@@ -2,8 +2,7 @@
 <PROJECT_ROOT>/config/.*
 [include]
 [libs]
-node_modules/react/flow
-node_modules/react-redux/flow
+flow/decl/require.js
 [options]
 
 module.name_mapper='.*\.scss$' -> '<PROJECT_ROOT>/flow/stub/css-modules.js'
