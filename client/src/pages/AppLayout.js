@@ -1,11 +1,16 @@
+/* @flow */
+
 import React from 'react';
 import Header from 'components/Header';
 import globalStyles from '../styles/core.scss'; //eslint-disable-line
 
-const AppLayout = React.createClass({
-  propTypes: {
-    children: React.PropTypes.node,
-  },
+type Props = {
+  children: any,
+};
+
+class AppLayout extends React.Component {
+  props: Props;
+
   render() {
     return (
       <div style={{ height: '100%' }}>
@@ -13,7 +18,7 @@ const AppLayout = React.createClass({
         {this.props.children}
       </div>
     );
-  },
-});
+  }
+}
 
 export default AppLayout;

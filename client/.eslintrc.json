@@ -1,0 +1,33 @@
+{
+    "extends": "airbnb",
+    "parser": "babel-eslint",
+    "plugins": [
+        "flowtype",
+        "react",
+        "jsx-a11y",
+        "import"
+    ],
+    "settings": {
+        "import/resolver": {
+            "webpack": {
+                "config": {
+                    "resolve": {
+                        "extensions":[".js", ".jsx"],
+                        "modules": ["src", "node_modules"],
+                        "alias": {
+                            "shared" : "shared"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "globals": {
+        "document": false,
+        "require": false
+    },
+    "rules": {
+        "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }],
+        "react/prefer-stateless-function": [0]
+    }
+}
