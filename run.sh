@@ -25,6 +25,9 @@ elif [ "$1" = "client:run" ]; then
 elif [ "$1" = "server:run" ]; then
     cd $SCRIPT_PATH/server
     go run main.go
+elif [ "$1" = "server:run:dev" ]; then
+    cd $SCRIPT_PATH/server
+    gin
 else
     echo "
         client:lint - check code with linter

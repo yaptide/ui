@@ -3,3 +3,5 @@ dist
 
 *.swp
 npm-debug.log
+
+gin-bin

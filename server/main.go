@@ -3,18 +3,14 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
+
+	"palantir/api"
 )
 
 func main() {
-	static := os.Getenv("PALANTIR_STATIC_FILES_PATH")
-	if static == "" {
-		static = "../dist"
-	}
 
-	fs := http.FileServer(http.Dir(static))
-	http.Handle("/", fs)
+	router := api.NewRouter()
 
 	log.Println("Listening...")
-	http.ListenAndServe(":3001", nil)
+	http.ListenAndServe(":3001", router)
 }
