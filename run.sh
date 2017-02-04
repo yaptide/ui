@@ -26,6 +26,8 @@ elif [ "$1" = "server:run" ]; then
     go run main.go
 elif [ "$1" = "server:run:dev" ]; then
     gin
+elif [ "$1" = "server:check" ]; then
+    gometalinter
 else
     echo "
         client:lint - check code with linter

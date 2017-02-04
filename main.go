@@ -12,5 +12,5 @@ func main() {
 	router := api.NewRouter()
 
 	log.Println("Listening...")
-	http.ListenAndServe(":3001", router)
+	log.Fatal(http.ListenAndServe(":3001", router))
 }
