@@ -13,7 +13,7 @@ func NewRouter() *mux.Router {
 	authRouter := router.PathPrefix("/auth").Subrouter()
 	auth.HandleAuth(authRouter)
 
-	router.Handle("/", http.FileServer(http.Dir("../dist")))
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./dist/")))
 
 	return router
 }

@@ -23,10 +23,8 @@ elif [ "$1" = "client:run" ]; then
     cd $SCRIPT_PATH/client
     npm start
 elif [ "$1" = "server:run" ]; then
-    cd $SCRIPT_PATH/server
     go run main.go
 elif [ "$1" = "server:run:dev" ]; then
-    cd $SCRIPT_PATH/server
     gin
 else
     echo "
@@ -43,5 +41,8 @@ else
         docker:deploy:dev - TODO
         local:deploy:prod - TODO
         local:deploy:dev - TODO"
+        
+
+        # protoc - protoc --go_out=./ **/*.proto
 fi
 
