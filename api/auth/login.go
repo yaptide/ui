@@ -2,10 +2,10 @@ package auth
 
 import (
 	"encoding/json"
+	"github.com/wkozyra95/palantir/model/auth"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"palantir/model/auth"
 )
 
 type mockLoginHandler struct{}

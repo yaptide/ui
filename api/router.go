@@ -2,9 +2,9 @@ package api
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/wkozyra95/palantir/api/auth"
+	"github.com/wkozyra95/palantir/api/simulation"
 	"net/http"
-	"palantir/api/auth"
-	"palantir/api/simulation"
 )
 
 // NewRouter define root routes

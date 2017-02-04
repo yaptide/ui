@@ -28,6 +28,8 @@ elif [ "$1" = "server:run:dev" ]; then
     gin
 elif [ "$1" = "server:check" ]; then
     gometalinter
+elif [ "$1" = "check" ]; then
+    gometalinter --config=.gometalinter.json ./... && cd $SCRIPT_PATH/client && npm run check
 else
     echo "
         client:lint - check code with linter

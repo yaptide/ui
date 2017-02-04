@@ -1,0 +1,14 @@
+language: go
+go:
+    - master
+env: 
+    - TRAVIS_NODE_VERSION="node"
+install:
+    - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
+    - go get -u github.com/alecthomas/gometalinter
+    - gometalinter -i
+    - cd client && npm install && cd ..
+script:
+    - gometalinter --config=.gometalinter.json ./...
+    - cd client && npm run check && cd ..
+
