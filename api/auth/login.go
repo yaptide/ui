@@ -2,7 +2,7 @@ package auth
 
 import (
 	"encoding/json"
-	"github.com/wkozyra95/palantir/model/auth"
+	"github.com/Palantir/palantir/model/auth"
 	"io/ioutil"
 	"log"
 	"net/http"

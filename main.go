@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/wkozyra95/palantir/api"
+	"github.com/Palantir/palantir/api"
 )
 
 func main() {
