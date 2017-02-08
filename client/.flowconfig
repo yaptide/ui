@@ -1,6 +1,7 @@
 [ignore]
 <PROJECT_ROOT>/config/.*
 [include]
+../node_modules
 [libs]
 flow/decl/require.js
 [options]

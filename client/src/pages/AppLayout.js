@@ -5,7 +5,7 @@ import Header from 'components/Header';
 import globalStyles from '../styles/core.scss'; //eslint-disable-line
 
 type Props = {
-  children: any,
+  children?: any,
 };
 
 class AppLayout extends React.Component {

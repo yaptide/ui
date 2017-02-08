@@ -2,25 +2,25 @@
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 if [ "$1" = "client:lint" ]; then
-    cd $SCRIPT_PATH/client
+    cd $SCRIPT_PATH
     npm run lint
 elif [ "$1" = "client:lint:fix" ]; then
-    cd $SCRIPT_PATH/client
+    cd $SCRIPT_PATH
     npm run lint:fix
 elif [ "$1" = "client:flow" ]; then
-    cd $SCRIPT_PATH/client
+    cd $SCRIPT_PATH
     npm run flow
 elif [ "$1" = "client:test" ]; then
-    cd $SCRIPT_PATH/client
+    cd $SCRIPT_PATH
     npm run test
 elif [ "$1" = "client:check" ]; then
-    cd $SCRIPT_PATH/client
+    cd $SCRIPT_PATH
     npm run check
 elif [ "$1" = "client:deploy" ]; then
-    cd $SCRIPT_PATH/client
+    cd $SCRIPT_PATH
     npm run deploy
 elif [ "$1" = "client:run" ]; then
-    cd $SCRIPT_PATH/client
+    cd $SCRIPT_PATH
     npm start
 elif [ "$1" = "server:run" ]; then
     go run main.go

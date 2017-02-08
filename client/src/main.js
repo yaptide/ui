@@ -14,7 +14,9 @@ const history = syncHistoryWithStore(hashHistory, store);
 
 const rootContainer = (
   <Provider store={store} >
-    <Router history={history} routes={routes} />
+    <div style={{ height: '100%' }} >
+      <Router history={history} routes={routes} />
+    </div>
   </Provider>
 );
 

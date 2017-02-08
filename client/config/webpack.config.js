@@ -8,10 +8,10 @@ const path = require('path');
 
 const env = process.env.NODE_ENV;
 const config = {
-  entry: './src/main.js',
+  entry: './client/src/main.js',
 
   output: {
-    path: '../dist/',
+    path: './dist/',
     filename: 'index_bundle.js',
   },
 
@@ -23,7 +23,7 @@ const config = {
   resolve: {
     extensions: ['', '.js', '.jsx'],
     root: [
-      path.resolve('./src/'),
+      path.resolve('./client/src/'),
     ],
   },
 
@@ -73,7 +73,7 @@ const plugins = [];
 plugins.push(
   new HtmlWebpackPlugin({
     title: 'Palantir',
-    template: './src/index.html',
+    template: './client/src/index.html',
   })
 );
 
