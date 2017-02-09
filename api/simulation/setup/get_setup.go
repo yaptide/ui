@@ -19,5 +19,7 @@ func (h *getSetup) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	w.Write(responseBody)
+	if _, err := w.Write(responseBody); err != nil {
+		log.Fatal(err.Error())
+	}
 }

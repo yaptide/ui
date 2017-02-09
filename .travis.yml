@@ -8,6 +8,9 @@ install:
     - go get -u github.com/alecthomas/gometalinter
     - gometalinter -i
     - npm install
+    - cd $HOME/gopath/src/github.com && mv wkozyra95 Palantir && cd Palantir/palantir 
+    - export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/Palantir/palantir
+    - go get ./... && go install
 script:
     - gometalinter --config=.gometalinter.json ./...
     - npm run check

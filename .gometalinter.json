@@ -1,5 +1,3 @@
 {
-  "DisableAll": true,
-  "Enable": [],
   "Exclude": [".pb.go"]
 }

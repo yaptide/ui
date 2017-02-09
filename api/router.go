@@ -1,9 +1,9 @@
 package api
 
 import (
-	"github.com/gorilla/mux"
 	"github.com/Palantir/palantir/api/auth"
 	"github.com/Palantir/palantir/api/simulation"
+	"github.com/gorilla/mux"
 	"net/http"
 )
 

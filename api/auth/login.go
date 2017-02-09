@@ -11,7 +11,10 @@ import (
 type mockLoginHandler struct{}
 
 func (h *mockLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Here is a string"))
+
+	if _, err := w.Write([]byte("Here is a string")); err != nil {
+		log.Fatal(err.Error())
+	}
 }
 
 type loginHandler struct{}
@@ -35,6 +38,8 @@ func (h *loginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(responseErr.Error())
 	}
 
-	w.Write(responseBody)
+	if _, err := w.Write(responseBody); err != nil {
+		log.Fatal(err.Error())
+	}
 
 }
