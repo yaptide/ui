@@ -6,11 +6,12 @@ env:
 install:
     - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
     - go get -u github.com/alecthomas/gometalinter
-    - gometalinter -i
+    - go get -u github.com/kardianos/govendor
+    - gometalinter --install --force
     - npm install
     - cd $HOME/gopath/src/github.com && mv wkozyra95 Palantir && cd Palantir/palantir 
     - export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/Palantir/palantir
-    - go get ./... && go install
+    - govendor sync && go install
 script:
     - gometalinter --config=.gometalinter.json ./...
     - npm run check

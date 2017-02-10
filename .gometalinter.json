@@ -1,3 +1,4 @@
 {
-  "Exclude": [".pb.go"]
+  "Vendor": false,
+  "Exclude": [".pb.go", "vendor"]
 }
