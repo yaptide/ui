@@ -2,15 +2,9 @@
   "name": "Palantir",
   "version": "0.0.1-alpha",
   "description": "",
-  "engines": {
-    "node": "6.9.5",
-    "npm": "3.10.x"
-  },
-  "env": {
-  },
   "scripts": {
     "start": "webpack-dev-server --hot --config=./client/config/webpack.config.js --content-base=./client/src",
-    "deploy": "webpack --config=./client/config/webpack.config.js",
+    "deploy": "rm -rf ./dist && NODE_ENV=production webpack --config=./client/config/webpack.config.js",
     "lint": "eslint ./client/src",
     "lint:fix": "eslint --fix /client/src",
     "flow": "flow ./client/.flowconfig",
@@ -19,7 +13,6 @@
     "heroku-postbuild": "npm install && npm run deploy"
   },
   "dependencies": {
-    "es6-promise": "^4.0.5",
     "lodash": "^4.17.4",
     "react": "^15.4.1",
     "react-css-modules": "^4.1.0",
@@ -37,9 +30,11 @@
     "babel-core": "^6.18.2",
     "babel-eslint": "^7.1.1",
     "babel-loader": "^6.2.8",
+    "babel-polyfill": "^6.22.0",
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-react": "^6.16.0",
     "css-loader": "^0.26.1",
+    "es6-promise": "^4.0.5",
     "eslint": "^3.12.2",
     "eslint-config-airbnb": "^13.0.0",
     "eslint-import-resolver-webpack": "^0.8.1",

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Header from 'components/Header';
-import globalStyles from '../styles/core.scss'; //eslint-disable-line
+import cls from '../styles/core.scss'; // eslint-disable-line no-unused-vars
 
 type Props = {
   children?: any,

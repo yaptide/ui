@@ -29,7 +29,7 @@ elif [ "$1" = "server:run:dev" ]; then
 elif [ "$1" = "server:check" ]; then
     gometalinter
 elif [ "$1" = "check" ]; then
-    gometalinter --config=.gometalinter.json ./... && cd $SCRIPT_PATH/client && npm run check
+    gometalinter --config=.gometalinter.json --deadline 200s ./... && cd $SCRIPT_PATH/client && npm run check
 elif [ "$1" = "docker:build" ]; then
 	docker build --force-rm -t palantir .
 elif [ "$1" = "docker:run" ]; then

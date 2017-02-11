@@ -8,17 +8,27 @@ const path = require('path');
 
 
 const env = process.env.NODE_ENV;
-const config = {
-  entry: './client/src/main.js',
+const __PROD__ = env === 'production';
+const __DEV__ = env === 'development';
 
-  output: {
-    path: './dist/',
-    filename: 'index_bundle.js',
+const ENTRY_PATH = __dirname + '/../src/main.js';
+const DEPLOY_PATH = __dirname + '/../../dist/';
+
+const config = {
+  entry: {
+    app: ENTRY_PATH,
+    vendors: ['react', 'redux', 'react-redux', 'react-router'],
   },
 
+  output: {
+    path: DEPLOY_PATH,
+    filename: '[name].js',
+  },
+  devtool: "source-map",
   devServer: {
     inline: true,
-    port: 8080,
+    hot: true,
+    port: 3002,
   },
 
   resolve: {
@@ -35,8 +45,7 @@ const config = {
   plugins: [],
 };
 
-const loaders = [];
-
+const loaders = config.module.loaders;
 loaders.push({
   test: /\.js$/,
   exclude: /node_modules/,
@@ -53,11 +62,11 @@ loaders.push({
 
 loaders.push({
   test: /\.scss$/,
-  loaders: [
+  loader: ExtractTextPlugin.extract(
     'style-loader',
-    'css-loader?modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
-    'sass-loader',
-  ],
+    'css-loader?modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]&sourceMap' + "!" +
+    'sass?sourceMap'
+  ),
 });
 
 loaders.push(
@@ -70,7 +79,7 @@ loaders.push(
   { test: /\.(png|jpg)$/, loader: 'url?limit=8192' }
 )
 
-const plugins = [];
+const plugins = config.plugins
 plugins.push(
   new HtmlWebpackPlugin({
     title: 'Palantir',
@@ -78,7 +87,23 @@ plugins.push(
   })
 );
 
-
-config.module.loaders = loaders;
-config.plugins = plugins;
+plugins.push(
+  new ExtractTextPlugin("[name].[contenthash].css", {
+    allChunks: true,
+  }),
+  new webpack.EnvironmentPlugin(['NODE_ENV'])
+)
+if (__PROD__) {
+  plugins.push(
+    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        unused: true,
+        dead_code: true,
+        warnings: false,
+      }
+    })
+  )
+}
 module.exports = config;
