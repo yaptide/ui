@@ -1,8 +1,10 @@
 FROM golang
 
-RUN apt-get update && apt-get install -y \
+# nodejs-legacy pkg create "ln -s `which nodejs` /usr/bin/node", this is required for npm in Debian
+RUN apt-get update && apt-get install --no-install-recommends -y \
 npm \
-nodejs-legacy
+nodejs-legacy \
+&& rm -rf /var/lib/apt/lists/*
 
 ADD . /go/src/github.com/Palantir/palantir
 
