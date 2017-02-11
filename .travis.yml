@@ -13,6 +13,6 @@ install:
     - export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/Palantir/palantir
     - govendor sync && go install
 script:
-    - gometalinter --config=.gometalinter.json ./...
+    - gometalinter --config=.gometalinter.json  ./...
     - npm run check
 

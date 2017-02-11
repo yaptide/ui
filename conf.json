@@ -1,0 +1,4 @@
+{
+  "Port": 3001,
+  "StaticDirectory": "./dist"
+}
