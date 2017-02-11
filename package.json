@@ -2,6 +2,12 @@
   "name": "Palantir",
   "version": "0.0.1-alpha",
   "description": "",
+  "engines": {
+    "node": "6.9.5",
+    "npm": "3.10.x"
+  },
+  "env": {
+  },
   "scripts": {
     "start": "webpack-dev-server --hot --config=./client/config/webpack.config.js --content-base=./client/src",
     "deploy": "webpack --config=./client/config/webpack.config.js",
@@ -9,7 +15,8 @@
     "lint:fix": "eslint --fix /client/src",
     "flow": "flow ./client/.flowconfig",
     "test": "echo \"Error: no test specified\" && exit 0",
-    "check": "npm run test && npm run lint && npm run flow"
+    "check": "npm run test && npm run lint && npm run flow",
+    "heroku-postbuild": "npm install && npm run deploy"
   },
   "dependencies": {
     "lodash": "^4.17.4",
