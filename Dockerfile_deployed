@@ -1,9 +1,0 @@
-FROM golang
-
-ADD ./server /go/src/palantir
-ADD ./dist /static
-
-RUN go install palantir
-
-ENTRYPOINT /go/bin/palantir
-EXPOSE 3001

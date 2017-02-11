@@ -1,11 +1,18 @@
 FROM golang
 
-RUN apt-get update && apt-get install -y npm
-ADD ./server /go/src/palantir
-ADD ./client /palantir
+RUN apt-get update && apt-get install -y \
+npm \
+nodejs-legacy
 
-RUN cd /palantir && npm install && npm build
-RUN go install palantir
+ADD . /go/src/github.com/Palantir/palantir
+
+WORKDIR /go/src/github.com/Palantir/palantir
+RUN npm install 
+RUN npm run deploy
+
+RUN go get -u github.com/kardianos/govendor
+RUN govendor sync
+RUN go install github.com/Palantir/palantir 
 
 ENTRYPOINT /go/bin/palantir
 EXPOSE 3001

@@ -1,0 +1,12 @@
+.git
+
+dist
+node_modules
+
+*.swp
+npm-debug.log
+
+gin-bin
+
+vendor/*
+!vendor/vendor.json

@@ -30,6 +30,10 @@ elif [ "$1" = "server:check" ]; then
     gometalinter
 elif [ "$1" = "check" ]; then
     gometalinter --config=.gometalinter.json ./... && cd $SCRIPT_PATH/client && npm run check
+elif [ "$1" = "docker:build" ]; then
+	docker build --force-rm -t palantir .
+elif [ "$1" = "docker:run" ]; then
+	docker run --tty --interactive --rm -p 3001:3001 --name=palantir palantir:latest
 else
     echo "
         client:lint - check code with linter
@@ -41,8 +45,8 @@ else
         client:run - run client dev server
         server:run - run server
         server:run:dev - run server with hot reloading - TODO
-        docker:deploy:prod - TODO
-        docker:deploy:dev - TODO
+        docker:build- build docker image
+        docker:run- run new docker container
         local:deploy:prod - TODO
         local:deploy:dev - TODO"
         
