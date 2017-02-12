@@ -3,6 +3,8 @@
 import React from 'react';
 import { Link } from 'react-router';
 
+import { t } from '../i18n';
+
 import cls from './Header.scss';
 
 class Header extends React.Component {
@@ -10,7 +12,7 @@ class Header extends React.Component {
     return (
       <div className={cls.header}>
         <Link to="/">
-          <p className={cls.title} >Project name</p>
+          <p className={cls.title} >{t('appName')}</p>
         </Link>
       </div>
     );
