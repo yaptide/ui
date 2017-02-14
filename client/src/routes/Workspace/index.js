@@ -1,4 +1,4 @@
-/* flow */
+/* @flow */
 
 import Settings from './Settings';
 import Beam from './Beam';

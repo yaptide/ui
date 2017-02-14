@@ -15,7 +15,10 @@ const logger = createLogger({
 });
 
 export const createStore = () => { // eslint-disable-line import/prefer-default-export
-  const middleware = [logger, thunk];
+  const middleware = [
+    thunk,
+    logger,
+  ];
 
   return reduxCreateStore(
     makeRootReducer(),

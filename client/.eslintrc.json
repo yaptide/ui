@@ -1,33 +1,62 @@
 {
-    "extends": "airbnb",
-    "parser": "babel-eslint",
-    "plugins": [
-        "flowtype",
-        "react",
-        "jsx-a11y",
-        "import"
-    ],
-    "settings": {
-        "import/resolver": {
-            "webpack": {
-                "config": {
-                    "resolve": {
-                        "extensions":[".js", ".jsx"],
-                        "modules": ["src", "node_modules"],
-                        "alias": {
-                            "shared" : "shared"
-                        }
-                    }
-                }
+  "extends": "airbnb",
+  "parser": "babel-eslint",
+  "plugins": [
+    "flowtype",
+    "react",
+    "jsx-a11y",
+    "import"
+  ],
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": {
+          "resolve": {
+            "extensions":[".js", ".jsx"],
+            "modules": ["src", "node_modules"],
+            "alias": {
+              "shared" : "shared"
             }
+          }
         }
-    },
-    "globals": {
-        "document": false,
-        "require": false
-    },
-    "rules": {
-        "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }],
-        "react/prefer-stateless-function": [0]
+      }
     }
+  },
+  "globals": {
+    "document": false,
+    "require": false
+  },
+  "rules": {
+    "no-use-before-define": 0,
+    "arrow-body-style": 0,
+    "no-unused-vars": [2, { "ignoreRestSiblings": true }],
+    "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }],
+    "react/prefer-stateless-function": [0],
+    "react/sort-comp": [2, {
+      "groups": {
+        "lifecycle": [
+          "displayName",
+          "propTypes",
+          "contextTypes",
+          "childContextTypes",
+          "mixins",
+          "statics",
+          "defaultProps",
+          "constructor",
+          "getDefaultProps",
+          "getInitialState",
+          "props",
+          "state",
+          "getChildContext",
+          "componentWillMount",
+          "componentDidMount",
+          "componentWillReceiveProps",
+          "shouldComponentUpdate",
+          "componentWillUpdate",
+          "componentDidUpdate",
+          "componentWillUnmount"
+        ]
+      }
+    }]
+  }
 }

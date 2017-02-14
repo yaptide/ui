@@ -1,8 +1,8 @@
-/* flow */
+/* @flow */
 
 const materialRoute = {
   path: 'material',
-  getComponent(nextState, cb) {
+  getComponent(nextState: string, cb: Function) {
     require.ensure([], (require) => {
       cb(null, require('./containers/WorkspaceMaterialContainer').default);
     }, 'workspaceMaterialBoundle');

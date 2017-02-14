@@ -1,8 +1,8 @@
-/* flow */
+/* @flow */
 
 const settingsRoute = {
   path: 'settings',
-  getComponent(nextState, cb) {
+  getComponent(nextState: string, cb: Function) {
     require.ensure([], (require) => {
       cb(null, require('./containers/WorkspaceSettingsContainer').default);
     }, 'workspaceSettingsBoundle');

@@ -1,4 +1,4 @@
-/* flow */
+/* @flow */
 
 import AppLayout from 'pages/AppLayout';
 
@@ -8,7 +8,7 @@ const projectRoute = {
   childRoutes: [
     {
       path: 'list',
-      getComponent(nextState, cb) {
+      getComponent(nextState: string, cb: Function) {
         require.ensure([], (require) => {
           cb(null, require('./containers/ProjectListContainer').default);
         }, 'projectListBoundle');
@@ -16,7 +16,7 @@ const projectRoute = {
     },
     {
       path: 'details',
-      getComponent(nextState, cb) {
+      getComponent(nextState: string, cb: Function) {
         require.ensure([], (require) => {
           cb(null, require('./containers/ProjectDetailsContainer').default);
         }, 'projectDetailsBoundle');

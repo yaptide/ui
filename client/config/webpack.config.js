@@ -43,6 +43,7 @@ const config = {
     loaders: [],
   },
   plugins: [],
+  externals: {},
 };
 
 const loaders = config.module.loaders;
@@ -50,10 +51,6 @@ loaders.push({
   test: /\.js$/,
   exclude: /node_modules/,
   loader: 'babel-loader',
-
-  query: {
-    presets: ['es2015', 'react'],
-  },
 });
 
 loaders.push({
@@ -106,4 +103,12 @@ if (__PROD__) {
     })
   )
 }
+
+const externals = config.externals;
+
+externals['react/lib/ExecutionEnvironment'] = true;
+externals['react/lib/ReactContext'] = true;
+externals['react/addons'] = true;
+
+
 module.exports = config;

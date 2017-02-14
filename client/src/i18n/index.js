@@ -1,4 +1,4 @@
-/* flow */
+/* @flow */
 
 import {
   loadTranslations,
@@ -15,7 +15,9 @@ const translations = {
   en,
 };
 
-export const setupTranslationsInStore = (store) => {
+export const setupTranslationsInStore = (store: {
+  dispatch: Function,
+}) => {
   syncTranslationWithStore(store);
   store.dispatch(loadTranslations(translations));
   store.dispatch(setLocale('en'));
