@@ -1,10 +1,12 @@
-FROM debian
+FROM debian:7
 
-RUN adduser user
+RUN useradd user --create-home --base-dir /home/
+ADD . /home/user/palantir
+RUN chown -R user:user /home/user/palantir
 
-ADD ./release /palantir
 USER user
-WORKDIR /palantir
 
-ENTRYPOINT /palantir/palantir
-EXPOSE 3001
+WORKDIR /
+
+
+# ENTRYPOINT /home/user/palantir/run.sh

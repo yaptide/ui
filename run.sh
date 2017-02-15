@@ -1,5 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# get script parent directory absolute path
+# http://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script/
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+set -e
 
 if [ "$1" = "client:lint" ]; then
     cd $SCRIPT_PATH
@@ -18,22 +23,40 @@ elif [ "$1" = "client:check" ]; then
     npm run check
 elif [ "$1" = "client:deploy" ]; then
     cd $SCRIPT_PATH
+    rm -rf $SCRIPT_PATH/dist
     npm run deploy
 elif [ "$1" = "client:run" ]; then
     cd $SCRIPT_PATH
     npm start
 elif [ "$1" = "server:run" ]; then
+    cd $SCRIPT_PATH
     go run main.go
 elif [ "$1" = "server:run:dev" ]; then
+    # go get github.com/codegangsta/gin
+    cd $SCRIPT_PATH
     gin
 elif [ "$1" = "server:check" ]; then
-    gometalinter
+    # go get -u github.com/alecthomas/gometalinter
+    # gometalinter --install
+    # /... - checking recursively all files inside
+    cd $SCRIPT_PATH
+    gometalinter --config=.gometalinter.json --deadline 200s ./...
 elif [ "$1" = "check" ]; then
-    gometalinter --config=.gometalinter.json --deadline 200s ./... && cd $SCRIPT_PATH/client && npm run check
-elif [ "$1" = "docker:build" ]; then
-	docker build --force-rm -t palantir .
+    cd $SCRIPT_PATH
+    gometalinter --config=.gometalinter.json --deadline 200s ./...
+    cd $SCRIPT_PATH/client
+    npm run check
 elif [ "$1" = "docker:run" ]; then
-	docker run --tty --interactive --rm -p 3001:3001 --name=palantir palantir:latest
+    echo "{\"Port\": 3301, \"StaticDirectory\": \"./dist\"}" > $SCRIPT_PATH/conf.json
+	docker build --force-rm --tag palantir $SCRIPT_PATH
+	docker run --tty --interactive --rm -p 3301:3301 --name=palantir palantir:latest
+elif [ "$1" = "prod:run" ]; then
+    echo "{\"Port\": 3101, \"StaticDirectory\": \"./dist\"}" > $SCRIPT_PATH/conf.json
+    $SCRIPT_PATH/run.sh client:deploy
+    cd $SCRIPT_PATH
+    # protoc - protoc --go_out=./ **/*.proto
+    go install -v
+    palantir 
 else
     echo "
         client:lint - check code with linter
@@ -45,12 +68,9 @@ else
         client:run - run client dev server
         server:run - run server
         server:run:dev - run server with hot reloading - TODO
-        docker:build- build docker image
-        docker:run- run new docker container
-        local:deploy:prod - TODO
-        local:deploy:dev - TODO"
+        docker:run - build & run new docker container
+        local:prod - run production version localy"
         
 
-        # protoc - protoc --go_out=./ **/*.proto
 fi
 

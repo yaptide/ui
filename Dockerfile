@@ -17,4 +17,3 @@ RUN govendor sync
 RUN go install github.com/Palantir/palantir 
 
 ENTRYPOINT /go/bin/palantir
-EXPOSE 3001
