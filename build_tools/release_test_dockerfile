@@ -1,0 +1,10 @@
+FROM debian
+
+RUN adduser user
+
+ADD ./release /palantir
+USER user
+WORKDIR /palantir
+
+ENTRYPOINT /palantir/palantir
+EXPOSE 3001
