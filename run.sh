@@ -48,29 +48,38 @@ elif [ "$1" = "check" ]; then
     npm run check
 elif [ "$1" = "docker:run" ]; then
     echo "{\"Port\": 3301, \"StaticDirectory\": \"./dist\"}" > $SCRIPT_PATH/conf.json
-	docker build --force-rm --tag palantir $SCRIPT_PATH
-	docker run --tty --interactive --rm -p 3301:3301 --name=palantir palantir:latest
+    docker build --force-rm --tag palantir $SCRIPT_PATH
+    docker run --tty --interactive --rm -p 3301:3301 --name=palantir palantir:latest
 elif [ "$1" = "prod:run" ]; then
     echo "{\"Port\": 3101, \"StaticDirectory\": \"./dist\"}" > $SCRIPT_PATH/conf.json
     $SCRIPT_PATH/run.sh client:deploy
     cd $SCRIPT_PATH
-    # protoc - protoc --go_out=./ **/*.proto
+    # protoc - protoc --go_out=./ **/*.proto - run this comand after changes in proto files
     go install -v
     palantir 
+elif [ "$1" = "setup:go" ]; then
+    # I assume that go is installed and GOPATH is set
+    go get -u github.com/alecthomas/gometalinter
+    gometalinter --install
+    go get -u github.com/kardianos/govendor
+    go get github.com/codegangsta/gin
+    protoc - protoc --go_out=./ **/*.proto
 else
     echo "
-        client:lint - check code with linter
-        client:lint:fix - check code with linter and fix if possible
-        client:flow - static type check
-        client:test - run tests on frontend
-        client:check - run all checks lint+flow+test
-        client:deploy - generate static client code
-        client:run - run client dev server
-        server:run - run server
-        server:run:dev - run server with hot reloading - TODO
-        docker:run - build & run new docker container
-        local:prod - run production version localy"
-        
-
+    client:lint - check code with linter
+    client:lint:fix - check code with linter and fix if possible
+    client:flow - static type check
+    client:test - run tests on frontend
+    client:check - run all checks lint+flow+test
+    client:deploy - generate static client code
+    client:run - run client dev server
+    server:run - run server
+    server:run:dev - run server with hot reloading - TODO
+    server:check - run linters and tests on backend
+    check - server:check + client:check
+    docker:run - build & run new docker container
+    prod:run - run production version localy
+    setup:go - get all tools required in dev environment
+    "
 fi
 
