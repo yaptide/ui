@@ -5,7 +5,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 xz-utils \
 && rm -rf /var/lib/apt/lists/*
 
-# node instalation from https://github.com/nodejs/docker-node/blob/master/Dockerfile.template
+# node installation script from https://github.com/nodejs/docker-node/blob/master/Dockerfile.template#L3-L30
+# manual installation due to obsolete nodejs in Debian apt-get repository. most of node modules requires NODE_VERSION >= 4.0
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
 
@@ -27,15 +28,13 @@ RUN set -ex \
 ENV NPM_CONFIG_LOGLEVEL warn
 ENV NODE_VERSION 6.9.5
 
-RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \
-  && curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
-  && gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc \
-  && grep " node-v$NODE_VERSION-linux-x64.tar.xz\$" SHASUMS256.txt | sha256sum -c - \
-  && tar -xJf "node-v$NODE_VERSION-linux-x64.tar.xz" -C /usr/local --strip-components=1 \
-  && rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
-  && ln -s /usr/local/bin/node /usr/local/bin/nodejs
-
-
+RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz"
+RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc"
+RUN gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc
+RUN grep " node-v$NODE_VERSION-linux-x64.tar.xz\$" SHASUMS256.txt | sha256sum -c -
+RUN tar -xJf "node-v$NODE_VERSION-linux-x64.tar.xz" -C /usr/local --strip-components=1 \
+&& rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt
+RUN ln -s /usr/local/bin/node /usr/local/bin/nodejs
 ADD . /go/src/github.com/Palantir/palantir
 
 WORKDIR /go/src/github.com/Palantir/palantir
