@@ -10,11 +10,7 @@ import (
 )
 
 func main() {
-	conf, err := config.SetupConfig()
-	if err != nil {
-		log.Fatal(err.Error())
-		return
-	}
+	conf := config.SetupConfig()
 	router := api.NewRouter(conf)
 
 	portString := ":" + strconv.FormatInt(conf.Port, 10)

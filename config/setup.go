@@ -1,16 +1,31 @@
 package config
 
+import (
+	"log"
+)
+
 // SetupConfig read and check config from various sources
-// Return error, if config is not valid
-func SetupConfig() (*Config, error) {
-	cmdConf := parseCmd()
+// Close application, if any checkConfig err occurs
+func SetupConfig() *Config {
 	conf := getDefaultConfig()
 
-	readJSON(conf)
-	readEnv(conf)
-	readCmd(conf, cmdConf)
+	type readConfFunc func(*Config)
+	readConfFuncs := []readConfFunc{
+		readJSON,
+		readEnv,
+		readCmd,
+	}
 
-	return conf, checkConfig(*conf)
+	for _, readConfFunc := range readConfFuncs {
+		readConfFunc(conf)
+	}
+
+	err := checkConfig(conf)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	return conf
 }
 
 func getDefaultConfig() *Config {

@@ -3,29 +3,44 @@ package config
 import (
 	"errors"
 	"fmt"
+	"net"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
-func checkConfig(conf Config) error {
-	if err := checkPort(conf); err != nil {
-		return err
+type checkFunc func(conf *Config) error
+
+func checkConfig(conf *Config) error {
+	checkFuncs := []checkFunc{
+		checkPort,
+		checkStaticDirectory,
 	}
-	if err := checkStaticDirectory(conf); err != nil {
-		return err
+
+	for _, checkFunc := range checkFuncs {
+		if err := checkFunc(conf); err != nil {
+			return err
+		}
 	}
+
 	return nil
 }
 
-func checkPort(conf Config) error {
+func checkPort(conf *Config) error {
 	port := conf.Port
 	if port < 1000 || port > 65535 {
 		return errors.New("Invalid port number")
 	}
-	return nil
+
+	ln, connectErr := net.Listen("tcp", ":"+strconv.FormatInt(port, 10))
+	if connectErr != nil {
+		return connectErr
+	}
+	closeErr := ln.Close()
+	return closeErr
 }
 
-func checkStaticDirectory(conf Config) error {
+func checkStaticDirectory(conf *Config) error {
 	dist := conf.StaticDirectory
 	fileInfo, statErr := os.Stat(dist)
 	if statErr != nil {
@@ -36,9 +51,6 @@ func checkStaticDirectory(conf Config) error {
 	}
 
 	indexPath := filepath.Join(dist, "index.html")
-	if _, statErr = os.Stat(indexPath); statErr != nil {
-		return statErr
-	}
-
-	return nil
+	_, statErr = os.Stat(indexPath)
+	return statErr
 }
