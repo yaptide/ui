@@ -1,11 +1,16 @@
 package config
 
-// SetupConfig read config from various sources
-func SetupConfig() *Config {
+// SetupConfig read and check config from various sources
+// Return error, if config is not valid
+func SetupConfig() (*Config, error) {
+	cmdConf := parseCmd()
 	conf := getDefaultConfig()
+
 	readJSON(conf)
 	readEnv(conf)
-	return conf
+	readCmd(conf, cmdConf)
+
+	return conf, checkConfig(*conf)
 }
 
 func getDefaultConfig() *Config {
