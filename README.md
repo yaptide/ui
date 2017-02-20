@@ -2,7 +2,7 @@
 # Palantir
 
 ### Setup development environment
-#### Backend dependicies
+#### Backend dependencies
 - install go and setup GOPATH (https://golang.org/doc/install)
 - install protoc compiler (https://github.com/google/protobuf)
 - install gometalinter and available linters  
@@ -11,7 +11,7 @@
 - install govendor (`go get -u github.com/kardianos/govendor`)
 - install gin (`go get github.com/codegangsta/gin`)  
 
-#### Frontend dependicies  
+#### Frontend dependencies  
 - install node + npm ( recomended current LTS version )  
 
 #### Build project
@@ -34,8 +34,8 @@ generate source code described by *.proto files
 - gometalinter  
 Gometalinter cheks source code for inconsistent code style, potential bugs, unhandled situations  
 - govendor   
-Govendor allow to define consistent versions of dependicies   
-`govendor sync` will download defined dependicies  
+Govendor allow to define consistent versions of dependencies   
+`govendor sync` will download defined dependencies  
 - gin  
 gin is a simple command line utility for live-reloading Go web applications.  
 - npm  

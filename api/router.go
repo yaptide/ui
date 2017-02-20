@@ -11,6 +11,7 @@ import (
 // NewRouter define root routes
 func NewRouter(config *config.Config) *mux.Router {
 	router := mux.NewRouter()
+	_ = setupServerContext(config)
 
 	authRouter := router.PathPrefix("/auth").Subrouter()
 	auth.HandleAuth(authRouter)
