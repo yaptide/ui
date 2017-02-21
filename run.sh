@@ -13,7 +13,7 @@ if [ "$1" = "client:check" ]; then
     npm run check
 elif [ "$1" = "client:deploy" ]; then
     cd $SCRIPT_PATH
-    rm -rf $SCRIPT_PATH/dist
+    rm -rf $SCRIPT_PATH/dist # optional(to create clean build)
     npm install
     npm run deploy
 elif [ "$1" = "client:run" ]; then
@@ -30,7 +30,7 @@ elif [ "$1" = "server:run:dev" ]; then
     # go get github.com/codegangsta/gin
     echo "{\"Port\": 3001, \"StaticDirectory\": \"./dist\"}" > $SCRIPT_PATH/conf.json
     cd $SCRIPT_PATH
-    startDB "dev"
+    startDB "dev" "3005"
     gin
 elif [ "$1" = "server:check" ]; then
     # go get -u github.com/alecthomas/gometalinter
@@ -45,13 +45,14 @@ elif [ "$1" = "check" ]; then
 elif [ "$1" = "docker:run" ]; then
     cd $SCRIPT_PATH
     echo "{\"Port\": 3301, \"StaticDirectory\": \"./dist\"}" > $SCRIPT_PATH/conf.json
-    protoc --go_out=./ **/*.proto
+    #protoc --go_out=./ **/*.proto
+    find .  -iname "*.proto" -exec protoc --go_out=./ {}  \;
     docker build --force-rm --tag palantir $SCRIPT_PATH
     docker run --tty --interactive --rm -p 3301:3301 --name=palantir palantir:latest
 elif [ "$1" = "prod:run" ]; then
     echo "{\"Port\": 3101, \"StaticDirectory\": \"./dist\"}" > $SCRIPT_PATH/conf.json
     cd $SCRIPT_PATH
-    startDB "prod"
+    startDB "prod" "3105"
     ./run.sh client:deploy
 
     # protoc --go_out=./ **/*.proto   - ** won't work inside script (use find instead)
