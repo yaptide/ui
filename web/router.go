@@ -19,7 +19,7 @@ func NewRouter(config *config.Config) *mux.Router {
 	simulationRouter := router.PathPrefix("/simulation").Subrouter()
 	simulation.HandleSimulation(simulationRouter)
 
-	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir(config.StaticDirectory)))
 
 	return router
 }

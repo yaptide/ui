@@ -7,4 +7,4 @@
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # make relative paths independent from caller working directory
-cd $SCRIPT_PATH && ./run.sh
+cd $SCRIPT_PATH && ./bin/palantir
