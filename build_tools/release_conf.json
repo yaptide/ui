@@ -1,4 +1,7 @@
 {
-  "Port": 3101,
-  "StaticDirectory": "./dist"
+  "port": "3101",
+  "dbName": "palantir-db-prod",
+  "dbUsername": "palantir",
+  "dbPassword": "password",
+  "dbPort": "3105"
 }

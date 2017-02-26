@@ -1,8 +1,7 @@
-package api
+package web
 
 import (
 	"github.com/Palantir/palantir/config"
-	"github.com/Palantir/palantir/db"
 	"gopkg.in/mgo.v2"
 )
 
@@ -12,6 +11,5 @@ type ServerContext struct {
 }
 
 func setupServerContext(conf *config.Config) *ServerContext {
-	db.SetupDbConnection(conf)
 	return &ServerContext{}
 }

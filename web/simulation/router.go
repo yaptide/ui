@@ -3,9 +3,9 @@ package simulation
 import (
 	"github.com/gorilla/mux"
 
-	"github.com/Palantir/palantir/api/simulation/setup"
-	//"github.com/Palantir/palantir/api/simulation/results"
-	//"github.com/Palantir/palantir/api/simulation/status"
+	"github.com/Palantir/palantir/web/simulation/setup"
+	//"github.com/Palantir/palantir/web/simulation/results"
+	//"github.com/Palantir/palantir/web/simulation/status"
 )
 
 // HandleSimulation define auth routes

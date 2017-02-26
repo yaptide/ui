@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"github.com/Palantir/palantir/config"
 	"gopkg.in/mgo.v2"
 	"log"
@@ -13,15 +14,16 @@ type Test struct {
 
 // SetupDbConnection estblish connection to db and Session to config
 func SetupDbConnection(conf *config.Config) {
-	session, err := mgo.Dial("mongodb://palantir-db-dev:password@localhost:3005/palantir-db-dev")
+	dbURL := fmt.Sprintf("mongodb://%v:%v@%v:%d/%v", conf.DbUsername, conf.DbPassword, conf.DbHost, conf.DbPort, conf.DbName)
+	session, err := mgo.Dial(dbURL)
 
 	// TODO: remove when there is real use for db
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal(err.Error(), dbURL)
 	}
 
 	err2 := session.
-		DB("palantir-db-dev").
+		DB(conf.DbName).
 		C("test").Insert(
 		&Test{
 			TestName: "sample test data",
@@ -29,6 +31,6 @@ func SetupDbConnection(conf *config.Config) {
 	)
 
 	if err2 != nil {
-		log.Print(err2)
+		log.Fatal(err2.Error())
 	}
 }

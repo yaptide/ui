@@ -12,7 +12,7 @@ const __PROD__ = env === 'production';
 const __DEV__ = env === 'development';
 
 const ENTRY_PATH = __dirname + '/../src/main.js';
-const DEPLOY_PATH = __dirname + '/../../dist/';
+const DEPLOY_PATH = __dirname + '/../../static/';
 
 const config = {
   entry: {

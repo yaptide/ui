@@ -60,7 +60,7 @@ package manager
 ### Scripts overview
 - run.sh
   - server:check client:check check - this commands run linters, checkers and tests
-  - client:deploy - compile frontend sources to static content ( dist/ directory)
+  - client:deploy - compile frontend sources to static content ( static/ directory)
   - client:run - run webpack-dev-server, frontend is served on port :3002, on every change code is reloaded
   - server:run - run backend, start db on port :3005
   - server:run:dev - run backend with code reloading, start db on port :3005

@@ -1,9 +1,9 @@
-package api
+package web
 
 import (
-	"github.com/Palantir/palantir/api/auth"
-	"github.com/Palantir/palantir/api/simulation"
 	"github.com/Palantir/palantir/config"
+	"github.com/Palantir/palantir/web/auth"
+	"github.com/Palantir/palantir/web/simulation"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -19,7 +19,7 @@ func NewRouter(config *config.Config) *mux.Router {
 	simulationRouter := router.PathPrefix("/simulation").Subrouter()
 	simulation.HandleSimulation(simulationRouter)
 
-	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./dist/")))
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 
 	return router
 }

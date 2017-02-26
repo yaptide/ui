@@ -13,7 +13,7 @@ $SCRIPT_PATH/release.sh
 
 if [ "$1" = "docker" ]; then
     # replace runtime config
-    echo "{\"Port\": 3201, \"StaticDirectory\": \"./dist\"}" > $RELEASE_ROOT/conf.json
+    echo "{\"Port\": 3201, \"StaticDirectory\": \"./static\"}" > $RELEASE_ROOT/conf.json
     
     # copy Dockerfile to preserve context
     cp release_test_dockerfile $RELEASE_ROOT/Dockerfile

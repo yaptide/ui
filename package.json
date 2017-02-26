@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "start": "NODE_ENV=development webpack-dev-server --hot --config=./client/config/webpack.config.js --content-base=./client/src",
-    "deploy": "rm -rf ./dist && NODE_ENV=production webpack --config=./client/config/webpack.config.js",
+    "deploy": "rm -rf ./static && NODE_ENV=production webpack --config=./client/config/webpack.config.js",
     "lint": "eslint ./client/src",
     "lint:fix": "eslint --fix /client/src",
     "flow": "flow ./client/.flowconfig",

@@ -41,16 +41,16 @@ func checkPort(conf *Config) error {
 }
 
 func checkStaticDirectory(conf *Config) error {
-	dist := conf.StaticDirectory
-	fileInfo, statErr := os.Stat(dist)
+	static := conf.StaticDirectory
+	fileInfo, statErr := os.Stat(static)
 	if statErr != nil {
 		return statErr
 	}
 	if !fileInfo.IsDir() {
-		return fmt.Errorf("%s is not directory", dist)
+		return fmt.Errorf("%s is not directory", static)
 	}
 
-	indexPath := filepath.Join(dist, "index.html")
+	indexPath := filepath.Join(static, "index.html")
 	_, statErr = os.Stat(indexPath)
 	return statErr
 }

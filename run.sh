@@ -13,7 +13,7 @@ if [ "$1" = "client:check" ]; then
     npm run check
 elif [ "$1" = "client:deploy" ]; then
     cd $SCRIPT_PATH
-    rm -rf $SCRIPT_PATH/dist # optional(to create clean build)
+    rm -rf $SCRIPT_PATH/static # optional(to create clean build)
     npm install
     npm run deploy
 elif [ "$1" = "client:run" ]; then
@@ -22,16 +22,16 @@ elif [ "$1" = "client:run" ]; then
     npm start
 elif [ "$1" = "server:run" ]; then
     cd $SCRIPT_PATH
-    echo "{\"Port\": 3001, \"StaticDirectory\": \"./dist\"}" > $SCRIPT_PATH/conf.json
+    echo "{\"port\": \"3001\", \"dbName\": \"palantir-db-dev\", \"dbUsername\": \"palantir\", \"dbPassword\": \"password\", \"dbPort\": \"3005\"}" > $SCRIPT_PATH/conf.json
     startDB "dev" "3005"
     govendor sync
-    go run main.go
+    DEV=true go run main.go
 elif [ "$1" = "server:run:dev" ]; then
     # go get github.com/codegangsta/gin
-    echo "{\"Port\": 3001, \"StaticDirectory\": \"./dist\"}" > $SCRIPT_PATH/conf.json
+    echo "{\"port\": \"3001\", \"dbName\": \"palantir-db-dev\", \"dbUsername\": \"palantir-db-dev\", \"dbPassword\": \"password\", \"dbPort\": \"3005\"}" > $SCRIPT_PATH/conf.json
     cd $SCRIPT_PATH
     startDB "dev" "3005"
-    gin
+    DEV=true gin
 elif [ "$1" = "server:check" ]; then
     # go get -u github.com/alecthomas/gometalinter
     # gometalinter --install
@@ -44,13 +44,14 @@ elif [ "$1" = "check" ]; then
     npm run check
 elif [ "$1" = "docker:run" ]; then
     cd $SCRIPT_PATH
-    echo "{\"Port\": 3301, \"StaticDirectory\": \"./dist\"}" > $SCRIPT_PATH/conf.json
+    echo "{\"port\": \"3301\", \"dbName\": \"palantir-db-docker\", \"dbUsername\": \"palantir-db-docker\", \"dbPassword\": \"password\", \"dbPort\": \"27017\". \"dbHost\": \"172.17.1.1\"}" > $SCRIPT_PATH/conf.json
     #protoc --go_out=./ **/*.proto
     find .  -iname "*.proto" -exec protoc --go_out=./ {}  \;
+    startDB "docker" "27017" 
     docker build --force-rm --tag palantir $SCRIPT_PATH
     docker run --tty --interactive --rm -p 3301:3301 --name=palantir palantir:latest
 elif [ "$1" = "prod:run" ]; then
-    echo "{\"Port\": 3101, \"StaticDirectory\": \"./dist\"}" > $SCRIPT_PATH/conf.json
+    echo "{\"port\": \"3101\", \"dbName\": \"palantir-db-prod\", \"dbUsername\": \"palantir-db-prod\", \"dbPassword\": \"password\", \"dbPort\": \"3105\"}" > $SCRIPT_PATH/conf.json
     cd $SCRIPT_PATH
     startDB "prod" "3105"
     ./run.sh client:deploy
@@ -59,7 +60,7 @@ elif [ "$1" = "prod:run" ]; then
     find .  -iname "*.proto" -exec protoc --go_out=./ {}  \;
 
     go install -v
-    palantir 
+    DEV=true palantir 
 elif [ "$1" = "setup:go" ]; then
     # I assume that go and protoc are installed and GOPATH is set
     cd $SCRIPT_PATH

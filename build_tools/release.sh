@@ -15,7 +15,7 @@ mkdir $PROJECT_ROOT/release/bin
 
 # frontend deploy
 $PROJECT_ROOT/run.sh client:deploy
-cp -R $PROJECT_ROOT/dist $PROJECT_ROOT/release/dist
+cp -R $PROJECT_ROOT/static $PROJECT_ROOT/release/static
 
 # backend deploy
 cd $PROJECT_ROOT && go install -v

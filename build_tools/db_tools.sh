@@ -11,7 +11,7 @@ function startDB {
     if [ "$IS_RUNNING" != "true" ] && [ "$EXISTS" = "0" ]; then
         echo "Start mongo docker"
         docker start $DB_NAME
-    elif [ "$EXISTS" != "0" ]; then
+    elif [ "$EXISTS" != "0" ] ; then
         # temporary container without auth
         docker run -p $2:27017 --name $DB_NAME -d mongo --auth
         sleep 3 # db need some time to initialize

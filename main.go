@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Palantir/palantir/api"
 	"github.com/Palantir/palantir/config"
+	"github.com/Palantir/palantir/web"
 )
 
 func main() {
 	conf := config.SetupConfig()
-	router := api.NewRouter(conf)
+	router := web.NewRouter(conf)
 
 	portString := ":" + strconv.FormatInt(conf.Port, 10)
 
