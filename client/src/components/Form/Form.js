@@ -19,6 +19,7 @@ type Props = {
 };
 
 class Form extends React.Component {
+  static defaultProps = { links: [] }
   props: Props
 
   render() {
@@ -46,8 +47,7 @@ class Form extends React.Component {
 
 const styles = {
   form: {
-    display: 'flex',
-    flexDirection: 'column',
+    ...Style.Flex.rootColumn,
     alignItems: 'stretch',
   },
   formInput: {

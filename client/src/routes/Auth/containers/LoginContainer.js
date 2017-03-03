@@ -11,6 +11,10 @@ import { Form, FormInput } from 'components/Form';
 import type { LoginData } from '../model';
 
 type Props = {
+  router: {
+    push: (string) => void,
+  },
+  includeLinks?: bool,
   login: (LoginData) => void,
   //  requestErrors: Map<string, List<string>>,
   //  requestPending: bool,
@@ -21,6 +25,7 @@ type State = {
 }
 
 class LoginContainer extends React.Component {
+  static defaultProps = { includeLinks: true }
   props: Props
   state: State = {
     username: '',
@@ -36,12 +41,13 @@ class LoginContainer extends React.Component {
       username: this.state.username,
       password: this.state.password,
     });
+    this.props.router.push('project/list');
   }
 
   render() {
-    const links = [
+    const links = this.props.includeLinks ? [
       { text: t('auth.links.goRegister'), url: '/auth/register' },
-    ];
+    ] : undefined;
 
     return (
       <Form

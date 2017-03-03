@@ -1,10 +1,7 @@
 /* @flow */
 
-import AppLayout from 'pages/AppLayout';
-
 const projectRoute = {
   path: 'project',
-  component: AppLayout,
   childRoutes: [
     {
       path: 'list',

@@ -10,6 +10,7 @@ import { Form, FormInput } from 'components/Form';
 import type { RegisterData } from '../model';
 
 type Props = {
+  includeLinks?: bool,
   register: RegisterData => void,
   //  requestErrors: Map<string, List<string>>,
   //  requestPending: bool,
@@ -22,6 +23,7 @@ type State = {
 };
 
 class RegisterContainer extends React.Component {
+  static defaultProps = { includeLinks: true }
   props: Props
   state: State = {
     email: '',
@@ -43,9 +45,10 @@ class RegisterContainer extends React.Component {
   }
 
   render() {
-    const links = [
+    const links = this.props.includeLinks ? [
       { text: t('auth.links.goLogin'), url: '/auth/login' },
-    ];
+    ] : undefined;
+
     return (
       <Form
         submit={this.register}

@@ -50,7 +50,6 @@ class FormInput extends React.Component {
 const styles = {
   formWrapper: {
     ...Style.Flex.rootColumn,
-
   },
   input: {
     ...Style.Flex.elementEqual,

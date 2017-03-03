@@ -7,7 +7,7 @@ export const rootRow = {
 
 export const rootColumn = {
   display: 'flex',
-  flexDirection: 'row',
+  flexDirection: 'column',
 };
 
 export const elementEqual = {
@@ -15,9 +15,15 @@ export const elementEqual = {
   overflow: 'hidden',
 };
 
+export const center = {
+  justifyContent: 'center',
+  alignItems: 'center',
+};
+
 
 export default {
   rootRow,
   rootColumn,
   elementEqual,
+  center,
 };

@@ -1,11 +1,14 @@
 /* @flow */
 
 import React from 'react';
+import AppLayout from 'pages/AppLayout';
 
 class ProjectListContainer extends React.Component {
   render() {
     return (
-      <div>ProjectListContainer</div>
+      <AppLayout>
+        <div>ProjectListContainer</div>
+      </AppLayout>
     );
   }
 }
