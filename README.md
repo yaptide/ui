@@ -1,6 +1,12 @@
 [![Build Status](https://travis-ci.com/wkozyra95/palantir.svg?token=sCgDnvoX1GsuviUYexgT&branch=develop)](https://travis-ci.com/wkozyra95/palantir)
 # Palantir
 
+### Current instances
+#### PL-Grid
+<http://149.156.11.4:10206> - master  
+<http://149.156.11.4:10207> - develop  
+<http://149.156.11.4:10208> - staging  
+
 ### Project structure
 main.go - backend entry point  
 api - definition of rest endpoints  
