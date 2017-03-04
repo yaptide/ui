@@ -54,6 +54,7 @@ const styles = {
     ...Style.Flex.rootRow,
     background: Style.Colors.primary,
     height: Style.Dimens.spacing.veryLarge,
+    minHeight: Style.Dimens.spacing.veryLarge,
     alignItems: 'center',
     paddingLeft: Style.Dimens.spacing.normal,
     paddingRight: Style.Dimens.spacing.normal,

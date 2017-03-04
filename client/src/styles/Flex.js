@@ -11,7 +11,7 @@ export const rootColumn = {
 };
 
 export const elementEqual = {
-  flex: '1 0 auto',
+  flex: '1 0 0',
   overflow: 'hidden',
 };
 

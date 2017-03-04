@@ -1,8 +1,8 @@
 /* @flow */
 
-import type { State } from 'store/reducers';
+import type { Store } from 'store/reducers';
 
-export const authSelector = (state: State) => state.auth;
+export const authSelector = (state: Store) => state.auth;
 
 
 export default {

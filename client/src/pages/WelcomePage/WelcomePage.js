@@ -80,8 +80,4 @@ const styles = {
   },
 };
 
-//      <Link to="/auth/login"><p>Login</p></Link>
-//      <Link to="/auth/register"><p>Register</p></Link>
-//      <Link to="/project/list"><p>ProjectsList</p></Link>
-//      <Link to="/project/details"><p>ProjectDetails</p></Link>
 export default WelcomePage;

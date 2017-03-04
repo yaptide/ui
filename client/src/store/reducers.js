@@ -24,7 +24,7 @@ const makeRootReducer = () => combineReducers({
   project,
 });
 
-export type State = {
+export type Store = {
   routing: Object,
   i18n: Object,
   auth: AuthState,

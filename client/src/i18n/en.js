@@ -18,7 +18,14 @@ const en = {
     },
   },
   welcome: {},
-  project: {},
+  project: {
+    status: {
+      error: 'Last simulation failed',
+      success: 'Last simulation finished',
+      edited: 'Project was edited since last simulation run',
+      none: 'No results avilable',
+    },
+  },
   simulation: {},
   results: {},
 };

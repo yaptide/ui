@@ -27,6 +27,9 @@ const styles = {
   layout: {
     ...Style.Flex.rootColumn,
     ...Style.Flex.elementEqual,
+    overflow: 'auto',
+    minHeight: '350px',
+    minWidth: '800px',
   },
 };
 

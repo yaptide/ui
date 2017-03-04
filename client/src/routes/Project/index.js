@@ -12,7 +12,7 @@ const projectRoute = {
       },
     },
     {
-      path: 'details',
+      path: ':paramName',
       getComponent(nextState: string, cb: Function) {
         require.ensure([], (require) => {
           cb(null, require('./containers/ProjectDetailsContainer').default);

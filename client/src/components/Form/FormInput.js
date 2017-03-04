@@ -52,7 +52,7 @@ const styles = {
     ...Style.Flex.rootColumn,
   },
   input: {
-    ...Style.Flex.elementEqual,
+    flex: '1 0 auto',
     height: Style.Dimens.spacing.large,
     paddingLeft: '8px',
   },
