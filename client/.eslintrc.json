@@ -24,7 +24,8 @@
   },
   "globals": {
     "document": false,
-    "require": false
+    "require": false,
+    "BASE_URL": false
   },
   "rules": {
     "no-use-before-define": 0,

@@ -23,6 +23,7 @@ const rootContainer = (
     </div>
   </Provider>
 );
+console.log(BASE_URL);
 
 ReactDOM.render(rootContainer, document.getElementById('app'));
 

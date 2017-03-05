@@ -15,7 +15,7 @@ install:
   - cd $HOME/gopath/src/github.com && mv wkozyra95 Palantir && cd Palantir/palantir 
   - export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/Palantir/palantir
   - govendor sync
-  - ./build_tools/release.sh
+  - ./build_tools/travis_release.sh
 script:
   - ./run.sh check
 deploy:

@@ -1,5 +1,7 @@
 /* @flow */
 
-import axios from 'axios';
+import api from './config';
 
-export default axios;
+export { default as endpoint } from './endpoint';
+
+export default api;

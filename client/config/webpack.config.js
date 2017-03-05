@@ -8,8 +8,12 @@ const path = require('path');
 
 
 const env = process.env.NODE_ENV;
+
+const BASE_URL = process.env.PALANTIR_BASE_URL;
+
 const __PROD__ = env === 'production';
 const __DEV__ = env === 'development';
+const __TEST__ = env === 'test';
 
 const ENTRY_PATH = __dirname + '/../src/main.js';
 const DEPLOY_PATH = __dirname + '/../../static/';
@@ -88,7 +92,13 @@ plugins.push(
   new ExtractTextPlugin("[name].[contenthash].css", {
     allChunks: true,
   }),
-  new webpack.EnvironmentPlugin(['NODE_ENV'])
+  new webpack.EnvironmentPlugin(['NODE_ENV']),
+  new webpack.DefinePlugin({
+    'BASE_URL': JSON.stringify(BASE_URL || "localhost:3000"),
+    __DEV__,
+    __TEST__,
+    __PROD__,
+  })
 )
 if (__PROD__) {
   plugins.push(
@@ -103,6 +113,21 @@ if (__PROD__) {
     })
   )
 }
+
+if (__TEST__) {
+  plugins.push(function () {
+    this.plugin('done', function (stats) {
+      if (stats.compilation.errors.length) {
+        // Pretend no assets were generated. This prevents the tests
+        // from running making it clear that there were warnings.
+        throw new Error(
+          stats.compilation.errors.map(err => err.message || err)
+        )
+      }
+    })
+  })
+}
+
 
 const externals = config.externals;
 

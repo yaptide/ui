@@ -19,7 +19,7 @@ elif [ "$1" = "client:deploy" ]; then
 elif [ "$1" = "client:run" ]; then
     cd $SCRIPT_PATH
     npm install
-    npm start
+    PALANTIR_BASE_URL=localhost:3000 npm start
 elif [ "$1" = "server:run" ]; then
     cd $SCRIPT_PATH
     echo "{\"port\": \"3001\", \"dbName\": \"palantir-db-dev\", \"dbUsername\": \"palantir\", \"dbPassword\": \"password\", \"dbPort\": \"3005\"}" > $SCRIPT_PATH/conf.json
@@ -54,7 +54,7 @@ elif [ "$1" = "prod:run" ]; then
     echo "{\"port\": \"3101\", \"dbName\": \"palantir-db-prod\", \"dbUsername\": \"palantir-db-prod\", \"dbPassword\": \"password\", \"dbPort\": \"3105\"}" > $SCRIPT_PATH/conf.json
     cd $SCRIPT_PATH
     startDB "prod" "3105"
-    ./run.sh client:deploy
+    PALANTIR_BASE_URL=localhost:3101 ./run.sh client:deploy
 
     # protoc --go_out=./ **/*.proto   - ** won't work inside script (use find instead)
     find .  -iname "*.proto" -exec protoc --go_out=./ {}  \;

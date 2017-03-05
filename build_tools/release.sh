@@ -12,7 +12,6 @@ set -e
 rm -rf $PROJECT_ROOT/release
 mkdir $PROJECT_ROOT/release
 mkdir $PROJECT_ROOT/release/bin
-
 # frontend deploy
 $PROJECT_ROOT/run.sh client:deploy
 cp -R $PROJECT_ROOT/static $PROJECT_ROOT/release/static
