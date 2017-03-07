@@ -2,20 +2,16 @@ package setup
 
 import (
 	"encoding/json"
-	"github.com/Palantir/palantir/model/geometry/body"
-	"github.com/Palantir/palantir/model/geometry/zone"
-	//"github.com/gorilla/mux"
 	"log"
 	"net/http"
+
+	"github.com/Palantir/palantir/model/simulation/setup"
+	"github.com/Palantir/palantir/model/simulation/setup/body"
+	"github.com/Palantir/palantir/model/simulation/setup/zone"
+	//"github.com/gorilla/mux"
 )
 
 type getSetup struct{}
-
-// Response TODO remove this
-type Response struct {
-	Bodies []*body.Body
-	Zones  []*zone.Zone
-}
 
 func (h *getSetup) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// simualtionID := mux.Vars(r)["simulationId"]
@@ -32,7 +28,7 @@ func (h *getSetup) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			&zone.Operation{Type: zone.Intersect, Body: bodyExample},
 		},
 	}
-	response := &Response{
+	response := &setup.Object{
 		Bodies: []*body.Body{bodyExample},
 		Zones:  []*zone.Zone{zoneExample},
 	}

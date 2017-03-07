@@ -2,7 +2,8 @@ package zone
 
 import (
 	"encoding/json"
-	"github.com/Palantir/palantir/model/geometry/body"
+
+	"github.com/Palantir/palantir/model/simulation/setup/body"
 )
 
 const (
