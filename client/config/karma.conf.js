@@ -1,5 +1,6 @@
 /* eslint-disable */
 
+const path = require('path');
 var webpack = require('webpack');
 var webpackConfig = require('./webpack.config');
 
@@ -21,6 +22,12 @@ module.exports = function (config) {
         loaders: [
           { test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/ }
         ]
+      },
+      resolve: {
+        extensions: ['', '.js', '.jsx'],
+        root: [
+          path.resolve('client/src/'),
+        ],
       },
       plugins: webpackConfig.plugins,
     },

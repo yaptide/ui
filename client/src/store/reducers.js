@@ -15,7 +15,7 @@ import type { WorkspaceState } from '../routes/Workspace/model';
 import type { ResultsState } from '../routes/Results/model';
 import type { ProjectState } from '../routes/Project/model';
 
-const makeRootReducer = () => combineReducers({
+const rootReducer = combineReducers({
   routing,
   i18n,
   auth,
@@ -33,4 +33,4 @@ export type Store = {
   project: ProjectState,
 };
 
-export default makeRootReducer;
+export default rootReducer;
