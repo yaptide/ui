@@ -47,8 +47,6 @@ elif [ "$1" = "check" ]; then
 elif [ "$1" = "docker:run" ]; then
     cd $SCRIPT_PATH
     echo "{\"port\": \"3301\", \"dbName\": \"palantir-db-docker\", \"dbUsername\": \"palantir-db-docker\", \"dbPassword\": \"password\", \"dbPort\": \"27017\". \"dbHost\": \"172.17.1.1\"}" > $SCRIPT_PATH/conf.json
-    #protoc --go_out=./ **/*.proto
-    find .  -iname "*.proto" -exec protoc --go_out=./ {}  \;
     startDB "docker" "27017" 
     docker build --force-rm --tag palantir $SCRIPT_PATH
     docker run --tty --interactive --rm -p 3301:3301 --name=palantir palantir:latest
@@ -58,23 +56,15 @@ elif [ "$1" = "prod:run" ]; then
     startDB "prod" "3105"
     PALANTIR_BASE_URL=localhost:3101 ./run.sh client:deploy
 
-    # protoc --go_out=./ **/*.proto   - ** won't work inside script (use find instead)
-    find .  -iname "*.proto" -exec protoc --go_out=./ {}  \;
 
     go install -v
     DEV=true palantir 
 elif [ "$1" = "setup:go" ]; then
-    # I assume that go and protoc are installed and GOPATH is set
     cd $SCRIPT_PATH
     go get -u github.com/alecthomas/gometalinter
     gometalinter --install
     go get -u github.com/kardianos/govendor
     go get  github.com/codegangsta/gin
-    go get -u github.com/golang/protobuf/{proto,protoc-gen-go}
-
-    # protoc --go_out=./ **/*.proto   - ** won't work inside script (use find instead)
-    find .  -iname "*.proto" -exec protoc --go_out=./ {}  \;
-
     npm install
 elif [ "$1" = "server:test" ]; then
     govendor test +local

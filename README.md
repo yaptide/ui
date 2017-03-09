@@ -11,7 +11,7 @@
 main.go - backend entry point  
 api - definition of rest endpoints  
 parser/shield - parsers for shield hit  
-model - data model(mostly protobufs)  
+model - data model
 client - frontend sources  
 client/src/main.js - entry point for frontend  
 client/src/api - api config  
@@ -26,7 +26,6 @@ build_tools - scripts used to build or setup environment
 #### Backend dependencies
 - install go and setup GOPATH (https://golang.org/doc/install)
 - setup docker without root required
-- install protoc compiler (https://github.com/google/protobuf)
 - install gometalinter and available linters  
     `go get -u github.com/alecthomas/gometalinter` -install metalinter  
     `gometalinter --install`  - install all linters  
@@ -50,9 +49,6 @@ Most comands listed above are included in script run.sh (checkout source)
 
 
 ### Tools overview
-- protoc compiler  
-generate source code described by *.proto files   
- `protoc --go_out=./ **/*.proto` - generate go sources for entire project    
 - gometalinter  
 Gometalinter checks source code for inconsistent code style, potential bugs, unhandled situations  
 - govendor   
@@ -82,7 +78,6 @@ release.sh build entire project localy an copy all files to release/ directory.
 
 ### Useful commands
 
-`protoc --go_out=./ **/*.proto` - generate protobuf fixes  
 `docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)` - stop and remove all docker container(for cleanup)  
 `govendor add +external` - add missing deps to vendor.json  
 `govendor sync` - get dependecies from vendor.json  

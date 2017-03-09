@@ -2,10 +2,11 @@ package auth
 
 import (
 	"encoding/json"
-	"github.com/Palantir/palantir/model/auth"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/Palantir/palantir/model/auth"
 )
 
 type mockLoginHandler struct{}
@@ -28,7 +29,7 @@ func (h *loginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if parseErr := json.Unmarshal(requestBody, account); parseErr != nil {
 		log.Fatal(parseErr.Error())
 	}
-	account.Id = 1
+	account.ID = "1"
 	account.Password = ""
 
 	response := make(map[string]string)
