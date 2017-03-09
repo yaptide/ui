@@ -16,12 +16,12 @@ type getSetup struct{}
 func (h *getSetup) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// simualtionID := mux.Vars(r)["simulationId"]
 	bodyExample := &body.Body{
-		ID:       1,
+		ID:       "1",
 		Name:     "First body",
-		Geometry: &body.SphereGeometry{Center: &body.Point{X: 1, Y: 1, Z: 1}, Radius: 1},
+		Geometry: &body.SphereGeometry{Center: body.Point{X: 1, Y: 1, Z: 1}, Radius: 1},
 	}
 	zoneExample := &zone.Zone{
-		ID:   3,
+		ID:   "3",
 		Name: "First zone",
 		Base: bodyExample,
 		Construction: []*zone.Operation{

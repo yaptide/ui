@@ -2,6 +2,7 @@ package list
 
 import (
 	"encoding/json"
+
 	"github.com/Palantir/palantir/model/project"
 	//"github.com/gorilla/mux"
 	"log"
@@ -15,13 +16,13 @@ func (h *getProjectList) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	response := &project.List{
 		Projects: []project.Object{
-			project.Object{ID: 1, Name: "project name", Versions: []project.Version{
-				project.Version{ID: 2, Settings: 1, Simulation: 1, Results: 1},
-				project.Version{ID: 2, Settings: 1, Simulation: 1, Results: 1},
+			project.Object{ID: "1", Name: "project name", Versions: []project.Version{
+				project.Version{ID: "2", Settings: "1", Setup: "1", Results: "1"},
+				project.Version{ID: "2", Settings: "1", Setup: "1", Results: "1"},
 			}},
-			project.Object{ID: 1, Name: "project name", Versions: []project.Version{
-				project.Version{ID: 2, Settings: 1, Simulation: 1, Results: 1},
-				project.Version{ID: 2, Settings: 1, Simulation: 1, Results: 1},
+			project.Object{ID: "1", Name: "project name", Versions: []project.Version{
+				project.Version{ID: "2", Settings: "1", Setup: "1", Results: "1"},
+				project.Version{ID: "2", Settings: "1", Setup: "1", Results: "1"},
 			}},
 		},
 	}

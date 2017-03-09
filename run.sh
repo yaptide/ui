@@ -38,9 +38,11 @@ elif [ "$1" = "server:check" ]; then
     # /... - checking recursively all files inside
     cd $SCRIPT_PATH
     gometalinter --config=.gometalinter.json --deadline 200s ./...
+    govendor test +local
 elif [ "$1" = "check" ]; then
     cd $SCRIPT_PATH
     gometalinter --config=.gometalinter.json --deadline 200s ./...
+    govendor test +local
     npm run check
 elif [ "$1" = "docker:run" ]; then
     cd $SCRIPT_PATH
@@ -74,18 +76,23 @@ elif [ "$1" = "setup:go" ]; then
     find .  -iname "*.proto" -exec protoc --go_out=./ {}  \;
 
     npm install
+elif [ "$1" = "server:test" ]; then
+    govendor test +local
 else
     echo "
     client:check - run all checks lint+flow+test
     client:deploy - generate static client code
     client:run - run client dev server
+
+    setup:go - get all tools required in dev environment
     server:run - run server
     server:run:dev - run server with hot reloading - TODO
     server:check - run linters and tests on backend
+    server:test - run server tests
+
     check - server:check + client:check
     docker:run - build & run new docker container
     prod:run - run production version localy
-    setup:go - get all tools required in dev environment
     "
 fi
 

@@ -2,7 +2,7 @@ package project
 
 // Object TODO
 type Object struct {
-	ID       int64     `json:"id"`
+	ID       string    `json:"id"`
 	Name     string    `json:"name"`
 	Versions []Version `json:"versions"`
 }
@@ -14,8 +14,8 @@ type List struct {
 
 // Version TODO
 type Version struct {
-	ID         int64 `json:"id"`
-	Settings   int64 `json:"settings"`     // TODO create setting model
-	Simulation int64 `json:"simulationId"` // TODO change id to reference add Marshaling
-	Results    int64 `json:"resultsId"`
+	ID       string `json:"id"`
+	Settings string `json:"settings"` // TODO create setting model
+	Setup    string `json:"setupId"`  // TODO change id to reference add Marshaling
+	Results  string `json:"resultsId"`
 }

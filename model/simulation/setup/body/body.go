@@ -2,7 +2,7 @@ package body
 
 // Body TODO
 type Body struct {
-	ID       int64    `json:"id"`
+	ID       string   `json:"id"`
 	Name     string   `json:"name, omitempty"`
 	Geometry Geometry `json:"geometry"`
 }
@@ -19,14 +19,14 @@ type GenericGeometry struct {
 // SphereGeometry TODO
 type SphereGeometry struct {
 	GenericGeometry
-	Center *Point  `json:"center"`
+	Center Point   `json:"center"`
 	Radius float64 `json:"radius"`
 }
 
 // CuboidGeometry TODO
 type CuboidGeometry struct {
 	GenericGeometry
-	Center *Point  `json:"center"`
+	Center Point   `json:"center"`
 	Width  float64 `json:"width"`
 	Height float64 `json:"height"`
 }

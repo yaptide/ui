@@ -7,6 +7,6 @@ import (
 
 // Object contains all simulation data
 type Object struct {
-	Bodies []*body.Body
-	Zones  []*zone.Zone
+	Bodies []*body.Body `json:"bodies"`
+	Zones  []*zone.Zone `json:"zones"`
 }
