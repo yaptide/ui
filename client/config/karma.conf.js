@@ -32,6 +32,7 @@ module.exports = function (config) {
       plugins: webpackConfig.plugins,
     },
     webpackServer: {
+      noInfo: true,
     }
   });
 };

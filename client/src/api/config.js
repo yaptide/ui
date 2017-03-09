@@ -8,6 +8,20 @@ const axiosInstance = axios.create({
   baseURL,
 });
 
+let authorizationToken = '';
+
+axiosInstance.interceptors.request.use(
+  (request) => {
+    if (authorizationToken) {
+      request.headers.Authorization = authorizationToken; // eslint-disable-line no-param-reassign
+    }
+    return request;
+  },
+  (error) => {
+    Promise.reject(error);
+  },
+);
+
 const api = {
   get: (endpoint: Endpoint, params?: Object) => axiosInstance.get(endpoint, { params }),
   delete: (endpoint: Endpoint, params?: Object) => axiosInstance.delete(endpoint, { params }),
@@ -18,7 +32,11 @@ const api = {
   put: (endpoint: Endpoint, body?: Object, params?: Object) => (
     axiosInstance.put(endpoint, body, { params })
   ),
+  saveAuthToken: (token: string) => {
+    authorizationToken = token;
+  },
 };
+
 console.log(baseURL);
 
 export default api;
