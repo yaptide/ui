@@ -1,11 +1,12 @@
 /* @flow */
 
 import React from 'react';
+import WorkspaceLayout from 'pages/WorkspaceLayout';
 
 class WorkspaceSettingsContainer extends React.Component {
   render() {
     return (
-      <div>WorkspaceSettingsContainer</div>
+      <WorkspaceLayout isWorkspaceLoading />
     );
   }
 }

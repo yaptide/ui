@@ -7,40 +7,43 @@ export type ProjectState = Map<
   'projects'
   ,
   List<number> |
-  Map<number, Project>
+  Map<number, Object>
   >;
 
-export type Project = Map<
-  'id' |
-  'name' |
-  'description' |
-  'versionIndices' |
-  number
-  ,
-  number |
-  string |
-  List<number> |
-  Version
-  >;
+export type Project = {
+  id: string,
+  name: string,
+  description: string,
+  versionIndices: Array<string>,
+  lastBuildStatus: SimulationStatus,
+};
 
-export type Version = Map<
-  'id' |
-  'setupId' |
-  'resultsId' |
-  'settings'
-  ,
-  number,
-  Settings,
-  >
+export type ProjectDetails = {
+  id: string,
+  name: string,
+  description: string,
+  versions: Array<Version>,
+}
 
-export type Settings = Map<
-  'library' |
-  'engine'
-  ,
-  SimulationLibrary |
-  ComputeEngine
-  >
+export type Version = {
+  id: number,
+  setupId: string,
+  resultsId: string,
+  settings: Settings,
+  status: SimulationStatus,
+}
+
+export type Settings = {
+  library: SimulationLibrary,
+  engine: ComputeEngine,
+}
+
+export type SimulationStatus = 'current' | // local changes
+  'success' | // last simulation finished without errors
+  'error' | // simulation tun unsucessful
+  'inprogress' | // simulation is in progress
+  'none'; // there was no build or any changes in this version
 
 export type SimulationLibrary = 'shield';
-export type ComputeEngine = 'local'
+export type ComputeEngine = 'local' | 'plgrid';
 

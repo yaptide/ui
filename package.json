@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "axios": "^0.15.3",
+    "better-react-spinkit": "^2.0.0-6",
     "immutable": "^3.8.1",
     "lodash": "^4.17.4",
     "react": "^15.4.1",

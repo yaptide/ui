@@ -8,13 +8,14 @@ import { t } from 'i18n';
 import Style from 'styles';
 
 import selector from '../selector';
+import { mapSimulationStateToColor } from '../enum';
 
 type Props = {
   projectId: number,
   project: {
     name: string,
     description: string,
-    lastBuildSucessfull: string,
+    lastBuildStatus: string,
   },
 };
 
@@ -22,10 +23,10 @@ class ProjectListItem extends React.Component {
   props: Props;
 
   render() {
-    const buildStatusColor = mapBuildStateToColor[
-      this.props.project.lastBuildSucessfull
+    const buildStatusColor = mapSimulationStateToColor[
+      this.props.project.lastBuildStatus
     ];
-    const buildStatusText = t(`project.status.${this.props.project.lastBuildSucessfull}`);
+    const buildStatusText = t(`project.status.${this.props.project.lastBuildStatus}`);
     return (
       <div style={styles.container} >
         <div style={{ ...styles.buildStatus, background: buildStatusColor }} />
@@ -49,12 +50,6 @@ class ProjectListItem extends React.Component {
   }
 }
 
-const mapBuildStateToColor = {
-  success: Style.Colors.green,
-  error: Style.Colors.red,
-  edited: Style.Colors.yellow,
-  none: Style.Colors.gray,
-};
 
 const styles = {
   container: {

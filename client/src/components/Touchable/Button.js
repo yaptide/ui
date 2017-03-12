@@ -24,6 +24,7 @@ class Button extends React.Component {
 
 const styles = {
   button: {
+    outline: 'none',
     paddingTop: Style.Dimens.spacing.min,
     paddingBottom: Style.Dimens.spacing.min,
     marginLeft: Style.Dimens.spacing.min,

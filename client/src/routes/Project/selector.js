@@ -3,6 +3,7 @@
 import type { Store } from 'store/reducers';
 import { fromJS } from 'immutable';
 import * as _ from 'lodash';
+import type { Project, ProjectDetails } from './model';
 
 const MOCK_DESCRIPTION_LONG = 'mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description'; //eslint-disable-line 
 
@@ -13,19 +14,60 @@ const projectListSelector = (state: Store) => {
   return fromJS([1, 2, 3, 4, 5]);
 };
 
-const projectOverviewSelector = () => {
+const projectOverviewSelector = (): Project => {
   const numberOfVersions = Math.floor((Math.random() * 10) + 1);
   return {
-    id: 1,
+    id: '12321h3b',
     name: 'Example project 1',
     description: 'Short project description' + MOCK_DESCRIPTION_LONG, //eslint-disable-line
-    versionIndices: _.times(numberOfVersions, () => Math.floor((Math.random() * 10) + 1)),
-    lastBuildSucessfull: Math.random() > 0.3 ? Math.random() > 0.5 ? 'edited' : 'success' : 'error', // eslint-disable-line
+    versionIndices: _.times(numberOfVersions, () => String(Math.floor((Math.random() * 10) + 1))),
+    lastBuildStatus: Math.random() > 0.3 ? Math.random() > 0.5 ? 'current' : 'success' : 'error', // eslint-disable-line
   }; // eslint-disable-line
 };
 
+const projectDetailsSelector = (): ProjectDetails => {
+  return {
+    id: 'rwhgur',
+    name: 'Example project 1',
+    description: 'Short project description' + MOCK_DESCRIPTION_LONG, // eslint-disable-line
+    versions: [
+      {
+        id: 1,
+        setupId: 'wuiergfier',
+        resultsId: 'wrgunferioufn',
+        errors: undefined,
+        status: 'error',
+        settings: {
+          library: 'shield',
+          engine: 'local',
+        },
+      }, {
+        id: 2,
+        setupId: 'erihbgfir',
+        resultsId: 'wrufiurnwi',
+        errors: ['SHIELD HIT ERROR', 'PARSING ERRROR...'],
+        status: 'success',
+        settings: {
+          library: 'shield',
+          engine: 'plgrid',
+        },
+      }, {
+        id: 3,
+        setupId: 'erihbgfir',
+        resultsId: 'wrufiurnwi',
+        errors: ['SHIELD HIT ERROR', 'PARSING ERRROR...'],
+        status: 'current',
+        settings: {
+          library: 'shield',
+          engine: 'plgrid',
+        },
+      },
+    ],
+  };
+};
 
 export default {
   projectListSelector,
   projectOverviewSelector,
+  projectDetailsSelector,
 };
