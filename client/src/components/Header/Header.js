@@ -1,83 +1,71 @@
 /* @flow */
 
 import React from 'react';
-import { Link } from 'react-router';
-import Style from 'styles';
+import { connect } from 'react-redux';
+import { hashHistory } from 'react-router';
+import AppBar from 'material-ui/AppBar';
+import FlatButton from 'material-ui/FlatButton';
 import { t } from 'i18n';
 
-import { Button } from 'components/Touchable';
+const wrapPush = (path) => {
+  if (`#${path}` !== window.location.hash) { // eslint-disable-line
+    hashHistory.push(path);
+  }
+};
 
-type Action = {
-  label: string,
-  handler: () => void,
-}
+const links = {
+  login: () => wrapPush('/auth/login'),
+  register: () => wrapPush('/auth/register'),
+};
+
+const NotLoggedIn = ({ ...props }) => (
+  <div>
+    <FlatButton {...props} onTouchTap={links.login} label={t('auth.form.loginBtn')} />
+    <FlatButton {...props} onTouchTap={links.register} label={t('auth.form.registerBtn')} />
+  </div>
+);
+
+NotLoggedIn.muiName = 'FlatButton';
 
 type Props = {
-  buttons: Array<Action>,
-  //  menu?: Array<Action>,
 };
 
 class Header extends React.Component {
-  static defaultProps = { buttons: [], menu: [] };
-
   props: Props;
 
-  render() {
-    const buttons = this.props.buttons.map((e, i) => {
-      return (
-        <Button
-          key={i}
-          title={e.label}
-          onClick={e.handler}
-          style={{ ...styles.button, ...(e.isActive ? styles.activeBtn : undefined) }}
-        />
-      );
-    });
+  goToMain = () => {
+    // if not logged
+    wrapPush('/');
+  }
 
+  render() {
     return (
-      <div style={styles.header}>
-        <Link
-          to="/"
-          style={styles.linkStyle}
-        >
-          <p style={styles.title} >{t('appName')}</p>
-        </Link>
-        <div style={Style.Flex.elementEqual} />
-        {buttons}
-      </div>
+      <AppBar
+        title={t('appName')}
+        iconElementRight={
+          <NotLoggedIn />
+        }
+        onTitleTouchTap={this.goToMain}
+        style={styles.container}
+        titleStyle={{ cursor: 'pointer', flex: '0 1 auto' }}
+      />
     );
   }
 }
 
 const styles = {
-  header: {
-    ...Style.Flex.rootRow,
-    background: Style.Colors.primary,
-    height: Style.Dimens.spacing.veryLarge,
-    minHeight: Style.Dimens.spacing.veryLarge,
-    alignItems: 'center',
-    paddingLeft: Style.Dimens.spacing.normal,
-    paddingRight: Style.Dimens.spacing.normal,
-  },
-  linkStyle: {
-    textDecoration: 'none',
-  },
-  title: {
-    color: Style.Colors.white,
-    fontSize: Style.Dimens.font.huge,
-  },
-  button: {
-    paddingTop: Style.Dimens.spacing.small,
-    paddingBottom: Style.Dimens.spacing.small,
-    fontSize: Style.Dimens.font.standard,
-    color: Style.Colors.secondary,
-    background: Style.Colors.white,
-    fontWeight: 'bold',
-  },
-  activeBtn: {
-    background: Style.Colors.secondary,
-    color: Style.Colors.white,
+  container: {
+    flexShrink: '0',
   },
 };
 
-export default Header;
+const mapStateToProps = () => {
+  return {
+    isLoggedIn: true,
+  };
+};
+
+
+export default connect(
+  mapStateToProps,
+)(Header);

@@ -58,13 +58,13 @@ class LoginContainer extends React.Component {
         <FormInput
           value={this.state.username}
           type="username"
-          placeholder={t('auth.form.usernameLabel')}
+          floatingLabelText={t('auth.form.usernameLabel')}
           onChange={this.onChange}
         />
         <FormInput
           value={this.state.password}
           type="password"
-          placeholder={t('auth.form.passwordLabel')}
+          floatingLabelText={t('auth.form.passwordLabel')}
           onChange={this.onChange}
           secureTextEntry
         />

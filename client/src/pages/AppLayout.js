@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Header } from 'components/Header';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Style from 'styles';
 import cls from '../styles/core.scss'; // eslint-disable-line no-unused-vars
 
@@ -15,10 +16,12 @@ class AppLayout extends React.Component {
   render() {
     const { children, ...props } = this.props;
     return (
-      <div style={styles.layout}>
-        <Header {...props} />
-        {children}
-      </div>
+      <MuiThemeProvider>
+        <div style={styles.layout}>
+          <Header {...props} />
+          {children}
+        </div>
+      </MuiThemeProvider>
     );
   }
 }

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Style from 'styles';
-import { Circle } from 'better-react-spinkit';
+import CircularProgress from 'material-ui/CircularProgress';
 import AppLayout from './AppLayout';
 
 
@@ -22,7 +22,7 @@ class WorkspaceLayout extends React.Component {
         <div style={styles.container}>
           {
             isWorkspaceLoading
-            ? <Circle size={75} />
+            ? <CircularProgress size={70} thickness={6} />
             : children
           }
         </div>

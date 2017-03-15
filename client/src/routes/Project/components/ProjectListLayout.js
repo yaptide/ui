@@ -7,17 +7,20 @@ import ProjectListItem from './ProjectListItem';
 
 type Props = {
   projects: List<number>,
+  goToProjectDetails: (string) => void,
 }
 
 class ProjectListLayout extends React.Component {
   props: Props;
 
   render() {
-    const projects = this.props.projects.map((e, i) => {
-      return (
-        <ProjectListItem key={i} projectId={e} />
-      );
-    });
+    const projects = this.props.projects.map((e, i) => (
+      <ProjectListItem
+        key={i}
+        projectId={e}
+        goToProjectDetails={this.props.goToProjectDetails}
+      />
+    ));
     return (
       <div style={styles.container}>{projects}</div>
     );

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
+import { hashHistory } from 'react-router';
 import type { Store } from 'store/reducers';
 import { List } from 'immutable';
 import AppLayout from 'pages/AppLayout';
@@ -16,11 +17,16 @@ type Props = {
 class ProjectListContainer extends React.Component {
   props: Props;
 
+  goToProjectDetails = (id: string) => {
+    hashHistory.push(`/project/${id}`);
+  }
+
   render() {
     return (
       <AppLayout>
         <ProjectListLayout
           projects={this.props.projects}
+          goToProjectDetails={this.goToProjectDetails}
         />
       </AppLayout>
     );

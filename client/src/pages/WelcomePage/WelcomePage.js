@@ -1,59 +1,37 @@
 /* @flow */
 
 import React from 'react';
-import { LoginForm, RegisterForm } from 'routes/Auth';
-
+import { RegisterForm } from 'routes/Auth';
+import Paper from 'material-ui/Paper';
 import Style from 'styles';
 import AppLayout from '../AppLayout';
 
 type Props = {
-  router: Object,
-};
-
-type State = {
-  active: 'login' | 'register',
+  location: {
+    pathname: string,
+  },
 };
 
 class WelcomePage extends React.Component {
   props: Props;
-  state: State = {
-    active: 'register',
-  }
-
-  showLoginForm = () => {
-    this.setState({ active: 'login' });
-  }
-
-  showRegisterForm = () => {
-    this.setState({ active: 'register' });
-  }
 
   render() {
-    const Form = mapStateToForm[this.state.active];
-    const buttons = [
-      { label: 'Sing In', handler: this.showLoginForm, isActive: this.state.active === 'login' },
-      { label: 'Sing Up', handler: this.showRegisterForm, isActive: this.state.active === 'register' },
-    ];
-
     return (
       <AppLayout
-        buttons={buttons}
+        location={this.props.location.pathname}
       >
         <div style={styles.container}>
           <p style={styles.description}>We will make Palantir great again!</p>
           <div style={styles.form}>
-            <Form includeLinks={false} router={this.props.router} />
+            <Paper style={styles.formWrapper} zDepth={3} >
+              <RegisterForm includeLinks={false} />
+            </Paper>
           </div>
         </div>
       </AppLayout>
     );
   }
 }
-
-const mapStateToForm = {
-  register: RegisterForm,
-  login: LoginForm,
-};
 
 const styles = {
   container: {
@@ -77,6 +55,9 @@ const styles = {
     paddingLeft: Style.Dimens.spacing.normal,
     paddingRight: Style.Dimens.spacing.normal,
     ...Style.Flex.rootColumn,
+  },
+  formWrapper: {
+    padding: Style.Dimens.spacing.normal,
   },
 };
 

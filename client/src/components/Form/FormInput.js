@@ -1,8 +1,7 @@
 /* @flow */
 
 import React from 'react';
-
-import Style from 'styles';
+import TextField from 'material-ui/TextField';
 
 type Props = {
   type: string,
@@ -35,27 +34,13 @@ class FormInput extends React.Component {
     inputType = numbersOnly ? 'number' : inputType;
 
     return (
-      <div style={{ ...styles.formWrapper, ...inputStyle }} >
-        <input
-          {...inputProps}
-          onChange={this.onChange}
-          type={inputType}
-          style={styles.input}
-        />
-      </div>
+      <TextField
+        {...inputProps}
+        onChange={this.onChange}
+        type={inputType}
+      />
     );
   }
 }
-
-const styles = {
-  formWrapper: {
-    ...Style.Flex.rootColumn,
-  },
-  input: {
-    flex: '1 0 auto',
-    height: Style.Dimens.spacing.large,
-    paddingLeft: '8px',
-  },
-};
 
 export default FormInput;

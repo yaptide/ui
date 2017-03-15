@@ -26,6 +26,7 @@ const styles = {
   text: {
     paddingTop: Style.Dimens.spacing.small,
     fontSize: Style.Dimens.font.standard,
+    fontFamily: 'Roboto',
   },
 };
 

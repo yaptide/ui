@@ -21,7 +21,6 @@ const projectOverviewSelector = (): Project => {
     name: 'Example project 1',
     description: 'Short project description' + MOCK_DESCRIPTION_LONG, //eslint-disable-line
     versionIndices: _.times(numberOfVersions, () => String(Math.floor((Math.random() * 10) + 1))),
-    lastBuildStatus: Math.random() > 0.3 ? Math.random() > 0.5 ? 'current' : 'success' : 'error', // eslint-disable-line
   }; // eslint-disable-line
 };
 

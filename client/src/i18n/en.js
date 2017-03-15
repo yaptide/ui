@@ -19,6 +19,7 @@ const en = {
   },
   welcome: {},
   project: {
+    showDetailsBtn: 'Go to project details',
     status: {
       error: 'Last simulation failed',
       success: 'Last simulation finished',
@@ -27,8 +28,8 @@ const en = {
       none: 'No results avilable',
     },
     versionStatus: {
-      error: 'Simulation failed - checkout errors',
-      success: 'Simulation success - checkout results',
+      error: 'Simulation failed - check errors',
+      success: 'Simulation success - check results',
       current: 'Simulation is ready to start',
       inprogress: 'Simulation in progress',
       none: 'No results avilable',
@@ -41,7 +42,7 @@ const en = {
       useVersionBtn: 'Use this version as current simulation',
       showResultsBtn: 'Show simulation results',
       showErrorsBtn: 'Show simulation errors',
-      startSimulationBtn: 'Start simmulation',
+      startSimulationBtn: 'Start simulation',
       updateSettingBtn: 'Update settings',
     },
   },

@@ -1,51 +1,48 @@
 /* @flow */
 
 import React from 'react';
-import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import type { Store } from 'store/reducers';
 import { t } from 'i18n';
 import Style from 'styles';
+import { Card, CardActions, CardTitle, CardText } from 'material-ui/Card';
+import RaisedButton from 'material-ui/RaisedButton';
 
 import selector from '../selector';
-import { mapSimulationStateToColor } from '../enum';
 
 type Props = {
-  projectId: number,
+  projectId: string,
   project: {
     name: string,
     description: string,
-    lastBuildStatus: string,
   },
+  goToProjectDetails: (string) => void,
 };
 
 class ProjectListItem extends React.Component {
   props: Props;
 
+  goToProjectDetails = () => {
+    this.props.goToProjectDetails(this.props.projectId);
+  }
+
   render() {
-    const buildStatusColor = mapSimulationStateToColor[
-      this.props.project.lastBuildStatus
-    ];
-    const buildStatusText = t(`project.status.${this.props.project.lastBuildStatus}`);
     return (
-      <div style={styles.container} >
-        <div style={{ ...styles.buildStatus, background: buildStatusColor }} />
-        <div style={styles.detailsContainer} >
-          <Link
-            to={`/project/${this.props.projectId}`}
-          >
-            <p style={{ ...styles.projectName, color: buildStatusColor }}>
-              {`${this.props.project.name} - ${buildStatusText}`}
-            </p>
-          </Link>
-          <p style={styles.projectDescription}>
-            {this.props.project.description}
-          </p>
-        </div>
-        <div style={styles.buttonsContainer}>
-          {/* <Button title="Delete"/> */}
-        </div>
-      </div>
+      <Card style={styles.container} zDepth={2} >
+        <CardTitle
+          actAsExpander
+          showExpandableButton
+          title={this.props.project.name}
+          subtitle="01-12-2017 - 03-10-2022"
+        />
+        <CardText expandable >
+          {this.props.project.description}
+        </CardText>
+        <CardActions>
+          <RaisedButton label={t('project.showDetailsBtn')} onTouchTap={this.goToProjectDetails} />
+          <RaisedButton label={t('project.projectSettings')} />
+        </CardActions>
+      </Card>
     );
   }
 }
@@ -53,34 +50,15 @@ class ProjectListItem extends React.Component {
 
 const styles = {
   container: {
-    ...Style.Flex.rootRow,
-    alignItems: 'stretch',
     margin: Style.Dimens.spacing.normal,
-    border: '1px solid',
-    borderColor: Style.Colors.gray,
-    overflow: 'auto',
+  },
+  wrapper: {
+    ...Style.Flex.rootRow,
   },
   buildStatus: {
-    width: Style.Dimens.spacing.normal,
   },
-  detailsContainer: {
-    ...Style.Flex.elementEqual,
-    padding: Style.Dimens.spacing.normal,
-  },
-  buttonsContainer: {
-    padding: Style.Dimens.spacing.normal,
-    width: '80px',
-  },
-  projectName: {
-    fontSize: Style.Dimens.font.large,
-    paddingBottom: Style.Dimens.spacing.normal,
-  },
-  projectDescription: {
-    fontSize: Style.Dimens.font.standard,
-    WebkitLineClamp: 3,
-    WebkitBoxOrient: 'vertical',
-    display: '-webkit-box',
-    overflow: 'hidden',
+  cardContainer: {
+    flex: '1 0 0',
   },
 };
 

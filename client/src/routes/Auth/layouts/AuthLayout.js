@@ -1,8 +1,9 @@
 /* @flow */
 
 import React, { Element } from 'react';
-import { Header } from 'components/Header';
+import AppLayout from 'pages/AppLayout';
 import Style from 'styles';
+import Paper from 'material-ui/Paper';
 
 type Props = {
   children?: Element<*>,
@@ -14,21 +15,18 @@ class AuthLayout extends React.Component {
   render() {
     const { children } = this.props;
     return (
-      <div style={styles.container} >
-        <Header />
+      <AppLayout>
         <div style={styles.formWrapper} >
-          {children}
+          <Paper style={{ padding: '20px' }} zDepth={3} >
+            {children}
+          </Paper>
         </div>
-      </div>
+      </AppLayout>
     );
   }
 }
 
 const styles = {
-  container: {
-    ...Style.Flex.rootColumn,
-    ...Style.Flex.elementEqual,
-  },
   formWrapper: {
     ...Style.Flex.elementEqual,
     ...Style.Flex.rootColumn,

@@ -2,10 +2,10 @@
 
 import React, { Element } from 'react';
 import type { ApplicationRoute } from 'routes/model';
+import RaisedButton from 'material-ui/RaisedButton';
 
 import Style from 'styles';
 
-import FormButton from './FormButton';
 import FormLink from './FormLink';
 
 type Props = {
@@ -25,20 +25,17 @@ class Form extends React.Component {
   render() {
     return (
       <div style={styles.form} >
-        {
-          (this.props.children || []).map((e, i) => (
-            React.cloneElement(e, { inputStyle: styles.formInput, key: i })
-          ))
-        }
+        {this.props.children}
         {
           this.props.links.map((e, i) => (
             <FormLink url={e.url} text={e.text} key={i} />
           ))
         }
         <div style={{ height: Style.Dimens.spacing.normal }} />
-        <FormButton
+        <RaisedButton
           onClick={this.props.submit}
-          btnText={this.props.submitText}
+          primary
+          label={this.props.submitText}
         />
       </div>
     );
@@ -49,9 +46,6 @@ const styles = {
   form: {
     ...Style.Flex.rootColumn,
     alignItems: 'stretch',
-  },
-  formInput: {
-    marginTop: Style.Dimens.spacing.normal,
   },
 };
 

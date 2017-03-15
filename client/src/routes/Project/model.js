@@ -15,7 +15,6 @@ export type Project = {
   name: string,
   description: string,
   versionIndices: Array<string>,
-  lastBuildStatus: SimulationStatus,
 };
 
 export type ProjectDetails = {
