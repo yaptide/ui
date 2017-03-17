@@ -3,15 +3,15 @@
 import React from 'react';
 import WorkspaceLayout from 'pages/WorkspaceLayout';
 
-class WorkspaceBeamContainer extends React.Component {
+class WorkspaceDetectorsContainer extends React.Component {
   render() {
     return (
       <WorkspaceLayout
         isWorkspaceLoading
-        activeWorkspaceTab="beam"
+        activeWorkspaceTab="detectors"
       />
     );
   }
 }
 
-export default WorkspaceBeamContainer;
+export default WorkspaceDetectorsContainer;

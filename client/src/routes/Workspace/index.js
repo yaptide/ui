@@ -4,6 +4,7 @@ import Settings from './Settings';
 import Beam from './Beam';
 import Material from './Material';
 import Geometry from './Geometry';
+import Detectors from './Detectors';
 
 const workspaceRoutes = {
   path: 'workspace',
@@ -12,6 +13,7 @@ const workspaceRoutes = {
     Beam,
     Material,
     Geometry,
+    Detectors,
   ],
 };
 

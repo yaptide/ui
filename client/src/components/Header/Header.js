@@ -2,20 +2,14 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { hashHistory } from 'react-router';
+import router from 'utils/router';
 import AppBar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import { t } from 'i18n';
 
-const wrapPush = (path) => {
-  if (`#${path}` !== window.location.hash) { // eslint-disable-line
-    hashHistory.push(path);
-  }
-};
-
 const links = {
-  login: () => wrapPush('/auth/login'),
-  register: () => wrapPush('/auth/register'),
+  login: () => router.push('/auth/login'),
+  register: () => router.push('/auth/register'),
 };
 
 const NotLoggedIn = ({ ...props }) => (
@@ -35,7 +29,7 @@ class Header extends React.Component {
 
   goToMain = () => {
     // if not logged
-    wrapPush('/');
+    router.push('/');
   }
 
   render() {

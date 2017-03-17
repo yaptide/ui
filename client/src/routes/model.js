@@ -13,6 +13,7 @@ export type ApplicationRoute = '/' |
   '/workspace/material' |
   '/workspace/settings' |
   '/workspace/beam' |
+  '/workspace/detectors' |
   '/results'
 ;
 

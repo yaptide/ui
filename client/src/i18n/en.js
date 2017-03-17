@@ -2,6 +2,11 @@
 
 const en = {
   appName: 'Palantir',
+  tabGeometry: 'Geometry',
+  tabMaterial: 'Material',
+  tabDetectors: 'Detectors',
+  tabSettings: 'Settings',
+  tabBeam: 'Beam',
   auth: {
     form: {
       loginBtn: 'Sign in',
