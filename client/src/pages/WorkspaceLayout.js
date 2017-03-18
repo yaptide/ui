@@ -75,13 +75,15 @@ class WorkspaceLayout extends React.Component {
           </ToolbarGroup>
         </Toolbar>
 
-        <div style={styles.container}>
-          {
-            isWorkspaceLoading
-            ? <CircularProgress size={70} thickness={6} />
+        {
+          isWorkspaceLoading
+            ? (
+              <div style={styles.container}>
+                <CircularProgress size={70} thickness={6} />
+              </div>
+            )
             : children
-          }
-        </div>
+        }
       </AppLayout>
     );
   }
@@ -90,7 +92,7 @@ class WorkspaceLayout extends React.Component {
 const styles = {
   container: {
     ...Style.Flex.elementEqual,
-    ...Style.Flex.rootRow,
+    ...Style.Flex.rootColumn,
     justifyContent: 'center',
     alignItems: 'center',
   },
