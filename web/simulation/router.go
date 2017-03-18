@@ -3,12 +3,11 @@ package simulation
 import (
 	"github.com/gorilla/mux"
 
+	"github.com/Palantir/palantir/web/server"
 	"github.com/Palantir/palantir/web/simulation/setup"
-	//"github.com/Palantir/palantir/web/simulation/results"
-	//"github.com/Palantir/palantir/web/simulation/status"
 )
 
 // HandleSimulation define auth routes
-func HandleSimulation(router *mux.Router) {
-	setup.HandleSetup(router)
+func HandleSimulation(router *mux.Router, context *server.Context) {
+	setup.HandleSetup(router, context)
 }

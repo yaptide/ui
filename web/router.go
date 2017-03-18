@@ -1,27 +1,38 @@
+// Package web provide main application router.
 package web
 
 import (
+	"log"
+	"net/http"
+	"os"
+
 	"github.com/Palantir/palantir/config"
 	"github.com/Palantir/palantir/web/auth"
 	"github.com/Palantir/palantir/web/project"
+	"github.com/Palantir/palantir/web/server"
 	"github.com/Palantir/palantir/web/simulation"
 	"github.com/gorilla/mux"
-	"net/http"
 )
 
-// NewRouter define root routes
+// NewRouter create main router, which define root routes.
 func NewRouter(config *config.Config) *mux.Router {
 	router := mux.NewRouter()
-	_ = setupServerContext(config)
+	context, err := server.NewContext(config)
+	if err != nil {
+		log.Printf("server.NewContext(config) fatal error: %s\n", err.Error())
+		log.Println("Probably config is incorrect")
+		log.Println("Terminating application")
+		os.Exit(1)
+	}
 
 	authRouter := router.PathPrefix("/auth").Subrouter()
-	auth.HandleAuth(authRouter)
+	auth.HandleAuth(authRouter, context)
 
 	simulationRouter := router.PathPrefix("/simulation").Subrouter()
-	simulation.HandleSimulation(simulationRouter)
+	simulation.HandleSimulation(simulationRouter, context)
 
 	projectRouter := router.PathPrefix("/project").Subrouter()
-	project.HandleSimulation(projectRouter)
+	project.HandleSimulation(projectRouter, context)
 
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir(config.StaticDirectory)))
 

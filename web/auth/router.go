@@ -1,13 +1,19 @@
+// Package auth implement /auth routes.
+// Responsible for login, register and account information.
 package auth
 
 import (
-	"github.com/gorilla/mux"
 	"net/http"
+
+	"github.com/Palantir/palantir/web/server"
+	"github.com/gorilla/mux"
 )
 
 // HandleAuth define auth routes
-func HandleAuth(router *mux.Router) {
-	router.Handle("/login", &loginHandler{}).Methods(http.MethodPost)
-	router.Handle("/register", &mockLoginHandler{}).Methods(http.MethodGet)
-	router.Handle("/account", &mockLoginHandler{}).Methods(http.MethodGet)
+func HandleAuth(router *mux.Router, context *server.Context) {
+	router.Handle("/login", &loginHandler{context}).Methods(http.MethodPost)
+	router.Handle("/register", &registerHandler{context}).Methods(http.MethodPost)
+
+	router.Handle("/account",
+		context.ValidationMiddleware(&getAccountHandler{context})).Methods(http.MethodGet)
 }

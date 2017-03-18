@@ -6,15 +6,14 @@ import (
 	"net/http"
 
 	"github.com/Palantir/palantir/model/auth"
-	"github.com/Palantir/palantir/web/auth/token"
 	"github.com/Palantir/palantir/web/server"
 )
 
-type loginHandler struct {
+type registerHandler struct {
 	*server.Context
 }
 
-func (h *loginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *registerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	acc := auth.Account{}
 	err := json.NewDecoder(r.Body).Decode(&acc)
 	if err != nil {
@@ -25,29 +24,28 @@ func (h *loginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	db := h.Db.Copy()
 	defer db.Close()
 
-	responseMap := make(map[string]string)
+	responseMap := make(map[string]interface{})
 
-	res, err := db.Account.GetIfAuthenticated(&acc)
-	if err != nil {
-		log.Println(err.Error())
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	if res == nil {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-
-	tokenString, err := token.Generate(res, h.JWTKey)
+	isRegistered, err := db.Account.IsRegistered(&acc)
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	responseMap["token"] = tokenString
+	if isRegistered {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		responseMap["error"] = "User already registrated"
+	} else {
+		w.WriteHeader(http.StatusCreated)
+		err = db.Account.Create(acc)
+		if err != nil {
+			log.Println(err.Error())
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
 
-	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(responseMap)
 	if err != nil {
 		log.Println(err.Error())

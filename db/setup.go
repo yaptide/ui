@@ -1,36 +1,54 @@
+// Package db provide MongoDB session
 package db
 
 import (
 	"fmt"
+
 	"github.com/Palantir/palantir/config"
 	"gopkg.in/mgo.v2"
-	"log"
 )
 
-// Test test
-type Test struct {
-	TestName string
+// Session contains mgo.Session, DbName, and collections DAOs
+type Session struct {
+	dbName  *string
+	session *mgo.Session
+
+	Account Account
 }
 
-// SetupDbConnection estblish connection to db and Session to config
-func SetupDbConnection(conf *config.Config) {
-	dbURL := fmt.Sprintf("mongodb://%v:%v@%v:%d/%v", conf.DbUsername, conf.DbPassword, conf.DbHost, conf.DbPort, conf.DbName)
-	session, err := mgo.Dial(dbURL)
+// Copy return copy of Session. Copy is necessary to call few operations on several goroutines.
+func (s *Session) Copy() Session {
+	newSession := *s
+	newSession.session = s.session.Copy()
+	newSession.createDAOs()
+	return newSession
+}
 
-	// TODO: remove when there is real use for db
+func (s *Session) createDAOs() {
+	s.Account = newAccount(s)
+}
+
+// Close close session created by Copy() or NewConnection().
+func (s *Session) Close() {
+	s.session.Close()
+}
+
+// DB return implementation handler to Database.
+func (s *Session) DB() *mgo.Database {
+	return s.session.DB(*s.dbName)
+}
+
+// NewConnection establish new MongoDB connection based on config.Config.
+func NewConnection(conf *config.Config) (*Session, error) {
+	dbURL := fmt.Sprintf("mongodb://%v:%v@%v:%d/%v",
+		conf.DbUsername, conf.DbPassword, conf.DbHost, conf.DbPort, conf.DbName)
+	mgoSession, err := mgo.Dial(dbURL)
+
 	if err != nil {
-		log.Fatal(err.Error(), dbURL)
+		return nil, err
 	}
 
-	err2 := session.
-		DB(conf.DbName).
-		C("test").Insert(
-		&Test{
-			TestName: "sample test data",
-		},
-	)
-
-	if err2 != nil {
-		log.Fatal(err2.Error())
-	}
+	session := &Session{session: mgoSession, dbName: &conf.DbName}
+	session.createDAOs()
+	return session, nil
 }

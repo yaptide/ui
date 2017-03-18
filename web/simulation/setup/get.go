@@ -8,12 +8,15 @@ import (
 	"github.com/Palantir/palantir/model/simulation/setup"
 	"github.com/Palantir/palantir/model/simulation/setup/body"
 	"github.com/Palantir/palantir/model/simulation/setup/zone"
+	"github.com/Palantir/palantir/web/server"
 	//"github.com/gorilla/mux"
 )
 
-type getSetup struct{}
+type getSetupHandler struct {
+	*server.Context
+}
 
-func (h *getSetup) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *getSetupHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// simualtionID := mux.Vars(r)["simulationId"]
 	bodyExample := &body.Body{
 		ID:       "1",

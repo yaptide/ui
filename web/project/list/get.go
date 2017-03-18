@@ -4,14 +4,17 @@ import (
 	"encoding/json"
 
 	"github.com/Palantir/palantir/model/project"
+	"github.com/Palantir/palantir/web/server"
 	//"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
 
-type getProjectList struct{}
+type getProjectListHandler struct {
+	*server.Context
+}
 
-func (h *getProjectList) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *getProjectListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// simualtionID := mux.Vars(r)["simulationId"]
 
 	response := &project.List{
