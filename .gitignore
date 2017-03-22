@@ -3,6 +3,7 @@ release
 node_modules
 
 *.swp
+*.swo
 npm-debug.log
 /conf.json
 gin-bin

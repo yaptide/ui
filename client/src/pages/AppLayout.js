@@ -31,7 +31,7 @@ const styles = {
     ...Style.Flex.rootColumn,
     ...Style.Flex.elementEqual,
     overflow: 'auto',
-    minHeight: '350px',
+    minHeight: '300px',
     minWidth: '800px',
   },
 };
