@@ -1,4 +1,4 @@
-// Package auth contains auth models.
+// Package auth implement Account model used for authentication.
 package auth
 
 import (

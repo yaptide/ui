@@ -2,16 +2,16 @@ package shield
 
 import "github.com/Palantir/palantir/model/simulation/setup"
 
-// Parser parse shield.Config to setup.Object
+// Parser parse shield.Config to setup.Setup.
 type Parser struct {
 	conf *Config
 }
 
-// Parse shield.Config to setup.Object
-// Return error, if any parser error occurs
-func (p *Parser) Parse(c *Config) (*setup.Object, error) {
+// Parse shield.Config to setup.Setup.
+// Return error, if any parser error occurs.
+func (p *Parser) Parse(c *Config) (*setup.Setup, error) {
 	p.conf = c
-	setup := &setup.Object{}
+	setup := &setup.Setup{}
 
 	err := p.parseMat(setup)
 	if err != nil {
@@ -36,18 +36,18 @@ func (p *Parser) Parse(c *Config) (*setup.Object, error) {
 	return setup, nil
 }
 
-func (p *Parser) parseMat(setup *setup.Object) error {
+func (p *Parser) parseMat(setup *setup.Setup) error {
 	return nil
 }
 
-func (p *Parser) parseBeam(setup *setup.Object) error {
+func (p *Parser) parseBeam(setup *setup.Setup) error {
 	return nil
 }
 
-func (p *Parser) parseGeo(setup *setup.Object) error {
+func (p *Parser) parseGeo(setup *setup.Setup) error {
 	return nil
 }
 
-func (p *Parser) parseDetect(setup *setup.Object) error {
+func (p *Parser) parseDetect(setup *setup.Setup) error {
 	return nil
 }

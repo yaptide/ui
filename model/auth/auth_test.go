@@ -1,37 +1,39 @@
 package auth
 
 import (
-	"encoding/json"
 	"testing"
+
+	"github.com/Palantir/palantir/model/test"
 
 	"gopkg.in/mgo.v2/bson"
 )
 
-var testCases = []struct {
-	input    Account
-	expected string
-}{
+var testCases test.MarshallingCases = test.MarshallingCases{
 	{
-		Account{ID: bson.ObjectIdHex("58cfd607dc25403a3b691781"), Username: "username", Email: "email", Password: "password"},
-		`{"id":"58cfd607dc25403a3b691781","username":"username","email":"email","password":"password"}`,
+		&Account{ID: bson.ObjectIdHex("58cfd607dc25403a3b691781"), Username: "username", Email: "email", Password: "password"},
+		`{
+		    "id": "58cfd607dc25403a3b691781",
+		    "username": "username",
+		    "email": "email",
+		    "password": "password"
+		}`,
 	},
 }
 
-func TestMarshal(t *testing.T) {
-	for _, tc := range testCases {
-		result, err := json.Marshal(tc.input)
+func TestAccountMarshal(t *testing.T) {
+	test.Marshal(t, testCases)
+}
 
-		if err != nil {
-			t.Fatal(err.Error())
-		}
+func TestAccountUnmarshal(t *testing.T) {
+	test.Unmarshal(t, testCases)
+}
 
-		sres := string(result[:])
-		if sres != tc.expected {
-			t.Errorf("json.Marshal(%T): expected: %s, actual: %s",
-				tc.input, tc.expected, sres)
+func TestAccountUnmarshalMarshalled(t *testing.T) {
+	test.UnmarshalMarshalled(t, testCases)
+}
 
-		}
-	}
+func TestAccountMarshalUnmarshalled(t *testing.T) {
+	test.MarshalUnmarshalled(t, testCases)
 }
 
 func TestGeneratePassword(t *testing.T) {
@@ -58,7 +60,6 @@ func TestCompareValidPassword(t *testing.T) {
 	res := account.ComparePassword(password)
 	if !res {
 		t.Errorf("Not valid password")
-
 	}
 }
 

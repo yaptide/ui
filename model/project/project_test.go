@@ -1,43 +1,55 @@
 package project
 
 import (
-	"encoding/json"
 	"testing"
+
+	"gopkg.in/mgo.v2/bson"
+
+	"github.com/Palantir/palantir/model/test"
 )
 
-var testCases = []struct {
-	input    interface{}
-	expected string
-}{
+var testCases test.MarshallingCases = test.MarshallingCases{
 	{
-		Version{ID: "id", Settings: "setId", Setup: "setupId", Results: "resultsId"},
-		`{"id":"id","settings":"setId","setupId":"setupId","resultsId":"resultsId"}`,
+		&Version{ID: bson.ObjectIdHex("AAAAAAAAAAAAAAAAAAAAAAAA"),
+			Settings: "setId",
+			SetupID:  bson.ObjectIdHex("BBBBBBBBBBBBBBBBBBBBBBBB"),
+			Results:  "resultsId",
+		},
+		`{
+			"id": "aaaaaaaaaaaaaaaaaaaaaaaa",
+			"settings": "setId",
+			"setup": "bbbbbbbbbbbbbbbbbbbbbbbb",
+			"results": "resultsId"
+		}`,
 	},
 
 	{
-		Object{ID: "id", Name: "name", Versions: []Version{}},
-		`{"id":"id","name":"name","versions":[]}`,
+		&Project{ID: bson.ObjectIdHex("58cfd607dc25403a3b691781"), Name: "name", Versions: []Version{}},
+		`{
+			"id": "58cfd607dc25403a3b691781",
+			"name": "name",
+			"versions": []
+		}`,
 	},
 
 	{
-		List{[]Object{}},
+		&List{[]Project{}},
 		`{"projects":[]}`,
 	},
 }
 
 func TestMarshal(t *testing.T) {
-	for _, tc := range testCases {
-		result, err := json.Marshal(tc.input)
+	test.Marshal(t, testCases)
+}
 
-		if err != nil {
-			t.Fatal(err.Error())
-		}
+func TestUnmarshal(t *testing.T) {
+	test.Unmarshal(t, testCases)
+}
 
-		sres := string(result[:])
-		if sres != tc.expected {
-			t.Errorf("json.Marshal(%T): expected: %s, actual: %s",
-				tc.input, tc.expected, sres)
+func TestUnmarshalMarshalled(t *testing.T) {
+	test.UnmarshalMarshalled(t, testCases)
+}
 
-		}
-	}
+func TestMarshalUnmarshalled(t *testing.T) {
+	test.MarshalUnmarshalled(t, testCases)
 }

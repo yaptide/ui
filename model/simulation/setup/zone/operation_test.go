@@ -1,44 +1,89 @@
 package zone
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/Palantir/palantir/model/simulation/setup/body"
+	"github.com/Palantir/palantir/model/test"
 )
 
-var opTestBody = &body.Body{}
-
-var opTestCases = []struct {
-	input    Operation
-	expected string
-}{
+var opTestCases test.MarshallingCases = test.MarshallingCases{
 	{
-		Operation{Type: Intersect, Body: opTestBody},
-		`{"body":"","type":"intersect"}`,
+		&Operation{BodyID: body.ID(1), Type: Intersect},
+		`{"bodyId":1,"type":"intersect"}`,
 	},
-
 	{
-		Operation{Type: Subtract, Body: opTestBody},
-		`{"body":"","type":"subtract"}`,
+		&Operation{BodyID: body.ID(1), Type: Subtract},
+		`{"bodyId":1,"type":"subtract"}`,
 	},
-
 	{
-		Operation{Type: Union, Body: opTestBody},
-		`{"body":"","type":"union"}`,
+		&Operation{BodyID: body.ID(1), Type: Union},
+		`{"bodyId":1,"type":"union"}`,
 	},
 }
 
-func TestOperationMarshalJSON(t *testing.T) {
-	for _, tc := range opTestCases {
-		result, err := tc.input.MarshalJSON()
+func TestOperationMarshal(t *testing.T) {
+	test.Marshal(t, opTestCases)
+}
 
-		if err != nil {
-			t.Fatal(err.Error())
+func TestOperationUnmarshal(t *testing.T) {
+	test.Unmarshal(t, opTestCases)
+}
+
+func TestOperationMarshalUnmarshalled(t *testing.T) {
+	test.MarshalUnmarshalled(t, opTestCases)
+}
+
+func TestOperationUnmarshalMarshalled(t *testing.T) {
+	test.UnmarshalMarshalled(t, opTestCases)
+}
+
+func TestOperationInvalidTypeMarshal(t *testing.T) {
+	testCases := []struct {
+		TestOperation *Operation
+		IsReturnErr   bool
+	}{
+		{
+			&Operation{BodyID: body.ID(1), Type: Subtract},
+			false,
+		},
+		{
+			&Operation{BodyID: body.ID(1), Type: (OperationType)(10000)},
+			true,
+		},
+	}
+
+	for _, tc := range testCases {
+		_, err := json.Marshal(tc.TestOperation)
+		if (err != nil) != tc.IsReturnErr {
+			t.Errorf("TestOperationInvalidTypeMarshal: IsReturnErr: %v, Actual: %v",
+				tc.IsReturnErr, !tc.IsReturnErr)
 		}
+	}
+}
 
-		sres := string(result[:])
-		if sres != tc.expected {
-			t.Errorf("MarshalJSON: expected: %s, actual: %s", tc.expected, sres)
+func TestOperationInvalidTypeUnmarshal(t *testing.T) {
+	testCases := []struct {
+		TestJSON    string
+		IsReturnErr bool
+	}{
+		{
+			`{"bodyId":1,"type":"intersect"}`,
+			false,
+		},
+		{
+			`{"bodyId":1,"type":"xxxxxxx"}`,
+			true,
+		},
+	}
+
+	for _, tc := range testCases {
+		var op Operation
+		err := json.Unmarshal([]byte(tc.TestJSON), &op)
+		if (err != nil) != tc.IsReturnErr {
+			t.Errorf("TestOperationInvalidTypeUnmarshal: IsReturnErr: %v, Actual: %v",
+				tc.IsReturnErr, !tc.IsReturnErr)
 		}
 	}
 }

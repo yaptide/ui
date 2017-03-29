@@ -2,14 +2,14 @@ package shield
 
 import "github.com/Palantir/palantir/model/simulation/setup"
 
-// Serializer serialize setup.Object to shield.Config
+// Serializer serialize setup.Setup to shield.Config.
 type Serializer struct {
-	setup *setup.Object
+	setup *setup.Setup
 }
 
-// Serialize setup.Object to shield.Config
+// Serialize setup.Setup to shield.Config.
 // Return error, if any parser error occurs
-func (s *Serializer) Serialize(setup *setup.Object) (*Config, error) {
+func (s *Serializer) Serialize(setup *setup.Setup) (*Config, error) {
 	s.setup = setup
 	mat, err := s.serializeMat()
 	if err != nil {

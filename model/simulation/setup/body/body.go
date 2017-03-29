@@ -1,39 +1,40 @@
+// Package body implement Body model, which store basic Geometry description.
 package body
 
-// Body TODO
+import "encoding/json"
+
+// ID is key type in Body map.
+type ID int64
+
+// Body store Geometry interface described by ID and Name.
 type Body struct {
-	ID       string   `json:"id"`
+	ID       ID       `json:"id"`
 	Name     string   `json:"name, omitempty"`
 	Geometry Geometry `json:"geometry"`
 }
 
-// Geometry TODO
-type Geometry interface {
-}
+// UnmarshalJSON custom Unmarshal function.
+// GeometryType is recognized by geometry/type in json.
+func (body *Body) UnmarshalJSON(b []byte) error {
+	type rawBody struct {
+		ID          ID              `json:"id"`
+		Name        string          `json:"name, omitempty"`
+		GeometryRaw json.RawMessage `json:"geometry"`
+	}
 
-// GenericGeometry TODO
-type GenericGeometry struct {
-	Type string `json:"type"`
-}
+	var raw rawBody
+	err := json.Unmarshal(b, &raw)
+	if err != nil {
+		return err
+	}
+	body.ID = raw.ID
+	body.Name = raw.Name
 
-// SphereGeometry TODO
-type SphereGeometry struct {
-	GenericGeometry
-	Center Point   `json:"center"`
-	Radius float64 `json:"radius"`
-}
+	geometry, err := unmarshalGeometry(raw.GeometryRaw)
+	if err != nil {
+		return err
+	}
+	body.Geometry = geometry
 
-// CuboidGeometry TODO
-type CuboidGeometry struct {
-	GenericGeometry
-	Center Point   `json:"center"`
-	Width  float64 `json:"width"`
-	Height float64 `json:"height"`
-}
-
-// Point TODO
-type Point struct {
-	X float64 `json:"x"`
-	Y float64 `json:"y"`
-	Z float64 `json:"z"`
+	return nil
 }

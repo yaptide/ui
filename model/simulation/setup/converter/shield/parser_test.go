@@ -8,11 +8,11 @@ import (
 
 var parserTestCases = []struct {
 	input    *Config
-	expected *setup.Object
+	expected *setup.Setup
 }{
 	{
 		&Config{Mat: "", Beam: "", Geo: "", Detect: ""},
-		&setup.Object{},
+		&setup.Setup{},
 	},
 }
 
@@ -25,7 +25,7 @@ func TestParser(t *testing.T) {
 		if err != nil {
 			t.Fatal(err.Error())
 		}
-		// TODO setup.Object compare
+		// TODO setup.Setup compare
 	}
 
 }

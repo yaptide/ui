@@ -17,23 +17,24 @@ type getSetupHandler struct {
 }
 
 func (h *getSetupHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// simualtionID := mux.Vars(r)["simulationId"]
+	//simualtionID := mux.Vars(r)["simulationId"]
+
 	bodyExample := &body.Body{
-		ID:       "1",
+		ID:       body.ID(1),
 		Name:     "First body",
-		Geometry: &body.SphereGeometry{Center: body.Point{X: 1, Y: 1, Z: 1}, Radius: 1},
+		Geometry: &body.Sphere{Center: body.Point{X: 1, Y: 1, Z: 1}, Radius: 1},
 	}
 	zoneExample := &zone.Zone{
-		ID:   "3",
-		Name: "First zone",
-		Base: bodyExample,
+		ID:     zone.ID(1),
+		Name:   "First zone",
+		BaseID: bodyExample.ID,
 		Construction: []*zone.Operation{
-			&zone.Operation{Type: zone.Intersect, Body: bodyExample},
+			&zone.Operation{Type: zone.Intersect, BodyID: bodyExample.ID},
 		},
 	}
-	response := &setup.Object{
-		Bodies: []*body.Body{bodyExample},
-		Zones:  []*zone.Zone{zoneExample},
+	response := &setup.Setup{
+		Bodies: setup.BodyMap{1: bodyExample},
+		Zones:  setup.ZoneMap{1: zoneExample},
 	}
 
 	responseBody, err := json.Marshal(response)

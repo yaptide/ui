@@ -2,11 +2,13 @@ package list
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/Palantir/palantir/model/project"
 	"github.com/Palantir/palantir/web/server"
+	"gopkg.in/mgo.v2/bson"
 	//"github.com/gorilla/mux"
-	"log"
+
 	"net/http"
 )
 
@@ -15,17 +17,19 @@ type getProjectListHandler struct {
 }
 
 func (h *getProjectListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// simualtionID := mux.Vars(r)["simulationId"]
+	//simualtionID := mux.Vars(r)["simulationId"]
 
+	versionID := bson.ObjectIdHex("AAAAAAAAAAAAAAAAAAAAAAAA")
+	setupID := bson.ObjectIdHex("BBBBBBBBBBBBBBBBBBBBBBBB")
 	response := &project.List{
-		Projects: []project.Object{
-			project.Object{ID: "1", Name: "project name", Versions: []project.Version{
-				project.Version{ID: "2", Settings: "1", Setup: "1", Results: "1"},
-				project.Version{ID: "2", Settings: "1", Setup: "1", Results: "1"},
+		Projects: []project.Project{
+			project.Project{ID: "1", Name: "project name", Versions: []project.Version{
+				project.Version{ID: versionID, Settings: "1", SetupID: setupID, Results: "1"},
+				project.Version{ID: versionID, Settings: "1", SetupID: setupID, Results: "1"},
 			}},
-			project.Object{ID: "1", Name: "project name", Versions: []project.Version{
-				project.Version{ID: "2", Settings: "1", Setup: "1", Results: "1"},
-				project.Version{ID: "2", Settings: "1", Setup: "1", Results: "1"},
+			project.Project{ID: "1", Name: "project name", Versions: []project.Version{
+				project.Version{ID: versionID, Settings: "1", SetupID: setupID, Results: "1"},
+				project.Version{ID: versionID, Settings: "1", SetupID: setupID, Results: "1"},
 			}},
 		},
 	}

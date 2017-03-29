@@ -1,3 +1,4 @@
+// Package setup implement setup.Setup, which contains simulation setup data.
 package setup
 
 import (
@@ -5,8 +6,14 @@ import (
 	"github.com/Palantir/palantir/model/simulation/setup/zone"
 )
 
-// Object contains all simulation data
-type Object struct {
-	Bodies []*body.Body `json:"bodies"`
-	Zones  []*zone.Zone `json:"zones"`
+// BodyMap type used in Setup structure.
+type BodyMap map[body.ID]*body.Body
+
+// ZoneMap type used in Setup structure.
+type ZoneMap map[zone.ID]*zone.Zone
+
+// Setup contains all simulation data.
+type Setup struct {
+	Bodies BodyMap `json:"bodies"`
+	Zones  ZoneMap `json:"zones"`
 }

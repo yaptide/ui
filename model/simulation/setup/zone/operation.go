@@ -2,27 +2,23 @@ package zone
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/Palantir/palantir/model/simulation/setup/body"
 )
 
-const (
-	// Intersect TODO
-	Intersect OperationType = iota
-	// Subtract TODO
-	Subtract
-	// Union TODO
-	Union
-)
-
-// OperationType TODO
+// OperationType determines operation type.
+// OperationTypes are based on mathematical operations on sets.
 type OperationType int
 
-// Operation TODO
-type Operation struct {
-	Type OperationType `json:"type"`
-	Body *body.Body    `json:"body"`
-}
+const (
+	// Intersect operation: A ∩ B.
+	Intersect OperationType = iota
+	// Subtract operation: A \ B.
+	Subtract
+	// Union operation: A ∪ B.
+	Union
+)
 
 var mapOperationToJSON = map[OperationType]string{
 	Intersect: "intersect",
@@ -30,16 +26,52 @@ var mapOperationToJSON = map[OperationType]string{
 	Union:     "union",
 }
 
-// MarshalJSON TODO
-func (z *Operation) MarshalJSON() ([]byte, error) {
-	type Alias Operation
-	return json.Marshal(&struct {
-		Body string `json:"body"`
-		Type string `json:"type"`
-		*Alias
-	}{
-		Body:  z.Body.ID,
-		Type:  mapOperationToJSON[z.Type],
-		Alias: (*Alias)(z),
+var mapJSONToOperation = map[string]OperationType{
+	"intersect": Intersect,
+	"subtract":  Subtract,
+	"union":     Union,
+}
+
+// Operation determines construction of Zone.
+type Operation struct {
+	BodyID body.ID       `json:"bodyId"`
+	Type   OperationType `json:"-"`
+}
+
+type rawOperation struct {
+	BodyID body.ID `json:"bodyId"`
+	Type   string  `json:"type"`
+}
+
+// MarshalJSON custom Marshal function.
+func (o *Operation) MarshalJSON() ([]byte, error) {
+
+	typeStr, ok := mapOperationToJSON[o.Type]
+	if !ok {
+		return nil, fmt.Errorf("Operation.MarshalJSON: can not convert OperationType: %v to string",
+			o.Type)
+
+	}
+	return json.Marshal(&rawOperation{
+		BodyID: o.BodyID,
+		Type:   typeStr,
 	})
+}
+
+// UnmarshalJSON custom Unmarshal function.
+func (o *Operation) UnmarshalJSON(b []byte) error {
+	rOperation := rawOperation{}
+	err := json.Unmarshal(b, &rOperation)
+	if err != nil {
+		return err
+	}
+
+	operationType, ok := mapJSONToOperation[rOperation.Type]
+	if !ok {
+		return fmt.Errorf("Operation.UnmarshalJSON: can not convert string: %v to OperationType",
+			o.Type)
+	}
+	o.BodyID = rOperation.BodyID
+	o.Type = operationType
+	return nil
 }

@@ -1,21 +1,24 @@
+// Package project implement project model used for storing simulation settings, setup and results.
 package project
 
-// Object TODO
-type Object struct {
-	ID       string    `json:"id"`
-	Name     string    `json:"name"`
-	Versions []Version `json:"versions"`
+import "gopkg.in/mgo.v2/bson"
+
+// Project represent named project, which may have multiple version.
+type Project struct {
+	ID       bson.ObjectId `json:"id" bson:"_id,omitempty"`
+	Name     string        `json:"name"`
+	Versions []Version     `json:"versions"`
 }
 
-// List TODO
+// List contains list of project.Project.
 type List struct {
-	Projects []Object `json:"projects"`
+	Projects []Project `json:"projects"`
 }
 
-// Version TODO
+// Version is project version, which contains settting and simulation setup/results.
 type Version struct {
-	ID       string `json:"id"`
-	Settings string `json:"settings"` // TODO create setting model
-	Setup    string `json:"setupId"`  // TODO change id to reference add Marshaling
-	Results  string `json:"resultsId"`
+	ID       bson.ObjectId `json:"id" bson:"_id,omitempty"`
+	Settings interface{}   `json:"settings"` // TODO create setting model
+	SetupID  bson.ObjectId `json:"setup"`
+	Results  interface{}   `json:"results"` // TODO create results
 }

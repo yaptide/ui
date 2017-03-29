@@ -8,11 +8,11 @@ import (
 )
 
 var serializerTestCases = []struct {
-	input    *setup.Object
+	input    *setup.Setup
 	expected *Config
 }{
 	{
-		&setup.Object{},
+		&setup.Setup{},
 		&Config{Mat: "", Beam: "", Geo: "", Detect: ""},
 	},
 }
