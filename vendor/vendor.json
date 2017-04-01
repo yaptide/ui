@@ -21,6 +21,12 @@
 			"revisionTime": "2016-08-17T18:46:32Z"
 		},
 		{
+			"checksumSHA1": "+/oy2SsS8YvHVvQGcWUDbaajeXQ=",
+			"path": "github.com/gorilla/handlers",
+			"revision": "13d73096a474cac93275c679c7b8a2dc17ddba82",
+			"revisionTime": "2017-02-24T19:39:55Z"
+		},
+		{
 			"checksumSHA1": "F5dR3/i70EhSIMZfeIV+H8/PtvM=",
 			"path": "github.com/gorilla/mux",
 			"revision": "392c28fe23e1c45ddba891b0320b3b5df220beea",

@@ -1,3 +1,4 @@
 {
+  "Cyclo": 12,
   "Exclude": [".pb.go", "^vendor/"]
 }

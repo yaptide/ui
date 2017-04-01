@@ -1,4 +1,5 @@
 /* @flow */
+import { Map } from 'immutable';
 
 export type LoginData = {
   username: string,
@@ -11,6 +12,6 @@ export type RegisterData = {
   password: string,
 }
 
-export type AuthState = {
+export type AuthState = Map<
 
-};
+  >;

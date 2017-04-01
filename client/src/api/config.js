@@ -13,7 +13,8 @@ let authorizationToken = '';
 axiosInstance.interceptors.request.use(
   (request) => {
     if (authorizationToken) {
-      request.headers.Authorization = authorizationToken; // eslint-disable-line no-param-reassign
+      request.headers['X-Auth-Token'] = authorizationToken; // eslint-disable-line no-param-reassign
+      request.headers['Content-Type'] = 'application/json'; // eslint-disable-line no-param-reassign
     }
     return request;
   },
@@ -27,7 +28,7 @@ const api = {
   delete: (endpoint: Endpoint, params?: Object) => axiosInstance.delete(endpoint, { params }),
   head: (endpoint: Endpoint, params?: Object) => axiosInstance.head(endpoint, { params }),
   post: (endpoint: Endpoint, body?: Object, params?: Object) => (
-    axiosInstance.get(endpoint, body, { params })
+    axiosInstance.post(endpoint, body, { params })
   ),
   put: (endpoint: Endpoint, body?: Object, params?: Object) => (
     axiosInstance.put(endpoint, body, { params })

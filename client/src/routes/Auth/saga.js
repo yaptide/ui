@@ -5,7 +5,7 @@ import { fork, call, put } from 'redux-saga/effects';
 import api, { endpoint } from 'api';
 import cookie, { key as cookieKey } from 'store/cookie';
 import { actionType } from './reducer';
-import type { RegisterData } from './model';
+import type { RegisterData, LoginData } from './model';
 
 export function* updateAuthToken(token: string): Generator<*, *, *> {
   if (token) {
@@ -14,12 +14,12 @@ export function* updateAuthToken(token: string): Generator<*, *, *> {
   }
 }
 
-export function* login(action: { username: string, password: string }): Generator<*, *, *> {
+export function* login(action: { user: LoginData }): Generator<*, *, *> {
   try {
     const response = yield call(
       api.post,
       endpoint.LOGIN,
-      { username: action.username, password: action.password },
+      { username: action.user.username, password: action.user.password },
     );
     const token = response.data.token;
     yield* updateAuthToken(token);
@@ -34,7 +34,10 @@ export function* register(action: { user: RegisterData }): Generator<*, *, *> {
   try {
     yield call(api.post, endpoint.REGISTER, action.user);
     yield put({ type: actionType.REGISTER_RESPONSE_SUCCESS });
-    yield call(login, { username: action.user.username, password: action.user.password });
+    yield call(login, { user: {
+      username: action.user.username,
+      password: action.user.password,
+    } });
   } catch (error) {
     yield put({ type: actionType.REGISTER_RESPONSE_ERROR, error: error.response.data });
   }

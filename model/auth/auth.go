@@ -26,7 +26,7 @@ func (a *Account) GeneratePassword() error {
 }
 
 // ComparePassword return true, if argument hash is equals to a.Password.
-func (a Account) ComparePassword(password string) bool {
+func (a *Account) ComparePassword(password string) bool {
 	hashedPassword := []byte(a.Password)
 	err := bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
 	return err == nil

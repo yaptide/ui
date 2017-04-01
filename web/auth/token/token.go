@@ -7,20 +7,20 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Palantir/palantir/model/auth"
 	"github.com/Palantir/palantir/web/server/middleware"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
+	"gopkg.in/mgo.v2/bson"
 )
 
 // Generate generate JWT token for account, signed by key.
 // Used claims: "id" -> account.ID (bson.ObjectId),
 // "exp" -> exp time (int64).
-func Generate(account *auth.Account, key []byte) (string, error) {
+func Generate(id bson.ObjectId, key []byte) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 
-	claims["id"] = account.ID
+	claims["id"] = id
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
 	tokenString, err := token.SignedString(key)

@@ -11,11 +11,12 @@ import (
 	"github.com/Palantir/palantir/web/project"
 	"github.com/Palantir/palantir/web/server"
 	"github.com/Palantir/palantir/web/simulation"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
 // NewRouter create main router, which define root routes.
-func NewRouter(config *config.Config) *mux.Router {
+func NewRouter(config *config.Config) http.Handler {
 	router := mux.NewRouter()
 	context, err := server.NewContext(config)
 	if err != nil {
@@ -36,5 +37,7 @@ func NewRouter(config *config.Config) *mux.Router {
 
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir(config.StaticDirectory)))
 
-	return router
+	return handlers.CORS(
+		handlers.AllowedHeaders([]string{"content-type", "x-auth-token"}),
+	)(router)
 }

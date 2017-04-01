@@ -18,23 +18,36 @@ func newAccount(session *Session) Account {
 	return Account{session: session}
 }
 
-// IsRegistered returns true, if account already exists in db.
-// Return err, if any db error occurs.
-func (a *Account) IsRegistered(account *auth.Account) (bool, error) {
-	c := a.session.DB().C(accountC)
+// FindByUsername return if exists user with login @name.
+func (a *Account) FindByUsername(name string) (*auth.Account, error) {
+	collection := a.session.DB().C(accountC)
+	result := &auth.Account{}
 
-	queries := []bson.M{bson.M{"username": account.Username}, bson.M{"email": account.Email}}
-	for _, query := range queries {
-		n, err := c.Find(query).Count()
-		if err != nil {
-			return false, err
-		}
-		if n > 0 {
-			return true, nil
-		}
+	query := bson.M{"username": name}
+	err := collection.Find(query).One(result)
+	if err == mgo.ErrNotFound {
+		return nil, nil
 	}
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
 
-	return false, nil
+// FindByEmail return if exists user with email @email.
+func (a *Account) FindByEmail(email string) (*auth.Account, error) {
+	collection := a.session.DB().C(accountC)
+	result := &auth.Account{}
+
+	query := bson.M{"email": email}
+	err := collection.Find(query).One(result)
+	if err == mgo.ErrNotFound {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 // Create create new account in Account collection.
@@ -47,38 +60,13 @@ func (a *Account) Create(account auth.Account) error {
 
 	c := a.session.DB().C(accountC)
 	err = c.Insert(account)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
-// GetIfAuthenticated return Account from db, if account Username/Email and Password are valid.
-// Return nil, if not found or password is invalid.
-// Return err, if any db error occurs.
-func (a *Account) GetIfAuthenticated(account *auth.Account) (*auth.Account, error) {
-	c := a.session.DB().C(accountC)
-
-	res := &auth.Account{}
-
-	for _, loginField := range []string{"username", "email"} {
-		err := c.Find(bson.M{loginField: account.Username}).One(res)
-		switch {
-		case err == mgo.ErrNotFound:
-			return nil, nil
-		case err != nil:
-			return nil, err
-		case res.ComparePassword(account.Password):
-			return res, nil
-		}
-	}
-	return nil, nil
-}
-
-// GetByID return auth.Account from db by id.
+// FindByID return auth.Account from db by id.
 // Return nil, if not found.
 // Return err, if any db error occurs.
-func (a *Account) GetByID(id bson.ObjectId) (*auth.Account, error) {
+func (a *Account) FindByID(id bson.ObjectId) (*auth.Account, error) {
 	c := a.session.DB().C(accountC)
 
 	res := &auth.Account{}

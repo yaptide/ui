@@ -1,6 +1,7 @@
 /* @flow */
 
 export const baseURL = BASE_URL;
+
 export type Endpoint = 'LOGIN' |
   'REGISTER';
 

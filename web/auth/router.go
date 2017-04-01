@@ -15,5 +15,5 @@ func HandleAuth(router *mux.Router, context *server.Context) {
 	router.Handle("/register", &registerHandler{context}).Methods(http.MethodPost)
 
 	router.Handle("/account",
-		context.ValidationMiddleware(&getAccountHandler{context})).Methods(http.MethodGet)
+		context.ValidationMiddleware(&fetchAccountHandler{context})).Methods(http.MethodGet)
 }

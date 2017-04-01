@@ -24,7 +24,7 @@ const loginSuccessResponse = {
 
 describe('Auth saga tests', () => {
   it('Login success', () => {
-    const saga = authSaga.login(testUser);
+    const saga = authSaga.login({ user: testUser });
     expect(saga.next().value).toEqual(call(api.post, endpoint.LOGIN, testUser));
     expect(saga.next(loginSuccessResponse).value)
       .toEqual(call(api.saveAuthToken, loginSuccessResponse.data.token));
@@ -38,7 +38,7 @@ describe('Auth saga tests', () => {
   });
 
   it('Login api call error', () => {
-    const saga = authSaga.login(testUser);
+    const saga = authSaga.login({ user: testUser });
 
     const loginError = {
       response: { data: 'errorMessage' },
@@ -56,7 +56,7 @@ describe('Auth saga tests', () => {
 
     expect(saga.next().value).toEqual(call(api.post, endpoint.REGISTER, testRegisterUser));
     expect(saga.next().value).toEqual(put({ type: actionType.REGISTER_RESPONSE_SUCCESS }));
-    expect(saga.next().value).toEqual(call(authSaga.login, testRegisterUser));
+    expect(saga.next().value).toEqual(call(authSaga.login, { user: testRegisterUser }));
     expect(saga.next().done).toBeTruthy();
   });
 

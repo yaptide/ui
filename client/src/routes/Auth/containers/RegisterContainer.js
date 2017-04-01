@@ -3,17 +3,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { List } from 'immutable';
 import { t } from 'i18n';
 import { Form, FormInput } from 'components/Form';
 
+import { actionCreator } from '../reducer';
+import selector from '../selector';
 import type { RegisterData } from '../model';
 
 type Props = {
   includeLinks?: bool,
   register: RegisterData => void,
-  //  requestErrors: Map<string, List<string>>,
-  //  requestPending: bool,
+  registerError: { username?: string, email?: string, password?: string },
+  // isRegisterPending: bool,
+  clearError: (field: string) => void,
 };
 type State = {
   email: string,
@@ -34,6 +36,7 @@ class RegisterContainer extends React.Component {
 
   onChange = (value, type) => {
     this.setState({ [type]: value });
+    this.props.clearError(type);
   }
 
   register = () => {
@@ -60,12 +63,14 @@ class RegisterContainer extends React.Component {
           type="email"
           floatingLabelText={t('auth.form.emailLabel')}
           onChange={this.onChange}
+          errorText={this.props.registerError.email}
         />
         <FormInput
           value={this.state.username}
           type="username"
           floatingLabelText={t('auth.form.usernameLabel')}
           onChange={this.onChange}
+          errorText={this.props.registerError.username}
         />
         <FormInput
           value={this.state.password}
@@ -73,6 +78,7 @@ class RegisterContainer extends React.Component {
           floatingLabelText={t('auth.form.passwordLabel')}
           onChange={this.onChange}
           secureTextEntry
+          errorText={this.props.registerError.password}
         />
         <FormInput
           value={this.state.repeatPassword}
@@ -86,21 +92,19 @@ class RegisterContainer extends React.Component {
   }
 }
 
-const mapStateToProps = () => {
+const mapStateToProps = (state) => {
   return {
-    requestErrors: List(),
-    requestPending: false,
+    ...selector.registerSelector(state),
   };
 };
 
-const mapDispatchToProps = () => {
+const mapDispatchToProps = (dispatch) => {
   return {
     register: (registerData: RegisterData) => {
-      console.log('register',
-        registerData.email,
-        registerData.username,
-        registerData.password,
-      );
+      return dispatch(actionCreator.register(registerData));
+    },
+    clearError: (field: string) => {
+      return dispatch(actionCreator.clearRegisterError(field));
     },
   };
 };

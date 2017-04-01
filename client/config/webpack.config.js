@@ -94,7 +94,7 @@ plugins.push(
   }),
   new webpack.EnvironmentPlugin(['NODE_ENV']),
   new webpack.DefinePlugin({
-    'BASE_URL': JSON.stringify(BASE_URL || "localhost:3000"),
+    'BASE_URL': JSON.stringify(BASE_URL || "http://localhost:3000"),
     __DEV__,
     __TEST__,
     __PROD__,

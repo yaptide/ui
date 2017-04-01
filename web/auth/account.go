@@ -11,30 +11,31 @@ import (
 	"github.com/Palantir/palantir/web/server"
 )
 
-type getAccountHandler struct {
+type fetchAccountHandler struct {
 	*server.Context
 }
 
-func (h *getAccountHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *fetchAccountHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	db := h.Db.Copy()
 	defer db.Close()
 
 	id := bson.ObjectIdHex(r.Context().Value(token.ContextIDKey).(string))
 
-	acc, err := db.Account.GetByID(id)
+	account, err := db.Account.FindByID(id)
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if acc == nil {
+	if account == nil {
 		w.WriteHeader(http.StatusNotFound)
+		return
 	}
 
-	acc.Password = ""
+	account.Password = ""
 
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(acc)
+	err = json.NewEncoder(w).Encode(account)
 	if err != nil {
 		log.Println(err.Error())
 	}
