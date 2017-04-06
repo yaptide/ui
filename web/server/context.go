@@ -6,20 +6,21 @@ import (
 
 	"github.com/Palantir/palantir/config"
 	"github.com/Palantir/palantir/db"
+	"github.com/Palantir/palantir/db/mongo"
 	"github.com/Palantir/palantir/web/auth/token"
 	"github.com/Palantir/palantir/web/server/middleware"
 )
 
 // Context contains server structures passed to all subrouters
 type Context struct {
-	Db                   *db.Session
+	Db                   db.Session
 	JWTKey               []byte
 	ValidationMiddleware middleware.Middleware
 }
 
 // NewContext constructor create Context using config.Config
 func NewContext(conf *config.Config) (*Context, error) {
-	session, err := db.NewConnection(conf)
+	session, err := mongo.NewConnection(conf)
 	if err != nil {
 		return nil, err
 	}

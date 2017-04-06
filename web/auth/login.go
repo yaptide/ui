@@ -83,8 +83,8 @@ func (h *loginHandler) validateLogin(context *loginContext) bool {
 	if context.requestAccount.Username == "" {
 		mapFields["username"] = "Username is required"
 	}
-	userWithUsername, userErr := context.Db.Account.FindByUsername(context.requestAccount.Username)
-	userWithEmail, emailErr := context.Db.Account.FindByEmail(context.requestAccount.Username)
+	userWithUsername, userErr := context.Db.Account().FindByUsername(context.requestAccount.Username)
+	userWithEmail, emailErr := context.Db.Account().FindByEmail(context.requestAccount.Username)
 	switch {
 	case userErr != nil:
 		context.W.WriteHeader(http.StatusInternalServerError)

@@ -21,7 +21,7 @@ func (h *fetchAccountHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 
 	id := bson.ObjectIdHex(r.Context().Value(token.ContextIDKey).(string))
 
-	account, err := db.Account.FindByID(id)
+	account, err := db.Account().FindByID(id)
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)

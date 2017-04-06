@@ -1,3 +1,4 @@
+// Package util provide universal operations on collections.
 package util
 
 import (

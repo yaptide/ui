@@ -8,18 +8,18 @@ import (
 
 const accountC = "Account"
 
-// Account collection DAO
+// Account collection DAO.
 type Account struct {
-	session *Session
+	session Session
 }
 
-// NewAccount constructor
-func newAccount(session *Session) Account {
-	return Account{session: session}
+// NewAccount constructor.
+func NewAccount(session Session) Account {
+	return Account{session}
 }
 
 // FindByUsername return if exists user with login @name.
-func (a *Account) FindByUsername(name string) (*auth.Account, error) {
+func (a Account) FindByUsername(name string) (*auth.Account, error) {
 	collection := a.session.DB().C(accountC)
 	result := &auth.Account{}
 
@@ -35,7 +35,7 @@ func (a *Account) FindByUsername(name string) (*auth.Account, error) {
 }
 
 // FindByEmail return if exists user with email @email.
-func (a *Account) FindByEmail(email string) (*auth.Account, error) {
+func (a Account) FindByEmail(email string) (*auth.Account, error) {
 	collection := a.session.DB().C(accountC)
 	result := &auth.Account{}
 
@@ -52,7 +52,7 @@ func (a *Account) FindByEmail(email string) (*auth.Account, error) {
 
 // Create create new account in Account collection.
 // Return err, if any db error occurs.
-func (a *Account) Create(account auth.Account) error {
+func (a Account) Create(account auth.Account) error {
 	err := account.GeneratePassword()
 	if err != nil {
 		return err
@@ -66,13 +66,13 @@ func (a *Account) Create(account auth.Account) error {
 // FindByID return auth.Account from db by id.
 // Return nil, if not found.
 // Return err, if any db error occurs.
-func (a *Account) FindByID(id bson.ObjectId) (*auth.Account, error) {
+func (a Account) FindByID(id bson.ObjectId) (*auth.Account, error) {
 	c := a.session.DB().C(accountC)
 
 	res := &auth.Account{}
 	err := c.Find(bson.M{"_id": id}).One(res)
 
-	if err == mgo.ErrNotFound {
+	if err == ErrNotFound {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

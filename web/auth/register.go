@@ -41,7 +41,7 @@ func (h *registerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (h *registerHandler) register(context *registerContext) bool {
 
-	err := context.Db.Account.Create(*context.requestAccount)
+	err := context.Db.Account().Create(*context.requestAccount)
 	if err != nil {
 		context.W.WriteHeader(http.StatusInternalServerError)
 		return false
@@ -62,7 +62,7 @@ func (h *registerHandler) validateRegister(context *registerContext) bool {
 	if account.Email == "" {
 		mapFields["email"] = "Email is required"
 	}
-	userWithEmail, err := context.Db.Account.FindByEmail(account.Email)
+	userWithEmail, err := context.Db.Account().FindByEmail(account.Email)
 	if err != nil {
 		context.W.WriteHeader(http.StatusInternalServerError)
 		return false
@@ -76,7 +76,7 @@ func (h *registerHandler) validateRegister(context *registerContext) bool {
 		mapFields["username"] = "Username is required"
 	}
 
-	userWithUsername, err := context.Db.Account.FindByUsername(account.Username)
+	userWithUsername, err := context.Db.Account().FindByUsername(account.Username)
 	if err != nil {
 		context.W.WriteHeader(http.StatusInternalServerError)
 		return false
