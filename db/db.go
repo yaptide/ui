@@ -25,14 +25,25 @@ type Database interface {
 }
 
 // Session represents a communication session with the database.
-// Single Session can be used only for one goroutine at a time.
-// Use Copy(), if you need perform db operations parallel.
-// Each Session must call Close() after performing tasks.
 type Session interface {
+	// Copy copy Session handler.
+	// Copy is necessary, if you need perfom db operations on several goroutines at once.
 	Copy() Session
+
+	//Close close Session.
 	Close()
 
 	DB() Database
 
 	Account() Account
+	Project() Project
+
+	// Configure configure db and collections.
+	Configure() error
+}
+
+// DAO represent collection DAO.
+type DAO interface {
+	// ConfigureCollection configure collection configuration such as Indexes.
+	ConfigureCollection() error
 }

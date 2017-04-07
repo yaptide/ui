@@ -1,27 +1,25 @@
 package auth
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
-	"gopkg.in/mgo.v2/bson"
-
 	"github.com/Palantir/palantir/web/auth/token"
 	"github.com/Palantir/palantir/web/server"
+	"github.com/Palantir/palantir/web/util"
 )
 
 type fetchAccountHandler struct {
 	*server.Context
 }
 
-func (h *fetchAccountHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h fetchAccountHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	db := h.Db.Copy()
 	defer db.Close()
 
-	id := bson.ObjectIdHex(r.Context().Value(token.ContextIDKey).(string))
+	id := token.ExtractAccountID(r)
 
-	account, err := db.Account().FindByID(id)
+	account, err := db.Account().Fetch(id)
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
@@ -34,9 +32,5 @@ func (h *fetchAccountHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 
 	account.Password = ""
 
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(account)
-	if err != nil {
-		log.Println(err.Error())
-	}
+	_ = util.WriteJSONResponse(w, http.StatusOK, account)
 }

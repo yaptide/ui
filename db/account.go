@@ -6,11 +6,20 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-const accountC = "Account"
+const (
+	accountCollectionName = "Account"
+	usernameKey           = "username"
+	emailKey              = "email"
+)
 
 // Account collection DAO.
 type Account struct {
 	session Session
+}
+
+// ConfigureCollection implementation of DAO interface.
+func (a Account) ConfigureCollection() error {
+	return nil
 }
 
 // NewAccount constructor.
@@ -20,10 +29,10 @@ func NewAccount(session Session) Account {
 
 // FindByUsername return if exists user with login @name.
 func (a Account) FindByUsername(name string) (*auth.Account, error) {
-	collection := a.session.DB().C(accountC)
+	collection := a.session.DB().C(accountCollectionName)
 	result := &auth.Account{}
 
-	query := bson.M{"username": name}
+	query := bson.M{usernameKey: name}
 	err := collection.Find(query).One(result)
 	if err == mgo.ErrNotFound {
 		return nil, nil
@@ -36,10 +45,10 @@ func (a Account) FindByUsername(name string) (*auth.Account, error) {
 
 // FindByEmail return if exists user with email @email.
 func (a Account) FindByEmail(email string) (*auth.Account, error) {
-	collection := a.session.DB().C(accountC)
+	collection := a.session.DB().C(accountCollectionName)
 	result := &auth.Account{}
 
-	query := bson.M{"email": email}
+	query := bson.M{emailKey: email}
 	err := collection.Find(query).One(result)
 	if err == mgo.ErrNotFound {
 		return nil, nil
@@ -58,16 +67,16 @@ func (a Account) Create(account auth.Account) error {
 		return err
 	}
 
-	c := a.session.DB().C(accountC)
+	c := a.session.DB().C(accountCollectionName)
 	err = c.Insert(account)
 	return err
 }
 
-// FindByID return auth.Account from db by id.
+// Fetch return auth.Account from db by id.
 // Return nil, if not found.
 // Return err, if any db error occurs.
-func (a Account) FindByID(id bson.ObjectId) (*auth.Account, error) {
-	c := a.session.DB().C(accountC)
+func (a Account) Fetch(id bson.ObjectId) (*auth.Account, error) {
+	c := a.session.DB().C(accountCollectionName)
 
 	res := &auth.Account{}
 	err := c.Find(bson.M{"_id": id}).One(res)

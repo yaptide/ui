@@ -74,3 +74,8 @@ func NewValidationMiddleware(key []byte) middleware.Middleware {
 		return handlerFunc
 	}
 }
+
+// ExtractAccountID return AccountID from context.Context.
+func ExtractAccountID(r *http.Request) bson.ObjectId {
+	return bson.ObjectIdHex(r.Context().Value(ContextIDKey).(string))
+}

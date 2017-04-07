@@ -1,4 +1,4 @@
 {
-  "Cyclo": 12,
-  "Exclude": [".pb.go", "^vendor/"]
+  "Cyclo": 13,
+  "Exclude": ["^vendor/"]
 }

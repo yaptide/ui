@@ -1,8 +1,9 @@
 package request
 
 import (
-	"github.com/Palantir/palantir/db"
 	"net/http"
+
+	"github.com/Palantir/palantir/db"
 )
 
 // Context wraps object used in request handler.

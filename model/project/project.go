@@ -5,9 +5,10 @@ import "gopkg.in/mgo.v2/bson"
 
 // Project represent named project, which may have multiple version.
 type Project struct {
-	ID       bson.ObjectId `json:"id" bson:"_id,omitempty"`
-	Name     string        `json:"name"`
-	Versions []Version     `json:"versions"`
+	ID        bson.ObjectId `json:"id" bson:"_id,omitempty"`
+	AccountID bson.ObjectId `json:"accountId" bson:"accountId,omitempty"`
+	Name      string        `json:"name"`
+	Versions  []Version     `json:"versions"`
 }
 
 // List contains list of project.Project.

@@ -8,7 +8,7 @@ import (
 
 	"github.com/Palantir/palantir/config"
 	"github.com/Palantir/palantir/web/auth"
-	"github.com/Palantir/palantir/web/project"
+	"github.com/Palantir/palantir/web/projects"
 	"github.com/Palantir/palantir/web/server"
 	"github.com/Palantir/palantir/web/simulation"
 	"github.com/gorilla/handlers"
@@ -32,8 +32,8 @@ func NewRouter(config *config.Config) http.Handler {
 	simulationRouter := router.PathPrefix("/simulation").Subrouter()
 	simulation.HandleSimulation(simulationRouter, context)
 
-	projectRouter := router.PathPrefix("/project").Subrouter()
-	project.HandleSimulation(projectRouter, context)
+	projectsRouter := router.PathPrefix("/projects").Subrouter()
+	projects.HandleProject(projectsRouter, context)
 
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir(config.StaticDirectory)))
 

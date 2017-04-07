@@ -39,27 +39,42 @@ func NewConnection(conf *config.Config) (db.Session, error) {
 	}
 
 	res := session{db: database{session: mgoSession, dbName: &conf.DbName}}
+	err = res.Configure()
+	if err != nil {
+		return nil, err
+	}
 	return res, nil
 }
 
-// Copy return copy of session. Copy is necessary to call few operations on several goroutines.
 func (s session) Copy() db.Session {
 	newSession := s
 	newSession.db.session = s.db.session.Copy()
 	return newSession
 }
 
-// Close close session.
 func (s session) Close() {
 	s.db.session.Close()
 }
 
-// DB return Database which implement db.Database.
 func (s session) DB() db.Database {
 	return s.db
 }
 
-// Account returns Account DAO.
 func (s session) Account() db.Account {
 	return db.NewAccount(s)
+}
+
+func (s session) Project() db.Project {
+	return db.NewProject(s)
+}
+
+func (s session) Configure() error {
+	daos := []db.DAO{s.Account(), s.Project()}
+	for _, dao := range daos {
+		err := dao.ConfigureCollection()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

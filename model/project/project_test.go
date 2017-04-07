@@ -24,9 +24,15 @@ var testCases test.MarshallingCases = test.MarshallingCases{
 	},
 
 	{
-		&Project{ID: bson.ObjectIdHex("58cfd607dc25403a3b691781"), Name: "name", Versions: []Version{}},
+		&Project{
+			ID:        bson.ObjectIdHex("58cfd607dc25403a3b691781"),
+			AccountID: bson.ObjectIdHex("cccccccccccccccccccccccc"),
+			Name:      "name",
+			Versions:  []Version{},
+		},
 		`{
 			"id": "58cfd607dc25403a3b691781",
+			"accountId": "cccccccccccccccccccccccc",
 			"name": "name",
 			"versions": []
 		}`,
