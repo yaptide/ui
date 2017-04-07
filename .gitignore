@@ -10,3 +10,5 @@ gin-bin
 
 vendor/*
 !vendor/vendor.json
+
+yarn.lock

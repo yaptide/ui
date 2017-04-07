@@ -13,7 +13,7 @@
         "config": {
           "resolve": {
             "extensions":[".js", ".jsx"],
-            "modules": ["src", "node_modules"],
+            "modules": ["src", "node_modules", "lib"],
             "alias": {
               "shared" : "shared"
             }
@@ -25,6 +25,7 @@
   "globals": {
     "document": false,
     "require": false,
+    "window": false,
     "BASE_URL": false,
     "Generator": false
   },

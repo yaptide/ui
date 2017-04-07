@@ -2,15 +2,14 @@
 
 import React from 'react';
 import Style from 'styles';
+import Visualisation from 'components/Visualisation/Visualisation';
 import ZoneWorkspaceContainer from '../containers/ZoneWorkspaceContainer';
 
 class WorkspaceGeometryLayout extends React.Component {
   render() {
     return (
       <div style={styles.container}>
-        <div style={styles.visualisationContainer}>
-          {/* TODO */}
-        </div>
+        <Visualisation style={styles.visualisationContainer} />
         <div style={styles.zoneForm}>
           <ZoneWorkspaceContainer />
         </div>
@@ -29,6 +28,8 @@ const styles = {
   visualisationContainer: {
     ...Style.Flex.elementEqual,
     border: '2px solid',
+    borderRadius: '4px',
+    borderColor: Style.Colors.gray,
   },
   zoneForm: {
     width: '500px',

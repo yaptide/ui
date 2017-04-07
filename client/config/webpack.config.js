@@ -39,6 +39,7 @@ const config = {
     extensions: ['', '.js', '.jsx'],
     root: [
       path.resolve('./client/src/'),
+      path.resolve('./client/lib/'),
     ],
   },
 
