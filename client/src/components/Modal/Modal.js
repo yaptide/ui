@@ -2,6 +2,7 @@
 
 import React from 'react';
 import RNModal from 'react-modal';
+import Style from 'styles';
 
 class Modal extends React.Component {
   props: {
@@ -36,7 +37,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.75)',
+    backgroundColor: Style.Theme.palette.disabledColor,
     zIndex: 2100,
   },
   content: {
@@ -46,7 +47,7 @@ const styles = {
     right: '60px',
     bottom: '60px',
     border: '1px solid #ccc',
-    background: '#fff',
+    background: Style.Theme.palette.canvasColor,
     overflow: 'auto',
     WebkitOverflowScrolling: 'touch',
     borderRadius: '4px',

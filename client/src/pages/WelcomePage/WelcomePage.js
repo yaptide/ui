@@ -4,6 +4,7 @@ import React from 'react';
 import { RegisterForm } from 'routes/Auth';
 import Paper from 'material-ui/Paper';
 import Style from 'styles';
+import Visualisation from 'components/Visualisation/Visualisation';
 import AppLayout from '../AppLayout';
 
 type Props = {
@@ -21,7 +22,10 @@ class WelcomePage extends React.Component {
         location={this.props.location.pathname}
       >
         <div style={styles.container}>
-          <p style={styles.description}>We will make Palantir great again!</p>
+          <div style={styles.descriptionBlock} >
+            <p style={styles.description}>We will make Palantir great again!</p>
+            <Visualisation style={styles.visualisation} />
+          </div>
           <div style={styles.form}>
             <Paper style={styles.formWrapper} zDepth={3} >
               <RegisterForm includeLinks={false} />
@@ -43,11 +47,21 @@ const styles = {
     paddingRight: Style.Dimens.spacing.veryLarge,
   },
   description: {
-    flex: '1 0 0',
+    flex: '0 0 1',
     overflow: 'hidden',
     fontSize: '30pt',
+    fontFamily: Style.Theme.fontFamily,
+    color: Style.Theme.palette.textColor,
     paddingLeft: Style.Dimens.spacing.normal,
     paddingRight: Style.Dimens.spacing.normal,
+  },
+  descriptionBlock: {
+    ...Style.Flex.rootColumn,
+    flex: '1 0 0',
+    overflow: 'hidden',
+  },
+  visualisation: {
+    flex: '1 0 0',
   },
   form: {
     overflow: 'hidden',
@@ -58,6 +72,7 @@ const styles = {
   },
   formWrapper: {
     padding: Style.Dimens.spacing.normal,
+    flex: '0 0 1',
   },
 };
 

@@ -26,6 +26,7 @@ class Form extends React.Component {
     return (
       <div style={styles.form} >
         {this.props.children}
+        <div style={{ height: Style.Dimens.spacing.normal }} />
         {
           this.props.links.map((e, i) => (
             <FormLink url={e.url} text={e.text} key={i} />

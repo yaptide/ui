@@ -34,10 +34,14 @@ const styles = {
     padding: Style.Dimens.spacing.large,
   },
   projectName: {
+    fontFamily: Style.Theme.fontFamily,
     fontSize: Style.Dimens.font.large,
+    color: Style.Theme.palette.textColor,
     paddingBottom: Style.Dimens.spacing.normal,
   },
   projectDescription: {
+    color: Style.Theme.palette.textColor,
+    fontFamily: Style.Theme.fontFamily,
     fontSize: Style.Dimens.font.standard,
   },
 };

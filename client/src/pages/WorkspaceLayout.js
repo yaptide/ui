@@ -34,7 +34,9 @@ class WorkspaceLayout extends React.Component {
     const { children, activeWorkspaceTab, isWorkspaceLoading, ...props } = this.props;
     return (
       <AppLayout {...props} >
-        <Toolbar>
+        <Toolbar
+          style={{ background: Style.Theme.palette.disabledColor }}
+        >
           <ToolbarGroup>
             <ToolbarTitle
               text="Workspace"
@@ -44,7 +46,7 @@ class WorkspaceLayout extends React.Component {
             <FlatButton
               style={styles.button}
               label={t('tabSettings')}
-              secondary={this.isActive('settings')}
+              primary={this.isActive('settings')}
               onTouchTap={link.settings}
             />
             <ToolbarSeparator style={styles.separator} />

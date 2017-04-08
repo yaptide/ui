@@ -39,8 +39,8 @@ class ProjectListItem extends React.Component {
           {this.props.project.description}
         </CardText>
         <CardActions>
-          <RaisedButton label={t('project.showDetailsBtn')} onTouchTap={this.goToProjectDetails} />
-          <RaisedButton label={t('project.projectSettings')} />
+          <RaisedButton primary label={t('project.showDetailsBtn')} onTouchTap={this.goToProjectDetails} />
+          <RaisedButton primary label={t('project.projectSettings')} />
         </CardActions>
       </Card>
     );

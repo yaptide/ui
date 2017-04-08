@@ -40,7 +40,7 @@ class Visualisation extends React.Component {
       <Renderer
         width={width}
         height={height}
-        background={0xFFFFFF}
+        background={0x303030}
       >
         <Scene
           camera="maincamera"
@@ -53,7 +53,7 @@ class Visualisation extends React.Component {
             <Mesh
               position={new Vector3(0, 0, 0)}
               geometry={geometry.toGeometry()}
-              material={new MeshBasicMaterial({ color: 0x00ff00 })}
+              material={new MeshBasicMaterial({ color: 0x009900 })}
             />
           </Object3D>
         </Scene>

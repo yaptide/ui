@@ -101,6 +101,8 @@ class ZoneItemLayout extends React.Component {
 const styles = {
   container: {
     padding: Style.Dimens.spacing.small,
+    marginLeft: Style.Dimens.spacing.small,
+    marginRight: Style.Dimens.spacing.small,
     ...Style.Flex.rootColumn,
     alignItems: 'stretch',
     position: 'relative',

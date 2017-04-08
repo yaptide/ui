@@ -40,13 +40,15 @@ class ZoneWorkspaceLayout extends React.Component {
 
 const styles = {
   wrapper: {
-    position: 'relative',
     height: '100%',
+    marginTop: `-${Style.Dimens.spacing.normal}`,
+    paddingTop: Style.Dimens.spacing.normal,
+    paddingBottom: Style.Dimens.spacing.normal,
+    paddingLeft: '46px',
   },
   container: {
-    marginTop: `-${Style.Dimens.spacing.normal}`,
-    padding: Style.Dimens.spacing.normal,
-    paddingLeft: '46px',
+    height: '100%',
+    overflowY: 'scroll',
   },
   item: {
     marginBottom: Style.Dimens.spacing.normal,
@@ -57,7 +59,7 @@ const styles = {
     height: '100%',
     lineHeight: '100%',
     position: 'absolute',
-    top: Style.Dimens.spacing.normal,
+    top: '0',
     left: '16px',
     bottom: '0',
   },

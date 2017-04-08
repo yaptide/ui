@@ -3,6 +3,7 @@
 import React from 'react';
 import { Header } from 'components/Header';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Style from 'styles';
 import cls from '../styles/core.scss'; // eslint-disable-line no-unused-vars
 
@@ -16,7 +17,7 @@ class AppLayout extends React.Component {
   render() {
     const { children, ...props } = this.props;
     return (
-      <MuiThemeProvider>
+      <MuiThemeProvider muiTheme={getMuiTheme(Style.Theme)} >
         <div style={styles.layout}>
           <Header {...props} />
           {children}
@@ -33,6 +34,7 @@ const styles = {
     overflow: 'auto',
     minHeight: '300px',
     minWidth: '800px',
+    background: Style.Theme.palette.canvasColor,
   },
 };
 

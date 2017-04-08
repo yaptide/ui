@@ -33,7 +33,7 @@ const styles = {
   },
   zoneForm: {
     width: '500px',
-    overflowY: 'scroll',
+    position: 'relative',
   },
 };
 

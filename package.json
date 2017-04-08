@@ -1,6 +1,7 @@
 {
   "name": "Palantir",
   "version": "0.0.1-alpha",
+  "license": "GPL-3.0",
   "description": "",
   "scripts": {
     "start": "better-npm-run start",
