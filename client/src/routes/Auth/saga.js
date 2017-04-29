@@ -4,6 +4,7 @@ import { takeLatest } from 'redux-saga';
 import { fork, call, put } from 'redux-saga/effects';
 import api, { endpoint } from 'api';
 import cookie, { key as cookieKey } from 'store/cookie';
+import router from 'utils/router';
 import { actionType } from './reducer';
 import type { RegisterData, LoginData } from './model';
 
@@ -25,6 +26,7 @@ export function* login(action: { user: LoginData }): Generator<*, *, *> {
     yield* updateAuthToken(token);
 
     yield put({ type: actionType.LOGIN_RESPONSE_SUCCESS, token });
+    router.push('project/list');
   } catch (error) {
     yield put({ type: actionType.LOGIN_RESPONSE_ERROR, error: error.response.data });
   }

@@ -4,7 +4,7 @@ import React from 'react';
 import { RegisterForm } from 'routes/Auth';
 import Paper from 'material-ui/Paper';
 import Style from 'styles';
-import Visualisation from 'components/Visualisation/Visualisation';
+import Visualisation from '../../routes/Workspace/Geometry/containers/VisualisationContainer';
 import AppLayout from '../AppLayout';
 
 type Props = {

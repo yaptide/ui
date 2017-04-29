@@ -12,7 +12,7 @@ class ProjectDetailsLayout extends React.Component {
   props: Props;
 
   render() {
-    const versions = this.props.versions.reverse().map((e, i) => {
+    const versions = this.props.versions.slice().reverse().map((e, i) => {
       return (
         <ProjectVersionListItem key={i} {...e} />
       );

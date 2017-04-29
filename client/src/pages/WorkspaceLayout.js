@@ -46,7 +46,7 @@ class WorkspaceLayout extends React.Component {
             <FlatButton
               style={styles.button}
               label={t('tabSettings')}
-              primary={this.isActive('settings')}
+              secondary={this.isActive('settings')}
               onTouchTap={link.settings}
             />
             <ToolbarSeparator style={styles.separator} />

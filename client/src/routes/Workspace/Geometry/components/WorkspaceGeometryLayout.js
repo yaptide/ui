@@ -2,14 +2,14 @@
 
 import React from 'react';
 import Style from 'styles';
-import Visualisation from 'components/Visualisation/Visualisation';
+import VisualisationContainer from '../containers/VisualisationContainer';
 import ZoneWorkspaceContainer from '../containers/ZoneWorkspaceContainer';
 
 class WorkspaceGeometryLayout extends React.Component {
   render() {
     return (
       <div style={styles.container}>
-        <Visualisation style={styles.visualisationContainer} />
+        <VisualisationContainer style={styles.visualisationContainer} />
         <div style={styles.zoneForm}>
           <ZoneWorkspaceContainer />
         </div>

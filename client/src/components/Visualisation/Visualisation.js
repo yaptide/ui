@@ -4,23 +4,23 @@ import {
   Renderer,
   Scene,
   Mesh,
-  Object3D,
+  AxisHelper,
+  PointLight,
 } from 'react-three';
 import {
   Vector3,
-  BoxGeometry,
-  MeshBasicMaterial,
-  Quaternion,
+  MeshLambertMaterial,
 } from 'three'; //eslint-disable-line
 import * as Three from 'three'; //eslint-disable-line
 import OrbitControls from 'three-orbitcontrols';
-import ThreeBSP from 'ThreeCSG';
+import type { Dim } from 'routes/Workspace/bodyModel';
 import ResizeHOC from './ResizeHOC';
 import InteractiveCamera from './InteractiveCamera';
 
 type Props = {
   width: number,
   height: number,
+  geometry: Array<{zone: Object, zoneData: Object, color: string, position: Dim }>,
 };
 
 class Visualisation extends React.Component {
@@ -30,11 +30,9 @@ class Visualisation extends React.Component {
     const { width, height } = this.props;
     const cameraprops = {
       aspect: width / height,
-      position: new Vector3(0, 0, 600),
+      position: new Vector3(0, 0, 50),
       lookat: new Vector3(0, 0, 0),
     };
-    let geometry = new ThreeBSP(new BoxGeometry(500, 100, 500));
-    geometry = geometry.subtract(new ThreeBSP(new BoxGeometry(600, 50, 600)));
 
     return (
       <Renderer
@@ -48,14 +46,26 @@ class Visualisation extends React.Component {
           height={height}
           orbitControls={OrbitControls}
         >
+          <AxisHelper />
+          <PointLight position={{ x: 40, y: 40, z: -40 }} distance={100} />
+          <PointLight position={{ x: -40, y: 40, z: -40 }} distance={100} />
+          <PointLight position={{ x: 40, y: -40, z: -40 }} distance={100} />
+          <PointLight position={{ x: -40, y: -40, z: -40 }} distance={100} />
+          <PointLight position={{ x: 40, y: 40, z: 40 }} distance={100} />
+          <PointLight position={{ x: -40, y: 40, z: 40 }} distance={100} />
+          <PointLight position={{ x: 40, y: -40, z: 40 }} distance={100} />
+          <PointLight position={{ x: -40, y: -40, z: 40 }} distance={100} />
           <InteractiveCamera name="maincamera" {...cameraprops} />
-          <Object3D quaternion={new Quaternion()} position={new Vector3(0, 0, 0)}>
-            <Mesh
-              position={new Vector3(0, 0, 0)}
-              geometry={geometry.toGeometry()}
-              material={new MeshBasicMaterial({ color: 0x009900 })}
-            />
-          </Object3D>
+          {
+            this.props.geometry.map((item, index) => (
+              <Mesh
+                key={index}
+                position={new Vector3(item.position.x, item.position.y, item.position.z)}
+                geometry={item.zone.toGeometry()}
+                material={new MeshLambertMaterial({ color: item.color })}
+              />
+            ))
+          }
         </Scene>
       </Renderer>
     );
