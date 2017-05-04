@@ -1,8 +1,12 @@
-package id
+package projects
 
 import (
+	"log"
+
+	"github.com/Palantir/palantir/db"
 	"github.com/Palantir/palantir/model/project"
 	"github.com/Palantir/palantir/web/auth/token"
+	"github.com/Palantir/palantir/web/projects/pathvars"
 	"github.com/Palantir/palantir/web/server"
 	"github.com/Palantir/palantir/web/util"
 	"gopkg.in/mgo.v2"
@@ -28,25 +32,29 @@ func deleteProject(getFromDb, deleteFromDb, writeProjectResponse func() bool) {
 }
 
 func (h *deleteProjectHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	projectID, isValid := extractProjectID(r)
+	projectID, isValid := pathvars.ExtractProjectID(r)
 	if !isValid {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 	accountID := token.ExtractAccountID(r)
 
-	db := h.Db.Copy()
-	defer db.Close()
+	dbSession := h.Db.Copy()
+	defer dbSession.Close()
 
 	var dbProject *project.Project
 
 	getFromDb := func() bool {
-		project, err := db.Project().Fetch(projectID, accountID)
+		project, err := dbSession.Project().Fetch(
+			db.ProjectID{Account: accountID, Project: projectID},
+		)
+
 		switch {
 		case err == mgo.ErrNotFound:
 			w.WriteHeader(http.StatusNotFound)
 			return false
 		case err != nil:
+			log.Print(err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			return false
 		}
@@ -55,13 +63,16 @@ func (h *deleteProjectHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 
 	deleteFromDb := func() bool {
+		err := dbSession.Project().Delete(
+			db.ProjectID{Account: accountID, Project: projectID},
+		)
 
-		err := db.Project().Delete(projectID, accountID)
 		switch {
 		case err == mgo.ErrNotFound:
 			w.WriteHeader(http.StatusNotFound)
 			return false
 		case err != nil:
+			log.Print(err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			return false
 		}

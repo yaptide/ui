@@ -16,11 +16,11 @@ type getProjectsHandler struct {
 }
 
 func (h *getProjectsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	db := h.Db.Copy()
-	defer db.Close()
+	dbSession := h.Db.Copy()
+	defer dbSession.Close()
 
 	accountID := token.ExtractAccountID(r)
-	projectList, err := db.Project().FindAllByAccountID(accountID)
+	projectList, err := dbSession.Project().FindAllByAccountID(accountID)
 	if err != nil {
 		log.Print(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)

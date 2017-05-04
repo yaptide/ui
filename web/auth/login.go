@@ -23,13 +23,13 @@ func login(validateLogin, generateToken func() bool) {
 
 func (h *loginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	requestAccount := &auth.Account{}
-	ok := util.DecodeJSONResponse(w, r, requestAccount)
+	ok := util.DecodeJSONRequest(w, r, requestAccount)
 	if !ok {
 		return
 	}
 
-	db := h.Db.Copy()
-	defer db.Close()
+	dbSession := h.Db.Copy()
+	defer dbSession.Close()
 	var dbAccount *auth.Account
 
 	validateLogin := func() bool {
@@ -43,8 +43,8 @@ func (h *loginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if requestAccount.Username == "" {
 			mapFields["username"] = "Username is required"
 		}
-		userWithUsername, userErr := db.Account().FindByUsername(requestAccount.Username)
-		userWithEmail, emailErr := db.Account().FindByEmail(requestAccount.Username)
+		userWithUsername, userErr := dbSession.Account().FindByUsername(requestAccount.Username)
+		userWithEmail, emailErr := dbSession.Account().FindByEmail(requestAccount.Username)
 		switch {
 		case userErr != nil:
 			w.WriteHeader(http.StatusInternalServerError)

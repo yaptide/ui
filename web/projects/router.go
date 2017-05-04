@@ -2,11 +2,13 @@
 package projects
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
 
-	"github.com/Palantir/palantir/web/projects/id"
+	"github.com/Palantir/palantir/web/projects/pathvars"
+	"github.com/Palantir/palantir/web/projects/versions"
 	"github.com/Palantir/palantir/web/server"
 )
 
@@ -17,5 +19,12 @@ func HandleProject(router *mux.Router, context *server.Context) {
 	router.Handle("", middlewares(&getProjectsHandler{context})).Methods(http.MethodGet)
 	router.Handle("", middlewares(&createProjectHandler{context})).Methods(http.MethodPost)
 
-	id.HandleProjectID(router, context)
+	projectIDRoute := fmt.Sprintf("/{%s}", pathvars.ProjectID)
+	idRouter := router.PathPrefix(projectIDRoute).Subrouter()
+
+	idRouter.Handle("", middlewares(&updateProjectHandler{context})).Methods(http.MethodPut)
+	idRouter.Handle("", middlewares(&deleteProjectHandler{context})).Methods(http.MethodDelete)
+
+	versionsRouter := idRouter.PathPrefix("/versions").Subrouter()
+	versions.HandleVersions(versionsRouter, context)
 }

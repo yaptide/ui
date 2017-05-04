@@ -22,13 +22,13 @@ func register(validateRegister, registerInDb func() bool) {
 
 func (h *registerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	requestAccount := &auth.Account{}
-	ok := util.DecodeJSONResponse(w, r, requestAccount)
+	ok := util.DecodeJSONRequest(w, r, requestAccount)
 	if !ok {
 		return
 	}
 
-	db := h.Db.Copy()
-	defer db.Close()
+	dbSession := h.Db.Copy()
+	defer dbSession.Close()
 
 	validateRegister := func() bool {
 		mapFields := map[string]string{}
@@ -37,7 +37,7 @@ func (h *registerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if account.Email == "" {
 			mapFields["email"] = "Email is required"
 		}
-		userWithEmail, err := db.Account().FindByEmail(account.Email)
+		userWithEmail, err := dbSession.Account().FindByEmail(account.Email)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return false
@@ -51,7 +51,7 @@ func (h *registerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			mapFields["username"] = "Username is required"
 		}
 
-		userWithUsername, err := db.Account().FindByUsername(account.Username)
+		userWithUsername, err := dbSession.Account().FindByUsername(account.Username)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return false
@@ -76,7 +76,7 @@ func (h *registerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	registerInDb := func() bool {
-		err := db.Account().Create(*requestAccount)
+		err := dbSession.Account().Create(*requestAccount)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return false

@@ -7,10 +7,10 @@ import (
 	"net/http"
 )
 
-// DecodeJSONResponse decode json payload from request to result.
+// DecodeJSONRequest decode json payload from request to result.
 // Write http.StatusBadRequest, if payload is not json or incorrect.
 // Return true, if everything is ok.
-func DecodeJSONResponse(w http.ResponseWriter, r *http.Request, result interface{}) bool {
+func DecodeJSONRequest(w http.ResponseWriter, r *http.Request, result interface{}) bool {
 	err := json.NewDecoder(r.Body).Decode(result)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)

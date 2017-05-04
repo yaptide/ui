@@ -14,12 +14,12 @@ type fetchAccountHandler struct {
 }
 
 func (h fetchAccountHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	db := h.Db.Copy()
-	defer db.Close()
+	dbSession := h.Db.Copy()
+	defer dbSession.Close()
 
 	id := token.ExtractAccountID(r)
 
-	account, err := db.Account().Fetch(id)
+	account, err := dbSession.Account().Fetch(id)
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)

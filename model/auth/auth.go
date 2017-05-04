@@ -9,9 +9,9 @@ import (
 // Account contains account login data.
 type Account struct {
 	ID       bson.ObjectId `json:"id,omitempty" bson:"_id,omitempty"`
-	Username string        `json:"username"`
-	Email    string        `json:"email"`
-	Password string        `json:"password,omitempty"`
+	Username string        `json:"username" bson:"username"`
+	Email    string        `json:"email" bson:"email"`
+	Password string        `json:"password,omitempty" bson:"password"`
 }
 
 // GeneratePassword encrypt a.Password using bcrypt algorithm.
