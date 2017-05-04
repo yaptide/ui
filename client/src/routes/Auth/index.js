@@ -1,5 +1,7 @@
 /* @flow */
 
+import { redirectIfLoggedIn } from 'utils/router';
+
 export { default as LoginForm } from './containers/LoginContainer';
 export { default as RegisterForm } from './containers/RegisterContainer';
 
@@ -13,6 +15,7 @@ const authRoutes = {
   childRoutes: [
     {
       path: 'login',
+      indexRoute: { onEnter: redirectIfLoggedIn('/project/list') },
       getComponent(nextState: string, cb: Function) {
         require.ensure([], (require) => {
           cb(null, require('./containers/LoginContainer').default);
@@ -20,6 +23,7 @@ const authRoutes = {
       },
     }, {
       path: 'register',
+      indexRoute: { onEnter: redirectIfLoggedIn('project/list') },
       getComponent(nextState: string, cb: Function) {
         require.ensure([], (require) => {
           cb(null, require('./containers/RegisterContainer').default);

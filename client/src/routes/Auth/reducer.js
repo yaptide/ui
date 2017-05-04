@@ -14,6 +14,8 @@ export const actionType = {
   REGISTER_RESPONSE_ERROR: 'REGISTER_RESPONSE_ERROR',
   REGISTER_RESPONSE_SUCCESS: 'REGISTER_RESPONSE_SUCCESS',
   CLEAR_REGISTER_ERROR: 'CLEAR_REGISTER_ERROR',
+
+  LOGOUT: 'LOGOUT',
 };
 
 const ACTION_HANDLERS = {
@@ -40,6 +42,9 @@ const ACTION_HANDLERS = {
   },
   [actionType.CLEAR_REGISTER_ERROR]: (state: AuthState, action: {field: string}) => {
     return state.deleteIn(['registerError', action.field]);
+  },
+  [actionType.LOGOUT]: (state: AuthState) => {
+    return state.delete('token');
   },
 };
 

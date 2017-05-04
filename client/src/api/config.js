@@ -23,6 +23,7 @@ axiosInstance.interceptors.request.use(
   },
 );
 
+
 const api = {
   get: (endpoint: Endpoint, params?: Object) => axiosInstance.get(endpoint, { params }),
   delete: (endpoint: Endpoint, params?: Object) => axiosInstance.delete(endpoint, { params }),
@@ -36,8 +37,13 @@ const api = {
   saveAuthToken: (token: string) => {
     authorizationToken = token;
   },
+  getAuthToken: (): string => {
+    return authorizationToken;
+  },
+  registerInterceptor: (onSuccess: Function, onError: Function) => {
+    axiosInstance.interceptors.response.use(onSuccess, onError);
+  },
 };
 
 console.log(baseURL);
-
 export default api;

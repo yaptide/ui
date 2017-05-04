@@ -3,6 +3,7 @@
 require('es6-promise').polyfill()
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
@@ -40,6 +41,7 @@ const config = {
     root: [
       path.resolve('./client/src/'),
       path.resolve('./client/lib/'),
+      path.resolve('./client/assets/'),
     ],
   },
 
@@ -83,6 +85,7 @@ loaders.push(
 
 const plugins = config.plugins
 plugins.push(
+  new FaviconsWebpackPlugin('favicon.png'),
   new HtmlWebpackPlugin({
     title: 'Palantir',
     template: './client/src/index.html',

@@ -2,6 +2,11 @@
 
 const en = {
   appName: 'Palantir',
+  pageProjects: 'Projects',
+  pageWorkspace: 'Workspace',
+  pageAccount: 'Account',
+  pageAbout: 'About',
+  pageHelp: 'Help',
   tabGeometry: 'Geometry',
   tabMaterial: 'Material',
   tabDetectors: 'Detectors',
@@ -15,6 +20,7 @@ const en = {
       passwordLabel: 'Password',
       repeatPasswordLabel: 'Repeat password',
       emailLabel: 'Email',
+      logoutBtn: 'Sign out',
     },
     links: {
       goRegister: 'New to Palantir? Create an account.',
@@ -59,6 +65,16 @@ const en = {
   engine: {
     local: 'Host system',
     plgrid: 'PL-GRID',
+  },
+  empty: {
+    logout: {
+      title: 'You are now signed out.',
+      body1: 'You can return to ',
+      home: 'home page',
+      body2: ' or ',
+      login: 'login',
+      body3: ' again.',
+    },
   },
 };
 

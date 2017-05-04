@@ -1,14 +1,18 @@
 /* @flow */
 
 import React from 'react';
+import { connect } from 'react-redux';
 import { Header } from 'components/Header';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Style from 'styles';
+import { actionType } from 'routes/Auth/reducer';
 import cls from '../styles/core.scss'; // eslint-disable-line no-unused-vars
 
 type Props = {
   children?: any,
+  isLoggedIn: bool,
+  logout: Function,
 };
 
 class AppLayout extends React.Component {
@@ -38,4 +42,19 @@ const styles = {
   },
 };
 
-export default AppLayout;
+const mapStateToProps = (state) => {
+  return {
+    isLoggedIn: !!state.auth.get('token'),
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    logout: () => dispatch({ type: actionType.LOGOUT }),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(AppLayout);

@@ -28,6 +28,7 @@ module.exports = function (config) {
         root: [
           path.resolve('client/src/'),
           path.resolve('./client/lib/'),
+          path.resolve('./client/assets/'),
         ],
       },
       plugins: webpackConfig.plugins,

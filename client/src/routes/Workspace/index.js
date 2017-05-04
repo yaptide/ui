@@ -8,6 +8,7 @@ import Detectors from './Detectors';
 
 const workspaceRoutes = {
   path: 'workspace',
+  indexRoute: { onEnter: (nextState: string, replace: Function) => replace('/workspace/geometry') },
   childRoutes: [
     Settings,
     Beam,

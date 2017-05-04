@@ -1,7 +1,7 @@
 /* @flow */
 
-import { takeLatest } from 'redux-saga';
-import { fork, call, put } from 'redux-saga/effects';
+import { takeLatest, eventChannel } from 'redux-saga';
+import { fork, call, put, take } from 'redux-saga/effects';
 import api, { endpoint } from 'api';
 import cookie, { key as cookieKey } from 'store/cookie';
 import router from 'utils/router';
@@ -48,6 +48,7 @@ export function* register(action: { user: RegisterData }): Generator<*, *, *> {
 export function* logout(): Generator<*, *, *> {
   yield call(api.saveAuthToken, '');
   yield call(cookie.delete, cookieKey.AUTH_TOKEN);
+  yield call(router.push, '/logout');
 }
 
 export function* watchLogin(): Generator<*, *, *> {
@@ -58,10 +59,42 @@ export function* watchRegister(): Generator<*, *, *> {
   yield call(takeLatest, actionType.REGISTER_REQUEST, register);
 }
 
+export function* watchLogout(): Generator<*, *, *> {
+  yield call(takeLatest, actionType.LOGOUT, logout);
+}
+
+export function* watch403InterceptorChannel(): Generator<*, *, *> {
+  const emitterWrapper = (emitter) => {
+    api.registerInterceptor(
+      (response) => {
+        if (response.status === 403) {
+          emitter(403);
+        }
+        return response;
+      },
+      (error) => {
+        throw error;
+      },
+    );
+    return () => null;
+  };
+  const channel = eventChannel(emitterWrapper);
+
+  while (true) {
+    try {
+      yield take(channel);
+      yield put({ type: actionType.LOGOUT });
+    } catch (error) {
+      // ignore errors
+    }
+  }
+}
+
 export default function* authSaga(): Generator<*, *, *> {
-  // auth initialize code
   yield [
+    fork(watch403InterceptorChannel),
     fork(watchLogin),
     fork(watchRegister),
+    fork(watchLogout),
   ];
 }

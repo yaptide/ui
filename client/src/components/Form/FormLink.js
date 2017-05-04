@@ -11,12 +11,13 @@ class FormLink extends React.Component {
   props: {
     url: ApplicationRoute,
     text: string,
+    style?: Object,
   }
 
   render() {
     return (
-      <Link to={this.props.url} >
-        <p style={styles.text}>{this.props.text}</p>
+      <Link to={this.props.url} style={{ ...styles.text, ...this.props.style }} >
+        {this.props.text}
       </Link>
     );
   }

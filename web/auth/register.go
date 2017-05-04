@@ -68,10 +68,8 @@ func (h *registerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			mapFields["password"] = "Password is required"
 		}
 		if len(mapFields) != 0 {
-			ok := util.WriteJSONResponse(w, http.StatusBadRequest, mapFields)
-			if !ok {
-				return false
-			}
+			util.WriteJSONResponse(w, http.StatusBadRequest, mapFields)
+			return false
 		}
 		return true
 

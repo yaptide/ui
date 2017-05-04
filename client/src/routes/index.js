@@ -1,7 +1,11 @@
 /* @flow */
+
+import { redirectIfUnlogged } from 'utils/router';
+
 import Auth from './Auth';
 import Project from './Project';
 import Workspace from './Workspace';
+import staticPages from './staticPages';
 
 const routes = {
   path: '/',
@@ -11,13 +15,15 @@ const routes = {
     Project,
     Workspace,
     {
-      path: 'welcome',
-      getComponent(nextState: Object, cb: Function) {
+      path: 'account',
+      indexRoute: { onEnter: redirectIfUnlogged() },
+      getComponent(nextState: string, cb: Function) {
         require.ensure([], (require) => {
-          cb(null, require('pages/WelcomePage').default);
-        }, 'welcomePageBundle');
+          cb(null, require('routes/Auth/containers/AccountContainer').default);
+        }, 'accountBoundle');
       },
     },
+    ...staticPages,
   ],
 };
 
