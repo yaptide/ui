@@ -10,6 +10,8 @@ const (
 	accountCollectionName = "Account"
 	usernameKey           = "username"
 	emailKey              = "email"
+
+	accountIDKey = "account_id"
 )
 
 // Account collection DAO.
@@ -17,23 +19,28 @@ type Account struct {
 	session Session
 }
 
-// ConfigureCollection implementation of DAO interface.
-func (a Account) ConfigureCollection() error {
-	return nil
-}
-
 // NewAccount constructor.
 func NewAccount(session Session) Account {
 	return Account{session}
 }
 
+// ConfigureCollection implementation of DAO interface.
+func (a Account) ConfigureCollection() error {
+	return nil
+}
+
+// Collection implementation of DAO interface.
+func (a Account) Collection() Collection {
+	return a.session.DB().C(accountCollectionName)
+}
+
 // FindByUsername return if exists user with login @name.
 func (a Account) FindByUsername(name string) (*auth.Account, error) {
-	collection := a.session.DB().C(accountCollectionName)
+	collection := a.Collection()
 	result := &auth.Account{}
 
-	query := bson.M{usernameKey: name}
-	err := collection.Find(query).One(result)
+	selector := bson.M{usernameKey: name}
+	err := collection.Find(selector).One(result)
 	if err == mgo.ErrNotFound {
 		return nil, nil
 	}
@@ -45,11 +52,11 @@ func (a Account) FindByUsername(name string) (*auth.Account, error) {
 
 // FindByEmail return if exists user with email @email.
 func (a Account) FindByEmail(email string) (*auth.Account, error) {
-	collection := a.session.DB().C(accountCollectionName)
+	collection := a.Collection()
 	result := &auth.Account{}
 
-	query := bson.M{emailKey: email}
-	err := collection.Find(query).One(result)
+	selector := bson.M{emailKey: email}
+	err := collection.Find(selector).One(result)
 	if err == mgo.ErrNotFound {
 		return nil, nil
 	}
@@ -67,7 +74,7 @@ func (a Account) Create(account auth.Account) error {
 		return err
 	}
 
-	c := a.session.DB().C(accountCollectionName)
+	c := a.Collection()
 	err = c.Insert(account)
 	return err
 }
@@ -76,7 +83,7 @@ func (a Account) Create(account auth.Account) error {
 // Return nil, if not found.
 // Return err, if any db error occurs.
 func (a Account) Fetch(id bson.ObjectId) (*auth.Account, error) {
-	c := a.session.DB().C(accountCollectionName)
+	c := a.Collection()
 
 	res := &auth.Account{}
 	err := c.Find(bson.M{"_id": id}).One(res)

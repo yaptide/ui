@@ -1,3 +1,4 @@
+// Package simulation implement /simulation routes.
 package simulation
 
 import (
@@ -7,7 +8,8 @@ import (
 	"github.com/Palantir/palantir/web/simulation/setup"
 )
 
-// HandleSimulation define auth routes
+// HandleSimulation define simulation routes.
 func HandleSimulation(router *mux.Router, context *server.Context) {
-	setup.HandleSetup(router, context)
+	setupRouter := router.PathPrefix("/setup").Subrouter()
+	setup.HandleSetup(setupRouter, context)
 }

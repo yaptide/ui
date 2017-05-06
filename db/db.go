@@ -37,6 +37,7 @@ type Session interface {
 
 	Account() Account
 	Project() Project
+	Setup() Setup
 
 	// Configure configure db and collections.
 	Configure() error
@@ -46,4 +47,5 @@ type Session interface {
 type DAO interface {
 	// ConfigureCollection configure collection configuration such as Indexes.
 	ConfigureCollection() error
+	Collection() Collection
 }

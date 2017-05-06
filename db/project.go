@@ -9,13 +9,16 @@ import (
 
 const (
 	projectCollectionName = "Project"
-	accountIDKey          = "account_id"
 )
 
 // ProjectID is used in DAOs methods args to indicate Project.
 type ProjectID struct {
 	Account bson.ObjectId
 	Project bson.ObjectId
+}
+
+func (pID ProjectID) generateSelector() *bson.M {
+	return &bson.M{"_id": pID.Project, accountIDKey: pID.Account}
 }
 
 // VersionID is used in DAOs methods args to indicate project Version.
@@ -25,14 +28,25 @@ type VersionID struct {
 	Version project.VersionID
 }
 
+func (vID VersionID) toProjectID() ProjectID {
+	return ProjectID{
+		Account: vID.Account,
+		Project: vID.Project,
+	}
+}
+
 // Project collection DAO.
 type Project struct {
 	session Session
 }
 
-func (p Project) ensureIDAndAccountIDIndex() error {
-	collection := p.session.DB().C(projectCollectionName)
+// NewProject constructor.
+func NewProject(session Session) Project {
+	return Project{session}
+}
 
+func (p Project) ensureIDAndAccountIDIndex() error {
+	collection := p.Collection()
 	return collection.EnsureIndex(mgo.Index{
 		Key:        []string{"_id", accountIDKey},
 		Unique:     true,
@@ -41,8 +55,7 @@ func (p Project) ensureIDAndAccountIDIndex() error {
 }
 
 func (p Project) ensureAccountIDIndex() error {
-	collection := p.session.DB().C(projectCollectionName)
-
+	collection := p.Collection()
 	return collection.EnsureIndex(mgo.Index{
 		Key:        []string{accountIDKey},
 		Background: true,
@@ -58,19 +71,19 @@ func (p Project) ConfigureCollection() error {
 	return p.ensureAccountIDIndex()
 }
 
-// NewProject constructor.
-func NewProject(session Session) Project {
-	return Project{session}
+// Collection implementation of DAO interface.
+func (p Project) Collection() Collection {
+	return p.session.DB().C(projectCollectionName)
 }
 
 // FindAllByAccountID return *project.List, which contains all projects of accountID Account.
 // Return err, if any db error occurs.
 func (p Project) FindAllByAccountID(accountID bson.ObjectId) (*project.List, error) {
-	collection := p.session.DB().C(projectCollectionName)
+	collection := p.Collection()
 	result := &project.List{Projects: []project.Project{}}
 
-	query := bson.M{accountIDKey: accountID}
-	err := collection.Find(query).All(&result.Projects)
+	selector := bson.M{accountIDKey: accountID}
+	err := collection.Find(selector).All(&result.Projects)
 	if err != nil {
 		return nil, err
 	}
@@ -81,11 +94,11 @@ func (p Project) FindAllByAccountID(accountID bson.ObjectId) (*project.List, err
 // Return nil, if not found.
 // Return err, if any db error occurs.
 func (p Project) Fetch(projectID ProjectID) (*project.Project, error) {
-	collection := p.session.DB().C(projectCollectionName)
+	collection := p.Collection()
 	result := &project.Project{}
 
-	query := bson.M{"_id": projectID.Project, accountIDKey: projectID.Account}
-	err := collection.Find(query).One(result)
+	selector := projectID.generateSelector()
+	err := collection.Find(selector).One(result)
 	switch {
 	case err == ErrNotFound:
 		return nil, nil
@@ -98,7 +111,7 @@ func (p Project) Fetch(projectID ProjectID) (*project.Project, error) {
 // Create insert project into db.
 // Return err, if any db error occurs.
 func (p Project) Create(project *project.Project) error {
-	collection := p.session.DB().C(projectCollectionName)
+	collection := p.Collection()
 	return collection.Insert(project)
 }
 
@@ -106,19 +119,23 @@ func (p Project) Create(project *project.Project) error {
 // Return db.ErrorNotFound, if project does not exists in db.
 // Return another err, if any other db error occurs.
 func (p Project) Update(project *project.Project) error {
-	collection := p.session.DB().C(projectCollectionName)
-	query := bson.M{"_id": project.ID, accountIDKey: project.AccountID}
-	return collection.Update(query, project)
+	collection := p.Collection()
+	selector := ProjectID{Account: project.AccountID, Project: project.ID}.generateSelector()
+	return collection.Update(selector, project)
 }
 
-func (p Project) deleteVersionChilds(version *project.Version) error {
-	//TODO delete childs from db
-	return nil
+func (p Project) deleteVersionChilds(version *project.Version, projectID ProjectID) error {
+	err := p.session.Setup().Delete(SetupID{
+		Account: projectID.Account,
+		Setup:   version.SetupID,
+	})
+
+	return err
 }
 
-func (p Project) deleteAllVersionsWithChilds(dbProject *project.Project) error {
+func (p Project) deleteAllVersionsWithChilds(dbProject *project.Project, projectID ProjectID) error {
 	for _, version := range dbProject.Versions {
-		err := p.deleteVersionChilds(&version)
+		err := p.deleteVersionChilds(&version, projectID)
 		if err != nil {
 			return err
 		}
@@ -130,7 +147,7 @@ func (p Project) deleteAllVersionsWithChilds(dbProject *project.Project) error {
 // Return db.ErrorNotFound, if project does not exists in db.
 // Return another err, if any other db error occurs.
 func (p Project) Delete(projectID ProjectID) error {
-	collection := p.session.DB().C(projectCollectionName)
+	collection := p.Collection()
 	dbProject, err := p.Fetch(projectID)
 	switch {
 	case dbProject == nil:
@@ -139,13 +156,13 @@ func (p Project) Delete(projectID ProjectID) error {
 		return err
 	}
 
-	err = p.deleteAllVersionsWithChilds(dbProject)
+	err = p.deleteAllVersionsWithChilds(dbProject, projectID)
 	if err != nil {
 		return err
 	}
 
-	query := bson.M{"_id": projectID.Project, accountIDKey: projectID.Account}
-	return collection.Remove(query)
+	selector := projectID.generateSelector()
+	return collection.Remove(selector)
 }
 
 func extractVersionFromProject(dbProject *project.Project, id project.VersionID) *project.Version {
@@ -181,9 +198,16 @@ type versionPrototype struct {
 	Results  interface{}
 }
 
-func (p Project) createNewVersionFromPrototype(prototype versionPrototype) (*project.Version, error) {
+func (p Project) createNewVersionFromPrototype(projectID ProjectID, prototype versionPrototype) (*project.Version, error) {
 	newVersion := &project.Version{ID: prototype.ID, Settings: prototype.Settings}
-	// TODO add setup and results creation in db
+
+	setupID, err := p.session.Setup().Create(projectID, prototype.Setup)
+	if err != nil {
+		return nil, err
+	}
+	newVersion.SetupID = setupID
+
+	// TODO add  results creation in db
 	return newVersion, nil
 }
 
@@ -205,10 +229,10 @@ func (p Project) CreateVersion(projectID ProjectID) (*project.Version, error) {
 	newVersionPrototype := versionPrototype{
 		ID:       newVersionID,
 		Settings: nil,
-		Setup:    &setup.Setup{},
+		Setup:    setup.NewEmptySetup(),
 		Results:  nil,
 	}
-	newVersion, err := p.createNewVersionFromPrototype(newVersionPrototype)
+	newVersion, err := p.createNewVersionFromPrototype(projectID, newVersionPrototype)
 	if err != nil {
 		return nil, err
 	}
@@ -243,13 +267,21 @@ func (p Project) CreateVersionFrom(existingVersionID VersionID) (*project.Versio
 
 	newVersionID := project.VersionID(len(dbProject.Versions))
 	// TODO fetch setup and results, then put them into versionPrototype
+	existingSetup, err := p.session.Setup().Fetch(SetupID{
+		Account: existingVersionID.Account,
+		Setup:   existingVersion.SetupID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	newVersionPrototype := versionPrototype{
 		ID:       newVersionID,
 		Settings: existingVersion.Settings,
-		Setup:    &setup.Setup{},
+		Setup:    existingSetup,
 		Results:  nil,
 	}
-	newVersion, err := p.createNewVersionFromPrototype(newVersionPrototype)
+	newVersion, err := p.createNewVersionFromPrototype(existingVersionID.toProjectID(), newVersionPrototype)
 	if err != nil {
 		return nil, err
 	}

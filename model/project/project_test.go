@@ -12,7 +12,7 @@ var testCases test.MarshallingCases = test.MarshallingCases{
 	{
 		&Version{ID: 1,
 			Settings: "setId",
-			SetupID:  "bbbbbbbbbbbbbbbbbbbbbbbb",
+			SetupID:  bson.ObjectIdHex("bbbbbbbbbbbbbbbbbbbbbbbb"),
 			Results:  "resultsId",
 		},
 		`{

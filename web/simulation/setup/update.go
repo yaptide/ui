@@ -5,17 +5,18 @@ import (
 	"net/http"
 
 	"github.com/Palantir/palantir/db"
+	"github.com/Palantir/palantir/model/simulation/setup"
 	"github.com/Palantir/palantir/web/auth/token"
 	"github.com/Palantir/palantir/web/pathvars"
 	"github.com/Palantir/palantir/web/server"
 	"github.com/Palantir/palantir/web/util"
 )
 
-type getSetupHandler struct {
+type updateSetupHandler struct {
 	*server.Context
 }
 
-func (h *getSetupHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *updateSetupHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	accountID := token.ExtractAccountID(r)
 
 	setupID, isValid := pathvars.ExtractSetupID(r)
@@ -24,12 +25,20 @@ func (h *getSetupHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	updatedSetup := &setup.Setup{}
+	ok := util.DecodeJSONRequest(w, r, updatedSetup)
+	if !ok {
+		return
+	}
+
 	dbSession := h.Db.Copy()
 	defer dbSession.Close()
 
-	setup, err := dbSession.Setup().Fetch(db.SetupID{Account: accountID, Setup: setupID})
+	err := dbSession.Setup().Update(db.SetupID{Account: accountID, Setup: setupID},
+		updatedSetup)
+
 	switch {
-	case setup == nil:
+	case err == db.ErrNotFound:
 		w.WriteHeader(http.StatusNotFound)
 		return
 	case err != nil:
@@ -37,6 +46,6 @@ func (h *getSetupHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	_ = util.WriteJSONResponse(w, http.StatusOK, setup)
+	_ = util.WriteJSONResponse(w, http.StatusOK, updatedSetup)
 
 }

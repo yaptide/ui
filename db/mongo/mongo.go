@@ -68,8 +68,12 @@ func (s session) Project() db.Project {
 	return db.NewProject(s)
 }
 
+func (s session) Setup() db.Setup {
+	return db.NewSetup(s)
+}
+
 func (s session) Configure() error {
-	daos := []db.DAO{s.Account(), s.Project()}
+	daos := []db.DAO{s.Account(), s.Project(), s.Setup()}
 	for _, dao := range daos {
 		err := dao.ConfigureCollection()
 		if err != nil {

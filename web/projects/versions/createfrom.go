@@ -8,7 +8,7 @@ import (
 	"github.com/Palantir/palantir/db"
 	"github.com/Palantir/palantir/model/project"
 	"github.com/Palantir/palantir/web/auth/token"
-	"github.com/Palantir/palantir/web/projects/pathvars"
+	"github.com/Palantir/palantir/web/pathvars"
 	"github.com/Palantir/palantir/web/server"
 	"github.com/Palantir/palantir/web/util"
 )
@@ -53,12 +53,12 @@ func (h *createFromExistingVersionHandler) ServeHTTP(w http.ResponseWriter, r *h
 		)
 
 		switch {
-		case version == nil:
-			w.WriteHeader(http.StatusNotFound)
-			return false
 		case err != nil:
 			log.Print(err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
+			return false
+		case version == nil:
+			w.WriteHeader(http.StatusNotFound)
 			return false
 		}
 

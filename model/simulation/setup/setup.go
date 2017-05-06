@@ -17,3 +17,11 @@ type Setup struct {
 	Bodies BodyMap `json:"bodies"`
 	Zones  ZoneMap `json:"zones"`
 }
+
+// NewEmptySetup constructor.
+func NewEmptySetup() *Setup {
+	return &Setup{
+		Bodies: make(BodyMap),
+		Zones:  make(ZoneMap),
+	}
+}

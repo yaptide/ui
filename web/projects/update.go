@@ -6,7 +6,7 @@ import (
 	"github.com/Palantir/palantir/db"
 	"github.com/Palantir/palantir/model/project"
 	"github.com/Palantir/palantir/web/auth/token"
-	"github.com/Palantir/palantir/web/projects/pathvars"
+	"github.com/Palantir/palantir/web/pathvars"
 	"github.com/Palantir/palantir/web/server"
 	"github.com/Palantir/palantir/web/util"
 

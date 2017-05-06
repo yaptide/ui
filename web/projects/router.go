@@ -7,7 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/Palantir/palantir/web/projects/pathvars"
+	"github.com/Palantir/palantir/web/pathvars"
 	"github.com/Palantir/palantir/web/projects/versions"
 	"github.com/Palantir/palantir/web/server"
 )

@@ -16,6 +16,9 @@ const (
 
 	// VersionID pathvar: /projects/{ProjectID}/versions/{VersionID}
 	VersionID = "versionId"
+
+	// SetupID pathvar: /simulation/{SetupID}
+	SetupID = "setupId"
 )
 
 // ExtractProjectID return extracted projectID from routes variables.
@@ -35,4 +38,13 @@ func ExtractVersionID(r *http.Request) (project.VersionID, bool) {
 		return 0, false
 	}
 	return project.VersionID(result), true
+}
+
+// ExtractSetupID return extracted setupID from routes variables.
+func ExtractSetupID(r *http.Request) (bson.ObjectId, bool) {
+	setupID := mux.Vars(r)[SetupID]
+	if !bson.IsObjectIdHex(setupID) {
+		return "", false
+	}
+	return bson.ObjectIdHex(setupID), true
 }
