@@ -3,16 +3,37 @@
 import { fromJS } from 'immutable';
 
 import type { WorkspaceState } from './model';
+import stateProcessor from './reducerHelpers';
 
 export const actionType = {
+  SYNC_WORKSPACE_WITH_SERVER: 'SYNC_WORKSPACE_WITH_SERVER',
+
+  CREATE_ZONE: 'CREATE_ZONE',
+  DELETE_ZONE: 'DELETE_ZONE',
+
+  CREATE_BODY_IN_ZONE: 'CREATE_BODY_IN_ZONE',
+  DELETE_BODY_IN_ZONE: 'DELETE_BODY_IN_ZONE',
+
+  UPDATE_BODY: 'UPDATE_BODY',
+
+  CREATE_MATERIAL: 'CREATE_MATERIAL',
+  DELETE_MATERIAL: 'DELETE_MATERIAL',
+  UPDATE_MATERIAL: 'UPDATE_MATERIAL',
 
 };
 
 const ACTION_HANDLERS = {
+  [actionType.CREATE_ZONE]: (state, action) => stateProcessor.zone.create(state, action.zone),
+  [actionType.DELETE_ZONE]: (state, action) => stateProcessor.zone.delete(state, action.zoneId),
+  [actionType.CREATE_BODY_IN_ZONE]: (state, action) => (
+    stateProcessor.body.createInZone(state, action.body, action.zoneConstructionPath)
+  ),
+  [actionType.DELETE_BODY_IN_ZONE]: (state, action) => (
+    stateProcessor.body.deleteInZone(state, action.bodyId, action.zoneConstructionPath)
+  ),
 };
 
 export const actionCreator = {
-
 };
 
 const initialState = fromJS({

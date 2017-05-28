@@ -31,20 +31,20 @@ const expectedZone = (function expectedZone() {
   return result;
 }());
 
-describe('Invalid zone data for visualisation', () => {
-  it('invalid zone (udefined part of body construction)', () => {
+describe('Geometry visualisation data (body/zone)', () => {
+  it('Invalid zone (udefined part of body construction)', () => {
     const brokenZone = validZone.setIn(['zones', '1', 'construction', 0, 'bodyId'], undefined);
     const result = processor.processZone(brokenZone.getIn(['zones', '1']), brokenZone.get('bodies'));
     expect(result).toEqual({ position: { x: 5, y: 5, z: 5 }, zone: undefined });
   });
 
-  it('invalid zone (udefined baseId construction)', () => {
+  it('Invalid zone (udefined baseId construction)', () => {
     const brokenZone = validZone.setIn(['zones', '1', 'baseId'], undefined);
     const result = processor.processZone(brokenZone.getIn(['zones', '1']), brokenZone.get('bodies'));
     expect(result).toEqual({});
   });
 
-  it('invalid zones (udefined bodies)', () => {
+  it('Invalid zones (udefined bodies)', () => {
     const result = processor.processZone(validZone.getIn(['zones', '1']), Immutable.Map());
     expect(result).toEqual({});
   });

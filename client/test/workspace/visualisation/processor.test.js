@@ -72,7 +72,7 @@ const expectedZones = (function expectedZones() {
   ];
 }());
 
-describe('Invalid geometry data for visualisation', () => {
+describe('Geometry visualisation data (all)', () => {
   it('Empty geometry on (Map({zones, bodies})', () => {
     const result = processor.processGeometry(Immutable.fromJS({
       zones: {},
@@ -113,7 +113,7 @@ describe('Invalid geometry data for visualisation', () => {
   });
 
 
-  it('Don\'t fail geometry processing on invalid data(no body for zone))', () => {
+  it('Invalid data(no body for zone))', () => {
     const result = processor.processGeometry(Immutable.fromJS({
       zones: { 1: { id: 1, baseId: 2 } },
       bodies: {},
@@ -121,7 +121,7 @@ describe('Invalid geometry data for visualisation', () => {
     expect(result).toEqual([]);
   });
 
-  it('Don\'t fail geometry processing on invalid data(undefined baseId))', () => {
+  it('Invalid data(undefined baseId))', () => {
     const result = processor.processGeometry(Immutable.fromJS({
       zones: { 1: { id: 1, baseId: undefined } },
       bodies: {},
@@ -129,15 +129,15 @@ describe('Invalid geometry data for visualisation', () => {
     expect(result).toEqual([]);
   });
 
-  it('Don\'t fail geometry processing on invalid data(undefined construction step))', () => {
+  it('Invalid data(undefined construction step))', () => {
     const result = processor.processGeometry(Immutable.fromJS({
-      zones: { 1: { id: 1, baseId: undefined, construction: [{ type: 'subtract', bodyId: undefined}] } },
+      zones: { 1: { id: 1, baseId: undefined, construction: [{ type: 'subtract', bodyId: undefined }] } },
       bodies: {},
     }));
     expect(result).toEqual([]);
   });
 
-  it('Don\'t fail geometry processing on invalid data(Map())', () => {
+  it('Invalid data(Map())', () => {
     processor.processGeometry(Immutable.Map());
   });
 });

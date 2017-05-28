@@ -33,3 +33,9 @@ export type ProjectGeometry = BodyType.SphereGeometry |
   BodyType.CuboidGeometry |
   BodyType.CylinderGeometry;
 
+
+export type ConstructionPath = {
+  zoneId: number,
+  baseId?: bool,
+  construction: number,
+}

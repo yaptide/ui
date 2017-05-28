@@ -15,7 +15,10 @@ module.exports = function (config) {
     preprocessors: {
       'tests.webpack.js': [ 'webpack', 'sourcemap' ]
     },
-    reporters: [ 'dots' ], //report results in this format
+    reporters: [ 'mocha' ], //report results in this format
+    mochaReporter: {
+      showDiff: true
+    },
     webpack: { //kind of a copy of your webpack config
       devtool: 'inline-source-map', //just do inline source maps instead of the default
       module: {
