@@ -2,7 +2,13 @@
 
 import { fromJS } from 'immutable';
 
-import type { WorkspaceState } from './model';
+import type {
+  WorkspaceState,
+  Body,
+  Zone,
+  ConstructionPath,
+  OperationType,
+} from './model';
 import stateProcessor from './reducerHelpers';
 
 export const actionType = {
@@ -10,9 +16,11 @@ export const actionType = {
 
   CREATE_ZONE: 'CREATE_ZONE',
   DELETE_ZONE: 'DELETE_ZONE',
+  CHANGE_ZONE_OPERATION_TYPE: 'CHANGE_ZONE_OPERATION_TYPE',
+  CREATE_ZONE_OPERATION: 'CREATE_ZONE_OPERATION',
+  DELETE_ZONE_OPERATION: 'DELETE_ZONE_OPERATION',
 
   CREATE_BODY_IN_ZONE: 'CREATE_BODY_IN_ZONE',
-  DELETE_BODY_IN_ZONE: 'DELETE_BODY_IN_ZONE',
 
   UPDATE_BODY: 'UPDATE_BODY',
 
@@ -25,15 +33,53 @@ export const actionType = {
 const ACTION_HANDLERS = {
   [actionType.CREATE_ZONE]: (state, action) => stateProcessor.zone.create(state, action.zone),
   [actionType.DELETE_ZONE]: (state, action) => stateProcessor.zone.delete(state, action.zoneId),
+  [actionType.CHANGE_ZONE_OPERATION_TYPE]: (state, action) => (
+    stateProcessor.zone.changeOperationType(
+      state,
+      action.operationType,
+      action.zoneConstructionPath,
+    )
+  ),
+  [actionType.CREATE_ZONE_OPERATION]: (state, action) => (
+    stateProcessor.zone.createOperation(state, action.zoneConstructionPath)
+  ),
+  [actionType.DELETE_ZONE_OPERATION]: (state, action) => (
+    stateProcessor.zone.deleteOperation(state, action.zoneConstructionPath)
+  ),
   [actionType.CREATE_BODY_IN_ZONE]: (state, action) => (
     stateProcessor.body.createInZone(state, action.body, action.zoneConstructionPath)
   ),
-  [actionType.DELETE_BODY_IN_ZONE]: (state, action) => (
-    stateProcessor.body.deleteInZone(state, action.bodyId, action.zoneConstructionPath)
+  [actionType.UPDATE_BODY]: (state, action) => (
+    stateProcessor.body.update(state, action.body)
   ),
 };
 
 export const actionCreator = {
+  updateBody(body: Body) {
+    return { type: actionType.UPDATE_BODY, body };
+  },
+  createZone(zone: Zone) {
+    return { type: actionType.CREATE_ZONE, zone };
+  },
+  deleteZone(zoneId: number) {
+    return { type: actionType.DELETE_ZONE, zoneId };
+  },
+  createZoneOperation(path: ConstructionPath) {
+    return { type: actionType.CREATE_ZONE_OPERATION, zoneConstructionPath: path };
+  },
+  deleteZoneOperation(path: ConstructionPath) {
+    return { type: actionType.DELETE_ZONE_OPERATION, zoneConstructionPath: path };
+  },
+  createBodyInZone(body: Body, path: ConstructionPath) {
+    return { type: actionType.CREATE_BODY_IN_ZONE, body, zoneConstructionPath: path };
+  },
+  changeOperationType(type: OperationType, path: ConstructionPath) {
+    return {
+      type: actionType.CHANGE_ZONE_OPERATION_TYPE,
+      operationType: type,
+      zoneConstructionPath: path,
+    };
+  },
 };
 
 const initialState = fromJS({
@@ -59,6 +105,15 @@ const initialState = fromJS({
       construction: [
         { type: 'union', bodyId: 4 },
       ],
+    },
+    '3': {
+      id: 3,
+      name: 'zone 3',
+      parentId: 3,
+      children: [],
+      materialId: 1,
+      baseId: undefined,
+      construction: [],
     },
   },
   bodies: {

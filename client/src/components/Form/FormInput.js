@@ -8,8 +8,7 @@ type Props = {
   onChange: (any, string) => void,
   secureTextEntry?: bool,
   numbersOnly?: bool,
-  value: string,
-  inputStyle?: Object,
+  value: string | number,
 };
 
 class FormInput extends React.Component {
@@ -25,7 +24,6 @@ class FormInput extends React.Component {
       type,
       secureTextEntry,
       numbersOnly,
-      inputStyle,
       ...inputProps
     } = this.props;
 

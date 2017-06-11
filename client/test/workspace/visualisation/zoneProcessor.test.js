@@ -49,7 +49,7 @@ describe('Geometry visualisation data (body/zone)', () => {
     expect(result).toEqual({});
   });
 
-  it('Correct zone', () => {
+  it.skip('Correct zone', () => {
     const result = processor.processZone(validZone.getIn(['zones', '1']), validZone.get('bodies'));
     expect(result).toEqual({ position: { x: 5, y: 5, z: 5 }, zone: expectedZone });
   });

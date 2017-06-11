@@ -23,7 +23,6 @@ class WelcomePage extends React.Component {
       >
         <div style={styles.container}>
           <div style={styles.descriptionBlock} >
-            <p style={styles.description}>We will make Palantir great again!</p>
             <Visualisation style={styles.visualisation} />
           </div>
           <div style={styles.form}>

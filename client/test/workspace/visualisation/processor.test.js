@@ -102,12 +102,12 @@ describe('Geometry visualisation data (all)', () => {
   });
 
 
-  it('Single correct zone', () => {
+  it.skip('Single correct zone', () => {
     const result = processor.processGeometry(validZone);
     expect(result).toEqual(expectedZone);
   });
 
-  it('Two correct zones', () => {
+  it.skip('Two correct zones', () => {
     const result = processor.processGeometry(validZones);
     expect(result).toEqual(expectedZones);
   });

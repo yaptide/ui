@@ -9,6 +9,7 @@ type Props = {
   aspect: number,
   position: Vector3,
   lookat: Vector3,
+  children?: any,
 }
 
 class InteractiveCamera extends React.Component {
@@ -38,7 +39,9 @@ class InteractiveCamera extends React.Component {
         fov={75}
         position={this.state.position}
         lookat={this.state.lookat}
-      />
+      >
+        {this.props.children}
+      </PerspectiveCamera>
     );
   }
 }

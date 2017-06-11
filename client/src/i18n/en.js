@@ -57,6 +57,23 @@ const en = {
       updateSettingBtn: 'Update settings',
     },
   },
+  workspace: {
+    editor: {
+      size: 'Size',
+      center: 'Center',
+      height: 'Height',
+      radius: 'Radius',
+      type: 'Type',
+      baseCenter: 'Base center',
+      updateBtn: 'Update',
+      createBtn: 'Create',
+    },
+    typeLabel: {
+      cuboid: 'Cuboid',
+      sphere: 'Sphere',
+      cylinder: 'Cylinder',
+    },
+  },
   simulation: {},
   results: {},
   library: {

@@ -2,10 +2,13 @@
 
 import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
+import FlatButtonMD from 'material-ui/FlatButton';
 import Popover from 'material-ui/Popover';
 import Style from 'styles';
+import { ButtonHOC } from 'components/Touchable';
 import type { OperationType } from '../../../model';
+
+const FlatButton = ButtonHOC(FlatButtonMD);
 
 type Props = {
   id: number,
@@ -23,8 +26,9 @@ class OperationSelector extends React.Component {
     open: false,
   }
 
-  onMenuItemSelected = (event: any) => {
-    this.props.onOperationSelected(this.props.id, event.target.value);
+  onMenuItemSelected = (event: any, operation: OperationType) => {
+    this.props.onOperationSelected(this.props.id, operation);
+    this.handleRequestClose();
   }
 
   handleTouchTap = (event: any) => {
@@ -59,9 +63,9 @@ class OperationSelector extends React.Component {
           onRequestClose={this.handleRequestClose}
         >
           <div style={Style.Flex.rootColumn}>
-            <FlatButton style={styles.selector} key={1} value="union" icon={Style.Icons.union} onTouchTap={this.onMenuItemSelected} />
-            <FlatButton style={styles.selector} key={2} value="intersect" icon={Style.Icons.intersect} />
-            <FlatButton style={styles.selector} key={3} value="subtract" icon={Style.Icons.subtract} />
+            <FlatButton style={styles.selector} payload="union" icon={Style.Icons.union} onTouchTap={this.onMenuItemSelected} />
+            <FlatButton style={styles.selector} payload="intersect" icon={Style.Icons.intersect} onTouchTap={this.onMenuItemSelected} />
+            <FlatButton style={styles.selector} payload="subtract" icon={Style.Icons.subtract} onTouchTap={this.onMenuItemSelected} />
           </div>
         </Popover>
       </div>

@@ -38,7 +38,7 @@ const styles = {
     right: 0,
     bottom: 0,
     backgroundColor: Style.Theme.palette.disabledColor,
-    zIndex: 2100,
+    zIndex: 1500,
   },
   content: {
     position: 'absolute',

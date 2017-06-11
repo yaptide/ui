@@ -80,7 +80,7 @@ export function* watch403InterceptorChannel(): Generator<*, *, *> {
   };
   const channel = eventChannel(emitterWrapper);
 
-  while (true) {
+  for (;;) {
     try {
       yield take(channel);
       yield put({ type: actionType.LOGOUT });

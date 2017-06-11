@@ -41,7 +41,7 @@ elif [ "$1" = "server:check" ]; then
     govendor test +local
 elif [ "$1" = "check" ]; then
     cd $SCRIPT_PATH
-    gometalinter --config=.gometalinter.json --deadline 200s ./...
+    gometalinter --config=.gometalinter.json --deadline 1000s ./...
     govendor test +local
     npm run check
 elif [ "$1" = "docker:run" ]; then

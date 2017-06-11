@@ -16,7 +16,7 @@ class ZoneWorkspaceLayout extends React.Component {
   render() {
     const goToParrentBtn = (
       <FlatButton
-        onTouchTap={() => console.log('ervger')}
+        onTouchTap={() => console.log('parrent')}
         style={styles.goToParrentBtn}
         icon={<LeftArrowIcon />}
         disableTouchRipple

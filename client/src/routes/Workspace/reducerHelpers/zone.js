@@ -1,7 +1,7 @@
 /* @flow */
 
 import { Map, List, fromJS } from 'immutable';
-import type { Zone } from '../model';
+import type { Zone, ConstructionPath, OperationType } from '../model';
 // import { withMutations } from './utils';
 
 export function createZone(state: Map<string, any>, zone: Zone) {
@@ -16,9 +16,7 @@ export function createZone(state: Map<string, any>, zone: Zone) {
 export function deleteZone(oldState: Map<string, any>, zoneId: number) {
   let state = oldState;
   const zone = state.getIn(['zones', String(zoneId)]);
-  if (!zone) {
-    return state;
-  }
+  if (!zone) return state;
 
   zone.getIn(['children'], []).forEach((item) => {
     state = deleteZone(state, item.get('id'));
@@ -31,7 +29,63 @@ export function deleteZone(oldState: Map<string, any>, zoneId: number) {
   return state;
 }
 
+export function changeZoneOperationType(
+  oldState: Map<string, any>,
+  newVal: OperationType,
+  path: ConstructionPath,
+): Map<string, any> {
+  let state = oldState;
+  if (path.baseId || path.construction === undefined) return state;
+
+  state = state.setIn(
+    ['zones', String(path.zoneId), 'construction', path.construction, 'type'],
+    newVal,
+  );
+  return state;
+}
+
+export function createZoneOperation(
+  oldState: Map<string, any>,
+  path: ConstructionPath,
+): Map<string, any> {
+  let state = oldState;
+
+  if (path.baseId || path.construction === undefined) return state;
+
+  state = state.updateIn(
+    ['zones', String(path.zoneId), 'construction'],
+    construction => construction.insert(path.construction, fromJS({
+      type: 'subtract',
+      bodyId: undefined,
+    })),
+  );
+  return state;
+}
+
+export function deleteZoneOperation(
+  oldState: Map<string, any>,
+  path: ConstructionPath,
+): Map<string, any> {
+  let state = oldState;
+
+  if (path.baseId || path.construction === undefined) return state;
+  const bodyId = state.getIn(
+    ['zones', String(path.zoneId), 'construction', path.construction, 'bodyId'],
+  );
+  if (bodyId !== undefined) {
+    state = state.deleteIn(['bodies', String(bodyId)]);
+  }
+
+  state = state.deleteIn(
+    ['zones', String(path.zoneId), 'construction', path.construction],
+  );
+  return state;
+}
+
 export default {
   create: createZone,
   delete: deleteZone,
+  changeOperationType: changeZoneOperationType,
+  createOperation: createZoneOperation,
+  deleteOperation: deleteZoneOperation,
 };

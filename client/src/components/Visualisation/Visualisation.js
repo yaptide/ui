@@ -5,7 +5,7 @@ import {
   Scene,
   Mesh,
   AxisHelper,
-  PointLight,
+  DirectionalLight,
 } from 'react-three';
 import {
   Vector3,
@@ -47,22 +47,22 @@ class Visualisation extends React.Component {
           orbitControls={OrbitControls}
         >
           <AxisHelper />
-          <PointLight position={{ x: 40, y: 40, z: -40 }} distance={100} />
-          <PointLight position={{ x: -40, y: 40, z: -40 }} distance={100} />
-          <PointLight position={{ x: 40, y: -40, z: -40 }} distance={100} />
-          <PointLight position={{ x: -40, y: -40, z: -40 }} distance={100} />
-          <PointLight position={{ x: 40, y: 40, z: 40 }} distance={100} />
-          <PointLight position={{ x: -40, y: 40, z: 40 }} distance={100} />
-          <PointLight position={{ x: 40, y: -40, z: 40 }} distance={100} />
-          <PointLight position={{ x: -40, y: -40, z: 40 }} distance={100} />
-          <InteractiveCamera name="maincamera" {...cameraprops} />
+          <InteractiveCamera name="maincamera" {...cameraprops} >
+            <DirectionalLight intensity={0.4} />
+          </InteractiveCamera>
           {
             this.props.geometry.map((item, index) => (
               <Mesh
                 key={index}
                 position={new Vector3(item.position.x, item.position.y, item.position.z)}
                 geometry={item.zone.toGeometry()}
-                material={new MeshLambertMaterial({ color: item.color })}
+                material={
+                  new MeshLambertMaterial({
+                    color: item.color,
+                    emissive: item.color,
+                    emissiveIntensity: 0.4,
+                  })
+                }
               />
             ))
           }

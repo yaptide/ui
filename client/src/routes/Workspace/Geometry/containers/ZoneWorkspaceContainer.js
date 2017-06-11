@@ -1,15 +1,29 @@
 /* @flow */
 
 import React from 'react';
+import { connect } from 'react-redux';
 import ZoneWorkspaceLayout from '../components/ZoneWorkspaceLayout';
+import selector from '../../selector';
+
+type Props = {
+  zoneIds: Array<number>,
+}
 
 class ZoneWorkspaceContainer extends React.Component {
+  props: Props
   render() {
-    const zoneIds = [1, 10, 21, 12, 43, 91, 121];
     return (
-      <ZoneWorkspaceLayout zoneIds={zoneIds} />
+      <ZoneWorkspaceLayout zoneIds={this.props.zoneIds} />
     );
   }
 }
 
-export default ZoneWorkspaceContainer;
+const mapStateToProps = (state) => {
+  return {
+    zoneIds: selector.allZonesIds(state).toJS(),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+)(ZoneWorkspaceContainer);

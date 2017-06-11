@@ -6,7 +6,7 @@ var webpackConfig = require('./webpack.config');
 
 module.exports = function (config) {
   config.set({
-    browsers: ['PhantomJS'],
+    browsers: ['PhantomJS2'],
     singleRun: true,
     frameworks: [ 'mocha' ],
     files: [
@@ -17,7 +17,10 @@ module.exports = function (config) {
     },
     reporters: [ 'mocha' ], //report results in this format
     mochaReporter: {
-      showDiff: true
+      showDiff: true,
+    },
+    settings: {
+      webSecurityEnabled: false,
     },
     webpack: { //kind of a copy of your webpack config
       devtool: 'inline-source-map', //just do inline source maps instead of the default
@@ -29,7 +32,7 @@ module.exports = function (config) {
       resolve: {
         extensions: ['', '.js', '.jsx'],
         root: [
-          path.resolve('client/src/'),
+          path.resolve('./client/src/'),
           path.resolve('./client/lib/'),
           path.resolve('./client/assets/'),
         ],

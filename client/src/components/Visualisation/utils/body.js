@@ -18,7 +18,7 @@ const geometryTypeMapping = {
     return body;
   },
   sphere(geometry: BodyType.SphereGeometry): any {
-    const body = new Mesh(new SphereGeometry(geometry.radius));
+    const body = new Mesh(new SphereGeometry(geometry.radius, 40, 30));
     body.position.x = geometry.center.x;
     body.position.y = geometry.center.y;
     body.position.z = geometry.center.z;
@@ -29,6 +29,8 @@ const geometryTypeMapping = {
       geometry.radius, // radiusTop
       geometry.radius, // radiusBottom
       geometry.height, // height
+      40,
+      1,
     ));
     body.position.x = geometry.baseCenter.x;
     body.position.y = geometry.baseCenter.y + (geometry.height / 2);

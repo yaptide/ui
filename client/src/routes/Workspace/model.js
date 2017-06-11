@@ -26,10 +26,10 @@ export type OperationType = "intersect" |
 
 export type Body = {
   id: number,
-  geometry: ProjectGeometry
+  geometry: BodyGeometry
 };
 
-export type ProjectGeometry = BodyType.SphereGeometry |
+export type BodyGeometry = BodyType.SphereGeometry |
   BodyType.CuboidGeometry |
   BodyType.CylinderGeometry;
 
@@ -37,5 +37,5 @@ export type ProjectGeometry = BodyType.SphereGeometry |
 export type ConstructionPath = {
   zoneId: number,
   baseId?: bool,
-  construction: number,
+  construction?: number,
 }

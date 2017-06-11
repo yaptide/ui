@@ -5,19 +5,19 @@ export type GeometryType = 'sphere' |
   'cylinder';
 
 export type SphereGeometry = {
-  type: GeometryType,
+  type: 'sphere',
   center: Dim,
   radius: number,
 };
 
 export type CuboidGeometry = {
-  type: GeometryType,
+  type: 'cuboid',
   center: Dim,
   size: Dim,
 };
 
 export type CylinderGeometry = {
-  type: GeometryType,
+  type: 'cylinder',
   baseCenter: Dim,
   height: number,
   radius: number,

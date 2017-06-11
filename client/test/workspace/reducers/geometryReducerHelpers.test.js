@@ -83,25 +83,17 @@ describe('Operations on workspace state', () => {
         construction => construction.insert(0, fromJS({ type: 'subtract', bodyId: 5 })),
       );
 
-    const newState = stateProcessor.body.createInZone(
-      initialState,
+    let newState = stateProcessor.zone.createOperation(
+      initialState, { zoneId: 2, construction: 0 },
+    );
+    newState = stateProcessor.body.createInZone(
+      newState,
       newBody,
       { zoneId: 2, construction: 0 },
     );
     expect(newState.toJS()).toEqual(expectedState.toJS());
   });
-  it('Add new baseId to zone', () => {
-    const newBody = { someValue: 'someValue' };
-    const expectedState = initialState
-      .setIn(['bodies', '5'], fromJS({ ...newBody, id: 5 }))
-      .setIn(['zones', '2', 'baseId'], 5);
-    const newState = stateProcessor.body.createInZone(
-      initialState,
-      newBody,
-      { zoneId: 2, base: true },
-    );
-    expect(newState.toJS()).toEqual(expectedState.toJS());
-  });
+
   it('Add new body to zone (append to end)', () => {
     const newBody = { someValue: 'someValue' };
     const expectedState = initialState
@@ -111,13 +103,17 @@ describe('Operations on workspace state', () => {
         construction => construction.insert(1, fromJS({ type: 'subtract', bodyId: 5 })),
       );
 
-    const newState = stateProcessor.body.createInZone(
-      initialState,
+    let newState = stateProcessor.zone.createOperation(
+      initialState, { zoneId: 2, construction: 1 },
+    );
+    newState = stateProcessor.body.createInZone(
+      newState,
       newBody,
       { zoneId: 2, construction: 1 },
     );
     expect(newState.toJS()).toEqual(expectedState.toJS());
   });
+
   it('Add new body to empty construction', () => {
     const newBody = { someValue: 'someValue' };
     const newInitialState = initialState
@@ -128,9 +124,11 @@ describe('Operations on workspace state', () => {
         ['zones', '2', 'construction'],
         construction => construction.insert(0, fromJS({ type: 'subtract', bodyId: 5 })),
       );
-
-    const newState = stateProcessor.body.createInZone(
-      newInitialState,
+    let newState = stateProcessor.zone.createOperation(
+      newInitialState, { zoneId: 2, construction: 0 },
+    );
+    newState = stateProcessor.body.createInZone(
+      newState,
       newBody,
       { zoneId: 2, construction: 0 },
     );

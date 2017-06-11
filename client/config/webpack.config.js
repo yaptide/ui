@@ -84,19 +84,21 @@ loaders.push(
 )
 
 const plugins = config.plugins
-plugins.push(
-  new FaviconsWebpackPlugin('favicon.png'),
-  new HtmlWebpackPlugin({
-    title: 'Palantir',
-    template: './client/src/index.html',
-  })
-);
+if (!__TEST__) {
+  plugins.push(
+    new FaviconsWebpackPlugin('favicon.png'),
+    new HtmlWebpackPlugin({
+      title: 'Palantir',
+      template: './client/src/index.html',
+    }),
+    new webpack.EnvironmentPlugin(['NODE_ENV']),
+    new ExtractTextPlugin("[name].[contenthash].css", {
+      allChunks: true,
+    })
+  );
+}
 
 plugins.push(
-  new ExtractTextPlugin("[name].[contenthash].css", {
-    allChunks: true,
-  }),
-  new webpack.EnvironmentPlugin(['NODE_ENV']),
   new webpack.DefinePlugin({
     'BASE_URL': JSON.stringify(BASE_URL || "http://localhost:3000"),
     __DEV__,

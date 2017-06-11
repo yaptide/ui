@@ -13,7 +13,7 @@ import rootSaga from './sagas';
 
 
 const logger = createLogger({
-  stateTransormer: (state: Object) => _.map(state, e => (e.toJS ? e.toJS() : e)),
+  stateTransformer: (state: Object) => _.mapValues(state, e => (e.toJS ? e.toJS() : e)),
 });
 
 const saga = createSagaMiddleware();

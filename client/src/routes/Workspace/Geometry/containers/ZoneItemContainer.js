@@ -1,72 +1,113 @@
 /* @flow */
 
 import React from 'react';
+import { connect } from 'react-redux';
 import ZoneItemLayout from '../components/ZoneItemLayout';
 import BodyEditorModal from './BodyEditorModal';
-import type { OperationType } from '../../model';
+import type { OperationType, ConstructionPath } from '../../model';
+import selector from '../../selector';
+import { actionCreator } from '../../reducer';
 
 type Props = {
   style?: Object,
+  zoneId: number,
+  zone: Object,
+  changeOperationType: (val: OperationType, path: ConstructionPath) => void,
+  removeOperation: (path: ConstructionPath) => void,
+  createOperation: (path: ConstructionPath) => void,
 }
 
 class ZoneItemContainer extends React.Component {
   props: Props;
   state: {
     isBodyModalOpen: bool,
-    zoneConstructionStep?: string | number,
+    zoneConstructionPath?: ConstructionPath,
   } = {
     isBodyModalOpen: false,
+    zoneConstructionPath: undefined,
   }
 
   closeBodyModal = () => {
-    this.setState({ isBodyModalOpen: false, zoneConstructionStep: undefined });
+    this.setState({ isBodyModalOpen: false, zoneConstructionPath: undefined });
   }
 
-  onBodySelected = (event: any, constructionStep: number | string) => {
-    console.log('body selected', constructionStep);
-    this.setState({ isBodyModalOpen: true, zoneConstructionStep: constructionStep });
+  onBodySelected = (event: mixed, constructionPath: Object) => {
+    this.setState({
+      isBodyModalOpen: true,
+      zoneConstructionPath: {
+        ...constructionPath,
+        zoneId: this.props.zoneId,
+        action: 'update',
+      },
+    });
   }
 
   onOperationSelected = (constructionStep: number, operation: OperationType) => {
-    console.log(`Selected operation ${operation} in ${constructionStep} step`);
+    this.props.changeOperationType(operation, {
+      zoneId: this.props.zoneId,
+      construction: constructionStep,
+    });
   }
 
   onMaterialSelected = () => {
     console.log('material');
   }
 
+  createOperation = (constructionStep: number) => {
+    this.props.createOperation({
+      zoneId: this.props.zoneId,
+      construction: constructionStep,
+    });
+  }
+
+  deleteOperation = (constructionStep: number) => {
+    this.props.removeOperation({
+      zoneId: this.props.zoneId,
+      construction: constructionStep,
+    });
+  }
+
   render() {
     const material = { label: 'Water', materialId: 11 };
-
-    const base = { label: 'Cube a: (1,2,1) b: (0,0,0)', bodyId: 13 };
-    const construction = [
-      { operation: 'subtract', body: { label: 'Sphere r: 1, c: (1,1,3)', bodyId: 10 } },
-      {
-        operation: 'union',
-        body: { label: 'Cylinder s1: (0, 0, 0) s2: (1, 1, 1) r: 1', bodyId: 22 },
-      },
-    ];
 
     return (
       <div>
         <ZoneItemLayout
           style={this.props.style}
           material={material}
-          base={base}
-          construction={construction}
+          base={this.props.zone.base}
+          construction={this.props.zone.construction}
           onBodySelected={this.onBodySelected}
           onOperationSelected={this.onOperationSelected}
           onMaterialSelected={this.onMaterialSelected}
+          createOperation={this.createOperation}
+          deleteOperation={this.deleteOperation}
         />
         <BodyEditorModal
           isModalOpen={this.state.isBodyModalOpen}
           closeModal={this.closeBodyModal}
-          zoneId={2}
-          constructionStep={this.state.zoneConstructionStep}
+          constructionPath={this.state.zoneConstructionPath}
         />
       </div>
     );
   }
 }
 
-export default ZoneItemContainer;
+const mapStateToProps = (state, props) => {
+  return {
+    zone: selector.zoneByIdPrintable(state, props.zoneId).toJS(),
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    changeOperationType: (val, path) => dispatch(actionCreator.changeOperationType(val, path)),
+    removeOperation: path => dispatch(actionCreator.deleteZoneOperation(path)),
+    createOperation: path => dispatch(actionCreator.createZoneOperation(path)),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(ZoneItemContainer);
