@@ -1,7 +1,7 @@
 /* @flow */
 
 import { Map, fromJS } from 'immutable';
-import type { ConstructionPath, Body } from './model';
+import type { ConstructionPath, Body } from 'model/simulation/zone';
 import serializer from './bodySerializer';
 
 function visualisationSelector(state: { workspace: Map<string, mixed> }) {
@@ -48,7 +48,7 @@ function bodyByConstructionPath(state: { workspace: Map<string, mixed> }, path: 
   const bodyId = workspace.getIn([
     'zones',
     String(path.zoneId),
-    ...(path.baseId ? ['baseId'] : ['construction', path.construction, 'bodyId']),
+    ...(path.base ? ['baseId'] : ['construction', path.construction, 'bodyId']),
   ]);
   const body = workspace.getIn(['bodies', String(bodyId)], Map());
   return body;

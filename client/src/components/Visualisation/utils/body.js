@@ -1,6 +1,6 @@
 /* @flow */
 
-import * as BodyType from 'routes/Workspace/bodyModel';
+import * as BodyType from 'model/simulation/body';
 import {
   Mesh,
   BoxGeometry,

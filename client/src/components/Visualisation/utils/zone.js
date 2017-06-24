@@ -1,6 +1,6 @@
 /* @flow */
 
-import type { OperationType } from 'routes/Workspace/model';
+import type { OperationType } from 'model/simulation/zone';
 import { Map } from 'immutable';
 import ThreeBSP from 'ThreeCSG';
 import geometryTypeMapping from './body';

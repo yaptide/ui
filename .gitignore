@@ -4,7 +4,10 @@ node_modules
 
 *.swp
 *.swo
+
 npm-debug.log
+package-lock.json
+
 /conf.json
 gin-bin
 

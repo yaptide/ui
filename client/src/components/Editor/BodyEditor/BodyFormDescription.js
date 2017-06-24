@@ -11,12 +11,13 @@ import type {
   SphereGeometry as SphereGeometryType,
   CylinderGeometry as CylinderGeometryType,
   GeometryType,
-} from '../../../bodyModel';
-import type { BodyGeometry } from '../../../model';
+} from 'model/simulation/body';
+import type { BodyGeometry } from 'model/simulation/zone';
 import GeometryForm from './GeometryForm';
 
 type Props = {
   geometry: BodyGeometry,
+  geometryErrors: Object,
   typeUpdate: (type: GeometryType) => void,
   geometryUpdate: (field: string, value: Object) => void,
 };
@@ -28,6 +29,7 @@ const coordinateValueLabels = [
 ];
 const radiusValueLabel = { label: 'radius', field: 'radius' };
 const heightValueLabel = { label: 'height', field: 'height' };
+const EMPTY = {};
 
 const CuboidGeometry = (props: Props & { geometry: CuboidGeometryType }) => (
   <GeometryForm
@@ -40,6 +42,7 @@ const CuboidGeometry = (props: Props & { geometry: CuboidGeometryType }) => (
       rowLabel={t('workspace.editor.center')}
       valueLabels={coordinateValueLabels}
       values={props.geometry.center}
+      valueError={props.geometryErrors.center || EMPTY}
       numbersOnly
     />
     <FormV3Input
@@ -48,6 +51,7 @@ const CuboidGeometry = (props: Props & { geometry: CuboidGeometryType }) => (
       rowLabel={t('workspace.editor.size')}
       valueLabels={coordinateValueLabels}
       values={props.geometry.size}
+      valueError={props.geometryErrors.size || EMPTY}
       numbersOnly
     />
   </GeometryForm>
@@ -64,6 +68,7 @@ const SphereGeometry = (props: Props & { geometry: SphereGeometryType }) => (
       rowLabel={t('workspace.editor.center')}
       valueLabels={coordinateValueLabels}
       values={props.geometry.center}
+      valueError={props.geometryErrors.center || EMPTY}
       numbersOnly
     />
     <FormV3SingleInput
@@ -72,6 +77,7 @@ const SphereGeometry = (props: Props & { geometry: SphereGeometryType }) => (
       rowLabel={t('workspace.editor.radius')}
       valueLabel={radiusValueLabel}
       value={props.geometry.radius}
+      valueError={props.geometryErrors.radius}
       numbersOnly
     />
   </GeometryForm>
@@ -88,6 +94,7 @@ const CylinderGeometry = (props: Props & { geometry: CylinderGeometryType }) => 
       rowLabel={t('workspace.editor.baseCenter')}
       valueLabels={coordinateValueLabels}
       values={props.geometry.baseCenter}
+      valueError={props.geometryErrors.baseCenter || EMPTY}
       numbersOnly
     />
     <FormV3SingleInput
@@ -96,6 +103,7 @@ const CylinderGeometry = (props: Props & { geometry: CylinderGeometryType }) => 
       rowLabel={t('workspace.editor.radius')}
       valueLabel={radiusValueLabel}
       value={props.geometry.radius}
+      valueError={props.geometryErrors.radius}
       numbersOnly
     />
     <FormV3SingleInput
@@ -104,6 +112,7 @@ const CylinderGeometry = (props: Props & { geometry: CylinderGeometryType }) => 
       rowLabel={t('workspace.editor.height')}
       valueLabel={heightValueLabel}
       value={props.geometry.height}
+      valueError={props.geometryErrors.height}
       numbersOnly
     />
   </GeometryForm>

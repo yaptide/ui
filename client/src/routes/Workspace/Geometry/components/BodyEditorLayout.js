@@ -3,12 +3,13 @@
 import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import Style from 'styles';
-import type { BodyGeometry } from '../../model';
-import type { GeometryType } from '../../bodyModel';
-import BodyFormDescription from './BodyEditor/BodyFormDescription';
+import type { BodyGeometry } from 'model/simulation/zone';
+import type { GeometryType } from 'model/simulation/body';
+import { BodyEditor } from 'components/Editor/BodyEditor';
 
 type Props = {
   bodyGeometry: BodyGeometry,
+  bodyGeometryErrors: Object,
   typeUpdate: (type: GeometryType) => void,
   geometryUpdate: (field: string, value: Object) => void,
   submit: () => void,
@@ -19,20 +20,17 @@ class BodyEditorLayout extends React.Component {
   props: Props
 
   render() {
-    const GeometryForm = BodyFormDescription[this.props.bodyGeometry.type || 'empty'];
-    if (!GeometryForm) {
-      return null;
-    }
     return (
       <div style={styles.editor}>
-        <GeometryForm
+        <BodyEditor
           geometry={this.props.bodyGeometry}
+          geometryErrors={this.props.bodyGeometryErrors}
           typeUpdate={this.props.typeUpdate}
           geometryUpdate={this.props.geometryUpdate}
-          submit={this.props.submit}
         />
         <div style={styles.buttonRow}>
           <RaisedButton
+            disabled={Object.keys(this.props.bodyGeometryErrors).length !== 0}
             label={this.props.submitBtnName}
             onTouchTap={this.props.submit}
             primary

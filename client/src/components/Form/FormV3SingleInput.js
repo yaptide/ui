@@ -11,6 +11,7 @@ type Props = {
   rowLabel: string,
   valueLabel: { label: string, field: string },
   value: string | number,
+  valueError: string,
   onUpdate: (field: string, value: any) => void,
 }
 
@@ -20,7 +21,7 @@ class FormV3SingleInput extends React.Component {
   onUpdate = (value: any) => {
     this.props.onUpdate(
       this.props.field,
-      this.props.numbersOnly ? Number(value) : value,
+      this.props.numbersOnly && value !== '' ? Number(value) : value,
     );
   }
 
@@ -32,6 +33,7 @@ class FormV3SingleInput extends React.Component {
           floatingLabelText={this.props.valueLabel.label}
           onChange={this.onUpdate}
           value={this.props.value}
+          errorText={this.props.valueError}
           numbersOnly={this.props.numbersOnly}
           style={styles.inputWrapper}
           fullWidth

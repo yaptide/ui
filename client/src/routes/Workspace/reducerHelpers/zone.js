@@ -1,14 +1,20 @@
 /* @flow */
 
 import { Map, List, fromJS } from 'immutable';
-import type { Zone, ConstructionPath, OperationType } from '../model';
+import type { ConstructionPath, OperationType } from 'model/simulation/zone';
 // import { withMutations } from './utils';
 
-export function createZone(state: Map<string, any>, zone: Zone) {
+export function createZone(state: Map<string, any>) {
   const zones: List<any> = state.get('zones');
   const newZoneId: number = 1 + zones.reduce((acc, val) => (val.get('id') > acc ? val.get('id') : acc), 0);
 
-  const newZone = fromJS(zone).merge({ id: newZoneId });
+  const newZone = fromJS({
+    id: newZoneId,
+    parentId: newZoneId,
+    children: [],
+    name: 'Unnamed zone',
+    construction: [],
+  });
 
   return state.setIn(['zones', String(newZoneId)], newZone);
 }

@@ -1,9 +1,7 @@
 /* @flow */
-import * as BodyType from './bodyModel';
 
-export type WorkspaceState = {
+import * as BodyType from './body';
 
-};
 
 export type Zone = {
   id: number,
@@ -15,9 +13,24 @@ export type Zone = {
   construction: Array<Operation>,
 };
 
+export type PrintableZone = {
+  id: number,
+  parentId: number,
+  children: Array<number>,
+  name: string,
+  materialId: number,
+  base: { label: string, bodyId: number },
+  construction: Array<PrintableOperation>,
+}
+
 export type Operation = {
   type: OperationType,
   bodyId: number,
+};
+
+export type PrintableOperation = {
+  type: OperationType,
+  body: { label: string, bodyId: number },
 };
 
 export type OperationType = "intersect" |
@@ -35,7 +48,7 @@ export type BodyGeometry = BodyType.SphereGeometry |
 
 
 export type ConstructionPath = {
-  zoneId: number,
+  zoneId?: number,
   baseId?: bool,
   construction?: number,
 }

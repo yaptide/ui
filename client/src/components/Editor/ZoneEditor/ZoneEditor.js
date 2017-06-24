@@ -1,18 +1,20 @@
 /* @flow */
+
 import React from 'react';
 import Style from 'styles';
-import Paper from 'material-ui/Paper';
-import FlatButton from 'material-ui/FlatButton';
-import RightArrowIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
-import { ZoneName, ZoneEditor } from 'components/Editor/ZoneEditor';
+import RaisedButtonMD from 'material-ui/RaisedButton';
+import { ButtonHOC } from 'components/Touchable';
+import { ZoneName, ZoneOperation } from 'components/Editor/ZoneEditor';
 import type { OperationType, ConstructionPath, PrintableOperation } from 'model/simulation/zone';
+
+const RaisedButton = ButtonHOC(RaisedButtonMD);
 
 type Props = {
   zoneName: string,
   material: { label: string, materialId: number },
   base: { label: string, bodyId: number },
   construction: Array<PrintableOperation>,
-  onBodySelected: (constructionStep: Object) => void,
+  onBodySelected: (constructionStep: ConstructionPath) => void,
   onMaterialSelected: (materialId: number) => void,
   onOperationSelected: (constructionStep: ConstructionPath, operation: OperationType) => void,
   onZoneNameUpdate: (name: string) => void,
@@ -21,69 +23,63 @@ type Props = {
   style?: Object,
 };
 
-class ZoneItemLayout extends React.Component {
-  props: Props;
-  state: {
-    isOpen: bool,
-  } = {
-    isOpen: true,
-  }
 
-  toggleOpen = () => {
-    this.setState({ isOpen: !this.state.isOpen });
-  }
+class ZoneEditor extends React.Component {
+  props: Props;
 
   render() {
     const zoneTitle = (
       <ZoneName
         name={this.props.zoneName}
-        isOpen={this.state.isOpen}
-        toggleOpen={this.toggleOpen}
         updateName={this.props.onZoneNameUpdate}
       />
     );
-    const goToChildBtn = (
-      <FlatButton
-        onTouchTap={() => console.log('ervger')}
-        style={styles.goToChildrenBtn}
-        icon={<RightArrowIcon />}
-        disableTouchRipple
+    const construction = this.props.construction.map((item: PrintableOperation, index:number) => (
+      <ZoneOperation
+        id={index}
+        key={index}
+        body={item.body}
+        operation={item.type}
+        onBodySelected={this.props.onBodySelected}
+        onOperationSelected={this.props.onOperationSelected}
+        createOperation={this.props.createOperation}
+        deleteOperation={this.props.deleteOperation}
+        internalMarginStyle={styles.constructionStyles}
       />
-    );
-    if (!this.state.isOpen) {
-      return (
-        <Paper zDepth={2} style={{ ...styles.container, ...this.props.style }} >
-          {zoneTitle}
-          {goToChildBtn}
-        </Paper>
-      );
-    }
+    ));
 
     return (
-      <Paper zDepth={2} style={{ ...styles.container, ...this.props.style }} >
-        <ZoneEditor
-          zoneName={this.props.zoneName}
-          material={this.props.material}
-          base={this.props.base}
-          construction={this.props.construction}
-          onBodySelected={this.props.onBodySelected}
-          onMaterialSelected={this.props.onMaterialSelected}
-          onOperationSelected={this.props.onOperationSelected}
-          onZoneNameUpdate={this.props.onZoneNameUpdate}
-          createOperation={this.props.createOperation}
-          deleteOperation={this.props.deleteOperation}
+      <div style={{ ...styles.container, ...this.props.style }} >
+        {zoneTitle}
+        <div style={styles.label} >Material</div>
+        <RaisedButton
+          label={this.props.material.label}
+          onTouchTap={this.props.onMaterialSelected}
+          payload={this.props.material.materialId}
         />
-        {goToChildBtn}
-      </Paper>
+        <div style={styles.label} >Construction</div>
+        <ZoneOperation
+          id="base"
+          key="base"
+          body={this.props.base}
+          onBodySelected={this.props.onBodySelected}
+          onOperationSelected={this.props.onOperationSelected}
+          createOperation={this.props.createOperation}
+          internalMarginStyle={styles.constructionStyles}
+        />
+        {construction}
+        <div style={{ 'paddingBottom': Style.Dimens.spacing.large }} />
+      </div>
     );
   }
 }
 
 const styles = {
   container: {
+    ...Style.Flex.rootColumn,
+    alignContent: 'stretch',
     padding: Style.Dimens.spacing.small,
     position: 'relative',
-    paddingRight: '30px',
     minHeight: '48px',
   },
   opperation: {
@@ -138,4 +134,4 @@ const styles = {
   },
 };
 
-export default ZoneItemLayout;
+export default ZoneEditor;

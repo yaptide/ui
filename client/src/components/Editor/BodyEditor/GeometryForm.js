@@ -4,7 +4,7 @@ import React from 'react';
 import { RowLabel, FormSelect } from 'components/Form';
 import { t } from 'i18n';
 import Style from 'styles';
-import type { GeometryType } from '../../../bodyModel';
+import type { GeometryType } from 'model/simulation/body';
 
 type Props = {
   type: GeometryType,

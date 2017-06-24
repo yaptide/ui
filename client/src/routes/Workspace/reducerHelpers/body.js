@@ -1,7 +1,7 @@
 /* @flow */
 
 import { Map, fromJS } from 'immutable';
-import type { Body, ConstructionPath } from '../model';
+import type { Body, ConstructionPath } from 'model/simulation/zone';
 // import { withMutations } from './utils';
 
 export function createBodyInZone(

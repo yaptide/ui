@@ -5,14 +5,14 @@ import { connect } from 'react-redux';
 import { Modal } from 'components/Modal';
 import { Tab, Tabs } from 'material-ui/Tabs';
 import Style from 'styles';
+import type { Body, BodyGeometry, ConstructionPath } from 'model/simulation/zone';
 import BodyEditorContainer from './BodyEditorContainer';
-import type { Body, BodyGeometry, ConstructionPath } from '../../model';
 import selector from '../../selector';
 
 type Props = {
   isModalOpen: ?bool,
   closeModal: () => void,
-  constructionPath: ConstructionPath & { action: 'update' | 'create' },
+  constructionPath: ConstructionPath,
 
   body: Body,
 }

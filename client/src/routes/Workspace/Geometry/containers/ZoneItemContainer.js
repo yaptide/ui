@@ -2,19 +2,20 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
+import type { OperationType, ConstructionPath, PrintableZone } from 'model/simulation/zone';
 import ZoneItemLayout from '../components/ZoneItemLayout';
 import BodyEditorModal from './BodyEditorModal';
-import type { OperationType, ConstructionPath } from '../../model';
 import selector from '../../selector';
 import { actionCreator } from '../../reducer';
 
 type Props = {
   style?: Object,
   zoneId: number,
-  zone: Object,
+  zone: PrintableZone,
   changeOperationType: (val: OperationType, path: ConstructionPath) => void,
   removeOperation: (path: ConstructionPath) => void,
   createOperation: (path: ConstructionPath) => void,
+  updateName: (id: number, name: string) => void,
 }
 
 class ZoneItemContainer extends React.Component {
@@ -31,21 +32,20 @@ class ZoneItemContainer extends React.Component {
     this.setState({ isBodyModalOpen: false, zoneConstructionPath: undefined });
   }
 
-  onBodySelected = (event: mixed, constructionPath: Object) => {
+  onBodySelected = (constructionPath: ConstructionPath) => {
     this.setState({
       isBodyModalOpen: true,
       zoneConstructionPath: {
         ...constructionPath,
         zoneId: this.props.zoneId,
-        action: 'update',
       },
     });
   }
 
-  onOperationSelected = (constructionStep: number, operation: OperationType) => {
+  onOperationSelected = (constructionStep: ConstructionPath, operation: OperationType) => {
     this.props.changeOperationType(operation, {
       zoneId: this.props.zoneId,
-      construction: constructionStep,
+      construction: constructionStep.construction,
     });
   }
 
@@ -53,18 +53,22 @@ class ZoneItemContainer extends React.Component {
     console.log('material');
   }
 
-  createOperation = (constructionStep: number) => {
+  createOperation = (constructionStep: ConstructionPath) => {
     this.props.createOperation({
       zoneId: this.props.zoneId,
-      construction: constructionStep,
+      construction: constructionStep.base ? 0 : constructionStep.construction + 1,
     });
   }
 
-  deleteOperation = (constructionStep: number) => {
+  deleteOperation = (constructionStep: ConstructionPath) => {
     this.props.removeOperation({
       zoneId: this.props.zoneId,
-      construction: constructionStep,
+      construction: constructionStep.construction,
     });
+  }
+
+  onZoneNameUpdate = (name: string) => {
+    this.props.updateName(this.props.zoneId, name);
   }
 
   render() {
@@ -76,10 +80,12 @@ class ZoneItemContainer extends React.Component {
           style={this.props.style}
           material={material}
           base={this.props.zone.base}
+          zoneName={this.props.zone.name}
           construction={this.props.zone.construction}
           onBodySelected={this.onBodySelected}
           onOperationSelected={this.onOperationSelected}
           onMaterialSelected={this.onMaterialSelected}
+          onZoneNameUpdate={this.onZoneNameUpdate}
           createOperation={this.createOperation}
           deleteOperation={this.deleteOperation}
         />
@@ -104,6 +110,7 @@ const mapDispatchToProps = (dispatch) => {
     changeOperationType: (val, path) => dispatch(actionCreator.changeOperationType(val, path)),
     removeOperation: path => dispatch(actionCreator.deleteZoneOperation(path)),
     createOperation: path => dispatch(actionCreator.createZoneOperation(path)),
+    updateName: (id, value) => dispatch(actionCreator.updateZoneName(id, value)),
   };
 };
 

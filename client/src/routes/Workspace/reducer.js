@@ -3,12 +3,10 @@
 import { fromJS } from 'immutable';
 
 import type {
-  WorkspaceState,
   Body,
-  Zone,
   ConstructionPath,
   OperationType,
-} from './model';
+} from 'model/simulation/zone';
 import stateProcessor from './reducerHelpers';
 
 export const actionType = {
@@ -19,6 +17,7 @@ export const actionType = {
   CHANGE_ZONE_OPERATION_TYPE: 'CHANGE_ZONE_OPERATION_TYPE',
   CREATE_ZONE_OPERATION: 'CREATE_ZONE_OPERATION',
   DELETE_ZONE_OPERATION: 'DELETE_ZONE_OPERATION',
+  UPDATE_ZONE_NAME: 'UPDATE_ZONE_NAME',
 
   CREATE_BODY_IN_ZONE: 'CREATE_BODY_IN_ZONE',
 
@@ -31,7 +30,7 @@ export const actionType = {
 };
 
 const ACTION_HANDLERS = {
-  [actionType.CREATE_ZONE]: (state, action) => stateProcessor.zone.create(state, action.zone),
+  [actionType.CREATE_ZONE]: state => stateProcessor.zone.create(state),
   [actionType.DELETE_ZONE]: (state, action) => stateProcessor.zone.delete(state, action.zoneId),
   [actionType.CHANGE_ZONE_OPERATION_TYPE]: (state, action) => (
     stateProcessor.zone.changeOperationType(
@@ -52,14 +51,17 @@ const ACTION_HANDLERS = {
   [actionType.UPDATE_BODY]: (state, action) => (
     stateProcessor.body.update(state, action.body)
   ),
+  [actionType.UPDATE_ZONE_NAME]: (state, action) => (
+    state.setIn(['zones', String(action.zoneId), 'name'], action.name)
+  ),
 };
 
 export const actionCreator = {
   updateBody(body: Body) {
     return { type: actionType.UPDATE_BODY, body };
   },
-  createZone(zone: Zone) {
-    return { type: actionType.CREATE_ZONE, zone };
+  createZone() {
+    return { type: actionType.CREATE_ZONE };
   },
   deleteZone(zoneId: number) {
     return { type: actionType.DELETE_ZONE, zoneId };
@@ -78,6 +80,13 @@ export const actionCreator = {
       type: actionType.CHANGE_ZONE_OPERATION_TYPE,
       operationType: type,
       zoneConstructionPath: path,
+    };
+  },
+  updateZoneName(id: number, name: string) {
+    return {
+      type: actionType.UPDATE_ZONE_NAME,
+      zoneId: id,
+      name,
     };
   },
 };
@@ -153,7 +162,7 @@ const initialState = fromJS({
     },
   },
 });
-export const reducer = (state: WorkspaceState = initialState, action: { type: string }) => {
+export const reducer = (state: Map<string, any> = initialState, action: { type: string }) => {
   const handler = ACTION_HANDLERS[action.type];
   return handler ? handler(state, action) : state;
 };

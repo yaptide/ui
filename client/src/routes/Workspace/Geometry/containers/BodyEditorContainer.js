@@ -3,8 +3,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { t } from 'i18n';
-import type { Body, BodyGeometry, ConstructionPath } from '../../model';
-import type { GeometryType } from '../../bodyModel';
+import type { Body, BodyGeometry, ConstructionPath } from 'model/simulation/zone';
+import type { GeometryType } from 'model/simulation/body';
+import { validateBody } from 'utils/simulation/bodyValidator';
 import BodyEditorLayout from '../components/BodyEditorLayout';
 import { defaultBodyForType } from '../defaults';
 import { actionCreator } from '../../reducer';
@@ -22,6 +23,29 @@ type Props = {
 
 class BodyEditorContainer extends React.Component {
   props: Props
+  state: {
+    geometryErrors: Object,
+  } = {
+    geometryErrors: {},
+  }
+
+  componentWillMount() {
+    this.setState({
+      geometryErrors: validateBody(
+        { id: this.props.bodyId, geometry: this.props.bodyGeometry },
+      ).geometry || {},
+    });
+  }
+
+  componentWillReceiveProps(props: Props) {
+    if (this.props.bodyGeometry !== props.bodyGeometry) {
+      this.setState({
+        geometryErrors: validateBody(
+          { id: this.props.bodyId, geometry: props.bodyGeometry },
+        ).geometry || {},
+      });
+    }
+  }
 
   typeUpdate = (type: GeometryType) => {
     const newGeometry = { type, ...defaultBodyForType(type) };
@@ -49,6 +73,7 @@ class BodyEditorContainer extends React.Component {
     return (
       <BodyEditorLayout
         bodyGeometry={this.props.bodyGeometry}
+        bodyGeometryErrors={this.state.geometryErrors}
         typeUpdate={this.typeUpdate}
         geometryUpdate={this.geometryUpdate}
         submit={this.applyChanges}

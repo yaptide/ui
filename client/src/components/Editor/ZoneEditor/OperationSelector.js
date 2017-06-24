@@ -6,13 +6,13 @@ import FlatButtonMD from 'material-ui/FlatButton';
 import Popover from 'material-ui/Popover';
 import Style from 'styles';
 import { ButtonHOC } from 'components/Touchable';
-import type { OperationType } from '../../../model';
+import type { OperationType, ConstructionPath } from 'model/simulation/zone';
 
 const FlatButton = ButtonHOC(FlatButtonMD);
 
 type Props = {
-  id: number,
-  onOperationSelected: (type: number, value: OperationType) => void,
+  constructionPath: ConstructionPath,
+  onOperationSelected: (type: ConstructionPath, value: OperationType) => void,
   operation: string,
   style?: Object,
 };
@@ -27,7 +27,7 @@ class OperationSelector extends React.Component {
   }
 
   onMenuItemSelected = (event: any, operation: OperationType) => {
-    this.props.onOperationSelected(this.props.id, operation);
+    this.props.onOperationSelected(this.props.constructionPath, operation);
     this.handleRequestClose();
   }
 
@@ -77,6 +77,7 @@ const styles = {
   selector: {
     width: '50px',
     minWidth: '50px',
+    overflow: 'hidden',
   },
 };
 
