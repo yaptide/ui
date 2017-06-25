@@ -14,12 +14,13 @@ class ZoneWorkspaceLayout extends React.Component {
   props: {
     zoneIds: Array<number>,
     addZone: () => void,
+    goToParentLayer: () => void,
   }
 
   render() {
     const goToParrentBtn = (
       <FlatButton
-        onTouchTap={() => console.log('parrent')}
+        onTouchTap={this.props.goToParentLayer}
         style={styles.goToParrentBtn}
         icon={<LeftArrowIcon />}
         disableTouchRipple

@@ -1,17 +1,28 @@
 /* @flow */
 
-import { Map, fromJS } from 'immutable';
+import { Map, Seq, fromJS } from 'immutable';
 import type { ConstructionPath, Body } from 'model/simulation/zone';
 import serializer from './bodySerializer';
 
-function visualisationSelector(state: { workspace: Map<string, mixed> }) {
-  return state.workspace;
+function visualisationSelector(state: { workspace: Map<string, any> }) {
+  const parentId = state.workspace.get('zoneLayerParent');
+  const zones = state.workspace.get('zones', Seq()).filter(item => item.get('parentId') === parentId);
+  return state.workspace.set('zones', zones);
 }
 
 function allZonesIds(state: { workspace: Map<string, any> }) {
   return state.workspace
     .get('zones', Map())
     .valueSeq()
+    .map(item => item.get('id'));
+}
+
+function allCurrentLayerZonesIds(state: { workspace: Map<string, any> }) {
+  const parentId = state.workspace.get('zoneLayerParent');
+  return state.workspace
+    .get('zones', Map())
+    .valueSeq()
+    .filter(item => item.get('parentId') === parentId)
     .map(item => item.get('id'));
 }
 
@@ -58,6 +69,7 @@ export default {
   visualisationSelector,
   bodyByConstructionPath,
   allZonesIds,
+  allCurrentLayerZonesIds,
   zoneById,
   bodyById,
   materialById,

@@ -37,7 +37,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: Style.Theme.palette.disabledColor,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     zIndex: 1500,
   },
   content: {

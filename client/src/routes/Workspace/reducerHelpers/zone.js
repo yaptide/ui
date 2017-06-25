@@ -10,8 +10,9 @@ export function createZone(state: Map<string, any>) {
 
   const newZone = fromJS({
     id: newZoneId,
-    parentId: newZoneId,
+    parentId: state.get('zoneLayerParent'),
     children: [],
+    materialId: 2,
     name: 'Unnamed zone',
     construction: [],
   });

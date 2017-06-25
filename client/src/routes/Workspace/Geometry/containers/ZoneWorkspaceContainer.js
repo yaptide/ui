@@ -9,6 +9,7 @@ import { actionCreator } from '../../reducer';
 type Props = {
   zoneIds: Array<number>,
   addZone: () => void,
+  goToParentLayer: () => void,
 }
 
 class ZoneWorkspaceContainer extends React.Component {
@@ -18,6 +19,7 @@ class ZoneWorkspaceContainer extends React.Component {
       <ZoneWorkspaceLayout
         zoneIds={this.props.zoneIds}
         addZone={this.props.addZone}
+        goToParentLayer={this.props.goToParentLayer}
       />
     );
   }
@@ -25,13 +27,14 @@ class ZoneWorkspaceContainer extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    zoneIds: selector.allZonesIds(state).toJS(),
+    zoneIds: selector.allCurrentLayerZonesIds(state).toJS(),
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     addZone: () => dispatch(actionCreator.createZone()),
+    goToParentLayer: () => dispatch(actionCreator.goToParentLayer()),
   };
 };
 

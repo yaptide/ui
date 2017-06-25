@@ -16,6 +16,8 @@ type Props = {
   removeOperation: (path: ConstructionPath) => void,
   createOperation: (path: ConstructionPath) => void,
   updateName: (id: number, name: string) => void,
+
+  goToChildLayer: (id: number) => void,
 }
 
 class ZoneItemContainer extends React.Component {
@@ -71,6 +73,8 @@ class ZoneItemContainer extends React.Component {
     this.props.updateName(this.props.zoneId, name);
   }
 
+  goToChildLayer = () => this.props.goToChildLayer(this.props.zoneId);
+
   render() {
     const material = { label: 'Water', materialId: 11 };
 
@@ -88,6 +92,7 @@ class ZoneItemContainer extends React.Component {
           onZoneNameUpdate={this.onZoneNameUpdate}
           createOperation={this.createOperation}
           deleteOperation={this.deleteOperation}
+          goToChildLayer={this.goToChildLayer}
         />
         <BodyEditorModal
           isModalOpen={this.state.isBodyModalOpen}
@@ -111,6 +116,7 @@ const mapDispatchToProps = (dispatch) => {
     removeOperation: path => dispatch(actionCreator.deleteZoneOperation(path)),
     createOperation: path => dispatch(actionCreator.createZoneOperation(path)),
     updateName: (id, value) => dispatch(actionCreator.updateZoneName(id, value)),
+    goToChildLayer: id => dispatch(actionCreator.goToChildLayer(id)),
   };
 };
 

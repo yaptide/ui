@@ -68,7 +68,7 @@ const initialState = fromJS({
 
 describe('Operations on workspace state', () => {
   it('Create new zone', () => {
-    const newZone = { name: 'Unnamed zone', parentId: 3, children: [], construction: [] };
+    const newZone = { name: 'Unnamed zone', parentId: undefined, materialId: 2, children: [], construction: [] };
     const expectedState = initialState
       .setIn(['zones', '3'], fromJS({ ...newZone, id: 3 }));
     const newState = stateProcessor.zone.create(initialState, newZone);

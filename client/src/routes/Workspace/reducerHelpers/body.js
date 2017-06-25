@@ -15,7 +15,7 @@ export function createBodyInZone(
 
   const newBody = fromJS(body).merge({ id: newBodyId });
   state = state.setIn(['bodies', String(newBodyId)], newBody);
-  if (constructionPath.baseId) {
+  if (constructionPath.base) {
     state = state.setIn(
       ['zones', String(constructionPath.zoneId), 'baseId'],
       newBodyId,

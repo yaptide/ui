@@ -19,6 +19,8 @@ type Props = {
   createOperation: (constructionStep: ConstructionPath) => void,
   deleteOperation: (constructionStep: ConstructionPath) => void,
   style?: Object,
+
+  goToChildLayer: () => void,
 };
 
 class ZoneItemLayout extends React.Component {
@@ -44,7 +46,7 @@ class ZoneItemLayout extends React.Component {
     );
     const goToChildBtn = (
       <FlatButton
-        onTouchTap={() => console.log('ervger')}
+        onTouchTap={this.props.goToChildLayer}
         style={styles.goToChildrenBtn}
         icon={<RightArrowIcon />}
         disableTouchRipple

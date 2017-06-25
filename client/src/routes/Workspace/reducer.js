@@ -27,6 +27,8 @@ export const actionType = {
   DELETE_MATERIAL: 'DELETE_MATERIAL',
   UPDATE_MATERIAL: 'UPDATE_MATERIAL',
 
+  MOVE_TO_CHILD_LAYER: 'MOVE_TO_CHILD_LAYER',
+  MOVE_TO_PARENT_LAYER: 'MOVE_TO_PARENT_LAYER',
 };
 
 const ACTION_HANDLERS = {
@@ -53,6 +55,17 @@ const ACTION_HANDLERS = {
   ),
   [actionType.UPDATE_ZONE_NAME]: (state, action) => (
     state.setIn(['zones', String(action.zoneId), 'name'], action.name)
+  ),
+  [actionType.MOVE_TO_PARENT_LAYER]: (state) => {
+    const currentZoneId = state.get('zoneLayerParent');
+    if (currentZoneId === undefined) {
+      return state;
+    }
+    const parentId = state.getIn(['zones', String(currentZoneId), 'parentId']);
+    return state.set('zoneLayerParent', parentId);
+  },
+  [actionType.MOVE_TO_CHILD_LAYER]: (state, action) => (
+    state.set('zoneLayerParent', action.zoneId)
   ),
 };
 
@@ -89,14 +102,21 @@ export const actionCreator = {
       name,
     };
   },
+  goToParentLayer() {
+    return { type: actionType.MOVE_TO_PARENT_LAYER };
+  },
+  goToChildLayer(zoneId?: number) {
+    return { type: actionType.MOVE_TO_CHILD_LAYER, zoneId };
+  },
 };
 
 const initialState = fromJS({
+  zoneLayerParent: undefined,
+  singleLayerView: true,
   zones: {
     '1': {
       id: 1,
       name: 'zone 1',
-      parentId: 1,
       children: [],
       materialId: 1,
       baseId: 1,
@@ -107,7 +127,6 @@ const initialState = fromJS({
     '2': {
       id: 2,
       name: 'zone 2',
-      parentId: 2,
       children: [],
       materialId: 2,
       baseId: 3,
@@ -118,10 +137,10 @@ const initialState = fromJS({
     '3': {
       id: 3,
       name: 'zone 3',
-      parentId: 3,
+      parentId: 1,
       children: [],
       materialId: 1,
-      baseId: undefined,
+      baseId: 1,
       construction: [],
     },
   },
