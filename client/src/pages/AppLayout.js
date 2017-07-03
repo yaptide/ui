@@ -9,6 +9,8 @@ import Style from 'styles';
 import { actionType } from 'routes/Auth/reducer';
 import cls from '../styles/core.scss'; // eslint-disable-line no-unused-vars
 
+const theme = getMuiTheme(Style.Theme);
+
 type Props = {
   children?: any,
   isLoggedIn: bool,
@@ -21,7 +23,7 @@ class AppLayout extends React.Component {
   render() {
     const { children, ...props } = this.props;
     return (
-      <MuiThemeProvider muiTheme={getMuiTheme(Style.Theme)} >
+      <MuiThemeProvider muiTheme={theme} >
         <div style={styles.layout}>
           <Header {...props} />
           {children}
@@ -38,7 +40,7 @@ const styles = {
     overflow: 'auto',
     minHeight: '300px',
     minWidth: '800px',
-    background: Style.Theme.palette.canvasColor,
+    background: '#2B2B2B',
   },
 };
 

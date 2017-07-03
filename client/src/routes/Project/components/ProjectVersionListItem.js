@@ -7,7 +7,7 @@ import { t } from 'i18n';
 import * as _ from 'lodash';
 import { Card, CardActions, CardText } from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton';
-import type { Version } from '../model';
+import type { Version } from 'model/project';
 import { mapSimulationStateToColor, mapActionsToVersionState } from '../enum';
 
 type Props = {

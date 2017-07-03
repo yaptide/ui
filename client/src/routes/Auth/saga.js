@@ -63,16 +63,16 @@ export function* watchLogout(): Generator<*, *, *> {
   yield call(takeLatest, actionType.LOGOUT, logout);
 }
 
-export function* watch403InterceptorChannel(): Generator<*, *, *> {
+export function* watch401InterceptorChannel(): Generator<*, *, *> {
   const emitterWrapper = (emitter) => {
     api.registerInterceptor(
       (response) => {
-        if (response.status === 403) {
-          emitter(403);
-        }
         return response;
       },
       (error) => {
+        if (error.response.status === 401) {
+          emitter(401);
+        }
         throw error;
       },
     );
@@ -92,7 +92,7 @@ export function* watch403InterceptorChannel(): Generator<*, *, *> {
 
 export default function* authSaga(): Generator<*, *, *> {
   yield [
-    fork(watch403InterceptorChannel),
+    fork(watch401InterceptorChannel),
     fork(watchLogin),
     fork(watchRegister),
     fork(watchLogout),

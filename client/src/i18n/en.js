@@ -30,7 +30,14 @@ const en = {
   },
   welcome: {},
   project: {
+    projectEdit: 'Edit project',
     showDetailsBtn: 'Go to project details',
+    form: {
+      name: 'Name',
+      description: 'Description',
+      createBtn: 'Create',
+      updateBtn: 'Update',
+    },
     status: {
       error: 'Last simulation failed',
       success: 'Last simulation finished',

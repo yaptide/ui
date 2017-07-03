@@ -4,8 +4,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import type { Store } from 'store/reducers';
 
-import AppLayout from 'pages/AppLayout';
-import type { ProjectDetails } from '../model';
+import type { ProjectDetails } from 'model/project';
 import selector from '../selector';
 import ProjectDetailsLayout from '../components/ProjectDetailsLayout';
 
@@ -18,9 +17,7 @@ class ProjectDetailsContainer extends React.Component {
   props: Props;
   render() {
     return (
-      <AppLayout>
-        <ProjectDetailsLayout {...this.props.project} />
-      </AppLayout>
+      <ProjectDetailsLayout {...this.props.project} />
     );
   }
 }

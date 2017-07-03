@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Style from 'styles';
-import type { ProjectDetails } from '../model';
+import type { ProjectDetails } from 'model/project';
 import ProjectVersionListItem from './ProjectVersionListItem';
 
 type Props = {

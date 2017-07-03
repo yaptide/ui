@@ -17,4 +17,5 @@ export const font = {
 export default {
   spacing,
   font,
+  fixedPageWidth: '700px',
 };

@@ -1,9 +1,11 @@
 /* @flow */
 
 import { redirectIfUnlogged } from 'utils/router';
+import AppLayout from 'pages/AppLayout';
 
 const projectRoute = {
   path: 'project',
+  component: AppLayout,
   childRoutes: [
     {
       path: 'list',
@@ -13,9 +15,24 @@ const projectRoute = {
           cb(null, require('./containers/ProjectListContainer').default);
         }, 'projectListBoundle');
       },
-    },
-    {
-      path: ':paramName',
+    }, {
+      path: 'new',
+      indexRoute: { onEnter: redirectIfUnlogged() },
+      getComponent(nextState: string, cb: Function) {
+        require.ensure([], (require) => {
+          cb(null, require('./containers/NewProjectContainer').default);
+        }, 'projectNewBoundle');
+      },
+    }, {
+      path: 'edit/:projectId',
+      indexRoute: { onEnter: redirectIfUnlogged() },
+      getComponent(nextState: string, cb: Function) {
+        require.ensure([], (require) => {
+          cb(null, require('./containers/EditProjectContainer').default);
+        }, 'projectEditBoundle');
+      },
+    }, {
+      path: ':projectId',
       indexRoute: { onEnter: redirectIfUnlogged() },
       getComponent(nextState: string, cb: Function) {
         require.ensure([], (require) => {

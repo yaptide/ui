@@ -1,34 +1,23 @@
 /* @flow */
 
 import type { Store } from 'store/reducers';
-import { fromJS } from 'immutable';
-import * as _ from 'lodash';
-import type { Project, ProjectDetails } from './model';
+import { Map, Seq } from 'immutable';
+import type { Project, ProjectDetails } from 'model/project';
 
-const MOCK_DESCRIPTION_LONG = 'mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description mock description'; //eslint-disable-line 
 
 const projectListSelector = (state: Store) => {
-  const mock = state; //eslint-disable-line
-  // TODO replace by real implementation (blocked by API)
-
-  return fromJS([1, 2, 3, 4, 5]);
+  return state.project.get('projectIds', Seq());
 };
 
-const projectOverviewSelector = (): Project => {
-  const numberOfVersions = Math.floor((Math.random() * 10) + 1);
-  return {
-    id: '12321h3b',
-    name: 'Example project 1',
-    description: 'Short project description' + MOCK_DESCRIPTION_LONG, //eslint-disable-line
-    versionIndices: _.times(numberOfVersions, () => String(Math.floor((Math.random() * 10) + 1))),
-  }; // eslint-disable-line
+const projectOverviewSelector = (state: Store, projectId: string): Project => {
+  return state.project.getIn(['projects', projectId], Map()).toJS();
 };
 
 const projectDetailsSelector = (): ProjectDetails => {
   return {
     id: 'rwhgur',
     name: 'Example project 1',
-    description: 'Short project description' + MOCK_DESCRIPTION_LONG, // eslint-disable-line
+    description: 'Short project description', // eslint-disable-line
     versions: [
       {
         id: 1,

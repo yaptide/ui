@@ -8,7 +8,6 @@ type Props = {
   onChange: (any, string) => void,
   secureTextEntry?: bool,
   numbersOnly?: bool,
-  value: string | number,
 };
 
 class FormInput extends React.Component {

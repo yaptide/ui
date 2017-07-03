@@ -39,5 +39,6 @@ func NewRouter(config *config.Config) http.Handler {
 
 	return handlers.CORS(
 		handlers.AllowedHeaders([]string{"content-type", "x-auth-token"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT"}),
 	)(router)
 }

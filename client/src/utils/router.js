@@ -14,6 +14,7 @@ const router = {
   push: (route: string) => {
     wrapPush(route);
   },
+  pop: hashHistory.pop,
 };
 
 export const redirectIfUnlogged = (redirectPage?: string) => (
