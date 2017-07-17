@@ -44,6 +44,7 @@ const styles = {
     paddingTop: Style.Dimens.spacing.veryLarge,
     paddingLeft: Style.Dimens.spacing.veryLarge,
     paddingRight: Style.Dimens.spacing.veryLarge,
+    paddingBottom: Style.Dimens.spacing.veryLarge,
   },
   description: {
     flex: '0 0 1',
