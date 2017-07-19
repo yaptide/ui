@@ -9,17 +9,33 @@
 
 ### Project structure
 main.go - backend entry point  
-api - definition of rest endpoints  
-parser/shield - parsers for shield hit  
-model - data model
+web - definition of rest endpoints  
+processor - responsible for supervising parsing and simulation  
+converter  
+converter/serializer - serialize setup model into specyfic for library configuration files  
+converter/parser - parse configuration fies to Palantir internal model  
+runner - start and supervise simulations  
+db - interface with db  
+model - data model  
+model/auth - account and auth data model  
+model/project - project and version data model  
+model/simulation/setup - simulation setup model  
+model/simulation/results - simulation resuls model  
+model/simulation/settings - settings defined for specyfic project version  
+config - applications configuration  
 client - frontend sources  
 client/src/main.js - entry point for frontend  
 client/src/api - api config  
 client/src/components - reusable components  
 client/src/i18n - translations dictionary  
+client/src/pages - static pages
+client/src/model - flow definitions for frontend data model
 client/src/routes - routes definitions and content(main part of client side)  
 client/src/store - configuration of data model and logic of frontend  
 client/src/styles - global style used in application  
+client/config - webpack and karma configuration
+client/lib - 3rd party libararies
+client/assets - static assets
 build_tools - scripts used to build or setup environment  
 
 ### Setup development environment
