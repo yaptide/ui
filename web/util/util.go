@@ -5,6 +5,10 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/Palantir/palantir/db"
+	"github.com/Palantir/palantir/web/auth/token"
+	"github.com/Palantir/palantir/web/pathvars"
 )
 
 // DecodeJSONRequest decode json payload from request to result.
@@ -39,4 +43,55 @@ func WriteJSONResponseWithHeaders(w http.ResponseWriter, httpStatus int, headers
 		w.Header().Set(k, v)
 	}
 	return WriteJSONResponse(w, httpStatus, payload)
+}
+
+// HandleDbError write proper http status code based on database error.
+func HandleDbError(w http.ResponseWriter, err error) {
+	switch {
+	case err == db.ErrNotFound:
+		w.WriteHeader(http.StatusNotFound)
+		return
+	case err != nil:
+		log.Print(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+
+// ReadDBProjectID read db.ProjectID from request claims and routes path variables.
+// It write http.StatusNotFound to w, if path variables are not valid.
+// When everything goes well it return ok == true.
+func ReadDBProjectID(w http.ResponseWriter, r *http.Request) (db.ProjectID, bool) {
+	accountID := token.ExtractAccountID(r)
+	projectID, isValid := pathvars.ExtractProjectID(r)
+	if !isValid {
+		w.WriteHeader(http.StatusNotFound)
+		return db.ProjectID{}, false
+	}
+	return db.ProjectID{
+		Account: accountID,
+		Project: projectID,
+	}, true
+}
+
+// ReadDBVersionID read db.VersionID from request claims and routes path variables.
+// It write http.StatusNotFound to w, if path variables are not valid.
+// When everything goes well it return ok == true.
+func ReadDBVersionID(w http.ResponseWriter, r *http.Request) (db.VersionID, bool) {
+	accountID := token.ExtractAccountID(r)
+	projectID, isValid := pathvars.ExtractProjectID(r)
+	if !isValid {
+		w.WriteHeader(http.StatusNotFound)
+		return db.VersionID{}, false
+	}
+	versionID, isValid := pathvars.ExtractVersionID(r)
+	if !isValid {
+		w.WriteHeader(http.StatusNotFound)
+		return db.VersionID{}, false
+	}
+	return db.VersionID{
+		Account: accountID,
+		Project: projectID,
+		Version: versionID,
+	}, true
 }

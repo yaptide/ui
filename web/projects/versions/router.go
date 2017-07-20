@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/Palantir/palantir/web/pathvars"
+	"github.com/Palantir/palantir/web/projects/versions/result"
+	"github.com/Palantir/palantir/web/projects/versions/setup"
 	"github.com/Palantir/palantir/web/server"
 	"github.com/gorilla/mux"
 )
@@ -20,4 +22,14 @@ func HandleVersions(router *mux.Router, context *server.Context) {
 	router.Handle(createFromRoute,
 		middlewares(&createFromExistingVersionHandler{context})).
 		Methods(http.MethodPost)
+
+	versionIDRoute := fmt.Sprintf("/{%s}", pathvars.VersionID)
+	versionIDRouter := router.PathPrefix(versionIDRoute).Subrouter()
+
+	setupRouter := versionIDRouter.PathPrefix("/setup").Subrouter()
+	setup.HandleSetup(setupRouter, context)
+
+	resultRouter := versionIDRouter.PathPrefix("/result").Subrouter()
+	result.HandleResult(resultRouter, context)
+
 }

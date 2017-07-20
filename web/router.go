@@ -29,16 +29,16 @@ func NewRouter(config *config.Config) http.Handler {
 	authRouter := router.PathPrefix("/auth").Subrouter()
 	auth.HandleAuth(authRouter, context)
 
-	simulationRouter := router.PathPrefix("/simulation").Subrouter()
-	simulation.HandleSimulation(simulationRouter, context)
-
 	projectsRouter := router.PathPrefix("/projects").Subrouter()
 	projects.HandleProject(projectsRouter, context)
+
+	simulationRouter := router.PathPrefix("/simulation").Subrouter()
+	simulation.HandleSimulation(simulationRouter, context)
 
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir(config.StaticDirectory)))
 
 	return handlers.CORS(
 		handlers.AllowedHeaders([]string{"content-type", "x-auth-token"}),
-		handlers.AllowedMethods([]string{"GET", "POST", "PUT"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"}),
 	)(router)
 }

@@ -1,4 +1,4 @@
-package setup
+package result
 
 import (
 	"log"
@@ -11,14 +11,18 @@ import (
 	"github.com/Palantir/palantir/web/util"
 )
 
-type getSetupHandler struct {
+type getResultHandler struct {
 	*server.Context
 }
 
-func (h *getSetupHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *getResultHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	accountID := token.ExtractAccountID(r)
-
-	setupID, isValid := pathvars.ExtractSetupID(r)
+	projectID, isValid := pathvars.ExtractProjectID(r)
+	if !isValid {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	versionID, isValid := pathvars.ExtractVersionID(r)
 	if !isValid {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -27,9 +31,13 @@ func (h *getSetupHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	dbSession := h.Db.Copy()
 	defer dbSession.Close()
 
-	setup, err := dbSession.Setup().Fetch(db.SetupID{Account: accountID, Setup: setupID})
+	result, err := dbSession.Result().Fetch(db.VersionID{
+		Account: accountID,
+		Project: projectID,
+		Version: versionID,
+	})
 	switch {
-	case setup == nil:
+	case result == nil:
 		w.WriteHeader(http.StatusNotFound)
 		return
 	case err != nil:
@@ -37,6 +45,6 @@ func (h *getSetupHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	_ = util.WriteJSONResponse(w, http.StatusOK, setup)
+	_ = util.WriteJSONResponse(w, http.StatusOK, result)
 
 }

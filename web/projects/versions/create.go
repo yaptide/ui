@@ -2,13 +2,9 @@ package versions
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
-	"github.com/Palantir/palantir/db"
 	"github.com/Palantir/palantir/model/project"
-	"github.com/Palantir/palantir/web/auth/token"
-	"github.com/Palantir/palantir/web/pathvars"
 	"github.com/Palantir/palantir/web/server"
 	"github.com/Palantir/palantir/web/util"
 )
@@ -26,12 +22,10 @@ func createVersion(createInDb, writeVersionResponse func() bool) {
 }
 
 func (h *createVersionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	projectID, isValid := pathvars.ExtractProjectID(r)
-	if !isValid {
-		w.WriteHeader(http.StatusNotFound)
+	dbProjectID, ok := util.ReadDBProjectID(w, r)
+	if !ok {
 		return
 	}
-	accountID := token.ExtractAccountID(r)
 
 	dbSession := h.Db.Copy()
 	defer dbSession.Close()
@@ -39,17 +33,9 @@ func (h *createVersionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	var dbVersion *project.Version
 
 	createInDb := func() bool {
-		version, err := dbSession.Project().CreateVersion(
-			db.ProjectID{Account: accountID, Project: projectID},
-		)
-
-		switch {
-		case err != nil:
-			log.Print(err.Error())
-			w.WriteHeader(http.StatusInternalServerError)
-			return false
-		case version == nil:
-			w.WriteHeader(http.StatusNotFound)
+		version, err := dbSession.Project().CreateVersion(dbProjectID)
+		if err != nil {
+			util.HandleDbError(w, err)
 			return false
 		}
 
@@ -60,7 +46,7 @@ func (h *createVersionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	writeVersionResponse := func() bool {
 		headers := make(map[string]string)
 		headers["Location"] = fmt.Sprintf("/projects/%s/versions/%d",
-			projectID.Hex(), dbVersion.ID)
+			dbProjectID.Project, dbVersion.ID)
 		return util.WriteJSONResponseWithHeaders(w, http.StatusCreated, headers, dbVersion)
 	}
 

@@ -10,20 +10,6 @@ import (
 
 var testCases test.MarshallingCases = test.MarshallingCases{
 	{
-		&Version{ID: 1,
-			Settings: "setId",
-			SetupID:  bson.ObjectIdHex("bbbbbbbbbbbbbbbbbbbbbbbb"),
-			Results:  "resultsId",
-		},
-		`{
-			"id": 1,
-			"settings": "setId",
-			"setupId": "bbbbbbbbbbbbbbbbbbbbbbbb",
-			"resultsId": "resultsId"
-		}`,
-	},
-
-	{
 		&Project{
 			ID:          bson.ObjectIdHex("58cfd607dc25403a3b691781"),
 			AccountID:   bson.ObjectIdHex("cccccccccccccccccccccccc"),
@@ -46,8 +32,27 @@ var testCases test.MarshallingCases = test.MarshallingCases{
 	},
 }
 
+var onlyMarshalling test.MarshallingCases = test.MarshallingCases{
+	{
+		&Version{ID: 1,
+			Status:   New,
+			Settings: NewSettings(),
+			SetupID:  bson.ObjectIdHex("bbbbbbbbbbbbbbbbbbbbbbbb"),
+			ResultID: bson.ObjectIdHex("aaaaaaaaaaaaaaaaaaaaaaaa"),
+		},
+		`{
+			"id": 1,
+			"status": "new",
+			"settings": {
+				"simulationEngine": ""
+			}
+		}`,
+	},
+}
+
 func TestMarshal(t *testing.T) {
 	test.Marshal(t, testCases)
+	test.Marshal(t, onlyMarshalling)
 }
 
 func TestUnmarshal(t *testing.T) {

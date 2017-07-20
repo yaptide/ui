@@ -2,14 +2,15 @@
 package simulation
 
 import (
+	"net/http"
+
 	"github.com/gorilla/mux"
 
 	"github.com/Palantir/palantir/web/server"
-	"github.com/Palantir/palantir/web/simulation/setup"
 )
 
 // HandleSimulation define simulation routes.
 func HandleSimulation(router *mux.Router, context *server.Context) {
-	setupRouter := router.PathPrefix("/setup").Subrouter()
-	setup.HandleSetup(setupRouter, context)
+	middlewares := context.ValidationMiddleware
+	router.Handle("/run", middlewares(&runSimulationHandler{context})).Methods(http.MethodPost)
 }

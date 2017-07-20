@@ -1,4 +1,4 @@
 {
-  "Cyclo": 13,
+  "Disable": ["gocyclo", "safesql"],
   "Exclude": ["^vendor/"]
 }

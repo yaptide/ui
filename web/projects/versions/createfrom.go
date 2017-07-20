@@ -2,13 +2,9 @@ package versions
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
-	"github.com/Palantir/palantir/db"
 	"github.com/Palantir/palantir/model/project"
-	"github.com/Palantir/palantir/web/auth/token"
-	"github.com/Palantir/palantir/web/pathvars"
 	"github.com/Palantir/palantir/web/server"
 	"github.com/Palantir/palantir/web/util"
 )
@@ -26,15 +22,8 @@ func createFromExistingVersion(createFromExistingVersionInDb, writeVersionRespon
 }
 
 func (h *createFromExistingVersionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	accountID := token.ExtractAccountID(r)
-	projectID, isValid := pathvars.ExtractProjectID(r)
-	if !isValid {
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-	versionID, isValid := pathvars.ExtractVersionID(r)
-	if !isValid {
-		w.WriteHeader(http.StatusNotFound)
+	dbVersionID, ok := util.ReadDBVersionID(w, r)
+	if !ok {
 		return
 	}
 
@@ -44,24 +33,11 @@ func (h *createFromExistingVersionHandler) ServeHTTP(w http.ResponseWriter, r *h
 	var copiedDbVersion *project.Version
 
 	createFromExistingVersionInDb := func() bool {
-		version, err := dbSession.Project().CreateVersionFrom(
-			db.VersionID{
-				Account: accountID,
-				Project: projectID,
-				Version: versionID,
-			},
-		)
-
-		switch {
-		case err != nil:
-			log.Print(err.Error())
-			w.WriteHeader(http.StatusInternalServerError)
-			return false
-		case version == nil:
-			w.WriteHeader(http.StatusNotFound)
+		version, err := dbSession.Project().CreateVersionFrom(dbVersionID)
+		if err != nil {
+			util.HandleDbError(w, err)
 			return false
 		}
-
 		copiedDbVersion = version
 		return true
 	}
@@ -69,7 +45,7 @@ func (h *createFromExistingVersionHandler) ServeHTTP(w http.ResponseWriter, r *h
 	writeVersionResponse := func() bool {
 		headers := make(map[string]string)
 		headers["Location"] = fmt.Sprintf("/projects/%s/versions/%d",
-			projectID.Hex(), copiedDbVersion.ID)
+			dbVersionID.Project.Hex(), copiedDbVersion.ID)
 		return util.WriteJSONResponseWithHeaders(w, http.StatusCreated, headers, copiedDbVersion)
 	}
 

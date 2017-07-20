@@ -1,7 +1,10 @@
 package db
 
 import (
+	"fmt"
+
 	"github.com/Palantir/palantir/model/project"
+	"github.com/Palantir/palantir/model/simulation/result"
 	"github.com/Palantir/palantir/model/simulation/setup"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -125,11 +128,12 @@ func (p Project) Update(project *project.Project) error {
 }
 
 func (p Project) deleteVersionChilds(version *project.Version, projectID ProjectID) error {
-	err := p.session.Setup().Delete(SetupID{
-		Account: projectID.Account,
-		Setup:   version.SetupID,
-	})
+	err := p.session.Setup().deleteByID(version.SetupID)
+	if err != nil {
+		return err
+	}
 
+	err = p.session.Result().deleteByID(version.ResultID)
 	return err
 }
 
@@ -193,21 +197,27 @@ func (p Project) FetchVersion(versionID VersionID) (*project.Version, error) {
 
 type versionPrototype struct {
 	ID       project.VersionID
-	Settings interface{}
+	Status   project.VersionStatus
+	Settings project.Settings
 	Setup    *setup.Setup
-	Results  interface{}
+	Result   *result.Result
 }
 
 func (p Project) createNewVersionFromPrototype(projectID ProjectID, prototype versionPrototype) (*project.Version, error) {
 	newVersion := &project.Version{ID: prototype.ID, Settings: prototype.Settings}
 
-	setupID, err := p.session.Setup().Create(projectID, prototype.Setup)
+	setupID, err := p.session.Setup().Create(prototype.Setup)
 	if err != nil {
 		return nil, err
 	}
 	newVersion.SetupID = setupID
 
-	// TODO add  results creation in db
+	resultID, err := p.session.Result().Create(prototype.Result)
+	if err != nil {
+		return nil, err
+	}
+	newVersion.ResultID = resultID
+
 	return newVersion, nil
 }
 
@@ -228,9 +238,10 @@ func (p Project) CreateVersion(projectID ProjectID) (*project.Version, error) {
 	newVersionID := project.VersionID(len(dbProject.Versions))
 	newVersionPrototype := versionPrototype{
 		ID:       newVersionID,
-		Settings: nil,
+		Status:   project.New,
+		Settings: project.NewSettings(),
 		Setup:    setup.NewEmptySetup(),
-		Results:  nil,
+		Result:   result.NewEmptyResult(),
 	}
 	newVersion, err := p.createNewVersionFromPrototype(projectID, newVersionPrototype)
 	if err != nil {
@@ -266,20 +277,23 @@ func (p Project) CreateVersionFrom(existingVersionID VersionID) (*project.Versio
 	}
 
 	newVersionID := project.VersionID(len(dbProject.Versions))
-	// TODO fetch setup and results, then put them into versionPrototype
-	existingSetup, err := p.session.Setup().Fetch(SetupID{
-		Account: existingVersionID.Account,
-		Setup:   existingVersion.SetupID,
-	})
+
+	existingSetup, err := p.session.Setup().fetchByID(existingVersion.SetupID)
+	if err != nil {
+		return nil, err
+	}
+
+	existingResult, err := p.session.Result().fetchByID(existingVersion.ResultID)
 	if err != nil {
 		return nil, err
 	}
 
 	newVersionPrototype := versionPrototype{
 		ID:       newVersionID,
+		Status:   project.New,
 		Settings: existingVersion.Settings,
 		Setup:    existingSetup,
-		Results:  nil,
+		Result:   existingResult,
 	}
 	newVersion, err := p.createNewVersionFromPrototype(existingVersionID.toProjectID(), newVersionPrototype)
 	if err != nil {
@@ -292,4 +306,26 @@ func (p Project) CreateVersionFrom(existingVersionID VersionID) (*project.Versio
 		return nil, err
 	}
 	return newVersion, nil
+}
+
+// FetchVersionStatus fetch VersionStatus.
+func (p Project) FetchVersionStatus(versionID VersionID) (project.VersionStatus, error) {
+	version, err := p.FetchVersion(versionID)
+	switch {
+	case err != nil:
+		return 0, err
+	case version == nil:
+		return 0, ErrNotFound
+	}
+	return version.Status, nil
+}
+
+// SetVersionStatus sets new VersionStatus.
+func (p Project) SetVersionStatus(versionID VersionID, newStatus project.VersionStatus) error {
+	collection := p.Collection()
+	selector := versionID.toProjectID().generateSelector()
+	toUpdate := bson.M{"$set": bson.M{
+		fmt.Sprintf("versions.%d.status", versionID.Version): newStatus,
+	}}
+	return collection.Update(selector, toUpdate)
 }

@@ -72,8 +72,12 @@ func (s session) Setup() db.Setup {
 	return db.NewSetup(s)
 }
 
+func (s session) Result() db.Result {
+	return db.NewResult(s)
+}
+
 func (s session) Configure() error {
-	daos := []db.DAO{s.Account(), s.Project(), s.Setup()}
+	daos := []db.DAO{s.Account(), s.Project(), s.Setup(), s.Result()}
 	for _, dao := range daos {
 		err := dao.ConfigureCollection()
 		if err != nil {

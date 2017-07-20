@@ -1,12 +1,7 @@
 package projects
 
 import (
-	"log"
-
-	"github.com/Palantir/palantir/db"
 	"github.com/Palantir/palantir/model/project"
-	"github.com/Palantir/palantir/web/auth/token"
-	"github.com/Palantir/palantir/web/pathvars"
 	"github.com/Palantir/palantir/web/server"
 	"github.com/Palantir/palantir/web/util"
 
@@ -34,15 +29,13 @@ func updateProject(validateProject, getFromDb, updateInDb, writeProjectResponse 
 }
 
 func (h *updateProjectHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	projectID, isValid := pathvars.ExtractProjectID(r)
-	if !isValid {
-		w.WriteHeader(http.StatusNotFound)
+	dbProjectID, ok := util.ReadDBProjectID(w, r)
+	if !ok {
 		return
 	}
-	accountID := token.ExtractAccountID(r)
 
 	updatedProject := &project.Project{}
-	ok := util.DecodeJSONRequest(w, r, updatedProject)
+	ok = util.DecodeJSONRequest(w, r, updatedProject)
 	if !ok {
 		return
 	}
@@ -66,36 +59,24 @@ func (h *updateProjectHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 
 	getFromDb := func() bool {
-		project, err := dbSession.Project().Fetch(
-			db.ProjectID{Account: accountID, Project: projectID},
-		)
-
-		switch {
-		case err == db.ErrNotFound:
-			w.WriteHeader(http.StatusNotFound)
-			return false
-		case err != nil:
-			log.Print(err.Error())
-			w.WriteHeader(http.StatusInternalServerError)
+		project, err := dbSession.Project().Fetch(dbProjectID)
+		if err != nil {
+			util.HandleDbError(w, err)
 			return false
 		}
+
 		dbProject = project
 		return true
 	}
 
 	updateInDb := func() bool {
-		updatedProject.ID = projectID
-		updatedProject.AccountID = accountID
+		updatedProject.ID = dbProjectID.Project
+		updatedProject.AccountID = dbProjectID.Account
 		updatedProject.Versions = dbProject.Versions
 
 		err := dbSession.Project().Update(updatedProject)
-		switch {
-		case err == db.ErrNotFound:
-			w.WriteHeader(http.StatusNotFound)
-			return false
-		case err != nil:
-			log.Print(err.Error())
-			w.WriteHeader(http.StatusInternalServerError)
+		if err != nil {
+			util.HandleDbError(w, err)
 			return false
 		}
 		return true

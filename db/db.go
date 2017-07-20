@@ -38,6 +38,7 @@ type Session interface {
 	Account() Account
 	Project() Project
 	Setup() Setup
+	Result() Result
 
 	// Configure configure db and collections.
 	Configure() error

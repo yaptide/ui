@@ -50,9 +50,7 @@ func NewValidationMiddleware(key []byte) middleware.Middleware {
 			token, err := request.ParseFromRequest(r, request.HeaderExtractor{"X-Auth-Token"}, keyFunc)
 			if err != nil {
 				w.WriteHeader(http.StatusUnauthorized)
-				_, err = fmt.Fprint(w, "Unauthorised access to this resource")
-				if err != nil {
-				}
+				_, _ = fmt.Fprint(w, "Unauthorised access to this resource")
 				return
 			}
 
@@ -65,9 +63,7 @@ func NewValidationMiddleware(key []byte) middleware.Middleware {
 				next.ServeHTTP(w, r.WithContext(ctx))
 			} else {
 				w.WriteHeader(http.StatusUnauthorized)
-				_, err = fmt.Fprint(w, "Token is not valid")
-				if err != nil {
-				}
+				_, _ = fmt.Fprint(w, "Token is not valid")
 				return
 			}
 		})
