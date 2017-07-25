@@ -8,7 +8,7 @@ import (
 	"github.com/Palantir/palantir/model/test"
 )
 
-var opTestCases test.MarshallingCases = test.MarshallingCases{
+var opTestCases = test.MarshallingCases{
 	{
 		&Operation{BodyID: body.ID(1), Type: Intersect},
 		`{"bodyId":1,"type":"intersect"}`,

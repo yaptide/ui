@@ -8,7 +8,7 @@ import (
 	"github.com/Palantir/palantir/model/test"
 )
 
-var zoneTestCases test.MarshallingCases = test.MarshallingCases{
+var zoneTestCases = test.MarshallingCases{
 	{
 		&Zone{
 			ID:         ID(1),

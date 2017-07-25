@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Palantir/palantir/config"
 	"github.com/Palantir/palantir/web/server/middleware"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
@@ -22,6 +23,9 @@ func Generate(id bson.ObjectId, key []byte) (string, error) {
 
 	claims["id"] = id
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+	if config.DEVEnv {
+		claims["exp"] = time.Now().Add(time.Hour * 2400).Unix()
+	}
 
 	tokenString, err := token.SignedString(key)
 	return tokenString, err

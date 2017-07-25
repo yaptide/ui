@@ -8,7 +8,7 @@ import (
 	"github.com/Palantir/palantir/model/test"
 )
 
-var testCases test.MarshallingCases = test.MarshallingCases{
+var testCases = test.MarshallingCases{
 	{
 		&Project{
 			ID:          bson.ObjectIdHex("58cfd607dc25403a3b691781"),
@@ -32,7 +32,7 @@ var testCases test.MarshallingCases = test.MarshallingCases{
 	},
 }
 
-var onlyMarshalling test.MarshallingCases = test.MarshallingCases{
+var onlyMarshalling = test.MarshallingCases{
 	{
 		&Version{ID: 1,
 			Status:   New,
@@ -44,7 +44,8 @@ var onlyMarshalling test.MarshallingCases = test.MarshallingCases{
 			"id": 1,
 			"status": "new",
 			"settings": {
-				"simulationEngine": ""
+				"simulationEngine": "",
+				"computingLibrary": ""
 			}
 		}`,
 	},

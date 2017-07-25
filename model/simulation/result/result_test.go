@@ -6,7 +6,7 @@ import (
 	"github.com/Palantir/palantir/model/test"
 )
 
-var testCases test.MarshallingCases = test.MarshallingCases{
+var testCases = test.MarshallingCases{
 	{
 		&Result{
 			Errors: map[string]string{

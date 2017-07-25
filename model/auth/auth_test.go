@@ -8,7 +8,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-var testCases test.MarshallingCases = test.MarshallingCases{
+var testCases = test.MarshallingCases{
 	{
 		&Account{ID: bson.ObjectIdHex("58cfd607dc25403a3b691781"), Username: "username", Email: "email", Password: "password"},
 		`{

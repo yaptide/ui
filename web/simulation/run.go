@@ -104,16 +104,19 @@ func (h *runSimulationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 
 	pushSimulationJob := func() bool {
-		err := dbSession.Project().SetVersionStatus(dbVersionID, project.Running)
+		err := dbSession.Project().SetVersionStatus(dbVersionID, project.New)
 		if err != nil {
 			log.Print(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return false
 		}
 
-		go func() {
-			// TODO run simulation here
-		}()
+		simulationStartErr := h.SimulationProcessor.HandleSimulation(dbVersionID)
+		if simulationStartErr != nil {
+			errorResponseMap := map[string]string{"simulation": simulationStartErr.Error()}
+			_ = util.WriteJSONResponse(w, http.StatusBadRequest, errorResponseMap)
+			return false
+		}
 
 		responseMap := map[string]string{}
 		responseMap["simulation"] = "simulation pending"

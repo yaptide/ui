@@ -19,8 +19,11 @@ const (
 	// Edited version status. It is set during version modifing.
 	Edited
 
-	// Running version status.It is set after simulation/run request
+	// Running version status. It is set after simulation start.
 	Running
+
+	// Pending version status. It is set after siulation start request.
+	Pending
 
 	// Success version status. It is set after successful simulation.
 	Success
@@ -32,6 +35,9 @@ const (
 	// Interrupted version status. It is set, when simulation processing is interrupted
 	// due to technical difficultes like broken connection or server crash.
 	Interrupted
+
+	// Canceled version status. Is is after request to cancel simulation.
+	Canceled
 )
 
 // IsModifable return true, if simulation has no started yet,
@@ -42,25 +48,29 @@ func (v VersionStatus) IsModifable() bool {
 
 // IsRunnable return true, if simulation can be runned.
 func (v VersionStatus) IsRunnable() bool {
-	return v.IsModifable() || v == Interrupted
+	return v.IsModifable() || v == Interrupted || v == Canceled
 }
 
 var mapVersionStatusToJSON = map[VersionStatus]string{
 	New:         "new",
 	Edited:      "edited",
 	Running:     "running",
+	Pending:     "pending",
 	Success:     "success",
 	Failure:     "failure",
 	Interrupted: "interrupted",
+	Canceled:    "canceled",
 }
 
 var mapJSONToVersionStatus = map[string]VersionStatus{
 	"new":         New,
 	"edited":      Edited,
 	"running":     Running,
+	"pending":     Pending,
 	"success":     Success,
 	"failure":     Failure,
 	"interrupted": Interrupted,
+	"canceled":    Canceled,
 }
 
 // String fmt.Stringer implementation.
@@ -94,16 +104,6 @@ func (v *VersionStatus) UnmarshalJSON(b []byte) error {
 	}
 	*v = newVersion
 	return nil
-}
-
-// Settings contains simulation settings such as the used simulation engine.
-type Settings struct {
-	SimulationEngine string `json:"simulationEngine"`
-}
-
-// NewSettings constructor.
-func NewSettings() Settings {
-	return Settings{}
 }
 
 // VersionID is key type in Project.Versions list.
