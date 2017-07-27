@@ -17,6 +17,7 @@ func HandleVersions(router *mux.Router, context *server.Context) {
 	middlewares := context.ValidationMiddleware
 
 	router.Handle("", middlewares(&createVersionHandler{context})).Methods(http.MethodPost)
+	router.Handle("", middlewares(&updateVersionHandler{context})).Methods(http.MethodPut)
 
 	createFromRoute := fmt.Sprintf("/create/from/{%s}", pathvars.VersionID)
 	router.Handle(createFromRoute,

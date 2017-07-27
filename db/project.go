@@ -308,6 +308,26 @@ func (p Project) CreateVersionFrom(existingVersionID VersionID) (*project.Versio
 	return newVersion, nil
 }
 
+// UpdateVersion update version with the given versionID.
+func (p Project) UpdateVersion(versionID VersionID, newSettings project.Settings) error {
+	dbProject, err := p.Fetch(versionID.toProjectID())
+	switch {
+	case err != nil:
+		return err
+	case dbProject == nil:
+		return ErrNotFound
+	}
+
+	if int(versionID.Version) >= len(dbProject.Versions) {
+		return ErrNotFound
+	}
+
+	dbProject.Versions[versionID.Version].Settings = newSettings
+	dbProject.Versions[versionID.Version].Status = project.Edited
+
+	return p.Update(dbProject)
+}
+
 // FetchVersionStatus fetch VersionStatus.
 func (p Project) FetchVersionStatus(versionID VersionID) (project.VersionStatus, error) {
 	version, err := p.FetchVersion(versionID)
