@@ -2,6 +2,7 @@ package processor
 
 import (
 	"fmt"
+	"github.com/Palantir/palantir/converter/shield"
 	"path"
 )
 
@@ -18,7 +19,8 @@ type shieldFileInput struct {
 }
 
 type shieldFileOutput struct {
-	files map[string]string
+	files            map[string]string
+	serializeContext *shield.SerializeParseContext
 }
 
 func generateShieldPath(workDir string) []string {
@@ -39,10 +41,10 @@ RNDSEED         89736501     ! Random seed
 JPART0          25           ! Incident particle type
 HIPROJ		    12.0    6.0  ! A and Z of heavy ion
 TMAX0		    391.0   0.0  ! Incident energy; (MeV/nucl)
-NSTAT           6000    3000 ! NSTAT, Step of saving
-STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
-MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
-NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
+NSTAT           6000    -1   ! NSTAT, Step of saving
+STRAGG          1            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
+MSCAT           1            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
+NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 `,
 	detectorsDatFile: `*----0---><----1---><----2---><----3---><----4---><----5---><----6--->
 CYL              0.0       0.0       0.0      10.0       7.0      30.0

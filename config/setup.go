@@ -1,7 +1,7 @@
 package config
 
 import (
-	"log"
+	"github.com/Palantir/palantir/utils/log"
 	"os"
 	"path"
 	"path/filepath"
@@ -18,6 +18,8 @@ var DEVEnv = false
 func SetupConfig() *Config {
 	readEnv()
 	conf := getDefaultConfig()
+
+	log.SetLoggerLevel(log.LevelWarning)
 
 	paramsMapping := map[string]configParam{
 		"port":       configParam{"int64", &conf.Port, "Port on which application is served"},
@@ -41,7 +43,8 @@ func SetupConfig() *Config {
 
 	err := checkConfig(conf)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Error(err.Error())
+		os.Exit(-1)
 	}
 
 	return conf
@@ -52,7 +55,7 @@ func getDefaultConfig() *Config {
 	if PRODEnv {
 		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 		if err != nil {
-			log.Println(err.Error())
+			log.Error("Unable to find configuration file %s", err.Error())
 		}
 		static = path.Join(dir, "../static")
 	} else if DEVEnv {

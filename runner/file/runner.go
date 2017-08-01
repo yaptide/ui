@@ -12,7 +12,7 @@ const (
 	maxNumberOfPendingJobs = 1000 // TODO: remove pending jobs limit
 )
 
-// Runner starts and supervises running of shield simulations
+// Runner starts and supervises running of shield simulations.
 type Runner struct {
 	jobsChannel        chan *LocalSimulationInput
 	workerReleased     chan bool
@@ -20,7 +20,7 @@ type Runner struct {
 	workers            map[*worker]bool
 }
 
-// LocalSimulationInput localSimulationInput
+// LocalSimulationInput localSimulationInput.
 type LocalSimulationInput struct {
 	*runner.InputCommon
 	Files         map[string]string
@@ -28,13 +28,13 @@ type LocalSimulationInput struct {
 	ResultChannel chan *LocalSimulationResults
 }
 
-// LocalSimulationResults localSimulationResults
+// LocalSimulationResults localSimulationResults.
 type LocalSimulationResults struct {
 	*runner.ResultsCommon
 	Files map[string]string
 }
 
-// SetupRunner is RunnerSupervisor constructor
+// SetupRunner is RunnerSupervisor constructor.
 func SetupRunner(config *config.Config) *Runner {
 	runner := &Runner{
 		jobsChannel:        make(chan *LocalSimulationInput, maxNumberOfPendingJobs),
@@ -51,7 +51,7 @@ func SetupRunner(config *config.Config) *Runner {
 	return runner
 }
 
-// StartSimulation starts local simulation using shield library
+// StartSimulation starts local simulation using shield library.
 func (r *Runner) StartSimulation(simultion *LocalSimulationInput) error {
 	// TODO: potentialy blocking
 	if len(r.jobsChannel) < maxNumberOfPendingJobs {

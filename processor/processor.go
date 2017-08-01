@@ -10,13 +10,13 @@ import (
 	"log"
 )
 
-// SimulationProcessor responsible for all steps of processing simulation
+// SimulationProcessor responsible for all steps of processing simulation.
 type SimulationProcessor struct {
 	session    db.Session
 	fileRunner *file.Runner
 }
 
-// NewProcessor constructor
+// NewProcessor constructor.
 func NewProcessor(config *config.Config, session db.Session) *SimulationProcessor {
 	processor := &SimulationProcessor{
 		session:    session,
@@ -25,7 +25,7 @@ func NewProcessor(config *config.Config, session db.Session) *SimulationProcesso
 	return processor
 }
 
-// HandleSimulation processes simulation
+// HandleSimulation processes simulation.
 func (p *SimulationProcessor) HandleSimulation(versionID db.VersionID) error {
 	version, dbErr := p.session.Project().FetchVersion(versionID)
 	if dbErr != nil {
