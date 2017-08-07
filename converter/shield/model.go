@@ -8,8 +8,8 @@ type SerializeParseContext struct {
 	// TODO needs to extended
 }
 
-// NewSerialaizeParseContext constructor
-func NewSerialaizeParseContext() *SerializeParseContext {
+// NewSerializeParseContext constructor
+func NewSerializeParseContext() *SerializeParseContext {
 	return &SerializeParseContext{
 		MapBodyID:           map[string]string{},
 		MapDetectorIDToFile: map[string]string{},

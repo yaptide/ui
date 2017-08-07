@@ -33,7 +33,7 @@ func (h *createVersionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	var dbVersion *project.Version
 
 	createInDb := func() bool {
-		version, err := dbSession.Project().CreateVersion(dbProjectID)
+		version, err := dbSession.Project().CreateVersionFromLatest(dbProjectID)
 		if err != nil {
 			util.HandleDbError(w, err)
 			return false

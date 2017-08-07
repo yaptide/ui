@@ -283,17 +283,12 @@ func (p Project) CreateVersionFrom(existingVersionID VersionID) (*project.Versio
 		return nil, err
 	}
 
-	existingResult, err := p.session.Result().fetchByID(existingVersion.ResultID)
-	if err != nil {
-		return nil, err
-	}
-
 	newVersionPrototype := versionPrototype{
 		ID:       newVersionID,
 		Status:   project.New,
 		Settings: existingVersion.Settings,
 		Setup:    existingSetup,
-		Result:   existingResult,
+		Result:   result.NewEmptyResult(),
 	}
 	newVersion, err := p.createNewVersionFromPrototype(existingVersionID.toProjectID(), newVersionPrototype)
 	if err != nil {
@@ -306,6 +301,25 @@ func (p Project) CreateVersionFrom(existingVersionID VersionID) (*project.Versio
 		return nil, err
 	}
 	return newVersion, nil
+}
+
+// CreateVersionFromLatest creates version from latest.
+func (p Project) CreateVersionFromLatest(projectID ProjectID) (*project.Version, error) {
+	dbProject, err := p.Fetch(projectID)
+	switch {
+	case err != nil:
+		return nil, err
+	case dbProject == nil:
+		return nil, nil
+	}
+	if len(dbProject.Versions) == 0 {
+		return p.CreateVersion(projectID)
+	}
+	return p.CreateVersionFrom(VersionID{
+		Project: projectID.Project,
+		Version: project.VersionID(len(dbProject.Versions) - 1),
+		Account: projectID.Account,
+	})
 }
 
 // UpdateVersion update version with the given versionID.
@@ -347,5 +361,15 @@ func (p Project) SetVersionStatus(versionID VersionID, newStatus project.Version
 	toUpdate := bson.M{"$set": bson.M{
 		fmt.Sprintf("versions.%d.status", versionID.Version): newStatus,
 	}}
-	return collection.Update(selector, toUpdate)
+	updateErr := collection.Update(selector, toUpdate)
+	if updateErr != nil {
+		return updateErr
+	}
+	if !newStatus.IsRunnable() && newStatus != project.Pending && newStatus != project.Running {
+		_, err := p.CreateVersionFromLatest(ProjectID{Account: versionID.Account, Project: versionID.Project})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

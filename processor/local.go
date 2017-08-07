@@ -1,9 +1,9 @@
 package processor
 
 import (
-	//"github.com/Palantir/palantir/converter/serializer"
 	"github.com/Palantir/palantir/converter/shield/results"
 	"github.com/Palantir/palantir/converter/shield/setup"
+	"github.com/Palantir/palantir/model/project"
 	"github.com/Palantir/palantir/runner"
 	"github.com/Palantir/palantir/runner/file"
 	"log"
@@ -30,6 +30,7 @@ func (ls *localShieldRequest) SerializeModel() error {
 	serializer := setup.NewShieldSerializer(ls.mainRequestComponent.setup)
 	serializeErr := serializer.Serialize()
 	if serializeErr != nil {
+		_ = ls.session.Project().SetVersionStatus(ls.versionID, project.Failure)
 		return serializeErr
 	}
 	_ = serializer.Files
@@ -45,6 +46,7 @@ func (ls *localShieldRequest) StartSimulation() error {
 		CmdCreator:    generateShieldPath,
 		ResultChannel: make(chan *file.LocalSimulationResults),
 	}
+	go handleStatusUpdateChannel(ls.session, ls.versionID, simulationInput.StatusUpdateChannel)
 	ls.runnerInput = simulationInput
 	simulationErr := ls.runner.StartSimulation(simulationInput)
 	if simulationErr != nil {
@@ -52,16 +54,14 @@ func (ls *localShieldRequest) StartSimulation() error {
 	}
 
 	go func() {
-		results := <-simulationInput.ResultChannel
-		log.Println("logerr", len(results.LogStdErr))
-		log.Println("logstd", len(results.LogStdOut))
-		for name, file := range results.Files {
-			log.Println(name, len(file))
+		simResults := <-simulationInput.ResultChannel
+		if len(simResults.Errors) == 0 {
+			_ = ls.session.Project().SetVersionStatus(ls.versionID, project.Success)
+		} else {
+			_ = ls.session.Project().SetVersionStatus(ls.versionID, project.Failure)
 		}
-		log.Println("errors", results.Errors)
-
-		if results != nil {
-			ls.shieldFileOutput.files = results.Files
+		if simResults != nil {
+			ls.shieldFileOutput.files = simResults.Files
 			_ = ls.ParseResults()
 		}
 	}()
@@ -69,7 +69,10 @@ func (ls *localShieldRequest) StartSimulation() error {
 }
 
 func (ls *localShieldRequest) ParseResults() error {
-	parserInput, constructErr := results.NewShieldParserInput(ls.shieldFileOutput.files, ls.shieldFileOutput.serializeContext)
+	parserInput, constructErr := results.NewShieldParserInput(
+		ls.shieldFileOutput.files,
+		ls.shieldFileOutput.serializeContext,
+	)
 	if constructErr != nil {
 		return constructErr
 	}
@@ -77,6 +80,10 @@ func (ls *localShieldRequest) ParseResults() error {
 	parserOutput, parseErr := results.ParseResults(parserInput)
 	if parseErr != nil {
 		return parseErr
+	}
+	updateErr := ls.session.Result().Update(ls.versionID, parserOutput.Results)
+	if updateErr != nil {
+		return updateErr
 	}
 	log.Println(parserOutput)
 	return nil

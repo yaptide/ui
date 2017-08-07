@@ -22,7 +22,7 @@ type ShieldSerializer struct {
 // NewShieldSerializer constructor.
 func NewShieldSerializer(setup *setup.Setup) *ShieldSerializer {
 	return &ShieldSerializer{
-		SerializeContext: shield.NewSerialaizeParseContext(),
+		SerializeContext: shield.NewSerializeParseContext(),
 		Files:            map[string]string{},
 		setup:            setup,
 	}

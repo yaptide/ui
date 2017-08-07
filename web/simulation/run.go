@@ -104,7 +104,7 @@ func (h *runSimulationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 
 	pushSimulationJob := func() bool {
-		err := dbSession.Project().SetVersionStatus(dbVersionID, project.New)
+		err := dbSession.Project().SetVersionStatus(dbVersionID, project.Pending)
 		if err != nil {
 			log.Print(err)
 			w.WriteHeader(http.StatusInternalServerError)

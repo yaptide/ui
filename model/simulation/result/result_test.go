@@ -14,10 +14,12 @@ var testCases = test.MarshallingCases{
 			},
 		},
 		`{
-			"errors": {
-				"error": "some_error"
-			}
-		}`,
+	"errors": {
+		"error": "some_error"
+	},
+	"result_metadata": null,
+	"detectors": null
+}`,
 	},
 }
 

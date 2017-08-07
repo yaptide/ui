@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/Palantir/palantir/config"
+	"github.com/Palantir/palantir/model/project"
 	"github.com/Palantir/palantir/runner"
 	"io/ioutil"
 	"log"
@@ -39,14 +40,16 @@ func createWorker(config *config.Config, job *LocalSimulationInput) (*worker, er
 			Files:         make(map[string]string),
 		},
 	}
-
+	job.StatusUpdateChannel <- project.Running
 	setupDirectoryErr := w.setupDirectory()
 	if setupDirectoryErr != nil {
+		job.StatusUpdateChannel <- project.Failure
 		return nil, setupDirectoryErr
 	}
 
 	setupExecutionErr := w.setupExecution()
 	if setupExecutionErr != nil {
+		job.StatusUpdateChannel <- project.Failure
 		return nil, setupExecutionErr
 	}
 

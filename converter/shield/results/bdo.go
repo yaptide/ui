@@ -3,6 +3,8 @@ package results
 import (
 	"bytes"
 	"encoding/binary"
+	"github.com/Palantir/palantir/converter/shield"
+	"github.com/Palantir/palantir/model/simulation/result"
 	bin "github.com/Palantir/palantir/utils/binary"
 	err "github.com/Palantir/palantir/utils/error"
 	"github.com/Palantir/palantir/utils/log"
@@ -15,6 +17,8 @@ type bdoParser struct {
 	content  []byte
 	metadata map[string]string
 	endiness binary.ByteOrder
+	context  *shield.SerializeParseContext
+	Results  *result.DetectorResult
 }
 
 var (
@@ -24,12 +28,14 @@ var (
 	shield0p6VersionTag = "0.6" + strings.Repeat("\000", 13)
 )
 
-func newBdoParser(name string, filecontent []byte) *bdoParser {
+func newBdoParser(name string, filecontent []byte, context *shield.SerializeParseContext) *bdoParser {
 	return &bdoParser{
+		context:  context,
 		filename: name,
 		content:  filecontent,
 		metadata: map[string]string{},
 		endiness: nil,
+		Results:  result.NewDetectorResult(),
 	}
 }
 
@@ -37,7 +43,8 @@ func (p *bdoParser) Parse() error {
 	if err := p.validateShieldVersion(); err != nil {
 		return err
 	}
-
+	p.Results.DetectorMetadata = p.metadata
+	p.metadata["filename"] = p.filename
 	for {
 		if len(p.content) == 0 {
 			return nil
@@ -57,10 +64,10 @@ func (p *bdoParser) validateShieldVersion() error {
 		return err.NewApp("Shield [0:6] don't match xSH12A")
 	}
 	if string(p.content[6:8]) == lilteEndianFormat {
-		p.metadata["endianess"] = "litle-endian"
+		p.metadata["endianness"] = "litle-endian"
 		p.endiness = binary.LittleEndian
 	} else if string(p.content[6:8]) == bigEndianFormat {
-		p.metadata["endianess"] = "big-endian"
+		p.metadata["endianness"] = "big-endian"
 		p.endiness = binary.BigEndian
 	} else {
 		return err.NewApp("Unknown endinaess")

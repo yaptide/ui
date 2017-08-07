@@ -7,7 +7,7 @@ import (
 
 // Rest is error format ready to pass to rest response.
 type Rest struct {
-	api map[string]string
+	API map[string]string
 	log string
 }
 
@@ -23,14 +23,14 @@ func NewRest(key string, value string, optionalMessage string, formatedValues ..
 		logMessage = fmt.Sprintf(optionalMessage, formatedValues...)
 	}
 	return Rest{
-		api: map[string]string{key: value},
+		API: map[string]string{key: value},
 		log: logMessage,
 	}
 }
 
 func (e Rest) Error() string {
 	if e.log != "" {
-		return fmt.Sprint(e.api)
+		return fmt.Sprint(e.API)
 	}
 	return e.log
 }
