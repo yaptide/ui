@@ -1,9 +1,10 @@
 package results
 
 import (
+	"strings"
+
 	"github.com/Palantir/palantir/model/simulation/result"
 	"github.com/Palantir/palantir/utils/log"
-	"strings"
 )
 
 // ParseResults will parse results of shield simulation.
@@ -19,7 +20,7 @@ func ParseResults(input *ShieldParserInput) (*ShieldParserOutput, error) {
 			parser := newBdoParser(bdoFile, []byte(content), input.serializeContext)
 			parseErr := parser.Parse()
 			if parseErr != nil {
-				return nil, parseErr
+				log.Info(parseErr.Error())
 			}
 			simulationResult.AddDetectorResults(parser.Results)
 		}

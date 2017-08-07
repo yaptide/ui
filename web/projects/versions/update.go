@@ -35,7 +35,7 @@ func (h *updateVersionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	updateRQ := struct {
 		Settings project.Settings `json:"settings"`
 	}{}
-	ok = util.DecodeJSONRequest(w, r, updateRQ)
+	ok = util.DecodeJSONRequest(w, r, &updateRQ)
 	if !ok {
 		return
 	}

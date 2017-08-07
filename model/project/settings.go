@@ -107,7 +107,7 @@ func (s *SimulationEngine) UnmarshalJSON(b []byte) error {
 
 	engine, ok := mapJSONToSimulationEngine[input]
 	if !ok {
-		return fmt.Errorf("[Model.ComputingLibrary.UnmarshalJSON] Warning: can not convert %s to ComputingLibrary", input)
+		return fmt.Errorf("[Model.SimulationEngine.UnmarshalJSON] Warning: can not convert %s to SimulationEngine", input)
 	}
 	*s = engine
 	return nil

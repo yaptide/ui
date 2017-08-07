@@ -1,12 +1,13 @@
 package processor
 
 import (
+	"log"
+
 	"github.com/Palantir/palantir/converter/shield/results"
 	"github.com/Palantir/palantir/converter/shield/setup"
 	"github.com/Palantir/palantir/model/project"
 	"github.com/Palantir/palantir/runner"
 	"github.com/Palantir/palantir/runner/file"
-	"log"
 )
 
 type localShieldRequest struct {
@@ -77,10 +78,7 @@ func (ls *localShieldRequest) ParseResults() error {
 		return constructErr
 	}
 
-	parserOutput, parseErr := results.ParseResults(parserInput)
-	if parseErr != nil {
-		return parseErr
-	}
+	parserOutput, _ := results.ParseResults(parserInput)
 	updateErr := ls.session.Result().Update(ls.versionID, parserOutput.Results)
 	if updateErr != nil {
 		return updateErr
