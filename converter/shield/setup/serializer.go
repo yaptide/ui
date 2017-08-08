@@ -3,73 +3,53 @@ package setup
 import (
 	"github.com/Palantir/palantir/converter/shield"
 	"github.com/Palantir/palantir/model/simulation/setup"
+	"github.com/Palantir/palantir/model/simulation/setup/body"
 )
 
 const (
-	beamDatFile      = "beam.dat"
-	detectorsDatFile = "detect.dat"
-	geometryDatFile  = "geo.dat"
-	materialsDatFile = "mat.dat"
+	//beamDatFile      = "beam.dat"
+	//detectorsDatFile = "detect.dat"
+	geometryDatFile = "geo.dat"
+	//materialsDatFile = "mat.dat"
 )
 
 // ShieldSerializer serialize setup.Setup to shield.Config.
 type ShieldSerializer struct {
-	SerializeContext *shield.SerializeParseContext
-	Files            map[string]string
-	setup            *setup.Setup
+	Context     *shield.SerializeParseContext
+	ResultFiles map[string]string
+
+	setup *setup.Setup
 }
 
 // NewShieldSerializer constructor.
 func NewShieldSerializer(setup *setup.Setup) *ShieldSerializer {
 	return &ShieldSerializer{
-		SerializeContext: shield.NewSerializeParseContext(),
-		Files:            map[string]string{},
-		setup:            setup,
+		Context:     createSerializeContext(setup),
+		ResultFiles: make(map[string]string),
+		setup:       setup,
 	}
 }
 
-// Serialize setup.Setup to shield.Config.
-// Return error, if any parser error occurs.
+func createSerializeContext(setup *setup.Setup) *shield.SerializeParseContext {
+	Context := &shield.SerializeParseContext{}
+
+	Context.MapBodyID = make(map[body.ID]shield.BodyID)
+
+	for id := range setup.Bodies {
+		Context.MapBodyID[id] = shield.BodyID(len(Context.MapBodyID) + 1)
+	}
+
+	return Context
+}
+
+// Serialize setup.Setup to s.ResultFiles map, where key: file name, value: file content.
+// Return error, if any serializer error occurs.
 func (s *ShieldSerializer) Serialize() error {
-	mat, err := s.serializeMat()
+	geo, err := serializeGeo(s)
 	if err != nil {
 		return err
 	}
-	s.Files[materialsDatFile] = mat
-
-	geo, err := s.serializeGeo()
-	if err != nil {
-		return err
-	}
-	s.Files[geometryDatFile] = geo
-
-	beam, err := s.serializeBeam()
-	if err != nil {
-		return err
-	}
-	s.Files[beamDatFile] = beam
-
-	detect, err := s.serializeDetect()
-	if err != nil {
-		return err
-	}
-	s.Files[detectorsDatFile] = detect
+	s.ResultFiles[geometryDatFile] = geo
 
 	return nil
-}
-
-func (s *ShieldSerializer) serializeMat() (string, error) {
-	return "", nil
-}
-
-func (s *ShieldSerializer) serializeGeo() (string, error) {
-	return "", nil
-}
-
-func (s *ShieldSerializer) serializeBeam() (string, error) {
-	return "", nil
-}
-
-func (s *ShieldSerializer) serializeDetect() (string, error) {
-	return "", nil
 }

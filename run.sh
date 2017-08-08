@@ -25,7 +25,8 @@ elif [ "$1" = "server:run" ]; then
     echo "{\"port\": \"3001\", \"dbName\": \"palantir-db-dev\", \"dbUsername\": \"palantir\", \"dbPassword\": \"password\", \"dbPort\": \"3005\"}" > $SCRIPT_PATH/conf.json
     startDB "dev" "3005"
     govendor sync
-    DEV=true go run main.go
+    shift
+    DEV=true go run main.go $@
 elif [ "$1" = "server:run:dev" ]; then
     # go get github.com/codegangsta/gin
     echo "{\"port\": \"3001\", \"dbName\": \"palantir-db-dev\", \"dbUsername\": \"palantir-db-dev\", \"dbPassword\": \"password\", \"dbPort\": \"3005\"}" > $SCRIPT_PATH/conf.json
@@ -47,7 +48,7 @@ elif [ "$1" = "check" ]; then
 elif [ "$1" = "docker:run" ]; then
     cd $SCRIPT_PATH
     echo "{\"port\": \"3301\", \"dbName\": \"palantir-db-docker\", \"dbUsername\": \"palantir-db-docker\", \"dbPassword\": \"password\", \"dbPort\": \"27017\". \"dbHost\": \"172.17.1.1\"}" > $SCRIPT_PATH/conf.json
-    startDB "docker" "27017" 
+    startDB "docker" "27017"
     docker build --force-rm --tag palantir $SCRIPT_PATH
     docker run --tty --interactive --rm -p 3301:3301 --name=palantir palantir:latest
 elif [ "$1" = "prod:run" ]; then
@@ -58,7 +59,7 @@ elif [ "$1" = "prod:run" ]; then
 
 
     go install -v
-    DEV=true palantir 
+    DEV=true palantir
 elif [ "$1" = "setup:go" ]; then
     cd $SCRIPT_PATH
     go get -u github.com/alecthomas/gometalinter
@@ -67,22 +68,26 @@ elif [ "$1" = "setup:go" ]; then
     go get  github.com/codegangsta/gin
     npm install
 elif [ "$1" = "server:test" ]; then
-    govendor test +local
+    shift
+    govendor test +local $@
 else
-    echo "
-    client:check - run all checks lint+flow+test
-    client:deploy - generate static client code
-    client:run - run client dev server
+    echo "\
+Usage: $0 COMMAND [ARGS]
 
-    setup:go - get all tools required in dev environment
-    server:run - run server
-    server:run:dev - run server with hot reloading - TODO
-    server:check - run linters and tests on backend
-    server:test - run server tests
+Commands:
+    client:check	run all checks lint+flow+test
+    client:deploy	generate static client code
+    client:run		run client dev server
 
-    check - server:check + client:check
-    docker:run - build & run new docker container
-    prod:run - run production version localy
+    setup:go		get all tools required in dev environment
+    server:run		run server
+    server:run:dev	run server with hot reloading - TODO
+    server:check	run linters and tests on backend
+    server:test		run server tests
+
+    check		server:check + client:check
+    docker:run		build & run new docker container
+    prod:run		run production version localy
     "
 fi
 

@@ -30,12 +30,12 @@ func newLocalShieldRequest(mainRequestComponent *mainRequestComponent, runner *f
 func (ls *localShieldRequest) SerializeModel() error {
 	serializer := setup.NewShieldSerializer(ls.mainRequestComponent.setup)
 	serializeErr := serializer.Serialize()
+	_ = serializer.ResultFiles
 	if serializeErr != nil {
 		_ = ls.session.Project().SetVersionStatus(ls.versionID, project.Failure)
 		return serializeErr
 	}
-	_ = serializer.Files
-	ls.shieldFileOutput.serializeContext = serializer.SerializeContext
+	ls.shieldFileOutput.serializeContext = serializer.Context
 	ls.shieldFileInput.files = mockParserExample
 	return nil
 }

@@ -1,6 +1,7 @@
 package body
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/Palantir/palantir/model/test"
@@ -28,13 +29,32 @@ var testCases = test.MarshallingCases{
 			"geometry": {
 				"type": "cuboid",
 				"center": {"x": 0, "y": 0, "z": 0},
-				"width": 0, "height": 0
+				"size": {"x": 0, "y": 0, "z": 0}
+			}
+		}`,
+	},
+
+	{
+		&Body{ID: ID(3), Name: "somethin", Geometry: Cylinder{}},
+		`{
+			"id": 3,
+			"name": "somethin",
+			"geometry": {
+				"type": "cylinder",
+				"center": {"x": 0, "y": 0, "z": 0},
+				"height": 0,
+				"radius": 0
 			}
 		}`,
 	},
 
 	{
 		&Point{X: 1.0, Y: 2.0, Z: 3.0},
+		`{"x":1,"y":2,"z":3}`,
+	},
+
+	{
+		&Vec3D{X: 1.0, Y: 2.0, Z: 3.0},
 		`{"x":1,"y":2,"z":3}`,
 	},
 
@@ -49,8 +69,15 @@ var testCases = test.MarshallingCases{
 	},
 
 	{
-		&Cuboid{Center: Point{1.0, 2.0, -100.0}, Width: 100.0, Height: 40.0},
-		`{"type":"cuboid","center":{"x":1,"y":2,"z":-100},"width":100,"height":40}`,
+		&Cuboid{Center: Point{1.0, 2.0, -100.0}, Size: Vec3D{5.0, 2.0, 6.0}},
+		`{"type":"cuboid",
+		  "center":{"x":1,"y":2,"z":-100},
+		  "size":  {"x":5, "y":2, "z":6}}`,
+	},
+
+	{
+		&Cylinder{Center: Point{1.0, 2.0, -100.0}, Height: 100.0, Radius: 40.0},
+		`{"type":"cylinder","center":{"x":1,"y":2,"z":-100},"height":100,"radius":40}`,
 	},
 }
 
@@ -68,4 +95,13 @@ func TestBodyUnmarshalMarshalled(t *testing.T) {
 
 func TestBodyMarshalUnmarshalled(t *testing.T) {
 	test.MarshalUnmarshalled(t, testCases)
+}
+
+func TestBadGeometryTypeUnmarshalling(t *testing.T) {
+	input := `{"id": 3, "name": "somethin","geometry": {"type": "xaxaxa"}}`
+	body := &Body{}
+	err := json.Unmarshal([]byte(input), body)
+	if err == nil {
+		t.Error("Unmarshalled bad geometry type without error")
+	}
 }
