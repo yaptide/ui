@@ -39,6 +39,14 @@ const projectRoute = {
           cb(null, require('./containers/ProjectDetailsContainer').default);
         }, 'projectDetailsBoundle');
       },
+    }, {
+      path: 'settings/:projectId/:versionId',
+      indexRoute: { onEnter: redirectIfUnlogged() },
+      getComponent(nextState: string, cb: Function) {
+        require.ensure([], (require) => {
+          cb(null, require('./containers/EditSettingsContainer').default);
+        }, 'settingsEditBoundle');
+      },
     },
   ],
 };

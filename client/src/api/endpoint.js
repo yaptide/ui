@@ -14,8 +14,16 @@ const endpoints = {
   versionByProjectIdFromVersionId: (projectId: string, versionId: number) => (
     `projects/${projectId}/versions/create/from/${versionId}`
   ),
-
-  setupById: (simulation: string) => `simulation/setup/${simulation}`,
+  simulationSetup: (projectId: string, versionId: number) => (
+    `projects/${projectId}/versions/${versionId}/setup`
+  ),
+  simulationResults: (projectId: string, versionId: number) => (
+    `projects/${projectId}/versions/${versionId}/result`
+  ),
+  version: (projectId: string, versionId: number) => (
+    `projects/${projectId}/versions/${versionId}`
+  ),
+  SIMULATION_RUN: 'simulation/run',
 };
 
 export default endpoints;

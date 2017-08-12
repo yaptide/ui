@@ -97,6 +97,7 @@ const styles = {
     ...Style.Flex.rootColumn,
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
   },
   button: {
     marginLeft: '0px',

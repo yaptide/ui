@@ -65,6 +65,11 @@ function bodyByConstructionPath(state: { workspace: Map<string, mixed> }, path: 
   return body;
 }
 
+function isWorkspaceLoading(state: { workspace: Map<string, mixed> }) {
+  const dataStatus = state.workspace.get('dataStatus');
+  return dataStatus === 'none' || dataStatus === 'loading';
+}
+
 export default {
   visualisationSelector,
   bodyByConstructionPath,
@@ -74,4 +79,5 @@ export default {
   bodyById,
   materialById,
   zoneByIdPrintable,
+  isWorkspaceLoading,
 };

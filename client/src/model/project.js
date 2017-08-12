@@ -14,15 +14,9 @@ export type Project = {
   id: string,
   name: string,
   description: string,
-  versionIndices: Array<string>,
-};
-
-export type ProjectDetails = {
-  id: string,
-  name: string,
-  description: string,
+  versionIds: Array<number>,
   versions: Array<Version>,
-}
+};
 
 export type Version = {
   id: number,
@@ -33,16 +27,20 @@ export type Version = {
 }
 
 export type Settings = {
-  library: SimulationLibrary,
-  engine: ComputeEngine,
+  computingLibrary: ComputingLibrary,
+  simulationEngine: SimulationEngine,
 }
 
-export type SimulationStatus = 'current' | // local changes
-  'success' | // last simulation finished without errors
-  'error' | // simulation tun unsucessful
-  'inprogress' | // simulation is in progress
-  'none'; // there was no build or any changes in this version
+export type SimulationStatus = 'curre' | // local changes
+  'new' |
+  'edited' |
+  'running' |
+  'pending' |
+  'success' |
+  'failure' |
+  'interrupted' |
+  'canceled'
 
-export type SimulationLibrary = 'shield';
-export type ComputeEngine = 'local' | 'plgrid';
+export type ComputingLibrary = 'shield' | '';
+export type SimulationEngine = 'local' | 'plgrid' | '';
 

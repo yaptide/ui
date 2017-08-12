@@ -1,61 +1,37 @@
 /* @flow */
 
 import type { Store } from 'store/reducers';
-import { Map, Seq } from 'immutable';
-import type { Project, ProjectDetails } from 'model/project';
+import type { Project, Version, Settings } from 'model/project';
 
+function projectListSelector(state: Store): Array<Project> {
+  return state.project.get('projectIds');
+}
 
-const projectListSelector = (state: Store) => {
-  return state.project.get('projectIds', Seq());
-};
+function projectSelector(state: Store, projectId: string): ?Project {
+  const project = state.project.getIn(['projects', projectId, 'project']);
+  return project ? project.toJS() : undefined;
+}
 
-const projectOverviewSelector = (state: Store, projectId: string): Project => {
-  return state.project.getIn(['projects', projectId], Map()).toJS();
-};
+function versionSelector(
+  state: Store, projectId: string, versionId: number,
+): ?Version {
+  const version = state.project.getIn(['projects', projectId, 'versions', String(versionId)]);
+  return version ? version.toJS() : undefined;
+}
 
-const projectDetailsSelector = (): ProjectDetails => {
-  return {
-    id: 'rwhgur',
-    name: 'Example project 1',
-    description: 'Short project description', // eslint-disable-line
-    versions: [
-      {
-        id: 1,
-        setupId: 'wuiergfier',
-        resultsId: 'wrgunferioufn',
-        errors: undefined,
-        status: 'error',
-        settings: {
-          library: 'shield',
-          engine: 'local',
-        },
-      }, {
-        id: 2,
-        setupId: 'erihbgfir',
-        resultsId: 'wrufiurnwi',
-        errors: ['SHIELD HIT ERROR', 'PARSING ERRROR...'],
-        status: 'success',
-        settings: {
-          library: 'shield',
-          engine: 'plgrid',
-        },
-      }, {
-        id: 3,
-        setupId: 'erihbgfir',
-        resultsId: 'wrufiurnwi',
-        errors: ['SHIELD HIT ERROR', 'PARSING ERRROR...'],
-        status: 'current',
-        settings: {
-          library: 'shield',
-          engine: 'plgrid',
-        },
-      },
-    ],
-  };
-};
+function versionSettingsSelector(
+  state: Store, projectId: string, versionId: number,
+): ?Settings {
+  const settings = state.project.getIn(
+    ['projects', projectId, 'versions', String(versionId), 'settings'],
+  );
+  return settings ? settings.toJS() : undefined;
+}
+
 
 export default {
   projectListSelector,
-  projectOverviewSelector,
-  projectDetailsSelector,
+  projectSelector,
+  versionSelector,
+  versionSettingsSelector,
 };

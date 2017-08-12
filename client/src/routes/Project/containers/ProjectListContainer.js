@@ -29,7 +29,7 @@ class ProjectListContainer extends React.Component {
   }
 
   render() {
-    if (this.props.isFetchPending) return <LoadingCircle />;
+    if (this.props.isFetchPending || !this.props.projects) return <LoadingCircle />;
     return (
       <ProjectListLayout
         projects={this.props.projects}

@@ -4,30 +4,55 @@ import React from 'react';
 import { connect } from 'react-redux';
 import type { Store } from 'store/reducers';
 
-import type { ProjectDetails } from 'model/project';
+import type { Project } from 'model/project';
 import selector from '../selector';
+import { actionCreator } from '../reducer';
 import ProjectDetailsLayout from '../components/ProjectDetailsLayout';
 
 type Props = {
-  project: ProjectDetails,
+  project: Project,
+  fetchProjects: () => void,
+  createVersionFromLatest: () => void,
 };
 
 
 class ProjectDetailsContainer extends React.Component {
-  props: Props;
+  props: Props
+
+  componentWillMount() {
+    this.props.fetchProjects();
+  }
+
+
   render() {
+    if (!this.props.project) {
+      return <div />;
+    }
     return (
-      <ProjectDetailsLayout {...this.props.project} />
+      <ProjectDetailsLayout
+        createVersionFromLatest={this.props.createVersionFromLatest}
+        {...this.props.project}
+      />
     );
   }
 }
 
-const mapStateToProps = (state: Store) => {
+const mapStateToProps = (state: Store, props: Object) => {
   return {
-    project: selector.projectDetailsSelector(state, 'wfnewofnwoe'),
+    project: selector.projectSelector(state, props.params.projectId),
+  };
+};
+
+const mapDispatchToProps = (dispatch, props) => {
+  return {
+    fetchProjects: () => dispatch(actionCreator.fetchProjects()),
+    createVersionFromLatest: () => (
+      dispatch(actionCreator.createNewVersion(props.params.projectId))
+    ),
   };
 };
 
 export default connect(
   mapStateToProps,
+  mapDispatchToProps,
 )(ProjectDetailsContainer);

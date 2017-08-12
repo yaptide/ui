@@ -5,6 +5,7 @@ import { redirectIfUnlogged } from 'utils/router';
 import Auth from './Auth';
 import Project from './Project';
 import Workspace from './Workspace';
+import Results from './Results';
 import staticPages from './staticPages';
 
 const routes = {
@@ -14,6 +15,7 @@ const routes = {
     Auth,
     Project,
     Workspace,
+    Results,
     {
       path: 'account',
       indexRoute: { onEnter: redirectIfUnlogged() },

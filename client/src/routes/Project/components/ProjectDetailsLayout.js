@@ -2,26 +2,40 @@
 
 import React from 'react';
 import Style from 'styles';
-import type { ProjectDetails } from 'model/project';
-import ProjectVersionListItem from './ProjectVersionListItem';
+import type { Project } from 'model/project';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
+import IconAdd from 'material-ui/svg-icons/content/add';
+import VersionItemContainer from '../containers/VersionItemContainer';
 
 type Props = {
-} & ProjectDetails
+  createVersionFromLatest: () => void,
+} & Project
 
 class ProjectDetailsLayout extends React.Component {
-  props: Props;
+  props: Props
 
   render() {
-    const versions = this.props.versions.slice().reverse().map((e, i) => {
+    const versions = this.props.versionIds.reverse().map((version) => {
       return (
-        <ProjectVersionListItem key={i} {...e} />
+        <VersionItemContainer
+          key={version}
+          versionId={version}
+          projectId={this.props.id}
+        />
       );
     });
 
     return (
       <div style={styles.container}>
-        <p style={styles.projectName}>{this.props.name}</p>
-        <p style={styles.projectDescription}>{this.props.description}</p>
+        <div style={styles.header}>
+          <div style={styles.descriptionBlock}>
+            <p style={styles.projectName}>{this.props.name}</p>
+            <p style={styles.projectDescription}>{this.props.description}</p>
+          </div>
+          <FloatingActionButton onTouchTap={this.props.createVersionFromLatest} >
+            <IconAdd />
+          </FloatingActionButton>
+        </div>
         {versions}
       </div>
     );
@@ -32,6 +46,13 @@ const styles = {
   container: {
     alignItems: 'stretch',
     padding: Style.Dimens.spacing.large,
+  },
+  header: {
+    ...Style.Flex.rootRow,
+  },
+  descriptionBlock: {
+    ...Style.Flex.rootColumn,
+    ...Style.Flex.elementEqual,
   },
   projectName: {
     fontFamily: Style.Theme.fontFamily,

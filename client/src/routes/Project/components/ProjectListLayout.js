@@ -6,7 +6,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import PlusIcon from 'material-ui/svg-icons/content/add';
 import Style from 'styles';
 
-import ProjectListItemContainer from '../containers/ProjectListItemContainer';
+import ProjectItemContainer from '../containers/ProjectItemContainer';
 
 type Props = {
   projects: List<string>,
@@ -18,7 +18,7 @@ class ProjectListLayout extends React.Component {
 
   render() {
     const projects = this.props.projects.map(id => (
-      <ProjectListItemContainer
+      <ProjectItemContainer
         key={id}
         projectId={id}
         style={styles.item}

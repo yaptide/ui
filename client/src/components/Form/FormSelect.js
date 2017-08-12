@@ -6,8 +6,9 @@ import MenuItem from 'material-ui/MenuItem';
 import Style from 'styles';
 
 type Props = {
+  type?: any,
   value: any,
-  onChange: (value: any) => void,
+  onChange: (value: any, type: any) => void,
   options: Array<{ field: string, label: string }>,
 }
 
@@ -15,7 +16,7 @@ class FormSelect extends React.Component {
   props: Props
 
   onChange = (event: mixed, index: number, value: any) => {
-    this.props.onChange(value);
+    this.props.onChange(value, this.props.type);
   }
 
   render() {

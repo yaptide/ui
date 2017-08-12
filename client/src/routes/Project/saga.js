@@ -4,7 +4,7 @@ import { takeLatest } from 'redux-saga';
 import { fork, call, put } from 'redux-saga/effects';
 import api, { endpoint } from 'api';
 import router from 'utils/router';
-import type { Project } from 'model/project';
+import type { Project, Settings } from 'model/project';
 import { actionType } from './reducer';
 
 export function* fetchProjects(): Generator<*, *, *> {
@@ -69,6 +69,34 @@ export function* createNewVersionFrom(
   }
 }
 
+export function* startSimulation(
+  action: { projectId: string, versionId: number },
+): Generator<*, *, *> {
+  try {
+    yield call(api.post, endpoint.SIMULATION_RUN, {
+      projectId: action.projectId, versionId: String(action.versionId),
+    });
+    yield put({ type: actionType.START_SIMULATION_SUCCESS });
+    yield call(fetchProjects);
+  } catch (error) {
+    yield put({ type: actionType.START_SIMULATION_ERROR, error: error.response.data });
+  }
+}
+
+export function* updateVersionSettings(
+  action: { settings: Settings, projectId: string, versionId: number },
+): Generator<*, *, *> {
+  try {
+    const { versionId, projectId, settings } = action;
+    yield call(api.put, endpoint.version(projectId, versionId), { settings });
+    yield put({ type: actionType.UPDATE_VERSION_SETTINGS_SUCCESS });
+    yield call(fetchProjects);
+    yield call(router.push, `project/${projectId}`);
+  } catch (error) {
+    yield put({ type: actionType.UPDATE_VERSION_SETTINGS_ERROR, error: error.response.data });
+  }
+}
+
 export function* watchFetchProjects(): Generator<*, *, *> {
   yield call(takeLatest, actionType.FETCH_PROJECTS, fetchProjects);
 }
@@ -89,6 +117,14 @@ export function* watchCreateNewVersionFrom(): Generator<*, *, *> {
   yield call(takeLatest, actionType.CREATE_NEW_VERSION_FROM, createNewVersionFrom);
 }
 
+export function* watchStartSimulation(): Generator<*, *, *> {
+  yield call(takeLatest, actionType.START_SIMULATION, startSimulation);
+}
+
+export function* watchUpdateVersionSettings(): Generator<*, *, *> {
+  yield call(takeLatest, actionType.UPDATE_VERSION_SETTINGS, updateVersionSettings);
+}
+
 export default function* projectSaga(): Generator<*, *, *> {
   yield [
     fork(watchFetchProjects),
@@ -96,5 +132,7 @@ export default function* projectSaga(): Generator<*, *, *> {
     fork(watchUpdateProject),
     fork(watchCreateNewVersion),
     fork(watchCreateNewVersionFrom),
+    fork(watchStartSimulation),
+    fork(watchUpdateVersionSettings),
   ];
 }

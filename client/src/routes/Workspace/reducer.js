@@ -12,6 +12,12 @@ import stateProcessor from './reducerHelpers';
 export const actionType = {
   SYNC_WORKSPACE_WITH_SERVER: 'SYNC_WORKSPACE_WITH_SERVER',
 
+  SETUP_WORKSPACE: 'SETUP_WORKSPACE',
+  FETCH_SIMULATION_SETUP: 'FETCH_SIMULATION_SETUP',
+  FETCH_SIMULATION_SETUP_PENDING: 'FETCH_SIMULATION_SETUP_PENDING',
+  FETCH_SIMULATION_SETUP_SUCCESS: 'FETCH_SIMULATION_SETUP_SUCCESS',
+  FETCH_SIMULATION_SETUP_ERROR: 'FETCH_SIMULATION_SETUP_ERROR',
+
   CREATE_ZONE: 'CREATE_ZONE',
   DELETE_ZONE: 'DELETE_ZONE',
   CHANGE_ZONE_OPERATION_TYPE: 'CHANGE_ZONE_OPERATION_TYPE',
@@ -32,6 +38,19 @@ export const actionType = {
 };
 
 const ACTION_HANDLERS = {
+  [actionType.SETUP_WORKSPACE]: (state, action) => (
+    fromJS({ projectId: action.projectId, versionId: action.versionId, ...emptyState() })
+  ),
+  [actionType.FETCH_SIMULATION_SETUP]: state => (
+    state.merge({
+      dataStatus: state.get('dataStatus') === 'none' ? 'pendingReducer' : state.get('dataStatus'),
+    })
+  ),
+  [actionType.FETCH_SIMULATION_SETUP_PENDING]: state => state.merge({ dataStatus: 'pendingReducer' }),
+  [actionType.FETCH_SIMULATION_SETUP_SUCCESS]: (state, action) => (
+    state.merge({ dataStatus: 'ready', ...action.geometry })
+  ),
+  [actionType.FETCH_SIMULATION_SETUP_ERROR]: state => state.merge({ dataStatus: 'error' }),
   [actionType.CREATE_ZONE]: state => stateProcessor.zone.create(state),
   [actionType.DELETE_ZONE]: (state, action) => stateProcessor.zone.delete(state, action.zoneId),
   [actionType.CHANGE_ZONE_OPERATION_TYPE]: (state, action) => (
@@ -70,6 +89,12 @@ const ACTION_HANDLERS = {
 };
 
 export const actionCreator = {
+  setupWorkspace(projectId: string, versionId: number) {
+    return { type: actionType.SETUP_WORKSPACE, projectId, versionId };
+  },
+  fetchSimulationSetup() {
+    return { type: actionType.FETCH_SIMULATION_SETUP };
+  },
   updateBody(body: Body) {
     return { type: actionType.UPDATE_BODY, body };
   },
@@ -110,6 +135,11 @@ export const actionCreator = {
   },
 };
 
+const emptyState = () => ({
+  zoneLayerParent: undefined,
+  singleLayerView: true,
+  dataStatus: 'none',
+});
 const initialState = fromJS({
   zoneLayerParent: undefined,
   singleLayerView: true,

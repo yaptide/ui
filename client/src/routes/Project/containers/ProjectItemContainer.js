@@ -4,7 +4,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import router from 'utils/router';
 import type { Project } from 'model/project';
-import ProjectListItemLayout from '../components/ProjectListItemLayout';
+import ProjectListItemLayout from '../components/ProjectItemLayout';
 import selector from '../selector';
 
 type Props = {
@@ -38,7 +38,7 @@ class ProjectListItemContainer extends React.Component {
 
 const mapStateToProps = (state, props) => {
   return {
-    project: selector.projectOverviewSelector(state, props.projectId),
+    project: selector.projectSelector(state, props.projectId),
   };
 };
 

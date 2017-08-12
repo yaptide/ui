@@ -66,7 +66,7 @@ class EditProjectContainer extends React.Component {
 
 const mapStateToProps = (state, props) => {
   return {
-    project: selector.projectOverviewSelector(state, props.params.projectId),
+    project: selector.projectSelector(state, props.params.projectId),
   };
 };
 
