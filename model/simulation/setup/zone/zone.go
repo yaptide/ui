@@ -22,7 +22,13 @@ type ID int64
 // Eg: Base{sphere}. Construction{{sphere, union}, {cuboid, intersect}] is zone made from
 // intersection of cuboid and union of 2 spheres.
 type Zone struct {
-	ID           ID           `json:"id"`
+	ID ID `json:"id"`
+
+	// ID of parent. If ID == 0 then Zone is a root.
+	ParentID ID `json:"parentId"`
+
+	Children []ID `json:"children,omitempty"`
+
 	Name         string       `json:"name"`
 	BaseID       body.ID      `json:"baseId"`
 	MaterialID   material.ID  `json:"materialId"`

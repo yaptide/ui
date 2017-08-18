@@ -1,4 +1,4 @@
 {
-  "Disable": ["gocyclo", "safesql"],
+  "Disable": ["aligncheck", "gocyclo", "safesql"],
   "Exclude": ["^vendor/"]
 }

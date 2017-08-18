@@ -3,8 +3,12 @@ package setup
 
 import (
 	"github.com/Palantir/palantir/model/simulation/setup/body"
+	"github.com/Palantir/palantir/model/simulation/setup/material"
 	"github.com/Palantir/palantir/model/simulation/setup/zone"
 )
+
+// MaterialMap type used in Setup structure.
+type MaterialMap map[material.ID]*material.Material
 
 // BodyMap type used in Setup structure.
 type BodyMap map[body.ID]*body.Body
@@ -14,14 +18,16 @@ type ZoneMap map[zone.ID]*zone.Zone
 
 // Setup contains all simulation data.
 type Setup struct {
-	Bodies BodyMap `json:"bodies"`
-	Zones  ZoneMap `json:"zones"`
+	Materials MaterialMap `json:"materials"`
+	Bodies    BodyMap     `json:"bodies"`
+	Zones     ZoneMap     `json:"zones"`
 }
 
 // NewEmptySetup constructor.
 func NewEmptySetup() *Setup {
 	return &Setup{
-		Bodies: make(BodyMap),
-		Zones:  make(ZoneMap),
+		Materials: make(MaterialMap),
+		Bodies:    make(BodyMap),
+		Zones:     make(ZoneMap),
 	}
 }
