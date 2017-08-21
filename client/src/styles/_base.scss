@@ -8,8 +8,9 @@ div {
   font-family: 'Roboto';
 }
 
-a {
+a, a:visited, a:hover {
   text-decoration: none;
+  color: rgb(0, 151, 167);
 }
 ::-webkit-scrollbar { 
 //  display: none; 

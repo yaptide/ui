@@ -18,7 +18,7 @@ const darkTheme = {
     accent1Color: pinkA200,
     accent2Color: pinkA400,
     accent3Color: pinkA100,
-    textColor: fullWhite,
+    textColor: '#DDDDDD',
     secondaryTextColor: fade(fullWhite, 0.7),
     alternateTextColor: '#303030',
     canvasColor: '#303030',
