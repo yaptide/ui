@@ -14,7 +14,7 @@ import {
 import * as Three from 'three'; //eslint-disable-line
 import OrbitControls from 'three-orbitcontrols';
 import type { Dim } from 'model/simulation/body';
-import ResizeHOC from './ResizeHOC';
+import ResizeHOC from '../Utils/ResizeHOC';
 import InteractiveCamera from './InteractiveCamera';
 
 type Props = {
