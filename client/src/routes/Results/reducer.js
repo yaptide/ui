@@ -40,7 +40,7 @@ const ACTION_HANDLERS = {
     });
   },
   [actionType.FETCH_SIMULATION_RESULTS_ERROR]: (state, action) => (
-    state.merge({ isResultFetchPending: false, error: action.error })
+    state.merge({ isResultFetchPending: false, error: action.error, dataStatus: 'error' })
   ),
 };
 

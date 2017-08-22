@@ -17,9 +17,9 @@ class ProjectListLayout extends React.Component {
   props: Props;
 
   render() {
-    const projects = this.props.projects.map(id => (
+    const projects = this.props.projects.map((id, index) => (
       <ProjectItemContainer
-        key={id}
+        key={index}
         projectId={id}
         style={styles.item}
       />
@@ -30,6 +30,7 @@ class ProjectListLayout extends React.Component {
           onTouchTap={this.props.createNewProject}
           icon={<PlusIcon />}
           style={styles.itemBtn}
+          href="#/project/new"
         />
         {projects}
       </div>

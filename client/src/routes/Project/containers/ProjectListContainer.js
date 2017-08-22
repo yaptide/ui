@@ -24,12 +24,14 @@ class ProjectListContainer extends React.Component {
     this.props.fetchProjects();
   }
 
-  createNewProject = () => {
+  createNewProject = (e: any) => {
+    e.preventDefault();
+    if (e.nativeEvent.button !== 0) return;
     router.push('project/new');
   }
 
   render() {
-    if (this.props.isFetchPending || !this.props.projects) return <LoadingCircle />;
+    if (!this.props.projects) return <LoadingCircle />;
     return (
       <ProjectListLayout
         projects={this.props.projects}
@@ -48,7 +50,7 @@ const mapStateToProps = (state: Store) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchProjects: () => dispatch(actionCreator.fetchProjects()),
+    fetchProjects: () => dispatch(actionCreator.ensureProjects()),
   };
 };
 

@@ -1,14 +1,23 @@
 /* @flow */
 
-import { takeLatest } from 'redux-saga';
-import { fork, call, put } from 'redux-saga/effects';
+import { takeLatest, delay } from 'redux-saga';
+import { fork, call, put, select } from 'redux-saga/effects';
 import api, { endpoint } from 'api';
 import router from 'utils/router';
 import type { Project, Settings } from 'model/project';
+import { List, Map } from 'immutable';
 import { actionType } from './reducer';
+
+export function* ensureProjects(): Generator<*, *, *> {
+  const projects = yield select(store => store.project.get('projects'));
+  if (!projects) {
+    yield call(fetchProjects);
+  }
+}
 
 export function* fetchProjects(): Generator<*, *, *> {
   try {
+    yield put({ type: actionType.FETCH_PROJECTS_PENDING });
     const response = yield call(api.get, endpoint.PROJECT);
     const projects = response.data ? response.data.projects : [];
     projects.reverse();
@@ -46,7 +55,7 @@ export function* createNewVersion(action: { projectId: string }): Generator<*, *
   try {
     yield call(api.post, endpoint.versionByProjectId(action.projectId));
     yield put({ type: actionType.CREATE_NEW_VERSION_SUCCESS });
-    yield call(fetchProjects); // TODO: better solution possible
+    yield call(fetchProjects);
     yield call(router.push, `project/${action.projectId}`);
   } catch (error) {
     yield put({ type: actionType.CREATE_NEW_VERSION_ERROR, error: error.response.data });
@@ -101,6 +110,10 @@ export function* watchFetchProjects(): Generator<*, *, *> {
   yield call(takeLatest, actionType.FETCH_PROJECTS, fetchProjects);
 }
 
+export function* watchEnsureProjects(): Generator<*, *, *> {
+  yield call(takeLatest, actionType.ENSURE_PROJECTS, ensureProjects);
+}
+
 export function* watchCreateNewProject(): Generator<*, *, *> {
   yield call(takeLatest, actionType.CREATE_NEW_PROJECT, createNewProject);
 }
@@ -125,14 +138,44 @@ export function* watchUpdateVersionSettings(): Generator<*, *, *> {
   yield call(takeLatest, actionType.UPDATE_VERSION_SETTINGS, updateVersionSettings);
 }
 
+export function* watchRunningSimulations(): Generator<*, *, *> {
+  const projectIdsSelector = store => store.project.get('projectIds', List());
+  const projectsSelector = store => store.project.get('projects', Map());
+  for (;;) {
+    try {
+      yield call(delay, 5000);
+      const projects = yield select(projectsSelector);
+      const projectIds = yield select(projectIdsSelector);
+      const isSimulationRunning = !projectIds.every((projectId) => {
+        const project = projects.get(projectId);
+        const lastVersionId = project.getIn(['project', 'versionIds'], List()).last();
+        if (lastVersionId !== undefined) {
+          const version = project.getIn(['versions', String(lastVersionId)]);
+          if (version && (version.get('status') === 'running' || version.get('status') === 'pending')) {
+            return false;
+          }
+        }
+        return true;
+      });
+      if (isSimulationRunning) {
+        yield call(fetchProjects);
+      }
+    } catch (error) {
+      // ignore error
+    }
+  }
+}
+
 export default function* projectSaga(): Generator<*, *, *> {
   yield [
     fork(watchFetchProjects),
+    fork(watchEnsureProjects),
     fork(watchCreateNewProject),
     fork(watchUpdateProject),
     fork(watchCreateNewVersion),
     fork(watchCreateNewVersionFrom),
     fork(watchStartSimulation),
     fork(watchUpdateVersionSettings),
+    fork(watchRunningSimulations),
   ];
 }

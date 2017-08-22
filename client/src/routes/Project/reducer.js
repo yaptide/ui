@@ -6,6 +6,8 @@ import type { ProjectState, Project, Settings } from 'model/project';
 
 export const actionType = {
   FETCH_PROJECTS: 'FETCH_PROJECTS',
+  ENSURE_PROJECTS: 'ENSURE_PROJECTS',
+  FETCH_PROJECTS_PENDING: 'FETCH_PROJECTS_PENDING',
   FETCH_PROJECTS_SUCCESS: 'FETCH_PROJECTS_SUCCESS',
   FETCH_PROJECTS_ERROR: 'FETCH_PROJECTS_ERROR',
 
@@ -35,7 +37,7 @@ export const actionType = {
 };
 
 const ACTION_HANDLERS = {
-  [actionType.FETCH_PROJECTS]: (state: ProjectState) => {
+  [actionType.FETCH_PROJECTS_PENDING]: (state: ProjectState) => {
     return state.set('isFetchProjectsPending', true);
   },
   [actionType.FETCH_PROJECTS_SUCCESS]: (state: ProjectState, action: Object) => {
@@ -126,6 +128,9 @@ const ACTION_HANDLERS = {
 export const actionCreator = {
   fetchProjects() {
     return { type: actionType.FETCH_PROJECTS };
+  },
+  ensureProjects() {
+    return { type: actionType.ENSURE_PROJECTS };
   },
   createNewProject(project: Project) {
     return { type: actionType.CREATE_NEW_PROJECT, project };

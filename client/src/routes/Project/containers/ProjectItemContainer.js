@@ -8,7 +8,7 @@ import ProjectListItemLayout from '../components/ProjectItemLayout';
 import selector from '../selector';
 
 type Props = {
-  projectId: number,
+  projectId: string,
   project: Project,
   style?: Object,
 };
@@ -16,17 +16,22 @@ type Props = {
 class ProjectListItemContainer extends React.Component {
   props: Props
 
-  goToProjectDetails = () => {
+  goToProjectDetails = (e: any) => {
+    e.preventDefault();
+    if (e.nativeEvent.button !== 0) return;
     router.push(`/project/${this.props.projectId}`);
   }
 
-  goToProjectEdit = () => {
+  goToProjectEdit = (e: any) => {
+    e.preventDefault();
+    if (e.nativeEvent.button !== 0) return;
     router.push(`/project/edit/${this.props.projectId}`);
   }
 
   render() {
     return (
       <ProjectListItemLayout
+        projectId={this.props.projectId}
         project={this.props.project}
         goToProjectDetails={this.goToProjectDetails}
         goToProjectEdit={this.goToProjectEdit}

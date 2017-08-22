@@ -45,10 +45,10 @@ const mapStateToProps = (state: Store, props: Object) => {
 
 const mapDispatchToProps = (dispatch, props) => {
   return {
-    fetchProjects: () => dispatch(actionCreator.fetchProjects()),
     createVersionFromLatest: () => (
       dispatch(actionCreator.createNewVersion(props.params.projectId))
     ),
+    fetchProjects: () => dispatch(actionCreator.ensureProjects()),
   };
 };
 

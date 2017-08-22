@@ -30,9 +30,18 @@ class ProjectDetailsLayout extends React.Component {
         <div style={styles.header}>
           <div style={styles.descriptionBlock}>
             <p style={styles.projectName}>{this.props.name}</p>
-            <p style={styles.projectDescription}>{this.props.description}</p>
+            <p style={styles.projectDescription}>
+              {
+                this.props.description
+                  .split('\n')
+                  .map((item, key) => <span key={key}>{item}<br /></span>)
+              }
+            </p>
           </div>
-          <FloatingActionButton onTouchTap={this.props.createVersionFromLatest} >
+          <FloatingActionButton
+            onTouchTap={this.props.createVersionFromLatest}
+            href={`#/project/${this.props.id}`}
+          >
             <IconAdd />
           </FloatingActionButton>
         </div>
@@ -49,10 +58,12 @@ const styles = {
   },
   header: {
     ...Style.Flex.rootRow,
+    alignItems: 'flex-start',
   },
   descriptionBlock: {
     ...Style.Flex.rootColumn,
     ...Style.Flex.elementEqual,
+    marginRight: Style.Dimens.spacing.normal,
   },
   projectName: {
     fontFamily: Style.Theme.fontFamily,

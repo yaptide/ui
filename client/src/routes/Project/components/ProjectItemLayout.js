@@ -8,6 +8,7 @@ import type { Project } from 'model/project';
 
 
 type Props = {
+  projectId: string,
   project: Project,
   goToProjectDetails: () => void,
   goToProjectEdit: () => void,
@@ -37,11 +38,13 @@ class ProjectListItemLayout extends React.Component {
             primary
             label={t('project.showDetailsBtn')}
             onTouchTap={this.props.goToProjectDetails}
+            href={`#/project/${this.props.projectId}`}
           />
           <RaisedButton
             primary
             label={t('project.projectEdit')}
             onTouchTap={this.props.goToProjectEdit}
+            href={`#/project/edit/${this.props.projectId}`}
           />
         </CardActions>
       </Card>

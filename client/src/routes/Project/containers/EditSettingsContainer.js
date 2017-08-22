@@ -96,7 +96,7 @@ const mapDispatchToProps = (dispatch, props) => {
         settings, props.params.projectId, props.params.versionId,
       ))
     ),
-    fetchProjects: () => dispatch(actionCreator.fetchProjects()),
+    fetchProjects: () => dispatch(actionCreator.ensureProjects()),
   };
 };
 

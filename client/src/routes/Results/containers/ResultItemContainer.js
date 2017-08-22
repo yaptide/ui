@@ -9,7 +9,7 @@ import selector from '../selector';
 
 type Props = {
   projectId: string,
-  versionId: string,
+  versionId: number,
   detectorId: DetectorResultId,
   detectorOverview: DetectorResultsInfo,
   style?: Object,
@@ -18,7 +18,9 @@ type Props = {
 class ResultItemContainer extends React.Component {
   props: Props
 
-  goToDetectorScore = () => {
+  goToDetectorScore = (e: any) => {
+    e.preventDefault();
+    if (e.nativeEvent.button !== 0) return;
     const { projectId, versionId, detectorId } = this.props;
     router.push(`/result/${detectorId}/${projectId}/${versionId}`);
   }
@@ -26,6 +28,9 @@ class ResultItemContainer extends React.Component {
   render() {
     return (
       <ResultItemLayout
+        projectId={this.props.projectId}
+        versionId={this.props.versionId}
+        detectorId={this.props.detectorId}
         detectorOverview={this.props.detectorOverview}
         goToDetectorScore={this.goToDetectorScore}
         style={this.props.style}

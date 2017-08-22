@@ -10,10 +10,13 @@ import type { Version } from 'model/project';
 import { mapSimulationStateToColor } from '../enum';
 
 type Props = {
+  projectId: string,
+  versionId: number,
   loadIntoWorkspace: () => void,
   buttonHandlers: Array<{
     handler: () => void,
     label: string,
+    url: (projectId: string, versionId: number) => string,
   }>,
 } & Version;
 
@@ -21,6 +24,8 @@ class VersionItemLayout extends React.Component {
   props: Props;
 
   render() {
+    const { projectId, versionId } = this.props;
+
     const buildStatusColor = mapSimulationStateToColor[this.props.status];
     const buttons = this.props.buttonHandlers.map((button, index) => {
       return (
@@ -28,6 +33,7 @@ class VersionItemLayout extends React.Component {
           key={index}
           label={button.label}
           onTouchTap={button.handler}
+          href={button.url(projectId, versionId)}
         />
       );
     });
@@ -63,6 +69,7 @@ class VersionItemLayout extends React.Component {
             primary
             label={t('project.version.loadIntoWorkspace')}
             onTouchTap={this.props.loadIntoWorkspace}
+            href={`#/project/${projectId}`}
           />
         </CardActions>
         <CardActions >

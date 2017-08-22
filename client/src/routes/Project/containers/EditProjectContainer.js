@@ -20,18 +20,23 @@ class EditProjectContainer extends React.Component {
     name: string,
     description: string,
   } = {
-    name: this.props.project.name || '',
-    description: this.props.project.description || '',
+    name: '',
+    description: '',
   }
 
   componentWillMount() {
-    if (!this.props.project.id) {
+    if (!this.props.project) {
       this.props.fetchProjects();
+    } else {
+      this.setState({
+        name: this.props.project.name,
+        description: this.props.project.description,
+      });
     }
   }
 
   componentWillReceiveProps(props: Props) {
-    if (!this.props.project.id && !!props.project.id) {
+    if (!this.props.project && !!props.project) {
       this.setState({
         name: props.project.name,
         description: props.project.description,
@@ -75,7 +80,7 @@ const mapDispatchToProps = (dispatch, props) => {
     createProject: (project: Project) => (
       dispatch(actionCreator.updateProject(project, props.params.projectId))
     ),
-    fetchProjects: () => dispatch(actionCreator.fetchProjects()),
+    fetchProjects: () => dispatch(actionCreator.ensureProjects()),
   };
 };
 

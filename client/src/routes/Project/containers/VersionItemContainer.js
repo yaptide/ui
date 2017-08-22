@@ -13,7 +13,7 @@ import { mapActionsToVersionState } from '../enum';
 
 type Props = {
   projectId: string,
-  versionId: string,
+  versionId: number,
   version: Version,
   startSimulation: () => void,
   setupWorkspace: () => void,
@@ -24,24 +24,37 @@ class VersionItemContainer extends React.Component {
   props: Props
 
   handlers = {
-    useVersion: () => {
+    useVersion: (e: any) => {
+      e.preventDefault();
+      if (e.nativeEvent.button !== 0) return;
       this.props.createNewVersionFrom();
     },
-    showResults: () => {
+    showResults: (e: any) => {
+      e.preventDefault();
+      if (e.nativeEvent.button !== 0) return;
       const { projectId, versionId } = this.props;
       router.push(`/result/list/${projectId}/${versionId}`);
     },
-    showErrors: () => {
-
+    showErrors: (e: any) => {
+      e.preventDefault();
+      // if (e.nativeEvent.button !== 0) return;
     },
-    startSimulation: this.props.startSimulation,
-    modifySettings: () => {
+    startSimulation: (e: any) => {
+      e.preventDefault();
+      if (e.nativeEvent.button !== 0) return;
+      this.props.startSimulation();
+    },
+    modifySettings: (e: any) => {
+      e.preventDefault();
+      if (e.nativeEvent.button !== 0) return;
       const { projectId, versionId } = this.props;
       router.push(`/project/settings/${projectId}/${versionId}`);
     },
   }
 
-  loadIntoWorkspace = () => {
+  loadIntoWorkspace = (e: any) => {
+    e.preventDefault();
+    if (e.nativeEvent.button !== 0) return;
     this.props.setupWorkspace();
     router.push('/workspace/geometry');
   }
@@ -53,10 +66,12 @@ class VersionItemContainer extends React.Component {
     }
     const buttonHandlers = mapActionsToVersionState
       .filter(item => _.includes(item.condition, this.props.version.status))
-      .map(item => ({ label: item.label, handler: this.handlers[item.action] }));
+      .map(item => ({ label: item.label, handler: this.handlers[item.action], url: item.url }));
 
     return (
       <VersionItemLayout
+        projectId={this.props.projectId}
+        versionId={this.props.versionId}
         {...this.props.version}
         loadIntoWorkspace={this.loadIntoWorkspace}
         buttonHandlers={buttonHandlers}
