@@ -8,9 +8,10 @@ import (
 
 var testCases = test.MarshallingCases{
 	{
-		&Material{ID(1), Predefined{Name: "Methanol"}},
+		&Material{ID(1), Color("#FF0000"), Predefined{Name: "Methanol"}},
 		`{
 			"id": 1,
+			"color": "#FF0000",
 			"material": {
 				"type": "predefined",
 				"name": "Methanol"
@@ -18,7 +19,7 @@ var testCases = test.MarshallingCases{
 		}`,
 	},
 	{
-		&Material{ID(1), Predefined{
+		&Material{ID(1), Color("#FF0000"), Predefined{
 			Name:                      "Methanol",
 			StateOfMatter:             Liquid,
 			Density:                   0.001,
@@ -26,6 +27,7 @@ var testCases = test.MarshallingCases{
 		}},
 		`{
 			"id": 1,
+			"color": "#FF0000",
 			"material": {
 				"type": "predefined",
 				"name": "Methanol",
@@ -35,7 +37,7 @@ var testCases = test.MarshallingCases{
 		}`,
 	},
 	{
-		&Material{ID(1), Compound{
+		&Material{ID(1), Color("#FFFFFF"), Compound{
 			Name:          "ala",
 			Density:       1.2345,
 			StateOfMatter: Gas,
@@ -46,6 +48,7 @@ var testCases = test.MarshallingCases{
 		}},
 		`{
 			"id": 1,
+			"color": "#FFFFFF",
 			"material": {
 				"type": "compound",
 				"name": "ala",
@@ -65,18 +68,19 @@ var testCases = test.MarshallingCases{
 		}`,
 	},
 	{
-		&Material{ID(1), Compound{
+		&Material{ID(1), Color("#AABBCC"), Compound{
 			Name:          "kot",
 			Density:       99.9,
 			StateOfMatter: Liquid,
 			Elements: []Element{
-				Element{Isotope: "Gd-*", RelativeStoichiometricFraction: 2},
+				Element{Isotope: "Gd-*", RelativeStoichiometricFraction: 2, AtomicMass: 100.23},
 				Element{Isotope: "U-235", RelativeStoichiometricFraction: 123, IValue: 555.34},
 			},
 			ExternalStoppingPowerFromPredefined: "Water",
 		}},
 		`{
 			"id": 1,
+			"color": "#AABBCC",
 			"material": {
 				"type": "compound",
 				"name": "kot",
@@ -85,7 +89,8 @@ var testCases = test.MarshallingCases{
 				"elements": [
 					{
 						"isotope": "Gd-*",
-						"relativeStoichiometricFraction": 2
+						"relativeStoichiometricFraction": 2,
+						"atomicMass": 100.23
 					},
 					{
 						"isotope": "U-235",

@@ -35,6 +35,9 @@ func NewRouter(config *config.Config) http.Handler {
 	simulationRouter := router.PathPrefix("/simulation").Subrouter()
 	simulation.HandleSimulation(simulationRouter, context)
 
+	router.Handle("/configuration", &getConfigurationHandler{Context: context, Config: config}).
+		Methods(http.MethodGet)
+
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir(config.StaticDirectory)))
 
 	return handlers.CORS(

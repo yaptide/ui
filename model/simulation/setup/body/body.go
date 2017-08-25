@@ -9,7 +9,7 @@ type ID int64
 // Body store Geometry interface described by ID and Name.
 type Body struct {
 	ID       ID       `json:"id"`
-	Name     string   `json:"name, omitempty"`
+	Name     string   `json:"name,omitempty"`
 	Geometry Geometry `json:"geometry"`
 }
 
@@ -18,7 +18,7 @@ type Body struct {
 func (body *Body) UnmarshalJSON(b []byte) error {
 	type rawBody struct {
 		ID          ID              `json:"id"`
-		Name        string          `json:"name, omitempty"`
+		Name        string          `json:"name,omitempty"`
 		GeometryRaw json.RawMessage `json:"geometry"`
 	}
 

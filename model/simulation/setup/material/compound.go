@@ -14,7 +14,7 @@ type Compound struct {
 
 	Elements []Element `json:"elements"`
 
-	// Load stopping power from external file. The file is selected
+	// Load stopping power from external file - optional. The file is selected
 	// just like in case of Predefined material named by this string.
 	ExternalStoppingPowerFromPredefined string `json:"externalStoppingPowerFromPredefined,omitempty"`
 }
@@ -24,6 +24,9 @@ type Element struct {
 	Isotope string `json:"isotope"`
 
 	RelativeStoichiometricFraction int64 `json:"relativeStoichiometricFraction"`
+
+	// Override atomic mass - optional.
+	AtomicMass float64 `json:"atomicMass,omitempty"`
 
 	// Mean excitation energy (I-value) in eV - optional.
 	IValue float64 `json:"iValue,omitempty"`

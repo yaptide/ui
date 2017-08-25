@@ -9,11 +9,14 @@ import (
 // ID is key type in Material map.
 type ID int64
 
+// Color hex representation #RRGGBB.
+type Color string
+
 // Material defines the zone material that is used in the simulation.
 type Material struct {
-	ID ID `json:"id"`
-
-	Type Type `json:"material"`
+	ID    ID    `json:"id"`
+	Color Color `json:"color"`
+	Type  Type  `json:"material"`
 }
 
 // UnmarshalJSON custom Unmarshal function.
@@ -21,6 +24,7 @@ type Material struct {
 func (m *Material) UnmarshalJSON(b []byte) error {
 	type rawBody struct {
 		ID      ID              `json:"id"`
+		Color   Color           `json:"color"`
 		TypeRaw json.RawMessage `json:"material"`
 	}
 
@@ -30,6 +34,7 @@ func (m *Material) UnmarshalJSON(b []byte) error {
 		return err
 	}
 	m.ID = raw.ID
+	m.Color = raw.Color
 
 	matType, err := unmarshalMaterialType(raw.TypeRaw)
 	if err != nil {

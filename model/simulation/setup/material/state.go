@@ -9,6 +9,10 @@ import (
 type StateOfMatter int
 
 const (
+
+	// NonDefined - only allowed for Predifined
+	NonDefined = iota
+
 	// Solid state of matter.
 	Solid StateOfMatter = iota
 	// Gas state of matter.
