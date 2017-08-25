@@ -3,12 +3,13 @@ package results
 import (
 	"bytes"
 	"encoding/binary"
+	"strings"
+
 	"github.com/Palantir/palantir/converter/shield"
 	"github.com/Palantir/palantir/model/simulation/result"
 	bin "github.com/Palantir/palantir/utils/binary"
-	err "github.com/Palantir/palantir/utils/error"
+	"github.com/Palantir/palantir/utils/errors"
 	"github.com/Palantir/palantir/utils/log"
-	"strings"
 )
 
 // TODO: suport for big endian (for no litle endian files and host system is assumed)
@@ -17,7 +18,7 @@ type bdoParser struct {
 	content  []byte
 	metadata map[string]string
 	endiness binary.ByteOrder
-	context  *shield.SerializeParseContext
+	context  *shield.SimulationContext
 	Results  *result.DetectorResult
 }
 
@@ -28,7 +29,7 @@ var (
 	shield0p6VersionTag = "0.6" + strings.Repeat("\000", 13)
 )
 
-func newBdoParser(name string, filecontent []byte, context *shield.SerializeParseContext) *bdoParser {
+func newBdoParser(name string, filecontent []byte, context *shield.SimulationContext) *bdoParser {
 	return &bdoParser{
 		context:  context,
 		filename: name,
@@ -58,10 +59,10 @@ func (p *bdoParser) Parse() error {
 
 func (p *bdoParser) validateShieldVersion() error {
 	if len(p.content) < 24 {
-		return err.NewApp("To short content of %s", p.filename)
+		return errors.NewApp("To short content of %s", p.filename)
 	}
 	if string(p.content[0:6]) != shieldNameTag {
-		return err.NewApp("Shield [0:6] don't match xSH12A")
+		return errors.NewApp("Shield [0:6] don't match xSH12A")
 	}
 	if string(p.content[6:8]) == lilteEndianFormat {
 		p.metadata["endianness"] = "litle-endian"
@@ -70,10 +71,10 @@ func (p *bdoParser) validateShieldVersion() error {
 		p.metadata["endianness"] = "big-endian"
 		p.endiness = binary.BigEndian
 	} else {
-		return err.NewApp("Unknown endinaess")
+		return errors.NewApp("Unknown endinaess")
 	}
 	if string(p.content[8:24]) != shield0p6VersionTag {
-		return err.NewApp("Suported only version 0.6 of shield binnary")
+		return errors.NewApp("Suported only version 0.6 of shield binnary")
 	}
 	p.metadata["version"] = "0.6"
 	p.content = p.content[24:]
@@ -83,7 +84,7 @@ func (p *bdoParser) validateShieldVersion() error {
 
 func (p *bdoParser) readNextToken() error {
 	if len(p.content) < 24 {
-		return err.NewApp("To short content of %s", p.filename)
+		return errors.NewApp("To short content of %s", p.filename)
 	}
 
 	var tagID uint64
@@ -99,12 +100,12 @@ func (p *bdoParser) readNextToken() error {
 
 	if tagIDBinErr != nil || numberOfItemsErr != nil {
 		errMsg := log.Error("Unexpected read error. Can't ever happend")
-		return err.NewApp(errMsg)
+		return errors.NewApp(errMsg)
 	}
 	tokenSize := uint64(24) + itemSize*numberOfItems
 	if uint64(len(p.content)) < tokenSize {
 		errMsg := log.Warning("To short content of %s", p.filename)
-		return err.NewApp(errMsg)
+		return errors.NewApp(errMsg)
 	}
 
 	log.Info("Bdo token header tagId: %v, dataType: %v, tokenSize %v, numberOfItems: %v, itemSize: %v", tagID, dataType, tokenSize, numberOfItems, itemSize)
@@ -113,7 +114,7 @@ func (p *bdoParser) readNextToken() error {
 	handler := tagsHandler[tagID]
 	if handler == nil {
 		errMsg := log.Warning("Unknown handler %d", tagID)
-		return err.NewApp(errMsg)
+		return errors.NewApp(errMsg)
 	}
 
 	parseTokenErr := handler(dataType, splitedToken, p)

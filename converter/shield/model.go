@@ -1,13 +1,18 @@
 package shield
 
-import "github.com/Palantir/palantir/model/simulation/setup/body"
+import (
+	"github.com/Palantir/palantir/model/simulation/setup/body"
+	"github.com/Palantir/palantir/model/simulation/setup/material"
+)
+
+// MaterialID used directly in shield input files.
+type MaterialID int
 
 // BodyID used directly in shield input files.
 type BodyID int
 
-// SerializeParseContext is data used to recover data lost in process of serializing simulation data.
-type SerializeParseContext struct {
-	MapBodyID map[body.ID]BodyID
-	//MapDetectorIDToFile map[string]string
-	//MapZoneIDToZones    map[string][]string
+// SimulationContext is struct used to recover data lost in process of serializing simulation data.
+type SimulationContext struct {
+	MapMaterialID map[MaterialID]material.ID
+	MapBodyID     map[BodyID]body.ID
 }

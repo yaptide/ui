@@ -2,8 +2,9 @@ package processor
 
 import (
 	"fmt"
-	"github.com/Palantir/palantir/converter/shield"
 	"path"
+
+	"github.com/Palantir/palantir/converter/shield"
 )
 
 const (
@@ -19,8 +20,8 @@ type shieldFileInput struct {
 }
 
 type shieldFileOutput struct {
-	files            map[string]string
-	serializeContext *shield.SerializeParseContext
+	files             map[string]string
+	simulationContext *shield.SimulationContext
 }
 
 func generateShieldPath(workDir string) []string {

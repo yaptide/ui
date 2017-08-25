@@ -7,7 +7,7 @@ import (
 
 // ShieldParserInput input for shield results parser.
 type ShieldParserInput struct {
-	serializeContext *shield.SerializeParseContext
+	serializeContext *shield.SimulationContext
 	bdo              map[string]string
 }
 
@@ -17,7 +17,7 @@ type ShieldParserOutput struct {
 }
 
 // NewShieldParserInput constructor.
-func NewShieldParserInput(input map[string]string, serializeContext *shield.SerializeParseContext) (*ShieldParserInput, error) {
+func NewShieldParserInput(input map[string]string, serializeContext *shield.SimulationContext) (*ShieldParserInput, error) {
 	return &ShieldParserInput{
 		serializeContext: serializeContext,
 		bdo:              input,

@@ -3,9 +3,10 @@ package results
 import (
 	"bytes"
 	"encoding/binary"
+
 	"github.com/Palantir/palantir/model/simulation/result"
 	bin "github.com/Palantir/palantir/utils/binary"
-	err "github.com/Palantir/palantir/utils/error"
+	"github.com/Palantir/palantir/utils/errors"
 	"github.com/Palantir/palantir/utils/log"
 )
 
@@ -145,18 +146,18 @@ func constructHandleGeneralInfoTags(tagStatName string) tagHandlerFunc {
 		log.Debug("Started handler bdoDataUnit %v", dtype)
 		if len(payload) > 1 {
 			errStr := log.Warning("Too much tag values(%v) for tag %s", len(payload), tagStatName)
-			return err.NewApp(errStr)
+			return errors.NewApp(errStr)
 		}
 		if len(payload) == 0 {
 			errStr := log.Warning("No values for tag %s", tagStatName)
-			return err.NewApp(errStr)
+			return errors.NewApp(errStr)
 		}
 		if dtype.IsString() {
 			value := bin.ReadNULLTerminatedString(payload[0])
 			parser.metadata[tagStatName] = value
 		} else {
 			errStr := log.Warning("Unexpected type %v for tag %s", dtype, tagStatName)
-			return err.NewApp(errStr)
+			return errors.NewApp(errStr)
 		}
 		return nil
 	}
@@ -173,7 +174,7 @@ func constructHandleDebugTags(tagStatName string) tagHandlerFunc {
 		}
 		if len(payload) == 0 {
 			errStr := log.Warning("No values for tag %s", tagStatName)
-			return err.NewApp(errStr)
+			return errors.NewApp(errStr)
 		}
 		if len(payload) == 1 {
 			log.Debug("Tag %s value %s", dtype, dtype.ToString(payload[0], parser.endiness))
@@ -185,11 +186,11 @@ func constructHandleDebugTags(tagStatName string) tagHandlerFunc {
 func handleResultDimensions(dtype bdoDataUnit, payload [][]byte, parser *bdoParser) error {
 	if dtype != "<i8" {
 		errStr := log.Warning("[handleMainDataBlockTag] Unexpected data type %s.", dtype)
-		return err.NewRest("dataType", "Unexpected data type in Shield result file", errStr)
+		return errors.NewRest("dataType", "Unexpected data type in Shield result file", errStr)
 	}
 	if len(payload) != 3 {
 		errStr := log.Warning("[handleMainDataBlockTag] Should be 3 dimesnions", dtype)
-		return err.NewRest("dataType", "Unexpected token length in Shield result file. Expected 3 dimensions.", errStr)
+		return errors.NewRest("dataType", "Unexpected token length in Shield result file. Expected 3 dimensions.", errStr)
 	}
 	parser.Results.Dimensions = result.Dimensions{}
 	var dim1, dim2, dim3 int64
@@ -213,7 +214,7 @@ func handleResultDimensions(dtype bdoDataUnit, payload [][]byte, parser *bdoPars
 func handleMainDataBlockTag(dtype bdoDataUnit, payload [][]byte, parser *bdoParser) error {
 	if dtype != "<f8" {
 		errStr := log.Error("[handleMainDataBlockTag] Unexpected data type %s.", dtype)
-		return err.NewRest("dataType", "Unexpected data type in SHIeld result file", errStr)
+		return errors.NewRest("dataType", "Unexpected data type in SHIeld result file", errStr)
 	}
 	expectedPayloadSize := parser.Results.Dimensions.SegmentsInDim1 *
 		parser.Results.Dimensions.SegmentsInDim2 *
@@ -221,7 +222,7 @@ func handleMainDataBlockTag(dtype bdoDataUnit, payload [][]byte, parser *bdoPars
 
 	if int64(len(payload)) != expectedPayloadSize {
 		errStr := log.Error("[handleMainDataBlockTag] To short token payload size.")
-		return err.NewRest("mainDataBlock", "To short token payload size.", errStr)
+		return errors.NewRest("mainDataBlock", "To short token payload size.", errStr)
 	}
 
 	parser.Results.Data = make([][][]float64, parser.Results.Dimensions.SegmentsInDim3)

@@ -3,11 +3,12 @@ package processor
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/Palantir/palantir/config"
 	"github.com/Palantir/palantir/db"
 	"github.com/Palantir/palantir/model/project"
 	"github.com/Palantir/palantir/runner/file"
-	"log"
 )
 
 // SimulationProcessor responsible for all steps of processing simulation.
@@ -27,13 +28,15 @@ func NewProcessor(config *config.Config, session db.Session) *SimulationProcesso
 
 // HandleSimulation processes simulation.
 func (p *SimulationProcessor) HandleSimulation(versionID db.VersionID) error {
-	version, dbErr := p.session.Project().FetchVersion(versionID)
+	dbSession := p.session.Copy()
+	defer dbSession.Close()
+	version, dbErr := dbSession.Project().FetchVersion(versionID)
 	if dbErr != nil {
 		log.Printf("[SimulationProcessor] Unable to fetch version. Reason: %s", dbErr.Error())
 		return dbErr
 	}
 
-	setup, dbErr := p.session.Setup().Fetch(versionID)
+	setup, dbErr := dbSession.Setup().Fetch(versionID)
 	if dbErr != nil {
 		return dbErr
 	}
@@ -54,11 +57,11 @@ func (p *SimulationProcessor) HandleSimulation(versionID db.VersionID) error {
 		case project.LocalMachine:
 			request = newLocalShieldRequest(mainRequestComponent, p.fileRunner)
 		default:
-			simErr = fmt.Errorf("invalid engine simulation")
+			simErr = fmt.Errorf("Invalid engine simulation")
 		}
 	case project.FlukaLibrary:
 	default:
-		simErr = fmt.Errorf("invalid computing library")
+		simErr = fmt.Errorf("Invalid computing library")
 	}
 
 	if simErr != nil {

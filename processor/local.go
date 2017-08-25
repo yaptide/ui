@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/Palantir/palantir/converter/shield/results"
-	"github.com/Palantir/palantir/converter/shield/setup"
+	"github.com/Palantir/palantir/converter/shield/setup/serialize"
 	"github.com/Palantir/palantir/model/project"
 	"github.com/Palantir/palantir/runner"
 	"github.com/Palantir/palantir/runner/file"
@@ -28,14 +28,12 @@ func newLocalShieldRequest(mainRequestComponent *mainRequestComponent, runner *f
 }
 
 func (ls *localShieldRequest) SerializeModel() error {
-	serializer := setup.NewShieldSerializer(ls.mainRequestComponent.setup)
-	serializeErr := serializer.Serialize()
-	_ = serializer.ResultFiles
+	serializerRes, serializeErr := serialize.Serialize(ls.mainRequestComponent.setup)
 	if serializeErr != nil {
 		_ = ls.session.Project().SetVersionStatus(ls.versionID, project.Failure)
 		return serializeErr
 	}
-	ls.shieldFileOutput.serializeContext = serializer.Context
+	ls.shieldFileOutput.simulationContext = serializerRes.SimulationContext
 	ls.shieldFileInput.files = mockParserExample
 	return nil
 }
@@ -72,7 +70,7 @@ func (ls *localShieldRequest) StartSimulation() error {
 func (ls *localShieldRequest) ParseResults() error {
 	parserInput, constructErr := results.NewShieldParserInput(
 		ls.shieldFileOutput.files,
-		ls.shieldFileOutput.serializeContext,
+		ls.shieldFileOutput.simulationContext,
 	)
 	if constructErr != nil {
 		return constructErr

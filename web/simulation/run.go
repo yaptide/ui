@@ -10,6 +10,7 @@ import (
 
 	"github.com/Palantir/palantir/db"
 	"github.com/Palantir/palantir/model/project"
+	"github.com/Palantir/palantir/utils/errors"
 	"github.com/Palantir/palantir/web/auth/token"
 	"github.com/Palantir/palantir/web/server"
 	"github.com/Palantir/palantir/web/util"
@@ -113,7 +114,15 @@ func (h *runSimulationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 
 		simulationStartErr := h.SimulationProcessor.HandleSimulation(dbVersionID)
 		if simulationStartErr != nil {
-			errorResponseMap := map[string]string{"simulation": simulationStartErr.Error()}
+			var errMsg string
+			switch err := simulationStartErr.(type) {
+			case errors.Rest:
+				errMsg = err.Error()
+			default:
+				errMsg = "Internal server error"
+
+			}
+			errorResponseMap := map[string]string{"simulation": errMsg}
 			_ = util.WriteJSONResponse(w, http.StatusBadRequest, errorResponseMap)
 			return false
 		}

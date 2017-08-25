@@ -1,25 +1,23 @@
-package setup
+package serialize
 
 import (
 	"bytes"
 	"fmt"
+	"sort"
 
 	"github.com/Palantir/palantir/converter/shield"
-	"github.com/Palantir/palantir/model/simulation/setup"
 	"github.com/Palantir/palantir/model/simulation/setup/body"
 )
 
-func serializeGeo(shieldSerializer *ShieldSerializer) (string, error) {
+func serializeGeo(shieldSerializer *shieldSerializer) (string, error) {
 	serializer := geoSerializer{
-		context: shieldSerializer.Context,
-		setup:   shieldSerializer.setup,
+		shieldSerializer: shieldSerializer,
 	}
 	return serializer.serialize()
 }
 
 type geoSerializer struct {
-	context *shield.SerializeParseContext
-	setup   *setup.Setup
+	*shieldSerializer
 }
 
 func (s *geoSerializer) serialize() (string, error) {
@@ -71,8 +69,19 @@ func (s *geoSerializer) serializeBodies(geoBuff *bytes.Buffer) error {
 	const empty = ""
 
 	writeSectionNameComment(geoBuff, "Bodies")
-	for _, body := range s.setup.Bodies {
-		err := s.serializeBody(geoBuff, body)
+
+	ids := bodyIDSlice{}
+	for id := range s.setup.Bodies {
+		ids = append(ids, id)
+	}
+	sort.Sort(ids)
+
+	for i, bodyID := range ids {
+		nextShieldID := shield.BodyID(i + 1)
+		s.serializerContext.bodyIDToShield[bodyID] = nextShieldID
+		s.simulationContext.MapBodyID[nextShieldID] = bodyID
+
+		err := s.serializeBody(geoBuff, s.setup.Bodies[bodyID])
 		if err != nil {
 			return err
 		}
@@ -120,7 +129,7 @@ func (s *geoSerializer) serializeBody(geoBuff *bytes.Buffer, setupBody *body.Bod
 		Desc   []float64
 	}
 
-	shieldID := s.context.MapBodyID[setupBody.ID]
+	shieldID := s.bodyIDToShield[setupBody.ID]
 	entry := bodyEntry{Number: shieldID}
 
 	switch b := setupBody.Geometry.(type) {

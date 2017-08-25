@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"reflect"
 	"testing"
+
+	u "github.com/Palantir/palantir/utils/testing"
 )
 
 func jsonPrettyPrint(in string) string {
@@ -38,8 +40,8 @@ func Marshal(t *testing.T, testCases MarshallingCases) {
 
 		sres := string(result[:])
 		if sres != prettyJSON {
-			t.Errorf("json.Marshal(%T): \nexpected:\n%s\nactual:\n%s",
-				tc.Model, prettyJSON, sres)
+			t.Errorf("json.Marshal(%T):", tc.Model)
+			u.PrettyDiff(t, prettyJSON, sres)
 		}
 	}
 }
@@ -109,8 +111,9 @@ func MarshalUnmarshalled(t *testing.T, testCases MarshallingCases) {
 
 		sres := string(res[:])
 		if sres != jsonPrettyPrint(tc.JSON) {
-			t.Errorf("json.Marshal(%T) on json.Unmarshal(%T, %T) result:\nexpected:\n%s\nactual:\n%s",
-				unmarshallingResult, bInput, unmarshallingResult, tc.JSON, sres)
+			t.Errorf("json.Marshal(%T) on json.Unmarshal(%T, %T):", unmarshallingResult, bInput, unmarshallingResult)
+
+			u.PrettyDiff(t, tc.JSON, sres)
 		}
 	}
 }
