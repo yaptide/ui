@@ -3,10 +3,10 @@
 import React from 'react';
 import Style from 'styles';
 
-import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
-import LeftArrowIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
-import PlusIcon from 'material-ui/svg-icons/content/add';
+import Button from 'material-ui/Button';
+import { withStyles } from 'material-ui/styles';
+import KeyboardArrowLeft from 'material-ui-icons/KeyboardArrowLeft';
+import PlusIcon from 'material-ui-icons/Add';
 
 import ZoneItemContainer from '../containers/ZoneItemContainer';
 
@@ -15,32 +15,40 @@ class ZoneWorkspaceLayout extends React.Component {
     zoneIds: Array<number>,
     addZone: () => void,
     goToParentLayer: () => void,
+    classes: Object,
   }
 
   render() {
+    const { zoneIds, classes } = this.props;
     const goToParrentBtn = (
-      <FlatButton
+      <Button
         onTouchTap={this.props.goToParentLayer}
-        style={styles.goToParrentBtn}
-        icon={<LeftArrowIcon />}
-        disableTouchRipple
-      />
+        className={classes.goToParrentBtn}
+        dense
+      >
+        <KeyboardArrowLeft />
+      </Button>
     );
 
     const addZoneBtn = (
-      <RaisedButton
+      <Button
         onTouchTap={this.props.addZone}
-        style={styles.item}
-        icon={<PlusIcon />}
-      />
+        className={classes.item}
+      >
+        <PlusIcon />
+      </Button>
     );
 
     return (
-      <div style={styles.wrapper} >
-        <div style={styles.container}>
+      <div className={classes.wrapper} >
+        <div className={classes.container}>
           {
-            this.props.zoneIds.map(id => (
-              <ZoneItemContainer key={id} zoneId={id} style={styles.item} />
+            zoneIds.map(id => (
+              <ZoneItemContainer
+                key={id}
+                zoneId={id}
+                classes={{ root: classes.item }}
+              />
             ))
           }
           {addZoneBtn}
@@ -51,7 +59,7 @@ class ZoneWorkspaceLayout extends React.Component {
   }
 }
 
-const styles = {
+const styles = () => ({
   wrapper: {
     height: '100%',
     marginTop: `-${Style.Dimens.spacing.normal}`,
@@ -62,8 +70,11 @@ const styles = {
   container: {
     height: '100%',
     overflowY: 'scroll',
+    display: 'flex',
+    flexDirection: 'column',
   },
   item: {
+    flex: '0 0 auto',
     marginBottom: Style.Dimens.spacing.normal,
     marginLeft: Style.Dimens.spacing.small,
     marginRight: Style.Dimens.spacing.small,
@@ -80,7 +91,6 @@ const styles = {
     left: '16px',
     bottom: '0',
   },
+});
 
-};
-
-export default ZoneWorkspaceLayout;
+export default withStyles(styles)(ZoneWorkspaceLayout);

@@ -2,7 +2,7 @@
 
 import React, { Element } from 'react';
 import type { ApplicationRoute } from 'routes/model';
-import RaisedButton from 'material-ui/RaisedButton';
+import Button from 'material-ui/Button';
 
 import Style from 'styles';
 
@@ -33,11 +33,13 @@ class Form extends React.Component {
           ))
         }
         <div style={{ height: Style.Dimens.spacing.normal }} />
-        <RaisedButton
+        <Button
           onClick={this.props.submit}
-          primary
-          label={this.props.submitText}
-        />
+          color="primary"
+          raised
+        >
+          {this.props.submitText}
+        </Button>
       </div>
     );
   }

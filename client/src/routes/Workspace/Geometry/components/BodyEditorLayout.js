@@ -1,7 +1,8 @@
 /* @flow */
 
 import React from 'react';
-import RaisedButton from 'material-ui/RaisedButton';
+import Button from 'material-ui/Button';
+import { withStyles } from 'material-ui/styles';
 import Style from 'styles';
 import type { BodyGeometry } from 'model/simulation/zone';
 import type { GeometryType } from 'model/simulation/body';
@@ -14,14 +15,16 @@ type Props = {
   geometryUpdate: (field: string, value: Object) => void,
   submit: () => void,
   submitBtnName: string,
+  classes: Object,
 }
 
 class BodyEditorLayout extends React.Component {
   props: Props
 
   render() {
+    const classes = this.props.classes;
     return (
-      <div style={styles.editor}>
+      <div className={classes.root}>
         <BodyEditor
           geometry={this.props.bodyGeometry}
           geometryErrors={this.props.bodyGeometryErrors}
@@ -29,12 +32,14 @@ class BodyEditorLayout extends React.Component {
           geometryUpdate={this.props.geometryUpdate}
         />
         <div style={styles.buttonRow}>
-          <RaisedButton
+          <Button
             disabled={Object.keys(this.props.bodyGeometryErrors).length !== 0}
-            label={this.props.submitBtnName}
             onTouchTap={this.props.submit}
-            primary
-          />
+            color="primary"
+            raised
+          >
+            {this.props.submitBtnName}
+          </Button>
         </div>
       </div>
     );
@@ -42,8 +47,9 @@ class BodyEditorLayout extends React.Component {
 }
 
 const styles = {
-  editor: {
+  root: {
     ...Style.Flex.rootColumn,
+    flex: '1 0 0',
     height: '100%',
   },
   buttonRow: {
@@ -52,4 +58,4 @@ const styles = {
   },
 };
 
-export default BodyEditorLayout;
+export default withStyles(styles)(BodyEditorLayout);

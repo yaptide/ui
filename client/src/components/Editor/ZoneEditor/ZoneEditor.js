@@ -2,12 +2,13 @@
 
 import React from 'react';
 import Style from 'styles';
-import RaisedButtonMD from 'material-ui/RaisedButton';
+import ButtonMD from 'material-ui/Button';
+import { withStyles } from 'material-ui/styles';
 import { ButtonHOC } from 'components/Touchable';
 import { ZoneName, ZoneOperation } from 'components/Editor/ZoneEditor';
 import type { OperationType, ConstructionPath, PrintableOperation } from 'model/simulation/zone';
 
-const RaisedButton = ButtonHOC(RaisedButtonMD);
+const Button = ButtonHOC(ButtonMD);
 
 type Props = {
   zoneName: string,
@@ -20,7 +21,7 @@ type Props = {
   onZoneNameUpdate: (name: string) => void,
   createOperation: (constructionStep: ConstructionPath) => void,
   deleteOperation: (constructionStep: ConstructionPath) => void,
-  style?: Object,
+  classes: Object,
 };
 
 
@@ -28,6 +29,7 @@ class ZoneEditor extends React.Component {
   props: Props;
 
   render() {
+    const { classes } = this.props;
     const zoneTitle = (
       <ZoneName
         name={this.props.zoneName}
@@ -44,19 +46,24 @@ class ZoneEditor extends React.Component {
         onOperationSelected={this.props.onOperationSelected}
         createOperation={this.props.createOperation}
         deleteOperation={this.props.deleteOperation}
-        internalMarginStyle={styles.constructionStyles}
+        classes={{
+          root: classes.zoneOperation,
+          item: classes.zoneOperationItem,
+        }}
       />
     ));
 
     return (
-      <div style={{ ...styles.container, ...this.props.style }} >
+      <div className={classes.container}>
         {zoneTitle}
         <div style={styles.label} >Material</div>
-        <RaisedButton
-          label={this.props.material.label}
+        <Button
+          raised
           onTouchTap={this.props.onMaterialSelected}
           payload={this.props.material.materialId}
-        />
+        >
+          {this.props.material.label}
+        </Button>
         <div style={styles.label} >Construction</div>
         <ZoneOperation
           id="base"
@@ -81,6 +88,7 @@ const styles = {
     padding: Style.Dimens.spacing.small,
     position: 'relative',
     minHeight: '48px',
+    overflow: 'hidden',
   },
   opperation: {
     ...Style.Flex.rootRow,
@@ -132,6 +140,15 @@ const styles = {
     marginBottom: Style.Dimens.spacing.min,
     overflow: 'hidden',
   },
+  zoneOperation: {
+    marginTop: 4,
+  },
+  zoneOperationItem: {
+    marginLeft: 4,
+    '&:first-child': {
+      marginLeft: 0,
+    },
+  },
 };
 
-export default ZoneEditor;
+export default withStyles(styles)(ZoneEditor);

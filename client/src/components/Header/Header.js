@@ -3,12 +3,17 @@
 import React from 'react';
 import router from 'utils/router';
 import AppBar from 'material-ui/AppBar';
-import FlatButton from 'material-ui/FlatButton';
-import ExitIcon from 'material-ui/svg-icons/action/exit-to-app';
+import Toolbar from 'material-ui/Toolbar';
 import Drawer from 'material-ui/Drawer';
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
+import Typography from 'material-ui/Typography';
+import Button from 'material-ui/Button';
+import IconButton from 'material-ui/IconButton';
+import ExitIcon from 'material-ui-icons/ExitToApp';
+import MenuIcon from 'material-ui-icons/Menu';
+import List, { ListItem, ListItemText } from 'material-ui/List';
+import { withStyles } from 'material-ui/styles';
 import { t } from 'i18n';
+
 
 const handleHref = (func: () => void) => {
   return (e: any) => {
@@ -30,56 +35,65 @@ const links = {
 
 const NotLoggedIn = ({ ...props }) => (
   <div>
-    <FlatButton
+    <Button
       {...props}
+      color="contrast"
       onTouchTap={links.login}
-      label={t('auth.form.loginBtn')}
       href="#/auth/login"
-    />
-    <FlatButton
+    >
+      {t('auth.form.loginBtn')}
+    </Button>
+    <Button
       {...props}
+      color="contrast"
       onTouchTap={links.register}
-      label={t('auth.form.registerBtn')}
       href="#/auth/register"
-    />
+    >
+      {t('auth.form.registerBtn')}
+    </Button>
   </div>
 );
-NotLoggedIn.muiName = 'FlatButton';
 
 const LoggedIn = ({ ...buttonProps }) => {
   const { logout, ...props } = buttonProps;
   return (
-    <FlatButton
+    <Button
       {...props}
-      label={t('auth.form.logoutBtn')}
+      color="contrast"
       onTouchTap={logout}
-      icon={<ExitIcon />}
       href="#/logout"
-    />
+    >
+      {t('auth.form.logoutBtn')}
+      <ExitIcon />
+    </Button>
   );
 };
-LoggedIn.muiName = 'FlatButton';
 
-const LoggedInMenuItems = [
-  <MenuItem
+const LoggedInListItems = [
+  <ListItem
     key="project"
     onTouchTap={links.project}
+    component="a"
+    button
     href="#/project/list"
   >
-    {t('pageProjects')}
-  </MenuItem>,
-  <MenuItem
+    <ListItemText primary={t('pageProjects')} />
+  </ListItem>,
+  <ListItem
     key="account"
     onTouchTap={links.account}
+    component="a"
+    button
     href="#/account"
   >
-    {t('pageAccount')}
-  </MenuItem>,
+    <ListItemText primary={t('pageAccount')} />
+  </ListItem>,
 ];
 
 type Props = {
   isLoggedIn: bool,
   logout: Function,
+  classes: Object,
 };
 
 class Header extends React.Component {
@@ -95,62 +109,88 @@ class Header extends React.Component {
     router.push('/');
   }
 
-  showDrawer = () => {
-    this.setState({ drawer: true });
-  }
-
-  hideDrawer = () => {
-    this.setState({ drawer: false });
-  }
+  showDrawer = handleHref(() => { this.setState({ drawer: true }); })
+  hideDrawer = handleHref(() => { this.setState({ drawer: false }); })
 
   render() {
+    const classes = this.props.classes;
     return (
       <AppBar
-        title={t('appName')}
-        iconElementRight={
-          this.props.isLoggedIn ? <LoggedIn logout={this.props.logout} /> : <NotLoggedIn />
-        }
-        onLeftIconButtonTouchTap={this.showDrawer}
-        onTitleTouchTap={this.goToMain}
-        style={styles.container}
-        titleStyle={{ cursor: 'pointer', flex: '0 1 auto' }}
+        position="static"
+        className={classes.appbar}
       >
-        <Drawer
-          open={this.state.drawer}
-          docked={false}
-          onRequestChange={this.hideDrawer}
-        >
-          <Menu>
-            <MenuItem
-              onTouchTap={links.workspace}
-              href="#/workspace"
-            >
-              {t('pageWorkspace')}
-            </MenuItem>
-            {this.props.isLoggedIn ? LoggedInMenuItems : null}
-            <MenuItem
-              onTouchTap={links.about}
-              href="#/about"
-            >
-              {t('pageAbout')}
-            </MenuItem>
-            <MenuItem
-              onTouchTap={links.help}
-              href="#/help"
-            >
-              {t('pageHelp')}
-            </MenuItem>
-          </Menu>
-        </Drawer>
+        <Toolbar>
+          <IconButton
+            color="contrast"
+            aria-label="Menu"
+            onTouchTap={this.showDrawer}
+            href={window.location.hash}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography
+            type="title"
+            color="inherit"
+            component="a"
+            href="#"
+          >
+            {t('appName')}
+          </Typography>
+          <div className={classes.flex} />
+          {
+            this.props.isLoggedIn
+              ? <LoggedIn logout={this.props.logout} />
+              : <NotLoggedIn />
+          }
+          <Drawer
+            open={this.state.drawer}
+            docked={false}
+            onRequestClose={this.hideDrawer}
+            classes={{ paper: classes.drawer }}
+          >
+            <List>
+              <ListItem
+                onTouchTap={links.workspace}
+                component="a"
+                button
+                href="#/workspace"
+              >
+                <ListItemText primary={t('pageWorkspace')} />
+              </ListItem>
+              {this.props.isLoggedIn ? LoggedInListItems : null}
+              <ListItem
+                onTouchTap={links.about}
+                component="a"
+                button
+                href="#/about"
+              >
+                <ListItemText primary={t('pageAbout')} />
+              </ListItem>
+              <ListItem
+                onTouchTap={links.help}
+                component="a"
+                button
+                href="#/help"
+              >
+                <ListItemText primary={t('pageHelp')} />
+              </ListItem>
+            </List>
+          </Drawer>
+        </Toolbar>
       </AppBar>
     );
   }
 }
 
 const styles = {
-  container: {
-    flexShrink: '0',
+  appbar: {
+  },
+  flex: {
+    flex: '1',
+  },
+  drawer: {
+    width: 220,
   },
 };
 
-export default Header;
+export default withStyles(styles)(Header);

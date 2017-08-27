@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { t } from 'i18n';
-import { Card, CardActions, CardTitle, CardText } from 'material-ui/Card';
-import RaisedButton from 'material-ui/RaisedButton';
+import Card, { CardActions, CardHeader, CardContent } from 'material-ui/Card';
+import Typography from 'material-ui/Typography';
+import Button from 'material-ui/Button';
 import type { Project } from 'model/project';
-
 
 type Props = {
   projectId: string,
@@ -15,37 +15,41 @@ type Props = {
   style?: Object,
 };
 
-class ProjectListItemLayout extends React.Component {
+class ProjectItemLayout extends React.Component {
   props: Props;
 
   render() {
     return (
-      <Card style={this.props.style} zDepth={2} >
-        <CardTitle
-          actAsExpander
-          showExpandableButton
+      <Card style={this.props.style} elevation={4} >
+        <CardHeader
           title={this.props.project.name}
         />
-        <CardText expandable >
-          {
-            this.props.project.description
-              .split('\n')
-              .map((item, key) => <span key={key}>{item}<br /></span>)
-          }
-        </CardText>
+        <CardContent>
+          <Typography>
+            {
+              this.props.project.description
+                .split('\n')
+                .map((item, key) => <span key={key}>{item}<br /></span>)
+            }
+          </Typography>
+        </CardContent>
         <CardActions>
-          <RaisedButton
-            primary
-            label={t('project.showDetailsBtn')}
+          <Button
+            color="primary"
+            raised
             onTouchTap={this.props.goToProjectDetails}
             href={`#/project/${this.props.projectId}`}
-          />
-          <RaisedButton
-            primary
-            label={t('project.projectEdit')}
+          >
+            {t('project.showDetailsBtn')}
+          </Button>
+          <Button
+            color="primary"
+            raised
             onTouchTap={this.props.goToProjectEdit}
             href={`#/project/edit/${this.props.projectId}`}
-          />
+          >
+            {t('project.projectEdit')}
+          </Button>
         </CardActions>
       </Card>
     );
@@ -53,4 +57,4 @@ class ProjectListItemLayout extends React.Component {
 }
 
 
-export default ProjectListItemLayout;
+export default ProjectItemLayout;

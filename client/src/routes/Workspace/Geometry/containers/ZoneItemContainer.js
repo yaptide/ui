@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
+import { withStyles } from 'material-ui/styles';
 import type { OperationType, ConstructionPath, PrintableZone } from 'model/simulation/zone';
 import ZoneItemLayout from '../components/ZoneItemLayout';
 import BodyEditorModal from './BodyEditorModal';
@@ -9,7 +10,7 @@ import selector from '../../selector';
 import { actionCreator } from '../../reducer';
 
 type Props = {
-  style?: Object,
+  classes: Object,
   zoneId: number,
   zone: PrintableZone,
   changeOperationType: (val: OperationType, path: ConstructionPath) => void,
@@ -79,9 +80,10 @@ class ZoneItemContainer extends React.Component {
     const material = { label: 'Water', materialId: 11 };
 
     return (
-      <div>
+      <div
+        className={this.props.classes.root}
+      >
         <ZoneItemLayout
-          style={this.props.style}
           material={material}
           base={this.props.zone.base}
           zoneName={this.props.zone.name}
@@ -120,7 +122,11 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
+const styles = {
+  root: {},
+};
+
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(ZoneItemContainer);
+)(withStyles(styles)(ZoneItemContainer));

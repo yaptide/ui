@@ -3,7 +3,8 @@
 import React from 'react';
 
 import TextField from 'material-ui/TextField';
-import Style from 'styles';
+import Typography from 'material-ui/Typography';
+import { withStyles } from 'material-ui/styles';
 
 const UNDEFINED_ZONE = '-------------';
 
@@ -11,6 +12,7 @@ class ZoneName extends React.Component {
   props: {
     name: string,
     updateName: (value: string) => void,
+    classes: Object,
   }
   state: {
     isEditOn: bool,
@@ -30,36 +32,39 @@ class ZoneName extends React.Component {
   }
   updateName = (e: Object) => this.setState({ name: e.target.value });
 
-  setRef = (ref: any) => ref && ref.focus()
+  setRef = (ref: any) => ref && ref.focus();
 
   render() {
+    const classes = this.props.classes;
     return (
-      <div>
-        {
-          this.state.isEditOn
-            ? <TextField
-              value={this.state.name}
-              name="zone name"
-              onBlur={this.stopEditing}
-              onChange={this.updateName}
-              ref={this.setRef}
-            />
-            : <div
-              onDoubleClick={this.makeEditable}
-              style={styles.label}
-            >
-              {this.props.name || UNDEFINED_ZONE}
-            </div>
-        }
+      this.state.isEditOn
+      ? <TextField
+        value={this.state.name}
+        name="zone name"
+        onBlur={this.stopEditing}
+        onChange={this.updateName}
+        inputRef={this.setRef}
+      />
+      : <div
+        onDoubleClick={this.makeEditable}
+      >
+        <Typography
+          className={classes.label}
+          noWrap
+        >
+          {`Zone: ${this.props.name}` || UNDEFINED_ZONE}
+        </Typography>
       </div>
     );
   }
 }
 
-const styles = {
+const styles = (theme: Object) => ({
   label: {
-    fontSize: Style.Dimens.font.large,
+    ...theme.typography.subheading,
+    paddingTop: 4,
+    paddingBottom: 4,
   },
-};
+});
 
-export default ZoneName;
+export default withStyles(styles)(ZoneName);

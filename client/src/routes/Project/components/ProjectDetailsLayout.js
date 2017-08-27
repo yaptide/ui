@@ -3,8 +3,8 @@
 import React from 'react';
 import Style from 'styles';
 import type { Project } from 'model/project';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
-import IconAdd from 'material-ui/svg-icons/content/add';
+import Button from 'material-ui/Button';
+import IconAdd from 'material-ui-icons/Add';
 import VersionItemContainer from '../containers/VersionItemContainer';
 
 type Props = {
@@ -38,12 +38,12 @@ class ProjectDetailsLayout extends React.Component {
               }
             </p>
           </div>
-          <FloatingActionButton
+          <Button
             onTouchTap={this.props.createVersionFromLatest}
             href={`#/project/${this.props.id}`}
           >
             <IconAdd />
-          </FloatingActionButton>
+          </Button>
         </div>
         {versions}
       </div>
@@ -51,7 +51,7 @@ class ProjectDetailsLayout extends React.Component {
   }
 }
 
-const styles = {
+const styles = (theme: Object) => ({
   container: {
     alignItems: 'stretch',
     padding: Style.Dimens.spacing.large,
@@ -66,16 +66,14 @@ const styles = {
     marginRight: Style.Dimens.spacing.normal,
   },
   projectName: {
-    fontFamily: Style.Theme.fontFamily,
     fontSize: Style.Dimens.font.large,
-    color: Style.Theme.palette.textColor,
+    color: theme.palette.grey[200],
     paddingBottom: Style.Dimens.spacing.normal,
   },
   projectDescription: {
-    color: Style.Theme.palette.textColor,
-    fontFamily: Style.Theme.fontFamily,
+    color: theme.palette.grey[200],
     fontSize: Style.Dimens.font.standard,
   },
-};
+});
 
 export default ProjectDetailsLayout;

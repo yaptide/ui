@@ -4,7 +4,7 @@ import React from 'react';
 import { t } from 'i18n';
 import { FormSelect } from 'components/Form';
 import type { ComputingLibrary, SimulationEngine } from 'model/project';
-import RaisedButton from 'material-ui/RaisedButton';
+import Button from 'material-ui/Button';
 import Style from 'styles';
 
 type Props = {
@@ -23,7 +23,7 @@ class SettingsEditor extends React.Component {
       <div style={styles.container} >
         <FormSelect
           type="computingLibrary"
-          floatingLabelText={t('project.form.computingLibrary')}
+          label={t('project.form.computingLibrary')}
           value={this.props.computingLibrary}
           onChange={this.props.updateSettings}
           options={computingLibraryOptions}
@@ -31,18 +31,20 @@ class SettingsEditor extends React.Component {
         />
         <FormSelect
           type="simulationEngine"
-          floatingLabelText={t('project.form.simulationEngine')}
+          label={t('project.form.simulationEngine')}
           value={this.props.simulationEngine}
           options={simulationEngineOptions}
           onChange={this.props.updateSettings}
           fullWidth
         />
         <div style={styles.btnRow} >
-          <RaisedButton
-            label={this.props.new ? t('project.form.createBtn') : t('project.form.updateBtn')}
+          <Button
             onTouchTap={this.props.submit}
-            primary
-          />
+            color="primary"
+            raised
+          >
+            {this.props.new ? t('project.form.createBtn') : t('project.form.updateBtn')}
+          </Button>
         </div>
       </div>
     );

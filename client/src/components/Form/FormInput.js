@@ -1,13 +1,21 @@
 /* @flow */
 
 import React from 'react';
-import TextField from 'material-ui/TextField';
+import Input from 'material-ui/Input';
+import InputLabel from 'material-ui/Input/InputLabel';
+import FormControl from 'material-ui/Form/FormControl';
+import FormHelperText from 'material-ui/Form/FormHelperText';
+import { withStyles } from 'material-ui/styles';
 
 type Props = {
   type: string,
+  label: string,
+  errorText?: string,
   onChange: (any, string) => void,
   secureTextEntry?: bool,
   numbersOnly?: bool,
+
+  classes: Object,
 };
 
 class FormInput extends React.Component {
@@ -21,8 +29,11 @@ class FormInput extends React.Component {
     const {
       onChange,
       type,
+      label,
       secureTextEntry,
       numbersOnly,
+      errorText,
+      classes,
       ...inputProps
     } = this.props;
 
@@ -31,13 +42,22 @@ class FormInput extends React.Component {
     inputType = numbersOnly ? 'number' : inputType;
 
     return (
-      <TextField
-        {...inputProps}
-        onChange={this.onChange}
-        type={inputType}
-      />
+      <FormControl error={!!errorText} className={classes.root} >
+        <InputLabel htmlFor="formInput">{label}</InputLabel>
+        <Input
+          {...inputProps}
+          id="formInput"
+          onChange={this.onChange}
+          type={inputType}
+        />
+        <FormHelperText>{errorText}</FormHelperText>
+      </FormControl>
     );
   }
 }
 
-export default FormInput;
+const styles = {
+  root: {},
+};
+
+export default withStyles(styles)(FormInput);

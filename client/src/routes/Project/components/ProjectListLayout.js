@@ -2,8 +2,8 @@
 
 import React from 'react';
 import type { List } from 'immutable';
-import RaisedButton from 'material-ui/RaisedButton';
-import PlusIcon from 'material-ui/svg-icons/content/add';
+import Button from 'material-ui/Button';
+import PlusIcon from 'material-ui-icons/Add';
 import Style from 'styles';
 
 import ProjectItemContainer from '../containers/ProjectItemContainer';
@@ -26,12 +26,13 @@ class ProjectListLayout extends React.Component {
     ));
     return (
       <div style={styles.container}>
-        <RaisedButton
+        <Button
           onTouchTap={this.props.createNewProject}
-          icon={<PlusIcon />}
           style={styles.itemBtn}
           href="#/project/new"
-        />
+        >
+          <PlusIcon />
+        </Button>
         {projects}
       </div>
     );

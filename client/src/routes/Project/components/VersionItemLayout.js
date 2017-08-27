@@ -3,9 +3,10 @@
 import React from 'react';
 import Style from 'styles';
 import { t } from 'i18n';
-import { Card, CardActions, CardText } from 'material-ui/Card';
-import CircularProgress from 'material-ui/CircularProgress';
-import RaisedButton from 'material-ui/RaisedButton';
+import Card, { CardActions, CardContent } from 'material-ui/Card';
+import { CircularProgress } from 'material-ui/Progress';
+import Typography from 'material-ui/Typography';
+import Button from 'material-ui/Button';
 import type { Version } from 'model/project';
 import { mapSimulationStateToColor } from '../enum';
 
@@ -29,48 +30,54 @@ class VersionItemLayout extends React.Component {
     const buildStatusColor = mapSimulationStateToColor[this.props.status];
     const buttons = this.props.buttonHandlers.map((button, index) => {
       return (
-        <RaisedButton
+        <Button
           key={index}
-          label={button.label}
           onTouchTap={button.handler}
           href={button.url(projectId, versionId)}
-        />
+          raised
+        >
+          {button.label}
+        </Button>
       );
     });
     return (
-      <Card style={styles.container} zDepth={2}>
-        <CardText>
-          <p style={styles.infoText} >{t('project.version.number', { number: this.props.id })}</p>
+      <Card style={styles.container} elevation={4} >
+        <CardContent>
+          <Typography>{t('project.version.number', { number: this.props.id })}</Typography>
           <div style={styles.infoText} >
-            {t(
-              'project.version.status',
-              { statusInfo: t(`project.versionStatus.${this.props.status}`) },
-            )}
+            <Typography>
+              {t(
+                'project.version.status',
+                { statusInfo: t(`project.versionStatus.${this.props.status}`) },
+              )}
+            </Typography>
             { ['running', 'pending'].includes(this.props.status)
                 ? <CircularProgress size={14} style={styles.loader} />
                 : null
             }
           </div>
-          <p style={styles.infoText} >
+          <Typography>
             {t(
               'project.version.library',
               { library: t(`library.${this.props.settings.computingLibrary}`) })
             }
-          </p>
-          <p style={styles.infoText} >
+          </Typography>
+          <Typography>
             {t(
               'project.version.engine',
               { engine: t(`engine.${this.props.settings.simulationEngine}`) })
             }
-          </p>
-        </CardText>
+          </Typography>
+        </CardContent>
         <CardActions>
-          <RaisedButton
-            primary
-            label={t('project.version.loadIntoWorkspace')}
-            onTouchTap={this.props.loadIntoWorkspace}
+          <Button
+            color="primary"
+            raised
+            onClick={this.props.loadIntoWorkspace}
             href={`#/project/${projectId}`}
-          />
+          >
+            {t('project.version.loadIntoWorkspace')}
+          </Button>
         </CardActions>
         <CardActions >
           {buttons}
@@ -97,10 +104,13 @@ const styles = {
   },
   infoText: {
     paddingBottom: Style.Dimens.spacing.min,
+    display: 'flex',
+    flexDirection: 'row',
   },
   loader: {
-    paddingLeft: Style.Dimens.spacing.small,
+    marginLeft: '15px',
     bottom: '-3px',
+    width: '20px',
   },
 };
 

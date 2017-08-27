@@ -33,13 +33,12 @@ class FormV3Input extends React.Component {
             <FormInput
               key={index}
               type={item.field}
-              floatingLabelText={item.label}
+              label={item.label}
               onChange={this.onUpdate}
               value={this.props.values[item.field]}
               errorText={this.props.valueError[item.field]}
               numbersOnly={this.props.numbersOnly}
               style={styles.inputWrapper}
-              fullWidth
             />
           ))
         }

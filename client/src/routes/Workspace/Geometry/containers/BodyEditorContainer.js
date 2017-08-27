@@ -19,6 +19,7 @@ type Props = {
 
   updateBody: (body: Body) => void,
   createBodyInZone: (body: Body, path: ConstructionPath) => void,
+  classes?: Object,
 }
 
 class BodyEditorContainer extends React.Component {
@@ -82,6 +83,7 @@ class BodyEditorContainer extends React.Component {
             ? t('workspace.editor.updateBtn')
             : t('workspace.editor.createBtn')
         }
+        classes={this.props.classes}
       />
     );
   }

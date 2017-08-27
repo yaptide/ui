@@ -3,7 +3,7 @@
 import React from 'react';
 import { t } from 'i18n';
 import { FormInput } from 'components/Form';
-import RaisedButton from 'material-ui/RaisedButton';
+import Button from 'material-ui/Button';
 import Style from 'styles';
 
 type Props = {
@@ -22,27 +22,27 @@ class ProjectEditor extends React.Component {
       <div style={styles.container} >
         <FormInput
           type="name"
-          floatingLabelText={t('project.form.name')}
+          label={t('project.form.name')}
           value={this.props.name}
           onChange={this.props.updateProject}
           fullWidth
         />
         <FormInput
           type="description"
-          floatingLabelText={t('project.form.description')}
+          label={t('project.form.description')}
           value={this.props.description}
           onChange={this.props.updateProject}
           fullWidth
-          multiLine
-          textareaStyle={styles.textArea}
-          rows={3}
+          multiline
         />
         <div style={styles.btnRow} >
-          <RaisedButton
-            label={this.props.new ? t('project.form.createBtn') : t('project.form.updateBtn')}
+          <Button
             onTouchTap={this.props.submit}
-            primary
-          />
+            color="primary"
+            raised
+          >
+            {this.props.new ? t('project.form.createBtn') : t('project.form.updateBtn')}
+          </Button>
         </div>
       </div>
     );
@@ -54,8 +54,6 @@ const styles = {
     ...Style.Flex.rootColumn,
     alignItems: 'stretch',
     padding: Style.Dimens.spacing.normal,
-  },
-  textArea: {
   },
   btnRow: {
     ...Style.Flex.rootRow,

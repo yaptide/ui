@@ -2,8 +2,8 @@
 
 import React from 'react';
 import Style from 'styles';
-import { Card, CardTitle, CardText, CardActions } from 'material-ui/Card';
-import RaisedButton from 'material-ui/RaisedButton';
+import Card, { CardHeader, CardContent, CardActions } from 'material-ui/Card';
+import Button from 'material-ui/Button';
 import type { DetectorResultsInfo, DetectorResultId } from 'model/result';
 import * as _ from 'lodash';
 import { t } from 'i18n';
@@ -23,34 +23,36 @@ class ResultItemLayout extends React.Component {
   render() {
     const { detectorId, projectId, versionId } = this.props;
     return (
-      <Card style={this.props.style} zDepth={2} >
-        <CardTitle
+      <Card style={this.props.style} elevation={4} >
+        <CardHeader
           title={this.props.detectorOverview.metadata.filename}
         />
         <CardActions>
-          <RaisedButton
-            primary
-            label={t('result.goToDetectorScore')}
+          <Button
+            color="primary"
+            raised
             onTouchTap={this.props.goToDetectorScore}
             href={`#/result/${detectorId}/${projectId}/${versionId}`}
-          />
+          >
+            {t('result.goToDetectorScore')}
+          </Button>
         </CardActions>
-        <CardText>
+        <CardContent>
           <p key="header" style={styles.infoTextHeader}>Detector dimensions</p>
           {
             _.map(this.props.detectorOverview.dimensions, (metadata, key) => {
               return <p key={key} style={styles.infoText} >{key}: {metadata}</p>;
             })
           }
-        </CardText>
-        <CardText>
+        </CardContent>
+        <CardContent>
           <p key="header" style={styles.infoTextHeader}>Detector metadata</p>
           {
             _.map(this.props.detectorOverview.metadata, (metadata, key) => {
               return <p key={key} style={styles.infoText} >{key}: {metadata}</p>;
             })
           }
-        </CardText>
+        </CardContent>
       </Card>
     );
   }

@@ -2,14 +2,17 @@
 
 import React from 'react';
 import Style from 'styles';
-import RaisedButtonMD from 'material-ui/RaisedButton';
-import AddIcon from 'material-ui/svg-icons/content/add';
-import DeleteIcon from 'material-ui/svg-icons/action/delete';
+import ButtonMD from 'material-ui/Button';
+import Typography from 'material-ui/Typography';
+import AddIcon from 'material-ui-icons/Add';
+import DeleteIcon from 'material-ui-icons/Delete';
+import { withStyles } from 'material-ui/styles';
 import { ButtonHOC } from 'components/Touchable';
 import type { OperationType, ConstructionPath } from 'model/simulation/zone';
+import cn from 'classnames';
 import OperationSelector from './OperationSelector';
 
-const RaisedButton = ButtonHOC(RaisedButtonMD);
+const Button = ButtonHOC(ButtonMD);
 
 type Props = {
   id: number | "base",
@@ -20,6 +23,7 @@ type Props = {
   createOperation: (constructionStep: ConstructionPath) => void,
   deleteOperation?: (constructionStep: ConstructionPath) => void,
   internalMarginStyle?: Object,
+  classes: Object,
 }
 
 const BASE_CONSTRUCTION_PATH = { base: true };
@@ -39,54 +43,66 @@ class ZoneOperation extends React.Component {
   }
 
   render() {
+    const { classes } = this.props;
     return (
-      <div style={styles.row} >
+      <div className={classes.root} >
         {
           this.props.operation
             ? <OperationSelector
               constructionPath={this.getConstructionPath()}
               operation={this.props.operation}
               onOperationSelected={this.props.onOperationSelected}
-              style={this.props.internalMarginStyle}
+              classes={{ root: classes.item }}
             />
             : null
         }
-        <RaisedButton
-          label={this.props.body.label}
+        <Button
+          raised
           onTouchTap={this.onBodySelected}
           payload={this.getConstructionPath()}
-          style={{ ...this.props.internalMarginStyle, ...styles.rowElement }}
-        />
+          className={cn(classes.item, classes.bodySelector)}
+        >
+          <Typography noWrap className={classes.typographyBtn} >
+            {this.props.body.label}
+          </Typography>
+        </Button>
         {
           this.props.deleteOperation
-            ? <RaisedButton
-              icon={<DeleteIcon />}
+            ? <Button
+              raised
               onTouchTap={this.deleteOperation}
-              style={{ ...this.props.internalMarginStyle, ...styles.deleteButton }}
-            />
+              className={cn(classes.deleteButton, classes.item)}
+              dense
+            >
+              <DeleteIcon />
+            </Button>
             : null
         }
-        <div style={{ ...this.props.internalMarginStyle, ...styles.addButtonPlaceholder }} />
-        <RaisedButton
-          icon={<AddIcon />}
+        <div className={classes.addButtonPlaceholder} />
+        <Button
+          raised
           onTouchTap={this.createOperation}
-          style={{ ...this.props.internalMarginStyle, ...styles.addButton }}
-        />
+          className={classes.addButton}
+          dense
+        >
+          <AddIcon />
+        </Button>
       </div>
     );
   }
 }
 
-const styles = {
-  row: {
+const styles = (theme: Object) => ({
+  root: {
     ...Style.Flex.rootRow,
     alignItems: 'flex-start',
     position: 'relative',
   },
-  rowElement: {
-    flex: '1 0 0',
-    marginRight: '0px',
+  item: {
     overflow: 'hidden',
+  },
+  bodySelector: {
+    flex: '1 0 0',
   },
   addButton: {
     width: '50px',
@@ -107,8 +123,13 @@ const styles = {
     width: '50px',
     minWidth: '50px',
     marginRight: '0px',
-    marginLeft: Style.Dimens.spacing.min,
+    paddingTop: '9px',
+    paddingBottom: '9px',
   },
-};
+  typographyBtn: {
+    ...theme.typography.button,
+    color: theme.palette.common.darkBlack,
+  },
+});
 
-export default ZoneOperation;
+export default withStyles(styles)(ZoneOperation);

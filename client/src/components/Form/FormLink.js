@@ -2,8 +2,7 @@
 
 import React from 'react';
 import { Link } from 'react-router';
-
-import Style from 'styles';
+import { withStyles } from 'material-ui/styles';
 
 import type { ApplicationRoute } from 'routes/model';
 
@@ -11,25 +10,29 @@ class FormLink extends React.Component {
   props: {
     url: ApplicationRoute,
     text: string,
-    style?: Object,
+    classes: Object,
   }
 
   render() {
     return (
-      <Link to={this.props.url} style={{ ...styles.text, ...this.props.style }} >
+      <Link
+        to={this.props.url}
+        className={this.props.classes.text}
+      >
         {this.props.text}
       </Link>
     );
   }
 }
 
-const styles = {
+const styles = (theme: Object) => ({
   text: {
-    paddingTop: Style.Dimens.spacing.small,
-    fontSize: Style.Dimens.font.standard,
-    fontFamily: 'Roboto',
-    color: Style.Theme.palette.primary1Color,
+    ...theme.typography.subheading,
+    color: theme.palette.primary[400],
+    '&:hover': {
+      color: theme.palette.primary[300],
+    },
   },
-};
+});
 
-export default FormLink;
+export default withStyles(styles)(FormLink);

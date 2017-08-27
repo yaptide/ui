@@ -1,20 +1,22 @@
 /* @flow */
 
 import React from 'react';
-import RaisedButton from 'material-ui/RaisedButton';
-import FlatButtonMD from 'material-ui/FlatButton';
-import Popover from 'material-ui/Popover';
+import Button from 'material-ui/Button';
+import Menu, { MenuItem as MenuItemMD } from 'material-ui/Menu';
+import { withStyles } from 'material-ui/styles';
 import Style from 'styles';
 import { ButtonHOC } from 'components/Touchable';
 import type { OperationType, ConstructionPath } from 'model/simulation/zone';
+import cn from 'classnames';
 
-const FlatButton = ButtonHOC(FlatButtonMD);
+const MenuItem = ButtonHOC(MenuItemMD);
 
 type Props = {
   constructionPath: ConstructionPath,
   onOperationSelected: (type: ConstructionPath, value: OperationType) => void,
   operation: string,
   style?: Object,
+  classes: Object,
 };
 
 class OperationSelector extends React.Component {
@@ -48,38 +50,73 @@ class OperationSelector extends React.Component {
 
 
   render() {
+    const { classes } = this.props;
     return (
-      <div style={this.props.style}>
-        <RaisedButton
+      <div className={classes.root} >
+        <Button
           onTouchTap={this.handleTouchTap}
-          icon={Style.Icons[this.props.operation]}
-          style={styles.selector}
-        />
-        <Popover
+          className={cn(classes.iconBtn)}
+          raised
+          dense
+        >
+          {Style.Icons[this.props.operation]}
+        </Button>
+        <Menu
           open={this.state.open}
           anchorEl={this.state.anchorEl}
-          anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
-          targetOrigin={{ horizontal: 'right', vertical: 'top' }}
           onRequestClose={this.handleRequestClose}
+          className={classes.menuContent}
         >
-          <div style={Style.Flex.rootColumn}>
-            <FlatButton style={styles.selector} payload="union" icon={Style.Icons.union} onTouchTap={this.onMenuItemSelected} />
-            <FlatButton style={styles.selector} payload="intersect" icon={Style.Icons.intersect} onTouchTap={this.onMenuItemSelected} />
-            <FlatButton style={styles.selector} payload="subtract" icon={Style.Icons.subtract} onTouchTap={this.onMenuItemSelected} />
-          </div>
-        </Popover>
+          <MenuItem
+            className={classes.selector}
+            payload="union"
+            selected={this.props.operation === 'union'}
+            onTouchTap={this.onMenuItemSelected}
+          >
+            {Style.Icons.union}
+          </MenuItem>
+          <MenuItem
+            className={classes.selector}
+            payload="intersect"
+            selected={this.props.operation === 'intersect'}
+            onTouchTap={this.onMenuItemSelected}
+          >
+            {Style.Icons.intersect}
+          </MenuItem>
+          <MenuItem
+            className={classes.selector}
+            payload="subtract"
+            selected={this.props.operation === 'subtract'}
+            onTouchTap={this.onMenuItemSelected}
+          >
+            {Style.Icons.subtract}
+          </MenuItem>
+        </Menu>
       </div>
     );
   }
 }
 
-const styles = {
+const styles = (theme: Object) => ({
+  root: {},
   selector: {
-    width: '50px',
-    minWidth: '50px',
     overflow: 'hidden',
+    '&:hover': {
+      background: theme.palette.grey.A200,
+    },
+    '&:active': {
+      background: theme.palette.grey.A300,
+    },
+    color: theme.palette.common.darkBlack,
   },
-};
+  iconBtn: {
+    paddingTop: '9px',
+    paddingBottom: '9px',
+  },
+  menuContent: {
+    background: theme.palette.grey[300],
+  },
+});
 
-export default OperationSelector;
+export default withStyles(styles)(OperationSelector);
 

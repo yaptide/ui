@@ -3,7 +3,6 @@
 import React from 'react';
 import * as _ from 'lodash';
 import type { ChartLabels1D } from 'model/result/chart';
-import Style from 'styles';
 import Plotly from './Plotly';
 
 type Props = {
@@ -71,8 +70,8 @@ class LineChart extends React.Component {
 const styles = {
   layout: {
     margin: { t: 30 },
-    paper_bgcolor: Style.Theme.palette.canvasColor,
-    plot_bgcolor: Style.Theme.palette.canvasColor,
+    paper_bgcolor: '#333333',
+    plot_bgcolor: '#333333',
     font: {
       color: '#FFFFFF',
     },
@@ -83,8 +82,8 @@ const styles = {
       tickColor: '#FFFFFF',
       lineColor: '#FFFFFF',
       rangeselector: {
-        bgcolor: Style.Theme.palette.canvasDarkColor,
-        bordercolor: Style.Theme.palette.primary1Color,
+        bgcolor: '#333333',
+        bordercolor: '#333333',
       },
     },
     yaxis: {

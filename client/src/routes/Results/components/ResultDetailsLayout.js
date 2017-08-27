@@ -17,7 +17,7 @@ class ResultDetailsLayout extends React.Component {
   render() {
     return (
       <div style={styles.container} >
-        <Paper zDepth={2} >
+        <Paper elevation={4} >
           <ChartInterface
             data={this.props.scored}
             numberOfDimensions={this.props.dimensions.numberOfDimensions}

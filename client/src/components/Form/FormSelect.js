@@ -1,51 +1,76 @@
 /* @flow */
 
 import React from 'react';
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
-import Style from 'styles';
+import Menu, { MenuItem } from 'material-ui/Menu';
+import Button from 'material-ui/Button';
+import { withStyles } from 'material-ui/styles';
 
 type Props = {
   type?: any,
   value: any,
+  label: string,
   onChange: (value: any, type: any) => void,
   options: Array<{ field: string, label: string }>,
+  classes: Object,
 }
 
 class FormSelect extends React.Component {
   props: Props
+  state: {
+    open: bool,
+    anchorEl: any,
+  } = {
+    open: false,
+    anchorEl: undefined,
+  }
 
-  onChange = (event: mixed, index: number, value: any) => {
-    this.props.onChange(value, this.props.type);
+  onChange = (event: any) => {
+    this.props.onChange(event.target.getAttribute('value'), this.props.type);
+    this.handleClose();
+  }
+
+  handleOpen = (event: Object) => {
+    this.setState({ open: true, anchorEl: event.currentTarget });
+  }
+
+  handleClose = () => {
+    this.setState({ open: false });
   }
 
   render() {
-    const { value, onChange, options, ...props } = this.props;
+    const { value, options, label } = this.props;
     return (
-      <SelectField
-        value={value}
-        style={styles.select}
-        onChange={this.onChange}
-        {...props}
-      >
-        {
-          options.map((item, index) => (
-            <MenuItem
-              key={index}
-              value={item.field}
-              primaryText={item.label}
-            />
-          ))
-        }
-      </SelectField>
+      <div>
+        <Button
+          onTouchTap={this.handleOpen}
+        >
+          {value || `select ${label}`}
+        </Button>
+        <Menu
+          id="inputSelect"
+          value={value}
+          anchorEl={this.state.anchorEl}
+          open={this.state.open}
+          onRequestClose={this.handleClose}
+        >
+          {
+            options.map((item, index) => (
+              <MenuItem
+                key={index}
+                value={item.field}
+                onClick={this.onChange}
+              >
+                {item.label}
+              </MenuItem>
+            ))
+          }
+        </Menu>
+      </div>
     );
   }
 }
 
 const styles = {
-  select: {
-    marginRight: Style.Dimens.spacing.normal,
-  },
 };
 
-export default FormSelect;
+export default withStyles(styles)(FormSelect);

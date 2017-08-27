@@ -3,19 +3,24 @@
 import React from 'react';
 import Style from 'styles';
 import { t } from 'i18n';
+import { withStyles } from 'material-ui/styles';
 import { FormLink } from 'components/Form';
 import AppLayout from '../AppLayout';
 
 class Logout extends React.Component {
+  props: {
+    classes: Object,
+  }
 
   render() {
+    const classes = this.props.classes;
     return (
       <AppLayout>
-        <div style={styles.container}>
-          <p style={styles.title}>
+        <div className={classes.container}>
+          <p className={classes.title}>
             {t('empty.logout.title')}
           </p>
-          <p style={styles.description}>
+          <p className={classes.description}>
             {t('empty.logout.body1')}
             <FormLink text={t('empty.logout.home')} url="/welcome" />
             {t('empty.logout.body2')}
@@ -28,7 +33,7 @@ class Logout extends React.Component {
   }
 }
 
-const styles = {
+const styles = (theme: Object) => ({
   container: {
     ...Style.Flex.elementEqual,
     alignSelf: 'center',
@@ -37,17 +42,15 @@ const styles = {
   },
   title: {
     fontSize: Style.Dimens.font.huge,
-    fontFamily: Style.Theme.fontFamily,
-    color: Style.Theme.palette.textColor,
+    color: theme.palette.grey[200],
     paddingTop: Style.Dimens.spacing.veryLarge,
   },
   description: {
     dispaly: 'flex',
     fontSize: Style.Dimens.font.standard,
-    fontFamily: Style.Theme.fontFamily,
-    color: Style.Theme.palette.textColor,
+    color: theme.palette.grey[200],
     paddingTop: Style.Dimens.spacing.normal,
   },
-};
+});
 
-export default Logout;
+export default withStyles(styles)(Logout);

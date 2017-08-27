@@ -4,9 +4,11 @@ import React from 'react';
 import Style from 'styles';
 import { t } from 'i18n';
 import router from 'utils/router';
-import CircularProgress from 'material-ui/CircularProgress';
-import FlatButton from 'material-ui/FlatButton';
-import { Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle } from 'material-ui/Toolbar';
+import { CircularProgress } from 'material-ui/Progress';
+import Button from 'material-ui/Button';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
+import { withStyles } from 'material-ui/styles';
 import AppLayout from './AppLayout';
 
 const link = {
@@ -21,67 +23,64 @@ type Props = {
   activeWorkspaceTab?: string,
   isWorkspaceLoading?: bool,
   children?: React.Component<*, *, *>,
+  classes: Object,
 }
 
 class WorkspaceLayout extends React.Component {
   props: Props;
 
   isActive = (tab: string) => {
-    return this.props.activeWorkspaceTab === tab;
+    return this.props.activeWorkspaceTab === tab ? 'accent' : undefined;
   }
 
   render() {
-    const { children, activeWorkspaceTab, isWorkspaceLoading, ...props } = this.props;
+    const { children, activeWorkspaceTab, isWorkspaceLoading, classes, ...props } = this.props;
     return (
       <AppLayout {...props} >
-        <Toolbar
-          style={{ background: Style.Theme.palette.disabledColor }}
-        >
-          <ToolbarGroup>
-            <ToolbarTitle
-              text="Workspace"
-            />
-          </ToolbarGroup>
-          <ToolbarGroup>
-            <FlatButton
-              style={styles.button}
-              label={t('tabSettings')}
-              secondary={this.isActive('settings')}
-              onTouchTap={link.settings}
-            />
-            <ToolbarSeparator style={styles.separator} />
-            <FlatButton
-              style={styles.button}
-              label={t('tabGeometry')}
-              secondary={this.isActive('geometry')}
-              onTouchTap={link.geometry}
-            />
-            <FlatButton
-              style={styles.button}
-              label={t('tabMaterial')}
-              secondary={this.isActive('material')}
-              onTouchTap={link.material}
-            />
-            <FlatButton
-              style={styles.button}
-              label={t('tabBeam')}
-              secondary={this.isActive('beam')}
-              onTouchTap={link.beam}
-            />
-            <FlatButton
-              style={styles.button}
-              label={t('tabDetectors')}
-              secondary={this.isActive('detectors')}
-              onTouchTap={link.detectors}
-            />
-          </ToolbarGroup>
+        <Toolbar className={classes.toolbar} >
+          <Typography className={classes.toolbarTitle} >Workspace</Typography>
+          <Button
+            style={styles.button}
+            color={this.isActive('settings')}
+            onTouchTap={link.settings}
+          >
+            {t('tabSettings')}
+          </Button>
+          <Button
+            style={styles.button}
+            color={this.isActive('geometry')}
+            onTouchTap={link.geometry}
+          >
+            {t('tabGeometry')}
+          </Button>
+          <Button
+            style={styles.button}
+            color={this.isActive('material')}
+            onTouchTap={link.material}
+          >
+            {t('tabMaterial')}
+          </Button>
+          <Button
+            style={styles.button}
+            color={this.isActive('beam')}
+            onTouchTap={link.beam}
+          >
+            {t('tabBeam')}
+          </Button>
+          <Button
+            style={styles.button}
+            color={this.isActive('detectors')}
+            onTouchTap={link.detectors}
+          >
+            {t('tabDetectors')}
+          </Button>
         </Toolbar>
 
         {
           isWorkspaceLoading
             ? (
-              <div style={styles.container}>
-                <CircularProgress size={70} thickness={6} />
+              <div className={classes.container}>
+                <CircularProgress size={70} />
               </div>
             )
             : children
@@ -91,7 +90,15 @@ class WorkspaceLayout extends React.Component {
   }
 }
 
-const styles = {
+const styles = (theme: Object) => ({
+  toolbar: {
+    background: theme.palette.grey[800],
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  toolbarTitle: {
+    flex: '1 0 0',
+  },
   container: {
     ...Style.Flex.elementEqual,
     ...Style.Flex.rootColumn,
@@ -99,15 +106,7 @@ const styles = {
     alignItems: 'center',
     position: 'relative',
   },
-  button: {
-    marginLeft: '0px',
-    marginRight: '0px',
-  },
-  separator: {
-    marginLeft: '16px',
-    marginRight: '16px',
-  },
-};
+});
 
-export default WorkspaceLayout;
+export default withStyles(styles)(WorkspaceLayout);
 

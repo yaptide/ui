@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { Modal } from 'components/Modal';
-import { Tab, Tabs } from 'material-ui/Tabs';
-import Style from 'styles';
+import Dialog from 'material-ui/Dialog';
+import { withStyles } from 'material-ui/styles';
+import Tabs, { Tab } from 'material-ui/Tabs';
 import type { Body, BodyGeometry, ConstructionPath } from 'model/simulation/zone';
 import BodyEditorContainer from './BodyEditorContainer';
 import selector from '../../selector';
@@ -13,14 +13,14 @@ type Props = {
   isModalOpen: ?bool,
   closeModal: () => void,
   constructionPath: ConstructionPath,
-
   body: Body,
+  classes: Object,
 }
 
 class BodyEditorModal extends React.Component {
   props: Props;
   state: {
-    route: string,
+    route: 'create' | 'select',
     bodyGeometry: BodyGeometry | {},
   } = {
     route: 'create',
@@ -46,54 +46,67 @@ class BodyEditorModal extends React.Component {
     });
   }
 
-  onRouteChanged = (newRoute: string) => {
-    this.setState({ route: newRoute });
+  onRouteChanged = (event:any, route: 'create' | 'select') => {
+    this.setState({ route });
   }
 
   setGeometry = (geometryUpdate: BodyGeometry) => {
     this.setState({ bodyGeometry: geometryUpdate });
   }
   render() {
+    const classes = this.props.classes;
     return this.props.isModalOpen ? (
-      <Modal
-        isOpen={this.props.isModalOpen}
-        closeModal={this.props.closeModal}
-        contentLabel="bodyEditor"
+      <Dialog
+        open={this.props.isModalOpen}
+        onRequestClose={this.props.closeModal}
+        classes={{ paper: classes.root }}
       >
         <Tabs
           value={this.state.route}
           onChange={this.onRouteChanged}
-          style={styles.tabsRoot}
-          contentContainerStyle={styles.tabsContent}
+          indicatorColor="primary"
+          textColor="primary"
+          fullWidth
+          classes={{ flexContainer: classes.tabsContainer }}
         >
-          <Tab label="Body creator" value="create" >
-            <BodyEditorContainer
+          <Tab label="Body creator" value="create" className={classes.tabItem} />
+          <Tab label="Select existing body" value="select" className={classes.tabItem} />
+        </Tabs>
+        {
+          this.state.route === 'create'
+            ? <BodyEditorContainer
               bodyGeometry={this.state.bodyGeometry}
               setGeometry={this.setGeometry}
               constructionPath={this.props.constructionPath}
               bodyId={this.props.body.id}
               closeModal={this.props.closeModal}
+              classes={{ root: classes.editorRoot }}
             />
-          </Tab>
-
-          <Tab label="Select existing body" value="select" />
-        </Tabs>
-      </Modal>
+            : null
+        }
+      </Dialog>
     ) : null;
   }
 }
 
-const styles = {
-  tabsRoot: {
-    ...Style.Flex.rootColumn,
-    height: '100%',
+const styles = (theme: Object) => ({
+  root: {
+    minWidth: theme.breakpoints.values[1],
+    minHeight: theme.breakpoints.values[0],
   },
-  tabsContent: {
-    flex: '1 0 0',
-    ...Style.Flex.rootRow,
-    alignContent: 'stretch',
+  editorRoot: {
+    paddingLeft: theme.spacing.unit,
+    paddingRight: theme.spacing.unit,
+    paddingBottom: theme.spacing.unit,
   },
-};
+  tabsContainer: {
+    flexDirection: 'row',
+  },
+  tabItem: {
+    flex: '1 1 0',
+    maxWidth: theme.breakpoints.values[2],
+  },
+});
 
 const mapStateToProps = (state, props) => {
   return {
@@ -103,4 +116,4 @@ const mapStateToProps = (state, props) => {
 
 export default connect(
   mapStateToProps,
-)(BodyEditorModal);
+)(withStyles(styles)(BodyEditorModal));

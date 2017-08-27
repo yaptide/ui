@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Style from 'styles';
+import { withStyles } from 'material-ui/styles';
 import { FormInput } from 'components/Form';
 import RowLabel from './RowLabel';
 
@@ -13,6 +14,7 @@ type Props = {
   value: string | number,
   valueError: string,
   onUpdate: (field: string, value: any) => void,
+  classes: Object,
 }
 
 class FormV3SingleInput extends React.Component {
@@ -26,20 +28,20 @@ class FormV3SingleInput extends React.Component {
   }
 
   render() {
+    const classes = this.props.classes;
     return (
       <RowLabel label={this.props.rowLabel} >
         <FormInput
           type={this.props.valueLabel.field}
-          floatingLabelText={this.props.valueLabel.label}
+          label={this.props.valueLabel.label}
           onChange={this.onUpdate}
           value={this.props.value}
           errorText={this.props.valueError}
           numbersOnly={this.props.numbersOnly}
-          style={styles.inputWrapper}
-          fullWidth
+          classes={{ root: classes.inputWrapper }}
         />
-        <div style={styles.inputWrapper} />
-        <div style={styles.inputWrapper} />
+        <div className={classes.inputWrapper} />
+        <div className={classes.inputWrapper} />
       </RowLabel>
     );
   }
@@ -55,4 +57,4 @@ const styles = {
   },
 };
 
-export default FormV3SingleInput;
+export default withStyles(styles)(FormV3SingleInput);

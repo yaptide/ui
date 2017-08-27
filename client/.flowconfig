@@ -2,12 +2,15 @@
 .*/node_modules/config-chain/test/.*
 .*/node_modules/npmconf/test/.*
 .*/test/.*
+.*/test-utils/.*
+.*/babel-plugin-transform-react-remove-prop-types/.*
 [include]
 ../node_modules
 ./src/api/index.js
 [libs]
 flow/decl/require.js
 ../node_modules/react/dist/*
+../node_modules/jss/flow-typed
 [options]
 
 experimental.strict_type_args=true

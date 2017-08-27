@@ -3,7 +3,7 @@ import React from 'react';
 import SvgIcon from 'material-ui/SvgIcon';
 
 const intersect = (
-  <SvgIcon viewBox="0 0 300 300" style={{ width: '30px', height: '30px' }}>
+  <SvgIcon viewBox="0 0 300 300" style={{ width: '24px', height: '24px' }}>
     <defs>
       <mask id="hole">
         <rect width="100%" height="100%" fill="black" />
@@ -16,7 +16,7 @@ const intersect = (
 );
 
 const subtract = (
-  <SvgIcon viewBox="0 0 300 300" style={{ width: '30px', height: '30px' }}>
+  <SvgIcon viewBox="0 0 300 300" style={{ width: '24px', height: '24px' }}>
     <defs>
       <mask id="cut">
         <rect width="100%" height="100%" fill="white" />
@@ -29,7 +29,7 @@ const subtract = (
 );
 
 const union = (
-  <SvgIcon viewBox="0 0 300 300" style={{ width: '30px', height: '30px' }}>
+  <SvgIcon viewBox="0 0 300 300" style={{ width: '24px', height: '24px' }}>
     <circle r="100" cx="100" cy="150" />
     <circle r="100" cx="200" cy="150" />
   </SvgIcon>

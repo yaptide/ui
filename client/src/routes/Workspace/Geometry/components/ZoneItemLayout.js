@@ -2,8 +2,9 @@
 import React from 'react';
 import Style from 'styles';
 import Paper from 'material-ui/Paper';
-import FlatButton from 'material-ui/FlatButton';
-import RightArrowIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
+import Button from 'material-ui/Button';
+import RightArrowIcon from 'material-ui-icons/KeyboardArrowRight';
+import { withStyles } from 'material-ui/styles';
 import { ZoneName, ZoneEditor } from 'components/Editor/ZoneEditor';
 import type { OperationType, ConstructionPath, PrintableOperation } from 'model/simulation/zone';
 
@@ -18,8 +19,8 @@ type Props = {
   onZoneNameUpdate: (name: string) => void,
   createOperation: (constructionStep: ConstructionPath) => void,
   deleteOperation: (constructionStep: ConstructionPath) => void,
-  style?: Object,
 
+  classes: Object,
   goToChildLayer: () => void,
 };
 
@@ -36,25 +37,27 @@ class ZoneItemLayout extends React.Component {
   }
 
   render() {
+    const { classes, zoneName, base, construction, material } = this.props;
     const zoneTitle = (
       <ZoneName
-        name={this.props.zoneName}
+        name={zoneName}
         isOpen={this.state.isOpen}
         toggleOpen={this.toggleOpen}
         updateName={this.props.onZoneNameUpdate}
       />
     );
     const goToChildBtn = (
-      <FlatButton
+      <Button
         onTouchTap={this.props.goToChildLayer}
-        style={styles.goToChildrenBtn}
-        icon={<RightArrowIcon />}
-        disableTouchRipple
-      />
+        className={classes.goToChildrenBtn}
+        dense
+      >
+        <RightArrowIcon />
+      </Button>
     );
     if (!this.state.isOpen) {
       return (
-        <Paper zDepth={2} style={{ ...styles.container, ...this.props.style }} >
+        <Paper zDepth={2} className={classes.container} >
           {zoneTitle}
           {goToChildBtn}
         </Paper>
@@ -62,12 +65,12 @@ class ZoneItemLayout extends React.Component {
     }
 
     return (
-      <Paper zDepth={2} style={{ ...styles.container, ...this.props.style }} >
+      <Paper elevation={4} className={classes.container} >
         <ZoneEditor
-          zoneName={this.props.zoneName}
-          material={this.props.material}
-          base={this.props.base}
-          construction={this.props.construction}
+          zoneName={zoneName}
+          material={material}
+          base={base}
+          construction={construction}
           onBodySelected={this.props.onBodySelected}
           onMaterialSelected={this.props.onMaterialSelected}
           onOperationSelected={this.props.onOperationSelected}
@@ -81,12 +84,15 @@ class ZoneItemLayout extends React.Component {
   }
 }
 
-const styles = {
+const styles = (theme: Object) => ({
   container: {
-    padding: Style.Dimens.spacing.small,
+    display: 'flex',
+    flexDirection: 'column',
+    padding: theme.spacing.unit,
     position: 'relative',
-    paddingRight: '30px',
+    paddingRight: theme.spacing.unit * 4,
     minHeight: '48px',
+    overflow: 'hidden',
   },
   opperation: {
     ...Style.Flex.rootRow,
@@ -138,6 +144,6 @@ const styles = {
     marginBottom: Style.Dimens.spacing.min,
     overflow: 'hidden',
   },
-};
+});
 
-export default ZoneItemLayout;
+export default withStyles(styles)(ZoneItemLayout);

@@ -61,21 +61,21 @@ class RegisterContainer extends React.Component {
         <FormInput
           value={this.state.email}
           type="email"
-          floatingLabelText={t('auth.form.emailLabel')}
+          label={t('auth.form.emailLabel')}
           onChange={this.onChange}
           errorText={this.props.registerError.email}
         />
         <FormInput
           value={this.state.username}
           type="username"
-          floatingLabelText={t('auth.form.usernameLabel')}
+          label={t('auth.form.usernameLabel')}
           onChange={this.onChange}
           errorText={this.props.registerError.username}
         />
         <FormInput
           value={this.state.password}
           type="password"
-          floatingLabelText={t('auth.form.passwordLabel')}
+          label={t('auth.form.passwordLabel')}
           onChange={this.onChange}
           secureTextEntry
           errorText={this.props.registerError.password}
@@ -83,7 +83,7 @@ class RegisterContainer extends React.Component {
         <FormInput
           value={this.state.repeatPassword}
           type="repeatPassword"
-          floatingLabelText={t('auth.form.repeatPasswordLabel')}
+          label={t('auth.form.repeatPasswordLabel')}
           onChange={this.onChange}
           secureTextEntry
         />

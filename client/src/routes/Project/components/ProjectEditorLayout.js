@@ -12,7 +12,7 @@ class ProjectEditorLayout extends React.Component {
   render() {
     return (
       <div style={styles.formWrapper} >
-        <Paper style={styles.paper} zDepth={3} >
+        <Paper style={styles.paper} elevation={4} >
           {this.props.children}
         </Paper>
       </div>
