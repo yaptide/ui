@@ -16,8 +16,8 @@ type getConfigurationHandler struct {
 
 func (h *getConfigurationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var response struct {
-		PredefinedMaterials []string `json:"predefinedMaterials"`
-		Isotopes            []string `json:"isotopes"`
+		PredefinedMaterials []material.PredefinedMaterialRecord `json:"predefinedMaterials"`
+		Isotopes            []material.IsotopeRecord            `json:"isotopes"`
 	}
 
 	response.PredefinedMaterials = material.PredefinedMaterials()

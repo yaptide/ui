@@ -24,14 +24,14 @@ func newEmptySerializeTestCase() serializerTestCase {
 func materialPredefinedTrivial(id int64) *material.Material {
 	materialID := material.ID(id)
 	return &material.Material{ID: material.ID(materialID), Type: material.Predefined{
-		Name: "Urea",
+		Name: "urea",
 	}}
 }
 
 func materialPredefinedFull(id int64) *material.Material {
 	materialID := material.ID(id)
 	return &material.Material{ID: material.ID(materialID), Type: material.Predefined{
-		Name:                      "Methanol",
+		Name:                      "methanol",
 		StateOfMatter:             material.Liquid,
 		Density:                   0.001,
 		LoadExternalStoppingPower: false,
@@ -45,10 +45,10 @@ func materialCompoundTrivial(id int64) *material.Material {
 		Density:       99.9,
 		StateOfMatter: material.Solid,
 		Elements: []material.Element{
-			material.Element{Isotope: "Gd-*", RelativeStoichiometricFraction: 2, AtomicMass: 100.23},
-			material.Element{Isotope: "U-235", RelativeStoichiometricFraction: 123, IValue: 555.34},
+			material.Element{Isotope: "gd-*", RelativeStoichiometricFraction: 2, AtomicMass: 100.23},
+			material.Element{Isotope: "u-235", RelativeStoichiometricFraction: 123, IValue: 555.34},
 		},
-		ExternalStoppingPowerFromPredefined: "Water Vapor",
+		ExternalStoppingPowerFromPredefined: "water vapor",
 	}}
 }
 
