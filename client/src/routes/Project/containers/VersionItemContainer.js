@@ -18,9 +18,10 @@ type Props = {
   startSimulation: () => void,
   setupWorkspace: () => void,
   createNewVersionFrom: () => void,
+  classes?: Object,
 }
 
-class VersionItemContainer extends React.Component {
+class VersionItemContainer extends React.Component<Props> {
   props: Props
 
   handlers = {
@@ -72,9 +73,10 @@ class VersionItemContainer extends React.Component {
       <VersionItemLayout
         projectId={this.props.projectId}
         versionId={this.props.versionId}
-        {...this.props.version}
+        version={this.props.version}
         loadIntoWorkspace={this.loadIntoWorkspace}
         buttonHandlers={buttonHandlers}
+        classes={this.props.classes}
       />
     );
   }

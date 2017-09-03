@@ -5,34 +5,39 @@ import Style from 'styles';
 import type { Project } from 'model/project';
 import Button from 'material-ui/Button';
 import IconAdd from 'material-ui-icons/Add';
+import { withStyles } from 'material-ui/styles';
 import VersionItemContainer from '../containers/VersionItemContainer';
 
 type Props = {
   createVersionFromLatest: () => void,
-} & Project
+  project: Project,
+  classes: Object,
+};
 
-class ProjectDetailsLayout extends React.Component {
+class ProjectDetailsLayout extends React.Component<Props> {
   props: Props
 
   render() {
-    const versions = this.props.versionIds.reverse().map((version) => {
+    const { classes, project } = this.props;
+    const versions = project.versionIds.reverse().map((version) => {
       return (
         <VersionItemContainer
           key={version}
           versionId={version}
-          projectId={this.props.id}
+          projectId={project.id}
+          classes={{ root: classes.item }}
         />
       );
     });
 
     return (
-      <div style={styles.container}>
-        <div style={styles.header}>
-          <div style={styles.descriptionBlock}>
-            <p style={styles.projectName}>{this.props.name}</p>
-            <p style={styles.projectDescription}>
+      <div className={classes.root}>
+        <div className={classes.header}>
+          <div className={classes.descriptionBlock}>
+            <p className={classes.projectName}>{project.name}</p>
+            <p className={classes.projectDescription}>
               {
-                this.props.description
+                project.description
                   .split('\n')
                   .map((item, key) => <span key={key}>{item}<br /></span>)
               }
@@ -40,7 +45,9 @@ class ProjectDetailsLayout extends React.Component {
           </div>
           <Button
             onTouchTap={this.props.createVersionFromLatest}
-            href={`#/project/${this.props.id}`}
+            href={`#/project/${project.id}`}
+            color="contrast"
+            raised
           >
             <IconAdd />
           </Button>
@@ -52,17 +59,22 @@ class ProjectDetailsLayout extends React.Component {
 }
 
 const styles = (theme: Object) => ({
-  container: {
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: '1 0 auto',
     alignItems: 'stretch',
-    padding: Style.Dimens.spacing.large,
+    padding: theme.spacing.unit * 4,
   },
   header: {
-    ...Style.Flex.rootRow,
+    display: 'flex',
+    flexDirection: 'row',
     alignItems: 'flex-start',
   },
   descriptionBlock: {
-    ...Style.Flex.rootColumn,
-    ...Style.Flex.elementEqual,
+    display: 'flex',
+    flexDirection: 'column',
+    flex: '1 0 auto',
     marginRight: Style.Dimens.spacing.normal,
   },
   projectName: {
@@ -74,6 +86,12 @@ const styles = (theme: Object) => ({
     color: theme.palette.grey[200],
     fontSize: Style.Dimens.font.standard,
   },
+  item: {
+    marginBottom: theme.spacing.unit * 2,
+    '&:last-child': {
+      marginBottom: 0,
+    },
+  },
 });
 
-export default ProjectDetailsLayout;
+export default withStyles(styles)(ProjectDetailsLayout);

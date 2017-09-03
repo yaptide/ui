@@ -10,10 +10,10 @@ import selector from '../selector';
 type Props = {
   projectId: string,
   project: Project,
-  style?: Object,
+  classes?: Object,
 };
 
-class ProjectListItemContainer extends React.Component {
+class ProjectListItemContainer extends React.Component<Props> {
   props: Props
 
   goToProjectDetails = (e: any) => {
@@ -35,7 +35,7 @@ class ProjectListItemContainer extends React.Component {
         project={this.props.project}
         goToProjectDetails={this.goToProjectDetails}
         goToProjectEdit={this.goToProjectEdit}
-        style={this.props.style}
+        classes={this.props.classes}
       />
     );
   }

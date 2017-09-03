@@ -3,7 +3,7 @@
 import React from 'react';
 import WorkspaceLayout from 'pages/WorkspaceLayout';
 
-class WorkspaceDetectorsContainer extends React.Component {
+class WorkspaceDetectorsContainer extends React.Component<{}> {
   render() {
     return (
       <WorkspaceLayout

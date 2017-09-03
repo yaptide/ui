@@ -24,7 +24,7 @@ type State = {
   repeatPassword: string,
 };
 
-class RegisterContainer extends React.Component {
+class RegisterContainer extends React.Component<Props, State> {
   static defaultProps = { includeLinks: true }
   props: Props
   state: State = {

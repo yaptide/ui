@@ -12,7 +12,7 @@ type Props = {
   fetchSimulationSetup: () => void,
 }
 
-class WorkspaceSettingsContainer extends React.Component {
+class WorkspaceSettingsContainer extends React.Component<Props> {
   props: Props
 
   componentWillMount() {

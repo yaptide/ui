@@ -14,7 +14,7 @@ type Props = {
   fetchResults: () => void,
 }
 
-class ResultListContainer extends React.Component {
+class ResultListContainer extends React.Component<Props> {
   props: Props
 
   componentWillMount() {

@@ -19,12 +19,14 @@ type Props = {
   classes: Object,
 };
 
-class OperationSelector extends React.Component {
-  props: Props;
-  state: {
-    open: bool,
-      anchorEl?: any,
-  } = {
+type State = {
+  open: bool,
+  anchorEl?: any,
+};
+
+class OperationSelector extends React.Component<Props, State> {
+  props: Props
+  state: State = {
     open: false,
   }
 

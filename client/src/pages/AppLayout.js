@@ -4,16 +4,27 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Header } from 'components/Header';
 import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles';
-import createPalette from 'material-ui/styles/palette';
+import grey from 'material-ui/colors/grey';
 import Style from 'styles';
 import { actionType } from 'routes/Auth/reducer';
 import cls from '../styles/core.scss'; // eslint-disable-line no-unused-vars
 
-// const theme = getMuiTheme(Style.Theme);
+const appPalette = {
+  type: 'dark',
+};
+
 const appTheme = createMuiTheme({
-  palette: createPalette({
-    type: 'dark',
-  }),
+  overrides: {
+    MuiButton: {
+      raisedContrast: {
+        background: grey[800],
+        '&:hover': {
+          background: grey[700],
+        },
+      },
+    },
+  },
+  palette: appPalette,
 });
 console.log(appTheme);
 
@@ -24,7 +35,7 @@ type Props = {
   classes: Object,
 };
 
-class AppLayout extends React.Component {
+class AppLayout extends React.Component<Props> {
   props: Props;
 
   render() {

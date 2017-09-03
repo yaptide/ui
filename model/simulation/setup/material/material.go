@@ -15,7 +15,7 @@ type ID int64
 type Material struct {
 	ID    ID          `json:"id"`
 	Color color.Color `json:"color"`
-	Type  Type        `json:"material"`
+	Type  Type        `json:"materialInfo"`
 }
 
 // UnmarshalJSON custom Unmarshal function.
@@ -24,7 +24,7 @@ func (m *Material) UnmarshalJSON(b []byte) error {
 	type rawBody struct {
 		ID      ID              `json:"id"`
 		Color   color.Color     `json:"color"`
-		TypeRaw json.RawMessage `json:"material"`
+		TypeRaw json.RawMessage `json:"materialInfo"`
 	}
 
 	var raw rawBody

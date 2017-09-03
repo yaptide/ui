@@ -20,13 +20,15 @@ type Props = {
   updateBody: (body: Body) => void,
   createBodyInZone: (body: Body, path: ConstructionPath) => void,
   classes?: Object,
-}
+};
 
-class BodyEditorContainer extends React.Component {
+type State = {
+  geometryErrors: Object,
+};
+
+class BodyEditorContainer extends React.Component<Props, State> {
   props: Props
-  state: {
-    geometryErrors: Object,
-  } = {
+  state: State = {
     geometryErrors: {},
   }
 

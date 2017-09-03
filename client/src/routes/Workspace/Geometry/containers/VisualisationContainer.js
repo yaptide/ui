@@ -10,7 +10,7 @@ type Props = {
   style?: Object,
 }
 
-class VisualisationContainer extends React.Component {
+class VisualisationContainer extends React.Component<Props> {
   props: Props;
 
   render() {

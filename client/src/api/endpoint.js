@@ -8,6 +8,7 @@ export type Endpoint = 'LOGIN' |
 const endpoints = {
   LOGIN: 'auth/login',
   REGISTER: 'auth/register',
+  CONFIGURATION: 'configuration',
   PROJECT: 'projects',
   projectById: (project: string) => `projects/${project}`,
   versionByProjectId: (project: string) => `projects/${project}/versions`,

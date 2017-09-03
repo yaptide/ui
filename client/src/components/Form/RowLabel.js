@@ -5,10 +5,10 @@ import Style from 'styles';
 
 type Props = {
   label: string,
-  children?: React.Element<*>,
+  children?: Array<React$Element<*>> | React$Element<*>,
 }
 
-class RowLabel extends React.Component {
+class RowLabel extends React.Component<Props> {
   props: Props
 
   render() {

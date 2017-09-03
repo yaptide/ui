@@ -17,7 +17,7 @@ type Props = {
   classes: Object,
 }
 
-class FormV3SingleInput extends React.Component {
+class FormV3SingleInput extends React.Component<Props> {
   props: Props
 
   onUpdate = (value: any) => {

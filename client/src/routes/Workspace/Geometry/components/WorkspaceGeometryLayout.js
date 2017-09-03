@@ -5,7 +5,7 @@ import Style from 'styles';
 import VisualisationContainer from '../containers/VisualisationContainer';
 import ZoneWorkspaceContainer from '../containers/ZoneWorkspaceContainer';
 
-class WorkspaceGeometryLayout extends React.Component {
+class WorkspaceGeometryLayout extends React.Component<{}> {
   render() {
     return (
       <div style={styles.container}>

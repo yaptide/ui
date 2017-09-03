@@ -6,12 +6,14 @@ import { withStyles } from 'material-ui/styles';
 
 import type { ApplicationRoute } from 'routes/model';
 
-class FormLink extends React.Component {
-  props: {
-    url: ApplicationRoute,
-    text: string,
-    classes: Object,
-  }
+type Props = {
+  url: ApplicationRoute,
+  text: string,
+  classes: Object,
+}
+
+class FormLink extends React.Component<Props> {
+  props: Props
 
   render() {
     return (

@@ -1,25 +1,28 @@
 /* @flow */
 
 import React from 'react';
-import Style from 'styles';
+import { withStyles } from 'material-ui/styles';
 import type { DetectorResultId } from 'model/result';
 import ResultItemContainer from '../containers/ResultItemContainer';
 
 type Props = {
   detectorIds: Array<DetectorResultId>,
+  classes: Object,
 }
 
-class ResultListLayout extends React.Component {
+class ResultListLayout extends React.Component<Props> {
   props: Props
+
   render() {
+    const classes = this.props.classes;
     return (
-      <div>
+      <div className={classes.root} >
         {
           this.props.detectorIds.map(id => (
             <ResultItemContainer
               key={id}
               detectorId={id}
-              style={styles.item}
+              classes={{ root: classes.item }}
             />
           ))
         }
@@ -28,10 +31,16 @@ class ResultListLayout extends React.Component {
   }
 }
 
-const styles = {
-  item: {
-    margin: Style.Dimens.spacing.large,
+const styles = (theme: Object) => ({
+  root: {
+    padding: theme.spacing.unit * 4,
   },
-};
+  item: {
+    marginBottom: theme.spacing.unit * 2,
+    '&:last-child': {
+      marginBottom: 0,
+    },
+  },
+});
 
-export default ResultListLayout;
+export default withStyles(styles)(ResultListLayout);

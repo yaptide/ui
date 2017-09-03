@@ -7,6 +7,9 @@ import type {
   ConstructionPath,
   OperationType,
 } from 'model/simulation/zone';
+import type {
+  Material,
+} from 'model/simulation/material';
 import stateProcessor from './reducerHelpers';
 
 export const actionType = {
@@ -66,14 +69,23 @@ const ACTION_HANDLERS = {
   [actionType.DELETE_ZONE_OPERATION]: (state, action) => (
     stateProcessor.zone.deleteOperation(state, action.zoneConstructionPath)
   ),
+  [actionType.UPDATE_ZONE_NAME]: (state, action) => (
+    state.setIn(['zones', String(action.zoneId), 'name'], action.name)
+  ),
   [actionType.CREATE_BODY_IN_ZONE]: (state, action) => (
     stateProcessor.body.createInZone(state, action.body, action.zoneConstructionPath)
   ),
   [actionType.UPDATE_BODY]: (state, action) => (
     stateProcessor.body.update(state, action.body)
   ),
-  [actionType.UPDATE_ZONE_NAME]: (state, action) => (
-    state.setIn(['zones', String(action.zoneId), 'name'], action.name)
+  [actionType.CREATE_MATERIAL]: (state, action) => (
+    stateProcessor.material.create(state, action.material)
+  ),
+  [actionType.UPDATE_MATERIAL]: (state, action) => (
+    stateProcessor.material.update(state, action.material)
+  ),
+  [actionType.DELETE_MATERIAL]: (state, action) => (
+    stateProcessor.material.delete(state, action.materialId)
   ),
   [actionType.MOVE_TO_PARENT_LAYER]: (state) => {
     const currentZoneId = state.get('zoneLayerParent');
@@ -95,23 +107,11 @@ export const actionCreator = {
   fetchSimulationSetup() {
     return { type: actionType.FETCH_SIMULATION_SETUP };
   },
-  updateBody(body: Body) {
-    return { type: actionType.UPDATE_BODY, body };
-  },
   createZone() {
     return { type: actionType.CREATE_ZONE };
   },
   deleteZone(zoneId: number) {
     return { type: actionType.DELETE_ZONE, zoneId };
-  },
-  createZoneOperation(path: ConstructionPath) {
-    return { type: actionType.CREATE_ZONE_OPERATION, zoneConstructionPath: path };
-  },
-  deleteZoneOperation(path: ConstructionPath) {
-    return { type: actionType.DELETE_ZONE_OPERATION, zoneConstructionPath: path };
-  },
-  createBodyInZone(body: Body, path: ConstructionPath) {
-    return { type: actionType.CREATE_BODY_IN_ZONE, body, zoneConstructionPath: path };
   },
   changeOperationType(type: OperationType, path: ConstructionPath) {
     return {
@@ -120,12 +120,33 @@ export const actionCreator = {
       zoneConstructionPath: path,
     };
   },
+  createZoneOperation(path: ConstructionPath) {
+    return { type: actionType.CREATE_ZONE_OPERATION, zoneConstructionPath: path };
+  },
+  deleteZoneOperation(path: ConstructionPath) {
+    return { type: actionType.DELETE_ZONE_OPERATION, zoneConstructionPath: path };
+  },
   updateZoneName(id: number, name: string) {
     return {
       type: actionType.UPDATE_ZONE_NAME,
       zoneId: id,
       name,
     };
+  },
+  createBodyInZone(body: Body, path: ConstructionPath) {
+    return { type: actionType.CREATE_BODY_IN_ZONE, body, zoneConstructionPath: path };
+  },
+  updateBody(body: Body) {
+    return { type: actionType.UPDATE_BODY, body };
+  },
+  createMaterial(material: Material) {
+    return { type: actionType.CREATE_MATERIAL, material };
+  },
+  updateMaterial(material: Material) {
+    return { type: actionType.UPDATE_MATERIAL, material };
+  },
+  deleteMaterial(materialId: number) {
+    return { type: actionType.DELETE_MATERIAL, materialId };
   },
   goToParentLayer() {
     return { type: actionType.MOVE_TO_PARENT_LAYER };
@@ -140,73 +161,51 @@ const emptyState = () => ({
   singleLayerView: true,
   dataStatus: 'none',
 });
+
 const initialState = fromJS({
   zoneLayerParent: undefined,
   singleLayerView: true,
   zones: {
-    '1': {
-      id: 1,
-      name: 'zone 1',
-      children: [],
-      materialId: 1,
-      baseId: 1,
-      construction: [
-        { type: 'subtract', bodyId: 2 },
-      ],
-    },
-    '2': {
-      id: 2,
-      name: 'zone 2',
-      children: [],
-      materialId: 2,
-      baseId: 3,
-      construction: [
-        { type: 'union', bodyId: 4 },
-      ],
-    },
-    '3': {
-      id: 3,
-      name: 'zone 3',
-      parentId: 1,
-      children: [],
-      materialId: 1,
-      baseId: 1,
-      construction: [],
-    },
+    '1': { id: 1, name: 'zone 1', children: [], materialId: 1, baseId: 1, construction: [{ type: 'subtract', bodyId: 2 }] },
+    '2': { id: 2, name: 'zone 2', children: [], materialId: 2, baseId: 3, construction: [{ type: 'union', bodyId: 4 }] },
+    '3': { id: 3, name: 'zone 3', parentId: 1, children: [], materialId: 1, baseId: 1, construction: [] },
   },
   bodies: {
-    '1': {
-      id: 1,
-      geometry: {
-        type: 'sphere',
-        center: { x: 5, y: 5, z: 5 },
-        radius: 3,
-      },
-    },
-    '2': {
-      id: 2,
-      geometry: {
-        type: 'cylinder',
-        height: 10,
-        baseCenter: { x: 5, y: 0, z: 5 },
-        radius: 1,
-      },
-    },
+    '1': { id: 1, geometry: { type: 'sphere', center: { x: 5, y: 5, z: 5 }, radius: 3 } },
+    '2': { id: 2, geometry: { type: 'cylinder', height: 10, baseCenter: { x: 5, y: 0, z: 5 }, radius: 1 } },
+    '3': { id: 3, geometry: { type: 'cylinder', height: 20, baseCenter: { x: -10, y: 0, z: 10 }, radius: 3 } },
+    '4': { id: 4, geometry: { type: 'cuboid', center: { x: -10, y: -3, z: 10 }, size: { x: 20, y: 6, z: 20 } } },
+  },
+  materials: {
+    '1': { id: 1, color: '#FF6666', materialInfo: { type: 'predefined', predefinedId: 'hydrogen', density: 1000 } },
+    '2': { id: 2, color: '#66FF66', materialInfo: { type: 'predefined', predefinedId: 'helium', density: 10, stateOfMatter: 'liquid' } },
     '3': {
       id: 3,
-      geometry: {
-        type: 'cylinder',
-        height: 20,
-        baseCenter: { x: -10, y: 0, z: 10 },
-        radius: 3,
+      color: '#6666FF',
+      materialInfo: {
+        type: 'compound',
+        name: 'some compund',
+        stateOfMatter: 'gas',
+        density: 11,
+        elements: [
+          { isotope: 'he-3', relativeStochiometricFraction: 1, atomicValue: 11, iValue: 20 },
+          { isotope: 'he-3', relativeStochiometricFraction: 1, atomicValue: 11 },
+          { isotope: 'he-3', relativeStochiometricFraction: 1, iValue: 20 },
+          { isotope: 'he-3', relativeStochiometricFraction: 1 },
+        ],
       },
     },
     '4': {
       id: 4,
-      geometry: {
-        type: 'cuboid',
-        center: { x: -10, y: -3, z: 10 },
-        size: { x: 20, y: 6, z: 20 },
+      color: '#FFFFFF',
+      materialInfo: {
+        type: 'compound',
+        name: 'another compound',
+        stateOfMatter: 'solid',
+        density: 100,
+        elements: [
+          { isotope: 'he-3', relativeStochiometricFraction: 1, atomicValue: 11, iValue: 20 },
+        ],
       },
     },
   },

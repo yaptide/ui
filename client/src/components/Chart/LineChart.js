@@ -12,17 +12,26 @@ type Props = {
   labels: ChartLabels1D,
 }
 
-class LineChart extends React.Component {
+class LineChart extends React.Component<Props> {
   props: Props;
+
+  componentDidMount() {
+    this.constructChart(this.props);
+  }
+
+  componentWillReceiveProps(newProps: Props) {
+    this.constructChart(newProps);
+  }
+
   ref: any
   indices: Array<number> = [];
   values: Array<number> = [];
 
-  constructChart = () => {
-    this.evaluateValues();
-    this.evaluateIndices();
+  constructChart = (props: Props) => {
+    this.evaluateValues(props);
+    this.evaluateIndices(props);
 
-    Plotly.plot(
+    Plotly.newPlot(
       this.ref,
       [
         {
@@ -33,23 +42,25 @@ class LineChart extends React.Component {
       ],
       {
         ...styles.layout,
+        width: props.width,
+        height: props.height,
         xaxis: {
           ...styles.layout.xaxis,
-          title: `${this.props.labels.axis.label} [${this.props.labels.axis.unit}]`,
+          title: `${props.labels.axis.label} [${props.labels.axis.unit}]`,
         },
         yaxis: {
           ...styles.layout.yaxis,
-          title: `${this.props.labels.valueLabel} [${this.props.labels.valueUnit}]`,
+          title: `${props.labels.valueLabel} [${props.labels.valueUnit}]`,
         },
       },
     );
   }
 
-  evaluateValues = () => { this.values = this.props.data; }
-  evaluateIndices = () => {
+  evaluateValues = (props: Props) => { this.values = props.data; }
+  evaluateIndices = (props: Props) => {
     const { endValue, startValue } = this.props.labels.axis;
-    this.indices = _.map(this.props.data, (value, index) => (
-      startValue + ((index * (endValue - startValue)) / this.props.data.length)
+    this.indices = _.map(props.data, (value, index) => (
+      startValue + ((index * (endValue - startValue)) / props.data.length)
     ));
   };
 
@@ -57,7 +68,6 @@ class LineChart extends React.Component {
   setRef = (ref: any) => {
     if (!ref) return;
     this.ref = ref;
-    this.constructChart();
   }
 
   render() {

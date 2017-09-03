@@ -11,7 +11,7 @@ type Props = {
   classes: Object,
 };
 
-class WelcomePage extends React.Component {
+class WelcomePage extends React.Component<Props> {
   props: Props;
 
   render() {
@@ -23,7 +23,7 @@ class WelcomePage extends React.Component {
             <h1 className={classes.description} >Getting started</h1>
             <p className={classes.text} >You can see demo of this application <a href="#/workspace/geometry">here</a>.</p>
             <br />
-            <p className={classes.text} >Basic info about app durring development.</p>
+            <p className={classes.text} >Basic info about app during development.</p>
             <p className={classes.text} > - Email is not validated durring registration.</p>
             <p className={classes.text} > - Every deploy should have at least user with credentials {'"'}username{'"'} and {'"'}password{'"'}.</p>
             <p className={classes.text} >

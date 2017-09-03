@@ -29,7 +29,7 @@ type Props = {
 const BASE_CONSTRUCTION_PATH = { base: true };
 const OPERATION_CONSTRUCTION_PATH = (id: number) => ({ construction: id });
 
-class ZoneOperation extends React.Component {
+class ZoneOperation extends React.Component<Props> {
   props: Props;
 
   onBodySelected = (e: any, path: ConstructionPath) => this.props.onBodySelected(path);

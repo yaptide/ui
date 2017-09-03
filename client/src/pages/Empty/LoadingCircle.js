@@ -4,7 +4,7 @@ import React from 'react';
 import { CircularProgress } from 'material-ui/Progress';
 import Style from 'styles';
 
-class LoadingCircle extends React.Component {
+class LoadingCircle extends React.Component<{}> {
   render() {
     return (
       <div style={styles.container}>

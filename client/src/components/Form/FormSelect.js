@@ -12,14 +12,16 @@ type Props = {
   onChange: (value: any, type: any) => void,
   options: Array<{ field: string, label: string }>,
   classes: Object,
-}
+};
 
-class FormSelect extends React.Component {
+type State = {
+  open: bool,
+  anchorEl: any,
+};
+
+class FormSelect extends React.Component<Props, State> {
   props: Props
-  state: {
-    open: bool,
-    anchorEl: any,
-  } = {
+  state: State = {
     open: false,
     anchorEl: undefined,
   }
@@ -43,6 +45,8 @@ class FormSelect extends React.Component {
       <div>
         <Button
           onTouchTap={this.handleOpen}
+          raised
+          color="contrast"
         >
           {value || `select ${label}`}
         </Button>

@@ -17,7 +17,7 @@ type Props = {
   isFetchPending: bool,
 }
 
-class ProjectListContainer extends React.Component {
+class ProjectListContainer extends React.Component<Props> {
   props: Props;
 
   componentWillMount() {

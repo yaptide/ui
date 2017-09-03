@@ -15,14 +15,16 @@ type Props = {
   constructionPath: ConstructionPath,
   body: Body,
   classes: Object,
-}
+};
 
-class BodyEditorModal extends React.Component {
+type State = {
+  route: 'create' | 'select',
+  bodyGeometry: BodyGeometry | {},
+};
+
+class BodyEditorModal extends React.Component<Props, State> {
   props: Props;
-  state: {
-    route: 'create' | 'select',
-    bodyGeometry: BodyGeometry | {},
-  } = {
+  state: State = {
     route: 'create',
     bodyGeometry: {},
   };

@@ -27,7 +27,8 @@
     "require": false,
     "window": false,
     "BASE_URL": false,
-    "Generator": false
+    "Generator": false,
+    "React$Element": false
   },
   "env": {
     "mocha": true

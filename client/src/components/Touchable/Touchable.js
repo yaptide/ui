@@ -9,7 +9,7 @@ type Props = {
   onClick: (type?: string) => void,
 }
 
-class Touchable extends React.Component {
+class Touchable extends React.Component<Props> {
   props: Props;
 
   onClick = () => {

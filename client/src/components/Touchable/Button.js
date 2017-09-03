@@ -4,12 +4,14 @@ import React from 'react';
 import Style from 'styles';
 import Touchable from './Touchable';
 
-class Button extends React.Component {
-  props: {
-    style?: {[string]: string},
-    onClick: (type?: string) => void,
-    title: string,
-  }
+type Props = {
+  style?: {[string]: string},
+  onClick: (type?: string) => void,
+  title: string,
+}
+
+class Button extends React.Component<Props> {
+  props: Props
 
   render() {
     const { style, ...props } = this.props;

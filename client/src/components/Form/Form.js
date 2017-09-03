@@ -1,6 +1,6 @@
 /* @flow */
 
-import React, { Element } from 'react';
+import React from 'react';
 import type { ApplicationRoute } from 'routes/model';
 import Button from 'material-ui/Button';
 
@@ -9,7 +9,7 @@ import Style from 'styles';
 import FormLink from './FormLink';
 
 type Props = {
-  children?: Array<Element<*>>,
+  children?: Array<any>,
   submit: () => void,
   submitText: string,
   links: Array<{
@@ -18,7 +18,7 @@ type Props = {
   }>,
 };
 
-class Form extends React.Component {
+class Form extends React.Component<Props> {
   static defaultProps = { links: [] }
   props: Props
 

@@ -2,15 +2,20 @@
 
 import React from 'react';
 
+type Props = {
+  style?: Object,
+  classes?: Object,
+};
+
+type State = {
+  width: number,
+  height: number,
+};
+
 const ResizeHOC = (WrapedComponent: any) => {
-  return class extends React.Component {
-    props: {
-      style?: Object,
-    }
-    state: {
-      width: number,
-      height: number,
-    } = {
+  return class extends React.Component<Props, State> {
+    props: Props
+    state: State = {
       width: 300,
       height: 200,
     }
@@ -40,9 +45,9 @@ const ResizeHOC = (WrapedComponent: any) => {
     }
 
     render() {
-      const { style, ...props } = this.props;
+      const { style, classes, ...props } = this.props;
       return (
-        <div style={{ ...style, overflow: 'hidden' }} ref={this.setRef}>
+        <div style={{ ...style, overflow: 'hidden' }} className={classes && classes.hoc} ref={this.setRef}>
           <WrapedComponent
             {...props}
             width={this.state.width}

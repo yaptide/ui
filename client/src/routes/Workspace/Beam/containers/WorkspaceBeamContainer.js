@@ -3,7 +3,7 @@
 import React from 'react';
 import WorkspaceLayout from 'pages/WorkspaceLayout';
 
-class WorkspaceBeamContainer extends React.Component {
+class WorkspaceBeamContainer extends React.Component<{}> {
   render() {
     return (
       <WorkspaceLayout

@@ -12,8 +12,9 @@ type Props = {
   goToParentLayer: () => void,
 }
 
-class ZoneWorkspaceContainer extends React.Component {
+class ZoneWorkspaceContainer extends React.Component<Props> {
   props: Props
+
   render() {
     return (
       <ZoneWorkspaceLayout

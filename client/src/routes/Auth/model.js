@@ -12,6 +12,4 @@ export type RegisterData = {
   password: string,
 }
 
-export type AuthState = Map<
-
-  >;
+export type AuthState = Map<string, any>;

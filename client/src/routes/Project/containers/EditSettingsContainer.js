@@ -14,14 +14,16 @@ type Props = {
   updateSettings: (settings: Settings) => void,
   fetchProjects: () => void,
   isFetchPending: bool,
-}
+};
 
-class EditSettingsContainer extends React.Component {
+type State = {
+  computingLibrary: ComputingLibrary,
+  simulationEngine: SimulationEngine,
+};
+
+class EditSettingsContainer extends React.Component<Props, State> {
   props: Props
-  state: {
-    computingLibrary: ComputingLibrary,
-    simulationEngine: SimulationEngine,
-  } = {
+  state: State = {
     computingLibrary: '',
     simulationEngine: '',
   }

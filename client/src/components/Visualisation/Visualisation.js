@@ -23,7 +23,7 @@ type Props = {
   geometry: Array<{zone: Object, zoneData: Object, color: string, position: Dim }>,
 };
 
-class Visualisation extends React.Component {
+class Visualisation extends React.Component<Props> {
   props: Props;
 
   render() {

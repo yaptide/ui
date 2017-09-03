@@ -3,7 +3,7 @@
 import React from 'react';
 import AppLayout from 'pages/AppLayout';
 
-class AccountContainer extends React.Component {
+class AccountContainer extends React.Component<void> {
   render() {
     return (
       <AppLayout>

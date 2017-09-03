@@ -4,10 +4,12 @@ import React from 'react';
 import Paper from 'material-ui/Paper';
 import Style from 'styles';
 
-class ProjectEditorLayout extends React.Component {
-  props: {
-    children?: React.Element<*>,
-  }
+type Props = {
+  children: React$Element<*>,
+}
+
+class ProjectEditorLayout extends React.Component<Props> {
+  props: Props
 
   render() {
     return (

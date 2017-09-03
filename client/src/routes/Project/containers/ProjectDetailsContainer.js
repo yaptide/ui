@@ -16,7 +16,7 @@ type Props = {
 };
 
 
-class ProjectDetailsContainer extends React.Component {
+class ProjectDetailsContainer extends React.Component<Props> {
   props: Props
 
   componentWillMount() {
@@ -31,7 +31,7 @@ class ProjectDetailsContainer extends React.Component {
     return (
       <ProjectDetailsLayout
         createVersionFromLatest={this.props.createVersionFromLatest}
-        {...this.props.project}
+        project={this.props.project}
       />
     );
   }

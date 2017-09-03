@@ -21,12 +21,14 @@ type Props = {
   goToChildLayer: (id: number) => void,
 }
 
-class ZoneItemContainer extends React.Component {
+type State = {
+  isBodyModalOpen: bool,
+  zoneConstructionPath?: ConstructionPath,
+};
+
+class ZoneItemContainer extends React.Component<Props, State> {
   props: Props;
-  state: {
-    isBodyModalOpen: bool,
-    zoneConstructionPath?: ConstructionPath,
-  } = {
+  state: State = {
     isBodyModalOpen: false,
     zoneConstructionPath: undefined,
   }

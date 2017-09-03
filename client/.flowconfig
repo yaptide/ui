@@ -1,5 +1,8 @@
 [ignore]
 .*/node_modules/config-chain/test/.*
+.*/node_modules/jss/lib/renderers/DomRenderer.js.flow
+.*/node_modules/react-scrollbar-size/node_modules/react-event-listener/src/index.js
+.*/node_modules/material-ui/styles/withStyles.js.flow
 .*/node_modules/npmconf/test/.*
 .*/test/.*
 .*/test-utils/.*
@@ -11,6 +14,7 @@
 flow/decl/require.js
 ../node_modules/react/dist/*
 ../node_modules/jss/flow-typed
+../node_modules/material-ui/index.js.flow
 [options]
 
 experimental.strict_type_args=true

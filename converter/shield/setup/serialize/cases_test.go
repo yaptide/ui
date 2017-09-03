@@ -24,14 +24,14 @@ func newEmptySerializeTestCase() serializerTestCase {
 func materialPredefinedTrivial(id int64) *material.Material {
 	materialID := material.ID(id)
 	return &material.Material{ID: material.ID(materialID), Type: material.Predefined{
-		Name: "urea",
+		PredefinedID: "urea",
 	}}
 }
 
 func materialPredefinedFull(id int64) *material.Material {
 	materialID := material.ID(id)
 	return &material.Material{ID: material.ID(materialID), Type: material.Predefined{
-		Name:                      "methanol",
+		PredefinedID:              "methanol",
 		StateOfMatter:             material.Liquid,
 		Density:                   0.001,
 		LoadExternalStoppingPower: false,
@@ -48,7 +48,7 @@ func materialCompoundTrivial(id int64) *material.Material {
 			material.Element{Isotope: "gd-*", RelativeStoichiometricFraction: 2, AtomicMass: 100.23},
 			material.Element{Isotope: "u-235", RelativeStoichiometricFraction: 123, IValue: 555.34},
 		},
-		ExternalStoppingPowerFromPredefined: "water vapor",
+		ExternalStoppingPowerFromPredefined: "water_vapor",
 	}}
 }
 
@@ -126,7 +126,7 @@ func materialMappingNotFoundCase() []serializerTestCase {
 	predefinedCase := newEmptySerializeTestCase()
 	mat := materialPredefinedTrivial(id)
 	predef := mat.Type.(material.Predefined)
-	predef.Name = "predefNameNotDefined"
+	predef.PredefinedID = "predefNameNotDefined"
 	mat.Type = predef
 	predefinedCase.Setup.Materials[id] = mat
 	predefinedCase.ExpectedError = errors.New(

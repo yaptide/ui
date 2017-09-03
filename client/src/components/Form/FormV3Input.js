@@ -15,7 +15,7 @@ type Props = {
   onUpdate: (field: string, value: Object) => void,
 }
 
-class FormV3Input extends React.Component {
+class FormV3Input extends React.Component<Props> {
   props: Props
 
   onUpdate = (value: string | number, type: string) => {

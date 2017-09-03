@@ -4,7 +4,7 @@ import "encoding/json"
 
 // Predefined material type - choose material definition from predefined material list by name.
 type Predefined struct {
-	Name string `json:"name"`
+	PredefinedID string `json:"predefinedId"`
 
 	// Density of the medium in g/cm³ - optional.
 	Density float64 `json:"density,omitempty"`

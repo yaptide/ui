@@ -10,6 +10,7 @@ import { reducer as auth } from '../routes/Auth/reducer';
 import { reducer as workspace } from '../routes/Workspace/reducer';
 import { reducer as results } from '../routes/Results/reducer';
 import { reducer as project } from '../routes/Project/reducer';
+import { reducer as configuration } from './server_configuration';
 
 const rootReducer = combineReducers({
   routing,
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   workspace,
   results,
   project,
+  configuration,
 });
 
 export type Store = {
@@ -27,6 +29,7 @@ export type Store = {
   workspace: Map<string, any>,
   results: Map<string, any>,
   project: Map<string, any>,
+  configuration: Map<string, any>,
 };
 
 export default rootReducer;

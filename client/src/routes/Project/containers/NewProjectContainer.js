@@ -9,14 +9,16 @@ import { actionCreator } from '../reducer';
 
 type Props = {
   createProject: (project: Project) => void,
-}
+};
 
-class NewProjectContainer extends React.Component {
+type State = {
+  name: string,
+  description: string,
+};
+
+class NewProjectContainer extends React.Component<Props, State> {
   props: Props
-  state: {
-    name: string,
-    description: string,
-  } = {
+  state: State = {
     name: '',
     description: '',
   }

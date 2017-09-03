@@ -25,7 +25,7 @@ type Props = {
 };
 
 
-class ZoneEditor extends React.Component {
+class ZoneEditor extends React.Component<Props> {
   props: Props;
 
   render() {

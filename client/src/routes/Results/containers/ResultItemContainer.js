@@ -12,10 +12,10 @@ type Props = {
   versionId: number,
   detectorId: DetectorResultId,
   detectorOverview: DetectorResultsInfo,
-  style?: Object,
+  classes?: Object,
 }
 
-class ResultItemContainer extends React.Component {
+class ResultItemContainer extends React.Component<Props> {
   props: Props
 
   goToDetectorScore = (e: any) => {
@@ -33,7 +33,7 @@ class ResultItemContainer extends React.Component {
         detectorId={this.props.detectorId}
         detectorOverview={this.props.detectorOverview}
         goToDetectorScore={this.goToDetectorScore}
-        style={this.props.style}
+        classes={this.props.classes}
       />
     );
   }

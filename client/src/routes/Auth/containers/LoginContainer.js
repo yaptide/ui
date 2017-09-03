@@ -23,7 +23,7 @@ type State = {
   password: string,
 }
 
-class LoginContainer extends React.Component {
+class LoginContainer extends React.Component<Props, State> {
   static defaultProps = { includeLinks: true }
   props: Props
   state: State = {

@@ -10,13 +10,15 @@ import PlusIcon from 'material-ui-icons/Add';
 
 import ZoneItemContainer from '../containers/ZoneItemContainer';
 
-class ZoneWorkspaceLayout extends React.Component {
-  props: {
-    zoneIds: Array<number>,
-    addZone: () => void,
-    goToParentLayer: () => void,
-    classes: Object,
-  }
+type Props = {
+  zoneIds: Array<number>,
+  addZone: () => void,
+  goToParentLayer: () => void,
+  classes: Object,
+}
+
+class ZoneWorkspaceLayout extends React.Component<Props> {
+  props: Props
 
   render() {
     const { zoneIds, classes } = this.props;

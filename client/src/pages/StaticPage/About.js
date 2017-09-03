@@ -3,7 +3,7 @@
 import React from 'react';
 import AppLayout from 'pages/AppLayout';
 
-class About extends React.Component {
+class About extends React.Component<void> {
   render() {
     return (
       <AppLayout>

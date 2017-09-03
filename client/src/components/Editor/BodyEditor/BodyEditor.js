@@ -13,7 +13,7 @@ type Props = {
   geometryUpdate: (field: string, value: Object) => void,
 }
 
-class BodyEditor extends React.Component {
+class BodyEditor extends React.Component<Props> {
   props: Props
 
   render() {

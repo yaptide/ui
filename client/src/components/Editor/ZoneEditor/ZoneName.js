@@ -8,16 +8,20 @@ import { withStyles } from 'material-ui/styles';
 
 const UNDEFINED_ZONE = '-------------';
 
-class ZoneName extends React.Component {
-  props: {
-    name: string,
-    updateName: (value: string) => void,
-    classes: Object,
-  }
-  state: {
-    isEditOn: bool,
-    name: string,
-  } = {
+type Props = {
+  name: string,
+  updateName: (value: string) => void,
+  classes: Object,
+};
+
+type State = {
+  isEditOn: bool,
+  name: string,
+};
+
+class ZoneName extends React.Component<Props, State> {
+  props: Props
+  state: State = {
     isEditOn: false,
     name: this.props.name,
   }

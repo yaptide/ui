@@ -2,26 +2,29 @@
 
 import React from 'react';
 import Paper from 'material-ui/Paper';
+import { withStyles } from 'material-ui/styles';
 import type { Score, DimensionsInfo } from 'model/result';
-import Style from 'styles';
 import { ChartInterface } from 'components/Chart';
 import { generateDetectorChartLabels } from 'utils/simulation/detectorInfo';
 
 type Props = {
   scored: Score,
   dimensions: DimensionsInfo,
+  classes: Object,
 }
 
-class ResultDetailsLayout extends React.Component {
+class ResultDetailsLayout extends React.Component<Props> {
   props: Props
+
   render() {
+    const classes = this.props.classes;
     return (
-      <div style={styles.container} >
-        <Paper elevation={4} >
+      <div className={classes.root} >
+        <Paper className={classes.item} elevation={4} >
           <ChartInterface
             data={this.props.scored}
             numberOfDimensions={this.props.dimensions.numberOfDimensions}
-            style={styles.chart}
+            classes={{ hoc: classes.chart }}
             labels={generateDetectorChartLabels({ name: 'test', shape: null })}
           />
         </Paper>
@@ -41,14 +44,21 @@ class ResultDetailsLayout extends React.Component {
   }
 }
 
-const styles = {
-  container: {
-    padding: '30px',
+const styles = (theme: Object) => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 1,
+    padding: theme.spacing.unit * 4,
+  },
+  item: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 1,
   },
   chart: {
-    ...Style.Flex.elementEqual,
-    margin: '20px',
+    flex: 1,
   },
-};
+});
 
-export default ResultDetailsLayout;
+export default withStyles(styles)(ResultDetailsLayout);

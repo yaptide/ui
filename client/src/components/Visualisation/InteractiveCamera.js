@@ -9,15 +9,17 @@ type Props = {
   aspect: number,
   position: Vector3,
   lookat: Vector3,
-  children?: any,
-}
+  children: React$Element<*>,
+};
 
-class InteractiveCamera extends React.Component {
+type State = {
+  position: Vector3,
+  lookat: Vector3,
+};
+
+class InteractiveCamera extends React.Component<Props, State> {
   props: Props;
-  state: {
-    position: Vector3,
-    lookat: Vector3,
-  } = {
+  state: State = {
     position: this.props.position,
     lookat: this.props.lookat,
   };

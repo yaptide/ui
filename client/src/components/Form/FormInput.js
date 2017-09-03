@@ -4,6 +4,7 @@ import React from 'react';
 import Input from 'material-ui/Input';
 import InputLabel from 'material-ui/Input/InputLabel';
 import FormControl from 'material-ui/Form/FormControl';
+import RightArrowIcon from 'material-ui-icons/KeyboardArrowRight';
 import FormHelperText from 'material-ui/Form/FormHelperText';
 import { withStyles } from 'material-ui/styles';
 
@@ -18,11 +19,16 @@ type Props = {
   classes: Object,
 };
 
-class FormInput extends React.Component {
+class FormInput extends React.Component<Props> {
   props: Props;
 
   onChange = (e: { target: { value: number|string }}) => {
-    this.props.onChange(e.target.value, this.props.type);
+    this.props.onChange(
+      this.props.numbersOnly && isNaN(Number(e.target.value))
+      ? ''
+      : e.target.value,
+      this.props.type,
+    );
   }
 
   render() {
@@ -49,7 +55,9 @@ class FormInput extends React.Component {
           id="formInput"
           onChange={this.onChange}
           type={inputType}
-        />
+        >
+          <RightArrowIcon />
+        </Input>
         <FormHelperText>{errorText}</FormHelperText>
       </FormControl>
     );
@@ -57,7 +65,8 @@ class FormInput extends React.Component {
 }
 
 const styles = {
-  root: {},
+  root: {
+  },
 };
 
 export default withStyles(styles)(FormInput);

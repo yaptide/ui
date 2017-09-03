@@ -15,7 +15,7 @@ type Props = {
   labels: ChartLabels,
 }
 
-class ChartInterface extends React.Component {
+class ChartInterface extends React.Component<Props> {
   props: Props
 
   render1DChart = () => {

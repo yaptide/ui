@@ -15,7 +15,7 @@ type Props = {
   submit: () => void,
 }
 
-class SettingsEditor extends React.Component {
+class SettingsEditor extends React.Component<Props> {
   props: Props
 
   render() {

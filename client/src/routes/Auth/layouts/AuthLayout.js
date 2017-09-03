@@ -1,17 +1,17 @@
 /* @flow */
 
-import React, { Element } from 'react';
+import React from 'react';
 import AppLayout from 'pages/AppLayout';
 import Style from 'styles';
 import Paper from 'material-ui/Paper';
 import { withStyles } from 'material-ui/styles';
 
 type Props = {
-  children?: Element<*>,
+  children: React$Element<*>,
   classes: Object,
 };
 
-class AuthLayout extends React.Component {
+class AuthLayout extends React.Component<Props> {
   props: Props
 
   render() {

@@ -87,9 +87,9 @@ func (s *matSerializer) serializePredefined(writer io.Writer, id mat_model.ID, p
 		fmt.Fprintf(writer, "RHO %f\n", predef.Density)
 	}
 
-	materialICRUNumber, found := predefinedMaterialsToShieldICRU[predef.Name]
+	materialICRUNumber, found := predefinedMaterialsToShieldICRU[predef.PredefinedID]
 	if !found {
-		return newMaterialIDError(id, "\"%s\" material mapping to shield format not found", predef.Name)
+		return newMaterialIDError(id, "\"%s\" material mapping to shield format not found", predef.PredefinedID)
 	}
 	fmt.Fprintf(writer, "ICRU %d\n", materialICRUNumber)
 

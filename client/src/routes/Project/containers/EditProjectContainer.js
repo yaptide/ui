@@ -12,14 +12,16 @@ type Props = {
   project: Project,
   createProject: (project: Project) => void,
   fetchProjects: () => void,
-}
+};
 
-class EditProjectContainer extends React.Component {
+type State = {
+  name: string,
+  description: string,
+};
+
+class EditProjectContainer extends React.Component<Props, State> {
   props: Props
-  state: {
-    name: string,
-    description: string,
-  } = {
+  state: State = {
     name: '',
     description: '',
   }

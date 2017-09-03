@@ -18,7 +18,7 @@ type Props = {
   classes: Object,
 }
 
-class BodyEditorLayout extends React.Component {
+class BodyEditorLayout extends React.Component<Props> {
   props: Props
 
   render() {

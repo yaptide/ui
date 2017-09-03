@@ -7,10 +7,12 @@ import { withStyles } from 'material-ui/styles';
 import { FormLink } from 'components/Form';
 import AppLayout from '../AppLayout';
 
-class Logout extends React.Component {
-  props: {
-    classes: Object,
-  }
+type Props = {
+  classes: Object,
+};
+
+class Logout extends React.Component<Props> {
+  props: Props
 
   render() {
     const classes = this.props.classes;

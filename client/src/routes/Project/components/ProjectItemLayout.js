@@ -5,6 +5,7 @@ import { t } from 'i18n';
 import Card, { CardActions, CardHeader, CardContent } from 'material-ui/Card';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
+import { withStyles } from 'material-ui/styles';
 import type { Project } from 'model/project';
 
 type Props = {
@@ -12,15 +13,16 @@ type Props = {
   project: Project,
   goToProjectDetails: () => void,
   goToProjectEdit: () => void,
-  style?: Object,
+  classes: Object,
 };
 
-class ProjectItemLayout extends React.Component {
+class ProjectItemLayout extends React.Component<Props> {
   props: Props;
 
   render() {
+    const classes = this.props.classes;
     return (
-      <Card style={this.props.style} elevation={4} >
+      <Card className={classes.root} elevation={4} >
         <CardHeader
           title={this.props.project.name}
         />
@@ -56,5 +58,8 @@ class ProjectItemLayout extends React.Component {
   }
 }
 
+const styles = () => ({
+  root: {},
+});
 
-export default ProjectItemLayout;
+export default withStyles(styles)(ProjectItemLayout);

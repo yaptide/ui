@@ -26,7 +26,7 @@ type Props = {
   classes: Object,
 }
 
-class WorkspaceLayout extends React.Component {
+class WorkspaceLayout extends React.Component<Props> {
   props: Props;
 
   isActive = (tab: string) => {

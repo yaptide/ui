@@ -24,11 +24,13 @@ type Props = {
   goToChildLayer: () => void,
 };
 
-class ZoneItemLayout extends React.Component {
+type State = {
+  isOpen: bool,
+};
+
+class ZoneItemLayout extends React.Component<Props, State> {
   props: Props;
-  state: {
-    isOpen: bool,
-  } = {
+  state: State = {
     isOpen: true,
   }
 

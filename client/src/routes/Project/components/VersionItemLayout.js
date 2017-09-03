@@ -7,6 +7,7 @@ import Card, { CardActions, CardContent } from 'material-ui/Card';
 import { CircularProgress } from 'material-ui/Progress';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
+import { withStyles } from 'material-ui/styles';
 import type { Version } from 'model/project';
 import { mapSimulationStateToColor } from '../enum';
 
@@ -14,20 +15,22 @@ type Props = {
   projectId: string,
   versionId: number,
   loadIntoWorkspace: () => void,
+  version: Version,
   buttonHandlers: Array<{
     handler: () => void,
     label: string,
     url: (projectId: string, versionId: number) => string,
   }>,
-} & Version;
+  classes: Object,
+};
 
-class VersionItemLayout extends React.Component {
+class VersionItemLayout extends React.Component<Props> {
   props: Props;
 
   render() {
-    const { projectId, versionId } = this.props;
+    const { projectId, versionId, version, classes } = this.props;
 
-    const buildStatusColor = mapSimulationStateToColor[this.props.status];
+    const buildStatusColor = mapSimulationStateToColor[version.status];
     const buttons = this.props.buttonHandlers.map((button, index) => {
       return (
         <Button
@@ -41,31 +44,31 @@ class VersionItemLayout extends React.Component {
       );
     });
     return (
-      <Card style={styles.container} elevation={4} >
+      <Card className={classes.root} elevation={4} >
         <CardContent>
-          <Typography>{t('project.version.number', { number: this.props.id })}</Typography>
-          <div style={styles.infoText} >
+          <Typography>{t('project.version.number', { number: version.id })}</Typography>
+          <div className={classes.infoText} >
             <Typography>
               {t(
                 'project.version.status',
-                { statusInfo: t(`project.versionStatus.${this.props.status}`) },
+                { statusInfo: t(`project.versionStatus.${version.status}`) },
               )}
             </Typography>
-            { ['running', 'pending'].includes(this.props.status)
-                ? <CircularProgress size={14} style={styles.loader} />
+            { ['running', 'pending'].includes(version.status)
+                ? <CircularProgress size={14} className={classes.loader} />
                 : null
             }
           </div>
           <Typography>
             {t(
               'project.version.library',
-              { library: t(`library.${this.props.settings.computingLibrary}`) })
+              { library: t(`library.${version.settings.computingLibrary}`) })
             }
           </Typography>
           <Typography>
             {t(
               'project.version.engine',
-              { engine: t(`engine.${this.props.settings.simulationEngine}`) })
+              { engine: t(`engine.${version.settings.simulationEngine}`) })
             }
           </Typography>
         </CardContent>
@@ -82,14 +85,14 @@ class VersionItemLayout extends React.Component {
         <CardActions >
           {buttons}
         </CardActions>
-        <div style={{ ...styles.buildStatus, background: buildStatusColor }} />
+        <div className={classes.buildStatus} style={{ background: buildStatusColor }} />
       </Card>
     );
   }
 }
 
 const styles = {
-  container: {
+  root: {
     marginTop: Style.Dimens.spacing.normal,
     marginBottom: Style.Dimens.spacing.normal,
     paddingLeft: '30px',
@@ -114,4 +117,4 @@ const styles = {
   },
 };
 
-export default VersionItemLayout;
+export default withStyles(styles)(VersionItemLayout);

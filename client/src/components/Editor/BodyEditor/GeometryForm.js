@@ -9,10 +9,10 @@ import type { GeometryType } from 'model/simulation/body';
 type Props = {
   type: GeometryType,
   onTypeChange: (type: GeometryType) => void,
-  children?: React.Element<*>,
+  children?: any,
 }
 
-class GeometryForm extends React.Component {
+class GeometryForm extends React.Component<Props> {
   props: Props
 
   render() {

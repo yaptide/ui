@@ -17,6 +17,25 @@ function allZonesIds(state: { workspace: Map<string, any> }) {
     .map(item => item.get('id'));
 }
 
+function allMaterialIds(state: { workspace: Map<string, any> }) {
+  return state.workspace
+    .get('materials', Map())
+    .valueSeq()
+    .map(item => item.get('id'));
+}
+
+function allPredefinedMaterialsPrintable(state: { configuration: Map<string, any> }) {
+  const predefinedMaterials = state.configuration.get('predefinedMaterials', Map());
+  const order = state.configuration.get('predefinedMaterialsOrder', Seq());
+  return order.map(item => predefinedMaterials.get(item));
+}
+
+function allIsotopesPrintable(state: { configuration: Map<string, any> }) {
+  const isotopes = state.configuration.get('isotopes', Map());
+  const order = state.configuration.get('isotopesOrder', Seq());
+  return order.map(item => isotopes.get(item));
+}
+
 function allCurrentLayerZonesIds(state: { workspace: Map<string, any> }) {
   const parentId = state.workspace.get('zoneLayerParent');
   return state.workspace
@@ -34,8 +53,22 @@ function bodyById(state: { workspace: Map<string, any> }, zoneId: number): Map<s
   return state.workspace.getIn(['bodies', String(zoneId)], Map());
 }
 
-function materialById(state: { workspace: Map<string, any> }, zoneId: number): Map<string, any> {
-  return state.workspace.getIn(['materials', String(zoneId)], Map());
+function materialById(
+  state: { workspace: Map<string, any> }, materialId: number,
+): Map<string, any> {
+  return state.workspace.getIn(['materials', String(materialId)], Map());
+}
+
+function materialByIdPrintable(
+  state: {
+    workspace: Map<string, any>,
+    configuration: Map<string, any>,
+  },
+  materialId: number,
+): string {
+  const materialType = materialById(state, materialId).getIn(['materialInfo', 'predefinedId']);
+  const label = state.configuration.getIn(['predefinedMaterials', materialType, 'name'], 'unknown material');
+  return label;
 }
 
 function zoneByIdPrintable(
@@ -74,10 +107,14 @@ export default {
   visualisationSelector,
   bodyByConstructionPath,
   allZonesIds,
+  allMaterialIds,
   allCurrentLayerZonesIds,
   zoneById,
   bodyById,
   materialById,
   zoneByIdPrintable,
+  materialByIdPrintable,
+  allPredefinedMaterialsPrintable,
+  allIsotopesPrintable,
   isWorkspaceLoading,
 };

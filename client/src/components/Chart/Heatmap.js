@@ -12,19 +12,28 @@ type Props = {
   labels: ChartLabels2D,
 }
 
-class Heatmap extends React.Component {
+class Heatmap extends React.Component<Props> {
   props: Props;
+
+  componentDidMount() {
+    this.constructChart(this.props);
+  }
+
+  componentWillReceiveProps(newProps: Props) {
+    this.constructChart(newProps);
+  }
+
   ref: any
   indices1: Array<number> = [];
   indices2: Array<number> = [];
   values: Array<Array<number>> = [];
 
-  constructChart = () => {
-    this.evaluateValues();
-    this.evaluateAxis1Indices();
-    this.evaluateAxis2Indices();
+  constructChart = (props: Props) => {
+    this.evaluateValues(props);
+    this.evaluateAxis1Indices(props);
+    this.evaluateAxis2Indices(props);
 
-    Plotly.plot(
+    Plotly.newPlot(
       this.ref,
       [{
         x: this.indices1,
@@ -34,37 +43,38 @@ class Heatmap extends React.Component {
       }],
       {
         ...styles.layout,
+        width: props.width,
+        height: props.height,
         xaxis: {
           ...styles.layout.xaxis,
-          title: `${this.props.labels.axis1.label} [${this.props.labels.axis1.unit}]`,
+          title: `${props.labels.axis1.label} [${props.labels.axis1.unit}]`,
           name: 'yaxis name',
         },
         yaxis: {
           ...styles.layout.yaxis,
-          title: `${this.props.labels.axis2.label} [${this.props.labels.axis2.unit}]`,
+          title: `${props.labels.axis2.label} [${props.labels.axis2.unit}]`,
         },
       },
     );
   }
 
-  evaluateValues = () => { this.values = this.props.data; }
-  evaluateAxis1Indices = () => {
-    const { endValue, startValue } = this.props.labels.axis1;
-    this.indices1 = _.map(this.props.data, (value, index) => (
-      startValue + ((index * (endValue - startValue)) / this.props.data.length)
+  evaluateValues = (props: Props) => { this.values = props.data; }
+  evaluateAxis1Indices = (props: Props) => {
+    const { endValue, startValue } = props.labels.axis1;
+    this.indices1 = _.map(props.data, (value, index) => (
+      startValue + ((index * (endValue - startValue)) / props.data.length)
     ));
   };
-  evaluateAxis2Indices = () => {
-    const { endValue, startValue } = this.props.labels.axis2;
-    this.indices2 = _.map(this.props.data[0], (value, index) => (
-      startValue + ((index * (endValue - startValue)) / this.props.data.length)
+  evaluateAxis2Indices = (props: Props) => {
+    const { endValue, startValue } = props.labels.axis2;
+    this.indices2 = _.map(props.data[0], (value, index) => (
+      startValue + ((index * (endValue - startValue)) / props.data.length)
     ));
   };
 
   setRef = (ref: any) => {
     if (!ref) return;
     this.ref = ref;
-    this.constructChart();
   }
 
   render() {

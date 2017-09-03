@@ -69,7 +69,7 @@ const LoggedIn = ({ ...buttonProps }) => {
   );
 };
 
-const LoggedInListItems = [
+const LoggedInListItems = () => [
   <ListItem
     key="project"
     onTouchTap={links.project}
@@ -96,11 +96,13 @@ type Props = {
   classes: Object,
 };
 
-class Header extends React.Component {
+type State = {
+  drawer: bool,
+};
+
+class Header extends React.Component<Props, State> {
   props: Props;
-  state: {
-    drawer: bool,
-  } = {
+  state: State = {
     drawer: false,
   }
 
@@ -157,7 +159,7 @@ class Header extends React.Component {
               >
                 <ListItemText primary={t('pageWorkspace')} />
               </ListItem>
-              {this.props.isLoggedIn ? LoggedInListItems : null}
+              {this.props.isLoggedIn ? LoggedInListItems() : null}
               <ListItem
                 onTouchTap={links.about}
                 component="a"
