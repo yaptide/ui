@@ -3,6 +3,7 @@ package body
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/Palantir/palantir/model/simulation/common"
 )
 
 // Geometry is interface for body geometry.
@@ -10,20 +11,6 @@ import (
 // dependant on Geometry implementation type.
 type Geometry interface {
 	json.Marshaler
-}
-
-// Point represent a point in space.
-type Point struct {
-	X float64 `json:"x"`
-	Y float64 `json:"y"`
-	Z float64 `json:"z"`
-}
-
-// Vec3D represent 3-dimensional vector.
-type Vec3D struct {
-	X float64 `json:"x"`
-	Y float64 `json:"y"`
-	Z float64 `json:"z"`
 }
 
 type geometryType struct {
@@ -73,8 +60,8 @@ func unmarshalGeometry(b json.RawMessage) (Geometry, error) {
 
 // Sphere represent sphere with given radius in space.
 type Sphere struct {
-	Center Point   `json:"center"`
-	Radius float64 `json:"radius"`
+	Center common.Point `json:"center"`
+	Radius float64      `json:"radius"`
 }
 
 // MarshalJSON custom Marshal function.
@@ -91,8 +78,8 @@ func (s Sphere) MarshalJSON() ([]byte, error) {
 
 // Cuboid represent cuboid of given sizes in a space.
 type Cuboid struct {
-	Center Point `json:"center"`
-	Size   Vec3D `json:"size"`
+	Center common.Point `json:"center"`
+	Size   common.Vec3D `json:"size"`
 }
 
 // MarshalJSON json.Marshaller implementaion.
@@ -109,9 +96,9 @@ func (c Cuboid) MarshalJSON() ([]byte, error) {
 
 // Cylinder represent cylinder of given sizes in a space.
 type Cylinder struct {
-	Center Point   `json:"center"`
-	Height float64 `json:"height"`
-	Radius float64 `json:"radius"`
+	Center common.Point `json:"center"`
+	Height float64      `json:"height"`
+	Radius float64      `json:"radius"`
 }
 
 // MarshalJSON json.Marshaller implementaion.

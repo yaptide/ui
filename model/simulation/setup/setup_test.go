@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/Palantir/palantir/model/simulation/setup/body"
+	"github.com/Palantir/palantir/model/simulation/setup/detector"
 	"github.com/Palantir/palantir/model/simulation/setup/material"
 	"github.com/Palantir/palantir/model/simulation/setup/zone"
 	"github.com/Palantir/palantir/model/test"
@@ -15,6 +16,7 @@ var testCases = test.MarshallingCases{
 			Materials: MaterialMap{material.ID(40): nil, material.ID(34): nil},
 			Bodies:    BodyMap{body.ID(1): nil, body.ID(2): nil},
 			Zones:     ZoneMap{zone.ID(100): nil, zone.ID(200): nil},
+			Detectors: DetectorMap{detector.ID(1): nil, detector.ID(2): nil},
 		},
 		`{
 			"materials": {
@@ -28,6 +30,10 @@ var testCases = test.MarshallingCases{
 			"zones": {
 				"100": null,
 				"200": null
+			},
+			"detectors": {
+				"1": null,
+				"2": null
 			}
 		}`,
 	},

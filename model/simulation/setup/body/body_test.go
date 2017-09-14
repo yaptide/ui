@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/Palantir/palantir/model/simulation/common"
 	"github.com/Palantir/palantir/model/test"
 )
 
@@ -49,12 +50,12 @@ var testCases = test.MarshallingCases{
 	},
 
 	{
-		&Point{X: 1.0, Y: 2.0, Z: 3.0},
+		&common.Point{X: 1.0, Y: 2.0, Z: 3.0},
 		`{"x":1,"y":2,"z":3}`,
 	},
 
 	{
-		&Vec3D{X: 1.0, Y: 2.0, Z: 3.0},
+		&common.Vec3D{X: 1.0, Y: 2.0, Z: 3.0},
 		`{"x":1,"y":2,"z":3}`,
 	},
 
@@ -64,19 +65,19 @@ var testCases = test.MarshallingCases{
 	},
 
 	{
-		&Sphere{Center: Point{1.0, 2.0, -100.0}, Radius: 100.0},
+		&Sphere{Center: common.Point{X: 1.0, Y: 2.0, Z: -100.0}, Radius: 100.0},
 		`{"type":"sphere","center":{"x":1,"y":2,"z":-100},"radius":100}`,
 	},
 
 	{
-		&Cuboid{Center: Point{1.0, 2.0, -100.0}, Size: Vec3D{5.0, 2.0, 6.0}},
+		&Cuboid{Center: common.Point{X: 1.0, Y: 2.0, Z: -100.0}, Size: common.Vec3D{X: 5.0, Y: 2.0, Z: 6.0}},
 		`{"type":"cuboid",
 		  "center":{"x":1,"y":2,"z":-100},
 		  "size":  {"x":5, "y":2, "z":6}}`,
 	},
 
 	{
-		&Cylinder{Center: Point{1.0, 2.0, -100.0}, Height: 100.0, Radius: 40.0},
+		&Cylinder{Center: common.Point{X: 1.0, Y: 2.0, Z: -100.0}, Height: 100.0, Radius: 40.0},
 		`{"type":"cylinder","center":{"x":1,"y":2,"z":-100},"height":100,"radius":40}`,
 	},
 }
