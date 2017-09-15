@@ -5,6 +5,7 @@ import { t } from 'i18n';
 import { FormSelect } from 'components/Form';
 import type { ComputingLibrary, SimulationEngine } from 'model/project';
 import Button from 'material-ui/Button';
+import { withStyles } from 'material-ui/styles';
 import Style from 'styles';
 
 type Props = {
@@ -13,20 +14,23 @@ type Props = {
   simulationEngine: SimulationEngine,
   updateSettings: (value: string, type: string) => void,
   submit: () => void,
+  classes: Object,
 }
 
 class SettingsEditor extends React.Component<Props> {
   props: Props
 
   render() {
+    const { classes } = this.props;
     return (
-      <div style={styles.container} >
+      <div className={classes.root} >
         <FormSelect
           type="computingLibrary"
           label={t('project.form.computingLibrary')}
           value={this.props.computingLibrary}
           onChange={this.props.updateSettings}
           options={computingLibraryOptions}
+          classes={{ root: classes.select }}
           fullWidth
         />
         <FormSelect
@@ -35,6 +39,7 @@ class SettingsEditor extends React.Component<Props> {
           value={this.props.simulationEngine}
           options={simulationEngineOptions}
           onChange={this.props.updateSettings}
+          classes={{ root: classes.select }}
           fullWidth
         />
         <div style={styles.btnRow} >
@@ -63,8 +68,8 @@ const computingLibraryOptions: Array<{
   { field: 'shield', label: t('library.shield') },
 ];
 
-const styles = {
-  container: {
+const styles = (theme: Object) => ({
+  root: {
     ...Style.Flex.rootColumn,
     alignItems: 'stretch',
     padding: Style.Dimens.spacing.normal,
@@ -75,6 +80,10 @@ const styles = {
     ...Style.Flex.rootRow,
     justifyContent: 'flex-end',
   },
-};
+  select: {
+    marginTop: theme.spacing.unit,
+    marginBottom: theme.spacing.unit,
+  },
+});
 
-export default SettingsEditor;
+export default withStyles(styles)(SettingsEditor);

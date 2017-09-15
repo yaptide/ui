@@ -11,6 +11,7 @@ type Props = {
   geometryErrors: Object,
   typeUpdate: (type: GeometryType) => void,
   geometryUpdate: (field: string, value: Object) => void,
+  classes?: Object,
 }
 
 class BodyEditor extends React.Component<Props> {
@@ -27,6 +28,7 @@ class BodyEditor extends React.Component<Props> {
         geometryErrors={this.props.geometryErrors}
         typeUpdate={this.props.typeUpdate}
         geometryUpdate={this.props.geometryUpdate}
+        classes={this.props.classes}
       />
     );
   }

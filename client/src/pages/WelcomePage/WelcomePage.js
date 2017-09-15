@@ -24,7 +24,7 @@ class WelcomePage extends React.Component<Props> {
             <p className={classes.text} >You can see demo of this application <a href="#/workspace/geometry">here</a>.</p>
             <br />
             <p className={classes.text} >Basic info about app during development.</p>
-            <p className={classes.text} > - Email is not validated durring registration.</p>
+            <p className={classes.text} > - Email is not validated during registration.</p>
             <p className={classes.text} > - Every deploy should have at least user with credentials {'"'}username{'"'} and {'"'}password{'"'}.</p>
             <p className={classes.text} >
               - Workspace for unlogged user contains only demo of functionality.

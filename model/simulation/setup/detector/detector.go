@@ -8,7 +8,7 @@ import (
 // ID is a key type in detector map.
 type ID int64
 
-// Detector describes where and what values are scored durring simulation.
+// Detector describes where and what values are scored during simulation.
 type Detector struct {
 	ID               ID          `json:"id"`
 	DetectorGeometry Geometry    `json:"detectorGeometry"`

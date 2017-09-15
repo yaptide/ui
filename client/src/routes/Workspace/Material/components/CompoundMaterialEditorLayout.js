@@ -106,7 +106,7 @@ const styles = (theme: Object) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    flex: '1 1 auto',
+    flex: 1,
     alignItems: 'stretch',
     padding: theme.spacing.unit * 2,
   },

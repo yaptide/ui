@@ -2,22 +2,25 @@
 
 import React from 'react';
 import Style from 'styles';
+import { withStyles } from 'material-ui/styles';
 
 type Props = {
   label: string,
   children?: Array<React$Element<*>> | React$Element<*>,
+  classes: Object,
 }
 
 class RowLabel extends React.Component<Props> {
   props: Props
 
   render() {
+    const classes = this.props.classes;
     return (
-      <div style={styles.inputRow}>
-        <div style={styles.label}>
-          <div style={styles.labelText}>{`${this.props.label}:`}</div>
+      <div className={classes.inputRow}>
+        <div className={classes.label}>
+          <div className={classes.labelText}>{`${this.props.label}:`}</div>
         </div>
-        <div style={styles.inputs}>
+        <div className={classes.inputs}>
           {this.props.children}
         </div>
       </div>
@@ -25,7 +28,7 @@ class RowLabel extends React.Component<Props> {
   }
 }
 
-const styles = {
+const styles = (theme: Object) => ({
   inputRow: {
     ...Style.Flex.rootRow,
   },
@@ -44,7 +47,8 @@ const styles = {
     marginBottom: '12px',
     color: Style.Colors.white,
     marginLeft: Style.Dimens.spacing.small,
+    paddingBottom: theme.spacing.unit * 2,
   },
-};
+});
 
-export default RowLabel;
+export default withStyles(styles)(RowLabel);

@@ -30,6 +30,7 @@ class BodyEditorLayout extends React.Component<Props> {
           geometryErrors={this.props.bodyGeometryErrors}
           typeUpdate={this.props.typeUpdate}
           geometryUpdate={this.props.geometryUpdate}
+          classes={{ root: classes.editor }}
         />
         <div style={styles.buttonRow}>
           <Button
@@ -55,6 +56,9 @@ const styles = {
   buttonRow: {
     ...Style.Flex.rootRow,
     justifyContent: 'flex-end',
+  },
+  editor: {
+    flex: '1 0 0',
   },
 };
 

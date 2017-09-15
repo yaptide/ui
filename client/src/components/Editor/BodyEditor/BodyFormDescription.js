@@ -12,6 +12,7 @@ import type {
   CylinderGeometry as CylinderGeometryType,
   GeometryType,
 } from 'model/simulation/body';
+import { withStyles } from 'material-ui/styles';
 import type { BodyGeometry } from 'model/simulation/zone';
 import GeometryForm from './GeometryForm';
 
@@ -20,6 +21,7 @@ type Props = {
   geometryErrors: Object,
   typeUpdate: (type: GeometryType) => void,
   geometryUpdate: (field: string, value: Object) => void,
+  classes: Object,
 };
 
 const coordinateValueLabels = [
@@ -35,6 +37,7 @@ const CuboidGeometry = (props: Props & { geometry: CuboidGeometryType }) => (
   <GeometryForm
     onTypeChange={props.typeUpdate}
     type={props.geometry.type}
+    classes={props.classes}
   >
     <FormV3Input
       field="center"
@@ -61,6 +64,7 @@ const SphereGeometry = (props: Props & { geometry: SphereGeometryType }) => (
   <GeometryForm
     onTypeChange={props.typeUpdate}
     type={props.geometry.type}
+    classes={props.classes}
   >
     <FormV3Input
       field="center"
@@ -87,6 +91,7 @@ const CylinderGeometry = (props: Props & { geometry: CylinderGeometryType }) => 
   <GeometryForm
     onTypeChange={props.typeUpdate}
     type={props.geometry.type}
+    classes={props.classes}
   >
     <FormV3Input
       field="baseCenter"
@@ -121,16 +126,20 @@ const CylinderGeometry = (props: Props & { geometry: CylinderGeometryType }) => 
 const EmptyBodyDescription = (props: {
   geometry: BodyGeometry,
   typeUpdate: (type: GeometryType) => void,
+  classes: Object,
 }) => (
   <GeometryForm
     onTypeChange={props.typeUpdate}
     type={props.geometry.type}
+    classes={props.classes}
   />
 );
 
+const GeometryFormStyleHOC = withStyles({ root: {} });
+
 export default {
-  cuboid: (props: Props) => CuboidGeometry((props: any)),
-  sphere: (props: Props) => SphereGeometry((props: any)),
-  cylinder: (props: Props) => CylinderGeometry((props: any)),
-  empty: (props: Props) => EmptyBodyDescription((props: any)),
+  cuboid: GeometryFormStyleHOC((props: Props) => CuboidGeometry((props: any))),
+  sphere: GeometryFormStyleHOC((props: Props) => SphereGeometry((props: any))),
+  cylinder: GeometryFormStyleHOC((props: Props) => CylinderGeometry((props: any))),
+  empty: GeometryFormStyleHOC((props: Props) => EmptyBodyDescription((props: any))),
 };

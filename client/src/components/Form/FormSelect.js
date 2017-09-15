@@ -1,8 +1,10 @@
 /* @flow */
 
 import React from 'react';
-import Menu, { MenuItem } from 'material-ui/Menu';
-import Button from 'material-ui/Button';
+import { MenuItem } from 'material-ui/Menu';
+import Select from 'material-ui/Select';
+import Input, { InputLabel } from 'material-ui/Input';
+import { FormControl } from 'material-ui/Form';
 import { withStyles } from 'material-ui/styles';
 
 type Props = {
@@ -27,54 +29,37 @@ class FormSelect extends React.Component<Props, State> {
   }
 
   onChange = (event: any) => {
-    this.props.onChange(event.target.getAttribute('value'), this.props.type);
-    this.handleClose();
-  }
-
-  handleOpen = (event: Object) => {
-    this.setState({ open: true, anchorEl: event.currentTarget });
-  }
-
-  handleClose = () => {
-    this.setState({ open: false });
+    this.props.onChange(event.target.value, this.props.type);
   }
 
   render() {
-    const { value, options, label } = this.props;
+    const { value, options, label, classes } = this.props;
     return (
-      <div>
-        <Button
-          onTouchTap={this.handleOpen}
-          raised
-          color="contrast"
-        >
-          {value || `select ${label}`}
-        </Button>
-        <Menu
-          id="inputSelect"
-          value={value}
-          anchorEl={this.state.anchorEl}
-          open={this.state.open}
-          onRequestClose={this.handleClose}
+      <FormControl className={classes.root} >
+        <InputLabel htmlFor="select">{label}</InputLabel>
+        <Select
+          onChange={this.onChange}
+          value={value || ''}
+          input={<Input id="select" />}
         >
           {
             options.map((item, index) => (
               <MenuItem
                 key={index}
                 value={item.field}
-                onClick={this.onChange}
               >
                 {item.label}
               </MenuItem>
             ))
           }
-        </Menu>
-      </div>
+        </Select>
+      </FormControl>
     );
   }
 }
 
-const styles = {
-};
+const styles = () => ({
+  root: {},
+});
 
 export default withStyles(styles)(FormSelect);

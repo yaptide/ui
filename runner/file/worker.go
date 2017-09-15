@@ -87,7 +87,7 @@ func (w *worker) setupDirectory() error {
 		content := []byte(fileContent)
 		writeErr := ioutil.WriteFile(path.Join(w.dirInPath, fileName), content, os.ModePerm)
 		if writeErr != nil {
-			log.Printf("[Runner.Local.SHIELD] Error: Problem durring file write. Reason: %s", writeErr.Error())
+			log.Printf("[Runner.Local.SHIELD] Error: Problem during file write. Reason: %s", writeErr.Error())
 			return writeErr
 		}
 	}
