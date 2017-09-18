@@ -96,7 +96,7 @@ func (c Cuboid) MarshalJSON() ([]byte, error) {
 
 // Cylinder represent cylinder of given sizes in a space.
 type Cylinder struct {
-	Center common.Point `json:"center"`
+	Center common.Point `json:"baseCenter"`
 	Height float64      `json:"height"`
 	Radius float64      `json:"radius"`
 }

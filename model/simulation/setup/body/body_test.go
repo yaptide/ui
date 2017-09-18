@@ -42,7 +42,7 @@ var testCases = test.MarshallingCases{
 			"name": "somethin",
 			"geometry": {
 				"type": "cylinder",
-				"center": {"x": 0, "y": 0, "z": 0},
+				"baseCenter": {"x": 0, "y": 0, "z": 0},
 				"height": 0,
 				"radius": 0
 			}
@@ -78,7 +78,7 @@ var testCases = test.MarshallingCases{
 
 	{
 		&Cylinder{Center: common.Point{X: 1.0, Y: 2.0, Z: -100.0}, Height: 100.0, Radius: 40.0},
-		`{"type":"cylinder","center":{"x":1,"y":2,"z":-100},"height":100,"radius":40}`,
+		`{"type":"cylinder","baseCenter":{"x":1,"y":2,"z":-100},"height":100,"radius":40}`,
 	},
 }
 

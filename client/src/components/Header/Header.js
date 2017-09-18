@@ -146,7 +146,6 @@ class Header extends React.Component<Props, State> {
           }
           <Drawer
             open={this.state.drawer}
-            docked={false}
             onRequestClose={this.hideDrawer}
             classes={{ paper: classes.drawer }}
           >

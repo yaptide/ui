@@ -1,10 +1,11 @@
 
 import expect from 'expect';
+import router from 'utils/router';
 import { call, put } from 'redux-saga/effects';
 import * as authSaga from '../../src/routes/Auth/saga';
 import { actionType } from '../../src/routes/Auth/reducer';
 import api, { endpoint } from '../../src/api';
-import cookie, { key as cookieKey } from '../../src/store/cookie';
+import localStorage, { key as storageKey } from '../../src/store/localStorage';
 
 const testUser = {
   username: 'username',
@@ -26,10 +27,11 @@ describe('Auth saga tests', () => {
   it('Login success', () => {
     const saga = authSaga.login({ user: testUser });
     expect(saga.next().value).toEqual(call(api.post, endpoint.LOGIN, testUser));
-    expect(saga.next(loginSuccessResponse).value)
+    expect(saga.next(loginSuccessResponse).value).toEqual(call(localStorage.clear));
+    expect(saga.next().value)
       .toEqual(call(api.saveAuthToken, loginSuccessResponse.data.token));
     expect(saga.next().value)
-      .toEqual(call(cookie.set, cookieKey.AUTH_TOKEN, loginSuccessResponse.data.token));
+      .toEqual(call(localStorage.set, storageKey.AUTH_TOKEN, loginSuccessResponse.data.token));
     expect(saga.next().value).toEqual(put({
       type: actionType.LOGIN_RESPONSE_SUCCESS,
       token: loginSuccessResponse.data.token,
@@ -78,6 +80,8 @@ describe('Auth saga tests', () => {
     const saga = authSaga.logout();
 
     expect(saga.next().value).toEqual(call(api.saveAuthToken, ''));
-    expect(saga.next().value).toEqual(call(cookie.delete, cookieKey.AUTH_TOKEN));
+    expect(saga.next().value).toEqual(call(localStorage.clear));
+    expect(saga.next().value).toEqual(call(router.push, '/logout'));
+    expect(saga.next().done).toBeTruthy();
   });
 });

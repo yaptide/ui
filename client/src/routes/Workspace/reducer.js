@@ -1,6 +1,6 @@
 /* @flow */
 
-import { fromJS } from 'immutable';
+import { Map, fromJS } from 'immutable';
 
 import type {
   Body,
@@ -10,10 +10,13 @@ import type {
 import type {
   Material,
 } from 'model/simulation/material';
+import localStorage, { key as storageKey } from 'store/localStorage';
 import stateProcessor from './reducerHelpers';
 
 export const actionType = {
   SYNC_WORKSPACE_WITH_SERVER: 'SYNC_WORKSPACE_WITH_SERVER',
+  UPDATE_SIMULATION_SETUP_SUCCESS: 'UPDATE_SIMULATION_SETUP_SUCCESS',
+  UPDATE_SIMULATION_SETUP_ERROR: 'UPDATE_SIMULATION_SETUP_ERROR',
 
   SETUP_WORKSPACE: 'SETUP_WORKSPACE',
   FETCH_SIMULATION_SETUP: 'FETCH_SIMULATION_SETUP',
@@ -41,6 +44,11 @@ export const actionType = {
 };
 
 const ACTION_HANDLERS = {
+  [actionType.SYNC_WORKSPACE_WITH_SERVER]: state => state.set('isServerSyncPending', true),
+  [actionType.UPDATE_SIMULATION_SETUP_SUCCESS]: state => state.set('isServerSyncPending', false),
+  [actionType.UPDATE_SIMULATION_SETUP_ERROR]: (state, action) => (
+    state.set('isServerSyncPending', false).set('serverSyncError', action.error)
+  ),
   [actionType.SETUP_WORKSPACE]: (state, action) => (
     fromJS({ projectId: action.projectId, versionId: action.versionId, ...emptyState() })
   ),
@@ -104,6 +112,9 @@ export const actionCreator = {
   setupWorkspace(projectId: string, versionId: number) {
     return { type: actionType.SETUP_WORKSPACE, projectId, versionId };
   },
+  syncServerWithLocal() {
+    return { type: actionType.SYNC_WORKSPACE_WITH_SERVER };
+  },
   fetchSimulationSetup() {
     return { type: actionType.FETCH_SIMULATION_SETUP };
   },
@@ -157,17 +168,17 @@ export const actionCreator = {
 };
 
 const emptyState = () => ({
-  zoneLayerParent: undefined,
+  zoneLayerParent: 0,
   singleLayerView: true,
   dataStatus: 'none',
 });
 
 const initialState = fromJS({
-  zoneLayerParent: undefined,
+  zoneLayerParent: 0,
   singleLayerView: true,
   zones: {
-    '1': { id: 1, name: 'zone 1', children: [], materialId: 1, baseId: 1, construction: [{ type: 'subtract', bodyId: 2 }] },
-    '2': { id: 2, name: 'zone 2', children: [], materialId: 2, baseId: 3, construction: [{ type: 'union', bodyId: 4 }] },
+    '1': { id: 1, name: 'zone 1', parentId: 0, children: [], materialId: 1, baseId: 1, construction: [{ type: 'subtract', bodyId: 2 }] },
+    '2': { id: 2, name: 'zone 2', parentId: 0, children: [], materialId: 2, baseId: 3, construction: [{ type: 'union', bodyId: 4 }] },
     '3': { id: 3, name: 'zone 3', parentId: 1, children: [], materialId: 1, baseId: 1, construction: [] },
   },
   bodies: {
@@ -210,7 +221,24 @@ const initialState = fromJS({
     },
   },
 });
-export const reducer = (state: Map<string, any> = initialState, action: { type: string }) => {
+export const reducer = (state: Map<string, any>, action: { type: string }) => {
   const handler = ACTION_HANDLERS[action.type];
-  return handler ? handler(state, action) : state;
+  const persistedState = localStorage.get(storageKey.WORKSPACE_SYNC);
+  if (!handler) {
+    return state || fromJS(persistedState) || initialState;
+  }
+  if (state) {
+    const newState = handler(state, action);
+    localStorage.set(storageKey.WORKSPACE_SYNC, newState.toJS());
+    return newState;
+  }
+
+  if (persistedState) {
+    const newState = handler(fromJS(persistedState), action);
+    localStorage.set(storageKey.WORKSPACE_SYNC, newState.toJS());
+    return newState;
+  }
+
+  localStorage.set(storageKey.WORKSPACE_SYNC, initialState.toJS());
+  return handler(initialState, action);
 };

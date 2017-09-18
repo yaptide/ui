@@ -1,6 +1,8 @@
 /* @flow */
 
 import React from 'react';
+import { connect } from 'react-redux';
+import { actionCreator } from 'routes/Workspace/reducer';
 import Style from 'styles';
 import { t } from 'i18n';
 import router from 'utils/router';
@@ -22,6 +24,8 @@ const link = {
 type Props = {
   activeWorkspaceTab?: string,
   isWorkspaceLoading?: bool,
+  isSyncPending?: bool,
+  syncWorkspace: () => void,
   children?: React.Component<*, *, *>,
   classes: Object,
 }
@@ -38,7 +42,21 @@ class WorkspaceLayout extends React.Component<Props> {
     return (
       <AppLayout {...props} >
         <Toolbar className={classes.toolbar} >
-          <Typography className={classes.toolbarTitle} >Workspace</Typography>
+          <Typography className={classes.title}>Workspace</Typography>
+          <Button
+            style={styles.button}
+            color="primary"
+            raised
+            onTouchTap={this.props.syncWorkspace}
+          >
+            {t('save')}
+            {
+              this.props.isSyncPending &&
+              <CircularProgress size={14} className={classes.loader} color="white" />
+            }
+          </Button>
+
+          <div className={classes.toolbarFlexSeparator} />
           <Button
             style={styles.button}
             color={this.isActive('settings')}
@@ -96,8 +114,14 @@ const styles = (theme: Object) => ({
     display: 'flex',
     flexDirection: 'row',
   },
-  toolbarTitle: {
+  toolbarFlexSeparator: {
     flex: '1 0 0',
+  },
+  title: {
+    paddingRight: theme.spacing.unit * 2,
+  },
+  loader: {
+    marginLeft: theme.spacing.unit,
   },
   container: {
     ...Style.Flex.elementEqual,
@@ -107,6 +131,20 @@ const styles = (theme: Object) => ({
     position: 'relative',
   },
 });
+const mapStateToProps = (state) => {
+  return {
+    isSyncPending: state.workspace.get('isServerSyncPending'),
+  };
+};
 
-export default withStyles(styles)(WorkspaceLayout);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    syncWorkspace: () => dispatch(actionCreator.syncServerWithLocal()),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withStyles(styles)(WorkspaceLayout));
 

@@ -34,6 +34,7 @@
     "mocha": true
   },
   "rules": {
+    "eqeqeq": 0,
     "no-use-before-define": 0,
     "arrow-body-style": 0,
     "no-unused-vars": [2, { "ignoreRestSiblings": true }],

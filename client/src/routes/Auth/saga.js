@@ -3,7 +3,7 @@
 import { takeLatest, eventChannel } from 'redux-saga';
 import { fork, call, put, take } from 'redux-saga/effects';
 import api, { endpoint } from 'api';
-import cookie, { key as cookieKey } from 'store/cookie';
+import localStorage, { key as storageKey } from 'store/localStorage';
 import router from 'utils/router';
 import { actionType } from './reducer';
 import type { RegisterData, LoginData } from './model';
@@ -11,7 +11,7 @@ import type { RegisterData, LoginData } from './model';
 export function* updateAuthToken(token: string): Generator<*, *, *> {
   if (token) {
     yield call(api.saveAuthToken, token);
-    yield call(cookie.set, cookieKey.AUTH_TOKEN, token);
+    yield call(localStorage.set, storageKey.AUTH_TOKEN, token);
   }
 }
 
@@ -22,6 +22,7 @@ export function* login(action: { user: LoginData }): Generator<*, *, *> {
       endpoint.LOGIN,
       { username: action.user.username, password: action.user.password },
     );
+    yield call(localStorage.clear);
     const token = response.data.token;
     yield* updateAuthToken(token);
 
@@ -47,7 +48,7 @@ export function* register(action: { user: RegisterData }): Generator<*, *, *> {
 
 export function* logout(): Generator<*, *, *> {
   yield call(api.saveAuthToken, '');
-  yield call(cookie.delete, cookieKey.AUTH_TOKEN);
+  yield call(localStorage.clear);
   yield call(router.push, '/logout');
 }
 
