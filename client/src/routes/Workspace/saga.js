@@ -48,7 +48,10 @@ export function* updateSimulationSetup(): Generator<*, *, *> {
     );
     yield put({ type: actionType.UPDATE_SIMULATION_SETUP_SUCCESS });
   } catch (error) {
-    yield put({ type: actionType.UPDATE_SIMULATION_SETUP_ERROR, error: error.response.data });
+    yield put({
+      type: actionType.UPDATE_SIMULATION_SETUP_ERROR,
+      error: error.response || error.response.data,
+    });
   }
 }
 

@@ -52,7 +52,7 @@ class WorkspaceLayout extends React.Component<Props> {
             {t('save')}
             {
               this.props.isSyncPending &&
-              <CircularProgress size={14} className={classes.loader} color="white" />
+              <CircularProgress size={14} className={classes.loader} color="accent" />
             }
           </Button>
 
