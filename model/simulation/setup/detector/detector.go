@@ -126,7 +126,7 @@ type detectorType struct {
 var (
 	geomapDetector             = detectorType{"geomap"}
 	zoneScoringDetector        = detectorType{"zone"}
-	cylindricalScoringDetector = detectorType{"cylindrical"}
+	cylindricalScoringDetector = detectorType{"cylinder"}
 	meshScoringDetector        = detectorType{"mesh"}
 	planeScoringDetector       = detectorType{"plane"}
 )

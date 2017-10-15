@@ -13,14 +13,14 @@ import {
 } from 'three'; //eslint-disable-line
 import * as Three from 'three'; //eslint-disable-line
 import OrbitControls from 'three-orbitcontrols';
-import type { Dim } from 'model/simulation/body';
+import type { Point } from 'model/simulation/utils';
 import ResizeHOC from '../Utils/ResizeHOC';
 import InteractiveCamera from './InteractiveCamera';
 
 type Props = {
   width: number,
   height: number,
-  geometry: Array<{zone: Object, zoneData: Object, color: string, position: Dim }>,
+  geometry: Array<{zone: Object, zoneData: Object, color: string, position: Point }>,
 };
 
 class Visualisation extends React.Component<Props> {

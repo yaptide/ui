@@ -10,6 +10,9 @@ import type {
 import type {
   Material,
 } from 'model/simulation/material';
+import type {
+  Detector,
+} from 'model/simulation/detector';
 import localStorage, { key as storageKey } from 'store/localStorage';
 import stateProcessor from './reducerHelpers';
 
@@ -38,6 +41,10 @@ export const actionType = {
   CREATE_MATERIAL: 'CREATE_MATERIAL',
   DELETE_MATERIAL: 'DELETE_MATERIAL',
   UPDATE_MATERIAL: 'UPDATE_MATERIAL',
+
+  CREATE_DETECTOR: 'CREATE_DETECTOR',
+  DELETE_DETECTOR: 'DELETE_DETECTOR',
+  UPDATE_DETECTOR: 'UPDATE_DETECTOR',
 
   MOVE_TO_CHILD_LAYER: 'MOVE_TO_CHILD_LAYER',
   MOVE_TO_PARENT_LAYER: 'MOVE_TO_PARENT_LAYER',
@@ -94,6 +101,15 @@ const ACTION_HANDLERS = {
   ),
   [actionType.DELETE_MATERIAL]: (state, action) => (
     stateProcessor.material.delete(state, action.materialId)
+  ),
+  [actionType.CREATE_DETECTOR]: state => (
+    stateProcessor.detector.create(state)
+  ),
+  [actionType.DELETE_DETECTOR]: (state, action) => (
+    stateProcessor.detector.delete(state, action.detectorId)
+  ),
+  [actionType.UPDATE_DETECTOR]: (state, action) => (
+    stateProcessor.detector.update(state, action.detector)
   ),
   [actionType.MOVE_TO_PARENT_LAYER]: (state) => {
     const currentZoneId = state.get('zoneLayerParent');
@@ -159,6 +175,15 @@ export const actionCreator = {
   deleteMaterial(materialId: number) {
     return { type: actionType.DELETE_MATERIAL, materialId };
   },
+  createDetector() {
+    return { type: actionType.CREATE_DETECTOR };
+  },
+  deleteDetector(detectorId: number) {
+    return { type: actionType.DELETE_DETECTOR, detectorId };
+  },
+  updateDetector(detector: Detector) {
+    return { type: actionType.UPDATE_DETECTOR, detector };
+  },
   goToParentLayer() {
     return { type: actionType.MOVE_TO_PARENT_LAYER };
   },
@@ -218,6 +243,20 @@ const initialState = fromJS({
           { isotope: 'he-3', relativeStochiometricFraction: 1, atomicValue: 11, iValue: 20 },
         ],
       },
+    },
+  },
+  detectors: {
+    '1': {
+      id: 1,
+      detectorGeometry: { type: 'mesh', center: { x: 1, y: 2, z: 3 }, size: { x: 3, y: 3, z: 3 }, slices: { x: 10, y: 10, z: 10 } },
+      particle: { type: 'all' },
+      scoring: { type: 'energy' },
+    },
+    '2': {
+      id: 2,
+      detectorGeometry: { type: 'cylinder', radius: { max: 10, min: 0 }, angle: { max: Math.PI * 1.5, min: Math.PI / 2 }, zValue: { max: 10, min: -10 }, slices: { radius: 1, angle: 1, z: 1 } },
+      particle: { type: 'heavy_ion', charge: 10, nucleonsCount: 10 },
+      scoring: { type: 'tlet', material: 0 },
     },
   },
 });

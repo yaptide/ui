@@ -118,7 +118,7 @@ const styles = (theme: Object) => ({
   },
   tabItem: {
     flex: '1 1 0',
-    maxWidth: theme.breakpoints.values[2],
+    maxWidth: theme.breakpoints.values.md,
   },
 });
 

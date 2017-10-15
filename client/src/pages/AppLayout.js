@@ -56,8 +56,8 @@ const styles = (theme: Object) => ({
     ...Style.Flex.rootColumn,
     ...Style.Flex.elementEqual,
     overflow: 'auto',
-    minHeight: theme.breakpoints.values[1],
-    minWidth: theme.breakpoints.values[1],
+    minHeight: theme.breakpoints.values.sm,
+    minWidth: theme.breakpoints.values.lg,
     background: '#2B2B2B',
   },
 });

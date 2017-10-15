@@ -47,7 +47,7 @@ const ResizeHOC = (WrapedComponent: any) => {
     render() {
       const { style, classes, ...props } = this.props;
       return (
-        <div style={{ ...style, overflow: 'hidden' }} className={classes && classes.hoc} ref={this.setRef}>
+        <div style={{ ...style, overflow: 'hidden' }} className={classes && classes.root} ref={this.setRef}>
           <WrapedComponent
             {...props}
             width={this.state.width}

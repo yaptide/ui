@@ -17,7 +17,7 @@ type Props = {
   classes: Object,
 }
 
-class FormV3Input extends React.Component<Props> {
+class FormV3DoubleInput extends React.Component<Props> {
   props: Props
 
   onUpdate = (value: string | number, type: string) => {
@@ -28,6 +28,7 @@ class FormV3Input extends React.Component<Props> {
   }
 
   render() {
+    const classes = this.props.classes;
     return (
       <RowLabel
         label={this.props.rowLabel}
@@ -43,10 +44,11 @@ class FormV3Input extends React.Component<Props> {
               value={this.props.values[item.field]}
               errorText={this.props.valueError[item.field]}
               numbersOnly={this.props.numbersOnly}
-              style={styles.inputWrapper}
+              classes={{ root: classes.inputWrapper }}
             />
           ))
         }
+        <div className={classes.inputWrapper} />
       </RowLabel>
     );
   }
@@ -65,4 +67,4 @@ const styles = {
   },
 };
 
-export default withStyles(styles)(FormV3Input);
+export default withStyles(styles)(FormV3DoubleInput);

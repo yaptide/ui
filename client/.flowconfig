@@ -1,24 +1,19 @@
 [ignore]
-.*/node_modules/config-chain/test/.*
-.*/node_modules/jss/lib/renderers/DomRenderer.js.flow
-.*/node_modules/react-scrollbar-size/node_modules/react-event-listener/src/index.js
-.*/node_modules/material-ui/styles/withStyles.js.flow
-.*/node_modules/npmconf/test/.*
 .*/test/.*
 .*/test-utils/.*
-.*/babel-plugin-transform-react-remove-prop-types/.*
 [include]
-../node_modules
+../node_modules/*
 ./src/api/index.js
 [libs]
 flow/decl/require.js
-../node_modules/react/dist/*
-../node_modules/jss/flow-typed
-../node_modules/material-ui/index.js.flow
+../node_modules/material-ui/utils/reactHelpers.js.flow
+../node_modules/material-ui/.*.flow
+../node_modules/react-flow-types/index.js.flow
+../node_modules/jss/flow-typed/cssom.js
+../node_modules/jss/lib/renderers/DomRenderer.js.flow
+../node_modules/jss/lib/renderers/VirtualRenderer.js.flow
 [options]
 
-experimental.strict_type_args=true
-esproposal.export_star_as=enable
 
 munge_underscores=true
 

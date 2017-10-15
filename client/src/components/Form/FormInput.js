@@ -9,7 +9,7 @@ import FormHelperText from 'material-ui/Form/FormHelperText';
 import { withStyles } from 'material-ui/styles';
 
 type Props = {
-  type: string,
+  type?: string,
   label: string,
   errorText?: string,
   onChange: (any, string) => void,
@@ -27,7 +27,7 @@ class FormInput extends React.Component<Props> {
       this.props.numbersOnly && isNaN(Number(e.target.value))
       ? ''
       : e.target.value,
-      this.props.type,
+      this.props.type || '',
     );
   }
 

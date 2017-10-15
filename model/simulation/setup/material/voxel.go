@@ -4,6 +4,7 @@ import "encoding/json"
 
 // Voxel TODO
 type Voxel struct {
+	_ int // mock to fix memory alignment issue.
 }
 
 // MarshalJSON json.Marshaller implementation.

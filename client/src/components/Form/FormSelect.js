@@ -10,7 +10,7 @@ import { withStyles } from 'material-ui/styles';
 type Props = {
   type?: any,
   value: any,
-  label: string,
+  label: any,
   onChange: (value: any, type: any) => void,
   options: Array<{ field: string, label: string }>,
   classes: Object,

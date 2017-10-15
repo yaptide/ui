@@ -2,29 +2,26 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import Visualisation, { processGeometry } from 'components/Visualisation';
+import DetectorsVisualisationLayout from '../components/DetectorsVisualisationLayout';
 import selector from '../../selector';
 
 type Props = {
   geometry: any,
-  style?: Object,
   classes?: Object,
-}
+};
 
-class VisualisationContainer extends React.Component<Props> {
-  props: Props;
+class DetectorsVisualisationContainer extends React.Component<Props> {
+  props: Props
 
   render() {
     return (
-      <Visualisation
-        geometry={processGeometry(this.props.geometry)}
-        style={this.props.style}
+      <DetectorsVisualisationLayout
+        geometry={this.props.geometry}
         classes={this.props.classes}
       />
     );
   }
 }
-
 
 const mapStateToProps = (state) => {
   return {
@@ -34,4 +31,4 @@ const mapStateToProps = (state) => {
 
 export default connect(
   mapStateToProps,
-)(VisualisationContainer);
+)(DetectorsVisualisationContainer);

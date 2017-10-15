@@ -7,9 +7,8 @@ import (
 
 // Plane detector.
 type Plane struct {
-	Point  common.Point
-	Normal common.Vec3D
-	Slices common.Vec3DInt
+	Point  common.Point `json:"point"`
+	Normal common.Vec3D `json:"normal"`
 }
 
 // MarshalJSON json.Marshaller implementation.

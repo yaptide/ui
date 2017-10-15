@@ -1,31 +1,27 @@
 /* @flow */
 
+import type { Point, Vec3D } from './utils';
+
 export type GeometryType = 'sphere' |
   'cuboid' |
   'cylinder';
 
 export type SphereGeometry = {
   type: 'sphere',
-  center: Dim,
+  center: Point,
   radius: number,
 };
 
 export type CuboidGeometry = {
   type: 'cuboid',
-  center: Dim,
-  size: Dim,
+  center: Point,
+  size: Vec3D,
 };
 
 export type CylinderGeometry = {
   type: 'cylinder',
-  baseCenter: Dim,
+  baseCenter: Point,
   height: number,
   radius: number,
 };
 
-
-export type Dim = {
-  x: number,
-  y: number,
-  z: number,
-};

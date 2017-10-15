@@ -24,5 +24,5 @@ const rootContainer = (
   </Provider>
 );
 
-ReactDOM.render(rootContainer, document.getElementById('app'));
+ReactDOM.render(rootContainer, (document: any).getElementById('app'));
 

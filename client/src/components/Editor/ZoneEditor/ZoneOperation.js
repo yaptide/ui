@@ -50,7 +50,7 @@ class ZoneOperation extends React.Component<Props> {
           this.props.operation
             ? <OperationSelector
               constructionPath={this.getConstructionPath()}
-              operation={this.props.operation}
+              operation={((this.props.operation: any): OperationType)}
               onOperationSelected={this.props.onOperationSelected}
               classes={{ root: classes.item }}
             />

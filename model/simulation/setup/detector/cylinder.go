@@ -7,10 +7,10 @@ import (
 
 // Cylinder is detector with cylindrical shape directed along z-axis.
 type Cylinder struct {
-	Radius common.Range    `json:"radius"`
-	Angle  common.Range    `json:"angle"`
-	ZValue common.Range    `json:"zValue"`
-	Slices common.Vec3DInt `json:"slices"`
+	Radius common.Range               `json:"radius"`
+	Angle  common.Range               `json:"angle"`
+	ZValue common.Range               `json:"zValue"`
+	Slices common.Vec3DCylindricalInt `json:"slices"`
 }
 
 // MarshalJSON json.Marshaller implementation.

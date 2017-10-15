@@ -1,12 +1,12 @@
 /* @flow */
 import type { Body, BodyGeometry } from 'model/simulation/zone';
 import type {
-  Dim,
   GeometryType,
   CuboidGeometry,
   SphereGeometry,
   CylinderGeometry,
 } from 'model/simulation/body';
+import type { Vec3D } from 'model/simulation/utils';
 import * as _ from 'lodash';
 
 export const geometryTypes = ['cuboid', 'sphere', 'cylinder'];
@@ -107,7 +107,7 @@ function validateCylinder(geometry: CylinderGeometry) {
   }
 }
 const helpers = {
-  positiveXYZ(value: Dim) {
+  positiveXYZ(value: Vec3D) {
     const errors = {};
     _.forEach(value || {}, (val, key) => {
       if (val <= 0) {
@@ -116,7 +116,7 @@ const helpers = {
     });
     return errors;
   },
-  existsXYZ(value: Dim) {
+  existsXYZ(value: Vec3D) {
     const errors = {};
     _.forEach(value || {}, (val, key) => {
       if (val === undefined || val === null || val === '') {

@@ -25,7 +25,7 @@ class ResultDetailsLayout extends React.Component<Props> {
             data={this.props.scored}
             numberOfDimensions={this.props.dimensions.numberOfDimensions}
             classes={{ hoc: classes.chart }}
-            labels={generateDetectorChartLabels({ name: 'test', shape: null })}
+            labels={generateDetectorChartLabels(({ name: 'test', shape: null }: any))}
           />
         </Paper>
         {

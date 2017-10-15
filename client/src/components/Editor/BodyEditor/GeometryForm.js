@@ -24,6 +24,7 @@ class GeometryForm extends React.Component<Props> {
           label={t('workspace.editor.type')}
         >
           <FormSelect
+            label={t('workspace.editor.type')}
             value={this.props.type}
             onChange={this.props.onTypeChange}
             options={options}

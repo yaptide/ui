@@ -24,6 +24,13 @@ function allMaterialIds(state: { workspace: Map<string, any> }) {
     .map(item => item.get('id'));
 }
 
+function allDetectorsIds(state: { workspace: Map<string, any> }) {
+  return state.workspace
+    .get('detectors', Map())
+    .valueSeq()
+    .map(item => item.get('id'));
+}
+
 function allPredefinedMaterialsPrintable(state: { configuration: Map<string, any> }) {
   const predefinedMaterials = state.configuration.get('predefinedMaterials', Map());
   const order = state.configuration.get('predefinedMaterialsOrder', Seq());
@@ -57,6 +64,12 @@ function materialById(
   state: { workspace: Map<string, any> }, materialId: number,
 ): Map<string, any> {
   return state.workspace.getIn(['materials', String(materialId)], Map());
+}
+
+function detectorById(
+  state: { workspace: Map<string, any> }, detectorId: number,
+): Map<string, any> {
+  return state.workspace.getIn(['detectors', String(detectorId)], Map());
 }
 
 function materialByIdPrintable(
@@ -108,12 +121,14 @@ export default {
   bodyByConstructionPath,
   allZonesIds,
   allMaterialIds,
+  allDetectorsIds,
   allCurrentLayerZonesIds,
   zoneById,
   bodyById,
   materialById,
   zoneByIdPrintable,
   materialByIdPrintable,
+  detectorById,
   allPredefinedMaterialsPrintable,
   allIsotopesPrintable,
   isWorkspaceLoading,

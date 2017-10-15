@@ -3,6 +3,7 @@
 import React from 'react';
 import Style from 'styles';
 import ButtonMD from 'material-ui/Button';
+import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/styles';
 import { ButtonHOC } from 'components/Touchable';
 import { ZoneName, ZoneOperation } from 'components/Editor/ZoneEditor';
@@ -56,7 +57,7 @@ class ZoneEditor extends React.Component<Props> {
     return (
       <div className={classes.container}>
         {zoneTitle}
-        <div style={styles.label} >Material</div>
+        <Typography style={styles.label} >Material</Typography>
         <Button
           raised
           onTouchTap={this.props.onMaterialSelected}
@@ -64,7 +65,7 @@ class ZoneEditor extends React.Component<Props> {
         >
           {this.props.material.label}
         </Button>
-        <div style={styles.label} >Construction</div>
+        <Typography style={styles.label} >Construction</Typography>
         <ZoneOperation
           id="base"
           key="base"

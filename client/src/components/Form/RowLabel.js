@@ -16,7 +16,7 @@ class RowLabel extends React.Component<Props> {
   render() {
     const classes = this.props.classes;
     return (
-      <div className={classes.inputRow}>
+      <div className={classes.root}>
         <div className={classes.label}>
           <div className={classes.labelText}>{`${this.props.label}:`}</div>
         </div>
@@ -29,7 +29,7 @@ class RowLabel extends React.Component<Props> {
 }
 
 const styles = (theme: Object) => ({
-  inputRow: {
+  root: {
     ...Style.Flex.rootRow,
   },
   label: {
@@ -43,7 +43,7 @@ const styles = (theme: Object) => ({
     flex: '3 0 0',
   },
   labelText: {
-    fontSize: Style.Dimens.font.large,
+    fontSize: 18,
     marginBottom: '12px',
     color: Style.Colors.white,
     marginLeft: Style.Dimens.spacing.small,

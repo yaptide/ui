@@ -93,8 +93,8 @@ class BodyEditorModal extends React.Component<Props, State> {
 
 const styles = (theme: Object) => ({
   root: {
-    minWidth: theme.breakpoints.values[1],
-    minHeight: theme.breakpoints.values[0],
+    minWidth: theme.breakpoints.values.sm,
+    minHeight: theme.breakpoints.values.xs,
   },
   editorRoot: {
     paddingLeft: theme.spacing.unit,
@@ -106,7 +106,7 @@ const styles = (theme: Object) => ({
   },
   tabItem: {
     flex: '1 1 0',
-    maxWidth: theme.breakpoints.values[2],
+    maxWidth: theme.breakpoints.values.md,
   },
 });
 

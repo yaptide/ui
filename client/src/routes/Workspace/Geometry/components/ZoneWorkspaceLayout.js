@@ -36,6 +36,9 @@ class ZoneWorkspaceLayout extends React.Component<Props> {
       <Button
         onTouchTap={this.props.addZone}
         className={classes.item}
+        raised
+        color="contrast"
+        dense
       >
         <PlusIcon />
       </Button>

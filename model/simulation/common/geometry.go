@@ -8,6 +8,13 @@ type Point struct {
 	Z float64 `json:"z"`
 }
 
+// Vec3DCylindricalInt 3-dimensional vector of integers in cylindrical cordinates.
+type Vec3DCylindricalInt struct {
+	Radius int64 `json:"radius"`
+	Angle  int64 `json:"angle"`
+	Z      int64 `json:"z"`
+}
+
 // Vec3D represent 3-dimensional vector.
 type Vec3D struct {
 	X float64 `json:"x"`
