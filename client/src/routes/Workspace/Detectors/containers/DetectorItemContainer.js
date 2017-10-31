@@ -11,6 +11,7 @@ import { defaultDetectorGeometryForType } from '../defaults';
 type Props = {
   detector: Detector,
   updateDetector: (detector: Detector) => void,
+  deleteDetector: () => void,
   classes?: Object,
 }
 
@@ -62,6 +63,7 @@ class DetectorItemContainer extends React.Component<Props> {
         geometryUpdate={this.geometryUpdate}
         particleUpdate={this.particleUpdate}
         scoringUpdate={this.scoringUpdate}
+        deleteDetector={this.props.deleteDetector}
       />
     );
   }
@@ -73,9 +75,10 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch, props) => {
   return {
     updateDetector: detector => dispatch(actionCreator.updateDetector(detector)),
+    deleteDetector: () => dispatch(actionCreator.deleteDetector(props.detectorId)),
   };
 };
 

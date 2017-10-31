@@ -1,13 +1,17 @@
 /* @flow */
 
 import React from 'react';
+import { connect } from 'react-redux';
 import type { ScoringType } from 'model/simulation/detector';
 import { FormSelect, FormV3SingleInput } from 'components/Form';
 import { withStyles } from 'material-ui/styles';
 import { t } from 'i18n';
+import * as _ from 'lodash';
+import selector from '../../selector';
 
 type Props = {
   scoring: ScoringType,
+  scoringOptions: Array<{value: string, name: string}>,
   scoringUpdate: (updated: ScoringType) => void,
   classes: Object,
 }
@@ -23,6 +27,13 @@ class DetectorScoringItemLayout extends React.Component<Props> {
     });
   }
 
+  mapParticleOptions = () => {
+    return _.map(
+      this.props.scoringOptions,
+      item => ({ field: item.value, label: item.name }),
+    );
+  }
+
   render() {
     const classes = this.props.classes;
     return (
@@ -32,7 +43,7 @@ class DetectorScoringItemLayout extends React.Component<Props> {
           value={this.props.scoring.type}
           label={t('workspace.editor.scoringType')}
           onChange={this.scoringUpdate}
-          options={[]}
+          options={this.mapParticleOptions()}
           classes={{ root: classes.item }}
         />
         {
@@ -62,4 +73,12 @@ const styles = (theme: Object) => ({
   },
 });
 
-export default withStyles(styles)(DetectorScoringItemLayout);
+const mapStateToProps = (state) => {
+  return {
+    scoringOptions: selector.allScoringTypesPrintable(state).toJS(),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+)(withStyles(styles)(DetectorScoringItemLayout));

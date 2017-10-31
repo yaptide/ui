@@ -2,7 +2,9 @@
 
 import { Map, Seq, fromJS } from 'immutable';
 import type { ConstructionPath, Body } from 'model/simulation/zone';
+import type { Material } from 'model/simulation/material';
 import serializer from './bodySerializer';
+import materialSerializer from './materialSerializer';
 
 function visualisationSelector(state: { workspace: Map<string, any> }) {
   const parentId = state.workspace.get('zoneLayerParent');
@@ -31,6 +33,19 @@ function allDetectorsIds(state: { workspace: Map<string, any> }) {
     .map(item => item.get('id'));
 }
 
+function allSelectedMaterialsPrintable(
+  state: { configuration: Map<string, any>, workspace: Map<string, any> },
+) {
+  return state.workspace.get('materials', Map())
+    .valueSeq()
+    .map(item => Map({ id: item.get('id'), ...constructMaterialLabel(item.toJS(), state.configuration) }))
+    .toJS();
+}
+
+function constructMaterialLabel(item: Material, configuration: Map<string, any>) {
+  return { label: materialSerializer(item, configuration), color: item.color };
+}
+
 function allPredefinedMaterialsPrintable(state: { configuration: Map<string, any> }) {
   const predefinedMaterials = state.configuration.get('predefinedMaterials', Map());
   const order = state.configuration.get('predefinedMaterialsOrder', Seq());
@@ -41,6 +56,18 @@ function allIsotopesPrintable(state: { configuration: Map<string, any> }) {
   const isotopes = state.configuration.get('isotopes', Map());
   const order = state.configuration.get('isotopesOrder', Seq());
   return order.map(item => isotopes.get(item));
+}
+
+function allScoredParticleTypesPrinatable(state: { configuration: Map<string, any> }) {
+  const particles = state.configuration.get('particles', Map());
+  const order = state.configuration.get('particlesOrder', Seq());
+  return order.map(item => particles.get(item));
+}
+
+function allScoringTypesPrintable(state: { configuration: Map<string, any> }) {
+  const particles = state.configuration.get('scoringTypes', Map());
+  const order = state.configuration.get('scoringTypesOrder', Seq());
+  return order.map(item => particles.get(item));
 }
 
 function allCurrentLayerZonesIds(state: { workspace: Map<string, any> }) {
@@ -129,7 +156,10 @@ export default {
   zoneByIdPrintable,
   materialByIdPrintable,
   detectorById,
+  allSelectedMaterialsPrintable,
   allPredefinedMaterialsPrintable,
   allIsotopesPrintable,
+  allScoredParticleTypesPrinatable,
+  allScoringTypesPrintable,
   isWorkspaceLoading,
 };

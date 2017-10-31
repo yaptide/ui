@@ -62,6 +62,7 @@ class WorkspaceMaterialContainer extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state) => {
+  console.log(selector.allSelectedMaterialsPrintable(state));
   return {
     isWorkspaceLoading: selector.isWorkspaceLoading(state),
     materialIds: selector.allMaterialIds(state),

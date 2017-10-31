@@ -2,14 +2,14 @@ package detector
 
 // PredefinedParticleRecord ...
 type PredefinedParticleRecord struct {
-	Type string `json:"type"`
-	Name string `json:"name"`
+	Value string `json:"value"`
+	Name  string `json:"name"`
 }
 
 // ScoringTypeRecord ...
 type ScoringTypeRecord struct {
-	Type string `json:"type"`
-	Name string `json:"name"`
+	Value string `json:"value"`
+	Name  string `json:"name"`
 }
 
 var predefinedParticles = []PredefinedParticleRecord{

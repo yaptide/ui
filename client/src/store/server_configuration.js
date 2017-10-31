@@ -23,6 +23,10 @@ const ACTION_HANDLERS = {
       predefinedMaterialsOrder: _.map(action.config.predefinedMaterials, item => item.value),
       isotopes: _.keyBy(action.config.isotopes, item => item.value),
       isotopesOrder: _.map(action.config.isotopes, item => item.value),
+      particles: _.keyBy(action.config.particles, item => item.value),
+      particlesOrder: _.map(action.config.particles, item => item.value),
+      scoringTypes: _.keyBy(action.config.scoringTypes, item => item.value),
+      scoringTypesOrder: _.map(action.config.scoringTypes, item => item.value),
       isConfigFetchPending: false,
       fetchConfigError: undefined,
     });

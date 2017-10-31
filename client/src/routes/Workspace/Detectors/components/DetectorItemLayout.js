@@ -4,6 +4,8 @@ import React from 'react';
 import { FormSelect } from 'components/Form';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
+import Button from 'material-ui/Button';
+import DeleteIcon from 'material-ui-icons/Delete';
 import type { Detector } from 'model/simulation/detector';
 import { t } from 'i18n';
 import DetectorGeometryItemLayout from './DetectorGeometryItemLayout';
@@ -16,6 +18,7 @@ type Props = {
   geometryUpdate: (value: Object, type: string) => void,
   particleUpdate: (value: Object) => void,
   scoringUpdate: (value: Object) => void,
+  deleteDetector: () => void,
   classes: Object,
 }
 
@@ -57,6 +60,15 @@ class DetectorItemLayout extends React.Component<Props> {
           scoring={detector.scoring}
           scoringUpdate={this.props.scoringUpdate}
         />
+        <div className={classes.btnRow}>
+          <Button
+            color="contrast"
+            onTouchTap={this.props.deleteDetector}
+            raised
+          >
+            <DeleteIcon />
+          </Button>
+        </div>
       </Paper>
     );
   }
@@ -80,6 +92,11 @@ const styles = (theme: Object) => ({
   select: {
     marginTop: theme.spacing.unit,
     marginBottom: theme.spacing.unit,
+  },
+  btnRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
   },
 });
 

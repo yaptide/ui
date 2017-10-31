@@ -1,14 +1,18 @@
 /* @flow */
 
 import React from 'react';
+import { connect } from 'react-redux';
 import type { ScoredParticle } from 'model/simulation/detector';
 import { FormSelect, FormV3DoubleInput } from 'components/Form';
 import { withStyles } from 'material-ui/styles';
+import * as _ from 'lodash';
 import { t } from 'i18n';
+import selector from '../../selector';
 
 type Props = {
   particle: ScoredParticle,
   particleUpdate: (updated: ScoredParticle) => void,
+  particleOptions: Array<{value: string, name: string}>,
   classes: Object,
 }
 
@@ -19,8 +23,21 @@ const options = [
 class DetectorParticleItemLayout extends React.Component<Props> {
   props: Props
 
+  particleTypeUpdate = (type: string) => {
+    this.props.particleUpdate({
+      ...(this.props.particle: ScoredParticle),
+      type,
+    });
+  }
   particleUpdate = (field: string, particle: Object) => {
     this.props.particleUpdate(particle);
+  }
+
+  mapParticleOptions = () => {
+    return _.map(
+      this.props.particleOptions,
+      item => ({ field: item.value, label: item.name }),
+    );
   }
 
   render() {
@@ -31,8 +48,8 @@ class DetectorParticleItemLayout extends React.Component<Props> {
           type="type"
           value={this.props.particle.type}
           label={t('workspace.editor.particleType')}
-          onChange={this.particleUpdate}
-          options={[{ field: 'heavy_ion', label: 'Heavy Ion' }]}
+          onChange={this.particleTypeUpdate}
+          options={this.mapParticleOptions()}
           classes={{ root: classes.item }}
         />
         {
@@ -62,4 +79,12 @@ const styles = (theme: Object) => ({
   },
 });
 
-export default withStyles(styles)(DetectorParticleItemLayout);
+const mapStateToProps = (state) => {
+  return {
+    particleOptions: selector.allScoredParticleTypesPrinatable(state).toJS(),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+)(withStyles(styles)(DetectorParticleItemLayout));
