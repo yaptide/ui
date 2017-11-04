@@ -3,6 +3,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import type { PredefinedMaterial } from 'model/simulation/material';
+import type { Color } from 'model/utils';
 import Typorgaphy from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 import Paper from 'material-ui/Paper';
@@ -13,6 +14,7 @@ import selector from '../../selector';
 type Props = {
   materialId: number,
   material: PredefinedMaterial,
+  color: Color,
   materialLabel: string,
   editMaterial: () => void,
   deleteMaterial: () => void,
@@ -24,6 +26,7 @@ class PredefinedMaterialItemLayout extends React.Component<Props> {
 
   render() {
     const classes = this.props.classes;
+    const color = this.props.color;
     return (
       <div className={classes.root} >
         <div className={classes.infoWrap} >
@@ -54,6 +57,14 @@ class PredefinedMaterialItemLayout extends React.Component<Props> {
         >
           Delete
         </Button>
+        <div
+          className={classes.colorMarker}
+          style={
+            color
+              ? { background: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})` }
+              : null
+          }
+        />
       </div>
     );
   }
@@ -62,9 +73,18 @@ class PredefinedMaterialItemLayout extends React.Component<Props> {
 const styles = (theme: Object) => ({
   root: {
     padding: theme.spacing.unit * 2,
+    paddingLeft: theme.spacing.unit * 4,
+    position: 'relative',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-start',
+  },
+  colorMarker: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    width: theme.spacing.unit * 2,
   },
   item: {
     paddingRight: theme.spacing.unit * 2,

@@ -1,9 +1,16 @@
 /* @flow */
+import type { Color } from 'model/utils';
 
 export type Material = {
   id: number,
   materialInfo: MaterialInfo,
-  color: string,
+  color: Color,
+}
+
+export type PrintableMaterial = {
+  id: number,
+  label: string,
+  color: Color,
 }
 
 export type MaterialInfo

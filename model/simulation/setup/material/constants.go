@@ -17,7 +17,7 @@ type IsotopeRecord struct {
 	Name  string `json:"name"`
 }
 
-const waterColor = "#0093DD"
+var waterColor = color.New(0x00, 0x93, 0xDD, 0xFF)
 
 var predefinedMaterials = []PredefinedMaterialRecord{
 	PredefinedMaterialRecord{"hydrogen", "Hydrogen (Z: 1)", color.White},

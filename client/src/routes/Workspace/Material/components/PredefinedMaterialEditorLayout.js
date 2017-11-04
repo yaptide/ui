@@ -6,7 +6,9 @@ import Chip from 'material-ui/Chip';
 import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import type { StateOfMatter } from 'model/simulation/material';
+import type { Color } from 'model/utils';
 import { FormInput, FormSelect, FuzzyChipSelector } from 'components/Form';
+import { ColorPicker } from 'components';
 
 type Props = {
   new: bool,
@@ -14,13 +16,14 @@ type Props = {
   density: number | '',
   materialState: StateOfMatter | '',
   isMaterialSelected: bool,
+  color: Color,
   options: Array<{
     value: string,
     name: string,
     color: string,
   }>,
   submit: () => void,
-  updateField: () => void,
+  updateField: (vaue: any, type: string) => void,
   selectMaterial: (value: string) => void,
   removeMaterialSelection: () => void,
   classes: Object,
@@ -40,6 +43,10 @@ class PredefinedMaterialEditorLayout extends React.Component<Props> {
     this.props.selectMaterial(event.currentTarget.getAttribute('value'));
   }
 
+  updateColor = (color: Color) => {
+    this.props.updateField(color, 'color');
+  }
+
   render() {
     const { classes, materialName, density, materialState } = this.props;
     return this.props.isMaterialSelected
@@ -55,6 +62,11 @@ class PredefinedMaterialEditorLayout extends React.Component<Props> {
                   className={classes.largeChip}
                   label={materialName}
                   onRequestDelete={this.props.removeMaterialSelection}
+                />
+                <div className={classes.flex} />
+                <ColorPicker
+                  color={this.props.color}
+                  updateColor={this.updateColor}
                 />
               </div>
               <div className={classes.separator} />
@@ -104,6 +116,9 @@ const styles = (theme: Object) => ({
     flex: 1,
     alignItems: 'stretch',
     padding: theme.spacing.unit * 2,
+  },
+  flex: {
+    flex: 1,
   },
   form: {
     flex: '1 1 auto',

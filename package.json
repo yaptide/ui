@@ -25,6 +25,7 @@
     "material-ui-icons": "^1.0.0-beta.5",
     "plotly.js": "^1.29.3",
     "react": "^15.6.1",
+    "react-color": "^2.13.8",
     "react-css-modules": "^4.1.0",
     "react-dom": "^15.6.1",
     "react-redux": "^5.0.2",

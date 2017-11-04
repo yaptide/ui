@@ -3,6 +3,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import type { CompoundMaterial } from 'model/simulation/material';
+import type { Color } from 'model/utils';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 import Paper from 'material-ui/Paper';
@@ -13,6 +14,7 @@ import selector from '../../selector';
 type Props = {
   materialId: number,
   material: CompoundMaterial,
+  color: Color,
   materialLabel: string,
   editMaterial: () => void,
   deleteMaterial: () => void,
@@ -24,6 +26,7 @@ class CompoundMaterialItemLayout extends React.Component<Props> {
 
   render() {
     const classes = this.props.classes;
+    const color = this.props.color;
     const elementInfo = this.props.material.elements.map((element, index) => {
       return (
         <Paper className={classes.elementInfo} key={index} >
@@ -77,6 +80,14 @@ class CompoundMaterialItemLayout extends React.Component<Props> {
             Delete
           </Button>
         </div>
+        <div
+          className={classes.colorMarker}
+          style={
+            color
+              ? { background: `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})` }
+              : null
+          }
+        />
       </div>
     );
   }
@@ -85,10 +96,19 @@ class CompoundMaterialItemLayout extends React.Component<Props> {
 const styles = (theme: Object) => ({
   root: {
     padding: theme.spacing.unit * 2,
+    paddingLeft: theme.spacing.unit * 4,
+    position: 'relative',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-start',
     flexWrap: 'wrap',
+  },
+  colorMarker: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    width: theme.spacing.unit * 2,
   },
   mainItem: {
     paddingRight: theme.spacing.unit * 2,

@@ -7,6 +7,7 @@ import type {
   PredefinedMaterial,
   StateOfMatter,
 } from 'model/simulation/material';
+import type { Color } from 'model/utils';
 import * as _ from 'lodash';
 import PredefinedMaterialEditorLayout from '../components/PredefinedMaterialEditorLayout';
 import selector from '../../selector';
@@ -26,7 +27,7 @@ type State = {
   materialValue: string,
   density: number | '',
   materialState: StateOfMatter | '',
-  color: string,
+  color: Color,
   isMaterialSelected: bool,
 }
 
@@ -37,7 +38,7 @@ class PredefinedMaterialEditorContainer extends React.Component<Props, State> {
     materialValue: '',
     density: '',
     materialState: '',
-    color: '#333333',
+    color: { r: 0x80, g: 0x80, b: 0x80, a: 0xFF },
     isMaterialSelected: false,
   }
 
@@ -64,7 +65,7 @@ class PredefinedMaterialEditorContainer extends React.Component<Props, State> {
   updateMaterialState = (materialObj: any) => {
     const { materialInfo, color } : {
       materialInfo: PredefinedMaterial,
-      color: string
+      color: Color,
     } = materialObj;
 
     this.setState({
@@ -86,14 +87,16 @@ class PredefinedMaterialEditorContainer extends React.Component<Props, State> {
   }
 
   selectMaterial = (value: string) => {
+    const predefinedMaterial = _.reduce(
+      this.props.materials,
+      (acc, item) => (item.value === value ? item : acc),
+      {},
+    );
     this.setState({
       isMaterialSelected: true,
       materialValue: value,
-      materialName: _.reduce(
-        this.props.materials,
-        (acc, item) => (item.value === value ? item.name : acc),
-        '',
-      ),
+      materialName: predefinedMaterial.name,
+      color: predefinedMaterial.color,
     });
   }
 
@@ -121,7 +124,7 @@ class PredefinedMaterialEditorContainer extends React.Component<Props, State> {
 
     actionFunction({
       id: materialId,
-      color: '#00FF00',
+      color: this.state.color,
       materialInfo,
     });
     this.props.closeModal();
@@ -135,6 +138,7 @@ class PredefinedMaterialEditorContainer extends React.Component<Props, State> {
         density={this.state.density}
         materialState={this.state.materialState}
         isMaterialSelected={this.state.isMaterialSelected}
+        color={this.state.color}
         options={this.props.materials}
         submit={this.submitForm}
         updateField={this.updateField}

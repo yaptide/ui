@@ -32,7 +32,7 @@ export const actionType = {
   CHANGE_ZONE_OPERATION_TYPE: 'CHANGE_ZONE_OPERATION_TYPE',
   CREATE_ZONE_OPERATION: 'CREATE_ZONE_OPERATION',
   DELETE_ZONE_OPERATION: 'DELETE_ZONE_OPERATION',
-  UPDATE_ZONE_NAME: 'UPDATE_ZONE_NAME',
+  UPDATE_ZONE_FIELD: 'UPDATE_ZONE_FIELD',
 
   CREATE_BODY_IN_ZONE: 'CREATE_BODY_IN_ZONE',
 
@@ -84,8 +84,8 @@ const ACTION_HANDLERS = {
   [actionType.DELETE_ZONE_OPERATION]: (state, action) => (
     stateProcessor.zone.deleteOperation(state, action.zoneConstructionPath)
   ),
-  [actionType.UPDATE_ZONE_NAME]: (state, action) => (
-    state.setIn(['zones', String(action.zoneId), 'name'], action.name)
+  [actionType.UPDATE_ZONE_FIELD]: (state, action) => (
+    state.setIn(['zones', String(action.zoneId), action.valueType], fromJS(action.value))
   ),
   [actionType.CREATE_BODY_IN_ZONE]: (state, action) => (
     stateProcessor.body.createInZone(state, action.body, action.zoneConstructionPath)
@@ -153,11 +153,12 @@ export const actionCreator = {
   deleteZoneOperation(path: ConstructionPath) {
     return { type: actionType.DELETE_ZONE_OPERATION, zoneConstructionPath: path };
   },
-  updateZoneName(id: number, name: string) {
+  updateZoneField(id: number, valueType: string, value: any) {
     return {
-      type: actionType.UPDATE_ZONE_NAME,
+      type: actionType.UPDATE_ZONE_FIELD,
       zoneId: id,
-      name,
+      valueType,
+      value,
     };
   },
   createBodyInZone(body: Body, path: ConstructionPath) {
@@ -213,11 +214,11 @@ const initialState = fromJS({
     '4': { id: 4, geometry: { type: 'cuboid', center: { x: -10, y: -3, z: 10 }, size: { x: 20, y: 6, z: 20 } } },
   },
   materials: {
-    '1': { id: 1, color: '#FF6666', materialInfo: { type: 'predefined', predefinedId: 'hydrogen', density: 1000 } },
-    '2': { id: 2, color: '#66FF66', materialInfo: { type: 'predefined', predefinedId: 'helium', density: 10, stateOfMatter: 'liquid' } },
+    '1': { id: 1, color: { r: 0x80, g: 0x80, b: 0x80, a: 0xFF }, materialInfo: { type: 'predefined', predefinedId: 'hydrogen', density: 1000 } },
+    '2': { id: 2, color: { r: 0x80, g: 0x80, b: 0x80, a: 0xFF }, materialInfo: { type: 'predefined', predefinedId: 'helium', density: 10, stateOfMatter: 'liquid' } },
     '3': {
       id: 3,
-      color: '#6666FF',
+      color: { r: 0x80, g: 0x80, b: 0x80, a: 0xFF },
       materialInfo: {
         type: 'compound',
         name: 'some compund',
@@ -233,7 +234,7 @@ const initialState = fromJS({
     },
     '4': {
       id: 4,
-      color: '#FFFFFF',
+      color: { r: 0x80, g: 0x80, b: 0x80, a: 0xFF },
       materialInfo: {
         type: 'compound',
         name: 'another compound',

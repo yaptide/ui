@@ -8,6 +8,7 @@ import type {
   CompoundElement,
   StateOfMatter,
 } from 'model/simulation/material';
+import type { Color } from 'model/utils';
 import CompoundMaterialEditorLayout from '../components/CompoundMaterialEditorLayout';
 import selector from '../../selector';
 import { actionCreator } from '../../reducer';
@@ -26,7 +27,7 @@ type State = {
   materialName: string,
   density: number | '',
   materialState: StateOfMatter | '',
-  color: string,
+  color: Color,
   compoundElements: Array<Object>,
   isMaterialSelected: bool,
 }
@@ -37,7 +38,7 @@ class CompoundMaterialEditorContainer extends React.Component<Props, State> {
     materialName: '',
     density: '',
     materialState: '',
-    color: '#333333',
+    color: { r: 0x80, g: 0x80, b: 0x80, a: 0xFF },
     compoundElements: [],
     isMaterialSelected: false,
   }
@@ -64,7 +65,7 @@ class CompoundMaterialEditorContainer extends React.Component<Props, State> {
 
   updateMaterialState = (materialObj: any) => {
     const { materialInfo, color } : {
-      materialInfo: CompoundMaterial, color: string,
+      materialInfo: CompoundMaterial, color: Color,
     } = materialObj;
     this.setState({
       materialName: materialInfo.name,
@@ -141,6 +142,7 @@ class CompoundMaterialEditorContainer extends React.Component<Props, State> {
         materialName={this.state.materialName}
         density={this.state.density}
         materialState={this.state.materialState}
+        color={this.state.color}
         compoundElements={this.state.compoundElements}
         updateField={this.updateField}
         addCompoundElement={this.addCompoundElement}

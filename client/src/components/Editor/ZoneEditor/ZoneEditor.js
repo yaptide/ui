@@ -2,18 +2,21 @@
 
 import React from 'react';
 import Style from 'styles';
-import ButtonMD from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/styles';
-import { ButtonHOC } from 'components/Touchable';
-import { ZoneName, ZoneOperation } from 'components/Editor/ZoneEditor';
+import {
+  ZoneName,
+  ZoneOperation,
+  MaterialSelector,
+} from 'components/Editor/ZoneEditor';
 import type { OperationType, ConstructionPath, PrintableOperation } from 'model/simulation/zone';
+import type { PrintableMaterial } from 'model/simulation/material';
 
-const Button = ButtonHOC(ButtonMD);
 
 type Props = {
   zoneName: string,
-  material: { label: string, materialId: number },
+  materialId: number,
+  materials: Array<PrintableMaterial>,
   base: { label: string, bodyId: number },
   construction: Array<PrintableOperation>,
   onBodySelected: (constructionStep: ConstructionPath) => void,
@@ -57,14 +60,11 @@ class ZoneEditor extends React.Component<Props> {
     return (
       <div className={classes.container}>
         {zoneTitle}
-        <Typography style={styles.label} >Material</Typography>
-        <Button
-          raised
-          onTouchTap={this.props.onMaterialSelected}
-          payload={this.props.material.materialId}
-        >
-          {this.props.material.label}
-        </Button>
+        <MaterialSelector
+          materialId={this.props.materialId}
+          materials={this.props.materials}
+          onMaterialSelected={this.props.onMaterialSelected}
+        />
         <Typography style={styles.label} >Construction</Typography>
         <ZoneOperation
           id="base"

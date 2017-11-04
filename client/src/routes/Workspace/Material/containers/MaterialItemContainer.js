@@ -46,6 +46,7 @@ class MaterialItemContainer extends React.Component<Props, State> {
             <PredefinedMaterialItemLayout
               materialId={this.props.materialId}
               material={this.props.material.materialInfo}
+              color={this.props.material.color}
               editMaterial={this.openEditorModal}
               deleteMaterial={this.props.deleteMaterial}
             /> : null
@@ -55,6 +56,7 @@ class MaterialItemContainer extends React.Component<Props, State> {
             <CompoundMaterialItemLayout
               materialId={this.props.materialId}
               material={this.props.material.materialInfo}
+              color={this.props.material.color}
               editMaterial={this.openEditorModal}
               deleteMaterial={this.props.deleteMaterial}
             /> : null

@@ -7,10 +7,12 @@ import RightArrowIcon from 'material-ui-icons/KeyboardArrowRight';
 import { withStyles } from 'material-ui/styles';
 import { ZoneName, ZoneEditor } from 'components/Editor/ZoneEditor';
 import type { OperationType, ConstructionPath, PrintableOperation } from 'model/simulation/zone';
+import type { PrintableMaterial } from 'model/simulation/material';
 
 type Props = {
   zoneName: string,
-  material: { label: string, materialId: number },
+  materialId: number,
+  materials: Array<PrintableMaterial>,
   base: { label: string, bodyId: number },
   construction: Array<PrintableOperation>,
   onBodySelected: (constructionStep: Object) => void,
@@ -39,7 +41,7 @@ class ZoneItemLayout extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes, zoneName, base, construction, material } = this.props;
+    const { classes, zoneName, base, construction, materialId, materials } = this.props;
     const zoneTitle = (
       <ZoneName
         name={zoneName}
@@ -70,7 +72,8 @@ class ZoneItemLayout extends React.Component<Props, State> {
       <Paper elevation={4} className={classes.container} >
         <ZoneEditor
           zoneName={zoneName}
-          material={material}
+          materialId={materialId}
+          materials={materials}
           base={base}
           construction={construction}
           onBodySelected={this.props.onBodySelected}

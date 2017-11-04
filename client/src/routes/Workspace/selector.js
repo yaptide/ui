@@ -38,8 +38,7 @@ function allSelectedMaterialsPrintable(
 ) {
   return state.workspace.get('materials', Map())
     .valueSeq()
-    .map(item => Map({ id: item.get('id'), ...constructMaterialLabel(item.toJS(), state.configuration) }))
-    .toJS();
+    .map(item => Map({ id: item.get('id'), ...constructMaterialLabel(item.toJS(), state.configuration) }));
 }
 
 function constructMaterialLabel(item: Material, configuration: Map<string, any>) {

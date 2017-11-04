@@ -4,6 +4,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 import type { OperationType, ConstructionPath, PrintableZone } from 'model/simulation/zone';
+import type { PrintableMaterial } from 'model/simulation/material';
 import ZoneItemLayout from '../components/ZoneItemLayout';
 import BodyEditorModal from './BodyEditorModal';
 import selector from '../../selector';
@@ -13,10 +14,12 @@ type Props = {
   classes: Object,
   zoneId: number,
   zone: PrintableZone,
+  materials: Array<PrintableMaterial>,
   changeOperationType: (val: OperationType, path: ConstructionPath) => void,
   removeOperation: (path: ConstructionPath) => void,
   createOperation: (path: ConstructionPath) => void,
-  updateName: (id: number, name: string) => void,
+  updateName: (name: string) => void,
+  updateMaterial: (material: number) => void,
 
   goToChildLayer: (id: number) => void,
 }
@@ -54,10 +57,6 @@ class ZoneItemContainer extends React.Component<Props, State> {
     });
   }
 
-  onMaterialSelected = () => {
-    console.log('material');
-  }
-
   createOperation = (constructionStep: ConstructionPath) => {
     this.props.createOperation({
       zoneId: this.props.zoneId,
@@ -72,28 +71,23 @@ class ZoneItemContainer extends React.Component<Props, State> {
     });
   }
 
-  onZoneNameUpdate = (name: string) => {
-    this.props.updateName(this.props.zoneId, name);
-  }
-
   goToChildLayer = () => this.props.goToChildLayer(this.props.zoneId);
 
   render() {
-    const material = { label: 'Water', materialId: 11 };
-
     return (
       <div
         className={this.props.classes.root}
       >
         <ZoneItemLayout
-          material={material}
+          materialId={this.props.zone.materialId}
+          materials={this.props.materials}
           base={this.props.zone.base}
           zoneName={this.props.zone.name}
           construction={this.props.zone.construction}
           onBodySelected={this.onBodySelected}
           onOperationSelected={this.onOperationSelected}
-          onMaterialSelected={this.onMaterialSelected}
-          onZoneNameUpdate={this.onZoneNameUpdate}
+          onMaterialSelected={this.props.updateMaterial}
+          onZoneNameUpdate={this.props.updateName}
           createOperation={this.createOperation}
           deleteOperation={this.deleteOperation}
           goToChildLayer={this.goToChildLayer}
@@ -111,15 +105,17 @@ class ZoneItemContainer extends React.Component<Props, State> {
 const mapStateToProps = (state, props) => {
   return {
     zone: selector.zoneByIdPrintable(state, props.zoneId).toJS(),
+    materials: selector.allSelectedMaterialsPrintable(state).toJS(),
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch, props) => {
   return {
     changeOperationType: (val, path) => dispatch(actionCreator.changeOperationType(val, path)),
     removeOperation: path => dispatch(actionCreator.deleteZoneOperation(path)),
     createOperation: path => dispatch(actionCreator.createZoneOperation(path)),
-    updateName: (id, value) => dispatch(actionCreator.updateZoneName(id, value)),
+    updateName: value => dispatch(actionCreator.updateZoneField(props.zoneId, 'name', value)),
+    updateMaterial: value => dispatch(actionCreator.updateZoneField(props.zoneId, 'materialId', Number(value))),
     goToChildLayer: id => dispatch(actionCreator.goToChildLayer(id)),
   };
 };

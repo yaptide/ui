@@ -9,10 +9,15 @@ import (
 
 var testCases = test.MarshallingCases{
 	{
-		&Material{ID(1), color.Color("#FF0000"), Predefined{PredefinedID: "methanol"}},
+		&Material{ID(1), color.New(0xFF, 0x00, 0x00, 0xFF), Predefined{PredefinedID: "methanol"}},
 		`{
 			"id": 1,
-			"color": "#FF0000",
+			"color": {
+				"r": 255,
+				"g": 0,
+				"b": 0,
+				"a": 255
+			},
 			"materialInfo": {
 				"type": "predefined",
 				"predefinedId": "methanol"
@@ -20,7 +25,7 @@ var testCases = test.MarshallingCases{
 		}`,
 	},
 	{
-		&Material{ID(1), color.Color("#FF0000"), Predefined{
+		&Material{ID(1), color.New(0xFF, 0x00, 0x00, 0xFF), Predefined{
 			PredefinedID:              "methanol",
 			StateOfMatter:             Liquid,
 			Density:                   0.001,
@@ -28,7 +33,12 @@ var testCases = test.MarshallingCases{
 		}},
 		`{
 			"id": 1,
-			"color": "#FF0000",
+			"color": {
+				"r": 255,
+				"g": 0,
+				"b": 0,
+				"a": 255
+			},
 			"materialInfo": {
 				"type": "predefined",
 				"predefinedId": "methanol",
@@ -38,7 +48,7 @@ var testCases = test.MarshallingCases{
 		}`,
 	},
 	{
-		&Material{ID(1), color.Color("#FFFFFF"), Compound{
+		&Material{ID(1), color.New(0xFF, 0xFF, 0xFF, 0xFF), Compound{
 			Name:          "ala",
 			Density:       1.2345,
 			StateOfMatter: Gas,
@@ -49,7 +59,12 @@ var testCases = test.MarshallingCases{
 		}},
 		`{
 			"id": 1,
-			"color": "#FFFFFF",
+			"color": {
+				"r": 255,
+				"g": 255,
+				"b": 255,
+				"a": 255
+			},
 			"materialInfo": {
 				"type": "compound",
 				"name": "ala",
@@ -69,7 +84,7 @@ var testCases = test.MarshallingCases{
 		}`,
 	},
 	{
-		&Material{ID(1), color.Color("#AABBCC"), Compound{
+		&Material{ID(1), color.New(0xAA, 0xBB, 0xCC, 0xFF), Compound{
 			Name:          "kot",
 			Density:       99.9,
 			StateOfMatter: Liquid,
@@ -81,7 +96,12 @@ var testCases = test.MarshallingCases{
 		}},
 		`{
 			"id": 1,
-			"color": "#AABBCC",
+			"color": {
+				"r": 170,
+				"g": 187,
+				"b": 204,
+				"a": 255
+			},
 			"materialInfo": {
 				"type": "compound",
 				"name": "kot",

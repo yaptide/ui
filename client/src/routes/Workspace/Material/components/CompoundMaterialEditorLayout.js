@@ -6,7 +6,9 @@ import Button from 'material-ui/Button';
 import IconAdd from 'material-ui-icons/Add';
 import Typography from 'material-ui/Typography';
 import type { StateOfMatter, CompoundElement } from 'model/simulation/material';
+import type { Color } from 'model/utils';
 import { FormInput, FormSelect } from 'components/Form';
+import { ColorPicker } from 'components';
 import CompoundElementItemEditor from './CompoundElementItemEditor';
 
 type Props = {
@@ -15,8 +17,9 @@ type Props = {
   density: number | '',
   materialState: StateOfMatter | '',
   compoundElements: Array<CompoundElement>,
+  color: Color,
   submit: () => void,
-  updateField: () => void,
+  updateField: (value: any, type: string) => void,
   addCompoundElement: () => void,
   deleteCompoundElement: (index: number) => void,
   updateCompoundElement: (index: number, element: CompoundElement) => void,
@@ -32,6 +35,11 @@ const stateOfMatterOptions = [
 
 class CompoundMaterialEditorLayout extends React.Component<Props> {
   props: Props
+
+  updateColor = (color: Color) => {
+    console.log(color);
+    this.props.updateField(color, 'color');
+  }
 
   render() {
     const { classes, materialName, density, materialState, compoundElements } = this.props;
@@ -51,13 +59,20 @@ class CompoundMaterialEditorLayout extends React.Component<Props> {
       <div className={classes.root}>
         <div className={classes.form}>
           <div className={classes.formFlex}>
-            <FormInput
-              type="materialName"
-              label="Name"
-              value={materialName}
-              onChange={this.props.updateField}
-              fullWidth
-            />
+            <div className={classes.row}>
+              <FormInput
+                type="materialName"
+                label="Name"
+                value={materialName}
+                onChange={this.props.updateField}
+                fullWidth
+                classes={{ root: classes.form }}
+              />
+              <ColorPicker
+                color={this.props.color}
+                updateColor={this.updateColor}
+              />
+            </div>
             <div className={classes.separator} />
             <FormInput
               type="density"
@@ -114,6 +129,11 @@ const styles = (theme: Object) => ({
     flex: '1 1 auto',
     overflow: 'auto',
     paddingRight: theme.spacing.unit,
+  },
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   formFlex: {
     display: 'flex',
