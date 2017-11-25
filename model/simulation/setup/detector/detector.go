@@ -3,6 +3,7 @@ package detector
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/Palantir/palantir/model/simulation/common"
 )
 
 // ID is a key type in detector map.
@@ -10,10 +11,10 @@ type ID int64
 
 // Detector describes where and what values are scored during simulation.
 type Detector struct {
-	ID               ID          `json:"id"`
-	DetectorGeometry Geometry    `json:"detectorGeometry"`
-	ScoredParticle   Particle    `json:"particle"`
-	ScoringType      ScoringType `json:"scoring"`
+	ID               ID              `json:"id"`
+	DetectorGeometry Geometry        `json:"detectorGeometry"`
+	ScoredParticle   common.Particle `json:"particle"`
+	ScoringType      ScoringType     `json:"scoring"`
 }
 
 // UnmarshalJSON custom Unmarshal function.
@@ -39,7 +40,7 @@ func (m *Detector) UnmarshalJSON(b []byte) error {
 	}
 	m.DetectorGeometry = matType
 
-	scoredParticle, err := unmarshalParticle(raw.ParticleRaw)
+	scoredParticle, err := common.UnmarshalParticle(raw.ParticleRaw)
 	if err != nil {
 		return err
 	}
@@ -111,11 +112,6 @@ type Geometry interface {
 
 // ScoringType is interface for scoring particles.
 type ScoringType interface {
-	json.Marshaler
-}
-
-// Particle is interface for particle scored in detectors.
-type Particle interface {
 	json.Marshaler
 }
 

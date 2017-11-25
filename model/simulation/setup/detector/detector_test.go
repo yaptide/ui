@@ -16,7 +16,7 @@ var testCases = test.MarshallingCases{
 				Size:   common.Vec3D{X: 1, Y: 2, Z: 3},
 				Slices: common.Vec3DInt{X: 10, Y: 10, Z: 10},
 			},
-			ScoredParticle: PredefinedParticle("all"),
+			ScoredParticle: common.PredefinedParticle("all"),
 			ScoringType:    PredefinedScoring("energy"),
 		},
 		`{
@@ -54,7 +54,7 @@ var testCases = test.MarshallingCases{
 				Size:   common.Vec3D{X: 1, Y: 2, Z: 3},
 				Slices: common.Vec3DInt{X: 10, Y: 10, Z: 10},
 			},
-			ScoredParticle: HeavyIon{Charge: 10, NucleonsCount: 10},
+			ScoredParticle: common.HeavyIon{Charge: 10, NucleonsCount: 10},
 			ScoringType:    LetTypeScoring{Type: "tlet", Material: 0},
 		},
 		`{

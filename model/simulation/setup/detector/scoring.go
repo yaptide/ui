@@ -3,6 +3,7 @@ package detector
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/Palantir/palantir/model/simulation/common"
 	"github.com/Palantir/palantir/model/simulation/setup/material"
 )
 
@@ -34,7 +35,7 @@ func (s LetTypeScoring) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func unmarshalScoringType(scoring json.RawMessage) (Particle, error) {
+func unmarshalScoringType(scoring json.RawMessage) (common.Particle, error) {
 	var predefinedScoring struct {
 		Type PredefinedScoring `json:"type"`
 	}

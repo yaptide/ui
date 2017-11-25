@@ -40,6 +40,7 @@ export function* updateSimulationSetup(): Generator<*, *, *> {
       materials: workspace.get('materials', Map()).toJS(),
       detectors: workspace.get('detectors', Map()).toJS(),
       beam: workspace.get('beam', Map()).toJS(),
+      options: workspace.get('beam', Map()).toJS(),
     };
     yield call(
       api.put,

@@ -5,13 +5,14 @@ import type {
   Vec3D,
   Vec3DCylindrical,
   Range,
+  Particle,
 } from './utils';
 
 export type Detector = {
   id: number,
   name: string,
   detectorGeometry: DetectorGeometry,
-  particle: ScoredParticle,
+  particle: Particle,
   scoring: ScoringType,
 }
 
@@ -22,9 +23,6 @@ export type DetectorGeometry
   | Plane
   | Zone
 
-export type ScoredParticle
-  = PredefinedParticle
-  | HeavyIon
 
 export type ScoringType
   = PredefinedScoringType
@@ -61,16 +59,6 @@ export type Plane = {
   type: 'plane',
   point: Point,
   normal: Vec3D,
-}
-
-export type PredefinedParticle = {
-  type: string,
-}
-
-export type HeavyIon = {
-  type: 'heavy_ion',
-  charge: number,
-  nucleonsCount: number,
 }
 
 export type PredefinedScoringType = {

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import type { ScoredParticle } from 'model/simulation/detector';
+import type { Particle } from 'model/simulation/utils';
 import { FormSelect, FormV3DoubleInput } from 'components/Form';
 import { withStyles } from 'material-ui/styles';
 import * as _ from 'lodash';
@@ -10,8 +10,8 @@ import { t } from 'i18n';
 import selector from '../../selector';
 
 type Props = {
-  particle: ScoredParticle,
-  particleUpdate: (updated: ScoredParticle) => void,
+  particle: Particle,
+  particleUpdate: (updated: Particle) => void,
   particleOptions: Array<{value: string, name: string}>,
   classes: Object,
 }
@@ -25,7 +25,7 @@ class DetectorParticleItemLayout extends React.Component<Props> {
 
   particleTypeUpdate = (type: string) => {
     this.props.particleUpdate({
-      ...(this.props.particle: ScoredParticle),
+      ...(this.props.particle: Particle),
       type,
     });
   }

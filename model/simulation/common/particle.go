@@ -1,9 +1,14 @@
-package detector
+package common
 
 import (
 	"encoding/json"
 	"fmt"
 )
+
+// Particle is interface for particle scored in detectors.
+type Particle interface {
+	json.Marshaler
+}
 
 // PredefinedParticle ...
 type PredefinedParticle string
@@ -35,7 +40,8 @@ func (g HeavyIon) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func unmarshalParticle(b json.RawMessage) (Particle, error) {
+// UnmarshalParticle ...
+func UnmarshalParticle(b json.RawMessage) (Particle, error) {
 	var predefinedParticle struct {
 		Type PredefinedParticle `json:"type"`
 	}

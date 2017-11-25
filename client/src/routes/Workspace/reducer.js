@@ -260,6 +260,12 @@ const initialState = fromJS({
       scoring: { type: 'tlet', material: 0 },
     },
   },
+  beam: {
+
+  },
+  options: {
+
+  },
 });
 export const reducer = (state: Map<string, any>, action: { type: string }) => {
   const handler = ACTION_HANDLERS[action.type];
