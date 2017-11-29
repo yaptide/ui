@@ -1,13 +1,11 @@
 /* @flow */
 
 import React from 'react';
-import { connect } from 'react-redux';
 import type { Particle } from 'model/simulation/utils';
 import { FormSelect, FormV3DoubleInput } from 'components/Form';
 import { withStyles } from 'material-ui/styles';
 import * as _ from 'lodash';
 import { t } from 'i18n';
-import selector from '../../selector';
 
 type Props = {
   particle: Particle,
@@ -20,7 +18,7 @@ const options = [
   { field: 'charge', label: t('workspace.editor.charge') },
   { field: 'nucleonsCount', label: t('workspace.editor.nucleons') },
 ];
-class DetectorParticleItemLayout extends React.Component<Props> {
+class ParticleEditor extends React.Component<Props> {
   props: Props
 
   particleTypeUpdate = (type: string) => {
@@ -79,12 +77,4 @@ const styles = (theme: Object) => ({
   },
 });
 
-const mapStateToProps = (state) => {
-  return {
-    particleOptions: selector.allScoredParticleTypesPrinatable(state).toJS(),
-  };
-};
-
-export default connect(
-  mapStateToProps,
-)(withStyles(styles)(DetectorParticleItemLayout));
+export default withStyles(styles)(ParticleEditor);

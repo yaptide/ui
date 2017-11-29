@@ -2,7 +2,6 @@
 
 import type { Point, Particle, Distribution } from './utils';
 
-
 export type Beam = {
   direction: Direction,
   divergence: Divergence,

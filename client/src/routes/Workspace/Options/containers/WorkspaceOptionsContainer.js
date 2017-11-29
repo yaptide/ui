@@ -3,26 +3,25 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import WorkspaceLayout from 'pages/WorkspaceLayout';
-import type { Beam } from 'model/simulation/beam';
+import type { SimulationOptions } from 'model/simulation/options';
 import { Map } from 'immutable';
-import WorkspaceBeamLayout from '../components/WorkspaceBeamLayout';
+import WorkspaceOptionsLayout from '../components/WorkspaceOptionsLayout';
 import selector from '../../selector';
 import { actionCreator } from '../../reducer';
 
 type Props = {
   isWorkspaceLoading: bool,
   fetchSimulationSetup: () => void,
-  beam: Beam,
-  updateBeam: (beam: Beam) => void,
-  particleOptions: Array<{value: string, name: string}>,
+  options: SimulationOptions,
+  updateOptions: (options: SimulationOptions) => void,
 }
 
-class WorkspaceBeamContainer extends React.Component<Props> {
+class WorkspaceOptionsContainer extends React.Component<Props> {
   props: Props
 
-  updateBeamField = (field: string, value: any) => {
-    this.props.updateBeam({
-      ...this.props.beam,
+  updateOptionsField = (field: string, value: any) => {
+    this.props.updateOptions({
+      ...this.props.options,
       [field]: value,
     });
   }
@@ -31,15 +30,14 @@ class WorkspaceBeamContainer extends React.Component<Props> {
     return (
       <WorkspaceLayout
         isWorkspaceLoading={this.props.isWorkspaceLoading}
-        activeWorkspaceTab="beam"
+        activeWorkspaceTab="options"
       >
         {
           this.props.isWorkspaceLoading
             ? null
-            : <WorkspaceBeamLayout
-              beam={this.props.beam}
-              updateBeamField={this.updateBeamField}
-              particleOptions={this.props.particleOptions}
+            : <WorkspaceOptionsLayout
+              options={this.props.options}
+              updateOptionsField={this.updateOptionsField}
             />
         }
       </WorkspaceLayout>
@@ -50,19 +48,18 @@ class WorkspaceBeamContainer extends React.Component<Props> {
 const mapStateToProps = (state) => {
   return {
     isWorkspaceLoading: selector.isWorkspaceLoading(state),
-    beam: state.workspace.get('beam', Map()).toJS(),
-    particleOptions: selector.allScoredParticleTypesPrinatable(state).toJS(),
+    options: state.workspace.get('options', Map()).toJS(),
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     fetchSimulationSetup: () => dispatch(actionCreator.fetchSimulationSetup()),
-    updateBeam: beam => dispatch(actionCreator.updateBeam(beam)),
+    updateOptions: options => dispatch(actionCreator.updateOptions(options)),
   };
 };
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(WorkspaceBeamContainer);
+)(WorkspaceOptionsContainer);

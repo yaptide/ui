@@ -1,7 +1,6 @@
 /* @flow */
 
 import React from 'react';
-import Style from 'styles';
 import { withStyles } from 'material-ui/styles';
 import { FormInput } from 'components/Form';
 import RowLabel from './RowLabel';
@@ -54,17 +53,20 @@ class FormV3DoubleInput extends React.Component<Props> {
   }
 }
 
-const styles = {
+const styles = (theme: Object) => ({
   root: {
-
   },
   inputRow: {
-    ...Style.Flex.rootRow,
+    display: 'flex',
+    flexDirection: 'row',
   },
   inputWrapper: {
-    marginRight: Style.Dimens.spacing.normal,
-    flex: '1 0 0',
+    marginRight: theme.spacing.unit * 2,
+    flex: '1 1 0',
+    '&:last-child': {
+      marginRight: 0,
+    },
   },
-};
+});
 
 export default withStyles(styles)(FormV3DoubleInput);

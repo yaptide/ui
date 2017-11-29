@@ -12,7 +12,7 @@ type Props = {
   fetchSimulationSetup: () => void,
 }
 
-class WorkspaceSettingsContainer extends React.Component<Props> {
+class WorkspaceGeometryContainer extends React.Component<Props> {
   props: Props
 
   componentWillMount() {
@@ -46,4 +46,4 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(WorkspaceSettingsContainer);
+)(WorkspaceGeometryContainer);

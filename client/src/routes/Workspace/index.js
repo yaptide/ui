@@ -1,6 +1,6 @@
 /* @flow */
 
-import Settings from './Settings';
+import Options from './Options';
 import Beam from './Beam';
 import Material from './Material';
 import Geometry from './Geometry';
@@ -10,7 +10,7 @@ const workspaceRoutes = {
   path: 'workspace',
   indexRoute: { onEnter: (nextState: string, replace: Function) => replace('/workspace/geometry') },
   childRoutes: [
-    Settings,
+    Options,
     Beam,
     Material,
     Geometry,

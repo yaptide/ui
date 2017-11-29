@@ -12,6 +12,7 @@ type Props = {
   detector: Detector,
   updateDetector: (detector: Detector) => void,
   deleteDetector: () => void,
+  particleOptions: Array<{value: string, name: string}>,
   classes?: Object,
 }
 
@@ -64,6 +65,7 @@ class DetectorItemContainer extends React.Component<Props> {
         particleUpdate={this.particleUpdate}
         scoringUpdate={this.scoringUpdate}
         deleteDetector={this.props.deleteDetector}
+        particleOptions={this.props.particleOptions}
       />
     );
   }
@@ -72,6 +74,7 @@ class DetectorItemContainer extends React.Component<Props> {
 const mapStateToProps = (state, props) => {
   return {
     detector: selector.detectorById(state, props.detectorId).toJS(),
+    particleOptions: selector.allScoredParticleTypesPrinatable(state).toJS(),
   };
 };
 

@@ -18,7 +18,7 @@ const link = {
   material: () => router.push('/workspace/material'),
   beam: () => router.push('/workspace/beam'),
   detectors: () => router.push('/workspace/detectors'),
-  settings: () => router.push('/workspace/settings'),
+  options: () => router.push('/workspace/options'),
 };
 
 type Props = {
@@ -59,10 +59,10 @@ class WorkspaceLayout extends React.Component<Props> {
           <div className={classes.toolbarFlexSeparator} />
           <Button
             style={styles.button}
-            color={this.isActive('settings')}
-            onTouchTap={link.settings}
+            color={this.isActive('options')}
+            onTouchTap={link.options}
           >
-            {t('tabSettings')}
+            {t('tabOptions')}
           </Button>
           <Button
             style={styles.button}

@@ -59,7 +59,8 @@ class FormSelect extends React.Component<Props, State> {
 }
 
 const styles = () => ({
-  root: {},
+  root: {
+  },
 });
 
 export default withStyles(styles)(FormSelect);

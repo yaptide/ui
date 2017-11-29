@@ -8,8 +8,8 @@ import Button from 'material-ui/Button';
 import DeleteIcon from 'material-ui-icons/Delete';
 import type { Detector } from 'model/simulation/detector';
 import { t } from 'i18n';
+import ParticleEditor from 'components/Editor/ParticleEditor';
 import DetectorGeometryItemLayout from './DetectorGeometryItemLayout';
-import DetectorPartilceItemLayout from './DetectorParticleItemLayout';
 import DetectorScoringItemLayout from './DetectorScoringItemLayout';
 
 type Props = {
@@ -19,6 +19,7 @@ type Props = {
   particleUpdate: (value: Object) => void,
   scoringUpdate: (value: Object) => void,
   deleteDetector: () => void,
+  particleOptions: Array<{value: string, name: string}>,
   classes: Object,
 }
 
@@ -52,9 +53,10 @@ class DetectorItemLayout extends React.Component<Props> {
           classes={{ root: classes.select }}
         />
         {detectorGeometry}
-        <DetectorPartilceItemLayout
+        <ParticleEditor
           particle={detector.particle}
           particleUpdate={this.props.particleUpdate}
+          particleOptions={this.props.particleOptions}
         />
         <DetectorScoringItemLayout
           scoring={detector.scoring}

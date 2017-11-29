@@ -2,6 +2,7 @@
 
 export { default as Form } from './Form';
 export { default as FormInput } from './FormInput';
+export { default as FormSwitch } from './FormSwitch';
 export { default as FormLink } from './FormLink';
 export { default as FormV3Input } from './FormV3Input';
 export { default as FormV3DoubleInput } from './FormV3DoubleInput';

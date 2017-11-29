@@ -13,6 +13,12 @@ import type {
 import type {
   Detector,
 } from 'model/simulation/detector';
+import type {
+  Beam,
+} from 'model/simulation/beam';
+import type {
+  SimulationOptions,
+} from 'model/simulation/options';
 import localStorage, { key as storageKey } from 'store/localStorage';
 import stateProcessor from './reducerHelpers';
 
@@ -45,6 +51,9 @@ export const actionType = {
   CREATE_DETECTOR: 'CREATE_DETECTOR',
   DELETE_DETECTOR: 'DELETE_DETECTOR',
   UPDATE_DETECTOR: 'UPDATE_DETECTOR',
+
+  UPDATE_BEAM: 'UPDATE_BEAM',
+  UPDATE_OPTIONS: 'UPDATE_OPTIONS',
 
   MOVE_TO_CHILD_LAYER: 'MOVE_TO_CHILD_LAYER',
   MOVE_TO_PARENT_LAYER: 'MOVE_TO_PARENT_LAYER',
@@ -110,6 +119,12 @@ const ACTION_HANDLERS = {
   ),
   [actionType.UPDATE_DETECTOR]: (state, action) => (
     stateProcessor.detector.update(state, action.detector)
+  ),
+  [actionType.UPDATE_BEAM]: (state, action) => (
+    state.set('beam', fromJS(action.beam))
+  ),
+  [actionType.UPDATE_OPTIONS]: (state, action) => (
+    state.set('options', fromJS(action.options))
   ),
   [actionType.MOVE_TO_PARENT_LAYER]: (state) => {
     const currentZoneId = state.get('zoneLayerParent');
@@ -184,6 +199,12 @@ export const actionCreator = {
   },
   updateDetector(detector: Detector) {
     return { type: actionType.UPDATE_DETECTOR, detector };
+  },
+  updateBeam(beam: Beam) {
+    return { type: actionType.UPDATE_BEAM, beam };
+  },
+  updateOptions(options: SimulationOptions) {
+    return { type: actionType.UPDATE_OPTIONS, options };
   },
   goToParentLayer() {
     return { type: actionType.MOVE_TO_PARENT_LAYER };
@@ -261,10 +282,24 @@ const initialState = fromJS({
     },
   },
   beam: {
-
+    direction: { phi: 0, theta: 0, position: { x: 0, y: 0, z: 0 } },
+    divergence: { sigmaX: 1, sigmaY: 1, distribution: '' },
+    particleType: { type: '' },
+    initialBaseEnergy: 0,
+    initialEnergySigma: 0,
   },
   options: {
-
+    antyparticleCorrectionOn: false,
+    nuclearCorectionOn: false,
+    meanEnergyLoss: 0,
+    minEnergyLoss: 0,
+    scatteringType: '',
+    energyStraggling: '',
+    fastNeutronTransportOn: false,
+    lowEnergyNeutronCutOff: false,
+    recordSecondaryNeutronCreation: false,
+    numberOfRecordedParticles: 1000,
+    numberOfGeneratedParticles: 1000,
   },
 });
 export const reducer = (state: Map<string, any>, action: { type: string }) => {

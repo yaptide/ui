@@ -10,7 +10,7 @@ const en = {
   tabGeometry: 'Geometry',
   tabMaterial: 'Material',
   tabDetectors: 'Detectors',
-  tabSettings: 'Settings',
+  tabOptions: 'Options',
   tabBeam: 'Beam',
   auth: {
     form: {
