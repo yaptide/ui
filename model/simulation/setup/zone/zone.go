@@ -9,6 +9,9 @@ import (
 // ID is key type in Zone map.
 type ID int64
 
+// RootID indicate that zone with the given number is a root.
+const RootID = 0
+
 // Zone is composed from list of bodies.
 // Every Zone have Base body. Zone 3D model is created by using an pseudo algorithm:
 // 	currentResult := zone.Base
@@ -21,13 +24,19 @@ type ID int64
 //
 // Eg: Base{sphere}. Construction{{sphere, union}, {cuboid, intersect}] is zone made from
 // intersection of cuboid and union of 2 spheres.
+//
+// Zones are structured as forest of B-trees.
+// Parent <-> Children relationship means that children is contained entirely in parent.
+// Zone is a tree root, if ID == RootID.
+//
+// TODO: intersections other than children <-> one parent like beetween childrens of same parent are not allowed.
 type Zone struct {
 	ID ID `json:"id"`
 
-	// ID of parent. If ID == 0 then Zone is a root.
+	// ID of parent. If ID == RootID then Zone is a root.
 	ParentID ID `json:"parentId"`
 
-	Children []ID `json:"children,omitempty"`
+	Childrens []ID `json:"children,omitempty"`
 
 	Name         string       `json:"name"`
 	BaseID       body.ID      `json:"baseId"`

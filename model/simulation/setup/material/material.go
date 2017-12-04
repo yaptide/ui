@@ -58,6 +58,7 @@ func unmarshalMaterialType(b json.RawMessage) (Type, error) {
 			return nil, err
 		}
 		return predefined, nil
+
 	case compoundType:
 		compound := Compound{}
 		err = json.Unmarshal(b, &compound)

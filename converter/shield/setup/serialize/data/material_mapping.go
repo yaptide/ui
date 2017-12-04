@@ -1,8 +1,37 @@
-package serialize
+package data
 
-import "github.com/Palantir/palantir/model/simulation/setup/material"
+import (
+	"github.com/Palantir/palantir/converter/shield"
+	"github.com/Palantir/palantir/model/simulation/setup/material"
+)
 
-var predefinedMaterialsToShieldICRU = map[string]int64{
+// MaterialICRU is representation of predefined materials in shield mat.dat file.
+type MaterialICRU int64
+
+// IsotopeNUCLID is representation of element in shield mat.dat file.
+type IsotopeNUCLID int64
+
+// StateOfMatter representation in shield mat.dat file.
+type StateOfMatter int64
+
+const (
+	stateNonDefined StateOfMatter = -1
+	stateSolid      StateOfMatter = 0
+	stateGas        StateOfMatter = 1
+	stateLiquid     StateOfMatter = 2
+)
+
+var setupStateOfMatterToShield = map[material.StateOfMatter]StateOfMatter{
+	material.NonDefined: stateNonDefined,
+	material.Solid:      stateSolid,
+	material.Gas:        stateGas,
+	material.Liquid:     stateLiquid,
+}
+
+// BlackholeMaterialID represent Blackhole material in shield input files.
+const BlackholeMaterialID shield.MaterialID = 0
+
+var predefinedMaterialsToShieldICRU = map[string]MaterialICRU{
 	"hydrogen":                                 1,
 	"helium":                                   2,
 	"lithium":                                  3,
@@ -236,7 +265,7 @@ var predefinedMaterialsToShieldICRU = map[string]int64{
 	"polyvinyl_alcohol":                        230,
 	"polyvinyl_butyral":                        231,
 	"polyvinyl_chloride":                       232,
-	"polyvinylidene_chloride,xsaran":           233,
+	"polyvinylidene_chloride_saran":            233,
 	"polyvinylidene_fluoride":                  234,
 	"polyvinyl_pyrrolidone":                    235,
 	"potassium_iodide":                         236,
@@ -282,9 +311,10 @@ var predefinedMaterialsToShieldICRU = map[string]int64{
 	"water_liquid":                             276,
 	"water_vapor":                              277,
 	"xylene":                                   278,
+	"vacuum":                                   1000,
 }
 
-var isotopesToShieldNUCLID = map[string]int64{
+var isotopesToShieldNUCLID = map[string]IsotopeNUCLID{
 	"h-1 - hydrogen":  1,
 	"h-2 - deuterium": 101,
 	"h-3 - tritium":   102,
@@ -341,10 +371,4 @@ var isotopesToShieldNUCLID = map[string]int64{
 	"u-238":           92,
 	"pu-239":          94,
 	"pu-240":          107,
-}
-
-var stateOfMatterToShield = map[material.StateOfMatter]int64{
-	material.Solid:  0,
-	material.Gas:    1,
-	material.Liquid: 2,
 }

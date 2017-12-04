@@ -1,0 +1,17 @@
+---- EXAMPLE "simple" ---
+
+Features:
+  - C-12 beam, 391 MeV/u, 0 cm width 
+  - Vavilov straggling and Moliere multiple scattering activated
+  - Water target: cylinder r=10cm length=30 cm
+  - scorer1: energy, cylindrical, r=10 cm in 1 bin, z=30 cm in 300 bins, "ex_cyl.bdo"
+  - scorer2: energy, cartesian, X and Y from -5 cm to +5 cm in 1 bin, z=30 cm in 300 bins, "ex_zmsh.bdo"
+  - scorer3: energy, cartesian, X from -1 cm to +1 cm in 1 bin, , Y from -5 to +5 cm in 100 bins, z from +10cm to +12 cm in 1 bin. "ex_ymsh.bdo"
+  - scorer3: energy, 2 dimensional cartesian, X from -5 cm to +5 cm in 1 bin, , Y from -5 to +5 cm in 100 bins, z from 0 cm to +30 cm in 300 bin. "ex_yzmsh.bdo"
+  - 6000 primary particles simulated
+
+Execution:
+Simply run the shieldhit command from this directory. If you are outside of the directory, you can specify the dir in the argument, i.e.:
+
+shieldhit simple/
+

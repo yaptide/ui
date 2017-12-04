@@ -3,46 +3,23 @@ package serialize
 import (
 	"bytes"
 	"fmt"
-	"sort"
+	"io"
 
-	"github.com/Palantir/palantir/converter/shield"
-	"github.com/Palantir/palantir/model/simulation/setup/body"
+	"github.com/Palantir/palantir/converter/shield/setup/serialize/data"
 )
 
-func serializeGeo(shieldSerializer *shieldSerializer) (string, error) {
-	serializer := geoSerializer{
-		shieldSerializer: shieldSerializer,
-	}
-	return serializer.serialize()
+func serializeGeo(geometry data.Geometry) string {
+	w := &bytes.Buffer{}
+
+	serializeTitle(w)
+	serializeBodies(w, geometry.Bodies)
+	serializeZones(w, geometry.Zones)
+	serializeZoneToMaterialPairs(w, geometry.ZoneToMaterialPairs)
+
+	return w.String()
 }
 
-type geoSerializer struct {
-	*shieldSerializer
-}
-
-func (s *geoSerializer) serialize() (string, error) {
-	geoBuff := &bytes.Buffer{}
-
-	s.serializeTitle(geoBuff)
-	err := s.serializeBodies(geoBuff)
-	if err != nil {
-		return "", err
-	}
-
-	err = s.serializeZones(geoBuff)
-	if err != nil {
-		return "", err
-	}
-
-	err = s.serializeMedia(geoBuff)
-	if err != nil {
-		return "", err
-	}
-
-	return geoBuff.String(), nil
-}
-
-func (s *geoSerializer) serializeTitle(geoBuff *bytes.Buffer) {
+func serializeTitle(w io.Writer) {
 	const (
 		// JDBG1 selects whether the file for017 containing the
 		// geometry debugging information should be kept
@@ -52,125 +29,111 @@ func (s *geoSerializer) serializeTitle(geoBuff *bytes.Buffer) {
 		//JDBG2 describes the lower cutoff value of transportation
 		// step size in powers of 10, i.e. 10e−|JDBG2|.
 		jdbg2 = 0
-
-		// empty value necessary in some cases.
-		empty = ""
 	)
 	var (
 		geoName = "Geometry TODO: why we need this field?"
 	)
-	writeSectionNameComment(geoBuff, "Title")
-
-	writeColumnsIndicators(geoBuff, []int{5, 5, 10, 50})
-	fmt.Fprintf(geoBuff, "%5d%5d%10s%-60s\n", jdbg1, jdbg2, empty, geoName)
+	fmt.Fprintf(w, "%5d%5d%10s%-60s\n", jdbg1, jdbg2, "", geoName)
 }
 
-func (s *geoSerializer) serializeBodies(geoBuff *bytes.Buffer) error {
-	const empty = ""
+func serializeBodies(w io.Writer, bodies []data.Body) {
+	const argumentsNumberInLine = 6
 
-	writeSectionNameComment(geoBuff, "Bodies")
-
-	ids := bodyIDSlice{}
-	for id := range s.setup.Bodies {
-		ids = append(ids, id)
-	}
-	sort.Sort(ids)
-
-	for i, bodyID := range ids {
-		nextShieldID := shield.BodyID(i + 1)
-		s.serializerContext.bodyIDToShield[bodyID] = nextShieldID
-		s.simulationContext.MapBodyID[nextShieldID] = bodyID
-
-		err := s.serializeBody(geoBuff, s.setup.Bodies[bodyID])
-		if err != nil {
-			return err
-		}
-	}
-	fmt.Fprintf(geoBuff, "  END%65s\n", empty)
-	return nil
-}
-
-func (s *geoSerializer) serializeZones(geoBuff *bytes.Buffer) error {
-	writeSectionNameComment(geoBuff, "Zones")
-	return nil
-}
-
-func (s *geoSerializer) serializeMedia(geoBuff *bytes.Buffer) error {
-	writeSectionNameComment(geoBuff, "Media")
-	return nil
-}
-
-func cuboidMinAndMaxInAxis(center float64, size float64) (min float64, max float64) {
-	min = center - size/2
-	max = center + size/2
-	return
-}
-
-func cuboidToShieldDesc(c body.Cuboid) []float64 {
-	minX, maxX := cuboidMinAndMaxInAxis(c.Center.X, c.Size.X)
-	minY, maxY := cuboidMinAndMaxInAxis(c.Center.Y, c.Size.Y)
-	minZ, maxZ := cuboidMinAndMaxInAxis(c.Center.Z, c.Size.Z)
-
-	return []float64{
-		minX, maxX,
-		minY, maxY,
-		minZ, maxZ,
-	}
-}
-
-func (s *geoSerializer) serializeBody(geoBuff *bytes.Buffer, setupBody *body.Body) error {
-	const (
-		empty = ""
-	)
-
-	type bodyEntry struct {
-		Name   string
-		Number shield.BodyID
-		Desc   []float64
-	}
-
-	shieldID := s.bodyIDToShield[setupBody.ID]
-	entry := bodyEntry{Number: shieldID}
-
-	switch b := setupBody.Geometry.(type) {
-	case body.Sphere:
-		entry.Name = "SPH" // Sphere
-		entry.Desc = []float64{b.Center.X, b.Center.Y, b.Center.Z, b.Radius}
-	case body.Cuboid:
-		entry.Name = "RPP" // Rectangular parallelepiped
-		entry.Desc = cuboidToShieldDesc(b)
-	case body.Cylinder:
-		entry.Name = "RCC" // Right elliptical cylinder
-		entry.Desc = []float64{9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0}
-
-	default:
-		return fmt.Errorf("Geometry type %T serializing not implemented", setupBody.Geometry)
-	}
-
-	writeColumnsIndicators(geoBuff, []int{2, 3, 1, 4, 10, 10, 10, 10, 10, 10})
-	fmt.Fprintf(geoBuff,
-		"%2s%3s%1s%4d",
-		empty,
-		entry.Name,
-		empty,
-		entry.Number,
-	)
-
-	const maxArgumentsNumberInRow = 6
-	for argOffset := 0; argOffset < len(entry.Desc); argOffset += maxArgumentsNumberInRow {
-		if argOffset > 0 {
-			writeColumnsIndicators(geoBuff, []int{10, 10, 10, 10, 10, 10, 10})
-			fmt.Fprintf(geoBuff, "%10s", empty)
-		}
-		for i := 0; i < maxArgumentsNumberInRow; i++ {
-			if argOffset+i < len(entry.Desc) {
-				fmt.Fprintf(geoBuff, "%10f", entry.Desc[argOffset+i])
+	writeBodyArgumentsLine := func(arguments []float64, argOffset int) {
+		for i := 0; i < argumentsNumberInLine; i++ {
+			if argOffset+i < len(arguments) {
+				fmt.Fprintf(w, "%10f", arguments[argOffset+i])
 			} else {
-				fmt.Fprintf(geoBuff, "%10s", empty)
+				// padding
+				fmt.Fprintf(w, "%10s", "")
 			}
 		}
-		fmt.Fprint(geoBuff, "\n")
 	}
 
-	return nil
+	for _, body := range bodies {
+		// first line
+		fmt.Fprintf(w,
+			"%2s%3s%1s%4d",
+			"",
+			body.Identifier,
+			"",
+			body.ID,
+		)
+		writeBodyArgumentsLine(body.Arguments, 0)
+
+		// next lines
+		for i := argumentsNumberInLine; i < len(body.Arguments); i += argumentsNumberInLine {
+			fmt.Fprintf(w, "%10s", "")
+			writeBodyArgumentsLine(body.Arguments, i)
+		}
+
+	}
+	fmt.Fprintf(w, "  END\n")
+}
+
+func generateNameFromNumber(n, nameLength int) string {
+	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+	buff := bytes.Buffer{}
+	for i := 0; i < nameLength; i++ {
+		buff.WriteByte(charset[n%len(charset)])
+		n /= len(charset)
+	}
+
+	return buff.String()
+}
+
+func serializeZones(w io.Writer, zones []data.Zone) {
+
+	const constructionsNumberInLine = 9
+
+	for _, zone := range zones {
+		for i := 0; i < len(zone.Constructions); i += constructionsNumberInLine {
+			fmt.Fprintf(w, "%2s", "")
+			if i == 0 {
+				fmt.Fprintf(w, "%3s", generateNameFromNumber(int(zone.ID), 3))
+			} else {
+				fmt.Fprintf(w, "%3s", "")
+			}
+			fmt.Fprintf(w, "%5d", zone.ID)
+
+			var currentSlice []data.Construction
+			if i+constructionsNumberInLine < len(zone.Constructions) {
+				currentSlice = zone.Constructions[i : i+constructionsNumberInLine]
+			} else {
+				currentSlice = zone.Constructions[i:]
+			}
+
+			for _, construction := range currentSlice {
+				fmt.Fprintf(w, "%2s%1s%5d\n", construction.Operation, construction.Sign, construction.BodyID)
+			}
+		}
+	}
+
+	fmt.Fprintf(w, "  END")
+}
+
+func serializeZoneToMaterialPairs(w io.Writer, zoneToMaterialPairs []data.ZoneToMaterial) {
+	const mappingNumberPerLine = 14
+
+	type IDGetter = func(data.ZoneToMaterial) int64
+
+	for _, idGetter := range []IDGetter{
+		func(ztm data.ZoneToMaterial) int64 { return int64(ztm.ZoneID) },
+		func(ztm data.ZoneToMaterial) int64 { return int64(ztm.MaterialID) },
+	} {
+		for i := 0; i < len(zoneToMaterialPairs); i += 14 {
+			var currentSlice []data.ZoneToMaterial
+			if i+mappingNumberPerLine <= len(zoneToMaterialPairs) {
+				currentSlice = zoneToMaterialPairs[i : i+mappingNumberPerLine]
+			} else {
+				currentSlice = zoneToMaterialPairs[i:]
+			}
+			fmt.Fprintf(w, "\n")
+			for _, zoneToMaterial := range currentSlice {
+				fmt.Fprintf(w, "%5d", idGetter(zoneToMaterial))
+			}
+		}
+	}
+
 }

@@ -227,7 +227,7 @@ var predefinedMaterials = []PredefinedMaterialRecord{
 	PredefinedMaterialRecord{"muscle_equivalent_liquid_without_sucrose", "Muscle-Equivalent Liquid, without Sucrose", color.Gray},
 	PredefinedMaterialRecord{"naphthalene", "Naphthalene", color.Gray},
 	PredefinedMaterialRecord{"nitrobenzene", "Nitrobenzene", color.Gray},
-	PredefinedMaterialRecord{"nitrousr_oxide", "Nitrous Oxide", color.Gray},
+	PredefinedMaterialRecord{"nitrous_oxide", "Nitrous Oxide", color.Gray},
 	PredefinedMaterialRecord{"nylon_du_pont_elvamide_8062", "Nylon, Du Pont ELVAmide 8062", color.Gray},
 	PredefinedMaterialRecord{"nylon_type_6_and_type_6/6", "Nylon, type 6 and type 6/6", color.Gray},
 	PredefinedMaterialRecord{"nylon_type_6/10", "Nylon, type 6/10", color.Gray},
@@ -299,6 +299,7 @@ var predefinedMaterials = []PredefinedMaterialRecord{
 	PredefinedMaterialRecord{"water_liquid", "Water, Liquid", waterColor},
 	PredefinedMaterialRecord{"water_vapor", "Water Vapor", waterColor},
 	PredefinedMaterialRecord{"xylene", "Xylene", color.Gray},
+	PredefinedMaterialRecord{"vacuum", "Vaccum", color.Gray},
 }
 
 var isotopes = []IsotopeRecord{

@@ -3,12 +3,12 @@ package body
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/Palantir/palantir/model/simulation/common"
 )
 
-// Geometry is interface for body geometry.
-// It must implement json.Marshaler to marshal geometry type
-// dependant on Geometry implementation type.
+// Geometry is a variant type, which represent different geometries used in simulations.
+// It must implement json.Marshaler to marshal geometry type dependant on Geometry implementation type.
 type Geometry interface {
 	json.Marshaler
 }
@@ -64,7 +64,7 @@ type Sphere struct {
 	Radius float64      `json:"radius"`
 }
 
-// MarshalJSON custom Marshal function.
+// MarshalJSON json.Marshaller implementaion.
 func (s Sphere) MarshalJSON() ([]byte, error) {
 	type Alias Sphere
 	return json.Marshal(struct {

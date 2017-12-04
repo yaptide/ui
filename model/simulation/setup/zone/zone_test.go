@@ -13,7 +13,7 @@ var zoneTestCases = test.MarshallingCases{
 		&Zone{
 			ID:         ID(1),
 			ParentID:   ID(0),
-			Children:   []ID{1, 2, 3, 4, 5, 987},
+			Childrens:  []ID{1, 2, 3, 4, 5, 987},
 			Name:       "name",
 			BaseID:     body.ID(1),
 			MaterialID: material.ID(2),
