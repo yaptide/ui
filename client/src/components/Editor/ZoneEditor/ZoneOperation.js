@@ -123,8 +123,8 @@ const styles = (theme: Object) => ({
     width: '50px',
     minWidth: '50px',
     marginRight: '0px',
-    paddingTop: '9px',
-    paddingBottom: '9px',
+    paddingTop: '6px',
+    paddingBottom: '6px',
   },
   typographyBtn: {
     ...theme.typography.button,

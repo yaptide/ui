@@ -93,8 +93,8 @@ class BodyEditorModal extends React.Component<Props, State> {
 
 const styles = (theme: Object) => ({
   root: {
-    minWidth: theme.breakpoints.values.sm,
-    minHeight: theme.breakpoints.values.xs,
+    minWidth: 720,
+    minHeight: 480,
   },
   editorRoot: {
     paddingLeft: theme.spacing.unit,

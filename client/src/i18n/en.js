@@ -77,7 +77,15 @@ const en = {
       cylinder: 'Cylinder',
     },
   },
-  simulation: {},
+  simulation: {
+    energyBase: 'Energy base [MeV]',
+    energySigma: 'Energy sigma [MeV]',
+    meanEnergyLoss: 'Mean energy loss [MeV]',
+    minEnergyLoss: 'Minimal energy loss [MeV]',
+    positionLabel: 'Position',
+    distributionParameters: 'Distribution parameters',
+    lowEnergyNeutronCutOff: 'Low energy neutron cut off [MeV]',
+  },
   results: {},
   library: {
     shield: 'SHIELD-HIT12A',

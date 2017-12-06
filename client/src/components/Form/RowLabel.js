@@ -47,7 +47,7 @@ const styles = (theme: Object) => ({
     marginBottom: '12px',
     color: Style.Colors.white,
     marginLeft: Style.Dimens.spacing.small,
-    paddingBottom: theme.spacing.unit * 2,
+    paddingBottom: theme.spacing.unit,
   },
 });
 

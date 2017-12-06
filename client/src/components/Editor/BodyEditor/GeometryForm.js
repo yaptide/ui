@@ -50,8 +50,7 @@ const styles = (theme: Object) => ({
   },
   select: {
     flex: '1 0 0',
-    paddingRight: theme.spacing.unit * 2,
-    marginBottom: theme.spacing.unit * 2,
+    marginBottom: theme.spacing.unit,
   },
 });
 

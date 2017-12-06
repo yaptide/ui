@@ -14,11 +14,13 @@ type Props = {
 }
 
 const scatteringTypeOptions = [
+  { label: '', field: '' },
   { label: 'Gaussian', field: 'gaussian' },
   { label: 'Moliere', field: 'moliere' },
 ];
 
 const energyStragglingOptions = [
+  { label: '', field: '' },
   { label: 'Gaussian', field: 'gaussian' },
   { label: 'Vavilov', field: 'vavilov' },
 ];
@@ -38,20 +40,20 @@ class WorkspaceOptionsLayout extends React.Component<Props> {
           <FormSwitch
             type="antyparticleCorrectionOn"
             checked={options.antyparticleCorrectionOn}
-            label={t('workspace.editor.antyparticleCorrection')}
+            label={t('simulation.antyparticleCorrection')}
             onChange={this.updateByType}
           />
           <FormSwitch
             type="nuclearCorectionOn"
             checked={options.nuclearCorectionOn}
-            label={t('workspace.editor.nuclearCorection')}
+            label={t('simulation.nuclearCorection')}
             onChange={this.updateByType}
           />
 
           <FormInput
             type="meanEnergyLoss"
             value={options.meanEnergyLoss}
-            label={t('workspace.editor.meanEnergyLoss')}
+            label={t('simulation.meanEnergyLoss')}
             numbersOnly
             onChange={this.updateByType}
           />
@@ -59,21 +61,21 @@ class WorkspaceOptionsLayout extends React.Component<Props> {
           <FormInput
             type="minEnergyLoss"
             value={options.minEnergyLoss}
-            label={t('workspace.editor.minEnergyLoss')}
+            label={t('simulation.minEnergyLoss')}
             numbersOnly
             onChange={this.updateByType}
           />
           <FormSelect
             type="scatteringType"
             value={options.scatteringType}
-            label={t('workspace.editor.scatteringType')}
+            label={t('simulation.scatteringType')}
             options={scatteringTypeOptions}
             onChange={this.updateByType}
           />
           <FormSelect
             type="energyStraggling"
             value={options.energyStraggling}
-            label={t('workspace.editor.energyStraggling')}
+            label={t('simulation.energyStraggling')}
             options={energyStragglingOptions}
             onChange={this.updateByType}
           />
@@ -81,14 +83,14 @@ class WorkspaceOptionsLayout extends React.Component<Props> {
           <FormSwitch
             type="fastNeutronTransportOn"
             checked={options.fastNeutronTransportOn}
-            label={t('workspace.editor.fastNeutronTransport')}
+            label={t('simulation.fastNeutronTransport')}
             onChange={this.updateByType}
           />
 
           <FormInput
             type="lowEnergyNeutronCutOff"
             value={options.lowEnergyNeutronCutOff}
-            label={t('workspace.editor.lowEnergyNeutronCutOff')}
+            label={t('simulation.lowEnergyNeutronCutOff')}
             numbersOnly
             onChange={this.updateByType}
           />

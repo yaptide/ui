@@ -7,7 +7,7 @@ import (
 )
 
 type request interface {
-	SerializeModel() error
+	ConvertModel() error
 	StartSimulation() error
 	ParseResults() error
 }

@@ -128,7 +128,7 @@ const ACTION_HANDLERS = {
   ),
   [actionType.MOVE_TO_PARENT_LAYER]: (state) => {
     const currentZoneId = state.get('zoneLayerParent');
-    if (currentZoneId === undefined) {
+    if (!currentZoneId) {
       return state;
     }
     const parentId = state.getIn(['zones', String(currentZoneId), 'parentId']);

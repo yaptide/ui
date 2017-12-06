@@ -57,7 +57,7 @@ var testCases = test.MarshallingCases{
 				"particleType": {
 					"type": "proton"
 				},
-				"initialBaseEnergy": 0,
+				"initialBaseEnergy": 100,
 				"initialEnergySigma": 0
 			},
 			"options": {

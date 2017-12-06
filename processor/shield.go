@@ -3,8 +3,6 @@ package processor
 import (
 	"fmt"
 	"path"
-
-	"github.com/Palantir/palantir/converter/shield"
 )
 
 const (
@@ -15,14 +13,7 @@ const (
 	materialsDatFile = "mat.dat"
 )
 
-type shieldFileInput struct {
-	files map[string]string
-}
-
-type shieldFileOutput struct {
-	files             map[string]string
-	simulationContext *shield.SimulationContext
-}
+type shieldFiles map[string]string
 
 func generateShieldPath(workDir string) []string {
 	cmd := []string{

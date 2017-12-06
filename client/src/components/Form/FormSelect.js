@@ -41,6 +41,7 @@ class FormSelect extends React.Component<Props, State> {
           onChange={this.onChange}
           value={value || ''}
           input={<Input id="select" />}
+          classes={{ select: classes.select }}
         >
           {
             options.map((item, index) => (
@@ -60,6 +61,9 @@ class FormSelect extends React.Component<Props, State> {
 
 const styles = () => ({
   root: {
+  },
+  select: {
+    margin: 1, // sometimes underline of input is invisible
   },
 });
 

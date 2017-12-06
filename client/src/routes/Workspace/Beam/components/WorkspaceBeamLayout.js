@@ -17,30 +17,35 @@ type Props = {
 }
 
 const coordinateValueLabels = [
-  { label: 'x', field: 'x' },
-  { label: 'y', field: 'y' },
-  { label: 'z', field: 'z' },
+  { label: 'x [cm]', field: 'x' },
+  { label: 'y [cm]', field: 'y' },
+  { label: 'z [cm]', field: 'z' },
 ];
 
 const angleDirection = [
-  { label: 'φ', field: 'phi' },
-  { label: 'θ', field: 'theta' },
+  { label: 'φ [rad]', field: 'phi' },
+  { label: 'θ [rad]', field: 'theta' },
 ];
 
 const distributionSigma = [
-  { label: 'x axis σ', field: 'sigmaX' },
-  { label: 'y axis σ', field: 'sigmaY' },
+  { label: 'x axis σ [cm]', field: 'sigmaX' },
+  { label: 'y axis σ [cm]', field: 'sigmaY' },
 ];
 
 const particleInitialEnergies = [
-  { label: t('workspace.editor.energyBase'), field: 'initialBaseEnergy' },
-  { label: t('workspace.editor.energyDeviation'), field: 'initialEnergySigma' },
+  { label: t('simulation.energyBase'), field: 'initialBaseEnergy' },
+  { label: t('simulation.energySigma'), field: 'initialEnergySigma' },
 ];
 
 const distributionOptions = [
+  { label: '', field: '' },
   { label: 'Gaussian', field: 'gaussian' },
   { label: 'Flat', field: 'flat' },
 ];
+
+function filterConcreteParticles(options) {
+  return [] && options.filter(option => option.value !== 'all');
+}
 
 class WorkspaceBeamLayout extends React.Component<Props> {
   props: Props
@@ -75,6 +80,15 @@ class WorkspaceBeamLayout extends React.Component<Props> {
     return (
       <div className={classes.root} >
         <Paper className={classes.item} >
+          <FormV3Input
+            field="position"
+            numbersOnly
+            rowLabel={t('simulation.positionLabel')}
+            valueLabels={coordinateValueLabels}
+            values={beam.direction && beam.direction.position}
+            valueError={{}}
+            onUpdate={this.updateDirection}
+          />
           <FormV3DoubleInput
             field="direction"
             numbersOnly
@@ -83,15 +97,6 @@ class WorkspaceBeamLayout extends React.Component<Props> {
             values={beam.direction}
             valueError={{}}
             onUpdate={this.props.updateBeamField}
-          />
-          <FormV3Input
-            field="position"
-            numbersOnly
-            rowLabel={t('workspace.editor.position')}
-            valueLabels={coordinateValueLabels}
-            values={beam.direction && beam.direction.position}
-            valueError={{}}
-            onUpdate={this.updateDirection}
           />
         </Paper>
         <Paper className={classes.item} >
@@ -105,7 +110,7 @@ class WorkspaceBeamLayout extends React.Component<Props> {
           <FormV3DoubleInput
             field="divergence"
             numbersOnly
-            rowLabel={t('workspace.editor.distributionParameters')}
+            rowLabel={t('simulation.distributionParameters')}
             valueLabels={distributionSigma}
             values={beam.divergence}
             valueError={{}}
@@ -115,7 +120,7 @@ class WorkspaceBeamLayout extends React.Component<Props> {
         <Paper className={classes.item} >
           <ParticleEditor
             particle={beam.particleType}
-            particleOptions={particleOptions}
+            particleOptions={filterConcreteParticles(particleOptions)}
             particleUpdate={this.updateParticle}
           />
           <FormV3DoubleInput

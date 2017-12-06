@@ -38,7 +38,7 @@ var Default = Beam{
 		Distribution: common.GaussianDistribution,
 	},
 	ParticleType:       common.PredefinedParticle("proton"),
-	InitialBaseEnergy:  0,
+	InitialBaseEnergy:  100,
 	InitialEnergySigma: 0,
 }
 

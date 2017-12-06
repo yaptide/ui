@@ -3,7 +3,6 @@
 import React from 'react';
 import Button from 'material-ui/Button';
 import { withStyles } from 'material-ui/styles';
-import Style from 'styles';
 import type { BodyGeometry } from 'model/simulation/zone';
 import type { GeometryType } from 'model/simulation/body';
 import { BodyEditor } from 'components/Editor/BodyEditor';
@@ -32,7 +31,7 @@ class BodyEditorLayout extends React.Component<Props> {
           geometryUpdate={this.props.geometryUpdate}
           classes={{ root: classes.editor }}
         />
-        <div style={styles.buttonRow}>
+        <div className={classes.buttonRow}>
           <Button
             disabled={Object.keys(this.props.bodyGeometryErrors).length !== 0}
             onTouchTap={this.props.submit}
@@ -49,12 +48,14 @@ class BodyEditorLayout extends React.Component<Props> {
 
 const styles = {
   root: {
-    ...Style.Flex.rootColumn,
+    display: 'flex',
+    flexDirection: 'column',
     flex: '1 0 0',
     height: '100%',
   },
   buttonRow: {
-    ...Style.Flex.rootRow,
+    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'flex-end',
   },
   editor: {

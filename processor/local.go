@@ -1,47 +1,45 @@
 package processor
 
 import (
-	"log"
-
+	"github.com/Palantir/palantir/converter/shield"
 	"github.com/Palantir/palantir/converter/shield/results"
 	"github.com/Palantir/palantir/converter/shield/setup/serialize"
 	"github.com/Palantir/palantir/model/project"
 	"github.com/Palantir/palantir/runner"
 	"github.com/Palantir/palantir/runner/file"
+	"github.com/Palantir/palantir/utils/log"
 )
 
 type localShieldRequest struct {
 	*mainRequestComponent
-	*shieldFileInput
-	*shieldFileOutput
-	runner      *file.Runner
-	runnerInput *file.LocalSimulationInput
+	shieldInputFiles        shieldFiles
+	shieldResultFiles       shieldFiles
+	shieldSimulationContext *shield.SimulationContext
+	runner                  *file.Runner
+	runnerInput             *file.LocalSimulationInput
 }
 
 func newLocalShieldRequest(mainRequestComponent *mainRequestComponent, runner *file.Runner) *localShieldRequest {
 	return &localShieldRequest{
 		mainRequestComponent: mainRequestComponent,
-		shieldFileInput:      &shieldFileInput{},
-		shieldFileOutput:     &shieldFileOutput{},
 		runner:               runner,
 	}
 }
 
-func (ls *localShieldRequest) SerializeModel() error {
+func (ls *localShieldRequest) ConvertModel() error {
 	serializerRes, serializeErr := serialize.Serialize(ls.mainRequestComponent.setup)
 	if serializeErr != nil {
-		_ = ls.session.Project().SetVersionStatus(ls.versionID, project.Failure)
 		return serializeErr
 	}
-	ls.shieldFileOutput.simulationContext = serializerRes.SimulationContext
-	ls.shieldFileInput.files = mockParserExample
+	ls.shieldSimulationContext = serializerRes.SimulationContext
+	ls.shieldInputFiles = mockParserExample
 	return nil
 }
 
 func (ls *localShieldRequest) StartSimulation() error {
 	simulationInput := &file.LocalSimulationInput{
 		InputCommon:   runner.NewInputCommon(),
-		Files:         ls.shieldFileInput.files,
+		Files:         ls.shieldInputFiles,
 		CmdCreator:    generateShieldPath,
 		ResultChannel: make(chan *file.LocalSimulationResults),
 	}
@@ -60,7 +58,8 @@ func (ls *localShieldRequest) StartSimulation() error {
 			_ = ls.session.Project().SetVersionStatus(ls.versionID, project.Failure)
 		}
 		if simResults != nil {
-			ls.shieldFileOutput.files = simResults.Files
+			log.Debug("[Result parser] output %v", simResults.LogStdOut)
+			ls.shieldResultFiles = simResults.Files
 			_ = ls.ParseResults()
 		}
 	}()
@@ -69,8 +68,8 @@ func (ls *localShieldRequest) StartSimulation() error {
 
 func (ls *localShieldRequest) ParseResults() error {
 	parserInput, constructErr := results.NewShieldParserInput(
-		ls.shieldFileOutput.files,
-		ls.shieldFileOutput.simulationContext,
+		ls.shieldResultFiles,
+		ls.shieldSimulationContext,
 	)
 	if constructErr != nil {
 		return constructErr
@@ -81,6 +80,6 @@ func (ls *localShieldRequest) ParseResults() error {
 	if updateErr != nil {
 		return updateErr
 	}
-	log.Println(parserOutput)
+	log.Debug("[Result parser] output %v", parserOutput.Results)
 	return nil
 }

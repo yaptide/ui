@@ -112,8 +112,8 @@ const styles = (theme: Object) => ({
     color: theme.palette.common.darkBlack,
   },
   iconBtn: {
-    paddingTop: '9px',
-    paddingBottom: '9px',
+    paddingTop: '6px',
+    paddingBottom: '6px',
   },
   menuContent: {
     background: theme.palette.grey[300],

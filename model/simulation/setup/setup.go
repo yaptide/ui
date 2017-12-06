@@ -40,6 +40,6 @@ func NewEmptySetup() *Setup {
 		Zones:     make(ZoneMap),
 		Detectors: make(DetectorMap),
 		Beam:      beam.Default,
-		Options:   options.SimulationOptions{},
+		Options:   options.Default,
 	}
 }

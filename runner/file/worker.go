@@ -154,6 +154,7 @@ func (w *worker) startWorker(release chan bool) {
 }
 
 func (w *worker) postSimulationSteps() {
+	log.Println("Post simulation steps")
 	files, listDirErr := ioutil.ReadDir(w.dirOutPath)
 	if listDirErr != nil {
 		log.Printf("[Runner.Local.SHIELD] Warning: Can't access directory with solutions. Reason: %s", listDirErr.Error())
@@ -170,5 +171,6 @@ func (w *worker) postSimulationSteps() {
 		w.results.Files[fileInfo.Name()] = string(content)
 	}
 	w.results.LogStdOut = w.outbuf.String()
+	log.Printf("LogStdOut %v", w.results.LogStdOut)
 	w.results.LogStdErr = w.errbuf.String()
 }

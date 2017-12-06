@@ -24,18 +24,18 @@ type Props = {
 }
 
 const coordinateValueLabels = [
-  { label: 'x', field: 'x' },
-  { label: 'y', field: 'y' },
-  { label: 'z', field: 'z' },
+  { label: 'x [cm]', field: 'x' },
+  { label: 'y [cm]', field: 'y' },
+  { label: 'z [cm]', field: 'z' },
 ];
 const cylinderCoordinateValueLabels = [
-  { label: 'radius', field: 'radius' },
-  { label: 'angle', field: 'angle' },
-  { label: 'z', field: 'z' },
+  { label: 'radius [cm]', field: 'radius' },
+  { label: 'angle [rad]', field: 'angle' },
+  { label: 'z [cm]', field: 'z' },
 ];
 const rangeValueLabel = [
-  { label: 'min', field: 'min' },
-  { label: 'max', field: 'max' },
+  { label: 'min [cm]', field: 'min' },
+  { label: 'max [cm]', field: 'max' },
 ];
 // const radiusValueLabel = { label: 'radius', field: 'radius' };
 // const heightValueLabel = { label: 'height', field: 'height' };

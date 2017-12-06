@@ -3,12 +3,12 @@ package processor
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/Palantir/palantir/config"
 	"github.com/Palantir/palantir/db"
 	"github.com/Palantir/palantir/model/project"
 	"github.com/Palantir/palantir/runner/file"
+	"github.com/Palantir/palantir/utils/log"
 )
 
 // SimulationProcessor responsible for all steps of processing simulation.
@@ -32,7 +32,7 @@ func (p *SimulationProcessor) HandleSimulation(versionID db.VersionID) error {
 	defer dbSession.Close()
 	version, dbErr := dbSession.Project().FetchVersion(versionID)
 	if dbErr != nil {
-		log.Printf("[SimulationProcessor] Unable to fetch version. Reason: %s", dbErr.Error())
+		log.Warning("[SimulationProcessor] Unable to fetch version. Reason: %s", dbErr.Error())
 		return dbErr
 	}
 
@@ -48,7 +48,7 @@ func (p *SimulationProcessor) HandleSimulation(versionID db.VersionID) error {
 		setup:     setup,
 	}
 
-	log.Println("Start simulation")
+	log.Info("Start simulation request")
 	var request request
 	var simErr error
 	switch version.Settings.ComputingLibrary {
@@ -68,11 +68,18 @@ func (p *SimulationProcessor) HandleSimulation(versionID db.VersionID) error {
 		return simErr
 	}
 
-	serializeErr := request.SerializeModel()
+	log.Info("Start simulation request (serialization)")
+	serializeErr := request.ConvertModel()
 	if serializeErr != nil {
+		_ = p.session.Project().SetVersionStatus(versionID, project.Failure)
 		return serializeErr
 	}
 
-	return request.StartSimulation()
-
+	log.Info("Start simulation request (enqueue in runner)")
+	startSimulationErr := request.StartSimulation()
+	if startSimulationErr != nil {
+		_ = p.session.Project().SetVersionStatus(versionID, project.Failure)
+		return startSimulationErr
+	}
+	return nil
 }

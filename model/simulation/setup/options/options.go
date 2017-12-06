@@ -48,6 +48,21 @@ type SimulationOptions struct {
 	NumberOfRecordedParticles int64 `json:"numberOfRecordedParticles"`
 }
 
+// Default ...
+var Default = SimulationOptions{
+	AntyparticleCorrectionOn:       false,
+	NuclearCorectionOn:             false,
+	MeanEnergyLoss:                 0,
+	MinEnergyLoss:                  0,
+	ScatteringType:                 GaussianScattering,
+	EnergyStraggling:               GaussianStraggling,
+	FastNeutronTransportOn:         false,
+	LowEnergyNeutronCutOff:         0,
+	RecordSecondaryNeutronCreation: false,
+	NumberOfGeneratedParticles:     1000,
+	NumberOfRecordedParticles:      1000,
+}
+
 // ScatteringType ...
 type ScatteringType int64
 

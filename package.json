@@ -21,7 +21,7 @@
     "immutable": "FormAPI/immutable-js#v3.8.1-flow-fix",
     "karma-phantomjs-launcher": "^1.0.4",
     "lodash": "^4.17.4",
-    "material-ui": "1.0.0-beta.16",
+    "material-ui": "^1.0.0-beta.22",
     "material-ui-icons": "^1.0.0-beta.5",
     "plotly.js": "^1.29.3",
     "react": "^15.6.1",

@@ -17,7 +17,7 @@ class DetectorsVisualisationLayout extends React.Component<Props> {
     return (
       <Visualisation
         geometry={processGeometry(this.props.geometry)}
-        classes={{ root: classes.root }}
+        classes={{ hoc: classes.root }}
       />
     );
   }
