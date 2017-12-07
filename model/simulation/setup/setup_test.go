@@ -62,7 +62,7 @@ var testCases = test.MarshallingCases{
 			},
 			"options": {
 				"antyparticleCorrectionOn": false,
-				"nuclearCorectionOn": false,
+				"nuclearReactionsOn": false,
 				"meanEnergyLoss": 0,
 				"minEnergyLoss": 0,
 				"scatteringType": "",

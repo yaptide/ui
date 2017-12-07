@@ -7,6 +7,7 @@ SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $SCRIPT_PATH/build_tools/db_tools.sh
 
 set -e
+set -x
 
 if [ "$1" = "client:check" ]; then
     cd $SCRIPT_PATH

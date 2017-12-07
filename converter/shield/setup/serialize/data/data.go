@@ -7,6 +7,8 @@ import (
 
 	"github.com/Palantir/palantir/converter/shield"
 	"github.com/Palantir/palantir/model/simulation/setup"
+	"github.com/Palantir/palantir/model/simulation/setup/beam"
+	"github.com/Palantir/palantir/model/simulation/setup/options"
 )
 
 // Data is input for shield Serialize function.
@@ -16,6 +18,12 @@ type Data struct {
 
 	// Data needed for geo.dat file serialization.
 	Geometry Geometry
+
+	// Data needed for beam.dat file serialization.
+	Beam beam.Beam
+
+	// Data needed for beam.dat file serialization.
+	Options options.SimulationOptions
 }
 
 // Convert simulation setup model to easily serializable data,
@@ -42,6 +50,8 @@ func Convert(setup *setup.Setup) (Data, *shield.SimulationContext, error) {
 	return Data{
 			Materials: materials,
 			Geometry:  geometry,
+			Beam:      setup.Beam,
+			Options:   setup.Options,
 		},
 		simContext,
 		nil

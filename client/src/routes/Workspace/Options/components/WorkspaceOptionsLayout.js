@@ -44,9 +44,9 @@ class WorkspaceOptionsLayout extends React.Component<Props> {
             onChange={this.updateByType}
           />
           <FormSwitch
-            type="nuclearCorectionOn"
-            checked={options.nuclearCorectionOn}
-            label={t('simulation.nuclearCorection')}
+            type="nuclearReactionsOn"
+            checked={options.nuclearReactionsOn}
+            label={t('simulation.nuclearReactions')}
             onChange={this.updateByType}
           />
 

@@ -6,8 +6,8 @@ import (
 	"github.com/Palantir/palantir/config"
 	"github.com/Palantir/palantir/model/project"
 	"github.com/Palantir/palantir/runner"
+	"github.com/Palantir/palantir/utils/log"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"path"
@@ -73,13 +73,13 @@ func (w *worker) setupDirectory() error {
 
 	mkdirInErr := os.MkdirAll(w.dirInPath, os.ModePerm)
 	if mkdirInErr != nil {
-		log.Printf("[Runner.Local.SHIELD] Error: Unable to create workdir. Reason: %s", mkdirInErr.Error())
+		log.Error("[Runner.Local.SHIELD] Error: Unable to create workdir. Reason: %s", mkdirInErr.Error())
 		return mkdirInErr
 	}
 
 	mkdirOutErr := os.MkdirAll(w.dirOutPath, os.ModePerm)
 	if mkdirOutErr != nil {
-		log.Printf("[Runner.Local.SHIELD] Error: Unable to create workdir. Reason: %s", mkdirOutErr.Error())
+		log.Error("[Runner.Local.SHIELD] Error: Unable to create workdir. Reason: %s", mkdirOutErr.Error())
 		return mkdirOutErr
 	}
 
@@ -87,7 +87,7 @@ func (w *worker) setupDirectory() error {
 		content := []byte(fileContent)
 		writeErr := ioutil.WriteFile(path.Join(w.dirInPath, fileName), content, os.ModePerm)
 		if writeErr != nil {
-			log.Printf("[Runner.Local.SHIELD] Error: Problem during file write. Reason: %s", writeErr.Error())
+			log.Error("[Runner.Local.SHIELD] Error: Problem during file write. Reason: %s", writeErr.Error())
 			return writeErr
 		}
 	}
@@ -99,10 +99,10 @@ func (w *worker) setupExecution() error {
 	binaryName := w.cmdString[0]
 	binaryArgs := w.cmdString[1:]
 
-	log.Println(binaryName)
+	log.Debug(binaryName)
 	binaryPath, lookupErr := exec.LookPath(binaryName)
 	if lookupErr != nil {
-		log.Printf("[Runner.Local] Error: Unable to find %s on PATH. Reason: %s", binaryName, lookupErr.Error())
+		log.Error("[Runner.Local] Error: Unable to find %s on PATH. Reason: %s", binaryName, lookupErr.Error())
 		return lookupErr
 	}
 
@@ -118,7 +118,7 @@ func (w *worker) startWorker(release chan bool) {
 	timer := time.AfterFunc(maxJobDuration, func() {
 		killErr := w.cmd.Process.Kill()
 		if killErr != nil {
-			log.Printf("[Runner.Local.SHIELD] Warning: Unable to kill process. Reason: %s", killErr.Error())
+			log.Warning("[Runner.Local.SHIELD] Warning: Unable to kill process. Reason: %s", killErr.Error())
 		}
 		w.workerFinishChannel <- true
 	})
@@ -128,24 +128,25 @@ func (w *worker) startWorker(release chan bool) {
 		if w.cmd.ProcessState == nil || !w.cmd.ProcessState.Exited() {
 			killErr := w.cmd.Process.Kill()
 			if killErr != nil {
-				log.Printf("[Runner.Local.SHIELD] Warning: Unable to kill process. Reason: %s", killErr.Error())
+				log.Error("[Runner.Local.SHIELD] Warning: Unable to kill process. Reason: %s", killErr.Error())
 			}
 		}
 		w.job.ResultChannel <- w.results
-		log.Println("Defer finished")
+		log.Debug("Defer finished")
 	}()
 
 	startErr := w.cmd.Start()
 	if startErr != nil {
-		log.Printf("[Runner.Local.SHIELD] Error: Unable to start worker. Reason: %s", startErr.Error())
+		log.Error("[Runner.Local.SHIELD] Error: Unable to start worker. Reason: %s", startErr.Error())
 		return
 	}
 	go func() {
 		err := w.cmd.Wait()
 		if err != nil {
-			log.Printf("[Runner.Local.SHIELD] Warning: Problem during final wait. Reason: %s", err.Error())
+			log.Warning("[Runner.Local.SHIELD] Warning: Problem during final wait. Reason: %s", err.Error())
+			w.results.Errors["program_finish"] = err.Error()
 		}
-		log.Println("Process finished")
+		log.Info("Process finished")
 		w.workerFinishChannel <- true
 	}()
 
@@ -154,23 +155,24 @@ func (w *worker) startWorker(release chan bool) {
 }
 
 func (w *worker) postSimulationSteps() {
-	log.Println("Post simulation steps")
+	log.Debug("Post simulation steps")
 	files, listDirErr := ioutil.ReadDir(w.dirOutPath)
 	if listDirErr != nil {
-		log.Printf("[Runner.Local.SHIELD] Warning: Can't access directory with solutions. Reason: %s", listDirErr.Error())
+		log.Debug("[Runner.Local.SHIELD] Warning: Can't access directory with solutions. Reason: %s", listDirErr.Error())
 		return
 	}
 
 	for _, fileInfo := range files {
 		content, readFileErr := ioutil.ReadFile(path.Join(w.dirOutPath, fileInfo.Name()))
 		if readFileErr != nil {
-			log.Printf("[Runner.Local.SHIELD] Warning: Can't open %s in simulation directory. Reason: %s", fileInfo.Name(), readFileErr.Error())
+			log.Error("[Runner.Local.SHIELD] Warning: Can't open %s in simulation directory. Reason: %s", fileInfo.Name(), readFileErr.Error())
 			w.results.Errors["readResults"] = readFileErr.Error()
 			return
 		}
 		w.results.Files[fileInfo.Name()] = string(content)
 	}
 	w.results.LogStdOut = w.outbuf.String()
-	log.Printf("LogStdOut %v", w.results.LogStdOut)
+	log.Debug("LogStdOut %v", w.results.LogStdOut)
 	w.results.LogStdErr = w.errbuf.String()
+	log.Debug("LogStdErr %v", w.results.LogStdErr)
 }

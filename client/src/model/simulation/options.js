@@ -2,7 +2,7 @@
 
 export type SimulationOptions = {
   antyparticleCorrectionOn: bool,
-  nuclearCorectionOn: bool,
+  nuclearReactionsOn: bool,
   meanEnergyLoss: number,
   minEnergyLoss: number,
   scatteringType: ScatteringType,

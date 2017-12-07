@@ -12,9 +12,9 @@ type SimulationOptions struct {
 	// AntyparticleCorrectionOn ...
 	// SHIELD doc: APCORR
 	AntyparticleCorrectionOn bool `json:"antyparticleCorrectionOn"`
-	// NuclearCorectionOn ...
+	// NuclearReactionsOn ...
 	// SHIELD doc: NUCRE
-	NuclearCorectionOn bool `json:"nuclearCorectionOn"`
+	NuclearReactionsOn bool `json:"nuclearReactionsOn"`
 
 	// MeanEnergyLoss ...
 	// SHIELD doc: DELTAE
@@ -51,12 +51,12 @@ type SimulationOptions struct {
 // Default ...
 var Default = SimulationOptions{
 	AntyparticleCorrectionOn:       false,
-	NuclearCorectionOn:             false,
-	MeanEnergyLoss:                 0,
-	MinEnergyLoss:                  0,
+	NuclearReactionsOn:             true,
+	MeanEnergyLoss:                 0.05,
+	MinEnergyLoss:                  0.025,
 	ScatteringType:                 GaussianScattering,
 	EnergyStraggling:               GaussianStraggling,
-	FastNeutronTransportOn:         false,
+	FastNeutronTransportOn:         true,
 	LowEnergyNeutronCutOff:         0,
 	RecordSecondaryNeutronCreation: false,
 	NumberOfGeneratedParticles:     1000,

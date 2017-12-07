@@ -9,7 +9,6 @@ import (
 
 // ParseResults will parse results of shield simulation.
 func ParseResults(input *ShieldParserInput) (*ShieldParserOutput, error) {
-	log.SetLoggerLevel(log.LevelDebug)
 	log.Info("Start shield parser.")
 
 	simulationResult := result.NewEmptyResult()

@@ -32,7 +32,8 @@ func (ls *localShieldRequest) ConvertModel() error {
 		return serializeErr
 	}
 	ls.shieldSimulationContext = serializerRes.SimulationContext
-	ls.shieldInputFiles = mockParserExample
+	ls.shieldInputFiles = serializerRes.Files
+	ls.shieldInputFiles[detectorsDatFile] = mockParserExample[detectorsDatFile]
 	return nil
 }
 
@@ -58,7 +59,6 @@ func (ls *localShieldRequest) StartSimulation() error {
 			_ = ls.session.Project().SetVersionStatus(ls.versionID, project.Failure)
 		}
 		if simResults != nil {
-			log.Debug("[Result parser] output %v", simResults.LogStdOut)
 			ls.shieldResultFiles = simResults.Files
 			_ = ls.ParseResults()
 		}

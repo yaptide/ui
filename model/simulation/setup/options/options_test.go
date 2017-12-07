@@ -11,7 +11,7 @@ var testCases = test.MarshallingCases{
 	{
 		&SimulationOptions{
 			AntyparticleCorrectionOn:       true,
-			NuclearCorectionOn:             true,
+			NuclearReactionsOn:             true,
 			MeanEnergyLoss:                 common.Fraction(0.1),
 			MinEnergyLoss:                  1.1,
 			ScatteringType:                 GaussianScattering,
@@ -24,7 +24,7 @@ var testCases = test.MarshallingCases{
 		},
 		`{
 			"antyparticleCorrectionOn": true,
-			"nuclearCorectionOn": true,
+			"nuclearReactionsOn": true,
 			"meanEnergyLoss": 0.1,
 			"minEnergyLoss": 1.1,
 			"scatteringType": "gaussian",
