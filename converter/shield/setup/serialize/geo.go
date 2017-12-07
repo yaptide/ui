@@ -31,9 +31,9 @@ func serializeTitle(w io.Writer) {
 		jdbg2 = 0
 	)
 	var (
-		geoName = "Geometry TODO: why we need this field?"
+		geoName = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxNAMExxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 	)
-	fmt.Fprintf(w, "%5d%5d%10s%-60s\n", jdbg1, jdbg2, "", geoName)
+	fmt.Fprintf(w, "%5d%5d%10s%60s", jdbg1, jdbg2, "", geoName)
 }
 
 func serializeBodies(w io.Writer, bodies []data.Body) {
@@ -42,7 +42,7 @@ func serializeBodies(w io.Writer, bodies []data.Body) {
 	writeBodyArgumentsLine := func(arguments []float64, argOffset int) {
 		for i := 0; i < argumentsNumberInLine; i++ {
 			if argOffset+i < len(arguments) {
-				fmt.Fprintf(w, "%10f", arguments[argOffset+i])
+				fmt.Fprintf(w, floatToFixedWidthString(arguments[argOffset+i], 10))
 			} else {
 				// padding
 				fmt.Fprintf(w, "%10s", "")
@@ -53,7 +53,7 @@ func serializeBodies(w io.Writer, bodies []data.Body) {
 	for _, body := range bodies {
 		// first line
 		fmt.Fprintf(w,
-			"%2s%3s%1s%4d",
+			"\n%2s%3s%1s%4d",
 			"",
 			body.Identifier,
 			"",
@@ -63,12 +63,12 @@ func serializeBodies(w io.Writer, bodies []data.Body) {
 
 		// next lines
 		for i := argumentsNumberInLine; i < len(body.Arguments); i += argumentsNumberInLine {
-			fmt.Fprintf(w, "%10s", "")
+			fmt.Fprintf(w, "\n%10s", "")
 			writeBodyArgumentsLine(body.Arguments, i)
 		}
 
 	}
-	fmt.Fprintf(w, "  END\n")
+	fmt.Fprintf(w, "\n  END")
 }
 
 func generateNameFromNumber(n, nameLength int) string {
@@ -87,11 +87,11 @@ func serializeZones(w io.Writer, zones []data.Zone) {
 
 	const constructionsNumberInLine = 9
 
-	for _, zone := range zones {
+	for n, zone := range zones {
 		for i := 0; i < len(zone.Constructions); i += constructionsNumberInLine {
-			fmt.Fprintf(w, "%2s", "")
+			fmt.Fprintf(w, "\n%2s", "")
 			if i == 0 {
-				fmt.Fprintf(w, "%3s", generateNameFromNumber(int(zone.ID), 3))
+				fmt.Fprintf(w, "%3s", generateNameFromNumber(n, 3))
 			} else {
 				fmt.Fprintf(w, "%3s", "")
 			}
@@ -105,12 +105,12 @@ func serializeZones(w io.Writer, zones []data.Zone) {
 			}
 
 			for _, construction := range currentSlice {
-				fmt.Fprintf(w, "%2s%1s%5d\n", construction.Operation, construction.Sign, construction.BodyID)
+				fmt.Fprintf(w, "%2s%-1s%-5d", construction.Operation, construction.Sign, construction.BodyID)
 			}
 		}
 	}
 
-	fmt.Fprintf(w, "  END")
+	fmt.Fprintf(w, "\n  END")
 }
 
 func serializeZoneToMaterialPairs(w io.Writer, zoneToMaterialPairs []data.ZoneToMaterial) {

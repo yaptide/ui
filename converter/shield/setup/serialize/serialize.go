@@ -32,9 +32,7 @@ func Serialize(setup *setup.Setup) (Result, error) {
 func serializeData(data data.Data) map[string]string {
 	files := map[string]string{}
 
-	type SerializeFunc = func() string
-
-	for fileName, serializeFunc := range map[string]SerializeFunc{
+	for fileName, serializeFunc := range map[string]func() string{
 		materialsDatFile: func() string { return serializeMat(data.Materials) },
 		geometryDatFile:  func() string { return serializeGeo(data.Geometry) },
 	} {
