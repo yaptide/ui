@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/Palantir/palantir/converter/shield/setup/serialize/data"
 	"github.com/Palantir/palantir/model/simulation/common"
 	setup_beam "github.com/Palantir/palantir/model/simulation/setup/beam"
 	setup_options "github.com/Palantir/palantir/model/simulation/setup/options"
@@ -61,7 +62,7 @@ var beamCardSerializers = map[string]beamCardSerializerFunc{
 		return ""
 	},
 	"JPART0": func(beam setup_beam.Beam, options setup_options.SimulationOptions) string {
-		number, _ := mapParticleToShieldParticleID(beam.ParticleType)
+		number, _ := data.MapParticleToShieldParticleID(beam.ParticleType)
 		return fmt.Sprintf("%8d", number)
 	},
 	"MAKELN": func(beam setup_beam.Beam, options setup_options.SimulationOptions) string {

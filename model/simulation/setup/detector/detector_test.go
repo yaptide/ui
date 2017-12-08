@@ -10,7 +10,8 @@ import (
 var testCases = test.MarshallingCases{
 	{
 		&Detector{
-			ID: ID(1),
+			ID:   ID(1),
+			Name: "ala",
 			DetectorGeometry: Mesh{
 				Center: common.Point{X: 1, Y: 2, Z: 3},
 				Size:   common.Vec3D{X: 1, Y: 2, Z: 3},
@@ -21,6 +22,7 @@ var testCases = test.MarshallingCases{
 		},
 		`{
 			"id": 1,
+			"name": "ala",
 			"detectorGeometry": {
 				"type": "mesh",
 				"center": {
@@ -48,7 +50,8 @@ var testCases = test.MarshallingCases{
 		}`,
 	}, {
 		&Detector{
-			ID: ID(1),
+			ID:   ID(1),
+			Name: "ma",
 			DetectorGeometry: Mesh{
 				Center: common.Point{X: 1, Y: 2, Z: 3},
 				Size:   common.Vec3D{X: 1, Y: 2, Z: 3},
@@ -59,6 +62,7 @@ var testCases = test.MarshallingCases{
 		},
 		`{
 			"id": 1,
+			"name": "ma",
 			"detectorGeometry": {
 				"type": "mesh",
 				"center": {

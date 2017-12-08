@@ -19,6 +19,8 @@ type Data struct {
 	// Data needed for geo.dat file serialization.
 	Geometry Geometry
 
+	// Data needed for detect.dat file serialization.
+	Detectors []Detector
 	// Data needed for beam.dat file serialization.
 	Beam beam.Beam
 
@@ -39,17 +41,23 @@ func Convert(setup setup.Setup) (Data, shield.SimulationContext, error) {
 
 	materials, materialIDToShield, err := convertSetupMaterials(setup.Materials, simContext)
 	if err != nil {
-		return Data{}, *simContext, err
+		return Data{}, shield.SimulationContext{}, err
 	}
 
 	geometry, err := convertSetupGeometry(setup.Bodies, setup.Zones, materialIDToShield, simContext)
 	if err != nil {
-		return Data{}, *simContext, err
+		return Data{}, shield.SimulationContext{}, err
+	}
+
+	detectors, err := convertSetupDetectors(setup.Detectors, materialIDToShield, simContext)
+	if err != nil {
+		return Data{}, shield.SimulationContext{}, err
 	}
 
 	return Data{
 			Materials: materials,
 			Geometry:  geometry,
+			Detectors: detectors,
 			Beam:      setup.Beam,
 			Options:   setup.Options,
 		},

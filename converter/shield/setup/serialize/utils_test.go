@@ -22,5 +22,4 @@ func TestFloatToFixedWidthString(t *testing.T) {
 	} {
 		assert.Equal(t, tc.Expected, floatToFixedWidthString(tc.Number, tc.Width))
 	}
-
 }

@@ -37,6 +37,7 @@ func serializeData(data data.Data) map[string]string {
 	for fileName, serializeFunc := range map[string]func() string{
 		materialsDatFile: func() string { return serializeMat(data.Materials) },
 		geometryDatFile:  func() string { return serializeGeo(data.Geometry) },
+		detectorsDatFile: func() string { return serializeDetect(data.Detectors) },
 		beamDatFile:      func() string { return serializeBeam(data.Beam, data.Options) },
 	} {
 		serializeOutput := serializeFunc()

@@ -3,6 +3,7 @@ package detector
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/Palantir/palantir/model/simulation/common"
 )
 
@@ -12,6 +13,7 @@ type ID int64
 // Detector describes where and what values are scored during simulation.
 type Detector struct {
 	ID               ID              `json:"id"`
+	Name             string          `json:"name"`
 	DetectorGeometry Geometry        `json:"detectorGeometry"`
 	ScoredParticle   common.Particle `json:"particle"`
 	ScoringType      ScoringType     `json:"scoring"`
@@ -22,6 +24,7 @@ type Detector struct {
 func (m *Detector) UnmarshalJSON(b []byte) error {
 	type rawBody struct {
 		ID          ID              `json:"id"`
+		Name        string          `json:"name"`
 		GeometryRaw json.RawMessage `json:"detectorGeometry"`
 		ParticleRaw json.RawMessage `json:"particle"`
 		ScoringType json.RawMessage `json:"scoring"`
@@ -33,6 +36,7 @@ func (m *Detector) UnmarshalJSON(b []byte) error {
 		return err
 	}
 	m.ID = raw.ID
+	m.Name = raw.Name
 
 	matType, err := unmarshalDetectorGeometry(raw.GeometryRaw)
 	if err != nil {

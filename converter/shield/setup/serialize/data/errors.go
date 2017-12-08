@@ -7,9 +7,12 @@ type makeNewIDErrorFuncType = func(id interface{}, message string, formatedValue
 
 var newGeneralMatError = makeNewGeneralErrorFunc("mat.dat")
 var newMaterialIDError = makeNewIDErrorFunc("Material", "mat.dat")
+var newGeneralDetectorError = makeNewGeneralErrorFunc("detect.dat")
 
 var newBodyIDError = makeNewIDErrorFunc("Body", "geo.dat")
 var newZoneIDError = makeNewIDErrorFunc("Zone", "geo.dat")
+
+var newDetectorIDError = makeNewIDErrorFunc("Detector", "detect.dat")
 
 func makeNewGeneralErrorFunc(serializedFileName string) makeNewGeneralErrorFuncType {
 	return func(message string, formatedValues ...interface{}) error {

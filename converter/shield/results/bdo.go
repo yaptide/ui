@@ -3,6 +3,7 @@ package results
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"strings"
 
 	"github.com/Palantir/palantir/converter/shield"
@@ -44,6 +45,11 @@ func (p *bdoParser) Parse() error {
 	if err := p.validateShieldVersion(); err != nil {
 		return err
 	}
+
+	if err := p.findDetectorIDByFilename(); err != nil {
+		return err
+	}
+
 	p.Results.DetectorMetadata = p.metadata
 	p.metadata["filename"] = p.filename
 	for {
@@ -55,6 +61,15 @@ func (p *bdoParser) Parse() error {
 			return tokenErr
 		}
 	}
+}
+
+func (p *bdoParser) findDetectorIDByFilename() error {
+	if detectorID, found := p.context.MapFilenameToDetectorID[p.filename]; found {
+		log.Debug("[Parser][SHIELD] Found DetectorID: %d for filename", detectorID, p.filename)
+		p.Results.DetectorID = detectorID
+		return nil
+	}
+	return fmt.Errorf("Not found detectorID for filename %s", p.filename)
 }
 
 func (p *bdoParser) validateShieldVersion() error {

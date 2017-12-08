@@ -2,6 +2,7 @@ package detector
 
 import (
 	"encoding/json"
+
 	"github.com/Palantir/palantir/model/simulation/common"
 )
 
