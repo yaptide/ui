@@ -28,10 +28,21 @@ const coordinateValueLabels = [
   { label: 'y [cm]', field: 'y' },
   { label: 'z [cm]', field: 'z' },
 ];
+const coordinateSliceLabels = [
+  { label: 'x [slices]', field: 'x' },
+  { label: 'y [slices]', field: 'y' },
+  { label: 'z [slices]', field: 'z' },
+];
+/*
 const cylinderCoordinateValueLabels = [
   { label: 'radius [cm]', field: 'radius' },
   { label: 'angle [rad]', field: 'angle' },
   { label: 'z [cm]', field: 'z' },
+];*/
+const cylinderCoordinateSliceLabels = [
+  { label: 'radius [slices]', field: 'radius' },
+  { label: 'angle [slices]', field: 'angle' },
+  { label: 'z [slices]', field: 'z' },
 ];
 const rangeValueLabel = [
   { label: 'min [cm]', field: 'min' },
@@ -67,7 +78,7 @@ const GeomapDetectorGeometry = (props: Props & { detector: Geomap }) => (
       field="slices"
       onUpdate={props.detectorUpdate}
       rowLabel={t('workspace.editor.slices')}
-      valueLabels={coordinateValueLabels}
+      valueLabels={coordinateSliceLabels}
       values={props.detector.slices}
       valueError={props.detectorErrors.slices || EMPTY}
       numbersOnly
@@ -112,7 +123,7 @@ const CylinderDetectorGeometry = (props: Props & { detector: Cylinder }) => (
       field="slices"
       onUpdate={props.detectorUpdate}
       rowLabel={t('workspace.editor.slices')}
-      valueLabels={cylinderCoordinateValueLabels}
+      valueLabels={cylinderCoordinateSliceLabels}
       values={props.detector.slices}
       valueError={props.detectorErrors.slices || EMPTY}
       numbersOnly
@@ -147,7 +158,7 @@ const MeshDetectorGeometry = (props: Props & { detector: Mesh }) => (
       field="slices"
       onUpdate={props.detectorUpdate}
       rowLabel={t('workspace.editor.slices')}
-      valueLabels={coordinateValueLabels}
+      valueLabels={coordinateSliceLabels}
       values={props.detector.slices}
       valueError={props.detectorErrors.slices || EMPTY}
       numbersOnly

@@ -30,7 +30,7 @@ func (h *createFromExistingVersionHandler) ServeHTTP(w http.ResponseWriter, r *h
 	dbSession := h.Db.Copy()
 	defer dbSession.Close()
 
-	var copiedDbVersion *project.Version
+	var copiedDbVersion project.Version
 
 	createFromExistingVersionInDb := func() bool {
 		version, err := dbSession.Project().CreateVersionFrom(dbVersionID)

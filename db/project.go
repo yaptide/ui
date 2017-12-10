@@ -79,55 +79,55 @@ func (p Project) Collection() Collection {
 	return p.session.DB().C(projectCollectionName)
 }
 
-// FindAllByAccountID return *project.List, which contains all projects of accountID Account.
+// FindAllByAccountID return project.List, which contains all projects of accountID Account.
 // Return err, if any db error occurs.
-func (p Project) FindAllByAccountID(accountID bson.ObjectId) (*project.List, error) {
+func (p Project) FindAllByAccountID(accountID bson.ObjectId) (project.List, error) {
 	collection := p.Collection()
-	result := &project.List{Projects: []project.Project{}}
+	result := project.List{Projects: []project.Project{}}
 
 	selector := bson.M{accountIDKey: accountID}
 	err := collection.Find(selector).All(&result.Projects)
 	if err != nil {
-		return nil, err
+		return project.List{}, err
 	}
 	return result, nil
 }
 
-// Fetch *project.Project.
-// Return nil, if not found.
-// Return err, if any db error occurs.
-func (p Project) Fetch(projectID ProjectID) (*project.Project, error) {
+// Fetch project.Project.
+// Return err, if any db error occurs or notfound.
+func (p Project) Fetch(projectID ProjectID) (project.Project, error) {
 	collection := p.Collection()
-	result := &project.Project{}
+	result := project.Project{}
 
 	selector := projectID.generateSelector()
-	err := collection.Find(selector).One(result)
-	switch {
-	case err == ErrNotFound:
-		return nil, nil
-	case err != nil:
-		return nil, err
-	}
-	return result, nil
+	err := collection.Find(selector).One(&result)
+	return result, err
 }
 
 // Create insert project into db.
 // Return err, if any db error occurs.
-func (p Project) Create(project *project.Project) error {
+func (p Project) Create(project project.Project) error {
 	collection := p.Collection()
-	return collection.Insert(project)
+	insertErr := collection.Insert(project)
+	ensureErr := p.EnsureSingleEditableVersion(
+		ProjectID{Account: project.AccountID, Project: project.ID},
+	)
+	if insertErr != nil {
+		return insertErr
+	}
+	return ensureErr
 }
 
-// Update update *project.Project.
+// Update update project.Project.
 // Return db.ErrorNotFound, if project does not exists in db.
 // Return another err, if any other db error occurs.
-func (p Project) Update(project *project.Project) error {
+func (p Project) Update(project project.Project) error {
 	collection := p.Collection()
 	selector := ProjectID{Account: project.AccountID, Project: project.ID}.generateSelector()
 	return collection.Update(selector, project)
 }
 
-func (p Project) deleteVersionChilds(version *project.Version, projectID ProjectID) error {
+func (p Project) deleteVersionChilds(version project.Version, projectID ProjectID) error {
 	err := p.session.Setup().deleteByID(version.SetupID)
 	if err != nil {
 		return err
@@ -137,9 +137,9 @@ func (p Project) deleteVersionChilds(version *project.Version, projectID Project
 	return err
 }
 
-func (p Project) deleteAllVersionsWithChilds(dbProject *project.Project, projectID ProjectID) error {
+func (p Project) deleteAllVersionsWithChilds(dbProject project.Project, projectID ProjectID) error {
 	for _, version := range dbProject.Versions {
-		err := p.deleteVersionChilds(&version, projectID)
+		err := p.deleteVersionChilds(version, projectID)
 		if err != nil {
 			return err
 		}
@@ -147,16 +147,13 @@ func (p Project) deleteAllVersionsWithChilds(dbProject *project.Project, project
 	return nil
 }
 
-// Delete remove *project.Project from db.
+// Delete remove project.Project from db.
 // Return db.ErrorNotFound, if project does not exists in db.
 // Return another err, if any other db error occurs.
 func (p Project) Delete(projectID ProjectID) error {
 	collection := p.Collection()
 	dbProject, err := p.Fetch(projectID)
-	switch {
-	case dbProject == nil:
-		return ErrNotFound
-	case err != nil:
+	if err != nil {
 		return err
 	}
 
@@ -169,52 +166,48 @@ func (p Project) Delete(projectID ProjectID) error {
 	return collection.Remove(selector)
 }
 
-func extractVersionFromProject(dbProject *project.Project, id project.VersionID) *project.Version {
+func extractVersionFromProject(dbProject project.Project, id project.VersionID) (project.Version, error) {
 	if project.VersionID(len(dbProject.Versions)) <= id {
-		return nil
+		return project.Version{}, fmt.Errorf("Unknown version id")
 	}
-	return &dbProject.Versions[id]
+	return dbProject.Versions[id], nil
 }
 
-// FetchVersion find *project.Version.
+// FetchVersion find project.Version.
 // Return nil, if not found.
 // Return err, if any db error occurs.
-func (p Project) FetchVersion(versionID VersionID) (*project.Version, error) {
+func (p Project) FetchVersion(versionID VersionID) (project.Version, error) {
 	dbProject, err := p.Fetch(
 		ProjectID{
 			Account: versionID.Account,
 			Project: versionID.Project,
 		})
-	switch {
-	case err != nil:
-		return nil, err
-	case dbProject == nil:
-		return nil, nil
+	if err != nil {
+		return project.Version{}, err
 	}
-
-	return extractVersionFromProject(dbProject, versionID.Version), nil
+	return extractVersionFromProject(dbProject, versionID.Version)
 }
 
 type versionPrototype struct {
 	ID       project.VersionID
 	Status   project.VersionStatus
 	Settings project.Settings
-	Setup    *setup.Setup
-	Result   *result.Result
+	Setup    setup.Setup
+	Result   result.Result
 }
 
-func (p Project) createNewVersionFromPrototype(projectID ProjectID, prototype versionPrototype) (*project.Version, error) {
-	newVersion := &project.Version{ID: prototype.ID, Settings: prototype.Settings}
+func (p Project) createNewVersionFromPrototype(projectID ProjectID, prototype versionPrototype) (project.Version, error) {
+	newVersion := project.Version{ID: prototype.ID, Settings: prototype.Settings}
 
 	setupID, err := p.session.Setup().Create(prototype.Setup)
 	if err != nil {
-		return nil, err
+		return project.Version{}, err
 	}
 	newVersion.SetupID = setupID
 
 	resultID, err := p.session.Result().Create(prototype.Result)
 	if err != nil {
-		return nil, err
+		return project.Version{}, err
 	}
 	newVersion.ResultID = resultID
 
@@ -226,13 +219,10 @@ func (p Project) createNewVersionFromPrototype(projectID ProjectID, prototype ve
 // All childs are initialized by empty value.
 // Return nil, if project not found.
 // Return err, if any db error occurs.
-func (p Project) CreateVersion(projectID ProjectID) (*project.Version, error) {
+func (p Project) createVersion(projectID ProjectID) (project.Version, error) {
 	dbProject, err := p.Fetch(projectID)
-	switch {
-	case err != nil:
-		return nil, err
-	case dbProject == nil:
-		return nil, nil
+	if err != nil {
+		return project.Version{}, err
 	}
 
 	newVersionID := project.VersionID(len(dbProject.Versions))
@@ -245,13 +235,17 @@ func (p Project) CreateVersion(projectID ProjectID) (*project.Version, error) {
 	}
 	newVersion, err := p.createNewVersionFromPrototype(projectID, newVersionPrototype)
 	if err != nil {
-		return nil, err
+		return project.Version{}, err
 	}
-	dbProject.Versions = append(dbProject.Versions, *newVersion)
+	dbProject.Versions = append(dbProject.Versions, newVersion)
 
 	err = p.Update(dbProject)
 	if err != nil {
-		return nil, err
+		return project.Version{}, err
+	}
+	ensureErr := p.EnsureSingleEditableVersion(projectID)
+	if ensureErr != nil {
+		return project.Version{}, ensureErr
 	}
 	return newVersion, nil
 }
@@ -259,28 +253,25 @@ func (p Project) CreateVersion(projectID ProjectID) (*project.Version, error) {
 // CreateVersionFrom works like CreateVersion, but childs are copied from existingVersion childs.
 // Return nil, if version not found.
 // Return err, if any db error occurs.
-func (p Project) CreateVersionFrom(existingVersionID VersionID) (*project.Version, error) {
+func (p Project) CreateVersionFrom(existingVersionID VersionID) (project.Version, error) {
 	dbProject, err := p.Fetch(ProjectID{
 		Account: existingVersionID.Account,
 		Project: existingVersionID.Project,
 	})
-	switch {
-	case err != nil:
-		return nil, err
-	case dbProject == nil:
-		return nil, nil
+	if err != nil {
+		return project.Version{}, err
 	}
 
-	existingVersion := extractVersionFromProject(dbProject, existingVersionID.Version)
-	if existingVersion == nil {
-		return nil, nil
+	existingVersion, extractVersionErr := extractVersionFromProject(dbProject, existingVersionID.Version)
+	if extractVersionErr != nil {
+		return existingVersion, extractVersionErr
 	}
 
 	newVersionID := project.VersionID(len(dbProject.Versions))
 
 	existingSetup, err := p.session.Setup().fetchByID(existingVersion.SetupID)
 	if err != nil {
-		return nil, err
+		return project.Version{}, err
 	}
 
 	newVersionPrototype := versionPrototype{
@@ -292,28 +283,29 @@ func (p Project) CreateVersionFrom(existingVersionID VersionID) (*project.Versio
 	}
 	newVersion, err := p.createNewVersionFromPrototype(existingVersionID.toProjectID(), newVersionPrototype)
 	if err != nil {
-		return nil, err
+		return project.Version{}, err
 	}
-	dbProject.Versions = append(dbProject.Versions, *newVersion)
+	dbProject.Versions = append(dbProject.Versions, newVersion)
 
-	err = p.Update(dbProject)
-	if err != nil {
-		return nil, err
+	updateErr := p.Update(dbProject)
+	if updateErr != nil {
+		return project.Version{}, updateErr
+	}
+	ensureErr := p.EnsureSingleEditableVersion(existingVersionID.toProjectID())
+	if ensureErr != nil {
+		return project.Version{}, ensureErr
 	}
 	return newVersion, nil
 }
 
 // CreateVersionFromLatest creates version from latest.
-func (p Project) CreateVersionFromLatest(projectID ProjectID) (*project.Version, error) {
+func (p Project) CreateVersionFromLatest(projectID ProjectID) (project.Version, error) {
 	dbProject, err := p.Fetch(projectID)
-	switch {
-	case err != nil:
-		return nil, err
-	case dbProject == nil:
-		return nil, nil
+	if err != nil {
+		return project.Version{}, err
 	}
 	if len(dbProject.Versions) == 0 {
-		return p.CreateVersion(projectID)
+		return p.createVersion(projectID)
 	}
 	return p.CreateVersionFrom(VersionID{
 		Project: projectID.Project,
@@ -325,11 +317,8 @@ func (p Project) CreateVersionFromLatest(projectID ProjectID) (*project.Version,
 // UpdateVersion update version with the given versionID.
 func (p Project) UpdateVersion(versionID VersionID, newSettings project.Settings) error {
 	dbProject, err := p.Fetch(versionID.toProjectID())
-	switch {
-	case err != nil:
+	if err != nil {
 		return err
-	case dbProject == nil:
-		return ErrNotFound
 	}
 
 	if int(versionID.Version) >= len(dbProject.Versions) {
@@ -345,11 +334,8 @@ func (p Project) UpdateVersion(versionID VersionID, newSettings project.Settings
 // FetchVersionStatus fetch VersionStatus.
 func (p Project) FetchVersionStatus(versionID VersionID) (project.VersionStatus, error) {
 	version, err := p.FetchVersion(versionID)
-	switch {
-	case err != nil:
+	if err != nil {
 		return 0, err
-	case version == nil:
-		return 0, ErrNotFound
 	}
 	return version.Status, nil
 }
@@ -365,11 +351,36 @@ func (p Project) SetVersionStatus(versionID VersionID, newStatus project.Version
 	if updateErr != nil {
 		return updateErr
 	}
-	if !newStatus.IsRunnable() && newStatus != project.Pending && newStatus != project.Running {
-		_, err := p.CreateVersionFromLatest(ProjectID{Account: versionID.Account, Project: versionID.Project})
-		if err != nil {
-			return err
-		}
+
+	return p.EnsureSingleEditableVersion(versionID.toProjectID())
+}
+
+// EnsureSingleEditableVersion ensures that last version is only editable.
+func (p Project) EnsureSingleEditableVersion(projectID ProjectID) error {
+	projectObj, projectErr := p.Fetch(projectID)
+	if projectErr != nil {
+		return projectErr
 	}
-	return nil
+
+	versionsCount := len(projectObj.Versions)
+	lastVersionIndex := versionsCount - 1
+	switch {
+	case len(projectObj.Versions) == 0:
+		_, versionErr := p.createVersion(projectID)
+		return versionErr
+	case !projectObj.Versions[lastVersionIndex].Status.IsModifable():
+		_, versionErr := p.CreateVersionFromLatest(projectID)
+		return versionErr
+	case versionsCount >= 2 && projectObj.Versions[lastVersionIndex-1].Status.IsModifable():
+		return p.SetVersionStatus(
+			VersionID{
+				Account: projectID.Account,
+				Project: projectID.Project,
+				Version: project.VersionID(lastVersionIndex - 1),
+			},
+			project.Discarded,
+		)
+	default:
+		return nil
+	}
 }

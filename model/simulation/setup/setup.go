@@ -33,8 +33,8 @@ type Setup struct {
 }
 
 // NewEmptySetup constructor.
-func NewEmptySetup() *Setup {
-	return &Setup{
+func NewEmptySetup() Setup {
+	return Setup{
 		Materials: make(MaterialMap),
 		Bodies:    make(BodyMap),
 		Zones:     make(ZoneMap),

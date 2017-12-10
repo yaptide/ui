@@ -3,28 +3,29 @@ package results
 import (
 	"strings"
 
+	"github.com/Palantir/palantir/converter/shield"
 	"github.com/Palantir/palantir/model/simulation/result"
 	"github.com/Palantir/palantir/utils/log"
 )
 
 // ParseResults will parse results of shield simulation.
-func ParseResults(input *ShieldParserInput) (*ShieldParserOutput, error) {
-	log.Info("Start shield parser.")
+func ParseResults(files map[string]string, simulationContext shield.SimulationContext) (result.Result, error) {
+	log.Info("[Parser][Results] Start shield parser.")
 
 	simulationResult := result.NewEmptyResult()
 
-	for bdoFile, content := range input.bdo {
+	for bdoFile, content := range files {
 		if strings.Contains(bdoFile, ".bdo") {
-			log.Info("Start parsing result file %s", bdoFile)
-			parser := newBdoParser(bdoFile, []byte(content), input.serializeContext)
+			log.Debug("[Parser][Results] Start parsing result file %s", bdoFile)
+			parser := newBdoParser(bdoFile, []byte(content), simulationContext)
 			parseErr := parser.Parse()
 			if parseErr != nil {
-				log.Info(parseErr.Error())
+				log.Warning("[Parser][Results] file parsing error %s", parseErr.Error())
 			}
 			simulationResult.AddDetectorResults(parser.Results)
 		}
 	}
 
-	log.Info("Finished shield parser")
-	return &ShieldParserOutput{Results: simulationResult}, nil
+	log.Info("[Parser][Results] Finished shield parser")
+	return simulationResult, nil
 }

@@ -34,6 +34,7 @@ export function* createNewProject(action: { project: Project }): Generator<*, *,
     yield call(fetchProjects);
     yield call(router.push, 'project/list');
   } catch (error) {
+    yield call(fetchProjects);
     yield put({ type: actionType.CREATE_NEW_PROJECT_ERROR, error: error.response.data });
   }
 }
@@ -47,6 +48,7 @@ export function* updateProject(
     yield call(fetchProjects);
     yield call(router.push, 'project/list');
   } catch (error) {
+    yield call(fetchProjects);
     yield put({ type: actionType.UPDATE_PROJECT_ERROR, error: error.response.data });
   }
 }
@@ -58,6 +60,7 @@ export function* createNewVersion(action: { projectId: string }): Generator<*, *
     yield call(fetchProjects);
     yield call(router.push, `project/${action.projectId}`);
   } catch (error) {
+    yield call(fetchProjects);
     yield put({ type: actionType.CREATE_NEW_VERSION_ERROR, error: error.response.data });
   }
 }
@@ -74,6 +77,7 @@ export function* createNewVersionFrom(
     yield call(fetchProjects);
     yield call(router.push, `project/${action.projectId}`);
   } catch (error) {
+    yield call(fetchProjects);
     yield put({ type: actionType.CREATE_NEW_VERSION_FROM, error: error.response.data });
   }
 }
@@ -88,6 +92,7 @@ export function* startSimulation(
     yield put({ type: actionType.START_SIMULATION_SUCCESS });
     yield call(fetchProjects);
   } catch (error) {
+    yield call(fetchProjects);
     yield put({ type: actionType.START_SIMULATION_ERROR, error: error.response.data });
   }
 }
@@ -102,6 +107,7 @@ export function* updateVersionSettings(
     yield call(fetchProjects);
     yield call(router.push, `project/${projectId}`);
   } catch (error) {
+    yield call(fetchProjects);
     yield put({ type: actionType.UPDATE_VERSION_SETTINGS_ERROR, error: error.response.data });
   }
 }

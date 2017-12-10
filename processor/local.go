@@ -5,7 +5,6 @@ import (
 	"github.com/Palantir/palantir/converter/shield/results"
 	"github.com/Palantir/palantir/converter/shield/setup/serialize"
 	"github.com/Palantir/palantir/model/project"
-	"github.com/Palantir/palantir/runner"
 	"github.com/Palantir/palantir/runner/file"
 	"github.com/Palantir/palantir/utils/log"
 )
@@ -14,9 +13,8 @@ type localShieldRequest struct {
 	*mainRequestComponent
 	shieldInputFiles        shieldFiles
 	shieldResultFiles       shieldFiles
-	shieldSimulationContext *shield.SimulationContext
+	shieldSimulationContext shield.SimulationContext
 	runner                  *file.Runner
-	runnerInput             *file.LocalSimulationInput
 }
 
 func newLocalShieldRequest(mainRequestComponent *mainRequestComponent, runner *file.Runner) *localShieldRequest {
@@ -38,48 +36,39 @@ func (ls *localShieldRequest) ConvertModel() error {
 }
 
 func (ls *localShieldRequest) StartSimulation() error {
-	simulationInput := &file.LocalSimulationInput{
-		InputCommon:   runner.NewInputCommon(),
-		Files:         ls.shieldInputFiles,
-		CmdCreator:    generateShieldPath,
-		ResultChannel: make(chan *file.LocalSimulationResults),
+	simulationInput := file.LocalSimulationInput{
+		StatusUpdate: func(status project.VersionStatus) {
+			_ = ls.session.Project().SetVersionStatus(ls.versionID, status)
+		},
+
+		Files:      ls.shieldInputFiles,
+		CmdCreator: generateShieldPath,
+		ResultCallback: func(results file.LocalSimulationResults) {
+			ls.shieldResultFiles = results.Files
+			ls.ParseResults()
+		},
 	}
-	go handleStatusUpdateChannel(ls.session, ls.versionID, simulationInput.StatusUpdateChannel)
-	ls.runnerInput = simulationInput
 	simulationErr := ls.runner.StartSimulation(simulationInput)
 	if simulationErr != nil {
+		log.Warning("[Processor][localfile][Simulation] failed to schedule job")
 		return simulationErr
 	}
-
-	go func() {
-		simResults := <-simulationInput.ResultChannel
-		if len(simResults.Errors) == 0 {
-			_ = ls.session.Project().SetVersionStatus(ls.versionID, project.Success)
-		} else {
-			_ = ls.session.Project().SetVersionStatus(ls.versionID, project.Failure)
-		}
-		if simResults != nil {
-			ls.shieldResultFiles = simResults.Files
-			_ = ls.ParseResults()
-		}
-	}()
 	return nil
 }
 
-func (ls *localShieldRequest) ParseResults() error {
-	parserInput, constructErr := results.NewShieldParserInput(
-		ls.shieldResultFiles,
-		ls.shieldSimulationContext,
-	)
-	if constructErr != nil {
-		return constructErr
+func (ls *localShieldRequest) ParseResults() {
+	parserOutput, parserErr := results.ParseResults(ls.shieldResultFiles, ls.shieldSimulationContext)
+	if parserErr != nil {
+		log.Warning("[Processor][localfile][parser] error results parsing %v", parserErr)
+		_ = ls.session.Project().SetVersionStatus(ls.versionID, project.Failure)
+		return
 	}
-
-	parserOutput, _ := results.ParseResults(parserInput)
-	updateErr := ls.session.Result().Update(ls.versionID, parserOutput.Results)
+	updateErr := ls.session.Result().Update(ls.versionID, parserOutput)
 	if updateErr != nil {
-		return updateErr
+		log.Error("[Processor][localfile][parser] Unable to update results %v", updateErr)
+		_ = ls.session.Project().SetVersionStatus(ls.versionID, project.Failure)
+		return
 	}
-	log.Debug("[Result parser] output %v", parserOutput.Results)
-	return nil
+	_ = ls.session.Project().SetVersionStatus(ls.versionID, project.Failure)
+	log.Debug("[Processor][localfile][parser] Parser results %v", parserOutput)
 }

@@ -29,22 +29,22 @@ type Data struct {
 // Convert simulation setup model to easily serializable data,
 // which is input for shield serializer.
 // Return error, if setup data are not semantically correct.
-func Convert(setup *setup.Setup) (Data, *shield.SimulationContext, error) {
+func Convert(setup setup.Setup) (Data, shield.SimulationContext, error) {
 	err := checkSetupCompleteness(setup)
 	if err != nil {
-		return Data{}, nil, err
+		return Data{}, shield.SimulationContext{}, err
 	}
 
 	simContext := shield.NewSimulationContext()
 
 	materials, materialIDToShield, err := convertSetupMaterials(setup.Materials, simContext)
 	if err != nil {
-		return Data{}, nil, err
+		return Data{}, *simContext, err
 	}
 
 	geometry, err := convertSetupGeometry(setup.Bodies, setup.Zones, materialIDToShield, simContext)
 	if err != nil {
-		return Data{}, nil, err
+		return Data{}, *simContext, err
 	}
 
 	return Data{
@@ -53,11 +53,11 @@ func Convert(setup *setup.Setup) (Data, *shield.SimulationContext, error) {
 			Beam:      setup.Beam,
 			Options:   setup.Options,
 		},
-		simContext,
+		*simContext,
 		nil
 }
 
-func checkSetupCompleteness(setup *setup.Setup) error {
+func checkSetupCompleteness(setup setup.Setup) error {
 	createMissingError := func(mapName string) error {
 		return fmt.Errorf("[serializer]: %s map is null", mapName)
 	}

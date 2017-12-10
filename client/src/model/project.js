@@ -39,7 +39,8 @@ export type SimulationStatus = 'curre' | // local changes
   'success' |
   'failure' |
   'interrupted' |
-  'canceled'
+  'canceled' |
+  'discarded'
 
 export type ComputingLibrary = 'shield' | '';
 export type SimulationEngine = 'local' | 'plgrid' | '';

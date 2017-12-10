@@ -11,14 +11,14 @@ import (
 // Result store result of Serialize() function.
 type Result struct {
 	// SimulationContext is necessary to bind shield simulation results to model.
-	SimulationContext *shield.SimulationContext
+	SimulationContext shield.SimulationContext
 
 	//  Files map where: key is file name, value is file content.
 	Files map[string]string
 }
 
 // Serialize simulation setup.Setup to shield input files.
-func Serialize(setup *setup.Setup) (Result, error) {
+func Serialize(setup setup.Setup) (Result, error) {
 	data, simulationContext, err := data.Convert(setup)
 	if err != nil {
 		return Result{}, err

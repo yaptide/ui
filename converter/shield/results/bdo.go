@@ -18,8 +18,8 @@ type bdoParser struct {
 	content  []byte
 	metadata map[string]string
 	endiness binary.ByteOrder
-	context  *shield.SimulationContext
-	Results  *result.DetectorResult
+	context  shield.SimulationContext
+	Results  result.DetectorResult
 }
 
 var (
@@ -29,8 +29,8 @@ var (
 	shield0p6VersionTag = "0.6" + strings.Repeat("\000", 13)
 )
 
-func newBdoParser(name string, filecontent []byte, context *shield.SimulationContext) *bdoParser {
-	return &bdoParser{
+func newBdoParser(name string, filecontent []byte, context shield.SimulationContext) bdoParser {
+	return bdoParser{
 		context:  context,
 		filename: name,
 		content:  filecontent,
@@ -108,7 +108,7 @@ func (p *bdoParser) readNextToken() error {
 		return errors.NewApp(errMsg)
 	}
 
-	log.Info("Bdo token header tagId: %v, dataType: %v, tokenSize %v, numberOfItems: %v, itemSize: %v", tagID, dataType, tokenSize, numberOfItems, itemSize)
+	log.Debug("Bdo token header tagId: %v, dataType: %v, tokenSize %v, numberOfItems: %v, itemSize: %v", tagID, dataType, tokenSize, numberOfItems, itemSize)
 	splitedToken := p.splitTokenPayload(numberOfItems, p.content[24:tokenSize])
 
 	handler := tagsHandler[tagID]

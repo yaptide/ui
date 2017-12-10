@@ -12,6 +12,7 @@ const success: SimulationStatus = 'success';
 const failure: SimulationStatus = 'failure';
 const interrupted: SimulationStatus = 'interrupted';
 const canceled: SimulationStatus = 'canceled';
+const discarded: SimulationStatus = 'discarded';
 
 
 export const mapSimulationStateToColor: {[SimulationStatus]: string} = {
@@ -23,13 +24,14 @@ export const mapSimulationStateToColor: {[SimulationStatus]: string} = {
   [canceled]: Style.Colors.gray,
   [newState]: Style.Colors.gray,
   [edited]: Style.Colors.gray,
+  [discarded]: Style.Colors.black,
 };
 const stayOnProjectDetails = (projectId: string) => `#/project/${projectId}`;
 
 export const mapActionsToVersionState = [
   {
     action: 'useVersion',
-    condition: [running, pending, success, failure, interrupted, canceled],
+    condition: [running, pending, success, failure, interrupted, canceled, discarded],
     label: t('project.version.useVersionBtn'),
     url: stayOnProjectDetails,
   }, {
@@ -42,11 +44,13 @@ export const mapActionsToVersionState = [
     condition: [newState, edited, interrupted, canceled],
     label: t('project.version.startSimulationBtn'),
     url: stayOnProjectDetails,
+    lastOnly: true,
   }, {
     action: 'modifySettings',
     condition: [newState, edited, interrupted, canceled],
     label: t('project.version.updateSettingBtn'),
     url: (projectId: string, versionId: number) => `#/project/settings/${projectId}/${versionId}`,
+    lastOnly: true,
   },
 ];
 

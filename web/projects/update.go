@@ -34,15 +34,15 @@ func (h *updateProjectHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	updatedProject := &project.Project{}
-	ok = util.DecodeJSONRequest(w, r, updatedProject)
+	updatedProject := project.Project{}
+	ok = util.DecodeJSONRequest(w, r, &updatedProject)
 	if !ok {
 		return
 	}
 
 	dbSession := h.Db.Copy()
 	defer dbSession.Close()
-	var dbProject *project.Project
+	var dbProject project.Project
 
 	validateProject := func() bool {
 		mapFields := map[string]string{}

@@ -36,8 +36,11 @@ const (
 	// due to technical difficultes like broken connection or server crash.
 	Interrupted
 
-	// Canceled version status. Is is after request to cancel simulation.
+	// Canceled version status. It is after request to cancel simulation.
 	Canceled
+
+	// Discarded version status. It is after creatine new version while old is still editable.
+	Discarded
 )
 
 // IsModifable return true, if simulation has no started yet,
@@ -60,6 +63,7 @@ var mapVersionStatusToJSON = map[VersionStatus]string{
 	Failure:     "failure",
 	Interrupted: "interrupted",
 	Canceled:    "canceled",
+	Discarded:   "discarded",
 }
 
 var mapJSONToVersionStatus = map[string]VersionStatus{
@@ -71,6 +75,7 @@ var mapJSONToVersionStatus = map[string]VersionStatus{
 	"failure":     Failure,
 	"interrupted": Interrupted,
 	"canceled":    Canceled,
+	"discarded":   Discarded,
 }
 
 // String fmt.Stringer implementation.

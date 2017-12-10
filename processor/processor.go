@@ -48,7 +48,7 @@ func (p *SimulationProcessor) HandleSimulation(versionID db.VersionID) error {
 		setup:     setup,
 	}
 
-	log.Info("Start simulation request")
+	log.Debug("Start simulation request")
 	var request request
 	var simErr error
 	switch version.Settings.ComputingLibrary {
@@ -63,9 +63,13 @@ func (p *SimulationProcessor) HandleSimulation(versionID db.VersionID) error {
 	default:
 		simErr = fmt.Errorf("Invalid computing library")
 	}
-
 	if simErr != nil {
 		return simErr
+	}
+	updateStatusErr := dbSession.Project().SetVersionStatus(versionID, project.Pending)
+	if updateStatusErr != nil {
+		log.Debug("[API][StartSimulation] Error while setting job to pending %v", updateStatusErr.Error())
+		return updateStatusErr
 	}
 
 	log.Info("Start simulation request (serialization)")

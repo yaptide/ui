@@ -47,6 +47,7 @@ const en = {
       failure: 'Failure',
       interrupted: 'Simulation interrupted - server error',
       canceled: 'Canceled',
+      discarded: 'Discarded',
     },
     version: {
       number: 'Version: %{number}',

@@ -19,13 +19,14 @@ class ProjectDetailsLayout extends React.Component<Props> {
 
   render() {
     const { classes, project } = this.props;
-    const versions = project.versionIds.reverse().map((version) => {
+    const versions = project.versionIds.reverse().map((version, index) => {
       return (
         <VersionItemContainer
           key={version}
           versionId={version}
           projectId={project.id}
           classes={{ root: classes.item }}
+          last={index == 0}
         />
       );
     });

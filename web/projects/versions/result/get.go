@@ -1,10 +1,10 @@
 package result
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/Palantir/palantir/db"
+	"github.com/Palantir/palantir/utils/log"
 	"github.com/Palantir/palantir/web/auth/token"
 	"github.com/Palantir/palantir/web/pathvars"
 	"github.com/Palantir/palantir/web/server"
@@ -36,15 +36,13 @@ func (h *getResultHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Project: projectID,
 		Version: versionID,
 	})
-	switch {
-	case result == nil:
+	switch err {
+	case db.ErrNotFound:
 		w.WriteHeader(http.StatusNotFound)
-		return
-	case err != nil:
-		log.Print(err.Error())
+	case nil:
+		_ = util.WriteJSONResponse(w, http.StatusOK, result)
+	case err:
+		log.Error("[API][Results][GET] Unable to fetch results from db")
 		w.WriteHeader(http.StatusInternalServerError)
-		return
 	}
-	_ = util.WriteJSONResponse(w, http.StatusOK, result)
-
 }

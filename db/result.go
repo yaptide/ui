@@ -33,7 +33,7 @@ func (s Result) Collection() Collection {
 
 type dbResult struct {
 	ResultID bson.ObjectId `bson:"_id"`
-	*result.Result
+	result.Result
 }
 
 type rawDbResult struct {
@@ -59,20 +59,20 @@ func (d *dbResult) SetBSON(raw bson.Raw) error {
 		return nil
 	}
 
-	result := &result.Result{}
-	err = json.Unmarshal(decoded.RawResult, result)
+	resultObj := result.Result{}
+	err = json.Unmarshal(decoded.RawResult, &resultObj)
 	if err != nil {
 		return err
 	}
 
 	d.ResultID = decoded.ResultID
-	d.Result = result
+	d.Result = resultObj
 	return nil
 }
 
 // Create Result in db, and return ObjectId of created document.
 // Return err, if any db error occurs.
-func (s Result) Create(result *result.Result) (bson.ObjectId, error) {
+func (s Result) Create(result result.Result) (bson.ObjectId, error) {
 	collection := s.Collection()
 	newID := bson.NewObjectId()
 	newResult := dbResult{
@@ -89,24 +89,18 @@ func (s Result) Create(result *result.Result) (bson.ObjectId, error) {
 
 func (s Result) fetchResultIDFromVersion(versionID VersionID) (bson.ObjectId, error) {
 	version, err := s.session.Project().FetchVersion(versionID)
-	switch {
-	case err != nil:
+	if err != nil {
 		return "", err
-	case version == nil:
-		return "", ErrNotFound
 	}
 	return version.ResultID, nil
 }
 
-func (s Result) fetchByID(resultID bson.ObjectId) (*result.Result, error) {
+func (s Result) fetchByID(resultID bson.ObjectId) (result.Result, error) {
 	collection := s.Collection()
-	result := &dbResult{}
-	err := collection.Find(bson.M{"_id": resultID}).One(result)
-	switch {
-	case err == ErrNotFound:
-		return nil, nil
-	case err != nil:
-		return nil, err
+	result := dbResult{}
+	err := collection.Find(bson.M{"_id": resultID}).One(&result)
+	if err != nil {
+		return result.Result, err
 	}
 	return result.Result, nil
 }
@@ -114,10 +108,10 @@ func (s Result) fetchByID(resultID bson.ObjectId) (*result.Result, error) {
 // Fetch *result.Result.
 // Return nil, if not found.
 // Return err, if any db error occurs.
-func (s Result) Fetch(versionID VersionID) (*result.Result, error) {
+func (s Result) Fetch(versionID VersionID) (result.Result, error) {
 	resultID, err := s.fetchResultIDFromVersion(versionID)
 	if err != nil {
-		return nil, err
+		return result.Result{}, err
 	}
 	return s.fetchByID(resultID)
 }
@@ -141,7 +135,7 @@ func (s Result) Delete(versionID VersionID) error {
 // Update result.Result.
 // Return db.ErrorNotFound, if result does not exists in db.
 // Return another err, if any other db error occurs.
-func (s Result) Update(versionID VersionID, result *result.Result) error {
+func (s Result) Update(versionID VersionID, result result.Result) error {
 	collection := s.Collection()
 
 	resultID, err := s.fetchResultIDFromVersion(versionID)

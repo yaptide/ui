@@ -66,7 +66,12 @@ const ACTION_HANDLERS = {
     state.set('isServerSyncPending', false).set('serverSyncError', action.error)
   ),
   [actionType.SETUP_WORKSPACE]: (state, action) => (
-    fromJS({ projectId: action.projectId, versionId: action.versionId, ...emptyState() })
+    fromJS({
+      isEditable: action.isEditable,
+      projectId: action.projectId,
+      versionId: action.versionId,
+      ...emptyState(),
+    })
   ),
   [actionType.FETCH_SIMULATION_SETUP]: state => (
     state.merge({
@@ -140,8 +145,8 @@ const ACTION_HANDLERS = {
 };
 
 export const actionCreator = {
-  setupWorkspace(projectId: string, versionId: number) {
-    return { type: actionType.SETUP_WORKSPACE, projectId, versionId };
+  setupWorkspace(projectId: string, versionId: number, isEditable: bool) {
+    return { type: actionType.SETUP_WORKSPACE, projectId, versionId, isEditable };
   },
   syncServerWithLocal() {
     return { type: actionType.SYNC_WORKSPACE_WITH_SERVER };

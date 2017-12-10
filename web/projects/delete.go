@@ -34,7 +34,7 @@ func (h *deleteProjectHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	dbSession := h.Db.Copy()
 	defer dbSession.Close()
 
-	var dbProject *project.Project
+	var dbProject project.Project
 
 	getFromDb := func() bool {
 		project, err := dbSession.Project().Fetch(dbProjectID)

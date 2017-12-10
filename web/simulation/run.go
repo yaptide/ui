@@ -2,7 +2,6 @@ package simulation
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/Palantir/palantir/db"
 	"github.com/Palantir/palantir/model/project"
 	"github.com/Palantir/palantir/utils/errors"
+	"github.com/Palantir/palantir/utils/log"
 	"github.com/Palantir/palantir/web/auth/token"
 	"github.com/Palantir/palantir/web/server"
 	"github.com/Palantir/palantir/web/util"
@@ -35,6 +35,7 @@ func runSimulation(readRequest, checkVersionStatus, pushSimulationJob func() boo
 }
 
 func (h *runSimulationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.SetLoggerLevel(log.LevelDebug)
 	var dbVersionID db.VersionID
 	dbSession := h.Db.Copy()
 	defer dbSession.Close()
@@ -105,15 +106,9 @@ func (h *runSimulationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	}
 
 	pushSimulationJob := func() bool {
-		err := dbSession.Project().SetVersionStatus(dbVersionID, project.Pending)
-		if err != nil {
-			log.Print(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return false
-		}
-
 		simulationStartErr := h.SimulationProcessor.HandleSimulation(dbVersionID)
 		if simulationStartErr != nil {
+			log.Debug("[API][StartSimulation] Error while queuing simulation %v", simulationStartErr.Error())
 			var errMsg string
 			switch err := simulationStartErr.(type) {
 			case errors.Rest:

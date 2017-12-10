@@ -21,6 +21,7 @@ type Props = {
     label: string,
     url: (projectId: string, versionId: number) => string,
   }>,
+  last?: bool,
   classes: Object,
 };
 

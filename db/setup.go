@@ -33,7 +33,7 @@ func (s Setup) Collection() Collection {
 
 type dbSetup struct {
 	SetupID bson.ObjectId `bson:"_id"`
-	*setup.Setup
+	setup.Setup
 }
 
 type rawDbSetup struct {
@@ -53,26 +53,26 @@ func (d dbSetup) GetBSON() (interface{}, error) {
 }
 
 func (d *dbSetup) SetBSON(raw bson.Raw) error {
-	decoded := &rawDbSetup{}
-	err := raw.Unmarshal(decoded)
+	decoded := rawDbSetup{}
+	err := raw.Unmarshal(&decoded)
 	if err != nil {
 		return nil
 	}
 
-	setup := &setup.Setup{}
-	err = json.Unmarshal(decoded.RawSetup, setup)
+	setupObj := setup.Setup{}
+	err = json.Unmarshal(decoded.RawSetup, &setupObj)
 	if err != nil {
 		return err
 	}
 
 	d.SetupID = decoded.SetupID
-	d.Setup = setup
+	d.Setup = setupObj
 	return nil
 }
 
 // Create Setup in db, and return ObjectId of created document.
 // Return err, if any db error occurs.
-func (s Setup) Create(setup *setup.Setup) (bson.ObjectId, error) {
+func (s Setup) Create(setup setup.Setup) (bson.ObjectId, error) {
 	collection := s.Collection()
 	newID := bson.NewObjectId()
 	newSetup := dbSetup{
@@ -89,35 +89,29 @@ func (s Setup) Create(setup *setup.Setup) (bson.ObjectId, error) {
 
 func (s Setup) fetchSetupIDFromVersion(versionID VersionID) (bson.ObjectId, error) {
 	version, err := s.session.Project().FetchVersion(versionID)
-	switch {
-	case err != nil:
+	if err != nil {
 		return "", err
-	case version == nil:
-		return "", ErrNotFound
 	}
 	return version.SetupID, nil
 }
 
-func (s Setup) fetchByID(setupID bson.ObjectId) (*setup.Setup, error) {
+func (s Setup) fetchByID(setupID bson.ObjectId) (setup.Setup, error) {
 	collection := s.Collection()
-	setup := &dbSetup{}
-	err := collection.Find(bson.M{"_id": setupID}).One(setup)
-	switch {
-	case err == ErrNotFound:
-		return nil, nil
-	case err != nil:
-		return nil, err
+	dbsetup := dbSetup{}
+	err := collection.Find(bson.M{"_id": setupID}).One(&dbsetup)
+	if err != nil {
+		return setup.NewEmptySetup(), nil
 	}
-	return setup.Setup, nil
+	return dbsetup.Setup, nil
 }
 
-// Fetch *setup.Setup.
+// Fetch setup.Setup.
 // Return nil, if not found.
 // Return err, if any db error occurs.
-func (s Setup) Fetch(versionID VersionID) (*setup.Setup, error) {
+func (s Setup) Fetch(versionID VersionID) (setup.Setup, error) {
 	setupID, err := s.fetchSetupIDFromVersion(versionID)
 	if err != nil {
-		return nil, err
+		return setup.NewEmptySetup(), err
 	}
 	return s.fetchByID(setupID)
 }
@@ -141,7 +135,7 @@ func (s Setup) Delete(versionID VersionID) error {
 // Update setup.Setup.
 // Return db.ErrorNotFound, if setup does not exists in db.
 // Return another err, if any other db error occurs.
-func (s Setup) Update(versionID VersionID, setup *setup.Setup) error {
+func (s Setup) Update(versionID VersionID, setup setup.Setup) error {
 	collection := s.Collection()
 
 	setupID, err := s.fetchSetupIDFromVersion(versionID)

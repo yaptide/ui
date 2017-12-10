@@ -30,8 +30,8 @@ func createProject(validateProject, createInDb, writeProjectResponse func() bool
 }
 
 func (h *createProjectHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	newProject := &project.Project{}
-	ok := util.DecodeJSONRequest(w, r, newProject)
+	newProject := project.Project{}
+	ok := util.DecodeJSONRequest(w, r, &newProject)
 	if !ok {
 		return
 	}

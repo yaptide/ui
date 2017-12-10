@@ -4,8 +4,8 @@ package file
 import (
 	"fmt"
 	"github.com/Palantir/palantir/config"
-	"github.com/Palantir/palantir/runner"
-	"log"
+	"github.com/Palantir/palantir/model/project"
+	"github.com/Palantir/palantir/utils/log"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 
 // Runner starts and supervises running of shield simulations.
 type Runner struct {
-	jobsChannel        chan *LocalSimulationInput
+	jobsChannel        chan LocalSimulationInput
 	workerReleased     chan bool
 	maxNumberOfWorkers int64
 	workers            map[*worker]bool
@@ -22,25 +22,27 @@ type Runner struct {
 
 // LocalSimulationInput localSimulationInput.
 type LocalSimulationInput struct {
-	*runner.InputCommon
-	Files         map[string]string
-	CmdCreator    func(workDir string) []string
-	ResultChannel chan *LocalSimulationResults
+	Files          map[string]string
+	CmdCreator     func(workDir string) []string
+	ResultCallback func(LocalSimulationResults)
+	StatusUpdate   func(project.VersionStatus)
 }
 
 // LocalSimulationResults localSimulationResults.
 type LocalSimulationResults struct {
-	*runner.ResultsCommon
-	Files map[string]string
+	Files     map[string]string
+	LogStdOut string
+	LogStdErr string
+	Errors    map[string]string
 }
 
 // SetupRunner is RunnerSupervisor constructor.
 func SetupRunner(config *config.Config) *Runner {
 	runner := &Runner{
-		jobsChannel:        make(chan *LocalSimulationInput, maxNumberOfPendingJobs),
+		jobsChannel:        make(chan LocalSimulationInput, maxNumberOfPendingJobs),
 		workerReleased:     make(chan bool, maxNumberOfPendingJobs),
 		maxNumberOfWorkers: 2,
-		workers:            make(map[*worker]bool),
+		workers:            map[*worker]bool{},
 	}
 
 	for i := int64(0); i < runner.maxNumberOfWorkers; i++ {
@@ -52,10 +54,10 @@ func SetupRunner(config *config.Config) *Runner {
 }
 
 // StartSimulation starts local simulation using shield library.
-func (r *Runner) StartSimulation(simultion *LocalSimulationInput) error {
+func (r *Runner) StartSimulation(simultion LocalSimulationInput) error {
 	// TODO: potentialy blocking
 	if len(r.jobsChannel) < maxNumberOfPendingJobs {
-		log.Println("[Runner.Local.SHIELD] Add pending simulation")
+		log.Debug("[Runner.Local.SHIELD] Add pending simulation")
 		r.jobsChannel <- simultion //pending}
 		return nil
 	}
@@ -70,7 +72,7 @@ func (r *Runner) listenForNewJobs(config *config.Config) {
 		if createErr != nil {
 			continue
 		}
-		log.Println("[Runner.Local.SHIELD] Start simulation")
+		log.Debug("[Runner][Local][SHIELD] Start simulation")
 		go newWorker.startWorker(r.workerReleased)
 	}
 }

@@ -25,6 +25,8 @@ type Props = {
   activeWorkspaceTab?: string,
   isWorkspaceLoading?: bool,
   isSyncPending?: bool,
+  isEditable: bool,
+  isLoggedIn: bool,
   syncWorkspace: () => void,
   children?: React.Component<*, *, *>,
   classes: Object,
@@ -47,6 +49,7 @@ class WorkspaceLayout extends React.Component<Props> {
             style={styles.button}
             color="primary"
             raised
+            disabled={!this.props.isEditable || !this.props.isLoggedIn}
             onTouchTap={this.props.syncWorkspace}
           >
             {t('save')}
@@ -134,6 +137,8 @@ const styles = (theme: Object) => ({
 const mapStateToProps = (state) => {
   return {
     isSyncPending: state.workspace.get('isServerSyncPending'),
+    isEditable: state.workspace.get('isEditable'),
+    isLoggedIn: !!state.auth.get('token'),
   };
 };
 

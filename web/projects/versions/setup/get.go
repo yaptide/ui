@@ -25,6 +25,6 @@ func (h *getSetupHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		util.HandleDbError(w, err)
 		return
 	}
-	_ = util.WriteJSONResponse(w, http.StatusOK, setup)
+	_ = util.WriteJSONResponse(w, http.StatusOK, &setup)
 
 }

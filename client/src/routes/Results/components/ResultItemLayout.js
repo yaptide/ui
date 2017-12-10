@@ -3,6 +3,7 @@
 import React from 'react';
 import Card, { CardHeader, CardContent, CardActions } from 'material-ui/Card';
 import Button from 'material-ui/Button';
+import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/styles';
 import type { DetectorResultsInfo, DetectorResultId } from 'model/result';
 import * as _ from 'lodash';
@@ -38,18 +39,22 @@ class ResultItemLayout extends React.Component<Props> {
           </Button>
         </CardActions>
         <CardContent>
-          <p key="header" className={classes.infoTextHeader}>Detector dimensions</p>
+          <Typography key="header" className={classes.infoTextHeader}>Detector dimensions</Typography>
           {
             _.map(this.props.detectorOverview.dimensions, (metadata, key) => {
-              return <p key={key} className={classes.infoText} >{key}: {metadata}</p>;
+              return (
+                <Typography key={key} className={classes.infoText} >{key}: {metadata}</Typography>
+              );
             })
           }
         </CardContent>
         <CardContent>
-          <p key="header" className={classes.infoTextHeader}>Detector metadata</p>
+          <Typography key="header" className={classes.infoTextHeader}>Detector metadata</Typography>
           {
             _.map(this.props.detectorOverview.metadata, (metadata, key) => {
-              return <p key={key} className={classes.infoText} >{key}: {metadata}</p>;
+              return (
+                <Typography key={key} className={classes.infoText} >{key}: {metadata}</Typography>
+              );
             })
           }
         </CardContent>

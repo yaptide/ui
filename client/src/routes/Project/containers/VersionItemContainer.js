@@ -18,6 +18,7 @@ type Props = {
   startSimulation: () => void,
   setupWorkspace: () => void,
   createNewVersionFrom: () => void,
+  last?: bool,
   classes?: Object,
 }
 
@@ -67,6 +68,7 @@ class VersionItemContainer extends React.Component<Props> {
     }
     const buttonHandlers = mapActionsToVersionState
       .filter(item => _.includes(item.condition, this.props.version.status))
+      .filter(item => (item.lastOnly ? this.props.last : true))
       .map(item => ({ label: item.label, handler: this.handlers[item.action], url: item.url }));
 
     return (
@@ -76,6 +78,7 @@ class VersionItemContainer extends React.Component<Props> {
         version={this.props.version}
         loadIntoWorkspace={this.loadIntoWorkspace}
         buttonHandlers={buttonHandlers}
+        last={this.props.last}
         classes={this.props.classes}
       />
     );
@@ -95,7 +98,7 @@ const mapDispatchToProps = (dispatch, props) => {
       actionCreator.startSimulation(props.projectId, props.versionId),
     ),
     setupWorkspace: () => dispatch(
-      workspaceActionCreator.setupWorkspace(props.projectId, props.versionId),
+      workspaceActionCreator.setupWorkspace(props.projectId, props.versionId, props.last),
     ),
     createNewVersionFrom: () => dispatch(
       actionCreator.createNewVersionFrom(props.projectId, props.versionId),

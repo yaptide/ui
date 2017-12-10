@@ -19,8 +19,8 @@ func (h *updateSetupHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	updatedSetup := &setup.Setup{}
-	ok = util.DecodeJSONRequest(w, r, updatedSetup)
+	updatedSetup := setup.Setup{}
+	ok = util.DecodeJSONRequest(w, r, &updatedSetup)
 	if !ok {
 		return
 	}
