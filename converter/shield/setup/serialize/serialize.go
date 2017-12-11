@@ -43,6 +43,11 @@ func serializeData(data data.Data) map[string]string {
 		serializeOutput := serializeFunc()
 		files[fileName] = serializeOutput
 	}
-	log.Debug("Files %+v", files)
+
+	log.Debug("Files:\n")
+	for filename, content := range files {
+		log.Debug("%s:\n%s\n\n", filename, content)
+	}
+
 	return files
 }

@@ -13,7 +13,6 @@ var zoneTestCases = test.MarshallingCases{
 		&Zone{
 			ID:         ID(1),
 			ParentID:   ID(0),
-			Childrens:  []ID{1, 2, 3, 4, 5, 987},
 			Name:       "name",
 			BaseID:     body.ID(1),
 			MaterialID: material.ID(2),
@@ -24,14 +23,6 @@ var zoneTestCases = test.MarshallingCases{
 		`{
 			"id": 1,
 			"parentId": 0,
-			"children": [
-				1,
-				2,
-				3,
-				4,
-				5,
-				987
-			],
 			"name": "name",
 			"baseId": 1,
 			"materialId": 2,

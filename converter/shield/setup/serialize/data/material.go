@@ -70,6 +70,8 @@ func convertSetupMaterials(setupMat setup.MaterialMap, simContext *shield.Simula
 		case material.Predefined:
 			if g.PredefinedID != "vacuum" {
 				predefMaterialsIds = append(predefMaterialsIds, id)
+			} else {
+				materialIDToShield[id] = shield.MaterialID(predefinedMaterialsToShieldICRU["vacuum"])
 			}
 		case material.Compound:
 			compoundMaterialsIds = append(compoundMaterialsIds, id)

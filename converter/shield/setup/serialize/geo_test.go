@@ -29,15 +29,16 @@ const geoTc1Expected = `    0    0          xxxxxxxxxxxxxxxxxxxxxxxxxxxxNAMExxxx
              99999.5                                                  
   SPH    4       20.       31.      0.99      0.01                    
   END
-  AAA    1  +1      +3      -4    OR+2      +3      -4    
-  BAA    2  +5    OR+6    
-  CAA    3  +7      -8      -1      -2      -5      -6    OR+7      -8      -3    
-         3  -5      -6    OR+7      -8      +4      -5      -6    
+  AAA    1     +1     +3     -4OR   +2     +3     -4
+  BAA    2     +5OR   +6
+  CAA    3     +7     -8     -1     -2     -5     -6OR   +7     -8     -3
+         3     -5     -6OR   +7     -8     +4     -5     -6
   END
     0    1    2    3    4    5    6    7    8    9   10   11   12   13
    14   15   16   17   18   19
     0    1    2    3    4    5    6    7    8    9   10   11   12   13
-   14   15   16   17   18   19`
+   14   15   16   17   18   19
+`
 
 func TestSerializeGeo(t *testing.T) {
 	type testCase struct {

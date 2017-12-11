@@ -35,7 +35,6 @@ func TestConvertSetupZonesToZoneTreeForest(t *testing.T) {
 			ZoneMap: createZoneMap(&zone.Zone{
 				ID:         zone.ID(1),
 				ParentID:   zone.ID(0),
-				Childrens:  []zone.ID{},
 				BaseID:     body.ID(1),
 				MaterialID: material.ID(2),
 				Construction: []*zone.Operation{
@@ -65,7 +64,6 @@ func TestConvertSetupZonesToZoneTreeForest(t *testing.T) {
 				&zone.Zone{
 					ID:         zone.ID(1),
 					ParentID:   zone.ID(0),
-					Childrens:  []zone.ID{2},
 					BaseID:     body.ID(1),
 					MaterialID: material.ID(2),
 					Construction: []*zone.Operation{

@@ -15,6 +15,7 @@ func serializeGeo(geometry data.Geometry) string {
 	serializeBodies(w, geometry.Bodies)
 	serializeZones(w, geometry.Zones)
 	serializeZoneToMaterialPairs(w, geometry.ZoneToMaterialPairs)
+	w.WriteString("\n")
 
 	return w.String()
 }
@@ -105,7 +106,8 @@ func serializeZones(w io.Writer, zones []data.Zone) {
 			}
 
 			for _, construction := range currentSlice {
-				fmt.Fprintf(w, "%2s%-1s%-5d", construction.Operation, construction.Sign, construction.BodyID)
+				number := fmt.Sprintf("%s%d", construction.Sign, construction.BodyID)
+				fmt.Fprintf(w, "%2s%5s", construction.Operation, number)
 			}
 		}
 	}

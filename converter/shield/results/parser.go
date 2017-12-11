@@ -17,7 +17,7 @@ func ParseResults(files map[string]string, simulationContext shield.SimulationCo
 	for bdoFile, content := range files {
 		if strings.Contains(bdoFile, ".bdo") {
 			log.Debug("[Parser][Results] Start parsing result file %s", bdoFile)
-			parser := newBdoParser(bdoFile, []byte(content), simulationContext)
+			parser := newBdoParser(bdoFile[:len(bdoFile)-4], []byte(content), simulationContext)
 			parseErr := parser.Parse()
 			if parseErr != nil {
 				log.Warning("[Parser][Results] file parsing error %s", parseErr.Error())

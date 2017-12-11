@@ -74,21 +74,26 @@ func (z *zoneConverter) createZoneTree(zoneModel *zone.Zone) (*zoneTree, error) 
 		return nil, newZoneIDError(zoneModel.ID, "Cannot find material: %d", zoneModel.MaterialID)
 	}
 
-	childrens := []*zoneTree{}
-	if zoneModel.Childrens != nil {
-		for _, childModelID := range zoneModel.Childrens {
-			childModel, found := z.zoneMap[childModelID]
-			if !found {
-				return nil, newZoneIDError(zoneModel.ID, "Can not find Children {ID: %d}", childModelID)
-			}
-
-			child, err := z.createZoneTree(childModel)
-			if err != nil {
-				return nil, err
-			}
-
-			childrens = append(childrens, child)
+	childModelIDs := []zone.ID{}
+	for _, zone := range z.zoneMap {
+		if zone.ParentID == zoneModel.ID {
+			childModelIDs = append(childModelIDs, zone.ID)
 		}
+	}
+
+	childrens := []*zoneTree{}
+	for _, childModelID := range childModelIDs {
+		childModel, found := z.zoneMap[childModelID]
+		if !found {
+			return nil, newZoneIDError(zoneModel.ID, "Can not find Children {ID: %d}", childModelID)
+		}
+
+		child, err := z.createZoneTree(childModel)
+		if err != nil {
+			return nil, err
+		}
+
+		childrens = append(childrens, child)
 	}
 
 	return &zoneTree{
