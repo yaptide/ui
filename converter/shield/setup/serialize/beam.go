@@ -43,7 +43,7 @@ var beamCardSerializers = map[string]beamCardSerializerFunc{
 		return ""
 	},
 	"DELTAE": func(beam setup_beam.Beam, options setup_options.SimulationOptions) string {
-		return floatToFixedWidthString(float64(options.MeanEnergyLoss), 8)
+		return floatToFixedWidthString(float64(options.MeanEnergyLoss/100), 8)
 	},
 	"DEMIN": func(beam setup_beam.Beam, options setup_options.SimulationOptions) string {
 		return floatToFixedWidthString(options.MinEnergyLoss, 8)
@@ -85,7 +85,7 @@ var beamCardSerializers = map[string]beamCardSerializerFunc{
 	},
 	"NSTAT": func(beam setup_beam.Beam, options setup_options.SimulationOptions) string {
 		return fmt.Sprintf("%8d", options.NumberOfGeneratedParticles) +
-			fmt.Sprintf("%8d", options.NumberOfRecordedParticles)
+			fmt.Sprintf("%8d", -1)
 	},
 	"NUCRE": func(beam setup_beam.Beam, options setup_options.SimulationOptions) string {
 		if options.NuclearReactionsOn {

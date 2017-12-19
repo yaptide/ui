@@ -142,6 +142,14 @@ function isWorkspaceLoading(state: { workspace: Map<string, mixed> }) {
   return dataStatus === 'none' || dataStatus === 'loading';
 }
 
+function isSimulationStarting(state: { workspace: Map<string, mixed> }) {
+  return state.workspace.get('isSimulationStartPending');
+}
+
+function isSimulationValid() {
+  return true; // TODO: validator
+}
+
 export default {
   visualisationSelector,
   bodyByConstructionPath,
@@ -161,4 +169,6 @@ export default {
   allScoredParticleTypesPrinatable,
   allScoringTypesPrintable,
   isWorkspaceLoading,
+  isSimulationStarting,
+  isSimulationValid,
 };

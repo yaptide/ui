@@ -12,6 +12,7 @@ import (
 func TestSuccessfullDeafultBeamSerialization(t *testing.T) {
 	serialized := serializeBeam(beam.Default, options.Default)
 	log.Warning("\n" + serialized)
+	log.Warning("\n" + expectedTest1)
 
 	assert.Equal(t, expectedTest1, serialized)
 }
@@ -19,22 +20,23 @@ func TestSuccessfullDeafultBeamSerialization(t *testing.T) {
 const expectedTest1 = `APCORR                 0
 BEAMDIR               0.      0.
 BEAMPOS               0.      0.      0.
-BEAMSIGMA             1.      1.
-DELTAE              0.05
+BEAMSIGMA             0.      0.
+DELTAE              0.01
 DEMIN              0.025
 JPART0                 2
-MSCAT                  1
+MSCAT                  2
 NEUTRFAST              1
 NEUTRLCUT             0.
-NSTAT               1000    1000
+NSTAT               1000      -1
 NUCRE                  1
-STRAGG                 1
+STRAGG                 2
 TMAX0               100.      0.
 `
 
 func TestSuccessfullBeamSerialization(t *testing.T) {
 	serialized := serializeBeam(beamTest2, optionsTest2)
 	log.Warning("\n" + serialized)
+	log.Warning("\n" + expectedTest2)
 
 	assert.Equal(t, expectedTest2, serialized)
 }
@@ -57,17 +59,15 @@ var beamTest2 = beam.Beam{
 }
 
 var optionsTest2 = options.SimulationOptions{
-	AntyparticleCorrectionOn:       true,
-	NuclearReactionsOn:             false,
-	MeanEnergyLoss:                 0.9,
-	MinEnergyLoss:                  0.112,
-	ScatteringType:                 options.MoliereScattering,
-	EnergyStraggling:               options.VavilovStraggling,
-	FastNeutronTransportOn:         false,
-	LowEnergyNeutronCutOff:         11.11,
-	RecordSecondaryNeutronCreation: true,
-	NumberOfGeneratedParticles:     0,
-	NumberOfRecordedParticles:      0,
+	AntyparticleCorrectionOn:   true,
+	NuclearReactionsOn:         false,
+	MeanEnergyLoss:             90,
+	MinEnergyLoss:              0.112,
+	ScatteringType:             options.MoliereScattering,
+	EnergyStraggling:           options.VavilovStraggling,
+	FastNeutronTransportOn:     false,
+	LowEnergyNeutronCutOff:     11.11,
+	NumberOfGeneratedParticles: 0,
 }
 
 const expectedTest2 = `APCORR                 1
@@ -81,7 +81,7 @@ JPART0                25
 MSCAT                  2
 NEUTRFAST              0
 NEUTRLCUT          11.11
-NSTAT                  0       0
+NSTAT                  0      -1
 NUCRE                  0
 STRAGG                 2
 TMAX0               100.      1.

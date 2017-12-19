@@ -80,58 +80,57 @@ class WorkspaceBeamLayout extends React.Component<Props> {
     return (
       <div className={classes.root} >
         <Paper className={classes.item} >
-          <FormV3Input
-            field="position"
-            numbersOnly
-            rowLabel={t('simulation.positionLabel')}
-            valueLabels={coordinateValueLabels}
-            values={beam.direction && beam.direction.position}
-            valueError={{}}
-            onUpdate={this.updateDirection}
-          />
-          <FormV3DoubleInput
-            field="direction"
-            numbersOnly
-            rowLabel={t('workspace.editor.angle')}
-            valueLabels={angleDirection}
-            values={beam.direction}
-            valueError={{}}
-            onUpdate={this.props.updateBeamField}
-          />
-        </Paper>
-        <Paper className={classes.item} >
-          <FormSelect
-            type="distribution"
-            value={beam.divergence.distribution}
-            label={t('workspace.editor.distribution')}
-            options={distributionOptions}
-            onChange={this.updateDistribution}
-          />
-          <FormV3DoubleInput
-            field="divergence"
-            numbersOnly
-            rowLabel={t('simulation.distributionParameters')}
-            valueLabels={distributionSigma}
-            values={beam.divergence}
-            valueError={{}}
-            onUpdate={this.props.updateBeamField}
-          />
-        </Paper>
-        <Paper className={classes.item} >
-          <ParticleEditor
-            particle={beam.particleType}
-            particleOptions={filterConcreteParticles(particleOptions)}
-            particleUpdate={this.updateParticle}
-          />
-          <FormV3DoubleInput
-            field="beam"
-            numbersOnly
-            rowLabel={t('workspace.editor.initialEnergy')}
-            valueLabels={particleInitialEnergies}
-            values={beam}
-            valueError={{}}
-            onUpdate={this.updateInitialEnergy}
-          />
+          <form>
+            <ParticleEditor
+              particle={beam.particleType}
+              particleOptions={filterConcreteParticles(particleOptions)}
+              particleUpdate={this.updateParticle}
+            />
+            <FormV3DoubleInput
+              field="beam"
+              numbersOnly
+              rowLabel={t('workspace.editor.initialEnergy')}
+              valueLabels={particleInitialEnergies}
+              values={beam}
+              valueError={{}}
+              onUpdate={this.updateInitialEnergy}
+            />
+            <FormV3Input
+              field="position"
+              numbersOnly
+              rowLabel={t('simulation.positionLabel')}
+              valueLabels={coordinateValueLabels}
+              values={beam.direction && beam.direction.position}
+              valueError={{}}
+              onUpdate={this.updateDirection}
+            />
+            <FormV3DoubleInput
+              field="direction"
+              numbersOnly
+              rowLabel={t('workspace.editor.angle')}
+              valueLabels={angleDirection}
+              values={beam.direction}
+              valueError={{}}
+              onUpdate={this.props.updateBeamField}
+            />
+            <FormSelect
+              fullWidth
+              type="distribution"
+              value={beam.divergence.distribution}
+              label={t('workspace.editor.distribution')}
+              options={distributionOptions}
+              onChange={this.updateDistribution}
+            />
+            <FormV3DoubleInput
+              field="divergence"
+              numbersOnly
+              rowLabel={t('simulation.distributionParameters')}
+              valueLabels={distributionSigma}
+              values={beam.divergence}
+              valueError={{}}
+              onUpdate={this.props.updateBeamField}
+            />
+          </form>
         </Paper>
       </div>
     );
@@ -140,22 +139,13 @@ class WorkspaceBeamLayout extends React.Component<Props> {
 
 const styles = (theme: Object) => ({
   root: {
-    margin: theme.spacing.unit,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flexStart',
   },
   item: {
-    flex: '0 0 100%',
-    margin: theme.spacing.unit,
+    marginTop: theme.spacing.unit * 2,
+    '&:first-child': {
+      marginTop: 0,
+    },
     padding: theme.spacing.unit * 2,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'stretch',
-  },
-  stretched: {
-    display: 'flex',
-    flexDirection: 'row',
   },
 });
 

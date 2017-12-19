@@ -61,7 +61,7 @@ class PredefinedMaterialEditorLayout extends React.Component<Props> {
                 <Chip
                   className={classes.largeChip}
                   label={materialName}
-                  onRequestDelete={this.props.removeMaterialSelection}
+                  onDelete={this.props.removeMaterialSelection}
                 />
                 <div className={classes.flex} />
                 <ColorPicker

@@ -27,6 +27,7 @@ class ResultItemLayout extends React.Component<Props> {
       <Card className={classes.root} elevation={4} >
         <CardHeader
           title={this.props.detectorOverview.metadata.filename}
+          subheader=" "
         />
         <CardActions>
           <Button

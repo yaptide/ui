@@ -2,25 +2,40 @@
 
 import React from 'react';
 import { CircularProgress } from 'material-ui/Progress';
-import Style from 'styles';
+import { withStyles } from 'material-ui/styles';
+import AppLayout from 'pages/AppLayout';
 
-class LoadingCircle extends React.Component<{}> {
+type Props = {
+  classes: Object,
+}
+
+class LoadingCircle extends React.Component<Props> {
+  props: Props;
+
   render() {
+    const classes = this.props.classes;
     return (
-      <div style={styles.container}>
-        <CircularProgress size={70} />
-      </div>
+      <AppLayout classes={{ root: classes.layout }} >
+        <div className={classes.root}>
+          <CircularProgress size={70} />
+        </div>
+      </AppLayout>
     );
   }
 }
 
 const styles = {
-  container: {
-    ...Style.Flex.elementEqual,
-    ...Style.Flex.rootColumn,
+  root: {
+    display: 'flex',
+    flexDirection: 'row',
+    flex: '1 0 0',
     justifyContent: 'center',
     alignItems: 'center',
   },
+  layout: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
 };
 
-export default LoadingCircle;
+export default withStyles(styles)(LoadingCircle);

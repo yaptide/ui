@@ -11,7 +11,6 @@ export type SimulationOptions = {
   lowEnergyNeutronCutOff: number,
   recordSecondaryNeutronCreation: bool,
   numberOfGeneratedParticles: number,
-  numberOfRecordedParticles: number
 };
 
 export type ScatteringType =

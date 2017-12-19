@@ -43,6 +43,10 @@ func (ls *localShieldRequest) StartSimulation() error {
 		Files:      ls.shieldInputFiles,
 		CmdCreator: generateShieldPath,
 		ResultCallback: func(results file.LocalSimulationResults) {
+			if len(results.Errors) > 0 {
+				_ = ls.session.Project().SetVersionStatus(ls.versionID, project.Failure)
+				return
+			}
 			ls.shieldResultFiles = results.Files
 			ls.ParseResults()
 		},

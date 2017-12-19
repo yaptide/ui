@@ -12,8 +12,8 @@ export function createDetector(
     id: newDetectorId,
     name: 'Unnamed detector',
     detectorGeometry: { type: '' },
-    particle: { type: '' },
-    scoring: { type: '' },
+    particle: { type: 'all' },
+    scoring: { type: 'dose' },
   });
   return state.setIn(['detectors', String(newDetectorId)], detectorImmutable);
 }

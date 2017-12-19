@@ -1,53 +1,44 @@
 /* @flow */
 
 import React from 'react';
-import WorkspaceLayout from 'pages/WorkspaceLayout';
-import WorkspaceDetectorsLayout from '../components/WorkspaceDetectorsLayout';
+import { connect } from 'react-redux';
+import DetectorsListLayout from '../components/DetectorsListLayout';
+import selector from '../../selector';
+import { actionCreator } from '../../reducer';
 
 type Props = {
+  detectors: Array<number>,
+  addDetector: () => void,
   classes?: Object,
-};
-
-type State = {
-  shouldShowVisualisation: bool,
-  visualisedDetectors: {[string]: bool},
 }
 
-class WorkspaceDetectorsContainer extends React.Component<Props, State> {
+class DetectorsListContainer extends React.Component<Props> {
   props: Props
-  state: State = {
-    shouldShowVisualisation: true,
-    visualisedDetectors: {},
-  }
-
-  updateVisualisationStatus = (detectorId: string, setVisible: bool) => {
-    this.setState({
-      visualisedDetectors: {
-        ...this.state.visualisedDetectors,
-        [String(detectorId)]: setVisible,
-      },
-    });
-  }
-
-  showVisualisation = (setVisible: bool) => {
-    this.setState({ shouldShowVisualisation: setVisible });
-  }
-
   render() {
     return (
-      <WorkspaceLayout
-        activeWorkspaceTab="detectors"
-      >
-        <WorkspaceDetectorsLayout
-          shouldShowVisualisation={this.state.shouldShowVisualisation}
-          visualisedDetectors={this.state.visualisedDetectors}
-          updateVisualisationStatus={this.updateVisualisationStatus}
-          showVisualisation={this.showVisualisation}
-          classes={this.props.classes}
-        />
-      </WorkspaceLayout>
+      <DetectorsListLayout
+        detectors={this.props.detectors}
+        addDetector={this.props.addDetector}
+        classes={this.props.classes}
+      />
     );
   }
 }
 
-export default WorkspaceDetectorsContainer;
+const mapStateToProps = (state) => {
+  return {
+    detectors: selector.allDetectorsIds(state),
+    geometry: selector.visualisationSelector(state),
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addDetector: () => dispatch(actionCreator.createDetector()),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(DetectorsListContainer);

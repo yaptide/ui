@@ -4,7 +4,7 @@ import React from 'react';
 import { t } from 'i18n';
 import { FormInput } from 'components/Form';
 import Button from 'material-ui/Button';
-import Style from 'styles';
+import { withStyles } from 'material-ui/styles';
 
 type Props = {
   new?: bool,
@@ -12,14 +12,16 @@ type Props = {
   description: string,
   updateProject: (value: string, type: string) => void,
   submit: () => void,
+  classes: Object,
 }
 
 class ProjectEditor extends React.Component<Props> {
   props: Props
 
   render() {
+    const classes = this.props.classes;
     return (
-      <div style={styles.container} >
+      <div className={classes.root} >
         <FormInput
           type="name"
           label={t('project.form.name')}
@@ -35,7 +37,7 @@ class ProjectEditor extends React.Component<Props> {
           fullWidth
           multiline
         />
-        <div style={styles.btnRow} >
+        <div className={classes.btnRow} >
           <Button
             onTouchTap={this.props.submit}
             color="primary"
@@ -49,16 +51,18 @@ class ProjectEditor extends React.Component<Props> {
   }
 }
 
-const styles = {
-  container: {
-    ...Style.Flex.rootColumn,
+const styles = (theme: Object) => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
     alignItems: 'stretch',
-    padding: Style.Dimens.spacing.normal,
+    padding: theme.spacing.unit * 2,
   },
   btnRow: {
-    ...Style.Flex.rootRow,
+    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'flex-end',
   },
-};
+});
 
-export default ProjectEditor;
+export default withStyles(styles)(ProjectEditor);

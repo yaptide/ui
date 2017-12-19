@@ -11,8 +11,9 @@ import { actionType } from './reducer';
 export function* ensureProjects(): Generator<*, *, *> {
   const projects = yield select(store => store.project.get('projects'));
   if (!projects) {
-    yield call(fetchProjects);
+    return yield call(fetchProjects);
   }
+  return undefined;
 }
 
 export function* fetchProjects(): Generator<*, *, *> {
@@ -24,7 +25,9 @@ export function* fetchProjects(): Generator<*, *, *> {
     yield put({ type: actionType.FETCH_PROJECTS_SUCCESS, projects });
   } catch (error) {
     yield put({ type: actionType.FETCH_PROJECTS_ERROR, error: error.response.data });
+    return error;
   }
+  return undefined;
 }
 
 export function* createNewProject(action: { project: Project }): Generator<*, *, *> {
@@ -82,21 +85,6 @@ export function* createNewVersionFrom(
   }
 }
 
-export function* startSimulation(
-  action: { projectId: string, versionId: number },
-): Generator<*, *, *> {
-  try {
-    yield call(api.post, endpoint.SIMULATION_RUN, {
-      projectId: action.projectId, versionId: String(action.versionId),
-    });
-    yield put({ type: actionType.START_SIMULATION_SUCCESS });
-    yield call(fetchProjects);
-  } catch (error) {
-    yield call(fetchProjects);
-    yield put({ type: actionType.START_SIMULATION_ERROR, error: error.response.data });
-  }
-}
-
 export function* updateVersionSettings(
   action: { settings: Settings, projectId: string, versionId: number },
 ): Generator<*, *, *> {
@@ -136,10 +124,6 @@ export function* watchCreateNewVersionFrom(): Generator<*, *, *> {
   yield call(takeLatest, actionType.CREATE_NEW_VERSION_FROM, createNewVersionFrom);
 }
 
-export function* watchStartSimulation(): Generator<*, *, *> {
-  yield call(takeLatest, actionType.START_SIMULATION, startSimulation);
-}
-
 export function* watchUpdateVersionSettings(): Generator<*, *, *> {
   yield call(takeLatest, actionType.UPDATE_VERSION_SETTINGS, updateVersionSettings);
 }
@@ -154,14 +138,15 @@ export function* watchRunningSimulations(): Generator<*, *, *> {
       const projectIds = yield select(projectIdsSelector);
       const isSimulationRunning = !projectIds.every((projectId) => {
         const project = projects.get(projectId);
-        const lastVersionId = project.getIn(['project', 'versionIds'], List()).last();
-        if (lastVersionId !== undefined) {
-          const version = project.getIn(['versions', String(lastVersionId)]);
-          if (version && (version.get('status') === 'running' || version.get('status') === 'pending')) {
-            return false;
+        return project.getIn(['project', 'versionIds'], List()).every((versionId) => {
+          if (versionId !== undefined) {
+            const version = project.getIn(['versions', String(versionId)]);
+            if (version && (version.get('status') === 'running' || version.get('status') === 'pending')) {
+              return false;
+            }
           }
-        }
-        return true;
+          return true;
+        });
       });
       if (isSimulationRunning) {
         yield call(fetchProjects);
@@ -180,7 +165,6 @@ export default function* projectSaga(): Generator<*, *, *> {
     fork(watchUpdateProject),
     fork(watchCreateNewVersion),
     fork(watchCreateNewVersionFrom),
-    fork(watchStartSimulation),
     fork(watchUpdateVersionSettings),
     fork(watchRunningSimulations),
   ];

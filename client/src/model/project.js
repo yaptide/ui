@@ -31,8 +31,7 @@ export type Settings = {
   simulationEngine: SimulationEngine,
 }
 
-export type SimulationStatus = 'curre' | // local changes
-  'new' |
+export type SimulationStatus = 'new' |
   'edited' |
   'running' |
   'pending' |

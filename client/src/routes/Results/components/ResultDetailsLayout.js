@@ -6,6 +6,7 @@ import { withStyles } from 'material-ui/styles';
 import type { Score, DimensionsInfo } from 'model/result';
 import { ChartInterface } from 'components/Chart';
 import { generateDetectorChartLabels } from 'utils/simulation/detectorInfo';
+import AppLayout from 'pages/AppLayout';
 
 type Props = {
   scored: Score,
@@ -19,18 +20,19 @@ class ResultDetailsLayout extends React.Component<Props> {
   render() {
     const classes = this.props.classes;
     return (
-      <div className={classes.root} >
-        <Paper className={classes.item} elevation={4} >
-          <ChartInterface
-            data={this.props.scored}
-            numberOfDimensions={this.props.dimensions.numberOfDimensions}
-            classes={{ hoc: classes.chart }}
-            labels={generateDetectorChartLabels(({ name: 'test', shape: null }: any))}
-          />
-        </Paper>
-        {
-          // TODO: remove this whenall data hav implemented representation
-          /*
+      <AppLayout classes={{ root: classes.layout }}>
+        <div className={classes.root} >
+          <Paper className={classes.item} elevation={4} >
+            <ChartInterface
+              data={this.props.scored}
+              numberOfDimensions={this.props.dimensions.numberOfDimensions}
+              classes={{ root: classes.chart }}
+              labels={generateDetectorChartLabels(({ name: 'test', shape: null }: any))}
+            />
+          </Paper>
+          {
+            // TODO: remove this whenall data hav implemented representation
+            /*
           this.props.scored.map((scored2) => {
               const block = scored2.map((scored1) => {
                 return <p>{`[${scored1.join(', ')}]`}</p>;
@@ -38,8 +40,9 @@ class ResultDetailsLayout extends React.Component<Props> {
               return [<p>[</p>, ...block, <p>],</p>];
             })
             */
-        }
-      </div>
+          }
+        </div>
+      </AppLayout>
     );
   }
 }
@@ -58,6 +61,10 @@ const styles = (theme: Object) => ({
   },
   chart: {
     flex: 1,
+  },
+  layout: {
+    display: 'flex',
+    flexDirection: 'column',
   },
 });
 

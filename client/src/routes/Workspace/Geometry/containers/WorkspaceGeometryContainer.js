@@ -2,44 +2,42 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import WorkspaceLayout from 'pages/WorkspaceLayout';
 import WorkspaceGeometryLayout from '../components/WorkspaceGeometryLayout';
 import selector from '../../selector';
 import { actionCreator } from '../../reducer';
 
 type Props = {
-  isWorkspaceLoading: bool,
-  fetchSimulationSetup: () => void,
+  zoneIds: Array<number>,
+  addZone: () => void,
+  goToParentLayer: () => void,
+  classes?: Object,
 }
 
 class WorkspaceGeometryContainer extends React.Component<Props> {
   props: Props
 
-  componentWillMount() {
-    this.props.fetchSimulationSetup();
-  }
-
   render() {
     return (
-      <WorkspaceLayout
-        activeWorkspaceTab="geometry"
-        isWorkspaceLoading={this.props.isWorkspaceLoading}
-      >
-        { this.props.isWorkspaceLoading ? null : <WorkspaceGeometryLayout /> }
-      </WorkspaceLayout>
+      <WorkspaceGeometryLayout
+        zoneIds={this.props.zoneIds}
+        addZone={this.props.addZone}
+        goToParentLayer={this.props.goToParentLayer}
+        classes={this.props.classes}
+      />
     );
   }
 }
 
 const mapStateToProps = (state) => {
   return {
-    isWorkspaceLoading: selector.isWorkspaceLoading(state),
+    zoneIds: selector.allCurrentLayerZonesIds(state).toJS(),
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchSimulationSetup: () => dispatch(actionCreator.fetchSimulationSetup()),
+    addZone: () => dispatch(actionCreator.createZone()),
+    goToParentLayer: () => dispatch(actionCreator.goToParentLayer()),
   };
 };
 

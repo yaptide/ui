@@ -22,11 +22,9 @@ elif [ "$1" = "client:run" ]; then
     PALANTIR_BASE_URL=http://localhost:3000 npm start
 elif [ "$1" = "server:run" ]; then
     cd $SCRIPT_PATH
-    echo "{\"port\": \"3001\", \"dbName\": \"palantir-db-dev\", \"dbUsername\": \"palantir\", \"dbPassword\": \"password\", \"dbPort\": \"3005\"}" > $SCRIPT_PATH/conf.json
+    echo "{\"port\": \"3000\", \"dbName\": \"palantir-db-dev\", \"dbUsername\": \"palantir-db-dev\", \"dbPassword\": \"password\", \"dbPort\": \"3005\"}" > $SCRIPT_PATH/conf.json
     startDB "dev" "3005"
-    govendor sync
-    shift
-    DEV=true go run main.go $@
+    DEV=true go run main.go
 elif [ "$1" = "server:run:dev" ]; then
     # go get github.com/codegangsta/gin
     echo "{\"port\": \"3001\", \"dbName\": \"palantir-db-dev\", \"dbUsername\": \"palantir-db-dev\", \"dbPassword\": \"password\", \"dbPort\": \"3005\"}" > $SCRIPT_PATH/conf.json

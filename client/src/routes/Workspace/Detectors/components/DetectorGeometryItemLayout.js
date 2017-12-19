@@ -41,12 +41,16 @@ const cylinderCoordinateValueLabels = [
 ];*/
 const cylinderCoordinateSliceLabels = [
   { label: 'radius [slices]', field: 'radius' },
-  { label: 'angle [slices]', field: 'angle' },
+  { label: 'angle [slices]', field: 'angle', disabled: true },
   { label: 'z [slices]', field: 'z' },
 ];
 const rangeValueLabel = [
   { label: 'min [cm]', field: 'min' },
   { label: 'max [cm]', field: 'max' },
+];
+const rangeAngleValueLabel = [
+  { label: 'min [rad]', field: 'min', disabled: true },
+  { label: 'max [rad]', field: 'max', disabled: true },
 ];
 // const radiusValueLabel = { label: 'radius', field: 'radius' };
 // const heightValueLabel = { label: 'height', field: 'height' };
@@ -103,7 +107,7 @@ const CylinderDetectorGeometry = (props: Props & { detector: Cylinder }) => (
       field="angle"
       onUpdate={props.detectorUpdate}
       rowLabel={t('workspace.editor.angle')}
-      valueLabels={rangeValueLabel}
+      valueLabels={rangeAngleValueLabel}
       values={props.detector.angle}
       valueError={props.detectorErrors.angle || EMPTY}
       numbersOnly

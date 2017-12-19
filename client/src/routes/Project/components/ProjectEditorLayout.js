@@ -2,36 +2,44 @@
 
 import React from 'react';
 import Paper from 'material-ui/Paper';
-import Style from 'styles';
+import { withStyles } from 'material-ui/styles';
+import AppLayout from 'pages/AppLayout';
 
 type Props = {
   children: React$Element<*>,
+  classes: Object,
 }
 
 class ProjectEditorLayout extends React.Component<Props> {
   props: Props
 
   render() {
+    const classes = this.props.classes;
     return (
-      <div style={styles.formWrapper} >
-        <Paper style={styles.paper} elevation={4} >
-          {this.props.children}
-        </Paper>
-      </div>
+      <AppLayout>
+        <div className={classes.root} >
+          <Paper className={classes.paper} elevation={4} >
+            {this.props.children}
+          </Paper>
+        </div>
+      </AppLayout>
     );
   }
 }
 
 
-const styles = {
-  formWrapper: {
-    width: Style.Dimens.fixedPageWidth,
-    alignSelf: 'center',
-    padding: Style.Dimens.spacing.normal,
+const styles = () => ({
+  root: {
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   paper: {
-    padding: Style.Dimens.spacing.large,
+    marginTop: 100,
+    width: 700,
   },
-};
+});
 
-export default ProjectEditorLayout;
+export default withStyles(styles)(ProjectEditorLayout);

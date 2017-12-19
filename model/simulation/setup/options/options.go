@@ -36,31 +36,23 @@ type SimulationOptions struct {
 	// LowEnergyNeutronCutOff ...
 	// SHIELD doc: NEUTRLCUT
 	LowEnergyNeutronCutOff float64 `json:"lowEnergyNeutronCutOff"`
-	// RecordSecondaryNeutronCreation ...
-	// SHIELD doc: MAKELN
-	RecordSecondaryNeutronCreation bool `json:"recordSecondaryNeutronCreation"`
 
 	// NumberOfGeneratedParticles ...
 	// SHIELD doc: NTSTAT
 	NumberOfGeneratedParticles int64 `json:"numberOfGeneratedParticles"`
-	// NumberOfRecordedParticles ...
-	// SHIELD doc: NTSTAT
-	NumberOfRecordedParticles int64 `json:"numberOfRecordedParticles"`
 }
 
 // Default ...
 var Default = SimulationOptions{
-	AntyparticleCorrectionOn:       false,
-	NuclearReactionsOn:             true,
-	MeanEnergyLoss:                 0.05,
-	MinEnergyLoss:                  0.025,
-	ScatteringType:                 GaussianScattering,
-	EnergyStraggling:               GaussianStraggling,
-	FastNeutronTransportOn:         true,
-	LowEnergyNeutronCutOff:         0,
-	RecordSecondaryNeutronCreation: false,
-	NumberOfGeneratedParticles:     1000,
-	NumberOfRecordedParticles:      1000,
+	AntyparticleCorrectionOn:   false,
+	NuclearReactionsOn:         true,
+	MeanEnergyLoss:             1,
+	MinEnergyLoss:              0.025,
+	ScatteringType:             MoliereScattering,
+	EnergyStraggling:           VavilovStraggling,
+	FastNeutronTransportOn:     true,
+	LowEnergyNeutronCutOff:     0,
+	NumberOfGeneratedParticles: 1000,
 }
 
 // ScatteringType ...

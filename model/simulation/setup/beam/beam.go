@@ -33,8 +33,8 @@ var Default = Beam{
 		Phi: 0, Theta: 0, Position: common.Point{X: 0, Y: 0, Z: 0},
 	},
 	Divergence: Divergence{
-		SigmaX:       1,
-		SigmaY:       1,
+		SigmaX:       0,
+		SigmaY:       0,
 		Distribution: common.GaussianDistribution,
 	},
 	ParticleType:       common.PredefinedParticle("proton"),

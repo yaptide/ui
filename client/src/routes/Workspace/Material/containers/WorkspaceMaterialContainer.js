@@ -2,16 +2,13 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import WorkspaceLayout from 'pages/WorkspaceLayout';
 import WorkspaceMaterialLayout from '../components/WorkspaceMaterialLayout';
 import MaterialEditorModal from './MaterialEditorModal';
 import selector from '../../selector';
-import { actionCreator } from '../../reducer';
 
 type Props = {
-  isWorkspaceLoading: bool,
-  fetchSimulationSetup: () => void,
   materialIds: Array<number>,
+  classes?: Object,
 };
 
 type State = {
@@ -26,10 +23,6 @@ class WorkspaceMaterialContainer extends React.Component<Props, State> {
     editedMaterialId: undefined,
   }
 
-  componentWillMount() {
-    this.props.fetchSimulationSetup();
-  }
-
   openCreatorModal = (materialId?: number) => {
     this.setState({ isMaterialCreatorOpen: true, editedMaterialId: materialId });
   }
@@ -39,43 +32,28 @@ class WorkspaceMaterialContainer extends React.Component<Props, State> {
   }
 
   render() {
-    if (this.props.isWorkspaceLoading) {
-      return <WorkspaceLayout activeWorkspaceTab="material" isWorkspaceLoading />;
-    }
     return (
-      <WorkspaceLayout
-        activeWorkspaceTab="material"
-        isWorkspaceLoading={this.props.isWorkspaceLoading}
+      <WorkspaceMaterialLayout
+        openMaterialCreator={this.openCreatorModal}
+        materials={this.props.materialIds}
+        classes={this.props.classes}
       >
-        <WorkspaceMaterialLayout
-          openMaterialCreator={this.openCreatorModal}
-          materials={this.props.materialIds}
-        />
         <MaterialEditorModal
           isModalOpen={this.state.isMaterialCreatorOpen}
           materialId={this.state.editedMaterialId}
           closeModal={this.closeCreatorModal}
         />
-      </WorkspaceLayout>
+      </WorkspaceMaterialLayout>
     );
   }
 }
 
 const mapStateToProps = (state) => {
-  console.log(selector.allSelectedMaterialsPrintable(state));
   return {
-    isWorkspaceLoading: selector.isWorkspaceLoading(state),
     materialIds: selector.allMaterialIds(state),
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    fetchSimulationSetup: () => dispatch(actionCreator.fetchSimulationSetup()),
   };
 };
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps,
 )(WorkspaceMaterialContainer);

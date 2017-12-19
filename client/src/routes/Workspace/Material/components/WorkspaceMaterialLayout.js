@@ -9,6 +9,7 @@ import MaterialItemContainer from '../containers/MaterialItemContainer';
 type Props = {
   openMaterialCreator: (materialId: ?number) => void,
   materials: Array<number>,
+  children?: React$Element<*>,
   classes: Object,
 }
 
@@ -31,15 +32,17 @@ class WorkspaceMaterialLayout extends React.Component<Props> {
     });
     return (
       <div className={classes.root}>
+        {materialItems}
+        {this.props.children}
         <Button
           onClick={this.openMaterialCreator}
           href="#/workspace/material"
           color="contrast"
           raised
+          className={classes.item}
         >
           <IconAdd />
         </Button>
-        {materialItems}
       </div>
     );
   }
@@ -47,16 +50,13 @@ class WorkspaceMaterialLayout extends React.Component<Props> {
 
 const styles = (theme: Object) => ({
   root: {
-    margin: theme.spacing.unit * 3,
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'stretch',
-    flex: '1 0 auto',
   },
   item: {
     marginTop: theme.spacing.unit * 2,
-    '&:last-child': {
-      marginBottom: theme.spacing.unit * 2,
+    '&:first-child': {
+      marginTop: 0,
     },
   },
 });

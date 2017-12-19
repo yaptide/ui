@@ -81,7 +81,7 @@ const en = {
   simulation: {
     energyBase: 'Energy base [MeV]',
     energySigma: 'Energy sigma [MeV]',
-    meanEnergyLoss: 'Mean energy loss (fraction in range (0, 1))',
+    meanEnergyLoss: 'Mean energy loss [%]',
     minEnergyLoss: 'Minimal energy loss [MeV]',
     positionLabel: 'Position',
     distributionParameters: 'Distribution parameters',

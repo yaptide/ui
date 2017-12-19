@@ -3,6 +3,7 @@
 import React from 'react';
 import { withStyles } from 'material-ui/styles';
 import type { DetectorResultId } from 'model/result';
+import AppLayout from 'pages/AppLayout';
 import ResultItemContainer from '../containers/ResultItemContainer';
 
 type Props = {
@@ -16,17 +17,19 @@ class ResultListLayout extends React.Component<Props> {
   render() {
     const classes = this.props.classes;
     return (
-      <div className={classes.root} >
-        {
-          this.props.detectorIds.map(id => (
-            <ResultItemContainer
-              key={id}
-              detectorId={id}
-              classes={{ root: classes.item }}
-            />
-          ))
-        }
-      </div>
+      <AppLayout>
+        <div className={classes.root} >
+          {
+            this.props.detectorIds.map(id => (
+              <ResultItemContainer
+                key={id}
+                detectorId={id}
+                classes={{ root: classes.item }}
+              />
+            ))
+          }
+        </div>
+      </AppLayout>
     );
   }
 }

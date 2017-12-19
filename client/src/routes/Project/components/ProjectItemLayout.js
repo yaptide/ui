@@ -25,6 +25,7 @@ class ProjectItemLayout extends React.Component<Props> {
       <Card className={classes.root} elevation={4} >
         <CardHeader
           title={this.props.project.name}
+          subheader=" "
         />
         <CardContent>
           <Typography>

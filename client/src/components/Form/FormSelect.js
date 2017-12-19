@@ -13,6 +13,7 @@ type Props = {
   label: any,
   onChange: (value: any, type: any) => void,
   options: Array<{ field: string, label: string }>,
+  fullWidth?: bool,
   classes: Object,
 };
 
@@ -33,9 +34,12 @@ class FormSelect extends React.Component<Props, State> {
   }
 
   render() {
-    const { value, options, label, classes } = this.props;
+    const { value, options, label, classes, fullWidth } = this.props;
     return (
-      <FormControl className={classes.root} >
+      <FormControl
+        className={classes.root}
+        fullWidth={fullWidth}
+      >
         <InputLabel htmlFor="select">{label}</InputLabel>
         <Select
           onChange={this.onChange}

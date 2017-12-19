@@ -9,7 +9,7 @@ type Props = {
   field: string,
   numbersOnly?: bool,
   rowLabel: string,
-  valueLabels: Array<{ label: string, field: string }>,
+  valueLabels: Array<{ label: string, field: string, disabled?: bool }>,
   values: Object,
   valueError: Object,
   onUpdate: (field: string, value: Object) => void,
@@ -39,6 +39,7 @@ class FormV3Input extends React.Component<Props> {
               key={index}
               type={item.field}
               label={item.label}
+              disabled={item.disabled}
               onChange={this.onUpdate}
               value={this.props.values[item.field]}
               errorText={this.props.valueError[item.field]}

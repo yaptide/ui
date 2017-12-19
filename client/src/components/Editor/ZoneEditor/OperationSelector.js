@@ -67,7 +67,7 @@ class OperationSelector extends React.Component<Props, State> {
           open={this.state.open}
           anchorEl={this.state.anchorEl}
           onRequestClose={this.handleRequestClose}
-          className={classes.menuContent}
+          classes={{ paper: classes.menuContent }}
         >
           <MenuItem
             className={classes.selector}

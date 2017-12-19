@@ -5,9 +5,10 @@ import { connect } from 'react-redux';
 import { Header } from 'components/Header';
 import { MuiThemeProvider, createMuiTheme, withStyles } from 'material-ui/styles';
 import grey from 'material-ui/colors/grey';
-import Style from 'styles';
 import { actionType } from 'routes/Auth/reducer';
+import { ToastContainer } from 'react-toastify';
 import cls from '../styles/core.scss'; // eslint-disable-line no-unused-vars
+import { Alert } from '../components/EventElements';
 
 const appPalette = {
   type: 'dark',
@@ -42,8 +43,10 @@ class AppLayout extends React.Component<Props> {
     const { children, classes, ...props } = this.props;
     return (
       <MuiThemeProvider theme={appTheme}>
-        <div className={classes.layout}>
+        <div className={classes.root}>
           <Header {...props} />
+          <Alert />
+          <ToastContainer />
           {children}
         </div>
       </MuiThemeProvider>
@@ -52,11 +55,9 @@ class AppLayout extends React.Component<Props> {
 }
 
 const styles = (theme: Object) => ({
-  layout: {
-    ...Style.Flex.rootColumn,
-    ...Style.Flex.elementEqual,
+  root: {
     overflow: 'auto',
-    minHeight: theme.breakpoints.values.sm,
+    minHeight: '100%',
     minWidth: theme.breakpoints.values.lg,
     background: '#2B2B2B',
   },

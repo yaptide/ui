@@ -14,8 +14,10 @@ type ScoringTypeRecord struct {
 
 var predefinedParticles = []PredefinedParticleRecord{
 	PredefinedParticleRecord{"all", "All particles"},
-	PredefinedParticleRecord{"neutron", "Neutron"},
 	PredefinedParticleRecord{"proton", "Proton"},
+	PredefinedParticleRecord{"he_4", "He-4"},
+	PredefinedParticleRecord{"heavy_ion", "Heavy ion"},
+	PredefinedParticleRecord{"neutron", "Neutron"},
 	PredefinedParticleRecord{"pion_pi_minus", "Pion π−"},
 	PredefinedParticleRecord{"pion_pi_plus", "Pion π+"},
 	PredefinedParticleRecord{"pion_pi_zero", "Pion π0"},
@@ -37,21 +39,19 @@ var predefinedParticles = []PredefinedParticleRecord{
 	PredefinedParticleRecord{"deuteron", "Deuteron"},
 	PredefinedParticleRecord{"triton", "Triton"},
 	PredefinedParticleRecord{"he_3", "He-3"},
-	PredefinedParticleRecord{"he_4", "He-4"},
-	PredefinedParticleRecord{"heavy_ion", "Heavy ion"},
 }
 
 var predefinedScoring = []ScoringTypeRecord{
+	ScoringTypeRecord{"dose", "Dose"},
 	ScoringTypeRecord{"energy", "Energy"},
 	ScoringTypeRecord{"fluence", "Fluence"},
-	ScoringTypeRecord{"crossflu", "Cross"},
-	ScoringTypeRecord{"dose", "Dose"},
-	ScoringTypeRecord{"letflu", "Letflue"},
+	//	ScoringTypeRecord{"crossflu", "Cross"},
+	//	ScoringTypeRecord{"letflu", "Letflu"},
 	ScoringTypeRecord{"dlet", "Dlet"},
 	ScoringTypeRecord{"tlet", "Tlet"},
 	ScoringTypeRecord{"avg_energy", "Avg energy"},
 	ScoringTypeRecord{"avg_beta", "Avg beta"},
-	ScoringTypeRecord{"ddd", "DDD"},
+	//	ScoringTypeRecord{"ddd", "DDD"},
 	ScoringTypeRecord{"spc", "SPC"},
 	ScoringTypeRecord{"alanine", "Alanine"},
 	ScoringTypeRecord{"counter", "Counter"},

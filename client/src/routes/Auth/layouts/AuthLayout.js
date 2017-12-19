@@ -2,7 +2,6 @@
 
 import React from 'react';
 import AppLayout from 'pages/AppLayout';
-import Style from 'styles';
 import Paper from 'material-ui/Paper';
 import { withStyles } from 'material-ui/styles';
 
@@ -15,11 +14,11 @@ class AuthLayout extends React.Component<Props> {
   props: Props
 
   render() {
-    const { children } = this.props;
+    const { children, classes } = this.props;
     return (
-      <AppLayout>
-        <div className={this.props.classes.formWrapper} >
-          <Paper className={this.props.classes.block} elevation={4} >
+      <AppLayout classes={{ root: classes.layout }} >
+        <div className={classes.formWrapper} >
+          <Paper className={classes.block} elevation={4} >
             {children}
           </Paper>
         </div>
@@ -30,13 +29,21 @@ class AuthLayout extends React.Component<Props> {
 
 const styles = (theme: Object) => ({
   formWrapper: {
-    ...Style.Flex.elementEqual,
-    ...Style.Flex.rootColumn,
-    ...Style.Flex.center,
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
   },
   block: {
-    width: '270px',
+    width: '300px',
     padding: theme.spacing.unit * 3,
+  },
+  layout: {
+    display: 'flex',
+    flexDirection: 'column',
   },
 });
 

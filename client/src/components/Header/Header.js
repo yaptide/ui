@@ -112,7 +112,7 @@ class Header extends React.Component<Props, State> {
   }
 
   showDrawer = handleHref(() => { this.setState({ drawer: true }); })
-  hideDrawer = handleHref(() => { this.setState({ drawer: false }); })
+  hideDrawer = () => { this.setState({ drawer: false }); }
 
   render() {
     const classes = this.props.classes;
@@ -146,7 +146,8 @@ class Header extends React.Component<Props, State> {
           }
           <Drawer
             open={this.state.drawer}
-            onRequestClose={this.hideDrawer}
+            onEscapeKeyUp={this.hideDrawer}
+            onBackdropClick={this.hideDrawer}
             classes={{ paper: classes.drawer }}
           >
             <List>

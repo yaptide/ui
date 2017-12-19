@@ -51,7 +51,7 @@ class FormInput extends React.Component<Props> {
         <InputLabel htmlFor="formInput">{label}</InputLabel>
         <Input
           {...inputProps}
-          id="formInput"
+          id={`formInput_${String(type)}`}
           onChange={this.onChange}
           type={inputType}
           inputProps={{ className: classes.input }}

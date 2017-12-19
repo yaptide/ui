@@ -43,7 +43,7 @@ const styles = (theme: Object) => ({
     flex: '3 0 0',
   },
   labelText: {
-    fontSize: 18,
+    fontSize: 16,
     marginBottom: '12px',
     color: Style.Colors.white,
     marginLeft: Style.Dimens.spacing.small,

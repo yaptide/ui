@@ -138,6 +138,11 @@ func (s Setup) Delete(versionID VersionID) error {
 func (s Setup) Update(versionID VersionID, setup setup.Setup) error {
 	collection := s.Collection()
 
+	timestampUpdateErr := s.session.Project().UpdateVersionTimestamp(versionID)
+	if timestampUpdateErr != nil {
+		return timestampUpdateErr
+	}
+
 	setupID, err := s.fetchSetupIDFromVersion(versionID)
 	if err != nil {
 		return err

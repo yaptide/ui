@@ -28,6 +28,7 @@ export const actionType = {
   UPDATE_SIMULATION_SETUP_ERROR: 'UPDATE_SIMULATION_SETUP_ERROR',
 
   SETUP_WORKSPACE: 'SETUP_WORKSPACE',
+  SETUP_WORKSPACE_SUCCESS: 'SETUP_WORKSPACE_SUCCESS',
   FETCH_SIMULATION_SETUP: 'FETCH_SIMULATION_SETUP',
   FETCH_SIMULATION_SETUP_PENDING: 'FETCH_SIMULATION_SETUP_PENDING',
   FETCH_SIMULATION_SETUP_SUCCESS: 'FETCH_SIMULATION_SETUP_SUCCESS',
@@ -57,30 +58,66 @@ export const actionType = {
 
   MOVE_TO_CHILD_LAYER: 'MOVE_TO_CHILD_LAYER',
   MOVE_TO_PARENT_LAYER: 'MOVE_TO_PARENT_LAYER',
+
+  START_SIMULATION: 'START_SIMULATION',
+  START_SIMULATION_PENDING: 'START_SIMULATION_PENDING',
+  START_SIMULATION_SUCCESS: 'START_SIMULATION_SUCCESS',
+  START_SIMULATION_ERROR: 'START_SIMULATION_ERROR',
 };
+
+const editActionType = [
+  actionType.CREATE_ZONE,
+  actionType.DELETE_ZONE,
+  actionType.CHANGE_ZONE_OPERATION_TYPE,
+  actionType.CREATE_ZONE_OPERATION,
+  actionType.DELETE_ZONE_OPERATION,
+  actionType.UPDATE_ZONE_FIELD,
+
+  actionType.CREATE_BODY_IN_ZONE,
+
+  actionType.UPDATE_BODY,
+
+  actionType.CREATE_MATERIAL,
+  actionType.DELETE_MATERIAL,
+  actionType.UPDATE_MATERIAL,
+
+  actionType.CREATE_DETECTOR,
+  actionType.DELETE_DETECTOR,
+  actionType.UPDATE_DETECTOR,
+
+  actionType.UPDATE_BEAM,
+  actionType.UPDATE_OPTIONS,
+];
 
 const ACTION_HANDLERS = {
   [actionType.SYNC_WORKSPACE_WITH_SERVER]: state => state.set('isServerSyncPending', true),
-  [actionType.UPDATE_SIMULATION_SETUP_SUCCESS]: state => state.set('isServerSyncPending', false),
+  [actionType.UPDATE_SIMULATION_SETUP_SUCCESS]: (state) => {
+    const now = (new Date()).toISOString();
+    return state.merge({
+      isServerSyncPending: false,
+      updatedAt: now,
+      baseUpdatedAt: now,
+    });
+  },
   [actionType.UPDATE_SIMULATION_SETUP_ERROR]: (state, action) => (
     state.set('isServerSyncPending', false).set('serverSyncError', action.error)
   ),
-  [actionType.SETUP_WORKSPACE]: (state, action) => (
+  [actionType.SETUP_WORKSPACE_SUCCESS]: (state, action) => (
     fromJS({
-      isEditable: action.isEditable,
       projectId: action.projectId,
       versionId: action.versionId,
+      viewOnly: action.viewOnly,
       ...emptyState(),
     })
   ),
-  [actionType.FETCH_SIMULATION_SETUP]: state => (
-    state.merge({
-      dataStatus: state.get('dataStatus') === 'none' ? 'pendingReducer' : state.get('dataStatus'),
-    })
-  ),
-  [actionType.FETCH_SIMULATION_SETUP_PENDING]: state => state.merge({ dataStatus: 'pendingReducer' }),
+  [actionType.FETCH_SIMULATION_SETUP_PENDING]: state => state.merge({ dataStatus: 'loading' }),
   [actionType.FETCH_SIMULATION_SETUP_SUCCESS]: (state, action) => (
-    state.merge({ dataStatus: 'ready', ...action.geometry })
+    state.merge({
+      dataStatus: 'ready',
+      updatedAt: action.updatedAt,
+      baseUpdatedAt: action.updatedAt,
+      ...action.setup,
+    })
   ),
   [actionType.FETCH_SIMULATION_SETUP_ERROR]: state => state.merge({ dataStatus: 'error' }),
   [actionType.CREATE_ZONE]: state => stateProcessor.zone.create(state),
@@ -142,11 +179,20 @@ const ACTION_HANDLERS = {
   [actionType.MOVE_TO_CHILD_LAYER]: (state, action) => (
     state.set('zoneLayerParent', action.zoneId)
   ),
+  [actionType.START_SIMULATION_PENDING]: (state) => {
+    return state.merge({ isSimulationStartPending: true });
+  },
+  [actionType.START_SIMULATION_SUCCESS]: (state) => {
+    return state.merge({ isSimulationStartPending: false });
+  },
+  [actionType.START_SIMULATION_ERROR]: (state) => {
+    return state.merge({ isSimulationStartPending: false });
+  },
 };
 
 export const actionCreator = {
-  setupWorkspace(projectId: string, versionId: number, isEditable: bool) {
-    return { type: actionType.SETUP_WORKSPACE, projectId, versionId, isEditable };
+  setupWorkspace(projectId: string, versionId: number) {
+    return { type: actionType.SETUP_WORKSPACE, projectId, versionId };
   },
   syncServerWithLocal() {
     return { type: actionType.SYNC_WORKSPACE_WITH_SERVER };
@@ -216,6 +262,9 @@ export const actionCreator = {
   },
   goToChildLayer(zoneId?: number) {
     return { type: actionType.MOVE_TO_CHILD_LAYER, zoneId };
+  },
+  startSimulation(projectId: string, versionId: number) {
+    return { type: actionType.START_SIMULATION, projectId, versionId };
   },
 };
 
@@ -288,43 +337,44 @@ const initialState = fromJS({
   },
   beam: {
     direction: { phi: 0, theta: 0, position: { x: 0, y: 0, z: 0 } },
-    divergence: { sigmaX: 1, sigmaY: 1, distribution: '' },
-    particleType: { type: '' },
+    divergence: { sigmaX: 0, sigmaY: 0, distribution: 'gaussian' },
+    particleType: { type: 'dose' },
     initialBaseEnergy: 0,
     initialEnergySigma: 0,
   },
   options: {
     antyparticleCorrectionOn: false,
     nuclearReactionsOn: true,
-    meanEnergyLoss: 0.05,
+    meanEnergyLoss: 1,
     minEnergyLoss: 0.025,
-    scatteringType: '',
-    energyStraggling: '',
+    scatteringType: 'moliere',
+    energyStraggling: 'vavilov',
     fastNeutronTransportOn: true,
-    lowEnergyNeutronCutOff: false,
-    recordSecondaryNeutronCreation: false,
-    numberOfRecordedParticles: 1000,
+    lowEnergyNeutronCutOff: 0,
     numberOfGeneratedParticles: 1000,
   },
 });
 export const reducer = (state: Map<string, any>, action: { type: string }) => {
   const handler = ACTION_HANDLERS[action.type];
   const persistedState = localStorage.get(storageKey.WORKSPACE_SYNC);
-  if (!handler) {
-    return state || fromJS(persistedState) || initialState;
-  }
+  let letState;
   if (state) {
-    const newState = handler(state, action);
-    localStorage.set(storageKey.WORKSPACE_SYNC, newState.toJS());
-    return newState;
+    letState = state;
+  } else if (persistedState) {
+    letState = fromJS(persistedState);
+  } else {
+    letState = initialState;
   }
 
-  if (persistedState) {
-    const newState = handler(fromJS(persistedState), action);
-    localStorage.set(storageKey.WORKSPACE_SYNC, newState.toJS());
-    return newState;
+  if (!handler) {
+    return letState;
   }
 
-  localStorage.set(storageKey.WORKSPACE_SYNC, initialState.toJS());
-  return handler(initialState, action);
+  if (editActionType.includes(action.type)) {
+    letState = letState.set('updatedAt', (new Date()).toISOString());
+  }
+
+  const newState = handler(letState, action);
+  localStorage.set(storageKey.WORKSPACE_SYNC, newState.toJS());
+  return newState;
 };

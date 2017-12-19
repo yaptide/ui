@@ -6,6 +6,7 @@ import type { Project } from 'model/project';
 import Button from 'material-ui/Button';
 import IconAdd from 'material-ui-icons/Add';
 import { withStyles } from 'material-ui/styles';
+import AppLayout from 'pages/AppLayout';
 import VersionItemContainer from '../containers/VersionItemContainer';
 
 type Props = {
@@ -32,29 +33,31 @@ class ProjectDetailsLayout extends React.Component<Props> {
     });
 
     return (
-      <div className={classes.root}>
-        <div className={classes.header}>
-          <div className={classes.descriptionBlock}>
-            <p className={classes.projectName}>{project.name}</p>
-            <p className={classes.projectDescription}>
-              {
-                project.description
+      <AppLayout>
+        <div className={classes.root}>
+          <div className={classes.header}>
+            <div className={classes.descriptionBlock}>
+              <p className={classes.projectName}>{project.name}</p>
+              <p className={classes.projectDescription}>
+                {
+                  project.description
                   .split('\n')
                   .map((item, key) => <span key={key}>{item}<br /></span>)
-              }
-            </p>
+                }
+              </p>
+            </div>
+            <Button
+              onTouchTap={this.props.createVersionFromLatest}
+              href={`#/project/${project.id}`}
+              color="contrast"
+              raised
+            >
+              <IconAdd />
+            </Button>
           </div>
-          <Button
-            onTouchTap={this.props.createVersionFromLatest}
-            href={`#/project/${project.id}`}
-            color="contrast"
-            raised
-          >
-            <IconAdd />
-          </Button>
+          {versions}
         </div>
-        {versions}
-      </div>
+      </AppLayout>
     );
   }
 }

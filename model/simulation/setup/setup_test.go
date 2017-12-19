@@ -50,8 +50,8 @@ var testCases = test.MarshallingCases{
 					}
 				},
 				"divergence": {
-					"sigmaX": 1,
-					"sigmaY": 1,
+					"sigmaX": 0,
+					"sigmaY": 0,
 					"distribution": "gaussian"
 				},
 				"particleType": {
@@ -69,9 +69,7 @@ var testCases = test.MarshallingCases{
 				"energyStraggling": "",
 				"fastNeutronTransportOn": false,
 				"lowEnergyNeutronCutOff": 0,
-				"recordSecondaryNeutronCreation": false,
-				"numberOfGeneratedParticles": 0,
-				"numberOfRecordedParticles": 0
+				"numberOfGeneratedParticles": 0
 			}
 
 		}`,

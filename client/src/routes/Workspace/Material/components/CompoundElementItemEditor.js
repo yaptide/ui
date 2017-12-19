@@ -47,7 +47,7 @@ class CompoundElementItemEditor extends React.Component<Props> {
                 </Typography>
                 <Chip
                   label={element.isotope}
-                  onRequestDelete={this.deleteCompoundElement}
+                  onDelete={this.deleteCompoundElement}
                 />
               </div>
               <FormInput

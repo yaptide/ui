@@ -17,7 +17,7 @@ class Logout extends React.Component<Props> {
   render() {
     const classes = this.props.classes;
     return (
-      <AppLayout>
+      <AppLayout classes={{ root: classes.layout }}>
         <div className={classes.container}>
           <p className={classes.title}>
             {t('empty.logout.title')}
@@ -37,13 +37,13 @@ class Logout extends React.Component<Props> {
 
 const styles = (theme: Object) => ({
   container: {
-    ...Style.Flex.elementEqual,
+    flex: 1,
     alignSelf: 'center',
     justifyContent: 'stretch',
     width: '500px',
   },
   title: {
-    fontSize: Style.Dimens.font.huge,
+    fontSize: theme.typography.display1.fontSize,
     color: theme.palette.grey[200],
     paddingTop: Style.Dimens.spacing.veryLarge,
   },
@@ -52,6 +52,10 @@ const styles = (theme: Object) => ({
     fontSize: Style.Dimens.font.standard,
     color: theme.palette.grey[200],
     paddingTop: Style.Dimens.spacing.normal,
+  },
+  layout: {
+    display: 'flex',
+    flexDirection: 'column',
   },
 });
 

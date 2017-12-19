@@ -25,12 +25,12 @@ type Props = {
 };
 
 const coordinateValueLabels = [
-  { label: 'x', field: 'x' },
-  { label: 'y', field: 'y' },
-  { label: 'z', field: 'z' },
+  { label: 'x [cm]', field: 'x' },
+  { label: 'y [cm]', field: 'y' },
+  { label: 'z [cm]', field: 'z' },
 ];
-const radiusValueLabel = { label: 'radius', field: 'radius' };
-const heightValueLabel = { label: 'height', field: 'height' };
+const radiusValueLabel = { label: 'radius [cm]', field: 'radius' };
+const heightValueLabel = { label: 'height [cm]', field: 'height' };
 const EMPTY = {};
 
 const CuboidGeometry = (props: Props & { geometry: CuboidGeometryType }) => (

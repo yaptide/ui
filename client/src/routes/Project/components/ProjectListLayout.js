@@ -5,6 +5,7 @@ import type { List } from 'immutable';
 import Button from 'material-ui/Button';
 import PlusIcon from 'material-ui-icons/Add';
 import { withStyles } from 'material-ui/styles';
+import AppLayout from 'pages/AppLayout';
 
 import ProjectItemContainer from '../containers/ProjectItemContainer';
 
@@ -27,18 +28,20 @@ class ProjectListLayout extends React.Component<Props> {
       />
     ));
     return (
-      <div className={classes.root}>
-        <Button
-          onTouchTap={this.props.createNewProject}
-          className={classes.itemBtn}
-          href="#/project/new"
-          color="contrast"
-          raised
-        >
-          <PlusIcon />
-        </Button>
-        {projects}
-      </div>
+      <AppLayout>
+        <div className={classes.root}>
+          <Button
+            onTouchTap={this.props.createNewProject}
+            className={classes.itemBtn}
+            href="#/project/new"
+            color="contrast"
+            raised
+          >
+            <PlusIcon />
+          </Button>
+          {projects}
+        </div>
+      </AppLayout>
     );
   }
 }

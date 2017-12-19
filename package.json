@@ -21,7 +21,7 @@
     "immutable": "FormAPI/immutable-js#v3.8.1-flow-fix",
     "karma-phantomjs-launcher": "^1.0.4",
     "lodash": "^4.17.4",
-    "material-ui": "^1.0.0-beta.22",
+    "material-ui": "^1.0.0-beta.24",
     "material-ui-icons": "^1.0.0-beta.5",
     "plotly.js": "^1.29.3",
     "react": "^15.6.1",
@@ -34,6 +34,7 @@
     "react-router-redux": "^4.0.7",
     "react-tap-event-plugin": "^2.0.1",
     "react-three": "^0.9.7",
+    "react-toastify": "^3.2.1",
     "redux": "^3.6.0",
     "redux-logger": "^2.7.4",
     "redux-saga": "^0.13.0",
@@ -81,11 +82,11 @@
     "sass-loader": "^4.0.2",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.3",
-    "webpack-dev-server": "^1.16.2"
+    "webpack-dev-server": "^1.16.5"
   },
   "betterScripts": {
     "start": {
-      "command": "webpack-dev-server --hot --config=./client/config/webpack.config.js --content-base=./client/src",
+      "command": "webpack-dev-server --watch --hot --config=./client/config/webpack.config.js --content-base=./client/src",
       "env": {
         "NODE_ENV": "development"
       }

@@ -15,7 +15,6 @@ type Props = {
   projectId: string,
   versionId: number,
   version: Version,
-  startSimulation: () => void,
   setupWorkspace: () => void,
   createNewVersionFrom: () => void,
   last?: bool,
@@ -41,11 +40,6 @@ class VersionItemContainer extends React.Component<Props> {
       e.preventDefault();
       // if (e.nativeEvent.button !== 0) return;
     },
-    startSimulation: (e: any) => {
-      e.preventDefault();
-      if (e.nativeEvent.button !== 0) return;
-      this.props.startSimulation();
-    },
     modifySettings: (e: any) => {
       e.preventDefault();
       if (e.nativeEvent.button !== 0) return;
@@ -58,7 +52,6 @@ class VersionItemContainer extends React.Component<Props> {
     e.preventDefault();
     if (e.nativeEvent.button !== 0) return;
     this.props.setupWorkspace();
-    router.push('/workspace/geometry');
   }
 
 
@@ -94,11 +87,8 @@ const mapStateToProps = (state, props) => {
 
 const mapDispatchToProps = (dispatch, props) => {
   return {
-    startSimulation: () => dispatch(
-      actionCreator.startSimulation(props.projectId, props.versionId),
-    ),
     setupWorkspace: () => dispatch(
-      workspaceActionCreator.setupWorkspace(props.projectId, props.versionId, props.last),
+      workspaceActionCreator.setupWorkspace(props.projectId, props.versionId),
     ),
     createNewVersionFrom: () => dispatch(
       actionCreator.createNewVersionFrom(props.projectId, props.versionId),

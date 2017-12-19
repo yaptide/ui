@@ -48,7 +48,7 @@ func (p *SimulationProcessor) HandleSimulation(versionID db.VersionID) error {
 		setup:     setup,
 	}
 
-	log.Debug("Start simulation request")
+	log.Debug("[SimulationProcessor] Start simulation request")
 	var request request
 	var simErr error
 	switch version.Settings.ComputingLibrary {
@@ -61,29 +61,28 @@ func (p *SimulationProcessor) HandleSimulation(versionID db.VersionID) error {
 		}
 	case project.FlukaLibrary:
 	default:
-		simErr = fmt.Errorf("Invalid computing library")
+		simErr = fmt.Errorf("[SimulationProcessor] Invalid computing library")
 	}
 	if simErr != nil {
 		return simErr
 	}
-	updateStatusErr := dbSession.Project().SetVersionStatus(versionID, project.Pending)
-	if updateStatusErr != nil {
-		log.Debug("[API][StartSimulation] Error while setting job to pending %v", updateStatusErr.Error())
-		return updateStatusErr
-	}
 
-	log.Info("Start simulation request (serialization)")
+	log.Info("[SimulationProcessor] Start simulation request (serialization)")
 	serializeErr := request.ConvertModel()
 	if serializeErr != nil {
-		_ = p.session.Project().SetVersionStatus(versionID, project.Failure)
 		return serializeErr
 	}
 
-	log.Info("Start simulation request (enqueue in runner)")
+	log.Info("[SimulationProcessor] Start simulation request (enqueue in runner)")
 	startSimulationErr := request.StartSimulation()
 	if startSimulationErr != nil {
-		_ = p.session.Project().SetVersionStatus(versionID, project.Failure)
 		return startSimulationErr
+	}
+
+	updateStatusErr := dbSession.Project().SetVersionStatus(versionID, project.Pending)
+	if updateStatusErr != nil {
+		log.Debug("[SimulationProcessor] Error while setting job to pending %v", updateStatusErr.Error())
+		return updateStatusErr
 	}
 	return nil
 }

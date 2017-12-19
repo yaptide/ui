@@ -46,7 +46,8 @@ var onlyMarshalling = test.MarshallingCases{
 			"settings": {
 				"simulationEngine": "",
 				"computingLibrary": ""
-			}
+			},
+			"updatedAt": "0001-01-01T00:00:00Z"
 		}`,
 	},
 }

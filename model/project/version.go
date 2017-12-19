@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 
 	"gopkg.in/mgo.v2/bson"
 )
@@ -116,9 +117,10 @@ type VersionID int
 
 // Version is project version, which contains settting and simulation setup/results.
 type Version struct {
-	ID       VersionID     `json:"id" bson:"id"`
-	Status   VersionStatus `json:"status" bson:"status"`
-	Settings Settings      `json:"settings" bson:"settings"`
-	SetupID  bson.ObjectId `json:"-" bson:"setup_id"`
-	ResultID bson.ObjectId `json:"-" bson:"result_id"`
+	ID        VersionID     `json:"id" bson:"id"`
+	Status    VersionStatus `json:"status" bson:"status"`
+	Settings  Settings      `json:"settings" bson:"settings"`
+	SetupID   bson.ObjectId `json:"-" bson:"setup_id"`
+	ResultID  bson.ObjectId `json:"-" bson:"result_id"`
+	UpdatedAt time.Time     `json:"updatedAt"`
 }

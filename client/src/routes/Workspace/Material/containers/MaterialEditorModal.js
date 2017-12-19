@@ -57,7 +57,8 @@ class MaterialEditorModal extends React.Component<Props, State> {
     return this.props.isModalOpen ? (
       <Dialog
         open={this.props.isModalOpen}
-        onRequestClose={this.props.closeModal}
+        onBackdropClick={this.props.closeModal}
+        onEscapeKeyUp={this.props.closeModal}
         classes={{ paper: classes.root }}
       >
         <Tabs

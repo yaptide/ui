@@ -1,11 +1,9 @@
 /* @flow */
 
 import { redirectIfUnlogged } from 'utils/router';
-import AppLayout from 'pages/AppLayout';
 
 const projectRoute = {
   path: 'project',
-  component: AppLayout,
   childRoutes: [
     {
       path: 'list',

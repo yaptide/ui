@@ -40,12 +40,6 @@ export const mapActionsToVersionState = [
     label: t('project.version.showResultsBtn'),
     url: (projectId: string, versionId: number) => `#/result/list/${projectId}/${versionId}`,
   }, {
-    action: 'startSimulation',
-    condition: [newState, edited, interrupted, canceled],
-    label: t('project.version.startSimulationBtn'),
-    url: stayOnProjectDetails,
-    lastOnly: true,
-  }, {
     action: 'modifySettings',
     condition: [newState, edited, interrupted, canceled],
     label: t('project.version.updateSettingBtn'),

@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/Palantir/palantir/model/project"
 	"github.com/Palantir/palantir/model/simulation/result"
@@ -189,15 +190,21 @@ func (p Project) FetchVersion(versionID VersionID) (project.Version, error) {
 }
 
 type versionPrototype struct {
-	ID       project.VersionID
-	Status   project.VersionStatus
-	Settings project.Settings
-	Setup    setup.Setup
-	Result   result.Result
+	ID        project.VersionID
+	Status    project.VersionStatus
+	Settings  project.Settings
+	Setup     setup.Setup
+	Result    result.Result
+	UpdatedAt time.Time
 }
 
 func (p Project) createNewVersionFromPrototype(projectID ProjectID, prototype versionPrototype) (project.Version, error) {
-	newVersion := project.Version{ID: prototype.ID, Settings: prototype.Settings}
+	newVersion := project.Version{
+		ID:        prototype.ID,
+		Settings:  prototype.Settings,
+		UpdatedAt: prototype.UpdatedAt,
+		Status:    prototype.Status,
+	}
 
 	setupID, err := p.session.Setup().Create(prototype.Setup)
 	if err != nil {
@@ -227,11 +234,12 @@ func (p Project) createVersion(projectID ProjectID) (project.Version, error) {
 
 	newVersionID := project.VersionID(len(dbProject.Versions))
 	newVersionPrototype := versionPrototype{
-		ID:       newVersionID,
-		Status:   project.New,
-		Settings: project.NewSettings(),
-		Setup:    setup.NewEmptySetup(),
-		Result:   result.NewEmptyResult(),
+		ID:        newVersionID,
+		Status:    project.New,
+		Settings:  project.NewSettings(),
+		Setup:     setup.NewEmptySetup(),
+		Result:    result.NewEmptyResult(),
+		UpdatedAt: time.Now(),
 	}
 	newVersion, err := p.createNewVersionFromPrototype(projectID, newVersionPrototype)
 	if err != nil {
@@ -275,11 +283,12 @@ func (p Project) CreateVersionFrom(existingVersionID VersionID) (project.Version
 	}
 
 	newVersionPrototype := versionPrototype{
-		ID:       newVersionID,
-		Status:   project.New,
-		Settings: existingVersion.Settings,
-		Setup:    existingSetup,
-		Result:   result.NewEmptyResult(),
+		ID:        newVersionID,
+		Status:    project.New,
+		Settings:  existingVersion.Settings,
+		Setup:     existingSetup,
+		Result:    result.NewEmptyResult(),
+		UpdatedAt: time.Now(),
 	}
 	newVersion, err := p.createNewVersionFromPrototype(existingVersionID.toProjectID(), newVersionPrototype)
 	if err != nil {
@@ -327,6 +336,23 @@ func (p Project) UpdateVersion(versionID VersionID, newSettings project.Settings
 
 	dbProject.Versions[versionID.Version].Settings = newSettings
 	dbProject.Versions[versionID.Version].Status = project.Edited
+	dbProject.Versions[versionID.Version].UpdatedAt = time.Now()
+
+	return p.Update(dbProject)
+}
+
+// UpdateVersionTimestamp update version with the given versionID.
+func (p Project) UpdateVersionTimestamp(versionID VersionID) error {
+	dbProject, err := p.Fetch(versionID.toProjectID())
+	if err != nil {
+		return err
+	}
+
+	if int(versionID.Version) >= len(dbProject.Versions) {
+		return ErrNotFound
+	}
+
+	dbProject.Versions[versionID.Version].UpdatedAt = time.Now()
 
 	return p.Update(dbProject)
 }

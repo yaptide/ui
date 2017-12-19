@@ -10,17 +10,15 @@ import (
 var testCases = test.MarshallingCases{
 	{
 		&SimulationOptions{
-			AntyparticleCorrectionOn:       true,
-			NuclearReactionsOn:             true,
-			MeanEnergyLoss:                 common.Fraction(0.1),
-			MinEnergyLoss:                  1.1,
-			ScatteringType:                 GaussianScattering,
-			EnergyStraggling:               VavilovStraggling,
-			FastNeutronTransportOn:         true,
-			LowEnergyNeutronCutOff:         0.1,
-			RecordSecondaryNeutronCreation: true,
-			NumberOfGeneratedParticles:     1000,
-			NumberOfRecordedParticles:      1000,
+			AntyparticleCorrectionOn:   true,
+			NuclearReactionsOn:         true,
+			MeanEnergyLoss:             common.Fraction(0.1),
+			MinEnergyLoss:              1.1,
+			ScatteringType:             GaussianScattering,
+			EnergyStraggling:           VavilovStraggling,
+			FastNeutronTransportOn:     true,
+			LowEnergyNeutronCutOff:     0.1,
+			NumberOfGeneratedParticles: 1000,
 		},
 		`{
 			"antyparticleCorrectionOn": true,
@@ -31,9 +29,7 @@ var testCases = test.MarshallingCases{
 			"energyStraggling": "vavilov",
 			"fastNeutronTransportOn": true,
 			"lowEnergyNeutronCutOff": 0.1,
-			"recordSecondaryNeutronCreation": true,
-			"numberOfGeneratedParticles": 1000,
-			"numberOfRecordedParticles": 1000
+			"numberOfGeneratedParticles": 1000
 		}`,
 	},
 }
