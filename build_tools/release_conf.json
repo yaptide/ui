@@ -1,7 +1,0 @@
-{
-  "port": "3101",
-  "dbName": "palantir-db-prod",
-  "dbUsername": "palantir",
-  "dbPassword": "password",
-  "dbPort": "3105"
-}

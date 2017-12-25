@@ -6,9 +6,9 @@
   "scripts": {
     "start": "better-npm-run start",
     "deploy": "better-npm-run deploy",
-    "lint": "eslint ./client/src",
-    "lint:fix": "eslint --fix /client/src",
-    "flow": "flow ./client/.flowconfig",
+    "lint": "eslint ./src",
+    "lint:fix": "eslint --fix ./src",
+    "flow": "flow .flowconfig",
     "test": "better-npm-run test",
     "check": "npm run test && npm run lint && npm run flow",
     "heroku-postbuild": "npm install && npm run deploy"
@@ -86,19 +86,19 @@
   },
   "betterScripts": {
     "start": {
-      "command": "webpack-dev-server --watch --hot --config=./client/config/webpack.config.js --content-base=./client/src",
+      "command": "webpack-dev-server --hot --config=./config/webpack.config.js --content-base=./src",
       "env": {
         "NODE_ENV": "development"
       }
     },
     "deploy": {
-      "command": "rm -rf ./static && webpack --config=./client/config/webpack.config.js",
+      "command": "rm -rf ./static && webpack --config=./config/webpack.config.js",
       "env": {
         "NODE_ENV": "production"
       }
     },
     "test": {
-      "command": "karma start ./client/config/karma.conf.js",
+      "command": "karma start ./config/karma.conf.js",
       "env": {
         "NODE_ENV": "test"
       }

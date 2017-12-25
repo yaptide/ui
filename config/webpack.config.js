@@ -1,4 +1,3 @@
-/* @flow */
 /* eslint-disable */
 require('es6-promise').polyfill()
 const webpack = require('webpack');
@@ -17,7 +16,7 @@ const __DEV__ = env === 'development';
 const __TEST__ = env === 'test';
 
 const ENTRY_PATH = __dirname + '/../src/main.js';
-const DEPLOY_PATH = __dirname + '/../../static/';
+const DEPLOY_PATH = __dirname + '/../static/';
 
 const config = {
   entry: {
@@ -39,9 +38,9 @@ const config = {
   resolve: {
     extensions: ['', '.js', '.jsx'],
     root: [
-      path.resolve('./client/src/'),
-      path.resolve('./client/lib/'),
-      path.resolve('./client/assets/'),
+      path.resolve('./src/'),
+      path.resolve('./lib/'),
+      path.resolve('./assets/'),
     ],
   },
 
@@ -89,7 +88,7 @@ if (!__TEST__) {
     new FaviconsWebpackPlugin('favicon.png'),
     new HtmlWebpackPlugin({
       title: 'Palantir',
-      template: './client/src/index.html',
+      template: './src/index.html',
     }),
     new webpack.EnvironmentPlugin(['NODE_ENV']),
     new ExtractTextPlugin("[name].[contenthash].css", {

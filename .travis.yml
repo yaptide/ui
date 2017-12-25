@@ -1,25 +1,5 @@
-language: go
-go:
-  - master
-env: 
-  - TRAVIS_NODE_VERSION="7"
-before_install:
-  - openssl aes-256-cbc -K $encrypted_0532213be6b0_key -iv $encrypted_0532213be6b0_iv -in deploy_key.enc -out /home/travis/.ssh/deploy_key -d
-  - chmod 600 /home/travis/.ssh/deploy_key
+language: node
 install:
-  - go get -u github.com/alecthomas/gometalinter
-  - go get -u github.com/kardianos/govendor
-  - gometalinter --install --force
   - npm install
-  - cd $HOME/gopath/src/github.com && mv wkozyra95 Palantir && cd Palantir/palantir 
-  - export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/Palantir/palantir
-  - govendor sync
-  - ./build_tools/travis_release.sh
 script:
-  - ./run.sh check
-deploy:
-  - provider: script
-    script: build_tools/deploy.sh 
-    skip_cleanup: true
-    on:
-      all_branches: true
+  - npm run check

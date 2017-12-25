@@ -32,9 +32,9 @@ module.exports = function (config) {
       resolve: {
         extensions: ['', '.js', '.jsx'],
         root: [
-          path.resolve('./client/src/'),
-          path.resolve('./client/lib/'),
-          path.resolve('./client/assets/'),
+          path.resolve('./src/'),
+          path.resolve('./lib/'),
+          path.resolve('./assets/'),
         ],
       },
       plugins: webpackConfig.plugins,
