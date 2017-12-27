@@ -26,7 +26,7 @@
     "document": false,
     "require": false,
     "window": false,
-    "BASE_URL": false,
+    "BACKEND_PUBLIC_URL": false,
     "Generator": false,
     "React$Element": false
   },

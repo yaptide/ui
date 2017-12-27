@@ -9,7 +9,9 @@ const path = require('path');
 
 const env = process.env.NODE_ENV;
 
-const BASE_URL = process.env.PALANTIR_BASE_URL;
+const BACKEND_PUBLIC_URL = process.env.YAPTIDE_BACKEND_PUBLIC_URL;
+const FRONTEND_PUBLIC_URL = process.env.YAPTIDE_FRONTEND_PUBLIC_URL;
+const FROTEND_PORT = process.env.YAPTIDE_FRONTEND_PORT;
 
 const __PROD__ = env === 'production';
 const __DEV__ = env === 'development';
@@ -32,7 +34,7 @@ const config = {
   devServer: {
     inline: true,
     hot: true,
-    port: 3002,
+    port: FROTEND_PORT,
   },
 
   resolve: {
@@ -99,7 +101,9 @@ if (!__TEST__) {
 
 plugins.push(
   new webpack.DefinePlugin({
-    'BASE_URL': JSON.stringify(BASE_URL || "http://localhost:3000"),
+    BACKEND_PUBLIC_URL: JSON.stringify(BACKEND_PUBLIC_URL),
+    FRONTEND_PUBLIC_URL: JSON.stringify(FRONTEND_PUBLIC_URL),
+    FROTEND_PORT: JSON.stringify(FROTEND_PORT),
     __DEV__,
     __TEST__,
     __PROD__,

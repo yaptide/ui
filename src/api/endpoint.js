@@ -1,6 +1,6 @@
 /* @flow */
 
-export const baseURL = BASE_URL;
+export const baseURL = `${location.protocol}//${BACKEND_PUBLIC_URL}`;
 
 export type Endpoint = 'LOGIN' |
   'REGISTER';
