@@ -23,6 +23,7 @@
     }
   },
   "globals": {
+    "location": false,
     "document": false,
     "require": false,
     "window": false,

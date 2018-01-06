@@ -32,7 +32,7 @@ class WelcomePage extends React.Component<Props> {
             </p>
             <br />
             <br />
-            <p className={classes.text} >Palantir is an application ...</p>
+            <p className={classes.text} >Yaptide is an application ...</p>
           </div>
           <div className={classes.form}>
             <Paper className={this.props.classes.formWrapper} elevation={4} >

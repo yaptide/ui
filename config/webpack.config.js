@@ -89,7 +89,7 @@ if (!__TEST__) {
   plugins.push(
     new FaviconsWebpackPlugin('favicon.png'),
     new HtmlWebpackPlugin({
-      title: 'Palantir',
+      title: 'yaptide',
       template: './src/index.html',
     }),
     new webpack.EnvironmentPlugin(['NODE_ENV']),

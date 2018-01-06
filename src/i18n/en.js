@@ -1,7 +1,7 @@
 /* @flow */
 
 const en = {
-  appName: 'Palantir',
+  appName: 'yaptide',
   pageProjects: 'Projects',
   pageWorkspace: 'Workspace',
   pageAccount: 'Account',
@@ -23,7 +23,7 @@ const en = {
       logoutBtn: 'Sign out',
     },
     links: {
-      goRegister: 'New to Palantir? Create an account.',
+      goRegister: 'New to yaptide? Create an account.',
       goLogin: 'Already have an account? Log in',
       forgotenPass: 'Forgot password?',
     },
