@@ -17,17 +17,8 @@ type Props = {
   classes: Object,
 };
 
-type State = {
-  open: bool,
-  anchorEl: any,
-};
-
-class FormSelect extends React.Component<Props, State> {
+class FormSelect extends React.Component<Props> {
   props: Props
-  state: State = {
-    open: false,
-    anchorEl: undefined,
-  }
 
   onChange = (event: any) => {
     this.props.onChange(event.target.value, this.props.type);

@@ -42,23 +42,26 @@ class ZoneName extends React.Component<Props, State> {
     const classes = this.props.classes;
     return (
       this.state.isEditOn
-      ? <TextField
-        value={this.state.name}
-        name="zone name"
-        onBlur={this.stopEditing}
-        onChange={this.updateName}
-        inputRef={this.setRef}
-      />
-      : <div
-        onDoubleClick={this.makeEditable}
-      >
-        <Typography
-          className={classes.label}
-          noWrap
-        >
-          {`Zone: ${this.props.name}` || UNDEFINED_ZONE}
-        </Typography>
-      </div>
+        ? (
+          <TextField
+            value={this.state.name}
+            name="zone name"
+            onBlur={this.stopEditing}
+            onChange={this.updateName}
+            inputRef={this.setRef}
+          />
+        ) : (
+          <div
+            onDoubleClick={this.makeEditable}
+          >
+            <Typography
+              className={classes.label}
+              noWrap
+            >
+              {`Zone: ${this.props.name}` || UNDEFINED_ZONE}
+            </Typography>
+          </div>
+        )
     );
   }
 }

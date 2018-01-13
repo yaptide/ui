@@ -11,15 +11,15 @@ export function processGeometry(workspaceData: Map<string, Map<string, any>>): A
   const materials = workspaceData.get('materials', Map());
 
   return zones
-  .map((zoneData) => {
-    const { zone, position } = processZone(zoneData, bodies);
-    const color = processMaterial(zoneData, materials);
-    return zone && color && zoneData && position
-      ? { zone, color, zoneData, position }
-      : undefined;
-  })
-  .toList()
-  .filter(item => !!item)
-  .toJS();
+    .map((zoneData) => {
+      const { zone, position } = processZone(zoneData, bodies);
+      const color = processMaterial(zoneData, materials);
+      return zone && color && zoneData && position
+        ? { zone, color, zoneData, position }
+        : undefined;
+    })
+    .toList()
+    .filter(item => !!item)
+    .toJS();
 }
 export default processGeometry;

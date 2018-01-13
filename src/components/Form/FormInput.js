@@ -23,9 +23,9 @@ class FormInput extends React.Component<Props> {
 
   onChange = (e: { target: { value: number|string }}) => {
     this.props.onChange(
-      this.props.numbersOnly && !isNaN(Number(e.target.value)) && e.target.value
-      ? Number(e.target.value)
-      : e.target.value,
+      this.props.numbersOnly && !Number.isNaN(Number(e.target.value)) && e.target.value
+        ? Number(e.target.value)
+        : e.target.value,
       this.props.type || '',
     );
   }

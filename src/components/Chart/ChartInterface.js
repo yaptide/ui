@@ -22,11 +22,11 @@ class ChartInterface extends React.Component<Props> {
     const data = _.flattenDeep(this.props.data);
     let axisLabel = { label: 'unknown', unit: 'unknown', startValue: 0, endValue: 100 };
     if (this.props.data.length > 1) {
-      axisLabel = this.props.labels.dimensions[0];
+      axisLabel = this.props.labels.dimensions[0]; // eslint-disable-line prefer-destructuring
     } else if (this.props.data[0].length > 1) {
-      axisLabel = this.props.labels.dimensions[1];
+      axisLabel = this.props.labels.dimensions[1]; // eslint-disable-line prefer-destructuring
     } else if (this.props.data[0][0].length > 1) {
-      axisLabel = this.props.labels.dimensions[2];
+      axisLabel = this.props.labels.dimensions[2]; // eslint-disable-line prefer-destructuring
     }
     return (
       <LineChart

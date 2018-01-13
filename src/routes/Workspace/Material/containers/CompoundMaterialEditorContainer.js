@@ -29,7 +29,6 @@ type State = {
   materialState: StateOfMatter | '',
   color: Color,
   compoundElements: Array<Object>,
-  isMaterialSelected: bool,
 }
 
 class CompoundMaterialEditorContainer extends React.Component<Props, State> {
@@ -40,7 +39,6 @@ class CompoundMaterialEditorContainer extends React.Component<Props, State> {
     materialState: '',
     color: { r: 0x80, g: 0x80, b: 0x80, a: 0xFF },
     compoundElements: [],
-    isMaterialSelected: false,
   }
 
   componentWillMount() {
@@ -73,7 +71,6 @@ class CompoundMaterialEditorContainer extends React.Component<Props, State> {
       materialState: materialInfo.stateOfMatter || '',
       compoundElements: materialInfo.elements,
       color,
-      isMaterialSelected: !!materialObj.id,
     });
   }
 

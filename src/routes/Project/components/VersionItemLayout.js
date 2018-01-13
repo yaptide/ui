@@ -61,15 +61,19 @@ class VersionItemLayout extends React.Component<Props> {
             }
           </div>
           <Typography>
-            {t(
-              'project.version.library',
-              { library: t(`library.${version.settings.computingLibrary}`) })
+            {
+              t(
+                'project.version.library',
+                { library: t(`library.${version.settings.computingLibrary}`) },
+              )
             }
           </Typography>
           <Typography>
-            {t(
-              'project.version.engine',
-              { engine: t(`engine.${version.settings.simulationEngine}`) })
+            {
+              t(
+                'project.version.engine',
+                { engine: t(`engine.${version.settings.simulationEngine}`) },
+              )
             }
           </Typography>
         </CardContent>

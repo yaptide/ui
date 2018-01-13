@@ -45,15 +45,17 @@ class ColorPicker extends React.Component<Props, State> {
     };
     return (
       <div className={classes.root} >
-        <div role="button" className={classes.swatch} onClick={this.handleClick} >
+        <div className={classes.swatch} onClick={this.handleClick} >
           <div style={colorStyle} className={classes.color} />
         </div>
         {
           this.state.displayColorPicker
-            ? <div style={styles.popover}>
-              <div role="button" style={styles.cover} onClick={this.handleClose} />
-              <SketchPicker color={this.state.color} onChange={this.handleChange} />
-            </div>
+            ? (
+              <div style={styles.popover}>
+                <div style={styles.cover} onClick={this.handleClose} />
+                <SketchPicker color={this.state.color} onChange={this.handleChange} />
+              </div>
+            )
             : null
         }
       </div>

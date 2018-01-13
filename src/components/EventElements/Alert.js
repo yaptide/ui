@@ -87,11 +87,13 @@ class Alert extends React.Component<Props, State> {
         {this.state.title ? <DialogTitle id="alert-dialog-title">{this.state.title}</DialogTitle> : null }
         {
           this.state.content
-            ? <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                {this.state.content}
-              </DialogContentText>
-            </DialogContent>
+            ? (
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  {this.state.content}
+                </DialogContentText>
+              </DialogContent>
+            )
             : null
         }
         <DialogActions>

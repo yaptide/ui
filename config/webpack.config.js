@@ -1,5 +1,4 @@
 /* eslint-disable */
-require('es6-promise').polyfill()
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
@@ -10,8 +9,7 @@ const path = require('path');
 const env = process.env.NODE_ENV;
 
 const BACKEND_PUBLIC_URL = process.env.YAPTIDE_BACKEND_PUBLIC_URL;
-const FRONTEND_PUBLIC_URL = process.env.YAPTIDE_FRONTEND_PUBLIC_URL;
-const FROTEND_PORT = process.env.YAPTIDE_FRONTEND_PORT;
+const FRONTEND_PORT = process.env.YAPTIDE_FRONTEND_PORT;
 
 const __PROD__ = env === 'production';
 const __DEV__ = env === 'development';
@@ -19,6 +17,7 @@ const __TEST__ = env === 'test';
 
 const ENTRY_PATH = __dirname + '/../src/main.js';
 const DEPLOY_PATH = __dirname + '/../static/';
+const ENV_JS = __dirname + '../src/env.js';
 
 const config = {
   entry: {
@@ -34,54 +33,62 @@ const config = {
   devServer: {
     inline: true,
     hot: true,
-    port: FROTEND_PORT,
+    port: FRONTEND_PORT,
   },
 
   resolve: {
-    extensions: ['', '.js', '.jsx'],
-    root: [
+    extensions: ['.js', '.jsx'],
+    modules: [
       path.resolve('./src/'),
       path.resolve('./lib/'),
       path.resolve('./assets/'),
+      path.resolve('./node_modules/'),
     ],
   },
 
 
   module: {
-    loaders: [],
+    rules: [],
   },
   plugins: [],
   externals: {},
 };
 
-const loaders = config.module.loaders;
-loaders.push({
+const rules= config.module.rules;
+rules.push({
   test: /\.js$/,
   exclude: /node_modules/,
-  loader: 'babel-loader',
+  use: 'babel-loader',
 });
 
-loaders.push({
-  test: /\.css$/, loaders: ['style-loader', 'css-loader'],
+rules.push({
+  test: /env/,
+  use: 'url-loader',
 });
 
-loaders.push({
+rules.push({
+  test: /\.css$/, use: ['style-loader', 'css-loader'],
+});
+
+rules.push({
   test: /\.scss$/,
-  loader: ExtractTextPlugin.extract(
-    'style-loader',
-    'css-loader?modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]&sourceMap' + "!" +
-    'sass?sourceMap'
-  ),
+  use: ExtractTextPlugin.extract({
+    fallback: 'style-loader',
+    use: [
+      'css-loader?modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]&sourceMap' + "!" +
+      'sass-loader?sourceMap'
+    ]
+  })
 });
 
-loaders.push(
-  { test: /\.woff(\?.*)?$/, loader: 'url?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/font-woff' },
-  { test: /\.woff2(\?.*)?$/, loader: 'url?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/font-woff2' },
-  { test: /\.otf(\?.*)?$/, loader: 'file?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=font/opentype' },
-  { test: /\.ttf(\?.*)?$/, loader: 'url?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/octet-stream' },
-  { test: /\.eot(\?.*)?$/, loader: 'file?prefix=fonts/&name=[path][name].[ext]' },
-  { test: /\.svg(\?.*)?$/, loader: 'url?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=image/svg+xml' },
-  { test: /\.(png|jpg)$/, loader: 'url?limit=8192' }
+rules.push(
+  { test: /\.woff(\?.*)?$/, use: 'url?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/font-woff' },
+  { test: /\.woff2(\?.*)?$/, use: 'url?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/font-woff2' },
+  { test: /\.otf(\?.*)?$/, use: 'file?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=font/opentype' },
+  { test: /\.ttf(\?.*)?$/, use: 'url?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/octet-stream' },
+  { test: /\.eot(\?.*)?$/, use: 'file?prefix=fonts/&name=[path][name].[ext]' },
+  { test: /\.svg(\?.*)?$/, use: 'url?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=image/svg+xml' },
+  { test: /\.(png|jpg)$/, use: 'url?limit=8192' }
 )
 
 const plugins = config.plugins
@@ -101,9 +108,6 @@ if (!__TEST__) {
 
 plugins.push(
   new webpack.DefinePlugin({
-    BACKEND_PUBLIC_URL: JSON.stringify(BACKEND_PUBLIC_URL),
-    FRONTEND_PUBLIC_URL: JSON.stringify(FRONTEND_PUBLIC_URL),
-    FROTEND_PORT: JSON.stringify(FROTEND_PORT),
     __DEV__,
     __TEST__,
     __PROD__,
@@ -112,7 +116,9 @@ plugins.push(
 if (__PROD__) {
   plugins.push(
     new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.optimize.DedupePlugin(),
+  );
+
+  plugins.push(
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         unused: true,
@@ -120,7 +126,7 @@ if (__PROD__) {
         warnings: false,
       }
     })
-  )
+  );
 }
 
 if (__TEST__) {
@@ -143,6 +149,7 @@ const externals = config.externals;
 externals['react/lib/ExecutionEnvironment'] = true;
 externals['react/lib/ReactContext'] = true;
 externals['react/addons'] = true;
+externals['env'] = 'env.js';
 
 
 module.exports = config;

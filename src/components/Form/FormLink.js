@@ -18,6 +18,7 @@ class FormLink extends React.Component<Props> {
   render() {
     return (
       <Link
+        href={this.props.url}
         to={this.props.url}
         className={this.props.classes.text}
       >

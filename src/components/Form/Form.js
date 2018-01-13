@@ -19,7 +19,7 @@ type Props = {
 };
 
 class Form extends React.Component<Props> {
-  static defaultProps = { links: [] }
+  static defaultProps = { links: [] } // eslint-disable-line
   props: Props
 
   render() {

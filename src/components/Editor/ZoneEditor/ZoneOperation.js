@@ -68,14 +68,16 @@ class ZoneOperation extends React.Component<Props> {
         </Button>
         {
           this.props.deleteOperation
-            ? <Button
-              raised
-              onTouchTap={this.deleteOperation}
-              className={cn(classes.deleteButton, classes.item)}
-              dense
-            >
-              <DeleteIcon />
-            </Button>
+            ? (
+              <Button
+                raised
+                onTouchTap={this.deleteOperation}
+                className={cn(classes.deleteButton, classes.item)}
+                dense
+              >
+                <DeleteIcon />
+              </Button>
+            )
             : null
         }
         <div className={classes.addButtonPlaceholder} />

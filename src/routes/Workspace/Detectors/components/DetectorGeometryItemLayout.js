@@ -7,7 +7,6 @@ import {
   FormV3Input,
 } from 'components/Form';
 import type {
-  DetectorGeometry,
   Geomap,
   Cylinder,
   Mesh,
@@ -17,7 +16,6 @@ import type {
 import { t } from 'i18n';
 
 type Props = {
-  detector: DetectorGeometry,
   detectorErrors: Object,
   detectorUpdate: (field: string, value: Object) => void,
   classes: Object,
@@ -33,12 +31,14 @@ const coordinateSliceLabels = [
   { label: 'y [slices]', field: 'y' },
   { label: 'z [slices]', field: 'z' },
 ];
+
 /*
 const cylinderCoordinateValueLabels = [
   { label: 'radius [cm]', field: 'radius' },
   { label: 'angle [rad]', field: 'angle' },
   { label: 'z [cm]', field: 'z' },
-];*/
+];
+*/
 const cylinderCoordinateSliceLabels = [
   { label: 'radius [slices]', field: 'radius' },
   { label: 'angle [slices]', field: 'angle', disabled: true },

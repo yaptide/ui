@@ -64,12 +64,14 @@ class WorkspaceLayout extends React.Component<Props> {
         <Toolbar className={classes.toolbar} >
           {
             this.props.isProject
-            ? <IconButton
-              onClick={this.props.backToProject}
-            >
-              <BackIcon />
-            </IconButton>
-            : null
+              ? (
+                <IconButton
+                  onClick={this.props.backToProject}
+                >
+                  <BackIcon />
+                </IconButton>
+              )
+              : null
           }
           <Button
             color={this.isActive('options')}

@@ -25,16 +25,17 @@ module.exports = function (config) {
     webpack: { //kind of a copy of your webpack config
       devtool: 'inline-source-map', //just do inline source maps instead of the default
       module: {
-        loaders: [
-          { test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/ }
+        rules: [
+          { test: /\.js$/, use: 'babel-loader', exclude: /node_modules/ }
         ]
       },
       resolve: {
-        extensions: ['', '.js', '.jsx'],
-        root: [
+        extensions: ['.js', '.jsx'],
+        modules: [
           path.resolve('./src/'),
           path.resolve('./lib/'),
           path.resolve('./assets/'),
+          path.resolve('./node_modules/'),
         ],
       },
       plugins: webpackConfig.plugins,

@@ -17,7 +17,6 @@ import type { BodyGeometry } from 'model/simulation/zone';
 import GeometryForm from './GeometryForm';
 
 type Props = {
-  geometry: BodyGeometry,
   geometryErrors: Object,
   typeUpdate: (type: GeometryType) => void,
   geometryUpdate: (field: string, value: Object) => void,

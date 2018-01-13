@@ -19,7 +19,6 @@ const ResizeHOC = (WrapedComponent: any) => {
       width: 300,
       height: 200,
     }
-    component: any
 
     componentWillMount() {
       window.addEventListener('resize', this.resizeComponent);
@@ -32,6 +31,8 @@ const ResizeHOC = (WrapedComponent: any) => {
     componentWillUnmount() {
       window.removeEventListener('resize', this.resizeComponent);
     }
+
+    component: any
 
     resizeComponent = () => {
       if (!this.component) {
