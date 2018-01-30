@@ -108,6 +108,7 @@ if (!__TEST__) {
 
 plugins.push(
   new webpack.DefinePlugin({
+    'process.env.BACKEND_PUBLIC_URL': JSON.stringify(BACKEND_PUBLIC_URL),
     __DEV__,
     __TEST__,
     __PROD__,

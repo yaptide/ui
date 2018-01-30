@@ -26,6 +26,14 @@ class DetectorItemContainer extends React.Component<Props> {
       detectorGeometry: defaultDetectorGeometryForType(type),
     });
   }
+
+  detectorNameUpdate = (name: string) => {
+    this.props.updateDetector({
+      ...this.props.detector,
+      name,
+    });
+  }
+
   geometryUpdate = (type: string, value: any) => {
     this.props.updateDetector({
       ...this.props.detector,
@@ -61,6 +69,7 @@ class DetectorItemContainer extends React.Component<Props> {
         classes={this.props.classes}
         detector={this.props.detector || EMPTY}
         updateType={this.updateType}
+        detectorNameUpdate={this.detectorNameUpdate}
         geometryUpdate={this.geometryUpdate}
         particleUpdate={this.particleUpdate}
         scoringUpdate={this.scoringUpdate}

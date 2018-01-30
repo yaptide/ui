@@ -14,7 +14,10 @@ export function* fetchSimulationResults(
       versionId: state.results.get('versionId'),
       dataStatus: state.results.get('dataStatus'),
     }));
-    if (dataStatus !== 'none' && projectId === action.projectId && versionId === action.versionId) {
+    if (dataStatus !== 'none'
+      && projectId === action.projectId
+      && versionId === action.versionId
+    ) {
       return;
     }
     yield put({
@@ -22,11 +25,19 @@ export function* fetchSimulationResults(
       projectId: action.projectId,
       versionId: action.versionId,
     });
-    const response = yield call(
+    const results = yield call(
       api.get,
       endpoint.simulationResults(action.projectId, action.versionId),
     );
-    yield put({ type: actionType.FETCH_SIMULATION_RESULTS_SUCCESS, results: response.data });
+    const setup = yield call(
+      api.get,
+      endpoint.simulationSetup(action.projectId, action.versionId),
+    );
+    yield put({
+      type: actionType.FETCH_SIMULATION_RESULTS_SUCCESS,
+      setup: setup.data,
+      results: results.data,
+    });
   } catch (error) {
     yield put({ type: actionType.FETCH_SIMULATION_RESULTS_ERROR, error: error.response.data });
   }

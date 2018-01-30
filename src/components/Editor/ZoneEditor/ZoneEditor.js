@@ -5,10 +5,10 @@ import Style from 'styles';
 import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/styles';
 import {
-  ZoneName,
   ZoneOperation,
   MaterialSelector,
 } from 'components/Editor/ZoneEditor';
+import { EditableName } from 'components/Editor';
 import type { OperationType, ConstructionPath, PrintableOperation } from 'model/simulation/zone';
 import type { PrintableMaterial } from 'model/simulation/material';
 
@@ -35,7 +35,8 @@ class ZoneEditor extends React.Component<Props> {
   render() {
     const { classes } = this.props;
     const zoneTitle = (
-      <ZoneName
+      <EditableName
+        label="Zone: "
         name={this.props.zoneName}
         updateName={this.props.onZoneNameUpdate}
       />

@@ -8,6 +8,7 @@ import Button from 'material-ui/Button';
 import DeleteIcon from 'material-ui-icons/Delete';
 import type { Detector } from 'model/simulation/detector';
 import { t } from 'i18n';
+import { EditableName } from 'components/Editor';
 import ParticleEditor from 'components/Editor/ParticleEditor';
 import DetectorGeometryItemLayout from './DetectorGeometryItemLayout';
 import DetectorScoringItemLayout from './DetectorScoringItemLayout';
@@ -15,6 +16,7 @@ import DetectorScoringItemLayout from './DetectorScoringItemLayout';
 type Props = {
   detector: Detector,
   updateType: (type: string) => void,
+  detectorNameUpdate: (value: string) => void,
   geometryUpdate: (value: Object, type: string) => void,
   particleUpdate: (value: Object) => void,
   scoringUpdate: (value: Object) => void,
@@ -44,6 +46,11 @@ class DetectorItemLayout extends React.Component<Props> {
         className={classes.root}
         elevation={4}
       >
+        <EditableName
+          label="Detector: "
+          name={detector.name}
+          updateName={this.props.detectorNameUpdate}
+        />
         <FormSelect
           type="detectorGeometry"
           value={detector.detectorGeometry && detector.detectorGeometry.type}

@@ -37,7 +37,6 @@ class CompoundMaterialEditorLayout extends React.Component<Props> {
   props: Props
 
   updateColor = (color: Color) => {
-    console.log(color);
     this.props.updateField(color, 'color');
   }
 

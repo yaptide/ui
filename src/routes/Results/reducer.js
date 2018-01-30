@@ -21,10 +21,11 @@ const ACTION_HANDLERS = {
     })
   ),
   [actionType.FETCH_SIMULATION_RESULTS_SUCCESS]: (state, action) => {
-    const { detectors, results } = action.results;
-    const detectorIds = _.map(detectors, item => item.metadata.filename);
+    const { detectors: results } = action.results;
+    const { detectors: setup } = action.setup;
 
-    const detectorsMap = _.keyBy(detectors, item => item.metadata.filename);
+    const detectorIds = _.map(results, item => item.detectorId);
+    const detectorsMap = _.keyBy(results, item => item.detectorId);
     const detectorsProcessed = _.mapValues(detectorsMap, (item) => {
       const { scored, ...rest } = item;
       return rest;
@@ -32,9 +33,9 @@ const ACTION_HANDLERS = {
     const detectorsScore = _.mapValues(detectorsMap, item => item.scored);
 
     return state.merge({
-      ...results,
       detectorIds,
       detectors: detectorsProcessed,
+      detectorsSetup: setup,
       detectorsScore,
       dataStatus: 'success',
     });

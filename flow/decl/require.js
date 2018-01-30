@@ -5,3 +5,4 @@ declare var require: {
     ensure(ids: Array<string>, callback?: { (require: typeof require): void }, chunk?: string): void
 }
 declare var BACKEND_PUBLIC_URL: string;
+declare var process: Object;

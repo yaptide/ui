@@ -46,16 +46,16 @@ class ChartInterface extends React.Component<Props> {
     let axis1Label = { label: 'unknown', unit: 'unknown', startValue: 0, endValue: 100 };
     let axis2Label = { label: 'unknown', unit: 'unknown', startValue: 0, endValue: 100 };
     if (this.props.data.length === 1) {
-      axis1Label = this.props.labels.dimensions[1];
-      axis2Label = this.props.labels.dimensions[2];
-      data = _.flatten(this.props.data);
-    } else if (this.props.data[0].length > 1) {
-      axis1Label = this.props.labels.dimensions[0];
-      axis2Label = this.props.labels.dimensions[2];
-      data = _.map(this.props.data, item => _.flatten(item));
-    } else if (this.props.data[0][0].length > 1) {
-      axis1Label = this.props.labels.dimensions[0];
+      axis1Label = this.props.labels.dimensions[2];
       axis2Label = this.props.labels.dimensions[1];
+      data = this.props.data[0];
+    } else if (this.props.data[0].length === 1) {
+      axis1Label = this.props.labels.dimensions[2];
+      axis2Label = this.props.labels.dimensions[0];
+      data = _.map(this.props.data, item => item[0]);
+    } else if (this.props.data[0][0].length === 1) {
+      axis1Label = this.props.labels.dimensions[1];
+      axis2Label = this.props.labels.dimensions[0];
       data = _.map(this.props.data, array2d => _.map(array2d, array1d => array1d[0]));
     }
     return (

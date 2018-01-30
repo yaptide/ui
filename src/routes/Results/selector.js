@@ -11,12 +11,17 @@ function resultsListSelector(
 }
 
 function resultOverviewSelector(state: Store, detectorId: DetectorResultId): ?DetectorResultsInfo {
-  const overview = state.results.getIn(['detectors', detectorId]);
+  const overview = state.results.getIn(['detectors', String(detectorId)]);
   return overview ? overview.toJS() : undefined;
 }
 
 function resultScoreSelector(state: Store, detectorId: DetectorResultId): ?Score {
-  const score = state.results.getIn(['detectorsScore', detectorId]);
+  const score = state.results.getIn(['detectorsScore', String(detectorId)]);
+  return score ? score.toJS() : undefined;
+}
+
+function resultSetupSelector(state: Store, detectorId: DetectorResultId): ?Score {
+  const score = state.results.getIn(['detectorsSetup', String(detectorId)]);
   return score ? score.toJS() : undefined;
 }
 
@@ -24,4 +29,5 @@ export default {
   resultsListSelector,
   resultOverviewSelector,
   resultScoreSelector,
+  resultSetupSelector,
 };

@@ -5,7 +5,8 @@ import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
 import RightArrowIcon from 'material-ui-icons/KeyboardArrowRight';
 import { withStyles } from 'material-ui/styles';
-import { ZoneName, ZoneEditor } from 'components/Editor/ZoneEditor';
+import { ZoneEditor } from 'components/Editor/ZoneEditor';
+import { EditableName } from 'components/Editor';
 import type { OperationType, ConstructionPath, PrintableOperation } from 'model/simulation/zone';
 import type { PrintableMaterial } from 'model/simulation/material';
 
@@ -43,7 +44,8 @@ class ZoneItemLayout extends React.Component<Props, State> {
   render() {
     const { classes, zoneName, base, construction, materialId, materials } = this.props;
     const zoneTitle = (
-      <ZoneName
+      <EditableName
+        label="Zone: "
         name={zoneName}
         isOpen={this.state.isOpen}
         toggleOpen={this.toggleOpen}

@@ -4,11 +4,13 @@ import React from 'react';
 import Paper from 'material-ui/Paper';
 import { withStyles } from 'material-ui/styles';
 import type { Score, DimensionsInfo } from 'model/result';
+import type { Detector } from 'model/simulation/detector';
 import { ChartInterface } from 'components/Chart';
 import { generateDetectorChartLabels } from 'utils/simulation/detectorInfo';
 import AppLayout from 'pages/AppLayout';
 
 type Props = {
+  setup: Detector,
   scored: Score,
   dimensions: DimensionsInfo,
   classes: Object,
@@ -27,7 +29,7 @@ class ResultDetailsLayout extends React.Component<Props> {
               data={this.props.scored}
               numberOfDimensions={this.props.dimensions.numberOfDimensions}
               classes={{ root: classes.chart }}
-              labels={generateDetectorChartLabels(({ name: 'test', shape: null }: any))}
+              labels={generateDetectorChartLabels(this.props.setup)}
             />
           </Paper>
           {

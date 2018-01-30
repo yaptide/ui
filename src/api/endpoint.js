@@ -1,6 +1,7 @@
 /* @flow */
-window.env = window.env || {};
-export const baseURL = `${window.location.protocol}//${window.env.BACKEND_PUBLIC_URL}`;
+window.process = window.process || {};
+window.process.env = window.process.env || {};
+export const baseURL = `${window.location.protocol}//${window.process.env.BACKEND_PUBLIC_URL}`;
 
 export type Endpoint = 'LOGIN' |
   'REGISTER';

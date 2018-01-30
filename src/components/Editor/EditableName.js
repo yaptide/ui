@@ -10,6 +10,7 @@ const UNDEFINED_ZONE = '-------------';
 
 type Props = {
   name: string,
+  label: string,
   updateName: (value: string) => void,
   classes: Object,
 };
@@ -19,7 +20,7 @@ type State = {
   name: string,
 };
 
-class ZoneName extends React.Component<Props, State> {
+class EditableName extends React.Component<Props, State> {
   props: Props
   state: State = {
     isEditOn: false,
@@ -45,7 +46,6 @@ class ZoneName extends React.Component<Props, State> {
         ? (
           <TextField
             value={this.state.name}
-            name="zone name"
             onBlur={this.stopEditing}
             onChange={this.updateName}
             inputRef={this.setRef}
@@ -58,7 +58,7 @@ class ZoneName extends React.Component<Props, State> {
               className={classes.label}
               noWrap
             >
-              {`Zone: ${this.props.name}` || UNDEFINED_ZONE}
+              {`${this.props.label}${this.props.name}` || UNDEFINED_ZONE}
             </Typography>
           </div>
         )
@@ -74,4 +74,4 @@ const styles = (theme: Object) => ({
   },
 });
 
-export default withStyles(styles)(ZoneName);
+export default withStyles(styles)(EditableName);
