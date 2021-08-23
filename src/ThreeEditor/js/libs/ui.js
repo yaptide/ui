@@ -307,7 +307,7 @@ class UITextArea extends UIElement {
 
 		this.dom.setAttribute( 'autocomplete', 'off' );
 
-		this.dom.addEventListener( 'keydown', function ( event ) {
+		this.dom.addEventListener( 'keydown', ( event ) => {
 
 			event.stopPropagation();
 
