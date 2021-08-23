@@ -1,4 +1,4 @@
-import { Box3, Vector3 } from '../../build/three.module.js';
+import * as THREE from 'three';
 
 import { UIPanel, UIRow, UIHorizontalRule } from './libs/ui.js';
 
@@ -53,7 +53,7 @@ function MenubarEdit( editor ) {
 	option.setTextContent( strings.getKey( 'menubar/edit/clear_history' ) );
 	option.onClick( function () {
 
-		if ( confirm( 'The Undo/Redo History will be cleared. Are you sure?' ) ) {
+		if ( window.confirm( 'The Undo/Redo History will be cleared. Are you sure?' ) ) {
 
 			editor.history.clear();
 
@@ -99,9 +99,9 @@ function MenubarEdit( editor ) {
 
 		if ( object === null || object.parent === null ) return; // avoid centering the camera or scene
 
-		const aabb = new Box3().setFromObject( object );
-		const center = aabb.getCenter( new Vector3() );
-		const newPosition = new Vector3();
+		const aabb = new THREE.Box3().setFromObject( object );
+		const center = aabb.getCenter( new THREE.Vector3() );
+		const newPosition = new THREE.Vector3();
 
 		newPosition.x = object.position.x + ( object.position.x - center.x );
 		newPosition.y = object.position.y + ( object.position.y - center.y );

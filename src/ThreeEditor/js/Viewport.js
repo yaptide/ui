@@ -1,6 +1,6 @@
-import * as THREE from '../../build/three.module.js';
+import * as THREE from 'three'
 
-import { TransformControls } from '../../examples/jsm/controls/TransformControls.js';
+import { TransformControls } from './libs/controls/TransformControls.js';
 
 import { UIPanel } from './libs/ui.js';
 
@@ -9,13 +9,12 @@ import { EditorControls } from './EditorControls.js';
 import { ViewportCamera } from './Viewport.Camera.js';
 import { ViewportInfo } from './Viewport.Info.js';
 import { ViewHelper } from './Viewport.ViewHelper.js';
-import { VR } from './Viewport.VR.js';
 
 import { SetPositionCommand } from './commands/SetPositionCommand.js';
 import { SetRotationCommand } from './commands/SetRotationCommand.js';
 import { SetScaleCommand } from './commands/SetScaleCommand.js';
 
-import { RoomEnvironment } from '../../examples/jsm/environments/RoomEnvironment.js';
+import { RoomEnvironment } from './libs/environments/RoomEnvironment.js';
 
 function Viewport( editor ) {
 
@@ -56,7 +55,7 @@ function Viewport( editor ) {
 	grid.add( grid2 );
 
 	var viewHelper = new ViewHelper( camera, container );
-	var vr = new VR( editor );
+
 
 	//
 
@@ -681,7 +680,6 @@ function Viewport( editor ) {
 
 	} );
 
-	signals.exitedVR.add( render );
 
 	//
 
@@ -737,12 +735,7 @@ function Viewport( editor ) {
 			needsUpdate = true;
 
 		}
-
-		if ( vr.currentSession !== null ) {
-
-			needsUpdate = true;
-
-		}
+		
 
 		if ( needsUpdate === true ) render();
 
@@ -769,7 +762,7 @@ function Viewport( editor ) {
 
 			renderer.autoClear = false;
 			if ( showSceneHelpers === true ) renderer.render( sceneHelpers, camera );
-			if ( vr.currentSession === null ) viewHelper.render( renderer );
+			
 			renderer.autoClear = true;
 
 		}
