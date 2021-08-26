@@ -10,6 +10,7 @@ function App() {
   return (<>
     <JsRoot></JsRoot>
     <ZoneManagerPanel></ZoneManagerPanel>
+    {/* <ThreeEditor></ThreeEditor> */}
   </>);
 }
 

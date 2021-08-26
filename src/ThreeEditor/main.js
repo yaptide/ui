@@ -177,5 +177,7 @@ export function initEditor(container) {
         }
 
     }
+
+    return { editor, viewport, toolbar, sidebar, menubar, resizer }
 }
 
