@@ -9,7 +9,7 @@ import ZoneManagerPanel from './components/ZoneManagerPanel/ZoneManagerPanel';
 function App() {
   return (<>
     {/* <JsRoot></JsRoot> */}
-    <ZoneManagerPanel></ZoneManagerPanel>
+
     <ThreeEditor></ThreeEditor>
   </>);
 }

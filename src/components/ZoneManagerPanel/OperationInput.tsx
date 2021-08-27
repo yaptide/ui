@@ -9,10 +9,7 @@ type OperationInputProps = {
     last?: boolean,
 }
 type Operation = "intersection" | "left-subtraction" | "right-subtraction" 
-type AlgebraRow = {
-    geometries: number[],
-    operations: Operation[],
-}
+
 
 function OperationInput(props: OperationInputProps) {
     let [selected, setSelected] = useState<Operation|"">(props?.value??"");
