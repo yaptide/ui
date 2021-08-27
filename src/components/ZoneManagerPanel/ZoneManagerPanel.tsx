@@ -1,7 +1,9 @@
 import { Button } from "@material-ui/core";
 import { useState } from "react";
+import { parseZone } from "../../util/parseZone/parseZone";
 import BooleanAlgebraRow from "./BooleanAlgebraRow";
 import "./zoneManagerPanel.css";
+
 type Operation = "intersection" | "left-subtraction" | "right-subtraction" 
 type AlgebraRow = {
     geometries: (number|null)[],
@@ -16,24 +18,24 @@ function ZoneManagerPanel() {
     let addAlgebraRow = () => {
         setRows((prev) => [...prev,{geometries:[],operations:[]}]);
     };    
-    let parseZone = () => {
-        console.log();
-    }
     let removeRow = (removeId:number) => () => {
-        setRows((prev)=> [...prev.filter((el, id) => id != removeId)]);
+        if(rows.length === 1)
+            setRows([{geometries:[],operations:[]}]);
+        else
+            setRows((prev)=> [...prev.filter((el, id) => id !== removeId)]);
     }
-    console.log(rows);
     return (<div className="zoneManagerWrapper">
         {rows.map((row ,id) => {
             return (<BooleanAlgebraRow 
                 id={id} 
+                key={id}
                 del={removeRow(id)} 
                 change={changeRowValues(id)}
                 value={row}
             ></BooleanAlgebraRow>)
         })}
         <Button className="addRowButton" onClick={addAlgebraRow}>+</Button>
-        <Button className="parseZoneButton" onClick={parseZone}>Parse Zone</Button>
+        <Button className="parseZoneButton" onClick={()=>parseZone(rows)}>Parse Zone</Button>
     </div>);
 }
 
