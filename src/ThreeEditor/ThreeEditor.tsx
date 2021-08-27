@@ -3,8 +3,9 @@ import { initEditor } from './main';
 import './css/main.css';
 import SampleComponent from './components/SampleComponent';
 import { Editor } from './js/Editor';
-import  * as THREE from 'three';
+import * as THREE from 'three';
 import CSG from './js/libs/csg/three-csg';
+
 
 function ThreeEditor() {
   const containerEl = useRef(null);
@@ -44,7 +45,7 @@ function ThreeEditor() {
       let meshResult = CSG.toMesh(bspResult, meshA.matrix, meshA.material);
 
       meshResult.name = 'meshResult';
-      meshResult.material = new THREE.MeshNormalMaterial()
+      meshResult.material = new THREE.MeshNormalMaterial();
       editor.sceneHelpers.add(meshResult);
     }
     return () => {
