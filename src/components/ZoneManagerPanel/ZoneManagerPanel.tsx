@@ -15,9 +15,9 @@ function ZoneManagerPanel() {
     } 
     let addAlgebraRow = () => {
         setRows((prev) => [...prev,{geometries:[],operations:[]}]);
-    };
+    };    
     let parseZone = () => {
-
+        console.log();
     }
     let removeRow = (removeId:number) => () => {
         setRows((prev)=> [...prev.filter((el, id) => id != removeId)]);
@@ -33,7 +33,7 @@ function ZoneManagerPanel() {
             ></BooleanAlgebraRow>)
         })}
         <Button className="addRowButton" onClick={addAlgebraRow}>+</Button>
-        <Button className="parseZoneButton" onClick={() => parseZone()}>Parse Zone</Button>
+        <Button className="parseZoneButton" onClick={parseZone}>Parse Zone</Button>
     </div>);
 }
 
