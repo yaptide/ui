@@ -9,16 +9,12 @@ type OperationInputProps = {
     last?: boolean,
 }
 type Operation = "intersection" | "left-subtraction" | "right-subtraction" 
-type AlgebraRow = {
-    geometries: number[],
-    operations: Operation[],
-}
 
 function OperationInput(props: OperationInputProps) {
     let [selected, setSelected] = useState<Operation|"">(props?.value??"");
     let handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         setSelected(event.target.value as (""|Operation));
-        if(event.target.value as string != "")
+        if(event.target.value as string !== "")
             props.push(event.target.value as Operation)
         else
             props.pop();
