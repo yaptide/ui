@@ -10,6 +10,7 @@ type OperationInputProps = {
 }
 type Operation = "intersection" | "left-subtraction" | "right-subtraction" 
 
+
 function OperationInput(props: OperationInputProps) {
     let [selected, setSelected] = useState<Operation|"">(props?.value??"");
     let handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {

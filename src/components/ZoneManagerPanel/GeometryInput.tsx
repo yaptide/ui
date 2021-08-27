@@ -2,21 +2,20 @@ import { MenuItem, Select } from "@material-ui/core";
 import { useState } from "react";
 type GeometryInputProps = {
     id: number,
-    geometries: Geometry[],
-    push: (geoId: number) => void
-    value?: number | null;
+    geometries: THREE.Object3D[],
+    push: (uuid: string) => void
+    value?: string | null;
 }
-type Geometry = {
-    id: number,
-    name: string,
-}
+
 
 function GeometryInput(props: GeometryInputProps) {
     let [selected, setSelected] = useState(props?.value ?? 0);
+
     let handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setSelected(event.target.value as number);
-        props.push(event.target.value as number)
+        setSelected(event.target.value as string);
+        props.push(event.target.value as string)
     };
+
     return (
         <Select
             labelId={"GeometryLabel" + props.id}
@@ -29,8 +28,8 @@ function GeometryInput(props: GeometryInputProps) {
             <MenuItem disabled value={0}>
                 <em>Geometry</em>
             </MenuItem>
-            {props.geometries.map((geo, index) => {
-                return (<MenuItem key={geo.id} value={geo.id}>{geo.name}</MenuItem>)
+            {props.geometries.map((geo, id) => {
+                return (<MenuItem value={geo.uuid}>{geo.name}</MenuItem>)
             })}
         </Select>
     )

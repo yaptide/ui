@@ -5,6 +5,7 @@ import SampleComponent from './components/SampleComponent';
 import { Editor } from './js/Editor';
 import * as THREE from 'three';
 import CSG from './js/libs/csg/three-csg';
+import ZoneManagerPanel from '../components/ZoneManagerPanel/ZoneManagerPanel';
 
 
 function ThreeEditor() {
@@ -12,6 +13,7 @@ function ThreeEditor() {
 
 
   const [editor, setEditor] = useState<Editor>();
+
   useEffect(() => {
     if (containerEl.current) {
       const { editor, viewport, toolbar, sidebar, menubar, resizer } = initEditor(containerEl.current);
@@ -57,7 +59,10 @@ function ThreeEditor() {
   return (
     <div className="ThreeEditor" ref={containerEl}>
       {editor &&
-        <SampleComponent signal={editor.signals.objectSelected} ></SampleComponent>
+        <>
+          <SampleComponent signal={editor.signals.objectSelected} ></SampleComponent>
+          <ZoneManagerPanel editor={editor}></ZoneManagerPanel>
+        </>
       }
     </div>
   );
