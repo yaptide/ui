@@ -21,7 +21,13 @@ type Geometry = {
 
 function BooleanAlgebraRow(props:BooleanAlgebraRowProps) {
     let [algebraRow, setAlgebraRow] = useState<AlgebraRow>(props.value??{geometries:[],operations:[]});
-    let possibleGeometries : Geometry[] = [{id:1,name:"cube1"},{id:2,name:"cube2"}];
+    let possibleGeometries : Geometry[] = [{id:1,name:"cube1"},{id:2,name:"cube2"},{id:3,name:"cube3"},{id:4,name:"cube4"}];
+    useEffect(() => {
+        props.change(algebraRow);
+    },[algebraRow])
+    useEffect(() => {
+        setAlgebraRow(props.value??{geometries:[],operations:[]});
+    },[props,props.value])
     let pushGeometry = (id:number) => (geoId:number) => {
         if(id === algebraRow.geometries.length)
             setAlgebraRow((prev)=>{
@@ -45,12 +51,18 @@ function BooleanAlgebraRow(props:BooleanAlgebraRowProps) {
                 }
             })
     }
-    useEffect(() => {
-        props.change(algebraRow);
-    },[algebraRow])
-    useEffect(() => {
-        setAlgebraRow(props.value??{geometries:[],operations:[]});
-    },[props,props.value])
+    let removeOperation = (id:number) => () => {
+        setAlgebraRow((prev)=>{
+            return {
+                geometries:[
+                    ...prev.geometries.slice(0,id+1)
+                ],
+                operations:[
+                    ...prev.operations.slice(0,id)
+                ]
+            }
+        })
+    }
     let pushOperation = (id:number) => (op:Operation) => {
         if(id === algebraRow.operations.length)
             setAlgebraRow((prev)=>{
@@ -85,11 +97,13 @@ function BooleanAlgebraRow(props:BooleanAlgebraRowProps) {
             <OperationInput 
                 id={id}
                 push={pushOperation(id)}
+                pop={removeOperation(id)}
                 value={algebraRow.operations?.[id]}
+                last={algebraRow.operations.length <= id+1}
             />
         </>
     })}
-    {algebraRow.operations.length == algebraRow.geometries.length && 
+    {algebraRow.operations.length >= algebraRow.geometries.length && 
         (<GeometryInput 
             id={algebraRow.geometries.length} 
             geometries={possibleGeometries}
