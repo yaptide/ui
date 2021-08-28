@@ -3,17 +3,17 @@ import { useState } from "react";
 type GeometryInputProps = {
     id: number,
     geometries: THREE.Object3D[],
-    push: (uuid: string) => void
-    value?: string | null;
+    push: (uuid: number) => void
+    value?: number | null;
 }
 
 
 function GeometryInput(props: GeometryInputProps) {
-    let [selected, setSelected] = useState(props?.value ?? 0);
+    const [selected, setSelected] = useState(props?.value ?? 0);
 
-    let handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setSelected(event.target.value as string);
-        props.push(event.target.value as string)
+    const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        setSelected(event.target.value as number);
+        props.push(event.target.value as number);
     };
 
     return (
@@ -28,8 +28,8 @@ function GeometryInput(props: GeometryInputProps) {
             <MenuItem disabled value={0}>
                 <em>Geometry</em>
             </MenuItem>
-            {props.geometries.map((geo, id) => {
-                return (<MenuItem value={geo.uuid}>{geo.name}</MenuItem>)
+            {props.geometries.map((geo, index) => {
+                return (<MenuItem value={geo.id}>{geo.name}</MenuItem>)
             })}
         </Select>
     )
