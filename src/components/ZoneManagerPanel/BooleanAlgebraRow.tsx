@@ -9,38 +9,27 @@ type BooleanAlgebraRowProps = {
     del: () => void,
     change: (row: AlgebraRow) => void,
     value?: AlgebraRow,
+    possibleObjects: THREE.Object3D[]
 }
-type Operation = "intersection" | "left-subtraction" | "right-subtraction"
-type AlgebraRow = {
+
+export type Operation = "intersection" | "left-subtraction" | "right-subtraction";
+
+export type AlgebraRow = {
     geometries: (number | null)[],
     operations: (Operation | null)[]
 }
-type Geometry = {
-    id: number,
-    name: string,
-}
+
 
 function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
-    let [algebraRow, setAlgebraRow] = useState<AlgebraRow>(props.value ?? { geometries: [], operations: [] });
-    let possibleGeometries: Geometry[] = [{ id: 1, name: "cube1" }, { id: 2, name: "cube2" }, { id: 3, name: "cube3" }, { id: 4, name: "cube4" }, { id: 5, name: "cube5" }, { id: 6, name: "cube6" }];
+    const [algebraRow, setAlgebraRow] = useState<AlgebraRow>(props.value ?? { geometries: [], operations: [] });
 
-    let changeGeometry = useCallback((row: AlgebraRow) => {
-        props.change(row);
-    }, [props.change])
-    useEffect(() => {
-        changeGeometry(algebraRow);
-    }, [algebraRow])
-    useEffect(() => {
-        setAlgebraRow(props.value ?? { geometries: [], operations: [] });
-    }, [props])
-
-    let pushGeometry = (id: number) => (geoId: number) => {
-        if (id === algebraRow.geometries.length)
+    const pushGeometry = (index: number) => (id: number) => {
+        if (index === algebraRow.geometries.length)
             setAlgebraRow((prev) => {
                 return {
                     geometries: [
                         ...prev.geometries,
-                        possibleGeometries.find(el => el.id === geoId)?.id ?? null
+                        props.possibleObjects.find(el => el.id === id)?.id ?? null
                     ],
                     operations: prev.operations
                 }
@@ -49,15 +38,15 @@ function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
             setAlgebraRow((prev) => {
                 return {
                     geometries: [
-                        ...prev.geometries.map((el, index) => {
-                            return index === id ? geoId : el
+                        ...prev.geometries.map((el, elIndex) => {
+                            return index === elIndex ? id : el
                         }),
                     ],
                     operations: prev.operations
                 }
             })
     }
-    let removeOperation = (id: number) => () => {
+    const removeOperation = (id: number) => () => {
         setAlgebraRow((prev) => {
             return {
                 geometries: [
@@ -69,7 +58,16 @@ function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
             }
         })
     }
-    let pushOperation = (id: number) => (op: Operation) => {
+
+    useEffect(() => {
+        props.change(algebraRow);
+    }, [algebraRow]);
+
+    useEffect(() => {
+        setAlgebraRow(props.value ?? { geometries: [], operations: [] });
+    }, [props]);
+    
+    const pushOperation = (id: number) => (op: Operation) => {
         if (id === algebraRow.operations.length)
             setAlgebraRow((prev) => {
                 return {
@@ -97,7 +95,7 @@ function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
         return (<React.Fragment key={id} >
             <GeometryInput
                 id={id}
-                geometries={possibleGeometries}
+                geometries={props.possibleObjects}
                 push={pushGeometry(id)}
                 value={geo}
             />
@@ -110,10 +108,10 @@ function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
             />
         </React.Fragment>)
     })}
-        {algebraRow.operations.length >= algebraRow.geometries.length &&
+        {algebraRow.operations.length === algebraRow.geometries.length &&
             (<GeometryInput
                 id={algebraRow.geometries.length}
-                geometries={possibleGeometries}
+                geometries={props.possibleObjects}
                 push={pushGeometry(algebraRow.geometries.length)}
             />)
         }
