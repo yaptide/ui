@@ -29,7 +29,7 @@ function GeometryInput(props: GeometryInputProps) {
             <MenuItem disabled value={0}>
                 <em>Geometry</em>
             </MenuItem>
-            {props.geometries.map((geo, id) => {
+            {props.geometries.map((geo, index) => {
                 return (<MenuItem key={geo.id} value={geo.id}>{geo.name}</MenuItem>)
             })}
         </Select>
