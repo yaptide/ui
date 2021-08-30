@@ -163,6 +163,12 @@ class CSGManager {
         this.zones.delete(zone.uuid);
     }
 
+    removeZone(zone: CSGZone) {
+        this.editor.sceneHelpers.remove(zone.resultMesh);
+        this.zones.delete(zone.uuid);
+    }
+    
+
 }
 
 export { CSGManager }
