@@ -1,7 +1,0 @@
-static
-release
-node_modules
-
-*.swp
-*.swo
-*.log
