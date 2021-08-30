@@ -1,4 +1,4 @@
-import { AlgebraRow, Operation } from "../../components/ZoneManagerPanel/BooleanAlgebraRow";
+import { AlgebraRow } from "../../components/ZoneManagerPanel/BooleanAlgebraRow";
 import ZoneConstructorController from "./ZoneConstructorController";
 
 function parseRow(zoneOperationRow:AlgebraRow){
@@ -28,3 +28,4 @@ function parseZone(zoneOperationRows:AlgebraRow[]){
 }
 
 export { parseZone };
+

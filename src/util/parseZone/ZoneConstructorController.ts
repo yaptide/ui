@@ -1,4 +1,3 @@
-import { isNumber } from "util";
 import { Operation } from "../../components/ZoneManagerPanel/BooleanAlgebraRow";
 
 export default class ZoneConstructorController {
