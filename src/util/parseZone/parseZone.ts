@@ -1,4 +1,4 @@
-import { AlgebraRow, Operation } from "../../components/ZoneManagerPanel/BooleanAlgebraRow";
+import { AlgebraRow } from "../../components/ZoneManagerPanel/BooleanAlgebraRow";
 
 function parseRightSubtraction(result:number[][], nextGeo:number){
     let groupSections: Record<string,number[]> = {};
