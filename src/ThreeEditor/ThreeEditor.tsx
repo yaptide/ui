@@ -6,6 +6,7 @@ import { Editor } from './js/Editor';
 import * as THREE from 'three';
 import CSG from './js/libs/csg/three-csg';
 import ZoneManagerPanel from '../components/ZoneManagerPanel/ZoneManagerPanel';
+import { CSGManager } from './util/CSGManager';
 
 
 function ThreeEditor() {
@@ -48,7 +49,16 @@ function ThreeEditor() {
 
       meshResult.name = 'meshResult';
       meshResult.material = new THREE.MeshNormalMaterial();
-      editor.sceneHelpers.add(meshResult);
+      // editor.sceneHelpers.add(meshResult);
+
+
+      // let manager = new CSGManager(editor);
+      // let zone = manager.createZone();
+
+      // zone.addUnion();
+      // zone.addOperation(0, { object: meshA, mode: 'union' });
+      // zone.addOperation(0, { object: meshB, mode: 'left-subtraction' });
+
     }
     return () => {
 
