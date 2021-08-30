@@ -23,7 +23,7 @@ function parseRow(zoneOperationRow:AlgebraRow){
 function parseZone(zoneOperationRows:AlgebraRow[]){
     console.log(zoneOperationRows);
     let result: string = "";
-    zoneOperationRows.forEach(el=>{result = result.concat(parseRow(el))});
+    zoneOperationRows.forEach(el=>{result = result.concat(parseRow(el)+" OR")});
     console.log(result.slice(0,-3));
 }
 

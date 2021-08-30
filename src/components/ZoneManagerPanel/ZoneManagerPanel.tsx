@@ -19,7 +19,11 @@ function ZoneManagerPanel(props: { editor: Editor }) {
         setRows((prev) => [...prev, { geometries: [], operations: [] }]);
     };
     const removeRow = (removeId: number) => () => {
-        setRows((prev) => [...prev.filter((el, id) => id !== removeId)]);
+        setRows((prev) => {
+            let newRows = [...prev.filter((el, id) => id !== removeId)];
+            if(newRows.length === 0) newRows.push({ geometries: [], operations: [] });
+            return newRows;
+        });
     }
 
     const refreshObjectsList = useCallback(
