@@ -8,11 +8,13 @@ interface SampleComponentProps {
 
 function SampleComponent(props: SampleComponentProps) {
     const [objectName, setObjectName] = useState();
+    const [objectID, setObjectID] = useState();
 
 
     const objectSelected = useCallback(
         (object) => {
             setObjectName(object?.name);
+            setObjectID(object?.id);
         },
         [],
     );
@@ -22,11 +24,12 @@ function SampleComponent(props: SampleComponentProps) {
         return () => {
             props.signal.remove(objectSelected)
         }
-    }, [objectSelected, props.signal]);  
+    }, [objectSelected, props.signal]);
 
     return (
         <div className="SampleComponent">
-            Selected Name:{objectName}
+            Selected Name:{objectName}<br></br>
+            Selected ID:{objectID}
         </div>
     );
 }
