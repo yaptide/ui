@@ -55,9 +55,13 @@ function ZoneManagerPanel(props: { editor: Editor }) {
     };
 
     const removeRow = (removeId: number) => () => {
-        setRows((prev) => [...prev.filter((el, id) => id !== removeId)]);
+        setRows((prev) => {
+            let newRows = [...prev.filter((el, id) => id !== removeId)];
+            if(newRows.length === 0) newRows.push({ geometries: [], operations: [] });
+            return newRows;
+        });
         zoneRef.current?.removeUnion(removeId);
-    };
+    }
 
     const refreshObjectsList = useCallback(
         () => {
