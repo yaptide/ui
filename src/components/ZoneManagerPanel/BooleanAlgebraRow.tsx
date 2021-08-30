@@ -1,6 +1,5 @@
 import { Button } from "@material-ui/core";
-import React from "react";
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import GeometryInput from "./GeometryInput";
 import OperationInput from "./OperationInput";
 
@@ -89,7 +88,8 @@ function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
             })
     }
     return (<div className="zoneManagerRow">{algebraRow.geometries.map((geo, id) => {
-        return <>
+
+        return (<Fragment key={id} >
             <GeometryInput
                 id={id}
                 geometries={props.possibleObjects}
@@ -101,9 +101,9 @@ function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
                 push={pushOperation(id)}
                 pop={removeOperation(id)}
                 value={algebraRow.operations?.[id]}
-                last={algebraRow.operations.length <= id + 1}
+                canClear={algebraRow.operations.length <= id + 1}
             />
-        </React.Fragment>)
+        </Fragment>)
     })}
         {algebraRow.operations.length === algebraRow.geometries.length &&
             (<GeometryInput

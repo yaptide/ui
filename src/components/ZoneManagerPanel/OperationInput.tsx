@@ -6,7 +6,7 @@ type OperationInputProps = {
     push: (op:Operation) => void,
     pop: () => void,
     value?: Operation|null,
-    last?: boolean,
+    canClear?: boolean,
 }
 type Operation = "intersection" | "left-subtraction" | "right-subtraction" 
 
@@ -30,7 +30,7 @@ function OperationInput(props: OperationInputProps) {
         <MenuItem disabled value={0}>
             <em>Operation</em>
         </MenuItem>
-        {props.last && (<MenuItem value={""}>
+        {props.canClear && (<MenuItem value={""}>
             X
         </MenuItem>)}
         <MenuItem value={"left-subtraction"}><img src="./images/L.png" alt="left subtraction"/></MenuItem>
