@@ -17,11 +17,12 @@ function ZoneManagerPanel(props: { editor: Editor }) {
     let addAlgebraRow = () => {
         setRows((prev) => [...prev, { geometries: [], operations: [] }]);
     };
-    let parseZone = () => {
-        console.log();
-    }
-    let removeRow = (removeId: number) => () => {
-        setRows((prev) => [...prev.filter((el, id) => id !== removeId)]);
+    const removeRow = (removeId: number) => () => {
+        setRows((prev) => {
+            let newRows = [...prev.filter((el, id) => id !== removeId)];
+            if(newRows.length === 0) newRows.push({ geometries: [], operations: [] });
+            return newRows;
+        });
     }
 
     const refreshObjectsList = useCallback(
