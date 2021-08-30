@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { MathUtils } from "three";
 import { Editor } from "../js/Editor";
 import CSG from "../js/libs/csg/three-csg";
+import { debounce } from 'throttle-debounce';
 
 export interface CSGOperation {
     object: THREE.Object3D;
@@ -25,6 +26,8 @@ export class CSGZone {
         sceneGraphChanged: Signal,
     };
 
+    readonly debouncedUpdatePreview = debounce(200, false, () => this.updatePreview());
+
     constructor(editor: Editor, name?: string, material?: THREE.Material, unionOperations?: CSGOperation[][]) {
         this.uuid = MathUtils.generateUUID();
         this.name = name || 'CSGZone';
@@ -42,6 +45,7 @@ export class CSGZone {
     }
 
     updateGeometry() {
+        console.time("CSGZone");
         let unionsResultBsp = new CSG();
 
         for (let i = 0; i < this.unionOperations.length; i++) {
@@ -55,7 +59,7 @@ export class CSGZone {
 
                 operation.object.updateMatrix();
 
-                let objectBsp = CSG.fromMesh(operation.object as THREE.Mesh);                
+                let objectBsp = CSG.fromMesh(operation.object as THREE.Mesh);
 
                 let handleMode = {
                     'left-subtraction': () => lastBsp.subtract(objectBsp),
@@ -76,42 +80,43 @@ export class CSGZone {
         this.resultMesh.geometry.dispose();
         this.resultMesh.geometry = geometryResult;
         this.resultMesh.geometry.computeBoundingSphere();
+        console.timeEnd("CSGZone");
     }
 
     addUnion() {
         this.unionOperations.push([]);
-        this.updatePreview();
+        this.debouncedUpdatePreview();
     }
 
     updateUnion(unionIndex: number, operations: CSGOperation[]) {
         this.unionOperations[unionIndex].forEach((e, i) => this.subscribedObjectsId.delete(e.object.id));
         this.unionOperations[unionIndex] = [...operations];
         this.unionOperations[unionIndex].forEach((e, i) => this.subscribedObjectsId.add(e.object.id));
-        this.updatePreview();
+        this.debouncedUpdatePreview();
     }
 
     removeUnion(unionIndex: number) {
         this.unionOperations[unionIndex].forEach((e, i) => this.removeOperation(unionIndex, i));
         this.unionOperations.splice(unionIndex, 0);
-        this.updatePreview();
+        this.debouncedUpdatePreview();
     }
 
     addOperation(unionIndex: number, operation: CSGOperation) {
         this.unionOperations[unionIndex].push(operation);
         this.subscribedObjectsId.add(operation.object.id);
-        this.updatePreview();
+        this.debouncedUpdatePreview();
     }
 
     removeOperation(unionIndex: number, operationIndex: number) {
         this.unionOperations[unionIndex].splice(operationIndex, 0);
         this.subscribedObjectsId.delete(this.unionOperations[unionIndex][operationIndex].object.id);
-        this.updatePreview();
+        this.debouncedUpdatePreview();
     }
 
     handleSignal(object: THREE.Object3D) {
         if (!this.subscribedObjectsId.has(object.id)) return;
 
-        this.updatePreview();
+        this.debouncedUpdatePreview();
     }
 
     updatePreview() {
@@ -121,6 +126,7 @@ export class CSGZone {
 
         this.signals.sceneGraphChanged.dispatch();
     }
+
 }
 
 class CSGManager {
@@ -142,7 +148,7 @@ class CSGManager {
         this.editor.sceneHelpers.remove(zone.resultMesh);
         this.zones.delete(zone.uuid);
     }
-    
+
 
 }
 
