@@ -4,6 +4,10 @@ import { MathUtils } from "three";
 import { Editor } from "../js/Editor";
 import CSG from "../js/libs/csg/three-csg";
 import { debounce } from 'throttle-debounce';
+import * as Comlink from 'comlink';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import Worker from 'worker-loader!./CSGWorker';
+import { ICSGWorker } from "./CSGWorker";
 
 export interface CSGOperation {
     object: THREE.Object3D;
@@ -18,6 +22,7 @@ export class CSGZone {
     material: THREE.Material;
     unionOperations: CSGOperation[][];
 
+
     subscribedObjectsId: Set<number> = new Set();
     needsUpdate: boolean = true;
     signals: {
@@ -26,6 +31,7 @@ export class CSGZone {
         sceneGraphChanged: Signal,
     };
 
+    worker?: Comlink.Remote<ICSGWorker>;
     readonly debouncedUpdatePreview = debounce(200, false, () => this.updatePreview());
 
     constructor(editor: Editor, name?: string, material?: THREE.Material, unionOperations?: CSGOperation[][]) {
@@ -59,6 +65,10 @@ export class CSGZone {
 
                 operation.object.updateMatrix();
 
+                this.worker?.parse(JSON.stringify(operation.object))
+                    .then((json: string) => new THREE.ObjectLoader().parseAsync(JSON.parse(json)))
+                    .then(console.log);
+                    
                 let objectBsp = CSG.fromMesh(operation.object as THREE.Mesh);
 
                 let handleMode = {
@@ -124,6 +134,8 @@ export class CSGZone {
 
         this.updateGeometry();
 
+
+
         this.signals.sceneGraphChanged.dispatch();
     }
 
@@ -132,6 +144,7 @@ export class CSGZone {
 class CSGManager {
     editor: Editor;
     zones: Map<String, CSGZone> = new Map();
+    worker = Comlink.wrap<ICSGWorker>(new Worker());
 
     constructor(editor: Editor) {
         this.editor = editor;
@@ -139,6 +152,7 @@ class CSGManager {
 
     createZone() {
         let zone = new CSGZone(this.editor);
+        zone.worker = this.worker;
         this.editor.sceneHelpers.add(zone.resultMesh);
         this.zones.set(zone.uuid, zone);
         return zone;
