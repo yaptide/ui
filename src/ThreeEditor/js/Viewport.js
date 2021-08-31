@@ -9,6 +9,7 @@ import { EditorControls } from './EditorControls.js';
 import { ViewportCamera } from './Viewport.Camera.js';
 import { ViewportInfo } from './Viewport.Info.js';
 import { ViewHelper } from './Viewport.ViewHelper.js';
+import { VR } from './Viewport.VR.js';
 
 import { SetPositionCommand } from './commands/SetPositionCommand.js';
 import { SetRotationCommand } from './commands/SetRotationCommand.js';
@@ -55,7 +56,7 @@ function Viewport( editor ) {
 	grid.add( grid2 );
 
 	var viewHelper = new ViewHelper( camera, container );
-
+	var vr = new VR( editor );
 
 	//
 
@@ -680,6 +681,7 @@ function Viewport( editor ) {
 
 	} );
 
+	signals.exitedVR.add( render );
 
 	//
 
@@ -735,7 +737,12 @@ function Viewport( editor ) {
 			needsUpdate = true;
 
 		}
-		
+
+		if ( vr.currentSession !== null ) {
+
+			needsUpdate = true;
+
+		}
 
 		if ( needsUpdate === true ) render();
 
@@ -762,7 +769,7 @@ function Viewport( editor ) {
 
 			renderer.autoClear = false;
 			if ( showSceneHelpers === true ) renderer.render( sceneHelpers, camera );
-			
+			if ( vr.currentSession === null ) viewHelper.render( renderer );
 			renderer.autoClear = true;
 
 		}
