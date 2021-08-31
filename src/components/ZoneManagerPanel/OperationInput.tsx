@@ -12,8 +12,8 @@ type Operation = "intersection" | "left-subtraction" | "right-subtraction"
 
 
 function OperationInput(props: OperationInputProps) {
-    let [selected, setSelected] = useState<Operation|"">(props?.value??"");
-    let handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const [selected, setSelected] = useState<Operation|"">(props?.value??"");
+    const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         setSelected(event.target.value as (""|Operation));
         if(event.target.value as string !== "")
             props.push(event.target.value as Operation)

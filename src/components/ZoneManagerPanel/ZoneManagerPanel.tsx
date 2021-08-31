@@ -1,20 +1,21 @@
 import { Button } from "@material-ui/core";
 import { useCallback, useEffect, useState } from "react";
 import { Editor } from "../../ThreeEditor/js/Editor";
+import { parseZone } from "../../util/parseZone/parseZone";
 import BooleanAlgebraRow, { AlgebraRow } from "./BooleanAlgebraRow";
 import "./zoneManagerPanel.css";
 
 
 
 function ZoneManagerPanel(props: { editor: Editor }) {
-    let [rows, setRows] = useState<AlgebraRow[]>([{ geometries: [], operations: [] }]);
+    const [rows, setRows] = useState<AlgebraRow[]>([{ geometries: [], operations: [] }]);
     const [allObjects, setAllObjects] = useState<THREE.Object3D[]>([]);
 
 
-    let changeRowValues = (rowId: number) => (row: AlgebraRow) => {
+    const changeRowValues = (rowId: number) => (row: AlgebraRow) => {
         setRows((prev) => [...prev.map((el, id) => { return rowId === id ? row : el })]);
     }
-    let addAlgebraRow = () => {
+    const addAlgebraRow = () => {
         setRows((prev) => [...prev, { geometries: [], operations: [] }]);
     };
     const removeRow = (removeId: number) => () => {

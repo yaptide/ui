@@ -10,23 +10,25 @@ type BooleanAlgebraRowProps = {
     value?: AlgebraRow,
     possibleObjects: THREE.Object3D[]
 }
-type Operation = "intersection" | "left-subtraction" | "right-subtraction";
+
+export type Operation = "intersection" | "left-subtraction" | "right-subtraction";
+
 export type AlgebraRow = {
-    geometries: (string | null)[],
+    geometries: (number | null)[],
     operations: (Operation | null)[]
 }
 
 
 function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
-    let [algebraRow, setAlgebraRow] = useState<AlgebraRow>(props.value ?? { geometries: [], operations: [] });
+    const [algebraRow, setAlgebraRow] = useState<AlgebraRow>(props.value ?? { geometries: [], operations: [] });
 
-    let pushGeometry = (id: number) => (uuid: string) => {
-        if (id === algebraRow.geometries.length)
+    const pushGeometry = (index: number) => (id: number) => {
+        if (index === algebraRow.geometries.length)
             setAlgebraRow((prev) => {
                 return {
                     geometries: [
                         ...prev.geometries,
-                        props.possibleObjects.find(el => el.uuid === uuid)?.uuid ?? null
+                        props.possibleObjects.find(el => el.id === id)?.id ?? null
                     ],
                     operations: prev.operations
                 }
@@ -35,15 +37,15 @@ function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
             setAlgebraRow((prev) => {
                 return {
                     geometries: [
-                        ...prev.geometries.map((el, index) => {
-                            return index === id ? uuid : el
+                        ...prev.geometries.map((el, elIndex) => {
+                            return index === elIndex ? id : el
                         }),
                     ],
                     operations: prev.operations
                 }
             })
     }
-    let removeOperation = (id: number) => () => {
+    const removeOperation = (id: number) => () => {
         setAlgebraRow((prev) => {
             return {
                 geometries: [
@@ -64,7 +66,7 @@ function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
         setAlgebraRow(props.value ?? { geometries: [], operations: [] });
     }, [props]);
     
-    let pushOperation = (id: number) => (op: Operation) => {
+    const pushOperation = (id: number) => (op: Operation) => {
         if (id === algebraRow.operations.length)
             setAlgebraRow((prev) => {
                 return {
