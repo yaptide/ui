@@ -84,7 +84,7 @@ function GeometryParametersPanel( editor, object ) {
 			widthSegments.getValue(),
 			heightSegments.getValue(),
 			depthSegments.getValue()
-		) ) );
+		).translate ( 0, height.getValue()/2, 0 ) ) );
 
 	}
 
