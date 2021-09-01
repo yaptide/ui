@@ -4,9 +4,6 @@ import { UIPanel, UIRow, UIText, UIInput, UIButton, UISpan } from './libs/ui.js'
 
 import { SetGeometryValueCommand } from './commands/SetGeometryValueCommand.js';
 
-import { SidebarGeometryBufferGeometry } from './Sidebar.Geometry.BufferGeometry.js';
-import { SidebarGeometryModifiers } from './Sidebar.Geometry.Modifiers.js';
-
 import { VertexNormalsHelper } from './libs/helpers/VertexNormalsHelper.js';
 
 function SidebarGeometry( editor ) {
@@ -142,9 +139,6 @@ function SidebarGeometry( editor ) {
 	var parameters = new UISpan();
 	container.add( parameters );
 
-	// buffergeometry
-
-	container.add( new SidebarGeometryBufferGeometry( editor ) );
 
 	// Size
 
@@ -202,13 +196,21 @@ function SidebarGeometry( editor ) {
 
 				if ( geometry.type === 'BufferGeometry' ) {
 
-					parameters.add( new SidebarGeometryModifiers( editor, object ) );
+					// parameters.add( new SidebarGeometryModifiers( editor, object ) );
 
 				} else {
 
-					var { GeometryParametersPanel } = await import( `./Sidebar.Geometry.${ geometry.type }.js` );
+					try{
 
-					parameters.add( new GeometryParametersPanel( editor, object ) );
+						var { GeometryParametersPanel } = await import( `./Sidebar.Geometry.${ geometry.type }.js` );
+						
+						parameters.add( new GeometryParametersPanel( editor, object ) );
+
+					} catch(e){
+
+						console.error(`Geometry: ${ geometry.type } is not supported`);
+
+					}						
 
 				}
 
