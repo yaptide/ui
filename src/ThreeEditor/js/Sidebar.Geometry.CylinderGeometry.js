@@ -84,7 +84,7 @@ function GeometryParametersPanel( editor, object ) {
 			radialSegments.getValue(),
 			heightSegments.getValue(),
 			openEnded.getValue()
-		) ) );
+		).translate ( 0, height.getValue()/2, 0 ) ) );
 
 	}
 

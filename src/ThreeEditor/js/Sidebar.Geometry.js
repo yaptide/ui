@@ -4,7 +4,7 @@ import { UIPanel, UIRow, UIText, UIInput, UIButton, UISpan } from './libs/ui.js'
 
 import { SetGeometryValueCommand } from './commands/SetGeometryValueCommand.js';
 
-import { VertexNormalsHelper } from './libs/helpers/VertexNormalsHelper.js';
+import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper.js';
 
 function SidebarGeometry( editor ) {
 

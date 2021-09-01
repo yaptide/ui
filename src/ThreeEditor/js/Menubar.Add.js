@@ -50,6 +50,7 @@ function MenubarAdd(editor) {
 	option.onClick(function () {
 
 		var geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
+		geometry.translate( 0, geometry.parameters.height / 2, 0 );
 		var mesh = new THREE.Mesh(geometry, material);
 		mesh.name = 'Box';
 
