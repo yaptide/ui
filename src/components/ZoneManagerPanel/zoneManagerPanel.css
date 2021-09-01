@@ -1,0 +1,41 @@
+.zoneManagerWrapper{
+    position: absolute;
+    width: min(1200px,80vw);
+    height: min(240px,25vh);
+    bottom: 0;
+    left: min(200px,10vw);
+    background: white;
+    border: 2px solid black;
+    z-index: 1000;
+    overflow: auto;
+    display: grid;
+    grid-auto-rows: 50px;
+}
+.addRowButton{
+    max-width: 100%;
+}
+.parseZoneButton{
+    max-width: 200px;
+}
+.zoneManagerRow{
+    display: flex;
+    color: black;
+    background: #fafafa;
+    border-bottom: 1px solid black;
+    min-width: fit-content;
+    flex-grow: 1;
+}
+.zoneManagerRow .deleteButton{
+    margin-left: auto;
+}
+.geometrySelect{
+    min-width:12ch;
+}
+.operationSelect img{
+    max-height: 20px;
+    margin-bottom: -5px;
+}
+.geometrySelect, .operationSelect{
+    padding-inline: 5px;
+    margin-bottom: -1px;
+}
