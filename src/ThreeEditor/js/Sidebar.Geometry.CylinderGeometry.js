@@ -13,25 +13,16 @@ function GeometryParametersPanel( editor, object ) {
 	var geometry = object.geometry;
 	var parameters = geometry.parameters;
 
-	// radiusTop
+	// radius
 
-	var radiusTopRow = new UIRow();
-	var radiusTop = new UINumber( parameters.radiusTop ).onChange( update );
+	var radiusRow = new UIRow();
+	var radius = new UINumber( parameters.radius ).onChange( update );
 
-	radiusTopRow.add( new UIText( strings.getKey( 'sidebar/geometry/cylinder_geometry/radiustop' ) ).setWidth( '90px' ) );
-	radiusTopRow.add( radiusTop );
+	radiusRow.add( new UIText( strings.getKey( 'sidebar/geometry/sphere_geometry/radius' ) ).setWidth( '90px' ) );
+	radiusRow.add( radius );
 
-	container.add( radiusTopRow );
-
-	// radiusBottom
-
-	var radiusBottomRow = new UIRow();
-	var radiusBottom = new UINumber( parameters.radiusBottom ).onChange( update );
-
-	radiusBottomRow.add( new UIText( strings.getKey( 'sidebar/geometry/cylinder_geometry/radiusbottom' ) ).setWidth( '90px' ) );
-	radiusBottomRow.add( radiusBottom );
-
-	container.add( radiusBottomRow );
+	container.add( radiusRow );
+	
 
 	// height
 
@@ -43,47 +34,18 @@ function GeometryParametersPanel( editor, object ) {
 
 	container.add( heightRow );
 
-	// radialSegments
-
-	var radialSegmentsRow = new UIRow();
-	var radialSegments = new UIInteger( parameters.radialSegments ).setRange( 1, Infinity ).onChange( update );
-
-	radialSegmentsRow.add( new UIText( strings.getKey( 'sidebar/geometry/cylinder_geometry/radialsegments' ) ).setWidth( '90px' ) );
-	radialSegmentsRow.add( radialSegments );
-
-	container.add( radialSegmentsRow );
-
-	// heightSegments
-
-	var heightSegmentsRow = new UIRow();
-	var heightSegments = new UIInteger( parameters.heightSegments ).setRange( 1, Infinity ).onChange( update );
-
-	heightSegmentsRow.add( new UIText( strings.getKey( 'sidebar/geometry/cylinder_geometry/heightsegments' ) ).setWidth( '90px' ) );
-	heightSegmentsRow.add( heightSegments );
-
-	container.add( heightSegmentsRow );
-
-	// openEnded
-
-	var openEndedRow = new UIRow();
-	var openEnded = new UICheckbox( parameters.openEnded ).onChange( update );
-
-	openEndedRow.add( new UIText( strings.getKey( 'sidebar/geometry/cylinder_geometry/openended' ) ).setWidth( '90px' ) );
-	openEndedRow.add( openEnded );
-
-	container.add( openEndedRow );
 
 	//
 
 	function update() {
 
 		editor.execute( new SetGeometryCommand( editor, object, new THREE.CylinderGeometry(
-			radiusTop.getValue(),
-			radiusBottom.getValue(),
+			radius.getValue(),
+			radius.getValue(),
 			height.getValue(),
-			radialSegments.getValue(),
-			heightSegments.getValue(),
-			openEnded.getValue()
+			16,
+			1,
+			false
 		).translate ( 0, height.getValue()/2, 0 ) ) );
 
 	}
