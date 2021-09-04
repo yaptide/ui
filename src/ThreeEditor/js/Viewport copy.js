@@ -17,9 +17,6 @@ import { SetRotationCommand } from './commands/SetRotationCommand.js';
 import { SetScaleCommand } from './commands/SetScaleCommand.js';
 
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { ViewPanel } from './ViewPanel.js';
-
-
 
 function Viewport(editor) {
 
@@ -40,13 +37,9 @@ function Viewport(editor) {
 	var camera = editor.camera;
 	var scene = editor.scene;
 	var sceneHelpers = editor.sceneHelpers;
-	
+	var showSceneHelpers = true;
 
 	var objects = [];
-
-
-
-
 
 	// helpers
 
@@ -63,8 +56,7 @@ function Viewport(editor) {
 	grid2.material.vertexColors = false;
 	grid.add(grid2);
 
-
-		
+	var viewHelper = new ViewHelper( camera, container );
 	var vr = new VR( editor );
 
 	//
@@ -77,31 +69,97 @@ function Viewport(editor) {
 	selectionBox.visible = false;
 	sceneHelpers.add(selectionBox);
 
+	var objectPositionOnDown = null;
+	var objectRotationOnDown = null;
+	var objectScaleOnDown = null;
 
+	var transformControls = new TransformControls(camera, container.dom);
+	transformControls.addEventListener('change', function () {
 
+		var object = transformControls.object;
 
+		if (object !== undefined) {
 
+			selectionBox.setFromObject(object);
 
-	
+			var helper = editor.helpers[object.id];
 
-	let view1 = new ViewPanel("ViewPanel1",editor,400, 400,{objects,grid,oldCamera:editor.viewportCamera,selectionBox});
-	container.add(view1.container);
+			if (helper !== undefined && helper.isSkeletonHelper !== true) {
 
-	let view2 = new ViewPanel("ViewPanel2",editor,400, 400,{objects,grid,oldCamera:editor.viewportCamera,selectionBox});
-	container.add(view2.container);
-	view2.container.setLeft("400px");
+				helper.update();
 
-	let view3 = new ViewPanel("ViewPanel3",editor,400, 400,{objects,grid,oldCamera:editor.viewportCamera,selectionBox});
-	container.add(view3.container);
-	view3.container.setTop("400px");
+			}
 
-	let view4 = new ViewPanel("ViewPanel4",editor,400, 400,{objects,grid,oldCamera:editor.viewportCamera,selectionBox});
-	container.add(view4.container);
-	view4.container.setTop("400px");
-	view4.container.setLeft("400px");
+			signals.refreshSidebarObject3D.dispatch(object);
 
-	let views = [view1, view2, view3,view4];
+		}
 
+		render();
+
+	});
+	transformControls.addEventListener('mouseDown', function () {
+
+		var object = transformControls.object;
+
+		objectPositionOnDown = object.position.clone();
+		objectRotationOnDown = object.rotation.clone();
+		objectScaleOnDown = object.scale.clone();
+
+		controls.enabled = false;
+
+	});
+	transformControls.addEventListener('mouseUp', function () {
+
+		var object = transformControls.object;
+
+		if (object !== undefined) {
+
+			switch (transformControls.getMode()) {
+
+				case 'translate':
+
+					if (!objectPositionOnDown.equals(object.position)) {
+
+						editor.execute(new SetPositionCommand(editor, object, object.position, objectPositionOnDown));
+
+					}
+
+					break;
+
+				case 'rotate':
+
+					if (!objectRotationOnDown.equals(object.rotation)) {
+
+						editor.execute(new SetRotationCommand(editor, object, object.rotation, objectRotationOnDown));
+
+					}
+
+					break;
+
+				case 'scale':
+
+					if (!objectScaleOnDown.equals(object.scale)) {
+
+						editor.execute(new SetScaleCommand(editor, object, object.scale, objectScaleOnDown));
+
+					}
+
+					break;
+
+			}
+
+		}
+
+		controls.enabled = true;
+
+	});
+
+	sceneHelpers.add(transformControls);
+
+	// object picking
+
+	var raycaster = new THREE.Raycaster();
+	var mouse = new THREE.Vector2();
 
 	// events
 
@@ -112,18 +170,167 @@ function Viewport(editor) {
 
 	}
 
+	function getIntersects(point, objects) {
 
+		mouse.set((point.x * 2) - 1, - (point.y * 2) + 1);
+
+		raycaster.setFromCamera(mouse, camera);
+
+		return raycaster.intersectObjects(objects)
+			.filter(intersect => intersect.object.visible === true);
+
+	}
+
+	var onDownPosition = new THREE.Vector2();
+	var onUpPosition = new THREE.Vector2();
+	var onDoubleClickPosition = new THREE.Vector2();
+
+	function getMousePosition(dom, x, y) {
+
+		var rect = dom.getBoundingClientRect();
+		return [(x - rect.left) / rect.width, (y - rect.top) / rect.height];
+
+	}
+
+	function handleClick() {
+
+		if (onDownPosition.distanceTo(onUpPosition) === 0) {
+
+			var intersects = getIntersects(onUpPosition, objects);
+
+			if (intersects.length > 0) {
+
+				var object = intersects[0].object;
+
+				if (object.userData.object !== undefined) {
+
+					// helper
+
+					editor.select(object.userData.object);
+
+				} else {
+
+					editor.select(object);
+
+				}
+
+			} else {
+
+				editor.select(null);
+
+			}
+
+			render();
+
+		}
+
+	}
+
+	function onMouseDown(event) {
+
+		// event.preventDefault();
+
+		var array = getMousePosition(container.dom, event.clientX, event.clientY);
+		onDownPosition.fromArray(array);
+
+		document.addEventListener('mouseup', onMouseUp, false);
+
+	}
+
+	function onMouseUp(event) {
+
+		var array = getMousePosition(container.dom, event.clientX, event.clientY);
+		onUpPosition.fromArray(array);
+
+		handleClick();
+
+		document.removeEventListener('mouseup', onMouseUp, false);
+
+	}
+
+	function onTouchStart(event) {
+
+		var touch = event.changedTouches[0];
+
+		var array = getMousePosition(container.dom, touch.clientX, touch.clientY);
+		onDownPosition.fromArray(array);
+
+		document.addEventListener('touchend', onTouchEnd, false);
+
+	}
+
+	function onTouchEnd(event) {
+
+		var touch = event.changedTouches[0];
+
+		var array = getMousePosition(container.dom, touch.clientX, touch.clientY);
+		onUpPosition.fromArray(array);
+
+		handleClick();
+
+		document.removeEventListener('touchend', onTouchEnd, false);
+
+	}
+
+	function onDoubleClick(event) {
+
+		var array = getMousePosition(container.dom, event.clientX, event.clientY);
+		onDoubleClickPosition.fromArray(array);
+
+		var intersects = getIntersects(onDoubleClickPosition, objects);
+
+		if (intersects.length > 0) {
+
+			var intersect = intersects[0];
+
+			signals.objectFocused.dispatch(intersect.object);
+
+		}
+
+	}
+
+	container.dom.addEventListener('mousedown', onMouseDown, false);
+	container.dom.addEventListener('touchstart', onTouchStart, false);
+	container.dom.addEventListener('dblclick', onDoubleClick, false);
+
+	// controls need to be added *after* main logic,
+	// otherwise controls.enabled doesn't work.
+
+	var controls = new EditorControls(camera, container.dom);
+	controls.addEventListener('change', function () {
+
+		signals.cameraChanged.dispatch(camera);
+		signals.refreshSidebarObject3D.dispatch(camera);
+
+	});
+	viewHelper.controls = controls;
 
 	// signals
 
 	signals.editorCleared.add(function () {
-		
-		views.forEach((view)=>view.controls.center.set(0, 0, 0));
+
+		controls.center.set(0, 0, 0);
 		render();
 
 	});
 
+	signals.transformModeChanged.add(function (mode) {
 
+		transformControls.setMode(mode);
+
+	});
+
+	signals.snapChanged.add(function (dist) {
+
+		transformControls.setTranslationSnap(dist);
+
+	});
+
+	signals.spaceChanged.add(function (space) {
+
+		transformControls.setSpace(space);
+
+	});
 
 	signals.rendererUpdated.add(function () {
 
@@ -202,7 +409,7 @@ function Viewport(editor) {
 	signals.objectSelected.add(function (object) {
 
 		selectionBox.visible = false;
-
+		transformControls.detach();
 
 		if (object !== null && object !== scene && object !== camera) {
 
@@ -215,6 +422,8 @@ function Viewport(editor) {
 
 			}
 
+			transformControls.attach(object);
+
 		}
 
 		render();
@@ -223,7 +432,7 @@ function Viewport(editor) {
 
 	signals.objectFocused.add(function (object) {
 
-		views.forEach((view)=>view.controls.focus(object));
+		controls.focus(object);
 
 	});
 
@@ -274,6 +483,13 @@ function Viewport(editor) {
 	});
 
 	signals.objectRemoved.add(function (object) {
+
+		controls.enabled = true; // see #14180
+		if (object === transformControls.object) {
+
+			transformControls.detach();
+
+		}
 
 		object.traverse(function (child) {
 
@@ -460,8 +676,7 @@ function Viewport(editor) {
 
 		// disable EditorControls when setting a user camera
 
-		// controls.enabled = (viewportCamera === editor.camera);
-		// views.forEach((view)=>view.controls.enabled = true);
+		controls.enabled = (viewportCamera === editor.camera);
 
 		render();
 
@@ -488,6 +703,14 @@ function Viewport(editor) {
 
 	});
 
+	signals.showHelpersChanged.add(function (showHelpers) {
+
+		showSceneHelpers = showHelpers;
+		transformControls.enabled = showHelpers;
+
+		render();
+
+	});
 
 	signals.cameraResetted.add(updateAspectRatio);
 
@@ -509,8 +732,12 @@ function Viewport(editor) {
 
 		}
 
-		needsUpdate = views.map((view)=> view.animate(delta)).some(e => e);
-	
+		if (viewHelper.animating === true) {
+
+			viewHelper.update(delta);
+			needsUpdate = true;
+
+		}
 
 		if ( vr.currentSession !== null ) {
 
@@ -535,25 +762,19 @@ function Viewport(editor) {
 		// Adding/removing grid to scene so materials with depthWrite false
 		// don't render under the grid.
 
+		scene.add(grid);
+		renderer.setViewport(0, 0, container.dom.offsetWidth, container.dom.offsetHeight);
+		renderer.render(scene, editor.viewportCamera);
+		scene.remove(grid);
 
+		if (camera === editor.viewportCamera) {
 
+			renderer.autoClear = false;
+			if ( showSceneHelpers === true ) renderer.render( sceneHelpers, camera );
+			if ( vr.currentSession === null ) viewHelper.render( renderer );
+			renderer.autoClear = true;
 
-		views.forEach((view)=> view.render(renderer));
-
-
-		// renderer.setSize(container.dom.offsetWidth, container.dom.offsetHeight);
-		// renderer.render(scene, editor.viewportCamera);
-
-
-		// if (camera === editor.viewportCamera) {
-
-		// 	renderer.autoClear = false;
-		// 	if ( showSceneHelpers === true ) renderer.render( sceneHelpers, camera );
-		// 	renderer.autoClear = true;
-
-		// }
-
-
+		}
 
 		endTime = performance.now();
 		editor.signals.sceneRendered.dispatch(endTime - startTime);
