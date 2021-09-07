@@ -1,0 +1,60 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# see https://github.community/t/treating-warnings-as-errors-because-process-env-ci-true/18032
+env:
+  CI: false
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm test
+    
+  test_and_deploy:
+    runs-on: ubuntu-latest
+    needs: [build]    
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+
+      - name: Install 🔧 
+        run: npm install
+
+      - name: webfactory/ssh-agent
+        # You may pin to the exact commit or the version.
+        # uses: webfactory/ssh-agent@5f066a372ec13036ab7cb9a8adf18c936f8d2043
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          # Private SSH key to register in the SSH agent
+          ssh-private-key: ${{ secrets.WEBDEV }}
+
+      - name: Deploy
+        if: github.ref == 'refs/heads/master'    
+        run: |
+          git remote set-url origin git@github.com:yaptide/web_dev.git
+          npm run deploy -- -u "github-actions-bot <support+actions@github.com>" -r "git@github.com:yaptide/web_dev.git"    
+    
