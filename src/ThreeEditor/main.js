@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import { Editor } from './js/Editor.js';
-import { Viewport } from './js/Viewport.js';
+import { ViewManager } from './js/ViewportManager.js';
 import { Toolbar } from './js/Toolbar.js';
 import { Sidebar } from './js/Sidebar.js';
 import { Menubar } from './js/Menubar.js';
@@ -28,8 +28,8 @@ export function initEditor(container) {
     window.editor = editor; // Expose editor to Console
     window.THREE = THREE; // Expose THREE to APP Scripts and Console
 
-    var viewport = new Viewport(editor);
-    container.appendChild(viewport.dom);
+    var viewManager = new ViewManager(editor);
+    container.appendChild(viewManager.dom);
 
     var toolbar = new Toolbar(editor);
     container.appendChild(toolbar.dom);
@@ -178,6 +178,6 @@ export function initEditor(container) {
 
     }
 
-    return { editor, viewport, toolbar, sidebar, menubar, resizer }
+    return { editor, viewport: viewManager, toolbar, sidebar, menubar, resizer }
 }
 
