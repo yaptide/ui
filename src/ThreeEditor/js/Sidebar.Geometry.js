@@ -4,10 +4,7 @@ import { UIPanel, UIRow, UIText, UIInput, UIButton, UISpan } from './libs/ui.js'
 
 import { SetGeometryValueCommand } from './commands/SetGeometryValueCommand.js';
 
-import { SidebarGeometryBufferGeometry } from './Sidebar.Geometry.BufferGeometry.js';
-import { SidebarGeometryModifiers } from './Sidebar.Geometry.Modifiers.js';
-
-import { VertexNormalsHelper } from './libs/helpers/VertexNormalsHelper.js';
+import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper.js';
 
 function SidebarGeometry( editor ) {
 
@@ -105,53 +102,12 @@ function SidebarGeometry( editor ) {
 
 	container.add( geometryTypeRow );
 
-	// uuid
-
-	var geometryUUIDRow = new UIRow();
-	var geometryUUID = new UIInput().setWidth( '102px' ).setFontSize( '12px' ).setDisabled( true );
-	var geometryUUIDRenew = new UIButton( strings.getKey( 'sidebar/geometry/new' ) ).setMarginLeft( '7px' ).onClick( function () {
-
-		geometryUUID.setValue( THREE.MathUtils.generateUUID() );
-
-		editor.execute( new SetGeometryValueCommand( editor, editor.selected, 'uuid', geometryUUID.getValue() ) );
-
-	} );
-
-	geometryUUIDRow.add( new UIText( strings.getKey( 'sidebar/geometry/uuid' ) ).setWidth( '90px' ) );
-	geometryUUIDRow.add( geometryUUID );
-	geometryUUIDRow.add( geometryUUIDRenew );
-
-	container.add( geometryUUIDRow );
-
-	// name
-
-	var geometryNameRow = new UIRow();
-	var geometryName = new UIInput().setWidth( '150px' ).setFontSize( '12px' ).onChange( function () {
-
-		editor.execute( new SetGeometryValueCommand( editor, editor.selected, 'name', geometryName.getValue() ) );
-
-	} );
-
-	geometryNameRow.add( new UIText( strings.getKey( 'sidebar/geometry/name' ) ).setWidth( '90px' ) );
-	geometryNameRow.add( geometryName );
-
-	container.add( geometryNameRow );
 
 	// parameters
 
 	var parameters = new UISpan();
 	container.add( parameters );
 
-	// buffergeometry
-
-	container.add( new SidebarGeometryBufferGeometry( editor ) );
-
-	// Size
-
-	var geometryBoundingBox = new UIText().setFontSize( '12px' ).setVerticalAlign( 'middle' );
-
-	container.add( new UIText( strings.getKey( 'sidebar/geometry/bounds' ) ).setWidth( '90px' ) );
-	container.add( geometryBoundingBox );
 
 	// Helpers
 
@@ -191,8 +147,7 @@ function SidebarGeometry( editor ) {
 
 			geometryType.setValue( geometry.type );
 
-			geometryUUID.setValue( geometry.uuid );
-			geometryName.setValue( geometry.name );
+			
 
 			//
 
@@ -202,13 +157,21 @@ function SidebarGeometry( editor ) {
 
 				if ( geometry.type === 'BufferGeometry' ) {
 
-					parameters.add( new SidebarGeometryModifiers( editor, object ) );
+					// parameters.add( new SidebarGeometryModifiers( editor, object ) );
 
 				} else {
 
-					var { GeometryParametersPanel } = await import( `./Sidebar.Geometry.${ geometry.type }.js` );
+					try{
 
-					parameters.add( new GeometryParametersPanel( editor, object ) );
+						var { GeometryParametersPanel } = await import( `./Sidebar.Geometry.${ geometry.type }.js` );
+						
+						parameters.add( new GeometryParametersPanel( editor, object ) );
+
+					} catch(e){
+
+						console.error(`Geometry: ${ geometry.type } is not supported`);
+
+					}						
 
 				}
 
@@ -218,12 +181,6 @@ function SidebarGeometry( editor ) {
 
 			if ( geometry.boundingBox === null ) geometry.computeBoundingBox();
 
-			const boundingBox = geometry.boundingBox;
-			const x = Math.floor( ( boundingBox.max.x - boundingBox.min.x ) * 1000 ) / 1000;
-			const y = Math.floor( ( boundingBox.max.y - boundingBox.min.y ) * 1000 ) / 1000;
-			const z = Math.floor( ( boundingBox.max.z - boundingBox.min.z ) * 1000 ) / 1000;
-
-			geometryBoundingBox.setInnerHTML( `${x}<br/>${y}<br/>${z}` );
 
 		} else {
 

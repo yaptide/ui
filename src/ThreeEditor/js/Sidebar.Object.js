@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-import { UIPanel, UIRow, UIInput, UIButton, UIColor, UICheckbox, UIInteger, UITextArea, UIText, UINumber } from './libs/ui.js';
+import { UIPanel, UIRow, UIInput,UISelect, UIButton, UIColor, UICheckbox, UIInteger, UITextArea, UIText, UINumber } from './libs/ui.js';
 import { UIBoolean } from './libs/ui.three.js';
 
 import { SetUuidCommand } from './commands/SetUuidCommand.js';
@@ -21,48 +21,7 @@ function SidebarObject( editor ) {
 	container.setPaddingTop( '20px' );
 	container.setDisplay( 'none' );
 
-	// Actions
 
-	/*
-	var objectActions = new UI.Select().setPosition( 'absolute' ).setRight( '8px' ).setFontSize( '11px' );
-	objectActions.setOptions( {
-
-		'Actions': 'Actions',
-		'Reset Position': 'Reset Position',
-		'Reset Rotation': 'Reset Rotation',
-		'Reset Scale': 'Reset Scale'
-
-	} );
-	objectActions.onClick( function ( event ) {
-
-		event.stopPropagation(); // Avoid panel collapsing
-
-	} );
-	objectActions.onChange( function ( event ) {
-
-		var object = editor.selected;
-
-		switch ( this.getValue() ) {
-
-			case 'Reset Position':
-				editor.execute( new SetPositionCommand( editor, object, new Vector3( 0, 0, 0 ) ) );
-				break;
-
-			case 'Reset Rotation':
-				editor.execute( new SetRotationCommand( editor, object, new Euler( 0, 0, 0 ) ) );
-				break;
-
-			case 'Reset Scale':
-				editor.execute( new SetScaleCommand( editor, object, new Vector3( 1, 1, 1 ) ) );
-				break;
-
-		}
-
-		this.setValue( 'Actions' );
-
-	} );
-	container.addStatic( objectActions );
-	*/
 
 	// type
 
@@ -86,11 +45,15 @@ function SidebarObject( editor ) {
 
 	} );
 
-	objectUUIDRow.add( new UIText( strings.getKey( 'sidebar/object/uuid' ) ).setWidth( '90px' ) );
-	objectUUIDRow.add( objectUUID );
-	objectUUIDRow.add( objectUUIDRenew );
+	// id - added
 
-	container.add( objectUUIDRow );
+	var objectIdRow = new UIRow();
+	var objectId = new UIText();
+
+	objectIdRow.add( new UIText( 'Id' ).setWidth( '90px' ) );
+	objectIdRow.add( objectId );
+
+	container.add( objectIdRow );
 
 	// name
 
@@ -609,6 +572,7 @@ function SidebarObject( editor ) {
 			'shadow': [ objectShadowBiasRow, objectShadowNormalBiasRow, objectShadowRadiusRow ]
 		};
 
+
 		for ( var property in properties ) {
 
 			var uiElement = properties[ property ];
@@ -662,6 +626,16 @@ function SidebarObject( editor ) {
 
 	}
 
+	function updateRowsForTypeOfObject( object ) {
+
+
+		let invisible = [objectTypeRow,objectFrustumCulledRow, objectScaleRow, objectUUIDRenew, objectShadowRow];
+		
+		invisible.forEach((e)=>e.setDisplay( 'none' ));
+
+	}
+
+
 	// events
 
 	signals.objectSelected.add( function ( object ) {
@@ -702,6 +676,7 @@ function SidebarObject( editor ) {
 		objectType.setValue( object.type );
 
 		objectUUID.setValue( object.uuid );
+		objectId.setValue( object.id );
 		objectName.setValue( object.name );
 
 		objectPositionX.setValue( object.position.x );
@@ -838,6 +813,8 @@ function SidebarObject( editor ) {
 		objectUserData.setBackgroundColor( '' );
 
 		updateTransformRows( object );
+		
+		updateRowsForTypeOfObject( object );
 
 	}
 
