@@ -1,4 +1,4 @@
-import { Operation } from "../../components/ZoneManagerPanel/BooleanAlgebraRow";
+import { Operation } from "../../ThreeEditor/util/CSGManager";
 
 export default class ZoneConstructorController {
     commonPrefix: number[];
