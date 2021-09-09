@@ -3,7 +3,7 @@ import { TransformControls } from 'three/examples/jsm/controls/TransformControls
 import { SetPositionCommand } from './commands/SetPositionCommand';
 import { SetRotationCommand } from './commands/SetRotationCommand';
 import { SetScaleCommand } from './commands/SetScaleCommand';
-import { EditorControls } from './EditorControls';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import { ViewportCamera } from './Viewport.Camera.js';
 import { ViewportInfo } from './Viewport.Info.js';
@@ -37,12 +37,13 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, cameraPo
 
     let context = canvas.getContext('2d');
 
-    let cameraPersp = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
+    let cameraPersp = new THREE.PerspectiveCamera(50, 1, 0.00001, 10000);
     cameraPersp.position.copy(cameraPosition ?? new THREE.Vector3(0, 5, 10));
     cameraPersp.lookAt(new THREE.Vector3());
 
-    let cameraOrtho = new THREE.OrthographicCamera(1 / - 2, 1 / 2, 1 / 2, 1 / - 2, 1, 1000);
+    let cameraOrtho = new THREE.OrthographicCamera(1 / - 2, 1 / 2, 1 / 2, 1 / - 2, 0.00001, 10000);
     cameraOrtho.position.copy(cameraPersp.position);
+    cameraOrtho.zoom = .2;
     cameraOrtho.lookAt(new THREE.Vector3());
 
     let camera = cameraPersp;
@@ -341,7 +342,7 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, cameraPo
                 transformControls.camera = camera;
                 viewHelper.editorCamera = camera;
 
-                camera.lookAt(controls.center.x, controls.center.y, controls.center.z);
+                camera.lookAt(controls.target.x, controls.target.y, controls.target.z);
                 updateAspectRatio();
                 break;
 
@@ -359,7 +360,7 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, cameraPo
     // controls need to be added *after* main logic,
     // otherwise controls.enabled doesn't work.
 
-    var controls = new EditorControls(camera, container.dom);
+    var controls = new OrbitControls(camera, container.dom);
     controls.addEventListener('change', function () {
 
         signals.cameraChanged.dispatch(camera);
