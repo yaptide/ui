@@ -10,10 +10,6 @@ function EditorControls( controlledObject, domElement ) {
 	this.zoomSpeed = 0.1;
 	this.rotationSpeed = 0.005;
 
-	Object.defineProperty(this, 'object', {
-		get() {return object},
-		set(newObject) { object = newObject; }
-	});
 
 	// internals
 

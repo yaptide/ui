@@ -77,7 +77,7 @@ function ViewManager(editor) {
 		selectionBox
 	}
 
-	let viewZ = new Viewport("ViewPanel1", editor, viewManagerProps, new THREE.Vector3(0, 0, 10));
+	let viewZ = new Viewport("ViewPanel1", editor, viewManagerProps, true, new THREE.Vector3(0, 0, 10));
 	viewsGrid.add(viewZ.container);
 
 	let gutterCol = new UIDiv().setClass("gutter-col gutter-col-1");
@@ -86,13 +86,13 @@ function ViewManager(editor) {
 	let view3D = new Viewport("ViewPanel2", editor, viewManagerProps);
 	viewsGrid.add(view3D.container);
 
-	let viewY = new Viewport("ViewPanel3", editor, viewManagerProps, new THREE.Vector3(0, 10, 0));
+	let viewY = new Viewport("ViewPanel3", editor, viewManagerProps, true, new THREE.Vector3(0, 10, 0));
 	viewsGrid.add(viewY.container);
 
 	let gutterRow = new UIDiv().setClass("gutter-row gutter-row-1");
 	viewsGrid.add(gutterRow);
 
-	let viewX = new Viewport("ViewPanel4", editor, viewManagerProps, new THREE.Vector3(10, 0, 0));
+	let viewX = new Viewport("ViewPanel4", editor, viewManagerProps, true, new THREE.Vector3(10, 0, 0));
 	viewsGrid.add(viewX.container);
 
 	// Add resizable views
@@ -137,7 +137,7 @@ function ViewManager(editor) {
 	let views = singleView;
 
 	views.forEach((view) => view.config.visible = true);
-	
+
 
 	// events
 
@@ -543,14 +543,14 @@ function ViewManager(editor) {
 				currentLayout = 'singleView';
 				views = singleView;
 				viewSingle.dom.style.display = null;
-				
+
 		}
 
 		views.forEach((view) => view.setSize());
 		views.forEach((view) => view.config.visible = true);
 
 		render();
-	
+
 	});
 
 

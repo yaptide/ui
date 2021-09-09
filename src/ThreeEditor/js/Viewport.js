@@ -11,7 +11,7 @@ import { ViewportInfo } from './Viewport.Info.js';
 import { UIPanel } from "./libs/ui";
 import { ViewHelper } from './Viewport.ViewHelper';
 
-export function Viewport(name, editor, { objects, grid, selectionBox }, cameraPosition) {
+export function Viewport(name, editor, { objects, grid, selectionBox }, orthographic, cameraPosition) {
 
     let { scene, sceneHelpers, signals } = editor;
 
@@ -28,7 +28,7 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, cameraPo
     container.setOverflow("hidden");
     container.dom.setAttribute('tabindex', '0');
 
-    container.add(new ViewportCamera(editor));
+
     container.add(new ViewportInfo(editor));
 
     let canvas = document.createElement('canvas');
@@ -38,18 +38,33 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, cameraPo
     let context = canvas.getContext('2d');
 
     let cameraPersp = new THREE.PerspectiveCamera(50, 1, 0.00001, 10000);
+    cameraPersp.name = "Perspective";
     cameraPersp.position.copy(cameraPosition ?? new THREE.Vector3(0, 5, 10));
     cameraPersp.lookAt(new THREE.Vector3());
 
     let cameraOrtho = new THREE.OrthographicCamera(1 / - 2, 1 / 2, 1 / 2, 1 / - 2, 0.00001, 10000);
+    cameraOrtho.name = "Orthographic";
     cameraOrtho.position.copy(cameraPersp.position);
     cameraOrtho.zoom = .2;
     cameraOrtho.lookAt(new THREE.Vector3());
 
-    let camera = cameraPersp;
-    camera.name = name;
-    updateAspectRatio();
+    let cameras = [cameraOrtho, cameraPersp];
 
+    let camera = orthographic ? cameraOrtho : cameraPersp;
+    updateAspectRatio();
+    Object.defineProperty(this, 'camera', {
+        get() { return camera },
+        set(value) {
+
+            const position = camera.position.clone();
+
+            camera = value;
+
+            updateCamera(camera, position);
+        }
+    });
+
+    container.add(new ViewportCamera(this, cameras));
     let viewHelper = new ViewHelper(camera, container);
 
     let cachedRenderer = null;
@@ -329,6 +344,17 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, cameraPo
 
     }
 
+    function updateCamera(camera, position) {
+        camera.position.copy(position);
+
+        controls.object = camera;
+        transformControls.camera = camera;
+        viewHelper.editorCamera = camera;
+
+        camera.lookAt(controls.target.x, controls.target.y, controls.target.z);
+        updateAspectRatio();
+    }
+
     container.dom.addEventListener('keydown', function (event) {
 
         switch (event.code) {
@@ -336,18 +362,11 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, cameraPo
                 const position = camera.position.clone();
 
                 camera = camera.isPerspectiveCamera ? cameraOrtho : cameraPersp;
-                camera.position.copy(position);
+                updateCamera(camera, position);
 
-                controls.object = camera;
-                transformControls.camera = camera;
-                viewHelper.editorCamera = camera;
-
-                camera.lookAt(controls.target.x, controls.target.y, controls.target.z);
-                updateAspectRatio();
                 break;
 
             default:
-
 
         }
 
@@ -430,6 +449,16 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, cameraPo
         canvas.height = viewHeight;
         updateAspectRatio();
     }
+
+
+    this.setCameraFromUuid = function (uuid) {
+        let newCam = cameras.find((e) => e.uuid === uuid);
+        if (newCam)
+            this.camera = newCam;
+        else
+            console.error(`No camera with uuid: [${uuid}] in this viewport`);
+    }
+
 
     return {
         render,
