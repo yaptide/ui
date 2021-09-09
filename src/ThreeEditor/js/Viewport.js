@@ -3,13 +3,13 @@ import { TransformControls } from 'three/examples/jsm/controls/TransformControls
 import { SetPositionCommand } from './commands/SetPositionCommand';
 import { SetRotationCommand } from './commands/SetRotationCommand';
 import { SetScaleCommand } from './commands/SetScaleCommand';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import { ViewportCamera } from './Viewport.Camera.js';
 import { ViewportInfo } from './Viewport.Info.js';
 
 import { UIPanel } from "./libs/ui";
 import { ViewHelper } from './Viewport.ViewHelper';
+import { EditorOrbitControls } from './EditorOrbitControls';
 
 export function Viewport(name, editor, { objects, grid, selectionBox }, orthographic, cameraPosition) {
 
@@ -69,6 +69,14 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, orthogra
 
     let cachedRenderer = null;
 
+    let localPlane = new THREE.Plane(new THREE.Vector3(0, - 1, 0), 0.000001);
+    if (name === "ViewPanel1")
+        localPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.000001);
+    if (name === "ViewPanel4")
+        localPlane = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.000001);
+    // const helper = new THREE.PlaneHelper(localPlane, 10, 0xffff00);
+    // sceneHelpers.add(helper);
+
     function render(renderer = cachedRenderer) {
         if (!config.visible) return;
 
@@ -76,12 +84,16 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, orthogra
 
         if (!renderer) return;
 
+        if (name !== "ViewPanel2" && name !== "ViewPanel")
+            renderer.clippingPlanes = [localPlane];
+
         // Adding/removing grid to scene so materials with depthWrite false
         // don't render under the grid.
         scene.add(grid);
         renderer.setSize(canvas.width, canvas.height);
         renderer.render(scene, camera);
         scene.remove(grid);
+        renderer.clippingPlanes = [];
 
         renderer.autoClear = false;
         if (config.showSceneHelpers) {
@@ -379,14 +391,18 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, orthogra
     // controls need to be added *after* main logic,
     // otherwise controls.enabled doesn't work.
 
-    var controls = new OrbitControls(camera, container.dom);
+    var controls = new EditorOrbitControls(camera, container.dom);
     controls.addEventListener('change', function () {
 
         signals.cameraChanged.dispatch(camera);
         signals.refreshSidebarObject3D.dispatch(camera);
+        // console.log(name, controls.getAzimuthalAngle(), controls.getPolarAngle());
 
     });
     viewHelper.controls = controls;
+
+    //TODO: add fixed axis to controls
+
 
 
     signals.transformModeChanged.add(function (mode) {
