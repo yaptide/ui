@@ -88,11 +88,11 @@ function MenubarAdd(editor) {
 		geometry.translate( 0, geometry.parameters.height / 2, 0 );
 		var mesh = new THREE.Mesh( geometry, material );
 		mesh.name = 'Cylinder';
+		editor.execute(new AddObjectCommand(editor, mesh));
 
-		editor.execute( new AddObjectCommand( editor, mesh ) );
+	});
+	options.add(option);
 
-	} );
-	options.add( option );
 
 
 	options.add(new UIHorizontalRule());
