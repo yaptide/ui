@@ -22,7 +22,6 @@ export class CSGZone {
     material: THREE.Material;
     unionOperations: CSGOperation[][];
 
-
     subscribedObjectsId: Set<number> = new Set();
     needsUpdate: boolean = true;
     signals: {
@@ -162,7 +161,7 @@ class CSGManager {
         this.editor.sceneHelpers.remove(zone.resultMesh);
         this.zones.delete(zone.uuid);
     }
-
+   
 
 }
 

@@ -60,6 +60,7 @@ function ZoneManagerPanel(props: { editor: Editor }) {
             if(newRows.length === 0) newRows.push({ geometries: [], operations: [] });
             return newRows;
         });
+        zoneRef.current?.removeUnion(removeId);
     }
 
     const refreshObjectsList = useCallback(
