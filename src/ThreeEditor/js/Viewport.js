@@ -11,7 +11,9 @@ import { UIPanel } from "./libs/ui";
 import { ViewHelper } from './Viewport.ViewHelper';
 import { EditorOrbitControls } from './EditorOrbitControls';
 
-export function Viewport(name, editor, { objects, grid, selectionBox }, orthographic, cameraPosition) {
+import { GUI } from 'three/examples//jsm/libs/dat.gui.module.js';
+
+export function Viewport(name, editor, { objects, grid, selectionBox }, { orthographic, cameraPosition, clipPlane, planePosLabel, planeHelperColor } = {}) {
 
     let { scene, sceneHelpers, signals } = editor;
 
@@ -67,15 +69,42 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, orthogra
     container.add(new ViewportCamera(this, cameras));
     let viewHelper = new ViewHelper(camera, container);
 
-    let cachedRenderer = null;
 
-    let localPlane = new THREE.Plane(new THREE.Vector3(0, - 1, 0), 0.000001);
-    if (name === "ViewPanel1")
-        localPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.000001);
-    if (name === "ViewPanel4")
-        localPlane = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.000001);
-    // const helper = new THREE.PlaneHelper(localPlane, 10, 0xffff00);
-    // sceneHelpers.add(helper);
+
+    // Setup plane clipping ui 
+
+    let globalPlane = clipPlane;
+    if (globalPlane) {
+        const helper = new THREE.PlaneHelper(globalPlane, 10, planeHelperColor ?? 0xffff00);
+        sceneHelpers.add(helper);
+        const planePosProperty = planePosLabel ?? 'PlanePos'
+        const gui = new GUI({}),
+            propsGlobal = {
+
+                get [planePosProperty]() {
+
+                    return globalPlane.constant;
+
+                },
+                set [planePosProperty](v) {
+
+                    globalPlane.constant = v;
+                    render();
+
+                }
+
+            };
+
+        gui.add(propsGlobal, planePosProperty, -10, 10, 0.1);
+
+        container.dom.appendChild(gui.domElement);
+        gui.domElement.style.position = "absolute";
+        gui.domElement.style.top = "35px";
+        gui.domElement.style.right = "-5px";
+    }
+
+
+    let cachedRenderer = null;
 
     function render(renderer = cachedRenderer) {
         if (!config.visible) return;
@@ -84,8 +113,8 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, orthogra
 
         if (!renderer) return;
 
-        if (name !== "ViewPanel2" && name !== "ViewPanel")
-            renderer.clippingPlanes = [localPlane];
+        if (globalPlane)
+            renderer.clippingPlanes = [globalPlane];
 
         // Adding/removing grid to scene so materials with depthWrite false
         // don't render under the grid.
@@ -93,6 +122,7 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, orthogra
         renderer.setSize(canvas.width, canvas.height);
         renderer.render(scene, camera);
         scene.remove(grid);
+
         renderer.clippingPlanes = [];
 
         renderer.autoClear = false;
@@ -396,13 +426,10 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, orthogra
 
         signals.cameraChanged.dispatch(camera);
         signals.refreshSidebarObject3D.dispatch(camera);
-        // console.log(name, controls.getAzimuthalAngle(), controls.getPolarAngle());
+        console.log(name, controls.getAzimuthalAngle(), controls.getPolarAngle());
 
     });
     viewHelper.controls = controls;
-
-    //TODO: add fixed axis to controls
-
 
 
     signals.transformModeChanged.add(function (mode) {

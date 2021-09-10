@@ -77,23 +77,55 @@ function ViewManager(editor) {
 		selectionBox
 	}
 
-	let viewZ = new Viewport("ViewPanel1", editor, viewManagerProps, true, new THREE.Vector3(0, 0, 10));
+	let configZ = {
+		orthographic: true,
+		cameraPosition: new THREE.Vector3(0, 0, 10),
+		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.000001),
+		planePosLabel: "PlanePoz Z",
+		planeHelperColor: 0x73c5ff,
+	};
+	let viewZ = new Viewport("ViewPanelZ", editor, viewManagerProps, configZ);
 	viewsGrid.add(viewZ.container);
+	viewZ.controls.maxAzimuthAngle = viewZ.controls.minAzimuthAngle = 0;
+	viewZ.controls.maxPolarAngle = viewZ.controls.minPolarAngle = Math.PI / 2;
+	viewZ.controls.update();
 
 	let gutterCol = new UIDiv().setClass("gutter-col gutter-col-1");
 	viewsGrid.add(gutterCol);
 
-	let view3D = new Viewport("ViewPanel2", editor, viewManagerProps);
+	let view3D = new Viewport("ViewPanel3D", editor, viewManagerProps);
 	viewsGrid.add(view3D.container);
 
-	let viewY = new Viewport("ViewPanel3", editor, viewManagerProps, true, new THREE.Vector3(0, 10, 0));
+
+	let configY = {
+		orthographic: true,
+		cameraPosition: new THREE.Vector3(0, 10, 0),
+		clipPlane: new THREE.Plane(new THREE.Vector3(0, - 1, 0), 0.000001),
+		planePosLabel: "PlanePoz Y",
+		planeHelperColor: 0xc2ee00,
+	};
+	let viewY = new Viewport("ViewPanelY", editor, viewManagerProps, configY);
 	viewsGrid.add(viewY.container);
+	viewY.controls.maxAzimuthAngle = viewY.controls.minAzimuthAngle = 0;
+	viewY.controls.maxPolarAngle = viewY.controls.minPolarAngle = 0;
+	viewY.controls.update();
 
 	let gutterRow = new UIDiv().setClass("gutter-row gutter-row-1");
 	viewsGrid.add(gutterRow);
 
-	let viewX = new Viewport("ViewPanel4", editor, viewManagerProps, true, new THREE.Vector3(10, 0, 0));
+	let configX = {
+		orthographic: true,
+		cameraPosition: new THREE.Vector3(10, 0, 0),
+		clipPlane: new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.000001),
+		planePosLabel: "PlanePoz X",
+		planeHelperColor: 0xff7f9b,
+	};
+	let viewX = new Viewport("ViewPanelX", editor, viewManagerProps, configX);
 	viewsGrid.add(viewX.container);
+	viewX.controls.maxAzimuthAngle = viewX.controls.minAzimuthAngle = Math.PI / 2;
+	viewX.controls.maxPolarAngle = viewX.controls.minPolarAngle = Math.PI / 2;
+	viewX.controls.update();
+
 
 	// Add resizable views
 
@@ -524,7 +556,7 @@ function ViewManager(editor) {
 
 	// Layout 
 
-	editor.signals.layoutChanged.add(function (layout) {
+	signals.layoutChanged.add(function (layout) {
 		currentLayout = layout;
 
 		viewsGrid.setDisplay('none');
