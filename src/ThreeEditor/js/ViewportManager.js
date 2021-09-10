@@ -1,34 +1,23 @@
 import * as THREE from 'three'
 
+import Split from 'split-grid'
 
-import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
+import { UIDiv, UIPanel } from './libs/ui.js';
 
-import { UIPanel } from './libs/ui.js';
-
-import { EditorControls } from './EditorControls.js';
-
-import { ViewportCamera } from './Viewport.Camera.js';
-import { ViewportInfo } from './Viewport.Info.js';
-import { ViewHelper } from './Viewport.ViewHelper.js';
 import { VR } from './Viewport.VR.js';
-
-import { SetPositionCommand } from './commands/SetPositionCommand.js';
-import { SetRotationCommand } from './commands/SetRotationCommand.js';
-import { SetScaleCommand } from './commands/SetScaleCommand.js';
 
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { Viewport } from './Viewport.js';
 
 
 
-function ViewportManager(editor) {
+function ViewManager(editor) {
 
 	var signals = editor.signals;
 
 	var container = new UIPanel();
 	container.setId('viewport');
 	container.setPosition('absolute');
-
 
 
 	//
@@ -39,14 +28,9 @@ function ViewportManager(editor) {
 	var camera = editor.camera;
 	var scene = editor.scene;
 	var sceneHelpers = editor.sceneHelpers;
-	var showSceneHelpers = true;
+
 
 	var objects = [];
-
-
-	
-
-
 
 	// helpers
 
@@ -63,6 +47,7 @@ function ViewportManager(editor) {
 	grid2.material.vertexColors = false;
 	grid.add(grid2);
 
+
 	var vr = new VR(editor);
 
 	//
@@ -75,10 +60,86 @@ function ViewportManager(editor) {
 	selectionBox.visible = false;
 	sceneHelpers.add(selectionBox);
 
-	var objectPositionOnDown = null;
-	var objectRotationOnDown = null;
-	var objectScaleOnDown = null;
 
+	// Four Views Layout 
+
+	let viewsGrid = new UIDiv();
+	viewsGrid.setClass("grid");
+	viewsGrid.setPosition("absolute");
+	viewsGrid.setWidth("100%");
+	viewsGrid.setHeight("100%");
+	viewsGrid.setBackgroundColor("#aaaaaa");
+	container.add(viewsGrid);
+
+	let viewManagerProps = {
+		objects,
+		grid,
+		selectionBox
+	}
+
+	let viewZ = new Viewport("ViewPanel1", editor, viewManagerProps, new THREE.Vector3(0, 0, 10));
+	viewsGrid.add(viewZ.container);
+
+	let gutterCol = new UIDiv().setClass("gutter-col gutter-col-1");
+	viewsGrid.add(gutterCol);
+
+	let view3D = new Viewport("ViewPanel2", editor, viewManagerProps);
+	viewsGrid.add(view3D.container);
+
+	let viewY = new Viewport("ViewPanel3", editor, viewManagerProps, new THREE.Vector3(0, 10, 0));
+	viewsGrid.add(viewY.container);
+
+	let gutterRow = new UIDiv().setClass("gutter-row gutter-row-1");
+	viewsGrid.add(gutterRow);
+
+	let viewX = new Viewport("ViewPanel4", editor, viewManagerProps, new THREE.Vector3(10, 0, 0));
+	viewsGrid.add(viewX.container);
+
+	// Add resizable views
+
+	Split({
+		columnGutters: [{
+			track: 1,
+			element: gutterCol.dom,
+		}],
+		rowGutters: [{
+			track: 1,
+			element: gutterRow.dom,
+		}],
+		onDragEnd: (direction, track) => {
+			views.forEach((view) => view.setSize());
+
+			render();
+		}
+	});
+
+	let fourViews = [viewZ, view3D, viewY, viewX];
+
+	// Single View Layout 
+
+	let viewSingle = new UIDiv();
+	viewSingle.setPosition("absolute");
+	viewSingle.setWidth("100%");
+	viewSingle.setHeight("100%");
+	viewSingle.setBackgroundColor("#aaaaaa");
+	container.add(viewSingle);
+
+	let viewport = new Viewport("ViewPanel", editor, viewManagerProps);
+	viewport.container.setPosition("absolute");
+	viewport.container.setWidth("100%");
+	viewport.container.setHeight("100%");
+	viewSingle.add(viewport.container);
+
+	let singleView = [viewport];
+
+	let currentLayout = 'singleView';
+
+	let views = singleView;
+
+	views.forEach((view) => view.config.visible = true);
+	
+
+	// events
 
 	function updateAspectRatio() {
 
@@ -87,109 +148,13 @@ function ViewportManager(editor) {
 
 	}
 
-	var transformControls = new TransformControls(camera, container.dom);
-	transformControls.addEventListener('change', function () {
-
-		var object = transformControls.object;
-
-		if (object !== undefined) {
-
-			selectionBox.setFromObject(object);
-
-			var helper = editor.helpers[object.id];
-
-			if (helper !== undefined && helper.isSkeletonHelper !== true) {
-
-				helper.update();
-
-			}
-
-			signals.refreshSidebarObject3D.dispatch(object);
-
-		}
-
-		render();
-
-	});
-	transformControls.addEventListener('mouseDown', function () {
-
-		var object = transformControls.object;
-
-		objectPositionOnDown = object.position.clone();
-		objectRotationOnDown = object.rotation.clone();
-		objectScaleOnDown = object.scale.clone();
-
-
-
-	});
-	transformControls.addEventListener('mouseUp', function () {
-
-		var object = transformControls.object;
-
-		if (object !== undefined) {
-
-			switch (transformControls.getMode()) {
-
-				case 'translate':
-
-					if (!objectPositionOnDown.equals(object.position)) {
-
-						editor.execute(new SetPositionCommand(editor, object, object.position, objectPositionOnDown));
-
-					}
-
-					break;
-
-				case 'rotate':
-
-					if (!objectRotationOnDown.equals(object.rotation)) {
-
-						editor.execute(new SetRotationCommand(editor, object, object.rotation, objectRotationOnDown));
-
-					}
-
-					break;
-
-				case 'scale':
-
-					if (!objectScaleOnDown.equals(object.scale)) {
-
-						editor.execute(new SetScaleCommand(editor, object, object.scale, objectScaleOnDown));
-
-					}
-
-					break;
-
-			}
-
-		}
-
-
-	});
-
-	sceneHelpers.add(transformControls);
-
-
-
 
 	// signals
 
+	signals.editorCleared.add(function () {
 
-	signals.transformModeChanged.add(function (mode) {
-
-		transformControls.setMode(mode);
-
-	});
-
-	signals.snapChanged.add(function (dist) {
-
-		transformControls.setTranslationSnap(dist);
-
-	});
-
-	signals.spaceChanged.add(function (space) {
-
-		transformControls.setSpace(space);
+		views.forEach((view) => view.controls.center.set(0, 0, 0));
+		render();
 
 	});
 
@@ -270,7 +235,7 @@ function ViewportManager(editor) {
 	signals.objectSelected.add(function (object) {
 
 		selectionBox.visible = false;
-		transformControls.detach();
+
 
 		if (object !== null && object !== scene && object !== camera) {
 
@@ -283,15 +248,17 @@ function ViewportManager(editor) {
 
 			}
 
-			transformControls.attach(object);
-
 		}
 
 		render();
 
 	});
 
+	signals.objectFocused.add(function (object) {
 
+		views.forEach((view) => view.controls.focus(object));
+
+	});
 
 	signals.geometryChanged.add(function (object) {
 
@@ -339,7 +306,15 @@ function ViewportManager(editor) {
 
 	});
 
+	signals.objectRemoved.add(function (object) {
 
+		object.traverse(function (child) {
+
+			objects.splice(objects.indexOf(child), 1);
+
+		});
+
+	});
 
 	signals.helperAdded.add(function (object) {
 
@@ -516,7 +491,10 @@ function ViewportManager(editor) {
 
 		}
 
+		// disable EditorControls when setting a user camera
 
+		// controls.enabled = (viewportCamera === editor.camera);
+		// views.forEach((view)=>view.controls.enabled = true);
 
 		render();
 
@@ -528,9 +506,7 @@ function ViewportManager(editor) {
 
 	signals.windowResize.add(function () {
 
-		updateAspectRatio();
-
-		renderer.setSize(container.dom.offsetWidth, container.dom.offsetHeight);
+		views.forEach((view) => view.setSize());
 
 		render();
 
@@ -543,16 +519,40 @@ function ViewportManager(editor) {
 
 	});
 
-	signals.showHelpersChanged.add(function (showHelpers) {
-
-		showSceneHelpers = showHelpers;
-		transformControls.enabled = showHelpers;
-
-		render();
-
-	});
 
 	signals.cameraResetted.add(updateAspectRatio);
+
+	// Layout 
+
+	editor.signals.layoutChanged.add(function (layout) {
+		currentLayout = layout;
+
+		viewsGrid.setDisplay('none');
+		viewSingle.setDisplay('none');
+		views.forEach((view) => view.config.visible = false);
+
+		switch (layout) {
+
+			case 'fourViews':
+				views = fourViews;
+				viewsGrid.dom.style.display = null;
+				break;
+
+			case 'singleView':
+			default:
+				currentLayout = 'singleView';
+				views = singleView;
+				viewSingle.dom.style.display = null;
+				
+		}
+
+		views.forEach((view) => view.setSize());
+		views.forEach((view) => view.config.visible = true);
+
+		render();
+	
+	});
+
 
 	// animations
 
@@ -571,6 +571,8 @@ function ViewportManager(editor) {
 			needsUpdate = true;
 
 		}
+
+		needsUpdate = views.map((view) => view.animate(delta)).some(e => e);
 
 
 		if (vr.currentSession !== null) {
@@ -593,27 +595,7 @@ function ViewportManager(editor) {
 
 		startTime = performance.now();
 
-		// Adding/removing grid to scene so materials with depthWrite false
-		// don't render under the grid.
-
-		scene.add(grid);
-		renderer.setViewport(0, 0, container.dom.offsetWidth, container.dom.offsetHeight);
-		renderer.render(scene, editor.viewportCamera);
-
-		views.forEach((view) => {
-			console.log(view)
-			view.render()
-		});
-		scene.remove(grid);
-
-		if (camera === editor.viewportCamera) {
-
-			renderer.autoClear = false;
-			if (showSceneHelpers === true) renderer.render(sceneHelpers, camera);
-
-			renderer.autoClear = true;
-
-		}
+		views.forEach((view) => view.render(renderer));
 
 		endTime = performance.now();
 		editor.signals.sceneRendered.dispatch(endTime - startTime);
@@ -631,4 +613,4 @@ function updateGridColors(grid1, grid2, colors) {
 
 }
 
-export { ViewportManager };
+export { ViewManager };
