@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { initEditor } from './main';
-import './css/main.css';
 import SampleComponent from './components/SampleComponent';
+import './css/main.css';
 import { Editor } from './js/Editor';
 import ZoneManagerPanel from '../components/ZoneManagerPanel/ZoneManagerPanel';
 import { CSGManager } from './util/CSGManager';
