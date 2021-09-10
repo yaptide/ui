@@ -37,12 +37,12 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, orthogra
 
     let context = canvas.getContext('2d');
 
-    let cameraPersp = new THREE.PerspectiveCamera(50, 1, 0.00001, 10000);
+    let cameraPersp = new THREE.PerspectiveCamera(50, 1, 0.001, 10000);
     cameraPersp.name = "Perspective";
     cameraPersp.position.copy(cameraPosition ?? new THREE.Vector3(0, 5, 10));
     cameraPersp.lookAt(new THREE.Vector3());
 
-    let cameraOrtho = new THREE.OrthographicCamera(1 / - 2, 1 / 2, 1 / 2, 1 / - 2, 0.00001, 10000);
+    let cameraOrtho = new THREE.OrthographicCamera(1 / - 2, 1 / 2, 1 / 2, 1 / - 2, 0.001, 10000);
     cameraOrtho.name = "Orthographic";
     cameraOrtho.position.copy(cameraPersp.position);
     cameraOrtho.zoom = .2;

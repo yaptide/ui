@@ -39,7 +39,19 @@ function MenubarAdd(editor) {
 
 	options.add(new UIHorizontalRule());
 
-	const material = new THREE.MeshStandardMaterial({ wireframe: true, opacity: .2, transparent: true });
+	const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide });
+
+	//https://stackoverflow.com/questions/37090942/how-to-render-clipped-surfaces-as-solid-objects/37093210#37093210
+	material.onBeforeCompile = function (shader) {
+
+		shader.fragmentShader = shader.fragmentShader.replace(
+
+			`gl_FragColor = vec4( outgoingLight, diffuseColor.a );`,
+
+			`gl_FragColor = ( gl_FrontFacing ) ? vec4( outgoingLight, diffuseColor.a ) : vec4( diffuse, opacity );`
+
+		);
+	};
 
 
 	// Box
@@ -50,7 +62,7 @@ function MenubarAdd(editor) {
 	option.onClick(function () {
 
 		var geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
-		geometry.translate( 0, geometry.parameters.height / 2, 0 );
+		geometry.translate(0, geometry.parameters.height / 2, 0);
 		var mesh = new THREE.Mesh(geometry, material);
 		mesh.name = 'Box';
 
@@ -80,22 +92,43 @@ function MenubarAdd(editor) {
 	// Cylinder
 
 	var option = new UIRow();
-	option.setClass( 'option' );
-	option.setTextContent( strings.getKey( 'menubar/add/cylinder' ) );
-	option.onClick( function () {
+	option.setClass('option');
+	option.setTextContent(strings.getKey('menubar/add/cylinder'));
+	option.onClick(function () {
 
-		var geometry = new THREE.CylinderGeometry( 1, 1, 1, 16, 1, false, 0, Math.PI * 2 );
-		geometry.translate( 0, geometry.parameters.height / 2, 0 );
-		var mesh = new THREE.Mesh( geometry, material );
+		var geometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2);
+		geometry.translate(0, geometry.parameters.height / 2, 0);
+		var mesh = new THREE.Mesh(geometry, material);
 		mesh.name = 'Cylinder';
 
-		editor.execute( new AddObjectCommand( editor, mesh ) );
+		editor.execute(new AddObjectCommand(editor, mesh));
 
-	} );
-	options.add( option );
+	});
+	options.add(option);
 
 
 	options.add(new UIHorizontalRule());
+
+	// HemisphereLight
+
+	var option = new UIRow();
+	option.setClass( 'option' );
+	option.setTextContent( strings.getKey( 'menubar/add/hemispherelight' ) );
+	option.onClick( function () {
+
+		var skyColor = 0x00aaff;
+		var groundColor = 0xffaa00;
+		var intensity = 1;
+
+		var light = new THREE.HemisphereLight( skyColor, groundColor, intensity );
+		light.name = 'HemisphereLight';
+
+		light.position.set( 0, 10, 0 );
+
+		editor.execute( new AddObjectCommand( editor, light ) );
+
+	} );
+	options.add( option );
 
 
 	return container;
