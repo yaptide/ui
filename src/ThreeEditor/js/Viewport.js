@@ -56,8 +56,8 @@ function Viewport(editor) {
 	grid2.material.vertexColors = false;
 	grid.add(grid2);
 
-	var viewHelper = new ViewHelper(camera, container);
-
+	var viewHelper = new ViewHelper( camera, container );
+	var vr = new VR( editor );
 
 	//
 
@@ -739,6 +739,12 @@ function Viewport(editor) {
 
 		}
 
+		if ( vr.currentSession !== null ) {
+
+			needsUpdate = true;
+
+		}
+
 
 		if (needsUpdate === true) render();
 
@@ -764,8 +770,8 @@ function Viewport(editor) {
 		if (camera === editor.viewportCamera) {
 
 			renderer.autoClear = false;
-			if (showSceneHelpers === true) renderer.render(sceneHelpers, camera);
-
+			if ( showSceneHelpers === true ) renderer.render( sceneHelpers, camera );
+			if ( vr.currentSession === null ) viewHelper.render( renderer );
 			renderer.autoClear = true;
 
 		}
