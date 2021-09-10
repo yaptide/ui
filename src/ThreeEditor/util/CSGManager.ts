@@ -162,7 +162,6 @@ class CSGManager {
         this.editor.sceneHelpers.remove(zone.resultMesh);
         this.zones.delete(zone.uuid);
     }
-   
 
 }
 
