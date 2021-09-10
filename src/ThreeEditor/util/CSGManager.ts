@@ -22,6 +22,7 @@ export class CSGZone {
     material: THREE.Material;
     unionOperations: CSGOperation[][];
 
+
     subscribedObjectsId: Set<number> = new Set();
     needsUpdate: boolean = true;
     signals: {
