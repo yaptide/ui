@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-function EditorControls( controlledObject, domElement ) {
+function EditorControls(controlledObject, domElement) {
 
 	// API
 
@@ -11,7 +11,7 @@ function EditorControls( controlledObject, domElement ) {
 	this.rotationSpeed = 0.005;
 
 	Object.defineProperty(this, 'object', {
-		get() {return object},
+		get() { return object },
 		set(newObject) { object = newObject; }
 	});
 
@@ -38,119 +38,125 @@ function EditorControls( controlledObject, domElement ) {
 
 	var changeEvent = { type: 'change' };
 
-	this.focus = function ( target ) {
+	this.focus = function (target) {
 
 		var distance;
 
-		box.setFromObject( target );
+		box.setFromObject(target);
 
-		if ( box.isEmpty() === false ) {
+		if (box.isEmpty() === false) {
 
-			box.getCenter( center );
-			distance = box.getBoundingSphere( sphere ).radius;
+			box.getCenter(center);
+			distance = box.getBoundingSphere(sphere).radius;
 
 		} else {
 
 			// Focusing on an Group, AmbientLight, etc
 
-			center.setFromMatrixPosition( target.matrixWorld );
+			center.setFromMatrixPosition(target.matrixWorld);
 			distance = 0.1;
 
 		}
 
-		delta.set( 0, 0, 1 );
-		delta.applyQuaternion( object.quaternion );
-		delta.multiplyScalar( distance * 4 );
+		delta.set(0, 0, 1);
+		delta.applyQuaternion(object.quaternion);
+		delta.multiplyScalar(distance * 4);
 
-		object.position.copy( center ).add( delta );
+		object.position.copy(center).add(delta);
 
-		scope.dispatchEvent( changeEvent );
-
-	};
-
-	this.pan = function ( delta ) {
-
-		var distance = object.position.distanceTo( center );
-
-		delta.multiplyScalar( distance * scope.panSpeed );
-		delta.applyMatrix3( normalMatrix.getNormalMatrix( object.matrix ) );
-
-		object.position.add( delta );
-		center.add( delta );
-
-		scope.dispatchEvent( changeEvent );
+		scope.dispatchEvent(changeEvent);
 
 	};
 
-	this.zoom = function ( delta ) {
+	this.pan = function (delta) {
 
-		var distance = object.position.distanceTo( center );
+		var distance = object.position.distanceTo(center);
 
-		delta.multiplyScalar( distance * scope.zoomSpeed );
+		delta.multiplyScalar(distance * scope.panSpeed);
+		delta.applyMatrix3(normalMatrix.getNormalMatrix(object.matrix));
 
-		if ( delta.length() > distance ) return;
+		object.position.add(delta);
+		center.add(delta);
 
-		delta.applyMatrix3( normalMatrix.getNormalMatrix( object.matrix ) );
-
-		object.position.add( delta );
-
-		scope.dispatchEvent( changeEvent );
+		scope.dispatchEvent(changeEvent);
 
 	};
 
-	this.rotate = function ( delta ) {
+	this.zoom = function (delta) {
 
-		vector.copy( object.position ).sub( center );
+		var distance = object.position.distanceTo(center);
 
-		spherical.setFromVector3( vector );
+		delta.multiplyScalar(distance * scope.zoomSpeed);
+
+		if (delta.length() > distance) return;
+
+		delta.applyMatrix3(normalMatrix.getNormalMatrix(object.matrix));
+
+		object.position.add(delta);
+
+		scope.dispatchEvent(changeEvent);
+
+	};
+
+	this.rotate = function (delta) {
+
+		vector.copy(object.position).sub(center);
+
+		spherical.setFromVector3(vector);
 
 		spherical.theta += delta.x * scope.rotationSpeed;
 		spherical.phi += delta.y * scope.rotationSpeed;
 
 		spherical.makeSafe();
 
-		vector.setFromSpherical( spherical );
+		vector.setFromSpherical(spherical);
 
-		object.position.copy( center ).add( vector );
+		object.position.copy(center).add(vector);
 
-		object.lookAt( center );
+		object.lookAt(center);
 
-		scope.dispatchEvent( changeEvent );
+		scope.dispatchEvent(changeEvent);
 
 	};
 
 	//
 
-	function onPointerDown( event ) {
+	function onPointerDown(event) {
 
-		if ( scope.enabled === false ) return;
+		if (scope.enabled === false) return;
 
-		switch ( event.pointerType ) {
+		switch (event.pointerType) {
 
 			case 'mouse':
 			case 'pen':
-				onMouseDown( event );
+				onMouseDown(event);
 				break;
+
+			default:
+				console.log(event.pointerType, "is not supported");
 
 			// TODO touch
 
 		}
 
-		domElement.ownerDocument.addEventListener( 'pointermove', onPointerMove, false );
-		domElement.ownerDocument.addEventListener( 'pointerup', onPointerUp, false );
+		domElement.ownerDocument.addEventListener('pointermove', onPointerMove, false);
+		domElement.ownerDocument.addEventListener('pointerup', onPointerUp, false);
 
 	}
 
-	function onPointerMove( event ) {
+	function onPointerMove(event) {
 
-		if ( scope.enabled === false ) return;
+		if (scope.enabled === false) return;
 
-		switch ( event.pointerType ) {
+		switch (event.pointerType) {
 
 			case 'mouse':
 			case 'pen':
-				onMouseMove( event );
+				onMouseMove(event);
 				break;
+
+			default:
+				console.log(event.pointerType, "is not supported");
 
 			// TODO touch
 
@@ -158,68 +164,71 @@ function EditorControls( controlledObject, domElement ) {
 
 	}
 
-	function onPointerUp( event ) {
+	function onPointerUp(event) {
 
-		switch ( event.pointerType ) {
+		switch (event.pointerType) {
 
 			case 'mouse':
 			case 'pen':
 				onMouseUp();
 				break;
 
+			default:
+				console.log(event.pointerType, "is not supported");
+
 			// TODO touch
 
 		}
 
-		domElement.ownerDocument.removeEventListener( 'pointermove', onPointerMove, false );
-		domElement.ownerDocument.removeEventListener( 'pointerup', onPointerUp, false );
+		domElement.ownerDocument.removeEventListener('pointermove', onPointerMove, false);
+		domElement.ownerDocument.removeEventListener('pointerup', onPointerUp, false);
 
 	}
 
 	// mouse
 
-	function onMouseDown( event ) {
+	function onMouseDown(event) {
 
-		if ( event.button === 0 ) {
+		if (event.button === 0) {
 
 			state = STATE.ROTATE;
 
-		} else if ( event.button === 1 ) {
+		} else if (event.button === 1) {
 
 			state = STATE.ZOOM;
 
-		} else if ( event.button === 2 ) {
+		} else if (event.button === 2) {
 
 			state = STATE.PAN;
 
 		}
 
-		pointerOld.set( event.clientX, event.clientY );
+		pointerOld.set(event.clientX, event.clientY);
 
 	}
 
-	function onMouseMove( event ) {
+	function onMouseMove(event) {
 
-		pointer.set( event.clientX, event.clientY );
+		pointer.set(event.clientX, event.clientY);
 
 		var movementX = pointer.x - pointerOld.x;
 		var movementY = pointer.y - pointerOld.y;
 
-		if ( state === STATE.ROTATE ) {
+		if (state === STATE.ROTATE) {
 
-			scope.rotate( delta.set( - movementX, - movementY, 0 ) );
+			scope.rotate(delta.set(- movementX, - movementY, 0));
 
-		} else if ( state === STATE.ZOOM ) {
+		} else if (state === STATE.ZOOM) {
 
-			scope.zoom( delta.set( 0, 0, movementY ) );
+			scope.zoom(delta.set(0, 0, movementY));
 
-		} else if ( state === STATE.PAN ) {
+		} else if (state === STATE.PAN) {
 
-			scope.pan( delta.set( - movementX, movementY, 0 ) );
+			scope.pan(delta.set(- movementX, movementY, 0));
 
 		}
 
-		pointerOld.set( event.clientX, event.clientY );
+		pointerOld.set(event.clientX, event.clientY);
 
 	}
 
@@ -229,18 +238,18 @@ function EditorControls( controlledObject, domElement ) {
 
 	}
 
-	function onMouseWheel( event ) {
+	function onMouseWheel(event) {
 
-		if ( scope.enabled === false ) return;
+		if (scope.enabled === false) return;
 
 		event.preventDefault();
 
 		// Normalize deltaY due to https://bugzilla.mozilla.org/show_bug.cgi?id=1392460
-		scope.zoom( delta.set( 0, 0, event.deltaY > 0 ? 1 : - 1 ) );
+		scope.zoom(delta.set(0, 0, event.deltaY > 0 ? 1 : - 1));
 
 	}
 
-	function contextmenu( event ) {
+	function contextmenu(event) {
 
 		event.preventDefault();
 
@@ -248,69 +257,72 @@ function EditorControls( controlledObject, domElement ) {
 
 	this.dispose = function () {
 
-		domElement.removeEventListener( 'contextmenu', contextmenu, false );
-		domElement.removeEventListener( 'dblclick', onMouseUp, false );
-		domElement.removeEventListener( 'wheel', onMouseWheel, false );
+		domElement.removeEventListener('contextmenu', contextmenu, false);
+		domElement.removeEventListener('dblclick', onMouseUp, false);
+		domElement.removeEventListener('wheel', onMouseWheel, false);
 
-		domElement.removeEventListener( 'pointerdown', onPointerDown, false );
+		domElement.removeEventListener('pointerdown', onPointerDown, false);
 
-		domElement.removeEventListener( 'touchstart', touchStart, false );
-		domElement.removeEventListener( 'touchmove', touchMove, false );
+		domElement.removeEventListener('touchstart', touchStart, false);
+		domElement.removeEventListener('touchmove', touchMove, false);
 
 	};
 
-	domElement.addEventListener( 'contextmenu', contextmenu, false );
-	domElement.addEventListener( 'dblclick', onMouseUp, false );
-	domElement.addEventListener( 'wheel', onMouseWheel, false );
+	domElement.addEventListener('contextmenu', contextmenu, false);
+	domElement.addEventListener('dblclick', onMouseUp, false);
+	domElement.addEventListener('wheel', onMouseWheel, false);
 
-	domElement.addEventListener( 'pointerdown', onPointerDown, false );
+	domElement.addEventListener('pointerdown', onPointerDown, false);
 
 	// touch
 
-	var touches = [ new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3() ];
-	var prevTouches = [ new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3() ];
+	var touches = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
+	var prevTouches = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
 
 	var prevDistance = null;
 
-	function touchStart( event ) {
+	function touchStart(event) {
 
-		if ( scope.enabled === false ) return;
+		if (scope.enabled === false) return;
 
-		switch ( event.touches.length ) {
+		switch (event.touches.length) {
 
 			case 1:
-				touches[ 0 ].set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY, 0 ).divideScalar( window.devicePixelRatio );
-				touches[ 1 ].set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY, 0 ).divideScalar( window.devicePixelRatio );
+				touches[0].set(event.touches[0].pageX, event.touches[0].pageY, 0).divideScalar(window.devicePixelRatio);
+				touches[1].set(event.touches[0].pageX, event.touches[0].pageY, 0).divideScalar(window.devicePixelRatio);
 				break;
 
 			case 2:
-				touches[ 0 ].set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY, 0 ).divideScalar( window.devicePixelRatio );
-				touches[ 1 ].set( event.touches[ 1 ].pageX, event.touches[ 1 ].pageY, 0 ).divideScalar( window.devicePixelRatio );
-				prevDistance = touches[ 0 ].distanceTo( touches[ 1 ] );
+				touches[0].set(event.touches[0].pageX, event.touches[0].pageY, 0).divideScalar(window.devicePixelRatio);
+				touches[1].set(event.touches[1].pageX, event.touches[1].pageY, 0).divideScalar(window.devicePixelRatio);
+				prevDistance = touches[0].distanceTo(touches[1]);
 				break;
+
+			default:
+				console.log(event.touches.length, "is not supported");
 
 		}
 
-		prevTouches[ 0 ].copy( touches[ 0 ] );
-		prevTouches[ 1 ].copy( touches[ 1 ] );
+		prevTouches[0].copy(touches[0]);
+		prevTouches[1].copy(touches[1]);
 
 	}
 
 
-	function touchMove( event ) {
+	function touchMove(event) {
 
-		if ( scope.enabled === false ) return;
+		if (scope.enabled === false) return;
 
 		event.preventDefault();
 		event.stopPropagation();
 
-		function getClosest( touch, touches ) {
+		function getClosest(touch, touches) {
 
-			var closest = touches[ 0 ];
+			var closest = touches[0];
 
-			for ( var i in touches ) {
+			for (var i in touches) {
 
-				if ( closest.distanceTo( touch ) > touches[ i ].distanceTo( touch ) ) closest = touches[ i ];
+				if (closest.distanceTo(touch) > touches[i].distanceTo(touch)) closest = touches[i];
 
 			}
 
@@ -318,44 +330,47 @@ function EditorControls( controlledObject, domElement ) {
 
 		}
 
-		switch ( event.touches.length ) {
+		switch (event.touches.length) {
 
 			case 1:
-				touches[ 0 ].set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY, 0 ).divideScalar( window.devicePixelRatio );
-				touches[ 1 ].set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY, 0 ).divideScalar( window.devicePixelRatio );
-				scope.rotate( touches[ 0 ].sub( getClosest( touches[ 0 ], prevTouches ) ).multiplyScalar( - 1 ) );
+				touches[0].set(event.touches[0].pageX, event.touches[0].pageY, 0).divideScalar(window.devicePixelRatio);
+				touches[1].set(event.touches[0].pageX, event.touches[0].pageY, 0).divideScalar(window.devicePixelRatio);
+				scope.rotate(touches[0].sub(getClosest(touches[0], prevTouches)).multiplyScalar(- 1));
 				break;
 
 			case 2:
-				touches[ 0 ].set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY, 0 ).divideScalar( window.devicePixelRatio );
-				touches[ 1 ].set( event.touches[ 1 ].pageX, event.touches[ 1 ].pageY, 0 ).divideScalar( window.devicePixelRatio );
-				var distance = touches[ 0 ].distanceTo( touches[ 1 ] );
-				scope.zoom( delta.set( 0, 0, prevDistance - distance ) );
+				touches[0].set(event.touches[0].pageX, event.touches[0].pageY, 0).divideScalar(window.devicePixelRatio);
+				touches[1].set(event.touches[1].pageX, event.touches[1].pageY, 0).divideScalar(window.devicePixelRatio);
+				var distance = touches[0].distanceTo(touches[1]);
+				scope.zoom(delta.set(0, 0, prevDistance - distance));
 				prevDistance = distance;
 
 
-				var offset0 = touches[ 0 ].clone().sub( getClosest( touches[ 0 ], prevTouches ) );
-				var offset1 = touches[ 1 ].clone().sub( getClosest( touches[ 1 ], prevTouches ) );
+				var offset0 = touches[0].clone().sub(getClosest(touches[0], prevTouches));
+				var offset1 = touches[1].clone().sub(getClosest(touches[1], prevTouches));
 				offset0.x = - offset0.x;
 				offset1.x = - offset1.x;
 
-				scope.pan( offset0.add( offset1 ) );
+				scope.pan(offset0.add(offset1));
 
+				break;
+
+			default:
 				break;
 
 		}
 
-		prevTouches[ 0 ].copy( touches[ 0 ] );
-		prevTouches[ 1 ].copy( touches[ 1 ] );
+		prevTouches[0].copy(touches[0]);
+		prevTouches[1].copy(touches[1]);
 
 	}
 
-	domElement.addEventListener( 'touchstart', touchStart, false );
-	domElement.addEventListener( 'touchmove', touchMove, false );
+	domElement.addEventListener('touchstart', touchStart, false);
+	domElement.addEventListener('touchmove', touchMove, false);
 
 }
 
-EditorControls.prototype = Object.create( THREE.EventDispatcher.prototype );
+EditorControls.prototype = Object.create(THREE.EventDispatcher.prototype);
 EditorControls.prototype.constructor = EditorControls;
 
 export { EditorControls };

@@ -137,7 +137,7 @@ function ViewManager(editor) {
 	let views = singleView;
 
 	views.forEach((view) => view.config.visible = true);
-	
+
 
 	// events
 
@@ -391,6 +391,11 @@ function ViewManager(editor) {
 
 				break;
 
+			default:
+
+				console.log(backgroundType, "isn't supported");
+				break;
+
 		}
 
 		render();
@@ -428,6 +433,11 @@ function ViewManager(editor) {
 
 				break;
 
+			default:
+
+				console.log(environmentType, "isn't supported");
+				break;
+
 		}
 
 		render();
@@ -449,6 +459,9 @@ function ViewManager(editor) {
 			case 'FogExp2':
 				scene.fog = new THREE.FogExp2(fogColor, fogDensity);
 				break;
+			default:
+				console.log(fogType, "isn't supported");
+				break;
 
 		}
 
@@ -468,6 +481,9 @@ function ViewManager(editor) {
 			case 'FogExp2':
 				scene.fog.color.setHex(fogColor);
 				scene.fog.density = fogDensity;
+				break;
+			default:
+				console.log(fogType, "isn't supported");
 				break;
 
 		}
@@ -543,14 +559,14 @@ function ViewManager(editor) {
 				currentLayout = 'singleView';
 				views = singleView;
 				viewSingle.dom.style.display = null;
-				
+
 		}
 
 		views.forEach((view) => view.setSize());
 		views.forEach((view) => view.config.visible = true);
 
 		render();
-	
+
 	});
 
 

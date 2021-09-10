@@ -1,32 +1,26 @@
-import { UIPanel, UIRow } from './libs/ui.js';
+import { UIPanel } from './libs/ui.js';
+import { createOption } from './Menubar.js';
 
-function MenubarHelp( editor ) {
+function MenubarHelp(editor) {
 
 	var strings = editor.strings;
 
 	var container = new UIPanel();
-	container.setClass( 'menu' );
+	container.setClass('menu');
 
 	var title = new UIPanel();
-	title.setClass( 'title' );
-	title.setTextContent( strings.getKey( 'menubar/help' ) );
-	container.add( title );
+	title.setClass('title');
+	title.setTextContent(strings.getKey('menubar/help'));
+	container.add(title);
 
 	var options = new UIPanel();
-	options.setClass( 'options' );
-	container.add( options );
+	options.setClass('options');
+	container.add(options);
 
 	// Source code
-
-	var option = new UIRow();
-	option.setClass( 'option' );
-	option.setTextContent( strings.getKey( 'menubar/help/source_code' ) );
-	option.onClick( function () {
-
-		window.open( 'https://github.com/mrdoob/three.js/tree/master/editor', '_blank' );
-
-	} );
-	options.add( option );
+	options.add(createOption('option', strings.getKey('menubar/help/source_code'), () => {
+		window.open('https://github.com/mrdoob/three.js/tree/master/editor', '_blank');
+	}));
 
 	/*
 	// Icon
@@ -43,28 +37,14 @@ function MenubarHelp( editor ) {
 	*/
 
 	// About
-
-	var option = new UIRow();
-	option.setClass( 'option' );
-	option.setTextContent( strings.getKey( 'menubar/help/about' ) );
-	option.onClick( function () {
-
-		window.open( 'https://threejs.org', '_blank' );
-
-	} );
-	options.add( option );
+	options.add(createOption('option', strings.getKey('menubar/help/about'), () => {
+		window.open('https://threejs.org', '_blank');
+	}));
 
 	// Manual
-
-	var option = new UIRow();
-	option.setClass( 'option' );
-	option.setTextContent( strings.getKey( 'menubar/help/manual' ) );
-	option.onClick( function () {
-
-		window.open( 'https://github.com/mrdoob/three.js/wiki/Editor-Manual', '_blank' );
-
-	} );
-	options.add( option );
+	options.add(createOption('option', strings.getKey('menubar/help/manual'), () => {
+		window.open('https://github.com/mrdoob/three.js/wiki/Editor-Manual', '_blank');
+	}));
 
 	return container;
 

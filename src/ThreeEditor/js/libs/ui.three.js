@@ -8,110 +8,110 @@ import { MoveObjectCommand } from '../commands/MoveObjectCommand.js';
 
 class UITexture extends UISpan {
 
-	constructor( mapping ) {
+	constructor(mapping) {
 
 		super();
 
 		const scope = this;
 
-		const form = document.createElement( 'form' );
+		const form = document.createElement('form');
 
-		const input = document.createElement( 'input' );
+		const input = document.createElement('input');
 		input.type = 'file';
-		input.addEventListener( 'change', function ( event ) {
+		input.addEventListener('change', function (event) {
 
-			loadFile( event.target.files[ 0 ] );
+			loadFile(event.target.files[0]);
 
-		} );
-		form.appendChild( input );
+		});
+		form.appendChild(input);
 
-		const canvas = document.createElement( 'canvas' );
+		const canvas = document.createElement('canvas');
 		canvas.width = 32;
 		canvas.height = 16;
 		canvas.style.cursor = 'pointer';
 		canvas.style.marginRight = '5px';
 		canvas.style.border = '1px solid #888';
-		canvas.addEventListener( 'click', function () {
+		canvas.addEventListener('click', function () {
 
 			input.click();
 
-		}, false );
-		canvas.addEventListener( 'drop', function ( event ) {
+		}, false);
+		canvas.addEventListener('drop', function (event) {
 
 			event.preventDefault();
 			event.stopPropagation();
-			loadFile( event.dataTransfer.files[ 0 ] );
+			loadFile(event.dataTransfer.files[0]);
 
-		}, false );
-		this.dom.appendChild( canvas );
+		}, false);
+		this.dom.appendChild(canvas);
 
-		function loadFile( file ) {
+		function loadFile(file) {
 
-			const extension = file.name.split( '.' ).pop().toLowerCase();
+			const extension = file.name.split('.').pop().toLowerCase();
 			const reader = new FileReader();
 
-			if ( extension === 'hdr' ) {
+			if (extension === 'hdr') {
 
-				reader.addEventListener( 'load', function ( event ) {
+				reader.addEventListener('load', function (event) {
 
 					// assuming RGBE/Radiance HDR iamge format
 
-					const loader = new RGBELoader().setDataType( THREE.FloatType );
-					loader.load( event.target.result, function ( hdrTexture ) {
+					const loader = new RGBELoader().setDataType(THREE.FloatType);
+					loader.load(event.target.result, function (hdrTexture) {
 
 						hdrTexture.sourceFile = file.name;
 						hdrTexture.isHDRTexture = true;
 
-						scope.setValue( hdrTexture );
+						scope.setValue(hdrTexture);
 
-						if ( scope.onChangeCallback ) scope.onChangeCallback( hdrTexture );
+						if (scope.onChangeCallback) scope.onChangeCallback(hdrTexture);
 
-					} );
+					});
 
-				} );
+				});
 
-				reader.readAsDataURL( file );
+				reader.readAsDataURL(file);
 
-			} else if ( extension === 'tga' ) {
+			} else if (extension === 'tga') {
 
-				reader.addEventListener( 'load', function ( event ) {
+				reader.addEventListener('load', function (event) {
 
-					const canvas = new TGALoader().parse( event.target.result );
+					const canvas = new TGALoader().parse(event.target.result);
 
-					const texture = new THREE.CanvasTexture( canvas, mapping );
+					const texture = new THREE.CanvasTexture(canvas, mapping);
 					texture.sourceFile = file.name;
 
-					scope.setValue( texture );
+					scope.setValue(texture);
 
-					if ( scope.onChangeCallback ) scope.onChangeCallback( texture );
+					if (scope.onChangeCallback) scope.onChangeCallback(texture);
 
-				}, false );
+				}, false);
 
-				reader.readAsArrayBuffer( file );
+				reader.readAsArrayBuffer(file);
 
-			} else if ( file.type.match( 'image.*' ) ) {
+			} else if (file.type.match('image.*')) {
 
-				reader.addEventListener( 'load', function ( event ) {
+				reader.addEventListener('load', function (event) {
 
-					const image = document.createElement( 'img' );
-					image.addEventListener( 'load', function () {
+					const image = document.createElement('img');
+					image.addEventListener('load', function () {
 
-						const texture = new THREE.Texture( this, mapping );
+						const texture = new THREE.Texture(this, mapping);
 						texture.sourceFile = file.name;
 						texture.format = file.type === 'image/jpeg' ? THREE.RGBFormat : THREE.RGBAFormat;
 						texture.needsUpdate = true;
 
-						scope.setValue( texture );
+						scope.setValue(texture);
 
-						if ( scope.onChangeCallback ) scope.onChangeCallback( texture );
+						if (scope.onChangeCallback) scope.onChangeCallback(texture);
 
-					}, false );
+					}, false);
 
 					image.src = event.target.result;
 
-				}, false );
+				}, false);
 
-				reader.readAsDataURL( file );
+				reader.readAsDataURL(file);
 
 			}
 
@@ -130,36 +130,36 @@ class UITexture extends UISpan {
 
 	}
 
-	setValue( texture ) {
+	setValue(texture) {
 
-		const canvas = this.dom.children[ 0 ];
-		const context = canvas.getContext( '2d' );
+		const canvas = this.dom.children[0];
+		const context = canvas.getContext('2d');
 
 		// Seems like context can be null if the canvas is not visible
-		if ( context ) {
+		if (context) {
 
 			// Always clear the context before set new texture, because new texture may has transparency
-			context.clearRect( 0, 0, canvas.width, canvas.height );
+			context.clearRect(0, 0, canvas.width, canvas.height);
 
 		}
 
-		if ( texture !== null ) {
+		if (texture !== null) {
 
 			const image = texture.image;
 
-			if ( image !== undefined && image.width > 0 ) {
+			if (image !== undefined && image.width > 0) {
 
 				canvas.title = texture.sourceFile;
 				const scale = canvas.width / image.width;
 
-				if ( image.data === undefined ) {
+				if (image.data === undefined) {
 
-					context.drawImage( image, 0, 0, image.width * scale, image.height * scale );
+					context.drawImage(image, 0, 0, image.width * scale, image.height * scale);
 
 				} else {
 
-					const canvas2 = renderToCanvas( texture );
-					context.drawImage( canvas2, 0, 0, image.width * scale, image.height * scale );
+					const canvas2 = renderToCanvas(texture);
+					context.drawImage(canvas2, 0, 0, image.width * scale, image.height * scale);
 
 				}
 
@@ -179,11 +179,11 @@ class UITexture extends UISpan {
 
 	}
 
-	setEncoding( encoding ) {
+	setEncoding(encoding) {
 
 		const texture = this.getValue();
 
-		if ( texture !== null ) {
+		if (texture !== null) {
 
 			texture.encoding = encoding;
 
@@ -193,7 +193,7 @@ class UITexture extends UISpan {
 
 	}
 
-	onChange( callback ) {
+	onChange(callback) {
 
 		this.onChangeCallback = callback;
 
@@ -209,7 +209,7 @@ class UICubeTexture extends UIElement {
 
 		const container = new UIDiv();
 
-		super( container.dom );
+		super(container.dom);
 
 		this.cubeTexture = null;
 		this.onChangeCallback = null;
@@ -221,54 +221,54 @@ class UICubeTexture extends UIElement {
 		const pRow = new UIRow();
 		const nRow = new UIRow();
 
-		pRow.add( new UIText( 'P:' ).setWidth( '35px' ) );
-		nRow.add( new UIText( 'N:' ).setWidth( '35px' ) );
+		pRow.add(new UIText('P:').setWidth('35px'));
+		nRow.add(new UIText('N:').setWidth('35px'));
 
-		const posXTexture = new UITexture().onChange( onTextureChanged );
-		const negXTexture = new UITexture().onChange( onTextureChanged );
-		const posYTexture = new UITexture().onChange( onTextureChanged );
-		const negYTexture = new UITexture().onChange( onTextureChanged );
-		const posZTexture = new UITexture().onChange( onTextureChanged );
-		const negZTexture = new UITexture().onChange( onTextureChanged );
+		const posXTexture = new UITexture().onChange(onTextureChanged);
+		const negXTexture = new UITexture().onChange(onTextureChanged);
+		const posYTexture = new UITexture().onChange(onTextureChanged);
+		const negYTexture = new UITexture().onChange(onTextureChanged);
+		const posZTexture = new UITexture().onChange(onTextureChanged);
+		const negZTexture = new UITexture().onChange(onTextureChanged);
 
-		this.textures.push( posXTexture, negXTexture, posYTexture, negYTexture, posZTexture, negZTexture );
+		this.textures.push(posXTexture, negXTexture, posYTexture, negYTexture, posZTexture, negZTexture);
 
-		pRow.add( posXTexture );
-		pRow.add( posYTexture );
-		pRow.add( posZTexture );
+		pRow.add(posXTexture);
+		pRow.add(posYTexture);
+		pRow.add(posZTexture);
 
-		nRow.add( negXTexture );
-		nRow.add( negYTexture );
-		nRow.add( negZTexture );
+		nRow.add(negXTexture);
+		nRow.add(negYTexture);
+		nRow.add(negZTexture);
 
-		container.add( pRow, nRow );
+		container.add(pRow, nRow);
 
 		function onTextureChanged() {
 
 			const images = [];
 
-			for ( let i = 0; i < scope.textures.length; i ++ ) {
+			for (let i = 0; i < scope.textures.length; i++) {
 
-				const texture = scope.textures[ i ].getValue();
+				const texture = scope.textures[i].getValue();
 
-				if ( texture !== null ) {
+				if (texture !== null) {
 
-					images.push( texture.isHDRTexture ? texture : texture.image );
+					images.push(texture.isHDRTexture ? texture : texture.image);
 
 				}
 
 			}
 
-			if ( images.length === 6 ) {
+			if (images.length === 6) {
 
-				const cubeTexture = new THREE.CubeTexture( images );
+				const cubeTexture = new THREE.CubeTexture(images);
 				cubeTexture.needsUpdate = true;
 
-				if ( images[ 0 ].isHDRTexture ) cubeTexture.isHDRTexture = true;
+				if (images[0].isHDRTexture) cubeTexture.isHDRTexture = true;
 
 				scope.cubeTexture = cubeTexture;
 
-				if ( scope.onChangeCallback ) scope.onChangeCallback( cubeTexture );
+				if (scope.onChangeCallback) scope.onChangeCallback(cubeTexture);
 
 			}
 
@@ -276,10 +276,10 @@ class UICubeTexture extends UIElement {
 
 	}
 
-	setEncoding( encoding ) {
+	setEncoding(encoding) {
 
 		const cubeTexture = this.getValue();
-		if ( cubeTexture !== null ) {
+		if (cubeTexture !== null) {
 
 			cubeTexture.encoding = encoding;
 
@@ -295,22 +295,22 @@ class UICubeTexture extends UIElement {
 
 	}
 
-	setValue( cubeTexture ) {
+	setValue(cubeTexture) {
 
 		this.cubeTexture = cubeTexture;
 
-		if ( cubeTexture !== null ) {
+		if (cubeTexture !== null) {
 
 			const images = cubeTexture.image;
 
-			if ( Array.isArray( images ) === true && images.length === 6 ) {
+			if (Array.isArray(images) === true && images.length === 6) {
 
-				for ( let i = 0; i < images.length; i ++ ) {
+				for (let i = 0; i < images.length; i++) {
 
-					const image = images[ i ];
+					const image = images[i];
 
-					const texture = new THREE.Texture( image );
-					this.textures[ i ].setValue( texture );
+					const texture = new THREE.Texture(image);
+					this.textures[i].setValue(texture);
 
 				}
 
@@ -320,9 +320,9 @@ class UICubeTexture extends UIElement {
 
 			const textures = this.textures;
 
-			for ( let i = 0; i < textures.length; i ++ ) {
+			for (let i = 0; i < textures.length; i++) {
 
-				textures[ i ].setValue( null );
+				textures[i].setValue(null);
 
 			}
 
@@ -332,7 +332,7 @@ class UICubeTexture extends UIElement {
 
 	}
 
-	onChange( callback ) {
+	onChange(callback) {
 
 		this.onChangeCallback = callback;
 
@@ -344,7 +344,7 @@ class UICubeTexture extends UIElement {
 
 class UIOutliner extends UIDiv {
 
-	constructor( editor ) {
+	constructor(editor) {
 
 		super();
 
@@ -357,9 +357,9 @@ class UIOutliner extends UIDiv {
 		this.scene = editor.scene;
 
 		// Prevent native scroll behavior
-		this.dom.addEventListener( 'keydown', function ( event ) {
+		this.dom.addEventListener('keydown', function (event) {
 
-			switch ( event.keyCode ) {
+			switch (event.keyCode) {
 
 				case 38: // up
 				case 40: // down
@@ -367,25 +367,32 @@ class UIOutliner extends UIDiv {
 					event.stopPropagation();
 					break;
 
+				default:
+					break;
+
 			}
 
-		}, false );
+		}, false);
 
 		// Keybindings to support arrow navigation
-		this.dom.addEventListener( 'keyup', function ( event ) {
+		this.dom.addEventListener('keyup', function (event) {
 
-			switch ( event.keyCode ) {
+			switch (event.keyCode) {
 
 				case 38: // up
-					scope.selectIndex( scope.selectedIndex - 1 );
+					scope.selectIndex(scope.selectedIndex - 1);
 					break;
+
 				case 40: // down
-					scope.selectIndex( scope.selectedIndex + 1 );
+					scope.selectIndex(scope.selectedIndex + 1);
+					break;
+
+				default:
 					break;
 
 			}
 
-		}, false );
+		}, false);
 
 		this.editor = editor;
 
@@ -395,37 +402,37 @@ class UIOutliner extends UIDiv {
 
 	}
 
-	selectIndex( index ) {
+	selectIndex(index) {
 
-		if ( index >= 0 && index < this.options.length ) {
+		if (index >= 0 && index < this.options.length) {
 
-			this.setValue( this.options[ index ].value );
+			this.setValue(this.options[index].value);
 
-			const changeEvent = document.createEvent( 'HTMLEvents' );
-			changeEvent.initEvent( 'change', true, true );
-			this.dom.dispatchEvent( changeEvent );
+			const changeEvent = document.createEvent('HTMLEvents');
+			changeEvent.initEvent('change', true, true);
+			this.dom.dispatchEvent(changeEvent);
 
 		}
 
 	}
 
-	setOptions( options ) {
+	setOptions(options) {
 
 		const scope = this;
 
-		while ( scope.dom.children.length > 0 ) {
+		while (scope.dom.children.length > 0) {
 
-			scope.dom.removeChild( scope.dom.firstChild );
+			scope.dom.removeChild(scope.dom.firstChild);
 
 		}
 
 		function onClick() {
 
-			scope.setValue( this.value );
+			scope.setValue(this.value);
 
-			const changeEvent = document.createEvent( 'HTMLEvents' );
-			changeEvent.initEvent( 'change', true, true );
-			scope.dom.dispatchEvent( changeEvent );
+			const changeEvent = document.createEvent('HTMLEvents');
+			changeEvent.initEvent('change', true, true);
+			scope.dom.dispatchEvent(changeEvent);
 
 		}
 
@@ -439,23 +446,23 @@ class UIOutliner extends UIDiv {
 
 		}
 
-		function onDragStart( event ) {
+		function onDragStart(event) {
 
-			event.dataTransfer.setData( 'text', 'foo' );
+			event.dataTransfer.setData('text', 'foo');
 
 		}
 
-		function onDragOver( event ) {
+		function onDragOver(event) {
 
-			if ( this === currentDrag ) return;
+			if (this === currentDrag) return;
 
 			const area = event.offsetY / this.clientHeight;
 
-			if ( area < 0.25 ) {
+			if (area < 0.25) {
 
 				this.className = 'option dragTop';
 
-			} else if ( area > 0.75 ) {
+			} else if (area > 0.75) {
 
 				this.className = 'option dragBottom';
 
@@ -469,35 +476,35 @@ class UIOutliner extends UIDiv {
 
 		function onDragLeave() {
 
-			if ( this === currentDrag ) return;
+			if (this === currentDrag) return;
 
 			this.className = 'option';
 
 		}
 
-		function onDrop( event ) {
+		function onDrop(event) {
 
-			if ( this === currentDrag || currentDrag === undefined ) return;
+			if (this === currentDrag || currentDrag === undefined) return;
 
 			this.className = 'option';
 
 			const scene = scope.scene;
-			const object = scene.getObjectById( currentDrag.value );
+			const object = scene.getObjectById(currentDrag.value);
 
 			const area = event.offsetY / this.clientHeight;
 
-			if ( area < 0.25 ) {
+			if (area < 0.25) {
 
-				const nextObject = scene.getObjectById( this.value );
-				moveObject( object, nextObject.parent, nextObject );
+				const nextObject = scene.getObjectById(this.value);
+				moveObject(object, nextObject.parent, nextObject);
 
-			} else if ( area > 0.75 ) {
+			} else if (area > 0.75) {
 
 				let nextObject, parent;
 
-				if ( this.nextSibling !== null ) {
+				if (this.nextSibling !== null) {
 
-					nextObject = scene.getObjectById( this.nextSibling.value );
+					nextObject = scene.getObjectById(this.nextSibling.value);
 					parent = nextObject.parent;
 
 				} else {
@@ -505,41 +512,41 @@ class UIOutliner extends UIDiv {
 					// end of list (no next object)
 
 					nextObject = null;
-					parent = scene.getObjectById( this.value ).parent;
+					parent = scene.getObjectById(this.value).parent;
 
 				}
 
-				moveObject( object, parent, nextObject );
+				moveObject(object, parent, nextObject);
 
 			} else {
 
-				const parentObject = scene.getObjectById( this.value );
-				moveObject( object, parentObject );
+				const parentObject = scene.getObjectById(this.value);
+				moveObject(object, parentObject);
 
 			}
 
 		}
 
-		function moveObject( object, newParent, nextObject ) {
+		function moveObject(object, newParent, nextObject) {
 
-			if ( nextObject === null ) nextObject = undefined;
+			if (nextObject === null) nextObject = undefined;
 
 			let newParentIsChild = false;
 
-			object.traverse( function ( child ) {
+			object.traverse(function (child) {
 
-				if ( child === newParent ) newParentIsChild = true;
+				if (child === newParent) newParentIsChild = true;
 
-			} );
+			});
 
-			if ( newParentIsChild ) return;
+			if (newParentIsChild) return;
 
 			const editor = scope.editor;
-			editor.execute( new MoveObjectCommand( editor, object, newParent, nextObject ) );
+			editor.execute(new MoveObjectCommand(editor, object, newParent, nextObject));
 
-			const changeEvent = document.createEvent( 'HTMLEvents' );
-			changeEvent.initEvent( 'change', true, true );
-			scope.dom.dispatchEvent( changeEvent );
+			const changeEvent = document.createEvent('HTMLEvents');
+			changeEvent.initEvent('change', true, true);
+			scope.dom.dispatchEvent(changeEvent);
 
 		}
 
@@ -547,24 +554,24 @@ class UIOutliner extends UIDiv {
 
 		scope.options = [];
 
-		for ( let i = 0; i < options.length; i ++ ) {
+		for (let i = 0; i < options.length; i++) {
 
-			const div = options[ i ];
+			const div = options[i];
 			div.className = 'option';
-			scope.dom.appendChild( div );
+			scope.dom.appendChild(div);
 
-			scope.options.push( div );
+			scope.options.push(div);
 
-			div.addEventListener( 'click', onClick );
+			div.addEventListener('click', onClick);
 
-			if ( div.draggable === true ) {
+			if (div.draggable === true) {
 
-				div.addEventListener( 'drag', onDrag );
-				div.addEventListener( 'dragstart', onDragStart ); // Firefox needs this
+				div.addEventListener('drag', onDrag);
+				div.addEventListener('dragstart', onDragStart); // Firefox needs this
 
-				div.addEventListener( 'dragover', onDragOver );
-				div.addEventListener( 'dragleave', onDragLeave );
-				div.addEventListener( 'drop', onDrop );
+				div.addEventListener('dragover', onDragOver);
+				div.addEventListener('dragleave', onDragLeave);
+				div.addEventListener('drop', onDrop);
 
 			}
 
@@ -581,15 +588,15 @@ class UIOutliner extends UIDiv {
 
 	}
 
-	setValue( value ) {
+	setValue(value) {
 
-		for ( let i = 0; i < this.options.length; i ++ ) {
+		for (let i = 0; i < this.options.length; i++) {
 
-			const element = this.options[ i ];
+			const element = this.options[i];
 
-			if ( element.value === value ) {
+			if (element.value === value) {
 
-				element.classList.add( 'active' );
+				element.classList.add('active');
 
 				// scroll into view
 
@@ -597,11 +604,11 @@ class UIOutliner extends UIDiv {
 				const bottomY = y + element.offsetHeight;
 				const minScroll = bottomY - this.dom.offsetHeight;
 
-				if ( this.dom.scrollTop > y ) {
+				if (this.dom.scrollTop > y) {
 
 					this.dom.scrollTop = y;
 
-				} else if ( this.dom.scrollTop < minScroll ) {
+				} else if (this.dom.scrollTop < minScroll) {
 
 					this.dom.scrollTop = minScroll;
 
@@ -611,7 +618,7 @@ class UIOutliner extends UIDiv {
 
 			} else {
 
-				element.classList.remove( 'active' );
+				element.classList.remove('active');
 
 			}
 
@@ -634,7 +641,7 @@ class UIPoints extends UISpan {
 		this.dom.style.display = 'inline-block';
 
 		this.pointsList = new UIDiv();
-		this.add( this.pointsList );
+		this.add(this.pointsList);
 
 		this.pointsUI = [];
 		this.lastPointIdx = 0;
@@ -644,17 +651,17 @@ class UIPoints extends UISpan {
 
 		this.update = function () {
 
-			if ( this.onChangeCallback !== null ) {
+			if (this.onChangeCallback !== null) {
 
 				this.onChangeCallback();
 
 			}
 
-		}.bind( this );
+		}.bind(this);
 
 	}
 
-	onChange( callback ) {
+	onChange(callback) {
 
 		this.onChangeCallback = callback;
 
@@ -664,11 +671,11 @@ class UIPoints extends UISpan {
 
 	clear() {
 
-		for ( let i = 0; i < this.pointsUI.length; ++ i ) {
+		for (let i = 0; i < this.pointsUI.length; ++i) {
 
-			if ( this.pointsUI[ i ] ) {
+			if (this.pointsUI[i]) {
 
-				this.deletePointRow( i, true );
+				this.deletePointRow(i, true);
 
 			}
 
@@ -678,21 +685,21 @@ class UIPoints extends UISpan {
 
 	}
 
-	deletePointRow( idx, dontUpdate ) {
+	deletePointRow(idx, dontUpdate) {
 
-		if ( ! this.pointsUI[ idx ] ) return;
+		if (!this.pointsUI[idx]) return;
 
-		this.pointsList.remove( this.pointsUI[ idx ].row );
+		this.pointsList.remove(this.pointsUI[idx].row);
 
-		this.pointsUI.splice( idx, 1 );
+		this.pointsUI.splice(idx, 1);
 
-		if ( dontUpdate !== true ) {
+		if (dontUpdate !== true) {
 
 			this.update();
 
 		}
 
-		this.lastPointIdx --;
+		this.lastPointIdx--;
 
 	}
 
@@ -705,27 +712,27 @@ class UIPoints2 extends UIPoints {
 		super();
 
 		const row = new UIRow();
-		this.add( row );
+		this.add(row);
 
-		const addPointButton = new UIButton( '+' );
-		addPointButton.onClick( () => {
+		const addPointButton = new UIButton('+');
+		addPointButton.onClick(() => {
 
-			if ( this.pointsUI.length === 0 ) {
+			if (this.pointsUI.length === 0) {
 
-				this.pointsList.add( this.createPointRow( 0, 0 ) );
+				this.pointsList.add(this.createPointRow(0, 0));
 
 			} else {
 
-				const point = this.pointsUI[ this.pointsUI.length - 1 ];
+				const point = this.pointsUI[this.pointsUI.length - 1];
 
-				this.pointsList.add( this.createPointRow( point.x.getValue(), point.y.getValue() ) );
+				this.pointsList.add(this.createPointRow(point.x.getValue(), point.y.getValue()));
 
 			}
 
 			this.update();
 
-		} );
-		row.add( addPointButton );
+		});
+		row.add(addPointButton);
 
 	}
 
@@ -735,15 +742,15 @@ class UIPoints2 extends UIPoints {
 
 		let count = 0;
 
-		for ( let i = 0; i < this.pointsUI.length; i ++ ) {
+		for (let i = 0; i < this.pointsUI.length; i++) {
 
-			const pointUI = this.pointsUI[ i ];
+			const pointUI = this.pointsUI[i];
 
-			if ( ! pointUI ) continue;
+			if (!pointUI) continue;
 
-			points.push( new THREE.Vector2( pointUI.x.getValue(), pointUI.y.getValue() ) );
-			++ count;
-			pointUI.lbl.setValue( count );
+			points.push(new THREE.Vector2(pointUI.x.getValue(), pointUI.y.getValue()));
+			++count;
+			pointUI.lbl.setValue(count);
 
 		}
 
@@ -751,14 +758,14 @@ class UIPoints2 extends UIPoints {
 
 	}
 
-	setValue( points ) {
+	setValue(points) {
 
 		this.clear();
 
-		for ( let i = 0; i < points.length; i ++ ) {
+		for (let i = 0; i < points.length; i++) {
 
-			const point = points[ i ];
-			this.pointsList.add( this.createPointRow( point.x, point.y ) );
+			const point = points[i];
+			this.pointsList.add(this.createPointRow(point.x, point.y));
 
 		}
 
@@ -767,26 +774,26 @@ class UIPoints2 extends UIPoints {
 
 	}
 
-	createPointRow( x, y ) {
+	createPointRow(x, y) {
 
 		const pointRow = new UIDiv();
-		const lbl = new UIText( this.lastPointIdx + 1 ).setWidth( '20px' );
-		const txtX = new UINumber( x ).setWidth( '30px' ).onChange( this.update );
-		const txtY = new UINumber( y ).setWidth( '30px' ).onChange( this.update );
+		const lbl = new UIText(this.lastPointIdx + 1).setWidth('20px');
+		const txtX = new UINumber(x).setWidth('30px').onChange(this.update);
+		const txtY = new UINumber(y).setWidth('30px').onChange(this.update);
 
 		const scope = this;
-		const btn = new UIButton( '-' ).onClick( function () {
+		const btn = new UIButton('-').onClick(function () {
 
-			if ( scope.isEditing ) return;
+			if (scope.isEditing) return;
 
-			const idx = scope.pointsList.getIndexOfChild( pointRow );
-			scope.deletePointRow( idx );
+			const idx = scope.pointsList.getIndexOfChild(pointRow);
+			scope.deletePointRow(idx);
 
-		} );
+		});
 
-		this.pointsUI.push( { row: pointRow, lbl: lbl, x: txtX, y: txtY } );
-		++ this.lastPointIdx;
-		pointRow.add( lbl, txtX, txtY, btn );
+		this.pointsUI.push({ row: pointRow, lbl: lbl, x: txtX, y: txtY });
+		++this.lastPointIdx;
+		pointRow.add(lbl, txtX, txtY, btn);
 
 		return pointRow;
 
@@ -801,27 +808,27 @@ class UIPoints3 extends UIPoints {
 		super();
 
 		const row = new UIRow();
-		this.add( row );
+		this.add(row);
 
-		const addPointButton = new UIButton( '+' );
-		addPointButton.onClick( () => {
+		const addPointButton = new UIButton('+');
+		addPointButton.onClick(() => {
 
-			if ( this.pointsUI.length === 0 ) {
+			if (this.pointsUI.length === 0) {
 
-				this.pointsList.add( this.createPointRow( 0, 0, 0 ) );
+				this.pointsList.add(this.createPointRow(0, 0, 0));
 
 			} else {
 
-				const point = this.pointsUI[ this.pointsUI.length - 1 ];
+				const point = this.pointsUI[this.pointsUI.length - 1];
 
-				this.pointsList.add( this.createPointRow( point.x.getValue(), point.y.getValue(), point.z.getValue() ) );
+				this.pointsList.add(this.createPointRow(point.x.getValue(), point.y.getValue(), point.z.getValue()));
 
 			}
 
 			this.update();
 
-		} );
-		row.add( addPointButton );
+		});
+		row.add(addPointButton);
 
 	}
 
@@ -830,15 +837,15 @@ class UIPoints3 extends UIPoints {
 		const points = [];
 		let count = 0;
 
-		for ( let i = 0; i < this.pointsUI.length; i ++ ) {
+		for (let i = 0; i < this.pointsUI.length; i++) {
 
-			const pointUI = this.pointsUI[ i ];
+			const pointUI = this.pointsUI[i];
 
-			if ( ! pointUI ) continue;
+			if (!pointUI) continue;
 
-			points.push( new THREE.Vector3( pointUI.x.getValue(), pointUI.y.getValue(), pointUI.z.getValue() ) );
-			++ count;
-			pointUI.lbl.setValue( count );
+			points.push(new THREE.Vector3(pointUI.x.getValue(), pointUI.y.getValue(), pointUI.z.getValue()));
+			++count;
+			pointUI.lbl.setValue(count);
 
 		}
 
@@ -846,14 +853,14 @@ class UIPoints3 extends UIPoints {
 
 	}
 
-	setValue( points ) {
+	setValue(points) {
 
 		this.clear();
 
-		for ( let i = 0; i < points.length; i ++ ) {
+		for (let i = 0; i < points.length; i++) {
 
-			const point = points[ i ];
-			this.pointsList.add( this.createPointRow( point.x, point.y, point.z ) );
+			const point = points[i];
+			this.pointsList.add(this.createPointRow(point.x, point.y, point.z));
 
 		}
 
@@ -862,27 +869,27 @@ class UIPoints3 extends UIPoints {
 
 	}
 
-	createPointRow( x, y, z ) {
+	createPointRow(x, y, z) {
 
 		const pointRow = new UIDiv();
-		const lbl = new UIText( this.lastPointIdx + 1 ).setWidth( '20px' );
-		const txtX = new UINumber( x ).setWidth( '30px' ).onChange( this.update );
-		const txtY = new UINumber( y ).setWidth( '30px' ).onChange( this.update );
-		const txtZ = new UINumber( z ).setWidth( '30px' ).onChange( this.update );
+		const lbl = new UIText(this.lastPointIdx + 1).setWidth('20px');
+		const txtX = new UINumber(x).setWidth('30px').onChange(this.update);
+		const txtY = new UINumber(y).setWidth('30px').onChange(this.update);
+		const txtZ = new UINumber(z).setWidth('30px').onChange(this.update);
 
 		const scope = this;
-		const btn = new UIButton( '-' ).onClick( function () {
+		const btn = new UIButton('-').onClick(function () {
 
-			if ( scope.isEditing ) return;
+			if (scope.isEditing) return;
 
-			const idx = scope.pointsList.getIndexOfChild( pointRow );
-			scope.deletePointRow( idx );
+			const idx = scope.pointsList.getIndexOfChild(pointRow);
+			scope.deletePointRow(idx);
 
-		} );
+		});
 
-		this.pointsUI.push( { row: pointRow, lbl: lbl, x: txtX, y: txtY, z: txtZ } );
-		++ this.lastPointIdx;
-		pointRow.add( lbl, txtX, txtY, txtZ, btn );
+		this.pointsUI.push({ row: pointRow, lbl: lbl, x: txtX, y: txtY, z: txtZ });
+		++this.lastPointIdx;
+		pointRow.add(lbl, txtX, txtY, txtZ, btn);
 
 		return pointRow;
 
@@ -892,17 +899,17 @@ class UIPoints3 extends UIPoints {
 
 class UIBoolean extends UISpan {
 
-	constructor( boolean, text ) {
+	constructor(boolean, text) {
 
 		super();
 
-		this.setMarginRight( '4px' );
+		this.setMarginRight('4px');
 
-		this.checkbox = new UICheckbox( boolean );
-		this.text = new UIText( text ).setMarginLeft( '3px' );
+		this.checkbox = new UICheckbox(boolean);
+		this.text = new UIText(text).setMarginLeft('3px');
 
-		this.add( this.checkbox );
-		this.add( this.text );
+		this.add(this.checkbox);
+		this.add(this.text);
 
 	}
 
@@ -912,9 +919,9 @@ class UIBoolean extends UISpan {
 
 	}
 
-	setValue( value ) {
+	setValue(value) {
 
-		return this.checkbox.setValue( value );
+		return this.checkbox.setValue(value);
 
 	}
 
@@ -922,9 +929,9 @@ class UIBoolean extends UISpan {
 
 let renderer;
 
-function renderToCanvas( texture ) {
+function renderToCanvas(texture) {
 
-	if ( renderer === undefined ) {
+	if (renderer === undefined) {
 
 		renderer = new THREE.WebGLRenderer();
 		renderer.outputEncoding = THREE.sRGBEncoding;
@@ -933,17 +940,17 @@ function renderToCanvas( texture ) {
 
 	const image = texture.image;
 
-	renderer.setSize( image.width, image.height, false );
+	renderer.setSize(image.width, image.height, false);
 
 	const scene = new THREE.Scene();
-	const camera = new THREE.OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
+	const camera = new THREE.OrthographicCamera(- 1, 1, 1, - 1, 0, 1);
 
-	const material = new THREE.MeshBasicMaterial( { map: texture } );
-	const quad = new THREE.PlaneGeometry( 2, 2 );
-	const mesh = new THREE.Mesh( quad, material );
-	scene.add( mesh );
+	const material = new THREE.MeshBasicMaterial({ map: texture });
+	const quad = new THREE.PlaneGeometry(2, 2);
+	const mesh = new THREE.Mesh(quad, material);
+	scene.add(mesh);
 
-	renderer.render( scene, camera );
+	renderer.render(scene, camera);
 
 	return renderer.domElement;
 

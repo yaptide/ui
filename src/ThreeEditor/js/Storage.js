@@ -2,10 +2,10 @@ function Storage() {
 
 	var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
-	if ( indexedDB === undefined ) {
+	if (indexedDB === undefined) {
 
-		console.warn( 'Storage: IndexedDB not available.' );
-		return { init: function () {}, get: function () {}, set: function () {}, clear: function () {} };
+		console.warn('Storage: IndexedDB not available.');
+		return { init: function () { }, get: function () { }, set: function () { }, clear: function () { } };
 
 	}
 
@@ -16,22 +16,22 @@ function Storage() {
 
 	return {
 
-		init: function ( callback ) {
+		init: function (callback) {
 
-			var request = indexedDB.open( name, version );
-			request.onupgradeneeded = function ( event ) {
+			var request = indexedDB.open(name, version);
+			request.onupgradeneeded = function (event) {
 
 				var db = event.target.result;
 
-				if ( db.objectStoreNames.contains( 'states' ) === false ) {
+				if (db.objectStoreNames.contains('states') === false) {
 
-					db.createObjectStore( 'states' );
+					db.createObjectStore('states');
 
 				}
 
 			};
 
-			request.onsuccess = function ( event ) {
+			request.onsuccess = function (event) {
 
 				database = event.target.result;
 
@@ -39,38 +39,38 @@ function Storage() {
 
 			};
 
-			request.onerror = function ( event ) {
+			request.onerror = function (event) {
 
-				console.error( 'IndexedDB', event );
+				console.error('IndexedDB', event);
 
 			};
 
 
 		},
 
-		get: function ( callback ) {
+		get: function (callback) {
 
-			var transaction = database.transaction( [ 'states' ], 'readwrite' );
-			var objectStore = transaction.objectStore( 'states' );
-			var request = objectStore.get( 0 );
-			request.onsuccess = function ( event ) {
+			var transaction = database.transaction(['states'], 'readwrite');
+			var objectStore = transaction.objectStore('states');
+			var request = objectStore.get(0);
+			request.onsuccess = function (event) {
 
-				callback( event.target.result );
+				callback(event.target.result);
 
 			};
 
 		},
 
-		set: function ( data ) {
+		set: function (data) {
 
 			var start = performance.now();
 
-			var transaction = database.transaction( [ 'states' ], 'readwrite' );
-			var objectStore = transaction.objectStore( 'states' );
-			var request = objectStore.put( data, 0 );
+			var transaction = database.transaction(['states'], 'readwrite');
+			var objectStore = transaction.objectStore('states');
+			var request = objectStore.put(data, 0);
 			request.onsuccess = function () {
 
-				console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved state to IndexedDB. ' + ( performance.now() - start ).toFixed( 2 ) + 'ms' );
+				console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved state to IndexedDB. ' + (performance.now() - start).toFixed(2) + 'ms'); // eslint-disable-line
 
 			};
 
@@ -78,14 +78,14 @@ function Storage() {
 
 		clear: function () {
 
-			if ( database === undefined ) return;
+			if (database === undefined) return;
 
-			var transaction = database.transaction( [ 'states' ], 'readwrite' );
-			var objectStore = transaction.objectStore( 'states' );
+			var transaction = database.transaction(['states'], 'readwrite');
+			var objectStore = transaction.objectStore('states');
 			var request = objectStore.clear();
 			request.onsuccess = function () {
 
-				console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Cleared IndexedDB.' );
+				console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Cleared IndexedDB.'); // eslint-disable-line
 
 			};
 
