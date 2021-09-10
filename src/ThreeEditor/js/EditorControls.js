@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-function EditorControls( object, domElement ) {
+function EditorControls( controlledObject, domElement ) {
 
 	// API
 
@@ -9,6 +9,11 @@ function EditorControls( object, domElement ) {
 	this.panSpeed = 0.002;
 	this.zoomSpeed = 0.1;
 	this.rotationSpeed = 0.005;
+
+	Object.defineProperty(this, 'object', {
+		get() {return object},
+		set(newObject) { object = newObject; }
+	});
 
 	// internals
 
@@ -26,6 +31,8 @@ function EditorControls( object, domElement ) {
 	var pointerOld = new THREE.Vector2();
 	var spherical = new THREE.Spherical();
 	var sphere = new THREE.Sphere();
+
+	var object = controlledObject;
 
 	// events
 

@@ -1,14 +1,14 @@
 import * as THREE from 'three'
 
+import Split from 'split-grid'
+
 
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 
-import { UIPanel } from './libs/ui.js';
+import { UIDiv, UIPanel } from './libs/ui.js';
 
 import { EditorControls } from './EditorControls.js';
 
-import { ViewportCamera } from './Viewport.Camera.js';
-import { ViewportInfo } from './Viewport.Info.js';
 import { ViewHelper } from './Viewport.ViewHelper.js';
 import { VR } from './Viewport.VR.js';
 
@@ -29,8 +29,6 @@ function Viewport(editor) {
 	container.setId('viewport');
 	container.setPosition('absolute');
 
-	container.add(new ViewportCamera(editor));
-	container.add(new ViewportInfo(editor));
 
 	//
 
@@ -43,10 +41,6 @@ function Viewport(editor) {
 	
 
 	var objects = [];
-
-
-
-
 
 	// helpers
 
@@ -77,31 +71,53 @@ function Viewport(editor) {
 	selectionBox.visible = false;
 	sceneHelpers.add(selectionBox);
 
-
-
-
-
-
 	
+	let viewsGrid = new UIDiv();
+	viewsGrid.setClass("grid");
+	viewsGrid.setPosition("absolute");
+	viewsGrid.setWidth("100%");
+	viewsGrid.setHeight("100%");
+	viewsGrid.setBackgroundColor("#aaaaaa");
+	container.add(viewsGrid);
 
-	let view1 = new ViewPanel("ViewPanel1",editor,400, 400,{objects,grid,oldCamera:editor.viewportCamera,selectionBox});
-	container.add(view1.container);
+
+	let view1 = new ViewPanel("ViewPanel1",editor,400, 400 ,{objects,grid,oldCamera:editor.viewportCamera,selectionBox, cameraPosition:new THREE.Vector3(0,0,10)});
+	viewsGrid.add(view1.container);
+
+	let gutterCol = new UIDiv().setClass("gutter-col gutter-col-1");
+	viewsGrid.add(gutterCol);
 
 	let view2 = new ViewPanel("ViewPanel2",editor,400, 400,{objects,grid,oldCamera:editor.viewportCamera,selectionBox});
-	container.add(view2.container);
-	view2.container.setLeft("400px");
+	viewsGrid.add(view2.container);
 
-	let view3 = new ViewPanel("ViewPanel3",editor,400, 400,{objects,grid,oldCamera:editor.viewportCamera,selectionBox});
-	container.add(view3.container);
-	view3.container.setTop("400px");
+	let view3 = new ViewPanel("ViewPanel3",editor,400, 400,{objects,grid,oldCamera:editor.viewportCamera,selectionBox, cameraPosition:new THREE.Vector3(0,10,0)});
+	viewsGrid.add(view3.container);
 
-	let view4 = new ViewPanel("ViewPanel4",editor,400, 400,{objects,grid,oldCamera:editor.viewportCamera,selectionBox});
-	container.add(view4.container);
-	view4.container.setTop("400px");
-	view4.container.setLeft("400px");
+	let gutterRow = new UIDiv().setClass("gutter-row gutter-row-1");
+	viewsGrid.add(gutterRow);
+
+	let view4 = new ViewPanel("ViewPanel4",editor,400, 400,{objects,grid,oldCamera:editor.viewportCamera,selectionBox, cameraPosition:new THREE.Vector3(10,0,0)});
+	viewsGrid.add(view4.container);
+
 
 	let views = [view1, view2, view3,view4];
 
+
+	Split({
+		columnGutters: [{
+			track: 1,
+			element: gutterCol.dom,
+		}],
+		rowGutters: [{
+			track: 1,
+			element: gutterRow.dom,
+		}],
+		onDragEnd: (direction, track) => {
+			views.forEach((view) => view.setSize());
+		
+			render();
+		}
+	})
 
 	// events
 
@@ -115,6 +131,7 @@ function Viewport(editor) {
 
 
 	// signals
+
 
 	signals.editorCleared.add(function () {
 		
@@ -473,10 +490,8 @@ function Viewport(editor) {
 
 	signals.windowResize.add(function () {
 
-		updateAspectRatio();
-
-		renderer.setSize(container.dom.offsetWidth, container.dom.offsetHeight);
-
+		views.forEach((view) => view.setSize());
+		
 		render();
 
 	});

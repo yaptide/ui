@@ -4,12 +4,18 @@ import * as THREE from 'three'
 
 class ViewHelper extends THREE.Object3D {
 
-	constructor( editorCamera, container ) {
+	constructor( originalCamera, container ) {
 
 		super();
 
 		this.animating = false;
 		this.controls = null;
+
+		var editorCamera = originalCamera;
+		Object.defineProperty(this, 'editorCamera', {
+			get() {return editorCamera},
+			set(newObject) { editorCamera = newObject; }
+		});		
 
 		const panel = new UIPanel();
 		panel.setId( 'viewHelper' );

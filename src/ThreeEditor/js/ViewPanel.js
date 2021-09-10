@@ -5,23 +5,29 @@ import { SetRotationCommand } from './commands/SetRotationCommand';
 import { SetScaleCommand } from './commands/SetScaleCommand';
 import { EditorControls } from './EditorControls';
 
+import { ViewportCamera } from './Viewport.Camera.js';
+import { ViewportInfo } from './Viewport.Info.js';
+
 import { UIPanel } from "./libs/ui";
 import { ViewHelper } from './Viewport.ViewHelper';
 
-export function ViewPanel(name, editor, viewWidth, viewHeight, { objects, grid, oldCamera, selectionBox }) {
+export function ViewPanel(name, editor, viewWidth, viewHeight, { objects, grid, cameraPosition, selectionBox }) {
     let { scene, sceneHelpers, signals } = editor;
 
     let showSceneHelpers = true;
 
     let sceneViewHelpers = new THREE.Scene();
 
-    let camera = editor.scene.getObjectByName(name) ?? oldCamera.clone();
-    camera.name = name;
-    editor.scene.add(camera);
 
     let container = new UIPanel();
     container.setId('ViewPanel');
-    container.setPosition('absolute');
+    container.setPosition('relative');
+    container.setOverflow("hidden");
+    container.dom.setAttribute('tabindex', '0');
+
+    
+	container.add(new ViewportCamera(editor));
+	container.add(new ViewportInfo(editor));
 
     let canvas = document.createElement('canvas');
     container.dom.appendChild(canvas);
@@ -29,6 +35,17 @@ export function ViewPanel(name, editor, viewWidth, viewHeight, { objects, grid, 
     canvas.height = viewHeight * window.devicePixelRatio;
 
     let context = canvas.getContext('2d');
+
+    let cameraPersp = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
+    cameraPersp.position.copy(cameraPosition ?? new THREE.Vector3(0,5,10));
+    cameraPersp.lookAt( new THREE.Vector3() );
+    let cameraOrtho = new THREE.OrthographicCamera(1 / - 2, 1 / 2, 1 / 2, 1 / - 2, 1, 1000);
+    cameraOrtho.position.copy(cameraPosition ?? new THREE.Vector3(0,5,10));
+    cameraOrtho.lookAt( new THREE.Vector3() );
+
+    let camera = cameraPersp;
+    camera.name = name;
+    updateAspectRatio();
 
     let viewHelper = new ViewHelper(camera, container);
 
@@ -38,9 +55,6 @@ export function ViewPanel(name, editor, viewWidth, viewHeight, { objects, grid, 
         cachedRenderer = renderer;
 
         if (!renderer) return;
-
-        camera.aspect = 1;
-        camera.updateProjectionMatrix();
 
         scene.add(grid);
         renderer.setSize(canvas.width, canvas.height);
@@ -162,8 +176,8 @@ export function ViewPanel(name, editor, viewWidth, viewHeight, { objects, grid, 
 
     });
 
-    
-	sceneViewHelpers.add(transformControls);
+
+    sceneViewHelpers.add(transformControls);
 
 
 
@@ -191,6 +205,20 @@ export function ViewPanel(name, editor, viewWidth, viewHeight, { objects, grid, 
 
         var rect = dom.getBoundingClientRect();
         return [(x - rect.left) / rect.width, (y - rect.top) / rect.height];
+
+    }
+
+    // events
+
+    function updateAspectRatio() {
+        const aspect = container.dom.offsetWidth / container.dom.offsetHeight;
+
+        cameraPersp.aspect = aspect;
+        cameraPersp.updateProjectionMatrix();
+
+        cameraOrtho.left = cameraOrtho.bottom * aspect;
+        cameraOrtho.right = cameraOrtho.top * aspect;
+        cameraOrtho.updateProjectionMatrix();
 
     }
 
@@ -293,6 +321,30 @@ export function ViewPanel(name, editor, viewWidth, viewHeight, { objects, grid, 
 
     }
 
+    container.dom.addEventListener( 'keydown', function ( event ) {
+
+        switch ( event.code ) {
+            case 'KeyC': // C
+                const position = camera.position.clone();
+
+                camera = camera.isPerspectiveCamera ? cameraOrtho : cameraPersp;
+                camera.position.copy( position );
+
+                controls.object = camera;
+                transformControls.camera = camera;
+                viewHelper.editorCamera = camera;
+
+                camera.lookAt( controls.center.x, controls.center.y, controls.center.z );
+                updateAspectRatio();
+                break;
+
+                default:                 
+
+
+        }
+
+    } );
+
     container.dom.addEventListener('mousedown', onMouseDown, false);
     container.dom.addEventListener('touchstart', onTouchStart, false);
     container.dom.addEventListener('dblclick', onDoubleClick, false);
@@ -312,65 +364,72 @@ export function ViewPanel(name, editor, viewWidth, viewHeight, { objects, grid, 
 
     signals.transformModeChanged.add(function (mode) {
 
-		transformControls.setMode(mode);
+        transformControls.setMode(mode);
 
-	});
+    });
 
-	signals.snapChanged.add(function (dist) {
+    signals.snapChanged.add(function (dist) {
 
-		transformControls.setTranslationSnap(dist);
+        transformControls.setTranslationSnap(dist);
 
-	});
+    });
 
-	signals.spaceChanged.add(function (space) {
+    signals.spaceChanged.add(function (space) {
 
-		transformControls.setSpace(space);
+        transformControls.setSpace(space);
 
-	});
+    });
 
     signals.objectSelected.add(function (object) {
 
 
-		transformControls.detach();
+        transformControls.detach();
 
-		if (object !== null && object !== scene && object !== camera) {
-		
-			transformControls.attach(object);
+        if (object !== null && object !== scene && object !== camera) {
 
-		}
+            transformControls.attach(object);
 
-		render();
+        }
 
-	});
+        render();
+
+    });
 
     signals.objectRemoved.add(function (object) {
 
-		controls.enabled = true;
+        controls.enabled = true;
 
-		if (object === transformControls.object) {
+        if (object === transformControls.object) {
 
-			transformControls.detach();
+            transformControls.detach();
 
-		}
+        }
 
-	});
+    });
 
 
     signals.showHelpersChanged.add(function (showHelpers) {
 
-		transformControls.enabled = showHelpers;
+        transformControls.enabled = showHelpers;
 
-		render();
+        render();
 
-	});
+    });
 
+
+    function setSize(viewWidth = container.dom.offsetWidth, viewHeight =container.dom.offsetHeight) {
+        canvas.width = viewWidth;
+        canvas.height = viewHeight;
+        updateAspectRatio();
+    }
 
     return {
         render,
         container,
         controls,
         viewHelper,
-        animate
+        animate,
+        setSize
     }
 
 }
