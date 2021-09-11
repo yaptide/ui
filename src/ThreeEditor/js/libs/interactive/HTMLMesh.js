@@ -177,7 +177,7 @@ function html2canvas( element ) {
 
 			range.selectNode( element );
 
-			var rect = range.getBoundingClientRect();
+			let rect = range.getBoundingClientRect();
 
 			x = rect.left - offset.left - 0.5;
 			y = rect.top - offset.top - 0.5;
@@ -190,7 +190,7 @@ function html2canvas( element ) {
 
 			if ( element.style.display === 'none' ) return;
 
-			var rect = element.getBoundingClientRect();
+			let rect = element.getBoundingClientRect();
 
 			x = rect.left - offset.left - 0.5;
 			y = rect.top - offset.top - 0.5;

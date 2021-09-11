@@ -4,12 +4,18 @@ import * as THREE from 'three'
 
 class ViewHelper extends THREE.Object3D {
 
-	constructor( editorCamera, container ) {
+	constructor( originalCamera, container ) {
 
 		super();
 
 		this.animating = false;
 		this.controls = null;
+
+		var editorCamera = originalCamera;
+		Object.defineProperty(this, 'editorCamera', {
+			get() {return editorCamera},
+			set(newObject) { editorCamera = newObject; }
+		});		
 
 		const panel = new UIPanel();
 		panel.setId( 'viewHelper' );
@@ -171,7 +177,7 @@ class ViewHelper extends THREE.Object3D {
 			const rect = container.dom.getBoundingClientRect();
 			const offsetX = rect.left + ( container.dom.offsetWidth - dim );
 			const offsetY = rect.top + ( container.dom.offsetHeight - dim );
-			mouse.x = ( ( event.clientX - offsetX ) / ( rect.width - offsetX ) ) * 2 - 1;
+			mouse.x = ( ( event.clientX - offsetX ) / ( rect.right - offsetX ) ) * 2 - 1;
 			mouse.y = - ( ( event.clientY - offsetY ) / ( rect.bottom - offsetY ) ) * 2 + 1;
 
 			raycaster.setFromCamera( mouse, camera );

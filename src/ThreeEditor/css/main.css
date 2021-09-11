@@ -698,3 +698,30 @@ select {
 	}
 
 }
+
+
+.grid {
+    display: grid;
+    grid-template-rows: 1fr 10px 1fr;
+    grid-template-columns: 1fr 10px 1fr;
+}
+
+.gutter-col {
+    grid-row: 1/-1;
+    cursor: col-resize;
+	background-color: rgb(53, 203, 248);
+}
+
+.gutter-col-1 {
+	grid-column: 2;
+}
+
+.gutter-row {
+    grid-column: 1/-1;
+    cursor: row-resize;
+	background-color: rgb(53, 248, 248);
+}
+
+.gutter-row-1 {
+    grid-row: 2;
+}

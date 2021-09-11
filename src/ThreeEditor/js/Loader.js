@@ -23,11 +23,11 @@ function Loader(editor) {
 
 	};
 
-	this.loadFiles = function (files, filesMap) {
+	this.loadFiles = function (files, currentFilesMap) {
 
 		if (files.length > 0) {
 
-			var filesMap = filesMap || LoaderUtils.createFilesMap(files);
+			var filesMap = currentFilesMap || LoaderUtils.createFilesMap(files);
 
 			var manager = new THREE.LoadingManager();
 			manager.setURLModifier(function (url) {
@@ -125,7 +125,7 @@ function Loader(editor) {
 				}, false);
 				reader.readAsText(file);
 
-				break;			
+				break;
 
 			default:
 
@@ -157,11 +157,13 @@ function Loader(editor) {
 
 		}
 
+		let loader;
+
 		switch (data.metadata.type.toLowerCase()) {
 
 			case 'buffergeometry':
 
-				var loader = new THREE.BufferGeometryLoader();
+				loader = new THREE.BufferGeometryLoader();
 				var result = loader.parse(data);
 
 				var mesh = new THREE.Mesh(result);
@@ -178,7 +180,7 @@ function Loader(editor) {
 
 			case 'object':
 
-				var loader = new THREE.ObjectLoader();
+				loader = new THREE.ObjectLoader();
 				loader.setResourcePath(scope.texturePath);
 
 				loader.parse(data, function (result) {
@@ -202,9 +204,9 @@ function Loader(editor) {
 				editor.fromJSON(data);
 
 				break;
-			
+
 			default:
-				console.error('Loader: '+data.metadata.type.toLowerCase()+' is not supported.');
+				console.error('Loader: ' + data.metadata.type.toLowerCase() + ' is not supported.');
 
 		}
 
