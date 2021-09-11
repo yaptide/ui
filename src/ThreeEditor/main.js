@@ -15,7 +15,7 @@ export function initEditor(container) {
     window.URL = window.URL || window.webkitURL;
     window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
 
-    Number.prototype.format = function () {
+    Number.prototype.format = function () { // eslint-disable-line
 
         return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 

@@ -441,6 +441,11 @@ function ViewManager(editor) {
 
 				break;
 
+			default:
+
+				console.error(backgroundType, "isn't supported");
+				break;
+
 		}
 
 		render();
@@ -478,6 +483,11 @@ function ViewManager(editor) {
 
 				break;
 
+			default:
+
+				console.error(environmentType, "isn't supported");
+				break;
+
 		}
 
 		render();
@@ -499,6 +509,9 @@ function ViewManager(editor) {
 			case 'FogExp2':
 				scene.fog = new THREE.FogExp2(fogColor, fogDensity);
 				break;
+			default:
+				console.error(fogType, "isn't supported");
+				break;
 
 		}
 
@@ -518,6 +531,9 @@ function ViewManager(editor) {
 			case 'FogExp2':
 				scene.fog.color.setHex(fogColor);
 				scene.fog.density = fogDensity;
+				break;
+			default:
+				console.error(fogType, "isn't supported");
 				break;
 
 		}

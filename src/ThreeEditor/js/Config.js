@@ -27,17 +27,17 @@ function Config() {
 		'settings/shortcuts/focus': 'f'
 	};
 
-	if ( window.localStorage[ name ] === undefined ) {
+	if (window.localStorage[name] === undefined) {
 
-		window.localStorage[ name ] = JSON.stringify( storage );
+		window.localStorage[name] = JSON.stringify(storage);
 
 	} else {
 
-		var data = JSON.parse( window.localStorage[ name ] );
+		var data = JSON.parse(window.localStorage[name]);
 
-		for ( var key in data ) {
+		for (var key in data) {
 
-			storage[ key ] = data[ key ];
+			storage[key] = data[key];
 
 		}
 
@@ -45,29 +45,29 @@ function Config() {
 
 	return {
 
-		getKey: function ( key ) {
+		getKey: function (key) {
 
-			return storage[ key ];
+			return storage[key];
 
 		},
 
 		setKey: function () { // key, value, key, value ...
 
-			for ( var i = 0, l = arguments.length; i < l; i += 2 ) {
+			for (var i = 0, l = arguments.length; i < l; i += 2) {
 
-				storage[ arguments[ i ] ] = arguments[ i + 1 ];
+				storage[arguments[i]] = arguments[i + 1];
 
 			}
 
-			window.localStorage[ name ] = JSON.stringify( storage );
+			window.localStorage[name] = JSON.stringify(storage);
 
-			console.log( '[' + /\d\d\:\d\d\:\d\d/.exec( new Date() )[ 0 ] + ']', 'Saved config to LocalStorage.' );
+			console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved config to LocalStorage.'); // eslint-disable-line
 
 		},
 
 		clear: function () {
 
-			delete window.localStorage[ name ];
+			delete window.localStorage[name];
 
 		}
 

@@ -1,8 +1,14 @@
-# Getting Started with Create React App
+# yaptide web interface
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## For users
 
-## Available Scripts
+Development version is unstable, without many features and with lot o bugs.
+It is released automatically after every commit to main branch of this repository and available for testing here:
+https://yaptide.github.io/web_dev/
+
+Stable version is not released yet, have patience.
+
+## For developers
 
 In the project directory, you can run:
 

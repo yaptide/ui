@@ -6,7 +6,7 @@ type OperationInputProps = {
     id: number,
     push: (op: Operation) => void,
     pop: () => void,
-    value?: Operation|null,
+    value?: Operation | null,
     canClear?: boolean,
 }
 

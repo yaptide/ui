@@ -13,8 +13,6 @@ type BooleanAlgebraRowProps = {
     possibleObjects: THREE.Object3D[]
 }
 
-
-
 export type AlgebraRow = {
     geometries: (number | null)[],
     operations: (Operation | null)[]

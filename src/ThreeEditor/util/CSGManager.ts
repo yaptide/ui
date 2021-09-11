@@ -163,7 +163,6 @@ class CSGManager {
         this.zones.delete(zone.uuid);
     }
 
-
 }
 
 export { CSGManager }

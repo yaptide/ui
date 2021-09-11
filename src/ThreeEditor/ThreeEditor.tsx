@@ -1,10 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { initEditor } from './main';
 import './css/main.css';
 import SampleComponent from './components/SampleComponent';
 import { Editor } from './js/Editor';
-import * as THREE from 'three';
-import CSG from './js/libs/csg/three-csg';
 import ZoneManagerPanel from '../components/ZoneManagerPanel/ZoneManagerPanel';
 import { CSGManager } from './util/CSGManager';
 
@@ -17,7 +15,7 @@ function ThreeEditor() {
 
   useEffect(() => {
     if (containerEl.current) {
-      const { editor, viewport, toolbar, sidebar, menubar, resizer } = initEditor(containerEl.current);
+      const { editor, viewport, toolbar, sidebar, menubar, resizer } = initEditor(containerEl.current); // eslint-disable-line
       setEditor(editor);
 
     }
