@@ -35,6 +35,7 @@ function ViewManager(editor) {
 	// helpers
 
 	var grid = new THREE.Group();
+	sceneHelpers.add(grid);
 
 	var grid1 = new THREE.GridHelper(30, 30, 0x888888);
 	grid1.material.color.setHex(0x888888);
@@ -46,6 +47,10 @@ function ViewManager(editor) {
 	grid2.material.depthFunc = THREE.AlwaysDepth;
 	grid2.material.vertexColors = false;
 	grid.add(grid2);
+
+
+	var planeHelpers = new THREE.Group();
+	sceneHelpers.add(planeHelpers);
 
 
 	var vr = new VR(editor);
@@ -74,6 +79,7 @@ function ViewManager(editor) {
 	let viewManagerProps = {
 		objects,
 		grid,
+		planeHelpers,
 		selectionBox
 	}
 
@@ -83,9 +89,11 @@ function ViewManager(editor) {
 		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.000001),
 		planePosLabel: "PlanePoz Z",
 		planeHelperColor: 0x73c5ff,
+		gridRotation: new THREE.Euler(Math.PI / 2, 0, 0),
 	};
 	let viewZ = new Viewport("ViewPanelZ", editor, viewManagerProps, configZ);
 	viewsGrid.add(viewZ.container);
+	// block controls to Z plane
 	viewZ.controls.maxAzimuthAngle = viewZ.controls.minAzimuthAngle = 0;
 	viewZ.controls.maxPolarAngle = viewZ.controls.minPolarAngle = Math.PI / 2;
 	viewZ.controls.update();
@@ -93,7 +101,10 @@ function ViewManager(editor) {
 	let gutterCol = new UIDiv().setClass("gutter-col gutter-col-1");
 	viewsGrid.add(gutterCol);
 
-	let view3D = new Viewport("ViewPanel3D", editor, viewManagerProps);
+	let config3D = {
+		showPlaneHelpers: true
+	};
+	let view3D = new Viewport("ViewPanel3D", editor, viewManagerProps, config3D);
 	viewsGrid.add(view3D.container);
 
 
@@ -106,6 +117,8 @@ function ViewManager(editor) {
 	};
 	let viewY = new Viewport("ViewPanelY", editor, viewManagerProps, configY);
 	viewsGrid.add(viewY.container);
+
+	// block controls to Y plane
 	viewY.controls.maxAzimuthAngle = viewY.controls.minAzimuthAngle = 0;
 	viewY.controls.maxPolarAngle = viewY.controls.minPolarAngle = 0;
 	viewY.controls.update();
@@ -119,9 +132,12 @@ function ViewManager(editor) {
 		clipPlane: new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.000001),
 		planePosLabel: "PlanePoz X",
 		planeHelperColor: 0xff7f9b,
+		gridRotation: new THREE.Euler(0, 0, Math.PI / 2),
 	};
 	let viewX = new Viewport("ViewPanelX", editor, viewManagerProps, configX);
 	viewsGrid.add(viewX.container);
+
+	// block controls to X plane
 	viewX.controls.maxAzimuthAngle = viewX.controls.minAzimuthAngle = Math.PI / 2;
 	viewX.controls.maxPolarAngle = viewX.controls.minPolarAngle = Math.PI / 2;
 	viewX.controls.update();
@@ -169,6 +185,8 @@ function ViewManager(editor) {
 	let views = singleView;
 
 	views.forEach((view) => view.config.visible = true);
+
+	setLayout("fourViews");
 
 
 	// events
@@ -556,7 +574,7 @@ function ViewManager(editor) {
 
 	// Layout 
 
-	signals.layoutChanged.add(function (layout) {
+	function setLayout(layout) {
 		currentLayout = layout;
 
 		viewsGrid.setDisplay('none');
@@ -580,6 +598,18 @@ function ViewManager(editor) {
 
 		views.forEach((view) => view.setSize());
 		views.forEach((view) => view.config.visible = true);
+
+		render();
+	}
+
+	signals.layoutChanged.add(function (layout) {
+
+		setLayout(layout);
+	});
+
+	// viewport config
+
+	signals.viewportConfigChanged.add(function () {
 
 		render();
 

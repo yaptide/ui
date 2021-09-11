@@ -39,7 +39,7 @@ function MenubarAdd(editor) {
 
 	options.add(new UIHorizontalRule());
 
-	const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide });
+	const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, transparent: true, opacity: .5 });
 
 	//https://stackoverflow.com/questions/37090942/how-to-render-clipped-surfaces-as-solid-objects/37093210#37093210
 	material.onBeforeCompile = function (shader) {
@@ -63,7 +63,7 @@ function MenubarAdd(editor) {
 
 		var geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
 		geometry.translate(0, geometry.parameters.height / 2, 0);
-		var mesh = new THREE.Mesh(geometry, material);
+		var mesh = new THREE.Mesh(geometry, material.clone());
 		mesh.name = 'Box';
 
 		editor.execute(new AddObjectCommand(editor, mesh));
@@ -80,7 +80,7 @@ function MenubarAdd(editor) {
 	option.onClick(function () {
 
 		var geometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI);
-		var mesh = new THREE.Mesh(geometry, material);
+		var mesh = new THREE.Mesh(geometry, material.clone());
 		mesh.name = 'Sphere';
 
 		editor.execute(new AddObjectCommand(editor, mesh));
@@ -98,7 +98,7 @@ function MenubarAdd(editor) {
 
 		var geometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2);
 		geometry.translate(0, geometry.parameters.height / 2, 0);
-		var mesh = new THREE.Mesh(geometry, material);
+		var mesh = new THREE.Mesh(geometry, material.clone());
 		mesh.name = 'Cylinder';
 
 		editor.execute(new AddObjectCommand(editor, mesh));
@@ -112,23 +112,23 @@ function MenubarAdd(editor) {
 	// HemisphereLight
 
 	var option = new UIRow();
-	option.setClass( 'option' );
-	option.setTextContent( strings.getKey( 'menubar/add/hemispherelight' ) );
-	option.onClick( function () {
+	option.setClass('option');
+	option.setTextContent(strings.getKey('menubar/add/hemispherelight'));
+	option.onClick(function () {
 
 		var skyColor = 0x00aaff;
 		var groundColor = 0xffaa00;
 		var intensity = 1;
 
-		var light = new THREE.HemisphereLight( skyColor, groundColor, intensity );
+		var light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
 		light.name = 'HemisphereLight';
 
-		light.position.set( 0, 10, 0 );
+		light.position.set(0, 10, 0);
 
-		editor.execute( new AddObjectCommand( editor, light ) );
+		editor.execute(new AddObjectCommand(editor, light));
 
-	} );
-	options.add( option );
+	});
+	options.add(option);
 
 
 	return container;

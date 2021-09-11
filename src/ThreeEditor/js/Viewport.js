@@ -13,7 +13,11 @@ import { EditorOrbitControls } from './EditorOrbitControls';
 
 import { GUI } from 'three/examples//jsm/libs/dat.gui.module.js';
 
-export function Viewport(name, editor, { objects, grid, selectionBox }, { orthographic, cameraPosition, clipPlane, planePosLabel, planeHelperColor } = {}) {
+export function Viewport(
+    name, editor,
+    { objects, grid, planeHelpers, selectionBox },
+    { orthographic, cameraPosition, clipPlane, planePosLabel, planeHelperColor, showPlaneHelpers, gridRotation = new THREE.Euler(0, Math.PI / 2, 0) } = {}
+) {
 
     let { scene, sceneHelpers, signals } = editor;
 
@@ -35,7 +39,7 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, { orthog
 
     let canvas = document.createElement('canvas');
     container.dom.appendChild(canvas);
-    // canvas.width = canvas.height = 100;
+
 
     let context = canvas.getContext('2d');
 
@@ -76,7 +80,7 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, { orthog
     let globalPlane = clipPlane;
     if (globalPlane) {
         const helper = new THREE.PlaneHelper(globalPlane, 10, planeHelperColor ?? 0xffff00);
-        sceneHelpers.add(helper);
+        planeHelpers.add(helper);
         const planePosProperty = planePosLabel ?? 'PlanePos'
         const gui = new GUI({}),
             propsGlobal = {
@@ -89,13 +93,29 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, { orthog
                 set [planePosProperty](v) {
 
                     globalPlane.constant = v;
-                    render();
 
-                }
+                    signals.viewportConfigChanged.dispatch({ name, globalPlaneConstant: v });
+
+                },
+
+                get 'Helper Visible'() {
+
+                    return helper.visible;
+
+                },
+                set 'Helper Visible'(v) {
+
+                    helper.visible = v;
+
+                    signals.viewportConfigChanged.dispatch({ name, helperVisible: v });
+
+                },
+
 
             };
 
         gui.add(propsGlobal, planePosProperty, -10, 10, 0.1);
+        gui.add(propsGlobal, 'Helper Visible', true);
 
         container.dom.appendChild(gui.domElement);
         gui.domElement.style.position = "absolute";
@@ -118,19 +138,25 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, { orthog
 
         // Adding/removing grid to scene so materials with depthWrite false
         // don't render under the grid.
-        scene.add(grid);
+
+        grid.rotation.copy(gridRotation);
         renderer.setSize(canvas.width, canvas.height);
         renderer.render(scene, camera);
-        scene.remove(grid);
+
 
         renderer.clippingPlanes = [];
 
         renderer.autoClear = false;
+
         if (config.showSceneHelpers) {
+
+            planeHelpers.visible = showPlaneHelpers ?? false;
+
             renderer.render(sceneHelpers, camera);
             renderer.render(sceneViewHelpers, camera);
             viewHelper.render(renderer);
         }
+
         renderer.autoClear = true;
 
         context.drawImage(renderer.domElement, 0, 0);
@@ -488,8 +514,9 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, { orthog
 
 
     function setSize(viewWidth = container.dom.offsetWidth, viewHeight = container.dom.offsetHeight) {
-        canvas.width = viewWidth;
-        canvas.height = viewHeight;
+        //prevent canvas from being empty 
+        canvas.width = Math.max(viewWidth, 2);
+        canvas.height = Math.max(viewHeight, 2);
         updateAspectRatio();
     }
 
