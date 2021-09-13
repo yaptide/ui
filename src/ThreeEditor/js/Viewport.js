@@ -452,7 +452,6 @@ export function Viewport(
 
         signals.cameraChanged.dispatch(camera);
         signals.refreshSidebarObject3D.dispatch(camera);
-        console.log(name, controls.getAzimuthalAngle(), controls.getPolarAngle());
 
     });
     viewHelper.controls = controls;
