@@ -1,3 +1,4 @@
+import { createOption } from './Menubar.js';
 import { UIPanel, UIRow } from './libs/ui.js';
 
 function MenubarLayout(editor) {
@@ -17,30 +18,16 @@ function MenubarLayout(editor) {
 	container.add(options);
 
 	// Single view
-
-	var option = new UIRow();
-	option.setClass('option');
-	option.setTextContent('Single View');
-	option.onClick(function () {
-
+	options.add(createOption('option', 'Single View', () => {
 		editor.signals.layoutChanged.dispatch('singleView');
 
 	});
-	options.add(option);
 
 	// Four view
-
-	var option = new UIRow();
-	option.setClass('option');
-	option.setTextContent('Four Views');
-	option.onClick(function () {
-
+	options.add(createOption('option', 'Four Views', () => {
 		editor.signals.layoutChanged.dispatch('fourViews');
 
 	});
-	options.add(option);
-
-
 
 	return container;
 

@@ -814,8 +814,6 @@ function SidebarObject(editor) {
 
 		updateTransformRows(object);
 
-		updateTransformRows(object);
-
 		updateRowsForTypeOfObject(object);
 
 	}
