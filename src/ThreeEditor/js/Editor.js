@@ -63,6 +63,11 @@ function Editor() {
 		objectChanged: new Signal(),
 		objectRemoved: new Signal(),
 
+		//YAPTIDE zones
+		zoneAdded: new Signal(),
+		zoneChanged: new Signal(),
+		zoneRemoved: new Signal(),
+
 		cameraAdded: new Signal(),
 		cameraRemoved: new Signal(),
 
@@ -88,10 +93,13 @@ function Editor() {
 
 		animationStopped: new Signal(),
 
+		// YAPTIDE signals
+		showZonesChanged: new Signal(),
+		selectModeChanged: new Signal(),
+
 		layoutChanged: new Signal(), // Layout signal 
 
 		viewportConfigChanged: new Signal(), // Viewport config signal 
-
 	};
 
 	this.config = new Config();
@@ -107,6 +115,8 @@ function Editor() {
 	this.scene.name = 'Scene';
 
 	this.sceneHelpers = new THREE.Scene();
+
+	this.sceneZones = new THREE.Scene();
 
 	this.object = {};
 	this.geometries = {};
@@ -562,8 +572,8 @@ Editor.prototype = {
 			return;
 
 		}
-
-		this.select( this.scene.getObjectById( id ) );
+		var object = this.scene.getObjectById( id ) ?? this.sceneZones.getObjectById( id )
+		this.select( object );
 
 	},
 

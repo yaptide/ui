@@ -6,9 +6,12 @@ import { parseZone } from "../../util/parseZone/parseZone";
 import BooleanAlgebraRow, { AlgebraRow } from "./BooleanAlgebraRow";
 import "./zoneManagerPanel.css";
 
+type ZoneManagerPanelProps = {
+    editor: Editor,
+    // zone: CSGZone,
+}
 
-
-function ZoneManagerPanel(props: { editor: Editor }) {
+function ZoneManagerPanel(props: ZoneManagerPanelProps) {
     const [rows, setRows] = useState<AlgebraRow[]>([]);
 
     const [allObjects, setAllObjects] = useState<THREE.Object3D[]>([]);

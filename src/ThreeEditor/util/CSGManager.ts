@@ -15,7 +15,7 @@ export interface CSGOperation {
 }
 
 export type Operation = "intersection" | "left-subtraction" | "right-subtraction" | "union";
-export class CSGZone {
+class CSGZone {
     uuid: string;
     name: string;
     resultMesh: THREE.Mesh;
@@ -29,6 +29,9 @@ export class CSGZone {
         objectChanged: Signal<THREE.Object3D>,
         geometryChanged: Signal<THREE.Object3D>,
         sceneGraphChanged: Signal,
+        zoneAdded: Signal<CSGZone>,
+        zoneChanged: Signal<CSGZone>,
+        zoneRemoved: Signal<CSGZone>,
     };
 
     worker?: Comlink.Remote<ICSGWorker>;
@@ -48,6 +51,9 @@ export class CSGZone {
 
         this.signals.geometryChanged.add((object) => this.handleSignal(object));
         this.signals.objectChanged.add((object) => this.handleSignal(object));
+        
+
+		this.signals.zoneAdded.dispatch(this);
     }
 
     updateGeometry() {
@@ -135,7 +141,8 @@ export class CSGZone {
         this.updateGeometry();
 
 
-
+        
+		this.signals.zoneChanged.dispatch(this);
         this.signals.sceneGraphChanged.dispatch();
     }
 
@@ -153,15 +160,16 @@ class CSGManager {
     createZone() {
         let zone = new CSGZone(this.editor);
         zone.worker = this.worker;
-        this.editor.sceneHelpers.add(zone.resultMesh);
+        this.editor.sceneZones.add(zone.resultMesh);
         this.zones.set(zone.uuid, zone);
         return zone;
     }
 
     removeZone(zone: CSGZone) {
-        this.editor.sceneHelpers.remove(zone.resultMesh);
+        this.editor.sceneZones.remove(zone.resultMesh);
+        zone.signals.zoneRemoved.dispatch(zone);
         this.zones.delete(zone.uuid);
     }
 }
 
-export { CSGManager }
+export { CSGManager, CSGZone }
