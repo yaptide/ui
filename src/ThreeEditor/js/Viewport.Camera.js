@@ -1,45 +1,37 @@
 import { UISelect } from './libs/ui.js';
 
-function ViewportCamera( editor ) {
-
-	var signals = editor.signals;
+function ViewportCamera(viewport, cameras) {
 
 	//
 
 	var cameraSelect = new UISelect();
-	cameraSelect.setPosition( 'absolute' );
-	cameraSelect.setRight( '10px' );
-	cameraSelect.setTop( '10px' );
-	cameraSelect.onChange( function () {
+	cameraSelect.setPosition('absolute');
+	cameraSelect.setRight('10px');
+	cameraSelect.setTop('10px');
+	cameraSelect.onChange(function () {
 
-		editor.setViewportCamera( this.getValue() );
+		viewport.setCameraFromUuid(this.getValue());
 
-	} );
-
-	signals.cameraAdded.add( update );
-	signals.cameraRemoved.add( update );
-
-	update();
+	});
 
 	//
 
-	function update() {
 
-		var options = {};
 
-		var cameras = editor.cameras;
+	var options = {};
 
-		for ( var key in cameras ) {
 
-			var camera = cameras[ key ];
-			options[ camera.uuid ] = camera.name;
 
-		}
+	for (var key in cameras) {
 
-		cameraSelect.setOptions( options );
-		cameraSelect.setValue( editor.viewportCamera.uuid );
+		var camera = cameras[key];
+		options[camera.uuid] = camera.name;
 
 	}
+
+	cameraSelect.setOptions(options);
+	cameraSelect.setValue(viewport.camera.uuid);
+
 
 	return cameraSelect;
 

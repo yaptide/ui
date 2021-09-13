@@ -9,7 +9,7 @@ import { VR } from './Viewport.VR.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { Viewport } from './Viewport.js';
 
-
+// Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js, file was splitted to add multiple viewports
 
 function ViewManager(editor) {
 
@@ -18,7 +18,6 @@ function ViewManager(editor) {
 	var container = new UIPanel();
 	container.setId('viewport');
 	container.setPosition('absolute');
-
 
 	//
 
@@ -35,6 +34,7 @@ function ViewManager(editor) {
 	// helpers
 
 	var grid = new THREE.Group();
+	sceneHelpers.add(grid);
 
 	var grid1 = new THREE.GridHelper(30, 30, 0x888888);
 	grid1.material.color.setHex(0x888888);
@@ -46,6 +46,10 @@ function ViewManager(editor) {
 	grid2.material.depthFunc = THREE.AlwaysDepth;
 	grid2.material.vertexColors = false;
 	grid.add(grid2);
+
+
+	var planeHelpers = new THREE.Group();
+	sceneHelpers.add(planeHelpers);
 
 
 	var vr = new VR(editor);
@@ -74,26 +78,70 @@ function ViewManager(editor) {
 	let viewManagerProps = {
 		objects,
 		grid,
+		planeHelpers,
 		selectionBox
 	}
 
-	let viewZ = new Viewport("ViewPanel1", editor, viewManagerProps, new THREE.Vector3(0, 0, 10));
+	let configZ = {
+		orthographic: true,
+		cameraPosition: new THREE.Vector3(0, 0, 10),
+		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.000001),
+		planePosLabel: "PlanePoz Z",
+		planeHelperColor: 0x73c5ff,
+		gridRotation: new THREE.Euler(Math.PI / 2, 0, 0),
+	};
+	let viewZ = new Viewport("ViewPanelZ", editor, viewManagerProps, configZ);
 	viewsGrid.add(viewZ.container);
+	
+	// block controls to Z plane
+	viewZ.controls.maxAzimuthAngle = viewZ.controls.minAzimuthAngle = 0;
+	viewZ.controls.maxPolarAngle = viewZ.controls.minPolarAngle = Math.PI / 2;
+	viewZ.controls.update();
 
 	let gutterCol = new UIDiv().setClass("gutter-col gutter-col-1");
 	viewsGrid.add(gutterCol);
 
-	let view3D = new Viewport("ViewPanel2", editor, viewManagerProps);
+	let config3D = {
+		showPlaneHelpers: true
+	};
+	let view3D = new Viewport("ViewPanel3D", editor, viewManagerProps, config3D);
 	viewsGrid.add(view3D.container);
 
-	let viewY = new Viewport("ViewPanel3", editor, viewManagerProps, new THREE.Vector3(0, 10, 0));
+
+	let configY = {
+		orthographic: true,
+		cameraPosition: new THREE.Vector3(0, 10, 0),
+		clipPlane: new THREE.Plane(new THREE.Vector3(0, - 1, 0), 0.000001),
+		planePosLabel: "PlanePoz Y",
+		planeHelperColor: 0xc2ee00,
+	};
+	let viewY = new Viewport("ViewPanelY", editor, viewManagerProps, configY);
 	viewsGrid.add(viewY.container);
+
+	// block controls to Y plane
+	viewY.controls.maxAzimuthAngle = viewY.controls.minAzimuthAngle = 0;
+	viewY.controls.maxPolarAngle = viewY.controls.minPolarAngle = 0;
+	viewY.controls.update();
 
 	let gutterRow = new UIDiv().setClass("gutter-row gutter-row-1");
 	viewsGrid.add(gutterRow);
 
-	let viewX = new Viewport("ViewPanel4", editor, viewManagerProps, new THREE.Vector3(10, 0, 0));
+	let configX = {
+		orthographic: true,
+		cameraPosition: new THREE.Vector3(10, 0, 0),
+		clipPlane: new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.000001),
+		planePosLabel: "PlanePoz X",
+		planeHelperColor: 0xff7f9b,
+		gridRotation: new THREE.Euler(0, 0, Math.PI / 2),
+	};
+	let viewX = new Viewport("ViewPanelX", editor, viewManagerProps, configX);
 	viewsGrid.add(viewX.container);
+
+	// block controls to X plane
+	viewX.controls.maxAzimuthAngle = viewX.controls.minAzimuthAngle = Math.PI / 2;
+	viewX.controls.maxPolarAngle = viewX.controls.minPolarAngle = Math.PI / 2;
+	viewX.controls.update();
+
 
 	// Add resizable views
 
@@ -137,6 +185,8 @@ function ViewManager(editor) {
 	let views = singleView;
 
 	views.forEach((view) => view.config.visible = true);
+
+	setLayout("fourViews");
 
 
 	// events
@@ -393,7 +443,7 @@ function ViewManager(editor) {
 
 			default:
 
-				console.log(backgroundType, "isn't supported");
+				console.error(backgroundType, "isn't supported");
 				break;
 
 		}
@@ -435,7 +485,7 @@ function ViewManager(editor) {
 
 			default:
 
-				console.log(environmentType, "isn't supported");
+				console.error(environmentType, "isn't supported");
 				break;
 
 		}
@@ -460,7 +510,7 @@ function ViewManager(editor) {
 				scene.fog = new THREE.FogExp2(fogColor, fogDensity);
 				break;
 			default:
-				console.log(fogType, "isn't supported");
+				console.error(fogType, "isn't supported");
 				break;
 
 		}
@@ -483,7 +533,7 @@ function ViewManager(editor) {
 				scene.fog.density = fogDensity;
 				break;
 			default:
-				console.log(fogType, "isn't supported");
+				console.error(fogType, "isn't supported");
 				break;
 
 		}
@@ -540,7 +590,7 @@ function ViewManager(editor) {
 
 	// Layout 
 
-	editor.signals.layoutChanged.add(function (layout) {
+	function setLayout(layout) {
 		currentLayout = layout;
 
 		viewsGrid.setDisplay('none');
@@ -564,6 +614,18 @@ function ViewManager(editor) {
 
 		views.forEach((view) => view.setSize());
 		views.forEach((view) => view.config.visible = true);
+
+		render();
+	}
+
+	signals.layoutChanged.add(function (layout) {
+
+		setLayout(layout);
+	});
+
+	// viewport config
+
+	signals.viewportConfigChanged.add(function () {
 
 		render();
 

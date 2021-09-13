@@ -3,15 +3,24 @@ import { TransformControls } from 'three/examples/jsm/controls/TransformControls
 import { SetPositionCommand } from './commands/SetPositionCommand';
 import { SetRotationCommand } from './commands/SetRotationCommand';
 import { SetScaleCommand } from './commands/SetScaleCommand';
-import { EditorControls } from './EditorControls';
 
 import { ViewportCamera } from './Viewport.Camera.js';
 import { ViewportInfo } from './Viewport.Info.js';
 
 import { UIPanel } from "./libs/ui";
 import { ViewHelper } from './Viewport.ViewHelper';
+import { EditorOrbitControls } from './EditorOrbitControls';
 
-export function Viewport(name, editor, { objects, grid, selectionBox }, cameraPosition) {
+import { GUI } from 'three/examples//jsm/libs/dat.gui.module.js';
+
+
+// Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
+
+export function Viewport(
+    name, editor,
+    { objects, grid, planeHelpers, selectionBox },
+    { orthographic, cameraPosition, clipPlane, planePosLabel, planeHelperColor, showPlaneHelpers, gridRotation } = {}
+) {
 
     let { scene, sceneHelpers, signals } = editor;
 
@@ -28,28 +37,95 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, cameraPo
     container.setOverflow("hidden");
     container.dom.setAttribute('tabindex', '0');
 
-    container.add(new ViewportCamera(editor));
+
     container.add(new ViewportInfo(editor));
 
     let canvas = document.createElement('canvas');
     container.dom.appendChild(canvas);
-    // canvas.width = canvas.height = 100;
+
 
     let context = canvas.getContext('2d');
 
-    let cameraPersp = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
-    cameraPersp.position.copy(cameraPosition ?? new THREE.Vector3(0, 5, 10));
+    let cameraPersp = new THREE.PerspectiveCamera(50, 1, 0.001, 10000);
+    cameraPersp.name = "Perspective";
+    cameraPersp.position.copy(cameraPosition ?? new THREE.Vector3(0, 5, 10)); // default camera position other than (0,0,0) to see anything 
     cameraPersp.lookAt(new THREE.Vector3());
 
-    let cameraOrtho = new THREE.OrthographicCamera(1 / - 2, 1 / 2, 1 / 2, 1 / - 2, 1, 1000);
+    let cameraOrtho = new THREE.OrthographicCamera(1 / - 2, 1 / 2, 1 / 2, 1 / - 2, 0.001, 10000);
+    cameraOrtho.name = "Orthographic";
     cameraOrtho.position.copy(cameraPersp.position);
+    cameraOrtho.zoom = .2;
     cameraOrtho.lookAt(new THREE.Vector3());
 
-    let camera = cameraPersp;
-    camera.name = name;
-    updateAspectRatio();
+    let cameras = [cameraOrtho, cameraPersp];
 
+    let camera = orthographic ? cameraOrtho : cameraPersp;
+    updateAspectRatio();
+    Object.defineProperty(this, 'camera', {
+        get() { return camera },
+        set(value) {
+
+            const position = camera.position.clone();
+
+            camera = value;
+
+            updateCamera(camera, position);
+        }
+    });
+
+    container.add(new ViewportCamera(this, cameras));
     let viewHelper = new ViewHelper(camera, container);
+
+
+
+    // Setup plane clipping ui 
+
+    let globalPlane = clipPlane;
+    if (globalPlane) {
+        const helper = new THREE.PlaneHelper(globalPlane, 10, planeHelperColor ?? 0xffff00); // default helper color is yellow
+        planeHelpers.add(helper);
+        const planePosProperty = planePosLabel ?? 'PlanePos'
+        const gui = new GUI({}),
+            propsGlobal = {
+
+                get [planePosProperty]() {
+
+                    return globalPlane.constant;
+
+                },
+                set [planePosProperty](v) {
+
+                    globalPlane.constant = v;
+
+                    signals.viewportConfigChanged.dispatch({ name, globalPlaneConstant: v });
+
+                },
+
+                get 'Helper Visible'() {
+
+                    return helper.visible;
+
+                },
+                set 'Helper Visible'(v) {
+
+                    helper.visible = v;
+
+                    signals.viewportConfigChanged.dispatch({ name, helperVisible: v });
+
+                },
+
+
+            };
+
+        gui.add(propsGlobal, planePosProperty, -10, 10, 0.1);
+        gui.add(propsGlobal, 'Helper Visible', true);
+
+        container.dom.appendChild(gui.domElement);
+        gui.domElement.style.position = "absolute";
+        gui.domElement.style.top = "35px";
+        gui.domElement.style.right = "-5px";
+    }
+
 
     let cachedRenderer = null;
 
@@ -60,19 +136,27 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, cameraPo
 
         if (!renderer) return;
 
-        // Adding/removing grid to scene so materials with depthWrite false
-        // don't render under the grid.
-        scene.add(grid);
+        if (globalPlane)
+            renderer.clippingPlanes = [globalPlane];
+
+        grid.rotation.copy(gridRotation ?? new THREE.Euler(0, Math.PI / 2, 0)); // setting default rotation of the grid helper, so it is aligned to the XZ-plane
+
         renderer.setSize(canvas.width, canvas.height);
         renderer.render(scene, camera);
-        scene.remove(grid);
+
+        renderer.clippingPlanes = []; // clear clipping planes for next renders
 
         renderer.autoClear = false;
+
         if (config.showSceneHelpers) {
+
+            planeHelpers.visible = showPlaneHelpers ?? false;
+
             renderer.render(sceneHelpers, camera);
             renderer.render(sceneViewHelpers, camera);
             viewHelper.render(renderer);
         }
+
         renderer.autoClear = true;
 
         context.drawImage(renderer.domElement, 0, 0);
@@ -328,6 +412,17 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, cameraPo
 
     }
 
+    function updateCamera(camera, position) {
+        camera.position.copy(position);
+
+        controls.object = camera;
+        transformControls.camera = camera;
+        viewHelper.editorCamera = camera;
+
+        camera.lookAt(controls.target.x, controls.target.y, controls.target.z);
+        updateAspectRatio();
+    }
+
     container.dom.addEventListener('keydown', function (event) {
 
         switch (event.code) {
@@ -335,18 +430,11 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, cameraPo
                 const position = camera.position.clone();
 
                 camera = camera.isPerspectiveCamera ? cameraOrtho : cameraPersp;
-                camera.position.copy(position);
+                updateCamera(camera, position);
 
-                controls.object = camera;
-                transformControls.camera = camera;
-                viewHelper.editorCamera = camera;
-
-                camera.lookAt(controls.center.x, controls.center.y, controls.center.z);
-                updateAspectRatio();
                 break;
 
             default:
-
 
         }
 
@@ -359,7 +447,7 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, cameraPo
     // controls need to be added *after* main logic,
     // otherwise controls.enabled doesn't work.
 
-    var controls = new EditorControls(camera, container.dom);
+    var controls = new EditorOrbitControls(camera, container.dom);
     controls.addEventListener('change', function () {
 
         signals.cameraChanged.dispatch(camera);
@@ -425,10 +513,21 @@ export function Viewport(name, editor, { objects, grid, selectionBox }, cameraPo
 
 
     function setSize(viewWidth = container.dom.offsetWidth, viewHeight = container.dom.offsetHeight) {
-        canvas.width = viewWidth;
-        canvas.height = viewHeight;
+        //prevent canvas from being empty 
+        canvas.width = Math.max(viewWidth, 2);
+        canvas.height = Math.max(viewHeight, 2);
         updateAspectRatio();
     }
+
+
+    this.setCameraFromUuid = function (uuid) {
+        let newCam = cameras.find((e) => e.uuid === uuid);
+        if (newCam)
+            this.camera = newCam;
+        else
+            console.error(`No camera with uuid: [${uuid}] in this viewport`);
+    }
+
 
     return {
         render,

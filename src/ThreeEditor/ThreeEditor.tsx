@@ -4,6 +4,7 @@ import './css/main.css';
 import SampleComponent from './components/SampleComponent';
 import { Editor } from './js/Editor';
 import ZoneManagerPanel from '../components/ZoneManagerPanel/ZoneManagerPanel';
+import { CSGManager } from './util/CSGManager';
 
 
 function ThreeEditor() {

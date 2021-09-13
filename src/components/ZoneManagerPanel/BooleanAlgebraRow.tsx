@@ -1,6 +1,7 @@
 import { Button } from "@material-ui/core";
-import { Fragment, useEffect, useState } from "react";
+import React from "react";
 import { Operation } from "../../ThreeEditor/util/CSGManager";
+import { Fragment, useEffect, useState } from "react";
 import GeometryInput from "./GeometryInput";
 import OperationInput from "./OperationInput";
 
@@ -11,8 +12,6 @@ type BooleanAlgebraRowProps = {
     value?: AlgebraRow,
     possibleObjects: THREE.Object3D[]
 }
-
-
 
 export type AlgebraRow = {
     geometries: (number | null)[],

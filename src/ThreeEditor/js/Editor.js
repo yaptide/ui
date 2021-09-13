@@ -88,7 +88,9 @@ function Editor() {
 
 		animationStopped: new Signal(),
 
-		layoutChanged: new Signal() // Layout signal 
+		layoutChanged: new Signal(), // Layout signal 
+
+		viewportConfigChanged: new Signal(), // Viewport config signal 
 
 	};
 
