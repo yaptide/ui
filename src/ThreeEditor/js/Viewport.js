@@ -13,6 +13,14 @@ import { EditorOrbitControls } from './EditorOrbitControls';
 
 import { GUI } from 'three/examples//jsm/libs/dat.gui.module.js';
 
+/*
+ * gridRotation = new THREE.Euler(0, Math.PI / 2, 0):
+ *  setting default rotation of the grid helper, so it is aligned to the XZ-plane
+ *
+*/
+
+// Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
+
 export function Viewport(
     name, editor,
     { objects, grid, planeHelpers, selectionBox },
@@ -45,7 +53,7 @@ export function Viewport(
 
     let cameraPersp = new THREE.PerspectiveCamera(50, 1, 0.001, 10000);
     cameraPersp.name = "Perspective";
-    cameraPersp.position.copy(cameraPosition ?? new THREE.Vector3(0, 5, 10));
+    cameraPersp.position.copy(cameraPosition ?? new THREE.Vector3(0, 5, 10)); // default camera position other than (0,0,0) to see anything 
     cameraPersp.lookAt(new THREE.Vector3());
 
     let cameraOrtho = new THREE.OrthographicCamera(1 / - 2, 1 / 2, 1 / 2, 1 / - 2, 0.001, 10000);
@@ -79,7 +87,7 @@ export function Viewport(
 
     let globalPlane = clipPlane;
     if (globalPlane) {
-        const helper = new THREE.PlaneHelper(globalPlane, 10, planeHelperColor ?? 0xffff00);
+        const helper = new THREE.PlaneHelper(globalPlane, 10, planeHelperColor ?? 0xffff00); // default helper color is yellow
         planeHelpers.add(helper);
         const planePosProperty = planePosLabel ?? 'PlanePos'
         const gui = new GUI({}),
@@ -136,15 +144,12 @@ export function Viewport(
         if (globalPlane)
             renderer.clippingPlanes = [globalPlane];
 
-        // Adding/removing grid to scene so materials with depthWrite false
-        // don't render under the grid.
+        grid.rotation.copy(gridRotation); // update grid rotation
 
-        grid.rotation.copy(gridRotation);
         renderer.setSize(canvas.width, canvas.height);
         renderer.render(scene, camera);
 
-
-        renderer.clippingPlanes = [];
+        renderer.clippingPlanes = []; // clear clipping planes for next renders
 
         renderer.autoClear = false;
 

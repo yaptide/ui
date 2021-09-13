@@ -9,7 +9,7 @@ import { VR } from './Viewport.VR.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { Viewport } from './Viewport.js';
 
-
+// Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js, file was splitted to add multiple viewports
 
 function ViewManager(editor) {
 
@@ -18,7 +18,6 @@ function ViewManager(editor) {
 	var container = new UIPanel();
 	container.setId('viewport');
 	container.setPosition('absolute');
-
 
 	//
 
@@ -93,6 +92,7 @@ function ViewManager(editor) {
 	};
 	let viewZ = new Viewport("ViewPanelZ", editor, viewManagerProps, configZ);
 	viewsGrid.add(viewZ.container);
+	
 	// block controls to Z plane
 	viewZ.controls.maxAzimuthAngle = viewZ.controls.minAzimuthAngle = 0;
 	viewZ.controls.maxPolarAngle = viewZ.controls.minPolarAngle = Math.PI / 2;
