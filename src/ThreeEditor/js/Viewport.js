@@ -13,18 +13,13 @@ import { EditorOrbitControls } from './EditorOrbitControls';
 
 import { GUI } from 'three/examples//jsm/libs/dat.gui.module.js';
 
-/*
- * gridRotation = new THREE.Euler(0, Math.PI / 2, 0):
- *  setting default rotation of the grid helper, so it is aligned to the XZ-plane
- *
-*/
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
 
 export function Viewport(
     name, editor,
     { objects, grid, planeHelpers, selectionBox },
-    { orthographic, cameraPosition, clipPlane, planePosLabel, planeHelperColor, showPlaneHelpers, gridRotation = new THREE.Euler(0, Math.PI / 2, 0) } = {}
+    { orthographic, cameraPosition, clipPlane, planePosLabel, planeHelperColor, showPlaneHelpers, gridRotation } = {}
 ) {
 
     let { scene, sceneHelpers, signals } = editor;
@@ -144,7 +139,7 @@ export function Viewport(
         if (globalPlane)
             renderer.clippingPlanes = [globalPlane];
 
-        grid.rotation.copy(gridRotation); // update grid rotation
+        grid.rotation.copy(gridRotation ?? new THREE.Euler(0, Math.PI / 2, 0)); // setting default rotation of the grid helper, so it is aligned to the XZ-plane
 
         renderer.setSize(canvas.width, canvas.height);
         renderer.render(scene, camera);
