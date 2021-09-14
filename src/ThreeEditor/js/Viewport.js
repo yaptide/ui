@@ -139,7 +139,9 @@ export function Viewport(
         if (globalPlane)
             renderer.clippingPlanes = [globalPlane];
 
-        grid.rotation.copy(gridRotation ?? new THREE.Euler(0, Math.PI / 2, 0)); // setting default rotation of the grid helper, so it is aligned to the XZ-plane
+        // applying rotation to the grid plane, if not provided set default rotation to none
+        // by default grid plane lies within XZ plane
+        grid.rotation.copy(gridRotation ?? new THREE.Euler(0, 0, 0));
 
         renderer.setSize(canvas.width, canvas.height);
         renderer.render(scene, camera);

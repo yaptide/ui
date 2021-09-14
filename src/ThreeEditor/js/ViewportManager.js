@@ -11,6 +11,26 @@ import { Viewport } from './Viewport.js';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js, file was splitted to add multiple viewports
 
+// spherical coordinates convention used in threejs can be found in source code of the Spherical class:
+// https://github.com/mrdoob/three.js/blob/r132/src/math/Spherical.js
+// it is assumed that polar (phi) and azimuthal/equator (theta) angles are calculated assuming:
+//   - zenith direction being positive Y axis
+//   - reference plane being XZ plane
+// polar (phi) angle is being measured from fixed zenith direction (positive Y axis)
+//   - point on positive part of Y axis: Y>0 X=Z=0  --> phi = 0
+//   - point on XZ plane: Y=0, X=!0 or Z!=0         --> phi = pi/2 = 90*
+//   - point on negative part of Y axis: Y<0 X=Z=0  --> phi = pi = 180*
+// azimuthal (theta) angle is being measured starting at positive Z axis on reference plane,
+// in principle theta = atan2(x,z)
+//   - point on positive part of Z axis: Z>0 X=Y=0  --> theta = 0
+//   - point on positive part of X axis: X>0 X=Z=0  --> theta = pi / 2 = 90*
+//   - point on negative part of Z axis: Z<0 X=Y=0  --> theta = pi = 180 *
+//   - point on positive part of X axis: X<0 X=Z=0  --> theta = -pi / 2 = -90* = 270*
+
+// TODO - consider using converter Spherical.setFromCartesianCoords
+//   then code reader would be free from understanding unusual convention of spherical coordinates system in threejs
+
+
 function ViewManager(editor) {
 
 	var signals = editor.signals;
@@ -36,16 +56,16 @@ function ViewManager(editor) {
 	var grid = new THREE.Group();
 	sceneHelpers.add(grid);
 
-	var grid1 = new THREE.GridHelper(30, 30, 0x888888);
-	grid1.material.color.setHex(0x888888);
-	grid1.material.vertexColors = false;
-	grid.add(grid1);
+	var minorGrid = new THREE.GridHelper(30, 30, 0x888888);
+	minorGrid.material.color.setHex(0x888888); // 0x888888 -> light grey (53% lightness)
+	minorGrid.material.vertexColors = false;
+	grid.add(minorGrid);
 
-	var grid2 = new THREE.GridHelper(30, 6, 0x222222);
-	grid2.material.color.setHex(0x222222);
-	grid2.material.depthFunc = THREE.AlwaysDepth;
-	grid2.material.vertexColors = false;
-	grid.add(grid2);
+	var majorGrid = new THREE.GridHelper(30, 6, 0x222222);
+	majorGrid.material.color.setHex(0x222222); // 0x222222 -> very dark grey (13% lightness)
+	majorGrid.material.depthFunc = THREE.AlwaysDepth;
+	majorGrid.material.vertexColors = false;
+	grid.add(majorGrid);
 
 
 	var planeHelpers = new THREE.Group();
@@ -72,7 +92,7 @@ function ViewManager(editor) {
 	viewsGrid.setPosition("absolute");
 	viewsGrid.setWidth("100%");
 	viewsGrid.setHeight("100%");
-	viewsGrid.setBackgroundColor("#aaaaaa");
+	viewsGrid.setBackgroundColor("#aaaaaa"); // aaaaaa -> dark grey (67% lightness)
 	container.add(viewsGrid);
 
 	let viewManagerProps = {
@@ -82,65 +102,115 @@ function ViewManager(editor) {
 		selectionBox
 	}
 
-	let configZ = {
+
+	// Below we define configuration for 4 cameras
+	// upper left : looking at plane XY
+	// upper right : full 3D view
+	// lower left : looking at plane
+
+	// --------------- first view, upper left, XY plane ----------------------------------
+
+	let configPlaneXY = {
 		orthographic: true,
+
+		// camera looking from above XY plane
 		cameraPosition: new THREE.Vector3(0, 0, 10),
-		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.000001),
-		planePosLabel: "PlanePoz Z",
+
+		// default clipping plane being XY plane (normal vector along Z axis)
+		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, 1), 0.),
+
+		planePosLabel: "PlanePos Z",
+
+		// 0x73c5ff - Malibu color (light blue)
 		planeHelperColor: 0x73c5ff,
+
+		// by default grid plane lies within XZ plane
+		// (phi = 90*, theta = any in threejs spherical coordinates, see comment in top part of this file)
+		// to align it with desired XY plane we rotate the grid plane around X axis by 90*
+		// therefore we use Euler angles (90*, 0*, 0*)
 		gridRotation: new THREE.Euler(Math.PI / 2, 0, 0),
 	};
-	let viewZ = new Viewport("ViewPanelZ", editor, viewManagerProps, configZ);
-	viewsGrid.add(viewZ.container);
+	let viewPlaneXY = new Viewport("ViewPanelXY", editor, viewManagerProps, configPlaneXY);
+	viewsGrid.add(viewPlaneXY.container);
 	
-	// block controls to Z plane
-	viewZ.controls.maxAzimuthAngle = viewZ.controls.minAzimuthAngle = 0;
-	viewZ.controls.maxPolarAngle = viewZ.controls.minPolarAngle = Math.PI / 2;
-	viewZ.controls.update();
+	// fix the view to being from positive part of Z axis: theta = 0*, phi = 90*
+	// for threejs spherical coordinates, see comment in top part of this file
+	viewPlaneXY.controls.maxAzimuthAngle = viewPlaneXY.controls.minAzimuthAngle = 0;
+	viewPlaneXY.controls.maxPolarAngle = viewPlaneXY.controls.minPolarAngle = Math.PI / 2;
+	viewPlaneXY.controls.update();
 
 	let gutterCol = new UIDiv().setClass("gutter-col gutter-col-1");
 	viewsGrid.add(gutterCol);
 
+	// --------------- second view, upper right, full 3D ----------------------------------
+
 	let config3D = {
-		showPlaneHelpers: true
+		showPlaneHelpers: true,
+
+		// camera looking from the middle of X>0,Y>0,Z>0 quadrant
+		cameraPosition: new THREE.Vector3(10, 10, 10),
 	};
 	let view3D = new Viewport("ViewPanel3D", editor, viewManagerProps, config3D);
 	viewsGrid.add(view3D.container);
 
+	// --------------- third view, lower left, XZ plane ----------------------------------
 
-	let configY = {
+	// note we do not specify grid rotation here, as it was done in XY and YZ planes
+	// by default grid plane lies within XZ plane which is consistent with current plane
+	// (phi = 90*, theta = any in threejs spherical coordinates, see comment in top part of this file)
+	let configPlaneXZ = {
 		orthographic: true,
+
+		// camera looking from above XZ plane
 		cameraPosition: new THREE.Vector3(0, 10, 0),
-		clipPlane: new THREE.Plane(new THREE.Vector3(0, - 1, 0), 0.000001),
+
+		// default clipping plane being XZ plane (normal vector along Y axis)
+		clipPlane: new THREE.Plane(new THREE.Vector3(0, 1, 0), 0.),
 		planePosLabel: "PlanePoz Y",
+
+		// 0xc2ee00 - Lime color (between green and yellow)
 		planeHelperColor: 0xc2ee00,
 	};
-	let viewY = new Viewport("ViewPanelY", editor, viewManagerProps, configY);
-	viewsGrid.add(viewY.container);
+	let viewPlaneXZ = new Viewport("ViewPanelY", editor, viewManagerProps, configPlaneXZ);
+	viewsGrid.add(viewPlaneXZ.container);
 
-	// block controls to Y plane
-	viewY.controls.maxAzimuthAngle = viewY.controls.minAzimuthAngle = 0;
-	viewY.controls.maxPolarAngle = viewY.controls.minPolarAngle = 0;
-	viewY.controls.update();
+	// fix the view to being from positive part of Y axis: theta = 0*, phi = 0*
+	viewPlaneXZ.controls.maxAzimuthAngle = viewPlaneXZ.controls.minAzimuthAngle = 0;
+	viewPlaneXZ.controls.maxPolarAngle = viewPlaneXZ.controls.minPolarAngle = 0;
+	viewPlaneXZ.controls.update();
 
 	let gutterRow = new UIDiv().setClass("gutter-row gutter-row-1");
 	viewsGrid.add(gutterRow);
 
-	let configX = {
+	// --------------- fourth view, lower right, YZ plane ----------------------------------
+
+	let configPlaneYZ = {
 		orthographic: true,
+
+		// camera looking from above YZ plane
 		cameraPosition: new THREE.Vector3(10, 0, 0),
-		clipPlane: new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.000001),
-		planePosLabel: "PlanePoz X",
+
+		// default clipping plane being YZ plane (normal vector along X axis)
+		clipPlane: new THREE.Plane(new THREE.Vector3(1, 0, 0), 0.),
+		planePosLabel: "PlanePos X",
+
+		// 0xff7f9b - Tickle Me Pink color
 		planeHelperColor: 0xff7f9b,
+
+		// by default grid plane lies within XZ plane
+		// (phi = 90*, theta = any in threejs spherical coordinates, see comment in top part of this file)
+		// to align it with desired YZ plane we rotate the grid plane around Z axis by 90*
+		// therefore we use Euler angles (0*, 0*, 90*)
 		gridRotation: new THREE.Euler(0, 0, Math.PI / 2),
 	};
-	let viewX = new Viewport("ViewPanelX", editor, viewManagerProps, configX);
-	viewsGrid.add(viewX.container);
+	let viewPlaneYZ = new Viewport("ViewPanelX", editor, viewManagerProps, configPlaneYZ);
+	viewsGrid.add(viewPlaneYZ.container);
 
-	// block controls to X plane
-	viewX.controls.maxAzimuthAngle = viewX.controls.minAzimuthAngle = Math.PI / 2;
-	viewX.controls.maxPolarAngle = viewX.controls.minPolarAngle = Math.PI / 2;
-	viewX.controls.update();
+	// fix the view to being from positive part of X axis: theta = 90*, phi = 90*
+	// see description of spherical coordinate system in threejs
+	viewPlaneYZ.controls.maxAzimuthAngle = viewPlaneYZ.controls.minAzimuthAngle = Math.PI / 2;
+	viewPlaneYZ.controls.maxPolarAngle = viewPlaneYZ.controls.minPolarAngle = Math.PI / 2;
+	viewPlaneYZ.controls.update();
 
 
 	// Add resizable views
@@ -161,7 +231,7 @@ function ViewManager(editor) {
 		}
 	});
 
-	let fourViews = [viewZ, view3D, viewY, viewX];
+	let fourViews = [viewPlaneXY, view3D, viewPlaneXZ, viewPlaneYZ];
 
 	// Single View Layout 
 
@@ -247,14 +317,14 @@ function ViewManager(editor) {
 			mediaQuery.addListener(function (event) {
 
 				renderer.setClearColor(event.matches ? 0x333333 : 0xaaaaaa);
-				updateGridColors(grid1, grid2, event.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]);
+				updateGridColors(minorGrid, majorGrid, event.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]);
 
 				render();
 
 			});
 
 			renderer.setClearColor(mediaQuery.matches ? 0x333333 : 0xaaaaaa);
-			updateGridColors(grid1, grid2, mediaQuery.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]);
+			updateGridColors(minorGrid, majorGrid, mediaQuery.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]);
 
 		}
 
