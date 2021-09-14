@@ -56,16 +56,16 @@ function ViewManager(editor) {
 	var grid = new THREE.Group();
 	sceneHelpers.add(grid);
 
-	var minor_grid = new THREE.GridHelper(30, 30, 0x888888);
-	minor_grid.material.color.setHex(0x888888); // 0x888888 -> light grey (53% lightness)
-	minor_grid.material.vertexColors = false;
-	grid.add(minor_grid);
+	var minorGrid = new THREE.GridHelper(30, 30, 0x888888);
+	minorGrid.material.color.setHex(0x888888); // 0x888888 -> light grey (53% lightness)
+	minorGrid.material.vertexColors = false;
+	grid.add(minorGrid);
 
-	var major_grid = new THREE.GridHelper(30, 6, 0x222222);
-	major_grid.material.color.setHex(0x222222); // 0x222222 -> very dark grey (13% lightness)
-	major_grid.material.depthFunc = THREE.AlwaysDepth;
-	major_grid.material.vertexColors = false;
-	grid.add(major_grid);
+	var majorGrid = new THREE.GridHelper(30, 6, 0x222222);
+	majorGrid.material.color.setHex(0x222222); // 0x222222 -> very dark grey (13% lightness)
+	majorGrid.material.depthFunc = THREE.AlwaysDepth;
+	majorGrid.material.vertexColors = false;
+	grid.add(majorGrid);
 
 
 	var planeHelpers = new THREE.Group();
@@ -110,7 +110,7 @@ function ViewManager(editor) {
 
 	// --------------- first view, upper left, XY plane ----------------------------------
 
-	let config_planeXY = {
+	let configPlaneXY = {
 		orthographic: true,
 
 		// camera looking from above XY plane
@@ -130,14 +130,14 @@ function ViewManager(editor) {
 		// therefore we use Euler angles (90*, 0*, 0*)
 		gridRotation: new THREE.Euler(Math.PI / 2, 0, 0),
 	};
-	let view_planeXY = new Viewport("ViewPanelXY", editor, viewManagerProps, config_planeXY);
-	viewsGrid.add(view_planeXY.container);
+	let viewPlaneXY = new Viewport("ViewPanelXY", editor, viewManagerProps, configPlaneXY);
+	viewsGrid.add(viewPlaneXY.container);
 	
 	// fix the view to being from positive part of Z axis: theta = 0*, phi = 90*
 	// for threejs spherical coordinates, see comment in top part of this file
-	view_planeXY.controls.maxAzimuthAngle = view_planeXY.controls.minAzimuthAngle = 0;
-	view_planeXY.controls.maxPolarAngle = view_planeXY.controls.minPolarAngle = Math.PI / 2;
-	view_planeXY.controls.update();
+	viewPlaneXY.controls.maxAzimuthAngle = viewPlaneXY.controls.minAzimuthAngle = 0;
+	viewPlaneXY.controls.maxPolarAngle = viewPlaneXY.controls.minPolarAngle = Math.PI / 2;
+	viewPlaneXY.controls.update();
 
 	let gutterCol = new UIDiv().setClass("gutter-col gutter-col-1");
 	viewsGrid.add(gutterCol);
@@ -146,6 +146,7 @@ function ViewManager(editor) {
 
 	let config3D = {
 		showPlaneHelpers: true,
+
 		// camera looking from the middle of X>0,Y>0,Z>0 quadrant
 		cameraPosition: new THREE.Vector3(10, 10, 10),
 	};
@@ -157,7 +158,7 @@ function ViewManager(editor) {
 	// note we do not specify grid rotation here, as it was done in XY and YZ planes
 	// by default grid plane lies within XZ plane which is consistent with current plane
 	// (phi = 90*, theta = any in threejs spherical coordinates, see comment in top part of this file)
-	let config_planeXZ = {
+	let configPlaneXZ = {
 		orthographic: true,
 
 		// camera looking from above XZ plane
@@ -170,20 +171,20 @@ function ViewManager(editor) {
 		// 0xc2ee00 - Lime color (between green and yellow)
 		planeHelperColor: 0xc2ee00,
 	};
-	let view_planeXZ = new Viewport("ViewPanelY", editor, viewManagerProps, config_planeXZ);
-	viewsGrid.add(view_planeXZ.container);
+	let viewPlaneXZ = new Viewport("ViewPanelY", editor, viewManagerProps, configPlaneXZ);
+	viewsGrid.add(viewPlaneXZ.container);
 
 	// fix the view to being from positive part of Y axis: theta = 0*, phi = 0*
-	view_planeXZ.controls.maxAzimuthAngle = view_planeXZ.controls.minAzimuthAngle = 0;
-	view_planeXZ.controls.maxPolarAngle = view_planeXZ.controls.minPolarAngle = 0;
-	view_planeXZ.controls.update();
+	viewPlaneXZ.controls.maxAzimuthAngle = viewPlaneXZ.controls.minAzimuthAngle = 0;
+	viewPlaneXZ.controls.maxPolarAngle = viewPlaneXZ.controls.minPolarAngle = 0;
+	viewPlaneXZ.controls.update();
 
 	let gutterRow = new UIDiv().setClass("gutter-row gutter-row-1");
 	viewsGrid.add(gutterRow);
 
 	// --------------- fourth view, lower right, YZ plane ----------------------------------
 
-	let config_planeYZ = {
+	let configPlaneYZ = {
 		orthographic: true,
 
 		// camera looking from above YZ plane
@@ -202,14 +203,14 @@ function ViewManager(editor) {
 		// therefore we use Euler angles (0*, 0*, 90*)
 		gridRotation: new THREE.Euler(0, 0, Math.PI / 2),
 	};
-	let view_planeYZ = new Viewport("ViewPanelX", editor, viewManagerProps, config_planeYZ);
-	viewsGrid.add(view_planeYZ.container);
+	let viewPlaneYZ = new Viewport("ViewPanelX", editor, viewManagerProps, configPlaneYZ);
+	viewsGrid.add(viewPlaneYZ.container);
 
 	// fix the view to being from positive part of X axis: theta = 90*, phi = 90*
 	// see description of spherical coordinate system in threejs
-	view_planeYZ.controls.maxAzimuthAngle = view_planeYZ.controls.minAzimuthAngle = Math.PI / 2;
-	view_planeYZ.controls.maxPolarAngle = view_planeYZ.controls.minPolarAngle = Math.PI / 2;
-	view_planeYZ.controls.update();
+	viewPlaneYZ.controls.maxAzimuthAngle = viewPlaneYZ.controls.minAzimuthAngle = Math.PI / 2;
+	viewPlaneYZ.controls.maxPolarAngle = viewPlaneYZ.controls.minPolarAngle = Math.PI / 2;
+	viewPlaneYZ.controls.update();
 
 
 	// Add resizable views
@@ -230,7 +231,7 @@ function ViewManager(editor) {
 		}
 	});
 
-	let fourViews = [view_planeXY, view3D, view_planeXZ, view_planeYZ];
+	let fourViews = [viewPlaneXY, view3D, viewPlaneXZ, viewPlaneYZ];
 
 	// Single View Layout 
 
@@ -316,14 +317,14 @@ function ViewManager(editor) {
 			mediaQuery.addListener(function (event) {
 
 				renderer.setClearColor(event.matches ? 0x333333 : 0xaaaaaa);
-				updateGridColors(minor_grid, major_grid, event.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]);
+				updateGridColors(minorGrid, majorGrid, event.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]);
 
 				render();
 
 			});
 
 			renderer.setClearColor(mediaQuery.matches ? 0x333333 : 0xaaaaaa);
-			updateGridColors(minor_grid, major_grid, mediaQuery.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]);
+			updateGridColors(minorGrid, majorGrid, mediaQuery.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]);
 
 		}
 
