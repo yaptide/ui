@@ -36,16 +36,16 @@ function ViewManager(editor) {
 	var grid = new THREE.Group();
 	sceneHelpers.add(grid);
 
-	var grid1 = new THREE.GridHelper(30, 30, 0x888888);
-	grid1.material.color.setHex(0x888888);
-	grid1.material.vertexColors = false;
-	grid.add(grid1);
+	var minor_grid = new THREE.GridHelper(30, 30, 0x888888);
+	minor_grid.material.color.setHex(0x888888); // 0x888888 -> light grey (53% lightness)
+	minor_grid.material.vertexColors = false;
+	grid.add(minor_grid);
 
-	var grid2 = new THREE.GridHelper(30, 6, 0x222222);
-	grid2.material.color.setHex(0x222222);
-	grid2.material.depthFunc = THREE.AlwaysDepth;
-	grid2.material.vertexColors = false;
-	grid.add(grid2);
+	var major_grid = new THREE.GridHelper(30, 6, 0x222222);
+	major_grid.material.color.setHex(0x222222); // 0x222222 -> very dark grey (13% lightness)
+	major_grid.material.depthFunc = THREE.AlwaysDepth;
+	major_grid.material.vertexColors = false;
+	grid.add(major_grid);
 
 
 	var planeHelpers = new THREE.Group();
@@ -72,7 +72,7 @@ function ViewManager(editor) {
 	viewsGrid.setPosition("absolute");
 	viewsGrid.setWidth("100%");
 	viewsGrid.setHeight("100%");
-	viewsGrid.setBackgroundColor("#aaaaaa");
+	viewsGrid.setBackgroundColor("#aaaaaa"); // aaaaaa -> dark grey (67% lightness)
 	container.add(viewsGrid);
 
 	let viewManagerProps = {
@@ -82,24 +82,55 @@ function ViewManager(editor) {
 		selectionBox
 	}
 
-	let configZ = {
+
+	// Below we define configuration for 4 cameras
+	// upper left : looking at plane XY
+	// upper right : full 3D view
+	// lower left : looking at plane
+
+	// --------------- first view, upper left, XY plane ----------------------------------
+
+	let config_planeXY = {
 		orthographic: true,
-		cameraPosition: new THREE.Vector3(0, 0, 10),
-		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.000001),
-		planePosLabel: "PlanePoz Z",
-		planeHelperColor: 0x73c5ff,
+		cameraPosition: new THREE.Vector3(0, 0, 10), // camera looking from above XY plane
+		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, 1), 0.), // default clipping plane being XY plane (normal vector along Z axis)
+		planePosLabel: "PlanePos Z",
+		planeHelperColor: 0x73c5ff, // 0x73c5ff - Malibu color (light blue)
 		gridRotation: new THREE.Euler(Math.PI / 2, 0, 0),
 	};
-	let viewZ = new Viewport("ViewPanelZ", editor, viewManagerProps, configZ);
-	viewsGrid.add(viewZ.container);
+	let view_planeXY = new Viewport("ViewPanelXY", editor, viewManagerProps, config_planeXY);
+	viewsGrid.add(view_planeXY.container);
 	
-	// block controls to Z plane
-	viewZ.controls.maxAzimuthAngle = viewZ.controls.minAzimuthAngle = 0;
-	viewZ.controls.maxPolarAngle = viewZ.controls.minPolarAngle = Math.PI / 2;
-	viewZ.controls.update();
+	// block controls to XY plane
+
+	// spherical coordinates convention used in threejs can be found in source code of the Spherical class:
+	// https://github.com/mrdoob/three.js/blob/r132/src/math/Spherical.js
+	// it is assumed that polar (phi) and azimuthal/equator (theta) angles are calculated assuming:
+	//   - zenith direction being positive Y axis
+	//   - reference plane being XZ plane
+	// polar (phi) angle is being measured from fixed zenith direction (positive Y axis)
+	//   - point on positive part of Y axis: Y>0 X=Z=0  --> phi = 0
+	//   - point on XZ plane: Y=0, X=!0 or Z!=0         --> phi = pi/2 = 90*
+	//   - point on negative part of Y axis: Y<0 X=Z=0  --> phi = pi = 180*
+	// azimuthal (theta) angle is being measured starting at positive Z axis on reference plane,
+	// in principle theta = atan2(x,z)
+	//   - point on positive part of Z axis: Z>0 X=Y=0  --> theta = 0
+	//   - point on positive part of X axis: X>0 X=Z=0  --> theta = pi / 2 = 90*
+	//   - point on negative part of Z axis: Z<0 X=Y=0  --> theta = pi = 180 *
+	//   - point on positive part of X axis: X<0 X=Z=0  --> theta = -pi / 2 = -90* = 270*
+
+	// TODO - consider using converter Spherical.setFromCartesianCoords
+	//   then code reader would be free from understanding unusual convention of spherical coordinates system in threejs
+
+	// fix the view to being from positive part of Z axis: theta = 0*, phi = 90*
+	view_planeXY.controls.maxAzimuthAngle = view_planeXY.controls.minAzimuthAngle = 0;
+	view_planeXY.controls.maxPolarAngle = view_planeXY.controls.minPolarAngle = Math.PI / 2;
+	view_planeXY.controls.update();
 
 	let gutterCol = new UIDiv().setClass("gutter-col gutter-col-1");
 	viewsGrid.add(gutterCol);
+
+	// --------------- second view, upper right, full 3D ----------------------------------
 
 	let config3D = {
 		showPlaneHelpers: true
@@ -107,40 +138,44 @@ function ViewManager(editor) {
 	let view3D = new Viewport("ViewPanel3D", editor, viewManagerProps, config3D);
 	viewsGrid.add(view3D.container);
 
+	// --------------- third view, lower left, XZ plane ----------------------------------
 
-	let configY = {
+	let config_planeXZ = {
 		orthographic: true,
 		cameraPosition: new THREE.Vector3(0, 10, 0),
-		clipPlane: new THREE.Plane(new THREE.Vector3(0, - 1, 0), 0.000001),
+		clipPlane: new THREE.Plane(new THREE.Vector3(0, 1, 0), 0.),
 		planePosLabel: "PlanePoz Y",
 		planeHelperColor: 0xc2ee00,
 	};
-	let viewY = new Viewport("ViewPanelY", editor, viewManagerProps, configY);
-	viewsGrid.add(viewY.container);
+	let view_planeXZ = new Viewport("ViewPanelY", editor, viewManagerProps, config_planeXZ);
+	viewsGrid.add(view_planeXZ.container);
 
-	// block controls to Y plane
-	viewY.controls.maxAzimuthAngle = viewY.controls.minAzimuthAngle = 0;
-	viewY.controls.maxPolarAngle = viewY.controls.minPolarAngle = 0;
-	viewY.controls.update();
+	// fix the view to being from positive part of Y axis: theta = 0*, phi = 0*
+	view_planeXZ.controls.maxAzimuthAngle = view_planeXZ.controls.minAzimuthAngle = 0;
+	view_planeXZ.controls.maxPolarAngle = view_planeXZ.controls.minPolarAngle = 0;
+	view_planeXZ.controls.update();
 
 	let gutterRow = new UIDiv().setClass("gutter-row gutter-row-1");
 	viewsGrid.add(gutterRow);
 
-	let configX = {
+	// --------------- fourth view, lower right, YZ plane ----------------------------------
+
+	let config_planeYZ = {
 		orthographic: true,
 		cameraPosition: new THREE.Vector3(10, 0, 0),
-		clipPlane: new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.000001),
-		planePosLabel: "PlanePoz X",
+		clipPlane: new THREE.Plane(new THREE.Vector3(1, 0, 0), 0.),
+		planePosLabel: "PlanePos X",
 		planeHelperColor: 0xff7f9b,
 		gridRotation: new THREE.Euler(0, 0, Math.PI / 2),
 	};
-	let viewX = new Viewport("ViewPanelX", editor, viewManagerProps, configX);
-	viewsGrid.add(viewX.container);
+	let view_planeYZ = new Viewport("ViewPanelX", editor, viewManagerProps, config_planeYZ);
+	viewsGrid.add(view_planeYZ.container);
 
-	// block controls to X plane
-	viewX.controls.maxAzimuthAngle = viewX.controls.minAzimuthAngle = Math.PI / 2;
-	viewX.controls.maxPolarAngle = viewX.controls.minPolarAngle = Math.PI / 2;
-	viewX.controls.update();
+	// fix the view to being from positive part of X axis: theta = 90*, phi = 90*
+	// see description of spherical coordinate system in threejs
+	view_planeYZ.controls.maxAzimuthAngle = view_planeYZ.controls.minAzimuthAngle = Math.PI / 2;
+	view_planeYZ.controls.maxPolarAngle = view_planeYZ.controls.minPolarAngle = Math.PI / 2;
+	view_planeYZ.controls.update();
 
 
 	// Add resizable views
@@ -161,7 +196,7 @@ function ViewManager(editor) {
 		}
 	});
 
-	let fourViews = [viewZ, view3D, viewY, viewX];
+	let fourViews = [view_planeXY, view3D, view_planeXZ, view_planeYZ];
 
 	// Single View Layout 
 
@@ -247,14 +282,14 @@ function ViewManager(editor) {
 			mediaQuery.addListener(function (event) {
 
 				renderer.setClearColor(event.matches ? 0x333333 : 0xaaaaaa);
-				updateGridColors(grid1, grid2, event.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]);
+				updateGridColors(minor_grid, major_grid, event.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]);
 
 				render();
 
 			});
 
 			renderer.setClearColor(mediaQuery.matches ? 0x333333 : 0xaaaaaa);
-			updateGridColors(grid1, grid2, mediaQuery.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]);
+			updateGridColors(minor_grid, major_grid, mediaQuery.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]);
 
 		}
 
