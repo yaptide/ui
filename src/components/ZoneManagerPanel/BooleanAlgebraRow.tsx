@@ -14,20 +14,20 @@ type BooleanAlgebraRowProps = {
 }
 
 export type AlgebraRow = {
-    geometries: (number | null)[],
+    geometriesId: (number | null)[],
     operations: (Operation | null)[]
 }
 
 
 function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
-    const [algebraRow, setAlgebraRow] = useState<AlgebraRow>(props.value ?? { geometries: [], operations: [] });
+    const [algebraRow, setAlgebraRow] = useState<AlgebraRow>(props.value ?? { geometriesId: [], operations: [] });
 
     const pushGeometry = (index: number) => (id: number) => {
-        if (index === algebraRow.geometries.length)
+        if (index === algebraRow.geometriesId.length)
             setAlgebraRow((prev) => {
                 return {
-                    geometries: [
-                        ...prev.geometries,
+                    geometriesId: [
+                        ...prev.geometriesId,
                         props.possibleObjects.find(el => el.id === id)?.id ?? null
                     ],
                     operations: prev.operations
@@ -36,8 +36,8 @@ function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
         else
             setAlgebraRow((prev) => {
                 return {
-                    geometries: [
-                        ...prev.geometries.map((el, elIndex) => {
+                    geometriesId: [
+                        ...prev.geometriesId.map((el, elIndex) => {
                             return index === elIndex ? id : el
                         }),
                     ],
@@ -48,8 +48,8 @@ function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
     const removeOperation = (id: number) => () => {
         setAlgebraRow((prev) => {
             return {
-                geometries: [
-                    ...prev.geometries.slice(0, id + 1)
+                geometriesId: [
+                    ...prev.geometriesId.slice(0, id + 1)
                 ],
                 operations: [
                     ...prev.operations.slice(0, id)
@@ -63,14 +63,14 @@ function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
     }, [algebraRow]);
 
     useEffect(() => {
-        setAlgebraRow(props.value ?? { geometries: [], operations: [] });
+        setAlgebraRow(props.value ?? { geometriesId: [], operations: [] });
     }, [props]);
     
     const pushOperation = (id: number) => (op: Operation) => {
         if (id === algebraRow.operations.length)
             setAlgebraRow((prev) => {
                 return {
-                    geometries: prev.geometries,
+                    geometriesId: prev.geometriesId,
                     operations: [
                         ...prev.operations,
                         op
@@ -80,7 +80,7 @@ function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
         else
             setAlgebraRow((prev) => {
                 return {
-                    geometries: prev.geometries,
+                    geometriesId: prev.geometriesId,
                     operations: [
                         ...prev.operations.map((el, index) => {
                             return index === id ? op : el
@@ -89,7 +89,7 @@ function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
                 }
             })
     }
-    return (<div className="zoneManagerRow">{algebraRow.geometries.map((geo, id) => {
+    return (<div className="zoneManagerRow">{algebraRow.geometriesId.map((geo, id) => {
 
         return (<Fragment key={id} >
             <GeometryInput
@@ -107,11 +107,11 @@ function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
             />
         </Fragment>)
     })}
-        {algebraRow.operations.length === algebraRow.geometries.length &&
+        {algebraRow.operations.length === algebraRow.geometriesId.length &&
             (<GeometryInput
-                id={algebraRow.geometries.length}
+                id={algebraRow.geometriesId.length}
                 geometries={props.possibleObjects}
-                push={pushGeometry(algebraRow.geometries.length)}
+                push={pushGeometry(algebraRow.geometriesId.length)}
             />)
         }
         <Button className="deleteButton" onClick={props.del}>X</Button>

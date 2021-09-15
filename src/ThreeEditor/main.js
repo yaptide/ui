@@ -47,6 +47,8 @@ export function initEditor(container) {
 
     editor.storage.init(function () {
 
+        var signals = editor.signals;
+
         editor.storage.get(function (state) {
 
             if (isLoadingFromHash) return;
@@ -97,7 +99,6 @@ export function initEditor(container) {
 
         }
 
-        var signals = editor.signals;
 
         signals.geometryChanged.add(saveState);
         signals.objectAdded.add(saveState);
@@ -110,6 +111,7 @@ export function initEditor(container) {
         signals.sceneGraphChanged.add(saveState);
         signals.scriptChanged.add(saveState);
         signals.historyChanged.add(saveState);
+        signals.CSGManagerStateChanged.add(saveState);
 
     });
 

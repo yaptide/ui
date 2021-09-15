@@ -6,6 +6,7 @@ import { Loader } from './Loader.js';
 import { History as _History } from './History.js';
 import { Strings } from './Strings.js';
 import { Storage as _Storage } from './Storage.js';
+import { CSGManager } from '../util/CSGManager';
 
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera( 50, 1, 0.01, 1000 );
@@ -100,12 +101,19 @@ function Editor() {
 		layoutChanged: new Signal(), // Layout signal 
 
 		viewportConfigChanged: new Signal(), // Viewport config signal 
+		
+		CSGManagerStateChanged: new Signal(), // State of CSGmanager changed
+
+		loadedFromJSON: new Signal(), // Editor loaded from JSON 
+
 	};
 
 	this.config = new Config();
 	this.history = new _History( this );
 	this.storage = new _Storage();
 	this.strings = new Strings( this.config );
+
+	this.CSGManager = new CSGManager( this ); //CSG Manager
 
 	this.loader = new Loader( this );
 
@@ -668,6 +676,10 @@ Editor.prototype = {
 
 		this.setScene( await loader.parseAsync( json.scene ) );
 
+		this.CSGManager = CSGManager.fromJSON(this, json.CSGManager ); // CSGManager must be load after scene 
+		
+		this.signals.loadedFromJSON.dispatch(this);
+
 	},
 
 	toJSON: function () {
@@ -705,7 +717,8 @@ Editor.prototype = {
 			camera: this.camera.toJSON(),
 			scene: this.scene.toJSON(),
 			scripts: this.scripts,
-			history: this.history.toJSON()
+			history: this.history.toJSON(),
+			CSGManager: this.CSGManager.toJSON() // serialize CSGManager
 
 		};
 
