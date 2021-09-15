@@ -30,7 +30,7 @@ export class CSGOperation {
         return jsonObject;
     }
 
-    static formJSON(editor: Editor, data: CSGOperationJSON) {
+    static fromJSON(editor: Editor, data: CSGOperationJSON) {
         let object = editor.scene.getObjectByProperty('uuid', data.objectUuid);
 
         if (!object)
@@ -204,7 +204,7 @@ export class CSGZone {
 
         let zone = new CSGZone(editor);
 
-        let unionOperations = data.unionOperations.map((union) => union.map((operation) => CSGOperation.formJSON(editor, operation)));
+        let unionOperations = data.unionOperations.map((union) => union.map((operation) => CSGOperation.fromJSON(editor, operation)));
         zone.unionOperations = unionOperations;
 
         if (!Array.isArray(data.subscribedObjectsUuid))
