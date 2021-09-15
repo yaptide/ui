@@ -33,14 +33,14 @@ function parseRightSubtraction(result:number[][], nextGeo:number){
 
 function parseRow(zoneOperationRow:AlgebraRow){
     let controller:ZoneConstructorController;
-    if(zoneOperationRow.geometries?.[0]){
-        controller = new ZoneConstructorController([zoneOperationRow.geometries[0]],[])
+    if(zoneOperationRow.geometriesId?.[0]){
+        controller = new ZoneConstructorController([zoneOperationRow.geometriesId[0]],[])
         zoneOperationRow.operations.every((op,id)=>{
             let nextGeo: number;
-            if (!zoneOperationRow.geometries?.[id + 1] || !op)
+            if (!zoneOperationRow.geometriesId?.[id + 1] || !op)
                 return false;
             else {
-                nextGeo = zoneOperationRow.geometries?.[id + 1] as number;
+                nextGeo = zoneOperationRow.geometriesId?.[id + 1] as number;
                 controller.parseOperation(op, nextGeo);
                 // console.log(controller.toString().slice(0,-3));
             }
