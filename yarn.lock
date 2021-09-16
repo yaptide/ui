@@ -1968,10 +1968,10 @@
   dependencies:
     "@types/jest" "*"
 
-"@types/three@^0.131.0":
-  version "0.131.0"
-  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.131.0.tgz#98f59887b05f71e665cf2fbdf04e0e4ceb9f89b6"
-  integrity sha512-4VCtsDi6mIId96GcGKG91e2Y6VwU2T0u/YB7vCFJh1kXik93arxn7l9tVZHo1LXOtgCJJDdC+e1fwf2Vu/4ySw==
+"@types/three@^0.131.1":
+  version "0.131.1"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.131.1.tgz#2ee511383c8620f6ce301582214122319e6aca34"
+  integrity sha512-unnjsolcm7R90e4XK9qMq4JYEzly0XQNa0pG8RAOMZeVzj3FLIFPymAYUx4Osz0gY9jFZz8omIQplqiieEE7gw==
 
 "@types/throttle-debounce@^2.1.0":
   version "2.1.0"
