@@ -1,4 +1,4 @@
-import { Operation } from "../../ThreeEditor/util/CSGManager";
+import { Operation } from "../../ThreeEditor/util/Operation";
 
 export default class ZoneConstructorController {
     commonPrefix: number[];

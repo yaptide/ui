@@ -331,7 +331,7 @@ function SidebarScene( editor ) {
 
 		var camera = editor.camera;
 		var scene = editor.scene;
-		var sceneZones = editor.sceneZones;
+		var zones = editor.zones;
 
 		var options = [];
 
@@ -365,8 +365,8 @@ function SidebarScene( editor ) {
 		}
 		addObjects( scene.children, 0 );
 		
-		options.push( buildOption( sceneZones, false ) );
-		addObjects( sceneZones.children, 0 );
+		options.push( buildOption( zones, false ) );
+		addObjects( zones.children, 0 );
 
 		outliner.setOptions( options );
 

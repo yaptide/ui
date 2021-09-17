@@ -6,6 +6,12 @@ import { SetGeometryValueCommand } from './commands/SetGeometryValueCommand.js';
 
 import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper.js';
 
+import React from 'react';
+
+import ReactDOM from 'react-dom';
+
+import ZoneManagerPanel from '../../components/ZoneManagerPanel/ZoneManagerPanel';
+
 function SidebarGeometry( editor ) {
 
 	var strings = editor.strings;
@@ -135,6 +141,25 @@ function SidebarGeometry( editor ) {
 	} );
 	helpersRow.add( vertexNormalsButton );
 
+	let zonePanel = new UISpan();
+	zonePanel.setId("zonePanel");
+
+	async function buildZoneManager() {
+
+		var object = editor.selected;
+
+		parameters.clear();
+
+		parameters.add(zonePanel);
+		ReactDOM.render(
+			(<ZoneManagerPanel editor={editor} zone={object}/>),
+			document.getElementById("zonePanel")
+		);
+
+		container.setDisplay( 'block' );
+
+	}
+
 	async function build() {
 
 		var object = editor.selected;
@@ -193,8 +218,10 @@ function SidebarGeometry( editor ) {
 	signals.objectSelected.add( function () {
 
 		currentGeometryType = null;
-
-		build();
+		console.log(editor.selected);
+		editor.selected?.unionOperations
+			? buildZoneManager()
+			: build();
 
 	} );
 

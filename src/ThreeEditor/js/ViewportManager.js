@@ -46,6 +46,7 @@ function ViewManager(editor) {
 
 	var camera = editor.camera;
 	var scene = editor.scene;
+	var zones = editor.zones;
 	var sceneHelpers = editor.sceneHelpers;
 
 
@@ -256,7 +257,7 @@ function ViewManager(editor) {
 
 	views.forEach((view) => view.config.visible = true);
 
-	setLayout("fourViews");
+	setLayout(editor.layout ?? "fourViews");
 
 
 	// events
@@ -273,7 +274,7 @@ function ViewManager(editor) {
 
 	signals.editorCleared.add(function () {
 
-		views.forEach((view) => view.controls.center.set(0, 0, 0));
+		views.forEach((view) => view.controls.center && view.controls.center.set(0, 0, 0));
 		render();
 
 	});
@@ -357,7 +358,7 @@ function ViewManager(editor) {
 		selectionBox.visible = false;
 
 
-		if (object !== null && object !== scene && object !== camera) {
+		if (object !== null && object !== scene && object !== camera && object !== zones) {
 
 			box.setFromObject(object);
 
@@ -662,6 +663,7 @@ function ViewManager(editor) {
 
 	function setLayout(layout) {
 		currentLayout = layout;
+		editor.layout = layout;
 
 		viewsGrid.setDisplay('none');
 		viewSingle.setDisplay('none');
@@ -684,13 +686,12 @@ function ViewManager(editor) {
 
 		views.forEach((view) => view.setSize());
 		views.forEach((view) => view.config.visible = true);
-
 		render();
 	}
 
-	signals.layoutChanged.add(function (layout) {
-
+	signals.layoutChanged.add(function (layout, quiet) {
 		setLayout(layout);
+		quiet || signals.layoutSaved.dispatch();
 	});
 
 	// viewport config

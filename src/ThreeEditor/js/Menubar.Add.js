@@ -33,9 +33,17 @@ function MenubarAdd(editor) {
 
 	options.add(new UIHorizontalRule());
 
+
+	// VAPTIDE zones
+	options.add(createOption('option', 'zone', () => {
+
+		editor.CSGManager.createZone();
+	}));
+
+
 	options.add(new UIHorizontalRule());
 
-	const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, transparent: true, opacity: .5 });
+	const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, transparent: true, opacity: .5, wireframe: true });
 
 	//https://stackoverflow.com/questions/37090942/how-to-render-clipped-surfaces-as-solid-objects/37093210#37093210
 	material.onBeforeCompile = function (shader) {

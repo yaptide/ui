@@ -22,10 +22,11 @@ export function Viewport(
     { orthographic, cameraPosition, clipPlane, planePosLabel, planeHelperColor, showPlaneHelpers, gridRotation } = {}
 ) {
 
-    let { scene, sceneHelpers, signals } = editor;
+    let { scene, zones, sceneHelpers, signals } = editor;
 
     let config = {
         showSceneHelpers: true,
+        showZones: true,
         visible: false,
     }
 
@@ -146,9 +147,11 @@ export function Viewport(
         renderer.setSize(canvas.width, canvas.height);
         renderer.render(scene, camera);
 
-        renderer.clippingPlanes = []; // clear clipping planes for next renders
-
         renderer.autoClear = false;
+
+        config.showZones && renderer.render(zones, camera);
+
+        renderer.clippingPlanes = []; // clear clipping planes for next renders
 
         if (config.showSceneHelpers) {
 
@@ -458,7 +461,6 @@ export function Viewport(
     });
     viewHelper.controls = controls;
 
-
     signals.transformModeChanged.add(function (mode) {
 
         transformControls.setMode(mode);
@@ -482,7 +484,7 @@ export function Viewport(
 
         transformControls.detach();
 
-        if (object !== null && object !== scene && object !== camera) {
+        if (object !== null && object !== scene && object !== camera && object !== zones && !object?.unionOperations) {
 
             transformControls.attach(object);
 
@@ -512,6 +514,19 @@ export function Viewport(
         render();
 
     });
+
+    //YAPTIDE signals
+    signals.showZonesChanged.add((showZones) => {
+
+        config.showZones = showZones;
+
+        render();
+    })
+    let number = 0;
+    signals.selectModeChanged.add((mode) => {
+        console.log(`Now selecting ${mode} times ${++number}`);
+        console.log(`Now selecting ${mode} times ${++number}`);
+    })
 
 
     function setSize(viewWidth = container.dom.offsetWidth, viewHeight = container.dom.offsetHeight) {

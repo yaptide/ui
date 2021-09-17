@@ -1,7 +1,7 @@
 import { Button } from "@material-ui/core";
 import React from "react";
-import { Operation } from "../../ThreeEditor/util/CSGManager";
 import { Fragment, useEffect, useState } from "react";
+import { Operation } from "../../ThreeEditor/util/Operation";
 import GeometryInput from "./GeometryInput";
 import OperationInput from "./OperationInput";
 

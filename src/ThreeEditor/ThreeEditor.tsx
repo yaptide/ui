@@ -4,7 +4,7 @@ import SampleComponent from './components/SampleComponent';
 import './css/main.css';
 import { Editor } from './js/Editor';
 import ZoneManagerPanel from '../components/ZoneManagerPanel/ZoneManagerPanel';
-import { CSGManager } from './util/CSGManager';
+import { CSGManager } from './util/CSG/CSGManager';
 
 
 function ThreeEditor() {
@@ -30,7 +30,7 @@ function ThreeEditor() {
       {editor &&
         <>
           <SampleComponent signal={editor.signals.objectSelected} ></SampleComponent>
-          <ZoneManagerPanel editor={editor}></ZoneManagerPanel>
+          {/* <ZoneManagerPanel editor={editor}></ZoneManagerPanel> */}
         </>
       }
     </div>

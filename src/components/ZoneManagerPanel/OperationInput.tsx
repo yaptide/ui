@@ -1,6 +1,6 @@
 import { MenuItem, Select } from "@material-ui/core";
 import { useState } from "react";
-import { Operation } from "../../ThreeEditor/util/CSGManager";
+import { Operation } from "../../ThreeEditor/util/Operation";
 
 type OperationInputProps = {
     id: number,
