@@ -524,8 +524,8 @@ export function Viewport(
     })
     let number = 0;
     signals.selectModeChanged.add((mode) => {
-        console.log(`Now selecting ${mode} times ${++number}`);
-        console.log(`Now selecting ${mode} times ${++number}`);
+        //console.log(`Now selecting ${mode}`);
+        //TODO: clicking on zones selects them if zoneSelectionMode is enabled
     })
 
 
