@@ -218,7 +218,6 @@ function SidebarGeometry( editor ) {
 	signals.objectSelected.add( function () {
 
 		currentGeometryType = null;
-		console.log(editor.selected);
 		editor.selected?.unionOperations
 			? buildZoneManager()
 			: build();

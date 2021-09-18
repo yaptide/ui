@@ -127,9 +127,6 @@ function EditorControls( controlledObject, domElement ) {
 			case 'pen':
 				onMouseDown(event);
 				break;
-				
-			default:
-				break;
 
 			default:
 				console.log(event.pointerType, "is not supported");
@@ -296,9 +293,6 @@ function EditorControls( controlledObject, domElement ) {
 				touches[1].set(event.touches[1].pageX, event.touches[1].pageY, 0).divideScalar(window.devicePixelRatio);
 				prevDistance = touches[0].distanceTo(touches[1]);
 				break;
-			
-			default:
-				break;
 
 			default:
 				console.log(event.touches.length, "is not supported");
@@ -355,9 +349,6 @@ function EditorControls( controlledObject, domElement ) {
 
 				scope.pan(offset0.add(offset1));
 
-				break;
-
-			default:
 				break;
 
 			default:

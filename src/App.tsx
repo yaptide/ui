@@ -6,7 +6,6 @@ import ThreeEditor from './ThreeEditor/ThreeEditor';
 function App() {
   const theme = createMuiTheme();
   return (<ThemeProvider theme={theme}>
-    {/* <JsRoot></JsRoot> */}
 
     <ThreeEditor></ThreeEditor>
   </ThemeProvider>);

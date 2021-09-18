@@ -30,7 +30,6 @@ function ThreeEditor() {
       {editor &&
         <>
           <SampleComponent signal={editor.signals.objectSelected} ></SampleComponent>
-          {/* <ZoneManagerPanel editor={editor}></ZoneManagerPanel> */}
         </>
       }
     </div>

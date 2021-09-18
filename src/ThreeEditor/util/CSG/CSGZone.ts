@@ -193,7 +193,6 @@ export class CSGZone<
     }
 
     static fromJSON(editor: Editor, data: CSGZoneJSON) {
-        console.log(data);
         let unionOperations = data.unionOperations.map((union) =>
             union.map((operation) => CSGOperation.fromJSON(editor, operation))
         );
