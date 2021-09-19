@@ -1,11 +1,7 @@
-import * as THREE from 'three'
-
-import { UIPanel, UIRow, UIHorizontalRule } from './libs/ui.js';
-
+import * as THREE from 'three';
 import { AddObjectCommand } from './commands/AddObjectCommand.js';
-
 import { AddZoneCommand } from './commands/AddZoneCommand.js';
-
+import { UIHorizontalRule, UIPanel } from './libs/ui.js';
 import { createOption } from './Menubar.js';
 
 function MenubarAdd(editor) {
@@ -119,3 +115,4 @@ function MenubarAdd(editor) {
 }
 
 export { MenubarAdd };
+

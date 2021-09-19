@@ -1,12 +1,8 @@
-import { Signal } from 'signals';
-import * as THREE from 'three';
-import { MathUtils } from 'three';
-import { Editor } from '../../js/Editor';
-import CSG from '../../js/libs/csg/three-csg';
-import { debounce } from 'throttle-debounce';
 import * as Comlink from 'comlink';
+import * as THREE from 'three';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import Worker from 'worker-loader!./CSGWorker';
+import { Editor } from '../../js/Editor';
 import { ICSGWorker } from './CSGWorker';
 import { CSGZone, CSGZoneJSON } from './CSGZone';
 

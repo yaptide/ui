@@ -1,4 +1,4 @@
-import { UIPanel, UIBreak, UIText } from './libs/ui.js';
+import { UIBreak, UIPanel, UIText } from './libs/ui.js';
 
 function ViewportInfo( editor ) {
 
@@ -97,3 +97,4 @@ function ViewportInfo( editor ) {
 }
 
 export { ViewportInfo };
+

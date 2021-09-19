@@ -1,5 +1,5 @@
+import { UIPanel } from './libs/ui.js';
 import { createOption } from './Menubar.js';
-import { UIPanel, UIRow } from './libs/ui.js';
 
 function MenubarLayout(editor) {
 
@@ -34,3 +34,4 @@ function MenubarLayout(editor) {
 }
 
 export { MenubarLayout };
+

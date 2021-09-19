@@ -1,18 +1,14 @@
-import * as THREE from 'three'
+import * as THREE from 'three';
+import { GUI } from 'three/examples//jsm/libs/dat.gui.module.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 import { SetPositionCommand } from './commands/SetPositionCommand';
 import { SetRotationCommand } from './commands/SetRotationCommand';
 import { SetScaleCommand } from './commands/SetScaleCommand';
-
+import { EditorOrbitControls } from './EditorOrbitControls';
+import { UIPanel } from "./libs/ui";
 import { ViewportCamera } from './Viewport.Camera.js';
 import { ViewportInfo } from './Viewport.Info.js';
-
-import { UIPanel } from "./libs/ui";
 import { ViewHelper } from './Viewport.ViewHelper';
-import { EditorOrbitControls } from './EditorOrbitControls';
-
-import { GUI } from 'three/examples//jsm/libs/dat.gui.module.js';
-
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
 
@@ -529,7 +525,7 @@ export function Viewport(
 
         render();
     })
-    let number = 0;
+    
     signals.selectModeChanged.add((mode) => {
         //console.log(`Now selecting ${mode}`);
         //TODO: clicking on zones selects them if zoneSelectionMode is enabled

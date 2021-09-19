@@ -1,7 +1,4 @@
-import * as THREE from 'three';
-
-
-import { UIPanel, UIRow, UIHorizontalRule } from './libs/ui.js';
+import { UIHorizontalRule, UIPanel, UIRow } from './libs/ui.js';
 
 function MenubarFile(editor) {
 
@@ -223,3 +220,4 @@ function MenubarFile(editor) {
 }
 
 export { MenubarFile };
+

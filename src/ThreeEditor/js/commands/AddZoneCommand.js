@@ -1,7 +1,4 @@
 import { Command } from '../Command.js';
-import { ObjectLoader } from 'three';
-import { Editor } from '../Editor.js';
-import { CSGZone } from '../../util/CSG/CSGZone';
 
 /**
  * @param editor Editor
@@ -58,3 +55,4 @@ class AddZoneCommand extends Command {
 }
 
 export { AddZoneCommand };
+

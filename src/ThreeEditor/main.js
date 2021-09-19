@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-
 import { Editor } from './js/Editor.js';
 import { ViewManager } from './js/ViewportManager.js';
 import { Toolbar } from './js/Toolbar.js';

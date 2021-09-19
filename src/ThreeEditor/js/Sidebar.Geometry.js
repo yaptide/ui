@@ -1,16 +1,8 @@
-import * as THREE from 'three'
-
-import { UIPanel, UIRow, UIText, UIInput, UIButton, UISpan } from './libs/ui.js';
-
-import { SetGeometryValueCommand } from './commands/SetGeometryValueCommand.js';
-
-import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper.js';
-
 import React from 'react';
-
 import ReactDOM from 'react-dom';
-
-import ZoneManagerPanel from '../../components/ZonesManagerPanel/ZoneManagerPanel';
+import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper.js';
+import ZoneManagerPanel from '../../components/ZoneManagerPanel/ZoneManagerPanel';
+import { UIButton, UIPanel, UIRow, UISpan, UIText } from './libs/ui.js';
 
 function SidebarGeometry( editor ) {
 
@@ -231,3 +223,4 @@ function SidebarGeometry( editor ) {
 }
 
 export { SidebarGeometry };
+

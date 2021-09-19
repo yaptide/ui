@@ -1,13 +1,9 @@
-import * as THREE from 'three'
-
-import Split from 'split-grid'
-
-import { UIDiv, UIPanel } from './libs/ui.js';
-
-import { VR } from './Viewport.VR.js';
-
+import Split from 'split-grid';
+import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { UIDiv, UIPanel } from './libs/ui.js';
 import { Viewport } from './Viewport.js';
+import { VR } from './Viewport.VR.js';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js, file was splitted to add multiple viewports
 
@@ -763,3 +759,4 @@ function updateGridColors(grid1, grid2, colors) {
 }
 
 export { ViewManager };
+

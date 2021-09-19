@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { initEditor } from './main';
 import SampleComponent from './components/SampleComponent';
 import './css/main.css';
 import { Editor } from './js/Editor';
-import { CSGManager } from './util/CSG/CSGManager';
+import { initEditor } from './main';
 
 
 function ThreeEditor() {
