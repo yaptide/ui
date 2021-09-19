@@ -10,7 +10,7 @@ import React from 'react';
 
 import ReactDOM from 'react-dom';
 
-import ZoneManagerPanel from '../../components/ZoneManagerPanel/ZoneManagerPanel';
+import ZoneManagerPanel from '../../components/ZonesManagerPanel/ZoneManagerPanel';
 
 function SidebarGeometry( editor ) {
 
@@ -144,7 +144,7 @@ function SidebarGeometry( editor ) {
 	let zonePanel = new UISpan();
 	zonePanel.setId("zonePanel");
 
-	async function buildZoneManager() {
+	async function buildZonesManager() {
 
 		var object = editor.selected;
 
@@ -219,7 +219,7 @@ function SidebarGeometry( editor ) {
 
 		currentGeometryType = null;
 		editor.selected?.unionOperations
-			? buildZoneManager()
+			? buildZonesManager()
 			: build();
 
 	} );

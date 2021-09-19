@@ -13,12 +13,7 @@ export interface CSGZoneJSON {
     unionOperations: CSGOperationJSON[][];
     subscribedObjectsUuid: string[];
 }
-export class CSGZone<
-    TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry,
-    TMaterial extends THREE.Material | THREE.Material[] =
-        | THREE.Material
-        | THREE.Material[]
-> extends THREE.Mesh {
+export class CSGZone extends THREE.Mesh {
     unionOperations: CSGOperation[][];
 
     subscribedObjectsUuid: Set<string>;
@@ -37,6 +32,8 @@ export class CSGZone<
         this.updatePreview()
     );
 
+    private editor: Editor;
+
     constructor(
         editor: Editor,
         name?: string,
@@ -44,7 +41,7 @@ export class CSGZone<
         subscribedObjectsUuid?: Set<string>
     ) {
         super();
-        // this.type = "Zone";
+        this.type = "Zone";
         this.name = name || "CSGZone";
         this.material = new THREE.MeshNormalMaterial();
         this.subscribedObjectsUuid = subscribedObjectsUuid || new Set();
@@ -66,7 +63,7 @@ export class CSGZone<
 
         // If operations are specified, we have to generate fist geometry manually.
         unionOperations && this.updateGeometry();
-
+        this.editor = editor;
         this.signals = editor.signals;
 
         this.signals.geometryChanged.add((object) => this.handleSignal(object));
@@ -74,6 +71,11 @@ export class CSGZone<
 
         this.signals.zoneAdded.dispatch(this);
     }
+
+	clone( recursive:boolean ) {
+        let clonedZone :this = new CSGZone(this.editor, this.name, this.unionOperations, this.subscribedObjectsUuid).copy( this, recursive ) as this;
+        return clonedZone;
+	}
 
     updateGeometry() {
         console.time("CSGZone");
@@ -115,6 +117,7 @@ export class CSGZone<
         this.geometry.dispose();
         this.geometry = geometryResult;
         this.geometry.computeBoundingSphere();
+        this.updateMatrixWorld(true);
         console.timeEnd("CSGZone");
     }
 
@@ -174,7 +177,8 @@ export class CSGZone<
         this.needsUpdate = true;
 
         this.updateGeometry();
-
+        
+        this.signals.objectChanged.dispatch(this);
         this.signals.sceneGraphChanged.dispatch();
     }
 
@@ -215,3 +219,4 @@ export class CSGZone<
         return zone;
     }
 }
+export const isCSGZone = (x: any): x is CSGZone => x instanceof CSGZone;

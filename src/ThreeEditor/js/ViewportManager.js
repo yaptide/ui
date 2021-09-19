@@ -46,7 +46,7 @@ function ViewManager(editor) {
 
 	var camera = editor.camera;
 	var scene = editor.scene;
-	var zones = editor.zones;
+	var zonesManager = editor.zonesManager;
 	var sceneHelpers = editor.sceneHelpers;
 
 
@@ -358,7 +358,7 @@ function ViewManager(editor) {
 		selectionBox.visible = false;
 
 
-		if (object !== null && object !== scene && object !== camera && object !== zones) {
+		if (object !== null && object !== scene && object !== camera && object !== zonesManager) {
 
 			box.setFromObject(object);
 

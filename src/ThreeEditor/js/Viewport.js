@@ -22,7 +22,7 @@ export function Viewport(
     { orthographic, cameraPosition, clipPlane, planePosLabel, planeHelperColor, showPlaneHelpers, gridRotation } = {}
 ) {
 
-    let { scene, zones, sceneHelpers, signals } = editor;
+    let { scene, zonesManager, sceneHelpers, signals } = editor;
 
     let config = {
         showSceneHelpers: true,
@@ -149,7 +149,7 @@ export function Viewport(
 
         renderer.autoClear = false;
 
-        config.showZones && renderer.render(zones, camera);
+        config.showZones && renderer.render(zonesManager, camera);
 
         renderer.clippingPlanes = []; // clear clipping planes for next renders
 
@@ -484,7 +484,7 @@ export function Viewport(
 
         transformControls.detach();
 
-        if (object !== null && object !== scene && object !== camera && object !== zones && !object?.unionOperations) {
+        if (object !== null && object !== scene && object !== camera && object !== zonesManager && !object?.unionOperations) {
 
             transformControls.attach(object);
 
@@ -506,7 +506,6 @@ export function Viewport(
 
     });
 
-
     signals.showHelpersChanged.add(function (showHelpers) {
 
         transformControls.enabled = showHelpers;
@@ -516,6 +515,14 @@ export function Viewport(
     });
 
     //YAPTIDE signals
+    
+    signals.objectChanged.add(function (object) {
+
+        transformControls.detach();
+        render();
+
+    })
+
     signals.showZonesChanged.add((showZones) => {
 
         config.showZones = showZones;

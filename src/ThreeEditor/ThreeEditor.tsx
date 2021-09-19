@@ -3,7 +3,6 @@ import { initEditor } from './main';
 import SampleComponent from './components/SampleComponent';
 import './css/main.css';
 import { Editor } from './js/Editor';
-import ZoneManagerPanel from '../components/ZoneManagerPanel/ZoneManagerPanel';
 import { CSGManager } from './util/CSG/CSGManager';
 
 

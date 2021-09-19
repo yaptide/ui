@@ -115,8 +115,6 @@ function Editor() {
 	this.storage = new _Storage();
 	this.strings = new Strings(this.config);
 
-	this.CSGManager = new CSGManager(this); //CSG Manager
-
 	this.loader = new Loader(this);
 
 	this.camera = _DEFAULT_CAMERA.clone();
@@ -126,8 +124,7 @@ function Editor() {
 
 	this.sceneHelpers = new THREE.Scene();
 
-	this.zones = new THREE.Scene();
-	this.zones.name = 'Zones';
+	this.zonesManager = new CSGManager(this); //CSG Manager
 
 	this.object = {};
 	this.geometries = {};
@@ -194,8 +191,9 @@ Editor.prototype = {
 		});
 
 		if (parent === undefined) {
-
-			this.scene.add(object);
+			object?.unionOperations
+				? this.zonesManager.add(object)
+				: this.scene.add(object);
 
 		} else {
 
@@ -563,7 +561,6 @@ Editor.prototype = {
 		var uuid = null;
 
 		if (object !== null) {
-
 			uuid = object.uuid;
 
 		}
@@ -583,7 +580,8 @@ Editor.prototype = {
 			return;
 
 		}
-		var object = this.scene.getObjectById(id) ?? this.zones.getObjectById(id)
+
+		var object = this.scene.getObjectById(id) ?? this.zonesManager.getObjectById(id)
 		this.select(object);
 
 	},
@@ -640,13 +638,25 @@ Editor.prototype = {
 		this.scene.environment = null;
 		this.scene.fog = null;
 
-		this.zones = new THREE.Scene();
-
 		var objects = this.scene.children;
 
 		while (objects.length > 0) {
 
 			this.removeObject(objects[0]);
+
+		}
+
+		this.zonesManager.name = 'Zones';
+		this.zonesManager.userData = {};
+		this.zonesManager.background = null;
+		this.zonesManager.environment = null;
+		this.zonesManager.fog = null;
+
+		var zones = this.zonesManager.children;
+
+		while (zones.length > 0) {
+
+			this.removeObject(zones[0]);
 
 		}
 
@@ -684,8 +694,11 @@ Editor.prototype = {
 
 		this.setScene(await loader.parseAsync(json.scene));
 
-		this.CSGManager = CSGManager.fromJSON(this, json.CSGManager); // CSGManager must be load after scene 
-		
+		let zonesManager = CSGManager.fromJSON(this, json.zonesManager); // CSGManager must be loaded after scene 
+
+		this.zonesManager.copy(zonesManager);
+		this.signals.sceneGraphChanged.dispatch();
+				
 		this.signals.loadedFromJSON.dispatch(this);
 	},
 
@@ -726,7 +739,7 @@ Editor.prototype = {
 			scene: this.scene.toJSON(),
 			scripts: this.scripts,
 			history: this.history.toJSON(),
-			CSGManager: this.CSGManager.toJSON() // serialize CSGManager
+			zonesManager: this.zonesManager.toJSON() // serialize CSGManager
 
 		};
 

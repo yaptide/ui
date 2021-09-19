@@ -19,7 +19,6 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 
     const zoneRef = useRef<CSGZone>();
 
-
     const parseAlgebraRow = (row: AlgebraRow) => {
         let operations: CSGOperation[] = [];
 
@@ -79,13 +78,11 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
         [props.editor]);
 
     const initZone = useCallback(() => {
-
-        let manager = props.editor.CSGManager;
-        props.zone || manager.zones.size > 0
+        let manager = props.editor.zonesManager;
+        let rows: AlgebraRow[] = [];
+        props.zone
             ? (() => {
-                zoneRef.current = props.zone || manager.zones.values().next().value;
-
-                let rows: AlgebraRow[] = [];
+                zoneRef.current = props.zone;
                 zoneRef.current?.unionOperations.forEach((union) => {
 
                     let row: AlgebraRow = { geometriesId: [], operations: [] };
@@ -99,10 +96,10 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
                     rows.push(row);
                 });
 
-                setRows([...rows]);
-
             })()
             : zoneRef.current = manager.createZone();
+
+        setRows([...rows]);
 
     }, [props.editor,props.zone]);
 

@@ -88,8 +88,8 @@ export function initEditor(container) {
                 editor.signals.savingStarted.dispatch();
 
                 timeout = setTimeout(function () {
-
-                    editor.storage.set(editor.toJSON());
+                    
+                    editor.storage.set( editor.toJSON() );
 
                     editor.signals.savingFinished.dispatch();
 

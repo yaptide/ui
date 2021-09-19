@@ -4,6 +4,8 @@ import { UIPanel, UIRow, UIHorizontalRule } from './libs/ui.js';
 
 import { AddObjectCommand } from './commands/AddObjectCommand.js';
 
+import { AddZoneCommand } from './commands/AddZoneCommand.js';
+
 import { createOption } from './Menubar.js';
 
 function MenubarAdd(editor) {
@@ -37,7 +39,7 @@ function MenubarAdd(editor) {
 	// VAPTIDE zones
 	options.add(createOption('option', 'zone', () => {
 
-		editor.CSGManager.createZone();
+		editor.execute(new AddZoneCommand(editor));
 	}));
 
 
