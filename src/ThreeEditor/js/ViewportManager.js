@@ -247,8 +247,6 @@ function ViewManager(editor) {
 
 	let singleView = [viewport];
 
-	let currentLayout = 'singleView';
-
 	let views = singleView;
 
 	views.forEach((view) => view.config.visible = true);
@@ -270,7 +268,7 @@ function ViewManager(editor) {
 
 	signals.editorCleared.add(function () {
 
-		views.forEach((view) => view.controls.center && view.controls.center.set(0, 0, 0));
+		views.forEach((view) => view.controls.center.set(0, 0, 0));
 		render();
 
 	});
@@ -658,7 +656,6 @@ function ViewManager(editor) {
 	// Layout 
 
 	function setLayout(layout) {
-		currentLayout = layout;
 		editor.layout = layout;
 
 		viewsGrid.setDisplay('none');
@@ -674,7 +671,7 @@ function ViewManager(editor) {
 
 			case 'singleView':
 			default:
-				currentLayout = 'singleView';
+				editor.layout = 'singleView';
 				views = singleView;
 				viewSingle.dom.style.display = null;
 

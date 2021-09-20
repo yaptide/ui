@@ -7,6 +7,7 @@ import { History as _History } from './History.js';
 import { Strings } from './Strings.js';
 import { Storage as _Storage } from './Storage.js';
 import { CSGManager } from '../util/CSG/CSGManager';
+import { isCSGZone } from '../util/CSG/CSGZone';
 
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
@@ -191,7 +192,7 @@ Editor.prototype = {
 		});
 
 		if (parent === undefined) {
-			object?.unionOperations
+			isCSGZone(object)
 				? this.zonesManager.add(object)
 				: this.scene.add(object);
 

@@ -72,10 +72,15 @@ export class CSGZone extends THREE.Mesh {
         this.signals.zoneAdded.dispatch(this);
     }
 
-	clone( recursive:boolean ) {
-        let clonedZone :this = new CSGZone(this.editor, this.name, this.unionOperations, this.subscribedObjectsUuid).copy( this, recursive ) as this;
+    clone(recursive: boolean) {
+        let clonedZone: this = new CSGZone(
+            this.editor,
+            this.name,
+            this.unionOperations,
+            this.subscribedObjectsUuid
+        ).copy(this, recursive) as this;
         return clonedZone;
-	}
+    }
 
     updateGeometry() {
         console.time("CSGZone");
@@ -101,9 +106,9 @@ export class CSGZone extends THREE.Mesh {
 
                 let handleMode = {
                     "left-subtraction": () => lastBsp.subtract(objectBsp),
-                    intersection: () => lastBsp.intersect(objectBsp),
+                    "intersection": () => lastBsp.intersect(objectBsp),
                     "right-subtraction": () => objectBsp.subtract(lastBsp),
-                    union: () => lastBsp.union(objectBsp),
+                    "union": () => lastBsp.union(objectBsp),
                 };
 
                 operationsResultBsp = handleMode[operation.mode]();
@@ -177,7 +182,7 @@ export class CSGZone extends THREE.Mesh {
         this.needsUpdate = true;
 
         this.updateGeometry();
-        
+
         this.signals.objectChanged.dispatch(this);
         this.signals.sceneGraphChanged.dispatch();
     }
