@@ -13,15 +13,15 @@ import { VR } from './Viewport.VR.js';
 //   - zenith direction being positive Y axis
 //   - reference plane being XZ plane
 // polar (phi) angle is being measured from fixed zenith direction (positive Y axis)
-//   - point on positive part of Y axis: Y>0 X=Z=0  --> phi = 0
-//   - point on XZ plane: Y=0, X=!0 or Z!=0         --> phi = pi/2 = 90*
-//   - point on negative part of Y axis: Y<0 X=Z=0  --> phi = pi = 180*
+//   - point on positive part of Y axis: Y>0 X=Z=0  			--> phi = 0
+//   - point on XZ plane: 				 Y=0, X=!0 or Z!=0      --> phi = pi/2 = 90*
+//   - point on negative part of Y axis: Y<0 X=Z=0  			--> phi = pi = 180*
 // azimuthal (theta) angle is being measured starting at positive Z axis on reference plane,
 // in principle theta = atan2(x,z)
-//   - point on positive part of Z axis: Z>0 X=Y=0  --> theta = 0
-//   - point on positive part of X axis: X>0 X=Z=0  --> theta = pi / 2 = 90*
-//   - point on negative part of Z axis: Z<0 X=Y=0  --> theta = pi = 180 *
-//   - point on positive part of X axis: X<0 X=Z=0  --> theta = -pi / 2 = -90* = 270*
+//   - point on positive part of Z axis: Z>0 X=Y=0  			--> theta = 0
+//   - point on positive part of X axis: X>0 Y=Z=0  			--> theta = pi / 2 = 90*
+//   - point on negative part of Z axis: Z<0 X=Y=0  			--> theta = pi = 180 *
+//   - point on negative part of X axis: X<0 Y=Z=0  			--> theta = -pi / 2 = -90* = 270*
 
 // TODO - consider using converter Spherical.setFromCartesianCoords
 //   then code reader would be free from understanding unusual convention of spherical coordinates system in threejs
@@ -114,8 +114,8 @@ function ViewManager(editor) {
 		// camera looking from above XY plane
 		cameraPosition: new THREE.Vector3(0, 0, 10),
 
-		// default clipping plane being XY plane (normal vector along Z axis)
-		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, 1), 0.),
+		// default clipping plane being XY plane (normal vector pointing down along Z axis)
+		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.),
 
 		planePosLabel: "PlanePos Z",
 
@@ -162,8 +162,8 @@ function ViewManager(editor) {
 		// camera looking from above XZ plane
 		cameraPosition: new THREE.Vector3(0, 10, 0),
 
-		// default clipping plane being XZ plane (normal vector along Y axis)
-		clipPlane: new THREE.Plane(new THREE.Vector3(0, 1, 0), 0.),
+		// default clipping plane being XZ plane (normal vector pointing down along Y axis)
+		clipPlane: new THREE.Plane(new THREE.Vector3(0, -1, 0), 0.),
 		planePosLabel: "PlanePoz Y",
 
 		// 0xc2ee00 - Lime color (between green and yellow)
@@ -188,8 +188,8 @@ function ViewManager(editor) {
 		// camera looking from above YZ plane
 		cameraPosition: new THREE.Vector3(10, 0, 0),
 
-		// default clipping plane being YZ plane (normal vector along X axis)
-		clipPlane: new THREE.Plane(new THREE.Vector3(1, 0, 0), 0.),
+		// default clipping plane being YZ plane (normal vector pointing down along X axis)
+		clipPlane: new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.),
 		planePosLabel: "PlanePos X",
 
 		// 0xff7f9b - Tickle Me Pink color
