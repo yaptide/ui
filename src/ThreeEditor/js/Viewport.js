@@ -9,6 +9,8 @@ import { UIPanel } from "./libs/ui";
 import { ViewportCamera } from './Viewport.Camera.js';
 import { ViewportInfo } from './Viewport.Info.js';
 import { ViewHelper } from './Viewport.ViewHelper';
+import { isCSGManager } from '../util/CSG/CSGManager';
+import { isCSGZone } from '../util/CSG/CSGZone';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
 
@@ -351,9 +353,8 @@ export function Viewport(
     }
 
     function onMouseDown(event) {
-
+        
         // event.preventDefault();
-
         var array = getMousePosition(container.dom, event.clientX, event.clientY);
         onDownPosition.fromArray(array);
 
@@ -424,6 +425,16 @@ export function Viewport(
         updateAspectRatio();
     }
 
+    function canBeTransformed(object) {
+        return object !== null && object !== scene && object !== camera && !isCSGManager(object) && !isCSGZone(object)
+    }
+
+    function reattachTransformControls(object) {
+        transformControls.detach();
+
+        canBeTransformed(object) && transformControls.attach(object);
+    }
+
     container.dom.addEventListener('keydown', function (event) {
 
         switch (event.code) {
@@ -447,7 +458,6 @@ export function Viewport(
 
     // controls need to be added *after* main logic,
     // otherwise controls.enabled doesn't work.
-
     var controls = new EditorOrbitControls(camera, container.dom);
     controls.addEventListener('change', function () {
 
@@ -477,15 +487,7 @@ export function Viewport(
 
     signals.objectSelected.add(function (object) {
 
-
-        transformControls.detach();
-
-        if (object !== null && object !== scene && object !== camera && object !== zonesManager && !object?.unionOperations) {
-
-            transformControls.attach(object);
-
-        }
-
+        reattachTransformControls(object);
         render();
 
     });
@@ -511,10 +513,8 @@ export function Viewport(
     });
 
     //YAPTIDE signals
-    
     signals.objectChanged.add(function (object) {
 
-        transformControls.detach();
         render();
 
     })
@@ -527,7 +527,6 @@ export function Viewport(
     })
     
     signals.selectModeChanged.add((mode) => {
-        //console.log(`Now selecting ${mode}`);
         //TODO: clicking on zones selects them if zoneSelectionMode is enabled
     })
 

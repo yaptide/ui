@@ -15,13 +15,7 @@ interface CSGManagerJSON {
 
 export class CSGManager extends THREE.Scene{
     editor: Editor;
-    // zones: Map<String, CSGZone> = new Map();
     worker: Comlink.Remote<ICSGWorker>;
-    // private signals: {
-    //     CSGManagerStateChanged: Signal,
-    //     sceneGraphChanged: Signal,
-    //     objectAdded: Signal<any>,
-    // };
 
     constructor(editor: Editor) {
         super();
@@ -29,7 +23,6 @@ export class CSGManager extends THREE.Scene{
         this.name = "Zones";
         this.worker = Comlink.wrap<ICSGWorker>(new Worker());
         this.editor = editor;
-        // this.signals = editor.signals;
     }
 
     createZone() {
@@ -45,10 +38,6 @@ export class CSGManager extends THREE.Scene{
     add(zone: CSGZone) {
         zone.worker = this.worker;
         return super.add(zone);
-        // this.editor.zones.add(zone);
-        // this.zones.set(zone.uuid, zone);
-
-        // this.signals.CSGManagerStateChanged.dispatch();
     }
 
     remove(zone: CSGZone) {
