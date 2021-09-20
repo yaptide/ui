@@ -425,6 +425,10 @@ export function Viewport(
     }
 
     function canBeTransformed(object) {
+        // Check if object can be transformed. 
+        // For our usage it would be only geometries included on the scene. 
+        // Amount of geometries can differ form project to project thus we check only if it isn't mesh.
+        // unionOperations is property unique to zones that shoudn't be transformed with controler.
         return object !== null && object !== scene && object !== camera && !isCSGManager(object) && !isCSGZone(object)
     }
 

@@ -32,7 +32,7 @@ function MenubarAdd(editor) {
 	options.add(new UIHorizontalRule());
 
 
-	// VAPTIDE zones
+	// YAPTIDE zones
 	options.add(createOption('option', 'zone', () => {
 
 		editor.execute(new AddZoneCommand(editor));
