@@ -36,6 +36,7 @@ function ViewManager(editor) {
 	container.setPosition('absolute');
 
 	//
+	let currentLayout = editor.config.getKey('layout');
 
 	var renderer = null;
 	var pmremGenerator = null;
@@ -251,7 +252,7 @@ function ViewManager(editor) {
 
 	views.forEach((view) => view.config.visible = true);
 
-	setLayout(editor.layout ?? "fourViews");
+	setLayout(currentLayout ?? "fourViews");
 
 
 	// events
@@ -656,8 +657,6 @@ function ViewManager(editor) {
 	// Layout 
 
 	function setLayout(layout) {
-		editor.layout = layout;
-
 		viewsGrid.setDisplay('none');
 		viewSingle.setDisplay('none');
 		views.forEach((view) => view.config.visible = false);
@@ -665,13 +664,14 @@ function ViewManager(editor) {
 		switch (layout) {
 
 			case 'fourViews':
+				currentLayout = 'fourViews';
 				views = fourViews;
 				viewsGrid.dom.style.display = null;
 				break;
 
 			case 'singleView':
 			default:
-				editor.layout = 'singleView';
+				currentLayout = 'singleView';
 				views = singleView;
 				viewSingle.dom.style.display = null;
 
@@ -682,9 +682,9 @@ function ViewManager(editor) {
 		render();
 	}
 
-	signals.layoutChanged.add(function (layout, quiet) {
+	signals.layoutChanged.add(function (layout) {
 		setLayout(layout);
-		quiet || signals.layoutSaved.dispatch();
+		editor.config.setKey('layout', currentLayout);
 	});
 
 	// viewport config

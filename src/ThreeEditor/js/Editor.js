@@ -99,9 +99,7 @@ function Editor() {
 		showZonesChanged: new Signal(),
 		selectModeChanged: new Signal(),
 
- 		// Layout signals
-		layoutChanged: new Signal(),
-		layoutSaved: new Signal(),
+		layoutChanged: new Signal(), // Layout signal
 
 		viewportConfigChanged: new Signal(), // Viewport config signal 
 
@@ -687,9 +685,6 @@ Editor.prototype = {
 		this.camera.copy(camera);
 		this.signals.cameraResetted.dispatch();
 
-		this.layout = json.layout;
-		this.signals.layoutChanged.dispatch(json.layout, true);
-
 		this.history.fromJSON(json.history);
 		this.scripts = json.scripts;
 
@@ -736,7 +731,6 @@ Editor.prototype = {
 				toneMappingExposure: this.config.getKey('project/renderer/toneMappingExposure')
 			},
 			camera: this.camera.toJSON(),
-			layout: this.layout,
 			scene: this.scene.toJSON(),
 			scripts: this.scripts,
 			history: this.history.toJSON(),

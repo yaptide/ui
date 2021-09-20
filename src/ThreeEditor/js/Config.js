@@ -6,6 +6,8 @@ function Config() {
 		'language': 'en',
 
 		'autosave': true,
+		
+		'layout': 'fourViews', //YAPTIDE LAYOUT
 
 		'project/title': '',
 		'project/editable': false,

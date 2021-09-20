@@ -353,7 +353,6 @@ export function Viewport(
     }
 
     function onMouseDown(event) {
-        
         // event.preventDefault();
         var array = getMousePosition(container.dom, event.clientX, event.clientY);
         onDownPosition.fromArray(array);

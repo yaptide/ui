@@ -111,7 +111,6 @@ export function initEditor(container) {
         signals.scriptChanged.add(saveState);
         signals.historyChanged.add(saveState);
         signals.CSGManagerStateChanged.add(saveState);
-        signals.layoutSaved.add(saveState);
     });
 
     //
