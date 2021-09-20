@@ -13,6 +13,7 @@ export interface CSGZoneJSON {
     unionOperations: CSGOperationJSON[][];
     subscribedObjectsUuid: string[];
 }
+
 export class CSGZone extends THREE.Mesh {
     unionOperations: CSGOperation[][];
 
