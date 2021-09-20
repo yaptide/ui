@@ -12,8 +12,7 @@ function parseRow(zoneOperationRow:AlgebraRow){
             else {
                 nextGeo = zoneOperationRow.geometriesId?.[id + 1] as number;
                 controller.parseOperation(op, nextGeo);
-                // console.log(controller.toString().slice(0,-3));
-                // Use to see how it parses every operation
+                // console.log(controller.toString().slice(0,-3)); // Preview parsed row to operation
             }
             return true;
         });
