@@ -268,8 +268,9 @@ function ViewManager(editor) {
 	// signals
 
 	signals.editorCleared.add(function () {
-
-		views.forEach((view) => view.controls.center.set(0, 0, 0));
+		// When we create new files view.controls is undefined
+		// TODO: fix this error
+		views.forEach((view) => view.controls.center && view.controls.center.set(0, 0, 0));
 		render();
 
 	});
