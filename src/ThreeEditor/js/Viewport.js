@@ -1,18 +1,16 @@
-import * as THREE from 'three'
+import * as THREE from 'three';
+import { GUI } from 'three/examples//jsm/libs/dat.gui.module.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 import { SetPositionCommand } from './commands/SetPositionCommand';
 import { SetRotationCommand } from './commands/SetRotationCommand';
 import { SetScaleCommand } from './commands/SetScaleCommand';
-
+import { EditorOrbitControls } from './EditorOrbitControls';
+import { UIPanel } from "./libs/ui";
 import { ViewportCamera } from './Viewport.Camera.js';
 import { ViewportInfo } from './Viewport.Info.js';
-
-import { UIPanel } from "./libs/ui";
 import { ViewHelper } from './Viewport.ViewHelper';
-import { EditorOrbitControls } from './EditorOrbitControls';
-
-import { GUI } from 'three/examples//jsm/libs/dat.gui.module.js';
-
+import { isCSGManager } from '../util/CSG/CSGManager';
+import { isCSGZone } from '../util/CSG/CSGZone';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
 
@@ -22,10 +20,11 @@ export function Viewport(
     { orthographic, cameraPosition, clipPlane, planePosLabel, planeHelperColor, showPlaneHelpers, gridRotation } = {}
 ) {
 
-    let { scene, sceneHelpers, signals } = editor;
+    let { scene, zonesManager, sceneHelpers, signals } = editor;
 
     let config = {
         showSceneHelpers: true,
+        showZones: true,
         visible: false,
     }
 
@@ -146,9 +145,11 @@ export function Viewport(
         renderer.setSize(canvas.width, canvas.height);
         renderer.render(scene, camera);
 
-        renderer.clippingPlanes = []; // clear clipping planes for next renders
-
         renderer.autoClear = false;
+
+        config.showZones && renderer.render(zonesManager, camera);
+
+        renderer.clippingPlanes = []; // clear clipping planes for next renders
 
         if (config.showSceneHelpers) {
 
@@ -352,9 +353,7 @@ export function Viewport(
     }
 
     function onMouseDown(event) {
-
         // event.preventDefault();
-
         var array = getMousePosition(container.dom, event.clientX, event.clientY);
         onDownPosition.fromArray(array);
 
@@ -425,6 +424,20 @@ export function Viewport(
         updateAspectRatio();
     }
 
+    function canBeTransformed(object) {
+        // Check if object can be transformed. 
+        // For our usage it would be only geometries included on the scene. 
+        // Amount of geometries can differ form project to project thus we check only if it isn't mesh.
+        // unionOperations is property unique to zones that shoudn't be transformed with controler.
+        return object !== null && object !== scene && object !== camera && !isCSGManager(object) && !isCSGZone(object)
+    }
+
+    function reattachTransformControls(object) {
+        transformControls.detach();
+
+        canBeTransformed(object) && transformControls.attach(object);
+    }
+
     container.dom.addEventListener('keydown', function (event) {
 
         switch (event.code) {
@@ -448,7 +461,6 @@ export function Viewport(
 
     // controls need to be added *after* main logic,
     // otherwise controls.enabled doesn't work.
-
     var controls = new EditorOrbitControls(camera, container.dom);
     controls.addEventListener('change', function () {
 
@@ -457,7 +469,6 @@ export function Viewport(
 
     });
     viewHelper.controls = controls;
-
 
     signals.transformModeChanged.add(function (mode) {
 
@@ -479,15 +490,7 @@ export function Viewport(
 
     signals.objectSelected.add(function (object) {
 
-
-        transformControls.detach();
-
-        if (object !== null && object !== scene && object !== camera) {
-
-            transformControls.attach(object);
-
-        }
-
+        reattachTransformControls(object);
         render();
 
     });
@@ -504,7 +507,6 @@ export function Viewport(
 
     });
 
-
     signals.showHelpersChanged.add(function (showHelpers) {
 
         transformControls.enabled = showHelpers;
@@ -512,6 +514,24 @@ export function Viewport(
         render();
 
     });
+
+    //YAPTIDE signals
+    signals.objectChanged.add(function (object) {
+
+        render();
+
+    })
+
+    signals.showZonesChanged.add((showZones) => {
+
+        config.showZones = showZones;
+
+        render();
+    })
+    
+    signals.selectModeChanged.add((mode) => {
+        //TODO: clicking on zones selects them if zoneSelectionMode is enabled
+    })
 
 
     function setSize(viewWidth = container.dom.offsetWidth, viewHeight = container.dom.offsetHeight) {

@@ -8,10 +8,19 @@ function Toolbar(editor) {
 	var container = new UIPanel();
 	container.setId('toolbar');
 
-	// translate / rotate / scale
+	// YAPTIDE select mode
+	var select = new UICheckbox( false );
+	select.dom.title = "select mode"
+	select.onChange( function () {
 
-	var translateIcon = document.createElement('img');
-	translateIcon.title = strings.getKey('toolbar/translate');
+		signals.selectModeChanged.dispatch( this.getValue() === true ? 'zones' : 'geometries' );
+
+	} );
+	container.add( select );
+
+	// translate
+	var translateIcon = document.createElement( 'img' );
+	translateIcon.title = strings.getKey( 'toolbar/translate' );
 	translateIcon.src = 'images/translate.svg';
 
 	var translate = new UIButton();
@@ -24,8 +33,9 @@ function Toolbar(editor) {
 	});
 	container.add(translate);
 
-	var rotateIcon = document.createElement('img');
-	rotateIcon.title = strings.getKey('toolbar/rotate');
+	// rotate
+	var rotateIcon = document.createElement( 'img' );
+	rotateIcon.title = strings.getKey( 'toolbar/rotate' );
 	rotateIcon.src = 'images/rotate.svg';
 
 	var rotate = new UIButton();
@@ -37,8 +47,9 @@ function Toolbar(editor) {
 	});
 	container.add(rotate);
 
-	var scaleIcon = document.createElement('img');
-	scaleIcon.title = strings.getKey('toolbar/scale');
+	// scale
+	var scaleIcon = document.createElement( 'img' );
+	scaleIcon.title = strings.getKey( 'toolbar/scale' );
 	scaleIcon.src = 'images/scale.svg';
 
 	var scale = new UIButton();
@@ -50,9 +61,10 @@ function Toolbar(editor) {
 	});
 	container.add(scale);
 
-	var local = new UICheckbox(false);
-	local.dom.title = strings.getKey('toolbar/local');
-	local.onChange(function () {
+	// local / world
+	var local = new UICheckbox( false );
+	local.dom.title = strings.getKey( 'toolbar/local' );
+	local.onChange( function () {
 
 		signals.spaceChanged.dispatch(this.getValue() === true ? 'local' : 'world');
 

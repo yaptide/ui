@@ -1,20 +1,23 @@
 import { Button } from "@material-ui/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Editor } from "../../ThreeEditor/js/Editor";
-import { CSGOperation, CSGZone } from "../../ThreeEditor/util/CSGManager";
+import { CSGZone } from "../../ThreeEditor/util/CSG/CSGZone";
+import { CSGOperation } from "../../ThreeEditor/util/CSG/CSGOperation";
 import { parseZone } from "../../util/parseZone/parseZone";
 import BooleanAlgebraRow, { AlgebraRow } from "./BooleanAlgebraRow";
 import "./zoneManagerPanel.css";
 
+type ZoneManagerPanelProps = {
+    editor: Editor,
+    zone?: CSGZone,
+}
 
-
-function ZoneManagerPanel(props: { editor: Editor }) {
+function ZoneManagerPanel(props: ZoneManagerPanelProps) {
     const [rows, setRows] = useState<AlgebraRow[]>([]);
 
     const [allObjects, setAllObjects] = useState<THREE.Object3D[]>([]);
 
     const zoneRef = useRef<CSGZone>();
-
 
     const parseAlgebraRow = (row: AlgebraRow) => {
         let operations: CSGOperation[] = [];
@@ -74,47 +77,45 @@ function ZoneManagerPanel(props: { editor: Editor }) {
         },
         [props.editor]);
 
-    const initZone = useCallback((editor: Editor) => {
+    const initZone = useCallback(() => {
+        let manager = props.editor.zonesManager;
+        let rows: AlgebraRow[] = [];
+        props.zone
+            ? (() => {
+                zoneRef.current = props.zone;
+                zoneRef.current?.unionOperations.forEach((union) => {
 
-        let manager = props.editor.CSGManager;
+                    let row: AlgebraRow = { geometriesId: [], operations: [] };
 
-        if (manager.zones.size > 0) {
-            zoneRef.current = manager.zones.values().next().value;
+                    union.forEach((operation) => {
+                        row.geometriesId.push(operation.object.id);
+                        if (operation.mode !== 'union')
+                            row.operations.push(operation.mode);
+                    });
 
-            let rows: AlgebraRow[] = [];
-            zoneRef.current?.unionOperations.forEach((union) => {
-
-                let row: AlgebraRow = { geometriesId: [], operations: [] };
-
-                union.forEach((operation) => {
-                    row.geometriesId.push(operation.object.id);
-                    if (operation.mode !== 'union')
-                        row.operations.push(operation.mode);
+                    rows.push(row);
                 });
 
-                rows.push(row);
-            });
+            })()
+            : zoneRef.current = manager.createZone();
 
-            setRows([...rows]);
-        } else {
-            zoneRef.current = manager.createZone();
-        }
+        setRows([...rows]);
 
-
-    }, [props.editor]);
+    }, [props.editor,props.zone]);
 
     useEffect(() => {
         refreshObjectsList();
         props.editor.signals.objectAdded.add(refreshObjectsList);
         props.editor.signals.objectRemoved.add(refreshObjectsList);
-        props.editor.signals.loadedFromJSON.add(initZone);
         return () => {
             props.editor.signals.objectAdded.remove(refreshObjectsList);
             props.editor.signals.objectRemoved.remove(refreshObjectsList);
-            props.editor.signals.loadedFromJSON.remove(initZone);
         }
-    }, [initZone, props.editor, refreshObjectsList]);
+    }, [props.editor, refreshObjectsList]);
 
+    useEffect(() => {
+        initZone();
+    },[initZone])
 
     return (<div className="zoneManagerWrapper">
         {rows.map((row, id) => {

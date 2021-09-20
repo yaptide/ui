@@ -1,13 +1,9 @@
-import * as THREE from 'three'
-
-import Split from 'split-grid'
-
-import { UIDiv, UIPanel } from './libs/ui.js';
-
-import { VR } from './Viewport.VR.js';
-
+import Split from 'split-grid';
+import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { UIDiv, UIPanel } from './libs/ui.js';
 import { Viewport } from './Viewport.js';
+import { VR } from './Viewport.VR.js';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js, file was splitted to add multiple viewports
 
@@ -17,15 +13,15 @@ import { Viewport } from './Viewport.js';
 //   - zenith direction being positive Y axis
 //   - reference plane being XZ plane
 // polar (phi) angle is being measured from fixed zenith direction (positive Y axis)
-//   - point on positive part of Y axis: Y>0 X=Z=0  --> phi = 0
-//   - point on XZ plane: Y=0, X=!0 or Z!=0         --> phi = pi/2 = 90*
-//   - point on negative part of Y axis: Y<0 X=Z=0  --> phi = pi = 180*
+//   - point on positive part of Y axis: Y>0 X=Z=0  			--> phi = 0
+//   - point on XZ plane: 				 Y=0, X=!0 or Z!=0      --> phi = pi/2 = 90*
+//   - point on negative part of Y axis: Y<0 X=Z=0  			--> phi = pi = 180*
 // azimuthal (theta) angle is being measured starting at positive Z axis on reference plane,
 // in principle theta = atan2(x,z)
-//   - point on positive part of Z axis: Z>0 X=Y=0  --> theta = 0
-//   - point on positive part of X axis: X>0 X=Z=0  --> theta = pi / 2 = 90*
-//   - point on negative part of Z axis: Z<0 X=Y=0  --> theta = pi = 180 *
-//   - point on positive part of X axis: X<0 X=Z=0  --> theta = -pi / 2 = -90* = 270*
+//   - point on positive part of Z axis: Z>0 X=Y=0  			--> theta = 0
+//   - point on positive part of X axis: X>0 Y=Z=0  			--> theta = pi / 2 = 90*
+//   - point on negative part of Z axis: Z<0 X=Y=0  			--> theta = pi = 180 *
+//   - point on negative part of X axis: X<0 Y=Z=0  			--> theta = -pi / 2 = -90* = 270*
 
 // TODO - consider using converter Spherical.setFromCartesianCoords
 //   then code reader would be free from understanding unusual convention of spherical coordinates system in threejs
@@ -40,12 +36,14 @@ function ViewManager(editor) {
 	container.setPosition('absolute');
 
 	//
+	let currentLayout = editor.config.getKey('layout');
 
 	var renderer = null;
 	var pmremGenerator = null;
 
 	var camera = editor.camera;
 	var scene = editor.scene;
+	var zonesManager = editor.zonesManager;
 	var sceneHelpers = editor.sceneHelpers;
 
 
@@ -104,9 +102,16 @@ function ViewManager(editor) {
 
 
 	// Below we define configuration for 4 cameras
-	// upper left : looking at plane XY
+	// upper left : looking from the top at plane XY
 	// upper right : full 3D view
-	// lower left : looking at plane
+	// lower left : looking from the top at plane XZ
+	// lower right : looking from the top at plane YZ
+	
+	// each of the 2D planes is defined by clipping plane which removes from view (clip) a half-space
+	// clipping removes points in space whose signed distance to the plane is negative
+	// points with negative distance are located on the other side of the plane than the normal vector
+	// therefore to remove from the view half-space Z>0 we define normal vector of XY plane to be [0,0,-1]
+	// same convention is used for XZ an YZ planes to hide Y>0 and X>0 half-spaces from the view
 
 	// --------------- first view, upper left, XY plane ----------------------------------
 
@@ -116,8 +121,8 @@ function ViewManager(editor) {
 		// camera looking from above XY plane
 		cameraPosition: new THREE.Vector3(0, 0, 10),
 
-		// default clipping plane being XY plane (normal vector along Z axis)
-		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, 1), 0.),
+		// default clipping plane being XY plane (normal vector pointing down along Z axis)
+		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.),
 
 		planePosLabel: "PlanePos Z",
 
@@ -164,8 +169,8 @@ function ViewManager(editor) {
 		// camera looking from above XZ plane
 		cameraPosition: new THREE.Vector3(0, 10, 0),
 
-		// default clipping plane being XZ plane (normal vector along Y axis)
-		clipPlane: new THREE.Plane(new THREE.Vector3(0, 1, 0), 0.),
+		// default clipping plane being XZ plane (normal vector pointing down along Y axis)
+		clipPlane: new THREE.Plane(new THREE.Vector3(0, -1, 0), 0.),
 		planePosLabel: "PlanePoz Y",
 
 		// 0xc2ee00 - Lime color (between green and yellow)
@@ -190,8 +195,8 @@ function ViewManager(editor) {
 		// camera looking from above YZ plane
 		cameraPosition: new THREE.Vector3(10, 0, 0),
 
-		// default clipping plane being YZ plane (normal vector along X axis)
-		clipPlane: new THREE.Plane(new THREE.Vector3(1, 0, 0), 0.),
+		// default clipping plane being YZ plane (normal vector pointing down along X axis)
+		clipPlane: new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.),
 		planePosLabel: "PlanePos X",
 
 		// 0xff7f9b - Tickle Me Pink color
@@ -250,13 +255,11 @@ function ViewManager(editor) {
 
 	let singleView = [viewport];
 
-	let currentLayout = 'singleView';
-
 	let views = singleView;
 
 	views.forEach((view) => view.config.visible = true);
 
-	setLayout("fourViews");
+	setLayout(currentLayout ?? "fourViews");
 
 
 	// events
@@ -272,8 +275,9 @@ function ViewManager(editor) {
 	// signals
 
 	signals.editorCleared.add(function () {
-
-		views.forEach((view) => view.controls.center.set(0, 0, 0));
+		// When we create new files view.controls is undefined
+		// TODO: fix this error
+		views.forEach((view) => view.controls.center && view.controls.center.set(0, 0, 0));
 		render();
 
 	});
@@ -357,7 +361,7 @@ function ViewManager(editor) {
 		selectionBox.visible = false;
 
 
-		if (object !== null && object !== scene && object !== camera) {
+		if (object !== null && object !== scene && object !== camera && object !== zonesManager) {
 
 			box.setFromObject(object);
 
@@ -661,8 +665,6 @@ function ViewManager(editor) {
 	// Layout 
 
 	function setLayout(layout) {
-		currentLayout = layout;
-
 		viewsGrid.setDisplay('none');
 		viewSingle.setDisplay('none');
 		views.forEach((view) => view.config.visible = false);
@@ -670,6 +672,7 @@ function ViewManager(editor) {
 		switch (layout) {
 
 			case 'fourViews':
+				currentLayout = 'fourViews';
 				views = fourViews;
 				viewsGrid.dom.style.display = null;
 				break;
@@ -684,13 +687,12 @@ function ViewManager(editor) {
 
 		views.forEach((view) => view.setSize());
 		views.forEach((view) => view.config.visible = true);
-
 		render();
 	}
 
 	signals.layoutChanged.add(function (layout) {
-
 		setLayout(layout);
+		editor.config.setKey('layout', currentLayout);
 	});
 
 	// viewport config
@@ -762,3 +764,4 @@ function updateGridColors(grid1, grid2, colors) {
 }
 
 export { ViewManager };
+

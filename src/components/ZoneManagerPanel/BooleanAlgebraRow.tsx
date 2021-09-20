@@ -1,7 +1,7 @@
 import { Button } from "@material-ui/core";
 import React from "react";
-import { Operation } from "../../ThreeEditor/util/CSGManager";
 import { Fragment, useEffect, useState } from "react";
+import { Operation } from "../../ThreeEditor/util/Operation";
 import GeometryInput from "./GeometryInput";
 import OperationInput from "./OperationInput";
 
@@ -18,8 +18,7 @@ export type AlgebraRow = {
     operations: (Operation | null)[]
 }
 
-
-function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
+export default function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
     const [algebraRow, setAlgebraRow] = useState<AlgebraRow>(props.value ?? { geometriesId: [], operations: [] });
 
     const pushGeometry = (index: number) => (id: number) => {
@@ -64,7 +63,7 @@ function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
 
     useEffect(() => {
         setAlgebraRow(props.value ?? { geometriesId: [], operations: [] });
-    }, [props]);
+    }, [props, props.value]);
     
     const pushOperation = (id: number) => (op: Operation) => {
         if (id === algebraRow.operations.length)
@@ -117,5 +116,3 @@ function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
         <Button className="deleteButton" onClick={props.del}>X</Button>
     </div>)
 }
-
-export default BooleanAlgebraRow;

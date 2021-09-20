@@ -1,10 +1,9 @@
-import * as THREE from 'three'
-
-import { UIPanel, UIRow, UIText, UIInput, UIButton, UISpan } from './libs/ui.js';
-
-import { SetGeometryValueCommand } from './commands/SetGeometryValueCommand.js';
-
+import React from 'react';
+import ReactDOM from 'react-dom';
 import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper.js';
+import ZoneManagerPanel from '../../components/ZoneManagerPanel/ZoneManagerPanel';
+import { UIButton, UIPanel, UIRow, UISpan, UIText } from './libs/ui.js';
+import { isCSGZone } from '../util/CSG/CSGZone';
 
 function SidebarGeometry( editor ) {
 
@@ -135,6 +134,25 @@ function SidebarGeometry( editor ) {
 	} );
 	helpersRow.add( vertexNormalsButton );
 
+	let zonePanel = new UISpan();
+	zonePanel.setId("zonePanel");
+
+	async function buildZonesManager() {
+
+		var object = editor.selected;
+
+		parameters.clear();
+
+		parameters.add(zonePanel);
+		ReactDOM.render(
+			(<ZoneManagerPanel editor={editor} zone={object}/>),
+			document.getElementById("zonePanel")
+		);
+
+		container.setDisplay( 'block' );
+
+	}
+
 	async function build() {
 
 		var object = editor.selected;
@@ -193,8 +211,9 @@ function SidebarGeometry( editor ) {
 	signals.objectSelected.add( function () {
 
 		currentGeometryType = null;
-
-		build();
+		isCSGZone(editor.selected)
+			? buildZonesManager()
+			: build();
 
 	} );
 
@@ -205,3 +224,4 @@ function SidebarGeometry( editor ) {
 }
 
 export { SidebarGeometry };
+

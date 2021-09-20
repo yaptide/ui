@@ -1,9 +1,6 @@
 .zoneManagerWrapper{
-    position: absolute;
-    width: min(1200px,80vw);
+    width: 100%;
     height: min(240px,25vh);
-    bottom: 0;
-    left: min(200px,10vw);
     background: white;
     border: 2px solid black;
     z-index: 1000;

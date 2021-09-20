@@ -1,9 +1,7 @@
-import * as THREE from 'three'
-
-import { UIPanel, UIRow, UIHorizontalRule } from './libs/ui.js';
-
+import * as THREE from 'three';
 import { AddObjectCommand } from './commands/AddObjectCommand.js';
-
+import { AddZoneCommand } from './commands/AddZoneCommand.js';
+import { UIHorizontalRule, UIPanel } from './libs/ui.js';
 import { createOption } from './Menubar.js';
 
 function MenubarAdd(editor) {
@@ -33,9 +31,17 @@ function MenubarAdd(editor) {
 
 	options.add(new UIHorizontalRule());
 
+
+	// YAPTIDE zones
+	options.add(createOption('option', 'zone', () => {
+
+		editor.execute(new AddZoneCommand(editor));
+	}));
+
+
 	options.add(new UIHorizontalRule());
 
-	const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, transparent: true, opacity: .5 });
+	const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, transparent: true, opacity: .5, wireframe: true });
 
 	//https://stackoverflow.com/questions/37090942/how-to-render-clipped-surfaces-as-solid-objects/37093210#37093210
 	material.onBeforeCompile = function (shader) {
@@ -109,3 +115,4 @@ function MenubarAdd(editor) {
 }
 
 export { MenubarAdd };
+

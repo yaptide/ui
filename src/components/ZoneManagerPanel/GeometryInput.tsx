@@ -1,5 +1,6 @@
 import { MenuItem, Select } from "@material-ui/core";
-import { useState } from "react";
+import { useState,useEffect } from "react";
+
 type GeometryInputProps = {
     id: number,
     geometries: THREE.Object3D[],
@@ -15,6 +16,9 @@ function GeometryInput(props: GeometryInputProps) {
         setSelected(event.target.value as number);
         props.push(event.target.value as number);
     };
+    useEffect(() => {
+        setSelected(props.value ?? 0);
+    }, [props, props.value]);
 
     return (
         <Select

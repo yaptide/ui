@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-
 import { Editor } from './js/Editor.js';
 import { ViewManager } from './js/ViewportManager.js';
 import { Toolbar } from './js/Toolbar.js';
@@ -88,8 +87,8 @@ export function initEditor(container) {
                 editor.signals.savingStarted.dispatch();
 
                 timeout = setTimeout(function () {
-
-                    editor.storage.set(editor.toJSON());
+                    
+                    editor.storage.set( editor.toJSON() );
 
                     editor.signals.savingFinished.dispatch();
 
@@ -112,7 +111,6 @@ export function initEditor(container) {
         signals.scriptChanged.add(saveState);
         signals.historyChanged.add(saveState);
         signals.CSGManagerStateChanged.add(saveState);
-
     });
 
     //

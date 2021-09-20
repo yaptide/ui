@@ -1,6 +1,6 @@
 import { MenuItem, Select } from "@material-ui/core";
-import { useState } from "react";
-import { Operation } from "../../ThreeEditor/util/CSGManager";
+import { useState,useEffect } from "react";
+import { Operation } from "../../ThreeEditor/util/Operation";
 
 type OperationInputProps = {
     id: number,
@@ -21,6 +21,9 @@ function OperationInput(props: OperationInputProps) {
         else
             props.pop();
     };
+    useEffect(() => {
+        setSelected(props.value ?? "");
+    }, [props, props.value]);
     return (<Select
         id={"OperationInput" + props.id}
         label={props.id}

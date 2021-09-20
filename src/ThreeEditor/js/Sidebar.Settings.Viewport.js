@@ -41,6 +41,20 @@ function SidebarSettingsViewport( editor ) {
 	showHelpersRow.add( showHelpers );
 	container.add( showHelpersRow );
 
+	// zones YAPTIDE
+
+	var showZonesRow = new UIRow();
+
+	showZonesRow.add( new UIText( "Zones" ).setWidth( '90px' ) );
+
+	var showZones = new UIBoolean( true ).onChange( function () {
+
+		signals.showZonesChanged.dispatch( showZones.getValue() );
+
+	} );
+	showZonesRow.add( showZones );
+	container.add( showZonesRow );
+
 	return container;
 
 }
