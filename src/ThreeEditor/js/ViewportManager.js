@@ -102,9 +102,16 @@ function ViewManager(editor) {
 
 
 	// Below we define configuration for 4 cameras
-	// upper left : looking at plane XY
+	// upper left : looking from the top at plane XY
 	// upper right : full 3D view
-	// lower left : looking at plane
+	// lower left : looking from the top at plane XZ
+	// lower right : looking from the top at plane YZ
+	
+	// each of the 2D planes is defined by clipping plane which removes from view (clip) a half-space
+	// clipping removes points in space whose signed distance to the plane is negative
+	// points with negative distance are located on the other side of the plane than the normal vector
+	// therefore to remove from the view half-space Z>0 we define normal vector of XY plane to be [0,0,-1]
+	// same convention is used for XZ an YZ planes to hide Y>0 and X>0 half-spaces from the view
 
 	// --------------- first view, upper left, XY plane ----------------------------------
 
