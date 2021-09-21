@@ -694,7 +694,7 @@ Editor.prototype = {
 
 		this.zonesManager.copy(zonesManager);
 		this.signals.sceneGraphChanged.dispatch();
-				
+
 		this.signals.loadedFromJSON.dispatch(this);
 	},
 
@@ -721,7 +721,11 @@ Editor.prototype = {
 
 		return {
 
-			metadata: {},
+			metadata: {
+				'version': 0.1,
+				'type': 'Editor',
+				'generator': 'Editor.toJSON'
+			},
 			project: {
 				shadows: this.config.getKey('project/renderer/shadows'),
 				shadowType: this.config.getKey('project/renderer/shadowType'),

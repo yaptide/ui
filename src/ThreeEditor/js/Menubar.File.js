@@ -2,7 +2,6 @@ import { UIHorizontalRule, UIPanel, UIRow } from './libs/ui.js';
 
 function MenubarFile(editor) {
 
-	var config = editor.config;
 	var strings = editor.strings;
 
 	var container = new UIPanel();
@@ -37,7 +36,7 @@ function MenubarFile(editor) {
 
 	options.add(new UIHorizontalRule());
 
-	// Import
+	// Open Editor
 
 	var form = document.createElement('form');
 	form.style.display = 'none';
@@ -56,7 +55,7 @@ function MenubarFile(editor) {
 
 	option = new UIRow();
 	option.setClass('option');
-	option.setTextContent(strings.getKey('menubar/file/import'));
+	option.setTextContent('Open');
 	option.onClick(function () {
 
 		fileInput.click();
@@ -68,37 +67,20 @@ function MenubarFile(editor) {
 
 	options.add(new UIHorizontalRule());
 
-	// Export Geometry
+
+	// Export Editor
 
 	option = new UIRow();
 	option.setClass('option');
-	option.setTextContent(strings.getKey('menubar/file/export/geometry'));
+	option.setTextContent('Export');
 	option.onClick(function () {
 
-		var object = editor.selected;
-
-		if (object === null) {
-
-			alert('No object selected.');
-			return;
-
-		}
-
-		var geometry = object.geometry;
-
-		if (geometry === undefined) {
-
-			alert('The selected object doesn\'t have geometry.');
-			return;
-
-		}
-
-		var output = geometry.toJSON();
+		var output = editor.toJSON();
 
 		try {
 
 			output = JSON.stringify(output, null, '\t');
-			output = output.replace(/[\n\t]+([\d\.e\-\[\]]+)/g, '$1'); // eslint-disable-line
+			output = output.replace(/[\n\t]+([\d.e\-[\]]+)/g, '$1');
 
 		} catch (e) {
 
@@ -106,66 +88,10 @@ function MenubarFile(editor) {
 
 		}
 
-		saveString(output, 'geometry.json');
+		const fileName = window.prompt('Input file name ', 'editor');
 
-	});
-	options.add(option);
-
-	// Export Object
-
-	option = new UIRow();
-	option.setClass('option');
-	option.setTextContent(strings.getKey('menubar/file/export/object'));
-	option.onClick(function () {
-
-		var object = editor.selected;
-
-		if (object === null) {
-
-			alert('No object selected');
-			return;
-
-		}
-
-		var output = object.toJSON();
-
-		try {
-
-			output = JSON.stringify(output, null, '\t');
-			output = output.replace(/[\n\t]+([\d\.e\-\[\]]+)/g, '$1'); // eslint-disable-line
-
-		} catch (e) {
-
-			output = JSON.stringify(output);
-
-		}
-
-		saveString(output, 'model.json');
-
-	});
-	options.add(option);
-
-	// Export Scene
-
-	option = new UIRow();
-	option.setClass('option');
-	option.setTextContent(strings.getKey('menubar/file/export/scene'));
-	option.onClick(function () {
-
-		var output = editor.scene.toJSON();
-
-		try {
-
-			output = JSON.stringify(output, null, '\t');
-			output = output.replace(/[\n\t]+([\d\.e\-\[\]]+)/g, '$1'); // eslint-disable-line
-
-		} catch (e) {
-
-			output = JSON.stringify(output);
-
-		}
-
-		saveString(output, 'scene.json');
+		if (fileName)
+			saveString(output, `${fileName}.json`);
 
 	});
 	options.add(option);
@@ -201,19 +127,6 @@ function MenubarFile(editor) {
 
 	}
 
-	function getAnimations(scene) {
-
-		var animations = [];
-
-		scene.traverse(function (object) {
-
-			animations.push(...object.animations);
-
-		});
-
-		return animations;
-
-	}
 
 	return container;
 
