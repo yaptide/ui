@@ -199,9 +199,14 @@ function Loader(editor) {
 
 				break;
 
-			case 'app':
+			case 'editor':
 
-				editor.fromJSON(data);
+				if (window.confirm('Current editor data will be lost. Are you sure?')) {
+
+					editor.clear();
+					editor.fromJSON(data);
+
+				}
 
 				break;
 
