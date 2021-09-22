@@ -36,7 +36,7 @@ function MenubarFile(editor) {
 
 	options.add(new UIHorizontalRule());
 
-	// Open Editor
+	// Open Editor from file
 
 	var form = document.createElement('form');
 	form.style.display = 'none';
@@ -68,11 +68,11 @@ function MenubarFile(editor) {
 	options.add(new UIHorizontalRule());
 
 
-	// Export Editor
+	// Save Editor to file
 
 	option = new UIRow();
 	option.setClass('option');
-	option.setTextContent('Export');
+	option.setTextContent('Save');
 	option.onClick(function () {
 
 		var output = editor.toJSON();
@@ -88,7 +88,7 @@ function MenubarFile(editor) {
 
 		}
 
-		const fileName = window.prompt('Input file name ', 'editor');
+		const fileName = window.prompt('Name of the file', 'editor');
 
 		if (fileName)
 			saveString(output, `${fileName}.json`);
@@ -115,11 +115,6 @@ function MenubarFile(editor) {
 
 	}
 
-	function saveArrayBuffer(buffer, filename) {
-
-		save(new Blob([buffer], { type: 'application/octet-stream' }), filename);
-
-	}
 
 	function saveString(text, filename) {
 
