@@ -654,7 +654,6 @@ function SidebarObject(editor) {
 	});
 
 	signals.objectChanged.add(function (object) {
-
 		if (object !== editor.selected) return;
 
 		updateUI(object);
@@ -662,7 +661,6 @@ function SidebarObject(editor) {
 	});
 
 	signals.refreshSidebarObject3D.add(function (object) {
-
 		if (object !== editor.selected) return;
 
 		updateUI(object);

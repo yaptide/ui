@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import SampleComponent from './components/SampleComponent';
 import './css/main.css';
 import { Editor } from './js/Editor';
 import { initEditor } from './main';
@@ -25,11 +24,6 @@ function ThreeEditor() {
 
   return (
     <div className="ThreeEditor" ref={containerEl}>
-      {editor &&
-        <>
-          <SampleComponent signal={editor.signals.objectSelected} ></SampleComponent>
-        </>
-      }
     </div>
   );
 }

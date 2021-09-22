@@ -7,7 +7,6 @@ import { SetScaleCommand } from './commands/SetScaleCommand';
 import { EditorOrbitControls } from './EditorOrbitControls';
 import { UIPanel } from "./libs/ui";
 import { ViewportCamera } from './Viewport.Camera.js';
-import { ViewportInfo } from './Viewport.Info.js';
 import { ViewHelper } from './Viewport.ViewHelper';
 import { isCSGManager } from '../util/CSG/CSGManager';
 import { isCSGZone } from '../util/CSG/CSGZone';
@@ -35,9 +34,6 @@ export function Viewport(
     container.setPosition('relative');
     container.setOverflow("hidden");
     container.dom.setAttribute('tabindex', '0');
-
-
-    container.add(new ViewportInfo(editor));
 
     let canvas = document.createElement('canvas');
     container.dom.appendChild(canvas);

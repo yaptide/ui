@@ -101,11 +101,12 @@ function Editor() {
 
 		layoutChanged: new Signal(), // Layout signal
 
+		
+		CSGZoneAdded: new Signal(), //Select geometry tab in Sidebar.Properties
+
 		viewportConfigChanged: new Signal(), // Viewport config signal 
 
 		CSGManagerStateChanged: new Signal(), // State of CSGmanager changed
-
-		loadedFromJSON: new Signal(), // Editor loaded from JSON 
 
 	};
 
@@ -695,7 +696,6 @@ Editor.prototype = {
 		this.zonesManager.copy(zonesManager);
 		this.signals.sceneGraphChanged.dispatch();
 				
-		this.signals.loadedFromJSON.dispatch(this);
 	},
 
 	toJSON: function () {
