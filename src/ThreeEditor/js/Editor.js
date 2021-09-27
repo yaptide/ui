@@ -68,6 +68,7 @@ function Editor() {
 		//YAPTIDE zones
 		zoneAdded: new Signal(),
 		zoneChanged: new Signal(),
+		zoneGeometryChanged: new Signal(),
 		zoneRemoved: new Signal(),
 
 		cameraAdded: new Signal(),

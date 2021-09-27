@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { GUI } from 'three/examples//jsm/libs/dat.gui.module.js';
+
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 import { SetPositionCommand } from './commands/SetPositionCommand';
 import { SetRotationCommand } from './commands/SetRotationCommand';
@@ -11,6 +11,7 @@ import { ViewportInfo } from './Viewport.Info.js';
 import { ViewHelper } from './Viewport.ViewHelper';
 import { isCSGManager } from '../util/CSG/CSGManager';
 import { isCSGZone } from '../util/CSG/CSGZone';
+import { ViewportClippedView as ViewportClipPlane } from './Viewport.ClipPlane';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
 
@@ -19,6 +20,8 @@ export function Viewport(
     { objects, grid, planeHelpers, selectionBox },
     { orthographic, cameraPosition, clipPlane, planePosLabel, planeHelperColor, showPlaneHelpers, gridRotation } = {}
 ) {
+
+    this.name = name;
 
     let { scene, zonesManager, sceneHelpers, signals } = editor;
 
@@ -29,6 +32,7 @@ export function Viewport(
     }
 
     let sceneViewHelpers = new THREE.Scene();
+    let clippedScene = new THREE.Scene();
 
     let container = new UIPanel();
     container.setId('ViewPanel');
@@ -73,58 +77,17 @@ export function Viewport(
     });
 
     container.add(new ViewportCamera(this, cameras));
+
     let viewHelper = new ViewHelper(camera, container);
 
+    let viewClipPlane = null;
+    if (clipPlane) {
+        viewClipPlane = new ViewportClipPlane(
+            editor, this, planeHelpers, zonesManager.children, signals.zoneGeometryChanged,
+            { clipPlane, planeHelperColor, planePosLabel });
 
-
-    // Setup plane clipping ui 
-
-    let globalPlane = clipPlane;
-    if (globalPlane) {
-        const helper = new THREE.PlaneHelper(globalPlane, 10, planeHelperColor ?? 0xffff00); // default helper color is yellow
-        planeHelpers.add(helper);
-        const planePosProperty = planePosLabel ?? 'PlanePos'
-        const gui = new GUI({}),
-            propsGlobal = {
-
-                get [planePosProperty]() {
-
-                    return globalPlane.constant;
-
-                },
-                set [planePosProperty](v) {
-
-                    globalPlane.constant = v;
-
-                    signals.viewportConfigChanged.dispatch({ name, globalPlaneConstant: v });
-
-                },
-
-                get 'Helper Visible'() {
-
-                    return helper.visible;
-
-                },
-                set 'Helper Visible'(v) {
-
-                    helper.visible = v;
-
-                    signals.viewportConfigChanged.dispatch({ name, helperVisible: v });
-
-                },
-
-
-            };
-
-        gui.add(propsGlobal, planePosProperty, -10, 10, 0.1);
-        gui.add(propsGlobal, 'Helper Visible', true);
-
-        container.dom.appendChild(gui.domElement);
-        gui.domElement.style.position = "absolute";
-        gui.domElement.style.top = "35px";
-        gui.domElement.style.right = "-5px";
+        container.dom.appendChild(viewClipPlane.gui.domElement);
     }
-
 
     let cachedRenderer = null;
 
@@ -135,19 +98,24 @@ export function Viewport(
 
         if (!renderer) return;
 
-        if (globalPlane)
-            renderer.clippingPlanes = [globalPlane];
+        if (clipPlane)
+            renderer.clippingPlanes = [clipPlane];
 
         // applying rotation to the grid plane, if not provided set default rotation to none
         // by default grid plane lies within XZ plane
         grid.rotation.copy(gridRotation ?? new THREE.Euler(0, 0, 0));
 
         renderer.setSize(canvas.width, canvas.height);
+
         renderer.render(scene, camera);
 
         renderer.autoClear = false;
 
-        config.showZones && renderer.render(zonesManager, camera);
+        if (config.showZones)
+            renderer.render(zonesManager, camera);
+
+        if (clipPlane)
+            renderer.render(viewClipPlane.scene, camera);
 
         renderer.clippingPlanes = []; // clear clipping planes for next renders
 
@@ -181,20 +149,20 @@ export function Viewport(
 
 
 
-    var objectPositionOnDown = null;
-    var objectRotationOnDown = null;
-    var objectScaleOnDown = null;
+    let objectPositionOnDown = null;
+    let objectRotationOnDown = null;
+    let objectScaleOnDown = null;
 
-    var transformControls = new TransformControls(camera, container.dom);
+    let transformControls = new TransformControls(camera, container.dom);
     transformControls.addEventListener('change', function () {
 
-        var object = transformControls.object;
+        let object = transformControls.object;
 
         if (object !== undefined) {
 
             selectionBox.setFromObject(object);
 
-            var helper = editor.helpers[object.id];
+            let helper = editor.helpers[object.id];
 
             if (helper !== undefined && helper.isSkeletonHelper !== true) {
 
@@ -212,7 +180,7 @@ export function Viewport(
 
     transformControls.addEventListener('mouseDown', function () {
 
-        var object = transformControls.object;
+        let object = transformControls.object;
 
         objectPositionOnDown = object.position.clone();
         objectRotationOnDown = object.rotation.clone();
@@ -225,7 +193,7 @@ export function Viewport(
 
     transformControls.addEventListener('mouseUp', function () {
 
-        var object = transformControls.object;
+        let object = transformControls.object;
 
         if (object !== undefined) {
 
@@ -277,8 +245,8 @@ export function Viewport(
 
     // object picking
 
-    var raycaster = new THREE.Raycaster();
-    var mouse = new THREE.Vector2();
+    let raycaster = new THREE.Raycaster();
+    let mouse = new THREE.Vector2();
 
     function getIntersects(point, objects) {
 
@@ -291,13 +259,13 @@ export function Viewport(
 
     }
 
-    var onDownPosition = new THREE.Vector2();
-    var onUpPosition = new THREE.Vector2();
-    var onDoubleClickPosition = new THREE.Vector2();
+    let onDownPosition = new THREE.Vector2();
+    let onUpPosition = new THREE.Vector2();
+    let onDoubleClickPosition = new THREE.Vector2();
 
     function getMousePosition(dom, x, y) {
 
-        var rect = dom.getBoundingClientRect();
+        let rect = dom.getBoundingClientRect();
         return [(x - rect.left) / rect.width, (y - rect.top) / rect.height];
 
     }
@@ -320,11 +288,11 @@ export function Viewport(
 
         if (onDownPosition.distanceTo(onUpPosition) === 0) {
 
-            var intersects = getIntersects(onUpPosition, objects);
+            let intersects = getIntersects(onUpPosition, objects);
 
             if (intersects.length > 0) {
 
-                var object = intersects[0].object;
+                let object = intersects[0].object;
 
                 if (object.userData.object !== undefined) {
 
@@ -354,7 +322,7 @@ export function Viewport(
 
     function onMouseDown(event) {
         // event.preventDefault();
-        var array = getMousePosition(container.dom, event.clientX, event.clientY);
+        let array = getMousePosition(container.dom, event.clientX, event.clientY);
         onDownPosition.fromArray(array);
 
         document.addEventListener('mouseup', onMouseUp, false);
@@ -363,7 +331,7 @@ export function Viewport(
 
     function onMouseUp(event) {
 
-        var array = getMousePosition(container.dom, event.clientX, event.clientY);
+        let array = getMousePosition(container.dom, event.clientX, event.clientY);
         onUpPosition.fromArray(array);
 
         handleClick();
@@ -374,9 +342,9 @@ export function Viewport(
 
     function onTouchStart(event) {
 
-        var touch = event.changedTouches[0];
+        let touch = event.changedTouches[0];
 
-        var array = getMousePosition(container.dom, touch.clientX, touch.clientY);
+        let array = getMousePosition(container.dom, touch.clientX, touch.clientY);
         onDownPosition.fromArray(array);
 
         document.addEventListener('touchend', onTouchEnd, false);
@@ -385,9 +353,9 @@ export function Viewport(
 
     function onTouchEnd(event) {
 
-        var touch = event.changedTouches[0];
+        let touch = event.changedTouches[0];
 
-        var array = getMousePosition(container.dom, touch.clientX, touch.clientY);
+        let array = getMousePosition(container.dom, touch.clientX, touch.clientY);
         onUpPosition.fromArray(array);
 
         handleClick();
@@ -398,14 +366,14 @@ export function Viewport(
 
     function onDoubleClick(event) {
 
-        var array = getMousePosition(container.dom, event.clientX, event.clientY);
+        let array = getMousePosition(container.dom, event.clientX, event.clientY);
         onDoubleClickPosition.fromArray(array);
 
-        var intersects = getIntersects(onDoubleClickPosition, objects);
+        let intersects = getIntersects(onDoubleClickPosition, objects);
 
         if (intersects.length > 0) {
 
-            var intersect = intersects[0];
+            let intersect = intersects[0];
 
             signals.objectFocused.dispatch(intersect.object);
 
@@ -461,7 +429,7 @@ export function Viewport(
 
     // controls need to be added *after* main logic,
     // otherwise controls.enabled doesn't work.
-    var controls = new EditorOrbitControls(camera, container.dom);
+    let controls = new EditorOrbitControls(camera, container.dom);
     controls.addEventListener('change', function () {
 
         signals.cameraChanged.dispatch(camera);
@@ -528,7 +496,7 @@ export function Viewport(
 
         render();
     })
-    
+
     signals.selectModeChanged.add((mode) => {
         //TODO: clicking on zones selects them if zoneSelectionMode is enabled
     })
