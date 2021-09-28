@@ -691,11 +691,9 @@ Editor.prototype = {
 
 		this.setScene(await loader.parseAsync(json.scene));
 
-		let zonesManager = CSGManager.fromJSON(this, json.zonesManager); // CSGManager must be loaded after scene 
+		this.zonesManager = CSGManager.fromJSON(this, json.zonesManager); // CSGManager must be loaded after scene 		
 
-		this.zonesManager.copy(zonesManager);
 		this.signals.sceneGraphChanged.dispatch();
-
 		this.signals.loadedFromJSON.dispatch(this);
 	},
 

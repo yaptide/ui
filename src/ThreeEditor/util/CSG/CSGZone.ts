@@ -40,10 +40,12 @@ export class CSGZone extends THREE.Mesh {
         editor: Editor,
         name?: string,
         unionOperations?: CSGOperation[][],
-        subscribedObjectsUuid?: Set<string>
+        subscribedObjectsUuid?: Set<string>,
+        uuid?: string
     ) {
         super();
         this.type = "Zone";
+        uuid && (this.uuid = uuid);
         this.editor = editor;
         this.signals = editor.signals;
         this.name = name || "CSGZone";
@@ -70,8 +72,6 @@ export class CSGZone extends THREE.Mesh {
 
         this.signals.geometryChanged.add((object) => this.handleSignal(object));
         this.signals.objectChanged.add((object) => this.handleSignal(object));
-
-        this.signals.zoneAdded.dispatch(this);
     }
 
     clone(recursive: boolean) {
@@ -79,8 +79,10 @@ export class CSGZone extends THREE.Mesh {
             this.editor,
             this.name,
             this.unionOperations,
-            this.subscribedObjectsUuid
+            this.subscribedObjectsUuid,
+            this.uuid
         ).copy(this, recursive) as this;
+
         return clonedZone;
     }
 
@@ -221,7 +223,8 @@ export class CSGZone extends THREE.Mesh {
             editor,
             data.name,
             unionOperations,
-            subscribedObjectsUuid
+            subscribedObjectsUuid,
+            data.uuid
         );
 
         return zone;

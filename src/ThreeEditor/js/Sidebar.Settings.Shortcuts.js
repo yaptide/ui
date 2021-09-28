@@ -1,6 +1,8 @@
 import { UIPanel, UIText, UIRow, UIInput } from './libs/ui.js';
 
 import { RemoveObjectCommand } from './commands/RemoveObjectCommand.js';
+import { isCSGZone } from '../util/CSG/CSGZone';
+import { RemoveZoneCommand } from './commands/RemoveZoneCommand.js';
 
 function SidebarSettingsShortcuts(editor) {
 
@@ -102,7 +104,7 @@ function SidebarSettingsShortcuts(editor) {
 			case 'backspace':
 
 				event.preventDefault(); // prevent browser back
-				// fall-through
+			// fall-through
 
 			// eslint-disable-next-line
 			case 'delete':
@@ -112,8 +114,12 @@ function SidebarSettingsShortcuts(editor) {
 				if (object === null) return;
 
 				var parent = object.parent;
-				if (parent !== null) editor.execute(new RemoveObjectCommand(editor, object));
-
+				if (parent !== null) {
+					if (isCSGZone(object))
+						editor.execute(new RemoveZoneCommand(editor, object));
+					else
+						editor.execute(new RemoveObjectCommand(editor, object));
+				}
 				break;
 
 			case config.getKey('settings/shortcuts/translate'):
