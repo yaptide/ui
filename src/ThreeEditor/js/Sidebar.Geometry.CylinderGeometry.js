@@ -2,49 +2,50 @@ import * as THREE from 'three';
 import { SetGeometryCommand } from './commands/SetGeometryCommand.js';
 import { UINumber, UIRow, UIText } from './libs/ui.js';
 
-function GeometryParametersPanel( editor, object ) {
+function GeometryParametersPanel(editor, object) {
 
-	var strings = editor.strings;
+	const strings = editor.strings;
 
-	var container = new UIRow();
+	const container = new UIRow();
 
-	var geometry = object.geometry;
-	var parameters = geometry.parameters;
+	const geometry = object.geometry;
+	const parameters = geometry.parameters;
 
-	// radius
+	// radiusTop = radiusBottom => radius 
 
-	var radiusRow = new UIRow();
-	var radius = new UINumber( parameters.radius ).onChange( update );
+	const radiusRow = new UIRow();
+	const radius = new UINumber(parameters.radiusTop).onChange(update);
+	radius.min = 0;
 
-	radiusRow.add( new UIText( strings.getKey( 'sidebar/geometry/sphere_geometry/radius' ) ).setWidth( '90px' ) );
-	radiusRow.add( radius );
+	radiusRow.add(new UIText(strings.getKey('sidebar/geometry/sphere_geometry/radius') + ' ' + editor.unit.name).setWidth('90px'));
+	radiusRow.add(radius);
 
-	container.add( radiusRow );
-	
+	container.add(radiusRow);
+
 
 	// height
 
-	var heightRow = new UIRow();
-	var height = new UINumber( parameters.height ).onChange( update );
+	const heightRow = new UIRow();
+	const height = new UINumber(parameters.height).onChange(update);
 
-	heightRow.add( new UIText( strings.getKey( 'sidebar/geometry/cylinder_geometry/height' ) ).setWidth( '90px' ) );
-	heightRow.add( height );
+	heightRow.add(new UIText(strings.getKey('sidebar/geometry/cylinder_geometry/height') + ' ' + editor.unit.name).setWidth('90px'));
+	heightRow.add(height);
 
-	container.add( heightRow );
+	container.add(heightRow);
 
 
 	//
 
 	function update() {
 
-		editor.execute( new SetGeometryCommand( editor, object, new THREE.CylinderGeometry(
+		editor.execute(new SetGeometryCommand(editor, object, new THREE.CylinderGeometry(
 			radius.getValue(),
 			radius.getValue(),
 			height.getValue(),
 			16,
 			1,
 			false
-		).translate ( 0, height.getValue()/2, 0 ) ) );
+		).translate(0, height.getValue() / 2, 0)));
 
 	}
 
