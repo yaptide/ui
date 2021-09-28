@@ -57,7 +57,6 @@ export class CSGManager extends THREE.Scene{
             uuid,
             name
         };
-        console.warn(jsonObject);
         return jsonObject;
     }
 

@@ -3,7 +3,6 @@ import { UITabbedPanel } from './libs/ui.js';
 import { SidebarObject } from './Sidebar.Object.js';
 import { SidebarGeometry } from './Sidebar.Geometry.js';
 import { SidebarMaterial } from './Sidebar.Material.js';
-import { isCSGZone } from '../util/CSG/CSGZone';
 
 function SidebarProperties( editor ) {
 
@@ -11,15 +10,29 @@ function SidebarProperties( editor ) {
 	var signals = editor.signals;
 
 	var container = new UITabbedPanel();
+	var material = new SidebarMaterial( editor );
 	container.setId( 'properties' );
 
 	container.addTab( 'object', strings.getKey( 'sidebar/properties/object' ), new SidebarObject( editor ) );
 	container.addTab( 'geometry', strings.getKey( 'sidebar/properties/geometry' ), new SidebarGeometry( editor ) );
-	container.addTab( 'material', strings.getKey( 'sidebar/properties/material' ), new SidebarMaterial( editor ) );
+	container.addTab( 'material', strings.getKey( 'sidebar/properties/material' ),  material);
 	container.select( 'object' );
 
 	//Select Geometry if zone is created
-	signals.objectAdded.add(object => object?.isCSGZone && container.select( 'geometry' ));
+	signals.objectAdded.add((object) => object?.isCSGZone && container.select( 'geometry' ));
+	
+	signals.objectSelected.add((object) => 
+		{
+			object?.isCSGZone
+				? (() => {
+					container.panels[2].clear();
+				})()
+				: (() => {
+					container.panels[2].clear();
+					container.panels[2].add(material);
+				})();
+		}
+	);
 
 	return container;
 
