@@ -21,11 +21,14 @@ export class CSGZone extends THREE.Mesh {
     needsUpdate: boolean = true;
     private signals: {
         objectChanged: Signal<THREE.Object3D>;
+        objectRemoved: Signal<THREE.Object3D>;
         geometryChanged: Signal<THREE.Object3D>;
         sceneGraphChanged: Signal;
         zoneAdded: Signal<CSGZone>;
         zoneGeometryChanged: Signal<CSGZone>;
         zoneRemoved: Signal<CSGZone>;
+        zoneChanged: Signal<CSGZone>;
+        zoneEmpty: Signal<CSGZone>;
         CSGManagerStateChanged: Signal;
     };
 
@@ -40,7 +43,7 @@ export class CSGZone extends THREE.Mesh {
         editor: Editor,
         name?: string,
         unionOperations?: CSGOperation[][],
-        subscribedObjectsUuid?: Set<string>,
+        subscribedObjectsUuid?: Set<string>, // TODO: replace Set with Map to correctly trace uuids
         uuid?: string
     ) {
         super();
@@ -70,8 +73,9 @@ export class CSGZone extends THREE.Mesh {
         // If operations are specified, we have to generate fist geometry manually.
         unionOperations && this.updateGeometry();
 
-        this.signals.geometryChanged.add((object) => this.handleSignal(object));
-        this.signals.objectChanged.add((object) => this.handleSignal(object));
+        this.signals.geometryChanged.add((object) => this.handleChange(object));
+        this.signals.objectChanged.add((object) => this.handleChange(object));
+        this.signals.objectRemoved.add((object) => this.handleRemoved(object));
     }
 
     clone(recursive: boolean) {
@@ -133,9 +137,8 @@ export class CSGZone extends THREE.Mesh {
 
     addUnion() {
         this.unionOperations.push([]);
-        this.announceChangedState();
 
-        this.signals.CSGManagerStateChanged.dispatch();
+        this.announceChangedState();
     }
 
     updateUnion(unionIndex: number, operations: CSGOperation[]) {
@@ -171,15 +174,37 @@ export class CSGZone extends THREE.Mesh {
         this.announceChangedState();
     }
 
-    handleSignal(object: THREE.Object3D) {
+    handleChange(object: THREE.Object3D) {
         if (!this.subscribedObjectsUuid.has(object.uuid)) return;
+
+        this.announceChangedState();
+    }
+
+    handleRemoved(object: THREE.Object3D) {
+        if (!this.subscribedObjectsUuid.has(object.uuid)) return;
+
+        this.unionOperations.forEach((operations, unionIndex) => {
+            operations.forEach((operation, index) => {
+                if (operation.object.uuid === object.uuid)
+                    this.removeOperation(unionIndex, index);
+            });
+
+            if (operations.length === 0)
+                this.removeUnion(unionIndex);
+            else
+                operations[0].mode = "union"; // ensure that first operation is union
+        });
+
+        if (this.unionOperations.length === 0)
+            this.signals.zoneEmpty.dispatch(this);
 
         this.announceChangedState();
     }
 
     announceChangedState() {
         this.debouncedUpdatePreview();
-
+        
+        this.signals.zoneChanged.dispatch(this);
         this.signals.CSGManagerStateChanged.dispatch();
     }
 

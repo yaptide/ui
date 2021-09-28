@@ -69,6 +69,7 @@ function Editor() {
 		zoneAdded: new Signal(),
 		zoneChanged: new Signal(),
 		zoneGeometryChanged: new Signal(),
+		zoneEmpty: new Signal(),
 		zoneRemoved: new Signal(),
 
 		cameraAdded: new Signal(),

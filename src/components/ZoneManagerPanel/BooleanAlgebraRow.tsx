@@ -22,72 +22,75 @@ export default function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
     const [algebraRow, setAlgebraRow] = useState<AlgebraRow>(props.value ?? { geometriesId: [], operations: [] });
 
     const pushGeometry = (index: number) => (id: number) => {
-        if (index === algebraRow.geometriesId.length)
-            setAlgebraRow((prev) => {
-                return {
-                    geometriesId: [
-                        ...prev.geometriesId,
-                        props.possibleObjects.find(el => el.id === id)?.id ?? null
-                    ],
-                    operations: prev.operations
-                }
-            })
-        else
-            setAlgebraRow((prev) => {
-                return {
-                    geometriesId: [
-                        ...prev.geometriesId.map((el, elIndex) => {
-                            return index === elIndex ? id : el
-                        }),
-                    ],
-                    operations: prev.operations
-                }
-            })
+        setAlgebraRow((prev) => {
+            let newRow: AlgebraRow = { geometriesId: [], operations: prev.operations };
+
+            if (index === algebraRow.geometriesId.length) {
+                newRow.geometriesId = [
+                    ...prev.geometriesId,
+                    props.possibleObjects.find(el => el.id === id)?.id ?? null
+                ];
+            } else {
+                newRow.geometriesId = [
+                    ...prev.geometriesId.map((el, elIndex) => {
+                        return index === elIndex ? id : el
+                    }),
+                ];
+            }
+
+            props.change(newRow);
+
+            return newRow;
+        })
     }
+
+    const pushOperation = (id: number) => (op: Operation) => {
+        setAlgebraRow((prev) => {
+            let newRow: AlgebraRow = { geometriesId: prev.geometriesId, operations: [] };
+
+            if (id === algebraRow.operations.length) {
+                newRow.operations = [
+                    ...prev.operations,
+                    op
+                ];
+            } else {
+                newRow.operations = [
+                    ...prev.operations.map((el, index) => {
+                        return index === id ? op : el
+                    }),
+                ];
+            }
+
+            // do not inform about change of state 
+
+            return newRow;
+        })
+    }
+
     const removeOperation = (id: number) => () => {
         setAlgebraRow((prev) => {
-            return {
+            let newRow: AlgebraRow = {
                 geometriesId: [
                     ...prev.geometriesId.slice(0, id + 1)
                 ],
                 operations: [
                     ...prev.operations.slice(0, id)
                 ]
-            }
+            };
+
+            props.change(newRow);
+
+            return newRow;
         })
     }
 
-    useEffect(() => {
-        props.change(algebraRow);
-    }, [algebraRow]);
 
     useEffect(() => {
         setAlgebraRow(props.value ?? { geometriesId: [], operations: [] });
-    }, [props, props.value]);
-    
-    const pushOperation = (id: number) => (op: Operation) => {
-        if (id === algebraRow.operations.length)
-            setAlgebraRow((prev) => {
-                return {
-                    geometriesId: prev.geometriesId,
-                    operations: [
-                        ...prev.operations,
-                        op
-                    ]
-                }
-            })
-        else
-            setAlgebraRow((prev) => {
-                return {
-                    geometriesId: prev.geometriesId,
-                    operations: [
-                        ...prev.operations.map((el, index) => {
-                            return index === id ? op : el
-                        }),
-                    ]
-                }
-            })
-    }
+    }, [props.value]);
+
+
+
     return (<div className="zoneManagerRow">{algebraRow.geometriesId.map((geo, id) => {
 
         return (<Fragment key={id} >

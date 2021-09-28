@@ -23,6 +23,8 @@ export class CSGManager extends THREE.Scene {
         this.name = "Zones";
         this.worker = Comlink.wrap<ICSGWorker>(new Worker());
         this.editor = editor;
+
+        this.editor.signals.zoneEmpty.add((zone: CSGZone) => this.handleZoneEmpty(zone));
     }
 
     createZone() {
@@ -80,7 +82,6 @@ export class CSGManager extends THREE.Scene {
 
         data.zones.forEach((zone) => {
 
-            console.log(zone.uuid);
             manager.add(CSGZone.fromJSON(editor, zone));
 
         });
@@ -91,6 +92,10 @@ export class CSGManager extends THREE.Scene {
 
     clone(recursive: boolean) {
         return new CSGManager(this.editor).copy(this, recursive) as this;
+    }
+
+    handleZoneEmpty(zone: CSGZone) {
+        this.remove(zone);
     }
 
 }
