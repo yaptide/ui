@@ -14,20 +14,23 @@ interface CSGManagerJSON {
 }
 
 export class CSGManager extends THREE.Scene{
-    editor: Editor;
+    private editor: Editor;
     worker: Comlink.Remote<ICSGWorker>;
+    zonesContainer: THREE.Group;
+    readonly isCSGManager: true = true;
 
     constructor(editor: Editor) {
         super();
-        this.type = 'ZonesManager' as any;
-        this.name = "Zones";
+        this.zonesContainer = new THREE.Group();
+        this.zonesContainer.name = "Zones";
+        this.add(this.zonesContainer);
         this.worker = Comlink.wrap<ICSGWorker>(new Worker());
         this.editor = editor;
     }
 
     createZone() {
         let zone = new CSGZone(this.editor);
-        this.add(zone);
+        this.addZone(zone);
         this.editor.signals.objectAdded.dispatch(zone);
 		this.editor.signals.sceneGraphChanged.dispatch();
         this.editor.signals.CSGManagerStateChanged.dispatch();
@@ -35,18 +38,18 @@ export class CSGManager extends THREE.Scene{
         return zone;
     }
 
-    add(zone: CSGZone) {
+    addZone(zone: CSGZone) {
         zone.worker = this.worker;
-        return super.add(zone);
+        return this.zonesContainer.add(zone);
     }
 
-    remove(zone: CSGZone) {
+    removeZone(zone: CSGZone) {
         console.log("Removing: ",zone);
-        return super.remove(zone);
+        return this.zonesContainer.remove(zone);
     }
 
     toJSON() {
-        let zones = this.children.map((zone) => zone.toJSON());
+        let zones = this.zonesContainer.children.map((zone) => (zone as CSGZone).toJSON());
         let uuid = this.uuid;
         let name = this.name;
         let jsonObject: CSGManagerJSON = {
@@ -54,7 +57,7 @@ export class CSGManager extends THREE.Scene{
             uuid,
             name
         };
-
+        console.warn(jsonObject);
         return jsonObject;
     }
 
@@ -68,7 +71,7 @@ export class CSGManager extends THREE.Scene{
             
             data.zones.forEach((zone) => {
 
-                manager.add(CSGZone.fromJSON(editor, zone));
+                manager.addZone(CSGZone.fromJSON(editor, zone));
 
             });
 
@@ -81,4 +84,3 @@ export class CSGManager extends THREE.Scene{
     }
 
 }
-export const isCSGManager = (x: any): x is CSGManager => x instanceof CSGManager;

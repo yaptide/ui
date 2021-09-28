@@ -19,7 +19,7 @@ function SidebarProperties( editor ) {
 	container.select( 'object' );
 
 	//Select Geometry if zone is created
-	signals.objectSelected.add(object => isCSGZone(object) && container.select( 'geometry' ));
+	signals.objectAdded.add(object => object?.isCSGZone && container.select( 'geometry' ));
 
 	return container;
 

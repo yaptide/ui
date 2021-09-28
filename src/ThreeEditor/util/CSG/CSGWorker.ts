@@ -6,6 +6,7 @@ export interface ICSGWorker {
 }
 
 class CSGWorker implements ICSGWorker {
+    readonly isCSGWorker: true = true;
     async parse(object: any) {
         console.log("CSGWorker", await new THREE.ObjectLoader().parseAsync(JSON.parse(object)));
         return object;

@@ -174,7 +174,21 @@ Editor.prototype = {
 
 	},
 
-	//
+	// YAPTIDE ZONES MAANGER
+	setZonesManager: function(zonesManager) {
+		this.zonesManager.uuid = zonesManager.uuid;
+		this.zonesManager.zonesContainer.uuid = zonesManager.zonesContainer.uuid;
+		// avoid render per object
+
+		this.signals.sceneGraphChanged.active = false;
+
+		while (zonesManager.zonesContainer.children.length > 0) {
+			this.zonesManager.addZone(zonesManager.zonesContainer.children[0]);
+		}
+
+		this.signals.sceneGraphChanged.active = true;
+		this.signals.sceneGraphChanged.dispatch();
+	},
 
 	addObject: function (object, parent, index) {
 
@@ -191,7 +205,7 @@ Editor.prototype = {
 		});
 
 		if (parent === undefined) {
-			isCSGZone(object)
+			object?.isCSGZone
 				? this.zonesManager.add(object)
 				: this.scene.add(object);
 
@@ -581,7 +595,7 @@ Editor.prototype = {
 
 		}
 
-		var object = this.scene.getObjectById(id) ?? this.zonesManager.getObjectById(id)
+		var object = this.scene.getObjectById(id) ?? this.zonesManager.zonesContainer.getObjectById(id)
 		this.select(object);
 
 	},
@@ -652,7 +666,7 @@ Editor.prototype = {
 		this.zonesManager.environment = null;
 		this.zonesManager.fog = null;
 
-		var zones = this.zonesManager.children;
+		var zones = this.zonesManager.zonesContainer.children;
 
 		while (zones.length > 0) {
 
@@ -691,9 +705,9 @@ Editor.prototype = {
 
 		this.setScene(await loader.parseAsync(json.scene));
 
-		let zonesManager = CSGManager.fromJSON(this, json.zonesManager); // CSGManager must be loaded after scene 
+		// CSGManager must be loaded after scene
+		this.setZonesManager(CSGManager.fromJSON(this, json.zonesManager))
 
-		this.zonesManager.copy(zonesManager);
 		this.signals.sceneGraphChanged.dispatch();
 				
 	},

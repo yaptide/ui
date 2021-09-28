@@ -27,6 +27,7 @@ export class CSGZone extends THREE.Mesh {
         zoneRemoved: Signal<CSGZone>;
         CSGManagerStateChanged: Signal;
     };
+    readonly isCSGZone: true = true;
 
     worker?: Comlink.Remote<ICSGWorker>;
     readonly debouncedUpdatePreview = debounce(200, false, () =>
@@ -192,7 +193,6 @@ export class CSGZone extends THREE.Mesh {
         let unionOperations = this.unionOperations.map((union) =>
             union.map((operation) => operation.toJSON())
         );
-
         let jsonObject: CSGZoneJSON = {
             uuid: this.uuid,
             name: this.name,
@@ -225,4 +225,3 @@ export class CSGZone extends THREE.Mesh {
         return zone;
     }
 }
-export const isCSGZone = (x: any): x is CSGZone => x instanceof CSGZone;

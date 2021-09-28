@@ -33,7 +33,6 @@ function SidebarObject(editor) {
 
 	// uuid
 
-	var objectUUIDRow = new UIRow();
 	var objectUUID = new UIInput().setWidth('102px').setFontSize('12px').setDisabled(true);
 	var objectUUIDRenew = new UIButton(strings.getKey('sidebar/object/new')).setMarginLeft('7px').onClick(function () {
 
@@ -638,7 +637,7 @@ function SidebarObject(editor) {
 
 	signals.objectSelected.add(function (object) {
 
-		if (object !== null) {
+		if (object !== null && !object?.parent?.isCSGManager && !object.isScene) {
 
 			container.setDisplay('block');
 

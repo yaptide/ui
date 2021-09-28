@@ -211,7 +211,7 @@ function SidebarGeometry( editor ) {
 	signals.objectSelected.add( function () {
 
 		currentGeometryType = null;
-		isCSGZone(editor.selected)
+		editor.selected?.isCSGZone
 			? buildZonesManager()
 			: build();
 

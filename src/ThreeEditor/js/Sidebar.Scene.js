@@ -85,6 +85,8 @@ function SidebarScene(editor) {
 
 	function getObjectType(object) {
 
+		if (object.isCSGZone) return 'Points'; //TODO: Add support to different keywords in css classes
+		if (object?.parent?.isCSGManager) return 'Camera'; //Add support to different keywords in css classes
 		if (object.isScene) return 'Scene';
 		if (object.isCamera) return 'Camera';
 		if (object.isLight) return 'Light';
@@ -330,7 +332,7 @@ function SidebarScene(editor) {
 
 		var camera = editor.camera;
 		var scene = editor.scene;
-		var zonesManager = editor.zonesManager;
+		var zonesContainer = editor.zonesManager.zonesContainer;
 
 		var options = [];
 
@@ -364,8 +366,8 @@ function SidebarScene(editor) {
 		}
 		addObjects(scene.children, 0);
 
-		options.push(buildOption(zonesManager, false));
-		addObjects(zonesManager.children, 0);
+		options.push(buildOption(zonesContainer, false));
+		addObjects(zonesContainer.children, 0);
 
 		outliner.setOptions(options);
 
@@ -467,36 +469,17 @@ function SidebarScene(editor) {
 
 	signals.sceneGraphChanged.add(refreshUI);
 
-	/*
-	signals.objectChanged.add( function ( object ) {
-
-		var options = outliner.options;
-
-		for ( var i = 0; i < options.length; i ++ ) {
-
-			var option = options[ i ];
-
-			if ( option.value === object.id ) {
-
-				option.innerHTML = buildHTML( object );
-				return;
-
-			}
-
-		}
-
-	} );
-	*/
-
 	signals.objectSelected.add(function (object) {
 		if (ignoreObjectSelectedSignal === true) return;
 
-		if (object !== null && object.parent !== null) {
+		console.warn(object);
+		if (object !== null && object.parent !== null && !object.parent.isCSGZone) {
 
 			let needsRefresh = false;
 			let parent = object.parent;
 
-			while (parent !== editor.scene && parent !== editor.zonesManager) {
+			while (parent !== editor.scene && parent !== editor.zonesManager.zonesContainer) {
+				console.warn(object);
 				if (nodeStates.get(parent) !== true) {
 					nodeStates.set(parent, true);
 					needsRefresh = true;

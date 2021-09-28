@@ -8,8 +8,6 @@ import { EditorOrbitControls } from './EditorOrbitControls';
 import { UIPanel } from "./libs/ui";
 import { ViewportCamera } from './Viewport.Camera.js';
 import { ViewHelper } from './Viewport.ViewHelper';
-import { isCSGManager } from '../util/CSG/CSGManager';
-import { isCSGZone } from '../util/CSG/CSGZone';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
 
@@ -24,6 +22,7 @@ export function Viewport(
     let config = {
         showSceneHelpers: true,
         showZones: true,
+        selectZones: false,
         visible: false,
     }
 
@@ -316,7 +315,12 @@ export function Viewport(
 
         if (onDownPosition.distanceTo(onUpPosition) === 0) {
 
-            var intersects = getIntersects(onUpPosition, objects);
+            var intersects = getIntersects(
+                onUpPosition, 
+                config.selectZones 
+                    ? zonesManager.zonesContainer.children
+                    : objects
+            );
 
             if (intersects.length > 0) {
 
@@ -425,7 +429,7 @@ export function Viewport(
         // For our usage it would be only geometries included on the scene. 
         // Amount of geometries can differ form project to project thus we check only if it isn't mesh.
         // unionOperations is property unique to zones that shoudn't be transformed with controler.
-        return object !== null && object !== scene && object !== camera && !isCSGManager(object) && !isCSGZone(object)
+        return object !== null && object !== scene && object !== camera && !object?.parent?.isCSGManager && !object?.isCSGZone
     }
 
     function reattachTransformControls(object) {
@@ -445,10 +449,28 @@ export function Viewport(
 
                 break;
 
+            case 'ControlLeft':
+            case 'ControlRight':
+                config.selectZones = true;
+                break;
+
             default:
+                break;
 
         }
 
+    });
+    container.dom.addEventListener('keyup', function (event) {
+
+        switch (event.code) {
+            case 'ControlLeft':
+            case 'ControlRight':
+                config.selectZones = false;
+                break;
+
+            default:
+                break;
+        }
     });
 
     container.dom.addEventListener('mousedown', onMouseDown, false);

@@ -24,14 +24,10 @@ function Sidebar( editor ) {
 	container.addTab( 'scene', strings.getKey( 'sidebar/scene' ), scene );
 	container.addTab( 'project', strings.getKey( 'sidebar/project' ), project );
 	container.addTab( 'settings', strings.getKey( 'sidebar/settings' ), settings );
-	container.addTab( 'settings', strings.getKey( 'sidebar/settings' ), settings );
-	container.addTab( 'settings', strings.getKey( 'sidebar/settings' ), settings );
-	container.addTab( 'settings', strings.getKey( 'sidebar/settings' ), settings );
-	container.addTab( 'settings', strings.getKey( 'sidebar/settings' ), settings );
 	container.select( 'scene' );
 
 	//Select Scene if zone is created
-	signals.objectSelected.add(object => isCSGZone(object) && container.select( 'scene' ));
+	signals.objectAdded.add(object => object?.isCSGZone && container.select( 'scene' ));
 
 	return container;
 
