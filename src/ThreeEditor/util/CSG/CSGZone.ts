@@ -24,6 +24,7 @@ export class CSGZone extends THREE.Mesh {
         geometryChanged: Signal<THREE.Object3D>;
         sceneGraphChanged: Signal;
         zoneAdded: Signal<CSGZone>;
+        zoneGeometryChanged: Signal<CSGZone>;
         zoneRemoved: Signal<CSGZone>;
         CSGManagerStateChanged: Signal;
     };
@@ -44,29 +45,29 @@ export class CSGZone extends THREE.Mesh {
     ) {
         super();
         this.type = "Zone";
+        this.editor = editor;
+        this.signals = editor.signals;
         this.name = name || "CSGZone";
         this.material = new THREE.MeshNormalMaterial();
         this.subscribedObjectsUuid = subscribedObjectsUuid || new Set();
         this.unionOperations = unionOperations
             ? (() => {
-                  // If operations are specified, we have to populate set of subscribed UUID's
-                  subscribedObjectsUuid ||
-                      unionOperations.forEach((op1) =>
-                          op1
-                              .map((op2) => op2.object.uuid)
-                              .forEach(
-                                  this.subscribedObjectsUuid.add,
-                                  this.subscribedObjectsUuid
-                              )
-                      );
-                  return unionOperations;
-              })()
+                // If operations are specified, we have to populate set of subscribed UUID's
+                subscribedObjectsUuid ||
+                    unionOperations.forEach((op1) =>
+                        op1
+                            .map((op2) => op2.object.uuid)
+                            .forEach(
+                                this.subscribedObjectsUuid.add,
+                                this.subscribedObjectsUuid
+                            )
+                    );
+                return unionOperations;
+            })()
             : [];
 
         // If operations are specified, we have to generate fist geometry manually.
         unionOperations && this.updateGeometry();
-        this.editor = editor;
-        this.signals = editor.signals;
 
         this.signals.geometryChanged.add((object) => this.handleSignal(object));
         this.signals.objectChanged.add((object) => this.handleSignal(object));
@@ -125,6 +126,7 @@ export class CSGZone extends THREE.Mesh {
         this.geometry = geometryResult;
         this.geometry.computeBoundingSphere();
         this.updateMatrixWorld(true);
+        this.signals.zoneGeometryChanged.dispatch(this);
         console.timeEnd("CSGZone");
     }
 
@@ -209,11 +211,11 @@ export class CSGZone extends THREE.Mesh {
         let subscribedObjectsUuid = Array.isArray(data.subscribedObjectsUuid)
             ? new Set(data.subscribedObjectsUuid)
             : (() => {
-                  throw Error(
-                      "SubscribedObjectsId is not array" +
-                          data.subscribedObjectsUuid
-                  );
-              })();
+                throw Error(
+                    "SubscribedObjectsId is not array" +
+                    data.subscribedObjectsUuid
+                );
+            })();
 
         let zone = new CSGZone(
             editor,

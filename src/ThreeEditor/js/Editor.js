@@ -68,6 +68,7 @@ function Editor() {
 		//YAPTIDE zones
 		zoneAdded: new Signal(),
 		zoneChanged: new Signal(),
+		zoneGeometryChanged: new Signal(),
 		zoneRemoved: new Signal(),
 
 		cameraAdded: new Signal(),
@@ -735,7 +736,11 @@ Editor.prototype = {
 
 		return {
 
-			metadata: {},
+			metadata: {
+				'version': 0.1,
+				'type': 'Editor',
+				'generator': 'Editor.toJSON'
+			},
 			project: {
 				shadows: this.config.getKey('project/renderer/shadows'),
 				shadowType: this.config.getKey('project/renderer/shadowType'),
