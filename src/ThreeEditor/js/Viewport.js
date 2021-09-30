@@ -32,7 +32,6 @@ export function Viewport(
     }
 
     let sceneViewHelpers = new THREE.Scene();
-    let clippedScene = new THREE.Scene();
 
     let container = new UIPanel();
     container.setId('ViewPanel');

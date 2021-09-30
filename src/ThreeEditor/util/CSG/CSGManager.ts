@@ -25,7 +25,8 @@ export class CSGManager extends THREE.Scene {
         this.editor = editor;
 
         this.editor.signals.zoneEmpty.add((zone: CSGZone) => this.handleZoneEmpty(zone));
-    }
+
+   }
 
     createZone() {
         let zone = new CSGZone(this.editor);
@@ -95,6 +96,7 @@ export class CSGManager extends THREE.Scene {
     }
 
     handleZoneEmpty(zone: CSGZone) {
+        console.log("handleZoneEmpty");
         this.remove(zone);
     }
 

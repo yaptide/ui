@@ -145,32 +145,40 @@ export class CSGZone extends THREE.Mesh {
         this.unionOperations[unionIndex].forEach((e, i) =>
             this.subscribedObjectsUuid.delete(e.object.uuid)
         );
+
         this.unionOperations[unionIndex] = [...operations];
+
         this.unionOperations[unionIndex].forEach((e, i) =>
             this.subscribedObjectsUuid.add(e.object.uuid)
         );
+
         this.announceChangedState();
     }
 
     removeUnion(unionIndex: number) {
-        this.unionOperations[unionIndex]?.forEach((e, i) =>
+        this.unionOperations[unionIndex].forEach((e, i) =>
             this.removeOperation(unionIndex, i)
         );
+
         this.unionOperations.splice(unionIndex, 1);
+
         this.announceChangedState();
     }
 
     addOperation(unionIndex: number, operation: CSGOperation) {
         this.unionOperations[unionIndex].push(operation);
         this.subscribedObjectsUuid.add(operation.object.uuid);
+        
         this.announceChangedState();
     }
 
     removeOperation(unionIndex: number, operationIndex: number) {
-        this.unionOperations[unionIndex].splice(operationIndex, 1);
         this.subscribedObjectsUuid.delete(
-            this.unionOperations[unionIndex][operationIndex]?.object.uuid
+            this.unionOperations[unionIndex][operationIndex].object.uuid
         );
+
+        this.unionOperations[unionIndex].splice(operationIndex, 1);
+
         this.announceChangedState();
     }
 
@@ -203,7 +211,7 @@ export class CSGZone extends THREE.Mesh {
 
     announceChangedState() {
         this.debouncedUpdatePreview();
-        
+
         this.signals.zoneChanged.dispatch(this);
         this.signals.CSGManagerStateChanged.dispatch();
     }
