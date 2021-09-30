@@ -77,6 +77,7 @@ export function Viewport(
         container.add(new ViewportCamera(this, cameras));
 
     let viewHelper = new ViewHelper(camera, container);
+    viewHelper.disabled = orthographic;
 
     let viewClipPlane = null;
     if (clipPlane) {
