@@ -469,6 +469,8 @@ function SidebarScene(editor) {
 
 	signals.sceneGraphChanged.add(refreshUI);
 
+	signals.objectChanged.add(refreshUI);
+
 	signals.objectSelected.add(function (object) {
 		if (ignoreObjectSelectedSignal === true) return;
 

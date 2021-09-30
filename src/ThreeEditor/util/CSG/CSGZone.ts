@@ -48,7 +48,7 @@ export class CSGZone extends THREE.Mesh {
         this.editor = editor;
         this.signals = editor.signals;
         this.name = name || "CSGZone";
-        this.material = new THREE.MeshNormalMaterial();
+        this.material = editor.simulationMaterials["Fire"].material;
         this.subscribedObjectsUuid = subscribedObjectsUuid || new Set();
         this.unionOperations = unionOperations
             ? (() => {

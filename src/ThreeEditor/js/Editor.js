@@ -5,6 +5,7 @@ import { Config } from './Config.js';
 import { Loader } from './Loader.js';
 import { History as _History } from './History.js';
 import { Strings } from './Strings.js';
+import { EditorMaterials } from './Editor.Materials.js';
 import { Storage as _Storage } from './Storage.js';
 import { CSGManager } from '../util/CSG/CSGManager';
 import { isCSGZone } from '../util/CSG/CSGZone';
@@ -126,6 +127,8 @@ function Editor() {
 	this.sceneHelpers = new THREE.Scene();
 
 	this.zonesManager = new CSGManager(this); //CSG Manager
+
+	this.simulationMaterials = EditorMaterials();
 
 	this.object = {};
 	this.geometries = {};

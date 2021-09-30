@@ -23,6 +23,9 @@ export class CSGManager extends THREE.Scene{
         super();
         this.zonesContainer = new THREE.Group();
         this.zonesContainer.name = "Zones";
+        let light = new THREE.HemisphereLight( 0xffffff, 0x222222, 1 );
+        light.position.set(15,15,15);
+        this.add(light);
         this.add(this.zonesContainer);
         this.worker = Comlink.wrap<ICSGWorker>(new Worker());
         this.editor = editor;
