@@ -40,8 +40,6 @@ export function Viewport(
     container.dom.setAttribute('tabindex', '0');
 
 
-    container.add(new ViewportInfo(editor));
-
     let canvas = document.createElement('canvas');
     container.dom.appendChild(canvas);
 
