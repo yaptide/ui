@@ -106,7 +106,7 @@ function ViewManager(editor) {
 	// upper right : full 3D view
 	// lower left : looking from the top at plane XZ
 	// lower right : looking from the top at plane YZ
-	
+
 	// each of the 2D planes is defined by clipping plane which removes from view (clip) a half-space
 	// clipping removes points in space whose signed distance to the plane is negative
 	// points with negative distance are located on the other side of the plane than the normal vector
@@ -137,7 +137,7 @@ function ViewManager(editor) {
 	};
 	let viewPlaneXY = new Viewport("ViewPanelXY", editor, viewManagerProps, configPlaneXY);
 	viewsGrid.add(viewPlaneXY.container);
-	
+
 	// fix the view to being from positive part of Z axis: theta = 0*, phi = 90*
 	// for threejs spherical coordinates, see comment in top part of this file
 	viewPlaneXY.controls.maxAzimuthAngle = viewPlaneXY.controls.minAzimuthAngle = 0;
@@ -275,9 +275,8 @@ function ViewManager(editor) {
 	// signals
 
 	signals.editorCleared.add(function () {
-		// When we create new files view.controls is undefined
-		// TODO: fix this error
-		views.forEach((view) => view.controls.center && view.controls.center.set(0, 0, 0));
+
+		views.forEach((view) => view.reset());
 		render();
 
 	});

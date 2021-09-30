@@ -15,8 +15,9 @@ function GeometryParametersPanel( editor, object ) {
 
 	var radiusRow = new UIRow();
 	var radius = new UINumber( parameters.radius ).onChange( update );
+	radius.min = 0;
 
-	radiusRow.add( new UIText( strings.getKey( 'sidebar/geometry/sphere_geometry/radius' ) ).setWidth( '90px' ) );
+	radiusRow.add( new UIText( strings.getKey( 'sidebar/geometry/sphere_geometry/radius' ) + ' ' + editor.unit.name).setWidth( '90px' ) );
 	radiusRow.add( radius );
 
 	container.add( radiusRow );

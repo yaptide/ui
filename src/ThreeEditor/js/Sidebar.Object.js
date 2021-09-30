@@ -31,18 +31,8 @@ function SidebarObject(editor) {
 
 	container.add(objectTypeRow);
 
-	// uuid
 
-	var objectUUID = new UIInput().setWidth('102px').setFontSize('12px').setDisabled(true);
-	var objectUUIDRenew = new UIButton(strings.getKey('sidebar/object/new')).setMarginLeft('7px').onClick(function () {
-
-		objectUUID.setValue(THREE.MathUtils.generateUUID());
-
-		editor.execute(new SetUuidCommand(editor, editor.selected, objectUUID.getValue()));
-
-	});
-
-	// id - added
+	// id 
 
 	var objectIdRow = new UIRow();
 	var objectId = new UIText();
@@ -51,6 +41,16 @@ function SidebarObject(editor) {
 	objectIdRow.add(objectId);
 
 	container.add(objectIdRow);
+
+	// uuid 
+
+	var objectUuidRow = new UIRow();
+	var objectUuid = new UIText().setWidth('150px');
+
+	objectUuidRow.add(new UIText('Uuid').setWidth('90px'));
+	objectUuidRow.add(objectUuid);
+
+	container.add(objectUuidRow);
 
 	// name
 
@@ -73,7 +73,7 @@ function SidebarObject(editor) {
 	var objectPositionY = new UINumber().setPrecision(3).setWidth('50px').onChange(update);
 	var objectPositionZ = new UINumber().setPrecision(3).setWidth('50px').onChange(update);
 
-	objectPositionRow.add(new UIText(strings.getKey('sidebar/object/position')).setWidth('90px'));
+	objectPositionRow.add(new UIText(strings.getKey('sidebar/object/position') + ' ' + editor.unit.name).setWidth('90px'));
 	objectPositionRow.add(objectPositionX, objectPositionY, objectPositionZ);
 
 	container.add(objectPositionRow);
@@ -626,7 +626,7 @@ function SidebarObject(editor) {
 	function updateRowsForTypeOfObject(object) {
 
 
-		let invisible = [objectTypeRow, objectFrustumCulledRow, objectScaleRow, objectUUIDRenew, objectShadowRow];
+		let invisible = [objectTypeRow, objectFrustumCulledRow, objectScaleRow,  objectShadowRow];
 
 		invisible.forEach((e) => e.setDisplay('none'));
 
@@ -670,8 +670,8 @@ function SidebarObject(editor) {
 
 		objectType.setValue(object.type);
 
-		objectUUID.setValue(object.uuid);
 		objectId.setValue(object.id);
+		objectUuid.setValue(object.uuid);
 		objectName.setValue(object.name);
 
 		objectPositionX.setValue(object.position.x);

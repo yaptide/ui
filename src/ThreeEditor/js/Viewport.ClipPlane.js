@@ -9,7 +9,7 @@ We aim at assigning stencil materials to hold different colors than the walls of
 This is especially useful for such clipped views where at the same time internal material and wall of the object is visible at same time
 (for example torus clipped by a plane containing its axis of symmetry, stencil material fills two full circles, while wall material is drawn on the visible outer wall).
  */
-export function ViewportClippedView(editor, viewport, planeHelpers, initialObjects, signalGeometryChanged, { clipPlane, planeHelperColor, planePosLabel }) {
+export function ViewportClippedView(editor, viewport, planeHelpers, initialObjects, signalGeometryChanged, signalGeometryAdded, signalGeometryRemoved, { clipPlane, planeHelperColor, planePosLabel }) {
 
     // default order is zero, we assign higher order to stencil plane to display it in front of other objects
     const STENCIL_RENDER_ORDER = 1;
@@ -27,7 +27,7 @@ export function ViewportClippedView(editor, viewport, planeHelpers, initialObjec
     const planeHelper = new THREE.PlaneHelper(clipPlane, CLIPPING_SIZE, planeHelperColor ?? 0xffff00); // default helper color is yellow
     planeHelpers.add(planeHelper);
 
-    const planePosProperty = planePosLabel ?? 'PlanePos';
+    const planePosProperty = (planePosLabel ?? 'PlanePos') + ' ' + editor.unit.name;
 
     const uiProps = {
 
@@ -134,17 +134,27 @@ export function ViewportClippedView(editor, viewport, planeHelpers, initialObjec
         const stencilGroup = createPlaneStencilGroup(object3D.geometry, clipPlane, STENCIL_RENDER_ORDER);
         stencilGroup.name = object3D.uuid;
         clippedObjects.add(stencilGroup);
-
     });
 
     // update stencil materials when geometry of bodies and zones is updated
-    signalGeometryChanged.add(function (object3D) {
+    function updateMeshWithStencilMaterial(object3D) {
         clippedObjects.remove(clippedObjects.getObjectByName(object3D.uuid));
 
         const stencilGroup = createPlaneStencilGroup(object3D.geometry, clipPlane, STENCIL_RENDER_ORDER);
         stencilGroup.name = object3D.uuid;
         clippedObjects.add(stencilGroup);
+    }
 
+    signalGeometryChanged.add(function (object3D) {
+        updateMeshWithStencilMaterial(object3D);
+    });
+
+    signalGeometryAdded.add(function (object3D) {
+        updateMeshWithStencilMaterial(object3D);
+    });
+
+    signalGeometryRemoved.add(function (object3D) {
+        clippedObjects.remove(clippedObjects.getObjectByName(object3D.uuid));
     });
 
     // https://github.com/mrdoob/three.js/blob/r132/examples/webgl_clipping_stencil.html
@@ -186,6 +196,11 @@ export function ViewportClippedView(editor, viewport, planeHelpers, initialObjec
 
         return group;
 
+    }
+
+
+    this.reset = () => {
+        clippedObjects.clear();
     }
 
 }

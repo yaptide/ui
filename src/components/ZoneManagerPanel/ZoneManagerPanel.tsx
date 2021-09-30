@@ -77,31 +77,47 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
         },
         [props.editor]);
 
+    const loadRows = useCallback(() => {
+        let newRows: AlgebraRow[] = [];
+        zoneRef.current?.unionOperations.forEach((union) => {
+
+            let row: AlgebraRow = { geometriesId: [], operations: [] };
+
+            union.forEach((operation) => {
+                row.geometriesId.push(operation.object.id);
+                if (operation.mode !== 'union')
+                    row.operations.push(operation.mode);
+            });
+
+            newRows.push(row);
+        });
+
+        setRows([...newRows]);
+    }, []);
+
+
     const initZone = useCallback(() => {
         let manager = props.editor.zonesManager;
-        let rows: AlgebraRow[] = [];
         props.zone
             ? (() => {
                 zoneRef.current = props.zone;
-                zoneRef.current?.unionOperations.forEach((union) => {
-
-                    let row: AlgebraRow = { geometriesId: [], operations: [] };
-
-                    union.forEach((operation) => {
-                        row.geometriesId.push(operation.object.id);
-                        if (operation.mode !== 'union')
-                            row.operations.push(operation.mode);
-                    });
-
-                    rows.push(row);
-                });
-
+                loadRows();
             })()
             : zoneRef.current = manager.createZone();
 
-        setRows([...rows]);
+    }, [loadRows, props.editor.zonesManager, props.zone]);
 
-    }, [props.editor,props.zone]);
+    useEffect(() => {
+        initZone();
+    }, [initZone]);
+
+    useEffect(() => {
+        props.editor.signals.zoneChanged.add(loadRows);
+        return () => {
+            props.editor.signals.zoneChanged.remove(loadRows);
+        }
+    }, [loadRows, props.editor.signals.zoneChanged]);
+
 
     useEffect(() => {
         refreshObjectsList();
@@ -113,20 +129,19 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
         }
     }, [props.editor, refreshObjectsList]);
 
-    useEffect(() => {
-        initZone();
-    },[initZone])
 
     return (<div className="zoneManagerWrapper">
         {rows.map((row, id) => {
-            return (<BooleanAlgebraRow
-                key={id}
-                id={id}
-                del={removeRow(id)}
-                change={changeRowValues(id)}
-                value={row}
-                possibleObjects={allObjects}
-            ></BooleanAlgebraRow>)
+            return (
+                <BooleanAlgebraRow
+                    key={id}
+                    id={id}
+                    del={removeRow(id)}
+                    change={changeRowValues(id)}
+                    value={row}
+                    possibleObjects={allObjects}
+                ></BooleanAlgebraRow>
+            )
         })}
         <Button className="addRowButton" onClick={addAlgebraRow}>+</Button>
         <Button className="parseZoneButton" onClick={() => parseZone(rows)}>Parse Zone</Button>

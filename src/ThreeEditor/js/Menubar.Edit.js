@@ -5,6 +5,7 @@ import { UIPanel, UIRow, UIHorizontalRule } from './libs/ui.js';
 import { AddObjectCommand } from './commands/AddObjectCommand.js';
 import { RemoveObjectCommand } from './commands/RemoveObjectCommand.js';
 import { SetPositionCommand } from './commands/SetPositionCommand.js';
+import { RemoveZoneCommand } from './commands/RemoveZoneCommand.js';
 
 function MenubarEdit(editor) {
 
@@ -141,7 +142,10 @@ function MenubarEdit(editor) {
 
 		if (object !== null && object.parent !== null) {
 
-			editor.execute(new RemoveObjectCommand(editor, object));
+			if (object?.isCSGZone)
+				editor.execute(new RemoveZoneCommand(editor, object));
+			else
+				editor.execute(new RemoveObjectCommand(editor, object));
 
 		}
 

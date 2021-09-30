@@ -70,6 +70,7 @@ function Editor() {
 		zoneAdded: new Signal(),
 		zoneChanged: new Signal(),
 		zoneGeometryChanged: new Signal(),
+		zoneEmpty: new Signal(),
 		zoneRemoved: new Signal(),
 
 		cameraAdded: new Signal(),
@@ -116,6 +117,10 @@ function Editor() {
 	this.history = new _History(this);
 	this.storage = new _Storage();
 	this.strings = new Strings(this.config);
+	this.unit = {
+		name: '[cm]',
+		multiplier: 1	
+	}
 
 	this.loader = new Loader(this);
 
@@ -698,8 +703,8 @@ Editor.prototype = {
 
 	fromJSON: async function (json) {
 
-		var loader = new THREE.ObjectLoader();
-		var camera = await loader.parseAsync(json.camera);
+		const loader = new THREE.ObjectLoader();
+		const camera = await loader.parseAsync(json.camera);
 
 		this.camera.copy(camera);
 		this.signals.cameraResetted.dispatch();
@@ -710,7 +715,7 @@ Editor.prototype = {
 		this.setScene(await loader.parseAsync(json.scene));
 
 		// CSGManager must be loaded after scene
-		this.setZonesManager(CSGManager.fromJSON(this, json.zonesManager))
+		this.setZonesManager(CSGManager.fromJSON(this, json.zonesManager)) // CSGManager must be loaded to not lose reference in components 		
 
 		this.signals.sceneGraphChanged.dispatch();
 				
@@ -750,7 +755,7 @@ Editor.prototype = {
 				vr: this.config.getKey('project/vr'),
 				physicallyCorrectLights: this.config.getKey('project/renderer/physicallyCorrectLights'),
 				toneMapping: this.config.getKey('project/renderer/toneMapping'),
-				toneMappingExposure: this.config.getKey('project/renderer/toneMappingExposure')
+				toneMappingExposure: this.config.getKey('project/renderer/toneMappingExposure'),
 			},
 			camera: this.camera.toJSON(),
 			scene: this.scene.toJSON(),

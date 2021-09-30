@@ -30,7 +30,6 @@ export function Viewport(
     }
 
     let sceneViewHelpers = new THREE.Scene();
-    let clippedScene = new THREE.Scene();
 
     let container = new UIPanel();
     container.setId('ViewPanel');
@@ -78,7 +77,7 @@ export function Viewport(
     let viewClipPlane = null;
     if (clipPlane) {
         viewClipPlane = new ViewportClipPlane(
-            editor, this, planeHelpers, zonesManager.children, signals.zoneGeometryChanged,
+            editor, this, planeHelpers, zonesManager.children, signals.zoneGeometryChanged, signals.zoneAdded, signals.zoneRemoved,
             { clipPlane, planeHelperColor, planePosLabel });
 
         container.dom.appendChild(viewClipPlane.gui.domElement);
@@ -527,6 +526,10 @@ export function Viewport(
         updateAspectRatio();
     }
 
+    this.reset = function () {
+        controls.reset();
+        viewClipPlane && viewClipPlane.reset();
+    }
 
     this.setCameraFromUuid = function (uuid) {
         let newCam = cameras.find((e) => e.uuid === uuid);
@@ -538,6 +541,7 @@ export function Viewport(
 
 
     return {
+        ...this,
         render,
         container,
         controls,
