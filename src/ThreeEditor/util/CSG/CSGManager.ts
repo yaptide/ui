@@ -13,7 +13,7 @@ interface CSGManagerJSON {
     zones: CSGZoneJSON[]
 }
 
-export class CSGManager extends THREE.Scene{
+export class CSGManager extends THREE.Scene {
     editor: Editor;
     worker: Comlink.Remote<ICSGWorker>;
 
@@ -23,26 +23,41 @@ export class CSGManager extends THREE.Scene{
         this.name = "Zones";
         this.worker = Comlink.wrap<ICSGWorker>(new Worker());
         this.editor = editor;
+
+        this.editor.signals.zoneEmpty.add((zone: CSGZone) => this.handleZoneEmpty(zone));
+
     }
 
     createZone() {
         let zone = new CSGZone(this.editor);
+
         this.add(zone);
-        this.editor.signals.objectAdded.dispatch(zone);
-		this.editor.signals.sceneGraphChanged.dispatch();
-        this.editor.signals.CSGManagerStateChanged.dispatch();
 
         return zone;
     }
 
     add(zone: CSGZone) {
         zone.worker = this.worker;
-        return super.add(zone);
+
+        super.add(zone);
+
+        this.editor.signals.objectAdded.dispatch(zone);
+        this.editor.signals.zoneAdded.dispatch(zone);
+        this.editor.signals.sceneGraphChanged.dispatch();
+        this.editor.signals.CSGManagerStateChanged.dispatch();
+
+        return this;
     }
 
     remove(zone: CSGZone) {
-        console.log("Removing: ",zone);
-        return super.remove(zone);
+        super.remove(zone);
+
+        this.editor.signals.objectRemoved.dispatch(zone);
+        this.editor.signals.zoneRemoved.dispatch(zone);
+        this.editor.signals.sceneGraphChanged.dispatch();
+        this.editor.signals.CSGManagerStateChanged.dispatch();
+
+        return this;
     }
 
     toJSON() {
@@ -64,20 +79,29 @@ export class CSGManager extends THREE.Scene{
             console.warn('Passed empty data to load CSGManager', data)
         else
             manager.uuid = data.uuid;
-            manager.name = data.name;
-            
-            data.zones.forEach((zone) => {
+        manager.name = data.name;
 
-                manager.add(CSGZone.fromJSON(editor, zone));
+        data.zones.forEach((zone) => {
 
-            });
+            manager.add(CSGZone.fromJSON(editor, zone));
+
+        });
 
         return manager;
 
     }
 
+    loadFrom(manager: CSGManager) {
+        this.children = manager.children;
+    }
+
     clone(recursive: boolean) {
         return new CSGManager(this.editor).copy(this, recursive) as this;
+    }
+
+    handleZoneEmpty(zone: CSGZone) {
+        console.log("handleZoneEmpty");
+        this.remove(zone);
     }
 
 }

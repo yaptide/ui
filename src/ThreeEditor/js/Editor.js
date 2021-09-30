@@ -69,6 +69,7 @@ function Editor() {
 		zoneAdded: new Signal(),
 		zoneChanged: new Signal(),
 		zoneGeometryChanged: new Signal(),
+		zoneEmpty: new Signal(),
 		zoneRemoved: new Signal(),
 
 		cameraAdded: new Signal(),
@@ -684,8 +685,8 @@ Editor.prototype = {
 
 	fromJSON: async function (json) {
 
-		var loader = new THREE.ObjectLoader();
-		var camera = await loader.parseAsync(json.camera);
+		const loader = new THREE.ObjectLoader();
+		const camera = await loader.parseAsync(json.camera);
 
 		this.camera.copy(camera);
 		this.signals.cameraResetted.dispatch();
@@ -695,11 +696,10 @@ Editor.prototype = {
 
 		this.setScene(await loader.parseAsync(json.scene));
 
-		let zonesManager = CSGManager.fromJSON(this, json.zonesManager); // CSGManager must be loaded after scene 
+		const zonesManager = CSGManager.fromJSON(this, json.zonesManager); // CSGManager must be loaded after scene 		
+		this.zonesManager.loadFrom(zonesManager); // CSGManager must be loaded to not lose reference in components 		
 
-		this.zonesManager.copy(zonesManager);
 		this.signals.sceneGraphChanged.dispatch();
-
 		this.signals.loadedFromJSON.dispatch(this);
 	},
 

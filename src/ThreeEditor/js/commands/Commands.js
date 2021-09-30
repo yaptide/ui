@@ -3,6 +3,7 @@ export { AddScriptCommand } from './AddScriptCommand.js';
 export { MoveObjectCommand } from './MoveObjectCommand.js';
 export { MultiCmdsCommand } from './MultiCmdsCommand.js';
 export { RemoveObjectCommand } from './RemoveObjectCommand.js';
+export { RemoveZoneCommand } from './RemoveZoneCommand.js';
 export { RemoveScriptCommand } from './RemoveScriptCommand.js';
 export { SetColorCommand } from './SetColorCommand.js';
 export { SetGeometryCommand } from './SetGeometryCommand.js';
