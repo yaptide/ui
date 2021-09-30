@@ -26,7 +26,7 @@ export class CSGManager extends THREE.Scene {
 
         this.editor.signals.zoneEmpty.add((zone: CSGZone) => this.handleZoneEmpty(zone));
 
-   }
+    }
 
     createZone() {
         let zone = new CSGZone(this.editor);
@@ -89,6 +89,10 @@ export class CSGManager extends THREE.Scene {
 
         return manager;
 
+    }
+
+    loadFrom(manager: CSGManager) {
+        this.children = manager.children;
     }
 
     clone(recursive: boolean) {

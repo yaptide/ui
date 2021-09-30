@@ -23,20 +23,9 @@ export default function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
 
     const pushGeometry = (index: number) => (id: number) => {
         setAlgebraRow((prev) => {
-            let newRow: AlgebraRow = { geometriesId: [], operations: prev.operations };
+            let newRow: AlgebraRow = { geometriesId: [...prev.geometriesId], operations: prev.operations };
 
-            if (index === algebraRow.geometriesId.length) {
-                newRow.geometriesId = [
-                    ...prev.geometriesId,
-                    props.possibleObjects.find(el => el.id === id)?.id ?? null
-                ];
-            } else {
-                newRow.geometriesId = [
-                    ...prev.geometriesId.map((el, elIndex) => {
-                        return index === elIndex ? id : el
-                    }),
-                ];
-            }
+            newRow.geometriesId.splice(index, 1, id);
 
             props.change(newRow);
 
@@ -44,24 +33,14 @@ export default function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
         })
     }
 
-    const pushOperation = (id: number) => (op: Operation) => {
+    const pushOperation = (index: number) => (op: Operation) => {
         setAlgebraRow((prev) => {
-            let newRow: AlgebraRow = { geometriesId: prev.geometriesId, operations: [] };
+            let newRow: AlgebraRow = { geometriesId: prev.geometriesId, operations: [...prev.operations] };
 
-            if (id === algebraRow.operations.length) {
-                newRow.operations = [
-                    ...prev.operations,
-                    op
-                ];
-            } else {
-                newRow.operations = [
-                    ...prev.operations.map((el, index) => {
-                        return index === id ? op : el
-                    }),
-                ];
-            }
+            newRow.operations.splice(index, 1, op);
 
-            // do not inform about change of state 
+            if (index < newRow.geometriesId.length - 1)
+                props.change(newRow);
 
             return newRow;
         })

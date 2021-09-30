@@ -84,7 +84,6 @@ export class CSGZone extends THREE.Mesh {
             this.name,
             this.unionOperations,
             this.subscribedObjectsUuid,
-            this.uuid
         ).copy(this, recursive) as this;
 
         return clonedZone;
@@ -131,6 +130,7 @@ export class CSGZone extends THREE.Mesh {
         this.geometry = geometryResult;
         this.geometry.computeBoundingSphere();
         this.updateMatrixWorld(true);
+
         this.signals.zoneGeometryChanged.dispatch(this);
         console.timeEnd("CSGZone");
     }
@@ -168,7 +168,7 @@ export class CSGZone extends THREE.Mesh {
     addOperation(unionIndex: number, operation: CSGOperation) {
         this.unionOperations[unionIndex].push(operation);
         this.subscribedObjectsUuid.add(operation.object.uuid);
-        
+
         this.announceChangedState();
     }
 
