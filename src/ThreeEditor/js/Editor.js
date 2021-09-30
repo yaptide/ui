@@ -182,7 +182,7 @@ Editor.prototype = {
 
 	},
 
-	// YAPTIDE ZONES MAANGER
+	// YAPTIDE ZONES MANAGER
 	setZonesManager: function(zonesManager) {
 		this.zonesManager.uuid = zonesManager.uuid;
 		this.zonesManager.zonesContainer.uuid = zonesManager.zonesContainer.uuid;
