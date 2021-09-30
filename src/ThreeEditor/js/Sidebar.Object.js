@@ -74,7 +74,7 @@ function SidebarObject(editor) {
 	var objectPositionY = new UINumber().setPrecision(3).setWidth('50px').onChange(update);
 	var objectPositionZ = new UINumber().setPrecision(3).setWidth('50px').onChange(update);
 
-	objectPositionRow.add(new UIText(strings.getKey('sidebar/object/position')).setWidth('90px'));
+	objectPositionRow.add(new UIText(strings.getKey('sidebar/object/position') + ' ' + editor.unit.name).setWidth('90px'));
 	objectPositionRow.add(objectPositionX, objectPositionY, objectPositionZ);
 
 	container.add(objectPositionRow);

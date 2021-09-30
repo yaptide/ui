@@ -114,6 +114,10 @@ function Editor() {
 	this.history = new _History(this);
 	this.storage = new _Storage();
 	this.strings = new Strings(this.config);
+	this.unit = {
+		name: '[cm]',
+		multiplier: 1	
+	}
 
 	this.loader = new Loader(this);
 
@@ -733,7 +737,7 @@ Editor.prototype = {
 				vr: this.config.getKey('project/vr'),
 				physicallyCorrectLights: this.config.getKey('project/renderer/physicallyCorrectLights'),
 				toneMapping: this.config.getKey('project/renderer/toneMapping'),
-				toneMappingExposure: this.config.getKey('project/renderer/toneMappingExposure')
+				toneMappingExposure: this.config.getKey('project/renderer/toneMappingExposure'),
 			},
 			camera: this.camera.toJSON(),
 			scene: this.scene.toJSON(),

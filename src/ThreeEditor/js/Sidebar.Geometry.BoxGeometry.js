@@ -11,12 +11,13 @@ function GeometryParametersPanel( editor, object ) {
 	var geometry = object.geometry;
 	var parameters = geometry.parameters;
 
-	// width
+	// width = height = depth
 
 	var widthRow = new UIRow();
 	var width = new UINumber( parameters.width ).onChange( update );
+	width.min = 0;
 
-	widthRow.add( new UIText( strings.getKey( 'sidebar/geometry/box_geometry/width' ) ).setWidth( '90px' ) );
+	widthRow.add( new UIText( strings.getKey( 'sidebar/geometry/box_geometry/width' )+ ' ' + editor.unit.name ).setWidth( '90px' ) );
 	widthRow.add( width );
 
 	container.add( widthRow );
