@@ -8,7 +8,6 @@ import { Strings } from './Strings.js';
 import { EditorMaterials } from './Editor.Materials.js';
 import { Storage as _Storage } from './Storage.js';
 import { CSGManager } from '../util/CSG/CSGManager';
-import { isCSGZone } from '../util/CSG/CSGZone';
 
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);

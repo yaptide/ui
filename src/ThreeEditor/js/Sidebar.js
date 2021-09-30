@@ -4,7 +4,6 @@ import { SidebarScene } from './Sidebar.Scene.js';
 import { SidebarProperties } from './Sidebar.Properties.js';
 import { SidebarProject } from './Sidebar.Project.js';
 import { SidebarSettings } from './Sidebar.Settings.js';
-import { isCSGZone } from '../util/CSG/CSGZone';
 
 function Sidebar( editor ) {
 

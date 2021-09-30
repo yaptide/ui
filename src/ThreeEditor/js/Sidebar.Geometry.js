@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper.js';
 import ZoneManagerPanel from '../../components/ZoneManagerPanel/ZoneManagerPanel';
 import { UIButton, UIPanel, UIRow, UISpan, UIText } from './libs/ui.js';
-import { isCSGZone } from '../util/CSG/CSGZone';
 
 function SidebarGeometry( editor ) {
 

@@ -3,9 +3,8 @@ import { SetColorCommand } from './commands/SetColorCommand.js';
 import { SetPositionCommand } from './commands/SetPositionCommand.js';
 import { SetRotationCommand } from './commands/SetRotationCommand.js';
 import { SetScaleCommand } from './commands/SetScaleCommand.js';
-import { SetUuidCommand } from './commands/SetUuidCommand.js';
 import { SetValueCommand } from './commands/SetValueCommand.js';
-import { UIButton, UICheckbox, UIColor, UIInput, UIInteger, UINumber, UIPanel, UIRow, UIText, UITextArea } from './libs/ui.js';
+import { UICheckbox, UIColor, UIInput, UIInteger, UINumber, UIPanel, UIRow, UIText, UITextArea } from './libs/ui.js';
 import { UIBoolean } from './libs/ui.three.js';
 
 function SidebarObject(editor) {
