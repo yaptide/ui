@@ -73,7 +73,8 @@ export function Viewport(
         }
     });
 
-    container.add(new ViewportCamera(this, cameras));
+    if (!orthographic)
+        container.add(new ViewportCamera(this, cameras));
 
     let viewHelper = new ViewHelper(camera, container);
 
@@ -143,8 +144,6 @@ export function Viewport(
 
         return false;
     }
-
-
 
     let objectPositionOnDown = null;
     let objectRotationOnDown = null;
