@@ -236,8 +236,38 @@ export function Viewport(
 
     });
 
+    window.addEventListener('keydown', function (event) {
+
+        switch (event.key) {
+
+            case 'Shift': // Shift
+                transformControls.setTranslationSnap(1);
+                transformControls.setRotationSnap(THREE.MathUtils.degToRad(15));
+                break;
+
+            default:
+        }
+
+    });
+
+    window.addEventListener('keyup', function (event) {
+
+        switch (event.key) {
+
+            case 'Shift': // Shift
+                transformControls.setTranslationSnap(null);
+                transformControls.setRotationSnap(null);
+                break;
+
+            default:
+
+        }
+
+    });
+
 
     sceneViewHelpers.add(transformControls);
+
 
 
     // object picking
