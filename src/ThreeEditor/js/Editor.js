@@ -213,9 +213,7 @@ Editor.prototype = {
 		});
 
 		if (parent === undefined) {
-			object?.isCSGZone
-				? this.zonesManager.add(object)
-				: this.scene.add(object);
+			this.scene.add(object);
 
 		} else {
 

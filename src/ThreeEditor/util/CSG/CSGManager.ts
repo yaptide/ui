@@ -45,8 +45,7 @@ export class CSGManager extends THREE.Scene {
 
     addZone(zone: CSGZone) {
         zone.worker = this.worker;
-        this.zonesContainer.add(zone);
-        
+        this.editor.addObject(zone, this.zonesContainer);        
         this.editor.signals.objectAdded.dispatch(zone);
         this.editor.signals.zoneAdded.dispatch(zone);
         this.editor.signals.sceneGraphChanged.dispatch();
