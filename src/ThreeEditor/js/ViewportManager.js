@@ -119,7 +119,7 @@ function ViewManager(editor) {
 		orthographic: true,
 
 		// camera looking from above XY plane
-		cameraPosition: new THREE.Vector3(0, 0, 10),
+		cameraPosition: new THREE.Vector3(0, 0, 100),
 
 		// default clipping plane being XY plane (normal vector pointing down along Z axis)
 		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.),
@@ -167,7 +167,7 @@ function ViewManager(editor) {
 		orthographic: true,
 
 		// camera looking from above XZ plane
-		cameraPosition: new THREE.Vector3(0, 10, 0),
+		cameraPosition: new THREE.Vector3(0, 100, 0),
 
 		// default clipping plane being XZ plane (normal vector pointing down along Y axis)
 		clipPlane: new THREE.Plane(new THREE.Vector3(0, -1, 0), 0.),
@@ -193,7 +193,7 @@ function ViewManager(editor) {
 		orthographic: true,
 
 		// camera looking from above YZ plane
-		cameraPosition: new THREE.Vector3(10, 0, 0),
+		cameraPosition: new THREE.Vector3(100, 0, 0),
 
 		// default clipping plane being YZ plane (normal vector pointing down along X axis)
 		clipPlane: new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.),
