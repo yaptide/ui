@@ -54,12 +54,12 @@ function ViewManager(editor) {
 	var grid = new THREE.Group();
 	sceneHelpers.add(grid);
 
-	var minorGrid = new THREE.GridHelper(30, 30, 0x888888);
+	var minorGrid = new THREE.GridHelper(100, 100, 0x888888);
 	minorGrid.material.color.setHex(0x888888); // 0x888888 -> light grey (53% lightness)
 	minorGrid.material.vertexColors = false;
 	grid.add(minorGrid);
 
-	var majorGrid = new THREE.GridHelper(30, 6, 0x222222);
+	var majorGrid = new THREE.GridHelper(100, 10, 0x222222);
 	majorGrid.material.color.setHex(0x222222); // 0x222222 -> very dark grey (13% lightness)
 	majorGrid.material.depthFunc = THREE.AlwaysDepth;
 	majorGrid.material.vertexColors = false;
