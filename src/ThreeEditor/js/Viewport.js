@@ -7,7 +7,6 @@ import { SetScaleCommand } from './commands/SetScaleCommand';
 import { EditorOrbitControls } from './EditorOrbitControls';
 import { UIPanel } from "./libs/ui";
 import { ViewportCamera } from './Viewport.Camera.js';
-import { ViewportInfo } from './Viewport.Info.js';
 import { ViewHelper } from './Viewport.ViewHelper';
 import { isCSGManager } from '../util/CSG/CSGManager';
 import { isCSGZone } from '../util/CSG/CSGZone';
@@ -18,7 +17,7 @@ import { ViewportClippedView as ViewportClipPlane } from './Viewport.ClipPlane';
 export function Viewport(
     name, editor,
     { objects, grid, planeHelpers, selectionBox },
-    { orthographic, cameraPosition, clipPlane, planePosLabel, planeHelperColor, showPlaneHelpers, gridRotation } = {}
+    { orthographic, cameraPosition, cameraUp, clipPlane, planePosLabel, planeHelperColor, showPlaneHelpers, gridRotation } = {}
 ) {
 
     this.name = name;
@@ -50,12 +49,15 @@ export function Viewport(
     cameraPersp.name = "Perspective";
     cameraPersp.position.copy(cameraPosition ?? new THREE.Vector3(0, 5, 10)); // default camera position other than (0,0,0) to see anything 
     cameraPersp.lookAt(new THREE.Vector3());
+    cameraUp && cameraPersp.up.copy(cameraUp);
 
     let cameraOrtho = new THREE.OrthographicCamera(1 / - 2, 1 / 2, 1 / 2, 1 / - 2, 0.001, 10000);
     cameraOrtho.name = "Orthographic";
     cameraOrtho.position.copy(cameraPersp.position);
     cameraOrtho.zoom = .2;
     cameraOrtho.lookAt(new THREE.Vector3());
+    cameraOrtho.rotateX(45);
+    cameraOrtho.up.copy(cameraPersp.up);
 
     let cameras = [cameraOrtho, cameraPersp];
 
@@ -455,8 +457,9 @@ export function Viewport(
     container.dom.addEventListener('dblclick', onDoubleClick, false);
 
     // controls need to be added *after* main logic,
-    // otherwise controls.enabled doesn't work.
+    // otherwise controls.enabled doesn't work.       
     let controls = new EditorOrbitControls(camera, container.dom);
+    controls.screenSpacePanning = false;
     controls.addEventListener('change', function () {
 
         signals.cameraChanged.dispatch(camera);

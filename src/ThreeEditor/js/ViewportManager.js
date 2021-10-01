@@ -169,6 +169,10 @@ function ViewManager(editor) {
 		// camera looking from above XZ plane
 		cameraPosition: new THREE.Vector3(0, 100, 0),
 
+		// to set Z from left to the right and X from down to up 
+		// Vector3(1, 1, 0) chosen experimentally, (1, 0, 0) not working correctly 
+		cameraUp: new THREE.Vector3(1, 1, 0),
+
 		// default clipping plane being XZ plane (normal vector pointing down along Y axis)
 		clipPlane: new THREE.Plane(new THREE.Vector3(0, -1, 0), 0.),
 		planePosLabel: "PlanePoz Y",
@@ -180,8 +184,9 @@ function ViewManager(editor) {
 	viewsGrid.add(viewPlaneXZ.container);
 
 	// fix the view to being from positive part of Y axis: theta = 0*, phi = 0*
-	viewPlaneXZ.controls.maxAzimuthAngle = viewPlaneXZ.controls.minAzimuthAngle = 0;
-	viewPlaneXZ.controls.maxPolarAngle = viewPlaneXZ.controls.minPolarAngle = 0;
+	// Values chosen experimentally to compensate changed camera.up 
+	viewPlaneXZ.controls.maxAzimuthAngle = viewPlaneXZ.controls.minAzimuthAngle = -1.5707963267948966;
+	viewPlaneXZ.controls.maxPolarAngle = viewPlaneXZ.controls.minPolarAngle = 0.9272952180016123;
 	viewPlaneXZ.controls.update();
 
 	let gutterRow = new UIDiv().setClass("gutter-row gutter-row-1");
@@ -194,6 +199,11 @@ function ViewManager(editor) {
 
 		// camera looking from above YZ plane
 		cameraPosition: new THREE.Vector3(100, 0, 0),
+
+		// to set Y from left to the right and Z from down to up 
+		// Vector3(1, 0, 1) chosen experimentally, (0, 0, 1) not working correctly 
+		// camera.up vector is used by lookAt function used in OrbitControls
+		cameraUp: new THREE.Vector3(1, 0, 1),
 
 		// default clipping plane being YZ plane (normal vector pointing down along X axis)
 		clipPlane: new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.),
@@ -212,9 +222,9 @@ function ViewManager(editor) {
 	viewsGrid.add(viewPlaneYZ.container);
 
 	// fix the view to being from positive part of X axis: theta = 90*, phi = 90*
-	// see description of spherical coordinate system in threejs
-	viewPlaneYZ.controls.maxAzimuthAngle = viewPlaneYZ.controls.minAzimuthAngle = Math.PI / 2;
-	viewPlaneYZ.controls.maxPolarAngle = viewPlaneYZ.controls.minPolarAngle = Math.PI / 2;
+	// Values chosen experimentally to compensate changed camera.up 	
+	viewPlaneYZ.controls.maxAzimuthAngle = viewPlaneYZ.controls.minAzimuthAngle = 2.677945044588986;
+	viewPlaneYZ.controls.maxPolarAngle = viewPlaneYZ.controls.minPolarAngle = 0.8410686705679358;
 	viewPlaneYZ.controls.update();
 
 
