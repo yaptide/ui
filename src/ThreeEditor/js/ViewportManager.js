@@ -127,6 +127,10 @@ function ViewManager(editor) {
 		// camera looking from above XY plane
 		cameraPosition: new THREE.Vector3(0, 0, 100),
 
+		// default polar/theta rotation keep OY axis (default "up") parallel to the vertical axis of the screen
+		// to avoid gimbal lock in XY plane view with correct orientation we select default "up" ax OZ
+		cameraUp: new THREE.Vector3(0, 0, 1),
+		
 		// default clipping plane being XY plane (normal vector pointing down along Z axis)
 		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.),
 
@@ -144,18 +148,14 @@ function ViewManager(editor) {
 	let viewPlaneXY = new Viewport("ViewPanelXY", editor, viewManagerProps, configPlaneXY);
 	viewsGrid.add(viewPlaneXY.container);
 
-    // fix the view to being from positive part of Z axis: phi = 90*, theta = 0*
+    // fix the view to being from positive part of Z axis: phi = 0*, theta = 0*
 	// for threejs spherical coordinates, see comment in top part of this file
-	// by default (up = "OY", phi = 0, theta = 0) axis orientation is following:
-	//    X pointing right
-	//    Y pointing towards observer ("up")
-	//    Z pointing down
-	// azimuth angle control axis in the plane (here X,Z), polar angle control other axis
-	// by setting polar angle to 90* we change Y axis to point up, so now the axis orientation is
+	// here (up = "OZ", phi = 0, theta = 0) axis orientation is following:
 	//    X pointing right
 	//    Y pointing up
 	//    Z pointing towards observer ("up")
-	viewPlaneXY.controls.maxPolarAngle = viewPlaneXY.controls.minPolarAngle = Math.PI / 2;
+	// azimuth angle control axis in the plane (here X,Z), polar angle control other axis
+	viewPlaneXY.controls.maxPolarAngle = viewPlaneXY.controls.minPolarAngle = 0;
 	viewPlaneXY.controls.maxAzimuthAngle = viewPlaneXY.controls.minAzimuthAngle = 0;
 	viewPlaneXY.controls.update();
 
