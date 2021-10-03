@@ -702,8 +702,8 @@ select {
 
 .grid {
     display: grid;
-    grid-template-rows: 1fr 10px 1fr;
-    grid-template-columns: 1fr 10px 1fr;
+    grid-template-rows: 1fr 5px 1fr;
+    grid-template-columns: 1fr 5px 1fr;
 }
 
 .gutter-col {

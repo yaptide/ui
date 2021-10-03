@@ -1,6 +1,6 @@
 .SampleComponent {
     position: absolute;
-    bottom: 70px;
+    bottom: 10px;
     left: 10px;
     z-index: 1;
     color: white;

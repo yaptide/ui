@@ -5,10 +5,13 @@ import { UIDiv, UIPanel } from './libs/ui.js';
 import { Viewport } from './Viewport.js';
 import { VR } from './Viewport.VR.js';
 
-// Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js, file was splitted to add multiple viewports
+// Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js, file was split to add multiple viewports
 
 // spherical coordinates convention used in threejs can be found in source code of the Spherical class:
 // https://github.com/mrdoob/three.js/blob/r132/src/math/Spherical.js
+// first it is assumed that the default axis pointing upward ("up") is OY,
+//  note that the "up" axis can be changed to either OX or OZ (i.e. using camera.up property)
+//
 // it is assumed that polar (phi) and azimuthal/equator (theta) angles are calculated assuming:
 //   - zenith direction being positive Y axis
 //   - reference plane being XZ plane
@@ -54,12 +57,12 @@ function ViewManager(editor) {
 	var grid = new THREE.Group();
 	sceneHelpers.add(grid);
 
-	var minorGrid = new THREE.GridHelper(30, 30, 0x888888);
+	var minorGrid = new THREE.GridHelper(100, 100, 0x888888);
 	minorGrid.material.color.setHex(0x888888); // 0x888888 -> light grey (53% lightness)
 	minorGrid.material.vertexColors = false;
 	grid.add(minorGrid);
 
-	var majorGrid = new THREE.GridHelper(30, 6, 0x222222);
+	var majorGrid = new THREE.GridHelper(100, 10, 0x222222);
 	majorGrid.material.color.setHex(0x222222); // 0x222222 -> very dark grey (13% lightness)
 	majorGrid.material.depthFunc = THREE.AlwaysDepth;
 	majorGrid.material.vertexColors = false;
@@ -113,14 +116,21 @@ function ViewManager(editor) {
 	// therefore to remove from the view half-space Z>0 we define normal vector of XY plane to be [0,0,-1]
 	// same convention is used for XZ an YZ planes to hide Y>0 and X>0 half-spaces from the view
 
+	// in full 3D view user can choose between Perspective and Orthographic cameras
+	// in 2D views the camera is fixed to be be Orthographic
+
 	// --------------- first view, upper left, XY plane ----------------------------------
 
 	let configPlaneXY = {
 		orthographic: true,
 
 		// camera looking from above XY plane
-		cameraPosition: new THREE.Vector3(0, 0, 10),
+		cameraPosition: new THREE.Vector3(0, 0, 100),
 
+		// default polar/theta rotation keep OY axis (default "up") parallel to the vertical axis of the screen
+		// to avoid gimbal lock in XY plane view with correct orientation we select default "up" ax OZ
+		cameraUp: new THREE.Vector3(0, 0, 1),
+		
 		// default clipping plane being XY plane (normal vector pointing down along Z axis)
 		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.),
 
@@ -138,10 +148,15 @@ function ViewManager(editor) {
 	let viewPlaneXY = new Viewport("ViewPanelXY", editor, viewManagerProps, configPlaneXY);
 	viewsGrid.add(viewPlaneXY.container);
 
-	// fix the view to being from positive part of Z axis: theta = 0*, phi = 90*
+    // fix the view to being from positive part of Z axis: phi = 0*, theta = 0*
 	// for threejs spherical coordinates, see comment in top part of this file
+	// here (up = "OZ", phi = 0, theta = 0) axis orientation is following:
+	//    X pointing right
+	//    Y pointing up
+	//    Z pointing towards observer ("up")
+	// azimuth angle control axis in the plane (here X,Z), polar angle control other axis
+	viewPlaneXY.controls.maxPolarAngle = viewPlaneXY.controls.minPolarAngle = 0;
 	viewPlaneXY.controls.maxAzimuthAngle = viewPlaneXY.controls.minAzimuthAngle = 0;
-	viewPlaneXY.controls.maxPolarAngle = viewPlaneXY.controls.minPolarAngle = Math.PI / 2;
 	viewPlaneXY.controls.update();
 
 	let gutterCol = new UIDiv().setClass("gutter-col gutter-col-1");
@@ -167,7 +182,7 @@ function ViewManager(editor) {
 		orthographic: true,
 
 		// camera looking from above XZ plane
-		cameraPosition: new THREE.Vector3(0, 10, 0),
+		cameraPosition: new THREE.Vector3(0, 100, 0),
 
 		// default clipping plane being XZ plane (normal vector pointing down along Y axis)
 		clipPlane: new THREE.Plane(new THREE.Vector3(0, -1, 0), 0.),
@@ -179,9 +194,19 @@ function ViewManager(editor) {
 	let viewPlaneXZ = new Viewport("ViewPanelY", editor, viewManagerProps, configPlaneXZ);
 	viewsGrid.add(viewPlaneXZ.container);
 
-	// fix the view to being from positive part of Y axis: theta = 0*, phi = 0*
-	viewPlaneXZ.controls.maxAzimuthAngle = viewPlaneXZ.controls.minAzimuthAngle = 0;
-	viewPlaneXZ.controls.maxPolarAngle = viewPlaneXZ.controls.minPolarAngle = 0;
+	// fix the view to being from positive part of Y axis: phi = 0*, theta = 270*
+	// for threejs spherical coordinates, see comment in top part of this file
+	// by default (up = "OY", phi = 0, theta = 0) axis orientation is following:
+	//    X pointing right
+	//    Y pointing towards observer ("up")
+	//    Z pointing down
+	// azimuth angle control axis in the plane (here X,Z), polar angle control other axis
+	// by setting azimuth angle to 270* rotate X,Z axis, so now the axis orientation is
+	//    X pointing up
+	//    Y pointing towards observer ("up")
+	//    Z pointing right
+	viewPlaneXZ.controls.maxPolarAngle = viewPlaneXZ.controls.minPolarAngle = 0.;
+	viewPlaneXZ.controls.maxAzimuthAngle = viewPlaneXZ.controls.minAzimuthAngle = 3. * Math.PI / 2.0;
 	viewPlaneXZ.controls.update();
 
 	let gutterRow = new UIDiv().setClass("gutter-row gutter-row-1");
@@ -193,7 +218,11 @@ function ViewManager(editor) {
 		orthographic: true,
 
 		// camera looking from above YZ plane
-		cameraPosition: new THREE.Vector3(10, 0, 0),
+		cameraPosition: new THREE.Vector3(100, 0, 0),
+
+		// default polar/theta rotation keep OY axis (default "up") parallel to the vertical axis of the screen
+		// to achieve YZ plane view with correct orientation we select default "up" ax OX
+		cameraUp: new THREE.Vector3(1, 0, 0),
 
 		// default clipping plane being YZ plane (normal vector pointing down along X axis)
 		clipPlane: new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.),
@@ -211,10 +240,19 @@ function ViewManager(editor) {
 	let viewPlaneYZ = new Viewport("ViewPanelX", editor, viewManagerProps, configPlaneYZ);
 	viewsGrid.add(viewPlaneYZ.container);
 
-	// fix the view to being from positive part of X axis: theta = 90*, phi = 90*
-	// see description of spherical coordinate system in threejs
-	viewPlaneYZ.controls.maxAzimuthAngle = viewPlaneYZ.controls.minAzimuthAngle = Math.PI / 2;
-	viewPlaneYZ.controls.maxPolarAngle = viewPlaneYZ.controls.minPolarAngle = Math.PI / 2;
+	// fix the view to being from positive part of X axis: phi = 0*, theta = 180*
+	// for threejs spherical coordinates, see comment in top part of this file
+	// here (up = "OX", phi = 0, theta = 0) axis orientation is following:
+	//    X pointing towards observer ("up")
+	//    Y pointing left
+	//    Z pointing down
+	// azimuth angle control axis in the plane (here Y,Z), polar angle control other axis
+	// by setting azimuth angle to 180* rotate Y,Z axis, so now the axis orientation is
+	//    X pointing towards observer ("up")
+	//    Y pointing right
+	//    Z pointing up
+	viewPlaneYZ.controls.maxPolarAngle = viewPlaneYZ.controls.minPolarAngle = 0;
+	viewPlaneYZ.controls.maxAzimuthAngle = viewPlaneYZ.controls.minAzimuthAngle = Math.PI;
 	viewPlaneYZ.controls.update();
 
 
