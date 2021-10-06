@@ -3,7 +3,6 @@ import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { UIDiv, UIPanel } from './libs/ui.js';
 import { Viewport } from './Viewport.js';
-import { VR } from './Viewport.VR.js';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js, file was split to add multiple viewports
 
@@ -71,9 +70,6 @@ function ViewManager(editor) {
 
 	var planeHelpers = new THREE.Group();
 	sceneHelpers.add(planeHelpers);
-
-
-	var vr = new VR(editor);
 
 	//
 
@@ -605,53 +601,6 @@ function ViewManager(editor) {
 
 	});
 
-	// fog
-
-	signals.sceneFogChanged.add(function (fogType, fogColor, fogNear, fogFar, fogDensity) {
-
-		switch (fogType) {
-
-			case 'None':
-				scene.fog = null;
-				break;
-			case 'Fog':
-				scene.fog = new THREE.Fog(fogColor, fogNear, fogFar);
-				break;
-			case 'FogExp2':
-				scene.fog = new THREE.FogExp2(fogColor, fogDensity);
-				break;
-			default:
-				console.error(fogType, "isn't supported");
-				break;
-
-		}
-
-		render();
-
-	});
-
-	signals.sceneFogSettingsChanged.add(function (fogType, fogColor, fogNear, fogFar, fogDensity) {
-
-		switch (fogType) {
-
-			case 'Fog':
-				scene.fog.color.setHex(fogColor);
-				scene.fog.near = fogNear;
-				scene.fog.far = fogFar;
-				break;
-			case 'FogExp2':
-				scene.fog.color.setHex(fogColor);
-				scene.fog.density = fogDensity;
-				break;
-			default:
-				console.error(fogType, "isn't supported");
-				break;
-
-		}
-
-		render();
-
-	});
 
 	signals.viewportCameraChanged.add(function () {
 
@@ -677,7 +626,6 @@ function ViewManager(editor) {
 
 	});
 
-	signals.exitedVR.add(render);
 
 	//
 
@@ -760,14 +708,6 @@ function ViewManager(editor) {
 		}
 
 		needsUpdate = views.map((view) => view.animate(delta)).some(e => e);
-
-
-		if (vr.currentSession !== null) {
-
-			needsUpdate = true;
-
-		}
-
 
 		if (needsUpdate === true) render();
 
