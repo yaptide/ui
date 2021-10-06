@@ -3,7 +3,6 @@ import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { UIDiv, UIPanel } from './libs/ui.js';
 import { Viewport } from './Viewport.js';
-import { VR } from './Viewport.VR.js';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js, file was split to add multiple viewports
 
@@ -71,9 +70,6 @@ function ViewManager(editor) {
 
 	var planeHelpers = new THREE.Group();
 	sceneHelpers.add(planeHelpers);
-
-
-	var vr = new VR(editor);
 
 	//
 
@@ -760,14 +756,6 @@ function ViewManager(editor) {
 		}
 
 		needsUpdate = views.map((view) => view.animate(delta)).some(e => e);
-
-
-		if (vr.currentSession !== null) {
-
-			needsUpdate = true;
-
-		}
-
 
 		if (needsUpdate === true) render();
 

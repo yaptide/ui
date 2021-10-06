@@ -1,6 +1,5 @@
 import { UIPanel, UIRow, UIInput, UICheckbox, UIText, UISpan } from './libs/ui.js';
 
-/* import { SidebarProjectMaterials } from './Sidebar.Project.Materials.js'; */
 import { SidebarProjectRenderer } from './Sidebar.Project.Renderer.js';
 
 function SidebarProject( editor ) {
@@ -44,23 +43,9 @@ function SidebarProject( editor ) {
 
 	settings.add( editableRow );
 
-	// WebVR
-
-	var vrRow = new UIRow();
-	var vr = new UICheckbox( config.getKey( 'project/vr' ) ).setLeft( '100px' ).onChange( function () {
-
-		config.setKey( 'project/vr', this.getValue() );
-
-	} );
-
-	vrRow.add( new UIText( strings.getKey( 'sidebar/project/vr' ) ).setWidth( '90px' ) );
-	vrRow.add( vr );
-
-	settings.add( vrRow );
 
 	//
 
-	/* container.add( new SidebarProjectMaterials( editor ) ); */
 	container.add( new SidebarProjectRenderer( editor ) );
 
 
