@@ -28,10 +28,6 @@ function Editor() {
 		startPlayer: new Signal(),
 		stopPlayer: new Signal(),
 
-		// vr
-
-		toggleVR: new Signal(),
-		exitedVR: new Signal(),
 
 		// notifications
 
@@ -48,8 +44,6 @@ function Editor() {
 
 		sceneBackgroundChanged: new Signal(),
 		sceneEnvironmentChanged: new Signal(),
-		sceneFogChanged: new Signal(),
-		sceneFogSettingsChanged: new Signal(),
 		sceneGraphChanged: new Signal(),
 		sceneRendered: new Signal(),
 
@@ -160,7 +154,6 @@ Editor.prototype = {
 
 		this.scene.background = scene.background;
 		this.scene.environment = scene.environment;
-		this.scene.fog = scene.fog;
 
 		this.scene.userData = JSON.parse(JSON.stringify(scene.userData));
 
@@ -641,7 +634,6 @@ Editor.prototype = {
 		this.scene.userData = {};
 		this.scene.background = null;
 		this.scene.environment = null;
-		this.scene.fog = null;
 
 		var objects = this.scene.children;
 
@@ -655,7 +647,6 @@ Editor.prototype = {
 		this.zonesManager.userData = {};
 		this.zonesManager.background = null;
 		this.zonesManager.environment = null;
-		this.zonesManager.fog = null;
 
 		var zones = this.zonesManager.children;
 
@@ -734,7 +725,6 @@ Editor.prototype = {
 			project: {
 				shadows: this.config.getKey('project/renderer/shadows'),
 				shadowType: this.config.getKey('project/renderer/shadowType'),
-				vr: this.config.getKey('project/vr'),
 				physicallyCorrectLights: this.config.getKey('project/renderer/physicallyCorrectLights'),
 				toneMapping: this.config.getKey('project/renderer/toneMapping'),
 				toneMappingExposure: this.config.getKey('project/renderer/toneMappingExposure'),

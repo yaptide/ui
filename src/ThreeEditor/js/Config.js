@@ -11,7 +11,6 @@ function Config() {
 
 		'project/title': '',
 		'project/editable': false,
-		'project/vr': false,
 
 		'project/renderer/antialias': true,
 		'project/renderer/shadows': true,

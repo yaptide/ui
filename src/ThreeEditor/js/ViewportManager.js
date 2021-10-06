@@ -601,53 +601,6 @@ function ViewManager(editor) {
 
 	});
 
-	// fog
-
-	signals.sceneFogChanged.add(function (fogType, fogColor, fogNear, fogFar, fogDensity) {
-
-		switch (fogType) {
-
-			case 'None':
-				scene.fog = null;
-				break;
-			case 'Fog':
-				scene.fog = new THREE.Fog(fogColor, fogNear, fogFar);
-				break;
-			case 'FogExp2':
-				scene.fog = new THREE.FogExp2(fogColor, fogDensity);
-				break;
-			default:
-				console.error(fogType, "isn't supported");
-				break;
-
-		}
-
-		render();
-
-	});
-
-	signals.sceneFogSettingsChanged.add(function (fogType, fogColor, fogNear, fogFar, fogDensity) {
-
-		switch (fogType) {
-
-			case 'Fog':
-				scene.fog.color.setHex(fogColor);
-				scene.fog.near = fogNear;
-				scene.fog.far = fogFar;
-				break;
-			case 'FogExp2':
-				scene.fog.color.setHex(fogColor);
-				scene.fog.density = fogDensity;
-				break;
-			default:
-				console.error(fogType, "isn't supported");
-				break;
-
-		}
-
-		render();
-
-	});
 
 	signals.viewportCameraChanged.add(function () {
 
@@ -673,7 +626,6 @@ function ViewManager(editor) {
 
 	});
 
-	signals.exitedVR.add(render);
 
 	//
 
