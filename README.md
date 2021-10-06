@@ -10,13 +10,13 @@ Stable version is not released yet, have patience.
 
 ## For developers
 
-Before starting local version of the web interface, you need to install necessary dependencies by typing::
+Before starting local version of the web interface, you need to install necessary dependencies by typing:
 
 ```bash
 npm install
 ```
 
-To run the app in the development mode, type::
+To run the app in the development mode, type:
 
 ```bash
 npm run start
