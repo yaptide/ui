@@ -3,6 +3,7 @@ import * as THREE from 'three';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import Worker from 'worker-loader!./CSGWorker';
 import { Editor } from '../../js/Editor';
+import { BoundingZones, BoundingZonesJSON } from '../BoundingZones';
 import { ICSGWorker } from './CSGWorker';
 import { CSGZone, CSGZoneJSON } from './CSGZone';
 
@@ -10,12 +11,14 @@ import { CSGZone, CSGZoneJSON } from './CSGZone';
 interface CSGManagerJSON {
     uuid: string,
     name: string,
-    zones: CSGZoneJSON[]
+    zones: CSGZoneJSON[],
+    boundingZones: BoundingZonesJSON
 }
 
 export class CSGManager extends THREE.Scene {
     editor: Editor;
     worker: Comlink.Remote<ICSGWorker>;
+    boundingZones: BoundingZones;
 
     constructor(editor: Editor) {
         super();
@@ -23,6 +26,8 @@ export class CSGManager extends THREE.Scene {
         this.name = "Zones";
         this.worker = Comlink.wrap<ICSGWorker>(new Worker());
         this.editor = editor;
+
+        this.boundingZones = new BoundingZones(editor);
 
         this.editor.signals.zoneEmpty.add((zone: CSGZone) => this.handleZoneEmpty(zone));
 
@@ -67,7 +72,8 @@ export class CSGManager extends THREE.Scene {
         let jsonObject: CSGManagerJSON = {
             zones,
             uuid,
-            name
+            name,
+            boundingZones: this.boundingZones.toJSON()
         };
 
         return jsonObject;
@@ -79,6 +85,7 @@ export class CSGManager extends THREE.Scene {
             console.warn('Passed empty data to load CSGManager', data)
         else
             manager.uuid = data.uuid;
+
         manager.name = data.name;
 
         data.zones.forEach((zone) => {
@@ -87,16 +94,23 @@ export class CSGManager extends THREE.Scene {
 
         });
 
+        manager.boundingZones = BoundingZones.fromJSON(editor, data.boundingZones);
+
         return manager;
 
     }
 
     loadFrom(manager: CSGManager) {
         this.children = manager.children;
+        this.boundingZones = manager.boundingZones;
     }
 
     clone(recursive: boolean) {
         return new CSGManager(this.editor).copy(this, recursive) as this;
+    }
+
+    getObjectById(id: number) {
+        return this.boundingZones.getObjectById(id) ?? super.getObjectById(id);
     }
 
     handleZoneEmpty(zone: CSGZone) {

@@ -4,17 +4,17 @@ import { UINumber, UIRow, UIText } from './libs/ui.js';
 
 function GeometryParametersPanel( editor, object ) {
 
-	var strings = editor.strings;
+	const strings = editor.strings;
 
-	var container = new UIRow();
+	const container = new UIRow();
 
-	var geometry = object.geometry;
-	var parameters = geometry.parameters;
+	const geometry = object.geometry;
+	const parameters = geometry.parameters;
 
 	// width = height = depth
 
-	var widthRow = new UIRow();
-	var width = new UINumber( parameters.width ).onChange( update );
+	const widthRow = new UIRow();
+	const width = new UINumber( parameters.width ).onChange( update );
 	width.min = 0;
 
 	widthRow.add( new UIText( strings.getKey( 'sidebar/geometry/box_geometry/width' )+ ' ' + editor.unit.name ).setWidth( '90px' ) );

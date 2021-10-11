@@ -111,7 +111,7 @@ function Editor() {
 	this.strings = new Strings(this.config);
 	this.unit = {
 		name: '[cm]',
-		multiplier: 1	
+		multiplier: 1
 	}
 
 	this.loader = new Loader(this);
@@ -579,7 +579,7 @@ Editor.prototype = {
 
 		}
 
-		var object = this.scene.getObjectById(id) ?? this.zonesManager.getObjectById(id)
+		var object = this.scene.getObjectById(id) ?? this.zonesManager.getObjectById(id);
 		this.select(object);
 
 	},
