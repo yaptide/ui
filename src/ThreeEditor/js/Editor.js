@@ -643,18 +643,7 @@ Editor.prototype = {
 
 		}
 
-		this.zonesManager.name = 'Zones';
-		this.zonesManager.userData = {};
-		this.zonesManager.background = null;
-		this.zonesManager.environment = null;
-
-		var zones = this.zonesManager.children;
-
-		while (zones.length > 0) {
-
-			this.removeObject(zones[0]);
-
-		}
+		this.zonesManager.reset();
 
 		this.geometries = {};
 		this.materials = {};

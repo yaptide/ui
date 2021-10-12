@@ -109,6 +109,20 @@ export class CSGManager extends THREE.Scene {
         return new CSGManager(this.editor).copy(this, recursive) as this;
     }
 
+    reset() {
+
+        this.name = 'Zones';
+        this.userData = {};
+        this.background = null;
+        this.environment = null;
+
+        this.clear();
+
+        this.boundingZones.reset();
+
+        return this;
+    }
+
     getObjectById(id: number) {
         return this.boundingZones.getObjectById(id) ?? super.getObjectById(id);
     }
