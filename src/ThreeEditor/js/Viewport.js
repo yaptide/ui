@@ -11,7 +11,7 @@ import { ViewHelper } from './Viewport.ViewHelper';
 import { isCSGManager } from '../util/CSG/CSGManager';
 import { isCSGZone } from '../util/CSG/CSGZone';
 import { ViewportClippedView as ViewportClipPlane } from './Viewport.ClipPlane';
-import { isBoundingZones } from '../util/BoundingZones';
+import { isBoundingZone } from '../util/BoundingZone';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
 
@@ -425,7 +425,7 @@ export function Viewport(
         // For our usage it would be only geometries included on the scene. 
         // Amount of geometries can differ form project to project thus we check only if it isn't mesh.
         // unionOperations is property unique to zones that shoudn't be transformed with controler.
-        return object !== null && object !== scene && object !== camera && !isCSGManager(object) && !isCSGZone(object) && !isBoundingZones(object);
+        return object !== null && object !== scene && object !== camera && !isCSGManager(object) && !isCSGZone(object) && !isBoundingZone(object);
     }
 
     function reattachTransformControls(object) {

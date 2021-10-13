@@ -260,7 +260,7 @@ function SidebarScene(editor) {
 		var camera = editor.camera;
 		var scene = editor.scene;
 		var zonesManager = editor.zonesManager;
-		var boundingZones = editor.zonesManager.boundingZones;
+		var boundingZone = editor.zonesManager.boundingZone;
 
 		var options = [];
 
@@ -297,9 +297,8 @@ function SidebarScene(editor) {
 		options.push(buildOption(zonesManager, false));
 		addObjects(zonesManager.children, 0);
 
-		options.push(buildOption(boundingZones, false));
-		addObjects(boundingZones.children, 0);
-
+		options.push(buildOption(boundingZone, false))
+		
 		outliner.setOptions(options);
 
 		if (editor.selected !== null) {

@@ -1,6 +1,6 @@
 
 import * as THREE from 'three';
-import { Vector3 } from 'three';
+import { Object3D, Vector3 } from 'three';
 
 import { Editor } from '../js/Editor';
 
@@ -26,11 +26,12 @@ export class BoundingZone extends THREE.Object3D {
     box: THREE.Box3;
     color: THREE.Color;
     marginMultiplier: number;
+    autoCalculate: boolean = true;
 
     constructor(editor: Editor, { box, color = 0xff0000, marginMultiplier = 1.1 }: { box?: THREE.Box3, color?: THREE.ColorRepresentation, marginMultiplier?: number } = {}) {
         super();
         this.type = 'BoundingZone' as any;
-        this.name = 'BoundingZone';
+        this.name = 'World Zone';
         this.editor = editor;
 
         this.color = new THREE.Color(color);
@@ -39,14 +40,27 @@ export class BoundingZone extends THREE.Object3D {
         this.box = box ?? new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
         this.helper = new THREE.Box3Helper(this.box, this.color);
 
-        editor.sceneHelpers.add(this.helper);
 
+        const handleSignal = (object: Object3D) => {
+            if (this.autoCalculate && !isBoundingZone(object)) this.calculate();
+        }
+        this.editor.signals.objectChanged.add((object: Object3D) => handleSignal(object));
+        this.editor.signals.sceneGraphChanged.add((object: Object3D) => handleSignal(object));
+    }
+
+    canCalculate() {
+        return this.geometryType === 'box';
+    }
+
+    calculate() {
+        if (!this.canCalculate()) return;
+
+        this.setFromObject(this.editor.scene);
     }
 
     setFromObject(object: THREE.Object3D) {
         this.updateBox((box) => {
             box.setFromObject(object);
-            this.makeCubeFromBox();
             this.addSafetyMarginToBox();
         });
     }
@@ -56,13 +70,7 @@ export class BoundingZone extends THREE.Object3D {
     }
 
     updateBox(updateFunction: (box: THREE.Box3) => void) {
-        this.editor.sceneHelpers.remove(this.helper);
-
-
         updateFunction(this.box);
-
-        this.helper = new THREE.Box3Helper(this.box, this.color);
-        this.editor.sceneHelpers.add(this.helper);
         this.editor.signals.objectChanged.dispatch(this);
     }
 
@@ -83,9 +91,9 @@ export class BoundingZone extends THREE.Object3D {
         this.box.setFromCenterAndSize(this.box.getCenter(new Vector3()), size);
     }
 
-    reset() {
-        this.color = new THREE.Color(0xff0000);
-        this.name = 'BoundingZone';
+    reset({ color = 0xff0000, name = 'World Zone' } = {}) {
+        this.color = new THREE.Color(color);
+        this.name = name;
         this.updateBox((box) => box.setFromCenterAndSize(new Vector3(), new Vector3()));
     }
 
@@ -121,8 +129,6 @@ export class BoundingZone extends THREE.Object3D {
     clone(recursive: boolean) {
         return new BoundingZone(this.editor).copy(this, recursive) as this;
     }
-
-
 
 }
 export const isBoundingZone = (x: any): x is BoundingZone => x instanceof BoundingZone;

@@ -4,8 +4,6 @@ import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHel
 import ZoneManagerPanel from '../../components/ZoneManagerPanel/ZoneManagerPanel';
 import { UIButton, UIPanel, UIRow, UISpan, UIText } from './libs/ui.js';
 import { isCSGZone } from '../util/CSG/CSGZone';
-import { isBoundingZones } from '../util/BoundingZones';
-import { BoundingZonesPanel } from './Sidebar.Geometry.BoundingZones';
 import { isBoundingZone } from '../util/BoundingZone';
 import { BoundingZonePanel } from './Sidebar.Geometry.BoundingZone';
 
@@ -95,16 +93,6 @@ function SidebarGeometry(editor) {
 
 			parameters.clear();
 			parameters.add(new BoundingZonePanel(editor, object));
-			geometryType.setValue(object.type);
-
-			container.setDisplay('block');
-
-			vertexNormalsButton.setDisplay('none');
-
-		} else if (isBoundingZones(object)) {
-
-			parameters.clear();
-			parameters.add(new BoundingZonesPanel(editor, object));
 			geometryType.setValue(object.type);
 
 			container.setDisplay('block');
