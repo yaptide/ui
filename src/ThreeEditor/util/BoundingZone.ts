@@ -25,19 +25,25 @@ const _sphereGeometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Ma
 
 const _material = new THREE.MeshBasicMaterial({ transparent: true, opacity: .5, wireframe: true });
 
+interface BoundingZoneParams {
+    box?: THREE.Box3,
+    color?: THREE.ColorRepresentation,
+    marginMultiplier?: number
+}
+
 export class BoundingZone extends THREE.Object3D {
     editor: Editor;
-    private _geometryType: BoundingZoneType = "box";
-
     box: THREE.Box3;
     marginMultiplier: number;
     autoCalculate: boolean = true;
     material: MeshBasicMaterial;
-    private boxHelper: THREE.Box3Helper;
-    private cylinderMesh: THREE.Mesh<THREE.CylinderGeometry, any>;
-    private sphereMesh: THREE.Mesh<THREE.SphereGeometry, any>;
 
-    constructor(editor: Editor, { box, color = 0xff0000, marginMultiplier = 1.1 }: { box?: THREE.Box3, color?: THREE.ColorRepresentation, marginMultiplier?: number } = {}) {
+    private _geometryType: BoundingZoneType = "box";
+    private boxHelper: THREE.Box3Helper;
+    private cylinderMesh: THREE.Mesh<THREE.CylinderGeometry, MeshBasicMaterial>;
+    private sphereMesh: THREE.Mesh<THREE.SphereGeometry, MeshBasicMaterial>;
+
+    constructor(editor: Editor, { box, color = 0xff0000, marginMultiplier = 1.1 }: BoundingZoneParams = {}) {
         super();
         this.type = 'BoundingZone' as any;
         this.name = 'World Zone';
@@ -205,4 +211,5 @@ export class BoundingZone extends THREE.Object3D {
     }
 
 }
+
 export const isBoundingZone = (x: any): x is BoundingZone => x instanceof BoundingZone;

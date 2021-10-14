@@ -8,7 +8,18 @@ const bodyTypeOptions = {
 	'sphere': 'sphere'
 };
 
-function BoundingZonePanel(editor, boundingZone) {
+function createParamRow(update) {
+	const row = new UIRow();
+	const param = new UINumber().onChange(update);
+	const paramText = new UIText().setWidth('90px');
+
+	row.add(paramText);
+	row.add(param);
+
+	return [row, param, paramText];
+}
+
+export function BoundingZonePanel(editor, boundingZone) {
 
 	const strings = editor.strings;
 
@@ -39,37 +50,18 @@ function BoundingZonePanel(editor, boundingZone) {
 
 	// width(box) / radius(sphere,cylinder)
 
-	const widthRow = new UIRow();
-	const width = new UINumber().onChange(update);
-	const widthText = new UIText(strings.getKey('sidebar/geometry/box_geometry/width') + ' ' + editor.unit.name).setWidth('90px');
-
-	widthRow.add(widthText);
-	widthRow.add(width);
-
+	const [widthRow, width, widthText] = createParamRow(update);
 	container.add(widthRow);
 
 	// height(box,cylinder)
 
-	const heightRow = new UIRow();
-	const height = new UINumber().onChange(update);
-	const heightText = new UIText(strings.getKey('sidebar/geometry/box_geometry/height') + ' ' + editor.unit.name).setWidth('90px');
-
-	heightRow.add(heightText);
-	heightRow.add(height);
-
+	const [heightRow, height, heightText] = createParamRow(update);
 	container.add(heightRow);
 
 	// depth(box)
 
-	const depthRow = new UIRow();
-	const depth = new UINumber().onChange(update);
-	const depthText = new UIText(strings.getKey('sidebar/geometry/box_geometry/depth') + ' ' + editor.unit.name).setWidth('90px');
-
-	depthRow.add(depthText);
-	depthRow.add(depth);
-
+	const [depthRow, depth, depthText] = createParamRow(update);
 	container.add(depthRow);
-
 
 
 	// auto calculate
@@ -93,8 +85,6 @@ function BoundingZonePanel(editor, boundingZone) {
 		boundingZone.calculate();
 	});
 	calculateContainer.add(calculateButton);
-
-
 
 	updateUI();
 
@@ -146,7 +136,7 @@ function BoundingZonePanel(editor, boundingZone) {
 				[widthRow].forEach(e => e.setDisplay('block'));
 				widthText.setValue(strings.getKey('sidebar/geometry/sphere_geometry/radius') + ' ' + editor.unit.name)
 				break;
-				
+
 			default:
 				console.error("Unsupported geometry type: " + boundingZone.geometryType)
 		}
@@ -173,5 +163,5 @@ function BoundingZonePanel(editor, boundingZone) {
 
 }
 
-export { BoundingZonePanel };
+
 
