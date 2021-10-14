@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-import { UIPanel, UIBreak, UIRow, UIColor, UISelect, UIText, UINumber } from './libs/ui.js';
+import { UIPanel, UIBreak, UIRow, UIColor, UISelect, UIText } from './libs/ui.js';
 import { UIOutliner, UITexture } from './libs/ui.three.js';
 
 function SidebarScene(editor) {
@@ -260,6 +260,7 @@ function SidebarScene(editor) {
 		var camera = editor.camera;
 		var scene = editor.scene;
 		var zonesManager = editor.zonesManager;
+		var boundingZone = editor.zonesManager.boundingZone;
 
 		var options = [];
 
@@ -296,6 +297,8 @@ function SidebarScene(editor) {
 		options.push(buildOption(zonesManager, false));
 		addObjects(zonesManager.children, 0);
 
+		options.push(buildOption(boundingZone, false))
+		
 		outliner.setOptions(options);
 
 		if (editor.selected !== null) {
@@ -393,7 +396,7 @@ function SidebarScene(editor) {
 			let needsRefresh = false;
 			let parent = object.parent;
 
-			while (parent !== editor.scene && parent !== editor.zonesManager) {
+			while (parent !== editor.scene && parent !== editor.zonesManager && parent !== editor.zonesManager.boundingZones) {
 				if (nodeStates.get(parent) !== true) {
 					nodeStates.set(parent, true);
 					needsRefresh = true;
