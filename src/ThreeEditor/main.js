@@ -106,7 +106,6 @@ export function initEditor(container) {
         signals.materialChanged.add(saveState);
         signals.sceneBackgroundChanged.add(saveState);
         signals.sceneEnvironmentChanged.add(saveState);
-        signals.sceneFogChanged.add(saveState);
         signals.sceneGraphChanged.add(saveState);
         signals.scriptChanged.add(saveState);
         signals.historyChanged.add(saveState);

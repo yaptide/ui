@@ -15,7 +15,7 @@ import { ViewportClippedView as ViewportClipPlane } from './Viewport.ClipPlane';
 export function Viewport(
     name, editor,
     { objects, grid, planeHelpers, selectionBox },
-    { orthographic, cameraPosition, clipPlane, planePosLabel, planeHelperColor, showPlaneHelpers, gridRotation } = {}
+    { orthographic, cameraPosition, cameraUp, clipPlane, planePosLabel, planeHelperColor, showPlaneHelpers, gridRotation } = {}
 ) {
 
     this.name = name;
@@ -37,6 +37,7 @@ export function Viewport(
     container.setOverflow("hidden");
     container.dom.setAttribute('tabindex', '0');
 
+
     let canvas = document.createElement('canvas');
     container.dom.appendChild(canvas);
 
@@ -45,14 +46,15 @@ export function Viewport(
 
     let cameraPersp = new THREE.PerspectiveCamera(50, 1, 0.001, 10000);
     cameraPersp.name = "Perspective";
-    cameraPersp.position.copy(cameraPosition ?? new THREE.Vector3(0, 5, 10)); // default camera position other than (0,0,0) to see anything 
-    cameraPersp.lookAt(new THREE.Vector3());
+    cameraPersp.position.copy(cameraPosition ?? new THREE.Vector3(0, 10, 10)); // default camera position other than (0,0,0) to see anything
 
     let cameraOrtho = new THREE.OrthographicCamera(1 / - 2, 1 / 2, 1 / 2, 1 / - 2, 0.001, 10000);
     cameraOrtho.name = "Orthographic";
     cameraOrtho.position.copy(cameraPersp.position);
     cameraOrtho.zoom = .2;
-    cameraOrtho.lookAt(new THREE.Vector3());
+
+    // in clipping plane views only Orthographic camera is used, hence is "up" axis adjustment is required we do so
+    cameraUp && cameraOrtho.up.copy(cameraUp);
 
     let cameras = [cameraOrtho, cameraPersp];
 
@@ -70,9 +72,11 @@ export function Viewport(
         }
     });
 
-    container.add(new ViewportCamera(this, cameras));
+    if (!orthographic)
+        container.add(new ViewportCamera(this, cameras));
 
     let viewHelper = new ViewHelper(camera, container);
+    viewHelper.disabled = orthographic;
 
     let viewClipPlane = null;
     if (clipPlane) {
@@ -140,8 +144,6 @@ export function Viewport(
 
         return false;
     }
-
-
 
     let objectPositionOnDown = null;
     let objectRotationOnDown = null;
@@ -233,8 +235,38 @@ export function Viewport(
 
     });
 
+    window.addEventListener('keydown', function (event) {
+
+        switch (event.key) {
+
+            case 'Shift': // Shift
+                transformControls.setTranslationSnap(1);
+                transformControls.setRotationSnap(THREE.MathUtils.degToRad(15));
+                break;
+
+            default:
+        }
+
+    });
+
+    window.addEventListener('keyup', function (event) {
+
+        switch (event.key) {
+
+            case 'Shift': // Shift
+                transformControls.setTranslationSnap(null);
+                transformControls.setRotationSnap(null);
+                break;
+
+            default:
+
+        }
+
+    });
+
 
     sceneViewHelpers.add(transformControls);
+
 
 
     // object picking
@@ -445,8 +477,9 @@ export function Viewport(
     container.dom.addEventListener('dblclick', onDoubleClick, false);
 
     // controls need to be added *after* main logic,
-    // otherwise controls.enabled doesn't work.
+    // otherwise controls.enabled doesn't work.       
     let controls = new EditorOrbitControls(camera, container.dom);
+    controls.screenSpacePanning = false;
     controls.addEventListener('change', function () {
 
         signals.cameraChanged.dispatch(camera);

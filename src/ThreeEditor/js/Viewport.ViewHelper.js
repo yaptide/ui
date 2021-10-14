@@ -9,6 +9,7 @@ class ViewHelper extends THREE.Object3D {
 		super();
 
 		this.animating = false;
+		this.disabled = false;
 		this.controls = null;
 
 		var editorCamera = originalCamera;
@@ -171,6 +172,8 @@ class ViewHelper extends THREE.Object3D {
 		let radius = 0;
 
 		this.handleClick = function ( event ) {
+
+			if ( this.disabled === true ) return false;
 
 			if ( this.animating === true ) return false;
 

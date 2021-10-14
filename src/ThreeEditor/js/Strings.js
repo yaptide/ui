@@ -88,7 +88,6 @@ function Strings( config ) {
 			'sidebar/scene': 'Scene',
 			'sidebar/scene/background': 'Background',
 			'sidebar/scene/environment': 'Environment',
-			'sidebar/scene/fog': 'Fog',
 
 			'sidebar/properties/object': 'Object',
 			'sidebar/properties/geometry': 'Geometry',
@@ -289,7 +288,6 @@ function Strings( config ) {
 			'sidebar/project': 'Project',
 			'sidebar/project/title': 'Title',
 			'sidebar/project/editable': 'Editable',
-			'sidebar/project/vr': 'VR',
 			'sidebar/project/renderer': 'Renderer',
 			'sidebar/project/antialias': 'Antialias',
 			'sidebar/project/shadows': 'Shadows',
@@ -298,7 +296,6 @@ function Strings( config ) {
 			'sidebar/project/materials': 'Materials',
 			'sidebar/project/Assign': 'Assign',
 
-			'sidebar/project/video': 'Video',
 			'sidebar/project/resolution': 'Resolution',
 			'sidebar/project/duration': 'Duration',
 			'sidebar/project/render': 'Render',
@@ -416,7 +413,6 @@ function Strings( config ) {
 			'sidebar/scene': 'Scène',
 			'sidebar/scene/background': 'Arrière Plan',
 			'sidebar/scene/environment': 'Environment',
-			'sidebar/scene/fog': 'Brouillard',
 
 			'sidebar/properties/object': 'Objet',
 			'sidebar/properties/geometry': 'Géométrie',
@@ -617,7 +613,6 @@ function Strings( config ) {
 			'sidebar/project': 'Projet',
 			'sidebar/project/title': 'Titre',
 			'sidebar/project/editable': 'Modifiable',
-			'sidebar/project/vr': 'VR',
 			'sidebar/project/renderer': 'Rendus',
 			'sidebar/project/antialias': 'Anticrénelage',
 			'sidebar/project/shadows': 'Ombres',
@@ -626,7 +621,6 @@ function Strings( config ) {
 			'sidebar/project/materials': 'Matériaux',
 			'sidebar/project/Assign': 'Attribuer',
 
-			'sidebar/project/video': 'Video',
 			'sidebar/project/resolution': 'Resolution',
 			'sidebar/project/duration': 'Duration',
 			'sidebar/project/render': 'Render',
@@ -744,7 +738,6 @@ function Strings( config ) {
 			'sidebar/scene': '场景',
 			'sidebar/scene/background': '背景',
 			'sidebar/scene/environment': '环境',
-			'sidebar/scene/fog': '雾',
 
 			'sidebar/properties/object': '属性',
 			'sidebar/properties/geometry': '几何组件',
@@ -945,7 +938,6 @@ function Strings( config ) {
 			'sidebar/project': '项目',
 			'sidebar/project/title': '标题',
 			'sidebar/project/editable': '编辑性',
-			'sidebar/project/vr': '虚拟现实',
 			'sidebar/project/renderer': '渲染器',
 			'sidebar/project/antialias': '抗锯齿',
 			'sidebar/project/shadows': '阴影',
@@ -954,7 +946,6 @@ function Strings( config ) {
 			'sidebar/project/materials': '材质',
 			'sidebar/project/Assign': '应用',
 
-			'sidebar/project/video': '视频',
 			'sidebar/project/resolution': '分辨率',
 			'sidebar/project/duration': '时长',
 			'sidebar/project/render': '渲染',
