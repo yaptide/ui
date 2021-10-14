@@ -45,7 +45,7 @@ function GeometryParametersPanel(editor, object) {
 			16,
 			1,
 			false
-		).translate(0, height.getValue() / 2, 0)));
+		)));
 
 	}
 

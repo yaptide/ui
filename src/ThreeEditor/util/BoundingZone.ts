@@ -1,6 +1,6 @@
 
 import * as THREE from 'three';
-import { Object3D, Vector3 } from 'three';
+import { Color, LineBasicMaterial, MeshBasicMaterial, Object3D, Vector3 } from 'three';
 
 import { Editor } from '../js/Editor';
 
@@ -19,14 +19,23 @@ const BOUNDING_ZONE_TYPE = ['sphere', 'cylinder', 'box'] as const;
 
 export type BoundingZoneType = (typeof BOUNDING_ZONE_TYPE)[number];
 
+const _cylinderGeometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2);
+
+const _sphereGeometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI);
+
+const _material = new THREE.MeshBasicMaterial({ transparent: true, opacity: .5, wireframe: true });
+
 export class BoundingZone extends THREE.Object3D {
     editor: Editor;
-    geometryType: BoundingZoneType = 'box';
-    helper: THREE.Box3Helper;
+    private _geometryType: BoundingZoneType = "box";
+
     box: THREE.Box3;
-    color: THREE.Color;
     marginMultiplier: number;
     autoCalculate: boolean = true;
+    material: MeshBasicMaterial;
+    private boxHelper: THREE.Box3Helper;
+    private cylinderMesh: THREE.Mesh<THREE.CylinderGeometry, any>;
+    private sphereMesh: THREE.Mesh<THREE.SphereGeometry, any>;
 
     constructor(editor: Editor, { box, color = 0xff0000, marginMultiplier = 1.1 }: { box?: THREE.Box3, color?: THREE.ColorRepresentation, marginMultiplier?: number } = {}) {
         super();
@@ -34,11 +43,33 @@ export class BoundingZone extends THREE.Object3D {
         this.name = 'World Zone';
         this.editor = editor;
 
-        this.color = new THREE.Color(color);
         this.marginMultiplier = marginMultiplier;
 
+        this.material = _material;
+
+        // watch for changes on material color 
+        const overrideHandler = {
+            set: (target: Color, prop: keyof Color, value: any) => {
+
+                Reflect.set((this.boxHelper.material as LineBasicMaterial).color, prop, value);
+
+                return Reflect.set(target, prop, value);
+            },
+        };
+
+        const proxyColor = new Proxy(new Color(color), overrideHandler);
+        this.material.color = proxyColor;
+
         this.box = box ?? new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
-        this.helper = new THREE.Box3Helper(this.box, this.color);
+        this.boxHelper = new THREE.Box3Helper(this.box, this.material.color);
+        this.boxHelper.name = 'boxHelper';
+
+        this.cylinderMesh = new THREE.Mesh(_cylinderGeometry, this.material);
+        this.cylinderMesh.name = 'cylinderMeshHelper';
+        this.sphereMesh = new THREE.Mesh(_sphereGeometry, this.material);
+        this.sphereMesh.name = 'sphereMeshHelper';
+
+        this.geometryType = 'box';
 
 
         const handleSignal = (object: Object3D) => {
@@ -46,19 +77,44 @@ export class BoundingZone extends THREE.Object3D {
         }
         this.editor.signals.objectChanged.add((object: Object3D) => handleSignal(object));
         this.editor.signals.sceneGraphChanged.add((object: Object3D) => handleSignal(object));
+
+    }
+
+    get geometryType() {
+        return this._geometryType;
+    }
+
+    set geometryType(value: BoundingZoneType) {
+        this._geometryType = value;
+        this.getAllHelpers().forEach(e => e.visible = false);
+        this.getHelper(value).visible = true;
+        this.editor.signals.objectChanged.dispatch(this);
+    }
+
+    private getAllHelpers() {
+        return [this.boxHelper, this.sphereMesh, this.cylinderMesh];
+    }
+
+    private getHelper(geometryType: BoundingZoneType): Object3D {
+        const obj = {
+            'box': this.boxHelper,
+            'cylinder': this.cylinderMesh,
+            'sphere': this.sphereMesh,
+        }
+        return obj[geometryType];
     }
 
     canCalculate() {
-        return this.geometryType === 'box';
+        return this._geometryType === 'box';
     }
 
     calculate() {
         if (!this.canCalculate()) return;
 
-        this.setFromObject(this.editor.scene);
+        this.setBoxFromObject(this.editor.scene);
     }
 
-    setFromObject(object: THREE.Object3D) {
+    setBoxFromObject(object: THREE.Object3D) {
         this.updateBox((box) => {
             box.setFromObject(object);
             this.addSafetyMarginToBox();
@@ -66,7 +122,15 @@ export class BoundingZone extends THREE.Object3D {
     }
 
     setFromCenterAndSize(center: THREE.Vector3, size: THREE.Vector3) {
-        this.updateBox((box) => box.setFromCenterAndSize(center, size));
+        this.updateBox((box) => {
+            box.setFromCenterAndSize(center, size);
+
+            this.sphereMesh.scale.setScalar(size.x);
+            this.sphereMesh.position.copy(center);
+
+            this.cylinderMesh.scale.set(size.x, size.y, size.x);
+            this.cylinderMesh.position.copy(center);
+        });
     }
 
     updateBox(updateFunction: (box: THREE.Box3) => void) {
@@ -92,9 +156,17 @@ export class BoundingZone extends THREE.Object3D {
     }
 
     reset({ color = 0xff0000, name = 'World Zone' } = {}) {
-        this.color = new THREE.Color(color);
+        this.material.color.set(color);
         this.name = name;
         this.updateBox((box) => box.setFromCenterAndSize(new Vector3(), new Vector3()));
+    }
+
+    addToScene() {
+        this.getAllHelpers().forEach(e => this.editor.sceneHelpers.add(e));
+    }
+
+    removeFromScene() {
+        this.getAllHelpers().forEach(e => this.editor.sceneHelpers.remove(e));
     }
 
     toJSON() {
@@ -103,9 +175,9 @@ export class BoundingZone extends THREE.Object3D {
             center: this.box.getCenter(new Vector3()),
             size: this.box.getSize(new Vector3()),
             type: this.type,
-            geometryType: this.geometryType,
+            geometryType: this._geometryType,
             name: this.name,
-            color: this.color.getHex(),
+            color: this.material.color.getHex(),
             marginMultiplier: this.marginMultiplier,
         };
 
@@ -120,6 +192,8 @@ export class BoundingZone extends THREE.Object3D {
 
         object.geometryType = data.geometryType;
         object.name = data.name;
+
+        object.setFromCenterAndSize(data.center, data.size);
 
         return object;
 

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { SetGeometryCommand } from './commands/SetGeometryCommand.js';
 import { UINumber, UIRow, UIText } from './libs/ui.js';
 
-function GeometryParametersPanel( editor, object ) {
+function GeometryParametersPanel(editor, object) {
 
 	const strings = editor.strings;
 
@@ -14,26 +14,26 @@ function GeometryParametersPanel( editor, object ) {
 	// width = height = depth
 
 	const widthRow = new UIRow();
-	const width = new UINumber( parameters.width ).onChange( update );
+	const width = new UINumber(parameters.width).onChange(update);
 	width.min = 0;
 
-	widthRow.add( new UIText( strings.getKey( 'sidebar/geometry/box_geometry/width' )+ ' ' + editor.unit.name ).setWidth( '90px' ) );
-	widthRow.add( width );
+	widthRow.add(new UIText(strings.getKey('sidebar/geometry/box_geometry/width') + ' ' + editor.unit.name).setWidth('90px'));
+	widthRow.add(width);
 
-	container.add( widthRow );
+	container.add(widthRow);
 
 	//
 
 	function update() {
 
-		editor.execute( new SetGeometryCommand( editor, object, new THREE.BoxGeometry(
+		editor.execute(new SetGeometryCommand(editor, object, new THREE.BoxGeometry(
 			width.getValue(),
 			width.getValue(),
 			width.getValue(),
 			1,
 			1,
 			1
-		).translate ( 0, width.getValue() / 2, 0 ) ) );
+		)));
 
 	}
 

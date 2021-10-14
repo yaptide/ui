@@ -28,7 +28,7 @@ export class CSGManager extends THREE.Scene {
         this.editor = editor;
 
         this.boundingZone = new BoundingZone(editor);
-        editor.sceneHelpers.add(this.boundingZone.helper);
+        this.boundingZone.addToScene();
         this.boundingZone.name = "World Zone"
 
         this.editor.signals.zoneEmpty.add((zone: CSGZone) => this.handleZoneEmpty(zone));
@@ -96,18 +96,18 @@ export class CSGManager extends THREE.Scene {
 
         });
 
-        editor.sceneHelpers.remove(manager.boundingZone.helper);
+        manager.boundingZone.removeFromScene();
         manager.boundingZone = BoundingZone.fromJSON(editor, data.boundingZone);
-        editor.sceneHelpers.add(manager.boundingZone.helper);
+        manager.boundingZone.addToScene();
         return manager;
 
     }
 
     loadFrom(manager: CSGManager) {
         this.children = manager.children;
-        this.editor.sceneHelpers.remove(this.boundingZone.helper);
+        this.boundingZone.removeFromScene();
         this.boundingZone = manager.boundingZone;
-        this.editor.sceneHelpers.add(this.boundingZone.helper);
+        this.boundingZone.addToScene();
     }
 
     clone(recursive: boolean) {
