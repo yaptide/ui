@@ -15,6 +15,7 @@ function MenubarStatus(editor) {
 	const deploy = new UIText(`editor: ${deployInfo.date} ${deployInfo.commit}`);
 	deploy.setClass('title');
 	deploy.setOpacity(0.5);
+	deploy.dom.title = `${deployInfo.date} ${deployInfo.commit} ${deployInfo.branch}`;	
 	container.add(deploy);
 
 	const version = new UIText('three.js: r' + THREE.REVISION);
