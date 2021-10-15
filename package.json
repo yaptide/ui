@@ -28,11 +28,14 @@
     "web-vitals": "^2.1.2"
   },
   "scripts": {
+    "identify": "node ./src/util/identify/identify.js > ./src/util/identify/deployInfo.json",
+    "prestart": "npm run identify",
     "start": "react-scripts start",
+    "prebuild": "npm run identify",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build",
+    "predeploy": "npm run identify && npm run build",
     "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
