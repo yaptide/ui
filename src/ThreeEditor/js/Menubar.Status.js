@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-import { UIPanel, UIText } from './libs/ui.js';
+import { UIElement, UIPanel, UIText } from './libs/ui.js';
 import { UIBoolean } from './libs/ui.three.js';
 import deployInfo from '../../util/identify/deployInfo.json';
 
@@ -12,10 +12,12 @@ function MenubarStatus(editor) {
 	const container = new UIPanel();
 	container.setClass('menu right');
 
-	const deploy = new UIText(`editor: ${deployInfo.date} ${deployInfo.commit}`);
+	const deploy = new UIElement(document.createElement('a')).setTextContent(`editor: ${deployInfo.date} ${deployInfo.commit}`);
+	deploy.dom.href = 'https://github.com/yaptide/ui/commit/' + deployInfo.commit;
+	deploy.dom.target = '_blank';
+	deploy.dom.title = `${deployInfo.date} ${deployInfo.commit} ${deployInfo.branch}`;
 	deploy.setClass('title');
 	deploy.setOpacity(0.5);
-	deploy.dom.title = `${deployInfo.date} ${deployInfo.commit} ${deployInfo.branch}`;	
 	container.add(deploy);
 
 	const version = new UIText('three.js: r' + THREE.REVISION);
