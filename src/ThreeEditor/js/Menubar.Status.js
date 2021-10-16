@@ -12,7 +12,7 @@ function MenubarStatus(editor) {
 	const container = new UIPanel();
 	container.setClass('menu right');
 
-	const deploy = new UIElement(document.createElement('a')).setTextContent(`editor: ${deployInfo.date} ${deployInfo.commit}`);
+	const deploy = new UIElement(document.createElement('a')).setTextContent(`${deployInfo.date} ${deployInfo.commit}`);
 	deploy.dom.href = 'https://github.com/yaptide/ui/commit/' + deployInfo.commit;
 	deploy.dom.target = '_blank';
 	deploy.dom.title = `${deployInfo.date} ${deployInfo.commit} ${deployInfo.branch}`;
@@ -20,7 +20,7 @@ function MenubarStatus(editor) {
 	deploy.setOpacity(0.5);
 	container.add(deploy);
 
-	const version = new UIText('three.js: r' + THREE.REVISION);
+	const version = new UIText('r' + THREE.REVISION);
 	version.setClass('title');
 	version.setOpacity(0.5);
 	container.add(version);
