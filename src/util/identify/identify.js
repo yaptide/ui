@@ -1,3 +1,4 @@
+// code below borrowed from https://github.com/APTG/dedx_web/pull/92/files
 const date = new Date().toLocaleDateString()
 const commit = require('child_process')
     .execSync('git rev-parse --short HEAD')
