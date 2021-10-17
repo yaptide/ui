@@ -9,7 +9,6 @@ import { UIPanel } from "./libs/ui";
 import { ViewportCamera } from './Viewport.Camera.js';
 import { ViewHelper } from './Viewport.ViewHelper';
 import { ViewportClippedView as ViewportClipPlane } from './Viewport.ClipPlane';
-
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
 
 export function Viewport(
@@ -428,7 +427,12 @@ export function Viewport(
         // For our usage it would be only geometries included on the scene. 
         // Amount of geometries can differ form project to project thus we check only if it isn't mesh.
         // unionOperations is property unique to zones that shoudn't be transformed with controler.
-        return object !== null && object !== scene && object !== camera && !object?.parent?.isCSGManager && !object?.isCSGZone
+        return object !== null 
+        && !object.isScene 
+        && !object.isCamera
+        && !object.isCSGZone 
+        && !object.isBoundingZone
+        && !object.isCSGZonesContainer;
     }
 
     function reattachTransformControls(object) {
@@ -538,7 +542,7 @@ export function Viewport(
 
         render();
 
-    })
+    });
 
     signals.showZonesChanged.add((showZones) => {
 

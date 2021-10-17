@@ -249,3 +249,6 @@ fabric.properties
 .idea/codestream.xml
 
 # End of https://www.toptal.com/developers/gitignore/api/node,webstorm,visualstudiocode
+
+# file containing deploy info 
+src/util/identify/deployInfo.json

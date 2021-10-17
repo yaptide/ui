@@ -60,7 +60,6 @@ function MenubarAdd(editor) {
 	options.add(createOption('option', strings.getKey('menubar/add/box'), () => {
 
 		var geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
-		geometry.translate(0, geometry.parameters.height / 2, 0);
 		var mesh = new THREE.Mesh(geometry, material.clone());
 		mesh.name = 'Box';
 
@@ -85,7 +84,6 @@ function MenubarAdd(editor) {
 	options.add(createOption('option', strings.getKey('menubar/add/cylinder'), () => {
 
 		var geometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2);
-		geometry.translate(0, geometry.parameters.height / 2, 0);
 		var mesh = new THREE.Mesh(geometry, material.clone());
 		mesh.name = 'Cylinder';
 		editor.execute(new AddObjectCommand(editor, mesh));

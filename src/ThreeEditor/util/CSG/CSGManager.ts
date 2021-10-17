@@ -3,6 +3,7 @@ import * as THREE from 'three';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import Worker from 'worker-loader!./CSGWorker';
 import { Editor } from '../../js/Editor';
+import { BoundingZone, BoundingZoneJSON } from '../BoundingZone';
 import { ICSGWorker } from './CSGWorker';
 import { CSGZone, CSGZoneJSON } from './CSGZone';
 
@@ -10,25 +11,30 @@ import { CSGZone, CSGZoneJSON } from './CSGZone';
 interface CSGManagerJSON {
     uuid: string,
     name: string,
-    zones: CSGZoneJSON[]
+    zones: CSGZoneJSON[],
+    boundingZone: BoundingZoneJSON
 }
 
 export class CSGManager extends THREE.Scene {
     editor: Editor;
     worker: Comlink.Remote<ICSGWorker>;
-    zonesContainer: THREE.Group;
+    boundingZone: BoundingZone;
+    zonesContainer: CSGZonesContainer;
     readonly isCSGManager: true = true;
 
     constructor(editor: Editor) {
         super();
-        this.zonesContainer = new THREE.Group();
-        this.zonesContainer.name = "Zones";
+        this.zonesContainer = new CSGZonesContainer();
         let light = new THREE.HemisphereLight( 0xffffff, 0x222222, 1 );
         light.position.set(15,15,15);
         this.add(light);
         this.add(this.zonesContainer);
         this.worker = Comlink.wrap<ICSGWorker>(new Worker());
         this.editor = editor;
+
+        this.boundingZone = new BoundingZone(editor);
+        this.boundingZone.addToScene();
+        this.boundingZone.name = "World Zone"
 
         this.editor.signals.zoneEmpty.add((zone: CSGZone) => this.handleZoneEmpty(zone));
 
@@ -69,7 +75,8 @@ export class CSGManager extends THREE.Scene {
         let jsonObject: CSGManagerJSON = {
             zones,
             uuid,
-            name
+            name,
+            boundingZone: this.boundingZone.toJSON()
         };
         return jsonObject;
     }
@@ -80,6 +87,7 @@ export class CSGManager extends THREE.Scene {
             console.warn('Passed empty data to load CSGManager', data)
         else
             manager.uuid = data.uuid;
+
         manager.name = data.name;
 
         data.zones.forEach((zone) => {
@@ -88,16 +96,40 @@ export class CSGManager extends THREE.Scene {
 
         });
 
+        manager.boundingZone.removeFromScene();
+        manager.boundingZone = BoundingZone.fromJSON(editor, data.boundingZone);
+        manager.boundingZone.addToScene();
         return manager;
 
     }
 
     loadFrom(manager: CSGManager) {
         this.children = manager.children;
+        this.boundingZone.removeFromScene();
+        this.boundingZone = manager.boundingZone;
+        this.boundingZone.addToScene();
     }
 
     clone(recursive: boolean) {
         return new CSGManager(this.editor).copy(this, recursive) as this;
+    }
+
+    reset() {
+
+        this.name = 'Zones';
+        this.userData = {};
+        this.background = null;
+        this.environment = null;
+
+        this.zonesContainer.clear();
+
+        this.boundingZone.reset();
+
+        return this;
+    }
+
+    getObjectById(id: number) {
+        return this.boundingZone.getObjectById(id) ?? super.getObjectById(id);
     }
 
     handleZoneEmpty(zone: CSGZone) {
@@ -106,4 +138,13 @@ export class CSGManager extends THREE.Scene {
     }
 
 }
-export const isCSGManager = (x: any): x is CSGManager => x instanceof CSGManager;
+
+export class CSGZonesContainer extends THREE.Group{
+    children: CSGZone[];
+    readonly isCSGZonesContainer: true = true;
+    constructor(){
+        super();
+        this.name = "Zones";
+        this.children = [];
+    }
+}

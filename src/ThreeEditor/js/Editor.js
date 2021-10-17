@@ -116,7 +116,7 @@ function Editor() {
 	this.strings = new Strings(this.config);
 	this.unit = {
 		name: '[cm]',
-		multiplier: 1,
+		multiplier: 1
 	}
 
 	this.loader = new Loader(this);
@@ -601,7 +601,7 @@ Editor.prototype = {
 
 		}
 
-		var object = this.scene.getObjectById(id) ?? this.zonesManager.zonesContainer.getObjectById(id)
+		var object = this.scene.getObjectById(id) ?? this.zonesManager.getObjectById(id)
 		this.select(object);
 
 	},
@@ -665,18 +665,7 @@ Editor.prototype = {
 
 		}
 
-		this.zonesManager.name = 'Zones';
-		this.zonesManager.userData = {};
-		this.zonesManager.background = null;
-		this.zonesManager.environment = null;
-
-		var zones = this.zonesManager.zonesContainer.children;
-
-		while (zones.length > 0) {
-
-			this.removeObject(zones[0]);
-
-		}
+		this.zonesManager.reset();
 
 		this.geometries = {};
 		this.materials = {};

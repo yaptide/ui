@@ -4,7 +4,7 @@ import { SidebarMaterialBooleanProperty } from './Sidebar.Material.BooleanProper
 import { SidebarMaterialColorProperty } from './Sidebar.Material.ColorProperty.js';
 import { SidebarMaterialConstantProperty } from './Sidebar.Material.ConstantProperty.js';
 import { SidebarMaterialNumberProperty } from './Sidebar.Material.NumberProperty.js';
-import { SetMaterialCommand } from './commands/SetMaterialCommand.js';
+import { SetZoneMaterialCommand } from './commands/SetZoneMaterialCommand.js';
 export default class ZoneMaterial extends UIPanel {
 	editor;
 	constructor(editor) {
@@ -14,7 +14,7 @@ export default class ZoneMaterial extends UIPanel {
 	}
 }
 
-// Code copied (and adjusted) from SidebarMaterial.js to get focus function that was missing on OrbitControls.
+// Code copied (and adjusted) from SidebarMaterial.js
 // https://github.com/mrdoob/three.js/blob/r132/editor/js/Sidebar.Material.js
 function makeSidebarMaterialOptions(container, editor) {
 	container.setBorderTop('0');
@@ -97,11 +97,12 @@ function makeSidebarMaterialOptions(container, editor) {
 
 		if (material) {
 
-			if (material.name !== materialClass.getValue()) {
+			let newMaterialName = materialClass.getValue();
+			console.warn(materialClass);
 
-				material = materials[materialClass.getValue()];
+			if (material.name !== newMaterialName) {
 
-				editor.execute(new SetMaterialCommand(editor, currentObject, material, currentMaterialSlot), 'Zone aplied material: ' + materialClass.getValue());
+				editor.execute(new SetZoneMaterialCommand(editor, currentObject, newMaterialName), 'Zone aplied material: ' + newMaterialName);
 
 				refreshUI();
 

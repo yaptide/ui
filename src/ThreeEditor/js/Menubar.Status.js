@@ -1,48 +1,60 @@
 import * as THREE from 'three'
 
-import { UIPanel, UIText } from './libs/ui.js';
+import { UIElement, UIPanel, UIText } from './libs/ui.js';
 import { UIBoolean } from './libs/ui.three.js';
+import deployInfo from '../../util/identify/deployInfo.json';
 
-function MenubarStatus( editor ) {
 
-	var strings = editor.strings;
+function MenubarStatus(editor) {
 
-	var container = new UIPanel();
-	container.setClass( 'menu right' );
+	const strings = editor.strings;
 
-	var autosave = new UIBoolean( editor.config.getKey( 'autosave' ), strings.getKey( 'menubar/status/autosave' ) );
-	autosave.text.setColor( '#888' );
-	autosave.onChange( function () {
+	const container = new UIPanel();
+	container.setClass('menu right');
 
-		var value = this.getValue();
+	const deploy = new UIElement(document.createElement('a')).setTextContent(`${deployInfo.date} ${deployInfo.commit}`);
+	deploy.dom.href = 'https://github.com/yaptide/ui/commit/' + deployInfo.commit;
+	deploy.dom.target = '_blank';
+	deploy.dom.title = `${deployInfo.date} ${deployInfo.commit} ${deployInfo.branch}`;
+	deploy.setClass('title');
+	deploy.setOpacity(0.5);
+	container.add(deploy);
 
-		editor.config.setKey( 'autosave', value );
+	const version = new UIText('r' + THREE.REVISION);
+	version.setClass('title');
+	version.setOpacity(0.5);
+	container.add(version);
 
-		if ( value === true ) {
+	const autosave = new UIBoolean(editor.config.getKey('autosave'), strings.getKey('menubar/status/autosave'));
+	autosave.text.setColor('#888');
+	autosave.onChange(function () {
+
+		const value = this.getValue();
+
+		editor.config.setKey('autosave', value);
+
+		if (value === true) {
 
 			editor.signals.sceneGraphChanged.dispatch();
 
 		}
 
-	} );
-	container.add( autosave );
+	});
+	container.add(autosave);
 
-	editor.signals.savingStarted.add( function () {
+	editor.signals.savingStarted.add(function () {
 
-		autosave.text.setTextDecoration( 'underline' );
+		autosave.text.setTextDecoration('underline');
 
-	} );
+	});
 
-	editor.signals.savingFinished.add( function () {
+	editor.signals.savingFinished.add(function () {
 
-		autosave.text.setTextDecoration( 'none' );
+		autosave.text.setTextDecoration('none');
 
-	} );
+	});
 
-	var version = new UIText( 'r' + THREE.REVISION );
-	version.setClass( 'title' );
-	version.setOpacity( 0.5 );
-	container.add( version );
+
 
 	return container;
 

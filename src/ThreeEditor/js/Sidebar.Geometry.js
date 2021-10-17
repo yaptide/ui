@@ -3,192 +3,132 @@ import ReactDOM from 'react-dom';
 import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper.js';
 import ZoneManagerPanel from '../../components/ZoneManagerPanel/ZoneManagerPanel';
 import { UIButton, UIPanel, UIRow, UISpan, UIText } from './libs/ui.js';
+import { BoundingZonePanel } from './Sidebar.Geometry.BoundingZone';
 
-function SidebarGeometry( editor ) {
+function SidebarGeometry(editor) {
 
 	var strings = editor.strings;
 
 	var signals = editor.signals;
 
 	var container = new UIPanel();
-	container.setBorderTop( '0' );
-	container.setDisplay( 'none' );
-	container.setPaddingTop( '20px' );
+	container.setBorderTop('0');
+	container.setDisplay('none');
+	container.setPaddingTop('20px');
 
 	var currentGeometryType = null;
-
-	// Actions
-
-	/*
-	var objectActions = new UISelect().setPosition( 'absolute' ).setRight( '8px' ).setFontSize( '11px' );
-	objectActions.setOptions( {
-
-		'Actions': 'Actions',
-		'Center': 'Center',
-		'Convert': 'Convert',
-		'Flatten': 'Flatten'
-
-	} );
-	objectActions.onClick( function ( event ) {
-
-		event.stopPropagation(); // Avoid panel collapsing
-
-	} );
-	objectActions.onChange( function ( event ) {
-
-		var action = this.getValue();
-
-		var object = editor.selected;
-		var geometry = object.geometry;
-
-		if ( confirm( action + ' ' + object.name + '?' ) === false ) return;
-
-		switch ( action ) {
-
-			case 'Center':
-
-				var offset = geometry.center();
-
-				var newPosition = object.position.clone();
-				newPosition.sub( offset );
-				editor.execute( new SetPositionCommand( editor, object, newPosition ) );
-
-				editor.signals.geometryChanged.dispatch( object );
-
-				break;
-
-			case 'Convert':
-
-				if ( geometry && geometry.isGeometry ) {
-
-					editor.execute( new SetGeometryCommand( editor, object, new THREE.BufferGeometry().fromGeometry( geometry ) ) );
-
-				}
-
-				break;
-
-			case 'Flatten':
-
-				var newGeometry = geometry.clone();
-				newGeometry.uuid = geometry.uuid;
-				newGeometry.applyMatrix( object.matrix );
-
-				var cmds = [ new SetGeometryCommand( editor, object, newGeometry ),
-					new SetPositionCommand( editor, object, new THREE.Vector3( 0, 0, 0 ) ),
-					new SetRotationCommand( editor, object, new THREE.Euler( 0, 0, 0 ) ),
-					new SetScaleCommand( editor, object, new THREE.Vector3( 1, 1, 1 ) ) ];
-
-				editor.execute( new MultiCmdsCommand( editor, cmds ), 'Flatten Geometry' );
-
-				break;
-
-		}
-
-		this.setValue( 'Actions' );
-
-	} );
-	container.addStatic( objectActions );
-	*/
 
 	// type
 
 	var geometryTypeRow = new UIRow();
 	var geometryType = new UIText();
 
-	geometryTypeRow.add( new UIText( strings.getKey( 'sidebar/geometry/type' ) ).setWidth( '90px' ) );
-	geometryTypeRow.add( geometryType );
+	geometryTypeRow.add(new UIText(strings.getKey('sidebar/geometry/type')).setWidth('90px'));
+	geometryTypeRow.add(geometryType);
 
-	container.add( geometryTypeRow );
+	container.add(geometryTypeRow);
 
 
 	// parameters
 
 	var parameters = new UISpan();
-	container.add( parameters );
+	container.add(parameters);
 
 
 	// Helpers
 
-	var helpersRow = new UIRow().setMarginTop( '16px' ).setPaddingLeft( '90px' );
-	container.add( helpersRow );
+	var helpersRow = new UIRow().setMarginTop('16px').setPaddingLeft('90px');
+	container.add(helpersRow);
 
-	var vertexNormalsButton = new UIButton( strings.getKey( 'sidebar/geometry/show_vertex_normals' ) );
-	vertexNormalsButton.onClick( function () {
+	var vertexNormalsButton = new UIButton(strings.getKey('sidebar/geometry/show_vertex_normals'));
+	vertexNormalsButton.onClick(function () {
 
 		var object = editor.selected;
 
-		if ( editor.helpers[ object.id ] === undefined ) {
+		if (editor.helpers[object.id] === undefined) {
 
-			var helper = new VertexNormalsHelper( object );
-			editor.addHelper( object, helper );
+			var helper = new VertexNormalsHelper(object);
+			editor.addHelper(object, helper);
 
 		} else {
 
-			editor.removeHelper( object );
+			editor.removeHelper(object);
 
 		}
 
 		signals.sceneGraphChanged.dispatch();
 
-	} );
-	helpersRow.add( vertexNormalsButton );
+	});
+	helpersRow.add(vertexNormalsButton);
 
-	let zonePanel = new UISpan();
-	zonePanel.setId("zonePanel");
+	const buildZonesManager = (() => {
+		let zonePanel = new UISpan();
+		zonePanel.setId("zonePanel");
 
-	async function buildZonesManager() {
+		return function buildZonesManager() {
 
-		var object = editor.selected;
+			var object = editor.selected;
 
-		parameters.clear();
+			parameters.clear();
 
-		parameters.add(zonePanel);
-		ReactDOM.render(
-			(<ZoneManagerPanel editor={editor} zone={object}/>),
-			document.getElementById("zonePanel")
-		);
+			parameters.add(zonePanel);
+			ReactDOM.render(
+				(<ZoneManagerPanel editor={editor} zone={object} />),
+				document.getElementById("zonePanel")
+			);
 
-		container.setDisplay( 'block' );
+			container.setDisplay('block');
 
-	}
+		};
+	})();
 
 	async function build() {
+		vertexNormalsButton.setDisplay('block');
 
 		var object = editor.selected;
 
-		if ( object && object.geometry ) {
+		if (object && object.isBoundingZone) {
+
+			parameters.clear();
+			parameters.add(new BoundingZonePanel(editor, object));
+			geometryType.setValue(object.type);
+
+			container.setDisplay('block');
+
+			vertexNormalsButton.setDisplay('none');
+
+		} else if (object && object.geometry) {
 
 			var geometry = object.geometry;
 
-			container.setDisplay( 'block' );
+			container.setDisplay('block');
 
-			geometryType.setValue( geometry.type );
+			geometryType.setValue(geometry.type);
 
-			
+
 
 			//
 
-			if ( currentGeometryType !== geometry.type ) {
+			if (currentGeometryType !== geometry.type) {
 
 				parameters.clear();
 
-				if ( geometry.type === 'BufferGeometry' ) {
+				if (geometry.type !== 'BufferGeometry') {
 
-					// parameters.add( new SidebarGeometryModifiers( editor, object ) );
 
-				} else {
 
-					try{
+					try {
 
-						var { GeometryParametersPanel } = await import( `./Sidebar.Geometry.${ geometry.type }.js` );
-						
-						parameters.add( new GeometryParametersPanel( editor, object ) );
+						var { GeometryParametersPanel } = await import(`./Sidebar.Geometry.${geometry.type}.js`);
 
-					} catch(e){
+						parameters.add(new GeometryParametersPanel(editor, object));
 
-						console.error(`Geometry: ${ geometry.type } is not supported`);
+					} catch (e) {
 
-					}						
+						console.error(`Geometry: ${geometry.type} is not supported`);
+
+					}
+
 
 				}
 
@@ -196,27 +136,28 @@ function SidebarGeometry( editor ) {
 
 			}
 
-			if ( geometry.boundingBox === null ) geometry.computeBoundingBox();
+			if (geometry.boundingBox === null) geometry.computeBoundingBox();
 
 
 		} else {
 
-			container.setDisplay( 'none' );
+			container.setDisplay('none');
 
 		}
 
 	}
 
-	signals.objectSelected.add( function () {
+	signals.objectSelected.add(function () {
 
 		currentGeometryType = null;
+		vertexNormalsButton.setDisplay('block');
 		editor.selected?.isCSGZone
 			? buildZonesManager()
 			: build();
 
-	} );
+	});
 
-	signals.geometryChanged.add( build );
+	signals.geometryChanged.add(build);
 
 	return container;
 
