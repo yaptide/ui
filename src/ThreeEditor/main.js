@@ -109,7 +109,10 @@ export function initEditor(container) {
         signals.sceneGraphChanged.add(saveState);
         signals.scriptChanged.add(saveState);
         signals.historyChanged.add(saveState);
+        
+        //YAPTIDE signals
         signals.CSGManagerStateChanged.add(saveState);
+        signals.simulationMaterialChanged.add(saveState);
     });
 
     //

@@ -1,0 +1,18 @@
+import * as THREE from "three";
+
+
+export default class SimulationMaterial extends THREE.MeshPhongMaterial{
+    simulationData:{id:string, name:string};
+    readonly isSimulationMaterial: true = true;
+    constructor(data:{id:string, name:string}, args: any) {
+        super({
+            name: data.name,
+            flatShading: true,
+            side: THREE.DoubleSide,
+            transparent: true,
+            color: new THREE.Color( 0xFF3D3D ),
+            ...args,
+        });
+        this.simulationData = data;
+    }
+}

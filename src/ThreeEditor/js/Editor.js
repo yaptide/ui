@@ -5,9 +5,10 @@ import { Config } from './Config.js';
 import { Loader } from './Loader.js';
 import { History as _History } from './History.js';
 import { Strings } from './Strings.js';
-import { EditorMaterials } from './Editor.Materials.js';
+import { createEditorMaterials } from './Editor.Materials.js';
 import { Storage as _Storage } from './Storage.js';
 import { CSGManager } from '../util/CSG/CSGManager';
+import SimulationMaterial from '../util/Materials/SimulationMaterial';
 
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
@@ -66,6 +67,9 @@ function Editor() {
 		zoneEmpty: new Signal(),
 		zoneRemoved: new Signal(),
 
+		//YAPTIDE materials
+		simulationMaterialChanged: new Signal(),
+
 		cameraAdded: new Signal(),
 		cameraRemoved: new Signal(),
 
@@ -112,7 +116,7 @@ function Editor() {
 	this.strings = new Strings(this.config);
 	this.unit = {
 		name: '[cm]',
-		multiplier: 1	
+		multiplier: 1,
 	}
 
 	this.loader = new Loader(this);
@@ -126,7 +130,10 @@ function Editor() {
 
 	this.zonesManager = new CSGManager(this); //CSG Manager
 
-	this.simulationMaterials = EditorMaterials();
+	const [simulationMaterials, simulationMaterialOptions] = createEditorMaterials();
+	this.simulationMaterials = simulationMaterials;
+	this.changedMaterials = {};
+	this.simulationMaterialOptions = simulationMaterialOptions;
 
 	this.object = {};
 	this.geometries = {};
@@ -690,7 +697,6 @@ Editor.prototype = {
 	//
 
 	fromJSON: async function (json) {
-
 		const loader = new THREE.ObjectLoader();
 		const camera = await loader.parseAsync(json.camera);
 
@@ -702,8 +708,28 @@ Editor.prototype = {
 
 		this.setScene(await loader.parseAsync(json.scene));
 
-		// CSGManager must be loaded after scene
-		this.setZonesManager(CSGManager.fromJSON(this, json.zonesManager)) // CSGManager must be loaded to not lose reference in components 		
+		console.warn(json);
+		this.changedMaterials = json.customMaterials.reduce((prev,object) => {
+			return {
+				...prev,
+				[object.data.name]: new SimulationMaterial(object.data,{
+					color: new THREE.Color(object.color),
+					flatShading: object.flatShading,
+					// blending: object.blending,
+					opacity: object.opacity,
+					transparent: object.transparent,
+				})
+			}
+		},{})
+
+		this.simulationMaterials = {
+			...this.simulationMaterials,
+			...this.changedMaterials
+		}
+		
+		// CSGManager must be loaded after scene and simulation materials
+		this.setZonesManager(CSGManager.fromJSON(this, json.zonesManager)) // CSGManager must be loaded to not lose reference in components 	
+	
 
 		this.signals.sceneGraphChanged.dispatch();
 				
@@ -748,8 +774,18 @@ Editor.prototype = {
 			scene: this.scene.toJSON(),
 			scripts: this.scripts,
 			history: this.history.toJSON(),
-			zonesManager: this.zonesManager.toJSON() // serialize CSGManager
-
+			zonesManager: this.zonesManager.toJSON(), // serialize CSGManager
+			customMaterials: Object.entries(this.changedMaterials).map((object => { 
+				return {
+					"data": object[1].simulationData,
+					"color": object[1].color.getHex(),
+					"flatShading": object[1].flatShading,
+					// "blending": object[1].blending,
+					//TODO: parse blending value
+					"opacity": object[1].opacity,
+					"transparent": object[1].transparent,
+				}
+			}))
 		};
 
 	},

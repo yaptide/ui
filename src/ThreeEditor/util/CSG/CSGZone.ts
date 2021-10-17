@@ -12,6 +12,7 @@ export interface CSGZoneJSON {
     name: string;
     unionOperations: CSGOperationJSON[][];
     subscribedObjectsUuid: string[];
+    materialName: string;
 }
 
 export class CSGZone extends THREE.Mesh {
@@ -45,7 +46,8 @@ export class CSGZone extends THREE.Mesh {
         name?: string,
         unionOperations?: CSGOperation[][],
         subscribedObjectsUuid?: Set<string>, // TODO: replace Set with Map to correctly trace uuids
-        uuid?: string
+        uuid?: string,
+        materialName?: string,
     ) {
         super();
         this.type = "Zone";
@@ -53,7 +55,8 @@ export class CSGZone extends THREE.Mesh {
         this.editor = editor;
         this.signals = editor.signals;
         this.name = name || "CSGZone";
-        this.material = editor.simulationMaterials["Fire"].material;
+        this.material = editor.simulationMaterials[materialName] ??
+                        Object.entries(editor.simulationMaterials)[0][1] as THREE.Material;
         this.subscribedObjectsUuid = subscribedObjectsUuid || new Set();
         this.unionOperations = unionOperations
             ? (() => {
@@ -235,6 +238,7 @@ export class CSGZone extends THREE.Mesh {
             name: this.name,
             unionOperations,
             subscribedObjectsUuid: Array.from(this.subscribedObjectsUuid),
+            materialName: (this.material as THREE.Material).name
         };
         return jsonObject;
     }
@@ -257,7 +261,8 @@ export class CSGZone extends THREE.Mesh {
             data.name,
             unionOperations,
             subscribedObjectsUuid,
-            data.uuid
+            data.uuid,
+            data.materialName
         );
 
         return zone;

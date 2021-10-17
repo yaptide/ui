@@ -5,7 +5,6 @@ import { SidebarMaterialColorProperty } from './Sidebar.Material.ColorProperty.j
 import { SidebarMaterialConstantProperty } from './Sidebar.Material.ConstantProperty.js';
 import { SidebarMaterialNumberProperty } from './Sidebar.Material.NumberProperty.js';
 import { SetMaterialCommand } from './commands/SetMaterialCommand.js';
-import { materialOptions } from './Editor.Materials.js';
 export default class ZoneMaterial extends UIPanel {
 	editor;
 	constructor(editor) {
@@ -25,6 +24,7 @@ function makeSidebarMaterialOptions(container, editor) {
 	const signals = editor.signals;
 	const strings = editor.strings;
 	const materials = editor.simulationMaterials;
+	const materialOptions = editor.simulationMaterialOptions;
 
 	let currentObject;
 
@@ -99,7 +99,7 @@ function makeSidebarMaterialOptions(container, editor) {
 
 			if (material.name !== materialClass.getValue()) {
 
-				material = materials[materialClass.getValue()].material;
+				material = materials[materialClass.getValue()];
 
 				editor.execute(new SetMaterialCommand(editor, currentObject, material, currentMaterialSlot), 'Zone aplied material: ' + materialClass.getValue());
 
@@ -194,6 +194,12 @@ function makeSidebarMaterialOptions(container, editor) {
 
 	});
 
-	signals.materialChanged.add(refreshUI);
+	signals.materialChanged.add((material) => {
+		if(material?.isSimulationMaterial){
+			editor.changedMaterials[material.name] = material;
+			signals.simulationMaterialChanged.dispatch();
+		}
+		refreshUI()
+	});
 
 }
