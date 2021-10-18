@@ -68,8 +68,10 @@ export class Beam extends THREE.Object3D {
 
 
     reset() {
-        this.position.copy(new Vector3());
+        this.position.copy(new Vector3(0, 0, -1));
         this.rotation.copy(new Euler());
+        this.direction.copy(new Vector3(0, 0, 1));
+        this.energy = 0;
     }
 
     toJSON() {
