@@ -141,4 +141,4 @@ export class CSGManager extends THREE.Scene {
     }
 
 }
-export const isCSGManager = (x: any): x is CSGManager => x instanceof CSGManager;
+export const isCSGManager = (x: unknown): x is CSGManager => x instanceof CSGManager;

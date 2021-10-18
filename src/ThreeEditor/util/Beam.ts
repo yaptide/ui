@@ -28,7 +28,7 @@ export class Beam extends THREE.Object3D {
         this.editor = editor;
 
         const overrideHandler = {
-            set: (target: THREE.Vector3, prop: keyof THREE.Vector3, value: any) => {
+            set: (target: THREE.Vector3, prop: keyof THREE.Vector3, value: unknown) => {
                 const result = Reflect.set(target, prop, value);
                 this.helper.setDirection(target.clone().normalize());
                 this.debouncedDispatchChanged();
@@ -51,7 +51,7 @@ export class Beam extends THREE.Object3D {
         this.energy = 0;
 
         const overrideHandlerThis = {
-            set: (target: Beam, prop: keyof Beam, value: any) => {
+            set: (target: Beam, prop: keyof Beam, value: unknown) => {
                 const result = Reflect.set(target, prop, value);
 
                 const informChange: (keyof Beam)[] = ['direction', 'energy'];
@@ -101,4 +101,4 @@ export class Beam extends THREE.Object3D {
 
 }
 
-export const isBeam = (x: any): x is Beam => x instanceof Beam;
+export const isBeam = (x: unknown): x is Beam => x instanceof Beam;

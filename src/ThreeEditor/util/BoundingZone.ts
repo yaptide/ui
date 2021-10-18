@@ -60,7 +60,7 @@ export class BoundingZone extends THREE.Object3D {
 
         // watch for changes on material color 
         const overrideHandler = {
-            set: (target: Color, prop: keyof Color, value: any) => {
+            set: (target: Color, prop: keyof Color, value: unknown) => {
 
                 Reflect.set((this.boxHelper.material as LineBasicMaterial).color, prop, value);
 
@@ -217,4 +217,4 @@ export class BoundingZone extends THREE.Object3D {
 
 }
 
-export const isBoundingZone = (x: any): x is BoundingZone => x instanceof BoundingZone;
+export const isBoundingZone = (x: unknown): x is BoundingZone => x instanceof BoundingZone;
