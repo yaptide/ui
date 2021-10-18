@@ -6,6 +6,8 @@ import { UIButton, UIPanel, UIRow, UISpan, UIText } from './libs/ui.js';
 import { isCSGZone } from '../util/CSG/CSGZone';
 import { isBoundingZone } from '../util/BoundingZone';
 import { BoundingZonePanel } from './Sidebar.Geometry.BoundingZone';
+import { isBeam } from '../util/Beam';
+import { BeamPanel } from './Sidebar.Geometry.Beam';
 
 function SidebarGeometry(editor) {
 
@@ -89,7 +91,16 @@ function SidebarGeometry(editor) {
 
 		var object = editor.selected;
 
-		if (isBoundingZone(object)) {
+		if (isBeam(object)) {
+			parameters.clear();
+			parameters.add(new BeamPanel(editor, object));
+			geometryType.setValue(object.type);
+
+			container.setDisplay('block');
+
+			vertexNormalsButton.setDisplay('none');
+
+		} else if (isBoundingZone(object)) {
 
 			parameters.clear();
 			parameters.add(new BoundingZonePanel(editor, object));

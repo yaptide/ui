@@ -1,6 +1,7 @@
 
 import * as THREE from 'three';
 import { Color, LineBasicMaterial, MeshBasicMaterial, Object3D, Vector3 } from 'three';
+import { debounce } from 'throttle-debounce';
 
 import { Editor } from '../js/Editor';
 
@@ -15,7 +16,7 @@ export interface BoundingZoneJSON {
     marginMultiplier: number;
 }
 
-const BOUNDING_ZONE_TYPE = ['sphere', 'cylinder', 'box'] as const;
+export const BOUNDING_ZONE_TYPE = ['sphere', 'cylinder', 'box'] as const;
 
 export type BoundingZoneType = (typeof BOUNDING_ZONE_TYPE)[number];
 
@@ -42,6 +43,10 @@ export class BoundingZone extends THREE.Object3D {
     private boxHelper: THREE.Box3Helper;
     private cylinderMesh: THREE.Mesh<THREE.CylinderGeometry, MeshBasicMaterial>;
     private sphereMesh: THREE.Mesh<THREE.SphereGeometry, MeshBasicMaterial>;
+
+    readonly debouncedCalculate = debounce(200, false, () =>
+        this.calculate()
+    );
 
     constructor(editor: Editor, { box, color = 0xff0000, marginMultiplier = 1.1 }: BoundingZoneParams = {}) {
         super();
@@ -79,7 +84,7 @@ export class BoundingZone extends THREE.Object3D {
 
 
         const handleSignal = (object: Object3D) => {
-            if (this.autoCalculate && !isBoundingZone(object)) this.calculate();
+            if (this.autoCalculate && !isBoundingZone(object)) this.debouncedCalculate();
         }
         this.editor.signals.objectChanged.add((object: Object3D) => handleSignal(object));
         this.editor.signals.sceneGraphChanged.add((object: Object3D) => handleSignal(object));
@@ -167,11 +172,11 @@ export class BoundingZone extends THREE.Object3D {
         this.updateBox((box) => box.setFromCenterAndSize(new Vector3(), new Vector3()));
     }
 
-    addToScene() {
+    addToSceneHelpers() {
         this.getAllHelpers().forEach(e => this.editor.sceneHelpers.add(e));
     }
 
-    removeFromScene() {
+    removeFromSceneHelpers() {
         this.getAllHelpers().forEach(e => this.editor.sceneHelpers.remove(e));
     }
 

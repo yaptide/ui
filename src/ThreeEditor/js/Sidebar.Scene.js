@@ -297,7 +297,9 @@ function SidebarScene(editor) {
 		options.push(buildOption(zonesManager, false));
 		addObjects(zonesManager.children, 0);
 
-		options.push(buildOption(boundingZone, false))
+		options.push(buildOption(boundingZone, false));
+
+		options.push(buildOption(editor.beam, false));
 		
 		outliner.setOptions(options);
 
