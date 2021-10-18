@@ -81,26 +81,29 @@ export class CSGManager extends THREE.Scene {
         return jsonObject;
     }
 
-    static fromJSON(editor: Editor, data: CSGManagerJSON) {
-        let manager = new CSGManager(editor);
+    fromJSON(data: CSGManagerJSON) {
         if (!data)
             console.warn('Passed empty data to load CSGManager', data)
-        else
-            manager.uuid = data.uuid;
 
-        manager.name = data.name;
+        this.uuid = data.uuid;
+
+        this.name = data.name;
 
         data.zones.forEach((zone) => {
 
-            manager.add(CSGZone.fromJSON(editor, zone));
+            this.add(CSGZone.fromJSON(this.editor, zone));
 
         });
 
-        manager.boundingZone.removeFromSceneHelpers();
-        manager.boundingZone = BoundingZone.fromJSON(editor, data.boundingZone);
-        manager.boundingZone.addToSceneHelpers();
-        return manager;
+        this.boundingZone.removeFromSceneHelpers();
+        this.boundingZone = BoundingZone.fromJSON(this.editor, data.boundingZone);
+        this.boundingZone.addToSceneHelpers();
 
+        return this;
+    }
+
+    static fromJSON(editor: Editor, data: CSGManagerJSON) {
+        return new CSGManager(editor).fromJSON(data);
     }
 
     loadFrom(manager: CSGManager) {

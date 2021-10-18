@@ -398,7 +398,7 @@ function SidebarScene(editor) {
 			let needsRefresh = false;
 			let parent = object.parent;
 
-			while (parent !== editor.scene && parent !== editor.zonesManager && parent !== editor.zonesManager.boundingZones) {
+			while (parent !== editor.scene && parent !== editor.zonesManager ) {
 				if (nodeStates.get(parent) !== true) {
 					nodeStates.set(parent, true);
 					needsRefresh = true;

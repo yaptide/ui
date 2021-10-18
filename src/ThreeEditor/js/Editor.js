@@ -585,9 +585,15 @@ Editor.prototype = {
 
 		const objectCollections = [this.scene, this.zonesManager, this.beam];
 
-		const object = objectCollections.find((object) => object.getObjectById(id) !== undefined);
-		this.select(object);
+		let object = null;
+		objectCollections.every((e) => {
+			const found = e.getObjectById(id);
+			if (found)
+				object = found;
+			return found === undefined;
+		});
 
+		this.select(object);
 	},
 
 	selectByUuid: function (uuid) {
@@ -685,7 +691,7 @@ Editor.prototype = {
 
 		const zonesManager = CSGManager.fromJSON(this, json.zonesManager); // CSGManager must be loaded after scene 		
 		this.zonesManager.loadFrom(zonesManager); // CSGManager must be loaded to not lose reference in components 
-		
+
 		this.beam.fromJSON(json.beam);
 
 		this.signals.sceneGraphChanged.dispatch();
