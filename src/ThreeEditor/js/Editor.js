@@ -690,7 +690,7 @@ Editor.prototype = {
 		this.setScene(await loader.parseAsync(json.scene));
 
 		const zonesManager = CSGManager.fromJSON(this, json.zonesManager); // CSGManager must be loaded after scene 		
-		this.zonesManager.loadFrom(zonesManager); // CSGManager must be loaded to not lose reference in components 
+		this.zonesManager.loadFrom(zonesManager); // CSGManager must be loaded in order not to lose reference in components 
 
 		this.beam.fromJSON(json.beam);
 
