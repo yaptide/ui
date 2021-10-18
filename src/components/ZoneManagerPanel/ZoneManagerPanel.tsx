@@ -140,7 +140,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
                     change={changeRowValues(id)}
                     value={row}
                     possibleObjects={allObjects}
-                ></BooleanAlgebraRow>
+                 />
             )
         })}
         <Button className="addRowButton" onClick={addAlgebraRow}>+</Button>

@@ -7,7 +7,7 @@ function App() {
   const theme = createMuiTheme();
   return (<ThemeProvider theme={theme}>
 
-    <ThreeEditor></ThreeEditor>
+    <ThreeEditor />
   </ThemeProvider>);
 }
 

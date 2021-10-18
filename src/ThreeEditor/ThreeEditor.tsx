@@ -27,7 +27,7 @@ function ThreeEditor() {
     <div className="ThreeEditor" ref={containerEl}>
       {editor &&
         <>
-          <SampleComponent signal={editor.signals.objectSelected} ></SampleComponent>
+          <SampleComponent signal={editor.signals.objectSelected}  />
         </>
       }
     </div>

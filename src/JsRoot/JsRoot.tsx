@@ -34,7 +34,7 @@ function JsRoot() {
     }, [obj,scriptLoaded])
     if(scriptLoaded){
         return(<div>
-            <div style={{ width: 480, height: 480 }} ref={containerEl}></div>
+            <div style={{ width: 480, height: 480 }} ref={containerEl} />
         </div>)
     }
     return (<AsyncLoader

@@ -28,7 +28,7 @@ function SampleComponent(props: SampleComponentProps) {
 
     return (
         <div className="SampleComponent">
-            Selected Name:{objectName}<br></br>
+            Selected Name:{objectName}<br />
             Selected ID:{objectID}
         </div>
     );
