@@ -374,10 +374,7 @@ class Node {
         }
         if (this.front)
             front = this.front.clipPolygons(front);
-        if (this.back)
-            back = this.back.clipPolygons(back);
-        else
-            back = [];
+        back = this.back ? this.back.clipPolygons(back) : [];
         return front.concat(back);
     }
 
