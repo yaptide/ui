@@ -300,7 +300,7 @@ History.prototype = {
 		var cmd = this.redo();
 		while (cmd !== undefined) {
 
-			if (!cmd.hasOwnProperty('json')) {
+			if (!Object.prototype.hasOwnProperty.call(cmd, 'json')) {
 
 				cmd.json = cmd.toJSON();
 
