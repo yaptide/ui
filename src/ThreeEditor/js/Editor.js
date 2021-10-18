@@ -585,13 +585,7 @@ Editor.prototype = {
 
 		const objectCollections = [this.scene, this.zonesManager, this.beam];
 
-		let object = null;
-		objectCollections.every((e) => {
-			const found = e.getObjectById(id);
-			if (found)
-				object = found;
-			return found === undefined;
-		});
+		const object = objectCollections.map((e) => e.getObjectById(id)).find(e => e !== undefined);
 
 		this.select(object);
 	},

@@ -10,6 +10,12 @@ export interface BeamJSON {
     energy: number
 }
 
+const _default = {
+    position: new THREE.Vector3(0, 0, 0),
+    direction: new THREE.Vector3(0, 0, 1),
+    energy: 150,
+}
+
 export class Beam extends THREE.Object3D {
     editor: Editor;
     helper: THREE.ArrowHelper;
@@ -36,7 +42,7 @@ export class Beam extends THREE.Object3D {
             },
         };
 
-        const proxyDirection = new Proxy(new THREE.Vector3(0, 0, 1), overrideHandler);
+        const proxyDirection = new Proxy(_default.direction.clone(), overrideHandler);
         this.direction = proxyDirection;
 
         const dir = this.direction.clone().normalize();
@@ -46,9 +52,9 @@ export class Beam extends THREE.Object3D {
         this.helper = new THREE.ArrowHelper(dir, origin, length, hex);
         this.add(this.helper);
 
-        this.position.set(0, 0, -1);
+        this.position.copy(_default.position);
 
-        this.energy = 0;
+        this.energy = _default.energy;
 
         const overrideHandlerThis = {
             set: (target: Beam, prop: keyof Beam, value: unknown) => {
@@ -68,15 +74,14 @@ export class Beam extends THREE.Object3D {
 
 
     reset() {
-        this.position.copy(new Vector3(0, 0, -1));
         this.rotation.copy(new Euler());
-        this.direction.copy(new Vector3(0, 0, 1));
-        this.energy = 0;
+        this.position.copy(_default.position);
+        this.direction.copy(_default.direction);
+        this.energy = _default.energy;
     }
 
     toJSON() {
-
-        let jsonObject: BeamJSON = {
+        const jsonObject: BeamJSON = {
             type: this.type,
             position: this.position.toArray(),
             direction: this.direction.toArray(),
@@ -94,9 +99,7 @@ export class Beam extends THREE.Object3D {
     }
 
     static fromJSON(editor: Editor, data: BeamJSON) {
-
         return new Beam(editor).fromJSON(data);
-
     }
 
 }

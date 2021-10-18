@@ -5,6 +5,25 @@ import { UINumber, UIRow, UIText } from './libs/ui.js';
 
 export function BeamPanel(editor, beam) {
 
+	function updateUI() {
+
+		dirX.setValue(beam.direction.x);
+		dirY.setValue(beam.direction.y);
+		dirZ.setValue(beam.direction.z);
+
+		energy.setValue(beam.energy);
+	}
+
+	function update() {
+		const direction = new THREE.Vector3(dirX.getValue(), dirY.getValue(), dirZ.getValue());
+
+		beam.direction.copy(direction);
+
+		beam.energy = energy.getValue();
+
+		updateUI();
+	}
+
 
 	const container = new UIRow();
 
@@ -23,41 +42,19 @@ export function BeamPanel(editor, beam) {
 
 	const energyRow = new UIRow();
 	const energy = new UINumber().onChange(update);
-	const energyText = new UIText('Energy').setWidth('90px');
+	energy.min = 0;
+	const energyText = new UIText('Energy [MeV]').setWidth('90px');
 
 	energyRow.add(energyText);
 	energyRow.add(energy);
 	container.add(energyRow);
 
 
-
 	updateUI();
-
 
 	//
 
-	function update() {
-		const direction = new THREE.Vector3(dirX.getValue(), dirY.getValue(), dirZ.getValue());
-
-		beam.direction.copy(direction);
-
-		beam.energy = energy.getValue();
-
-		updateUI();
-	}
-
-	function updateUI() {
-
-		dirX.setValue(beam.direction.x);
-		dirY.setValue(beam.direction.y);
-		dirZ.setValue(beam.direction.z);
-
-		energy.setValue(beam.energy);
-	}
-
-
-
-	editor.signals.objectChanged.add(function (object) {
+	editor.signals.objectChanged.add((object) => {
 
 		if (isBeam(object)) {
 			updateUI();

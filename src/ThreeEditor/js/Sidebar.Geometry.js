@@ -69,7 +69,7 @@ function SidebarGeometry(editor) {
 		let zonePanel = new UISpan();
 		zonePanel.setId("zonePanel");
 
-		return function buildZonesManager() {
+		return () => {
 
 			var object = editor.selected;
 
