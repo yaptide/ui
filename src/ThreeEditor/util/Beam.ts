@@ -23,7 +23,7 @@ export class Beam extends THREE.Object3D {
 
     constructor(editor: Editor) {
         super();
-        this.type = 'Beam' as any;
+        this.type = 'Beam';
         this.name = 'Beam';
         this.editor = editor;
 

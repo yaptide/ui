@@ -50,7 +50,7 @@ export class BoundingZone extends THREE.Object3D {
 
     constructor(editor: Editor, { box, color = 0xff0000, marginMultiplier = 1.1 }: BoundingZoneParams = {}) {
         super();
-        this.type = 'BoundingZone' as any;
+        this.type = 'BoundingZone';
         this.name = 'World Zone';
         this.editor = editor;
 
