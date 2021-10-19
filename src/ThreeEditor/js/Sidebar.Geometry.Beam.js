@@ -14,7 +14,7 @@ export function BeamPanel(editor, beam) {
 	const dirY = new UINumber().setPrecision(3).setWidth('50px').onChange(update);
 	const dirZ = new UINumber().setPrecision(3).setWidth('50px').onChange(update);
 
-	directionRow.add(new UIText('Direction ' + editor.unit.name).setWidth('90px'));
+	directionRow.add(new UIText(`Direction ${editor.unit.name}`).setWidth('90px'));
 	directionRow.add(dirX, dirY, dirZ);
 	container.add(directionRow);
 
