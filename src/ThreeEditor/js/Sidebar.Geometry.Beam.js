@@ -22,7 +22,7 @@ export function BeamPanel(editor, beam) {
 
 	const energyRow = new UIRow();
 	const energy = new UINumber().setPrecision(3).onChange(update);
-	energy.min = .001;
+	energy.min = 1e-12;  // set minimum energy to 1ueV (as lower limit of reasonable cross-section used in neutron transport)
 	const energyText = new UIText('Energy [MeV]').setWidth('90px');
 
 	energyRow.add(energyText);
