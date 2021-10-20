@@ -26,9 +26,24 @@ export class Beam extends THREE.Object3D {
     energy: number;
     direction: Vector3;
 
+    private proxy: Beam; // use proxy if you want inform about changes 
+
     readonly debouncedDispatchChanged = debounce(200, false, () =>
-        this.editor.signals.objectChanged.dispatch(this)
+        this.editor.signals.objectChanged.dispatch(this.proxy)
     );
+
+    private overrideHandler = {
+        set: (target: Beam, prop: keyof Beam, value: unknown) => {
+            const result = Reflect.set(target, prop, value);
+
+            const informChange: (keyof Beam)[] = ['direction', 'energy'];
+            if (informChange.includes(prop)) {
+                this.debouncedDispatchChanged();
+            }
+
+            return result;
+        },
+    };
 
     constructor(editor: Editor) {
         super();
@@ -36,7 +51,7 @@ export class Beam extends THREE.Object3D {
         this.name = 'Beam';
         this.editor = editor;
 
-        const overrideHandler = {
+        const overrideHandlerDirection = {
             set: (target: THREE.Vector3, prop: keyof THREE.Vector3, value: unknown) => {
                 const result = Reflect.set(target, prop, value);
                 this.helper.setDirection(target.clone().normalize());
@@ -45,7 +60,7 @@ export class Beam extends THREE.Object3D {
             },
         };
 
-        const proxyDirection = new Proxy(_default.direction.clone(), overrideHandler);
+        const proxyDirection = new Proxy(_default.direction.clone(), overrideHandlerDirection);
         this.direction = proxyDirection;
 
         this.position.copy(_default.position);
@@ -53,21 +68,11 @@ export class Beam extends THREE.Object3D {
 
         this.helper = this.initHelper();
 
-        const overrideHandlerThis = {
-            set: (target: Beam, prop: keyof Beam, value: unknown) => {
-                const result = Reflect.set(target, prop, value);
+        this.proxy = new Proxy(this, this.overrideHandler);  
 
-                const informChange: (keyof Beam)[] = ['direction', 'energy'];
-                if (informChange.includes(prop)) {
-                    this.debouncedDispatchChanged();
-                }
-
-                return result;
-            },
-        };
-
-        return new Proxy(this, overrideHandlerThis)
+        return this.proxy;
     }
+
 
     initHelper() {
         const dir = this.direction.clone().normalize();
@@ -121,6 +126,10 @@ export class Beam extends THREE.Object3D {
         this.position.copy(_default.position);
         this.direction.copy(_default.direction);
         this.energy = _default.energy;
+    }
+
+    copy(source: this, recursive = true) {
+        return new Proxy(super.copy(source, recursive), this.overrideHandler) as this;
     }
 
     toJSON() {

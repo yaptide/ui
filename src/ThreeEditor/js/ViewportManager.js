@@ -31,51 +31,51 @@ import { Viewport } from './Viewport.js';
 
 function ViewManager(editor) {
 
-	var signals = editor.signals;
+	const signals = editor.signals;
 
-	var container = new UIPanel();
+	const container = new UIPanel();
 	container.setId('viewport');
 	container.setPosition('absolute');
 
 	//
 	let currentLayout = editor.config.getKey('layout');
 
-	var renderer = null;
-	var pmremGenerator = null;
+	let renderer = null;
+	let pmremGenerator = null;
 
-	var camera = editor.camera;
-	var scene = editor.scene;
-	var zonesManager = editor.zonesManager;
-	var sceneHelpers = editor.sceneHelpers;
+	const camera = editor.camera;
+	const scene = editor.scene;
+	const zonesManager = editor.zonesManager;
+	const sceneHelpers = editor.sceneHelpers;
 
 
-	var objects = [];
+	const objects = [];
 
 	// helpers
 
-	var grid = new THREE.Group();
+	const grid = new THREE.Group();
 	sceneHelpers.add(grid);
 
-	var minorGrid = new THREE.GridHelper(100, 100, 0x888888);
+	const minorGrid = new THREE.GridHelper(100, 100, 0x888888);
 	minorGrid.material.color.setHex(0x888888); // 0x888888 -> light grey (53% lightness)
 	minorGrid.material.vertexColors = false;
 	grid.add(minorGrid);
 
-	var majorGrid = new THREE.GridHelper(100, 10, 0x222222);
+	const majorGrid = new THREE.GridHelper(100, 10, 0x222222);
 	majorGrid.material.color.setHex(0x222222); // 0x222222 -> very dark grey (13% lightness)
 	majorGrid.material.depthFunc = THREE.AlwaysDepth;
 	majorGrid.material.vertexColors = false;
 	grid.add(majorGrid);
 
 
-	var planeHelpers = new THREE.Group();
+	const planeHelpers = new THREE.Group();
 	sceneHelpers.add(planeHelpers);
 
 	//
 
-	var box = new THREE.Box3();
+	const box = new THREE.Box3();
 
-	var selectionBox = new THREE.BoxHelper();
+	const selectionBox = new THREE.BoxHelper();
 	selectionBox.material.depthTest = false;
 	selectionBox.material.transparent = true;
 	selectionBox.visible = false;
@@ -84,7 +84,7 @@ function ViewManager(editor) {
 
 	// Four Views Layout 
 
-	let viewsGrid = new UIDiv();
+	const viewsGrid = new UIDiv();
 	viewsGrid.setClass("grid");
 	viewsGrid.setPosition("absolute");
 	viewsGrid.setWidth("100%");
@@ -92,7 +92,7 @@ function ViewManager(editor) {
 	viewsGrid.setBackgroundColor("#aaaaaa"); // aaaaaa -> dark grey (67% lightness)
 	container.add(viewsGrid);
 
-	let viewManagerProps = {
+	const viewManagerProps = {
 		objects,
 		grid,
 		planeHelpers,
@@ -117,7 +117,7 @@ function ViewManager(editor) {
 
 	// --------------- first view, upper left, XY plane ----------------------------------
 
-	let configPlaneXY = {
+	const configPlaneXY = {
 		orthographic: true,
 
 		// camera looking from above XY plane
@@ -126,7 +126,7 @@ function ViewManager(editor) {
 		// default polar/theta rotation keep OY axis (default "up") parallel to the vertical axis of the screen
 		// to avoid gimbal lock in XY plane view with correct orientation we select default "up" ax OZ
 		cameraUp: new THREE.Vector3(0, 0, 1),
-		
+
 		// default clipping plane being XY plane (normal vector pointing down along Z axis)
 		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.),
 
@@ -141,10 +141,10 @@ function ViewManager(editor) {
 		// therefore we use Euler angles (90*, 0*, 0*)
 		gridRotation: new THREE.Euler(Math.PI / 2, 0, 0),
 	};
-	let viewPlaneXY = new Viewport("ViewPanelXY", editor, viewManagerProps, configPlaneXY);
+	const viewPlaneXY = new Viewport("ViewPanelXY", editor, viewManagerProps, configPlaneXY);
 	viewsGrid.add(viewPlaneXY.container);
 
-    // fix the view to being from positive part of Z axis: phi = 0*, theta = 0*
+	// fix the view to being from positive part of Z axis: phi = 0*, theta = 0*
 	// for threejs spherical coordinates, see comment in top part of this file
 	// here (up = "OZ", phi = 0, theta = 0) axis orientation is following:
 	//    X pointing right
@@ -155,18 +155,18 @@ function ViewManager(editor) {
 	viewPlaneXY.controls.maxAzimuthAngle = viewPlaneXY.controls.minAzimuthAngle = 0;
 	viewPlaneXY.controls.update();
 
-	let gutterCol = new UIDiv().setClass("gutter-col gutter-col-1");
+	const gutterCol = new UIDiv().setClass("gutter-col gutter-col-1");
 	viewsGrid.add(gutterCol);
 
 	// --------------- second view, upper right, full 3D ----------------------------------
 
-	let config3D = {
+	const config3D = {
 		showPlaneHelpers: true,
 
 		// camera looking from the middle of X>0,Y>0,Z>0 quadrant
 		cameraPosition: new THREE.Vector3(10, 10, 10),
 	};
-	let view3D = new Viewport("ViewPanel3D", editor, viewManagerProps, config3D);
+	const view3D = new Viewport("ViewPanel3D", editor, viewManagerProps, config3D);
 	viewsGrid.add(view3D.container);
 
 	// --------------- third view, lower left, XZ plane ----------------------------------
@@ -174,7 +174,7 @@ function ViewManager(editor) {
 	// note we do not specify grid rotation here, as it was done in XY and YZ planes
 	// by default grid plane lies within XZ plane which is consistent with current plane
 	// (phi = 90*, theta = any in threejs spherical coordinates, see comment in top part of this file)
-	let configPlaneXZ = {
+	const configPlaneXZ = {
 		orthographic: true,
 
 		// camera looking from above XZ plane
@@ -187,7 +187,7 @@ function ViewManager(editor) {
 		// 0xc2ee00 - Lime color (between green and yellow)
 		planeHelperColor: 0xc2ee00,
 	};
-	let viewPlaneXZ = new Viewport("ViewPanelY", editor, viewManagerProps, configPlaneXZ);
+	const viewPlaneXZ = new Viewport("ViewPanelY", editor, viewManagerProps, configPlaneXZ);
 	viewsGrid.add(viewPlaneXZ.container);
 
 	// fix the view to being from positive part of Y axis: phi = 0*, theta = 270*
@@ -205,12 +205,12 @@ function ViewManager(editor) {
 	viewPlaneXZ.controls.maxAzimuthAngle = viewPlaneXZ.controls.minAzimuthAngle = 3. * Math.PI / 2.0;
 	viewPlaneXZ.controls.update();
 
-	let gutterRow = new UIDiv().setClass("gutter-row gutter-row-1");
+	const gutterRow = new UIDiv().setClass("gutter-row gutter-row-1");
 	viewsGrid.add(gutterRow);
 
 	// --------------- fourth view, lower right, YZ plane ----------------------------------
 
-	let configPlaneYZ = {
+	const configPlaneYZ = {
 		orthographic: true,
 
 		// camera looking from above YZ plane
@@ -233,7 +233,7 @@ function ViewManager(editor) {
 		// therefore we use Euler angles (0*, 0*, 90*)
 		gridRotation: new THREE.Euler(0, 0, Math.PI / 2),
 	};
-	let viewPlaneYZ = new Viewport("ViewPanelX", editor, viewManagerProps, configPlaneYZ);
+	const viewPlaneYZ = new Viewport("ViewPanelX", editor, viewManagerProps, configPlaneYZ);
 	viewsGrid.add(viewPlaneYZ.container);
 
 	// fix the view to being from positive part of X axis: phi = 0*, theta = 180*
@@ -270,24 +270,24 @@ function ViewManager(editor) {
 		}
 	});
 
-	let fourViews = [viewPlaneXY, view3D, viewPlaneXZ, viewPlaneYZ];
+	const fourViews = [viewPlaneXY, view3D, viewPlaneXZ, viewPlaneYZ];
 
 	// Single View Layout 
 
-	let viewSingle = new UIDiv();
+	const viewSingle = new UIDiv();
 	viewSingle.setPosition("absolute");
 	viewSingle.setWidth("100%");
 	viewSingle.setHeight("100%");
 	viewSingle.setBackgroundColor("#aaaaaa");
 	container.add(viewSingle);
 
-	let viewport = new Viewport("ViewPanel", editor, viewManagerProps);
+	const viewport = new Viewport("ViewPanel", editor, viewManagerProps);
 	viewport.container.setPosition("absolute");
 	viewport.container.setWidth("100%");
 	viewport.container.setHeight("100%");
 	viewSingle.add(viewport.container);
 
-	let singleView = [viewport];
+	const singleView = [viewport];
 
 	let views = singleView;
 
@@ -350,7 +350,7 @@ function ViewManager(editor) {
 
 		if (window.matchMedia) {
 
-			var mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+			const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 			mediaQuery.addListener(function (event) {
 
 				renderer.setClearColor(event.matches ? 0x333333 : 0xaaaaaa);
@@ -389,12 +389,14 @@ function ViewManager(editor) {
 
 	});
 
+	const canBoxBeUpdated = (object) => object !== null && object !== scene && object !== camera && object !== zonesManager;
+
+
 	signals.objectSelected.add(function (object) {
 
 		selectionBox.visible = false;
 
-
-		if (object !== null && object !== scene && object !== camera && object !== zonesManager) {
+		if (canBoxBeUpdated(object)) {
 
 			box.setFromObject(object);
 
@@ -475,7 +477,7 @@ function ViewManager(editor) {
 
 	signals.helperAdded.add(function (object) {
 
-		var picker = object.getObjectByName('picker');
+		const picker = object.getObjectByName('picker');
 
 		if (picker !== undefined) {
 
@@ -487,7 +489,7 @@ function ViewManager(editor) {
 
 	signals.helperRemoved.add(function (object) {
 
-		var picker = object.getObjectByName('picker');
+		const picker = object.getObjectByName('picker');
 
 		if (picker !== undefined) {
 
@@ -604,7 +606,7 @@ function ViewManager(editor) {
 
 	signals.viewportCameraChanged.add(function () {
 
-		var viewportCamera = editor.viewportCamera;
+		const viewportCamera = editor.viewportCamera;
 
 		if (viewportCamera.isPerspectiveCamera) {
 
@@ -691,14 +693,14 @@ function ViewManager(editor) {
 
 	// animations
 
-	var clock = new THREE.Clock(); // only used for animations
+	const clock = new THREE.Clock(); // only used for animations
 
 	function animate() {
 
-		var mixer = editor.mixer;
-		var delta = clock.getDelta();
+		const mixer = editor.mixer;
+		const delta = clock.getDelta();
 
-		var needsUpdate = false;
+		let needsUpdate = false;
 
 		if (mixer.stats.actions.inUse > 0) {
 
@@ -728,6 +730,8 @@ function ViewManager(editor) {
 		editor.signals.sceneRendered.dispatch(endTime - startTime);
 
 	}
+
+
 
 	return container;
 
