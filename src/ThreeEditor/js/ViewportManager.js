@@ -31,7 +31,7 @@ import { Viewport } from './Viewport.js';
 
 function ViewManager(editor) {
 
-	const signals = editor.signals;
+	const { camera, scene, signals, zonesManager, sceneHelpers } = editor;
 
 	const container = new UIPanel();
 	container.setId('viewport');
@@ -42,12 +42,6 @@ function ViewManager(editor) {
 
 	let renderer = null;
 	let pmremGenerator = null;
-
-	const camera = editor.camera;
-	const scene = editor.scene;
-	const zonesManager = editor.zonesManager;
-	const sceneHelpers = editor.sceneHelpers;
-
 
 	const objects = [];
 
@@ -606,7 +600,7 @@ function ViewManager(editor) {
 
 	signals.viewportCameraChanged.add(function () {
 
-		const viewportCamera = editor.viewportCamera;
+		const { viewportCamera } = editor;
 
 		if (viewportCamera.isPerspectiveCamera) {
 
@@ -697,7 +691,7 @@ function ViewManager(editor) {
 
 	function animate() {
 
-		const mixer = editor.mixer;
+		const { mixer } = editor;
 		const delta = clock.getDelta();
 
 		let needsUpdate = false;
