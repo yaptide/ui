@@ -45,7 +45,8 @@ export function BeamPanel(editor, beam) {
 	function update() {
 		const direction = new THREE.Vector3(dirX.getValue(), dirY.getValue(), dirZ.getValue());
 
-		beam.direction.copy(direction);
+		if (direction.length() > 0)
+			beam.direction.copy(direction);
 
 		beam.energy = energy.getValue();
 
