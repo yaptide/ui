@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import Worker from 'worker-loader!./CSGWorker';
 import { Editor } from '../../js/Editor';
 import { BoundingZone, BoundingZoneJSON } from '../BoundingZone';
+import { ISimulationObject } from '../SimulationObject';
 import { ICSGWorker } from './CSGWorker';
 import { CSGZone, CSGZoneJSON } from './CSGZone';
 
@@ -15,7 +16,10 @@ interface CSGManagerJSON {
     boundingZone: BoundingZoneJSON
 }
 
-export class CSGManager extends THREE.Scene {
+export class CSGManager extends THREE.Scene implements ISimulationObject {
+    notRemovable = true;
+    notMoveable = true;
+
     editor: Editor;
     worker: Comlink.Remote<ICSGWorker>;
     boundingZone: BoundingZone;
@@ -28,7 +32,7 @@ export class CSGManager extends THREE.Scene {
         this.editor = editor;
 
         this.boundingZone = new BoundingZone(editor);
-        this.boundingZone.addToSceneHelpers();
+        this.boundingZone.addHelpersToSceneHelpers();
         this.boundingZone.name = "World Zone"
 
         this.editor.signals.zoneEmpty.add((zone: CSGZone) => this.handleZoneEmpty(zone));
@@ -95,9 +99,9 @@ export class CSGManager extends THREE.Scene {
 
         });
 
-        this.boundingZone.removeFromSceneHelpers();
+        this.boundingZone.removeHelpersFromSceneHelpers();
         this.boundingZone = BoundingZone.fromJSON(this.editor, data.boundingZone);
-        this.boundingZone.addToSceneHelpers();
+        this.boundingZone.addHelpersToSceneHelpers();
 
         return this;
     }
@@ -108,9 +112,9 @@ export class CSGManager extends THREE.Scene {
 
     loadFrom(manager: CSGManager) {
         this.children = manager.children;
-        this.boundingZone.removeFromSceneHelpers();
+        this.boundingZone.removeHelpersFromSceneHelpers();
         this.boundingZone = manager.boundingZone;
-        this.boundingZone.addToSceneHelpers();
+        this.boundingZone.addHelpersToSceneHelpers();
     }
 
     clone(recursive: boolean) {

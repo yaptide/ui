@@ -209,7 +209,7 @@ Editor.prototype = {
 
 	},
 
-	moveObject: function (object, parent, before) {
+	moveObject: function (object, parent, before) {	
 
 		if (parent === undefined) {
 
@@ -242,7 +242,7 @@ Editor.prototype = {
 
 	removeObject: function (object) {
 
-		if (object.parent === null) return; // avoid deleting the camera or scene
+		if (object.parent === null ) return; // avoid deleting the camera or scene
 
 		var scope = this;
 

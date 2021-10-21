@@ -6,6 +6,7 @@ import { Editor } from '../js/Editor';
 import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
+import { ISimulationObject } from './SimulationObject';
 
 export interface BeamJSON {
     type: string,
@@ -20,7 +21,10 @@ const _default = {
     energy: 150,
 }
 
-export class Beam extends THREE.Object3D {
+export class Beam extends THREE.Object3D implements ISimulationObject {
+    notRemovable = true;
+    notMoveable = true;
+    
     editor: Editor;
     helper: THREE.ArrowHelper;
 

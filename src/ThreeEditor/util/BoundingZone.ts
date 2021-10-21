@@ -4,6 +4,7 @@ import { Color, LineBasicMaterial, MeshBasicMaterial, Object3D, Vector3 } from '
 import { debounce } from 'throttle-debounce';
 
 import { Editor } from '../js/Editor';
+import { ISimulationObject } from './SimulationObject';
 
 
 export interface BoundingZoneJSON {
@@ -32,7 +33,10 @@ interface BoundingZoneParams {
     marginMultiplier?: number
 }
 
-export class BoundingZone extends THREE.Object3D {
+export class BoundingZone extends THREE.Object3D implements ISimulationObject {
+    notRemovable = true;
+    notMoveable = true;
+    
     editor: Editor;
     box: THREE.Box3;
     marginMultiplier: number;
@@ -90,6 +94,7 @@ export class BoundingZone extends THREE.Object3D {
         this.editor.signals.sceneGraphChanged.add((object: Object3D) => handleSignal(object));
 
     }
+
 
     get geometryType() {
         return this._geometryType;
@@ -172,11 +177,11 @@ export class BoundingZone extends THREE.Object3D {
         this.updateBox((box) => box.setFromCenterAndSize(new Vector3(), new Vector3()));
     }
 
-    addToSceneHelpers() {
+    addHelpersToSceneHelpers() {
         this.getAllHelpers().forEach(e => this.editor.sceneHelpers.add(e));
     }
 
-    removeFromSceneHelpers() {
+    removeHelpersFromSceneHelpers() {
         this.getAllHelpers().forEach(e => this.editor.sceneHelpers.remove(e));
     }
 
