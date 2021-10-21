@@ -2,7 +2,7 @@ import * as Comlink from 'comlink';
 import * as THREE from 'three';
 
 export interface ICSGWorker {
-    parse: (object: string) => unknown;
+    parse: (json: string) => unknown;
 }
 
 class CSGWorker implements ICSGWorker {
