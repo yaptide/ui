@@ -112,7 +112,6 @@ export function initEditor(container) {
         
         //YAPTIDE signals
         signals.CSGManagerStateChanged.add(saveState);
-        signals.simulationMaterialChanged.add(saveState);
     });
 
     //

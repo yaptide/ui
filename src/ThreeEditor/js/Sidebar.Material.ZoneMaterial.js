@@ -23,8 +23,7 @@ function makeSidebarMaterialOptions(container, editor) {
 
 	const signals = editor.signals;
 	const strings = editor.strings;
-	const materials = editor.simulationMaterials;
-	const materialOptions = editor.simulationMaterialOptions;
+	const materialOptions = editor.materialsManager.materialOptions;
 
 	let currentObject;
 
@@ -196,9 +195,9 @@ function makeSidebarMaterialOptions(container, editor) {
 	});
 
 	signals.materialChanged.add((material) => {
+		console.warn("Material changed", material)
 		if(material?.isSimulationMaterial){
-			editor.changedMaterials[material.name] = material;
-			signals.simulationMaterialChanged.dispatch();
+			editor.materialsManager.materials[material.name] = material;
 		}
 		refreshUI()
 	});

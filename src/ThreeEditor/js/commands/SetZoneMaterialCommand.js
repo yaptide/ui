@@ -25,9 +25,7 @@ class SetZoneMaterialCommand extends Command {
 
 	execute() {
 
-        let material = this.editor.simulationMaterials[this.newMaterialName] 
-                    ?? Object.entries(this.editor.simulationMaterials)[0][1];
-
+        let material = this.editor.materialsManager.materials[this.newMaterialName];
 		this.editor.setObjectMaterial( this.object, 0, material );
 		this.editor.signals.materialChanged.dispatch( material );
 		this.editor.signals.objectChanged.dispatch( this.object );
@@ -36,9 +34,7 @@ class SetZoneMaterialCommand extends Command {
 
 	undo() {
 
-        let material = this.editor.simulationMaterials[this.oldMaterialName] 
-                    ?? Object.entries(this.editor.simulationMaterials)[0][1];
-
+        let material = this.editor.materialsManager.materials[this.oldMaterialName];
 		this.editor.setObjectMaterial( this.object, 0, material );
 		this.editor.signals.materialChanged.dispatch( material );
 		this.editor.signals.objectChanged.dispatch( this.object );
