@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { Euler, Vector3 } from 'three';
 import { debounce } from 'throttle-debounce';
 import { Editor } from '../js/Editor';
+// Import of 'lines' from examples subfolder follows the official guidelines of threejs.editor (see https://threejs.org/docs/#manual/en/introduction/Installation)
 import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
