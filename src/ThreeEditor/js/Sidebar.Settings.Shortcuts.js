@@ -111,7 +111,7 @@ function SidebarSettingsShortcuts(editor) {
 
 				var object = editor.selected;
 
-				if (object === null) return;
+				if (object === null || object.notRemovable === true) return;
 
 				var parent = object.parent;
 				if (parent !== null) {

@@ -141,7 +141,7 @@ function MenubarEdit(editor) {
 
 		var object = editor.selected;
 
-		if (object !== null && object.parent !== null) {
+		if (object !== null && object.parent !== null && object.notRemovable !== true) {
 
 			if (isCSGZone(object))
 				editor.execute(new RemoveZoneCommand(editor, object));

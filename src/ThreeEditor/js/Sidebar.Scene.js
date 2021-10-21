@@ -297,7 +297,9 @@ function SidebarScene(editor) {
 		options.push(buildOption(zonesManager, false));
 		addObjects(zonesManager.children, 0);
 
-		options.push(buildOption(boundingZone, false))
+		options.push(buildOption(boundingZone, false));
+
+		options.push(buildOption(editor.beam, false));
 		
 		outliner.setOptions(options);
 
@@ -396,7 +398,7 @@ function SidebarScene(editor) {
 			let needsRefresh = false;
 			let parent = object.parent;
 
-			while (parent !== editor.scene && parent !== editor.zonesManager && parent !== editor.zonesManager.boundingZones) {
+			while (parent !== editor.scene && parent !== editor.zonesManager ) {
 				if (nodeStates.get(parent) !== true) {
 					nodeStates.set(parent, true);
 					needsRefresh = true;

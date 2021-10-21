@@ -263,4 +263,4 @@ export class CSGZone extends THREE.Mesh {
         return zone;
     }
 }
-export const isCSGZone = (x: any): x is CSGZone => x instanceof CSGZone;
+export const isCSGZone = (x: unknown): x is CSGZone => x instanceof CSGZone;

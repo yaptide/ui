@@ -8,6 +8,7 @@ import { Strings } from './Strings.js';
 import { Storage as _Storage } from './Storage.js';
 import { CSGManager } from '../util/CSG/CSGManager';
 import { isCSGZone } from '../util/CSG/CSGZone';
+import { Beam } from '../util/Beam';
 
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
@@ -125,6 +126,9 @@ function Editor() {
 
 	this.zonesManager = new CSGManager(this); //CSG Manager
 
+	this.beam = new Beam(this);
+	this.sceneHelpers.add(this.beam);
+
 	this.object = {};
 	this.geometries = {};
 	this.materials = {};
@@ -205,7 +209,7 @@ Editor.prototype = {
 
 	},
 
-	moveObject: function (object, parent, before) {
+	moveObject: function (object, parent, before) {	
 
 		if (parent === undefined) {
 
@@ -238,7 +242,7 @@ Editor.prototype = {
 
 	removeObject: function (object) {
 
-		if (object.parent === null) return; // avoid deleting the camera or scene
+		if (object.parent === null ) return; // avoid deleting the camera or scene
 
 		var scope = this;
 
@@ -579,9 +583,11 @@ Editor.prototype = {
 
 		}
 
-		var object = this.scene.getObjectById(id) ?? this.zonesManager.getObjectById(id);
-		this.select(object);
+		const objectCollections = [this.scene, this.zonesManager, this.beam];
 
+		const object = objectCollections.map((e) => e.getObjectById(id)).find(e => e !== undefined);
+
+		this.select(object);
 	},
 
 	selectByUuid: function (uuid) {
@@ -644,6 +650,7 @@ Editor.prototype = {
 		}
 
 		this.zonesManager.reset();
+		this.beam.reset();
 
 		this.geometries = {};
 		this.materials = {};
@@ -677,7 +684,9 @@ Editor.prototype = {
 		this.setScene(await loader.parseAsync(json.scene));
 
 		const zonesManager = CSGManager.fromJSON(this, json.zonesManager); // CSGManager must be loaded after scene 		
-		this.zonesManager.loadFrom(zonesManager); // CSGManager must be loaded to not lose reference in components 		
+		this.zonesManager.loadFrom(zonesManager); // CSGManager must be loaded in order not to lose reference in components 
+
+		this.beam.fromJSON(json.beam);
 
 		this.signals.sceneGraphChanged.dispatch();
 		this.signals.loadedFromJSON.dispatch(this);
@@ -722,8 +731,8 @@ Editor.prototype = {
 			scene: this.scene.toJSON(),
 			scripts: this.scripts,
 			history: this.history.toJSON(),
-			zonesManager: this.zonesManager.toJSON() // serialize CSGManager
-
+			zonesManager: this.zonesManager.toJSON(), // serialize CSGManager
+			beam: this.beam.toJSON()
 		};
 
 	},
