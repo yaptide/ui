@@ -7,7 +7,7 @@ import ZoneMaterial from './Sidebar.Material.ZoneMaterial.js';
 
 function SidebarProperties(editor) {
 
-	let { strings, signals } = editor.strings;
+	const { strings, signals } = editor;
 
 	var container = new UITabbedPanel();
 	var material = new SidebarMaterial(editor);
