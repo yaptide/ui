@@ -120,24 +120,24 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
         return obj[geometryType];
     }
 
-    canCalculate() {
+    canCalculate(): boolean  {
         return this._geometryType === 'box';
     }
 
-    calculate() {
+    calculate(): void  {
         if (!this.canCalculate()) return;
 
         this.setBoxFromObject(this.editor.scene);
     }
 
-    setBoxFromObject(object: THREE.Object3D) {
+    setBoxFromObject(object: THREE.Object3D): void  {
         this.updateBox((box) => {
             box.setFromObject(object);
             this.addSafetyMarginToBox();
         });
     }
 
-    setFromCenterAndSize(center: THREE.Vector3, size: THREE.Vector3) {
+    setFromCenterAndSize(center: THREE.Vector3, size: THREE.Vector3): void  {
         this.updateBox((box) => {
             box.setFromCenterAndSize(center, size);
 
@@ -149,12 +149,12 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
         });
     }
 
-    updateBox(updateFunction: (box: THREE.Box3) => void) {
+    updateBox(updateFunction: (box: THREE.Box3) => void): void  {
         updateFunction(this.box);
         this.editor.signals.objectChanged.dispatch(this);
     }
 
-    makeCubeFromBox() {
+    makeCubeFromBox(): void  {
         let size = this.box.getSize(new Vector3());
         let maxSize = Math.max(size.x, size.y, size.z);
 
@@ -163,7 +163,7 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
         this.box.setFromCenterAndSize(this.box.getCenter(new Vector3()), size);
     }
 
-    addSafetyMarginToBox() {
+    addSafetyMarginToBox(): void  {
         let size = this.box.getSize(new Vector3());
 
         size.multiplyScalar(this.marginMultiplier);
@@ -171,17 +171,17 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
         this.box.setFromCenterAndSize(this.box.getCenter(new Vector3()), size);
     }
 
-    reset({ color = 0xff0000, name = 'World Zone' } = {}) {
+    reset({ color = 0xff0000, name = 'World Zone' } = {}): void  {
         this.material.color.set(color);
         this.name = name;
         this.updateBox((box) => box.setFromCenterAndSize(new Vector3(), new Vector3()));
     }
 
-    addHelpersToSceneHelpers() {
+    addHelpersToSceneHelpers(): void  {
         this.getAllHelpers().forEach(e => this.editor.sceneHelpers.add(e));
     }
 
-    removeHelpersFromSceneHelpers() {
+    removeHelpersFromSceneHelpers(): void  {
         this.getAllHelpers().forEach(e => this.editor.sceneHelpers.remove(e));
     }
 

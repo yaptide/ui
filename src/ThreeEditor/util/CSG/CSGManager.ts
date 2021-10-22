@@ -110,7 +110,7 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
         return new CSGManager(editor).fromJSON(data);
     }
 
-    loadFrom(manager: CSGManager) {
+    loadFrom(manager: CSGManager): void  {
         this.children = manager.children;
         this.boundingZone.removeHelpersFromSceneHelpers();
         this.boundingZone = manager.boundingZone;
@@ -139,7 +139,7 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
         return this.boundingZone.getObjectById(id) ?? super.getObjectById(id);
     }
 
-    handleZoneEmpty(zone: CSGZone) {
+    handleZoneEmpty(zone: CSGZone): void  {
         console.log("handleZoneEmpty");
         this.remove(zone);
     }

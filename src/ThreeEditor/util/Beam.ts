@@ -126,7 +126,7 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
     }
 
 
-    reset() {
+    reset(): void  {
         this.rotation.copy(new Euler());
         this.position.copy(_default.position);
         this.direction.copy(_default.direction);
