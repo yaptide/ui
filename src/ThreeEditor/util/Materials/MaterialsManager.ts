@@ -10,7 +10,7 @@ export interface MaterialsManagerJSON {
     },
     color: number,
     flatShading: boolean,
-    blending?: any,
+    blending?: unknown,
     opacity: number,
     transparent: boolean
 }
@@ -33,7 +33,7 @@ export default class MaterialsManager{
                     ? this.prefabMaterials[ prop ]
                     : this.getDefaultMaterial()));
             },
-            set: (target:Record<string,SimulationMaterial>, prop:string, value:any) => {
+            set: (target:Record<string,SimulationMaterial>, prop:string, value:unknown) => {
 
                 Reflect.set(this.materialOptions, prop, prop);
                 return Reflect.set(target, prop, value);
@@ -77,7 +77,7 @@ export default class MaterialsManager{
         return jsonObject;
     }
     fromJSOM(json:MaterialsManagerJSON[]) {
-        json?.forEach((object,index) => {
+        json?.forEach((object) => {
             this.materials[object.data.name] = new SimulationMaterial(object.data,{
                 color: new THREE.Color(object.color),
                 flatShading: object.flatShading,

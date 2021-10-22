@@ -5,7 +5,7 @@ import { RemoveZoneCommand } from './commands/RemoveZoneCommand.js';
 
 function SidebarSettingsShortcuts(editor) {
 
-	var strings = editor.strings;
+	const { signals, strings, config } = editor;
 
 	var IS_MAC = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 
@@ -14,9 +14,6 @@ function SidebarSettingsShortcuts(editor) {
 		return key.match(/^[A-Za-z0-9]$/i); // Can't use z currently due to undo/redo
 
 	}
-
-	var config = editor.config;
-	var signals = editor.signals;
 
 	var container = new UIPanel();
 

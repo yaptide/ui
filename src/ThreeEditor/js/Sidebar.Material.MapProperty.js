@@ -8,7 +8,7 @@ import { SetMaterialVectorCommand } from './commands/SetMaterialVectorCommand.js
 
 function SidebarMaterialMapProperty( editor, property, name ) {
 
-	const signals = editor.signals;
+	const { signals } = editor;
 
 	const container = new UIRow();
 	container.add( new UIText( name ).setWidth( '90px' ) );

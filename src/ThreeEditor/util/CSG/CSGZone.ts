@@ -6,6 +6,7 @@ import * as Comlink from "comlink";
 import { Editor } from "../../js/Editor";
 import CSG from "../../js/libs/csg/three-csg";
 import { CSGOperation, CSGOperationJSON } from "./CSGOperation";
+import SimulationMaterial from "../Materials/SimulationMaterial";
 
 export interface CSGZoneJSON {
     uuid: string;
@@ -47,7 +48,7 @@ export class CSGZone extends THREE.Mesh {
         unionOperations?: CSGOperation[][],
         subscribedObjectsUuid?: Set<string>, // TODO: replace Set with Map to correctly trace uuids
         uuid?: string,
-        materialName?: string,
+        materialName?: string
     ) {
         super();
         this.type = "Zone";
@@ -59,18 +60,18 @@ export class CSGZone extends THREE.Mesh {
         this.subscribedObjectsUuid = subscribedObjectsUuid || new Set();
         this.unionOperations = unionOperations
             ? (() => {
-                // If operations are specified, we have to populate set of subscribed UUID's
-                subscribedObjectsUuid ||
-                    unionOperations.forEach((op1) =>
-                        op1
-                            .map((op2) => op2.object.uuid)
-                            .forEach(
-                                this.subscribedObjectsUuid.add,
-                                this.subscribedObjectsUuid
-                            )
-                    );
-                return unionOperations;
-            })()
+                  // If operations are specified, we have to populate set of subscribed UUID's
+                  subscribedObjectsUuid ||
+                      unionOperations.forEach((op1) =>
+                          op1
+                              .map((op2) => op2.object.uuid)
+                              .forEach(
+                                  this.subscribedObjectsUuid.add,
+                                  this.subscribedObjectsUuid
+                              )
+                      );
+                  return unionOperations;
+              })()
             : [];
 
         // If operations are specified, we have to generate fist geometry manually.
@@ -86,7 +87,7 @@ export class CSGZone extends THREE.Mesh {
             this.editor,
             this.name,
             this.unionOperations,
-            this.subscribedObjectsUuid,
+            this.subscribedObjectsUuid
         ).copy(this, recursive) as this;
 
         return clonedZone;
@@ -116,9 +117,9 @@ export class CSGZone extends THREE.Mesh {
 
                 let handleMode = {
                     "left-subtraction": () => lastBsp.subtract(objectBsp),
-                    "intersection": () => lastBsp.intersect(objectBsp),
+                    intersection: () => lastBsp.intersect(objectBsp),
                     "right-subtraction": () => objectBsp.subtract(lastBsp),
-                    "union": () => lastBsp.union(objectBsp),
+                    union: () => lastBsp.union(objectBsp),
                 };
 
                 operationsResultBsp = handleMode[operation.mode]();
@@ -200,10 +201,8 @@ export class CSGZone extends THREE.Mesh {
                     this.removeOperation(unionIndex, index);
             });
 
-            if (operations.length === 0)
-                this.removeUnion(unionIndex);
-            else
-                operations[0].mode = "union"; // ensure that first operation is union
+            if (operations.length === 0) this.removeUnion(unionIndex);
+            else operations[0].mode = "union"; // ensure that first operation is union
         });
 
         if (this.unionOperations.length === 0)
@@ -237,9 +236,13 @@ export class CSGZone extends THREE.Mesh {
             name: this.name,
             unionOperations,
             subscribedObjectsUuid: Array.from(this.subscribedObjectsUuid),
-            materialName: (this.material as THREE.Material).name
+            materialName: (this.material as THREE.Material).name,
         };
         return jsonObject;
+    }
+
+    getSimulationMaterial(): SimulationMaterial {
+        return this.material as SimulationMaterial;
     }
 
     static fromJSON(editor: Editor, data: CSGZoneJSON) {
@@ -249,11 +252,11 @@ export class CSGZone extends THREE.Mesh {
         let subscribedObjectsUuid = Array.isArray(data.subscribedObjectsUuid)
             ? new Set(data.subscribedObjectsUuid)
             : (() => {
-                throw Error(
-                    "SubscribedObjectsId is not array" +
-                    data.subscribedObjectsUuid
-                );
-            })();
+                  throw Error(
+                      "SubscribedObjectsId is not array" +
+                          data.subscribedObjectsUuid
+                  );
+              })();
 
         let zone = new CSGZone(
             editor,

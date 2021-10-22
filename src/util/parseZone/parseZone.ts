@@ -20,11 +20,11 @@ function parseRow(zoneOperationRow:AlgebraRow){
     }
     return "";
 }
-function parseZone(zoneOperationRows: AlgebraRow[]) {
+function parseZone(zoneOperationRows: AlgebraRow[], materialData?:{name: string, id: string}) {
     console.log(zoneOperationRows);
     let result: string = "";
     zoneOperationRows.forEach(el => { result = result.concat(parseRow(el) + " OR") });
-    console.log(result.slice(0, -3));
+    console.log(result.slice(0, -3),materialData);
 }
 
 export { parseZone };

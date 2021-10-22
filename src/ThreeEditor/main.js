@@ -46,7 +46,7 @@ export function initEditor(container) {
 
     editor.storage.init(function () {
 
-        var signals = editor.signals;
+        const { signals } = editor;
 
         editor.storage.get(function (state) {
 
@@ -87,8 +87,8 @@ export function initEditor(container) {
                 editor.signals.savingStarted.dispatch();
 
                 timeout = setTimeout(function () {
-                    
-                    editor.storage.set( editor.toJSON() );
+
+                    editor.storage.set(editor.toJSON());
 
                     editor.signals.savingFinished.dispatch();
 
@@ -109,7 +109,7 @@ export function initEditor(container) {
         signals.sceneGraphChanged.add(saveState);
         signals.scriptChanged.add(saveState);
         signals.historyChanged.add(saveState);
-        
+
         //YAPTIDE signals
         signals.CSGManagerStateChanged.add(saveState);
     });

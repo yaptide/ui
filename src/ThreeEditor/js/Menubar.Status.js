@@ -42,13 +42,13 @@ function MenubarStatus(editor) {
 	});
 	container.add(autosave);
 
-	editor.signals.savingStarted.add(function () {
+	editor.signals.savingStarted.add(() => {
 
 		autosave.text.setTextDecoration('underline');
 
 	});
 
-	editor.signals.savingFinished.add(function () {
+	editor.signals.savingFinished.add(() => {
 
 		autosave.text.setTextDecoration('none');
 

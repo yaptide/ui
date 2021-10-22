@@ -16,13 +16,13 @@ function History(editor) {
 
 	var scope = this;
 
-	this.editor.signals.startPlayer.add(function () {
+	this.editor.signals.startPlayer.add(() => {
 
 		scope.historyDisabled = true;
 
 	});
 
-	this.editor.signals.stopPlayer.add(function () {
+	this.editor.signals.stopPlayer.add(() => {
 
 		scope.historyDisabled = false;
 

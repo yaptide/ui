@@ -64,7 +64,7 @@ function MenubarEdit(editor) {
 	options.add(option);
 
 
-	editor.signals.historyChanged.add(function () {
+	editor.signals.historyChanged.add(() => {
 
 		var history = editor.history;
 

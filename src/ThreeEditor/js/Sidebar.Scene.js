@@ -5,8 +5,7 @@ import { UIOutliner, UITexture } from './libs/ui.three.js';
 
 function SidebarScene(editor) {
 
-	var signals = editor.signals;
-	var strings = editor.strings;
+	const { signals, strings } = editor;
 
 	var container = new UIPanel();
 	container.setBorderTop('0');
@@ -259,11 +258,8 @@ function SidebarScene(editor) {
 
 	function refreshUI() {
 
-		var camera = editor.camera;
-		var scene = editor.scene;
-		var zonesContainer = editor.zonesManager.zonesContainer;
-		var zonesManager = editor.zonesManager;
-		var boundingZone = editor.zonesManager.boundingZone;
+		let { camera, scene } = editor;
+		let { zonesContainer, boundingZone } = editor.zonesManager;
 
 		var options = [];
 
@@ -374,16 +370,19 @@ function SidebarScene(editor) {
 
 	signals.objectChanged.add(refreshUI);
 
-	signals.objectSelected.add(function (object) {
+	signals.objectSelected.add((object) => {
 		if (ignoreObjectSelectedSignal === true) return;
 
 		if (object !== null && object.parent !== null && !object.parent.isCSGZone) {
 
 			let needsRefresh = false;
 			let parent = object.parent;
-			let finalParents = [editor.scene, editor.zonesManager.zonesContainer, editor.zonesManager.boundingZones]
+			let reachedFinalParent = (parent) => {
+				let finalParents = [editor.scene, editor.zonesManager.zonesContainer, editor.zonesManager.boundingZones]
+				return finalParents.some((finalParent) => finalParent === parent)
+			}
 
-			while (finalParents.every((finalParent) => finalParent !== parent)) {
+			while (!reachedFinalParent(parent)) {
 				if (nodeStates.get(parent) !== true) {
 					nodeStates.set(parent, true);
 					needsRefresh = true;

@@ -2,25 +2,24 @@ import { UIPanel, UIButton, UICheckbox } from './libs/ui.js';
 
 function Toolbar(editor) {
 
-	var signals = editor.signals;
-	var strings = editor.strings;
+	const { signals, strings } = editor;
 
 	var container = new UIPanel();
 	container.setId('toolbar');
 
 	// YAPTIDE select mode
-	var select = new UICheckbox( false );
+	var select = new UICheckbox(false);
 	select.dom.title = "select mode"
-	select.onChange( function () {
+	select.onChange(function () {
 
-		signals.selectModeChanged.dispatch( this.getValue() === true ? 'zones' : 'geometries' );
+		signals.selectModeChanged.dispatch(this.getValue() === true ? 'zones' : 'geometries');
 
-	} );
-	container.add( select );
+	});
+	container.add(select);
 
 	// translate
-	var translateIcon = document.createElement( 'img' );
-	translateIcon.title = strings.getKey( 'toolbar/translate' );
+	var translateIcon = document.createElement('img');
+	translateIcon.title = strings.getKey('toolbar/translate');
 	translateIcon.src = 'images/translate.svg';
 
 	var translate = new UIButton();
@@ -34,8 +33,8 @@ function Toolbar(editor) {
 	container.add(translate);
 
 	// rotate
-	var rotateIcon = document.createElement( 'img' );
-	rotateIcon.title = strings.getKey( 'toolbar/rotate' );
+	var rotateIcon = document.createElement('img');
+	rotateIcon.title = strings.getKey('toolbar/rotate');
 	rotateIcon.src = 'images/rotate.svg';
 
 	var rotate = new UIButton();
@@ -48,8 +47,8 @@ function Toolbar(editor) {
 	container.add(rotate);
 
 	// scale
-	var scaleIcon = document.createElement( 'img' );
-	scaleIcon.title = strings.getKey( 'toolbar/scale' );
+	var scaleIcon = document.createElement('img');
+	scaleIcon.title = strings.getKey('toolbar/scale');
 	scaleIcon.src = 'images/scale.svg';
 
 	var scale = new UIButton();
@@ -62,9 +61,9 @@ function Toolbar(editor) {
 	container.add(scale);
 
 	// local / world
-	var local = new UICheckbox( false );
-	local.dom.title = strings.getKey( 'toolbar/local' );
-	local.onChange( function () {
+	var local = new UICheckbox(false);
+	local.dom.title = strings.getKey('toolbar/local');
+	local.onChange(function () {
 
 		signals.spaceChanged.dispatch(this.getValue() === true ? 'local' : 'world');
 
@@ -73,7 +72,7 @@ function Toolbar(editor) {
 
 	//
 
-	signals.transformModeChanged.add(function (mode) {
+	signals.transformModeChanged.add((mode) => {
 
 		translate.dom.classList.remove('selected');
 		rotate.dom.classList.remove('selected');

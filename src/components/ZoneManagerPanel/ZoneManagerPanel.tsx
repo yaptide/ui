@@ -144,7 +144,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
             )
         })}
         <Button className="addRowButton" onClick={addAlgebraRow}>+</Button>
-        <Button className="parseZoneButton" onClick={() => parseZone(rows)}>Parse Zone</Button>
+        <Button className="parseZoneButton" onClick={() => parseZone(rows, props?.zone?.getSimulationMaterial().simulationData)}>Parse Zone</Button>
     </div>);
 }
 

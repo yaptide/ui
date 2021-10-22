@@ -9,9 +9,7 @@ import { UIBoolean } from './libs/ui.three.js';
 
 function SidebarObject(editor) {
 
-	var strings = editor.strings;
-
-	var signals = editor.signals;
+	const { signals, strings } = editor;
 
 	var container = new UIPanel();
 	container.setBorderTop('0');
@@ -625,7 +623,7 @@ function SidebarObject(editor) {
 	function updateRowsForTypeOfObject(object) {
 
 
-		let invisible = [objectTypeRow, objectFrustumCulledRow, objectScaleRow,  objectShadowRow];
+		let invisible = [objectTypeRow, objectFrustumCulledRow, objectScaleRow, objectShadowRow];
 
 		invisible.forEach((e) => e.setDisplay('none'));
 
@@ -634,7 +632,7 @@ function SidebarObject(editor) {
 
 	// events
 
-	signals.objectSelected.add(function (object) {
+	signals.objectSelected.add((object) => {
 
 		if (object !== null && !object?.parent?.isCSGManager && !object.isScene) {
 
@@ -651,14 +649,14 @@ function SidebarObject(editor) {
 
 	});
 
-	signals.objectChanged.add(function (object) {
+	signals.objectChanged.add((object) => {
 		if (object !== editor.selected) return;
 
 		updateUI(object);
 
 	});
 
-	signals.refreshSidebarObject3D.add(function (object) {
+	signals.refreshSidebarObject3D.add((object) => {
 		if (object !== editor.selected) return;
 
 		updateUI(object);

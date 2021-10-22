@@ -9,9 +9,7 @@ import { BeamPanel } from './Sidebar.Geometry.Beam';
 
 function SidebarGeometry(editor) {
 
-	var strings = editor.strings;
-
-	var signals = editor.signals;
+	const { signals, strings } = editor;
 
 	var container = new UIPanel();
 	container.setBorderTop('0');
@@ -158,7 +156,7 @@ function SidebarGeometry(editor) {
 
 	}
 
-	signals.objectSelected.add(function () {
+	signals.objectSelected.add(() => {
 
 		currentGeometryType = null;
 		vertexNormalsButton.setDisplay('block');

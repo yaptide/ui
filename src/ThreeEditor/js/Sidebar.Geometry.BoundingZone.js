@@ -149,7 +149,7 @@ export function BoundingZonePanel(editor, boundingZone) {
 
 
 
-	editor.signals.objectChanged.add(function (object) {
+	editor.signals.objectChanged.add((object) => {
 
 		if (object.isBoundingZone) {
 			updateUI();

@@ -21,8 +21,7 @@ function makeSidebarMaterialOptions(container, editor) {
 	container.setDisplay('none');
 	container.setPaddingTop('20px');
 
-	const signals = editor.signals;
-	const strings = editor.strings;
+	const { signals, strings } = editor;
 	const materialOptions = editor.materialsManager.materialOptions;
 
 	let currentObject;
@@ -88,7 +87,7 @@ function makeSidebarMaterialOptions(container, editor) {
 
 		const previousSelectedSlot = currentMaterialSlot;
 
-		currentMaterialSlot = parseInt(materialSlotSelect.getValue());
+		currentMaterialSlot = parseInt(materialSlotSelect.getValue(),10);
 
 		if (currentMaterialSlot !== previousSelectedSlot) refreshUI();
 
@@ -97,7 +96,6 @@ function makeSidebarMaterialOptions(container, editor) {
 		if (material) {
 
 			let newMaterialName = materialClass.getValue();
-			console.warn(materialClass);
 
 			if (material.name !== newMaterialName) {
 
@@ -133,7 +131,7 @@ function makeSidebarMaterialOptions(container, editor) {
 
 		if (!currentObject) return;
 
-		let material = currentObject.material;
+		let { material } = currentObject;
 
 		if (Array.isArray(material)) {
 
@@ -163,7 +161,7 @@ function makeSidebarMaterialOptions(container, editor) {
 
 	// events
 
-	signals.objectSelected.add(function (object) {
+	signals.objectSelected.add((object) => {
 
 		let hasMaterial = false;
 
@@ -196,7 +194,7 @@ function makeSidebarMaterialOptions(container, editor) {
 
 	signals.materialChanged.add((material) => {
 		console.warn("Material changed", material)
-		if(material?.isSimulationMaterial){
+		if (material?.isSimulationMaterial) {
 			editor.materialsManager.materials[material.name] = material;
 		}
 		refreshUI()

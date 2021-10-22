@@ -4,7 +4,7 @@ import * as THREE from "three";
 export default class SimulationMaterial extends THREE.MeshPhongMaterial{
     simulationData:{id:string, name:string};
     readonly isSimulationMaterial: true = true;
-    constructor(data:{id:string, name:string}, args: any) {
+    constructor(data:{id:string, name:string}, args: Record<string,unknown>) {
         super({
             name: data.name,
             flatShading: true,

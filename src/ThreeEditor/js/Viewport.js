@@ -273,13 +273,13 @@ export function Viewport(
     let raycaster = new THREE.Raycaster();
     let mouse = new THREE.Vector2();
 
-    function getIntersects(point, objects) {
+    function getIntersects(point, validObjects) {
 
         mouse.set((point.x * 2) - 1, - (point.y * 2) + 1);
 
         raycaster.setFromCamera(mouse, camera);
 
-        return raycaster.intersectObjects(objects)
+        return raycaster.intersectObjects(validObjects)
             .filter(intersect => intersect.object.visible === true);
 
     }
@@ -313,9 +313,9 @@ export function Viewport(
 
         if (onDownPosition.distanceTo(onUpPosition) === 0) {
 
-            var intersects = getIntersects(
-                onUpPosition, 
-                config.selectZones 
+            let intersects = getIntersects(
+                onUpPosition,
+                config.selectZones
                     ? zonesManager.zonesContainer.children
                     : objects
             );
@@ -411,14 +411,14 @@ export function Viewport(
 
     }
 
-    function updateCamera(camera, position) {
-        camera.position.copy(position);
+    function updateCamera(newCamera, position) {
+        newCamera.position.copy(position);
 
-        controls.object = camera;
-        transformControls.camera = camera;
-        viewHelper.editorCamera = camera;
+        controls.object = newCamera;
+        transformControls.camera = newCamera;
+        viewHelper.editorCamera = newCamera;
 
-        camera.lookAt(controls.target.x, controls.target.y, controls.target.z);
+        newCamera.lookAt(controls.target.x, controls.target.y, controls.target.z);
         updateAspectRatio();
     }
 
@@ -427,12 +427,12 @@ export function Viewport(
         // For our usage it would be only geometries included on the scene. 
         // Amount of geometries can differ form project to project thus we check only if it isn't mesh.
         // unionOperations is property unique to zones that shoudn't be transformed with controler.
-        return object !== null 
-        && !object.isScene 
-        && !object.isCamera
-        && !object.isCSGZone 
-        && !object.isBoundingZone
-        && !object.isCSGZonesContainer;
+        return object !== null
+            && !object.isScene
+            && !object.isCamera
+            && !object.isCSGZone
+            && !object.isBoundingZone
+            && !object.isCSGZonesContainer;
     }
 
     function reattachTransformControls(object) {
@@ -492,32 +492,32 @@ export function Viewport(
     });
     viewHelper.controls = controls;
 
-    signals.transformModeChanged.add(function (mode) {
+    signals.transformModeChanged.add((mode) => {
 
         transformControls.setMode(mode);
 
     });
 
-    signals.snapChanged.add(function (dist) {
+    signals.snapChanged.add((dist) => {
 
         transformControls.setTranslationSnap(dist);
 
     });
 
-    signals.spaceChanged.add(function (space) {
+    signals.spaceChanged.add((space) => {
 
         transformControls.setSpace(space);
 
     });
 
-    signals.objectSelected.add(function (object) {
+    signals.objectSelected.add((object) => {
 
         reattachTransformControls(object);
         render();
 
     });
 
-    signals.objectRemoved.add(function (object) {
+    signals.objectRemoved.add((object) => {
 
         controls.enabled = true;
 
@@ -529,7 +529,7 @@ export function Viewport(
 
     });
 
-    signals.showHelpersChanged.add(function (showHelpers) {
+    signals.showHelpersChanged.add((showHelpers) => {
 
         transformControls.enabled = showHelpers;
 
@@ -538,7 +538,7 @@ export function Viewport(
     });
 
     //YAPTIDE signals
-    signals.objectChanged.add(function (object) {
+    signals.objectChanged.add((object) => {
 
         render();
 

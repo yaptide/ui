@@ -4,7 +4,7 @@ import { SetMaterialValueCommand } from './commands/SetMaterialValueCommand.js';
 
 function SidebarMaterialColorProperty( editor, property, name ) {
 
-	const signals = editor.signals;
+	const { signals } = editor;
 
 	const container = new UIRow();
 	container.add( new UIText( name ).setWidth( '90px' ) );

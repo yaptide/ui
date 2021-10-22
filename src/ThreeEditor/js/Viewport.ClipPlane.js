@@ -145,15 +145,15 @@ export function ViewportClippedView(editor, viewport, planeHelpers, initialObjec
         clippedObjects.add(stencilGroup);
     }
 
-    signalGeometryChanged.add(function (object3D) {
+    signalGeometryChanged.add((object3D) => {
         updateMeshWithStencilMaterial(object3D);
     });
 
-    signalGeometryAdded.add(function (object3D) {
+    signalGeometryAdded.add((object3D) => {
         updateMeshWithStencilMaterial(object3D);
     });
 
-    signalGeometryRemoved.add(function (object3D) {
+    signalGeometryRemoved.add((object3D) => {
         clippedObjects.remove(clippedObjects.getObjectByName(object3D.uuid));
     });
 

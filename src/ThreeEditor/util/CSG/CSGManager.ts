@@ -16,6 +16,16 @@ interface CSGManagerJSON {
     boundingZone: BoundingZoneJSON
 }
 
+export class CSGZonesContainer extends THREE.Group{
+    children: CSGZone[];
+    readonly isCSGZonesContainer: true = true;
+    constructor(){
+        super();
+        this.name = "Zones";
+        this.children = [];
+    }
+}
+
 export class CSGManager extends THREE.Scene implements ISimulationObject {
     notRemovable = true;
     notMoveable = true;
@@ -134,16 +144,6 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
         this.remove(zone);
     }
 
-}
-
-export class CSGZonesContainer extends THREE.Group{
-    children: CSGZone[];
-    readonly isCSGZonesContainer: true = true;
-    constructor(){
-        super();
-        this.name = "Zones";
-        this.children = [];
-    }
 }
 
 /**

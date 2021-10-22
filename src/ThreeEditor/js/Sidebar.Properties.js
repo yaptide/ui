@@ -7,8 +7,7 @@ import ZoneMaterial from './Sidebar.Material.ZoneMaterial.js';
 
 function SidebarProperties(editor) {
 
-	var strings = editor.strings;
-	var signals = editor.signals;
+	let { strings, signals } = editor.strings;
 
 	var container = new UITabbedPanel();
 	var material = new SidebarMaterial(editor);
@@ -24,17 +23,9 @@ function SidebarProperties(editor) {
 	signals.objectAdded.add((object) => object?.isCSGZone && container.select('geometry'));
 
 	signals.objectSelected.add((object) => {
-		object?.isCSGZone
-			? (() => {
-				container.panels[2].clear();
-				container.panels[2].add(zoneMaterial);
-			})()
-			: (() => {
-				container.panels[2].clear();
-				container.panels[2].add(material);
-			})();
-	}
-	);
+		container.panels[2].clear();
+		container.panels[2].add(object?.isCSGZone ? zoneMaterial : material);
+	});
 
 	return container;
 
