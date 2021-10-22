@@ -9,6 +9,7 @@ import MaterialsManager from '../util/Materials/MaterialsManager';
 import { Storage as _Storage } from './Storage.js';
 import { CSGManager } from '../util/CSG/CSGManager';
 import SimulationMaterial from '../util/Materials/SimulationMaterial';
+import { Beam } from '../util/Beam';
 
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
@@ -127,10 +128,11 @@ function Editor() {
 
 	this.zonesManager = new CSGManager(this); //CSG Manager
 
+	this.beam = new Beam(this);
+	this.sceneHelpers.add(this.beam);
+	
 	this.materialsManager = new MaterialsManager;
-
-	// this.changedMaterials = {};
-	// this.simulationMaterialOptions = simulationMaterialOptions;
+	
 
 	this.object = {};
 	this.geometries = {};
@@ -179,21 +181,6 @@ Editor.prototype = {
 
 	},
 
-	// YAPTIDE ZONES MANAGER
-	setZonesManager: function(zonesManager) {
-		this.zonesManager.uuid = zonesManager.uuid;
-		this.zonesManager.zonesContainer.uuid = zonesManager.zonesContainer.uuid;
-		// avoid render per object
-
-		this.signals.sceneGraphChanged.active = false;
-
-		while (zonesManager.zonesContainer.children.length > 0) {
-			this.zonesManager.addZone(zonesManager.zonesContainer.children[0]);
-		}
-
-		this.signals.sceneGraphChanged.active = true;
-		this.signals.sceneGraphChanged.dispatch();
-	},
 
 	addObject: function (object, parent, index) {
 
@@ -224,7 +211,7 @@ Editor.prototype = {
 
 	},
 
-	moveObject: function (object, parent, before) {
+	moveObject: function (object, parent, before) {	
 
 		if (parent === undefined) {
 
@@ -257,7 +244,7 @@ Editor.prototype = {
 
 	removeObject: function (object) {
 
-		if (object.parent === null) return; // avoid deleting the camera or scene
+		if (object.parent === null ) return; // avoid deleting the camera or scene
 
 		var scope = this;
 
@@ -598,9 +585,11 @@ Editor.prototype = {
 
 		}
 
-		var object = this.scene.getObjectById(id) ?? this.zonesManager.getObjectById(id)
-		this.select(object);
+		const objectCollections = [this.scene, this.zonesManager, this.beam];
 
+		const object = objectCollections.map((e) => e.getObjectById(id)).find(e => e !== undefined);
+
+		this.select(object);
 	},
 
 	selectByUuid: function (uuid) {
@@ -663,6 +652,7 @@ Editor.prototype = {
 		}
 
 		this.zonesManager.reset();
+		this.beam.reset();
 
 		this.geometries = {};
 		this.materials = {};
@@ -696,9 +686,11 @@ Editor.prototype = {
 
 		this.materialsManager.fromJSOM(json.materialsManager);
 		
-		// CSGManager must be loaded after scene and simulation materials
-		this.setZonesManager(CSGManager.fromJSON(this, json.zonesManager)) // CSGManager must be loaded to not lose reference in components 	
-	
+		// CSGManager must be loaded after scene and simulation materials	
+		const zonesManager = CSGManager.fromJSON(this, json.zonesManager);		
+		this.zonesManager.loadFrom(zonesManager); // CSGManager must be loaded in order not to lose reference in components 
+
+		this.beam.fromJSON(json.beam);
 
 		this.signals.sceneGraphChanged.dispatch();
 				
@@ -744,6 +736,7 @@ Editor.prototype = {
 			scripts: this.scripts,
 			history: this.history.toJSON(),
 			zonesManager: this.zonesManager.toJSON(), // serialize CSGManager
+			beam: this.beam.toJSON(),
 			materialsManager: this.materialsManager.toJSON() // serialize MaterialManager
 		};
 

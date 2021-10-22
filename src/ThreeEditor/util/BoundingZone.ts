@@ -1,8 +1,10 @@
 
 import * as THREE from 'three';
 import { Color, LineBasicMaterial, MeshBasicMaterial, Object3D, Vector3 } from 'three';
+import { debounce } from 'throttle-debounce';
 
 import { Editor } from '../js/Editor';
+import { ISimulationObject } from './SimulationObject';
 
 
 export interface BoundingZoneJSON {
@@ -15,7 +17,7 @@ export interface BoundingZoneJSON {
     marginMultiplier: number;
 }
 
-const BOUNDING_ZONE_TYPE = ['sphere', 'cylinder', 'box'] as const;
+export const BOUNDING_ZONE_TYPE = ['sphere', 'cylinder', 'box'] as const;
 
 export type BoundingZoneType = (typeof BOUNDING_ZONE_TYPE)[number];
 
@@ -31,7 +33,10 @@ interface BoundingZoneParams {
     marginMultiplier?: number
 }
 
-export class BoundingZone extends THREE.Object3D {
+export class BoundingZone extends THREE.Object3D implements ISimulationObject {
+    notRemovable = true;
+    notMoveable = true;
+    
     editor: Editor;
     box: THREE.Box3;
     marginMultiplier: number;
@@ -44,9 +49,13 @@ export class BoundingZone extends THREE.Object3D {
     private cylinderMesh: THREE.Mesh<THREE.CylinderGeometry, MeshBasicMaterial>;
     private sphereMesh: THREE.Mesh<THREE.SphereGeometry, MeshBasicMaterial>;
 
+    readonly debouncedCalculate = debounce(200, false, () =>
+        this.calculate()
+    );
+
     constructor(editor: Editor, { box, color = 0xff0000, marginMultiplier = 1.1 }: BoundingZoneParams = {}) {
         super();
-        this.type = 'BoundingZone' as any;
+        this.type = 'BoundingZone';
         this.name = 'World Zone';
         this.editor = editor;
 
@@ -56,7 +65,7 @@ export class BoundingZone extends THREE.Object3D {
 
         // watch for changes on material color 
         const overrideHandler = {
-            set: (target: Color, prop: keyof Color, value: any) => {
+            set: (target: Color, prop: keyof Color, value: unknown) => {
 
                 Reflect.set((this.boxHelper.material as LineBasicMaterial).color, prop, value);
 
@@ -80,12 +89,13 @@ export class BoundingZone extends THREE.Object3D {
 
 
         const handleSignal = (object: Object3D) => {
-            if (this.autoCalculate && !(object instanceof BoundingZone)) this.calculate();
+            if (this.autoCalculate && !isBoundingZone(object)) this.debouncedCalculate();
         }
         this.editor.signals.objectChanged.add((object: Object3D) => handleSignal(object));
         this.editor.signals.sceneGraphChanged.add((object: Object3D) => handleSignal(object));
 
     }
+
 
     get geometryType() {
         return this._geometryType;
@@ -168,11 +178,11 @@ export class BoundingZone extends THREE.Object3D {
         this.updateBox((box) => box.setFromCenterAndSize(new Vector3(), new Vector3()));
     }
 
-    addToScene() {
+    addHelpersToSceneHelpers() {
         this.getAllHelpers().forEach(e => this.editor.sceneHelpers.add(e));
     }
 
-    removeFromScene() {
+    removeHelpersFromSceneHelpers() {
         this.getAllHelpers().forEach(e => this.editor.sceneHelpers.remove(e));
     }
 
@@ -212,3 +222,8 @@ export class BoundingZone extends THREE.Object3D {
     }
 
 }
+
+export const isBoundingZone = (x: unknown): x is BoundingZone => x instanceof BoundingZone;
+/**
+ * @deprecated Use readonly property instead.
+ */

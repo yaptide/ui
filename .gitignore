@@ -252,3 +252,6 @@ fabric.properties
 
 # file containing deploy info 
 src/util/identify/deployInfo.json
+
+# build 
+build/

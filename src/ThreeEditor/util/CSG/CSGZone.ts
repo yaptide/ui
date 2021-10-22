@@ -267,3 +267,8 @@ export class CSGZone extends THREE.Mesh {
         return zone;
     }
 }
+
+/**
+ * @deprecated Use readonly property instead.
+ */
+export const isCSGZone = (x: unknown): x is CSGZone => x instanceof CSGZone;

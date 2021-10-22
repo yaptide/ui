@@ -300,8 +300,10 @@ function SidebarScene(editor) {
 		options.push(buildOption(zonesContainer, false));
 		addObjects(zonesContainer.children, 0);
 
-		options.push(buildOption(boundingZone, false))
-		
+		options.push(buildOption(boundingZone, false));
+
+		options.push(buildOption(editor.beam, false));
+
 		outliner.setOptions(options);
 
 		if (editor.selected !== null) {
@@ -375,13 +377,13 @@ function SidebarScene(editor) {
 	signals.objectSelected.add(function (object) {
 		if (ignoreObjectSelectedSignal === true) return;
 
-		console.warn(object);
 		if (object !== null && object.parent !== null && !object.parent.isCSGZone) {
 
 			let needsRefresh = false;
 			let parent = object.parent;
+			let finalParents = [editor.scene, editor.zonesManager.zonesContainer, editor.zonesManager.boundingZones]
 
-			while (parent !== editor.scene && parent !== editor.zonesManager.zonesContainer && parent !== editor.zonesManager.boundingZones) {
+			while (finalParents.every((finalParent) => finalParent !== parent)) {
 				if (nodeStates.get(parent) !== true) {
 					nodeStates.set(parent, true);
 					needsRefresh = true;

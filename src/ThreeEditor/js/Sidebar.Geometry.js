@@ -4,6 +4,8 @@ import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHel
 import ZoneManagerPanel from '../../components/ZoneManagerPanel/ZoneManagerPanel';
 import { UIButton, UIPanel, UIRow, UISpan, UIText } from './libs/ui.js';
 import { BoundingZonePanel } from './Sidebar.Geometry.BoundingZone';
+import { isBeam } from '../util/Beam';
+import { BeamPanel } from './Sidebar.Geometry.Beam';
 
 function SidebarGeometry(editor) {
 
@@ -65,7 +67,7 @@ function SidebarGeometry(editor) {
 		let zonePanel = new UISpan();
 		zonePanel.setId("zonePanel");
 
-		return function buildZonesManager() {
+		return () => {
 
 			var object = editor.selected;
 
@@ -87,7 +89,16 @@ function SidebarGeometry(editor) {
 
 		var object = editor.selected;
 
-		if (object && object.isBoundingZone) {
+		if (isBeam(object)) {
+			parameters.clear();
+			parameters.add(new BeamPanel(editor, object));
+			geometryType.setValue(object.type);
+
+			container.setDisplay('block');
+
+			vertexNormalsButton.setDisplay('none');
+
+		} else if (object && object.isBoundingZone) {
 
 			parameters.clear();
 			parameters.add(new BoundingZonePanel(editor, object));
