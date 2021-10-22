@@ -416,7 +416,7 @@ Editor.prototype = {
 
 	//
 
-	addHelper: function () {
+	addHelper: (function () {
 
 		var geometry = new THREE.SphereGeometry(2, 4, 2);
 		var material = new THREE.MeshBasicMaterial({ color: 0xff0000, visible: false });
@@ -470,7 +470,7 @@ Editor.prototype = {
 
 		};
 
-	}(),
+	}()),
 
 	removeHelper: function (object) {
 
