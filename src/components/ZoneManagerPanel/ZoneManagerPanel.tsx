@@ -33,7 +33,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
         for (let i = 0; i < row.operations.length; i++) {
             const operation = row.operations[i];
             const geometryID = row.geometriesId[i + 1];
-            if (row.geometriesId.length > i + 1 && geometryID != null && operation != null) {
+            if (row.geometriesId.length > i + 1 && geometryID !== null && operation !== null) {
                 const object = props.editor.scene.getObjectById(geometryID);
 
                 if (!object) throw new Error("object is undefined form props.editor.scene.getObjectById(geometryID)");
