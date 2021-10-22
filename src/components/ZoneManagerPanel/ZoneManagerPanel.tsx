@@ -62,6 +62,8 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
         setRows((prev) => [...prev, { geometriesId: [], operations: [] }]);
         zoneRef.current?.addUnion();
     };
+    
+    const handleParse = () => parseZone(rows, props?.zone?.getSimulationMaterial().simulationData)
 
     const removeRow = (removeId: number) => () => {
         setRows((prev) => {
@@ -144,7 +146,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
             )
         })}
         <Button className="addRowButton" onClick={addAlgebraRow}>+</Button>
-        <Button className="parseZoneButton" onClick={() => parseZone(rows, props?.zone?.getSimulationMaterial().simulationData)}>Parse Zone</Button>
+        <Button className="parseZoneButton" onClick={handleParse}>Parse Zone</Button>
     </div>);
 }
 

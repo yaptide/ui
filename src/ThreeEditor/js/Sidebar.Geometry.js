@@ -160,9 +160,9 @@ function SidebarGeometry(editor) {
 
 		currentGeometryType = null;
 		vertexNormalsButton.setDisplay('block');
-		editor.selected?.isCSGZone
-			? buildZonesManager()
-			: build();
+		(editor.selected?.isCSGZone
+			? buildZonesManager
+			: build)();
 
 	});
 

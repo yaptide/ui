@@ -5,14 +5,6 @@ import { SidebarMaterialColorProperty } from './Sidebar.Material.ColorProperty.j
 import { SidebarMaterialConstantProperty } from './Sidebar.Material.ConstantProperty.js';
 import { SidebarMaterialNumberProperty } from './Sidebar.Material.NumberProperty.js';
 import { SetZoneMaterialCommand } from './commands/SetZoneMaterialCommand.js';
-export default class ZoneMaterial extends UIPanel {
-	editor;
-	constructor(editor) {
-		super();
-		this.editor = editor;
-		makeSidebarMaterialOptions(this, editor);
-	}
-}
 
 // Code copied (and adjusted) from SidebarMaterial.js
 // https://github.com/mrdoob/three.js/blob/r132/editor/js/Sidebar.Material.js
@@ -83,31 +75,6 @@ function makeSidebarMaterialOptions(container, editor) {
 
 	const materialTransparent = SidebarMaterialBooleanProperty(editor, 'transparent', strings.getKey('sidebar/material/transparent'));
 	container.add(materialTransparent);
-	function update() {
-
-		const previousSelectedSlot = currentMaterialSlot;
-
-		currentMaterialSlot = parseInt(materialSlotSelect.getValue(),10);
-
-		if (currentMaterialSlot !== previousSelectedSlot) refreshUI();
-
-		let material = editor.getObjectMaterial(currentObject, currentMaterialSlot);
-
-		if (material) {
-
-			let newMaterialName = materialClass.getValue();
-
-			if (material.name !== newMaterialName) {
-
-				editor.execute(new SetZoneMaterialCommand(editor, currentObject, newMaterialName), 'Zone aplied material: ' + newMaterialName);
-
-				refreshUI();
-
-			}
-		}
-
-
-	}
 
 	//
 
@@ -159,6 +126,32 @@ function makeSidebarMaterialOptions(container, editor) {
 
 	}
 
+	function update() {
+
+		const previousSelectedSlot = currentMaterialSlot;
+
+		currentMaterialSlot = parseInt(materialSlotSelect.getValue(),10);
+
+		if (currentMaterialSlot !== previousSelectedSlot) refreshUI();
+
+		let material = editor.getObjectMaterial(currentObject, currentMaterialSlot);
+
+		if (material) {
+
+			let newMaterialName = materialClass.getValue();
+
+			if (material.name !== newMaterialName) {
+
+				editor.execute(new SetZoneMaterialCommand(editor, currentObject, newMaterialName), 'Zone aplied material: ' + newMaterialName);
+
+				refreshUI();
+
+			}
+		}
+
+
+	}
+
 	// events
 
 	signals.objectSelected.add((object) => {
@@ -193,11 +186,19 @@ function makeSidebarMaterialOptions(container, editor) {
 	});
 
 	signals.materialChanged.add((material) => {
-		console.warn("Material changed", material)
 		if (material?.isSimulationMaterial) {
 			editor.materialsManager.materials[material.name] = material;
 		}
 		refreshUI()
 	});
 
+}
+
+export default class ZoneMaterial extends UIPanel {
+	editor;
+	constructor(editor) {
+		super();
+		this.editor = editor;
+		makeSidebarMaterialOptions(this, editor);
+	}
 }

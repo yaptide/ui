@@ -411,17 +411,6 @@ export function Viewport(
 
     }
 
-    function updateCamera(newCamera, position) {
-        newCamera.position.copy(position);
-
-        controls.object = newCamera;
-        transformControls.camera = newCamera;
-        viewHelper.editorCamera = newCamera;
-
-        newCamera.lookAt(controls.target.x, controls.target.y, controls.target.z);
-        updateAspectRatio();
-    }
-
     function canBeTransformed(object) {
         // Check if object can be transformed. 
         // For our usage it would be only geometries included on the scene. 
@@ -439,6 +428,29 @@ export function Viewport(
         transformControls.detach();
 
         canBeTransformed(object) && transformControls.attach(object);
+    }
+
+    // controls need to be added *after* main logic,
+    // otherwise controls.enabled doesn't work.       
+    let controls = new EditorOrbitControls(camera, container.dom);
+    controls.screenSpacePanning = false;
+    controls.addEventListener('change', function () {
+
+        signals.cameraChanged.dispatch(camera);
+        signals.refreshSidebarObject3D.dispatch(camera);
+
+    });
+    viewHelper.controls = controls;
+
+    function updateCamera(newCamera, position) {
+        newCamera.position.copy(position);
+
+        controls.object = newCamera;
+        transformControls.camera = newCamera;
+        viewHelper.editorCamera = newCamera;
+
+        newCamera.lookAt(controls.target.x, controls.target.y, controls.target.z);
+        updateAspectRatio();
     }
 
     container.dom.addEventListener('keydown', function (event) {
@@ -479,18 +491,6 @@ export function Viewport(
     container.dom.addEventListener('mousedown', onMouseDown, false);
     container.dom.addEventListener('touchstart', onTouchStart, false);
     container.dom.addEventListener('dblclick', onDoubleClick, false);
-
-    // controls need to be added *after* main logic,
-    // otherwise controls.enabled doesn't work.       
-    let controls = new EditorOrbitControls(camera, container.dom);
-    controls.screenSpacePanning = false;
-    controls.addEventListener('change', function () {
-
-        signals.cameraChanged.dispatch(camera);
-        signals.refreshSidebarObject3D.dispatch(camera);
-
-    });
-    viewHelper.controls = controls;
 
     signals.transformModeChanged.add((mode) => {
 

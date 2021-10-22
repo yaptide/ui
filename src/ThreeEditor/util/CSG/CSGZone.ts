@@ -57,23 +57,24 @@ export class CSGZone extends THREE.Mesh {
         this.signals = editor.signals;
         this.name = name || "CSGZone";
         this.material = editor.materialsManager.materials[materialName ?? ""];
-        this.subscribedObjectsUuid = subscribedObjectsUuid || new Set();
-        this.unionOperations = unionOperations
+        let objectsUuid = subscribedObjectsUuid || new Set();
+        this.unionOperations = unionOperations && !subscribedObjectsUuid 
             ? (() => {
                   // If operations are specified, we have to populate set of subscribed UUID's
-                  subscribedObjectsUuid ||
-                      unionOperations.forEach((op1) =>
-                          op1
-                              .map((op2) => op2.object.uuid)
-                              .forEach(
-                                  this.subscribedObjectsUuid.add,
-                                  this.subscribedObjectsUuid
-                              )
-                      );
+                    unionOperations.forEach((op1) =>
+                        op1
+                            .map((op2) => op2.object.uuid)
+                            .forEach(
+                                objectsUuid.add,
+                                objectsUuid
+                            )
+                    );
                   return unionOperations;
               })()
-            : [];
+            : unionOperations ?? [];
 
+        this.subscribedObjectsUuid = objectsUuid;
+        
         // If operations are specified, we have to generate fist geometry manually.
         unionOperations && this.updateGeometry();
 
