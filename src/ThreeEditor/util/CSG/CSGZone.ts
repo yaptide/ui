@@ -93,7 +93,7 @@ export class CSGZone extends THREE.Mesh {
         return clonedZone;
     }
 
-    updateGeometry() {
+    updateGeometry(): void  {
         console.time("CSGZone");
         let unionsResultBsp = new CSG();
 
@@ -139,13 +139,13 @@ export class CSGZone extends THREE.Mesh {
         console.timeEnd("CSGZone");
     }
 
-    addUnion() {
+    addUnion(): void  {
         this.unionOperations.push([]);
 
         this.announceChangedState();
     }
 
-    updateUnion(unionIndex: number, operations: CSGOperation[]) {
+    updateUnion(unionIndex: number, operations: CSGOperation[]): void  {
         this.unionOperations[unionIndex].forEach((e, i) =>
             this.subscribedObjectsUuid.delete(e.object.uuid)
         );
@@ -159,7 +159,7 @@ export class CSGZone extends THREE.Mesh {
         this.announceChangedState();
     }
 
-    removeUnion(unionIndex: number) {
+    removeUnion(unionIndex: number): void  {
         this.unionOperations[unionIndex].forEach((e, i) =>
             this.removeOperation(unionIndex, i)
         );
@@ -169,14 +169,14 @@ export class CSGZone extends THREE.Mesh {
         this.announceChangedState();
     }
 
-    addOperation(unionIndex: number, operation: CSGOperation) {
+    addOperation(unionIndex: number, operation: CSGOperation): void  {
         this.unionOperations[unionIndex].push(operation);
         this.subscribedObjectsUuid.add(operation.object.uuid);
 
         this.announceChangedState();
     }
 
-    removeOperation(unionIndex: number, operationIndex: number) {
+    removeOperation(unionIndex: number, operationIndex: number): void  {
         this.subscribedObjectsUuid.delete(
             this.unionOperations[unionIndex][operationIndex].object.uuid
         );
@@ -186,13 +186,13 @@ export class CSGZone extends THREE.Mesh {
         this.announceChangedState();
     }
 
-    handleChange(object: THREE.Object3D) {
+    handleChange(object: THREE.Object3D): void  {
         if (!this.subscribedObjectsUuid.has(object.uuid)) return;
 
         this.announceChangedState();
     }
 
-    handleRemoved(object: THREE.Object3D) {
+    handleRemoved(object: THREE.Object3D): void  {
         if (!this.subscribedObjectsUuid.has(object.uuid)) return;
 
         this.unionOperations.forEach((operations, unionIndex) => {
@@ -211,14 +211,14 @@ export class CSGZone extends THREE.Mesh {
         this.announceChangedState();
     }
 
-    announceChangedState() {
+    announceChangedState(): void  {
         this.debouncedUpdatePreview();
 
         this.signals.zoneChanged.dispatch(this);
         this.signals.CSGManagerStateChanged.dispatch();
     }
 
-    updatePreview() {
+    updatePreview(): void  {
         this.needsUpdate = true;
 
         this.updateGeometry();

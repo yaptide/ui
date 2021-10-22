@@ -4,7 +4,7 @@ export default class ZoneConstructorController {
     commonPrefix: number[];
     tails: number[][];
 
-    parseOperation(op: Operation, geometry: number) {
+    parseOperation(op: Operation, geometry: number): void  {
         switch (op) {
             case "intersection":
                 this.extendPrefix(geometry);
@@ -19,11 +19,11 @@ export default class ZoneConstructorController {
         }
     }
 
-    extendPrefix(geometry: number) {
+    extendPrefix(geometry: number): void  {
         this.commonPrefix = [geometry, ...this.commonPrefix];
     }
 
-    shiftTails(geometry: number) {
+    shiftTails(geometry: number): void  {
         this.tails = [
             ...this.commonPrefix.map((el) => [-el]),
             ...this.tails.reduce((prev, el) => {
@@ -43,7 +43,7 @@ export default class ZoneConstructorController {
         this.commonPrefix = [geometry];
     }
 
-    toString() {
+    toString(): string  {
         let prefix = this.commonPrefix.reduceRight((prev, el) => {
             return prev + (el > 0 ? "+" + el : el) + " ";
         }, "") as string;
@@ -61,7 +61,7 @@ export default class ZoneConstructorController {
         ).slice(0, -4);
     }
 
-    getDimension = (target: any) => {
+    getDimension = (target: any): number  => {
         if (!Array.isArray(target)) {
             return target === null ? null : 0;
         } else {
