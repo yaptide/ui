@@ -22,14 +22,14 @@ class AddZoneCommand extends Command {
 		if( this.zone === undefined )
 			this.zone = this.editor.zonesManager.createZone();
 		else
-			this.editor.zonesManager.add( this.zone );
+			this.editor.zonesManager.addZone( this.zone );
 		this.editor.select( this.zone );
 
 	}
 
 	undo() {
 
-		this.editor.zonesManager.remove( this.zone );
+		this.editor.zonesManager.removeZone( this.zone );
 		this.editor.deselect();
 
 	}

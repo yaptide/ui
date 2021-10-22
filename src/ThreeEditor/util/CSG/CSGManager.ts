@@ -47,9 +47,6 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
     createZone() {
         let zone = new CSGZone(this.editor);
         this.addZone(zone);
-        this.editor.signals.objectAdded.dispatch(zone);
-        this.editor.signals.CSGManagerStateChanged.dispatch();
-
         return zone;
     }
 
@@ -95,7 +92,7 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
 
         data.zones.forEach((zone) => {
 
-            this.add(CSGZone.fromJSON(this.editor, zone));
+            this.addZone(CSGZone.fromJSON(this.editor, zone));
 
         });
 
@@ -108,13 +105,6 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
 
     static fromJSON(editor: Editor, data: CSGManagerJSON) {
         return new CSGManager(editor).fromJSON(data);
-    }
-
-    loadFrom(manager: CSGManager) {
-        this.children = manager.children;
-        this.boundingZone.removeHelpersFromSceneHelpers();
-        this.boundingZone = manager.boundingZone;
-        this.boundingZone.addHelpersToSceneHelpers();
     }
 
     clone(recursive: boolean) {

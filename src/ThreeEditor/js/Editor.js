@@ -686,9 +686,8 @@ Editor.prototype = {
 
 		this.materialsManager.fromJSOM(json.materialsManager);
 		
-		// CSGManager must be loaded after scene and simulation materials	
-		const zonesManager = CSGManager.fromJSON(this, json.zonesManager);		
-		this.zonesManager.loadFrom(zonesManager); // CSGManager must be loaded in order not to lose reference in components 
+		// CSGManager must be loaded after scene and simulation materials		
+		this.zonesManager.fromJSON(json.zonesManager); // CSGManager must be loaded in order not to lose reference in components 
 
 		this.beam.fromJSON(json.beam);
 
