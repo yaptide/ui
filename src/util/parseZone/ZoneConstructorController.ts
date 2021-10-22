@@ -63,14 +63,14 @@ export default class ZoneConstructorController {
 
     getDimension = (target: any): number  => {
         if (!Array.isArray(target)) {
-            return target === null ? null : 0;
+            return target === null ? -1 : 0;
         } else {
-            let dim = null;
+            let dim = -1;
             target.every((el) => {
                 dim = this.getDimension(el);
-                return dim === null;
+                return dim === -1;
             });
-            return dim === null ? dim : dim + 1;
+            return dim === -1 ? dim : dim + 1;
         }
     };
 
