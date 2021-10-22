@@ -57,7 +57,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react": "^17.0.30",
+    "@types/react": "^17.0.31",
     "@types/react-async-script": "^1.2.1",
     "@types/three": "^0.133.1",
     "react-app-rewired": "^2.1.8",
