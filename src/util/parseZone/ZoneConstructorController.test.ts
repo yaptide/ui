@@ -2,7 +2,7 @@ import ZoneConstructorController from "./ZoneConstructorController";
 
 test("find correct dimension of array", () => {
     let dim = new ZoneConstructorController().getDimension(null);
-    expect(dim).toBe(null);
+    expect(dim).toBe(-1);
 
     dim = new ZoneConstructorController().getDimension(1);
     expect(dim).toBe(0);
@@ -14,7 +14,7 @@ test("find correct dimension of array", () => {
     expect(dim).toBe(2);
 
     dim = new ZoneConstructorController().getDimension([[]]);
-    expect(dim).toBe(null);
+    expect(dim).toBe(-1);
 });
 
 test("create valid controller with class constructor", () => {
