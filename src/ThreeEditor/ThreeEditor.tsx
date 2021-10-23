@@ -23,8 +23,7 @@ function ThreeEditor() {
 
 
   return (
-    <div className="ThreeEditor" ref={containerEl}>
-    </div>
+    <div className="ThreeEditor" ref={containerEl} />
   );
 }
 

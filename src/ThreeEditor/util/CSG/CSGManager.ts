@@ -60,7 +60,7 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
         return zone;
     }
 
-    addZone(zone: CSGZone) {
+    addZone(zone: CSGZone): void  {
         zone.worker = this.worker;
         this.zonesContainer.add(zone);
               
@@ -70,7 +70,7 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
         this.editor.signals.CSGManagerStateChanged.dispatch();
     }
 
-    removeZone(zone: CSGZone) {
+    removeZone(zone: CSGZone): void  {
         this.zonesContainer.remove(zone);
         
         this.editor.signals.objectAdded.dispatch(zone);

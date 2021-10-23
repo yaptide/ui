@@ -76,7 +76,7 @@ export default class MaterialsManager{
         }))
         return jsonObject;
     }
-    fromJSOM(json:MaterialsManagerJSON[]) {
+    fromJSOM(json:MaterialsManagerJSON[]): void  {
         json?.forEach((object) => {
             this.materials[object.data.name] = new SimulationMaterial(object.data,{
                 color: new THREE.Color(object.color),
