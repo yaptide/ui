@@ -66,7 +66,7 @@ function MenubarEdit(editor) {
 
 	editor.signals.historyChanged.add(() => {
 
-		var history = editor.history;
+		const { history } = editor;
 
 		undo.setClass('option');
 		redo.setClass('option');
