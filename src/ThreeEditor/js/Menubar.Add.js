@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { generateSimulationInfo } from '../util/AdditionalUserData';
 import { AddObjectCommand } from './commands/AddObjectCommand.js';
 import { AddZoneCommand } from './commands/AddZoneCommand.js';
 import { UIHorizontalRule, UIPanel } from './libs/ui.js';
@@ -62,6 +63,7 @@ function MenubarAdd(editor) {
 		var geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
 		var mesh = new THREE.Mesh(geometry, material.clone());
 		mesh.name = 'Box';
+		mesh.userData = generateSimulationInfo(mesh);
 
 		editor.execute(new AddObjectCommand(editor, mesh));
 	}));
@@ -72,6 +74,7 @@ function MenubarAdd(editor) {
 		var geometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI);
 		var mesh = new THREE.Mesh(geometry, material.clone());
 		mesh.name = 'Sphere';
+		mesh.userData = generateSimulationInfo(mesh);
 
 		editor.execute(new AddObjectCommand(editor, mesh));
 	}));
@@ -86,6 +89,8 @@ function MenubarAdd(editor) {
 		var geometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2);
 		var mesh = new THREE.Mesh(geometry, material.clone());
 		mesh.name = 'Cylinder';
+		mesh.userData = generateSimulationInfo(mesh);
+
 		editor.execute(new AddObjectCommand(editor, mesh));
 	}));
 

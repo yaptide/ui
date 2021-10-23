@@ -75,6 +75,8 @@ function MenubarFile(editor) {
 	option.setTextContent('Save');
 	option.onClick(function () {
 
+		editor.updateUserData();
+
 		var output = editor.toJSON();
 
 		try {

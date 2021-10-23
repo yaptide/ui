@@ -9,6 +9,7 @@ import { Storage as _Storage } from './Storage.js';
 import { CSGManager } from '../util/CSG/CSGManager';
 import { isCSGZone } from '../util/CSG/CSGZone';
 import { Beam } from '../util/Beam';
+import { generateSimulationInfo } from '../util/AdditionalUserData';
 
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
@@ -209,7 +210,7 @@ Editor.prototype = {
 
 	},
 
-	moveObject: function (object, parent, before) {	
+	moveObject: function (object, parent, before) {
 
 		if (parent === undefined) {
 
@@ -242,7 +243,7 @@ Editor.prototype = {
 
 	removeObject: function (object) {
 
-		if (object.parent === null ) return; // avoid deleting the camera or scene
+		if (object.parent === null) return; // avoid deleting the camera or scene
 
 		var scope = this;
 
@@ -666,6 +667,14 @@ Editor.prototype = {
 
 		this.signals.editorCleared.dispatch();
 
+	},
+
+	//
+
+	updateUserData() {
+		this.scene.children.forEach(object => {
+			object.userData = generateSimulationInfo(object);
+		});
 	},
 
 	//
