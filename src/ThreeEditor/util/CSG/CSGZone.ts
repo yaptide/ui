@@ -57,23 +57,9 @@ export class CSGZone extends THREE.Mesh {
         this.signals = editor.signals;
         this.name = name || "CSGZone";
         this.material = editor.materialsManager.materials[materialName ?? ""];
-        const objectsUuid = subscribedObjectsUuid || new Set();
-        this.unionOperations = unionOperations && !subscribedObjectsUuid 
-            ? (() => {
-                  // If operations are specified, we have to populate set of subscribed UUID's
-                    unionOperations.forEach((op1) =>
-                        op1
-                            .map((op2) => op2.object.uuid)
-                            .forEach(
-                                objectsUuid.add,
-                                objectsUuid
-                            )
-                    );
-                  return unionOperations;
-              })()
-            : unionOperations ?? [];
-
-        this.subscribedObjectsUuid = objectsUuid;
+        this.unionOperations = unionOperations ?? [];
+        // If operations are specified, we have to populate set of subscribed UUID's
+        this.subscribedObjectsUuid = subscribedObjectsUuid ?? this.populateSubscribedUuid(this.unionOperations);
         
         // If operations are specified, we have to generate fist geometry manually.
         unionOperations && this.updateGeometry();
@@ -81,6 +67,12 @@ export class CSGZone extends THREE.Mesh {
         this.signals.geometryChanged.add((object) => this.handleChange(object));
         this.signals.objectChanged.add((object) => this.handleChange(object));
         this.signals.objectRemoved.add((object) => this.handleRemoved(object));
+    }
+
+    private populateSubscribedUuid(operations:CSGOperation[][]): Set<string> {
+        return new Set(
+            operations.flatMap(operationRow => operationRow.map(operation => operation.object.uuid))
+        );
     }
 
     clone(recursive: boolean) {
@@ -273,3 +265,4 @@ export class CSGZone extends THREE.Mesh {
 
 
 export const isCSGZone = (x: unknown): x is CSGZone => x instanceof CSGZone;
+
