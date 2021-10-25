@@ -108,7 +108,7 @@ export function ViewportClippedView(editor, viewport, planeHelpers, initialObjec
     };
     // increase render order to have stencil plane being rendered after other objects
     // we increase the render object by 0.1 following the original code from threejs repo
-    stencilPlane.renderOrder = STENCIL_RENDER_ORDER + .1;
+    stencilPlane.renderOrder = STENCIL_RENDER_ORDER + 0.1;
 
     crossSectionGroup.add(stencilPlane);
 
