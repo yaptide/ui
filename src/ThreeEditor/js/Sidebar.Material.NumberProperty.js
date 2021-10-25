@@ -18,7 +18,7 @@ function SidebarMaterialNumberProperty(editor, property, name, range = [- Infini
 
 		if (material[property] !== number.getValue()) {
 
-			editor.execute(new SetMaterialValueCommand(editor, object, property, number.getValue(), 0 /* TODO: currentMaterialSlot */));
+			editor.execute(new SetMaterialValueCommand(editor, object, property, number.getValue(), 0 /* TODO: currentMaterialSlot # skipcq: JS-0099 */));
 
 		}
 

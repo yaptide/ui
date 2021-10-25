@@ -84,7 +84,7 @@ function SidebarScene(editor) {
 
 	function getObjectType(object) {
 
-		if (object.isCSGZone) return 'Points'; //TODO: Add support to different keywords in css classes
+		if (object.isCSGZone) return 'Points'; //TODO: Add support to different keywords in css classes  # skipcq: JS-0099
 		if (object?.parent?.isCSGManager) return 'Camera'; //Add support to different keywords in css classes
 		if (object.isScene) return 'Scene';
 		if (object.isCamera) return 'Camera';

@@ -1,5 +1,5 @@
-import { SetMaterialValueCommand } from './commands/Commands';
 import { UIRow, UISelect, UIText } from './libs/ui.js';
+import { SetMaterialValueCommand } from './commands/Commands';
 
 function SidebarMaterialConstantProperty(editor, property, name, options) {
 
@@ -20,7 +20,7 @@ function SidebarMaterialConstantProperty(editor, property, name, options) {
 
 		if (material[property] !== value) {
 
-			editor.execute(new SetMaterialValueCommand(editor, object, property, value, 0 /* TODO: currentMaterialSlot */));
+			editor.execute(new SetMaterialValueCommand(editor, object, property, value, 0 /* TODO: currentMaterialSlot # skipcq: JS-0099 */));
 
 		}
 

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import * as Records from './Sidebar.Material.Records';
 import { SetMaterialCommand, SetMaterialValueCommand } from './commands/Commands';
 import { UIInput, UIPanel, UIRow, UISelect, UIText } from './libs/ui.js';
 import { SidebarMaterialBooleanProperty } from './Sidebar.Material.BooleanProperty.js';
@@ -7,7 +8,6 @@ import { SidebarMaterialConstantProperty } from './Sidebar.Material.ConstantProp
 import { SidebarMaterialMapProperty } from './Sidebar.Material.MapProperty.js';
 import { SidebarMaterialNumberProperty } from './Sidebar.Material.NumberProperty.js';
 import { SidebarMaterialProgram } from './Sidebar.Material.Program.js';
-import * as Records from './Sidebar.Material.Records';
 
 
 const { materialClasses, vertexShaderVariables, meshMaterialOptions, lineMaterialOptions, spriteMaterialOptions, pointsMaterialOptions } = Records;

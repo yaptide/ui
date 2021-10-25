@@ -18,7 +18,7 @@ function SidebarMaterialBooleanProperty(editor, property, name) {
 
 		if (material[property] !== boolean.getValue()) {
 
-			editor.execute(new SetMaterialValueCommand(editor, object, property, boolean.getValue(), 0 /* TODO: currentMaterialSlot */));
+			editor.execute(new SetMaterialValueCommand(editor, object, property, boolean.getValue(), 0 /* TODO: currentMaterialSlot # skipcq: JS-0099 */));
 
 		}
 

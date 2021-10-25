@@ -125,8 +125,8 @@ export function ViewportClippedView(editor, viewport, planeHelpers, initialObjec
     stencilPlane.translateZ(clipPlane.constant);
 
     // move back stencil plane by epsilon distance (here 1nm)
-    // TODO why back and not to the front ?
-    // TODO try to decrease this value in such way that creating geometry of small objects (i.e. um size is still possible)
+    // TODO why back and not to the front ?  # skipcq: JS-0099
+    // TODO try to decrease this value in such way that creating geometry of small objects (i.e. um size is still possible)  # skipcq: JS-0099
     stencilPlane.translateZ(-1e-2);
 
     // Initialize view with objects

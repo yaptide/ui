@@ -6,8 +6,8 @@ import { Config } from './Config.js';
 import { History as _History } from './History.js';
 import { Loader } from './Loader.js';
 import   Signal from 'signals';
-import { Storage as _Storage } from './Storage.js';
 import { Strings } from './Strings.js';
+import { Storage as _Storage } from './Storage.js';
 
 
 
