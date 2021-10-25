@@ -27,7 +27,7 @@ export function ViewportClippedView(editor, viewport, planeHelpers, initialObjec
     const planeHelper = new THREE.PlaneHelper(clipPlane, CLIPPING_SIZE, planeHelperColor ?? 0xffff00); // default helper color is yellow
     planeHelpers.add(planeHelper);
 
-    const planePosProperty = (planePosLabel ?? 'PlanePos') + ' ' + editor.unit.name;
+    const planePosProperty = `${planePosLabel ?? 'PlanePos'} ${editor.unit.name}`;
 
     const uiProps = {
 

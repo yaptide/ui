@@ -376,21 +376,21 @@ function SidebarScene(editor) {
 		if (object !== null && object.parent !== null && !object.parent.isCSGZone) {
 
 			let needsRefresh = false;
-			let parent = object.parent;
+			let nextParent = object.parent;
 
 			const reachedFinalParent = (parent) => {
 				let finalParents = [editor.scene, editor.zonesManager.zonesContainer, editor.zonesManager.boundingZones]
 				return finalParents.some((finalParent) => finalParent === parent)
 			}
 
-			while (!reachedFinalParent(parent)) {
-				if (nodeStates.get(parent) !== true) {
-					nodeStates.set(parent, true);
+			while (!reachedFinalParent(nextParent)) {
+				if (nodeStates.get(nextParent) !== true) {
+					nodeStates.set(nextParent, true);
 					needsRefresh = true;
 
 				}
 
-				parent = parent.parent;
+				nextParent = nextParent.parent;
 
 			}
 

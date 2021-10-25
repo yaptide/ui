@@ -14,6 +14,7 @@ export interface CSGZoneJSON {
     unionOperations: CSGOperationJSON[][];
     subscribedObjectsUuid: string[];
     materialName: string;
+    materialData: unknown;
 }
 
 export class CSGZone extends THREE.Mesh {
@@ -230,6 +231,7 @@ export class CSGZone extends THREE.Mesh {
             unionOperations,
             subscribedObjectsUuid: Array.from(this.subscribedObjectsUuid),
             materialName: this.getSimulationMaterial().name,
+            materialData: this.getSimulationMaterial().simulationData
         };
         return jsonObject;
     }
@@ -243,7 +245,7 @@ export class CSGZone extends THREE.Mesh {
             union.map((operation) => CSGOperation.fromJSON(editor, operation))
         );
 
-        let subscribedObjectsUuid;
+        let subscribedObjectsUuid = undefined;
         
         if(Array.isArray(data.subscribedObjectsUuid))
             subscribedObjectsUuid = new Set(data.subscribedObjectsUuid)
