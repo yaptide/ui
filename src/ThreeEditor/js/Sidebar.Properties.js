@@ -9,9 +9,9 @@ function SidebarProperties(editor) {
 
 	const { strings, signals } = editor;
 
-	let container = new UITabbedPanel();
-	let material = new SidebarMaterial(editor);
-	let zoneMaterial = new SidebarZoneMaterial(editor);
+	const container = new UITabbedPanel();
+	const material = new SidebarMaterial(editor);
+	const zoneMaterial = new SidebarZoneMaterial(editor);
 	container.setId('properties');
 
 	container.addTab('object', strings.getKey('sidebar/properties/object'), new SidebarObject(editor));

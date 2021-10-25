@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { AddObjectCommand, SetSceneCommand } from './commands/Commands';
-import { TGALoader } from 'three/examples/jsm/loaders/TGALoader.js';
 import { LoaderUtils } from './LoaderUtils.js';
+import { TGALoader } from 'three/examples/jsm/loaders/TGALoader.js';
 
 
 

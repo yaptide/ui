@@ -379,7 +379,7 @@ function SidebarScene(editor) {
 			let nextParent = object.parent;
 
 			const reachedFinalParent = (parent) => {
-				let finalParents = [editor.scene, editor.zonesManager.zonesContainer, editor.zonesManager.boundingZones]
+				const finalParents = [editor.scene, editor.zonesManager.zonesContainer, editor.zonesManager.boundingZones]
 				return finalParents.some((finalParent) => finalParent === parent)
 			}
 

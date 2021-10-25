@@ -1,5 +1,5 @@
-import * as THREE from 'three';
 import * as Records from './Sidebar.Material.Records';
+import * as THREE from 'three';
 import { SetMaterialCommand, SetMaterialValueCommand } from './commands/Commands';
 import { UIInput, UIPanel, UIRow, UISelect, UIText } from './libs/ui.js';
 import { SidebarMaterialBooleanProperty } from './Sidebar.Material.BooleanProperty.js';
