@@ -344,7 +344,6 @@ function SidebarObject(editor) {
 	objectUserDataRow.add(new UIText(strings.getKey('sidebar/object/userdata')).setWidth('90px'));
 	objectUserDataRow.add(objectUserData);
 
-	// container.add(objectUserDataRow);
 
 
 	//
