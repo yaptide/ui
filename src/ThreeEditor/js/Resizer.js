@@ -7,24 +7,6 @@ function Resizer(editor) {
 	const dom = document.createElement('div');
 	dom.id = 'resizer';
 
-	function onPointerDown(event) {
-
-		if (event.isPrimary === false) return;
-
-		dom.ownerDocument.addEventListener('pointermove', onPointerMove, false);
-		dom.ownerDocument.addEventListener('pointerup', onPointerUp, false);
-
-	}
-
-	function onPointerUp(event) {
-
-		if (event.isPrimary === false) return;
-
-		dom.ownerDocument.removeEventListener('pointermove', onPointerMove);
-		dom.ownerDocument.removeEventListener('pointerup', onPointerUp);
-
-	}
-
 	function onPointerMove(event) {
 
 		// PointerEvent's movementX/movementY are 0 in WebKit
@@ -40,6 +22,24 @@ function Resizer(editor) {
 		document.getElementById('viewport').style.right = (x + rect.width) + 'px';
 
 		signals.windowResize.dispatch();
+
+	}
+
+	function onPointerUp(event) {
+
+		if (event.isPrimary === false) return;
+
+		dom.ownerDocument.removeEventListener('pointermove', onPointerMove);
+		dom.ownerDocument.removeEventListener('pointerup', onPointerUp);
+
+	}
+
+	function onPointerDown(event) {
+
+		if (event.isPrimary === false) return;
+
+		dom.ownerDocument.addEventListener('pointermove', onPointerMove, false);
+		dom.ownerDocument.addEventListener('pointerup', onPointerUp, false);
 
 	}
 

@@ -242,13 +242,12 @@ export class CSGZone extends THREE.Mesh {
         let unionOperations = data.unionOperations.map((union) =>
             union.map((operation) => CSGOperation.fromJSON(editor, operation))
         );
-        let subscribedObjectsUuid = Array.isArray(data.subscribedObjectsUuid)
-            ? new Set(data.subscribedObjectsUuid)
-            : (() => {
-                  throw Error(
-                      `SubscribedObjectsId is not array ${data.subscribedObjectsUuid}`
-                  );
-              })();
+
+        let subscribedObjectsUuid;
+        
+        if(Array.isArray(data.subscribedObjectsUuid))
+            subscribedObjectsUuid = new Set(data.subscribedObjectsUuid)
+        else throw Error(`SubscribedObjectsId is not array: ${typeof data.subscribedObjectsUuid}`);
 
         let zone = new CSGZone(
             editor,

@@ -16,7 +16,7 @@ function SidebarMaterialConstantProperty(editor, property, name, options) {
 
 	function onChange() {
 
-		const value = parseInt(constant.getValue());
+		const value = parseInt(constant.getValue(),10);
 
 		if (material[property] !== value) {
 

@@ -8,11 +8,11 @@ function ThreeEditor() {
   const containerEl = useRef(null);
 
 
-  const [editor, setEditor] = useState<Editor>();
+  const [, setEditor] = useState<Editor>();
 
   useEffect(() => {
     if (containerEl.current) {
-      const { editor, viewport, toolbar, sidebar, menubar, resizer } = initEditor(containerEl.current); // eslint-disable-line
+      const { editor } = initEditor(containerEl.current);
       setEditor(editor);
 
     }

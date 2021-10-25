@@ -1,13 +1,13 @@
-import Signal from 'signals';
 import * as THREE from 'three';
 import { Beam } from '../util/Beam';
-import { Config } from './Config.js';
 import { CSGManager } from '../util/CSG/CSGManager';
+import   MaterialsManager from '../util/Materials/MaterialsManager';
+import { Config } from './Config.js';
 import { History as _History } from './History.js';
 import { Loader } from './Loader.js';
+import   Signal from 'signals';
 import { Storage as _Storage } from './Storage.js';
 import { Strings } from './Strings.js';
-import MaterialsManager from '../util/Materials/MaterialsManager';
 
 
 
@@ -181,15 +181,15 @@ Editor.prototype = {
 
 		object.traverse(function (child) {
 
-			if (child.geometry !== undefined) scope.addGeometry(child.geometry);
-			if (child.material !== undefined) scope.addMaterial(child.material);
+			if (child.geometry) scope.addGeometry(child.geometry);
+			if (child.material) scope.addMaterial(child.material);
 
 			scope.addCamera(child);
 			scope.addHelper(child);
 
 		});
 
-		if (parent === undefined) {
+		if (!parent) {
 			this.scene.add(object);
 
 		} else {
@@ -206,7 +206,7 @@ Editor.prototype = {
 
 	moveObject(object, parent, before) {	
 
-		if (parent === undefined) {
+		if (!parent) {
 
 			parent = this.scene;
 
@@ -216,7 +216,7 @@ Editor.prototype = {
 
 		// sort children array
 
-		if (before !== undefined) {
+		if (before) {
 
 			var index = parent.children.indexOf(before);
 			parent.children.splice(index, 0, object);
@@ -246,7 +246,7 @@ Editor.prototype = {
 			scope.removeCamera(child);
 			scope.removeHelper(child);
 
-			if (child.material !== undefined) scope.removeMaterial(child.material);
+			if (child.material) scope.removeMaterial(child.material);
 
 		});
 
@@ -296,7 +296,7 @@ Editor.prototype = {
 
 		var count = materialsRefCounter.get(material);
 
-		if (count === undefined) {
+		if (typeof count === "undefined") {
 
 			materialsRefCounter.set(material, 1);
 			this.materials[material.uuid] = material;
@@ -399,7 +399,7 @@ Editor.prototype = {
 
 	removeCamera(camera) {
 
-		if (this.cameras[camera.uuid] !== undefined) {
+		if (this.cameras[camera.uuid]) {
 
 			delete this.cameras[camera.uuid];
 
@@ -418,7 +418,7 @@ Editor.prototype = {
 
 		return function (object, helper) {
 
-			if (helper === undefined) {
+			if (!helper) {
 
 				if (object.isCamera) {
 
@@ -469,7 +469,7 @@ Editor.prototype = {
 
 	removeHelper(object) {
 
-		if (this.helpers[object.id] !== undefined) {
+		if (this.helpers[object.id]) {
 
 			var helper = this.helpers[object.id];
 			helper.parent.remove(helper);
@@ -524,7 +524,7 @@ Editor.prototype = {
 
 		var material = object.material;
 
-		if (Array.isArray(material) && slot !== undefined) {
+		if (Array.isArray(material) && Number.isInteger(slot)) {
 
 			material = material[slot];
 
@@ -536,7 +536,7 @@ Editor.prototype = {
 
 	setObjectMaterial(object, slot, newMaterial) {
 
-		if (Array.isArray(object.material) && slot !== undefined) {
+		if (Array.isArray(object.material) && Number.isInteger(slot)) {
 
 			object.material[slot] = newMaterial;
 
@@ -586,7 +586,7 @@ Editor.prototype = {
 
 		const objectCollections = [this.scene, this.zonesManager, this.beam];
 
-		const object = objectCollections.map((e) => e.getObjectById(id)).find(e => e !== undefined);
+		const object = objectCollections.map((e) => e.getObjectById(id)).find(e => typeof e !== "undefined");
 
 		this.select(object);
 	},
@@ -615,7 +615,7 @@ Editor.prototype = {
 
 	focus(object) {
 
-		if (object !== undefined) {
+		if (object) {
 
 			this.signals.objectFocused.dispatch(object);
 

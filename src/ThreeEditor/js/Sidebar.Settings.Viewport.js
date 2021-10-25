@@ -6,19 +6,19 @@ function SidebarSettingsViewport(editor) {
 
 	const { signals, strings } = editor;
 
-	var container = new UIPanel();
+	let container = new UIPanel();
 
-	var headerRow = new UIRow();
+	let headerRow = new UIRow();
 	headerRow.add(new UIText(strings.getKey('sidebar/settings/viewport').toUpperCase()));
 	container.add(headerRow);
 
 	// grid
 
-	var showGridRow = new UIRow();
+	let showGridRow = new UIRow();
 
 	showGridRow.add(new UIText(strings.getKey('sidebar/settings/viewport/grid')).setWidth('90px'));
 
-	var showGrid = new UIBoolean(true).onChange(() => {
+	let showGrid = new UIBoolean(true).onChange(() => {
 
 		signals.showGridChanged.dispatch(showGrid.getValue());
 
@@ -28,11 +28,11 @@ function SidebarSettingsViewport(editor) {
 
 	// helpers
 
-	var showHelpersRow = new UIRow();
+	let showHelpersRow = new UIRow();
 
 	showHelpersRow.add(new UIText(strings.getKey('sidebar/settings/viewport/helpers')).setWidth('90px'));
 
-	var showHelpers = new UIBoolean(true).onChange(() => {
+	let showHelpers = new UIBoolean(true).onChange(() => {
 
 		signals.showHelpersChanged.dispatch(showHelpers.getValue());
 
@@ -42,11 +42,11 @@ function SidebarSettingsViewport(editor) {
 
 	// zones YAPTIDE
 
-	var showZonesRow = new UIRow();
+	let showZonesRow = new UIRow();
 
 	showZonesRow.add(new UIText("Zones").setWidth('90px'));
 
-	var showZones = new UIBoolean(true).onChange(() => {
+	let showZones = new UIBoolean(true).onChange(() => {
 
 		signals.showZonesChanged.dispatch(showZones.getValue());
 

@@ -7,17 +7,17 @@ import { SidebarSettings } from './Sidebar.Settings.js';
 
 function Sidebar(editor) {
 
-	let { strings, signals } = editor;
+	const { strings, signals } = editor;
 
-	var container = new UITabbedPanel();
+	let container = new UITabbedPanel();
 	container.setId('sidebar');
 
-	var scene = new UISpan().add(
+	let scene = new UISpan().add(
 		new SidebarScene(editor),
 		new SidebarProperties(editor)
 	);
-	var project = new SidebarProject(editor);
-	var settings = new SidebarSettings(editor);
+	let project = new SidebarProject(editor);
+	let settings = new SidebarSettings(editor);
 
 	container.addTab('scene', strings.getKey('sidebar/scene'), scene);
 	container.addTab('project', strings.getKey('sidebar/project'), project);

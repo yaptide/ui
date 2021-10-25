@@ -258,8 +258,8 @@ function SidebarScene(editor) {
 
 	function refreshUI() {
 
-		let { camera, scene } = editor;
-		let { zonesContainer, boundingZone } = editor.zonesManager;
+		const { camera, scene } = editor;
+		const { zonesContainer, boundingZone } = editor.zonesManager;
 
 		var options = [];
 
@@ -377,7 +377,8 @@ function SidebarScene(editor) {
 
 			let needsRefresh = false;
 			let parent = object.parent;
-			let reachedFinalParent = (parent) => {
+
+			const reachedFinalParent = (parent) => {
 				let finalParents = [editor.scene, editor.zonesManager.zonesContainer, editor.zonesManager.boundingZones]
 				return finalParents.some((finalParent) => finalParent === parent)
 			}
