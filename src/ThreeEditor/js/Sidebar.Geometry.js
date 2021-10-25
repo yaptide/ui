@@ -66,7 +66,7 @@ function SidebarGeometry(editor) {
 		zonePanel.setId("zonePanel");
 
 		return () => {
-			console.warn(editor.selected);
+			
 
 			var object = editor.selected;
 
