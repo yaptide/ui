@@ -5,8 +5,7 @@ import { UIOutliner, UITexture } from './libs/ui.three.js';
 
 function SidebarScene(editor) {
 
-	var signals = editor.signals;
-	var strings = editor.strings;
+	const { signals, strings } = editor;
 
 	var container = new UIPanel();
 	container.setBorderTop('0');
@@ -37,7 +36,7 @@ function SidebarScene(editor) {
 
 			}
 
-			opener.addEventListener('click', function () {
+			opener.addEventListener('click', () => {
 
 				nodeStates.set(object, nodeStates.get(object) === false); // toggle
 				refreshUI();
@@ -85,6 +84,8 @@ function SidebarScene(editor) {
 
 	function getObjectType(object) {
 
+		if (object.isCSGZone) return 'Points'; //TODO: Add support to different keywords in css classes  # skipcq: JS-0099
+		if (object?.parent?.isCSGManager) return 'Camera'; //Add support to different keywords in css classes
 		if (object.isScene) return 'Scene';
 		if (object.isCamera) return 'Camera';
 		if (object.isLight) return 'Light';
@@ -132,7 +133,7 @@ function SidebarScene(editor) {
 
 	var outliner = new UIOutliner(editor);
 	outliner.setId('outliner');
-	outliner.onChange(function () {
+	outliner.onChange(() => {
 
 		ignoreObjectSelectedSignal = true;
 
@@ -141,7 +142,7 @@ function SidebarScene(editor) {
 		ignoreObjectSelectedSignal = false;
 
 	});
-	outliner.onDblClick(function () {
+	outliner.onDblClick(() => {
 
 		editor.focusById(parseInt(outliner.getValue()));
 
@@ -161,7 +162,7 @@ function SidebarScene(editor) {
 		'Equirectangular': 'Equirect'
 
 	}).setWidth('150px');
-	backgroundType.onChange(function () {
+	backgroundType.onChange(() => {
 
 		onBackgroundChanged();
 		refreshBackgroundUI();
@@ -218,7 +219,7 @@ function SidebarScene(editor) {
 
 	}).setWidth('150px');
 	environmentType.setValue('None');
-	environmentType.onChange(function () {
+	environmentType.onChange(() => {
 
 		onEnvironmentChanged();
 		refreshEnvironmentUI();
@@ -257,10 +258,8 @@ function SidebarScene(editor) {
 
 	function refreshUI() {
 
-		var camera = editor.camera;
-		var scene = editor.scene;
-		var zonesManager = editor.zonesManager;
-		var boundingZone = editor.zonesManager.boundingZone;
+		const { camera, scene } = editor;
+		const { zonesContainer, boundingZone } = editor.zonesManager;
 
 		var options = [];
 
@@ -294,13 +293,13 @@ function SidebarScene(editor) {
 		}
 		addObjects(scene.children, 0);
 
-		options.push(buildOption(zonesManager, false));
-		addObjects(zonesManager.children, 0);
+		options.push(buildOption(zonesContainer, false));
+		addObjects(zonesContainer.children, 0);
 
 		options.push(buildOption(boundingZone, false));
 
 		options.push(buildOption(editor.beam, false));
-		
+
 		outliner.setOptions(options);
 
 		if (editor.selected !== null) {
@@ -369,43 +368,29 @@ function SidebarScene(editor) {
 
 	signals.sceneGraphChanged.add(refreshUI);
 
-	/*
-	signals.objectChanged.add( function ( object ) {
+	signals.objectChanged.add(refreshUI);
 
-		var options = outliner.options;
-
-		for ( var i = 0; i < options.length; i ++ ) {
-
-			var option = options[ i ];
-
-			if ( option.value === object.id ) {
-
-				option.innerHTML = buildHTML( object );
-				return;
-
-			}
-
-		}
-
-	} );
-	*/
-
-	signals.objectSelected.add(function (object) {
+	signals.objectSelected.add((object) => {
 		if (ignoreObjectSelectedSignal === true) return;
 
-		if (object !== null && object.parent !== null) {
+		if (object !== null && object.parent !== null && !object.parent.isCSGZone) {
 
 			let needsRefresh = false;
-			let parent = object.parent;
+			let nextParent = object.parent;
 
-			while (parent !== editor.scene && parent !== editor.zonesManager ) {
-				if (nodeStates.get(parent) !== true) {
-					nodeStates.set(parent, true);
+			const reachedFinalParent = (parent) => {
+				const finalParents = [editor.scene, editor.zonesManager.zonesContainer, editor.zonesManager.boundingZones]
+				return finalParents.some((finalParent) => finalParent === parent)
+			}
+
+			while (!reachedFinalParent(nextParent)) {
+				if (nodeStates.get(nextParent) !== true) {
+					nodeStates.set(nextParent, true);
 					needsRefresh = true;
 
 				}
 
-				parent = parent.parent;
+				nextParent = nextParent.parent;
 
 			}
 

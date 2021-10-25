@@ -3,8 +3,6 @@ import { createOption } from './Menubar.js';
 
 function MenubarLayout(editor) {
 
-	var strings = editor.strings;
-
 	var container = new UIPanel();
 	container.setClass('menu');
 

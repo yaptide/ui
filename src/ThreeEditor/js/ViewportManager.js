@@ -302,14 +302,14 @@ function ViewManager(editor) {
 
 	// signals
 
-	signals.editorCleared.add(function () {
+	signals.editorCleared.add(() => {
 
 		views.forEach((view) => view.reset());
 		render();
 
 	});
 
-	signals.rendererUpdated.add(function () {
+	signals.rendererUpdated.add(() => {
 
 		scene.traverse(function (child) {
 
@@ -325,7 +325,7 @@ function ViewManager(editor) {
 
 	});
 
-	signals.rendererCreated.add(function (newRenderer) {
+	signals.rendererCreated.add((newRenderer) => {
 
 		if (renderer !== null) {
 
@@ -371,13 +371,13 @@ function ViewManager(editor) {
 
 	});
 
-	signals.sceneGraphChanged.add(function () {
+	signals.sceneGraphChanged.add(() => {
 
 		render();
 
 	});
 
-	signals.cameraChanged.add(function () {
+	signals.cameraChanged.add(() => {
 
 		render();
 
@@ -386,7 +386,7 @@ function ViewManager(editor) {
 	const canBoxBeUpdated = (object) => object !== null && object !== scene && object !== camera && object !== zonesManager;
 
 
-	signals.objectSelected.add(function (object) {
+	signals.objectSelected.add((object) => {
 
 		selectionBox.visible = false;
 
@@ -407,13 +407,13 @@ function ViewManager(editor) {
 
 	});
 
-	signals.objectFocused.add(function (object) {
+	signals.objectFocused.add((object) => {
 
 		views.forEach((view) => view.controls.focus(object));
 
 	});
 
-	signals.geometryChanged.add(function (object) {
+	signals.geometryChanged.add((object) => {
 
 		if (object !== undefined) {
 
@@ -425,7 +425,7 @@ function ViewManager(editor) {
 
 	});
 
-	signals.objectAdded.add(function (object) {
+	signals.objectAdded.add((object) => {
 
 		object.traverse(function (child) {
 
@@ -435,7 +435,7 @@ function ViewManager(editor) {
 
 	});
 
-	signals.objectChanged.add(function (object) {
+	signals.objectChanged.add((object) => {
 
 		if (editor.selected === object) {
 
@@ -459,7 +459,7 @@ function ViewManager(editor) {
 
 	});
 
-	signals.objectRemoved.add(function (object) {
+	signals.objectRemoved.add((object) => {
 
 		object.traverse(function (child) {
 
@@ -469,7 +469,7 @@ function ViewManager(editor) {
 
 	});
 
-	signals.helperAdded.add(function (object) {
+	signals.helperAdded.add((object) => {
 
 		const picker = object.getObjectByName('picker');
 
@@ -481,7 +481,7 @@ function ViewManager(editor) {
 
 	});
 
-	signals.helperRemoved.add(function (object) {
+	signals.helperRemoved.add((object) => {
 
 		const picker = object.getObjectByName('picker');
 
@@ -493,13 +493,13 @@ function ViewManager(editor) {
 
 	});
 
-	signals.materialChanged.add(function () {
+	signals.materialChanged.add(() => {
 
 		render();
 
 	});
 
-	signals.animationStopped.add(function () {
+	signals.animationStopped.add(() => {
 
 		render();
 
@@ -507,7 +507,7 @@ function ViewManager(editor) {
 
 	// background
 
-	signals.sceneBackgroundChanged.add(function (backgroundType, backgroundColor, backgroundTexture, backgroundEquirectangularTexture) {
+	signals.sceneBackgroundChanged.add((backgroundType, backgroundColor, backgroundTexture, backgroundEquirectangularTexture) => {
 
 		switch (backgroundType) {
 
@@ -557,7 +557,7 @@ function ViewManager(editor) {
 
 	// environment
 
-	signals.sceneEnvironmentChanged.add(function (environmentType, environmentEquirectangularTexture) {
+	signals.sceneEnvironmentChanged.add((environmentType, environmentEquirectangularTexture) => {
 
 		switch (environmentType) {
 
@@ -598,7 +598,7 @@ function ViewManager(editor) {
 	});
 
 
-	signals.viewportCameraChanged.add(function () {
+	signals.viewportCameraChanged.add(() => {
 
 		const { viewportCamera } = editor;
 
@@ -625,7 +625,7 @@ function ViewManager(editor) {
 
 	//
 
-	signals.windowResize.add(function () {
+	signals.windowResize.add(() => {
 
 		views.forEach((view) => view.setSize());
 
@@ -633,7 +633,7 @@ function ViewManager(editor) {
 
 	});
 
-	signals.showGridChanged.add(function (showGrid) {
+	signals.showGridChanged.add((showGrid) => {
 
 		grid.visible = showGrid;
 		render();
@@ -671,14 +671,14 @@ function ViewManager(editor) {
 		render();
 	}
 
-	signals.layoutChanged.add(function (layout) {
+	signals.layoutChanged.add((layout) => {
 		setLayout(layout);
 		editor.config.setKey('layout', currentLayout);
 	});
 
 	// viewport config
 
-	signals.viewportConfigChanged.add(function () {
+	signals.viewportConfigChanged.add(() => {
 
 		render();
 

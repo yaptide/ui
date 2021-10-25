@@ -1,6 +1,5 @@
 import * as THREE from 'three';
-import { AddObjectCommand } from './commands/AddObjectCommand.js';
-import { AddZoneCommand } from './commands/AddZoneCommand.js';
+import { AddObjectCommand, AddZoneCommand } from './commands/Commands';
 import { UIHorizontalRule, UIPanel } from './libs/ui.js';
 import { createOption } from './Menubar.js';
 

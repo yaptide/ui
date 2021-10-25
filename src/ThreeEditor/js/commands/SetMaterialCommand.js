@@ -9,9 +9,9 @@ import { ObjectLoader } from 'three';
  */
 class SetMaterialCommand extends Command {
 
-	constructor( editor, object, newMaterial, materialSlot ) {
+	constructor(editor, object, newMaterial, materialSlot) {
 
-		super( editor );
+		super(editor);
 
 		this.type = 'SetMaterialCommand';
 		this.name = 'New Material';
@@ -19,28 +19,30 @@ class SetMaterialCommand extends Command {
 		this.object = object;
 		this.materialSlot = materialSlot;
 
-		this.oldMaterial = this.editor.getObjectMaterial( object, materialSlot );
+		this.oldMaterial = this.editor.getObjectMaterial(object, materialSlot);
 		this.newMaterial = newMaterial;
 
 	}
 
 	execute() {
 
-		this.editor.setObjectMaterial( this.object, this.materialSlot, this.newMaterial );
-		this.editor.signals.materialChanged.dispatch( this.newMaterial );
+		this.editor.setObjectMaterial(this.object, this.materialSlot, this.newMaterial);
+		this.editor.signals.materialChanged.dispatch(this.newMaterial);
+		this.editor.signals.objectChanged.dispatch(this.object);
 
 	}
 
 	undo() {
 
-		this.editor.setObjectMaterial( this.object, this.materialSlot, this.oldMaterial );
-		this.editor.signals.materialChanged.dispatch( this.oldMaterial );
+		this.editor.setObjectMaterial(this.object, this.materialSlot, this.oldMaterial);
+		this.editor.signals.materialChanged.dispatch(this.oldMaterial);
+		this.editor.signals.objectChanged.dispatch(this.object);
 
 	}
 
 	toJSON() {
 
-		const output = super.toJSON( this );
+		const output = super.toJSON(this);
 
 		output.objectUuid = this.object.uuid;
 		output.oldMaterial = this.oldMaterial.toJSON();
@@ -50,21 +52,21 @@ class SetMaterialCommand extends Command {
 
 	}
 
-	fromJSON( json ) {
+	fromJSON(json) {
 
-		super.fromJSON( json );
+		super.fromJSON(json);
 
-		this.object = this.editor.objectByUuid( json.objectUuid );
-		this.oldMaterial = parseMaterial( json.oldMaterial );
-		this.newMaterial = parseMaterial( json.newMaterial );
+		this.object = this.editor.objectByUuid(json.objectUuid);
+		this.oldMaterial = parseMaterial(json.oldMaterial);
+		this.newMaterial = parseMaterial(json.newMaterial);
 
-		function parseMaterial( json ) {
+		function parseMaterial(materialJson) {
 
 			const loader = new ObjectLoader();
-			const images = loader.parseImages( json.images );
-			const textures = loader.parseTextures( json.textures, images );
-			const materials = loader.parseMaterials( [ json ], textures );
-			return materials[ json.uuid ];
+			const images = loader.parseImages(materialJson.images);
+			const textures = loader.parseTextures(materialJson.textures, images);
+			const materials = loader.parseMaterials([materialJson], textures);
+			return materials[materialJson.uuid];
 
 		}
 

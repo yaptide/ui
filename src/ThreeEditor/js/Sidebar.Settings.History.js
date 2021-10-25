@@ -4,13 +4,7 @@ import { UIBoolean, UIOutliner } from './libs/ui.three.js';
 
 function SidebarSettingsHistory( editor ) {
 
-	var strings = editor.strings;
-
-	var signals = editor.signals;
-
-	var config = editor.config;
-
-	var history = editor.history;
+	const { signals, strings, config, history } = editor;
 
 	var container = new UIPanel();
 

@@ -3,17 +3,13 @@ import ReactDOM from 'react-dom';
 import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper.js';
 import ZoneManagerPanel from '../../components/ZoneManagerPanel/ZoneManagerPanel';
 import { UIButton, UIPanel, UIRow, UISpan, UIText } from './libs/ui.js';
-import { isCSGZone } from '../util/CSG/CSGZone';
-import { isBoundingZone } from '../util/BoundingZone';
 import { BoundingZonePanel } from './Sidebar.Geometry.BoundingZone';
 import { isBeam } from '../util/Beam';
 import { BeamPanel } from './Sidebar.Geometry.Beam';
 
 function SidebarGeometry(editor) {
 
-	var strings = editor.strings;
-
-	var signals = editor.signals;
+	const { signals, strings } = editor;
 
 	var container = new UIPanel();
 	container.setBorderTop('0');
@@ -45,7 +41,7 @@ function SidebarGeometry(editor) {
 	container.add(helpersRow);
 
 	var vertexNormalsButton = new UIButton(strings.getKey('sidebar/geometry/show_vertex_normals'));
-	vertexNormalsButton.onClick(function () {
+	vertexNormalsButton.onClick(() => {
 
 		var object = editor.selected;
 
@@ -70,6 +66,7 @@ function SidebarGeometry(editor) {
 		zonePanel.setId("zonePanel");
 
 		return () => {
+			
 
 			var object = editor.selected;
 
@@ -100,7 +97,7 @@ function SidebarGeometry(editor) {
 
 			vertexNormalsButton.setDisplay('none');
 
-		} else if (isBoundingZone(object)) {
+		} else if (object && object.isBoundingZone) {
 
 			parameters.clear();
 			parameters.add(new BoundingZonePanel(editor, object));
@@ -160,17 +157,13 @@ function SidebarGeometry(editor) {
 
 	}
 
-	signals.objectSelected.add(function () {
+	signals.objectSelected.add(() => {
 
 		currentGeometryType = null;
-
 		vertexNormalsButton.setDisplay('block');
-
-		if (isCSGZone(editor.selected))
-			buildZonesManager();
-		else
-			build();
-
+		(editor.selected?.isCSGZone
+			? buildZonesManager
+			: build)();
 
 	});
 

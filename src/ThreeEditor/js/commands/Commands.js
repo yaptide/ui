@@ -1,10 +1,11 @@
 export { AddObjectCommand } from './AddObjectCommand.js';
 export { AddScriptCommand } from './AddScriptCommand.js';
+export { AddZoneCommand } from './AddZoneCommand.js';
 export { MoveObjectCommand } from './MoveObjectCommand.js';
 export { MultiCmdsCommand } from './MultiCmdsCommand.js';
 export { RemoveObjectCommand } from './RemoveObjectCommand.js';
-export { RemoveZoneCommand } from './RemoveZoneCommand.js';
 export { RemoveScriptCommand } from './RemoveScriptCommand.js';
+export { RemoveZoneCommand } from './RemoveZoneCommand.js';
 export { SetColorCommand } from './SetColorCommand.js';
 export { SetGeometryCommand } from './SetGeometryCommand.js';
 export { SetGeometryValueCommand } from './SetGeometryValueCommand.js';
@@ -20,3 +21,4 @@ export { SetSceneCommand } from './SetSceneCommand.js';
 export { SetScriptValueCommand } from './SetScriptValueCommand.js';
 export { SetUuidCommand } from './SetUuidCommand.js';
 export { SetValueCommand } from './SetValueCommand.js';
+export { SetZoneMaterialCommand } from './SetZoneMaterialCommand.js';

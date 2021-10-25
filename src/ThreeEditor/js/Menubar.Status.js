@@ -27,7 +27,7 @@ function MenubarStatus(editor) {
 
 	const autosave = new UIBoolean(editor.config.getKey('autosave'), strings.getKey('menubar/status/autosave'));
 	autosave.text.setColor('#888');
-	autosave.onChange(function () {
+	autosave.onChange(() => {
 
 		const value = this.getValue();
 
@@ -42,13 +42,13 @@ function MenubarStatus(editor) {
 	});
 	container.add(autosave);
 
-	editor.signals.savingStarted.add(function () {
+	editor.signals.savingStarted.add(() => {
 
 		autosave.text.setTextDecoration('underline');
 
 	});
 
-	editor.signals.savingFinished.add(function () {
+	editor.signals.savingFinished.add(() => {
 
 		autosave.text.setTextDecoration('none');
 

@@ -1,10 +1,9 @@
-import { UIColor, UINumber, UIRow, UIText } from './libs/ui.js';
-import { SetMaterialColorCommand } from './commands/SetMaterialColorCommand.js';
-import { SetMaterialValueCommand } from './commands/SetMaterialValueCommand.js';
+import {SetMaterialColorCommand, SetMaterialValueCommand} from './commands/Commands';
+import {UIColor, UINumber, UIRow, UIText} from './libs/ui.js';
 
 function SidebarMaterialColorProperty( editor, property, name ) {
 
-	const signals = editor.signals;
+	const { signals } = editor;
 
 	const container = new UIRow();
 	container.add( new UIText( name ).setWidth( '90px' ) );
@@ -28,7 +27,7 @@ function SidebarMaterialColorProperty( editor, property, name ) {
 
 		if ( material[ property ].getHex() !== color.getHexValue() ) {
 
-			editor.execute( new SetMaterialColorCommand( editor, object, property, color.getHexValue(), 0 /* TODO: currentMaterialSlot */ ) );
+			editor.execute( new SetMaterialColorCommand( editor, object, property, color.getHexValue(), 0 /* TODO: currentMaterialSlot # skipcq: JS-0099 */ ) );
 
 		}
 
@@ -36,7 +35,7 @@ function SidebarMaterialColorProperty( editor, property, name ) {
 
 			if ( material[ `${ property }Intensity` ] !== intensity.getValue() ) {
 
-				editor.execute( new SetMaterialValueCommand( editor, object, `${ property }Intensity`, intensity.getValue(), /* TODO: currentMaterialSlot*/ 0 ) );
+				editor.execute( new SetMaterialValueCommand( editor, object, `${ property }Intensity`, intensity.getValue(), /* TODO: currentMaterialSlot # skipcq: JS-0099 */ 0 ) );
 
 			}
 
@@ -88,3 +87,4 @@ function SidebarMaterialColorProperty( editor, property, name ) {
 }
 
 export { SidebarMaterialColorProperty };
+

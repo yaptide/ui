@@ -10,6 +10,8 @@ export interface CSGOperationJSON {
 export class CSGOperation {
     object: THREE.Object3D;
     mode: Operation;
+    readonly isCSGOperation: true = true;
+    
 
     constructor(object: THREE.Object3D, mode: Operation) {
         this.object = object;

@@ -1,8 +1,8 @@
 import { Button } from "@material-ui/core";
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Editor } from "../../ThreeEditor/js/Editor";
-import { CSGZone } from "../../ThreeEditor/util/CSG/CSGZone";
 import { CSGOperation } from "../../ThreeEditor/util/CSG/CSGOperation";
+import { CSGZone } from "../../ThreeEditor/util/CSG/CSGZone";
 import { parseZone } from "../../util/parseZone/parseZone";
 import BooleanAlgebraRow, { AlgebraRow } from "./BooleanAlgebraRow";
 import "./zoneManagerPanel.css";
@@ -62,6 +62,11 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
         setRows((prev) => [...prev, { geometriesId: [], operations: [] }]);
         zoneRef.current?.addUnion();
     };
+    
+    const handleParse = () => {
+        const simulationData = props?.zone?.getSimulationMaterial().simulationData;
+        parseZone(rows, simulationData);
+    }
 
     const removeRow = (removeId: number) => () => {
         setRows((prev) => {
@@ -144,7 +149,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
             )
         })}
         <Button className="addRowButton" onClick={addAlgebraRow}>+</Button>
-        <Button className="parseZoneButton" onClick={() => parseZone(rows)}>Parse Zone</Button>
+        <Button className="parseZoneButton" onClick={handleParse}>Parse Zone</Button>
     </div>);
 }
 

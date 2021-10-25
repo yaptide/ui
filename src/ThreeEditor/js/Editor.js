@@ -1,14 +1,14 @@
-import * as THREE from 'three'
-import Signal from 'signals';
-
+import * as THREE from 'three';
+import { Beam } from '../util/Beam';
+import { CSGManager } from '../util/CSG/CSGManager';
+import   MaterialsManager from '../util/Materials/MaterialsManager';
 import { Config } from './Config.js';
-import { Loader } from './Loader.js';
 import { History as _History } from './History.js';
+import { Loader } from './Loader.js';
+import   Signal from 'signals';
 import { Strings } from './Strings.js';
 import { Storage as _Storage } from './Storage.js';
-import { CSGManager } from '../util/CSG/CSGManager';
-import { isCSGZone } from '../util/CSG/CSGZone';
-import { Beam } from '../util/Beam';
+
 
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
@@ -16,18 +16,13 @@ _DEFAULT_CAMERA.name = 'Camera';
 _DEFAULT_CAMERA.position.set(0, 5, 10);
 _DEFAULT_CAMERA.lookAt(new THREE.Vector3());
 
-function Editor() {
+export function Editor() {
 
 	this.signals = {
 
 		// script
 
 		editScript: new Signal(),
-
-		// player
-
-		startPlayer: new Signal(),
-		stopPlayer: new Signal(),
 
 
 		// notifications
@@ -97,12 +92,12 @@ function Editor() {
 		selectModeChanged: new Signal(),
 
 		layoutChanged: new Signal(), // Layout signal
+		
+		CSGZoneAdded: new Signal(), // Sidebar.Properties signal
 
 		viewportConfigChanged: new Signal(), // Viewport config signal 
 
 		CSGManagerStateChanged: new Signal(), // State of CSGmanager changed
-
-		loadedFromJSON: new Signal(), // Editor loaded from JSON 
 
 	};
 
@@ -128,6 +123,9 @@ function Editor() {
 
 	this.beam = new Beam(this);
 	this.sceneHelpers.add(this.beam);
+	
+	this.materialsManager = new MaterialsManager;
+	
 
 	this.object = {};
 	this.geometries = {};
@@ -151,7 +149,7 @@ function Editor() {
 
 Editor.prototype = {
 
-	setScene: function (scene) {
+	setScene(scene) {
 
 		this.scene.uuid = scene.uuid;
 		this.scene.name = scene.name;
@@ -176,26 +174,23 @@ Editor.prototype = {
 
 	},
 
-	//
 
-	addObject: function (object, parent, index) {
+	addObject(object, parent, index) {
 
 		var scope = this;
 
 		object.traverse(function (child) {
 
-			if (child.geometry !== undefined) scope.addGeometry(child.geometry);
-			if (child.material !== undefined) scope.addMaterial(child.material);
+			if (child.geometry) scope.addGeometry(child.geometry);
+			if (child.material) scope.addMaterial(child.material);
 
 			scope.addCamera(child);
 			scope.addHelper(child);
 
 		});
 
-		if (parent === undefined) {
-			isCSGZone(object)
-				? this.zonesManager.add(object)
-				: this.scene.add(object);
+		if (!parent) {
+			this.scene.add(object);
 
 		} else {
 
@@ -209,9 +204,9 @@ Editor.prototype = {
 
 	},
 
-	moveObject: function (object, parent, before) {	
+	moveObject(object, parent, before) {	
 
-		if (parent === undefined) {
+		if (!parent) {
 
 			parent = this.scene;
 
@@ -221,7 +216,7 @@ Editor.prototype = {
 
 		// sort children array
 
-		if (before !== undefined) {
+		if (before) {
 
 			var index = parent.children.indexOf(before);
 			parent.children.splice(index, 0, object);
@@ -233,14 +228,14 @@ Editor.prototype = {
 
 	},
 
-	nameObject: function (object, name) {
+	nameObject(object, name) {
 
 		object.name = name;
 		this.signals.sceneGraphChanged.dispatch();
 
 	},
 
-	removeObject: function (object) {
+	removeObject(object) {
 
 		if (object.parent === null ) return; // avoid deleting the camera or scene
 
@@ -251,7 +246,7 @@ Editor.prototype = {
 			scope.removeCamera(child);
 			scope.removeHelper(child);
 
-			if (child.material !== undefined) scope.removeMaterial(child.material);
+			if (child.material) scope.removeMaterial(child.material);
 
 		});
 
@@ -262,20 +257,20 @@ Editor.prototype = {
 
 	},
 
-	addGeometry: function (geometry) {
+	addGeometry(geometry) {
 
 		this.geometries[geometry.uuid] = geometry;
 
 	},
 
-	setGeometryName: function (geometry, name) {
+	setGeometryName(geometry, name) {
 
 		geometry.name = name;
 		this.signals.sceneGraphChanged.dispatch();
 
 	},
 
-	addMaterial: function (material) {
+	addMaterial(material) {
 
 		if (Array.isArray(material)) {
 
@@ -295,13 +290,13 @@ Editor.prototype = {
 
 	},
 
-	addMaterialToRefCounter: function (material) {
+	addMaterialToRefCounter(material) {
 
 		var materialsRefCounter = this.materialsRefCounter;
 
 		var count = materialsRefCounter.get(material);
 
-		if (count === undefined) {
+		if (typeof count === "undefined") {
 
 			materialsRefCounter.set(material, 1);
 			this.materials[material.uuid] = material;
@@ -315,7 +310,7 @@ Editor.prototype = {
 
 	},
 
-	removeMaterial: function (material) {
+	removeMaterial(material) {
 
 		if (Array.isArray(material)) {
 
@@ -335,7 +330,7 @@ Editor.prototype = {
 
 	},
 
-	removeMaterialFromRefCounter: function (material) {
+	removeMaterialFromRefCounter(material) {
 
 		var materialsRefCounter = this.materialsRefCounter;
 
@@ -355,7 +350,7 @@ Editor.prototype = {
 
 	},
 
-	getMaterialById: function (id) {
+	getMaterialById(id) {
 
 		var material;
 		var materials = Object.values(this.materials);
@@ -375,14 +370,14 @@ Editor.prototype = {
 
 	},
 
-	setMaterialName: function (material, name) {
+	setMaterialName(material, name) {
 
 		material.name = name;
 		this.signals.sceneGraphChanged.dispatch();
 
 	},
 
-	addTexture: function (texture) {
+	addTexture(texture) {
 
 		this.textures[texture.uuid] = texture;
 
@@ -390,7 +385,7 @@ Editor.prototype = {
 
 	//
 
-	addCamera: function (camera) {
+	addCamera(camera) {
 
 		if (camera.isCamera) {
 
@@ -402,9 +397,9 @@ Editor.prototype = {
 
 	},
 
-	removeCamera: function (camera) {
+	removeCamera(camera) {
 
-		if (this.cameras[camera.uuid] !== undefined) {
+		if (this.cameras[camera.uuid]) {
 
 			delete this.cameras[camera.uuid];
 
@@ -423,7 +418,7 @@ Editor.prototype = {
 
 		return function (object, helper) {
 
-			if (helper === undefined) {
+			if (!helper) {
 
 				if (object.isCamera) {
 
@@ -472,9 +467,9 @@ Editor.prototype = {
 
 	}()),
 
-	removeHelper: function (object) {
+	removeHelper(object) {
 
-		if (this.helpers[object.id] !== undefined) {
+		if (this.helpers[object.id]) {
 
 			var helper = this.helpers[object.id];
 			helper.parent.remove(helper);
@@ -489,7 +484,10 @@ Editor.prototype = {
 
 	//
 
-	addScript: function (object, script) {
+	/**
+	 * @deprecated scripts aren't needed for our app.
+	 */
+	addScript(object, script) {
 
 		if (this.scripts[object.uuid] === undefined) {
 
@@ -503,7 +501,10 @@ Editor.prototype = {
 
 	},
 
-	removeScript: function (object, script) {
+	/**
+	 * @deprecated scripts aren't needed for our app.
+	 */
+	removeScript(object, script) {
 
 		if (this.scripts[object.uuid] === undefined) return;
 
@@ -519,11 +520,11 @@ Editor.prototype = {
 
 	},
 
-	getObjectMaterial: function (object, slot) {
+	getObjectMaterial(object, slot) {
 
 		var material = object.material;
 
-		if (Array.isArray(material) && slot !== undefined) {
+		if (Array.isArray(material) && Number.isInteger(slot)) {
 
 			material = material[slot];
 
@@ -533,9 +534,9 @@ Editor.prototype = {
 
 	},
 
-	setObjectMaterial: function (object, slot, newMaterial) {
+	setObjectMaterial(object, slot, newMaterial) {
 
-		if (Array.isArray(object.material) && slot !== undefined) {
+		if (Array.isArray(object.material) && Number.isInteger(slot)) {
 
 			object.material[slot] = newMaterial;
 
@@ -547,7 +548,7 @@ Editor.prototype = {
 
 	},
 
-	setViewportCamera: function (uuid) {
+	setViewportCamera(uuid) {
 
 		this.viewportCamera = this.cameras[uuid];
 		this.signals.viewportCameraChanged.dispatch();
@@ -556,7 +557,7 @@ Editor.prototype = {
 
 	//
 
-	select: function (object) {
+	select(object) {
 
 		if (this.selected === object) return;
 
@@ -574,7 +575,7 @@ Editor.prototype = {
 
 	},
 
-	selectById: function (id) {
+	selectById(id) {
 
 		if (id === this.camera.id) {
 
@@ -585,12 +586,12 @@ Editor.prototype = {
 
 		const objectCollections = [this.scene, this.zonesManager, this.beam];
 
-		const object = objectCollections.map((e) => e.getObjectById(id)).find(e => e !== undefined);
+		const object = objectCollections.map((e) => e.getObjectById(id)).find(e => typeof e !== "undefined");
 
 		this.select(object);
 	},
 
-	selectByUuid: function (uuid) {
+	selectByUuid(uuid) {
 
 		var scope = this;
 
@@ -606,15 +607,15 @@ Editor.prototype = {
 
 	},
 
-	deselect: function () {
+	deselect() {
 
 		this.select(null);
 
 	},
 
-	focus: function (object) {
+	focus(object) {
 
-		if (object !== undefined) {
+		if (object) {
 
 			this.signals.objectFocused.dispatch(object);
 
@@ -622,13 +623,13 @@ Editor.prototype = {
 
 	},
 
-	focusById: function (id) {
+	focusById(id) {
 
 		this.focus(this.scene.getObjectById(id));
 
 	},
 
-	clear: function () {
+	clear() {
 
 		this.history.clear();
 		this.storage.clear();
@@ -670,8 +671,7 @@ Editor.prototype = {
 
 	//
 
-	fromJSON: async function (json) {
-
+	async fromJSON(json) {
 		const loader = new THREE.ObjectLoader();
 		const camera = await loader.parseAsync(json.camera);
 
@@ -683,16 +683,18 @@ Editor.prototype = {
 
 		this.setScene(await loader.parseAsync(json.scene));
 
-		const zonesManager = CSGManager.fromJSON(this, json.zonesManager); // CSGManager must be loaded after scene 		
-		this.zonesManager.loadFrom(zonesManager); // CSGManager must be loaded in order not to lose reference in components 
+		this.materialsManager.fromJSOM(json.materialsManager);
+		
+		// CSGManager must be loaded after scene and simulation materials		
+		this.zonesManager.fromJSON(json.zonesManager); // CSGManager must be loaded in order not to lose reference in components 
 
 		this.beam.fromJSON(json.beam);
 
 		this.signals.sceneGraphChanged.dispatch();
-		this.signals.loadedFromJSON.dispatch(this);
+				
 	},
 
-	toJSON: function () {
+	toJSON() {
 
 		// scripts clean up
 
@@ -732,30 +734,31 @@ Editor.prototype = {
 			scripts: this.scripts,
 			history: this.history.toJSON(),
 			zonesManager: this.zonesManager.toJSON(), // serialize CSGManager
-			beam: this.beam.toJSON()
+			beam: this.beam.toJSON(),
+			materialsManager: this.materialsManager.toJSON() // serialize MaterialManager
 		};
 
 	},
 
-	objectByUuid: function (uuid) {
+	objectByUuid(uuid) {
 
 		return this.scene.getObjectByProperty('uuid', uuid, true);
 
 	},
 
-	execute: function (cmd, optionalName) {
+	execute(cmd, optionalName) {
 
 		this.history.execute(cmd, optionalName);
 
 	},
 
-	undo: function () {
+	undo() {
 
 		this.history.undo();
 
 	},
 
-	redo: function () {
+	redo() {
 
 		this.history.redo();
 
@@ -763,4 +766,3 @@ Editor.prototype = {
 
 };
 
-export { Editor };

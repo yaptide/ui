@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { isBoundingZone } from '../util/BoundingZone';
 import { UIButton, UICheckbox, UINumber, UIRow, UISelect, UIText } from './libs/ui.js';
 
 const bodyTypeOptions = {
@@ -81,7 +80,7 @@ export function BoundingZonePanel(editor, boundingZone) {
 	// calculate button
 
 	const calculateButton = new UIButton("CALCULATE").setWidth('100%');
-	calculateButton.onClick(function () {
+	calculateButton.onClick(() => {
 		boundingZone.calculate();
 	});
 	calculateContainer.add(calculateButton);
@@ -150,9 +149,9 @@ export function BoundingZonePanel(editor, boundingZone) {
 
 
 
-	editor.signals.objectChanged.add(function (object) {
+	editor.signals.objectChanged.add((object) => {
 
-		if (isBoundingZone(object)) {
+		if (object.isBoundingZone) {
 			updateUI();
 		}
 

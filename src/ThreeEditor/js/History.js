@@ -1,5 +1,5 @@
 
-import * as Commands from './commands/Commands.js';
+import * as Commands from './commands/Commands';
 
 function History(editor) {
 
@@ -11,23 +11,6 @@ function History(editor) {
 
 	this.historyDisabled = false;
 	this.config = editor.config;
-
-	// signals
-
-	var scope = this;
-
-	this.editor.signals.startPlayer.add(function () {
-
-		scope.historyDisabled = true;
-
-	});
-
-	this.editor.signals.stopPlayer.add(function () {
-
-		scope.historyDisabled = false;
-
-	});
-
 }
 
 History.prototype = {
@@ -320,3 +303,4 @@ History.prototype = {
 };
 
 export { History };
+

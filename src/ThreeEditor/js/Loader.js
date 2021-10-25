@@ -1,15 +1,14 @@
-import * as THREE from 'three'
-
+import * as THREE from 'three';
+import { AddObjectCommand, SetSceneCommand } from './commands/Commands';
+import { LoaderUtils } from './LoaderUtils.js';
 import { TGALoader } from 'three/examples/jsm/loaders/TGALoader.js';
 
-import { AddObjectCommand } from './commands/AddObjectCommand.js';
-import { SetSceneCommand } from './commands/SetSceneCommand.js';
 
-import { LoaderUtils } from './LoaderUtils.js';
+
 
 function Loader(editor) {
 
-	var scope = this;
+	let scope = this;
 
 	this.texturePath = '';
 
@@ -27,14 +26,14 @@ function Loader(editor) {
 
 		if (files.length > 0) {
 
-			var filesMap = currentFilesMap || LoaderUtils.createFilesMap(files);
+			let filesMap = currentFilesMap || LoaderUtils.createFilesMap(files);
 
-			var manager = new THREE.LoadingManager();
+			let manager = new THREE.LoadingManager();
 			manager.setURLModifier(function (url) {
 
 				url = url.replace(/^(\.?\/)/, ''); // remove './'
 
-				var file = filesMap[url];
+				let file = filesMap[url];
 
 				if (file) {
 
@@ -50,7 +49,7 @@ function Loader(editor) {
 
 			manager.addHandler(/\.tga$/i, new TGALoader());
 
-			for (var i = 0; i < files.length; i++) {
+			for (let i = 0; i < files.length; i++) {
 
 				scope.loadFile(files[i], manager);
 
@@ -62,14 +61,14 @@ function Loader(editor) {
 
 	this.loadFile = function (file, manager) {
 
-		var filename = file.name;
-		var extension = filename.split('.').pop().toLowerCase();
+		let filename = file.name;
+		let extension = filename.split('.').pop().toLowerCase();
 
-		var reader = new FileReader();
-		reader.addEventListener('progress', function (event) {
+		let reader = new FileReader();
+		reader.addEventListener('progress', (event) => {
 
-			var size = '(' + Math.floor(event.total / 1000).format() + ' KB)';
-			var progress = Math.floor((event.loaded / event.total) * 100) + '%';
+			let size = '(' + Math.floor(event.total / 1000).format() + ' KB)';
+			let progress = Math.floor((event.loaded / event.total) * 100) + '%';
 
 			console.log('Loading', filename, size, progress);
 
@@ -79,23 +78,23 @@ function Loader(editor) {
 			case 'js':
 			case 'json':
 
-				reader.addEventListener('load', function (event) {
+				reader.addEventListener('load', (event) => {
 
-					var contents = event.target.result;
+					let contents = event.target.result;
 
 					// 2.0
 
 					if (contents.indexOf('postMessage') !== - 1) {
 
-						var blob = new Blob([contents], { type: 'text/javascript' });
-						var url = URL.createObjectURL(blob);
+						let blob = new Blob([contents], { type: 'text/javascript' });
+						let url = URL.createObjectURL(blob);
 
-						var worker = new Worker(url);
+						let worker = new Worker(url);
 
-						worker.onmessage = function (event) {
+						worker.onmessage = function (messageEvent) {
 
-							event.data.metadata = { version: 2 };
-							handleJSON(event.data);
+							messageEvent.data.metadata = { version: 2 };
+							handleJSON(messageEvent.data);
 
 						};
 
@@ -107,7 +106,7 @@ function Loader(editor) {
 
 					// >= 3.0
 
-					var data;
+					let data;
 
 					try {
 
@@ -164,9 +163,9 @@ function Loader(editor) {
 			case 'buffergeometry':
 
 				loader = new THREE.BufferGeometryLoader();
-				var result = loader.parse(data);
+				let result = loader.parse(data);
 
-				var mesh = new THREE.Mesh(result);
+				let mesh = new THREE.Mesh(result);
 
 				editor.execute(new AddObjectCommand(editor, mesh));
 
@@ -220,3 +219,4 @@ function Loader(editor) {
 }
 
 export { Loader };
+
