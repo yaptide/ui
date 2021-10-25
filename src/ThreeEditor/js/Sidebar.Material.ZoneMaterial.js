@@ -1,25 +1,26 @@
+import { SetZoneMaterialCommand } from './commands/Commands';
 import { UIPanel, UIRow, UISelect, UIText } from './libs/ui.js';
-
 import { SidebarMaterialBooleanProperty } from './Sidebar.Material.BooleanProperty.js';
 import { SidebarMaterialColorProperty } from './Sidebar.Material.ColorProperty.js';
 import { SidebarMaterialConstantProperty } from './Sidebar.Material.ConstantProperty.js';
 import { SidebarMaterialNumberProperty } from './Sidebar.Material.NumberProperty.js';
-import { SetZoneMaterialCommand } from './commands/SetZoneMaterialCommand.js';
+
 
 // Code copied (and adjusted) from SidebarMaterial.js
 // https://github.com/mrdoob/three.js/blob/r132/editor/js/Sidebar.Material.js
-function makeSidebarMaterialOptions(container, editor) {
-	container.setBorderTop('0');
-	container.setDisplay('none');
-	container.setPaddingTop('20px');
+export function SidebarZoneMaterial(editor) {
 
 	const { signals, strings } = editor;
-	const materialOptions = editor.materialsManager.materialOptions;
+	const { materialOptions } = editor.materialsManager;
 
-	let currentObject;
+	let currentObject = null;
 
 	let currentMaterialSlot = 0;
 
+	const container = new UIPanel();
+	container.setBorderTop('0');
+	container.setDisplay('none');
+	container.setPaddingTop('20px');
 
 	// Current material slot
 
@@ -134,11 +135,11 @@ function makeSidebarMaterialOptions(container, editor) {
 
 		if (currentMaterialSlot !== previousSelectedSlot) refreshUI();
 
-		let material = editor.getObjectMaterial(currentObject, currentMaterialSlot);
+		const material = editor.getObjectMaterial(currentObject, currentMaterialSlot);
 
 		if (material) {
 
-			let newMaterialName = materialClass.getValue();
+			const newMaterialName = materialClass.getValue();
 
 			if (material.name !== newMaterialName) {
 
@@ -192,13 +193,6 @@ function makeSidebarMaterialOptions(container, editor) {
 		refreshUI()
 	});
 
-}
+	return container;
 
-export default class ZoneMaterial extends UIPanel {
-	editor;
-	constructor(editor) {
-		super();
-		this.editor = editor;
-		makeSidebarMaterialOptions(this, editor);
-	}
 }

@@ -36,7 +36,7 @@ function SidebarScene(editor) {
 
 			}
 
-			opener.addEventListener('click', function () {
+			opener.addEventListener('click', () => {
 
 				nodeStates.set(object, nodeStates.get(object) === false); // toggle
 				refreshUI();
@@ -133,7 +133,7 @@ function SidebarScene(editor) {
 
 	var outliner = new UIOutliner(editor);
 	outliner.setId('outliner');
-	outliner.onChange(function () {
+	outliner.onChange(() => {
 
 		ignoreObjectSelectedSignal = true;
 
@@ -142,7 +142,7 @@ function SidebarScene(editor) {
 		ignoreObjectSelectedSignal = false;
 
 	});
-	outliner.onDblClick(function () {
+	outliner.onDblClick(() => {
 
 		editor.focusById(parseInt(outliner.getValue()));
 
@@ -162,7 +162,7 @@ function SidebarScene(editor) {
 		'Equirectangular': 'Equirect'
 
 	}).setWidth('150px');
-	backgroundType.onChange(function () {
+	backgroundType.onChange(() => {
 
 		onBackgroundChanged();
 		refreshBackgroundUI();
@@ -219,7 +219,7 @@ function SidebarScene(editor) {
 
 	}).setWidth('150px');
 	environmentType.setValue('None');
-	environmentType.onChange(function () {
+	environmentType.onChange(() => {
 
 		onEnvironmentChanged();
 		refreshEnvironmentUI();

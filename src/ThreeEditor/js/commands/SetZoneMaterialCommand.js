@@ -1,5 +1,4 @@
 import { Command } from '../Command.js';
-import { ObjectLoader } from 'three';
 
 /**
  * @param editor Editor
@@ -25,7 +24,7 @@ class SetZoneMaterialCommand extends Command {
 
 	execute() {
 
-		let material = this.editor.materialsManager.materials[this.newMaterialName];
+		const material = this.editor.materialsManager.materials[this.newMaterialName];
 		this.editor.setObjectMaterial(this.object, 0, material);
 		this.editor.signals.materialChanged.dispatch(material);
 		this.editor.signals.objectChanged.dispatch(this.object);
@@ -34,7 +33,7 @@ class SetZoneMaterialCommand extends Command {
 
 	undo() {
 
-		let material = this.editor.materialsManager.materials[this.oldMaterialName];
+		const material = this.editor.materialsManager.materials[this.oldMaterialName];
 		this.editor.setObjectMaterial(this.object, 0, material);
 		this.editor.signals.materialChanged.dispatch(material);
 		this.editor.signals.objectChanged.dispatch(this.object);
@@ -66,3 +65,4 @@ class SetZoneMaterialCommand extends Command {
 }
 
 export { SetZoneMaterialCommand };
+

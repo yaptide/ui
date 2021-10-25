@@ -161,7 +161,5 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 
 }
 
-/**
- * @deprecated Use readonly property instead.
- */
+
 export const isBeam = (x: unknown): x is Beam => x instanceof Beam;

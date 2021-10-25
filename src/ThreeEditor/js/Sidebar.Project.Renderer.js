@@ -32,7 +32,7 @@ function SidebarProjectRenderer(editor) {
 
 	physicallyCorrectLightsRow.add(new UIText(strings.getKey('sidebar/project/physicallyCorrectLights')).setWidth('90px'));
 
-	var physicallyCorrectLightsBoolean = new UIBoolean(config.getKey('project/renderer/physicallyCorrectLights')).onChange(function () {
+	var physicallyCorrectLightsBoolean = new UIBoolean(config.getKey('project/renderer/physicallyCorrectLights')).onChange(() => {
 
 		currentRenderer.physicallyCorrectLights = this.getValue();
 		signals.rendererUpdated.dispatch();

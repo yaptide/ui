@@ -1,14 +1,12 @@
 import * as THREE from 'three';
-
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
-import { SetPositionCommand } from './commands/SetPositionCommand';
-import { SetRotationCommand } from './commands/SetRotationCommand';
-import { SetScaleCommand } from './commands/SetScaleCommand';
+import { SetPositionCommand, SetRotationCommand, SetScaleCommand } from './commands/Commands';
 import { EditorOrbitControls } from './EditorOrbitControls';
 import { UIPanel } from "./libs/ui";
 import { ViewportCamera } from './Viewport.Camera.js';
-import { ViewHelper } from './Viewport.ViewHelper';
 import { ViewportClippedView as ViewportClipPlane } from './Viewport.ClipPlane';
+import { ViewHelper } from './Viewport.ViewHelper';
+
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
 
 export function Viewport(
@@ -19,7 +17,7 @@ export function Viewport(
 
     this.name = name;
 
-    let { scene, zonesManager, sceneHelpers, signals } = editor;
+    const { scene, zonesManager, sceneHelpers, signals } = editor;
 
     let config = {
         showSceneHelpers: true,
@@ -149,7 +147,7 @@ export function Viewport(
     let objectScaleOnDown = null;
 
     let transformControls = new TransformControls(camera, container.dom);
-    transformControls.addEventListener('change', function () {
+    transformControls.addEventListener('change', () => {
 
         let object = transformControls.object;
 
@@ -173,7 +171,7 @@ export function Viewport(
 
     });
 
-    transformControls.addEventListener('mouseDown', function () {
+    transformControls.addEventListener('mouseDown', () => {
 
         let object = transformControls.object;
 
@@ -186,7 +184,7 @@ export function Viewport(
 
     });
 
-    transformControls.addEventListener('mouseUp', function () {
+    transformControls.addEventListener('mouseUp', () => {
 
         let object = transformControls.object;
 
@@ -234,7 +232,7 @@ export function Viewport(
 
     });
 
-    window.addEventListener('keydown', function (event) {
+    window.addEventListener('keydown', (event) => {
 
         switch (event.key) {
 
@@ -248,7 +246,7 @@ export function Viewport(
 
     });
 
-    window.addEventListener('keyup', function (event) {
+    window.addEventListener('keyup', (event) => {
 
         switch (event.key) {
 
@@ -416,7 +414,7 @@ export function Viewport(
         // For our usage it would be only geometries included on the scene. 
         // Amount of geometries can differ form project to project thus we check only if it isn't mesh.
         // unionOperations is property unique to zones that shoudn't be transformed with controler.
-        return object !== null
+        return  object
             && !object.isScene
             && !object.isCamera
             && !object.isCSGZone
@@ -432,9 +430,9 @@ export function Viewport(
 
     // controls need to be added *after* main logic,
     // otherwise controls.enabled doesn't work.       
-    let controls = new EditorOrbitControls(camera, container.dom);
+    const controls = new EditorOrbitControls(camera, container.dom);
     controls.screenSpacePanning = false;
-    controls.addEventListener('change', function () {
+    controls.addEventListener('change', () => {
 
         signals.cameraChanged.dispatch(camera);
         signals.refreshSidebarObject3D.dispatch(camera);
@@ -453,7 +451,7 @@ export function Viewport(
         updateAspectRatio();
     }
 
-    container.dom.addEventListener('keydown', function (event) {
+    container.dom.addEventListener('keydown', (event) => {
 
         switch (event.code) {
             case 'KeyC': // C
@@ -475,7 +473,7 @@ export function Viewport(
         }
 
     });
-    container.dom.addEventListener('keyup', function (event) {
+    container.dom.addEventListener('keyup', (event) => {
 
         switch (event.code) {
             case 'ControlLeft':
@@ -538,7 +536,7 @@ export function Viewport(
     });
 
     //YAPTIDE signals
-    signals.objectChanged.add((object) => {
+    signals.objectChanged.add(() => {
 
         render();
 

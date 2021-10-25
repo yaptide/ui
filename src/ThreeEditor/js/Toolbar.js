@@ -4,13 +4,13 @@ function Toolbar(editor) {
 
 	const { signals, strings } = editor;
 
-	var container = new UIPanel();
+	let container = new UIPanel();
 	container.setId('toolbar');
 
 	// YAPTIDE select mode
-	var select = new UICheckbox(false);
+	let select = new UICheckbox(false);
 	select.dom.title = "select mode"
-	select.onChange(function () {
+	select.onChange(() => {
 
 		signals.selectModeChanged.dispatch(this.getValue() === true ? 'zones' : 'geometries');
 
@@ -18,14 +18,14 @@ function Toolbar(editor) {
 	container.add(select);
 
 	// translate
-	var translateIcon = document.createElement('img');
+	let translateIcon = document.createElement('img');
 	translateIcon.title = strings.getKey('toolbar/translate');
 	translateIcon.src = 'images/translate.svg';
 
-	var translate = new UIButton();
+	let translate = new UIButton();
 	translate.dom.className = 'Button selected';
 	translate.dom.appendChild(translateIcon);
-	translate.onClick(function () {
+	translate.onClick(() => {
 
 		signals.transformModeChanged.dispatch('translate');
 
@@ -33,13 +33,13 @@ function Toolbar(editor) {
 	container.add(translate);
 
 	// rotate
-	var rotateIcon = document.createElement('img');
+	let rotateIcon = document.createElement('img');
 	rotateIcon.title = strings.getKey('toolbar/rotate');
 	rotateIcon.src = 'images/rotate.svg';
 
-	var rotate = new UIButton();
+	let rotate = new UIButton();
 	rotate.dom.appendChild(rotateIcon);
-	rotate.onClick(function () {
+	rotate.onClick(() => {
 
 		signals.transformModeChanged.dispatch('rotate');
 
@@ -47,13 +47,13 @@ function Toolbar(editor) {
 	container.add(rotate);
 
 	// scale
-	var scaleIcon = document.createElement('img');
+	let scaleIcon = document.createElement('img');
 	scaleIcon.title = strings.getKey('toolbar/scale');
 	scaleIcon.src = 'images/scale.svg';
 
-	var scale = new UIButton();
+	let scale = new UIButton();
 	scale.dom.appendChild(scaleIcon);
-	scale.onClick(function () {
+	scale.onClick(() => {
 
 		signals.transformModeChanged.dispatch('scale');
 
@@ -61,9 +61,9 @@ function Toolbar(editor) {
 	container.add(scale);
 
 	// local / world
-	var local = new UICheckbox(false);
+	let local = new UICheckbox(false);
 	local.dom.title = strings.getKey('toolbar/local');
-	local.onChange(function () {
+	local.onChange(() => {
 
 		signals.spaceChanged.dispatch(this.getValue() === true ? 'local' : 'world');
 

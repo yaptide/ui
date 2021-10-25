@@ -1,5 +1,5 @@
+import { SetMaterialValueCommand } from './commands/Commands';
 import { UICheckbox, UIRow, UIText } from './libs/ui.js';
-import { SetMaterialValueCommand } from './commands/SetMaterialValueCommand.js';
 
 function SidebarMaterialBooleanProperty(editor, property, name) {
 
@@ -61,3 +61,4 @@ function SidebarMaterialBooleanProperty(editor, property, name) {
 }
 
 export { SidebarMaterialBooleanProperty };
+

@@ -41,7 +41,7 @@ function SidebarGeometry(editor) {
 	container.add(helpersRow);
 
 	var vertexNormalsButton = new UIButton(strings.getKey('sidebar/geometry/show_vertex_normals'));
-	vertexNormalsButton.onClick(function () {
+	vertexNormalsButton.onClick(() => {
 
 		var object = editor.selected;
 
@@ -66,6 +66,7 @@ function SidebarGeometry(editor) {
 		zonePanel.setId("zonePanel");
 
 		return () => {
+			console.warn(editor.selected);
 
 			var object = editor.selected;
 

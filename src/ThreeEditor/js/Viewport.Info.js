@@ -42,7 +42,7 @@ function ViewportInfo(editor) {
 
 			var object = scene.children[i];
 
-			object.traverseVisible(function (object) {
+			object.traverseVisible((object) => {
 
 				objects++;
 

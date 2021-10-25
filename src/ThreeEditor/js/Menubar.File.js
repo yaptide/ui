@@ -21,7 +21,7 @@ function MenubarFile(editor) {
 	var option = new UIRow();
 	option.setClass('option');
 	option.setTextContent(strings.getKey('menubar/file/new'));
-	option.onClick(function () {
+	option.onClick(() => {
 
 		if (window.confirm('Any unsaved data will be lost. Are you sure?')) {
 
@@ -45,7 +45,7 @@ function MenubarFile(editor) {
 	var fileInput = document.createElement('input');
 	fileInput.multiple = true;
 	fileInput.type = 'file';
-	fileInput.addEventListener('change', function () {
+	fileInput.addEventListener('change', () => {
 
 		editor.loader.loadFiles(fileInput.files);
 		form.reset();
@@ -56,7 +56,7 @@ function MenubarFile(editor) {
 	option = new UIRow();
 	option.setClass('option');
 	option.setTextContent('Open');
-	option.onClick(function () {
+	option.onClick(() => {
 
 		fileInput.click();
 
@@ -73,7 +73,7 @@ function MenubarFile(editor) {
 	option = new UIRow();
 	option.setClass('option');
 	option.setTextContent('Save');
-	option.onClick(function () {
+	option.onClick(() => {
 
 		var output = editor.toJSON();
 

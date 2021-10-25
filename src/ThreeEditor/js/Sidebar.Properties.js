@@ -3,7 +3,7 @@ import { UITabbedPanel } from './libs/ui.js';
 import { SidebarObject } from './Sidebar.Object.js';
 import { SidebarGeometry } from './Sidebar.Geometry.js';
 import { SidebarMaterial } from './Sidebar.Material.js';
-import ZoneMaterial from './Sidebar.Material.ZoneMaterial.js';
+import { SidebarZoneMaterial } from './Sidebar.Material.ZoneMaterial.js';
 
 function SidebarProperties(editor) {
 
@@ -11,7 +11,7 @@ function SidebarProperties(editor) {
 
 	var container = new UITabbedPanel();
 	var material = new SidebarMaterial(editor);
-	var zoneMaterial = new ZoneMaterial(editor);
+	var zoneMaterial = new SidebarZoneMaterial(editor);
 	container.setId('properties');
 
 	container.addTab('object', strings.getKey('sidebar/properties/object'), new SidebarObject(editor));

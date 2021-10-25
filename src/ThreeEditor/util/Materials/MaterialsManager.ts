@@ -20,7 +20,7 @@ export default class MaterialsManager{
     materialOptions: Record<string,string>;
     materials: Record<string, SimulationMaterial>;
     constructor(){
-        let [materials, options] = this.createMaterialPrefabs();
+        const [materials, options] = this.createMaterialPrefabs();
         this.prefabMaterials = materials;
         this.materialOptions = options;
         this.customMaterials = {};
@@ -42,14 +42,14 @@ export default class MaterialsManager{
         this.materials = new Proxy(this.customMaterials,materialsHandler)
     }
     getDefaultMaterial() {
-        let defaultName = Object.keys(this.prefabMaterials)[0];
+        const defaultName = Object.keys(this.prefabMaterials)[0];
         return defaultName in this.customMaterials
             ? this.customMaterials[defaultName]
             : this.prefabMaterials[defaultName];
     }
     private createMaterialPrefabs = () => {
-        let editorMaterials = MATERIALS.reduce((prev, current) => {
-            let next = [{
+        const editorMaterials = MATERIALS.reduce((prev, current) => {
+            const next = [{
                     ...prev[0],
                     [current.name]: new SimulationMaterial(current,{})
                 },
@@ -63,7 +63,7 @@ export default class MaterialsManager{
         return editorMaterials;
     }
     toJSON(){
-        let jsonObject:MaterialsManagerJSON[] = Object.entries(this.customMaterials).map((object => { 
+        const jsonObject:MaterialsManagerJSON[] = Object.entries(this.customMaterials).map((object => { 
             return {
                 "data": object[1].simulationData,
                 "color": object[1].color.getHex(),

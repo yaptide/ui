@@ -1,9 +1,5 @@
 import * as THREE from 'three';
-import { SetColorCommand } from './commands/SetColorCommand.js';
-import { SetPositionCommand } from './commands/SetPositionCommand.js';
-import { SetRotationCommand } from './commands/SetRotationCommand.js';
-import { SetScaleCommand } from './commands/SetScaleCommand.js';
-import { SetValueCommand } from './commands/SetValueCommand.js';
+import { SetColorCommand, SetPositionCommand, SetRotationCommand, SetScaleCommand, SetValueCommand } from './commands/Commands';
 import { UICheckbox, UIColor, UIInput, UIInteger, UINumber, UIPanel, UIRow, UIText, UITextArea } from './libs/ui.js';
 import { UIBoolean } from './libs/ui.three.js';
 
@@ -16,8 +12,6 @@ function SidebarObject(editor) {
 	container.setPaddingTop('20px');
 	container.setDisplay('none');
 
-
-
 	// type
 
 	var objectTypeRow = new UIRow();
@@ -27,7 +21,6 @@ function SidebarObject(editor) {
 	objectTypeRow.add(objectType);
 
 	container.add(objectTypeRow);
-
 
 	// id 
 
@@ -52,7 +45,8 @@ function SidebarObject(editor) {
 	// name
 
 	var objectNameRow = new UIRow();
-	var objectName = new UIInput().setWidth('150px').setFontSize('12px').onChange(function () {
+	
+	var objectName = new UIInput().setWidth('150px').setFontSize('12px').onChange(() => {
 
 		editor.execute(new SetValueCommand(editor, editor.selected, 'name', objectName.getValue()));
 
@@ -320,7 +314,8 @@ function SidebarObject(editor) {
 
 	var objectUserDataRow = new UIRow();
 	var objectUserData = new UITextArea().setWidth('150px').setHeight('40px').setFontSize('12px').onChange(update);
-	objectUserData.onKeyUp(function () {
+
+	objectUserData.onKeyUp(() => {
 
 		try {
 
@@ -629,41 +624,8 @@ function SidebarObject(editor) {
 
 	}
 
-
-	// events
-
-	signals.objectSelected.add((object) => {
-
-		if (object !== null && !object?.parent?.isCSGManager && !object.isScene) {
-
-			container.setDisplay('block');
-
-			updateRows(object);
-			updateUI(object);
-
-		} else {
-
-			container.setDisplay('none');
-
-		}
-
-	});
-
-	signals.objectChanged.add((object) => {
-		if (object !== editor.selected) return;
-
-		updateUI(object);
-
-	});
-
-	signals.refreshSidebarObject3D.add((object) => {
-		if (object !== editor.selected) return;
-
-		updateUI(object);
-
-	});
-
 	function updateUI(object) {
+		if (object !== editor.selected) return;
 
 		objectType.setValue(object.type);
 
@@ -809,6 +771,26 @@ function SidebarObject(editor) {
 		updateRowsForTypeOfObject(object);
 
 	}
+
+	// events
+
+	signals.objectSelected.add((object) => {
+		const showObjectInfo = () => {
+			container.setDisplay('block');
+
+			updateRows(object);
+			updateUI(object);
+		}
+		const hideObjectInfo = () => container.setDisplay('none');
+
+		(object && !object.isCSGZonesContainer && !object.isScene
+			? showObjectInfo
+			: hideObjectInfo)();
+	});
+
+	signals.objectChanged.add(updateUI);
+
+	signals.refreshSidebarObject3D.add(updateUI);
 
 	return container;
 

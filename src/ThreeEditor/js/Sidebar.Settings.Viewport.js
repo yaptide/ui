@@ -18,7 +18,7 @@ function SidebarSettingsViewport(editor) {
 
 	showGridRow.add(new UIText(strings.getKey('sidebar/settings/viewport/grid')).setWidth('90px'));
 
-	var showGrid = new UIBoolean(true).onChange(function () {
+	var showGrid = new UIBoolean(true).onChange(() => {
 
 		signals.showGridChanged.dispatch(showGrid.getValue());
 
@@ -32,7 +32,7 @@ function SidebarSettingsViewport(editor) {
 
 	showHelpersRow.add(new UIText(strings.getKey('sidebar/settings/viewport/helpers')).setWidth('90px'));
 
-	var showHelpers = new UIBoolean(true).onChange(function () {
+	var showHelpers = new UIBoolean(true).onChange(() => {
 
 		signals.showHelpersChanged.dispatch(showHelpers.getValue());
 
@@ -46,7 +46,7 @@ function SidebarSettingsViewport(editor) {
 
 	showZonesRow.add(new UIText("Zones").setWidth('90px'));
 
-	var showZones = new UIBoolean(true).onChange(function () {
+	var showZones = new UIBoolean(true).onChange(() => {
 
 		signals.showZonesChanged.dispatch(showZones.getValue());
 

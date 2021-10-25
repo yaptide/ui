@@ -1,7 +1,6 @@
-import { UIPanel, UIText, UIRow, UIInput } from './libs/ui.js';
+import { RemoveObjectCommand, RemoveZoneCommand } from './commands/Commands';
+import { UIInput, UIPanel, UIRow, UIText } from './libs/ui.js';
 
-import { RemoveObjectCommand } from './commands/RemoveObjectCommand.js';
-import { RemoveZoneCommand } from './commands/RemoveZoneCommand.js';
 
 function SidebarSettingsShortcuts(editor) {
 
@@ -31,7 +30,7 @@ function SidebarSettingsShortcuts(editor) {
 		var shortcutInput = new UIInput().setWidth('15px').setFontSize('12px');
 		shortcutInput.setTextAlign('center');
 		shortcutInput.setTextTransform('lowercase');
-		shortcutInput.onChange(function () {
+		shortcutInput.onChange(() => {
 
 			var value = shortcutInput.getValue().toLowerCase();
 
@@ -44,7 +43,7 @@ function SidebarSettingsShortcuts(editor) {
 		});
 
 		// Automatically highlight when selecting an input field
-		shortcutInput.dom.addEventListener('click', function () {
+		shortcutInput.dom.addEventListener('click', () => {
 
 			shortcutInput.dom.select();
 
@@ -52,7 +51,7 @@ function SidebarSettingsShortcuts(editor) {
 
 		// If the value of the input field is invalid, revert the input field
 		// to contain the key binding stored in config
-		shortcutInput.dom.addEventListener('blur', function () {
+		shortcutInput.dom.addEventListener('blur', () => {
 
 			if (!isValidKeyBinding(shortcutInput.getValue())) {
 
@@ -63,7 +62,7 @@ function SidebarSettingsShortcuts(editor) {
 		});
 
 		// If a valid key binding character is entered, blur the input field
-		shortcutInput.dom.addEventListener('keyup', function (event) {
+		shortcutInput.dom.addEventListener('keyup', (event) => {
 
 			if (isValidKeyBinding(event.key)) {
 
@@ -93,7 +92,7 @@ function SidebarSettingsShortcuts(editor) {
 
 	}
 
-	document.addEventListener('keydown', function (event) {
+	document.addEventListener('keydown', (event) => {
 
 		switch (event.key.toLowerCase()) {
 
@@ -179,3 +178,4 @@ function SidebarSettingsShortcuts(editor) {
 }
 
 export { SidebarSettingsShortcuts };
+

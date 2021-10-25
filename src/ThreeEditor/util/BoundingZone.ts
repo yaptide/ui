@@ -224,6 +224,4 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
 }
 
 export const isBoundingZone = (x: unknown): x is BoundingZone => x instanceof BoundingZone;
-/**
- * @deprecated Use readonly property instead.
- */
+

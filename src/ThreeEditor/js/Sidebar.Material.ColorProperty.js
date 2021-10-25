@@ -1,6 +1,5 @@
+import { SetMaterialColorCommand, SetMaterialValueCommand } from './commands/Commands';
 import { UIColor, UINumber, UIRow, UIText } from './libs/ui.js';
-import { SetMaterialColorCommand } from './commands/SetMaterialColorCommand.js';
-import { SetMaterialValueCommand } from './commands/SetMaterialValueCommand.js';
 
 function SidebarMaterialColorProperty( editor, property, name ) {
 
@@ -88,3 +87,4 @@ function SidebarMaterialColorProperty( editor, property, name ) {
 }
 
 export { SidebarMaterialColorProperty };
+

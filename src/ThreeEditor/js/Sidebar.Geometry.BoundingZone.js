@@ -80,7 +80,7 @@ export function BoundingZonePanel(editor, boundingZone) {
 	// calculate button
 
 	const calculateButton = new UIButton("CALCULATE").setWidth('100%');
-	calculateButton.onClick(function () {
+	calculateButton.onClick(() => {
 		boundingZone.calculate();
 	});
 	calculateContainer.add(calculateButton);

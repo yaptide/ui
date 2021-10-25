@@ -1,5 +1,5 @@
 import { UINumber, UIRow, UIText } from './libs/ui.js';
-import { SetMaterialValueCommand } from './commands/SetMaterialValueCommand.js';
+import { SetMaterialValueCommand } from './commands/Commands';
 
 function SidebarMaterialNumberProperty(editor, property, name, range = [- Infinity, Infinity]) {
 

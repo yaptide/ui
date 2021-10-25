@@ -1,11 +1,10 @@
-import * as THREE from 'three'
-
+import * as THREE from 'three';
 import { TGALoader } from 'three/examples/jsm/loaders/TGALoader.js';
-
-import { AddObjectCommand } from './commands/AddObjectCommand.js';
-import { SetSceneCommand } from './commands/SetSceneCommand.js';
-
+import { AddObjectCommand, SetSceneCommand } from './commands/Commands';
 import { LoaderUtils } from './LoaderUtils.js';
+
+
+
 
 function Loader(editor) {
 
@@ -66,7 +65,7 @@ function Loader(editor) {
 		var extension = filename.split('.').pop().toLowerCase();
 
 		var reader = new FileReader();
-		reader.addEventListener('progress', function (event) {
+		reader.addEventListener('progress', (event) => {
 
 			var size = '(' + Math.floor(event.total / 1000).format() + ' KB)';
 			var progress = Math.floor((event.loaded / event.total) * 100) + '%';
@@ -79,7 +78,7 @@ function Loader(editor) {
 			case 'js':
 			case 'json':
 
-				reader.addEventListener('load', function (event) {
+				reader.addEventListener('load', (event) => {
 
 					var contents = event.target.result;
 
@@ -220,3 +219,4 @@ function Loader(editor) {
 }
 
 export { Loader };
+

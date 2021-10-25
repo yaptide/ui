@@ -1,5 +1,5 @@
+import { SetMaterialValueCommand } from './commands/Commands';
 import { UIRow, UISelect, UIText } from './libs/ui.js';
-import { SetMaterialValueCommand } from './commands/SetMaterialValueCommand.js';
 
 function SidebarMaterialConstantProperty(editor, property, name, options) {
 
@@ -63,3 +63,4 @@ function SidebarMaterialConstantProperty(editor, property, name, options) {
 }
 
 export { SidebarMaterialConstantProperty };
+

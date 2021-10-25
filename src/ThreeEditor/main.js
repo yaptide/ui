@@ -44,15 +44,15 @@ export function initEditor(container) {
 
     //
 
-    editor.storage.init(function () {
+    editor.storage.init(() => {
 
         const { signals } = editor;
 
-        editor.storage.get(function (state) {
+        editor.storage.get((state) => {
 
             if (isLoadingFromHash) return;
 
-            if (state !== undefined) {
+            if (typeof state !== "undefined") {
 
                 editor.fromJSON(state);
 
@@ -60,7 +60,7 @@ export function initEditor(container) {
 
             var selected = editor.config.getKey('selected');
 
-            if (selected !== undefined) {
+            if (typeof selected !== "undefined") {
 
                 editor.selectByUuid(selected);
 
@@ -82,11 +82,11 @@ export function initEditor(container) {
 
             clearTimeout(timeout);
 
-            timeout = setTimeout(function () {
+            timeout = setTimeout(() => {
 
                 editor.signals.savingStarted.dispatch();
 
-                timeout = setTimeout(function () {
+                timeout = setTimeout(() => {
 
                     editor.storage.set(editor.toJSON());
 
@@ -116,14 +116,14 @@ export function initEditor(container) {
 
     //
 
-    document.addEventListener('dragover', function (event) {
+    document.addEventListener('dragover', (event) => {
 
         event.preventDefault();
         event.dataTransfer.dropEffect = 'copy';
 
     }, false);
 
-    document.addEventListener('drop', function (event) {
+    document.addEventListener('drop', (event) => {
 
         event.preventDefault();
 
@@ -166,7 +166,7 @@ export function initEditor(container) {
 
             var loader = new THREE.FileLoader();
             loader.crossOrigin = '';
-            loader.load(file, function (text) {
+            loader.load(file, (text) => {
 
                 editor.clear();
                 editor.fromJSON(JSON.parse(text));

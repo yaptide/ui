@@ -1,16 +1,15 @@
-import * as THREE from 'three'
-
+import * as THREE from 'three';
+import { SetMaterialCommand, SetMaterialValueCommand } from './commands/Commands';
 import { UIButton, UIInput, UIPanel, UIRow, UISelect, UIText } from './libs/ui.js';
-
-import { SetMaterialCommand } from './commands/SetMaterialCommand.js';
-import { SetMaterialValueCommand } from './commands/SetMaterialValueCommand.js';
-
 import { SidebarMaterialBooleanProperty } from './Sidebar.Material.BooleanProperty.js';
 import { SidebarMaterialColorProperty } from './Sidebar.Material.ColorProperty.js';
 import { SidebarMaterialConstantProperty } from './Sidebar.Material.ConstantProperty.js';
 import { SidebarMaterialMapProperty } from './Sidebar.Material.MapProperty.js';
 import { SidebarMaterialNumberProperty } from './Sidebar.Material.NumberProperty.js';
 import { SidebarMaterialProgram } from './Sidebar.Material.Program.js';
+
+
+
 
 function SidebarMaterial(editor) {
 
@@ -52,7 +51,7 @@ function SidebarMaterial(editor) {
 	const materialUUIDRow = new UIRow();
 	const materialUUID = new UIInput().setWidth('102px').setFontSize('12px').setDisabled(true);
 	const materialUUIDRenew = new UIButton(strings.getKey('sidebar/material/new')).setMarginLeft('7px');
-	materialUUIDRenew.onClick(function () {
+	materialUUIDRenew.onClick(() => {
 
 		materialUUID.setValue(THREE.MathUtils.generateUUID());
 		update();
@@ -68,7 +67,7 @@ function SidebarMaterial(editor) {
 	// name
 
 	const materialNameRow = new UIRow();
-	const materialName = new UIInput().setWidth('150px').setFontSize('12px').onChange(function () {
+	const materialName = new UIInput().setWidth('150px').setFontSize('12px').onChange(() => {
 
 		editor.execute(new SetMaterialValueCommand(editor, editor.selected, 'name', materialName.getValue(), currentMaterialSlot));
 
@@ -544,3 +543,4 @@ const pointsMaterialOptions = {
 };
 
 export { SidebarMaterial };
+

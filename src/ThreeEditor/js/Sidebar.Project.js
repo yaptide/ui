@@ -16,7 +16,7 @@ function SidebarProject(editor) {
 	// Title
 
 	var titleRow = new UIRow();
-	var title = new UIInput(config.getKey('project/title')).setLeft('100px').setWidth('150px').onChange(function () {
+	var title = new UIInput(config.getKey('project/title')).setLeft('100px').setWidth('150px').onChange(() => {
 
 		config.setKey('project/title', this.getValue());
 
@@ -30,7 +30,7 @@ function SidebarProject(editor) {
 	// Editable
 
 	var editableRow = new UIRow();
-	var editable = new UICheckbox(config.getKey('project/editable')).setLeft('100px').onChange(function () {
+	var editable = new UICheckbox(config.getKey('project/editable')).setLeft('100px').onChange(() => {
 
 		config.setKey('project/editable', this.getValue());
 

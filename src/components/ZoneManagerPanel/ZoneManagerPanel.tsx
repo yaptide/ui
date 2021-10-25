@@ -1,8 +1,8 @@
 import { Button } from "@material-ui/core";
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Editor } from "../../ThreeEditor/js/Editor";
-import { CSGZone } from "../../ThreeEditor/util/CSG/CSGZone";
 import { CSGOperation } from "../../ThreeEditor/util/CSG/CSGOperation";
+import { CSGZone } from "../../ThreeEditor/util/CSG/CSGZone";
 import { parseZone } from "../../util/parseZone/parseZone";
 import BooleanAlgebraRow, { AlgebraRow } from "./BooleanAlgebraRow";
 import "./zoneManagerPanel.css";

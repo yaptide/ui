@@ -39,7 +39,7 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
     constructor(editor: Editor) {
         super();
         this.zonesContainer = new CSGZonesContainer();
-        let light = new THREE.HemisphereLight( 0xffffff, 0x222222, 1 );
+        const light = new THREE.HemisphereLight( 0xffffff, 0x222222, 1 );
         light.position.set(15,15,15);
         this.add(light);
         this.add(this.zonesContainer);
@@ -80,7 +80,7 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
     }
 
     toJSON() {
-        let zones = this.zonesContainer.children.map((zone) => (zone as CSGZone).toJSON());
+        let zones = this.zonesContainer.children.map(zone => zone.toJSON());
         let uuid = this.uuid;
         let name = this.name;
         let jsonObject: CSGManagerJSON = {
@@ -146,7 +146,5 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
 
 }
 
-/**
- * @deprecated Use readonly property instead.
- */
+
 export const isCSGManager = (x: unknown): x is CSGManager => x instanceof CSGManager;

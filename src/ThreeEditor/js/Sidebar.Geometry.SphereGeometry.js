@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { SetGeometryCommand } from './commands/SetGeometryCommand.js';
+import { SetGeometryCommand } from './commands/Commands';
 import { UINumber, UIRow, UIText } from './libs/ui.js';
 
 function GeometryParametersPanel( editor, object ) {

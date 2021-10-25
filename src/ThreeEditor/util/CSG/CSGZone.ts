@@ -57,7 +57,7 @@ export class CSGZone extends THREE.Mesh {
         this.signals = editor.signals;
         this.name = name || "CSGZone";
         this.material = editor.materialsManager.materials[materialName ?? ""];
-        let objectsUuid = subscribedObjectsUuid || new Set();
+        const objectsUuid = subscribedObjectsUuid || new Set();
         this.unionOperations = unionOperations && !subscribedObjectsUuid 
             ? (() => {
                   // If operations are specified, we have to populate set of subscribed UUID's
@@ -237,7 +237,7 @@ export class CSGZone extends THREE.Mesh {
             name: this.name,
             unionOperations,
             subscribedObjectsUuid: Array.from(this.subscribedObjectsUuid),
-            materialName: (this.material as THREE.Material).name,
+            materialName: this.getSimulationMaterial().name,
         };
         return jsonObject;
     }
@@ -254,8 +254,7 @@ export class CSGZone extends THREE.Mesh {
             ? new Set(data.subscribedObjectsUuid)
             : (() => {
                   throw Error(
-                      "SubscribedObjectsId is not array" +
-                          data.subscribedObjectsUuid
+                      `SubscribedObjectsId is not array ${data.subscribedObjectsUuid}`
                   );
               })();
 
@@ -272,7 +271,5 @@ export class CSGZone extends THREE.Mesh {
     }
 }
 
-/**
- * @deprecated Use readonly property instead.
- */
+
 export const isCSGZone = (x: unknown): x is CSGZone => x instanceof CSGZone;
