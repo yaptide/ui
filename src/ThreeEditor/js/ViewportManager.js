@@ -122,7 +122,7 @@ function ViewManager(editor) {
 		cameraUp: new THREE.Vector3(0, 0, 1),
 
 		// default clipping plane being XY plane (normal vector pointing down along Z axis)
-		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.),
+		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.0),
 
 		planePosLabel: "PlanePos Z",
 
@@ -175,7 +175,7 @@ function ViewManager(editor) {
 		cameraPosition: new THREE.Vector3(0, 100, 0),
 
 		// default clipping plane being XZ plane (normal vector pointing down along Y axis)
-		clipPlane: new THREE.Plane(new THREE.Vector3(0, -1, 0), 0.),
+		clipPlane: new THREE.Plane(new THREE.Vector3(0, -1, 0), 0.0),
 		planePosLabel: "PlanePoz Y",
 
 		// 0xc2ee00 - Lime color (between green and yellow)
@@ -195,8 +195,8 @@ function ViewManager(editor) {
 	//    X pointing up
 	//    Y pointing towards observer ("up")
 	//    Z pointing right
-	viewPlaneXZ.controls.maxPolarAngle = viewPlaneXZ.controls.minPolarAngle = 0.;
-	viewPlaneXZ.controls.maxAzimuthAngle = viewPlaneXZ.controls.minAzimuthAngle = 3. * Math.PI / 2.0;
+	viewPlaneXZ.controls.maxPolarAngle = viewPlaneXZ.controls.minPolarAngle = 0.0;
+	viewPlaneXZ.controls.maxAzimuthAngle = viewPlaneXZ.controls.minAzimuthAngle = 3.0 * Math.PI / 2.0;
 	viewPlaneXZ.controls.update();
 
 	const gutterRow = new UIDiv().setClass("gutter-row gutter-row-1");
@@ -215,7 +215,7 @@ function ViewManager(editor) {
 		cameraUp: new THREE.Vector3(1, 0, 0),
 
 		// default clipping plane being YZ plane (normal vector pointing down along X axis)
-		clipPlane: new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.),
+		clipPlane: new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.0),
 		planePosLabel: "PlanePos X",
 
 		// 0xff7f9b - Tickle Me Pink color
