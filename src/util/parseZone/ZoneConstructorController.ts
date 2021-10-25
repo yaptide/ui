@@ -78,7 +78,7 @@ export default class ZoneConstructorController {
         prefix?: number[] | number,
         tails?: number[][] | number[] | number
     ) {
-        if (prefix)
+        if (Number.isInteger(prefix) || prefix)
             switch (this.getDimension(prefix)) {
                 case 0:
                     this.commonPrefix = [prefix as number];
@@ -91,7 +91,7 @@ export default class ZoneConstructorController {
             }
         else this.commonPrefix = [];
 
-        if (tails)
+        if (Number.isInteger(tails) || tails)
             switch (this.getDimension(tails)) {
                 case 0:
                     this.tails = [[tails as number]];
