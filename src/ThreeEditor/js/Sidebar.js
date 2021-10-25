@@ -9,15 +9,15 @@ function Sidebar(editor) {
 
 	const { strings, signals } = editor;
 
-	let container = new UITabbedPanel();
+	const container = new UITabbedPanel();
 	container.setId('sidebar');
 
-	let scene = new UISpan().add(
+	const scene = new UISpan().add(
 		new SidebarScene(editor),
 		new SidebarProperties(editor)
 	);
-	let project = new SidebarProject(editor);
-	let settings = new SidebarSettings(editor);
+	const project = new SidebarProject(editor);
+	const settings = new SidebarSettings(editor);
 
 	container.addTab('scene', strings.getKey('sidebar/scene'), scene);
 	container.addTab('project', strings.getKey('sidebar/project'), project);
