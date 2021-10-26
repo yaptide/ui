@@ -22,7 +22,7 @@ function TabPanel(props: TabPanelProps) {
     <div
       role="tabpanel"
       className={tabPanelCss}
-      style={{ display: value !== index ? 'none' : 'flex' }}
+      style={{ display: value !== index ? 'none' : '' }}
       {...other}
     >
       <Box className={tabPanelCss}>
@@ -43,7 +43,7 @@ function WrapperApp() {
   return (
     <Box sx={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+        <Tabs value={value} onChange={handleChange} >
           <Tab label="Editor" />
           <Tab label="Run" />
           <Tab label="Results" disabled={true} />

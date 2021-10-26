@@ -36,7 +36,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "npm run identify && npm run build",
+    "start-gh": "cross-env REACT_APP_TARGET=github npm run start",
+    "test-gh": "cross-env REACT_APP_TARGET=github npm run test",
+    "build-gh": "cross-env REACT_APP_TARGET=github npm build",
+    "predeploy": "npm run identify && npm run build-gh",
     "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
@@ -61,8 +64,9 @@
     "@types/react": "^17.0.32",
     "@types/react-async-script": "^1.2.1",
     "@types/three": "^0.133.1",
+    "cross-env": "^7.0.3",
+    "gh-pages": "^3.2.3",
     "react-app-rewired": "^2.1.8",
-    "worker-loader": "^3.0.8",
-    "gh-pages": "^3.2.3"
+    "worker-loader": "^3.0.8"
   }
 }
