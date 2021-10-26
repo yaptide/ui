@@ -12,6 +12,7 @@ function ThreeEditor() {
 
   useEffect(() => {
     if (containerEl.current) {
+
       const { editor } = initEditor(containerEl.current);
       setEditor(editor);
 
@@ -23,7 +24,11 @@ function ThreeEditor() {
 
 
   return (
-    <div className="ThreeEditor" ref={containerEl} />
+    <div className="ThreeEditor" ref={containerEl} style={{
+      position: 'relative',
+      display: 'flex',
+      flexGrow: 1
+    }} />
   );
 }
 
