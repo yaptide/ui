@@ -1,4 +1,4 @@
-import { AlgebraRow } from "../../components/ZoneManagerPanel/BooleanAlgebraRow";
+import { AlgebraRow } from "../../ThreeEditor/components/ZoneManagerPanel/BooleanAlgebraRow";
 import ZoneConstructorController from "./ZoneConstructorController";
 
 function parseRow(zoneOperationRow:AlgebraRow){
