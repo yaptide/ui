@@ -1,4 +1,4 @@
-import LinearProgress from '@material-ui/core/LinearProgress';
+import LinearProgress from '@mui/material/LinearProgress';
 
 function Loader(){
     return <div className="LoaderContainer"><LinearProgress /></div>
