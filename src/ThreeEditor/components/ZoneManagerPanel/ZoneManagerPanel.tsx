@@ -1,4 +1,4 @@
-import { Button } from "@material-ui/core";
+import { Button } from "@mui/material";
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Editor } from "../../js/Editor";
 import { CSGOperation } from "../../util/CSG/CSGOperation";

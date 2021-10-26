@@ -1,14 +1,16 @@
-import { unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core';
-import { ThemeProvider } from '@material-ui/core/styles';
+import { createTheme } from '@mui/material';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import './App.css';
 import ThreeEditor from './ThreeEditor/ThreeEditor';
 
 function App() {
-  const theme = createMuiTheme();
+  const theme = createTheme();
   return (
-    <ThemeProvider theme={theme}>
-      <ThreeEditor></ThreeEditor>
-    </ThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <ThreeEditor></ThreeEditor>
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 }
 
