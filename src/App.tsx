@@ -5,10 +5,11 @@ import ThreeEditor from './ThreeEditor/ThreeEditor';
 
 function App() {
   const theme = createMuiTheme();
-  return (<ThemeProvider theme={theme}>
-
-    <ThreeEditor></ThreeEditor>
-  </ThemeProvider>);
+  return (
+    <ThemeProvider theme={theme}>
+      <ThreeEditor></ThreeEditor>
+    </ThemeProvider>
+  );
 }
 
 export default App;
