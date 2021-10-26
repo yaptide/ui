@@ -76,13 +76,13 @@ export default function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
             <GeometryInput
                 id={id}
                 geometries={props.possibleObjects}
-                push={pushGeometry(id)}
+                pushGeometry={pushGeometry(id)}
                 value={geo}
             />
             <OperationInput
                 id={id}
-                push={pushOperation(id)}
-                pop={removeOperation(id)}
+                pushOperation={pushOperation(id)}
+                removeOperation={removeOperation(id)}
                 value={algebraRow.operations?.[id]}
                 canClear={algebraRow.operations.length <= id + 1}
             />
@@ -92,7 +92,7 @@ export default function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
             (<GeometryInput
                 id={algebraRow.geometriesId.length}
                 geometries={props.possibleObjects}
-                push={pushGeometry(algebraRow.geometriesId.length)}
+                pushGeometry={pushGeometry(algebraRow.geometriesId.length)}
             />)
         }
         <Button className="deleteButton" onClick={props.del}>X</Button>

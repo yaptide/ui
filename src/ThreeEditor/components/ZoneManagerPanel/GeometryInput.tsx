@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 type GeometryInputProps = {
     id: number,
     geometries: THREE.Object3D[],
-    push: (uuid: number) => void
+    pushGeometry: (uuid: number) => void
     value?: number | null;
 }
 
@@ -13,8 +13,9 @@ function GeometryInput(props: GeometryInputProps) {
     const [selected, setSelected] = useState(props?.value ?? 0);
 
     const handleChange = (event: SelectChangeEvent<number>) => {
-        setSelected(event.target.value as number);
-        props.push(event.target.value as number);
+        const value = event.target.value as number;
+        setSelected(value);
+        props.pushGeometry(value);
     };
     useEffect(() => {
         setSelected(props.value ?? 0);
