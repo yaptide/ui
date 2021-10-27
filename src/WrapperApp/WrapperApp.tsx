@@ -40,23 +40,28 @@ function WrapperApp() {
     setValue(newValue);
   };
 
+  const demoMode = process.env.REACT_APP_TARGET === 'github';
+
   return (
     <Box sx={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} >
           <Tab label="Editor" />
-          <Tab label="Run" />
-          <Tab label="Results" disabled={true} />
-          <Tab label="Projects" disabled={true} />
-          <Tab label="Logout" disabled={true} />
+          <Tab label="Run" disabled={demoMode} />
+          <Tab label="Results" disabled />
+          <Tab label="Projects" disabled />
+          <Tab label="Logout" disabled />
+          <Tab label="About" />
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}  >
         <ThreeEditor></ThreeEditor>
       </TabPanel>
-      <TabPanel value={value} index={1}>
-        Run Simulation
-      </TabPanel>
+      {demoMode &&
+        <TabPanel value={value} index={1}>
+          Run Simulation
+        </TabPanel>
+      }
     </Box>
   );
 }
