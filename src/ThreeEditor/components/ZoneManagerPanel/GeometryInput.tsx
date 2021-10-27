@@ -1,10 +1,10 @@
-import { MenuItem, Select } from "@material-ui/core";
-import { useState,useEffect } from "react";
+import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import { useState, useEffect } from "react";
 
 type GeometryInputProps = {
     id: number,
     geometries: THREE.Object3D[],
-    push: (uuid: number) => void
+    pushGeometry: (uuid: number) => void
     value?: number | null;
 }
 
@@ -12,9 +12,10 @@ type GeometryInputProps = {
 function GeometryInput(props: GeometryInputProps) {
     const [selected, setSelected] = useState(props?.value ?? 0);
 
-    const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setSelected(event.target.value as number);
-        props.push(event.target.value as number);
+    const handleChange = (event: SelectChangeEvent<number>) => {
+        const value = event.target.value as number;
+        setSelected(value);
+        props.pushGeometry(value);
     };
     useEffect(() => {
         setSelected(props.value ?? 0);

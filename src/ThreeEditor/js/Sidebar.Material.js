@@ -323,7 +323,7 @@ function SidebarMaterial(editor) {
 
 			if (material.type !== materialClass.getValue()) {
 
-				material = new materialClasses[materialClass.getValue()]();
+				material = new (materialClasses[materialClass.getValue()])();
 
 				if (material.type === 'RawShaderMaterial') {
 
