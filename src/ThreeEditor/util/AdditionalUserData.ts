@@ -9,9 +9,20 @@ const geometryParameters = {
     'SphereGeometry': ['radius'],
 }
 
+export interface AdditionalUserDataType {
+    id: number
+    geometryType: string
+    position: THREE.Vector3Tuple
+    rotation: THREE.Vector3Tuple
+    parameters: {
+        [key: string]: number
+    }
+    userSetRotation?: boolean
+}
+
 export function generateSimulationInfo(geometryMesh: THREE.Mesh<PossibleGeometryType>) {
 
-    let parameters: { [key: string]: unknown } = {}
+    let parameters: { [key: string]: number } = {}
 
     const type = geometryMesh.geometry.type as keyof typeof geometryParameters;
 
@@ -21,14 +32,19 @@ export function generateSimulationInfo(geometryMesh: THREE.Mesh<PossibleGeometry
         parameters[prop] = geometry.parameters[prop as keyof typeof geometry.parameters]
     });
 
-    const userData = {
+    let userData: AdditionalUserDataType = {
         id: geometryMesh.id,
         geometryType: geometryMesh.geometry.type,
         position: geometryMesh.position.toArray(),
-        rotation: geometryMesh.rotation.toVector3().toArray().map(v => +(v * THREE.MathUtils.RAD2DEG).toFixed(2)),
-
+        rotation: geometryMesh.userData['rotation'],
         parameters,
     }
+
+    if (!geometryMesh.userData['userSetRotation'])
+        userData = {
+            ...userData,
+            rotation: geometryMesh.rotation.toVector3().toArray().map(v => v * THREE.MathUtils.RAD2DEG) as THREE.Vector3Tuple,
+        }
 
     return userData;
 }

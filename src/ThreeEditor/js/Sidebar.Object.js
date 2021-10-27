@@ -362,11 +362,11 @@ function SidebarObject(editor) {
 			}
 
 			var newRotation = new THREE.Euler(objectRotationX.getValue() * THREE.MathUtils.DEG2RAD, objectRotationY.getValue() * THREE.MathUtils.DEG2RAD, objectRotationZ.getValue() * THREE.MathUtils.DEG2RAD);
-			if (object.rotation.toVector3().distanceTo(newRotation.toVector3()) >= 0.01) {
 
-				editor.execute(new SetRotationCommand(editor, object, newRotation));
+			editor.execute(new SetRotationCommand(editor, object, newRotation));
+			object.userData.rotation = [objectRotationX.getValue(), objectRotationY.getValue(), objectRotationZ.getValue()];
+			object.userData.userSetRotation = [objectRotationX.getValue(), objectRotationY.getValue(), objectRotationZ.getValue()];
 
-			}
 
 			var newScale = new THREE.Vector3(objectScaleX.getValue(), objectScaleY.getValue(), objectScaleZ.getValue());
 			if (object.scale.distanceTo(newScale) >= 0.01) {
@@ -625,7 +625,7 @@ function SidebarObject(editor) {
 	function updateRowsForTypeOfObject(object) {
 
 
-		let invisible = [objectTypeRow, objectFrustumCulledRow, objectScaleRow,  objectShadowRow];
+		let invisible = [objectTypeRow, objectFrustumCulledRow, objectScaleRow, objectShadowRow];
 
 		invisible.forEach((e) => e.setDisplay('none'));
 

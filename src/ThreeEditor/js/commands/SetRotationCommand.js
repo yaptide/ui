@@ -10,7 +10,7 @@ import { Euler } from 'three';
  */
 class SetRotationCommand extends Command {
 
-	constructor( editor, object, newRotation, optionalOldRotation ) {
+	constructor( editor, object, newRotation, optionalOldRotation) {
 
 		super( editor );
 
@@ -19,6 +19,8 @@ class SetRotationCommand extends Command {
 		this.updatable = true;
 
 		this.object = object;
+
+		this.oldUserSetRotation = object.userData['userSetRotation'];
 
 		if ( object !== undefined && newRotation !== undefined ) {
 
@@ -38,6 +40,7 @@ class SetRotationCommand extends Command {
 	execute() {
 
 		this.object.rotation.copy( this.newRotation );
+		delete this.object.userData['userSetRotation'];
 		this.object.updateMatrixWorld( true );
 		this.editor.signals.objectChanged.dispatch( this.object );
 
@@ -46,6 +49,7 @@ class SetRotationCommand extends Command {
 	undo() {
 
 		this.object.rotation.copy( this.oldRotation );
+		this.object.userData['userSetRotation'] = this.oldUserSetRotation;
 		this.object.updateMatrixWorld( true );
 		this.editor.signals.objectChanged.dispatch( this.object );
 
