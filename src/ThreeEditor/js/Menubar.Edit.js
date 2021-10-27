@@ -1,12 +1,8 @@
 import * as THREE from 'three';
+import { AddObjectCommand, RemoveObjectCommand, RemoveZoneCommand, SetPositionCommand } from './commands/Commands';
+import { UIHorizontalRule, UIPanel, UIRow } from './libs/ui.js';
 
-import { UIPanel, UIRow, UIHorizontalRule } from './libs/ui.js';
 
-import { AddObjectCommand } from './commands/AddObjectCommand.js';
-import { RemoveObjectCommand } from './commands/RemoveObjectCommand.js';
-import { SetPositionCommand } from './commands/SetPositionCommand.js';
-import { isCSGZone } from '../util/CSG/CSGZone';
-import { RemoveZoneCommand } from './commands/RemoveZoneCommand.js';
 
 function MenubarEdit(editor) {
 
@@ -29,7 +25,7 @@ function MenubarEdit(editor) {
 	var undo = new UIRow();
 	undo.setClass('option');
 	undo.setTextContent(strings.getKey('menubar/edit/undo'));
-	undo.onClick(function () {
+	undo.onClick(() => {
 
 		editor.undo();
 
@@ -41,7 +37,7 @@ function MenubarEdit(editor) {
 	var redo = new UIRow();
 	redo.setClass('option');
 	redo.setTextContent(strings.getKey('menubar/edit/redo'));
-	redo.onClick(function () {
+	redo.onClick(() => {
 
 		editor.redo();
 
@@ -53,7 +49,7 @@ function MenubarEdit(editor) {
 	var option = new UIRow();
 	option.setClass('option');
 	option.setTextContent(strings.getKey('menubar/edit/clear_history'));
-	option.onClick(function () {
+	option.onClick(() => {
 
 		if (window.confirm('The Undo/Redo History will be cleared. Are you sure?')) {
 
@@ -65,9 +61,9 @@ function MenubarEdit(editor) {
 	options.add(option);
 
 
-	editor.signals.historyChanged.add(function () {
+	editor.signals.historyChanged.add(() => {
 
-		var history = editor.history;
+		const { history } = editor;
 
 		undo.setClass('option');
 		redo.setClass('option');
@@ -95,7 +91,7 @@ function MenubarEdit(editor) {
 	option = new UIRow();
 	option.setClass('option');
 	option.setTextContent(strings.getKey('menubar/edit/center'));
-	option.onClick(function () {
+	option.onClick(() => {
 
 		var object = editor.selected;
 
@@ -119,7 +115,7 @@ function MenubarEdit(editor) {
 	option = new UIRow();
 	option.setClass('option');
 	option.setTextContent(strings.getKey('menubar/edit/clone'));
-	option.onClick(function () {
+	option.onClick(() => {
 
 		var object = editor.selected;
 
@@ -137,13 +133,13 @@ function MenubarEdit(editor) {
 	option = new UIRow();
 	option.setClass('option');
 	option.setTextContent(strings.getKey('menubar/edit/delete'));
-	option.onClick(function () {
+	option.onClick(() => {
 
 		var object = editor.selected;
 
 		if (object !== null && object.parent !== null && object.notRemovable !== true) {
 
-			if (isCSGZone(object))
+			if (object?.isCSGZone)
 				editor.execute(new RemoveZoneCommand(editor, object));
 			else
 				editor.execute(new RemoveObjectCommand(editor, object));
@@ -162,7 +158,7 @@ function MenubarEdit(editor) {
 	option = new UIRow();
 	option.setClass('option');
 	option.setTextContent(strings.getKey('menubar/edit/fixcolormaps'));
-	option.onClick(function () {
+	option.onClick(() => {
 
 		editor.scene.traverse(fixColorMap);
 
@@ -223,3 +219,4 @@ function MenubarEdit(editor) {
 }
 
 export { MenubarEdit };
+

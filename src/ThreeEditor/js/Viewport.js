@@ -1,17 +1,11 @@
 import * as THREE from 'three';
-
-import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
-import { SetPositionCommand } from './commands/SetPositionCommand';
-import { SetRotationCommand } from './commands/SetRotationCommand';
-import { SetScaleCommand } from './commands/SetScaleCommand';
-import { EditorOrbitControls } from './EditorOrbitControls';
-import { UIPanel } from "./libs/ui";
-import { ViewportCamera } from './Viewport.Camera.js';
-import { ViewHelper } from './Viewport.ViewHelper';
-import { isCSGManager } from '../util/CSG/CSGManager';
-import { isCSGZone } from '../util/CSG/CSGZone';
+import { SetPositionCommand, SetRotationCommand, SetScaleCommand } from './commands/Commands';
 import { ViewportClippedView as ViewportClipPlane } from './Viewport.ClipPlane';
-import { isBoundingZone } from '../util/BoundingZone';
+import { EditorOrbitControls } from './EditorOrbitControls';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
+import { UIPanel } from "./libs/ui";
+import { ViewHelper } from './Viewport.ViewHelper';
+import { ViewportCamera } from './Viewport.Camera.js';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
 
@@ -23,11 +17,12 @@ export function Viewport(
 
     this.name = name;
 
-    let { scene, zonesManager, sceneHelpers, signals } = editor;
+    const { scene, zonesManager, sceneHelpers, signals } = editor;
 
     let config = {
         showSceneHelpers: true,
         showZones: true,
+        selectZones: false,
         visible: false,
     }
 
@@ -152,7 +147,7 @@ export function Viewport(
     let objectScaleOnDown = null;
 
     let transformControls = new TransformControls(camera, container.dom);
-    transformControls.addEventListener('change', function () {
+    transformControls.addEventListener('change', () => {
 
         let object = transformControls.object;
 
@@ -176,7 +171,7 @@ export function Viewport(
 
     });
 
-    transformControls.addEventListener('mouseDown', function () {
+    transformControls.addEventListener('mouseDown', () => {
 
         let object = transformControls.object;
 
@@ -189,7 +184,7 @@ export function Viewport(
 
     });
 
-    transformControls.addEventListener('mouseUp', function () {
+    transformControls.addEventListener('mouseUp', () => {
 
         let object = transformControls.object;
 
@@ -237,7 +232,7 @@ export function Viewport(
 
     });
 
-    window.addEventListener('keydown', function (event) {
+    window.addEventListener('keydown', (event) => {
 
         switch (event.key) {
 
@@ -251,7 +246,7 @@ export function Viewport(
 
     });
 
-    window.addEventListener('keyup', function (event) {
+    window.addEventListener('keyup', (event) => {
 
         switch (event.key) {
 
@@ -276,13 +271,13 @@ export function Viewport(
     let raycaster = new THREE.Raycaster();
     let mouse = new THREE.Vector2();
 
-    function getIntersects(point, objects) {
+    function getIntersects(point, validObjects) {
 
         mouse.set((point.x * 2) - 1, - (point.y * 2) + 1);
 
         raycaster.setFromCamera(mouse, camera);
 
-        return raycaster.intersectObjects(objects)
+        return raycaster.intersectObjects(validObjects)
             .filter(intersect => intersect.object.visible === true);
 
     }
@@ -316,7 +311,12 @@ export function Viewport(
 
         if (onDownPosition.distanceTo(onUpPosition) === 0) {
 
-            let intersects = getIntersects(onUpPosition, objects);
+            let intersects = getIntersects(
+                onUpPosition,
+                config.selectZones
+                    ? zonesManager.zonesContainer.children
+                    : objects
+            );
 
             if (intersects.length > 0) {
 
@@ -409,23 +409,17 @@ export function Viewport(
 
     }
 
-    function updateCamera(camera, position) {
-        camera.position.copy(position);
-
-        controls.object = camera;
-        transformControls.camera = camera;
-        viewHelper.editorCamera = camera;
-
-        camera.lookAt(controls.target.x, controls.target.y, controls.target.z);
-        updateAspectRatio();
-    }
-
     function canBeTransformed(object) {
         // Check if object can be transformed. 
         // For our usage it would be only geometries included on the scene. 
         // Amount of geometries can differ form project to project thus we check only if it isn't mesh.
         // unionOperations is property unique to zones that shoudn't be transformed with controler.
-        return object !== null && object !== scene && object !== camera && !isCSGManager(object) && !isCSGZone(object) && !isBoundingZone(object);
+        return  object
+            && !object.isScene
+            && !object.isCamera
+            && !object.isCSGZone
+            && !object.isBoundingZone
+            && !object.isCSGZonesContainer;
     }
 
     function reattachTransformControls(object) {
@@ -434,7 +428,30 @@ export function Viewport(
         canBeTransformed(object) && transformControls.attach(object);
     }
 
-    container.dom.addEventListener('keydown', function (event) {
+    // controls need to be added *after* main logic,
+    // otherwise controls.enabled doesn't work.       
+    const controls = new EditorOrbitControls(camera, container.dom);
+    controls.screenSpacePanning = false;
+    controls.addEventListener('change', () => {
+
+        signals.cameraChanged.dispatch(camera);
+        signals.refreshSidebarObject3D.dispatch(camera);
+
+    });
+    viewHelper.controls = controls;
+
+    function updateCamera(newCamera, position) {
+        newCamera.position.copy(position);
+
+        controls.object = newCamera;
+        transformControls.camera = newCamera;
+        viewHelper.editorCamera = newCamera;
+
+        newCamera.lookAt(controls.target.x, controls.target.y, controls.target.z);
+        updateAspectRatio();
+    }
+
+    container.dom.addEventListener('keydown', (event) => {
 
         switch (event.code) {
             case 'KeyC': // C
@@ -445,54 +462,60 @@ export function Viewport(
 
                 break;
 
+            case 'ControlLeft':
+            case 'ControlRight':
+                config.selectZones = true;
+                break;
+
             default:
+                break;
 
         }
 
+    });
+    container.dom.addEventListener('keyup', (event) => {
+
+        switch (event.code) {
+            case 'ControlLeft':
+            case 'ControlRight':
+                config.selectZones = false;
+                break;
+
+            default:
+                break;
+        }
     });
 
     container.dom.addEventListener('mousedown', onMouseDown, false);
     container.dom.addEventListener('touchstart', onTouchStart, false);
     container.dom.addEventListener('dblclick', onDoubleClick, false);
 
-    // controls need to be added *after* main logic,
-    // otherwise controls.enabled doesn't work.       
-    let controls = new EditorOrbitControls(camera, container.dom);
-    controls.screenSpacePanning = false;
-    controls.addEventListener('change', function () {
-
-        signals.cameraChanged.dispatch(camera);
-        signals.refreshSidebarObject3D.dispatch(camera);
-
-    });
-    viewHelper.controls = controls;
-
-    signals.transformModeChanged.add(function (mode) {
+    signals.transformModeChanged.add((mode) => {
 
         transformControls.setMode(mode);
 
     });
 
-    signals.snapChanged.add(function (dist) {
+    signals.snapChanged.add((dist) => {
 
         transformControls.setTranslationSnap(dist);
 
     });
 
-    signals.spaceChanged.add(function (space) {
+    signals.spaceChanged.add((space) => {
 
         transformControls.setSpace(space);
 
     });
 
-    signals.objectSelected.add(function (object) {
+    signals.objectSelected.add((object) => {
 
         reattachTransformControls(object);
         render();
 
     });
 
-    signals.objectRemoved.add(function (object) {
+    signals.objectRemoved.add((object) => {
 
         controls.enabled = true;
 
@@ -504,7 +527,7 @@ export function Viewport(
 
     });
 
-    signals.showHelpersChanged.add(function (showHelpers) {
+    signals.showHelpersChanged.add((showHelpers) => {
 
         transformControls.enabled = showHelpers;
 
@@ -513,7 +536,7 @@ export function Viewport(
     });
 
     //YAPTIDE signals
-    signals.objectChanged.add(function (object) {
+    signals.objectChanged.add(() => {
 
         render();
 

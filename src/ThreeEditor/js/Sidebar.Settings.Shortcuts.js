@@ -1,12 +1,10 @@
-import { UIPanel, UIText, UIRow, UIInput } from './libs/ui.js';
+import { RemoveObjectCommand, RemoveZoneCommand } from './commands/Commands';
+import { UIInput, UIPanel, UIRow, UIText } from './libs/ui.js';
 
-import { RemoveObjectCommand } from './commands/RemoveObjectCommand.js';
-import { isCSGZone } from '../util/CSG/CSGZone';
-import { RemoveZoneCommand } from './commands/RemoveZoneCommand.js';
 
 function SidebarSettingsShortcuts(editor) {
 
-	var strings = editor.strings;
+	const { signals, strings, config } = editor;
 
 	var IS_MAC = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 
@@ -15,9 +13,6 @@ function SidebarSettingsShortcuts(editor) {
 		return key.match(/^[A-Za-z0-9]$/i); // Can't use z currently due to undo/redo
 
 	}
-
-	var config = editor.config;
-	var signals = editor.signals;
 
 	var container = new UIPanel();
 
@@ -35,7 +30,7 @@ function SidebarSettingsShortcuts(editor) {
 		var shortcutInput = new UIInput().setWidth('15px').setFontSize('12px');
 		shortcutInput.setTextAlign('center');
 		shortcutInput.setTextTransform('lowercase');
-		shortcutInput.onChange(function () {
+		shortcutInput.onChange(() => {
 
 			var value = shortcutInput.getValue().toLowerCase();
 
@@ -48,7 +43,7 @@ function SidebarSettingsShortcuts(editor) {
 		});
 
 		// Automatically highlight when selecting an input field
-		shortcutInput.dom.addEventListener('click', function () {
+		shortcutInput.dom.addEventListener('click', () => {
 
 			shortcutInput.dom.select();
 
@@ -56,7 +51,7 @@ function SidebarSettingsShortcuts(editor) {
 
 		// If the value of the input field is invalid, revert the input field
 		// to contain the key binding stored in config
-		shortcutInput.dom.addEventListener('blur', function () {
+		shortcutInput.dom.addEventListener('blur', () => {
 
 			if (!isValidKeyBinding(shortcutInput.getValue())) {
 
@@ -67,7 +62,7 @@ function SidebarSettingsShortcuts(editor) {
 		});
 
 		// If a valid key binding character is entered, blur the input field
-		shortcutInput.dom.addEventListener('keyup', function (event) {
+		shortcutInput.dom.addEventListener('keyup', (event) => {
 
 			if (isValidKeyBinding(event.key)) {
 
@@ -97,7 +92,7 @@ function SidebarSettingsShortcuts(editor) {
 
 	}
 
-	document.addEventListener('keydown', function (event) {
+	document.addEventListener('keydown', (event) => {
 
 		switch (event.key.toLowerCase()) {
 
@@ -115,7 +110,7 @@ function SidebarSettingsShortcuts(editor) {
 
 				var parent = object.parent;
 				if (parent !== null) {
-					if (isCSGZone(object))
+					if (object?.isCSGZone)
 						editor.execute(new RemoveZoneCommand(editor, object));
 					else
 						editor.execute(new RemoveObjectCommand(editor, object));
@@ -183,3 +178,4 @@ function SidebarSettingsShortcuts(editor) {
 }
 
 export { SidebarSettingsShortcuts };
+

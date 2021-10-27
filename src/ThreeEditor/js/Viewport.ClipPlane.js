@@ -27,7 +27,7 @@ export function ViewportClippedView(editor, viewport, planeHelpers, initialObjec
     const planeHelper = new THREE.PlaneHelper(clipPlane, CLIPPING_SIZE, planeHelperColor ?? 0xffff00); // default helper color is yellow
     planeHelpers.add(planeHelper);
 
-    const planePosProperty = (planePosLabel ?? 'PlanePos') + ' ' + editor.unit.name;
+    const planePosProperty = `${planePosLabel ?? 'PlanePos'} ${editor.unit.name}`;
 
     const uiProps = {
 
@@ -125,8 +125,8 @@ export function ViewportClippedView(editor, viewport, planeHelpers, initialObjec
     stencilPlane.translateZ(clipPlane.constant);
 
     // move back stencil plane by epsilon distance (here 1nm)
-    // TODO why back and not to the front ?
-    // TODO try to decrease this value in such way that creating geometry of small objects (i.e. um size is still possible)
+    // TODO why back and not to the front ?  # skipcq: JS-0099
+    // TODO try to decrease this value in such way that creating geometry of small objects (i.e. um size is still possible)  # skipcq: JS-0099
     stencilPlane.translateZ(-1e-2);
 
     // Initialize view with objects
@@ -145,15 +145,15 @@ export function ViewportClippedView(editor, viewport, planeHelpers, initialObjec
         clippedObjects.add(stencilGroup);
     }
 
-    signalGeometryChanged.add(function (object3D) {
+    signalGeometryChanged.add((object3D) => {
         updateMeshWithStencilMaterial(object3D);
     });
 
-    signalGeometryAdded.add(function (object3D) {
+    signalGeometryAdded.add((object3D) => {
         updateMeshWithStencilMaterial(object3D);
     });
 
-    signalGeometryRemoved.add(function (object3D) {
+    signalGeometryRemoved.add((object3D) => {
         clippedObjects.remove(clippedObjects.getObjectByName(object3D.uuid));
     });
 

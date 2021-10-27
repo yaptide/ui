@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-import SampleComponent from './components/SampleComponent';
+import React, { useEffect, useRef, useState } from 'react';
 import './css/main.css';
 import { Editor } from './js/Editor';
 import { initEditor } from './main';
@@ -9,11 +8,11 @@ function ThreeEditor() {
   const containerEl = useRef(null);
 
 
-  const [editor, setEditor] = useState<Editor>();
+  const [, setEditor] = useState<Editor>();
 
   useEffect(() => {
     if (containerEl.current) {
-      const { editor, viewport, toolbar, sidebar, menubar, resizer } = initEditor(containerEl.current); // eslint-disable-line
+      const { editor } = initEditor(containerEl.current);
       setEditor(editor);
 
     }
@@ -24,13 +23,7 @@ function ThreeEditor() {
 
 
   return (
-    <div className="ThreeEditor" ref={containerEl}>
-      {editor &&
-        <>
-          <SampleComponent signal={editor.signals.objectSelected} ></SampleComponent>
-        </>
-      }
-    </div>
+    <div className="ThreeEditor" ref={containerEl} />
   );
 }
 

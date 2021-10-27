@@ -1,14 +1,12 @@
-import * as THREE from 'three'
-
+import * as THREE from 'three';
+import { SetMaterialMapCommand, SetMaterialValueCommand, SetMaterialVectorCommand } from './commands/Commands';
 import { UICheckbox, UINumber, UIRow, UIText } from './libs/ui.js';
 import { UITexture } from './libs/ui.three.js';
-import { SetMaterialMapCommand } from './commands/SetMaterialMapCommand.js';
-import { SetMaterialValueCommand } from './commands/SetMaterialValueCommand.js';
-import { SetMaterialVectorCommand } from './commands/SetMaterialVectorCommand.js';
+
 
 function SidebarMaterialMapProperty( editor, property, name ) {
 
-	const signals = editor.signals;
+	const { signals } = editor;
 
 	const container = new UIRow();
 	container.add( new UIText( name ).setWidth( '90px' ) );
@@ -191,3 +189,4 @@ function SidebarMaterialMapProperty( editor, property, name ) {
 }
 
 export { SidebarMaterialMapProperty };
+

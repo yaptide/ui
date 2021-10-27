@@ -16,6 +16,16 @@ interface CSGManagerJSON {
     boundingZone: BoundingZoneJSON
 }
 
+export class CSGZonesContainer extends THREE.Group{
+    children: CSGZone[];
+    readonly isCSGZonesContainer: true = true;
+    constructor(){
+        super();
+        this.name = "Zones";
+        this.children = [];
+    }
+}
+
 export class CSGManager extends THREE.Scene implements ISimulationObject {
     notRemovable = true;
     notMoveable = true;
@@ -23,11 +33,16 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
     editor: Editor;
     worker: Comlink.Remote<ICSGWorker>;
     boundingZone: BoundingZone;
+    zonesContainer: CSGZonesContainer;
+    readonly isCSGManager: true = true;
 
     constructor(editor: Editor) {
         super();
-        this.type = 'ZonesManager' as any;
-        this.name = "Zones";
+        this.zonesContainer = new CSGZonesContainer();
+        const light = new THREE.HemisphereLight( 0xffffff, 0x222222, 1 );
+        light.position.set(15,15,15);
+        this.add(light);
+        this.add(this.zonesContainer);
         this.worker = Comlink.wrap<ICSGWorker>(new Worker());
         this.editor = editor;
 
@@ -41,38 +56,31 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
 
     createZone() {
         let zone = new CSGZone(this.editor);
-
-        this.add(zone);
-
+        this.addZone(zone);
         return zone;
     }
 
-    add(zone: CSGZone) {
+    addZone(zone: CSGZone): void  {
         zone.worker = this.worker;
+        this.zonesContainer.add(zone);
+              
+        this.editor.signals.objectAdded.dispatch(zone);
+        this.editor.signals.zoneAdded.dispatch(zone);
+		this.editor.signals.sceneGraphChanged.dispatch();
+        this.editor.signals.CSGManagerStateChanged.dispatch();
+    }
 
-        super.add(zone);
-
+    removeZone(zone: CSGZone): void  {
+        this.zonesContainer.remove(zone);
+        
         this.editor.signals.objectAdded.dispatch(zone);
         this.editor.signals.zoneAdded.dispatch(zone);
         this.editor.signals.sceneGraphChanged.dispatch();
         this.editor.signals.CSGManagerStateChanged.dispatch();
-
-        return this;
-    }
-
-    remove(zone: CSGZone) {
-        super.remove(zone);
-
-        this.editor.signals.objectRemoved.dispatch(zone);
-        this.editor.signals.zoneRemoved.dispatch(zone);
-        this.editor.signals.sceneGraphChanged.dispatch();
-        this.editor.signals.CSGManagerStateChanged.dispatch();
-
-        return this;
     }
 
     toJSON() {
-        let zones = this.children.map((zone) => zone.toJSON());
+        let zones = this.zonesContainer.children.map(zone => zone.toJSON());
         let uuid = this.uuid;
         let name = this.name;
         let jsonObject: CSGManagerJSON = {
@@ -81,7 +89,6 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
             name,
             boundingZone: this.boundingZone.toJSON()
         };
-
         return jsonObject;
     }
 
@@ -95,7 +102,7 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
 
         data.zones.forEach((zone) => {
 
-            this.add(CSGZone.fromJSON(this.editor, zone));
+            this.addZone(CSGZone.fromJSON(this.editor, zone));
 
         });
 
@@ -110,13 +117,6 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
         return new CSGManager(editor).fromJSON(data);
     }
 
-    loadFrom(manager: CSGManager) {
-        this.children = manager.children;
-        this.boundingZone.removeHelpersFromSceneHelpers();
-        this.boundingZone = manager.boundingZone;
-        this.boundingZone.addHelpersToSceneHelpers();
-    }
-
     clone(recursive: boolean) {
         return new CSGManager(this.editor).copy(this, recursive) as this;
     }
@@ -128,7 +128,7 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
         this.background = null;
         this.environment = null;
 
-        this.clear();
+        this.zonesContainer.clear();
 
         this.boundingZone.reset();
 
@@ -139,10 +139,12 @@ export class CSGManager extends THREE.Scene implements ISimulationObject {
         return this.boundingZone.getObjectById(id) ?? super.getObjectById(id);
     }
 
-    handleZoneEmpty(zone: CSGZone) {
+    handleZoneEmpty(zone: CSGZone): void  {
         console.log("handleZoneEmpty");
         this.remove(zone);
     }
 
 }
+
+
 export const isCSGManager = (x: unknown): x is CSGManager => x instanceof CSGManager;

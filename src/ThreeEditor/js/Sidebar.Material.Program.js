@@ -2,8 +2,7 @@ import { UIButton, UIRow, UIText } from './libs/ui.js';
 
 function SidebarMaterialProgram( editor, property ) {
 
-	const signals = editor.signals;
-	const strings = editor.strings;
+	const { signals, strings } = editor;
 
 	let object = null;
 	let material = null;

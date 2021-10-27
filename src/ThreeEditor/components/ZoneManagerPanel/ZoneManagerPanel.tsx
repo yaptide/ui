@@ -1,9 +1,9 @@
-import { Button } from "@material-ui/core";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Editor } from "../../ThreeEditor/js/Editor";
-import { CSGZone } from "../../ThreeEditor/util/CSG/CSGZone";
-import { CSGOperation } from "../../ThreeEditor/util/CSG/CSGOperation";
-import { parseZone } from "../../util/parseZone/parseZone";
+import { Button } from "@mui/material";
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Editor } from "../../js/Editor";
+import { CSGOperation } from "../../util/CSG/CSGOperation";
+import { CSGZone } from "../../util/CSG/CSGZone";
+import { parseZone } from "../../../util/parseZone/parseZone";
 import BooleanAlgebraRow, { AlgebraRow } from "./BooleanAlgebraRow";
 import "./zoneManagerPanel.css";
 
@@ -33,8 +33,8 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
         for (let i = 0; i < row.operations.length; i++) {
             const operation = row.operations[i];
             const geometryID = row.geometriesId[i + 1];
-            if (row.geometriesId.length > i + 1 && geometryID != null && operation != null) {
-                const object = props.editor.scene.getObjectById(geometryID);
+            if (row.geometriesId.length > i + 1 && Number.isInteger(geometryID) && operation) {
+                const object = props.editor.scene.getObjectById(geometryID as number);
 
                 if (!object) throw new Error("object is undefined form props.editor.scene.getObjectById(geometryID)");
 
@@ -62,6 +62,11 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
         setRows((prev) => [...prev, { geometriesId: [], operations: [] }]);
         zoneRef.current?.addUnion();
     };
+    
+    const handleParse = () => {
+        const simulationData = props?.zone?.getSimulationMaterial().simulationData;
+        parseZone(rows, simulationData);
+    }
 
     const removeRow = (removeId: number) => () => {
         setRows((prev) => {
@@ -144,7 +149,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
             )
         })}
         <Button className="addRowButton" onClick={addAlgebraRow}>+</Button>
-        <Button className="parseZoneButton" onClick={() => parseZone(rows)}>Parse Zone</Button>
+        <Button className="parseZoneButton" onClick={handleParse}>Parse Zone</Button>
     </div>);
 }
 

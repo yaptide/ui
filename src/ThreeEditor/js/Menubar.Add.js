@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { generateSimulationInfo } from '../util/AdditionalUserData';
 import { AddObjectCommand } from './commands/AddObjectCommand.js';
 import { AddZoneCommand } from './commands/AddZoneCommand.js';
 import { UIHorizontalRule, UIPanel } from './libs/ui.js';
