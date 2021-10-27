@@ -40,7 +40,7 @@ function WrapperApp() {
     setValue(newValue);
   };
 
-  const demoMode = process.env.REACT_APP_TARGET === 'github';
+  const demoMode = process.env.REACT_APP_TARGET === 'demo';
 
   return (
     <Box sx={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}>

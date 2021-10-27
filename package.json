@@ -36,10 +36,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start-gh": "cross-env REACT_APP_TARGET=github npm run start",
-    "test-gh": "cross-env REACT_APP_TARGET=github npm run test",
-    "build-gh": "cross-env REACT_APP_TARGET=github npm build",
-    "predeploy": "npm run identify && npm run build-gh",
+    "start-demo": "cross-env REACT_APP_TARGET=demo npm run start",
+    "test-demo": "cross-env REACT_APP_TARGET=demo npm run test",
+    "build-demo": "cross-env REACT_APP_TARGET=demo npm build",
+    "predeploy": "npm run identify && npm run build-demo",
     "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
