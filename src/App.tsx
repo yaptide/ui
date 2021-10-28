@@ -1,14 +1,14 @@
 import { createTheme } from '@mui/material';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import './App.css';
-import ThreeEditor from './ThreeEditor/ThreeEditor';
+import WrapperApp from './WrapperApp/WrapperApp';
 
 function App() {
   const theme = createTheme();
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
-        <ThreeEditor></ThreeEditor>
+        <WrapperApp></WrapperApp>
       </ThemeProvider>
     </StyledEngineProvider>
   );
