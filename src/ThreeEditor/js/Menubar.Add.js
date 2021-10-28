@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { AddObjectCommand, AddZoneCommand } from './commands/Commands';
+import { AddObjectCommand } from './commands/AddObjectCommand.js';
+import { AddZoneCommand } from './commands/AddZoneCommand.js';
 import { UIHorizontalRule, UIPanel } from './libs/ui.js';
 import { createOption } from './Menubar.js';
 
@@ -85,6 +86,7 @@ function MenubarAdd(editor) {
 		var geometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2);
 		var mesh = new THREE.Mesh(geometry, material.clone());
 		mesh.name = 'Cylinder';
+
 		editor.execute(new AddObjectCommand(editor, mesh));
 	}));
 

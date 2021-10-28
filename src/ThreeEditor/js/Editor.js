@@ -8,8 +8,7 @@ import { Loader } from './Loader.js';
 import   Signal from 'signals';
 import { Strings } from './Strings.js';
 import { Storage as _Storage } from './Storage.js';
-
-
+import { generateSimulationInfo } from '../util/AdditionalUserData';
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
 _DEFAULT_CAMERA.name = 'Camera';
@@ -237,7 +236,7 @@ Editor.prototype = {
 
 	removeObject(object) {
 
-		if (object.parent === null ) return; // avoid deleting the camera or scene
+		if (object.parent === null) return; // avoid deleting the camera or scene
 
 		var scope = this;
 
@@ -671,6 +670,13 @@ Editor.prototype = {
 
 	//
 
+	updateUserData() {
+		this.scene.children.forEach(object => {
+			object.userData = generateSimulationInfo(object);
+		});
+	},
+
+	//
 	async fromJSON(json) {
 		const loader = new THREE.ObjectLoader();
 		const camera = await loader.parseAsync(json.camera);
