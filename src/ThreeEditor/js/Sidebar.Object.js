@@ -336,7 +336,6 @@ function SidebarObject(editor) {
 	objectUserDataRow.add(new UIText(strings.getKey('sidebar/object/userdata')).setWidth('90px'));
 	objectUserDataRow.add(objectUserData);
 
-	container.add(objectUserDataRow);
 
 
 	//
@@ -354,12 +353,12 @@ function SidebarObject(editor) {
 
 			}
 
-			let newRotation = new THREE.Euler(objectRotationX.getValue() * THREE.MathUtils.DEG2RAD, objectRotationY.getValue() * THREE.MathUtils.DEG2RAD, objectRotationZ.getValue() * THREE.MathUtils.DEG2RAD);
-			if (object.rotation.toVector3().distanceTo(newRotation.toVector3()) >= 0.01) {
+			var newRotation = new THREE.Euler(objectRotationX.getValue() * THREE.MathUtils.DEG2RAD, objectRotationY.getValue() * THREE.MathUtils.DEG2RAD, objectRotationZ.getValue() * THREE.MathUtils.DEG2RAD);
 
-				editor.execute(new SetRotationCommand(editor, object, newRotation));
+			editor.execute(new SetRotationCommand(editor, object, newRotation));
+			object.userData.rotation = [objectRotationX.getValue(), objectRotationY.getValue(), objectRotationZ.getValue()];
+			object.userData.userSetRotation = [objectRotationX.getValue(), objectRotationY.getValue(), objectRotationZ.getValue()];
 
-			}
 
 			let newScale = new THREE.Vector3(objectScaleX.getValue(), objectScaleY.getValue(), objectScaleZ.getValue());
 			if (object.scale.distanceTo(newScale) >= 0.01) {
