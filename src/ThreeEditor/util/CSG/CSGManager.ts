@@ -16,7 +16,9 @@ interface CSGManagerJSON {
     boundingZone: BoundingZoneJSON
 }
 
-export class CSGZonesContainer extends THREE.Group{
+export class CSGZonesContainer extends THREE.Group implements ISimulationObject {
+    notRemovable = true;
+    notMoveable = true;
     children: CSGZone[];
     readonly isCSGZonesContainer: true = true;
     constructor(){
