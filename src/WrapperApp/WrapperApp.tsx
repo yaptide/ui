@@ -6,6 +6,7 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import ThreeEditor from '../ThreeEditor/ThreeEditor';
 import UserData from '../util/user/UserData';
+import SimulationPanel from './components/SimulationPanel';
 
 
 interface TabPanelProps {
@@ -60,16 +61,28 @@ function WrapperApp() {
 			<TabPanel value={tabsValue} index={0}  >
 				<ThreeEditor />
 			</TabPanel>
-			{demoMode &&
+			{demoMode ||
 				<TabPanel value={tabsValue} index={1}>
-					Run Simulation
+					<SimulationPanel
+						requestSimulation={(): void => {
+							console.error('requestSimulation function not implemented.');
+						}}
+						onError={(error: unknown): void => {
+							console.error('onError function not implemented.',error);
+						}}
+						onSuccess={(result: unknown): void => {
+							console.error('onSuccess function not implemented.',result);
+						}}
+					/>
 				</TabPanel>
 			}
-			<TabPanel value={tabsValue} index={5}  >
-				<LoginPanel handleLogin={(data)=>{
-					setCurrentUser({uuid:"",login:data.email})
-					setTabsValue(0);
-				}}/>
+			<TabPanel value={tabsValue} index={5} >
+				<LoginPanel
+					handleLogin={(data) => {
+						setCurrentUser({ uuid: "", login: data.email })
+						setTabsValue(0);
+					}}
+				/>
 			</TabPanel>
 		</Box>
 	);
