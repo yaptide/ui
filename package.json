@@ -38,7 +38,7 @@
     "eject": "react-scripts eject",
     "start-demo": "cross-env REACT_APP_TARGET=demo npm run start",
     "test-demo": "cross-env REACT_APP_TARGET=demo npm run test",
-    "build-demo": "cross-env REACT_APP_TARGET=demo npm build",
+    "build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
     "predeploy": "npm run identify && npm run build-demo",
     "deploy": "gh-pages -d build"
   },
