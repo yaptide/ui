@@ -48,7 +48,7 @@ export function Viewport(
     let cameraOrtho = new THREE.OrthographicCamera(1 / - 2, 1 / 2, 1 / 2, 1 / - 2, 0.001, 10000);
     cameraOrtho.name = "Orthographic";
     cameraOrtho.position.copy(cameraPersp.position);
-    cameraOrtho.zoom = .2;
+    cameraOrtho.zoom = 0.2;
 
     // in clipping plane views only Orthographic camera is used, hence is "up" axis adjustment is required we do so
     cameraUp && cameraOrtho.up.copy(cameraUp);
