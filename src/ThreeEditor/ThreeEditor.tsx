@@ -7,7 +7,7 @@ interface ThreeEditorProps {
   onEditorInitialized?: (editor: Editor) => void
 }
 
-// Render component only once
+// React.memo(component, ()=>true) to prevent re-rendering and re-initializing editor 
 const ThreeEditor = React.memo(function ThreeEditorComponent(props: ThreeEditorProps) {
   const containerEl = useRef(null);
 
