@@ -1,1 +1,1 @@
-export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? 'https://617d3fe41eadc50017136443.mockapi.io/';
+export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? 'https://617d3fe41eadc50017136443.mockapi.io';

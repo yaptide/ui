@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import './css/main.css';
 import { Editor } from './js/Editor';
 import { initEditor } from './main';
