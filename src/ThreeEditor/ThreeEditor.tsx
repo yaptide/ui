@@ -3,24 +3,26 @@ import './css/main.css';
 import { Editor } from './js/Editor';
 import { initEditor } from './main';
 
+interface ThreeEditorProps {
+  onEditorInitialized?: (editor: Editor) => void
+}
 
-function ThreeEditor() {
+// Render component only once
+const ThreeEditor = React.memo(function ThreeEditorComponent(props: ThreeEditorProps) {
   const containerEl = useRef(null);
-
-
-  const [, setEditor] = useState<Editor>();
 
   useEffect(() => {
     if (containerEl.current) {
 
       const { editor } = initEditor(containerEl.current);
-      setEditor(editor);
+
+      props.onEditorInitialized?.call(null, editor);
 
     }
     return () => {
 
     }
-  }, [containerEl]);
+  }, [containerEl, props.onEditorInitialized]);
 
 
   return (
@@ -30,6 +32,6 @@ function ThreeEditor() {
       flexGrow: 1
     }} />
   );
-}
+}, () => true)
 
 export default ThreeEditor;
