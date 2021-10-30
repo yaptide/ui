@@ -34,7 +34,7 @@ function JsRoot() {
         const { JSROOT } = window;
 
         if (scriptLoaded && obj)
-            JSROOT.draw(containerEl.current, obj);
+            JSROOT.draw(containerEl.current, obj,"L");
     }, [obj, scriptLoaded])
 
     return (
