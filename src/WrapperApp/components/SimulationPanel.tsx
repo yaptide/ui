@@ -16,7 +16,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
     const sendRequest = () => {
         setInProgress(true);
-        ky.post(`${BACKEND_URL}/project`, { json: editorRef.current?.toJSON() })
+        ky.post(`${BACKEND_URL}/sh/demo`, { json: editorRef.current?.toJSON() })
             .json()
             .then((response) => {
                 console.log(response);
