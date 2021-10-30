@@ -2,44 +2,49 @@ import Loader from "../Loader/Loader";
 import makeAsyncScriptLoader from "react-async-script";
 import React, { useEffect, useRef, useState } from 'react';
 
-const URL = `https://root.cern.ch/js/latest/scripts/JSRoot.core.js`;
-const globalName = "JSROOT";
+const urlJSROOT = 'https://root.cern.ch/js/latest/scripts/JSRoot.core.js';
+const keyJSROOT = 'JSROOT';
 
+declare global {
+    interface Window { [keyJSROOT]: any; }
+}
 
+const AsyncLoader = makeAsyncScriptLoader(urlJSROOT, { globalName: keyJSROOT })(Loader);
 
 function JsRoot() {
     const containerEl = useRef(null);
-    let [obj, setObj] = useState(undefined);
-    let [isDrawn, setIsDrawn] = useState(false);
-    let [scriptLoaded, setScriptLoaded] = useState(false);
-    let JSROOT:any;
-    const AsyncLoader = makeAsyncScriptLoader(URL,{globalName})(Loader);
-    
+    const [obj, setObj] = useState(undefined);
+    const [scriptLoaded, setScriptLoaded] = useState(false);
+
     const isLoaded = () => {
-        console.log((window as any).JSROOT);
-        JSROOT = (window as any).JSROOT;
-        JSROOT.openFile("./files/hsimple.root")
-            .then((file : any) => file.readObject("hpxpy;1"))
-            .then((obj : any) => {
-                setObj(obj) ;
-                setScriptLoaded(true);
-            });
+        const { JSROOT } = window;
+
+        // create example graph
+        let nbinsx = 20;
+        const y = Array.from({ length: nbinsx }, () => Math.floor(Math.random() * 40));
+        const x = Array.from({ length: nbinsx }, (v, k) => k);
+
+        let h1 = JSROOT.createTGraph(nbinsx, x, y);
+
+        setObj(h1);
+        setScriptLoaded(true);
     }
+
     useEffect(() => {
-        JSROOT = (window as any).JSROOT as any;
-        if(scriptLoaded && obj){
-            JSROOT.draw(containerEl.current, obj, "colz")
-            .then(() => {setIsDrawn(true)})
-        }
-    }, [obj,scriptLoaded])
-    if(scriptLoaded){
-        return(<div>
-            <div style={{ width: 480, height: 480 }} ref={containerEl}></div>
-        </div>)
-    }
-    return (<AsyncLoader
-        asyncScriptOnLoad={isLoaded}
-    />);
+        const { JSROOT } = window;
+
+        if (scriptLoaded && obj)
+            JSROOT.draw(containerEl.current, obj);
+    }, [obj, scriptLoaded])
+
+    return (
+        scriptLoaded ?
+            <div>
+                <div style={{ width: 480, height: 480 }} ref={containerEl} />
+            </div>
+            :
+            <AsyncLoader asyncScriptOnLoad={isLoaded} />
+    );
 }
 
 export default JsRoot;

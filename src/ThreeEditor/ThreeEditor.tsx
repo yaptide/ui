@@ -1,8 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
+import THREE from 'three';
 import './css/main.css';
 import { Editor } from './js/Editor';
 import { initEditor } from './main';
 
+declare global {
+  interface Window {
+    editor: Editor;
+    THREE: typeof THREE;
+  }
+}
 
 function ThreeEditor() {
   const containerEl = useRef(null);

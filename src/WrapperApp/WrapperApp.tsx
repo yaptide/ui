@@ -6,6 +6,7 @@ import { SyntheticEvent, useState } from 'react';
 import ThreeEditor from '../ThreeEditor/ThreeEditor';
 
 import { css } from '@emotion/css';
+import JsRoot from '../JsRoot/JsRoot';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -48,7 +49,7 @@ function WrapperApp() {
         <Tabs value={value} onChange={handleChange} >
           <Tab label="Editor" />
           <Tab label="Run" disabled={demoMode} />
-          <Tab label="Results" disabled />
+          <Tab label="Results" disabled={demoMode} />
           <Tab label="Projects" disabled />
           <Tab label="Logout" disabled />
           <Tab label="About" />
@@ -57,9 +58,14 @@ function WrapperApp() {
       <TabPanel value={value} index={0}  >
         <ThreeEditor></ThreeEditor>
       </TabPanel>
-      {demoMode &&
+      {!demoMode &&
         <TabPanel value={value} index={1}>
           Run Simulation
+        </TabPanel>
+      }
+      {!demoMode &&
+        <TabPanel value={value} index={2}>
+          <JsRoot />
         </TabPanel>
       }
     </Box>
