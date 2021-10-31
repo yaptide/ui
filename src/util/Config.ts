@@ -1,1 +1,3 @@
-export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? 'https://617d3fe41eadc50017136443.mockapi.io';
+export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:5000';
+export const CORS = false;
+export const DEMO_MODE = process.env.REACT_APP_TARGET === 'demo';

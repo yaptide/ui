@@ -8,6 +8,7 @@ import ThreeEditor from '../ThreeEditor/ThreeEditor';
 import UserData from '../util/user/UserData';
 import SimulationPanel from './components/SimulationPanel';
 import { useStore } from '../services/StoreService';
+import { DEMO_MODE } from '../util/Config';
 
 
 interface TabPanelProps {
@@ -47,14 +48,13 @@ function WrapperApp() {
     setTabsValue(newValue);
   };
 
-  const demoMode = process.env.REACT_APP_TARGET === 'demo';
 
   return (
     <Box sx={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={tabsValue} onChange={handleChange} >
           <Tab label="Editor" />
-          <Tab label="Run" disabled={demoMode} />
+          <Tab label="Run" disabled={DEMO_MODE} />
           <Tab label="Results" disabled />
           <Tab label="Projects" disabled />
           <Tab label="About" />
@@ -64,7 +64,7 @@ function WrapperApp() {
       <TabPanel value={tabsValue} index={0}  >
         <ThreeEditor onEditorInitialized={(editor) => editorRef.current = editor} />
       </TabPanel>
-      {demoMode ||
+      {DEMO_MODE ||
         <TabPanel value={tabsValue} index={1}>
           <SimulationPanel />
         </TabPanel>
