@@ -3,7 +3,7 @@ import ky from 'ky';
 
 import React, { useState } from "react";
 import { useStore } from '../../services/StoreService';
-import { BACKEND_URL, CORS } from '../../util/Config';
+import { BACKEND_URL } from '../../util/Config';
 
 interface SimulationPanelProps {
     onError?: (error: unknown) => void;
@@ -17,16 +17,15 @@ export default function SimulationPanel(props: SimulationPanelProps) {
     const sendRequest = () => {
         setInProgress(true);
         ky.post(`${BACKEND_URL}/sh/demo`, {
-            mode: CORS ? 'cors' : 'no-cors',
             json: editorRef.current?.toJSON()
         })
             .json()
             .then((response) => {
-                alert(response);
+                console.log(response)
                 props.onSuccess?.call(null, response);
             })
             .catch((error) => {
-                alert(error);
+                console.log(error);
                 props.onError?.call(null, error);
             }).finally(() => {
                 setInProgress(false);
