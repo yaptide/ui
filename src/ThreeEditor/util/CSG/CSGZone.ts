@@ -245,7 +245,7 @@ export class CSGZone extends THREE.Mesh {
             union.map((operation) => CSGOperation.fromJSON(editor, operation))
         );
 
-        let subscribedObjectsUuid = undefined;
+        let subscribedObjectsUuid;
         
         if(Array.isArray(data.subscribedObjectsUuid))
             subscribedObjectsUuid = new Set(data.subscribedObjectsUuid)

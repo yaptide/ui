@@ -1,6 +1,7 @@
 import { createTheme } from '@mui/material';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import './App.css';
+import { Store } from './services/StoreService';
 import WrapperApp from './WrapperApp/WrapperApp';
 
 function App() {
@@ -8,7 +9,9 @@ function App() {
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
-        <WrapperApp></WrapperApp>
+        <Store>
+          <WrapperApp></WrapperApp>
+        </Store>
       </ThemeProvider>
     </StyledEngineProvider>
   );
