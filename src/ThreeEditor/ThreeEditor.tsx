@@ -10,24 +10,26 @@ declare global {
     THREE: typeof THREE;
   }
 }
+interface ThreeEditorProps {
+  onEditorInitialized?: (editor: Editor) => void
+}
 
-function ThreeEditor() {
+// React.memo(component, ()=>true) to prevent re-rendering and re-initializing editor 
+const ThreeEditor = React.memo(function ThreeEditorComponent(props: ThreeEditorProps) {
   const containerEl = useRef(null);
-
-
-  const [, setEditor] = useState<Editor>();
 
   useEffect(() => {
     if (containerEl.current) {
 
       const { editor } = initEditor(containerEl.current);
-      setEditor(editor);
+
+      props.onEditorInitialized?.call(null, editor);
 
     }
     return () => {
 
     }
-  }, [containerEl]);
+  }, [containerEl, props.onEditorInitialized]);
 
 
   return (
@@ -37,6 +39,6 @@ function ThreeEditor() {
       flexGrow: 1
     }} />
   );
-}
+}, () => true)
 
 export default ThreeEditor;

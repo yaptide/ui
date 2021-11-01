@@ -22,14 +22,14 @@ class RemoveZoneCommand extends Command {
 
 	execute() {
 
-		this.editor.zonesManager.remove( this.zone );
+		this.editor.zonesManager.removeZone( this.zone );
 		this.editor.deselect();
 
 	}
 
 	undo() {
 
-		this.editor.zonesManager.add( this.zone );
+		this.editor.zonesManager.addZone( this.zone );
 		this.editor.select( this.zone );
 
 	}
