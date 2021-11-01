@@ -20,7 +20,7 @@ function JsRoot() {
         const { JSROOT } = window;
 
         // create example graph
-        let nbinsx = 20;
+        const nbinsx = 20;
         const y = Array.from({ length: nbinsx }, () => Math.floor(Math.random() * 40));
         const x = Array.from({ length: nbinsx }, (v, k) => k);
 
