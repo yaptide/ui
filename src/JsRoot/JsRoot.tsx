@@ -11,7 +11,11 @@ declare global {
 
 const AsyncLoader = makeAsyncScriptLoader(urlJSROOT, { globalName: keyJSROOT })(Loader);
 
-function JsRoot() {
+interface JsRootProps{
+    data?:Object
+}
+
+function JsRoot(props:JsRootProps) {
     const containerEl = useRef(null);
     const [obj, setObj] = useState(undefined);
     const [scriptLoaded, setScriptLoaded] = useState(false);
@@ -37,14 +41,16 @@ function JsRoot() {
             JSROOT.draw(containerEl.current, obj,"L");
     }, [obj, scriptLoaded])
 
-    return (
-        scriptLoaded ?
-            <div>
+    return (<>
+        <div>
+            {JSON.stringify(props.data)}
+        </div>
+        {scriptLoaded 
+            ? <div>
                 <div style={{ width: 480, height: 480 }} ref={containerEl} />
-            </div>
-            :
-            <AsyncLoader asyncScriptOnLoad={isLoaded} />
-    );
+              </div>
+            : <AsyncLoader asyncScriptOnLoad={isLoaded} />}
+    </>);
 }
 
 export default JsRoot;
