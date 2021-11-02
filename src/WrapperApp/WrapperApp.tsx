@@ -42,6 +42,7 @@ function WrapperApp() {
 
   const [tabsValue, setTabsValue] = useState(0);
   const [currentUser, setCurrentUser] = useState<UserData | null>(null);
+  const [results, setResults] = useState(false);
 
   const handleChange = (event: SyntheticEvent, newValue: number) => {
     newValue === 5 && setCurrentUser(null);
@@ -55,7 +56,7 @@ function WrapperApp() {
         <Tabs value={tabsValue} onChange={handleChange} >
           <Tab label="Editor" />
           <Tab label="Run" disabled={DEMO_MODE} />
-          <Tab label="Results" disabled />
+          <Tab label="Results" disabled={DEMO_MODE || results} />
           <Tab label="Projects" disabled />
           <Tab label="About" />
           <Tab sx={{ marginLeft: 'auto' }} label={currentUser ? "Logout" : "Login"} />
@@ -65,9 +66,18 @@ function WrapperApp() {
         <ThreeEditor onEditorInitialized={(editor) => editorRef.current = editor} />
       </TabPanel>
       {DEMO_MODE ||
-        <TabPanel value={tabsValue} index={1}>
-          <SimulationPanel />
+        <><TabPanel value={tabsValue} index={1}>
+          <SimulationPanel 
+           onSuccess={() => {
+             setTabsValue(2);
+             setResults(true);
+           }}
+          
+          />
         </TabPanel>
+        <TabPanel value={tabsValue} index={2}>
+          <JsRoot />
+        </TabPanel></>
       }
       <TabPanel value={tabsValue} index={5} >
         <LoginPanel

@@ -17,14 +17,19 @@ export default function SimulationPanel(props: SimulationPanelProps) {
     const sendRequest = () => {
         setInProgress(true);
         ky.post(`${BACKEND_URL}/sh/demo`, {
-            json: editorRef.current?.toJSON()
+            json: editorRef.current?.toJSON(),
+            timeout:13000    
+            /**
+            Timeout in milliseconds for getting a response. Can not be greater than 2147483647.
+            If set to `false`, there will be no timeout.
+            **/
         })
             .json()
-            .then((response) => {
+            .then((response:unknown) => {
                 console.log(response)
                 props.onSuccess?.call(null, response);
             })
-            .catch((error) => {
+            .catch((error:unknown) => {
                 console.log(error);
                 props.onError?.call(null, error);
             }).finally(() => {
