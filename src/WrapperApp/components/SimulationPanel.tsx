@@ -18,7 +18,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
         setInProgress(true);
         ky.post(`${BACKEND_URL}/sh/demo`, {
             json: editorRef.current?.toJSON(),
-            timeout:13000    
+            timeout:30000    
             /**
             Timeout in milliseconds for getting a response. Can not be greater than 2147483647.
             If set to `false`, there will be no timeout.
