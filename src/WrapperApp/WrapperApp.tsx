@@ -10,7 +10,6 @@ import SimulationPanel from './components/SimulationPanel';
 import { useStore } from '../services/StoreService';
 import { DEMO_MODE } from '../util/Config';
 import JsRootGraph from '../JsRoot/JsRootGraph';
-import { JsRootService } from '../JsRoot/JsRootService';
 interface TabPanelProps {
 	children?: React.ReactNode;
 	index: number;
@@ -78,11 +77,9 @@ function WrapperApp() {
 						/>
 					</TabPanel>
 
-					<JsRootService>
-						<TabPanel value={tabsValue} index={2}>
-							<JsRootGraph data={resultData} />
-						</TabPanel>
-					</JsRootService>
+					<TabPanel value={tabsValue} index={2}>
+						<JsRootGraph data={resultData} />
+					</TabPanel>
 				</>
 			}
 			<TabPanel value={tabsValue} index={5} >

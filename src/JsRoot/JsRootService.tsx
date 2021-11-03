@@ -58,8 +58,6 @@ const JsRoot = (props: JsRootProps) => {
 
 const AsyncLoaderJsRoot = makeAsyncScriptLoader(JsRootUrl, { globalName: JsRootKey })(JsRoot);
 
-
-
 export {
     useJSROOT,
     AsyncLoaderJsRoot as JsRootService
