@@ -21,8 +21,6 @@ export interface IJsRoot {
 
 const [useJSROOT, JsRootContextProvider] = createGenericContext<IJsRoot>();
 
-
-
 const JsRoot = (props: JsRootProps) => {
     const [value, setValue] = useState<IJsRoot>();
 
@@ -32,12 +30,21 @@ const JsRoot = (props: JsRootProps) => {
         const script = document.createElement('script');
 
         script.src = JsRootPainterUrl;
-        script.async = false;
-        script.onload = () => {
-            setTimeout(() => {               
-                setValue({ JSROOT: window.JSROOT })
-            }, 500);
+        script.async = true;
+
+        const handler = {
+            set: function (obj: object, prop: PropertyKey, value: any) {
+                Reflect.set(obj, prop, value);
+                if (prop === 'Painter') {    
+                    // detect JSROOT.Painter loaded              
+                    setValue({ JSROOT: window.JSROOT });
+                }
+                return true;
+            }
         };
+        const proxyJsRoot = new Proxy(window.JSROOT, handler);
+        window.JSROOT = proxyJsRoot;        
+
         document.body.appendChild(script);
 
     }, [props.JSROOT]);
