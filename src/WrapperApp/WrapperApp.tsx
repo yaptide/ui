@@ -48,7 +48,7 @@ function WrapperApp() {
 		setTabsValue(newValue);
 	};
 
-	const [resultData, setResultData] = useState<Object>({});
+	const [resultData, setResultData] = useState<{data?:unknown}>({});
 
 	return (
 		<Box sx={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -71,7 +71,7 @@ function WrapperApp() {
 						<SimulationPanel
 							onSuccess={(data) => {
 								setTabsValue(2);
-								setResultData(data);
+								setResultData({data});
 							}}
 
 						/>

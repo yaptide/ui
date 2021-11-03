@@ -7,7 +7,7 @@ import { BACKEND_URL } from '../../util/Config';
 
 interface SimulationPanelProps {
     onError?: (error: unknown) => void;
-    onSuccess?: (result: Object) => void;
+    onSuccess?: (result: unknown) => void;
 }
 
 export default function SimulationPanel(props: SimulationPanelProps) {
@@ -27,10 +27,9 @@ export default function SimulationPanel(props: SimulationPanelProps) {
             .json()
             .then((response:unknown) => {
                 console.log(response);
-                props.onSuccess?.call(null, response as Object);
+                props.onSuccess?.call(null, response);
             })
             .catch((error:unknown) => {
-                props.onSuccess?.call(null, {error});
                 console.log(error);
                 props.onError?.call(null, error);
             }).finally(() => {
