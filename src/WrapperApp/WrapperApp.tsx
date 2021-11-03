@@ -62,7 +62,7 @@ function WrapperApp() {
 					<Tab sx={{ marginLeft: 'auto' }} label={currentUser ? "Logout" : "Login"} />
 				</Tabs>
 			</Box>
-			<TabPanel value={tabsValue} index={0} persistent={true} >
+			<TabPanel value={tabsValue} index={0} persistent >
 				<ThreeEditor onEditorInitialized={(editor) => editorRef.current = editor} />
 			</TabPanel>
 			{DEMO_MODE ||

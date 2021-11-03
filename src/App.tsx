@@ -12,7 +12,7 @@ function App() {
       <ThemeProvider theme={theme}>
         <JsRootService>
           <Store>
-            <WrapperApp></WrapperApp>
+            <WrapperApp/>
           </Store>
         </JsRootService>
       </ThemeProvider>
