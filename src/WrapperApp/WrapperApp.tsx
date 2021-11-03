@@ -9,18 +9,19 @@ import UserData from '../util/user/UserData';
 import SimulationPanel from './components/SimulationPanel';
 import { useStore } from '../services/StoreService';
 import { DEMO_MODE } from '../util/Config';
-import JsRoot from '../JsRoot/JsRoot';
-
+import JsRootGraph from '../JsRoot/JsRootGraph';
+import { JsRootService } from '../JsRoot/JsRootService';
 interface TabPanelProps {
 	children?: React.ReactNode;
 	index: number;
 	value: number;
+	persistent?: boolean;
 }
 
 const tabPanelCss = css({ display: 'flex', flexGrow: 1 });
 
 function TabPanel(props: TabPanelProps) {
-	const { children, value, index, ...other } = props;
+	const { children, value, index, persistent, ...other } = props;
 
 	return (
 		<div
@@ -29,9 +30,9 @@ function TabPanel(props: TabPanelProps) {
 			style={{ display: value !== index ? 'none' : '' }}
 			{...other}
 		>
-			<Box className={tabPanelCss}>
+			{(value === index || persistent) && <Box className={tabPanelCss}>
 				{children}
-			</Box>
+			</Box>}
 		</div>
 	);
 }
@@ -62,7 +63,7 @@ function WrapperApp() {
 					<Tab sx={{ marginLeft: 'auto' }} label={currentUser ? "Logout" : "Login"} />
 				</Tabs>
 			</Box>
-			<TabPanel value={tabsValue} index={0}  >
+			<TabPanel value={tabsValue} index={0} persistent={true} >
 				<ThreeEditor onEditorInitialized={(editor) => editorRef.current = editor} />
 			</TabPanel>
 			{DEMO_MODE ||
@@ -76,9 +77,12 @@ function WrapperApp() {
 
 						/>
 					</TabPanel>
-					<TabPanel value={tabsValue} index={2}>
-						<JsRoot data={resultData} />
-					</TabPanel>
+
+					<JsRootService>
+						<TabPanel value={tabsValue} index={2}>
+							<JsRootGraph data={resultData} />
+						</TabPanel>
+					</JsRootService>
 				</>
 			}
 			<TabPanel value={tabsValue} index={5} >

@@ -8,10 +8,10 @@ function App() {
   const theme = createTheme();
   return (
     <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        <Store>
-          <WrapperApp></WrapperApp>
-        </Store>
+      <ThemeProvider theme={theme}>       
+          <Store>
+            <WrapperApp></WrapperApp>
+          </Store>
       </ThemeProvider>
     </StyledEngineProvider>
   );
