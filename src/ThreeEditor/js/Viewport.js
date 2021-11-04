@@ -459,6 +459,7 @@ export function Viewport(
 
                 camera = camera.isPerspectiveCamera ? cameraOrtho : cameraPersp;
                 updateCamera(camera, position);
+                render();
 
                 break;
 
