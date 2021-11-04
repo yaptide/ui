@@ -2,6 +2,19 @@ import * as THREE from 'three';
 import { SetGeometryCommand } from './commands/Commands';
 import { UINumber, UIRow, UIText } from './libs/ui.js';
 
+function createParamRow(update, value, text) {
+	const row = new UIRow();
+	const param = new UINumber(value).onChange(update);
+	const paramText = new UIText(text).setWidth('90px');
+	param.min = 0;
+
+	row.add(paramText);
+	row.add(param);
+
+	return [row, param, paramText];
+}
+
+
 function GeometryParametersPanel(editor, object) {
 
 	const strings = editor.strings;
@@ -11,16 +24,22 @@ function GeometryParametersPanel(editor, object) {
 	const geometry = object.geometry;
 	const parameters = geometry.parameters;
 
-	// width = height = depth
 
-	const widthRow = new UIRow();
-	const width = new UINumber(parameters.width).onChange(update);
-	width.min = 0;
+	// width 
 
-	widthRow.add(new UIText(strings.getKey('sidebar/geometry/box_geometry/width') + ' ' + editor.unit.name).setWidth('90px'));
-	widthRow.add(width);
-
+	const [widthRow, width] = createParamRow(update, parameters.width, strings.getKey('sidebar/geometry/box_geometry/width') + ' ' + editor.unit.name);
 	container.add(widthRow);
+
+	// height
+
+	const [heightRow, height] = createParamRow(update, parameters.height, strings.getKey('sidebar/geometry/box_geometry/height') + ' ' + editor.unit.name);
+	container.add(heightRow);
+
+	// depth
+
+	const [depthRow, depth] = createParamRow(update, parameters.depth, strings.getKey('sidebar/geometry/box_geometry/depth') + ' ' + editor.unit.name);
+	container.add(depthRow);
+
 
 	//
 
@@ -28,8 +47,8 @@ function GeometryParametersPanel(editor, object) {
 
 		editor.execute(new SetGeometryCommand(editor, object, new THREE.BoxGeometry(
 			width.getValue(),
-			width.getValue(),
-			width.getValue(),
+			height.getValue(),
+			depth.getValue(),
 			1,
 			1,
 			1
