@@ -17,8 +17,6 @@ function createParamRow(update, value, text) {
 
 function GeometryParametersPanel(editor, object) {
 
-	const strings = editor.strings;
-
 	const container = new UIRow();
 
 	const geometry = object.geometry;
@@ -27,17 +25,17 @@ function GeometryParametersPanel(editor, object) {
 
 	// width 
 
-	const [widthRow, width] = createParamRow(update, parameters.width, strings.getKey('sidebar/geometry/box_geometry/width') + ' ' + editor.unit.name);
+	const [widthRow, width] = createParamRow(update, parameters.width, `X side length (width) ${editor.unit.name}`);
 	container.add(widthRow);
 
 	// height
 
-	const [heightRow, height] = createParamRow(update, parameters.height, strings.getKey('sidebar/geometry/box_geometry/height') + ' ' + editor.unit.name);
+	const [heightRow, height] = createParamRow(update, parameters.height, `Y side length (height) ${editor.unit.name}`);
 	container.add(heightRow);
 
 	// depth
 
-	const [depthRow, depth] = createParamRow(update, parameters.depth, strings.getKey('sidebar/geometry/box_geometry/depth') + ' ' + editor.unit.name);
+	const [depthRow, depth] = createParamRow(update, parameters.depth, `Z side length (depth) ${editor.unit.name}`);
 	container.add(depthRow);
 
 
