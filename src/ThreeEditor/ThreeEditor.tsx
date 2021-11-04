@@ -15,7 +15,7 @@ interface ThreeEditorProps {
   focus?: boolean
 }
 
-const ThreeEditor = (props: ThreeEditorProps) => {
+function ThreeEditor(props: ThreeEditorProps) {
   const [editor, setEditor] = useState<Editor>();
   const containerEl = useRef<HTMLDivElement>(null);
 
