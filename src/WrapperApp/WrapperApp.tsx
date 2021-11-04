@@ -48,7 +48,7 @@ function WrapperApp() {
 		setTabsValue(newValue);
 	};
 
-	const [resultData, setResultData] = useState<{data?:unknown}>({});
+	const [resultData, setResultData] = useState<{ data?: unknown }>({});
 
 	return (
 		<Box sx={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -63,7 +63,7 @@ function WrapperApp() {
 				</Tabs>
 			</Box>
 			<TabPanel value={tabsValue} index={0} persistent >
-				<ThreeEditor onEditorInitialized={(editor) => editorRef.current = editor} />
+				<ThreeEditor onEditorInitialized={(editor) => editorRef.current = editor} focus={tabsValue === 0} />
 			</TabPanel>
 			{DEMO_MODE ||
 				<>
@@ -71,7 +71,7 @@ function WrapperApp() {
 						<SimulationPanel
 							onSuccess={(data) => {
 								setTabsValue(2);
-								setResultData({data});
+								setResultData({ data });
 							}}
 
 						/>

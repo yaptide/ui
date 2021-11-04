@@ -12,33 +12,37 @@ declare global {
 }
 interface ThreeEditorProps {
   onEditorInitialized?: (editor: Editor) => void
+  focus?: boolean
 }
 
-// React.memo(component, ()=>true) to prevent re-rendering and re-initializing editor 
-const ThreeEditor = React.memo(function ThreeEditorComponent(props: ThreeEditorProps) {
-  const containerEl = useRef(null);
+function ThreeEditor(props: ThreeEditorProps) {
+  const [editor, setEditor] = useState<Editor>();
+  const containerEl = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (containerEl.current) {
-
       const { editor } = initEditor(containerEl.current);
-
-      props.onEditorInitialized?.call(null, editor);
-
+      setEditor(editor);
     }
-    return () => {
+  }, [containerEl]);
 
-    }
-  }, [containerEl, props.onEditorInitialized]);
+  useEffect(() => {
+    editor && props.onEditorInitialized?.call(null, editor);
+  }, [editor, props.onEditorInitialized]);
 
+  useEffect(() => {
+    props.focus === true && containerEl.current?.focus();
+    props.focus === false && containerEl.current?.blur();
+  }, [props.focus]);
 
   return (
     <div className="ThreeEditor" ref={containerEl} style={{
       position: 'relative',
       display: 'flex',
       flexGrow: 1
-    }} />
+    }}
+    />
   );
-}, () => true)
+}
 
 export default ThreeEditor;
