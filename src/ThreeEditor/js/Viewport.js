@@ -232,7 +232,7 @@ export function Viewport(
 
     });
 
-    window.addEventListener('keydown', (event) => {
+    editor.container.addEventListener('keydown', (event) => {
 
         switch (event.key) {
 
@@ -246,7 +246,7 @@ export function Viewport(
 
     });
 
-    window.addEventListener('keyup', (event) => {
+    editor.container.addEventListener('keyup', (event) => {
 
         switch (event.key) {
 

@@ -22,7 +22,7 @@ export function initEditor(container) {
 
     //
 
-    var editor = new Editor();
+    var editor = new Editor(container);     
 
     window.editor = editor; // Expose editor to Console
     window.THREE = THREE; // Expose THREE to APP Scripts and Console

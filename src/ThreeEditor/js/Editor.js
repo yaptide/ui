@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 import { Beam } from '../util/Beam';
 import { CSGManager } from '../util/CSG/CSGManager';
-import   MaterialsManager from '../util/Materials/MaterialsManager';
+import MaterialsManager from '../util/Materials/MaterialsManager';
 import { Config } from './Config.js';
 import { History as _History } from './History.js';
 import { Loader } from './Loader.js';
-import   Signal from 'signals';
+import Signal from 'signals';
 import { Strings } from './Strings.js';
 import { Storage as _Storage } from './Storage.js';
 import { generateSimulationInfo } from '../util/AdditionalUserData';
@@ -15,8 +15,8 @@ _DEFAULT_CAMERA.name = 'Camera';
 _DEFAULT_CAMERA.position.set(0, 5, 10);
 _DEFAULT_CAMERA.lookAt(new THREE.Vector3());
 
-export function Editor() {
-
+export function Editor(container) {
+	
 	this.signals = {
 
 		// script
@@ -91,7 +91,7 @@ export function Editor() {
 		selectModeChanged: new Signal(),
 
 		layoutChanged: new Signal(), // Layout signal
-		
+
 		CSGZoneAdded: new Signal(), // Sidebar.Properties signal
 
 		viewportConfigChanged: new Signal(), // Viewport config signal 
@@ -99,6 +99,10 @@ export function Editor() {
 		CSGManagerStateChanged: new Signal(), // State of CSGmanager changed
 
 	};
+
+	this.container = container;
+	container.setAttribute('tabindex', '-1');
+	this.container.focus();
 
 	this.config = new Config();
 	this.history = new _History(this);
@@ -122,9 +126,9 @@ export function Editor() {
 
 	this.beam = new Beam(this);
 	this.sceneHelpers.add(this.beam);
-	
-	this.materialsManager = new MaterialsManager;
-	
+
+	this.materialsManager = new MaterialsManager();
+
 
 	this.object = {};
 	this.geometries = {};
@@ -203,7 +207,7 @@ Editor.prototype = {
 
 	},
 
-	moveObject(object, parent, before) {	
+	moveObject(object, parent, before) {
 
 		if (!parent) {
 
@@ -690,14 +694,14 @@ Editor.prototype = {
 		this.setScene(await loader.parseAsync(json.scene));
 
 		this.materialsManager.fromJSOM(json.materialsManager);
-		
+
 		// CSGManager must be loaded after scene and simulation materials		
 		this.zonesManager.fromJSON(json.zonesManager); // CSGManager must be loaded in order not to lose reference in components 
 
 		this.beam.fromJSON(json.beam);
 
 		this.signals.sceneGraphChanged.dispatch();
-				
+
 	},
 
 	toJSON() {

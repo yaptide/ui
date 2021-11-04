@@ -92,16 +92,13 @@ function SidebarSettingsShortcuts(editor) {
 
 	}
 
-	document.addEventListener('keydown', (event) => {
+	editor.container.addEventListener('keydown', (event) => {
 
 		switch (event.key.toLowerCase()) {
 
 			case 'backspace':
-
-				event.preventDefault(); // prevent browser back
-			// fall-through
-
-			// eslint-disable-next-line
+				event.preventDefault(); // prevent browser back			
+			// eslint-disable-next-line no-fallthrough
 			case 'delete':
 
 				var object = editor.selected;
