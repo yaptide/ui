@@ -3,7 +3,6 @@ import { Editor } from "../ThreeEditor/js/Editor";
 import { createGenericContext } from "../util/GenericContext";
 
 
-
 export interface StoreProps {
     children: ReactNode
 }
