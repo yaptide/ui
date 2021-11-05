@@ -1,0 +1,64 @@
+import { Grid, Tab, Tabs } from "@mui/material";
+import { Box } from "@mui/system";
+import React, { SyntheticEvent, useState } from "react";
+import JsRootGraph from "../../JsRoot/JsRootGraph";
+import { TabPanel } from "./TabPanel";
+
+
+interface ResultsPanelProps {
+    data?: Object
+}
+
+const simulationData = (() => {
+    const data = [];
+    for (let index = 0; index < 5; index++) {
+        const numberOfElements = Math.floor(Math.random() * 50) + 100;
+        const obj = {
+            uuid: index,
+            name: `DetectorMesh${index}`,
+            graphs: Array(numberOfElements).fill(0).map((v, i) => {
+                const rand = Math.round(Math.random() * numberOfElements) + 1;
+                return { uuid: i, title: `Mesh${index} - Graph${i} - ${rand}`, value: rand }
+            })
+        }
+        data.push(obj);
+    }
+
+    return data;
+})();
+
+export default function ResultsPanel(props: ResultsPanelProps) {
+    const [tabsValue, setTabsValue] = useState(0);
+
+    const handleChange = (event: SyntheticEvent, newValue: number) => {
+        setTabsValue(newValue);
+    };
+
+    return (
+        <Box sx={{ display: 'flex', flexDirection: 'row', maxWidth: '100vw' }}>
+            {/* <JsRootGraph data={props.data} /> */}
+            <Tabs sx={{ flexShrink: 0 }} orientation="vertical" variant="scrollable" value={tabsValue} onChange={handleChange} >
+                {simulationData.map((meshResult) => {
+                    return (<Tab key={meshResult.uuid} label={meshResult.name} value={meshResult.uuid} />);
+                })}
+            </Tabs>
+
+            {simulationData.map((meshResult) => {
+                return (
+                    <TabPanel key={meshResult.uuid} value={tabsValue} index={meshResult.uuid} >
+                        <Grid key={meshResult.uuid} container spacing={1}>
+                            {meshResult.graphs.map((graph) =>
+                                <Grid key={graph.uuid} item xs={6}>
+                                    {graph.uuid}
+                                    {/* <JsRootGraph key={graph.uuid} data={graph} /> */}
+                                </Grid>
+                            )}
+                        </Grid>
+                    </TabPanel>
+                );
+            })}
+
+
+        </Box>
+    );
+}
