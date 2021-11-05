@@ -36,7 +36,6 @@ export default function ResultsPanel(props: ResultsPanelProps) {
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'row', maxWidth: '100vw' }}>
-            {/* <JsRootGraph data={props.data} /> */}
             <Tabs sx={{ flexShrink: 0 }} orientation="vertical" variant="scrollable" value={tabsValue} onChange={handleChange} >
                 {simulationData.map((meshResult) => {
                     return (<Tab key={meshResult.uuid} label={meshResult.name} value={meshResult.uuid} />);
@@ -45,12 +44,12 @@ export default function ResultsPanel(props: ResultsPanelProps) {
 
             {simulationData.map((meshResult) => {
                 return (
-                    <TabPanel key={meshResult.uuid} value={tabsValue} index={meshResult.uuid} >
+                    <TabPanel key={meshResult.uuid} value={tabsValue} index={meshResult.uuid} persistent >
                         <Grid key={meshResult.uuid} container spacing={1}>
-                            {meshResult.graphs.map((graph) =>
-                                <Grid key={graph.uuid} item xs={6}>
-                                    {graph.uuid}
-                                    {/* <JsRootGraph key={graph.uuid} data={graph} /> */}
+                            {meshResult.graphs.map((graph) =>                           
+                                <Grid key={graph.uuid} item xs={6}>  
+                                    {graph.title}                                 
+                                    <JsRootGraph key={graph.uuid} data={graph} />
                                 </Grid>
                             )}
                         </Grid>

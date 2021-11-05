@@ -9,7 +9,7 @@ interface TabPanelProps {
     persistent?: boolean;
 }
 
-const tabPanelCss = css({ display: 'flex', flexGrow: 1 });
+const tabPanelCss = css({ display: 'flex', flexGrow: 1, overflow: 'auto' });
 
 export function TabPanel(props: TabPanelProps) {
     const { children, value, index, persistent, ...other } = props;
