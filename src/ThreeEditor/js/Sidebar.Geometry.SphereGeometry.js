@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import { SetGeometryCommand } from './commands/Commands';
-import { UINumber, UIRow, UIText } from './libs/ui.js';
+import { createRowParam } from '../util/UiUtils';
+import { UIRow } from './libs/ui.js';
 
-function GeometryParametersPanel( editor, object ) {
+function GeometryParametersPanel(editor, object) {
 
 	var strings = editor.strings;
 
@@ -13,22 +14,19 @@ function GeometryParametersPanel( editor, object ) {
 
 	// radius
 
-	var radiusRow = new UIRow();
-	var radius = new UINumber( parameters.radius ).onChange( update );
-	radius.min = 0;
+	const [radiusRow, radius] = createRowParam({
+		update, value: parameters.radius, min: 0,
+		text: `${strings.getKey('sidebar/geometry/sphere_geometry/radius')} ${editor.unit.name}`
+	});
+	container.add(radiusRow);
 
-	radiusRow.add( new UIText( strings.getKey( 'sidebar/geometry/sphere_geometry/radius' ) + ' ' + editor.unit.name).setWidth( '90px' ) );
-	radiusRow.add( radius );
 
-	container.add( radiusRow );
-
-	
 
 	//
 
 	function update() {
 
-		editor.execute( new SetGeometryCommand( editor, object, new THREE.SphereGeometry(
+		editor.execute(new SetGeometryCommand(editor, object, new THREE.SphereGeometry(
 			radius.getValue(),
 			16,
 			8,
@@ -36,7 +34,7 @@ function GeometryParametersPanel( editor, object ) {
 			360 * THREE.MathUtils.DEG2RAD,
 			0 * THREE.MathUtils.DEG2RAD,
 			180 * THREE.MathUtils.DEG2RAD
-		) ) );
+		)));
 
 	}
 

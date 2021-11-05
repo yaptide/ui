@@ -15,7 +15,7 @@ import ResultsPanel from './components/ResultsPanel';
 function WrapperApp() {
 	const { editorRef } = useStore();
 
-	const [tabsValue, setTabsValue] = useState(2);
+	const [tabsValue, setTabsValue] = useState(0);
 	const [currentUser, setCurrentUser] = useState<UserData | null>(null);
 
 	const handleChange = (event: SyntheticEvent, newValue: number) => {
