@@ -1,11 +1,17 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useEffect, useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useJSROOT } from './JsRootService';
 import { useVisible } from 'react-hooks-visible'
 
-interface JsRootGraphProps {
-    data?: any
+interface IGraphData {
+    uuid: string | number
+    title: string
+    value: number
 }
+interface JsRootGraphProps {
+    data?: IGraphData
+}
+
 
 function JsRootGraph(props: JsRootGraphProps) {
     const { JSROOT } = useJSROOT();
@@ -17,14 +23,14 @@ function JsRootGraph(props: JsRootGraphProps) {
 
     useEffect(() => {
         // create example graph
-        const nbinsx = props.data?.value ?? 20;
-        const y = Array.from({ length: nbinsx }, () => Math.floor(Math.random() * 20));
-        const x = Array.from({ length: nbinsx }, (v, k) => k);
+        const npoints = props.data?.value ?? 20;
+        const y = Array.from({ length: npoints }, () => Math.floor(Math.random() * 20));
+        const x = Array.from({ length: npoints }, (v, k) => k);
 
-        const h1 = JSROOT.createTGraph(nbinsx, x, y);
-        h1.fTitle = props.data?.title ?? "Histogram title";
+        const gr = JSROOT.createTGraph(npoints, x, y);
+        gr.fTitle = props.data?.title ?? "Plot title";
 
-        setObj(h1);
+        setObj(gr);
         setDrawn(false);
     }, [JSROOT, props.data]);
 

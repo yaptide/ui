@@ -1,4 +1,4 @@
-import { Grid, Tab, Tabs } from "@mui/material";
+import { Grid, Tab, Tabs, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { SyntheticEvent, useState } from "react";
 import JsRootGraph from "../../JsRoot/JsRootGraph";
@@ -15,7 +15,7 @@ const simulationData = (() => {
         const numberOfElements = Math.floor(Math.random() * 50) + 100;
         const obj = {
             uuid: index,
-            name: `DetectorMesh${index}`,
+            name: `Scoring Mesh${index}`,
             graphs: Array(numberOfElements).fill(0).map((v, i) => {
                 const rand = Math.round(Math.random() * numberOfElements) + 1;
                 return { uuid: i, title: `Mesh${index} - Graph${i} - ${rand}`, value: rand }
@@ -46,11 +46,16 @@ export default function ResultsPanel(props: ResultsPanelProps) {
                 return (
                     <TabPanel key={meshResult.uuid} value={tabsValue} index={meshResult.uuid} persistent >
                         <Grid key={meshResult.uuid} container spacing={1}>
-                            {meshResult.graphs.map((graph) =>                           
-                                <Grid key={graph.uuid} item xs={6}>  
-                                    {graph.title}                                 
-                                    <JsRootGraph key={graph.uuid} data={graph} />
-                                </Grid>
+                            {meshResult.graphs.map((graph) =>
+                                <React.Fragment key={graph.uuid} >
+                                    <Grid item xs={8}>
+                                        <JsRootGraph data={graph} />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <Typography > Additional info:</Typography>
+                                        <Typography > Title: {graph.title}</Typography>
+                                    </Grid>
+                                </React.Fragment>
                             )}
                         </Grid>
                     </TabPanel>
