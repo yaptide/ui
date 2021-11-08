@@ -44,7 +44,6 @@ function JsRootGraph(props: JsRootGraphProps) {
 
     useEffect(() => {
         if (obj && !drawn && isVisible) {
-            console.log("DRAW")
             JSROOT.cleanup(containerEl.current);
             JSROOT.redraw(containerEl.current, obj, "");
             setDrawn(true);
