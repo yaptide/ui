@@ -27,15 +27,15 @@ const simulationData = (() => {
     return data;
 })();
 
-export default function ResultsPanel(props: ResultsPanelProps) {
-    const [tabsValue, setTabsValue] = useState(0);
+const ResultsPanel = React.memo(function ResultsPanel(props: ResultsPanelProps) {
+    const [tabsValue, setTabsValue] = useState<number>(simulationData[0].uuid);
 
     const handleChange = (event: SyntheticEvent, newValue: number) => {
         setTabsValue(newValue);
     };
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'row', maxWidth: '100vw' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', maxWidth: '100vw', width: '100%' }}>
             <Tabs sx={{ flexShrink: 0 }} orientation="vertical" variant="scrollable" value={tabsValue} onChange={handleChange} >
                 {simulationData.map((meshResult) => {
                     return (<Tab key={meshResult.uuid} label={meshResult.name} value={meshResult.uuid} />);
@@ -62,7 +62,8 @@ export default function ResultsPanel(props: ResultsPanelProps) {
                 );
             })}
 
-
         </Box>
     );
-}
+}, (prevProps, nextProps) => true);
+
+export default ResultsPanel;
