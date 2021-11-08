@@ -1,4 +1,4 @@
-import React, {useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useJSROOT } from './JsRootService';
 import { useVisible } from 'react-hooks-visible'
@@ -19,9 +19,16 @@ function JsRootGraph(props: JsRootGraphProps) {
 
     const [obj, setObj] = useState(undefined);
     const [drawn, setDrawn] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        setIsVisible(visible > 0.2);
+        return () => setIsVisible(false);
+    }, [visible]);
 
 
     useEffect(() => {
+        if (drawn || !visible) return;
         // create example graph
         const npoints = props.data?.value ?? 20;
         const y = Array.from({ length: npoints }, () => Math.floor(Math.random() * 20));
@@ -32,18 +39,17 @@ function JsRootGraph(props: JsRootGraphProps) {
 
         setObj(gr);
         setDrawn(false);
-    }, [JSROOT, props.data]);
+    }, [JSROOT, drawn, props.data, visible]);
 
 
     useEffect(() => {
-
-        if (obj && !drawn && visible > 0.2) {
+        if (obj && !drawn && isVisible) {
             JSROOT.cleanup(containerEl.current);
             JSROOT.redraw(containerEl.current, obj, "");
             setDrawn(true);
         }
 
-    }, [JSROOT, containerEl, drawn, obj, visible]);
+    }, [JSROOT, containerEl, drawn, obj, isVisible]);
 
 
 
