@@ -4,13 +4,13 @@ function ViewportCamera(viewport, cameras) {
 
 	//
 
-	var cameraSelect = new UISelect();
+	const cameraSelect = new UISelect();
 	cameraSelect.setPosition('absolute');
 	cameraSelect.setRight('10px');
 	cameraSelect.setTop('10px');
 	cameraSelect.onChange(() => {
 
-		viewport.setCameraFromUuid(this.getValue());
+		viewport.setCameraFromUuid(cameraSelect.getValue());
 
 	});
 
@@ -18,13 +18,12 @@ function ViewportCamera(viewport, cameras) {
 
 
 
-	var options = {};
+	const options = {};
 
 
+	for (const key in cameras) {
 
-	for (var key in cameras) {
-
-		var camera = cameras[key];
+		const camera = cameras[key];
 		options[camera.uuid] = camera.name;
 
 	}
