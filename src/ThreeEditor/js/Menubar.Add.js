@@ -1,6 +1,5 @@
 import * as THREE from 'three';
-import { AddObjectCommand } from './commands/AddObjectCommand.js';
-import { AddZoneCommand } from './commands/AddZoneCommand.js';
+import { AddObjectCommand, AddZoneCommand, AddDetectSectionCommand } from './commands/Commands';
 import { UIHorizontalRule, UIPanel } from './libs/ui.js';
 import { createOption } from './Menubar.js';
 
@@ -25,21 +24,22 @@ function MenubarAdd(editor) {
 	options.add(createOption('option', strings.getKey('menubar/add/group'), () => {
 
 		var mesh = new THREE.Group();
-		mesh.name = 'Zone';
+		mesh.name = 'Group';
 		editor.execute(new AddObjectCommand(editor, mesh));
-	}));
-
-	options.add(new UIHorizontalRule());
-
+	})).add(new UIHorizontalRule());
 
 	// YAPTIDE zones
-	options.add(createOption('option', 'zone', () => {
+	options.add(createOption('option', 'Zone', () => {
 
 		editor.execute(new AddZoneCommand(editor));
-	}));
+	})).add(new UIHorizontalRule());
 
+	// YAPTIDE detectors
+	options.add(createOption('option', 'Detect Section', () => {
 
-	options.add(new UIHorizontalRule());
+		editor.execute(new AddDetectSectionCommand(editor));
+
+	})).add(new UIHorizontalRule());
 
 	const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, transparent: true, opacity: 0.5, wireframe: true });
 
@@ -56,7 +56,7 @@ function MenubarAdd(editor) {
 	};
 
 
-	// Box
+	// Box Sphere & Cylinder
 	options.add(createOption('option', strings.getKey('menubar/add/box'), () => {
 
 		var geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
@@ -64,33 +64,21 @@ function MenubarAdd(editor) {
 		mesh.name = 'Box';
 
 		editor.execute(new AddObjectCommand(editor, mesh));
-	}));
-
-	// Sphere
-	options.add(createOption('option', strings.getKey('menubar/add/sphere'), () => {
+	})).add(createOption('option', strings.getKey('menubar/add/sphere'), () => {
 
 		var geometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI);
 		var mesh = new THREE.Mesh(geometry, material.clone());
 		mesh.name = 'Sphere';
 
 		editor.execute(new AddObjectCommand(editor, mesh));
-	}));
-
-
-
-
-
-	// Cylinder
-	options.add(createOption('option', strings.getKey('menubar/add/cylinder'), () => {
+	})).add(createOption('option', strings.getKey('menubar/add/cylinder'), () => {
 
 		var geometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2);
 		var mesh = new THREE.Mesh(geometry, material.clone());
 		mesh.name = 'Cylinder';
 
 		editor.execute(new AddObjectCommand(editor, mesh));
-	}));
-
-	options.add(new UIHorizontalRule());
+	})).add(new UIHorizontalRule());
 
 	// HemisphereLight
 	//Code adjusted from https://github.com/mrdoob/three.js/blob/r131/editor/js/Menubar.Add.js

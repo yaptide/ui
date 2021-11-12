@@ -34,8 +34,12 @@ interface BoundingZoneParams {
 }
 
 export class BoundingZone extends THREE.Object3D implements ISimulationObject {
-    notRemovable = true;
-    notMoveable = true;
+    readonly notRemovable = true;
+    readonly notMovable!: never;
+    readonly notRotatable = true;
+    readonly notScalable = true;
+
+    private proxy: BoundingZone;  // use proxy to conditionally return notMoveable property;
     
     editor: Editor;
     box: THREE.Box3;
@@ -49,9 +53,24 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
     private cylinderMesh: THREE.Mesh<THREE.CylinderGeometry, MeshBasicMaterial>;
     private sphereMesh: THREE.Mesh<THREE.SphereGeometry, MeshBasicMaterial>;
 
+
     readonly debouncedCalculate = debounce(200, false, () =>
         this.calculate()
     );
+
+    private overrideHandler = {
+        get: (target: BoundingZone, p: keyof BoundingZone) => {
+            let result:unknown;
+                switch(p){
+                    case "notMovable":
+                        result = this.autoCalculate && this.canCalculate();
+                        break;
+                    default:
+                        result = Reflect.get(target, p);
+                }
+            return result;
+        },
+    };
 
     constructor(editor: Editor, { box, color = 0xff0000, marginMultiplier = 1.1 }: BoundingZoneParams = {}) {
         super();
@@ -94,6 +113,9 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
         this.editor.signals.objectChanged.add((object: Object3D) => handleSignal(object));
         this.editor.signals.sceneGraphChanged.add((object: Object3D) => handleSignal(object));
 
+        this.proxy = new Proxy(this, this.overrideHandler);
+
+        return this.proxy;
     }
 
 
@@ -216,6 +238,12 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
 
     }
 
+    copy(source: this, recursive = true) {
+        return new Proxy(
+            super.copy(source, recursive),
+            this.overrideHandler
+        ) as this;
+    }
 
     clone(recursive: boolean) {
         return new BoundingZone(this.editor).copy(this, recursive) as this;

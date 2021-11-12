@@ -1,15 +1,15 @@
 import { Button } from "@mui/material";
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Editor } from "../../js/Editor";
-import { CSGOperation } from "../../util/CSG/CSGOperation";
-import { CSGZone } from "../../util/CSG/CSGZone";
+import { OperationTuple } from "../../util/CSG/CSGOperationTuple";
+import * as CSG from "../../util/CSG/CSG";
 import { parseZone } from "../../../util/parseZone/parseZone";
 import BooleanAlgebraRow, { AlgebraRow } from "./BooleanAlgebraRow";
 import "./zoneManagerPanel.css";
 
 type ZoneManagerPanelProps = {
     editor: Editor,
-    zone?: CSGZone,
+    zone?: CSG.Zone,
 }
 
 function ZoneManagerPanel(props: ZoneManagerPanelProps) {
@@ -17,17 +17,17 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 
     const [allObjects, setAllObjects] = useState<THREE.Object3D[]>([]);
 
-    const zoneRef = useRef<CSGZone>();
+    const zoneRef = useRef<CSG.Zone>();
 
     const parseAlgebraRow = (row: AlgebraRow) => {
-        let operations: CSGOperation[] = [];
+        let operations: OperationTuple[] = [];
 
         if (row.geometriesId[0]) {
             const object = props.editor.scene.getObjectById(row.geometriesId[0]);
 
             if (!object) throw new Error("object is undefined form props.editor.scene.getObjectById(row.geometries[0])");
 
-            operations.push(new CSGOperation(object, 'union'));
+            operations.push(new OperationTuple(object, 'union'));
         }
 
         for (let i = 0; i < row.operations.length; i++) {
@@ -38,7 +38,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 
                 if (!object) throw new Error("object is undefined form props.editor.scene.getObjectById(geometryID)");
 
-                operations.push(new CSGOperation(object, operation));
+                operations.push(new OperationTuple(object, operation));
             }
         }
 

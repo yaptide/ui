@@ -5,7 +5,11 @@ import ZoneManagerPanel from '../components/ZoneManagerPanel/ZoneManagerPanel';
 import { UIButton, UIPanel, UIRow, UISpan, UIText } from './libs/ui.js';
 import { BoundingZonePanel } from './Sidebar.Geometry.BoundingZone';
 import { isBeam } from '../util/Beam';
+import { isZone } from '../util/CSG/CSGZone';
+import { isBoundingZone } from '../util/BoundingZone';
+import { isDetectSection } from '../util/Detect/DetectSection';
 import { BeamPanel } from './Sidebar.Geometry.Beam';
+import { DetectPanel } from './Sidebar.Geometry.Detect';
 
 function SidebarGeometry(editor) {
 
@@ -13,7 +17,6 @@ function SidebarGeometry(editor) {
 
 	var container = new UIPanel();
 	container.setBorderTop('0');
-	container.setDisplay('none');
 	container.setPaddingTop('20px');
 
 	var currentGeometryType = null;
@@ -61,62 +64,58 @@ function SidebarGeometry(editor) {
 	});
 	helpersRow.add(vertexNormalsButton);
 
-	const buildZonesManager = (() => {
-		let zonePanel = new UISpan();
-		zonePanel.setId("zonePanel");
+	async function build() {
+		
+		var object = editor.selected;
 
-		return () => {
-			
-
-			var object = editor.selected;
-
+		if (isZone(object)) {
 			parameters.clear();
-
+			let zonePanel = new UISpan();
+			zonePanel.setId("zonePanel");
 			parameters.add(zonePanel);
+			geometryType.setValue(object.type);
+
 			ReactDOM.render(
 				(<ZoneManagerPanel editor={editor} zone={object} />),
 				document.getElementById("zonePanel")
 			);
 
 			container.setDisplay('block');
+			vertexNormalsButton.setDisplay('none');
 
-		};
-	})();
+		} else if (isBeam(object)) {
 
-	async function build() {
-		vertexNormalsButton.setDisplay('block');
-
-		var object = editor.selected;
-
-		if (isBeam(object)) {
 			parameters.clear();
 			parameters.add(new BeamPanel(editor, object));
 			geometryType.setValue(object.type);
-
 			container.setDisplay('block');
 
 			vertexNormalsButton.setDisplay('none');
 
-		} else if (object && object.isBoundingZone) {
+		} else if (isBoundingZone(object)) {
 
 			parameters.clear();
 			parameters.add(new BoundingZonePanel(editor, object));
 			geometryType.setValue(object.type);
+			container.setDisplay('block');
 
+			vertexNormalsButton.setDisplay('none');
+
+		} else if (isDetectSection(object)) {
+
+			parameters.clear();
+			parameters.add(new DetectPanel(editor, object));
+			geometryType.setValue(object.type);
 			container.setDisplay('block');
 
 			vertexNormalsButton.setDisplay('none');
 
 		} else if (object && object.geometry) {
 
+			vertexNormalsButton.setDisplay('block');
 			var geometry = object.geometry;
-
 			container.setDisplay('block');
-
 			geometryType.setValue(geometry.type);
-
-
-
 			//
 
 			if (currentGeometryType !== geometry.type) {
@@ -161,9 +160,11 @@ function SidebarGeometry(editor) {
 
 		currentGeometryType = null;
 		vertexNormalsButton.setDisplay('block');
-		(editor.selected?.isCSGZone
-			? buildZonesManager
-			: build)();
+		build()
+		// (isZone(editor.selected)
+		// 	? buildZonesManager
+		// 	: build
+		// )();
 
 	});
 

@@ -17,11 +17,12 @@ export function Viewport(
 
     this.name = name;
 
-    const { scene, zonesManager, sceneHelpers, signals } = editor;
+    const { scene, zonesManager, detectManager, sceneHelpers, signals } = editor;
 
     let config = {
         showSceneHelpers: true,
         showZones: true,
+        showDetect: true,
         selectZones: false,
         visible: false,
     }
@@ -78,8 +79,18 @@ export function Viewport(
     let viewClipPlane = null;
     if (clipPlane) {
         viewClipPlane = new ViewportClipPlane(
-            editor, this, planeHelpers, zonesManager.children, signals.zoneGeometryChanged, signals.zoneAdded, signals.zoneRemoved,
-            { clipPlane, planeHelperColor, planePosLabel });
+            editor,
+            this,
+            planeHelpers,
+            zonesManager.children,
+            signals.zoneGeometryChanged,
+            signals.zoneAdded,
+            signals.zoneRemoved,
+            {
+                clipPlane,
+                planeHelperColor,
+                planePosLabel
+            });
 
         container.dom.appendChild(viewClipPlane.gui.domElement);
     }
@@ -108,6 +119,9 @@ export function Viewport(
 
         if (config.showZones)
             renderer.render(zonesManager, camera);
+          
+        if (config.showDetect)  
+            renderer.render(detectManager, camera);
 
         if (clipPlane)
             renderer.render(viewClipPlane.scene, camera);
@@ -410,16 +424,25 @@ export function Viewport(
     }
 
     function canBeTransformed(object) {
+
+        function notTransformable(object){
+            switch (transformControls.getMode()) {
+                case 'translate':
+                    return object.notMovable;
+                case 'rotate':
+                    return object.notRotatable;
+                case 'scale':
+                    return object.notScalable;
+            }
+        }
         // Check if object can be transformed. 
         // For our usage it would be only geometries included on the scene. 
         // Amount of geometries can differ form project to project thus we check only if it isn't mesh.
         // unionOperations is property unique to zones that shoudn't be transformed with controler.
-        return  object
-            && !object.isScene
-            && !object.isCamera
-            && !object.isCSGZone
-            && !object.isBoundingZone
-            && !object.isCSGZonesContainer;
+        return object
+            && !(object.isScene
+            || object.isCamera
+            || notTransformable(object));
     }
 
     function reattachTransformControls(object) {
@@ -494,6 +517,8 @@ export function Viewport(
     signals.transformModeChanged.add((mode) => {
 
         transformControls.setMode(mode);
+        reattachTransformControls(editor.selected);
+        render();
 
     });
 

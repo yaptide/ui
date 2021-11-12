@@ -1,4 +1,6 @@
 export interface ISimulationObject {
-    notRemovable?: boolean,
-    notMoveable?: boolean,
+    notRemovable: boolean,
+    notMovable: boolean,
+    notRotatable: boolean,
+    notScalable: boolean,
 }

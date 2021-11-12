@@ -39,7 +39,7 @@ class AddObjectCommand extends Command {
 
 	toJSON() {
 
-		const output = super.toJSON( this );
+		let output = super.toJSON( this );
 
 		output.object = this.object.toJSON();
 
