@@ -4,32 +4,28 @@ import { ObjectLoader } from 'three';
 /**
  * @param editor Editor
  * @param object THREE.Object3D
- * @param newData DETECT.Any
+ * @param newData DETECT.DETECT_TYPE
  * @constructor
  */
 
-class SetDetectGeometryCommand extends Command {
+export class SetDetectTypeCommand extends Command {
 
-    constructor(editor, object, newData) {
+    constructor(editor, object, newType) {
 
         super(editor);
 
-        this.type = 'SetDetectGeometryCommand';
-        this.name = 'Set DetectGeometry';
+        this.type = 'SetDetectTypeCommand';
+        this.name = 'Set DetectType';
         this.updatable = true;
 
         this.object = object;
-        this.oldData = object.getData();
-        console.log(newData,this.oldData);
-        this.newData = {};
-        Object.entries(object.getData()).forEach(([key,_]) => {
-            this.newData[key] = newData[key] || this.oldData[key];
-        });
+        this.oldType = object.detectGeometryType;
+        this.newType = newType;
     }
 
     execute() {
 
-        this.object.setData(this.newData)
+        this.object.detectGeometryType = this.newType;
 
         this.editor.signals.geometryChanged.dispatch(this.object);
         this.editor.signals.sceneGraphChanged.dispatch();
@@ -37,10 +33,10 @@ class SetDetectGeometryCommand extends Command {
     }
 
     undo() {
-        let tmp = this.object.getData();
-        this.object.setData(this.oldData)
-        this.newData = this.object.getData();
-        this.oldData = tmp;
+        let tmp = this.object.detectGeometryType;
+        this.object.detectGeometryType = this.oldType;
+        this.newType = this.oldType;
+        this.oldType = tmp;
 
         this.editor.signals.geometryChanged.dispatch(this.object);
         this.editor.signals.sceneGraphChanged.dispatch();
@@ -57,8 +53,8 @@ class SetDetectGeometryCommand extends Command {
         const output = super.toJSON(this);
 
         output.objectUuid = this.object.uuid;
-        output.oldData = this.oldData;
-        output.newData = this.newData;
+        output.oldType = this.oldType;
+        output.newType = this.newType;
 
         return output;
 
@@ -70,11 +66,9 @@ class SetDetectGeometryCommand extends Command {
 
         this.object = this.editor.objectByUuid(json.objectUuid);
 
-        this.oldData = json.oldData;
-        this.newData = json.newData;
+        this.oldType = json.oldType;
+        this.newType = json.newType;
 
     }
 
 }
-
-export { SetDetectGeometryCommand };

@@ -33,6 +33,7 @@ export class DetectSection extends THREE.Mesh implements ISimulationObject {
     private proxy: DetectSection; // use proxy to conditionally return notMoveable property;
 
     detectGeometryData: DETECT.Any;
+    detectGeometryType: DETECT.DETECT_TYPE;
     maxDisplayDensity: number = 10;
     autoSplitGrid: boolean = true;
 
@@ -47,20 +48,28 @@ export class DetectSection extends THREE.Mesh implements ISimulationObject {
         detectSectionAdded: Signal<DetectSection>;
         detectSectionRemoved: Signal<DetectSection>;
         detectGeometryChanged: Signal<DetectSection>;
+        objectSelected: Signal<THREE.Object3D>;
     };
     readonly isDetectGeo: true = true;
 
-    private detectGeometryType: DETECT.DETECT_TYPE;
     private dataObject: DETECT.Any;
     private editor: Editor;
     private disableGeometryUpdate: boolean = false;
 
+    private tryUpdateGeometry = (type:DETECT.DETECT_TYPE = this.detectGeometryType) => {
+        if (!this.disableGeometryUpdate){ 
+            this.geometry.dispose();
+            this.geometry = this.generateGeometry(undefined,type)
+            this.geometry.computeBoundingSphere();
+        };
+    };
+    
     private overrideHandler = {
         get: (target: DetectSection, p: keyof DetectSection) => {
             let result: unknown;
             switch (p) {
                 case "notMovable":
-                    result = ["Zone", "All"].includes(p);
+                    result = ["Zone", "All"].includes(this.detectGeometryType);
                     break;
                 case "type":
                     result = target.detectGeometryType + target.type;
@@ -70,6 +79,14 @@ export class DetectSection extends THREE.Mesh implements ISimulationObject {
             }
             return result;
         },
+        set: (target: DetectSection, p: keyof DetectSection, value: unknown, receiver:unknown) => {
+            const result = Reflect.set(target, p, value, receiver);
+            if(p === "detectGeometryType"){
+                this.tryUpdateGeometry(value as DETECT.DETECT_TYPE);
+                this.signals.objectSelected.dispatch(this.proxy);
+            }
+            return result;
+        }
     };
 
     private generateGeometry(
@@ -77,6 +94,10 @@ export class DetectSection extends THREE.Mesh implements ISimulationObject {
         type: DETECT.DETECT_TYPE = this.detectGeometryType
     ): THREE.BufferGeometry {
         let geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
+        console.log(
+            `Generating geometry for DetectSection ${this.uuid} of type ${type}`,
+            data, type
+        )
         switch (type) {
             case "Mesh":
                 geometry = new THREE.BoxGeometry(
@@ -120,9 +141,9 @@ export class DetectSection extends THREE.Mesh implements ISimulationObject {
         this.type = 'Section';
         this.dataObject = data;
         this.detectGeometryData = new Proxy(this.dataObject, {
-            set: (target, p, value, receiver) => {
+            set: (target:DETECT.Any, p: keyof DETECT.Any, value: unknown, receiver:unknown) => {
                 const result = Reflect.set(target, p, value, receiver);
-                if (!this.disableGeometryUpdate) console.log("Do something");
+                this.tryUpdateGeometry();
                 return result;
             },
         });
@@ -144,15 +165,17 @@ export class DetectSection extends THREE.Mesh implements ISimulationObject {
             throw new Error(
                 `DetectGeo of uui=${this.uuid} isn't of 'Mesh' type`
             );
-        return Object.assign({}, this.dataObject as DETECT.Mesh);
+            return Object.assign({}, this.dataObject as DETECT.Mesh);
     }
-    getCylinder(): DETECT.Cyl {
+
+    getCyl(): DETECT.Cyl {
         if (this.detectGeometryType !== "Cyl")
             throw new Error(
                 `DetectGeo of uui=${this.uuid} isn't of 'Cyl' type`
             );
         return Object.assign({}, this.dataObject as DETECT.Cyl);
     }
+
     getZone(): DETECT.Zone {
         if (this.detectGeometryType !== "Zone")
             throw new Error(
@@ -160,22 +183,36 @@ export class DetectSection extends THREE.Mesh implements ISimulationObject {
             );
         return Object.assign({}, this.dataObject as DETECT.Zone);
     }
+
     getAll(): DETECT.All {
         if (this.detectGeometryType !== "All")
             throw new Error(
                 `DetectGeo of uui=${this.uuid} isn't of 'All' type`
             );
-        return;
+        return {};
     }
 
-    setType(type: DETECT.DETECT_TYPE): void {
-        this.detectGeometryType = type;
+    getData(
+        type: DETECT.DETECT_TYPE = this.detectGeometryType
+    ):  Partial<DETECT.Any> {
+        switch(type){
+            case 'Mesh':
+                return this.getMesh();
+            case 'Cyl':
+                return this.getCyl();
+            case 'Zone':
+                return this.getZone();
+            case 'All':
+            default:
+                return this.getAll();
+        }
     }
 
     setData(data: DETECT.Any): void {
         this.disableGeometryUpdate = true;
-        Object.assign(this.dataObject, data);
+        Object.assign(this.detectGeometryData, data);
         this.disableGeometryUpdate = false;
+        this.tryUpdateGeometry();
     }
 
     copy(source: this, recursive = true) {
@@ -183,12 +220,6 @@ export class DetectSection extends THREE.Mesh implements ISimulationObject {
             super.copy(source, recursive),
             this.overrideHandler
         ) as this;
-    }
-
-    getSectionById(id: number): DetectSection | null {
-        return this.children.find(
-            (child) => child.id === id
-        ) as DetectSection | null;
     }
 
     toJSON(): DetectSectionJSON {

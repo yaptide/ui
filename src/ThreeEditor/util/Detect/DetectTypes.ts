@@ -18,7 +18,7 @@ export type Zone = {
     zoneId: number
 };
 
-export type All = void
+export type All = {};
 
 export type Any = {
     width: number,
@@ -39,7 +39,7 @@ export const DEFAULT_ANY:Any = {
     widthSegments: 1,
     heightSegments: 1,
     depthSegments: 1,
-    radialSegments: 5,
+    radialSegments: 10,
     zoneId: -1
 }
 export type DETECT_TYPE = "Mesh" | "Cyl" | "Zone" | "All";

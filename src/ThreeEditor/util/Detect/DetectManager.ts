@@ -96,4 +96,10 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
     clone(recursive: boolean) {
         return new DetectManager(this.editor).copy(this, recursive) as this;
     }
+
+    getSectionById(id: number): DetectSection | null {
+        return this.children.find(
+            (child) => child.id === id
+        ) as DetectSection | null;
+    }
 }

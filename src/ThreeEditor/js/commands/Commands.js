@@ -11,6 +11,7 @@ export { RemoveScriptCommand } from './RemoveScriptCommand.js';
 export { RemoveZoneCommand } from './RemoveZoneCommand.js';
 export { SetColorCommand } from './SetColorCommand.js';
 export { SetDetectGeometryCommand } from './SetDetectGeometryCommand';
+export { SetDetectTypeCommand } from './SetDetectTypeCommand';
 export { SetGeometryCommand } from './SetGeometryCommand.js';
 export { SetGeometryValueCommand } from './SetGeometryValueCommand.js';
 export { SetMaterialColorCommand } from './SetMaterialColorCommand.js';
