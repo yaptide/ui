@@ -9,7 +9,12 @@ import { MenubarStatus } from './Menubar.Status.js';
 import { MenubarLayout } from './Menubar.Layout.js';
 
 
-
+/**
+ * @param {string} optionClass
+ * @param {string} optionText
+ * @param {() => void} optionClick
+ * @return {UIRow}
+ */
 function createOption(optionClass, optionText, optionClick) {
 	let option = new UIRow();
 	option.setClass(optionClass);
@@ -20,7 +25,7 @@ function createOption(optionClass, optionText, optionClick) {
 
 function Menubar(editor) {
 
-	var container = new UIPanel();
+	const container = new UIPanel();
 	container.setId('menubar');
 
 	container.add(new MenubarFile(editor));

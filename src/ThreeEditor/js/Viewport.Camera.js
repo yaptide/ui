@@ -16,10 +16,7 @@ function ViewportCamera(viewport, cameras) {
 
 	//
 
-
-
 	const options = {};
-
 
 	for (const key in cameras) {
 

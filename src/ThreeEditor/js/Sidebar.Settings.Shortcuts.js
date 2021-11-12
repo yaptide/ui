@@ -6,7 +6,7 @@ function SidebarSettingsShortcuts(editor) {
 
 	const { signals, strings, config } = editor;
 
-	var IS_MAC = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+	const IS_MAC = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 
 	function isValidKeyBinding(key) {
 
@@ -14,25 +14,25 @@ function SidebarSettingsShortcuts(editor) {
 
 	}
 
-	var container = new UIPanel();
+	const container = new UIPanel();
 
-	var headerRow = new UIRow();
+	const headerRow = new UIRow();
 	headerRow.add(new UIText(strings.getKey('sidebar/settings/shortcuts').toUpperCase()));
 	container.add(headerRow);
 
-	var shortcuts = ['translate', 'rotate', 'scale', 'undo', 'focus'];
+	const shortcuts = ['translate', 'rotate', 'scale', 'undo', 'focus'];
 
 	function createShortcutInput(name) {
 
-		var configName = 'settings/shortcuts/' + name;
-		var shortcutRow = new UIRow();
+		const configName = 'settings/shortcuts/' + name;
+		const shortcutRow = new UIRow();
 
-		var shortcutInput = new UIInput().setWidth('15px').setFontSize('12px');
+		const shortcutInput = new UIInput().setWidth('15px').setFontSize('12px');
 		shortcutInput.setTextAlign('center');
 		shortcutInput.setTextTransform('lowercase');
 		shortcutInput.onChange(() => {
 
-			var value = shortcutInput.getValue().toLowerCase();
+			const value = shortcutInput.getValue().toLowerCase();
 
 			if (isValidKeyBinding(value)) {
 
@@ -86,7 +86,7 @@ function SidebarSettingsShortcuts(editor) {
 
 	}
 
-	for (var i = 0; i < shortcuts.length; i++) {
+	for (let i = 0; i < shortcuts.length; i++) {
 
 		createShortcutInput(shortcuts[i]);
 
@@ -101,11 +101,11 @@ function SidebarSettingsShortcuts(editor) {
 			// eslint-disable-next-line no-fallthrough
 			case 'delete':
 
-				var object = editor.selected;
+				const object = editor.selected;
 
 				if (object === null || object.notRemovable === true) return;
 
-				var parent = object.parent;
+				const parent = object.parent;
 				if (parent !== null) {
 					if (object?.isCSGZone)
 						editor.execute(new RemoveZoneCommand(editor, object));

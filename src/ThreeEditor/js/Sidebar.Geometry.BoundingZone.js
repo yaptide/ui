@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { createRowParamXYZ, createRowParam, createRowSelect } from '../util/UiUtils.js';
-import { UIButton, UICheckbox, UINumber, UIRow, UISelect, UIText } from './libs/ui.js';
+import { createRowParamNumberXYZ, createRowParamNumber, createRowSelect } from '../util/UiUtils.js';
+import { UIButton, UICheckbox, UIRow, UIText } from './libs/ui.js';
 
 const bodyTypeOptions = {
 	'box': 'box',
@@ -21,7 +21,7 @@ export function BoundingZonePanel(editor, boundingZone) {
 	const [objectPositionRow,
 		objectPositionX,
 		objectPositionY,
-		objectPositionZ] = createRowParamXYZ({ text: `${strings.getKey('sidebar/object/position')} ${editor.unit.name}`, update });
+		objectPositionZ] = createRowParamNumberXYZ({ text: `${strings.getKey('sidebar/object/position')} ${editor.unit.name}`, update });
 
 	container.add(objectPositionRow);
 
@@ -33,17 +33,17 @@ export function BoundingZonePanel(editor, boundingZone) {
 
 	// width(box) / radius(sphere,cylinder)
 
-	const [widthRow, width, widthText] = createRowParam({ update });
+	const [widthRow, width, widthText] = createRowParamNumber({ update });
 	container.add(widthRow);
 
 	// height(box,cylinder)
 
-	const [heightRow, height, heightText] = createRowParam({ update });
+	const [heightRow, height, heightText] = createRowParamNumber({ update });
 	container.add(heightRow);
 
 	// depth(box)
 
-	const [depthRow, depth, depthText] = createRowParam({ update });
+	const [depthRow, depth, depthText] = createRowParamNumber({ update });
 	container.add(depthRow);
 
 

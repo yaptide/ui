@@ -11,17 +11,17 @@ function SidebarGeometry(editor) {
 
 	const { signals, strings } = editor;
 
-	var container = new UIPanel();
+	const container = new UIPanel();
 	container.setBorderTop('0');
 	container.setDisplay('none');
 	container.setPaddingTop('20px');
 
-	var currentGeometryType = null;
+	let currentGeometryType = null;
 
 	// type
 
-	var geometryTypeRow = new UIRow();
-	var geometryType = new UIText();
+	const geometryTypeRow = new UIRow();
+	const geometryType = new UIText();
 
 	geometryTypeRow.add(new UIText(strings.getKey('sidebar/geometry/type')).setWidth('90px'));
 	geometryTypeRow.add(geometryType);
@@ -31,23 +31,23 @@ function SidebarGeometry(editor) {
 
 	// parameters
 
-	var parameters = new UISpan();
+	const parameters = new UISpan();
 	container.add(parameters);
 
 
 	// Helpers
 
-	var helpersRow = new UIRow().setMarginTop('16px').setPaddingLeft('90px');
+	const helpersRow = new UIRow().setMarginTop('16px').setPaddingLeft('90px');
 	container.add(helpersRow);
 
-	var vertexNormalsButton = new UIButton(strings.getKey('sidebar/geometry/show_vertex_normals'));
+	const vertexNormalsButton = new UIButton(strings.getKey('sidebar/geometry/show_vertex_normals'));
 	vertexNormalsButton.onClick(() => {
 
-		var object = editor.selected;
+		const object = editor.selected;
 
 		if (editor.helpers[object.id] === undefined) {
 
-			var helper = new VertexNormalsHelper(object);
+			const helper = new VertexNormalsHelper(object);
 			editor.addHelper(object, helper);
 
 		} else {
@@ -68,7 +68,7 @@ function SidebarGeometry(editor) {
 		return () => {
 			
 
-			var object = editor.selected;
+			const object = editor.selected;
 
 			parameters.clear();
 
@@ -86,7 +86,7 @@ function SidebarGeometry(editor) {
 	async function build() {
 		vertexNormalsButton.setDisplay('block');
 
-		var object = editor.selected;
+		const object = editor.selected;
 
 		if (isBeam(object)) {
 			parameters.clear();
@@ -109,7 +109,7 @@ function SidebarGeometry(editor) {
 
 		} else if (object && object.geometry) {
 
-			var geometry = object.geometry;
+			const geometry = object.geometry;
 
 			container.setDisplay('block');
 
@@ -129,7 +129,7 @@ function SidebarGeometry(editor) {
 
 					try {
 
-						var { GeometryParametersPanel } = await import(`./Sidebar.Geometry.${geometry.type}.js`);
+						const { GeometryParametersPanel } = await import(`./Sidebar.Geometry.${geometry.type}.js`);
 
 						parameters.add(new GeometryParametersPanel(editor, object));
 

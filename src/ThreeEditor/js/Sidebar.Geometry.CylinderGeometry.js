@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createRowParam } from '../util/UiUtils';
+import { createRowParamNumber } from '../util/UiUtils';
 import { SetGeometryCommand } from './commands/Commands';
 import { UIRow } from './libs/ui.js';
 
@@ -14,7 +14,7 @@ function GeometryParametersPanel(editor, object) {
 
 	// radiusTop = radiusBottom => radius 
 
-	const [radiusRow, radius] = createRowParam({
+	const [radiusRow, radius] = createRowParamNumber({
 		update, value: parameters.radiusTop, min: 0,
 		text: `${strings.getKey('sidebar/geometry/sphere_geometry/radius')} ${editor.unit.name}`
 	});
@@ -23,7 +23,7 @@ function GeometryParametersPanel(editor, object) {
 
 	// height
 
-	const [heightRow, height] = createRowParam({
+	const [heightRow, height] = createRowParamNumber({
 		update, value: parameters.radiusTop,
 		text: `${strings.getKey('sidebar/geometry/cylinder_geometry/height')} ${editor.unit.name}`
 	});

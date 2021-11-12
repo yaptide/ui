@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { SetGeometryCommand } from './commands/Commands';
-import { createRowParam } from '../util/UiUtils';
+import { createRowParamNumber } from '../util/UiUtils';
 import { UIRow } from './libs/ui.js';
 
 function GeometryParametersPanel(editor, object) {
@@ -14,7 +14,7 @@ function GeometryParametersPanel(editor, object) {
 
 	// radius
 
-	const [radiusRow, radius] = createRowParam({
+	const [radiusRow, radius] = createRowParamNumber({
 		update, value: parameters.radius, min: 0,
 		text: `${strings.getKey('sidebar/geometry/sphere_geometry/radius')} ${editor.unit.name}`
 	});

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createRowParam } from '../util/UiUtils';
+import { createRowParamNumber } from '../util/UiUtils';
 import { SetGeometryCommand } from './commands/Commands';
 import { UIRow } from './libs/ui.js';
 
@@ -14,17 +14,17 @@ function GeometryParametersPanel(editor, object) {
 
 	// width 
 
-	const [widthRow, width] = createRowParam({ update, value: parameters.width, text: `X side length (width) ${editor.unit.name}` });
+	const [widthRow, width] = createRowParamNumber({ update, value: parameters.width, text: `X side length (width) ${editor.unit.name}` });
 	container.add(widthRow);
 
 	// height
 
-	const [heightRow, height] = createRowParam({ update, value: parameters.height, text: `Y side length (height) ${editor.unit.name}` });
+	const [heightRow, height] = createRowParamNumber({ update, value: parameters.height, text: `Y side length (height) ${editor.unit.name}` });
 	container.add(heightRow);
 
 	// depth
 
-	const [depthRow, depth] = createRowParam({ update, value: parameters.depth, text: `Z side length (depth) ${editor.unit.name}` });
+	const [depthRow, depth] = createRowParamNumber({ update, value: parameters.depth, text: `Z side length (depth) ${editor.unit.name}` });
 	container.add(depthRow);
 
 

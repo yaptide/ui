@@ -6,17 +6,17 @@ import { createOption } from './Menubar.js';
 
 function MenubarAdd(editor) {
 
-	var strings = editor.strings;
+	const strings = editor.strings;
 
-	var container = new UIPanel();
+	const container = new UIPanel();
 	container.setClass('menu');
 
-	var title = new UIPanel();
+	const title = new UIPanel();
 	title.setClass('title');
 	title.setTextContent(strings.getKey('menubar/add'));
 	container.add(title);
 
-	var options = new UIPanel();
+	const options = new UIPanel();
 	options.setClass('options');
 	container.add(options);
 
@@ -24,7 +24,7 @@ function MenubarAdd(editor) {
 	// Group
 	options.add(createOption('option', strings.getKey('menubar/add/group'), () => {
 
-		var mesh = new THREE.Group();
+		const mesh = new THREE.Group();
 		mesh.name = 'Zone';
 		editor.execute(new AddObjectCommand(editor, mesh));
 	}));
@@ -59,8 +59,8 @@ function MenubarAdd(editor) {
 	// Box
 	options.add(createOption('option', strings.getKey('menubar/add/box'), () => {
 
-		var geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
-		var mesh = new THREE.Mesh(geometry, material.clone());
+		const geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
+		const mesh = new THREE.Mesh(geometry, material.clone());
 		mesh.name = 'Box';
 
 		editor.execute(new AddObjectCommand(editor, mesh));
@@ -69,8 +69,8 @@ function MenubarAdd(editor) {
 	// Sphere
 	options.add(createOption('option', strings.getKey('menubar/add/sphere'), () => {
 
-		var geometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI);
-		var mesh = new THREE.Mesh(geometry, material.clone());
+		const geometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI);
+		const mesh = new THREE.Mesh(geometry, material.clone());
 		mesh.name = 'Sphere';
 
 		editor.execute(new AddObjectCommand(editor, mesh));
@@ -83,8 +83,8 @@ function MenubarAdd(editor) {
 	// Cylinder
 	options.add(createOption('option', strings.getKey('menubar/add/cylinder'), () => {
 
-		var geometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2);
-		var mesh = new THREE.Mesh(geometry, material.clone());
+		const geometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2);
+		const mesh = new THREE.Mesh(geometry, material.clone());
 		mesh.name = 'Cylinder';
 
 		editor.execute(new AddObjectCommand(editor, mesh));
@@ -96,11 +96,11 @@ function MenubarAdd(editor) {
 	//Code adjusted from https://github.com/mrdoob/three.js/blob/r131/editor/js/Menubar.Add.js
 	options.add(createOption('option', strings.getKey('menubar/add/hemispherelight'), () => {
 
-		var skyColor = 0x00aaff; // Deep Sky Blue
-		var groundColor = 0xffaa00; // Orange
-		var intensity = 1;
+		const skyColor = 0x00aaff; // Deep Sky Blue
+		const groundColor = 0xffaa00; // Orange
+		const intensity = 1;
 
-		var light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
+		const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
 		light.name = 'HemisphereLight';
 
 		light.position.set(0, 10, 0);

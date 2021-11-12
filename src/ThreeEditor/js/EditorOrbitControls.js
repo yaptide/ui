@@ -11,7 +11,7 @@ export class EditorOrbitControls extends OrbitControls {
 
     focus(target) {
 
-        var distance;
+        let distance;
 
         this.box.setFromObject(target);
 

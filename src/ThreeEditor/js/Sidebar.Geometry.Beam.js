@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { isBeam } from '../util/Beam';
-import { createRowParamXYZ, createRowParam } from '../util/UiUtils';
+import { createRowParamNumberXYZ, createRowParamNumber } from '../util/UiUtils';
 import { UIRow, } from './libs/ui.js';
 
 
@@ -10,13 +10,13 @@ export function BeamPanel(editor, beam) {
 
 	// direction
 
-	const [directionRow, directionX, directionY, directionZ] = createRowParamXYZ({ text: `Direction ${editor.unit.name}`, update });
+	const [directionRow, directionX, directionY, directionZ] = createRowParamNumberXYZ({ text: `Direction ${editor.unit.name}`, update });
 	container.add(directionRow);
 
 	// energy
 
 	// set minimum energy to 1ueV (as lower limit of reasonable cross-section used in neutron transport)
-	const [energyRow, energy] = createRowParam({ text: 'Energy [MeV]', min: 1e-12, update });
+	const [energyRow, energy] = createRowParamNumber({ text: 'Energy [MeV]', min: 1e-12, update });
 	container.add(energyRow);
 
 	updateUI();
