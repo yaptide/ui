@@ -436,6 +436,8 @@ export function Viewport(
                     return object.notRotatable;
                 case 'scale':
                     return object.notScalable;
+                default:
+                    return false;
             }
         }
         // Check if object can be transformed. 

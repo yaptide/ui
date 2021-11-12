@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import { UISelect, UIRow, UISpan, UIText, UINumber } from './libs/ui.js';
 import { detectOptions } from '../util/Detect/DetectTypes';
 import { SetDetectGeometryCommand, SetDetectTypeCommand } from './commands/Commands';
@@ -75,6 +74,7 @@ export function DetectPanel(editor, section) {
 				updateOptions();
 				zoneId.setValue(data.zoneId);
 				container.add(zoneIdRow);
+				break;
 			default:
 				break;
 		}

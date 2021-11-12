@@ -1,5 +1,4 @@
 import { Command } from '../Command.js';
-import { ObjectLoader } from 'three';
 
 /**
  * @param editor Editor
