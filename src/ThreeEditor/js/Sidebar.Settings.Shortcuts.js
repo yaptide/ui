@@ -96,9 +96,6 @@ function SidebarSettingsShortcuts(editor) {
 
 		switch (event.key.toLowerCase()) {
 
-			case 'backspace':
-				event.preventDefault(); // prevent browser back			
-			// eslint-disable-next-line no-fallthrough
 			case 'delete':
 
 				const object = editor.selected;
