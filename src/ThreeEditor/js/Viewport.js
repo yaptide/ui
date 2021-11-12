@@ -19,33 +19,33 @@ export function Viewport(
 
     const { scene, zonesManager, sceneHelpers, signals } = editor;
 
-    let config = {
+    const config = {
         showSceneHelpers: true,
         showZones: true,
         selectZones: false,
         visible: false,
     }
 
-    let sceneViewHelpers = new THREE.Scene();
+    const sceneViewHelpers = new THREE.Scene();
 
-    let container = new UIPanel();
+    const container = new UIPanel();
     container.setId('ViewPanel');
     container.setPosition('relative');
     container.setOverflow("hidden");
     container.dom.setAttribute('tabindex', '0');
 
 
-    let canvas = document.createElement('canvas');
+    const canvas = document.createElement('canvas');
     container.dom.appendChild(canvas);
 
 
-    let context = canvas.getContext('2d');
+    const context = canvas.getContext('2d');
 
-    let cameraPersp = new THREE.PerspectiveCamera(50, 1, 0.001, 10000);
+    const cameraPersp = new THREE.PerspectiveCamera(50, 1, 0.001, 10000);
     cameraPersp.name = "Perspective";
     cameraPersp.position.copy(cameraPosition ?? new THREE.Vector3(0, 10, 10)); // default camera position other than (0,0,0) to see anything
 
-    let cameraOrtho = new THREE.OrthographicCamera(1 / - 2, 1 / 2, 1 / 2, 1 / - 2, 0.001, 10000);
+    const cameraOrtho = new THREE.OrthographicCamera(1 / - 2, 1 / 2, 1 / 2, 1 / - 2, 0.001, 10000);
     cameraOrtho.name = "Orthographic";
     cameraOrtho.position.copy(cameraPersp.position);
     cameraOrtho.zoom = 0.2;
@@ -53,10 +53,11 @@ export function Viewport(
     // in clipping plane views only Orthographic camera is used, hence is "up" axis adjustment is required we do so
     cameraUp && cameraOrtho.up.copy(cameraUp);
 
-    let cameras = [cameraOrtho, cameraPersp];
+    const cameras = [cameraOrtho, cameraPersp];
 
     let camera = orthographic ? cameraOrtho : cameraPersp;
     updateAspectRatio();
+
     Object.defineProperty(this, 'camera', {
         get() { return camera },
         set(value) {
@@ -72,7 +73,7 @@ export function Viewport(
     if (!orthographic)
         container.add(new ViewportCamera(this, cameras));
 
-    let viewHelper = new ViewHelper(camera, container);
+    const viewHelper = new ViewHelper(camera, container);
     viewHelper.disabled = orthographic;
 
     let viewClipPlane = null;
@@ -142,22 +143,25 @@ export function Viewport(
         return false;
     }
 
+    // transform controls 
+
     let objectPositionOnDown = null;
     let objectRotationOnDown = null;
     let objectScaleOnDown = null;
 
-    let transformControls = new TransformControls(camera, container.dom);
+    const transformControls = new TransformControls(camera, container.dom);
+
     transformControls.addEventListener('change', () => {
 
-        let object = transformControls.object;
+        const object = transformControls.object;
 
         if (object !== undefined) {
 
             selectionBox.setFromObject(object);
 
-            let helper = editor.helpers[object.id];
+            const helper = editor.helpers[object.id];
 
-            if (helper !== undefined && helper.isSkeletonHelper !== true) {
+            if (helper !== undefined && helper.isSkeconstonHelper !== true) {
 
                 helper.update();
 
@@ -173,7 +177,7 @@ export function Viewport(
 
     transformControls.addEventListener('mouseDown', () => {
 
-        let object = transformControls.object;
+        const object = transformControls.object;
 
         objectPositionOnDown = object.position.clone();
         objectRotationOnDown = object.rotation.clone();
@@ -186,7 +190,7 @@ export function Viewport(
 
     transformControls.addEventListener('mouseUp', () => {
 
-        let object = transformControls.object;
+        const object = transformControls.object;
 
         if (object !== undefined) {
 
@@ -261,15 +265,14 @@ export function Viewport(
 
     });
 
-
     sceneViewHelpers.add(transformControls);
 
 
 
     // object picking
 
-    let raycaster = new THREE.Raycaster();
-    let mouse = new THREE.Vector2();
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
 
     function getIntersects(point, validObjects) {
 
@@ -282,13 +285,13 @@ export function Viewport(
 
     }
 
-    let onDownPosition = new THREE.Vector2();
-    let onUpPosition = new THREE.Vector2();
-    let onDoubleClickPosition = new THREE.Vector2();
+    const onDownPosition = new THREE.Vector2();
+    const onUpPosition = new THREE.Vector2();
+    const onDoubleClickPosition = new THREE.Vector2();
 
     function getMousePosition(dom, x, y) {
 
-        let rect = dom.getBoundingClientRect();
+        const rect = dom.getBoundingClientRect();
         return [(x - rect.left) / rect.width, (y - rect.top) / rect.height];
 
     }
@@ -311,7 +314,7 @@ export function Viewport(
 
         if (onDownPosition.distanceTo(onUpPosition) === 0) {
 
-            let intersects = getIntersects(
+            const intersects = getIntersects(
                 onUpPosition,
                 config.selectZones
                     ? zonesManager.zonesContainer.children
@@ -320,7 +323,7 @@ export function Viewport(
 
             if (intersects.length > 0) {
 
-                let object = intersects[0].object;
+                const object = intersects[0].object;
 
                 if (object.userData.object !== undefined) {
 
@@ -350,7 +353,7 @@ export function Viewport(
 
     function onMouseDown(event) {
         // event.preventDefault();
-        let array = getMousePosition(container.dom, event.clientX, event.clientY);
+        const array = getMousePosition(container.dom, event.clientX, event.clientY);
         onDownPosition.fromArray(array);
 
         document.addEventListener('mouseup', onMouseUp, false);
@@ -359,7 +362,7 @@ export function Viewport(
 
     function onMouseUp(event) {
 
-        let array = getMousePosition(container.dom, event.clientX, event.clientY);
+        const array = getMousePosition(container.dom, event.clientX, event.clientY);
         onUpPosition.fromArray(array);
 
         handleClick();
@@ -370,9 +373,9 @@ export function Viewport(
 
     function onTouchStart(event) {
 
-        let touch = event.changedTouches[0];
+        const touch = event.changedTouches[0];
 
-        let array = getMousePosition(container.dom, touch.clientX, touch.clientY);
+        const array = getMousePosition(container.dom, touch.clientX, touch.clientY);
         onDownPosition.fromArray(array);
 
         document.addEventListener('touchend', onTouchEnd, false);
@@ -381,9 +384,9 @@ export function Viewport(
 
     function onTouchEnd(event) {
 
-        let touch = event.changedTouches[0];
+        const touch = event.changedTouches[0];
 
-        let array = getMousePosition(container.dom, touch.clientX, touch.clientY);
+        const array = getMousePosition(container.dom, touch.clientX, touch.clientY);
         onUpPosition.fromArray(array);
 
         handleClick();
@@ -394,14 +397,14 @@ export function Viewport(
 
     function onDoubleClick(event) {
 
-        let array = getMousePosition(container.dom, event.clientX, event.clientY);
+        const array = getMousePosition(container.dom, event.clientX, event.clientY);
         onDoubleClickPosition.fromArray(array);
 
-        let intersects = getIntersects(onDoubleClickPosition, objects);
+        const intersects = getIntersects(onDoubleClickPosition, objects);
 
         if (intersects.length > 0) {
 
-            let intersect = intersects[0];
+            const intersect = intersects[0];
 
             signals.objectFocused.dispatch(intersect.object);
 
@@ -414,7 +417,7 @@ export function Viewport(
         // For our usage it would be only geometries included on the scene. 
         // Amount of geometries can differ form project to project thus we check only if it isn't mesh.
         // unionOperations is property unique to zones that shoudn't be transformed with controler.
-        return  object
+        return object
             && !object.isScene
             && !object.isCamera
             && !object.isCSGZone
@@ -555,20 +558,20 @@ export function Viewport(
     })
 
 
-    function setSize(viewWidth = container.dom.offsetWidth, viewHeight = container.dom.offsetHeight) {
+    this.setSize = (viewWidth = container.dom.offsetWidth, viewHeight = container.dom.offsetHeight) => {
         //prevent canvas from being empty 
         canvas.width = Math.max(viewWidth, 2);
         canvas.height = Math.max(viewHeight, 2);
         updateAspectRatio();
     }
 
-    this.reset = function () {
+    this.reset = () => {
         controls.reset();
         viewClipPlane && viewClipPlane.reset();
     }
 
-    this.setCameraFromUuid = function (uuid) {
-        let newCam = cameras.find((e) => e.uuid === uuid);
+    this.setCameraFromUuid = (uuid) => {
+        const newCam = cameras.find((e) => e.uuid === uuid);
         if (newCam)
             this.camera = newCam;
         else
@@ -583,7 +586,6 @@ export function Viewport(
         controls,
         viewHelper,
         animate,
-        setSize,
         config
     }
 

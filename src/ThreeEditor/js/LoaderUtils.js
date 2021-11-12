@@ -1,13 +1,13 @@
-var LoaderUtils = {
+const LoaderUtils = {
 
-	createFilesMap: function ( files ) {
+	createFilesMap: function (files) {
 
-		var map = {};
+		const map = {};
 
-		for ( var i = 0; i < files.length; i ++ ) {
+		for (let i = 0; i < files.length; i++) {
 
-			var file = files[ i ];
-			map[ file.name ] = file;
+			const file = files[i];
+			map[file.name] = file;
 
 		}
 
@@ -15,69 +15,69 @@ var LoaderUtils = {
 
 	},
 
-	getFilesFromItemList: function ( items, onDone ) {
+	getFilesFromItemList: function (items, onDone) {
 
 		// TOFIX: setURLModifier() breaks when the file being loaded is not in root
 
-		var itemsCount = 0;
-		var itemsTotal = 0;
+		let itemsCount = 0;
+		let itemsTotal = 0;
 
-		var files = [];
-		var filesMap = {};
+		const files = [];
+		const filesMap = {};
 
 		function onEntryHandled() {
 
-			itemsCount ++;
+			itemsCount++;
 
-			if ( itemsCount === itemsTotal ) {
+			if (itemsCount === itemsTotal) {
 
-				onDone( files, filesMap );
+				onDone(files, filesMap);
 
 			}
 
 		}
 
-		function handleEntry( entry ) {
+		function handleEntry(entry) {
 
-			if ( entry.isDirectory ) {
+			if (entry.isDirectory) {
 
-				var reader = entry.createReader();
-				reader.readEntries( function ( entries ) {
+				const reader = entry.createReader();
+				reader.readEntries(function (entries) {
 
-					for ( var i = 0; i < entries.length; i ++ ) {
+					for (let i = 0; i < entries.length; i++) {
 
-						handleEntry( entries[ i ] );
+						handleEntry(entries[i]);
 
 					}
 
 					onEntryHandled();
 
-				} );
+				});
 
-			} else if ( entry.isFile ) {
+			} else if (entry.isFile) {
 
-				entry.file( function ( file ) {
+				entry.file(function (file) {
 
-					files.push( file );
+					files.push(file);
 
-					filesMap[ entry.fullPath.substr( 1 ) ] = file;
+					filesMap[entry.fullPath.substr(1)] = file;
 					onEntryHandled();
 
-				} );
+				});
 
 			}
 
-			itemsTotal ++;
+			itemsTotal++;
 
 		}
 
-		for ( var i = 0; i < items.length; i ++ ) {
+		for (let i = 0; i < items.length; i++) {
 
-			var item = items[ i ];
+			const item = items[i];
 
-			if ( item.kind === 'file' ) {
+			if (item.kind === 'file') {
 
-				handleEntry( item.webkitGetAsEntry() );
+				handleEntry(item.webkitGetAsEntry());
 
 			}
 

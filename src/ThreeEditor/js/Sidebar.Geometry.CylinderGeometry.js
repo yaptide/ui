@@ -1,6 +1,7 @@
 import * as THREE from 'three';
+import { createRowParamNumber } from '../util/UiUtils';
 import { SetGeometryCommand } from './commands/Commands';
-import { UINumber, UIRow, UIText } from './libs/ui.js';
+import { UIRow } from './libs/ui.js';
 
 function GeometryParametersPanel(editor, object) {
 
@@ -13,24 +14,19 @@ function GeometryParametersPanel(editor, object) {
 
 	// radiusTop = radiusBottom => radius 
 
-	const radiusRow = new UIRow();
-	const radius = new UINumber(parameters.radiusTop).onChange(update);
-	radius.min = 0;
-
-	radiusRow.add(new UIText(strings.getKey('sidebar/geometry/sphere_geometry/radius') + ' ' + editor.unit.name).setWidth('90px'));
-	radiusRow.add(radius);
-
+	const [radiusRow, radius] = createRowParamNumber({
+		update, value: parameters.radiusTop, min: 0,
+		text: `${strings.getKey('sidebar/geometry/sphere_geometry/radius')} ${editor.unit.name}`
+	});
 	container.add(radiusRow);
 
 
 	// height
 
-	const heightRow = new UIRow();
-	const height = new UINumber(parameters.height).onChange(update);
-
-	heightRow.add(new UIText(strings.getKey('sidebar/geometry/cylinder_geometry/height') + ' ' + editor.unit.name).setWidth('90px'));
-	heightRow.add(height);
-
+	const [heightRow, height] = createRowParamNumber({
+		update, value: parameters.radiusTop,
+		text: `${strings.getKey('sidebar/geometry/cylinder_geometry/height')} ${editor.unit.name}`
+	});
 	container.add(heightRow);
 
 

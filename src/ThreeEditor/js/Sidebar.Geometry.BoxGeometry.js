@@ -1,18 +1,7 @@
 import * as THREE from 'three';
+import { createRowParamNumber } from '../util/UiUtils';
 import { SetGeometryCommand } from './commands/Commands';
-import { UINumber, UIRow, UIText } from './libs/ui.js';
-
-function createParamRow(update, value, text) {
-	const row = new UIRow();
-	const param = new UINumber(value).onChange(update);
-	const paramText = new UIText(text).setWidth('90px');
-	param.min = 0;
-
-	row.add(paramText);
-	row.add(param);
-
-	return [row, param, paramText];
-}
+import { UIRow } from './libs/ui.js';
 
 
 function GeometryParametersPanel(editor, object) {
@@ -25,17 +14,17 @@ function GeometryParametersPanel(editor, object) {
 
 	// width 
 
-	const [widthRow, width] = createParamRow(update, parameters.width, `X side length (width) ${editor.unit.name}`);
+	const [widthRow, width] = createRowParamNumber({ update, value: parameters.width, text: `X side length (width) ${editor.unit.name}` });
 	container.add(widthRow);
 
 	// height
 
-	const [heightRow, height] = createParamRow(update, parameters.height, `Y side length (height) ${editor.unit.name}`);
+	const [heightRow, height] = createRowParamNumber({ update, value: parameters.height, text: `Y side length (height) ${editor.unit.name}` });
 	container.add(heightRow);
 
 	// depth
 
-	const [depthRow, depth] = createParamRow(update, parameters.depth, `Z side length (depth) ${editor.unit.name}`);
+	const [depthRow, depth] = createRowParamNumber({ update, value: parameters.depth, text: `Z side length (depth) ${editor.unit.name}` });
 	container.add(depthRow);
 
 

@@ -3,17 +3,17 @@ import { createOption } from './Menubar.js';
 
 function MenubarHelp(editor) {
 
-	var strings = editor.strings;
+	const strings = editor.strings;
 
-	var container = new UIPanel();
+	const container = new UIPanel();
 	container.setClass('menu');
 
-	var title = new UIPanel();
+	const title = new UIPanel();
 	title.setClass('title');
 	title.setTextContent(strings.getKey('menubar/help'));
 	container.add(title);
 
-	var options = new UIPanel();
+	const options = new UIPanel();
 	options.setClass('options');
 	container.add(options);
 
@@ -25,7 +25,7 @@ function MenubarHelp(editor) {
 	/*
 	// Icon
 
-	var option = new UIRow();
+	const option = new UIRow();
 	option.setClass( 'option' );
 	option.setTextContent( strings.getKey( 'menubar/help/icons' ) );
 	option.onClick( function () {
