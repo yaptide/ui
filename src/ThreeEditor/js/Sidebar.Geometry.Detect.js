@@ -101,6 +101,9 @@ export function DetectPanel(editor, section) {
 		zoneId.setOptions(options);
 	}
 
+	editor.signals.zoneAdded.add(updateOptions);
+	editor.signals.zoneRemoved.add(updateOptions);
+
 	refreshUI();
 
 	return container;
