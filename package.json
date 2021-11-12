@@ -44,7 +44,6 @@
     "predeploy": "npm run identify && npm run build-demo",
     "deploy": "gh-pages -d build"
   },
-  "author": "ostatni5",
   "contributors":[
     {"name": "ostatni5"},
     {"name": "derstilon"},
