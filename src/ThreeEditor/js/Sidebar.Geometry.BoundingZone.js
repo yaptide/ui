@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { UIButton, UICheckbox, UINumber, UIRow, UISelect, UIText } from './libs/ui.js';
+import { createRowParamNumberXYZ, createRowParamNumber, createRowSelect } from '../util/UiUtils.js';
+import { UIButton, UICheckbox, UIRow, UIText } from './libs/ui.js';
 
 const bodyTypeOptions = {
 	'box': 'box',
@@ -7,16 +8,7 @@ const bodyTypeOptions = {
 	'sphere': 'sphere'
 };
 
-function createParamRow(update) {
-	const row = new UIRow();
-	const param = new UINumber().onChange(update);
-	const paramText = new UIText().setWidth('90px');
 
-	row.add(paramText);
-	row.add(param);
-
-	return [row, param, paramText];
-}
 
 export function BoundingZonePanel(editor, boundingZone) {
 
@@ -26,40 +18,32 @@ export function BoundingZonePanel(editor, boundingZone) {
 
 	// position
 
-	const objectPositionRow = new UIRow();
-	const objectPositionX = new UINumber().setPrecision(3).setWidth('50px').onChange(update);
-	const objectPositionY = new UINumber().setPrecision(3).setWidth('50px').onChange(update);
-	const objectPositionZ = new UINumber().setPrecision(3).setWidth('50px').onChange(update);
-
-	objectPositionRow.add(new UIText(strings.getKey('sidebar/object/position') + ' ' + editor.unit.name).setWidth('90px'));
-	objectPositionRow.add(objectPositionX, objectPositionY, objectPositionZ);
+	const [objectPositionRow,
+		objectPositionX,
+		objectPositionY,
+		objectPositionZ] = createRowParamNumberXYZ({ text: `${strings.getKey('sidebar/object/position')} ${editor.unit.name}`, update });
 
 	container.add(objectPositionRow);
 
 
 	// geometry type
-
-	const geometryTypeRow = new UIRow();
-	const geometryType = new UISelect().setWidth('150px').setFontSize('12px').setOptions(bodyTypeOptions).setValue(boundingZone.geometryType).onChange(update);
-
-	geometryTypeRow.add(new UIText('Geometry Type').setWidth('90px'));
-	geometryTypeRow.add(geometryType);
+	const [geometryTypeRow, geometryType] = createRowSelect({ text: 'Geometry Type', options: bodyTypeOptions, value: boundingZone.geometryType, update })
 
 	container.add(geometryTypeRow);
 
 	// width(box) / radius(sphere,cylinder)
 
-	const [widthRow, width, widthText] = createParamRow(update);
+	const [widthRow, width, widthText] = createRowParamNumber({ update });
 	container.add(widthRow);
 
 	// height(box,cylinder)
 
-	const [heightRow, height, heightText] = createParamRow(update);
+	const [heightRow, height, heightText] = createRowParamNumber({ update });
 	container.add(heightRow);
 
 	// depth(box)
 
-	const [depthRow, depth, depthText] = createParamRow(update);
+	const [depthRow, depth, depthText] = createRowParamNumber({ update });
 	container.add(depthRow);
 
 
@@ -68,6 +52,7 @@ export function BoundingZonePanel(editor, boundingZone) {
 	const calculateContainer = new UIRow();
 	container.add(calculateContainer);
 
+	// auto calculate checkbox
 
 	const autoCalculateRow = new UIRow();
 	const autoCalculate = new UICheckbox(boundingZone.autoCalculate).onChange(()=> {

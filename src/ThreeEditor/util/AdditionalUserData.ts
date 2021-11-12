@@ -1,10 +1,10 @@
-import * as THREE from "three";
+import * as THREE from 'three';
 
 
 export type PossibleGeometryType = THREE.BoxGeometry | THREE.CylinderGeometry | THREE.SphereGeometry;
 
 const geometryParameters = {
-    'BoxGeometry': ['width'],
+    'BoxGeometry': ['width', 'height', 'depth'],
     'CylinderGeometry': ['radiusTop', 'height'],
     'SphereGeometry': ['radius'],
 }

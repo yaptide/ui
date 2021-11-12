@@ -9,30 +9,30 @@ function SidebarProjectRenderer(editor) {
 
 	let currentRenderer = null;
 
-	let container = new UIPanel();
+	const container = new UIPanel();
 
-	let headerRow = new UIRow();
+	const headerRow = new UIRow();
 	headerRow.add(new UIText(strings.getKey('sidebar/project/renderer').toUpperCase()));
 	container.add(headerRow);
 
 	// Antialias
 
-	let antialiasRow = new UIRow();
+	const antialiasRow = new UIRow();
 	container.add(antialiasRow);
 
 	antialiasRow.add(new UIText(strings.getKey('sidebar/project/antialias')).setWidth('90px'));
 
-	let antialiasBoolean = new UIBoolean(config.getKey('project/renderer/antialias')).onChange(createRenderer);
+	const antialiasBoolean = new UIBoolean(config.getKey('project/renderer/antialias')).onChange(createRenderer);
 	antialiasRow.add(antialiasBoolean);
 
 	// Physically Correct lights
 
-	let physicallyCorrectLightsRow = new UIRow();
+	const physicallyCorrectLightsRow = new UIRow();
 	container.add(physicallyCorrectLightsRow);
 
 	physicallyCorrectLightsRow.add(new UIText(strings.getKey('sidebar/project/physicallyCorrectLights')).setWidth('90px'));
 
-	let physicallyCorrectLightsBoolean = new UIBoolean(config.getKey('project/renderer/physicallyCorrectLights')).onChange(() => {
+	const physicallyCorrectLightsBoolean = new UIBoolean(config.getKey('project/renderer/physicallyCorrectLights')).onChange(() => {
 
 		currentRenderer.physicallyCorrectLights = this.getValue();
 		signals.rendererUpdated.dispatch();
@@ -42,15 +42,15 @@ function SidebarProjectRenderer(editor) {
 
 	// Shadows
 
-	let shadowsRow = new UIRow();
+	const shadowsRow = new UIRow();
 	container.add(shadowsRow);
 
 	shadowsRow.add(new UIText(strings.getKey('sidebar/project/shadows')).setWidth('90px'));
 
-	let shadowsBoolean = new UIBoolean(config.getKey('project/renderer/shadows')).onChange(updateShadows);
+	const shadowsBoolean = new UIBoolean(config.getKey('project/renderer/shadows')).onChange(updateShadows);
 	shadowsRow.add(shadowsBoolean);
 
-	let shadowTypeSelect = new UISelect().setOptions({
+	const shadowTypeSelect = new UISelect().setOptions({
 		0: 'Basic',
 		1: 'PCF',
 		2: 'PCF Soft',
@@ -70,12 +70,12 @@ function SidebarProjectRenderer(editor) {
 
 	// Tonemapping
 
-	let toneMappingRow = new UIRow();
+	const toneMappingRow = new UIRow();
 	container.add(toneMappingRow);
 
 	toneMappingRow.add(new UIText(strings.getKey('sidebar/project/toneMapping')).setWidth('90px'));
 
-	let toneMappingSelect = new UISelect().setOptions({
+	const toneMappingSelect = new UISelect().setOptions({
 		0: 'No',
 		1: 'Linear',
 		2: 'Reinhard',
@@ -85,7 +85,7 @@ function SidebarProjectRenderer(editor) {
 	toneMappingSelect.setValue(config.getKey('project/renderer/toneMapping'));
 	toneMappingRow.add(toneMappingSelect);
 
-	let toneMappingExposure = new UINumber(config.getKey('project/renderer/toneMappingExposure'));
+	const toneMappingExposure = new UINumber(config.getKey('project/renderer/toneMappingExposure'));
 	toneMappingExposure.setDisplay(toneMappingSelect.getValue() === '0' ? 'none' : '');
 	toneMappingExposure.setWidth('30px').setMarginLeft('10px');
 	toneMappingExposure.setRange(0, 10);

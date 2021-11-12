@@ -1,5 +1,4 @@
 import React, { SyntheticEvent, useState } from 'react';
-import { css } from '@emotion/css';
 import Box from '@mui/material/Box';
 import LoginPanel from './components/LoginPanel';
 import Tab from '@mui/material/Tab';
@@ -9,32 +8,8 @@ import UserData from '../util/user/UserData';
 import SimulationPanel from './components/SimulationPanel';
 import { useStore } from '../services/StoreService';
 import { DEMO_MODE } from '../util/Config';
-import JsRootGraph from '../JsRoot/JsRootGraph';
-interface TabPanelProps {
-	children?: React.ReactNode;
-	index: number;
-	value: number;
-	persistent?: boolean;
-}
-
-const tabPanelCss = css({ display: 'flex', flexGrow: 1 });
-
-function TabPanel(props: TabPanelProps) {
-	const { children, value, index, persistent, ...other } = props;
-
-	return (
-		<div
-			role="tabpanel"
-			className={tabPanelCss}
-			style={{ display: value !== index ? 'none' : '' }}
-			{...other}
-		>
-			{(value === index || persistent) && <Box className={tabPanelCss}>
-				{children}
-			</Box>}
-		</div>
-	);
-}
+import { TabPanel } from './components/TabPanel';
+import ResultsPanel from './components/ResultsPanel';
 
 
 function WrapperApp() {
@@ -73,12 +48,11 @@ function WrapperApp() {
 								setTabsValue(2);
 								setResultData({ data });
 							}}
-
 						/>
 					</TabPanel>
 
-					<TabPanel value={tabsValue} index={2}>
-						<JsRootGraph data={resultData} />
+					<TabPanel value={tabsValue} index={2} persistentIfVisited >
+						<ResultsPanel data={resultData} />
 					</TabPanel>
 				</>
 			}

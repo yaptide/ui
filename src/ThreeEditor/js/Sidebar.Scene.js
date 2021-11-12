@@ -7,16 +7,16 @@ function SidebarScene(editor) {
 
 	const { signals, strings } = editor;
 
-	var container = new UIPanel();
+	const container = new UIPanel();
 	container.setBorderTop('0');
 	container.setPaddingTop('20px');
 
 	// outliner
 
-	var nodeStates = new WeakMap();
+	const nodeStates = new WeakMap();
 
 	function buildOption(object, draggable) {
-		var option = document.createElement('div');
+		const option = document.createElement('div');
 		option.draggable = draggable;
 		option.innerHTML = buildHTML(object);
 		option.value = object.id;
@@ -25,9 +25,9 @@ function SidebarScene(editor) {
 
 		if (nodeStates.has(object)) {
 
-			var state = nodeStates.get(object);
+			const state = nodeStates.get(object);
 
-			var opener = document.createElement('span');
+			const opener = document.createElement('span');
 			opener.classList.add('opener');
 
 			if (object.children.length > 0) {
@@ -55,9 +55,9 @@ function SidebarScene(editor) {
 
 		if (Array.isArray(material)) {
 
-			var array = [];
+			const array = [];
 
-			for (var i = 0; i < material.length; i++) {
+			for (let i = 0; i < material.length; i++) {
 
 				array.push(material[i].name);
 
@@ -99,12 +99,12 @@ function SidebarScene(editor) {
 
 	function buildHTML(object) {
 
-		var html = `<span class="type ${getObjectType(object)}"></span> ${escapeHTML(object.name)}`;
+		let html = `<span class="type ${getObjectType(object)}"></span> ${escapeHTML(object.name)}`;
 
 		if (object.isMesh) {
 
-			var geometry = object.geometry;
-			var material = object.material;
+			const geometry = object.geometry;
+			const material = object.material;
 
 			html += ` <span class="type Geometry"></span> ${escapeHTML(geometry.name)}`;
 			html += ` <span class="type Material"></span> ${escapeHTML(getMaterialName(material))}`;
@@ -129,9 +129,9 @@ function SidebarScene(editor) {
 
 	}
 
-	var ignoreObjectSelectedSignal = false;
+	let ignoreObjectSelectedSignal = false;
 
-	var outliner = new UIOutliner(editor);
+	const outliner = new UIOutliner(editor);
 	outliner.setId('outliner');
 	outliner.onChange(() => {
 
@@ -152,9 +152,9 @@ function SidebarScene(editor) {
 
 	// background
 
-	var backgroundRow = new UIRow();
+	const backgroundRow = new UIRow();
 
-	var backgroundType = new UISelect().setOptions({
+	const backgroundType = new UISelect().setOptions({
 
 		'None': '',
 		'Color': 'Color',
@@ -172,14 +172,14 @@ function SidebarScene(editor) {
 	backgroundRow.add(new UIText(strings.getKey('sidebar/scene/background')).setWidth('90px'));
 	backgroundRow.add(backgroundType);
 
-	var backgroundColor = new UIColor().setValue('#000000').setMarginLeft('8px').onInput(onBackgroundChanged);
+	const backgroundColor = new UIColor().setValue('#000000').setMarginLeft('8px').onInput(onBackgroundChanged);
 	backgroundRow.add(backgroundColor);
 
-	var backgroundTexture = new UITexture().setMarginLeft('8px').onChange(onBackgroundChanged);
+	const backgroundTexture = new UITexture().setMarginLeft('8px').onChange(onBackgroundChanged);
 	backgroundTexture.setDisplay('none');
 	backgroundRow.add(backgroundTexture);
 
-	var backgroundEquirectangularTexture = new UITexture().setMarginLeft('8px').onChange(onBackgroundChanged);
+	const backgroundEquirectangularTexture = new UITexture().setMarginLeft('8px').onChange(onBackgroundChanged);
 	backgroundEquirectangularTexture.setDisplay('none');
 	backgroundRow.add(backgroundEquirectangularTexture);
 
@@ -198,7 +198,7 @@ function SidebarScene(editor) {
 
 	function refreshBackgroundUI() {
 
-		var type = backgroundType.getValue();
+		const type = backgroundType.getValue();
 
 		backgroundType.setWidth(type === 'None' ? '150px' : '110px');
 		backgroundColor.setDisplay(type === 'Color' ? '' : 'none');
@@ -209,9 +209,9 @@ function SidebarScene(editor) {
 
 	// environment
 
-	var environmentRow = new UIRow();
+	const environmentRow = new UIRow();
 
-	var environmentType = new UISelect().setOptions({
+	const environmentType = new UISelect().setOptions({
 
 		'None': '',
 		'Equirectangular': 'Equirect',
@@ -229,7 +229,7 @@ function SidebarScene(editor) {
 	environmentRow.add(new UIText(strings.getKey('sidebar/scene/environment')).setWidth('90px'));
 	environmentRow.add(environmentType);
 
-	var environmentEquirectangularTexture = new UITexture().setMarginLeft('8px').onChange(onEnvironmentChanged);
+	const environmentEquirectangularTexture = new UITexture().setMarginLeft('8px').onChange(onEnvironmentChanged);
 	environmentEquirectangularTexture.setDisplay('none');
 	environmentRow.add(environmentEquirectangularTexture);
 
@@ -246,7 +246,7 @@ function SidebarScene(editor) {
 
 	function refreshEnvironmentUI() {
 
-		var type = environmentType.getValue();
+		const type = environmentType.getValue();
 
 		environmentType.setWidth(type !== 'Equirectangular' ? '150px' : '110px');
 		environmentEquirectangularTexture.setDisplay(type === 'Equirectangular' ? '' : 'none');
@@ -261,16 +261,16 @@ function SidebarScene(editor) {
 		const { camera, scene, detectManager } = editor;
 		const { zonesContainer, boundingZone } = editor.zonesManager;
 
-		var options = [];
+		const options = [];
 
 		options.push(buildOption(camera, false));
 		options.push(buildOption(scene, false));
 
 		function addObjects(objects, pad) {
 
-			for (var i = 0, l = objects.length; i < l; i++) {
+			for (let i = 0, l = objects.length; i < l; i++) {
 
-				var object = objects[i];
+				const object = objects[i];
 
 				if (nodeStates.has(object) === false) {
 
@@ -278,7 +278,7 @@ function SidebarScene(editor) {
 
 				}
 
-				var option = buildOption(object, true);
+				const option = buildOption(object, true);
 				option.style.paddingLeft = (pad * 18) + 'px';
 				options.push(option);
 
