@@ -1,8 +1,8 @@
 {
   "name": "threejs-editor-react",
   "version": "0.1.0",
-  "private": true,
-  "homepage": "http://yaptide.github.io/web_dev/",
+  "private": false,
+  "homepage": ".",
   "dependencies": {
     "@emotion/css": "^11.5.0",
     "@emotion/react": "^11.5.0",
@@ -44,6 +44,13 @@
     "predeploy": "npm run identify && npm run build-demo",
     "deploy": "gh-pages -d build"
   },
+  "author": "ostatni5",
+  "contributors":[
+    {"name": "ostatni5"},
+    {"name": "derstilon"},
+    {"name": "grzanka"}
+  ],
+  "license": "GPL-3.0",
   "eslintConfig": {
     "extends": [
       "react-app",
