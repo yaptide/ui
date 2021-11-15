@@ -78,7 +78,7 @@ export class CSGZone extends THREE.Mesh {
     }
 
     clone(recursive: boolean) {
-        let clonedZone: this = new CSGZone(
+        const clonedZone: this = new CSGZone(
             this.editor,
             this.name,
             this.unionOperations,
@@ -99,7 +99,7 @@ export class CSGZone extends THREE.Mesh {
 
             for (let index = 0; index < operations.length; index++) {
                 const operation = operations[index];
-                let lastBsp = operationsResultBsp;
+                const lastBsp = operationsResultBsp;
 
                 operation.object.updateMatrix();
 
@@ -108,9 +108,9 @@ export class CSGZone extends THREE.Mesh {
                 //     .then((json: string) => new THREE.ObjectLoader().parseAsync(JSON.parse(json)))
                 //     .then(console.log);
 
-                let objectBsp = CSG.fromMesh(operation.object as THREE.Mesh);
+                const objectBsp = CSG.fromMesh(operation.object as THREE.Mesh);
 
-                let handleMode = {
+                const handleMode = {
                     'left-subtraction': () => lastBsp.subtract(objectBsp),
                     intersection: () => lastBsp.intersect(objectBsp),
                     'right-subtraction': () => objectBsp.subtract(lastBsp),
@@ -123,7 +123,7 @@ export class CSGZone extends THREE.Mesh {
             unionsResultBsp = unionsResultBsp.union(operationsResultBsp);
         }
 
-        let geometryResult = CSG.toGeometry(unionsResultBsp, this.matrix);
+        const geometryResult = CSG.toGeometry(unionsResultBsp, this.matrix);
 
         this.geometry.dispose();
         this.geometry = geometryResult;
@@ -223,10 +223,10 @@ export class CSGZone extends THREE.Mesh {
     }
 
     toJSON() {
-        let unionOperations = this.unionOperations.map((union) =>
+        const unionOperations = this.unionOperations.map((union) =>
             union.map((operation) => operation.toJSON())
         );
-        let jsonObject: CSGZoneJSON = {
+        const jsonObject: CSGZoneJSON = {
             uuid: this.uuid,
             name: this.name,
             unionOperations,
@@ -242,13 +242,13 @@ export class CSGZone extends THREE.Mesh {
     }
 
     static fromJSON(editor: Editor, data: CSGZoneJSON) {
-        let unionOperations = data.unionOperations.map((union) =>
+        const unionOperations = data.unionOperations.map((union) =>
             union.map((operation) => CSGOperation.fromJSON(editor, operation))
         );
 
-        let subscribedObjectsUuid = new CounterMap().fromJSON(data.subscribedObjectsUuid);       
+        const subscribedObjectsUuid = new CounterMap().fromJSON(data.subscribedObjectsUuid);       
 
-        let zone = new CSGZone(
+        const zone = new CSGZone(
             editor,
             data.name,
             unionOperations,
