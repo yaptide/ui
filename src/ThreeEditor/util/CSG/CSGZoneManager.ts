@@ -24,7 +24,7 @@ export class ZoneContainer extends THREE.Group implements ISimulationObject {
     readonly notScalable = true;
 
     children: Zone[];
-    readonly isCSGZonesContainer: true = true;
+    readonly isZonesContainer: true = true;
     constructor(){
         super();
         this.name = "Zones";
@@ -51,7 +51,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
         sceneGraphChanged: Signal;
         CSGManagerStateChanged: Signal;
     };
-    readonly isCSGManager: true = true;
+    readonly isZoneManager: true = true;
 
     constructor(editor: Editor) {
         super();
@@ -178,5 +178,6 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 
 }
 
+export const isZonesContainer = (x: unknown): x is ZoneContainer => x instanceof ZoneContainer;
 
-export const isCSGManager = (x: unknown): x is ZoneManager => x instanceof ZoneManager;
+export const isZoneManager = (x: unknown): x is ZoneManager => x instanceof ZoneManager;

@@ -1,19 +1,20 @@
-import { Signal } from "signals";
-import * as THREE from "three";
-import { debounce } from "throttle-debounce";
+import { Signal } from 'signals';
+import * as THREE from 'three';
+import { debounce } from 'throttle-debounce';
 import { IZoneWorker } from "./CSGWorker";
-import * as Comlink from "comlink";
-import { Editor } from "../../js/Editor";
-import CSG from "../../js/libs/csg/three-csg";
+import * as Comlink from 'comlink';
+import { Editor } from '../../js/Editor';
+import CSG from '../../js/libs/csg/three-csg';
 import { OperationTuple, OperationTupleJSON } from "./CSGOperationTuple";
-import SimulationMaterial from "../Materials/SimulationMaterial";
+import SimulationMaterial from '../Materials/SimulationMaterial';
+import { CounterMap } from './CounterMap';
 import { ISimulationObject } from "../SimulationObject";
 
 export interface ZoneJSON {
     uuid: string;
     name: string;
     unionOperations: OperationTupleJSON[][];
-    subscribedObjectsUuid: string[];
+    subbedObjects: Record<string,number>;
     materialName: string;
     materialData: unknown;
 }
@@ -24,8 +25,8 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
     readonly notRotatable = true;
     readonly notScalable = true;
 
+    subbedObjects: CounterMap<string>;
     unionOperations: OperationTuple[][];
-    subscribedObjectsUuid: Set<string>;
     needsUpdate: boolean = true;
     private signals: {
         objectChanged: Signal<THREE.Object3D>;
@@ -52,7 +53,7 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
         editor: Editor,
         name?: string,
         unionOperations?: OperationTuple[][],
-        subscribedObjectsUuid?: Set<string>, // TODO: replace Set with Map to correctly trace uuids
+        subbedObjects?: CounterMap<string>,
         uuid?: string,
         materialName?: string
     ) {
@@ -65,8 +66,8 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
         this.material = editor.materialsManager.materials[materialName ?? ""];
         this.unionOperations = unionOperations ?? [];
         // If operations are specified, we have to populate set of subscribed UUID's
-        this.subscribedObjectsUuid = subscribedObjectsUuid ?? this.populateSubscribedUuid(this.unionOperations);
-        
+        this.subbedObjects = subbedObjects ?? this.populateSubscribedUuid(this.unionOperations);
+
         // If operations are specified, we have to generate fist geometry manually.
         unionOperations && this.updateGeometry();
 
@@ -75,25 +76,25 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
         this.signals.objectRemoved.add((object) => this.handleRemoved(object));
     }
 
-    private populateSubscribedUuid(operations:OperationTuple[][]): Set<string> {
-        return new Set(
+    private populateSubscribedUuid(operations:OperationTuple[][]): CounterMap<string> {
+        return new CounterMap(
             operations.flatMap(operationRow => operationRow.map(operation => operation.object.uuid))
         );
     }
 
     clone(recursive: boolean) {
-        let clonedZone: this = new Zone(
+        const clonedZone: this = new Zone(
             this.editor,
             this.name,
             this.unionOperations,
-            this.subscribedObjectsUuid
+            this.subbedObjects
         ).copy(this, recursive) as this;
 
         return clonedZone;
     }
 
-    updateGeometry(): void  {
-        console.time("CSGZone");
+    updateGeometry(): void {
+        console.time('CSGZone');
         let unionsResultBsp = new CSG();
 
         for (let i = 0; i < this.unionOperations.length; i++) {
@@ -103,7 +104,7 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
 
             for (let index = 0; index < operations.length; index++) {
                 const operation = operations[index];
-                let lastBsp = operationsResultBsp;
+                const lastBsp = operationsResultBsp;
 
                 operation.object.updateMatrix();
 
@@ -112,9 +113,9 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
                 //     .then((json: string) => new THREE.ObjectLoader().parseAsync(JSON.parse(json)))
                 //     .then(console.log);
 
-                let objectBsp = CSG.fromMesh(operation.object as THREE.Mesh);
+                const objectBsp = CSG.fromMesh(operation.object as THREE.Mesh);
 
-                let handleMode = {
+                const handleMode = {
                     "left-subtraction": () => lastBsp.subtract(objectBsp),
                     "intersection": () => lastBsp.intersect(objectBsp),
                     "right-subtraction": () => objectBsp.subtract(lastBsp),
@@ -127,7 +128,7 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
             unionsResultBsp = unionsResultBsp.union(operationsResultBsp);
         }
 
-        let geometryResult = CSG.toGeometry(unionsResultBsp, this.matrix);
+        const geometryResult = CSG.toGeometry(unionsResultBsp, this.matrix);
 
         this.geometry.dispose();
         this.geometry = geometryResult;
@@ -135,30 +136,30 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
         this.updateMatrixWorld(true);
 
         this.signals.zoneGeometryChanged.dispatch(this);
-        console.timeEnd("CSGZone");
+        console.timeEnd('CSGZone');
     }
 
-    addUnion(): void  {
+    addUnion(): void {
         this.unionOperations.push([]);
 
         this.announceChangedState();
     }
 
-    updateUnion(unionIndex: number, operations: OperationTuple[]): void  {
-        this.unionOperations[unionIndex].forEach((e, i) =>
-            this.subscribedObjectsUuid.delete(e.object.uuid)
-        );
+    updateUnion(unionIndex: number, operations: OperationTuple[]): void {
+        this.unionOperations[unionIndex].forEach((e) => {
+            this.subbedObjects.decrement(e.object.uuid);
+        });
 
         this.unionOperations[unionIndex] = [...operations];
 
-        this.unionOperations[unionIndex].forEach((e, i) =>
-            this.subscribedObjectsUuid.add(e.object.uuid)
-        );
+        this.unionOperations[unionIndex].forEach((e) => {
+            this.subbedObjects.increment(e.object.uuid);
+        });
 
         this.announceChangedState();
     }
 
-    removeUnion(unionIndex: number): void  {
+    removeUnion(unionIndex: number): void {
         this.unionOperations[unionIndex].forEach((e, i) =>
             this.removeOperation(unionIndex, i)
         );
@@ -168,15 +169,15 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
         this.announceChangedState();
     }
 
-    addOperation(unionIndex: number, operation: OperationTuple): void  {
+    addOperation(unionIndex: number, operation: OperationTuple): void {
         this.unionOperations[unionIndex].push(operation);
-        this.subscribedObjectsUuid.add(operation.object.uuid);
+        this.subbedObjects.increment(operation.object.uuid);
 
         this.announceChangedState();
     }
 
-    removeOperation(unionIndex: number, operationIndex: number): void  {
-        this.subscribedObjectsUuid.delete(
+    removeOperation(unionIndex: number, operationIndex: number): void {
+        this.subbedObjects.decrement(
             this.unionOperations[unionIndex][operationIndex].object.uuid
         );
 
@@ -185,14 +186,14 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
         this.announceChangedState();
     }
 
-    handleChange(object: THREE.Object3D): void  {
-        if (!this.subscribedObjectsUuid.has(object.uuid)) return;
+    handleChange(object: THREE.Object3D): void {
+        if (!this.subbedObjects.has(object.uuid)) return;
 
         this.announceChangedState();
     }
 
-    handleRemoved(object: THREE.Object3D): void  {
-        if (!this.subscribedObjectsUuid.has(object.uuid)) return;
+    handleRemoved(object: THREE.Object3D): void {
+        if (!this.subbedObjects.has(object.uuid)) return;
 
         this.unionOperations.forEach((operations, unionIndex) => {
             operations.forEach((operation, index) => {
@@ -201,7 +202,7 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
             });
 
             if (operations.length === 0) this.removeUnion(unionIndex);
-            else operations[0].mode = "union"; // ensure that first operation is union
+            else operations[0].mode = 'union'; // ensure that first operation is union
         });
 
         if (this.unionOperations.length === 0)
@@ -210,14 +211,14 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
         this.announceChangedState();
     }
 
-    announceChangedState(): void  {
+    announceChangedState(): void {
         this.debouncedUpdatePreview();
 
         this.signals.zoneChanged.dispatch(this);
         this.signals.CSGManagerStateChanged.dispatch();
     }
 
-    updatePreview(): void  {
+    updatePreview(): void {
         this.needsUpdate = true;
 
         this.updateGeometry();
@@ -227,14 +228,14 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
     }
 
     toJSON() {
-        let unionOperations = this.unionOperations.map((union) =>
+        const unionOperations = this.unionOperations.map((union) =>
             union.map((operation) => operation.toJSON())
         );
-        let jsonObject: ZoneJSON = {
+        const jsonObject: ZoneJSON = {
             uuid: this.uuid,
             name: this.name,
             unionOperations,
-            subscribedObjectsUuid: Array.from(this.subscribedObjectsUuid),
+            subbedObjects: this.subbedObjects.toJSON(),
             materialName: this.getSimulationMaterial().name,
             materialData: this.getSimulationMaterial().simulationData
         };
@@ -246,17 +247,13 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
     }
 
     static fromJSON(editor: Editor, data: ZoneJSON) {
-        let unionOperations = data.unionOperations.map((union) =>
+        const unionOperations = data.unionOperations.map((union) =>
             union.map((operation) => OperationTuple.fromJSON(editor, operation))
         );
 
-        let subscribedObjectsUuid;
-        
-        if(Array.isArray(data.subscribedObjectsUuid))
-            subscribedObjectsUuid = new Set(data.subscribedObjectsUuid)
-        else throw Error(`SubscribedObjectsId is not array: ${typeof data.subscribedObjectsUuid}`);
+        const subscribedObjectsUuid = new CounterMap().fromJSON(data.subbedObjects);       
 
-        let zone = new Zone(
+        const zone = new Zone(
             editor,
             data.name,
             unionOperations,

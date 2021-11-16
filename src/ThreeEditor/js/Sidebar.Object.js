@@ -757,7 +757,7 @@ function SidebarObject(editor) {
 		}
 		const hideObjectInfo = () => container.setDisplay('none');
 
-		(object && !object.isCSGZonesContainer && !object.isScene
+		(object && !object.isZonesContainer && !object.isScene
 			? showObjectInfo
 			: hideObjectInfo)();
 	});

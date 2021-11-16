@@ -86,7 +86,7 @@ function SidebarScene(editor) {
 		
 		if (object.isDetectSection) return 'Line';
 		if (object.isCSGZone) return 'Points';
-		if (object.isCSGZonesContainer) return 'Camera';
+		if (object.isZonesContainer) return 'Camera';
 		if (object.isDetectSectionsContainer) return 'Line'; 
 		 //TODO: Add support to different keywords in css classes  # skipcq: JS-0099
 		if (object.isScene) return 'Scene';
