@@ -2,8 +2,8 @@ import { Autocomplete, Popper, TextField } from "@mui/material";
 import React from "react";
 
 export interface MaterialSelectProps {
-    onChange?: (event: any, newValue: string | null) => void,
-    options?: any
+    onChange?: (event: React.SyntheticEvent<Element, Event>, newValue: string | null) => void,
+    options: string[]
     value?: string
 }
 
@@ -12,7 +12,7 @@ export function MaterialSelect(props: MaterialSelectProps) {
         <Autocomplete
             fullWidth
             size="small"
-            onChange={(event: any, newValue: string | null) => {
+            onChange={(event, newValue: string | null) => {
                 props.onChange?.call(null, event, newValue);
             }}
             disableClearable

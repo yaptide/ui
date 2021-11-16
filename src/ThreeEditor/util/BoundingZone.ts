@@ -1,6 +1,6 @@
 
 import * as THREE from 'three';
-import { Color, LineBasicMaterial, Material, MeshBasicMaterial, Object3D, Vector3 } from 'three';
+import { Color, LineBasicMaterial, MeshBasicMaterial, Object3D, Vector3 } from 'three';
 import { debounce } from 'throttle-debounce';
 
 import { Editor } from '../js/Editor';

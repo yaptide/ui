@@ -1,4 +1,4 @@
-import { UIButton, UIDiv, UIPanel, UIRow, UISelect, UIText } from './libs/ui.js';
+import { UIButton, UIPanel } from './libs/ui.js';
 import { SetZoneMaterialCommand } from './commands/Commands';
 import { SidebarMaterialBooleanProperty } from './Sidebar.Material.BooleanProperty.js';
 import { SidebarMaterialColorProperty } from './Sidebar.Material.ColorProperty.js';

@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import { UIRow, UINumber, UIText, UISelect, UIInput, UIElement, UIDiv } from "../js/libs/ui.js";
+import { UIRow, UINumber, UIText, UISelect, UIInput, UIDiv } from "../js/libs/ui.js";
 import { MaterialSelect } from '../components/MaterialSelect/MaterialSelect';
 
 /**
