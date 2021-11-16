@@ -3,12 +3,31 @@ import * as THREE from "three";
 import { Editor } from "../../js/Editor";
 import * as CSG from "../CSG/CSG";
 import { ISimulationObject } from "../SimulationObject";
-import { DetectSection, DetectSectionJSON } from "./DetectSection";
+import {
+    DetectSection,
+    DetectSectionJSON,
+    isDetectSection,
+} from "./DetectSection";
 
 interface DetectManagerJSON {
     uuid: string;
     name: string;
     detectSections: DetectSectionJSON[];
+}
+
+export class DetectsContainer extends THREE.Group implements ISimulationObject {
+    readonly notRemovable = true;
+    readonly notMovable = true;
+    readonly notRotatable = true;
+    readonly notScalable = true;
+
+    children: DetectSection[];
+    readonly isDetectSectionsContainer: true = true;
+    constructor() {
+        super();
+        this.name = "Sections";
+        this.children = [];
+    }
 }
 
 export class DetectManager extends THREE.Scene implements ISimulationObject {
@@ -17,12 +36,23 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
     readonly notRotatable = true;
     readonly notScalable = true;
 
-    children: DetectSection[];
+    private static _detectWireMaterial = new THREE.MeshBasicMaterial({
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.5,
+        wireframe: true,
+        color: new THREE.Color("cyan"),
+    });
+
+    detectsContainer: DetectsContainer;
+
+    detectHelper: THREE.Mesh;
 
     private signals: {
         objectAdded: Signal<THREE.Object3D>;
         objectChanged: Signal<THREE.Object3D>;
         objectRemoved: Signal<THREE.Object3D>;
+        objectSelected: Signal<THREE.Object3D>;
         zoneGeometryChanged: Signal<CSG.Zone>;
         sceneGraphChanged: Signal;
         detectSectionAdded: Signal<DetectSection>;
@@ -35,11 +65,31 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 
     constructor(editor: Editor) {
         super();
-        this.name = "Detect";
+        this.detectsContainer = new DetectsContainer();
+        this.detectHelper = new THREE.Mesh(
+            undefined,
+            DetectManager._detectWireMaterial
+        );
+        this.name = "DetectManager";
         this.editor = editor;
-        this.children = [];
+        this.add(this.detectsContainer);
+        this.add(this.detectHelper);
         this.signals = editor.signals;
+        this.signals.objectSelected.add(this.onObjectSelected);
+        this.signals.detectGeometryChanged.add(this.onObjectSelected);
+        console.log(this);
     }
+
+    onObjectSelected = (object: THREE.Object3D) => {
+        this.detectHelper.geometry.dispose();
+        if (isDetectSection(object)) {
+            this.detectHelper.position.copy(object.position);
+            this.detectHelper.geometry = object.geometry.clone();
+        } else {
+            this.detectHelper.geometry = new THREE.BufferGeometry();
+        }
+        this.signals.sceneGraphChanged.dispatch();
+    };
 
     createSection(): DetectSection {
         let section = new DetectSection(this.editor, {});
@@ -48,7 +98,7 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
     }
 
     addSection(section: DetectSection): void {
-        this.add(section);
+        this.detectsContainer.add(section);
 
         this.signals.objectAdded.dispatch(section);
         this.signals.detectSectionAdded.dispatch(section);
@@ -56,28 +106,27 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
     }
 
     removeSection(section: DetectSection): void {
-        this.remove(section);
+        this.detectsContainer.remove(section);
         this.signals.objectRemoved.dispatch(section);
         this.signals.detectSectionRemoved.dispatch(section);
         this.signals.sceneGraphChanged.dispatch();
     }
 
     fromJSON(data: DetectManagerJSON): void {
-        if (!data)
-            console.warn('Passed empty data to load CSGManager', data)
+        if (!data) console.warn("Passed empty data to load CSGManager", data);
 
         this.uuid = data.uuid;
 
         this.name = data.name;
         data.detectSections.forEach((sectionData) => {
-
             this.addSection(DetectSection.fromJSON(this.editor, sectionData));
-
         });
     }
 
     toJSON(): DetectManagerJSON {
-        let detectSections = this.children.map((section) => section.toJSON());
+        let detectSections = this.detectsContainer.children.map((section) =>
+            section.toJSON()
+        );
         let uuid = this.uuid;
         let name = this.name;
         return {
@@ -90,15 +139,15 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
     reset() {
         this.name = "Detect";
         this.userData = {};
-        this.clear();
+        this.detectsContainer.clear();
     }
-    
+
     clone(recursive: boolean) {
         return new DetectManager(this.editor).copy(this, recursive) as this;
     }
 
     getSectionById(id: number): DetectSection | null {
-        return this.children.find(
+        return this.detectsContainer.children.find(
             (child) => child.id === id
         ) as DetectSection | null;
     }

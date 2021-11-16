@@ -83,9 +83,12 @@ function SidebarScene(editor) {
 	}
 
 	function getObjectType(object) {
-
-		if (object.isCSGZone) return 'Points'; //TODO: Add support to different keywords in css classes  # skipcq: JS-0099
-		if (object?.parent?.isCSGManager) return 'Camera'; //Add support to different keywords in css classes
+		
+		if (object.isDetectSection) return 'Line';
+		if (object.isCSGZone) return 'Points';
+		if (object.isCSGZonesContainer) return 'Camera';
+		if (object.isDetectSectionsContainer) return 'Line'; 
+		 //TODO: Add support to different keywords in css classes  # skipcq: JS-0099
 		if (object.isScene) return 'Scene';
 		if (object.isCamera) return 'Camera';
 		if (object.isLight) return 'Light';
@@ -258,7 +261,8 @@ function SidebarScene(editor) {
 
 	function refreshUI() {
 
-		const { camera, scene, detectManager } = editor;
+		const { camera, scene } = editor;
+		const { detectsContainer } = editor.detectManager;
 		const { zonesContainer, boundingZone } = editor.zonesManager;
 
 		const options = [];
@@ -296,8 +300,8 @@ function SidebarScene(editor) {
 		options.push(buildOption(zonesContainer, false));
 		addObjects(zonesContainer.children, 0);
 
-		options.push(buildOption(detectManager, false));
-		addObjects(detectManager.children, 0);
+		options.push(buildOption(detectsContainer, false));
+		addObjects(detectsContainer.children, 0);
 
 		options.push(buildOption(boundingZone, false));
 
@@ -382,7 +386,7 @@ function SidebarScene(editor) {
 			let nextParent = object.parent;
 
 			const reachedFinalParent = (parent) => {
-				const finalParents = [editor.scene, editor.zonesManager.zonesContainer, editor.zonesManager.boundingZones, editor.detectManager]
+				const finalParents = [editor.scene, editor.zonesManager.zonesContainer, editor.zonesManager.boundingZones, editor.detectManager.detectsContainer]
 				return finalParents.some((finalParent) => finalParent === parent)
 			}
 

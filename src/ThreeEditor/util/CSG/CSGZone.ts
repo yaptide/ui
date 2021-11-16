@@ -116,9 +116,9 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
 
                 let handleMode = {
                     "left-subtraction": () => lastBsp.subtract(objectBsp),
-                    intersection: () => lastBsp.intersect(objectBsp),
+                    "intersection": () => lastBsp.intersect(objectBsp),
                     "right-subtraction": () => objectBsp.subtract(lastBsp),
-                    union: () => lastBsp.union(objectBsp),
+                    "union": () => lastBsp.union(objectBsp),
                 };
 
                 operationsResultBsp = handleMode[operation.mode]();

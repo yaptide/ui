@@ -1,18 +1,7 @@
-import { UISelect, UIRow, UISpan, UIText, UINumber } from './libs/ui.js';
+import { UISpan } from './libs/ui.js';
 import { detectOptions } from '../util/Detect/DetectTypes';
 import { SetDetectGeometryCommand, SetDetectTypeCommand } from './commands/Commands';
-
-function createParamRow(update, value, text) {
-	const row = new UIRow();
-	const param = new UINumber(value).onChange(update);
-	const paramText = new UIText(text).setWidth('90px');
-	param.min = 0;
-
-	row.add(paramText);
-	row.add(param);
-
-	return [row, param, paramText];
-}
+import { createRowParamNumber, createRowSelect } from '../util/UiUtils';
 
 export function DetectPanel(editor, section) {
 	const container = new UISpan();
@@ -20,33 +9,31 @@ export function DetectPanel(editor, section) {
 	let data = section.detectGeometryData;
 
 	// detect type
-
-	const sectionTypeRow = new UIRow();
-	const sectionType = new UISelect().setWidth('150px').setFontSize('12px');
-	sectionType.setOptions(detectOptions).onChange(updateType);
-	
-	sectionTypeRow.add(new UIText(`Type`).setWidth('90px'));
-	sectionTypeRow.add(sectionType);
+	const [sectionTypeRow, sectionType] = createRowSelect({ text: `Type`, update: updateType, options: detectOptions });
 
 	// width 
-	const [widthRow, width] = createParamRow(update, data.width, `X side length (width) ${editor.unit.name}`);
+	const [widthRow, width] = createRowParamNumber({ text: `X side length (width) ${editor.unit.name}`, min: 0, update });
+	const [widthRow2, width2] = createRowParamNumber({ text: `X side density (segments)`, min: 1, update, precision: 1 });
+	width2.setNudge(1).setStep(1);
 
 	// height
-	const [heightRow, height] = createParamRow(update, data.height, `Y side length (height) ${editor.unit.name}`);
+	const [heightRow, height] = createRowParamNumber({ text: `Y side length (height) ${editor.unit.name}`, min: 0, update });
+	const [heightRow2, height2] = createRowParamNumber({ text: `Y side density (segments)`, min: 1, update, precision: 1 });
+	height2.setNudge(1).setStep(1);
 
 	// depth
-	const [depthRow, depth] = createParamRow(update, data.depth, `Z side length (depth) ${editor.unit.name}`);
+	const [depthRow, depth] = createRowParamNumber({ text: `Z side length (depth) ${editor.unit.name}`, min: 0, update });
+	const [depthRow2, depth2] = createRowParamNumber({ text: `Z side density (segments)`, min: 1, update, precision: 1 });
+	depth2.setNudge(1).setStep(1);
 
 	// radius
-	const [radiusRow, radius] = createParamRow(update, data.radius, `Radius ${editor.unit.name}`);
+	const [radiusRow1, radius1] = createRowParamNumber({ text: `Inner radius ${editor.unit.name}`, min: 0, update });
+	const [radiusRow2, radius2] = createRowParamNumber({ text: `Outer radius ${editor.unit.name}`, min: 0, update });
+	const [radiusRow3, radius3] = createRowParamNumber({ text: `Radial density (segments)`, min: 1, update, precision: 1 });
+	radius3.setNudge(1).setStep(1);
 
 	// zoneid
-	const zoneIdRow = new UIRow();
-	const zoneId = new UISelect().setWidth('150px').setFontSize('12px');
-	zoneId.onChange(update);
-	
-	zoneIdRow.add(new UIText(`Type`).setWidth('90px'));
-	zoneIdRow.add(zoneId);
+	const [zoneidRow, zoneid] = createRowSelect({ text: `Zone ID`, update });
 
 	//
 
@@ -58,22 +45,34 @@ export function DetectPanel(editor, section) {
 		switch(type){
 			case 'Mesh':
 				width.setValue(data.width);
+				width2.setValue(data.widthSegments);
 				height.setValue(data.height);
+				height2.setValue(data.heightSegments);
 				depth.setValue(data.depth);
+				depth2.setValue(data.depthSegments);
 				container.add(widthRow);
+				container.add(widthRow2);
 				container.add(heightRow);
+				container.add(heightRow2);
 				container.add(depthRow);
+				container.add(depthRow2);
 				break;
 			case 'Cyl':
-				height.setValue(data.height);
-				radius.setValue(data.radius);
-				container.add(heightRow);
-				container.add(radiusRow);
+				depth.setValue(data.depth);
+				depth2.setValue(data.depthSegments);
+				radius1.setValue(data.innerRadius);
+				radius2.setValue(data.outerRadius);
+				radius3.setValue(data.radialSegments);
+				container.add(depthRow);
+				container.add(depthRow2);
+				container.add(radiusRow1);
+				container.add(radiusRow2);
+				container.add(radiusRow3);
 				break;
 			case 'Zone':
 				updateOptions();
-				zoneId.setValue(data.zoneId);
-				container.add(zoneIdRow);
+				zoneid.setValue(data.zoneId);
+				container.add(zoneidRow);
 				break;
 			default:
 				break;
@@ -83,10 +82,15 @@ export function DetectPanel(editor, section) {
 	function update() {
 		editor.execute( new SetDetectGeometryCommand( editor, section, {
 			width: width.getValue(),
+			widthSegments: width2.getValue(),
 			height: height.getValue(),
+			heightSegments: height2.getValue(),
 			depth: depth.getValue(),
-			radius: radius.getValue(),
-			zoneId: parseInt(zoneId.getValue())
+			depthSegments: depth2.getValue(),
+			innerRadius: radius1.getValue(),
+			outerRadius: radius2.getValue(),
+			radialSegments: radius3.getValue(),
+			zoneId: parseInt(zoneid.getValue())
 		}));
 	}
 
@@ -98,7 +102,7 @@ export function DetectPanel(editor, section) {
 
 	function updateOptions(){
 		let options = editor.zonesManager.getZoneOptions();
-		zoneId.setOptions(options);
+		zoneid.setOptions(options);
 	}
 
 	editor.signals.zoneAdded.add(updateOptions);

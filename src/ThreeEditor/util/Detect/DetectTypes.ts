@@ -8,10 +8,11 @@ export type Mesh = {
 };
 
 export type Cyl = {
-    radius: number,
-    height: number,
+    outerRadius: number,
+    innerRadius: number,
+    depth: number,
     radialSegments: number,
-    heightSegments: number
+    depthSegments: number
 };
 
 export type Zone = {
@@ -20,28 +21,21 @@ export type Zone = {
 
 export type All = {};
 
-export type Any = {
-    width: number,
-    height: number,
-    depth: number,
-    radius: number,
-    widthSegments: number,
-    heightSegments: number,
-    depthSegments: number,
-    radialSegments: number,
-    zoneId: number
-};
+export type Any = Mesh&Cyl&Zone&All;
+
 export const DEFAULT_ANY:Any = {
     width: 1,
     height: 1,
     depth: 1,
-    radius: 1,
+    outerRadius: 1,
+    innerRadius: 0,
     widthSegments: 1,
     heightSegments: 1,
     depthSegments: 1,
     radialSegments: 10,
     zoneId: -1
-}
+};
+
 export type DETECT_TYPE = "Mesh" | "Cyl" | "Zone" | "All";
 
 export const detectOptions = {
@@ -61,10 +55,11 @@ export const TYPE_RECORD:Record<string,Record<string,boolean>> = {
         depthSegments: true
     },
     Cyl:{
-        radius: true,
-        height: true,
+        outerRadius: true,
+        innerRadius: true,
+        depth: true,
         radialSegments: true,
-        heightSegments: true
+        depthSegments: true
     },
     Zone:{
         zoneUuid: true
