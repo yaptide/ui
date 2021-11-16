@@ -1,9 +1,11 @@
-import { UIPanel, UIRow, UISelect, UIText } from './libs/ui.js';
+import { UIButton, UIDiv, UIPanel, UIRow, UISelect, UIText } from './libs/ui.js';
 import { SetZoneMaterialCommand } from './commands/Commands';
 import { SidebarMaterialBooleanProperty } from './Sidebar.Material.BooleanProperty.js';
 import { SidebarMaterialColorProperty } from './Sidebar.Material.ColorProperty.js';
 import { SidebarMaterialConstantProperty } from './Sidebar.Material.ConstantProperty.js';
 import { SidebarMaterialNumberProperty } from './Sidebar.Material.NumberProperty.js';
+import { createMaterialSelect } from '../util/UiUtils.js';
+
 
 
 // Code copied (and adjusted) from SidebarMaterial.js
@@ -19,28 +21,11 @@ export function SidebarZoneMaterial(editor) {
 
 	const container = new UIPanel();
 	container.setBorderTop('0');
-	container.setDisplay('none');
 	container.setPaddingTop('20px');
-
-	// Current material slot
-
-	const materialSlotRow = new UIRow();
-
-	materialSlotRow.add(new UIText(strings.getKey('sidebar/material/slot')).setWidth('90px'));
-
-	const materialSlotSelect = new UISelect().setWidth('170px').setFontSize('12px');
-	materialSlotSelect.setOptions({ 0: '' }).setValue(0);
-	materialSlotRow.add(materialSlotSelect);
-
-	container.add(materialSlotRow);
 
 	// SimulationMaterial type
 
-	const materialClassRow = new UIRow();
-	const materialClass = new UISelect().setWidth('150px').setFontSize('12px');
-
-	materialClassRow.add(new UIText(strings.getKey('sidebar/material/type')).setWidth('90px'));
-	materialClassRow.add(materialClass);
+	const [materialClassRow, materialClass, renderMaterialSelect] = createMaterialSelect(materialOptions, update);
 
 	container.add(materialClassRow);
 
@@ -77,23 +62,15 @@ export function SidebarZoneMaterial(editor) {
 	const materialTransparent = SidebarMaterialBooleanProperty(editor, 'transparent', strings.getKey('sidebar/material/transparent'));
 	container.add(materialTransparent);
 
+	// export JSON
+
+	const exportMaterials = new UIButton('Console Log Materials');
+	exportMaterials.onClick(() => {
+		console.log(editor.materialsManager.toJSON());
+	});
+	container.add(exportMaterials);
+
 	//
-
-	function setRowVisibility() {
-
-		const material = currentObject?.material;
-
-		if (Array.isArray(material)) {
-
-			materialSlotRow.setDisplay('');
-
-		} else {
-
-			materialSlotRow.setDisplay('none');
-
-		}
-
-	}
 
 	function refreshUI() {
 
@@ -101,39 +78,13 @@ export function SidebarZoneMaterial(editor) {
 
 		let { material } = currentObject;
 
-		if (Array.isArray(material)) {
-
-			const slotOptions = {};
-
-			currentMaterialSlot = Math.max(0, Math.min(material.length, currentMaterialSlot));
-
-			for (let i = 0; i < material.length; i++) {
-
-				slotOptions[i] = String(i + 1) + ': ' + material[i].name;
-
-			}
-
-			materialSlotSelect.setOptions(slotOptions).setValue(currentMaterialSlot);
-
-		}
-
 		material = editor.getObjectMaterial(currentObject, currentMaterialSlot);
 
-		materialClass.setOptions(materialOptions);
-
-		materialClass.setValue(material.name);
-
-		setRowVisibility();
+		renderMaterialSelect(material.name);
 
 	}
 
 	function update() {
-
-		const previousSelectedSlot = currentMaterialSlot;
-
-		currentMaterialSlot = parseInt(materialSlotSelect.getValue(),10);
-
-		if (currentMaterialSlot !== previousSelectedSlot) refreshUI();
 
 		const material = editor.getObjectMaterial(currentObject, currentMaterialSlot);
 
@@ -143,7 +94,7 @@ export function SidebarZoneMaterial(editor) {
 
 			if (material.name !== newMaterialName) {
 
-				editor.execute(new SetZoneMaterialCommand(editor, currentObject, newMaterialName), 'Zone aplied material: ' + newMaterialName);
+				editor.execute(new SetZoneMaterialCommand(editor, currentObject, newMaterialName), 'Zone applied material: ' + newMaterialName);
 
 				refreshUI();
 
@@ -152,9 +103,6 @@ export function SidebarZoneMaterial(editor) {
 
 
 	}
-	
-	materialSlotSelect.onChange(update)
-	materialClass.onChange(update);
 
 	// events
 

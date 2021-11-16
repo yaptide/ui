@@ -1,4 +1,6 @@
-import { UIRow, UINumber, UIText, UISelect, UIInput } from "../js/libs/ui.js";
+import ReactDOM from 'react-dom';
+import { UIRow, UINumber, UIText, UISelect, UIInput, UIElement, UIDiv } from "../js/libs/ui.js";
+import { MaterialSelect } from '../components/MaterialSelect/MaterialSelect';
 
 /**
  * @param {{
@@ -102,7 +104,7 @@ export function createRowParamNumber(params) {
 export function createRowText(params) {
     const {
         text = 'Label',
-        value = undefined
+        value
     } = params;
 
     const row = new UIRow();
@@ -125,7 +127,7 @@ export function createRowText(params) {
 export function createRowParamInput(params) {
     const {
         text = 'Label',
-        value = undefined,
+        value,
         update = () => { }
     } = params;
 
@@ -149,8 +151,8 @@ export function createRowParamInput(params) {
  */
 export function createRowSelect({
     text = 'Label',
-    options = undefined,
-    value = undefined,
+    options,
+    value,
     update
 }) {
 
@@ -161,4 +163,34 @@ export function createRowSelect({
     row.add(label);
     row.add(select);
     return [row, select, label];
+}
+
+/**
+ * @param {string[]} options
+ * @param {()=>void} update
+ * @return {[UIRow,UISelect,(value:string)=>void]} render function
+ */
+export function createMaterialSelect(materialOptions, update) {
+   
+    const row = new UIRow();
+    const container = new UIDiv().setWidth('150px').setDisplay('inline-block');
+    const input = new UISelect().setWidth('150px');
+    row.add(new UIText('Type').setWidth('90px'));
+    row.add(container);
+
+    const options = Object.values(materialOptions);
+
+    return [row, input, (value) => {
+        input.setOptions(materialOptions);
+        input.setValue(value);
+        ReactDOM.render(
+            (<MaterialSelect options={options} value={value} onChange={(e, newValue) => {
+                if (newValue) {
+                    input.setValue(newValue);
+                    update();
+                }
+            }} />),
+            container.dom
+        );
+    }]
 }

@@ -693,7 +693,7 @@ Editor.prototype = {
 
 		this.setScene(await loader.parseAsync(json.scene));
 
-		this.materialsManager.fromJSOM(json.materialsManager);
+		this.materialsManager.fromJSON(json.materialsManager);
 
 		// CSGManager must be loaded after scene and simulation materials		
 		this.zonesManager.fromJSON(json.zonesManager); // CSGManager must be loaded in order not to lose reference in components 
