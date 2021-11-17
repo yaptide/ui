@@ -336,7 +336,9 @@ function createCylindricalGeometry(data: DETECT.Cyl, matrix: THREE.Matrix4) {
     let BSP2 = CSG.CSG.fromMesh(cyl2);
     let BSP3 = CSG.CSG.fromMesh(cyl3);
     let newGeometry = CSG.CSG.toGeometry(
-        data.innerRadius ? BSP1.subtract(BSP3).union(BSP2.subtract(BSP3)) : BSP1.subtract(BSP2).union(BSP2),
+        data.innerRadius
+            ? BSP1.subtract(BSP3).union(BSP2.subtract(BSP3))
+            : BSP1.subtract(BSP2).union(BSP2),
         matrix
     );
     return newGeometry;

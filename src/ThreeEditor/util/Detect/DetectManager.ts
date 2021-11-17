@@ -82,13 +82,12 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 
     onObjectSelected = (object: THREE.Object3D) => {
         this.detectHelper.geometry.dispose();
-        if (isDetectSection(object)) {
+        if (isDetectSection(object) && this.editor.selected === object) {
             this.detectHelper.position.copy(object.position);
             this.detectHelper.geometry = object.geometry.clone();
         } else {
             this.detectHelper.geometry = new THREE.BufferGeometry();
         }
-        console.warn("Should be updated");
         this.signals.sceneGraphChanged.dispatch();
     };
 

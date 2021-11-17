@@ -17,7 +17,7 @@ _DEFAULT_CAMERA.position.set(0, 5, 10);
 _DEFAULT_CAMERA.lookAt(new THREE.Vector3());
 
 export function Editor(container) {
-	
+
 	this.signals = {
 
 		// script
@@ -457,7 +457,7 @@ Editor.prototype = {
 
 				} else {
 
-					console.error(`No helper for this object type`, object);
+					// No helper for this object type
 					return;
 
 				}

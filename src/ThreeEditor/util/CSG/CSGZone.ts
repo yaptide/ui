@@ -14,7 +14,7 @@ export interface ZoneJSON {
     uuid: string;
     name: string;
     unionOperations: OperationTupleJSON[][];
-    subbedObjects: Record<string,number>;
+    subscribedObjects: Record<string,number>;
     materialName: string;
     materialData: unknown;
 }
@@ -25,7 +25,7 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
     readonly notRotatable = true;
     readonly notScalable = true;
 
-    subbedObjects: CounterMap<string>;
+    subscribedObjects: CounterMap<string>;
     unionOperations: OperationTuple[][];
     needsUpdate: boolean = true;
     private signals: {
@@ -53,7 +53,7 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
         editor: Editor,
         name?: string,
         unionOperations?: OperationTuple[][],
-        subbedObjects?: CounterMap<string>,
+        subscribedObjects?: CounterMap<string>,
         uuid?: string,
         materialName?: string
     ) {
@@ -66,7 +66,7 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
         this.material = editor.materialsManager.materials[materialName ?? ""];
         this.unionOperations = unionOperations ?? [];
         // If operations are specified, we have to populate set of subscribed UUID's
-        this.subbedObjects = subbedObjects ?? this.populateSubscribedUuid(this.unionOperations);
+        this.subscribedObjects = subscribedObjects ?? this.populateSubscribedUuid(this.unionOperations);
 
         // If operations are specified, we have to generate fist geometry manually.
         unionOperations && this.updateGeometry();
@@ -87,7 +87,7 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
             this.editor,
             this.name,
             this.unionOperations,
-            this.subbedObjects
+            this.subscribedObjects
         ).copy(this, recursive) as this;
 
         return clonedZone;
@@ -147,13 +147,13 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
 
     updateUnion(unionIndex: number, operations: OperationTuple[]): void {
         this.unionOperations[unionIndex].forEach((e) => {
-            this.subbedObjects.decrement(e.object.uuid);
+            this.subscribedObjects.decrement(e.object.uuid);
         });
 
         this.unionOperations[unionIndex] = [...operations];
 
         this.unionOperations[unionIndex].forEach((e) => {
-            this.subbedObjects.increment(e.object.uuid);
+            this.subscribedObjects.increment(e.object.uuid);
         });
 
         this.announceChangedState();
@@ -171,13 +171,13 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
 
     addOperation(unionIndex: number, operation: OperationTuple): void {
         this.unionOperations[unionIndex].push(operation);
-        this.subbedObjects.increment(operation.object.uuid);
+        this.subscribedObjects.increment(operation.object.uuid);
 
         this.announceChangedState();
     }
 
     removeOperation(unionIndex: number, operationIndex: number): void {
-        this.subbedObjects.decrement(
+        this.subscribedObjects.decrement(
             this.unionOperations[unionIndex][operationIndex].object.uuid
         );
 
@@ -187,13 +187,13 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
     }
 
     handleChange(object: THREE.Object3D): void {
-        if (!this.subbedObjects.has(object.uuid)) return;
+        if (!this.subscribedObjects.has(object.uuid)) return;
 
         this.announceChangedState();
     }
 
     handleRemoved(object: THREE.Object3D): void {
-        if (!this.subbedObjects.has(object.uuid)) return;
+        if (!this.subscribedObjects.has(object.uuid)) return;
 
         this.unionOperations.forEach((operations, unionIndex) => {
             operations.forEach((operation, index) => {
@@ -235,7 +235,7 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
             uuid: this.uuid,
             name: this.name,
             unionOperations,
-            subbedObjects: this.subbedObjects.toJSON(),
+            subscribedObjects: this.subscribedObjects.toJSON(),
             materialName: this.getSimulationMaterial().name,
             materialData: this.getSimulationMaterial().simulationData
         };
@@ -251,7 +251,7 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
             union.map((operation) => OperationTuple.fromJSON(editor, operation))
         );
 
-        const subscribedObjectsUuid = new CounterMap().fromJSON(data.subbedObjects);       
+        const subscribedObjectsUuid = new CounterMap().fromJSON(data.subscribedObjects);       
 
         const zone = new Zone(
             editor,

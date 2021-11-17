@@ -9,6 +9,7 @@ export { MultiCmdsCommand } from './MultiCmdsCommand.js';
 export { RemoveObjectCommand } from './RemoveObjectCommand.js';
 export { RemoveScriptCommand } from './RemoveScriptCommand.js';
 export { RemoveZoneCommand } from './RemoveZoneCommand.js';
+export { RemoveDetectCommand } from './RemoveDetectCommand.js';
 export { SetColorCommand } from './SetColorCommand.js';
 export { SetDetectGeometryCommand } from './SetDetectGeometryCommand';
 export { SetDetectTypeCommand } from './SetDetectTypeCommand';

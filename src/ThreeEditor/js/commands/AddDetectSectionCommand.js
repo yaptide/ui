@@ -1,16 +1,16 @@
 import { Command } from '../Command.js';
-import { ObjectLoader } from 'three';
+import { DetectSection } from '../../util/Detect/DetectSection'
 
 /**
  * @param editor Editor
- * @param object THREE.Object3D
+ * @param object DetectSection
  * @constructor
  */
 class AddDetectSectionCommand extends Command {
 
-	constructor( editor, section ) {
+	constructor(editor, section) {
 
-		super( editor );
+		super(editor);
 
 		this.type = 'AddDetectGeometryCommand';
 
@@ -23,23 +23,23 @@ class AddDetectSectionCommand extends Command {
 
 	execute() {
 
-		if(this.section) this.editor.detectManager.addSection( this.section );
+		if (this.section) this.editor.detectManager.addSection(this.section);
 		else this.section = this.editor.detectManager.createSection();
 
-		this.editor.select( this.section );
+		this.editor.select(this.section);
 
 	}
 
 	undo() {
 
-		this.editor.removeObject( this.section );
+		this.editor.detectManager.removeSection(this.section);
 		this.editor.deselect();
 
 	}
 
 	toJSON() {
 
-		let output = super.toJSON( this );
+		const output = super.toJSON(this);
 
 		output.object = this.section.toJSON();
 
@@ -47,16 +47,15 @@ class AddDetectSectionCommand extends Command {
 
 	}
 
-	fromJSON( json ) {
+	fromJSON(json) {
 
-		super.fromJSON( json );
+		super.fromJSON(json);
 
-		this.section = this.editor.objectByUuid( json.object.object.uuid );
+		this.section = this.editor.objectByUuid(json.object.object.uuid);
 
-		if ( this.section === undefined ) {
-
-			const loader = new ObjectLoader();
-			this.section = loader.parse( json.object );
+		if (this.section === undefined) {
+			
+			this.section = DetectSection.fromJSON( this.editor, json.object );
 
 		}
 

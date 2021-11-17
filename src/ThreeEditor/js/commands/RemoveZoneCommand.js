@@ -1,10 +1,10 @@
 import { Command } from '../Command.js';
 
-import { Zone } from '../../util/CSG/CSGZone';
+import * as CSG from '../../util/CSG/CSG';
 
 /**
  * @param editor Editor
- * @param zone CSGZone
+ * @param zone CSG.Zone
  * @constructor
  */
 class RemoveZoneCommand extends Command {
@@ -52,7 +52,7 @@ class RemoveZoneCommand extends Command {
 
 		if ( this.zone === undefined ) {
 			
-			this.zone = Zone.fromJSON( this.editor, json.object );
+			this.zone = CSG.Zone.fromJSON( this.editor, json.object );
 
 		}
 

@@ -70,7 +70,7 @@ function SidebarGeometry(editor) {
 
 		if (isZone(object)) {
 			parameters.clear();
-			let zonePanel = new UISpan();
+			const zonePanel = new UISpan();
 			zonePanel.setId("zonePanel");
 			parameters.add(zonePanel);
 			geometryType.setValue(object.type);
@@ -160,11 +160,7 @@ function SidebarGeometry(editor) {
 
 		currentGeometryType = null;
 		vertexNormalsButton.setDisplay('block');
-		build()
-		// (isZone(editor.selected)
-		// 	? buildZonesManager
-		// 	: build
-		// )();
+		build();
 
 	});
 

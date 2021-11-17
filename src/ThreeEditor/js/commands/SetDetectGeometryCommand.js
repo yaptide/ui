@@ -2,11 +2,10 @@ import { Command } from '../Command.js';
 
 /**
  * @param editor Editor
- * @param object THREE.Object3D
+ * @param object DetectSection
  * @param newData DETECT.Any
  * @constructor
  */
-
 class SetDetectGeometryCommand extends Command {
 
     constructor(editor, object, newData) {
@@ -19,7 +18,6 @@ class SetDetectGeometryCommand extends Command {
 
         this.object = object;
         this.oldData = object.getData();
-        console.log(newData,this.oldData);
         this.newData = {};
         Object.entries(object.getData()).forEach(([key,_]) => {
             this.newData[key] = newData[key] ?? this.oldData[key];
@@ -37,7 +35,7 @@ class SetDetectGeometryCommand extends Command {
     }
 
     undo() {
-        let tmp = this.object.getData();
+        const tmp = this.object.getData();
         this.object.setData(this.oldData)
         this.newData = this.object.getData();
         this.oldData = tmp;

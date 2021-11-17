@@ -1,9 +1,8 @@
 import { Button } from "@mui/material";
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Editor } from "../../js/Editor";
-import { OperationTuple } from "../../util/CSG/CSGOperationTuple";
-import * as CSG from "../../util/CSG/CSG";
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { parseZone } from "../../../util/parseZone/parseZone";
+import { Editor } from "../../js/Editor";
+import * as CSG from "../../util/CSG/CSG";
 import BooleanAlgebraRow, { AlgebraRow } from "./BooleanAlgebraRow";
 import "./zoneManagerPanel.css";
 
@@ -20,14 +19,14 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
     const zoneRef = useRef<CSG.Zone>();
 
     const parseAlgebraRow = (row: AlgebraRow) => {
-        let operations: OperationTuple[] = [];
+        const operations: CSG.OperationTuple[] = [];
 
         if (row.geometriesId[0]) {
             const object = props.editor.scene.getObjectById(row.geometriesId[0]);
 
             if (!object) throw new Error("object is undefined form props.editor.scene.getObjectById(row.geometries[0])");
 
-            operations.push(new OperationTuple(object, 'union'));
+            operations.push(new CSG.OperationTuple(object, 'union'));
         }
 
         for (let i = 0; i < row.operations.length; i++) {
@@ -38,7 +37,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 
                 if (!object) throw new Error("object is undefined form props.editor.scene.getObjectById(geometryID)");
 
-                operations.push(new OperationTuple(object, operation));
+                operations.push(new CSG.OperationTuple(object, operation));
             }
         }
 
@@ -62,7 +61,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
         setRows((prev) => [...prev, { geometriesId: [], operations: [] }]);
         zoneRef.current?.addUnion();
     };
-    
+
     const handleParse = () => {
         const simulationData = props?.zone?.getSimulationMaterial().simulationData;
         parseZone(rows, simulationData);

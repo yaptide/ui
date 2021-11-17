@@ -19,15 +19,6 @@ function MenubarAdd(editor) {
 	options.setClass('options');
 	container.add(options);
 
-
-	// Group
-	options.add(createOption('option', strings.getKey('menubar/add/group'), () => {
-
-		const mesh = new THREE.Group();
-		mesh.name = 'Group';
-		editor.execute(new AddObjectCommand(editor, mesh));
-	})).add(new UIHorizontalRule());
-
 	// YAPTIDE zones
 	options.add(createOption('option', 'Zone', () => {
 
