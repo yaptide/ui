@@ -29,10 +29,10 @@ export const DEFAULT_ANY:Any = {
     depth: 1,
     outerRadius: 1,
     innerRadius: 0,
-    widthSegments: 1,
-    heightSegments: 1,
-    depthSegments: 1,
-    radialSegments: 10,
+    widthSegments: 1000,
+    heightSegments: 1000,
+    depthSegments: 1000,
+    radialSegments: 1,
     zoneId: -1
 };
 

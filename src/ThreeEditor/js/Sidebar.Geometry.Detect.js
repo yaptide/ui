@@ -9,31 +9,89 @@ export function DetectPanel(editor, section) {
 	let data = section.detectGeometryData;
 
 	// detect type
-	const [sectionTypeRow, sectionType] = createRowSelect({ text: `Type`, update: updateType, options: detectOptions });
+	const [sectionTypeRow, sectionType] = createRowSelect({ 
+		text: `Type`, 
+		update: updateType, 
+		options: detectOptions,
+		value: type
+	});
 
 	// width 
-	const [widthRow, width] = createRowParamNumber({ text: `X side length (width) ${editor.unit.name}`, min: 0, update });
-	const [widthRow2, width2] = createRowParamNumber({ text: `X side density (segments)`, min: 1, update, precision: 1 });
+	const [widthRow, width] = createRowParamNumber({ 
+		text: `X side length (width) ${editor.unit.name}`, 
+		min: 0, 
+		update,
+		value: data.width
+	});
+	const [widthRow2, width2] = createRowParamNumber({ 
+		text: `number of bins along X axis`, 
+		min: 1, 
+		update, 
+		precision: 0,
+		value: data.widthSegments
+	});
 	width2.setNudge(1).setStep(1);
 
 	// height
-	const [heightRow, height] = createRowParamNumber({ text: `Y side length (height) ${editor.unit.name}`, min: 0, update });
-	const [heightRow2, height2] = createRowParamNumber({ text: `Y side density (segments)`, min: 1, update, precision: 1 });
+	const [heightRow, height] = createRowParamNumber({ 
+		text: `Y side length (height) ${editor.unit.name}`, 
+		min: 0, 
+		update,
+		value: data.height
+	});
+	const [heightRow2, height2] = createRowParamNumber({ 
+		text: `number of bins along Y axis`, 
+		min: 1, 
+		update, 
+		precision: 0,
+		value: data.heightSegments
+	});
 	height2.setNudge(1).setStep(1);
 
 	// depth
-	const [depthRow, depth] = createRowParamNumber({ text: `Z side length (depth) ${editor.unit.name}`, min: 0, update });
-	const [depthRow2, depth2] = createRowParamNumber({ text: `Z side density (segments)`, min: 1, update, precision: 1 });
+	const [depthRow, depth] = createRowParamNumber({ 
+		text: `Z side length (depth) ${editor.unit.name}`, 
+		min: 0, 
+		update,
+		value: data.depth
+	});
+	const [depthRow2, depth2] = createRowParamNumber({ 
+		text: `number of bins along Z axis`, 
+		min: 1, 
+		update, 
+		precision: 0,
+		value: data.depthSegments
+	});
 	depth2.setNudge(1).setStep(1);
 
 	// radius
-	const [radiusRow1, radius1] = createRowParamNumber({ text: `Inner radius ${editor.unit.name}`, min: 0, update });
-	const [radiusRow2, radius2] = createRowParamNumber({ text: `Outer radius ${editor.unit.name}`, min: 0, update });
-	const [radiusRow3, radius3] = createRowParamNumber({ text: `Radial density (segments)`, min: 1, update, precision: 1 });
+	const [radiusRow1, radius1] = createRowParamNumber({ 
+		text: `Inner radius ${editor.unit.name}`, 
+		min: 0,
+		update, 
+		value: data.radius
+	});
+	const [radiusRow2, radius2] = createRowParamNumber({ 
+		text: `Outer radius ${editor.unit.name}`, 
+		min: 0.001, 
+		update,
+		value: data.radius
+	});
+	const [radiusRow3, radius3] = createRowParamNumber({ 
+		text: `Number of bins along radial axis`, 
+		min: 1, 
+		update, 
+		precision: 0,
+		value: data.radiusSegments
+	});
 	radius3.setNudge(1).setStep(1);
 
 	// zoneid
-	const [zoneidRow, zoneid] = createRowSelect({ text: `Zone ID`, update });
+	const [zoneidRow, zoneid] = createRowSelect({ 
+		text: `Zone ID`, 
+		update,
+		value: editor.zonesManager.getZoneOptions()
+	});
 
 	//
 
@@ -92,6 +150,7 @@ export function DetectPanel(editor, section) {
 			radialSegments: radius3.getValue(),
 			zoneId: parseInt(zoneid.getValue())
 		}));
+		refreshUI();
 	}
 
 	function updateType() {
@@ -107,7 +166,8 @@ export function DetectPanel(editor, section) {
 
 	editor.signals.zoneAdded.add(updateOptions);
 	editor.signals.zoneRemoved.add(updateOptions);
-
+	editor.signals.objectSelected.add(refreshUI);
+	
 	refreshUI();
 
 	return container;

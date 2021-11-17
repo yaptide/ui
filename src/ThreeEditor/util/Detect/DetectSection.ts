@@ -30,7 +30,7 @@ export class DetectSection extends THREE.Points implements ISimulationObject {
 
     detectGeometryData: DETECT.Any;
     detectGeometryType: DETECT.DETECT_TYPE;
-    static maxDisplayDensity: number = 3;
+    static maxDisplayDensity: number = 4;
     autoSplitGrid: boolean = true;
 
     private signals: {
@@ -93,8 +93,6 @@ export class DetectSection extends THREE.Points implements ISimulationObject {
             } else if (p === "geometry") {
                 this.geometry.computeBoundingSphere();
                 this.updateMatrixWorld(true);
-                this.signals.detectGeometryChanged.dispatch(this.proxy);
-                this.signals.detectGeometryChanged.dispatch(this.proxy);
             }
             return result;
         },
@@ -147,12 +145,16 @@ export class DetectSection extends THREE.Points implements ISimulationObject {
             default:
                 throw new Error(`${type} is not a valid Detect Geometry type`);
         }
-    return geometry;
+        return geometry;
     }
 
     constructor(
         editor: Editor,
-        { data = DETECT.DEFAULT_ANY, type = "Mesh", position=[0,0,0] }: DetectSectionArgs
+        {
+            data = DETECT.DEFAULT_ANY,
+            type = "Mesh",
+            position = [0, 0, 0],
+        }: DetectSectionArgs
     ) {
         super();
         this.editor = editor;
@@ -334,7 +336,7 @@ function createCylindricalGeometry(data: DETECT.Cyl, matrix: THREE.Matrix4) {
     let BSP2 = CSG.CSG.fromMesh(cyl2);
     let BSP3 = CSG.CSG.fromMesh(cyl3);
     let newGeometry = CSG.CSG.toGeometry(
-        BSP1.subtract(BSP3).union(BSP2.subtract(BSP3)),
+        data.innerRadius ? BSP1.subtract(BSP3).union(BSP2.subtract(BSP3)) : BSP1.subtract(BSP2).union(BSP2),
         matrix
     );
     return newGeometry;

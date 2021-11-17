@@ -22,7 +22,7 @@ class SetDetectGeometryCommand extends Command {
         console.log(newData,this.oldData);
         this.newData = {};
         Object.entries(object.getData()).forEach(([key,_]) => {
-            this.newData[key] = newData[key] || this.oldData[key];
+            this.newData[key] = newData[key] ?? this.oldData[key];
         });
     }
 
@@ -31,6 +31,7 @@ class SetDetectGeometryCommand extends Command {
         this.object.setData(this.newData)
 
         this.editor.signals.geometryChanged.dispatch(this.object);
+        this.editor.signals.detectGeometryChanged.dispatch(this.object);
         this.editor.signals.sceneGraphChanged.dispatch();
 
     }
@@ -42,6 +43,7 @@ class SetDetectGeometryCommand extends Command {
         this.oldData = tmp;
 
         this.editor.signals.geometryChanged.dispatch(this.object);
+        this.editor.signals.detectGeometryChanged.dispatch(this.object);
         this.editor.signals.sceneGraphChanged.dispatch();
     }
 

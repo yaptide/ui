@@ -88,6 +88,7 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
         } else {
             this.detectHelper.geometry = new THREE.BufferGeometry();
         }
+        console.warn("Should be updated");
         this.signals.sceneGraphChanged.dispatch();
     };
 
