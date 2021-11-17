@@ -1,5 +1,5 @@
 import { UISpan } from './libs/ui.js';
-import { detectOptions } from '../util/Detect/DetectTypes';
+import { DETECT_OPTIONS } from '../util/Detect/DetectTypes';
 import { SetDetectGeometryCommand, SetDetectTypeCommand } from './commands/Commands';
 import { createRowParamNumber, createRowSelect } from '../util/UiUtils';
 
@@ -12,7 +12,7 @@ export function DetectPanel(editor, section) {
 	const [sectionTypeRow, sectionType] = createRowSelect({ 
 		text: `Type`, 
 		update: updateType, 
-		options: detectOptions,
+		options: DETECT_OPTIONS,
 		value: type
 	});
 
