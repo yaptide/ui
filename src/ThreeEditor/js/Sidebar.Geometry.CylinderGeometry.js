@@ -24,7 +24,7 @@ function GeometryParametersPanel(editor, object) {
 	// height
 
 	const [heightRow, height] = createRowParamNumber({
-		update, value: parameters.radiusTop,
+		update, value: parameters.height, min: 0,
 		text: `${strings.getKey('sidebar/geometry/cylinder_geometry/height')} ${editor.unit.name}`
 	});
 	container.add(heightRow);
