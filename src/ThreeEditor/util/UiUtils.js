@@ -166,25 +166,25 @@ export function createRowSelect({
 }
 
 /**
- * @param {string[]} options
+ * @param {MaterialsManager} materialsManager
  * @param {()=>void} update
  * @return {[UIRow,UISelect,(value:string)=>void]} render function
  */
-export function createMaterialSelect(materialOptions, update) {
-   
+export function createMaterialSelect(materialsManager, update) {
+
+    const { materialOptions, materials } = materialsManager;
+
     const row = new UIRow();
     const container = new UIDiv().setWidth('150px').setDisplay('inline-block');
     const input = new UISelect().setWidth('150px');
     row.add(new UIText('Type').setWidth('90px'));
     row.add(container);
 
-    const options = Object.values(materialOptions);
-
     return [row, input, (value) => {
         input.setOptions(materialOptions);
         input.setValue(value);
         ReactDOM.render(
-            (<MaterialSelect options={options} value={value} onChange={(e, newValue) => {
+            (<MaterialSelect materials={materials} value={value} onChange={(e, newValue) => {
                 if (newValue) {
                     input.setValue(newValue);
                     update();

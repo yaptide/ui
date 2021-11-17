@@ -12,8 +12,7 @@ import { createMaterialSelect } from '../util/UiUtils.js';
 // https://github.com/mrdoob/three.js/blob/r132/editor/js/Sidebar.Material.js
 export function SidebarZoneMaterial(editor) {
 
-	const { signals, strings } = editor;
-	const { materialOptions } = editor.materialsManager;
+	const { signals, strings } = editor;	
 
 	let currentObject = null;
 
@@ -25,7 +24,7 @@ export function SidebarZoneMaterial(editor) {
 
 	// SimulationMaterial type
 
-	const [materialClassRow, materialClass, renderMaterialSelect] = createMaterialSelect(materialOptions, update);
+	const [materialClassRow, materialClass, renderMaterialSelect] = createMaterialSelect( editor.materialsManager, update);
 
 	container.add(materialClassRow);
 

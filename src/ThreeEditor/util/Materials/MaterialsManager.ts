@@ -24,9 +24,9 @@ export default class MaterialsManager {
         this.prefabMaterials = materials;
         this.materialOptions = options;
         this.customMaterials = {};
+
         const materialsHandler = {
             get: (target: Record<string, SimulationMaterial>, prop: string) => {
-
                 return (prop in target
                     ? target[prop]
                     : (prop in this.prefabMaterials
@@ -38,12 +38,28 @@ export default class MaterialsManager {
                 Reflect.set(this.materialOptions, prop, prop);
                 return Reflect.set(target, prop, value);
             },
+            ownKeys: (target: Record<string, SimulationMaterial>) => {
+                
+                return Array.from(new Set([...Reflect.ownKeys(target), ...Reflect.ownKeys(this.prefabMaterials)]));
+            },
+            has: (target: Record<string, SimulationMaterial>, key: string) => {
+                return key in target || key in this.prefabMaterials;
+            },
+            getOwnPropertyDescriptor(target: Record<string, SimulationMaterial>, key: string) {
+                return {
+                    value: this.get(target, key),
+                    enumerable: true,
+                    configurable: true
+                };
+            }
         }
+
         this.materials = new Proxy(this.customMaterials, materialsHandler)
     }
 
+
     getDefaultMaterial() {
-        const defaultName = Object.keys(this.prefabMaterials)[0];
+        const defaultName = 'AIR, DRY (NEAR SEA LEVEL)';
         return defaultName in this.customMaterials
             ? this.customMaterials[defaultName]
             : this.prefabMaterials[defaultName];
