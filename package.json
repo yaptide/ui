@@ -27,7 +27,7 @@
     "split-grid": "^1.0.11",
     "three": "^0.134.0",
     "throttle-debounce": "^3.0.1",
-    "typescript": "^4.4.4",
+    "typescript": "^4.5.2",
     "web-vitals": "^2.1.2"
   },
   "scripts": {
