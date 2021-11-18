@@ -85,7 +85,7 @@ function SidebarScene(editor) {
 	function getObjectType(object) {
 		
 		if (object.isDetectSection) return 'Line';
-		if (object.isCSGZone) return 'Points';
+		if (object.isZone) return 'Points';
 		if (object.isZonesContainer) return 'Camera';
 		if (object.isDetectSectionsContainer) return 'Line'; 
 		 //TODO: Add support to different keywords in css classes  # skipcq: JS-0099
@@ -380,7 +380,7 @@ function SidebarScene(editor) {
 	signals.objectSelected.add((object) => {
 		if (ignoreObjectSelectedSignal === true) return;
 
-		if (object !== null && object.parent !== null && !object.parent.isCSGZone) {
+		if (object !== null && object.parent !== null && !object.parent?.isZone) {
 
 			let needsRefresh = false;
 			let nextParent = object.parent;

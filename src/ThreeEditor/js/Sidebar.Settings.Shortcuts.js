@@ -1,4 +1,4 @@
-import { RemoveObjectCommand, RemoveZoneCommand } from './commands/Commands';
+import { RemoveObjectCommand, RemoveDetectCommand, RemoveZoneCommand } from './commands/Commands';
 import { UIInput, UIPanel, UIRow, UIText } from './libs/ui.js';
 
 
@@ -104,8 +104,10 @@ function SidebarSettingsShortcuts(editor) {
 
 				const parent = object.parent;
 				if (parent !== null) {
-					if (object?.isCSGZone)
+					if (object?.isZone)
 						editor.execute(new RemoveZoneCommand(editor, object));
+					else if (object?.isDetectSection)
+						editor.execute(new RemoveDetectCommand(editor, object));
 					else
 						editor.execute(new RemoveObjectCommand(editor, object));
 				}

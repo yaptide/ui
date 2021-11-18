@@ -173,7 +173,7 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
         const jsonObject: BeamJSON = {
             position: this.position.toArray(),
             direction: this.direction.toArray(),
-            energy: this.energy,
+            energy: this.energy
         };
 
         return jsonObject;

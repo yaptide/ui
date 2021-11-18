@@ -18,13 +18,13 @@ export class SetDetectTypeCommand extends Command {
         this.updatable = true;
 
         this.object = object;
-        this.oldType = object.detectGeometryType;
+        this.oldType = object.detectType;
         this.newType = newType;
     }
 
     execute() {
 
-        this.object.detectGeometryType = this.newType;
+        this.object.detectType = this.newType;
 
         this.editor.signals.geometryChanged.dispatch(this.object);
         this.editor.signals.sceneGraphChanged.dispatch();
@@ -32,8 +32,8 @@ export class SetDetectTypeCommand extends Command {
     }
 
     undo() {
-        let tmp = this.object.detectGeometryType;
-        this.object.detectGeometryType = this.oldType;
+        let tmp = this.object.detectType;
+        this.object.detectType = this.oldType;
         this.newType = this.oldType;
         this.oldType = tmp;
 

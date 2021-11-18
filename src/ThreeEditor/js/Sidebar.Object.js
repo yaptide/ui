@@ -505,7 +505,7 @@ function SidebarObject(editor) {
 
 			} catch (exception) {
 
-				console.warn(exception);
+				console.error(exception);
 
 			}
 
@@ -733,7 +733,7 @@ function SidebarObject(editor) {
 
 		} catch (error) {
 
-			console.log(error);
+			console.error(error);
 
 		}
 

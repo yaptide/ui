@@ -39,7 +39,7 @@ class AddZoneCommand extends Command {
 
 	toJSON() {
 
-		let output = super.toJSON(this);
+		const output = super.toJSON(this);
 
 		output.zone = this.zone.toJSON();
 

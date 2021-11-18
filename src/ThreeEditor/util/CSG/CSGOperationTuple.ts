@@ -24,7 +24,7 @@ export class OperationTuple {
     }
 
     toJSON() {
-        let jsonObject: OperationTupleJSON = {
+        const jsonObject: OperationTupleJSON = {
             mode: this.mode,
             objectUuid: this.object.uuid
         };
@@ -32,8 +32,8 @@ export class OperationTuple {
     }
 
     static fromJSON(editor: Editor, data: OperationTupleJSON) {
-        let { mode, objectUuid } = data;
-        let object = editor.scene.getObjectByProperty('uuid', objectUuid);
+        const { mode, objectUuid } = data;
+        const object = editor.scene.getObjectByProperty('uuid', objectUuid);
 
         if (!object)
             throw new Error('Can not found object on scene: (uuid)' + objectUuid);

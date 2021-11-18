@@ -77,7 +77,6 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
         this.signals = editor.signals;
         this.signals.objectSelected.add(this.onObjectSelected);
         this.signals.detectGeometryChanged.add(this.onObjectSelected);
-        console.log(this);
     }
 
     onObjectSelected = (object: THREE.Object3D) => {
@@ -92,7 +91,7 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
     };
 
     createSection(): DetectSection {
-        let section = new DetectSection(this.editor, {});
+        const section = new DetectSection(this.editor, {});
         this.addSection(section);
         return section;
     }
@@ -113,7 +112,7 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
     }
 
     fromJSON(data: DetectManagerJSON): void {
-        if (!data) console.warn("Passed empty data to load CSGManager", data);
+        if (!data) console.error("Passed empty data to load CSGManager", data);
 
         this.uuid = data.uuid;
 
@@ -124,11 +123,11 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
     }
 
     toJSON(): DetectManagerJSON {
-        let detectSections = this.detectsContainer.children.map((section) =>
+        const detectSections = this.detectsContainer.children.map((section) =>
             section.toJSON()
         );
-        let uuid = this.uuid;
-        let name = this.name;
+        const uuid = this.uuid;
+        const name = this.name;
         return {
             uuid,
             name,

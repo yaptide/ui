@@ -1,5 +1,17 @@
-import { OperationTuple } from './CSGOperationTuple';
-import { ZoneManager, ZoneContainer } from './CSGZoneManager';
-import { Zone } from './CSGZone';
 import CSG from "../../js/libs/csg/three-csg";
-export { OperationTuple, ZoneContainer, ZoneManager, Zone, CSG };
+import { isOperationTuple, OperationTuple } from "./CSGOperationTuple";
+import { isZone, Zone } from "./CSGZone";
+import { isZoneManager, isZonesContainer, ZoneManager, ZonesContainer } from "./CSGZoneManager";
+
+export {
+    OperationTuple,
+    isOperationTuple,
+    ZoneManager,
+    isZoneManager,
+    ZonesContainer,
+    isZonesContainer,
+    Zone,
+    isZone,
+    CSG,
+};
+

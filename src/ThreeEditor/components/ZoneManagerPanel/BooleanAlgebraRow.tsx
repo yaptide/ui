@@ -23,7 +23,7 @@ export default function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
 
     const pushGeometry = (index: number) => (id: number) => {
         setAlgebraRow((prev) => {
-            let newRow: AlgebraRow = { geometriesId: [...prev.geometriesId], operations: prev.operations };
+            const newRow: AlgebraRow = { geometriesId: [...prev.geometriesId], operations: prev.operations };
 
             newRow.geometriesId.splice(index, 1, id);
 
@@ -35,7 +35,7 @@ export default function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
 
     const pushOperation = (index: number) => (op: Operation) => {
         setAlgebraRow((prev) => {
-            let newRow: AlgebraRow = { geometriesId: prev.geometriesId, operations: [...prev.operations] };
+            const newRow: AlgebraRow = { geometriesId: prev.geometriesId, operations: [...prev.operations] };
 
             newRow.operations.splice(index, 1, op);
 
@@ -48,7 +48,7 @@ export default function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
 
     const removeOperation = (id: number) => () => {
         setAlgebraRow((prev) => {
-            let newRow: AlgebraRow = {
+            const newRow: AlgebraRow = {
                 geometriesId: [
                     ...prev.geometriesId.slice(0, id + 1)
                 ],

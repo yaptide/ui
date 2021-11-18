@@ -25,7 +25,7 @@ function Sidebar(editor) {
 	container.select('scene');
 
 	//Select Scene if zone is created
-	signals.objectAdded.add(object => object?.isCSGZone && container.select('scene'));
+	signals.objectAdded.add(object => object?.isZone && container.select('scene'));
 
 	return container;
 

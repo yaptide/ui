@@ -40,7 +40,7 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
         zoneEmpty: Signal<Zone>;
         CSGManagerStateChanged: Signal;
     };
-    readonly isCSGZone: true = true;
+    readonly isZone: true = true;
 
     worker?: Comlink.Remote<IZoneWorker>;
     readonly debouncedUpdatePreview = debounce(200, false, () =>

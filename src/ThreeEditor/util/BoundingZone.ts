@@ -34,13 +34,14 @@ interface BoundingZoneParams {
 }
 
 export class BoundingZone extends THREE.Object3D implements ISimulationObject {
+
     readonly notRemovable = true;
-    readonly notMovable!: never;
+    get notMovable() { // custom get function to conditionally return notMoveable property;
+        return this.autoCalculate && this.canCalculate();
+    }
     readonly notRotatable = true;
     readonly notScalable = true;
-
-    private proxy: BoundingZone;  // use proxy to conditionally return notMoveable property;
-    
+        
     editor: Editor;
     box: THREE.Box3;
     marginMultiplier: number;
@@ -58,20 +59,6 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
         this.calculate()
     );
 
-    private overrideHandler = {
-        get: (target: BoundingZone, p: keyof BoundingZone) => {
-            let result:unknown;
-                switch(p){
-                    case "notMovable":
-                        result = this.autoCalculate && this.canCalculate();
-                        break;
-                    default:
-                        result = Reflect.get(target, p);
-                }
-            return result;
-        },
-    };
-
     constructor(editor: Editor, { box, color = 0xff0000, marginMultiplier = 1.1 }: BoundingZoneParams = {}) {
         super();
         this.type = 'BoundingZone';
@@ -83,7 +70,7 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
         this.material = _material;
 
         // watch for changes on material color 
-        const overrideHandler = {
+        const materialColorHandler = {
             set: (target: Color, prop: keyof Color, value: unknown) => {
 
                 Reflect.set((this.boxHelper.material as LineBasicMaterial).color, prop, value);
@@ -92,7 +79,7 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
             },
         };
 
-        const proxyColor = new Proxy(new Color(color), overrideHandler);
+        const proxyColor = new Proxy(new Color(color), materialColorHandler);
         this.material.color = proxyColor;
 
         this.box = box ?? new THREE.Box3(new THREE.Vector3(), new THREE.Vector3());
@@ -112,11 +99,9 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
         }
         this.editor.signals.objectChanged.add((object: Object3D) => handleSignal(object));
         this.editor.signals.sceneGraphChanged.add((object: Object3D) => handleSignal(object));
-
-        this.proxy = new Proxy(this, this.overrideHandler);
-
-        return this.proxy;
     }
+
+
 
 
     get geometryType() {
@@ -129,6 +114,8 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
         this.getHelper(value).visible = true;
         this.editor.signals.objectChanged.dispatch(this);
     }
+
+
 
     private getAllHelpers() {
         return [this.boxHelper, this.sphereMesh, this.cylinderMesh];
@@ -178,8 +165,8 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
     }
 
     makeCubeFromBox(): void  {
-        let size = this.box.getSize(new Vector3());
-        let maxSize = Math.max(size.x, size.y, size.z);
+        const size = this.box.getSize(new Vector3());
+        const maxSize = Math.max(size.x, size.y, size.z);
 
         size.setScalar(maxSize);
 
@@ -187,7 +174,7 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
     }
 
     addSafetyMarginToBox(): void  {
-        let size = this.box.getSize(new Vector3());
+        const size = this.box.getSize(new Vector3());
 
         size.multiplyScalar(this.marginMultiplier);
 
@@ -210,7 +197,7 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
 
     toJSON() {
 
-        let jsonObject: BoundingZoneJSON = {
+        const jsonObject: BoundingZoneJSON = {
             center: this.box.getCenter(new Vector3()),
             size: this.box.getSize(new Vector3()),
             type: this.type,
@@ -224,10 +211,10 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
     }
 
     static fromJSON(editor: Editor, data: BoundingZoneJSON) {
-        let box = new THREE.Box3();
+        const box = new THREE.Box3();
         box.setFromCenterAndSize(data.center, data.size);
 
-        let object = new BoundingZone(editor, { box, ...data });
+        const object = new BoundingZone(editor, { box, ...data });
 
         object.geometryType = data.geometryType;
         object.name = data.name;
@@ -239,10 +226,7 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
     }
 
     copy(source: this, recursive = true) {
-        return new Proxy(
-            super.copy(source, recursive),
-            this.overrideHandler
-        ) as this;
+        return super.copy(source, recursive) as this;
     }
 
     clone(recursive: boolean) {

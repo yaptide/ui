@@ -23,7 +23,9 @@ export function Viewport(
         showSceneHelpers: true,
         showZones: true,
         showDetect: true,
+        selectFigures: true,
         selectZones: false,
+        selectSections: false,
         visible: false,
     }
 
@@ -294,7 +296,7 @@ export function Viewport(
 
         raycaster.setFromCamera(mouse, camera);
 
-        return raycaster.intersectObjects(validObjects)
+        return raycaster.intersectObjects(validObjects.getSelectable(config))
             .filter(intersect => intersect.object.visible === true);
 
     }
@@ -330,9 +332,7 @@ export function Viewport(
 
             const intersects = getIntersects(
                 onUpPosition,
-                config.selectZones
-                    ? zonesManager.zonesContainer.children
-                    : objects
+                objects
             );
 
             if (intersects.length > 0) {
@@ -494,6 +494,7 @@ export function Viewport(
             case 'ControlLeft':
             case 'ControlRight':
                 config.selectZones = true;
+                config.selectFigures = false;
                 break;
 
             default:
@@ -508,6 +509,7 @@ export function Viewport(
             case 'ControlLeft':
             case 'ControlRight':
                 config.selectZones = false;
+                config.selectFigures = true;
                 break;
 
             default:

@@ -139,7 +139,7 @@ function MenubarEdit(editor) {
 
 		if (object !== null && object.parent !== null && object.notRemovable !== true) {
 
-			if (object?.isCSGZone)
+			if (object?.isZone)
 				editor.execute(new RemoveZoneCommand(editor, object));
 			else if(object?.isDetectSection)
 				editor.execute(new RemoveDetectCommand(editor, object));

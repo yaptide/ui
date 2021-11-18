@@ -184,8 +184,8 @@ History.prototype = {
 
 		for (let i = 0; i < json.undos.length; i++) {
 
-			let cmdJSON = json.undos[i];
-			let cmd = new Commands[cmdJSON.type](this.editor); // creates a new object of type "json.type"
+			const cmdJSON = json.undos[i];
+			const cmd = new Commands[cmdJSON.type](this.editor); // creates a new object of type "json.type"
 			cmd.json = cmdJSON;
 			cmd.id = cmdJSON.id;
 			cmd.name = cmdJSON.name;
@@ -196,8 +196,8 @@ History.prototype = {
 
 		for (let i = 0; i < json.redos.length; i++) {
 
-			let cmdJSON = json.redos[i];
-			let cmd = new Commands[cmdJSON.type](this.editor); // creates a new object of type "json.type"
+			const cmdJSON = json.redos[i];
+			const cmd = new Commands[cmdJSON.type](this.editor); // creates a new object of type "json.type"
 			cmd.json = cmdJSON;
 			cmd.id = cmdJSON.id;
 			cmd.name = cmdJSON.name;

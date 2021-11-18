@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { UIDiv, UIPanel } from './libs/ui.js';
 import { Viewport } from './Viewport.js';
+import { ViewportObjects } from './ViewportObjects';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js, file was split to add multiple viewports
 
@@ -43,7 +44,7 @@ function ViewManager(editor) {
 	let renderer = null;
 	let pmremGenerator = null;
 
-	const objects = [];
+	const objects = new ViewportObjects();
 
 	// helpers
 
@@ -463,7 +464,7 @@ function ViewManager(editor) {
 
 		object.traverse(function (child) {
 
-			objects.splice(objects.indexOf(child), 1);
+			objects.cut(child);
 
 		});
 
@@ -487,7 +488,7 @@ function ViewManager(editor) {
 
 		if (picker !== undefined) {
 
-			objects.splice(objects.indexOf(picker), 1);
+			objects.cut(picker);
 
 		}
 

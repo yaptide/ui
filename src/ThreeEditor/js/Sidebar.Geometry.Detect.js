@@ -5,8 +5,8 @@ import { createRowParamNumber, createRowSelect } from '../util/UiUtils';
 
 export function DetectPanel(editor, section) {
 	const container = new UISpan();
-	const type = section.detectGeometryType;
-	const data = section.detectGeometryData;
+	const type = section.detectType;
+	const data = section.geometryData;
 
 	// detect type
 	const [sectionTypeRow, sectionType] = createRowSelect({

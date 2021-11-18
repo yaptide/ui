@@ -15,8 +15,11 @@ export interface DetectSectionJSON {
 type DetectSectionArgs = Partial<DetectSectionJSON>;
 
 export class DetectSection extends THREE.Points implements ISimulationObject {
+
     readonly notRemovable = false;
-    readonly notMovable!: never;
+    get notMovable() { // custom get function to conditionally return notMoveable property;
+        return ["Zone", "All"].includes(this.detectType);
+    }
     readonly notRotatable = true;
     readonly notScalable = true;
     readonly isDetectSection: true = true;
@@ -25,11 +28,28 @@ export class DetectSection extends THREE.Points implements ISimulationObject {
         new THREE.PointsMaterial({ color: new THREE.Color("cyan"), size: 0.1 });
 
     private positionProxy: THREE.Vector3;
+    private proxy: DetectSection;
+    private _detectType: DETECT.DETECT_TYPE;
 
-    private proxy: DetectSection; // use proxy to conditionally return notMoveable property;
+    get detectType(): DETECT.DETECT_TYPE {
+        return this._detectType;
+    }                
 
-    detectGeometryData: DETECT.Any;
-    detectGeometryType: DETECT.DETECT_TYPE;
+    set detectType(value: DETECT.DETECT_TYPE) {
+        this._detectType = value;
+        this.tryUpdateGeometry();
+        this.signals.objectSelected.dispatch(this.proxy);
+    }
+ 
+    get geometryData(): DETECT.Any{
+        return this._geometryData;
+    }
+
+    set geometryData(value: DETECT.Any) {
+        this._geometryData = value;
+        this.tryUpdateGeometry();
+    }
+
     static maxDisplayDensity: number = 4;
     autoSplitGrid: boolean = true;
 
@@ -48,12 +68,12 @@ export class DetectSection extends THREE.Points implements ISimulationObject {
     };
     readonly isDetectGeo: true = true;
 
-    private dataObject: DETECT.Any;
+    private _geometryData: DETECT.Any;
     private editor: Editor;
     private disableGeometryUpdate: boolean = false;
 
     private tryUpdateGeometry = (
-        type: DETECT.DETECT_TYPE = this.detectGeometryType
+        type: DETECT.DETECT_TYPE = this.detectType
     ) => {
         if (!this.disableGeometryUpdate) {
             this.geometry.dispose();
@@ -66,11 +86,8 @@ export class DetectSection extends THREE.Points implements ISimulationObject {
         get: (target: DetectSection, p: keyof DetectSection) => {
             let result: unknown;
             switch (p) {
-                case "notMovable":
-                    result = ["Zone", "All"].includes(this.detectGeometryType);
-                    break;
                 case "type":
-                    result = target.detectGeometryType + target.type;
+                    result = `${target.detectType}Section`;
                     break;
                 case "position":
                     result = this.positionProxy;
@@ -87,20 +104,21 @@ export class DetectSection extends THREE.Points implements ISimulationObject {
             receiver: unknown
         ) => {
             const result = Reflect.set(target, p, value, receiver);
-            if (p === "detectGeometryType") {
-                this.tryUpdateGeometry(value as DETECT.DETECT_TYPE);
-                this.signals.objectSelected.dispatch(this.proxy);
-            } else if (p === "geometry") {
-                this.geometry.computeBoundingSphere();
-                this.updateMatrixWorld(true);
+            switch (p) {
+                case "geometry":
+                    this.geometry.computeBoundingSphere();
+                    this.updateMatrixWorld(true);
+                    break;
+                default:
+                    break;
             }
             return result;
         },
     };
 
     private generateGeometry(
-        data: DETECT.Any = this.detectGeometryData,
-        type: DETECT.DETECT_TYPE = this.detectGeometryType
+        data: DETECT.Any = this.geometryData,
+        type: DETECT.DETECT_TYPE = this.detectType
     ): THREE.BufferGeometry {
         let geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
 
@@ -129,7 +147,7 @@ export class DetectSection extends THREE.Points implements ISimulationObject {
                 geometry = geometry.rotateX(Math.PI / 2); // rotate to align along the z axis
                 break;
             case "Zone":
-                let zone = this.editor.zonesManager.getZoneById(data.zoneId);
+                const zone = this.editor.zonesManager.getZoneById(data.zoneId);
                 geometry =
                     zone?.geometry
                         .clone()
@@ -157,29 +175,18 @@ export class DetectSection extends THREE.Points implements ISimulationObject {
         }: DetectSectionArgs
     ) {
         super();
+        this.proxy = new Proxy(this, this.overrideHandler);
         this.editor = editor;
         this.signals = editor.signals;
         this.name = `DetectSection${this.id}`;
         this.position.fromArray(position);
-        // this.type = 'Section';
-        this.dataObject = data;
-        this.detectGeometryData = new Proxy(this.dataObject, {
-            set: (
-                target: DETECT.Any,
-                p: keyof DETECT.Any,
-                value: unknown,
-                receiver: unknown
-            ) => {
-                const result = Reflect.set(target, p, value, receiver);
-                this.tryUpdateGeometry();
-                return result;
-            },
-        });
+        this._geometryData = data;
+        this._detectType = type;
 
         this.positionProxy = new Proxy(this.position, {
             get: (target: THREE.Vector3, p: keyof THREE.Vector3) => {
-                let scope = this;
-                let parent: DetectManager = this.parent!
+                const scope = this;
+                const parent: DetectManager = this.parent!
                     .parent as DetectManager;
                 switch (p) {
                     case "copy":
@@ -189,7 +196,7 @@ export class DetectSection extends THREE.Points implements ISimulationObject {
                         };
                     case "add":
                         return function (v: THREE.Vector3) {
-                            let nV = target[p].apply(target, [v]);
+                            const nV = target[p].apply(target, [v]);
                             parent.detectHelper.position.copy(nV);
                             return nV;
                         };
@@ -201,43 +208,40 @@ export class DetectSection extends THREE.Points implements ISimulationObject {
 
         this.geometry = this.generateGeometry(data, type);
         this.material = DetectSection._detectPointsMaterial;
-        this.detectGeometryType = type;
         this.signals.zoneGeometryChanged.add((zone) => {
-            if (zone.id === this.dataObject.zoneId)
+            if (zone.id === this._geometryData.zoneId)
                 this.geometry = this.generateGeometry();
         });
-
-        this.proxy = new Proxy(this, this.overrideHandler);
 
         return this.proxy;
     }
 
     getMesh(): DETECT.Mesh {
-        if (this.detectGeometryType !== "Mesh")
+        if (this.detectType !== "Mesh")
             throw new Error(
                 `DetectGeo of uui=${this.uuid} isn't of 'Mesh' type`
             );
-        return Object.assign({}, this.dataObject as DETECT.Mesh);
+        return Object.assign({}, this._geometryData as DETECT.Mesh);
     }
 
     getCyl(): DETECT.Cyl {
-        if (this.detectGeometryType !== "Cyl")
+        if (this.detectType !== "Cyl")
             throw new Error(
                 `DetectGeo of uui=${this.uuid} isn't of 'Cyl' type`
             );
-        return Object.assign({}, this.dataObject as DETECT.Cyl);
+        return Object.assign({}, this._geometryData as DETECT.Cyl);
     }
 
     getZone(): DETECT.Zone {
-        if (this.detectGeometryType !== "Zone")
+        if (this.detectType !== "Zone")
             throw new Error(
                 `DetectGeo of uui=${this.uuid} isn't of 'Zone' type`
             );
-        return Object.assign({}, this.dataObject as DETECT.Zone);
+        return Object.assign({}, this._geometryData as DETECT.Zone);
     }
 
     getAll(): DETECT.All {
-        if (this.detectGeometryType !== "All")
+        if (this.detectType !== "All")
             throw new Error(
                 `DetectGeo of uui=${this.uuid} isn't of 'All' type`
             );
@@ -245,7 +249,7 @@ export class DetectSection extends THREE.Points implements ISimulationObject {
     }
 
     getData(
-        type: DETECT.DETECT_TYPE = this.detectGeometryType
+        type: DETECT.DETECT_TYPE = this.detectType
     ): Partial<DETECT.Any> {
         switch (type) {
             case "Mesh":
@@ -262,7 +266,7 @@ export class DetectSection extends THREE.Points implements ISimulationObject {
 
     setData(data: DETECT.Any): void {
         this.disableGeometryUpdate = true;
-        Object.assign(this.detectGeometryData, data);
+        Object.assign(this.geometryData, data);
         this.disableGeometryUpdate = false;
         this.tryUpdateGeometry();
     }
@@ -275,9 +279,9 @@ export class DetectSection extends THREE.Points implements ISimulationObject {
     }
 
     toJSON(): DetectSectionJSON {
-        let data = this.dataObject;
-        let type = this.detectGeometryType;
-        let position = this.position.toArray();
+        const data = this._geometryData;
+        const type = this.detectType;
+        const position = this.position.toArray();
         return {
             data,
             type,
@@ -286,15 +290,14 @@ export class DetectSection extends THREE.Points implements ISimulationObject {
     }
 
     fromJSON(data: DetectSectionJSON): void {
-        this.dataObject = data.data;
-        this.detectGeometryType = data.type;
+        this._geometryData = data.data;
+        this.detectType = data.type;
         this.geometry = this.generateGeometry();
-        console.warn(data.position);
         this.position.fromArray(data.position);
     }
 
     static fromJSON(editor: Editor, data: DetectSectionJSON): DetectSection {
-        let detectSection = new DetectSection(editor, data);
+        const detectSection = new DetectSection(editor, data);
         return detectSection;
     }
 }
@@ -303,15 +306,15 @@ export const isDetectSection = (x: any): x is DetectSection =>
     x instanceof DetectSection;
 
 function createCylindricalGeometry(data: DETECT.Cyl, matrix: THREE.Matrix4) {
-    let averageRadius = (data.outerRadius - data.innerRadius) / 2;
-    let geometry1 = new THREE.CylinderGeometry(
+    const averageRadius = (data.outerRadius - data.innerRadius) / 2;
+    const geometry1 = new THREE.CylinderGeometry(
         data.outerRadius,
         data.outerRadius,
         data.depth,
         20,
         Math.min(data.depthSegments, DetectSection.maxDisplayDensity)
     );
-    let geometry2 = new THREE.CylinderGeometry(
+    const geometry2 = new THREE.CylinderGeometry(
         averageRadius,
         averageRadius,
         data.depth,
@@ -319,23 +322,23 @@ function createCylindricalGeometry(data: DETECT.Cyl, matrix: THREE.Matrix4) {
         Math.min(data.depthSegments, DetectSection.maxDisplayDensity)
     );
 
-    let geometry3 = new THREE.CylinderGeometry(
+    const geometry3 = new THREE.CylinderGeometry(
         data.innerRadius,
         data.innerRadius,
         data.depth,
         20,
         Math.min(data.depthSegments, DetectSection.maxDisplayDensity)
     );
-    let cyl1 = new THREE.Mesh(geometry1);
-    let cyl2 = new THREE.Mesh(geometry2);
-    let cyl3 = new THREE.Mesh(geometry3);
+    const cyl1 = new THREE.Mesh(geometry1);
+    const cyl2 = new THREE.Mesh(geometry2);
+    const cyl3 = new THREE.Mesh(geometry3);
     cyl1.updateMatrix();
     cyl2.updateMatrix();
     cyl3.updateMatrix();
-    let BSP1 = CSG.CSG.fromMesh(cyl1);
-    let BSP2 = CSG.CSG.fromMesh(cyl2);
-    let BSP3 = CSG.CSG.fromMesh(cyl3);
-    let newGeometry = CSG.CSG.toGeometry(
+    const BSP1 = CSG.CSG.fromMesh(cyl1);
+    const BSP2 = CSG.CSG.fromMesh(cyl2);
+    const BSP3 = CSG.CSG.fromMesh(cyl3);
+    const newGeometry = CSG.CSG.toGeometry(
         data.innerRadius
             ? BSP1.subtract(BSP3).union(BSP2.subtract(BSP3))
             : BSP1.subtract(BSP2).union(BSP2),

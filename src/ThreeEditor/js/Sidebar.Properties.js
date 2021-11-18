@@ -15,9 +15,9 @@ function SidebarProperties(editor) {
 
 	function getPanel(object) {
 		if (object) 
-			if (object.isCSGZone)
+			if (object?.isZone)
 				return zoneMaterial;
-			else if (!object.isDetectSection)
+			else if (!object?.isDetectSection)
 				return material;
 		return new UIPanel();
 	}
@@ -30,7 +30,7 @@ function SidebarProperties(editor) {
 	container.select('object');
 
 	//Select Geometry if zone is created
-	signals.objectAdded.add((object) => object?.isCSGZone && container.select('geometry'));
+	signals.objectAdded.add((object) => object?.isZone && container.select('geometry'));
 
 	signals.objectSelected.add((object) => {
 

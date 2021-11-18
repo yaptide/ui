@@ -17,7 +17,7 @@ interface ZoneManagerJSON {
     boundingZone: BoundingZoneJSON
 }
 
-export class ZoneContainer extends THREE.Group implements ISimulationObject {
+export class ZonesContainer extends THREE.Group implements ISimulationObject {
     readonly notRemovable = true;
     readonly notMovable = true;
     readonly notRotatable = true;
@@ -41,7 +41,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
     editor: Editor;
     worker: Comlink.Remote<IZoneWorker>;
     boundingZone: BoundingZone;
-    zonesContainer: ZoneContainer;
+    zonesContainer: ZonesContainer;
     private signals: {
         objectAdded: Signal<THREE.Object3D>;
         zoneAdded: Signal<Zone>;
@@ -55,7 +55,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 
     constructor(editor: Editor) {
         super();
-        this.zonesContainer = new ZoneContainer();
+        this.zonesContainer = new ZonesContainer();
         const light = new THREE.HemisphereLight( 0xffffff, 0x222222, 1 );
         light.position.set(15,15,15);
         this.add(light);
@@ -75,7 +75,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
     }
 
     createZone() {
-        let zone = new Zone(this.editor);
+        const zone = new Zone(this.editor);
         this.addZone(zone);
         return zone;
     }
@@ -100,10 +100,10 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
     }
 
     toJSON() {
-        let zones = this.zonesContainer.children.map(zone => zone.toJSON());
-        let uuid = this.uuid;
-        let name = this.name;
-        let boundingZone = this.boundingZone.toJSON();
+        const zones = this.zonesContainer.children.map(zone => zone.toJSON());
+        const uuid = this.uuid;
+        const name = this.name;
+        const boundingZone = this.boundingZone.toJSON();
         return {
             zones,
             uuid,
@@ -114,7 +114,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 
     fromJSON(data: ZoneManagerJSON) {
         if (!data)
-            console.warn('Passed empty data to load CSGManager', data)
+            console.error('Passed empty data to load CSGManager', data)
 
         this.uuid = data.uuid;
 
@@ -164,12 +164,11 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
     }
 
     handleZoneEmpty(zone: Zone): void  {
-        console.log("handleZoneEmpty");
         this.removeZone(zone);
     }
 
     getZoneOptions(): Record<number,string>{
-        let zoneOptions = this.zonesContainer.children.reduce((acc, zone: Zone) => {
+        const zoneOptions = this.zonesContainer.children.reduce((acc, zone: Zone) => {
             acc[zone.id] = zone.name;
             return acc;
         },{} as Record<number,string>);
@@ -178,6 +177,6 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 
 }
 
-export const isZonesContainer = (x: unknown): x is ZoneContainer => x instanceof ZoneContainer;
+export const isZonesContainer = (x: unknown): x is ZonesContainer => x instanceof ZonesContainer;
 
 export const isZoneManager = (x: unknown): x is ZoneManager => x instanceof ZoneManager;

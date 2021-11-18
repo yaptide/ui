@@ -46,7 +46,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 
     const changeRowValues = (rowId: number) => (row: AlgebraRow) => {
         setRows((prev) => {
-            let newRows = [...prev.map((el, id) => { return rowId === id ? row : el })];
+            const newRows = [...prev.map((el, id) => { return rowId === id ? row : el })];
 
             if (rowId < (zoneRef.current?.unionOperations.length ?? 0))
                 zoneRef.current?.updateUnion(rowId, parseAlgebraRow(row));
@@ -69,7 +69,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 
     const removeRow = (removeId: number) => () => {
         setRows((prev) => {
-            let newRows = [...prev.filter((el, id) => id !== removeId)];
+            const newRows = [...prev.filter((el, id) => id !== removeId)];
             return newRows;
         });
         zoneRef.current?.removeUnion(removeId);
@@ -82,10 +82,10 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
         [props.editor]);
 
     const loadRows = useCallback(() => {
-        let newRows: AlgebraRow[] = [];
+        const newRows: AlgebraRow[] = [];
         zoneRef.current?.unionOperations.forEach((union) => {
 
-            let row: AlgebraRow = { geometriesId: [], operations: [] };
+            const row: AlgebraRow = { geometriesId: [], operations: [] };
 
             union.forEach((operation) => {
                 row.geometriesId.push(operation.object.id);
@@ -101,7 +101,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 
 
     const initZone = useCallback(() => {
-        let manager = props.editor.zonesManager;
+        const manager = props.editor.zonesManager;
         props.zone
             ? (() => {
                 zoneRef.current = props.zone;
