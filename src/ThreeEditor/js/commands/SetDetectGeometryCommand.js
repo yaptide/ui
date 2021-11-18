@@ -19,7 +19,7 @@ class SetDetectGeometryCommand extends Command {
         this.object = object;
         this.oldData = object.getData();
         this.newData = {};
-        Object.entries(object.getData()).forEach(([key,_]) => {
+        Object.entries(object.getData()).forEach(([key, _]) => {
             this.newData[key] = newData[key] ?? this.oldData[key];
         });
     }
@@ -45,9 +45,9 @@ class SetDetectGeometryCommand extends Command {
         this.editor.signals.sceneGraphChanged.dispatch();
     }
 
-    update(cmd) {
+    update(command) {
 
-        this.newGeometry = cmd.newGeometry;
+        this.newData = command.newData;
 
     }
 
