@@ -22,9 +22,33 @@ const commonCompare = (a: SimulationMaterial, b: SimulationMaterial): number => 
 
 export function MaterialSelect(props: MaterialSelectProps) {
 
-    const CustomPopper = (popperProps: PopperProps) => <Popper {...popperProps} style={{ width: 'fit-content' }} placement="bottom-start" />;
+    const CustomPopper = (popperProps: PopperProps) => {
+        return (
+            <Popper
+                {...popperProps}
+                style={{ width: 'fit-content' }}
+                placement="bottom-start"
+            />
+        )
+    };
 
-    const renderInput = (params: AutocompleteRenderInputParams) => <TextField {...params} InputProps={{ ...params?.InputProps, style: { fontSize: '12px' } }} size="small" variant="standard" />;
+    const renderInput = (params: AutocompleteRenderInputParams) => {
+        return (
+            <TextField
+                {...params}
+                InputProps={{
+                    ...params?.InputProps,
+                    style: { fontSize: '12px' }
+                }}
+                size="small"
+                variant="standard"
+            />
+        )
+    };
+
+    const getOptionLabel = (id:string, name:string) => {
+        return `[${id}] ${name}`;
+    }
 
     return (
         <Autocomplete
@@ -41,13 +65,26 @@ export function MaterialSelect(props: MaterialSelectProps) {
             value={props.materials[props.value ?? '']}
 
             options={Object.values(props.materials).sort(commonCompare)}
-            groupBy={(option) => isCommonMaterial(option) ? 'Common' : 'Other'}
-            getOptionLabel={(option) => `[${option.simulationData.id}] ${option.simulationData.name}`}
+
+            groupBy={(option) => isCommonMaterial(option)
+                ? 'Common'
+                : 'Other'
+            }
+
+            getOptionLabel={(option) => getOptionLabel(
+                option.simulationData.id,
+                option.simulationData.name
+            )}
 
             PopperComponent={CustomPopper}
-            ListboxProps={{ style: { fontSize: '12px', width: 'fit-content' } }}
-
             renderInput={renderInput}
+
+            ListboxProps={{
+                style: {
+                    fontSize: '12px',
+                    width: 'fit-content'
+                }
+            }}
         />
     );
 }
