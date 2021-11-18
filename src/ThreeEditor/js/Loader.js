@@ -8,7 +8,7 @@ import { TGALoader } from 'three/examples/jsm/loaders/TGALoader.js';
 
 function Loader(editor) {
 
-	let scope = this;
+	const scope = this;
 
 	this.texturePath = '';
 
@@ -26,14 +26,14 @@ function Loader(editor) {
 
 		if (files.length > 0) {
 
-			let filesMap = currentFilesMap || LoaderUtils.createFilesMap(files);
+			const filesMap = currentFilesMap || LoaderUtils.createFilesMap(files);
 
-			let manager = new THREE.LoadingManager();
+			const manager = new THREE.LoadingManager();
 			manager.setURLModifier(function (url) {
 
 				url = url.replace(/^(\.?\/)/, ''); // remove './'
 
-				let file = filesMap[url];
+				const file = filesMap[url];
 
 				if (file) {
 
@@ -61,14 +61,14 @@ function Loader(editor) {
 
 	this.loadFile = function (file, manager) {
 
-		let filename = file.name;
-		let extension = filename.split('.').pop().toLowerCase();
+		const filename = file.name;
+		const extension = filename.split('.').pop().toLowerCase();
 
-		let reader = new FileReader();
+		const reader = new FileReader();
 		reader.addEventListener('progress', (event) => {
 
-			let size = '(' + Math.floor(event.total / 1000).format() + ' KB)';
-			let progress = Math.floor((event.loaded / event.total) * 100) + '%';
+			const size = '(' + Math.floor(event.total / 1000).format() + ' KB)';
+			const progress = Math.floor((event.loaded / event.total) * 100) + '%';
 
 			console.log('Loading', filename, size, progress);
 
@@ -80,16 +80,16 @@ function Loader(editor) {
 
 				reader.addEventListener('load', (event) => {
 
-					let contents = event.target.result;
+					const contents = event.target.result;
 
 					// 2.0
 
 					if (contents.indexOf('postMessage') !== - 1) {
 
-						let blob = new Blob([contents], { type: 'text/javascript' });
-						let url = URL.createObjectURL(blob);
+						const blob = new Blob([contents], { type: 'text/javascript' });
+						const url = URL.createObjectURL(blob);
 
-						let worker = new Worker(url);
+						const worker = new Worker(url);
 
 						worker.onmessage = function (messageEvent) {
 

@@ -1,11 +1,11 @@
 import * as Comlink from 'comlink';
 import * as THREE from 'three';
 
-export interface ICSGWorker {
+export interface IZoneWorker {
     parse: (json: string) => unknown;
 }
 
-class CSGWorker implements ICSGWorker {
+class ZoneWorker implements IZoneWorker {
     readonly isCSGWorker: true = true;
     async parse(json: string) {
         console.log("CSGWorker", await new THREE.ObjectLoader().parseAsync(JSON.parse(json)));
@@ -13,4 +13,4 @@ class CSGWorker implements ICSGWorker {
     }
 }
 
-Comlink.expose(new CSGWorker());
+Comlink.expose(new ZoneWorker());

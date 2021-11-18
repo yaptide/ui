@@ -55,7 +55,10 @@ export function BoundingZonePanel(editor, boundingZone) {
 	// auto calculate checkbox
 
 	const autoCalculateRow = new UIRow();
-	const autoCalculate = new UICheckbox(boundingZone.autoCalculate).onChange(update);
+	const autoCalculate = new UICheckbox(boundingZone.autoCalculate).onChange(()=> {
+		update();
+		editor.signals.objectSelected.dispatch(boundingZone);
+	});
 
 	autoCalculateRow.add(new UIText("Auto calculate").setWidth('90px'));
 	autoCalculateRow.add(autoCalculate);

@@ -30,7 +30,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
                 props.onSuccess?.call(null, response);
             })
             .catch((error:unknown) => {
-                console.log(error);
+                console.error(error);
                 props.onError?.call(null, error);
             }).finally(() => {
                 setInProgress(false);

@@ -1,43 +1,48 @@
 import { Signal } from 'signals';
 import * as THREE from 'three';
 import { debounce } from 'throttle-debounce';
-import { ICSGWorker } from './CSGWorker';
+import { IZoneWorker } from "./CSGWorker";
 import * as Comlink from 'comlink';
 import { Editor } from '../../js/Editor';
 import CSG from '../../js/libs/csg/three-csg';
-import { CSGOperation, CSGOperationJSON } from './CSGOperation';
+import { OperationTuple, OperationTupleJSON } from "./CSGOperationTuple";
 import SimulationMaterial from '../Materials/SimulationMaterial';
 import { CounterMap } from './CounterMap';
+import { ISimulationObject } from "../SimulationObject";
 
-export interface CSGZoneJSON {
+export interface ZoneJSON {
     uuid: string;
     name: string;
-    unionOperations: CSGOperationJSON[][];
-    subscribedObjectsUuid: { [k: string]: number; };
+    unionOperations: OperationTupleJSON[][];
+    subscribedObjects: Record<string,number>;
     materialName: string;
     materialData: unknown;
 }
 
-export class CSGZone extends THREE.Mesh {
-    unionOperations: CSGOperation[][];
+export class Zone extends THREE.Mesh implements ISimulationObject {
+    readonly notRemovable = false;
+    readonly notMovable = true;
+    readonly notRotatable = true;
+    readonly notScalable = true;
 
-    subscribedObjectsUuid: CounterMap<string>;
+    subscribedObjects: CounterMap<string>;
+    unionOperations: OperationTuple[][];
     needsUpdate: boolean = true;
     private signals: {
         objectChanged: Signal<THREE.Object3D>;
         objectRemoved: Signal<THREE.Object3D>;
         geometryChanged: Signal<THREE.Object3D>;
         sceneGraphChanged: Signal;
-        zoneAdded: Signal<CSGZone>;
-        zoneGeometryChanged: Signal<CSGZone>;
-        zoneRemoved: Signal<CSGZone>;
-        zoneChanged: Signal<CSGZone>;
-        zoneEmpty: Signal<CSGZone>;
+        zoneAdded: Signal<Zone>;
+        zoneGeometryChanged: Signal<Zone>;
+        zoneRemoved: Signal<Zone>;
+        zoneChanged: Signal<Zone>;
+        zoneEmpty: Signal<Zone>;
         CSGManagerStateChanged: Signal;
     };
-    readonly isCSGZone: true = true;
+    readonly isZone: true = true;
 
-    worker?: Comlink.Remote<ICSGWorker>;
+    worker?: Comlink.Remote<IZoneWorker>;
     readonly debouncedUpdatePreview = debounce(200, false, () =>
         this.updatePreview()
     );
@@ -47,21 +52,21 @@ export class CSGZone extends THREE.Mesh {
     constructor(
         editor: Editor,
         name?: string,
-        unionOperations?: CSGOperation[][],
-        subscribedObjectsUuid?: CounterMap<string>,
+        unionOperations?: OperationTuple[][],
+        subscribedObjects?: CounterMap<string>,
         uuid?: string,
         materialName?: string
     ) {
         super();
-        this.type = 'Zone';
-        uuid && (this.uuid = uuid);
+        if(uuid) this.uuid = uuid;
         this.editor = editor;
+        this.type = "Zone";
         this.signals = editor.signals;
-        this.name = name || 'CSGZone';
-        this.material = editor.materialsManager.materials[materialName ?? ''];
+        this.name = name || `Zone${this.id}`;
+        this.material = editor.materialsManager.materials[materialName ?? ""];
         this.unionOperations = unionOperations ?? [];
         // If operations are specified, we have to populate set of subscribed UUID's
-        this.subscribedObjectsUuid = subscribedObjectsUuid ?? this.populateSubscribedUuid(this.unionOperations);
+        this.subscribedObjects = subscribedObjects ?? this.populateSubscribedUuid(this.unionOperations);
 
         // If operations are specified, we have to generate fist geometry manually.
         unionOperations && this.updateGeometry();
@@ -71,18 +76,18 @@ export class CSGZone extends THREE.Mesh {
         this.signals.objectRemoved.add((object) => this.handleRemoved(object));
     }
 
-    private populateSubscribedUuid(operations: CSGOperation[][]): CounterMap<string> {
+    private populateSubscribedUuid(operations:OperationTuple[][]): CounterMap<string> {
         return new CounterMap(
             operations.flatMap(operationRow => operationRow.map(operation => operation.object.uuid))
         );
     }
 
     clone(recursive: boolean) {
-        const clonedZone: this = new CSGZone(
+        const clonedZone: this = new Zone(
             this.editor,
             this.name,
             this.unionOperations,
-            this.subscribedObjectsUuid
+            this.subscribedObjects
         ).copy(this, recursive) as this;
 
         return clonedZone;
@@ -111,10 +116,10 @@ export class CSGZone extends THREE.Mesh {
                 const objectBsp = CSG.fromMesh(operation.object as THREE.Mesh);
 
                 const handleMode = {
-                    'left-subtraction': () => lastBsp.subtract(objectBsp),
-                    intersection: () => lastBsp.intersect(objectBsp),
-                    'right-subtraction': () => objectBsp.subtract(lastBsp),
-                    union: () => lastBsp.union(objectBsp),
+                    "left-subtraction": () => lastBsp.subtract(objectBsp),
+                    "intersection": () => lastBsp.intersect(objectBsp),
+                    "right-subtraction": () => objectBsp.subtract(lastBsp),
+                    "union": () => lastBsp.union(objectBsp),
                 };
 
                 operationsResultBsp = handleMode[operation.mode]();
@@ -140,15 +145,15 @@ export class CSGZone extends THREE.Mesh {
         this.announceChangedState();
     }
 
-    updateUnion(unionIndex: number, operations: CSGOperation[]): void {
+    updateUnion(unionIndex: number, operations: OperationTuple[]): void {
         this.unionOperations[unionIndex].forEach((e) => {
-            this.subscribedObjectsUuid.decrement(e.object.uuid);
+            this.subscribedObjects.decrement(e.object.uuid);
         });
 
         this.unionOperations[unionIndex] = [...operations];
 
         this.unionOperations[unionIndex].forEach((e) => {
-            this.subscribedObjectsUuid.increment(e.object.uuid);
+            this.subscribedObjects.increment(e.object.uuid);
         });
 
         this.announceChangedState();
@@ -164,15 +169,15 @@ export class CSGZone extends THREE.Mesh {
         this.announceChangedState();
     }
 
-    addOperation(unionIndex: number, operation: CSGOperation): void {
+    addOperation(unionIndex: number, operation: OperationTuple): void {
         this.unionOperations[unionIndex].push(operation);
-        this.subscribedObjectsUuid.increment(operation.object.uuid);
+        this.subscribedObjects.increment(operation.object.uuid);
 
         this.announceChangedState();
     }
 
     removeOperation(unionIndex: number, operationIndex: number): void {
-        this.subscribedObjectsUuid.decrement(
+        this.subscribedObjects.decrement(
             this.unionOperations[unionIndex][operationIndex].object.uuid
         );
 
@@ -182,13 +187,13 @@ export class CSGZone extends THREE.Mesh {
     }
 
     handleChange(object: THREE.Object3D): void {
-        if (!this.subscribedObjectsUuid.has(object.uuid)) return;
+        if (!this.subscribedObjects.has(object.uuid)) return;
 
         this.announceChangedState();
     }
 
     handleRemoved(object: THREE.Object3D): void {
-        if (!this.subscribedObjectsUuid.has(object.uuid)) return;
+        if (!this.subscribedObjects.has(object.uuid)) return;
 
         this.unionOperations.forEach((operations, unionIndex) => {
             operations.forEach((operation, index) => {
@@ -226,11 +231,11 @@ export class CSGZone extends THREE.Mesh {
         const unionOperations = this.unionOperations.map((union) =>
             union.map((operation) => operation.toJSON())
         );
-        const jsonObject: CSGZoneJSON = {
+        const jsonObject: ZoneJSON = {
             uuid: this.uuid,
             name: this.name,
             unionOperations,
-            subscribedObjectsUuid: this.subscribedObjectsUuid.toJSON(),
+            subscribedObjects: this.subscribedObjects.toJSON(),
             materialName: this.getSimulationMaterial().name,
             materialData: this.getSimulationMaterial().simulationData
         };
@@ -241,14 +246,14 @@ export class CSGZone extends THREE.Mesh {
         return this.material as SimulationMaterial;
     }
 
-    static fromJSON(editor: Editor, data: CSGZoneJSON) {
+    static fromJSON(editor: Editor, data: ZoneJSON) {
         const unionOperations = data.unionOperations.map((union) =>
-            union.map((operation) => CSGOperation.fromJSON(editor, operation))
+            union.map((operation) => OperationTuple.fromJSON(editor, operation))
         );
 
-        const subscribedObjectsUuid = new CounterMap().fromJSON(data.subscribedObjectsUuid);       
+        const subscribedObjectsUuid = new CounterMap().fromJSON(data.subscribedObjects);       
 
-        const zone = new CSGZone(
+        const zone = new Zone(
             editor,
             data.name,
             unionOperations,
@@ -262,5 +267,5 @@ export class CSGZone extends THREE.Mesh {
 }
 
 
-export const isCSGZone = (x: unknown): x is CSGZone => x instanceof CSGZone;
+export const isZone = (x: unknown): x is Zone => x instanceof Zone;
 

@@ -1,15 +1,14 @@
 import { Button } from "@mui/material";
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Editor } from "../../js/Editor";
-import { CSGOperation } from "../../util/CSG/CSGOperation";
-import { CSGZone } from "../../util/CSG/CSGZone";
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { parseZone } from "../../../util/parseZone/parseZone";
+import { Editor } from "../../js/Editor";
+import * as CSG from "../../util/CSG/CSG";
 import BooleanAlgebraRow, { AlgebraRow } from "./BooleanAlgebraRow";
 import "./zoneManagerPanel.css";
 
 type ZoneManagerPanelProps = {
     editor: Editor,
-    zone?: CSGZone,
+    zone?: CSG.Zone,
 }
 
 function ZoneManagerPanel(props: ZoneManagerPanelProps) {
@@ -17,17 +16,17 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 
     const [allObjects, setAllObjects] = useState<THREE.Object3D[]>([]);
 
-    const zoneRef = useRef<CSGZone>();
+    const zoneRef = useRef<CSG.Zone>();
 
     const parseAlgebraRow = (row: AlgebraRow) => {
-        let operations: CSGOperation[] = [];
+        const operations: CSG.OperationTuple[] = [];
 
         if (row.geometriesId[0]) {
             const object = props.editor.scene.getObjectById(row.geometriesId[0]);
 
             if (!object) throw new Error("object is undefined form props.editor.scene.getObjectById(row.geometries[0])");
 
-            operations.push(new CSGOperation(object, 'union'));
+            operations.push(new CSG.OperationTuple(object, 'union'));
         }
 
         for (let i = 0; i < row.operations.length; i++) {
@@ -38,7 +37,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 
                 if (!object) throw new Error("object is undefined form props.editor.scene.getObjectById(geometryID)");
 
-                operations.push(new CSGOperation(object, operation));
+                operations.push(new CSG.OperationTuple(object, operation));
             }
         }
 
@@ -47,7 +46,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 
     const changeRowValues = (rowId: number) => (row: AlgebraRow) => {
         setRows((prev) => {
-            let newRows = [...prev.map((el, id) => { return rowId === id ? row : el })];
+            const newRows = [...prev.map((el, id) => { return rowId === id ? row : el })];
 
             if (rowId < (zoneRef.current?.unionOperations.length ?? 0))
                 zoneRef.current?.updateUnion(rowId, parseAlgebraRow(row));
@@ -62,7 +61,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
         setRows((prev) => [...prev, { geometriesId: [], operations: [] }]);
         zoneRef.current?.addUnion();
     };
-    
+
     const handleParse = () => {
         const simulationData = props?.zone?.getSimulationMaterial().simulationData;
         parseZone(rows, simulationData);
@@ -70,7 +69,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 
     const removeRow = (removeId: number) => () => {
         setRows((prev) => {
-            let newRows = [...prev.filter((el, id) => id !== removeId)];
+            const newRows = [...prev.filter((el, id) => id !== removeId)];
             return newRows;
         });
         zoneRef.current?.removeUnion(removeId);
@@ -83,10 +82,10 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
         [props.editor]);
 
     const loadRows = useCallback(() => {
-        let newRows: AlgebraRow[] = [];
+        const newRows: AlgebraRow[] = [];
         zoneRef.current?.unionOperations.forEach((union) => {
 
-            let row: AlgebraRow = { geometriesId: [], operations: [] };
+            const row: AlgebraRow = { geometriesId: [], operations: [] };
 
             union.forEach((operation) => {
                 row.geometriesId.push(operation.object.id);
@@ -102,7 +101,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 
 
     const initZone = useCallback(() => {
-        let manager = props.editor.zonesManager;
+        const manager = props.editor.zonesManager;
         props.zone
             ? (() => {
                 zoneRef.current = props.zone;

@@ -22,7 +22,7 @@ export interface AdditionalUserDataType {
 
 export function generateSimulationInfo(geometryMesh: THREE.Mesh<PossibleGeometryType>) {
 
-    let parameters: { [key: string]: number } = {}
+    const parameters: { [key: string]: number } = {}
 
     const type = geometryMesh.geometry.type as keyof typeof geometryParameters;
 

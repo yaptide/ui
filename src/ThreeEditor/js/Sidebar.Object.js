@@ -505,7 +505,7 @@ function SidebarObject(editor) {
 
 			} catch (exception) {
 
-				console.warn(exception);
+				console.error(exception);
 
 			}
 
@@ -733,7 +733,7 @@ function SidebarObject(editor) {
 
 		} catch (error) {
 
-			console.log(error);
+			console.error(error);
 
 		}
 
@@ -757,7 +757,7 @@ function SidebarObject(editor) {
 		}
 		const hideObjectInfo = () => container.setDisplay('none');
 
-		(object && !object.isCSGZonesContainer && !object.isScene
+		(object && !object.isZonesContainer && !object.isScene
 			? showObjectInfo
 			: hideObjectInfo)();
 	});

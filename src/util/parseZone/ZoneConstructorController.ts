@@ -14,7 +14,6 @@ export default class ZoneConstructorController {
                 break;
             case "right-subtraction":
                 this.shiftTails(geometry);
-                console.log(this.commonPrefix, this.tails);
                 break;
         }
     }
@@ -27,7 +26,6 @@ export default class ZoneConstructorController {
         this.tails = [
             ...this.commonPrefix.map((el) => [-el]),
             ...this.tails.reduce((prev, el) => {
-                console.log("prev array", prev);
                 if (prev.length === 0) return el.map((el2) => [-el2]);
                 return el.reduceRight((prev2, el2) => {
                     return [
@@ -44,7 +42,7 @@ export default class ZoneConstructorController {
     }
 
     toString(): string  {
-        let prefix = this.commonPrefix.reduceRight((prev, el) => {
+        const prefix = this.commonPrefix.reduceRight((prev, el) => {
             return prev + (el > 0 ? "+" + el : el) + " ";
         }, "") as string;
         return (

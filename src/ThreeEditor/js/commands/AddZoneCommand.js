@@ -1,4 +1,4 @@
-import { CSGZone } from '../../util/CSG/CSGZone';
+import * as CSG from "../../util/CSG/CSG";
 import { Command } from '../Command.js';
 
 /**
@@ -8,21 +8,24 @@ import { Command } from '../Command.js';
  */
 class AddZoneCommand extends Command {
 
-	constructor( editor ) {
+	constructor( editor, zone ) {
 
 		super( editor );
 
 		this.type = 'AddZoneCommand';
-		this.name = `Add new Zone`;
+
+		this.zone = zone;
+		this.name = zone
+			? `Add Zone: ${zone.name}`
+			: `Create Zone`;
 
 	}
 
 	execute() {
 
-		if( this.zone === undefined )
-			this.zone = this.editor.zonesManager.createZone();
-		else
-			this.editor.zonesManager.addZone( this.zone );
+		if(this.zone) this.editor.zonesManager.addZone( this.zone );
+		else this.zone = this.editor.zonesManager.createZone();
+
 		this.editor.select( this.zone );
 
 	}
@@ -52,7 +55,7 @@ class AddZoneCommand extends Command {
 
 		if ( this.zone === undefined ) {
 			
-			this.zone = CSGZone.fromJSON( this.editor, json.object );
+			this.zone = CSG.Zone.fromJSON( this.editor, json.object );
 
 		}
 

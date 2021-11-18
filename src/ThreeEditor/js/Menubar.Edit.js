@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { AddObjectCommand, RemoveObjectCommand, RemoveZoneCommand, SetPositionCommand } from './commands/Commands';
+import { AddObjectCommand, RemoveObjectCommand, RemoveZoneCommand, RemoveDetectCommand, SetPositionCommand } from './commands/Commands';
 import { UIHorizontalRule, UIPanel, UIRow } from './libs/ui.js';
 
 
@@ -139,8 +139,10 @@ function MenubarEdit(editor) {
 
 		if (object !== null && object.parent !== null && object.notRemovable !== true) {
 
-			if (object?.isCSGZone)
+			if (object?.isZone)
 				editor.execute(new RemoveZoneCommand(editor, object));
+			else if(object?.isDetectSection)
+				editor.execute(new RemoveDetectCommand(editor, object));
 			else
 				editor.execute(new RemoveObjectCommand(editor, object));
 

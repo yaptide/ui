@@ -1,3 +1,6 @@
+// Most of a commands copied from https://github.com/mrdoob/three.js/blob/r131/editor/js/commands/
+
+export { AddDetectSectionCommand } from './AddDetectSectionCommand.js';
 export { AddObjectCommand } from './AddObjectCommand.js';
 export { AddScriptCommand } from './AddScriptCommand.js';
 export { AddZoneCommand } from './AddZoneCommand.js';
@@ -6,7 +9,10 @@ export { MultiCmdsCommand } from './MultiCmdsCommand.js';
 export { RemoveObjectCommand } from './RemoveObjectCommand.js';
 export { RemoveScriptCommand } from './RemoveScriptCommand.js';
 export { RemoveZoneCommand } from './RemoveZoneCommand.js';
+export { RemoveDetectCommand } from './RemoveDetectCommand.js';
 export { SetColorCommand } from './SetColorCommand.js';
+export { SetDetectGeometryCommand } from './SetDetectGeometryCommand';
+export { SetDetectTypeCommand } from './SetDetectTypeCommand';
 export { SetGeometryCommand } from './SetGeometryCommand.js';
 export { SetGeometryValueCommand } from './SetGeometryValueCommand.js';
 export { SetMaterialColorCommand } from './SetMaterialColorCommand.js';

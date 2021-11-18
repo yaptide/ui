@@ -1,6 +1,6 @@
 import * as THREE from 'three';
+import * as CSG from "../util/CSG/CSG";
 import { Beam } from '../util/Beam';
-import { CSGManager } from '../util/CSG/CSGManager';
 import MaterialsManager from '../util/Materials/MaterialsManager';
 import { Config } from './Config.js';
 import { History as _History } from './History.js';
@@ -9,6 +9,7 @@ import Signal from 'signals';
 import { Strings } from './Strings.js';
 import { Storage as _Storage } from './Storage.js';
 import { generateSimulationInfo } from '../util/AdditionalUserData';
+import { DetectManager } from '../util/Detect/DetectManager';
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
 _DEFAULT_CAMERA.name = 'Camera';
@@ -16,7 +17,7 @@ _DEFAULT_CAMERA.position.set(0, 5, 10);
 _DEFAULT_CAMERA.lookAt(new THREE.Vector3());
 
 export function Editor(container) {
-	
+
 	this.signals = {
 
 		// script
@@ -60,6 +61,12 @@ export function Editor(container) {
 		zoneGeometryChanged: new Signal(),
 		zoneEmpty: new Signal(),
 		zoneRemoved: new Signal(),
+
+
+		//YAPTIDE detect Sections
+		detectSectionAdded: new Signal(),
+		detectSectionRemoved: new Signal(),
+		detectGeometryChanged: new Signal(),
 
 		cameraAdded: new Signal(),
 		cameraRemoved: new Signal(),
@@ -122,7 +129,8 @@ export function Editor(container) {
 
 	this.sceneHelpers = new THREE.Scene();
 
-	this.zonesManager = new CSGManager(this); //CSG Manager
+	this.zonesManager = new CSG.ZoneManager(this); //CSG Manager
+	this.detectManager = new DetectManager(this); //Detect Manager
 
 	this.beam = new Beam(this);
 	this.sceneHelpers.add(this.beam);
@@ -414,12 +422,12 @@ Editor.prototype = {
 
 	//
 
-	addHelper: (function () {
+	addHelper: (() => {
 
 		var geometry = new THREE.SphereGeometry(2, 4, 2);
 		var material = new THREE.MeshBasicMaterial({ color: 0xff0000, visible: false });
 
-		return function (object, helper) {
+		return (object, helper) => {
 
 			if (!helper) {
 
@@ -449,7 +457,7 @@ Editor.prototype = {
 
 				} else {
 
-					// no helper for this object type
+					// No helper for this object type
 					return;
 
 				}
@@ -468,7 +476,7 @@ Editor.prototype = {
 
 		};
 
-	}()),
+	})(),
 
 	removeHelper(object) {
 
@@ -587,7 +595,7 @@ Editor.prototype = {
 
 		}
 
-		const objectCollections = [this.scene, this.zonesManager, this.beam];
+		const objectCollections = [this.scene, this.zonesManager, this.beam, this.detectManager];
 
 		const object = objectCollections.map((e) => e.getObjectById(id)).find(e => typeof e !== "undefined");
 
@@ -654,6 +662,7 @@ Editor.prototype = {
 		}
 
 		this.zonesManager.reset();
+		this.detectManager.reset();
 		this.beam.reset();
 
 		this.geometries = {};
@@ -697,6 +706,8 @@ Editor.prototype = {
 
 		// CSGManager must be loaded after scene and simulation materials		
 		this.zonesManager.fromJSON(json.zonesManager); // CSGManager must be loaded in order not to lose reference in components 
+
+		this.detectManager.fromJSON(json.detectManager);
 
 		this.beam.fromJSON(json.beam);
 
@@ -744,6 +755,7 @@ Editor.prototype = {
 			scripts: this.scripts,
 			history: this.history.toJSON(),
 			zonesManager: this.zonesManager.toJSON(), // serialize CSGManager
+			detectManager: this.detectManager.toJSON(), // serialize DetectManager;
 			beam: this.beam.toJSON(),
 			materialsManager: this.materialsManager.toJSON() // serialize MaterialManager
 		};

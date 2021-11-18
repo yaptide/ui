@@ -83,7 +83,7 @@ function Toolbar(editor) {
 			case 'translate': translate.dom.classList.add('selected'); break;
 			case 'rotate': rotate.dom.classList.add('selected'); break;
 			case 'scale': scale.dom.classList.add('selected'); break;
-			default: console.log(mode, "isn't supported"); break;
+			default: console.error(mode, "isn't supported"); break;
 
 		}
 
