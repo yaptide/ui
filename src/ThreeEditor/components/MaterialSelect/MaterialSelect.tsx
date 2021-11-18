@@ -13,15 +13,11 @@ const isCommonMaterial = (mat: SimulationMaterial) => COMMON_MATERIALS_ID.includ
 
 const commonCompare = (a: SimulationMaterial, b: SimulationMaterial): number => {
     const [aId, bId] = [a.simulationData.id, b.simulationData.id].map(e => parseInt(e));
-    if (isCommonMaterial(a)) {
-        if (isCommonMaterial(b))
-            return aId - bId;
-        else
-            return -1;
-    }
-    else if (isCommonMaterial(b)) return 1;
-
-    return aId - bId;
+    if (isCommonMaterial(a) === isCommonMaterial(b)) {
+        return aId - bId;
+    } else if (isCommonMaterial(b)) 
+        return 1;
+    return -1;
 }
 
 export function MaterialSelect(props: MaterialSelectProps) {
