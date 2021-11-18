@@ -14,8 +14,7 @@ env:
   CI: false
 
 jobs:
-  build:
-
+  build_and_test:   
     runs-on: ubuntu-latest
 
     strategy:
@@ -34,9 +33,11 @@ jobs:
     - run: npm run build --if-present
     - run: npm test
     
-  test_and_deploy:
+  deploy_gh_pages:
     runs-on: ubuntu-latest
-    needs: [build]    
+    needs: [build_and_test]    
+    if: github.ref == 'refs/heads/master'
+
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v2
@@ -44,16 +45,72 @@ jobs:
       - name: Install 🔧 
         run: npm install
 
-      - name: webfactory/ssh-agent
-        if: github.ref == 'refs/heads/master'    
+      - name: webfactory/ssh-agent 🖥️           
         uses: webfactory/ssh-agent@v0.5.3
         with:
           # Private SSH key to register in the SSH agent
           ssh-private-key: ${{ secrets.WEBDEV }}
 
-      - name: Deploy
-        if: github.ref == 'refs/heads/master'    
+      - name: Deploy 🚀  
         run: |
           git remote set-url origin git@github.com:yaptide/web_dev.git
           npm run deploy -- -u "github-actions-bot <support+actions@github.com>" -r "git@github.com:yaptide/web_dev.git"    
+
+  
+  deploy:    
+    runs-on: ubuntu-latest
+    needs: [build_and_test]
+    env:
+      FRONTEND_HOST: 149.156.182.181
+      FRONTEND_USER: ubuntu
+    if: github.ref == 'refs/heads/master'
+
+    steps:
+      # Get the repo to the github agent
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+
+      # Add keys to the SSH agent
+      - uses: webfactory/ssh-agent@v0.5.3 🖥️       
+        with:
+          ssh-private-key: |
+            ${{ secrets.DEPLOY_C3_TEST }}
+
+      # Create the known_hosts file with the open stack machines public keys
+      - name: Add host to known_hosts 🖥️
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          ssh-keyscan -H ${{ env.FRONTEND_HOST }} >> ~/.ssh/known_hosts
+
+
+      # Kill docker container, then remove them
+      - name: Kill our docker container 💀
+        continue-on-error: true
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.FRONTEND_HOST }}
+          username: ${{ env.FRONTEND_USER }}
+          key: ${{ secrets.DEPLOY_C3_TEST }}
+          script: |
+            docker rm --force yaptide-nginx 
+            docker container prune --force
     
+
+      # Copy the new files form the github agent onto the machine
+      - name: Copy files to the machine 📁
+        run: rsync -a ~/work/ui/ui ${{ env.FRONTEND_USER }}@${{ env.FRONTEND_HOST }}:~/ui --exclude={node_modules,build}
+
+
+      - name: Build app and run docker container 🔨 & 🚀
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.FRONTEND_HOST }}
+          username: ${{ env.FRONTEND_USER }}
+          key: ${{ secrets.DEPLOY_C3_TEST }}
+          command_timeout: 10m
+          script: |
+            cd ui/ui
+            npm install
+            npm run build
+            docker run --name yaptide-nginx -p 8080:80 -v $PWD/build:/usr/share/nginx/html:ro -d nginx

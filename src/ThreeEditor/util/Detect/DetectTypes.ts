@@ -44,25 +44,3 @@ export const DETECT_OPTIONS = {
 } as const;
 
 export type DETECT_TYPE = keyof typeof DETECT_OPTIONS;
-
-export const TYPE_RECORD: Record<string, Record<string, boolean>> = {
-    Mesh: {
-        width: true,
-        height: true,
-        depth: true,
-        widthSegments: true,
-        heightSegments: true,
-        depthSegments: true
-    },
-    Cyl: {
-        outerRadius: true,
-        innerRadius: true,
-        depth: true,
-        radialSegments: true,
-        depthSegments: true
-    },
-    Zone: {
-        zoneUuid: true
-    },
-    All: {}
-}
