@@ -43,7 +43,7 @@ export default class MaterialsManager {
                 return Array.from(new Set([...Reflect.ownKeys(target), ...Reflect.ownKeys(this.prefabMaterials)]));
             },
             has: (target: Record<string, SimulationMaterial>, key: string) => {
-                return key in target || key in this.prefabMaterials;
+                return key in this.prefabMaterials || key in target;
             },
             getOwnPropertyDescriptor(target: Record<string, SimulationMaterial>, key: string) {
                 return {

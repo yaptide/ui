@@ -1,4 +1,4 @@
-export const COMMON_MATERIALS_ID = ['104', '276', '223', '179', '222', '6', '245', '170'];
+export const COMMON_MATERIAL_IDS = ['104', '276', '223', '179', '222', '6', '245', '170'];
 
 // made with:
 //
