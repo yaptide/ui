@@ -71,7 +71,7 @@ jobs:
         uses: actions/checkout@v2
 
       # Add keys to the SSH agent
-      - uses: webfactory/ssh-agent@v0.5.3 🖥️       
+      - uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: |
             ${{ secrets.DEPLOY_C3_TEST }}
@@ -84,10 +84,10 @@ jobs:
           ssh-keyscan -H ${{ env.FRONTEND_HOST }} >> ~/.ssh/known_hosts
 
 
-      # Kill docker container, then remove them
+      # Kill docker container, then remove all docker images
       - name: Kill our docker container 💀
         continue-on-error: true
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ env.FRONTEND_HOST }}
           username: ${{ env.FRONTEND_USER }}
@@ -103,7 +103,7 @@ jobs:
 
 
       - name: Build app and run docker container 🔨 & 🚀
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ env.FRONTEND_HOST }}
           username: ${{ env.FRONTEND_USER }}
