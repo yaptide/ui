@@ -30,6 +30,11 @@ export class ZonesContainer extends THREE.Group implements ISimulationObject {
         this.name = "Zones";
         this.children = [];
     }
+
+    reset(){
+        this.name = "Zones";
+        this.clear();
+    }
 }
 
 export class ZoneManager extends THREE.Scene implements ISimulationObject {
@@ -144,11 +149,12 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
     reset() {
 
         this.name = 'Zones';
+
         this.userData = {};
         this.background = null;
         this.environment = null;
 
-        this.zonesContainer.clear();
+        this.zonesContainer.reset();
 
         this.boundingZone.reset();
 

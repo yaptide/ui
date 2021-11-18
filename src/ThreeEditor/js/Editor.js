@@ -662,6 +662,7 @@ Editor.prototype = {
 		}
 
 		this.zonesManager.reset();
+		this.detectManager.reset();
 		this.beam.reset();
 
 		this.geometries = {};

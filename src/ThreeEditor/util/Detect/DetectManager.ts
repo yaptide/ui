@@ -28,6 +28,11 @@ export class DetectsContainer extends THREE.Group implements ISimulationObject {
         this.name = "Sections";
         this.children = [];
     }
+
+    reset() {
+        this.name = "Sections";
+        this.clear();
+    }
 }
 
 export class DetectManager extends THREE.Scene implements ISimulationObject {
@@ -136,9 +141,15 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
     }
 
     reset() {
-        this.name = "Detect";
+        this.name = "DetectManager";
+
         this.userData = {};
-        this.detectsContainer.clear();
+        this.background = null;
+        this.environment = null;
+
+        this.detectsContainer.reset();
+
+        this.detectHelper.geometry.dispose();
     }
 
     clone(recursive: boolean) {
