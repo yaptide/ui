@@ -21,9 +21,9 @@ export type Zone = {
 
 export type All = {};
 
-export type Any = Mesh&Cyl&Zone&All;
+export type Any = Mesh & Cyl & Zone & All;
 
-export const DEFAULT_ANY:Any = {
+export const DEFAULT_ANY: Any = {
     width: 1,
     height: 1,
     depth: 1,
@@ -36,17 +36,17 @@ export const DEFAULT_ANY:Any = {
     zoneId: -1
 };
 
-export type DETECT_TYPE = "Mesh" | "Cyl" | "Zone" | "All";
-
-export const detectOptions = {
+export const DETECT_OPTIONS = {
     "Mesh": "Mesh",
     "Cyl": "Cyl",
     "Zone": "Zone",
     "All": "All"
-}
+} as const;
 
-export const TYPE_RECORD:Record<string,Record<string,boolean>> = {
-    Mesh:{
+export type DETECT_TYPE = keyof typeof DETECT_OPTIONS;
+
+export const TYPE_RECORD: Record<string, Record<string, boolean>> = {
+    Mesh: {
         width: true,
         height: true,
         depth: true,
@@ -54,15 +54,15 @@ export const TYPE_RECORD:Record<string,Record<string,boolean>> = {
         heightSegments: true,
         depthSegments: true
     },
-    Cyl:{
+    Cyl: {
         outerRadius: true,
         innerRadius: true,
         depth: true,
         radialSegments: true,
         depthSegments: true
     },
-    Zone:{
+    Zone: {
         zoneUuid: true
     },
-    All:{}
+    All: {}
 }
