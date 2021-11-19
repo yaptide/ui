@@ -1,6 +1,7 @@
 export interface ISimulationObject {
-    notRemovable: boolean,
-    notMovable: boolean,
-    notRotatable: boolean,
-    notScalable: boolean,
+    readonly isObject3D: true;
+    readonly notRemovable?: boolean,
+    readonly notMovable?: boolean,
+    readonly notRotatable?: boolean,
+    readonly notScalable?: boolean,
 }

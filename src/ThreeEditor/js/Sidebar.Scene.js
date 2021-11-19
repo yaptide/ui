@@ -83,12 +83,12 @@ function SidebarScene(editor) {
 	}
 
 	function getObjectType(object) {
-		
+
 		if (object.isDetectSection) return 'Line';
 		if (object.isZone) return 'Points';
 		if (object.isZonesContainer) return 'Camera';
-		if (object.isDetectSectionsContainer) return 'Line'; 
-		 //TODO: Add support to different keywords in css classes  # skipcq: JS-0099
+		if (object.isDetectSectionsContainer) return 'Line';
+		//TODO: Add support to different keywords in css classes  # skipcq: JS-0099
 		if (object.isScene) return 'Scene';
 		if (object.isCamera) return 'Camera';
 		if (object.isLight) return 'Light';
@@ -261,13 +261,12 @@ function SidebarScene(editor) {
 
 	function refreshUI() {
 
-		const { camera, scene } = editor;
+		const { scene } = editor;
 		const { detectsContainer } = editor.detectManager;
 		const { zonesContainer, boundingZone } = editor.zonesManager;
 
 		const options = [];
 
-		options.push(buildOption(camera, false));
 		options.push(buildOption(scene, false));
 
 		function addObjects(objects, pad) {
