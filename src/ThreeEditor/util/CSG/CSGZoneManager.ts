@@ -4,7 +4,7 @@ import * as THREE from 'three';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import Worker from 'worker-loader!./CSGWorker';
 import { Editor } from '../../js/Editor';
-import { BoundingZone, BoundingZoneJSON } from '../BoundingZone';
+import { WorldZone, WorldZoneJSON } from '../WorldZone';
 import { ISimulationObject } from '../SimulationObject';
 import { IZoneWorker } from './CSGWorker';
 import { Zone, ZoneJSON } from './CSGZone';
@@ -14,7 +14,7 @@ interface ZoneManagerJSON {
     uuid: string,
     name: string,
     zones: ZoneJSON[],
-    boundingZone: BoundingZoneJSON
+    worldZone: WorldZoneJSON
 }
 
 export class ZonesContainer extends THREE.Group implements ISimulationObject {
@@ -45,7 +45,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 
     editor: Editor;
     worker: Comlink.Remote<IZoneWorker>;
-    boundingZone: BoundingZone;
+    worldZone: WorldZone;
     zonesContainer: ZonesContainer;
     private signals: {
         objectAdded: Signal<THREE.Object3D>;
@@ -69,11 +69,11 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
         this.editor = editor;
         this.signals = editor.signals;
 
-        this.boundingZone = new BoundingZone(editor);
-        this.boundingZone.addHelpersToSceneHelpers();
-        this.boundingZone.name = "World Zone"
+        this.worldZone = new WorldZone(editor);
+        this.worldZone.addHelpersToSceneHelpers();
+        this.worldZone.name = "World Zone"
 
-        this.add(this.boundingZone);
+        this.add(this.worldZone);
 
         this.signals.zoneEmpty.add((zone: Zone) => this.handleZoneEmpty(zone));
 
@@ -108,12 +108,12 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
         const zones = this.zonesContainer.children.map(zone => zone.toJSON());
         const uuid = this.uuid;
         const name = this.name;
-        const boundingZone = this.boundingZone.toJSON();
+        const worldZone = this.worldZone.toJSON();
         return {
             zones,
             uuid,
             name,
-            boundingZone
+            worldZone
         };
     }
 
@@ -131,9 +131,9 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 
         });
 
-        this.boundingZone.removeHelpersFromSceneHelpers();
-        this.boundingZone = BoundingZone.fromJSON(this.editor, data.boundingZone);
-        this.boundingZone.addHelpersToSceneHelpers();
+        this.worldZone.removeHelpersFromSceneHelpers();
+        this.worldZone = WorldZone.fromJSON(this.editor, data.worldZone);
+        this.worldZone.addHelpersToSceneHelpers();
 
         return this;
     }
@@ -156,13 +156,13 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 
         this.zonesContainer.reset();
 
-        this.boundingZone.reset();
+        this.worldZone.reset();
 
         return this;
     }
 
     getObjectById(id: number) {
-        return this.boundingZone.getObjectById(id) ?? super.getObjectById(id);
+        return this.worldZone.getObjectById(id) ?? super.getObjectById(id);
     }
     
     getZoneById(id: number): Zone | undefined{

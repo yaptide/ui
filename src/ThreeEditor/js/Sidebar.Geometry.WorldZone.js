@@ -10,7 +10,7 @@ const bodyTypeOptions = {
 
 
 
-export function BoundingZonePanel(editor, boundingZone) {
+export function WorldZonePanel(editor, worldZone) {
 
 	const strings = editor.strings;
 
@@ -27,7 +27,7 @@ export function BoundingZonePanel(editor, boundingZone) {
 
 
 	// geometry type
-	const [geometryTypeRow, geometryType] = createRowSelect({ text: 'Geometry Type', options: bodyTypeOptions, value: boundingZone.geometryType, update })
+	const [geometryTypeRow, geometryType] = createRowSelect({ text: 'Geometry Type', options: bodyTypeOptions, value: worldZone.geometryType, update })
 
 	container.add(geometryTypeRow);
 
@@ -55,9 +55,9 @@ export function BoundingZonePanel(editor, boundingZone) {
 	// auto calculate checkbox
 
 	const autoCalculateRow = new UIRow();
-	const autoCalculate = new UICheckbox(boundingZone.autoCalculate).onChange(()=> {
+	const autoCalculate = new UICheckbox(worldZone.autoCalculate).onChange(()=> {
 		update();
-		editor.signals.objectSelected.dispatch(boundingZone);
+		editor.signals.objectSelected.dispatch(worldZone);
 	});
 
 	autoCalculateRow.add(new UIText("Auto calculate").setWidth('90px'));
@@ -69,7 +69,7 @@ export function BoundingZonePanel(editor, boundingZone) {
 
 	const calculateButton = new UIButton("CALCULATE").setWidth('100%');
 	calculateButton.onClick(() => {
-		boundingZone.calculate();
+		worldZone.calculate();
 	});
 	calculateContainer.add(calculateButton);
 
@@ -82,19 +82,19 @@ export function BoundingZonePanel(editor, boundingZone) {
 		const center = new THREE.Vector3(objectPositionX.getValue(), objectPositionY.getValue(), objectPositionZ.getValue());
 		const size = new THREE.Vector3(width.getValue(), height.getValue(), depth.getValue());
 
-		boundingZone.setFromCenterAndSize(center, size);
+		worldZone.setFromCenterAndSize(center, size);
 
-		boundingZone.geometryType = geometryType.getValue(); // set before calling boundingZone.calculate() 
+		worldZone.geometryType = geometryType.getValue(); // set before calling worldZone.calculate() 
 
-		boundingZone.autoCalculate = autoCalculate.getValue();
-		if (boundingZone.autoCalculate) boundingZone.calculate();
+		worldZone.autoCalculate = autoCalculate.getValue();
+		if (worldZone.autoCalculate) worldZone.calculate();
 
 		updateUI();
 	}
 
 	function updateUI() {
-		const pos = boundingZone.box.getCenter(new THREE.Vector3());
-		const size = boundingZone.box.getSize(new THREE.Vector3());
+		const pos = worldZone.box.getCenter(new THREE.Vector3());
+		const size = worldZone.box.getSize(new THREE.Vector3());
 
 		objectPositionX.setValue(pos.x);
 		objectPositionZ.setValue(pos.z);
@@ -103,9 +103,9 @@ export function BoundingZonePanel(editor, boundingZone) {
 		[widthRow, heightRow, depthRow, calculateContainer].forEach(e => e.setDisplay('none'));
 
 
-		if (boundingZone.canCalculate()) calculateContainer.setDisplay('block');
+		if (worldZone.canCalculate()) calculateContainer.setDisplay('block');
 
-		switch (boundingZone.geometryType) {
+		switch (worldZone.geometryType) {
 			case 'box':
 				[widthRow, heightRow, depthRow].forEach(e => e.setDisplay('block'));
 				widthText.setValue(strings.getKey('sidebar/geometry/box_geometry/width') + ' ' + editor.unit.name)
@@ -125,7 +125,7 @@ export function BoundingZonePanel(editor, boundingZone) {
 				break;
 
 			default:
-				console.error("Unsupported geometry type: " + boundingZone.geometryType)
+				console.error("Unsupported geometry type: " + worldZone.geometryType)
 		}
 
 		width.setValue(size.x);
@@ -139,7 +139,7 @@ export function BoundingZonePanel(editor, boundingZone) {
 
 	editor.signals.objectChanged.add((object) => {
 
-		if (object.isBoundingZone) {
+		if (object.isWorldZone) {
 			updateUI();
 		}
 

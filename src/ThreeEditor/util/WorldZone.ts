@@ -7,11 +7,11 @@ import { Editor } from '../js/Editor';
 import { ISimulationObject } from './SimulationObject';
 
 
-export interface BoundingZoneJSON {
+export interface WorldZoneJSON {
     type: string;
     center: THREE.Vector3;
     size: THREE.Vector3;
-    geometryType: BoundingZoneType;
+    geometryType: WorldZoneType;
     name: string;
     color: THREE.ColorRepresentation;
     marginMultiplier: number;
@@ -19,7 +19,7 @@ export interface BoundingZoneJSON {
 
 export const BOUNDING_ZONE_TYPE = ['sphere', 'cylinder', 'box'] as const;
 
-export type BoundingZoneType = (typeof BOUNDING_ZONE_TYPE)[number];
+export type WorldZoneType = (typeof BOUNDING_ZONE_TYPE)[number];
 
 const _cylinderGeometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2);
 
@@ -27,13 +27,13 @@ const _sphereGeometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Ma
 
 const _material = new THREE.MeshBasicMaterial({ transparent: true, opacity: .5, wireframe: true });
 
-interface BoundingZoneParams {
+interface WorldZoneParams {
     box?: THREE.Box3,
     color?: THREE.ColorRepresentation,
     marginMultiplier?: number
 }
 
-export class BoundingZone extends THREE.Object3D implements ISimulationObject {
+export class WorldZone extends THREE.Object3D implements ISimulationObject {
 
     readonly notRemovable = true;
     get notMovable() { // custom get function to conditionally return notMoveable property;
@@ -48,9 +48,9 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
     autoCalculate: boolean = true;
     material: MeshBasicMaterial;
     private _simulationMaterial?: MeshBasicMaterial;
-    readonly isBoundingZone: true = true;
+    readonly isWorldZone: true = true;
 
-    private _geometryType: BoundingZoneType = 'box';
+    private _geometryType: WorldZoneType = 'box';
     private boxHelper: THREE.Box3Helper;
     private cylinderMesh: THREE.Mesh<THREE.CylinderGeometry, MeshBasicMaterial>;
     private sphereMesh: THREE.Mesh<THREE.SphereGeometry, MeshBasicMaterial>;
@@ -60,9 +60,9 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
         this.calculate()
     );
 
-    constructor(editor: Editor, { box, color = 0xff0000, marginMultiplier = 1.1 }: BoundingZoneParams = {}) {
+    constructor(editor: Editor, { box, color = 0xff0000, marginMultiplier = 1.1 }: WorldZoneParams = {}) {
         super();
-        this.type = 'BoundingZone';
+        this.type = 'WorldZone';
         this.name = 'World Zone';
         this.editor = editor;
 
@@ -96,7 +96,7 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
 
 
         const handleSignal = (object: Object3D) => {
-            if (this.autoCalculate && !isBoundingZone(object)) this.debouncedCalculate();
+            if (this.autoCalculate && !isWorldZone(object)) this.debouncedCalculate();
         }
         this.editor.signals.objectChanged.add((object: Object3D) => handleSignal(object));
         this.editor.signals.sceneGraphChanged.add((object: Object3D) => handleSignal(object));
@@ -118,7 +118,7 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
         return this._geometryType;
     }
 
-    set geometryType(value: BoundingZoneType) {
+    set geometryType(value: WorldZoneType) {
         this._geometryType = value;
         this.getAllHelpers().forEach(e => e.visible = false);
         this.getHelper(value).visible = true;
@@ -131,7 +131,7 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
         return [this.boxHelper, this.sphereMesh, this.cylinderMesh];
     }
 
-    private getHelper(geometryType: BoundingZoneType): Object3D {
+    private getHelper(geometryType: WorldZoneType): Object3D {
         const obj = {
             'box': this.boxHelper,
             'cylinder': this.cylinderMesh,
@@ -207,7 +207,7 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
 
     toJSON() {
 
-        const jsonObject: BoundingZoneJSON = {
+        const jsonObject: WorldZoneJSON = {
             center: this.box.getCenter(new Vector3()),
             size: this.box.getSize(new Vector3()),
             type: this.type,
@@ -220,11 +220,11 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
         return jsonObject;
     }
 
-    static fromJSON(editor: Editor, data: BoundingZoneJSON) {
+    static fromJSON(editor: Editor, data: WorldZoneJSON) {
         const box = new THREE.Box3();
         box.setFromCenterAndSize(data.center, data.size);
 
-        const object = new BoundingZone(editor, { box, ...data });
+        const object = new WorldZone(editor, { box, ...data });
 
         object.geometryType = data.geometryType;
         object.name = data.name;
@@ -240,10 +240,10 @@ export class BoundingZone extends THREE.Object3D implements ISimulationObject {
     }
 
     clone(recursive: boolean) {
-        return new BoundingZone(this.editor).copy(this, recursive) as this;
+        return new WorldZone(this.editor).copy(this, recursive) as this;
     }
 
 }
 
-export const isBoundingZone = (x: unknown): x is BoundingZone => x instanceof BoundingZone;
+export const isWorldZone = (x: unknown): x is WorldZone => x instanceof WorldZone;
 

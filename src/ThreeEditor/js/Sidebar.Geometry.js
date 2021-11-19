@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper.js';
 import ZoneManagerPanel from '../components/ZoneManagerPanel/ZoneManagerPanel';
 import { UIButton, UIPanel, UIRow, UISpan, UIText } from './libs/ui.js';
-import { BoundingZonePanel } from './Sidebar.Geometry.BoundingZone';
+import { WorldZonePanel } from './Sidebar.Geometry.WorldZone';
 import { BeamPanel } from './Sidebar.Geometry.Beam';
 import { DetectPanel } from './Sidebar.Geometry.Detect';
 
@@ -87,10 +87,10 @@ function SidebarGeometry(editor) {
 
 			vertexNormalsButton.setDisplay('none');
 
-		} else if (object?.isBoundingZone) {
+		} else if (object?.isWorldZone) {
 
 			parameters.clear();
-			parameters.add(new BoundingZonePanel(editor, object));
+			parameters.add(new WorldZonePanel(editor, object));
 			geometryType.setValue(object.type);
 			container.setDisplay('block');
 
