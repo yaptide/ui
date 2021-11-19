@@ -10,6 +10,7 @@ import { Strings } from './Strings.js';
 import { Storage as _Storage } from './Storage.js';
 import { generateSimulationInfo } from '../util/AdditionalUserData';
 import { DetectManager } from '../util/Detect/DetectManager';
+import { EditorObjectLoader } from '../util/ObjectLoader';
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
 _DEFAULT_CAMERA.name = 'Camera';
@@ -23,7 +24,6 @@ export function Editor(container) {
 		// script
 
 		editScript: new Signal(),
-
 
 		// notifications
 
@@ -125,7 +125,7 @@ export function Editor(container) {
 	this.camera = _DEFAULT_CAMERA.clone();
 
 	this.scene = new THREE.Scene();
-	this.scene.name = 'Scene';
+	this.scene.name = 'Geometries';
 
 	this.sceneHelpers = new THREE.Scene();
 
@@ -648,7 +648,7 @@ Editor.prototype = {
 		this.camera.copy(_DEFAULT_CAMERA);
 		this.signals.cameraResetted.dispatch();
 
-		this.scene.name = 'Scene';
+		this.scene.name = 'Geometries';
 		this.scene.userData = {};
 		this.scene.background = null;
 		this.scene.environment = null;
@@ -691,7 +691,7 @@ Editor.prototype = {
 
 	//
 	async fromJSON(json) {
-		const loader = new THREE.ObjectLoader();
+		const loader = new EditorObjectLoader();
 		const camera = await loader.parseAsync(json.camera);
 
 		this.camera.copy(camera);

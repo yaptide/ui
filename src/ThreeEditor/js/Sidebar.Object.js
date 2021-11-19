@@ -593,8 +593,15 @@ function SidebarObject(editor) {
 
 
 		const invisible = [objectTypeRow, objectFrustumCulledRow, objectScaleRow, objectShadowRow];
+		const visible = [];
+
+		const visibility = (flag) => (flag ? invisible : visible);
+
+		visibility(object.notRotatable).push(objectRotationRow);
+		visibility(object.notMovable).push(objectPositionRow);
 
 		invisible.forEach((e) => e.setDisplay('none'));
+		visible.forEach((e) => e.setDisplay(''));
 
 	}
 

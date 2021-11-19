@@ -3,7 +3,7 @@ import { SetPositionCommand, SetRotationCommand, SetScaleCommand } from './comma
 import { ViewportClippedView as ViewportClipPlane } from './Viewport.ClipPlane';
 import { EditorOrbitControls } from './EditorOrbitControls';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
-import { UIPanel } from "./libs/ui";
+import { UIPanel } from './libs/ui';
 import { ViewHelper } from './Viewport.ViewHelper';
 import { ViewportCamera } from './Viewport.Camera.js';
 
@@ -34,7 +34,7 @@ export function Viewport(
     const container = new UIPanel();
     container.setId('ViewPanel');
     container.setPosition('relative');
-    container.setOverflow("hidden");
+    container.setOverflow('hidden');
     container.dom.setAttribute('tabindex', '0');
 
 
@@ -45,15 +45,15 @@ export function Viewport(
     const context = canvas.getContext('2d');
 
     const cameraPersp = new THREE.PerspectiveCamera(50, 1, 0.001, 10000);
-    cameraPersp.name = "Perspective";
+    cameraPersp.name = 'Perspective';
     cameraPersp.position.copy(cameraPosition ?? new THREE.Vector3(0, 10, 10)); // default camera position other than (0,0,0) to see anything
 
     const cameraOrtho = new THREE.OrthographicCamera(1 / - 2, 1 / 2, 1 / 2, 1 / - 2, 0.001, 10000);
-    cameraOrtho.name = "Orthographic";
+    cameraOrtho.name = 'Orthographic';
     cameraOrtho.position.copy(cameraPersp.position);
     cameraOrtho.zoom = 0.2;
 
-    // in clipping plane views only Orthographic camera is used, hence is "up" axis adjustment is required we do so
+    // in clipping plane views only Orthographic camera is used, hence is 'up' axis adjustment is required we do so
     cameraUp && cameraOrtho.up.copy(cameraUp);
 
     const cameras = [cameraOrtho, cameraPersp];
