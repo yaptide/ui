@@ -263,7 +263,7 @@ function SidebarScene(editor) {
 
 		const { scene } = editor;
 		const { detectsContainer } = editor.detectManager;
-		const { zonesContainer, boundingZone } = editor.zonesManager;
+		const { zonesContainer, worldZone } = editor.zonesManager;
 
 		const options = [];
 
@@ -302,7 +302,7 @@ function SidebarScene(editor) {
 		options.push(buildOption(detectsContainer, false));
 		addObjects(detectsContainer.children, 0);
 
-		options.push(buildOption(boundingZone, false));
+		options.push(buildOption(worldZone, false));
 
 		options.push(buildOption(editor.beam, false));
 
@@ -385,7 +385,7 @@ function SidebarScene(editor) {
 			let nextParent = object.parent;
 
 			const reachedFinalParent = (parent) => {
-				const finalParents = [editor.scene, editor.zonesManager.zonesContainer, editor.zonesManager.boundingZones, editor.detectManager.detectsContainer]
+				const finalParents = [editor.scene, editor.zonesManager.zonesContainer, editor.zonesManager.worldZones, editor.detectManager.detectsContainer]
 				return finalParents.some((finalParent) => finalParent === parent)
 			}
 

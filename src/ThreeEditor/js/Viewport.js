@@ -122,8 +122,8 @@ export function Viewport(
 
         if (config.showZones)
             renderer.render(zonesManager, camera);
-          
-        if (config.showDetect)  
+
+        if (config.showDetect)
             renderer.render(detectManager, camera);
 
         if (clipPlane)
@@ -428,7 +428,7 @@ export function Viewport(
 
     function canBeTransformed(object) {
 
-        function notTransformable(object){
+        function notTransformable(object) {
             switch (transformControls.getMode()) {
                 case 'translate':
                     return object.notMovable;
@@ -443,16 +443,16 @@ export function Viewport(
         // Check if object can be transformed. 
         // For our usage it would be only geometries included on the scene. 
         // Amount of geometries can differ form project to project thus we check only if it isn't mesh.
-        // unionOperations is property unique to zones that shoudn't be transformed with controler.
+        // unionOperations is property unique to zones that shouldn't be transformed with controller.
         return object
             && !(object.isScene
-            || object.isCamera
-            || notTransformable(object));
+                || object.isCamera
+                || object.isWorldZone
+                || notTransformable(object));
     }
 
     function reattachTransformControls(object) {
         transformControls.detach();
-
         canBeTransformed(object) && transformControls.attach(object);
     }
 
