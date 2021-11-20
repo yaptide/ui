@@ -1,3 +1,16 @@
+const _rule_units = {
+	A: '',
+	AMASS: 'MeV/c^2',
+	AMU: 'au',
+	E: 'MeV',
+	ENUC: 'MeV/n',
+	EAMU: 'MeV/amu',
+	ID: '',
+	GEN: 'gen',
+	NPRIM: '',
+	Z: 'z',
+};
+
 const _float_keywords = ['AMASS', 'AMU', 'E', 'ENUC', 'EAMU'] as const;
 
 const _int_keywords = ['A', 'GEN', 'NPRIM', 'Z'] as const;
