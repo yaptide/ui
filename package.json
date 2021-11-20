@@ -42,7 +42,8 @@
 		"test-demo": "cross-env REACT_APP_TARGET=demo npm run test",
 		"build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
 		"predeploy": "npm run identify && npm run build-demo",
-		"deploy": "gh-pages -d build"
+		"deploy": "gh-pages -d build",
+		"buildC3": "npm run identify && cross-env REACT_APP_BACKEND_URL='http://30.30.30.8:5000' npm run build"
 	},
 	"contributors": [
 		{
