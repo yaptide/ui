@@ -12,6 +12,7 @@ export interface BeamJSON {
 	position: THREE.Vector3Tuple;
 	direction: THREE.Vector3Tuple;
 	energy: number;
+	energySpread: number;
 	divergence: {
 		x: number;
 		y: number;
@@ -23,6 +24,7 @@ const _default = {
 	position: new THREE.Vector3(0, 0, 0),
 	direction: new THREE.Vector3(0, 0, 1),
 	energy: 150,
+	energySpread: 250,
 	divergence: {
 		x: 0,
 		y: 0,
@@ -42,6 +44,7 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 	helper: THREE.ArrowHelper;
 
 	energy: number;
+	energySpread: number;
 	direction: Vector3;
 
 	divergence: {
@@ -89,6 +92,7 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 
 		this.position.copy(_default.position);
 		this.energy = _default.energy;
+		this.energySpread = _default.energySpread;
 
 		this.divergence = { ..._default.divergence };
 
@@ -174,6 +178,7 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 			position: this.position.toArray(),
 			direction: this.direction.toArray(),
 			energy: this.energy,
+			energySpread: this.energySpread,
 			divergence: this.divergence
 		};
 
@@ -184,6 +189,7 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 		this.position.fromArray(data.position);
 		this.direction.fromArray(data.direction);
 		this.energy = data.energy;
+		this.energySpread = data.energySpread;
 		this.divergence = data.divergence;
 		return this;
 	}

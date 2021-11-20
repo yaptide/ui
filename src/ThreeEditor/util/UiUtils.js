@@ -72,7 +72,7 @@ export function createRowParamNumber(params) {
 	const { text = 'Label' } = params;
 
 	const row = new UIRow();
-	const input = createNumberInput({ ...params });
+	const input = createNumberInput({ ...params }).setWidth('auto');
 	const label = new UIText(text).setWidth('90px');
 
 	row.add(label);
@@ -108,7 +108,7 @@ export function createRowText(params) {
  * @return {[UIRow, UIText, UIText]}
  */
 export function createRowParamInput(params) {
-	const { text = 'Label', value, update = () => {} } = params;
+	const { text = 'Label', value, update = () => { } } = params;
 
 	const row = new UIRow();
 	const input = new UIInput(value).setWidth('150px').setFontSize('12px').onChange(update);
