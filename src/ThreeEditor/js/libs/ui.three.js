@@ -710,7 +710,13 @@ class UIPoints3 extends UIPoints {
 			scope.deletePointRow(idx);
 		});
 
-		this.pointsUI.push({ row: pointRow, lbl: lbl, x: txtX, y: txtY, z: txtZ });
+		this.pointsUI.push({
+			row: pointRow,
+			lbl: lbl,
+			x: txtX,
+			y: txtY,
+			z: txtZ
+		});
 		++this.lastPointIdx;
 		pointRow.add(lbl, txtX, txtY, txtZ, btn);
 

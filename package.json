@@ -6,13 +6,13 @@
 	"dependencies": {
 		"@emotion/css": "^11.5.0",
 		"@emotion/react": "^11.6.0",
-		"@emotion/styled": "^11.3.0",
+		"@emotion/styled": "^11.6.0",
 		"@mui/material": "^5.1.1",
 		"@testing-library/jest-dom": "^5.15.0",
 		"@testing-library/react": "^12.1.2",
 		"@testing-library/user-event": "^13.5.0",
-		"@types/jest": "^27.0.2",
-		"@types/node": "^16.11.7",
+		"@types/jest": "^27.0.3",
+		"@types/node": "^16.11.9",
 		"@types/react-dom": "^17.0.11",
 		"@types/signals": "^1.0.1",
 		"@types/throttle-debounce": "^2.1.0",
@@ -27,7 +27,7 @@
 		"split-grid": "^1.0.11",
 		"three": "^0.134.0",
 		"throttle-debounce": "^3.0.1",
-		"typescript": "^4.4.4",
+		"typescript": "^4.5.2",
 		"web-vitals": "^2.1.2"
 	},
 	"scripts": {
@@ -75,7 +75,7 @@
 		]
 	},
 	"devDependencies": {
-		"@types/react": "^17.0.34",
+		"@types/react": "^17.0.35",
 		"@types/react-async-script": "^1.2.1",
 		"@types/three": "^0.134.0",
 		"cross-env": "^7.0.3",

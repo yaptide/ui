@@ -25,7 +25,13 @@ function WrapperApp() {
 	const [resultData, setResultData] = useState<{ data?: unknown }>({});
 
 	return (
-		<Box sx={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}>
+		<Box
+			sx={{
+				width: '100%',
+				height: '100vh',
+				display: 'flex',
+				flexDirection: 'column'
+			}}>
 			<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
 				<Tabs value={tabsValue} onChange={handleChange}>
 					<Tab label='Editor' />

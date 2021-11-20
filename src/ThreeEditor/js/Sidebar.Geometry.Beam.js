@@ -17,7 +17,11 @@ export function BeamPanel(editor, beam) {
 	// energy
 
 	// set minimum energy to 1ueV (as lower limit of reasonable cross-section used in neutron transport)
-	const [energyRow, energy] = createRowParamNumber({ text: 'Energy [MeV]', min: 1e-12, update });
+	const [energyRow, energy] = createRowParamNumber({
+		text: 'Energy [MeV]',
+		min: 1e-12,
+		update
+	});
 	container.add(energyRow);
 
 	updateUI();
