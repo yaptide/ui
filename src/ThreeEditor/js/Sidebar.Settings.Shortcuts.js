@@ -84,7 +84,8 @@ function SidebarSettingsShortcuts(editor) {
 					const parent = object.parent;
 					if (parent !== null) {
 						if (object?.isZone) editor.execute(new RemoveZoneCommand(editor, object));
-						else if (object?.isDetectGeometry) editor.execute(new RemoveDetectCommand(editor, object));
+						else if (object?.isDetectGeometry)
+							editor.execute(new RemoveDetectCommand(editor, object));
 						else editor.execute(new RemoveObjectCommand(editor, object));
 					}
 					break;

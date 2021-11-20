@@ -42,7 +42,7 @@ function ThreeEditor(props: ThreeEditorProps) {
 			style={{
 				position: 'relative',
 				display: 'flex',
-				flexGrow: 1,
+				flexGrow: 1
 			}}
 		/>
 	);

@@ -32,7 +32,11 @@ export function ViewportClippedView(
 	this.gui = new GUI({});
 
 	// Setup plane clipping ui
-	const planeHelper = new THREE.PlaneHelper(clipPlane, CLIPPING_SIZE, planeHelperColor ?? 0xffff00); // default helper color is yellow
+	const planeHelper = new THREE.PlaneHelper(
+		clipPlane,
+		CLIPPING_SIZE,
+		planeHelperColor ?? 0xffff00
+	); // default helper color is yellow
 	planeHelpers.add(planeHelper);
 
 	const planePosProperty = `${planePosLabel ?? 'PlanePos'} ${editor.unit.name}`;
@@ -51,7 +55,10 @@ export function ViewportClippedView(
 			// align clipping plane with stencil plane
 			clipPlane.constant = v;
 
-			editor.signals.viewportConfigChanged.dispatch({ name: viewport.name, globalPlaneConstant: v });
+			editor.signals.viewportConfigChanged.dispatch({
+				name: viewport.name,
+				globalPlaneConstant: v
+			});
 		},
 
 		get 'Helper Visible'() {
@@ -60,8 +67,11 @@ export function ViewportClippedView(
 		set 'Helper Visible'(v) {
 			planeHelper.visible = v;
 
-			editor.signals.viewportConfigChanged.dispatch({ name: viewport.name, helperVisible: v });
-		},
+			editor.signals.viewportConfigChanged.dispatch({
+				name: viewport.name,
+				helperVisible: v
+			});
+		}
 	};
 
 	// adjust range of movement of clipping plane to -size...+size with given step
@@ -91,7 +101,7 @@ export function ViewportClippedView(
 		stencilFunc: THREE.NotEqualStencilFunc,
 		stencilFail: THREE.ReplaceStencilOp,
 		stencilZFail: THREE.ReplaceStencilOp,
-		stencilZPass: THREE.ReplaceStencilOp,
+		stencilZPass: THREE.ReplaceStencilOp
 	});
 
 	const stencilPlane = new THREE.Mesh(planeGeom, planeMat); // Cross Section Plane - fill stencil
@@ -123,7 +133,11 @@ export function ViewportClippedView(
 
 	// Initialize view with objects
 	initialObjects.forEach((object3D, index) => {
-		const stencilGroup = createPlaneStencilGroup(object3D.geometry, clipPlane, STENCIL_RENDER_ORDER);
+		const stencilGroup = createPlaneStencilGroup(
+			object3D.geometry,
+			clipPlane,
+			STENCIL_RENDER_ORDER
+		);
 		stencilGroup.name = object3D.uuid;
 		clippedObjects.add(stencilGroup);
 	});
@@ -132,7 +146,11 @@ export function ViewportClippedView(
 	function updateMeshWithStencilMaterial(object3D) {
 		clippedObjects.remove(clippedObjects.getObjectByName(object3D.uuid));
 
-		const stencilGroup = createPlaneStencilGroup(object3D.geometry, clipPlane, STENCIL_RENDER_ORDER);
+		const stencilGroup = createPlaneStencilGroup(
+			object3D.geometry,
+			clipPlane,
+			STENCIL_RENDER_ORDER
+		);
 		stencilGroup.name = object3D.uuid;
 		clippedObjects.add(stencilGroup);
 	}

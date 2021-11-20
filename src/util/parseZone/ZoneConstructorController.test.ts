@@ -45,7 +45,7 @@ test('generate correct string value for the zone', () => {
 		[9],
 		[
 			[8, 7, 6],
-			[-5, -4],
+			[-5, -4]
 		]
 	);
 	expect(ctrl.toString()).toEqual('-4 -5 +9 OR +6 +7 +8 +9');

@@ -16,11 +16,13 @@ class MoveObjectCommand extends Command {
 
 		this.object = object;
 		this.oldParent = object !== undefined ? object.parent : undefined;
-		this.oldIndex = this.oldParent !== undefined ? this.oldParent.children.indexOf(this.object) : undefined;
+		this.oldIndex =
+			this.oldParent !== undefined ? this.oldParent.children.indexOf(this.object) : undefined;
 		this.newParent = newParent;
 
 		if (newBefore !== undefined) {
-			this.newIndex = newParent !== undefined ? newParent.children.indexOf(newBefore) : undefined;
+			this.newIndex =
+				newParent !== undefined ? newParent.children.indexOf(newBefore) : undefined;
 		} else {
 			this.newIndex = newParent !== undefined ? newParent.children.length : undefined;
 		}

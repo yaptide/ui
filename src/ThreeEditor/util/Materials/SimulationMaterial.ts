@@ -10,7 +10,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 			side: THREE.DoubleSide,
 			transparent: true,
 			color: new THREE.Color(0xff3d3d),
-			...args,
+			...args
 		});
 		this.simulationData = data;
 	}

@@ -136,7 +136,7 @@ function SidebarScene(editor) {
 			None: '',
 			Color: 'Color',
 			Texture: 'Texture',
-			Equirectangular: 'Equirect',
+			Equirectangular: 'Equirect'
 		})
 		.setWidth('150px');
 	backgroundType.onChange(() => {
@@ -147,14 +147,19 @@ function SidebarScene(editor) {
 	backgroundRow.add(new UIText(strings.getKey('sidebar/scene/background')).setWidth('90px'));
 	backgroundRow.add(backgroundType);
 
-	const backgroundColor = new UIColor().setValue('#000000').setMarginLeft('8px').onInput(onBackgroundChanged);
+	const backgroundColor = new UIColor()
+		.setValue('#000000')
+		.setMarginLeft('8px')
+		.onInput(onBackgroundChanged);
 	backgroundRow.add(backgroundColor);
 
 	const backgroundTexture = new UITexture().setMarginLeft('8px').onChange(onBackgroundChanged);
 	backgroundTexture.setDisplay('none');
 	backgroundRow.add(backgroundTexture);
 
-	const backgroundEquirectangularTexture = new UITexture().setMarginLeft('8px').onChange(onBackgroundChanged);
+	const backgroundEquirectangularTexture = new UITexture()
+		.setMarginLeft('8px')
+		.onChange(onBackgroundChanged);
 	backgroundEquirectangularTexture.setDisplay('none');
 	backgroundRow.add(backgroundEquirectangularTexture);
 
@@ -186,7 +191,7 @@ function SidebarScene(editor) {
 		.setOptions({
 			None: '',
 			Equirectangular: 'Equirect',
-			ModelViewer: 'ModelViewer',
+			ModelViewer: 'ModelViewer'
 		})
 		.setWidth('150px');
 	environmentType.setValue('None');
@@ -198,7 +203,9 @@ function SidebarScene(editor) {
 	environmentRow.add(new UIText(strings.getKey('sidebar/scene/environment')).setWidth('90px'));
 	environmentRow.add(environmentType);
 
-	const environmentEquirectangularTexture = new UITexture().setMarginLeft('8px').onChange(onEnvironmentChanged);
+	const environmentEquirectangularTexture = new UITexture()
+		.setMarginLeft('8px')
+		.onChange(onEnvironmentChanged);
 	environmentEquirectangularTexture.setDisplay('none');
 	environmentRow.add(environmentEquirectangularTexture);
 
@@ -319,7 +326,7 @@ function SidebarScene(editor) {
 					editor.beam,
 					editor.zoneManager.zoneContainer,
 					editor.zoneManager.worldZone,
-					editor.detectManager.detGeoContainer,
+					editor.detectManager.detGeoContainer
 				];
 				return finalParents.some(finalParent => finalParent === parent);
 			};
@@ -328,7 +335,9 @@ function SidebarScene(editor) {
 				if (nodeStates.get(object, nextParent) !== true) {
 					if (!nextParent) {
 						console.error(nextParent);
-						throw new Error(`nextParent is ${nextParent === null ? 'null' : typeof nextParent}`);
+						throw new Error(
+							`nextParent is ${nextParent === null ? 'null' : typeof nextParent}`
+						);
 					}
 					nodeStates.set(nextParent, true);
 					needsRefresh = true;

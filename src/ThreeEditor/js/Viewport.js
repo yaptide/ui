@@ -21,7 +21,7 @@ export function Viewport(
 		planePosLabel,
 		planeHelperColor,
 		showPlaneHelpers,
-		gridRotation,
+		gridRotation
 	} = {}
 ) {
 	this.name = name;
@@ -35,7 +35,7 @@ export function Viewport(
 		selectFigures: true,
 		selectZones: false,
 		selectSections: false,
-		visible: false,
+		visible: false
 	};
 
 	const sceneViewHelpers = new THREE.Scene();
@@ -78,7 +78,7 @@ export function Viewport(
 			camera = value;
 
 			updateCamera(camera, position);
-		},
+		}
 	});
 
 	if (!orthographic) container.add(new ViewportCamera(this, cameras));
@@ -99,7 +99,7 @@ export function Viewport(
 			{
 				clipPlane,
 				planeHelperColor,
-				planePosLabel,
+				planePosLabel
 			}
 		);
 
@@ -203,21 +203,37 @@ export function Viewport(
 			switch (transformControls.getMode()) {
 				case 'translate':
 					if (!objectPositionOnDown.equals(object.position)) {
-						editor.execute(new SetPositionCommand(editor, object, object.position, objectPositionOnDown));
+						editor.execute(
+							new SetPositionCommand(
+								editor,
+								object,
+								object.position,
+								objectPositionOnDown
+							)
+						);
 					}
 
 					break;
 
 				case 'rotate':
 					if (!objectRotationOnDown.equals(object.rotation)) {
-						editor.execute(new SetRotationCommand(editor, object, object.rotation, objectRotationOnDown));
+						editor.execute(
+							new SetRotationCommand(
+								editor,
+								object,
+								object.rotation,
+								objectRotationOnDown
+							)
+						);
 					}
 
 					break;
 
 				case 'scale':
 					if (!objectScaleOnDown.equals(object.scale)) {
-						editor.execute(new SetScaleCommand(editor, object, object.scale, objectScaleOnDown));
+						editor.execute(
+							new SetScaleCommand(editor, object, object.scale, objectScaleOnDown)
+						);
 					}
 
 					break;
@@ -498,7 +514,10 @@ export function Viewport(
 		//TODO: clicking on zones selects them if zoneSelectionMode is enabled
 	});
 
-	this.setSize = (viewWidth = container.dom.offsetWidth, viewHeight = container.dom.offsetHeight) => {
+	this.setSize = (
+		viewWidth = container.dom.offsetWidth,
+		viewHeight = container.dom.offsetHeight
+	) => {
 		//prevent canvas from being empty
 		canvas.width = Math.max(viewWidth, 2);
 		canvas.height = Math.max(viewHeight, 2);
@@ -523,6 +542,6 @@ export function Viewport(
 		controls,
 		viewHelper,
 		animate,
-		config,
+		config
 	};
 }

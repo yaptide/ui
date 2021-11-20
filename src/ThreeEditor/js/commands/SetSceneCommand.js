@@ -19,7 +19,9 @@ class SetSceneCommand extends Command {
 
 		if (scene !== undefined) {
 			this.cmdArray.push(new SetUuidCommand(this.editor, this.editor.scene, scene.uuid));
-			this.cmdArray.push(new SetValueCommand(this.editor, this.editor.scene, 'name', scene.name));
+			this.cmdArray.push(
+				new SetValueCommand(this.editor, this.editor.scene, 'name', scene.name)
+			);
 			this.cmdArray.push(
 				new SetValueCommand(
 					this.editor,

@@ -20,7 +20,10 @@ function parseRow(zoneOperationRow: AlgebraRow) {
 	return '';
 }
 
-export function parseZone(zoneOperationRows: AlgebraRow[], materialData?: { name: string; id: string }): void {
+export function parseZone(
+	zoneOperationRows: AlgebraRow[],
+	materialData?: { name: string; id: string }
+): void {
 	console.log(zoneOperationRows);
 	let result: string = '';
 	zoneOperationRows.forEach(el => {

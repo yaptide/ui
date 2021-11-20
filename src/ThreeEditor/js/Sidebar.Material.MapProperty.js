@@ -1,5 +1,9 @@
 import * as THREE from 'three';
-import { SetMaterialMapCommand, SetMaterialValueCommand, SetMaterialVectorCommand } from './commands/Commands';
+import {
+	SetMaterialMapCommand,
+	SetMaterialValueCommand,
+	SetMaterialVectorCommand
+} from './commands/Commands';
 import { UICheckbox, UINumber, UIRow, UIText } from './libs/ui.js';
 import { UITexture } from './libs/ui.three.js';
 
@@ -50,12 +54,22 @@ function SidebarMaterialMapProperty(editor, property, name) {
 		if (material['property'] !== newMap) {
 			const geometry = object.geometry;
 
-			if (newMap !== null && geometry.isBufferGeometry && geometry.attributes.uv === undefined) {
+			if (
+				newMap !== null &&
+				geometry.isBufferGeometry &&
+				geometry.attributes.uv === undefined
+			) {
 				console.warn("Geometry doesn't have uvs:", geometry);
 			}
 
 			editor.execute(
-				new SetMaterialMapCommand(editor, object, property, newMap, 0 /* TODO: currentMaterialSlot */)
+				new SetMaterialMapCommand(
+					editor,
+					object,
+					property,
+					newMap,
+					0 /* TODO: currentMaterialSlot */
+				)
 			);
 		}
 	}
@@ -104,7 +118,10 @@ function SidebarMaterialMapProperty(editor, property, name) {
 	function onScaleXYChange() {
 		const value = [scaleX.getValue(), scaleY.getValue()];
 
-		if (material[`${mapType}Scale`].x !== value[0] || material[`${mapType}Scale`].y !== value[1]) {
+		if (
+			material[`${mapType}Scale`].x !== value[0] ||
+			material[`${mapType}Scale`].y !== value[1]
+		) {
 			editor.execute(
 				new SetMaterialVectorCommand(
 					editor,

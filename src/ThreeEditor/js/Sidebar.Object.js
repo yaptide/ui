@@ -5,9 +5,18 @@ import {
 	SetPositionCommand,
 	SetRotationCommand,
 	SetScaleCommand,
-	SetValueCommand,
+	SetValueCommand
 } from './commands/Commands';
-import { UICheckbox, UIColor, UIInteger, UINumber, UIPanel, UIRow, UIText, UITextArea } from './libs/ui.js';
+import {
+	UICheckbox,
+	UIColor,
+	UIInteger,
+	UINumber,
+	UIPanel,
+	UIRow,
+	UIText,
+	UITextArea
+} from './libs/ui.js';
 import { UIBoolean } from './libs/ui.three.js';
 
 function SidebarObject(editor) {
@@ -20,7 +29,9 @@ function SidebarObject(editor) {
 
 	// type
 
-	const [objectTypeRow, objectType] = createRowText({ text: strings.getKey('sidebar/object/type') });
+	const [objectTypeRow, objectType] = createRowText({
+		text: strings.getKey('sidebar/object/type')
+	});
 	container.add(objectTypeRow);
 
 	// id
@@ -38,29 +49,33 @@ function SidebarObject(editor) {
 	const [objectNameRow, objectName] = createRowParamInput({
 		text: strings.getKey('sidebar/object/name'),
 		update: () => {
-			editor.execute(new SetValueCommand(editor, editor.selected, 'name', objectName.getValue()));
-		},
+			editor.execute(
+				new SetValueCommand(editor, editor.selected, 'name', objectName.getValue())
+			);
+		}
 	});
 	container.add(objectNameRow);
 
 	// position
 
-	const [objectPositionRow, objectPositionX, objectPositionY, objectPositionZ] = createRowParamNumberXYZ({
-		text: `${strings.getKey('sidebar/object/position')} ${editor.unit.name}`,
-		update,
-	});
+	const [objectPositionRow, objectPositionX, objectPositionY, objectPositionZ] =
+		createRowParamNumberXYZ({
+			text: `${strings.getKey('sidebar/object/position')} ${editor.unit.name}`,
+			update
+		});
 	container.add(objectPositionRow);
 
 	// rotation
 
-	const [objectRotationRow, objectRotationX, objectRotationY, objectRotationZ] = createRowParamNumberXYZ({
-		text: `${strings.getKey('sidebar/object/rotation')} ${editor.unit.name}`,
-		update,
-		step: 10,
-		nudge: 0.1,
-		unit: '°',
-		precision: 2,
-	});
+	const [objectRotationRow, objectRotationX, objectRotationY, objectRotationZ] =
+		createRowParamNumberXYZ({
+			text: `${strings.getKey('sidebar/object/rotation')} ${editor.unit.name}`,
+			update,
+			step: 10,
+			nudge: 0.1,
+			unit: '°',
+			precision: 2
+		});
 	container.add(objectRotationRow);
 
 	// scale
@@ -68,7 +83,7 @@ function SidebarObject(editor) {
 	const [objectScaleRow, objectScaleX, objectScaleY, objectScaleZ] = createRowParamNumberXYZ({
 		text: `${strings.getKey('sidebar/object/scale')} ${editor.unit.name}`,
 		update,
-		value: { x: 1, y: 1, z: 1 },
+		value: { x: 1, y: 1, z: 1 }
 	});
 	container.add(objectScaleRow);
 
@@ -167,7 +182,9 @@ function SidebarObject(editor) {
 	const objectGroundColorRow = new UIRow();
 	const objectGroundColor = new UIColor().onInput(update);
 
-	objectGroundColorRow.add(new UIText(strings.getKey('sidebar/object/groundcolor')).setWidth('90px'));
+	objectGroundColorRow.add(
+		new UIText(strings.getKey('sidebar/object/groundcolor')).setWidth('90px')
+	);
 	objectGroundColorRow.add(objectGroundColor);
 
 	container.add(objectGroundColorRow);
@@ -221,10 +238,15 @@ function SidebarObject(editor) {
 
 	objectShadowRow.add(new UIText(strings.getKey('sidebar/object/shadow')).setWidth('90px'));
 
-	const objectCastShadow = new UIBoolean(false, strings.getKey('sidebar/object/cast')).onChange(update);
+	const objectCastShadow = new UIBoolean(false, strings.getKey('sidebar/object/cast')).onChange(
+		update
+	);
 	objectShadowRow.add(objectCastShadow);
 
-	const objectReceiveShadow = new UIBoolean(false, strings.getKey('sidebar/object/receive')).onChange(update);
+	const objectReceiveShadow = new UIBoolean(
+		false,
+		strings.getKey('sidebar/object/receive')
+	).onChange(update);
 	objectShadowRow.add(objectReceiveShadow);
 
 	container.add(objectShadowRow);
@@ -233,9 +255,15 @@ function SidebarObject(editor) {
 
 	const objectShadowBiasRow = new UIRow();
 
-	objectShadowBiasRow.add(new UIText(strings.getKey('sidebar/object/shadowBias')).setWidth('90px'));
+	objectShadowBiasRow.add(
+		new UIText(strings.getKey('sidebar/object/shadowBias')).setWidth('90px')
+	);
 
-	const objectShadowBias = new UINumber(0).setPrecision(5).setStep(0.0001).setNudge(0.00001).onChange(update);
+	const objectShadowBias = new UINumber(0)
+		.setPrecision(5)
+		.setStep(0.0001)
+		.setNudge(0.00001)
+		.onChange(update);
 	objectShadowBiasRow.add(objectShadowBias);
 
 	container.add(objectShadowBiasRow);
@@ -244,7 +272,9 @@ function SidebarObject(editor) {
 
 	const objectShadowNormalBiasRow = new UIRow();
 
-	objectShadowNormalBiasRow.add(new UIText(strings.getKey('sidebar/object/shadowNormalBias')).setWidth('90px'));
+	objectShadowNormalBiasRow.add(
+		new UIText(strings.getKey('sidebar/object/shadowNormalBias')).setWidth('90px')
+	);
 
 	const objectShadowNormalBias = new UINumber(0).onChange(update);
 	objectShadowNormalBiasRow.add(objectShadowNormalBias);
@@ -255,7 +285,9 @@ function SidebarObject(editor) {
 
 	const objectShadowRadiusRow = new UIRow();
 
-	objectShadowRadiusRow.add(new UIText(strings.getKey('sidebar/object/shadowRadius')).setWidth('90px'));
+	objectShadowRadiusRow.add(
+		new UIText(strings.getKey('sidebar/object/shadowRadius')).setWidth('90px')
+	);
 
 	const objectShadowRadius = new UINumber(1).onChange(update);
 	objectShadowRadiusRow.add(objectShadowRadius);
@@ -277,7 +309,9 @@ function SidebarObject(editor) {
 	const objectFrustumCulledRow = new UIRow();
 	const objectFrustumCulled = new UICheckbox().onChange(update);
 
-	objectFrustumCulledRow.add(new UIText(strings.getKey('sidebar/object/frustumcull')).setWidth('90px'));
+	objectFrustumCulledRow.add(
+		new UIText(strings.getKey('sidebar/object/frustumcull')).setWidth('90px')
+	);
 	objectFrustumCulledRow.add(objectFrustumCulled);
 
 	container.add(objectFrustumCulledRow);
@@ -287,7 +321,9 @@ function SidebarObject(editor) {
 	const objectRenderOrderRow = new UIRow();
 	const objectRenderOrder = new UIInteger().setWidth('50px').onChange(update);
 
-	objectRenderOrderRow.add(new UIText(strings.getKey('sidebar/object/renderorder')).setWidth('90px'));
+	objectRenderOrderRow.add(
+		new UIText(strings.getKey('sidebar/object/renderorder')).setWidth('90px')
+	);
 	objectRenderOrderRow.add(objectRenderOrder);
 
 	container.add(objectRenderOrderRow);
@@ -295,7 +331,11 @@ function SidebarObject(editor) {
 	// user data
 
 	const objectUserDataRow = new UIRow();
-	const objectUserData = new UITextArea().setWidth('150px').setHeight('40px').setFontSize('12px').onChange(update);
+	const objectUserData = new UITextArea()
+		.setWidth('150px')
+		.setHeight('40px')
+		.setFontSize('12px')
+		.onChange(update);
 
 	objectUserData.onKeyUp(() => {
 		try {
@@ -337,12 +377,12 @@ function SidebarObject(editor) {
 			object.userData.rotation = [
 				objectRotationX.getValue(),
 				objectRotationY.getValue(),
-				objectRotationZ.getValue(),
+				objectRotationZ.getValue()
 			];
 			object.userData.userSetRotation = [
 				objectRotationX.getValue(),
 				objectRotationY.getValue(),
-				objectRotationZ.getValue(),
+				objectRotationZ.getValue()
 			];
 
 			const newScale = new THREE.Vector3(
@@ -359,13 +399,21 @@ function SidebarObject(editor) {
 				object.updateProjectionMatrix();
 			}
 
-			if (object.left !== undefined && Math.abs(object.left - objectLeft.getValue()) >= 0.01) {
+			if (
+				object.left !== undefined &&
+				Math.abs(object.left - objectLeft.getValue()) >= 0.01
+			) {
 				editor.execute(new SetValueCommand(editor, object, 'left', objectLeft.getValue()));
 				object.updateProjectionMatrix();
 			}
 
-			if (object.right !== undefined && Math.abs(object.right - objectRight.getValue()) >= 0.01) {
-				editor.execute(new SetValueCommand(editor, object, 'right', objectRight.getValue()));
+			if (
+				object.right !== undefined &&
+				Math.abs(object.right - objectRight.getValue()) >= 0.01
+			) {
+				editor.execute(
+					new SetValueCommand(editor, object, 'right', objectRight.getValue())
+				);
 				object.updateProjectionMatrix();
 			}
 
@@ -374,12 +422,20 @@ function SidebarObject(editor) {
 				object.updateProjectionMatrix();
 			}
 
-			if (object.bottom !== undefined && Math.abs(object.bottom - objectBottom.getValue()) >= 0.01) {
-				editor.execute(new SetValueCommand(editor, object, 'bottom', objectBottom.getValue()));
+			if (
+				object.bottom !== undefined &&
+				Math.abs(object.bottom - objectBottom.getValue()) >= 0.01
+			) {
+				editor.execute(
+					new SetValueCommand(editor, object, 'bottom', objectBottom.getValue())
+				);
 				object.updateProjectionMatrix();
 			}
 
-			if (object.near !== undefined && Math.abs(object.near - objectNear.getValue()) >= 0.01) {
+			if (
+				object.near !== undefined &&
+				Math.abs(object.near - objectNear.getValue()) >= 0.01
+			) {
 				editor.execute(new SetValueCommand(editor, object, 'near', objectNear.getValue()));
 				if (object.isOrthographicCamera) {
 					object.updateProjectionMatrix();
@@ -393,68 +449,147 @@ function SidebarObject(editor) {
 				}
 			}
 
-			if (object.intensity !== undefined && Math.abs(object.intensity - objectIntensity.getValue()) >= 0.01) {
-				editor.execute(new SetValueCommand(editor, object, 'intensity', objectIntensity.getValue()));
+			if (
+				object.intensity !== undefined &&
+				Math.abs(object.intensity - objectIntensity.getValue()) >= 0.01
+			) {
+				editor.execute(
+					new SetValueCommand(editor, object, 'intensity', objectIntensity.getValue())
+				);
 			}
 
 			if (object.color !== undefined && object.color.getHex() !== objectColor.getHexValue()) {
-				editor.execute(new SetColorCommand(editor, object, 'color', objectColor.getHexValue()));
+				editor.execute(
+					new SetColorCommand(editor, object, 'color', objectColor.getHexValue())
+				);
 			}
 
-			if (object.groundColor !== undefined && object.groundColor.getHex() !== objectGroundColor.getHexValue()) {
-				editor.execute(new SetColorCommand(editor, object, 'groundColor', objectGroundColor.getHexValue()));
+			if (
+				object.groundColor !== undefined &&
+				object.groundColor.getHex() !== objectGroundColor.getHexValue()
+			) {
+				editor.execute(
+					new SetColorCommand(
+						editor,
+						object,
+						'groundColor',
+						objectGroundColor.getHexValue()
+					)
+				);
 			}
 
-			if (object.distance !== undefined && Math.abs(object.distance - objectDistance.getValue()) >= 0.01) {
-				editor.execute(new SetValueCommand(editor, object, 'distance', objectDistance.getValue()));
+			if (
+				object.distance !== undefined &&
+				Math.abs(object.distance - objectDistance.getValue()) >= 0.01
+			) {
+				editor.execute(
+					new SetValueCommand(editor, object, 'distance', objectDistance.getValue())
+				);
 			}
 
-			if (object.angle !== undefined && Math.abs(object.angle - objectAngle.getValue()) >= 0.01) {
-				editor.execute(new SetValueCommand(editor, object, 'angle', objectAngle.getValue()));
+			if (
+				object.angle !== undefined &&
+				Math.abs(object.angle - objectAngle.getValue()) >= 0.01
+			) {
+				editor.execute(
+					new SetValueCommand(editor, object, 'angle', objectAngle.getValue())
+				);
 			}
 
-			if (object.penumbra !== undefined && Math.abs(object.penumbra - objectPenumbra.getValue()) >= 0.01) {
-				editor.execute(new SetValueCommand(editor, object, 'penumbra', objectPenumbra.getValue()));
+			if (
+				object.penumbra !== undefined &&
+				Math.abs(object.penumbra - objectPenumbra.getValue()) >= 0.01
+			) {
+				editor.execute(
+					new SetValueCommand(editor, object, 'penumbra', objectPenumbra.getValue())
+				);
 			}
 
-			if (object.decay !== undefined && Math.abs(object.decay - objectDecay.getValue()) >= 0.01) {
-				editor.execute(new SetValueCommand(editor, object, 'decay', objectDecay.getValue()));
+			if (
+				object.decay !== undefined &&
+				Math.abs(object.decay - objectDecay.getValue()) >= 0.01
+			) {
+				editor.execute(
+					new SetValueCommand(editor, object, 'decay', objectDecay.getValue())
+				);
 			}
 
 			if (object.visible !== objectVisible.getValue()) {
-				editor.execute(new SetValueCommand(editor, object, 'visible', objectVisible.getValue()));
+				editor.execute(
+					new SetValueCommand(editor, object, 'visible', objectVisible.getValue())
+				);
 			}
 
 			if (object.frustumCulled !== objectFrustumCulled.getValue()) {
-				editor.execute(new SetValueCommand(editor, object, 'frustumCulled', objectFrustumCulled.getValue()));
+				editor.execute(
+					new SetValueCommand(
+						editor,
+						object,
+						'frustumCulled',
+						objectFrustumCulled.getValue()
+					)
+				);
 			}
 
 			if (object.renderOrder !== objectRenderOrder.getValue()) {
-				editor.execute(new SetValueCommand(editor, object, 'renderOrder', objectRenderOrder.getValue()));
+				editor.execute(
+					new SetValueCommand(editor, object, 'renderOrder', objectRenderOrder.getValue())
+				);
 			}
 
-			if (object.castShadow !== undefined && object.castShadow !== objectCastShadow.getValue()) {
-				editor.execute(new SetValueCommand(editor, object, 'castShadow', objectCastShadow.getValue()));
+			if (
+				object.castShadow !== undefined &&
+				object.castShadow !== objectCastShadow.getValue()
+			) {
+				editor.execute(
+					new SetValueCommand(editor, object, 'castShadow', objectCastShadow.getValue())
+				);
 			}
 
 			if (object.receiveShadow !== objectReceiveShadow.getValue()) {
 				if (object.material !== undefined) object.material.needsUpdate = true;
-				editor.execute(new SetValueCommand(editor, object, 'receiveShadow', objectReceiveShadow.getValue()));
+				editor.execute(
+					new SetValueCommand(
+						editor,
+						object,
+						'receiveShadow',
+						objectReceiveShadow.getValue()
+					)
+				);
 			}
 
 			if (object.shadow !== undefined) {
 				if (object.shadow.bias !== objectShadowBias.getValue()) {
-					editor.execute(new SetValueCommand(editor, object.shadow, 'bias', objectShadowBias.getValue()));
+					editor.execute(
+						new SetValueCommand(
+							editor,
+							object.shadow,
+							'bias',
+							objectShadowBias.getValue()
+						)
+					);
 				}
 
 				if (object.shadow.normalBias !== objectShadowNormalBias.getValue()) {
 					editor.execute(
-						new SetValueCommand(editor, object.shadow, 'normalBias', objectShadowNormalBias.getValue())
+						new SetValueCommand(
+							editor,
+							object.shadow,
+							'normalBias',
+							objectShadowNormalBias.getValue()
+						)
 					);
 				}
 
 				if (object.shadow.radius !== objectShadowRadius.getValue()) {
-					editor.execute(new SetValueCommand(editor, object.shadow, 'radius', objectShadowRadius.getValue()));
+					editor.execute(
+						new SetValueCommand(
+							editor,
+							object.shadow,
+							'radius',
+							objectShadowRadius.getValue()
+						)
+					);
 				}
 			}
 
@@ -487,7 +622,7 @@ function SidebarObject(editor) {
 			decay: objectDecayRow,
 			castShadow: objectShadowRow,
 			receiveShadow: objectReceiveShadow,
-			shadow: [objectShadowBiasRow, objectShadowNormalBiasRow, objectShadowRadiusRow],
+			shadow: [objectShadowBiasRow, objectShadowNormalBiasRow, objectShadowRadiusRow]
 		};
 
 		for (const property in properties) {

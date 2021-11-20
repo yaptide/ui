@@ -59,7 +59,7 @@ class SetMaterialMapCommand extends Command {
 				geometries: {},
 				materials: {},
 				textures: {},
-				images: {},
+				images: {}
 			};
 
 			const json = map.toJSON(meta);

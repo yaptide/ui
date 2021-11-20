@@ -17,7 +17,7 @@ function GeometryParametersPanel(editor, object) {
 		update,
 		value: parameters.radius,
 		min: 0,
-		text: `${strings.getKey('sidebar/geometry/sphere_geometry/radius')} ${editor.unit.name}`,
+		text: `${strings.getKey('sidebar/geometry/sphere_geometry/radius')} ${editor.unit.name}`
 	});
 	container.add(radiusRow);
 

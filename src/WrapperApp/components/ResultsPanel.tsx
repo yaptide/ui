@@ -20,7 +20,7 @@ const simulationData = (() => {
 				.map((v, i) => {
 					const rand = Math.round(Math.random() * numberOfElements) + 1;
 					return { uuid: i, title: `Mesh${index} - Graph${i} - ${rand}`, value: rand };
-				}),
+				})
 		};
 		data.push(obj);
 	}
@@ -45,13 +45,23 @@ const ResultsPanel = React.memo(
 					value={tabsValue}
 					onChange={handleChange}>
 					{simulationData.map(meshResult => {
-						return <Tab key={meshResult.uuid} label={meshResult.name} value={meshResult.uuid} />;
+						return (
+							<Tab
+								key={meshResult.uuid}
+								label={meshResult.name}
+								value={meshResult.uuid}
+							/>
+						);
 					})}
 				</Tabs>
 
 				{simulationData.map(meshResult => {
 					return (
-						<TabPanel key={meshResult.uuid} value={tabsValue} index={meshResult.uuid} persistent>
+						<TabPanel
+							key={meshResult.uuid}
+							value={tabsValue}
+							index={meshResult.uuid}
+							persistent>
 							<Grid key={meshResult.uuid} container spacing={1}>
 								{meshResult.graphs.map(graph => (
 									<React.Fragment key={graph.uuid}>

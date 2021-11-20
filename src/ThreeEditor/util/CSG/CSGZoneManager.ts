@@ -111,7 +111,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 			zones,
 			uuid,
 			name,
-			worldZone,
+			worldZone
 		};
 	}
 

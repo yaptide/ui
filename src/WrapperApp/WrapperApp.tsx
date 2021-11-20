@@ -37,7 +37,10 @@ function WrapperApp() {
 				</Tabs>
 			</Box>
 			<TabPanel value={tabsValue} index={0} persistent>
-				<ThreeEditor onEditorInitialized={editor => (editorRef.current = editor)} focus={tabsValue === 0} />
+				<ThreeEditor
+					onEditorInitialized={editor => (editorRef.current = editor)}
+					focus={tabsValue === 0}
+				/>
 			</TabPanel>
 			{DEMO_MODE || (
 				<>

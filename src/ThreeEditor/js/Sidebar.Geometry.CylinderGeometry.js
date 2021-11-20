@@ -17,7 +17,7 @@ function GeometryParametersPanel(editor, object) {
 		update,
 		value: parameters.radiusTop,
 		min: 0,
-		text: `${strings.getKey('sidebar/geometry/sphere_geometry/radius')} ${editor.unit.name}`,
+		text: `${strings.getKey('sidebar/geometry/sphere_geometry/radius')} ${editor.unit.name}`
 	});
 	container.add(radiusRow);
 
@@ -27,7 +27,7 @@ function GeometryParametersPanel(editor, object) {
 		update,
 		value: parameters.height,
 		min: 0,
-		text: `${strings.getKey('sidebar/geometry/cylinder_geometry/height')} ${editor.unit.name}`,
+		text: `${strings.getKey('sidebar/geometry/cylinder_geometry/height')} ${editor.unit.name}`
 	});
 	container.add(heightRow);
 
@@ -38,7 +38,14 @@ function GeometryParametersPanel(editor, object) {
 			new SetGeometryCommand(
 				editor,
 				object,
-				new THREE.CylinderGeometry(radius.getValue(), radius.getValue(), height.getValue(), 16, 1, false)
+				new THREE.CylinderGeometry(
+					radius.getValue(),
+					radius.getValue(),
+					height.getValue(),
+					16,
+					1,
+					false
+				)
 			)
 		);
 	}

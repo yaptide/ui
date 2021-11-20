@@ -21,7 +21,9 @@ function SidebarProjectRenderer(editor) {
 
 	antialiasRow.add(new UIText(strings.getKey('sidebar/project/antialias')).setWidth('90px'));
 
-	const antialiasBoolean = new UIBoolean(config.getKey('project/renderer/antialias')).onChange(createRenderer);
+	const antialiasBoolean = new UIBoolean(config.getKey('project/renderer/antialias')).onChange(
+		createRenderer
+	);
 	antialiasRow.add(antialiasBoolean);
 
 	// Physically Correct lights
@@ -48,14 +50,16 @@ function SidebarProjectRenderer(editor) {
 
 	shadowsRow.add(new UIText(strings.getKey('sidebar/project/shadows')).setWidth('90px'));
 
-	const shadowsBoolean = new UIBoolean(config.getKey('project/renderer/shadows')).onChange(updateShadows);
+	const shadowsBoolean = new UIBoolean(config.getKey('project/renderer/shadows')).onChange(
+		updateShadows
+	);
 	shadowsRow.add(shadowsBoolean);
 
 	const shadowTypeSelect = new UISelect()
 		.setOptions({
 			0: 'Basic',
 			1: 'PCF',
-			2: 'PCF Soft',
+			2: 'PCF Soft'
 			//	3: 'VSM'
 		})
 		.setWidth('125px')
@@ -83,7 +87,7 @@ function SidebarProjectRenderer(editor) {
 			1: 'Linear',
 			2: 'Reinhard',
 			3: 'Cineon',
-			4: 'ACESFilmic',
+			4: 'ACESFilmic'
 		})
 		.setWidth('120px')
 		.onChange(updateToneMapping);

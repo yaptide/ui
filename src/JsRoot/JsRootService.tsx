@@ -42,7 +42,7 @@ const JsRoot = (props: JsRootProps) => {
 					setValue({ JSROOT: window.JSROOT });
 				}
 				return true;
-			},
+			}
 		};
 		const proxyJsRoot = new Proxy(window.JSROOT, handler);
 		window.JSROOT = proxyJsRoot;
@@ -50,7 +50,11 @@ const JsRoot = (props: JsRootProps) => {
 		document.body.appendChild(script);
 	}, [props.JSROOT]);
 
-	return <JsRootContextProvider value={value}>{value?.JSROOT && props.children}</JsRootContextProvider>;
+	return (
+		<JsRootContextProvider value={value}>
+			{value?.JSROOT && props.children}
+		</JsRootContextProvider>
+	);
 };
 
 const AsyncLoaderJsRoot = makeAsyncScriptLoader(JsRootUrl, { globalName: JsRootKey })(JsRoot);

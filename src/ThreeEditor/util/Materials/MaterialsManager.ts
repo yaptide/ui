@@ -38,7 +38,9 @@ export default class MaterialsManager {
 				return Reflect.set(target, prop, value);
 			},
 			ownKeys: (target: Record<string, SimulationMaterial>) => {
-				return Array.from(new Set([...Reflect.ownKeys(target), ...Reflect.ownKeys(this.prefabMaterials)]));
+				return Array.from(
+					new Set([...Reflect.ownKeys(target), ...Reflect.ownKeys(this.prefabMaterials)])
+				);
 			},
 			has: (target: Record<string, SimulationMaterial>, key: string) => {
 				return key in this.prefabMaterials || key in target;
@@ -47,9 +49,9 @@ export default class MaterialsManager {
 				return {
 					value: this.get(target, key),
 					enumerable: true,
-					configurable: true,
+					configurable: true
 				};
-			},
+			}
 		};
 
 		this.materials = new Proxy(this.customMaterials, materialsHandler);
@@ -68,12 +70,12 @@ export default class MaterialsManager {
 				const next = [
 					{
 						...prev[0],
-						[current.name]: new SimulationMaterial(current, {}),
+						[current.name]: new SimulationMaterial(current, {})
 					},
 					{
 						...prev[1],
-						[current.name]: current.name,
-					},
+						[current.name]: current.name
+					}
 				];
 				return next;
 			},
@@ -83,17 +85,19 @@ export default class MaterialsManager {
 	};
 
 	toJSON() {
-		const jsonObject: MaterialsManagerJSON[] = Object.entries(this.customMaterials).map(object => {
-			return {
-				data: object[1].simulationData,
-				color: object[1].color.getHex(),
-				flatShading: object[1].flatShading,
-				// "blending": object[1].blending,
-				//TODO: parse blending value
-				opacity: object[1].opacity,
-				transparent: object[1].transparent,
-			};
-		});
+		const jsonObject: MaterialsManagerJSON[] = Object.entries(this.customMaterials).map(
+			object => {
+				return {
+					data: object[1].simulationData,
+					color: object[1].color.getHex(),
+					flatShading: object[1].flatShading,
+					// "blending": object[1].blending,
+					//TODO: parse blending value
+					opacity: object[1].opacity,
+					transparent: object[1].transparent
+				};
+			}
+		);
 		return jsonObject;
 	}
 
@@ -104,7 +108,7 @@ export default class MaterialsManager {
 				flatShading: object.flatShading,
 				// blending: object.blending,
 				opacity: object.opacity,
-				transparent: object.transparent,
+				transparent: object.transparent
 			});
 		});
 	}

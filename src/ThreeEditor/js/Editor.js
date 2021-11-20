@@ -99,7 +99,7 @@ export function Editor(container) {
 
 		viewportConfigChanged: new Signal(), // Viewport config signal
 
-		CSGManagerStateChanged: new Signal(), // State of CSGmanager changed
+		CSGManagerStateChanged: new Signal() // State of CSGmanager changed
 	};
 
 	this.container = container;
@@ -112,7 +112,7 @@ export function Editor(container) {
 	this.strings = new Strings(this.config);
 	this.unit = {
 		name: '[cm]',
-		multiplier: 1,
+		multiplier: 1
 	};
 
 	this.loader = new Loader(this);
@@ -465,7 +465,9 @@ Editor.prototype = {
 
 		const objectCollections = [this.scene, this.zoneManager, this.beam, this.detectManager];
 
-		const object = objectCollections.map(e => e.getObjectById(id)).find(e => typeof e !== 'undefined');
+		const object = objectCollections
+			.map(e => e.getObjectById(id))
+			.find(e => typeof e !== 'undefined');
 
 		this.select(object);
 	},
@@ -584,14 +586,16 @@ Editor.prototype = {
 			metadata: {
 				version: 0.1,
 				type: 'Editor',
-				generator: 'Editor.toJSON',
+				generator: 'Editor.toJSON'
 			},
 			project: {
 				shadows: this.config.getKey('project/renderer/shadows'),
 				shadowType: this.config.getKey('project/renderer/shadowType'),
-				physicallyCorrectLights: this.config.getKey('project/renderer/physicallyCorrectLights'),
+				physicallyCorrectLights: this.config.getKey(
+					'project/renderer/physicallyCorrectLights'
+				),
 				toneMapping: this.config.getKey('project/renderer/toneMapping'),
-				toneMappingExposure: this.config.getKey('project/renderer/toneMappingExposure'),
+				toneMappingExposure: this.config.getKey('project/renderer/toneMappingExposure')
 			},
 			camera: this.camera.toJSON(),
 			scene: this.scene.toJSON(),
@@ -600,7 +604,7 @@ Editor.prototype = {
 			zoneManager: this.zoneManager.toJSON(), // serialize CSGManager
 			detectManager: this.detectManager.toJSON(), // serialize DetectManager;
 			beam: this.beam.toJSON(),
-			materialsManager: this.materialsManager.toJSON(), // serialize MaterialManager
+			materialsManager: this.materialsManager.toJSON() // serialize MaterialManager
 		};
 	},
 
@@ -618,5 +622,5 @@ Editor.prototype = {
 
 	redo() {
 		this.history.redo();
-	},
+	}
 };

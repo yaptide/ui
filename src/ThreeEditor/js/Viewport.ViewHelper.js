@@ -17,7 +17,7 @@ class ViewHelper extends THREE.Object3D {
 			},
 			set(newObject) {
 				editorCamera = newObject;
-			},
+			}
 		});
 
 		const panel = new UIPanel();
@@ -191,7 +191,11 @@ class ViewHelper extends THREE.Object3D {
 			// animate position by doing a slerp and then scaling the position on the unit sphere
 
 			q1.rotateTowards(q2, step);
-			editorCamera.position.set(0, 0, 1).applyQuaternion(q1).multiplyScalar(radius).add(focusPoint);
+			editorCamera.position
+				.set(0, 0, 1)
+				.applyQuaternion(q1)
+				.multiplyScalar(radius)
+				.add(focusPoint);
 
 			// animate orientation
 

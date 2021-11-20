@@ -44,7 +44,7 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 		transparent: true,
 		opacity: 0.5,
 		wireframe: true,
-		color: new THREE.Color('cyan'),
+		color: new THREE.Color('cyan')
 	});
 
 	detGeoContainer: DetGeoContainer;
@@ -153,7 +153,7 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 			uuid,
 			name,
 			detectGeometries,
-			filters,
+			filters
 		};
 	}
 
@@ -182,7 +182,9 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 	}
 
 	getSectionById(id: number): DetectGeometry | null {
-		return this.detGeoContainer.children.find(child => child.id === id) as DetectGeometry | null;
+		return this.detGeoContainer.children.find(
+			child => child.id === id
+		) as DetectGeometry | null;
 	}
 
 	getFilterByUuid(uuid: string): DetectFilter | null {

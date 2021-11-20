@@ -87,7 +87,7 @@ function ViewManager(editor) {
 		objects,
 		grid,
 		planeHelpers,
-		selectionBox,
+		selectionBox
 	};
 
 	// Below we define configuration for 4 cameras
@@ -129,7 +129,7 @@ function ViewManager(editor) {
 		// (phi = 90*, theta = any in threejs spherical coordinates, see comment in top part of this file)
 		// to align it with desired XY plane we rotate the grid plane around X axis by 90*
 		// therefore we use Euler angles (90*, 0*, 0*)
-		gridRotation: new THREE.Euler(Math.PI / 2, 0, 0),
+		gridRotation: new THREE.Euler(Math.PI / 2, 0, 0)
 	};
 	const viewPlaneXY = new Viewport('ViewPanelXY', editor, viewManagerProps, configPlaneXY);
 	viewsGrid.add(viewPlaneXY.container);
@@ -154,7 +154,7 @@ function ViewManager(editor) {
 		showPlaneHelpers: true,
 
 		// camera looking from the middle of X>0,Y>0,Z>0 quadrant
-		cameraPosition: new THREE.Vector3(10, 10, 10),
+		cameraPosition: new THREE.Vector3(10, 10, 10)
 	};
 	const view3D = new Viewport('ViewPanel3D', editor, viewManagerProps, config3D);
 	viewsGrid.add(view3D.container);
@@ -175,7 +175,7 @@ function ViewManager(editor) {
 		planePosLabel: 'PlanePoz Y',
 
 		// 0xc2ee00 - Lime color (between green and yellow)
-		planeHelperColor: 0xc2ee00,
+		planeHelperColor: 0xc2ee00
 	};
 	const viewPlaneXZ = new Viewport('ViewPanelY', editor, viewManagerProps, configPlaneXZ);
 	viewsGrid.add(viewPlaneXZ.container);
@@ -192,7 +192,8 @@ function ViewManager(editor) {
 	//    Y pointing towards observer ("up")
 	//    Z pointing right
 	viewPlaneXZ.controls.maxPolarAngle = viewPlaneXZ.controls.minPolarAngle = 0.0;
-	viewPlaneXZ.controls.maxAzimuthAngle = viewPlaneXZ.controls.minAzimuthAngle = (3.0 * Math.PI) / 2.0;
+	viewPlaneXZ.controls.maxAzimuthAngle = viewPlaneXZ.controls.minAzimuthAngle =
+		(3.0 * Math.PI) / 2.0;
 	viewPlaneXZ.controls.update();
 
 	const gutterRow = new UIDiv().setClass('gutter-row gutter-row-1');
@@ -221,7 +222,7 @@ function ViewManager(editor) {
 		// (phi = 90*, theta = any in threejs spherical coordinates, see comment in top part of this file)
 		// to align it with desired YZ plane we rotate the grid plane around Z axis by 90*
 		// therefore we use Euler angles (0*, 0*, 90*)
-		gridRotation: new THREE.Euler(0, 0, Math.PI / 2),
+		gridRotation: new THREE.Euler(0, 0, Math.PI / 2)
 	};
 	const viewPlaneYZ = new Viewport('ViewPanelX', editor, viewManagerProps, configPlaneYZ);
 	viewsGrid.add(viewPlaneYZ.container);
@@ -247,20 +248,20 @@ function ViewManager(editor) {
 		columnGutters: [
 			{
 				track: 1,
-				element: gutterCol.dom,
-			},
+				element: gutterCol.dom
+			}
 		],
 		rowGutters: [
 			{
 				track: 1,
-				element: gutterRow.dom,
-			},
+				element: gutterRow.dom
+			}
 		],
 		onDragEnd: (direction, track) => {
 			views.forEach(view => view.setSize());
 
 			render();
-		},
+		}
 	});
 
 	const fourViews = [viewPlaneXY, view3D, viewPlaneXZ, viewPlaneYZ];
@@ -330,13 +331,21 @@ function ViewManager(editor) {
 			const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 			mediaQuery.addListener(function (event) {
 				renderer.setClearColor(event.matches ? 0x333333 : 0xaaaaaa);
-				updateGridColors(minorGrid, majorGrid, event.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]);
+				updateGridColors(
+					minorGrid,
+					majorGrid,
+					event.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]
+				);
 
 				render();
 			});
 
 			renderer.setClearColor(mediaQuery.matches ? 0x333333 : 0xaaaaaa);
-			updateGridColors(minorGrid, majorGrid, mediaQuery.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]);
+			updateGridColors(
+				minorGrid,
+				majorGrid,
+				mediaQuery.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]
+			);
 		}
 
 		renderer.setPixelRatio(window.devicePixelRatio);
@@ -464,7 +473,8 @@ function ViewManager(editor) {
 
 				case 'Equirectangular':
 					if (backgroundEquirectangularTexture) {
-						backgroundEquirectangularTexture.mapping = THREE.EquirectangularReflectionMapping;
+						backgroundEquirectangularTexture.mapping =
+							THREE.EquirectangularReflectionMapping;
 						scene.background = backgroundEquirectangularTexture;
 					}
 
@@ -492,7 +502,8 @@ function ViewManager(editor) {
 				scene.environment = null;
 
 				if (environmentEquirectangularTexture) {
-					environmentEquirectangularTexture.mapping = THREE.EquirectangularReflectionMapping;
+					environmentEquirectangularTexture.mapping =
+						THREE.EquirectangularReflectionMapping;
 					scene.environment = environmentEquirectangularTexture;
 				}
 

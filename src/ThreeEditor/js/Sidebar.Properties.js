@@ -21,8 +21,16 @@ function SidebarProperties(editor) {
 
 	container.setId('properties');
 
-	container.addTab('object', strings.getKey('sidebar/properties/object'), new SidebarObject(editor));
-	container.addTab('geometry', strings.getKey('sidebar/properties/geometry'), new SidebarGeometry(editor));
+	container.addTab(
+		'object',
+		strings.getKey('sidebar/properties/object'),
+		new SidebarObject(editor)
+	);
+	container.addTab(
+		'geometry',
+		strings.getKey('sidebar/properties/geometry'),
+		new SidebarGeometry(editor)
+	);
 	container.addTab('material', strings.getKey('sidebar/properties/material'), material);
 	container.select('object');
 

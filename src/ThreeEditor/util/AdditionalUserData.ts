@@ -1,11 +1,14 @@
 import * as THREE from 'three';
 
-export type PossibleGeometryType = THREE.BoxGeometry | THREE.CylinderGeometry | THREE.SphereGeometry;
+export type PossibleGeometryType =
+	| THREE.BoxGeometry
+	| THREE.CylinderGeometry
+	| THREE.SphereGeometry;
 
 const geometryParameters = {
 	BoxGeometry: ['width', 'height', 'depth'],
 	CylinderGeometry: ['radiusTop', 'height'],
-	SphereGeometry: ['radius'],
+	SphereGeometry: ['radius']
 };
 
 export interface AdditionalUserDataType {
@@ -35,7 +38,7 @@ export function generateSimulationInfo(geometryMesh: THREE.Mesh<PossibleGeometry
 		geometryType: geometryMesh.geometry.type,
 		position: geometryMesh.position.toArray(),
 		rotation: geometryMesh.userData['rotation'],
-		parameters,
+		parameters
 	};
 
 	if (!geometryMesh.userData['userSetRotation'])
@@ -44,7 +47,7 @@ export function generateSimulationInfo(geometryMesh: THREE.Mesh<PossibleGeometry
 			rotation: geometryMesh.rotation
 				.toVector3()
 				.toArray()
-				.map(v => v * THREE.MathUtils.RAD2DEG) as THREE.Vector3Tuple,
+				.map(v => v * THREE.MathUtils.RAD2DEG) as THREE.Vector3Tuple
 		};
 
 	return userData;

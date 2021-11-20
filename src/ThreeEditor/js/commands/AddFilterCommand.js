@@ -33,6 +33,8 @@ export class AddFilterCommand extends Command {
 
 	fromJSON(json) {
 		super.fromJSON(json);
-		this.filter = this.editor.detectManager.getFilterByUuid(json.filter.uuid) ?? DetectFilter.fromJSON(json.filter);
+		this.filter =
+			this.editor.detectManager.getFilterByUuid(json.filter.uuid) ??
+			DetectFilter.fromJSON(json.filter);
 	}
 }

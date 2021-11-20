@@ -56,7 +56,7 @@ const LoaderUtils = {
 				handleEntry(item.webkitGetAsEntry());
 			}
 		}
-	},
+	}
 };
 
 export { LoaderUtils };

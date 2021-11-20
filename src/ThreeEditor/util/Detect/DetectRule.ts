@@ -8,7 +8,7 @@ import {
 	Operator,
 	OperatorSymbol,
 	getOperator,
-	isValidID,
+	isValidID
 } from './DetectFilterTypes';
 
 //https://stackoverflow.com/questions/48757095/typescript-class-composition

@@ -7,7 +7,11 @@ export class ViewportObjects {
 	private zones: CSG.Zone[] = [];
 	private sections: DetectGeometry[] = [];
 
-	getSelectable({ selectFigures = true, selectZones = false, selectSections = false }): THREE.Object3D[] {
+	getSelectable({
+		selectFigures = true,
+		selectZones = false,
+		selectSections = false
+	}): THREE.Object3D[] {
 		let selectableObjects: THREE.Object3D[] = [];
 
 		if (selectFigures) selectableObjects = selectableObjects.concat(this.figures);

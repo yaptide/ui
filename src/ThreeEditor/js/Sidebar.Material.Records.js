@@ -16,13 +16,13 @@ const materialClasses = {
 	ShaderMaterial: THREE.ShaderMaterial,
 	ShadowMaterial: THREE.ShadowMaterial,
 	SpriteMaterial: THREE.SpriteMaterial,
-	PointsMaterial: THREE.PointsMaterial,
+	PointsMaterial: THREE.PointsMaterial
 };
 
 const vertexShaderVariables = [
 	'uniform mat4 projectionMatrix;',
 	'uniform mat4 modelViewMatrix;\n',
-	'attribute vec3 position;\n\n',
+	'attribute vec3 position;\n\n'
 ].join('\n');
 
 const meshMaterialOptions = {
@@ -37,26 +37,26 @@ const meshMaterialOptions = {
 	MeshPhysicalMaterial: 'MeshPhysicalMaterial',
 	RawShaderMaterial: 'RawShaderMaterial',
 	ShaderMaterial: 'ShaderMaterial',
-	ShadowMaterial: 'ShadowMaterial',
+	ShadowMaterial: 'ShadowMaterial'
 };
 
 const lineMaterialOptions = {
 	LineBasicMaterial: 'LineBasicMaterial',
 	LineDashedMaterial: 'LineDashedMaterial',
 	RawShaderMaterial: 'RawShaderMaterial',
-	ShaderMaterial: 'ShaderMaterial',
+	ShaderMaterial: 'ShaderMaterial'
 };
 
 const spriteMaterialOptions = {
 	SpriteMaterial: 'SpriteMaterial',
 	RawShaderMaterial: 'RawShaderMaterial',
-	ShaderMaterial: 'ShaderMaterial',
+	ShaderMaterial: 'ShaderMaterial'
 };
 
 const pointsMaterialOptions = {
 	PointsMaterial: 'PointsMaterial',
 	RawShaderMaterial: 'RawShaderMaterial',
-	ShaderMaterial: 'ShaderMaterial',
+	ShaderMaterial: 'ShaderMaterial'
 };
 
 export {
@@ -65,5 +65,5 @@ export {
 	meshMaterialOptions,
 	lineMaterialOptions,
 	spriteMaterialOptions,
-	pointsMaterialOptions,
+	pointsMaterialOptions
 };

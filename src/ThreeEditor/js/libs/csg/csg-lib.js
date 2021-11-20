@@ -254,7 +254,9 @@ class Plane {
 		// Put the polygon in the correct list, splitting it when necessary.
 		switch (polygonType) {
 			case COPLANAR:
-				(this.normal.dot(polygon.plane.normal) > 0 ? coplanarFront : coplanarBack).push(polygon);
+				(this.normal.dot(polygon.plane.normal) > 0 ? coplanarFront : coplanarBack).push(
+					polygon
+				);
 				break;
 			case FRONT:
 				front.push(polygon);
@@ -274,7 +276,9 @@ class Plane {
 					if (ti != BACK) f.push(vi);
 					if (ti != FRONT) b.push(ti != BACK ? vi.clone() : vi);
 					if ((ti | tj) == SPANNING) {
-						let t = (this.w - this.normal.dot(vi.pos)) / this.normal.dot(tv0.copy(vj.pos).sub(vi.pos));
+						let t =
+							(this.w - this.normal.dot(vi.pos)) /
+							this.normal.dot(tv0.copy(vj.pos).sub(vi.pos));
 						let v = vi.interpolate(vj, t);
 						f.push(v);
 						b.push(v.clone());

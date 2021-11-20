@@ -17,7 +17,7 @@ export interface BeamJSON {
 const _default = {
 	position: new THREE.Vector3(0, 0, 0),
 	direction: new THREE.Vector3(0, 0, 1),
-	energy: 150,
+	energy: 150
 };
 
 export class Beam extends THREE.Object3D implements ISimulationObject {
@@ -48,7 +48,7 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 			}
 
 			return result;
-		},
+		}
 	};
 
 	constructor(editor: Editor) {
@@ -63,7 +63,7 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 				this.helper.setDirection(target.clone().normalize());
 				this.debouncedDispatchChanged();
 				return result;
-			},
+			}
 		};
 
 		const proxyDirection = new Proxy(_default.direction.clone(), overrideHandlerDirection);
@@ -97,7 +97,7 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 		const matLine = new LineMaterial({
 			color: hex,
 			linewidth: 0.005, // in world units with size attenuation, pixels otherwise
-			worldUnits: false,
+			worldUnits: false
 		});
 
 		const line = new Line2(lineGeometry, matLine);
@@ -109,12 +109,15 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 		// dots
 
 		const dotGeometry = new THREE.BufferGeometry();
-		dotGeometry.setAttribute('position', new THREE.Float32BufferAttribute(new Vector3(0, 0, 0).toArray(), 3));
+		dotGeometry.setAttribute(
+			'position',
+			new THREE.Float32BufferAttribute(new Vector3(0, 0, 0).toArray(), 3)
+		);
 		const redDotMaterial = new THREE.PointsMaterial({
 			size: 8,
 			color: 0xff0000,
 			sizeAttenuation: false,
-			depthTest: false,
+			depthTest: false
 		});
 		const redDot = new THREE.Points(dotGeometry, redDotMaterial);
 		redDot.renderOrder = 2;
@@ -123,7 +126,7 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 			size: 2,
 			color: 0x000000,
 			sizeAttenuation: false,
-			depthTest: false,
+			depthTest: false
 		});
 		const blackDot = new THREE.Points(dotGeometry, blackDotMaterial);
 		blackDot.renderOrder = 3;
@@ -150,7 +153,7 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 		const jsonObject: BeamJSON = {
 			position: this.position.toArray(),
 			direction: this.direction.toArray(),
-			energy: this.energy,
+			energy: this.energy
 		};
 
 		return jsonObject;

@@ -15,7 +15,7 @@ const {
 	meshMaterialOptions,
 	lineMaterialOptions,
 	spriteMaterialOptions,
-	pointsMaterialOptions,
+	pointsMaterialOptions
 } = Records;
 
 function SidebarMaterial(editor) {
@@ -92,7 +92,11 @@ function SidebarMaterial(editor) {
 
 	// color
 
-	const materialColor = new SidebarMaterialColorProperty(editor, 'color', strings.getKey('sidebar/material/color'));
+	const materialColor = new SidebarMaterialColorProperty(
+		editor,
+		'color',
+		strings.getKey('sidebar/material/color')
+	);
 	container.add(materialColor);
 
 	// specular
@@ -221,7 +225,7 @@ function SidebarMaterial(editor) {
 
 	const materialDepthPackingOptions = {
 		[THREE.BasicDepthPacking]: 'Basic',
-		[THREE.RGBADepthPacking]: 'RGBA',
+		[THREE.RGBADepthPacking]: 'RGBA'
 	};
 
 	const materialDepthPacking = new SidebarMaterialConstantProperty(
@@ -234,7 +238,11 @@ function SidebarMaterial(editor) {
 
 	// map
 
-	const materialMap = new SidebarMaterialMapProperty(editor, 'map', strings.getKey('sidebar/material/map'));
+	const materialMap = new SidebarMaterialMapProperty(
+		editor,
+		'map',
+		strings.getKey('sidebar/material/map')
+	);
 	container.add(materialMap);
 
 	// specular map
@@ -329,7 +337,11 @@ function SidebarMaterial(editor) {
 
 	// env map
 
-	const materialEnvMap = new SidebarMaterialMapProperty(editor, 'envMap', strings.getKey('sidebar/material/envmap'));
+	const materialEnvMap = new SidebarMaterialMapProperty(
+		editor,
+		'envMap',
+		strings.getKey('sidebar/material/envmap')
+	);
 	container.add(materialEnvMap);
 
 	// light map
@@ -343,7 +355,11 @@ function SidebarMaterial(editor) {
 
 	// ambient occlusion map
 
-	const materialAOMap = new SidebarMaterialMapProperty(editor, 'aoMap', strings.getKey('sidebar/material/aomap'));
+	const materialAOMap = new SidebarMaterialMapProperty(
+		editor,
+		'aoMap',
+		strings.getKey('sidebar/material/aomap')
+	);
 	container.add(materialAOMap);
 
 	// gradient map
@@ -360,7 +376,7 @@ function SidebarMaterial(editor) {
 	const materialSideOptions = {
 		0: 'Front',
 		1: 'Back',
-		2: 'Double',
+		2: 'Double'
 	};
 
 	const materialSide = new SidebarMaterialConstantProperty(
@@ -373,10 +389,12 @@ function SidebarMaterial(editor) {
 
 	// size
 
-	const materialSize = new SidebarMaterialNumberProperty(editor, 'size', strings.getKey('sidebar/material/size'), [
-		0,
-		Infinity,
-	]);
+	const materialSize = new SidebarMaterialNumberProperty(
+		editor,
+		'size',
+		strings.getKey('sidebar/material/size'),
+		[0, Infinity]
+	);
 	container.add(materialSize);
 
 	// sizeAttenuation
@@ -405,7 +423,7 @@ function SidebarMaterial(editor) {
 		2: 'Additive',
 		3: 'Subtractive',
 		4: 'Multiply',
-		5: 'Custom',
+		5: 'Custom'
 	};
 
 	const materialBlending = new SidebarMaterialConstantProperty(

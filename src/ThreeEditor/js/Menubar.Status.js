@@ -10,7 +10,9 @@ function MenubarStatus(editor) {
 	const container = new UIPanel();
 	container.setClass('menu right');
 
-	const deploy = new UIElement(document.createElement('a')).setTextContent(`${deployInfo.date} ${deployInfo.commit}`);
+	const deploy = new UIElement(document.createElement('a')).setTextContent(
+		`${deployInfo.date} ${deployInfo.commit}`
+	);
 	deploy.dom.href = 'https://github.com/yaptide/ui/commit/' + deployInfo.commit;
 	deploy.dom.target = '_blank';
 	deploy.dom.title = `${deployInfo.date} ${deployInfo.commit} ${deployInfo.branch}`;
@@ -23,7 +25,10 @@ function MenubarStatus(editor) {
 	version.setOpacity(0.5);
 	container.add(version);
 
-	const autosave = new UIBoolean(editor.config.getKey('autosave'), strings.getKey('menubar/status/autosave'));
+	const autosave = new UIBoolean(
+		editor.config.getKey('autosave'),
+		strings.getKey('menubar/status/autosave')
+	);
 	autosave.text.setColor('#888');
 	autosave.onChange(() => {
 		const value = this.getValue();

@@ -26,7 +26,9 @@ function SidebarSettingsViewport(editor) {
 
 	const showHelpersRow = new UIRow();
 
-	showHelpersRow.add(new UIText(strings.getKey('sidebar/settings/viewport/helpers')).setWidth('90px'));
+	showHelpersRow.add(
+		new UIText(strings.getKey('sidebar/settings/viewport/helpers')).setWidth('90px')
+	);
 
 	const showHelpers = new UIBoolean(true).onChange(() => {
 		signals.showHelpersChanged.dispatch(showHelpers.getValue());

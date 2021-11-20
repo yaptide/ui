@@ -30,9 +30,9 @@ The page will reload if you make edits.
 
 This project adapts source code from the following libraries:
 
-- CSG javascript library https://github.com/manthrax/THREE-CSGMesh 
-  - parts of its code copied into `src/ThreeEditor/js/libs/csg/`
-  - adapted by adding types in separate file
-- ThreeJS editor https://threejs.org/editor/
-  - most of its code copied from [github mrdoob repo](https://github.com/mrdoob/three.js/tree/r132/editor) into `src/ThreeEditor`, starting from v.132
-  - most of copied code adapted to yaptide needs
+-   CSG javascript library https://github.com/manthrax/THREE-CSGMesh
+    -   parts of its code copied into `src/ThreeEditor/js/libs/csg/`
+    -   adapted by adding types in separate file
+-   ThreeJS editor https://threejs.org/editor/
+    -   most of its code copied from [github mrdoob repo](https://github.com/mrdoob/three.js/tree/r132/editor) into `src/ThreeEditor`, starting from v.132
+    -   most of copied code adapted to yaptide needs

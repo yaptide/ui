@@ -26,7 +26,7 @@ export class DetectGeometry extends THREE.Points implements ISimulationObject {
 
 	private static _detectPointsMaterial: THREE.PointsMaterial = new THREE.PointsMaterial({
 		color: new THREE.Color('cyan'),
-		size: 0.1,
+		size: 0.1
 	});
 
 	private positionProxy: THREE.Vector3;
@@ -97,7 +97,12 @@ export class DetectGeometry extends THREE.Points implements ISimulationObject {
 			}
 			return result;
 		},
-		set: (target: DetectGeometry, p: keyof DetectGeometry, value: unknown, receiver: unknown) => {
+		set: (
+			target: DetectGeometry,
+			p: keyof DetectGeometry,
+			value: unknown,
+			receiver: unknown
+		) => {
 			const result = Reflect.set(target, p, value, receiver);
 			switch (p) {
 				case 'geometry':
@@ -108,7 +113,7 @@ export class DetectGeometry extends THREE.Points implements ISimulationObject {
 					break;
 			}
 			return result;
-		},
+		}
 	};
 
 	private generateGeometry(
@@ -135,7 +140,10 @@ export class DetectGeometry extends THREE.Points implements ISimulationObject {
 			case 'Zone':
 				const zone = this.editor.zoneManager.getZoneById(data.zoneId);
 				geometry =
-					zone?.geometry.clone().translate(-this.position.x, -this.position.y, -this.position.z) ?? geometry;
+					zone?.geometry
+						.clone()
+						.translate(-this.position.x, -this.position.y, -this.position.z) ??
+					geometry;
 
 				break;
 			case 'All':
@@ -178,7 +186,7 @@ export class DetectGeometry extends THREE.Points implements ISimulationObject {
 					default:
 						return Reflect.get(target, p);
 				}
-			},
+			}
 		});
 
 		this.geometry = this.generateGeometry(data, type);
@@ -191,22 +199,26 @@ export class DetectGeometry extends THREE.Points implements ISimulationObject {
 	}
 
 	getMesh(): DETECT.Mesh {
-		if (this.detectType !== 'Mesh') throw new Error(`DetectGeo of uui=${this.uuid} isn't of 'Mesh' type`);
+		if (this.detectType !== 'Mesh')
+			throw new Error(`DetectGeo of uui=${this.uuid} isn't of 'Mesh' type`);
 		return Object.assign({}, this._geometryData as DETECT.Mesh);
 	}
 
 	getCyl(): DETECT.Cyl {
-		if (this.detectType !== 'Cyl') throw new Error(`DetectGeo of uui=${this.uuid} isn't of 'Cyl' type`);
+		if (this.detectType !== 'Cyl')
+			throw new Error(`DetectGeo of uui=${this.uuid} isn't of 'Cyl' type`);
 		return Object.assign({}, this._geometryData as DETECT.Cyl);
 	}
 
 	getZone(): DETECT.Zone {
-		if (this.detectType !== 'Zone') throw new Error(`DetectGeo of uui=${this.uuid} isn't of 'Zone' type`);
+		if (this.detectType !== 'Zone')
+			throw new Error(`DetectGeo of uui=${this.uuid} isn't of 'Zone' type`);
 		return Object.assign({}, this._geometryData as DETECT.Zone);
 	}
 
 	getAll(): DETECT.All {
-		if (this.detectType !== 'All') throw new Error(`DetectGeo of uui=${this.uuid} isn't of 'All' type`);
+		if (this.detectType !== 'All')
+			throw new Error(`DetectGeo of uui=${this.uuid} isn't of 'All' type`);
 		return {};
 	}
 
@@ -242,7 +254,7 @@ export class DetectGeometry extends THREE.Points implements ISimulationObject {
 		return {
 			data,
 			type,
-			position,
+			position
 		};
 	}
 
@@ -295,7 +307,9 @@ function createCylindricalGeometry(data: DETECT.Cyl, matrix: THREE.Matrix4) {
 	const BSP2 = CSG.CSG.fromMesh(cyl2);
 	const BSP3 = CSG.CSG.fromMesh(cyl3);
 	const newGeometry = CSG.CSG.toGeometry(
-		data.innerRadius ? BSP1.subtract(BSP3).union(BSP2.subtract(BSP3)) : BSP1.subtract(BSP2).union(BSP2),
+		data.innerRadius
+			? BSP1.subtract(BSP3).union(BSP2.subtract(BSP3))
+			: BSP1.subtract(BSP2).union(BSP2),
 		matrix
 	);
 	return newGeometry;

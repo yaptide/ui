@@ -11,7 +11,8 @@ class SetMaterialVectorCommand extends Command {
 		this.object = object;
 		this.material = this.editor.getObjectMaterial(object, materialSlot);
 
-		this.oldValue = this.material !== undefined ? this.material[attributeName].toArray() : undefined;
+		this.oldValue =
+			this.material !== undefined ? this.material[attributeName].toArray() : undefined;
 		this.newValue = newValue;
 
 		this.attributeName = attributeName;

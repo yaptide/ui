@@ -55,7 +55,10 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 
 	readonly debouncedCalculate = debounce(200, false, () => this.calculate());
 
-	constructor(editor: Editor, { box, color = 0xff0000, marginMultiplier = 1.1 }: WorldZoneParams = {}) {
+	constructor(
+		editor: Editor,
+		{ box, color = 0xff0000, marginMultiplier = 1.1 }: WorldZoneParams = {}
+	) {
 		super();
 		this.type = 'WorldZone';
 		this.name = 'World Zone';
@@ -71,7 +74,7 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 				Reflect.set((this.boxHelper.material as LineBasicMaterial).color, prop, value);
 
 				return Reflect.set(target, prop, value);
-			},
+			}
 		};
 
 		const proxyColor = new Proxy(new Color(color), materialColorHandler);
@@ -123,7 +126,7 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 		const obj = {
 			box: this.boxHelper,
 			cylinder: this.cylinderMesh,
-			sphere: this.sphereMesh,
+			sphere: this.sphereMesh
 		};
 		return obj[geometryType];
 	}
@@ -201,7 +204,7 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 			geometryType: this._geometryType,
 			name: this.name,
 			color: this.material.color.getHex(),
-			marginMultiplier: this.marginMultiplier,
+			marginMultiplier: this.marginMultiplier
 		};
 
 		return jsonObject;

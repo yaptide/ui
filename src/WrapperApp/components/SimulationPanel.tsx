@@ -18,7 +18,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		setInProgress(true);
 		ky.post(`${BACKEND_URL}/sh/demo`, {
 			json: editorRef.current?.toJSON(),
-			timeout: 30000,
+			timeout: 30000
 			/**
             Timeout in milliseconds for getting a response. Can not be greater than 2147483647.
             If set to `false`, there will be no timeout.
@@ -46,13 +46,13 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				padding: '5rem',
 				display: 'flex',
 				flexDirection: 'column',
-				gap: '1.5rem',
+				gap: '1.5rem'
 			}}>
 			<LinearProgress variant={isInProgress ? 'indeterminate' : 'determinate'} value={0} />
 			<Button
 				sx={{
 					width: 'min(300px, 100%)',
-					margin: '0 auto',
+					margin: '0 auto'
 				}}
 				onClick={sendRequest}>
 				{isInProgress ? 'Stop' : 'Start'}

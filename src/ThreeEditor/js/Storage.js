@@ -1,9 +1,15 @@
 function Storage() {
-	const indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+	const indexedDB =
+		window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
 	if (indexedDB === undefined) {
 		console.warn('Storage: IndexedDB not available.');
-		return { init: function () {}, get: function () {}, set: function () {}, clear: function () {} };
+		return {
+			init: function () {},
+			get: function () {},
+			set: function () {},
+			clear: function () {}
+		};
 	}
 
 	const name = 'threejs-editor';
@@ -63,9 +69,12 @@ function Storage() {
 			const objectStore = transaction.objectStore('states');
 			const request = objectStore.clear();
 			request.onsuccess = function () {
-				console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Cleared IndexedDB.'); // eslint-disable-line
+				console.log(
+					'[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']',
+					'Cleared IndexedDB.'
+				); // eslint-disable-line
 			};
-		},
+		}
 	};
 }
 

@@ -8,6 +8,6 @@ console.log(
 	JSON.stringify({
 		date,
 		commit,
-		branch,
+		branch
 	})
 );

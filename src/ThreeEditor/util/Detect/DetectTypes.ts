@@ -33,14 +33,14 @@ export const DEFAULT_ANY: Any = {
 	heightSegments: 1000,
 	depthSegments: 1000,
 	radialSegments: 1,
-	zoneId: -1,
+	zoneId: -1
 };
 
 export const DETECT_OPTIONS = {
 	Mesh: 'Mesh',
 	Cyl: 'Cyl',
 	Zone: 'Zone',
-	All: 'All',
+	All: 'All'
 } as const;
 
 export type DETECT_TYPE = keyof typeof DETECT_OPTIONS;

@@ -14,7 +14,7 @@ function GeometryParametersPanel(editor, object) {
 	const [widthRow, width] = createRowParamNumber({
 		update,
 		value: parameters.width,
-		text: `X side length (width) ${editor.unit.name}`,
+		text: `X side length (width) ${editor.unit.name}`
 	});
 	container.add(widthRow);
 
@@ -23,7 +23,7 @@ function GeometryParametersPanel(editor, object) {
 	const [heightRow, height] = createRowParamNumber({
 		update,
 		value: parameters.height,
-		text: `Y side length (height) ${editor.unit.name}`,
+		text: `Y side length (height) ${editor.unit.name}`
 	});
 	container.add(heightRow);
 
@@ -32,7 +32,7 @@ function GeometryParametersPanel(editor, object) {
 	const [depthRow, depth] = createRowParamNumber({
 		update,
 		value: parameters.depth,
-		text: `Z side length (depth) ${editor.unit.name}`,
+		text: `Z side length (depth) ${editor.unit.name}`
 	});
 	container.add(depthRow);
 
@@ -43,7 +43,14 @@ function GeometryParametersPanel(editor, object) {
 			new SetGeometryCommand(
 				editor,
 				object,
-				new THREE.BoxGeometry(width.getValue(), height.getValue(), depth.getValue(), 1, 1, 1)
+				new THREE.BoxGeometry(
+					width.getValue(),
+					height.getValue(),
+					depth.getValue(),
+					1,
+					1,
+					1
+				)
 			)
 		);
 	}

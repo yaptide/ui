@@ -92,7 +92,8 @@ class UITexture extends UISpan {
 							function () {
 								const texture = new THREE.Texture(this, mapping);
 								texture.sourceFile = file.name;
-								texture.format = file.type === 'image/jpeg' ? THREE.RGBFormat : THREE.RGBAFormat;
+								texture.format =
+									file.type === 'image/jpeg' ? THREE.RGBFormat : THREE.RGBAFormat;
 								texture.needsUpdate = true;
 
 								scope.setValue(texture);
@@ -197,7 +198,14 @@ class UICubeTexture extends UIElement {
 		const posZTexture = new UITexture().onChange(onTextureChanged);
 		const negZTexture = new UITexture().onChange(onTextureChanged);
 
-		this.textures.push(posXTexture, negXTexture, posYTexture, negYTexture, posZTexture, negZTexture);
+		this.textures.push(
+			posXTexture,
+			negXTexture,
+			posYTexture,
+			negYTexture,
+			posZTexture,
+			negZTexture
+		);
 
 		pRow.add(posXTexture);
 		pRow.add(posYTexture);
@@ -646,7 +654,9 @@ class UIPoints3 extends UIPoints {
 			} else {
 				const point = this.pointsUI[this.pointsUI.length - 1];
 
-				this.pointsList.add(this.createPointRow(point.x.getValue(), point.y.getValue(), point.z.getValue()));
+				this.pointsList.add(
+					this.createPointRow(point.x.getValue(), point.y.getValue(), point.z.getValue())
+				);
 			}
 
 			this.update();
@@ -663,7 +673,9 @@ class UIPoints3 extends UIPoints {
 
 			if (!pointUI) continue;
 
-			points.push(new THREE.Vector3(pointUI.x.getValue(), pointUI.y.getValue(), pointUI.z.getValue()));
+			points.push(
+				new THREE.Vector3(pointUI.x.getValue(), pointUI.y.getValue(), pointUI.z.getValue())
+			);
 			++count;
 			pointUI.lbl.setValue(count);
 		}

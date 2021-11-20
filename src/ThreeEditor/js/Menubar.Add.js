@@ -40,7 +40,7 @@ function MenubarAdd(editor) {
 		side: THREE.DoubleSide,
 		transparent: true,
 		opacity: 0.5,
-		wireframe: true,
+		wireframe: true
 	});
 
 	//https://stackoverflow.com/questions/37090942/how-to-render-clipped-surfaces-as-solid-objects/37093210#37093210

@@ -30,9 +30,11 @@ function SidebarProject(editor) {
 	// Editable
 
 	const editableRow = new UIRow();
-	const editable = new UICheckbox(config.getKey('project/editable')).setLeft('100px').onChange(() => {
-		config.setKey('project/editable', this.getValue());
-	});
+	const editable = new UICheckbox(config.getKey('project/editable'))
+		.setLeft('100px')
+		.onChange(() => {
+			config.setKey('project/editable', this.getValue());
+		});
 
 	editableRow.add(new UIText(strings.getKey('sidebar/project/editable')).setWidth('90px'));
 	editableRow.add(editable);

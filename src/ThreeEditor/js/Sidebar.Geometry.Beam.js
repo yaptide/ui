@@ -10,7 +10,7 @@ export function BeamPanel(editor, beam) {
 
 	const [directionRow, directionX, directionY, directionZ] = createRowParamNumberXYZ({
 		text: `Direction ${editor.unit.name}`,
-		update,
+		update
 	});
 	container.add(directionRow);
 
@@ -33,7 +33,11 @@ export function BeamPanel(editor, beam) {
 	}
 
 	function update() {
-		const direction = new THREE.Vector3(directionX.getValue(), directionY.getValue(), directionZ.getValue());
+		const direction = new THREE.Vector3(
+			directionX.getValue(),
+			directionY.getValue(),
+			directionZ.getValue()
+		);
 
 		if (direction.length() > 0) beam.direction.copy(direction);
 

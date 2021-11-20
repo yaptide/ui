@@ -24,7 +24,7 @@ function Config() {
 		'settings/shortcuts/rotate': 'e',
 		'settings/shortcuts/scale': 'r',
 		'settings/shortcuts/undo': 'z',
-		'settings/shortcuts/focus': 'f',
+		'settings/shortcuts/focus': 'f'
 	};
 
 	if (window.localStorage[name] === undefined) {
@@ -51,12 +51,15 @@ function Config() {
 
 			window.localStorage[name] = JSON.stringify(storage);
 
-			console.log('[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', 'Saved config to LocalStorage.'); // eslint-disable-line
+			console.log(
+				'[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']',
+				'Saved config to LocalStorage.'
+			); // eslint-disable-line
 		},
 
 		clear: function () {
 			delete window.localStorage[name];
-		},
+		}
 	};
 }
 

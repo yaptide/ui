@@ -17,7 +17,9 @@ CSG.fromGeometry = function (geom, objectIndex) {
 			let f = fs[i];
 			let vertices = [];
 			for (let j = 0; j < 3; j++)
-				vertices.push(new Vertex(vs[f[fm[j]]], f.vertexNormals[j], geom.faceVertexUvs[0][i][j]));
+				vertices.push(
+					new Vertex(vs[f[fm[j]]], f.vertexNormals[j], geom.faceVertexUvs[0][i][j])
+				);
 			polys.push(new Polygon(vertices, objectIndex));
 		}
 	} else if (geom.isBufferGeometry) {
@@ -52,19 +54,23 @@ CSG.fromGeometry = function (geom, objectIndex) {
 					{
 						x,
 						y,
-						z,
+						z
 					},
 					{
 						x: nx,
 						y: ny,
-						z: nz,
+						z: nz
 					},
 					{
 						x: u,
 						y: v,
-						z: 0,
+						z: 0
 					},
-					colorattr && { x: colorattr.array[vt], y: colorattr.array[vt + 1], z: colorattr.array[vt + 2] }
+					colorattr && {
+						x: colorattr.array[vt],
+						y: colorattr.array[vt + 1],
+						z: colorattr.array[vt + 2]
+					}
 				);
 			}
 			polys[pli] = new Polygon(vertices, objectIndex);
@@ -97,7 +103,7 @@ let nbuf3 = ct => {
 			this.array[this.top++] = v.x;
 			this.array[this.top++] = v.y;
 			this.array[this.top++] = v.z;
-		},
+		}
 	};
 };
 let nbuf2 = ct => {
@@ -107,7 +113,7 @@ let nbuf2 = ct => {
 		write: function (v) {
 			this.array[this.top++] = v.x;
 			this.array[this.top++] = v.y;
-		},
+		}
 	};
 };
 
@@ -148,7 +154,11 @@ CSG.toGeometry = function (csg, toMatrix) {
 			}
 			for (let j = 3; j <= pvlen; j++) {
 				p.shared !== undefined &&
-					grps[p.shared].push(vertices.top / 3, vertices.top / 3 + 1, vertices.top / 3 + 2);
+					grps[p.shared].push(
+						vertices.top / 3,
+						vertices.top / 3 + 1,
+						vertices.top / 3 + 2
+					);
 				vertices.write(pvs[0].pos);
 				vertices.write(pvs[j - 2].pos);
 				vertices.write(pvs[j - 1].pos);
@@ -159,7 +169,9 @@ CSG.toGeometry = function (csg, toMatrix) {
 				uvs.write(pvs[j - 2].uv);
 				uvs.write(pvs[j - 1].uv);
 				colors &&
-					(colors.write(pvs[0].color) || colors.write(pvs[j - 2].color) || colors.write(pvs[j - 1].color));
+					(colors.write(pvs[0].color) ||
+						colors.write(pvs[j - 2].color) ||
+						colors.write(pvs[j - 1].color));
 			}
 		});
 		geom.setAttribute('position', new THREE.BufferAttribute(vertices.array, 3));

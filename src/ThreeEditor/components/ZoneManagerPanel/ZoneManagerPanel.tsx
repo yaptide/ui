@@ -25,7 +25,9 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 			const object = props.editor.scene.getObjectById(row.geometriesId[0]);
 
 			if (!object)
-				throw new Error('object is undefined form props.editor.scene.getObjectById(row.geometries[0])');
+				throw new Error(
+					'object is undefined form props.editor.scene.getObjectById(row.geometries[0])'
+				);
 
 			operations.push(new CSG.OperationTuple(object, 'union'));
 		}
@@ -36,7 +38,10 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 			if (row.geometriesId.length > i + 1 && Number.isInteger(geometryID) && operation) {
 				const object = props.editor.scene.getObjectById(geometryID as number);
 
-				if (!object) throw new Error('object is undefined form props.editor.scene.getObjectById(geometryID)');
+				if (!object)
+					throw new Error(
+						'object is undefined form props.editor.scene.getObjectById(geometryID)'
+					);
 
 				operations.push(new CSG.OperationTuple(object, operation));
 			}
@@ -50,7 +55,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 			const newRows = [
 				...prev.map((el, id) => {
 					return rowId === id ? row : el;
-				}),
+				})
 			];
 
 			if (rowId < (zoneRef.current?.unionOperations.length ?? 0))

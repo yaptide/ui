@@ -133,11 +133,12 @@ const properties = [
 	'textDecoration',
 	'textTransform',
 	'cursor',
-	'zIndex',
+	'zIndex'
 ];
 
 properties.forEach(function (property) {
-	const method = 'set' + property.substr(0, 1).toUpperCase() + property.substr(1, property.length);
+	const method =
+		'set' + property.substr(0, 1).toUpperCase() + property.substr(1, property.length);
 
 	UIElement.prototype[method] = function () {
 		this.setStyle(property, arguments);
@@ -148,7 +149,16 @@ properties.forEach(function (property) {
 
 // events
 
-const events = ['KeyUp', 'KeyDown', 'MouseOver', 'MouseOut', 'Click', 'DblClick', 'Change', 'Input'];
+const events = [
+	'KeyUp',
+	'KeyDown',
+	'MouseOver',
+	'MouseOut',
+	'Click',
+	'DblClick',
+	'Change',
+	'Input'
+];
 
 events.forEach(function (event) {
 	const method = 'on' + event;
@@ -264,7 +274,10 @@ class UITextArea extends UIElement {
 
 					const cursor = this.dom.selectionStart;
 
-					this.dom.value = this.dom.value.substring(0, cursor) + '\t' + this.dom.value.substring(cursor);
+					this.dom.value =
+						this.dom.value.substring(0, cursor) +
+						'\t' +
+						this.dom.value.substring(cursor);
 					this.dom.selectionStart = cursor + 1;
 					this.dom.selectionEnd = this.dom.selectionStart;
 				}
@@ -1027,5 +1040,5 @@ export {
 	UIProgress,
 	UITabbedPanel,
 	UIListbox,
-	ListboxItem,
+	ListboxItem
 };

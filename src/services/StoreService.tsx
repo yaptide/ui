@@ -16,7 +16,7 @@ const Store = (props: StoreProps) => {
 	const editorRef = useRef<Editor>();
 
 	const value: IStore = {
-		editorRef,
+		editorRef
 	};
 
 	return <StoreContextProvider value={value}>{props.children}</StoreContextProvider>;

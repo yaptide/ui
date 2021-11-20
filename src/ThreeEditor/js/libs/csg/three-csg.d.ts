@@ -11,7 +11,11 @@ export default class CSG extends LibCSG {
 		throw new Error('Function not implemented.');
 	}
 
-	static toMesh(bspResult: CSG, matrix: Matrix4, material?: THREE.Material | THREE.Material[]): THREE.Mesh {
+	static toMesh(
+		bspResult: CSG,
+		matrix: Matrix4,
+		material?: THREE.Material | THREE.Material[]
+	): THREE.Mesh {
 		throw new Error('Function not implemented.');
 	}
 }

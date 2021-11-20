@@ -30,7 +30,11 @@ export function SidebarZoneMaterial(editor) {
 
 	// color
 
-	const materialColor = SidebarMaterialColorProperty(editor, 'color', strings.getKey('sidebar/material/color'));
+	const materialColor = SidebarMaterialColorProperty(
+		editor,
+		'color',
+		strings.getKey('sidebar/material/color')
+	);
 	container.add(materialColor);
 
 	// flatShading
@@ -49,7 +53,7 @@ export function SidebarZoneMaterial(editor) {
 		1: 'Normal',
 		2: 'Additive',
 		3: 'Subtractive',
-		4: 'Multiply',
+		4: 'Multiply'
 	};
 
 	const materialBlending = SidebarMaterialConstantProperty(

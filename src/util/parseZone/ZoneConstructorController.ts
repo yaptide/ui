@@ -33,10 +33,10 @@ export default class ZoneConstructorController {
 						...prev.reduceRight((prev3, el3) => {
 							if (el3.indexOf(-el2) !== -1) return prev3;
 							return [...prev3, [...el3, -el2]];
-						}, [] as number[][]),
+						}, [] as number[][])
 					];
 				}, [] as number[][]);
-			}, [] as number[][]),
+			}, [] as number[][])
 		];
 		this.commonPrefix = [geometry];
 	}

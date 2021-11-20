@@ -8,7 +8,7 @@ const _rule_units = {
 	ID: '',
 	GEN: 'gen',
 	NPRIM: '',
-	Z: 'z',
+	Z: 'z'
 };
 
 const _float_keywords = ['AMASS', 'AMU', 'E', 'ENUC', 'EAMU'] as const;
@@ -23,7 +23,7 @@ const _operators = {
 	less_than: '&#60;',
 	less_than_or_equal: '&#8804;',
 	greater_than: '&#62;',
-	greater_than_or_equal: '&#8805;',
+	greater_than_or_equal: '&#8805;'
 } as const;
 
 const _notOperator = '&#172;' as const;
@@ -46,7 +46,7 @@ const _particles = {
 	17: 'νe electron neutrino',
 	18: 'νe electron anti-neutrino',
 	19: 'νµ mu neutrino',
-	20: 'νµ mu anti-neutrino',
+	20: 'νµ mu anti-neutrino'
 } as const;
 
 export type F_Keyword = typeof _float_keywords[number];
@@ -54,7 +54,10 @@ export type I_Keyword = typeof _int_keywords[number];
 export type ID_Keyword = typeof _id_keywords[number];
 
 export type Keyword = F_Keyword | I_Keyword | ID_Keyword;
-export function isValidKeyword(keyword: string, type: 'INT' | 'FLOAT' | 'ID' | 'ANY' = 'ANY'): keyword is Keyword {
+export function isValidKeyword(
+	keyword: string,
+	type: 'INT' | 'FLOAT' | 'ID' | 'ANY' = 'ANY'
+): keyword is Keyword {
 	const sets = [_float_keywords, _int_keywords, _id_keywords] as const;
 	switch (type) {
 		case 'FLOAT':

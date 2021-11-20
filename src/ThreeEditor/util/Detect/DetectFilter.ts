@@ -1,6 +1,15 @@
 import { MathUtils } from 'three';
 import { Editor } from '../../js/Editor';
-import { FilterRule, FloatRule, FloatRuleJSON, IDRule, IDRuleJSON, IntRule, IntRuleJSON, RuleJSON } from './DetectRule';
+import {
+	FilterRule,
+	FloatRule,
+	FloatRuleJSON,
+	IDRule,
+	IDRuleJSON,
+	IntRule,
+	IntRuleJSON,
+	RuleJSON
+} from './DetectRule';
 
 export type FilterJSON = {
 	uuid: string;

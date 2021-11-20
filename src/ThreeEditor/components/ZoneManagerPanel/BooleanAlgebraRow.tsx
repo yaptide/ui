@@ -19,11 +19,16 @@ export type AlgebraRow = {
 };
 
 export default function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
-	const [algebraRow, setAlgebraRow] = useState<AlgebraRow>(props.value ?? { geometriesId: [], operations: [] });
+	const [algebraRow, setAlgebraRow] = useState<AlgebraRow>(
+		props.value ?? { geometriesId: [], operations: [] }
+	);
 
 	const pushGeometry = (index: number) => (id: number) => {
 		setAlgebraRow(prev => {
-			const newRow: AlgebraRow = { geometriesId: [...prev.geometriesId], operations: prev.operations };
+			const newRow: AlgebraRow = {
+				geometriesId: [...prev.geometriesId],
+				operations: prev.operations
+			};
 
 			newRow.geometriesId.splice(index, 1, id);
 
@@ -35,7 +40,10 @@ export default function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
 
 	const pushOperation = (index: number) => (op: Operation) => {
 		setAlgebraRow(prev => {
-			const newRow: AlgebraRow = { geometriesId: prev.geometriesId, operations: [...prev.operations] };
+			const newRow: AlgebraRow = {
+				geometriesId: prev.geometriesId,
+				operations: [...prev.operations]
+			};
 
 			newRow.operations.splice(index, 1, op);
 
@@ -49,7 +57,7 @@ export default function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
 		setAlgebraRow(prev => {
 			const newRow: AlgebraRow = {
 				geometriesId: [...prev.geometriesId.slice(0, id + 1)],
-				operations: [...prev.operations.slice(0, id)],
+				operations: [...prev.operations.slice(0, id)]
 			};
 
 			props.change(newRow);

@@ -13,7 +13,7 @@ export function DetectPanel(editor, section) {
 		text: `Type`,
 		update: updateType,
 		options: DETECT_OPTIONS,
-		value: type,
+		value: type
 	});
 
 	// width
@@ -21,14 +21,14 @@ export function DetectPanel(editor, section) {
 		text: `X side length (width) ${editor.unit.name}`,
 		min: 0,
 		update,
-		value: data.width,
+		value: data.width
 	});
 	const [widthRow2, width2] = createRowParamNumber({
 		text: `number of bins along X axis`,
 		min: 1,
 		update,
 		precision: 0,
-		value: data.widthSegments,
+		value: data.widthSegments
 	});
 	width2.setNudge(1).setStep(1);
 
@@ -37,14 +37,14 @@ export function DetectPanel(editor, section) {
 		text: `Y side length (height) ${editor.unit.name}`,
 		min: 0,
 		update,
-		value: data.height,
+		value: data.height
 	});
 	const [heightRow2, height2] = createRowParamNumber({
 		text: `number of bins along Y axis`,
 		min: 1,
 		update,
 		precision: 0,
-		value: data.heightSegments,
+		value: data.heightSegments
 	});
 	height2.setNudge(1).setStep(1);
 
@@ -53,14 +53,14 @@ export function DetectPanel(editor, section) {
 		text: `Z side length (depth) ${editor.unit.name}`,
 		min: 0,
 		update,
-		value: data.depth,
+		value: data.depth
 	});
 	const [depthRow2, depth2] = createRowParamNumber({
 		text: `number of bins along Z axis`,
 		min: 1,
 		update,
 		precision: 0,
-		value: data.depthSegments,
+		value: data.depthSegments
 	});
 	depth2.setNudge(1).setStep(1);
 
@@ -69,20 +69,20 @@ export function DetectPanel(editor, section) {
 		text: `Inner radius ${editor.unit.name}`,
 		min: 0,
 		update,
-		value: data.radius,
+		value: data.radius
 	});
 	const [radiusRow2, radius2] = createRowParamNumber({
 		text: `Outer radius ${editor.unit.name}`,
 		min: 0.001,
 		update,
-		value: data.radius,
+		value: data.radius
 	});
 	const [radiusRow3, radius3] = createRowParamNumber({
 		text: `Number of bins along radial axis`,
 		min: 1,
 		update,
 		precision: 0,
-		value: data.radiusSegments,
+		value: data.radiusSegments
 	});
 	radius3.setNudge(1).setStep(1);
 
@@ -90,7 +90,7 @@ export function DetectPanel(editor, section) {
 	const [zoneidRow, zoneid] = createRowSelect({
 		text: `Zone ID`,
 		update,
-		value: editor.zoneManager.getZoneOptions(),
+		value: editor.zoneManager.getZoneOptions()
 	});
 
 	//
@@ -149,7 +149,7 @@ export function DetectPanel(editor, section) {
 				innerRadius: radius1.getValue(),
 				outerRadius: radius2.getValue(),
 				radialSegments: radius3.getValue(),
-				zoneId: parseInt(zoneid.getValue()),
+				zoneId: parseInt(zoneid.getValue())
 			})
 		);
 		refreshUI();

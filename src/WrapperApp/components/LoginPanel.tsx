@@ -20,7 +20,7 @@ export default function LoginPanel(props: LoginPanelProps) {
 				margin: '0 auto',
 				display: 'flex',
 				alignItems: 'center',
-				padding: '5rem',
+				padding: '5rem'
 			}}>
 			<Box
 				component='form'
@@ -30,7 +30,7 @@ export default function LoginPanel(props: LoginPanelProps) {
 					display: 'flex',
 					flexDirection: 'column',
 					gap: '1.5rem',
-					padding: '5rem',
+					padding: '5rem'
 				}}>
 				<TextField
 					id='loginField'

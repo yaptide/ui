@@ -22,7 +22,11 @@ export function TabPanel(props: TabPanelProps) {
 	}, [index, value]);
 
 	return (
-		<div role='tabpanel' className={tabPanelCss} style={{ display: value !== index ? 'none' : '' }} {...other}>
+		<div
+			role='tabpanel'
+			className={tabPanelCss}
+			style={{ display: value !== index ? 'none' : '' }}
+			{...other}>
 			{(value === index || persistent || (visited && persistentIfVisited)) && (
 				<Box className={tabPanelCss}>{children}</Box>
 			)}

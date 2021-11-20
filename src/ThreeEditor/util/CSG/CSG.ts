@@ -12,5 +12,5 @@ export {
 	isZoneContainer,
 	Zone,
 	isZone,
-	CSG,
+	CSG
 };

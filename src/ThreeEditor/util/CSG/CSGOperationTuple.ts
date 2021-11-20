@@ -25,7 +25,7 @@ export class OperationTuple {
 	toJSON() {
 		const jsonObject: OperationTupleJSON = {
 			mode: this.mode,
-			objectUuid: this.object.uuid,
+			objectUuid: this.object.uuid
 		};
 		return jsonObject;
 	}

@@ -36,7 +36,9 @@ function SidebarGeometry(editor) {
 	const helpersRow = new UIRow().setMarginTop('16px').setPaddingLeft('90px');
 	container.add(helpersRow);
 
-	const vertexNormalsButton = new UIButton(strings.getKey('sidebar/geometry/show_vertex_normals'));
+	const vertexNormalsButton = new UIButton(
+		strings.getKey('sidebar/geometry/show_vertex_normals')
+	);
 	vertexNormalsButton.onClick(() => {
 		const object = editor.selected;
 
@@ -60,7 +62,10 @@ function SidebarGeometry(editor) {
 			parameters.add(zonePanel);
 			geometryType.setValue(object.type);
 
-			ReactDOM.render(<ZoneManagerPanel editor={editor} zone={object} />, document.getElementById('zonePanel'));
+			ReactDOM.render(
+				<ZoneManagerPanel editor={editor} zone={object} />,
+				document.getElementById('zonePanel')
+			);
 
 			container.setDisplay('block');
 			vertexNormalsButton.setDisplay('none');
@@ -97,7 +102,9 @@ function SidebarGeometry(editor) {
 
 				if (geometry.type !== 'BufferGeometry') {
 					try {
-						const { GeometryParametersPanel } = await import(`./Sidebar.Geometry.${geometry.type}.js`);
+						const { GeometryParametersPanel } = await import(
+							`./Sidebar.Geometry.${geometry.type}.js`
+						);
 
 						parameters.add(new GeometryParametersPanel(editor, object));
 					} catch (e) {

@@ -5,7 +5,7 @@ import { UIButton, UICheckbox, UIRow, UIText } from './libs/ui.js';
 const bodyTypeOptions = {
 	box: 'box',
 	cylinder: 'cylinder',
-	sphere: 'sphere',
+	sphere: 'sphere'
 };
 
 export function WorldZonePanel(editor, worldZone) {
@@ -15,10 +15,11 @@ export function WorldZonePanel(editor, worldZone) {
 
 	// position
 
-	const [objectPositionRow, objectPositionX, objectPositionY, objectPositionZ] = createRowParamNumberXYZ({
-		text: `${strings.getKey('sidebar/object/position')} ${editor.unit.name}`,
-		update,
-	});
+	const [objectPositionRow, objectPositionX, objectPositionY, objectPositionZ] =
+		createRowParamNumberXYZ({
+			text: `${strings.getKey('sidebar/object/position')} ${editor.unit.name}`,
+			update
+		});
 
 	container.add(objectPositionRow);
 
@@ -27,7 +28,7 @@ export function WorldZonePanel(editor, worldZone) {
 		text: 'Geometry Type',
 		options: bodyTypeOptions,
 		value: worldZone.geometryType,
-		update,
+		update
 	});
 
 	container.add(geometryTypeRow);
@@ -110,22 +111,38 @@ export function WorldZonePanel(editor, worldZone) {
 		switch (worldZone.geometryType) {
 			case 'box':
 				[widthRow, heightRow, depthRow].forEach(e => e.setDisplay('block'));
-				widthText.setValue(strings.getKey('sidebar/geometry/box_geometry/width') + ' ' + editor.unit.name);
-				heightText.setValue(strings.getKey('sidebar/geometry/box_geometry/height') + ' ' + editor.unit.name);
-				depthText.setValue(strings.getKey('sidebar/geometry/box_geometry/depth') + ' ' + editor.unit.name);
+				widthText.setValue(
+					strings.getKey('sidebar/geometry/box_geometry/width') + ' ' + editor.unit.name
+				);
+				heightText.setValue(
+					strings.getKey('sidebar/geometry/box_geometry/height') + ' ' + editor.unit.name
+				);
+				depthText.setValue(
+					strings.getKey('sidebar/geometry/box_geometry/depth') + ' ' + editor.unit.name
+				);
 				break;
 
 			case 'cylinder':
 				[widthRow, heightRow].forEach(e => e.setDisplay('block'));
-				widthText.setValue(strings.getKey('sidebar/geometry/sphere_geometry/radius') + ' ' + editor.unit.name);
+				widthText.setValue(
+					strings.getKey('sidebar/geometry/sphere_geometry/radius') +
+						' ' +
+						editor.unit.name
+				);
 				heightText.setValue(
-					strings.getKey('sidebar/geometry/cylinder_geometry/height') + ' ' + editor.unit.name
+					strings.getKey('sidebar/geometry/cylinder_geometry/height') +
+						' ' +
+						editor.unit.name
 				);
 				break;
 
 			case 'sphere':
 				[widthRow].forEach(e => e.setDisplay('block'));
-				widthText.setValue(strings.getKey('sidebar/geometry/sphere_geometry/radius') + ' ' + editor.unit.name);
+				widthText.setValue(
+					strings.getKey('sidebar/geometry/sphere_geometry/radius') +
+						' ' +
+						editor.unit.name
+				);
 				break;
 
 			default:

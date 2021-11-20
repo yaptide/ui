@@ -176,6 +176,6 @@ export function createMaterialSelect(materialsManager, update) {
 				/>,
 				container.dom
 			);
-		},
+		}
 	];
 }

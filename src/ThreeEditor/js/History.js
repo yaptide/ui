@@ -228,7 +228,7 @@ History.prototype = {
 		this.editor.signals.historyChanged.active = true;
 
 		this.goToState(id);
-	},
+	}
 };
 
 export { History };

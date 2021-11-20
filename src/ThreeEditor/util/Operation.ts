@@ -5,7 +5,7 @@ const METHOD = [
 	(csg: CSG) => (object: CSG) => csg.intersect(object),
 	(csg: CSG) => (object: CSG) => csg.subtract(object),
 	(csg: CSG) => (object: CSG) => object.subtract(csg),
-	(csg: CSG) => (object: CSG) => csg.union(object),
+	(csg: CSG) => (object: CSG) => csg.union(object)
 ] as const;
 
 export type Operation = typeof OPERATION[number];
