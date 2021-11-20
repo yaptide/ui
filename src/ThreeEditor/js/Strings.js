@@ -1,11 +1,8 @@
-function Strings( config ) {
-
-	var language = config.getKey( 'language' );
+function Strings(config) {
+	var language = config.getKey('language');
 
 	var values = {
-
 		en: {
-
 			'menubar/file': 'File',
 			'menubar/file/new': 'New',
 			'menubar/file/import': 'Import',
@@ -325,12 +322,10 @@ function Strings( config ) {
 			'viewport/info/objects': 'Objects',
 			'viewport/info/vertices': 'Vertices',
 			'viewport/info/triangles': 'Triangles',
-			'viewport/info/frametime': 'Frametime'
-
+			'viewport/info/frametime': 'Frametime',
 		},
 
 		fr: {
-
 			'menubar/file': 'Fichier',
 			'menubar/file/new': 'Nouveau',
 			'menubar/file/import': 'Importer',
@@ -443,7 +438,7 @@ function Strings( config ) {
 			'sidebar/object/shadow': 'Ombre',
 			'sidebar/object/shadowBias': 'Biais directionnel des ombres',
 			'sidebar/object/shadowNormalBias': 'Shadow Normal Bias',
-			'sidebar/object/shadowRadius': 'Rayon de l\'ombre',
+			'sidebar/object/shadowRadius': "Rayon de l'ombre",
 			'sidebar/object/cast': 'Projète',
 			'sidebar/object/receive': 'Reçoit',
 			'sidebar/object/visible': 'Visible',
@@ -588,10 +583,10 @@ function Strings( config ) {
 			'sidebar/material/roughnessmap': 'Texture de rugosité',
 			'sidebar/material/metalnessmap': 'Texture métallique',
 			'sidebar/material/specularmap': 'Texture spéculaire',
-			'sidebar/material/envmap': 'Texture d\'environnement',
-			'sidebar/material/lightmap': 'Texture d\'éclairage',
-			'sidebar/material/aomap': 'Texture d\'occlusion ambiante',
-			'sidebar/material/emissivemap': 'Texture d\'émission',
+			'sidebar/material/envmap': "Texture d'environnement",
+			'sidebar/material/lightmap': "Texture d'éclairage",
+			'sidebar/material/aomap': "Texture d'occlusion ambiante",
+			'sidebar/material/emissivemap': "Texture d'émission",
 			'sidebar/material/gradientmap': 'Texture de gradient',
 			'sidebar/material/side': 'Côté',
 			'sidebar/material/size': 'Size',
@@ -650,12 +645,10 @@ function Strings( config ) {
 			'viewport/info/objects': 'Objets',
 			'viewport/info/vertices': 'Sommets',
 			'viewport/info/triangles': 'Triangles',
-			'viewport/info/frametime': 'Temps de trame'
-
+			'viewport/info/frametime': 'Temps de trame',
 		},
 
 		zh: {
-
 			'menubar/file': '文件',
 			'menubar/file/new': '新建',
 			'menubar/file/import': '导入',
@@ -975,22 +968,15 @@ function Strings( config ) {
 			'viewport/info/objects': '物体',
 			'viewport/info/vertices': '顶点',
 			'viewport/info/triangles': '三角形',
-			'viewport/info/frametime': '帧时'
-
-		}
-
+			'viewport/info/frametime': '帧时',
+		},
 	};
 
 	return {
-
-		getKey: function ( key ) {
-
-			return values[ language ][ key ] || '???';
-
-		}
-
+		getKey: function (key) {
+			return values[language][key] || '???';
+		},
 	};
-
 }
 
 export { Strings };

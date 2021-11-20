@@ -2,7 +2,6 @@ import { UIPanel } from './libs/ui.js';
 import { createOption } from './Menubar.js';
 
 function MenubarLayout(editor) {
-
 	const container = new UIPanel();
 	container.setClass('menu');
 
@@ -16,18 +15,20 @@ function MenubarLayout(editor) {
 	container.add(options);
 
 	// Single view
-	options.add(createOption('option', 'Single View', () => {
-		editor.signals.layoutChanged.dispatch('singleView');
-	}));
+	options.add(
+		createOption('option', 'Single View', () => {
+			editor.signals.layoutChanged.dispatch('singleView');
+		})
+	);
 
 	// Four view
-	options.add(createOption('option', 'Four Views', () => {
-		editor.signals.layoutChanged.dispatch('fourViews');
-	}));
+	options.add(
+		createOption('option', 'Four Views', () => {
+			editor.signals.layoutChanged.dispatch('fourViews');
+		})
+	);
 
 	return container;
-
 }
 
 export { MenubarLayout };
-

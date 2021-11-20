@@ -1,164 +1,191 @@
-import { Signal } from "signals";
-import * as THREE from "three";
-import { Editor } from "../../js/Editor";
-import * as CSG from "../CSG/CSG";
-import { ISimulationObject } from "../SimulationObject";
-import {
-    DetectSection,
-    DetectSectionJSON,
-    isDetectSection,
-} from "./DetectSection";
+import { Signal } from 'signals';
+import * as THREE from 'three';
+import { Editor } from '../../js/Editor';
+import * as CSG from '../CSG/CSG';
+import { ISimulationObject } from '../SimulationObject';
+import { DetectFilter, FilterJSON } from './DetectFilter';
+import { DetectGeometry, DetectGeometryJSON, isDetectGeometry } from './DetectGeometry';
 
 interface DetectManagerJSON {
-    uuid: string;
-    name: string;
-    detectSections: DetectSectionJSON[];
+	uuid: string;
+	name: string;
+	detectGeometries: DetectGeometryJSON[];
+	filters: FilterJSON[];
 }
 
-export class DetectsContainer extends THREE.Group implements ISimulationObject {
-    readonly notRemovable = true;
-    readonly notMovable = true;
-    readonly notRotatable = true;
-    readonly notScalable = true;
+export class DetGeoContainer extends THREE.Group implements ISimulationObject {
+	readonly notRemovable = true;
+	readonly notMovable = true;
+	readonly notRotatable = true;
+	readonly notScalable = true;
 
-    children: DetectSection[];
-    readonly isDetectSectionsContainer: true = true;
-    constructor() {
-        super();
-        this.name = "Sections";
-        this.children = [];
-    }
+	children: DetectGeometry[];
+	readonly isDetectGeometryContainer: true = true;
+	constructor() {
+		super();
+		this.name = 'Sections';
+		this.children = [];
+	}
 
-    reset() {
-        this.name = "Sections";
-        this.clear();
-    }
+	reset() {
+		this.name = 'Sections';
+		this.clear();
+	}
 }
 
 export class DetectManager extends THREE.Scene implements ISimulationObject {
-    readonly notRemovable = true;
-    readonly notMovable = true;
-    readonly notRotatable = true;
-    readonly notScalable = true;
+	readonly notRemovable = true;
+	readonly notMovable = true;
+	readonly notRotatable = true;
+	readonly notScalable = true;
 
-    private static _detectWireMaterial = new THREE.MeshBasicMaterial({
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.5,
-        wireframe: true,
-        color: new THREE.Color("cyan"),
-    });
+	private static _detectWireMaterial = new THREE.MeshBasicMaterial({
+		side: THREE.DoubleSide,
+		transparent: true,
+		opacity: 0.5,
+		wireframe: true,
+		color: new THREE.Color('cyan'),
+	});
 
-    detectsContainer: DetectsContainer;
+	detGeoContainer: DetGeoContainer;
 
-    detectHelper: THREE.Mesh;
+	detectHelper: THREE.Mesh;
 
-    private signals: {
-        objectAdded: Signal<THREE.Object3D>;
-        objectChanged: Signal<THREE.Object3D>;
-        objectRemoved: Signal<THREE.Object3D>;
-        objectSelected: Signal<THREE.Object3D>;
-        zoneGeometryChanged: Signal<CSG.Zone>;
-        sceneGraphChanged: Signal;
-        detectSectionAdded: Signal<DetectSection>;
-        detectSectionRemoved: Signal<DetectSection>;
-        detectGeometryChanged: Signal<DetectSection>;
-    };
-    readonly isDetectManager: true = true;
+	filters: DetectFilter[];
 
-    private editor: Editor;
+	private signals: {
+		objectAdded: Signal<THREE.Object3D>;
+		objectChanged: Signal<THREE.Object3D>;
+		objectRemoved: Signal<THREE.Object3D>;
+		objectSelected: Signal<THREE.Object3D>;
+		zoneGeometryChanged: Signal<CSG.Zone>;
+		sceneGraphChanged: Signal;
+		detectGeometryAdded: Signal<DetectGeometry>;
+		detectGeometryRemoved: Signal<DetectGeometry>;
+		detectGeometryChanged: Signal<DetectGeometry>;
+	};
+	readonly isDetectManager: true = true;
 
-    constructor(editor: Editor) {
-        super();
-        this.detectsContainer = new DetectsContainer();
-        this.detectHelper = new THREE.Mesh(
-            undefined,
-            DetectManager._detectWireMaterial
-        );
-        this.name = "DetectManager";
-        this.editor = editor;
-        this.add(this.detectsContainer);
-        this.add(this.detectHelper);
-        this.signals = editor.signals;
-        this.signals.objectSelected.add(this.onObjectSelected);
-        this.signals.detectGeometryChanged.add(this.onObjectSelected);
-    }
+	private editor: Editor;
 
-    onObjectSelected = (object: THREE.Object3D) => {
-        this.detectHelper.geometry.dispose();
-        if (isDetectSection(object) && this.editor.selected === object) {
-            this.detectHelper.position.copy(object.position);
-            this.detectHelper.geometry = object.geometry.clone();
-        } else {
-            this.detectHelper.geometry = new THREE.BufferGeometry();
-        }
-        this.signals.sceneGraphChanged.dispatch();
-    };
+	constructor(editor: Editor) {
+		super();
+		this.detGeoContainer = new DetGeoContainer();
+		this.detectHelper = new THREE.Mesh(undefined, DetectManager._detectWireMaterial);
+		this.name = 'DetectManager';
+		this.editor = editor;
+		this.filters = [];
+		this.add(this.detGeoContainer);
+		this.add(this.detectHelper);
+		this.signals = editor.signals;
+		this.signals.objectSelected.add(this.onObjectSelected);
+		this.signals.detectGeometryChanged.add(this.onObjectSelected);
+	}
 
-    createSection(): DetectSection {
-        const section = new DetectSection(this.editor, {});
-        this.addSection(section);
-        return section;
-    }
+	onObjectSelected = (object: THREE.Object3D) => {
+		this.detectHelper.geometry.dispose();
+		if (isDetectGeometry(object) && this.editor.selected === object) {
+			this.detectHelper.position.copy(object.position);
+			this.detectHelper.geometry = object.geometry.clone();
+		} else {
+			this.detectHelper.geometry = new THREE.BufferGeometry();
+		}
+		this.signals.sceneGraphChanged.dispatch();
+	};
 
-    addSection(section: DetectSection): void {
-        this.detectsContainer.add(section);
+	createSection(): DetectGeometry {
+		const section = new DetectGeometry(this.editor, {});
+		this.addSection(section);
+		return section;
+	}
 
-        this.signals.objectAdded.dispatch(section);
-        this.signals.detectSectionAdded.dispatch(section);
-        this.signals.sceneGraphChanged.dispatch();
-    }
+	addSection(section: DetectGeometry): void {
+		this.detGeoContainer.add(section);
 
-    removeSection(section: DetectSection): void {
-        this.detectsContainer.remove(section);
-        this.signals.objectRemoved.dispatch(section);
-        this.signals.detectSectionRemoved.dispatch(section);
-        this.signals.sceneGraphChanged.dispatch();
-    }
+		this.signals.objectAdded.dispatch(section);
+		this.signals.detectGeometryAdded.dispatch(section);
+		this.signals.sceneGraphChanged.dispatch();
+	}
 
-    fromJSON(data: DetectManagerJSON): void {
-        if (!data) console.error("Passed empty data to load CSGManager", data);
+	removeSection(section: DetectGeometry): void {
+		this.detGeoContainer.remove(section);
+		this.signals.objectRemoved.dispatch(section);
+		this.signals.detectGeometryRemoved.dispatch(section);
+		this.signals.sceneGraphChanged.dispatch();
+	}
 
-        this.uuid = data.uuid;
+	addFilter(filter: DetectFilter): void {
+		this.filters.push(filter);
+	}
 
-        this.name = data.name;
-        data.detectSections.forEach((sectionData) => {
-            this.addSection(DetectSection.fromJSON(this.editor, sectionData));
-        });
-    }
+	removeFilter(filter: DetectFilter): void {
+		this.filters = this.filters.filter(f => f.uuid !== filter.uuid);
+	}
 
-    toJSON(): DetectManagerJSON {
-        const detectSections = this.detectsContainer.children.map((section) =>
-            section.toJSON()
-        );
-        const uuid = this.uuid;
-        const name = this.name;
-        return {
-            uuid,
-            name,
-            detectSections,
-        };
-    }
+	createFilter(): DetectFilter {
+		const filter = new DetectFilter(this.editor);
+		this.addFilter(filter);
+		return filter;
+	}
 
-    reset() {
-        this.name = "DetectManager";
+	fromJSON(data: DetectManagerJSON): void {
+		if (!data) console.error('Passed empty data to load CSGManager', data);
 
-        this.userData = {};
-        this.background = null;
-        this.environment = null;
+		this.uuid = data.uuid;
 
-        this.detectsContainer.reset();
+		this.name = data.name;
+		data.detectGeometries.forEach(sectionData => {
+			this.addSection(DetectGeometry.fromJSON(this.editor, sectionData));
+		});
+		data.filters.forEach(filterData => {
+			this.addFilter(DetectFilter.fromJSON(this.editor, filterData));
+		});
+	}
 
-        this.detectHelper.geometry.dispose();
-    }
+	toJSON(): DetectManagerJSON {
+		const detectGeometries = this.detGeoContainer.children.map(section => section.toJSON());
 
-    clone(recursive: boolean) {
-        return new DetectManager(this.editor).copy(this, recursive) as this;
-    }
+		const filters = this.filters.map(filter => filter.toJSON());
 
-    getSectionById(id: number): DetectSection | null {
-        return this.detectsContainer.children.find(
-            (child) => child.id === id
-        ) as DetectSection | null;
-    }
+		const { uuid, name } = this;
+
+		return {
+			uuid,
+			name,
+			detectGeometries,
+			filters,
+		};
+	}
+
+	reset(): void {
+		this.name = 'DetectManager';
+
+		this.userData = {};
+		this.background = null;
+		this.environment = null;
+
+		this.detGeoContainer.reset();
+		this.clear();
+
+		this.detectHelper.geometry.dispose();
+	}
+
+	clear(): this {
+		this.filters.forEach(filter => {
+			this.removeFilter(filter);
+		});
+		return this;
+	}
+
+	clone(recursive: boolean) {
+		return new DetectManager(this.editor).copy(this, recursive) as this;
+	}
+
+	getSectionById(id: number): DetectGeometry | null {
+		return this.detGeoContainer.children.find(child => child.id === id) as DetectGeometry | null;
+	}
+
+	getFilterByUuid(uuid: string): DetectFilter | null {
+		return this.filters.find(filter => filter.uuid === uuid) as DetectFilter | null;
+	}
 }

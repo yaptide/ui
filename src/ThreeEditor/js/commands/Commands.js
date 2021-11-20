@@ -1,17 +1,15 @@
 // Most of a commands copied from https://github.com/mrdoob/three.js/blob/r131/editor/js/commands/
 
-export { AddDetectSectionCommand } from './AddDetectSectionCommand.js';
+export { AddDetectCommand } from './AddDetectCommand.js';
 export { AddObjectCommand } from './AddObjectCommand.js';
-export { AddScriptCommand } from './AddScriptCommand.js';
 export { AddZoneCommand } from './AddZoneCommand.js';
 export { MoveObjectCommand } from './MoveObjectCommand.js';
 export { MultiCmdsCommand } from './MultiCmdsCommand.js';
 export { RemoveObjectCommand } from './RemoveObjectCommand.js';
-export { RemoveScriptCommand } from './RemoveScriptCommand.js';
 export { RemoveZoneCommand } from './RemoveZoneCommand.js';
 export { RemoveDetectCommand } from './RemoveDetectCommand.js';
 export { SetColorCommand } from './SetColorCommand.js';
-export { SetDetectGeometryCommand } from './SetDetectGeometryCommand';
+export { SetDetectCommand } from './SetDetectCommand';
 export { SetDetectTypeCommand } from './SetDetectTypeCommand';
 export { SetGeometryCommand } from './SetGeometryCommand.js';
 export { SetGeometryValueCommand } from './SetGeometryValueCommand.js';
@@ -24,7 +22,6 @@ export { SetPositionCommand } from './SetPositionCommand.js';
 export { SetRotationCommand } from './SetRotationCommand.js';
 export { SetScaleCommand } from './SetScaleCommand.js';
 export { SetSceneCommand } from './SetSceneCommand.js';
-export { SetScriptValueCommand } from './SetScriptValueCommand.js';
 export { SetUuidCommand } from './SetUuidCommand.js';
 export { SetValueCommand } from './SetValueCommand.js';
 export { SetZoneMaterialCommand } from './SetZoneMaterialCommand.js';

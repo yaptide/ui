@@ -1,16 +1,17 @@
 import * as THREE from 'three';
 import { isBeam } from '../util/Beam';
 import { createRowParamNumberXYZ, createRowParamNumber } from '../util/UiUtils';
-import { UIRow, } from './libs/ui.js';
-
+import { UIRow } from './libs/ui.js';
 
 export function BeamPanel(editor, beam) {
-
 	const container = new UIRow();
 
 	// direction
 
-	const [directionRow, directionX, directionY, directionZ] = createRowParamNumberXYZ({ text: `Direction ${editor.unit.name}`, update });
+	const [directionRow, directionX, directionY, directionZ] = createRowParamNumberXYZ({
+		text: `Direction ${editor.unit.name}`,
+		update,
+	});
 	container.add(directionRow);
 
 	// energy
@@ -21,10 +22,9 @@ export function BeamPanel(editor, beam) {
 
 	updateUI();
 
-	// 
+	//
 
 	function updateUI() {
-
 		directionX.setValue(beam.direction.x);
 		directionY.setValue(beam.direction.y);
 		directionZ.setValue(beam.direction.z);
@@ -35,8 +35,7 @@ export function BeamPanel(editor, beam) {
 	function update() {
 		const direction = new THREE.Vector3(directionX.getValue(), directionY.getValue(), directionZ.getValue());
 
-		if (direction.length() > 0)
-			beam.direction.copy(direction);
+		if (direction.length() > 0) beam.direction.copy(direction);
 
 		beam.energy = energy.getValue();
 
@@ -45,18 +44,11 @@ export function BeamPanel(editor, beam) {
 
 	// signals
 
-	editor.signals.objectChanged.add((object) => {
-
+	editor.signals.objectChanged.add(object => {
 		if (isBeam(object)) {
 			updateUI();
 		}
-
 	});
 
-
 	return container;
-
 }
-
-
-

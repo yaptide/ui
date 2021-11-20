@@ -1,6 +1,6 @@
 import { UISpan } from './libs/ui.js';
 import { DETECT_OPTIONS } from '../util/Detect/DetectTypes';
-import { SetDetectGeometryCommand, SetDetectTypeCommand } from './commands/Commands';
+import { SetDetectCommand, SetDetectTypeCommand } from './commands/Commands';
 import { createRowParamNumber, createRowSelect } from '../util/UiUtils';
 
 export function DetectPanel(editor, section) {
@@ -9,26 +9,26 @@ export function DetectPanel(editor, section) {
 	const data = section.geometryData;
 
 	// detect type
-	const [sectionTypeRow, sectionType] = createRowSelect({ 
-		text: `Type`, 
-		update: updateType, 
+	const [sectionTypeRow, sectionType] = createRowSelect({
+		text: `Type`,
+		update: updateType,
 		options: DETECT_OPTIONS,
-		value: type
+		value: type,
 	});
 
-	// width 
+	// width
 	const [widthRow, width] = createRowParamNumber({
 		text: `X side length (width) ${editor.unit.name}`,
 		min: 0,
 		update,
-		value: data.width
+		value: data.width,
 	});
 	const [widthRow2, width2] = createRowParamNumber({
 		text: `number of bins along X axis`,
 		min: 1,
 		update,
 		precision: 0,
-		value: data.widthSegments
+		value: data.widthSegments,
 	});
 	width2.setNudge(1).setStep(1);
 
@@ -37,14 +37,14 @@ export function DetectPanel(editor, section) {
 		text: `Y side length (height) ${editor.unit.name}`,
 		min: 0,
 		update,
-		value: data.height
+		value: data.height,
 	});
 	const [heightRow2, height2] = createRowParamNumber({
 		text: `number of bins along Y axis`,
 		min: 1,
 		update,
 		precision: 0,
-		value: data.heightSegments
+		value: data.heightSegments,
 	});
 	height2.setNudge(1).setStep(1);
 
@@ -53,14 +53,14 @@ export function DetectPanel(editor, section) {
 		text: `Z side length (depth) ${editor.unit.name}`,
 		min: 0,
 		update,
-		value: data.depth
+		value: data.depth,
 	});
 	const [depthRow2, depth2] = createRowParamNumber({
 		text: `number of bins along Z axis`,
 		min: 1,
 		update,
 		precision: 0,
-		value: data.depthSegments
+		value: data.depthSegments,
 	});
 	depth2.setNudge(1).setStep(1);
 
@@ -69,20 +69,20 @@ export function DetectPanel(editor, section) {
 		text: `Inner radius ${editor.unit.name}`,
 		min: 0,
 		update,
-		value: data.radius
+		value: data.radius,
 	});
 	const [radiusRow2, radius2] = createRowParamNumber({
 		text: `Outer radius ${editor.unit.name}`,
 		min: 0.001,
 		update,
-		value: data.radius
+		value: data.radius,
 	});
 	const [radiusRow3, radius3] = createRowParamNumber({
 		text: `Number of bins along radial axis`,
 		min: 1,
 		update,
 		precision: 0,
-		value: data.radiusSegments
+		value: data.radiusSegments,
 	});
 	radius3.setNudge(1).setStep(1);
 
@@ -90,7 +90,7 @@ export function DetectPanel(editor, section) {
 	const [zoneidRow, zoneid] = createRowSelect({
 		text: `Zone ID`,
 		update,
-		value: editor.zonesManager.getZoneOptions()
+		value: editor.zoneManager.getZoneOptions(),
 	});
 
 	//
@@ -138,18 +138,20 @@ export function DetectPanel(editor, section) {
 	}
 
 	function update() {
-		editor.execute(new SetDetectGeometryCommand(editor, section, {
-			width: width.getValue(),
-			widthSegments: width2.getValue(),
-			height: height.getValue(),
-			heightSegments: height2.getValue(),
-			depth: depth.getValue(),
-			depthSegments: depth2.getValue(),
-			innerRadius: radius1.getValue(),
-			outerRadius: radius2.getValue(),
-			radialSegments: radius3.getValue(),
-			zoneId: parseInt(zoneid.getValue())
-		}));
+		editor.execute(
+			new SetDetectCommand(editor, section, {
+				width: width.getValue(),
+				widthSegments: width2.getValue(),
+				height: height.getValue(),
+				heightSegments: height2.getValue(),
+				depth: depth.getValue(),
+				depthSegments: depth2.getValue(),
+				innerRadius: radius1.getValue(),
+				outerRadius: radius2.getValue(),
+				radialSegments: radius3.getValue(),
+				zoneId: parseInt(zoneid.getValue()),
+			})
+		);
 		refreshUI();
 	}
 
@@ -160,7 +162,7 @@ export function DetectPanel(editor, section) {
 	}
 
 	function updateOptions() {
-		const options = editor.zonesManager.getZoneOptions();
+		const options = editor.zoneManager.getZoneOptions();
 		zoneid.setOptions(options);
 	}
 

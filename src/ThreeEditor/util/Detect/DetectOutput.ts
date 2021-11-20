@@ -1,1 +1,1 @@
-export class DetectOutput{}
+export class DetectOutput {}

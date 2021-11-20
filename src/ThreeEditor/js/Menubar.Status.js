@@ -1,12 +1,10 @@
-import * as THREE from 'three'
+import * as THREE from 'three';
 
 import { UIElement, UIPanel, UIText } from './libs/ui.js';
 import { UIBoolean } from './libs/ui.three.js';
 import deployInfo from '../../util/identify/deployInfo.json';
 
-
 function MenubarStatus(editor) {
-
 	const strings = editor.strings;
 
 	const container = new UIPanel();
@@ -28,36 +26,25 @@ function MenubarStatus(editor) {
 	const autosave = new UIBoolean(editor.config.getKey('autosave'), strings.getKey('menubar/status/autosave'));
 	autosave.text.setColor('#888');
 	autosave.onChange(() => {
-
 		const value = this.getValue();
 
 		editor.config.setKey('autosave', value);
 
 		if (value === true) {
-
 			editor.signals.sceneGraphChanged.dispatch();
-
 		}
-
 	});
 	container.add(autosave);
 
 	editor.signals.savingStarted.add(() => {
-
 		autosave.text.setTextDecoration('underline');
-
 	});
 
 	editor.signals.savingFinished.add(() => {
-
 		autosave.text.setTextDecoration('none');
-
 	});
 
-
-
 	return container;
-
 }
 
 export { MenubarStatus };

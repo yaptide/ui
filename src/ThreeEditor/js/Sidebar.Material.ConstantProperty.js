@@ -2,7 +2,6 @@ import { UIRow, UISelect, UIText } from './libs/ui.js';
 import { SetMaterialValueCommand } from './commands/Commands';
 
 function SidebarMaterialConstantProperty(editor, property, name, options) {
-
 	const { signals } = editor;
 
 	const container = new UIRow();
@@ -15,52 +14,46 @@ function SidebarMaterialConstantProperty(editor, property, name, options) {
 	let material = null;
 
 	function onChange() {
-
-		const value = parseInt(constant.getValue(),10);
+		const value = parseInt(constant.getValue(), 10);
 
 		if (material[property] !== value) {
-
-			editor.execute(new SetMaterialValueCommand(editor, object, property, value, 0 /* TODO: currentMaterialSlot # skipcq: JS-0099 */));
-
+			editor.execute(
+				new SetMaterialValueCommand(
+					editor,
+					object,
+					property,
+					value,
+					0 /* TODO: currentMaterialSlot # skipcq: JS-0099 */
+				)
+			);
 		}
-
 	}
 
 	function update() {
-
 		if (object === null) return;
 		if (object.material === undefined) return;
 
 		material = object.material;
 
 		if (property in material) {
-
 			constant.setValue(material[property]);
 			container.setDisplay('');
-
 		} else {
-
 			container.setDisplay('none');
-
 		}
-
 	}
 
 	//
 
-	signals.objectSelected.add((selected) => {
-
+	signals.objectSelected.add(selected => {
 		object = selected;
 
 		update();
-
 	});
 
 	signals.materialChanged.add(update);
 
 	return container;
-
 }
 
 export { SidebarMaterialConstantProperty };
-

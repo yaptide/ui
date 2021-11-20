@@ -6,13 +6,10 @@ import { SidebarMaterialConstantProperty } from './Sidebar.Material.ConstantProp
 import { SidebarMaterialNumberProperty } from './Sidebar.Material.NumberProperty.js';
 import { createMaterialSelect } from '../util/UiUtils.js';
 
-
-
 // Code copied (and adjusted) from SidebarMaterial.js
 // https://github.com/mrdoob/three.js/blob/r132/editor/js/Sidebar.Material.js
 export function SidebarZoneMaterial(editor) {
-
-	const { signals, strings } = editor;	
+	const { signals, strings } = editor;
 
 	let currentObject = null;
 
@@ -24,7 +21,10 @@ export function SidebarZoneMaterial(editor) {
 
 	// SimulationMaterial type
 
-	const [materialClassRow, materialClass, renderMaterialSelect] = createMaterialSelect( editor.materialsManager, update);
+	const [materialClassRow, materialClass, renderMaterialSelect] = createMaterialSelect(
+		editor.materialsManager,
+		update
+	);
 
 	container.add(materialClassRow);
 
@@ -35,7 +35,11 @@ export function SidebarZoneMaterial(editor) {
 
 	// flatShading
 
-	const materialFlatShading = new SidebarMaterialBooleanProperty(editor, 'flatShading', strings.getKey('sidebar/material/flatShading'));
+	const materialFlatShading = new SidebarMaterialBooleanProperty(
+		editor,
+		'flatShading',
+		strings.getKey('sidebar/material/flatShading')
+	);
 	container.add(materialFlatShading);
 
 	// blending
@@ -48,17 +52,31 @@ export function SidebarZoneMaterial(editor) {
 		4: 'Multiply',
 	};
 
-	const materialBlending = SidebarMaterialConstantProperty(editor, 'blending', strings.getKey('sidebar/material/blending'), materialBlendingOptions);
+	const materialBlending = SidebarMaterialConstantProperty(
+		editor,
+		'blending',
+		strings.getKey('sidebar/material/blending'),
+		materialBlendingOptions
+	);
 	container.add(materialBlending);
 
 	// opacity
 
-	const materialOpacity = SidebarMaterialNumberProperty(editor, 'opacity', strings.getKey('sidebar/material/opacity'), [0, 1]);
+	const materialOpacity = SidebarMaterialNumberProperty(
+		editor,
+		'opacity',
+		strings.getKey('sidebar/material/opacity'),
+		[0, 1]
+	);
 	container.add(materialOpacity);
 
 	// transparent
 
-	const materialTransparent = SidebarMaterialBooleanProperty(editor, 'transparent', strings.getKey('sidebar/material/transparent'));
+	const materialTransparent = SidebarMaterialBooleanProperty(
+		editor,
+		'transparent',
+		strings.getKey('sidebar/material/transparent')
+	);
 	container.add(materialTransparent);
 
 	// export JSON
@@ -72,7 +90,6 @@ export function SidebarZoneMaterial(editor) {
 	//
 
 	function refreshUI() {
-
 		if (!currentObject) return;
 
 		let { material } = currentObject;
@@ -80,69 +97,54 @@ export function SidebarZoneMaterial(editor) {
 		material = editor.getObjectMaterial(currentObject, currentMaterialSlot);
 
 		renderMaterialSelect(material.name);
-
 	}
 
 	function update() {
-
 		const material = editor.getObjectMaterial(currentObject, currentMaterialSlot);
 
 		if (material) {
-
 			const newMaterialName = materialClass.getValue();
 
 			if (material.name !== newMaterialName) {
-
-				editor.execute(new SetZoneMaterialCommand(editor, currentObject, newMaterialName), 'Zone applied material: ' + newMaterialName);
+				editor.execute(
+					new SetZoneMaterialCommand(editor, currentObject, newMaterialName),
+					'Zone applied material: ' + newMaterialName
+				);
 
 				refreshUI();
-
 			}
 		}
-
-
 	}
 
 	// events
 
-	signals.objectSelected.add((object) => {
-
+	signals.objectSelected.add(object => {
 		let hasMaterial = false;
 
 		if (object && object.material) {
-
 			hasMaterial = true;
 
 			if (Array.isArray(object.material) && object.material.length === 0) {
-
 				hasMaterial = false;
-
 			}
-
 		}
 
 		if (hasMaterial) {
-
 			currentObject = object;
 			refreshUI();
 			container.setDisplay('');
-
 		} else {
-
 			currentObject = null;
 			container.setDisplay('none');
-
 		}
-
 	});
 
-	signals.materialChanged.add((material) => {
+	signals.materialChanged.add(material => {
 		if (material?.isSimulationMaterial) {
 			editor.materialsManager.materials[material.name] = material;
 		}
-		refreshUI()
+		refreshUI();
 	});
 
 	return container;
-
 }

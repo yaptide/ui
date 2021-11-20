@@ -1,10 +1,9 @@
 import * as THREE from 'three';
-import { AddObjectCommand, AddZoneCommand, AddDetectSectionCommand } from './commands/Commands';
+import { AddObjectCommand, AddZoneCommand, AddDetectCommand } from './commands/Commands';
 import { UIHorizontalRule, UIPanel } from './libs/ui.js';
 import { createOption } from './Menubar.js';
 
 function MenubarAdd(editor) {
-
 	const strings = editor.strings;
 
 	const container = new UIPanel();
@@ -20,77 +19,88 @@ function MenubarAdd(editor) {
 	container.add(options);
 
 	// YAPTIDE zones
-	options.add(createOption('option', 'Zone', () => {
-
-		editor.execute(new AddZoneCommand(editor));
-	})).add(new UIHorizontalRule());
+	options
+		.add(
+			createOption('option', 'Zone', () => {
+				editor.execute(new AddZoneCommand(editor));
+			})
+		)
+		.add(new UIHorizontalRule());
 
 	// YAPTIDE detectors
-	options.add(createOption('option', 'Detect Section', () => {
+	options
+		.add(
+			createOption('option', 'Detect Section', () => {
+				editor.execute(new AddDetectCommand(editor));
+			})
+		)
+		.add(new UIHorizontalRule());
 
-		editor.execute(new AddDetectSectionCommand(editor));
-
-	})).add(new UIHorizontalRule());
-
-	const material = new THREE.MeshPhongMaterial({ side: THREE.DoubleSide, transparent: true, opacity: 0.5, wireframe: true });
+	const material = new THREE.MeshPhongMaterial({
+		side: THREE.DoubleSide,
+		transparent: true,
+		opacity: 0.5,
+		wireframe: true,
+	});
 
 	//https://stackoverflow.com/questions/37090942/how-to-render-clipped-surfaces-as-solid-objects/37093210#37093210
 	material.onBeforeCompile = function (shader) {
-
 		shader.fragmentShader = shader.fragmentShader.replace(
-
 			`gl_FragColor = vec4( outgoingLight, diffuseColor.a );`,
 
 			`gl_FragColor = ( gl_FrontFacing ) ? vec4( outgoingLight, diffuseColor.a ) : vec4( diffuse, opacity );`
-
 		);
 	};
 
-
 	// Box Sphere & Cylinder
-	options.add(createOption('option', strings.getKey('menubar/add/box'), () => {
+	options
+		.add(
+			createOption('option', strings.getKey('menubar/add/box'), () => {
+				const geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
+				const mesh = new THREE.Mesh(geometry, material.clone());
+				mesh.name = 'Box';
 
-		const geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
-		const mesh = new THREE.Mesh(geometry, material.clone());
-		mesh.name = 'Box';
+				editor.execute(new AddObjectCommand(editor, mesh));
+			})
+		)
+		.add(
+			createOption('option', strings.getKey('menubar/add/sphere'), () => {
+				const geometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI);
+				const mesh = new THREE.Mesh(geometry, material.clone());
+				mesh.name = 'Sphere';
 
-		editor.execute(new AddObjectCommand(editor, mesh));
-	})).add(createOption('option', strings.getKey('menubar/add/sphere'), () => {
+				editor.execute(new AddObjectCommand(editor, mesh));
+			})
+		)
+		.add(
+			createOption('option', strings.getKey('menubar/add/cylinder'), () => {
+				const geometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2);
+				const mesh = new THREE.Mesh(geometry, material.clone());
+				mesh.name = 'Cylinder';
 
-		const geometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI);
-		const mesh = new THREE.Mesh(geometry, material.clone());
-		mesh.name = 'Sphere';
-
-		editor.execute(new AddObjectCommand(editor, mesh));
-	})).add(createOption('option', strings.getKey('menubar/add/cylinder'), () => {
-
-		const geometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2);
-		const mesh = new THREE.Mesh(geometry, material.clone());
-		mesh.name = 'Cylinder';
-
-		editor.execute(new AddObjectCommand(editor, mesh));
-	})).add(new UIHorizontalRule());
+				editor.execute(new AddObjectCommand(editor, mesh));
+			})
+		)
+		.add(new UIHorizontalRule());
 
 	// HemisphereLight
 	//Code adjusted from https://github.com/mrdoob/three.js/blob/r131/editor/js/Menubar.Add.js
-	options.add(createOption('option', strings.getKey('menubar/add/hemispherelight'), () => {
+	options.add(
+		createOption('option', strings.getKey('menubar/add/hemispherelight'), () => {
+			const skyColor = 0x00aaff; // Deep Sky Blue
+			const groundColor = 0xffaa00; // Orange
+			const intensity = 1;
 
-		const skyColor = 0x00aaff; // Deep Sky Blue
-		const groundColor = 0xffaa00; // Orange
-		const intensity = 1;
+			const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
+			light.name = 'HemisphereLight';
 
-		const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
-		light.name = 'HemisphereLight';
+			light.position.set(0, 10, 0);
 
-		light.position.set(0, 10, 0);
-
-		editor.execute(new AddObjectCommand(editor, light));
-	}));
-
-
+			editor.execute(new AddObjectCommand(editor, light));
+		})
+	);
 
 	return container;
 }
 
 export { MenubarAdd };
-
