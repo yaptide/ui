@@ -133,7 +133,7 @@ input {
 
 /* outliner */
 
-#outliner .opener {
+div:is(#outliner, #filter-outliner) .opener {
 	display: inline-block;
 	width: 14px;
 	height: 14px;
@@ -142,31 +142,31 @@ input {
 	text-align: center;
 }
 
-#outliner .opener.open:after {
+div:is(#outliner, #filter-outliner) .opener.open:after {
 	content: '−';
 }
 
-#outliner .opener.closed:after {
+div:is(#outliner, #filter-outliner) .opener.closed:after {
 	content: '+';
 }
 
-#outliner .option {
+div:is(#outliner, #filter-outliner) .option {
 	border: 1px solid transparent;
 }
 
-#outliner .option.drag {
+div:is(#outliner, #filter-outliner) .option.drag {
 	border: 1px dashed #999;
 }
 
-#outliner .option.dragTop {
+div:is(#outliner, #filter-outliner) .option.dragTop {
 	border-top: 1px dashed #999;
 }
 
-#outliner .option.dragBottom {
+div:is(#outliner, #filter-outliner) .option.dragBottom {
 	border-bottom: 1px dashed #999;
 }
 
-#outliner .type {
+div:is(#outliner, #filter-outliner) .type {
 	display: inline-block;
 	width: 14px;
 	height: 14px;
@@ -174,59 +174,59 @@ input {
 	text-align: center;
 }
 
-#outliner .type:after {
+div:is(#outliner, #filter-outliner) .type:after {
 	content: '●';
 }
 
 /* */
 
-#outliner .Scene {
+div:is(#outliner, #filter-outliner) .Scene {
 	color: #8888dd;
 }
 
-#outliner .Camera {
+div:is(#outliner, #filter-outliner) .Camera {
 	color: #dd8888;
 }
 
-#outliner .Light {
+div:is(#outliner, #filter-outliner) .Light {
 	color: #dddd88;
 }
 
 /* */
 
-#outliner .Object3D {
+div:is(#outliner, #filter-outliner) .Object3D {
 	color: #aaaaee;
 }
 
-#outliner .Mesh {
+div:is(#outliner, #filter-outliner) .Mesh {
 	color: #8888ee;
 }
 
-#outliner .Line {
+div:is(#outliner, #filter-outliner) .Line {
 	color: #88ee88;
 }
 
-#outliner .LineSegments {
+div:is(#outliner, #filter-outliner) .LineSegments {
 	color: #88ee88;
 }
 
-#outliner .Points {
+div:is(#outliner, #filter-outliner) .Points {
 	color: #ee8888;
 }
 
 /* */
 
-#outliner .Geometry {
+div:is(#outliner, #filter-outliner) .Geometry {
 	color: #aaeeaa;
 }
 
-#outliner .Material {
+div:is(#outliner, #filter-outliner) .Material {
 	color: #eeaaee;
 }
 
 /* */
 
-#outliner .Script:after {
+div:is(#outliner, #filter-outliner) .Script:after {
 	content: '◎';
 }
 

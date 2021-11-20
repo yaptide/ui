@@ -3,6 +3,16 @@ import * as THREE from 'three';
 import { UIPanel, UIBreak, UIRow, UIColor, UISelect, UIText } from '../libs/ui.js';
 import { UIOutliner, UITexture } from '../libs/ui.three.js';
 
+
+export function escapeHTML(html) {
+	return html
+		.replace(/&/g, '&amp;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;');
+}
+
 function SidebarScene(editor) {
 	const { signals, strings } = editor;
 
@@ -59,15 +69,6 @@ function SidebarScene(editor) {
 		}
 
 		return material.name;
-	}
-
-	function escapeHTML(html) {
-		return html
-			.replace(/&/g, '&amp;')
-			.replace(/"/g, '&quot;')
-			.replace(/'/g, '&#39;')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;');
 	}
 
 	function getObjectType(object) {
@@ -245,11 +246,11 @@ function SidebarScene(editor) {
 					nodeStates.set(object, false);
 				}
 
-				const option = buildOption(object, true);
+				const option = buildOption(object, false);
 				option.style.paddingLeft = pad * 18 + 'px';
 				options.push(option);
 
-				if (nodeStates.get(object) === true) {
+				if (nodeStates.get(object) === false) {
 					addObjects(object.children, pad + 1);
 				}
 			}

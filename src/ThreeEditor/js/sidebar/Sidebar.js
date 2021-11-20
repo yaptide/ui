@@ -15,7 +15,7 @@ function Sidebar(editor) {
 	const scene = new UISpan().add(new SidebarScene(editor), new SidebarProperties(editor));
 	const project = new SidebarProject(editor);
 	const settings = new SidebarSettings(editor);
-	const filters = new SidebarFilters(editor);
+	const filters = new SidebarFilters(editor).setBorderTop('0').setPaddingTop('20px');
 
 	container.addTab('scene', strings.getKey('sidebar/scene'), scene);
 	container.addTab('filters', 'FILTERS', filters);

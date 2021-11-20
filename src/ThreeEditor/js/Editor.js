@@ -59,10 +59,15 @@ export function Editor(container) {
 		zoneEmpty: new Signal(),
 		zoneRemoved: new Signal(),
 
-		//YAPTIDE detect Sections
+		//YAPTIDE detect
 		detectGeometryAdded: new Signal(),
 		detectGeometryRemoved: new Signal(),
 		detectGeometryChanged: new Signal(),
+
+		detectFilterAdded: new Signal(),
+		detectFilterRemoved: new Signal(),
+		detectFilterChanged: new Signal(),
+		outputObjectSelected: new Signal(),
 
 		cameraAdded: new Signal(),
 		cameraRemoved: new Signal(),
@@ -142,7 +147,8 @@ export function Editor(container) {
 
 	this.mixer = new THREE.AnimationMixer(this.scene);
 
-	this.selected = null;
+	this._selected = null;
+	this.outputSelected = null;
 	this.helpers = {};
 
 	this.cameras = {};
@@ -152,6 +158,13 @@ export function Editor(container) {
 }
 
 Editor.prototype = {
+	set selected(object) {
+		this._selected = object;
+		this.outputSelected = null;
+	},
+	get selected() {
+		return this._selected;
+	},
 	setScene(scene) {
 		this.scene.uuid = scene.uuid;
 		this.scene.name = scene.name;
@@ -484,6 +497,10 @@ Editor.prototype = {
 
 	deselect() {
 		this.select(null);
+	},
+
+	outputDeselect() {
+		this.outputSelected = null;
 	},
 
 	focus(object) {

@@ -63,6 +63,9 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 		detectGeometryAdded: Signal<DetectGeometry>;
 		detectGeometryRemoved: Signal<DetectGeometry>;
 		detectGeometryChanged: Signal<DetectGeometry>;
+		detectFilterRemoved: Signal<DetectFilter>;
+		detectFilterAdded: Signal<DetectFilter>;
+		detectFilterChanged: Signal<DetectFilter>;
 	};
 	readonly isDetectManager: true = true;
 
@@ -120,11 +123,13 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 
 	removeFilter(filter: DetectFilter): void {
 		this.filters = this.filters.filter(f => f.uuid !== filter.uuid);
+		this.signals.detectFilterRemoved.dispatch(filter);
 	}
 
 	createFilter(): DetectFilter {
 		const filter = new DetectFilter(this.editor);
 		this.addFilter(filter);
+		this.signals.detectFilterAdded.dispatch(filter);
 		return filter;
 	}
 
@@ -140,6 +145,7 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 		data.filters.forEach(filterData => {
 			this.addFilter(DetectFilter.fromJSON(this.editor, filterData));
 		});
+		this.signals.detectFilterAdded.dispatch(this.filters[this.filters.length - 1]);
 	}
 
 	toJSON(): DetectManagerJSON {

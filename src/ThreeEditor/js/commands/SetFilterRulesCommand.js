@@ -6,12 +6,12 @@ import { Command } from '../Command.js';
  * @param newRules RulesJSON[]
  * @constructor
  */
-export class SetFilterCommand extends Command {
+export class SetFilterRulesCommand extends Command {
 	constructor(editor, filter, newRules) {
 		super(editor);
 
-		this.type = 'SetFilterCommand';
-		this.name = 'Set Filter';
+		this.type = 'SetFilterRulesCommand';
+		this.name = 'Set Filter Rules';
 		this.updatable = true;
 
 		this.filter = filter;
@@ -19,5 +19,5 @@ export class SetFilterCommand extends Command {
 		this.newRules = newRules;
 	}
 
-	execute() {}
+	execute() { }
 }

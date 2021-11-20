@@ -1,5 +1,5 @@
 import { Command } from '../Command.js';
-import DetectFilter from '../../util/Detect/DetectFilter';
+import { DetectFilter } from '../../util/Detect/DetectFilter';
 
 /**
  * @param editor Editor
@@ -18,7 +18,7 @@ export class AddFilterCommand extends Command {
 
 	execute() {
 		if (this.filter) this.editor.detectManager.addFilter(this.filter);
-		else this.section = this.editor.detectManager.createFilter();
+		else this.filter = this.editor.detectManager.createFilter();
 	}
 
 	undo() {

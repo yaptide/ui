@@ -77,7 +77,7 @@ function SidebarSettingsShortcuts(editor) {
 		event => {
 			switch (event.key.toLowerCase()) {
 				case 'delete':
-					const object = editor.selected;
+					const object = editor.selected || editor.outputSelected;
 
 					if (object === null || object.notRemovable === true) return;
 
