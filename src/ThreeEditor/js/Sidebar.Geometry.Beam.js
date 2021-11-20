@@ -36,7 +36,7 @@ export function BeamPanel(editor, beam) {
 	// divergence distance
 
 	const [divergenceDistanceRow, divergenceDistance] = createRowParamNumber({
-		text: `Divergence distance ${editor.unit.name}`,
+		text: `Divergence distance to focal point ${editor.unit.name}`,
 		update
 	});
 	container.add(divergenceDistanceRow);
@@ -53,7 +53,7 @@ export function BeamPanel(editor, beam) {
 
 		divergenceX.setValue(beam.divergence.x);
 		divergenceY.setValue(beam.divergence.y);
-		divergenceDistance.setValue(beam.divergence.distance);
+		divergenceDistance.setValue(beam.divergence.distanceToFocal);
 
 		energy.setValue(beam.energy);
 	}
@@ -71,7 +71,7 @@ export function BeamPanel(editor, beam) {
 
 		beam.divergence.x = divergenceX.getValue();
 		beam.divergence.y = divergenceY.getValue();
-		beam.divergence.distance = divergenceDistance.getValue();
+		beam.divergence.distanceToFocal = divergenceDistance.getValue();
 
 		updateUI();
 	}

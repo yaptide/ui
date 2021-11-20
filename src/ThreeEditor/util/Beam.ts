@@ -15,7 +15,7 @@ export interface BeamJSON {
 	divergence: {
 		x: number;
 		y: number;
-		distance: number;
+		distanceToFocal: number;
 	};
 }
 
@@ -26,7 +26,7 @@ const _default = {
 	divergence: {
 		x: 0,
 		y: 0,
-		distance: 0
+		distanceToFocal: 0
 	}
 };
 
@@ -47,7 +47,7 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 	divergence: {
 		x: number;
 		y: number;
-		distance: number;
+		distanceToFocal: number;
 	};
 
 	private proxy: Beam; // use proxy if you want inform about changes
