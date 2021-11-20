@@ -2,7 +2,6 @@ import { UIPanel } from './libs/ui.js';
 import { createOption } from './Menubar.js';
 
 function MenubarHelp(editor) {
-
 	const strings = editor.strings;
 
 	const container = new UIPanel();
@@ -18,9 +17,11 @@ function MenubarHelp(editor) {
 	container.add(options);
 
 	// Source code
-	options.add(createOption('option', strings.getKey('menubar/help/source_code'), () => {
-		window.open('https://github.com/mrdoob/three.js/tree/master/editor', '_blank');
-	}));
+	options.add(
+		createOption('option', strings.getKey('menubar/help/source_code'), () => {
+			window.open('https://github.com/mrdoob/three.js/tree/master/editor', '_blank');
+		})
+	);
 
 	/*
 	// Icon
@@ -37,17 +38,20 @@ function MenubarHelp(editor) {
 	*/
 
 	// About
-	options.add(createOption('option', strings.getKey('menubar/help/about'), () => {
-		window.open('https://threejs.org', '_blank');
-	}));
+	options.add(
+		createOption('option', strings.getKey('menubar/help/about'), () => {
+			window.open('https://threejs.org', '_blank');
+		})
+	);
 
 	// Manual
-	options.add(createOption('option', strings.getKey('menubar/help/manual'), () => {
-		window.open('https://github.com/mrdoob/three.js/wiki/Editor-Manual', '_blank');
-	}));
+	options.add(
+		createOption('option', strings.getKey('menubar/help/manual'), () => {
+			window.open('https://github.com/mrdoob/three.js/wiki/Editor-Manual', '_blank');
+		})
+	);
 
 	return container;
-
 }
 
 export { MenubarHelp };

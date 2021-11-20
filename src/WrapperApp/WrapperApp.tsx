@@ -11,7 +11,6 @@ import { DEMO_MODE } from '../util/Config';
 import { TabPanel } from './components/TabPanel';
 import ResultsPanel from './components/ResultsPanel';
 
-
 function WrapperApp() {
 	const { editorRef } = useStore();
 
@@ -26,40 +25,49 @@ function WrapperApp() {
 	const [resultData, setResultData] = useState<{ data?: unknown }>({});
 
 	return (
-		<Box sx={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column' }}>
+		<Box
+			sx={{
+				width: '100%',
+				height: '100vh',
+				display: 'flex',
+				flexDirection: 'column'
+			}}>
 			<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-				<Tabs value={tabsValue} onChange={handleChange} >
-					<Tab label="Editor" />
-					<Tab label="Run" disabled={DEMO_MODE} />
-					<Tab label="Results" disabled={DEMO_MODE} />
-					<Tab label="Projects" disabled />
-					<Tab label="About" />
-					<Tab sx={{ marginLeft: 'auto' }} label={currentUser ? "Logout" : "Login"} />
+				<Tabs value={tabsValue} onChange={handleChange}>
+					<Tab label='Editor' />
+					<Tab label='Run' disabled={DEMO_MODE} />
+					<Tab label='Results' disabled={DEMO_MODE} />
+					<Tab label='Projects' disabled />
+					<Tab label='About' />
+					<Tab sx={{ marginLeft: 'auto' }} label={currentUser ? 'Logout' : 'Login'} />
 				</Tabs>
 			</Box>
-			<TabPanel value={tabsValue} index={0} persistent >
-				<ThreeEditor onEditorInitialized={(editor) => editorRef.current = editor} focus={tabsValue === 0} />
+			<TabPanel value={tabsValue} index={0} persistent>
+				<ThreeEditor
+					onEditorInitialized={editor => (editorRef.current = editor)}
+					focus={tabsValue === 0}
+				/>
 			</TabPanel>
-			{DEMO_MODE ||
+			{DEMO_MODE || (
 				<>
 					<TabPanel value={tabsValue} index={1}>
 						<SimulationPanel
-							onSuccess={(data) => {
+							onSuccess={data => {
 								setTabsValue(2);
 								setResultData({ data });
 							}}
 						/>
 					</TabPanel>
 
-					<TabPanel value={tabsValue} index={2} persistentIfVisited >
+					<TabPanel value={tabsValue} index={2} persistentIfVisited>
 						<ResultsPanel data={resultData} />
 					</TabPanel>
 				</>
-			}
-			<TabPanel value={tabsValue} index={5} >
+			)}
+			<TabPanel value={tabsValue} index={5}>
 				<LoginPanel
-					handleLogin={(data) => {
-						setCurrentUser({ uuid: "", login: data.email })
+					handleLogin={data => {
+						setCurrentUser({ uuid: '', login: data.email });
 						setTabsValue(0);
 					}}
 				/>

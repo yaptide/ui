@@ -8,9 +8,7 @@ import { ObjectLoader } from 'three';
  * @constructor
  */
 class SetMaterialCommand extends Command {
-
 	constructor(editor, object, newMaterial, materialSlot) {
-
 		super(editor);
 
 		this.type = 'SetMaterialCommand';
@@ -21,27 +19,21 @@ class SetMaterialCommand extends Command {
 
 		this.oldMaterial = this.editor.getObjectMaterial(object, materialSlot);
 		this.newMaterial = newMaterial;
-
 	}
 
 	execute() {
-
 		this.editor.setObjectMaterial(this.object, this.materialSlot, this.newMaterial);
 		this.editor.signals.materialChanged.dispatch(this.newMaterial);
 		this.editor.signals.objectChanged.dispatch(this.object);
-
 	}
 
 	undo() {
-
 		this.editor.setObjectMaterial(this.object, this.materialSlot, this.oldMaterial);
 		this.editor.signals.materialChanged.dispatch(this.oldMaterial);
 		this.editor.signals.objectChanged.dispatch(this.object);
-
 	}
 
 	toJSON() {
-
 		const output = super.toJSON(this);
 
 		output.objectUuid = this.object.uuid;
@@ -49,11 +41,9 @@ class SetMaterialCommand extends Command {
 		output.newMaterial = this.newMaterial.toJSON();
 
 		return output;
-
 	}
 
 	fromJSON(json) {
-
 		super.fromJSON(json);
 
 		this.object = this.editor.objectByUuid(json.objectUuid);
@@ -61,17 +51,13 @@ class SetMaterialCommand extends Command {
 		this.newMaterial = parseMaterial(json.newMaterial);
 
 		function parseMaterial(materialJson) {
-
 			const loader = new ObjectLoader();
 			const images = loader.parseImages(materialJson.images);
 			const textures = loader.parseTextures(materialJson.textures, images);
 			const materials = loader.parseMaterials([materialJson], textures);
 			return materials[materialJson.uuid];
-
 		}
-
 	}
-
 }
 
 export { SetMaterialCommand };

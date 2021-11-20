@@ -1,80 +1,86 @@
 {
-  "name": "threejs-editor-react",
-  "version": "0.1.0",
-  "private": false,
-  "homepage": ".",
-  "dependencies": {
-    "@emotion/css": "^11.5.0",
-    "@emotion/react": "^11.6.0",
-    "@emotion/styled": "^11.6.0",
-    "@mui/material": "^5.1.1",
-    "@testing-library/jest-dom": "^5.15.0",
-    "@testing-library/react": "^12.1.2",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.0.3",
-    "@types/node": "^16.11.9",
-    "@types/react-dom": "^17.0.11",
-    "@types/signals": "^1.0.1",
-    "@types/throttle-debounce": "^2.1.0",
-    "comlink": "^4.3.1",
-    "ky": "^0.28.7",
-    "react": "^17.0.2",
-    "react-async-script": "^1.2.0",
-    "react-dom": "^17.0.2",
-    "react-hooks-visible": "^1.1.1",
-    "react-scripts": "4.0.3",
-    "signals": "^1.0.0",
-    "split-grid": "^1.0.11",
-    "three": "^0.134.0",
-    "throttle-debounce": "^3.0.1",
-    "typescript": "^4.5.2",
-    "web-vitals": "^2.1.2"
-  },
-  "scripts": {
-    "identify": "node ./src/util/identify/identify.js > ./src/util/identify/deployInfo.json",
-    "prestart": "npm run identify",
-    "start": "react-scripts start",
-    "prebuild": "npm run identify",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "start-demo": "cross-env REACT_APP_TARGET=demo npm run start",
-    "test-demo": "cross-env REACT_APP_TARGET=demo npm run test",
-    "build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
-    "predeploy": "npm run identify && npm run build-demo",
-    "deploy": "gh-pages -d build"
-  },
-  "contributors":[
-    {"name": "ostatni5"},
-    {"name": "derstilon"},
-    {"name": "grzanka"}
-  ],
-  "license": "GPL-3.0",
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "@types/react": "^17.0.35",
-    "@types/react-async-script": "^1.2.1",
-    "@types/three": "^0.134.0",
-    "cross-env": "^7.0.3",
-    "gh-pages": "^3.2.3",
-    "react-app-rewired": "^2.1.8",
-    "worker-loader": "^3.0.8"
-  }
+	"name": "threejs-editor-react",
+	"version": "0.1.0",
+	"private": false,
+	"homepage": ".",
+	"dependencies": {
+		"@emotion/css": "^11.5.0",
+		"@emotion/react": "^11.6.0",
+		"@emotion/styled": "^11.6.0",
+		"@mui/material": "^5.1.1",
+		"@testing-library/jest-dom": "^5.15.0",
+		"@testing-library/react": "^12.1.2",
+		"@testing-library/user-event": "^13.5.0",
+		"@types/jest": "^27.0.3",
+		"@types/node": "^16.11.9",
+		"@types/react-dom": "^17.0.11",
+		"@types/signals": "^1.0.1",
+		"@types/throttle-debounce": "^2.1.0",
+		"comlink": "^4.3.1",
+		"ky": "^0.28.7",
+		"react": "^17.0.2",
+		"react-async-script": "^1.2.0",
+		"react-dom": "^17.0.2",
+		"react-hooks-visible": "^1.1.1",
+		"react-scripts": "4.0.3",
+		"signals": "^1.0.0",
+		"split-grid": "^1.0.11",
+		"three": "^0.134.0",
+		"throttle-debounce": "^3.0.1",
+		"typescript": "^4.5.2",
+		"web-vitals": "^2.1.2"
+	},
+	"scripts": {
+		"identify": "node ./src/util/identify/identify.js > ./src/util/identify/deployInfo.json",
+		"prestart": "npm run identify",
+		"start": "react-scripts start",
+		"prebuild": "npm run identify",
+		"build": "react-scripts build",
+		"test": "react-scripts test",
+		"eject": "react-scripts eject",
+		"start-demo": "cross-env REACT_APP_TARGET=demo npm run start",
+		"test-demo": "cross-env REACT_APP_TARGET=demo npm run test",
+		"build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
+		"predeploy": "npm run identify && npm run build-demo",
+		"deploy": "gh-pages -d build"
+	},
+	"contributors": [
+		{
+			"name": "ostatni5"
+		},
+		{
+			"name": "derstilon"
+		},
+		{
+			"name": "grzanka"
+		}
+	],
+	"license": "GPL-3.0",
+	"eslintConfig": {
+		"extends": [
+			"react-app",
+			"react-app/jest"
+		]
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	},
+	"devDependencies": {
+		"@types/react": "^17.0.35",
+		"@types/react-async-script": "^1.2.1",
+		"@types/three": "^0.134.0",
+		"cross-env": "^7.0.3",
+		"gh-pages": "^3.2.3",
+		"react-app-rewired": "^2.1.8",
+		"worker-loader": "^3.0.8"
+	}
 }

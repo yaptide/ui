@@ -8,7 +8,6 @@ import { MenubarHelp } from './Menubar.Help.js';
 import { MenubarStatus } from './Menubar.Status.js';
 import { MenubarLayout } from './Menubar.Layout.js';
 
-
 /**
  * @param {string} optionClass
  * @param {string} optionText
@@ -24,7 +23,6 @@ function createOption(optionClass, optionText, optionClick) {
 }
 
 function Menubar(editor) {
-
 	const container = new UIPanel();
 	container.setId('menubar');
 
@@ -38,7 +36,6 @@ function Menubar(editor) {
 	container.add(new MenubarStatus(editor));
 
 	return container;
-
 }
 
 export { Menubar, createOption };

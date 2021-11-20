@@ -7,73 +7,62 @@ import { Command } from '../Command.js';
  * @constructor
  */
 class SetDetectGeometryCommand extends Command {
+	constructor(editor, object, newData) {
+		super(editor);
 
-    constructor(editor, object, newData) {
+		this.type = 'SetDetectGeometryCommand';
+		this.name = 'Set DetectGeometry';
+		this.updatable = true;
 
-        super(editor);
+		this.object = object;
+		this.oldData = object.getData();
+		this.newData = {};
+		Object.entries(object.getData()).forEach(([key, _]) => {
+			this.newData[key] = newData[key] ?? this.oldData[key];
+		});
+	}
 
-        this.type = 'SetDetectGeometryCommand';
-        this.name = 'Set DetectGeometry';
-        this.updatable = true;
+	execute() {
+		this.object.setData(this.newData);
 
-        this.object = object;
-        this.oldData = object.getData();
-        this.newData = {};
-        Object.entries(object.getData()).forEach(([key, _]) => {
-            this.newData[key] = newData[key] ?? this.oldData[key];
-        });
-    }
+		this.editor.signals.geometryChanged.dispatch(this.object);
+		this.editor.signals.detectGeometryChanged.dispatch(this.object);
+		this.editor.signals.sceneGraphChanged.dispatch();
+	}
 
-    execute() {
+	undo() {
+		const tmp = this.object.getData();
+		this.object.setData(this.oldData);
+		this.newData = this.object.getData();
+		this.oldData = tmp;
 
-        this.object.setData(this.newData)
+		this.editor.signals.geometryChanged.dispatch(this.object);
+		this.editor.signals.detectGeometryChanged.dispatch(this.object);
+		this.editor.signals.sceneGraphChanged.dispatch();
+	}
 
-        this.editor.signals.geometryChanged.dispatch(this.object);
-        this.editor.signals.detectGeometryChanged.dispatch(this.object);
-        this.editor.signals.sceneGraphChanged.dispatch();
+	update(command) {
+		this.newData = command.newData;
+	}
 
-    }
+	toJSON() {
+		const output = super.toJSON(this);
 
-    undo() {
-        const tmp = this.object.getData();
-        this.object.setData(this.oldData)
-        this.newData = this.object.getData();
-        this.oldData = tmp;
+		output.objectUuid = this.object.uuid;
+		output.oldData = this.oldData;
+		output.newData = this.newData;
 
-        this.editor.signals.geometryChanged.dispatch(this.object);
-        this.editor.signals.detectGeometryChanged.dispatch(this.object);
-        this.editor.signals.sceneGraphChanged.dispatch();
-    }
+		return output;
+	}
 
-    update(command) {
+	fromJSON(json) {
+		super.fromJSON(json);
 
-        this.newData = command.newData;
+		this.object = this.editor.objectByUuid(json.objectUuid);
 
-    }
-
-    toJSON() {
-
-        const output = super.toJSON(this);
-
-        output.objectUuid = this.object.uuid;
-        output.oldData = this.oldData;
-        output.newData = this.newData;
-
-        return output;
-
-    }
-
-    fromJSON(json) {
-
-        super.fromJSON(json);
-
-        this.object = this.editor.objectByUuid(json.objectUuid);
-
-        this.oldData = json.oldData;
-        this.newData = json.newData;
-
-    }
-
+		this.oldData = json.oldData;
+		this.newData = json.newData;
+	}
 }
 
 export { SetDetectGeometryCommand };

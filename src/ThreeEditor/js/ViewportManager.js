@@ -29,9 +29,7 @@ import { ViewportObjects } from './ViewportObjects';
 // TODO - consider using converter Spherical.setFromCartesianCoords
 //   then code reader would be free from understanding unusual convention of spherical coordinates system in threejs
 
-
 function ViewManager(editor) {
-
 	const { camera, scene, signals, zonesManager, sceneHelpers } = editor;
 
 	const container = new UIPanel();
@@ -62,7 +60,6 @@ function ViewManager(editor) {
 	majorGrid.material.vertexColors = false;
 	grid.add(majorGrid);
 
-
 	const planeHelpers = new THREE.Group();
 	sceneHelpers.add(planeHelpers);
 
@@ -76,15 +73,14 @@ function ViewManager(editor) {
 	selectionBox.visible = false;
 	sceneHelpers.add(selectionBox);
 
-
-	// Four Views Layout 
+	// Four Views Layout
 
 	const viewsGrid = new UIDiv();
-	viewsGrid.setClass("grid");
-	viewsGrid.setPosition("absolute");
-	viewsGrid.setWidth("100%");
-	viewsGrid.setHeight("100%");
-	viewsGrid.setBackgroundColor("#aaaaaa"); // aaaaaa -> dark grey (67% lightness)
+	viewsGrid.setClass('grid');
+	viewsGrid.setPosition('absolute');
+	viewsGrid.setWidth('100%');
+	viewsGrid.setHeight('100%');
+	viewsGrid.setBackgroundColor('#aaaaaa'); // aaaaaa -> dark grey (67% lightness)
 	container.add(viewsGrid);
 
 	const viewManagerProps = {
@@ -92,8 +88,7 @@ function ViewManager(editor) {
 		grid,
 		planeHelpers,
 		selectionBox
-	}
-
+	};
 
 	// Below we define configuration for 4 cameras
 	// upper left : looking from the top at plane XY
@@ -125,7 +120,7 @@ function ViewManager(editor) {
 		// default clipping plane being XY plane (normal vector pointing down along Z axis)
 		clipPlane: new THREE.Plane(new THREE.Vector3(0, 0, -1), 0.0),
 
-		planePosLabel: "PlanePos Z",
+		planePosLabel: 'PlanePos Z',
 
 		// 0x73c5ff - Malibu color (light blue)
 		planeHelperColor: 0x73c5ff,
@@ -134,9 +129,9 @@ function ViewManager(editor) {
 		// (phi = 90*, theta = any in threejs spherical coordinates, see comment in top part of this file)
 		// to align it with desired XY plane we rotate the grid plane around X axis by 90*
 		// therefore we use Euler angles (90*, 0*, 0*)
-		gridRotation: new THREE.Euler(Math.PI / 2, 0, 0),
+		gridRotation: new THREE.Euler(Math.PI / 2, 0, 0)
 	};
-	const viewPlaneXY = new Viewport("ViewPanelXY", editor, viewManagerProps, configPlaneXY);
+	const viewPlaneXY = new Viewport('ViewPanelXY', editor, viewManagerProps, configPlaneXY);
 	viewsGrid.add(viewPlaneXY.container);
 
 	// fix the view to being from positive part of Z axis: phi = 0*, theta = 0*
@@ -150,7 +145,7 @@ function ViewManager(editor) {
 	viewPlaneXY.controls.maxAzimuthAngle = viewPlaneXY.controls.minAzimuthAngle = 0;
 	viewPlaneXY.controls.update();
 
-	const gutterCol = new UIDiv().setClass("gutter-col gutter-col-1");
+	const gutterCol = new UIDiv().setClass('gutter-col gutter-col-1');
 	viewsGrid.add(gutterCol);
 
 	// --------------- second view, upper right, full 3D ----------------------------------
@@ -159,9 +154,9 @@ function ViewManager(editor) {
 		showPlaneHelpers: true,
 
 		// camera looking from the middle of X>0,Y>0,Z>0 quadrant
-		cameraPosition: new THREE.Vector3(10, 10, 10),
+		cameraPosition: new THREE.Vector3(10, 10, 10)
 	};
-	const view3D = new Viewport("ViewPanel3D", editor, viewManagerProps, config3D);
+	const view3D = new Viewport('ViewPanel3D', editor, viewManagerProps, config3D);
 	viewsGrid.add(view3D.container);
 
 	// --------------- third view, lower left, XZ plane ----------------------------------
@@ -177,12 +172,12 @@ function ViewManager(editor) {
 
 		// default clipping plane being XZ plane (normal vector pointing down along Y axis)
 		clipPlane: new THREE.Plane(new THREE.Vector3(0, -1, 0), 0.0),
-		planePosLabel: "PlanePoz Y",
+		planePosLabel: 'PlanePoz Y',
 
 		// 0xc2ee00 - Lime color (between green and yellow)
-		planeHelperColor: 0xc2ee00,
+		planeHelperColor: 0xc2ee00
 	};
-	const viewPlaneXZ = new Viewport("ViewPanelY", editor, viewManagerProps, configPlaneXZ);
+	const viewPlaneXZ = new Viewport('ViewPanelY', editor, viewManagerProps, configPlaneXZ);
 	viewsGrid.add(viewPlaneXZ.container);
 
 	// fix the view to being from positive part of Y axis: phi = 0*, theta = 270*
@@ -197,10 +192,11 @@ function ViewManager(editor) {
 	//    Y pointing towards observer ("up")
 	//    Z pointing right
 	viewPlaneXZ.controls.maxPolarAngle = viewPlaneXZ.controls.minPolarAngle = 0.0;
-	viewPlaneXZ.controls.maxAzimuthAngle = viewPlaneXZ.controls.minAzimuthAngle = 3.0 * Math.PI / 2.0;
+	viewPlaneXZ.controls.maxAzimuthAngle = viewPlaneXZ.controls.minAzimuthAngle =
+		(3.0 * Math.PI) / 2.0;
 	viewPlaneXZ.controls.update();
 
-	const gutterRow = new UIDiv().setClass("gutter-row gutter-row-1");
+	const gutterRow = new UIDiv().setClass('gutter-row gutter-row-1');
 	viewsGrid.add(gutterRow);
 
 	// --------------- fourth view, lower right, YZ plane ----------------------------------
@@ -217,7 +213,7 @@ function ViewManager(editor) {
 
 		// default clipping plane being YZ plane (normal vector pointing down along X axis)
 		clipPlane: new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.0),
-		planePosLabel: "PlanePos X",
+		planePosLabel: 'PlanePos X',
 
 		// 0xff7f9b - Tickle Me Pink color
 		planeHelperColor: 0xff7f9b,
@@ -226,9 +222,9 @@ function ViewManager(editor) {
 		// (phi = 90*, theta = any in threejs spherical coordinates, see comment in top part of this file)
 		// to align it with desired YZ plane we rotate the grid plane around Z axis by 90*
 		// therefore we use Euler angles (0*, 0*, 90*)
-		gridRotation: new THREE.Euler(0, 0, Math.PI / 2),
+		gridRotation: new THREE.Euler(0, 0, Math.PI / 2)
 	};
-	const viewPlaneYZ = new Viewport("ViewPanelX", editor, viewManagerProps, configPlaneYZ);
+	const viewPlaneYZ = new Viewport('ViewPanelX', editor, viewManagerProps, configPlaneYZ);
 	viewsGrid.add(viewPlaneYZ.container);
 
 	// fix the view to being from positive part of X axis: phi = 0*, theta = 180*
@@ -246,20 +242,23 @@ function ViewManager(editor) {
 	viewPlaneYZ.controls.maxAzimuthAngle = viewPlaneYZ.controls.minAzimuthAngle = Math.PI;
 	viewPlaneYZ.controls.update();
 
-
 	// Add resizable views
 
 	Split({
-		columnGutters: [{
-			track: 1,
-			element: gutterCol.dom,
-		}],
-		rowGutters: [{
-			track: 1,
-			element: gutterRow.dom,
-		}],
+		columnGutters: [
+			{
+				track: 1,
+				element: gutterCol.dom
+			}
+		],
+		rowGutters: [
+			{
+				track: 1,
+				element: gutterRow.dom
+			}
+		],
 		onDragEnd: (direction, track) => {
-			views.forEach((view) => view.setSize());
+			views.forEach(view => view.setSize());
 
 			render();
 		}
@@ -267,75 +266,60 @@ function ViewManager(editor) {
 
 	const fourViews = [viewPlaneXY, view3D, viewPlaneXZ, viewPlaneYZ];
 
-	// Single View Layout 
+	// Single View Layout
 
 	const viewSingle = new UIDiv();
-	viewSingle.setPosition("absolute");
-	viewSingle.setWidth("100%");
-	viewSingle.setHeight("100%");
-	viewSingle.setBackgroundColor("#aaaaaa");
+	viewSingle.setPosition('absolute');
+	viewSingle.setWidth('100%');
+	viewSingle.setHeight('100%');
+	viewSingle.setBackgroundColor('#aaaaaa');
 	container.add(viewSingle);
 
-	const viewport = new Viewport("ViewPanel", editor, viewManagerProps);
-	viewport.container.setPosition("absolute");
-	viewport.container.setWidth("100%");
-	viewport.container.setHeight("100%");
+	const viewport = new Viewport('ViewPanel', editor, viewManagerProps);
+	viewport.container.setPosition('absolute');
+	viewport.container.setWidth('100%');
+	viewport.container.setHeight('100%');
 	viewSingle.add(viewport.container);
 
 	const singleView = [viewport];
 
 	let views = singleView;
 
-	views.forEach((view) => view.config.visible = true);
+	views.forEach(view => (view.config.visible = true));
 
-	setLayout(currentLayout ?? "fourViews");
-
+	setLayout(currentLayout ?? 'fourViews');
 
 	// events
 
 	function updateAspectRatio() {
-
 		camera.aspect = container.dom.offsetWidth / container.dom.offsetHeight;
 		camera.updateProjectionMatrix();
-
 	}
-
 
 	// signals
 
 	signals.editorCleared.add(() => {
-
-		views.forEach((view) => view.reset());
+		views.forEach(view => view.reset());
 		render();
-
 	});
 
 	signals.rendererUpdated.add(() => {
-
 		scene.traverse(function (child) {
-
 			if (child.material !== undefined) {
-
 				child.material.needsUpdate = true;
-
 			}
-
 		});
 
 		render();
-
 	});
 
-	signals.rendererCreated.add((newRenderer) => {
-
+	signals.rendererCreated.add(newRenderer => {
 		if (renderer !== null) {
-
 			renderer.setAnimationLoop(null);
 			renderer.dispose();
 			pmremGenerator.dispose();
 
 			container.dom.removeChild(renderer.domElement);
-
 		}
 
 		renderer = newRenderer;
@@ -344,20 +328,24 @@ function ViewManager(editor) {
 		renderer.setClearColor(0xaaaaaa);
 
 		if (window.matchMedia) {
-
 			const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 			mediaQuery.addListener(function (event) {
-
 				renderer.setClearColor(event.matches ? 0x333333 : 0xaaaaaa);
-				updateGridColors(minorGrid, majorGrid, event.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]);
+				updateGridColors(
+					minorGrid,
+					majorGrid,
+					event.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]
+				);
 
 				render();
-
 			});
 
 			renderer.setClearColor(mediaQuery.matches ? 0x333333 : 0xaaaaaa);
-			updateGridColors(minorGrid, majorGrid, mediaQuery.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]);
-
+			updateGridColors(
+				minorGrid,
+				majorGrid,
+				mediaQuery.matches ? [0x222222, 0x888888] : [0x888888, 0x282828]
+			);
 		}
 
 		renderer.setPixelRatio(window.devicePixelRatio);
@@ -369,249 +357,179 @@ function ViewManager(editor) {
 		container.dom.appendChild(renderer.domElement);
 
 		render();
-
 	});
 
 	signals.sceneGraphChanged.add(() => {
-
 		render();
-
 	});
 
 	signals.cameraChanged.add(() => {
-
 		render();
-
 	});
 
-	const canBoxBeUpdated = (object) => object !== null && object !== scene && object !== camera && object !== zonesManager;
+	const canBoxBeUpdated = object =>
+		object !== null && object !== scene && object !== camera && object !== zonesManager;
 
-
-	signals.objectSelected.add((object) => {
-
+	signals.objectSelected.add(object => {
 		selectionBox.visible = false;
 
 		if (canBoxBeUpdated(object)) {
-
 			box.setFromObject(object);
 
 			if (box.isEmpty() === false) {
-
 				selectionBox.setFromObject(object);
 				selectionBox.visible = true;
-
 			}
-
 		}
 
 		render();
-
 	});
 
-	signals.objectFocused.add((object) => {
-
-		views.forEach((view) => view.controls.focus(object));
-
+	signals.objectFocused.add(object => {
+		views.forEach(view => view.controls.focus(object));
 	});
 
-	signals.geometryChanged.add((object) => {
-
+	signals.geometryChanged.add(object => {
 		if (object !== undefined) {
-
 			selectionBox.setFromObject(object);
-
 		}
 
 		render();
-
 	});
 
-	signals.objectAdded.add((object) => {
-
+	signals.objectAdded.add(object => {
 		object.traverse(function (child) {
-
 			objects.push(child);
-
 		});
-
 	});
 
-	signals.objectChanged.add((object) => {
-
+	signals.objectChanged.add(object => {
 		if (editor.selected === object) {
-
 			selectionBox.setFromObject(object);
-
 		}
 
 		if (object.isPerspectiveCamera) {
-
 			object.updateProjectionMatrix();
-
 		}
 
 		if (editor.helpers[object.id] !== undefined) {
-
 			editor.helpers[object.id].update();
-
 		}
 
 		render();
-
 	});
 
-	signals.objectRemoved.add((object) => {
-
+	signals.objectRemoved.add(object => {
 		object.traverse(function (child) {
-
 			objects.cut(child);
-
 		});
-
 	});
 
-	signals.helperAdded.add((object) => {
-
+	signals.helperAdded.add(object => {
 		const picker = object.getObjectByName('picker');
 
 		if (picker !== undefined) {
-
 			objects.push(picker);
-
 		}
-
 	});
 
-	signals.helperRemoved.add((object) => {
-
+	signals.helperRemoved.add(object => {
 		const picker = object.getObjectByName('picker');
 
 		if (picker !== undefined) {
-
 			objects.cut(picker);
-
 		}
-
 	});
 
 	signals.materialChanged.add(() => {
-
 		render();
-
 	});
 
 	signals.animationStopped.add(() => {
-
 		render();
-
 	});
 
 	// background
 
-	signals.sceneBackgroundChanged.add((backgroundType, backgroundColor, backgroundTexture, backgroundEquirectangularTexture) => {
+	signals.sceneBackgroundChanged.add(
+		(backgroundType, backgroundColor, backgroundTexture, backgroundEquirectangularTexture) => {
+			switch (backgroundType) {
+				case 'None':
+					scene.background = null;
 
-		switch (backgroundType) {
+					break;
 
-			case 'None':
+				case 'Color':
+					scene.background = new THREE.Color(backgroundColor);
 
-				scene.background = null;
+					break;
 
-				break;
+				case 'Texture':
+					if (backgroundTexture) {
+						scene.background = backgroundTexture;
+					}
 
-			case 'Color':
+					break;
 
-				scene.background = new THREE.Color(backgroundColor);
+				case 'Equirectangular':
+					if (backgroundEquirectangularTexture) {
+						backgroundEquirectangularTexture.mapping =
+							THREE.EquirectangularReflectionMapping;
+						scene.background = backgroundEquirectangularTexture;
+					}
 
-				break;
+					break;
 
-			case 'Texture':
+				default:
+					console.error(backgroundType, "isn't supported");
+					break;
+			}
 
-				if (backgroundTexture) {
-
-					scene.background = backgroundTexture;
-
-				}
-
-				break;
-
-			case 'Equirectangular':
-
-				if (backgroundEquirectangularTexture) {
-
-					backgroundEquirectangularTexture.mapping = THREE.EquirectangularReflectionMapping;
-					scene.background = backgroundEquirectangularTexture;
-
-				}
-
-				break;
-
-			default:
-
-				console.error(backgroundType, "isn't supported");
-				break;
-
+			render();
 		}
-
-		render();
-
-	});
+	);
 
 	// environment
 
 	signals.sceneEnvironmentChanged.add((environmentType, environmentEquirectangularTexture) => {
-
 		switch (environmentType) {
-
 			case 'None':
-
 				scene.environment = null;
 
 				break;
 
 			case 'Equirectangular':
-
 				scene.environment = null;
 
 				if (environmentEquirectangularTexture) {
-
-					environmentEquirectangularTexture.mapping = THREE.EquirectangularReflectionMapping;
+					environmentEquirectangularTexture.mapping =
+						THREE.EquirectangularReflectionMapping;
 					scene.environment = environmentEquirectangularTexture;
-
 				}
 
 				break;
 
 			case 'ModelViewer':
-
 				scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
 
 				break;
 
 			default:
-
 				console.error(environmentType, "isn't supported");
 				break;
-
 		}
 
 		render();
-
 	});
 
-
 	signals.viewportCameraChanged.add(() => {
-
 		const { viewportCamera } = editor;
 
 		if (viewportCamera.isPerspectiveCamera) {
-
 			viewportCamera.aspect = editor.camera.aspect;
 			viewportCamera.projectionMatrix.copy(editor.camera.projectionMatrix);
-
 		} else if (viewportCamera.isOrthographicCamera) {
-
 			// TODO
-
 		}
 
 		// disable EditorControls when setting a user camera
@@ -620,39 +538,31 @@ function ViewManager(editor) {
 		// views.forEach((view)=>view.controls.enabled = true);
 
 		render();
-
 	});
-
 
 	//
 
 	signals.windowResize.add(() => {
-
-		views.forEach((view) => view.setSize());
+		views.forEach(view => view.setSize());
 
 		render();
-
 	});
 
-	signals.showGridChanged.add((showGrid) => {
-
+	signals.showGridChanged.add(showGrid => {
 		grid.visible = showGrid;
 		render();
-
 	});
-
 
 	signals.cameraResetted.add(updateAspectRatio);
 
-	// Layout 
+	// Layout
 
 	function setLayout(layout) {
 		viewsGrid.setDisplay('none');
 		viewSingle.setDisplay('none');
-		views.forEach((view) => view.config.visible = false);
+		views.forEach(view => (view.config.visible = false));
 
 		switch (layout) {
-
 			case 'fourViews':
 				currentLayout = 'fourViews';
 				views = fourViews;
@@ -664,15 +574,14 @@ function ViewManager(editor) {
 				currentLayout = 'singleView';
 				views = singleView;
 				viewSingle.dom.style.display = null;
-
 		}
 
-		views.forEach((view) => view.setSize());
-		views.forEach((view) => view.config.visible = true);
+		views.forEach(view => view.setSize());
+		views.forEach(view => (view.config.visible = true));
 		render();
 	}
 
-	signals.layoutChanged.add((layout) => {
+	signals.layoutChanged.add(layout => {
 		setLayout(layout);
 		editor.config.setKey('layout', currentLayout);
 	});
@@ -680,34 +589,27 @@ function ViewManager(editor) {
 	// viewport config
 
 	signals.viewportConfigChanged.add(() => {
-
 		render();
-
 	});
-
 
 	// animations
 
 	const clock = new THREE.Clock(); // only used for animations
 
 	function animate() {
-
 		const { mixer } = editor;
 		const delta = clock.getDelta();
 
 		let needsUpdate = false;
 
 		if (mixer.stats.actions.inUse > 0) {
-
 			mixer.update(delta);
 			needsUpdate = true;
-
 		}
 
-		needsUpdate = views.map((view) => view.animate(delta)).some(e => e);
+		needsUpdate = views.map(view => view.animate(delta)).some(e => e);
 
 		if (needsUpdate === true) render();
-
 	}
 
 	//
@@ -716,28 +618,20 @@ function ViewManager(editor) {
 	var endTime = 0;
 
 	function render() {
-
 		startTime = performance.now();
 
-		views.forEach((view) => view.render(renderer));
+		views.forEach(view => view.render(renderer));
 
 		endTime = performance.now();
 		editor.signals.sceneRendered.dispatch(endTime - startTime);
-
 	}
 
-
-
 	return container;
-
 }
 
 function updateGridColors(grid1, grid2, colors) {
-
 	grid1.material.color.setHex(colors[0]);
 	grid2.material.color.setHex(colors[1]);
-
 }
 
 export { ViewManager };
-
