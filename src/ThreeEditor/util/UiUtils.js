@@ -1,6 +1,8 @@
 import ReactDOM from 'react-dom';
 import { UIRow, UINumber, UIText, UISelect, UIInput, UIDiv } from '../js/libs/ui.js';
-import { MaterialSelect } from '../components/MaterialSelect/MaterialSelect';
+import { MaterialSelect } from '../components/Select/MaterialSelect';
+import { ParticleSelect } from '../components/Select/ParticlesSelect';
+import { PARTICLE_TYPES } from './particles';
 
 /**
  * @param {{
@@ -108,7 +110,7 @@ export function createRowText(params) {
  * @return {[UIRow, UIText, UIText]}
  */
 export function createRowParamInput(params) {
-	const { text = 'Label', value, update = () => { } } = params;
+	const { text = 'Label', value, update = () => {} } = params;
 
 	const row = new UIRow();
 	const input = new UIInput(value).setWidth('150px').setFontSize('12px').onChange(update);
@@ -167,7 +169,40 @@ export function createMaterialSelect(materialsManager, update) {
 				<MaterialSelect
 					materials={materials}
 					value={value}
-					onChange={(e, newValue) => {
+					onChange={(_, newValue) => {
+						if (newValue) {
+							input.setValue(newValue);
+							update();
+						}
+					}}
+				/>,
+				container.dom
+			);
+		}
+	];
+}
+
+/**
+ * @param {()=>void} update
+ * @return {[UIRow,UINumber,(value:string)=>void]} render function
+ */
+export function createParticleTypeSelect(update) {
+	const row = new UIRow();
+	const container = new UIDiv().setWidth('150px').setDisplay('inline-block');
+	const input = new UINumber();
+	row.add(new UIText('Particle type').setWidth('90px'));
+	row.add(container);
+
+	return [
+		row,
+		input,
+		value => {
+			input.setValue(value);
+			ReactDOM.render(
+				<ParticleSelect
+					particles={PARTICLE_TYPES}
+					value={value}
+					onChange={(_, newValue) => {
 						if (newValue) {
 							input.setValue(newValue);
 							update();

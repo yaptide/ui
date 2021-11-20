@@ -1,13 +1,7 @@
-import {
-	Autocomplete,
-	AutocompleteRenderInputParams,
-	Popper,
-	PopperProps,
-	TextField
-} from '@mui/material';
 import React from 'react';
 import { COMMON_MATERIAL_IDS } from '../../util/Materials/materials';
 import SimulationMaterial from '../../util/Materials/SimulationMaterial';
+import { AutoCompleteSelect } from './AutoCompleteSelect';
 
 export interface MaterialSelectProps {
 	onChange?: (event: React.SyntheticEvent<Element, Event>, newValue: string | null) => void;
@@ -27,36 +21,12 @@ const commonCompare = (a: SimulationMaterial, b: SimulationMaterial): number => 
 };
 
 export function MaterialSelect(props: MaterialSelectProps) {
-	const CustomPopper = (popperProps: PopperProps) => {
-		return (
-			<Popper {...popperProps} style={{ width: 'fit-content' }} placement='bottom-start' />
-		);
-	};
-
-	const renderInput = (params: AutocompleteRenderInputParams) => {
-		return (
-			<TextField
-				{...params}
-				InputProps={{
-					...params?.InputProps,
-					style: { fontSize: '12px' }
-				}}
-				size='small'
-				variant='standard'
-			/>
-		);
-	};
-
 	const getOptionLabel = (id: string, name: string) => {
 		return `[${id}] ${name}`;
 	};
 
 	return (
-		<Autocomplete
-			fullWidth
-			disableClearable
-			size='small'
-			sx={{ width: '100%' }}
+		<AutoCompleteSelect
 			onChange={(event, newValue) => {
 				props.onChange?.call(null, event, newValue.simulationData.name);
 			}}
@@ -66,14 +36,6 @@ export function MaterialSelect(props: MaterialSelectProps) {
 			getOptionLabel={option =>
 				getOptionLabel(option.simulationData.id, option.simulationData.name)
 			}
-			PopperComponent={CustomPopper}
-			renderInput={renderInput}
-			ListboxProps={{
-				style: {
-					fontSize: '12px',
-					width: 'fit-content'
-				}
-			}}
 		/>
 	);
 }

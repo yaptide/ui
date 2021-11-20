@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import { isBeam } from '../util/Beam';
-import { createRowParamNumberXYZ, createRowParamNumber } from '../util/UiUtils';
+import {
+	createRowParamNumberXYZ,
+	createRowParamNumber,
+	createParticleTypeSelect
+} from '../util/UiUtils';
 import { UIRow } from './libs/ui.js';
 
 export function BeamPanel(editor, beam) {
@@ -20,10 +24,9 @@ export function BeamPanel(editor, beam) {
 	const [energyRow, energy] = createRowParamNumber({
 		text: 'Energy mean',
 		min: 1e-12,
-		unit: 'MeV',
+		unit: 'MeV/nucl',
 		update
 	});
-	console.log(energy)
 	container.add(energyRow);
 
 	// energy spread
@@ -52,6 +55,31 @@ export function BeamPanel(editor, beam) {
 	});
 	container.add(divergenceDistanceRow);
 
+	// particle
+
+	const [particleTypeRow, particleType, renderParticleType] = createParticleTypeSelect(update);
+	container.add(particleTypeRow);
+
+	// particle Z
+
+	const [particleZRow, particleZ] = createRowParamNumber({
+		text: `charge (Z)`,
+		precision: 0,
+		step: 1,
+		update
+	});
+	container.add(particleZRow);
+
+	// particle A
+
+	const [particleARow, particleA] = createRowParamNumber({
+		text: `nucleons (A)`,
+		precision: 0,
+		step: 1,
+		update
+	});
+	container.add(particleARow);
+
 	updateUI();
 
 	//
@@ -68,6 +96,14 @@ export function BeamPanel(editor, beam) {
 		energy.setValue(beam.energy);
 		energySpread.setUnit(beam.energySpread < 0 ? 'Mev/c' : 'MeV/nucl');
 		energySpread.setValue(beam.energySpread);
+
+		renderParticleType(beam.particle.id);
+
+		const particleRows = [particleZRow, particleARow];
+		particleRows.forEach(r => r.setDisplay(beam.particle.id === 25 ? '' : 'none'));
+
+		particleZ.setValue(beam.particle.z);
+		particleA.setValue(beam.particle.a);
 	}
 
 	function update() {
@@ -85,6 +121,10 @@ export function BeamPanel(editor, beam) {
 		beam.divergence.x = divergenceX.getValue();
 		beam.divergence.y = divergenceY.getValue();
 		beam.divergence.distanceToFocal = divergenceDistance.getValue();
+
+		beam.particle.id = particleType.getValue();
+		beam.particle.a = particleA.getValue();
+		beam.particle.z = particleZ.getValue();
 
 		updateUI();
 	}

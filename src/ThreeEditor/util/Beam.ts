@@ -18,17 +18,27 @@ export interface BeamJSON {
 		y: number;
 		distanceToFocal: number;
 	};
+	particle: {
+		id: number;
+		z: number;
+		a: number;
+	};
 }
 
 const _default = {
 	position: new THREE.Vector3(0, 0, 0),
 	direction: new THREE.Vector3(0, 0, 1),
 	energy: 150,
-	energySpread: 250,
+	energySpread: 1.5,
 	divergence: {
 		x: 0,
 		y: 0,
 		distanceToFocal: 0
+	},
+	particle: {
+		id: -1,
+		a: 12,
+		z: 6
 	}
 };
 
@@ -51,6 +61,12 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 		x: number;
 		y: number;
 		distanceToFocal: number;
+	};
+
+	particle: {
+		id: number;
+		z: number;
+		a: number;
 	};
 
 	private proxy: Beam; // use proxy if you want inform about changes
@@ -95,6 +111,8 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 		this.energySpread = _default.energySpread;
 
 		this.divergence = { ..._default.divergence };
+
+		this.particle = _default.particle;
 
 		this.helper = this.initHelper();
 
@@ -166,7 +184,11 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 		this.rotation.copy(new Euler());
 		this.position.copy(_default.position);
 		this.direction.copy(_default.direction);
+
 		this.energy = _default.energy;
+		this.energySpread = _default.energySpread;
+		this.divergence = { ..._default.divergence };
+		this.particle = _default.particle;
 	}
 
 	copy(source: this, recursive = true) {
@@ -179,7 +201,8 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 			direction: this.direction.toArray(),
 			energy: this.energy,
 			energySpread: this.energySpread,
-			divergence: this.divergence
+			divergence: this.divergence,
+			particle: this.particle
 		};
 
 		return jsonObject;
@@ -191,6 +214,7 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 		this.energy = data.energy;
 		this.energySpread = data.energySpread;
 		this.divergence = data.divergence;
+		this.particle = data.particle
 		return this;
 	}
 
