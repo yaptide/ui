@@ -24,6 +24,24 @@ export function BeamPanel(editor, beam) {
 	});
 	container.add(energyRow);
 
+	// divergence XY
+
+	const [divergenceRow, divergenceX, divergenceY, divergenceZ] = createRowParamNumberXYZ({
+		text: `Divergence XY [mrad]`,
+		update
+	});
+	divergenceZ.setDisplay('none');
+	container.add(divergenceRow);
+
+	// divergence distance
+
+	const [divergenceDistanceRow, divergenceDistance] = createRowParamNumber({
+		text: `Divergence distance ${editor.unit.name}`,
+		update
+	});
+	container.add(divergenceDistanceRow);
+
+
 	updateUI();
 
 	//
@@ -32,6 +50,10 @@ export function BeamPanel(editor, beam) {
 		directionX.setValue(beam.direction.x);
 		directionY.setValue(beam.direction.y);
 		directionZ.setValue(beam.direction.z);
+
+		divergenceX.setValue(beam.divergence.x);
+		divergenceY.setValue(beam.divergence.y);
+		divergenceDistance.setValue(beam.divergence.distance);
 
 		energy.setValue(beam.energy);
 	}
@@ -46,6 +68,10 @@ export function BeamPanel(editor, beam) {
 		if (direction.length() > 0) beam.direction.copy(direction);
 
 		beam.energy = energy.getValue();
+
+		beam.divergence.x = divergenceX.getValue();
+		beam.divergence.y = divergenceY.getValue();
+		beam.divergence.distance = divergenceDistance.getValue();
 
 		updateUI();
 	}

@@ -12,12 +12,22 @@ export interface BeamJSON {
 	position: THREE.Vector3Tuple;
 	direction: THREE.Vector3Tuple;
 	energy: number;
+	divergence: {
+		x: number;
+		y: number;
+		distance: number;
+	};
 }
 
 const _default = {
 	position: new THREE.Vector3(0, 0, 0),
 	direction: new THREE.Vector3(0, 0, 1),
-	energy: 150
+	energy: 150,
+	divergence: {
+		x: 0,
+		y: 0,
+		distance: 0
+	}
 };
 
 export class Beam extends THREE.Object3D implements ISimulationObject {
@@ -26,11 +36,19 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 	readonly notRotatable = true; //TODO: https://github.com/yaptide/ui/issues/242
 	readonly notScalable = true;
 
+	readonly isBeam: true = true;
+
 	editor: Editor;
 	helper: THREE.ArrowHelper;
 
 	energy: number;
 	direction: Vector3;
+
+	divergence: {
+		x: number;
+		y: number;
+		distance: number;
+	};
 
 	private proxy: Beam; // use proxy if you want inform about changes
 
@@ -42,7 +60,7 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 		set: (target: Beam, prop: keyof Beam, value: unknown) => {
 			const result = Reflect.set(target, prop, value);
 
-			const informChange: (keyof Beam)[] = ['direction', 'energy'];
+			const informChange: (keyof Beam)[] = ['direction', 'energy', 'divergence'];
 			if (informChange.includes(prop)) {
 				this.debouncedDispatchChanged();
 			}
@@ -71,6 +89,8 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 
 		this.position.copy(_default.position);
 		this.energy = _default.energy;
+
+		this.divergence = { ..._default.divergence };
 
 		this.helper = this.initHelper();
 
@@ -153,7 +173,8 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 		const jsonObject: BeamJSON = {
 			position: this.position.toArray(),
 			direction: this.direction.toArray(),
-			energy: this.energy
+			energy: this.energy,
+			divergence: this.divergence
 		};
 
 		return jsonObject;
@@ -163,6 +184,7 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 		this.position.fromArray(data.position);
 		this.direction.fromArray(data.direction);
 		this.energy = data.energy;
+		this.divergence = data.divergence;
 		return this;
 	}
 
