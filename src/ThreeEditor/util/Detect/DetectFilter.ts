@@ -1,1 +1,1 @@
-export class DetectFilter{}
+export class DetectFilter {}

@@ -1,10 +1,9 @@
-import * as THREE from 'three'
+import * as THREE from 'three';
 
 import { UINumber, UIPanel, UIRow, UISelect, UIText } from './libs/ui.js';
 import { UIBoolean } from './libs/ui.three.js';
 
 function SidebarProjectRenderer(editor) {
-
 	const { signals, strings, config } = editor;
 
 	let currentRenderer = null;
@@ -22,7 +21,9 @@ function SidebarProjectRenderer(editor) {
 
 	antialiasRow.add(new UIText(strings.getKey('sidebar/project/antialias')).setWidth('90px'));
 
-	const antialiasBoolean = new UIBoolean(config.getKey('project/renderer/antialias')).onChange(createRenderer);
+	const antialiasBoolean = new UIBoolean(config.getKey('project/renderer/antialias')).onChange(
+		createRenderer
+	);
 	antialiasRow.add(antialiasBoolean);
 
 	// Physically Correct lights
@@ -30,13 +31,15 @@ function SidebarProjectRenderer(editor) {
 	const physicallyCorrectLightsRow = new UIRow();
 	container.add(physicallyCorrectLightsRow);
 
-	physicallyCorrectLightsRow.add(new UIText(strings.getKey('sidebar/project/physicallyCorrectLights')).setWidth('90px'));
+	physicallyCorrectLightsRow.add(
+		new UIText(strings.getKey('sidebar/project/physicallyCorrectLights')).setWidth('90px')
+	);
 
-	const physicallyCorrectLightsBoolean = new UIBoolean(config.getKey('project/renderer/physicallyCorrectLights')).onChange(() => {
-
+	const physicallyCorrectLightsBoolean = new UIBoolean(
+		config.getKey('project/renderer/physicallyCorrectLights')
+	).onChange(() => {
 		currentRenderer.physicallyCorrectLights = this.getValue();
 		signals.rendererUpdated.dispatch();
-
 	});
 	physicallyCorrectLightsRow.add(physicallyCorrectLightsBoolean);
 
@@ -47,25 +50,28 @@ function SidebarProjectRenderer(editor) {
 
 	shadowsRow.add(new UIText(strings.getKey('sidebar/project/shadows')).setWidth('90px'));
 
-	const shadowsBoolean = new UIBoolean(config.getKey('project/renderer/shadows')).onChange(updateShadows);
+	const shadowsBoolean = new UIBoolean(config.getKey('project/renderer/shadows')).onChange(
+		updateShadows
+	);
 	shadowsRow.add(shadowsBoolean);
 
-	const shadowTypeSelect = new UISelect().setOptions({
-		0: 'Basic',
-		1: 'PCF',
-		2: 'PCF Soft',
-		//	3: 'VSM'
-	}).setWidth('125px').onChange(updateShadows);
+	const shadowTypeSelect = new UISelect()
+		.setOptions({
+			0: 'Basic',
+			1: 'PCF',
+			2: 'PCF Soft'
+			//	3: 'VSM'
+		})
+		.setWidth('125px')
+		.onChange(updateShadows);
 	shadowTypeSelect.setValue(config.getKey('project/renderer/shadowType'));
 	shadowsRow.add(shadowTypeSelect);
 
 	function updateShadows() {
-
 		currentRenderer.shadowMap.enabled = shadowsBoolean.getValue();
 		currentRenderer.shadowMap.type = parseFloat(shadowTypeSelect.getValue());
 
 		signals.rendererUpdated.dispatch();
-
 	}
 
 	// Tonemapping
@@ -75,13 +81,16 @@ function SidebarProjectRenderer(editor) {
 
 	toneMappingRow.add(new UIText(strings.getKey('sidebar/project/toneMapping')).setWidth('90px'));
 
-	const toneMappingSelect = new UISelect().setOptions({
-		0: 'No',
-		1: 'Linear',
-		2: 'Reinhard',
-		3: 'Cineon',
-		4: 'ACESFilmic'
-	}).setWidth('120px').onChange(updateToneMapping);
+	const toneMappingSelect = new UISelect()
+		.setOptions({
+			0: 'No',
+			1: 'Linear',
+			2: 'Reinhard',
+			3: 'Cineon',
+			4: 'ACESFilmic'
+		})
+		.setWidth('120px')
+		.onChange(updateToneMapping);
 	toneMappingSelect.setValue(config.getKey('project/renderer/toneMapping'));
 	toneMappingRow.add(toneMappingSelect);
 
@@ -93,20 +102,19 @@ function SidebarProjectRenderer(editor) {
 	toneMappingRow.add(toneMappingExposure);
 
 	function updateToneMapping() {
-
 		toneMappingExposure.setDisplay(toneMappingSelect.getValue() === '0' ? 'none' : '');
 
 		currentRenderer.toneMapping = parseFloat(toneMappingSelect.getValue());
 		currentRenderer.toneMappingExposure = toneMappingExposure.getValue();
 		signals.rendererUpdated.dispatch();
-
 	}
 
 	//
 
 	function createRenderer() {
-
-		currentRenderer = new THREE.WebGLRenderer({ antialias: antialiasBoolean.getValue() });
+		currentRenderer = new THREE.WebGLRenderer({
+			antialias: antialiasBoolean.getValue()
+		});
 		currentRenderer.outputEncoding = THREE.sRGBEncoding;
 		currentRenderer.physicallyCorrectLights = physicallyCorrectLightsBoolean.getValue();
 		currentRenderer.shadowMap.enabled = shadowsBoolean.getValue();
@@ -116,16 +124,13 @@ function SidebarProjectRenderer(editor) {
 
 		signals.rendererCreated.dispatch(currentRenderer);
 		signals.rendererUpdated.dispatch();
-
 	}
 
 	createRenderer();
 
-
 	// Signals
 
 	signals.editorCleared.add(() => {
-
 		currentRenderer.physicallyCorrectLights = false;
 		currentRenderer.shadowMap.enabled = true;
 		currentRenderer.shadowMap.type = THREE.PCFShadowMap;
@@ -140,24 +145,26 @@ function SidebarProjectRenderer(editor) {
 		toneMappingExposure.setDisplay(currentRenderer.toneMapping === 0 ? 'none' : '');
 
 		signals.rendererUpdated.dispatch();
-
 	});
 
 	signals.rendererUpdated.add(() => {
-
 		config.setKey(
-			'project/renderer/antialias', antialiasBoolean.getValue(),
-			'project/renderer/physicallyCorrectLights', physicallyCorrectLightsBoolean.getValue(),
-			'project/renderer/shadows', shadowsBoolean.getValue(),
-			'project/renderer/shadowType', parseFloat(shadowTypeSelect.getValue()),
-			'project/renderer/toneMapping', parseFloat(toneMappingSelect.getValue()),
-			'project/renderer/toneMappingExposure', toneMappingExposure.getValue()
+			'project/renderer/antialias',
+			antialiasBoolean.getValue(),
+			'project/renderer/physicallyCorrectLights',
+			physicallyCorrectLightsBoolean.getValue(),
+			'project/renderer/shadows',
+			shadowsBoolean.getValue(),
+			'project/renderer/shadowType',
+			parseFloat(shadowTypeSelect.getValue()),
+			'project/renderer/toneMapping',
+			parseFloat(toneMappingSelect.getValue()),
+			'project/renderer/toneMappingExposure',
+			toneMappingExposure.getValue()
 		);
-
 	});
 
 	return container;
-
 }
 
 export { SidebarProjectRenderer };

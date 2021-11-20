@@ -8,66 +8,55 @@ import { Command } from '../Command.js';
  */
 
 export class SetDetectTypeCommand extends Command {
+	constructor(editor, object, newType) {
+		super(editor);
 
-    constructor(editor, object, newType) {
+		this.type = 'SetDetectTypeCommand';
+		this.name = 'Set DetectType';
+		this.updatable = true;
 
-        super(editor);
+		this.object = object;
+		this.oldType = object.detectType;
+		this.newType = newType;
+	}
 
-        this.type = 'SetDetectTypeCommand';
-        this.name = 'Set DetectType';
-        this.updatable = true;
+	execute() {
+		this.object.detectType = this.newType;
 
-        this.object = object;
-        this.oldType = object.detectType;
-        this.newType = newType;
-    }
+		this.editor.signals.geometryChanged.dispatch(this.object);
+		this.editor.signals.sceneGraphChanged.dispatch();
+	}
 
-    execute() {
+	undo() {
+		let tmp = this.object.detectType;
+		this.object.detectType = this.oldType;
+		this.newType = this.oldType;
+		this.oldType = tmp;
 
-        this.object.detectType = this.newType;
+		this.editor.signals.geometryChanged.dispatch(this.object);
+		this.editor.signals.sceneGraphChanged.dispatch();
+	}
 
-        this.editor.signals.geometryChanged.dispatch(this.object);
-        this.editor.signals.sceneGraphChanged.dispatch();
+	update(cmd) {
+		this.newGeometry = cmd.newGeometry;
+	}
 
-    }
+	toJSON() {
+		const output = super.toJSON(this);
 
-    undo() {
-        let tmp = this.object.detectType;
-        this.object.detectType = this.oldType;
-        this.newType = this.oldType;
-        this.oldType = tmp;
+		output.objectUuid = this.object.uuid;
+		output.oldType = this.oldType;
+		output.newType = this.newType;
 
-        this.editor.signals.geometryChanged.dispatch(this.object);
-        this.editor.signals.sceneGraphChanged.dispatch();
-    }
+		return output;
+	}
 
-    update(cmd) {
+	fromJSON(json) {
+		super.fromJSON(json);
 
-        this.newGeometry = cmd.newGeometry;
+		this.object = this.editor.objectByUuid(json.objectUuid);
 
-    }
-
-    toJSON() {
-
-        const output = super.toJSON(this);
-
-        output.objectUuid = this.object.uuid;
-        output.oldType = this.oldType;
-        output.newType = this.newType;
-
-        return output;
-
-    }
-
-    fromJSON(json) {
-
-        super.fromJSON(json);
-
-        this.object = this.editor.objectByUuid(json.objectUuid);
-
-        this.oldType = json.oldType;
-        this.newType = json.newType;
-
-    }
-
+		this.oldType = json.oldType;
+		this.newType = json.newType;
+	}
 }

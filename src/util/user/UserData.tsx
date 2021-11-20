@@ -1,4 +1,4 @@
-export default interface UserData{
-    uuid: string,
-    login: string,
+export default interface UserData {
+	uuid: string;
+	login: string;
 }

@@ -9,14 +9,14 @@ export function DetectPanel(editor, section) {
 	const data = section.geometryData;
 
 	// detect type
-	const [sectionTypeRow, sectionType] = createRowSelect({ 
-		text: `Type`, 
-		update: updateType, 
+	const [sectionTypeRow, sectionType] = createRowSelect({
+		text: `Type`,
+		update: updateType,
 		options: DETECT_OPTIONS,
 		value: type
 	});
 
-	// width 
+	// width
 	const [widthRow, width] = createRowParamNumber({
 		text: `X side length (width) ${editor.unit.name}`,
 		min: 0,
@@ -138,18 +138,20 @@ export function DetectPanel(editor, section) {
 	}
 
 	function update() {
-		editor.execute(new SetDetectGeometryCommand(editor, section, {
-			width: width.getValue(),
-			widthSegments: width2.getValue(),
-			height: height.getValue(),
-			heightSegments: height2.getValue(),
-			depth: depth.getValue(),
-			depthSegments: depth2.getValue(),
-			innerRadius: radius1.getValue(),
-			outerRadius: radius2.getValue(),
-			radialSegments: radius3.getValue(),
-			zoneId: parseInt(zoneid.getValue())
-		}));
+		editor.execute(
+			new SetDetectGeometryCommand(editor, section, {
+				width: width.getValue(),
+				widthSegments: width2.getValue(),
+				height: height.getValue(),
+				heightSegments: height2.getValue(),
+				depth: depth.getValue(),
+				depthSegments: depth2.getValue(),
+				innerRadius: radius1.getValue(),
+				outerRadius: radius2.getValue(),
+				radialSegments: radius3.getValue(),
+				zoneId: parseInt(zoneid.getValue())
+			})
+		);
 		refreshUI();
 	}
 

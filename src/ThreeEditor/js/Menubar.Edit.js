@@ -1,11 +1,14 @@
 import * as THREE from 'three';
-import { AddObjectCommand, RemoveObjectCommand, RemoveZoneCommand, RemoveDetectCommand, SetPositionCommand } from './commands/Commands';
+import {
+	AddObjectCommand,
+	RemoveObjectCommand,
+	RemoveZoneCommand,
+	RemoveDetectCommand,
+	SetPositionCommand
+} from './commands/Commands';
 import { UIHorizontalRule, UIPanel, UIRow } from './libs/ui.js';
 
-
-
 function MenubarEdit(editor) {
-
 	const strings = editor.strings;
 
 	const container = new UIPanel();
@@ -26,9 +29,7 @@ function MenubarEdit(editor) {
 	undo.setClass('option');
 	undo.setTextContent(strings.getKey('menubar/edit/undo'));
 	undo.onClick(() => {
-
 		editor.undo();
-
 	});
 	options.add(undo);
 
@@ -38,9 +39,7 @@ function MenubarEdit(editor) {
 	redo.setClass('option');
 	redo.setTextContent(strings.getKey('menubar/edit/redo'));
 	redo.onClick(() => {
-
 		editor.redo();
-
 	});
 	options.add(redo);
 
@@ -50,36 +49,25 @@ function MenubarEdit(editor) {
 	option.setClass('option');
 	option.setTextContent(strings.getKey('menubar/edit/clear_history'));
 	option.onClick(() => {
-
 		if (window.confirm('The Undo/Redo History will be cleared. Are you sure?')) {
-
 			editor.history.clear();
-
 		}
-
 	});
 	options.add(option);
 
-
 	editor.signals.historyChanged.add(() => {
-
 		const { history } = editor;
 
 		undo.setClass('option');
 		redo.setClass('option');
 
 		if (history.undos.length === 0) {
-
 			undo.setClass('inactive');
-
 		}
 
 		if (history.redos.length === 0) {
-
 			redo.setClass('inactive');
-
 		}
-
 	});
 
 	// ---
@@ -92,7 +80,6 @@ function MenubarEdit(editor) {
 	option.setClass('option');
 	option.setTextContent(strings.getKey('menubar/edit/center'));
 	option.onClick(() => {
-
 		const object = editor.selected;
 
 		if (object === null || object.parent === null) return; // avoid centering the camera or scene
@@ -106,7 +93,6 @@ function MenubarEdit(editor) {
 		newPosition.z = object.position.z + (object.position.z - center.z);
 
 		editor.execute(new SetPositionCommand(editor, object, newPosition));
-
 	});
 	options.add(option);
 
@@ -116,7 +102,6 @@ function MenubarEdit(editor) {
 	option.setClass('option');
 	option.setTextContent(strings.getKey('menubar/edit/clone'));
 	option.onClick(() => {
-
 		let object = editor.selected;
 
 		if (object === null || object.parent === null) return; // avoid cloning the camera or scene
@@ -124,7 +109,6 @@ function MenubarEdit(editor) {
 		object = object.clone();
 
 		editor.execute(new AddObjectCommand(editor, object));
-
 	});
 	options.add(option);
 
@@ -134,20 +118,14 @@ function MenubarEdit(editor) {
 	option.setClass('option');
 	option.setTextContent(strings.getKey('menubar/edit/delete'));
 	option.onClick(() => {
-
 		const object = editor.selected;
 
 		if (object !== null && object.parent !== null && object.notRemovable !== true) {
-
-			if (object?.isZone)
-				editor.execute(new RemoveZoneCommand(editor, object));
-			else if(object?.isDetectSection)
+			if (object?.isZone) editor.execute(new RemoveZoneCommand(editor, object));
+			else if (object?.isDetectSection)
 				editor.execute(new RemoveDetectCommand(editor, object));
-			else
-				editor.execute(new RemoveObjectCommand(editor, object));
-
+			else editor.execute(new RemoveObjectCommand(editor, object));
 		}
-
 	});
 	options.add(option);
 
@@ -161,64 +139,44 @@ function MenubarEdit(editor) {
 	option.setClass('option');
 	option.setTextContent(strings.getKey('menubar/edit/fixcolormaps'));
 	option.onClick(() => {
-
 		editor.scene.traverse(fixColorMap);
-
 	});
 	options.add(option);
 
 	const colorMaps = ['map', 'envMap', 'emissiveMap'];
 
 	function fixColorMap(obj) {
-
 		const material = obj.material;
 
 		if (material !== undefined) {
-
 			if (Array.isArray(material) === true) {
-
 				for (let i = 0; i < material.length; i++) {
-
 					fixMaterial(material[i]);
-
 				}
-
 			} else {
-
 				fixMaterial(material);
-
 			}
 
 			editor.signals.sceneGraphChanged.dispatch();
-
 		}
-
 	}
 
 	function fixMaterial(material) {
-
 		let needsUpdate = material.needsUpdate;
 
 		for (let i = 0; i < colorMaps.length; i++) {
-
 			const map = material[colorMaps[i]];
 
 			if (map) {
-
 				map.encoding = THREE.sRGBEncoding;
 				needsUpdate = true;
-
 			}
-
 		}
 
 		material.needsUpdate = needsUpdate;
-
 	}
 
 	return container;
-
 }
 
 export { MenubarEdit };
-

@@ -1,10 +1,9 @@
-import * as THREE from 'three'
+import * as THREE from 'three';
 
 import { UIPanel, UIBreak, UIRow, UIColor, UISelect, UIText } from './libs/ui.js';
 import { UIOutliner, UITexture } from './libs/ui.three.js';
 
 function SidebarScene(editor) {
-
 	const { signals, strings } = editor;
 
 	const container = new UIPanel();
@@ -24,66 +23,54 @@ function SidebarScene(editor) {
 		// opener
 
 		if (nodeStates.has(object)) {
-
 			const state = nodeStates.get(object);
 
 			const opener = document.createElement('span');
 			opener.classList.add('opener');
 
 			if (object.children.length > 0) {
-
 				opener.classList.add(state ? 'open' : 'closed');
-
 			}
 
-			opener.addEventListener('click', () => {
-
-				nodeStates.set(object, nodeStates.get(object) === false); // toggle
-				refreshUI();
-
-			}, false);
+			opener.addEventListener(
+				'click',
+				() => {
+					nodeStates.set(object, nodeStates.get(object) === false); // toggle
+					refreshUI();
+				},
+				false
+			);
 
 			option.insertBefore(opener, option.firstChild);
-
 		}
 
 		return option;
-
 	}
 
 	function getMaterialName(material) {
-
 		if (Array.isArray(material)) {
-
 			const array = [];
 
 			for (let i = 0; i < material.length; i++) {
-
 				array.push(material[i].name);
-
 			}
 
 			return array.join(',');
-
 		}
 
 		return material.name;
-
 	}
 
 	function escapeHTML(html) {
-
 		return html
 			.replace(/&/g, '&amp;')
 			.replace(/"/g, '&quot;')
 			.replace(/'/g, '&#39;')
 			.replace(/</g, '&lt;')
 			.replace(/>/g, '&gt;');
-
 	}
 
 	function getObjectType(object) {
-
 		if (object.isDetectSection) return 'Line';
 		if (object.isZone) return 'Points';
 		if (object.isZonesContainer) return 'Camera';
@@ -97,39 +84,30 @@ function SidebarScene(editor) {
 		if (object.isPoints) return 'Points';
 
 		return 'Object3D';
-
 	}
 
 	function buildHTML(object) {
-
 		let html = `<span class="type ${getObjectType(object)}"></span> ${escapeHTML(object.name)}`;
 
 		if (object.isMesh) {
-
 			const geometry = object.geometry;
 			const material = object.material;
 
 			html += ` <span class="type Geometry"></span> ${escapeHTML(geometry.name)}`;
 			html += ` <span class="type Material"></span> ${escapeHTML(getMaterialName(material))}`;
-
 		}
 
 		html += getScript(object.uuid);
 
 		return html;
-
 	}
 
 	function getScript(uuid) {
-
 		if (editor.scripts[uuid] !== undefined) {
-
 			return ' <span class="type Script"></span>';
-
 		}
 
 		return '';
-
 	}
 
 	let ignoreObjectSelectedSignal = false;
@@ -137,18 +115,14 @@ function SidebarScene(editor) {
 	const outliner = new UIOutliner(editor);
 	outliner.setId('outliner');
 	outliner.onChange(() => {
-
 		ignoreObjectSelectedSignal = true;
 
 		editor.selectById(parseInt(outliner.getValue()));
 
 		ignoreObjectSelectedSignal = false;
-
 	});
 	outliner.onDblClick(() => {
-
 		editor.focusById(parseInt(outliner.getValue()));
-
 	});
 	container.add(outliner);
 	container.add(new UIBreak());
@@ -157,110 +131,103 @@ function SidebarScene(editor) {
 
 	const backgroundRow = new UIRow();
 
-	const backgroundType = new UISelect().setOptions({
-
-		'None': '',
-		'Color': 'Color',
-		'Texture': 'Texture',
-		'Equirectangular': 'Equirect'
-
-	}).setWidth('150px');
+	const backgroundType = new UISelect()
+		.setOptions({
+			None: '',
+			Color: 'Color',
+			Texture: 'Texture',
+			Equirectangular: 'Equirect'
+		})
+		.setWidth('150px');
 	backgroundType.onChange(() => {
-
 		onBackgroundChanged();
 		refreshBackgroundUI();
-
 	});
 
 	backgroundRow.add(new UIText(strings.getKey('sidebar/scene/background')).setWidth('90px'));
 	backgroundRow.add(backgroundType);
 
-	const backgroundColor = new UIColor().setValue('#000000').setMarginLeft('8px').onInput(onBackgroundChanged);
+	const backgroundColor = new UIColor()
+		.setValue('#000000')
+		.setMarginLeft('8px')
+		.onInput(onBackgroundChanged);
 	backgroundRow.add(backgroundColor);
 
 	const backgroundTexture = new UITexture().setMarginLeft('8px').onChange(onBackgroundChanged);
 	backgroundTexture.setDisplay('none');
 	backgroundRow.add(backgroundTexture);
 
-	const backgroundEquirectangularTexture = new UITexture().setMarginLeft('8px').onChange(onBackgroundChanged);
+	const backgroundEquirectangularTexture = new UITexture()
+		.setMarginLeft('8px')
+		.onChange(onBackgroundChanged);
 	backgroundEquirectangularTexture.setDisplay('none');
 	backgroundRow.add(backgroundEquirectangularTexture);
 
 	container.add(backgroundRow);
 
 	function onBackgroundChanged() {
-
 		signals.sceneBackgroundChanged.dispatch(
 			backgroundType.getValue(),
 			backgroundColor.getHexValue(),
 			backgroundTexture.getValue(),
 			backgroundEquirectangularTexture.getValue()
 		);
-
 	}
 
 	function refreshBackgroundUI() {
-
 		const type = backgroundType.getValue();
 
 		backgroundType.setWidth(type === 'None' ? '150px' : '110px');
 		backgroundColor.setDisplay(type === 'Color' ? '' : 'none');
 		backgroundTexture.setDisplay(type === 'Texture' ? '' : 'none');
 		backgroundEquirectangularTexture.setDisplay(type === 'Equirectangular' ? '' : 'none');
-
 	}
 
 	// environment
 
 	const environmentRow = new UIRow();
 
-	const environmentType = new UISelect().setOptions({
-
-		'None': '',
-		'Equirectangular': 'Equirect',
-		'ModelViewer': 'ModelViewer'
-
-	}).setWidth('150px');
+	const environmentType = new UISelect()
+		.setOptions({
+			None: '',
+			Equirectangular: 'Equirect',
+			ModelViewer: 'ModelViewer'
+		})
+		.setWidth('150px');
 	environmentType.setValue('None');
 	environmentType.onChange(() => {
-
 		onEnvironmentChanged();
 		refreshEnvironmentUI();
-
 	});
 
 	environmentRow.add(new UIText(strings.getKey('sidebar/scene/environment')).setWidth('90px'));
 	environmentRow.add(environmentType);
 
-	const environmentEquirectangularTexture = new UITexture().setMarginLeft('8px').onChange(onEnvironmentChanged);
+	const environmentEquirectangularTexture = new UITexture()
+		.setMarginLeft('8px')
+		.onChange(onEnvironmentChanged);
 	environmentEquirectangularTexture.setDisplay('none');
 	environmentRow.add(environmentEquirectangularTexture);
 
 	container.add(environmentRow);
 
 	function onEnvironmentChanged() {
-
 		signals.sceneEnvironmentChanged.dispatch(
 			environmentType.getValue(),
 			environmentEquirectangularTexture.getValue()
 		);
-
 	}
 
 	function refreshEnvironmentUI() {
-
 		const type = environmentType.getValue();
 
 		environmentType.setWidth(type !== 'Equirectangular' ? '150px' : '110px');
 		environmentEquirectangularTexture.setDisplay(type === 'Equirectangular' ? '' : 'none');
-
 	}
-
 
 	//
 
 	function refreshUI() {
-
 		const { scene } = editor;
 		const { detectsContainer } = editor.detectManager;
 		const { zonesContainer, worldZone } = editor.zonesManager;
@@ -270,29 +237,21 @@ function SidebarScene(editor) {
 		options.push(buildOption(scene, false));
 
 		function addObjects(objects, pad) {
-
 			for (let i = 0, l = objects.length; i < l; i++) {
-
 				const object = objects[i];
 
 				if (nodeStates.has(object) === false) {
-
 					nodeStates.set(object, false);
-
 				}
 
 				const option = buildOption(object, true);
-				option.style.paddingLeft = (pad * 18) + 'px';
+				option.style.paddingLeft = pad * 18 + 'px';
 				options.push(option);
 
 				if (nodeStates.get(object) === true) {
-
 					addObjects(object.children, pad + 1);
-
 				}
-
 			}
-
 		}
 		addObjects(scene.children, 0);
 
@@ -309,62 +268,38 @@ function SidebarScene(editor) {
 		outliner.setOptions(options);
 
 		if (editor.selected !== null) {
-
 			outliner.setValue(editor.selected.id);
-
 		}
 
 		if (scene.background) {
-
 			if (scene.background.isColor) {
-
 				backgroundType.setValue('Color');
 				backgroundColor.setHexValue(scene.background.getHex());
-
 			} else if (scene.background.isTexture) {
-
 				if (scene.background.mapping === THREE.EquirectangularReflectionMapping) {
-
 					backgroundType.setValue('Equirectangular');
 					backgroundEquirectangularTexture.setValue(scene.background);
-
 				} else {
-
 					backgroundType.setValue('Texture');
 					backgroundTexture.setValue(scene.background);
-
 				}
-
 			}
-
 		} else {
-
 			backgroundType.setValue('None');
-
 		}
 
 		if (scene.environment) {
-
 			if (scene.environment.mapping === THREE.EquirectangularReflectionMapping) {
-
 				environmentType.setValue('Equirectangular');
 				environmentEquirectangularTexture.setValue(scene.environment);
-
 			}
-
 		} else {
-
 			environmentType.setValue('None');
-
 		}
-
 
 		refreshBackgroundUI();
 		refreshEnvironmentUI();
-
 	}
-
-
 
 	refreshUI();
 
@@ -376,44 +311,41 @@ function SidebarScene(editor) {
 
 	signals.objectChanged.add(refreshUI);
 
-	signals.objectSelected.add((object) => {
+	signals.objectSelected.add(object => {
 		if (ignoreObjectSelectedSignal === true) return;
 
 		if (object !== null && object.parent !== null && !object.parent?.isZone) {
-
 			let needsRefresh = false;
 			let nextParent = object.parent;
 
-			const reachedFinalParent = (parent) => {
-				const finalParents = [editor.scene, editor.zonesManager.zonesContainer, editor.zonesManager.worldZones, editor.detectManager.detectsContainer]
-				return finalParents.some((finalParent) => finalParent === parent)
-			}
+			const reachedFinalParent = parent => {
+				const finalParents = [
+					editor.scene,
+					editor.zonesManager.zonesContainer,
+					editor.zonesManager.worldZones,
+					editor.detectManager.detectsContainer
+				];
+				return finalParents.some(finalParent => finalParent === parent);
+			};
 
 			while (!reachedFinalParent(nextParent)) {
 				if (nodeStates.get(nextParent) !== true) {
 					nodeStates.set(nextParent, true);
 					needsRefresh = true;
-
 				}
 
 				nextParent = nextParent.parent;
-
 			}
 
 			if (needsRefresh) refreshUI();
 
 			outliner.setValue(object.id);
-
 		} else {
-
 			outliner.setValue(null);
-
 		}
-
 	});
 
 	return container;
-
 }
 
 export { SidebarScene };

@@ -6,179 +6,159 @@ import { Sidebar } from './js/Sidebar.js';
 import { Menubar } from './js/Menubar.js';
 import { Resizer } from './js/Resizer.js';
 
-
 export function initEditor(container) {
+	container = container || document.body;
 
-    container = container || document.body;
+	window.URL = window.URL || window.webkitURL;
+	window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
 
-    window.URL = window.URL || window.webkitURL;
-    window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
+	Number.prototype.format = function () {
+		// eslint-disable-line
 
-    Number.prototype.format = function () { // eslint-disable-line
+		return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+	};
 
-        return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+	//
 
-    };
+	var editor = new Editor(container);
 
-    //
+	window.editor = editor; // Expose editor to Console
+	window.THREE = THREE; // Expose THREE to APP Scripts and Console
 
-    var editor = new Editor(container);     
+	var viewManager = new ViewManager(editor);
+	container.appendChild(viewManager.dom);
 
-    window.editor = editor; // Expose editor to Console
-    window.THREE = THREE; // Expose THREE to APP Scripts and Console
+	var toolbar = new Toolbar(editor);
+	container.appendChild(toolbar.dom);
 
-    var viewManager = new ViewManager(editor);
-    container.appendChild(viewManager.dom);
+	var sidebar = new Sidebar(editor);
+	container.appendChild(sidebar.dom);
 
-    var toolbar = new Toolbar(editor);
-    container.appendChild(toolbar.dom);
+	var menubar = new Menubar(editor);
+	container.appendChild(menubar.dom);
 
-    var sidebar = new Sidebar(editor);
-    container.appendChild(sidebar.dom);
+	var resizer = new Resizer(editor);
+	container.appendChild(resizer.dom);
 
-    var menubar = new Menubar(editor);
-    container.appendChild(menubar.dom);
+	//
 
-    var resizer = new Resizer(editor);
-    container.appendChild(resizer.dom);
+	editor.storage.init(() => {
+		const { signals } = editor;
 
-    //
+		editor.storage.get(state => {
+			if (isLoadingFromHash) return;
 
-    editor.storage.init(() => {
+			if (typeof state !== 'undefined') {
+				editor.fromJSON(state);
+			}
 
-        const { signals } = editor;
+			var selected = editor.config.getKey('selected');
 
-        editor.storage.get((state) => {
+			if (typeof selected !== 'undefined') {
+				editor.selectByUuid(selected);
+			}
+		});
 
-            if (isLoadingFromHash) return;
+		//
 
-            if (typeof state !== "undefined") {
+		var timeout;
 
-                editor.fromJSON(state);
+		function saveState() {
+			if (editor.config.getKey('autosave') === false) {
+				return;
+			}
 
-            }
+			clearTimeout(timeout);
 
-            var selected = editor.config.getKey('selected');
+			timeout = setTimeout(() => {
+				editor.signals.savingStarted.dispatch();
 
-            if (typeof selected !== "undefined") {
+				timeout = setTimeout(() => {
+					editor.storage.set(editor.toJSON());
 
-                editor.selectByUuid(selected);
+					editor.signals.savingFinished.dispatch();
+				}, 100);
+			}, 1000);
+		}
 
-            }
+		signals.geometryChanged.add(saveState);
+		signals.objectAdded.add(saveState);
+		signals.objectChanged.add(saveState);
+		signals.objectRemoved.add(saveState);
+		signals.materialChanged.add(saveState);
+		signals.sceneBackgroundChanged.add(saveState);
+		signals.sceneEnvironmentChanged.add(saveState);
+		signals.sceneGraphChanged.add(saveState);
+		signals.scriptChanged.add(saveState);
+		signals.historyChanged.add(saveState);
 
-        });
+		//YAPTIDE signals
+		signals.CSGManagerStateChanged.add(saveState);
+	});
 
-        //
+	//
 
-        var timeout;
+	document.addEventListener(
+		'dragover',
+		event => {
+			event.preventDefault();
+			event.dataTransfer.dropEffect = 'copy';
+		},
+		false
+	);
 
-        function saveState() {
-
-            if (editor.config.getKey('autosave') === false) {
-
-                return;
-
-            }
-
-            clearTimeout(timeout);
-
-            timeout = setTimeout(() => {
-
-                editor.signals.savingStarted.dispatch();
-
-                timeout = setTimeout(() => {
-
-                    editor.storage.set(editor.toJSON());
-
-                    editor.signals.savingFinished.dispatch();
-
-                }, 100);
-
-            }, 1000);
-
-        }
-
-
-        signals.geometryChanged.add(saveState);
-        signals.objectAdded.add(saveState);
-        signals.objectChanged.add(saveState);
-        signals.objectRemoved.add(saveState);
-        signals.materialChanged.add(saveState);
-        signals.sceneBackgroundChanged.add(saveState);
-        signals.sceneEnvironmentChanged.add(saveState);
-        signals.sceneGraphChanged.add(saveState);
-        signals.scriptChanged.add(saveState);
-        signals.historyChanged.add(saveState);
-
-        //YAPTIDE signals
-        signals.CSGManagerStateChanged.add(saveState);
-    });
-
-    //
-
-    document.addEventListener('dragover', (event) => {
-
-        event.preventDefault();
-        event.dataTransfer.dropEffect = 'copy';
-
-    }, false);
-
-    document.addEventListener('drop', (event) => {
-
-        event.preventDefault();
-
-        if (event.dataTransfer.types[0] === 'text/plain') return; // Outliner drop
-
-        if (event.dataTransfer.items) {
-
-            // DataTransferItemList supports folders
-
-            editor.loader.loadItemList(event.dataTransfer.items);
-
-        } else {
-
-            editor.loader.loadFiles(event.dataTransfer.files);
-
-        }
-
-    }, false);
-
-    function onWindowResize() {
-
-        editor.signals.windowResize.dispatch();
-
-    }
-
-    window.addEventListener('resize', onWindowResize, false);
-
-    onWindowResize();
-
-    //
-
-    var isLoadingFromHash = false;
-    var hash = window.location.hash;
-
-    if (hash.substr(1, 5) === 'file=') {
-
-        var file = hash.substr(6);
-
-        if (window.confirm('Any unsaved data will be lost. Are you sure?')) {
-
-            var loader = new THREE.FileLoader();
-            loader.crossOrigin = '';
-            loader.load(file, (text) => {
-
-                editor.clear();
-                editor.fromJSON(JSON.parse(text));
-
-            });
-
-            isLoadingFromHash = true;
-
-        }
-
-    }
-
-    return { editor, viewport: viewManager, toolbar, sidebar, menubar, resizer }
+	document.addEventListener(
+		'drop',
+		event => {
+			event.preventDefault();
+
+			if (event.dataTransfer.types[0] === 'text/plain') return; // Outliner drop
+
+			if (event.dataTransfer.items) {
+				// DataTransferItemList supports folders
+
+				editor.loader.loadItemList(event.dataTransfer.items);
+			} else {
+				editor.loader.loadFiles(event.dataTransfer.files);
+			}
+		},
+		false
+	);
+
+	function onWindowResize() {
+		editor.signals.windowResize.dispatch();
+	}
+
+	window.addEventListener('resize', onWindowResize, false);
+
+	onWindowResize();
+
+	//
+
+	var isLoadingFromHash = false;
+	var hash = window.location.hash;
+
+	if (hash.substr(1, 5) === 'file=') {
+		var file = hash.substr(6);
+
+		if (window.confirm('Any unsaved data will be lost. Are you sure?')) {
+			var loader = new THREE.FileLoader();
+			loader.crossOrigin = '';
+			loader.load(file, text => {
+				editor.clear();
+				editor.fromJSON(JSON.parse(text));
+			});
+
+			isLoadingFromHash = true;
+		}
+	}
+
+	return {
+		editor,
+		viewport: viewManager,
+		toolbar,
+		sidebar,
+		menubar,
+		resizer
+	};
 }
-

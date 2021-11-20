@@ -6,16 +6,12 @@ import { SidebarProject } from './Sidebar.Project.js';
 import { SidebarSettings } from './Sidebar.Settings.js';
 
 function Sidebar(editor) {
-
 	const { strings, signals } = editor;
 
 	const container = new UITabbedPanel();
 	container.setId('sidebar');
 
-	const scene = new UISpan().add(
-		new SidebarScene(editor),
-		new SidebarProperties(editor)
-	);
+	const scene = new UISpan().add(new SidebarScene(editor), new SidebarProperties(editor));
 	const project = new SidebarProject(editor);
 	const settings = new SidebarSettings(editor);
 
@@ -28,7 +24,6 @@ function Sidebar(editor) {
 	signals.objectAdded.add(object => object?.isZone && container.select('scene'));
 
 	return container;
-
 }
 
 export { Sidebar };
