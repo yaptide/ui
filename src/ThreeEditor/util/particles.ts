@@ -1,10 +1,6 @@
 
 export const PARTICLE_TYPES = [
     {
-        "id": -1,
-        "name": "All particles"
-    },
-    {
         "id": 1,
         "name": "Neutron"
     },

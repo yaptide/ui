@@ -36,7 +36,7 @@ const _default = {
 		distanceToFocal: 0
 	},
 	particle: {
-		id: -1,
+		id: 2,
 		a: 12,
 		z: 6
 	}

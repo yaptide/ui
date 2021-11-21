@@ -22,17 +22,15 @@ export function BeamPanel(editor, beam) {
 
 	// set minimum energy to 1ueV (as lower limit of reasonable cross-section used in neutron transport)
 	const [energyRow, energy] = createRowParamNumber({
-		text: 'Energy mean',
+		text: 'Energy mean [MeV/nucl]',
 		min: 1e-12,
-		unit: 'MeV/nucl',
 		update
 	});
 	container.add(energyRow);
 
 	// energy spread
 
-	// set minimum energy to 1ueV (as lower limit of reasonable cross-section used in neutron transport)
-	const [energySpreadRow, energySpread] = createRowParamNumber({
+	const [energySpreadRow, energySpread, energySpreadLabel] = createRowParamNumber({
 		text: 'Energy spread',
 		update
 	});
@@ -94,7 +92,9 @@ export function BeamPanel(editor, beam) {
 		divergenceDistance.setValue(beam.divergence.distanceToFocal);
 
 		energy.setValue(beam.energy);
-		energySpread.setUnit(beam.energySpread < 0 ? 'Mev/c' : 'MeV/nucl');
+		energySpreadLabel.setTextContent(
+			`Energy spread [${beam.energySpread < 0 ? 'Mev/c' : 'MeV/nucl'}]`
+		);
 		energySpread.setValue(beam.energySpread);
 
 		renderParticleType(beam.particle.id);
