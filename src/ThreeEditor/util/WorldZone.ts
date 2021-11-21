@@ -13,6 +13,7 @@ export interface WorldZoneJSON {
 	name: string;
 	color: THREE.ColorRepresentation;
 	marginMultiplier: number;
+	autoCalculate: boolean;
 }
 
 export const BOUNDING_ZONE_TYPE = ['sphere', 'cylinder', 'box'] as const;
@@ -43,11 +44,12 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 	editor: Editor;
 	box: THREE.Box3;
 	marginMultiplier: number;
-	autoCalculate: boolean = true;
+
 	material: MeshBasicMaterial;
 	private _simulationMaterial?: MeshBasicMaterial;
 	readonly isWorldZone: true = true;
 
+	private _autoCalculate: boolean = false;
 	private _geometryType: WorldZoneType = 'box';
 	private boxHelper: THREE.Box3Helper;
 	private cylinderMesh: THREE.Mesh<THREE.CylinderGeometry, MeshBasicMaterial>;
@@ -117,6 +119,32 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 		this.getHelper(value).visible = true;
 		this.editor.signals.objectChanged.dispatch(this);
 	}
+
+	get autoCalculate(): boolean {
+		return this._autoCalculate;
+	}
+
+	set autoCalculate(value: boolean) {
+		this._autoCalculate = value;
+		if (this._autoCalculate) this.calculate();
+	}
+
+	get center() {
+		return this.box.getCenter(new Vector3());
+	}
+
+	set center(value: Vector3) {
+		this.setFromCenterAndSize(value, this.size);
+	}
+
+	get size() {
+		return this.box.getSize(new Vector3());
+	}
+
+	set size(value: Vector3) {
+		this.setFromCenterAndSize(this.center, value);
+	}
+
 
 	private getAllHelpers() {
 		return [this.boxHelper, this.sphereMesh, this.cylinderMesh];
@@ -204,24 +232,31 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 			geometryType: this._geometryType,
 			name: this.name,
 			color: this.material.color.getHex(),
-			marginMultiplier: this.marginMultiplier
+			marginMultiplier: this.marginMultiplier,
+			autoCalculate: this.autoCalculate
 		};
 
 		return jsonObject;
 	}
 
+	fromJSON(data: WorldZoneJSON) {
+
+		this.geometryType = data.geometryType;
+		this.name = data.name;
+
+		this.material.color.set(data.color);
+
+		this.marginMultiplier = data.marginMultiplier;
+
+		this.setFromCenterAndSize(data.center, data.size);
+
+		this.autoCalculate = data.autoCalculate;
+
+		return this;
+	}
+
 	static fromJSON(editor: Editor, data: WorldZoneJSON) {
-		const box = new THREE.Box3();
-		box.setFromCenterAndSize(data.center, data.size);
-
-		const object = new WorldZone(editor, { box, ...data });
-
-		object.geometryType = data.geometryType;
-		object.name = data.name;
-
-		object.setFromCenterAndSize(data.center, data.size);
-
-		return object;
+		return new WorldZone(editor).fromJSON(data);
 	}
 
 	copy(source: this, recursive = true) {

@@ -1,7 +1,7 @@
-import { Box, Button, LinearProgress } from '@mui/material';
+import { Box, Button, LinearProgress, Typography } from '@mui/material';
 import ky from 'ky';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useStore } from '../../services/StoreService';
 import { BACKEND_URL } from '../../util/Config';
 
@@ -12,7 +12,9 @@ interface SimulationPanelProps {
 
 export default function SimulationPanel(props: SimulationPanelProps) {
 	const { editorRef } = useStore();
-	const [isInProgress, setInProgress] = useState<boolean>(false);
+	const [isInProgress, setInProgress] = useState(false);
+
+	const [isBackendAlive, setBackendAlive] = useState(false);
 
 	const sendRequest = () => {
 		setInProgress(true);
@@ -38,6 +40,25 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			});
 	};
 
+	useEffect(() => {
+		let ignore = false;
+
+		ky.get(`${BACKEND_URL}`)
+			.json()
+			.then((response: unknown) => {
+				console.log(response);
+				if (!ignore) setBackendAlive(true);
+			})
+			.catch((error: unknown) => {
+				console.error(error);
+				if (!ignore) setBackendAlive(false);
+			});
+
+		return () => {
+			ignore = true;
+		};
+	}, []);
+
 	return (
 		<Box
 			sx={{
@@ -57,6 +78,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				onClick={sendRequest}>
 				{isInProgress ? 'Stop' : 'Start'}
 			</Button>
+			<Typography>Backend status: {isBackendAlive ? 'alive' : 'dead'}</Typography>
 		</Box>
 	);
 }

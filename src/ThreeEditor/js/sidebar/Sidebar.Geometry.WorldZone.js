@@ -1,6 +1,7 @@
 import * as THREE from 'three';
-import { createRowParamNumberXYZ, createRowParamNumber, createRowSelect } from '../../util/UiUtils.js';
-import { UIButton, UICheckbox, UIRow, UIText } from '../libs/ui.js';
+import { createRowParamNumberXYZ, createRowParamNumber, createRowSelect } from '../util/UiUtils.js';
+import { SetValueCommand } from './commands/SetValueCommand.js';
+import { UIButton, UICheckbox, UIRow, UIText } from './libs/ui.js';
 
 const bodyTypeOptions = {
 	box: 'box',
@@ -28,7 +29,12 @@ export function WorldZonePanel(editor, worldZone) {
 		text: 'Geometry Type',
 		options: bodyTypeOptions,
 		value: worldZone.geometryType,
-		update
+		update: () => {
+			if (worldZone.geometryType !== geometryType.getValue())
+				editor.execute(
+					new SetValueCommand(editor, worldZone, 'geometryType', geometryType.getValue())
+				);
+		}
 	});
 
 	container.add(geometryTypeRow);
@@ -57,8 +63,16 @@ export function WorldZonePanel(editor, worldZone) {
 
 	const autoCalculateRow = new UIRow();
 	const autoCalculate = new UICheckbox(worldZone.autoCalculate).onChange(() => {
-		update();
-		editor.signals.objectSelected.dispatch(worldZone);
+		if (worldZone.autoCalculate !== autoCalculate.getValue())
+			editor.execute(
+				new SetValueCommand(
+					editor,
+					worldZone,
+					'autoCalculate',
+					autoCalculate.getValue(),
+					true
+				)
+			);
 	});
 
 	autoCalculateRow.add(new UIText('Auto calculate').setWidth('90px'));
@@ -74,7 +88,7 @@ export function WorldZonePanel(editor, worldZone) {
 	});
 	calculateContainer.add(calculateButton);
 
-	updateUI();
+	updateUI(worldZone);
 
 	//
 
@@ -84,21 +98,19 @@ export function WorldZonePanel(editor, worldZone) {
 			objectPositionY.getValue(),
 			objectPositionZ.getValue()
 		);
+
+		if (center.distanceTo(worldZone.center) > 0)
+			editor.execute(new SetValueCommand(editor, worldZone, 'center', center));
+
 		const size = new THREE.Vector3(width.getValue(), height.getValue(), depth.getValue());
 
-		worldZone.setFromCenterAndSize(center, size);
-
-		worldZone.geometryType = geometryType.getValue(); // set before calling worldZone.calculate()
-
-		worldZone.autoCalculate = autoCalculate.getValue();
-		if (worldZone.autoCalculate) worldZone.calculate();
-
-		updateUI();
+		if (size.distanceTo(worldZone.size) > 0)
+			editor.execute(new SetValueCommand(editor, worldZone, 'size', size));
 	}
 
 	function updateUI() {
-		const pos = worldZone.box.getCenter(new THREE.Vector3());
-		const size = worldZone.box.getSize(new THREE.Vector3());
+		const pos = worldZone.center;
+		const size = worldZone.size;
 
 		objectPositionX.setValue(pos.x);
 		objectPositionZ.setValue(pos.z);
@@ -152,10 +164,13 @@ export function WorldZonePanel(editor, worldZone) {
 		width.setValue(size.x);
 		height.setValue(size.y);
 		depth.setValue(size.z);
+
+		autoCalculate.setValue(worldZone.autoCalculate);
 	}
 
 	editor.signals.objectChanged.add(object => {
 		if (object.isWorldZone) {
+			worldZone = object;
 			updateUI();
 		}
 	});
