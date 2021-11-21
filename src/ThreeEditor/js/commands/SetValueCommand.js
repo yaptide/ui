@@ -13,7 +13,7 @@ class SetValueCommand extends Command {
 
 		this.type = 'SetValueCommand';
 		this.name = `Set ${attributeName}`;
-		this.updatable = true && !sideEffect;
+		this.updatable = !sideEffect;
 
 		this.object = object;
 		this.attributeName = attributeName;
