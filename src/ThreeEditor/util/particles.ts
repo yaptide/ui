@@ -42,19 +42,11 @@ export const PARTICLE_TYPES = [
     },
     {
         "id": 11,
-        "name": "Krum κ~"
+        "name": "Kaon κ~"
     },
     {
         "id": 12,
-        "name": "Garnma ray"
-    },
-    {
-        "id": 13,
-        "name": "Electron"
-    },
-    {
-        "id": 14,
-        "name": "Positron"
+        "name": "Gamma ray"
     },
     {
         "id": 15,
@@ -63,22 +55,6 @@ export const PARTICLE_TYPES = [
     {
         "id": 16,
         "name": "Muon µ+"
-    },
-    {
-        "id": 17,
-        "name": "e−-Neutrino ve"
-    },
-    {
-        "id": 18,
-        "name": "e--Anti-neutrino v-e"
-    },
-    {
-        "id": 19,
-        "name": "µ--Neutrino vµ"
-    },
-    {
-        "id": 20,
-        "name": "µ--Anti-neutrino  v-µ"
     },
     {
         "id": 21,
