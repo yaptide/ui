@@ -39,3 +39,8 @@ export class SphereMesh extends THREE.Mesh<THREE.SphereGeometry> implements ISim
 		super(geometry ?? sphereGeometry, material ?? defaultMaterial.clone());
 	}
 }
+
+export type BasicMesh = BoxMesh | CylinderMesh | SphereMesh;
+
+export const isBasicMesh = (x: unknown): x is BasicMesh =>
+	x instanceof BoxMesh || x instanceof CylinderMesh || x instanceof SphereMesh;

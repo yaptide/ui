@@ -3,7 +3,7 @@ import {
 	AddObjectCommand,
 	RemoveObjectCommand,
 	RemoveZoneCommand,
-	RemoveDetectCommand,
+	RemoveDetectGeometryCommand,
 	SetPositionCommand
 } from '../commands/Commands';
 import { UIHorizontalRule, UIPanel, UIRow } from '../libs/ui.js';

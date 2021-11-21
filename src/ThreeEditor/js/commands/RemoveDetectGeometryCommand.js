@@ -3,29 +3,27 @@ import { DetectGeometry } from '../../util/Detect/DetectGeometry';
 
 /**
  * @param editor Editor
- * @param section DetectGeometry
+ * @param zone DetectGeometry
  * @constructor
  */
-export class AddDetectCommand extends Command {
+export class RemoveDetectGeometryCommand extends Command {
 	constructor(editor, section) {
 		super(editor);
 
-		this.type = 'AddDetectCommand';
+		this.type = 'RemoveDetectGeometryCommand';
+		this.name = 'Remove Detect';
 
 		this.section = section;
-		this.name = section ? `Add Section: ${section.name}` : `Create Section`;
 	}
 
 	execute() {
-		if (this.section) this.editor.detectManager.addSection(this.section);
-		else this.section = this.editor.detectManager.createSection();
-
-		this.editor.select(this.section);
+		this.editor.detectManager.removeSection(this.section);
+		this.editor.deselect();
 	}
 
 	undo() {
-		this.editor.detectManager.removeSection(this.section);
-		this.editor.deselect();
+		this.editor.detectManager.addSection(this.section);
+		this.editor.select(this.section);
 	}
 
 	toJSON() {
@@ -39,7 +37,7 @@ export class AddDetectCommand extends Command {
 	fromJSON(json) {
 		super.fromJSON(json);
 
-		this.section = this.editor.objectByUuid(json.section.uuid);
+		this.section = this.editor.objectByUuid(json.object.section.uuid);
 
 		if (this.section === undefined) {
 			this.section = DetectGeometry.fromJSON(this.editor, json.object);

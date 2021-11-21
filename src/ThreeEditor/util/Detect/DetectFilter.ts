@@ -114,3 +114,5 @@ export class DetectFilter {
 			.join('\n')}}`;
 	}
 }
+
+export const isDetectFilter = (x: unknown): x is DetectFilter => x instanceof DetectFilter;

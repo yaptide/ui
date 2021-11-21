@@ -1,6 +1,7 @@
 import * as THREE from 'three';
-import { AddObjectCommand, AddZoneCommand, AddDetectCommand } from '../commands/Commands';
-import { UIHorizontalRule, UIPanel } from '../libs/ui.js';
+import { BoxMesh, CylinderMesh, SphereMesh } from '../util/BasicMeshes';
+import { AddObjectCommand, AddZoneCommand, AddDetectGeometryCommand } from './commands/Commands';
+import { UIHorizontalRule, UIPanel } from './libs/ui.js';
 import { createOption } from './Menubar.js';
 
 function MenubarAdd(editor) {

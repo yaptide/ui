@@ -100,6 +100,8 @@ export function Editor(container) {
 
 		layoutChanged: new Signal(), // Layout signal
 
+		contextChanged: new Signal(),
+
 		CSGZoneAdded: new Signal(), // Sidebar.Properties signal
 
 		viewportConfigChanged: new Signal(), // Viewport config signal
