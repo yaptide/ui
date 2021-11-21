@@ -99,12 +99,12 @@ export function WorldZonePanel(editor, worldZone) {
 			objectPositionZ.getValue()
 		);
 
-		if (new THREE.Vector3().add(center).sub(worldZone.center).length() > 0)
+		if (center.distanceTo(worldZone.center) > 0)
 			editor.execute(new SetValueCommand(editor, worldZone, 'center', center));
 
 		const size = new THREE.Vector3(width.getValue(), height.getValue(), depth.getValue());
 
-		if (new THREE.Vector3().add(size).sub(worldZone.size).length() > 0)
+		if (size.distanceTo(worldZone.size) > 0)
 			editor.execute(new SetValueCommand(editor, worldZone, 'size', size));
 	}
 

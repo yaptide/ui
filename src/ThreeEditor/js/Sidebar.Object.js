@@ -373,17 +373,21 @@ function SidebarObject(editor) {
 				objectRotationZ.getValue() * THREE.MathUtils.DEG2RAD
 			);
 
-			editor.execute(new SetRotationCommand(editor, object, newRotation));
-			object.userData.rotation = [
-				objectRotationX.getValue(),
-				objectRotationY.getValue(),
-				objectRotationZ.getValue()
-			];
-			object.userData.userSetRotation = [
-				objectRotationX.getValue(),
-				objectRotationY.getValue(),
-				objectRotationZ.getValue()
-			];
+			let omitUserData = false;
+			if (!newRotation.equals(object.rotation)) {
+				omitUserData = true;
+				editor.execute(new SetRotationCommand(editor, object, newRotation));
+				object.userData.rotation = [
+					objectRotationX.getValue(),
+					objectRotationY.getValue(),
+					objectRotationZ.getValue()
+				];
+				object.userData.userSetRotation = [
+					objectRotationX.getValue(),
+					objectRotationY.getValue(),
+					objectRotationZ.getValue()
+				];
+			}
 
 			const newScale = new THREE.Vector3(
 				objectScaleX.getValue(),
@@ -595,7 +599,7 @@ function SidebarObject(editor) {
 
 			try {
 				const userData = JSON.parse(objectUserData.getValue());
-				if (JSON.stringify(object.userData) !== JSON.stringify(userData)) {
+				if (JSON.stringify(object.userData) !== JSON.stringify(userData) && !omitUserData) {
 					editor.execute(new SetValueCommand(editor, object, 'userData', userData));
 				}
 			} catch (exception) {
