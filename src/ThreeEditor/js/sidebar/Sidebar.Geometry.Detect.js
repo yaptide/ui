@@ -1,6 +1,6 @@
 import { UISpan } from '../libs/ui.js';
 import { DETECT_OPTIONS } from '../../util/Detect/DetectTypes';
-import { SetDetectCommand, SetDetectTypeCommand } from '../commands/Commands';
+import { SetDetectGeometryCommand, SetDetectTypeCommand } from '../commands/Commands';
 import { createRowParamNumber, createRowSelect } from '../../util/UiUtils';
 
 export function DetectPanel(editor, section) {
@@ -139,7 +139,7 @@ export function DetectPanel(editor, section) {
 
 	function update() {
 		editor.execute(
-			new SetDetectCommand(editor, section, {
+			new SetDetectGeometryCommand(editor, section, {
 				width: width.getValue(),
 				widthSegments: width2.getValue(),
 				height: height.getValue(),

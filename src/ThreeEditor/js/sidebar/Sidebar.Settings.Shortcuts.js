@@ -1,4 +1,4 @@
-import { RemoveObjectCommand, RemoveDetectCommand, RemoveZoneCommand } from '../commands/Commands';
+import { RemoveObjectCommand, RemoveDetectGeometryCommand, RemoveZoneCommand } from '../commands/Commands';
 import { UIInput, UIPanel, UIRow, UIText } from '../libs/ui.js';
 
 function SidebarSettingsShortcuts(editor) {
@@ -85,7 +85,7 @@ function SidebarSettingsShortcuts(editor) {
 					if (parent !== null) {
 						if (object?.isZone) editor.execute(new RemoveZoneCommand(editor, object));
 						else if (object?.isDetectGeometry)
-							editor.execute(new RemoveDetectCommand(editor, object));
+							editor.execute(new RemoveDetectGeometryCommand(editor, object));
 						else editor.execute(new RemoveObjectCommand(editor, object));
 					}
 					break;

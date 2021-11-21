@@ -6,11 +6,11 @@ import { Command } from '../Command.js';
  * @param newData DETECT.Any
  * @constructor
  */
-class SetDetectCommand extends Command {
+export class SetDetectGeometryCommand extends Command {
 	constructor(editor, object, newData) {
 		super(editor);
 
-		this.type = 'SetDetectCommand';
+		this.type = 'SetDetectGeometryCommand';
 		this.name = 'Set DetectGeometry';
 		this.updatable = true;
 
@@ -64,5 +64,3 @@ class SetDetectCommand extends Command {
 		this.newData = json.newData;
 	}
 }
-
-export { SetDetectCommand };

@@ -5,7 +5,7 @@ import * as CSG from '../util/CSG/CSG';
 import { isZone } from '../util/CSG/CSG';
 import { DetectFilter, isDetectFilter } from '../util/Detect/DetectFilter';
 import { DetectGeometry, isDetectGeometry } from '../util/Detect/DetectGeometry';
-import { DetectContainer } from '../util/Detect/DetectManager';
+import { DetGeoContainer } from '../util/Detect/DetectManager';
 import { isWorldZone, WorldZone } from '../util/WorldZone';
 import { Editor } from './Editor';
 
@@ -33,8 +33,8 @@ export class EditorContext {
 	set selected(
 		selected:
 			| CSG.Zone
-			| CSG.ZonesContainer
-			| DetectContainer
+			| CSG.ZoneContainer
+			| DetGeoContainer
 			| BasicMesh
 			| WorldZone
 			| null

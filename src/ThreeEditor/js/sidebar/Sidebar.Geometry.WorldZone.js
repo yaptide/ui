@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { createRowParamNumberXYZ, createRowParamNumber, createRowSelect } from '../util/UiUtils.js';
-import { SetValueCommand } from './commands/SetValueCommand.js';
-import { UIButton, UICheckbox, UIRow, UIText } from './libs/ui.js';
+import { createRowParamNumberXYZ, createRowParamNumber, createRowSelect } from '../../util/UiUtils.js';
+import { SetValueCommand } from '../commands/Commands';
+import { UIButton, UICheckbox, UIRow, UIText } from '../libs/ui.js';
 
 const bodyTypeOptions = {
 	box: 'box',

@@ -1,11 +1,11 @@
 import * as THREE from 'three';
-import { isBeam } from '../util/Beam';
+import { isBeam } from '../../util/Beam';
 import {
 	createRowParamNumberXYZ,
 	createRowParamNumber,
 	createParticleTypeSelect
-} from '../util/UiUtils';
-import { UIRow } from './libs/ui.js';
+} from '../../util/UiUtils';
+import { UIRow } from '../libs/ui.js';
 
 export function BeamPanel(editor, beam) {
 	const container = new UIRow();

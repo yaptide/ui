@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { BoxMesh, CylinderMesh, SphereMesh } from '../util/BasicMeshes';
-import { AddObjectCommand, AddZoneCommand, AddDetectGeometryCommand } from './commands/Commands';
-import { UIHorizontalRule, UIPanel } from './libs/ui.js';
+import { BoxMesh, CylinderMesh, SphereMesh } from '../../util/BasicMeshes';
+import { AddObjectCommand, AddZoneCommand, AddDetectGeometryCommand } from '../commands/Commands';
+import { UIHorizontalRule, UIPanel } from '../libs/ui.js';
 import { createOption } from './Menubar.js';
 
 function MenubarAdd(editor) {
@@ -32,7 +32,7 @@ function MenubarAdd(editor) {
 	options
 		.add(
 			createOption('option', 'Detect Section', () => {
-				editor.execute(new AddDetectCommand(editor));
+				editor.execute(new AddDetectGeometryCommand(editor));
 			})
 		)
 		.add(new UIHorizontalRule());

@@ -123,7 +123,7 @@ function MenubarEdit(editor) {
 		if (object !== null && object.parent !== null && object.notRemovable !== true) {
 			if (object?.isZone) editor.execute(new RemoveZoneCommand(editor, object));
 			else if (object?.isDetectGeometry)
-				editor.execute(new RemoveDetectCommand(editor, object));
+				editor.execute(new RemoveDetectGeometryCommand(editor, object));
 			else editor.execute(new RemoveObjectCommand(editor, object));
 		}
 	});
