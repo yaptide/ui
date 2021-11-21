@@ -38,7 +38,7 @@ export const PARTICLE_TYPES = [
     },
     {
         "id": 10,
-        "name": "Krum κo"
+        "name": "Kaon κo"
     },
     {
         "id": 11,
