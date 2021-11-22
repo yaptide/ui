@@ -1,7 +1,8 @@
 import { Box, Button, LinearProgress, Typography } from '@mui/material';
-import ky from 'ky';
+import { HTTPError } from 'ky';
 
 import React, { useEffect, useState } from 'react';
+import { useAuth } from '../../services/AuthService';
 import { useStore } from '../../services/StoreService';
 import { BACKEND_URL } from '../../util/Config';
 
@@ -11,6 +12,7 @@ interface SimulationPanelProps {
 }
 
 export default function SimulationPanel(props: SimulationPanelProps) {
+	const { authKy } = useAuth();
 	const { editorRef } = useStore();
 	const [isInProgress, setInProgress] = useState(false);
 
@@ -18,14 +20,15 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	const sendRequest = () => {
 		setInProgress(true);
-		ky.post(`${BACKEND_URL}/sh/demo`, {
-			json: editorRef.current?.toJSON(),
-			timeout: 30000
-			/**
+		authKy
+			.post(`${BACKEND_URL}/sh/demo`, {
+				json: editorRef.current?.toJSON(),
+				timeout: 30000
+				/**
             Timeout in milliseconds for getting a response. Can not be greater than 2147483647.
             If set to `false`, there will be no timeout.
             **/
-		})
+			})
 			.json()
 			.then((response: unknown) => {
 				console.log(response);
@@ -43,7 +46,8 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	useEffect(() => {
 		let ignore = false;
 
-		ky.get(`${BACKEND_URL}`)
+		authKy
+			.get(`${BACKEND_URL}`)
 			.json()
 			.then((response: unknown) => {
 				console.log(response);
@@ -54,10 +58,22 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				if (!ignore) setBackendAlive(false);
 			});
 
+		authKy
+			.get(`${BACKEND_URL}/auth/status`)
+			.json()
+			.then((response: unknown) => {
+				console.log(response);
+				if (!ignore) setBackendAlive(true);
+			})
+			.catch((error: HTTPError) => {
+				console.error(error);
+				console.log(error.response);
+			});
+
 		return () => {
 			ignore = true;
 		};
-	}, []);
+	}, [authKy]);
 
 	return (
 		<Box
