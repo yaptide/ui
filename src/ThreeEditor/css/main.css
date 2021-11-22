@@ -174,15 +174,7 @@ div:is(#outliner, #filter-outliner) .type {
 	text-align: center;
 }
 
-div:is(#outliner, #filter-outliner) .type:after {
-	content: '●';
-}
-
-/* */
-
-div:is(#outliner, #filter-outliner) .Scene {
-	color: #8888dd;
-}
+/*
 
 div:is(#outliner, #filter-outliner) .Camera {
 	color: #dd8888;
@@ -192,7 +184,7 @@ div:is(#outliner, #filter-outliner) .Light {
 	color: #dddd88;
 }
 
-/* */
+/*
 
 div:is(#outliner, #filter-outliner) .Object3D {
 	color: #aaaaee;
@@ -214,7 +206,7 @@ div:is(#outliner, #filter-outliner) .Points {
 	color: #ee8888;
 }
 
-/* */
+/*
 
 div:is(#outliner, #filter-outliner) .Geometry {
 	color: #aaeeaa;
@@ -224,10 +216,60 @@ div:is(#outliner, #filter-outliner) .Material {
 	color: #eeaaee;
 }
 
-/* */
+/*
 
 div:is(#outliner, #filter-outliner) .Script:after {
 	content: '◎';
+}
+
+/* */
+
+div:is(#outliner, #filter-outliner) .type:after {
+	content: '●';
+}
+
+div:is(#outliner, #filter-outliner) .Geometry:after {
+	content: '⬛';
+}
+
+div:is(#outliner, #filter-outliner) .Material:after {
+	content: '▲';
+}
+
+/* */
+
+div:is(#outliner, #filter-outliner) .Scene {
+	color: #9696d4;
+}
+div:is(#outliner, #filter-outliner) .Figure {
+	color: #aaaaee;
+}
+div:is(#outliner, #filter-outliner) .ZoneGroup {
+	color: #7bd47b;
+}
+div:is(#outliner, #filter-outliner) .Zone {
+	color: #88ee88;
+}
+div:is(#outliner, #filter-outliner) .Beam {
+	color: #dddd88;
+}
+div:is(#outliner, #filter-outliner) .DetectGroup {
+	color: #7bced4;
+}
+div:is(#outliner, #filter-outliner) .Detect {
+	color: #88daee;
+}
+div:is(#outliner, #filter-outliner) .FilterGroup {
+	color: #b07bd4;
+}
+div:is(#outliner, #filter-outliner) .Filter {
+	color: #ce88ee;
+}
+div:is(#outliner, #filter-outliner) .Geometry {
+	color: #d36ca4;
+}
+div:is(#outliner, #filter-outliner) .Material {
+	color: #d36c6c;
 }
 
 /*  */
@@ -293,7 +335,7 @@ select:hover {
 	position: absolute;
 	top: 32px;
 	left: 0;
-	right: 350px;
+	right: 360px;
 	bottom: 0;
 }
 
@@ -356,7 +398,7 @@ select:hover {
 	display: none;
 	padding: 5px 0;
 	background: #eee;
-	width: 150px;
+	width: 160px;
 	max-height: calc(100% - 80px);
 	overflow: auto;
 }
@@ -398,7 +440,7 @@ select:hover {
 	right: 0;
 	top: 32px;
 	bottom: 0;
-	width: 350px;
+	width: 360px;
 	background: #eee;
 	overflow: auto;
 }

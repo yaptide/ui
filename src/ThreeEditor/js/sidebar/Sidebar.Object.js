@@ -332,7 +332,7 @@ function SidebarObject(editor) {
 
 	const objectUserDataRow = new UIRow();
 	const objectUserData = new UITextArea()
-		.setWidth('150px')
+		.setWidth('160px')
 		.setHeight('40px')
 		.setFontSize('12px')
 		.onChange(update);

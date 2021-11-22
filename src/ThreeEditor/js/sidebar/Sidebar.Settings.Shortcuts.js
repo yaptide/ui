@@ -72,22 +72,29 @@ function SidebarSettingsShortcuts(editor) {
 		createShortcutInput(shortcuts[i]);
 	}
 
+	const getRemoveCommand = (editor, object) => {
+		switch (true) {
+			case object.isDetectGeometry:
+				return new RemoveDetectGeometryCommand(editor, object);
+			case object.isZone:
+				return new RemoveZoneCommand(editor, object);
+			default:
+				return new RemoveObjectCommand(editor, object);
+		}
+	}
+
 	editor.container.addEventListener(
 		'keydown',
 		event => {
 			switch (event.key.toLowerCase()) {
 				case 'delete':
-					const object = editor.selected || editor.outputSelected;
+					const object = editor.selected;
 
 					if (object === null || object.notRemovable === true) return;
 
 					const parent = object.parent;
-					if (parent !== null) {
-						if (object?.isZone) editor.execute(new RemoveZoneCommand(editor, object));
-						else if (object?.isDetectGeometry)
-							editor.execute(new RemoveDetectGeometryCommand(editor, object));
-						else editor.execute(new RemoveObjectCommand(editor, object));
-					}
+					if (parent !== null)
+						editor.execute(getRemoveCommand(editor, object));
 					break;
 
 				case config.getKey('settings/shortcuts/translate'):

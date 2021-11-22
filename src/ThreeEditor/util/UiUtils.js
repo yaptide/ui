@@ -110,10 +110,10 @@ export function createRowText(params) {
  * @return {[UIRow, UIText, UIText]}
  */
 export function createRowParamInput(params) {
-	const { text = 'Label', value, update = () => {} } = params;
+	const { text = 'Label', value, update = () => { } } = params;
 
 	const row = new UIRow();
-	const input = new UIInput(value).setWidth('150px').setFontSize('12px').onChange(update);
+	const input = new UIInput(value).setWidth('160px').setFontSize('12px').onChange(update);
 	const label = new UIText(text).setWidth('90px');
 
 	row.add(label);
@@ -133,7 +133,7 @@ export function createRowParamInput(params) {
 export function createRowSelect({ text = 'Label', options, value, update }) {
 	const row = new UIRow();
 	const select = new UISelect()
-		.setWidth('150px')
+		.setWidth('160px')
 		.setFontSize('12px')
 		.setOptions(options)
 		.setValue(value)
@@ -154,8 +154,8 @@ export function createMaterialSelect(materialsManager, update) {
 	const { materialOptions, materials } = materialsManager;
 
 	const row = new UIRow();
-	const container = new UIDiv().setWidth('150px').setDisplay('inline-block');
-	const input = new UISelect().setWidth('150px');
+	const container = new UIDiv().setWidth('160px').setDisplay('inline-block');
+	const input = new UISelect().setWidth('160px');
 	row.add(new UIText('Type').setWidth('90px'));
 	row.add(container);
 
@@ -188,7 +188,7 @@ export function createMaterialSelect(materialsManager, update) {
  */
 export function createParticleTypeSelect(update) {
 	const row = new UIRow();
-	const container = new UIDiv().setWidth('150px').setDisplay('inline-block');
+	const container = new UIDiv().setWidth('160px').setDisplay('inline-block');
 	const input = new UINumber();
 	row.add(new UIText('Particle type').setWidth('90px'));
 	row.add(container);

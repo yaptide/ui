@@ -145,7 +145,6 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 		this.setFromCenterAndSize(this.center, value);
 	}
 
-
 	private getAllHelpers() {
 		return [this.boxHelper, this.sphereMesh, this.cylinderMesh];
 	}
@@ -240,7 +239,6 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 	}
 
 	fromJSON(data: WorldZoneJSON) {
-
 		this.geometryType = data.geometryType;
 		this.name = data.name;
 

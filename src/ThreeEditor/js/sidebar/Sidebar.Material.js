@@ -45,7 +45,7 @@ function SidebarMaterial(editor) {
 	// type
 
 	const materialClassRow = new UIRow();
-	const materialClass = new UISelect().setWidth('150px').setFontSize('12px');
+	const materialClass = new UISelect().setWidth('160px').setFontSize('12px');
 
 	materialClassRow.add(new UIText(strings.getKey('sidebar/material/type')).setWidth('90px'));
 	materialClassRow.add(materialClass);
@@ -55,7 +55,7 @@ function SidebarMaterial(editor) {
 	// uuid
 
 	const materialUUIDRow = new UIRow();
-	const materialUUID = new UIInput().setWidth('150px').setFontSize('12px').setDisabled(true);
+	const materialUUID = new UIInput().setWidth('160px').setFontSize('12px').setDisabled(true);
 
 	materialUUIDRow.add(new UIText(strings.getKey('sidebar/material/uuid')).setWidth('90px'));
 	materialUUIDRow.add(materialUUID);
@@ -66,7 +66,7 @@ function SidebarMaterial(editor) {
 
 	const materialNameRow = new UIRow();
 	const materialName = new UIInput()
-		.setWidth('150px')
+		.setWidth('160px')
 		.setFontSize('12px')
 		.onChange(() => {
 			editor.execute(

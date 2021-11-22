@@ -53,14 +53,14 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
 		unionOperations?: OperationTuple[][],
 		subscribedObjects?: CounterMap<string>,
 		uuid?: string,
-		materialName?: string
+		materialName?: string //TODO: change args to type
 	) {
 		super();
 		if (uuid) this.uuid = uuid;
 		this.editor = editor;
 		this.type = 'Zone';
 		this.signals = editor.signals;
-		this.name = name || `Zone${this.id}`;
+		this.name = name ?? `Zone${this.id}`;
 		this.material = editor.materialsManager.materials[materialName ?? ''];
 		this.unionOperations = unionOperations ?? [];
 		// If operations are specified, we have to populate set of subscribed UUID's

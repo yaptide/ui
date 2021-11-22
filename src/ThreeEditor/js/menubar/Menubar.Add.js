@@ -57,35 +57,23 @@ function MenubarAdd(editor) {
 	options
 		.add(
 			createOption('option', strings.getKey('menubar/add/box'), () => {
-				const geometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
-				const mesh = new THREE.Mesh(geometry, material.clone());
-				mesh.name = 'Box';
-
-				editor.execute(new AddObjectCommand(editor, mesh));
+				editor.execute(new AddObjectCommand(editor, new BoxMesh()));
 			})
 		)
 		.add(
 			createOption('option', strings.getKey('menubar/add/sphere'), () => {
-				const geometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI);
-				const mesh = new THREE.Mesh(geometry, material.clone());
-				mesh.name = 'Sphere';
-
-				editor.execute(new AddObjectCommand(editor, mesh));
+				editor.execute(new AddObjectCommand(editor, new SphereMesh()));
 			})
 		)
 		.add(
 			createOption('option', strings.getKey('menubar/add/cylinder'), () => {
-				const geometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2);
-				const mesh = new THREE.Mesh(geometry, material.clone());
-				mesh.name = 'Cylinder';
-
-				editor.execute(new AddObjectCommand(editor, mesh));
+				editor.execute(new AddObjectCommand(editor, new CylinderMesh()));
 			})
 		)
 		.add(new UIHorizontalRule());
 
 	// HemisphereLight
-	//Code adjusted from https://github.com/mrdoob/three.js/blob/r131/editor/js/menubar/Menubar.Add.js
+	// Code adjusted from https://github.com/mrdoob/three.js/blob/r131/editor/js/Menubar.Add.js
 	options.add(
 		createOption('option', strings.getKey('menubar/add/hemispherelight'), () => {
 			const skyColor = 0x00aaff; // Deep Sky Blue

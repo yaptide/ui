@@ -17,7 +17,7 @@ function SidebarProject(editor) {
 	const titleRow = new UIRow();
 	const title = new UIInput(config.getKey('project/title'))
 		.setLeft('100px')
-		.setWidth('150px')
+		.setWidth('160px')
 		.onChange(() => {
 			config.setKey('project/title', this.getValue());
 		});

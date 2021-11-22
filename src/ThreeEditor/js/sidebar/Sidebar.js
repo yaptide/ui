@@ -16,15 +16,26 @@ function Sidebar(editor) {
 	const project = new SidebarProject(editor);
 	const settings = new SidebarSettings(editor);
 	const filters = new SidebarFilters(editor).setBorderTop('0').setPaddingTop('20px');
+	let ignoreContextChangedSignal = false;
 
 	container.addTab('scene', strings.getKey('sidebar/scene'), scene);
-	container.addTab('filters', 'FILTERS', filters);
-	container.addTab('project', strings.getKey('sidebar/project'), project);
+	container.addTab('output', 'OUTPUT', filters);
+	container.addTab('parameters', 'PARAMETERS', project);
 	container.addTab('settings', strings.getKey('sidebar/settings'), settings);
+
+	container._select = container.select;
+	container.select = function (id) {
+		this._select(id);
+
+		ignoreContextChangedSignal = true;
+		editor.contextManager.currentContext = id;
+		ignoreContextChangedSignal = false;
+	}
 	container.select('scene');
 
-	//Select Scene if zone is created
-	signals.objectAdded.add(object => object?.isZone && container.select('scene'));
+	signals.contextChanged.add((id) => {
+		ignoreContextChangedSignal || container._select(id);
+	});
 
 	return container;
 }

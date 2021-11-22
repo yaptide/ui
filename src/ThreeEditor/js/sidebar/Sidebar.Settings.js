@@ -24,7 +24,7 @@ function SidebarSettings(editor) {
 	};
 
 	const languageRow = new UIRow();
-	const language = new UISelect().setWidth('150px');
+	const language = new UISelect().setWidth('160px');
 	language.setOptions(options);
 
 	if (config.getKey('language') !== undefined) {

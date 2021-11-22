@@ -16,7 +16,7 @@ interface ZoneManagerJSON {
 	worldZone: WorldZoneJSON;
 }
 
-export class ZoneContainer extends THREE.Group implements ISimulationObject {
+export class ZoneContainer extends THREE.Object3D implements ISimulationObject {
 	readonly notRemovable = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -27,6 +27,7 @@ export class ZoneContainer extends THREE.Group implements ISimulationObject {
 	constructor() {
 		super();
 		this.name = 'Zones';
+		this.type = 'DetectGroup';
 		this.children = [];
 	}
 

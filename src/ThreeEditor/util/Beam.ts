@@ -214,7 +214,7 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 		this.energy = data.energy;
 		this.energySpread = data.energySpread;
 		this.divergence = data.divergence;
-		this.particle = data.particle
+		this.particle = data.particle;
 		return this;
 	}
 

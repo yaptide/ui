@@ -10,6 +10,7 @@ import { Strings } from './Strings.js';
 import { Storage as _Storage } from './Storage.js';
 import { generateSimulationInfo } from '../util/AdditionalUserData';
 import { DetectManager } from '../util/Detect/DetectManager';
+import { ContextManager } from './Editor.Context';
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
 _DEFAULT_CAMERA.name = 'Camera';
@@ -17,6 +18,8 @@ _DEFAULT_CAMERA.position.set(0, 5, 10);
 _DEFAULT_CAMERA.lookAt(new THREE.Vector3());
 
 export function Editor(container) {
+	this.contextManager = new ContextManager(this);
+
 	this.signals = {
 		// script
 
@@ -127,7 +130,7 @@ export function Editor(container) {
 	this.camera = _DEFAULT_CAMERA.clone();
 
 	this.scene = new THREE.Scene();
-	this.scene.name = 'Scene';
+	this.scene.name = 'Figures';
 
 	this.sceneHelpers = new THREE.Scene();
 
@@ -149,8 +152,6 @@ export function Editor(container) {
 
 	this.mixer = new THREE.AnimationMixer(this.scene);
 
-	this._selected = null;
-	this.outputSelected = null;
 	this.helpers = {};
 
 	this.cameras = {};
@@ -161,11 +162,10 @@ export function Editor(container) {
 
 Editor.prototype = {
 	set selected(object) {
-		this._selected = object;
-		this.outputSelected = null;
+		Reflect.set(this.contextManager, 'selected', object);
 	},
 	get selected() {
-		return this._selected;
+		return Reflect.get(this.contextManager, 'selected');
 	},
 	setScene(scene) {
 		this.scene.uuid = scene.uuid;
@@ -501,10 +501,6 @@ Editor.prototype = {
 		this.select(null);
 	},
 
-	outputDeselect() {
-		this.outputSelected = null;
-	},
-
 	focus(object) {
 		if (object) {
 			this.signals.objectFocused.dispatch(object);
@@ -522,7 +518,7 @@ Editor.prototype = {
 		this.camera.copy(_DEFAULT_CAMERA);
 		this.signals.cameraResetted.dispatch();
 
-		this.scene.name = 'Scene';
+		this.scene.name = 'Figures';
 		this.scene.userData = {};
 		this.scene.background = null;
 		this.scene.environment = null;

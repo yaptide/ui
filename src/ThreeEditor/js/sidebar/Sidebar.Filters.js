@@ -18,13 +18,11 @@ export class SidebarFilters extends UIPanel {
 			option.innerHTML = `<span class="type Points"></span> ${escapeHTML(filter.name)}`;
 			return option;
 		});
-		console.log(options);
 		return options;
 	}
 
 	onChange() {
-		this.editor.deselect();
-		this.editor.outputSelected = this.detectManager.getFilterByUuid(this.outliner.getValue());
+		this.editor.selected = this.detectManager.getFilterByUuid(this.outliner.getValue());
 	}
 
 	createButton() {
@@ -42,7 +40,8 @@ export class SidebarFilters extends UIPanel {
 	}
 
 	changeSelection(object) {
-		this.outliner.setValue(object.uuid);
+		if (object) this.outliner.setValue(object.uuid);
+		else this.outliner.setValue(null);
 	}
 
 	constructor(editor) {

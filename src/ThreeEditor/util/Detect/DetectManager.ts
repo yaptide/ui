@@ -13,7 +13,7 @@ interface DetectManagerJSON {
 	filters: FilterJSON[];
 }
 
-export class DetGeoContainer extends THREE.Group implements ISimulationObject {
+export class DetGeoContainer extends THREE.Object3D implements ISimulationObject {
 	readonly notRemovable = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -23,12 +23,13 @@ export class DetGeoContainer extends THREE.Group implements ISimulationObject {
 	readonly isDetectGeometryContainer: true = true;
 	constructor() {
 		super();
-		this.name = 'Sections';
+		this.name = 'Geometries';
+		this.type = 'DetectGroup';
 		this.children = [];
 	}
 
 	reset() {
-		this.name = 'Sections';
+		this.name = 'Geometries';
 		this.clear();
 	}
 }

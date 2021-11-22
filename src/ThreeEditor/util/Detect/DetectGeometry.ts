@@ -10,11 +10,12 @@ export interface DetectGeometryJSON {
 	data: DETECT.Any;
 	type: DETECT.DETECT_TYPE;
 	position: THREE.Vector3Tuple;
+	name: string;
 }
 
 type DetectGeometryArgs = Partial<DetectGeometryJSON>;
 
-export class DetectGeometry extends THREE.Points implements ISimulationObject {
+export class DetectGeometry extends THREE.Mesh<THREE.BufferGeometry> implements ISimulationObject {
 	readonly notRemovable = false;
 	get notMovable() {
 		// custom get function to conditionally return notMoveable property;
@@ -156,13 +157,14 @@ export class DetectGeometry extends THREE.Points implements ISimulationObject {
 
 	constructor(
 		editor: Editor,
-		{ data = DETECT.DEFAULT_ANY, type = 'Mesh', position = [0, 0, 0] }: DetectGeometryArgs
+		{ data = DETECT.DEFAULT_ANY, type = 'Mesh', position = [0, 0, 0], name }: DetectGeometryArgs
 	) {
 		super();
 		this.proxy = new Proxy(this, this.overrideHandler);
 		this.editor = editor;
 		this.signals = editor.signals;
-		this.name = `DetectGeometry${this.id}`;
+		this.name = name ?? `DetectGeometry${this.id}`;
+		this.type = 'Detect';
 		this.position.fromArray(position);
 		this._geometryData = data;
 		this._detectType = type;
@@ -251,16 +253,19 @@ export class DetectGeometry extends THREE.Points implements ISimulationObject {
 		const data = this._geometryData;
 		const type = this.detectType;
 		const position = this.position.toArray();
+		const name = this.name;
 		return {
 			data,
 			type,
-			position
+			position,
+			name
 		};
 	}
 
 	fromJSON(data: DetectGeometryJSON): void {
 		this._geometryData = data.data;
 		this.detectType = data.type;
+		this.name = data.name;
 		this.geometry = this.generateGeometry();
 		this.position.fromArray(data.position);
 	}

@@ -20,6 +20,7 @@ export type FilterJSON = {
 export class DetectFilter {
 	uuid: string;
 	name: string;
+	type: string;
 	private rules: Record<string, FilterRule>;
 	private editor: Editor;
 
@@ -27,6 +28,7 @@ export class DetectFilter {
 		this.uuid = MathUtils.generateUUID();
 		this.editor = editor;
 		this.name = 'MyFilter';
+		this.type = 'Filter';
 		this.rules = {};
 		rules.forEach(rule => this.addRule(rule));
 	}
