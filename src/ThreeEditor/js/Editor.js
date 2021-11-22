@@ -11,6 +11,7 @@ import { Storage as _Storage } from './Storage.js';
 import { generateSimulationInfo } from '../util/AdditionalUserData';
 import { DetectManager } from '../util/Detect/DetectManager';
 import { ContextManager } from './Editor.Context';
+import { EditorObjectLoader } from '../util/ObjectLoader';
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
 _DEFAULT_CAMERA.name = 'Camera';
@@ -558,7 +559,7 @@ Editor.prototype = {
 
 	//
 	async fromJSON(json) {
-		const loader = new THREE.ObjectLoader();
+		const loader = new EditorObjectLoader();
 		const camera = await loader.parseAsync(json.camera);
 
 		this.camera.copy(camera);
