@@ -64,7 +64,7 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
 		this.type = 'Zone';
 		this.signals = editor.signals;
 		this.name = name || `Zone${this.id}`;
-		this.material = editor.materialsManager.materials[materialName ?? ''];
+		this.material = editor.materialsManager.materials[materialName ?? 'WATER, LIQUID'];
 		this.unionOperations = unionOperations ?? [];
 		// If operations are specified, we have to populate set of subscribed UUID's
 		this.subscribedObjects =

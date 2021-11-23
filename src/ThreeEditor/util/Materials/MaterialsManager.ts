@@ -30,8 +30,8 @@ export default class MaterialsManager {
 				return prop in target
 					? target[prop]
 					: prop in this.prefabMaterials
-					? this.prefabMaterials[prop]
-					: this.getDefaultMaterial();
+						? this.prefabMaterials[prop]
+						: this.getDefaultMaterial();
 			},
 			set: (target: Record<string, SimulationMaterial>, prop: string, value: unknown) => {
 				Reflect.set(this.materialOptions, prop, prop);
@@ -58,7 +58,7 @@ export default class MaterialsManager {
 	}
 
 	getDefaultMaterial() {
-		const defaultName = 'AIR, DRY (NEAR SEA LEVEL)';
+		const defaultName = 'WATER, LIQUID';
 		return defaultName in this.customMaterials
 			? this.customMaterials[defaultName]
 			: this.prefabMaterials[defaultName];
