@@ -21,7 +21,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const sendRequest = () => {
 		setInProgress(true);
 		authKy
-			.post(`${BACKEND_URL}/sh/demo`, {
+			.post(`${BACKEND_URL}/sh/run`, {
 				json: editorRef.current?.toJSON(),
 				timeout: 30000
 				/**
@@ -34,8 +34,9 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				console.log(response);
 				props.onSuccess?.call(null, response);
 			})
-			.catch((error: unknown) => {
+			.catch((error: HTTPError) => {
 				console.error(error);
+				console.log(error.response);
 				props.onError?.call(null, error);
 			})
 			.finally(() => {
