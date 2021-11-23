@@ -45,6 +45,10 @@ const Auth = (props: AuthProps) => {
 
 	const kyRef = useRef<KyInstance>(ky.create({ credentials: 'include' }));
 
+	useEffect(() => {
+		save(StorageKey.USER, user);
+	}, [user]);
+
 	const refresh = useCallback(() => {
 		kyRef.current
 			.get(`${BACKEND_URL}/auth/refresh`)
@@ -71,7 +75,6 @@ const Auth = (props: AuthProps) => {
 					const user: AuthUser = {
 						name: login_name
 					};
-					save(StorageKey.USER, user);
 					return user;
 				});
 			})
@@ -88,7 +91,8 @@ const Auth = (props: AuthProps) => {
 	}, []);
 
 	useEffect(() => {
-		status();
+		if (user !== null) status();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [status]);
 
 	useInterval(
@@ -127,6 +131,8 @@ const Auth = (props: AuthProps) => {
 
 	const logout = () => {
 		setUser(null);
+
+		//TODO: Server call when will be implemented
 	};
 
 	const value: IAuth = {
