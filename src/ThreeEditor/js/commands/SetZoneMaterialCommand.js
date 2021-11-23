@@ -11,7 +11,7 @@ class SetZoneMaterialCommand extends Command {
 		super(editor);
 
 		this.type = 'SetZoneMaterialCommand';
-		this.name = 'New Material';
+		this.name = `Zone applied simulation material: ${newMaterialName}`;
 
 		this.object = object;
 
@@ -20,16 +20,16 @@ class SetZoneMaterialCommand extends Command {
 	}
 
 	execute() {
-		const material = this.editor.materialsManager.materials[this.newMaterialName];
-		this.editor.setObjectMaterial(this.object, 0, material);
-		this.editor.signals.materialChanged.dispatch(material);
+		const simulationMaterial = this.editor.materialsManager.materials[this.newMaterialName];
+		this.object.simulationMaterial = simulationMaterial;
+		this.editor.signals.materialChanged.dispatch(simulationMaterial);
 		this.editor.signals.objectChanged.dispatch(this.object);
 	}
 
 	undo() {
-		const material = this.editor.materialsManager.materials[this.oldMaterialName];
-		this.editor.setObjectMaterial(this.object, 0, material);
-		this.editor.signals.materialChanged.dispatch(material);
+		const simulationMaterial = this.editor.materialsManager.materials[this.oldMaterialName];
+		this.object.simulationMaterial = simulationMaterial;
+		this.editor.signals.materialChanged.dispatch(simulationMaterial);
 		this.editor.signals.objectChanged.dispatch(this.object);
 	}
 

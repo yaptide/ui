@@ -97,6 +97,12 @@ function SidebarScene(editor) {
 			html += ` <span class="type Material"></span> ${escapeHTML(getMaterialName(material))}`;
 		}
 
+		if (object.isWorldZone) {
+			html += ` <span class="type Material"></span> ${escapeHTML(
+				object.simulationMaterial.simulationData.name
+			)}`;
+		}
+
 		html += getScript(object.uuid);
 
 		return html;

@@ -14,7 +14,7 @@ function SidebarProperties(editor) {
 
 	function getPanel(object) {
 		if (object)
-			if (object?.isZone) return zoneMaterial;
+			if (object?.isZone || object?.isWorldZone) return zoneMaterial;
 			else if (!object?.isDetectSection) return material;
 		return new UIPanel();
 	}

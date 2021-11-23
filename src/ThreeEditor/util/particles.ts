@@ -76,4 +76,4 @@ export const PARTICLE_TYPES = [
         "id": 25,
         "name": "Heavy ions"
     }
-];
+] as const;

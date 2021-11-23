@@ -25,6 +25,8 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
 	readonly notRotatable = true;
 	readonly notScalable = true;
 
+	material: SimulationMaterial;
+
 	subscribedObjects: CounterMap<string>;
 	unionOperations: OperationTuple[][];
 	needsUpdate: boolean = true;
@@ -46,6 +48,7 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
 	readonly debouncedUpdatePreview = debounce(200, false, () => this.updatePreview());
 
 	private editor: Editor;
+
 
 	constructor(
 		editor: Editor,
@@ -79,6 +82,14 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
 		return new CounterMap(
 			operations.flatMap(operationRow => operationRow.map(operation => operation.object.uuid))
 		);
+	}
+
+	get simulationMaterial(): SimulationMaterial {
+		return this.material;
+	}
+
+	set simulationMaterial(value: SimulationMaterial) {
+		this.material = value;
 	}
 
 	clone(recursive: boolean) {

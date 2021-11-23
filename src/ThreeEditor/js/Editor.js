@@ -125,13 +125,12 @@ export function Editor(container) {
 
 	this.sceneHelpers = new THREE.Scene();
 
-	this.zonesManager = new CSG.ZoneManager(this); //CSG Manager
-	this.detectManager = new DetectManager(this); //Detect Manager
+	this.materialsManager = new MaterialsManager(); // Material Manager
+	this.zonesManager = new CSG.ZoneManager(this); // CSG Manager
+	this.detectManager = new DetectManager(this); // Detect Manager
 
 	this.beam = new Beam(this);
 	this.sceneHelpers.add(this.beam);
-
-	this.materialsManager = new MaterialsManager();
 
 	this.object = {};
 	this.geometries = {};
