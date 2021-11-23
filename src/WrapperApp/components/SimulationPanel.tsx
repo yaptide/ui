@@ -59,18 +59,6 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				if (!ignore) setBackendAlive(false);
 			});
 
-		authKy
-			.get(`${BACKEND_URL}/auth/status`)
-			.json()
-			.then((response: unknown) => {
-				console.log(response);
-				if (!ignore) setBackendAlive(true);
-			})
-			.catch((error: HTTPError) => {
-				console.error(error);
-				console.log(error.response);
-			});
-
 		return () => {
 			ignore = true;
 		};
