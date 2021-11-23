@@ -229,7 +229,7 @@ div:is(#outliner, #filter-outliner) .type:after {
 }
 
 div:is(#outliner, #filter-outliner) .Geometry:after {
-	content: '⬛';
+	content: '◩';
 }
 
 div:is(#outliner, #filter-outliner) .Material:after {
@@ -238,38 +238,38 @@ div:is(#outliner, #filter-outliner) .Material:after {
 
 /* */
 
-div:is(#outliner, #filter-outliner) .Scene {
-	color: #9696d4;
+div:is(#outliner, #filter-outliner) .FigureGroup {
+	color: #7474eb;
 }
 div:is(#outliner, #filter-outliner) .Figure {
-	color: #aaaaee;
+	color: #7474eb;
 }
 div:is(#outliner, #filter-outliner) .ZoneGroup {
-	color: #7bd47b;
+	color: #4ed14e;
 }
 div:is(#outliner, #filter-outliner) .Zone {
-	color: #88ee88;
+	color: #4ed14e;
 }
 div:is(#outliner, #filter-outliner) .Beam {
-	color: #dddd88;
+	color: #dbdb55;
 }
 div:is(#outliner, #filter-outliner) .DetectGroup {
-	color: #7bced4;
+	color: #56ced6;
 }
 div:is(#outliner, #filter-outliner) .Detect {
-	color: #88daee;
+	color: #56ced6;
 }
 div:is(#outliner, #filter-outliner) .FilterGroup {
-	color: #b07bd4;
+	color: #8651db;
 }
 div:is(#outliner, #filter-outliner) .Filter {
-	color: #ce88ee;
+	color: #8651db;
 }
 div:is(#outliner, #filter-outliner) .Geometry {
-	color: #d36ca4;
+	color: #d45151;
 }
 div:is(#outliner, #filter-outliner) .Material {
-	color: #d36c6c;
+	color: #d45151;
 }
 
 /*  */

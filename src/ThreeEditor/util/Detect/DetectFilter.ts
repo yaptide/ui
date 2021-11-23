@@ -1,5 +1,6 @@
 import { MathUtils } from 'three';
 import { Editor } from '../../js/Editor';
+import { SimulationData } from '../SimulationBase/SimulationMesh';
 import {
 	FilterRule,
 	FloatRule,
@@ -17,19 +18,14 @@ export type FilterJSON = {
 	rules: RuleJSON[];
 };
 
-export class DetectFilter {
-	uuid: string;
-	name: string;
-	type: string;
+export class DetectFilter extends SimulationData {
 	private rules: Record<string, FilterRule>;
-	private editor: Editor;
+	readonly isFilter: true = true;
 
 	constructor(editor: Editor, rules: FilterRule[] = []) {
-		this.uuid = MathUtils.generateUUID();
-		this.editor = editor;
-		this.name = 'MyFilter';
-		this.type = 'Filter';
+		super(editor, undefined, 'Filter');
 		this.rules = {};
+		this.parent = null;
 		rules.forEach(rule => this.addRule(rule));
 	}
 

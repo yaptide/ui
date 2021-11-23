@@ -72,23 +72,6 @@ function MenubarAdd(editor) {
 		)
 		.add(new UIHorizontalRule());
 
-	// HemisphereLight
-	// Code adjusted from https://github.com/mrdoob/three.js/blob/r131/editor/js/Menubar.Add.js
-	options.add(
-		createOption('option', strings.getKey('menubar/add/hemispherelight'), () => {
-			const skyColor = 0x00aaff; // Deep Sky Blue
-			const groundColor = 0xffaa00; // Orange
-			const intensity = 1;
-
-			const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
-			light.name = 'HemisphereLight';
-
-			light.position.set(0, 10, 0);
-
-			editor.execute(new AddObjectCommand(editor, light));
-		})
-	);
-
 	return container;
 }
 

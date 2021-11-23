@@ -4,8 +4,9 @@ import * as THREE from 'three';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import Worker from 'worker-loader!./CSGWorker';
 import { Editor } from '../../js/Editor';
+import { SimulationSceneGroup } from '../SimulationBase/SimulationGroup';
+import { ISimulationObject } from '../SimulationBase/SimulationObject';
 import { WorldZone, WorldZoneJSON } from '../WorldZone';
-import { ISimulationObject } from '../SimulationObject';
 import { IZoneWorker } from './CSGWorker';
 import { Zone, ZoneJSON } from './CSGZone';
 
@@ -16,24 +17,15 @@ interface ZoneManagerJSON {
 	worldZone: WorldZoneJSON;
 }
 
-export class ZoneContainer extends THREE.Object3D implements ISimulationObject {
+export class ZoneContainer extends SimulationSceneGroup<Zone> {
 	readonly notRemovable = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
 
-	children: Zone[];
 	readonly isZoneContainer: true = true;
-	constructor() {
-		super();
-		this.name = 'Zones';
-		this.type = 'DetectGroup';
-		this.children = [];
-	}
-
-	reset() {
-		this.name = 'Zones';
-		this.clear();
+	constructor(editor: Editor) {
+		super(editor, 'Zones', 'ZoneGroup');
 	}
 }
 
@@ -60,7 +52,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 
 	constructor(editor: Editor) {
 		super();
-		this.zoneContainer = new ZoneContainer();
+		this.zoneContainer = new ZoneContainer(editor);
 		const light = new THREE.HemisphereLight(0xffffff, 0x222222, 1);
 		light.position.set(15, 15, 15);
 		this.add(light);
@@ -104,7 +96,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 	}
 
 	toJSON() {
-		const zones = this.zoneContainer.children.map(zone => zone.toJSON());
+		const zones = this.zoneContainer.toJSON() as ZoneJSON[];
 		const uuid = this.uuid;
 		const name = this.name;
 		const worldZone = this.worldZone.toJSON();

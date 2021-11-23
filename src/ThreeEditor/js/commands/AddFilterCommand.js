@@ -19,10 +19,13 @@ export class AddFilterCommand extends Command {
 	execute() {
 		if (this.filter) this.editor.detectManager.addFilter(this.filter);
 		else this.filter = this.editor.detectManager.createFilter();
+
+		this.editor.select(this.filter);
 	}
 
 	undo() {
 		this.editor.removeFilter(this.filter);
+		this.editor.deselect();
 	}
 
 	toJSON() {

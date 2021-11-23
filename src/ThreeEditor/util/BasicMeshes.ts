@@ -1,5 +1,7 @@
 import * as THREE from 'three';
-import { ISimulationObject } from './SimulationObject';
+import { Editor } from '../js/Editor';
+import { SimulationMesh } from './SimulationBase/SimulationMesh';
+import { ISimulationObject } from './SimulationBase/SimulationObject';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
 	color: 0x000000,
@@ -9,38 +11,43 @@ const defaultMaterial = new THREE.MeshBasicMaterial({
 	wireframe: true
 });
 
-const boxGeometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
+export abstract class BasicMesh<
+	TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry
+> extends SimulationMesh<TGeometry> {
+	constructor(
+		editor: Editor,
+		name: string | undefined,
+		type: string,
+		geometry: TGeometry,
+		material?: THREE.Material
+	) {
+		super(editor, name, type, geometry, material ?? defaultMaterial.clone());
+		if (!name) this.name = `Figure${this.id}`;
+	}
+}
 
-export class BoxMesh extends THREE.Mesh<THREE.BoxGeometry> implements ISimulationObject {
-	type = 'BoxMesh';
-	constructor(geometry?: THREE.BoxGeometry, material?: THREE.Material) {
-		super(geometry ?? boxGeometry, material ?? defaultMaterial.clone());
-		this.name = `Figure${this.id}`;
+const boxGeometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
+export class BoxMesh extends BasicMesh<THREE.BoxGeometry> {
+	constructor(editor: Editor, geometry?: THREE.BoxGeometry, material?: THREE.Material) {
+		super(editor, undefined, 'BoxMesh', geometry ?? boxGeometry, material);
 	}
 }
 
 const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2);
 
-export class CylinderMesh extends THREE.Mesh<THREE.CylinderGeometry> implements ISimulationObject {
-	type = 'CylinderMesh';
-	constructor(geometry?: THREE.CylinderGeometry, material?: THREE.Material) {
-		super(geometry ?? cylinderGeometry, material ?? defaultMaterial.clone());
-		this.name = `Figure${this.id}`;
+export class CylinderMesh extends BasicMesh<THREE.CylinderGeometry> {
+	constructor(editor: Editor, geometry?: THREE.CylinderGeometry, material?: THREE.Material) {
+		super(editor, undefined, 'CylinderMesh', geometry ?? cylinderGeometry, material);
 	}
 }
 
 const sphereGeometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI);
 
-export class SphereMesh extends THREE.Mesh<THREE.SphereGeometry> implements ISimulationObject {
+export class SphereMesh extends BasicMesh<THREE.SphereGeometry> {
 	readonly notRotatable = true;
-	type = 'SphereMesh';
-	constructor(geometry?: THREE.SphereGeometry, material?: THREE.Material) {
-		super(geometry ?? sphereGeometry, material ?? defaultMaterial.clone());
-		this.name = `Figure${this.id}`;
+	constructor(editor: Editor, geometry?: THREE.SphereGeometry, material?: THREE.Material) {
+		super(editor, undefined, 'CylinderMesh', geometry ?? sphereGeometry, material);
 	}
 }
 
-export type BasicMesh = BoxMesh | CylinderMesh | SphereMesh;
-
-export const isBasicMesh = (x: unknown): x is BasicMesh =>
-	x instanceof BoxMesh || x instanceof CylinderMesh || x instanceof SphereMesh;
+export const isBasicMesh = (x: unknown): x is BasicMesh => x instanceof BasicMesh;

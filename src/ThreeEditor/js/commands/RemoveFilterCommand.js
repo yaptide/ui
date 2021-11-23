@@ -1,4 +1,3 @@
-import { Command } from '../Command.js';
 import { DetectFilter } from '../../util/Detect/DetectFilter';
 
 /**
@@ -13,11 +12,13 @@ export class RemoveFilterCommand {
 	}
 
 	execute() {
-		this.editor.removeFilter(this.filter);
+		this.editor.detectManager.removeFilter(this.filter);
+		this.editor.deselect();
 	}
 
 	undo() {
-		this.editor.addFilter(this.filter);
+		this.editor.detectManager.addFilter(this.filter);
+		this.editor.select(this.filter);
 	}
 
 	toJSON() {

@@ -6,7 +6,8 @@ import { Editor } from '../js/Editor';
 import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
-import { ISimulationObject } from './SimulationObject';
+import { ISimulationObject } from './SimulationBase/SimulationObject';
+import { SimulationMesh } from './SimulationBase/SimulationMesh';
 
 export interface BeamJSON {
 	position: THREE.Vector3Tuple;
@@ -42,7 +43,7 @@ const _default = {
 	}
 };
 
-export class Beam extends THREE.Object3D implements ISimulationObject {
+export class Beam extends SimulationMesh {
 	readonly notRemovable = true;
 	readonly notMovable = false;
 	readonly notRotatable = true; //TODO: https://github.com/yaptide/ui/issues/242
@@ -50,7 +51,6 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 
 	readonly isBeam: true = true;
 
-	editor: Editor;
 	helper: THREE.ArrowHelper;
 
 	energy: number;
@@ -89,10 +89,7 @@ export class Beam extends THREE.Object3D implements ISimulationObject {
 	};
 
 	constructor(editor: Editor) {
-		super();
-		this.type = 'Beam';
-		this.name = 'Beam';
-		this.editor = editor;
+		super(editor, 'Beam', 'Beam');
 
 		const overrideHandlerDirection = {
 			set: (target: THREE.Vector3, prop: keyof THREE.Vector3, value: unknown) => {

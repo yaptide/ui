@@ -4,6 +4,7 @@ import {
 	RemoveObjectCommand,
 	RemoveZoneCommand,
 	RemoveDetectGeometryCommand,
+	RemoveFilterCommand,
 	SetPositionCommand
 } from '../commands/Commands';
 import { UIHorizontalRule, UIPanel, UIRow } from '../libs/ui.js';
@@ -117,14 +118,22 @@ function MenubarEdit(editor) {
 	option = new UIRow();
 	option.setClass('option');
 	option.setTextContent(strings.getKey('menubar/edit/delete'));
+	const getRemoveCommand = (editor, object) => {
+		switch (true) {
+			case object.isDetectGeometry:
+				return new RemoveDetectGeometryCommand(editor, object);
+			case object.isZone:
+				return new RemoveZoneCommand(editor, object);
+			case object.isFilter:
+				return new RemoveFilterCommand(editor, object);
+			default:
+				return new RemoveObjectCommand(editor, object);
+		}
+	}
 	option.onClick(() => {
 		const object = editor.selected;
-
 		if (object !== null && object.parent !== null && object.notRemovable !== true) {
-			if (object?.isZone) editor.execute(new RemoveZoneCommand(editor, object));
-			else if (object?.isDetectGeometry)
-				editor.execute(new RemoveDetectGeometryCommand(editor, object));
-			else editor.execute(new RemoveObjectCommand(editor, object));
+			editor.execute(getRemoveCommand(editor, object));
 		}
 	});
 	options.add(option);

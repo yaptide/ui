@@ -12,7 +12,7 @@ const escapeHTML = (html) => {
 
 const getObjectType = (object) => {
     switch (object.type) {
-        case 'Scene': return 'Scene';
+        case 'Scene': return 'FigureGroup';
         case 'DetectGroup': return 'DetectGroup';
         case 'FilterGroup': return 'FilterGroup';
         case 'OutputGroup': return 'OutputGroup';
@@ -23,27 +23,27 @@ const getObjectType = (object) => {
         case 'BoxMesh':
         case 'CylinderMesh':
         case 'SphereMesh': return 'Figure';
+        case 'Points':
         case 'Detect': return 'Detect';
         case 'Filter': return 'Filter';
+        default: return 'Unknown';
     }
 }
 const getAditionalInfo = (object) => {
     switch (object.type) {
-        case 'BoxMesh': return ['Geometry', 'Box'];
-        case 'CylinderMesh': return ['Geometry', 'Cylinder'];
-        case 'SphereMesh': return ['Geometry', 'Sphere'];
+        case 'BoxMesh': return ` <span class="type Geometry"></span> Box`;
+        case 'CylinderMesh': return ` <span class="type Geometry"></span> Cylinder`;
+        case 'SphereMesh': return ` <span class="type Geometry"></span> Sphere`;
         case 'WorldZone':
-        case 'Zone': return ['Material', object.material.name];
-        case 'Detect': return ['Geometry', object.detectType];
-        default: return ['', ''];
+        case 'Zone': return ` <span class="type Material"></span> ${escapeHTML(object.material.name)}`;
+        case 'Points':
+        case 'Detect': return ` <span class="type Geometry"></span> ${escapeHTML(object.detectType)}`;
+        default: return '';
     }
 }
 
 const buildHTML = (object) => {
-    let html = `<span class="type ${getObjectType(object)}"></span> ${escapeHTML(object.name)}`;
-    let aditionalInfo = getAditionalInfo(object);
-
-    html += ` <span class="type ${escapeHTML(aditionalInfo[0])}"></span> ${escapeHTML(aditionalInfo[1])}`;
+    let html = `<span class="type ${getObjectType(object)}"></span> ${escapeHTML(object.name)}` + getAditionalInfo(object);
     return html;
 }
 
@@ -53,9 +53,8 @@ const buildOptions = (object, pad) => {
     option.innerHTML = buildHTML(object);
     option.value = object.uuid;
     option.style.paddingLeft = pad * 18 + 'px';
-    console.log(object, option);
     let result = [option];
-    if (object.children.length > 0)
+    if (object.type !== 'Beam' && object.children?.length > 0) //TODO: move beam helpers to scene helpers
         result = result.concat(object.children.flatMap(child => buildOptions(child, pad + 1)));
     return result;
 }
@@ -63,19 +62,39 @@ const buildOptions = (object, pad) => {
 export class OutlinerManager {
     editor;
     outliner;
-    nodeStates;
+    nodeStates; //TODO: copy collapsable groups system from THREE.js Editor
+    ignoreObjectSelectedSignal = false;
+    _selected;
     constructor(editor, container) {
         this.editor = editor;
         this.outliner = new UIOutliner(editor);
         this.nodeStates = new WeakMap();
         container.add(this.outliner);
+        this.outliner.onChange(this.onChange.bind(this));
+        this.editor.signals.objectSelected.add(this.onObjectSelected.bind(this));
+        this.editor.signals.dataObjectSelected.add(this.onObjectSelected.bind(this));
+        this.editor.signals.contextChanged.add(() => this.outliner.setValue(null));
     }
     setOptionsFromSources(sources) {
         const options = sources.flatMap((parent) => buildOptions(parent, 0));
-        console.log(options);
         this.outliner.setOptions(options);
+        this.outliner.setValue(this._selected);
     }
     set id(id) {
         this.outliner.setId(id);
     }
+    onChange() {
+        const selectedUuid = this.outliner.getValue();
+        this._selected = this.outliner.selectedValue;
+        this.ignoreObjectSelectedSignal = true;
+        this.editor.selectByUuid(selectedUuid);
+        this.ignoreObjectSelectedSignal = false;
+        console.log(this.editor.selected, selectedUuid);
+    }
+    onObjectSelected(object) {
+        if (this.ignoreObjectSelectedSignal) return;
+        this._selected = object?.uuid ?? null;
+        this.outliner.setValue(object?.uuid ?? null);
+    }
+
 }

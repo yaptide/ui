@@ -2,7 +2,8 @@ import { Signal } from 'signals';
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
 import * as CSG from '../CSG/CSG';
-import { ISimulationObject } from '../SimulationObject';
+import { SimulationMesh, SimulationPoints } from '../SimulationBase/SimulationMesh';
+import { ISimulationObject } from '../SimulationBase/SimulationObject';
 import { DetectManager } from './DetectManager';
 import * as DETECT from './DetectTypes';
 
@@ -15,8 +16,12 @@ export interface DetectGeometryJSON {
 
 type DetectGeometryArgs = Partial<DetectGeometryJSON>;
 
-export class DetectGeometry extends THREE.Mesh<THREE.BufferGeometry> implements ISimulationObject {
+export class DetectGeometry extends SimulationPoints {
 	readonly notRemovable = false;
+	map: null;
+	alphaMap: null;
+	size: number;
+	sizeAttenuation: boolean;
 	get notMovable() {
 		// custom get function to conditionally return notMoveable property;
 		return ['Zone', 'All'].includes(this.detectType);
@@ -72,7 +77,6 @@ export class DetectGeometry extends THREE.Mesh<THREE.BufferGeometry> implements 
 	readonly isDetectGeo: true = true;
 
 	private _geometryData: DETECT.Any;
-	private editor: Editor;
 	private disableGeometryUpdate: boolean = false;
 
 	private tryUpdateGeometry = (type: DETECT.DETECT_TYPE = this.detectType) => {
@@ -159,12 +163,15 @@ export class DetectGeometry extends THREE.Mesh<THREE.BufferGeometry> implements 
 		editor: Editor,
 		{ data = DETECT.DEFAULT_ANY, type = 'Mesh', position = [0, 0, 0], name }: DetectGeometryArgs
 	) {
-		super();
+		super(editor, name, 'Detect');
+		this.map = null;
+
+		this.alphaMap = null;
+
+		this.size = 1;
+		this.sizeAttenuation = true;
 		this.proxy = new Proxy(this, this.overrideHandler);
-		this.editor = editor;
 		this.signals = editor.signals;
-		this.name = name ?? `DetectGeometry${this.id}`;
-		this.type = 'Detect';
 		this.position.fromArray(position);
 		this._geometryData = data;
 		this._detectType = type;

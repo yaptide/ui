@@ -30,12 +30,10 @@ export function Viewport(
 
 	const config = {
 		showSceneHelpers: true,
-		showZones: true,
-		showDetect: true,
 		selectFigures: true,
 		selectZones: false,
 		selectSections: false,
-		visible: false
+		visible: true
 	};
 
 	const sceneViewHelpers = new THREE.Scene();
@@ -127,9 +125,9 @@ export function Viewport(
 
 		renderer.autoClear = false;
 
-		if (config.showZones) renderer.render(zoneManager, camera);
+		renderer.render(zoneManager, camera);
 
-		if (config.showDetect) renderer.render(detectManager, camera);
+		renderer.render(detectManager, camera);
 
 		if (clipPlane) renderer.render(viewClipPlane.scene, camera);
 
@@ -501,12 +499,6 @@ export function Viewport(
 
 	//YAPTIDE signals
 	signals.objectChanged.add(() => {
-		render();
-	});
-
-	signals.showZonesChanged.add(showZones => {
-		config.showZones = showZones;
-
 		render();
 	});
 

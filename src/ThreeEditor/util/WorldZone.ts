@@ -3,7 +3,7 @@ import { Color, LineBasicMaterial, MeshBasicMaterial, Object3D, Vector3 } from '
 import { debounce } from 'throttle-debounce';
 
 import { Editor } from '../js/Editor';
-import { ISimulationObject } from './SimulationObject';
+import { SimulationMesh } from './SimulationBase/SimulationMesh';
 
 export interface WorldZoneJSON {
 	type: string;
@@ -32,7 +32,7 @@ interface WorldZoneParams {
 	marginMultiplier?: number;
 }
 
-export class WorldZone extends THREE.Object3D implements ISimulationObject {
+export class WorldZone extends SimulationMesh {
 	readonly notRemovable = true;
 	get notMovable() {
 		// custom get function to conditionally return notMoveable property;
@@ -41,7 +41,6 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 	readonly notRotatable = true;
 	readonly notScalable = true;
 
-	editor: Editor;
 	box: THREE.Box3;
 	marginMultiplier: number;
 
@@ -61,13 +60,8 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 		editor: Editor,
 		{ box, color = 0xff0000, marginMultiplier = 1.1 }: WorldZoneParams = {}
 	) {
-		super();
-		this.type = 'WorldZone';
-		this.name = 'World Zone';
-		this.editor = editor;
-
+		super(editor, 'World Zone', 'WorldZone');
 		this.marginMultiplier = marginMultiplier;
-
 		this.material = _material;
 
 		// watch for changes on material color

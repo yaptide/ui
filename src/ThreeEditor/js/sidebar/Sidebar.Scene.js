@@ -1,18 +1,9 @@
 import * as THREE from 'three';
-
-import { UIPanel, UIBreak, UIRow, UIColor, UISelect, UIText } from '../libs/ui.js';
-import { UIOutliner, UITexture } from '../libs/ui.three.js';
+import { UIBreak, UIColor, UIPanel, UIRow, UISelect, UIText } from '../libs/ui.js';
+import { UITexture } from '../libs/ui.three.js';
 import { OutlinerManager } from './Sidebar.OutlinerManager';
 
 
-export function escapeHTML(html) {
-	return html
-		.replace(/&/g, '&amp;')
-		.replace(/"/g, '&quot;')
-		.replace(/'/g, '&#39;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;');
-}
 
 function SidebarScene(editor) {
 	const { signals, strings } = editor;
@@ -25,7 +16,13 @@ function SidebarScene(editor) {
 	outlinerManager.id = 'outliner';
 
 	const refreshOptions = function () {
-		outlinerManager.setOptionsFromSources([editor.scene, editor.zoneManager.zoneContainer]);
+		const sources = [
+			editor.scene,
+			editor.zoneManager.zoneContainer,
+			editor.zoneManager.worldZone,
+			editor.beam
+		];
+		outlinerManager.setOptionsFromSources(sources);
 	};
 
 	// outliner
@@ -238,7 +235,7 @@ function SidebarScene(editor) {
 
 	function refreshUI() {
 		const { camera, scene } = editor;
-		const { detGeoContainer } = editor.detectManager;
+		const { detectContainer } = editor.detectManager;
 		const { zoneContainer, worldZone } = editor.zoneManager;
 
 		refreshOptions();
@@ -270,8 +267,8 @@ function SidebarScene(editor) {
 		// options.push(buildOption(zoneContainer, false));
 		// addObjects(zoneContainer.children, 0);
 
-		// options.push(buildOption(detGeoContainer, false));
-		// addObjects(detGeoContainer.children, 0);
+		// options.push(buildOption(detectContainer, false));
+		// addObjects(detectContainer.children, 0);
 
 		// options.push(buildOption(worldZone, false));
 
@@ -323,49 +320,50 @@ function SidebarScene(editor) {
 
 	signals.objectChanged.add(refreshUI);
 
-	signals.objectSelected.add(object => {
-		// if (ignoreObjectSelectedSignal === true) return;
+	// signals.objectSelected.add(object => {
+	// 	if (ignoreObjectSelectedSignal === true) return;
 
-		// if (object !== null && object.parent !== null && !object.parent?.isZoneManager) {
-		// 	let needsRefresh = false;
-		// 	let nextParent = object.parent;
+	// 	if (object !== null && object.parent !== null && !object.parent?.isZoneManager) {
+	// 		let needsRefresh = false;
+	// 		let nextParent = object.parent;
 
-		// 	const reachedFinalParent = parent => {
-		// 		const finalParents = [
-		// 			editor.camera,
-		// 			editor.scene,
-		// 			editor.beam,
-		// 			editor.zoneManager.zoneContainer,
-		// 			editor.zoneManager.worldZone,
-		// 			editor.detectManager.detGeoContainer
-		// 		];
-		// 		return finalParents.some(finalParent => finalParent === parent);
-		// 	};
+	// 		const reachedFinalParent = parent => {
+	// 			const finalParents = [
+	// 				editor.camera,
+	// 				editor.scene,
+	// 				editor.beam,
+	// 				editor.zoneManager.zoneContainer,
+	// 				editor.zoneManager.worldZone,
+	// 				editor.detectManager.detectContainer
+	// 			];
+	// 			return finalParents.some(finalParent => finalParent === parent);
+	// 		};
 
-		// 	while (!reachedFinalParent(nextParent)) {
-		// 		if (nodeStates.get(object, nextParent) !== true) {
-		// 			if (!nextParent) {
-		// 				console.error(nextParent);
-		// 				throw new Error(
-		// 					`nextParent is ${nextParent === null ? 'null' : typeof nextParent}`
-		// 				);
-		// 			}
-		// 			nodeStates.set(nextParent, true);
-		// 			needsRefresh = true;
-		// 		}
+	// 		while (!reachedFinalParent(nextParent)) {
+	// 			if (nodeStates.get(object, nextParent) !== true) {
+	// 				if (!nextParent) {
+	// 					console.error(nextParent);
+	// 					throw new Error(
+	// 						`nextParent is ${nextParent === null ? 'null' : typeof nextParent}`
+	// 					);
+	// 				}
+	// 				nodeStates.set(nextParent, true);
+	// 				needsRefresh = true;
+	// 			}
 
-		// 		nextParent = nextParent.parent;
-		// 	}
+	// 			nextParent = nextParent.parent;
+	// 		}
 
-		// 	if (needsRefresh) refreshUI();
+	// 		if (needsRefresh) refreshUI();
 
-		// 	outliner.setValue('objectSelected', object.id);
-		// } else {
-		// 	outliner.setValue(null);
-		// }
-	});
+	// 		outliner.setValue('objectSelected', object.id);
+	// 	} else {
+	// 		outliner.setValue(null);
+	// 	}
+	// });
 
 	return container;
 }
 
 export { SidebarScene };
+

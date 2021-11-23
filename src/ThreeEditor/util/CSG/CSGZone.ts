@@ -8,7 +8,8 @@ import CSG from '../../js/libs/csg/three-csg';
 import { OperationTuple, OperationTupleJSON } from './CSGOperationTuple';
 import SimulationMaterial from '../Materials/SimulationMaterial';
 import { CounterMap } from './CounterMap';
-import { ISimulationObject } from '../SimulationObject';
+import { ISimulationObject } from '../SimulationBase/SimulationObject';
+import { SimulationMesh } from '../SimulationBase/SimulationMesh';
 
 export interface ZoneJSON {
 	uuid: string;
@@ -19,7 +20,7 @@ export interface ZoneJSON {
 	materialData: unknown;
 }
 
-export class Zone extends THREE.Mesh implements ISimulationObject {
+export class Zone extends SimulationMesh {
 	readonly notRemovable = false;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -45,7 +46,7 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
 	worker?: Comlink.Remote<IZoneWorker>;
 	readonly debouncedUpdatePreview = debounce(200, false, () => this.updatePreview());
 
-	private editor: Editor;
+	// private editor: Editor;
 
 	constructor(
 		editor: Editor,
@@ -55,12 +56,9 @@ export class Zone extends THREE.Mesh implements ISimulationObject {
 		uuid?: string,
 		materialName?: string //TODO: change args to type
 	) {
-		super();
+		super(editor, name, 'Zone');
 		if (uuid) this.uuid = uuid;
-		this.editor = editor;
-		this.type = 'Zone';
 		this.signals = editor.signals;
-		this.name = name ?? `Zone${this.id}`;
 		this.material = editor.materialsManager.materials[materialName ?? ''];
 		this.unionOperations = unionOperations ?? [];
 		// If operations are specified, we have to populate set of subscribed UUID's

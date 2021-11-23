@@ -1,29 +1,12 @@
-import { UIButton, UIPanel, UIRow } from '../libs/ui';
-import { UIOutliner } from '../libs/ui.three';
-import { escapeHTML } from './Sidebar.Scene';
 import { AddFilterCommand } from '../commands/Commands';
+import { UIButton, UIPanel, UIRow } from '../libs/ui';
+import { OutlinerManager } from './Sidebar.OutlinerManager';
 
 export class SidebarFilters extends UIPanel {
 	editor;
 	signals;
 	detectManager;
-	outliner;
-	objectSelected;
-
-	createOptions(filters) {
-		let options = filters.map(filter => {
-			let option = document.createElement('div');
-			option.className = 'option';
-			option.value = filter.uuid;
-			option.innerHTML = `<span class="type Points"></span> ${escapeHTML(filter.name)}`;
-			return option;
-		});
-		return options;
-	}
-
-	onChange() {
-		this.editor.selected = this.detectManager.getFilterByUuid(this.outliner.getValue());
-	}
+	outlinerManager;
 
 	createButton() {
 		const panel = new UIPanel();
@@ -39,10 +22,13 @@ export class SidebarFilters extends UIPanel {
 		this.add(panel);
 	}
 
-	changeSelection(object) {
-		if (object) this.outliner.setValue(object.uuid);
-		else this.outliner.setValue(null);
-	}
+	refreshOptions() {
+		const sources = [
+			this.editor.detectManager.detectContainer,
+			this.editor.detectManager.filterContainer
+		];
+		this.outlinerManager.setOptionsFromSources(sources);
+	};
 
 	constructor(editor) {
 		super();
@@ -50,19 +36,19 @@ export class SidebarFilters extends UIPanel {
 		this.signals = editor.signals;
 		this.detectManager = editor.detectManager;
 
-		this.outliner = new UIOutliner(editor); //TODO: implement Outliner util function
-		this.outliner.setId("filter-outliner")
-		this.outliner.onChange(this.onChange.bind(this));
-		this.add(this.outliner);
-		this.updateOutlinerOptions();
+		this.outlinerManager = new OutlinerManager(editor, this);
+		this.outlinerManager.id = 'filter-outliner';
 
-		this.signals.detectFilterAdded.add(this.updateOutlinerOptions.bind(this));
-		this.signals.detectFilterRemoved.add(this.updateOutlinerOptions.bind(this));
-		this.signals.objectSelected.add(this.changeSelection.bind(this));
+		this.signals.editorCleared.add(this.refreshOptions.bind(this));
+
+		this.signals.sceneGraphChanged.add(this.refreshOptions.bind(this));
+
+		this.signals.objectChanged.add(this.refreshOptions.bind(this));
+
+		this.signals.detectFilterAdded.add(this.refreshOptions.bind(this));
+
+		this.signals.detectFilterRemoved.add(this.refreshOptions.bind(this));
 
 		this.createButton();
-	}
-	updateOutlinerOptions() {
-		this.outliner.setOptions(this.createOptions(this.detectManager.filters));
 	}
 }

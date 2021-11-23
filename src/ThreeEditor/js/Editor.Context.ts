@@ -1,17 +1,38 @@
 import * as THREE from 'three';
+import { Scene } from 'three';
 import { BasicMesh, isBasicMesh } from '../util/BasicMeshes';
 import { Beam, isBeam } from '../util/Beam';
 import * as CSG from '../util/CSG/CSG';
-import { isZone } from '../util/CSG/CSG';
+import { isZone, isZoneContainer } from '../util/CSG/CSG';
 import { DetectFilter, isDetectFilter } from '../util/Detect/DetectFilter';
 import { DetectGeometry, isDetectGeometry } from '../util/Detect/DetectGeometry';
-import { DetectOutput } from '../util/Detect/DetectOutput';
+import {
+	DetectContainer,
+	DetectManager,
+	FilterContainer,
+	isDetectContainer,
+	isFilterContainer
+} from '../util/Detect/DetectManager';
+import { DetectOutput, isDetectOutput } from '../util/Detect/DetectOutput';
 import { isWorldZone, WorldZone } from '../util/WorldZone';
 import { Editor } from './Editor';
 
 export type Context = 'scene' | 'output' | 'parameters' | 'settings';
-export type SceneObject = CSG.Zone | BasicMesh | WorldZone | Beam;
-export type OutputObject = DetectFilter | DetectGeometry | DetectOutput;
+export type SceneObject =
+	| CSG.Zone
+	| BasicMesh
+	| WorldZone
+	| Beam
+	| CSG.ZoneContainer
+	| CSG.ZoneManager
+	| THREE.Scene;
+export type OutputObject =
+	| DetectFilter
+	| DetectGeometry
+	| DetectOutput
+	| DetectContainer
+	| DetectManager
+	| FilterContainer;
 
 export class ContextManager {
 	private editor: Editor;
@@ -22,12 +43,17 @@ export class ContextManager {
 		this.editor = editor;
 		this._context = context;
 		this._selected = [null, null];
+		this.editor.signals.contextChanged.add(this.setVisibility.bind(this));
+		this.setVisibility(context);
 	}
 
 	set currentContext(context: Context) {
 		if (this._context !== context) {
 			this._context = context;
 			this.editor.signals.contextChanged.dispatch(context);
+			if (this.selected instanceof THREE.Object3D)
+				this.editor.signals.objectSelected.dispatch(this.selected);
+			else this.editor.signals.dataObjectSelected.dispatch(this.selected);
 		}
 	}
 
@@ -35,19 +61,30 @@ export class ContextManager {
 		return this._context;
 	}
 
-	get renderList(): THREE.Scene[] {
-		let list: THREE.Scene[] = [this.editor.sceneHelpers, this.editor.zoneManager];
-		switch (this._context) {
+	setVisibility(context: Context): void {
+		let visible: THREE.Scene[] = [this.editor.sceneHelpers, this.editor.zoneManager];
+		let hidden: THREE.Scene[] = [];
+		switch (context) {
 			case 'scene':
-				list.push(this.editor.scene);
+				visible.push(this.editor.scene);
+				hidden.push(this.editor.detectManager);
 				break;
 			case 'output':
-				list.push(this.editor.detectManager);
+				visible.push(this.editor.detectManager);
+				hidden.push(this.editor.scene);
 				break;
 			default:
+				hidden.push(this.editor.scene);
+				hidden.push(this.editor.detectManager);
 				break;
 		}
-		return list;
+		visible.forEach(scene => {
+			scene.visible = true;
+		});
+		hidden.forEach(scene => {
+			scene.visible = false;
+		});
+		this.editor.signals.sceneGraphChanged.dispatch();
 	}
 
 	set selected(selected: SceneObject | OutputObject | null) {
@@ -89,9 +126,22 @@ export class ContextManager {
 }
 
 export const isOutputObject = (x: unknown): x is OutputObject => {
-	return isDetectGeometry(x) || isDetectFilter(x);
+	return (
+		isDetectGeometry(x) ||
+		isDetectFilter(x) ||
+		isDetectContainer(x) ||
+		isFilterContainer(x) ||
+		isDetectOutput(x)
+	);
 };
 
 export const isInputObject = (x: unknown): x is SceneObject => {
-	return isZone(x) || isWorldZone(x) || isBeam(x) || isBasicMesh(x);
+	return (
+		isZone(x) ||
+		isWorldZone(x) ||
+		isBeam(x) ||
+		isBasicMesh(x) ||
+		isZoneContainer(x) ||
+		x instanceof THREE.Scene
+	);
 };
