@@ -1,12 +1,10 @@
 import * as THREE from 'three';
 import { Color, LineBasicMaterial, MeshBasicMaterial, Object3D, Vector3 } from 'three';
 import { debounce } from 'throttle-debounce';
-
 import { Editor } from '../js/Editor';
-import SimulationMaterial from './Materials/SimulationMaterial';
 import { getGeometryParameters, PossibleGeometryType } from './AdditionalUserData';
-import { SimulationMesh } from './SimulationBase/SimulationMesh';
-import { ISimulationObject } from './SimulationBase/SimulationObject';
+import SimulationMaterial from './Materials/SimulationMaterial';
+import { SimulationObject3D } from './SimulationBase/SimulationMesh';
 
 export interface WorldZoneJSON {
 	type: string;
@@ -24,7 +22,7 @@ export interface WorldZoneJSON {
 		parameters: {
 			[key: string]: number;
 		};
-	}
+	};
 }
 
 export const BOUNDING_ZONE_TYPE = ['sphere', 'cylinder', 'box'] as const;
@@ -47,7 +45,7 @@ interface WorldZoneParams {
 	marginMultiplier?: number;
 }
 
-export class WorldZone extends THREE.Object3D implements ISimulationObject {
+export class WorldZone extends SimulationObject3D {
 	readonly notRemovable = true;
 	get notMovable() {
 		// custom get function to conditionally return notMoveable property;
@@ -80,7 +78,7 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 		editor: Editor,
 		{ box, color = 0xff0000, marginMultiplier = 1.1 }: WorldZoneParams = {}
 	) {
-		super();
+		super(editor, 'World Zone', 'WorldZone');
 		this.type = 'WorldZone';
 		this.name = 'World Zone';
 		this.editor = editor;
@@ -252,9 +250,9 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 		const geometry: {
 			[K in WorldZoneType]: PossibleGeometryType;
 		} = {
-			'box': new THREE.BoxGeometry(this.size.x, this.size.y, this.size.z),
-			'sphere': new THREE.SphereGeometry(this.size.x),
-			'cylinder': new THREE.CylinderGeometry(this.size.x, this.size.x, this.size.y),
+			box: new THREE.BoxGeometry(this.size.x, this.size.y, this.size.z),
+			sphere: new THREE.SphereGeometry(this.size.x),
+			cylinder: new THREE.CylinderGeometry(this.size.x, this.size.x, this.size.y)
 		};
 
 		const jsonObject: WorldZoneJSON = {
@@ -270,7 +268,7 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 			userData: {
 				geometryType: geometry[this._geometryType].type,
 				parameters: getGeometryParameters(geometry[this._geometryType]),
-				position: this.box.getCenter(new Vector3()).toArray(),
+				position: this.box.getCenter(new Vector3()).toArray()
 			}
 		};
 
@@ -289,7 +287,8 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 
 		this.autoCalculate = data.autoCalculate;
 
-		this.simulationMaterial = this.editor.materialsManager.materials[data.simulationMaterialName]
+		this.simulationMaterial =
+			this.editor.materialsManager.materials[data.simulationMaterialName];
 
 		return this;
 	}
