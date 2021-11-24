@@ -4,8 +4,9 @@ import * as THREE from 'three';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import Worker from 'worker-loader!./CSGWorker';
 import { Editor } from '../../js/Editor';
+import { SimulationSceneGroup } from '../SimulationBase/SimulationGroup';
+import { ISimulationObject } from '../SimulationBase/SimulationObject';
 import { WorldZone, WorldZoneJSON } from '../WorldZone';
-import { ISimulationObject } from '../SimulationObject';
 import { IZoneWorker } from './CSGWorker';
 import { Zone, ZoneJSON } from './CSGZone';
 
@@ -16,23 +17,15 @@ interface ZoneManagerJSON {
 	worldZone: WorldZoneJSON;
 }
 
-export class ZonesContainer extends THREE.Group implements ISimulationObject {
+export class ZoneContainer extends SimulationSceneGroup<Zone> {
 	readonly notRemovable = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
 
-	children: Zone[];
-	readonly isZonesContainer: true = true;
-	constructor() {
-		super();
-		this.name = 'Zones';
-		this.children = [];
-	}
-
-	reset() {
-		this.name = 'Zones';
-		this.clear();
+	readonly isZoneContainer: true = true;
+	constructor(editor: Editor) {
+		super(editor, 'Zones', 'ZoneGroup');
 	}
 }
 
@@ -45,7 +38,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 	editor: Editor;
 	worker: Comlink.Remote<IZoneWorker>;
 	worldZone: WorldZone;
-	zonesContainer: ZonesContainer;
+	zoneContainer: ZoneContainer;
 	private signals: {
 		objectAdded: Signal<THREE.Object3D>;
 		zoneAdded: Signal<Zone>;
@@ -59,11 +52,11 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 
 	constructor(editor: Editor) {
 		super();
-		this.zonesContainer = new ZonesContainer();
+		this.zoneContainer = new ZoneContainer(editor);
 		const light = new THREE.HemisphereLight(0xffffff, 0x222222, 1);
 		light.position.set(15, 15, 15);
 		this.add(light);
-		this.add(this.zonesContainer);
+		this.add(this.zoneContainer);
 		this.worker = Comlink.wrap<IZoneWorker>(new Worker());
 		this.editor = editor;
 		this.signals = editor.signals;
@@ -85,7 +78,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 
 	addZone(zone: Zone): void {
 		zone.worker = this.worker;
-		this.zonesContainer.add(zone);
+		this.zoneContainer.add(zone);
 
 		this.signals.objectAdded.dispatch(zone);
 		this.signals.zoneAdded.dispatch(zone);
@@ -94,7 +87,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 	}
 
 	removeZone(zone: Zone): void {
-		this.zonesContainer.remove(zone);
+		this.zoneContainer.remove(zone);
 
 		this.signals.objectRemoved.dispatch(zone);
 		this.signals.zoneRemoved.dispatch(zone);
@@ -103,7 +96,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 	}
 
 	toJSON() {
-		const zones = this.zonesContainer.children.map(zone => zone.toJSON());
+		const zones = this.zoneContainer.toJSON() as ZoneJSON[];
 		const uuid = this.uuid;
 		const name = this.name;
 		const worldZone = this.worldZone.toJSON();
@@ -127,7 +120,9 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 		});
 
 		this.worldZone.removeHelpersFromSceneHelpers();
+		this.remove(this.worldZone);
 		this.worldZone = WorldZone.fromJSON(this.editor, data.worldZone);
+		this.add(this.worldZone);
 		this.worldZone.addHelpersToSceneHelpers();
 
 		return this;
@@ -148,7 +143,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 		this.background = null;
 		this.environment = null;
 
-		this.zonesContainer.reset();
+		this.zoneContainer.reset();
 
 		this.worldZone.reset();
 
@@ -160,7 +155,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 	}
 
 	getZoneById(id: number): Zone | undefined {
-		return this.zonesContainer.children.find((zone: Zone) => zone.id === id);
+		return this.zoneContainer.children.find((zone: Zone) => zone.id === id);
 	}
 
 	handleZoneEmpty(zone: Zone): void {
@@ -168,7 +163,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 	}
 
 	getZoneOptions(): Record<number, string> {
-		const zoneOptions = this.zonesContainer.children.reduce((acc, zone: Zone) => {
+		const zoneOptions = this.zoneContainer.children.reduce((acc, zone: Zone) => {
 			acc[zone.id] = zone.name;
 			return acc;
 		}, {} as Record<number, string>);
@@ -176,6 +171,6 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 	}
 }
 
-export const isZonesContainer = (x: unknown): x is ZonesContainer => x instanceof ZonesContainer;
+export const isZoneContainer = (x: unknown): x is ZoneContainer => x instanceof ZoneContainer;
 
 export const isZoneManager = (x: unknown): x is ZoneManager => x instanceof ZoneManager;

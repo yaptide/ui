@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import { Editor } from './js/Editor.js';
-import { ViewManager } from './js/ViewportManager.js';
+import { ViewManager } from './js/viewport/ViewportManager.js';
 import { Toolbar } from './js/Toolbar.js';
-import { Sidebar } from './js/Sidebar.js';
-import { Menubar } from './js/Menubar.js';
+import { Sidebar } from './js/sidebar/Sidebar.js';
+import { Menubar } from './js/menubar/Menubar.js';
 import { Resizer } from './js/Resizer.js';
 
 export function initEditor(container) {
@@ -152,12 +152,5 @@ export function initEditor(container) {
 		}
 	}
 
-	return {
-		editor,
-		viewport: viewManager,
-		toolbar,
-		sidebar,
-		menubar,
-		resizer
-	};
+	return { editor, viewport: viewManager, toolbar, sidebar, menubar, resizer };
 }

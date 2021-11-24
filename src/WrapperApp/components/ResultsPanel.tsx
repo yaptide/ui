@@ -19,11 +19,7 @@ const simulationData = (() => {
 				.fill(0)
 				.map((v, i) => {
 					const rand = Math.round(Math.random() * numberOfElements) + 1;
-					return {
-						uuid: i,
-						title: `Mesh${index} - Graph${i} - ${rand}`,
-						value: rand
-					};
+					return { uuid: i, title: `Mesh${index} - Graph${i} - ${rand}`, value: rand };
 				})
 		};
 		data.push(obj);
@@ -41,13 +37,7 @@ const ResultsPanel = React.memo(
 		};
 
 		return (
-			<Box
-				sx={{
-					display: 'flex',
-					flexDirection: 'row',
-					maxWidth: '100vw',
-					width: '100%'
-				}}>
+			<Box sx={{ display: 'flex', flexDirection: 'row', maxWidth: '100vw', width: '100%' }}>
 				<Tabs
 					sx={{ flexShrink: 0 }}
 					orientation='vertical'

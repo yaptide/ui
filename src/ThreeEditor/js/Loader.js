@@ -64,9 +64,7 @@ function Loader(editor) {
 						// 2.0
 
 						if (contents.indexOf('postMessage') !== -1) {
-							const blob = new Blob([contents], {
-								type: 'text/javascript'
-							});
+							const blob = new Blob([contents], { type: 'text/javascript' });
 							const url = URL.createObjectURL(blob);
 
 							const worker = new Worker(url);

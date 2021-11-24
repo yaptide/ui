@@ -6,7 +6,7 @@ import { Command } from '../Command.js';
  * @param object THREE.Object3D
  * @constructor
  */
-class AddZoneCommand extends Command {
+export class AddZoneCommand extends Command {
 	constructor(editor, zone) {
 		super(editor);
 
@@ -17,14 +17,14 @@ class AddZoneCommand extends Command {
 	}
 
 	execute() {
-		if (this.zone) this.editor.zonesManager.addZone(this.zone);
-		else this.zone = this.editor.zonesManager.createZone();
+		if (this.zone) this.editor.zoneManager.addZone(this.zone);
+		else this.zone = this.editor.zoneManager.createZone();
 
 		this.editor.select(this.zone);
 	}
 
 	undo() {
-		this.editor.zonesManager.removeZone(this.zone);
+		this.editor.zoneManager.removeZone(this.zone);
 		this.editor.deselect();
 	}
 
@@ -46,5 +46,3 @@ class AddZoneCommand extends Command {
 		}
 	}
 }
-
-export { AddZoneCommand };
