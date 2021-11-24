@@ -18,12 +18,12 @@ class RemoveZoneCommand extends Command {
 	}
 
 	execute() {
-		this.editor.zonesManager.removeZone(this.zone);
+		this.editor.zoneManager.removeZone(this.zone);
 		this.editor.deselect();
 	}
 
 	undo() {
-		this.editor.zonesManager.addZone(this.zone);
+		this.editor.zoneManager.addZone(this.zone);
 		this.editor.select(this.zone);
 	}
 

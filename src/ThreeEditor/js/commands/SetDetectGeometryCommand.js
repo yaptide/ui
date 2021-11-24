@@ -2,11 +2,11 @@ import { Command } from '../Command.js';
 
 /**
  * @param editor Editor
- * @param object DetectSection
+ * @param object DetectGeometry
  * @param newData DETECT.Any
  * @constructor
  */
-class SetDetectGeometryCommand extends Command {
+export class SetDetectGeometryCommand extends Command {
 	constructor(editor, object, newData) {
 		super(editor);
 
@@ -64,5 +64,3 @@ class SetDetectGeometryCommand extends Command {
 		this.newData = json.newData;
 	}
 }
-
-export { SetDetectGeometryCommand };

@@ -4,7 +4,9 @@ import { debounce } from 'throttle-debounce';
 
 import { Editor } from '../js/Editor';
 import SimulationMaterial from './Materials/SimulationMaterial';
-import { ISimulationObject } from './SimulationObject';
+import { getGeometryParameters, PossibleGeometryType } from './AdditionalUserData';
+import { SimulationMesh } from './SimulationBase/SimulationMesh';
+import { ISimulationObject } from './SimulationBase/SimulationObject';
 
 export interface WorldZoneJSON {
 	type: string;
@@ -16,6 +18,13 @@ export interface WorldZoneJSON {
 	marginMultiplier: number;
 	autoCalculate: boolean;
 	simulationMaterialName: string;
+	userData?: {
+		geometryType: string;
+		position: THREE.Vector3Tuple;
+		parameters: {
+			[key: string]: number;
+		};
+	}
 }
 
 export const BOUNDING_ZONE_TYPE = ['sphere', 'cylinder', 'box'] as const;
@@ -48,6 +57,7 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 	readonly notScalable = true;
 
 	editor: Editor;
+
 	box: THREE.Box3;
 	marginMultiplier: number;
 
@@ -159,7 +169,6 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 		this.setFromCenterAndSize(this.center, value);
 	}
 
-
 	private getAllHelpers() {
 		return [this.boxHelper, this.sphereMesh, this.cylinderMesh];
 	}
@@ -240,6 +249,14 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 	}
 
 	toJSON() {
+		const geometry: {
+			[K in WorldZoneType]: PossibleGeometryType;
+		} = {
+			'box': new THREE.BoxGeometry(this.size.x, this.size.y, this.size.z),
+			'sphere': new THREE.SphereGeometry(this.size.x),
+			'cylinder': new THREE.CylinderGeometry(this.size.x, this.size.x, this.size.y),
+		};
+
 		const jsonObject: WorldZoneJSON = {
 			center: this.box.getCenter(new Vector3()),
 			size: this.box.getSize(new Vector3()),
@@ -249,14 +266,18 @@ export class WorldZone extends THREE.Object3D implements ISimulationObject {
 			color: this._material.color.getHex(),
 			marginMultiplier: this.marginMultiplier,
 			autoCalculate: this.autoCalculate,
-			simulationMaterialName: this.simulationMaterial.name
+			simulationMaterialName: this.simulationMaterial.name,
+			userData: {
+				geometryType: geometry[this._geometryType].type,
+				parameters: getGeometryParameters(geometry[this._geometryType]),
+				position: this.box.getCenter(new Vector3()).toArray(),
+			}
 		};
 
 		return jsonObject;
 	}
 
 	fromJSON(data: WorldZoneJSON) {
-
 		this.geometryType = data.geometryType;
 		this.name = data.name;
 

@@ -22,16 +22,23 @@ export interface AdditionalUserDataType {
 	userSetRotation?: boolean;
 }
 
-export function generateSimulationInfo(geometryMesh: THREE.Mesh<PossibleGeometryType>) {
+export const getGeometryParameters = (geometry: PossibleGeometryType) => {
 	const parameters: { [key: string]: number } = {};
 
-	const type = geometryMesh.geometry.type as keyof typeof geometryParameters;
-
-	const geometry = geometryMesh.geometry as PossibleGeometryType;
+	const type = geometry.type as keyof typeof geometryParameters;
 
 	geometryParameters[type].forEach(prop => {
 		parameters[prop] = geometry.parameters[prop as keyof typeof geometry.parameters];
 	});
+
+	return parameters;
+}
+
+export function generateSimulationInfo(geometryMesh: THREE.Mesh<PossibleGeometryType>) {
+
+	const geometry = geometryMesh.geometry as PossibleGeometryType;
+
+	const parameters = getGeometryParameters(geometry);
 
 	let userData: AdditionalUserDataType = {
 		id: geometryMesh.id,

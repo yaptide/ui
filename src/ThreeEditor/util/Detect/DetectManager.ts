@@ -2,31 +2,52 @@ import { Signal } from 'signals';
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
 import * as CSG from '../CSG/CSG';
-import { ISimulationObject } from '../SimulationObject';
-import { DetectSection, DetectSectionJSON, isDetectSection } from './DetectSection';
+import { SimulationDataGroup, SimulationSceneGroup } from '../SimulationBase/SimulationGroup';
+import { ISimulationObject } from '../SimulationBase/SimulationObject';
+import { DetectFilter, FilterJSON } from './DetectFilter';
+import { DetectGeometry, DetectGeometryJSON, isDetectGeometry } from './DetectGeometry';
 
 interface DetectManagerJSON {
 	uuid: string;
 	name: string;
-	detectSections: DetectSectionJSON[];
+	detectGeometries: DetectGeometryJSON[];
+	filters: FilterJSON[];
 }
 
-export class DetectsContainer extends THREE.Group implements ISimulationObject {
+export class DetectContainer extends SimulationSceneGroup<DetectGeometry> {
 	readonly notRemovable = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
 
-	children: DetectSection[];
-	readonly isDetectSectionsContainer: true = true;
-	constructor() {
-		super();
-		this.name = 'Sections';
+	children: DetectGeometry[];
+	readonly isDetectContainer: true = true;
+	constructor(editor: Editor) {
+		super(editor, 'Detects', 'DetectGroup');
 		this.children = [];
 	}
 
 	reset() {
-		this.name = 'Sections';
+		this.name = 'Geometries';
+		this.clear();
+	}
+}
+
+export class FilterContainer extends SimulationDataGroup<DetectFilter> {
+	readonly notRemovable = true;
+	readonly notMovable = true;
+	readonly notRotatable = true;
+	readonly notScalable = true;
+
+	children: DetectFilter[];
+	readonly isFilterContainer: true = true;
+	constructor(editor: Editor) {
+		super(editor, 'Filters', 'FilterGroup');
+		this.children = [];
+	}
+
+	reset() {
+		this.name = 'Filters';
 		this.clear();
 	}
 }
@@ -45,9 +66,15 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 		color: new THREE.Color('cyan')
 	});
 
-	detectsContainer: DetectsContainer;
+	detectContainer: DetectContainer;
 
 	detectHelper: THREE.Mesh;
+
+	filterContainer: FilterContainer;
+
+	get filters() {
+		return this.filterContainer.children;
+	}
 
 	private signals: {
 		objectAdded: Signal<THREE.Object3D>;
@@ -56,9 +83,12 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 		objectSelected: Signal<THREE.Object3D>;
 		zoneGeometryChanged: Signal<CSG.Zone>;
 		sceneGraphChanged: Signal;
-		detectSectionAdded: Signal<DetectSection>;
-		detectSectionRemoved: Signal<DetectSection>;
-		detectGeometryChanged: Signal<DetectSection>;
+		detectGeometryAdded: Signal<DetectGeometry>;
+		detectGeometryRemoved: Signal<DetectGeometry>;
+		detectGeometryChanged: Signal<DetectGeometry>;
+		detectFilterRemoved: Signal<DetectFilter>;
+		detectFilterAdded: Signal<DetectFilter>;
+		detectFilterChanged: Signal<DetectFilter>;
 	};
 	readonly isDetectManager: true = true;
 
@@ -66,11 +96,12 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 
 	constructor(editor: Editor) {
 		super();
-		this.detectsContainer = new DetectsContainer();
+		this.detectContainer = new DetectContainer(editor);
 		this.detectHelper = new THREE.Mesh(undefined, DetectManager._detectWireMaterial);
 		this.name = 'DetectManager';
 		this.editor = editor;
-		this.add(this.detectsContainer);
+		this.filterContainer = new FilterContainer(editor);
+		this.add(this.detectContainer);
 		this.add(this.detectHelper);
 		this.signals = editor.signals;
 		this.signals.objectSelected.add(this.onObjectSelected);
@@ -79,7 +110,7 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 
 	onObjectSelected = (object: THREE.Object3D) => {
 		this.detectHelper.geometry.dispose();
-		if (isDetectSection(object) && this.editor.selected === object) {
+		if (isDetectGeometry(object) && this.editor.selected === object) {
 			this.detectHelper.position.copy(object.position);
 			this.detectHelper.geometry = object.geometry.clone();
 		} else {
@@ -88,25 +119,42 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 		this.signals.sceneGraphChanged.dispatch();
 	};
 
-	createSection(): DetectSection {
-		const section = new DetectSection(this.editor, {});
+	createSection(): DetectGeometry {
+		const section = new DetectGeometry(this.editor, {});
 		this.addSection(section);
 		return section;
 	}
 
-	addSection(section: DetectSection): void {
-		this.detectsContainer.add(section);
+	addSection(section: DetectGeometry): void {
+		this.detectContainer.add(section);
 
 		this.signals.objectAdded.dispatch(section);
-		this.signals.detectSectionAdded.dispatch(section);
+		this.signals.detectGeometryAdded.dispatch(section);
 		this.signals.sceneGraphChanged.dispatch();
 	}
 
-	removeSection(section: DetectSection): void {
-		this.detectsContainer.remove(section);
+	removeSection(section: DetectGeometry): void {
+		this.detectContainer.remove(section);
 		this.signals.objectRemoved.dispatch(section);
-		this.signals.detectSectionRemoved.dispatch(section);
+		this.signals.detectGeometryRemoved.dispatch(section);
 		this.signals.sceneGraphChanged.dispatch();
+	}
+
+	addFilter(filter: DetectFilter): void {
+		filter.parent = this.filterContainer;
+		this.filters.push(filter);
+	}
+
+	removeFilter(filter: DetectFilter): void {
+		this.filters.splice(this.filters.indexOf(filter), 1);
+		this.signals.detectFilterRemoved.dispatch(filter);
+	}
+
+	createFilter(): DetectFilter {
+		const filter = new DetectFilter(this.editor);
+		this.addFilter(filter);
+		this.signals.detectFilterAdded.dispatch(filter);
+		return filter;
 	}
 
 	fromJSON(data: DetectManagerJSON): void {
@@ -115,41 +163,67 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 		this.uuid = data.uuid;
 
 		this.name = data.name;
-		data.detectSections.forEach(sectionData => {
-			this.addSection(DetectSection.fromJSON(this.editor, sectionData));
+		data.detectGeometries.forEach(sectionData => {
+			this.addSection(DetectGeometry.fromJSON(this.editor, sectionData));
 		});
+		data.filters.forEach(filterData => {
+			this.addFilter(DetectFilter.fromJSON(this.editor, filterData));
+		});
+		this.signals.detectFilterAdded.dispatch(this.filters[this.filters.length - 1]);
 	}
 
 	toJSON(): DetectManagerJSON {
-		const detectSections = this.detectsContainer.children.map(section => section.toJSON());
-		const uuid = this.uuid;
-		const name = this.name;
+		const detectGeometries = this.detectContainer.toJSON() as DetectGeometryJSON[];
+
+		const filters = this.filterContainer.toJSON() as FilterJSON[];
+
+		const { uuid, name } = this;
+
 		return {
 			uuid,
 			name,
-			detectSections
+			detectGeometries,
+			filters
 		};
 	}
 
-	reset() {
+	reset(): void {
 		this.name = 'DetectManager';
 
 		this.userData = {};
 		this.background = null;
 		this.environment = null;
 
-		this.detectsContainer.reset();
+		this.detectContainer.reset();
+		this.clear();
 
 		this.detectHelper.geometry.dispose();
+	}
+
+	clear(): this {
+		this.filters.forEach(filter => {
+			this.removeFilter(filter);
+		});
+		return this;
 	}
 
 	clone(recursive: boolean) {
 		return new DetectManager(this.editor).copy(this, recursive) as this;
 	}
 
-	getSectionById(id: number): DetectSection | null {
-		return this.detectsContainer.children.find(
+	getSectionById(id: number): DetectGeometry | null {
+		return this.detectContainer.children.find(
 			child => child.id === id
-		) as DetectSection | null;
+		) as DetectGeometry | null;
+	}
+
+	getFilterByUuid(uuid: string): DetectFilter | null {
+		return this.filters.find(filter => filter.uuid === uuid) as DetectFilter | null;
 	}
 }
+
+export const isDetectContainer = (x: unknown): x is DetectContainer => x instanceof DetectContainer;
+
+export const isDetectManager = (x: unknown): x is DetectManager => x instanceof DetectManager;
+
+export const isFilterContainer = (x: unknown): x is FilterContainer => x instanceof FilterContainer;

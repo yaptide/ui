@@ -104,14 +104,14 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 	}, []);
 
 	const initZone = useCallback(() => {
-		const manager = props.editor.zonesManager;
+		const manager = props.editor.zoneManager;
 		props.zone
 			? (() => {
 					zoneRef.current = props.zone;
 					loadRows();
 			  })()
 			: (zoneRef.current = manager.createZone());
-	}, [loadRows, props.editor.zonesManager, props.zone]);
+	}, [loadRows, props.editor.zoneManager, props.zone]);
 
 	useEffect(() => {
 		initZone();

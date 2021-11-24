@@ -6,7 +6,7 @@ import { ObjectLoader } from 'three';
  * @param object THREE.Object3D
  * @constructor
  */
-class AddObjectCommand extends Command {
+export class AddObjectCommand extends Command {
 	constructor(editor, object) {
 		super(editor);
 
@@ -47,5 +47,3 @@ class AddObjectCommand extends Command {
 		}
 	}
 }
-
-export { AddObjectCommand };

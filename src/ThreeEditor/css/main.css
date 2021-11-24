@@ -136,7 +136,7 @@ input {
 
 /* outliner */
 
-#outliner .opener {
+div:is(#outliner, #filter-outliner) .opener {
 	display: inline-block;
 	width: 14px;
 	height: 14px;
@@ -145,31 +145,31 @@ input {
 	text-align: center;
 }
 
-#outliner .opener.open:after {
+div:is(#outliner, #filter-outliner) .opener.open:after {
 	content: '−';
 }
 
-#outliner .opener.closed:after {
+div:is(#outliner, #filter-outliner) .opener.closed:after {
 	content: '+';
 }
 
-#outliner .option {
+div:is(#outliner, #filter-outliner) .option {
 	border: 1px solid transparent;
 }
 
-#outliner .option.drag {
+div:is(#outliner, #filter-outliner) .option.drag {
 	border: 1px dashed #999;
 }
 
-#outliner .option.dragTop {
+div:is(#outliner, #filter-outliner) .option.dragTop {
 	border-top: 1px dashed #999;
 }
 
-#outliner .option.dragBottom {
+div:is(#outliner, #filter-outliner) .option.dragBottom {
 	border-bottom: 1px dashed #999;
 }
 
-#outliner .type {
+div:is(#outliner, #filter-outliner) .type {
 	display: inline-block;
 	width: 14px;
 	height: 14px;
@@ -177,60 +177,102 @@ input {
 	text-align: center;
 }
 
-#outliner .type:after {
-	content: '●';
-}
+/*
 
-/* */
-
-#outliner .Scene {
-	color: #8888dd;
-}
-
-#outliner .Camera {
+div:is(#outliner, #filter-outliner) .Camera {
 	color: #dd8888;
 }
 
-#outliner .Light {
+div:is(#outliner, #filter-outliner) .Light {
 	color: #dddd88;
 }
 
-/* */
+/*
 
-#outliner .Object3D {
+div:is(#outliner, #filter-outliner) .Object3D {
 	color: #aaaaee;
 }
 
-#outliner .Mesh {
+div:is(#outliner, #filter-outliner) .Mesh {
 	color: #8888ee;
 }
 
-#outliner .Line {
+div:is(#outliner, #filter-outliner) .Line {
 	color: #88ee88;
 }
 
-#outliner .LineSegments {
+div:is(#outliner, #filter-outliner) .LineSegments {
 	color: #88ee88;
 }
 
-#outliner .Points {
+div:is(#outliner, #filter-outliner) .Points {
 	color: #ee8888;
 }
 
-/* */
+/*
 
-#outliner .Geometry {
+div:is(#outliner, #filter-outliner) .Geometry {
 	color: #aaeeaa;
 }
 
-#outliner .Material {
+div:is(#outliner, #filter-outliner) .Material {
 	color: #eeaaee;
+}
+
+/*
+
+div:is(#outliner, #filter-outliner) .Script:after {
+	content: '◎';
 }
 
 /* */
 
-#outliner .Script:after {
-	content: '◎';
+div:is(#outliner, #filter-outliner) .type:after {
+	content: '●';
+}
+
+div:is(#outliner, #filter-outliner) .Geometry:after {
+	content: '◩';
+}
+
+div:is(#outliner, #filter-outliner) .Material:after {
+	content: '▲';
+}
+
+/* */
+
+div:is(#outliner, #filter-outliner) .FigureGroup {
+	color: #7474eb;
+}
+div:is(#outliner, #filter-outliner) .Figure {
+	color: #7474eb;
+}
+div:is(#outliner, #filter-outliner) .ZoneGroup {
+	color: #4ed14e;
+}
+div:is(#outliner, #filter-outliner) .Zone {
+	color: #4ed14e;
+}
+div:is(#outliner, #filter-outliner) .Beam {
+	color: #dbdb55;
+}
+div:is(#outliner, #filter-outliner) .DetectGroup {
+	color: #56ced6;
+}
+div:is(#outliner, #filter-outliner) .Detect {
+	color: #56ced6;
+}
+div:is(#outliner, #filter-outliner) .FilterGroup {
+	color: #8651db;
+}
+div:is(#outliner, #filter-outliner) .Filter {
+	color: #8651db;
+}
+div:is(#outliner, #filter-outliner) .Geometry {
+	color: #d45151;
+}
+div:is(#outliner, #filter-outliner) .Material {
+	color: #d45151;
 }
 
 /*  */
@@ -297,7 +339,7 @@ select:hover {
 	position: absolute;
 	top: 32px;
 	left: 0;
-	right: 350px;
+	right: 360px;
 	bottom: 0;
 }
 
@@ -360,7 +402,7 @@ select:hover {
 	display: none;
 	padding: 5px 0;
 	background: #eee;
-	width: 150px;
+	width: 160px;
 	max-height: calc(100% - 80px);
 	overflow: auto;
 }
@@ -402,7 +444,7 @@ select:hover {
 	right: 0;
 	top: 32px;
 	bottom: 0;
-	width: 350px;
+	width: 360px;
 	background: #eee;
 	overflow: auto;
 }

@@ -4,7 +4,7 @@
  * @constructor
  */
 
-class Command {
+export class Command {
 	constructor(editor) {
 		this.id = -1;
 		this.inMemory = false;
@@ -29,5 +29,3 @@ class Command {
 		this.name = json.name;
 	}
 }
-
-export { Command };

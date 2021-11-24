@@ -1,16 +1,17 @@
+import Signal from 'signals';
 import * as THREE from 'three';
-import * as CSG from '../util/CSG/CSG';
+import { generateSimulationInfo } from '../util/AdditionalUserData';
 import { Beam } from '../util/Beam';
+import * as CSG from '../util/CSG/CSG';
+import { DetectManager } from '../util/Detect/DetectManager';
 import MaterialsManager from '../util/Materials/MaterialsManager';
+import { EditorObjectLoader } from '../util/ObjectLoader';
 import { Config } from './Config.js';
+import { ContextManager } from './Editor.Context';
 import { History as _History } from './History.js';
 import { Loader } from './Loader.js';
-import Signal from 'signals';
-import { Strings } from './Strings.js';
 import { Storage as _Storage } from './Storage.js';
-import { generateSimulationInfo } from '../util/AdditionalUserData';
-import { DetectManager } from '../util/Detect/DetectManager';
-import { EditorObjectLoader } from '../util/ObjectLoader';
+import { Strings } from './Strings.js';
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
 _DEFAULT_CAMERA.name = 'Camera';
@@ -60,10 +61,15 @@ export function Editor(container) {
 		zoneEmpty: new Signal(),
 		zoneRemoved: new Signal(),
 
-		//YAPTIDE detect Sections
-		detectSectionAdded: new Signal(),
-		detectSectionRemoved: new Signal(),
+		//YAPTIDE detect
+		detectGeometryAdded: new Signal(),
+		detectGeometryRemoved: new Signal(),
 		detectGeometryChanged: new Signal(),
+
+		detectFilterAdded: new Signal(),
+		detectFilterRemoved: new Signal(),
+		detectFilterChanged: new Signal(),
+		dataObjectSelected: new Signal(),
 
 		cameraAdded: new Signal(),
 		cameraRemoved: new Signal(),
@@ -91,10 +97,11 @@ export function Editor(container) {
 		animationStopped: new Signal(),
 
 		// YAPTIDE signals
-		showZonesChanged: new Signal(),
 		selectModeChanged: new Signal(),
 
 		layoutChanged: new Signal(), // Layout signal
+
+		contextChanged: new Signal(),
 
 		CSGZoneAdded: new Signal(), // Sidebar.Properties signal
 
@@ -121,16 +128,18 @@ export function Editor(container) {
 	this.camera = _DEFAULT_CAMERA.clone();
 
 	this.scene = new THREE.Scene();
-	this.scene.name = 'Geometries';
+	this.scene.name = 'Figures';
 
 	this.sceneHelpers = new THREE.Scene();
 
 	this.materialsManager = new MaterialsManager(); // Material Manager
-	this.zonesManager = new CSG.ZoneManager(this); // CSG Manager
+	this.zoneManager = new CSG.ZoneManager(this); // CSG Manager
 	this.detectManager = new DetectManager(this); // Detect Manager
 
 	this.beam = new Beam(this);
 	this.sceneHelpers.add(this.beam);
+
+	this.contextManager = new ContextManager(this); //Context Manager must be loaded after all scenes
 
 	this.object = {};
 	this.geometries = {};
@@ -142,7 +151,6 @@ export function Editor(container) {
 
 	this.mixer = new THREE.AnimationMixer(this.scene);
 
-	this.selected = null;
 	this.helpers = {};
 
 	this.cameras = {};
@@ -152,6 +160,12 @@ export function Editor(container) {
 }
 
 Editor.prototype = {
+	set selected(object) {
+		Reflect.set(this.contextManager, 'selected', object);
+	},
+	get selected() {
+		return Reflect.get(this.contextManager, 'selected');
+	},
 	setScene(scene) {
 		this.scene.uuid = scene.uuid;
 		this.scene.name = scene.name;
@@ -231,9 +245,8 @@ Editor.prototype = {
 		});
 
 		object.parent.remove(object);
-
-		this.signals.objectRemoved.dispatch(object);
 		this.signals.sceneGraphChanged.dispatch();
+		this.signals.objectRemoved.dispatch(object);
 	},
 
 	addGeometry(geometry) {
@@ -342,10 +355,7 @@ Editor.prototype = {
 
 	addHelper: (() => {
 		var geometry = new THREE.SphereGeometry(2, 4, 2);
-		var material = new THREE.MeshBasicMaterial({
-			color: 0xff0000,
-			visible: false
-		});
+		var material = new THREE.MeshBasicMaterial({ color: 0xff0000, visible: false });
 
 		return (object, helper) => {
 			if (!helper) {
@@ -447,7 +457,6 @@ Editor.prototype = {
 
 	select(object) {
 		if (this.selected === object) return;
-
 		var uuid = null;
 
 		if (object !== null) {
@@ -457,7 +466,9 @@ Editor.prototype = {
 		this.selected = object;
 
 		this.config.setKey('selected', uuid);
-		this.signals.objectSelected.dispatch(object);
+
+		if (!object || object.isObject3D) this.signals.objectSelected.dispatch(object);
+		else this.signals.dataObjectSelected.dispatch(object);
 	},
 
 	selectById(id) {
@@ -466,23 +477,31 @@ Editor.prototype = {
 			return;
 		}
 
-		const objectCollections = [this.scene, this.zonesManager, this.beam, this.detectManager];
+		const objectCollections = [this.scene, this.zoneManager, this.beam, this.detectManager];
 
-		const object = objectCollections
-			.map(e => e.getObjectById(id))
-			.find(e => typeof e !== 'undefined');
+		const object =
+			objectCollections.map(e => e.getObjectById(id)).find(e => typeof e !== 'undefined') ??
+			null;
 
 		this.select(object);
 	},
 
 	selectByUuid(uuid) {
-		var scope = this;
+		const objectCollections = [
+			this.scene,
+			this.zoneManager,
+			this.beam,
+			this.detectManager,
+			this.detectManager.filterContainer
+		];
+		const object =
+			objectCollections.find(e => e.uuid === uuid) ??
+			objectCollections
+				.map(e => e.getObjectByProperty('uuid', uuid))
+				.find(e => typeof e !== 'undefined') ??
+			null;
 
-		this.scene.traverse(function (child) {
-			if (child.uuid === uuid) {
-				scope.select(child);
-			}
-		});
+		this.select(object);
 	},
 
 	deselect() {
@@ -506,7 +525,7 @@ Editor.prototype = {
 		this.camera.copy(_DEFAULT_CAMERA);
 		this.signals.cameraResetted.dispatch();
 
-		this.scene.name = 'Geometries';
+		this.scene.name = 'Figures';
 		this.scene.userData = {};
 		this.scene.background = null;
 		this.scene.environment = null;
@@ -517,7 +536,7 @@ Editor.prototype = {
 			this.removeObject(objects[0]);
 		}
 
-		this.zonesManager.reset();
+		this.zoneManager.reset();
 		this.detectManager.reset();
 		this.beam.reset();
 
@@ -545,8 +564,9 @@ Editor.prototype = {
 	},
 
 	//
+
 	async fromJSON(json) {
-		const loader = new EditorObjectLoader();
+		const loader = new EditorObjectLoader(this);
 		const camera = await loader.parseAsync(json.camera);
 
 		this.camera.copy(camera);
@@ -560,7 +580,7 @@ Editor.prototype = {
 		this.materialsManager.fromJSON(json.materialsManager);
 
 		// CSGManager must be loaded after scene and simulation materials
-		this.zonesManager.fromJSON(json.zonesManager); // CSGManager must be loaded in order not to lose reference in components
+		this.zoneManager.fromJSON(json.zoneManager); // CSGManager must be loaded in order not to lose reference in components
 
 		this.detectManager.fromJSON(json.detectManager);
 
@@ -604,7 +624,7 @@ Editor.prototype = {
 			scene: this.scene.toJSON(),
 			scripts: this.scripts,
 			history: this.history.toJSON(),
-			zonesManager: this.zonesManager.toJSON(), // serialize CSGManager
+			zoneManager: this.zoneManager.toJSON(), // serialize CSGManager
 			detectManager: this.detectManager.toJSON(), // serialize DetectManager;
 			beam: this.beam.toJSON(),
 			materialsManager: this.materialsManager.toJSON() // serialize MaterialManager

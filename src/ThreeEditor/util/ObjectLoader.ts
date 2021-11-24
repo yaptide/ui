@@ -1,7 +1,13 @@
 import { Object3D, ObjectLoader } from 'three';
+import { Editor } from '../js/Editor';
 import { BoxMesh, CylinderMesh, SphereMesh } from './BasicMeshes';
 
 export class EditorObjectLoader extends ObjectLoader {
+	private editor: Editor;
+	constructor(editor: Editor) {
+		super();
+		this.editor = editor;
+	}
 	parseObject<T extends Object3D<THREE.Event>>(
 		data: any,
 		geometries: any[],
@@ -15,13 +21,13 @@ export class EditorObjectLoader extends ObjectLoader {
 		let editorObject;
 		switch (data.type) {
 			case 'SphereMesh':
-				editorObject = new SphereMesh();
+				editorObject = new SphereMesh(this.editor);
 				break;
 			case 'BoxMesh':
-				editorObject = new BoxMesh();
+				editorObject = new BoxMesh(this.editor);
 				break;
 			case 'CylinderMesh':
-				editorObject = new CylinderMesh();
+				editorObject = new CylinderMesh(this.editor);
 				break;
 			default:
 			// not custom object type

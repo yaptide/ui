@@ -54,7 +54,7 @@ function Config() {
 			console.log(
 				'[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', // eslint-disable-line
 				'Saved config to LocalStorage.'
-			); 
+			);
 		},
 
 		clear: function () {
