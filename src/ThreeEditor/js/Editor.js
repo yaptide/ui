@@ -141,7 +141,6 @@ export function Editor(container) {
 
 	this.materialsManager = new MaterialsManager();
 
-
 	this.contextManager = new ContextManager(this); //Context Manager must be loaded after all scenes
 
 	this.object = {};

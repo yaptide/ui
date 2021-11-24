@@ -25,112 +25,6 @@ function SidebarScene(editor) {
 		outlinerManager.setOptionsFromSources(sources);
 	};
 
-	// outliner
-
-	// const nodeStates = new WeakMap();
-
-	// function buildOption(object, draggable) {
-	// 	const option = document.createElement('div');
-	// 	option.draggable = draggable;
-	// 	option.innerHTML = buildHTML(object);
-	// 	option.value = object.id;
-
-	// 	// opener
-
-	// 	if (nodeStates.has(object)) {
-	// 		const state = nodeStates.get(object);
-
-	// 		const opener = document.createElement('span');
-	// 		opener.classList.add('opener');
-
-	// 		if (object.children.length > 0) {
-	// 			opener.classList.add(state ? 'open' : 'closed');
-	// 		}
-
-	// 		opener.addEventListener(
-	// 			'click',
-	// 			() => {
-	// 				nodeStates.set(object, nodeStates.get(object) === false); // toggle
-	// 				refreshUI();
-	// 			},
-	// 			false
-	// 		);
-
-	// 		option.insertBefore(opener, option.firstChild);
-	// 	}
-
-	// 	return option;
-	// }
-
-	// function getMaterialName(material) {
-	// 	if (Array.isArray(material)) {
-	// 		const array = [];
-
-	// 		for (let i = 0; i < material.length; i++) {
-	// 			array.push(material[i].name);
-	// 		}
-
-	// 		return array.join(',');
-	// 	}
-
-	// 	return material.name;
-	// }
-
-	// function getObjectType(object) {
-	// 	if (object.isDetectGeometry) return 'Line';
-	// 	if (object.isZone) return 'Points';
-	// 	if (object.isZoneContainer) return 'Camera';
-	// 	if (object.isDetectGeometryContainer) return 'Line';
-	// 	//TODO: Add support to different keywords in css classes  # skipcq: JS-0099
-	// 	if (object.isScene) return 'Scene';
-	// 	if (object.isCamera) return 'Camera';
-	// 	if (object.isLight) return 'Light';
-	// 	if (object.isMesh) return 'Mesh';
-	// 	if (object.isLine) return 'Line';
-	// 	if (object.isPoints) return 'Points';
-
-	// 	return 'Object3D';
-	// }
-
-	// function buildHTML(object) {
-	// 	let html = `<span class="type ${getObjectType(object)}"></span> ${escapeHTML(object.name)}`;
-
-	// 	if (object.isMesh) {
-	// 		const geometry = object.geometry;
-	// 		const material = object.material;
-
-	// 		html += ` <span class="type Geometry"></span> ${escapeHTML(geometry.name)}`;
-	// 		html += ` <span class="type Material"></span> ${escapeHTML(getMaterialName(material))}`;
-	// 	}
-
-	// 	html += getScript(object.uuid);
-
-	// 	return html;
-	// }
-
-	// function getScript(uuid) {
-	// 	if (editor.scripts[uuid] !== undefined) {
-	// 		return ' <span class="type Script"></span>';
-	// 	}
-
-	// 	return '';
-	// }
-
-	// let ignoreObjectSelectedSignal = false;
-
-	// const outliner = new UIOutliner(editor);
-	// outliner.setId('outliner');
-	// outliner.onChange(() => {
-	// 	ignoreObjectSelectedSignal = true;
-
-	// 	editor.selectById(parseInt(outliner.getValue()));
-
-	// 	ignoreObjectSelectedSignal = false;
-	// });
-	// outliner.onDblClick(() => {
-	// 	editor.focusById(parseInt(outliner.getValue()));
-	// });
-	// container.add(outliner);
 	container.add(new UIBreak());
 
 	// background
@@ -240,46 +134,6 @@ function SidebarScene(editor) {
 
 		refreshOptions();
 
-		// const options = [];
-
-		// options.push(buildOption(camera, false));
-		// options.push(buildOption(scene, false));
-
-		// function addObjects(objects, pad) {
-		// 	for (let i = 0, l = objects.length; i < l; i++) {
-		// 		const object = objects[i];
-
-		// 		if (nodeStates.has(object) === false) {
-		// 			nodeStates.set(object, false);
-		// 		}
-
-		// 		const option = buildOption(object, false);
-		// 		option.style.paddingLeft = pad * 18 + 'px';
-		// 		options.push(option);
-
-		// 		if (nodeStates.get(object) === false) {
-		// 			addObjects(object.children, pad + 1);
-		// 		}
-		// 	}
-		// }
-		// addObjects(scene.children, 0);
-
-		// options.push(buildOption(zoneContainer, false));
-		// addObjects(zoneContainer.children, 0);
-
-		// options.push(buildOption(detectContainer, false));
-		// addObjects(detectContainer.children, 0);
-
-		// options.push(buildOption(worldZone, false));
-
-		// options.push(buildOption(editor.beam, false));
-
-		// outliner.setOptions(options);
-
-		// if (editor.selected !== null) {
-		// 	outliner.setValue(editor.selected.id);
-		// }
-
 		if (scene.background) {
 			if (scene.background.isColor) {
 				backgroundType.setValue('Color');
@@ -320,47 +174,6 @@ function SidebarScene(editor) {
 
 	signals.objectChanged.add(refreshUI);
 
-	// signals.objectSelected.add(object => {
-	// 	if (ignoreObjectSelectedSignal === true) return;
-
-	// 	if (object !== null && object.parent !== null && !object.parent?.isZoneManager) {
-	// 		let needsRefresh = false;
-	// 		let nextParent = object.parent;
-
-	// 		const reachedFinalParent = parent => {
-	// 			const finalParents = [
-	// 				editor.camera,
-	// 				editor.scene,
-	// 				editor.beam,
-	// 				editor.zoneManager.zoneContainer,
-	// 				editor.zoneManager.worldZone,
-	// 				editor.detectManager.detectContainer
-	// 			];
-	// 			return finalParents.some(finalParent => finalParent === parent);
-	// 		};
-
-	// 		while (!reachedFinalParent(nextParent)) {
-	// 			if (nodeStates.get(object, nextParent) !== true) {
-	// 				if (!nextParent) {
-	// 					console.error(nextParent);
-	// 					throw new Error(
-	// 						`nextParent is ${nextParent === null ? 'null' : typeof nextParent}`
-	// 					);
-	// 				}
-	// 				nodeStates.set(nextParent, true);
-	// 				needsRefresh = true;
-	// 			}
-
-	// 			nextParent = nextParent.parent;
-	// 		}
-
-	// 		if (needsRefresh) refreshUI();
-
-	// 		outliner.setValue('objectSelected', object.id);
-	// 	} else {
-	// 		outliner.setValue(null);
-	// 	}
-	// });
 
 	return container;
 }

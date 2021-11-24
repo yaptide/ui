@@ -89,7 +89,6 @@ export class OutlinerManager {
         this.ignoreObjectSelectedSignal = true;
         this.editor.selectByUuid(selectedUuid);
         this.ignoreObjectSelectedSignal = false;
-        console.log(this.editor.selected, selectedUuid);
     }
     onObjectSelected(object) {
         if (this.ignoreObjectSelectedSignal) return;
