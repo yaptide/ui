@@ -3,6 +3,7 @@ import { Color, LineBasicMaterial, MeshBasicMaterial, Object3D, Vector3 } from '
 import { debounce } from 'throttle-debounce';
 
 import { Editor } from '../js/Editor';
+import { getGeometryParameters, PossibleGeometryType } from './AdditionalUserData';
 import { SimulationMesh } from './SimulationBase/SimulationMesh';
 
 export interface WorldZoneJSON {
@@ -14,6 +15,13 @@ export interface WorldZoneJSON {
 	color: THREE.ColorRepresentation;
 	marginMultiplier: number;
 	autoCalculate: boolean;
+	userData?: {
+		geometryType: string;
+		position: THREE.Vector3Tuple;
+		parameters: {
+			[key: string]: number;
+		};
+	}
 }
 
 export const BOUNDING_ZONE_TYPE = ['sphere', 'cylinder', 'box'] as const;
@@ -218,6 +226,14 @@ export class WorldZone extends SimulationMesh {
 	}
 
 	toJSON() {
+		const geometry: {
+			[K in WorldZoneType]: PossibleGeometryType;
+		} = {
+			'box': new THREE.BoxGeometry(this.size.x, this.size.y, this.size.z),
+			'sphere': new THREE.SphereGeometry(this.size.x),
+			'cylinder': new THREE.CylinderGeometry(this.size.x, this.size.x, this.size.y),
+		};
+
 		const jsonObject: WorldZoneJSON = {
 			center: this.box.getCenter(new Vector3()),
 			size: this.box.getSize(new Vector3()),
@@ -226,7 +242,13 @@ export class WorldZone extends SimulationMesh {
 			name: this.name,
 			color: this.material.color.getHex(),
 			marginMultiplier: this.marginMultiplier,
-			autoCalculate: this.autoCalculate
+			autoCalculate: this.autoCalculate,
+
+			userData: {
+				geometryType: geometry[this._geometryType].type,
+				parameters: getGeometryParameters(geometry[this._geometryType]),
+				position: this.box.getCenter(new Vector3()).toArray(),
+			}
 		};
 
 		return jsonObject;
