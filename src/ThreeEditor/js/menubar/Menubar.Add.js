@@ -37,22 +37,6 @@ function MenubarAdd(editor) {
 		)
 		.add(new UIHorizontalRule());
 
-	const material = new THREE.MeshPhongMaterial({
-		side: THREE.DoubleSide,
-		transparent: true,
-		opacity: 0.5,
-		wireframe: true
-	});
-
-	//https://stackoverflow.com/questions/37090942/how-to-render-clipped-surfaces-as-solid-objects/37093210#37093210
-	material.onBeforeCompile = function (shader) {
-		shader.fragmentShader = shader.fragmentShader.replace(
-			`gl_FragColor = vec4( outgoingLight, diffuseColor.a );`,
-
-			`gl_FragColor = ( gl_FrontFacing ) ? vec4( outgoingLight, diffuseColor.a ) : vec4( diffuse, opacity );`
-		);
-	};
-
 	// Box Sphere & Cylinder
 	options
 		.add(
