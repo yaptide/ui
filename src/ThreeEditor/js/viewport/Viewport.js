@@ -33,7 +33,7 @@ export function Viewport(
 		selectFigures: true,
 		selectZones: false,
 		selectSections: false,
-		visible: true
+		visible: false
 	};
 
 	const sceneViewHelpers = new THREE.Scene();
