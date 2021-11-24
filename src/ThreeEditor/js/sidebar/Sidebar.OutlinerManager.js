@@ -31,13 +31,14 @@ const getObjectType = (object) => {
 }
 const getAditionalInfo = (object) => {
     switch (object.type) {
-        case 'BoxMesh': return ` <span class="type Geometry"></span> Box`;
-        case 'CylinderMesh': return ` <span class="type Geometry"></span> Cylinder`;
-        case 'SphereMesh': return ` <span class="type Geometry"></span> Sphere`;
+        case 'BoxMesh': return ` [${object.id}] <span class="type Geometry"></span> Box`;
+        case 'CylinderMesh': return ` [${object.id}] <span class="type Geometry"></span> Cylinder`;
+        case 'SphereMesh': return ` [${object.id}] <span class="type Geometry"></span> Sphere`;
+        case 'Beam': return ` [${object.id}]`;
         case 'WorldZone':
-        case 'Zone': return ` <span class="type Material"></span> ${escapeHTML(object.material.name)}`;
+        case 'Zone': return ` [${object.id}] <span class="type Material"></span> ${escapeHTML(object.material.name)}`; //TODO: change to simulation material when its implemented
         case 'Points':
-        case 'Detect': return ` <span class="type Geometry"></span> ${escapeHTML(object.detectType)}`;
+        case 'Detect': return ` [${object.id}] <span class="type Geometry"></span> ${escapeHTML(object.detectType)}`;
         default: return '';
     }
 }

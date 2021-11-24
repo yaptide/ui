@@ -22,14 +22,14 @@ export abstract class BasicMesh<
 		material?: THREE.Material
 	) {
 		super(editor, name, type, geometry, material ?? defaultMaterial.clone());
-		if (!name) this.name = `Figure${this.id}`;
+		this.name = name ?? `Figure`;
 	}
 }
 
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
 export class BoxMesh extends BasicMesh<THREE.BoxGeometry> {
 	constructor(editor: Editor, geometry?: THREE.BoxGeometry, material?: THREE.Material) {
-		super(editor, undefined, 'BoxMesh', geometry ?? boxGeometry, material);
+		super(editor, 'Box', 'BoxMesh', geometry ?? boxGeometry, material);
 	}
 }
 
@@ -37,7 +37,7 @@ const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Ma
 
 export class CylinderMesh extends BasicMesh<THREE.CylinderGeometry> {
 	constructor(editor: Editor, geometry?: THREE.CylinderGeometry, material?: THREE.Material) {
-		super(editor, undefined, 'CylinderMesh', geometry ?? cylinderGeometry, material);
+		super(editor, 'Cylinder', 'CylinderMesh', geometry ?? cylinderGeometry, material);
 	}
 }
 
@@ -46,7 +46,7 @@ const sphereGeometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Mat
 export class SphereMesh extends BasicMesh<THREE.SphereGeometry> {
 	readonly notRotatable = true;
 	constructor(editor: Editor, geometry?: THREE.SphereGeometry, material?: THREE.Material) {
-		super(editor, undefined, 'CylinderMesh', geometry ?? sphereGeometry, material);
+		super(editor, 'Sphere', 'SphereMesh', geometry ?? sphereGeometry, material);
 	}
 }
 

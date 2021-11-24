@@ -28,7 +28,7 @@ export abstract class SimulationMesh<
 	) {
 		super(geometry, material);
 		this.editor = editor;
-		this.name = name ?? `${type}${this.id}`;
+		this.name = name ?? type;
 		this.type = type;
 		this.parent = null;
 	}
@@ -44,7 +44,7 @@ export abstract class SimulationPoints
 	constructor(editor: Editor, name: string | undefined, type: string) {
 		super();
 		this.editor = editor;
-		this.name = name ?? `Detect${this.id}`;
+		this.name = name ?? `Detect`;
 		this.parent = null;
 	}
 }
