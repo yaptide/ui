@@ -12,7 +12,7 @@ type AutoCompleteSelectProps<
 	T,
 	Multiple extends boolean | undefined = undefined,
 	FreeSolo extends boolean | undefined = undefined
-> = Omit<AutocompleteProps<T, Multiple, true, FreeSolo, 'div'>, 'renderInput'>;
+> = Omit<AutocompleteProps<T, Multiple, false, FreeSolo, 'div'>, 'renderInput'>;
 
 export function AutoCompleteSelect<
 	T,
@@ -42,7 +42,6 @@ export function AutoCompleteSelect<
 		<Autocomplete
 			{...props}
 			fullWidth
-			disableClearable
 			size='small'
 			sx={{ width: '100%' }}
 			PopperComponent={CustomPopper}

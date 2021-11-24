@@ -8,7 +8,6 @@ import CSG from '../../js/libs/csg/three-csg';
 import { OperationTuple, OperationTupleJSON } from './CSGOperationTuple';
 import SimulationMaterial from '../Materials/SimulationMaterial';
 import { CounterMap } from './CounterMap';
-import { ISimulationObject } from '../SimulationBase/SimulationObject';
 import { SimulationMesh } from '../SimulationBase/SimulationMesh';
 
 export interface ZoneJSON {
@@ -25,6 +24,8 @@ export class Zone extends SimulationMesh {
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
+
+	material: SimulationMaterial;
 
 	subscribedObjects: CounterMap<string>;
 	unionOperations: OperationTuple[][];
@@ -47,6 +48,7 @@ export class Zone extends SimulationMesh {
 	readonly debouncedUpdatePreview = debounce(200, false, () => this.updatePreview());
 
 
+
 	constructor(
 		editor: Editor,
 		name?: string,
@@ -58,7 +60,8 @@ export class Zone extends SimulationMesh {
 		super(editor, name, 'Zone');
 		if (uuid) this.uuid = uuid;
 		this.signals = editor.signals;
-		this.material = editor.materialsManager.materials[materialName ?? ''];
+		this.name = name || `Zone${this.id}`;
+		this.material = editor.materialsManager.materials[materialName ?? 'WATER, LIQUID'];
 		this.unionOperations = unionOperations ?? [];
 		// If operations are specified, we have to populate set of subscribed UUID's
 		this.subscribedObjects =
@@ -76,6 +79,14 @@ export class Zone extends SimulationMesh {
 		return new CounterMap(
 			operations.flatMap(operationRow => operationRow.map(operation => operation.object.uuid))
 		);
+	}
+
+	get simulationMaterial(): SimulationMaterial {
+		return this.material;
+	}
+
+	set simulationMaterial(value: SimulationMaterial) {
+		this.material = value;
 	}
 
 	clone(recursive: boolean) {

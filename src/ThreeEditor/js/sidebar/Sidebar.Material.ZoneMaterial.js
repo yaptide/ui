@@ -13,8 +13,6 @@ export function SidebarZoneMaterial(editor) {
 
 	let currentObject = null;
 
-	let currentMaterialSlot = 0;
-
 	const container = new UIPanel();
 	container.setBorderTop('0');
 	container.setPaddingTop('20px');
@@ -45,6 +43,7 @@ export function SidebarZoneMaterial(editor) {
 		strings.getKey('sidebar/material/flatShading')
 	);
 	container.add(materialFlatShading);
+	materialFlatShading.setClass('display-none');
 
 	// blending
 
@@ -63,6 +62,7 @@ export function SidebarZoneMaterial(editor) {
 		materialBlendingOptions
 	);
 	container.add(materialBlending);
+	materialBlending.setClass('display-none');
 
 	// opacity
 
@@ -94,26 +94,19 @@ export function SidebarZoneMaterial(editor) {
 	//
 
 	function refreshUI() {
-		if (!currentObject) return;
+		const { simulationMaterial } = currentObject;
 
-		let { material } = currentObject;
-
-		material = editor.getObjectMaterial(currentObject, currentMaterialSlot);
-
-		renderMaterialSelect(material.name);
+		renderMaterialSelect(simulationMaterial.simulationData.name);
 	}
 
 	function update() {
-		const material = editor.getObjectMaterial(currentObject, currentMaterialSlot);
+		const { simulationMaterial } = currentObject;
 
-		if (material) {
+		if (simulationMaterial) {
 			const newMaterialName = materialClass.getValue();
 
-			if (material.name !== newMaterialName) {
-				editor.execute(
-					new SetZoneMaterialCommand(editor, currentObject, newMaterialName),
-					'Zone applied material: ' + newMaterialName
-				);
+			if (simulationMaterial.simulationData.name !== newMaterialName) {
+				editor.execute(new SetZoneMaterialCommand(editor, currentObject, newMaterialName));
 
 				refreshUI();
 			}
@@ -123,17 +116,7 @@ export function SidebarZoneMaterial(editor) {
 	// events
 
 	signals.objectSelected.add(object => {
-		let hasMaterial = false;
-
-		if (object && object.material) {
-			hasMaterial = true;
-
-			if (Array.isArray(object.material) && object.material.length === 0) {
-				hasMaterial = false;
-			}
-		}
-
-		if (hasMaterial) {
+		if (object?.simulationMaterial) {
 			currentObject = object;
 			refreshUI();
 			container.setDisplay('');
@@ -145,7 +128,7 @@ export function SidebarZoneMaterial(editor) {
 
 	signals.materialChanged.add(material => {
 		if (material?.isSimulationMaterial) {
-			editor.materialsManager.materials[material.name] = material;
+			editor.materialsManager.materials[material.simulationData.name] = material;
 		}
 		refreshUI();
 	});

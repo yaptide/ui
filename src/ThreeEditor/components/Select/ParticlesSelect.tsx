@@ -20,7 +20,7 @@ export function ParticleSelect(props: ParticleSelectProps) {
 	return (
 		<AutoCompleteSelect
 			onChange={(event, newValue) => {
-				props.onChange?.call(null, event, newValue.id);
+				if (newValue !== null) props.onChange?.call(null, event, newValue.id);
 			}}
 			value={props.particles.find(p => p.id === props.value)}
 			options={props.particles}

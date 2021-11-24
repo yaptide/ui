@@ -34,6 +34,21 @@ export abstract class SimulationMesh<
 	}
 }
 
+export abstract class SimulationObject3D
+	extends THREE.Object3D
+	implements ISimulationObject, ISimulationSceneChild
+{
+	editor: Editor;
+	parent: SimulationSceneGroup<this> | null = null;
+
+	constructor(editor: Editor, name: string | undefined, type: string) {
+		super();
+		this.editor = editor;
+		this.name = name ?? `Detect`;
+		this.parent = null;
+	}
+}
+
 export abstract class SimulationPoints
 	extends THREE.Points
 	implements ISimulationObject, ISimulationSceneChild

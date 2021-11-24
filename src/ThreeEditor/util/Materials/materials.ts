@@ -205,4 +205,4 @@ export const MATERIALS = [
 	{ id: '276', name: 'WATER, LIQUID' },
 	{ id: '277', name: 'WATER VAPOR' },
 	{ id: '278', name: 'XYLENE' }
-];
+] as const;

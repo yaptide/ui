@@ -19,7 +19,6 @@ _DEFAULT_CAMERA.position.set(0, 5, 10);
 _DEFAULT_CAMERA.lookAt(new THREE.Vector3());
 
 export function Editor(container) {
-
 	this.signals = {
 		// script
 
@@ -133,13 +132,12 @@ export function Editor(container) {
 
 	this.sceneHelpers = new THREE.Scene();
 
-	this.zoneManager = new CSG.ZoneManager(this); //CSG Manager
-	this.detectManager = new DetectManager(this); //Detect Manager
+	this.materialsManager = new MaterialsManager(); // Material Manager
+	this.zoneManager = new CSG.ZoneManager(this); // CSG Manager
+	this.detectManager = new DetectManager(this); // Detect Manager
 
 	this.beam = new Beam(this);
 	this.sceneHelpers.add(this.beam);
-
-	this.materialsManager = new MaterialsManager();
 
 	this.contextManager = new ContextManager(this); //Context Manager must be loaded after all scenes
 
@@ -469,8 +467,7 @@ Editor.prototype = {
 
 		this.config.setKey('selected', uuid);
 
-		if (!object || object.isObject3D)
-			this.signals.objectSelected.dispatch(object);
+		if (!object || object.isObject3D) this.signals.objectSelected.dispatch(object);
 		else this.signals.dataObjectSelected.dispatch(object);
 	},
 
@@ -482,20 +479,27 @@ Editor.prototype = {
 
 		const objectCollections = [this.scene, this.zoneManager, this.beam, this.detectManager];
 
-		const object = objectCollections
-			.map(e => e.getObjectById(id))
-			.find(e => typeof e !== 'undefined')
-			?? null;
+		const object =
+			objectCollections.map(e => e.getObjectById(id)).find(e => typeof e !== 'undefined') ??
+			null;
 
 		this.select(object);
 	},
 
 	selectByUuid(uuid) {
-		const objectCollections = [this.scene, this.zoneManager, this.beam, this.detectManager, this.detectManager.filterContainer];
-		const object = objectCollections.find(e => e.uuid === uuid) ?? objectCollections
-			.map(e => e.getObjectByProperty('uuid', uuid))
-			.find(e => typeof e !== 'undefined')
-			?? null;
+		const objectCollections = [
+			this.scene,
+			this.zoneManager,
+			this.beam,
+			this.detectManager,
+			this.detectManager.filterContainer
+		];
+		const object =
+			objectCollections.find(e => e.uuid === uuid) ??
+			objectCollections
+				.map(e => e.getObjectByProperty('uuid', uuid))
+				.find(e => typeof e !== 'undefined') ??
+			null;
 
 		this.select(object);
 	},

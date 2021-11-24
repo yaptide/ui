@@ -4,7 +4,7 @@ import SimulationMaterial from '../../util/Materials/SimulationMaterial';
 import { AutoCompleteSelect } from './AutoCompleteSelect';
 
 export interface MaterialSelectProps {
-	onChange?: (event: React.SyntheticEvent<Element, Event>, newValue: string | null) => void;
+	onChange?: (event: React.SyntheticEvent<Element, Event>, newValue: string) => void;
 	materials: Record<string, SimulationMaterial>;
 	value?: string;
 }
@@ -28,7 +28,8 @@ export function MaterialSelect(props: MaterialSelectProps) {
 	return (
 		<AutoCompleteSelect
 			onChange={(event, newValue) => {
-				props.onChange?.call(null, event, newValue.simulationData.name);
+				if (newValue !== null)
+					props.onChange?.call(null, event, newValue.simulationData.name);
 			}}
 			value={props.materials[props.value ?? '']}
 			options={Object.values(props.materials).sort(commonCompare)}
