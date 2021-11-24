@@ -101,7 +101,7 @@ function SidebarScene(editor) {
 			html += ` <span class="type Material"></span> ${escapeHTML(
 				object.simulationMaterial.simulationData.name
 			)}`;
-		}
+		} //TODO: merge this with a new outliner code when both will be on the master branch
 
 		html += getScript(object.uuid);
 

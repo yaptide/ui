@@ -43,6 +43,7 @@ export function SidebarZoneMaterial(editor) {
 		strings.getKey('sidebar/material/flatShading')
 	);
 	container.add(materialFlatShading);
+	materialFlatShading.setClass('display-none');
 
 	// blending
 
@@ -61,6 +62,7 @@ export function SidebarZoneMaterial(editor) {
 		materialBlendingOptions
 	);
 	container.add(materialBlending);
+	materialBlending.setClass('display-none');
 
 	// opacity
 
@@ -114,13 +116,7 @@ export function SidebarZoneMaterial(editor) {
 	// events
 
 	signals.objectSelected.add(object => {
-		let hasMaterial = false;
-
-		if (object && object.simulationMaterial) {
-			hasMaterial = true;
-		}
-
-		if (hasMaterial) {
+		if (object?.simulationMaterial) {
 			currentObject = object;
 			refreshUI();
 			container.setDisplay('');
