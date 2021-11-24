@@ -46,7 +46,6 @@ export class Zone extends SimulationMesh {
 	worker?: Comlink.Remote<IZoneWorker>;
 	readonly debouncedUpdatePreview = debounce(200, false, () => this.updatePreview());
 
-	// private editor: Editor;
 
 	constructor(
 		editor: Editor,

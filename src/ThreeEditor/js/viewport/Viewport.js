@@ -502,9 +502,6 @@ export function Viewport(
 		render();
 	});
 
-	signals.selectModeChanged.add(mode => {
-		//TODO: clicking on zones selects them if zoneSelectionMode is enabled
-	});
 
 	this.setSize = (
 		viewWidth = container.dom.offsetWidth,
