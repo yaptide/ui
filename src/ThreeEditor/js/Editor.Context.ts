@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { Scene } from 'three';
 import { BasicMesh, isBasicMesh } from '../util/BasicMeshes';
 import { Beam, isBeam } from '../util/Beam';
 import * as CSG from '../util/CSG/CSG';

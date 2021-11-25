@@ -2,8 +2,7 @@ import { Signal } from 'signals';
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
 import * as CSG from '../CSG/CSG';
-import { SimulationMesh, SimulationPoints } from '../SimulationBase/SimulationMesh';
-import { ISimulationObject } from '../SimulationBase/SimulationObject';
+import { SimulationPoints } from '../SimulationBase/SimulationMesh';
 import { DetectManager } from './DetectManager';
 import * as DETECT from './DetectTypes';
 
@@ -91,9 +90,6 @@ export class DetectGeometry extends SimulationPoints {
 		get: (target: DetectGeometry, p: keyof DetectGeometry) => {
 			let result: unknown;
 			switch (p) {
-				case 'type':
-					result = `${target.detectType}Section`;
-					break;
 				case 'position':
 					result = this.positionProxy;
 					break;

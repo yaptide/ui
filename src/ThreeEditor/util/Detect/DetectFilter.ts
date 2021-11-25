@@ -1,4 +1,3 @@
-import { MathUtils } from 'three';
 import { Editor } from '../../js/Editor';
 import { SimulationData } from '../SimulationBase/SimulationMesh';
 import {
