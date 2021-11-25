@@ -76,7 +76,7 @@
 		]
 	},
 	"devDependencies": {
-		"@types/react": "^17.0.36",
+		"@types/react": "^17.0.37",
 		"@types/react-async-script": "^1.2.1",
 		"@types/three": "^0.134.0",
 		"cross-env": "^7.0.3",
