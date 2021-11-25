@@ -9,10 +9,10 @@ export default class ZoneConstructorController {
 			case 'intersection':
 				this.extendPrefix(geometry);
 				break;
-			case 'left-subtraction':
+			case 'subtraction':
 				this.extendPrefix(-geometry);
 				break;
-			case 'right-subtraction':
+			case 'reverse-subtraction':
 				this.shiftTails(geometry);
 				break;
 		}

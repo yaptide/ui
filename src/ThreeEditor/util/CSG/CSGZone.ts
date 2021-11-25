@@ -47,8 +47,6 @@ export class Zone extends SimulationMesh {
 	worker?: Comlink.Remote<IZoneWorker>;
 	readonly debouncedUpdatePreview = debounce(200, false, () => this.updatePreview());
 
-
-
 	constructor(
 		editor: Editor,
 		name?: string,
@@ -123,9 +121,9 @@ export class Zone extends SimulationMesh {
 				const objectBsp = CSG.fromMesh(operation.object as THREE.Mesh);
 
 				const handleMode = {
-					'left-subtraction': () => lastBsp.subtract(objectBsp),
+					'subtraction': () => lastBsp.subtract(objectBsp),
 					'intersection': () => lastBsp.intersect(objectBsp),
-					'right-subtraction': () => objectBsp.subtract(lastBsp),
+					'reverse-subtraction': () => objectBsp.subtract(lastBsp),
 					'union': () => lastBsp.union(objectBsp)
 				};
 

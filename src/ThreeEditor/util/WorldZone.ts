@@ -1,3 +1,4 @@
+import { Signal } from 'signals';
 import * as THREE from 'three';
 import { Color, LineBasicMaterial, MeshBasicMaterial, Object3D, Vector3 } from 'three';
 import { debounce } from 'throttle-debounce';
@@ -72,6 +73,12 @@ export class WorldZone extends SimulationObject3D {
 	private cylinderMesh: THREE.Mesh<THREE.CylinderGeometry, MeshBasicMaterial>;
 	private sphereMesh: THREE.Mesh<THREE.SphereGeometry, MeshBasicMaterial>;
 
+	private signals: {
+		objectChanged: Signal<THREE.Object3D>;
+		sceneGraphChanged: Signal;
+		objectSelected: Signal<THREE.Object3D>;
+	};
+
 	readonly debouncedCalculate = debounce(200, false, () => this.calculate());
 
 	constructor(
@@ -82,6 +89,7 @@ export class WorldZone extends SimulationObject3D {
 		this.type = 'WorldZone';
 		this.name = 'World Zone';
 		this.editor = editor;
+		this.signals = editor.signals;
 
 		this.marginMultiplier = marginMultiplier;
 
@@ -111,11 +119,11 @@ export class WorldZone extends SimulationObject3D {
 
 		this.geometryType = 'box';
 
-		const handleSignal = (object: Object3D) => {
+		const handleSignal = (object?: Object3D) => {
 			if (this.autoCalculate && !isWorldZone(object)) this.debouncedCalculate();
 		};
-		this.editor.signals.objectChanged.add((object: Object3D) => handleSignal(object));
-		this.editor.signals.sceneGraphChanged.add((object: Object3D) => handleSignal(object));
+		this.signals.objectChanged.add(handleSignal);
+		this.signals.sceneGraphChanged.add(handleSignal);
 	}
 
 	get material(): MeshBasicMaterial {
@@ -139,7 +147,7 @@ export class WorldZone extends SimulationObject3D {
 		this._geometryType = value;
 		this.getAllHelpers().forEach(e => (e.visible = false));
 		this.getHelper(value).visible = true;
-		this.editor.signals.objectChanged.dispatch(this);
+		this.signals.objectChanged.dispatch(this);
 	}
 
 	get autoCalculate(): boolean {
@@ -149,6 +157,7 @@ export class WorldZone extends SimulationObject3D {
 	set autoCalculate(value: boolean) {
 		this._autoCalculate = value;
 		if (this._autoCalculate) this.calculate();
+		this.signals.objectSelected.dispatch(this);
 	}
 
 	get center() {
@@ -187,7 +196,7 @@ export class WorldZone extends SimulationObject3D {
 	calculate(): void {
 		if (!this.canCalculate()) return;
 
-		this.setBoxFromObject(this.editor.scene);
+		this.setBoxFromObject(this.editor.zoneManager.zoneContainer);
 	}
 
 	setBoxFromObject(object: THREE.Object3D): void {
@@ -209,9 +218,14 @@ export class WorldZone extends SimulationObject3D {
 		});
 	}
 
+	updatePosition(): void {
+		this.position.copy(this.box.getCenter(new Vector3()));
+	}
+
 	updateBox(updateFunction: (box: THREE.Box3) => void): void {
 		updateFunction(this.box);
-		this.editor.signals.objectChanged.dispatch(this);
+		this.updatePosition();
+		this.signals.objectChanged.dispatch(this);
 	}
 
 	makeCubeFromBox(): void {
