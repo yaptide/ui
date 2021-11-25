@@ -100,7 +100,7 @@ export class ContextManager {
 				this.editor.signals.contextChanged.dispatch(this._context);
 			}
 		} else {
-			this._selected = [null, isDetectGeometry(this._selected[1]) ? null : this._selected[1]];
+			this._selected = [null, null];
 		}
 	}
 

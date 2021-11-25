@@ -778,18 +778,30 @@ function SidebarObject(editor) {
 	}
 
 	// events
-
-	signals.objectSelected.add(object => {
+	const handleSelected = object => {
 		const showObjectInfo = () => {
 			container.setDisplay('block');
 
 			updateRows(object);
 			updateUI(object);
 		};
+		const objectNotApplicable = object => {
+			return (
+				object.isZoneContainer ||
+				object.isDetectContainer ||
+				object.isFilterContainer ||
+				object.isScene ||
+				object.isFilter ||
+				object.isQuantity ||
+				object.isQuantityContainer
+			);
+		};
 		const hideObjectInfo = () => container.setDisplay('none');
 
-		(object && !object.isZoneContainer && !object.isScene ? showObjectInfo : hideObjectInfo)();
-	});
+		(object && !objectNotApplicable(object) ? showObjectInfo : hideObjectInfo)();
+	};
+	signals.objectSelected.add(handleSelected);
+	signals.dataObjectSelected.add(handleSelected);
 
 	signals.objectChanged.add(updateUI);
 

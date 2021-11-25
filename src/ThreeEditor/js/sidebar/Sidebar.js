@@ -11,14 +11,12 @@ function Sidebar(editor) {
 
 	const container = new UITabbedPanel();
 	container.setId('sidebar');
-
-	const properties = new SidebarProperties(editor);
 	const filters = new SidebarFilters(editor).setBorderTop('0').setPaddingTop('20px');
 
-	const scene = new UISpan().add(new SidebarScene(editor), properties);
+	const scene = new UISpan().add(new SidebarScene(editor), new SidebarProperties(editor));
 	const project = new SidebarProject(editor);
 	const settings = new SidebarSettings(editor);
-	const output = new UISpan().add(filters, properties);
+	const output = new UISpan().add(filters, new SidebarProperties(editor));
 	let ignoreContextChangedSignal = false;
 
 	container.addTab('scene', strings.getKey('sidebar/scene'), scene);

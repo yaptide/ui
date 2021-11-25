@@ -1,8 +1,13 @@
 import { UIPanel, UIText, UIRow, UIButton } from '../libs/ui.js';
 import { BoxMesh, CylinderMesh, SphereMesh } from '../../util/BasicMeshes';
-import * as Cmd from '../commands/Commands';
+import {
+	AddDetectGeometryCommand,
+	AddFilterCommand,
+	AddObjectCommand,
+	AddZoneCommand
+} from '../commands/Commands';
 
-function SidebarAddPanel(editor, parent, title, names, commands) {
+function SidebarAddPanel(parent, title, names, commands) {
 	const container = new UIPanel();
 
 	// Header
@@ -16,9 +21,7 @@ function SidebarAddPanel(editor, parent, title, names, commands) {
 
 	names.forEach((name, index) => {
 		const button = new UIButton(name);
-		button.onClick(function () {
-			editor.execute(commands[index]);
-		});
+		button.onClick(commands[index]);
 		btnRow.add(button);
 	});
 
@@ -30,38 +33,35 @@ function SidebarAddPanel(editor, parent, title, names, commands) {
 
 export function DetectAddPanel(editor, container) {
 	return SidebarAddPanel(
-		editor,
 		container,
 		'Add Detect',
 		['Geometry', 'Filter', 'Quantity'],
 		[
-			new Cmd.AddDetectGeometryCommand(editor),
-			new Cmd.AddFilterCommand(editor),
-			new Cmd.AddFilterCommand(editor)
+			() => editor.execute(new AddDetectGeometryCommand(editor)),
+			() => editor.execute(new AddFilterCommand(editor)),
+			() => alert('Not implemented')
 		]
 	);
 }
 
 export function FigureAddPanel(editor, container) {
 	return SidebarAddPanel(
-		editor,
 		container,
 		'Add Figure',
 		['Box', 'Cylinder', 'Sphere'],
 		[
-			new Cmd.AddObjectCommand(editor, new BoxMesh()),
-			new Cmd.AddObjectCommand(editor, new CylinderMesh()),
-			new Cmd.AddObjectCommand(editor, new SphereMesh())
+			() => editor.execute(new AddObjectCommand(editor, new BoxMesh())),
+			() => editor.execute(new AddObjectCommand(editor, new CylinderMesh())),
+			() => editor.execute(new AddObjectCommand(editor, new SphereMesh()))
 		]
 	);
 }
 
 export function ZoneAddPanel(editor, container) {
 	return SidebarAddPanel(
-		editor,
 		container,
 		'Add Zone',
 		['Constructive solid Zone'],
-		[new Cmd.AddZoneCommand(editor)]
+		[() => editor.execute(new AddZoneCommand(editor))]
 	);
 }

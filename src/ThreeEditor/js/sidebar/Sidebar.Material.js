@@ -603,7 +603,7 @@ function SidebarMaterial(editor) {
 
 	// events
 
-	signals.objectSelected.add(object => {
+	const handleSelected = object => {
 		let hasMaterial = false;
 
 		if (object && object.material) {
@@ -622,7 +622,10 @@ function SidebarMaterial(editor) {
 			currentObject = null;
 			container.setDisplay('none');
 		}
-	});
+	};
+
+	signals.objectSelected.add(handleSelected);
+	signals.dataObjectSelected.add(handleSelected);
 
 	signals.materialChanged.add(refreshUI);
 

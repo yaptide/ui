@@ -120,12 +120,13 @@ function SidebarGeometry(editor) {
 			container.setDisplay('none');
 		}
 	}
-
-	signals.objectSelected.add(() => {
+	const handleSelected = () => {
 		currentGeometryType = null;
 		vertexNormalsButton.setDisplay('block');
 		build();
-	});
+	};
+	signals.objectSelected.add(handleSelected);
+	signals.dataObjectSelected.add(handleSelected);
 
 	signals.geometryChanged.add(build);
 
