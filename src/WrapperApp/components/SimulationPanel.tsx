@@ -45,22 +45,44 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	};
 
 	useEffect(() => {
-		let ignore = false;
+		const controller = new AbortController();
+		const { signal } = controller;
 
 		authKy
-			.get(`${BACKEND_URL}`)
+			.get(`${BACKEND_URL}`, { signal })
 			.json()
 			.then((response: unknown) => {
 				console.log(response);
-				if (!ignore) setBackendAlive(true);
+				setBackendAlive(true);
 			})
 			.catch((error: unknown) => {
 				console.error(error);
-				if (!ignore) setBackendAlive(false);
+				setBackendAlive(false);
 			});
 
 		return () => {
-			ignore = true;
+			controller.abort();
+		};
+	}, [authKy]);
+
+	useEffect(() => {
+		const controller = new AbortController();
+		const { signal } = controller;
+
+		authKy
+			.get(`${BACKEND_URL}`, { signal })
+			.json()
+			.then((response: unknown) => {
+				console.log(response);
+				setBackendAlive(true);
+			})
+			.catch((error: unknown) => {
+				console.error(error);
+				setBackendAlive(false);
+			});
+
+		return () => {
+			controller.abort();
 		};
 	}, [authKy]);
 

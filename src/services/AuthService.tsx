@@ -42,6 +42,7 @@ const [useAuth, AuthContextProvider] = createGenericContext<IAuth>();
 
 const Auth = (props: AuthProps) => {
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER));
+	const [refreshInterval, setRefreshInterval] = useState(1000 * 60 * 3);
 
 	const kyRef = useRef<KyInstance>(ky.create({ credentials: 'include' }));
 
@@ -99,7 +100,7 @@ const Auth = (props: AuthProps) => {
 		() => {
 			refresh();
 		},
-		user !== null ? 1000 * 900 : null
+		user !== null ? refreshInterval : null
 	);
 
 	const login = (username: string, password: string) => {
@@ -113,7 +114,13 @@ const Auth = (props: AuthProps) => {
 			.json()
 			.then((response: unknown) => {
 				setUser({ name: username });
-				console.log(response);
+				const {
+					message: { access_exp: accessExp }
+				} = response as { message: { access_exp: number } };
+
+				const refreshDelay = Math.max((accessExp - new Date().getTime()) / 2, 0);
+
+				setRefreshInterval(refreshDelay);
 			})
 			.catch((error: HTTPError) => {
 				console.error(error);
@@ -123,16 +130,20 @@ const Auth = (props: AuthProps) => {
 						alert('Username or password is wrong');
 						break;
 				}
-			})
-			.finally(() => {
-				console.log(document.cookie);
 			});
 	};
 
 	const logout = () => {
-		setUser(null);
-
-		//TODO: Server call when will be implemented
+		kyRef.current
+			.delete(`${BACKEND_URL}/auth/logout`)
+			.json()
+			.then((response: unknown) => {
+				setUser(null);
+			})
+			.catch((error: HTTPError) => {
+				console.error(error);
+				console.log(error.response);
+			});
 	};
 
 	const value: IAuth = {
