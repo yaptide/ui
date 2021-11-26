@@ -2,8 +2,7 @@ import { Signal } from 'signals';
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
 import * as CSG from '../CSG/CSG';
-import { SimulationMesh, SimulationPoints } from '../SimulationBase/SimulationMesh';
-import { ISimulationObject } from '../SimulationBase/SimulationObject';
+import { SimulationPoints } from '../SimulationBase/SimulationMesh';
 import { DetectManager } from './DetectManager';
 import * as DETECT from './DetectTypes';
 
@@ -91,9 +90,6 @@ export class DetectGeometry extends SimulationPoints {
 		get: (target: DetectGeometry, p: keyof DetectGeometry) => {
 			let result: unknown;
 			switch (p) {
-				case 'type':
-					result = `${target.detectType}Section`;
-					break;
 				case 'position':
 					result = this.positionProxy;
 					break;
@@ -179,7 +175,9 @@ export class DetectGeometry extends SimulationPoints {
 		this.positionProxy = new Proxy(this.position, {
 			get: (target: THREE.Vector3, p: keyof THREE.Vector3) => {
 				const scope = this;
-				const parent: DetectManager = this.parent!.parent as DetectManager;
+				const parent: DetectManager | undefined = this.parent?.parent as
+					| DetectManager
+					| undefined;
 				switch (p) {
 					case 'copy':
 						return function (v: THREE.Vector3) {
@@ -187,11 +185,13 @@ export class DetectGeometry extends SimulationPoints {
 							return scope.positionProxy;
 						};
 					case 'add':
-						return function (v: THREE.Vector3) {
-							const nV = target[p].apply(target, [v]);
-							parent.detectHelper.position.copy(nV);
-							return nV;
-						};
+						if (parent)
+							return function (v: THREE.Vector3) {
+								const nV = target[p].apply(target, [v]);
+								parent.detectHelper.position.copy(nV);
+								return nV;
+							};
+						return Reflect.get(target, p);
 					default:
 						return Reflect.get(target, p);
 				}

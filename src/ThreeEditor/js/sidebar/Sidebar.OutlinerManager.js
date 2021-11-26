@@ -31,11 +31,11 @@ const getObjectType = object => {
 		case 'SphereMesh':
 			return 'Figure';
 		case 'Points':
-		case 'Detect':
 			return 'Detect';
 		case 'Filter':
 			return 'Filter';
 		default:
+			console.warn(`could not parse object of type ${object.type}`, typeof object, object);
 			return 'Unknown';
 	}
 };

@@ -1,6 +1,5 @@
-import * as THREE from 'three';
 import { BoxMesh, CylinderMesh, SphereMesh } from '../../util/BasicMeshes';
-import { AddObjectCommand, AddZoneCommand, AddDetectGeometryCommand } from '../commands/Commands';
+import { AddDetectGeometryCommand, AddObjectCommand, AddZoneCommand } from '../commands/Commands';
 import { UIHorizontalRule, UIPanel } from '../libs/ui.js';
 import { createOption } from './Menubar.js';
 

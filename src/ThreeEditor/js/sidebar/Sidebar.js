@@ -11,15 +11,16 @@ function Sidebar(editor) {
 
 	const container = new UITabbedPanel();
 	container.setId('sidebar');
+	const filters = new SidebarFilters(editor).setBorderTop('0').setPaddingTop('20px');
 
 	const scene = new UISpan().add(new SidebarScene(editor), new SidebarProperties(editor));
 	const project = new SidebarProject(editor);
 	const settings = new SidebarSettings(editor);
-	const filters = new SidebarFilters(editor).setBorderTop('0').setPaddingTop('20px');
+	const output = new UISpan().add(filters, new SidebarProperties(editor));
 	let ignoreContextChangedSignal = false;
 
 	container.addTab('scene', strings.getKey('sidebar/scene'), scene);
-	container.addTab('output', 'OUTPUT', filters);
+	container.addTab('output', 'OUTPUT', output);
 	container.addTab('parameters', 'PARAMETERS', project);
 	container.addTab('settings', strings.getKey('sidebar/settings'), settings);
 
@@ -30,10 +31,10 @@ function Sidebar(editor) {
 		ignoreContextChangedSignal = true;
 		editor.contextManager.currentContext = id;
 		ignoreContextChangedSignal = false;
-	}
+	};
 	container.select('scene');
 
-	signals.contextChanged.add((id) => {
+	signals.contextChanged.add(id => {
 		ignoreContextChangedSignal || container._select(id);
 	});
 
