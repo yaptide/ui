@@ -1,26 +1,14 @@
 import { AddFilterCommand } from '../commands/Commands';
 import { UIButton, UIPanel, UIRow } from '../libs/ui';
 import { OutlinerManager } from './Sidebar.OutlinerManager';
+import { DetectAddPanel } from './Sidebar.AddPanel';
 
 export class SidebarFilters extends UIPanel {
 	editor;
 	signals;
 	detectManager;
+	detectAddPanel;
 	outlinerManager;
-
-	createButton() {
-		const panel = new UIPanel();
-		const row = new UIRow();
-		const add_button = new UIButton("Add Detect Filter");
-
-		add_button.onClick(() => {
-			this.editor.execute(new AddFilterCommand(this.editor));
-		});
-
-		row.add(add_button);
-		panel.add(row);
-		this.add(panel);
-	}
 
 	refreshOptions() {
 		const sources = [
@@ -28,7 +16,7 @@ export class SidebarFilters extends UIPanel {
 			this.editor.detectManager.filterContainer
 		];
 		this.outlinerManager.setOptionsFromSources(sources);
-	};
+	}
 
 	constructor(editor) {
 		super();
@@ -39,16 +27,12 @@ export class SidebarFilters extends UIPanel {
 		this.outlinerManager = new OutlinerManager(editor, this);
 		this.outlinerManager.id = 'filter-outliner';
 
+		this.detectAddPanel = DetectAddPanel(editor, this);
+
 		this.signals.editorCleared.add(this.refreshOptions.bind(this));
-
 		this.signals.sceneGraphChanged.add(this.refreshOptions.bind(this));
-
 		this.signals.objectChanged.add(this.refreshOptions.bind(this));
-
 		this.signals.detectFilterAdded.add(this.refreshOptions.bind(this));
-
 		this.signals.detectFilterRemoved.add(this.refreshOptions.bind(this));
-
-		this.createButton();
 	}
 }

@@ -28,7 +28,7 @@ export class DetectContainer extends SimulationSceneGroup<DetectGeometry> {
 	}
 
 	reset() {
-		this.name = 'Geometries';
+		this.name = 'Detects';
 		this.clear();
 	}
 }
@@ -49,6 +49,7 @@ export class FilterContainer extends SimulationDataGroup<DetectFilter> {
 	reset() {
 		this.name = 'Filters';
 		this.clear();
+		console.log(this);
 	}
 }
 
@@ -195,16 +196,9 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 		this.environment = null;
 
 		this.detectContainer.reset();
-		this.clear();
+		this.filterContainer.reset();
 
 		this.detectHelper.geometry.dispose();
-	}
-
-	clear(): this {
-		this.filters.forEach(filter => {
-			this.removeFilter(filter);
-		});
-		return this;
 	}
 
 	clone(recursive: boolean) {

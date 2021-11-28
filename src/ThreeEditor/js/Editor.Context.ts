@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { Scene } from 'three';
 import { BasicMesh, isBasicMesh } from '../util/BasicMeshes';
 import { Beam, isBeam } from '../util/Beam';
 import * as CSG from '../util/CSG/CSG';
@@ -101,7 +100,7 @@ export class ContextManager {
 				this.editor.signals.contextChanged.dispatch(this._context);
 			}
 		} else {
-			this._selected = [null, isDetectGeometry(this._selected[1]) ? null : this._selected[1]];
+			this._selected = [null, null];
 		}
 	}
 

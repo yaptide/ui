@@ -248,6 +248,8 @@ export class WorldZone extends SimulationObject3D {
 	reset({ color = 0xff0000, name = 'World Zone' } = {}): void {
 		this._material.color.set(color);
 		this.name = name;
+		this.simulationMaterial =
+			this.editor.materialsManager.materials['AIR, DRY (NEAR SEA LEVEL)'];
 		this.geometryType = 'box';
 		this.updateBox(box => box.setFromCenterAndSize(new Vector3(), new Vector3()));
 	}

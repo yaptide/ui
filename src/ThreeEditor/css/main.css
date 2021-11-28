@@ -328,7 +328,7 @@ select:hover {
 #resizer {
 	position: absolute;
 	top: 32px;
-	right: 345px;
+	right: 370px;
 	width: 5px;
 	bottom: 0px;
 	/* background-color: rgba(255,0,0,0.5); */
@@ -339,7 +339,7 @@ select:hover {
 	position: absolute;
 	top: 32px;
 	left: 0;
-	right: 360px;
+	right: 375px;
 	bottom: 0;
 }
 
@@ -444,7 +444,7 @@ select:hover {
 	right: 0;
 	top: 32px;
 	bottom: 0;
-	width: 360px;
+	width: 375px;
 	background: #eee;
 	overflow: auto;
 }

@@ -5,7 +5,7 @@ import { SidebarGeometry } from './Sidebar.Geometry.js';
 import { SidebarMaterial } from './Sidebar.Material.js';
 import { SidebarZoneMaterial } from './Sidebar.Material.ZoneMaterial.js';
 
-function SidebarProperties(editor) {
+function SidebarProperties(editor, id = 'properties') {
 	const { strings, signals } = editor;
 
 	const container = new UITabbedPanel();
@@ -19,7 +19,7 @@ function SidebarProperties(editor) {
 		return new UIPanel();
 	}
 
-	container.setId('properties');
+	container.setId(id);
 
 	container.addTab(
 		'object',
@@ -31,16 +31,20 @@ function SidebarProperties(editor) {
 		strings.getKey('sidebar/properties/geometry'),
 		new SidebarGeometry(editor)
 	);
-	container.addTab('material', strings.getKey('sidebar/properties/material'), material);
+	container.addTab(
+		'material',
+		strings.getKey('sidebar/properties/material'),
+		getPanel(editor.selected)
+	);
 	container.select('object');
 
-	//Select Geometry if zone is created
-	signals.objectAdded.add(object => object?.isZone && container.select('geometry'));
-
-	signals.objectSelected.add(object => {
+	const handleSelected = object => {
 		container.panels[2].clear();
 		container.panels[2].add(getPanel(object));
-	});
+	};
+
+	signals.objectSelected.add(handleSelected);
+	signals.dataObjectSelected.add(handleSelected);
 
 	return container;
 }
