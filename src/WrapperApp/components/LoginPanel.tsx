@@ -5,11 +5,11 @@ import { useAuth } from '../../services/AuthService';
 export default function LoginPanel() {
 	const { login } = useAuth();
 
-	const [email, setEmail] = useState('');
+	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 
-	const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setEmail(event.target.value);
+	const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setUsername(event.target.value);
 	};
 	const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setPassword(event.target.value);
@@ -35,10 +35,10 @@ export default function LoginPanel() {
 				}}>
 				<TextField
 					id='loginField'
-					label='Email adress'
+					label='Username adress'
 					variant='outlined'
-					value={email}
-					onChange={handleEmailChange}
+					value={username}
+					onChange={handleUsernameChange}
 				/>
 				<TextField
 					id='passwordField'
@@ -48,7 +48,7 @@ export default function LoginPanel() {
 					value={password}
 					onChange={handlePasswordChange}
 				/>
-				<Button variant='outlined' onClick={() => login(email, password)}>
+				<Button variant='outlined' onClick={() => login(username, password)}>
 					Login
 				</Button>
 			</Box>
