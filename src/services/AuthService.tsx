@@ -14,12 +14,16 @@ interface AuthUser {
 }
 
 const load = (key: string) => {
-	const item = localStorage.getItem(key) ?? 'null';
-	const obj = JSON.parse(item.length === 0 ? 'null' : item);
-	return obj;
+	const item = localStorage.getItem(key);
+	try {
+		const [obj] = JSON.parse(`[${item}]`);
+		return obj;
+	} catch {
+		return null;
+	}
 };
 
-const save = (key: string, value: any) => {
+const save = (key: string, value: unknown) => {
 	if (value === undefined) return;
 	return localStorage.setItem(key, JSON.stringify(value));
 };
@@ -42,7 +46,7 @@ const [useAuth, AuthContextProvider] = createGenericContext<IAuth>();
 
 const Auth = (props: AuthProps) => {
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER));
-	const [refreshInterval, setRefreshInterval] = useState(1000 * 60 * 3);
+	const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
 
 	const kyRef = useRef<KyInstance>(ky.create({ credentials: 'include' }));
 
@@ -56,8 +60,8 @@ const Auth = (props: AuthProps) => {
 			.json()
 			.catch((error: HTTPError) => {
 				console.error(error);
-				console.log(error.response);
-				switch (error.response.status) {
+				console.log(error?.response);
+				switch (error?.response?.status) {
 					case 401:
 						alert('Session expired');
 						setUser(null);
@@ -81,8 +85,8 @@ const Auth = (props: AuthProps) => {
 			})
 			.catch((error: HTTPError) => {
 				console.error(error);
-				console.log(error.response);
-				switch (error.response.status) {
+				console.log(error?.response);
+				switch (error?.response?.status) {
 					case 401:
 						alert('Session expired');
 						setUser(null);
@@ -124,8 +128,8 @@ const Auth = (props: AuthProps) => {
 			})
 			.catch((error: HTTPError) => {
 				console.error(error);
-				console.log(error.response);
-				switch (error.response.status) {
+				console.log(error?.response);
+				switch (error?.response?.status) {
 					case 401:
 						alert('Username or password is wrong');
 						break;
@@ -142,7 +146,7 @@ const Auth = (props: AuthProps) => {
 			})
 			.catch((error: HTTPError) => {
 				console.error(error);
-				console.log(error.response);
+				console.log(error?.response);
 			});
 	};
 

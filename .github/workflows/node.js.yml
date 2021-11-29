@@ -108,5 +108,5 @@ jobs:
                   script: |
                       cd ui/ui
                       npm install
-                      npm run buildC3
+                      npm run build
                       docker run --name yaptide-nginx -p 8080:80 -v $PWD/build:/usr/share/nginx/html:ro -d nginx

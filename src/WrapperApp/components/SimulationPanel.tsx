@@ -36,7 +36,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			})
 			.catch((error: HTTPError) => {
 				console.error(error);
-				console.log(error.response);
+				console.log(error?.response);
 				props.onError?.call(null, error);
 			})
 			.finally(() => {
