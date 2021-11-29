@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { GUI } from 'three/examples//jsm/libs/dat.gui.module.js';
+import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
 
 /*
 This function is responsible for preparing scene with clipping plane and stencil materials
