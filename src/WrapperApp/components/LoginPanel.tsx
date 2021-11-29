@@ -1,19 +1,20 @@
 import { Box, Button, TextField } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
+import { useAuth } from '../../services/AuthService';
 
-interface LoginPanelProps {
-	handleLogin: (data: { email: string; password: string }) => void;
-}
+export default function LoginPanel() {
+	const { login } = useAuth();
 
-export default function LoginPanel(props: LoginPanelProps) {
-	const [email, setEmail] = React.useState('');
-	const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setEmail(event.target.value);
+	const [username, setUsername] = useState('');
+	const [password, setPassword] = useState('');
+
+	const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setUsername(event.target.value);
 	};
-	const [password, setPassword] = React.useState('');
 	const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setPassword(event.target.value);
 	};
+
 	return (
 		<Box
 			sx={{
@@ -34,10 +35,10 @@ export default function LoginPanel(props: LoginPanelProps) {
 				}}>
 				<TextField
 					id='loginField'
-					label='Email adress'
+					label='Username adress'
 					variant='outlined'
-					value={email}
-					onChange={handleEmailChange}
+					value={username}
+					onChange={handleUsernameChange}
 				/>
 				<TextField
 					id='passwordField'
@@ -47,13 +48,7 @@ export default function LoginPanel(props: LoginPanelProps) {
 					value={password}
 					onChange={handlePasswordChange}
 				/>
-				<Button
-					variant='outlined'
-					onClick={() => {
-						setPassword('');
-						setEmail('');
-						props.handleLogin({ email, password });
-					}}>
+				<Button variant='outlined' onClick={() => login(username, password)}>
 					Login
 				</Button>
 			</Box>

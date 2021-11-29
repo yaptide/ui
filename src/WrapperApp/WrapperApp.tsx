@@ -1,26 +1,30 @@
-import React, { SyntheticEvent, useState } from 'react';
+import React, { SyntheticEvent, useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import LoginPanel from './components/LoginPanel';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import ThreeEditor from '../ThreeEditor/ThreeEditor';
-import UserData from '../util/user/UserData';
 import SimulationPanel from './components/SimulationPanel';
 import { useStore } from '../services/StoreService';
 import { DEMO_MODE } from '../util/Config';
 import { TabPanel } from './components/TabPanel';
 import ResultsPanel from './components/ResultsPanel';
+import { useAuth } from '../services/AuthService';
 
 function WrapperApp() {
 	const { editorRef } = useStore();
+	const { isAuthorized, logout } = useAuth();
 
 	const [tabsValue, setTabsValue] = useState(0);
-	const [currentUser, setCurrentUser] = useState<UserData | null>(null);
 
 	const handleChange = (event: SyntheticEvent, newValue: number) => {
-		newValue === 5 && setCurrentUser(null);
 		setTabsValue(newValue);
 	};
+
+	useEffect(() => {
+		if (!isAuthorized) setTabsValue(5);
+		else setTabsValue(0);
+	}, [isAuthorized]);
 
 	const [resultData, setResultData] = useState<{ data?: unknown }>({});
 
@@ -35,11 +39,15 @@ function WrapperApp() {
 			<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
 				<Tabs value={tabsValue} onChange={handleChange}>
 					<Tab label='Editor' />
-					<Tab label='Run' disabled={DEMO_MODE} />
-					<Tab label='Results' disabled={DEMO_MODE} />
+					<Tab label='Run' disabled={DEMO_MODE || !isAuthorized} />
+					<Tab label='Results' disabled={DEMO_MODE || !isAuthorized} />
 					<Tab label='Projects' disabled />
 					<Tab label='About' />
-					<Tab sx={{ marginLeft: 'auto' }} label={currentUser ? 'Logout' : 'Login'} />
+					<Tab
+						sx={{ marginLeft: 'auto' }}
+						label={isAuthorized ? 'Logout' : 'Login'}
+						onClick={() => isAuthorized && logout()}
+					/>
 				</Tabs>
 			</Box>
 			<TabPanel value={tabsValue} index={0} persistent>
@@ -65,12 +73,7 @@ function WrapperApp() {
 				</>
 			)}
 			<TabPanel value={tabsValue} index={5}>
-				<LoginPanel
-					handleLogin={data => {
-						setCurrentUser({ uuid: '', login: data.email });
-						setTabsValue(0);
-					}}
-				/>
+				<LoginPanel />
 			</TabPanel>
 		</Box>
 	);
