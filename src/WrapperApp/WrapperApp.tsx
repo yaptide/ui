@@ -45,8 +45,9 @@ function WrapperApp() {
 					<Tab label='About' />
 					<Tab
 						sx={{ marginLeft: 'auto' }}
-						label={isAuthorized ? 'Logout' : 'Login'}
+						label={isAuthorized && !DEMO_MODE ? 'Logout' : 'Login'}
 						onClick={() => isAuthorized && logout()}
+						disabled={DEMO_MODE}
 					/>
 				</Tabs>
 			</Box>

@@ -2,7 +2,7 @@ import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { createGenericContext } from '../util/GenericContext';
 import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
-import { BACKEND_URL } from '../util/Config';
+import { BACKEND_URL, DEMO_MODE } from '../util/Config';
 import useInterval from 'use-interval';
 
 export interface AuthProps {
@@ -55,6 +55,7 @@ const Auth = (props: AuthProps) => {
 	}, [user]);
 
 	const refresh = useCallback(() => {
+		if (DEMO_MODE) return;
 		kyRef.current
 			.get(`${BACKEND_URL}/auth/refresh`)
 			.json()
@@ -71,6 +72,7 @@ const Auth = (props: AuthProps) => {
 	}, []);
 
 	const status = useCallback(() => {
+		if (DEMO_MODE) return;
 		kyRef.current
 			.get(`${BACKEND_URL}/auth/status`)
 			.json()
@@ -152,7 +154,7 @@ const Auth = (props: AuthProps) => {
 
 	const value: IAuth = {
 		user,
-		isAuthorized: user !== null,
+		isAuthorized: user !== null || DEMO_MODE,
 		login,
 		logout,
 		authKy: kyRef.current,
