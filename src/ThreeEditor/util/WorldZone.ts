@@ -232,6 +232,8 @@ export class WorldZone extends SimulationObject3D {
 	}
 
 	reset({ color = 0xff0000, name = 'World Zone' } = {}): void {
+		this.debouncedCalculate.cancel();
+
 		this._material.color.set(color);
 		this.name = name;
 		this.simulationMaterial =

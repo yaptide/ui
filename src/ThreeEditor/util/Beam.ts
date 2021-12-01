@@ -177,6 +177,8 @@ export class Beam extends SimulationMesh {
 	}
 
 	reset(): void {
+		this.debouncedDispatchChanged.cancel();
+
 		this.rotation.copy(new Euler());
 		this.position.copy(_default.position);
 		this.direction.copy(_default.direction);
