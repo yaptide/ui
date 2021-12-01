@@ -119,11 +119,13 @@ export class ObjectMaterial extends ObjectAbstract {
 		hideUIElement(this.typeSelectRow);
 		hideUIElement(this.opacityRow);
 		hideUIElement(this.transparentRow);
+		hideUIElement(this.exportMaterialsRow);
 		if (isWorldZone(object) || isZone(object)) {
 			showUIElement(this.typeSelectRow);
 			if (isZone(object)) {
 				showUIElement(this.opacityRow);
 				showUIElement(this.transparentRow);
+				showUIElement(this.exportMaterialsRow);
 			}
 			this.typeSelect.setValue(object.simulationMaterial.name);
 		} else {

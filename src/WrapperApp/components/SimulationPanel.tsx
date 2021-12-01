@@ -1,7 +1,8 @@
 import { Box, Button, LinearProgress, Typography } from '@mui/material';
-import ky from 'ky';
+import { HTTPError } from 'ky';
 
 import React, { useEffect, useState } from 'react';
+import { useAuth } from '../../services/AuthService';
 import { useStore } from '../../services/StoreService';
 import { BACKEND_URL } from '../../util/Config';
 
@@ -11,6 +12,7 @@ interface SimulationPanelProps {
 }
 
 export default function SimulationPanel(props: SimulationPanelProps) {
+	const { authKy } = useAuth();
 	const { editorRef } = useStore();
 	const [isInProgress, setInProgress] = useState(false);
 
@@ -18,21 +20,23 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	const sendRequest = () => {
 		setInProgress(true);
-		ky.post(`${BACKEND_URL}/sh/demo`, {
-			json: editorRef.current?.toJSON(),
-			timeout: 30000
-			/**
+		authKy
+			.post(`${BACKEND_URL}/sh/run`, {
+				json: editorRef.current?.toJSON(),
+				timeout: 30000
+				/**
             Timeout in milliseconds for getting a response. Can not be greater than 2147483647.
             If set to `false`, there will be no timeout.
             **/
-		})
+			})
 			.json()
 			.then((response: unknown) => {
 				console.log(response);
 				props.onSuccess?.call(null, response);
 			})
-			.catch((error: unknown) => {
+			.catch((error: HTTPError) => {
 				console.error(error);
+				console.log(error?.response);
 				props.onError?.call(null, error);
 			})
 			.finally(() => {
@@ -41,23 +45,46 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	};
 
 	useEffect(() => {
-		let ignore = false;
+		const controller = new AbortController();
+		const { signal } = controller;
 
-		ky.get(`${BACKEND_URL}`)
+		authKy
+			.get(`${BACKEND_URL}`, { signal })
 			.json()
 			.then((response: unknown) => {
 				console.log(response);
-				if (!ignore) setBackendAlive(true);
+				setBackendAlive(true);
 			})
 			.catch((error: unknown) => {
 				console.error(error);
-				if (!ignore) setBackendAlive(false);
+				setBackendAlive(false);
 			});
 
 		return () => {
-			ignore = true;
+			controller.abort();
 		};
-	}, []);
+	}, [authKy]);
+
+	useEffect(() => {
+		const controller = new AbortController();
+		const { signal } = controller;
+
+		authKy
+			.get(`${BACKEND_URL}`, { signal })
+			.json()
+			.then((response: unknown) => {
+				console.log(response);
+				setBackendAlive(true);
+			})
+			.catch((error: unknown) => {
+				console.error(error);
+				setBackendAlive(false);
+			});
+
+		return () => {
+			controller.abort();
+		};
+	}, [authKy]);
 
 	return (
 		<Box
