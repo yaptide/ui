@@ -13,6 +13,7 @@ export class AddFilterCommand extends Command {
 		this.type = 'AddFilterCommand';
 
 		this.filter = filter;
+		this.object = filter;
 		this.name = filter ? `Add Filter: ${filter.name}` : `Create Filter`;
 	}
 

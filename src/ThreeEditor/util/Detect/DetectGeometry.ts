@@ -29,11 +29,6 @@ export class DetectGeometry extends SimulationPoints {
 	readonly notScalable = true;
 	readonly isDetectGeometry: true = true;
 
-	private static _detectPointsMaterial: THREE.PointsMaterial = new THREE.PointsMaterial({
-		color: new THREE.Color('cyan'),
-		size: 0.1
-	});
-
 	private positionProxy: THREE.Vector3;
 	private proxy: DetectGeometry;
 	private _detectType: DETECT.DETECT_TYPE;
@@ -199,7 +194,6 @@ export class DetectGeometry extends SimulationPoints {
 		});
 
 		this.geometry = this.generateGeometry(data, type);
-		this.material = DetectGeometry._detectPointsMaterial;
 		this.signals.zoneGeometryChanged.add(zone => {
 			if (zone.id === this._geometryData.zoneId) this.geometry = this.generateGeometry();
 		});
@@ -283,13 +277,13 @@ export class DetectGeometry extends SimulationPoints {
 	}
 }
 
-export const isDetectGeometry = (x: any): x is DetectGeometry => x instanceof DetectGeometry;
+export const isDetectGeometry = (x: unknown): x is DetectGeometry => x instanceof DetectGeometry;
 
 function createCylindricalGeometry(data: DETECT.Cyl, matrix: THREE.Matrix4) {
-	const averageRadius = (data.outerRadius - data.innerRadius) / 2;
+	const averageRadius = (data.radius - data.innerRadius) / 2;
 	const geometry1 = new THREE.CylinderGeometry(
-		data.outerRadius,
-		data.outerRadius,
+		data.radius,
+		data.radius,
 		data.depth,
 		20,
 		Math.min(data.depthSegments, DetectGeometry.maxDisplayDensity)

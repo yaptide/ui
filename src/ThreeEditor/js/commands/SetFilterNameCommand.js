@@ -15,6 +15,8 @@ export class SetFilterNameCommand extends Command {
 		this.name = 'Set Filter Name';
 		this.updatable = true;
 
+		this.object = filter;
+
 		this.filter = filter;
 		this.oldData = filter.toJSON();
 		this.newName = newName;

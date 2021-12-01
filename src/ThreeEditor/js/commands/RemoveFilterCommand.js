@@ -9,6 +9,8 @@ export class RemoveFilterCommand {
 	constructor(editor, filter) {
 		this.editor = editor;
 		this.filter = filter;
+
+		this.object = filter;
 	}
 
 	execute() {

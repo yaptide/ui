@@ -72,7 +72,7 @@ export function DetectPanel(editor, section) {
 		value: data.radius
 	});
 	const [radiusRow2, radius2] = createRowParamNumber({
-		text: `Outer radius ${editor.unit.name}`,
+		text: `Radius ${editor.unit.name}`,
 		min: 0.001,
 		update,
 		value: data.radius
@@ -119,7 +119,7 @@ export function DetectPanel(editor, section) {
 				depth.setValue(data.depth);
 				depth2.setValue(data.depthSegments);
 				radius1.setValue(data.innerRadius);
-				radius2.setValue(data.outerRadius);
+				radius2.setValue(data.radius);
 				radius3.setValue(data.radialSegments);
 				container.add(depthRow);
 				container.add(depthRow2);
@@ -147,7 +147,7 @@ export function DetectPanel(editor, section) {
 				depth: depth.getValue(),
 				depthSegments: depth2.getValue(),
 				innerRadius: radius1.getValue(),
-				outerRadius: radius2.getValue(),
+				radius: radius2.getValue(),
 				radialSegments: radius3.getValue(),
 				zoneId: parseInt(zoneid.getValue())
 			})

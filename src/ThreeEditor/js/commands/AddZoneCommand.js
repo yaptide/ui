@@ -13,6 +13,7 @@ export class AddZoneCommand extends Command {
 		this.type = 'AddZoneCommand';
 
 		this.zone = zone;
+		this.object = zone;
 		this.name = zone ? `Add Zone: ${zone.name}` : `Create Zone`;
 	}
 

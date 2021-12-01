@@ -1,5 +1,5 @@
 import { Editor } from '../../js/Editor';
-import { SimulationData } from '../SimulationBase/SimulationMesh';
+import { SimulationObject3D } from '../SimulationBase/SimulationMesh';
 import {
 	FilterRule,
 	FloatRule,
@@ -17,12 +17,16 @@ export type FilterJSON = {
 	rules: RuleJSON[];
 };
 
-export class DetectFilter extends SimulationData {
+export class DetectFilter extends SimulationObject3D {
 	private rules: Record<string, FilterRule>;
 	readonly isFilter: true = true;
+	readonly notRemovable = true;
+	readonly notMovable = true;
+	readonly notRotatable = true;
+	readonly notScalable = true;
 
 	constructor(editor: Editor, rules: FilterRule[] = []) {
-		super(editor, undefined, 'Filter');
+		super(editor, 'Filter', 'Filter');
 		this.rules = {};
 		this.parent = null;
 		rules.forEach(rule => this.addRule(rule));
@@ -57,8 +61,9 @@ export class DetectFilter extends SimulationData {
 		delete this.rules[ruleUuid];
 	}
 
-	clear(): void {
+	clear(): this {
 		this.rules = {};
+		return this;
 	}
 
 	createRule(json: RuleJSON): FilterRule {

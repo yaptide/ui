@@ -185,7 +185,7 @@ function Strings(config) {
 			'sidebar/geometry/plane_geometry/heightsegments': 'Height segments',
 
 			'sidebar/geometry/ring_geometry/innerRadius': 'Inner radius',
-			'sidebar/geometry/ring_geometry/outerRadius': 'Outer radius',
+			'sidebar/geometry/ring_geometry/radius': 'Radius',
 			'sidebar/geometry/ring_geometry/thetaSegments': 'Theta segments',
 			'sidebar/geometry/ring_geometry/phiSegments': 'Phi segments',
 			'sidebar/geometry/ring_geometry/thetastart': 'Theta start',
@@ -508,7 +508,7 @@ function Strings(config) {
 			'sidebar/geometry/plane_geometry/heightsegments': 'Segments en Hauteur',
 
 			'sidebar/geometry/ring_geometry/innerRadius': 'Rayon intérieur',
-			'sidebar/geometry/ring_geometry/outerRadius': 'Rayon extérieur',
+			'sidebar/geometry/ring_geometry/radius': 'Rayon extérieur',
 			'sidebar/geometry/ring_geometry/thetaSegments': 'Segments Thêta',
 			'sidebar/geometry/ring_geometry/phiSegments': 'Phi segments',
 			'sidebar/geometry/ring_geometry/thetastart': 'Début Thêta',
@@ -831,7 +831,7 @@ function Strings(config) {
 			'sidebar/geometry/plane_geometry/heightsegments': '长度分段',
 
 			'sidebar/geometry/ring_geometry/innerRadius': '内半径',
-			'sidebar/geometry/ring_geometry/outerRadius': '外半径',
+			'sidebar/geometry/ring_geometry/radius': '外半径',
 			'sidebar/geometry/ring_geometry/thetaSegments': '弧度分段',
 			'sidebar/geometry/ring_geometry/phiSegments': '经度分段',
 			'sidebar/geometry/ring_geometry/thetastart': '弧度起点',

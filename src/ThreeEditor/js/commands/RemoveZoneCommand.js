@@ -15,6 +15,7 @@ class RemoveZoneCommand extends Command {
 		this.name = 'Remove Zone';
 
 		this.zone = zone;
+		this.object = zone;
 	}
 
 	execute() {

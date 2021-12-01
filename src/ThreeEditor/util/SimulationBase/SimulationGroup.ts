@@ -5,10 +5,15 @@ import { ISimulationObject } from './SimulationObject';
 
 export interface ISimulationSceneChild extends THREE.Object3D {
 	parent: SimulationSceneGroup<this> | null;
+	name: string;
+	type: string;
+	readonly id: number;
+	uuid: string;
 }
 
 export interface ISimulationChild {
 	parent: SimulationDataGroup<this> | null;
+
 	toJSON: () => unknown;
 }
 

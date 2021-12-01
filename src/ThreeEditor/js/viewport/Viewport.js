@@ -1,5 +1,10 @@
 import * as THREE from 'three';
-import { SetPositionCommand, SetRotationCommand, SetScaleCommand } from '../commands/Commands';
+import {
+	SetPositionCommand,
+	SetValueCommand,
+	SetRotationCommand,
+	SetScaleCommand
+} from '../commands/Commands';
 import { ViewportClippedView as ViewportClipPlane } from './Viewport.ClipPlane';
 import { EditorOrbitControls } from '../EditorOrbitControls';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
@@ -201,14 +206,12 @@ export function Viewport(
 			switch (transformControls.getMode()) {
 				case 'translate':
 					if (!objectPositionOnDown.equals(object.position)) {
-						editor.execute(
-							new SetPositionCommand(
-								editor,
-								object,
-								object.position,
-								objectPositionOnDown
-							)
-						);
+						if (object.isWorldZone)
+							editor.execute(
+								new SetValueCommand(editor, object, 'center', object.position)
+							);
+						else
+							editor.execute(new SetPositionCommand(editor, object, object.position));
 					}
 
 					break;
@@ -482,6 +485,10 @@ export function Viewport(
 		reattachTransformControls(object);
 		render();
 	});
+	signals.contextChanged.add(context => {
+		reattachTransformControls(editor.selected);
+		render();
+	});
 
 	signals.objectRemoved.add(object => {
 		controls.enabled = true;
@@ -501,7 +508,6 @@ export function Viewport(
 	signals.objectChanged.add(() => {
 		render();
 	});
-
 
 	this.setSize = (
 		viewWidth = container.dom.offsetWidth,

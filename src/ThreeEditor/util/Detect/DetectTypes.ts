@@ -8,7 +8,7 @@ export type Mesh = {
 };
 
 export type Cyl = {
-	outerRadius: number;
+	radius: number;
 	innerRadius: number;
 	depth: number;
 	radialSegments: number;
@@ -27,7 +27,7 @@ export const DEFAULT_ANY: Any = {
 	width: 1,
 	height: 1,
 	depth: 1,
-	outerRadius: 1,
+	radius: 1,
 	innerRadius: 0,
 	widthSegments: 1000,
 	heightSegments: 1000,

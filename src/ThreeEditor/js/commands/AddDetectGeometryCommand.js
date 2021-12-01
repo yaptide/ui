@@ -7,31 +7,31 @@ import { DetectGeometry } from '../../util/Detect/DetectGeometry';
  * @constructor
  */
 class AddDetectGeometryCommand extends Command {
-	constructor(editor, section) {
+	constructor(editor, geometry) {
 		super(editor);
 
 		this.type = 'AddDetectGeometryCommand';
 
-		this.section = section;
-		this.name = section ? `Add Section: ${section.name}` : `Create Section`;
+		this.geometry = geometry;
+		this.name = geometry ? `Add Section: ${geometry.name}` : `Create Section`;
 	}
 
 	execute() {
-		if (this.section) this.editor.detectManager.addSection(this.section);
-		else this.section = this.editor.detectManager.createSection();
+		if (this.geometry) this.editor.detectManager.addSection(this.geometry);
+		else this.geometry = this.editor.detectManager.createSection();
 
-		this.editor.select(this.section);
+		this.editor.select(this.geometry);
 	}
 
 	undo() {
-		this.editor.detectManager.removeSection(this.section);
+		this.editor.detectManager.removeSection(this.geometry);
 		this.editor.deselect();
 	}
 
 	toJSON() {
 		const output = super.toJSON(this);
 
-		output.object = this.section.toJSON();
+		output.object = this.geometry.toJSON();
 
 		return output;
 	}
@@ -39,10 +39,10 @@ class AddDetectGeometryCommand extends Command {
 	fromJSON(json) {
 		super.fromJSON(json);
 
-		this.section = this.editor.objectByUuid(json.object.object.uuid);
+		this.geometry = this.editor.objectByUuid(json.object.object.uuid);
 
-		if (this.section === undefined) {
-			this.section = DetectGeometry.fromJSON(this.editor, json.object);
+		if (this.geometry === undefined) {
+			this.geometry = DetectGeometry.fromJSON(this.editor, json.object);
 		}
 	}
 }

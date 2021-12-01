@@ -1,0 +1,48 @@
+//OBJECT TYPE
+//NAME
+//ID
+//UUID
+
+import { createRowParamInput, createRowText } from '../../util/UiUtils';
+import { SetValueCommand } from '../commands/Commands';
+import { Editor } from '../Editor';
+import { UIElement, UIInput, UIRow, UIText } from '../libs/ui';
+import { ObjectAbstract } from './Object.Abstract';
+
+export class ObjectInfo extends ObjectAbstract {
+	object?: THREE.Object3D;
+
+	idRow: UIRow;
+	id: UIText;
+
+	typeRow: UIRow;
+	type: UIText;
+
+	nameRow: UIRow;
+	name: UIInput;
+
+	constructor(editor: Editor) {
+		super(editor, 'Information');
+		[this.idRow, this.id] = createRowText({ text: 'ID' });
+		[this.typeRow, this.type] = createRowText({ text: 'Type' });
+		[this.nameRow, this.name] = createRowParamInput({
+			text: 'Name',
+			update: this.update.bind(this)
+		});
+		this.panel.add(this.idRow, this.typeRow, this.nameRow);
+	}
+
+	setObject(object: THREE.Object3D): void {
+		this.object = object;
+		this.id.setValue(this.object.id.toString());
+		this.type.setValue(this.object.type);
+		this.name.setValue(this.object.name);
+	}
+
+	update(): void {
+		if (this.object)
+			this.editor.execute(
+				new SetValueCommand(this.editor, this.editor.selected, 'name', this.name.getValue())
+			);
+	}
+}

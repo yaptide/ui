@@ -14,10 +14,12 @@ export class SetFilterRulesCommand extends Command {
 		this.name = 'Set Filter Rules';
 		this.updatable = true;
 
+		this.object = filter;
+
 		this.filter = filter;
 		this.oldRules = filter.rules.map(rule => rule.toJSON());
 		this.newRules = newRules;
 	}
 
-	execute() { }
+	execute() {}
 }

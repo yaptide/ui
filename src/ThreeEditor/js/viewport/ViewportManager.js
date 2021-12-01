@@ -367,13 +367,13 @@ function ViewManager(editor) {
 		render();
 	});
 
-	const canBoxBeUpdated = object =>
-		object !== null && object !== scene && object !== camera && object !== zoneManager;
+	const canBoxBeUpdated = object => object !== null && object !== camera;
 
-	signals.objectSelected.add(object => {
+	const handleSelected = object => {
 		selectionBox.visible = false;
 
 		if (canBoxBeUpdated(object)) {
+			console.log(typeof object);
 			box.setFromObject(object);
 
 			if (box.isEmpty() === false) {
@@ -383,7 +383,10 @@ function ViewManager(editor) {
 		}
 
 		render();
-	});
+	};
+
+	signals.objectSelected.add(handleSelected);
+	signals.contextChanged.add(() => handleSelected(editor.selected));
 
 	signals.objectFocused.add(object => {
 		views.forEach(view => view.controls.focus(object));

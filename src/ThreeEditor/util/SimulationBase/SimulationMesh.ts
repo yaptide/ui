@@ -44,7 +44,8 @@ export abstract class SimulationObject3D
 	constructor(editor: Editor, name: string | undefined, type: string) {
 		super();
 		this.editor = editor;
-		this.name = name ?? `Detect`;
+		this.name = name ?? type;
+		this.type = type;
 		this.parent = null;
 	}
 }
@@ -53,31 +54,20 @@ export abstract class SimulationPoints
 	extends THREE.Points
 	implements ISimulationObject, ISimulationSceneChild
 {
+	private static _detectPointsMaterial: THREE.PointsMaterial = new THREE.PointsMaterial({
+		color: new THREE.Color('cyan'),
+		size: 0.1
+	});
+
 	editor: Editor;
 	parent: SimulationSceneGroup<this> | null = null;
+	material: THREE.PointsMaterial;
 
 	constructor(editor: Editor, name: string | undefined, type: string) {
 		super();
 		this.editor = editor;
 		this.name = name ?? `Detect`;
 		this.parent = null;
+		this.material = SimulationPoints._detectPointsMaterial;
 	}
-}
-
-export abstract class SimulationData implements ISimulationChild {
-	private editor: Editor;
-
-	parent: SimulationDataGroup<this> | null;
-	name: string;
-	type: string;
-	uuid: string;
-
-	constructor(editor: Editor, name: string | undefined, type: string) {
-		this.editor = editor;
-		this.name = name ?? type;
-		this.type = type;
-		this.parent = null;
-		this.uuid = MathUtils.generateUUID();
-	}
-	abstract toJSON(): unknown;
 }

@@ -2,7 +2,7 @@ import { Signal } from 'signals';
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
 import * as CSG from '../CSG/CSG';
-import { SimulationDataGroup, SimulationSceneGroup } from '../SimulationBase/SimulationGroup';
+import { SimulationSceneGroup } from '../SimulationBase/SimulationGroup';
 import { ISimulationObject } from '../SimulationBase/SimulationObject';
 import { DetectFilter, FilterJSON } from './DetectFilter';
 import { DetectGeometry, DetectGeometryJSON, isDetectGeometry } from './DetectGeometry';
@@ -33,7 +33,7 @@ export class DetectContainer extends SimulationSceneGroup<DetectGeometry> {
 	}
 }
 
-export class FilterContainer extends SimulationDataGroup<DetectFilter> {
+export class FilterContainer extends SimulationSceneGroup<DetectFilter> {
 	readonly notRemovable = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
