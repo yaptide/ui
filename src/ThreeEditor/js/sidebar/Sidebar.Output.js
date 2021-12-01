@@ -3,7 +3,7 @@ import { UIButton, UIPanel, UIRow } from '../libs/ui';
 import { OutlinerManager } from './Sidebar.OutlinerManager';
 import { DetectAddPanel } from './Sidebar.AddPanel';
 
-export class SidebarFilters extends UIPanel {
+export class SidebarOutput extends UIPanel {
 	editor;
 	signals;
 	detectManager;

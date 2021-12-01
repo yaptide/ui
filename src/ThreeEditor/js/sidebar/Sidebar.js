@@ -4,14 +4,14 @@ import { SidebarScene } from './Sidebar.Scene';
 import { SidebarProperties } from './Sidebar.Properties';
 import { SidebarProject } from './Sidebar.Project';
 import { SidebarSettings } from './Sidebar.Settings';
-import { SidebarFilters } from './Sidebar.Filters';
+import { SidebarOutput } from './Sidebar.Output';
 
 function Sidebar(editor) {
 	const { strings, signals } = editor;
 
 	const container = new UITabbedPanel();
 	container.setId('sidebar');
-	const filters = new SidebarFilters(editor).setBorderTop('0').setPaddingTop('20px');
+	const filters = new SidebarOutput(editor).setBorderTop('0').setPaddingTop('20px');
 
 	const scene = new UISpan().add(new SidebarScene(editor), new SidebarProperties(editor));
 	const project = new SidebarProject(editor);
