@@ -49,7 +49,6 @@ export class FilterContainer extends SimulationDataGroup<DetectFilter> {
 	reset() {
 		this.name = 'Filters';
 		this.clear();
-		console.log(this);
 	}
 }
 
