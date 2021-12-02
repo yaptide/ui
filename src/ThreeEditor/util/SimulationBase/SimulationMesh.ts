@@ -1,17 +1,11 @@
 import * as THREE from 'three';
-import { MathUtils } from 'three';
 import { Editor } from '../../js/Editor';
-import {
-	ISimulationChild,
-	ISimulationSceneChild,
-	SimulationDataGroup,
-	SimulationSceneGroup
-} from './SimulationGroup';
+import { ISimulationSceneChild, SimulationSceneGroup } from './SimulationGroup';
 import { ISimulationObject } from './SimulationObject';
 
 export abstract class SimulationMesh<
 		TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry,
-		TMaterial extends THREE.Material = THREE.Material
+		TMaterial extends THREE.Material = THREE.MeshBasicMaterial
 	>
 	extends THREE.Mesh<TGeometry, TMaterial>
 	implements ISimulationObject, ISimulationSceneChild
@@ -68,6 +62,6 @@ export abstract class SimulationPoints
 		this.editor = editor;
 		this.name = name ?? `Detect`;
 		this.parent = null;
-		this.material = SimulationPoints._detectPointsMaterial;
+		this.material = SimulationPoints._detectPointsMaterial.clone();
 	}
 }

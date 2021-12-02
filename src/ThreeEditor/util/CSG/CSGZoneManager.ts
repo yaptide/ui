@@ -110,9 +110,9 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 
 	fromJSON(data: ZoneManagerJSON) {
 		if (!data) {
-			console.error('Passed empty data to load CSGManager', data)
-			return this
-		};
+			console.error('Passed empty data to load CSGManager', data);
+			return this;
+		}
 
 		this.uuid = data.uuid;
 
@@ -167,7 +167,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 
 	getZoneOptions(): Record<number, string> {
 		const zoneOptions = this.zoneContainer.children.reduce((acc, zone: Zone) => {
-			acc[zone.id] = zone.name;
+			acc[zone.id] = `${zone.name}[${zone.id}]`;
 			return acc;
 		}, {} as Record<number, string>);
 		return zoneOptions;

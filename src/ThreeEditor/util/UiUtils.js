@@ -6,14 +6,18 @@ import {
 	UIButton,
 	UICheckbox,
 	UIDiv,
-	UIElement,
 	UIInput,
 	UINumber,
 	UIRow,
 	UISelect,
-	UIText
+	UIText,
+	UIColor
 } from '../js/libs/ui.js';
 import { PARTICLE_TYPES } from './particles';
+
+/**
+ * @typedef {import('../js/libs/ui').UIElement} UIElement
+ */
 
 const LABEL_WIDTH = 'min(30%, 120px)';
 const LABEL_MARGIN = '10px 10px 10px 0';
@@ -52,6 +56,23 @@ export function createRowCheckbox(params) {
 	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
 	row.add(label, checkbox);
 	return [row, checkbox, label];
+}
+
+/**
+ * @param {{
+ *      text?: string,
+ *      value?: string,
+ *      update?: ()=> void,
+ *      }} params
+ * @return {[UIRow, UIColor, UIText]}
+ */
+export function createRowColor(params) {
+	const { text = 'Label', value = '#ffffff', update = () => {} } = params;
+	const row = new UIRow();
+	const color = new UIColor(value).onInput(update);
+	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
+	row.add(label, color);
+	return [row, color, label];
 }
 
 /**
@@ -252,7 +273,7 @@ export function createZoneRulesPanel(editor) {
 
 /**
  * @param {()=>void} update
- * @return {[UIRow,UINumber,(value:string)=>void]} render function
+ * @return {[UIRow,UINumber,(value:number)=>void]} render function
  */
 export function createParticleTypeSelect(update) {
 	const row = new UIRow();
@@ -299,6 +320,26 @@ export function hideUIElement(element) {
 	element.setDisplay('none');
 }
 
+export class UICustomTab extends UIText {
+	/**
+	 * @param {string text}
+	 * @param {UICustomTabbedPanel parent}
+	 * @constructor
+	 */
+	constructor(text, parent) {
+		super(text);
+
+		this.dom.className = 'Tab';
+
+		this.parent = parent;
+
+		const scope = this;
+
+		this.dom.addEventListener('click', function () {
+			scope.parent.select(scope.dom.id);
+		});
+	}
+}
 export class UICustomTabbedPanel extends UIDiv {
 	/**
 	 * @constructor
@@ -325,11 +366,56 @@ export class UICustomTabbedPanel extends UIDiv {
 
 	/**
 	 * @param {string id}
+	 * @param {string newName}
+	 * @return {this}
+	 */
+	changeTabName(id, newName) {
+		const tab = this.tabs.find(function (item) {
+			return item.dom.id === id;
+		});
+		if (tab) tab.setValue(newName);
+
+		return this;
+	}
+
+	hideTab(id) {
+		const tab = this.tabs.find(function (item) {
+			return item.dom.id === id;
+		});
+		if (tab) hideUIElement(tab);
+
+		if (this.selected !== id) return;
+		const panel = this.panels.find(function (item) {
+			return item.dom.id === id;
+		});
+		if (panel) hideUIElement(panel);
+		this.select(this.tabs[0].dom.id);
+
+		return this;
+	}
+
+	showTab(id) {
+		const tab = this.tabs.find(function (item) {
+			return item.dom.id === id;
+		});
+		if (tab) showUIElement(tab);
+
+		if (this.selected !== id) return;
+		const panel = this.panels.find(function (item) {
+			return item.dom.id === id;
+		});
+		if (panel) showUIElement(panel);
+
+		return this;
+	}
+
+	/**
+	 * @param {string id}
 	 * @return {this}
 	 */
 	select(id) {
-		let tab;
-		let panel;
+		let tab = null;
+		let panel = null;
 		const scope = this;
 
 		// Deselect current selection
@@ -410,25 +496,5 @@ export class UICustomTabbedPanel extends UIDiv {
 
 		this.add(this.tabsDiv);
 		this.add(this.panelsDiv);
-	}
-}
-export class UICustomTab extends UIText {
-	/**
-	 * @param {string text}
-	 * @param {UICustomTabbedPanel parent}
-	 * @constructor
-	 */
-	constructor(text, parent) {
-		super(text);
-
-		this.dom.className = 'Tab';
-
-		this.parent = parent;
-
-		const scope = this;
-
-		this.dom.addEventListener('click', function () {
-			scope.parent.select(scope.dom.id);
-		});
 	}
 }

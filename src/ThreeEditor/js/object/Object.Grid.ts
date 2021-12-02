@@ -1,27 +1,20 @@
-//GRID DENSITY
-//WIDTH DENSITY
-//HEIGHT DENSITY
-//DEPTH DENSITY
-
 import { DetectGeometry } from '../../util/Detect/DetectGeometry';
 import { createRowParamNumber, hideUIElement, showUIElement } from '../../util/UiUtils';
 import { SetDetectGeometryCommand } from '../commands/Commands';
 import { Editor } from '../Editor';
 import { UINumber, UIRow } from '../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
-
-//RADIAL DENSITY
 export class ObjectGrid extends ObjectAbstract {
 	object?: DetectGeometry;
 
-	widthRow: UIRow;
-	width: UINumber;
+	xLengthRow: UIRow;
+	xLength: UINumber;
 
-	heightRow: UIRow;
-	height: UINumber;
+	yLengthRow: UIRow;
+	yLength: UINumber;
 
-	depthRow: UIRow;
-	depth: UINumber;
+	zLengthRow: UIRow;
+	zLength: UINumber;
 
 	radiusRow: UIRow;
 	radius: UINumber;
@@ -29,57 +22,60 @@ export class ObjectGrid extends ObjectAbstract {
 	constructor(editor: Editor) {
 		super(editor, 'Grid');
 
-		[this.widthRow, this.width] = createRowParamNumber({
+		[this.xLengthRow, this.xLength] = createRowParamNumber({
 			update: this.update.bind(this),
 			text: `number of bins along X axis`,
-			min: 0,
-			max: 10000,
+			min: 1,
+			max: 1000000,
 			precision: 0
 		});
-		[this.heightRow, this.height] = createRowParamNumber({
+		[this.yLengthRow, this.yLength] = createRowParamNumber({
 			update: this.update.bind(this),
 			text: `number of bins along Y axis`,
-			min: 0,
-			max: 10000,
+			min: 1,
+			max: 1000000,
 			precision: 0
 		});
-		[this.depthRow, this.depth] = createRowParamNumber({
+		[this.zLengthRow, this.zLength] = createRowParamNumber({
 			update: this.update.bind(this),
 			text: `number of bins along Z axis`,
-			min: 0,
-			max: 10000,
+			min: 1,
+			max: 1000000,
 			precision: 0
 		});
 		[this.radiusRow, this.radius] = createRowParamNumber({
 			update: this.update.bind(this),
-			text: `number of bins around the radius of the grid`,
-			min: 0,
-			max: 10000,
+			text: `number of bins along the radius`,
+			min: 1,
+			max: 1000000,
 			precision: 0
 		});
-		this.panel.add(this.widthRow, this.heightRow, this.depthRow, this.radiusRow);
+		this.panel.add(this.xLengthRow, this.yLengthRow, this.zLengthRow, this.radiusRow);
 	}
 
 	setObject(object: DetectGeometry): void {
+		super.setObject(object);
+		if (!object) return;
+
 		this.object = object;
 		const { detectType, geometryData } = object;
-		hideUIElement(this.widthRow);
-		hideUIElement(this.heightRow);
-		hideUIElement(this.depthRow);
+		hideUIElement(this.xLengthRow);
+		hideUIElement(this.yLengthRow);
+		hideUIElement(this.zLengthRow);
 		hideUIElement(this.radiusRow);
 		switch (detectType) {
 			case 'Mesh':
-				showUIElement(this.widthRow);
-				showUIElement(this.heightRow);
-				showUIElement(this.depthRow);
-				this.width.setValue(geometryData.widthSegments);
-				this.height.setValue(geometryData.heightSegments);
-				this.depth.setValue(geometryData.depthSegments);
+				showUIElement(this.xLengthRow);
+				showUIElement(this.yLengthRow);
+				showUIElement(this.zLengthRow);
+				this.xLength.setValue(geometryData.xSegments);
+				this.yLength.setValue(geometryData.ySegments);
+				this.zLength.setValue(geometryData.zSegments);
 				break;
 			case 'Cyl':
-				showUIElement(this.depthRow);
+				showUIElement(this.zLengthRow);
 				showUIElement(this.radiusRow);
-				this.depth.setValue(geometryData.depthSegments);
+				this.zLength.setValue(geometryData.zSegments);
 				this.radius.setValue(geometryData.radialSegments);
 				break;
 			default:
@@ -94,9 +90,9 @@ export class ObjectGrid extends ObjectAbstract {
 			case 'Mesh':
 				editor.execute(
 					new SetDetectGeometryCommand(editor, object, {
-						widthSegments: this.width.getValue(),
-						heightSegments: this.height.getValue(),
-						depthSegments: this.depth.getValue()
+						xSegments: this.xLength.getValue(),
+						ySegments: this.yLength.getValue(),
+						zSegments: this.zLength.getValue()
 					})
 				);
 				break;
@@ -104,7 +100,7 @@ export class ObjectGrid extends ObjectAbstract {
 				editor.execute(
 					new SetDetectGeometryCommand(editor, object, {
 						radialSegments: this.radius.getValue(),
-						depthSegments: this.depth.getValue()
+						zSegments: this.zLength.getValue()
 					})
 				);
 				break;

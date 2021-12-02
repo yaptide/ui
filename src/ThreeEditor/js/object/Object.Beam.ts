@@ -1,5 +1,3 @@
-//ENERGY descriptors
-
 import { Beam } from '../../util/Beam';
 import {
 	createParticleTypeSelect,
@@ -32,7 +30,7 @@ export class ObjectBeam extends ObjectAbstract {
 
 	particleTypeRow: UIRow;
 	particleType: UINumber;
-	renderParticleType: (value: string) => void;
+	renderParticleType: (value: number) => void;
 
 	particleZRow: UIRow;
 	particleZ: UINumber;
@@ -102,6 +100,9 @@ export class ObjectBeam extends ObjectAbstract {
 		);
 	}
 	setObject(object: Beam): void {
+		super.setObject(object);
+		if (!object) return;
+
 		this.object = object;
 
 		this.divergenceX.setValue(object.divergence.x);
@@ -142,6 +143,6 @@ export class ObjectBeam extends ObjectAbstract {
 
 	render(): void {
 		if (!this.object) return;
-		this.renderParticleType(`${this.object!.particle.id}`);
+		this.renderParticleType(this.object.particle.id);
 	}
 }

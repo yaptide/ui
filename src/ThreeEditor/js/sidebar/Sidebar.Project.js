@@ -3,7 +3,7 @@ import { UIPanel, UIRow, UIInput, UICheckbox, UIText, UISpan } from '../libs/ui.
 import { SidebarProjectRenderer } from './Sidebar.Project.Renderer.js';
 
 function SidebarProject(editor) {
-	const { signals, strings, config } = editor;
+	const { signals, config } = editor;
 
 	const container = new UISpan();
 
@@ -22,7 +22,7 @@ function SidebarProject(editor) {
 			config.setKey('project/title', this.getValue());
 		});
 
-	titleRow.add(new UIText(strings.getKey('sidebar/project/title')).setWidth('90px'));
+	titleRow.add(new UIText('Title').setWidth('90px'));
 	titleRow.add(title);
 
 	settings.add(titleRow);
@@ -36,7 +36,7 @@ function SidebarProject(editor) {
 			config.setKey('project/editable', this.getValue());
 		});
 
-	editableRow.add(new UIText(strings.getKey('sidebar/project/editable')).setWidth('90px'));
+	editableRow.add(new UIText('Editable').setWidth('90px'));
 	editableRow.add(editable);
 
 	settings.add(editableRow);

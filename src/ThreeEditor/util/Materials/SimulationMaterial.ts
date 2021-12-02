@@ -15,3 +15,5 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 		this.simulationData = data;
 	}
 }
+export const isSimulationMaterial = (m: unknown): m is SimulationMaterial =>
+	m instanceof SimulationMaterial;

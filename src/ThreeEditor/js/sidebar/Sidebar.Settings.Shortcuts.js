@@ -1,11 +1,13 @@
 import {
 	RemoveDetectGeometryCommand,
-	RemoveFilterCommand, RemoveObjectCommand, RemoveZoneCommand
+	RemoveFilterCommand,
+	RemoveObjectCommand,
+	RemoveZoneCommand
 } from '../commands/Commands';
 import { UIInput, UIPanel, UIRow, UIText } from '../libs/ui.js';
 
 function SidebarSettingsShortcuts(editor) {
-	const { signals, strings, config } = editor;
+	const { signals, config } = editor;
 
 	const IS_MAC = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 
@@ -16,7 +18,7 @@ function SidebarSettingsShortcuts(editor) {
 	const container = new UIPanel();
 
 	const headerRow = new UIRow();
-	headerRow.add(new UIText(strings.getKey('sidebar/settings/shortcuts').toUpperCase()));
+	headerRow.add(new UIText('Shortcuts'.toUpperCase()));
 	container.add(headerRow);
 
 	const shortcuts = ['translate', 'rotate', 'scale', 'undo', 'focus'];
@@ -61,11 +63,7 @@ function SidebarSettingsShortcuts(editor) {
 		}
 
 		shortcutInput.dom.maxLength = 1;
-		shortcutRow.add(
-			new UIText(strings.getKey('sidebar/settings/shortcuts/' + name))
-				.setTextTransform('capitalize')
-				.setWidth('90px')
-		);
+		shortcutRow.add(new UIText(name).setTextTransform('capitalize').setWidth('90px'));
 		shortcutRow.add(shortcutInput);
 
 		container.add(shortcutRow);
@@ -86,7 +84,7 @@ function SidebarSettingsShortcuts(editor) {
 			default:
 				return new RemoveObjectCommand(editor, object);
 		}
-	}
+	};
 
 	editor.container.addEventListener(
 		'keydown',
@@ -98,8 +96,7 @@ function SidebarSettingsShortcuts(editor) {
 					if (object === null || object.notRemovable === true) return;
 
 					const parent = object.parent;
-					if (parent !== null)
-						editor.execute(getRemoveCommand(editor, object));
+					if (parent !== null) editor.execute(getRemoveCommand(editor, object));
 					break;
 
 				case config.getKey('settings/shortcuts/translate'):
@@ -148,4 +145,3 @@ function SidebarSettingsShortcuts(editor) {
 }
 
 export { SidebarSettingsShortcuts };
-

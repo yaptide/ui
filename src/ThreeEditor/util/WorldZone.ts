@@ -13,7 +13,6 @@ export interface WorldZoneJSON {
 	size: THREE.Vector3;
 	geometryType: WorldZoneType;
 	name: string;
-	color: THREE.ColorRepresentation;
 	marginMultiplier: number;
 	autoCalculate: boolean;
 	simulationMaterialName: string;
@@ -79,6 +78,7 @@ export class WorldZone extends SimulationObject3D {
 		objectChanged: Signal<THREE.Object3D>;
 		sceneGraphChanged: Signal;
 		objectSelected: Signal<THREE.Object3D>;
+		autocalculateChanged: Signal<boolean>;
 	};
 
 	readonly debouncedCalculate = debounce(200, false, () => this.calculate());
@@ -102,7 +102,8 @@ export class WorldZone extends SimulationObject3D {
 		// watch for changes on material color
 		const materialColorHandler = {
 			get: (target: Color, prop: keyof Color) => {
-				return Reflect.get(this.simulationMaterial.color, prop);
+				const result = Reflect.get(this.simulationMaterial.color, prop);
+				return result;
 			}
 		};
 
@@ -115,7 +116,6 @@ export class WorldZone extends SimulationObject3D {
 		this.boxHelper.name = 'boxHelper';
 
 		this.cylinderMesh = new THREE.Mesh(_cylinderGeometry, this._material);
-		this.cylinderMesh.rotation.set(Math.PI / 2, 0, 0);
 		this.cylinderMesh.name = 'cylinderMeshHelper';
 		this.sphereMesh = new THREE.Mesh(_sphereGeometry, this._material);
 		this.sphereMesh.name = 'sphereMeshHelper';
@@ -148,6 +148,7 @@ export class WorldZone extends SimulationObject3D {
 
 	set geometryType(value: WorldZoneType) {
 		this._geometryType = value;
+		this.setFromCenterAndSize(this.position, this.size);
 		this.getAllHelpers().forEach(e => (e.visible = false));
 		this.getHelper(value).visible = true;
 		this.signals.objectChanged.dispatch(this);
@@ -160,7 +161,7 @@ export class WorldZone extends SimulationObject3D {
 	set autoCalculate(value: boolean) {
 		this._autoCalculate = value;
 		if (this._autoCalculate) this.calculate();
-		this.signals.objectSelected.dispatch(this);
+		this.signals.autocalculateChanged.dispatch(value);
 	}
 
 	get center() {
@@ -217,7 +218,7 @@ export class WorldZone extends SimulationObject3D {
 			this.sphereMesh.scale.setScalar(size.x);
 			this.sphereMesh.position.copy(center);
 
-			this.cylinderMesh.scale.set(size.x, size.y, size.x);
+			this.cylinderMesh.scale.set(Math.min(size.x, size.y), Math.min(size.x, size.y), size.z);
 			this.cylinderMesh.position.copy(center);
 		});
 	}
@@ -281,7 +282,6 @@ export class WorldZone extends SimulationObject3D {
 			type: this.type,
 			geometryType: this._geometryType,
 			name: this.name,
-			color: this._material.color.getHex(),
 			marginMultiplier: this.marginMultiplier,
 			autoCalculate: this.autoCalculate,
 			simulationMaterialName: this.simulationMaterial.name,
@@ -299,16 +299,15 @@ export class WorldZone extends SimulationObject3D {
 		this.geometryType = data.geometryType;
 		this.name = data.name;
 
-		this._material.color.set(data.color);
-
 		this.marginMultiplier = data.marginMultiplier;
 
 		this.setFromCenterAndSize(data.center, data.size);
 
 		this.autoCalculate = data.autoCalculate;
-
-		this.simulationMaterial =
+		const simulationMaterial =
 			this.editor.materialsManager.materials[data.simulationMaterialName];
+		this.simulationMaterial = simulationMaterial;
+		this.material.color.setHex(simulationMaterial.color.getHex());
 
 		return this;
 	}

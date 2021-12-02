@@ -1,19 +1,8 @@
-//POSITION
-//ROTATION
-//DIRECTION (BEAM)
-
 import * as THREE from 'three';
 import { Beam, isBeam } from '../../util/Beam';
-import { isZone } from '../../util/CSG/CSGZone';
 import { SimulationObject3D } from '../../util/SimulationBase/SimulationMesh';
 import { ISimulationObject } from '../../util/SimulationBase/SimulationObject';
-import {
-	createRowParamInput,
-	createRowParamNumberXYZ,
-	createRowText,
-	hideUIElement,
-	showUIElement
-} from '../../util/UiUtils';
+import { createRowParamNumberXYZ, hideUIElement, showUIElement } from '../../util/UiUtils';
 import { isWorldZone } from '../../util/WorldZone';
 import {
 	SetBeamDirectionCommand,
@@ -22,7 +11,7 @@ import {
 	SetValueCommand
 } from '../commands/Commands';
 import { Editor } from '../Editor';
-import { UIElement, UIInput, UINumber, UIRow, UIText } from '../libs/ui';
+import { UINumber, UIRow } from '../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectPlacement extends ObjectAbstract {
@@ -81,6 +70,9 @@ export class ObjectPlacement extends ObjectAbstract {
 	}
 
 	setObject(object: SimulationObject3D | Beam): void {
+		super.setObject(object);
+		if (!object) return;
+
 		this.object = object;
 		if (this.hasPosition(object)) {
 			showUIElement(this.positionRow);
@@ -112,7 +104,7 @@ export class ObjectPlacement extends ObjectAbstract {
 		const { object, editor } = this;
 		if (!object) return;
 		if (this.hasPosition(object)) {
-			let newPosition = new THREE.Vector3(
+			const newPosition = new THREE.Vector3(
 				this.positionX.getValue(),
 				this.positionY.getValue(),
 				this.positionZ.getValue()
@@ -124,7 +116,7 @@ export class ObjectPlacement extends ObjectAbstract {
 			}
 		}
 		if (this.hasRotation(object)) {
-			let newRotation = new THREE.Euler(
+			const newRotation = new THREE.Euler(
 				this.rotationX.getValue(),
 				this.rotationY.getValue(),
 				this.rotationZ.getValue()
@@ -133,7 +125,7 @@ export class ObjectPlacement extends ObjectAbstract {
 				this.editor.execute(new SetRotationCommand(editor, object, newRotation));
 		}
 		if (this.hasDirection(object)) {
-			let newDirection = new THREE.Vector3(
+			const newDirection = new THREE.Vector3(
 				this.directionX.getValue(),
 				this.directionY.getValue(),
 				this.directionZ.getValue()

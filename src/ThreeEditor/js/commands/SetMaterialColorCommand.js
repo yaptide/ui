@@ -8,7 +8,7 @@ import { Command } from '../Command.js';
  * @constructor
  */
 class SetMaterialColorCommand extends Command {
-	constructor(editor, object, attributeName, newValue, materialSlot) {
+	constructor(editor, object, attributeName, newValue, materialSlot = 0) {
 		super(editor);
 
 		this.type = 'SetMaterialColorCommand';

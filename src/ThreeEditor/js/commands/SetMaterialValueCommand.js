@@ -8,7 +8,7 @@ import { Command } from '../Command.js';
  * @constructor
  */
 class SetMaterialValueCommand extends Command {
-	constructor(editor, object, attributeName, newValue, materialSlot) {
+	constructor(editor, object, attributeName, newValue, materialSlot = 0) {
 		super(editor);
 
 		this.type = 'SetMaterialValueCommand';
@@ -27,7 +27,7 @@ class SetMaterialValueCommand extends Command {
 	execute() {
 		this.material[this.attributeName] = this.newValue;
 		this.material.needsUpdate = true;
-
+		console.log(this.newValue);
 		this.editor.signals.objectChanged.dispatch(this.object);
 		this.editor.signals.materialChanged.dispatch(this.material);
 	}

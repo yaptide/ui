@@ -58,7 +58,7 @@ export class Zone extends SimulationMesh {
 		super(editor, name, 'Zone');
 		if (uuid) this.uuid = uuid;
 		this.signals = editor.signals;
-		this.name = name || `Zone${this.id}`;
+		this.name = name || `Zone`;
 		this.material = editor.materialsManager.materials[materialName ?? 'WATER, LIQUID'];
 		this.unionOperations = unionOperations ?? [];
 		// If operations are specified, we have to populate set of subscribed UUID's

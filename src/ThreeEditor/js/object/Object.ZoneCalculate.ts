@@ -1,4 +1,9 @@
-import { createFullwidthButton, createRowCheckbox } from '../../util/UiUtils';
+import {
+	createFullwidthButton,
+	createRowCheckbox,
+	hideUIElement,
+	showUIElement
+} from '../../util/UiUtils';
 import { WorldZone } from '../../util/WorldZone';
 import { SetValueCommand } from '../commands/Commands';
 import { Editor } from '../Editor';
@@ -25,9 +30,21 @@ export class ObjectZoneCalculate extends ObjectAbstract {
 			update: this.zoneCalculate.bind(this)
 		});
 		this.panel.add(this.autoRow, this.calculateRow);
+		this.editor.signals.objectChanged.add((object: THREE.Object3D) =>
+			(object === this.object &&
+				object === this.editor.selected &&
+				this.object.geometryType === 'Box'
+				? showUIElement
+				: hideUIElement)(this.panel)
+		);
 	}
 
 	setObject(object: WorldZone): void {
+		super.setObject(object);
+		if (!object) return;
+
+		this.object = object;
+		if (object.geometryType !== 'Box') return hideUIElement(this.panel);
 		this.object = object;
 		this.auto.setValue(object.autoCalculate);
 	}

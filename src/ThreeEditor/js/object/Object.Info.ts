@@ -1,12 +1,7 @@
-//OBJECT TYPE
-//NAME
-//ID
-//UUID
-
 import { createRowParamInput, createRowText } from '../../util/UiUtils';
 import { SetValueCommand } from '../commands/Commands';
 import { Editor } from '../Editor';
-import { UIElement, UIInput, UIRow, UIText } from '../libs/ui';
+import { UIInput, UIRow, UIText } from '../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectInfo extends ObjectAbstract {
@@ -33,6 +28,9 @@ export class ObjectInfo extends ObjectAbstract {
 	}
 
 	setObject(object: THREE.Object3D): void {
+		super.setObject(object);
+		if (!object) return;
+
 		this.object = object;
 		this.id.setValue(this.object.id.toString());
 		this.type.setValue(this.object.type);

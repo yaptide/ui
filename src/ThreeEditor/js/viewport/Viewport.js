@@ -440,24 +440,6 @@ export function Viewport(
 
 				break;
 
-			case 'ControlLeft':
-			case 'ControlRight':
-				config.selectZones = true;
-				config.selectFigures = false;
-				break;
-
-			default:
-				break;
-		}
-	});
-	container.dom.addEventListener('keyup', event => {
-		switch (event.code) {
-			case 'ControlLeft':
-			case 'ControlRight':
-				config.selectZones = false;
-				config.selectFigures = true;
-				break;
-
 			default:
 				break;
 		}
@@ -473,22 +455,13 @@ export function Viewport(
 		render();
 	});
 
-	signals.snapChanged.add(dist => {
-		transformControls.setTranslationSnap(dist);
-	});
+	signals.snapChanged.add(transformControls.setTranslationSnap);
 
-	signals.spaceChanged.add(space => {
-		transformControls.setSpace(space);
-	});
+	signals.spaceChanged.add(transformControls.setSpace);
 
-	signals.objectSelected.add(object => {
-		reattachTransformControls(object);
-		render();
-	});
-	signals.contextChanged.add(context => {
-		reattachTransformControls(editor.selected);
-		render();
-	});
+	signals.objectSelected.add(reattachTransformControls);
+	signals.autocalculateChanged.add(() => reattachTransformControls(editor.selected));
+	signals.contextChanged.add(() => reattachTransformControls(editor.selected));
 
 	signals.objectRemoved.add(object => {
 		controls.enabled = true;
@@ -500,7 +473,6 @@ export function Viewport(
 
 	signals.showHelpersChanged.add(showHelpers => {
 		transformControls.enabled = showHelpers;
-
 		render();
 	});
 

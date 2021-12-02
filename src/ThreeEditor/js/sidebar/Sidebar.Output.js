@@ -1,7 +1,6 @@
-import { AddFilterCommand } from '../commands/Commands';
-import { UIButton, UIPanel, UIRow } from '../libs/ui';
-import { OutlinerManager } from './Sidebar.OutlinerManager';
+import { UIPanel } from '../libs/ui';
 import { DetectAddPanel } from './Sidebar.AddPanel';
+import { OutlinerManager } from './Sidebar.OutlinerManager';
 
 export class SidebarOutput extends UIPanel {
 	editor;

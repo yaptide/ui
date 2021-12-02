@@ -11,6 +11,7 @@ export interface DetectGeometryJSON {
 	type: DETECT.DETECT_TYPE;
 	position: THREE.Vector3Tuple;
 	name: string;
+	colorHex: number;
 }
 
 type DetectGeometryArgs = Partial<DetectGeometryJSON>;
@@ -52,7 +53,8 @@ export class DetectGeometry extends SimulationPoints {
 		this.tryUpdateGeometry();
 	}
 
-	static maxDisplayDensity: number = 4;
+	static maxDisplayDensity: number = 2;
+	static maxSegmentsAmount: number = 40;
 	autoSplitGrid: boolean = true;
 
 	private signals: {
@@ -124,9 +126,18 @@ export class DetectGeometry extends SimulationPoints {
 					data.width,
 					data.height,
 					data.depth,
-					Math.min(data.widthSegments, DetectGeometry.maxDisplayDensity),
-					Math.min(data.heightSegments, DetectGeometry.maxDisplayDensity),
-					Math.min(data.depthSegments, DetectGeometry.maxDisplayDensity)
+					Math.min(
+						DetectGeometry.maxSegmentsAmount,
+						Math.max(1, Math.floor(data.width * DetectGeometry.maxDisplayDensity))
+					),
+					Math.min(
+						DetectGeometry.maxSegmentsAmount,
+						Math.max(1, Math.floor(data.height * DetectGeometry.maxDisplayDensity))
+					),
+					Math.min(
+						DetectGeometry.maxSegmentsAmount,
+						Math.max(1, Math.floor(data.depth * DetectGeometry.maxDisplayDensity))
+					)
 				);
 				break;
 			case 'Cyl':
@@ -164,7 +175,7 @@ export class DetectGeometry extends SimulationPoints {
 		this.proxy = new Proxy(this, this.overrideHandler);
 		this.signals = editor.signals;
 		this.position.fromArray(position);
-		this._geometryData = data;
+		this._geometryData = { ...data };
 		this._detectType = type;
 
 		this.positionProxy = new Proxy(this.position, {
@@ -255,53 +266,77 @@ export class DetectGeometry extends SimulationPoints {
 		const type = this.detectType;
 		const position = this.position.toArray();
 		const name = this.name;
+		const colorHex = this.material.color.getHex();
 		return {
 			data,
 			type,
 			position,
-			name
+			name,
+			colorHex
 		};
 	}
 
-	fromJSON(data: DetectGeometryJSON): void {
+	fromJSON(data: DetectGeometryJSON): DetectGeometry {
 		this._geometryData = data.data;
 		this.detectType = data.type;
 		this.name = data.name;
 		this.geometry = this.generateGeometry();
 		this.position.fromArray(data.position);
+		this.material.color.setHex(data.colorHex);
+		return this;
 	}
 
 	static fromJSON(editor: Editor, data: DetectGeometryJSON): DetectGeometry {
-		const detectGeometry = new DetectGeometry(editor, data);
-		return detectGeometry;
+		return new DetectGeometry(editor, data).fromJSON(data);
 	}
 }
 
 export const isDetectGeometry = (x: unknown): x is DetectGeometry => x instanceof DetectGeometry;
 
 function createCylindricalGeometry(data: DETECT.Cyl, matrix: THREE.Matrix4) {
-	const averageRadius = (data.radius - data.innerRadius) / 2;
 	const geometry1 = new THREE.CylinderGeometry(
 		data.radius,
 		data.radius,
 		data.depth,
-		20,
-		Math.min(data.depthSegments, DetectGeometry.maxDisplayDensity)
+		Math.min(
+			DetectGeometry.maxSegmentsAmount,
+			Math.max(10, Math.floor(Math.PI * data.radius * DetectGeometry.maxDisplayDensity))
+		),
+		Math.min(
+			DetectGeometry.maxSegmentsAmount,
+			Math.max(1, Math.floor(data.depth * DetectGeometry.maxDisplayDensity))
+		)
 	);
-	const geometry2 = new THREE.CylinderGeometry(
-		averageRadius,
-		averageRadius,
+	const geometry2 = new THREE.BoxGeometry(
+		data.radius * 2,
 		data.depth,
-		20,
-		Math.min(data.depthSegments, DetectGeometry.maxDisplayDensity)
+		data.radius * 2,
+		Math.min(
+			DetectGeometry.maxSegmentsAmount,
+			Math.max(2, Math.floor(data.radius * 2 * DetectGeometry.maxDisplayDensity))
+		),
+		Math.min(
+			DetectGeometry.maxSegmentsAmount,
+			Math.max(2, Math.floor(data.depth * DetectGeometry.maxDisplayDensity))
+		),
+		Math.min(
+			DetectGeometry.maxSegmentsAmount,
+			Math.max(2, Math.floor(data.radius * 2 * DetectGeometry.maxDisplayDensity))
+		)
 	);
 
 	const geometry3 = new THREE.CylinderGeometry(
 		data.innerRadius,
 		data.innerRadius,
 		data.depth,
-		20,
-		Math.min(data.depthSegments, DetectGeometry.maxDisplayDensity)
+		Math.min(
+			DetectGeometry.maxSegmentsAmount,
+			Math.max(10, Math.floor(Math.PI * data.innerRadius * DetectGeometry.maxDisplayDensity))
+		),
+		Math.min(
+			DetectGeometry.maxSegmentsAmount,
+			Math.max(1, Math.floor(data.depth * DetectGeometry.maxDisplayDensity))
+		)
 	);
 	const cyl1 = new THREE.Mesh(geometry1);
 	const cyl2 = new THREE.Mesh(geometry2);
@@ -313,9 +348,7 @@ function createCylindricalGeometry(data: DETECT.Cyl, matrix: THREE.Matrix4) {
 	const BSP2 = CSG.CSG.fromMesh(cyl2);
 	const BSP3 = CSG.CSG.fromMesh(cyl3);
 	const newGeometry = CSG.CSG.toGeometry(
-		data.innerRadius
-			? BSP1.subtract(BSP3).union(BSP2.subtract(BSP3))
-			: BSP1.subtract(BSP2).union(BSP2),
+		data.innerRadius ? BSP2.intersect(BSP1).subtract(BSP3) : BSP2.intersect(BSP1),
 		matrix
 	);
 	return newGeometry;

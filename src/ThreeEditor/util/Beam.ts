@@ -1,12 +1,12 @@
 import * as THREE from 'three';
-import { Euler, Material, Vector3 } from 'three';
+import { Euler, Vector3 } from 'three';
 // Import of 'lines' from examples subfolder follows the official guidelines of threejs.editor (see https://threejs.org/docs/#manual/en/introduction/Installation)
 import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { debounce } from 'throttle-debounce';
 import { Editor } from '../js/Editor';
-import { SimulationMesh, SimulationObject3D } from './SimulationBase/SimulationMesh';
+import { SimulationObject3D } from './SimulationBase/SimulationMesh';
 
 export interface BeamJSON {
 	position: THREE.Vector3Tuple;
@@ -23,6 +23,7 @@ export interface BeamJSON {
 		z: number;
 		a: number;
 	};
+	colorHex: number;
 }
 
 const _default = {
@@ -204,9 +205,11 @@ export class Beam extends SimulationObject3D {
 		this.energySpread = _default.energySpread;
 		this.divergence = { ..._default.divergence };
 		this.particle = _default.particle;
+		this.material.color.setHex(0xffff00); // yellow
 	}
 
 	copy(source: this, recursive = true) {
+		throw new Error('Not implemented');
 		return new Proxy(super.copy(source, recursive), this.overrideHandler) as this;
 	}
 
@@ -217,7 +220,8 @@ export class Beam extends SimulationObject3D {
 			energy: this.energy,
 			energySpread: this.energySpread,
 			divergence: this.divergence,
-			particle: this.particle
+			particle: this.particle,
+			colorHex: this.material.color.getHex()
 		};
 
 		return jsonObject;
@@ -230,6 +234,7 @@ export class Beam extends SimulationObject3D {
 		this.energySpread = data.energySpread;
 		this.divergence = data.divergence;
 		this.particle = data.particle;
+		this.material.color.setHex(data.colorHex);
 		return this;
 	}
 

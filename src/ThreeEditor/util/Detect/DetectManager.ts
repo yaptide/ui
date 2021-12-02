@@ -49,7 +49,6 @@ export class FilterContainer extends SimulationSceneGroup<DetectFilter> {
 	reset() {
 		this.name = 'Filters';
 		this.clear();
-		console.log(this);
 	}
 }
 
@@ -59,7 +58,7 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 	readonly notRotatable = true;
 	readonly notScalable = true;
 
-	private static _detectWireMaterial = new THREE.MeshBasicMaterial({
+	private _detectWireMaterial = new THREE.MeshBasicMaterial({
 		side: THREE.DoubleSide,
 		transparent: true,
 		opacity: 0.5,
@@ -90,6 +89,7 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 		detectFilterRemoved: Signal<DetectFilter>;
 		detectFilterAdded: Signal<DetectFilter>;
 		detectFilterChanged: Signal<DetectFilter>;
+		materialChanged: Signal<THREE.Material>;
 	};
 	readonly isDetectManager: true = true;
 
@@ -98,7 +98,7 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 	constructor(editor: Editor) {
 		super();
 		this.detectContainer = new DetectContainer(editor);
-		this.detectHelper = new THREE.Mesh(undefined, DetectManager._detectWireMaterial);
+		this.detectHelper = new THREE.Mesh(undefined, this._detectWireMaterial);
 		this.name = 'DetectManager';
 		this.editor = editor;
 		this.filterContainer = new FilterContainer(editor);
@@ -107,18 +107,26 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 		this.signals = editor.signals;
 		this.signals.objectSelected.add(this.onObjectSelected);
 		this.signals.detectGeometryChanged.add(this.onObjectSelected);
+		this.signals.materialChanged.add(this.onMaterialChanged.bind(this));
 	}
 
 	onObjectSelected = (object: THREE.Object3D) => {
 		this.detectHelper.geometry.dispose();
 		if (isDetectGeometry(object) && this.editor.selected === object) {
 			this.detectHelper.position.copy(object.position);
+			this._detectWireMaterial.color.copy(object.material.color);
 			this.detectHelper.geometry = object.geometry.clone();
 		} else {
 			this.detectHelper.geometry = new THREE.BufferGeometry();
 		}
 		this.signals.sceneGraphChanged.dispatch();
 	};
+
+	onMaterialChanged() {
+		if (isDetectGeometry(this.editor.selected)) {
+			this._detectWireMaterial.color.copy(this.editor.selected.material.color);
+		}
+	}
 
 	createSection(): DetectGeometry {
 		const section = new DetectGeometry(this.editor, {});

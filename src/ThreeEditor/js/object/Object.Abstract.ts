@@ -1,5 +1,6 @@
+import { hideUIElement, showUIElement } from '../../util/UiUtils';
 import { Editor } from '../Editor';
-import { UIElement, UIPanel, UIRow, UIText } from '../libs/ui';
+import { UIPanel, UIRow, UIText } from '../libs/ui';
 
 export abstract class ObjectAbstract {
 	editor: Editor;
@@ -14,6 +15,8 @@ export abstract class ObjectAbstract {
 		this.panel = new UIPanel();
 		this.panel.add(this.titleRow);
 	}
-	abstract setObject(object: unknown): void;
+	setObject(object: unknown): void {
+		object ? showUIElement(this.panel) : hideUIElement(this.panel);
+	}
 	abstract update(): void;
 }

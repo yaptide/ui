@@ -1,19 +1,11 @@
-//GEOMETRY TYPE
-//WIDTH
-//HEIGHT
-//DEPTH
-//RADIUS
-
 import * as THREE from 'three';
 import {
 	BasicMesh,
 	BASIC_GEOMETRY_OPTIONS,
-	BoxMesh,
 	isBasicMesh,
 	isBoxMesh,
 	isCylinderMesh,
-	isSphereMesh,
-	SphereMesh
+	isSphereMesh
 } from '../../util/BasicMeshes';
 import { DetectGeometry, isDetectGeometry } from '../../util/Detect/DetectGeometry';
 import { DETECT_OPTIONS } from '../../util/Detect/DetectTypes';
@@ -32,7 +24,7 @@ import {
 	SetValueCommand
 } from '../commands/Commands';
 import { Editor } from '../Editor';
-import { UIElement, UIInput, UINumber, UIRow, UISelect, UIText } from '../libs/ui';
+import { UINumber, UIRow, UISelect, UIText } from '../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectDimensions extends ObjectAbstract {
@@ -44,14 +36,14 @@ export class ObjectDimensions extends ObjectAbstract {
 	typeSelectRow: UIRow;
 	typeSelect: UISelect;
 
-	widthRow: UIRow;
-	width: UINumber;
+	xLengthRow: UIRow;
+	xLength: UINumber;
 
-	heightRow: UIRow;
-	height: UINumber;
+	yLengthRow: UIRow;
+	yLength: UINumber;
 
-	depthRow: UIRow;
-	depth: UINumber;
+	zLengthRow: UIRow;
+	zLength: UINumber;
 
 	radiusRow: UIRow;
 	radius: UINumber;
@@ -70,17 +62,17 @@ export class ObjectDimensions extends ObjectAbstract {
 			update: this.updateType.bind(this),
 			text: 'Geometry Type'
 		});
-		[this.widthRow, this.width] = createRowParamNumber({
+		[this.xLengthRow, this.xLength] = createRowParamNumber({
 			update: this.update.bind(this),
 			text: `X side length (width) ${editor.unit.name}`,
 			min: 0
 		});
-		[this.heightRow, this.height] = createRowParamNumber({
+		[this.yLengthRow, this.yLength] = createRowParamNumber({
 			update: this.update.bind(this),
 			text: `Y side length (height) ${editor.unit.name}`,
 			min: 0
 		});
-		[this.depthRow, this.depth] = createRowParamNumber({
+		[this.zLengthRow, this.zLength] = createRowParamNumber({
 			update: this.update.bind(this),
 			text: `Z side length (depth) ${editor.unit.name}`,
 			min: 0
@@ -103,9 +95,9 @@ export class ObjectDimensions extends ObjectAbstract {
 		this.panel.add(
 			this.typeRow,
 			this.typeSelectRow,
-			this.widthRow,
-			this.heightRow,
-			this.depthRow,
+			this.xLengthRow,
+			this.yLengthRow,
+			this.zLengthRow,
 			this.radiusRow,
 			this.radiusRow2,
 			this.zoneIdRow
@@ -136,28 +128,28 @@ export class ObjectDimensions extends ObjectAbstract {
 	}
 
 	private setBox(object: BasicMesh | DetectGeometry | WorldZone): void {
-		showUIElement(this.widthRow);
-		showUIElement(this.heightRow);
-		showUIElement(this.depthRow);
+		showUIElement(this.xLengthRow);
+		showUIElement(this.yLengthRow);
+		showUIElement(this.zLengthRow);
 		if (isWorldZone(object)) {
 			if (object.autoCalculate) {
-				hideUIElement(this.widthRow);
-				hideUIElement(this.heightRow);
-				hideUIElement(this.depthRow);
+				hideUIElement(this.xLengthRow);
+				hideUIElement(this.yLengthRow);
+				hideUIElement(this.zLengthRow);
 			} else {
 				const { size } = object;
-				this.width.setValue(size.x);
-				this.height.setValue(size.y);
-				this.depth.setValue(size.z);
+				this.xLength.setValue(size.x);
+				this.yLength.setValue(size.y);
+				this.zLength.setValue(size.z);
 			}
 		} else {
 			let parameters;
 			if (isDetectGeometry(object)) parameters = object.geometryData;
 			else if (isBoxMesh(object)) parameters = object.geometry.parameters;
 			else return;
-			this.width.setValue(parameters.width);
-			this.height.setValue(parameters.height);
-			this.depth.setValue(parameters.depth);
+			this.xLength.setValue(parameters.width);
+			this.yLength.setValue(parameters.height);
+			this.zLength.setValue(parameters.depth);
 		}
 	}
 
@@ -176,42 +168,51 @@ export class ObjectDimensions extends ObjectAbstract {
 	}
 
 	private setCylinder(object: BasicMesh | DetectGeometry | WorldZone): void {
-		showUIElement(this.depthRow);
+		showUIElement(this.zLengthRow);
 		showUIElement(this.radiusRow);
 		if (isWorldZone(object)) {
 			const { size } = object;
 			this.radius.setValue(size.x);
-			this.depth.setValue(size.y); //TODO: move this value to z property when we unify cylinder rotation in application
+			this.zLength.setValue(size.z);
 		} else if (isDetectGeometry(object)) {
 			showUIElement(this.radiusRow2);
 			const parameters = object.geometryData;
 			this.radius.setValue(parameters.radius);
 			this.radius2.setValue(parameters.innerRadius);
-			this.depth.setValue(parameters.height);
+			this.radius.min = parameters.innerRadius + 0.001; // Prevent radius from being lower than innerRadius
+			this.radius2.max = parameters.radius - 0.001; // innerRadius cannot be greater than radius
+			this.zLength.setValue(parameters.depth);
 		} else if (isCylinderMesh(object)) {
 			const parameters = object.geometry.parameters;
 			this.radius.setValue(parameters.radiusTop);
-			this.depth.setValue(parameters.height);
+			this.zLength.setValue(parameters.height);
 		}
 	}
 
-	private setZoneId(object: BasicMesh | DetectGeometry | WorldZone): void {
+	private setZoneId(): void {
+		const { object } = this;
+		if (!object) return;
 		showUIElement(this.zoneIdRow);
+		this.zoneId.setOptions(this.editor.zoneManager.getZoneOptions());
 		if (isDetectGeometry(object)) {
 			this.zoneId.setValue(object.geometryData.zoneId);
 		}
 	}
 
 	setObject(object: BasicMesh | DetectGeometry | WorldZone): void {
+		super.setObject(object);
+		if (!object) return;
+
 		this.object = object;
 		const geometryType = this.setGeometryType(object);
 
-		hideUIElement(this.widthRow);
-		hideUIElement(this.heightRow);
-		hideUIElement(this.depthRow);
+		hideUIElement(this.xLengthRow);
+		hideUIElement(this.yLengthRow);
+		hideUIElement(this.zLengthRow);
 		hideUIElement(this.radiusRow);
 		hideUIElement(this.radiusRow2);
 		hideUIElement(this.zoneIdRow);
+		this.editor.signals.zoneAdded.remove(this.setZoneId);
 		if (geometryType && geometryType !== 'All')
 			if (['Box', 'Mesh'].includes(geometryType)) {
 				this.setBox(object);
@@ -220,15 +221,16 @@ export class ObjectDimensions extends ObjectAbstract {
 			} else if (['Cyl', 'Cylinder'].includes(geometryType)) {
 				this.setCylinder(object);
 			} else if (geometryType === 'Zone') {
-				this.setZoneId(object);
+				this.editor.signals.zoneAdded.add(this.setZoneId.bind(this));
+				this.setZoneId();
 			}
 	}
 
 	getBoxData(): { width: number; height: number; depth: number } {
 		return {
-			width: this.width.getValue(),
-			height: this.height.getValue(),
-			depth: this.depth.getValue()
+			width: this.xLength.getValue(),
+			height: this.yLength.getValue(),
+			depth: this.zLength.getValue()
 		};
 	}
 
@@ -236,7 +238,7 @@ export class ObjectDimensions extends ObjectAbstract {
 		return {
 			radius: this.radius.getValue(),
 			innerRadius: this.radius2.getValue(),
-			depth: this.depth.getValue()
+			depth: this.zLength.getValue()
 		};
 	}
 
@@ -250,9 +252,9 @@ export class ObjectDimensions extends ObjectAbstract {
 		switch (geometryType) {
 			case 'Box':
 				return new THREE.Vector3(
-					this.width.getValue(),
-					this.height.getValue(),
-					this.depth.getValue()
+					this.xLength.getValue(),
+					this.yLength.getValue(),
+					this.zLength.getValue()
 				);
 			case 'Sphere':
 				return new THREE.Vector3(
@@ -263,8 +265,8 @@ export class ObjectDimensions extends ObjectAbstract {
 			case 'Cylinder':
 				return new THREE.Vector3(
 					this.radius.getValue(),
-					this.depth.getValue(),
-					this.depth.getValue()
+					this.radius.getValue(),
+					this.zLength.getValue()
 				);
 			default:
 				return;
@@ -283,9 +285,11 @@ export class ObjectDimensions extends ObjectAbstract {
 					break;
 				case 'Cyl':
 					geometryData = this.getCylinderData();
+					this.radius.min = geometryData.innerRadius + 0.001; // Prevent radius from being lower than innerRadius
+					this.radius2.max = geometryData.radius - 0.001; // innerRadius cannot be greater than radius
 					break;
 				case 'Zone':
-					geometryData = { zoneId: this.zoneId.getValue() };
+					geometryData = { zoneId: parseInt(this.zoneId.getValue()) };
 					break;
 				default:
 					break;
@@ -308,7 +312,11 @@ export class ObjectDimensions extends ObjectAbstract {
 			} else if (isSphereMesh(object)) {
 				const { radius } = this.getSphereData();
 				editor.execute(
-					new SetGeometryCommand(editor, object, new THREE.SphereGeometry(radius))
+					new SetGeometryCommand(
+						editor,
+						object,
+						new THREE.SphereGeometry(radius, 16, 8, 0, Math.PI * 2, 0, Math.PI)
+					)
 				);
 			} else if (isCylinderMesh(object)) {
 				const { radius, depth } = this.getCylinderData();
@@ -316,7 +324,16 @@ export class ObjectDimensions extends ObjectAbstract {
 					new SetGeometryCommand(
 						editor,
 						object,
-						new THREE.CylinderGeometry(radius, radius, depth)
+						new THREE.CylinderGeometry(
+							radius,
+							radius,
+							depth,
+							16,
+							1,
+							false,
+							0,
+							Math.PI * 2
+						).rotateX(Math.PI / 2)
 					)
 				);
 			}
@@ -326,13 +343,12 @@ export class ObjectDimensions extends ObjectAbstract {
 	updateType(): void {
 		const { object, editor } = this;
 		if (!object) return;
-		if (isDetectGeometry(object)) {
+		if (isDetectGeometry(object))
 			editor.execute(new SetDetectTypeCommand(editor, object, this.typeSelect.getValue()));
-		} else if (isWorldZone(object)) {
+		else if (isWorldZone(object))
 			editor.execute(
 				new SetValueCommand(editor, object, 'geometryType', this.typeSelect.getValue())
 			);
-		}
 		this.setObject(object);
 	}
 }

@@ -1,4 +1,4 @@
-import { UICustomTabbedPanel } from '../../util/UiUtils';
+import { UICustomTabbedPanel, hideUIElement, showUIElement } from '../../util/UiUtils';
 import { ObjectBeam } from '../object/Object.Beam';
 import { ObjectCSG } from '../object/Object.CSG';
 import { ObjectDimensions } from '../object/Object.Dimensions';
@@ -12,7 +12,6 @@ function SidebarProperties(editor, id = 'properties') {
 	const { signals } = editor;
 	const container = new UICustomTabbedPanel();
 	container.setId(id);
-	container.selected = 'object';
 	const info = new ObjectInfo(editor);
 	const placement = new ObjectPlacement(editor);
 	const dimensions = new ObjectDimensions(editor);
@@ -22,105 +21,117 @@ function SidebarProperties(editor, id = 'properties') {
 	const beam = new ObjectBeam(editor);
 	const material = new ObjectMaterial(editor);
 
-	let objectItems = [];
-	let geometryItems = [];
-	let materialItems = [];
+	const objectItems = [info, placement];
+	const geometryItems = [dimensions, grid, zoneRules, calculate, beam];
+	const materialItems = [material];
+	container.addTab(
+		'object',
+		'OBJECT',
+		objectItems.map(item => item.panel)
+	);
+	container.addTab(
+		'geometry',
+		'GEOMETRY',
+		geometryItems.map(item => item.panel)
+	);
+	container.addTab(
+		'material',
+		'MATERIAL',
+		materialItems.map(item => item.panel)
+	);
+	container.select('object');
 
-	function refreshPanels(object) {
-		[...objectItems, ...geometryItems, ...materialItems].forEach(item =>
-			item.setObject(object)
-		);
+	function setupObjectPanel(object) {
+		info.setObject(object);
+		if (!object.notMovable && !object.isScene)
+			// TODO: Create custom scene for figures
+			placement.setObject(object);
+		else hideUIElement(placement.panel);
 	}
 
+	function setupGeometryPanel(object) {
+		if (
+			object.isScene ||
+			object.isDetectContainer ||
+			object.isZoneContainer ||
+			object.isFilterContainer ||
+			object.isOutputContainer
+		)
+			return container.hideTab('geometry');
+		container.showTab('geometry');
+		switch (true) {
+			case object.isZone:
+				[beam, dimensions, grid, calculate].forEach(item => item.setObject(null));
+				[zoneRules].forEach(item => item.setObject(object));
+				container.changeTabName('geometry', 'RULES');
+				break;
+			case object.isBeam:
+				[zoneRules, dimensions, grid, calculate].forEach(item => item.setObject(null));
+				[beam].forEach(item => item.setObject(object));
+				container.changeTabName('geometry', 'DESCRIPTORS');
+				break;
+			case object.isFilter:
+				[zoneRules, beam, dimensions, grid, calculate].forEach(item =>
+					item.setObject(null)
+				);
+				container.changeTabName('geometry', 'RULES');
+				break;
+			case object.isOutput:
+				[zoneRules, beam, dimensions, grid, calculate].forEach(item =>
+					item.setObject(null)
+				);
+				container.changeTabName('geometry', 'RULES');
+				break;
+			case object.isDetectGeometry:
+				[zoneRules, beam, calculate].forEach(item => item.setObject(null));
+				[grid, dimensions].forEach(item => item.setObject(object));
+				container.changeTabName('geometry', 'GEOMETRY');
+				break;
+			case object.isWorldZone:
+				[zoneRules, grid, beam].forEach(item => item.setObject(null));
+				[dimensions, calculate].forEach(item => item.setObject(object));
+				container.changeTabName('geometry', 'GEOMETRY');
+				break;
+			case object.isBasicMesh:
+				[zoneRules, beam, grid, calculate].forEach(item => item.setObject(null));
+				[dimensions].forEach(item => item.setObject(object));
+				container.changeTabName('geometry', 'GEOMETRY');
+				break;
+			default:
+				[zoneRules, beam, dimensions, grid, calculate].forEach(item =>
+					item.setObject(null)
+				);
+				console.warn(object);
+				break;
+		}
+	}
+
+	function setupMaterialPanel(object) {
+		if (!object.material) return container.hideTab('material');
+		container.showTab('material');
+		material.setObject(object);
+	}
 	function setupPanels(object) {
-		container.reset();
-		objectItems = [];
-		geometryItems = [];
-		materialItems = [];
-		let geometryName = 'GEOMETRY';
-		if (object) {
-			info.setObject(object);
-			objectItems.push(info);
-			if (!object.notMovable && !object.isScene /*TODO: Create custom scene for figures*/) {
-				placement.setObject(object);
-				objectItems.push(placement);
-			}
-			if (
-				object.isScene ||
-				object.isDetectContainer ||
-				object.isZoneContainer ||
-				object.isFilterContainer ||
-				object.isOutputContainer
-			) {
-				//Containers don't have dimensions
-			} else if (object.isZone) {
-				zoneRules.setObject(object);
-				geometryItems.push(zoneRules);
-				geometryName = 'RULES';
-			} else if (object.isBeam) {
-				beam.setObject(object);
-				geometryItems.push(beam);
-				geometryName = 'DESCRIPTORS';
-			} else if (!object.isFilter && !object.isOutput) {
-				dimensions.setObject(object);
-				geometryItems.push(dimensions);
-				if (object.isDetectGeometry && ['Cyl', 'Mesh'].includes(object.detectType)) {
-					grid.setObject(object);
-					geometryItems.push(grid);
-				} else if (object.isWorldZone && object.geometryType === 'Box') {
-					calculate.setObject(object);
-					geometryItems.push(calculate);
-				}
-			}
-			if (
-				object.isBasicMesh ||
-				object.isDetectGeometry ||
-				object.isZone ||
-				object.isBeam ||
-				object.isWorldZone
-			) {
-				material.setObject(object);
-				materialItems.push(material);
-			}
-		}
-		if (objectItems.length > 0) {
-			container.addTab(
-				'object',
-				'OBJECT',
-				objectItems.map(item => item.panel)
-			);
-		}
-		if (geometryItems.length > 0) {
-			container.addTab(
-				'geometry',
-				geometryName,
-				geometryItems.map(item => item.panel)
-			);
-		}
-		if (materialItems.length > 0) {
-			container.addTab(
-				'material',
-				'MATERIAL',
-				materialItems.map(item => item.panel)
-			);
-		}
-		zoneRules.render();
-		beam.render();
-		material.render();
-		container.select(container.selected);
+		if (!object) return hideUIElement(container);
+		showUIElement(container);
+
+		setupObjectPanel(object);
+		setupGeometryPanel(object);
+		setupMaterialPanel(object);
 	}
 
 	signals.objectChanged.add(object => {
-		if (object === editor.selected) refreshPanels(object);
-	});
-
-	signals.refreshSidebarObject3D.add(object => {
 		if (object === editor.selected) setupPanels(object);
 	});
 
-	signals.objectSelected.add(setupPanels);
-	signals.dataObjectSelected.add(setupPanels);
-	signals.contextChanged.add(() => setupPanels(editor.selected));
+	signals.objectSelected.add(object => {
+		setupPanels(object);
+	});
+	signals.dataObjectSelected.add(object => {
+		setupPanels(object);
+	});
+
+	setupPanels(editor.selected);
 
 	return container;
 }

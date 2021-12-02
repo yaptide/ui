@@ -2,9 +2,9 @@ export type Mesh = {
 	width: number;
 	height: number;
 	depth: number;
-	widthSegments: number;
-	heightSegments: number;
-	depthSegments: number;
+	xSegments: number;
+	ySegments: number;
+	zSegments: number;
 };
 
 export type Cyl = {
@@ -12,7 +12,7 @@ export type Cyl = {
 	innerRadius: number;
 	depth: number;
 	radialSegments: number;
-	depthSegments: number;
+	zSegments: number;
 };
 
 export type Zone = {
@@ -29,9 +29,9 @@ export const DEFAULT_ANY: Any = {
 	depth: 1,
 	radius: 1,
 	innerRadius: 0,
-	widthSegments: 1000,
-	heightSegments: 1000,
-	depthSegments: 1000,
+	xSegments: 1000,
+	ySegments: 1000,
+	zSegments: 1000,
 	radialSegments: 1,
 	zoneId: -1
 };
