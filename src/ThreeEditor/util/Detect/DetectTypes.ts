@@ -29,9 +29,9 @@ export const DEFAULT_ANY: Any = {
 	depth: 1,
 	radius: 1,
 	innerRadius: 0,
-	xSegments: 1000,
-	ySegments: 1000,
-	zSegments: 1000,
+	xSegments: 1,
+	ySegments: 1,
+	zSegments: 100,
 	radialSegments: 1,
 	zoneId: -1
 };

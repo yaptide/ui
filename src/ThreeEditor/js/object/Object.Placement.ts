@@ -45,7 +45,11 @@ export class ObjectPlacement extends ObjectAbstract {
 		[this.rotationRow, this.rotationX, this.rotationY, this.rotationZ] =
 			createRowParamNumberXYZ({
 				text: `Rotation [deg]`, //TODO: add multiple unit types to editor
-				update: this.update.bind(this)
+				update: this.update.bind(this),
+				step: 10,
+				nudge: 0.1,
+				precision: 2,
+				unit: '°'
 			});
 
 		[this.directionRow, this.directionX, this.directionY, this.directionZ] =
@@ -84,9 +88,9 @@ export class ObjectPlacement extends ObjectAbstract {
 		}
 		if (this.hasRotation(object)) {
 			showUIElement(this.rotationRow);
-			this.rotationX.setValue(object.rotation.x);
-			this.rotationY.setValue(object.rotation.y);
-			this.rotationZ.setValue(object.rotation.z);
+			this.rotationX.setValue(object.rotation.x * THREE.MathUtils.RAD2DEG);
+			this.rotationY.setValue(object.rotation.y * THREE.MathUtils.RAD2DEG);
+			this.rotationZ.setValue(object.rotation.z * THREE.MathUtils.RAD2DEG);
 		} else {
 			hideUIElement(this.rotationRow);
 		}
@@ -117,9 +121,9 @@ export class ObjectPlacement extends ObjectAbstract {
 		}
 		if (this.hasRotation(object)) {
 			const newRotation = new THREE.Euler(
-				this.rotationX.getValue(),
-				this.rotationY.getValue(),
-				this.rotationZ.getValue()
+				this.rotationX.getValue() * THREE.MathUtils.DEG2RAD,
+				this.rotationY.getValue() * THREE.MathUtils.DEG2RAD,
+				this.rotationZ.getValue() * THREE.MathUtils.DEG2RAD
 			);
 			if (!newRotation.equals(object.rotation))
 				this.editor.execute(new SetRotationCommand(editor, object, newRotation));

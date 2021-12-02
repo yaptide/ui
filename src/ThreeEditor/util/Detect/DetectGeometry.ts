@@ -326,8 +326,8 @@ function createCylindricalGeometry(data: DETECT.Cyl, matrix: THREE.Matrix4) {
 	);
 
 	const geometry3 = new THREE.CylinderGeometry(
-		data.innerRadius,
-		data.innerRadius,
+		Math.min(data.innerRadius, data.radius - 1e-4),
+		Math.min(data.innerRadius, data.radius - 1e-4),
 		data.depth,
 		Math.min(
 			DetectGeometry.maxSegmentsAmount,

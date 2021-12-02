@@ -116,11 +116,7 @@ export class ContextManager {
 	}
 
 	get selected(): SceneObject | OutputObject | null {
-		if (this._context === 'scene') {
-			return this.selectedByContext('scene');
-		} else {
-			return this.selectedByContext('output');
-		}
+		return this.selectedByContext(this._context);
 	}
 }
 

@@ -179,8 +179,8 @@ export class ObjectDimensions extends ObjectAbstract {
 			const parameters = object.geometryData;
 			this.radius.setValue(parameters.radius);
 			this.radius2.setValue(parameters.innerRadius);
-			this.radius.min = parameters.innerRadius + 0.001; // Prevent radius from being lower than innerRadius
-			this.radius2.max = parameters.radius - 0.001; // innerRadius cannot be greater than radius
+			this.radius.min = parameters.innerRadius + 1e-5; // Prevent radius from being lower than innerRadius
+			this.radius2.max = parameters.radius - 1e-5; // innerRadius cannot be greater than radius
 			this.zLength.setValue(parameters.depth);
 		} else if (isCylinderMesh(object)) {
 			const parameters = object.geometry.parameters;
@@ -285,8 +285,8 @@ export class ObjectDimensions extends ObjectAbstract {
 					break;
 				case 'Cyl':
 					geometryData = this.getCylinderData();
-					this.radius.min = geometryData.innerRadius + 0.001; // Prevent radius from being lower than innerRadius
-					this.radius2.max = geometryData.radius - 0.001; // innerRadius cannot be greater than radius
+					this.radius.min = geometryData.innerRadius + 1e-5; // Prevent radius from being lower than innerRadius
+					this.radius2.max = geometryData.radius - 1e-5; // innerRadius cannot be greater than radius
 					break;
 				case 'Zone':
 					geometryData = { zoneId: parseInt(this.zoneId.getValue()) };

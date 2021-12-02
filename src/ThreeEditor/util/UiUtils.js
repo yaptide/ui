@@ -89,7 +89,7 @@ export function createRowColor(params) {
  * @return {UINumber}
  */
 function createNumberInput(params) {
-	const { value = 0, precision = 3, update, min, max, unit, nudge, step } = params;
+	const { value = 0, precision = 5, update, min, max, unit, nudge, step } = params;
 
 	const input = new UINumber(value).setPrecision(precision).setWidth('50px').onChange(update);
 	if (unit !== undefined) input.setUnit(unit);
@@ -110,6 +110,9 @@ function createNumberInput(params) {
  *      text?: string,
  *      value?: { x:number, y:number, z:number },
  *      precision?: number
+ * 		step?: number,
+ * 		nudge?: number,
+ * 		unit?: string,
  *      update: ()=> void,
  *      min?: number,
  *      max?: number
