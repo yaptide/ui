@@ -18,6 +18,8 @@ _DEFAULT_CAMERA.name = 'Camera';
 _DEFAULT_CAMERA.position.set(0, 5, 10);
 _DEFAULT_CAMERA.lookAt(new THREE.Vector3());
 
+export const JSON_VERSION = 0.2;
+
 export function Editor(container) {
 	this.signals = {
 		// script
@@ -113,6 +115,8 @@ export function Editor(container) {
 	this.container = container;
 	container.setAttribute('tabindex', '-1');
 	this.container.focus();
+
+	this.jsonVersion = JSON_VERSION;
 
 	this.config = new Config();
 	this.history = new _History(this);
@@ -607,7 +611,7 @@ Editor.prototype = {
 
 		return {
 			metadata: {
-				version: 0.1,
+				version: this.jsonVersion,
 				type: 'Editor',
 				generator: 'Editor.toJSON'
 			},

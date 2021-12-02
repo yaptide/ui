@@ -12,7 +12,8 @@ export function initEditor(container) {
 	window.URL = window.URL || window.webkitURL;
 	window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
 
-	Number.prototype.format = function () { // eslint-disable-line
+	Number.prototype.format = function () {
+		// eslint-disable-line
 
 		return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 	};
@@ -48,7 +49,14 @@ export function initEditor(container) {
 			if (isLoadingFromHash) return;
 
 			if (typeof state !== 'undefined') {
-				editor.fromJSON(state);
+				let versionIsOk = true;
+				if (state.metadata.version !== editor.jsonVersion) {
+					versionIsOk = window.confirm(
+						`Editor in memory has version of JSON: ${state.metadata.version}\nCurrent version of editor JSON: ${editor.jsonVersion}\nLoad it anyway?`
+					);
+				}
+
+				if (versionIsOk) editor.fromJSON(state);
 			}
 
 			var selected = editor.config.getKey('selected');
