@@ -158,7 +158,7 @@ function Loader(editor) {
 				let versionIsOk = true;
 				if (data.metadata.version !== editor.jsonVersion) {
 					versionIsOk = window.confirm(
-						`File was generated with different version of editor JSON: ${data.metadata.version}\nCurrent version of editor JSON: ${editor.jsonVersion}\nContinue?`
+						`File has  project standard version ${data.metadata.version} which is different from standard version handled by this web application: ${editor.jsonVersion}\nContinue?`
 					);
 				}
 
