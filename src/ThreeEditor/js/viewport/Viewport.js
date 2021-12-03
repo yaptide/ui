@@ -92,10 +92,11 @@ export function Viewport(
 	let viewClipPlane = null;
 	if (clipPlane) {
 		viewClipPlane = new ViewportClipPlane(
+			name,
 			editor,
 			this,
 			planeHelpers,
-			zoneManager.children,
+			zoneManager.zoneContainer.children,
 			signals.zoneGeometryChanged,
 			signals.zoneAdded,
 			signals.zoneRemoved,
@@ -134,7 +135,9 @@ export function Viewport(
 
 		renderer.render(detectManager, camera);
 
-		if (clipPlane) renderer.render(viewClipPlane.scene, camera);
+		if (clipPlane) {
+			renderer.render(viewClipPlane.scene, camera);
+		}
 
 		renderer.clippingPlanes = []; // clear clipping planes for next renders
 

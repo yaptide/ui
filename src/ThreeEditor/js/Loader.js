@@ -155,7 +155,17 @@ function Loader(editor) {
 				break;
 
 			case 'editor':
-				if (window.confirm('Current editor data will be lost. Are you sure?')) {
+				let versionIsOk = true;
+				if (data.metadata.version !== editor.jsonVersion) {
+					versionIsOk = window.confirm(
+						`File has  project standard version ${data.metadata.version} which is different from standard version handled by this web application: ${editor.jsonVersion}\nContinue?`
+					);
+				}
+
+				if (
+					versionIsOk &&
+					window.confirm('Current editor data will be lost. Are you sure?')
+				) {
 					editor.clear();
 					editor.fromJSON(data);
 				}

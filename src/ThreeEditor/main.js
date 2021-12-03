@@ -47,7 +47,14 @@ export function initEditor(container) {
 			if (isLoadingFromHash) return;
 
 			if (typeof state !== 'undefined') {
-				editor.fromJSON(state);
+				let versionIsOk = true;
+				if (state.metadata.version !== editor.jsonVersion) {
+					versionIsOk = window.confirm(
+						`Editor in memory has version of JSON: ${state.metadata.version}\nCurrent version of editor JSON: ${editor.jsonVersion}\nLoad it anyway?`
+					);
+				}
+
+				if (versionIsOk) editor.fromJSON(state);
 			}
 
 			var selected = editor.config.getKey('selected');

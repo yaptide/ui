@@ -10,6 +10,7 @@ This is especially useful for such clipped views where at the same time internal
 (for example torus clipped by a plane containing its axis of symmetry, stencil material fills two full circles, while wall material is drawn on the visible outer wall).
  */
 export function ViewportClippedView(
+	name,
 	editor,
 	viewport,
 	planeHelpers,
@@ -19,6 +20,8 @@ export function ViewportClippedView(
 	signalGeometryRemoved,
 	{ clipPlane, planeHelperColor, planePosLabel }
 ) {
+	this.name = name;
+
 	// default order is zero, we assign higher order to stencil plane to display it in front of other objects
 	const STENCIL_RENDER_ORDER = 1;
 
@@ -29,6 +32,7 @@ export function ViewportClippedView(
 	const CLIPPING_SIZE = 100;
 
 	this.scene = new THREE.Scene();
+	this.scene.name = `ClippedViewScene-${name}`;
 	this.gui = new GUI({});
 
 	// Setup plane clipping ui
@@ -87,12 +91,15 @@ export function ViewportClippedView(
 	const planeGeom = new THREE.PlaneGeometry(CLIPPING_SIZE, CLIPPING_SIZE);
 
 	const clippedObjects = new THREE.Group();
+	clippedObjects.name = 'clippedObjects';
 	this.scene.add(clippedObjects);
 
 	const crossSectionGroup = new THREE.Group();
+	crossSectionGroup.name = 'crossSectionGroup';
 	this.scene.add(crossSectionGroup);
 
 	const planeMat = new THREE.MeshBasicMaterial({
+		name: 'CrossSectionPlaneMaterial',
 		color: 0x00ff00,
 		emissive: 0x00ff00,
 
@@ -105,6 +112,7 @@ export function ViewportClippedView(
 	});
 
 	const stencilPlane = new THREE.Mesh(planeGeom, planeMat); // Cross Section Plane - fill stencil
+	stencilPlane.name = 'stencilPlane';
 	stencilPlane.onAfterRender = function (renderer) {
 		renderer.clearStencil();
 	};
@@ -132,7 +140,7 @@ export function ViewportClippedView(
 	stencilPlane.translateZ(-1e-2);
 
 	// Initialize view with objects
-	initialObjects.forEach((object3D, index) => {
+	initialObjects.forEach(object3D => {
 		const stencilGroup = createPlaneStencilGroup(
 			object3D.geometry,
 			clipPlane,
@@ -180,6 +188,7 @@ export function ViewportClippedView(
 
 		// back faces - add stencil
 		const mat0 = baseMat.clone();
+		mat0.name = 'back faces - add stencil';
 		mat0.side = THREE.BackSide;
 		mat0.clippingPlanes = [plane];
 		mat0.stencilFail = THREE.IncrementWrapStencilOp;
@@ -192,6 +201,7 @@ export function ViewportClippedView(
 
 		// front faces - remove stencil
 		const mat1 = baseMat.clone();
+		mat1.name = 'front faces - remove stencil';
 		mat1.side = THREE.FrontSide;
 		mat1.clippingPlanes = [plane];
 		mat1.stencilFail = THREE.DecrementWrapStencilOp;

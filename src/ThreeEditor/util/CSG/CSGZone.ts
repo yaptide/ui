@@ -193,6 +193,8 @@ export class Zone extends SimulationMesh {
 	}
 
 	updatePreview(): void {
+		if (!this.parent) return;
+
 		this.needsUpdate = true;
 
 		this.updateGeometry();
