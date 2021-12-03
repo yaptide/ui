@@ -2,17 +2,17 @@ export type Mesh = {
 	width: number;
 	height: number;
 	depth: number;
-	widthSegments: number;
-	heightSegments: number;
-	depthSegments: number;
+	xSegments: number;
+	ySegments: number;
+	zSegments: number;
 };
 
 export type Cyl = {
-	outerRadius: number;
+	radius: number;
 	innerRadius: number;
 	depth: number;
 	radialSegments: number;
-	depthSegments: number;
+	zSegments: number;
 };
 
 export type Zone = {
@@ -27,11 +27,11 @@ export const DEFAULT_ANY: Any = {
 	width: 1,
 	height: 1,
 	depth: 1,
-	outerRadius: 1,
+	radius: 1,
 	innerRadius: 0,
-	widthSegments: 1000,
-	heightSegments: 1000,
-	depthSegments: 1000,
+	xSegments: 1,
+	ySegments: 1,
+	zSegments: 100,
 	radialSegments: 1,
 	zoneId: -1
 };

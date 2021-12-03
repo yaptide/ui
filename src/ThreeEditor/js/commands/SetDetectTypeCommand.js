@@ -25,6 +25,7 @@ export class SetDetectTypeCommand extends Command {
 
 		this.editor.signals.geometryChanged.dispatch(this.object);
 		this.editor.signals.sceneGraphChanged.dispatch();
+		this.editor.signals.detectTypeChanged.dispatch(this.object);
 	}
 
 	undo() {
@@ -33,6 +34,8 @@ export class SetDetectTypeCommand extends Command {
 		this.newType = this.oldType;
 		this.oldType = tmp;
 
+		this.editor.select(this.object);
+		this.editor.signals.objectSelected.dispatch(this.object);
 		this.editor.signals.geometryChanged.dispatch(this.object);
 		this.editor.signals.sceneGraphChanged.dispatch();
 	}

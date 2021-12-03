@@ -6,7 +6,7 @@ import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { debounce } from 'throttle-debounce';
 import { Editor } from '../js/Editor';
-import { SimulationMesh } from './SimulationBase/SimulationMesh';
+import { SimulationObject3D } from './SimulationBase/SimulationMesh';
 
 export interface BeamJSON {
 	position: THREE.Vector3Tuple;
@@ -23,6 +23,7 @@ export interface BeamJSON {
 		z: number;
 		a: number;
 	};
+	colorHex: number;
 }
 
 const _default = {
@@ -42,13 +43,23 @@ const _default = {
 	}
 };
 
-export class Beam extends SimulationMesh {
+export class Beam extends SimulationObject3D {
 	readonly notRemovable = true;
 	readonly notMovable = false;
 	readonly notRotatable = true; //TODO: https://github.com/yaptide/ui/issues/242
 	readonly notScalable = true;
 
 	readonly isBeam: true = true;
+
+	private _lineMaterial = new LineMaterial({
+		color: 0xffff00, // yellow
+		linewidth: 0.005, // in world units with size attenuation, pixels otherwise
+		worldUnits: false
+	});
+
+	get material(): LineMaterial {
+		return this._lineMaterial;
+	}
 
 	helper: THREE.ArrowHelper;
 
@@ -112,6 +123,21 @@ export class Beam extends SimulationMesh {
 
 		this.helper = this.initHelper();
 
+		this._lineMaterial.color = new Proxy(new THREE.Color(0xffff00), {
+			get: (target: THREE.Color, prop: keyof THREE.Color) => {
+				const scope = this;
+				const result = Reflect.get(target, prop);
+				if (prop === 'setHex') {
+					return function (hex: number) {
+						target[prop].apply(target, [hex]);
+						scope.helper.setColor(hex);
+						return scope._lineMaterial.color;
+					};
+				}
+				return result;
+			}
+		});
+
 		this.proxy = new Proxy(this, this.overrideHandler);
 
 		return this.proxy;
@@ -121,7 +147,7 @@ export class Beam extends SimulationMesh {
 		const dir = this.direction.clone().normalize();
 		const origin = new THREE.Vector3(0, 0, 0);
 		const length = 1;
-		const hex = 0xffff00;
+		const hex = 0xffff00; //yellow
 		const helper = new THREE.ArrowHelper(dir, origin, length, hex, length * 0.3, length * 0.2);
 
 		// line
@@ -132,13 +158,7 @@ export class Beam extends SimulationMesh {
 		const lineGeometry = new LineGeometry();
 		lineGeometry.setPositions(positions);
 
-		const matLine = new LineMaterial({
-			color: hex,
-			linewidth: 0.005, // in world units with size attenuation, pixels otherwise
-			worldUnits: false
-		});
-
-		const line = new Line2(lineGeometry, matLine);
+		const line = new Line2(lineGeometry, this._lineMaterial);
 		line.renderOrder = 1;
 		line.computeLineDistances();
 		line.scale.set(1, 1, 1);
@@ -187,10 +207,7 @@ export class Beam extends SimulationMesh {
 		this.energySpread = _default.energySpread;
 		this.divergence = { ..._default.divergence };
 		this.particle = _default.particle;
-	}
-
-	copy(source: this, recursive = true) {
-		return new Proxy(super.copy(source, recursive), this.overrideHandler) as this;
+		this.material.color.setHex(0xffff00); // yellow
 	}
 
 	toJSON() {
@@ -200,7 +217,8 @@ export class Beam extends SimulationMesh {
 			energy: this.energy,
 			energySpread: this.energySpread,
 			divergence: this.divergence,
-			particle: this.particle
+			particle: this.particle,
+			colorHex: this.material.color.getHex()
 		};
 
 		return jsonObject;
@@ -213,6 +231,7 @@ export class Beam extends SimulationMesh {
 		this.energySpread = data.energySpread;
 		this.divergence = data.divergence;
 		this.particle = data.particle;
+		this.material.color.setHex(data.colorHex);
 		return this;
 	}
 

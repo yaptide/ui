@@ -1,22 +1,14 @@
 import { UIPanel, UIButton, UICheckbox } from './libs/ui.js';
 
 function Toolbar(editor) {
-	const { signals, strings } = editor;
+	const { signals } = editor;
 
 	const container = new UIPanel();
 	container.setId('toolbar');
 
-	// YAPTIDE select mode
-	const select = new UICheckbox(false);
-	select.dom.title = 'select mode';
-	select.onChange(() => {
-		signals.selectModeChanged.dispatch(this.getValue() === true ? 'zones' : 'geometries');
-	});
-	container.add(select);
-
 	// translate
 	const translateIcon = document.createElement('img');
-	translateIcon.title = strings.getKey('toolbar/translate');
+	translateIcon.title = 'Translate';
 	translateIcon.src = '/images/translate.svg';
 
 	const translate = new UIButton();
@@ -29,7 +21,7 @@ function Toolbar(editor) {
 
 	// rotate
 	const rotateIcon = document.createElement('img');
-	rotateIcon.title = strings.getKey('toolbar/rotate');
+	rotateIcon.title = 'Rotate';
 	rotateIcon.src = '/images/rotate.svg';
 
 	const rotate = new UIButton();
@@ -41,7 +33,7 @@ function Toolbar(editor) {
 
 	// scale
 	const scaleIcon = document.createElement('img');
-	scaleIcon.title = strings.getKey('toolbar/scale');
+	scaleIcon.title = 'Scale';
 	scaleIcon.src = '/images/scale.svg';
 
 	const scale = new UIButton();
@@ -53,9 +45,9 @@ function Toolbar(editor) {
 
 	// local / world
 	const local = new UICheckbox(false);
-	local.dom.title = strings.getKey('toolbar/local');
+	local.dom.title = 'Local';
 	local.onChange(() => {
-		signals.spaceChanged.dispatch(this.getValue() === true ? 'local' : 'world');
+		signals.spaceChanged.dispatch(local.getValue() === true ? 'local' : 'world');
 	});
 	container.add(local);
 

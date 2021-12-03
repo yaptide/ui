@@ -1,0 +1,15 @@
+#ignore ThreeEditor libs files
+src/ThreeEditor/js/libs/
+
+#ignore npm files
+node_modules/
+
+#ignore auto generated config files
+package.json
+package-lock.json
+tsconfig.json
+dockerRun.ps1
+dockerBuild.ps1
+.github/
+.notebook/
+.vscode/

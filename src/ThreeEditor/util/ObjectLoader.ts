@@ -11,7 +11,7 @@ export class EditorObjectLoader extends ObjectLoader {
 	parseObject<T extends Object3D<THREE.Event>>(
 		data: any,
 		geometries: any[],
-		materials: THREE.Material[],
+		materials: THREE.MeshBasicMaterial[],
 		animations: THREE.AnimationClip[]
 	): T {
 		const geometry = geometries[data.geometry];
@@ -28,6 +28,7 @@ export class EditorObjectLoader extends ObjectLoader {
 				break;
 			case 'CylinderMesh':
 				editorObject = new CylinderMesh(this.editor);
+				geometry.rotateX(Math.PI / 2);
 				break;
 			default:
 			// not custom object type

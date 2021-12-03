@@ -17,7 +17,7 @@ export class SetDetectGeometryCommand extends Command {
 		this.object = object;
 		this.oldData = object.getData();
 		this.newData = {};
-		Object.entries(object.getData()).forEach(([key, _]) => {
+		Object.entries(this.oldData).forEach(([key, _]) => {
 			this.newData[key] = newData[key] ?? this.oldData[key];
 		});
 	}

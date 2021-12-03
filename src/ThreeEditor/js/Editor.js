@@ -11,7 +11,6 @@ import { ContextManager } from './Editor.Context';
 import { History as _History } from './History.js';
 import { Loader } from './Loader.js';
 import { Storage as _Storage } from './Storage.js';
-import { Strings } from './Strings.js';
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
 _DEFAULT_CAMERA.name = 'Camera';
@@ -62,11 +61,13 @@ export function Editor(container) {
 		zoneGeometryChanged: new Signal(),
 		zoneEmpty: new Signal(),
 		zoneRemoved: new Signal(),
+		zoneTypeChanged: new Signal(),
 
 		//YAPTIDE detect
 		detectGeometryAdded: new Signal(),
 		detectGeometryRemoved: new Signal(),
 		detectGeometryChanged: new Signal(),
+		detectTypeChanged: new Signal(),
 
 		detectFilterAdded: new Signal(),
 		detectFilterRemoved: new Signal(),
@@ -105,6 +106,8 @@ export function Editor(container) {
 
 		contextChanged: new Signal(),
 
+		autocalculateChanged: new Signal(),
+
 		CSGZoneAdded: new Signal(), // Sidebar.Properties signal
 
 		viewportConfigChanged: new Signal(), // Viewport config signal
@@ -121,7 +124,6 @@ export function Editor(container) {
 	this.config = new Config();
 	this.history = new _History(this);
 	this.storage = new _Storage();
-	this.strings = new Strings(this.config);
 	this.unit = {
 		name: '[cm]',
 		multiplier: 1
@@ -136,7 +138,7 @@ export function Editor(container) {
 
 	this.sceneHelpers = new THREE.Scene();
 
-	this.materialsManager = new MaterialsManager(); // Material Manager
+	this.materialsManager = new MaterialsManager(this); // Material Manager
 	this.zoneManager = new CSG.ZoneManager(this); // CSG Manager
 	this.detectManager = new DetectManager(this); // Detect Manager
 

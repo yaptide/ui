@@ -39,14 +39,11 @@ function OperationInput(props: OperationInputProps) {
 				<em>Operation</em>
 			</MenuItem>
 			{props.canClear && <MenuItem value={''}>X</MenuItem>}
-			<MenuItem value={'left-subtraction'}>
-				<img src='./images/L.png' alt='left subtraction' />
+			<MenuItem value={'subtraction'}>
+				<img src='./images/L.png' alt='subtraction' />
 			</MenuItem>
 			<MenuItem value={'intersection'}>
 				<img src='./images/S.png' alt='intersection' />
-			</MenuItem>
-			<MenuItem value={'right-subtraction'}>
-				<img src='./images/R.png' alt='right subtraction' />
 			</MenuItem>
 		</Select>
 	);

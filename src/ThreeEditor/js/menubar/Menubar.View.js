@@ -1,14 +1,13 @@
-import { UIPanel, UIRow } from '../libs/ui.js';
+import { UIHorizontalRule, UIPanel } from '../libs/ui.js';
+import { createOption } from './Menubar.js';
 
 function MenubarView(editor) {
-	const strings = editor.strings;
-
 	const container = new UIPanel();
 	container.setClass('menu');
 
 	const title = new UIPanel();
 	title.setClass('title');
-	title.setTextContent(strings.getKey('menubar/view'));
+	title.setTextContent('View');
 	container.add(title);
 
 	const options = new UIPanel();
@@ -16,26 +15,36 @@ function MenubarView(editor) {
 	container.add(options);
 
 	// Fullscreen
+	options.add(
+		createOption(
+			'option',
+			'Fullscreen',
+			document.exitFullscreen
+				? () =>
+						document.fullscreenElement === null
+							? document.documentElement.requestFullscreen()
+							: document.exitFullscreen()
+				: () =>
+						document.webkitFullscreenElement === null //Safari
+							? document.documentElement.webkitRequestFullscreen()
+							: document.webkitExitFullscreen()
+		),
+		new UIHorizontalRule()
+	);
 
-	const option = new UIRow();
-	option.setClass('option');
-	option.setTextContent(strings.getKey('menubar/view/fullscreen'));
-	option.onClick(function () {
-		if (document.fullscreenElement === null) {
-			document.documentElement.requestFullscreen();
-		} else if (document.exitFullscreen) {
-			document.exitFullscreen();
-		}
+	// Single view
+	options.add(
+		createOption('option', 'Single View', () => {
+			editor.signals.layoutChanged.dispatch('singleView');
+		})
+	);
 
-		// Safari
-
-		if (document.webkitFullscreenElement === null) {
-			document.documentElement.webkitRequestFullscreen();
-		} else if (document.webkitExitFullscreen) {
-			document.webkitExitFullscreen();
-		}
-	});
-	options.add(option);
+	// Four view
+	options.add(
+		createOption('option', 'Four Views', () => {
+			editor.signals.layoutChanged.dispatch('fourViews');
+		})
+	);
 
 	return container;
 }

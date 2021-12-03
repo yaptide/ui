@@ -1,3 +1,4 @@
+import { Signal } from 'signals';
 import * as THREE from 'three';
 import { Color, LineBasicMaterial, MeshBasicMaterial, Object3D, Vector3 } from 'three';
 import { debounce } from 'throttle-debounce';
@@ -12,7 +13,6 @@ export interface WorldZoneJSON {
 	size: THREE.Vector3;
 	geometryType: WorldZoneType;
 	name: string;
-	color: THREE.ColorRepresentation;
 	marginMultiplier: number;
 	autoCalculate: boolean;
 	simulationMaterialName: string;
@@ -25,11 +25,13 @@ export interface WorldZoneJSON {
 	};
 }
 
-export const BOUNDING_ZONE_TYPE = ['sphere', 'cylinder', 'box'] as const;
+export const BOUNDING_ZONE_TYPE = ['Sphere', 'Cylinder', 'Box'] as const;
 
 export type WorldZoneType = typeof BOUNDING_ZONE_TYPE[number];
 
-const _cylinderGeometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2);
+const _cylinderGeometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2).rotateX(
+	Math.PI / 2
+) as THREE.CylinderGeometry;
 
 const _sphereGeometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI);
 
@@ -67,10 +69,17 @@ export class WorldZone extends SimulationObject3D {
 	readonly isWorldZone: true = true;
 
 	private _autoCalculate: boolean = false;
-	private _geometryType: WorldZoneType = 'box';
+	private _geometryType: WorldZoneType = 'Box';
 	private boxHelper: THREE.Box3Helper;
 	private cylinderMesh: THREE.Mesh<THREE.CylinderGeometry, MeshBasicMaterial>;
 	private sphereMesh: THREE.Mesh<THREE.SphereGeometry, MeshBasicMaterial>;
+
+	private signals: {
+		objectChanged: Signal<THREE.Object3D>;
+		sceneGraphChanged: Signal;
+		objectSelected: Signal<THREE.Object3D>;
+		autocalculateChanged: Signal<boolean>;
+	};
 
 	readonly debouncedCalculate = debounce(200, false, () => this.calculate());
 
@@ -82,6 +91,7 @@ export class WorldZone extends SimulationObject3D {
 		this.type = 'WorldZone';
 		this.name = 'World Zone';
 		this.editor = editor;
+		this.signals = editor.signals;
 
 		this.marginMultiplier = marginMultiplier;
 
@@ -92,7 +102,8 @@ export class WorldZone extends SimulationObject3D {
 		// watch for changes on material color
 		const materialColorHandler = {
 			get: (target: Color, prop: keyof Color) => {
-				return Reflect.get(this.simulationMaterial.color, prop);
+				const result = Reflect.get(this.simulationMaterial.color, prop);
+				return result;
 			}
 		};
 
@@ -109,13 +120,13 @@ export class WorldZone extends SimulationObject3D {
 		this.sphereMesh = new THREE.Mesh(_sphereGeometry, this._material);
 		this.sphereMesh.name = 'sphereMeshHelper';
 
-		this.geometryType = 'box';
+		this.geometryType = 'Box';
 
 		const handleSignal = (object: Object3D) => {
 			if (this.autoCalculate && !isWorldZone(object)) this.debouncedCalculate();
 		};
-		this.editor.signals.objectChanged.add((object: Object3D) => handleSignal(object));
-		this.editor.signals.sceneGraphChanged.add((object: Object3D) => handleSignal(object));
+		this.signals.objectChanged.add(handleSignal);
+		this.signals.sceneGraphChanged.add(handleSignal);
 	}
 
 	get material(): MeshBasicMaterial {
@@ -137,9 +148,10 @@ export class WorldZone extends SimulationObject3D {
 
 	set geometryType(value: WorldZoneType) {
 		this._geometryType = value;
+		this.setFromCenterAndSize(this.position, this.size);
 		this.getAllHelpers().forEach(e => (e.visible = false));
 		this.getHelper(value).visible = true;
-		this.editor.signals.objectChanged.dispatch(this);
+		this.signals.objectChanged.dispatch(this);
 	}
 
 	get autoCalculate(): boolean {
@@ -149,6 +161,7 @@ export class WorldZone extends SimulationObject3D {
 	set autoCalculate(value: boolean) {
 		this._autoCalculate = value;
 		if (this._autoCalculate) this.calculate();
+		this.signals.autocalculateChanged.dispatch(value);
 	}
 
 	get center() {
@@ -157,6 +170,7 @@ export class WorldZone extends SimulationObject3D {
 
 	set center(value: Vector3) {
 		this.setFromCenterAndSize(value, this.size);
+		this.position.copy(value);
 	}
 
 	get size() {
@@ -173,21 +187,21 @@ export class WorldZone extends SimulationObject3D {
 
 	private getHelper(geometryType: WorldZoneType): Object3D {
 		const obj = {
-			box: this.boxHelper,
-			cylinder: this.cylinderMesh,
-			sphere: this.sphereMesh
+			Box: this.boxHelper,
+			Cylinder: this.cylinderMesh,
+			Sphere: this.sphereMesh
 		};
 		return obj[geometryType];
 	}
 
 	canCalculate(): boolean {
-		return this._geometryType === 'box';
+		return this._geometryType === 'Box';
 	}
 
 	calculate(): void {
 		if (!this.canCalculate()) return;
 
-		this.setBoxFromObject(this.editor.scene);
+		this.setBoxFromObject(this.editor.zoneManager.zoneContainer);
 	}
 
 	setBoxFromObject(object: THREE.Object3D): void {
@@ -204,14 +218,19 @@ export class WorldZone extends SimulationObject3D {
 			this.sphereMesh.scale.setScalar(size.x);
 			this.sphereMesh.position.copy(center);
 
-			this.cylinderMesh.scale.set(size.x, size.y, size.x);
+			this.cylinderMesh.scale.set(Math.min(size.x, size.y), Math.min(size.x, size.y), size.z);
 			this.cylinderMesh.position.copy(center);
 		});
 	}
 
+	updatePosition(): void {
+		this.position.copy(this.box.getCenter(new Vector3()));
+	}
+
 	updateBox(updateFunction: (box: THREE.Box3) => void): void {
 		updateFunction(this.box);
-		this.editor.signals.objectChanged.dispatch(this);
+		this.updatePosition();
+		this.signals.objectChanged.dispatch(this);
 	}
 
 	makeCubeFromBox(): void {
@@ -238,7 +257,7 @@ export class WorldZone extends SimulationObject3D {
 		this.name = name;
 		this.simulationMaterial =
 			this.editor.materialsManager.materials['AIR, DRY (NEAR SEA LEVEL)'];
-		this.geometryType = 'box';
+		this.geometryType = 'Box';
 		this.updateBox(box => box.setFromCenterAndSize(new Vector3(), new Vector3()));
 	}
 
@@ -254,9 +273,9 @@ export class WorldZone extends SimulationObject3D {
 		const geometry: {
 			[K in WorldZoneType]: PossibleGeometryType;
 		} = {
-			box: new THREE.BoxGeometry(this.size.x, this.size.y, this.size.z),
-			sphere: new THREE.SphereGeometry(this.size.x),
-			cylinder: new THREE.CylinderGeometry(this.size.x, this.size.x, this.size.y)
+			Box: new THREE.BoxGeometry(this.size.x, this.size.y, this.size.z),
+			Sphere: new THREE.SphereGeometry(this.size.x),
+			Cylinder: new THREE.CylinderGeometry(this.size.x, this.size.x, this.size.y)
 		};
 
 		const jsonObject: WorldZoneJSON = {
@@ -265,7 +284,6 @@ export class WorldZone extends SimulationObject3D {
 			type: this.type,
 			geometryType: this._geometryType,
 			name: this.name,
-			color: this._material.color.getHex(),
 			marginMultiplier: this.marginMultiplier,
 			autoCalculate: this.autoCalculate,
 			simulationMaterialName: this.simulationMaterial.name,
@@ -283,16 +301,15 @@ export class WorldZone extends SimulationObject3D {
 		this.geometryType = data.geometryType;
 		this.name = data.name;
 
-		this._material.color.set(data.color);
-
 		this.marginMultiplier = data.marginMultiplier;
 
 		this.setFromCenterAndSize(data.center, data.size);
 
 		this.autoCalculate = data.autoCalculate;
-
-		this.simulationMaterial =
+		const simulationMaterial =
 			this.editor.materialsManager.materials[data.simulationMaterialName];
+		this.simulationMaterial = simulationMaterial;
+		this.material.color.setHex(simulationMaterial.color.getHex());
 
 		return this;
 	}

@@ -24,9 +24,9 @@ function SidebarScene(editor) {
 
 	container.add(new UIBreak());
 
-	const figureAddPanel = FigureAddPanel(editor, container);
+	FigureAddPanel(editor, container);
 
-	const sceneAddPanel = ZoneAddPanel(editor, container);
+	ZoneAddPanel(editor, container);
 
 	//
 

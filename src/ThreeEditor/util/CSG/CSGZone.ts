@@ -58,7 +58,7 @@ export class Zone extends SimulationMesh {
 		super(editor, name, 'Zone');
 		if (uuid) this.uuid = uuid;
 		this.signals = editor.signals;
-		this.name = name || `Zone${this.id}`;
+		this.name = name || `Zone`;
 		this.material = editor.materialsManager.materials[materialName ?? 'WATER, LIQUID'];
 		this.unionOperations = unionOperations ?? [];
 		// If operations are specified, we have to populate set of subscribed UUID's
@@ -100,43 +100,16 @@ export class Zone extends SimulationMesh {
 
 	updateGeometry(): void {
 		console.time('CSGZone');
-		let unionsResultBsp = new CSG();
 
-		for (let i = 0; i < this.unionOperations.length; i++) {
-			const operations = this.unionOperations[i];
-
-			let operationsResultBsp = new CSG();
-
-			for (let index = 0; index < operations.length; index++) {
-				const operation = operations[index];
-				const lastBsp = operationsResultBsp;
-
-				operation.object.updateMatrix();
-
-				// TODO: use worker to offload main thread
-				// this.worker?.parse(JSON.stringify(operation.object))
-				//     .then((json: string) => new THREE.ObjectLoader().parseAsync(JSON.parse(json)))
-				//     .then(console.log);
-
-				const objectBsp = CSG.fromMesh(operation.object as THREE.Mesh);
-
-				const handleMode = {
-					'left-subtraction': () => lastBsp.subtract(objectBsp),
-					'intersection': () => lastBsp.intersect(objectBsp),
-					'right-subtraction': () => objectBsp.subtract(lastBsp),
-					'union': () => lastBsp.union(objectBsp)
-				};
-
-				operationsResultBsp = handleMode[operation.mode]();
-			}
-
-			unionsResultBsp = unionsResultBsp.union(operationsResultBsp);
-		}
-
-		const geometryResult = CSG.toGeometry(unionsResultBsp, this.matrix);
+		const unionsResultBsp = this.unionOperations.reduce((result, operationRow) => {
+			const rowResult = operationRow.reduce((result, operation) => {
+				return operation.execute(result);
+			}, new CSG());
+			return result.union(rowResult);
+		}, new CSG());
 
 		this.geometry.dispose();
-		this.geometry = geometryResult;
+		this.geometry = CSG.toGeometry(unionsResultBsp, this.matrix);
 		this.geometry.computeBoundingSphere();
 		this.updateMatrixWorld(true);
 
@@ -234,15 +207,33 @@ export class Zone extends SimulationMesh {
 		const unionOperations = this.unionOperations.map(union =>
 			union.map(operation => operation.toJSON())
 		);
-		const jsonObject: ZoneJSON = {
-			uuid: this.uuid,
-			name: this.name,
+		const { name: materialName, simulationData: materialData } = this.getSimulationMaterial();
+		const subscribedObjects = this.subscribedObjects.toJSON();
+		const { uuid, name } = this;
+		return {
+			uuid,
+			name,
+			materialName,
+			materialData,
 			unionOperations,
-			subscribedObjects: this.subscribedObjects.toJSON(),
-			materialName: this.getSimulationMaterial().name,
-			materialData: this.getSimulationMaterial().simulationData
+			subscribedObjects
 		};
-		return jsonObject;
+	}
+
+	fromJSON(editor: Editor, data: ZoneJSON): Zone {
+		this.unionOperations = data.unionOperations.map(union =>
+			union.map(operation => OperationTuple.fromJSON(editor, operation))
+		);
+
+		this.subscribedObjects = new CounterMap().fromJSON(data.subscribedObjects);
+
+		this.setSimulationMaterial(data.materialName);
+
+		return this;
+	}
+
+	setSimulationMaterial(materialName: string) {
+		this.material = this.editor.materialsManager.materials[materialName ?? 'WATER, LIQUID'];
 	}
 
 	getSimulationMaterial(): SimulationMaterial {
@@ -254,13 +245,13 @@ export class Zone extends SimulationMesh {
 			union.map(operation => OperationTuple.fromJSON(editor, operation))
 		);
 
-		const subscribedObjectsUuid = new CounterMap().fromJSON(data.subscribedObjects);
+		const subscribedObjects = new CounterMap().fromJSON(data.subscribedObjects);
 
 		const zone = new Zone(
 			editor,
 			data.name,
 			unionOperations,
-			subscribedObjectsUuid,
+			subscribedObjects,
 			data.uuid,
 			data.materialName
 		);

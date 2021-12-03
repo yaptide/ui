@@ -7,43 +7,40 @@ import { DetectGeometry } from '../../util/Detect/DetectGeometry';
  * @constructor
  */
 class AddDetectGeometryCommand extends Command {
-	constructor(editor, section) {
+	constructor(editor, object) {
 		super(editor);
 
 		this.type = 'AddDetectGeometryCommand';
 
-		this.section = section;
-		this.name = section ? `Add Section: ${section.name}` : `Create Section`;
+		this.object = object;
+		this.name = object ? `Add Detect Geometry: ${object.name}` : `Create Detect Geometry`;
 	}
 
 	execute() {
-		if (this.section) this.editor.detectManager.addSection(this.section);
-		else this.section = this.editor.detectManager.createSection();
+		if (this.object) this.editor.detectManager.addGeometry(this.object);
+		else this.object = this.editor.detectManager.createGeometry();
 
-		this.editor.select(this.section);
+		this.editor.select(this.object);
 	}
 
 	undo() {
-		this.editor.detectManager.removeSection(this.section);
+		this.editor.detectManager.removeGeometry(this.object);
 		this.editor.deselect();
 	}
 
 	toJSON() {
 		const output = super.toJSON(this);
 
-		output.object = this.section.toJSON();
+		output.object = this.object.toJSON();
 
 		return output;
 	}
 
 	fromJSON(json) {
 		super.fromJSON(json);
-
-		this.section = this.editor.objectByUuid(json.object.object.uuid);
-
-		if (this.section === undefined) {
-			this.section = DetectGeometry.fromJSON(this.editor, json.object);
-		}
+		this.object =
+			this.editor.detectManager.getGeometryByUuid(json.object.uuid) ??
+			DetectGeometry.fromJSON(this.editor, json.object);
 	}
 }
 

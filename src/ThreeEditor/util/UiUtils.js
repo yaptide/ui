@@ -1,24 +1,95 @@
 import ReactDOM from 'react-dom';
-import { UIRow, UINumber, UIText, UISelect, UIInput, UIDiv } from '../js/libs/ui.js';
 import { MaterialSelect } from '../components/Select/MaterialSelect';
 import { ParticleSelect } from '../components/Select/ParticlesSelect';
+import ZoneManagerPanel from '../components/ZoneManagerPanel/ZoneManagerPanel';
+import {
+	UIButton,
+	UICheckbox,
+	UIDiv,
+	UIInput,
+	UINumber,
+	UIRow,
+	UISelect,
+	UIText,
+	UIColor
+} from '../js/libs/ui.js';
 import { PARTICLE_TYPES } from './particles';
 
 /**
+ * @typedef {import('../js/libs/ui').UIElement} UIElement
+ */
+
+const LABEL_WIDTH = 'min(30%, 120px)';
+const LABEL_MARGIN = '10px 10px 10px 0';
+const INPUT_WIDTH = 'max(60%, 160px)';
+const FONT_SIZE = '12px';
+
+/**
  * @param {{
- *      value: number,
- *      precision: number
+ *      text?: string,
+ *      update?: ()=> void,
+ *      }} params
+ * @return {[UIRow, UIButton]}
+ */
+export function createFullwidthButton(params) {
+	const { text = 'Button', update = () => {} } = params;
+	const row = new UIRow();
+	const button = new UIButton(text).onClick(update);
+	button.setWidth('100%');
+	row.add(button);
+	return [row, button];
+}
+
+/**
+ * @param {{
+ *      text?: string,
+ *      value?: boolean,
+ *      update?: ()=> void,
+ *      }} params
+ * @return {[UIRow, UICheckbox, UIText]}
+ */
+export function createRowCheckbox(params) {
+	const { text = 'Label', value = false, update = () => {} } = params;
+
+	const row = new UIRow();
+	const checkbox = new UICheckbox(value).onChange(update);
+	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
+	row.add(label, checkbox);
+	return [row, checkbox, label];
+}
+
+/**
+ * @param {{
+ *      text?: string,
+ *      value?: string,
+ *      update?: ()=> void,
+ *      }} params
+ * @return {[UIRow, UIColor, UIText]}
+ */
+export function createRowColor(params) {
+	const { text = 'Label', value = '#ffffff', update = () => {} } = params;
+	const row = new UIRow();
+	const color = new UIColor(value).onInput(update);
+	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
+	row.add(label, color);
+	return [row, color, label];
+}
+
+/**
+ * @param {{
+ *      value?: number,
+ *      precision?: number
  *      update: ()=> void,
- *      min : number,
- *      max : number,
- *      unit : string,
- *      nudge : number,
- *      step : number,
+ *      min?: number,
+ *      max?: number,
+ *      unit?: string,
+ *      nudge?: number,
+ *      step?: number,
  *      }} params
  * @return {UINumber}
  */
 function createNumberInput(params) {
-	const { value = 0, precision = 3, update, min, max, unit, nudge, step } = params;
+	const { value = 0, precision = 4, update, min, max, unit, nudge, step } = params;
 
 	const input = new UINumber(value).setPrecision(precision).setWidth('50px').onChange(update);
 	if (unit !== undefined) input.setUnit(unit);
@@ -36,12 +107,15 @@ function createNumberInput(params) {
 
 /**
  * @param {{
- *      text: string,
- *      value: { x:number, y:number, z:number },
- *      precision: number
+ *      text?: string,
+ *      value?: { x:number, y:number, z:number },
+ *      precision?: number
+ * 		step?: number,
+ * 		nudge?: number,
+ * 		unit?: string,
  *      update: ()=> void,
- *      min : number,
- *      max : number
+ *      min?: number,
+ *      max?: number
  *      }} params
  * @return {[UIRow, UINumber, UINumber, UINumber, UIText]}
  */
@@ -52,7 +126,7 @@ export function createRowParamNumberXYZ(params) {
 	const inputX = createNumberInput({ ...params, value: x });
 	const inputY = createNumberInput({ ...params, value: y });
 	const inputZ = createNumberInput({ ...params, value: z });
-	const label = new UIText(text).setWidth('90px');
+	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
 
 	row.add(label);
 	row.add(inputX, inputY, inputZ);
@@ -61,12 +135,13 @@ export function createRowParamNumberXYZ(params) {
 
 /**
  * @param {{
- *      text: string,
- *      value: number,
- *      precision: number
+ *      text?: string,
+ *      value?: number,
+ *      precision?: number
  *      update: ()=> void,
- *      min : number,
- *      max : number
+ *      step?: number,
+ *      min?: number,
+ *      max?: number
  *      }} params
  * @return {[UIRow, UINumber, UIText]}
  */
@@ -75,7 +150,7 @@ export function createRowParamNumber(params) {
 
 	const row = new UIRow();
 	const input = createNumberInput({ ...params }).setWidth('auto');
-	const label = new UIText(text).setWidth('90px');
+	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
 
 	row.add(label);
 	row.add(input);
@@ -84,17 +159,17 @@ export function createRowParamNumber(params) {
 
 /**
  * @param {{
- *      text: string,
- *      value: string
+ *      text?: string,
+ *      value?: string
  *      }} params
  * @return {[UIRow, UIText, UIText]}
  */
 export function createRowText(params) {
-	const { text = 'Label', value } = params;
+	const { text = 'Label', value = '' } = params;
 
 	const row = new UIRow();
 	const input = new UIText(value);
-	const label = new UIText(text).setWidth('90px');
+	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
 
 	row.add(label);
 	row.add(input);
@@ -103,18 +178,18 @@ export function createRowText(params) {
 
 /**
  * @param {{
- *      text: string,
- *      value: string,
+ *      text?: string,
+ *      value?: string,
  *      update: ()=> void
  *      }} params
- * @return {[UIRow, UIText, UIText]}
+ * @return {[UIRow, UIInput, UIText]}
  */
 export function createRowParamInput(params) {
-	const { text = 'Label', value, update = () => { } } = params;
+	const { text = 'Label', value, update = () => {} } = params;
 
 	const row = new UIRow();
-	const input = new UIInput(value).setWidth('160px').setFontSize('12px').onChange(update);
-	const label = new UIText(text).setWidth('90px');
+	const input = new UIInput(value).setWidth(INPUT_WIDTH).setFontSize(FONT_SIZE).onChange(update);
+	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
 
 	row.add(label);
 	row.add(input);
@@ -123,22 +198,22 @@ export function createRowParamInput(params) {
 
 /**
  * @param {{
- *      text: string,
- *      value: string,
- *      options: {[key:string]:string}
+ *      text?: string,
+ *      options?: {[key:string]:string},
+ *      value?: string,
  *      update: ()=> void,
  *      }} params
  * @return {[UIRow, UISelect, UIText]}
  */
-export function createRowSelect({ text = 'Label', options, value, update }) {
+export function createRowSelect({ text = 'Label', options = [], value, update }) {
 	const row = new UIRow();
 	const select = new UISelect()
-		.setWidth('160px')
-		.setFontSize('12px')
+		.setWidth(INPUT_WIDTH)
+		.setFontSize(FONT_SIZE)
 		.setOptions(options)
 		.setValue(value)
 		.onChange(update);
-	const label = new UIText(text).setWidth('90px');
+	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
 
 	row.add(label);
 	row.add(select);
@@ -154,9 +229,9 @@ export function createMaterialSelect(materialsManager, update) {
 	const { materialOptions, materials } = materialsManager;
 
 	const row = new UIRow();
-	const container = new UIDiv().setWidth('160px').setDisplay('inline-block');
-	const input = new UISelect().setWidth('160px');
-	row.add(new UIText('Type').setWidth('90px'));
+	const container = new UIDiv().setWidth(INPUT_WIDTH).setDisplay('inline-block');
+	const input = new UISelect().setWidth(INPUT_WIDTH);
+	row.add(new UIText('Material Type').setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN));
 	row.add(container);
 
 	return [
@@ -183,14 +258,31 @@ export function createMaterialSelect(materialsManager, update) {
 }
 
 /**
+ * @param {Editor} editor
+ * @return {[UIRow,(zone: CSG.Zone) => void]} render function
+ */
+export function createZoneRulesPanel(editor) {
+	const row = new UIRow();
+	const container = new UIDiv().setWidth('100%').setDisplay('inline-block');
+	row.add(container);
+
+	return [
+		row,
+		zone => {
+			ReactDOM.render(<ZoneManagerPanel editor={editor} zone={zone} />, container.dom);
+		}
+	];
+}
+
+/**
  * @param {()=>void} update
- * @return {[UIRow,UINumber,(value:string)=>void]} render function
+ * @return {[UIRow,UINumber,(value:number)=>void]} render function
  */
 export function createParticleTypeSelect(update) {
 	const row = new UIRow();
-	const container = new UIDiv().setWidth('160px').setDisplay('inline-block');
+	const container = new UIDiv().setWidth(INPUT_WIDTH).setDisplay('inline-block');
 	const input = new UINumber();
-	row.add(new UIText('Particle type').setWidth('90px'));
+	row.add(new UIText('Particle type').setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN));
 	row.add(container);
 
 	return [
@@ -213,4 +305,199 @@ export function createParticleTypeSelect(update) {
 			);
 		}
 	];
+}
+
+/**
+ * @param {UIElement element}
+ * @return {void}
+ */
+export function showUIElement(element) {
+	element.setDisplay('');
+}
+
+/**
+ * @param {UIElement element}
+ * @return {void}
+ */
+export function hideUIElement(element) {
+	element.setDisplay('none');
+}
+
+export class UICustomTab extends UIText {
+	/**
+	 * @param {string text}
+	 * @param {UICustomTabbedPanel parent}
+	 * @constructor
+	 */
+	constructor(text, parent) {
+		super(text);
+
+		this.dom.className = 'Tab';
+
+		this.parent = parent;
+
+		const scope = this;
+
+		this.dom.addEventListener('click', function () {
+			scope.parent.select(scope.dom.id);
+		});
+	}
+}
+export class UICustomTabbedPanel extends UIDiv {
+	/**
+	 * @constructor
+	 */
+	constructor() {
+		super();
+
+		this.dom.className = 'TabbedPanel';
+
+		this.tabs = [];
+		this.panels = [];
+
+		this.tabsDiv = new UIDiv();
+		this.tabsDiv.setClass('Tabs');
+
+		this.panelsDiv = new UIDiv();
+		this.panelsDiv.setClass('Panels');
+
+		this.add(this.tabsDiv);
+		this.add(this.panelsDiv);
+
+		this.selected = '';
+	}
+
+	/**
+	 * @param {string id}
+	 * @param {string newName}
+	 * @return {this}
+	 */
+	changeTabName(id, newName) {
+		const tab = this.tabs.find(function (item) {
+			return item.dom.id === id;
+		});
+		if (tab) tab.setValue(newName);
+
+		return this;
+	}
+
+	hideTab(id) {
+		const tab = this.tabs.find(function (item) {
+			return item.dom.id === id;
+		});
+		if (tab) hideUIElement(tab);
+
+		if (this.selected !== id) return;
+		const panel = this.panels.find(function (item) {
+			return item.dom.id === id;
+		});
+		if (panel) hideUIElement(panel);
+		this.select(this.tabs[0].dom.id);
+
+		return this;
+	}
+
+	showTab(id) {
+		const tab = this.tabs.find(function (item) {
+			return item.dom.id === id;
+		});
+		if (tab) showUIElement(tab);
+
+		if (this.selected !== id) return;
+		const panel = this.panels.find(function (item) {
+			return item.dom.id === id;
+		});
+		if (panel) showUIElement(panel);
+
+		return this;
+	}
+
+	/**
+	 * @param {string id}
+	 * @return {this}
+	 */
+	select(id) {
+		let tab = null;
+		let panel = null;
+		const scope = this;
+
+		// Deselect current selection
+		if (this.selected && this.selected.length) {
+			tab = this.tabs.find(function (item) {
+				return item.dom.id === scope.selected;
+			});
+			panel = this.panels.find(function (item) {
+				return item.dom.id === scope.selected;
+			});
+
+			if (tab) {
+				tab.removeClass('selected');
+			}
+
+			if (panel) {
+				panel.setDisplay('none');
+			}
+		}
+
+		tab =
+			this.tabs.find(function (item) {
+				return item.dom.id === id;
+			}) ?? this.tabs[0];
+		panel =
+			this.panels.find(function (item) {
+				return item.dom.id === id;
+			}) ?? this.panels[0];
+
+		if (tab) {
+			tab.addClass('selected');
+		}
+
+		if (panel) {
+			panel.setDisplay('');
+			this.selected = panel.dom.id;
+		}
+
+		return this;
+	}
+
+	/**
+	 * @param {string id}
+	 * @param {string label}
+	 * @param {UIElement[] items}
+	 * @return {void}
+	 */
+	addTab(id, label, items) {
+		const tab = new UICustomTab(label, this);
+		tab.setId(id);
+		this.tabs.push(tab);
+		this.tabsDiv.add(tab);
+
+		const panel = new UIDiv();
+		panel.setId(id);
+		panel.add(...items);
+		panel.setDisplay('none');
+		panel.setPadding('10px');
+		this.panels.push(panel);
+		this.panelsDiv.add(panel);
+	}
+
+	/**
+	 * @return {void}
+	 */
+	reset() {
+		this.clear();
+		this.dom.className = 'TabbedPanel';
+
+		this.tabs = [];
+		this.panels = [];
+
+		this.tabsDiv = new UIDiv();
+		this.tabsDiv.setClass('Tabs');
+
+		this.panelsDiv = new UIDiv();
+		this.panelsDiv.setClass('Panels');
+
+		this.add(this.tabsDiv);
+		this.add(this.panelsDiv);
+	}
 }

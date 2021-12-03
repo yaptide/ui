@@ -6,31 +6,31 @@ import { DetectFilter } from '../../util/Detect/DetectFilter';
  * @constructor
  */
 export class RemoveFilterCommand {
-	constructor(editor, filter) {
+	constructor(editor, object) {
 		this.editor = editor;
-		this.filter = filter;
+		this.object = object;
 	}
 
 	execute() {
-		this.editor.detectManager.removeFilter(this.filter);
+		this.editor.detectManager.removeFilter(this.object);
 		this.editor.deselect();
 	}
 
 	undo() {
-		this.editor.detectManager.addFilter(this.filter);
-		this.editor.select(this.filter);
+		this.editor.detectManager.addFilter(this.object);
+		this.editor.select(this.object);
 	}
 
 	toJSON() {
 		const output = super.toJSON(this);
-		output.filter = this.filter.toJSON();
+		output.object = this.object.toJSON();
 		return output;
 	}
 
 	fromJSON(json) {
 		super.fromJSON(json);
-		this.filter =
-			this.editor.detectManager.getFilterByUuid(json.filter.uuid) ??
+		this.object =
+			this.editor.detectManager.getFilterByUuid(json.object.uuid) ??
 			DetectFilter.fromJSON(json.filter);
 	}
 }

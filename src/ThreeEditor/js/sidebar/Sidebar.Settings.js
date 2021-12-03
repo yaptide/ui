@@ -6,7 +6,7 @@ import { SidebarSettingsShortcuts } from './Sidebar.Settings.Shortcuts.js';
 import { SidebarSettingsViewport } from './Sidebar.Settings.Viewport.js';
 
 function SidebarSettings(editor) {
-	const { signals, strings, config, scene } = editor;
+	const { signals, scene } = editor;
 
 	const container = new UISpan();
 
@@ -32,7 +32,7 @@ function SidebarSettings(editor) {
 		refreshBackgroundUI();
 	});
 
-	backgroundRow.add(new UIText(strings.getKey('sidebar/scene/background')).setWidth('90px'));
+	backgroundRow.add(new UIText('Background').setWidth('90px'));
 	backgroundRow.add(backgroundType);
 
 	const backgroundColor = new UIColor()
@@ -88,7 +88,7 @@ function SidebarSettings(editor) {
 		refreshEnvironmentUI();
 	});
 
-	environmentRow.add(new UIText(strings.getKey('sidebar/scene/environment')).setWidth('90px'));
+	environmentRow.add(new UIText('Environment').setWidth('90px'));
 	environmentRow.add(environmentType);
 
 	const environmentEquirectangularTexture = new UITexture()
@@ -112,32 +112,6 @@ function SidebarSettings(editor) {
 		environmentType.setWidth(type !== 'Equirectangular' ? '160px' : '110px');
 		environmentEquirectangularTexture.setDisplay(type === 'Equirectangular' ? '' : 'none');
 	}
-	// language
-
-	const options = {
-		en: 'English',
-		fr: 'Français',
-		zh: '中文'
-	};
-
-	const languageRow = new UIRow();
-	const language = new UISelect().setWidth('160px');
-	language.setOptions(options);
-
-	if (config.getKey('language') !== undefined) {
-		language.setValue(config.getKey('language'));
-	}
-
-	language.onChange(function () {
-		const value = this.getValue();
-
-		editor.config.setKey('language', value);
-	});
-
-	languageRow.add(new UIText(strings.getKey('sidebar/settings/language')).setWidth('90px'));
-	languageRow.add(language);
-
-	settings.add(languageRow);
 
 	//
 

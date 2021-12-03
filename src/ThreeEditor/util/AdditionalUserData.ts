@@ -32,10 +32,9 @@ export const getGeometryParameters = (geometry: PossibleGeometryType) => {
 	});
 
 	return parameters;
-}
+};
 
 export function generateSimulationInfo(geometryMesh: THREE.Mesh<PossibleGeometryType>) {
-
 	const geometry = geometryMesh.geometry as PossibleGeometryType;
 
 	const parameters = getGeometryParameters(geometry);

@@ -30,7 +30,7 @@ import { ViewportObjects } from './ViewportObjects';
 //   then code reader would be free from understanding unusual convention of spherical coordinates system in threejs
 
 function ViewManager(editor) {
-	const { camera, scene, signals, zoneManager, sceneHelpers } = editor;
+	const { camera, scene, signals, sceneHelpers } = editor;
 
 	const container = new UIPanel();
 	container.setId('viewport');
@@ -367,10 +367,10 @@ function ViewManager(editor) {
 		render();
 	});
 
-	const canBoxBeUpdated = object =>
-		object !== null && object !== scene && object !== camera && object !== zoneManager;
+	const canBoxBeUpdated = object => object !== null && object !== camera;
 
-	signals.objectSelected.add(object => {
+	const handleSelected = () => {
+		const object = editor.selected;
 		selectionBox.visible = false;
 
 		if (canBoxBeUpdated(object)) {
@@ -383,7 +383,10 @@ function ViewManager(editor) {
 		}
 
 		render();
-	});
+	};
+
+	signals.objectSelected.add(handleSelected);
+	signals.contextChanged.add(handleSelected);
 
 	signals.objectFocused.add(object => {
 		views.forEach(view => view.controls.focus(object));

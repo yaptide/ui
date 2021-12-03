@@ -14,6 +14,14 @@ export class Command {
 		this.editor = editor;
 	}
 
+	/**
+	 * @returns {{
+	 * 		type: string,
+	 * 		id: number,
+	 * 		name: string,
+	 * 		object?: Object
+	 * }}
+	 */
 	toJSON() {
 		const output = {};
 		output.type = this.type;

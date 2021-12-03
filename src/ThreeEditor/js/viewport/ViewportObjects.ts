@@ -16,13 +16,13 @@ export class ViewportObjects {
 	getSelectable({
 		selectFigures = true,
 		selectZones = false,
-		selectSections = false
+		selectDetects = false
 	}): THREE.Object3D[] {
 		let selectableObjects: THREE.Object3D[] = [];
 
 		if (selectFigures) selectableObjects = selectableObjects.concat(this.figures);
 		if (selectZones) selectableObjects = selectableObjects.concat(this.zones);
-		if (selectSections) selectableObjects = selectableObjects.concat(this.detects);
+		if (selectDetects) selectableObjects = selectableObjects.concat(this.detects);
 
 		return selectableObjects;
 	}

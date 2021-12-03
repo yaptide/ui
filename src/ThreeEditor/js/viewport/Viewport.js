@@ -1,5 +1,10 @@
 import * as THREE from 'three';
-import { SetPositionCommand, SetRotationCommand, SetScaleCommand } from '../commands/Commands';
+import {
+	SetPositionCommand,
+	SetValueCommand,
+	SetRotationCommand,
+	SetScaleCommand
+} from '../commands/Commands';
 import { ViewportClippedView as ViewportClipPlane } from './Viewport.ClipPlane';
 import { EditorOrbitControls } from '../EditorOrbitControls';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
@@ -32,7 +37,7 @@ export function Viewport(
 		showSceneHelpers: true,
 		selectFigures: true,
 		selectZones: false,
-		selectSections: false,
+		selectGeometries: false,
 		visible: false
 	};
 
@@ -204,14 +209,12 @@ export function Viewport(
 			switch (transformControls.getMode()) {
 				case 'translate':
 					if (!objectPositionOnDown.equals(object.position)) {
-						editor.execute(
-							new SetPositionCommand(
-								editor,
-								object,
-								object.position,
-								objectPositionOnDown
-							)
-						);
+						if (object.isWorldZone)
+							editor.execute(
+								new SetValueCommand(editor, object, 'center', object.position)
+							);
+						else
+							editor.execute(new SetPositionCommand(editor, object, object.position));
 					}
 
 					break;
@@ -440,24 +443,6 @@ export function Viewport(
 
 				break;
 
-			case 'ControlLeft':
-			case 'ControlRight':
-				config.selectZones = true;
-				config.selectFigures = false;
-				break;
-
-			default:
-				break;
-		}
-	});
-	container.dom.addEventListener('keyup', event => {
-		switch (event.code) {
-			case 'ControlLeft':
-			case 'ControlRight':
-				config.selectZones = false;
-				config.selectFigures = true;
-				break;
-
 			default:
 				break;
 		}
@@ -473,18 +458,13 @@ export function Viewport(
 		render();
 	});
 
-	signals.snapChanged.add(dist => {
-		transformControls.setTranslationSnap(dist);
-	});
+	signals.snapChanged.add(transformControls.setTranslationSnap);
 
-	signals.spaceChanged.add(space => {
-		transformControls.setSpace(space);
-	});
+	signals.spaceChanged.add(transformControls.setSpace);
 
-	signals.objectSelected.add(object => {
-		reattachTransformControls(object);
-		render();
-	});
+	signals.objectSelected.add(reattachTransformControls);
+	signals.autocalculateChanged.add(() => reattachTransformControls(editor.selected));
+	signals.contextChanged.add(() => reattachTransformControls(editor.selected));
 
 	signals.objectRemoved.add(object => {
 		controls.enabled = true;
@@ -496,7 +476,6 @@ export function Viewport(
 
 	signals.showHelpersChanged.add(showHelpers => {
 		transformControls.enabled = showHelpers;
-
 		render();
 	});
 

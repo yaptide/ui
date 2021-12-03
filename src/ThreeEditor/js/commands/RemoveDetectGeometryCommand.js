@@ -7,29 +7,29 @@ import { DetectGeometry } from '../../util/Detect/DetectGeometry';
  * @constructor
  */
 export class RemoveDetectGeometryCommand extends Command {
-	constructor(editor, section) {
+	constructor(editor, object) {
 		super(editor);
 
 		this.type = 'RemoveDetectGeometryCommand';
-		this.name = 'Remove Detect';
+		this.name = 'Remove Detect Geometry';
 
-		this.section = section;
+		this.object = object;
 	}
 
 	execute() {
-		this.editor.detectManager.removeSection(this.section);
+		this.editor.detectManager.removeGeometry(this.object);
 		this.editor.deselect();
 	}
 
 	undo() {
-		this.editor.detectManager.addSection(this.section);
-		this.editor.select(this.section);
+		this.editor.detectManager.addGeometry(this.object);
+		this.editor.select(this.object);
 	}
 
 	toJSON() {
 		const output = super.toJSON(this);
 
-		output.section = this.section.toJSON();
+		output.object = this.object.toJSON();
 
 		return output;
 	}
@@ -37,10 +37,8 @@ export class RemoveDetectGeometryCommand extends Command {
 	fromJSON(json) {
 		super.fromJSON(json);
 
-		this.section = this.editor.objectByUuid(json.object.section.uuid);
-
-		if (this.section === undefined) {
-			this.section = DetectGeometry.fromJSON(this.editor, json.object);
-		}
+		this.object =
+			this.editor.objectByUuid(json.object.uuid) ??
+			DetectGeometry.fromJSON(this.editor, json.object);
 	}
 }

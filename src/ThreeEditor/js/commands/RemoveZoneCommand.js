@@ -8,29 +8,29 @@ import * as CSG from '../../util/CSG/CSG';
  * @constructor
  */
 class RemoveZoneCommand extends Command {
-	constructor(editor, zone) {
+	constructor(editor, object) {
 		super(editor);
 
 		this.type = 'RemoveZoneCommand';
 		this.name = 'Remove Zone';
 
-		this.zone = zone;
+		this.object = object;
 	}
 
 	execute() {
-		this.editor.zoneManager.removeZone(this.zone);
+		this.editor.zoneManager.removeZone(this.object);
 		this.editor.deselect();
 	}
 
 	undo() {
-		this.editor.zoneManager.addZone(this.zone);
-		this.editor.select(this.zone);
+		this.editor.zoneManager.addZone(this.object);
+		this.editor.select(this.object);
 	}
 
 	toJSON() {
 		const output = super.toJSON(this);
 
-		output.zone = this.zone.toJSON();
+		output.object = this.object.toJSON();
 
 		return output;
 	}
@@ -38,11 +38,9 @@ class RemoveZoneCommand extends Command {
 	fromJSON(json) {
 		super.fromJSON(json);
 
-		this.zone = this.editor.objectByUuid(json.object.zone.uuid);
-
-		if (this.zone === undefined) {
-			this.zone = CSG.Zone.fromJSON(this.editor, json.object);
-		}
+		this.object =
+			this.editor.zoneManager.getZoneByUuid(json.object.uuid) ??
+			CSG.Zone.fromJSON(this.editor, json.object);
 	}
 }
 

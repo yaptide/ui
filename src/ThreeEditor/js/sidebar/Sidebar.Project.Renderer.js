@@ -4,14 +4,14 @@ import { UINumber, UIPanel, UIRow, UISelect, UIText } from '../libs/ui.js';
 import { UIBoolean } from '../libs/ui.three.js';
 
 function SidebarProjectRenderer(editor) {
-	const { signals, strings, config } = editor;
+	const { signals, config } = editor;
 
 	let currentRenderer = null;
 
 	const container = new UIPanel();
 
 	const headerRow = new UIRow();
-	headerRow.add(new UIText(strings.getKey('sidebar/project/renderer').toUpperCase()));
+	headerRow.add(new UIText('Renderer'.toUpperCase()));
 	container.add(headerRow);
 
 	// Antialias
@@ -19,7 +19,7 @@ function SidebarProjectRenderer(editor) {
 	const antialiasRow = new UIRow();
 	container.add(antialiasRow);
 
-	antialiasRow.add(new UIText(strings.getKey('sidebar/project/antialias')).setWidth('90px'));
+	antialiasRow.add(new UIText('Antialias').setWidth('90px'));
 
 	const antialiasBoolean = new UIBoolean(config.getKey('project/renderer/antialias')).onChange(
 		createRenderer
@@ -31,9 +31,7 @@ function SidebarProjectRenderer(editor) {
 	const physicallyCorrectLightsRow = new UIRow();
 	container.add(physicallyCorrectLightsRow);
 
-	physicallyCorrectLightsRow.add(
-		new UIText(strings.getKey('sidebar/project/physicallyCorrectLights')).setWidth('90px')
-	);
+	physicallyCorrectLightsRow.add(new UIText('Physical lights').setWidth('90px'));
 
 	const physicallyCorrectLightsBoolean = new UIBoolean(
 		config.getKey('project/renderer/physicallyCorrectLights')
@@ -48,7 +46,7 @@ function SidebarProjectRenderer(editor) {
 	const shadowsRow = new UIRow();
 	container.add(shadowsRow);
 
-	shadowsRow.add(new UIText(strings.getKey('sidebar/project/shadows')).setWidth('90px'));
+	shadowsRow.add(new UIText('Shadows').setWidth('90px'));
 
 	const shadowsBoolean = new UIBoolean(config.getKey('project/renderer/shadows')).onChange(
 		updateShadows
@@ -79,7 +77,7 @@ function SidebarProjectRenderer(editor) {
 	const toneMappingRow = new UIRow();
 	container.add(toneMappingRow);
 
-	toneMappingRow.add(new UIText(strings.getKey('sidebar/project/toneMapping')).setWidth('90px'));
+	toneMappingRow.add(new UIText('Tone mapping').setWidth('90px'));
 
 	const toneMappingSelect = new UISelect()
 		.setOptions({

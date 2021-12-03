@@ -1,6 +1,7 @@
 import { MATERIALS } from './materials';
-import SimulationMaterial from './SimulationMaterial';
+import SimulationMaterial, { isSimulationMaterial } from './SimulationMaterial';
 import * as THREE from 'three';
+import { Editor } from '../../js/Editor';
 
 export interface MaterialsManagerJSON {
 	data: {
@@ -14,12 +15,14 @@ export interface MaterialsManagerJSON {
 	transparent: boolean;
 }
 export default class MaterialsManager {
+	private editor: Editor;
 	private prefabMaterials: Record<string, SimulationMaterial>;
 	private customMaterials: Record<string, SimulationMaterial>;
 	materialOptions: Record<string, string>;
 	materials: Record<string, SimulationMaterial>;
 
-	constructor() {
+	constructor(editor: Editor) {
+		this.editor = editor;
 		const [materials, options] = this.createMaterialPrefabs();
 		this.prefabMaterials = materials;
 		this.materialOptions = options;
@@ -27,11 +30,10 @@ export default class MaterialsManager {
 
 		const materialsHandler = {
 			get: (target: Record<string, SimulationMaterial>, prop: string) => {
-				return prop in target
-					? target[prop]
-					: prop in this.prefabMaterials
-						? this.prefabMaterials[prop]
-						: this.getDefaultMaterial();
+				return (
+					(prop in target ? target : this.prefabMaterials)[prop] ??
+					this.getDefaultMaterial()
+				);
 			},
 			set: (target: Record<string, SimulationMaterial>, prop: string, value: unknown) => {
 				Reflect.set(this.materialOptions, prop, prop);
@@ -55,6 +57,11 @@ export default class MaterialsManager {
 		};
 
 		this.materials = new Proxy(this.customMaterials, materialsHandler);
+		this.editor.signals.materialChanged.add(this.onMaterialChanged.bind(this));
+	}
+
+	private onMaterialChanged(material: THREE.Material) {
+		if (isSimulationMaterial(material)) this.customMaterials[material.name] = material;
 	}
 
 	getDefaultMaterial() {
