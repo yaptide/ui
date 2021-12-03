@@ -20,7 +20,6 @@ export class SetDetectGeometryCommand extends Command {
 		Object.entries(this.oldData).forEach(([key, _]) => {
 			this.newData[key] = newData[key] ?? this.oldData[key];
 		});
-		console.log(this.oldData, this.newData, newData);
 	}
 
 	execute() {

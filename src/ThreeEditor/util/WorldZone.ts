@@ -122,7 +122,7 @@ export class WorldZone extends SimulationObject3D {
 
 		this.geometryType = 'Box';
 
-		const handleSignal = (object?: Object3D) => {
+		const handleSignal = (object: Object3D) => {
 			if (this.autoCalculate && !isWorldZone(object)) this.debouncedCalculate();
 		};
 		this.signals.objectChanged.add(handleSignal);

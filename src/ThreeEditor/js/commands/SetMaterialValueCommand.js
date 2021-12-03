@@ -27,7 +27,6 @@ class SetMaterialValueCommand extends Command {
 	execute() {
 		this.material[this.attributeName] = this.newValue;
 		this.material.needsUpdate = true;
-		console.log(this.newValue);
 		this.editor.signals.objectChanged.dispatch(this.object);
 		this.editor.signals.materialChanged.dispatch(this.material);
 	}

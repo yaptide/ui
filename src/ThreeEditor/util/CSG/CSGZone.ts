@@ -100,43 +100,16 @@ export class Zone extends SimulationMesh {
 
 	updateGeometry(): void {
 		console.time('CSGZone');
-		let unionsResultBsp = new CSG();
 
-		for (let i = 0; i < this.unionOperations.length; i++) {
-			const operations = this.unionOperations[i];
-
-			let operationsResultBsp = new CSG();
-
-			for (let index = 0; index < operations.length; index++) {
-				const operation = operations[index];
-				const lastBsp = operationsResultBsp;
-
-				operation.object.updateMatrix();
-
-				// TODO: use worker to offload main thread
-				// this.worker?.parse(JSON.stringify(operation.object))
-				//     .then((json: string) => new THREE.ObjectLoader().parseAsync(JSON.parse(json)))
-				//     .then(console.log);
-
-				const objectBsp = CSG.fromMesh(operation.object as THREE.Mesh);
-
-				const handleMode = {
-					'subtraction': () => lastBsp.subtract(objectBsp),
-					'intersection': () => lastBsp.intersect(objectBsp),
-					'reverse-subtraction': () => objectBsp.subtract(lastBsp),
-					'union': () => lastBsp.union(objectBsp)
-				};
-
-				operationsResultBsp = handleMode[operation.mode]();
-			}
-
-			unionsResultBsp = unionsResultBsp.union(operationsResultBsp);
-		}
-
-		const geometryResult = CSG.toGeometry(unionsResultBsp, this.matrix);
+		const unionsResultBsp = this.unionOperations.reduce((result, operationRow) => {
+			const rowResult = operationRow.reduce((result, operation) => {
+				return operation.execute(result);
+			}, new CSG());
+			return result.union(rowResult);
+		}, new CSG());
 
 		this.geometry.dispose();
-		this.geometry = geometryResult;
+		this.geometry = CSG.toGeometry(unionsResultBsp, this.matrix);
 		this.geometry.computeBoundingSphere();
 		this.updateMatrixWorld(true);
 

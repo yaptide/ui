@@ -9,17 +9,19 @@ export interface OperationTupleJSON {
 }
 
 export class OperationTuple {
-	object: THREE.Object3D;
+	object: THREE.Mesh;
 	mode: Operation;
 	readonly isOperationTuple: true = true;
 
-	constructor(object: THREE.Object3D, mode: Operation) {
+	constructor(object: THREE.Mesh, mode: Operation) {
 		this.object = object;
 		this.mode = mode;
 	}
 
-	execute(object: CSG) {
-		return executeOperation(this.mode)(object);
+	execute(csg: CSG) {
+		const { object } = this;
+		object.updateMatrix();
+		return executeOperation(this.mode)(csg)(CSG.fromMesh(object));
 	}
 
 	toJSON() {
@@ -38,7 +40,7 @@ export class OperationTuple {
 
 		if (!isOperation(mode)) throw new Error('Mode contains not known operation: ' + mode);
 
-		return new OperationTuple(object, mode);
+		return new OperationTuple(object as THREE.Mesh, mode);
 	}
 }
 

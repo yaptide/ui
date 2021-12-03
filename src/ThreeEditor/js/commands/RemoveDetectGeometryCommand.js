@@ -11,7 +11,7 @@ export class RemoveDetectGeometryCommand extends Command {
 		super(editor);
 
 		this.type = 'RemoveDetectGeometryCommand';
-		this.name = 'Remove Detect';
+		this.name = 'Remove Detect Geometry';
 
 		this.object = object;
 	}

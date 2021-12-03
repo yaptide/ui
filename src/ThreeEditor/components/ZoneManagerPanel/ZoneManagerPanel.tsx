@@ -22,7 +22,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 		const operations: CSG.OperationTuple[] = [];
 
 		if (row.geometriesId[0]) {
-			const object = props.editor.scene.getObjectById(row.geometriesId[0]);
+			const object = props.editor.scene.getObjectById(row.geometriesId[0]) as THREE.Mesh;
 
 			if (!object)
 				throw new Error(
@@ -36,7 +36,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 			const operation = row.operations[i];
 			const geometryID = row.geometriesId[i + 1];
 			if (row.geometriesId.length > i + 1 && Number.isInteger(geometryID) && operation) {
-				const object = props.editor.scene.getObjectById(geometryID as number);
+				const object = props.editor.scene.getObjectById(geometryID as number) as THREE.Mesh;
 
 				if (!object)
 					throw new Error(
