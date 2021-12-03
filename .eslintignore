@@ -1,0 +1,2 @@
+# ignore ThreeEditor libs files
+src/ThreeEditor/js/libs/*

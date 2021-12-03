@@ -37,7 +37,7 @@ export function Viewport(
 		showSceneHelpers: true,
 		selectFigures: true,
 		selectZones: false,
-		selectSections: false,
+		selectGeometries: false,
 		visible: false
 	};
 

@@ -1,4 +1,4 @@
-import { UIPanel } from '../libs/ui.js';
+import { UIHorizontalRule, UIPanel } from '../libs/ui.js';
 import { createOption } from './Menubar.js';
 
 function MenubarView(editor) {
@@ -19,12 +19,13 @@ function MenubarView(editor) {
 		createOption('option', 'Fullscreen', () => {
 			document.fullscreenElement === null
 				? document.documentElement.requestFullscreen()
-				: document.exitFullscreen();
+				: document.exitFullscreen && document.exitFullscreen();
 
 			document.webkitFullscreenElement === null // Safari
 				? document.documentElement.webkitRequestFullscreen()
 				: document.webkitExitFullscreen();
-		})
+		}),
+		new UIHorizontalRule()
 	);
 
 	// Single view

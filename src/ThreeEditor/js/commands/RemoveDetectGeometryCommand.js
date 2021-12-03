@@ -19,12 +19,12 @@ export class RemoveDetectGeometryCommand extends Command {
 	}
 
 	execute() {
-		this.editor.detectManager.removeSection(this.detect);
+		this.editor.detectManager.removeGeometry(this.detect);
 		this.editor.deselect();
 	}
 
 	undo() {
-		this.editor.detectManager.addSection(this.detect);
+		this.editor.detectManager.addGeometry(this.detect);
 		this.editor.select(this.detect);
 	}
 

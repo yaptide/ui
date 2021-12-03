@@ -40,7 +40,7 @@ function OperationInput(props: OperationInputProps) {
 			</MenuItem>
 			{props.canClear && <MenuItem value={''}>X</MenuItem>}
 			<MenuItem value={'subtraction'}>
-				<img src='./images/L.png' alt='left subtraction' />
+				<img src='./images/L.png' alt='subtraction' />
 			</MenuItem>
 			<MenuItem value={'intersection'}>
 				<img src='./images/S.png' alt='intersection' />

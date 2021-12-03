@@ -26,7 +26,7 @@ function MenubarAdd(editor) {
 
 	// YAPTIDE detectors
 	options.add(
-		createOption('option', 'Detect Section', () => {
+		createOption('option', 'Detect Geometry', () => {
 			editor.execute(new AddDetectGeometryCommand(editor));
 		}),
 		new UIHorizontalRule()

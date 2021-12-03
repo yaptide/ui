@@ -369,7 +369,8 @@ function ViewManager(editor) {
 
 	const canBoxBeUpdated = object => object !== null && object !== camera;
 
-	const handleSelected = object => {
+	const handleSelected = () => {
+		const object = editor.selected;
 		selectionBox.visible = false;
 
 		if (canBoxBeUpdated(object)) {
@@ -385,7 +386,7 @@ function ViewManager(editor) {
 	};
 
 	signals.objectSelected.add(handleSelected);
-	signals.contextChanged.add(() => handleSelected(editor.selected));
+	signals.contextChanged.add(handleSelected);
 
 	signals.objectFocused.add(object => {
 		views.forEach(view => view.controls.focus(object));

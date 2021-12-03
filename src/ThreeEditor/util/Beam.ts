@@ -208,11 +208,6 @@ export class Beam extends SimulationObject3D {
 		this.material.color.setHex(0xffff00); // yellow
 	}
 
-	copy(source: this, recursive = true) {
-		throw new Error('Not implemented');
-		return new Proxy(super.copy(source, recursive), this.overrideHandler) as this;
-	}
-
 	toJSON() {
 		const jsonObject: BeamJSON = {
 			position: this.position.toArray(),

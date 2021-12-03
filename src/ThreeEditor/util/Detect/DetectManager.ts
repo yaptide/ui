@@ -128,24 +128,24 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 		}
 	}
 
-	createSection(): DetectGeometry {
-		const section = new DetectGeometry(this.editor, {});
-		this.addSection(section);
-		return section;
+	createGeometry(): DetectGeometry {
+		const geometry = new DetectGeometry(this.editor, {});
+		this.addGeometry(geometry);
+		return geometry;
 	}
 
-	addSection(section: DetectGeometry): void {
-		this.detectContainer.add(section);
+	addGeometry(geometry: DetectGeometry): void {
+		this.detectContainer.add(geometry);
 
-		this.signals.objectAdded.dispatch(section);
-		this.signals.detectGeometryAdded.dispatch(section);
+		this.signals.objectAdded.dispatch(geometry);
+		this.signals.detectGeometryAdded.dispatch(geometry);
 		this.signals.sceneGraphChanged.dispatch();
 	}
 
-	removeSection(section: DetectGeometry): void {
-		this.detectContainer.remove(section);
-		this.signals.objectRemoved.dispatch(section);
-		this.signals.detectGeometryRemoved.dispatch(section);
+	removeGeometry(geometry: DetectGeometry): void {
+		this.detectContainer.remove(geometry);
+		this.signals.objectRemoved.dispatch(geometry);
+		this.signals.detectGeometryRemoved.dispatch(geometry);
 		this.signals.sceneGraphChanged.dispatch();
 	}
 
@@ -172,8 +172,8 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 		this.uuid = data.uuid;
 
 		this.name = data.name;
-		data.detectGeometries.forEach(sectionData => {
-			this.addSection(DetectGeometry.fromJSON(this.editor, sectionData));
+		data.detectGeometries.forEach(geometryData => {
+			this.addGeometry(DetectGeometry.fromJSON(this.editor, geometryData));
 		});
 		data.filters.forEach(filterData => {
 			this.addFilter(DetectFilter.fromJSON(this.editor, filterData));
@@ -213,7 +213,7 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 		return new DetectManager(this.editor).copy(this, recursive) as this;
 	}
 
-	getSectionById(id: number): DetectGeometry | null {
+	getGeometryById(id: number): DetectGeometry | null {
 		return this.detectContainer.children.find(
 			child => child.id === id
 		) as DetectGeometry | null;

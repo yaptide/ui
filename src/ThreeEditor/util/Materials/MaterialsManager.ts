@@ -30,11 +30,10 @@ export default class MaterialsManager {
 
 		const materialsHandler = {
 			get: (target: Record<string, SimulationMaterial>, prop: string) => {
-				return prop in target
-					? target[prop]
-					: prop in this.prefabMaterials
-					? this.prefabMaterials[prop]
-					: this.getDefaultMaterial();
+				return (
+					(prop in target ? target : this.prefabMaterials)[prop] ??
+					this.getDefaultMaterial()
+				);
 			},
 			set: (target: Record<string, SimulationMaterial>, prop: string, value: unknown) => {
 				Reflect.set(this.materialOptions, prop, prop);
