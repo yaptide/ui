@@ -213,9 +213,9 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 		return new DetectManager(this.editor).copy(this, recursive) as this;
 	}
 
-	getGeometryById(id: number): DetectGeometry | null {
+	getGeometryByUuid(uuid: string): DetectGeometry | null {
 		return this.detectContainer.children.find(
-			child => child.id === id
+			child => child.uuid === uuid
 		) as DetectGeometry | null;
 	}
 

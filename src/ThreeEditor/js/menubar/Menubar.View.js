@@ -16,15 +16,19 @@ function MenubarView(editor) {
 
 	// Fullscreen
 	options.add(
-		createOption('option', 'Fullscreen', () => {
-			document.fullscreenElement === null
-				? document.documentElement.requestFullscreen()
-				: document.exitFullscreen && document.exitFullscreen();
-
-			document.webkitFullscreenElement === null // Safari
-				? document.documentElement.webkitRequestFullscreen()
-				: document.webkitExitFullscreen();
-		}),
+		createOption(
+			'option',
+			'Fullscreen',
+			document.exitFullscreen
+				? () =>
+						document.fullscreenElement === null
+							? document.documentElement.requestFullscreen()
+							: document.exitFullscreen()
+				: () =>
+						document.webkitFullscreenElement === null //Safari
+							? document.documentElement.webkitRequestFullscreen()
+							: document.webkitExitFullscreen()
+		),
 		new UIHorizontalRule()
 	);
 

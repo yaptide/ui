@@ -7,6 +7,7 @@ import { DetectManager } from './DetectManager';
 import * as DETECT from './DetectTypes';
 
 export interface DetectGeometryJSON {
+	uuid: string;
 	data: DETECT.Any;
 	type: DETECT.DETECT_TYPE;
 	position: THREE.Vector3Tuple;
@@ -267,7 +268,9 @@ export class DetectGeometry extends SimulationPoints {
 		const position = this.position.toArray();
 		const name = this.name;
 		const colorHex = this.material.color.getHex();
+		const uuid = this.uuid;
 		return {
+			uuid,
 			data,
 			type,
 			position,
@@ -278,6 +281,7 @@ export class DetectGeometry extends SimulationPoints {
 
 	fromJSON(data: DetectGeometryJSON): DetectGeometry {
 		this._geometryData = data.data;
+		this.uuid = data.uuid;
 		this.detectType = data.type;
 		this.name = data.name;
 		this.geometry = this.generateGeometry();

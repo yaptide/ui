@@ -7,17 +7,17 @@ import { Command } from '../Command.js';
  * @constructor
  */
 export class SetFilterRulesCommand extends Command {
-	constructor(editor, filter, newRules) {
+	constructor(editor, object, newRules) {
 		super(editor);
 
 		this.type = 'SetFilterRulesCommand';
 		this.name = 'Set Filter Rules';
 		this.updatable = true;
 
-		this.object = filter;
+		this.object = object;
 
-		this.filter = filter;
-		this.oldRules = filter.rules.map(rule => rule.toJSON());
+		this.filter = object;
+		this.oldRules = object.rules.map(rule => rule.toJSON());
 		this.newRules = newRules;
 	}
 

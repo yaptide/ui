@@ -38,12 +38,9 @@ class AddDetectGeometryCommand extends Command {
 
 	fromJSON(json) {
 		super.fromJSON(json);
-
-		this.object = this.editor.objectByUuid(json.object.object.uuid);
-
-		if (this.object === undefined) {
-			this.object = DetectGeometry.fromJSON(this.editor, json.object);
-		}
+		this.object =
+			this.editor.detectManager.getGeometryByUuid(json.object.uuid) ??
+			DetectGeometry.fromJSON(this.editor, json.object);
 	}
 }
 

@@ -7,38 +7,37 @@ import { DetectFilter } from '../../util/Detect/DetectFilter';
  * @constructor
  */
 export class AddFilterCommand extends Command {
-	constructor(editor, filter) {
+	constructor(editor, object) {
 		super(editor);
 
 		this.type = 'AddFilterCommand';
 
-		this.filter = filter;
-		this.object = filter;
-		this.name = filter ? `Add Filter: ${filter.name}` : `Create Filter`;
+		this.object = object;
+		this.name = object ? `Add Filter: ${object.name}` : `Create Filter`;
 	}
 
 	execute() {
-		if (this.filter) this.editor.detectManager.addFilter(this.filter);
-		else this.filter = this.editor.detectManager.createFilter();
+		if (this.object) this.editor.detectManager.addFilter(this.object);
+		else this.object = this.editor.detectManager.createFilter();
 
-		this.editor.select(this.filter);
+		this.editor.select(this.object);
 	}
 
 	undo() {
-		this.editor.removeFilter(this.filter);
+		this.editor.removeFilter(this.object);
 		this.editor.deselect();
 	}
 
 	toJSON() {
 		const output = super.toJSON(this);
-		output.filter = this.filter.toJSON();
+		output.object = this.object.toJSON();
 		return output;
 	}
 
 	fromJSON(json) {
 		super.fromJSON(json);
-		this.filter =
-			this.editor.detectManager.getFilterByUuid(json.filter.uuid) ??
+		this.object =
+			this.editor.detectManager.getFilterByUuid(json.object.uuid) ??
 			DetectFilter.fromJSON(json.filter);
 	}
 }

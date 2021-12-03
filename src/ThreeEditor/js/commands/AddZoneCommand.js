@@ -7,32 +7,31 @@ import { Command } from '../Command.js';
  * @constructor
  */
 export class AddZoneCommand extends Command {
-	constructor(editor, zone) {
+	constructor(editor, object) {
 		super(editor);
 
 		this.type = 'AddZoneCommand';
 
-		this.zone = zone;
-		this.object = zone;
-		this.name = zone ? `Add Zone: ${zone.name}` : `Create Zone`;
+		this.object = object;
+		this.name = object ? `Add Zone: ${object.name}` : `Create Zone`;
 	}
 
 	execute() {
-		if (this.zone) this.editor.zoneManager.addZone(this.zone);
-		else this.zone = this.editor.zoneManager.createZone();
+		if (this.object) this.editor.zoneManager.addZone(this.object);
+		else this.object = this.editor.zoneManager.createZone();
 
-		this.editor.select(this.zone);
+		this.editor.select(this.object);
 	}
 
 	undo() {
-		this.editor.zoneManager.removeZone(this.zone);
+		this.editor.zoneManager.removeZone(this.object);
 		this.editor.deselect();
 	}
 
 	toJSON() {
 		const output = super.toJSON(this);
 
-		output.zone = this.zone.toJSON();
+		output.object = this.object.toJSON();
 
 		return output;
 	}
@@ -40,10 +39,8 @@ export class AddZoneCommand extends Command {
 	fromJSON(json) {
 		super.fromJSON(json);
 
-		this.zone = this.editor.objectByUuid(json.zone.object.uuid);
-
-		if (this.zone === undefined) {
-			this.zone = CSG.Zone.fromJSON(this.editor, json.object);
-		}
+		this.object =
+			this.editor.objectByUuid(json.zone.uuid) ??
+			this.editor.zoneManager.createZone().fromJSON(this.editor, json.object);
 	}
 }

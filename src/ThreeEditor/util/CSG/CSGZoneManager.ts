@@ -161,6 +161,10 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 		return this.zoneContainer.children.find((zone: Zone) => zone.id === id);
 	}
 
+	getZoneByUuid(uuid: string): Zone | undefined {
+		return this.zoneContainer.children.find((zone: Zone) => zone.uuid === uuid);
+	}
+
 	handleZoneEmpty(zone: Zone): void {
 		this.removeZone(zone);
 	}

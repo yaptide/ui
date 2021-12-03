@@ -232,15 +232,33 @@ export class Zone extends SimulationMesh {
 		const unionOperations = this.unionOperations.map(union =>
 			union.map(operation => operation.toJSON())
 		);
-		const jsonObject: ZoneJSON = {
-			uuid: this.uuid,
-			name: this.name,
+		const { name: materialName, simulationData: materialData } = this.getSimulationMaterial();
+		const subscribedObjects = this.subscribedObjects.toJSON();
+		const { uuid, name } = this;
+		return {
+			uuid,
+			name,
+			materialName,
+			materialData,
 			unionOperations,
-			subscribedObjects: this.subscribedObjects.toJSON(),
-			materialName: this.getSimulationMaterial().name,
-			materialData: this.getSimulationMaterial().simulationData
+			subscribedObjects
 		};
-		return jsonObject;
+	}
+
+	fromJSON(editor: Editor, data: ZoneJSON): Zone {
+		this.unionOperations = data.unionOperations.map(union =>
+			union.map(operation => OperationTuple.fromJSON(editor, operation))
+		);
+
+		this.subscribedObjects = new CounterMap().fromJSON(data.subscribedObjects);
+
+		this.setSimulationMaterial(data.materialName);
+
+		return this;
+	}
+
+	setSimulationMaterial(materialName: string) {
+		this.material = this.editor.materialsManager.materials[materialName ?? 'WATER, LIQUID'];
 	}
 
 	getSimulationMaterial(): SimulationMaterial {
@@ -252,13 +270,13 @@ export class Zone extends SimulationMesh {
 			union.map(operation => OperationTuple.fromJSON(editor, operation))
 		);
 
-		const subscribedObjectsUuid = new CounterMap().fromJSON(data.subscribedObjects);
+		const subscribedObjects = new CounterMap().fromJSON(data.subscribedObjects);
 
 		const zone = new Zone(
 			editor,
 			data.name,
 			unionOperations,
-			subscribedObjectsUuid,
+			subscribedObjects,
 			data.uuid,
 			data.materialName
 		);
