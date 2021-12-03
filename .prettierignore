@@ -10,3 +10,6 @@ package-lock.json
 tsconfig.json
 dockerRun.ps1
 dockerBuild.ps1
+.github/
+.notebook/
+.vscode/
