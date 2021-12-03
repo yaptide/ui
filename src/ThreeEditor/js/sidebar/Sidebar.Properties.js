@@ -1,12 +1,12 @@
-import { UICustomTabbedPanel, hideUIElement, showUIElement } from '../../util/UiUtils';
-import { ObjectBeam } from '../object/Object.Beam';
-import { ObjectCSG } from '../object/Object.CSG';
-import { ObjectDimensions } from '../object/Object.Dimensions';
-import { ObjectGrid } from '../object/Object.Grid';
-import { ObjectInfo } from '../object/Object.Info';
-import { ObjectMaterial } from '../object/Object.Material';
-import { ObjectPlacement } from '../object/Object.Placement';
-import { ObjectZoneCalculate } from '../object/Object.ZoneCalculate';
+import { UICustomTabbedPanel, hideUIElement, showUIElement } from '../../util/Ui/Uis';
+import { ObjectBeam } from './object/Object.Beam';
+import { ObjectCSG } from './object/Object.CSG';
+import { ObjectDimensions } from './object/Object.Dimensions';
+import { ObjectGrid } from './object/Object.Grid';
+import { ObjectInfo } from './object/Object.Info';
+import { ObjectMaterial } from './object/Object.Material';
+import { ObjectPlacement } from './object/Object.Placement';
+import { ObjectZoneCalculate } from './object/Object.ZoneCalculate';
 
 function SidebarProperties(editor, id = 'properties') {
 	const { signals } = editor;

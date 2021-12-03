@@ -1,17 +1,17 @@
 import * as THREE from 'three';
-import { Beam, isBeam } from '../../util/Beam';
-import { SimulationObject3D } from '../../util/SimulationBase/SimulationMesh';
-import { ISimulationObject } from '../../util/SimulationBase/SimulationObject';
-import { createRowParamNumberXYZ, hideUIElement, showUIElement } from '../../util/UiUtils';
-import { isWorldZone } from '../../util/WorldZone';
+import { Beam, isBeam } from '../../../util/Beam';
+import { SimulationObject3D } from '../../../util/SimulationBase/SimulationMesh';
+import { ISimulationObject } from '../../../util/SimulationBase/SimulationObject';
+import { createRowParamNumberXYZ, hideUIElement, showUIElement } from '../../../util/Ui/Uis';
+import { isWorldZone } from '../../../util/WorldZone';
 import {
 	SetBeamDirectionCommand,
 	SetPositionCommand,
 	SetRotationCommand,
 	SetValueCommand
-} from '../commands/Commands';
-import { Editor } from '../Editor';
-import { UINumber, UIRow } from '../libs/ui';
+} from '../../commands/Commands';
+import { Editor } from '../../Editor';
+import { UINumber, UIRow } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectPlacement extends ObjectAbstract {

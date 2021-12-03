@@ -1,4 +1,3 @@
-import * as CSG from '../../util/CSG/CSG';
 import { Command } from '../Command.js';
 
 /**

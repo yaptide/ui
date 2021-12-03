@@ -1,13 +1,13 @@
-import { Beam } from '../../util/Beam';
+import { Beam } from '../../../util/Beam';
 import {
 	createParticleTypeSelect,
 	createRowParamNumber,
 	createRowParamNumberXYZ,
 	hideUIElement,
 	showUIElement
-} from '../../util/UiUtils';
-import { Editor } from '../Editor';
-import { UINumber, UIRow, UIText } from '../libs/ui';
+} from '../../../util/Ui/Uis';
+import { Editor } from '../../Editor';
+import { UINumber, UIRow, UIText } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectBeam extends ObjectAbstract {
