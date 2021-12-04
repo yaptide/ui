@@ -462,6 +462,7 @@ select:hover {
 #sidebar .Row {
 	min-height: 20px;
 	margin-bottom: 10px;
+	display: flex;
 }
 
 #sidebar canvas {

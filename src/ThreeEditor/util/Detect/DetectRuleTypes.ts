@@ -1,15 +1,28 @@
-const _rule_units = {
-	A: '',
-	AMASS: 'MeV/c^2',
+export const _rule_units = {
+	A: null,
+	AMASS: 'MeV/c²',
 	AMU: 'au',
 	E: 'MeV',
 	ENUC: 'MeV/n',
 	EAMU: 'MeV/amu',
-	ID: '',
+	ID: null,
 	GEN: 'gen',
-	NPRIM: '',
+	NPRIM: null,
 	Z: 'z'
-};
+} as const;
+
+export const _rule_descriptions = {
+	A: 'Filters the atomic mass number A of the particles.',
+	AMASS: 'Filters the mass of the particles, measured in [MeV/c²].',
+	AMU: 'Filters the mass of the particles, measured in atomic units.',
+	E: 'Filters the kinetic energy of the particles, measured in [MeV].',
+	ENUC: 'Filters the kinetic energy per nucleon, measured in [MeV/n].',
+	EAMU: 'Filters the kinetic energy per atomic mass unit, measured in [MeV/amu].',
+	ID: 'Filters the type of the particles.',
+	GEN: 'Filters the generation number of the particles currently simulated.',
+	NPRIM: 'Filters the number of primary particles.',
+	Z: 'Filters the charge number [z] of the particles.'
+} as const;
 
 const _float_keywords = ['AMASS', 'AMU', 'E', 'ENUC', 'EAMU'] as const;
 
@@ -29,25 +42,29 @@ const _operators = {
 const _notOperator = '&#172;' as const;
 
 const _particles = {
-	1: 'Hadrons',
-	2: 'Anti-hadrons',
-	3: 'pi- meson',
-	4: 'pi+ meson',
-	5: 'pi0 meson',
-	8: 'K-',
-	9: 'K+',
-	10: 'K0',
-	11: 'K∼',
-	12: 'γ-ray',
-	13: 'electron',
-	14: 'positron',
-	15: 'µ-',
-	16: 'µ+',
-	17: 'νe electron neutrino',
-	18: 'νe electron anti-neutrino',
-	19: 'νµ mu neutrino',
-	20: 'νµ mu anti-neutrino'
+	1: ['Hadron', 'H'],
+	2: ['Anti-hadron', 'H'],
+	3: ['Pion π-', 'π-'],
+	4: ['Pion π+', 'π+'],
+	5: ['Pion π0', 'π0'],
+	8: ['Kaon κ-', 'κ-'],
+	9: ['Kaon κ+', 'κ+'],
+	10: ['Kaon κ0', 'κ0'],
+	11: ['Kaon κ∼', 'κ∼'],
+	12: ['Gamma radiation', 'γ'],
+	13: ['Electron', 'e−'],
+	14: ['Positron', 'e+'],
+	15: ['Muon', 'μ-'],
+	16: ['Anti-muon', 'μ+'],
+	17: ['Electron neutrino', 'νe'],
+	18: ['Electron anti-neutrino', 'νe'],
+	19: ['Muon neutrino', 'νµ'],
+	20: ['Muon anti-neutrino', 'νµ']
 } as const;
+
+export function textDecoration(id: number) {
+	return [2, 18, 20].includes(id) ? 'overline' : null;
+}
 
 export type F_Keyword = typeof _float_keywords[number];
 export type I_Keyword = typeof _int_keywords[number];
@@ -70,6 +87,9 @@ export function isValidKeyword(
 			return sets.flat().includes(keyword as Keyword);
 	}
 }
+export function getDescription(keyword: string): string {
+	return isValidKeyword(keyword) ? _rule_descriptions[keyword] : 'Invalid rule';
+}
 
 export type Operator = keyof typeof _operators;
 export function isValidOperator(operator: string): operator is Operator {
@@ -78,11 +98,7 @@ export function isValidOperator(operator: string): operator is Operator {
 
 export type OperatorSymbol = typeof _operators[Operator] | typeof _notOperator;
 export function getOperator(operator: string) {
-	if (isValidOperator(operator)) {
-		return _operators[operator];
-	} else {
-		return _notOperator;
-	}
+	return isValidOperator(operator) ? _operators[operator] : _notOperator;
 }
 
 export type ParticleId = keyof typeof _particles;
@@ -92,9 +108,5 @@ export function isValidID(id: number): id is ParticleId {
 
 export type Particle = typeof _particles[ParticleId];
 export function getParticle(id: number) {
-	if (isValidID(id)) {
-		return _particles[id];
-	} else {
-		return _particles[1];
-	}
+	return isValidID(id) ? _particles[id] : null;
 }

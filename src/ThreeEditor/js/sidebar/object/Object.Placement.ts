@@ -38,13 +38,14 @@ export class ObjectPlacement extends ObjectAbstract {
 
 		[this.positionRow, this.positionX, this.positionY, this.positionZ] =
 			createRowParamNumberXYZ({
-				text: `Position ${editor.unit.name}`,
+				text: `Position`,
+				unit: `${editor.unit.name}`,
 				update: this.update.bind(this)
 			});
 
 		[this.rotationRow, this.rotationX, this.rotationY, this.rotationZ] =
 			createRowParamNumberXYZ({
-				text: `Rotation [deg]`, //TODO: add multiple unit types to editor
+				text: `Rotation`, //TODO: add multiple unit types to editor
 				update: this.update.bind(this),
 				step: 10,
 				nudge: 0.1,
@@ -54,7 +55,8 @@ export class ObjectPlacement extends ObjectAbstract {
 
 		[this.directionRow, this.directionX, this.directionY, this.directionZ] =
 			createRowParamNumberXYZ({
-				text: `Direction ${editor.unit.name}`,
+				text: `Direction`,
+				unit: `${editor.unit.name}`,
 				update: this.update.bind(this)
 			});
 

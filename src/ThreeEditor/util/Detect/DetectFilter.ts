@@ -20,7 +20,6 @@ export type FilterJSON = {
 export class DetectFilter extends SimulationObject3D {
 	private rules: Record<string, FilterRule>;
 	readonly isFilter: true = true;
-	readonly notRemovable = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;

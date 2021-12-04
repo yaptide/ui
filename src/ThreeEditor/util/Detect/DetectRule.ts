@@ -9,7 +9,7 @@ import {
 	OperatorSymbol,
 	getOperator,
 	isValidID
-} from './DetectFilterTypes';
+} from './DetectRuleTypes';
 
 //https://stackoverflow.com/questions/48757095/typescript-class-composition
 
@@ -61,10 +61,14 @@ export abstract class FilterRule {
 
 export class FloatRule extends FilterRule {
 	keyword: F_Keyword;
-	_value: number;
+	isFloatRule: true = true;
+	private _value: number;
 	set value(value: number) {
 		const precision = 100;
 		this._value = Math.round((value + Number.EPSILON) * precision) / precision;
+	}
+	get value(): number {
+		return this._value;
 	}
 
 	constructor({ keyword, operator, value }: FloatRuleJSON) {
@@ -87,9 +91,13 @@ export class FloatRule extends FilterRule {
 
 export class IntRule extends FilterRule {
 	keyword: I_Keyword;
-	_value: number;
+	isIntRule: true = true;
+	private _value: number;
 	set value(value: number) {
 		this._value = Math.floor(value);
+	}
+	get value(): number {
+		return this._value;
 	}
 
 	constructor({ keyword, operator, value }: IntRuleJSON) {
@@ -112,6 +120,7 @@ export class IntRule extends FilterRule {
 
 export class IDRule extends FilterRule {
 	keyword: ID_Keyword;
+	isIDRule: true = true;
 	private _value: ParticleId;
 	set value(value: ParticleId) {
 		const id = Math.floor(value);

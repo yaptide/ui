@@ -7,10 +7,12 @@ import {
 	isCylinderMesh,
 	isSphereMesh
 } from '../../../util/BasicMeshes';
+import { DetectFilter } from '../../../util/Detect/DetectFilter';
 import { DetectGeometry, isDetectGeometry } from '../../../util/Detect/DetectGeometry';
+import { FilterRule } from '../../../util/Detect/DetectRule';
 import { DETECT_OPTIONS } from '../../../util/Detect/DetectTypes';
 import {
-	createRowParamNumber,
+	createRulesOutliner,
 	createRowSelect,
 	createRowText,
 	hideUIElement,
@@ -24,14 +26,21 @@ import {
 	SetValueCommand
 } from '../../commands/Commands';
 import { Editor } from '../../Editor';
-import { UINumber, UIRow, UISelect, UIText } from '../../libs/ui';
+import { UIOutliner } from '../../libs/ui.three';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectFilter extends ObjectAbstract {
+	object?: DetectFilter;
+	rule?: FilterRule;
+	outliner: UIOutliner;
 	constructor(editor: Editor) {
-		super(editor, 'Rules');
+		super(editor, 'Scoring rules');
+		[this.outliner] = createRulesOutliner(editor, { update: this.update.bind(this) });
 	}
 	update(): void {
-		throw new Error('Method not implemented.');
+		const { object, rule } = this;
+		if (!object) return;
+		this.rule = object.getRuleByUuid(this.outliner.getValue());
+		console.log(this.rule);
 	}
 }

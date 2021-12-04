@@ -1,13 +1,5 @@
 import { UIOutliner } from '../libs/ui.three.js';
-
-const escapeHTML = html => {
-	return html
-		.replace(/&/g, '&amp;')
-		.replace(/"/g, '&quot;')
-		.replace(/'/g, '&#39;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;');
-};
+import { escapeHTML } from '../../util/escapeHTML.js';
 
 const getObjectType = object => {
 	switch (object.type) {

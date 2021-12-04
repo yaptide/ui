@@ -1,5 +1,5 @@
 import { UINumber, UIRow, UIText } from '../../js/libs/ui.js';
-import { LABEL_MARGIN, LABEL_WIDTH } from './Uis';
+import { LABEL_MARGIN, LABEL_WIDTH, TRIPLE_INPUT_WIDTH, PRECISION } from './Uis';
 
 /**
  * @typedef {import('../js/libs/ui').UIElement} UIElement
@@ -19,7 +19,7 @@ import { LABEL_MARGIN, LABEL_WIDTH } from './Uis';
  * @return {UINumber}
  */
 function createNumberInput(params) {
-	const { value = 0, precision = 4, update, min, max, unit, nudge, step } = params;
+	const { value = 0, precision = PRECISION, update, min, max, unit, nudge, step } = params;
 
 	const input = new UINumber(value).setPrecision(precision).setWidth('50px').onChange(update);
 	if (unit !== undefined) input.setUnit(unit);
@@ -44,6 +44,7 @@ function createNumberInput(params) {
  *      step?: number,
  *      min?: number,
  *      max?: number
+ * 		unit?: string,
  *      }} params
  * @return {[UIRow, UINumber, UIText]}
  */
@@ -77,9 +78,9 @@ export function createRowParamNumberXYZ(params) {
 	const { text = 'Label', value: { x, y, z } = {} } = params;
 
 	const row = new UIRow();
-	const inputX = createNumberInput({ ...params, value: x });
-	const inputY = createNumberInput({ ...params, value: y });
-	const inputZ = createNumberInput({ ...params, value: z });
+	const inputX = createNumberInput({ ...params, value: x }).setWidth(TRIPLE_INPUT_WIDTH);
+	const inputY = createNumberInput({ ...params, value: y }).setWidth(TRIPLE_INPUT_WIDTH);
+	const inputZ = createNumberInput({ ...params, value: z }).setWidth(TRIPLE_INPUT_WIDTH);
 	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
 
 	row.add(label);
