@@ -1,17 +1,17 @@
-export const _rule_units = {
-	A: null,
+export const RULE_UNITS = {
+	A: '',
 	AMASS: 'MeV/c²',
 	AMU: 'au',
 	E: 'MeV',
 	ENUC: 'MeV/n',
 	EAMU: 'MeV/amu',
-	ID: null,
+	ID: '',
 	GEN: 'gen',
-	NPRIM: null,
+	NPRIM: '',
 	Z: 'z'
 } as const;
 
-export const _rule_descriptions = {
+const _rule_descriptions = {
 	A: 'Filters the atomic mass number A of the particles.',
 	AMASS: 'Filters the mass of the particles, measured in [MeV/c²].',
 	AMU: 'Filters the mass of the particles, measured in atomic units.',
@@ -31,13 +31,23 @@ const _int_keywords = ['A', 'GEN', 'NPRIM', 'Z'] as const;
 const _id_keywords = ['ID'] as const;
 
 const _operators = {
-	equal: '&#61;',
-	not_equal: '&#8800;',
-	less_than: '&#60;',
-	less_than_or_equal: '&#8804;',
-	greater_than: '&#62;',
-	greater_than_or_equal: '&#8805;'
+	equal: ['&#61;', '='],
+	not_equal: ['&#8800;', '≠'],
+	less_than: ['&#60;', '<'],
+	less_than_or_equal: ['&#8804;', '≤'],
+	greater_than: ['&#62;', '>'],
+	greater_than_or_equal: ['&#8805;', '≥']
 } as const;
+
+export const OPERATOR_OPTIONS = Object.entries(_operators).reduce((acc, [key, [html, text]]) => {
+	if (key !== 'not_equal') acc[key] = text;
+	return acc;
+}, {} as Record<string, string>);
+
+export const KEYWORD_OPTIONS = Object.entries(_rule_descriptions).reduce((acc, [key]) => {
+	acc[key] = key;
+	return acc;
+}, {} as Record<string, string>);
 
 const _notOperator = '&#172;' as const;
 
@@ -62,7 +72,12 @@ const _particles = {
 	20: ['Muon anti-neutrino', 'νµ']
 } as const;
 
-export function textDecoration(id: number) {
+export const PARTICLE_OPTIONS = Object.entries(_particles).reduce((acc, [id, [name, symbol]]) => {
+	acc[id] = `<span title="${name}">${symbol}</span>`;
+	return acc;
+}, {} as Record<string, string>);
+
+function textDecoration(id: number) {
 	return [2, 18, 20].includes(id) ? 'overline' : null;
 }
 

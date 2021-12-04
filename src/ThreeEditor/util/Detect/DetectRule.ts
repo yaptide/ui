@@ -71,7 +71,7 @@ export class FloatRule extends FilterRule {
 		return this._value;
 	}
 
-	constructor({ keyword, operator, value }: FloatRuleJSON) {
+	constructor({ keyword, operator, value }: Omit<FloatRuleJSON, 'uuid'>) {
 		super(operator);
 		this.keyword = keyword;
 		this._value = value;
@@ -100,7 +100,7 @@ export class IntRule extends FilterRule {
 		return this._value;
 	}
 
-	constructor({ keyword, operator, value }: IntRuleJSON) {
+	constructor({ keyword, operator, value }: Omit<IntRuleJSON, 'uuid'>) {
 		super(operator);
 		this.keyword = keyword;
 		this._value = value;
@@ -130,7 +130,7 @@ export class IDRule extends FilterRule {
 		return this._value;
 	}
 
-	constructor({ keyword, operator, value }: IDRuleJSON) {
+	constructor({ keyword, operator, value }: Omit<IDRuleJSON, 'uuid'>) {
 		super(operator);
 		this.keyword = keyword;
 		this._value = value;
@@ -147,3 +147,7 @@ export class IDRule extends FilterRule {
 		return rule;
 	}
 }
+
+export const isIDRule = (rule: unknown): rule is IDRule => rule instanceof IDRule;
+export const isFloatRule = (rule: unknown): rule is FloatRule => rule instanceof FloatRule;
+export const isIntRule = (rule: unknown): rule is IntRule => rule instanceof IntRule;

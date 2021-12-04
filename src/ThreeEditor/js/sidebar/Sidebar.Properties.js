@@ -136,16 +136,17 @@ function SidebarProperties(editor, id = 'properties') {
 		container.showTab('rules');
 		switch (true) {
 			case object.isZone:
-				[beam, dimensions, grid, calculate].forEach(item => item.setObject(null));
+				[beam, dimensions, filter, grid, calculate].forEach(item => item.setObject(null));
 				[zoneRules].forEach(item => item.setObject(object));
 				break;
 			case object.isFilter:
 				[zoneRules, beam, dimensions, grid, calculate].forEach(item =>
 					item.setObject(null)
 				);
+				[filter].forEach(item => item.setObject(object));
 				break;
 			default:
-				[zoneRules, beam, dimensions, grid, calculate].forEach(item =>
+				[zoneRules, beam, dimensions, filter, grid, calculate].forEach(item =>
 					item.setObject(null)
 				);
 				break;

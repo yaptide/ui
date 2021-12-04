@@ -8,27 +8,25 @@ import { DetectFilter } from '../../util/Detect/DetectFilter';
  * @constructor
  */
 export class SetFilterNameCommand extends Command {
-	constructor(editor, filter, newName) {
+	constructor(editor, object, newName) {
 		super(editor);
 
 		this.type = 'SetFilterNameCommand';
 		this.name = 'Set Filter Name';
 		this.updatable = true;
 
-		this.object = filter;
-
-		this.filter = filter;
-		this.oldData = filter.toJSON();
+		this.object = object;
+		this.oldData = object.toJSON();
 		this.newName = newName;
-		this.oldName = filter.name;
+		this.oldName = object.name;
 	}
 
 	execute() {
-		this.filter.name = this.newName;
+		this.object.name = this.newName;
 	}
 
 	undo() {
-		this.filter.name = this.oldName;
+		this.object.name = this.oldName;
 	}
 
 	update(command) {
@@ -37,7 +35,7 @@ export class SetFilterNameCommand extends Command {
 
 	toJSON() {
 		const output = super.toJSON(this);
-		output.filter = this.filter.toJSON();
+		output.object = this.object.toJSON();
 		output.newName = this.newName;
 		output.oldName = this.oldName;
 		return output;
@@ -45,9 +43,9 @@ export class SetFilterNameCommand extends Command {
 
 	fromJSON(json) {
 		super.fromJSON(json);
-		this.filter =
-			this.editor.detectManager.getFilterByUuid(json.filter.uuid) ??
-			DetectFilter.fromJSON(json.filter);
+		this.object =
+			this.editor.detectManager.getFilterByUuid(json.object.uuid) ??
+			this.editor.detectManager.createFilter().fromJSON(json.object);
 		this.newName = json.newName;
 		this.oldName = json.oldName;
 	}

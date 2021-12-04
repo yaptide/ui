@@ -23,8 +23,8 @@ export * from './RulesOutliner';
  * @return {void}
  */
 
-export function showUIElement(element) {
-	element.setDisplay('');
+export function showUIElement(element, type = '') {
+	element.setDisplay(type);
 }
 
 /**

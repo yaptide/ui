@@ -1,4 +1,4 @@
-import { UIPanel } from '../libs/ui';
+import { UIBreak, UIPanel } from '../libs/ui';
 import { DetectAddPanel } from './Sidebar.AddPanel';
 import { OutlinerManager } from './Sidebar.OutlinerManager';
 
@@ -25,6 +25,8 @@ export class SidebarOutput extends UIPanel {
 
 		this.outlinerManager = new OutlinerManager(editor, this);
 		this.outlinerManager.id = 'filter-outliner';
+
+		this.add(new UIBreak());
 
 		this.detectAddPanel = DetectAddPanel(editor, this);
 

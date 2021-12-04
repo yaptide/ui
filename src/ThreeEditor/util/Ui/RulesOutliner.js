@@ -1,9 +1,8 @@
-import { UIRow } from '../../js/libs/ui';
+import { UIButton, UINumber, UIRow, UISelect } from '../../js/libs/ui';
 import { UIOutliner } from '../../js/libs/ui.three';
-import { LABEL_MARGIN, LABEL_WIDTH } from './Uis';
-import { escapeHTML } from '../escapeHTML';
 import { FilterRule } from '../Detect/DetectRule';
 import * as Rule from '../Detect/DetectRuleTypes';
+import { FONT_SIZE } from './Uis';
 
 /**
  * @typedef {import('../js/libs/ui').UIElement} UIElement
@@ -20,6 +19,8 @@ import * as Rule from '../Detect/DetectRuleTypes';
 export function createRulesOutliner(editor, params) {
 	const { update = () => {} } = params;
 	const outliner = new UIOutliner(editor);
+	outliner.setId('rules-outliner');
+	outliner.setHeight('120px');
 	outliner._setOptions = outliner.setOptions;
 	outliner.setOptions = function (rules) {
 		outliner._setOptions(rules.map(buildOption));
@@ -35,20 +36,52 @@ export function createRulesOutliner(editor, params) {
  */
 function buildHTML(rule) {
 	const description = Rule.getDescription(rule.keyword);
-	const operator = Rule.getOperator(rule.operator);
-	const value = rule.isIDRule ? Rule.getParticle(rule.value)[1] : `${rule.value}`;
-	const decoration = Rule.textDecoration(rule.isIDRule ? rule.value : null);
-	return `${description} ${operator} <span ${
-		decoration ? `style="text-decoraction: ${decoration};"` : ''
-	}>${value}</span>`;
+	return `${description}`;
 }
 
+/**
+ *
+ * @param {FilterRule} rule
+ * @returns {HTMLDivElement}
+ */
 function buildOption(rule) {
 	const option = document.createElement('div');
-	option.setPadding('0 2px');
+	option.style.padding = '6px';
+
 	option.draggable = false;
 	option.innerHTML = buildHTML(rule);
 	option.value = rule.uuid;
 
 	return option;
+}
+
+/**
+ * @param {Editor} editor
+ * @param {{
+ *      update: ()=> void,
+ * 		options: Object,
+ * 		operators: Object,
+ * 		particles: Object,
+ * 		delete: ()=> void
+ *      }} params
+ * @return {[UIRow, UISelect, UISelect, UISelect, UINumber, UIButton]}
+ */
+export function createRuleConfigurationRow(params) {
+	const { update, delete: deleteRule, options, operators, particles } = params;
+	const row = new UIRow();
+	row.dom.style.gridTemplateColumns = '1fr 55px 1fr 25px';
+	row.dom.style.display = 'grid';
+	const keywordSelect = new UISelect()
+		.setOptions(options)
+		.setFontSize(FONT_SIZE)
+		.onChange(update);
+	const operatorSelect = new UISelect()
+		.setOptions(operators)
+		.setFontSize(FONT_SIZE)
+		.onChange(update);
+	const idSelect = new UISelect().setFontSize(FONT_SIZE).onChange(update).setOptions(particles);
+	const valueInput = new UINumber().setPadding('2px 4px').onChange(update).setWidth('100%');
+	const deleteButton = new UIButton('X').onClick(deleteRule);
+	row.add(keywordSelect, operatorSelect, idSelect, valueInput, deleteButton);
+	return [row, keywordSelect, operatorSelect, idSelect, valueInput, deleteButton];
 }
