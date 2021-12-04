@@ -69,7 +69,7 @@ function buildOption(rule) {
 export function createRuleConfigurationRow(params) {
 	const { update, delete: deleteRule, options, operators, particles } = params;
 	const row = new UIRow();
-	row.dom.style.gridTemplateColumns = '1fr 55px 1fr 25px';
+	row.dom.style.gridTemplateColumns = '1fr 35px 3fr 25px';
 	row.dom.style.display = 'grid';
 	const keywordSelect = new UISelect()
 		.setOptions(options)
@@ -79,7 +79,11 @@ export function createRuleConfigurationRow(params) {
 		.setOptions(operators)
 		.setFontSize(FONT_SIZE)
 		.onChange(update);
-	const idSelect = new UISelect().setFontSize(FONT_SIZE).onChange(update).setOptions(particles);
+	const idSelect = new UISelect()
+		.setFontSize(FONT_SIZE)
+		.onChange(update)
+		.setOptions(particles)
+		.setWidth('100%');
 	const valueInput = new UINumber().setPadding('2px 4px').onChange(update).setWidth('100%');
 	const deleteButton = new UIButton('X').onClick(deleteRule);
 	row.add(keywordSelect, operatorSelect, idSelect, valueInput, deleteButton);

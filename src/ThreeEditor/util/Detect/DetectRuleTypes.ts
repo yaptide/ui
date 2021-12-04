@@ -12,16 +12,16 @@ export const RULE_UNITS = {
 } as const;
 
 const _rule_descriptions = {
-	A: 'Filters the atomic mass number A of the particles.',
-	AMASS: 'Filters the mass of the particles, measured in [MeV/c²].',
-	AMU: 'Filters the mass of the particles, measured in atomic units.',
-	E: 'Filters the kinetic energy of the particles, measured in [MeV].',
-	ENUC: 'Filters the kinetic energy per nucleon, measured in [MeV/n].',
-	EAMU: 'Filters the kinetic energy per atomic mass unit, measured in [MeV/amu].',
-	ID: 'Filters the type of the particles.',
-	GEN: 'Filters the generation number of the particles currently simulated.',
-	NPRIM: 'Filters the number of primary particles.',
-	Z: 'Filters the charge number [z] of the particles.'
+	A: 'Filters by the atomic mass number A of the particles.',
+	AMASS: 'Filters by the mass of the particles.',
+	AMU: 'Filters by the mass of the particles in atomic units.',
+	E: 'Filters by the kinetic energy of the particles.',
+	ENUC: 'Filters by the kinetic energy per nucleon.',
+	EAMU: 'Filters by the kinetic energy per amu.',
+	ID: 'Filters by the type of the particles.',
+	GEN: 'Filters by the generation of the particles.',
+	NPRIM: 'Filters by the number of primary particles.',
+	Z: 'Filters by the charge number [z] of the particles.'
 } as const;
 
 const _float_keywords = ['AMASS', 'AMU', 'E', 'ENUC', 'EAMU'] as const;
@@ -72,8 +72,8 @@ const _particles = {
 	20: ['Muon anti-neutrino', 'νµ']
 } as const;
 
-export const PARTICLE_OPTIONS = Object.entries(_particles).reduce((acc, [id, [name, symbol]]) => {
-	acc[id] = `<span title="${name}">${symbol}</span>`;
+export const PARTICLE_OPTIONS = Object.entries(_particles).reduce((acc, [id, [name]]) => {
+	acc[id] = `<span>${name}</span>`;
 	return acc;
 }, {} as Record<string, string>);
 
