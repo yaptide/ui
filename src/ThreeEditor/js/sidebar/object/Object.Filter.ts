@@ -38,7 +38,7 @@ export class ObjectFilter extends ObjectAbstract {
 			update: this.addRule.bind(this)
 		});
 		[this.outliner] = createRulesOutliner(editor, {
-			update: this.updateSelectedRule.bind(this)
+			update: this.selectRule.bind(this)
 		});
 
 		[
@@ -53,17 +53,19 @@ export class ObjectFilter extends ObjectAbstract {
 			delete: this.deleteRule.bind(this),
 			operators: Rule.OPERATOR_OPTIONS,
 			options: Rule.KEYWORD_OPTIONS,
-			particles: Rule.PARTICLE_OPTIONS
+			particles: Rule.PARTICLE_OPTIONS,
+			sortFunc: Rule.KEYWORD_SORT_ORDER
 		});
 		this.panel.add(this.addRow, this.outliner, new UIBreak(), this.ruleRow);
 		editor.signals.detectFilterChanged.add(() =>
 			this.object ? this.setObject(this.object) : null
 		);
 	}
+
 	getRuleValue(rule: FilterRule): number {
 		switch (true) {
 			case isIDRule(rule):
-				return this.idSelect.getValue();
+				return parseInt(this.idSelect.getValue());
 			case isFloatRule(rule):
 				return this.valueInput.getValue();
 			case isIntRule(rule):
@@ -73,6 +75,7 @@ export class ObjectFilter extends ObjectAbstract {
 				return 0;
 		}
 	}
+
 	update(): void {
 		const { object, rule } = this;
 		if (!object || !rule) return;
@@ -84,54 +87,13 @@ export class ObjectFilter extends ObjectAbstract {
 		};
 		this.editor.execute(new SetFilterRuleCommand(this.editor, object, ruleJson));
 	}
-	updateSelectedRule(): void {
-		const { object } = this;
-		if (!object) return;
-		const rule = object.getRuleByUuid(this.outliner.getValue());
-		if (rule) {
-			object.selectedRule = rule.uuid;
-			this.setRule(rule);
-		} else {
-			object.selectedRule = undefined;
-			hideUIElement(this.ruleRow);
-		}
-	}
+
 	deleteRule(): void {
 		const { object, editor, rule } = this;
 		if (!object || !rule) return;
 		editor.execute(new SetFilterRuleCommand(editor, object));
 	}
-	setRule(rule: FilterRule): void {
-		showUIElement(this.ruleRow, 'grid');
-		this.rule = rule;
-		this.outliner.setValue(rule.uuid);
-		this.keywordSelect.setValue(rule.keyword);
-		this.operatorSelect.setValue(rule.operator);
-		switch (true) {
-			case isIDRule(rule):
-				hideUIElement(this.valueInput);
-				showUIElement(this.idSelect);
-				this.idSelect.setValue(rule.value);
-				break;
-			case isFloatRule(rule):
-				showUIElement(this.valueInput);
-				hideUIElement(this.idSelect);
-				this.valueInput.setValue(rule.value);
-				this.valueInput.setPrecision(5);
-				this.valueInput.setUnit(Rule.RULE_UNITS[rule.keyword]);
-				break;
-			case isIntRule(rule):
-				showUIElement(this.valueInput);
-				hideUIElement(this.idSelect);
-				this.valueInput.setValue(rule.value);
-				this.valueInput.setPrecision(0);
-				this.valueInput.setUnit(Rule.RULE_UNITS[rule.keyword]);
-				break;
-			default:
-				console.warn('Unknown rule type');
-				break;
-		}
-	}
+
 	addRule(): void {
 		const { object, editor } = this;
 		if (!object) return;
@@ -143,6 +105,45 @@ export class ObjectFilter extends ObjectAbstract {
 		};
 		editor.execute(new SetFilterRuleCommand(editor, object, ruleJson));
 	}
+
+	selectRule(): void {
+		const { object } = this;
+		if (!object) return;
+		const rule = object.getRuleByUuid(this.outliner.getValue());
+		object.selectedRule = rule;
+		if (rule) {
+			this.setRule(rule);
+		} else {
+			this.outliner.setValue(null);
+			this.rule = undefined;
+			hideUIElement(this.ruleRow);
+		}
+	}
+
+	updateSelectedRule(): void {
+		const { rule } = this;
+		if (!rule) return;
+		this.valueInput.setUnit(Rule.RULE_UNITS[rule.keyword]);
+		this.keywordSelect.setValue(rule.keyword);
+		this.operatorSelect.setValue(rule.operator);
+		this.idSelect.setValue(rule.value.toString());
+		this.valueInput.setValue(rule.value);
+		if (isIDRule(rule)) {
+			showUIElement(this.idSelect);
+			hideUIElement(this.valueInput);
+		} else {
+			hideUIElement(this.idSelect);
+			showUIElement(this.valueInput);
+			if (isFloatRule(rule)) this.valueInput.setPrecision(3);
+			else this.valueInput.setPrecision(0);
+		}
+	}
+	setRule(rule: FilterRule): void {
+		showUIElement(this.ruleRow, 'grid');
+		this.rule = rule;
+		this.outliner.setValue(rule.uuid);
+		this.updateSelectedRule();
+	}
 	setObject(object: DetectFilter): void {
 		super.setObject(object);
 		if (!object) return;
@@ -150,11 +151,10 @@ export class ObjectFilter extends ObjectAbstract {
 		this.object = object;
 		this.outliner.setOptions(object.rules);
 		if (object.selectedRule) {
-			const rule = object.getRuleByUuid(object.selectedRule);
+			const rule = object.selectedRule;
 			if (rule) {
-				this.outliner.setValue(object.selectedRule);
+				this.outliner.setValue(object.selectedRule.uuid);
 				this.setRule(rule);
-				this.updateSelectedRule();
 			} else {
 				object.selectedRule = undefined;
 				hideUIElement(this.ruleRow);

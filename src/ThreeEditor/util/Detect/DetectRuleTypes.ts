@@ -40,7 +40,7 @@ const _operators = {
 } as const;
 
 export const OPERATOR_OPTIONS = Object.entries(_operators).reduce((acc, [key, [html, text]]) => {
-	if (key !== 'not_equal') acc[key] = text;
+	acc[key] = text;
 	return acc;
 }, {} as Record<string, string>);
 
@@ -48,6 +48,11 @@ export const KEYWORD_OPTIONS = Object.entries(_rule_descriptions).reduce((acc, [
 	acc[key] = key;
 	return acc;
 }, {} as Record<string, string>);
+
+export function KEYWORD_SORT_ORDER(a: string, b: string) {
+	const order = ['A', 'AMASS', 'AMU', 'Z', 'GEN', 'E', 'ENUC', 'EAMU', 'ID', 'NPRIM'];
+	return order.indexOf(a) - order.indexOf(b);
+}
 
 const _notOperator = '&#172;' as const;
 

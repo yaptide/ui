@@ -60,6 +60,7 @@ function buildOption(rule) {
  * @param {{
  *      update: ()=> void,
  * 		options: Object,
+ * 		sortFunc: (a: string, b: string)=> number,
  * 		operators: Object,
  * 		particles: Object,
  * 		delete: ()=> void
@@ -67,14 +68,13 @@ function buildOption(rule) {
  * @return {[UIRow, UISelect, UISelect, UISelect, UINumber, UIButton]}
  */
 export function createRuleConfigurationRow(params) {
-	const { update, delete: deleteRule, options, operators, particles } = params;
+	const { update, delete: deleteRule, options, operators, particles, sortFunc } = params;
 	const row = new UIRow();
 	row.dom.style.gridTemplateColumns = '1fr 35px 3fr 25px';
 	row.dom.style.display = 'grid';
-	const keywordSelect = new UISelect()
-		.setOptions(options)
-		.setFontSize(FONT_SIZE)
-		.onChange(update);
+	const keywordSelect = new UISelect().setFontSize(FONT_SIZE).onChange(update);
+	keywordSelect.setOptions = setOptionsSorted.bind(keywordSelect);
+	keywordSelect.setOptions(options, sortFunc);
 	const operatorSelect = new UISelect()
 		.setOptions(operators)
 		.setFontSize(FONT_SIZE)
@@ -88,4 +88,20 @@ export function createRuleConfigurationRow(params) {
 	const deleteButton = new UIButton('X').onClick(deleteRule);
 	row.add(keywordSelect, operatorSelect, idSelect, valueInput, deleteButton);
 	return [row, keywordSelect, operatorSelect, idSelect, valueInput, deleteButton];
+}
+
+function setOptionsSorted(options, sortFunc) {
+	const { value } = this.dom;
+	while (this.dom.children.length > 0) this.dom.removeChild(this.dom.firstChild);
+
+	Object.keys(options)
+		.sort(sortFunc)
+		.forEach(value => {
+			const option = document.createElement('option');
+			option.value = value;
+			option.innerHTML = options[value];
+			this.dom.appendChild(option);
+		});
+	this.dom.value = value;
+	return this;
 }

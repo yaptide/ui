@@ -19,23 +19,26 @@ export type FilterJSON = {
 
 export class DetectFilter extends SimulationObject3D {
 	private _rules: Record<string, FilterRule>;
-	selectedRule?: string;
+	private _selectedRule?: string;
 	readonly isFilter: true = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
 
 	private onObjectSelected(object: SimulationObject3D): void {
-		this.selectedRule = undefined;
+		this._selectedRule = undefined;
+	}
+
+	set selectedRule(rule: FilterRule | undefined) {
+		this._selectedRule = rule?.uuid;
+	}
+	get selectedRule(): FilterRule | undefined {
+		return this._selectedRule ? this._rules[this._selectedRule] : undefined;
 	}
 
 	constructor(editor: Editor, rules: FilterRule[] = []) {
 		super(editor, 'Filter', 'Filter');
 		this._rules = {};
-		this.addRule(new FloatRule({ keyword: 'AMASS', operator: 'less_than', value: 0 }));
-		this.addRule(new FloatRule({ keyword: 'AMU', operator: 'less_than', value: 0 }));
-		this.addRule(new IDRule({ keyword: 'ID', operator: 'equal', value: 16 }));
-		this.addRule(new IntRule({ keyword: 'NPRIM', operator: 'less_than', value: 0 }));
 		this.parent = null;
 		rules.forEach(rule => this.addRule(rule));
 		editor.signals.objectSelected.add(this.onObjectSelected.bind(this));
@@ -74,7 +77,7 @@ export class DetectFilter extends SimulationObject3D {
 				throw new Error(`Invalid keyword: ${keyword}`);
 		}
 		this.addRule(rule);
-		this.selectedRule = rule.uuid;
+		this.selectedRule = rule;
 	}
 
 	getRuleByUuid(uuid: string): FilterRule | undefined {
@@ -83,7 +86,7 @@ export class DetectFilter extends SimulationObject3D {
 
 	removeRule(uuid: string): void {
 		delete this._rules[uuid];
-		if (this.selectedRule === uuid) this.selectedRule = undefined;
+		if (this.selectedRule?.uuid === uuid) this.selectedRule = undefined;
 	}
 
 	clear(): this {
