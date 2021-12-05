@@ -63,29 +63,43 @@ export class ObjectFilter extends ObjectAbstract {
 	}
 
 	getRuleValue(rule: FilterRule): number {
+		let value;
 		switch (true) {
 			case isIDRule(rule):
-				return parseInt(this.idSelect.getValue());
+				value = parseInt(this.idSelect.getValue());
+				break;
 			case isFloatRule(rule):
-				return this.valueInput.getValue();
+				value = this.valueInput.getValue();
+				break;
 			case isIntRule(rule):
-				return Math.floor(this.valueInput.getValue());
+				value = Math.floor(this.valueInput.getValue());
+				break;
 			default:
 				console.warn('Unknown rule type');
-				return 0;
+				value = 0;
 		}
+		return isNaN(value) ? this.valueInput.min : value;
 	}
 
 	update(): void {
 		const { object, rule } = this;
 		if (!object || !rule) return;
-		const ruleJson = {
-			uuid: rule.uuid,
-			keyword: this.keywordSelect.getValue(),
-			operator: this.operatorSelect.getValue(),
-			value: this.getRuleValue(rule)
-		};
-		this.editor.execute(new SetFilterRuleCommand(this.editor, object, ruleJson));
+		const uuid = rule.uuid;
+		const keyword = this.keywordSelect.getValue() as Rule.Keyword;
+		const operator =
+			keyword !== rule.keyword
+				? Rule.RULE_DEFAULTS[keyword][0]
+				: this.operatorSelect.getValue();
+		const value =
+			keyword !== rule.keyword ? Rule.RULE_DEFAULTS[keyword][1] : this.getRuleValue(rule);
+		this.editor.execute(
+			new SetFilterRuleCommand(this.editor, object, {
+				uuid,
+				keyword,
+				operator,
+				value
+			})
+		);
 	}
 
 	deleteRule(): void {
@@ -99,9 +113,9 @@ export class ObjectFilter extends ObjectAbstract {
 		if (!object) return;
 		const ruleJson = {
 			uuid: MathUtils.generateUUID(),
-			keyword: 'AMASS',
-			operator: 'less_than',
-			value: 1
+			keyword: 'Z',
+			operator: Rule.RULE_DEFAULTS.Z[0],
+			value: Rule.RULE_DEFAULTS.Z[1]
 		};
 		editor.execute(new SetFilterRuleCommand(editor, object, ruleJson));
 	}
@@ -123,20 +137,21 @@ export class ObjectFilter extends ObjectAbstract {
 	updateSelectedRule(): void {
 		const { rule } = this;
 		if (!rule) return;
-		this.valueInput.setUnit(Rule.RULE_UNITS[rule.keyword]);
 		this.keywordSelect.setValue(rule.keyword);
 		this.operatorSelect.setValue(rule.operator);
 		this.idSelect.setValue(rule.value.toString());
-		this.valueInput.setValue(rule.value);
 		if (isIDRule(rule)) {
 			showUIElement(this.idSelect);
 			hideUIElement(this.valueInput);
 		} else {
 			hideUIElement(this.idSelect);
 			showUIElement(this.valueInput);
+			this.valueInput.setUnit(Rule.RULE_UNITS[rule.keyword]);
+			this.valueInput.setRange(...Rule.RULE_VALUE_RANGES[rule.keyword]);
 			if (isFloatRule(rule)) this.valueInput.setPrecision(3);
 			else this.valueInput.setPrecision(0);
 		}
+		this.valueInput.setValue(rule.value);
 	}
 	setRule(rule: FilterRule): void {
 		showUIElement(this.ruleRow, 'grid');

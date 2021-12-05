@@ -6,9 +6,35 @@ export const RULE_UNITS = {
 	ENUC: 'MeV/n',
 	EAMU: 'MeV/amu',
 	ID: '',
-	GEN: 'gen',
+	GEN: '',
 	NPRIM: '',
-	Z: 'z'
+	Z: ''
+} as const;
+
+export const RULE_DEFAULTS = {
+	A: ['equal', 4],
+	AMASS: ['less_than', 1.0],
+	AMU: ['less_than', 1.0],
+	E: ['less_than', 1.0],
+	ENUC: ['less_than', 10.0],
+	EAMU: ['less_than_or_equal', 10.0],
+	ID: ['equal', 1],
+	GEN: ['equal', 1],
+	NPRIM: ['equal', 2],
+	Z: ['equal', 1]
+} as const;
+
+export const RULE_VALUE_RANGES = {
+	A: [0, 500],
+	AMASS: [0.0, 500.0],
+	AMU: [0.0, 500.0],
+	Z: [0, 149],
+	E: [0.0, Infinity],
+	ENUC: [0.0, Infinity],
+	EAMU: [0.0, Infinity],
+	GEN: [0, 20],
+	NPRIM: [1, Infinity],
+	ID: [1, 20]
 } as const;
 
 const _rule_descriptions = {
