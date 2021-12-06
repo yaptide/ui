@@ -13,6 +13,7 @@ export { RemoveZoneCommand } from './RemoveZoneCommand';
 export { SetBeamDirectionCommand } from './SetBeamDirectionCommand';
 export { SetColorCommand } from './SetColorCommand';
 export { SetDetectGeometryCommand } from './SetDetectGeometryCommand';
+export { SetDetectPositionCommand } from './SetDetectPositionCommand';
 export { SetDetectTypeCommand } from './SetDetectTypeCommand';
 export { SetFilterNameCommand } from './SetFilterNameCommand';
 export { SetFilterRuleCommand } from './SetFilterRuleCommand';

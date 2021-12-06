@@ -7,7 +7,14 @@ import {
 	AddZoneCommand
 } from '../commands/Commands';
 
-function SidebarAddPanel(parent, title, names, commands) {
+function createButtons(
+	parent,
+	title,
+	names,
+	commands,
+	areas = ['a', 'b', 'c'],
+	gridTemplate = [`"a b c"`]
+) {
 	const container = new UIPanel();
 
 	// Header
@@ -18,10 +25,14 @@ function SidebarAddPanel(parent, title, names, commands) {
 	// Buttons
 
 	const btnRow = new UIRow();
+	btnRow.setDisplay('grid');
+	btnRow.dom.style.gridTemplate = gridTemplate;
+	btnRow.dom.style.gap = '2px';
 
 	names.forEach((name, index) => {
 		const button = new UIButton(name);
 		button.onClick(commands[index]);
+		button.dom.style.gridArea = areas[index];
 		btnRow.add(button);
 	});
 
@@ -32,9 +43,9 @@ function SidebarAddPanel(parent, title, names, commands) {
 }
 
 export function DetectAddPanel(editor, container) {
-	return SidebarAddPanel(
+	return createButtons(
 		container,
-		'Add Detect',
+		'Add new',
 		['Geometry', 'Filter', 'Quantity'],
 		[
 			() => editor.execute(new AddDetectGeometryCommand(editor)),
@@ -44,24 +55,18 @@ export function DetectAddPanel(editor, container) {
 	);
 }
 
-export function FigureAddPanel(editor, container) {
-	return SidebarAddPanel(
+export function SceneAddPanel(editor, container) {
+	return createButtons(
 		container,
-		'Add Figure',
-		['Box', 'Cylinder', 'Sphere'],
+		'Add new',
+		['Box', 'Cylinder', 'Sphere', 'Constructive solid Zone'],
 		[
 			() => editor.execute(new AddObjectCommand(editor, new BoxMesh())),
 			() => editor.execute(new AddObjectCommand(editor, new CylinderMesh())),
-			() => editor.execute(new AddObjectCommand(editor, new SphereMesh()))
-		]
-	);
-}
-
-export function ZoneAddPanel(editor, container) {
-	return SidebarAddPanel(
-		container,
-		'Add Zone',
-		['Constructive solid Zone'],
-		[() => editor.execute(new AddZoneCommand(editor))]
+			() => editor.execute(new AddObjectCommand(editor, new SphereMesh())),
+			() => editor.execute(new AddZoneCommand(editor))
+		],
+		['a', 'b', 'c', 'd'],
+		[`"a b c" "d d d"`]
 	);
 }

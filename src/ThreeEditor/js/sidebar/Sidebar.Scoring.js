@@ -2,7 +2,7 @@ import { UIBreak, UIPanel } from '../libs/ui';
 import { DetectAddPanel } from './Sidebar.AddPanel';
 import { OutlinerManager } from './Sidebar.OutlinerManager';
 
-export class SidebarOutput extends UIPanel {
+export class SidebarScoring extends UIPanel {
 	editor;
 	signals;
 	detectManager;

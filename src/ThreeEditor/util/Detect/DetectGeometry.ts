@@ -45,11 +45,11 @@ export class DetectGeometry extends SimulationPoints {
 		this.signals.objectSelected.dispatch(this.proxy);
 	}
 
-	get geometryData(): DETECT.Any {
+	get geometryData(): DETECT.AnyData {
 		return this._geometryData;
 	}
 
-	set geometryData(value: DETECT.Any) {
+	set geometryData(value: DETECT.AnyData) {
 		this._geometryData = value;
 		this.tryUpdateGeometry();
 	}
@@ -73,15 +73,12 @@ export class DetectGeometry extends SimulationPoints {
 	};
 	readonly isDetectGeo: true = true;
 
-	private _geometryData: DETECT.Any;
-	private disableGeometryUpdate: boolean = false;
+	private _geometryData: DETECT.AnyData;
 
 	private tryUpdateGeometry = (type: DETECT.DETECT_TYPE = this.detectType) => {
-		if (!this.disableGeometryUpdate) {
-			this.geometry.dispose();
-			this.geometry = this.generateGeometry(undefined, type);
-			this.geometry.computeBoundingSphere();
-		}
+		this.geometry.dispose();
+		this.geometry = this.generateGeometry(undefined, type);
+		this.geometry.computeBoundingSphere();
 	};
 
 	private overrideHandler = {
@@ -116,7 +113,7 @@ export class DetectGeometry extends SimulationPoints {
 	};
 
 	private generateGeometry(
-		data: DETECT.Any = this.geometryData,
+		data: DETECT.AnyData = this.geometryData,
 		type: DETECT.DETECT_TYPE = this.detectType
 	): THREE.BufferGeometry {
 		let geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
@@ -164,7 +161,7 @@ export class DetectGeometry extends SimulationPoints {
 
 	constructor(
 		editor: Editor,
-		{ data = DETECT.DEFAULT_ANY, type = 'Mesh', position = [0, 0, 0], name }: DetectGeometryArgs
+		{ data = {}, type = 'Mesh', position = [0, 0, 0], name }: DetectGeometryArgs
 	) {
 		super(editor, name, 'Detect');
 		this.map = null;
@@ -176,7 +173,7 @@ export class DetectGeometry extends SimulationPoints {
 		this.proxy = new Proxy(this, this.overrideHandler);
 		this.signals = editor.signals;
 		this.position.fromArray(position);
-		this._geometryData = { ...data };
+		this._geometryData = { ...data, ...DETECT.DEFAULT_ANY };
 		this._detectType = type;
 
 		this.positionProxy = new Proxy(this.position, {
@@ -205,7 +202,7 @@ export class DetectGeometry extends SimulationPoints {
 			}
 		});
 
-		this.geometry = this.generateGeometry(data, type);
+		this.geometry = this.generateGeometry(this._geometryData, type);
 		this.signals.zoneGeometryChanged.add(zone => {
 			if (zone.id === this._geometryData.zoneId) this.geometry = this.generateGeometry();
 		});
@@ -216,25 +213,25 @@ export class DetectGeometry extends SimulationPoints {
 	getMesh(): DETECT.Mesh {
 		if (this.detectType !== 'Mesh')
 			throw new Error(`DetectGeo of uui=${this.uuid} isn't of 'Mesh' type`);
-		return Object.assign({}, this._geometryData as DETECT.Mesh);
+		return new DETECT.Mesh(this._geometryData);
 	}
 
 	getCyl(): DETECT.Cyl {
 		if (this.detectType !== 'Cyl')
 			throw new Error(`DetectGeo of uui=${this.uuid} isn't of 'Cyl' type`);
-		return Object.assign({}, this._geometryData as DETECT.Cyl);
+		return new DETECT.Cyl(this._geometryData);
 	}
 
 	getZone(): DETECT.Zone {
 		if (this.detectType !== 'Zone')
 			throw new Error(`DetectGeo of uui=${this.uuid} isn't of 'Zone' type`);
-		return Object.assign({}, this._geometryData as DETECT.Zone);
+		return new DETECT.Zone(this._geometryData);
 	}
 
 	getAll(): DETECT.All {
 		if (this.detectType !== 'All')
 			throw new Error(`DetectGeo of uui=${this.uuid} isn't of 'All' type`);
-		return {};
+		return new DETECT.All(this._geometryData);
 	}
 
 	getData(type: DETECT.DETECT_TYPE = this.detectType): Partial<DETECT.Any> {
@@ -252,9 +249,7 @@ export class DetectGeometry extends SimulationPoints {
 	}
 
 	setData(data: DETECT.Any): void {
-		this.disableGeometryUpdate = true;
-		Object.assign(this.geometryData, data);
-		this.disableGeometryUpdate = false;
+		this._geometryData = { ...this._geometryData, ...data };
 		this.tryUpdateGeometry();
 	}
 
@@ -263,7 +258,7 @@ export class DetectGeometry extends SimulationPoints {
 	}
 
 	toJSON(): DetectGeometryJSON {
-		const data = this._geometryData;
+		const data = this.getData();
 		const type = this.detectType;
 		const position = this.position.toArray();
 		const name = this.name;
@@ -280,7 +275,7 @@ export class DetectGeometry extends SimulationPoints {
 	}
 
 	fromJSON(data: DetectGeometryJSON): DetectGeometry {
-		this._geometryData = data.data;
+		this._geometryData = { ...DETECT.DEFAULT_ANY, ...data.data };
 		this.uuid = data.uuid;
 		this.detectType = data.type;
 		this.name = data.name;
@@ -297,7 +292,7 @@ export class DetectGeometry extends SimulationPoints {
 
 export const isDetectGeometry = (x: unknown): x is DetectGeometry => x instanceof DetectGeometry;
 
-function createCylindricalGeometry(data: DETECT.Cyl, matrix: THREE.Matrix4) {
+function createCylindricalGeometry(data: DETECT.CylData, matrix: THREE.Matrix4) {
 	const geometry1 = new THREE.CylinderGeometry(
 		data.radius,
 		data.radius,

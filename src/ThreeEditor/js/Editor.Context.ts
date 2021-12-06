@@ -12,11 +12,11 @@ import {
 	isDetectContainer,
 	isFilterContainer
 } from '../util/Detect/DetectManager';
-import { DetectOutput, isDetectOutput } from '../util/Detect/DetectOutput';
+import { ScoringOutput, isOutput } from '../util/Scoring/ScoringOutput';
 import { isWorldZone, WorldZone } from '../util/WorldZone';
 import { Editor } from './Editor';
 
-export type Context = 'scene' | 'output' | 'parameters' | 'settings';
+export type Context = 'scene' | 'scoring' | 'parameters' | 'settings';
 export type SceneObject =
 	| CSG.Zone
 	| BasicMesh
@@ -28,7 +28,7 @@ export type SceneObject =
 export type OutputObject =
 	| DetectFilter
 	| DetectGeometry
-	| DetectOutput
+	| ScoringOutput
 	| DetectContainer
 	| DetectManager
 	| FilterContainer;
@@ -66,7 +66,7 @@ export class ContextManager {
 			case 'scene':
 				clickable = clickable.concat(this.editor.scene.children);
 				break;
-			case 'output':
+			case 'scoring':
 				clickable = clickable.concat(this.editor.detectManager.children);
 				break;
 			default:
@@ -83,7 +83,7 @@ export class ContextManager {
 				visible.push(this.editor.scene);
 				hidden.push(this.editor.detectManager);
 				break;
-			case 'output':
+			case 'scoring':
 				visible.push(this.editor.detectManager);
 				hidden.push(this.editor.scene);
 				break;
@@ -104,8 +104,8 @@ export class ContextManager {
 	set selected(selected: SceneObject | OutputObject | null) {
 		if (isOutputObject(selected)) {
 			this._selected[1] = selected;
-			if (this._context !== 'output') {
-				this._context = 'output';
+			if (this._context !== 'scoring') {
+				this._context = 'scoring';
 				this.editor.signals.contextChanged.dispatch(this._context);
 			}
 		} else if (isInputObject(selected)) {
@@ -123,7 +123,7 @@ export class ContextManager {
 		switch (context) {
 			case 'scene':
 				return this._selected[0];
-			case 'output':
+			case 'scoring':
 				return this._selected[1];
 			default:
 				return null;
@@ -141,7 +141,7 @@ export const isOutputObject = (x: unknown): x is OutputObject => {
 		isDetectFilter(x) ||
 		isDetectContainer(x) ||
 		isFilterContainer(x) ||
-		isDetectOutput(x)
+		isOutput(x)
 	);
 };
 
