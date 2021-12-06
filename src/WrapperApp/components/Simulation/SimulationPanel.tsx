@@ -1,10 +1,19 @@
-import { Box, Button, LinearProgress, Typography } from '@mui/material';
+import {
+	Box,
+	Button,
+	Card,
+	CardActions,
+	CardContent,
+	LinearProgress,
+	Typography
+} from '@mui/material';
 import { HTTPError } from 'ky';
 
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../../services/AuthService';
-import { useStore } from '../../services/StoreService';
-import { BACKEND_URL } from '../../util/Config';
+import { useAuth } from '../../../services/AuthService';
+import { useStore } from '../../../services/StoreService';
+import { BACKEND_URL } from '../../../util/Config';
+import SimulationStatus from './SimulationStatus';
 
 interface SimulationPanelProps {
 	onError?: (error: unknown) => void;
@@ -96,16 +105,37 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				flexDirection: 'column',
 				gap: '1.5rem'
 			}}>
-			<LinearProgress variant={isInProgress ? 'indeterminate' : 'determinate'} value={0} />
-			<Button
-				sx={{
-					width: 'min(300px, 100%)',
-					margin: '0 auto'
-				}}
-				onClick={sendRequest}>
-				{isInProgress ? 'Stop' : 'Start'}
-			</Button>
-			<Typography>Backend status: {isBackendAlive ? 'alive' : 'dead'}</Typography>
+			<Card sx={{ minWidth: 275 }}>
+				<CardContent>
+					<Typography gutterBottom variant='h5' component='div'>
+						Backend Status - {isBackendAlive ? 'ALIVE' : 'DEAD'}
+					</Typography>
+				</CardContent>
+			</Card>
+
+			<Card sx={{ minWidth: 275 }}>
+				<CardContent>
+					<Typography gutterBottom variant='h5' component='div'>
+						Run Simulation
+					</Typography>
+					<LinearProgress
+						variant={isInProgress ? 'indeterminate' : 'determinate'}
+						value={0}
+					/>
+				</CardContent>
+				<CardActions>
+					<Button
+						sx={{
+							width: 'min(300px, 100%)',
+							margin: '0 auto'
+						}}
+						onClick={sendRequest}>
+						{isInProgress ? 'Stop' : 'Start'}
+					</Button>
+				</CardActions>
+			</Card>
+
+			<SimulationStatus></SimulationStatus>
 		</Box>
 	);
 }

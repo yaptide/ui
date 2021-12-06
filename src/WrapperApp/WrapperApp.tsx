@@ -4,7 +4,7 @@ import LoginPanel from './components/LoginPanel';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import ThreeEditor from '../ThreeEditor/ThreeEditor';
-import SimulationPanel from './components/SimulationPanel';
+import SimulationPanel from './components/Simulation/SimulationPanel';
 import { useStore } from '../services/StoreService';
 import { DEMO_MODE } from '../util/Config';
 import { TabPanel } from './components/TabPanel';
