@@ -124,6 +124,11 @@ export class WorldZone extends SimulationObject3D {
 
 		const handleSignal = (object: Object3D) => {
 			if (this.autoCalculate && !isWorldZone(object)) this.debouncedCalculate();
+			else
+				if (object === this) {
+					this.getHelper(this.geometryType).visible = object.visible;
+					this.signals.objectChanged.dispatch(this.getHelper(this.geometryType));
+				};
 		};
 		this.signals.objectChanged.add(handleSignal);
 		this.signals.sceneGraphChanged.add(handleSignal);
@@ -180,6 +185,7 @@ export class WorldZone extends SimulationObject3D {
 	set size(value: Vector3) {
 		this.setFromCenterAndSize(this.center, value);
 	}
+
 
 	private getAllHelpers() {
 		return [this.boxHelper, this.sphereMesh, this.cylinderMesh];

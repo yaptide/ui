@@ -1,5 +1,7 @@
 import { UIOutliner } from '../libs/ui.three.js';
 import { escapeHTML } from '../../util/escapeHTML.js';
+import { UICheckbox } from '../libs/ui.js';
+import { SetValueCommand } from '../commands/SetValueCommand.js';
 
 const getObjectType = object => {
 	switch (object.type) {
@@ -31,26 +33,24 @@ const getObjectType = object => {
 			return 'Unknown';
 	}
 };
-const getAditionalInfo = object => {
+const getAdditionalInfo = object => {
 	switch (object.type) {
 		case 'BoxMesh':
-			return ` [${object.id}] <span class="type Geometry"></span> Box`;
+			return ` [${object.id}] <span class="type Geometry"></span>  <span class="type-value">Box</span>`;
 		case 'CylinderMesh':
-			return ` [${object.id}] <span class="type Geometry"></span> Cylinder`;
+			return ` [${object.id}] <span class="type Geometry"></span> <span class="type-value"> Cylinder</span>`;
 		case 'SphereMesh':
-			return ` [${object.id}] <span class="type Geometry"></span> Sphere`;
+			return ` [${object.id}] <span class="type Geometry"></span> <span class="type-value"> Sphere</span>`;
 		case 'Beam':
 			return ` [${object.id}]`;
 		case 'WorldZone':
-			return `<span class="type Material"></span> 
-            ${escapeHTML(object.simulationMaterial.name)}`;
 		case 'Zone':
-			return ` [${object.id}] <span class="type Material"></span> 
-            ${escapeHTML(object.simulationMaterial.name)}`; //TODO: change to simulation material when its implemented
+			return `<span class="type Material"></span> 
+            <span class="type-value">${escapeHTML(object.simulationMaterial.name)}</span>`;
 		case 'Points':
 		case 'Detect':
 			return ` [${object.id}] <span class="type Geometry"></span> 
-            ${escapeHTML(object.detectType)}`;
+			<span class="type-value">${escapeHTML(object.detectType)}</span>`;
 		default:
 			return '';
 	}
@@ -59,20 +59,38 @@ const getAditionalInfo = object => {
 const buildHTML = object => {
 	let html =
 		`<span class="type ${getObjectType(object)}"></span> ${escapeHTML(object.name)}` +
-		getAditionalInfo(object);
+		getAdditionalInfo(object);
+
 	return html;
 };
 
-const buildOptions = (object, pad) => {
+const buildOptions = (editor, object, pad) => {
 	const option = document.createElement('div');
+	option.style.display = 'flex';
 	option.draggable = false;
 	option.innerHTML = buildHTML(object);
 	option.value = object.uuid;
 	option.style.paddingLeft = pad * 18 + 'px';
+
+	if ('visible' in object && !object.notHidable) {
+		const visible = new UICheckbox(object.visible);
+		visible.setStyle('margin', ['0']);
+		visible.setStyle('margin-left', ['auto']);
+		visible.dom.title = 'visible';
+		visible.dom.disabled = object?.parent?.visible === false ? 'disabled' : '';
+		visible.onClick(e => e.stopPropagation());
+		visible.onChange(() => {
+			editor.execute(new SetValueCommand(editor, object, 'visible', visible.getValue()));
+		});
+		option.appendChild(visible.dom);
+	}
+
 	let result = [option];
 	if (object.type !== 'Beam' && object.children?.length > 0)
 		//TODO: move beam helpers to scene helpers
-		result = result.concat(object.children.flatMap(child => buildOptions(child, pad + 1)));
+		result = result.concat(
+			object.children.flatMap(child => buildOptions(editor, child, pad + 1))
+		);
 	return result;
 };
 
@@ -93,7 +111,7 @@ export class OutlinerManager {
 		this.editor.signals.contextChanged.add(() => this.outliner.setValue(null));
 	}
 	setOptionsFromSources(sources) {
-		const options = sources.flatMap(parent => buildOptions(parent, 0));
+		const options = sources.flatMap(parent => buildOptions(this.editor, parent, 0));
 		this.outliner.setOptions(options);
 		this.outliner.setValue(this._selected);
 	}
