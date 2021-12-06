@@ -1,8 +1,8 @@
-import { DetectGeometry } from '../../util/Detect/DetectGeometry';
-import { createRowParamNumber, hideUIElement, showUIElement } from '../../util/UiUtils';
-import { SetDetectGeometryCommand } from '../commands/Commands';
-import { Editor } from '../Editor';
-import { UINumber, UIRow } from '../libs/ui';
+import { DetectGeometry } from '../../../util/Detect/DetectGeometry';
+import { createRowParamNumber, hideUIElement, showUIElement } from '../../../util/Ui/Uis';
+import { SetDetectGeometryCommand } from '../../commands/Commands';
+import { Editor } from '../../Editor';
+import { UINumber, UIRow } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 export class ObjectGrid extends ObjectAbstract {
 	object?: DetectGeometry;

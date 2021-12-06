@@ -153,79 +153,29 @@ div:is(#outliner, #filter-outliner) .opener.closed:after {
 	content: '+';
 }
 
-div:is(#outliner, #filter-outliner) .option {
+.Outliner .option {
 	border: 1px solid transparent;
 }
 
-div:is(#outliner, #filter-outliner) .option.drag {
+.Outliner .option.drag {
 	border: 1px dashed #999;
 }
 
-div:is(#outliner, #filter-outliner) .option.dragTop {
+.Outliner .option.dragTop {
 	border-top: 1px dashed #999;
 }
 
-div:is(#outliner, #filter-outliner) .option.dragBottom {
+.Outliner .option.dragBottom {
 	border-bottom: 1px dashed #999;
 }
 
-div:is(#outliner, #filter-outliner) .type {
+.Outliner .type {
 	display: inline-block;
 	width: 14px;
 	height: 14px;
 	color: #ddd;
 	text-align: center;
 }
-
-/*
-
-div:is(#outliner, #filter-outliner) .Camera {
-	color: #dd8888;
-}
-
-div:is(#outliner, #filter-outliner) .Light {
-	color: #dddd88;
-}
-
-/*
-
-div:is(#outliner, #filter-outliner) .Object3D {
-	color: #aaaaee;
-}
-
-div:is(#outliner, #filter-outliner) .Mesh {
-	color: #8888ee;
-}
-
-div:is(#outliner, #filter-outliner) .Line {
-	color: #88ee88;
-}
-
-div:is(#outliner, #filter-outliner) .LineSegments {
-	color: #88ee88;
-}
-
-div:is(#outliner, #filter-outliner) .Points {
-	color: #ee8888;
-}
-
-/*
-
-div:is(#outliner, #filter-outliner) .Geometry {
-	color: #aaeeaa;
-}
-
-div:is(#outliner, #filter-outliner) .Material {
-	color: #eeaaee;
-}
-
-/*
-
-div:is(#outliner, #filter-outliner) .Script:after {
-	content: '◎';
-}
-
-/* */
 
 div:is(#outliner, #filter-outliner) .type:after {
 	content: '●';
@@ -462,6 +412,7 @@ select:hover {
 #sidebar .Row {
 	min-height: 20px;
 	margin-bottom: 10px;
+	display: flex;
 }
 
 #sidebar canvas {

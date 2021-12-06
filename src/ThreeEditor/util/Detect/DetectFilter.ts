@@ -18,55 +18,84 @@ export type FilterJSON = {
 };
 
 export class DetectFilter extends SimulationObject3D {
-	private rules: Record<string, FilterRule>;
+	private _rules: Record<string, FilterRule>;
+	private _selectedRule?: string;
 	readonly isFilter: true = true;
-	readonly notRemovable = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
 
+	private onObjectSelected(object: SimulationObject3D): void {
+		this._selectedRule = undefined;
+	}
+
+	set selectedRule(rule: FilterRule | undefined) {
+		this._selectedRule = rule?.uuid;
+	}
+	get selectedRule(): FilterRule | undefined {
+		return this._selectedRule ? this._rules[this._selectedRule] : undefined;
+	}
+
 	constructor(editor: Editor, rules: FilterRule[] = []) {
 		super(editor, 'Filter', 'Filter');
-		this.rules = {};
+		this._rules = {};
 		this.parent = null;
 		rules.forEach(rule => this.addRule(rule));
+		editor.signals.objectSelected.add(this.onObjectSelected.bind(this));
+		editor.signals.dataObjectSelected.add(this.onObjectSelected.bind(this));
 	}
 
 	addRule(rule: FilterRule): void {
-		this.rules[rule.uuid] = rule;
+		this._rules[rule.uuid] = rule;
 	}
 
-	updateRule(ruleUuid: string, ruleData: Partial<RuleJSON>): void {
-		const rule = this.rules[ruleUuid];
-		if (rule) {
-			Object.assign(rule, ruleData);
+	get rules(): FilterRule[] {
+		return Object.values(this._rules);
+	}
+
+	updateOrCreateRule(json: RuleJSON): void {
+		const { keyword } = json;
+		let rule;
+		switch (keyword) {
+			case 'AMASS':
+			case 'AMU':
+			case 'E':
+			case 'ENUC':
+			case 'EAMU':
+				rule = FloatRule.fromJSON(json as FloatRuleJSON);
+				break;
+			case 'A':
+			case 'GEN':
+			case 'NPRIM':
+			case 'Z':
+				rule = IntRule.fromJSON(json as IntRuleJSON);
+				break;
+			case 'ID':
+				rule = IDRule.fromJSON(json as IDRuleJSON);
+				break;
+			default:
+				throw new Error(`Invalid keyword: ${keyword}`);
 		}
+		this.addRule(rule);
+		this.selectedRule = rule;
 	}
 
-	findAndUpdateRule(ruleUuid: string, ruleData: RuleJSON): void {
-		let rule = this.getRuleByUuid(ruleUuid);
-		if (rule) {
-			Object.assign(rule, ruleData);
-		} else {
-			rule = this.createRule(ruleData);
-			this.addRule(rule);
-		}
+	getRuleByUuid(uuid: string): FilterRule | undefined {
+		return this._rules[uuid];
 	}
 
-	getRuleByUuid(uuid: string): FilterRule {
-		return this.rules[uuid];
-	}
-
-	removeRule(ruleUuid: string): void {
-		delete this.rules[ruleUuid];
+	removeRule(uuid: string): void {
+		delete this._rules[uuid];
+		if (this.selectedRule?.uuid === uuid) this.selectedRule = undefined;
 	}
 
 	clear(): this {
-		this.rules = {};
+		this._rules = {};
+		this.name = 'Filter';
 		return this;
 	}
 
-	createRule(json: RuleJSON): FilterRule {
+	createRule(json: Omit<RuleJSON, 'uuid'>): FilterRule {
 		const { keyword } = json;
 		let rule;
 		switch (keyword) {
@@ -94,23 +123,23 @@ export class DetectFilter extends SimulationObject3D {
 	}
 
 	toJSON(): FilterJSON {
-		const { uuid, name, rules } = this;
+		const { uuid, name, _rules: rules } = this;
 		return { uuid, name, rules: Object.values(rules).map(rule => rule.toJSON()) };
+	}
+	fromJSON(json: FilterJSON): this {
+		this.clear();
+		this.uuid = json.uuid;
+		this.name = json.name;
+		json.rules.map(this.updateOrCreateRule.bind(this));
+		return this;
 	}
 
 	static fromJSON(editor: Editor, json: FilterJSON): DetectFilter {
-		const filter = new DetectFilter(editor);
-		filter.uuid = json.uuid;
-		filter.name = json.name;
-		json.rules.forEach(ruleJson => {
-			const rule = filter.createRule(ruleJson);
-			rule.uuid = ruleJson.uuid;
-		});
-		return filter;
+		return new DetectFilter(editor).fromJSON(json);
 	}
 
 	toString(): string {
-		const { uuid, name, rules } = this;
+		const { uuid, name, _rules: rules } = this;
 		return `[${uuid}]\n${name}\n${Object.values(rules)
 			.map(rule => `    ${rule.toString()}`)
 			.join('\n')}}`;

@@ -31,7 +31,7 @@ export function Viewport(
 ) {
 	this.name = name;
 
-	const { scene, zoneManager, detectManager, sceneHelpers, signals } = editor;
+	const { scene, zoneManager, detectManager, sceneHelpers, signals, contextManager } = editor;
 
 	const config = {
 		showSceneHelpers: true,
@@ -279,13 +279,14 @@ export function Viewport(
 	const raycaster = new THREE.Raycaster();
 	const mouse = new THREE.Vector2();
 
-	function getIntersects(point, validObjects) {
+	function getIntersects(point) {
 		mouse.set(point.x * 2 - 1, -(point.y * 2) + 1);
+		const clicableObjects = contextManager.getClickableObjects();
 
 		raycaster.setFromCamera(mouse, camera);
 
 		return raycaster
-			.intersectObjects(validObjects.getSelectable(config))
+			.intersectObjects(clicableObjects)
 			.filter(intersect => intersect.object.visible === true);
 	}
 
@@ -313,7 +314,7 @@ export function Viewport(
 
 	function handleClick() {
 		if (onDownPosition.distanceTo(onUpPosition) === 0) {
-			const intersects = getIntersects(onUpPosition, objects);
+			const intersects = getIntersects(onUpPosition);
 
 			if (intersects.length > 0) {
 				const object = intersects[0].object;
@@ -376,7 +377,7 @@ export function Viewport(
 		const array = getMousePosition(container.dom, event.clientX, event.clientY);
 		onDoubleClickPosition.fromArray(array);
 
-		const intersects = getIntersects(onDoubleClickPosition, objects);
+		const intersects = getIntersects(onDoubleClickPosition);
 
 		if (intersects.length > 0) {
 			const intersect = intersects[0];

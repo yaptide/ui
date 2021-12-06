@@ -3,11 +3,11 @@ import {
 	createRowCheckbox,
 	hideUIElement,
 	showUIElement
-} from '../../util/UiUtils';
-import { WorldZone } from '../../util/WorldZone';
-import { SetValueCommand } from '../commands/Commands';
-import { Editor } from '../Editor';
-import { UIButton, UICheckbox, UIRow } from '../libs/ui';
+} from '../../../util/Ui/Uis';
+import { WorldZone } from '../../../util/WorldZone';
+import { SetValueCommand } from '../../commands/Commands';
+import { Editor } from '../../Editor';
+import { UIButton, UICheckbox, UIRow } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectZoneCalculate extends ObjectAbstract {

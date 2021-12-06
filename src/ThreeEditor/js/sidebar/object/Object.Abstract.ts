@@ -1,6 +1,6 @@
-import { hideUIElement, showUIElement } from '../../util/UiUtils';
-import { Editor } from '../Editor';
-import { UIPanel, UIRow, UIText } from '../libs/ui';
+import { hideUIElement, showUIElement } from '../../../util/Ui/Uis';
+import { Editor } from '../../Editor';
+import { UIPanel, UIRow, UIText } from '../../libs/ui';
 
 export abstract class ObjectAbstract {
 	editor: Editor;

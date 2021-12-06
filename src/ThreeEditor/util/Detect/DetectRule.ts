@@ -9,7 +9,7 @@ import {
 	OperatorSymbol,
 	getOperator,
 	isValidID
-} from './DetectFilterTypes';
+} from './DetectRuleTypes';
 
 //https://stackoverflow.com/questions/48757095/typescript-class-composition
 
@@ -61,13 +61,17 @@ export abstract class FilterRule {
 
 export class FloatRule extends FilterRule {
 	keyword: F_Keyword;
-	_value: number;
+	isFloatRule: true = true;
+	private _value: number;
 	set value(value: number) {
 		const precision = 100;
 		this._value = Math.round((value + Number.EPSILON) * precision) / precision;
 	}
+	get value(): number {
+		return this._value;
+	}
 
-	constructor({ keyword, operator, value }: FloatRuleJSON) {
+	constructor({ keyword, operator, value }: Omit<FloatRuleJSON, 'uuid'>) {
 		super(operator);
 		this.keyword = keyword;
 		this._value = value;
@@ -87,12 +91,16 @@ export class FloatRule extends FilterRule {
 
 export class IntRule extends FilterRule {
 	keyword: I_Keyword;
-	_value: number;
+	isIntRule: true = true;
+	private _value: number;
 	set value(value: number) {
 		this._value = Math.floor(value);
 	}
+	get value(): number {
+		return this._value;
+	}
 
-	constructor({ keyword, operator, value }: IntRuleJSON) {
+	constructor({ keyword, operator, value }: Omit<IntRuleJSON, 'uuid'>) {
 		super(operator);
 		this.keyword = keyword;
 		this._value = value;
@@ -112,6 +120,7 @@ export class IntRule extends FilterRule {
 
 export class IDRule extends FilterRule {
 	keyword: ID_Keyword;
+	isIDRule: true = true;
 	private _value: ParticleId;
 	set value(value: ParticleId) {
 		const id = Math.floor(value);
@@ -121,7 +130,7 @@ export class IDRule extends FilterRule {
 		return this._value;
 	}
 
-	constructor({ keyword, operator, value }: IDRuleJSON) {
+	constructor({ keyword, operator, value }: Omit<IDRuleJSON, 'uuid'>) {
 		super(operator);
 		this.keyword = keyword;
 		this._value = value;
@@ -138,3 +147,7 @@ export class IDRule extends FilterRule {
 		return rule;
 	}
 }
+
+export const isIDRule = (rule: unknown): rule is IDRule => rule instanceof IDRule;
+export const isFloatRule = (rule: unknown): rule is FloatRule => rule instanceof FloatRule;
+export const isIntRule = (rule: unknown): rule is IntRule => rule instanceof IntRule;

@@ -15,7 +15,7 @@ export { SetColorCommand } from './SetColorCommand';
 export { SetDetectGeometryCommand } from './SetDetectGeometryCommand';
 export { SetDetectTypeCommand } from './SetDetectTypeCommand';
 export { SetFilterNameCommand } from './SetFilterNameCommand';
-export { SetFilterRulesCommand } from './SetFilterRulesCommand';
+export { SetFilterRuleCommand } from './SetFilterRuleCommand';
 export { SetGeometryCommand } from './SetGeometryCommand';
 export { SetGeometryValueCommand } from './SetGeometryValueCommand';
 export { SetMaterialColorCommand } from './SetMaterialColorCommand';

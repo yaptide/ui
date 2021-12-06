@@ -3,7 +3,6 @@ import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { UIDiv, UIPanel } from '../libs/ui.js';
 import { Viewport } from './Viewport.js';
-import { ViewportObjects } from './ViewportObjects';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js, file was split to add multiple viewports
 
@@ -41,8 +40,6 @@ function ViewManager(editor) {
 
 	let renderer = null;
 	let pmremGenerator = null;
-
-	const objects = new ViewportObjects();
 
 	// helpers
 
@@ -84,7 +81,6 @@ function ViewManager(editor) {
 	container.add(viewsGrid);
 
 	const viewManagerProps = {
-		objects,
 		grid,
 		planeHelpers,
 		selectionBox
@@ -400,12 +396,6 @@ function ViewManager(editor) {
 		render();
 	});
 
-	signals.objectAdded.add(object => {
-		object.traverse(function (child) {
-			objects.push(child);
-		});
-	});
-
 	signals.objectChanged.add(object => {
 		if (editor.selected === object) {
 			selectionBox.setFromObject(object);
@@ -420,28 +410,6 @@ function ViewManager(editor) {
 		}
 
 		render();
-	});
-
-	signals.objectRemoved.add(object => {
-		object.traverse(function (child) {
-			objects.cut(child);
-		});
-	});
-
-	signals.helperAdded.add(object => {
-		const picker = object.getObjectByName('picker');
-
-		if (picker !== undefined) {
-			objects.push(picker);
-		}
-	});
-
-	signals.helperRemoved.add(object => {
-		const picker = object.getObjectByName('picker');
-
-		if (picker !== undefined) {
-			objects.cut(picker);
-		}
 	});
 
 	signals.materialChanged.add(() => {

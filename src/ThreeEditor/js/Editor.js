@@ -125,7 +125,7 @@ export function Editor(container) {
 	this.history = new _History(this);
 	this.storage = new _Storage();
 	this.unit = {
-		name: '[cm]',
+		name: 'cm',
 		multiplier: 1
 	};
 

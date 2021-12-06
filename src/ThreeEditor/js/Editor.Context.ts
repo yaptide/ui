@@ -60,6 +60,21 @@ export class ContextManager {
 		return this._context;
 	}
 
+	getClickableObjects(): THREE.Object3D[] {
+		let clickable: THREE.Object3D[] = [];
+		switch (this._context) {
+			case 'scene':
+				clickable = clickable.concat(this.editor.scene.children);
+				break;
+			case 'output':
+				clickable = clickable.concat(this.editor.detectManager.children);
+				break;
+			default:
+				return [];
+		}
+		return clickable;
+	}
+
 	setVisibility(context: Context): void {
 		let visible: THREE.Scene[] = [this.editor.sceneHelpers, this.editor.zoneManager];
 		let hidden: THREE.Scene[] = [];

@@ -37,7 +37,7 @@ export const PARTICLE_TYPES = [
 	},
 	{
 		id: 10,
-		name: 'Kaon κo'
+		name: 'Kaon κ0'
 	},
 	{
 		id: 11,
@@ -45,7 +45,7 @@ export const PARTICLE_TYPES = [
 	},
 	{
 		id: 12,
-		name: 'Gamma ray'
+		name: 'Gamma radiation'
 	},
 	{
 		id: 15,
@@ -65,11 +65,11 @@ export const PARTICLE_TYPES = [
 	},
 	{
 		id: 23,
-		name: 'He-3'
+		name: 'Helium-3'
 	},
 	{
 		id: 24,
-		name: 'He-4'
+		name: 'Helium-4'
 	},
 	{
 		id: 25,

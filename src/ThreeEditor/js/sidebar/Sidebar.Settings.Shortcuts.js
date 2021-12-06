@@ -2,7 +2,8 @@ import {
 	RemoveDetectGeometryCommand,
 	RemoveFilterCommand,
 	RemoveObjectCommand,
-	RemoveZoneCommand
+	RemoveZoneCommand,
+	SetFilterRuleCommand
 } from '../commands/Commands';
 import { UIInput, UIPanel, UIRow, UIText } from '../libs/ui.js';
 
@@ -80,6 +81,7 @@ function SidebarSettingsShortcuts(editor) {
 			case object.isZone:
 				return new RemoveZoneCommand(editor, object);
 			case object.isFilter:
+				if (object.selectedRule) return new SetFilterRuleCommand(editor, object);
 				return new RemoveFilterCommand(editor, object);
 			default:
 				return new RemoveObjectCommand(editor, object);

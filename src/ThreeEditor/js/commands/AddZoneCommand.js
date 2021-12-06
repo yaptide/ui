@@ -1,4 +1,3 @@
-import * as CSG from '../../util/CSG/CSG';
 import { Command } from '../Command.js';
 
 /**
@@ -40,7 +39,7 @@ export class AddZoneCommand extends Command {
 		super.fromJSON(json);
 
 		this.object =
-			this.editor.objectByUuid(json.zone.uuid) ??
+			this.editor.objectByUuid(json.object.uuid) ??
 			this.editor.zoneManager.createZone().fromJSON(this.editor, json.object);
 	}
 }

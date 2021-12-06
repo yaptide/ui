@@ -1,6 +1,6 @@
-import { Beam } from '../../util/Beam';
-import { isZone } from '../../util/CSG/CSGZone';
-import { SimulationMesh, SimulationPoints } from '../../util/SimulationBase/SimulationMesh';
+import { Beam } from '../../../util/Beam';
+import { isZone } from '../../../util/CSG/CSGZone';
+import { SimulationMesh, SimulationPoints } from '../../../util/SimulationBase/SimulationMesh';
 import {
 	createFullwidthButton,
 	createMaterialSelect,
@@ -10,17 +10,17 @@ import {
 	createRowText,
 	hideUIElement,
 	showUIElement
-} from '../../util/UiUtils';
-import { isWorldZone } from '../../util/WorldZone';
+} from '../../../util/Ui/Uis';
+import { isWorldZone } from '../../../util/WorldZone';
 import {
 	SetMaterialColorCommand,
 	SetMaterialValueCommand,
 	SetZoneMaterialCommand
-} from '../commands/Commands';
-import { Editor } from '../Editor';
-import { UIButton, UICheckbox, UIColor, UINumber, UIRow, UISelect, UIText } from '../libs/ui';
-import { SidebarMaterialBooleanProperty } from '../sidebar/Sidebar.Material.BooleanProperty';
-import { SidebarMaterialConstantProperty } from '../sidebar/Sidebar.Material.ConstantProperty';
+} from '../../commands/Commands';
+import { Editor } from '../../Editor';
+import { UIButton, UICheckbox, UIColor, UINumber, UIRow, UISelect, UIText } from '../../libs/ui';
+import { SidebarMaterialBooleanProperty } from '../Sidebar.Material.BooleanProperty';
+import { SidebarMaterialConstantProperty } from '../Sidebar.Material.ConstantProperty';
 import { ObjectAbstract } from './Object.Abstract';
 
 const MATERIAL_BLENDING_OPTIONS = {

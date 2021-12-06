@@ -1,13 +1,13 @@
-import { Beam } from '../../util/Beam';
+import { Beam } from '../../../util/Beam';
 import {
 	createParticleTypeSelect,
 	createRowParamNumber,
 	createRowParamNumberXYZ,
 	hideUIElement,
 	showUIElement
-} from '../../util/UiUtils';
-import { Editor } from '../Editor';
-import { UINumber, UIRow, UIText } from '../libs/ui';
+} from '../../../util/Ui/Uis';
+import { Editor } from '../../Editor';
+import { UINumber, UIRow, UIText } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectBeam extends ObjectAbstract {
@@ -43,8 +43,9 @@ export class ObjectBeam extends ObjectAbstract {
 
 		// set minimum energy to 1ueV (as lower limit of reasonable cross-section used in neutron transport)
 		[this.energyRow, this.energy] = createRowParamNumber({
-			text: 'Energy mean [MeV/nucl]',
+			text: 'Energy mean',
 			min: 1e-12,
+			unit: 'MeV/nucl',
 			update: this.update.bind(this)
 		});
 
@@ -57,14 +58,16 @@ export class ObjectBeam extends ObjectAbstract {
 		// divergence XY
 		[this.divergenceRow, this.divergenceX, this.divergenceY, this.divergenceZ] =
 			createRowParamNumberXYZ({
-				text: `Divergence XY [mrad]`,
+				text: `Divergence XY`,
+				unit: `mrad`,
 				update: this.update.bind(this)
 			});
 		hideUIElement(this.divergenceZ);
 
 		// divergence distance
 		[this.divergenceDistanceRow, this.divergenceDistance] = createRowParamNumber({
-			text: `Divergence distance to focal point ${editor.unit.name}`,
+			text: `Divergence distance to focal point`,
+			unit: `${editor.unit.name}`,
 			update: this.update.bind(this)
 		});
 
@@ -110,9 +113,7 @@ export class ObjectBeam extends ObjectAbstract {
 		this.divergenceDistance.setValue(object.divergence.distanceToFocal);
 
 		this.energy.setValue(object.energy);
-		this.energySpreadLabel.setTextContent(
-			`Energy spread [${object.energySpread < 0 ? 'Mev/c' : 'MeV/nucl'}]`
-		);
+		this.energySpread.unit = object.energySpread < 0 ? 'Mev/c' : 'MeV/nucl';
 		this.energySpread.setValue(object.energySpread);
 
 		this.render();

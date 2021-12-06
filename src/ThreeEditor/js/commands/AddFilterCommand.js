@@ -38,6 +38,6 @@ export class AddFilterCommand extends Command {
 		super.fromJSON(json);
 		this.object =
 			this.editor.detectManager.getFilterByUuid(json.object.uuid) ??
-			DetectFilter.fromJSON(json.filter);
+			this.editor.detectManager.createFilter().fromJSON(json.object);
 	}
 }

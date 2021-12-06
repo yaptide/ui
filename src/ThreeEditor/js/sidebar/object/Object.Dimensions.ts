@@ -6,25 +6,25 @@ import {
 	isBoxMesh,
 	isCylinderMesh,
 	isSphereMesh
-} from '../../util/BasicMeshes';
-import { DetectGeometry, isDetectGeometry } from '../../util/Detect/DetectGeometry';
-import { DETECT_OPTIONS } from '../../util/Detect/DetectTypes';
+} from '../../../util/BasicMeshes';
+import { DetectGeometry, isDetectGeometry } from '../../../util/Detect/DetectGeometry';
+import { DETECT_OPTIONS } from '../../../util/Detect/DetectTypes';
 import {
 	createRowParamNumber,
 	createRowSelect,
 	createRowText,
 	hideUIElement,
 	showUIElement
-} from '../../util/UiUtils';
-import { isWorldZone, WorldZone } from '../../util/WorldZone';
+} from '../../../util/Ui/Uis';
+import { isWorldZone, WorldZone } from '../../../util/WorldZone';
 import {
 	SetDetectGeometryCommand,
 	SetDetectTypeCommand,
 	SetGeometryCommand,
 	SetValueCommand
-} from '../commands/Commands';
-import { Editor } from '../Editor';
-import { UINumber, UIRow, UISelect, UIText } from '../libs/ui';
+} from '../../commands/Commands';
+import { Editor } from '../../Editor';
+import { UINumber, UIRow, UISelect, UIText } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectDimensions extends ObjectAbstract {
@@ -64,27 +64,32 @@ export class ObjectDimensions extends ObjectAbstract {
 		});
 		[this.xLengthRow, this.xLength] = createRowParamNumber({
 			update: this.update.bind(this),
-			text: `X side length (width) ${editor.unit.name}`,
+			text: `X side (width)`,
+			unit: `${editor.unit.name}`,
 			min: 0
 		});
 		[this.yLengthRow, this.yLength] = createRowParamNumber({
 			update: this.update.bind(this),
-			text: `Y side length (height) ${editor.unit.name}`,
+			text: `Y side (height)`,
+			unit: `${editor.unit.name}`,
 			min: 0
 		});
 		[this.zLengthRow, this.zLength] = createRowParamNumber({
 			update: this.update.bind(this),
-			text: `Z side length (depth) ${editor.unit.name}`,
+			text: `Z side (depth)`,
+			unit: `${editor.unit.name}`,
 			min: 0
 		});
 		[this.radiusRow, this.radius] = createRowParamNumber({
 			update: this.update.bind(this),
-			text: `Radius ${editor.unit.name}`,
+			text: `Radius`,
+			unit: `${editor.unit.name}`,
 			min: 0
 		});
 		[this.radiusRow2, this.radius2] = createRowParamNumber({
 			update: this.update.bind(this),
-			text: `Inner radius ${editor.unit.name}`,
+			text: `Inner radius`,
+			unit: `${editor.unit.name}`,
 			min: 0
 		});
 		[this.zoneIdRow, this.zoneId] = createRowSelect({

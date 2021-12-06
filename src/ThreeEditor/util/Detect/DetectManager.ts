@@ -155,7 +155,7 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 	}
 
 	removeFilter(filter: DetectFilter): void {
-		this.filters.splice(this.filters.indexOf(filter), 1);
+		this.filterContainer.remove(filter);
 		this.signals.detectFilterRemoved.dispatch(filter);
 	}
 
