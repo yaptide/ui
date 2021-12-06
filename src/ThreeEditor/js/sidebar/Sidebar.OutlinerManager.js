@@ -72,7 +72,7 @@ const buildOptions = (editor, object, pad) => {
 	option.value = object.uuid;
 	option.style.paddingLeft = pad * 18 + 'px';
 
-	if ('visible' in object) {
+	if ('visible' in object && !object.notHidable) {
 		const visible = new UICheckbox(object.visible);
 		visible.setStyle('margin', ['0']);
 		visible.setStyle('margin-left', ['auto']);

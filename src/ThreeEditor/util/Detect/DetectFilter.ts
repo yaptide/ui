@@ -24,6 +24,7 @@ export class DetectFilter extends SimulationObject3D {
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
+	readonly notHidable = true;
 
 	private onObjectSelected(object: SimulationObject3D): void {
 		this._selectedRule = undefined;
