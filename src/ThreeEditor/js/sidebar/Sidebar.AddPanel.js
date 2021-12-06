@@ -46,7 +46,7 @@ export function DetectAddPanel(editor, container) {
 	return createButtons(
 		container,
 		'Add new',
-		['Geometry', 'Filter', 'Quantity'],
+		['Geometry', 'Filter', 'Output'],
 		[
 			() => editor.execute(new AddDetectGeometryCommand(editor)),
 			() => editor.execute(new AddFilterCommand(editor)),

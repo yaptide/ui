@@ -12,7 +12,8 @@ export class SidebarScoring extends UIPanel {
 	refreshOptions() {
 		const sources = [
 			this.editor.detectManager.detectContainer,
-			this.editor.detectManager.filterContainer
+			this.editor.detectManager.filterContainer,
+			this.editor.scoringManager
 		];
 		this.outlinerManager.setOptionsFromSources(sources);
 	}

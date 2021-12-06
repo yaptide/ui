@@ -14,7 +14,7 @@ export interface MaterialsManagerJSON {
 	opacity: number;
 	transparent: boolean;
 }
-export default class MaterialsManager {
+export class MaterialsManager {
 	private editor: Editor;
 	private prefabMaterials: Record<string, SimulationMaterial>;
 	private customMaterials: Record<string, SimulationMaterial>;

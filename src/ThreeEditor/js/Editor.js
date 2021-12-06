@@ -4,8 +4,9 @@ import { generateSimulationInfo } from '../util/AdditionalUserData';
 import { Beam } from '../util/Beam';
 import * as CSG from '../util/CSG/CSG';
 import { DetectManager } from '../util/Detect/DetectManager';
-import MaterialsManager from '../util/Materials/MaterialsManager';
+import { MaterialsManager } from '../util/Materials/MaterialsManager';
 import { EditorObjectLoader } from '../util/ObjectLoader';
+import { ScoringManager } from '../util/Scoring/ScoringManager';
 import { Config } from './Config.js';
 import { ContextManager } from './Editor.Context';
 import { History as _History } from './History.js';
@@ -141,6 +142,7 @@ export function Editor(container) {
 	this.materialsManager = new MaterialsManager(this); // Material Manager
 	this.zoneManager = new CSG.ZoneManager(this); // CSG Manager
 	this.detectManager = new DetectManager(this); // Detect Manager
+	this.scoringManager = new ScoringManager(this); // Scoring Manager
 
 	this.beam = new Beam(this);
 	this.sceneHelpers.add(this.beam);

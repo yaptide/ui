@@ -139,8 +139,7 @@ export class DetectGeometry extends SimulationPoints {
 				);
 				break;
 			case 'Cyl':
-				geometry = createCylindricalGeometry(data, this.matrix);
-				geometry = geometry.rotateX(Math.PI / 2); // rotate to align along the z axis
+				geometry = createCylindricalGeometry(data, new THREE.Matrix4());
 				break;
 			case 'Zone':
 				const zone = this.editor.zoneManager.getZoneById(data.zoneId);
@@ -350,5 +349,5 @@ function createCylindricalGeometry(data: DETECT.CylData, matrix: THREE.Matrix4) 
 		data.innerRadius ? BSP2.intersect(BSP1).subtract(BSP3) : BSP2.intersect(BSP1),
 		matrix
 	);
-	return newGeometry;
+	return newGeometry.rotateX(Math.PI / 2); // rotate to align along the z axis
 }
