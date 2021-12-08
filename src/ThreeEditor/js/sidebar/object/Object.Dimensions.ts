@@ -217,8 +217,7 @@ export class ObjectDimensions extends ObjectAbstract {
 		hideUIElement(this.radiusRow);
 		hideUIElement(this.radiusRow2);
 		hideUIElement(this.zoneUuidRow);
-		const { remove } = this.editor.signals.zoneAdded;
-		remove(this.setZoneUuid);
+		this.editor.signals.zoneAdded.remove(this.setZoneUuid);
 		if (geometryType && geometryType !== 'All')
 			if (['Box', 'Mesh'].includes(geometryType)) {
 				this.setBox(object);
