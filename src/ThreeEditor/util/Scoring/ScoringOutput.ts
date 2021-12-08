@@ -25,6 +25,7 @@ export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> {
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
+	readonly notHidable = true;
 	private _geometry?: string;
 	private _primaries: [boolean, number | null];
 	private _disabledChildren: ScoringQuantity[] = [];

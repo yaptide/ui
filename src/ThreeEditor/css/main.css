@@ -175,6 +175,7 @@ div:is(#outliner, #filter-outliner) .opener.closed:after {
 	height: 14px;
 	color: #ddd;
 	text-align: center;
+	flex-shrink: 0;
 }
 
 div:is(#outliner, #filter-outliner) .type:after {
@@ -195,6 +196,14 @@ div:is(#outliner, #filter-outliner) .Particle:after {
 
 div:is(#outliner, #filter-outliner) .Custom:after {
 	content: '✪';
+}
+
+.type-value {
+	overflow: hidden;
+}
+
+.type-value:nth-last-child(2) {
+	margin-right: 10px;
 }
 
 /* */

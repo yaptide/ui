@@ -14,6 +14,7 @@ export class ScoringManager extends SimulationSceneGroup<ScoringOutput> {
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
+	readonly notHidable = true;
 	signals: {
 		objectAdded: Signal<THREE.Object3D>;
 		objectRemoved: Signal<THREE.Object3D>;

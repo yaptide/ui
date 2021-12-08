@@ -1,5 +1,7 @@
 import { UIOutliner } from '../libs/ui.three.js';
 import { escapeHTML } from '../../util/escapeHTML.js';
+import { UICheckbox } from '../libs/ui.js';
+import { SetValueCommand } from '../commands/SetValueCommand.js';
 
 const getObjectType = object => {
 	switch (object.type) {
@@ -29,51 +31,55 @@ const getObjectType = object => {
 			return 'Unknown';
 	}
 };
-const getAditionalInfo = object => {
+const getAdditionalInfo = object => {
 	switch (object.type) {
 		case 'BoxMesh':
 		case 'CylinderMesh':
 		case 'SphereMesh':
-			return ` [${object.id}] <span class="type Geometry"></span> ${object.type.slice(
+			return ` [${
+				object.id
+			}] <span class="type Geometry"></span> <span class="type-value">${object.type.slice(
 				0,
 				-4
-			)}`;
+			)}</span>`;
 		case 'Beam':
 			let particle = object.particle;
 			return ` [${object.id}] <span class="type Particle Beam"></span> ${particle.name} [${particle.id}]`;
 		case 'WorldZone':
 			let { simulationMaterial: worldMaterial } = object;
 			return `<span class="type Material"></span> 
-            ${escapeHTML(worldMaterial.name)}`;
+            <span class="type-value">${escapeHTML(worldMaterial.name)}</span>`;
 		case 'Zone':
 			let { simulationMaterial: material } = object;
 			return ` [${object.id}] <span class="type Material"></span> 
-            ${escapeHTML(material.name)}`;
+            <span class="type-value">${escapeHTML(material.name)}</span>`;
 		case 'Points':
 			let { zone, detectType } = object;
 			return ` [${object.id}] <span class="type Geometry ${
 				detectType === 'Zone' ? 'Zone' : ''
-			}"></span> ${escapeHTML(zone ? `${zone.name} [${zone.id}]` : detectType)}`;
+			}"></span> <span class="type-value">${escapeHTML(
+				zone ? `${zone.name} [${zone.id}]` : detectType
+			)}</span>`;
 		case 'Filter':
 			return ` [${object.id}]`;
 		case 'Output':
 			let { geometry } = object;
-			return ` [${object.id}] ${
+			return ` [${object.id}] <span class="type-value">${
 				object.geometry
 					? `<span class="type Detect Geometry"></span> ${escapeHTML(geometry.name)} [${
 							geometry.id
 					  }]`
 					: ''
-			}`;
+			}</span>`;
 		case 'Quantity':
 			let filter = object.filter;
 			return ` [${object.id}] ${
 				filter
-					? `<span class="type Filter Material"></span> ${escapeHTML(filter.name)} [${
-							filter.id
-					  }]`
+					? `<span class="type Filter Material"></span> <span class="type-value">${escapeHTML(
+							filter.name
+					  )} [${filter.id}]`
 					: ''
-			}`;
+			}</span>`;
 		default:
 			return '';
 	}
@@ -82,20 +88,38 @@ const getAditionalInfo = object => {
 const buildHTML = object => {
 	let html =
 		`<span class="type ${getObjectType(object)}"></span> ${escapeHTML(object.name)}` +
-		getAditionalInfo(object);
+		getAdditionalInfo(object);
+
 	return html;
 };
 
-const buildOptions = (object, pad) => {
+const buildOptions = (editor, object, pad) => {
 	const option = document.createElement('div');
+	option.style.display = 'flex';
 	option.draggable = false;
 	option.innerHTML = buildHTML(object);
 	option.value = object.uuid;
 	option.style.paddingLeft = pad * 18 + 'px';
+
+	if ('visible' in object && !object.notHidable) {
+		const visible = new UICheckbox(object.visible);
+		visible.setStyle('margin', ['0']);
+		visible.setStyle('margin-left', ['auto']);
+		visible.dom.title = 'visible';
+		visible.dom.disabled = object?.parent?.visible === false ? 'disabled' : '';
+		visible.onClick(e => e.stopPropagation());
+		visible.onChange(() => {
+			editor.execute(new SetValueCommand(editor, object, 'visible', visible.getValue()));
+		});
+		option.appendChild(visible.dom);
+	}
+
 	let result = [option];
 	if (object.type !== 'Beam' && object.children?.length > 0)
 		//TODO: move beam helpers to scene helpers
-		result = result.concat(object.children.flatMap(child => buildOptions(child, pad + 1)));
+		result = result.concat(
+			object.children.flatMap(child => buildOptions(editor, child, pad + 1))
+		);
 	return result;
 };
 
@@ -115,7 +139,7 @@ export class OutlinerManager {
 		this.editor.signals.contextChanged.add(() => this.outliner.setValue(null));
 	}
 	setOptionsFromSources(sources) {
-		const options = sources.flatMap(parent => buildOptions(parent, 0));
+		const options = sources.flatMap(parent => buildOptions(this.editor, parent, 0));
 		this.outliner.setOptions(options);
 		this.outliner.setValue(this._selected);
 	}

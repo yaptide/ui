@@ -38,6 +38,7 @@ export class FilterContainer extends SimulationSceneGroup<DetectFilter> {
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
+	readonly notHidable = true;
 
 	children: DetectFilter[];
 	readonly isFilterContainer: true = true;

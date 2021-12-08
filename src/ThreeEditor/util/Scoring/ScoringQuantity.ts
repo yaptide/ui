@@ -16,6 +16,7 @@ export class ScoringQuantity extends SimulationObject3D {
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
+	readonly notHidable = true;
 	//TODO: signal DetectFilter removed => clear _filter uuid if its the same as the removed filter
 	private _filter: string;
 	hasFilter: boolean;
