@@ -222,6 +222,22 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 	getFilterByUuid(uuid: string): DetectFilter | null {
 		return this.filters.find(filter => filter.uuid === uuid) as DetectFilter | null;
 	}
+
+	getFilterOptions(): Record<string, string> {
+		const options = this.filters.reduce((acc, filter) => {
+			acc[filter.uuid] = `${filter.name} [${filter.id}]`;
+			return acc;
+		}, {} as Record<string, string>);
+		return options;
+	}
+
+	getDetectOptions(): Record<string, string> {
+		const options = this.detectContainer.children.reduce((acc, geometry) => {
+			acc[geometry.uuid] = `${geometry.name} [${geometry.id}]`;
+			return acc;
+		}, {} as Record<string, string>);
+		return options;
+	}
 }
 
 export const isDetectContainer = (x: unknown): x is DetectContainer => x instanceof DetectContainer;

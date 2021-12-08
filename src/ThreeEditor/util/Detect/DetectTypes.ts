@@ -57,7 +57,7 @@ export class Mesh extends Data<MeshData> implements MeshData {
 }
 
 export interface ZoneData {
-	zoneId: number;
+	zoneUuid: string;
 }
 
 export class Cyl extends Data<CylData> implements CylData {
@@ -92,14 +92,14 @@ export class Cyl extends Data<CylData> implements CylData {
 }
 
 export class Zone extends Data<ZoneData> implements ZoneData {
-	zoneId: number;
-	constructor({ zoneId = DEFAULT_ANY.zoneId }: Any) {
+	zoneUuid: string;
+	constructor({ zoneUuid = DEFAULT_ANY.zoneUuid }: Any) {
 		super('Scoring within one or more zones');
-		this.zoneId = zoneId;
+		this.zoneUuid = zoneUuid;
 	}
 	toJSON(): ZoneData {
 		return {
-			zoneId: this.zoneId
+			zoneUuid: this.zoneUuid
 		};
 	}
 }
@@ -133,7 +133,7 @@ export const DEFAULT_ANY: AnyData = {
 	ySegments: 1,
 	zSegments: 100,
 	radialSegments: 1,
-	zoneId: -1
+	zoneUuid: ''
 };
 
 export const DETECT_OPTIONS = {

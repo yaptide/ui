@@ -4,28 +4,26 @@ import { escapeHTML } from '../../util/escapeHTML.js';
 const getObjectType = object => {
 	switch (object.type) {
 		case 'Scene':
-			return 'FigureGroup';
+		case 'BoxMesh':
+		case 'CylinderMesh':
+		case 'SphereMesh':
+			return 'Figure';
 		case 'DetectGroup':
-			return 'DetectGroup';
+		case 'Points':
+			return 'Detect';
+		case 'Filter':
 		case 'FilterGroup':
-			return 'FilterGroup';
+			return 'Filter';
 		case 'OutputGroup':
-			return 'OutputGroup';
+		case 'Output':
+		case 'Quantity':
+			return 'Output';
 		case 'ZoneGroup':
-			return 'ZoneGroup';
 		case 'Zone':
 		case 'WorldZone':
 			return 'Zone';
 		case 'Beam':
 			return 'Beam';
-		case 'BoxMesh':
-		case 'CylinderMesh':
-		case 'SphereMesh':
-			return 'Figure';
-		case 'Points':
-			return 'Detect';
-		case 'Filter':
-			return 'Filter';
 		default:
 			console.warn(`could not parse object of type ${object.type}`, typeof object, object);
 			return 'Unknown';
@@ -34,23 +32,48 @@ const getObjectType = object => {
 const getAditionalInfo = object => {
 	switch (object.type) {
 		case 'BoxMesh':
-			return ` [${object.id}] <span class="type Geometry"></span> Box`;
 		case 'CylinderMesh':
-			return ` [${object.id}] <span class="type Geometry"></span> Cylinder`;
 		case 'SphereMesh':
-			return ` [${object.id}] <span class="type Geometry"></span> Sphere`;
+			return ` [${object.id}] <span class="type Geometry"></span> ${object.type.slice(
+				0,
+				-4
+			)}`;
 		case 'Beam':
-			return ` [${object.id}]`;
+			let particle = object.particle;
+			return ` [${object.id}] <span class="type Particle Beam"></span> ${particle.name} [${particle.id}]`;
 		case 'WorldZone':
+			let { simulationMaterial: worldMaterial } = object;
 			return `<span class="type Material"></span> 
-            ${escapeHTML(object.simulationMaterial.name)}`;
+            ${escapeHTML(worldMaterial.name)}`;
 		case 'Zone':
+			let { simulationMaterial: material } = object;
 			return ` [${object.id}] <span class="type Material"></span> 
-            ${escapeHTML(object.simulationMaterial.name)}`; //TODO: change to simulation material when its implemented
+            ${escapeHTML(material.name)}`;
 		case 'Points':
-		case 'Detect':
-			return ` [${object.id}] <span class="type Geometry"></span> 
-            ${escapeHTML(object.detectType)}`;
+			let { zone, detectType } = object;
+			return ` [${object.id}] <span class="type Geometry ${
+				detectType === 'Zone' ? 'Zone' : ''
+			}"></span> ${escapeHTML(zone ? `${zone.name} [${zone.id}]` : detectType)}`;
+		case 'Filter':
+			return ` [${object.id}]`;
+		case 'Output':
+			let { geometry } = object;
+			return ` [${object.id}] ${
+				object.geometry
+					? `<span class="type Detect Geometry"></span> ${escapeHTML(geometry.name)} [${
+							geometry.id
+					  }]`
+					: ''
+			}`;
+		case 'Quantity':
+			let filter = object.filter;
+			return ` [${object.id}] ${
+				filter
+					? `<span class="type Filter Material"></span> ${escapeHTML(filter.name)} [${
+							filter.id
+					  }]`
+					: ''
+			}`;
 		default:
 			return '';
 	}
@@ -89,7 +112,6 @@ export class OutlinerManager {
 		container.add(this.outliner);
 		this.outliner.onChange(this.onChange.bind(this));
 		this.editor.signals.objectSelected.add(this.onObjectSelected.bind(this));
-		this.editor.signals.dataObjectSelected.add(this.onObjectSelected.bind(this));
 		this.editor.signals.contextChanged.add(() => this.outliner.setValue(null));
 	}
 	setOptionsFromSources(sources) {

@@ -73,7 +73,6 @@ export function Editor(container) {
 		detectFilterAdded: new Signal(),
 		detectFilterRemoved: new Signal(),
 		detectFilterChanged: new Signal(),
-		dataObjectSelected: new Signal(),
 
 		cameraAdded: new Signal(),
 		cameraRemoved: new Signal(),
@@ -475,8 +474,7 @@ Editor.prototype = {
 
 		this.config.setKey('selected', uuid);
 
-		if (!object || object.isObject3D) this.signals.objectSelected.dispatch(object);
-		else this.signals.dataObjectSelected.dispatch(object);
+		this.signals.objectSelected.dispatch(object);
 	},
 
 	selectById(id) {
@@ -485,7 +483,14 @@ Editor.prototype = {
 			return;
 		}
 
-		const objectCollections = [this.scene, this.zoneManager, this.beam, this.detectManager];
+		const objectCollections = [
+			this.scene,
+			this.zoneManager,
+			this.beam,
+			this.detectManager,
+			this.detectManager.filterContainer,
+			this.scoringManager
+		];
 
 		const object =
 			objectCollections.map(e => e.getObjectById(id)).find(e => typeof e !== 'undefined') ??
@@ -500,7 +505,8 @@ Editor.prototype = {
 			this.zoneManager,
 			this.beam,
 			this.detectManager,
-			this.detectManager.filterContainer
+			this.detectManager.filterContainer,
+			this.scoringManager
 		];
 		const object =
 			objectCollections.find(e => e.uuid === uuid) ??
@@ -546,6 +552,7 @@ Editor.prototype = {
 
 		this.zoneManager.reset();
 		this.detectManager.reset();
+		this.scoringManager.reset();
 		this.beam.reset();
 
 		this.geometries = {};
@@ -592,6 +599,8 @@ Editor.prototype = {
 
 		this.detectManager.fromJSON(json.detectManager);
 
+		this.scoringManager.fromJSON(json.scoringManager);
+
 		this.beam.fromJSON(json.beam);
 
 		this.signals.sceneGraphChanged.dispatch();
@@ -635,7 +644,8 @@ Editor.prototype = {
 			zoneManager: this.zoneManager.toJSON(), // serialize CSGManager
 			detectManager: this.detectManager.toJSON(), // serialize DetectManager;
 			beam: this.beam.toJSON(),
-			materialsManager: this.materialsManager.toJSON() // serialize MaterialManager
+			materialsManager: this.materialsManager.toJSON(), // serialize MaterialManager
+			scoringManager: this.scoringManager.toJSON() // serialize ScoringManager
 		};
 	},
 

@@ -12,7 +12,9 @@ import {
 	isDetectContainer,
 	isFilterContainer
 } from '../util/Detect/DetectManager';
+import { isScoringManager, ScoringManager } from '../util/Scoring/ScoringManager';
 import { ScoringOutput, isOutput } from '../util/Scoring/ScoringOutput';
+import { isQuantity, ScoringQuantity } from '../util/Scoring/ScoringQuantity';
 import { isWorldZone, WorldZone } from '../util/WorldZone';
 import { Editor } from './Editor';
 
@@ -29,6 +31,8 @@ export type OutputObject =
 	| DetectFilter
 	| DetectGeometry
 	| ScoringOutput
+	| ScoringManager
+	| ScoringQuantity
 	| DetectContainer
 	| DetectManager
 	| FilterContainer;
@@ -50,9 +54,7 @@ export class ContextManager {
 		if (this._context !== context) {
 			this._context = context;
 			this.editor.signals.contextChanged.dispatch(context);
-			if (this.selected instanceof THREE.Object3D)
-				this.editor.signals.objectSelected.dispatch(this.selected);
-			else this.editor.signals.dataObjectSelected.dispatch(this.selected);
+			this.editor.signals.objectSelected.dispatch(this.selected);
 		}
 	}
 
@@ -64,10 +66,14 @@ export class ContextManager {
 		let clickable: THREE.Object3D[] = [];
 		switch (this._context) {
 			case 'scene':
-				clickable = clickable.concat(this.editor.scene.children);
+				clickable = clickable.concat(
+					this.editor.scene.visible ? this.editor.scene.children : []
+				);
 				break;
 			case 'scoring':
-				clickable = clickable.concat(this.editor.detectManager.children);
+				clickable = clickable.concat(
+					this.editor.detectManager.visible ? this.editor.detectManager.children : []
+				);
 				break;
 			default:
 				return [];
@@ -141,7 +147,9 @@ export const isOutputObject = (x: unknown): x is OutputObject => {
 		isDetectFilter(x) ||
 		isDetectContainer(x) ||
 		isFilterContainer(x) ||
-		isOutput(x)
+		isOutput(x) ||
+		isQuantity(x) ||
+		isScoringManager(x)
 	);
 };
 

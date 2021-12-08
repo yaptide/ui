@@ -1,13 +1,33 @@
 import { UIButton, UINumber, UIRow, UISelect } from '../../js/libs/ui';
 import { UIOutliner } from '../../js/libs/ui.three';
-import { FilterRule } from '../Detect/DetectRule';
 import * as Rule from '../Detect/DetectRuleTypes';
 import { FONT_SIZE } from './Uis';
 
 /**
  * @typedef {import('../js/libs/ui').UIElement} UIElement
+ * @typedef {import('../Detect/DetectRule').FilterRule} FilterRule
  *
  */
+
+/**
+ * @param {Editor} editor
+ * @param {{
+ *      update?: ()=> void,
+ *      }} params
+ * @return {[UIOutliner]}
+ */
+export function createModifiersOutliner(editor, params) {
+	const { update = () => {} } = params;
+	const outliner = new UIOutliner(editor);
+	outliner.setId('modifiers-outliner');
+	outliner.setHeight('120px');
+	outliner._setOptions = outliner.setOptions;
+	outliner.setOptions = function (rules) {
+		outliner._setOptions(rules.map(buildOption));
+	};
+	outliner.onChange(update);
+	return [outliner];
+}
 
 /**
  * @param {Editor} editor

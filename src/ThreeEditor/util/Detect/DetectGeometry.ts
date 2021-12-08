@@ -27,6 +27,12 @@ export class DetectGeometry extends SimulationPoints {
 		// custom get function to conditionally return notMoveable property;
 		return ['Zone', 'All'].includes(this.detectType);
 	}
+
+	get zone(): CSG.Zone | null {
+		const data = this.getData();
+		if (data.zoneUuid) return this.editor.zoneManager.getZoneByUuid(data.zoneUuid) ?? null;
+		else return null;
+	}
 	readonly notRotatable = true;
 	readonly notScalable = true;
 	readonly isDetectGeometry: true = true;
@@ -142,7 +148,7 @@ export class DetectGeometry extends SimulationPoints {
 				geometry = createCylindricalGeometry(data, new THREE.Matrix4());
 				break;
 			case 'Zone':
-				const zone = this.editor.zoneManager.getZoneById(data.zoneId);
+				const zone = this.editor.zoneManager.getZoneByUuid(data.zoneUuid);
 				geometry =
 					zone?.geometry
 						.clone()
@@ -203,7 +209,7 @@ export class DetectGeometry extends SimulationPoints {
 
 		this.geometry = this.generateGeometry(this._geometryData, type);
 		this.signals.zoneGeometryChanged.add(zone => {
-			if (zone.id === this._geometryData.zoneId) this.geometry = this.generateGeometry();
+			if (zone.uuid === this._geometryData.zoneUuid) this.geometry = this.generateGeometry();
 		});
 
 		return this.proxy;

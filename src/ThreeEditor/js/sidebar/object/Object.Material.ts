@@ -6,6 +6,7 @@ import {
 	createMaterialSelect,
 	createRowCheckbox,
 	createRowColor,
+	createRowConditionalNumber,
 	createRowParamNumber,
 	createRowText,
 	hideUIElement,
@@ -49,8 +50,6 @@ export class ObjectMaterial extends ObjectAbstract {
 
 	opacityRow: UIRow;
 	opacity: UINumber;
-
-	transparentRow: UIRow;
 	transparent: UICheckbox;
 
 	exportMaterialsRow: UIRow;
@@ -83,16 +82,11 @@ export class ObjectMaterial extends ObjectAbstract {
 		);
 
 		// opacity
-		[this.opacityRow, this.opacity] = createRowParamNumber({
+		[this.opacityRow, this.transparent, this.opacity] = createRowConditionalNumber({
 			text: 'Opacity',
 			min: 0,
 			max: 1,
-			update: this.update.bind(this)
-		});
-
-		// transparent
-		[this.transparentRow, this.transparent] = createRowCheckbox({
-			text: 'Transparent',
+			step: 0.05,
 			update: this.update.bind(this)
 		});
 
@@ -112,7 +106,6 @@ export class ObjectMaterial extends ObjectAbstract {
 			 * this.blendingRow,
 			 */
 			this.opacityRow,
-			this.transparentRow,
 			this.exportMaterialsRow
 		);
 	}
@@ -122,17 +115,18 @@ export class ObjectMaterial extends ObjectAbstract {
 		if (!object) return;
 
 		this.object = object;
+		const { color, opacity, transparent } = object.material;
 		hideUIElement(this.typeRow);
 		hideUIElement(this.typeSelectRow);
 		hideUIElement(this.opacityRow);
-		hideUIElement(this.transparentRow);
 		hideUIElement(this.exportMaterialsRow);
-		this.color.setHexValue(object.material.color.getHexString());
+		this.color.setHexValue(color.getHexString());
 		if (isWorldZone(object) || isZone(object)) {
 			showUIElement(this.typeSelectRow);
 			if (isZone(object)) {
 				showUIElement(this.opacityRow);
-				showUIElement(this.transparentRow);
+				if (transparent) showUIElement(this.opacity);
+				else hideUIElement(this.opacity);
 				showUIElement(this.exportMaterialsRow);
 				this.opacity.setValue(object.material.opacity);
 				this.transparent.setValue(object.material.transparent);

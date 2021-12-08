@@ -83,7 +83,7 @@ export class ObjectPlacement extends ObjectAbstract {
 
 		this.object = object;
 		if (this.hasPosition(object)) {
-			showUIElement(this.positionRow);
+			showUIElement(this.positionRow, 'grid');
 			this.positionX.setValue(object.position.x);
 			this.positionY.setValue(object.position.y);
 			this.positionZ.setValue(object.position.z);
@@ -91,7 +91,7 @@ export class ObjectPlacement extends ObjectAbstract {
 			hideUIElement(this.positionRow);
 		}
 		if (this.hasRotation(object)) {
-			showUIElement(this.rotationRow);
+			showUIElement(this.rotationRow, 'grid');
 			this.rotationX.setValue(object.rotation.x * THREE.MathUtils.RAD2DEG);
 			this.rotationY.setValue(object.rotation.y * THREE.MathUtils.RAD2DEG);
 			this.rotationZ.setValue(object.rotation.z * THREE.MathUtils.RAD2DEG);
@@ -99,7 +99,7 @@ export class ObjectPlacement extends ObjectAbstract {
 			hideUIElement(this.rotationRow);
 		}
 		if (this.hasDirection(object)) {
-			showUIElement(this.directionRow);
+			showUIElement(this.directionRow, 'grid');
 			this.directionX.setValue(object.direction.x);
 			this.directionY.setValue(object.direction.y);
 			this.directionZ.setValue(object.direction.z);

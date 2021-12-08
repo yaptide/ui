@@ -3,6 +3,8 @@
 export { AddDetectGeometryCommand } from './AddDetectGeometryCommand';
 export { AddFilterCommand } from './AddFilterCommand';
 export { AddObjectCommand } from './AddObjectCommand';
+export { AddOutputCommand } from './AddOutputCommand';
+export { AddQuantityCommand } from './AddQuantityCommand';
 export { AddZoneCommand } from './AddZoneCommand';
 export { MoveObjectCommand } from './MoveObjectCommand';
 export { MultiCmdsCommand } from './MultiCmdsCommand';
@@ -24,7 +26,9 @@ export { SetMaterialCommand } from './SetMaterialCommand';
 export { SetMaterialMapCommand } from './SetMaterialMapCommand';
 export { SetMaterialValueCommand } from './SetMaterialValueCommand';
 export { SetMaterialVectorCommand } from './SetMaterialVectorCommand';
+export { SetOutputSettingsCommand } from './SetOutputSettingsCommand';
 export { SetPositionCommand } from './SetPositionCommand';
+export * from './SetQuantityValueCommand';
 export { SetRotationCommand } from './SetRotationCommand';
 export { SetScaleCommand } from './SetScaleCommand';
 export { SetSceneCommand } from './SetSceneCommand';

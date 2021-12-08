@@ -119,12 +119,12 @@ export class ObjectBeam extends ObjectAbstract {
 		this.render();
 
 		[this.particleZRow, this.particleARow].forEach(r => {
-			if (object.particle.id === 25) showUIElement(r);
+			if (object._particle.id === 25) showUIElement(r);
 			else hideUIElement(r);
 		});
 
-		this.particleZ.setValue(object.particle.z);
-		this.particleA.setValue(object.particle.a);
+		this.particleZ.setValue(object._particle.z);
+		this.particleA.setValue(object._particle.a);
 	}
 
 	update(): void {
@@ -137,13 +137,13 @@ export class ObjectBeam extends ObjectAbstract {
 		object.divergence.y = this.divergenceY.getValue();
 		object.divergence.distanceToFocal = this.divergenceDistance.getValue();
 
-		object.particle.id = this.particleType.getValue();
-		object.particle.a = this.particleA.getValue();
-		object.particle.z = this.particleZ.getValue();
+		object._particle.id = this.particleType.getValue();
+		object._particle.a = this.particleA.getValue();
+		object._particle.z = this.particleZ.getValue();
 	}
 
 	render(): void {
 		if (!this.object) return;
-		this.renderParticleType(this.object.particle.id);
+		this.renderParticleType(this.object._particle.id);
 	}
 }

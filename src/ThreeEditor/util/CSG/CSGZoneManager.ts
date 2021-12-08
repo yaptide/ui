@@ -169,11 +169,11 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 		this.removeZone(zone);
 	}
 
-	getZoneOptions(): Record<number, string> {
+	getZoneOptions(): Record<string, string> {
 		const zoneOptions = this.zoneContainer.children.reduce((acc, zone: Zone) => {
-			acc[zone.id] = `${zone.name}[${zone.id}]`;
+			acc[zone.uuid] = `${zone.name} [${zone.id}]`;
 			return acc;
-		}, {} as Record<number, string>);
+		}, {} as Record<string, string>);
 		return zoneOptions;
 	}
 }

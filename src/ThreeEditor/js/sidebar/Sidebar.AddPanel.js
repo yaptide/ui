@@ -4,7 +4,8 @@ import {
 	AddDetectGeometryCommand,
 	AddFilterCommand,
 	AddObjectCommand,
-	AddZoneCommand
+	AddZoneCommand,
+	AddOutputCommand
 } from '../commands/Commands';
 
 function createButtons(
@@ -46,11 +47,11 @@ export function DetectAddPanel(editor, container) {
 	return createButtons(
 		container,
 		'Add new',
-		['Geometry', 'Filter', 'Output'],
+		['Detect', 'Filter', 'Output'],
 		[
 			() => editor.execute(new AddDetectGeometryCommand(editor)),
 			() => editor.execute(new AddFilterCommand(editor)),
-			() => alert('Not implemented')
+			() => editor.execute(new AddOutputCommand(editor))
 		]
 	);
 }
