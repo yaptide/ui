@@ -63,4 +63,4 @@ export class ScoringQuantity extends SimulationObject3D {
 	}
 }
 
-export const isQuantity = (x: any): x is ScoringQuantity => x instanceof ScoringQuantity;
+export const isQuantity = (x: unknown): x is ScoringQuantity => x instanceof ScoringQuantity;

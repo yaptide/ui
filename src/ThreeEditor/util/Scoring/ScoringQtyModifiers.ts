@@ -1,5 +1,3 @@
-import { SimulationObject3D } from '../SimulationBase/SimulationMesh';
-
 export interface ScoringQtyModifier {
 	type: string;
 	lowerBound: number;

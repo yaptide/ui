@@ -9,7 +9,7 @@ import {
 } from '../../../util/Ui/Uis';
 import { AddQuantityCommand, SetOutputSettingsCommand } from '../../commands/Commands';
 import { Editor } from '../../Editor';
-import { UIButton, UICheckbox, UINumber, UIPanel, UIRow, UISelect, UIText } from '../../libs/ui';
+import { UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectSettings extends ObjectAbstract {

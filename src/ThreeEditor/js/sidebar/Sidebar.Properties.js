@@ -146,6 +146,7 @@ function SidebarProperties(editor, id = 'properties') {
 			case object.isQuantity:
 				[zoneRules, beam, filter].forEach(item => item.setObject(null));
 				[differential].forEach(item => item.setObject(object));
+				break;
 			default:
 				[zoneRules, beam, filter, differential].forEach(item => item.setObject(null));
 				break;

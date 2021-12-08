@@ -137,4 +137,4 @@ export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> {
 	}
 }
 
-export const isOutput = (x: any): x is ScoringOutput => x instanceof ScoringOutput;
+export const isOutput = (x: unknown): x is ScoringOutput => x instanceof ScoringOutput;

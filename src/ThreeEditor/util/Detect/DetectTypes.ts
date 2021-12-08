@@ -109,7 +109,7 @@ export type AllData = {
 };
 
 export class All extends Data<AllData> implements AllData {
-	constructor(data: Any) {
+	constructor(_data: Any) {
 		super('Scoring within the entire universe, only useful with certain detectors');
 	}
 	toJSON(): AllData {
