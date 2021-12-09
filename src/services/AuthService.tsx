@@ -48,7 +48,26 @@ const Auth = (props: AuthProps) => {
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER));
 	const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
 
-	const kyRef = useRef<KyInstance>(ky.create({ credentials: 'include' }));
+	const kyRef = useRef<KyInstance>(
+		ky.create({
+			credentials: 'include',
+			hooks: {
+				afterResponse: [
+					(_request, _options, response) => {
+						switch (response?.status) {
+							case 401:
+								alert('Please log in with correct username and password.');
+								setUser(null);
+								break;
+						}
+						if (response?.status > 300) {
+							console.error(response.status, response);
+						}
+					}
+				]
+			}
+		})
+	);
 
 	useEffect(() => {
 		save(StorageKey.USER, user);
@@ -59,16 +78,7 @@ const Auth = (props: AuthProps) => {
 		kyRef.current
 			.get(`${BACKEND_URL}/auth/refresh`)
 			.json()
-			.catch((error: HTTPError) => {
-				console.error(error);
-				console.log(error?.response);
-				switch (error?.response?.status) {
-					case 401:
-						alert('Session expired');
-						setUser(null);
-						break;
-				}
-			});
+			.catch((_: HTTPError) => {});
 	}, []);
 
 	const status = useCallback(() => {
@@ -85,22 +95,17 @@ const Auth = (props: AuthProps) => {
 					return user;
 				});
 			})
-			.catch((error: HTTPError) => {
-				console.error(error);
-				console.log(error?.response);
-				switch (error?.response?.status) {
-					case 401:
-						alert('Session expired');
-						setUser(null);
-						break;
-				}
-			});
+			.catch((_: HTTPError) => {});
 	}, []);
 
 	useEffect(() => {
 		if (user !== null) status();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [status]);
+
+	useEffect(() => {
+		if (user !== null) refresh();
+	}, [refresh, user]);
 
 	useInterval(
 		() => {
@@ -128,28 +133,17 @@ const Auth = (props: AuthProps) => {
 
 				setRefreshInterval(refreshDelay);
 			})
-			.catch((error: HTTPError) => {
-				console.error(error);
-				console.log(error?.response);
-				switch (error?.response?.status) {
-					case 401:
-						alert('Username or password is wrong');
-						break;
-				}
-			});
+			.catch((_: HTTPError) => {});
 	};
 
 	const logout = () => {
 		kyRef.current
 			.delete(`${BACKEND_URL}/auth/logout`)
 			.json()
-			.then((response: unknown) => {
+			.then((_response: unknown) => {
 				setUser(null);
 			})
-			.catch((error: HTTPError) => {
-				console.error(error);
-				console.log(error?.response);
-			});
+			.catch((_: HTTPError) => {});
 	};
 
 	const value: IAuth = {

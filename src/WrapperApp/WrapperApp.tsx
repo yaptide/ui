@@ -62,7 +62,6 @@ function WrapperApp() {
 					<TabPanel value={tabsValue} index={1}>
 						<SimulationPanel
 							onSuccess={data => {
-								setTabsValue(2);
 								setResultData({ data });
 							}}
 						/>

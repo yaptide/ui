@@ -9,15 +9,31 @@ import {
 } from '@mui/material';
 import { HTTPError } from 'ky';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
 import { BACKEND_URL } from '../../../util/Config';
-import SimulationStatus from './SimulationStatus';
+import SimulationStatus, { SimulationStatusData } from './SimulationStatus';
 
 interface SimulationPanelProps {
 	onError?: (error: unknown) => void;
 	onSuccess?: (result: unknown) => void;
+}
+
+export interface IResponse {
+	status: string;
+	message: object;
+}
+
+export interface IRunResponse extends IResponse {
+	message: {
+		task_id: string;
+	};
+}
+export interface IListResponse {
+	message: {
+		tasks_ids: string[];
+	};
 }
 
 export default function SimulationPanel(props: SimulationPanelProps) {
@@ -27,7 +43,10 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	const [isBackendAlive, setBackendAlive] = useState(false);
 
-	const sendRequest = () => {
+	const [simulationIDs, setSimulationIDs] = useState<string[]>([]);
+	const [simulationsData, setSimulationsData] = useState<SimulationStatusData[]>([]);
+
+	const sendRun = () => {
 		setInProgress(true);
 		authKy
 			.post(`${BACKEND_URL}/sh/run`, {
@@ -41,11 +60,11 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			.json()
 			.then((response: unknown) => {
 				console.log(response);
+				const runResponse = response as IRunResponse;
 				props.onSuccess?.call(null, response);
+				getStatus(runResponse.message.task_id);
 			})
 			.catch((error: HTTPError) => {
-				console.error(error);
-				console.log(error?.response);
 				props.onError?.call(null, error);
 			})
 			.finally(() => {
@@ -53,25 +72,45 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			});
 	};
 
-	useEffect(() => {
-		const controller = new AbortController();
-		const { signal } = controller;
+	const getStatus = useCallback(
+		(taskId: string, signal?: AbortSignal) => {
+			return authKy
+				.post(`${BACKEND_URL}/sh/status`, {
+					signal,
+					json: { task_id: taskId }
+				})
+				.json()
+				.then((response: any) => {
+					const data: SimulationStatusData = {
+						uuid: taskId,
+						status: response.state,
+						message: response.status
+					};
+					return data;
+				})
+				.catch((error: HTTPError) =>
+					error?.response?.json().then(value => {
+						const data: SimulationStatusData = {
+							uuid: taskId,
+							status: value.state,
+							message: value.status
+						};
+						return data;
+					})
+				);
+		},
+		[authKy]
+	);
 
+	const getSimulations = useCallback(() => {
 		authKy
-			.get(`${BACKEND_URL}`, { signal })
+			.get(`${BACKEND_URL}/user/simulations`)
 			.json()
 			.then((response: unknown) => {
-				console.log(response);
-				setBackendAlive(true);
+				const simulationList = (response as IListResponse).message.tasks_ids;
+				setSimulationIDs(simulationList);
 			})
-			.catch((error: unknown) => {
-				console.error(error);
-				setBackendAlive(false);
-			});
-
-		return () => {
-			controller.abort();
-		};
+			.catch((error: HTTPError) => {});
 	}, [authKy]);
 
 	useEffect(() => {
@@ -84,16 +123,31 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			.then((response: unknown) => {
 				console.log(response);
 				setBackendAlive(true);
+				getSimulations();
 			})
 			.catch((error: unknown) => {
-				console.error(error);
 				setBackendAlive(false);
 			});
 
 		return () => {
 			controller.abort();
 		};
-	}, [authKy]);
+	}, [authKy, getSimulations]);
+
+	useEffect(() => {
+		const controller = new AbortController();
+		const { signal } = controller;
+
+		const res = simulationIDs.map(uuid => getStatus(uuid, signal));
+
+		Promise.all(res).then(values => {
+			setSimulationsData([...values.filter(e => e)]);
+		});
+
+		return () => {
+			controller.abort();
+		};
+	}, [authKy, getStatus, simulationIDs]);
 
 	return (
 		<Box
@@ -103,7 +157,8 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				padding: '5rem',
 				display: 'flex',
 				flexDirection: 'column',
-				gap: '1.5rem'
+				gap: '1.5rem',
+				height: 'min-content'
 			}}>
 			<Card sx={{ minWidth: 275 }}>
 				<CardContent>
@@ -129,13 +184,15 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 							width: 'min(300px, 100%)',
 							margin: '0 auto'
 						}}
-						onClick={sendRequest}>
+						onClick={sendRun}>
 						{isInProgress ? 'Stop' : 'Start'}
 					</Button>
 				</CardActions>
 			</Card>
 
-			<SimulationStatus></SimulationStatus>
+			{simulationsData.map(simulation => (
+				<SimulationStatus key={simulation.uuid} simulation={simulation}></SimulationStatus>
+			))}
 		</Box>
 	);
 }
