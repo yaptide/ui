@@ -7,27 +7,27 @@ import { Command } from '../Command.js';
  * @constructor
  */
 class SetZoneMaterialCommand extends Command {
-	constructor(editor, object, newMaterialName) {
+	constructor(editor, object, newIcru) {
 		super(editor);
 
 		this.type = 'SetZoneMaterialCommand';
-		this.name = `Zone applied simulation material: ${newMaterialName}`;
+		this.name = `Zone applied simulation material: ${newIcru}`;
 
 		this.object = object;
 
-		this.oldMaterialName = this.editor.getObjectMaterial(object).name;
-		this.newMaterialName = newMaterialName;
+		this.oldIcru = object.simulationMaterial.icru;
+		this.newIcru = newIcru;
 	}
 
 	execute() {
-		const simulationMaterial = this.editor.materialsManager.materials[this.newMaterialName];
+		const simulationMaterial = this.editor.materialManager.materials[this.newIcru];
 		this.object.simulationMaterial = simulationMaterial;
 		this.editor.signals.materialChanged.dispatch(simulationMaterial);
 		this.editor.signals.objectChanged.dispatch(this.object);
 	}
 
 	undo() {
-		const simulationMaterial = this.editor.materialsManager.materials[this.oldMaterialName];
+		const simulationMaterial = this.editor.materialManager.materials[this.oldIcru];
 		this.object.simulationMaterial = simulationMaterial;
 		this.editor.signals.materialChanged.dispatch(simulationMaterial);
 		this.editor.signals.objectChanged.dispatch(this.object);
@@ -37,8 +37,8 @@ class SetZoneMaterialCommand extends Command {
 		const output = super.toJSON(this);
 
 		output.objectUuid = this.object.uuid;
-		output.oldMaterialName = this.oldMaterialName;
-		output.newMaterialName = this.newMaterialName;
+		output.oldIcru = this.oldIcru;
+		output.newIcru = this.newIcru;
 
 		return output;
 	}
@@ -47,8 +47,8 @@ class SetZoneMaterialCommand extends Command {
 		super.fromJSON(json);
 
 		this.object = this.editor.objectByUuid(json.objectUuid);
-		this.oldMaterialName = json.oldMaterialName;
-		this.newMaterialName = json.newMaterialName;
+		this.oldIcru = json.oldIcru;
+		this.newIcru = json.newIcru;
 	}
 }
 

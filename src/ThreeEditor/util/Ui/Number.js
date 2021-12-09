@@ -132,7 +132,6 @@ export class UIScientificNumber extends UINumber {
 			super.setValue(value);
 			return this;
 		}
-		console.log(value, parseFloat(value).toFixed(PRECISION));
 		value = parseFloat(parseFloat(value).toFixed(PRECISION));
 
 		if (value < this.min) value = this.min;

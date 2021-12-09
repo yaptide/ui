@@ -151,7 +151,7 @@ export class DetectGeometry extends SimulationPoints {
 				const zone = this.editor.zoneManager.getZoneByUuid(data.zoneUuid);
 				geometry =
 					zone?.geometry
-						.clone()
+						?.clone()
 						.translate(-this.position.x, -this.position.y, -this.position.z) ??
 					geometry;
 

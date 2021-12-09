@@ -27,6 +27,14 @@ export class ZoneContainer extends SimulationSceneGroup<Zone> {
 	constructor(editor: Editor) {
 		super(editor, 'Zones', 'ZoneGroup');
 	}
+	reset() {
+		this.children.forEach(({ simulationMaterial }) => simulationMaterial.decrement());
+		super.reset();
+	}
+	remove(zone: Zone): this {
+		zone.simulationMaterial.decrement();
+		return super.remove(zone);
+	}
 }
 
 export class ZoneManager extends THREE.Scene implements ISimulationObject {
@@ -124,7 +132,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 
 		this.worldZone.removeHelpersFromSceneHelpers();
 		this.remove(this.worldZone);
-		this.worldZone = WorldZone.fromJSON(this.editor, data.worldZone);
+		this.worldZone.fromJSON(data.worldZone);
 		this.add(this.worldZone);
 		this.worldZone.addHelpersToSceneHelpers();
 

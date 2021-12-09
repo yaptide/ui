@@ -15,8 +15,7 @@ export interface ZoneJSON {
 	name: string;
 	unionOperations: OperationTupleJSON[][];
 	subscribedObjects: Record<string, number>;
-	materialName: string;
-	materialData: unknown;
+	materialUuid: string;
 }
 
 export class Zone extends SimulationMesh {
@@ -28,7 +27,7 @@ export class Zone extends SimulationMesh {
 	material: SimulationMaterial;
 
 	subscribedObjects: CounterMap<string>;
-	unionOperations: OperationTuple[][];
+	_unionOperations: OperationTuple[][];
 	needsUpdate: boolean = true;
 	private signals: {
 		objectChanged: Signal<THREE.Object3D>;
@@ -43,40 +42,30 @@ export class Zone extends SimulationMesh {
 		CSGManagerStateChanged: Signal;
 	};
 	readonly isZone: true = true;
+	set unionOperations(operations: OperationTuple[][]) {
+		this._unionOperations = operations;
+		// If operations are specified, we have to generate fist geometry manually.
+		if (operations.length) this.updateGeometry();
+	}
+	get unionOperations() {
+		return this._unionOperations;
+	}
 
 	worker?: Comlink.Remote<IZoneWorker>;
 	readonly debouncedUpdatePreview = debounce(200, false, () => this.updatePreview());
 
-	constructor(
-		editor: Editor,
-		name?: string,
-		unionOperations?: OperationTuple[][],
-		subscribedObjects?: CounterMap<string>,
-		uuid?: string,
-		materialName?: string //TODO: change args to type
-	) {
+	constructor(editor: Editor, name?: string) {
 		super(editor, name, 'Zone');
-		if (uuid) this.uuid = uuid;
 		this.signals = editor.signals;
 		this.name = name || `Zone`;
-		this.material = editor.materialsManager.materials[materialName ?? 'WATER, LIQUID'];
-		this.unionOperations = unionOperations ?? [];
-		// If operations are specified, we have to populate set of subscribed UUID's
-		this.subscribedObjects =
-			subscribedObjects ?? this.populateSubscribedUuid(this.unionOperations);
-
-		// If operations are specified, we have to generate fist geometry manually.
-		unionOperations && this.updateGeometry();
+		this.material = editor.materialManager.defaultMaterial;
+		this.material.increment();
+		this._unionOperations = [];
+		this.subscribedObjects = new CounterMap<string>();
 
 		this.signals.geometryChanged.add(object => this.handleChange(object));
 		this.signals.objectChanged.add(object => this.handleChange(object));
 		this.signals.objectRemoved.add(object => this.handleRemoved(object));
-	}
-
-	private populateSubscribedUuid(operations: OperationTuple[][]): CounterMap<string> {
-		return new CounterMap(
-			operations.flatMap(operationRow => operationRow.map(operation => operation.object.uuid))
-		);
 	}
 
 	get simulationMaterial(): SimulationMaterial {
@@ -84,18 +73,25 @@ export class Zone extends SimulationMesh {
 	}
 
 	set simulationMaterial(value: SimulationMaterial) {
+		this.material.decrement();
 		this.material = value;
+		this.material.increment();
 	}
 
 	clone(recursive: boolean) {
-		const clonedZone: this = new Zone(
-			this.editor,
-			this.name,
-			this.unionOperations,
-			this.subscribedObjects
-		).copy(this, recursive) as this;
+		const clonedZone: this = new Zone(this.editor, this.name).copy(this, recursive) as this;
 
 		return clonedZone;
+	}
+
+	copy(source: this, recursive: boolean): this {
+		super.copy(source, recursive);
+
+		this.simulationMaterial = source.material;
+		this.subscribedObjects = source.subscribedObjects;
+		this.unionOperations = source.unionOperations;
+
+		return this;
 	}
 
 	updateGeometry(): void {
@@ -108,7 +104,7 @@ export class Zone extends SimulationMesh {
 			return result.union(rowResult);
 		}, new CSG());
 
-		this.geometry.dispose();
+		this.geometry?.dispose();
 		this.geometry = CSG.toGeometry(unionsResultBsp, this.matrix);
 		this.geometry.computeBoundingSphere();
 		this.updateMatrixWorld(true);
@@ -124,6 +120,7 @@ export class Zone extends SimulationMesh {
 	}
 
 	updateUnion(unionIndex: number, operations: OperationTuple[]): void {
+		console.log('updateUnion', unionIndex, operations);
 		this.unionOperations[unionIndex].forEach(e => {
 			this.subscribedObjects.decrement(e.object.uuid);
 		});
@@ -207,56 +204,38 @@ export class Zone extends SimulationMesh {
 		const unionOperations = this.unionOperations.map(union =>
 			union.map(operation => operation.toJSON())
 		);
-		const { name: materialName, simulationData: materialData } = this.getSimulationMaterial();
+		const { uuid: materialUuid } = this.simulationMaterial;
 		const subscribedObjects = this.subscribedObjects.toJSON();
 		const { uuid, name } = this;
 		return {
 			uuid,
 			name,
-			materialName,
-			materialData,
+			materialUuid,
 			unionOperations,
 			subscribedObjects
 		};
 	}
 
 	fromJSON(editor: Editor, data: ZoneJSON): Zone {
+		this.uuid = data.uuid;
+		this.name = data.name;
+
 		this.unionOperations = data.unionOperations.map(union =>
 			union.map(operation => OperationTuple.fromJSON(editor, operation))
 		);
 
 		this.subscribedObjects = new CounterMap().fromJSON(data.subscribedObjects);
 
-		this.setSimulationMaterial(data.materialName);
+		this.simulationMaterial =
+			this.editor.materialManager.getMaterialByUuid(data.materialUuid) ??
+			this.editor.materialManager.defaultMaterial;
 
 		return this;
 	}
 
-	setSimulationMaterial(materialName: string) {
-		this.material = this.editor.materialsManager.materials[materialName ?? 'WATER, LIQUID'];
-	}
-
-	getSimulationMaterial(): SimulationMaterial {
-		return this.material as SimulationMaterial;
-	}
-
 	static fromJSON(editor: Editor, data: ZoneJSON) {
-		const unionOperations = data.unionOperations.map(union =>
-			union.map(operation => OperationTuple.fromJSON(editor, operation))
-		);
-
-		const subscribedObjects = new CounterMap().fromJSON(data.subscribedObjects);
-
-		const zone = new Zone(
-			editor,
-			data.name,
-			unionOperations,
-			subscribedObjects,
-			data.uuid,
-			data.materialName
-		);
-
-		return zone;
+		const zone = new Zone(editor);
+		return zone.fromJSON(editor, data);
 	}
 }
 

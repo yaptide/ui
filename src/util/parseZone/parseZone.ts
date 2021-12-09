@@ -1,4 +1,5 @@
 import { AlgebraRow } from '../../ThreeEditor/components/ZoneManagerPanel/BooleanAlgebraRow';
+import SimulationMaterial from '../../ThreeEditor/util/Materials/SimulationMaterial';
 import ZoneConstructorController from './ZoneConstructorController';
 
 function parseRow(zoneOperationRow: AlgebraRow) {
@@ -20,14 +21,11 @@ function parseRow(zoneOperationRow: AlgebraRow) {
 	return '';
 }
 
-export function parseZone(
-	zoneOperationRows: AlgebraRow[],
-	materialData?: { name: string; id: string }
-): void {
-	console.log(zoneOperationRows);
+export function parseZone(rows: AlgebraRow[], { name, icru }: SimulationMaterial): void {
+	console.log(rows);
 	let result: string = '';
-	zoneOperationRows.forEach(el => {
+	rows.forEach(el => {
 		result = result.concat(parseRow(el) + ' OR');
 	});
-	console.log(result.slice(0, -3), materialData);
+	console.log(result.slice(0, -3), name, icru);
 }

@@ -1,3 +1,5 @@
+import { Editor } from '../../js/Editor';
+
 export class CounterMap<K extends string> {
 	private map: Map<K, number> = new Map();
 
@@ -17,7 +19,7 @@ export class CounterMap<K extends string> {
 
 		if (!lastCount) throw Error(`No item to decrement for key: ${key}`);
 		const newValue = lastCount - 1;
-		this.map.set(key, newValue);
+		newValue > 0 ? this.map.set(key, newValue) : this.map.delete(key);
 		return newValue;
 	}
 
@@ -38,5 +40,8 @@ export class CounterMap<K extends string> {
 			this.map.set(key, json[key]);
 		}
 		return this;
+	}
+	clear() {
+		this.map.clear();
 	}
 }
