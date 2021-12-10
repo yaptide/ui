@@ -1,3 +1,4 @@
+import { createTheme, ThemeProvider, useMediaQuery } from '@mui/material';
 import React from 'react';
 import { COMMON_MATERIAL_ICRUS } from '../../util/Materials/materials';
 import SimulationMaterial from '../../util/Materials/SimulationMaterial';
@@ -23,16 +24,29 @@ export function MaterialSelect(props: MaterialSelectProps) {
 	const getOptionLabel = ({ icru, name }: SimulationMaterial) => {
 		return `[${icru}] ${name}`;
 	};
+	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+	const theme = React.useMemo(
+		() =>
+			createTheme({
+				palette: {
+					mode: prefersDarkMode ? 'dark' : 'light'
+				}
+			}),
+		[prefersDarkMode]
+	);
 
 	return (
-		<AutoCompleteSelect
-			onChange={(event, newValue) => {
-				if (newValue !== null) props.onChange?.call(null, event, newValue.icru);
-			}}
-			value={props.materials[props.value ?? '']}
-			options={Object.values(props.materials).sort(commonCompare)}
-			groupBy={option => (isCommonMaterial(option) ? 'Common' : 'Other')}
-			getOptionLabel={getOptionLabel}
-		/>
+		<ThemeProvider theme={theme}>
+			<AutoCompleteSelect
+				onChange={(event, newValue) => {
+					if (newValue !== null) props.onChange?.call(null, event, newValue.icru);
+				}}
+				value={props.materials[props.value ?? '']}
+				options={Object.values(props.materials).sort(commonCompare)}
+				groupBy={option => (isCommonMaterial(option) ? 'Common' : 'Other')}
+				getOptionLabel={getOptionLabel}
+			/>
+		</ThemeProvider>
 	);
 }

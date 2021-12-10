@@ -42,6 +42,9 @@ export class ObjectSettings extends ObjectAbstract {
 		});
 		[this.primariesRow, this.primaries, this.primariesMultiplier] = createRowConditionalNumber({
 			text: 'Primaries',
+			precision: 0,
+			step: 1,
+			min: 0,
 			update: this.update.bind(this)
 		});
 		[this.addQuantityRow, this.addQuantity] = createFullwidthButton({
@@ -54,7 +57,7 @@ export class ObjectSettings extends ObjectAbstract {
 	setObject(object: ScoringOutput): void {
 		super.setObject(object);
 		if (!object) return;
-		const { trace, primaries } = object;
+		const { trace, primaries, children: quantities } = object;
 		this.object = object;
 
 		this.geometry.setOptions(this.editor.detectManager.getDetectOptions());
@@ -73,7 +76,8 @@ export class ObjectSettings extends ObjectAbstract {
 			showUIElement(this.primariesRow);
 			showUIElement(this.addQuantityRow);
 			hideUIElement(this.traceFilter);
-			if (!primaries[0]) hideUIElement(this.primariesMultiplier);
+			if (quantities.length === 0) hideUIElement(this.primariesRow);
+			else if (!primaries[0]) hideUIElement(this.primariesMultiplier);
 			else if (!this.trace.getValue()) showUIElement(this.primariesMultiplier);
 		}
 		this.primaries.setValue(primaries[0]);

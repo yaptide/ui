@@ -127,7 +127,6 @@ export class UIScientificNumber extends UINumber {
 	 * @returns
 	 */
 	setValue(value) {
-		console.warn(value, typeof value);
 		if (value === undefined) return this;
 		if (!this.scientificNotation) {
 			super.setValue(value);

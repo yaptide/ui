@@ -29,9 +29,11 @@ export function createRowCheckbox(params) {
  *      text?: string,
  *      value?: [boolean,number],
  *      update?: ()=> void,
+ *		precision?: number
  * 		min?: number,
  * 		max?: number,
  * 		step?: number,
+ *
  * 	}} params
  * @return {[UIRow, UICheckbox, UINumber, UIText]}
  */
