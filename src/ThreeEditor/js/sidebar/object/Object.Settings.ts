@@ -61,11 +61,14 @@ export class ObjectSettings extends ObjectAbstract {
 		this.geometry.setValue(object.geometry?.uuid);
 
 		if (trace[0]) {
+			const options = this.editor.detectManager.getFilterOptions();
 			hideUIElement(this.primariesRow);
 			hideUIElement(this.addQuantityRow);
-			showUIElement(this.traceFilter);
-			this.traceFilter.setOptions(this.editor.detectManager.getFilterOptions());
-			this.traceFilter.setValue(trace[1]);
+			if (Object.keys(options).length > 0) {
+				showUIElement(this.traceFilter);
+				this.traceFilter.setOptions(options);
+				this.traceFilter.setValue(trace[1]);
+			} else hideUIElement(this.traceFilter);
 		} else {
 			showUIElement(this.primariesRow);
 			showUIElement(this.addQuantityRow);

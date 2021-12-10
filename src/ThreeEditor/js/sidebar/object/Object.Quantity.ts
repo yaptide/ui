@@ -71,12 +71,17 @@ export class ObjectQuantity extends ObjectAbstract {
 		else hideUIElement(this.mediumRow);
 		this.medium.setValue(medium ?? Scoring.MEDIUM_KEYWORD_OPTIONS.WATER);
 
-		this.filterCheckbox.setValue(hasFilter);
-		this.filter.setOptions(this.editor.detectManager.getFilterOptions());
-		if (hasFilter) {
-			showUIElement(this.filter);
+		const options = this.editor.detectManager.getFilterOptions();
+		if (Object.keys(options).length > 0) {
+			showUIElement(this.filterRow);
+			this.filterCheckbox.setValue(hasFilter);
+			this.filter.setOptions(options);
 			this.filter.setValue(filter?.uuid);
-		} else hideUIElement(this.filter);
+			if (hasFilter) {
+				showUIElement(this.filter);
+				this.filter.setValue(filter?.uuid);
+			} else hideUIElement(this.filter);
+		} else hideUIElement(this.filterRow);
 
 		if (hasRescale) {
 			showUIElement(this.rescale);
