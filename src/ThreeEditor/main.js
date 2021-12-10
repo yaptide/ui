@@ -85,20 +85,37 @@ export function initEditor(container) {
 				}, 100);
 			}, 1000);
 		}
+		const stateChangedSignals = [
+			signals.geometryChanged,
+			signals.objectAdded,
+			signals.objectChanged,
+			signals.objectRemoved,
+			signals.materialChanged,
+			signals.sceneBackgroundChanged,
+			signals.sceneEnvironmentChanged,
+			signals.sceneGraphChanged,
+			signals.historyChanged,
+			signals.detectFilterChanged,
+			signals.scoringQuantityChanged,
+			signals.CSGManagerStateChanged
+		];
+		stateChangedSignals.forEach(signal => signal.add(saveState));
 
-		signals.geometryChanged.add(saveState);
-		signals.objectAdded.add(saveState);
-		signals.objectChanged.add(saveState);
-		signals.objectRemoved.add(saveState);
-		signals.materialChanged.add(saveState);
-		signals.sceneBackgroundChanged.add(saveState);
-		signals.sceneEnvironmentChanged.add(saveState);
-		signals.sceneGraphChanged.add(saveState);
-		signals.scriptChanged.add(saveState);
-		signals.historyChanged.add(saveState);
+		// signals.geometryChanged.add(saveState);
+		// signals.objectAdded.add(saveState);
+		// signals.objectChanged.add(saveState);
+		// signals.objectRemoved.add(saveState);
+		// signals.materialChanged.add(saveState);
+		// signals.sceneBackgroundChanged.add(saveState);
+		// signals.sceneEnvironmentChanged.add(saveState);
+		// signals.sceneGraphChanged.add(saveState);
+		// signals.scriptChanged.add(saveState);
+		// signals.historyChanged.add(saveState);
+		// signals.detectFilterChanged.add(saveState);
+		// signals.scoringQuantityChanged.add(saveState);
 
-		//YAPTIDE signals
-		signals.CSGManagerStateChanged.add(saveState);
+		// //YAPTIDE signals
+		// signals.CSGManagerStateChanged.add(saveState);
 	});
 
 	//

@@ -24,7 +24,6 @@ export const DETECTOR_KEYWORD_DESCRIPTION = {
 export type DETECTOR_KEYWORD = keyof typeof DETECTOR_KEYWORD_DESCRIPTION;
 
 export const DETECTOR_MODIFIERS_DESCRIPTION = {
-	Rescale: 'Rescale the quantity by a factor',
 	ANGLE: 'Differential in angle [deg]',
 	DEDX: 'Differential in unrestricted electronic stopping power [MeV/cm]',
 	E: 'Differential in kinetic energy [MeV]',
@@ -38,12 +37,40 @@ export const DETECTOR_MODIFIERS_DESCRIPTION = {
 	Zeff2Beta2: 'Differential in [Zeff²/beta²]'
 } as const;
 
+export function getModifierDescription(modifier: DETECTOR_MODIFIERS): string {
+	return DETECTOR_MODIFIERS_DESCRIPTION[modifier];
+}
+
+export const MEDIUM_KEYWORDS = {
+	A150: 'Tissue-equivalent A-150 plastic.',
+	AIR: 'Air, sea-level dry.',
+	BONE: 'Bone tissue.',
+	Muscule: 'Muscule tissue.',
+	TE_Methane: 'Tissue-equivalent gas, methane based.',
+	TE_Propane: 'Tissue-equivalent gas, propane based.',
+	WATER: 'Water, sea-level dry.'
+};
+
 export type DETECTOR_MODIFIERS = keyof typeof DETECTOR_MODIFIERS_DESCRIPTION;
 
-export const DETECTOR_KEYWORD_OPTIONS = Object.keys(DETECTOR_MODIFIERS_DESCRIPTION).reduce(
+export type DETECTOR_KEYWORDS = keyof typeof DETECTOR_KEYWORD_DESCRIPTION;
+
+export const DETECTOR_MODIFIERS_OPTIONS = Object.keys(DETECTOR_MODIFIERS_DESCRIPTION).reduce(
 	(acc, key) => {
-		acc[key] = key;
-		return acc;
+		return { ...acc, [key]: key };
 	},
-	{} as Record<string, string>
+	{} as Record<DETECTOR_MODIFIERS, DETECTOR_MODIFIERS>
 );
+
+export const DETECTOR_KEYWORD_OPTIONS = Object.keys(DETECTOR_KEYWORD_DESCRIPTION).reduce(
+	(acc, key) => {
+		return { ...acc, [key]: key };
+	},
+	{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
+);
+
+export type MEDIUM = keyof typeof MEDIUM_KEYWORDS;
+
+export const MEDIUM_KEYWORD_OPTIONS = Object.keys(MEDIUM_KEYWORDS).reduce((acc, key) => {
+	return { ...acc, [key]: key };
+}, {} as Record<MEDIUM, MEDIUM>);

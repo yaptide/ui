@@ -1,6 +1,7 @@
-import { UIButton, UINumber, UIRow, UISelect } from '../../js/libs/ui';
+import { UIButton, UINumber, UIRow, UIText, UICheckbox, UISelect, UIDiv } from '../../js/libs/ui';
 import { UIOutliner } from '../../js/libs/ui.three';
 import * as Rule from '../Detect/DetectRuleTypes';
+import * as Scoring from '../Scoring/ScoringOutputTypes';
 import { FONT_SIZE } from './Uis';
 
 /**
@@ -22,8 +23,19 @@ export function createModifiersOutliner(editor, params) {
 	outliner.setId('modifiers-outliner');
 	outliner.setHeight('120px');
 	outliner._setOptions = outliner.setOptions;
-	outliner.setOptions = function (rules) {
-		outliner._setOptions(rules.map(buildOption));
+	outliner.setOptions = function (modifier) {
+		outliner._setOptions(
+			modifier.map(modifier => {
+				const option = document.createElement('div');
+				option.style.padding = '6px';
+
+				option.draggable = false;
+				option.innerHTML = Scoring.getModifierDescription(modifier.diffType);
+				option.value = modifier.uuid;
+
+				return option;
+			})
+		);
 	};
 	outliner.onChange(update);
 	return [outliner];
@@ -43,36 +55,54 @@ export function createRulesOutliner(editor, params) {
 	outliner.setHeight('120px');
 	outliner._setOptions = outliner.setOptions;
 	outliner.setOptions = function (rules) {
-		outliner._setOptions(rules.map(buildOption));
+		outliner._setOptions(
+			rules.map(rule => {
+				const option = document.createElement('div');
+				option.style.padding = '6px';
+
+				option.draggable = false;
+				option.innerHTML = Rule.getDescription(rule.keyword);
+				option.value = rule.uuid;
+
+				return option;
+			})
+		);
 	};
 	outliner.onChange(update);
 	return [outliner];
 }
 
 /**
- *
- * @param {FilterRule} rule
- * @returns {string}
+ * @param {Editor} editor
+ * @param {{
+ *      update: ()=> void,
+ * 		options: Object,
+ * 		delete: ()=> void
+ *      }} params
+ * @return {[UIRow, UISelect, UINumber, UINumber, UINumber, UICheckbox, UIButton]}
  */
-function buildHTML(rule) {
-	const description = Rule.getDescription(rule.keyword);
-	return `${description}`;
-}
-
-/**
- *
- * @param {FilterRule} rule
- * @returns {HTMLDivElement}
- */
-function buildOption(rule) {
-	const option = document.createElement('div');
-	option.style.padding = '6px';
-
-	option.draggable = false;
-	option.innerHTML = buildHTML(rule);
-	option.value = rule.uuid;
-
-	return option;
+export function createDifferentialConfigurationRow(params) {
+	const { update, delete: deleteRule, options } = params;
+	const row = new UIRow();
+	row.dom.style.gridTemplateColumns = '2fr repeat(4, 3fr) 25px';
+	row.dom.style.display = 'grid';
+	const keywordSelect = new UISelect().setFontSize(FONT_SIZE).onChange(update);
+	keywordSelect.setOptions(options);
+	const lowerLimit = new UINumber().setPadding('2px 4px').onChange(update).setWidth('100%');
+	const upperLimit = new UINumber().setPadding('2px 4px').onChange(update).setWidth('100%');
+	const binsNumber = new UINumber()
+		.setPadding('2px 4px')
+		.onChange(update)
+		.setWidth('100%')
+		.setRange(1, 50000)
+		.setPrecision(0);
+	const logs = new UIDiv().setPadding('2px 4px').setWidth('100%').setFontSize(FONT_SIZE);
+	const logsLabel = new UIText('log');
+	const isLog = new UICheckbox().onChange(update);
+	logs.add(logsLabel, isLog);
+	const deleteButton = new UIButton('X').onClick(deleteRule);
+	row.add(keywordSelect, lowerLimit, upperLimit, binsNumber, logs, deleteButton);
+	return [row, keywordSelect, lowerLimit, upperLimit, binsNumber, isLog, deleteButton];
 }
 
 /**

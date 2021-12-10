@@ -4,7 +4,6 @@ import { Color, LineBasicMaterial, MeshBasicMaterial, Object3D, Vector3 } from '
 import { debounce } from 'throttle-debounce';
 import { Editor } from '../js/Editor';
 import { getGeometryParameters, PossibleGeometryType } from './AdditionalUserData';
-import { DEFAULT_MATERIAL_ICRU } from './Materials/materials';
 import SimulationMaterial from './Materials/SimulationMaterial';
 import { SimulationObject3D } from './SimulationBase/SimulationMesh';
 

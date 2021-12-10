@@ -75,7 +75,7 @@ const getAdditionalInfo = object => {
 			let filter = object.filter;
 			return ` [${object.id}] ${
 				filter
-					? `<span class="type Filter Material"></span> <span class="type-value">${escapeHTML(
+					? `<span class="type Filter Modifier"></span> <span class="type-value">${escapeHTML(
 							filter.name
 					  )} [${filter.id}]`
 					: ''

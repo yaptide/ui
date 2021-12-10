@@ -191,12 +191,32 @@ div:is(#outliner, #filter-outliner) .Material:after {
 }
 
 div:is(#outliner, #filter-outliner) .Particle:after {
-	content: '▼';
+	content: '☄';
 }
 
-div:is(#outliner, #filter-outliner) .Custom:after {
+div:is(#outliner, #filter-outliner) .Medium:after {
 	content: '✪';
 }
+div:is(#outliner, #filter-outliner) .Modifier:after {
+	content: '▧';
+}
+
+/*
+* content: '◓';
+* content: '◑';
+* content: '◒';
+* content: '◐';
+* content: '☎';
+* content: '✎';
+* content: '✏';
+* content: '✐';
+* content: '✑';
+* content: '✒';
+* content: '✓';
+* content: '✔';
+* content: '✕';
+* content: '✖';
+*/
 
 .type-value {
 	overflow: hidden;

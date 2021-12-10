@@ -8,6 +8,5 @@ export * from './Object.Info';
 export * from './Object.Material';
 export * from './Object.Placement';
 export * from './Object.Quantity';
-export * from './Object.Scoring';
 export * from './Object.Settings';
 export * from './Object.ZoneCalculate';

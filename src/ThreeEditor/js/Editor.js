@@ -74,6 +74,8 @@ export function Editor(container) {
 		detectFilterRemoved: new Signal(),
 		detectFilterChanged: new Signal(),
 
+		scoringQuantityChanged: new Signal(),
+
 		cameraAdded: new Signal(),
 		cameraRemoved: new Signal(),
 
