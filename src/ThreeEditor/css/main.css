@@ -190,6 +190,33 @@ div:is(#outliner, #filter-outliner) .Material:after {
 	content: '▲';
 }
 
+div:is(#outliner, #filter-outliner) .Particle:after {
+	content: '☄';
+	line-height: 0px;
+}
+
+div:is(#outliner, #filter-outliner) .Medium:after {
+	content: '✪';
+}
+div:is(#outliner, #filter-outliner) .Modifier:after {
+	content: '▧';
+}
+
+/* Possible icons for outliner
+* content: '◓';
+* content: '◑';
+* content: '◒';
+* content: '◐';
+* content: '☎';
+* content: '✎';
+* content: '✏';
+* content: '✐';
+* content: '✓';
+* content: '✔';
+* content: '✕';
+* content: '✖';
+*/
+
 .type-value {
 	overflow: hidden;
 }
@@ -200,16 +227,16 @@ div:is(#outliner, #filter-outliner) .Material:after {
 
 /* */
 
-div:is(#outliner, #filter-outliner) .FigureGroup {
-	color: #7474eb;
+div:is(#outliner, #filter-outliner) .Geometry {
+	color: #d45151;
+}
+
+div:is(#outliner, #filter-outliner) .Material {
+	color: #d45151;
 }
 
 div:is(#outliner, #filter-outliner) .Figure {
-	color: #7474eb;
-}
-
-div:is(#outliner, #filter-outliner) .ZoneGroup {
-	color: #4ed14e;
+	color: #5481e2;
 }
 
 div:is(#outliner, #filter-outliner) .Zone {
@@ -220,28 +247,16 @@ div:is(#outliner, #filter-outliner) .Beam {
 	color: #dbdb55;
 }
 
-div:is(#outliner, #filter-outliner) .DetectGroup {
-	color: #56ced6;
-}
-
 div:is(#outliner, #filter-outliner) .Detect {
 	color: #56ced6;
 }
 
-div:is(#outliner, #filter-outliner) .FilterGroup {
-	color: #8651db;
-}
-
 div:is(#outliner, #filter-outliner) .Filter {
-	color: #8651db;
+	color: #a244d8;
 }
 
-div:is(#outliner, #filter-outliner) .Geometry {
-	color: #d45151;
-}
-
-div:is(#outliner, #filter-outliner) .Material {
-	color: #d45151;
+div:is(#outliner, #filter-outliner) .Output {
+	color: #69402f;
 }
 
 /*  */
@@ -257,8 +272,13 @@ button {
 	cursor: pointer;
 	outline: none;
 }
+button[disabled] {
+	color: #aaa;
+	background-color: #ddd;
+	cursor: default;
+}
 
-button:hover {
+button:hover:not([disabled]) {
 	background-color: #fff;
 }
 
@@ -576,7 +596,13 @@ select:hover {
 		background-color: #222;
 	}
 
-	button:hover {
+	button[disabled] {
+		color: #444;
+		background-color: #222;
+		cursor: default;
+	}
+
+	button:hover:not([disabled]) {
 		color: #ccc;
 		background-color: #444;
 	}

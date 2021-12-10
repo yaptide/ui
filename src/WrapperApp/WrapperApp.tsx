@@ -10,6 +10,7 @@ import { DEMO_MODE } from '../util/Config';
 import { TabPanel } from './components/TabPanel';
 import ResultsPanel from './components/ResultsPanel';
 import { useAuth } from '../services/AuthService';
+import { Theme } from '@mui/material/styles/createTheme';
 
 function WrapperApp() {
 	const { editorRef } = useStore();

@@ -29,8 +29,12 @@ export class CounterMap<K extends string> {
 		return (this.map.get(key) ?? 0) > 0;
 	}
 
-	toJSON(): { [k in K]: number } {
-		return Object.fromEntries(this.map) as { [k in K]: number };
+	toJSON(): Record<string, number> {
+		const json: Record<string, number> = {};
+		this.map.forEach((value, key) => {
+			if (value > 0) json[key] = value;
+		});
+		return json;
 	}
 
 	fromJSON(json: { [k in K]: number }) {
@@ -38,5 +42,8 @@ export class CounterMap<K extends string> {
 			this.map.set(key, json[key]);
 		}
 		return this;
+	}
+	clear() {
+		this.map.clear();
 	}
 }

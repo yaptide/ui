@@ -43,7 +43,6 @@ export class DetectFilter extends SimulationObject3D {
 		this.parent = null;
 		rules.forEach(rule => this.addRule(rule));
 		editor.signals.objectSelected.add(this.onObjectSelected.bind(this));
-		editor.signals.dataObjectSelected.add(this.onObjectSelected.bind(this));
 	}
 
 	addRule(rule: FilterRule): void {

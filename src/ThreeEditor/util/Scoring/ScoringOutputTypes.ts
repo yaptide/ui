@@ -1,0 +1,76 @@
+export const DETECTOR_KEYWORD_DESCRIPTION = {
+	'1MeVNEq':
+		'1-MeV neutron equivalent fluence [cm−2]. Only scored for neutrons, protons and pions.Multiply with 2.037e-3 to get DNIEL in [MeV / g]',
+	'Alanine':
+		'Alanine quenching model for ions, scores Dose * RE(z,E). Based on Bassler et al. NIMB;2008;266(6);929-936',
+	'AvgBeta': 'Track-averaged β, where β = v/c',
+	'AvgEnergy': 'Average kinetic energy of the particle in [MeV/nucleon]',
+	'Dose': 'Dose [MeV/g]',
+	'DoseEqv': 'Dose-Equivalent (see notes below) [Sv]',
+	'DDD': 'as Dose, but specially for TRiP98 depth-dose kernel file generation',
+	'DoseGy': 'Dose [Gy]',
+	'dLET': 'Dose-averaged LET [MeV/cm]',
+	'Energy': 'Total amount of energy deposited [MeV]',
+	'EqvDose': 'Equivalent dose (see notes below) [Sv]',
+	'Fluence': 'Fluence [/cm2]',
+	'MATERIAL': 'Maps material ID as assigned in geo.dat. Useful for debugging geometries.',
+	'NEqvDose': 'Equivalent dose from neutron kerma (see notes below) [Sv]',
+	'NKERMA': 'Neutron Kerma in [Gy]',
+	'ZONE': 'Maps zone number. Useful for debugging geometries',
+	'Rho': 'Maps material density as assigned in geo.dat and mat.dat [g/cm³]. Useful for debugging geometries.',
+	'tLET': 'Track-averaged LET [MeV/cm]'
+} as const;
+
+export type DETECTOR_KEYWORD = keyof typeof DETECTOR_KEYWORD_DESCRIPTION;
+
+export const DETECTOR_MODIFIERS_DESCRIPTION = {
+	ANGLE: 'Differential in angle [deg]',
+	DEDX: 'Differential in unrestricted electronic stopping power [MeV/cm]',
+	E: 'Differential in kinetic energy [MeV]',
+	EAMU: 'Differential in kinetic energy per amu [MeV/amu]',
+	ENUC: 'Differential in kinetic energy per nucleon [MeV/n]',
+	MDEDX: 'Differential in electronic mass stopping power [MeV cm²/g]',
+	TL: 'Differential in track length [cm]',
+	Z: 'Differential in projectile change',
+	Zeff: 'Differential in effective projectile charge [Zeff]',
+	Z2Beta2: 'Differential in [Z²/beta²]',
+	Zeff2Beta2: 'Differential in [Zeff²/beta²]'
+} as const;
+
+export function getModifierDescription(modifier: DETECTOR_MODIFIERS): string {
+	return DETECTOR_MODIFIERS_DESCRIPTION[modifier];
+}
+
+export const MEDIUM_KEYWORDS = {
+	A150: 'Tissue-equivalent A-150 plastic.',
+	AIR: 'Air, sea-level dry.',
+	BONE: 'Bone tissue.',
+	Muscule: 'Muscule tissue.',
+	TE_Methane: 'Tissue-equivalent gas, methane based.',
+	TE_Propane: 'Tissue-equivalent gas, propane based.',
+	WATER: 'Water, sea-level dry.'
+};
+
+export type DETECTOR_MODIFIERS = keyof typeof DETECTOR_MODIFIERS_DESCRIPTION;
+
+export type DETECTOR_KEYWORDS = keyof typeof DETECTOR_KEYWORD_DESCRIPTION;
+
+export const DETECTOR_MODIFIERS_OPTIONS = Object.keys(DETECTOR_MODIFIERS_DESCRIPTION).reduce(
+	(acc, key) => {
+		return { ...acc, [key]: key };
+	},
+	{} as Record<DETECTOR_MODIFIERS, DETECTOR_MODIFIERS>
+);
+
+export const DETECTOR_KEYWORD_OPTIONS = Object.keys(DETECTOR_KEYWORD_DESCRIPTION).reduce(
+	(acc, key) => {
+		return { ...acc, [key]: key };
+	},
+	{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
+);
+
+export type MEDIUM = keyof typeof MEDIUM_KEYWORDS;
+
+export const MEDIUM_KEYWORD_OPTIONS = Object.keys(MEDIUM_KEYWORDS).reduce((acc, key) => {
+	return { ...acc, [key]: key };
+}, {} as Record<MEDIUM, MEDIUM>);

@@ -1,11 +1,12 @@
 import { Beam } from '../../../util/Beam';
-import { isZone } from '../../../util/CSG/CSGZone';
+import { isZone, Zone } from '../../../util/CSG/CSGZone';
 import { SimulationMesh, SimulationPoints } from '../../../util/SimulationBase/SimulationMesh';
 import {
 	createFullwidthButton,
 	createMaterialSelect,
 	createRowCheckbox,
 	createRowColor,
+	createRowConditionalNumber,
 	createRowParamNumber,
 	createRowText,
 	hideUIElement,
@@ -39,7 +40,7 @@ export class ObjectMaterial extends ObjectAbstract {
 
 	typeSelectRow: UIRow;
 	typeSelect: UISelect;
-	renderTypeSelect: (value: string) => void;
+	renderTypeSelect: (value: number) => void;
 
 	colorRow: UIRow;
 	color: UIColor;
@@ -49,8 +50,6 @@ export class ObjectMaterial extends ObjectAbstract {
 
 	opacityRow: UIRow;
 	opacity: UINumber;
-
-	transparentRow: UIRow;
 	transparent: UICheckbox;
 
 	exportMaterialsRow: UIRow;
@@ -61,7 +60,7 @@ export class ObjectMaterial extends ObjectAbstract {
 
 		[this.typeRow, this.type] = createRowText({ text: 'Material Type' });
 		[this.typeSelectRow, this.typeSelect, this.renderTypeSelect] = createMaterialSelect(
-			editor.materialsManager,
+			editor.materialManager,
 			this.update.bind(this)
 		);
 
@@ -83,16 +82,11 @@ export class ObjectMaterial extends ObjectAbstract {
 		);
 
 		// opacity
-		[this.opacityRow, this.opacity] = createRowParamNumber({
+		[this.opacityRow, this.transparent, this.opacity] = createRowConditionalNumber({
 			text: 'Opacity',
 			min: 0,
 			max: 1,
-			update: this.update.bind(this)
-		});
-
-		// transparent
-		[this.transparentRow, this.transparent] = createRowCheckbox({
-			text: 'Transparent',
+			step: 0.05,
 			update: this.update.bind(this)
 		});
 
@@ -112,7 +106,6 @@ export class ObjectMaterial extends ObjectAbstract {
 			 * this.blendingRow,
 			 */
 			this.opacityRow,
-			this.transparentRow,
 			this.exportMaterialsRow
 		);
 	}
@@ -122,25 +115,27 @@ export class ObjectMaterial extends ObjectAbstract {
 		if (!object) return;
 
 		this.object = object;
+		const { color, opacity, transparent, type } = object.material;
 		hideUIElement(this.typeRow);
 		hideUIElement(this.typeSelectRow);
 		hideUIElement(this.opacityRow);
-		hideUIElement(this.transparentRow);
 		hideUIElement(this.exportMaterialsRow);
-		this.color.setHexValue(object.material.color.getHexString());
+		this.color.setHexValue(color.getHexString());
 		if (isWorldZone(object) || isZone(object)) {
+			const { icru } = object.simulationMaterial;
 			showUIElement(this.typeSelectRow);
 			if (isZone(object)) {
 				showUIElement(this.opacityRow);
-				showUIElement(this.transparentRow);
+				if (transparent) showUIElement(this.opacity);
+				else hideUIElement(this.opacity);
 				showUIElement(this.exportMaterialsRow);
-				this.opacity.setValue(object.material.opacity);
-				this.transparent.setValue(object.material.transparent);
+				this.opacity.setValue(opacity);
+				this.transparent.setValue(transparent);
 			}
-			this.typeSelect.setValue(object.simulationMaterial.name);
+			this.typeSelect.setValue(icru);
 		} else {
 			showUIElement(this.typeRow);
-			this.type.setValue(this.object.material.type);
+			this.type.setValue(type);
 		}
 		this.render();
 	}
@@ -148,19 +143,21 @@ export class ObjectMaterial extends ObjectAbstract {
 	update(): void {
 		const { editor, object } = this;
 		if (!object) return;
+		console.log(
+			(object as Zone)?.simulationMaterial.icru,
+			parseInt(this.typeSelect.getValue())
+		);
 		if (
 			(isWorldZone(object) || isZone(object)) &&
-			object.simulationMaterial.name !== this.typeSelect.getValue()
+			object.simulationMaterial.icru !== parseInt(this.typeSelect.getValue())
 		)
 			editor.execute(new SetZoneMaterialCommand(editor, object, this.typeSelect.getValue()));
+		console.log(object.material.color.getHex(), this.color.getHexValue());
 		if (object.material.color.getHex() !== this.color.getHexValue())
 			editor.execute(
 				new SetMaterialColorCommand(editor, object, 'color', this.color.getHexValue())
 			);
-		if (isZone(object) && object.material.opacity !== this.opacity.getValue())
-			editor.execute(
-				new SetMaterialValueCommand(editor, object, 'opacity', this.opacity.getValue())
-			);
+		console.log(object.material.transparent, this.transparent.getValue());
 		if (isZone(object) && object.material.transparent !== this.transparent.getValue())
 			editor.execute(
 				new SetMaterialValueCommand(
@@ -170,13 +167,18 @@ export class ObjectMaterial extends ObjectAbstract {
 					this.transparent.getValue()
 				)
 			);
+		console.log(isZone(object) && object.material.opacity, this.opacity.getValue());
+		if (isZone(object) && object.material.opacity !== this.opacity.getValue())
+			editor.execute(
+				new SetMaterialValueCommand(editor, object, 'opacity', this.opacity.getValue())
+			);
 	}
 
 	render(): void {
 		if (!isWorldZone(this.object) && !isZone(this.object)) return;
-		this.renderTypeSelect(this.object.simulationMaterial.name);
+		this.renderTypeSelect(this.object.simulationMaterial.icru);
 	}
 	materialConsole(): void {
-		console.log(this.editor.materialsManager.toJSON());
+		console.log(this.editor.materialManager.toJSON().materials);
 	}
 }

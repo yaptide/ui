@@ -1,19 +1,128 @@
 import * as THREE from 'three';
+import { Editor } from '../../js/Editor';
+import { DEFAULT_MATERIAL_ICRU, DEFAULT_MATERIAL_NAME } from './materials';
 
+export type RenderProps = Omit<SimulationMaterialJSON, 'uuid' | 'name' | 'icru'>;
+
+export type SimulationMaterialJSON = {
+	uuid: string;
+	name: string;
+	icru: number;
+	transparent?: boolean;
+	opacity?: number;
+	color?: number;
+	wireframe?: boolean;
+	wireframeLinewidth?: number;
+};
 export default class SimulationMaterial extends THREE.MeshPhongMaterial {
-	simulationData: { id: string; name: string };
+	private proxy: SimulationMaterial;
+	private editor: Editor;
+	private colorProxy: THREE.Color;
+	icru: number;
+	renderProps: RenderProps;
+	defaultProps: RenderProps;
 	readonly isSimulationMaterial: true = true;
-	constructor(data: { id: string; name: string }, args: Record<string, unknown>) {
+	private overrideHandler = {
+		set: (target: THREE.MeshPhongMaterial, key: keyof RenderProps, value: unknown) => {
+			const result = Reflect.set(target, key, value);
+			if (
+				['transparent', 'opacity', 'color', 'wireframe', 'wireframeLinewidth'].includes(key)
+			)
+				if (this.defaultProps[key] !== value) Reflect.set(this.renderProps, key, value);
+				else delete this.renderProps[key];
+
+			return result;
+		},
+		get: (target: THREE.MeshPhongMaterial, key: keyof RenderProps) => {
+			const result = Reflect.get(target, key);
+			if (key === 'color') return this.colorProxy;
+
+			return result;
+		}
+	};
+	private materialColorHandler = {
+		get: (target: THREE.Color, prop: keyof THREE.Color) => {
+			const result = Reflect.get(target, prop);
+			const setHex = (hex: number) => {
+				if (this.defaultProps.color !== hex) this.renderProps.color = hex;
+				else delete this.renderProps.color;
+				return target.setHex(hex);
+			};
+			if (prop === 'setHex') return setHex.bind(this);
+			return result;
+		}
+	};
+	constructor(
+		editor: Editor,
+		name: string = DEFAULT_MATERIAL_NAME,
+		icru: number = DEFAULT_MATERIAL_ICRU
+	) {
 		super({
-			name: data.name,
+			name,
 			flatShading: true,
 			side: THREE.DoubleSide,
-			transparent: true,
-			color: new THREE.Color(0xff3d3d),
-			...args
+			transparent: false,
+			color: new THREE.Color(0xff3d3d)
 		});
-		this.simulationData = data;
+		this.colorProxy = new Proxy(new THREE.Color(0xff3d3d), this.materialColorHandler);
+		this.editor = editor;
+		this.icru = icru;
+		this.renderProps = {};
+		this.proxy = new Proxy(this, this.overrideHandler);
+		this.defaultProps = {
+			transparent: false,
+			opacity: 1,
+			color: 0xff3d3d,
+			wireframe: false,
+			wireframeLinewidth: 1
+		};
+		return this.proxy;
 	}
+	toJSON(): SimulationMaterialJSON {
+		const { uuid, name, icru, renderProps } = this;
+		return {
+			uuid,
+			name,
+			icru,
+			...renderProps
+		};
+	}
+	static fromJSON(
+		editor: Editor,
+		{ uuid, name, icru, ...renderProps }: SimulationMaterialJSON
+	): SimulationMaterial {
+		const material = new SimulationMaterial(editor, name, icru);
+		material.uuid = uuid;
+		material.renderProps = renderProps;
+		material.applyRenderProps();
+		return material.proxy;
+	}
+	applyRenderProps() {
+		const { color, opacity, transparent, wireframe, wireframeLinewidth } = this.renderProps;
+		if (color) this.colorProxy = new Proxy(new THREE.Color(color), this.materialColorHandler);
+		if (opacity !== undefined) this.opacity = opacity;
+		if (transparent !== undefined) this.transparent = transparent;
+		if (wireframe !== undefined) this.wireframe = wireframe;
+		if (wireframeLinewidth !== undefined) this.wireframeLinewidth = wireframeLinewidth;
+	}
+
+	copy(source: SimulationMaterial): this {
+		const result = super.copy(source);
+		result.renderProps = { ...source.renderProps };
+		return new Proxy(result, this.overrideHandler);
+	}
+
+	clone(): this {
+		const result = this.constructor().copy(this);
+		return new Proxy(result, this.overrideHandler);
+	}
+	increment = (() => this.editor.materialManager.selectedMaterials.increment(this.uuid)).bind(
+		this
+	);
+	decrement = (() => this.editor.materialManager.selectedMaterials.decrement(this.uuid)).bind(
+		this
+	);
 }
+
 export const isSimulationMaterial = (m: unknown): m is SimulationMaterial =>
 	m instanceof SimulationMaterial;

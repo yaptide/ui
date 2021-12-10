@@ -1,6 +1,6 @@
 import { UIBreak, UIPanel } from '../libs/ui.js';
 import { OutlinerManager } from './Sidebar.OutlinerManager';
-import { FigureAddPanel, ZoneAddPanel } from './Sidebar.AddPanel';
+import { SceneAddPanel } from './Sidebar.AddPanel';
 
 function SidebarScene(editor) {
 	const { signals } = editor;
@@ -24,9 +24,7 @@ function SidebarScene(editor) {
 
 	container.add(new UIBreak());
 
-	FigureAddPanel(editor, container);
-
-	ZoneAddPanel(editor, container);
+	SceneAddPanel(editor, container);
 
 	//
 

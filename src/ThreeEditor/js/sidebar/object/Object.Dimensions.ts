@@ -51,8 +51,8 @@ export class ObjectDimensions extends ObjectAbstract {
 	radiusRow2: UIRow;
 	radius2: UINumber;
 
-	zoneIdRow: UIRow;
-	zoneId: UISelect;
+	zoneUuidRow: UIRow;
+	zoneUuid: UISelect;
 
 	constructor(editor: Editor) {
 		super(editor, 'Dimensions');
@@ -92,7 +92,7 @@ export class ObjectDimensions extends ObjectAbstract {
 			unit: `${editor.unit.name}`,
 			min: 0
 		});
-		[this.zoneIdRow, this.zoneId] = createRowSelect({
+		[this.zoneUuidRow, this.zoneUuid] = createRowSelect({
 			update: this.update.bind(this),
 			text: 'Zone ID'
 		});
@@ -105,7 +105,7 @@ export class ObjectDimensions extends ObjectAbstract {
 			this.zLengthRow,
 			this.radiusRow,
 			this.radiusRow2,
-			this.zoneIdRow
+			this.zoneUuidRow
 		);
 	}
 
@@ -194,13 +194,13 @@ export class ObjectDimensions extends ObjectAbstract {
 		}
 	}
 
-	private setZoneId(): void {
+	private setZoneUuid(): void {
 		const { object } = this;
 		if (!object) return;
-		showUIElement(this.zoneIdRow);
-		this.zoneId.setOptions(this.editor.zoneManager.getZoneOptions());
+		showUIElement(this.zoneUuidRow);
+		this.zoneUuid.setOptions(this.editor.zoneManager.getZoneOptions());
 		if (isDetectGeometry(object)) {
-			this.zoneId.setValue(object.geometryData.zoneId);
+			this.zoneUuid.setValue(object.geometryData.zoneUuid);
 		}
 	}
 
@@ -216,8 +216,8 @@ export class ObjectDimensions extends ObjectAbstract {
 		hideUIElement(this.zLengthRow);
 		hideUIElement(this.radiusRow);
 		hideUIElement(this.radiusRow2);
-		hideUIElement(this.zoneIdRow);
-		this.editor.signals.zoneAdded.remove(this.setZoneId);
+		hideUIElement(this.zoneUuidRow);
+		this.editor.signals.zoneAdded.remove(this.setZoneUuid);
 		if (geometryType && geometryType !== 'All')
 			if (['Box', 'Mesh'].includes(geometryType)) {
 				this.setBox(object);
@@ -226,8 +226,8 @@ export class ObjectDimensions extends ObjectAbstract {
 			} else if (['Cyl', 'Cylinder'].includes(geometryType)) {
 				this.setCylinder(object);
 			} else if (geometryType === 'Zone') {
-				this.editor.signals.zoneAdded.add(this.setZoneId.bind(this));
-				this.setZoneId();
+				this.editor.signals.zoneAdded.add(this.setZoneUuid.bind(this));
+				this.setZoneUuid();
 			}
 	}
 
@@ -294,7 +294,7 @@ export class ObjectDimensions extends ObjectAbstract {
 					this.radius2.max = geometryData.radius - 1e-5; // innerRadius cannot be greater than radius
 					break;
 				case 'Zone':
-					geometryData = { zoneId: parseInt(this.zoneId.getValue()) };
+					geometryData = { zoneUuid: this.zoneUuid.getValue() };
 					break;
 				default:
 					break;

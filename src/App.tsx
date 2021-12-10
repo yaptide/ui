@@ -1,13 +1,24 @@
 import { createTheme } from '@mui/material';
-import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
-import './App.css';
+import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import * as React from 'react';
 import { JsRootService } from './JsRoot/JsRootService';
 import { Auth } from './services/AuthService';
 import { Store } from './services/StoreService';
 import WrapperApp from './WrapperApp/WrapperApp';
 
 function App() {
-	const theme = createTheme();
+	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+	const theme = React.useMemo(
+		() =>
+			createTheme({
+				palette: {
+					mode: prefersDarkMode ? 'dark' : 'light'
+				}
+			}),
+		[prefersDarkMode]
+	);
 	return (
 		<StyledEngineProvider injectFirst>
 			<ThemeProvider theme={theme}>

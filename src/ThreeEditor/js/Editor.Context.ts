@@ -12,11 +12,13 @@ import {
 	isDetectContainer,
 	isFilterContainer
 } from '../util/Detect/DetectManager';
-import { DetectOutput, isDetectOutput } from '../util/Detect/DetectOutput';
+import { isScoringManager, ScoringManager } from '../util/Scoring/ScoringManager';
+import { ScoringOutput, isOutput } from '../util/Scoring/ScoringOutput';
+import { isQuantity, ScoringQuantity } from '../util/Scoring/ScoringQuantity';
 import { isWorldZone, WorldZone } from '../util/WorldZone';
 import { Editor } from './Editor';
 
-export type Context = 'scene' | 'output' | 'parameters' | 'settings';
+export type Context = 'scene' | 'scoring' | 'parameters' | 'settings';
 export type SceneObject =
 	| CSG.Zone
 	| BasicMesh
@@ -28,7 +30,9 @@ export type SceneObject =
 export type OutputObject =
 	| DetectFilter
 	| DetectGeometry
-	| DetectOutput
+	| ScoringOutput
+	| ScoringManager
+	| ScoringQuantity
 	| DetectContainer
 	| DetectManager
 	| FilterContainer;
@@ -50,9 +54,7 @@ export class ContextManager {
 		if (this._context !== context) {
 			this._context = context;
 			this.editor.signals.contextChanged.dispatch(context);
-			if (this.selected instanceof THREE.Object3D)
-				this.editor.signals.objectSelected.dispatch(this.selected);
-			else this.editor.signals.dataObjectSelected.dispatch(this.selected);
+			this.editor.signals.objectSelected.dispatch(this.selected);
 		}
 	}
 
@@ -64,10 +66,16 @@ export class ContextManager {
 		let clickable: THREE.Object3D[] = [];
 		switch (this._context) {
 			case 'scene':
-				clickable = clickable.concat(this.editor.scene.children);
+				clickable = clickable.concat(
+					this.editor.scene.visible ? this.editor.scene.children : []
+				);
 				break;
-			case 'output':
-				clickable = clickable.concat(this.editor.detectManager.children);
+			case 'scoring':
+				clickable = clickable.concat(
+					this.editor.detectManager.detectContainer.visible
+						? this.editor.detectManager.children
+						: []
+				);
 				break;
 			default:
 				return [];
@@ -83,7 +91,7 @@ export class ContextManager {
 				visible.push(this.editor.scene);
 				hidden.push(this.editor.detectManager);
 				break;
-			case 'output':
+			case 'scoring':
 				visible.push(this.editor.detectManager);
 				hidden.push(this.editor.scene);
 				break;
@@ -104,8 +112,8 @@ export class ContextManager {
 	set selected(selected: SceneObject | OutputObject | null) {
 		if (isOutputObject(selected)) {
 			this._selected[1] = selected;
-			if (this._context !== 'output') {
-				this._context = 'output';
+			if (this._context !== 'scoring') {
+				this._context = 'scoring';
 				this.editor.signals.contextChanged.dispatch(this._context);
 			}
 		} else if (isInputObject(selected)) {
@@ -123,7 +131,7 @@ export class ContextManager {
 		switch (context) {
 			case 'scene':
 				return this._selected[0];
-			case 'output':
+			case 'scoring':
 				return this._selected[1];
 			default:
 				return null;
@@ -141,7 +149,9 @@ export const isOutputObject = (x: unknown): x is OutputObject => {
 		isDetectFilter(x) ||
 		isDetectContainer(x) ||
 		isFilterContainer(x) ||
-		isDetectOutput(x)
+		isOutput(x) ||
+		isQuantity(x) ||
+		isScoringManager(x)
 	);
 };
 

@@ -1,3 +1,7 @@
+export type Particle = {
+	id: number;
+	name: string;
+};
 export const PARTICLE_TYPES = [
 	{
 		id: 1,
