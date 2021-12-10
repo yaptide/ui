@@ -19,7 +19,7 @@ export class ScoringQuantity extends SimulationObject3D {
 	readonly notRotatable = true;
 	readonly notScalable = true;
 	readonly notHidable = true;
-	//TODO: signal DetectFilter removed => clear _filter uuid if its the same as the removed filter
+	//TODO: Issue#320
 	private _filter: string;
 	private _rescale: number;
 	private _medium: Scoring.MEDIUM;
@@ -72,7 +72,7 @@ export class ScoringQuantity extends SimulationObject3D {
 		return this._modifiers[uuid];
 	}
 
-	constructor(editor: Editor, keyword: Scoring.DETECTOR_KEYWORD = 'Energy') {
+	constructor(editor: Editor, keyword: Scoring.DETECTOR_KEYWORD = 'Dose') {
 		super(editor, 'Quantity', 'Quantity');
 		this._modifiers = {};
 		this.keyword = keyword;

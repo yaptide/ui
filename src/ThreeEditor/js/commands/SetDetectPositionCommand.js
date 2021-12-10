@@ -12,8 +12,8 @@ export class SetDetectPositionCommand extends Command {
 	constructor(editor, object, newPosition, optionalOldPosition) {
 		super(editor);
 
-		this.type = 'SetPositionCommand';
-		this.name = 'Set Position';
+		this.type = 'SetDetectPositionCommand';
+		this.name = 'Set Detect Position';
 		this.updatable = true;
 
 		this.object = object;

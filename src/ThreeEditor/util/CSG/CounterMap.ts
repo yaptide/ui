@@ -1,5 +1,3 @@
-import { Editor } from '../../js/Editor';
-
 export class CounterMap<K extends string> {
 	private map: Map<K, number> = new Map();
 

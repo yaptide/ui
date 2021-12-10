@@ -2,13 +2,13 @@ import { Command } from '../Command.js';
 import { DifferentialModifier } from '../../util/Scoring/ScoringQtyModifiers';
 import { ScoringQuantity } from '../../util/Scoring/ScoringQuantity';
 
-/**
- * @param editor Editor
- * @param object ScoringQuantity
- * @param modifier DifferentialModifier
- * @constructor
- */
 export class AddDifferentialModifierCommand extends Command {
+	/**
+	 * @param {Editor} editor
+	 * @param {ScoringQuantity} object
+	 * @param {DifferentialModifier} [modifier]
+	 * @constructor
+	 */
 	constructor(editor, object, modifier) {
 		super(editor);
 
@@ -16,6 +16,7 @@ export class AddDifferentialModifierCommand extends Command {
 
 		this.object = object;
 		this.modifier = modifier;
+		if (this.modifier) this.oldModifier = object.getModifierByUuid(modifier.uuid);
 		this.name = modifier ? `Update DifferentialModifier` : `Create DifferentialModifier`;
 	}
 
@@ -27,7 +28,8 @@ export class AddDifferentialModifierCommand extends Command {
 	}
 
 	undo() {
-		this.editor.detectManager.removeGeometry(this.object);
+		if (this.oldModifier) this.object.addModifier(this.oldModifier);
+		this.object.removeModifier(this.modifier);
 		this.object.selectedModifier = null;
 	}
 
@@ -36,6 +38,7 @@ export class AddDifferentialModifierCommand extends Command {
 
 		output.object = this.object.toJSON();
 		output.modifier = this.modifier.toJSON();
+		if (this.oldModifier) output.oldModifier = this.oldModifier.toJSON();
 
 		return output;
 	}
@@ -46,5 +49,6 @@ export class AddDifferentialModifierCommand extends Command {
 			this.editor.detectManager.getGeometryByUuid(json.object.uuid) ??
 			ScoringQuantity.fromJSON(this.editor, json.object);
 		this.modifier = DifferentialModifier.fromJSON(json.modifier);
+		if (json.oldModifier) this.oldModifier = DifferentialModifier.fromJSON(json.oldModifier);
 	}
 }

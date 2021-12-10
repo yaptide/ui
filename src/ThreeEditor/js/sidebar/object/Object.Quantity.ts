@@ -37,7 +37,7 @@ export class ObjectQuantity extends ObjectAbstract {
 	constructor(editor: Editor) {
 		super(editor, 'Quantity configuration');
 		[this.keywordRow, this.keyword] = createRowSelect({
-			text: 'Keyword',
+			text: 'Quantity type',
 			update: this.update.bind(this),
 			options: Scoring.DETECTOR_KEYWORD_OPTIONS
 		});
@@ -54,6 +54,7 @@ export class ObjectQuantity extends ObjectAbstract {
 		});
 		[this.rescaleRow, this.rescaleCheckbox, this.rescale] = createRowConditionalNumber({
 			text: 'Rescale',
+			value: [false, 1],
 			update: this.update.bind(this)
 		});
 		this.panel.add(this.keywordRow, this.mediumRow, this.filterRow, this.rescaleRow);

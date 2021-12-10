@@ -30,7 +30,7 @@ export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> {
 	private _primaries: [boolean, number | null];
 	private _disabledChildren: ScoringQuantity[] = [];
 
-	//TODO: signal DetectFilter removed => clear trace[1] uuid if its the same as the removed filter
+	//TODO: Issue#320
 	private _trace: [boolean, string | null];
 
 	get primaries(): [boolean, number | null] {

@@ -100,22 +100,6 @@ export function initEditor(container) {
 			signals.CSGManagerStateChanged
 		];
 		stateChangedSignals.forEach(signal => signal.add(saveState));
-
-		// signals.geometryChanged.add(saveState);
-		// signals.objectAdded.add(saveState);
-		// signals.objectChanged.add(saveState);
-		// signals.objectRemoved.add(saveState);
-		// signals.materialChanged.add(saveState);
-		// signals.sceneBackgroundChanged.add(saveState);
-		// signals.sceneEnvironmentChanged.add(saveState);
-		// signals.sceneGraphChanged.add(saveState);
-		// signals.scriptChanged.add(saveState);
-		// signals.historyChanged.add(saveState);
-		// signals.detectFilterChanged.add(saveState);
-		// signals.scoringQuantityChanged.add(saveState);
-
-		// //YAPTIDE signals
-		// signals.CSGManagerStateChanged.add(saveState);
 	});
 
 	//

@@ -74,14 +74,14 @@ export class Beam extends SimulationObject3D {
 		distanceToFocal: number;
 	};
 
-	_particle: {
+	particleData: {
 		id: number;
 		z: number;
 		a: number;
 	};
 
-	get particle(): Particle | null {
-		return PARTICLE_TYPES.find(p => p.id === this._particle.id) ?? null;
+	get particle(): Particle {
+		return PARTICLE_TYPES.find(p => p.id === this.particleData.id) as Particle;
 	}
 
 	private proxy: Beam; // use proxy if you want inform about changes
@@ -124,7 +124,7 @@ export class Beam extends SimulationObject3D {
 
 		this.divergence = { ..._default.divergence };
 
-		this._particle = _default.particle;
+		this.particleData = _default.particle;
 
 		this.helper = this.initHelper();
 
@@ -211,7 +211,7 @@ export class Beam extends SimulationObject3D {
 		this.energy = _default.energy;
 		this.energySpread = _default.energySpread;
 		this.divergence = { ..._default.divergence };
-		this._particle = _default.particle;
+		this.particleData = _default.particle;
 		this.material.color.setHex(0xffff00); // yellow
 	}
 
@@ -222,7 +222,7 @@ export class Beam extends SimulationObject3D {
 			energy: this.energy,
 			energySpread: this.energySpread,
 			divergence: this.divergence,
-			particle: this._particle,
+			particle: this.particleData,
 			colorHex: this.material.color.getHex()
 		};
 
@@ -235,7 +235,7 @@ export class Beam extends SimulationObject3D {
 		this.energy = data.energy;
 		this.energySpread = data.energySpread;
 		this.divergence = data.divergence;
-		this._particle = data.particle;
+		this.particleData = data.particle;
 		this.material.color.setHex(data.colorHex);
 		return this;
 	}

@@ -48,25 +48,25 @@ const getAdditionalInfo = object => {
 		case 'WorldZone':
 			let { simulationMaterial: worldMaterial } = object;
 			return `<span class="type Material"></span> 
-            <span class="type-value">${escapeHTML(worldMaterial.name)}</span>`;
+            <span class="type-value">${worldMaterial.name} [${worldMaterial.icru}]</span>`;
 		case 'Zone':
 			let { simulationMaterial: material } = object;
 			return ` [${object.id}] <span class="type Material"></span> 
-            <span class="type-value">${escapeHTML(material.name)}</span>`;
+            <span class="type-value">${material.name} [${material.icru}]</span>`;
 		case 'Points':
 			let { zone, detectType } = object;
 			return ` [${object.id}] <span class="type Geometry ${
 				detectType === 'Zone' ? 'Zone' : ''
-			}"></span> <span class="type-value">${escapeHTML(
-				zone ? `${zone.name} [${zone.id}]` : detectType
-			)}</span>`;
+			}"></span> <span class="type-value">${
+				zone ? `${escapeHTML(zone.name)} [${zone.id}]` : detectType
+			}</span>`;
 		case 'Filter':
 			return ` [${object.id}]`;
 		case 'Output':
 			let { geometry } = object;
 			return ` [${object.id}] <span class="type-value">${
 				object.geometry
-					? `<span class="type Detect Geometry"></span> ${escapeHTML(geometry.name)} [${
+					? `<span class="type Detect Geometry"></span>${escapeHTML(geometry.name)} [${
 							geometry.id
 					  }]`
 					: ''

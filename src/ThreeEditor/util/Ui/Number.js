@@ -13,15 +13,15 @@ import {
 
 /**
  * @param {{
- *      value?: number,
- *      precision?: number
- *      update: ()=> void,
- *      min?: number,
- *      max?: number,
- *      unit?: string,
- *      nudge?: number,
- *      step?: number,
- *      }} params
+ *		value?: number,
+ *		precision?: number
+ *		update: ()=> void,
+ *		min?: number,
+ *		max?: number,
+ *		unit?: string,
+ *		nudge?: number,
+ *		step?: number,
+ *		}} params
  * @return {UIScientificNumber}
  */
 export function createNumberInput(params) {
@@ -55,16 +55,16 @@ export function createNumberInput(params) {
 
 /**
  * @param {{
- *      text?: string,
- *      value?: number,
- *      precision?: number
- *      update: ()=> void,
- * 		nudge?: number,
- *      step?: number,
- *      min?: number,
- *      max?: number
- * 		unit?: string,
- *      }} params
+ *		text?: string,
+ *		value?: number,
+ *		precision?: number
+ *		update: ()=> void,
+ *		nudge?: number,
+ *		step?: number,
+ *		min?: number,
+ *		max?: number
+ *		unit?: string,
+ *		}} params
  * @return {[UIRow, UINumber, UIText]}
  */
 export function createRowParamNumber(params) {
@@ -81,16 +81,16 @@ export function createRowParamNumber(params) {
 
 /**
  * @param {{
- *      text?: string,
- *      value?: { x:number, y:number, z:number },
- *      precision?: number
- * 		step?: number,
- * 		nudge?: number,
- * 		unit?: string,
- *      update: ()=> void,
- *      min?: number,
- *      max?: number
- *      }} params
+ *		text?: string,
+ *		value?: { x:number, y:number, z:number },
+ *		precision?: number
+ *		step?: number,
+ *		nudge?: number,
+ *		unit?: string,
+ *		update: ()=> void,
+ *		min?: number,
+ *		max?: number
+ *		}} params
  * @return {[UIRow, UINumber, UINumber, UINumber, UIText]}
  */
 export function createRowParamNumberXYZ(params) {
@@ -127,12 +127,13 @@ export class UIScientificNumber extends UINumber {
 	 * @returns
 	 */
 	setValue(value) {
+		console.warn(value, typeof value);
 		if (value === undefined) return this;
 		if (!this.scientificNotation) {
 			super.setValue(value);
 			return this;
 		}
-		value = parseFloat(parseFloat(value).toFixed(PRECISION));
+		value = 0 + parseFloat(parseFloat(value).toFixed(PRECISION));
 
 		if (value < this.min) value = this.min;
 		if (value > this.max) value = this.max;

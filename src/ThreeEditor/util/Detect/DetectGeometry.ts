@@ -178,7 +178,7 @@ export class DetectGeometry extends SimulationPoints {
 		this.proxy = new Proxy(this, this.overrideHandler);
 		this.signals = editor.signals;
 		this.position.fromArray(position);
-		this._geometryData = { ...data, ...DETECT.DEFAULT_ANY };
+		this._geometryData = { ...DETECT.DEFAULT_ANY, ...data };
 		this._detectType = type;
 
 		this.positionProxy = new Proxy(this.position, {
@@ -217,25 +217,25 @@ export class DetectGeometry extends SimulationPoints {
 
 	getMesh(): DETECT.Mesh {
 		if (this.detectType !== 'Mesh')
-			throw new Error(`DetectGeo of uui=${this.uuid} isn't of 'Mesh' type`);
+			throw new Error(`DetectGeo of uuid=${this.uuid} isn't of 'Mesh' type`);
 		return new DETECT.Mesh(this._geometryData);
 	}
 
 	getCyl(): DETECT.Cyl {
 		if (this.detectType !== 'Cyl')
-			throw new Error(`DetectGeo of uui=${this.uuid} isn't of 'Cyl' type`);
+			throw new Error(`DetectGeo of uuid=${this.uuid} isn't of 'Cyl' type`);
 		return new DETECT.Cyl(this._geometryData);
 	}
 
 	getZone(): DETECT.Zone {
 		if (this.detectType !== 'Zone')
-			throw new Error(`DetectGeo of uui=${this.uuid} isn't of 'Zone' type`);
+			throw new Error(`DetectGeo of uuid=${this.uuid} isn't of 'Zone' type`);
 		return new DETECT.Zone(this._geometryData);
 	}
 
 	getAll(): DETECT.All {
 		if (this.detectType !== 'All')
-			throw new Error(`DetectGeo of uui=${this.uuid} isn't of 'All' type`);
+			throw new Error(`DetectGeo of uuid=${this.uuid} isn't of 'All' type`);
 		return new DETECT.All(this._geometryData);
 	}
 

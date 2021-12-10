@@ -192,6 +192,7 @@ div:is(#outliner, #filter-outliner) .Material:after {
 
 div:is(#outliner, #filter-outliner) .Particle:after {
 	content: '☄';
+	line-height: 0px;
 }
 
 div:is(#outliner, #filter-outliner) .Medium:after {
@@ -201,7 +202,7 @@ div:is(#outliner, #filter-outliner) .Modifier:after {
 	content: '▧';
 }
 
-/*
+/* Possible icons for outliner
 * content: '◓';
 * content: '◑';
 * content: '◒';
@@ -210,8 +211,6 @@ div:is(#outliner, #filter-outliner) .Modifier:after {
 * content: '✎';
 * content: '✏';
 * content: '✐';
-* content: '✑';
-* content: '✒';
 * content: '✓';
 * content: '✔';
 * content: '✕';
@@ -273,8 +272,13 @@ button {
 	cursor: pointer;
 	outline: none;
 }
+button[disabled] {
+	color: #aaa;
+	background-color: #ddd;
+	cursor: default;
+}
 
-button:hover {
+button:hover:not([disabled]) {
 	background-color: #fff;
 }
 
@@ -592,7 +596,13 @@ select:hover {
 		background-color: #222;
 	}
 
-	button:hover {
+	button[disabled] {
+		color: #444;
+		background-color: #222;
+		cursor: default;
+	}
+
+	button:hover:not([disabled]) {
 		color: #ccc;
 		background-color: #444;
 	}

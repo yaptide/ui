@@ -23,11 +23,11 @@ export class Zone extends SimulationMesh {
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
+	private _unionOperations: OperationTuple[][];
 
 	material: SimulationMaterial;
 
 	subscribedObjects: CounterMap<string>;
-	_unionOperations: OperationTuple[][];
 	needsUpdate: boolean = true;
 	private signals: {
 		objectChanged: Signal<THREE.Object3D>;
@@ -44,8 +44,8 @@ export class Zone extends SimulationMesh {
 	readonly isZone: true = true;
 	set unionOperations(operations: OperationTuple[][]) {
 		this._unionOperations = operations;
-		// If operations are specified, we have to generate fist geometry manually.
-		if (operations.length) this.updateGeometry();
+		// If operations are specified, we have to generate geometry.
+		this.updateGeometry();
 	}
 	get unionOperations() {
 		return this._unionOperations;
@@ -96,16 +96,18 @@ export class Zone extends SimulationMesh {
 
 	updateGeometry(): void {
 		console.time('CSGZone');
+		this.geometry.dispose();
 
-		const unionsResultBsp = this.unionOperations.reduce((result, operationRow) => {
-			const rowResult = operationRow.reduce((result, operation) => {
-				return operation.execute(result);
+		if (this.unionOperations && this.unionOperations.length) {
+			const unionsResultBsp = this.unionOperations.reduce((result, operationRow) => {
+				const rowResult = operationRow.reduce((result, operation) => {
+					return operation.execute(result);
+				}, new CSG());
+				return result.union(rowResult);
 			}, new CSG());
-			return result.union(rowResult);
-		}, new CSG());
 
-		this.geometry?.dispose();
-		this.geometry = CSG.toGeometry(unionsResultBsp, this.matrix);
+			this.geometry = CSG.toGeometry(unionsResultBsp, this.matrix);
+		}
 		this.geometry.computeBoundingSphere();
 		this.updateMatrixWorld(true);
 
@@ -120,7 +122,6 @@ export class Zone extends SimulationMesh {
 	}
 
 	updateUnion(unionIndex: number, operations: OperationTuple[]): void {
-		console.log('updateUnion', unionIndex, operations);
 		this.unionOperations[unionIndex].forEach(e => {
 			this.subscribedObjects.decrement(e.object.uuid);
 		});

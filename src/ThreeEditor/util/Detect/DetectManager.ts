@@ -76,6 +76,9 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 	get filters() {
 		return this.filterContainer.children;
 	}
+	get detects() {
+		return this.detectContainer.children;
+	}
 
 	private signals: {
 		objectAdded: Signal<THREE.Object3D>;
@@ -225,18 +228,27 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 	}
 
 	getFilterOptions(): Record<string, string> {
-		const options = this.filters.reduce((acc, filter) => {
-			acc[filter.uuid] = `${filter.name} [${filter.id}]`;
-			return acc;
-		}, {} as Record<string, string>);
+		const options = this.filters
+			.filter(filter => {
+				return filter.rules.length;
+			})
+			.reduce((acc, filter) => {
+				acc[filter.uuid] = `${filter.name} [${filter.id}]`;
+				return acc;
+			}, {} as Record<string, string>);
 		return options;
 	}
 
 	getDetectOptions(): Record<string, string> {
-		const options = this.detectContainer.children.reduce((acc, geometry) => {
-			acc[geometry.uuid] = `${geometry.name} [${geometry.id}]`;
-			return acc;
-		}, {} as Record<string, string>);
+		const options = this.detects
+			.filter(({ detectType, geometryData }) => {
+				if (detectType !== 'Zone') return true;
+				return this.editor.zoneManager.getZoneByUuid(geometryData.zoneUuid) !== undefined;
+			})
+			.reduce((acc, geometry) => {
+				acc[geometry.uuid] = `${geometry.name} [${geometry.id}]`;
+				return acc;
+			}, {} as Record<string, string>);
 		return options;
 	}
 }

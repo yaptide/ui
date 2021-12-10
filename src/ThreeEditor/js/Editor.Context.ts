@@ -72,7 +72,9 @@ export class ContextManager {
 				break;
 			case 'scoring':
 				clickable = clickable.concat(
-					this.editor.detectManager.visible ? this.editor.detectManager.children : []
+					this.editor.detectManager.detectContainer.visible
+						? this.editor.detectManager.children
+						: []
 				);
 				break;
 			default:

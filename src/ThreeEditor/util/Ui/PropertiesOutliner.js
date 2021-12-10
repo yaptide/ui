@@ -100,7 +100,7 @@ export function createDifferentialConfigurationRow(params) {
 	const logsLabel = new UIText('log');
 	const isLog = new UICheckbox().onChange(update);
 	logs.add(logsLabel, isLog);
-	const deleteButton = new UIButton('X').onClick(deleteRule);
+	const deleteButton = new UIButton('✖').onClick(deleteRule);
 	row.add(keywordSelect, lowerLimit, upperLimit, binsNumber, logs, deleteButton);
 	return [row, keywordSelect, lowerLimit, upperLimit, binsNumber, isLog, deleteButton];
 }
@@ -135,7 +135,7 @@ export function createRuleConfigurationRow(params) {
 		.setOptions(particles)
 		.setWidth('100%');
 	const valueInput = new UINumber().setPadding('2px 4px').onChange(update).setWidth('100%');
-	const deleteButton = new UIButton('X').onClick(deleteRule);
+	const deleteButton = new UIButton('✖').onClick(deleteRule);
 	row.add(keywordSelect, operatorSelect, idSelect, valueInput, deleteButton);
 	return [row, keywordSelect, operatorSelect, idSelect, valueInput, deleteButton];
 }

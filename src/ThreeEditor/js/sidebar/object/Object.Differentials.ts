@@ -65,10 +65,10 @@ export class ObjectDifferentials extends ObjectAbstract {
 		this.object = object;
 		this.outliner.setOptions(object.modifiers);
 		if (object.selectedModifier) {
-			const rule = object.selectedModifier;
-			if (rule) {
+			const mod = object.selectedModifier;
+			if (mod) {
 				this.outliner.setValue(object.selectedModifier.uuid);
-				this.setModifier(rule);
+				this.setModifier(mod);
 			} else {
 				object.selectedModifier = undefined;
 				hideUIElement(this.modifierRow);
@@ -76,6 +76,9 @@ export class ObjectDifferentials extends ObjectAbstract {
 		} else {
 			hideUIElement(this.modifierRow);
 		}
+		const mods = object.modifiers;
+		if (mods.length < 2) this.add.setDisabled(false);
+		else this.add.setDisabled(true);
 	}
 	update(): void {
 		const { object, modifier } = this;
@@ -105,6 +108,8 @@ export class ObjectDifferentials extends ObjectAbstract {
 	}
 	addModifier(): void {
 		const { editor, object } = this;
+		if (!object) return;
+		if (object.modifiers.length >= 2) return;
 		editor.execute(new AddDifferentialModifierCommand(editor, object));
 	}
 	selectModifier(): void {
