@@ -143,10 +143,6 @@ export class ObjectMaterial extends ObjectAbstract {
 	update(): void {
 		const { editor, object } = this;
 		if (!object) return;
-		console.log(
-			(object as Zone)?.simulationMaterial.icru,
-			parseInt(this.typeSelect.getValue())
-		);
 		if (
 			(isWorldZone(object) || isZone(object)) &&
 			object.simulationMaterial.icru !== parseInt(this.typeSelect.getValue())
