@@ -19,7 +19,7 @@ export class CounterMap<K extends string> {
 
 		if (!lastCount) throw Error(`No item to decrement for key: ${key}`);
 		const newValue = lastCount - 1;
-		newValue > 0 ? this.map.set(key, newValue) : this.map.delete(key);
+		this.map.set(key, newValue);
 		return newValue;
 	}
 
@@ -31,8 +31,12 @@ export class CounterMap<K extends string> {
 		return (this.map.get(key) ?? 0) > 0;
 	}
 
-	toJSON(): { [k in K]: number } {
-		return Object.fromEntries(this.map) as { [k in K]: number };
+	toJSON(): Record<string, number> {
+		const json: Record<string, number> = {};
+		this.map.forEach((value, key) => {
+			if (value > 0) json[key] = value;
+		});
+		return json;
 	}
 
 	fromJSON(json: { [k in K]: number }) {
