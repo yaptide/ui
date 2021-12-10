@@ -109,7 +109,8 @@ export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> {
 	}
 
 	removeQuantity(quantity: ScoringQuantity): this {
-		this.children.splice(this.children.indexOf(quantity));
+		this.children.splice(this.children.indexOf(quantity), 1);
+		this._disabledChildren.splice(this._disabledChildren.indexOf(quantity), 1);
 		quantity.parent = null;
 		return this;
 	}
