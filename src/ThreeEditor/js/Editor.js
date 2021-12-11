@@ -4,8 +4,9 @@ import { generateSimulationInfo } from '../util/AdditionalUserData';
 import { Beam } from '../util/Beam';
 import * as CSG from '../util/CSG/CSG';
 import { DetectManager } from '../util/Detect/DetectManager';
-import MaterialsManager from '../util/Materials/MaterialsManager';
+import { MaterialManager } from '../util/Materials/MaterialManager';
 import { EditorObjectLoader } from '../util/ObjectLoader';
+import { ScoringManager } from '../util/Scoring/ScoringManager';
 import { Config } from './Config.js';
 import { ContextManager } from './Editor.Context';
 import { History as _History } from './History.js';
@@ -72,7 +73,8 @@ export function Editor(container) {
 		detectFilterAdded: new Signal(),
 		detectFilterRemoved: new Signal(),
 		detectFilterChanged: new Signal(),
-		dataObjectSelected: new Signal(),
+
+		scoringQuantityChanged: new Signal(),
 
 		cameraAdded: new Signal(),
 		cameraRemoved: new Signal(),
@@ -138,9 +140,10 @@ export function Editor(container) {
 
 	this.sceneHelpers = new THREE.Scene();
 
-	this.materialsManager = new MaterialsManager(this); // Material Manager
+	this.materialManager = new MaterialManager(this); // Material Manager
 	this.zoneManager = new CSG.ZoneManager(this); // CSG Manager
 	this.detectManager = new DetectManager(this); // Detect Manager
+	this.scoringManager = new ScoringManager(this); // Scoring Manager
 
 	this.beam = new Beam(this);
 	this.sceneHelpers.add(this.beam);
@@ -408,34 +411,6 @@ Editor.prototype = {
 
 	//
 
-	/**
-	 * @deprecated scripts aren't needed for our app.
-	 */
-	addScript(object, script) {
-		if (this.scripts[object.uuid] === undefined) {
-			this.scripts[object.uuid] = [];
-		}
-
-		this.scripts[object.uuid].push(script);
-
-		this.signals.scriptAdded.dispatch(script);
-	},
-
-	/**
-	 * @deprecated scripts aren't needed for our app.
-	 */
-	removeScript(object, script) {
-		if (this.scripts[object.uuid] === undefined) return;
-
-		var index = this.scripts[object.uuid].indexOf(script);
-
-		if (index !== -1) {
-			this.scripts[object.uuid].splice(index, 1);
-		}
-
-		this.signals.scriptRemoved.dispatch(script);
-	},
-
 	getObjectMaterial(object, slot) {
 		var material = object.material;
 
@@ -473,8 +448,7 @@ Editor.prototype = {
 
 		this.config.setKey('selected', uuid);
 
-		if (!object || object.isObject3D) this.signals.objectSelected.dispatch(object);
-		else this.signals.dataObjectSelected.dispatch(object);
+		this.signals.objectSelected.dispatch(object);
 	},
 
 	selectById(id) {
@@ -483,7 +457,14 @@ Editor.prototype = {
 			return;
 		}
 
-		const objectCollections = [this.scene, this.zoneManager, this.beam, this.detectManager];
+		const objectCollections = [
+			this.scene,
+			this.zoneManager,
+			this.beam,
+			this.detectManager,
+			this.detectManager.filterContainer,
+			this.scoringManager
+		];
 
 		const object =
 			objectCollections.map(e => e.getObjectById(id)).find(e => typeof e !== 'undefined') ??
@@ -498,7 +479,8 @@ Editor.prototype = {
 			this.zoneManager,
 			this.beam,
 			this.detectManager,
-			this.detectManager.filterContainer
+			this.detectManager.filterContainer,
+			this.scoringManager
 		];
 		const object =
 			objectCollections.find(e => e.uuid === uuid) ??
@@ -542,14 +524,15 @@ Editor.prototype = {
 			this.removeObject(objects[0]);
 		}
 
+		this.materialManager.reset();
 		this.zoneManager.reset();
 		this.detectManager.reset();
+		this.scoringManager.reset();
 		this.beam.reset();
 
 		this.geometries = {};
 		this.materials = {};
 		this.textures = {};
-		this.scripts = {};
 
 		this.materialsRefCounter.clear();
 
@@ -573,23 +556,19 @@ Editor.prototype = {
 
 	async fromJSON(json) {
 		const loader = new EditorObjectLoader(this);
-		const camera = await loader.parseAsync(json.camera);
 
-		this.camera.copy(camera);
 		this.signals.cameraResetted.dispatch();
 
 		this.history.fromJSON(json.history);
-		this.scripts = json.scripts;
 
 		this.setScene(await loader.parseAsync(json.scene));
 
-		this.materialsManager.fromJSON(json.materialsManager);
+		this.materialManager.fromJSON(json.materialManager);
 
 		// CSGManager must be loaded after scene and simulation materials
 		this.zoneManager.fromJSON(json.zoneManager); // CSGManager must be loaded in order not to lose reference in components
-
 		this.detectManager.fromJSON(json.detectManager);
-
+		this.scoringManager.fromJSON(json.scoringManager);
 		this.beam.fromJSON(json.beam);
 
 		this.signals.sceneGraphChanged.dispatch();
@@ -626,14 +605,13 @@ Editor.prototype = {
 				toneMapping: this.config.getKey('project/renderer/toneMapping'),
 				toneMappingExposure: this.config.getKey('project/renderer/toneMappingExposure')
 			},
-			camera: this.camera.toJSON(),
 			scene: this.scene.toJSON(),
-			scripts: this.scripts,
 			history: this.history.toJSON(),
 			zoneManager: this.zoneManager.toJSON(), // serialize CSGManager
 			detectManager: this.detectManager.toJSON(), // serialize DetectManager;
 			beam: this.beam.toJSON(),
-			materialsManager: this.materialsManager.toJSON() // serialize MaterialManager
+			materialManager: this.materialManager.toJSON(), // serialize MaterialManager
+			scoringManager: this.scoringManager.toJSON() // serialize ScoringManager
 		};
 	},
 

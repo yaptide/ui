@@ -1,4 +1,4 @@
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, TextField, Card, CardContent } from '@mui/material';
 import React, { useState } from 'react';
 import { useAuth } from '../../services/AuthService';
 
@@ -23,35 +23,32 @@ export default function LoginPanel() {
 				alignItems: 'center',
 				padding: '5rem'
 			}}>
-			<Box
-				component='form'
-				sx={{
-					margin: '0 auto',
-					backgroundColor: 'rgba(255,255,255,.6)',
-					display: 'flex',
-					flexDirection: 'column',
-					gap: '1.5rem',
-					padding: '5rem'
-				}}>
-				<TextField
-					id='loginField'
-					label='Username adress'
-					variant='outlined'
-					value={username}
-					onChange={handleUsernameChange}
-				/>
-				<TextField
-					id='passwordField'
-					label='Password'
-					variant='outlined'
-					type='password'
-					value={password}
-					onChange={handlePasswordChange}
-				/>
-				<Button variant='outlined' onClick={() => login(username, password)}>
-					Login
-				</Button>
-			</Box>
+			<Card variant='outlined'>
+				<CardContent>
+					<TextField
+						id='loginField'
+						label='Username adress'
+						variant='outlined'
+						value={username}
+						onChange={handleUsernameChange}
+					/>
+				</CardContent>
+				<CardContent>
+					<TextField
+						id='passwordField'
+						label='Password'
+						variant='outlined'
+						type='password'
+						value={password}
+						onChange={handlePasswordChange}
+					/>
+				</CardContent>
+				<CardContent>
+					<Button variant='outlined' onClick={() => login(username, password)}>
+						Login
+					</Button>
+				</CardContent>
+			</Card>
 		</Box>
 	);
 }

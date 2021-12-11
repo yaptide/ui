@@ -38,6 +38,7 @@ export class FilterContainer extends SimulationSceneGroup<DetectFilter> {
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
+	readonly notHidable = true;
 
 	children: DetectFilter[];
 	readonly isFilterContainer: true = true;
@@ -74,6 +75,9 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 
 	get filters() {
 		return this.filterContainer.children;
+	}
+	get detects() {
+		return this.detectContainer.children;
 	}
 
 	private signals: {
@@ -221,6 +225,31 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 
 	getFilterByUuid(uuid: string): DetectFilter | null {
 		return this.filters.find(filter => filter.uuid === uuid) as DetectFilter | null;
+	}
+
+	getFilterOptions(): Record<string, string> {
+		const options = this.filters
+			.filter(filter => {
+				return filter.rules.length;
+			})
+			.reduce((acc, filter) => {
+				acc[filter.uuid] = `${filter.name} [${filter.id}]`;
+				return acc;
+			}, {} as Record<string, string>);
+		return options;
+	}
+
+	getDetectOptions(): Record<string, string> {
+		const options = this.detects
+			.filter(({ detectType, geometryData }) => {
+				if (detectType !== 'Zone') return true;
+				return this.editor.zoneManager.getZoneByUuid(geometryData.zoneUuid) !== undefined;
+			})
+			.reduce((acc, geometry) => {
+				acc[geometry.uuid] = `${geometry.name} [${geometry.id}]`;
+				return acc;
+			}, {} as Record<string, string>);
+		return options;
 	}
 }
 

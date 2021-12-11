@@ -3,7 +3,9 @@ import {
 	RemoveFilterCommand,
 	RemoveObjectCommand,
 	RemoveZoneCommand,
-	SetFilterRuleCommand
+	SetFilterRuleCommand,
+	RemoveDifferentialModifierCommand,
+	RemoveQuantityCommand
 } from '../commands/Commands';
 import { UIInput, UIPanel, UIRow, UIText } from '../libs/ui.js';
 
@@ -83,6 +85,14 @@ function SidebarSettingsShortcuts(editor) {
 			case object.isFilter:
 				if (object.selectedRule) return new SetFilterRuleCommand(editor, object);
 				return new RemoveFilterCommand(editor, object);
+			case object.isQuantity:
+				if (object.selectedModifier)
+					return new RemoveDifferentialModifierCommand(
+						editor,
+						object,
+						object.selectedModifier
+					);
+				return new RemoveQuantityCommand(editor, object, object.parent);
 			default:
 				return new RemoveObjectCommand(editor, object);
 		}

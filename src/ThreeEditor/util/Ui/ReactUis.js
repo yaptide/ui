@@ -44,12 +44,12 @@ export function createParticleTypeSelect(update) {
 }
 
 /**
- * @param {MaterialsManager} materialsManager
+ * @param {MaterialManager} materialManager
  * @param {()=>void} update
- * @return {[UIRow,UISelect,(value:string)=>void]} render function
+ * @return {[UIRow,UISelect,(value:number)=>void]} render function
  */
-export function createMaterialSelect(materialsManager, update) {
-	const { materialOptions, materials } = materialsManager;
+export function createMaterialSelect(materialManager, update) {
+	const { materialOptions, materials } = materialManager;
 
 	const row = new UIRow();
 	const container = new UIDiv().setWidth(INPUT_WIDTH).setDisplay('inline-block');

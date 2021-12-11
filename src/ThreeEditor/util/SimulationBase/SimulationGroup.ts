@@ -17,6 +17,7 @@ export abstract class SimulationSceneGroup<TChild extends ISimulationSceneChild>
 	children: TChild[];
 	editor: Editor;
 	private _name: string;
+	parent: SimulationSceneGroup<this> | null;
 	type: string;
 	constructor(editor: Editor, name: string, type: string) {
 		super();
@@ -24,6 +25,7 @@ export abstract class SimulationSceneGroup<TChild extends ISimulationSceneChild>
 		this.type = type;
 		this.editor = editor;
 		this.children = [];
+		this.parent = null;
 	}
 	reset() {
 		this.name = this._name;

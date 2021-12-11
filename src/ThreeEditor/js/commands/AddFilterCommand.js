@@ -24,7 +24,7 @@ export class AddFilterCommand extends Command {
 	}
 
 	undo() {
-		this.editor.removeFilter(this.object);
+		this.editor.detectManager.removeFilter(this.object);
 		this.editor.deselect();
 	}
 

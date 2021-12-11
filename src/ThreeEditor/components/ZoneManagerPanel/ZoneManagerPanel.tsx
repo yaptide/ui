@@ -70,10 +70,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 		zoneRef.current?.addUnion();
 	};
 
-	const handleParse = () => {
-		const simulationData = props?.zone?.getSimulationMaterial().simulationData;
-		parseZone(rows, simulationData);
-	};
+	const handleParse = () => parseZone(rows, props!.zone!.simulationMaterial);
 
 	const removeRow = (removeId: number) => () => {
 		setRows(prev => {

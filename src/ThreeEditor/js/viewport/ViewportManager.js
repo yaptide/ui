@@ -363,7 +363,15 @@ function ViewManager(editor) {
 		render();
 	});
 
-	const canBoxBeUpdated = object => object !== null && object !== camera;
+	const canBoxBeUpdated = object =>
+		object &&
+		!(
+			object.isCamera ||
+			object.isFilter ||
+			object.isOutput ||
+			object.isQuantity ||
+			object.isScoringManager
+		);
 
 	const handleSelected = () => {
 		const object = editor.selected;
@@ -389,7 +397,7 @@ function ViewManager(editor) {
 	});
 
 	signals.geometryChanged.add(object => {
-		if (object !== undefined) {
+		if (canBoxBeUpdated(object)) {
 			selectionBox.setFromObject(object);
 		}
 
@@ -397,7 +405,7 @@ function ViewManager(editor) {
 	});
 
 	signals.objectChanged.add(object => {
-		if (editor.selected === object) {
+		if (editor.selected === object && canBoxBeUpdated(object)) {
 			selectionBox.setFromObject(object);
 		}
 

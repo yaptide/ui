@@ -1,5 +1,5 @@
 import { UISpan, UITabbedPanel } from '../libs/ui.js';
-import { SidebarOutput } from './Sidebar.Output';
+import { SidebarScoring } from './Sidebar.Scoring';
 import { SidebarProject } from './Sidebar.Project';
 import { SidebarProperties } from './Sidebar.Properties';
 import { SidebarScene } from './Sidebar.Scene';
@@ -10,17 +10,18 @@ function Sidebar(editor) {
 	const container = new UISpan();
 	const tabbed = new UITabbedPanel();
 	container.setId('sidebar');
-	const filters = new SidebarOutput(editor).setBorderTop('0').setPaddingTop('20px');
 	const properties = new SidebarProperties(editor).setBorderTop('0');
 
 	const scene = new UISpan().add(new SidebarScene(editor));
+	const scoring = new UISpan().add(
+		new SidebarScoring(editor).setBorderTop('0').setPaddingTop('20px')
+	);
 	const project = new SidebarProject(editor);
 	const settings = new SidebarSettings(editor);
-	const output = new UISpan().add(filters);
 	let ignoreContextChangedSignal = false;
 
 	tabbed.addTab('scene', 'SCENE', scene);
-	tabbed.addTab('output', 'OUTPUT', output);
+	tabbed.addTab('scoring', 'SCORING', scoring);
 	tabbed.addTab('parameters', 'PARAMETERS', project);
 	tabbed.addTab('settings', 'SETTINGS', settings);
 

@@ -15,7 +15,7 @@ export interface WorldZoneJSON {
 	name: string;
 	marginMultiplier: number;
 	autoCalculate: boolean;
-	simulationMaterialName: string;
+	materialUuid: string;
 	userData?: {
 		geometryType: string;
 		position: THREE.Vector3Tuple;
@@ -64,7 +64,7 @@ export class WorldZone extends SimulationObject3D {
 	// material: SimulationMaterial;
 
 	private _material: MeshBasicMaterial;
-	private _simulationMaterial!: SimulationMaterial;
+	private _simulationMaterial: SimulationMaterial;
 
 	readonly isWorldZone: true = true;
 
@@ -96,8 +96,8 @@ export class WorldZone extends SimulationObject3D {
 		this.marginMultiplier = marginMultiplier;
 
 		this._material = _materialDefault;
-
-		this.simulationMaterial = editor.materialsManager.materials['AIR, DRY (NEAR SEA LEVEL)'];
+		this._simulationMaterial = editor.materialManager.defaultMaterial;
+		this._simulationMaterial.increment();
 
 		// watch for changes on material color
 		const materialColorHandler = {
@@ -124,6 +124,10 @@ export class WorldZone extends SimulationObject3D {
 
 		const handleSignal = (object: Object3D) => {
 			if (this.autoCalculate && !isWorldZone(object)) this.debouncedCalculate();
+			else if (object === this) {
+				this.getHelper(this.geometryType).visible = object.visible;
+				this.signals.objectChanged.dispatch(this.getHelper(this.geometryType));
+			}
 		};
 		this.signals.objectChanged.add(handleSignal);
 		this.signals.sceneGraphChanged.add(handleSignal);
@@ -138,8 +142,10 @@ export class WorldZone extends SimulationObject3D {
 	}
 
 	set simulationMaterial(value: SimulationMaterial) {
+		this._simulationMaterial.decrement();
 		this._simulationMaterial = value;
 		this._material.color.setHex(value.color.getHex());
+		this._simulationMaterial.increment();
 	}
 
 	get geometryType() {
@@ -255,8 +261,7 @@ export class WorldZone extends SimulationObject3D {
 
 		this._material.color.set(color);
 		this.name = name;
-		this.simulationMaterial =
-			this.editor.materialsManager.materials['AIR, DRY (NEAR SEA LEVEL)'];
+		this.simulationMaterial = this.editor.materialManager.defaultMaterial;
 		this.geometryType = 'Box';
 		this.updateBox(box => box.setFromCenterAndSize(new Vector3(), new Vector3()));
 	}
@@ -277,6 +282,7 @@ export class WorldZone extends SimulationObject3D {
 			Sphere: new THREE.SphereGeometry(this.size.x),
 			Cylinder: new THREE.CylinderGeometry(this.size.x, this.size.x, this.size.y)
 		};
+		const { uuid: materialUuid } = this.simulationMaterial;
 
 		const jsonObject: WorldZoneJSON = {
 			center: this.box.getCenter(new Vector3()),
@@ -286,7 +292,7 @@ export class WorldZone extends SimulationObject3D {
 			name: this.name,
 			marginMultiplier: this.marginMultiplier,
 			autoCalculate: this.autoCalculate,
-			simulationMaterialName: this.simulationMaterial.name,
+			materialUuid,
 			userData: {
 				geometryType: geometry[this._geometryType].type,
 				parameters: getGeometryParameters(geometry[this._geometryType]),
@@ -306,10 +312,9 @@ export class WorldZone extends SimulationObject3D {
 		this.setFromCenterAndSize(data.center, data.size);
 
 		this.autoCalculate = data.autoCalculate;
-		const simulationMaterial =
-			this.editor.materialsManager.materials[data.simulationMaterialName];
-		this.simulationMaterial = simulationMaterial;
-		this.material.color.setHex(simulationMaterial.color.getHex());
+		this.simulationMaterial =
+			this.editor.materialManager.getMaterialByUuid(data.materialUuid) ??
+			this.editor.materialManager.defaultMaterial;
 
 		return this;
 	}
@@ -319,7 +324,8 @@ export class WorldZone extends SimulationObject3D {
 	}
 
 	copy(source: this, recursive = true) {
-		return super.copy(source, recursive) as this;
+		super.copy(source, recursive);
+		return this;
 	}
 
 	clone(recursive: boolean) {

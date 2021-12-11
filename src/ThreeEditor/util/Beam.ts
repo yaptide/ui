@@ -6,6 +6,7 @@ import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { debounce } from 'throttle-debounce';
 import { Editor } from '../js/Editor';
+import { Particle, PARTICLE_TYPES } from './particles';
 import { SimulationObject3D } from './SimulationBase/SimulationMesh';
 
 export interface BeamJSON {
@@ -73,11 +74,15 @@ export class Beam extends SimulationObject3D {
 		distanceToFocal: number;
 	};
 
-	particle: {
+	particleData: {
 		id: number;
 		z: number;
 		a: number;
 	};
+
+	get particle(): Particle {
+		return PARTICLE_TYPES.find(p => p.id === this.particleData.id) as Particle;
+	}
 
 	private proxy: Beam; // use proxy if you want inform about changes
 
@@ -119,7 +124,7 @@ export class Beam extends SimulationObject3D {
 
 		this.divergence = { ..._default.divergence };
 
-		this.particle = _default.particle;
+		this.particleData = _default.particle;
 
 		this.helper = this.initHelper();
 
@@ -206,7 +211,7 @@ export class Beam extends SimulationObject3D {
 		this.energy = _default.energy;
 		this.energySpread = _default.energySpread;
 		this.divergence = { ..._default.divergence };
-		this.particle = _default.particle;
+		this.particleData = _default.particle;
 		this.material.color.setHex(0xffff00); // yellow
 	}
 
@@ -217,7 +222,7 @@ export class Beam extends SimulationObject3D {
 			energy: this.energy,
 			energySpread: this.energySpread,
 			divergence: this.divergence,
-			particle: this.particle,
+			particle: this.particleData,
 			colorHex: this.material.color.getHex()
 		};
 
@@ -230,7 +235,7 @@ export class Beam extends SimulationObject3D {
 		this.energy = data.energy;
 		this.energySpread = data.energySpread;
 		this.divergence = data.divergence;
-		this.particle = data.particle;
+		this.particleData = data.particle;
 		this.material.color.setHex(data.colorHex);
 		return this;
 	}

@@ -1,56 +1,85 @@
 import { UIOutliner } from '../libs/ui.three.js';
 import { escapeHTML } from '../../util/escapeHTML.js';
+import { UICheckbox } from '../libs/ui.js';
+import { SetValueCommand } from '../commands/SetValueCommand.js';
 
 const getObjectType = object => {
 	switch (object.type) {
 		case 'Scene':
-			return 'FigureGroup';
+		case 'BoxMesh':
+		case 'CylinderMesh':
+		case 'SphereMesh':
+			return 'Figure';
 		case 'DetectGroup':
-			return 'DetectGroup';
+		case 'Points':
+			return 'Detect';
+		case 'Filter':
 		case 'FilterGroup':
-			return 'FilterGroup';
+			return 'Filter';
 		case 'OutputGroup':
-			return 'OutputGroup';
+		case 'Output':
+		case 'Quantity':
+			return 'Output';
 		case 'ZoneGroup':
-			return 'ZoneGroup';
 		case 'Zone':
 		case 'WorldZone':
 			return 'Zone';
 		case 'Beam':
 			return 'Beam';
-		case 'BoxMesh':
-		case 'CylinderMesh':
-		case 'SphereMesh':
-			return 'Figure';
-		case 'Points':
-			return 'Detect';
-		case 'Filter':
-			return 'Filter';
 		default:
 			console.warn(`could not parse object of type ${object.type}`, typeof object, object);
 			return 'Unknown';
 	}
 };
-const getAditionalInfo = object => {
+const getAdditionalInfo = object => {
 	switch (object.type) {
 		case 'BoxMesh':
-			return ` [${object.id}] <span class="type Geometry"></span> Box`;
 		case 'CylinderMesh':
-			return ` [${object.id}] <span class="type Geometry"></span> Cylinder`;
 		case 'SphereMesh':
-			return ` [${object.id}] <span class="type Geometry"></span> Sphere`;
+			return ` [${
+				object.id
+			}] <span class="type Geometry"></span> <span class="type-value">${object.type.slice(
+				0,
+				-4
+			)}</span>`;
 		case 'Beam':
-			return ` [${object.id}]`;
+			let particle = object.particle;
+			return ` [${object.id}] <span class="type Particle Beam"></span> ${particle.name} [${particle.id}]`;
 		case 'WorldZone':
+			let { simulationMaterial: worldMaterial } = object;
 			return `<span class="type Material"></span> 
-            ${escapeHTML(object.simulationMaterial.name)}`;
+            <span class="type-value">${worldMaterial.name} [${worldMaterial.icru}]</span>`;
 		case 'Zone':
+			let { simulationMaterial: material } = object;
 			return ` [${object.id}] <span class="type Material"></span> 
-            ${escapeHTML(object.simulationMaterial.name)}`; //TODO: change to simulation material when its implemented
+            <span class="type-value">${material.name} [${material.icru}]</span>`;
 		case 'Points':
-		case 'Detect':
-			return ` [${object.id}] <span class="type Geometry"></span> 
-            ${escapeHTML(object.detectType)}`;
+			let { zone, detectType } = object;
+			return ` [${object.id}] <span class="type Geometry ${
+				detectType === 'Zone' ? 'Zone' : ''
+			}"></span> <span class="type-value">${
+				zone ? `${escapeHTML(zone.name)} [${zone.id}]` : detectType
+			}</span>`;
+		case 'Filter':
+			return ` [${object.id}]`;
+		case 'Output':
+			let { geometry } = object;
+			return ` [${object.id}] <span class="type-value">${
+				object.geometry
+					? `<span class="type Detect Geometry"></span>${escapeHTML(geometry.name)} [${
+							geometry.id
+					  }]`
+					: ''
+			}</span>`;
+		case 'Quantity':
+			let filter = object.filter;
+			return ` [${object.id}] ${
+				filter
+					? `<span class="type Filter Modifier"></span> <span class="type-value">${escapeHTML(
+							filter.name
+					  )} [${filter.id}]`
+					: ''
+			}</span>`;
 		default:
 			return '';
 	}
@@ -59,20 +88,38 @@ const getAditionalInfo = object => {
 const buildHTML = object => {
 	let html =
 		`<span class="type ${getObjectType(object)}"></span> ${escapeHTML(object.name)}` +
-		getAditionalInfo(object);
+		getAdditionalInfo(object);
+
 	return html;
 };
 
-const buildOptions = (object, pad) => {
+const buildOptions = (editor, object, pad) => {
 	const option = document.createElement('div');
+	option.style.display = 'flex';
 	option.draggable = false;
 	option.innerHTML = buildHTML(object);
 	option.value = object.uuid;
 	option.style.paddingLeft = pad * 18 + 'px';
+
+	if ('visible' in object && !object.notHidable) {
+		const visible = new UICheckbox(object.visible);
+		visible.setStyle('margin', ['0']);
+		visible.setStyle('margin-left', ['auto']);
+		visible.dom.title = 'visible';
+		visible.dom.disabled = object?.parent?.visible === false ? 'disabled' : '';
+		visible.onClick(e => e.stopPropagation());
+		visible.onChange(() => {
+			editor.execute(new SetValueCommand(editor, object, 'visible', visible.getValue()));
+		});
+		option.appendChild(visible.dom);
+	}
+
 	let result = [option];
 	if (object.type !== 'Beam' && object.children?.length > 0)
 		//TODO: move beam helpers to scene helpers
-		result = result.concat(object.children.flatMap(child => buildOptions(child, pad + 1)));
+		result = result.concat(
+			object.children.flatMap(child => buildOptions(editor, child, pad + 1))
+		);
 	return result;
 };
 
@@ -89,11 +136,10 @@ export class OutlinerManager {
 		container.add(this.outliner);
 		this.outliner.onChange(this.onChange.bind(this));
 		this.editor.signals.objectSelected.add(this.onObjectSelected.bind(this));
-		this.editor.signals.dataObjectSelected.add(this.onObjectSelected.bind(this));
 		this.editor.signals.contextChanged.add(() => this.outliner.setValue(null));
 	}
 	setOptionsFromSources(sources) {
-		const options = sources.flatMap(parent => buildOptions(parent, 0));
+		const options = sources.flatMap(parent => buildOptions(this.editor, parent, 0));
 		this.outliner.setOptions(options);
 		this.outliner.setValue(this._selected);
 	}

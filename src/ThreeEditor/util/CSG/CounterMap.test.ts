@@ -43,6 +43,10 @@ test('serialization', () => {
 	const obj = map.toJSON();
 	expect(obj).toEqual({ a: 3, b: 2, c: 1 });
 
+	map.decrement('c');
+	const obj2 = map.toJSON();
+	expect(obj2).toEqual({ a: 3, b: 2 });
+
 	const map2 = new CounterMap().fromJSON(obj);
 	expect(map2.get('a')).toBe(3);
 	expect(map2.get('b')).toBe(2);

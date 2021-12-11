@@ -4,4 +4,5 @@ export interface ISimulationObject {
 	readonly notMovable?: boolean;
 	readonly notRotatable?: boolean;
 	readonly notScalable?: boolean;
+	readonly notHidable?: boolean;
 }
