@@ -52,10 +52,6 @@ export abstract class FilterRule {
 		this.operator = operator;
 	}
 
-	get operatorSymbol(): OperatorSymbol {
-		return getOperator(this.operator);
-	}
-
 	abstract toJSON(): RuleJSON;
 }
 

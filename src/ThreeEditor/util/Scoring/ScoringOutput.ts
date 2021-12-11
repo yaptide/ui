@@ -15,8 +15,7 @@ export type ScoringOutputJSON = {
 				disabled: ScoringQuantityJSON[];
 		  };
 	detectGeometry?: string;
-	primaries: boolean;
-	primariesMultiplier?: number;
+	primaries?: number;
 	trace: boolean;
 	traceFilter?: string;
 };
@@ -88,9 +87,8 @@ export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> {
 				disabled: this._disabledChildren.map(qty => qty.toJSON())
 			},
 			detectGeometry: this._geometry,
-			primaries: this._primaries[0],
 			trace: this._trace[0],
-			...(this.primaries[1] && { primariesMultiplier: this.primaries[1] }),
+			...(this.primaries[1] && { primaries: this.primaries[1] }),
 			...(this.trace[1] && { traceFilter: this.trace[1] })
 		};
 	}
@@ -122,7 +120,7 @@ export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> {
 	fromJSON(json: ScoringOutputJSON): this {
 		this.uuid = json.uuid;
 		this.name = json.name;
-		this._primaries = [json.primaries, json.primariesMultiplier ?? null];
+		this._primaries = [json.primaries !== undefined, json.primaries ?? null];
 		this._trace = [json.trace, json.traceFilter ?? null];
 		Object.values(json.quantities)
 			.flat()

@@ -57,15 +57,15 @@ const _int_keywords = ['A', 'GEN', 'NPRIM', 'Z'] as const;
 const _id_keywords = ['ID'] as const;
 
 const _operators = {
-	equal: ['&#61;', '='],
-	not_equal: ['&#8800;', '≠'],
-	less_than: ['&#60;', '<'],
-	less_than_or_equal: ['&#8804;', '≤'],
-	greater_than: ['&#62;', '>'],
-	greater_than_or_equal: ['&#8805;', '≥']
+	'==': '=',
+	'!=': '≠',
+	'<': '<',
+	'<=': '≤',
+	'>': '>',
+	'>=': '≥'
 } as const;
 
-export const OPERATOR_OPTIONS = Object.entries(_operators).reduce((acc, [key, [html, text]]) => {
+export const OPERATOR_OPTIONS = Object.entries(_operators).reduce((acc, [key, text]) => {
 	acc[key] = text;
 	return acc;
 }, {} as Record<string, string>);
