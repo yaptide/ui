@@ -80,22 +80,20 @@ export function KEYWORD_SORT_ORDER(a: string, b: string) {
 	return order.indexOf(a) - order.indexOf(b);
 }
 
-const _notOperator = '&#172;' as const;
-
 const _particles = {
 	1: ['Hadron', 'H'],
 	2: ['Anti-hadron', 'H'],
-	3: ['Pion π-', 'π-'],
+	3: ['Pion π−', 'π−'],
 	4: ['Pion π+', 'π+'],
 	5: ['Pion π0', 'π0'],
-	8: ['Kaon κ-', 'κ-'],
+	8: ['Kaon κ−', 'κ−'],
 	9: ['Kaon κ+', 'κ+'],
 	10: ['Kaon κ0', 'κ0'],
 	11: ['Kaon κ∼', 'κ∼'],
 	12: ['Gamma radiation', 'γ'],
 	13: ['Electron', 'e−'],
 	14: ['Positron', 'e+'],
-	15: ['Muon', 'μ-'],
+	15: ['Muon', 'μ−'],
 	16: ['Anti-muon', 'μ+'],
 	17: ['Electron neutrino', 'νe'],
 	18: ['Electron anti-neutrino', 'νe'],
@@ -142,10 +140,7 @@ export function isValidOperator(operator: string): operator is Operator {
 	return operator in _operators;
 }
 
-export type OperatorSymbol = typeof _operators[Operator] | typeof _notOperator;
-export function getOperator(operator: string) {
-	return isValidOperator(operator) ? _operators[operator] : _notOperator;
-}
+export type OperatorSymbol = typeof _operators[Operator];
 
 export type ParticleId = keyof typeof _particles;
 export function isValidID(id: number): id is ParticleId {

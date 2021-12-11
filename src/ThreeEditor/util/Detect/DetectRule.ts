@@ -6,8 +6,6 @@ import {
 	I_Keyword,
 	Keyword,
 	Operator,
-	OperatorSymbol,
-	getOperator,
 	isValidID
 } from './DetectRuleTypes';
 
