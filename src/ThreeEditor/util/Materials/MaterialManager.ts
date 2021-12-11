@@ -68,10 +68,11 @@ export class MaterialManager {
 	}
 
 	get defaultMaterial(): SimulationMaterial {
-		return (
-			this.customMaterials[DEFAULT_MATERIAL_ICRU] ??
-			this.prefabMaterials[DEFAULT_MATERIAL_ICRU]
-		);
+		let defaultMaterial = this.customMaterials[DEFAULT_MATERIAL_ICRU];
+		if (defaultMaterial) return defaultMaterial;
+		defaultMaterial = this.prefabMaterials[DEFAULT_MATERIAL_ICRU];
+		this.customMaterials[DEFAULT_MATERIAL_ICRU] = defaultMaterial;
+		return defaultMaterial;
 	}
 
 	private createMaterialPrefabs = () => {
@@ -94,7 +95,7 @@ export class MaterialManager {
 
 	toJSON(): MaterialManagerJSON {
 		const selectedMaterials = this.selectedMaterials.toJSON();
-		const materials = Object.entries(this.materials)
+		const materials = Object.entries(this.customMaterials)
 			.map(([_icru, material]) => material.toJSON())
 			.filter(
 				({ uuid, name, icru, ...rest }) =>
@@ -118,10 +119,7 @@ export class MaterialManager {
 	}
 
 	getMaterialByUuid(uuid: string): SimulationMaterial | undefined {
-		return (
-			Object.values(this.customMaterials).find(material => material.uuid === uuid) ??
-			this.defaultMaterial
-		);
+		return Object.values(this.customMaterials).find(material => material.uuid === uuid);
 	}
 
 	reset(): void {

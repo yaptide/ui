@@ -97,6 +97,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 		material.applyRenderProps();
 		return material.proxy;
 	}
+
 	applyRenderProps() {
 		const { color, opacity, transparent, wireframe, wireframeLinewidth } = this.renderProps;
 		if (color) this.colorProxy = new Proxy(new THREE.Color(color), this.materialColorHandler);
