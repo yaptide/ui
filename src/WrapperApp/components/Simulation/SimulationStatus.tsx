@@ -13,10 +13,8 @@ import {
 	Theme,
 	Typography
 } from '@mui/material';
-import { title } from 'process';
-import React, { ReactChild, ReactFragment, ReactPortal, useState } from 'react';
+import React, { useState } from 'react';
 import Countdown from 'react-countdown';
-import { IRunResponse } from './SimulationPanel';
 
 interface SimulationStatusProps {
 	simulation: SimulationStatusData;
@@ -33,8 +31,6 @@ export interface SimulationStatusData {
 export default function SimulationStatus({ simulation }: SimulationStatusProps) {
 	const tableRowStyle: SxProps<Theme> = { '&:last-child td, &:last-child th': { border: 0 } };
 
-	const [endTime, setEndTime] = useState(Date.now() + 10000);
-
 	const row = (title: string, value: {} | undefined, guard = true) => (
 		<React.Fragment key={title}>
 			{guard && (
@@ -50,7 +46,11 @@ export default function SimulationStatus({ simulation }: SimulationStatusProps) 
 	const rows = [
 		row('UUID', simulation.uuid),
 		row('State', simulation.status),
-		row('Estimated time', <Countdown date={endTime} />, !!simulation.estimatedTime),
+		row(
+			'Estimated time',
+			<Countdown date={simulation.estimatedTime} />,
+			!!simulation.estimatedTime
+		),
 		row('Counted', simulation.counted, !!simulation.counted),
 		row('Message', simulation.message, !!simulation.message)
 	];

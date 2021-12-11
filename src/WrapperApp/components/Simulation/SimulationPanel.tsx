@@ -10,7 +10,9 @@ import {
 import { HTTPError } from 'ky';
 
 import React, { useCallback, useEffect, useState } from 'react';
+import useInterval from 'use-interval';
 import { useAuth } from '../../../services/AuthService';
+import { IResponseMsg } from '../../../services/ResponseTypes';
 import { useStore } from '../../../services/StoreService';
 import { BACKEND_URL } from '../../../util/Config';
 import SimulationStatus, { SimulationStatusData } from './SimulationStatus';
@@ -20,21 +22,56 @@ interface SimulationPanelProps {
 	onSuccess?: (result: unknown) => void;
 }
 
-export interface IResponse {
-	status: string;
-	message: object;
-}
-
-export interface IRunResponse extends IResponse {
-	message: {
+interface ResShRun extends IResponseMsg {
+	content: {
 		task_id: string;
 	};
 }
-export interface IListResponse {
-	message: {
+interface ResUserSimulations extends IResponseMsg {
+	content: {
 		tasks_ids: string[];
 	};
 }
+
+interface ResShStatusPending extends IResponseMsg {
+	content: {
+		state: 'PENDING';
+	};
+}
+
+interface ResShStatusProgress extends IResponseMsg {
+	content: {
+		state: 'PROGRESS';
+		info: {
+			simulated_primaries: number;
+			estimated?: {
+				hours: number;
+				minutes: number;
+				seconds: number;
+			};
+		};
+	};
+}
+
+interface ResShStatusFailure extends IResponseMsg {
+	content: {
+		state: 'FAILURE';
+		error: string;
+	};
+}
+
+interface ResShStatusCompleted extends IResponseMsg {
+	content: {
+		state: 'COMPLETED';
+		result: object;
+	};
+}
+
+type ResShStatus =
+	| ResShStatusPending
+	| ResShStatusProgress
+	| ResShStatusFailure
+	| ResShStatusCompleted;
 
 export default function SimulationPanel(props: SimulationPanelProps) {
 	const { authKy } = useAuth();
@@ -45,6 +82,16 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	const [simulationIDs, setSimulationIDs] = useState<string[]>([]);
 	const [simulationsData, setSimulationsData] = useState<SimulationStatusData[]>([]);
+
+	const [simulationStatusInterval, setSimulationStatusInterval] = useState<number | null>(null);
+
+	const [controller] = useState(new AbortController());
+
+	useEffect(() => {
+		return () => {
+			controller.abort();
+		};
+	}, [controller]);
 
 	const sendRun = () => {
 		setInProgress(true);
@@ -59,10 +106,9 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			})
 			.json()
 			.then((response: unknown) => {
-				console.log(response);
-				const runResponse = response as IRunResponse;
-				props.onSuccess?.call(null, response);
-				getStatus(runResponse.message.task_id);
+				const runResponse = response as ResShRun;
+				props.onSuccess?.call(null, runResponse);
+				setSimulationIDs(old => [runResponse.content.task_id, ...old]);
 			})
 			.catch((error: HTTPError) => {
 				props.onError?.call(null, error);
@@ -80,24 +126,31 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					json: { task_id: taskId }
 				})
 				.json()
-				.then((response: any) => {
+				.then((response: unknown) => {
+					const { content } = response as ResShStatus;
 					const data: SimulationStatusData = {
 						uuid: taskId,
-						status: response.state,
-						message: response.status
+						status: content.state
 					};
+					switch (content.state) {
+						case 'PENDING':
+							break;
+						case 'PROGRESS':
+							data.counted = content.info.simulated_primaries;
+							if (content.info.estimated) {
+								const { hours, minutes, seconds } = content.info.estimated;
+								data.estimatedTime =
+									Date.now() + (hours * 60 * 60 + minutes * 60 + seconds) * 1000;
+							}
+							break;
+						case 'FAILURE':
+							data.message = content.error;
+							break;
+					}
+
 					return data;
 				})
-				.catch((error: HTTPError) =>
-					error?.response?.json().then(value => {
-						const data: SimulationStatusData = {
-							uuid: taskId,
-							status: value.state,
-							message: value.status
-						};
-						return data;
-					})
-				);
+				.catch((error: HTTPError) => undefined);
 		},
 		[authKy]
 	);
@@ -107,47 +160,62 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			.get(`${BACKEND_URL}/user/simulations`)
 			.json()
 			.then((response: unknown) => {
-				const simulationList = (response as IListResponse).message.tasks_ids;
+				const simulationList = (response as ResUserSimulations).content.tasks_ids;
 				setSimulationIDs(simulationList);
 			})
-			.catch((error: HTTPError) => {});
+			.catch((_: HTTPError) => {});
 	}, [authKy]);
 
 	useEffect(() => {
-		const controller = new AbortController();
 		const { signal } = controller;
 
 		authKy
 			.get(`${BACKEND_URL}`, { signal })
 			.json()
 			.then((response: unknown) => {
-				console.log(response);
 				setBackendAlive(true);
 				getSimulations();
 			})
 			.catch((error: unknown) => {
 				setBackendAlive(false);
 			});
+	}, [authKy, controller, getSimulations]);
 
-		return () => {
-			controller.abort();
-		};
-	}, [authKy, getSimulations]);
+	const getSimulationsStatus = useCallback(
+		(abortSignal?: AbortSignal) => {
+			const res = simulationIDs.map(uuid => getStatus(uuid, abortSignal));
+
+			return Promise.all(res).then(values => {
+				if (values.includes(undefined)) getSimulations();
+
+				return setSimulationsData(
+					[...values.filter((e): e is SimulationStatusData => !!e)].reverse()
+				);
+			});
+		},
+		[getSimulations, getStatus, simulationIDs]
+	);
 
 	useEffect(() => {
-		const controller = new AbortController();
 		const { signal } = controller;
 
-		const res = simulationIDs.map(uuid => getStatus(uuid, signal));
-
-		Promise.all(res).then(values => {
-			setSimulationsData([...values.filter(e => e)]);
+		getSimulationsStatus(signal).then(() => {
+			setSimulationStatusInterval(5000);
 		});
 
 		return () => {
 			controller.abort();
 		};
-	}, [authKy, getStatus, simulationIDs]);
+	}, [controller, getSimulationsStatus, simulationIDs]);
+
+	useInterval(
+		() => {
+			const { signal } = controller;
+			getSimulationsStatus(signal);
+		},
+		simulationIDs.length > 0 ? simulationStatusInterval : null,
+		true
+	);
 
 	return (
 		<Box
