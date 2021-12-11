@@ -2,15 +2,15 @@
 
 ## For users
 
-Development version is unstable, without many features and with lot o bugs.
-It is released automatically after every commit to main branch of this repository and available for testing here:
+The development version is unstable, without many features and with lot o bugs.
+It is released automatically after every commit to the main branch of this repository and is available for testing here:
 https://yaptide.github.io/web_dev/
 
-Stable version is not released yet, have patience.
+The stable version is not released yet, have patience.
 
 ## For developers
 
-Before starting local version of the web interface, you need to install necessary dependencies by typing:
+Before starting the local version of the web interface, you need to install the necessary dependencies by typing:
 
 ```bash
 npm install
@@ -36,3 +36,5 @@ This project adapts source code from the following libraries:
 -   ThreeJS editor https://threejs.org/editor/
     -   most of its code copied from [github mrdoob repo](https://github.com/mrdoob/three.js/tree/r132/editor) into `src/ThreeEditor`, starting from v.132
     -   most of copied code adapted to yaptide needs
+
+This work was partially funded by EuroHPC PL Project, Smart Growth Operational Programme 4.2
