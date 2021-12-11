@@ -1,5 +1,5 @@
 import { Beam } from '../../../util/Beam';
-import { isZone, Zone } from '../../../util/CSG/CSGZone';
+import * as CSG from '../../../util/CSG/CSG';
 import { SimulationMesh, SimulationPoints } from '../../../util/SimulationBase/SimulationMesh';
 import {
 	createFullwidthButton,
@@ -121,10 +121,10 @@ export class ObjectMaterial extends ObjectAbstract {
 		hideUIElement(this.opacityRow);
 		hideUIElement(this.exportMaterialsRow);
 		this.color.setHexValue(color.getHexString());
-		if (isWorldZone(object) || isZone(object)) {
+		if (isWorldZone(object) || CSG.isZone(object)) {
 			const { icru } = object.simulationMaterial;
 			showUIElement(this.typeSelectRow);
-			if (isZone(object)) {
+			if (CSG.isZone(object)) {
 				showUIElement(this.opacityRow);
 				if (transparent) showUIElement(this.opacity);
 				else hideUIElement(this.opacity);
@@ -143,12 +143,8 @@ export class ObjectMaterial extends ObjectAbstract {
 	update(): void {
 		const { editor, object } = this;
 		if (!object) return;
-		console.log(
-			(object as Zone)?.simulationMaterial.icru,
-			parseInt(this.typeSelect.getValue())
-		);
 		if (
-			(isWorldZone(object) || isZone(object)) &&
+			(isWorldZone(object) || CSG.isZone(object)) &&
 			object.simulationMaterial.icru !== parseInt(this.typeSelect.getValue())
 		)
 			editor.execute(new SetZoneMaterialCommand(editor, object, this.typeSelect.getValue()));
@@ -158,7 +154,7 @@ export class ObjectMaterial extends ObjectAbstract {
 				new SetMaterialColorCommand(editor, object, 'color', this.color.getHexValue())
 			);
 		console.log(object.material.transparent, this.transparent.getValue());
-		if (isZone(object) && object.material.transparent !== this.transparent.getValue())
+		if (CSG.isZone(object) && object.material.transparent !== this.transparent.getValue())
 			editor.execute(
 				new SetMaterialValueCommand(
 					editor,
@@ -167,15 +163,15 @@ export class ObjectMaterial extends ObjectAbstract {
 					this.transparent.getValue()
 				)
 			);
-		console.log(isZone(object) && object.material.opacity, this.opacity.getValue());
-		if (isZone(object) && object.material.opacity !== this.opacity.getValue())
+		console.log(CSG.isZone(object) && object.material.opacity, this.opacity.getValue());
+		if (CSG.isZone(object) && object.material.opacity !== this.opacity.getValue())
 			editor.execute(
 				new SetMaterialValueCommand(editor, object, 'opacity', this.opacity.getValue())
 			);
 	}
 
 	render(): void {
-		if (!isWorldZone(this.object) && !isZone(this.object)) return;
+		if (!isWorldZone(this.object) && !CSG.isZone(this.object)) return;
 		this.renderTypeSelect(this.object.simulationMaterial.icru);
 	}
 	materialConsole(): void {

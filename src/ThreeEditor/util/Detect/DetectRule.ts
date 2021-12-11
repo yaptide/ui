@@ -6,8 +6,6 @@ import {
 	I_Keyword,
 	Keyword,
 	Operator,
-	OperatorSymbol,
-	getOperator,
 	isValidID
 } from './DetectRuleTypes';
 
@@ -50,10 +48,6 @@ export abstract class FilterRule {
 	constructor(operator: Operator) {
 		this.uuid = MathUtils.generateUUID();
 		this.operator = operator;
-	}
-
-	get operatorSymbol(): OperatorSymbol {
-		return getOperator(this.operator);
 	}
 
 	abstract toJSON(): RuleJSON;
