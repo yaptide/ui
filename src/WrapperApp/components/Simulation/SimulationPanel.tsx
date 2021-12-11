@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { HTTPError } from 'ky';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import useInterval from 'use-interval';
 import { useAuth } from '../../../services/AuthService';
 import { IResponseMsg } from '../../../services/ResponseTypes';
@@ -33,15 +33,21 @@ interface ResUserSimulations extends IResponseMsg {
 	};
 }
 
+export enum StatusState {
+	PENDING = 'PENDING',
+	PROGRESS = 'PROGRESS',
+	FAILURE = 'FAILURE',
+	SUCCESS = 'SUCCESS'
+}
 interface ResShStatusPending extends IResponseMsg {
 	content: {
-		state: 'PENDING';
+		state: StatusState.PENDING;
 	};
 }
 
 interface ResShStatusProgress extends IResponseMsg {
 	content: {
-		state: 'PROGRESS';
+		state: StatusState.PROGRESS;
 		info: {
 			simulated_primaries: number;
 			estimated?: {
@@ -55,15 +61,15 @@ interface ResShStatusProgress extends IResponseMsg {
 
 interface ResShStatusFailure extends IResponseMsg {
 	content: {
-		state: 'FAILURE';
+		state: StatusState.FAILURE;
 		error: string;
 	};
 }
 
-interface ResShStatusCompleted extends IResponseMsg {
+interface ResShStatusSuccess extends IResponseMsg {
 	content: {
-		state: 'COMPLETED';
-		result: object;
+		state: StatusState.SUCCESS;
+		result: any;
 	};
 }
 
@@ -71,7 +77,9 @@ type ResShStatus =
 	| ResShStatusPending
 	| ResShStatusProgress
 	| ResShStatusFailure
-	| ResShStatusCompleted;
+	| ResShStatusSuccess;
+
+const statusDataCache = new Map<string, SimulationStatusData>();
 
 export default function SimulationPanel(props: SimulationPanelProps) {
 	const { authKy } = useAuth();
@@ -96,7 +104,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const sendRun = () => {
 		setInProgress(true);
 		authKy
-			.post(`${BACKEND_URL}/sh/run`, {
+			.post(`${BACKEND_URL}/sh/run?sim_type=sh_dummy`, {
 				json: editorRef.current?.toJSON(),
 				timeout: 30000
 				/**
@@ -108,7 +116,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			.then((response: unknown) => {
 				const runResponse = response as ResShRun;
 				props.onSuccess?.call(null, runResponse);
-				setSimulationIDs(old => [runResponse.content.task_id, ...old]);
+				setSimulationIDs(old => [...old, runResponse.content.task_id]);
 			})
 			.catch((error: HTTPError) => {
 				props.onError?.call(null, error);
@@ -120,6 +128,8 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	const getStatus = useCallback(
 		(taskId: string, signal?: AbortSignal) => {
+			if (statusDataCache.has(taskId)) return Promise.resolve(statusDataCache.get(taskId));
+
 			return authKy
 				.post(`${BACKEND_URL}/sh/status`, {
 					signal,
@@ -133,9 +143,9 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 						status: content.state
 					};
 					switch (content.state) {
-						case 'PENDING':
+						case StatusState.PENDING:
 							break;
-						case 'PROGRESS':
+						case StatusState.PROGRESS:
 							data.counted = content.info.simulated_primaries;
 							if (content.info.estimated) {
 								const { hours, minutes, seconds } = content.info.estimated;
@@ -143,10 +153,16 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 									Date.now() + (hours * 60 * 60 + minutes * 60 + seconds) * 1000;
 							}
 							break;
-						case 'FAILURE':
+						case StatusState.FAILURE:
 							data.message = content.error;
 							break;
+						case StatusState.SUCCESS:
+							data.result = content.result;
+							break;
 					}
+
+					if ([StatusState.FAILURE, StatusState.SUCCESS].includes(content.state))
+						statusDataCache.set(data.uuid, data);
 
 					return data;
 				})

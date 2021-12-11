@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import React, { useState } from 'react';
 import Countdown from 'react-countdown';
+import { StatusState } from './SimulationPanel';
 
 interface SimulationStatusProps {
 	simulation: SimulationStatusData;
@@ -22,10 +23,11 @@ interface SimulationStatusProps {
 
 export interface SimulationStatusData {
 	uuid: string;
-	status: string;
+	status: StatusState;
 	estimatedTime?: number;
 	counted?: number;
 	message?: string;
+	result?: any;
 }
 
 export default function SimulationStatus({ simulation }: SimulationStatusProps) {
@@ -55,13 +57,13 @@ export default function SimulationStatus({ simulation }: SimulationStatusProps) 
 		row('Message', simulation.message, !!simulation.message)
 	];
 
-	const statusColor = (status: string) => {
+	const statusColor = (status: StatusState) => {
 		switch (status) {
-			case 'FAILURE':
+			case StatusState.FAILURE:
 				return 'red';
-			case 'PROGRESS':
+			case StatusState.PROGRESS:
 				return 'blue';
-			case 'COMPLETED':
+			case StatusState.SUCCESS:
 				return 'green';
 			default:
 				return 'black';
