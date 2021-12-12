@@ -1,8 +1,9 @@
 import { Grid, Tab, Tabs, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import React, { SyntheticEvent, useState } from 'react';
-import JsRootGraph from '../../JsRoot/JsRootGraph';
+import { generateGraphs } from '../../JsRoot/GraphData';
 import { TabPanel } from './TabPanel';
+import { estimators } from '../../JsRoot/simulation_output'
 
 interface ResultsPanelProps {
 	data?: Object;
@@ -28,9 +29,10 @@ const simulationData = (() => {
 	return data;
 })();
 
+
 const ResultsPanel = React.memo(
 	function ResultsPanel(props: ResultsPanelProps) {
-		const [tabsValue, setTabsValue] = useState<number>(simulationData[0].uuid);
+		const [tabsValue, setTabsValue] = useState<number>(0);
 
 		const handleChange = (event: SyntheticEvent, newValue: number) => {
 			setTabsValue(newValue);
@@ -44,36 +46,25 @@ const ResultsPanel = React.memo(
 					variant='scrollable'
 					value={tabsValue}
 					onChange={handleChange}>
-					{simulationData.map(meshResult => {
+					{estimators.map((estimator, idx) => {
 						return (
 							<Tab
-								key={meshResult.uuid}
-								label={meshResult.name}
-								value={meshResult.uuid}
+								key={estimator.name + idx}
+								label={estimator.name}
+								value={idx}
 							/>
 						);
 					})}
 				</Tabs>
-
-				{simulationData.map(meshResult => {
+				{estimators.map((estimator, idx) => {
 					return (
 						<TabPanel
-							key={meshResult.uuid}
+							key={"tab_pane_l" + estimator.name + idx}
 							value={tabsValue}
-							index={meshResult.uuid}
+							index={idx}
 							persistent>
-							<Grid key={meshResult.uuid} container spacing={1}>
-								{meshResult.graphs.map(graph => (
-									<React.Fragment key={graph.uuid}>
-										<Grid item xs={8}>
-											<JsRootGraph data={graph} />
-										</Grid>
-										<Grid item xs={4}>
-											<Typography> Additional info:</Typography>
-											<Typography> Title: {graph.title}</Typography>
-										</Grid>
-									</React.Fragment>
-								))}
+							<Grid key={"grid_" + estimator.name + idx} container spacing={1}>
+								{generateGraphs(estimator)}
 							</Grid>
 						</TabPanel>
 					);
