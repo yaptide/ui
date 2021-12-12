@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import CircularProgress from '@mui/material/CircularProgress';
 import Skeleton from '@mui/material/Skeleton';
 import { useJSROOT } from './JsRootService';
 import { useVisible } from 'react-hooks-visible';

@@ -1,3 +1,4 @@
+import React from "react";
 import JsRootGraph1D from "./JsRootGraph1D";
 import JsRootGraph2D from "./JsRootGraph2D";
 import JsRootGraph0D from "./JsRootGraph0D";
@@ -47,7 +48,7 @@ export const isPage0d = (page: Page): page is Page0D => {
     return (page as Page0D).dimensions === 0;
 }
 
-const getGraphFromPage = (page: Page, name:string = "estimator") => {
+const getGraphFromPage = (page: Page) => {
     if (isPage2d(page)) {
         return <JsRootGraph2D {...page} />;
     }else if (isPage1d(page)) {
@@ -59,9 +60,9 @@ const getGraphFromPage = (page: Page, name:string = "estimator") => {
     }
 }
 
-export function generateGraphs({name, pages}: Estimators) {
+export function generateGraphs({pages}: Estimators) {
     return pages.map(page => {
-        return getGraphFromPage(page, name)
+        return getGraphFromPage(page)
     }).map(graph => {
         return (<Grid item xs={8}>
                     {graph}
