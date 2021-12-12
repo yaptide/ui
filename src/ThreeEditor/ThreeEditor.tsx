@@ -31,8 +31,12 @@ function ThreeEditor(props: ThreeEditorProps) {
 	}, [editor, props.onEditorInitialized]);
 
 	useEffect(() => {
-		props.focus === true && containerEl.current?.focus();
+		if (props.focus === true) {
+			containerEl.current?.focus();
+			editor?.signals.sceneGraphChanged.dispatch();
+		}
 		props.focus === false && containerEl.current?.blur();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.focus]);
 
 	return (

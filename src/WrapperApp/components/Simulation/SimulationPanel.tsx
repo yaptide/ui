@@ -7,14 +7,11 @@ import {
 	LinearProgress,
 	Typography
 } from '@mui/material';
-import { HTTPError } from 'ky';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
-import { useAuth } from '../../../services/AuthService';
-import { IResponseMsg } from '../../../services/ResponseTypes';
+import { useShSimulation } from '../../../services/ShSimulationService';
 import { useStore } from '../../../services/StoreService';
-import { BACKEND_URL } from '../../../util/Config';
 import SimulationStatus, { SimulationStatusData } from './SimulationStatus';
 
 interface SimulationPanelProps {
@@ -22,68 +19,11 @@ interface SimulationPanelProps {
 	onSuccess?: (result: unknown) => void;
 }
 
-interface ResShRun extends IResponseMsg {
-	content: {
-		task_id: string;
-	};
-}
-interface ResUserSimulations extends IResponseMsg {
-	content: {
-		tasks_ids: string[];
-	};
-}
-
-export enum StatusState {
-	PENDING = 'PENDING',
-	PROGRESS = 'PROGRESS',
-	FAILURE = 'FAILURE',
-	SUCCESS = 'SUCCESS'
-}
-interface ResShStatusPending extends IResponseMsg {
-	content: {
-		state: StatusState.PENDING;
-	};
-}
-
-interface ResShStatusProgress extends IResponseMsg {
-	content: {
-		state: StatusState.PROGRESS;
-		info: {
-			simulated_primaries: number;
-			estimated?: {
-				hours: number;
-				minutes: number;
-				seconds: number;
-			};
-		};
-	};
-}
-
-interface ResShStatusFailure extends IResponseMsg {
-	content: {
-		state: StatusState.FAILURE;
-		error: string;
-	};
-}
-
-interface ResShStatusSuccess extends IResponseMsg {
-	content: {
-		state: StatusState.SUCCESS;
-		result: any;
-	};
-}
-
-type ResShStatus =
-	| ResShStatusPending
-	| ResShStatusProgress
-	| ResShStatusFailure
-	| ResShStatusSuccess;
-
-const statusDataCache = new Map<string, SimulationStatusData>();
-
 export default function SimulationPanel(props: SimulationPanelProps) {
-	const { authKy } = useAuth();
 	const { editorRef } = useStore();
+
+	const { sendRun, sendHelloWorld, getSimulations, getSimulationsStatus } = useShSimulation();
+
 	const [isInProgress, setInProgress] = useState(false);
 
 	const [isBackendAlive, setBackendAlive] = useState(false);
@@ -91,7 +31,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const [simulationIDs, setSimulationIDs] = useState<string[]>([]);
 	const [simulationsData, setSimulationsData] = useState<SimulationStatusData[]>([]);
 
-	const [simulationStatusInterval, setSimulationStatusInterval] = useState<number | null>(null);
+	const [simulationIDInterval, setSimulationIDInterval] = useState<number | null>(null);
 
 	const [controller] = useState(new AbortController());
 
@@ -101,137 +41,55 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		};
 	}, [controller]);
 
-	const sendRun = () => {
-		setInProgress(true);
-		authKy
-			.post(`${BACKEND_URL}/sh/run?sim_type=sh_dummy`, {
-				json: editorRef.current?.toJSON(),
-				timeout: 30000
-				/**
-            Timeout in milliseconds for getting a response. Can not be greater than 2147483647.
-            If set to `false`, there will be no timeout.
-            **/
-			})
-			.json()
-			.then((response: unknown) => {
-				const runResponse = response as ResShRun;
-				props.onSuccess?.call(null, runResponse);
-				setSimulationIDs(old => [...old, runResponse.content.task_id]);
-			})
-			.catch((error: HTTPError) => {
-				props.onError?.call(null, error);
-			})
-			.finally(() => {
-				setInProgress(false);
-			});
-	};
-
-	const getStatus = useCallback(
-		(taskId: string, signal?: AbortSignal) => {
-			if (statusDataCache.has(taskId)) return Promise.resolve(statusDataCache.get(taskId));
-
-			return authKy
-				.post(`${BACKEND_URL}/sh/status`, {
-					signal,
-					json: { task_id: taskId }
-				})
-				.json()
-				.then((response: unknown) => {
-					const { content } = response as ResShStatus;
-					const data: SimulationStatusData = {
-						uuid: taskId,
-						status: content.state
-					};
-					switch (content.state) {
-						case StatusState.PENDING:
-							break;
-						case StatusState.PROGRESS:
-							data.counted = content.info.simulated_primaries;
-							if (content.info.estimated) {
-								const { hours, minutes, seconds } = content.info.estimated;
-								data.estimatedTime =
-									Date.now() + (hours * 60 * 60 + minutes * 60 + seconds) * 1000;
-							}
-							break;
-						case StatusState.FAILURE:
-							data.message = content.error;
-							break;
-						case StatusState.SUCCESS:
-							data.result = content.result;
-							break;
-					}
-
-					if ([StatusState.FAILURE, StatusState.SUCCESS].includes(content.state))
-						statusDataCache.set(data.uuid, data);
-
-					return data;
-				})
-				.catch((error: HTTPError) => undefined);
-		},
-		[authKy]
+	const updateSimulationIDs = useCallback(
+		() =>
+			getSimulations(controller.signal)
+				.then(s => setSimulationIDs(s))
+				.catch(),
+		[controller.signal, getSimulations]
 	);
 
-	const getSimulations = useCallback(() => {
-		authKy
-			.get(`${BACKEND_URL}/user/simulations`)
-			.json()
-			.then((response: unknown) => {
-				const simulationList = (response as ResUserSimulations).content.tasks_ids;
-				setSimulationIDs(simulationList);
-			})
-			.catch((_: HTTPError) => {});
-	}, [authKy]);
-
 	useEffect(() => {
-		const { signal } = controller;
-
-		authKy
-			.get(`${BACKEND_URL}`, { signal })
-			.json()
-			.then((response: unknown) => {
+		sendHelloWorld(controller.signal)
+			.then(() => {
 				setBackendAlive(true);
-				getSimulations();
+				updateSimulationIDs();
+				setSimulationIDInterval(10000);
 			})
-			.catch((error: unknown) => {
+			.catch(() => {
 				setBackendAlive(false);
 			});
-	}, [authKy, controller, getSimulations]);
+	}, [controller.signal, getSimulations, isBackendAlive, sendHelloWorld, updateSimulationIDs]);
 
-	const getSimulationsStatus = useCallback(
-		(abortSignal?: AbortSignal) => {
-			const res = simulationIDs.map(uuid => getStatus(uuid, abortSignal));
+	useInterval(updateSimulationIDs, simulationIDInterval, true);
 
-			return Promise.all(res).then(values => {
-				if (values.includes(undefined)) getSimulations();
-
-				return setSimulationsData(
-					[...values.filter((e): e is SimulationStatusData => !!e)].reverse()
-				);
-			});
-		},
-		[getSimulations, getStatus, simulationIDs]
+	const updateSimulationData = useCallback(
+		() =>
+			getSimulationsStatus(simulationIDs, controller.signal).then(s => {
+				setSimulationsData([...s.reverse()]);
+			}),
+		[controller.signal, getSimulationsStatus, simulationIDs]
 	);
 
 	useEffect(() => {
-		const { signal } = controller;
-
-		getSimulationsStatus(signal).then(() => {
-			setSimulationStatusInterval(5000);
-		});
-
-		return () => {
-			controller.abort();
-		};
-	}, [controller, getSimulationsStatus, simulationIDs]);
+		updateSimulationData();
+	}, [updateSimulationData]);
 
 	useInterval(
-		() => {
-			const { signal } = controller;
-			getSimulationsStatus(signal);
-		},
-		simulationIDs.length > 0 ? simulationStatusInterval : null,
+		updateSimulationData,
+		simulationIDInterval !== null && simulationIDs.length > 0 ? 1000 : null,
 		true
 	);
+
+	const onClickRun = () => {
+		setInProgress(true);
+		sendRun(editorRef.current?.toJSON(), controller.signal)
+			.then(res => {
+				setSimulationIDs(old => [...old, res.content.task_id]);
+			})
+			.catch()
+			.finally(() => setInProgress(false));
+	};
 
 	return (
 		<Box
@@ -268,7 +126,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 							width: 'min(300px, 100%)',
 							margin: '0 auto'
 						}}
-						onClick={sendRun}>
+						onClick={onClickRun}>
 						{isInProgress ? 'Stop' : 'Start'}
 					</Button>
 				</CardActions>

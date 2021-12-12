@@ -13,9 +13,9 @@ import {
 	Theme,
 	Typography
 } from '@mui/material';
-import React, { useState } from 'react';
+import React from 'react';
 import Countdown from 'react-countdown';
-import { StatusState } from './SimulationPanel';
+import { StatusState } from '../../../services/ShSimulationService';
 
 interface SimulationStatusProps {
 	simulation: SimulationStatusData;
