@@ -19,6 +19,7 @@ import { StatusState } from '../../../services/ShSimulationService';
 
 interface SimulationStatusProps {
 	simulation: SimulationStatusData;
+	loadResults?: (taskId: string) => void;
 }
 
 export interface SimulationStatusData {
@@ -30,7 +31,7 @@ export interface SimulationStatusData {
 	result?: any;
 }
 
-export default function SimulationStatus({ simulation }: SimulationStatusProps) {
+export default function SimulationStatus({ simulation, loadResults }: SimulationStatusProps) {
 	const tableRowStyle: SxProps<Theme> = { '&:last-child td, &:last-child th': { border: 0 } };
 
 	const row = (title: string, value: {} | undefined, guard = true) => (
@@ -70,6 +71,10 @@ export default function SimulationStatus({ simulation }: SimulationStatusProps) 
 		}
 	};
 
+	const onClickLoadResults = () => {
+		loadResults?.call(null, simulation.uuid);
+	};
+
 	return (
 		<Card sx={{ minWidth: 275 }}>
 			<CardContent>
@@ -87,7 +92,9 @@ export default function SimulationStatus({ simulation }: SimulationStatusProps) 
 				</TableContainer>
 			</CardContent>
 			<CardActions>
-				<Button size='small'>Load Results</Button>
+				<Button size='small' onClick={onClickLoadResults}>
+					Load Results
+				</Button>
 				<Button size='small' disabled>
 					Cancel Simulation
 				</Button>

@@ -64,12 +64,13 @@ function WrapperApp() {
 						<SimulationPanel
 							onSuccess={data => {
 								setResultData({ data });
+								setTabsValue(2);
 							}}
 						/>
 					</TabPanel>
 
 					<TabPanel value={tabsValue} index={2} persistentIfVisited>
-						<ResultsPanel data={resultData} />
+						<ResultsPanel simulationResult={resultData} />
 					</TabPanel>
 				</>
 			)}

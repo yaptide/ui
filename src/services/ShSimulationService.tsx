@@ -15,13 +15,15 @@ export interface IShSimulation {
 	getStatus: (
 		taskId: string,
 		signal?: AbortSignal,
-		cache?: boolean
+		cache?: boolean,
+		beforeCacheWrite?: (id: string, response: ResShStatus) => void
 	) => Promise<SimulationStatusData | undefined>;
 	getSimulations: (signal?: AbortSignal) => Promise<string[]>;
 	getSimulationsStatus: (
 		simulationIDs: string[],
 		abortSignal?: AbortSignal,
-		cache?: boolean
+		cache?: boolean,
+		beforeCacheWrite?: (id: string, response: ResShStatus) => void
 	) => Promise<SimulationStatusData[]>;
 }
 
@@ -114,7 +116,12 @@ const ShSimulation = (props: ShSimulationProps) => {
 	);
 
 	const getStatus = useCallback(
-		(taskId: string, signal?: AbortSignal, cache = true) => {
+		(
+			taskId: string,
+			signal?: AbortSignal,
+			cache = true,
+			beforeCacheWrite?: (id: string, response: ResShStatus) => void
+		) => {
 			if (cache && statusDataCache.current.has(taskId))
 				return Promise.resolve(statusDataCache.current.get(taskId));
 
@@ -125,7 +132,9 @@ const ShSimulation = (props: ShSimulationProps) => {
 				})
 				.json()
 				.then((response: unknown) => {
-					const { content } = response as ResShStatus;
+					const resStatus = response as ResShStatus;
+					const { content } = resStatus;
+
 					const data: SimulationStatusData = {
 						uuid: taskId,
 						status: content.state
@@ -153,8 +162,10 @@ const ShSimulation = (props: ShSimulationProps) => {
 							break;
 					}
 
-					if ([StatusState.FAILURE, StatusState.SUCCESS].includes(content.state))
+					if ([StatusState.FAILURE, StatusState.SUCCESS].includes(content.state)) {
+						beforeCacheWrite?.call(null, data.uuid, resStatus);
 						statusDataCache.current.set(data.uuid, data);
+					}
 
 					return data;
 				})
@@ -176,8 +187,15 @@ const ShSimulation = (props: ShSimulationProps) => {
 	);
 
 	const getSimulationsStatus = useCallback(
-		(simulationIDs: string[], abortSignal?: AbortSignal, cache = true) => {
-			const res = simulationIDs.map(uuid => getStatus(uuid, abortSignal, cache));
+		(
+			simulationIDs: string[],
+			abortSignal?: AbortSignal,
+			cache = true,
+			beforeCacheWrite?: (id: string, response: ResShStatus) => void
+		) => {
+			const res = simulationIDs.map(uuid =>
+				getStatus(uuid, abortSignal, cache, beforeCacheWrite)
+			);
 
 			return Promise.all(res).then(values => {
 				return [...values.filter((e): e is SimulationStatusData => !!e)];
@@ -193,6 +211,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 		getSimulations,
 		getSimulationsStatus
 	};
+
 	return (
 		<ShSimulationContextProvider value={value}>{props.children}</ShSimulationContextProvider>
 	);

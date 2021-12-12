@@ -5,13 +5,13 @@ import JsRootGraph from '../../JsRoot/JsRootGraph';
 import { TabPanel } from './TabPanel';
 
 interface ResultsPanelProps {
-	data?: Object;
+	simulationResult?: Object;
 }
 
 const simulationData = (() => {
 	const data = [];
 	for (let index = 0; index < 5; index++) {
-		const numberOfElements = Math.floor(Math.random() * 50) + 100;
+		const numberOfElements = Math.floor(Math.random() * 10) + 20;
 		const obj = {
 			uuid: index,
 			name: `Scoring Mesh${index}`,
@@ -81,7 +81,9 @@ const ResultsPanel = React.memo(
 			</Box>
 		);
 	},
-	(prevProps, nextProps) => true
+	(prevProps, nextProps) => {
+		return prevProps.simulationResult === nextProps.simulationResult;
+	}
 );
 
 export default ResultsPanel;
