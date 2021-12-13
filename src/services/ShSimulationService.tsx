@@ -1,7 +1,6 @@
 import { ReactNode, useCallback, useRef } from 'react';
 import { BACKEND_URL } from '../util/Config';
 import { createGenericContext } from '../util/GenericContext';
-import { SimulationStatusData } from '../WrapperApp/components/Simulation/SimulationStatus';
 import { useAuth } from './AuthService';
 import { IResponseMsg } from './ResponseTypes';
 
@@ -13,14 +12,14 @@ export interface IShSimulation {
 	sendRun: (editorJSON: unknown, signal?: AbortSignal) => Promise<ResShRun>;
 	sendHelloWorld: (signal?: AbortSignal) => Promise<unknown>;
 	getStatus: (
-		taskId: string,
+		simulation: SimulationInfo,
 		signal?: AbortSignal,
 		cache?: boolean,
 		beforeCacheWrite?: (id: string, response: ResShStatus) => void
 	) => Promise<SimulationStatusData | undefined>;
-	getSimulations: (signal?: AbortSignal) => Promise<string[]>;
+	getSimulations: (signal?: AbortSignal) => Promise<SimulationInfo[]>;
 	getSimulationsStatus: (
-		simulationIDs: string[],
+		simulationInfo: SimulationInfo[],
 		abortSignal?: AbortSignal,
 		cache?: boolean,
 		beforeCacheWrite?: (id: string, response: ResShStatus) => void
@@ -32,9 +31,16 @@ interface ResShRun extends IResponseMsg {
 		task_id: string;
 	};
 }
+
+export interface SimulationInfo {
+	creation_date: Date;
+	name: string;
+	task_id: string;
+}
+
 interface ResUserSimulations extends IResponseMsg {
 	content: {
-		tasks_ids: string[];
+		simulations: SimulationInfo[];
 	};
 }
 
@@ -84,6 +90,17 @@ type ResShStatus =
 	| ResShStatusFailure
 	| ResShStatusSuccess;
 
+export interface SimulationStatusData {
+	uuid: string;
+	status: StatusState;
+	creationDate: Date;
+	name: string;
+	estimatedTime?: number;
+	counted?: number;
+	message?: string;
+	result?: any;
+}
+
 const [useShSimulation, ShSimulationContextProvider] = createGenericContext<IShSimulation>();
 
 const ShSimulation = (props: ShSimulationProps) => {
@@ -117,11 +134,13 @@ const ShSimulation = (props: ShSimulationProps) => {
 
 	const getStatus = useCallback(
 		(
-			taskId: string,
+			simulation: SimulationInfo,
 			signal?: AbortSignal,
 			cache = true,
 			beforeCacheWrite?: (id: string, response: ResShStatus) => void
 		) => {
+			const { task_id: taskId, name, creation_date: creationDate } = simulation;
+
 			if (cache && statusDataCache.current.has(taskId))
 				return Promise.resolve(statusDataCache.current.get(taskId));
 
@@ -137,7 +156,9 @@ const ShSimulation = (props: ShSimulationProps) => {
 
 					const data: SimulationStatusData = {
 						uuid: taskId,
-						status: content.state
+						status: content.state,
+						name,
+						creationDate
 					};
 
 					switch (content.state) {
@@ -180,7 +201,11 @@ const ShSimulation = (props: ShSimulationProps) => {
 				.get(`${BACKEND_URL}/user/simulations`, { signal })
 				.json()
 				.then((response: unknown) => {
-					return (response as ResUserSimulations).content.tasks_ids;
+					return (response as ResUserSimulations).content.simulations.map(s => {
+						const creation_date = new Date(s.creation_date as unknown as string);
+						const obj: SimulationInfo = { ...s, creation_date };
+						return obj;
+					});
 				});
 		},
 		[authKy]
@@ -188,14 +213,12 @@ const ShSimulation = (props: ShSimulationProps) => {
 
 	const getSimulationsStatus = useCallback(
 		(
-			simulationIDs: string[],
+			simulations: SimulationInfo[],
 			abortSignal?: AbortSignal,
 			cache = true,
 			beforeCacheWrite?: (id: string, response: ResShStatus) => void
 		) => {
-			const res = simulationIDs.map(uuid =>
-				getStatus(uuid, abortSignal, cache, beforeCacheWrite)
-			);
+			const res = simulations.map(s => getStatus(s, abortSignal, cache, beforeCacheWrite));
 
 			return Promise.all(res).then(values => {
 				return [...values.filter((e): e is SimulationStatusData => !!e)];

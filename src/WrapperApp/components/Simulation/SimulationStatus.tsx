@@ -15,23 +15,17 @@ import {
 } from '@mui/material';
 import React from 'react';
 import Countdown from 'react-countdown';
-import { StatusState } from '../../../services/ShSimulationService';
+import { SimulationStatusData, StatusState } from '../../../services/ShSimulationService';
+import { useStore } from '../../../services/StoreService';
 
 interface SimulationStatusProps {
 	simulation: SimulationStatusData;
-	loadResults?: (taskId: string) => void;
-}
-
-export interface SimulationStatusData {
-	uuid: string;
-	status: StatusState;
-	estimatedTime?: number;
-	counted?: number;
-	message?: string;
-	result?: any;
+	loadResults?: (taskId: string | null) => void;
 }
 
 export default function SimulationStatus({ simulation, loadResults }: SimulationStatusProps) {
+	const { resultsSimulationData } = useStore();
+
 	const tableRowStyle: SxProps<Theme> = { '&:last-child td, &:last-child th': { border: 0 } };
 
 	const row = (title: string, value: {} | undefined, guard = true) => (
@@ -47,6 +41,7 @@ export default function SimulationStatus({ simulation, loadResults }: Simulation
 		</React.Fragment>
 	);
 	const rows = [
+		row('Creation Date', simulation.creationDate.toLocaleString()),
 		row('UUID', simulation.uuid),
 		row('State', simulation.status),
 		row(
@@ -75,6 +70,10 @@ export default function SimulationStatus({ simulation, loadResults }: Simulation
 		loadResults?.call(null, simulation.uuid);
 	};
 
+	const onClickGoToResults = () => {
+		loadResults?.call(null, null);
+	};
+
 	return (
 		<Card sx={{ minWidth: 275 }}>
 			<CardContent>
@@ -83,7 +82,7 @@ export default function SimulationStatus({ simulation, loadResults }: Simulation
 					variant='h5'
 					component='div'
 					color={statusColor(simulation.status)}>
-					Simulation Status
+					Simulation: {simulation.name}
 				</Typography>
 				<TableContainer component={Paper}>
 					<Table aria-label='simple table'>
@@ -92,9 +91,18 @@ export default function SimulationStatus({ simulation, loadResults }: Simulation
 				</TableContainer>
 			</CardContent>
 			<CardActions>
-				<Button size='small' onClick={onClickLoadResults}>
-					Load Results
-				</Button>
+				{resultsSimulationData?.uuid !== simulation.uuid ? (
+					<Button
+						size='small'
+						disabled={simulation.status !== StatusState.SUCCESS}
+						onClick={onClickLoadResults}>
+						Load Results
+					</Button>
+				) : (
+					<Button size='small' onClick={onClickGoToResults}>
+						Go to Results
+					</Button>
+				)}
 				<Button size='small' disabled>
 					Cancel Simulation
 				</Button>

@@ -10,17 +10,21 @@ import {
 
 import { useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
-import { StatusState, useShSimulation } from '../../../services/ShSimulationService';
+import {
+	SimulationInfo,
+	SimulationStatusData,
+	StatusState,
+	useShSimulation
+} from '../../../services/ShSimulationService';
 import { useStore } from '../../../services/StoreService';
-import SimulationStatus, { SimulationStatusData } from './SimulationStatus';
+import SimulationStatus from './SimulationStatus';
 
 interface SimulationPanelProps {
-	onError?: (error: unknown) => void;
-	onSuccess?: (result: unknown) => void;
+	goToResults?: () => void;
 }
 
 export default function SimulationPanel(props: SimulationPanelProps) {
-	const { editorRef } = useStore();
+	const { editorRef, setResultsSimulationData } = useStore();
 
 	const { sendRun, sendHelloWorld, getSimulations, getSimulationsStatus } = useShSimulation();
 
@@ -29,8 +33,8 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const [isBackendAlive, setBackendAlive] = useState(false);
 
 	const [trackedId, setTrackedId] = useState<string>();
-	const [simulationIDs, setSimulationIDs] = useState<string[]>([]);
-	const [simulationsData, setSimulationsData] = useState<SimulationStatusData[]>([]);
+	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
+	const [simulationsStatusData, setSimulationsStatusData] = useState<SimulationStatusData[]>([]);
 
 	const [simulationIDInterval, setSimulationIDInterval] = useState<number | null>(null);
 
@@ -42,10 +46,10 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		};
 	}, [controller]);
 
-	const updateSimulationIDs = useCallback(
+	const updateSimulationInfo = useCallback(
 		() =>
 			getSimulations(controller.signal)
-				.then(s => setSimulationIDs([...s]))
+				.then(s => setSimulationInfo([...s]))
 				.catch(),
 		[controller.signal, getSimulations]
 	);
@@ -54,25 +58,31 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		sendHelloWorld(controller.signal)
 			.then(() => {
 				setBackendAlive(true);
-				updateSimulationIDs();
+				updateSimulationInfo();
 				setSimulationIDInterval(10000);
 			})
 			.catch(() => {
 				setBackendAlive(false);
 			});
-	}, [controller.signal, getSimulations, isBackendAlive, sendHelloWorld, updateSimulationIDs]);
+	}, [controller.signal, getSimulations, isBackendAlive, sendHelloWorld, updateSimulationInfo]);
 
-	useInterval(updateSimulationIDs, simulationIDInterval, true);
+	useInterval(updateSimulationInfo, simulationIDInterval, true);
 
 	const updateSimulationData = useCallback(
 		() =>
-			getSimulationsStatus(simulationIDs, controller.signal, true, (id, res) => {
+			getSimulationsStatus(simulationInfo, controller.signal, true, (id, res) => {
 				if (id === trackedId && res.content.state === StatusState.SUCCESS)
-					props.onSuccess?.call(null, res.content.result);
+					setResultsSimulationData(res.content.result);
 			}).then(s => {
-				setSimulationsData([...s.reverse()]);
+				setSimulationsStatusData([...s.reverse()]);
 			}),
-		[controller.signal, getSimulationsStatus, props.onSuccess, simulationIDs, trackedId]
+		[
+			controller.signal,
+			getSimulationsStatus,
+			setResultsSimulationData,
+			simulationInfo,
+			trackedId
+		]
 	);
 
 	useEffect(() => {
@@ -81,7 +91,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	useInterval(
 		updateSimulationData,
-		simulationIDInterval !== null && simulationIDs.length > 0 ? 1000 : null,
+		simulationIDInterval !== null && simulationInfo.length > 0 ? 1000 : null,
 		true
 	);
 
@@ -89,7 +99,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		setInProgress(true);
 		sendRun(editorRef.current?.toJSON(), controller.signal)
 			.then(res => {
-				setSimulationIDs(old => [...old, res.content.task_id]);
+				updateSimulationInfo();
 				setTrackedId(res.content.task_id);
 			})
 			.catch()
@@ -137,12 +147,13 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				</CardActions>
 			</Card>
 
-			{simulationsData.map(simulation => (
+			{simulationsStatusData.map(simulation => (
 				<SimulationStatus
 					key={simulation.uuid}
 					simulation={simulation}
-					loadResults={() => {
-						props.onSuccess?.call(null, simulation.result);
+					loadResults={id => {
+						if (id === null) props.goToResults?.call(null);
+						else setResultsSimulationData(simulation);
 					}}></SimulationStatus>
 			))}
 		</Box>

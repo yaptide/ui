@@ -10,10 +10,9 @@ import { DEMO_MODE } from '../util/Config';
 import { TabPanel } from './components/TabPanel';
 import ResultsPanel from './components/ResultsPanel';
 import { useAuth } from '../services/AuthService';
-import { Theme } from '@mui/material/styles/createTheme';
 
 function WrapperApp() {
-	const { editorRef } = useStore();
+	const { editorRef, resultsSimulationData } = useStore();
 	const { isAuthorized, logout } = useAuth();
 
 	const [tabsValue, setTabsValue] = useState(0);
@@ -27,7 +26,9 @@ function WrapperApp() {
 		else setTabsValue(0);
 	}, [isAuthorized]);
 
-	const [resultData, setResultData] = useState<{ data?: unknown }>({});
+	useEffect(() => {
+		if (resultsSimulationData) setTabsValue(2);
+	}, [resultsSimulationData]);
 
 	return (
 		<Box
@@ -41,7 +42,10 @@ function WrapperApp() {
 				<Tabs value={tabsValue} onChange={handleChange}>
 					<Tab label='Editor' />
 					<Tab label='Run' disabled={DEMO_MODE || !isAuthorized} />
-					<Tab label='Results' disabled={DEMO_MODE || !isAuthorized} />
+					<Tab
+						label='Results'
+						disabled={DEMO_MODE || !isAuthorized || !resultsSimulationData}
+					/>
 					<Tab label='Projects' disabled />
 					<Tab label='About' />
 					<Tab
@@ -61,16 +65,11 @@ function WrapperApp() {
 			{DEMO_MODE || (
 				<>
 					<TabPanel value={tabsValue} index={1}>
-						<SimulationPanel
-							onSuccess={data => {
-								setResultData({ data });
-								setTabsValue(2);
-							}}
-						/>
+						<SimulationPanel goToResults={() => setTabsValue(2)} />
 					</TabPanel>
 
 					<TabPanel value={tabsValue} index={2} persistentIfVisited>
-						<ResultsPanel simulationResult={resultData} />
+						<ResultsPanel />
 					</TabPanel>
 				</>
 			)}
