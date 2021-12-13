@@ -23,11 +23,6 @@ export function JsRootGraph2D(props: Page2D) {
 		const y = props.second_axis.values;
 		const z = props.data.values;
 
-		// JSRoot is unable to draw bins with value from the end of the range unless there is at least
-		//  one negative number, therefore we swap the first zero we find for -epsilon ¯\_(ツ)_/¯
-		const min_idx = z.findIndex(val => val === 0);
-		z[min_idx] = -Number.EPSILON;
-
 		const nxpoints = x.length;
 		const nypoints = y.length;
 
