@@ -12,7 +12,7 @@ declare global {
 }
 interface ThreeEditorProps {
 	onEditorInitialized?: (editor: Editor) => void;
-	focus?: boolean;
+	focus: boolean;
 }
 
 function ThreeEditor(props: ThreeEditorProps) {
@@ -31,11 +31,10 @@ function ThreeEditor(props: ThreeEditorProps) {
 	}, [editor, props.onEditorInitialized]);
 
 	useEffect(() => {
-		if (props.focus === true) {
+		if (props.focus) {
 			containerEl.current?.focus();
 			editor?.signals.sceneGraphChanged.dispatch();
-		}
-		props.focus === false && containerEl.current?.blur();
+		} else containerEl.current?.blur();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.focus]);
 
