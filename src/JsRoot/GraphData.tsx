@@ -28,7 +28,7 @@ export type Page0D = {
 	dimensions: 0;
 };
 
-export type Estimators = {
+export type Estimator = {
 	name: string;
 	pages: Page[];
 };
@@ -59,7 +59,7 @@ const getGraphFromPage = (page: Page) => {
 	}
 };
 
-export function generateGraphs({ pages, name }: Estimators) {
+export function generateGraphs({ pages, name }: Estimator) {
 	return pages
 		.map(page => {
 			return getGraphFromPage(page);

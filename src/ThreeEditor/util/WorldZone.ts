@@ -8,6 +8,7 @@ import SimulationMaterial from './Materials/SimulationMaterial';
 import { SimulationObject3D } from './SimulationBase/SimulationMesh';
 
 export interface WorldZoneJSON {
+	uuid: string;
 	type: string;
 	center: THREE.Vector3;
 	size: THREE.Vector3;
@@ -19,6 +20,7 @@ export interface WorldZoneJSON {
 	userData?: {
 		geometryType: string;
 		position: THREE.Vector3Tuple;
+		rotation: THREE.Vector3Tuple;
 		parameters: {
 			[key: string]: number;
 		};
@@ -285,6 +287,7 @@ export class WorldZone extends SimulationObject3D {
 		const { uuid: materialUuid } = this.simulationMaterial;
 
 		const jsonObject: WorldZoneJSON = {
+			uuid: this.uuid,
 			center: this.box.getCenter(new Vector3()),
 			size: this.box.getSize(new Vector3()),
 			type: this.type,
@@ -296,7 +299,8 @@ export class WorldZone extends SimulationObject3D {
 			userData: {
 				geometryType: geometry[this._geometryType].type,
 				parameters: getGeometryParameters(geometry[this._geometryType]),
-				position: this.box.getCenter(new Vector3()).toArray()
+				position: this.box.getCenter(new Vector3()).toArray(),
+				rotation: this.rotation.toVector3().toArray()
 			}
 		};
 

@@ -5,7 +5,7 @@ import {
 	SetRotationCommand,
 	SetScaleCommand
 } from '../commands/Commands';
-import { ViewportClippedView as ViewportClipPlane } from './Viewport.ClipPlane';
+import { ViewportClippedView } from './Viewport.ClippedView';
 import { EditorOrbitControls } from '../EditorOrbitControls';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 import { UIPanel } from '../libs/ui';
@@ -91,7 +91,7 @@ export function Viewport(
 
 	let viewClipPlane = null;
 	if (clipPlane) {
-		viewClipPlane = new ViewportClipPlane(
+		viewClipPlane = new ViewportClippedView(
 			name,
 			editor,
 			this,

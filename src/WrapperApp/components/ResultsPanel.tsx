@@ -1,37 +1,75 @@
-import { Grid, Tab, Tabs } from '@mui/material';
-import { Box } from '@mui/system';
-import React, { SyntheticEvent, useState } from 'react';
+import { Box, Card, CardContent, Grid, Tab, Tabs, Typography } from '@mui/material';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { generateGraphs } from '../../JsRoot/GraphData';
 import { TabPanel } from './TabPanel';
-import { estimators } from '../../JsRoot/simulation_output';
+import { useStore } from '../../services/StoreService';
 
-interface ResultsPanelProps {
-	data?: Object;
-}
+function ResultsPanel() {
+	const { resultsSimulationData: simulation } = useStore();
 
-const ResultsPanel = React.memo(
-	function ResultsPanel(props: ResultsPanelProps) {
-		const [tabsValue, setTabsValue] = useState<number>(0);
-		
-		const handleChange = (event: SyntheticEvent, newValue: number) => {
-			setTabsValue(newValue);
-		};
+	const [tabsValue, setTabsValue] = useState<number>(0);
 
-		return (
-			<Box sx={{ display: 'flex', flexDirection: 'row', maxWidth: '100vw', width: '100%' }}>
-				<Tabs
-					sx={{ flexShrink: 0 }}
-					orientation='vertical'
-					variant='scrollable'
-					value={tabsValue}
-					onChange={handleChange}>
-					{estimators.map((estimator, idx) => {
+	const handleChange = (_event: SyntheticEvent, newValue: number) => {
+		setTabsValue(newValue);
+	};
+
+	useEffect(() => {
+		console.log(simulation)
+	}, [simulation])
+
+	return (
+		<Box>
+			{simulation && (
+				<Card
+					sx={{
+						margin: '0.5rem'
+					}}>
+					<Typography
+						gutterBottom
+						variant='h5'
+						component='div'
+						sx={{
+							margin: '1.5rem 1rem'
+						}}>
+						{simulation.name} [{simulation.creationDate.toLocaleString()}]
+					</Typography>
+				</Card>
+			)}
+
+			<Box
+				sx={{
+					display: 'flex',
+					flexDirection: 'row',
+					maxWidth: '100vw',
+					width: '100%'
+				}}>
+				<Card
+					sx={{
+						margin: '0.5rem',
+						height: 'min-content',
+						overflow: 'unset'
+					}}>
+					<CardContent>
+						<Tabs
+							sx={{ flexShrink: 0 }}
+							orientation='vertical'
+							variant='scrollable'
+							value={tabsValue}
+							onChange={handleChange}>
+							{simulation?.result?.estimators.map((estimator, idx) => {
 						return (
 							<Tab key={`tab_${estimator.name}`} label={estimator.name} value={idx} />
 						);
 					})}
-				</Tabs>
-				{estimators.map((estimator, idx) => {
+						</Tabs>
+					</CardContent>
+				</Card>
+				<Card
+					sx={{
+						margin: '0.5rem'
+					}}>
+					<CardContent>
+						{simulation?.result?.estimators.map((estimator, idx) => {
 					return (
 						<TabPanel
 							key={`tab_panel_${estimator.name}`}
@@ -44,10 +82,11 @@ const ResultsPanel = React.memo(
 						</TabPanel>
 					);
 				})}
+					</CardContent>
+				</Card>
 			</Box>
-		);
-	},
-	(prevProps, nextProps) => true
-);
+		</Box>
+	);
+}
 
 export default ResultsPanel;
