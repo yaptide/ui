@@ -31,7 +31,7 @@ function ThreeEditor(props: ThreeEditorProps) {
 	}, [editor, props.onEditorInitialized]);
 
 	useEffect(() => {
-		if (props.focus === true) {
+		if (props.focus) {
 			containerEl.current?.focus();
 			editor?.signals.sceneGraphChanged.dispatch();
 		}
