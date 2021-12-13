@@ -3,7 +3,7 @@ import { Box } from '@mui/system';
 import React, { SyntheticEvent, useState } from 'react';
 import { generateGraphs } from '../../JsRoot/GraphData';
 import { TabPanel } from './TabPanel';
-import { estimators } from '../../JsRoot/simulation_output'
+import { estimators } from '../../JsRoot/simulation_output';
 
 interface ResultsPanelProps {
 	data?: Object;
@@ -29,15 +29,14 @@ interface ResultsPanelProps {
 // 	return data;
 // })();
 
-
 const ResultsPanel = React.memo(
 	function ResultsPanel(props: ResultsPanelProps) {
 		const [tabsValue, setTabsValue] = useState<number>(0);
-		
+
 		/**
 		 * Handles the changing of tabs
-		 * @param event 
-		 * @param newValue 
+		 * @param event
+		 * @param newValue
 		 */
 		const handleChange = (event: SyntheticEvent, newValue: number) => {
 			setTabsValue(newValue);
@@ -53,11 +52,7 @@ const ResultsPanel = React.memo(
 					onChange={handleChange}>
 					{estimators.map((estimator, idx) => {
 						return (
-							<Tab
-								key={`tab_${estimator.name}`}
-								label={estimator.name}
-								value={idx}
-							/>
+							<Tab key={`tab_${estimator.name}`} label={estimator.name} value={idx} />
 						);
 					})}
 				</Tabs>

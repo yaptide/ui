@@ -26,12 +26,11 @@ export function JsRootGraph1D(props: Page1D) {
 
 		const gr = JSROOT.createTGraph(npoints, x, y);
 
-		gr.fName = props.data.name
+		gr.fName = props.data.name;
 		gr.fTitle = `${props.data.name} [${props.data.unit}]`;
 
 		setObj(gr);
 		setDrawn(false);
-
 	}, [JSROOT, drawn, props, visible]);
 
 	useEffect(() => {
@@ -43,8 +42,16 @@ export function JsRootGraph1D(props: Page1D) {
 	}, [JSROOT, containerEl, drawn, obj, isVisible]);
 
 	return (
-		<div style={{ width: 500, height: 500, display:'flex',alignItems:'center',justifyContent:'center' }} ref={containerEl}>
-			<Skeleton hidden={drawn} variant="rectangular" width={'80%'} height={'80%'} />
+		<div
+			style={{
+				width: 500,
+				height: 500,
+				display: 'flex',
+				alignItems: 'center',
+				justifyContent: 'center'
+			}}
+			ref={containerEl}>
+			<Skeleton hidden={drawn} variant='rectangular' width={'80%'} height={'80%'} />
 		</div>
 	);
 }
