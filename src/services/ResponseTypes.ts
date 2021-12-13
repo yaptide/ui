@@ -1,7 +1,7 @@
 export interface IResponse {
     message?: string;
     status?: string;
-    content?: object;
+    content?: unknown;
 }
 
 export interface IResponseMsg extends IResponse {

@@ -98,7 +98,7 @@ export interface SimulationStatusData {
 	estimatedTime?: number;
 	counted?: number;
 	message?: string;
-	result?: any;
+	result?: unknown;
 }
 
 const [useShSimulation, ShSimulationContextProvider] = createGenericContext<IShSimulation>();
