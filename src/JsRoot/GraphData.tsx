@@ -59,14 +59,14 @@ const getGraphFromPage = (page: Page) => {
 	}
 };
 
-export function generateGraphs({ pages }: Estimators) {
+export function generateGraphs({ pages, name }: Estimators) {
 	return pages
 		.map(page => {
 			return getGraphFromPage(page);
 		})
-		.map(graph => {
+		.map((graph, idx) => {
 			return (
-				<Grid item xs={8}>
+				<Grid key={`graph_${name}_${idx}`} item xs={8}>
 					{graph}
 				</Grid>
 			);
