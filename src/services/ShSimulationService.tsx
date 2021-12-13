@@ -15,14 +15,14 @@ export interface IShSimulation {
 		simulation: SimulationInfo,
 		signal?: AbortSignal,
 		cache?: boolean,
-		beforeCacheWrite?: (id: string, response: ResShStatus) => void
+		beforeCacheWrite?: (id: string, data: SimulationStatusData) => void
 	) => Promise<SimulationStatusData | undefined>;
 	getSimulations: (signal?: AbortSignal) => Promise<SimulationInfo[]>;
 	getSimulationsStatus: (
 		simulationInfo: SimulationInfo[],
 		abortSignal?: AbortSignal,
 		cache?: boolean,
-		beforeCacheWrite?: (id: string, response: ResShStatus) => void
+		beforeCacheWrite?: (id: string, data: SimulationStatusData) => void
 	) => Promise<SimulationStatusData[]>;
 }
 
@@ -80,7 +80,7 @@ interface ResShStatusFailure extends IResponseMsg {
 interface ResShStatusSuccess extends IResponseMsg {
 	content: {
 		state: StatusState.SUCCESS;
-		result: any;
+		result: unknown;
 	};
 }
 
@@ -137,7 +137,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 			simulation: SimulationInfo,
 			signal?: AbortSignal,
 			cache = true,
-			beforeCacheWrite?: (id: string, response: ResShStatus) => void
+			beforeCacheWrite?: (id: string, response: SimulationStatusData) => void
 		) => {
 			const { task_id: taskId, name, creation_date: creationDate } = simulation;
 
@@ -184,7 +184,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 					}
 
 					if ([StatusState.FAILURE, StatusState.SUCCESS].includes(content.state)) {
-						beforeCacheWrite?.call(null, data.uuid, resStatus);
+						beforeCacheWrite?.call(null, data.uuid, data);
 						statusDataCache.current.set(data.uuid, data);
 					}
 
@@ -216,7 +216,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 			simulations: SimulationInfo[],
 			abortSignal?: AbortSignal,
 			cache = true,
-			beforeCacheWrite?: (id: string, response: ResShStatus) => void
+			beforeCacheWrite?: (id: string, response: SimulationStatusData) => void
 		) => {
 			const res = simulations.map(s => getStatus(s, abortSignal, cache, beforeCacheWrite));
 

@@ -70,9 +70,9 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	const updateSimulationData = useCallback(
 		() =>
-			getSimulationsStatus(simulationInfo, controller.signal, true, (id, res) => {
-				if (id === trackedId && res.content.state === StatusState.SUCCESS)
-					setResultsSimulationData(res.content.result);
+			getSimulationsStatus(simulationInfo, controller.signal, true, (id, data) => {
+				if (id === trackedId && data.status === StatusState.SUCCESS)
+					setResultsSimulationData(data);
 			}).then(s => {
 				setSimulationsStatusData([...s.reverse()]);
 			}),
