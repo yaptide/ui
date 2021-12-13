@@ -4,6 +4,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import * as React from 'react';
 import { JsRootService } from './JsRoot/JsRootService';
 import { Auth } from './services/AuthService';
+import { ShSimulation } from './services/ShSimulationService';
 import { Store } from './services/StoreService';
 import WrapperApp from './WrapperApp/WrapperApp';
 
@@ -24,9 +25,11 @@ function App() {
 			<ThemeProvider theme={theme}>
 				<JsRootService>
 					<Auth>
-						<Store>
-							<WrapperApp />
-						</Store>
+						<ShSimulation>
+							<Store>
+								<WrapperApp />
+							</Store>
+						</ShSimulation>
 					</Auth>
 				</JsRootService>
 			</ThemeProvider>
