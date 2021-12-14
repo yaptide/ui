@@ -1,5 +1,5 @@
 import { Box, Button, TextField, Card, CardContent } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '../../services/AuthService';
 
 export default function LoginPanel() {
@@ -14,13 +14,22 @@ export default function LoginPanel() {
 	const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setPassword(event.target.value);
 	};
-	
+
+	const handleEnter = useCallback(
+		e => {
+			console.log(username, password);
+			if (e.key === 'Enter') login(username, password);
+		},
+		[login, password, username]
+	);
+
 	// Handle login on 'Enter' keystroke
-	useEffect(()=> document.addEventListener("keydown", (e) => {
-		console.log(username, password)
-		if (e.key==="Enter")
-			login(username, password)
-	}), [])
+	useEffect(() => {
+		document.addEventListener('keydown', handleEnter);
+		return () => {
+			document.removeEventListener('keydown', handleEnter);
+		};
+	}, [handleEnter]);
 
 	return (
 		<Box
