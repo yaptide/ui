@@ -6,6 +6,8 @@ import { Page2D } from './GraphData';
 
 export function JsRootGraph2D(props: Page2D) {
 	const { JSROOT } = useJSROOT();
+	// Custom react hook, visible contains the percentage of the containterEl 
+	// that is currently visible on screen
 	const [containerEl, visible] = useVisible<HTMLDivElement>();
 
 	const [obj, setObj] = useState(undefined);
@@ -13,6 +15,7 @@ export function JsRootGraph2D(props: Page2D) {
 	const [isVisible, setIsVisible] = useState(false);
 
 	useEffect(() => {
+		// Update isVisible if more than 30% of containerEl is visible 
 		setIsVisible(visible > 0.3);
 		return () => setIsVisible(false);
 	}, [visible]);
@@ -26,31 +29,32 @@ export function JsRootGraph2D(props: Page2D) {
 		const nxpoints = x.length;
 		const nypoints = y.length;
 
-		const gr = JSROOT.createHistogram('TH2F', nxpoints, nypoints);
+		const histogram = JSROOT.createHistogram('TH2F', nxpoints, nypoints);
 
-		gr.fXaxis.fXmin = x[0];
-		gr.fXaxis.fXmax = x[nxpoints - 1];
-		gr.fXaxis.fTitle = `${props.first_axis.name} [${props.first_axis.unit}]`;
+		histogram.fXaxis.fXmin = x[0];
+		histogram.fXaxis.fXmax = x[nxpoints - 1];
+		histogram.fXaxis.fTitle = `${props.first_axis.name} [${props.first_axis.unit}]`;
 
-		gr.fYaxis.fXmin = y[0];
-		gr.fYaxis.fXmax = y[nypoints - 1];
-		gr.fYaxis.fTitle = `${props.second_axis.name} [${props.second_axis.unit}]`;
+		histogram.fYaxis.fXmin = y[0];
+		histogram.fYaxis.fXmax = y[nypoints - 1];
+		histogram.fYaxis.fTitle = `${props.second_axis.name} [${props.second_axis.unit}]`;
 
-		gr.fTitle = `${props.data.name} [${props.data.unit}]`;
+		histogram.fTitle = `${props.data.name} [${props.data.unit}]`;
 
 		for (let x = 0; x < nxpoints; x++)
 			for (let y = 0; y < nypoints; y++) {
-				gr.setBinContent(gr.getBin(x + 1, y + 1), z[x + y * nxpoints]);
+				// JSROOT hist object has bins indexed from 1, arrays are indexed from 0
+				histogram.setBinContent(histogram.getBin(x + 1, y + 1), z[x + y * nxpoints]);
 			}
 
-		setObj(gr);
+		setObj(histogram);
 		setDrawn(false);
 	}, [JSROOT, props, drawn, visible]);
 
 	useEffect(() => {
 		if (obj && !drawn && isVisible) {
 			JSROOT.cleanup(containerEl.current);
-			JSROOT.redraw(containerEl.current, obj, 'col');
+			JSROOT.redraw(containerEl.current, obj, 'colz');
 			setDrawn(true);
 		}
 	}, [JSROOT, containerEl, drawn, obj, isVisible]);
