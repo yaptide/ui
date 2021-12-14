@@ -1,37 +1,21 @@
-import { Card, CardContent, Grid, Tab, Tabs, Typography } from '@mui/material';
-import { Box } from '@mui/system';
-import React, { SyntheticEvent, useState } from 'react';
-import JsRootGraph from '../../JsRoot/JsRootGraph';
-import { useStore } from '../../services/StoreService';
+import { Box, Card, CardContent, Grid, Tab, Tabs, Typography } from '@mui/material';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
+import { generateGraphs } from '../../JsRoot/GraphData';
 import { TabPanel } from './TabPanel';
-const simulationData = (() => {
-	const data = [];
-	for (let index = 0; index < 5; index++) {
-		const numberOfElements = Math.floor(Math.random() * 10) + 20;
-		const obj = {
-			uuid: index,
-			name: `Scoring Mesh${index}`,
-			graphs: Array(numberOfElements)
-				.fill(0)
-				.map((v, i) => {
-					const rand = Math.round(Math.random() * numberOfElements) + 1;
-					return { uuid: i, title: `Mesh${index} - Graph${i} - ${rand}`, value: rand };
-				})
-		};
-		data.push(obj);
-	}
-
-	return data;
-})();
+import { useStore } from '../../services/StoreService';
 
 function ResultsPanel() {
 	const { resultsSimulationData: simulation } = useStore();
 
-	const [tabsValue, setTabsValue] = useState<number>(simulationData[0].uuid);
+	const [tabsValue, setTabsValue] = useState<number>(0);
 
-	const handleChange = (event: SyntheticEvent, newValue: number) => {
+	const handleChange = (_event: SyntheticEvent, newValue: number) => {
 		setTabsValue(newValue);
 	};
+
+	useEffect(() => {
+		console.log(simulation)
+	}, [simulation])
 
 	return (
 		<Box>
@@ -72,15 +56,11 @@ function ResultsPanel() {
 							variant='scrollable'
 							value={tabsValue}
 							onChange={handleChange}>
-							{simulationData.map(meshResult => {
-								return (
-									<Tab
-										key={meshResult.uuid}
-										label={meshResult.name}
-										value={meshResult.uuid}
-									/>
-								);
-							})}
+							{simulation?.result?.estimators.map((estimator, idx) => {
+						return (
+							<Tab key={`tab_${estimator.name}`} label={estimator.name} value={idx} />
+						);
+					})}
 						</Tabs>
 					</CardContent>
 				</Card>
@@ -89,29 +69,19 @@ function ResultsPanel() {
 						margin: '0.5rem'
 					}}>
 					<CardContent>
-						{simulationData.map(meshResult => {
-							return (
-								<TabPanel
-									key={meshResult.uuid}
-									value={tabsValue}
-									index={meshResult.uuid}
-									persistent>
-									<Grid key={meshResult.uuid} container spacing={1}>
-										{meshResult.graphs.map(graph => (
-											<React.Fragment key={graph.uuid}>
-												<Grid item xs={8}>
-													<JsRootGraph data={graph} />
-												</Grid>
-												<Grid item xs={4}>
-													<Typography> Additional info:</Typography>
-													<Typography> Title: {graph.title}</Typography>
-												</Grid>
-											</React.Fragment>
-										))}
-									</Grid>
-								</TabPanel>
-							);
-						})}
+						{simulation?.result?.estimators.map((estimator, idx) => {
+					return (
+						<TabPanel
+							key={`tab_panel_${estimator.name}`}
+							value={tabsValue}
+							index={idx}
+							persistent>
+							<Grid container spacing={1}>
+								{generateGraphs(estimator)}
+							</Grid>
+						</TabPanel>
+					);
+				})}
 					</CardContent>
 				</Card>
 			</Box>

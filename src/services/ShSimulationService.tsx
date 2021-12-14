@@ -3,6 +3,7 @@ import { BACKEND_URL } from '../util/Config';
 import { createGenericContext } from '../util/GenericContext';
 import { useAuth } from './AuthService';
 import { IResponseMsg } from './ResponseTypes';
+import { Estimator } from '../JsRoot/GraphData';
 
 export interface ShSimulationProps {
 	children: ReactNode;
@@ -80,7 +81,9 @@ interface ResShStatusFailure extends IResponseMsg {
 interface ResShStatusSuccess extends IResponseMsg {
 	content: {
 		state: StatusState.SUCCESS;
-		result: unknown;
+		result: {
+			estimators: Estimator[];
+		}
 	};
 }
 
@@ -98,7 +101,9 @@ export interface SimulationStatusData {
 	estimatedTime?: number;
 	counted?: number;
 	message?: string;
-	result?: unknown;
+	result?: {
+			estimators: Estimator[];
+		}
 }
 
 const [useShSimulation, ShSimulationContextProvider] = createGenericContext<IShSimulation>();
