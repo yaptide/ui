@@ -74,6 +74,36 @@ export default function SimulationStatus({ simulation, loadResults }: Simulation
 		loadResults?.call(null, null);
 	};
 
+	const onClickShowError = () => {
+		const errorWindow = window.open();
+
+		if (!errorWindow) return console.error('Could not open new window');
+		errorWindow.document.open();
+		errorWindow.document.write(
+			`<html>
+			<head>
+				<title>Error Details</title>
+			</head>
+			<body>
+			<h1>Details</h1>			
+			<h2>Input Files</h2>
+			<h3>beam.dat</h3>
+			<pre>${simulation?.inputFiles!['beam.dat']}</pre>
+			<h3>mat.dat</h3>
+			<pre>${simulation?.inputFiles!['mat.dat']}</pre>
+			<h3>detect.dat</h3>
+			<pre>${simulation?.inputFiles!['detect.dat']}</pre>
+			<h3>geo.dat</h3>
+			<pre>${simulation?.inputFiles!['geo.dat']}</pre>
+
+			<h2>Error</h2>
+			<pre>${simulation?.shieldhitlog}</pre>
+			</body>
+			</html>`
+		);
+		errorWindow.document.close();
+	};
+
 	return (
 		<Card sx={{ minWidth: 275 }}>
 			<CardContent>
@@ -91,21 +121,32 @@ export default function SimulationStatus({ simulation, loadResults }: Simulation
 				</TableContainer>
 			</CardContent>
 			<CardActions>
-				{resultsSimulationData?.uuid !== simulation.uuid ? (
-					<Button
-						size='small'
-						disabled={simulation.status !== StatusState.SUCCESS}
-						onClick={onClickLoadResults}>
-						Load Results
-					</Button>
-				) : (
-					<Button size='small' onClick={onClickGoToResults}>
-						Go to Results
+				{simulation.status === StatusState.FAILURE && simulation.inputFiles && (
+					<Button size='small' onClick={onClickShowError}>
+						Show Details
 					</Button>
 				)}
-				<Button size='small' disabled>
-					Cancel Simulation
+				<Button
+					sx={{
+						display: simulation.status === StatusState.FAILURE ? 'none' : ''
+					}}
+					size='small'
+					disabled={simulation.status !== StatusState.SUCCESS}
+					onClick={
+						resultsSimulationData?.uuid !== simulation.uuid
+							? onClickLoadResults
+							: onClickGoToResults
+					}>
+					{resultsSimulationData?.uuid !== simulation.uuid
+						? 'Load Results'
+						: 'Go to Results'}
 				</Button>
+
+				{simulation.status === StatusState.PROGRESS && (
+					<Button size='small' disabled>
+						Cancel Simulation
+					</Button>
+				)}
 			</CardActions>
 		</Card>
 	);

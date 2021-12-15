@@ -71,10 +71,18 @@ interface ResShStatusProgress extends IResponseMsg {
 	};
 }
 
+interface InputFiles {
+	'beam.dat': string;
+	'detect.dat': string;
+	'geo.dat': string;
+	'mat.dat': string;
+}
 interface ResShStatusFailure extends IResponseMsg {
 	content: {
 		state: StatusState.FAILURE;
 		error: string;
+		input_files?: InputFiles;
+		shieldhitlog?: string;
 	};
 }
 
@@ -83,7 +91,7 @@ interface ResShStatusSuccess extends IResponseMsg {
 		state: StatusState.SUCCESS;
 		result: {
 			estimators: Estimator[];
-		}
+		};
 	};
 }
 
@@ -101,9 +109,11 @@ export interface SimulationStatusData {
 	estimatedTime?: number;
 	counted?: number;
 	message?: string;
+	inputFiles?: InputFiles;
+	shieldhitlog?: string;
 	result?: {
-			estimators: Estimator[];
-		}
+		estimators: Estimator[];
+	};
 }
 
 const [useShSimulation, ShSimulationContextProvider] = createGenericContext<IShSimulation>();
@@ -181,6 +191,8 @@ const ShSimulation = (props: ShSimulationProps) => {
 
 						case StatusState.FAILURE:
 							data.message = content.error;
+							data.inputFiles = content.input_files;
+							data.shieldhitlog = content.shieldhitlog;
 							break;
 
 						case StatusState.SUCCESS:
