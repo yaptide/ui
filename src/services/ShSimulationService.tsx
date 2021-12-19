@@ -82,7 +82,7 @@ interface ResShStatusFailure extends IResponseMsg {
 		state: StatusState.FAILURE;
 		error: string;
 		input_files?: InputFiles;
-		shieldhitlog?: string;
+		logfile?: string;
 	};
 }
 
@@ -110,7 +110,7 @@ export interface SimulationStatusData {
 	counted?: number;
 	message?: string;
 	inputFiles?: InputFiles;
-	shieldhitlog?: string;
+	logFile?: string;
 	result?: {
 		estimators: Estimator[];
 	};
@@ -192,7 +192,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 						case StatusState.FAILURE:
 							data.message = content.error;
 							data.inputFiles = content.input_files;
-							data.shieldhitlog = content.shieldhitlog;
+							data.logFile = content.logfile;
 							break;
 
 						case StatusState.SUCCESS:

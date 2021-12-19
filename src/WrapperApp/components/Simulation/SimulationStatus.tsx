@@ -74,6 +74,31 @@ export default function SimulationStatus({ simulation, loadResults }: Simulation
 		loadResults?.call(null, null);
 	};
 
+	const onClickInputFiles = () => {
+		const errorWindow = window.open();
+
+		if (!errorWindow) return console.error('Could not open new window');
+		errorWindow.document.open();
+		errorWindow.document.write(
+			`<html>
+			<head>
+				<title>Input Files</title>
+			</head>
+			<body>
+			<h1>Input Files</h1>		
+			${Object.entries(simulation?.inputFiles ?? {})
+				.map(([name, value]) => {
+					return `
+				<h2>${name}</h2>
+				<pre>${value}</pre>`;
+				})
+				.join('')}
+			</body>
+			</html>`
+		);
+		errorWindow.document.close();
+	};
+
 	const onClickShowError = () => {
 		const errorWindow = window.open();
 
@@ -82,22 +107,11 @@ export default function SimulationStatus({ simulation, loadResults }: Simulation
 		errorWindow.document.write(
 			`<html>
 			<head>
-				<title>Error Details</title>
+				<title>Log File</title>
 			</head>
 			<body>
-			<h1>Details</h1>			
-			<h2>Input Files</h2>
-			<h3>beam.dat</h3>
-			<pre>${simulation?.inputFiles!['beam.dat']}</pre>
-			<h3>mat.dat</h3>
-			<pre>${simulation?.inputFiles!['mat.dat']}</pre>
-			<h3>detect.dat</h3>
-			<pre>${simulation?.inputFiles!['detect.dat']}</pre>
-			<h3>geo.dat</h3>
-			<pre>${simulation?.inputFiles!['geo.dat']}</pre>
-
-			<h2>Error</h2>
-			<pre>${simulation?.shieldhitlog}</pre>
+			<h1>Log File</h1>
+			<pre>${simulation?.logFile}</pre>
 			</body>
 			</html>`
 		);
@@ -121,11 +135,17 @@ export default function SimulationStatus({ simulation, loadResults }: Simulation
 				</TableContainer>
 			</CardContent>
 			<CardActions>
-				{simulation.status === StatusState.FAILURE && simulation.inputFiles && (
-					<Button size='small' onClick={onClickShowError}>
-						Show Details
+				{simulation.inputFiles && (
+					<Button size='small' onClick={onClickInputFiles}>
+						Show Input Files
 					</Button>
 				)}
+				{simulation.logFile && (
+					<Button size='small' onClick={onClickShowError}>
+						Show Error Log
+					</Button>
+				)}
+
 				<Button
 					sx={{
 						display: simulation.status === StatusState.FAILURE ? 'none' : ''
