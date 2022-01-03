@@ -128,7 +128,7 @@ function ViewManager(editor) {
 		gridRotation: new THREE.Euler(Math.PI / 2, 0, 0)
 	};
 	const viewPlaneXY = new Viewport('ViewPanelXY', editor, viewManagerProps, configPlaneXY);
-	viewsGrid.add(viewPlaneXY.container);
+	viewsGrid.add(viewPlaneXY.wrapperDiv);
 
 	// fix the view to being from positive part of Z axis: phi = 0*, theta = 0*
 	// for threejs spherical coordinates, see comment in top part of this file
@@ -153,7 +153,7 @@ function ViewManager(editor) {
 		cameraPosition: new THREE.Vector3(10, 10, 10)
 	};
 	const view3D = new Viewport('ViewPanel3D', editor, viewManagerProps, config3D);
-	viewsGrid.add(view3D.container);
+	viewsGrid.add(view3D.wrapperDiv);
 
 	// --------------- third view, lower left, XZ plane ----------------------------------
 
@@ -174,7 +174,7 @@ function ViewManager(editor) {
 		planeHelperColor: 0xc2ee00
 	};
 	const viewPlaneXZ = new Viewport('ViewPanelY', editor, viewManagerProps, configPlaneXZ);
-	viewsGrid.add(viewPlaneXZ.container);
+	viewsGrid.add(viewPlaneXZ.wrapperDiv);
 
 	// fix the view to being from positive part of Y axis: phi = 0*, theta = 270*
 	// for threejs spherical coordinates, see comment in top part of this file
@@ -221,7 +221,7 @@ function ViewManager(editor) {
 		gridRotation: new THREE.Euler(0, 0, Math.PI / 2)
 	};
 	const viewPlaneYZ = new Viewport('ViewPanelX', editor, viewManagerProps, configPlaneYZ);
-	viewsGrid.add(viewPlaneYZ.container);
+	viewsGrid.add(viewPlaneYZ.wrapperDiv);
 
 	// fix the view to being from positive part of X axis: phi = 0*, theta = 180*
 	// for threejs spherical coordinates, see comment in top part of this file
@@ -273,8 +273,6 @@ function ViewManager(editor) {
 
 	const viewport = new Viewport('ViewPanel', editor, viewManagerProps);
 	viewport.container.setPosition('absolute');
-	viewport.container.setWidth('100%');
-	viewport.container.setHeight('100%');
 	viewSingle.add(viewport.container);
 
 	const singleView = [viewport];
