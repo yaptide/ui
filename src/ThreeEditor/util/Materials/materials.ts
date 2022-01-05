@@ -16,6 +16,7 @@ export const DEFAULT_MATERIAL_NAME = 'WATER, LIQUID';
 //     json.dump(result, outfile)
 
 export const MATERIALS = [
+	{ icru: 1000, name: 'VACUUM' },
 	{ icru: 1, name: 'HYDROGEN' },
 	{ icru: 2, name: 'HELIUM' },
 	{ icru: 3, name: 'LITHIUM' },
