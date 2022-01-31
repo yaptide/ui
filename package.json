@@ -26,7 +26,7 @@
 		"react-scripts": "5.0.0",
 		"signals": "^1.0.0",
 		"split-grid": "^1.0.11",
-		"three": "^0.136.0",
+		"three": "^0.137.5",
 		"throttle-debounce": "^3.0.1",
 		"typescript": "^4.5.4",
 		"use-interval": "^1.4.0",
