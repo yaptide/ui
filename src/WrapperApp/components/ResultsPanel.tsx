@@ -1,87 +1,92 @@
-import { Grid, Tab, Tabs, Typography } from '@mui/material';
-import { Box } from '@mui/system';
-import React, { SyntheticEvent, useState } from 'react';
-import JsRootGraph from '../../JsRoot/JsRootGraph';
+import { Box, Card, CardContent, Grid, Tab, Tabs, Typography } from '@mui/material';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
+import { generateGraphs } from '../../JsRoot/GraphData';
 import { TabPanel } from './TabPanel';
+import { useStore } from '../../services/StoreService';
 
-interface ResultsPanelProps {
-	data?: Object;
-}
+function ResultsPanel() {
+	const { resultsSimulationData: simulation } = useStore();
 
-const simulationData = (() => {
-	const data = [];
-	for (let index = 0; index < 5; index++) {
-		const numberOfElements = Math.floor(Math.random() * 50) + 100;
-		const obj = {
-			uuid: index,
-			name: `Scoring Mesh${index}`,
-			graphs: Array(numberOfElements)
-				.fill(0)
-				.map((v, i) => {
-					const rand = Math.round(Math.random() * numberOfElements) + 1;
-					return { uuid: i, title: `Mesh${index} - Graph${i} - ${rand}`, value: rand };
-				})
-		};
-		data.push(obj);
-	}
+	const [tabsValue, setTabsValue] = useState<number>(0);
 
-	return data;
-})();
+	const handleChange = (_event: SyntheticEvent, newValue: number) => {
+		setTabsValue(newValue);
+	};
 
-const ResultsPanel = React.memo(
-	function ResultsPanel(props: ResultsPanelProps) {
-		const [tabsValue, setTabsValue] = useState<number>(simulationData[0].uuid);
+	useEffect(() => {
+		console.log(simulation)
+	}, [simulation])
 
-		const handleChange = (event: SyntheticEvent, newValue: number) => {
-			setTabsValue(newValue);
-		};
+	return (
+		<Box>
+			{simulation && (
+				<Card
+					sx={{
+						margin: '0.5rem'
+					}}>
+					<Typography
+						gutterBottom
+						variant='h5'
+						component='div'
+						sx={{
+							margin: '1.5rem 1rem'
+						}}>
+						{simulation.name} [{simulation.creationDate.toLocaleString()}]
+					</Typography>
+				</Card>
+			)}
 
-		return (
-			<Box sx={{ display: 'flex', flexDirection: 'row', maxWidth: '100vw', width: '100%' }}>
-				<Tabs
-					sx={{ flexShrink: 0 }}
-					orientation='vertical'
-					variant='scrollable'
-					value={tabsValue}
-					onChange={handleChange}>
-					{simulationData.map(meshResult => {
+			<Box
+				sx={{
+					display: 'flex',
+					flexDirection: 'row',
+					maxWidth: '100vw',
+					width: '100%'
+				}}>
+				<Card
+					sx={{
+						margin: '0.5rem',
+						height: 'min-content',
+						overflow: 'unset'
+					}}>
+					<CardContent>
+						<Tabs
+							sx={{ flexShrink: 0 }}
+							orientation='vertical'
+							variant='scrollable'
+							value={tabsValue}
+							onChange={handleChange}>
+							{simulation?.result?.estimators.map((estimator, idx) => {
 						return (
-							<Tab
-								key={meshResult.uuid}
-								label={meshResult.name}
-								value={meshResult.uuid}
-							/>
+							<Tab key={`tab_${estimator.name}`} label={estimator.name} value={idx} />
 						);
 					})}
-				</Tabs>
-
-				{simulationData.map(meshResult => {
+						</Tabs>
+					</CardContent>
+				</Card>
+				<Card
+					sx={{
+						margin: '0.5rem'
+					}}>
+					<CardContent>
+						{simulation?.result?.estimators.map((estimator, idx) => {
 					return (
 						<TabPanel
-							key={meshResult.uuid}
+							key={`tab_panel_${estimator.name}`}
 							value={tabsValue}
-							index={meshResult.uuid}
+							index={idx}
 							persistent>
-							<Grid key={meshResult.uuid} container spacing={1}>
-								{meshResult.graphs.map(graph => (
-									<React.Fragment key={graph.uuid}>
-										<Grid item xs={8}>
-											<JsRootGraph data={graph} />
-										</Grid>
-										<Grid item xs={4}>
-											<Typography> Additional info:</Typography>
-											<Typography> Title: {graph.title}</Typography>
-										</Grid>
-									</React.Fragment>
-								))}
+							<Grid container spacing={1}>
+								{generateGraphs(estimator)}
 							</Grid>
 						</TabPanel>
 					);
 				})}
+					</CardContent>
+				</Card>
 			</Box>
-		);
-	},
-	(prevProps, nextProps) => true
-);
+		</Box>
+	);
+}
 
 export default ResultsPanel;

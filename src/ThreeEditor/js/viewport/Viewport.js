@@ -5,10 +5,10 @@ import {
 	SetRotationCommand,
 	SetScaleCommand
 } from '../commands/Commands';
-import { ViewportClippedView as ViewportClipPlane } from './Viewport.ClipPlane';
+import { ViewportClippedView } from './Viewport.ClippedView';
 import { EditorOrbitControls } from '../EditorOrbitControls';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
-import { UIPanel } from '../libs/ui';
+import { UIDiv, UIPanel } from '../libs/ui';
 import { ViewHelper } from './Viewport.ViewHelper';
 import { ViewportCamera } from './Viewport.Camera.js';
 
@@ -45,9 +45,16 @@ export function Viewport(
 
 	const container = new UIPanel();
 	container.setId('ViewPanel');
-	container.setPosition('relative');
+	container.setPosition('absolute');
 	container.setOverflow('hidden');
+	container.setWidth('100%');
+	container.setHeight('100%');
 	container.dom.setAttribute('tabindex', '0');
+
+	const wrapperDiv = new UIDiv();
+	wrapperDiv.setPosition('relative');
+	wrapperDiv.add(container);	
+	
 
 	const canvas = document.createElement('canvas');
 	container.dom.appendChild(canvas);
@@ -91,7 +98,7 @@ export function Viewport(
 
 	let viewClipPlane = null;
 	if (clipPlane) {
-		viewClipPlane = new ViewportClipPlane(
+		viewClipPlane = new ViewportClippedView(
 			name,
 			editor,
 			this,
@@ -100,14 +107,13 @@ export function Viewport(
 			signals.zoneGeometryChanged,
 			signals.zoneAdded,
 			signals.zoneRemoved,
+			wrapperDiv.dom,
 			{
 				clipPlane,
 				planeHelperColor,
 				planePosLabel
 			}
 		);
-
-		container.dom.appendChild(viewClipPlane.gui.domElement);
 	}
 
 	let cachedRenderer = null;
@@ -449,9 +455,9 @@ export function Viewport(
 		}
 	});
 
-	container.dom.addEventListener('mousedown', onMouseDown, false);
-	container.dom.addEventListener('touchstart', onTouchStart, false);
-	container.dom.addEventListener('dblclick', onDoubleClick, false);
+	container.dom.addEventListener('mousedown', onMouseDown);
+	container.dom.addEventListener('touchstart', onTouchStart);
+	container.dom.addEventListener('dblclick', onDoubleClick);
 
 	signals.transformModeChanged.add(mode => {
 		transformControls.setMode(mode);
@@ -513,6 +519,7 @@ export function Viewport(
 		controls,
 		viewHelper,
 		animate,
-		config
+		config,
+		wrapperDiv
 	};
 }

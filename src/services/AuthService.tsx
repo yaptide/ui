@@ -4,6 +4,7 @@ import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
 import { BACKEND_URL, DEMO_MODE } from '../util/Config';
 import useInterval from 'use-interval';
+import { IResponseMsg } from './ResponseTypes';
 
 export interface AuthProps {
 	children: ReactNode;
@@ -42,13 +43,51 @@ export interface IAuth {
 	authKy: KyInstance;
 }
 
+interface ResAuthLogin extends IResponseMsg {
+	content: {
+		access_exp: number;
+		refresh_exp: number;
+	};
+}
+
+interface ResAuthRefresh extends IResponseMsg {
+	content: {
+		access_exp: number;
+	};
+}
+interface ResAuthStatus extends IResponseMsg {
+	content: {
+		login_name: string;
+	};
+}
+
 const [useAuth, AuthContextProvider] = createGenericContext<IAuth>();
 
 const Auth = (props: AuthProps) => {
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER));
 	const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
 
-	const kyRef = useRef<KyInstance>(ky.create({ credentials: 'include' }));
+	const kyRef = useRef<KyInstance>(
+		ky.create({
+			credentials: 'include',
+			hooks: {
+				afterResponse: [
+					async (_request, _options, response) => {
+						switch (response?.status) {
+							case 401:
+							case 403:
+								alert('Please log in with correct username and password.');
+								setUser(null);
+								break;
+						}
+						if (response?.status > 300) {
+							console.error(response.status, await response.json());
+						}
+					}
+				]
+			}
+		})
+	);
 
 	useEffect(() => {
 		save(StorageKey.USER, user);
@@ -56,28 +95,31 @@ const Auth = (props: AuthProps) => {
 
 	const refresh = useCallback(() => {
 		if (DEMO_MODE) return;
-		kyRef.current
+		return kyRef.current
 			.get(`${BACKEND_URL}/auth/refresh`)
 			.json()
-			.catch((error: HTTPError) => {
-				console.error(error);
-				console.log(error?.response);
-				switch (error?.response?.status) {
-					case 401:
-						alert('Session expired');
-						setUser(null);
-						break;
-				}
-			});
+			.then((response: unknown) => {
+				const {
+					content: { access_exp }
+				} = response as ResAuthRefresh;
+
+				const refreshDelay = Math.max((access_exp - new Date().getTime()) / 2, 1000);
+
+				setRefreshInterval(refreshDelay);
+			})
+			.catch((_: HTTPError) => {});
 	}, []);
 
 	const status = useCallback(() => {
 		if (DEMO_MODE) return;
-		kyRef.current
+		return kyRef.current
 			.get(`${BACKEND_URL}/auth/status`)
 			.json()
 			.then(response => {
-				const { login_name } = response as { login_name: string };
+				const {
+					content: { login_name }
+				} = response as ResAuthStatus;
+
 				setUser(() => {
 					const user: AuthUser = {
 						name: login_name
@@ -85,22 +127,12 @@ const Auth = (props: AuthProps) => {
 					return user;
 				});
 			})
-			.catch((error: HTTPError) => {
-				console.error(error);
-				console.log(error?.response);
-				switch (error?.response?.status) {
-					case 401:
-						alert('Session expired');
-						setUser(null);
-						break;
-				}
-			});
+			.catch((_: HTTPError) => {});
 	}, []);
 
 	useEffect(() => {
-		if (user !== null) status();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [status]);
+		if (user !== null) refresh();
+	}, [refresh, user]);
 
 	useInterval(
 		() => {
@@ -121,35 +153,24 @@ const Auth = (props: AuthProps) => {
 			.then((response: unknown) => {
 				setUser({ name: username });
 				const {
-					message: { access_exp: accessExp }
-				} = response as { message: { access_exp: number } };
+					content: { access_exp }
+				} = response as ResAuthLogin;
 
-				const refreshDelay = Math.max((accessExp - new Date().getTime()) / 2, 0);
+				const refreshDelay = Math.max((access_exp - new Date().getTime()) / 2, 1000);
 
 				setRefreshInterval(refreshDelay);
 			})
-			.catch((error: HTTPError) => {
-				console.error(error);
-				console.log(error?.response);
-				switch (error?.response?.status) {
-					case 401:
-						alert('Username or password is wrong');
-						break;
-				}
-			});
+			.catch((_: HTTPError) => {});
 	};
 
 	const logout = () => {
 		kyRef.current
 			.delete(`${BACKEND_URL}/auth/logout`)
 			.json()
-			.then((response: unknown) => {
+			.then(() => {
 				setUser(null);
 			})
-			.catch((error: HTTPError) => {
-				console.error(error);
-				console.log(error?.response);
-			});
+			.catch((_: HTTPError) => {});
 	};
 
 	const value: IAuth = {

@@ -37,7 +37,7 @@ export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> {
 	}
 
 	set primaries(value: [boolean, number | null]) {
-		this._primaries = [value[0], value[0] && value[1] != null ? value[1] : this._primaries[1]];
+		this._primaries = [value[0], value[0] && value[1] !== null ? value[1] : this._primaries[1]];
 	}
 
 	get trace(): [boolean, string | null] {

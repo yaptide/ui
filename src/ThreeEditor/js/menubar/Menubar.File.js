@@ -61,7 +61,6 @@ function MenubarFile(editor) {
 
 	options.add(
 		createOption('option', 'Save', () => {
-			editor.updateUserData();
 
 			let output = editor.toJSON();
 
