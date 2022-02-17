@@ -71,7 +71,7 @@ interface ResShStatusProgress extends IResponseMsg {
 	};
 }
 
-interface InputFiles {
+export interface InputFiles {
 	'beam.dat': string;
 	'detect.dat': string;
 	'geo.dat': string;
@@ -147,6 +147,18 @@ const ShSimulation = (props: ShSimulationProps) => {
 		[authKy]
 	);
 
+	const getSimulationInputFiles = useCallback(
+		(taskId: string, signal?: AbortSignal) => {
+			return authKy
+				.post(`${BACKEND_URL}/sh/inputs`, { signal, json: { task_id: taskId } })
+				.json()
+				.then((response: unknown) => {
+					return (response as any);
+				});
+		},
+		[authKy]
+	);
+
 	const getStatus = useCallback(
 		(
 			simulation: SimulationInfo,
@@ -165,7 +177,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 					json: { task_id: taskId }
 				})
 				.json()
-				.then((response: unknown) => {
+				.then(async (response: unknown) => {
 					const resStatus = response as ResShStatus;
 					const { content } = resStatus;
 
@@ -209,7 +221,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 				})
 				.catch(() => undefined);
 		},
-		[authKy]
+		[authKy, getSimulationInputFiles]
 	);
 
 	const getSimulations = useCallback(

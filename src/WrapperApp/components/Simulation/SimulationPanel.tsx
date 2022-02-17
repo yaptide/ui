@@ -4,19 +4,25 @@ import {
 	Card,
 	CardActions,
 	CardContent,
+	Fade,
 	LinearProgress,
+	Modal,
+	ToggleButton,
+	ToggleButtonGroup,
 	Typography
 } from '@mui/material';
 
 import { useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
 import {
+	InputFiles,
 	SimulationInfo,
 	SimulationStatusData,
 	StatusState,
 	useShSimulation
 } from '../../../services/ShSimulationService';
 import { useStore } from '../../../services/StoreService';
+import { InputFilesEditor } from './InputFilesEditor';
 import SimulationStatus from './SimulationStatus';
 
 interface SimulationPanelProps {
@@ -29,9 +35,10 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const { sendRun, sendHelloWorld, getSimulations, getSimulationsStatus } = useShSimulation();
 
 	const [isInProgress, setInProgress] = useState(false);
-
 	const [isBackendAlive, setBackendAlive] = useState(false);
-
+	const [inputFilesOrigin, setInputFilesOrigin] = useState('editor');
+	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
+	const [inputFiles, setInputFiles] = useState<InputFiles>();
 	const [trackedId, setTrackedId] = useState<string>();
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
 	const [simulationsStatusData, setSimulationsStatusData] = useState<SimulationStatusData[]>([]);
@@ -106,6 +113,10 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			.finally(() => setInProgress(false));
 	};
 
+	const handleEditorModal = () => {
+		setShowInputFilesEditor(false);
+	};
+
 	return (
 		<Box
 			sx={{
@@ -117,11 +128,60 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				gap: '1.5rem',
 				height: 'min-content'
 			}}>
+			<Modal
+				aria-labelledby='transition-modal-title'
+				aria-describedby='transition-modal-description'
+				open={showInputFilesEditor}
+				onClose={handleEditorModal}
+				closeAfterTransition>
+				<Fade in={showInputFilesEditor}>
+					<Box sx={{ height: '100vh', width: '100vw', overflow: 'auto' }}>
+						<InputFilesEditor
+							inputFiles={inputFiles}
+							closeEditor={() => setShowInputFilesEditor(false)}
+							saveAndExit={newInputFiles => {
+								setShowInputFilesEditor(false);
+								setInputFiles(newInputFiles);
+							}}
+							runSimulation={newInputFiles => {
+								setShowInputFilesEditor(false);
+								setInputFiles(newInputFiles);
+								console.log(newInputFiles);
+							}}></InputFilesEditor>
+					</Box>
+				</Fade>
+			</Modal>
+
 			<Card sx={{ minWidth: 275 }}>
 				<CardContent>
 					<Typography gutterBottom variant='h5' component='div'>
 						Backend Status - {isBackendAlive ? 'ALIVE' : 'DEAD'}
 					</Typography>
+				</CardContent>
+			</Card>
+
+			<Card sx={{ minWidth: 275 }}>
+				<CardContent>
+					<Typography gutterBottom variant='h5' component='div'>
+						Input files
+					</Typography>
+					<ToggleButtonGroup
+						color='primary'
+						size='small'
+						value={inputFilesOrigin}
+						exclusive
+						onChange={(_event, value) => value !== null && setInputFilesOrigin(value)}>
+						<ToggleButton value='editor'>Editor</ToggleButton>
+						<ToggleButton value='custom'>Custom</ToggleButton>
+					</ToggleButtonGroup>
+					<Button
+						size='small'
+						variant='text'
+						sx={{ marginLeft: '20px' }}
+						disabled={inputFilesOrigin !== 'custom'}
+						onClick={() => setShowInputFilesEditor(true)}>
+						Edit input files
+					</Button>
 				</CardContent>
 			</Card>
 
@@ -154,6 +214,10 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					loadResults={id => {
 						if (id === null) props.goToResults?.call(null);
 						else setResultsSimulationData(simulation);
+					}}
+					showInputFiles={inputFiles => {
+						setShowInputFilesEditor(true);
+						setInputFiles(inputFiles);
 					}}></SimulationStatus>
 			))}
 		</Box>
