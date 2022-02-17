@@ -575,6 +575,8 @@ Editor.prototype = {
 	},
 
 	toJSON() {
+		this.updateUserData();
+
 		// scripts clean up
 
 		var scene = this.scene;

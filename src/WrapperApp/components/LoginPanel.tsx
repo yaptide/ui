@@ -21,13 +21,10 @@ export default function LoginPanel() {
 		},
 		[login, password, username]
 	);
-
 	// Handle login on 'Enter' keystroke
 	useEffect(() => {
 		document.addEventListener('keydown', handleEnter);
-		return () => {
-			document.removeEventListener('keydown', handleEnter);
-		};
+		return () => document.removeEventListener('keydown', handleEnter);
 	}, [handleEnter]);
 
 	return (
