@@ -30,7 +30,7 @@ export function ViewportClippedView(
 	// it limits range of applicability of clipping plane
 	// it also limits the size (horizontally and vertically) of stencil plane
 	// here side length is set to 10 cm
-	const CLIPPING_SIZE = 100;
+	const CLIPPING_SIZE = 200;
 
 	this.scene = new THREE.Scene();
 	this.scene.name = `ClippedViewScene-${name}`;
