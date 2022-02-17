@@ -117,12 +117,8 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 		const result = this.constructor().copy(this);
 		return new Proxy(result, this.overrideHandler);
 	}
-	increment = (() => this.editor.materialManager.selectedMaterials.increment(this.uuid)).bind(
-		this
-	);
-	decrement = (() => this.editor.materialManager.selectedMaterials.decrement(this.uuid)).bind(
-		this
-	);
+	increment = () => this.editor.materialManager.selectedMaterials.increment(this.uuid);
+	decrement = () => this.editor.materialManager.selectedMaterials.decrement(this.uuid);
 }
 
 export const isSimulationMaterial = (m: unknown): m is SimulationMaterial =>
