@@ -10,6 +10,7 @@ import { DEMO_MODE } from '../util/Config';
 import { TabPanel } from './components/TabPanel';
 import ResultsPanel from './components/ResultsPanel';
 import { useAuth } from '../services/AuthService';
+import { AboutPanel } from './components/AboutPanel';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData } = useStore();
@@ -73,6 +74,10 @@ function WrapperApp() {
 					</TabPanel>
 				</>
 			)}
+
+			<TabPanel value={tabsValue} index={4} persistentIfVisited>
+				<AboutPanel />
+			</TabPanel>
 			<TabPanel value={tabsValue} index={5}>
 				<LoginPanel />
 			</TabPanel>
