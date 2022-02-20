@@ -98,7 +98,7 @@ export class WorldZone extends SimulationObject3D {
 		this.marginMultiplier = marginMultiplier;
 
 		this._material = _materialDefault;
-		this._simulationMaterial = editor.materialManager.materials[0];
+		this._simulationMaterial = editor.materialManager.defaultMaterial;
 		this._simulationMaterial.increment();
 
 		// watch for changes on material color
@@ -263,7 +263,7 @@ export class WorldZone extends SimulationObject3D {
 
 		this._material.color.set(color);
 		this.name = name;
-		this.simulationMaterial = this.editor.materialManager.materials[0];
+		this.simulationMaterial = this.editor.materialManager.defaultMaterial;
 		this.geometryType = 'Box';
 		this.updateBox(box => box.setFromCenterAndSize(new Vector3(), new Vector3()));
 	}
