@@ -165,22 +165,33 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					<Typography gutterBottom variant='h5' component='div'>
 						Input files
 					</Typography>
-					<ToggleButtonGroup
-						color='primary'
-						size='small'
-						value={inputFilesOrigin}
-						exclusive
-						onChange={(_event, value) => value !== null && setInputFilesOrigin(value)}>
-						<ToggleButton value='editor'>Editor</ToggleButton>
-						<ToggleButton value='custom'>Custom</ToggleButton>
-					</ToggleButtonGroup>
+					<Box>
+						<ToggleButtonGroup
+							color='primary'
+							size='small'
+							value={inputFilesOrigin}
+							exclusive
+							onChange={(_event, value) =>
+								value !== null && setInputFilesOrigin(value)
+							}>
+							<ToggleButton value='editor'>Editor</ToggleButton>
+							<ToggleButton value='custom'>Custom</ToggleButton>
+						</ToggleButtonGroup>
+						<Button
+							size='small'
+							variant='text'
+							sx={{ marginLeft: '20px' }}
+							disabled={inputFilesOrigin !== 'custom'}
+							onClick={() => setShowInputFilesEditor(true)}>
+							Edit input files
+						</Button>
+					</Box>
 					<Button
 						size='small'
 						variant='text'
-						sx={{ marginLeft: '20px' }}
-						disabled={inputFilesOrigin !== 'custom'}
+						sx={{ marginTop: '20px' }}
 						onClick={() => setShowInputFilesEditor(true)}>
-						Edit input files
+						Preview editor input files
 					</Button>
 				</CardContent>
 			</Card>

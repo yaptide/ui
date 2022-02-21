@@ -1,5 +1,6 @@
 import { UIHorizontalRule, UIPanel } from '../libs/ui.js';
 import { createOption } from './Menubar.js';
+import { saveString } from '../../../util/File';
 
 function MenubarFile(editor) {
 	const container = new UIPanel();
@@ -45,19 +46,6 @@ function MenubarFile(editor) {
 	);
 
 	// Save Editor to file
-	const link = document.createElement('a');
-	function save(blob, filename) {
-		if (link.href) {
-			URL.revokeObjectURL(link.href);
-		}
-
-		link.href = URL.createObjectURL(blob);
-		link.download = filename || 'data.json';
-		link.dispatchEvent(new MouseEvent('click'));
-	}
-	function saveString(text, filename) {
-		save(new Blob([text], { type: 'text/plain' }), filename);
-	}
 
 	options.add(
 		createOption('option', 'Save', () => {

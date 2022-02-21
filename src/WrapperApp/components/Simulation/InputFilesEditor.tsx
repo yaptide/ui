@@ -2,6 +2,7 @@ import { Box, Button, Card, CardActions, CardContent } from '@mui/material';
 import React, { useState } from 'react';
 import { InputFiles } from '../../../services/ShSimulationService';
 import CodeEditor from '@uiw/react-textarea-code-editor';
+import { saveString } from '../../../util/File';
 
 interface InputFilesEditorProps {
 	inputFiles?: InputFiles;
@@ -22,15 +23,22 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 	);
 
 	return (
-		<Card>
+		<Card sx={{ minHeight: '100%' }}>
 			<CardActions sx={{ justifyContent: 'flex-end' }}>
 				{props.runSimulation && (
 					<Button
 						color='success'
+						variant='contained'
 						onClick={() => props.runSimulation?.call(null, inputFiles)}>
 						Run input files
 					</Button>
 				)}
+				<Button
+					onClick={() =>
+						Object.entries(inputFiles).map(([name, value]) => saveString(value, name))
+					}>
+					Download all
+				</Button>
 				{props.saveAndExit && (
 					<Button onClick={() => props.saveAndExit?.call(null, inputFiles)}>
 						Save and exit
@@ -44,7 +52,15 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 				{Object.entries(inputFiles).map(([name, value]) => {
 					return (
 						<Box key={name}>
-							<h2>{name}</h2>
+							<h2>
+								{name}
+								<Button
+									onClick={() => {
+										saveString(value, name);
+									}}>
+									Download
+								</Button>
+							</h2>
 							<CodeEditor
 								value={value}
 								language='sql'
