@@ -180,17 +180,6 @@ const ShSimulation = (props: ShSimulationProps) => {
 		[authKy]
 	);
 
-	const getSimulationInputFiles = useCallback(
-		(taskId: string, signal?: AbortSignal) => {
-			return authKy
-				.post(`${BACKEND_URL}/sh/inputs`, { signal, json: { task_id: taskId } })
-				.json()
-				.then((response: unknown) => {
-					return response as any;
-				});
-		},
-		[authKy]
-	);
 
 	const getStatus = useCallback(
 		(
@@ -210,7 +199,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 					json: { task_id: taskId }
 				})
 				.json()
-				.then(async (response: unknown) => {
+				.then((response: unknown) => {
 					const resStatus = response as ResShStatus;
 					const { content } = resStatus;
 
