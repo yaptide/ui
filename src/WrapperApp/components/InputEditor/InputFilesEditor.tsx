@@ -1,5 +1,5 @@
 import { Box, Button, Card, CardActions, CardContent } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { InputFiles } from '../../../services/ShSimulatorService';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { saveString } from '../../../util/File';
@@ -9,6 +9,7 @@ interface InputFilesEditorProps {
 	runSimulation?: (inputFiles: InputFiles) => void;
 	saveAndExit?: (inputFiles: InputFiles) => void;
 	closeEditor?: () => void;
+	innerState?: boolean;
 }
 
 const _emptyInputFiles: InputFiles = {
@@ -21,6 +22,11 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 	const [inputFiles, setInputFiles] = useState<InputFiles>(
 		props.inputFiles ?? { ..._emptyInputFiles }
 	);
+
+	useEffect(() => {
+		if (!props.innerState) setInputFiles({ ...(props.inputFiles ?? _emptyInputFiles) });
+	}, [props.innerState, props.inputFiles]);
+	
 
 	return (
 		<Card sx={{ minHeight: '100%' }}>

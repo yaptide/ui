@@ -7,7 +7,7 @@ import { useStore } from '../../services/StoreService';
 function ResultsPanel() {
 	const { resultsSimulationData: simulation } = useStore();
 
-	const [tabsValue, setTabsValue] = useState<number>(0);
+	const [tabsValue, setTabsValue] = useState(0);
 
 	const handleChange = (_event: SyntheticEvent, newValue: number) => {
 		setTabsValue(newValue);

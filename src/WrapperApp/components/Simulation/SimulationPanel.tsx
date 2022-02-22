@@ -7,8 +7,6 @@ import {
 	Fade,
 	LinearProgress,
 	Modal,
-	ToggleButton,
-	ToggleButtonGroup,
 	Typography
 } from '@mui/material';
 
@@ -22,7 +20,7 @@ import {
 	useShSimulation
 } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
-import { InputFilesEditor } from './InputFilesEditor';
+import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import SimulationStatus from './SimulationStatus';
 
 interface SimulationPanelProps {
@@ -32,13 +30,15 @@ interface SimulationPanelProps {
 export default function SimulationPanel(props: SimulationPanelProps) {
 	const { editorRef, setResultsSimulationData } = useStore();
 
-	const { sendRun, sendHelloWorld, getSimulations, getSimulationsStatus } = useShSimulation();
+	const { sendRun, sendHelloWorld, getSimulations, getSimulationsStatus } =
+		useShSimulation();
 
 	const [isInProgress, setInProgress] = useState(false);
 	const [isBackendAlive, setBackendAlive] = useState(false);
-	const [inputFilesOrigin, setInputFilesOrigin] = useState('editor');
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
+
 	const [inputFiles, setInputFiles] = useState<InputFiles>();
+
 	const [trackedId, setTrackedId] = useState<string>();
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
 	const [simulationsStatusData, setSimulationsStatusData] = useState<SimulationStatusData[]>([]);
@@ -102,9 +102,10 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		true
 	);
 
-	const onClickRun = () => {
+	const runSimulation = (inputFiles?: InputFiles) => {
 		setInProgress(true);
-		sendRun(editorRef.current?.toJSON(), controller.signal)
+		const input = inputFiles ? { inputFiles } : { editorJSON: editorRef.current?.toJSON() };
+		sendRun(input, controller.signal)
 			.then(res => {
 				updateSimulationInfo();
 				setTrackedId(res.content.task_id);
@@ -112,6 +113,8 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			.catch()
 			.finally(() => setInProgress(false));
 	};
+
+	const onClickRun = () => runSimulation();
 
 	const handleEditorModal = () => {
 		setShowInputFilesEditor(false);
@@ -122,7 +125,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			sx={{
 				margin: '0 auto',
 				width: 'min(960px, 100%)',
-				padding: '5rem',
+				padding: '2rem 5rem',
 				display: 'flex',
 				flexDirection: 'column',
 				gap: '1.5rem',
@@ -139,14 +142,10 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 						<InputFilesEditor
 							inputFiles={inputFiles}
 							closeEditor={() => setShowInputFilesEditor(false)}
-							saveAndExit={newInputFiles => {
-								setShowInputFilesEditor(false);
-								setInputFiles(newInputFiles);
-							}}
 							runSimulation={newInputFiles => {
 								setShowInputFilesEditor(false);
 								setInputFiles(newInputFiles);
-								console.log(newInputFiles);
+								runSimulation(newInputFiles);
 							}}></InputFilesEditor>
 					</Box>
 				</Fade>
@@ -157,42 +156,6 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					<Typography gutterBottom variant='h5' component='div'>
 						Backend Status - {isBackendAlive ? 'ALIVE' : 'DEAD'}
 					</Typography>
-				</CardContent>
-			</Card>
-
-			<Card sx={{ minWidth: 275 }}>
-				<CardContent>
-					<Typography gutterBottom variant='h5' component='div'>
-						Input files
-					</Typography>
-					<Box>
-						<ToggleButtonGroup
-							color='primary'
-							size='small'
-							value={inputFilesOrigin}
-							exclusive
-							onChange={(_event, value) =>
-								value !== null && setInputFilesOrigin(value)
-							}>
-							<ToggleButton value='editor'>Editor</ToggleButton>
-							<ToggleButton value='custom'>Custom</ToggleButton>
-						</ToggleButtonGroup>
-						<Button
-							size='small'
-							variant='text'
-							sx={{ marginLeft: '20px' }}
-							disabled={inputFilesOrigin !== 'custom'}
-							onClick={() => setShowInputFilesEditor(true)}>
-							Edit input files
-						</Button>
-					</Box>
-					<Button
-						size='small'
-						variant='text'
-						sx={{ marginTop: '20px' }}
-						onClick={() => setShowInputFilesEditor(true)}>
-						Preview editor input files
-					</Button>
 				</CardContent>
 			</Card>
 
