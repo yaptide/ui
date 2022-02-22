@@ -11,6 +11,7 @@ import { TabPanel } from './components/TabPanel';
 import ResultsPanel from './components/ResultsPanel';
 import { useAuth } from '../services/AuthService';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
+import { AboutPanel } from './components/AboutPanel';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData } = useStore();
@@ -83,7 +84,11 @@ function WrapperApp() {
 						<ResultsPanel />
 					</TabPanel>
 				</>
-			)}
+			)}			
+
+			<TabPanel value={tabsValue} index={'About'} persistentIfVisited>
+				<AboutPanel />
+			</TabPanel>
 			<TabPanel value={tabsValue} index={'Login'}>
 				<LoginPanel />
 			</TabPanel>

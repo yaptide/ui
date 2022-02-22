@@ -63,9 +63,9 @@ export function Viewport(
 
 	const cameraPersp = new THREE.PerspectiveCamera(50, 1, 0.001, 10000);
 	cameraPersp.name = 'Perspective';
-	cameraPersp.position.copy(cameraPosition ?? new THREE.Vector3(0, 10, 10)); // default camera position other than (0,0,0) to see anything
+	cameraPersp.position.copy(cameraPosition ?? new THREE.Vector3(0, 20, 20)); // default camera position other than (0,0,0) to see anything
 
-	const cameraOrtho = new THREE.OrthographicCamera(1 / -2, 1 / 2, 1 / 2, 1 / -2, 0.001, 10000);
+	const cameraOrtho = new THREE.OrthographicCamera(-4, 4,4, -4, 0.001, 10000);
 	cameraOrtho.name = 'Orthographic';
 	cameraOrtho.position.copy(cameraPersp.position);
 	cameraOrtho.zoom = 0.2;

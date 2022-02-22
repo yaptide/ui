@@ -1,4 +1,4 @@
-export const COMMON_MATERIAL_ICRUS = [104, 276, 223, 179, 222, 6, 245, 170];
+export const COMMON_MATERIAL_ICRUS = [104, 276, 223, 179, 222, 6, 245, 170, 1000];
 export const DEFAULT_MATERIAL_ICRU = 276;
 export const DEFAULT_MATERIAL_NAME = 'WATER, LIQUID';
 // made with:
@@ -16,6 +16,8 @@ export const DEFAULT_MATERIAL_NAME = 'WATER, LIQUID';
 //     json.dump(result, outfile)
 
 export const MATERIALS = [
+	{ icru: 1000, name: 'VACUUM' },
+	{ icru: 0, name: 'BLACK HOLE' },
 	{ icru: 1, name: 'HYDROGEN' },
 	{ icru: 2, name: 'HELIUM' },
 	{ icru: 3, name: 'LITHIUM' },
