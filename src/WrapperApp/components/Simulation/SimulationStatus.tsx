@@ -19,7 +19,7 @@ import {
 	InputFiles,
 	SimulationStatusData,
 	StatusState
-} from '../../../services/ShSimulationService';
+} from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 
 interface SimulationStatusProps {

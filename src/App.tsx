@@ -4,7 +4,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import * as React from 'react';
 import { JsRootService } from './JsRoot/JsRootService';
 import { Auth } from './services/AuthService';
-import { ShSimulation } from './services/ShSimulationService';
+import { ShSimulation } from './services/ShSimulatorService';
 import { Store } from './services/StoreService';
 import WrapperApp from './WrapperApp/WrapperApp';
 

@@ -1,6 +1,6 @@
 import { Box, Button, Card, CardActions, CardContent } from '@mui/material';
 import React, { useState } from 'react';
-import { InputFiles } from '../../../services/ShSimulationService';
+import { InputFiles } from '../../../services/ShSimulatorService';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { saveString } from '../../../util/File';
 

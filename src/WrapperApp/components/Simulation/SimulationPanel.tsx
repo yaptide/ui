@@ -20,7 +20,7 @@ import {
 	SimulationStatusData,
 	StatusState,
 	useShSimulation
-} from '../../../services/ShSimulationService';
+} from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { InputFilesEditor } from './InputFilesEditor';
 import SimulationStatus from './SimulationStatus';

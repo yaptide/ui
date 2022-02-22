@@ -221,7 +221,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 				})
 				.catch(() => undefined);
 		},
-		[authKy, getSimulationInputFiles]
+		[authKy]
 	);
 
 	const getSimulations = useCallback(
