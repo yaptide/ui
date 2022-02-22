@@ -42,10 +42,15 @@ function WrapperApp() {
 			<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
 				<Tabs value={tabsValue} onChange={handleChange}>
 					<Tab label='Editor' value={'Editor'} />
-					<Tab label='Run' value={'Run'}  disabled={DEMO_MODE || !isAuthorized} />
-					<Tab label='Input Editor' value={'Input Editor'} disabled={DEMO_MODE || !isAuthorized} />
+					<Tab label='Run' value={'Run'} disabled={DEMO_MODE || !isAuthorized} />
 					<Tab
-						label='Results' value={'Results'}
+						label='Input Editor'
+						value={'Input Editor'}
+						disabled={DEMO_MODE || !isAuthorized}
+					/>
+					<Tab
+						label='Results'
+						value={'Results'}
 						disabled={DEMO_MODE || !isAuthorized || !resultsSimulationData}
 					/>
 					<Tab label='Projects' value={'Projects'} disabled />
@@ -74,7 +79,7 @@ function WrapperApp() {
 						<InputEditorPanel goToRun={() => setTabsValue('Run')} />
 					</TabPanel>
 
-					<TabPanel value={tabsValue} index={'Results'} persistentIfVisited>
+					<TabPanel value={tabsValue} index={'Results'} persistent>
 						<ResultsPanel />
 					</TabPanel>
 				</>
