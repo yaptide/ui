@@ -1,7 +1,7 @@
 import { ReactNode, useRef, useState } from 'react';
 import { Editor } from '../ThreeEditor/js/Editor';
 import { createGenericContext } from '../util/GenericContext';
-import { SimulationStatusData } from './ShSimulationService';
+import { SimulationStatusData } from './ShSimulatorService';
 
 export interface StoreProps {
 	children: ReactNode;

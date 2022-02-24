@@ -4,19 +4,23 @@ import {
 	Card,
 	CardActions,
 	CardContent,
+	Fade,
 	LinearProgress,
+	Modal,
 	Typography
 } from '@mui/material';
 
 import { useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
 import {
+	InputFiles,
 	SimulationInfo,
 	SimulationStatusData,
 	StatusState,
 	useShSimulation
-} from '../../../services/ShSimulationService';
+} from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
+import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import SimulationStatus from './SimulationStatus';
 
 interface SimulationPanelProps {
@@ -26,11 +30,14 @@ interface SimulationPanelProps {
 export default function SimulationPanel(props: SimulationPanelProps) {
 	const { editorRef, setResultsSimulationData } = useStore();
 
-	const { sendRun, sendHelloWorld, getSimulations, getSimulationsStatus } = useShSimulation();
+	const { sendRun, sendHelloWorld, getSimulations, getSimulationsStatus } =
+		useShSimulation();
 
 	const [isInProgress, setInProgress] = useState(false);
-
 	const [isBackendAlive, setBackendAlive] = useState(false);
+	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
+
+	const [inputFiles, setInputFiles] = useState<InputFiles>();
 
 	const [trackedId, setTrackedId] = useState<string>();
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
@@ -95,9 +102,10 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		true
 	);
 
-	const onClickRun = () => {
+	const runSimulation = (inputFiles?: InputFiles) => {
 		setInProgress(true);
-		sendRun(editorRef.current?.toJSON(), controller.signal)
+		const input = inputFiles ? { inputFiles } : { editorJSON: editorRef.current?.toJSON() };
+		sendRun(input, controller.signal)
 			.then(res => {
 				updateSimulationInfo();
 				setTrackedId(res.content.task_id);
@@ -106,17 +114,43 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			.finally(() => setInProgress(false));
 	};
 
+	const onClickRun = () => runSimulation();
+
+	const handleEditorModal = () => {
+		setShowInputFilesEditor(false);
+	};
+
 	return (
 		<Box
 			sx={{
 				margin: '0 auto',
 				width: 'min(960px, 100%)',
-				padding: '5rem',
+				padding: '2rem 5rem',
 				display: 'flex',
 				flexDirection: 'column',
 				gap: '1.5rem',
 				height: 'min-content'
 			}}>
+			<Modal
+				aria-labelledby='transition-modal-title'
+				aria-describedby='transition-modal-description'
+				open={showInputFilesEditor}
+				onClose={handleEditorModal}
+				closeAfterTransition>
+				<Fade in={showInputFilesEditor}>
+					<Box sx={{ height: '100vh', width: '100vw', overflow: 'auto' }}>
+						<InputFilesEditor
+							inputFiles={inputFiles}
+							closeEditor={() => setShowInputFilesEditor(false)}
+							runSimulation={newInputFiles => {
+								setShowInputFilesEditor(false);
+								setInputFiles(newInputFiles);
+								runSimulation(newInputFiles);
+							}}></InputFilesEditor>
+					</Box>
+				</Fade>
+			</Modal>
+
 			<Card sx={{ minWidth: 275 }}>
 				<CardContent>
 					<Typography gutterBottom variant='h5' component='div'>
@@ -154,6 +188,10 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					loadResults={id => {
 						if (id === null) props.goToResults?.call(null);
 						else setResultsSimulationData(simulation);
+					}}
+					showInputFiles={inputFiles => {
+						setShowInputFilesEditor(true);
+						setInputFiles(inputFiles);
 					}}></SimulationStatus>
 			))}
 		</Box>
