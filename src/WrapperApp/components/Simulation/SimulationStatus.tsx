@@ -15,15 +15,24 @@ import {
 } from '@mui/material';
 import React from 'react';
 import Countdown from 'react-countdown';
-import { SimulationStatusData, StatusState } from '../../../services/ShSimulationService';
+import {
+	InputFiles,
+	SimulationStatusData,
+	StatusState
+} from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 
 interface SimulationStatusProps {
 	simulation: SimulationStatusData;
 	loadResults?: (taskId: string | null) => void;
+	showInputFiles: (inputFiles?: InputFiles) => void;
 }
 
-export default function SimulationStatus({ simulation, loadResults }: SimulationStatusProps) {
+export default function SimulationStatus({
+	simulation,
+	loadResults,
+	showInputFiles
+}: SimulationStatusProps) {
 	const { resultsSimulationData } = useStore();
 
 	const tableRowStyle: SxProps<Theme> = { '&:last-child td, &:last-child th': { border: 0 } };
@@ -40,6 +49,7 @@ export default function SimulationStatus({ simulation, loadResults }: Simulation
 			)}
 		</React.Fragment>
 	);
+
 	const rows = [
 		row('Creation Date', simulation.creationDate.toLocaleString()),
 		row('UUID', simulation.uuid),
@@ -75,28 +85,7 @@ export default function SimulationStatus({ simulation, loadResults }: Simulation
 	};
 
 	const onClickInputFiles = () => {
-		const errorWindow = window.open();
-
-		if (!errorWindow) return console.error('Could not open new window');
-		errorWindow.document.open();
-		errorWindow.document.write(
-			`<html>
-			<head>
-				<title>Input Files</title>
-			</head>
-			<body>
-			<h1>Input Files</h1>		
-			${Object.entries(simulation?.inputFiles ?? {})
-				.map(([name, value]) => {
-					return `
-				<h2>${name}</h2>
-				<pre>${value}</pre>`;
-				})
-				.join('')}
-			</body>
-			</html>`
-		);
-		errorWindow.document.close();
+		showInputFiles(simulation.inputFiles);
 	};
 
 	const onClickShowError = () => {

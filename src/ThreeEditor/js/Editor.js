@@ -540,6 +540,7 @@ Editor.prototype = {
 		this.mixer.stopAllAction();
 
 		this.deselect();
+		this.contextManager.reset();
 
 		this.signals.editorCleared.dispatch();
 	},

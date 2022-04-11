@@ -4,8 +4,8 @@ import { Box } from '@mui/material';
 
 interface TabPanelProps {
 	children?: React.ReactNode;
-	index: number;
-	value?: number;
+	index: string | number;
+	value?: string | number;
 	persistent?: boolean;
 	persistentIfVisited?: boolean;
 }

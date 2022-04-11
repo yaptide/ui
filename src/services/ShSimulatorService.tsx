@@ -10,7 +10,11 @@ export interface ShSimulationProps {
 }
 
 export interface IShSimulation {
-	sendRun: (editorJSON: unknown, signal?: AbortSignal) => Promise<ResShRun>;
+	sendRun: (
+		input: { editorJSON: unknown } | { inputFiles: InputFiles },
+		signal?: AbortSignal
+	) => Promise<ResShRun>;
+	convertToInputFiles: (editorJSON: unknown, signal?: AbortSignal) => Promise<ResShConvert>;
 	sendHelloWorld: (signal?: AbortSignal) => Promise<unknown>;
 	getStatus: (
 		simulation: SimulationInfo,
@@ -71,12 +75,19 @@ interface ResShStatusProgress extends IResponseMsg {
 	};
 }
 
-interface InputFiles {
+export interface InputFiles {
 	'beam.dat': string;
 	'detect.dat': string;
 	'geo.dat': string;
 	'mat.dat': string;
 }
+
+interface ResShConvert extends IResponseMsg {
+	content: {
+		input_files: InputFiles;
+	};
+}
+
 interface ResShStatusFailure extends IResponseMsg {
 	content: {
 		state: StatusState.FAILURE;
@@ -129,11 +140,18 @@ const ShSimulation = (props: ShSimulationProps) => {
 	);
 
 	const sendRun = useCallback(
-		(editorJSON: unknown, signal?: AbortSignal) =>
-			authKy
+		(input: { editorJSON: unknown } | { inputFiles: InputFiles }, signal?: AbortSignal) => {
+			let json;
+			if ('editorJSON' in input) {
+				json = input.editorJSON;
+			} else if ('inputFiles' in input) {
+				json = { input_files: { ...input.inputFiles } };
+			}
+
+			return authKy
 				.post(`${BACKEND_URL}/sh/run`, {
 					signal,
-					json: editorJSON,
+					json: json,
 					timeout: 30000
 					/**
             Timeout in milliseconds for getting a response. Can not be greater than 2147483647.
@@ -143,9 +161,25 @@ const ShSimulation = (props: ShSimulationProps) => {
 				.json()
 				.then((response: unknown) => {
 					return response as ResShRun;
+				});
+		},
+		[authKy]
+	);
+
+	const convertToInputFiles = useCallback(
+		(editorJSON: unknown, signal?: AbortSignal) =>
+			authKy
+				.post(`${BACKEND_URL}/sh/convert`, {
+					signal,
+					json: editorJSON
+				})
+				.json()
+				.then((response: unknown) => {
+					return response as ResShConvert;
 				}),
 		[authKy]
 	);
+
 
 	const getStatus = useCallback(
 		(
@@ -246,6 +280,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 
 	const value: IShSimulation = {
 		sendRun,
+		convertToInputFiles,
 		sendHelloWorld,
 		getStatus,
 		getSimulations,

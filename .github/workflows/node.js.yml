@@ -23,9 +23,9 @@ jobs:
                 # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
             - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v2
+              uses: actions/setup-node@v3
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: 'npm'
@@ -40,7 +40,7 @@ jobs:
 
         steps:
             - name: Checkout 🛎️
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
 
             - name: Install 🔧
               run: npm install
@@ -67,7 +67,7 @@ jobs:
         steps:
             # Get the repo to the github agent
             - name: Checkout 🛎️
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
 
             # Add keys to the SSH agent
             - uses: webfactory/ssh-agent@v0.5.4

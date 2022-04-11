@@ -50,6 +50,11 @@ export class ContextManager {
 		this.setVisibility(context);
 	}
 
+	reset = () => {
+		this._selected = [null, null];
+		this.editor.signals.objectSelected.dispatch(this.selected);
+	};
+
 	set currentContext(context: Context) {
 		if (this._context !== context) {
 			this._context = context;

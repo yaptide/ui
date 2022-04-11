@@ -278,9 +278,9 @@ button[disabled] {
 	cursor: default;
 }
 
-button:hover:not([disabled]) {
+/* button:hover:not([disabled]) {
 	background-color: #fff;
-}
+} */
 
 button.selected {
 	background-color: #fff;
@@ -602,10 +602,10 @@ select:hover {
 		cursor: default;
 	}
 
-	button:hover:not([disabled]) {
+	/* button:hover:not([disabled]) {
 		color: #ccc;
 		background-color: #444;
-	}
+	} */
 
 	button.selected {
 		color: #fff;

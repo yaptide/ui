@@ -4,7 +4,7 @@ const examples = [];
 while (canImport) {
 	try {
 		const example = require(`./ex${iterator}.json`);
-		if (!example.project.name) example.project.name = `Example ${iterator}`;
+		if (!example.project?.name) example.project.name = `Example ${iterator}`;
 		examples.push(example);
 		iterator++;
 	} catch (e) {
@@ -12,7 +12,4 @@ while (canImport) {
 	}
 }
 
-export default examples.map(example => ({
-	name: example.name,
-	data: example
-}));
+export default examples;

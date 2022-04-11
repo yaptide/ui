@@ -7,15 +7,15 @@ import { useStore } from '../../services/StoreService';
 function ResultsPanel() {
 	const { resultsSimulationData: simulation } = useStore();
 
-	const [tabsValue, setTabsValue] = useState<number>(0);
+	const [tabsValue, setTabsValue] = useState(0);
 
 	const handleChange = (_event: SyntheticEvent, newValue: number) => {
 		setTabsValue(newValue);
 	};
 
 	useEffect(() => {
-		console.log(simulation)
-	}, [simulation])
+		console.log(simulation);
+	}, [simulation]);
 
 	return (
 		<Box>
@@ -57,10 +57,14 @@ function ResultsPanel() {
 							value={tabsValue}
 							onChange={handleChange}>
 							{simulation?.result?.estimators.map((estimator, idx) => {
-						return (
-							<Tab key={`tab_${estimator.name}`} label={estimator.name} value={idx} />
-						);
-					})}
+								return (
+									<Tab
+										key={`tab_${estimator.name}`}
+										label={estimator.name}
+										value={idx}
+									/>
+								);
+							})}
 						</Tabs>
 					</CardContent>
 				</Card>
@@ -70,18 +74,18 @@ function ResultsPanel() {
 					}}>
 					<CardContent>
 						{simulation?.result?.estimators.map((estimator, idx) => {
-					return (
-						<TabPanel
-							key={`tab_panel_${estimator.name}`}
-							value={tabsValue}
-							index={idx}
-							persistent>
-							<Grid container spacing={1}>
-								{generateGraphs(estimator)}
-							</Grid>
-						</TabPanel>
-					);
-				})}
+							return (
+								<TabPanel
+									key={`tab_panel_${estimator.name}`}
+									value={tabsValue}
+									index={idx}
+									persistent>
+									<Grid container spacing={1}>
+										{generateGraphs(estimator)}
+									</Grid>
+								</TabPanel>
+							);
+						})}
 					</CardContent>
 				</Card>
 			</Box>
