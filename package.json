@@ -84,7 +84,7 @@
 		"cross-env": "^7.0.3",
 		"gh-pages": "^3.2.3",
 		"prettier": "2.5.1",
-		"react-app-rewired": "^2.1.11",
+		"react-app-rewired": "^2.2.1",
 		"worker-loader": "^3.0.8"
 	}
 }
