@@ -2,8 +2,8 @@ import { ReactNode, useEffect, useState } from 'react';
 import { createGenericContext } from '../util/GenericContext';
 import makeAsyncScriptLoader from 'react-async-script';
 
-const JsRootUrl = 'https://root.cern.ch/js/latest/scripts/JSRoot.core.js';
-const JsRootPainterUrl = 'https://root.cern.ch/js/latest/scripts/JSRoot.painter.js';
+const JsRootUrl = 'https://root.cern.ch/js/6.3.4/scripts/JSRoot.core.js';
+const JsRootPainterUrl = 'https://root.cern.ch/js/6.3.4/scripts/JSRoot.painter.js';
 const JsRootKey = 'JSROOT';
 
 declare global {
