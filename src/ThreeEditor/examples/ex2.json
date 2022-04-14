@@ -1,0 +1,256 @@
+{
+	"metadata": {
+		"version": 0.2,
+		"type": "Editor",
+		"generator": "Editor.toJSON"
+	},
+	"project": {
+		"title": "images_generation",
+		"shadows": true,
+		"shadowType": 1,
+		"physicallyCorrectLights": false,
+		"toneMapping": 0,
+		"toneMappingExposure": 1
+	},
+	"scene": {
+		"metadata": {
+			"version": 4.5,
+			"type": "Object",
+			"generator": "Object3D.toJSON"
+		},
+		"geometries": [
+			{
+				"uuid": "32b5253c-d0cb-404f-9999-5bbee3499b00",
+				"type": "CylinderGeometry",
+				"radiusTop": 10,
+				"radiusBottom": 10,
+				"height": 20,
+				"radialSegments": 16,
+				"heightSegments": 1,
+				"openEnded": false,
+				"thetaStart": 0,
+				"thetaLength": 6.283185307179586
+			}
+		],
+		"materials": [
+			{
+				"uuid": "2dbe3356-074f-44b8-bfd3-a231a309d25b",
+				"type": "MeshBasicMaterial",
+				"color": 0,
+				"reflectivity": 1,
+				"refractionRatio": 0.98,
+				"side": 2,
+				"opacity": 0.5,
+				"transparent": true,
+				"depthFunc": 3,
+				"depthTest": true,
+				"depthWrite": true,
+				"colorWrite": true,
+				"stencilWrite": false,
+				"stencilWriteMask": 255,
+				"stencilFunc": 519,
+				"stencilRef": 0,
+				"stencilFuncMask": 255,
+				"stencilFail": 7680,
+				"stencilZFail": 7680,
+				"stencilZPass": 7680,
+				"wireframe": true
+			}
+		],
+		"object": {
+			"uuid": "C1BF5EE7-ACC7-4896-8451-A5B358DF9889",
+			"type": "Scene",
+			"name": "Figures",
+			"layers": 1,
+			"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+			"children": [
+				{
+					"uuid": "30e7daf2-1841-4b75-b189-da47edad8dc5",
+					"type": "CylinderMesh",
+					"name": "Cylinder",
+					"userData": {
+						"id": 927,
+						"geometryType": "CylinderGeometry",
+						"position": [0, 0, -10],
+						"rotation": [0, 0, 0],
+						"parameters": {
+							"radiusTop": 10,
+							"height": 20
+						}
+					},
+					"layers": 1,
+					"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -10, 1],
+					"geometry": "32b5253c-d0cb-404f-9999-5bbee3499b00",
+					"material": "2dbe3356-074f-44b8-bfd3-a231a309d25b"
+				}
+			]
+		}
+	},
+	"history": {
+		"undos": [],
+		"redos": []
+	},
+	"zoneManager": {
+		"zones": [
+			{
+				"uuid": "4bd13170-b8bd-48a7-b97b-8e0b87c91e6f",
+				"name": "Zone",
+				"materialUuid": "d85fe808-54b8-472c-adef-b6f3c09605bf",
+				"unionOperations": [
+					[
+						{
+							"mode": "union",
+							"objectUuid": "30e7daf2-1841-4b75-b189-da47edad8dc5"
+						}
+					]
+				],
+				"subscribedObjects": {
+					"30e7daf2-1841-4b75-b189-da47edad8dc5": 1
+				}
+			}
+		],
+		"uuid": "368269D3-6F9B-4241-84A0-5D908D10E196",
+		"name": "Zones",
+		"worldZone": {
+			"uuid": "4eb3646b-88ec-47a6-a9bd-a1333f2c37b5",
+			"center": {
+				"x": 0,
+				"y": 0,
+				"z": -10
+			},
+			"size": {
+				"x": 15,
+				"y": 15,
+				"z": 30
+			},
+			"type": "WorldZone",
+			"geometryType": "Cylinder",
+			"name": "World Zone",
+			"marginMultiplier": 1.1,
+			"autoCalculate": false,
+			"materialUuid": "cd7c2eb0-e91f-4144-b4eb-536e4626cc09",
+			"userData": {
+				"geometryType": "CylinderGeometry",
+				"parameters": {
+					"radiusTop": 15,
+					"height": 15
+				},
+				"position": [0, 0, -10],
+				"rotation": [0, 0, 0]
+			}
+		}
+	},
+	"detectManager": {
+		"uuid": "9A7D17B8-BAE4-441F-965F-490CAA617EC6",
+		"name": "DetectManager",
+		"detectGeometries": [
+			{
+				"uuid": "11d33a68-4e64-4b9f-906c-78bfe0a25250",
+				"data": {
+					"radius": 10,
+					"innerRadius": 0,
+					"depth": 20,
+					"radialSegments": 1,
+					"zSegments": 400
+				},
+				"type": "Cyl",
+				"position": [0, 0, -10],
+				"name": "CylZ_Mesh",
+				"colorHex": 65535
+			},
+			{
+				"uuid": "d0cc5103-a9d3-4166-9bde-2f283cef17d0",
+				"data": {
+					"width": 1,
+					"height": 4,
+					"depth": 20,
+					"xSegments": 1,
+					"ySegments": 1,
+					"zSegments": 100
+				},
+				"type": "Mesh",
+				"position": [0, 0, -10],
+				"name": "YZ_Mesh",
+				"colorHex": 65535
+			}
+		],
+		"filters": []
+	},
+	"beam": {
+		"position": [0, 0, 0],
+		"direction": [0, 0, 1],
+		"energy": 150,
+		"energySpread": 1.5,
+		"divergence": {
+			"x": 0,
+			"y": 0,
+			"distanceToFocal": 0
+		},
+		"particle": {
+			"id": 2,
+			"a": 12,
+			"z": 6
+		},
+		"colorHex": 16776960
+	},
+	"materialManager": {
+		"materials": [
+			{
+				"uuid": "d85fe808-54b8-472c-adef-b6f3c09605bf",
+				"name": "WATER, LIQUID",
+				"icru": 276,
+				"color": 43775,
+				"transparent": true,
+				"opacity": 0.5
+			},
+			{
+				"uuid": "cd7c2eb0-e91f-4144-b4eb-536e4626cc09",
+				"name": "VACUUM",
+				"icru": 1000,
+				"color": 16777215
+			}
+		],
+		"selectedMaterials": {
+			"d85fe808-54b8-472c-adef-b6f3c09605bf": 1,
+			"cd7c2eb0-e91f-4144-b4eb-536e4626cc09": 1
+		}
+	},
+	"scoringManager": {
+		"uuid": "D0F67F59-F311-4F8E-A06F-5A07D618FDE2",
+		"name": "Outputs",
+		"scoringOutputs": [
+			{
+				"name": "cylz",
+				"uuid": "acd8cefc-ec88-4d15-9a31-a104ef3786e9",
+				"quantities": {
+					"active": [
+						{
+							"uuid": "bd51ae94-cd14-4615-881d-15056ab4df25",
+							"keyword": "DoseGy",
+							"modifiers": []
+						}
+					],
+					"disabled": []
+				},
+				"detectGeometry": "11d33a68-4e64-4b9f-906c-78bfe0a25250",
+				"trace": false
+			},
+			{
+				"name": "yzmsh.bdo",
+				"uuid": "8a5864fc-67ab-4085-b821-66e577c374dc",
+				"quantities": {
+					"active": [
+						{
+							"uuid": "68354147-5373-48cd-a4b6-f198fc07a3ab",
+							"keyword": "DoseGy",
+							"modifiers": []
+						}
+					],
+					"disabled": []
+				},
+				"detectGeometry": "d0cc5103-a9d3-4166-9bde-2f283cef17d0",
+				"trace": false
+			}
+		]
+	}
+}

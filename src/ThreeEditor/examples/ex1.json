@@ -5,6 +5,7 @@
 		"generator": "Editor.toJSON"
 	},
 	"project": {
+		"title": "",
 		"shadows": true,
 		"shadowType": 1,
 		"physicallyCorrectLights": false,

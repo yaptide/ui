@@ -28,7 +28,7 @@ export function MenubarExamples(editor) {
 	// YAPTIDE examples
 	options.add(
 		...examples.map(data =>
-			createOption('option', data.project?.name ?? 'Example', () => {
+			createOption('option', data.project?.title ?? 'Example', () => {
 				window.confirm('Any unsaved data will be lost. Are you sure?') && loadExample(data);
 			})
 		),
