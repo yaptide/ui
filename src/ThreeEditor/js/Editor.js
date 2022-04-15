@@ -540,6 +540,7 @@ Editor.prototype = {
 		this.mixer.stopAllAction();
 
 		this.deselect();
+		this.contextManager.reset();
 
 		this.signals.editorCleared.dispatch();
 	},
@@ -555,6 +556,7 @@ Editor.prototype = {
 	//
 
 	async fromJSON(json) {
+		this.config.setKey('project/title', json.project.title ?? '');
 		const loader = new EditorObjectLoader(this);
 
 		this.signals.cameraResetted.dispatch();
@@ -599,6 +601,7 @@ Editor.prototype = {
 				generator: 'Editor.toJSON'
 			},
 			project: {
+				title: this.config.getKey('project/title'),
 				shadows: this.config.getKey('project/renderer/shadows'),
 				shadowType: this.config.getKey('project/renderer/shadowType'),
 				physicallyCorrectLights: this.config.getKey(

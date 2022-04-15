@@ -300,7 +300,7 @@ export class WorldZone extends SimulationObject3D {
 				geometryType: geometry[this._geometryType].type,
 				parameters: getGeometryParameters(geometry[this._geometryType]),
 				position: this.box.getCenter(new Vector3()).toArray(),
-				rotation: this.rotation.toVector3().toArray()
+				rotation: this.rotation.toArray().slice(0, 3) as THREE.Vector3Tuple
 			}
 		};
 
