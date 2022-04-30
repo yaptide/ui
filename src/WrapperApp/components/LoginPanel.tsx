@@ -16,10 +16,12 @@ export default function LoginPanel() {
 	};
 
 	const handleEnter = useCallback(
-		e => {
-			if (e.key === 'Enter') login(username, password);
+		(event: KeyboardEvent) => {
+			if (event.key === 'Enter') {
+				login(username, password);
+			}
 		},
-		[login, password, username]
+		[login, username, password]
 	);
 	// Handle login on 'Enter' keystroke
 	useEffect(() => {
@@ -63,4 +65,7 @@ export default function LoginPanel() {
 			</Card>
 		</Box>
 	);
+}
+function handleEnter(arg0: string, handleEnter: any) {
+	throw new Error('Function not implemented.');
 }

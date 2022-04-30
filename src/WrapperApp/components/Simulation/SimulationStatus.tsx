@@ -13,7 +13,7 @@ import {
 	Theme,
 	Typography
 } from '@mui/material';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import Countdown from 'react-countdown';
 import {
 	InputFiles,
@@ -37,7 +37,7 @@ export default function SimulationStatus({
 
 	const tableRowStyle: SxProps<Theme> = { '&:last-child td, &:last-child th': { border: 0 } };
 
-	const row = (title: string, value: {} | undefined, guard = true) => (
+	const row = (title: string, value: React.ReactNode | undefined, guard = true) => (
 		<React.Fragment key={title}>
 			{guard && (
 				<TableRow sx={tableRowStyle}>

@@ -10,10 +10,16 @@ function SampleComponent(props: SampleComponentProps) {
 	const [objectName, setObjectName] = useState();
 	const [objectID, setObjectID] = useState();
 
-	const objectSelected = useCallback(object => {
-		setObjectName(object?.name);
-		setObjectID(object?.id);
-	}, []);
+	const objectSelected = useCallback(
+		(object: {
+			name: React.SetStateAction<undefined>;
+			id: React.SetStateAction<undefined>;
+		}) => {
+			setObjectName(object?.name);
+			setObjectID(object?.id);
+		},
+		[]
+	);
 
 	useEffect(() => {
 		props.signal.add(objectSelected);
