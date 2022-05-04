@@ -12,6 +12,7 @@ import { ContextManager } from './Editor.Context';
 import { History as _History } from './History.js';
 import { Loader } from './Loader.js';
 import { Storage as _Storage } from './Storage.js';
+import { Patient } from '../util/Patient/Patient';
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
 _DEFAULT_CAMERA.name = 'Camera';
@@ -564,6 +565,7 @@ Editor.prototype = {
 		this.history.fromJSON(json.history);
 
 		this.setScene(await loader.parseAsync(json.scene));
+		this.sceneHelpers.add(new Patient(this));
 
 		this.materialManager.fromJSON(json.materialManager);
 
