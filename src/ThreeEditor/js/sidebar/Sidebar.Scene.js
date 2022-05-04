@@ -17,7 +17,8 @@ function SidebarScene(editor) {
 			editor.scene,
 			editor.zoneManager.zoneContainer,
 			editor.zoneManager.worldZone,
-			editor.beam
+			editor.beam,
+			editor.treatmentPlan
 		];
 		outlinerManager.setOptionsFromSources(sources);
 	};

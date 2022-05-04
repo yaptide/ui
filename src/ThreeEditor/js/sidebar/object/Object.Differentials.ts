@@ -61,8 +61,8 @@ export class ObjectDifferentials extends ObjectAbstract {
 	}
 	setObject(object: ScoringQuantity): void {
 		super.setObject(object);
-		if (!object) return;
-		this.object = object;
+		if (!this.object) return;
+		
 		this.outliner.setOptions(object.modifiers);
 		if (object.selectedModifier) {
 			const mod = object.selectedModifier;

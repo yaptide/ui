@@ -17,8 +17,9 @@ function SidebarProperties(editor, id = 'properties') {
 	const settings = new Panel.ObjectSettings(editor);
 	const quantity = new Panel.ObjectQuantity(editor);
 	const differential = new Panel.ObjectDifferentials(editor);
+	const treatmentPlan = new Panel.ObjectTreatmentPlan(editor);
 
-	const generalItems = [info, placement, settings, quantity];
+	const generalItems = [info, treatmentPlan, placement, settings, quantity];
 	const geometryItems = [dimensions, grid, calculate];
 	const descriptorItems = [beam];
 	const modifierItems = [zoneRules, filter, differential];
@@ -53,104 +54,73 @@ function SidebarProperties(editor, id = 'properties') {
 
 	function setupGeneralPanel(object) {
 		info.setObject(object);
+
 		if (!object.notMovable && !object.isScene)
 			// TODO: Create custom scene for figures
 			placement.setObject(object);
 		else hideUIElement(placement.panel);
+
 		if (!object.isOutput) hideUIElement(settings.panel);
 		else settings.setObject(object);
+
 		if (!object.isQuantity) hideUIElement(quantity.panel);
 		else quantity.setObject(object);
+
+		if (!object.isTreatmentPlan) hideUIElement(treatmentPlan.panel) 
+		else treatmentPlan.setObject(object);
 	}
 
-	const WITHOUT_GEOMETRIES = [
-		'isScene',
-		'isDetectContainer',
-		'isZoneContainer',
-		'isZone',
-		'isFilterContainer',
-		'isFilter',
-		'isBeam',
-		'isScoringManager',
-		'isOutput',
-		'isQuantity'
-	];
+	function setupPanel(name, panelItems, itemsToShow, object) {
+		container.showTab(name);
+		panelItems.forEach(item => item.setObject(null));
+		itemsToShow.forEach(item => item.setObject(object));
+		if (itemsToShow.length === 0) container.hideTab(name);
+	}
+
 	function setupGeometryPanel(object) {
-		if (WITHOUT_GEOMETRIES.some(key => object[key])) return container.hideTab('geometry');
-		container.showTab('geometry');
+		let itemsToShow = [];
 		switch (true) {
 			case object.isDetectGeometry:
-				[calculate].forEach(item => item.setObject(null));
-				[grid, dimensions].forEach(item => item.setObject(object));
+				itemsToShow = [grid, dimensions];
 				break;
 			case object.isWorldZone:
-				[grid].forEach(item => item.setObject(null));
-				[dimensions, calculate].forEach(item => item.setObject(object));
+				itemsToShow = [dimensions, calculate];
 				break;
 			case object.isBasicMesh:
-				[grid, calculate].forEach(item => item.setObject(null));
-				[dimensions].forEach(item => item.setObject(object));
+				itemsToShow = [dimensions];
 				break;
 			default:
-				[dimensions, grid, calculate].forEach(item => item.setObject(null));
-				break;
 		}
+		setupPanel('geometry', geometryItems, itemsToShow, object);
 	}
 
-	const WITHOUT_DESCRIPTORS = [
-		'isScene',
-		'isBasicMesh',
-		'isDetectContainer',
-		'isScoringManager',
-		'isDetectGeometry',
-		'isZoneContainer',
-		'isZone',
-		'isWorldZone',
-		'isFilterContainer',
-		'isFilter',
-		'isScoringManager',
-		'isOutput',
-		'isQuantity'
-	];
+
 	function setupDescriptorPanel(object) {
-		if (WITHOUT_DESCRIPTORS.some(key => object[key])) return container.hideTab('descriptors');
-		container.showTab('descriptors');
-		[zoneRules, dimensions, grid, calculate].forEach(item => item.setObject(null));
-		[beam].forEach(item => item.setObject(object));
+		let itemsToShow = [];
+		switch (true) {
+			case object.isBeam:
+				itemsToShow = [beam];
+				break;
+			default:
+		}
+		setupPanel('descriptors', descriptorItems, itemsToShow, object);
 	}
 
-	const WITHOUT_MODIFIERS = [
-		'isScene',
-		'isBasicMesh',
-		'isDetectContainer',
-		'isDetectGeometry',
-		'isZoneContainer',
-		'isWorldZone',
-		'isBeam',
-		'isFilterContainer',
-		'isScoringManager',
-		'isOutput'
-	];
 	function setupModifierPanel(object) {
-		if (WITHOUT_MODIFIERS.some(key => object[key])) return container.hideTab('modifiers');
-		container.showTab('modifiers');
+		let itemsToShow = [];
 		switch (true) {
 			case object.isZone:
-				[beam, filter, differential].forEach(item => item.setObject(null));
-				[zoneRules].forEach(item => item.setObject(object));
+				itemsToShow = [zoneRules]
 				break;
 			case object.isFilter:
-				[zoneRules, beam, differential].forEach(item => item.setObject(null));
-				[filter].forEach(item => item.setObject(object));
+				itemsToShow = [filter]
 				break;
 			case object.isQuantity:
-				[zoneRules, beam, filter].forEach(item => item.setObject(null));
-				[differential].forEach(item => item.setObject(object));
+				itemsToShow = [differential]
 				break;
 			default:
-				[zoneRules, beam, filter, differential].forEach(item => item.setObject(null));
-				break;
 		}
+		setupPanel('modifiers', modifierItems, itemsToShow, object);
 	}
 
 	function setupMaterialPanel(object) {

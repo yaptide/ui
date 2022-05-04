@@ -3,6 +3,7 @@ import { Editor } from '../../Editor';
 import { UIPanel, UIRow, UIText } from '../../libs/ui';
 
 export abstract class ObjectAbstract {
+	object?: unknown;
 	editor: Editor;
 	title: UIText;
 	titleRow: UIRow;
@@ -16,6 +17,7 @@ export abstract class ObjectAbstract {
 		this.panel.add(this.titleRow);
 	}
 	setObject(object: unknown): void {
+		this.object = object;
 		object ? showUIElement(this.panel) : hideUIElement(this.panel);
 	}
 	abstract update(): void;

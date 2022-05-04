@@ -1,41 +1,24 @@
 import * as THREE from 'three';
-import { BasicMesh, isBasicMesh } from '../util/BasicMeshes';
-import { Beam, isBeam } from '../util/Beam';
-import * as CSG from '../util/CSG/CSG';
+import { isBasicMesh } from '../util/BasicMeshes';
+import { isBeam } from '../util/Beam';
 import { isZone, isZoneContainer } from '../util/CSG/CSG';
-import { DetectFilter, isDetectFilter } from '../util/Detect/DetectFilter';
-import { DetectGeometry, isDetectGeometry } from '../util/Detect/DetectGeometry';
+import { isDetectFilter } from '../util/Detect/DetectFilter';
+import { isDetectGeometry } from '../util/Detect/DetectGeometry';
 import {
-	DetectContainer,
-	DetectManager,
-	FilterContainer,
 	isDetectContainer,
 	isFilterContainer
 } from '../util/Detect/DetectManager';
-import { isScoringManager, ScoringManager } from '../util/Scoring/ScoringManager';
-import { ScoringOutput, isOutput } from '../util/Scoring/ScoringOutput';
-import { isQuantity, ScoringQuantity } from '../util/Scoring/ScoringQuantity';
-import { isWorldZone, WorldZone } from '../util/WorldZone';
+import { isScoringManager } from '../util/Scoring/ScoringManager';
+import { isOutput } from '../util/Scoring/ScoringOutput';
+import { isQuantity } from '../util/Scoring/ScoringQuantity';
+import { SimulationObject3D } from '../util/SimulationBase/SimulationMesh';
+import { isTreatmentPlan } from '../util/TreatmentPlan';
+import { isWorldZone } from '../util/WorldZone';
 import { Editor } from './Editor';
 
 export type Context = 'scene' | 'scoring' | 'parameters' | 'settings';
-export type SceneObject =
-	| CSG.Zone
-	| BasicMesh
-	| WorldZone
-	| Beam
-	| CSG.ZoneContainer
-	| CSG.ZoneManager
-	| THREE.Scene;
-export type OutputObject =
-	| DetectFilter
-	| DetectGeometry
-	| ScoringOutput
-	| ScoringManager
-	| ScoringQuantity
-	| DetectContainer
-	| DetectManager
-	| FilterContainer;
+export type SceneObject = SimulationObject3D; // guard isSceneObject define allowed types
+export type OutputObject = SimulationObject3D; // guard isOutputObject define allowed types
 
 export class ContextManager {
 	private editor: Editor;
@@ -167,6 +150,7 @@ export const isInputObject = (x: unknown): x is SceneObject => {
 		isBeam(x) ||
 		isBasicMesh(x) ||
 		isZoneContainer(x) ||
-		x instanceof THREE.Scene
+		x instanceof THREE.Scene ||
+		isTreatmentPlan(x)
 	);
 };

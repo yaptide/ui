@@ -62,7 +62,7 @@ export class ObjectQuantity extends ObjectAbstract {
 
 	setObject(object: ScoringQuantity): void {
 		super.setObject(object);
-		if (!object) return;
+		if (!this.object) return;
 		this.object = object;
 
 		const { filter, hasFilter, rescale, hasRescale, medium, keyword } = object;

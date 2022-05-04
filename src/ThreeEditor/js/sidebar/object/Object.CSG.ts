@@ -23,9 +23,8 @@ export class ObjectCSG extends ObjectAbstract {
 	}
 	setObject(object: CSG.Zone): void {
 		super.setObject(object);
-		if (!object) return;
+		if (!this.object) return;
 
-		this.object = object;
 		this.render();
 	}
 	update(): void {

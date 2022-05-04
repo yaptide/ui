@@ -161,9 +161,8 @@ export class ObjectFilter extends ObjectAbstract {
 	}
 	setObject(object: DetectFilter): void {
 		super.setObject(object);
-		if (!object) return;
+		if (!this.object) return;
 
-		this.object = object;
 		this.outliner.setOptions(object.rules);
 		if (object.selectedRule) {
 			const rule = object.selectedRule;

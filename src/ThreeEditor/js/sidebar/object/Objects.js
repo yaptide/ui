@@ -10,3 +10,4 @@ export * from './Object.Placement';
 export * from './Object.Quantity';
 export * from './Object.Settings';
 export * from './Object.ZoneCalculate';
+export * from './Object.TreatmentPlan';

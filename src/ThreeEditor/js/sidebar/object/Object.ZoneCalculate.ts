@@ -41,11 +41,10 @@ export class ObjectZoneCalculate extends ObjectAbstract {
 
 	setObject(object: WorldZone): void {
 		super.setObject(object);
-		if (!object) return;
+		if (!this.object) return;
 
-		this.object = object;
+
 		if (object.geometryType !== 'Box') return hideUIElement(this.panel);
-		this.object = object;
 		this.auto.setValue(object.autoCalculate);
 	}
 

@@ -206,9 +206,8 @@ export class ObjectDimensions extends ObjectAbstract {
 
 	setObject(object: BasicMesh | DetectGeometry | WorldZone): void {
 		super.setObject(object);
-		if (!object) return;
+		if (!this.object) return;
 
-		this.object = object;
 		const geometryType = this.setGeometryType(object);
 
 		hideUIElement(this.xLengthRow);

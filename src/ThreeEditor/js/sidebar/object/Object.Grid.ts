@@ -55,9 +55,8 @@ export class ObjectGrid extends ObjectAbstract {
 
 	setObject(object: DetectGeometry): void {
 		super.setObject(object);
-		if (!object) return;
+		if (!this.object) return;
 
-		this.object = object;
 		const { detectType, geometryData } = object;
 		hideUIElement(this.xLengthRow);
 		hideUIElement(this.yLengthRow);

@@ -112,7 +112,7 @@ export class ObjectMaterial extends ObjectAbstract {
 
 	setObject(object: SimulationMesh | Beam | SimulationPoints): void {
 		super.setObject(object);
-		if (!object) return;
+		if (!this.object) return;
 
 		this.object = object;
 		const { color, opacity, transparent, type } = object.material;

@@ -104,9 +104,7 @@ export class ObjectBeam extends ObjectAbstract {
 	}
 	setObject(object: Beam): void {
 		super.setObject(object);
-		if (!object) return;
-
-		this.object = object;
+		if (!this.object) return;
 
 		this.divergenceX.setValue(object.divergence.x);
 		this.divergenceY.setValue(object.divergence.y);

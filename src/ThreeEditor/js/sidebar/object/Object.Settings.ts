@@ -56,7 +56,7 @@ export class ObjectSettings extends ObjectAbstract {
 
 	setObject(object: ScoringOutput): void {
 		super.setObject(object);
-		if (!object) return;
+		if (!this.object) return;
 		const { trace, primaries, children: quantities } = object;
 		this.object = object;
 

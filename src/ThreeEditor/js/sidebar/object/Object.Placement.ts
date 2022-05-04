@@ -79,7 +79,7 @@ export class ObjectPlacement extends ObjectAbstract {
 
 	setObject(object: SimulationObject3D | Beam): void {
 		super.setObject(object);
-		if (!object) return;
+		if (!this.object) return;
 
 		this.object = object;
 		if (this.hasPosition(object)) {

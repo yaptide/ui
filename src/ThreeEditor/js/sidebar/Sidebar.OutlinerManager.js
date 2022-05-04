@@ -24,6 +24,7 @@ const getObjectType = object => {
 		case 'Zone':
 		case 'WorldZone':
 			return 'Zone';
+		case 'TreatmentPlan':
 		case 'Beam':
 			return 'Beam';
 		default:
@@ -41,7 +42,7 @@ const getAdditionalInfo = object => {
 			}] <span class="type Geometry"></span> <span class="type-value">${object.type.slice(
 				0,
 				-4
-			)}</span>`;
+			)}</span>`;		
 		case 'Beam':
 			let particle = object.particle;
 			return ` [${object.id}] <span class="type Particle Beam"></span> ${particle.name} [${particle.id}]`;

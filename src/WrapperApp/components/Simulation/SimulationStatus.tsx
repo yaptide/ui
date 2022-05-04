@@ -13,7 +13,7 @@ import {
 	Theme,
 	Typography
 } from '@mui/material';
-import React, { ReactElement } from 'react';
+import React, {  } from 'react';
 import Countdown from 'react-countdown';
 import {
 	InputFiles,
