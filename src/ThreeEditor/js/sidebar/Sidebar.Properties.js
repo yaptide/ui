@@ -52,24 +52,6 @@ function SidebarProperties(editor, id = 'properties') {
 	);
 	container.select('general');
 
-	function setupGeneralPanel(object) {
-		info.setObject(object);
-
-		if (!object.notMovable && !object.isScene)
-			// TODO: Create custom scene for figures
-			placement.setObject(object);
-		else hideUIElement(placement.panel);
-
-		if (!object.isOutput) hideUIElement(settings.panel);
-		else settings.setObject(object);
-
-		if (!object.isQuantity) hideUIElement(quantity.panel);
-		else quantity.setObject(object);
-
-		if (!object.isTreatmentPlan) hideUIElement(treatmentPlan.panel) 
-		else treatmentPlan.setObject(object);
-	}
-
 	function setupPanel(name, panelItems, itemsToShow, object) {
 		container.showTab(name);
 		panelItems.forEach(item => item.setObject(null));
@@ -77,29 +59,50 @@ function SidebarProperties(editor, id = 'properties') {
 		if (itemsToShow.length === 0) container.hideTab(name);
 	}
 
+	function setupGeneralPanel(object) {
+		const itemsToShow = [info];
+
+		if (!object.notMovable && !object.isScene)
+			// TODO: Create custom scene for figures
+			itemsToShow.push(placement);
+
+		switch (true) {
+			case object.isOutput:
+				itemsToShow.push(settings);
+				break;
+			case object.isQuantity:
+				itemsToShow.push(quantity);
+				break;
+			case object.isTreatmentPlan:
+				itemsToShow.push(treatmentPlan);
+				break;
+			default:
+		}
+		setupPanel('general', generalItems, itemsToShow, object);
+	}
+
 	function setupGeometryPanel(object) {
-		let itemsToShow = [];
+		const itemsToShow = [dimensions];
+
 		switch (true) {
 			case object.isDetectGeometry:
-				itemsToShow = [grid, dimensions];
+				itemsToShow.push(grid);
 				break;
 			case object.isWorldZone:
-				itemsToShow = [dimensions, calculate];
+				itemsToShow.push(calculate);
 				break;
 			case object.isBasicMesh:
-				itemsToShow = [dimensions];
-				break;
 			default:
 		}
 		setupPanel('geometry', geometryItems, itemsToShow, object);
 	}
 
-
 	function setupDescriptorPanel(object) {
-		let itemsToShow = [];
+		const itemsToShow = [];
+
 		switch (true) {
 			case object.isBeam:
-				itemsToShow = [beam];
+				itemsToShow.push(beam);
 				break;
 			default:
 		}
@@ -107,16 +110,17 @@ function SidebarProperties(editor, id = 'properties') {
 	}
 
 	function setupModifierPanel(object) {
-		let itemsToShow = [];
+		const itemsToShow = [];
+
 		switch (true) {
 			case object.isZone:
-				itemsToShow = [zoneRules]
+				itemsToShow.push(zoneRules);
 				break;
 			case object.isFilter:
-				itemsToShow = [filter]
+				itemsToShow.push(filter);
 				break;
 			case object.isQuantity:
-				itemsToShow = [differential]
+				itemsToShow.push(differential);
 				break;
 			default:
 		}
@@ -124,9 +128,7 @@ function SidebarProperties(editor, id = 'properties') {
 	}
 
 	function setupMaterialPanel(object) {
-		if (!object.material) return container.hideTab('material');
-		container.showTab('material');
-		material.setObject(object);
+		setupPanel('material', materialItems, object.material ? [material] : [], object);
 	}
 
 	function setupPanels() {

@@ -12,8 +12,8 @@ import { ContextManager } from './Editor.Context';
 import { History as _History } from './History.js';
 import { Loader } from './Loader.js';
 import { Storage as _Storage } from './Storage.js';
-import { Patient } from '../util/Patient/Patient';
-import { TreatmentPlan } from '../util/TreatmentPlan';
+import { Patient } from '../util/TreatmentPlan/Patient';
+import { TreatmentPlan } from '../util/TreatmentPlan/TreatmentPlan';
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
 _DEFAULT_CAMERA.name = 'Camera';
@@ -112,6 +112,8 @@ export function Editor(container) {
 
 		autocalculateChanged: new Signal(),
 
+		patientUsageChanged: new Signal(),
+
 		CSGZoneAdded: new Signal(), // Sidebar.Properties signal
 
 		viewportConfigChanged: new Signal(), // Viewport config signal
@@ -149,7 +151,7 @@ export function Editor(container) {
 
 	this.beam = new Beam(this);
 	this.treatmentPlan = new TreatmentPlan(this);
-	this.sceneHelpers.add(this.beam);
+	this.sceneHelpers.add(this.beam, this.treatmentPlan);
 
 	this.contextManager = new ContextManager(this); //Context Manager must be loaded after all scenes
 
@@ -566,7 +568,6 @@ Editor.prototype = {
 		this.history.fromJSON(json.history);
 
 		this.setScene(await loader.parseAsync(json.scene));
-		
 
 		this.materialManager.fromJSON(json.materialManager);
 

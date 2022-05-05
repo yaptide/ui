@@ -6,7 +6,7 @@ import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { debounce } from 'throttle-debounce';
 import { Editor } from '../js/Editor';
-import { Particle, PARTICLE_TYPES } from './particles';
+import { Particle, PARTICLE_TYPES } from './TreatmentPlan/particles';
 import { SimulationObject3D } from './SimulationBase/SimulationMesh';
 
 export interface BeamJSON {
@@ -84,13 +84,13 @@ export class Beam extends SimulationObject3D {
 		return PARTICLE_TYPES.find(p => p.id === this.particleData.id) as Particle;
 	}
 
-	private proxy: Beam; // use proxy if you want inform about changes
+	private _proxy: Beam; // use proxy if you want inform about changes
 
 	readonly debouncedDispatchChanged = debounce(200, false, () =>
-		this.editor.signals.objectChanged.dispatch(this.proxy)
+		this.editor.signals.objectChanged.dispatch(this._proxy)
 	);
 
-	private overrideHandler = {
+	private _overrideHandler = {
 		set: (target: Beam, prop: keyof Beam, value: unknown) => {
 			const result = Reflect.set(target, prop, value);
 
@@ -143,9 +143,9 @@ export class Beam extends SimulationObject3D {
 			}
 		});
 
-		this.proxy = new Proxy(this, this.overrideHandler);
+		this._proxy = new Proxy(this, this._overrideHandler);
 
-		return this.proxy;
+		return this._proxy;
 	}
 
 	initHelper() {

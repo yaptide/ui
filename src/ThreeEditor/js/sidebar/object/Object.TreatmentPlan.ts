@@ -1,5 +1,10 @@
-import { TreatmentPlan } from '../../../util/TreatmentPlan';
-import { createRowCheckbox, createRowParamInput, hideUIElement, showUIElement } from '../../../util/Ui/Uis';
+import { TreatmentPlan } from '../../../util/TreatmentPlan/TreatmentPlan';
+import {
+	createRowCheckbox,
+	createRowParamInput,
+	hideUIElement,
+	showUIElement
+} from '../../../util/Ui/Uis';
 import { SetValueCommand } from '../../commands/Commands';
 import { Editor } from '../../Editor';
 import { UICheckbox, UIInput, UIRow } from '../../libs/ui';
@@ -23,7 +28,12 @@ export class ObjectTreatmentPlan extends ObjectAbstract {
 			text: 'Beam File',
 			update: () => {
 				this.editor.execute(
-					new SetValueCommand(this.editor, this.object, 'beamPath', this.beamFile.getValue())
+					new SetValueCommand(
+						this.editor,
+						this.object,
+						'beamPath',
+						this.beamFile.getValue()
+					)
 				);
 			}
 		});
@@ -33,7 +43,12 @@ export class ObjectTreatmentPlan extends ObjectAbstract {
 			update: () => {
 				(this.usePatient.getValue() ? showUIElement : hideUIElement)(this.patientFileRow);
 				this.editor.execute(
-					new SetValueCommand(this.editor, this.object, 'usePatient', this.usePatient.getValue())
+					new SetValueCommand(
+						this.editor,
+						this.object,
+						'usePatient',
+						this.usePatient.getValue()
+					)
 				);
 			}
 		});
@@ -42,7 +57,12 @@ export class ObjectTreatmentPlan extends ObjectAbstract {
 			text: 'Patient File',
 			update: () => {
 				this.editor.execute(
-					new SetValueCommand(this.editor, this.object, 'patientPath', this.patientFile.getValue())
+					new SetValueCommand(
+						this.editor,
+						this.object,
+						'patientPath',
+						this.patientFile.getValue()
+					)
 				);
 			}
 		});
@@ -60,7 +80,5 @@ export class ObjectTreatmentPlan extends ObjectAbstract {
 		(this.usePatient.getValue() ? showUIElement : hideUIElement)(this.patientFileRow);
 	}
 
-	update(): void {
-
-	}
+	update(): void {}
 }

@@ -443,15 +443,12 @@ export function Viewport(
 		switch (event.code) {
 			case 'KeyC': // C
 				const position = camera.position.clone();
-
 				camera = camera.isPerspectiveCamera ? cameraOrtho : cameraPersp;
 				updateCamera(camera, position);
 				render();
-
 				break;
 
 			default:
-				break;
 		}
 	});
 
@@ -471,6 +468,7 @@ export function Viewport(
 
 	signals.objectSelected.add(reattachTransformControls);
 	signals.autocalculateChanged.add(() => reattachTransformControls(editor.selected));
+	signals.patientUsageChanged.add(() => reattachTransformControls(editor.selected));
 	signals.contextChanged.add(() => reattachTransformControls(editor.selected));
 
 	signals.objectRemoved.add(object => {

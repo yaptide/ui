@@ -11,31 +11,26 @@ export class Patient extends SimulationObject3D {
 	constructor(editor: Editor) {
 		super(editor, 'Patient', 'Patient');
 		const canvas = document.createElement('canvas');
-		const alphaCanvas = document.createElement('canvas');
 		canvas.width = ICON_SIZE;
 		canvas.height = ICON_SIZE;
-		alphaCanvas.width = ICON_SIZE;
-		alphaCanvas.height = ICON_SIZE;
 		const ctx = canvas.getContext('2d');
-		const alphaCtx = alphaCanvas.getContext('2d');
-		if (ctx && alphaCtx) {
+		if (ctx) {
 			//rescale path to fill canvas
 			ctx.scale(ICON_SIZE / 24.0, ICON_SIZE / 24.0);
-			alphaCtx.scale(ICON_SIZE / 24.0, ICON_SIZE / 24.0);
-			alphaCtx.fillStyle = '#000000';
-			alphaCtx.fillRect(0, 0, ICON_SIZE, ICON_SIZE);
+			ctx.fillStyle = '#000000';
+			ctx.fillRect(0, 0, ICON_SIZE, ICON_SIZE);
 			ctx.fillStyle = '#ffffff';
 			ctx.fill(path);
-			alphaCtx.fillStyle = '#ffffff';
-			alphaCtx.fill(path);
 			const map = new THREE.CanvasTexture(canvas);
 			map.needsUpdate = true;
-			const material = new THREE.SpriteMaterial({ map, color: 0xffffff });
-			const alphaMap = new THREE.CanvasTexture(alphaCanvas);
-			material.alphaMap = alphaMap;
-			material.sizeAttenuation = false;
+			const material = new THREE.SpriteMaterial({
+				map,
+				color: 0xffffff,
+				alphaMap: map,
+				sizeAttenuation: false
+			});
 			const sprite = new THREE.Sprite(material);
-			sprite.scale.set(24 / ICON_SIZE, 24 / ICON_SIZE, 1);
+			sprite.scale.set(12 / ICON_SIZE, 12 / ICON_SIZE, 1);
 			this.add(sprite);
 		} else {
 			console.log('Error: Could not create canvas for Patient icon');

@@ -4,15 +4,12 @@ import { isBeam } from '../util/Beam';
 import { isZone, isZoneContainer } from '../util/CSG/CSG';
 import { isDetectFilter } from '../util/Detect/DetectFilter';
 import { isDetectGeometry } from '../util/Detect/DetectGeometry';
-import {
-	isDetectContainer,
-	isFilterContainer
-} from '../util/Detect/DetectManager';
+import { isDetectContainer, isFilterContainer } from '../util/Detect/DetectManager';
 import { isScoringManager } from '../util/Scoring/ScoringManager';
 import { isOutput } from '../util/Scoring/ScoringOutput';
 import { isQuantity } from '../util/Scoring/ScoringQuantity';
 import { SimulationObject3D } from '../util/SimulationBase/SimulationMesh';
-import { isTreatmentPlan } from '../util/TreatmentPlan';
+import { isTreatmentPlan } from '../util/TreatmentPlan/TreatmentPlan';
 import { isWorldZone } from '../util/WorldZone';
 import { Editor } from './Editor';
 

@@ -3,7 +3,7 @@ import { MaterialSelect } from '../../components/Select/MaterialSelect';
 import { ParticleSelect } from '../../components/Select/ParticlesSelect';
 import ZoneManagerPanel from '../../components/ZoneManagerPanel/ZoneManagerPanel';
 import { UIDiv, UINumber, UIRow, UISelect, UIText } from '../../js/libs/ui.js';
-import { PARTICLE_TYPES } from '../particles';
+import { PARTICLE_TYPES } from '../TreatmentPlan/particles';
 import { INPUT_WIDTH, LABEL_MARGIN, LABEL_WIDTH } from './Uis';
 
 /**
