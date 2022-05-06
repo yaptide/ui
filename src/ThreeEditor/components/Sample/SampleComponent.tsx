@@ -6,7 +6,7 @@ interface SampleComponentProps {
 	signal: Signal;
 }
 
-function SampleComponent(props: SampleComponentProps) {
+function SampleComponent({ signal }: SampleComponentProps) {
 	const [objectName, setObjectName] = useState();
 	const [objectID, setObjectID] = useState();
 
@@ -22,11 +22,11 @@ function SampleComponent(props: SampleComponentProps) {
 	);
 
 	useEffect(() => {
-		props.signal.add(objectSelected);
+		signal.add(objectSelected);
 		return () => {
-			props.signal.remove(objectSelected);
+			signal.remove(objectSelected);
 		};
-	}, [objectSelected, props.signal]);
+	}, [objectSelected, signal]);
 
 	return (
 		<div className='SampleComponent'>

@@ -66,6 +66,3 @@ export default function LoginPanel() {
 		</Box>
 	);
 }
-function handleEnter(arg0: string, handleEnter: any) {
-	throw new Error('Function not implemented.');
-}

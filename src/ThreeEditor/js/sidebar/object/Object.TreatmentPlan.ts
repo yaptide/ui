@@ -79,6 +79,4 @@ export class ObjectTreatmentPlan extends ObjectAbstract {
 
 		(this.usePatient.getValue() ? showUIElement : hideUIElement)(this.patientFileRow);
 	}
-
-	update(): void {}
 }

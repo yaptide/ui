@@ -1,8 +1,7 @@
-import { Editor } from '../../js/Editor';
-import { Patient } from './Patient';
-import { SimulationObject3D } from '../SimulationBase/SimulationMesh';
-import { Vector3 } from 'three';
 import { Signal } from 'signals';
+import { Editor } from '../../js/Editor';
+import { SimulationObject3D } from '../SimulationBase/SimulationMesh';
+import { Patient } from './Patient';
 
 export interface TreatmentPlanJSON {
 	patientPath: string;

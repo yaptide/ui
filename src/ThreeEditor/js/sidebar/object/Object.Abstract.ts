@@ -20,5 +20,4 @@ export abstract class ObjectAbstract {
 		this.object = object;
 		object ? showUIElement(this.panel) : hideUIElement(this.panel);
 	}
-	abstract update(): void;
 }
