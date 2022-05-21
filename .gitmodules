@@ -1,3 +1,5 @@
-[submodule "src/JsRoot/lib/jsroot"]
-	path = src/JsRoot/lib/jsroot
+[submodule "public/lib/jsroot"]
+	path = public/lib/jsroot
 	url = https://github.com/root-project/jsroot
+	branch = 6.3
+	shallow = true

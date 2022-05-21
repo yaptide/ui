@@ -12,6 +12,7 @@ import ResultsPanel from './components/ResultsPanel';
 import { useAuth } from '../services/AuthService';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
 import { AboutPanel } from './components/AboutPanel';
+import { JsRootService, JsRootUrl, JsRootKey } from '../JsRoot/JsRootService';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData } = useStore();
@@ -31,6 +32,10 @@ function WrapperApp() {
 	useEffect(() => {
 		if (resultsSimulationData) setTabsValue('Results');
 	}, [resultsSimulationData]);
+
+	const onLoad = () => {
+		console.log('JSROOT loaded');
+	};
 
 	return (
 		<Box
@@ -76,15 +81,18 @@ function WrapperApp() {
 					<TabPanel value={tabsValue} index={'Run'}>
 						<SimulationPanel goToResults={() => setTabsValue('Results')} />
 					</TabPanel>
+
 					<TabPanel value={tabsValue} index={'Input Editor'} persistent>
 						<InputEditorPanel goToRun={() => setTabsValue('Run')} />
 					</TabPanel>
 
 					<TabPanel value={tabsValue} index={'Results'} persistent>
-						<ResultsPanel />
+						<JsRootService asyncScriptOnLoad={onLoad}>
+							<ResultsPanel />
+						</JsRootService>
 					</TabPanel>
 				</>
-			)}			
+			)}
 
 			<TabPanel value={tabsValue} index={'About'} persistentIfVisited>
 				<AboutPanel />

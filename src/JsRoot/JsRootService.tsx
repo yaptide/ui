@@ -2,15 +2,15 @@ import { ReactNode, useEffect, useState } from 'react';
 import { createGenericContext } from '../util/GenericContext';
 import makeAsyncScriptLoader from 'react-async-script';
 
-// local copy of version 6.3.4 of JSROOT
+// submodule copy of JSROOT v6.3.4
 // https://github.com/root-project/jsroot/tree/6.3.4
-const JsRootUrl = './JsRoot/lib/jsroot/scripts/JSRoot.core.js';
-const JsRootPainterUrl = './JsRoot/lib/jsroot/scripts/JSRoot.painter.js';
+const JsRootUrl = `/lib/jsroot/scripts/JSRoot.core.js`;
+const JsRootPainterUrl = `/lib/jsroot/scripts/JSRoot.painter.js`;
 const JsRootKey = 'JSROOT';
 
 declare global {
 	interface Window {
-		[JsRootKey]: any;
+		[JsRootKey]: {};
 	}
 }
 
@@ -63,4 +63,4 @@ const AsyncLoaderJsRoot = makeAsyncScriptLoader(JsRootUrl, {
 	globalName: JsRootKey
 })(JsRoot);
 
-export { useJSROOT, AsyncLoaderJsRoot as JsRootService };
+export { useJSROOT, AsyncLoaderJsRoot as JsRootService, JsRootUrl, JsRootKey };
