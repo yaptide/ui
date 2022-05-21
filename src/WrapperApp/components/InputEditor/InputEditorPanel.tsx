@@ -1,5 +1,6 @@
 import { Box, Button } from '@mui/material';
 import { useState } from 'react';
+import { PythonConverterService2 } from '../../../PythonConverter/PythonConverterService2';
 import { InputFiles, useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { InputFilesEditor } from './InputFilesEditor';
@@ -41,24 +42,26 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 			});
 	};
 	return (
-		<Box
-			sx={{
-				margin: '0 auto',
-				width: '100%',
-				padding: '3rem',
-				gap: '1.5rem',
-				height: 'min-content'
-			}}>
-			<Button
-				variant='contained'
-				onClick={onClickGenerate}
-				disabled={isInProgress}
+		<PythonConverterService2>
+			<Box
 				sx={{
-					marginBottom: '2rem'
+					margin: '0 auto',
+					width: '100%',
+					padding: '3rem',
+					gap: '1.5rem',
+					height: 'min-content'
 				}}>
-				Generate from Editor
-			</Button>
-			<InputFilesEditor inputFiles={inputFiles} runSimulation={runSimulation} />
-		</Box>
+				<Button
+					variant='contained'
+					onClick={onClickGenerate}
+					disabled={isInProgress}
+					sx={{
+						marginBottom: '2rem'
+					}}>
+					Generate from Editor
+				</Button>
+				<InputFilesEditor inputFiles={inputFiles} runSimulation={runSimulation} />
+			</Box>
+		</PythonConverterService2>
 	);
 }

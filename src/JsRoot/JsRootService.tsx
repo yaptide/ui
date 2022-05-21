@@ -52,7 +52,8 @@ const JsRoot = (props: JsRootProps) => {
 
 	return (
 		<JsRootContextProvider value={value}>
-			{value?.JSROOT && props.children}
+			{/* {value?.JSROOT && props.children} */}
+			{props.children}
 		</JsRootContextProvider>
 	);
 };

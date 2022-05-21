@@ -23,15 +23,14 @@ function App() {
 	return (
 		<StyledEngineProvider injectFirst>
 			<ThemeProvider theme={theme}>
-				<JsRootService>
-					<Auth>
-						<ShSimulation>
-							<Store>
-								<WrapperApp />
-							</Store>
-						</ShSimulation>
-					</Auth>
-				</JsRootService>
+				<Auth>
+					<ShSimulation>
+						<Store>
+							<WrapperApp />
+						</Store>
+					</ShSimulation>
+				</Auth>
+				{/* <JsRootService></JsRootService> */}
 			</ThemeProvider>
 		</StyledEngineProvider>
 	);
