@@ -1,16 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Signal } from 'signals';
 import './SampleComponent.css';
+import * as THREE from 'three';
 
 interface SampleComponentProps {
 	signal: Signal;
 }
 
 function SampleComponent(props: SampleComponentProps) {
-	const [objectName, setObjectName] = useState();
-	const [objectID, setObjectID] = useState();
+	const [objectName, setObjectName] = useState<string | undefined>();
+	const [objectID, setObjectID] = useState<number | undefined>();
 
-	const objectSelected = useCallback(object => {
+	const objectSelected = useCallback((object: THREE.Object3D) => {
 		setObjectName(object?.name);
 		setObjectID(object?.id);
 	}, []);
