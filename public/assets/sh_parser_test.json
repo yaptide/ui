@@ -1,0 +1,406 @@
+{
+    "metadata": {
+        "version": 0.2,
+        "type": "Editor",
+        "generator": "Editor.toJSON"
+    },
+    "project": {
+        "shadows": true,
+        "shadowType": 1,
+        "physicallyCorrectLights": false,
+        "toneMapping": 0,
+        "toneMappingExposure": 1
+    },
+    "camera": {
+        "metadata": {
+            "version": 4.5,
+            "type": "Object",
+            "generator": "Object3D.toJSON"
+        },
+        "object": {
+            "uuid": "0D427D0C-D35E-4E39-A89B-2DA17D024BA7",
+            "type": "PerspectiveCamera",
+            "name": "Camera",
+            "layers": 1,
+            "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                5,
+                10,
+                1
+            ],
+            "fov": 50,
+            "zoom": 1,
+            "near": 0.01,
+            "far": 1000,
+            "focus": 10,
+            "aspect": 1,
+            "filmGauge": 35,
+            "filmOffset": 0
+        }
+    },
+    "scene": {
+        "metadata": {
+            "version": 4.5,
+            "type": "Object",
+            "generator": "Object3D.toJSON"
+        },
+        "geometries": [
+            {
+                "uuid": "8D5F1D9F-204F-4A98-BD12-2479E0B2BD91",
+                "type": "BoxGeometry",
+                "width": 1,
+                "height": 1,
+                "depth": 1,
+                "widthSegments": 1,
+                "heightSegments": 1,
+                "depthSegments": 1
+            },
+            {
+                "uuid": "F24134D6-63C8-4E44-A1A7-14420EFEE201",
+                "type": "SphereGeometry",
+                "radius": 1,
+                "widthSegments": 16,
+                "heightSegments": 8,
+                "phiStart": 0,
+                "phiLength": 6.283185307179586,
+                "thetaStart": 0,
+                "thetaLength": 3.141592653589793
+            }
+        ],
+        "materials": [
+            {
+                "uuid": "EEADBF59-A957-46DB-98B5-FB4EEFBDC06D",
+                "type": "MeshBasicMaterial",
+                "color": 0,
+                "reflectivity": 1,
+                "refractionRatio": 0.98,
+                "side": 2,
+                "opacity": 0.5,
+                "transparent": true,
+                "depthFunc": 3,
+                "depthTest": true,
+                "depthWrite": true,
+                "colorWrite": true,
+                "stencilWrite": false,
+                "stencilWriteMask": 255,
+                "stencilFunc": 519,
+                "stencilRef": 0,
+                "stencilFuncMask": 255,
+                "stencilFail": 7680,
+                "stencilZFail": 7680,
+                "stencilZPass": 7680,
+                "wireframe": true
+            },
+            {
+                "uuid": "6E9761A0-C19E-4E20-9C8F-2A2EF32101F4",
+                "type": "MeshBasicMaterial",
+                "color": 0,
+                "reflectivity": 1,
+                "refractionRatio": 0.98,
+                "side": 2,
+                "opacity": 0.5,
+                "transparent": true,
+                "depthFunc": 3,
+                "depthTest": true,
+                "depthWrite": true,
+                "colorWrite": true,
+                "stencilWrite": false,
+                "stencilWriteMask": 255,
+                "stencilFunc": 519,
+                "stencilRef": 0,
+                "stencilFuncMask": 255,
+                "stencilFail": 7680,
+                "stencilZFail": 7680,
+                "stencilZPass": 7680,
+                "wireframe": true
+            },
+            {
+                "uuid": "94DE2BFA-C365-4277-BE8E-8DB2FED9A83A",
+                "type": "MeshBasicMaterial",
+                "color": 0,
+                "reflectivity": 1,
+                "refractionRatio": 0.98,
+                "side": 2,
+                "opacity": 0.5,
+                "transparent": true,
+                "depthFunc": 3,
+                "depthTest": true,
+                "depthWrite": true,
+                "colorWrite": true,
+                "stencilWrite": false,
+                "stencilWriteMask": 255,
+                "stencilFunc": 519,
+                "stencilRef": 0,
+                "stencilFuncMask": 255,
+                "stencilFail": 7680,
+                "stencilZFail": 7680,
+                "stencilZPass": 7680,
+                "wireframe": true
+            }
+        ],
+        "object": {
+            "uuid": "C1BF5EE7-ACC7-4896-8451-A5B358DF9889",
+            "type": "Scene",
+            "name": "Figures",
+            "layers": 1,
+            "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1
+            ],
+            "children": [
+                {
+                    "uuid": "48EE4307-80C7-47AA-BF01-9132898B2B5A",
+                    "type": "BoxMesh",
+                    "name": "Box",
+                    "userData": {
+                        "id": 860,
+                        "geometryType": "CylinderGeometry",
+                        "position": [
+                            0,
+                            0,
+                            10
+                        ],
+                        "rotation": [
+                            90,
+                            0,
+                            0
+                        ],
+                        "parameters": {
+                            "radiusTop": 10,
+                            "height": 20
+                        }
+                    },
+                    "layers": 1,
+                    "geometry": "8D5F1D9F-204F-4A98-BD12-2479E0B2BD91",
+                    "material": "EEADBF59-A957-46DB-98B5-FB4EEFBDC06D"
+                }
+            ]
+        }
+    },
+    "scripts": {},
+    "history": {
+        "undos": [],
+        "redos": []
+    },
+    "zoneManager": {
+        "zones": [
+            {
+                "uuid": "7103722D-BE89-4BAC-A7E0-44F5CD3143BE",
+                "name": "Zone",
+                "materialName": "GLASS, LEAD",
+                "materialData": {
+                    "id": "170",
+                    "name": "GLASS, LEAD"
+                },
+                "materialUuid": "5172F301-C69D-479B-81E0-F4FB5A16A94D",
+                "unionOperations": [
+                    [
+                        {
+                            "mode": "union",
+                            "objectUuid": "48EE4307-80C7-47AA-BF01-9132898B2B5A"
+                        }
+                    ]
+                ],
+                "subscribedObjects": {
+                    "48EE4307-80C7-47AA-BF01-9132898B2B5C": 1,
+                    "09360EDF-E555-44D9-8561-128493CC2314": 1,
+                    "E10C12F9-7C85-417D-B6B3-755FAFE54EFA": 1
+                }
+            }
+        ],
+        "uuid": "A62A2261-C346-4E04-BC62-415BC998BD3B",
+        "name": "",
+        "worldZone": {
+            "uuid": "A62A2261-32AS-4E04-BC62-415BC998BD3B",
+            "center": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "size": {
+                "x": 3,
+                "y": 3,
+                "z": 3
+            },
+            "type": "WorldZone",
+            "geometryType": "Box",
+            "name": "World Zone",
+            "marginMultiplier": 1.1,
+            "autoCalculate": false,
+            "materialUuid": "37C3F777-8B67-46B2-9D7F-374B49330F5C",
+            "userData": {
+                "geometryType": "BoxGeometry",
+                "parameters": {
+                    "width": 22,
+                    "height": 22,
+                    "depth": 22
+                },
+                "position": [
+                    0,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ]
+            }
+        }
+    },
+    "detectManager": {
+        "uuid": "E3635B58-BFC9-423A-B384-2838D32353E8",
+        "name": "DetectManager",
+        "detectGeometries": [
+            {
+                "uuid": "563DBCFF-0B85-4511-B557-DE55AB4FA692",
+                "data": {
+                    "radius": 10,
+                    "innerRadius": 0,
+                    "depth": 20,
+                    "radialSegments": 1,
+                    "zSegments": 400
+                },
+                "type": "Cyl",
+                "position": [
+                    0,
+                    0,
+                    10
+                ],
+                "name": "CylZ_Mesh",
+                "colorHex": 65535
+            },
+            {
+                "uuid": "87D9453D-ED04-4A7C-97F0-6E6A28DFF382",
+                "data": {
+                    "width": 1,
+                    "height": 4,
+                    "depth": 20,
+                    "xSegments": 1,
+                    "ySegments": 80,
+                    "zSegments": 400
+                },
+                "type": "Mesh",
+                "position": [
+                    0,
+                    0,
+                    10
+                ],
+                "name": "YZ_Mesh",
+                "colorHex": 65535
+            }
+        ],
+        "filters": []
+    },
+    "beam": {
+        "position": [
+            0,
+            0,
+            0
+        ],
+        "direction": [
+            0,
+            0,
+            1
+        ],
+        "energy": 150,
+        "energySpread": 1.5,
+        "divergence": {
+            "x": 0,
+            "y": 0,
+            "distanceToFocal": 0
+        },
+        "particle": {
+            "id": 2,
+            "a": 12,
+            "z": 6
+        },
+        "colorHex": 16776960
+    },
+    "materialManager": {
+        "materials": [
+            {
+                "uuid": "5172F301-C69D-479B-81E0-F4FB5A16A94D",
+                "name": "AMORPHOUS CARBON (density 2.0 g/cm3)",
+                "icru": 276,
+                "color": 16711680
+            },
+            {
+                "uuid": "37C3F777-8B67-46B2-9D7F-374B49330F5C",
+                "name": "VACUUM",
+                "icru": 1000
+            }
+        ],
+        "selectedMaterials": {
+            "ECE3D5A5-9B49-4A9B-B81C-BB22C825F85D": 1,
+            "8BEE5624-81C2-4B79-824A-563CF0F8163D": 1,
+            "736C07A0-06DA-41F1-A828-3425FC47152A": 1
+        }
+    },
+    "scoringManager": {
+        "uuid": "42E44040-61AD-4483-8604-9BC02775C7D7",
+        "name": "Outputs",
+        "scoringOutputs": [
+            {
+                "name": "cylz",
+                "uuid": "11985E99-1ABC-4EDE-839F-7EA66A48394D",
+                "quantities": {
+                    "active": [
+                        {
+                            "uuid": "97BE2F24-F5FE-492E-AAA3-A3DFD190C198",
+                            "keyword": "DoseGy",
+                            "rescale": 2,
+                            "modifiers": []
+                        }
+                    ],
+                    "disabled": []
+                },
+                "detectGeometry": "563DBCFF-0B85-4511-B557-DE55AB4FA692",
+                "trace": false
+            },
+            {
+                "name": "yzmsh",
+                "uuid": "11985E99-1ABC-4EDE-839F-7EA66A48394D",
+                "quantities": {
+                    "active": [
+                        {
+                            "uuid": "97BE2F24-F5FE-492E-AAA3-A3DFD190C198",
+                            "keyword": "DoseGy",
+                            "rescale": 2,
+                            "modifiers": []
+                        }
+                    ],
+                    "disabled": []
+                },
+                "detectGeometry": "87D9453D-ED04-4A7C-97F0-6E6A28DFF382",
+                "trace": false
+            }
+        ]
+    }
+}

@@ -12,6 +12,7 @@ import ResultsPanel from './components/ResultsPanel';
 import { useAuth } from '../services/AuthService';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
 import { AboutPanel } from './components/AboutPanel';
+import { PythonConverterService } from '../PythonConverter/PythonConverterService';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData } = useStore();
@@ -69,7 +70,9 @@ function WrapperApp() {
 			</TabPanel>
 
 			<TabPanel value={tabsValue} index={'Input Editor'} persistentIfVisited>
-				<InputEditorPanel goToRun={() => setTabsValue('Run')} />
+				<PythonConverterService>
+					<InputEditorPanel goToRun={() => setTabsValue('Run')} />
+				</PythonConverterService>
 			</TabPanel>
 
 			{DEMO_MODE && (

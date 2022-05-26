@@ -12,8 +12,7 @@ export interface ISimulationSceneChild extends THREE.Object3D {
 
 export abstract class SimulationSceneGroup<TChild extends ISimulationSceneChild>
 	extends THREE.Object3D
-	implements ISimulationObject
-{
+	implements ISimulationObject {
 	children: TChild[];
 	editor: Editor;
 	private _name: string;
