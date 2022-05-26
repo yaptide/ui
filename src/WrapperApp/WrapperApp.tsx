@@ -1,17 +1,18 @@
-import React, { SyntheticEvent, useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
-import LoginPanel from './components/LoginPanel';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import ThreeEditor from '../ThreeEditor/ThreeEditor';
-import SimulationPanel from './components/Simulation/SimulationPanel';
-import { useStore } from '../services/StoreService';
-import { DEMO_MODE } from '../util/Config';
-import { TabPanel } from './components/TabPanel';
-import ResultsPanel from './components/ResultsPanel';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
+import { JsRootService } from '../JsRoot/JsRootService';
 import { useAuth } from '../services/AuthService';
-import InputEditorPanel from './components/InputEditor/InputEditorPanel';
+import { useStore } from '../services/StoreService';
+import ThreeEditor from '../ThreeEditor/ThreeEditor';
+import { DEMO_MODE } from '../util/Config';
 import { AboutPanel } from './components/AboutPanel';
+import InputEditorPanel from './components/InputEditor/InputEditorPanel';
+import LoginPanel from './components/LoginPanel';
+import ResultsPanel from './components/ResultsPanel';
+import SimulationPanel from './components/Simulation/SimulationPanel';
+import { TabPanel } from './components/TabPanel';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData } = useStore();
@@ -31,6 +32,10 @@ function WrapperApp() {
 	useEffect(() => {
 		if (resultsSimulationData) setTabsValue('Results');
 	}, [resultsSimulationData]);
+
+	const onLoad = () => {
+		console.log('JSROOT loaded');
+	};
 
 	return (
 		<Box
@@ -76,15 +81,18 @@ function WrapperApp() {
 					<TabPanel value={tabsValue} index={'Run'}>
 						<SimulationPanel goToResults={() => setTabsValue('Results')} />
 					</TabPanel>
+
 					<TabPanel value={tabsValue} index={'Input Editor'} persistent>
 						<InputEditorPanel goToRun={() => setTabsValue('Run')} />
 					</TabPanel>
 
 					<TabPanel value={tabsValue} index={'Results'} persistent>
-						<ResultsPanel />
+						<JsRootService asyncScriptOnLoad={onLoad}>
+							<ResultsPanel />
+						</JsRootService>
 					</TabPanel>
 				</>
-			)}			
+			)}
 
 			<TabPanel value={tabsValue} index={'About'} persistentIfVisited>
 				<AboutPanel />

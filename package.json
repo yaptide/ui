@@ -10,7 +10,7 @@
 		"@mui/material": "^5.4.2",
 		"@testing-library/jest-dom": "^5.16.4",
 		"@testing-library/react": "^12.1.2",
-		"@testing-library/user-event": "^13.5.0",
+		"@testing-library/user-event": "^14.2.0",
 		"@types/jest": "^27.4.0",
 		"@types/node": "^17.0.18",
 		"@types/react-dom": "^17.0.11",
@@ -29,7 +29,7 @@
 		"split-grid": "^1.0.11",
 		"three": "^0.139.2",
 		"throttle-debounce": "^3.0.1",
-		"typescript": "^4.5.5",
+		"typescript": "^4.7.2",
 		"use-interval": "^1.4.0",
 		"web-vitals": "^2.1.4"
 	},
@@ -78,7 +78,7 @@
 		]
 	},
 	"devDependencies": {
-		"@types/react": "^17.0.38",
+		"@types/react": "^18.0.9",
 		"@types/react-async-script": "^1.2.1",
 		"@types/three": "^0.139.0",
 		"cross-env": "^7.0.3",

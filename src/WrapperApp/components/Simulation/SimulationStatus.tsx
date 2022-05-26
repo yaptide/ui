@@ -4,15 +4,14 @@ import {
 	CardActions,
 	CardContent,
 	Paper,
-	SxProps,
 	Table,
 	TableBody,
 	TableCell,
 	TableContainer,
 	TableRow,
-	Theme,
 	Typography
 } from '@mui/material';
+import { SxProps, Theme } from '@mui/material/styles';
 import React from 'react';
 import Countdown from 'react-countdown';
 import {
@@ -44,7 +43,7 @@ export default function SimulationStatus({
 					<TableCell component='th' scope='row'>
 						{title}
 					</TableCell>
-					<TableCell align='right'>{value}</TableCell>
+					<TableCell align='right'>{value?.toString()}</TableCell>
 				</TableRow>
 			)}
 		</React.Fragment>
