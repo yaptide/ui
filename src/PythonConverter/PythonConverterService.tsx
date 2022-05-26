@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { createGenericContext } from '../util/GenericContext';
 import makeAsyncScriptLoader from 'react-async-script';
 import { InputFiles } from '../services/ShSimulatorService';
@@ -20,6 +20,7 @@ export interface PythonConverterProps {
 export interface IPythonConverter {
 	pyodide: any;
 	convertJSON: (editorJSON: object) => Promise<Map<keyof InputFiles, string>>;
+	isConverterReady: boolean;
 }
 
 const [usePythonConverter, PythonConverterContextProvider] =
@@ -34,15 +35,36 @@ def convertJson(editor_json, parser_name = 'shieldhit'):
 	return run_parser(parser, editor_json.to_py(), None, True)
 convertJson`;
 
+const pythonCheckConverterCode = `
+def checkIfConverterReady():
+	try:
+		from converter.api import run_parser
+		print("module 'converter' is installed")
+		return True
+	except ModuleNotFoundError:
+		print("module 'converter' is not installed")
+		return False
+checkIfConverterReady
+`;
+
 const PythonConverter = (props: PythonConverterProps) => {
 	const [pyodide, setPyodide] = useState<any>();
-	
+	const [isConverterReady, setConverterReady] = useState(false);
+
+	const checkIfConvertReady = useCallback(() => {
+		console.log('checkIfConvertReady', !!pyodide);
+		return pyodide && pyodide.runPython(pythonCheckConverterCode)();
+	}, [pyodide]);
 
 	useEffect(() => {
 		if (!props.loadPyodide) return;
 
 		async function initPyodide() {
-			if (window.pyodide) return setPyodide(window.pyodide);
+			if (window.pyodide) {
+				setPyodide(window.pyodide);
+				setConverterReady(checkIfConvertReady());
+				return;
+			}
 
 			const pyodide = await props.loadPyodide();
 			window.pyodide = pyodide;
@@ -51,18 +73,20 @@ const PythonConverter = (props: PythonConverterProps) => {
 
 			await pyodide.loadPackage(['scipy', 'micropip']);
 
-			await pyodide.runPythonAsync(`
+			await pyodide.runPythonAsync(`			
 import micropip
 await micropip.install('/libs/converter/dist/yaptide_converter-1.0.0-py3-none-any.whl') 
 print(micropip.list())
 			`);
+			console.log('pyodide loaded');
 			setPyodide(pyodide);
+			setConverterReady(checkIfConvertReady());
 		}
 
 		initPyodide();
 
 		return () => {};
-	}, [props]);
+	}, [checkIfConvertReady, props]);
 
 	const convertJSON = async (editorJSON: object) => {
 		const runPythonConvert = pyodide.runPython(pythonConverterCode);
@@ -71,7 +95,8 @@ print(micropip.list())
 
 	const value: IPythonConverter = {
 		pyodide,
-		convertJSON
+		convertJSON,
+		isConverterReady
 	};
 
 	return (

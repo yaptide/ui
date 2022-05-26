@@ -1,9 +1,7 @@
-import { Box, Button, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { type } from 'os';
-import { useEffect, useState } from 'react';
+import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { useState } from 'react';
 import LoadingButton from '@mui/lab/LoadingButton';
 import {
-	PythonConverterService,
 	usePythonConverter
 } from '../../../PythonConverter/PythonConverterService';
 import { InputFiles, useShSimulation } from '../../../services/ShSimulatorService';
@@ -19,7 +17,7 @@ type GeneratorLocation = 'local' | 'remote';
 export default function InputEditorPanel(props: InputEditorPanelProps) {
 	const { editorRef } = useStore();
 	const { convertToInputFiles, sendRun } = useShSimulation();
-	const { pyodide, convertJSON } = usePythonConverter();
+	const { isConverterReady, convertJSON } = usePythonConverter();
 
 	const [isInProgress, setInProgress] = useState(false);
 	const [inputFiles, setInputFiles] = useState<InputFiles>();
@@ -86,7 +84,7 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 					sx={{
 						marginRight: '1rem'
 					}}
-					loading={generator === 'local' && !pyodide}
+					loading={generator === 'local' && !isConverterReady}
 					variant='contained'
 					onClick={onClickGenerate}
 					disabled={isInProgress}

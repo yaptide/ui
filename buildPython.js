@@ -4,17 +4,16 @@ const { execSync } = require("child_process");
 const fileName = 'yaptide_converter-1.0.0-py3-none-any.whl';
 const srcFolder = 'src/libs/converter/';
 const srcFullPath = srcFolder + 'dist/' + fileName;
-const destPath = 'public/libs/converter/dist/' + fileName;
+const destFolder = 'public/libs/converter/dist/';
+const destFullPath = destFolder + fileName;
 
 const SKIP = process.argv[2] === 'skip';
 
 try {
-    if (fs.existsSync(destPath) && SKIP === true) {
+    if (fs.existsSync(destFullPath) && SKIP === true) {
         //file exists
         console.log('yaptide_converter is already installed');
     } else {
-        console.log('Installing yaptide_converter');
-
         console.log('Building yaptide_converter');
         execSync("python3 -m build", {
             cwd: srcFolder
@@ -30,13 +29,19 @@ try {
             console.log(`stdout: ${stdout}`);
         });
 
+        console.log('Checking destination folder');
+        if (!fs.existsSync(destFolder)) {
+            console.log('Creating folder ' + destFolder);
+            fs.mkdirSync(destFolder, { recursive: true });
+        }
+
         console.log('Copying yaptide_converter');
-        fs.copyFile(srcFullPath, destPath, (err) => {
+        fs.copyFile(srcFullPath, destFullPath, (err) => {
             if (err) throw err;
             console.log('yaptide_converter was copied to destination');
             console.log(srcFullPath);
             console.log('=>');
-            console.log(destPath);
+            console.log(destFullPath);
         });
     }
 } catch (err) {
