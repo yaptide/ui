@@ -1,23 +1,49 @@
 const fs = require("fs");
+const glob = require("glob")
 const { execSync } = require("child_process");
 
-const fileName = 'yaptide_converter-1.0.0-py3-none-any.whl';
-const srcFolder = 'src/libs/converter/';
-const srcFullPath = srcFolder + 'dist/' + fileName;
-const destFolder = 'public/libs/converter/dist/';
-const destFullPath = destFolder + fileName;
 
 const SKIP = process.argv[2] === 'skip';
 
-try {
-    if (fs.existsSync(destFullPath) && SKIP === true) {
+const destFolder = 'public/libs/converter/dist/';
+const srcFolder = 'src/libs/converter/';
+
+const globPromise = (pattern) => {
+    return new Promise((resolve, reject) => {
+        glob(pattern, (err, files) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(files);
+        });
+    });
+}
+
+const saveFileName = (destFolder, fileName) => {
+    let data = JSON.stringify({ 'fileName': fileName });
+    if (!fs.existsSync(destFolder)) fs.mkdirSync(destFolder, { recursive: true });
+
+    fs.writeFileSync(destFolder + 'yaptide_converter.json', data);
+    console.log('yaptide_converter.json saved');
+}
+
+(async () => {
+    const installedPath = await globPromise(destFolder + 'yaptide_converter-*-py3-none-any.whl').then(files => files[0]);
+    const installedFileName = installedPath?.split('/').pop();
+
+    if (installedPath && SKIP === true) {
         //file exists
-        console.log('yaptide_converter is already installed');
+        console.log(`${installedFileName} is already installed`);
+        saveFileName(destFolder, installedFileName);
     } else {
-        console.log('Building yaptide_converter');
-        execSync("python3 -m build", {
-            cwd: srcFolder
-        }, (error, stdout, stderr) => {
+        const measureTime = (label, callback) => {
+            console.log("Start: " + label)
+            console.time(label);
+            callback();
+            console.timeEnd(label);
+        }
+
+        const handleExec = (error, stdout, stderr) => {
             if (error) {
                 console.log(`error: ${error.message}`);
                 return;
@@ -27,6 +53,18 @@ try {
                 return;
             }
             console.log(`stdout: ${stdout}`);
+        }
+
+        measureTime('Installing build module for python', () => {
+            execSync("python3 -m pip install build", {
+                cwd: srcFolder
+            }, handleExec);
+        });
+
+        measureTime('Building yaptide_converter', () => {
+            execSync("python3 -m build", {
+                cwd: srcFolder
+            }, handleExec)
         });
 
         console.log('Checking destination folder');
@@ -35,18 +73,26 @@ try {
             fs.mkdirSync(destFolder, { recursive: true });
         }
 
+        const buildFilePath = await globPromise(srcFolder + 'dist/yaptide_converter-*-py3-none-any.whl').then(files => files[0]);
+        const buildFileName = buildFilePath?.split('/').pop();
+
+        const destFullPath = destFolder + buildFileName;
+
         console.log('Copying yaptide_converter');
-        fs.copyFile(srcFullPath, destFullPath, (err) => {
+        fs.copyFile(buildFilePath, destFullPath, (err) => {
             if (err) throw err;
             console.log('yaptide_converter was copied to destination');
-            console.log(srcFullPath);
+            console.log(buildFilePath);
             console.log('=>');
             console.log(destFullPath);
         });
+        saveFileName(destFolder, buildFileName);
     }
-} catch (err) {
-    console.error(err);
-}
+
+})();
+
+
+
 
 
 

@@ -3,6 +3,8 @@ import { createGenericContext } from '../util/GenericContext';
 import makeAsyncScriptLoader from 'react-async-script';
 import { InputFiles } from '../services/ShSimulatorService';
 
+// as for now there is no reasonable npm package for pyodide
+// CND method is suggested in https://pyodide.org/en/stable/usage/downloading-and-deploying.html
 const PythonConverterUrl = 'https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js';
 
 declare global {
@@ -73,9 +75,17 @@ const PythonConverter = (props: PythonConverterProps) => {
 
 			await pyodide.loadPackage(['scipy', 'micropip']);
 
+			const converterFolder = '/libs/converter/dist/';
+
+			const { fileName: converterFileName } = await (
+				await fetch(converterFolder + 'yaptide_converter.json')
+			).json();
+
+			if (!converterFileName) throw new Error('converterFileName is not defined');
+
 			await pyodide.runPythonAsync(`			
 import micropip
-await micropip.install('/libs/converter/dist/yaptide_converter-1.0.0-py3-none-any.whl') 
+await micropip.install('/libs/converter/dist/${converterFileName}') 
 print(micropip.list())
 			`);
 			console.log('pyodide loaded');
