@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useState, useEffect } from 'react';
+import { SyntheticEvent, useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import LoginPanel from './components/LoginPanel';
 import Tab from '@mui/material/Tab';
@@ -12,7 +12,6 @@ import ResultsPanel from './components/ResultsPanel';
 import { useAuth } from '../services/AuthService';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
 import { AboutPanel } from './components/AboutPanel';
-import { PythonConverterService } from '../PythonConverter/PythonConverterService';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData } = useStore();
@@ -69,10 +68,8 @@ function WrapperApp() {
 				/>
 			</TabPanel>
 
-			<TabPanel value={tabsValue} index={'Input Editor'} persistentIfVisited>
-				<PythonConverterService>
-					<InputEditorPanel goToRun={() => setTabsValue('Run')} />
-				</PythonConverterService>
+			<TabPanel value={tabsValue} index={'Input Editor'} persistentIfVisited>				
+					<InputEditorPanel goToRun={() => setTabsValue('Run')} />				
 			</TabPanel>
 
 			{DEMO_MODE && (

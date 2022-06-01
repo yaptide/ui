@@ -20,7 +20,7 @@ const globPromise = (pattern) => {
 }
 
 const saveFileName = (destFolder, fileName) => {
-    let data = JSON.stringify({ 'fileName': fileName });
+    const data = JSON.stringify({ 'fileName': fileName });
     if (!fs.existsSync(destFolder)) fs.mkdirSync(destFolder, { recursive: true });
 
     fs.writeFileSync(destFolder + 'yaptide_converter.json', data);

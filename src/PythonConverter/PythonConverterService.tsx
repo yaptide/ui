@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { createGenericContext } from '../util/GenericContext';
 import makeAsyncScriptLoader from 'react-async-script';
 import { InputFiles } from '../services/ShSimulatorService';
@@ -49,27 +49,34 @@ def checkIfConverterReady():
 checkIfConverterReady
 `;
 
+const PYODIDE_LOADED = 'PYODIDE_LOADED';
+
+/**
+ *	PythonConverter  is react wrapper for pyodide.js and converter module.
+ *	There can be only one instance of PythonConverter in the whole application.
+ */
 const PythonConverter = (props: PythonConverterProps) => {
-	const [pyodide, setPyodide] = useState<any>();
+	const pyodideRef = useRef(window.pyodide);
 	const [isConverterReady, setConverterReady] = useState(false);
 
 	const checkIfConvertReady = useCallback(() => {
-		console.log('checkIfConvertReady', !!pyodide);
-		return pyodide && pyodide.runPython(pythonCheckConverterCode)();
-	}, [pyodide]);
+		return pyodideRef.current && pyodideRef.current.runPython(pythonCheckConverterCode)();
+	}, []);
 
 	useEffect(() => {
-		if (!props.loadPyodide) return;
+		if (!props.loadPyodide) return console.warn('loadPyodide is not defined');
 
 		async function initPyodide() {
-			if (window.pyodide) {
-				setPyodide(window.pyodide);
+			if (window.pyodide || pyodideRef.current) {
+				pyodideRef.current = window.pyodide;
 				setConverterReady(checkIfConvertReady());
 				return;
 			}
 
 			const pyodide = await props.loadPyodide();
+
 			window.pyodide = pyodide;
+			pyodideRef.current = pyodide;
 
 			console.log(pyodide.runPython('import sys\nsys.version'));
 
@@ -88,9 +95,7 @@ import micropip
 await micropip.install('/libs/converter/dist/${converterFileName}') 
 print(micropip.list())
 			`);
-			console.log('pyodide loaded');
-			setPyodide(pyodide);
-			setConverterReady(checkIfConvertReady());
+			document.dispatchEvent(new CustomEvent(PYODIDE_LOADED));
 		}
 
 		initPyodide();
@@ -98,13 +103,24 @@ print(micropip.list())
 		return () => {};
 	}, [checkIfConvertReady, props]);
 
+	useEffect(() => {
+		const handleLoad = () => {
+			setConverterReady(checkIfConvertReady());
+		};
+
+		document.addEventListener(PYODIDE_LOADED, handleLoad);
+		return () => {
+			document.removeEventListener(PYODIDE_LOADED, handleLoad);
+		};
+	});
+
 	const convertJSON = async (editorJSON: object) => {
-		const runPythonConvert = pyodide.runPython(pythonConverterCode);
+		const runPythonConvert = pyodideRef.current.runPython(pythonConverterCode);
 		return runPythonConvert(editorJSON).toJs();
 	};
 
 	const value: IPythonConverter = {
-		pyodide,
+		pyodide: pyodideRef.current,
 		convertJSON,
 		isConverterReady
 	};
