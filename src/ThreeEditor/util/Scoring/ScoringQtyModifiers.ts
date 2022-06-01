@@ -1,4 +1,4 @@
-import { DETECTOR_KEYWORD_OPTIONS, DETECTOR_MODIFIERS } from './ScoringOutputTypes';
+import { DETECTOR_MODIFIERS } from './ScoringOutputTypes';
 import * as THREE from 'three';
 
 export type DifferentialJSON = {

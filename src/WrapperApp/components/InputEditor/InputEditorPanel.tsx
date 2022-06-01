@@ -1,12 +1,13 @@
 import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import LoadingButton from '@mui/lab/LoadingButton';
-import {
-	usePythonConverter
-} from '../../../PythonConverter/PythonConverterService';
+import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
 import { InputFiles, useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { InputFilesEditor } from './InputFilesEditor';
+import { DEMO_MODE } from '../../../util/Config';
+import { useSnackbar } from 'notistack';
+import { throttle } from 'throttle-debounce';
 
 interface InputEditorPanelProps {
 	goToRun?: () => void;
@@ -15,6 +16,7 @@ interface InputEditorPanelProps {
 type GeneratorLocation = 'local' | 'remote';
 
 export default function InputEditorPanel(props: InputEditorPanelProps) {
+	const { enqueueSnackbar } = useSnackbar();
 	const { editorRef } = useStore();
 	const { convertToInputFiles, sendRun } = useShSimulation();
 	const { isConverterReady, convertJSON } = usePythonConverter();
@@ -25,20 +27,25 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 
 	const [controller] = useState(new AbortController());
 
-	const handleConvert = async (editorJSON: object) => {
-		switch (generator) {
-			case 'remote':
-				return convertToInputFiles(editorJSON, controller.signal).then(res => {
-					return res.content.input_files;
-				});
-			case 'local':
-				return convertJSON(editorJSON).then(res => Object.fromEntries(res) as unknown as InputFiles);
-			default:
-				throw new Error('Unknown generator: ' + generator);
-		}
-	};
+	const handleConvert = useCallback(
+		async (editorJSON: object) => {
+			switch (generator) {
+				case 'remote':
+					return convertToInputFiles(editorJSON, controller.signal).then(res => {
+						return res.content.input_files;
+					});
+				case 'local':
+					return convertJSON(editorJSON).then(
+						res => Object.fromEntries(res) as unknown as InputFiles
+					);
+				default:
+					throw new Error('Unknown generator: ' + generator);
+			}
+		},
+		[controller.signal, convertJSON, convertToInputFiles, generator]
+	);
 
-	const onClickGenerate = () => {
+	const onClickGenerate = useCallback(() => {
 		setInProgress(true);
 		const editorJSON = editorRef.current?.toJSON();
 		if (!editorJSON) return setInProgress(false);
@@ -46,14 +53,21 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 		handleConvert(editorJSON)
 			.then(inputFiles => {
 				setInputFiles({ ...inputFiles });
+				enqueueSnackbar('Input files generated', { variant: 'info' });
 			})
 			.catch(e => {
+				enqueueSnackbar('Error while converting input files', { variant: 'error' });
 				console.error(e);
 			})
 			.finally(() => {
 				setInProgress(false);
 			});
-	};
+	}, [editorRef, enqueueSnackbar, handleConvert]);
+
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const debouncedOnClickGenerate = useCallback(throttle(1000, true, onClickGenerate), [
+		onClickGenerate
+	]);
 
 	const runSimulation = (inputFiles: InputFiles) => {
 		setInProgress(true);
@@ -86,7 +100,7 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 					}}
 					loading={generator === 'local' && !isConverterReady}
 					variant='contained'
-					onClick={onClickGenerate}
+					onClick={debouncedOnClickGenerate}
 					disabled={isInProgress}
 					loadingIndicator='Initializing...'>
 					Generate from Editor
@@ -98,7 +112,7 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 					exclusive
 					onChange={(_e, generator) => setGenerator(generator)}>
 					<ToggleButton value='local'>Local</ToggleButton>
-					<ToggleButton value='remote'>Remote</ToggleButton>
+					{!DEMO_MODE && <ToggleButton value='remote'>Remote</ToggleButton>}
 				</ToggleButtonGroup>
 			</Box>
 			<InputFilesEditor inputFiles={inputFiles} runSimulation={runSimulation} />

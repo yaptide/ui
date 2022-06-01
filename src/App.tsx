@@ -1,8 +1,8 @@
 import { createTheme } from '@mui/material';
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { SnackbarProvider } from 'notistack';
 import * as React from 'react';
-import { JsRootService } from './JsRoot/JsRootService';
 import { PythonConverterService } from './PythonConverter/PythonConverterService';
 import { Auth } from './services/AuthService';
 import { ShSimulation } from './services/ShSimulatorService';
@@ -23,18 +23,19 @@ function App() {
 	);
 	return (
 		<StyledEngineProvider injectFirst>
-			<ThemeProvider theme={theme}>
-				<Auth>
-					<ShSimulation>
-						<PythonConverterService>
-							<Store>
-								<WrapperApp />
-							</Store>
-						</PythonConverterService>
-					</ShSimulation>
-				</Auth>
-				{/* <JsRootService></JsRootService> */}
-			</ThemeProvider>
+			<SnackbarProvider maxSnack={3}>
+				<ThemeProvider theme={theme}>
+					<Auth>
+						<ShSimulation>
+							<PythonConverterService>
+								<Store>
+									<WrapperApp />
+								</Store>
+							</PythonConverterService>
+						</ShSimulation>
+					</Auth>
+				</ThemeProvider>
+			</SnackbarProvider>
 		</StyledEngineProvider>
 	);
 }

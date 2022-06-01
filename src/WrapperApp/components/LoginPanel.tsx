@@ -16,7 +16,7 @@ export default function LoginPanel() {
 	};
 
 	const handleEnter = useCallback(
-		e => {
+		(e: KeyboardEvent) => {
 			if (e.key === 'Enter') login(username, password);
 		},
 		[login, password, username]
