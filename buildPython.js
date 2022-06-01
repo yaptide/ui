@@ -39,7 +39,11 @@ const saveFileName = (destFolder, fileName) => {
         const measureTime = (label, callback) => {
             console.log("Start: " + label)
             console.time(label);
-            callback();
+            try {
+                callback();
+            } catch (error) {
+                console.error(error.stdout.toString());
+            }
             console.timeEnd(label);
         }
 

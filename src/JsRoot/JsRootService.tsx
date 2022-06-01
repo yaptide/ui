@@ -54,8 +54,7 @@ const JsRoot = (props: JsRootProps) => {
 
 	return (
 		<JsRootContextProvider value={value}>
-			{/* {value?.JSROOT && props.children} */}
-			{props.children}
+			{value?.JSROOT && props.children}
 		</JsRootContextProvider>
 	);
 };
