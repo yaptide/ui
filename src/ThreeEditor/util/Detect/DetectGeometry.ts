@@ -242,14 +242,14 @@ export class DetectGeometry extends SimulationPoints {
 	getData(type: DETECT.DETECT_TYPE = this.detectType): Partial<DETECT.Any> {
 		switch (type) {
 			case 'Mesh':
-				return this.getMesh();
+				return this.getMesh().toJSON();
 			case 'Cyl':
-				return this.getCyl();
+				return this.getCyl().toJSON();
 			case 'Zone':
-				return this.getZone();
+				return this.getZone().toJSON();
 			case 'All':
 			default:
-				return this.getAll();
+				return this.getAll().toJSON();
 		}
 	}
 

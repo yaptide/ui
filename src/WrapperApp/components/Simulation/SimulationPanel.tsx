@@ -9,6 +9,7 @@ import {
 	Modal,
 	Typography
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 
 import { useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
@@ -30,8 +31,8 @@ interface SimulationPanelProps {
 export default function SimulationPanel(props: SimulationPanelProps) {
 	const { editorRef, setResultsSimulationData } = useStore();
 
-	const { sendRun, sendHelloWorld, getSimulations, getSimulationsStatus } =
-		useShSimulation();
+	const { sendRun, sendHelloWorld, getSimulations, getSimulationsStatus } = useShSimulation();
+	const { enqueueSnackbar } = useSnackbar();
 
 	const [isInProgress, setInProgress] = useState(false);
 	const [isBackendAlive, setBackendAlive] = useState(false);
@@ -110,7 +111,10 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				updateSimulationInfo();
 				setTrackedId(res.content.task_id);
 			})
-			.catch()
+			.catch(e => {
+				enqueueSnackbar('Error while starting simulation', { variant: 'error' });
+				console.error(e);
+			})
 			.finally(() => setInProgress(false));
 	};
 

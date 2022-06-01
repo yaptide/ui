@@ -49,11 +49,7 @@ function WrapperApp() {
 				<Tabs value={tabsValue} onChange={handleChange}>
 					<Tab label='Editor' value={'Editor'} />
 					<Tab label='Run' value={'Run'} disabled={DEMO_MODE || !isAuthorized} />
-					<Tab
-						label='Input Editor'
-						value={'Input Editor'}
-						disabled={DEMO_MODE || !isAuthorized}
-					/>
+					<Tab label='Input Editor' value={'Input Editor'} />
 					<Tab
 						label='Results'
 						value={'Results'}
@@ -76,14 +72,15 @@ function WrapperApp() {
 					focus={tabsValue === 'Editor'}
 				/>
 			</TabPanel>
-			{DEMO_MODE || (
+
+			<TabPanel value={tabsValue} index={'Input Editor'} persistentIfVisited>
+				<InputEditorPanel goToRun={() => setTabsValue('Run')} />
+			</TabPanel>
+
+			{!DEMO_MODE && (
 				<>
 					<TabPanel value={tabsValue} index={'Run'}>
 						<SimulationPanel goToResults={() => setTabsValue('Results')} />
-					</TabPanel>
-
-					<TabPanel value={tabsValue} index={'Input Editor'} persistent>
-						<InputEditorPanel goToRun={() => setTabsValue('Run')} />
 					</TabPanel>
 
 					<TabPanel value={tabsValue} index={'Results'} persistent>

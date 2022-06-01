@@ -1,7 +1,9 @@
 import { createTheme } from '@mui/material';
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { SnackbarProvider } from 'notistack';
 import * as React from 'react';
+import { PythonConverterService } from './PythonConverter/PythonConverterService';
 import { Auth } from './services/AuthService';
 import { ShSimulation } from './services/ShSimulatorService';
 import { Store } from './services/StoreService';
@@ -21,15 +23,19 @@ function App() {
 	);
 	return (
 		<StyledEngineProvider injectFirst>
-			<ThemeProvider theme={theme}>
-				<Auth>
-					<ShSimulation>
-						<Store>
-							<WrapperApp />
-						</Store>
-					</ShSimulation>
-				</Auth>
-			</ThemeProvider>
+			<SnackbarProvider maxSnack={3}>
+				<ThemeProvider theme={theme}>
+					<Auth>
+						<ShSimulation>
+							<PythonConverterService>
+								<Store>
+									<WrapperApp />
+								</Store>
+							</PythonConverterService>
+						</ShSimulation>
+					</Auth>
+				</ThemeProvider>
+			</SnackbarProvider>
 		</StyledEngineProvider>
 	);
 }

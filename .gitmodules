@@ -1,5 +1,10 @@
-[submodule "public/lib/jsroot"]
-	path = public/lib/jsroot
+[submodule "public/libs/converter"]
+	path = src/libs/converter
+	url = https://github.com/yaptide/converter
+	shallow = true
+
+[submodule "public/libs/jsroot"]
+	path = public/libs/jsroot
 	url = https://github.com/root-project/jsroot
 	branch = 6.3
 	shallow = true

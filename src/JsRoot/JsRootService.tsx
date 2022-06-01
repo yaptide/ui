@@ -4,8 +4,8 @@ import makeAsyncScriptLoader from 'react-async-script';
 
 // submodule copy of JSROOT v6.3.4
 // https://github.com/root-project/jsroot/tree/6.3.4
-const JsRootUrl = `/lib/jsroot/scripts/JSRoot.core.js`;
-const JsRootPainterUrl = `/lib/jsroot/scripts/JSRoot.painter.js`;
+const JsRootUrl = `/libs/jsroot/scripts/JSRoot.core.js`;
+const JsRootPainterUrl = `/libs/jsroot/scripts/JSRoot.painter.js`;
 const JsRootKey = 'JSROOT';
 
 declare global {

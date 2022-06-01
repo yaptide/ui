@@ -60,7 +60,7 @@ export interface ZoneData {
 	zoneUuid: string;
 }
 
-export class Cyl extends Data<CylData> implements CylData {
+export class Cyl extends Data<CylData> {
 	radius: number;
 	innerRadius: number;
 	depth: number;
