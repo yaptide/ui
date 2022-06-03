@@ -82,7 +82,7 @@ const PythonConverter = (props: PythonConverterProps) => {
 
 			await pyodide.loadPackage(['scipy', 'micropip']);
 
-			const converterFolder = '/libs/converter/dist/';
+			const converterFolder = process.env.PUBLIC_URL + '/libs/converter/dist/';
 
 			const { fileName: converterFileName } = await (
 				await fetch(converterFolder + 'yaptide_converter.json')
@@ -92,7 +92,7 @@ const PythonConverter = (props: PythonConverterProps) => {
 
 			await pyodide.runPythonAsync(`			
 import micropip
-await micropip.install('/libs/converter/dist/${converterFileName}') 
+await micropip.install('${process.env.PUBLIC_URL}/libs/converter/dist/${converterFileName}') 
 print(micropip.list())
 			`);
 			document.dispatchEvent(new CustomEvent(PYODIDE_LOADED));
