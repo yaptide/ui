@@ -69,9 +69,9 @@
 					"type": "CylinderMesh",
 					"name": "Cylinder",
 					"userData": {
-						"id": 927,
+						"id": 903,
 						"geometryType": "CylinderGeometry",
-						"position": [0, 0, -10],
+						"position": [0, 0, 10],
 						"rotation": [0, 0, 0],
 						"parameters": {
 							"radiusTop": 10,
@@ -79,7 +79,7 @@
 						}
 					},
 					"layers": 1,
-					"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -10, 1],
+					"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 10, 1],
 					"geometry": "32b5253c-d0cb-404f-9999-5bbee3499b00",
 					"material": "2dbe3356-074f-44b8-bfd3-a231a309d25b"
 				}
@@ -112,11 +112,11 @@
 		"uuid": "368269D3-6F9B-4241-84A0-5D908D10E196",
 		"name": "Zones",
 		"worldZone": {
-			"uuid": "4eb3646b-88ec-47a6-a9bd-a1333f2c37b5",
+			"uuid": "a61185a8-4845-4823-89d6-24f1f6445921",
 			"center": {
 				"x": 0,
 				"y": 0,
-				"z": -10
+				"z": 10
 			},
 			"size": {
 				"x": 15,
@@ -135,7 +135,7 @@
 					"radiusTop": 15,
 					"height": 15
 				},
-				"position": [0, 0, -10],
+				"position": [0, 0, 10],
 				"rotation": [0, 0, 0]
 			}
 		}
