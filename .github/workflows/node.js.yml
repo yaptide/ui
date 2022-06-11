@@ -122,6 +122,7 @@ jobs:
                   username: ${{ env.FRONTEND_USER }}
                   key: ${{ secrets.DEPLOY_C3_TEST }}
                   command_timeout: 10m
+                  script_stop: true  # stop after first failure
                   script: |
                       cd ui/ui
                       npm install
