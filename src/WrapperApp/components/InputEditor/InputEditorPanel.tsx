@@ -65,9 +65,10 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 	}, [editorRef, enqueueSnackbar, handleConvert]);
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const debouncedOnClickGenerate = useCallback(throttle(1000, true, onClickGenerate), [
-		onClickGenerate
-	]);
+	const debouncedOnClickGenerate = useCallback(
+		throttle(1000, onClickGenerate, { noTrailing: true }),
+		[onClickGenerate]
+	);
 
 	const runSimulation = (inputFiles: InputFiles) => {
 		setInProgress(true);
