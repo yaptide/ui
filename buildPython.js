@@ -1,6 +1,7 @@
 const fs = require("fs");
 const glob = require("glob")
 const { execSync } = require("child_process");
+const { exit } = require("process");
 
 
 const SKIP = process.argv[2] === 'skip';
@@ -43,32 +44,22 @@ const saveFileName = (destFolder, fileName) => {
                 callback();
             } catch (error) {
                 console.error(error.stdout.toString());
+                exit(1);
             }
             console.timeEnd(label);
         }
 
-        const handleExec = (error, stdout, stderr) => {
-            if (error) {
-                console.log(`error: ${error.message}`);
-                return;
-            }
-            if (stderr) {
-                console.log(`stderr: ${stderr}`);
-                return;
-            }
-            console.log(`stdout: ${stdout}`);
-        }
 
         measureTime('Installing build module for python', () => {
             execSync("python3 -m pip install build", {
                 cwd: srcFolder
-            }, handleExec);
+            });
         });
 
         measureTime('Building yaptide_converter', () => {
             execSync("python3 -m build", {
                 cwd: srcFolder
-            }, handleExec)
+            })
         });
 
         console.log('Checking destination folder');
@@ -84,7 +75,10 @@ const saveFileName = (destFolder, fileName) => {
 
         console.log('Copying yaptide_converter');
         fs.copyFile(buildFilePath, destFullPath, (err) => {
-            if (err) throw err;
+            if (err) {
+                console.error(err.message);
+                exit(1);
+            }
             console.log('yaptide_converter was copied to destination');
             console.log(buildFilePath);
             console.log('=>');
@@ -92,7 +86,6 @@ const saveFileName = (destFolder, fileName) => {
         });
         saveFileName(destFolder, buildFileName);
     }
-
 })();
 
 
