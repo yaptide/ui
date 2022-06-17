@@ -86,8 +86,9 @@ export class Beam extends SimulationObject3D {
 
 	private proxy: Beam; // use proxy if you want inform about changes
 
-	readonly debouncedDispatchChanged = debounce(200, false, () =>
-		this.editor.signals.objectChanged.dispatch(this.proxy)
+	readonly debouncedDispatchChanged = debounce(200, () =>
+		this.editor.signals.objectChanged.dispatch(this.proxy),
+		{ atBegin: false }
 	);
 
 	private overrideHandler = {
