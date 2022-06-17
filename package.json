@@ -16,7 +16,7 @@
 		"@types/node": "^18.0.0",
 		"@types/react-dom": "^17.0.11",
 		"@types/signals": "^1.0.1",
-		"@types/throttle-debounce": "^2.1.0",
+		"@types/throttle-debounce": "^5.0.0",
 		"@uiw/react-textarea-code-editor": "^2.0.2",
 		"comlink": "^4.3.1",
 		"glob": "^8.0.3",
@@ -31,7 +31,7 @@
 		"signals": "^1.0.0",
 		"split-grid": "^1.0.11",
 		"three": "^0.141.0",
-		"throttle-debounce": "^3.0.1",
+		"throttle-debounce": "^5.0.0",
 		"typescript": "^4.7.2",
 		"use-interval": "^1.4.0",
 		"web-vitals": "^2.1.4"
