@@ -89,7 +89,7 @@ export class WorldZone extends SimulationObject3D {
 		autocalculateChanged: Signal<boolean>;
 	};
 
-	readonly debouncedCalculate = debounce(200, false, () => this.calculate());
+	readonly debouncedCalculate = debounce(200, () => this.calculate(), { atBegin: false });
 
 	constructor(editor: Editor) {
 		super(editor, 'World Zone', 'WorldZone');
