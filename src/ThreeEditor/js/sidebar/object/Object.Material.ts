@@ -12,7 +12,7 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../util/Ui/Uis';
-import { isWorldZone } from '../../../util/WorldZone';
+import { isWorldZone } from '../../../util/WorldZone/WorldZone';
 import {
 	SetMaterialColorCommand,
 	SetMaterialValueCommand,

@@ -1,6 +1,6 @@
 import Signal from 'signals';
 import * as THREE from 'three';
-import { generateSimulationInfo } from '../util/AdditionalUserData';
+import { generateSimulationInfo } from '../util/AdditionalGeometryData';
 import { Beam } from '../util/Beam';
 import * as CSG from '../util/CSG/CSG';
 import { DetectManager } from '../util/Detect/DetectManager';
@@ -547,9 +547,9 @@ Editor.prototype = {
 
 	//
 
-	updateUserData() {
+	updateGeometryData() {
 		this.scene.children.forEach(object => {
-			object.userData = generateSimulationInfo(object);
+			object.geometryData = generateSimulationInfo(object);
 		});
 	},
 
@@ -577,7 +577,7 @@ Editor.prototype = {
 	},
 
 	toJSON() {
-		this.updateUserData();
+		this.updateGeometryData();
 
 		// scripts clean up
 

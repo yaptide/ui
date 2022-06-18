@@ -15,7 +15,7 @@ import {
 import { isScoringManager, ScoringManager } from '../util/Scoring/ScoringManager';
 import { ScoringOutput, isOutput } from '../util/Scoring/ScoringOutput';
 import { isQuantity, ScoringQuantity } from '../util/Scoring/ScoringQuantity';
-import { isWorldZone, WorldZone } from '../util/WorldZone';
+import { isWorldZone, WorldZone } from '../util/WorldZone/WorldZone';
 import { Editor } from './Editor';
 
 export type Context = 'scene' | 'scoring' | 'parameters' | 'settings';

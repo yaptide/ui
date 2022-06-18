@@ -4,7 +4,7 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../util/Ui/Uis';
-import { WorldZone } from '../../../util/WorldZone';
+import { WorldZone } from '../../../util/WorldZone/WorldZone';
 import { SetValueCommand } from '../../commands/Commands';
 import { Editor } from '../../Editor';
 import { UIButton, UICheckbox, UIRow } from '../../libs/ui';

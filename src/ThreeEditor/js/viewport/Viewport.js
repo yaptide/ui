@@ -53,8 +53,7 @@ export function Viewport(
 
 	const wrapperDiv = new UIDiv();
 	wrapperDiv.setPosition('relative');
-	wrapperDiv.add(container);	
-	
+	wrapperDiv.add(container);
 
 	const canvas = document.createElement('canvas');
 	container.dom.appendChild(canvas);
@@ -65,7 +64,7 @@ export function Viewport(
 	cameraPersp.name = 'Perspective';
 	cameraPersp.position.copy(cameraPosition ?? new THREE.Vector3(0, 20, 20)); // default camera position other than (0,0,0) to see anything
 
-	const cameraOrtho = new THREE.OrthographicCamera(-4, 4,4, -4, 0.001, 10000);
+	const cameraOrtho = new THREE.OrthographicCamera(-4, 4, 4, -4, 0.001, 10000);
 	cameraOrtho.name = 'Orthographic';
 	cameraOrtho.position.copy(cameraPersp.position);
 	cameraOrtho.zoom = 0.2;
