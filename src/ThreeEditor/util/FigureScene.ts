@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { Editor } from '../js/Editor';
 import { generateSimulationInfo } from './AdditionalGeometryData';
 import { BasicMesh } from './BasicMeshes';
-import { SimulationSceneGroup } from './SimulationBase/SimulationGroup';
 import { ISimulationObject } from './SimulationBase/SimulationObject';
 
 export class FigureScene extends THREE.Scene implements ISimulationObject {
