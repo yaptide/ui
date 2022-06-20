@@ -1,9 +1,9 @@
 import Signal from 'signals';
 import * as THREE from 'three';
-import { generateSimulationInfo } from '../util/AdditionalGeometryData';
 import { Beam } from '../util/Beam';
 import * as CSG from '../util/CSG/CSG';
 import { DetectManager } from '../util/Detect/DetectManager';
+import { FigureScene } from '../util/FigureScene';
 import { MaterialManager } from '../util/Materials/MaterialManager';
 import { EditorObjectLoader } from '../util/ObjectLoader';
 import { ScoringManager } from '../util/Scoring/ScoringManager';
@@ -43,6 +43,7 @@ export function Editor(container) {
 		sceneEnvironmentChanged: new Signal(),
 		sceneGraphChanged: new Signal(),
 		sceneRendered: new Signal(),
+		projectChanged: new Signal(),
 
 		cameraChanged: new Signal(),
 		cameraResetted: new Signal(),
@@ -135,8 +136,7 @@ export function Editor(container) {
 
 	this.camera = _DEFAULT_CAMERA.clone();
 
-	this.scene = new THREE.Scene();
-	this.scene.name = 'Figures';
+	this.scene = new FigureScene(this);
 
 	this.sceneHelpers = new THREE.Scene();
 
@@ -547,14 +547,6 @@ Editor.prototype = {
 
 	//
 
-	updateGeometryData() {
-		this.scene.children.forEach(object => {
-			object.geometryData = generateSimulationInfo(object);
-		});
-	},
-
-	//
-
 	async fromJSON(json) {
 		this.config.setKey('project/title', json.project.title ?? '');
 		const loader = new EditorObjectLoader(this);
@@ -577,8 +569,6 @@ Editor.prototype = {
 	},
 
 	toJSON() {
-		this.updateGeometryData();
-
 		// scripts clean up
 
 		var scene = this.scene;

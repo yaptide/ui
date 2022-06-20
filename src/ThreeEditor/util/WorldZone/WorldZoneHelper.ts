@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { MeshBasicMaterial } from 'three';
+import { MeshBasicMaterial, Vector3 } from 'three';
 import { Editor } from '../../js/Editor';
 import { PossibleGeometryType } from '../AdditionalGeometryData';
 import { WorldZoneType } from './WorldZone';
@@ -13,13 +13,27 @@ const _sphereGeometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Ma
 const _defaultMarginMultiplier = 1.1;
 
 export class WorldZoneHelper extends THREE.Object3D {
-	get allHelpers(): Record<WorldZoneType, THREE.Mesh<PossibleGeometryType, MeshBasicMaterial>> {
-		return {
-			Box: this.boxMesh,
+	getMeshType(type: WorldZoneType): THREE.Mesh<PossibleGeometryType, MeshBasicMaterial> {
+		switch (type) {
+			case 'Box':
+				return this.boxMesh;
+			case 'Cylinder':
+				return this.cylinderMesh;
+			case 'Sphere':
+				return this.sphereMesh;
+			default:
+				throw new Error(`Unknown mesh type: ${type}`);
+		}
+	}
+	get allHelpers(): Record<WorldZoneType, THREE.Object3D> {
+		const obj = {
+			Box: this._boxHelper,
 			Cylinder: this.cylinderMesh,
 			Sphere: this.sphereMesh
 		};
+		return obj;
 	}
+
 	editor: Editor;
 	marginMultiplier: number;
 	private _boxHelper: THREE.Box3Helper;
@@ -43,11 +57,28 @@ export class WorldZoneHelper extends THREE.Object3D {
 	}
 
 	get center() {
-		return this._box.getCenter(new THREE.Vector3());
+		return this.position;
 	}
 
 	get size() {
 		return this._box.getSize(new THREE.Vector3());
+	}
+
+	constructor(editor: Editor, material: MeshBasicMaterial) {
+		super();
+		this.editor = editor;
+		this.marginMultiplier = _defaultMarginMultiplier;
+
+		this._box = new THREE.Box3();
+		this._boxHelper = new THREE.Box3Helper(this._box, material.color);
+		// (this._boxHelper.material as THREE.LineBasicMaterial).color = material.color;
+
+		this._cylinderMesh = new THREE.Mesh(_cylinderGeometry, material);
+		this._sphereMesh = new THREE.Mesh(_sphereGeometry, material);
+
+		this.add(this._boxHelper);
+		this.add(this._cylinderMesh);
+		this.add(this._sphereMesh);
 	}
 
 	calculateFromObject(object: THREE.Object3D) {
@@ -64,37 +95,34 @@ export class WorldZoneHelper extends THREE.Object3D {
 	}
 
 	updateHelper(center: THREE.Vector3, size: THREE.Vector3, rotation?: THREE.Euler) {
-		this._box.setFromCenterAndSize(center, size);
+		this.position.copy(center);
+		if (rotation) this.rotation.copy(rotation);
 
-		this._cylinderMesh.position.copy(center);
-		this._sphereMesh.position.copy(center);
+		// Box
+		this._box.setFromCenterAndSize(new Vector3(), size);
 
-		this._cylinderMesh.geometry.parameters.height = size.z;
-		this._cylinderMesh.geometry.parameters.radiusTop = size.x / 2;
-		this._cylinderMesh.geometry.parameters.radiusBottom = size.x / 2;
-		this._sphereMesh.geometry.parameters.radius = size.x / 2;
+		// Cylinder
+		this._cylinderMesh.geometry = new THREE.CylinderGeometry(
+			size.x,
+			size.x,
+			size.z,
+			16,
+			1,
+			false,
+			0,
+			Math.PI * 2
+		).rotateX(Math.PI / 2) as THREE.CylinderGeometry;
 
-		if (rotation) {
-			this._cylinderMesh.rotation.copy(rotation);
-			this._sphereMesh.rotation.copy(rotation);
-		}
-	}
-
-	constructor(editor: Editor, material: MeshBasicMaterial) {
-		super();
-		this.editor = editor;
-		this.marginMultiplier = _defaultMarginMultiplier;
-
-		this._box = new THREE.Box3();
-		this._boxHelper = new THREE.Box3Helper(this._box);
-		(this._boxHelper.material as THREE.LineBasicMaterial).color = material.color;
-
-		this._cylinderMesh = new THREE.Mesh(_cylinderGeometry, material);
-		this._sphereMesh = new THREE.Mesh(_sphereGeometry, material);
-
-		this.add(this._boxHelper);
-		this.add(this._cylinderMesh);
-		this.add(this._sphereMesh);
+		// Sphere
+		this._sphereMesh.geometry = new THREE.SphereGeometry(
+			size.x,
+			16,
+			8,
+			0,
+			Math.PI * 2,
+			0,
+			Math.PI
+		);
 	}
 
 	reset() {

@@ -1,14 +1,9 @@
 import { Signal } from 'signals';
 import * as THREE from 'three';
-import { Color, LineBasicMaterial, MeshBasicMaterial, Object3D, Vector3 } from 'three';
+import { Color, MeshBasicMaterial, Object3D, Vector3 } from 'three';
 import { debounce } from 'throttle-debounce';
 import { Editor } from '../../js/Editor';
-import {
-	AdditionalGeometryDataType,
-	generateSimulationInfo,
-	getGeometryParameters,
-	PossibleGeometryType
-} from '../AdditionalGeometryData';
+import { AdditionalGeometryDataType, generateSimulationInfo } from '../AdditionalGeometryData';
 import SimulationMaterial from '../Materials/SimulationMaterial';
 import { SimulationObject3D } from '../SimulationBase/SimulationMesh';
 import { WorldZoneHelper } from './WorldZoneHelper';
@@ -60,13 +55,12 @@ export class WorldZone extends SimulationObject3D {
 	private _geometryType: WorldZoneType = 'Box';
 	private _helper!: WorldZoneHelper;
 	public get helperMesh(): THREE.Mesh {
-		return this._helper.allHelpers[this.geometryType];
+		return this._helper.getMeshType(this.geometryType);
 	}
 	helperProxy!: WorldZoneHelper;
 
 	private _handleHelperUpdate = {
 		get: (target: WorldZoneHelper, prop: keyof WorldZoneHelper) => {
-			const result = Reflect.get(target, prop);
 			switch (prop) {
 				case 'reset':
 				case 'updateHelper':
@@ -74,12 +68,17 @@ export class WorldZone extends SimulationObject3D {
 					this.updatePosition();
 					this.signals.objectChanged.dispatch(this);
 			}
+			return Reflect.get(target, prop);
 		}
 	};
 
 	public set helper(value: WorldZoneHelper) {
 		this._helper = value;
 		this.helperProxy = new Proxy(this._helper, this._handleHelperUpdate);
+	}
+
+	public get helper(): WorldZoneHelper {
+		return this.helperProxy;
 	}
 
 	private signals: {
@@ -95,13 +94,9 @@ export class WorldZone extends SimulationObject3D {
 		super(editor, 'World Zone', 'WorldZone');
 		this.type = 'WorldZone';
 		this.name = 'World Zone';
-		this.geometryType = 'Box';
+		this._material = _materialDefault;
 		this.editor = editor;
 		this.signals = editor.signals;
-
-		this._material = _materialDefault;
-
-		this.helper = new WorldZoneHelper(editor, this._material);
 
 		this._simulationMaterial = editor.materialManager.defaultMaterial;
 		this._simulationMaterial.increment();
@@ -117,11 +112,16 @@ export class WorldZone extends SimulationObject3D {
 		const proxyColor = new Proxy(new Color(_defaultColor), materialColorHandler);
 		this._material.color = proxyColor;
 
+		this.helper = new WorldZoneHelper(editor, this._material);
+		this.geometryType = 'Box';
+
+		editor.sceneHelpers.add(this.helper);
+
 		const handleSignal = (object: Object3D) => {
 			if (this.autoCalculate && !isWorldZone(object)) this.debouncedCalculate();
 			else if (object === this) {
-				this._helper.allHelpers[this.geometryType].visible = object.visible;
-				this.signals.objectChanged.dispatch(this._helper.allHelpers[this.geometryType]);
+				this._helper.getMeshType(this.geometryType).visible = object.visible;
+				this.signals.objectChanged.dispatch(this._helper.getMeshType(this.geometryType));
 			}
 		};
 		this.signals.objectChanged.add(handleSignal);
@@ -149,7 +149,7 @@ export class WorldZone extends SimulationObject3D {
 
 	set geometryType(value: WorldZoneType) {
 		this._geometryType = value;
-		this._helper.geometryType = value;
+		this.helper.geometryType = value;
 	}
 
 	get autoCalculate(): boolean {
@@ -213,26 +213,20 @@ export class WorldZone extends SimulationObject3D {
 	}
 
 	toJSON() {
-		const geometry: {
-			[K in WorldZoneType]: PossibleGeometryType;
-		} = {
-			Box: new THREE.BoxGeometry(this.size.x, this.size.y, this.size.z),
-			Sphere: new THREE.SphereGeometry(this.size.x),
-			Cylinder: new THREE.CylinderGeometry(this.size.x, this.size.x, this.size.y)
-		};
 		const { uuid: materialUuid } = this.simulationMaterial;
-
+		const geometryData = generateSimulationInfo(this.helper.getMeshType(this.geometryType));
+		geometryData.position = this.position.toArray();
 		const jsonObject: WorldZoneJSON = {
 			uuid: this.uuid,
 			center: this.center,
 			size: this.size,
 			type: this.type,
-			geometryType: this._geometryType,
+			geometryType: this.geometryType,
 			name: this.name,
-			marginMultiplier: this._helper.marginMultiplier,
+			marginMultiplier: this.helper.marginMultiplier,
 			autoCalculate: this.autoCalculate,
 			materialUuid,
-			geometryData: generateSimulationInfo(this.helper.allHelpers[this._geometryType])
+			geometryData
 		};
 
 		return jsonObject;
@@ -241,8 +235,9 @@ export class WorldZone extends SimulationObject3D {
 	fromJSON(data: WorldZoneJSON) {
 		this.geometryType = data.geometryType;
 		this.name = data.name;
-		this._helper.marginMultiplier = data.marginMultiplier;
-		this._helper.updateHelper(data.center, data.size);
+		this.helper.marginMultiplier = data.marginMultiplier;
+		this.helper.updateHelper(data.center, data.size);
+		this.position.copy(data.center);
 
 		this.autoCalculate = data.autoCalculate;
 		this.simulationMaterial =

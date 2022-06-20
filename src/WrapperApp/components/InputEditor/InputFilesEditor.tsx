@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { InputFiles } from '../../../services/ShSimulatorService';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { saveString } from '../../../util/File';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 interface InputFilesEditorProps {
 	inputFiles?: InputFiles;
@@ -23,10 +24,11 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 		props.inputFiles ?? { ..._emptyInputFiles }
 	);
 
+	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
 	useEffect(() => {
 		if (!props.innerState) setInputFiles({ ...(props.inputFiles ?? _emptyInputFiles) });
 	}, [props.innerState, props.inputFiles]);
-	
 
 	return (
 		<Card sx={{ minHeight: '100%' }}>
@@ -79,7 +81,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 								padding={15}
 								style={{
 									fontSize: 12,
-									backgroundColor: '#f5f5f5',
+									backgroundColor: prefersDarkMode ? '#121212' : '#f5f5f5',
 									fontFamily:
 										'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace'
 								}}

@@ -68,7 +68,7 @@ export function createMaterialSelect(materialManager, update) {
 					materials={materials}
 					value={value}
 					onChange={(_, newValue) => {
-						if (newValue) {
+						if (typeof newValue === 'number') {
 							input.setValue(newValue);
 							update();
 						}

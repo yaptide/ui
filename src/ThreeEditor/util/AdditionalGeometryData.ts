@@ -40,7 +40,7 @@ export const getGeometryParameters = (geometry: PossibleGeometryType) => {
 	return parameters;
 };
 
-export function generateSimulationInfo(geometryMesh: THREE.Mesh<PossibleGeometryType>) {
+export function generateSimulationInfo(geometryMesh: THREE.Mesh) {
 	const geometry = geometryMesh.geometry as PossibleGeometryType;
 
 	const parameters = getGeometryParameters(geometry);
@@ -49,11 +49,11 @@ export function generateSimulationInfo(geometryMesh: THREE.Mesh<PossibleGeometry
 		id: geometryMesh.id,
 		geometryType: geometryMesh.geometry.type,
 		position: geometryMesh.position.toArray(),
-		rotation: geometryMesh.geometryData['rotation'],
+		rotation: geometryMesh.userData['rotation'],
 		parameters
 	};
 
-	if (!geometryMesh.geometryData['userSetRotation'])
+	if (!geometryMesh.userData['userSetRotation'])
 		geometryData = {
 			...geometryData,
 			rotation: geometryMesh.rotation

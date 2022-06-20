@@ -145,14 +145,14 @@
 					"uuid": "48EE4307-80C7-47AA-BF01-9132898B2B5A",
 					"type": "BoxMesh",
 					"name": "Box",
-					"userData": {
+					"geometryData": {
 						"id": 860,
 						"geometryType": "CylinderGeometry",
 						"position": [0, 0, 10],
 						"rotation": [90, 0, 0],
 						"parameters": {
-							"radiusTop": 10,
-							"height": 20
+							"radius": 10,
+							"depth": 20
 						}
 					},
 					"layers": 1,
@@ -213,7 +213,7 @@
 			"marginMultiplier": 1.1,
 			"autoCalculate": false,
 			"materialUuid": "37C3F777-8B67-46B2-9D7F-374B49330F5C",
-			"userData": {
+			"geometryData": {
 				"geometryType": "BoxGeometry",
 				"parameters": {
 					"width": 22,
