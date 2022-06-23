@@ -13,6 +13,9 @@ const _sphereGeometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Ma
 const _defaultMarginMultiplier = 1.1;
 
 export class WorldZoneHelper extends THREE.Object3D {
+	/**
+	 * Function returns THREE.Mesh based on type name on input
+	 */
 	getMeshType(type: WorldZoneType): THREE.Mesh<PossibleGeometryType, MeshBasicMaterial> {
 		switch (type) {
 			case 'Box':
@@ -21,8 +24,6 @@ export class WorldZoneHelper extends THREE.Object3D {
 				return this.cylinderMesh;
 			case 'Sphere':
 				return this.sphereMesh;
-			default:
-				throw new Error(`Unknown mesh type: ${type}`);
 		}
 	}
 	get allHelpers(): Record<WorldZoneType, THREE.Object3D> {
@@ -81,6 +82,9 @@ export class WorldZoneHelper extends THREE.Object3D {
 		this.add(this._sphereMesh);
 	}
 
+	/**
+	 * Function creates wrapper around chosen Object3D with margin of space around it.
+	 */
 	calculateFromObject(object: THREE.Object3D) {
 		const size = new THREE.Vector3();
 		const center = new THREE.Vector3();
@@ -94,6 +98,9 @@ export class WorldZoneHelper extends THREE.Object3D {
 		);
 	}
 
+	/**
+	 * Function updates dimensions of all helper objects based on new parameters.
+	 */
 	updateHelper(center: THREE.Vector3, size: THREE.Vector3, rotation?: THREE.Euler) {
 		this.position.copy(center);
 		if (rotation) this.rotation.copy(rotation);

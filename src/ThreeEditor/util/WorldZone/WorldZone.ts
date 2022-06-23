@@ -51,7 +51,7 @@ export class WorldZone extends SimulationObject3D {
 
 	readonly isWorldZone: true = true;
 
-	private _autoCalculate: boolean = false;
+	private _autoCalculate: boolean;
 	private _geometryType: WorldZoneType = 'Box';
 	private _helper!: WorldZoneHelper;
 	public get helperMesh(): THREE.Mesh {
@@ -95,6 +95,7 @@ export class WorldZone extends SimulationObject3D {
 		this.type = 'WorldZone';
 		this.name = 'World Zone';
 		this._material = _materialDefault;
+		this._autoCalculate  = false;
 		this.editor = editor;
 		this.signals = editor.signals;
 

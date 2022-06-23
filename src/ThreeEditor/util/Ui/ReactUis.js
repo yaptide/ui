@@ -1,3 +1,4 @@
+import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { MaterialSelect } from '../../components/Select/MaterialSelect';
 import { ParticleSelect } from '../../components/Select/ParticlesSelect';
@@ -20,6 +21,12 @@ export function createParticleTypeSelect(update) {
 	const input = new UINumber();
 	row.add(new UIText('Particle type').setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN));
 	row.add(container);
+	const onChange = (_, newValue) => {
+		if (newValue) {
+			input.setValue(newValue);
+			update();
+		}
+	};
 
 	return [
 		row,
@@ -27,16 +34,7 @@ export function createParticleTypeSelect(update) {
 		value => {
 			input.setValue(value);
 			ReactDOM.render(
-				<ParticleSelect
-					particles={PARTICLE_TYPES}
-					value={value}
-					onChange={(_, newValue) => {
-						if (newValue) {
-							input.setValue(newValue);
-							update();
-						}
-					}}
-				/>,
+				<ParticleSelect particles={PARTICLE_TYPES} value={value} onChange={onChange} />,
 				container.dom
 			);
 		}
@@ -56,6 +54,12 @@ export function createMaterialSelect(materialManager, update) {
 	const input = new UISelect().setWidth(INPUT_WIDTH);
 	row.add(new UIText('Material Type').setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN));
 	row.add(container);
+	const onChange = (_, newValue) => {
+		if (typeof newValue === 'number') {
+			input.setValue(newValue);
+			update();
+		}
+	};
 
 	return [
 		row,
@@ -64,16 +68,7 @@ export function createMaterialSelect(materialManager, update) {
 			input.setOptions(materialOptions);
 			input.setValue(value);
 			ReactDOM.render(
-				<MaterialSelect
-					materials={materials}
-					value={value}
-					onChange={(_, newValue) => {
-						if (typeof newValue === 'number') {
-							input.setValue(newValue);
-							update();
-						}
-					}}
-				/>,
+				<MaterialSelect materials={materials} value={value} onChange={onChange} />,
 				container.dom
 			);
 		}

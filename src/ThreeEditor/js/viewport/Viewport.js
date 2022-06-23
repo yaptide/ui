@@ -392,14 +392,14 @@ export function Viewport(
 	}
 
 	function canBeTransformed(object) {
-		function notTransformable(object) {
+		function notTransformable(o) {
 			switch (transformControls.getMode()) {
 				case 'translate':
-					return object.notMovable;
+					return o.notMovable;
 				case 'rotate':
-					return object.notRotatable;
+					return o.notRotatable;
 				case 'scale':
-					return object.notScalable;
+					return o.notScalable;
 				default:
 					return false;
 			}
