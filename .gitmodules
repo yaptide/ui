@@ -1,6 +1,7 @@
 [submodule "public/libs/converter"]
 	path = src/libs/converter
 	url = https://github.com/yaptide/converter
+	branch = master
 	shallow = true
 
 [submodule "public/libs/jsroot"]
