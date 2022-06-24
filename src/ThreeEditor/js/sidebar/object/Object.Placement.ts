@@ -4,7 +4,7 @@ import { isDetectGeometry } from '../../../util/Detect/DetectGeometry';
 import { SimulationObject3D } from '../../../util/SimulationBase/SimulationMesh';
 import { ISimulationObject } from '../../../util/SimulationBase/SimulationObject';
 import { createRowParamNumberXYZ, hideUIElement, showUIElement } from '../../../util/Ui/Uis';
-import { isWorldZone } from '../../../util/WorldZone';
+import { isWorldZone } from '../../../util/WorldZone/WorldZone';
 import {
 	SetBeamDirectionCommand,
 	SetDetectPositionCommand,

@@ -16,7 +16,7 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../util/Ui/Uis';
-import { isWorldZone, WorldZone } from '../../../util/WorldZone';
+import { isWorldZone, WorldZone } from '../../../util/WorldZone/WorldZone';
 import {
 	SetDetectGeometryCommand,
 	SetDetectTypeCommand,

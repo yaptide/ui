@@ -6,7 +6,7 @@ import Worker from 'worker-loader!./CSGWorker';
 import { Editor } from '../../js/Editor';
 import { SimulationSceneGroup } from '../SimulationBase/SimulationGroup';
 import { ISimulationObject } from '../SimulationBase/SimulationObject';
-import { WorldZone, WorldZoneJSON } from '../WorldZone';
+import { WorldZone, WorldZoneJSON } from '../WorldZone/WorldZone';
 import { IZoneWorker } from './CSGWorker';
 import { Zone, ZoneJSON } from './CSGZone';
 

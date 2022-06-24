@@ -11,7 +11,6 @@ import WrapperApp from './WrapperApp/WrapperApp';
 
 function App() {
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-
 	const theme = React.useMemo(
 		() =>
 			createTheme({

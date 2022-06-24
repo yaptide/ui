@@ -20,6 +20,7 @@ function SidebarProject(editor) {
 		.setWidth('160px')
 		.onChange(() => {
 			config.setKey('project/title', this.getValue());
+			editor.signals.projectChanged.dispatch();
 		});
 
 	titleRow.add(new UIText('Title').setWidth('90px'));

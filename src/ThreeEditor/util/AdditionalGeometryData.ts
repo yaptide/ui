@@ -7,11 +7,14 @@ export type PossibleGeometryType =
 
 const geometryParameters = {
 	BoxGeometry: ['width', 'height', 'depth'],
-	CylinderGeometry: ['radiusTop', 'height'],
+	CylinderGeometry: [
+		['radius', 'radiusTop'],
+		['depth', 'height']
+	],
 	SphereGeometry: ['radius']
 };
 
-export interface AdditionalUserDataType {
+export interface AdditionalGeometryDataType {
 	id: number;
 	geometryType: string;
 	position: THREE.Vector3Tuple;
@@ -28,18 +31,21 @@ export const getGeometryParameters = (geometry: PossibleGeometryType) => {
 	const type = geometry.type as keyof typeof geometryParameters;
 
 	geometryParameters[type].forEach(prop => {
-		parameters[prop] = geometry.parameters[prop as keyof typeof geometry.parameters];
+		parameters[Array.isArray(prop) ? prop[0] : prop] =
+			geometry.parameters[
+				(Array.isArray(prop) ? prop[1] : prop) as keyof typeof geometry.parameters
+			];
 	});
 
 	return parameters;
 };
 
-export function generateSimulationInfo(geometryMesh: THREE.Mesh<PossibleGeometryType>) {
+export function generateSimulationInfo(geometryMesh: THREE.Mesh) {
 	const geometry = geometryMesh.geometry as PossibleGeometryType;
 
 	const parameters = getGeometryParameters(geometry);
 
-	let userData: AdditionalUserDataType = {
+	let geometryData: AdditionalGeometryDataType = {
 		id: geometryMesh.id,
 		geometryType: geometryMesh.geometry.type,
 		position: geometryMesh.position.toArray(),
@@ -48,13 +54,13 @@ export function generateSimulationInfo(geometryMesh: THREE.Mesh<PossibleGeometry
 	};
 
 	if (!geometryMesh.userData['userSetRotation'])
-		userData = {
-			...userData,
+		geometryData = {
+			...geometryData,
 			rotation: geometryMesh.rotation
 				.toArray()
 				.slice(0, 3)
 				.map(v => v * THREE.MathUtils.RAD2DEG) as THREE.Vector3Tuple
 		};
 
-	return userData;
+	return geometryData;
 }
