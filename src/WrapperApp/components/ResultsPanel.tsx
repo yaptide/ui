@@ -1,10 +1,12 @@
-import { Box, Card, CardContent, Grid, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Card, CardContent, Grid, Tab, Tabs, Typography, useMediaQuery } from '@mui/material';
 import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { generateGraphs } from '../../JsRoot/GraphData';
 import { TabPanel } from './TabPanel';
 import { useStore } from '../../services/StoreService';
 
 function ResultsPanel() {
+	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
 	const { resultsSimulationData: simulation } = useStore();
 
 	const [tabsValue, setTabsValue] = useState(0);
@@ -70,7 +72,8 @@ function ResultsPanel() {
 				</Card>
 				<Card
 					sx={{
-						margin: '0.5rem'
+						margin: '0.5rem',
+						bgcolor: prefersDarkMode ? 'text.disabled' : 'background.paper'
 					}}>
 					<CardContent>
 						{simulation?.result?.estimators.map((estimator, idx) => {
