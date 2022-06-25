@@ -5,7 +5,7 @@
 		"generator": "Editor.toJSON"
 	},
 	"project": {
-		"title": "images_generation",
+		"title": "Proton pencil beam, water phantom",
 		"shadows": true,
 		"shadowType": 1,
 		"physicallyCorrectLights": false,
