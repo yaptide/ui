@@ -42,8 +42,7 @@
 				"openEnded": false,
 				"thetaStart": 0,
 				"thetaLength": 6.283185307179586
-			}
-		],
+			}],
 		"materials": [
 			{
 				"uuid": "81a7aa32-b85f-45c4-bcd7-f648a0be12dc",
@@ -90,29 +89,27 @@
 				"stencilZFail": 7680,
 				"stencilZPass": 7680,
 				"wireframe": true
-			}
-		],
+			}],
 		"object": {
 			"uuid": "C1BF5EE7-ACC7-4896-8451-A5B358DF9889",
 			"type": "Scene",
 			"name": "Figures",
-			"visible": false,
 			"layers": 1,
-			"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+			"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
 			"children": [
 				{
 					"uuid": "7ab62ba9-6dba-4543-b50b-ce31e143d482",
 					"type": "CylinderMesh",
-					"name": "RCC1",
+					"name": "Water_phantom_cylinder",
 					"layers": 1,
-					"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 10, 1],
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,10,1],
 					"geometry": "e1aec771-4f70-4521-a427-7fe2e8aef7b7",
 					"material": "81a7aa32-b85f-45c4-bcd7-f648a0be12dc",
 					"geometryData": {
-						"id": 854,
+						"id": 859,
 						"geometryType": "CylinderGeometry",
-						"position": [0, 0, 10],
-						"rotation": [0, 0, 0],
+						"position": [0,0,10],
+						"rotation": [0,0,0],
 						"parameters": {
 							"radius": 10,
 							"depth": 20
@@ -122,23 +119,22 @@
 				{
 					"uuid": "aeeffad9-ed86-44ae-bfe4-b5f78580741b",
 					"type": "CylinderMesh",
-					"name": "RCC2",
+					"name": "Vacuum_cylinder",
 					"layers": 1,
-					"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 7.5, 1],
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,7.5,1],
 					"geometry": "4decc799-70e5-47ac-ad90-5b03a016ebff",
 					"material": "8485707f-07bf-49d2-86ab-070eb9878a00",
 					"geometryData": {
-						"id": 856,
+						"id": 861,
 						"geometryType": "CylinderGeometry",
-						"position": [0, 0, 7.5],
-						"rotation": [0, 0, 0],
+						"position": [0,0,7.5],
+						"rotation": [0,0,0],
 						"parameters": {
 							"radius": 15,
 							"depth": 25
 						}
 					}
-				}
-			]
+				}]
 		}
 	},
 	"history": {
@@ -149,41 +145,34 @@
 		"zones": [
 			{
 				"uuid": "9ee041c1-acc0-433f-bc66-90e057b72474",
-				"name": "Zone1",
+				"name": "Water_phantom_zone",
 				"materialUuid": "49ce56b9-ee48-4640-88d4-bcfd660d8c0e",
-				"unionOperations": [
-					[
+				"unionOperations": [[
 						{
 							"mode": "union",
 							"objectUuid": "7ab62ba9-6dba-4543-b50b-ce31e143d482"
-						}
-					]
-				],
+						}]],
 				"subscribedObjects": {
 					"7ab62ba9-6dba-4543-b50b-ce31e143d482": 1
 				}
 			},
 			{
 				"uuid": "a2c614cf-7074-4abe-a757-4a850f6731b3",
-				"name": "Zone2",
+				"name": "Vacuum_zone",
 				"materialUuid": "cd7c2eb0-e91f-4144-b4eb-536e4626cc09",
-				"unionOperations": [
-					[
+				"unionOperations": [[
 						{
 							"mode": "union",
 							"objectUuid": "aeeffad9-ed86-44ae-bfe4-b5f78580741b"
-						}
-					]
-				],
+						}]],
 				"subscribedObjects": {
 					"aeeffad9-ed86-44ae-bfe4-b5f78580741b": 1
 				}
-			}
-		],
+			}],
 		"uuid": "368269D3-6F9B-4241-84A0-5D908D10E196",
 		"name": "Zones",
 		"worldZone": {
-			"uuid": "ffbb8307-0e11-4570-b410-553ce4e07d3e",
+			"uuid": "1de0547e-3291-4f4a-ab5d-66ea7f8f3d1f",
 			"center": {
 				"isVector3": true,
 				"x": 0,
@@ -205,8 +194,8 @@
 			"geometryData": {
 				"id": 14,
 				"geometryType": "CylinderGeometry",
-				"position": [0, 0, 5],
-				"rotation": [0, 0, 0],
+				"position": [0,0,5],
+				"rotation": [0,0,0],
 				"parameters": {
 					"radius": 20,
 					"depth": 30
@@ -228,7 +217,7 @@
 					"zSegments": 400
 				},
 				"type": "Cyl",
-				"position": [0, 0, 10],
+				"position": [0,0,10],
 				"name": "CylZ_Mesh",
 				"colorHex": 327424
 			},
@@ -243,16 +232,15 @@
 					"zSegments": 400
 				},
 				"type": "Mesh",
-				"position": [0, 0, 10],
+				"position": [0,0,10],
 				"name": "YZ_Mesh",
 				"colorHex": 65535
-			}
-		],
+			}],
 		"filters": []
 	},
 	"beam": {
-		"position": [0, 0, 0],
-		"direction": [0, 0, 1],
+		"position": [0,0,0],
+		"direction": [0,0,1],
 		"energy": 150,
 		"energySpread": 1.5,
 		"divergence": {
@@ -289,12 +277,11 @@
 				"color": 16119285,
 				"transparent": true,
 				"opacity": 0.1
-			}
-		],
+			}],
 		"selectedMaterials": {
-			"1dd2e8f0-6684-42c2-ad35-7aa55358204e": 1,
 			"49ce56b9-ee48-4640-88d4-bcfd660d8c0e": 1,
-			"cd7c2eb0-e91f-4144-b4eb-536e4626cc09": 1
+			"cd7c2eb0-e91f-4144-b4eb-536e4626cc09": 1,
+			"1dd2e8f0-6684-42c2-ad35-7aa55358204e": 1
 		}
 	},
 	"scoringManager": {
@@ -310,8 +297,7 @@
 							"uuid": "e3488754-9a67-4d3c-b0ea-17300d651a8a",
 							"keyword": "DoseGy",
 							"modifiers": []
-						}
-					],
+						}],
 					"disabled": []
 				},
 				"detectGeometry": "186ec65a-8511-418b-8218-8890138c6b12",
@@ -326,13 +312,11 @@
 							"uuid": "c3499475-9496-4ee5-b705-950b83867dac",
 							"keyword": "DoseGy",
 							"modifiers": []
-						}
-					],
+						}],
 					"disabled": []
 				},
 				"detectGeometry": "3306e98b-5da2-46ee-8892-ac0191d645a7",
 				"trace": false
-			}
-		]
+			}]
 	}
 }
