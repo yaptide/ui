@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { createGenericContext } from '../util/GenericContext';
 import makeAsyncScriptLoader from 'react-async-script';
 
@@ -27,9 +27,10 @@ const [useJSROOT, JsRootContextProvider] = createGenericContext<IJsRoot>();
 
 const JsRoot = (props: JsRootProps) => {
 	const [value, setValue] = useState<IJsRoot>();
+	const painterScript = useRef<HTMLScriptElement>();
 
 	useEffect(() => {
-		if (!props.JSROOT) return;
+		if (!props.JSROOT || painterScript.current) return;
 
 		const script = document.createElement('script');
 
@@ -42,6 +43,7 @@ const JsRoot = (props: JsRootProps) => {
 				if (prop === 'Painter') {
 					// detect JSROOT.Painter loaded
 					setValue({ JSROOT: window.JSROOT });
+					painterScript.current = script;
 				}
 				return true;
 			}
@@ -51,6 +53,15 @@ const JsRoot = (props: JsRootProps) => {
 
 		document.body.appendChild(script);
 	}, [props.JSROOT]);
+
+	useEffect(() => {
+		return () => {
+			if (painterScript.current) {
+				painterScript.current.remove();
+				painterScript.current = undefined;
+			}
+		};
+	}, []);
 
 	return (
 		<JsRootContextProvider value={value}>
