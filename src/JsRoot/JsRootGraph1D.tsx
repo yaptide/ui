@@ -6,7 +6,7 @@ import { Page1D } from './GraphData';
 
 export function JsRootGraph1D(props: Page1D) {
 	const { JSROOT } = useJSROOT();
-	// Custom react hook, visible contains the percentage of the containterEl 
+	// Custom react hook, visible contains the percentage of the containterEl
 	// that is currently visible on screen
 	const [containerEl, visible] = useVisible<HTMLDivElement>();
 
@@ -15,13 +15,13 @@ export function JsRootGraph1D(props: Page1D) {
 	const [isVisible, setIsVisible] = useState(false);
 
 	useEffect(() => {
-		// Update isVisible if more than 30% of containerEl is visible 
+		// Update isVisible if more than 30% of containerEl is visible
 		setIsVisible(visible > 0.3);
 		return () => setIsVisible(false);
 	}, [visible]);
 
 	useEffect(() => {
-		if (drawn || !visible) return;
+		if (!visible) return;
 		// create example graph
 		const npoints = props.data.values.length;
 		const y = props.data.values;
@@ -34,7 +34,7 @@ export function JsRootGraph1D(props: Page1D) {
 
 		setObj(graph);
 		setDrawn(false);
-	}, [JSROOT, drawn, props, visible]);
+	}, [JSROOT, props, visible]);
 
 	useEffect(() => {
 		if (obj && !drawn && isVisible) {
