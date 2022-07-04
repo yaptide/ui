@@ -19,6 +19,7 @@
 		"@types/throttle-debounce": "^5.0.0",
 		"@uiw/react-textarea-code-editor": "^2.0.2",
 		"comlink": "^4.3.1",
+		"command-exists": "^1.2.9",
 		"glob": "^8.0.3",
 		"ky": "^0.31.0",
 		"notistack": "^2.0.5",
