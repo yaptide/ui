@@ -2,6 +2,7 @@ const fs = require("fs");
 const glob = require("glob")
 const { execSync } = require("child_process");
 const { exit } = require("process");
+const commandExists = require('command-exists');
 
 
 const SKIP = process.argv[2] === 'skip';
@@ -29,6 +30,11 @@ const saveFileName = (destFolder, fileName) => {
 }
 
 (async () => {
+    const PYTHON = await commandExists('python3').then(_ => 'python3')
+        .catch(_ => commandExists('python')).then(_ => 'python')
+        .catch(_ => { console.error("Python does not found"); exit(1) });
+
+
     const installedPath = await globPromise(destFolder + 'yaptide_converter-*-py3-none-any.whl').then(files => files[0]);
     const installedFileName = installedPath?.split('/').pop();
 
@@ -51,13 +57,13 @@ const saveFileName = (destFolder, fileName) => {
 
 
         measureTime('Installing build module for python', () => {
-            execSync("python3 -m pip install build", {
+            execSync(`${PYTHON} -m pip install build`, {
                 cwd: srcFolder
             });
         });
 
         measureTime('Building yaptide_converter', () => {
-            execSync("python3 -m build", {
+            execSync(`${PYTHON} -m build`, {
                 cwd: srcFolder
             })
         });

@@ -11,13 +11,13 @@ function ResultsPanel() {
 
 	const [tabsValue, setTabsValue] = useState(0);
 
+	useEffect(() => {
+		setTabsValue(0);
+	}, [simulation]);
+
 	const handleChange = (_event: SyntheticEvent, newValue: number) => {
 		setTabsValue(newValue);
 	};
-
-	useEffect(() => {
-		console.log(simulation);
-	}, [simulation]);
 
 	return (
 		<Box>
@@ -45,52 +45,56 @@ function ResultsPanel() {
 					maxWidth: '100vw',
 					width: '100%'
 				}}>
-				<Card
-					sx={{
-						margin: '0.5rem',
-						height: 'min-content',
-						overflow: 'unset'
-					}}>
-					<CardContent>
-						<Tabs
-							sx={{ flexShrink: 0 }}
-							orientation='vertical'
-							variant='scrollable'
-							value={tabsValue}
-							onChange={handleChange}>
-							{simulation?.result?.estimators.map((estimator, idx) => {
-								return (
-									<Tab
-										key={`tab_${estimator.name}`}
-										label={estimator.name}
-										value={idx}
-									/>
-								);
-							})}
-						</Tabs>
-					</CardContent>
-				</Card>
-				<Card
-					sx={{
-						margin: '0.5rem',
-						bgcolor: prefersDarkMode ? 'text.disabled' : 'background.paper'
-					}}>
-					<CardContent>
-						{simulation?.result?.estimators.map((estimator, idx) => {
-							return (
-								<TabPanel
-									key={`tab_panel_${estimator.name}`}
+				{(simulation?.result?.estimators?.length ?? 0) > 0 && (
+					<>
+						<Card
+							sx={{
+								margin: '0.5rem',
+								height: 'min-content',
+								overflow: 'unset'
+							}}>
+							<CardContent>
+								<Tabs
+									sx={{ flexShrink: 0 }}
+									orientation='vertical'
+									variant='scrollable'
 									value={tabsValue}
-									index={idx}
-									persistent>
-									<Grid container spacing={1}>
-										{generateGraphs(estimator)}
-									</Grid>
-								</TabPanel>
-							);
-						})}
-					</CardContent>
-				</Card>
+									onChange={handleChange}>
+									{simulation?.result?.estimators.map((estimator, idx) => {
+										return (
+											<Tab
+												key={`tab_${estimator.name}`}
+												label={estimator.name}
+												value={idx}
+											/>
+										);
+									})}
+								</Tabs>
+							</CardContent>
+						</Card>
+						<Card
+							sx={{
+								margin: '0.5rem',
+								bgcolor: prefersDarkMode ? 'text.disabled' : 'background.paper'
+							}}>
+							<CardContent>
+								{simulation?.result?.estimators.map((estimator, idx) => {
+									return (
+										<TabPanel
+											key={`tab_panel_${estimator.name}`}
+											value={tabsValue}
+											index={idx}
+											persistentIfVisited>
+											<Grid container spacing={1}>
+												{generateGraphs(estimator)}
+											</Grid>
+										</TabPanel>
+									);
+								})}
+							</CardContent>
+						</Card>
+					</>
+				)}
 			</Box>
 		</Box>
 	);
