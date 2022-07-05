@@ -30,10 +30,28 @@ const saveFileName = (destFolder, fileName) => {
 }
 
 (async () => {
-    const PYTHON = await commandExists('python3').then(_ => 'python3')
-        .catch(_ => commandExists('python')).then(_ => 'python')
-        .catch(_ => { console.error("Python does not found"); exit(1) });
+    const PYTHON = (() => {
+        const pythonCmdArr = ['python3', 'python'];
+        const index = pythonCmdArr.findIndex(pythonCmd => {
+            console.log(`Checking for ${pythonCmd}`);
+            try {
+                execSync(`${pythonCmd} --version`);
+                return true;
+            }
+            catch (e) {
+                return false;
+            }
+        });
 
+        if (index === -1) {
+            console.error('Python not found');
+            return exit(1);
+        }
+
+        return pythonCmdArr[index];
+    })();
+
+    console.log(`\nUsing: ${PYTHON}`);
 
     const installedPath = await globPromise(destFolder + 'yaptide_converter-*-py3-none-any.whl').then(files => files[0]);
     const installedFileName = installedPath?.split('/').pop();
