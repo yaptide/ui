@@ -1,14 +1,29 @@
 import * as THREE from 'three';
-import { UIColor, UIPanel, UIRow, UISelect, UISpan, UIText } from '../libs/ui.js';
+import { UIButton, UIColor, UIPanel, UIRow, UISelect, UIText } from '../libs/ui.js';
 import { UITexture } from '../libs/ui.three.js';
-import { SidebarSettingsHistory } from './Sidebar.Settings.History.js';
-import { SidebarSettingsShortcuts } from './Sidebar.Settings.Shortcuts.js';
-import { SidebarSettingsViewport } from './Sidebar.Settings.Viewport.js';
+import { SidebarProjectRenderer } from '../sidebar/Sidebar.Project.Renderer.js';
+import { MenubarSettingsHistory } from './Menubar.Settings.History.js';
+import { MenubarSettingsShortcuts } from './Menubar.Settings.Shortcuts.js';
+import { MenubarSettingsViewport } from './Menubar.Settings.Viewport.js';
 
-function SidebarSettings(editor) {
+const MenubarSettingsEvent = {
+	close: 'closeMenubarSettings',
+}
+
+function MenubarSettings(editor) {
 	const { signals, scene } = editor;
 
-	const container = new UISpan();
+	const container = new UIPanel();
+
+	const headerRow = new UIRow();
+	headerRow.add(new UIText('Settings'.toUpperCase()));
+	const closeButton = new UIButton('Close').onClick(() => {
+		const event = new CustomEvent(MenubarSettingsEvent.close);
+		container.dom.dispatchEvent(event);
+
+	}).setMarginLeft('auto');
+	headerRow.add(closeButton);
+	container.add(headerRow);
 
 	const settings = new UIPanel();
 	settings.setBorderTop('0');
@@ -115,9 +130,10 @@ function SidebarSettings(editor) {
 
 	//
 
-	container.add(new SidebarSettingsViewport(editor));
-	container.add(new SidebarSettingsShortcuts(editor));
-	container.add(new SidebarSettingsHistory(editor));
+	container.add(new MenubarSettingsViewport(editor));
+	container.add(new MenubarSettingsShortcuts(editor));
+	container.add(new MenubarSettingsHistory(editor));
+	container.add(new SidebarProjectRenderer(editor))
 
 	//
 
@@ -165,4 +181,4 @@ function SidebarSettings(editor) {
 	return container;
 }
 
-export { SidebarSettings };
+export { MenubarSettings,MenubarSettingsEvent };

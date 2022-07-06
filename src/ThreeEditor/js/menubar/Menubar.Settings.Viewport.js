@@ -1,7 +1,7 @@
 import { UIPanel, UIText, UIRow } from '../libs/ui.js';
 import { UIBoolean } from '../libs/ui.three.js';
 
-function SidebarSettingsViewport(editor) {
+function MenubarSettingsViewport(editor) {
 	const { signals } = editor;
 
 	const container = new UIPanel();
@@ -37,4 +37,4 @@ function SidebarSettingsViewport(editor) {
 	return container;
 }
 
-export { SidebarSettingsViewport };
+export { MenubarSettingsViewport };

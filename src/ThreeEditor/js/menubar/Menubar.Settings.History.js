@@ -1,7 +1,7 @@
 import { UIPanel, UIBreak, UIText } from '../libs/ui.js';
 import { UIBoolean, UIOutliner } from '../libs/ui.three.js';
 
-function SidebarSettingsHistory(editor) {
+function MenubarSettingsHistory(editor) {
 	const { signals, config, history } = editor;
 
 	const container = new UIPanel();
@@ -99,4 +99,4 @@ function SidebarSettingsHistory(editor) {
 	return container;
 }
 
-export { SidebarSettingsHistory };
+export { MenubarSettingsHistory };

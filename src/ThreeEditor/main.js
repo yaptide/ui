@@ -18,24 +18,24 @@ export function initEditor(container) {
 
 	//
 
-	var editor = new Editor(container);
+	const editor = new Editor(container);
 
 	window.editor = editor; // Expose editor to Console
 	window.THREE = THREE; // Expose THREE to APP Scripts and Console
 
-	var viewManager = new ViewManager(editor);
+	const viewManager = new ViewManager(editor);
 	container.appendChild(viewManager.dom);
 
-	var toolbar = new Toolbar(editor);
+	const toolbar = new Toolbar(editor);
 	container.appendChild(toolbar.dom);
 
-	var sidebar = new Sidebar(editor);
+	const sidebar = new Sidebar(editor);
 	container.appendChild(sidebar.dom);
 
-	var menubar = new Menubar(editor);
+	const menubar = new Menubar(editor);
 	container.appendChild(menubar.dom);
 
-	var resizer = new Resizer(editor);
+	const resizer = new Resizer(editor);
 	container.appendChild(resizer.dom);
 
 	//
@@ -57,7 +57,7 @@ export function initEditor(container) {
 				if (versionIsOk) editor.fromJSON(state);
 			}
 
-			var selected = editor.config.getKey('selected');
+			const selected = editor.config.getKey('selected');
 
 			if (typeof selected !== 'undefined') {
 				editor.selectByUuid(selected);
@@ -66,7 +66,7 @@ export function initEditor(container) {
 
 		//
 
-		var timeout;
+		let timeout;
 
 		function saveState() {
 			if (editor.config.getKey('autosave') === false) {
@@ -85,6 +85,7 @@ export function initEditor(container) {
 				}, 100);
 			}, 1000);
 		}
+
 		const stateChangedSignals = [
 			signals.geometryChanged,
 			signals.objectAdded,
@@ -97,7 +98,8 @@ export function initEditor(container) {
 			signals.historyChanged,
 			signals.detectFilterChanged,
 			signals.scoringQuantityChanged,
-			signals.CSGManagerStateChanged
+			signals.CSGManagerStateChanged,
+			signals.projectChanged
 		];
 		stateChangedSignals.forEach(signal => signal.add(saveState));
 	});
@@ -141,11 +143,11 @@ export function initEditor(container) {
 
 	//
 
-	var isLoadingFromHash = false;
-	var hash = window.location.hash;
+	let isLoadingFromHash = false;
+	const hash = window.location.hash;
 
 	if (hash.substr(1, 5) === 'file=') {
-		var file = hash.substr(6);
+		const file = hash.substr(6);
 
 		if (window.confirm('Any unsaved data will be lost. Are you sure?')) {
 			var loader = new THREE.FileLoader();

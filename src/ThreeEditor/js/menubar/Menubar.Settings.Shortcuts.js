@@ -9,7 +9,7 @@ import {
 } from '../commands/Commands';
 import { UIInput, UIPanel, UIRow, UIText } from '../libs/ui.js';
 
-function SidebarSettingsShortcuts(editor) {
+function MenubarSettingsShortcuts(editor) {
 	const { signals, config } = editor;
 
 	const IS_MAC = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
@@ -156,4 +156,4 @@ function SidebarSettingsShortcuts(editor) {
 	return container;
 }
 
-export { SidebarSettingsShortcuts };
+export { MenubarSettingsShortcuts };
