@@ -115,7 +115,9 @@ export function Editor(container) {
 
 		viewportConfigChanged: new Signal(), // Viewport config signal
 
-		CSGManagerStateChanged: new Signal() // State of CSGmanager changed
+		CSGManagerStateChanged: new Signal(), // State of CSGmanager changed
+
+		exampleLoaded: new Signal(),
 	};
 
 	this.container = container;
@@ -549,6 +551,9 @@ Editor.prototype = {
 
 	async fromJSON(json) {
 		this.config.setKey('project/title', json.project.title ?? '');
+		this.config.setKey('project/description', json.project.description ?? '');
+		this.signals.projectChanged.dispatch();
+
 		const loader = new EditorObjectLoader(this);
 
 		this.signals.cameraResetted.dispatch();
@@ -592,6 +597,7 @@ Editor.prototype = {
 			},
 			project: {
 				title: this.config.getKey('project/title'),
+				description: this.config.getKey('project/description'),
 				shadows: this.config.getKey('project/renderer/shadows'),
 				shadowType: this.config.getKey('project/renderer/shadowType'),
 				physicallyCorrectLights: this.config.getKey(

@@ -1,6 +1,7 @@
-import { UIHorizontalRule, UIPanel } from '../libs/ui.js';
+import { UIHorizontalRule, UIPanel, UIRow, UIText } from '../libs/ui.js';
 import { createOption } from './Menubar.js';
 import { saveString } from '../../../util/File';
+import { MenubarSettings, MenubarSettingsEvent } from './Menubar.Settings.js';
 
 function MenubarFile(editor) {
 	const container = new UIPanel();
@@ -62,8 +63,32 @@ function MenubarFile(editor) {
 			const fileName = window.prompt('Name of the file', 'editor');
 
 			if (fileName) saveString(output, `${fileName}.json`);
-		})
+		}),
+		new UIHorizontalRule()
 	);
+
+
+	// Settings
+	const settingsModal = new UIPanel();
+	settingsModal.setClass('sidebar');
+	settingsModal.dom.style.left = '0';
+	settingsModal.setDisplay('none');
+
+	const settings = new MenubarSettings(editor);
+	settings.dom.addEventListener(MenubarSettingsEvent.close, () => {
+		settingsModal.setDisplay('none');
+	})
+	settingsModal.add(settings);
+	editor.container.appendChild(settingsModal.dom);
+
+
+	options.add(
+		createOption('option', 'Settings', () => {
+			settingsModal.setDisplay('');
+		})
+
+	);
+
 
 	return container;
 }

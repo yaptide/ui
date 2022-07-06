@@ -428,7 +428,7 @@ select:hover {
 	margin: 0 !important;
 }
 
-#sidebar {
+:is(#sidebar,.sidebar) {
 	position: absolute;
 	right: 0;
 	top: 32px;
@@ -438,23 +438,24 @@ select:hover {
 	overflow: auto;
 }
 
-#sidebar .Panel {
+:is(#sidebar,.sidebar) .Panel {
 	color: #888;
 	padding: 10px;
 	border-top: 1px solid #ccc;
 }
 
-#sidebar .Panel.collapsed {
+:is(#sidebar,.sidebar) .Panel.collapsed {
 	margin-bottom: 0;
 }
 
-#sidebar .Row {
+:is(#sidebar,.sidebar) .Row {
 	min-height: 20px;
 	margin-bottom: 10px;
 	display: flex;
+	align-items: center;
 }
 
-#sidebar canvas {
+:is(#sidebar,.sidebar) canvas {
 	vertical-align: middle;
 }
 
@@ -580,7 +581,7 @@ select:hover {
 		height: calc(100% - 352px);
 	}
 
-	#sidebar {
+	:is(#sidebar,.sidebar) {
 		left: 0;
 		width: 100%;
 		top: calc(100% - 320px);
@@ -651,15 +652,15 @@ select:hover {
 		color: #444;
 	}
 
-	#sidebar {
+	:is(#sidebar,.sidebar) {
 		background-color: #111;
 	}
 
-	#sidebar .Panel {
+	:is(#sidebar,.sidebar) .Panel {
 		border-top: 1px solid #222;
 	}
 
-	#sidebar .Panel.Material canvas {
+	:is(#sidebar,.sidebar) .Panel.Material canvas {
 		border: solid 1px #5a5a5a;
 	}
 

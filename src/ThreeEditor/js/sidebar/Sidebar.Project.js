@@ -1,6 +1,4 @@
-import { UIPanel, UIRow, UIInput, UICheckbox, UIText, UISpan } from '../libs/ui.js';
-
-import { SidebarProjectRenderer } from './Sidebar.Project.Renderer.js';
+import { UIPanel, UIRow, UIInput, UIText, UISpan, UITextArea } from '../libs/ui.js';
 
 function SidebarProject(editor) {
 	const { signals, config } = editor;
@@ -19,7 +17,7 @@ function SidebarProject(editor) {
 		.setLeft('100px')
 		.setWidth('160px')
 		.onChange(() => {
-			config.setKey('project/title', this.getValue());
+			config.setKey('project/title', title.getValue());
 			editor.signals.projectChanged.dispatch();
 		});
 
@@ -28,29 +26,41 @@ function SidebarProject(editor) {
 
 	settings.add(titleRow);
 
-	// Editable
+	// Description
 
-	const editableRow = new UIRow();
-	const editable = new UICheckbox(config.getKey('project/editable'))
-		.setLeft('100px')
+	const descriptionRow = new UIRow();
+	descriptionRow.add(new UIText('Description').setWidth('90px'));
+	settings.add(descriptionRow);
+
+	const description = new UITextArea()
+		.setWidth('100%')
+		.setHeight('400px')
 		.onChange(() => {
-			config.setKey('project/editable', this.getValue());
+			config.setKey('project/description', description.getValue());
+			editor.signals.projectChanged.dispatch();
 		});
+	description.setValue(config.getKey('project/description'));
+	description.dom.wrap = 'soft';
+	description.dom.style.whiteSpace = 'break-spaces';
 
-	editableRow.add(new UIText('Editable').setWidth('90px'));
-	editableRow.add(editable);
-
-	settings.add(editableRow);
+	settings.add(new UIRow().add(description));
 
 	//
 
-	container.add(new SidebarProjectRenderer(editor));
+
 
 	// Signals
+
+	signals.projectChanged.add(() => {
+		title.setValue(config.getKey('project/title'));
+		description.setValue(config.getKey('project/description'));
+	})
 
 	signals.editorCleared.add(() => {
 		title.setValue('');
 		config.setKey('project/title', '');
+		description.setValue('');
+		config.setKey('project/description', '');
 	});
 
 	return container;

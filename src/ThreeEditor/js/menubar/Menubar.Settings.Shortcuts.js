@@ -9,13 +9,13 @@ import {
 } from '../commands/Commands';
 import { UIInput, UIPanel, UIRow, UIText } from '../libs/ui.js';
 
-function SidebarSettingsShortcuts(editor) {
+function MenubarSettingsShortcuts(editor) {
 	const { signals, config } = editor;
 
 	const IS_MAC = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 
 	function isValidKeyBinding(key) {
-		return key.match(/^[A-Za-z0-9]$/i); // Can't use z currently due to undo/redo
+		return /^[A-Za-z0-9]$/i.test(key); // Can't use z currently due to undo/redo
 	}
 
 	const container = new UIPanel();
@@ -76,7 +76,7 @@ function SidebarSettingsShortcuts(editor) {
 		createShortcutInput(shortcuts[i]);
 	}
 
-	const getRemoveCommand = (editor, object) => {
+	const getRemoveCommand = (object) => {
 		switch (true) {
 			case object.isDetectGeometry:
 				return new RemoveDetectGeometryCommand(editor, object);
@@ -108,7 +108,7 @@ function SidebarSettingsShortcuts(editor) {
 					if (object === null || object.notRemovable === true) return;
 
 					const parent = object.parent;
-					if (parent !== null) editor.execute(getRemoveCommand(editor, object));
+					if (parent !== null) editor.execute(getRemoveCommand(object));
 					break;
 
 				case config.getKey('settings/shortcuts/translate'):
@@ -156,4 +156,4 @@ function SidebarSettingsShortcuts(editor) {
 	return container;
 }
 
-export { SidebarSettingsShortcuts };
+export { MenubarSettingsShortcuts };

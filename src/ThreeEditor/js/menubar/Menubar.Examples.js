@@ -23,6 +23,7 @@ export function MenubarExamples(editor) {
 	function loadExample(example) {
 		editor.clear();
 		editor.fromJSON(example);
+		editor.signals.exampleLoaded.dispatch();
 	}
 
 	// YAPTIDE examples
