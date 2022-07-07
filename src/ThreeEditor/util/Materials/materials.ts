@@ -1,19 +1,21 @@
 export const COMMON_MATERIAL_ICRUS = [104, 276, 223, 179, 222, 6, 245, 170, 1000];
 export const DEFAULT_MATERIAL_ICRU = 276;
 export const DEFAULT_MATERIAL_NAME = 'WATER, LIQUID';
-// made with:
+
+/* made with Python script:
 //
-// import json
-// result = []
-// with open('07_reftab.tex', 'r') as infile:
-//     for line in infile.readlines():
-//         data = line.strip().split()
-//         materialId = data[0]
-//         materialName = ' '.join(data[2:])[1:-2]
-//         result.append({'icru': materialId, 'name': materialName})
-//         print(materialId, materialName)
-// with open('materials.txt', 'w') as outfile:
-//     json.dump(result, outfile)
+import json
+result = []
+with open('07_reftab.tex', 'r') as infile:
+  for line in infile.readlines():
+    data = line.strip().split()
+    materialId = data[0]
+    materialName = ' '.join(data[2:])[1:-2]
+    result.append({'icru': materialId, 'name': materialName})
+    print(materialId, materialName)
+ with open('materials.txt', 'w') as outfile:
+    json.dump(result, outfile)
+*/
 
 export const MATERIALS = [
 	{ icru: 1000, name: 'VACUUM' },
