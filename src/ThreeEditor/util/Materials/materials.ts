@@ -26,6 +26,7 @@ for i, elem in enumerate(elements):
 
 export const MATERIALS = [
 	{ icru: 1000, name: 'VACUUM' },
+	{ icru: 0, name: 'BLACK HOLE' },
 	{ icru: 1, name: 'HYDROGEN' },
 	{ icru: 2, name: 'HELIUM' },
 	{ icru: 3, name: 'LITHIUM' },
