@@ -255,3 +255,5 @@ src/util/identify/deployInfo.json
 
 # build 
 build/
+
+venv/

@@ -1,19 +1,28 @@
-export const COMMON_MATERIAL_ICRUS = [104, 276, 223, 179, 222, 6, 245, 170, 1000];
+export const COMMON_MATERIAL_ICRUS = [104, 276, 223, 179, 222, 6, 13, 14, 82, 245, 170, 1000];
 export const DEFAULT_MATERIAL_ICRU = 276;
 export const DEFAULT_MATERIAL_NAME = 'WATER, LIQUID';
-// made with:
-//
-// import json
-// result = []
-// with open('07_reftab.tex', 'r') as infile:
-//     for line in infile.readlines():
-//         data = line.strip().split()
-//         materialId = data[0]
-//         materialName = ' '.join(data[2:])[1:-2]
-//         result.append({'icru': materialId, 'name': materialName})
-//         print(materialId, materialName)
-// with open('materials.txt', 'w') as outfile:
-//     json.dump(result, outfile)
+
+/* made with two Python scripts:
+import json
+result = []
+with open('07_reftab.tex', 'r') as infile:
+  for line in infile.readlines():
+    data = line.strip().split()
+    materialId = data[0]
+    materialName = ' '.join(data[2:])[1:-2]
+    result.append({'icru': materialId, 'name': materialName})
+    print(materialId, materialName)
+with open('materials.txt', 'w') as outfile:
+    json.dump(result, outfile)
+
+# pip install periodictable
+from periodictable import elements
+
+for i, elem in enumerate(elements):
+    if i > 0 and i < 99:
+        line = "	{ icru: "   + str(i) + ", name: '" + elem.name.upper() + "' },"
+        print(line)
+*/
 
 export const MATERIALS = [
 	{ icru: 1000, name: 'VACUUM' },
@@ -23,10 +32,99 @@ export const MATERIALS = [
 	{ icru: 3, name: 'LITHIUM' },
 	{ icru: 4, name: 'BERYLLIUM' },
 	{ icru: 5, name: 'BORON' },
-	{ icru: 6, name: 'AMORPHOUS CARBON (density 2.0 g/cm3)' },
+	{ icru: 6, name: 'CARBON' },
 	{ icru: 906, name: 'GRAPHITE' },
 	{ icru: 7, name: 'NITROGEN' },
 	{ icru: 8, name: 'OXYGEN' },
+	{ icru: 9, name: 'FLUORINE' },
+	{ icru: 10, name: 'NEON' },
+	{ icru: 11, name: 'SODIUM' },
+	{ icru: 12, name: 'MAGNESIUM' },
+	{ icru: 13, name: 'ALUMINUM' },
+	{ icru: 14, name: 'SILICON' },
+	{ icru: 15, name: 'PHOSPHORUS' },
+	{ icru: 16, name: 'SULFUR' },
+	{ icru: 17, name: 'CHLORINE' },
+	{ icru: 18, name: 'ARGON' },
+	{ icru: 19, name: 'POTASSIUM' },
+	{ icru: 20, name: 'CALCIUM' },
+	{ icru: 21, name: 'SCANDIUM' },
+	{ icru: 22, name: 'TITANIUM' },
+	{ icru: 23, name: 'VANADIUM' },
+	{ icru: 24, name: 'CHROMIUM' },
+	{ icru: 25, name: 'MANGANESE' },
+	{ icru: 26, name: 'IRON' },
+	{ icru: 27, name: 'COBALT' },
+	{ icru: 28, name: 'NICKEL' },
+	{ icru: 29, name: 'COPPER' },
+	{ icru: 30, name: 'ZINC' },
+	{ icru: 31, name: 'GALLIUM' },
+	{ icru: 32, name: 'GERMANIUM' },
+	{ icru: 33, name: 'ARSENIC' },
+	{ icru: 34, name: 'SELENIUM' },
+	{ icru: 35, name: 'BROMINE' },
+	{ icru: 36, name: 'KRYPTON' },
+	{ icru: 37, name: 'RUBIDIUM' },
+	{ icru: 38, name: 'STRONTIUM' },
+	{ icru: 39, name: 'YTTRIUM' },
+	{ icru: 40, name: 'ZIRCONIUM' },
+	{ icru: 41, name: 'NIOBIUM' },
+	{ icru: 42, name: 'MOLYBDENUM' },
+	{ icru: 43, name: 'TECHNETIUM' },
+	{ icru: 44, name: 'RUTHENIUM' },
+	{ icru: 45, name: 'RHODIUM' },
+	{ icru: 46, name: 'PALLADIUM' },
+	{ icru: 47, name: 'SILVER' },
+	{ icru: 48, name: 'CADMIUM' },
+	{ icru: 49, name: 'INDIUM' },
+	{ icru: 50, name: 'TIN' },
+	{ icru: 51, name: 'ANTIMONY' },
+	{ icru: 52, name: 'TELLURIUM' },
+	{ icru: 53, name: 'IODINE' },
+	{ icru: 54, name: 'XENON' },
+	{ icru: 55, name: 'CESIUM' },
+	{ icru: 56, name: 'BARIUM' },
+	{ icru: 57, name: 'LANTHANUM' },
+	{ icru: 58, name: 'CERIUM' },
+	{ icru: 59, name: 'PRASEODYMIUM' },
+	{ icru: 60, name: 'NEODYMIUM' },
+	{ icru: 61, name: 'PROMETHIUM' },
+	{ icru: 62, name: 'SAMARIUM' },
+	{ icru: 63, name: 'EUROPIUM' },
+	{ icru: 64, name: 'GADOLINIUM' },
+	{ icru: 65, name: 'TERBIUM' },
+	{ icru: 66, name: 'DYSPROSIUM' },
+	{ icru: 67, name: 'HOLMIUM' },
+	{ icru: 68, name: 'ERBIUM' },
+	{ icru: 69, name: 'THULIUM' },
+	{ icru: 70, name: 'YTTERBIUM' },
+	{ icru: 71, name: 'LUTETIUM' },
+	{ icru: 72, name: 'HAFNIUM' },
+	{ icru: 73, name: 'TANTALUM' },
+	{ icru: 74, name: 'TUNGSTEN' },
+	{ icru: 75, name: 'RHENIUM' },
+	{ icru: 76, name: 'OSMIUM' },
+	{ icru: 77, name: 'IRIDIUM' },
+	{ icru: 78, name: 'PLATINUM' },
+	{ icru: 79, name: 'GOLD' },
+	{ icru: 80, name: 'MERCURY' },
+	{ icru: 81, name: 'THALLIUM' },
+	{ icru: 82, name: 'LEAD' },
+	{ icru: 83, name: 'BISMUTH' },
+	{ icru: 84, name: 'POLONIUM' },
+	{ icru: 85, name: 'ASTATINE' },
+	{ icru: 86, name: 'RADON' },
+	{ icru: 87, name: 'FRANCIUM' },
+	{ icru: 88, name: 'RADIUM' },
+	{ icru: 89, name: 'ACTINIUM' },
+	{ icru: 90, name: 'THORIUM' },
+	{ icru: 91, name: 'PROTACTINIUM' },
+	{ icru: 92, name: 'URANIUM' },
+	{ icru: 93, name: 'NEPTUNIUM' },
+	{ icru: 94, name: 'PLUTONIUM' },
+	{ icru: 95, name: 'AMERICIUM' },
+	{ icru: 96, name: 'CURIUM' },
+	{ icru: 97, name: 'BERKELIUM' },
 	{ icru: 98, name: 'CALIFORNIUM' },
 	{ icru: 99, name: 'A-150 TISSUE-EQUIVALENT PLASTIC' },
 	{ icru: 100, name: 'ACETONE' },
