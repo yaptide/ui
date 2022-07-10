@@ -40,7 +40,6 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					key={example.result.uuid}
 					simulation={example.result}
 					loadResults={id => {
-						console.log(id);
 						if (id === null) props.goToResults?.call(null);
 						else setResultsSimulationData(example.result);
 					}}></SimulationStatus>
