@@ -23,6 +23,7 @@
 		"glob": "^8.0.3",
 		"ky": "^0.31.0",
 		"notistack": "^2.0.5",
+		"object-hash": "^3.0.0",
 		"react": "^17.0.2",
 		"react-async-script": "^1.2.0",
 		"react-countdown": "^2.3.2",
