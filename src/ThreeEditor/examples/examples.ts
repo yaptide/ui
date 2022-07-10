@@ -18,7 +18,6 @@ while (canImport) {
 		EXAMPLES.push({ editor, result });
 		iterator++;
 	} catch (e) {
-		console.log(`Loaded ${iterator - 1} examples`);
 		canImport = false;
 	}
 }
