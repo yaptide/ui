@@ -50,6 +50,9 @@
 		"start-demo": "cross-env REACT_APP_TARGET=demo npm run start",
 		"test-demo": "cross-env REACT_APP_TARGET=demo npm run test",
 		"build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
+		"start-debug": "cross-env REACT_APP_TARGET=debug npm run start",
+		"test-debug": "cross-env REACT_APP_TARGET=debug npm run test",
+		"build-debug": "cross-env REACT_APP_TARGET=debug npm run build",
 		"predeploy": "npm run setup && npm run build-demo",
 		"deploy": "gh-pages -d build"
 	},

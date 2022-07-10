@@ -33,15 +33,6 @@ const getObjectType = object => {
 };
 const getAdditionalInfo = object => {
 	switch (object.type) {
-		case 'BoxMesh':
-		case 'CylinderMesh':
-		case 'SphereMesh':
-			return ` [${
-				object.id
-			}] <span class="type Geometry"></span> <span class="type-value">${object.type.slice(
-				0,
-				-4
-			)}</span>`;
 		case 'Beam':
 			let particle = object.particle;
 			return ` [${object.id}] <span class="type Particle Beam"></span> ${particle.name} [${particle.id}]`;

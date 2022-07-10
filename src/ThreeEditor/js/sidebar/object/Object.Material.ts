@@ -1,4 +1,4 @@
-import { Beam } from '../../../util/Beam';
+import { Beam, isBeam } from '../../../util/Beam';
 import * as CSG from '../../../util/CSG/CSG';
 import { SimulationMesh, SimulationPoints } from '../../../util/SimulationBase/SimulationMesh';
 import {
@@ -133,7 +133,7 @@ export class ObjectMaterial extends ObjectAbstract {
 				this.transparent.setValue(transparent);
 			}
 			this.typeSelect.setValue(icru);
-		} else {
+		} else if (!isBeam(object)) {
 			showUIElement(this.typeRow);
 			this.type.setValue(type);
 		}

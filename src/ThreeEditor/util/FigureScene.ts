@@ -9,6 +9,7 @@ export class FigureScene extends THREE.Scene implements ISimulationObject {
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
+	isFigureContainer: true = true;
 
 	private editor: Editor;
 	readonly isFigureScene: true = true;
@@ -28,3 +29,4 @@ export class FigureScene extends THREE.Scene implements ISimulationObject {
 		return data;
 	}
 }
+export const isFigureContainer = (x: unknown): x is FigureScene => x instanceof FigureScene;

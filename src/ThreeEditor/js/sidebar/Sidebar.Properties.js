@@ -52,10 +52,9 @@ function SidebarProperties(editor, id = 'properties') {
 	container.select('general');
 
 	function setupGeneralPanel(object) {
-		info.setObject(object);
-		if (!object.notMovable && !object.isScene)
-			// TODO: Create custom scene for figures
-			placement.setObject(object);
+		if (!object.isBeam) info.setObject(object);
+		else hideUIElement(info.panel);
+		if (!object.notMovable) placement.setObject(object);
 		else hideUIElement(placement.panel);
 		if (!object.isOutput) hideUIElement(settings.panel);
 		else settings.setObject(object);
@@ -65,7 +64,7 @@ function SidebarProperties(editor, id = 'properties') {
 
 	const WITHOUT_GEOMETRIES = [
 		'isScene',
-		'isDetectContainer',
+		'isFigureContainer',
 		'isZoneContainer',
 		'isZone',
 		'isFilterContainer',
