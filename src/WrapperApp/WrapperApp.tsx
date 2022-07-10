@@ -12,6 +12,7 @@ import InputEditorPanel from './components/InputEditor/InputEditorPanel';
 import LoginPanel from './components/LoginPanel';
 import ResultsPanel from './components/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
+import SimulationPanelDemo from './components/Simulation/SimulationPanelDemo';
 import { TabPanel } from './components/TabPanel';
 
 function WrapperApp() {
@@ -48,12 +49,12 @@ function WrapperApp() {
 			<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
 				<Tabs value={tabsValue} onChange={handleChange}>
 					<Tab label='Editor' value={'Editor'} />
-					<Tab label='Run' value={'Run'} disabled={DEMO_MODE || !isAuthorized} />
 					<Tab label='Input Editor' value={'Input Editor'} />
+					<Tab label='Run' value={'Run'} disabled={!DEMO_MODE && !isAuthorized} />
 					<Tab
 						label='Results'
 						value={'Results'}
-						disabled={DEMO_MODE || !isAuthorized || !resultsSimulationData}
+						disabled={(!DEMO_MODE && !isAuthorized) || !resultsSimulationData}
 					/>
 					<Tab label='Projects' value={'Projects'} disabled />
 					<Tab label='About' value={'About'} />
@@ -77,19 +78,19 @@ function WrapperApp() {
 				<InputEditorPanel goToRun={() => setTabsValue('Run')} />
 			</TabPanel>
 
-			{!DEMO_MODE && (
-				<>
-					<TabPanel value={tabsValue} index={'Run'}>
-						<SimulationPanel goToResults={() => setTabsValue('Results')} />
-					</TabPanel>
+			<TabPanel value={tabsValue} index={'Run'}>
+				{!DEMO_MODE ? (
+					<SimulationPanel goToResults={() => setTabsValue('Results')} />
+				) : (
+					<SimulationPanelDemo goToResults={() => setTabsValue('Results')} />
+				)}
+			</TabPanel>
 
-					<TabPanel value={tabsValue} index={'Results'} persistent>
-						<JsRootService asyncScriptOnLoad={onLoad}>
-							<ResultsPanel />
-						</JsRootService>
-					</TabPanel>
-				</>
-			)}
+			<TabPanel value={tabsValue} index={'Results'} persistent>
+				<JsRootService asyncScriptOnLoad={onLoad}>
+					<ResultsPanel />
+				</JsRootService>
+			</TabPanel>
 
 			<TabPanel value={tabsValue} index={'About'} persistentIfVisited>
 				<AboutPanel />

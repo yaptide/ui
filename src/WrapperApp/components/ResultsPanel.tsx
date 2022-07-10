@@ -1,8 +1,9 @@
-import { Box, Card, CardContent, Grid, Tab, Tabs, Typography, useMediaQuery } from '@mui/material';
+import { Box, Button, Card, CardContent, Grid, Tab, Tabs, Typography, useMediaQuery } from '@mui/material';
 import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { generateGraphs } from '../../JsRoot/GraphData';
 import { TabPanel } from './TabPanel';
 import { useStore } from '../../services/StoreService';
+import { saveString } from '../../util/File';
 
 function ResultsPanel() {
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -19,12 +20,20 @@ function ResultsPanel() {
 		setTabsValue(newValue);
 	};
 
+	const onClickSaveToFile = () => {
+		saveString(JSON.stringify(simulation), `${simulation?.name}_result.json`);
+	};
+
 	return (
 		<Box>
 			{simulation && (
 				<Card
 					sx={{
-						margin: '0.5rem'
+						margin: '0.5rem',
+						padding: '0.5rem',
+						display: 'flex',
+						justifyContent: 'space-between',
+						alignItems: 'center',
 					}}>
 					<Typography
 						gutterBottom
@@ -35,6 +44,10 @@ function ResultsPanel() {
 						}}>
 						{simulation.name} [{simulation.creationDate.toLocaleString()}]
 					</Typography>
+
+					<Button size='small' onClick={onClickSaveToFile}>
+						Save to file
+					</Button>
 				</Card>
 			)}
 

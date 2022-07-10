@@ -1,8 +1,6 @@
-import { ScoringOutput } from '../../../util/Scoring/ScoringOutput';
 import * as Scoring from '../../../util/Scoring/ScoringOutputTypes';
 import { ScoringQuantity } from '../../../util/Scoring/ScoringQuantity';
 import {
-	createFullwidthButton,
 	createRowConditionalNumber,
 	createRowConditionalSelect,
 	createRowSelect,
@@ -10,12 +8,10 @@ import {
 	showUIElement
 } from '../../../util/Ui/Uis';
 import {
-	AddQuantityCommand,
-	SetOutputSettingsCommand,
 	SetQuantityValueCommand
 } from '../../commands/Commands';
 import { Editor } from '../../Editor';
-import { UIButton, UICheckbox, UINumber, UIPanel, UIRow, UISelect, UIText } from '../../libs/ui';
+import { UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectQuantity extends ObjectAbstract {

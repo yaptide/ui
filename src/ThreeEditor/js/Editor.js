@@ -12,6 +12,7 @@ import { ContextManager } from './Editor.Context';
 import { History as _History } from './History.js';
 import { Loader } from './Loader.js';
 import { Storage as _Storage } from './Storage.js';
+import hash from 'object-hash';
 
 var _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
 _DEFAULT_CAMERA.name = 'Camera';
@@ -589,7 +590,7 @@ Editor.prototype = {
 
 		//
 
-		return {
+		const jsonEditor = {
 			metadata: {
 				version: this.jsonVersion,
 				type: 'Editor',
@@ -612,8 +613,12 @@ Editor.prototype = {
 			detectManager: this.detectManager.toJSON(), // serialize DetectManager;
 			beam: this.beam.toJSON(),
 			materialManager: this.materialManager.toJSON(), // serialize MaterialManager
-			scoringManager: this.scoringManager.toJSON() // serialize ScoringManager
+			scoringManager: this.scoringManager.toJSON(), // serialize ScoringManager
 		};
+
+		const hashJsonEditor = hash(jsonEditor);
+
+		return { ...jsonEditor, hash: hashJsonEditor };
 	},
 
 	objectByUuid(uuid) {
