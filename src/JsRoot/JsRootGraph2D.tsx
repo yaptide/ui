@@ -54,7 +54,7 @@ export function JsRootGraph2D(props: Page2D) {
 	useEffect(() => {
 		if (obj && !drawn && isVisible) {
 			JSROOT.cleanup(containerEl.current);
-			JSROOT.redraw(containerEl.current, obj, 'colz');
+			JSROOT.redraw(containerEl.current, obj, 'colz;gridx;gridy');
 			setDrawn(true);
 		}
 	}, [JSROOT, containerEl, drawn, obj, isVisible]);
