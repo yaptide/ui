@@ -38,6 +38,7 @@ function WrapperApp() {
 
 	const onLoadExample = useCallback(
 		(example: EditorExample) => {
+			if (!DEMO_MODE) return;
 			setResultsSimulationData(example.result);
 			setTabsValue('Editor');
 		},
