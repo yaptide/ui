@@ -28,9 +28,31 @@ export function JsRootGraph1D(props: Page1D) {
 		const x = props.first_axis.values;
 
 		const graph = JSROOT.createTGraph(npoints, x, y);
+		
+		// adding name using method suggested here:
+		// https://github.com/root-project/jsroot/issues/225#issuecomment-998260751
+		const histogram = JSROOT.createHistogram('TH1F', npoints);
+		histogram.fXaxis.fXmin = x[0];
+		histogram.fXaxis.fXmax = x[npoints - 1];
+		histogram.fXaxis.fTitle = `${props.first_axis.name} [${props.first_axis.unit}]`;
+
+		histogram.fYaxis.fXmin = y[0];
+		histogram.fYaxis.fXmax = y[npoints - 1];
+		histogram.fYaxis.fTitle = `${props.data.name} [${props.data.unit}]`;
+
+		// centering axes labels using method suggested here:
+		// https://github.com/root-project/jsroot/issues/225#issuecomment-998748035
+		histogram.fXaxis.InvertBit(JSROOT.BIT(12));
+		histogram.fYaxis.InvertBit(JSROOT.BIT(12));
+
+		// moving axes labels a bit away from axis object, as described here:
+		// https://github.com/root-project/jsroot/issues/239
+		histogram.fXaxis.fTitleOffset = 1.4;
+		histogram.fYaxis.fTitleOffset = 1.4;
 
 		graph.fName = props.data.name;
 		graph.fTitle = `${props.data.name} [${props.data.unit}]`;
+		graph.fHistogram = histogram
 
 		setObj(graph);
 		setDrawn(false);
@@ -39,7 +61,7 @@ export function JsRootGraph1D(props: Page1D) {
 	useEffect(() => {
 		if (obj && !drawn && isVisible) {
 			JSROOT.cleanup(containerEl.current);
-			JSROOT.redraw(containerEl.current, obj, '');
+			JSROOT.redraw(containerEl.current, obj, 'gridx;gridy');
 			setDrawn(true);
 		}
 	}, [JSROOT, containerEl, drawn, obj, isVisible]);
