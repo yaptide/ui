@@ -28,9 +28,19 @@ export function JsRootGraph1D(props: Page1D) {
 		const x = props.first_axis.values;
 
 		const graph = JSROOT.createTGraph(npoints, x, y);
+		
+		const histogram = JSROOT.createHistogram('TH1F', npoints);
+		histogram.fXaxis.fXmin = x[0];
+		histogram.fXaxis.fXmax = x[npoints - 1];
+		histogram.fXaxis.fTitle = `${props.first_axis.name} [${props.first_axis.unit}]`;
+
+		histogram.fYaxis.fXmin = y[0];
+		histogram.fYaxis.fXmax = y[npoints - 1];
+		histogram.fYaxis.fTitle = `${props.data.name} [${props.data.unit}]`;
 
 		graph.fName = props.data.name;
 		graph.fTitle = `${props.data.name} [${props.data.unit}]`;
+		graph.fHistogram = histogram
 
 		setObj(graph);
 		setDrawn(false);
