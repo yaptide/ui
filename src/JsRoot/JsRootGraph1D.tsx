@@ -29,6 +29,8 @@ export function JsRootGraph1D(props: Page1D) {
 
 		const graph = JSROOT.createTGraph(npoints, x, y);
 		
+		// adding name using method suggested here:
+		// https://github.com/root-project/jsroot/issues/225#issuecomment-998260751
 		const histogram = JSROOT.createHistogram('TH1F', npoints);
 		histogram.fXaxis.fXmin = x[0];
 		histogram.fXaxis.fXmax = x[npoints - 1];
@@ -37,6 +39,11 @@ export function JsRootGraph1D(props: Page1D) {
 		histogram.fYaxis.fXmin = y[0];
 		histogram.fYaxis.fXmax = y[npoints - 1];
 		histogram.fYaxis.fTitle = `${props.data.name} [${props.data.unit}]`;
+
+		// centering axes labels using method suggested here:
+		// https://github.com/root-project/jsroot/issues/225#issuecomment-998748035
+		histogram.fXaxis.InvertBit(JSROOT.BIT(12));
+		histogram.fYaxis.InvertBit(JSROOT.BIT(12));
 
 		graph.fName = props.data.name;
 		graph.fTitle = `${props.data.name} [${props.data.unit}]`;
