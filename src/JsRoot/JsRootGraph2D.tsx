@@ -39,7 +39,8 @@ export function JsRootGraph2D(props: Page2D) {
 		histogram.fYaxis.fXmax = y[nypoints - 1];
 		histogram.fYaxis.fTitle = `${props.second_axis.name} [${props.second_axis.unit}]`;
 
-		//centering axes labels
+		// centering axes labels using method suggested here:
+		// https://github.com/root-project/jsroot/issues/225#issuecomment-998748035
 		histogram.fXaxis.InvertBit(JSROOT.BIT(12));
 		histogram.fYaxis.InvertBit(JSROOT.BIT(12));
 
