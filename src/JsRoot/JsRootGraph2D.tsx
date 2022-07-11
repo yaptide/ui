@@ -40,8 +40,8 @@ export function JsRootGraph2D(props: Page2D) {
 		histogram.fYaxis.fTitle = `${props.second_axis.name} [${props.second_axis.unit}]`;
 
         //centering axes labels
-        histogram.fXaxis.InvertBit(JSROOT.BIT(12))
-        histogram.fYaxis.InvertBit(JSROOT.BIT(12))
+        histogram.fXaxis.InvertBit(JSROOT.BIT(12));
+        histogram.fYaxis.InvertBit(JSROOT.BIT(12));
 
 		histogram.fTitle = `${props.data.name} [${props.data.unit}]`;
 
