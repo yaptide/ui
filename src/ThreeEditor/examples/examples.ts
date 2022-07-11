@@ -1,6 +1,6 @@
 import { SimulationStatusData } from "../../services/ShSimulatorService";
 
-interface EditorExample {
+export interface EditorExample {
 	editor: unknown;
 	result: SimulationStatusData;
 }
