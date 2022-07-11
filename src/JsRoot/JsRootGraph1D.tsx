@@ -45,6 +45,11 @@ export function JsRootGraph1D(props: Page1D) {
 		histogram.fXaxis.InvertBit(JSROOT.BIT(12));
 		histogram.fYaxis.InvertBit(JSROOT.BIT(12));
 
+		// moving axes labels a bit away from axis object, as described here:
+		// https://github.com/root-project/jsroot/issues/239
+		histogram.fXaxis.fTitleOffset = 1.4;
+		histogram.fYaxis.fTitleOffset = 1.4;
+
 		graph.fName = props.data.name;
 		graph.fTitle = `${props.data.name} [${props.data.unit}]`;
 		graph.fHistogram = histogram
