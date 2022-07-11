@@ -22,15 +22,15 @@ export function MenubarExamples(editor) {
 
 	function loadExample(example) {
 		editor.clear();
-		editor.fromJSON(example);
-		editor.signals.exampleLoaded.dispatch();
+		editor.fromJSON(example.editor);
+		editor.signals.exampleLoaded.dispatch(example);
 	}
 
 	// YAPTIDE examples
 	options.add(
 		...EXAMPLES.map(example =>
 			createOption('option', example.editor.project?.title ?? 'Example', () => {
-				window.confirm('Any unsaved data will be lost. Are you sure?') && loadExample(example.editor);
+				window.confirm('Any unsaved data will be lost. Are you sure?') && loadExample(example);
 			})
 		),
 		new UIHorizontalRule()

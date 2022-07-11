@@ -1,10 +1,12 @@
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import React, { SyntheticEvent, useEffect, useState } from 'react';
+import React, { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { JsRootService } from '../JsRoot/JsRootService';
 import { useAuth } from '../services/AuthService';
 import { useStore } from '../services/StoreService';
+import { EditorExample } from '../ThreeEditor/examples/examples';
+import { Editor } from '../ThreeEditor/js/Editor';
 import ThreeEditor from '../ThreeEditor/ThreeEditor';
 import { DEMO_MODE } from '../util/Config';
 import { AboutPanel } from './components/AboutPanel';
@@ -16,7 +18,7 @@ import SimulationPanelDemo from './components/Simulation/SimulationPanelDemo';
 import { TabPanel } from './components/TabPanel';
 
 function WrapperApp() {
-	const { editorRef, resultsSimulationData } = useStore();
+	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
 	const { isAuthorized, logout } = useAuth();
 
 	const [tabsValue, setTabsValue] = useState('Editor');
@@ -34,9 +36,26 @@ function WrapperApp() {
 		if (resultsSimulationData) setTabsValue('Results');
 	}, [resultsSimulationData]);
 
-	const onLoad = () => {
-		console.log('JSROOT loaded');
+	const onLoadExample = useCallback(
+		(example: EditorExample) => {
+			setResultsSimulationData(example.result);
+			setTabsValue('Editor');
+		},
+		[setResultsSimulationData]
+	);
+
+	const onEditorInitialized = (editor: Editor) => {
+		editorRef.current?.signals.exampleLoaded.remove(onLoadExample);
+		editorRef.current = editor;
+		editorRef.current?.signals.exampleLoaded.add(onLoadExample);
 	};
+
+	useEffect(() => {
+		editorRef.current?.signals.exampleLoaded.add(onLoadExample);
+		return () => {
+			editorRef.current?.signals.exampleLoaded.remove(onLoadExample);
+		};
+	}, [editorRef, onLoadExample]);
 
 	return (
 		<Box
@@ -69,7 +88,7 @@ function WrapperApp() {
 			</Box>
 			<TabPanel value={tabsValue} index={'Editor'} persistent>
 				<ThreeEditor
-					onEditorInitialized={editor => (editorRef.current = editor)}
+					onEditorInitialized={onEditorInitialized}
 					focus={tabsValue === 'Editor'}
 				/>
 			</TabPanel>
@@ -87,7 +106,7 @@ function WrapperApp() {
 			</TabPanel>
 
 			<TabPanel value={tabsValue} index={'Results'} persistent>
-				<JsRootService asyncScriptOnLoad={onLoad}>
+				<JsRootService>
 					<ResultsPanel />
 				</JsRootService>
 			</TabPanel>
