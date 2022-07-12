@@ -1,4 +1,5 @@
 import { Button } from '@mui/material';
+import * as React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { parseZone } from '../../../util/parseZone/parseZone';
 import { Editor } from '../../js/Editor';
@@ -71,7 +72,10 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 		zoneRef.current?.addUnion();
 	};
 
-	const handleParse = () => parseZone(rows, props!.zone!.simulationMaterial);
+	const handleParse = useCallback(
+		() => parseZone(rows, props!.zone!.simulationMaterial),
+		[props.zone]
+	);
 
 	const removeRow = (removeId: number) => () => {
 		setRows(prev => {
