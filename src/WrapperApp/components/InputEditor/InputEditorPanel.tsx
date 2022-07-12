@@ -116,7 +116,10 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 					{!DEMO_MODE && <ToggleButton value='remote'>Remote</ToggleButton>}
 				</ToggleButtonGroup>
 			</Box>
-			<InputFilesEditor inputFiles={inputFiles} runSimulation={runSimulation} />
+			<InputFilesEditor
+				inputFiles={inputFiles}
+				runSimulation={!DEMO_MODE ? runSimulation : undefined}
+			/>
 		</Box>
 	);
 }

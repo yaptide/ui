@@ -12,7 +12,7 @@ import {
 	Typography
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import Countdown from 'react-countdown';
 import {
 	InputFiles,
@@ -20,11 +20,12 @@ import {
 	StatusState
 } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
+import { saveString } from '../../../util/File';
 
 interface SimulationStatusProps {
 	simulation: SimulationStatusData;
 	loadResults?: (taskId: string | null) => void;
-	showInputFiles: (inputFiles?: InputFiles) => void;
+	showInputFiles?: (inputFiles?: InputFiles) => void;
 }
 
 export default function SimulationStatus({
@@ -36,14 +37,14 @@ export default function SimulationStatus({
 
 	const tableRowStyle: SxProps<Theme> = { '&:last-child td, &:last-child th': { border: 0 } };
 
-	const row = (title: string, value: {} | undefined, guard = true) => (
+	const row = (title: string, value: string | undefined | ReactNode, guard = true) => (
 		<React.Fragment key={title}>
 			{guard && (
 				<TableRow sx={tableRowStyle}>
 					<TableCell component='th' scope='row'>
 						{title}
 					</TableCell>
-					<TableCell align='right'>{value?.toString()}</TableCell>
+					<TableCell align='right'>{value}</TableCell>
 				</TableRow>
 			)}
 		</React.Fragment>
@@ -84,7 +85,7 @@ export default function SimulationStatus({
 	};
 
 	const onClickInputFiles = () => {
-		showInputFiles(simulation.inputFiles);
+		showInputFiles?.call(null, simulation.inputFiles);
 	};
 
 	const onClickShowError = () => {
@@ -106,6 +107,10 @@ export default function SimulationStatus({
 		errorWindow.document.close();
 	};
 
+	const onClickSaveToFile = () => {
+		saveString(JSON.stringify(simulation), `${simulation.name}_result.json`);
+	};
+
 	return (
 		<Card sx={{ minWidth: 275 }}>
 			<CardContent>
@@ -123,7 +128,7 @@ export default function SimulationStatus({
 				</TableContainer>
 			</CardContent>
 			<CardActions>
-				{simulation.inputFiles && (
+				{simulation.inputFiles && showInputFiles && (
 					<Button size='small' onClick={onClickInputFiles}>
 						Show Input Files
 					</Button>
@@ -149,6 +154,12 @@ export default function SimulationStatus({
 						? 'Load Results'
 						: 'Go to Results'}
 				</Button>
+
+				{simulation.status === StatusState.SUCCESS && (
+					<Button size='small' onClick={onClickSaveToFile}>
+						Save to file
+					</Button>
+				)}
 
 				{simulation.status === StatusState.PROGRESS && (
 					<Button size='small' disabled>

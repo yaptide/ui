@@ -39,6 +39,16 @@ export function JsRootGraph2D(props: Page2D) {
 		histogram.fYaxis.fXmax = y[nypoints - 1];
 		histogram.fYaxis.fTitle = `${props.second_axis.name} [${props.second_axis.unit}]`;
 
+		// centering axes labels using method suggested here:
+		// https://github.com/root-project/jsroot/issues/225#issuecomment-998748035
+		histogram.fXaxis.InvertBit(JSROOT.BIT(12));
+		histogram.fYaxis.InvertBit(JSROOT.BIT(12));
+
+    // moving axes labels a bit away from axis object, as described here:
+		// https://github.com/root-project/jsroot/issues/239
+		histogram.fXaxis.fTitleOffset = 1.4;
+		histogram.fYaxis.fTitleOffset = 1.4;
+
 		histogram.fTitle = `${props.data.name} [${props.data.unit}]`;
 
 		for (let x = 0; x < nxpoints; x++)
@@ -54,7 +64,7 @@ export function JsRootGraph2D(props: Page2D) {
 	useEffect(() => {
 		if (obj && !drawn && isVisible) {
 			JSROOT.cleanup(containerEl.current);
-			JSROOT.redraw(containerEl.current, obj, 'colz');
+			JSROOT.redraw(containerEl.current, obj, 'colz;gridx;gridy');
 			setDrawn(true);
 		}
 	}, [JSROOT, containerEl, drawn, obj, isVisible]);

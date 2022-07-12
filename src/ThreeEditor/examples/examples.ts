@@ -1,16 +1,25 @@
+import { SimulationStatusData } from "../../services/ShSimulatorService";
+
+export interface EditorExample {
+	editor: unknown;
+	result: SimulationStatusData;
+}
+
 let canImport = true;
 let iterator = 1;
-const examples = [];
+const EXAMPLES: EditorExample[] = [];
 while (canImport) {
 	try {
-		const example = require(`./ex${iterator}.json`);
-		if (!(example.project?.title && example.project.title.length > 0))
-			example.project.title = `Untitled example ${iterator}`;
-		examples.push(example);
+		const editor = require(`./ex${iterator}.json`);
+		const result = require(`./ex${iterator}_result.json`);
+		editor.result = result;
+		if (!(editor.project?.title && editor.project.title.length > 0))
+			editor.project.title = `Untitled example ${iterator}`;
+		EXAMPLES.push({ editor, result });
 		iterator++;
 	} catch (e) {
 		canImport = false;
 	}
 }
 
-export default examples;
+export default EXAMPLES;
