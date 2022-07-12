@@ -1,7 +1,7 @@
 import { ReactNode, useCallback, useRef } from 'react';
 import { BACKEND_URL } from '../util/Config';
 import { createGenericContext } from '../util/GenericContext';
-import { useAuth } from './AuthService';
+import { useAuth } from './KeyCloakService';
 import { IResponseMsg } from './ResponseTypes';
 import { Estimator } from '../JsRoot/GraphData';
 
@@ -154,9 +154,9 @@ const ShSimulation = (props: ShSimulationProps) => {
 					json: json,
 					timeout: 30000
 					/**
-            Timeout in milliseconds for getting a response. Can not be greater than 2147483647.
-            If set to `false`, there will be no timeout.
-            **/
+			Timeout in milliseconds for getting a response. Can not be greater than 2147483647.
+			If set to `false`, there will be no timeout.
+			**/
 				})
 				.json()
 				.then((response: unknown) => {

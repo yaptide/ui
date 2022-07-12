@@ -3,7 +3,7 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import React, { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { JsRootService } from '../JsRoot/JsRootService';
-import { useAuth } from '../services/AuthService';
+import { useAuth } from '../services/KeyCloakService';
 import { useStore } from '../services/StoreService';
 import { EditorExample } from '../ThreeEditor/examples/examples';
 import { Editor } from '../ThreeEditor/js/Editor';

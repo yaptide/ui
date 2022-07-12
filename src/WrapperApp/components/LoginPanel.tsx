@@ -1,6 +1,6 @@
 import { Box, Button, TextField, Card, CardContent } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useAuth } from '../../services/AuthService';
+import { useAuth } from '../../services/KeyCloakService';
 
 export default function LoginPanel() {
 	const { login } = useAuth();

@@ -4,7 +4,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { SnackbarProvider } from 'notistack';
 import * as React from 'react';
 import { PythonConverterService } from './PythonConverter/PythonConverterService';
-import { Auth } from './services/AuthService';
+import { Auth } from './services/KeyCloakService';
 import { ShSimulation } from './services/ShSimulatorService';
 import { Store } from './services/StoreService';
 import WrapperApp from './WrapperApp/WrapperApp';
