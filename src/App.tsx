@@ -8,6 +8,8 @@ import { Auth } from './services/KeyCloakService';
 import { ShSimulation } from './services/ShSimulatorService';
 import { Store } from './services/StoreService';
 import WrapperApp from './WrapperApp/WrapperApp';
+import { ReactKeycloakProvider } from "@react-keycloak/web";
+import { keycloak } from './services/keycloak';
 
 function App() {
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -24,15 +26,17 @@ function App() {
 		<StyledEngineProvider injectFirst>
 			<SnackbarProvider maxSnack={3}>
 				<ThemeProvider theme={theme}>
-					<Auth>
-						<ShSimulation>
-							<PythonConverterService>
-								<Store>
-									<WrapperApp />
-								</Store>
-							</PythonConverterService>
-						</ShSimulation>
-					</Auth>
+					<ReactKeycloakProvider authClient={keycloak}>
+						<Auth>
+							<ShSimulation>
+								<PythonConverterService>
+									<Store>
+										<WrapperApp />
+									</Store>
+								</PythonConverterService>
+							</ShSimulation>
+						</Auth>
+					</ReactKeycloakProvider>
 				</ThemeProvider>
 			</SnackbarProvider>
 		</StyledEngineProvider>
