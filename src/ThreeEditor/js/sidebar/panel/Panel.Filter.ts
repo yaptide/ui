@@ -13,7 +13,7 @@ import { SetFilterRuleCommand } from '../../commands/SetFilterRuleCommand';
 import { Editor } from '../../Editor';
 import { UIBreak, UIButton, UINumber, UIRow, UISelect } from '../../libs/ui';
 import { UIOutliner } from '../../libs/ui.three';
-import { ObjectAbstract } from './Object.Abstract';
+import { ObjectAbstract } from './Panel.Abstract';
 
 export class ObjectFilter extends ObjectAbstract {
 	object?: DetectFilter;

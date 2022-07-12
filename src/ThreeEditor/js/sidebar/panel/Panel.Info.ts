@@ -2,7 +2,7 @@ import { createRowParamInput, createRowText } from '../../../util/Ui/Uis';
 import { SetValueCommand } from '../../commands/Commands';
 import { Editor } from '../../Editor';
 import { UIInput, UIRow, UIText } from '../../libs/ui';
-import { ObjectAbstract } from './Object.Abstract';
+import { ObjectAbstract } from './Panel.Abstract';
 
 export class ObjectInfo extends ObjectAbstract {
 	object?: THREE.Object3D;

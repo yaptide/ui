@@ -25,7 +25,7 @@ import {
 } from '../../commands/Commands';
 import { Editor } from '../../Editor';
 import { UINumber, UIRow, UISelect, UIText } from '../../libs/ui';
-import { ObjectAbstract } from './Object.Abstract';
+import { ObjectAbstract } from './Panel.Abstract';
 
 export class ObjectDimensions extends ObjectAbstract {
 	object?: BasicMesh | DetectGeometry | WorldZone;

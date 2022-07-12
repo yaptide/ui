@@ -8,7 +8,7 @@ import { WorldZone } from '../../../util/WorldZone/WorldZone';
 import { SetValueCommand } from '../../commands/Commands';
 import { Editor } from '../../Editor';
 import { UIButton, UICheckbox, UIRow } from '../../libs/ui';
-import { ObjectAbstract } from './Object.Abstract';
+import { ObjectAbstract } from './Panel.Abstract';
 
 export class ObjectZoneCalculate extends ObjectAbstract {
 	object?: WorldZone;

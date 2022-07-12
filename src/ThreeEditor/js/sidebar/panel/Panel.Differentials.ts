@@ -15,7 +15,7 @@ import {
 import { Editor } from '../../Editor';
 import { UIBreak, UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
 import { UIOutliner } from '../../libs/ui.three';
-import { ObjectAbstract } from './Object.Abstract';
+import { ObjectAbstract } from './Panel.Abstract';
 
 export class ObjectDifferentials extends ObjectAbstract {
 	object?: ScoringQuantity;

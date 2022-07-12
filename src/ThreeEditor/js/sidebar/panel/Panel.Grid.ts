@@ -3,7 +3,7 @@ import { createRowParamNumber, hideUIElement, showUIElement } from '../../../uti
 import { SetDetectGeometryCommand } from '../../commands/Commands';
 import { Editor } from '../../Editor';
 import { UINumber, UIRow } from '../../libs/ui';
-import { ObjectAbstract } from './Object.Abstract';
+import { ObjectAbstract } from './Panel.Abstract';
 export class ObjectGrid extends ObjectAbstract {
 	object?: DetectGeometry;
 

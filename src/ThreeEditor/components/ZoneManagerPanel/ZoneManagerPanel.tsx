@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { parseZone } from '../../../util/parseZone/parseZone';
 import { Editor } from '../../js/Editor';
 import * as CSG from '../../util/CSG/CSG';
+import { DEBUG_MODE } from '../../../util/Config';
 import BooleanAlgebraRow, { AlgebraRow } from './BooleanAlgebraRow';
 import './zoneManagerPanel.css';
 
@@ -147,9 +148,11 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 			<Button className='addRowButton' onClick={addAlgebraRow}>
 				+
 			</Button>
-			<Button className='parseZoneButton' onClick={handleParse}>
-				Parse Zone
-			</Button>
+			{DEBUG_MODE && (
+				<Button className='parseZoneButton' onClick={handleParse}>
+					Parse Zone
+				</Button>
+			)}
 		</div>
 	);
 }

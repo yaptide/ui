@@ -14,7 +14,7 @@ import {
 } from '../../commands/Commands';
 import { Editor } from '../../Editor';
 import { UINumber, UIRow } from '../../libs/ui';
-import { ObjectAbstract } from './Object.Abstract';
+import { ObjectAbstract } from './Panel.Abstract';
 
 export class ObjectPlacement extends ObjectAbstract {
 	object?: SimulationObject3D | Beam;

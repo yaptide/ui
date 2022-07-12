@@ -1,13 +1,12 @@
+import { DEBUG_MODE } from '../../../../util/Config';
 import { Beam, isBeam } from '../../../util/Beam';
 import * as CSG from '../../../util/CSG/CSG';
 import { SimulationMesh, SimulationPoints } from '../../../util/SimulationBase/SimulationMesh';
 import {
 	createFullwidthButton,
 	createMaterialSelect,
-	createRowCheckbox,
 	createRowColor,
 	createRowConditionalNumber,
-	createRowParamNumber,
 	createRowText,
 	hideUIElement,
 	showUIElement
@@ -22,7 +21,7 @@ import { Editor } from '../../Editor';
 import { UIButton, UICheckbox, UIColor, UINumber, UIRow, UISelect, UIText } from '../../libs/ui';
 import { SidebarMaterialBooleanProperty } from '../Sidebar.Material.BooleanProperty';
 import { SidebarMaterialConstantProperty } from '../Sidebar.Material.ConstantProperty';
-import { ObjectAbstract } from './Object.Abstract';
+import { ObjectAbstract } from './Panel.Abstract';
 
 const MATERIAL_BLENDING_OPTIONS = {
 	0: 'No',
@@ -106,7 +105,7 @@ export class ObjectMaterial extends ObjectAbstract {
 			 * this.blendingRow,
 			 */
 			this.opacityRow,
-			this.exportMaterialsRow
+			DEBUG_MODE ? this.exportMaterialsRow : undefined
 		);
 	}
 

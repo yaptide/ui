@@ -10,7 +10,7 @@ import {
 import { AddQuantityCommand, SetOutputSettingsCommand } from '../../commands/Commands';
 import { Editor } from '../../Editor';
 import { UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
-import { ObjectAbstract } from './Object.Abstract';
+import { ObjectAbstract } from './Panel.Abstract';
 
 export class ObjectSettings extends ObjectAbstract {
 	object?: ScoringOutput;

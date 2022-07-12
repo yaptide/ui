@@ -2,7 +2,7 @@ import * as CSG from '../../../util/CSG/CSG';
 import { createRowText, createZoneRulesPanel } from '../../../util/Ui/Uis';
 import { Editor } from '../../Editor';
 import { UIRow, UIText } from '../../libs/ui';
-import { ObjectAbstract } from './Object.Abstract';
+import { ObjectAbstract } from './Panel.Abstract';
 
 export class ObjectCSG extends ObjectAbstract {
 	object?: CSG.Zone;
