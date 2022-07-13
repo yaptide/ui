@@ -5,34 +5,12 @@
 		"generator": "Editor.toJSON"
 	},
 	"project": {
-		"title": "",
+		"title": "Proton pencil beam, water phantom",
 		"shadows": true,
 		"shadowType": 1,
 		"physicallyCorrectLights": false,
 		"toneMapping": 0,
 		"toneMappingExposure": 1
-	},
-	"camera": {
-		"metadata": {
-			"version": 4.5,
-			"type": "Object",
-			"generator": "Object3D.toJSON"
-		},
-		"object": {
-			"uuid": "0D427D0C-D35E-4E39-A89B-2DA17D024BA7",
-			"type": "PerspectiveCamera",
-			"name": "Camera",
-			"layers": 1,
-			"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 5, 10, 1],
-			"fov": 50,
-			"zoom": 1,
-			"near": 0.01,
-			"far": 1000,
-			"focus": 10,
-			"aspect": 1,
-			"filmGauge": 35,
-			"filmOffset": 0
-		}
 	},
 	"scene": {
 		"metadata": {
@@ -42,30 +20,32 @@
 		},
 		"geometries": [
 			{
-				"uuid": "8D5F1D9F-204F-4A98-BD12-2479E0B2BD91",
-				"type": "BoxGeometry",
-				"width": 1,
-				"height": 1,
-				"depth": 1,
-				"widthSegments": 1,
+				"uuid": "e1aec771-4f70-4521-a427-7fe2e8aef7b7",
+				"type": "CylinderGeometry",
+				"radiusTop": 10,
+				"radiusBottom": 10,
+				"height": 20,
+				"radialSegments": 16,
 				"heightSegments": 1,
-				"depthSegments": 1
+				"openEnded": false,
+				"thetaStart": 0,
+				"thetaLength": 6.283185307179586
 			},
 			{
-				"uuid": "F24134D6-63C8-4E44-A1A7-14420EFEE201",
-				"type": "SphereGeometry",
-				"radius": 1,
-				"widthSegments": 16,
-				"heightSegments": 8,
-				"phiStart": 0,
-				"phiLength": 6.283185307179586,
+				"uuid": "4decc799-70e5-47ac-ad90-5b03a016ebff",
+				"type": "CylinderGeometry",
+				"radiusTop": 15,
+				"radiusBottom": 15,
+				"height": 25,
+				"radialSegments": 16,
+				"heightSegments": 1,
+				"openEnded": false,
 				"thetaStart": 0,
-				"thetaLength": 3.141592653589793
-			}
-		],
+				"thetaLength": 6.283185307179586
+			}],
 		"materials": [
 			{
-				"uuid": "EEADBF59-A957-46DB-98B5-FB4EEFBDC06D",
+				"uuid": "81a7aa32-b85f-45c4-bcd7-f648a0be12dc",
 				"type": "MeshBasicMaterial",
 				"color": 0,
 				"reflectivity": 1,
@@ -88,7 +68,7 @@
 				"wireframe": true
 			},
 			{
-				"uuid": "6E9761A0-C19E-4E20-9C8F-2A2EF32101F4",
+				"uuid": "8485707f-07bf-49d2-86ab-070eb9878a00",
 				"type": "MeshBasicMaterial",
 				"color": 0,
 				"reflectivity": 1,
@@ -109,60 +89,54 @@
 				"stencilZFail": 7680,
 				"stencilZPass": 7680,
 				"wireframe": true
-			},
-			{
-				"uuid": "94DE2BFA-C365-4277-BE8E-8DB2FED9A83A",
-				"type": "MeshBasicMaterial",
-				"color": 0,
-				"reflectivity": 1,
-				"refractionRatio": 0.98,
-				"side": 2,
-				"opacity": 0.5,
-				"transparent": true,
-				"depthFunc": 3,
-				"depthTest": true,
-				"depthWrite": true,
-				"colorWrite": true,
-				"stencilWrite": false,
-				"stencilWriteMask": 255,
-				"stencilFunc": 519,
-				"stencilRef": 0,
-				"stencilFuncMask": 255,
-				"stencilFail": 7680,
-				"stencilZFail": 7680,
-				"stencilZPass": 7680,
-				"wireframe": true
-			}
-		],
+			}],
 		"object": {
 			"uuid": "C1BF5EE7-ACC7-4896-8451-A5B358DF9889",
 			"type": "Scene",
 			"name": "Figures",
 			"layers": 1,
-			"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+			"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
 			"children": [
 				{
-					"uuid": "48EE4307-80C7-47AA-BF01-9132898B2B5A",
-					"type": "BoxMesh",
-					"name": "Box",
+					"uuid": "7ab62ba9-6dba-4543-b50b-ce31e143d482",
+					"type": "CylinderMesh",
+					"name": "Water_phantom_cylinder",
+					"layers": 1,
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,10,1],
+					"geometry": "e1aec771-4f70-4521-a427-7fe2e8aef7b7",
+					"material": "81a7aa32-b85f-45c4-bcd7-f648a0be12dc",
 					"geometryData": {
-						"id": 860,
+						"id": 859,
 						"geometryType": "CylinderGeometry",
-						"position": [0, 0, 10],
-						"rotation": [90, 0, 0],
+						"position": [0,0,10],
+						"rotation": [0,0,0],
 						"parameters": {
 							"radius": 10,
 							"depth": 20
 						}
-					},
+					}
+				},
+				{
+					"uuid": "aeeffad9-ed86-44ae-bfe4-b5f78580741b",
+					"type": "CylinderMesh",
+					"name": "Vacuum_cylinder",
 					"layers": 1,
-					"geometry": "8D5F1D9F-204F-4A98-BD12-2479E0B2BD91",
-					"material": "EEADBF59-A957-46DB-98B5-FB4EEFBDC06D"
-				}
-			]
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,7.5,1],
+					"geometry": "4decc799-70e5-47ac-ad90-5b03a016ebff",
+					"material": "8485707f-07bf-49d2-86ab-070eb9878a00",
+					"geometryData": {
+						"id": 861,
+						"geometryType": "CylinderGeometry",
+						"position": [0,0,7.5],
+						"rotation": [0,0,0],
+						"parameters": {
+							"radius": 15,
+							"depth": 25
+						}
+					}
+				}]
 		}
 	},
-	"scripts": {},
 	"history": {
 		"undos": [],
 		"redos": []
@@ -170,67 +144,71 @@
 	"zoneManager": {
 		"zones": [
 			{
-				"uuid": "7103722D-BE89-4BAC-A7E0-44F5CD3143BE",
-				"name": "Zone",
-				"materialName": "GLASS, LEAD",
-				"materialData": {
-					"id": "170",
-					"name": "GLASS, LEAD"
-				},
-				"materialUuid": "5172F301-C69D-479B-81E0-F4FB5A16A94D",
-				"unionOperations": [
-					[
+				"uuid": "9ee041c1-acc0-433f-bc66-90e057b72474",
+				"name": "Water_phantom_zone",
+				"materialUuid": "49ce56b9-ee48-4640-88d4-bcfd660d8c0e",
+				"unionOperations": [[
 						{
 							"mode": "union",
-							"objectUuid": "48EE4307-80C7-47AA-BF01-9132898B2B5A"
-						}
-					]
-				],
+							"objectUuid": "7ab62ba9-6dba-4543-b50b-ce31e143d482"
+						}]],
 				"subscribedObjects": {
-					"48EE4307-80C7-47AA-BF01-9132898B2B5C": 1,
-					"09360EDF-E555-44D9-8561-128493CC2314": 1,
-					"E10C12F9-7C85-417D-B6B3-755FAFE54EFA": 1
+					"7ab62ba9-6dba-4543-b50b-ce31e143d482": 1
 				}
-			}
-		],
-		"uuid": "A62A2261-C346-4E04-BC62-415BC998BD3B",
-		"name": "",
+			},
+			{
+				"uuid": "a2c614cf-7074-4abe-a757-4a850f6731b3",
+				"name": "Vacuum_zone",
+				"materialUuid": "cd7c2eb0-e91f-4144-b4eb-536e4626cc09",
+				"unionOperations": [[
+						{
+							"mode": "union",
+							"objectUuid": "aeeffad9-ed86-44ae-bfe4-b5f78580741b"
+						}]],
+				"subscribedObjects": {
+					"aeeffad9-ed86-44ae-bfe4-b5f78580741b": 1
+				}
+			}],
+		"uuid": "368269D3-6F9B-4241-84A0-5D908D10E196",
+		"name": "Zones",
 		"worldZone": {
-			"uuid": "A62A2261-32AS-4E04-BC62-415BC998BD3B",
+			"uuid": "1de0547e-3291-4f4a-ab5d-66ea7f8f3d1f",
 			"center": {
+				"isVector3": true,
 				"x": 0,
 				"y": 0,
-				"z": 0
+				"z": 5
 			},
 			"size": {
-				"x": 3,
-				"y": 3,
-				"z": 3
+				"isVector3": true,
+				"x": 20,
+				"y": 20,
+				"z": 30
 			},
 			"type": "WorldZone",
-			"geometryType": "Box",
+			"geometryType": "Cylinder",
 			"name": "World Zone",
 			"marginMultiplier": 1.1,
 			"autoCalculate": false,
-			"materialUuid": "37C3F777-8B67-46B2-9D7F-374B49330F5C",
+			"materialUuid": "1dd2e8f0-6684-42c2-ad35-7aa55358204e",
 			"geometryData": {
-				"geometryType": "BoxGeometry",
+				"id": 14,
+				"geometryType": "CylinderGeometry",
+				"position": [0,0,5],
+				"rotation": [0,0,0],
 				"parameters": {
-					"width": 22,
-					"height": 22,
-					"depth": 22
-				},
-				"position": [0, 0, 0],
-				"rotation": [0, 0, 0]
+					"radius": 20,
+					"depth": 30
+				}
 			}
 		}
 	},
 	"detectManager": {
-		"uuid": "E3635B58-BFC9-423A-B384-2838D32353E8",
+		"uuid": "9A7D17B8-BAE4-441F-965F-490CAA617EC6",
 		"name": "DetectManager",
 		"detectGeometries": [
 			{
-				"uuid": "563DBCFF-0B85-4511-B557-DE55AB4FA692",
+				"uuid": "186ec65a-8511-418b-8218-8890138c6b12",
 				"data": {
 					"radius": 10,
 					"innerRadius": 0,
@@ -239,12 +217,12 @@
 					"zSegments": 400
 				},
 				"type": "Cyl",
-				"position": [0, 0, 10],
+				"position": [0,0,10],
 				"name": "CylZ_Mesh",
-				"colorHex": 65535
+				"colorHex": 327424
 			},
 			{
-				"uuid": "87D9453D-ED04-4A7C-97F0-6E6A28DFF382",
+				"uuid": "3306e98b-5da2-46ee-8892-ac0191d645a7",
 				"data": {
 					"width": 1,
 					"height": 4,
@@ -254,16 +232,15 @@
 					"zSegments": 400
 				},
 				"type": "Mesh",
-				"position": [0, 0, 10],
+				"position": [0,0,10],
 				"name": "YZ_Mesh",
 				"colorHex": 65535
-			}
-		],
+			}],
 		"filters": []
 	},
 	"beam": {
-		"position": [0, 0, 0],
-		"direction": [0, 0, 1],
+		"position": [0,0,0],
+		"direction": [0,0,1],
 		"energy": 150,
 		"energySpread": 1.5,
 		"divergence": {
@@ -281,61 +258,65 @@
 	"materialManager": {
 		"materials": [
 			{
-				"uuid": "5172F301-C69D-479B-81E0-F4FB5A16A94D",
-				"name": "AMORPHOUS CARBON (density 2.0 g/cm3)",
-				"icru": 276,
-				"color": 16711680
+				"uuid": "1dd2e8f0-6684-42c2-ad35-7aa55358204e",
+				"name": "BLACK HOLE",
+				"icru": 0,
+				"color": 196613
 			},
 			{
-				"uuid": "37C3F777-8B67-46B2-9D7F-374B49330F5C",
+				"uuid": "49ce56b9-ee48-4640-88d4-bcfd660d8c0e",
+				"name": "WATER, LIQUID",
+				"icru": 276,
+				"color": 34047,
+				"opacity": 0.4
+			},
+			{
+				"uuid": "cd7c2eb0-e91f-4144-b4eb-536e4626cc09",
 				"name": "VACUUM",
-				"icru": 1000
-			}
-		],
+				"icru": 1000,
+				"color": 16119285,
+				"transparent": true,
+				"opacity": 0.1
+			}],
 		"selectedMaterials": {
-			"ECE3D5A5-9B49-4A9B-B81C-BB22C825F85D": 1,
-			"8BEE5624-81C2-4B79-824A-563CF0F8163D": 1,
-			"736C07A0-06DA-41F1-A828-3425FC47152A": 1
+			"49ce56b9-ee48-4640-88d4-bcfd660d8c0e": 1,
+			"cd7c2eb0-e91f-4144-b4eb-536e4626cc09": 1,
+			"1dd2e8f0-6684-42c2-ad35-7aa55358204e": 1
 		}
 	},
 	"scoringManager": {
-		"uuid": "42E44040-61AD-4483-8604-9BC02775C7D7",
+		"uuid": "D0F67F59-F311-4F8E-A06F-5A07D618FDE2",
 		"name": "Outputs",
 		"scoringOutputs": [
 			{
 				"name": "cylz",
-				"uuid": "11985E99-1ABC-4EDE-839F-7EA66A48394D",
+				"uuid": "d24dd7eb-6a7c-40d0-b39e-f4424b3dd937",
 				"quantities": {
 					"active": [
 						{
-							"uuid": "97BE2F24-F5FE-492E-AAA3-A3DFD190C198",
+							"uuid": "e3488754-9a67-4d3c-b0ea-17300d651a8a",
 							"keyword": "DoseGy",
-							"rescale": 2,
 							"modifiers": []
-						}
-					],
+						}],
 					"disabled": []
 				},
-				"detectGeometry": "563DBCFF-0B85-4511-B557-DE55AB4FA692",
+				"detectGeometry": "186ec65a-8511-418b-8218-8890138c6b12",
 				"trace": false
 			},
 			{
 				"name": "yzmsh",
-				"uuid": "11985E99-1ABC-4EDE-839F-7EA66A48394D",
+				"uuid": "6e69ee1b-a73c-4936-a5a2-e81f5bf8bc04",
 				"quantities": {
 					"active": [
 						{
-							"uuid": "97BE2F24-F5FE-492E-AAA3-A3DFD190C198",
+							"uuid": "c3499475-9496-4ee5-b705-950b83867dac",
 							"keyword": "DoseGy",
-							"rescale": 2,
 							"modifiers": []
-						}
-					],
+						}],
 					"disabled": []
 				},
-				"detectGeometry": "87D9453D-ED04-4A7C-97F0-6E6A28DFF382",
+				"detectGeometry": "3306e98b-5da2-46ee-8892-ac0191d645a7",
 				"trace": false
-			}
-		]
+			}]
 	}
 }
