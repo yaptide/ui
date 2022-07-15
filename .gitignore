@@ -257,3 +257,5 @@ src/util/identify/deployInfo.json
 build/
 
 venv/
+
+src/services/keycloak.json

@@ -1,7 +1,7 @@
 import { ReactNode, useCallback, useRef } from 'react';
 import { BACKEND_URL } from '../util/Config';
 import { createGenericContext } from '../util/GenericContext';
-import { useAuth } from './KeyCloakService';
+import { useAuth } from './AuthService';
 import { IResponseMsg } from './ResponseTypes';
 import { Estimator } from '../JsRoot/GraphData';
 

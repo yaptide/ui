@@ -1,12 +1,15 @@
 import { Box, Button, TextField, Card, CardContent } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useAuth } from '../../services/KeyCloakService';
+import { useAuth } from '../../services/AuthService';
+import { useKeycloak } from '@react-keycloak/web'
 
 export default function LoginPanel() {
 	const { login } = useAuth();
 
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
+
+	const { keycloak } = useKeycloak();
 
 	const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setUsername(event.target.value);
@@ -56,7 +59,7 @@ export default function LoginPanel() {
 					/>
 				</CardContent>
 				<CardContent>
-					<Button variant='outlined' onClick={() => login(username, password)}>
+					<Button variant='outlined' onClick={() => keycloak.login()}>
 						Login
 					</Button>
 				</CardContent>
@@ -64,3 +67,5 @@ export default function LoginPanel() {
 		</Box>
 	);
 }
+
+// login(username, password)
