@@ -9,7 +9,7 @@ export default function LoginPanel() {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 
-	const { keycloak } = useKeycloak();
+	const { keycloak, initialized } = useKeycloak();
 
 	const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setUsername(event.target.value);
@@ -59,8 +59,23 @@ export default function LoginPanel() {
 					/>
 				</CardContent>
 				<CardContent>
-					<Button variant='outlined' onClick={() => keycloak.login()}>
+					<Button variant='outlined' onClick={() => login(username, password)}>
 						Login
+					</Button>
+				</CardContent>
+				<CardContent>
+					<Button variant='outlined' onClick={() => {
+						console.log(initialized)
+						console.log(keycloak.clientId);
+						console.log(keycloak.authServerUrl);
+						console.log("xDDDDD");
+						if (!keycloak.authenticated) {
+							keycloak.login();
+						} else {
+							keycloak.logout();
+						}
+					}}>
+						Login with PLGrid
 					</Button>
 				</CardContent>
 			</Card>

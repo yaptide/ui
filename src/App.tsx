@@ -3,12 +3,13 @@ import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { SnackbarProvider } from 'notistack';
 import * as React from 'react';
+import { ReactKeycloakProvider } from "@react-keycloak/web";
 import { PythonConverterService } from './PythonConverter/PythonConverterService';
 import { Auth } from './services/AuthService';
-import { KeycloakAuth } from './services/KeyCloakService'
 import { ShSimulation } from './services/ShSimulatorService';
 import { Store } from './services/StoreService';
 import WrapperApp from './WrapperApp/WrapperApp';
+import { keycloak } from './keycloak';
 
 function App() {
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -22,10 +23,10 @@ function App() {
 		[prefersDarkMode]
 	);
 	return (
-		<StyledEngineProvider injectFirst>
-			<SnackbarProvider maxSnack={3}>
-				<ThemeProvider theme={theme}>
-					<KeycloakAuth>
+		<ReactKeycloakProvider authClient={keycloak}>
+			<StyledEngineProvider injectFirst>
+				<SnackbarProvider maxSnack={3}>
+					<ThemeProvider theme={theme}>
 						<Auth>
 							<ShSimulation>
 								<PythonConverterService>
@@ -35,10 +36,10 @@ function App() {
 								</PythonConverterService>
 							</ShSimulation>
 						</Auth>
-					</KeycloakAuth>
-				</ThemeProvider>
-			</SnackbarProvider>
-		</StyledEngineProvider>
+					</ThemeProvider>
+				</SnackbarProvider>
+			</StyledEngineProvider>
+		</ReactKeycloakProvider>
 	);
 }
 
