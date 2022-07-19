@@ -258,4 +258,4 @@ build/
 
 venv/
 
-public/keycloak.json
+src/keycloak.json
