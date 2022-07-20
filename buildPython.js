@@ -74,7 +74,7 @@ const saveFileName = (destFolder, fileName) => {
 
 
         measureTime('Installing build module for python', () => {
-            execSync(`${PYTHON} -m pip install build`, {
+            execSync(`${PYTHON} -m pip install build wheel`, {
                 cwd: srcFolder
             });
         });
