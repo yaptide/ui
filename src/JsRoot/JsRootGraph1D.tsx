@@ -61,7 +61,7 @@ export function JsRootGraph1D(props: Page1D) {
 	useEffect(() => {
 		if (obj && !drawn && isVisible) {
 			JSROOT.cleanup(containerEl.current);
-			JSROOT.redraw(containerEl.current, obj, 'gridx;gridy');
+			JSROOT.redraw(containerEl.current, obj, 'gridxy;tickxy');
 			setDrawn(true);
 		}
 	}, [JSROOT, containerEl, drawn, obj, isVisible]);
