@@ -4,7 +4,6 @@ const { execSync } = require("child_process");
 const { exit } = require("process");
 const commandExists = require('command-exists');
 
-
 const SKIP = process.argv[2] === 'skip';
 
 const destFolder = 'public/libs/converter/dist/';
@@ -81,7 +80,7 @@ const saveFileName = (destFolder, fileName) => {
         });
 
         measureTime('Building yaptide_converter', () => {
-            execSync(`${PYTHON} -m build`, {
+            execSync(`${PYTHON} -m build --wheel --no-isolation`, {
                 cwd: srcFolder
             })
         });
@@ -111,9 +110,3 @@ const saveFileName = (destFolder, fileName) => {
         saveFileName(destFolder, buildFileName);
     }
 })();
-
-
-
-
-
-
