@@ -80,7 +80,7 @@ const saveFileName = (destFolder, fileName) => {
         });
 
         measureTime('Building yaptide_converter', () => {
-            execSync(`${PYTHON} -m build --no-isolation`, {
+            execSync(`${PYTHON} -m build --wheel --no-isolation`, {
                 cwd: srcFolder
             })
         });
