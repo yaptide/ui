@@ -198,6 +198,7 @@
 			"uuid": "9166C91E-941F-4EF2-8D26-102808FA661D",
 			"type": "Scene",
 			"name": "Figures",
+			"visible": false,
 			"layers": 1,
 			"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
 			"children": [
@@ -219,7 +220,7 @@
 					"geometry": "36EB8A61-2E9F-4DE8-B6E3-B872FE5A18E5",
 					"material": "59FDD25B-7350-43BD-9667-DC8564ABB28A",
 					"geometryData": {
-						"id": 928,
+						"id": 1022,
 						"geometryType": "SphereGeometry",
 						"position": [0,-10,0],
 						"rotation": [0,0,0],
@@ -246,7 +247,7 @@
 					"geometry": "C20538F5-2729-4000-8210-6D948001FE54",
 					"material": "E44D3D60-0E8A-4A2C-A308-845DDE22421E",
 					"geometryData": {
-						"id": 930,
+						"id": 1024,
 						"geometryType": "SphereGeometry",
 						"position": [0,3,0],
 						"rotation": [0,0,0],
@@ -274,7 +275,7 @@
 					"geometry": "DF952E7A-FD67-4AAE-9685-D23FC8CED3F5",
 					"material": "F7B071A8-770B-4C88-A772-5E13246DA709",
 					"geometryData": {
-						"id": 932,
+						"id": 1026,
 						"geometryType": "CylinderGeometry",
 						"position": [0,8.5,0],
 						"rotation": [89.99999999999999,0,0],
@@ -303,7 +304,7 @@
 					"geometry": "60F6965E-8CFC-4814-82CB-798BD12EF4F6",
 					"material": "5ADCABC7-E50E-4C5A-849F-1C3FC852C901",
 					"geometryData": {
-						"id": 934,
+						"id": 1028,
 						"geometryType": "CylinderGeometry",
 						"position": [0,12,0],
 						"rotation": [89.99999999999999,0,0],
@@ -332,7 +333,7 @@
 					"geometry": "5963C7B1-FC7D-4438-A2CF-DC1850780B08",
 					"material": "17CC3146-7F60-4773-BF2D-808A02F7AB78",
 					"geometryData": {
-						"id": 936,
+						"id": 1030,
 						"geometryType": "CylinderGeometry",
 						"position": [0,11,0],
 						"rotation": [89.99999999999999,0,0],
@@ -425,7 +426,7 @@
 		"uuid": "88E9C45C-3FBB-467D-A18E-69536BBA2376",
 		"name": "Zones",
 		"worldZone": {
-			"uuid": "201f1042-4738-4960-b9fa-311e62cc4a4f",
+			"uuid": "5928a8bc-8dbc-4485-80fc-b059a376ea8e",
 			"center": {
 				"isVector3": true,
 				"x": 0,
@@ -445,7 +446,7 @@
 			"autoCalculate": false,
 			"materialUuid": "edebc384-945d-499d-86a1-a9ba93cea36e",
 			"geometryData": {
-				"id": 1057,
+				"id": 1199,
 				"geometryType": "BoxGeometry",
 				"position": [0,1,0],
 				"rotation": [0,0,0],
@@ -468,7 +469,7 @@
 					"height": 40,
 					"depth": 20,
 					"xSegments": 1,
-					"ySegments": 200,
+					"ySegments": 400,
 					"zSegments": 200
 				},
 				"type": "Mesh",
@@ -493,12 +494,35 @@
 						"operator": "==",
 						"value": 1
 					}]
+			},
+			{
+				"uuid": "1754e9a0-b1ae-4e2d-9894-58a105dde80e",
+				"name": "primary",
+				"rules": [
+					{
+						"uuid": "139e5ced-0010-4ba4-97f3-fde525ac1752",
+						"keyword": "Z",
+						"operator": "==",
+						"value": 1
+					},
+					{
+						"uuid": "3afa4a18-b902-422e-a030-5966ead330bd",
+						"keyword": "A",
+						"operator": "==",
+						"value": 1
+					},
+					{
+						"uuid": "8620e82f-70f3-45f2-b8c7-9a416ac6cc86",
+						"keyword": "GEN",
+						"operator": "==",
+						"value": 0
+					}]
 			}]
 	},
 	"beam": {
-		"position": [0,18.50152968002184,0],
+		"position": [0,18,0],
 		"direction": [0,-1,0],
-		"energy": 150,
+		"energy": 200,
 		"energySpread": 1.5,
 		"divergence": {
 			"x": 0,
@@ -557,8 +581,8 @@
 							"modifiers": []
 						},
 						{
-							"uuid": "25883928-2de1-4584-8371-ee2dedc6fdde",
-							"keyword": "Fluence",
+							"uuid": "2dd60368-21ab-48be-8eb3-1a319b994042",
+							"keyword": "AvgEnergy",
 							"filter": "8f5e7196-e911-4ee4-b5c8-8d08fe2e3c93",
 							"modifiers": []
 						}],
@@ -568,5 +592,5 @@
 				"trace": false
 			}]
 	},
-	"hash": "cadf9d88880e3145fecb3b51f2dffc51f9861480"
+	"hash": "1344d21188394b5e45498d71f1dc56884c03b1c7"
 }
