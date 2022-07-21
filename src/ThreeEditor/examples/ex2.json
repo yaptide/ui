@@ -219,7 +219,7 @@
 					"geometry": "36EB8A61-2E9F-4DE8-B6E3-B872FE5A18E5",
 					"material": "59FDD25B-7350-43BD-9667-DC8564ABB28A",
 					"geometryData": {
-						"id": 951,
+						"id": 928,
 						"geometryType": "SphereGeometry",
 						"position": [0,-10,0],
 						"rotation": [0,0,0],
@@ -246,7 +246,7 @@
 					"geometry": "C20538F5-2729-4000-8210-6D948001FE54",
 					"material": "E44D3D60-0E8A-4A2C-A308-845DDE22421E",
 					"geometryData": {
-						"id": 953,
+						"id": 930,
 						"geometryType": "SphereGeometry",
 						"position": [0,3,0],
 						"rotation": [0,0,0],
@@ -274,7 +274,7 @@
 					"geometry": "DF952E7A-FD67-4AAE-9685-D23FC8CED3F5",
 					"material": "F7B071A8-770B-4C88-A772-5E13246DA709",
 					"geometryData": {
-						"id": 955,
+						"id": 932,
 						"geometryType": "CylinderGeometry",
 						"position": [0,8.5,0],
 						"rotation": [89.99999999999999,0,0],
@@ -303,7 +303,7 @@
 					"geometry": "60F6965E-8CFC-4814-82CB-798BD12EF4F6",
 					"material": "5ADCABC7-E50E-4C5A-849F-1C3FC852C901",
 					"geometryData": {
-						"id": 957,
+						"id": 934,
 						"geometryType": "CylinderGeometry",
 						"position": [0,12,0],
 						"rotation": [89.99999999999999,0,0],
@@ -332,7 +332,7 @@
 					"geometry": "5963C7B1-FC7D-4438-A2CF-DC1850780B08",
 					"material": "17CC3146-7F60-4773-BF2D-808A02F7AB78",
 					"geometryData": {
-						"id": 959,
+						"id": 936,
 						"geometryType": "CylinderGeometry",
 						"position": [0,11,0],
 						"rotation": [89.99999999999999,0,0],
@@ -425,7 +425,7 @@
 		"uuid": "88E9C45C-3FBB-467D-A18E-69536BBA2376",
 		"name": "Zones",
 		"worldZone": {
-			"uuid": "84a06b67-8f84-4aeb-8519-b32e4c523fe3",
+			"uuid": "201f1042-4738-4960-b9fa-311e62cc4a4f",
 			"center": {
 				"isVector3": true,
 				"x": 0,
@@ -443,9 +443,9 @@
 			"name": "World Zone",
 			"marginMultiplier": 1.1,
 			"autoCalculate": false,
-			"materialUuid": "F1284857-6B1C-4A1D-AC72-845CE92C6035",
+			"materialUuid": "edebc384-945d-499d-86a1-a9ba93cea36e",
 			"geometryData": {
-				"id": 1055,
+				"id": 1057,
 				"geometryType": "BoxGeometry",
 				"position": [0,1,0],
 				"rotation": [0,0,0],
@@ -476,7 +476,24 @@
 				"name": "Detect",
 				"colorHex": 65535
 			}],
-		"filters": []
+		"filters": [
+			{
+				"uuid": "8f5e7196-e911-4ee4-b5c8-8d08fe2e3c93",
+				"name": "protons",
+				"rules": [
+					{
+						"uuid": "619e434e-6cb6-4733-9146-f235e5225874",
+						"keyword": "A",
+						"operator": "==",
+						"value": 1
+					},
+					{
+						"uuid": "550c10d9-4876-4bb8-bd1f-b8bf33eb069e",
+						"keyword": "Z",
+						"operator": "==",
+						"value": 1
+					}]
+			}]
 	},
 	"beam": {
 		"position": [0,18.50152968002184,0],
@@ -504,6 +521,11 @@
 				"color": 255
 			},
 			{
+				"uuid": "edebc384-945d-499d-86a1-a9ba93cea36e",
+				"name": "AIR, DRY (NEAR SEA LEVEL)",
+				"icru": 104
+			},
+			{
 				"uuid": "E0986447-8AA7-4325-80D9-CEC2178494EB",
 				"name": "GLASS, LEAD",
 				"icru": 170,
@@ -513,16 +535,11 @@
 				"uuid": "07985775-F13C-4DFF-B4B2-C5F08F8174C7",
 				"name": "WATER, LIQUID",
 				"icru": 276
-			},
-			{
-				"uuid": "F1284857-6B1C-4A1D-AC72-845CE92C6035",
-				"name": "VACUUM",
-				"icru": 1000
 			}],
 		"selectedMaterials": {
 			"07985775-F13C-4DFF-B4B2-C5F08F8174C7": 2,
-			"F1284857-6B1C-4A1D-AC72-845CE92C6035": 1,
-			"68bc79bc-2a35-4d89-b0f0-9c4d2ad99451": 2
+			"68bc79bc-2a35-4d89-b0f0-9c4d2ad99451": 2,
+			"edebc384-945d-499d-86a1-a9ba93cea36e": 1
 		}
 	},
 	"scoringManager": {
@@ -538,6 +555,12 @@
 							"uuid": "E1ADA7D9-13CE-46DB-B533-47B910CA056A",
 							"keyword": "Dose",
 							"modifiers": []
+						},
+						{
+							"uuid": "25883928-2de1-4584-8371-ee2dedc6fdde",
+							"keyword": "Fluence",
+							"filter": "8f5e7196-e911-4ee4-b5c8-8d08fe2e3c93",
+							"modifiers": []
 						}],
 					"disabled": []
 				},
@@ -545,5 +568,5 @@
 				"trace": false
 			}]
 	},
-	"hash": "6174c7da9ddee097588f14e74c560bc529f577d6"
+	"hash": "cadf9d88880e3145fecb3b51f2dffc51f9861480"
 }
