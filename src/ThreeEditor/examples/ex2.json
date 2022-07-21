@@ -5,7 +5,7 @@
 		"generator": "Editor.toJSON"
 	},
 	"project": {
-		"title": "The Snowman",
+		"title": "Snowman",
 		"description": "",
 		"shadows": true,
 		"shadowType": 1,
