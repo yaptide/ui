@@ -6,7 +6,7 @@
 	},
 	"project": {
 		"title": "Proton pencil beam in water",
-		"description": "Proton pencil beam with initial kinetic energy 150 MeV and 1% energy spread.\nThe target is a cylindrical water phantom with radius 10 cm and length of 20 cm.\n\nWe score dose from all particles and fluence according to primary particles (protons), secondary protons and all protons.",
+		"description": "Proton pencil beam with initial kinetic energy 150 MeV and 1% energy spread.\nThe target is a cylindrical water phantom with a radius of 10 cm and a length of 20 cm.\n\nWe score dose from all particles and fluence according to primary particles (protons), secondary protons, and all protons.",
 		"shadows": true,
 		"shadowType": 1,
 		"physicallyCorrectLights": false,
@@ -21,10 +21,10 @@
 		},
 		"geometries": [
 			{
-				"uuid": "e1aec771-4f70-4521-a427-7fe2e8aef7b7",
+				"uuid": "744d5753-c4ab-4565-bfbd-77c981e84fec",
 				"type": "CylinderGeometry",
-				"radiusTop": 10,
-				"radiusBottom": 10,
+				"radiusTop": 5,
+				"radiusBottom": 5,
 				"height": 20,
 				"radialSegments": 16,
 				"heightSegments": 1,
@@ -33,11 +33,11 @@
 				"thetaLength": 6.283185307179586
 			},
 			{
-				"uuid": "4decc799-70e5-47ac-ad90-5b03a016ebff",
+				"uuid": "918ef747-7846-462d-ab4d-a1bfef2d196a",
 				"type": "CylinderGeometry",
-				"radiusTop": 15,
-				"radiusBottom": 15,
-				"height": 25,
+				"radiusTop": 5.5,
+				"radiusBottom": 5.5,
+				"height": 22,
 				"radialSegments": 16,
 				"heightSegments": 1,
 				"openEnded": false,
@@ -95,7 +95,6 @@
 			"uuid": "C1BF5EE7-ACC7-4896-8451-A5B358DF9889",
 			"type": "Scene",
 			"name": "Figures",
-			"visible": false,
 			"layers": 1,
 			"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
 			"children": [
@@ -103,17 +102,18 @@
 					"uuid": "7ab62ba9-6dba-4543-b50b-ce31e143d482",
 					"type": "CylinderMesh",
 					"name": "Water_phantom_cylinder",
+					"visible": false,
 					"layers": 1,
 					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,10,1],
-					"geometry": "e1aec771-4f70-4521-a427-7fe2e8aef7b7",
+					"geometry": "744d5753-c4ab-4565-bfbd-77c981e84fec",
 					"material": "81a7aa32-b85f-45c4-bcd7-f648a0be12dc",
 					"geometryData": {
-						"id": 859,
+						"id": 951,
 						"geometryType": "CylinderGeometry",
 						"position": [0,0,10],
 						"rotation": [0,0,0],
 						"parameters": {
-							"radius": 10,
+							"radius": 5,
 							"depth": 20
 						}
 					}
@@ -122,18 +122,19 @@
 					"uuid": "aeeffad9-ed86-44ae-bfe4-b5f78580741b",
 					"type": "CylinderMesh",
 					"name": "Vacuum_cylinder",
+					"visible": false,
 					"layers": 1,
-					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,7.5,1],
-					"geometry": "4decc799-70e5-47ac-ad90-5b03a016ebff",
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,10.5,1],
+					"geometry": "918ef747-7846-462d-ab4d-a1bfef2d196a",
 					"material": "8485707f-07bf-49d2-86ab-070eb9878a00",
 					"geometryData": {
-						"id": 861,
+						"id": 953,
 						"geometryType": "CylinderGeometry",
-						"position": [0,0,7.5],
+						"position": [0,0,10.5],
 						"rotation": [0,0,0],
 						"parameters": {
-							"radius": 15,
-							"depth": 25
+							"radius": 5.5,
+							"depth": 22
 						}
 					}
 				}]
@@ -174,18 +175,18 @@
 		"uuid": "368269D3-6F9B-4241-84A0-5D908D10E196",
 		"name": "Zones",
 		"worldZone": {
-			"uuid": "77fd7825-d9c0-44e5-935a-e8aa6890287b",
+			"uuid": "d85baa3a-8007-48ef-b259-e06c696b2436",
 			"center": {
 				"isVector3": true,
 				"x": 0,
 				"y": 0,
-				"z": 5
+				"z": 10.5
 			},
 			"size": {
 				"isVector3": true,
-				"x": 20,
-				"y": 20,
-				"z": 30
+				"x": 6,
+				"y": 6,
+				"z": 24
 			},
 			"type": "WorldZone",
 			"geometryType": "Cylinder",
@@ -196,11 +197,11 @@
 			"geometryData": {
 				"id": 14,
 				"geometryType": "CylinderGeometry",
-				"position": [0,0,5],
+				"position": [0,0,10.5],
 				"rotation": [0,0,0],
 				"parameters": {
-					"radius": 20,
-					"depth": 30
+					"radius": 6,
+					"depth": 24
 				}
 			}
 		}
@@ -212,7 +213,7 @@
 			{
 				"uuid": "186ec65a-8511-418b-8218-8890138c6b12",
 				"data": {
-					"radius": 10,
+					"radius": 5,
 					"innerRadius": 0,
 					"depth": 20,
 					"radialSegments": 1,
@@ -226,7 +227,7 @@
 			{
 				"uuid": "3306e98b-5da2-46ee-8892-ac0191d645a7",
 				"data": {
-					"width": 1,
+					"width": 0.5,
 					"height": 4,
 					"depth": 20,
 					"xSegments": 1,
@@ -333,7 +334,8 @@
 				"name": "WATER, LIQUID",
 				"icru": 276,
 				"color": 34047,
-				"opacity": 0.4
+				"opacity": 0.4,
+				"transparent": true
 			},
 			{
 				"uuid": "cd7c2eb0-e91f-4144-b4eb-536e4626cc09",
@@ -414,5 +416,5 @@
 				"trace": false
 			}]
 	},
-	"hash": "e270b62463438cdf74e983110feb1b2b275166c7"
+	"hash": "31ae258e5dea2f5d176ac09401ab8906e036dc11"
 }
