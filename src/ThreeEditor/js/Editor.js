@@ -19,7 +19,7 @@ _DEFAULT_CAMERA.name = 'Camera';
 _DEFAULT_CAMERA.position.set(0, 5, 10);
 _DEFAULT_CAMERA.lookAt(new THREE.Vector3());
 
-export const JSON_VERSION = 0.2;
+export const JSON_VERSION = 0.3;
 
 export function Editor(container) {
 	this.signals = {
