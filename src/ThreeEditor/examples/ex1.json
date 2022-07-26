@@ -1,6 +1,6 @@
 {
 	"metadata": {
-		"version": 0.2,
+		"version": 0.3,
 		"type": "Editor",
 		"generator": "Editor.toJSON"
 	},
@@ -307,6 +307,7 @@
 	"beam": {
 		"position": [0,0,0],
 		"direction": [0,0,1],
+		"numberOfParticles": 10000,
 		"energy": 150,
 		"energySpread": 1.5,
 		"divergence": {
@@ -316,8 +317,8 @@
 		},
 		"particle": {
 			"id": 2,
-			"a": 12,
-			"z": 6
+			"a": 1,
+			"z": 1
 		},
 		"colorHex": 16776960
 	},

@@ -28,6 +28,9 @@ export class ObjectBeam extends ObjectAbstract {
 	divergenceDistanceRow: UIRow;
 	divergenceDistance: UINumber;
 
+	numberOfParticlesRow: UIRow;
+	numberOfParticles: UINumber;
+
 	particleTypeRow: UIRow;
 	particleType: UINumber;
 	renderParticleType: (value: number) => void;
@@ -71,6 +74,15 @@ export class ObjectBeam extends ObjectAbstract {
 			update: this.update.bind(this)
 		});
 
+		// number of particles
+		[this.numberOfParticlesRow, this.numberOfParticles] = createRowParamNumber({
+			text: `Number of primary particles`,
+			unit: ``,
+			precision: 0,
+			step: 1,
+			update: this.update.bind(this)
+		});
+
 		// particle
 		[this.particleTypeRow, this.particleType, this.renderParticleType] =
 			createParticleTypeSelect(this.update.bind(this));
@@ -97,6 +109,7 @@ export class ObjectBeam extends ObjectAbstract {
 			this.energySpreadRow,
 			this.divergenceRow,
 			this.divergenceDistanceRow,
+			this.numberOfParticlesRow,
 			this.particleTypeRow,
 			this.particleZRow,
 			this.particleARow
@@ -115,6 +128,8 @@ export class ObjectBeam extends ObjectAbstract {
 		this.energy.setValue(object.energy);
 		this.energySpread.unit = object.energySpread < 0 ? 'Mev/c' : 'MeV/nucl';
 		this.energySpread.setValue(object.energySpread);
+
+		this.numberOfParticles.setValue(object.numberOfParticles);
 
 		this.render();
 
@@ -136,6 +151,8 @@ export class ObjectBeam extends ObjectAbstract {
 		object.divergence.x = this.divergenceX.getValue();
 		object.divergence.y = this.divergenceY.getValue();
 		object.divergence.distanceToFocal = this.divergenceDistance.getValue();
+
+		object.numberOfParticles = this.numberOfParticles.getValue();
 
 		object.particleData.id = this.particleType.getValue();
 		object.particleData.a = this.particleA.getValue();
