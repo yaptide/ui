@@ -76,7 +76,7 @@ export class ObjectBeam extends ObjectAbstract {
 
 		// number of particles
 		[this.numberOfParticlesRow, this.numberOfParticles] = createRowParamNumber({
-			text: `Number of particles`,
+			text: `Number of primary particles`,
 			unit: ``,
 			precision: 0,
 			step: 1,
