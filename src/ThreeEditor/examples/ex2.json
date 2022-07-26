@@ -522,6 +522,7 @@
 	"beam": {
 		"position": [0,18,0],
 		"direction": [0,-1,0],
+		"numberOfParticles": 10000,
 		"energy": 200,
 		"energySpread": 1.5,
 		"divergence": {
