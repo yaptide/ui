@@ -40,8 +40,8 @@ const _default = {
 	},
 	particle: {
 		id: 2,
-		a: 12,
-		z: 6
+		a: 1,
+		z: 1
 	},
 	numberOfParticles: 10000
 
