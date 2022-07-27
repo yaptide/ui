@@ -95,6 +95,7 @@
 			"uuid": "C1BF5EE7-ACC7-4896-8451-A5B358DF9889",
 			"type": "Scene",
 			"name": "Figures",
+			"visible": false,
 			"layers": 1,
 			"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
 			"children": [
@@ -108,7 +109,7 @@
 					"geometry": "744d5753-c4ab-4565-bfbd-77c981e84fec",
 					"material": "81a7aa32-b85f-45c4-bcd7-f648a0be12dc",
 					"geometryData": {
-						"id": 951,
+						"id": 859,
 						"geometryType": "CylinderGeometry",
 						"position": [0,0,10],
 						"rotation": [0,0,0],
@@ -128,7 +129,7 @@
 					"geometry": "918ef747-7846-462d-ab4d-a1bfef2d196a",
 					"material": "8485707f-07bf-49d2-86ab-070eb9878a00",
 					"geometryData": {
-						"id": 953,
+						"id": 861,
 						"geometryType": "CylinderGeometry",
 						"position": [0,0,10.5],
 						"rotation": [0,0,0],
@@ -175,7 +176,7 @@
 		"uuid": "368269D3-6F9B-4241-84A0-5D908D10E196",
 		"name": "Zones",
 		"worldZone": {
-			"uuid": "d85baa3a-8007-48ef-b259-e06c696b2436",
+			"uuid": "65e9ab34-419e-4782-b2c0-97ef12ef87e4",
 			"center": {
 				"isVector3": true,
 				"x": 0,
@@ -237,6 +238,34 @@
 				"type": "Mesh",
 				"position": [0,0,10],
 				"name": "YZ_Mesh",
+				"colorHex": 65535
+			},
+			{
+				"uuid": "53fff3c4-30de-4210-9066-20dc0f90cccb",
+				"data": {
+					"radius": 5,
+					"innerRadius": 0,
+					"depth": 0.1,
+					"radialSegments": 1,
+					"zSegments": 1
+				},
+				"type": "Cyl",
+				"position": [0,0,0.05],
+				"name": "EntrySlab",
+				"colorHex": 65535
+			},
+			{
+				"uuid": "deb6a8f8-fab3-488e-8a01-9bb3e8ea4649",
+				"data": {
+					"radius": 5,
+					"innerRadius": 0,
+					"depth": 0.1,
+					"radialSegments": 1,
+					"zSegments": 1
+				},
+				"type": "Cyl",
+				"position": [0,0,15.35],
+				"name": "PeakSlab",
 				"colorHex": 65535
 			}],
 		"filters": [
@@ -307,7 +336,6 @@
 	"beam": {
 		"position": [0,0,0],
 		"direction": [0,0,1],
-		"numberOfParticles": 10000,
 		"energy": 150,
 		"energySpread": 1.5,
 		"divergence": {
@@ -320,7 +348,8 @@
 			"a": 1,
 			"z": 1
 		},
-		"colorHex": 16776960
+		"colorHex": 16776960,
+		"numberOfParticles": 10000
 	},
 	"materialManager": {
 		"materials": [
@@ -415,7 +444,115 @@
 				},
 				"detectGeometry": "3306e98b-5da2-46ee-8892-ac0191d645a7",
 				"trace": false
+			},
+			{
+				"name": "entrance",
+				"uuid": "2e46a6ab-35d7-4fce-9de8-406a47fc9180",
+				"quantities": {
+					"active": [
+						{
+							"uuid": "48b2c7a4-58c4-4ff7-816b-865ce146ae95",
+							"keyword": "AvgEnergy",
+							"filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
+							"modifiers": []
+						},
+						{
+							"uuid": "a9164784-1770-48d5-a772-3342fb06efe9",
+							"keyword": "AvgEnergy",
+							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+							"modifiers": []
+						},
+						{
+							"uuid": "2bf3b68d-a855-443a-8ea0-2bf05eeb9e65",
+							"keyword": "AvgEnergy",
+							"filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
+							"modifiers": []
+						},
+						{
+							"uuid": "d0c4addd-0775-420e-9240-d5ba3e279a2b",
+							"keyword": "dLET",
+							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+							"modifiers": []
+						},
+						{
+							"uuid": "a4e9cac1-a643-4448-bc4a-89977101cc67",
+							"keyword": "tLET",
+							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+							"modifiers": []
+						},
+						{
+							"uuid": "de64c12b-15cc-4e72-9262-b5507a738c9f",
+							"keyword": "Fluence",
+							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+							"modifiers": [
+								{
+									"diffType": "E",
+									"lowerLimit": 0,
+									"upperLimit": 160,
+									"binsNumber": 640,
+									"isLog": false,
+									"uuid": "1afaf3d8-443f-4bac-8999-be914ff0691a"
+								}]
+						}],
+					"disabled": []
+				},
+				"detectGeometry": "53fff3c4-30de-4210-9066-20dc0f90cccb",
+				"trace": false
+			},
+			{
+				"name": "peak",
+				"uuid": "a9e8737f-edae-45fe-9395-1e6b220ef384",
+				"quantities": {
+					"active": [
+						{
+							"uuid": "54b85511-c885-41bd-a81d-a97842197764",
+							"keyword": "AvgEnergy",
+							"filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
+							"modifiers": []
+						},
+						{
+							"uuid": "e7ff88d1-e46a-4a69-b676-e8e3ed1e67fd",
+							"keyword": "AvgEnergy",
+							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+							"modifiers": []
+						},
+						{
+							"uuid": "95c292b9-966e-42fe-91a0-3d0f0db55876",
+							"keyword": "AvgEnergy",
+							"filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
+							"modifiers": []
+						},
+						{
+							"uuid": "efd9f82c-8e0e-4d3d-a22d-70a0cc11ef7b",
+							"keyword": "dLET",
+							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+							"modifiers": []
+						},
+						{
+							"uuid": "dac16bbd-e361-46d3-8eae-9c69571aea96",
+							"keyword": "tLET",
+							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+							"modifiers": []
+						},
+						{
+							"uuid": "65f821c8-a654-4f6f-b666-0fdc8c925cf5",
+							"keyword": "Fluence",
+							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+							"modifiers": [
+								{
+									"diffType": "E",
+									"lowerLimit": 0,
+									"upperLimit": 160,
+									"binsNumber": 640,
+									"isLog": false,
+									"uuid": "07a5db58-a8ea-4175-93e7-9fe74ca14d34"
+								}]
+						}],
+					"disabled": []
+				},
+				"detectGeometry": "deb6a8f8-fab3-488e-8a01-9bb3e8ea4649",
+				"trace": false
 			}]
 	},
-	"hash": "31ae258e5dea2f5d176ac09401ab8906e036dc11"
+	"hash": "9646c25a7efc0d9e83edb12db02d102cc84fda8b"
 }
