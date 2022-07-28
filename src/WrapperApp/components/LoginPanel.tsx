@@ -1,13 +1,13 @@
 import { Box, Button, TextField, Card, CardContent } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '../../services/AuthService';
-// import { useOidc, useOidcUser } from "@axa-fr/react-oidc";
+import { useOidc, useOidcUser } from "@axa-fr/react-oidc";
 // import { useKeycloak } from '@react-keycloak/web'
 
 export default function LoginPanel() {
-	const { login } = useAuth();
-	// const { login, logout, isAuthenticated } = useOidc();
-	// const { oidcUser } = useOidcUser();
+	// const { login } = useAuth();
+	const { login, logout, isAuthenticated } = useOidc();
+	const { oidcUser } = useOidcUser();
 
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
@@ -68,7 +68,7 @@ export default function LoginPanel() {
 						Login
 					</Button>
 				</CardContent>
-				{/* {
+				{
 					!isAuthenticated && <CardContent>
 						<Button variant='outlined' onClick={() => {
 							login();
@@ -94,7 +94,7 @@ export default function LoginPanel() {
 							Logout
 						</Button>
 					</CardContent>
-				} */}
+				}
 				{/* <CardContent>
 					<Button variant='outlined' onClick={() => {
 						if (!keycloak.authenticated) {

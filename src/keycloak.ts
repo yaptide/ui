@@ -13,7 +13,8 @@
 
 const auth_config = {
     scope: "openid profile email",
-    redirect_uri: `${window.location.origin}`,
+    redirect_uri: window.location.origin,
+    silent_redirect_uri: window.location.origin,
     authority: "https://sso.pre.plgrid.pl/auth/",
     ssl_required: "external",
     client_id: "yaptide_dev",
