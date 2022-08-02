@@ -2,7 +2,9 @@ import React from 'react';
 import JsRootGraph1D from './JsRootGraph1D';
 import JsRootGraph2D from './JsRootGraph2D';
 import JsRootGraph0D from './JsRootGraph0D';
-import { Grid } from '@mui/material';
+import { Button, Grid } from '@mui/material';
+import { saveString } from '../util/File';
+import { estimatorPageToCsv } from '../util/Csv';
 
 export type pageData = {
 	name: string;
@@ -19,6 +21,7 @@ export type Page2D = {
 
 export type Page1D = {
 	data: pageData;
+	metadata?: unknown;
 	dimensions: 1;
 	first_axis: pageData;
 };
@@ -30,6 +33,7 @@ export type Page0D = {
 
 export type Estimator = {
 	name: string;
+	metadata?: unknown;
 	pages: Page[];
 };
 
@@ -59,7 +63,17 @@ const getGraphFromPage = (page: Page) => {
 	}
 };
 
-export function generateGraphs({ pages, name }: Estimator) {
+export function generateGraphs(estimator: Estimator) {
+	const { pages, name } = estimator;
+	const onClickSaveToFile = (page: Page, idx: number) => {
+		if (isPage1d(page)) {
+			console.log(estimatorPageToCsv(estimator, page));
+			saveString(
+				estimatorPageToCsv(estimator, page),
+				`graph_${name}_${page.data.name.replace(/ /g, '_')}.csv`
+			);
+		}
+	};
 	return pages
 		.map(page => {
 			return getGraphFromPage(page);
@@ -68,6 +82,9 @@ export function generateGraphs({ pages, name }: Estimator) {
 			return (
 				<Grid key={`graph_${name}_${idx}`} item xs={8}>
 					{graph}
+					<Button onClick={() => onClickSaveToFile(pages[idx], idx)}>
+						EXPORT TO CSV
+					</Button>
 				</Grid>
 			);
 		});
