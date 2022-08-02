@@ -65,14 +65,11 @@ const getGraphFromPage = (page: Page) => {
 
 export function generateGraphs(estimator: Estimator) {
 	const { pages, name } = estimator;
-	const onClickSaveToFile = (page: Page, idx: number) => {
-		if (isPage1d(page)) {
-			console.log(estimatorPageToCsv(estimator, page));
-			saveString(
-				estimatorPageToCsv(estimator, page),
-				`graph_${name}_${page.data.name.replace(/ /g, '_')}.csv`
-			);
-		}
+	const onClickSaveToFile = (page: Page1D) => {
+		saveString(
+			estimatorPageToCsv(estimator, page),
+			`graph_${name}_${page.data.name.replace(/ /g, '_')}.csv`
+		);
 	};
 	return pages
 		.map(page => {
@@ -82,9 +79,12 @@ export function generateGraphs(estimator: Estimator) {
 			return (
 				<Grid key={`graph_${name}_${idx}`} item xs={8}>
 					{graph}
-					<Button onClick={() => onClickSaveToFile(pages[idx], idx)}>
-						EXPORT TO CSV
-					</Button>
+
+					{isPage1d(pages[idx]) && (
+						<Button onClick={() => onClickSaveToFile(pages[idx] as Page1D)}>
+							EXPORT TO CSV
+						</Button>
+					)}
 				</Grid>
 			);
 		});
