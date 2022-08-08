@@ -102,7 +102,7 @@ jobs:
             # Kill docker container, then remove all docker images
             - name: Kill our docker container 💀
               continue-on-error: true
-              uses: appleboy/ssh-action@v0.1.4
+              uses: appleboy/ssh-action@v0.1.5
               with:
                   host: ${{ env.FRONTEND_HOST }}
                   username: ${{ env.FRONTEND_USER }}
@@ -116,7 +116,7 @@ jobs:
               run: rsync -a ~/work/ui/ui ${{ env.FRONTEND_USER }}@${{ env.FRONTEND_HOST }}:~/ui --exclude={node_modules,build}
 
             - name: Build app and run docker container 🔨 & 🚀
-              uses: appleboy/ssh-action@v0.1.4
+              uses: appleboy/ssh-action@v0.1.5
               with:
                   host: ${{ env.FRONTEND_HOST }}
                   username: ${{ env.FRONTEND_USER }}
