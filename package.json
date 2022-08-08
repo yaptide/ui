@@ -4,7 +4,7 @@
 	"private": false,
 	"homepage": ".",
 	"dependencies": {
-		"@emotion/css": "^11.7.1",
+		"@emotion/css": "^11.10.0",
 		"@emotion/react": "^11.9.3",
 		"@emotion/styled": "^11.9.3",
 		"@mui/material": "^5.9.3",
