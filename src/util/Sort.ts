@@ -1,18 +1,18 @@
-import { castTo, Common } from "./Types";
+import { Common } from "./Types";
 
 
-export const orderAccordingToList = <A, B, C extends Common<A, B>>(list: A[], orderList: B[], property: keyof C) => {
+export const orderAccordingToList = <A extends C, B extends C, C extends Common<A, B>>(list: A[], orderList: B[], property: keyof C) => {
 
     const listCopy = [...list];
     const listOrdered = [];
 
     for (const orderElement of orderList) {
         const index = listCopy.findIndex(
-            obj => castTo<C>(obj)[property] === castTo<C>(orderElement)[property]
+            obj => obj[property] === orderElement[property]
         );
 
         if (index === -1) {
-            console.warn(`OrderElement ${castTo<C>(orderElement)[property]} not found`);
+            console.warn(`OrderElement ${orderElement[property]} not found`);
             continue;
         }
 
