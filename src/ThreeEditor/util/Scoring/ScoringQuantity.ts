@@ -6,6 +6,7 @@ import { DifferentialJSON, DifferentialModifier } from './ScoringQtyModifiers';
 
 export type ScoringQuantityJSON = {
 	uuid: string;
+	name: string;
 	keyword: Scoring.DETECTOR_KEYWORD;
 	medium?: Scoring.MEDIUM;
 	filter?: string;
@@ -23,13 +24,16 @@ export class ScoringQuantity extends SimulationObject3D {
 	private _filter: string;
 	private _rescale: number;
 	private _medium: Scoring.MEDIUM;
+
 	hasFilter: boolean;
 	hasRescale: boolean;
 	keyword: Scoring.DETECTOR_KEYWORD;
+
 	private _modifiers: Record<string, DifferentialModifier>;
 	get modifiers(): DifferentialModifier[] {
 		return Object.values(this._modifiers);
 	}
+
 	private _selectedModifier?: string;
 	set selectedModifier(mod: DifferentialModifier | undefined) {
 		this._selectedModifier = mod?.uuid;
@@ -37,6 +41,7 @@ export class ScoringQuantity extends SimulationObject3D {
 	get selectedModifier(): DifferentialModifier | undefined {
 		return this._selectedModifier ? this._modifiers[this._selectedModifier] : undefined;
 	}
+
 	get filter(): DetectFilter | null {
 		if (!this.hasFilter) return null;
 		return this.editor.detectManager.getFilterByUuid(this._filter);
@@ -44,6 +49,7 @@ export class ScoringQuantity extends SimulationObject3D {
 	set filter(filter: DetectFilter | null) {
 		this._filter = filter?.uuid ?? '';
 	}
+
 	get medium(): Scoring.MEDIUM | null {
 		if (['NEqvDose', 'NKERMA'].includes(this.keyword)) return this._medium;
 		return null;
@@ -51,23 +57,28 @@ export class ScoringQuantity extends SimulationObject3D {
 	set medium(medium: Scoring.MEDIUM | null) {
 		this._medium = medium ?? Scoring.MEDIUM_KEYWORD_OPTIONS.WATER;
 	}
+
 	set rescale(rescale: number) {
 		this._rescale = rescale;
 	}
 	get rescale(): number {
 		return this.hasRescale ? this._rescale : 1;
 	}
+
 	addModifier(modifier: DifferentialModifier): void {
 		this._modifiers[modifier.uuid] = modifier;
 	}
+
 	createModifier(): DifferentialModifier {
 		const modifier = new DifferentialModifier();
 		this.addModifier(modifier);
 		return modifier;
 	}
+
 	removeModifier(modifier: DifferentialModifier): void {
 		delete this._modifiers[modifier.uuid];
 	}
+
 	getModifierByUuid(uuid: string): DifferentialModifier | undefined {
 		return this._modifiers[uuid];
 	}
@@ -82,9 +93,11 @@ export class ScoringQuantity extends SimulationObject3D {
 		this._rescale = 1;
 		this.hasRescale = false;
 	}
+
 	toJSON(): ScoringQuantityJSON {
-		let { filter, hasFilter, uuid, keyword, modifiers, medium, rescale } = this;
+		let { filter, name, hasFilter, uuid, keyword, modifiers, medium, rescale } = this;
 		return {
+			name,
 			uuid,
 			keyword,
 			...(hasFilter && { filter: filter?.uuid }),
@@ -93,7 +106,9 @@ export class ScoringQuantity extends SimulationObject3D {
 			modifiers: modifiers.map(modifier => modifier.toJSON())
 		};
 	}
+
 	fromJSON(json: ScoringQuantityJSON): this {
+		this.name = json.name ?? this.name;
 		this.uuid = json.uuid;
 		this._modifiers = json.modifiers.reduce((acc, curr) => {
 			const modifier = DifferentialModifier.fromJSON(curr);
@@ -105,6 +120,7 @@ export class ScoringQuantity extends SimulationObject3D {
 		this.keyword = json.keyword;
 		return this;
 	}
+
 	static fromJSON(editor: Editor, json: ScoringQuantityJSON): ScoringQuantity {
 		return new ScoringQuantity(editor).fromJSON(json);
 	}

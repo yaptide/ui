@@ -248,6 +248,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 								estimator.name = estimator.name.replace(/_$/, '');
 							}
 
+							// metadata field means that editor file is attached to the simulation result
 							if (content.input && 'metadata' in content.input) {
 								data.editor = content.input;
 								data.result.estimators = recreateOrderInEstimators(

@@ -1,6 +1,8 @@
+import { Object3D } from 'three';
 import { Editor } from '../../js/Editor';
 import { DetectFilter } from '../Detect/DetectFilter';
 import { DetectGeometry } from '../Detect/DetectGeometry';
+import { getNextFreeName, UniqueChildrenNames } from '../Name';
 import { SimulationSceneGroup } from '../SimulationBase/SimulationGroup';
 import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
 
@@ -8,18 +10,18 @@ export type ScoringOutputJSON = {
 	uuid: string;
 	name: string;
 	quantities:
-		| {
-				active: ScoringQuantityJSON[];
-		  }
-		| {
-				disabled: ScoringQuantityJSON[];
-		  };
+	| {
+		active: ScoringQuantityJSON[];
+	}
+	| {
+		disabled: ScoringQuantityJSON[];
+	};
 	detectGeometry?: string;
 	primaries?: number;
 	trace: boolean;
 	traceFilter?: string;
 };
-export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> {
+export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> implements UniqueChildrenNames {
 	readonly isOutput: true = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -102,6 +104,7 @@ export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> {
 	addQuantity(quantity: ScoringQuantity): this {
 		if (this._trace[0]) this._disabledChildren.push(quantity);
 		else this.children.push(quantity);
+		quantity.name = this.getNextFreeName(quantity);
 		quantity.parent = this;
 		return this;
 	}
@@ -115,6 +118,10 @@ export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> {
 
 	getQuantityByUuid(uuid: string): ScoringQuantity | null {
 		return this.children.find(qty => qty.uuid === uuid) || null;
+	}
+
+	getNextFreeName(quantity: ScoringQuantity, newName?: string): string {
+		return getNextFreeName(this, newName ?? quantity.name, quantity);
 	}
 
 	fromJSON(json: ScoringOutputJSON): this {

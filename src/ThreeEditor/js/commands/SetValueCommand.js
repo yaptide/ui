@@ -1,3 +1,4 @@
+import { implementsUniqueChildrenNames } from '../../util/Name';
 import { Command } from '../Command.js';
 
 /**
@@ -23,6 +24,12 @@ class SetValueCommand extends Command {
 
 		this.oldValue = object !== undefined ? object[attributeName] : undefined;
 		this.newValue = newValue;
+
+		if (attributeName === 'name') {
+			if (implementsUniqueChildrenNames(object.parent)) {
+				this.newValue = object.parent.getNextFreeName(object, this.newValue);
+			}
+		}
 	}
 
 	execute() {

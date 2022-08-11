@@ -20,6 +20,10 @@ export const orderAccordingToList = <A extends C, B extends C, C extends Common<
         listCopy.splice(index, 1);
     }
 
-    return listOrdered;
+    if (listCopy.length > 0) {
+        console.warn(`${listCopy.length} elements not found in orderList`);
+    }
+
+    return [...listOrdered, ...listCopy];
 
 }
