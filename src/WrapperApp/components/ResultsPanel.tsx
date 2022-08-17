@@ -1,4 +1,14 @@
-import { Box, Button, Card, CardContent, Grid, Tab, Tabs, Typography, useMediaQuery } from '@mui/material';
+import {
+	Box,
+	Button,
+	Card,
+	CardContent,
+	Grid,
+	Tab,
+	Tabs,
+	Typography,
+	useMediaQuery
+} from '@mui/material';
 import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { generateGraphs } from '../../JsRoot/GraphData';
 import { TabPanel } from './TabPanel';
@@ -33,7 +43,7 @@ function ResultsPanel() {
 						padding: '0.5rem',
 						display: 'flex',
 						justifyContent: 'space-between',
-						alignItems: 'center',
+						alignItems: 'center'
 					}}>
 					<Typography
 						gutterBottom

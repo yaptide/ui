@@ -4,6 +4,9 @@ import { createGenericContext } from '../util/GenericContext';
 import { useAuth } from './AuthService';
 import { IResponseMsg } from './ResponseTypes';
 import { Estimator } from '../JsRoot/GraphData';
+import { EditorJson } from '../ThreeEditor/js/EditorJson';
+import { ScoringManagerJSON } from '../ThreeEditor/util/Scoring/ScoringManager';
+import { orderAccordingToList } from '../util/Sort';
 
 export interface ShSimulationProps {
 	children: ReactNode;
@@ -103,6 +106,7 @@ interface ResShStatusSuccess extends IResponseMsg {
 		result: {
 			estimators: Estimator[];
 		};
+		input?: EditorJson | { input_files: InputFiles };
 	};
 }
 
@@ -125,7 +129,15 @@ export interface SimulationStatusData {
 	result?: {
 		estimators: Estimator[];
 	};
+	editor?: EditorJson;
 }
+
+export const recreateOrderInEstimators = (
+	estimators: Estimator[],
+	scoringManagerJSON: ScoringManagerJSON
+): Estimator[] => {
+	return orderAccordingToList(estimators, scoringManagerJSON.scoringOutputs, 'name');
+};
 
 const [useShSimulation, ShSimulationContextProvider] = createGenericContext<IShSimulation>();
 
@@ -180,7 +192,6 @@ const ShSimulation = (props: ShSimulationProps) => {
 		[authKy]
 	);
 
-
 	const getStatus = useCallback(
 		(
 			simulation: SimulationInfo,
@@ -231,6 +242,19 @@ const ShSimulation = (props: ShSimulationProps) => {
 
 						case StatusState.SUCCESS:
 							data.result = content.result;
+
+							// remove trailing underscores from estimators names (#530)
+							for (const estimator of data.result.estimators) {
+								estimator.name = estimator.name.replace(/_$/, '');
+							}
+
+							if (content.input && 'metadata' in content.input) {
+								data.editor = content.input;
+								data.result.estimators = recreateOrderInEstimators(
+									data.result.estimators,
+									data.editor.scoringManager
+								);
+							}
 							break;
 					}
 
