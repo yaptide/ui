@@ -35,7 +35,10 @@ function ResultsPanel() {
 	};
 
 	return (
-		<Box>
+		<Box
+			sx={{
+				width: '100%'
+			}}>
 			{simulation && (
 				<Card
 					sx={{
@@ -97,6 +100,7 @@ function ResultsPanel() {
 						</Card>
 						<Card
 							sx={{
+								flexGrow: 1,
 								margin: '0.5rem',
 								bgcolor: prefersDarkMode ? 'text.disabled' : 'background.paper'
 							}}>
