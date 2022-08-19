@@ -88,7 +88,7 @@
 	"devDependencies": {
 		"@types/react": "^18.0.9",
 		"@types/react-async-script": "^1.2.1",
-		"@types/three": "^0.143.0",
+		"@types/three": "^0.143.1",
 		"cross-env": "^7.0.3",
 		"gh-pages": "^4.0.0",
 		"prettier": "2.7.1",
