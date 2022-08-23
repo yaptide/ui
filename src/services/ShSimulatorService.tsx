@@ -35,9 +35,7 @@ export interface IShSimulation {
 }
 
 interface ResShRun extends IResponseMsg {
-	content: {
-		task_id: string;
-	};
+	task_id: string;
 }
 
 export interface SimulationInfo {
@@ -47,9 +45,7 @@ export interface SimulationInfo {
 }
 
 interface ResUserSimulations extends IResponseMsg {
-	content: {
-		simulations: SimulationInfo[];
-	};
+	simulations: SimulationInfo[];
 }
 
 export enum StatusState {
@@ -59,21 +55,17 @@ export enum StatusState {
 	SUCCESS = 'SUCCESS'
 }
 interface ResShStatusPending extends IResponseMsg {
-	content: {
-		state: StatusState.PENDING;
-	};
+	state: StatusState.PENDING;
 }
 
 interface ResShStatusProgress extends IResponseMsg {
-	content: {
-		state: StatusState.PROGRESS;
-		info: {
-			simulated_primaries: number;
-			estimated?: {
-				hours: number;
-				minutes: number;
-				seconds: number;
-			};
+	state: StatusState.PROGRESS;
+	info: {
+		simulated_primaries: number;
+		estimated?: {
+			hours: number;
+			minutes: number;
+			seconds: number;
 		};
 	};
 }
@@ -86,28 +78,22 @@ export interface InputFiles {
 }
 
 interface ResShConvert extends IResponseMsg {
-	content: {
-		input_files: InputFiles;
-	};
+	input_files: InputFiles;
 }
 
 interface ResShStatusFailure extends IResponseMsg {
-	content: {
-		state: StatusState.FAILURE;
-		error: string;
-		input_files?: InputFiles;
-		logfile?: string;
-	};
+	state: StatusState.FAILURE;
+	error: string;
+	input_files?: InputFiles;
+	logfile?: string;
 }
 
 interface ResShStatusSuccess extends IResponseMsg {
-	content: {
-		state: StatusState.SUCCESS;
-		result: {
-			estimators: Estimator[];
-		};
-		input?: EditorJson | { input_files: InputFiles };
+	state: StatusState.SUCCESS;
+	result: {
+		estimators: Estimator[];
 	};
+	input?: EditorJson | { input_files: InputFiles };
 }
 
 type ResShStatus =
@@ -166,9 +152,9 @@ const ShSimulation = (props: ShSimulationProps) => {
 					json: json,
 					timeout: 30000
 					/**
-            Timeout in milliseconds for getting a response. Can not be greater than 2147483647.
-            If set to `false`, there will be no timeout.
-            **/
+			Timeout in milliseconds for getting a response. Can not be greater than 2147483647.
+			If set to `false`, there will be no timeout.
+			**/
 				})
 				.json()
 				.then((response: unknown) => {
@@ -212,44 +198,43 @@ const ShSimulation = (props: ShSimulationProps) => {
 				.json()
 				.then((response: unknown) => {
 					const resStatus = response as ResShStatus;
-					const { content } = resStatus;
 
 					const data: SimulationStatusData = {
 						uuid: taskId,
-						status: content.state,
+						status: resStatus.state,
 						name,
 						creationDate
 					};
 
-					switch (content.state) {
+					switch (resStatus.state) {
 						case StatusState.PENDING:
 							break;
 
 						case StatusState.PROGRESS:
-							data.counted = content.info.simulated_primaries;
-							if (content.info.estimated) {
-								const { hours, minutes, seconds } = content.info.estimated;
+							data.counted = resStatus.info.simulated_primaries;
+							if (resStatus.info.estimated) {
+								const { hours, minutes, seconds } = resStatus.info.estimated;
 								data.estimatedTime =
 									Date.now() + (hours * 60 * 60 + minutes * 60 + seconds) * 1000;
 							}
 							break;
 
 						case StatusState.FAILURE:
-							data.message = content.error;
-							data.inputFiles = content.input_files;
-							data.logFile = content.logfile;
+							data.message = resStatus.error;
+							data.inputFiles = resStatus.input_files;
+							data.logFile = resStatus.logfile;
 							break;
 
 						case StatusState.SUCCESS:
-							data.result = content.result;
+							data.result = resStatus.result;
 
 							// remove trailing underscores from estimators names (#530)
 							for (const estimator of data.result.estimators) {
 								estimator.name = estimator.name.replace(/_$/, '');
 							}
 
-							if (content.input && 'metadata' in content.input) {
-								data.editor = content.input;
+							if (resStatus.input && 'metadata' in resStatus.input) {
+								data.editor = resStatus.input;
 								data.result.estimators = recreateOrderInEstimators(
 									data.result.estimators,
 									data.editor.scoringManager
@@ -258,7 +243,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 							break;
 					}
 
-					if ([StatusState.FAILURE, StatusState.SUCCESS].includes(content.state)) {
+					if ([StatusState.FAILURE, StatusState.SUCCESS].includes(resStatus.state)) {
 						beforeCacheWrite?.call(null, data.uuid, data);
 						statusDataCache.current.set(data.uuid, data);
 					}
@@ -276,7 +261,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 				.get(`${BACKEND_URL}/user/simulations`, { signal })
 				.json()
 				.then((response: unknown) => {
-					return (response as ResUserSimulations).content.simulations.map(s => {
+					return (response as ResUserSimulations).simulations.map(s => {
 						const creation_date = new Date(s.creation_date as unknown as string);
 						const obj: SimulationInfo = { ...s, creation_date };
 						return obj;
