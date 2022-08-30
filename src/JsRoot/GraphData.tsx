@@ -2,7 +2,9 @@ import React from 'react';
 import JsRootGraph1D from './JsRootGraph1D';
 import JsRootGraph2D from './JsRootGraph2D';
 import JsRootGraph0D from './JsRootGraph0D';
-import { Grid } from '@mui/material';
+import { Button, Grid } from '@mui/material';
+import { saveString } from '../util/File';
+import { estimatorPageToCsv } from '../util/csv/Csv';
 import { ScoringOutputJSON } from '../ThreeEditor/util/Scoring/ScoringOutput';
 
 export type pageData = {
@@ -20,6 +22,7 @@ export type Page2D = {
 
 export type Page1D = {
 	data: pageData;
+	metadata?: unknown;
 	dimensions: 1;
 	first_axis: pageData;
 };
@@ -31,6 +34,7 @@ export type Page0D = {
 
 export type Estimator = {
 	name: string;
+	metadata?: unknown;
 	pages: Page[];
 	scoringOutputJsonRef?: ScoringOutputJSON;
 };
@@ -61,7 +65,14 @@ const getGraphFromPage = (page: Page, title?: string) => {
 	}
 };
 
-export function generateGraphs({ pages, name, scoringOutputJsonRef }: Estimator) {
+export function generateGraphs(estimator: Estimator) {
+	const { pages, name, scoringOutputJsonRef} = estimator;
+	const onClickSaveToFile = (page: Page1D) => {
+		saveString(
+			estimatorPageToCsv(estimator, page),
+			`graph_${name}_${page.data.name.replace(/ /g, '_')}.csv`
+		);
+	};
 	return pages
 		.map((page, idx) => {			
 			return getGraphFromPage(page, scoringOutputJsonRef?.quantities.active[idx].name);
@@ -70,6 +81,12 @@ export function generateGraphs({ pages, name, scoringOutputJsonRef }: Estimator)
 			return (
 				<Grid key={`graph_${name}_${idx}`} item xs={8}>
 					{graph}
+
+					{isPage1d(pages[idx]) && (
+						<Button onClick={() => onClickSaveToFile(pages[idx] as Page1D)}>
+							EXPORT TO CSV
+						</Button>
+					)}
 				</Grid>
 			);
 		});

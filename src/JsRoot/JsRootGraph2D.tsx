@@ -1,12 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Skeleton from '@mui/material/Skeleton';
 import { useJSROOT } from './JsRootService';
 import { useVisible } from 'react-hooks-visible';
 import { Page2D } from './GraphData';
+import useResizeObserver from 'use-resize-observer';
+import { throttle } from 'throttle-debounce';
+import { mergeRefs } from 'react-merge-refs';
 
 export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 	const { page, title } = props;
 	const { JSROOT } = useJSROOT();
+	const {
+		ref: resizeRef,
+		width: resizeWidth,
+		height: resizeHeight
+	} = useResizeObserver<HTMLDivElement>();
 	// Custom react hook, visible contains the percentage of the containterEl
 	// that is currently visible on screen
 	const [containerEl, visible] = useVisible<HTMLDivElement>();
@@ -65,23 +73,33 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 	}, [JSROOT, page, visible]);
 
 	useEffect(() => {
-		if (obj && !drawn && isVisible) {
-			JSROOT.cleanup(containerEl.current);
+		if (obj && !drawn) {
 			JSROOT.redraw(containerEl.current, obj, 'colz;gridxy;nostat;tickxy');
 			setDrawn(true);
 		}
-	}, [JSROOT, containerEl, drawn, obj, isVisible]);
+	}, [JSROOT, containerEl, drawn, obj]);
+
+	const resizeHandler = useCallback(() => {
+		if (isVisible) JSROOT.resize(containerEl.current);
+	}, [JSROOT, containerEl, isVisible]);
+	
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const debouncedResizeHandler = useCallback(
+		throttle(300, resizeHandler, { noTrailing: false }),
+		[resizeHandler]
+	);
+
+	useEffect(() => {
+		debouncedResizeHandler();
+	}, [debouncedResizeHandler, resizeHeight, resizeWidth]);
 
 	return (
 		<div
 			style={{
-				width: 500,
-				height: 500,
-				display: 'flex',
-				alignItems: 'center',
-				justifyContent: 'center'
+				width: '100%',
+				height: 500
 			}}
-			ref={containerEl}>
+			ref={mergeRefs([containerEl, resizeRef])}>
 			<Skeleton hidden={drawn} variant='rectangular' width={'80%'} height={'80%'} />
 		</div>
 	);

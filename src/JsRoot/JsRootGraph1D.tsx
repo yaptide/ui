@@ -1,11 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Skeleton from '@mui/material/Skeleton';
 import { useJSROOT } from './JsRootService';
 import { useVisible } from 'react-hooks-visible';
 import { Page1D } from './GraphData';
+import useResizeObserver from 'use-resize-observer';
+import { mergeRefs } from 'react-merge-refs';
+import { throttle } from 'throttle-debounce';
 
 export function JsRootGraph1D(props: Page1D) {
 	const { JSROOT } = useJSROOT();
+	const {
+		ref: resizeRef,
+		width: resizeWidth,
+		height: resizeHeight
+	} = useResizeObserver<HTMLDivElement>();
 	// Custom react hook, visible contains the percentage of the containterEl
 	// that is currently visible on screen
 	const [containerEl, visible] = useVisible<HTMLDivElement>();
@@ -28,7 +36,7 @@ export function JsRootGraph1D(props: Page1D) {
 		const x = props.first_axis.values;
 
 		const graph = JSROOT.createTGraph(npoints, x, y);
-		
+
 		// adding name using method suggested here:
 		// https://github.com/root-project/jsroot/issues/225#issuecomment-998260751
 		const histogram = JSROOT.createHistogram('TH1F', npoints);
@@ -52,30 +60,40 @@ export function JsRootGraph1D(props: Page1D) {
 
 		graph.fName = props.data.name;
 		graph.fTitle = `${props.data.name} [${props.data.unit}]`;
-		graph.fHistogram = histogram
+		graph.fHistogram = histogram;
 
 		setObj(graph);
 		setDrawn(false);
 	}, [JSROOT, props, visible]);
 
 	useEffect(() => {
-		if (obj && !drawn && isVisible) {
-			JSROOT.cleanup(containerEl.current);
+		if (obj && !drawn) {
 			JSROOT.redraw(containerEl.current, obj, 'gridxy;tickxy');
 			setDrawn(true);
 		}
-	}, [JSROOT, containerEl, drawn, obj, isVisible]);
+	}, [JSROOT, containerEl, drawn, obj]);
+
+	const resizeHandler = useCallback(() => {
+		if (isVisible) JSROOT.resize(containerEl.current);
+	}, [JSROOT, containerEl, isVisible]);
+
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const debouncedResizeHandler = useCallback(
+		throttle(300, resizeHandler, { noTrailing: false }),
+		[resizeHandler]
+	);
+
+	useEffect(() => {
+		debouncedResizeHandler();
+	}, [debouncedResizeHandler, resizeHeight, resizeWidth]);
 
 	return (
 		<div
 			style={{
-				width: 500,
-				height: 500,
-				display: 'flex',
-				alignItems: 'center',
-				justifyContent: 'center'
+				width: '100%',
+				height: 500
 			}}
-			ref={containerEl}>
+			ref={mergeRefs([containerEl, resizeRef])}>
 			<Skeleton hidden={drawn} variant='rectangular' width={'80%'} height={'80%'} />
 		</div>
 	);

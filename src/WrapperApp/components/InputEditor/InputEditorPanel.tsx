@@ -32,7 +32,7 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 			switch (generator) {
 				case 'remote':
 					return convertToInputFiles(editorJSON, controller.signal).then(res => {
-						return res.content.input_files;
+						return res.input_files;
 					});
 				case 'local':
 					return convertJSON(editorJSON).then(

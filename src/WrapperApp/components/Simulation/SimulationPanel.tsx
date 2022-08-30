@@ -109,7 +109,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		sendRun(input, controller.signal)
 			.then(res => {
 				updateSimulationInfo();
-				setTrackedId(res.content.task_id);
+				setTrackedId(res.task_id);
 			})
 			.catch(e => {
 				enqueueSnackbar('Error while starting simulation', { variant: 'error' });
