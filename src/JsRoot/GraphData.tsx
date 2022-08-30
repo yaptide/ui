@@ -3,6 +3,7 @@ import JsRootGraph1D from './JsRootGraph1D';
 import JsRootGraph2D from './JsRootGraph2D';
 import JsRootGraph0D from './JsRootGraph0D';
 import { Grid } from '@mui/material';
+import { ScoringOutputJSON } from '../ThreeEditor/util/Scoring/ScoringOutput';
 
 export type pageData = {
 	name: string;
@@ -31,6 +32,7 @@ export type Page0D = {
 export type Estimator = {
 	name: string;
 	pages: Page[];
+	scoringOutputJsonRef?: ScoringOutputJSON;
 };
 
 export type Page = Page2D | Page1D | Page0D;
@@ -47,9 +49,9 @@ export const isPage0d = (page: Page): page is Page0D => {
 	return (page as Page0D).dimensions === 0;
 };
 
-const getGraphFromPage = (page: Page) => {
+const getGraphFromPage = (page: Page, title?: string) => {
 	if (isPage2d(page)) {
-		return <JsRootGraph2D {...page} />;
+		return <JsRootGraph2D page={page} title={title} />;
 	} else if (isPage1d(page)) {
 		return <JsRootGraph1D {...page} />;
 	} else if (isPage0d(page)) {
@@ -59,10 +61,10 @@ const getGraphFromPage = (page: Page) => {
 	}
 };
 
-export function generateGraphs({ pages, name }: Estimator) {
+export function generateGraphs({ pages, name, scoringOutputJsonRef }: Estimator) {
 	return pages
-		.map(page => {
-			return getGraphFromPage(page);
+		.map((page, idx) => {			
+			return getGraphFromPage(page, scoringOutputJsonRef?.quantities.active[idx].name);
 		})
 		.map((graph, idx) => {
 			return (

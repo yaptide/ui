@@ -4,7 +4,8 @@ import { useJSROOT } from './JsRootService';
 import { useVisible } from 'react-hooks-visible';
 import { Page2D } from './GraphData';
 
-export function JsRootGraph2D(props: Page2D) {
+export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
+	const { page, title } = props;
 	const { JSROOT } = useJSROOT();
 	// Custom react hook, visible contains the percentage of the containterEl
 	// that is currently visible on screen
@@ -22,34 +23,36 @@ export function JsRootGraph2D(props: Page2D) {
 
 	useEffect(() => {
 		if (!visible) return;
-		const x = props.first_axis.values;
-		const y = props.second_axis.values;
-		const z = props.data.values;
+		const x = page.first_axis.values;
+		const y = page.second_axis.values;
+		const z = page.data.values;
 
 		const nxpoints = x.length;
 		const nypoints = y.length;
 
 		const histogram = JSROOT.createHistogram('TH2F', nxpoints, nypoints);
 
+		histogram.fTitle = title;
+
 		histogram.fXaxis.fXmin = x[0];
 		histogram.fXaxis.fXmax = x[nxpoints - 1];
-		histogram.fXaxis.fTitle = `${props.first_axis.name} [${props.first_axis.unit}]`;
+		histogram.fXaxis.fTitle = `${page.first_axis.name} [${page.first_axis.unit}]`;
 
 		histogram.fYaxis.fXmin = y[0];
 		histogram.fYaxis.fXmax = y[nypoints - 1];
-		histogram.fYaxis.fTitle = `${props.second_axis.name} [${props.second_axis.unit}]`;
+		histogram.fYaxis.fTitle = `${page.second_axis.name} [${page.second_axis.unit}]`;
 
 		// centering axes labels using method suggested here:
 		// https://github.com/root-project/jsroot/issues/225#issuecomment-998748035
 		histogram.fXaxis.InvertBit(JSROOT.BIT(12));
 		histogram.fYaxis.InvertBit(JSROOT.BIT(12));
 
-    // moving axes labels a bit away from axis object, as described here:
+		// moving axes labels a bit away from axis object, as described here:
 		// https://github.com/root-project/jsroot/issues/239
 		histogram.fXaxis.fTitleOffset = 1.4;
 		histogram.fYaxis.fTitleOffset = 1.4;
 
-		histogram.fTitle = `${props.data.name} [${props.data.unit}]`;
+		histogram.fTitle = `${page.data.name} [${page.data.unit}]`;
 
 		for (let x = 0; x < nxpoints; x++)
 			for (let y = 0; y < nypoints; y++) {
@@ -59,7 +62,7 @@ export function JsRootGraph2D(props: Page2D) {
 
 		setObj(histogram);
 		setDrawn(false);
-	}, [JSROOT, props, visible]);
+	}, [JSROOT, page, visible]);
 
 	useEffect(() => {
 		if (obj && !drawn && isVisible) {

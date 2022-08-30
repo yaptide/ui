@@ -136,7 +136,12 @@ export const recreateOrderInEstimators = (
 	estimators: Estimator[],
 	scoringManagerJSON: ScoringManagerJSON
 ): Estimator[] => {
-	return orderAccordingToList(estimators, scoringManagerJSON.scoringOutputs, 'name');
+	return orderAccordingToList(
+		estimators,
+		scoringManagerJSON.scoringOutputs,
+		'name',
+		(e, o) => (e.scoringOutputJsonRef = o)
+	);
 };
 
 const [useShSimulation, ShSimulationContextProvider] = createGenericContext<IShSimulation>();

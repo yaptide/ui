@@ -1,7 +1,7 @@
 import { Common } from "./Types";
 
 
-export const orderAccordingToList = <A extends C, B extends C, C extends Common<A, B>>(list: A[], orderList: B[], property: keyof C) => {
+export const orderAccordingToList = <A extends C, B extends C, C extends Common<A, B>>(list: A[], orderList: B[], property: keyof C, foundCallback?: (listElement: A, orderListElement: B) => void) => {
 
     const listCopy = [...list];
     const listOrdered = [];
@@ -15,6 +15,8 @@ export const orderAccordingToList = <A extends C, B extends C, C extends Common<
             console.warn(`OrderElement ${orderElement[property]} not found`);
             continue;
         }
+
+        foundCallback?.call(null, listCopy[index], orderElement);
 
         listOrdered.push(listCopy[index]);
         listCopy.splice(index, 1);
