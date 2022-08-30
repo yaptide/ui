@@ -30,8 +30,14 @@ const save = (key: string, value: unknown) => {
 };
 
 enum StorageKey {
-	USER = 'editor.user'
+	USER = 'editor.user',
+	SLURM = 'editor.grid'
 }
+
+type SlurmData = {
+	username?: string;
+	secret?: string;
+};
 
 export interface IAuth {
 	user: AuthUser | null;
@@ -41,6 +47,10 @@ export interface IAuth {
 	refresh: () => void;
 	status: () => void;
 	authKy: KyInstance;
+	slurmData: SlurmData;
+	setSlurmData: (data: SlurmData) => void;
+	isDataReq: boolean;
+	setDataReq: (isDataReq: boolean) => void;
 }
 
 interface ResAuthLogin extends IResponseMsg {
@@ -58,8 +68,15 @@ interface ResAuthStatus extends IResponseMsg {
 const [useAuth, AuthContextProvider] = createGenericContext<IAuth>();
 
 const Auth = (props: AuthProps) => {
+	const [slurmData, setSlurmData] = useState<SlurmData>(load(StorageKey.SLURM) ?? {});
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER));
 	const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
+	const [isDataReq, setDataReq] = useState(false);
+
+	const changeSlurmData = (data: SlurmData | null) => {
+		setSlurmData(data ?? {});
+		setDataReq(false);
+	};
 
 	const kyRef = useRef<KyInstance>(
 		ky.create({
@@ -85,7 +102,8 @@ const Auth = (props: AuthProps) => {
 
 	useEffect(() => {
 		save(StorageKey.USER, user);
-	}, [user]);
+		save(StorageKey.SLURM, slurmData);
+	}, [user, slurmData]);
 
 	const refresh = useCallback(() => {
 		if (DEMO_MODE) return;
@@ -93,15 +111,13 @@ const Auth = (props: AuthProps) => {
 			.get(`${BACKEND_URL}/auth/refresh`)
 			.json()
 			.then((response: unknown) => {
-				const {
-					access_exp
-				} = response as ResAuthRefresh;
+				const { access_exp } = response as ResAuthRefresh;
 
 				const refreshDelay = Math.max((access_exp - new Date().getTime()) / 2, 1000);
 
 				setRefreshInterval(refreshDelay);
 			})
-			.catch((_: HTTPError) => { });
+			.catch((_: HTTPError) => {});
 	}, []);
 
 	const status = useCallback(() => {
@@ -110,9 +126,7 @@ const Auth = (props: AuthProps) => {
 			.get(`${BACKEND_URL}/auth/status`)
 			.json()
 			.then(response => {
-				const {
-					login_name
-				} = response as ResAuthStatus;
+				const { login_name } = response as ResAuthStatus;
 
 				setUser(() => {
 					const user: AuthUser = {
@@ -121,7 +135,7 @@ const Auth = (props: AuthProps) => {
 					return user;
 				});
 			})
-			.catch((_: HTTPError) => { });
+			.catch((_: HTTPError) => {});
 	}, []);
 
 	useEffect(() => {
@@ -146,15 +160,13 @@ const Auth = (props: AuthProps) => {
 			.json()
 			.then((response: unknown) => {
 				setUser({ name: username });
-				const {
-					access_exp
-				} = response as ResAuthLogin;
+				const { access_exp } = response as ResAuthLogin;
 
 				const refreshDelay = Math.max((access_exp - new Date().getTime()) / 2, 1000);
 
 				setRefreshInterval(refreshDelay);
 			})
-			.catch((_: HTTPError) => { });
+			.catch((_: HTTPError) => {});
 	};
 
 	const logout = () => {
@@ -163,8 +175,9 @@ const Auth = (props: AuthProps) => {
 			.json()
 			.then(() => {
 				setUser(null);
+				changeSlurmData(null);
 			})
-			.catch((_: HTTPError) => { });
+			.catch((_: HTTPError) => {});
 	};
 
 	const value: IAuth = {
@@ -174,7 +187,11 @@ const Auth = (props: AuthProps) => {
 		logout,
 		authKy: kyRef.current,
 		status,
-		refresh
+		refresh,
+		slurmData,
+		isDataReq,
+		setDataReq,
+		setSlurmData: changeSlurmData
 	};
 
 	return <AuthContextProvider value={value}>{props.children}</AuthContextProvider>;

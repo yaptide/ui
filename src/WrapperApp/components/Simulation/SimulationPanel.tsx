@@ -22,7 +22,9 @@ import {
 } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
+import SlurmDataDrawer from './SlurmDataDrawer';
 import SimulationStatus from './SimulationStatus';
+import SimulationTypeSwitch from './SimulationTypeSwitch';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
@@ -120,6 +122,8 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	const onClickRun = () => runSimulation();
 
+	const toggleSimulationType = () => {};
+
 	const handleEditorModal = () => {
 		setShowInputFilesEditor(false);
 	};
@@ -135,6 +139,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				gap: '1.5rem',
 				height: 'min-content'
 			}}>
+			<SlurmDataDrawer />
 			<Modal
 				aria-labelledby='transition-modal-title'
 				aria-describedby='transition-modal-description'
@@ -160,6 +165,8 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					<Typography gutterBottom variant='h5' component='div'>
 						Backend Status - {isBackendAlive ? 'ALIVE' : 'DEAD'}
 					</Typography>
+					<SimulationTypeSwitch
+						handleChange={toggleSimulationType}></SimulationTypeSwitch>
 				</CardContent>
 			</Card>
 
