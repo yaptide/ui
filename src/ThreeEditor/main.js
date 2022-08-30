@@ -27,16 +27,16 @@ export function initEditor(container) {
 	container.appendChild(viewManager.dom);
 
 	const toolbar = new Toolbar(editor);
-	container.appendChild(toolbar.dom);
+	// container.appendChild(toolbar.dom);
 
 	const sidebar = new Sidebar(editor);
-	container.appendChild(sidebar.dom);
+	// container.appendChild(sidebar.dom);
 
 	const menubar = new Menubar(editor);
-	container.appendChild(menubar.dom);
+	// container.appendChild(menubar.dom);
 
 	const resizer = new Resizer(editor);
-	container.appendChild(resizer.dom);
+	// container.appendChild(resizer.dom);
 
 	//
 
