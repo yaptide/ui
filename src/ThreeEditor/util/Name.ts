@@ -34,7 +34,6 @@ export const implementsUniqueChildrenNames = (x: unknown): x is UniqueChildrenNa
 export const getNextFreeName = (parent: Object3D, name: string, searchingObject?: Object3D) => {
     return incrementName(name, (name) => {
         const child = parent.getObjectByName(name);
-        console.log(child === searchingObject, name);
         return child !== searchingObject && !!child;
     });
 }

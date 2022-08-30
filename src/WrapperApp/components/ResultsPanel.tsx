@@ -113,7 +113,10 @@ function ResultsPanel() {
 											index={idx}
 											persistentIfVisited>
 											<Grid container spacing={1}>
-												{generateGraphs(estimator)}
+												{generateGraphs(
+													estimator,
+													simulation?.editor?.detectManager?.filters ?? []
+												)}
 											</Grid>
 										</TabPanel>
 									);

@@ -40,8 +40,6 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 
 		const histogram = JSROOT.createHistogram('TH2F', nxpoints, nypoints);
 
-		histogram.fTitle = title;
-
 		histogram.fXaxis.fXmin = x[0];
 		histogram.fXaxis.fXmax = x[nxpoints - 1];
 		histogram.fXaxis.fTitle = `${page.first_axis.name} [${page.first_axis.unit}]`;
@@ -60,7 +58,7 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 		histogram.fXaxis.fTitleOffset = 1.4;
 		histogram.fYaxis.fTitleOffset = 1.4;
 
-		histogram.fTitle = `${page.data.name} [${page.data.unit}]`;
+		histogram.fTitle = title ?? `${page.data.name} [${page.data.unit}]`;
 
 		for (let x = 0; x < nxpoints; x++)
 			for (let y = 0; y < nypoints; y++) {
@@ -70,7 +68,7 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 
 		setObj(histogram);
 		setDrawn(false);
-	}, [JSROOT, page, visible]);
+	}, [JSROOT, page, title, visible]);
 
 	useEffect(() => {
 		if (obj && !drawn) {
@@ -82,7 +80,7 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 	const resizeHandler = useCallback(() => {
 		if (isVisible) JSROOT.resize(containerEl.current);
 	}, [JSROOT, containerEl, isVisible]);
-	
+
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const debouncedResizeHandler = useCallback(
 		throttle(300, resizeHandler, { noTrailing: false }),
