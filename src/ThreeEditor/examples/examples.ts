@@ -21,7 +21,7 @@ while (canImport) {
 			result.result.estimators,
 			editor.scoringManager
 		);
-
+		
 		EXAMPLES.push({ editor, result });
 		iterator++;
 	} catch (e) {
