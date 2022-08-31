@@ -78,8 +78,8 @@ export function generateGraphs(estimator: Estimator, FiltersJSON: FilterJSON[]) 
 	};
 	return pages
 		.map((page, idx) => {
-			const quantity: ScoringQuantityJSON = scoringOutputJsonRef!.quantities.active[idx];
-			const filter = FiltersJSON.find(o => o.uuid === quantity.filter);
+			const quantity = scoringOutputJsonRef?.quantities.active[idx];
+			const filter = FiltersJSON.find(o => o.uuid === quantity?.filter);
 			return { graph: getGraphFromPage(page, quantity?.name), filter };
 		})
 		.map(({ graph, filter }, idx) => {
