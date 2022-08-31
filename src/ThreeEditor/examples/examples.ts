@@ -1,7 +1,8 @@
-import { SimulationStatusData } from "../../services/ShSimulatorService";
+import { recreateOrderInEstimators, SimulationStatusData } from "../../services/ShSimulatorService";
+import { EditorJson } from "../js/EditorJson";
 
 export interface EditorExample {
-	editor: unknown;
+	editor: EditorJson;
 	result: SimulationStatusData;
 }
 
@@ -15,6 +16,12 @@ while (canImport) {
 		editor.result = result;
 		if (!(editor.project?.title && editor.project.title.length > 0))
 			editor.project.title = `Untitled example ${iterator}`;
+
+		result.result.estimators = recreateOrderInEstimators(
+			result.result.estimators,
+			editor.scoringManager
+		);
+
 		EXAMPLES.push({ editor, result });
 		iterator++;
 	} catch (e) {

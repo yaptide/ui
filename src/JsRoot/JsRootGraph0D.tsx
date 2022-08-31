@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Page0D } from './GraphData';
 
-export function JsRootGraph0D(props: Page0D) {
+export function JsRootGraph0D(props: { page: Page0D; title?: string }) {
+	const { page, title } = props;
 	const [resultValue, setResultValue] = useState(0);
 
 	useEffect(() => {
-		setResultValue(props.data.values[0]);
-	}, [props]);
+		setResultValue(page.data.values[0]);
+	}, [page]);
 
 	return (
 		<div
