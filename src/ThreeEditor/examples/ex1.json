@@ -109,7 +109,7 @@
 					"geometry": "744d5753-c4ab-4565-bfbd-77c981e84fec",
 					"material": "81a7aa32-b85f-45c4-bcd7-f648a0be12dc",
 					"geometryData": {
-						"id": 859,
+						"id": 958,
 						"geometryType": "CylinderGeometry",
 						"position": [0,0,10],
 						"rotation": [0,0,0],
@@ -129,7 +129,7 @@
 					"geometry": "918ef747-7846-462d-ab4d-a1bfef2d196a",
 					"material": "8485707f-07bf-49d2-86ab-070eb9878a00",
 					"geometryData": {
-						"id": 861,
+						"id": 960,
 						"geometryType": "CylinderGeometry",
 						"position": [0,0,10.5],
 						"rotation": [0,0,0],
@@ -176,15 +176,13 @@
 		"uuid": "368269D3-6F9B-4241-84A0-5D908D10E196",
 		"name": "Zones",
 		"worldZone": {
-			"uuid": "65e9ab34-419e-4782-b2c0-97ef12ef87e4",
+			"uuid": "ef88c351-6eb0-4e7c-a546-01a4d621a3ef",
 			"center": {
-				"isVector3": true,
 				"x": 0,
 				"y": 0,
 				"z": 10.5
 			},
 			"size": {
-				"isVector3": true,
 				"x": 6,
 				"y": 6,
 				"z": 24
@@ -391,29 +389,32 @@
 				"quantities": {
 					"active": [
 						{
+							"name": "Quantity",
 							"uuid": "e3488754-9a67-4d3c-b0ea-17300d651a8a",
 							"keyword": "DoseGy",
 							"modifiers": []
 						},
 						{
+							"name": "Quantity_1",
 							"uuid": "53ba1036-4975-4a96-a6bd-3d336fc72612",
 							"keyword": "Fluence",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
 							"modifiers": []
 						},
 						{
+							"name": "Quantity_2",
 							"uuid": "050f3919-a59b-45a4-9326-38d788c16ab7",
 							"keyword": "Fluence",
 							"filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
 							"modifiers": []
 						},
 						{
+							"name": "Quantity_3",
 							"uuid": "b3286437-b2a1-4ee9-b7da-8cc2cc435fcd",
 							"keyword": "Fluence",
 							"filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
 							"modifiers": []
-						}],
-					"disabled": []
+						}]
 				},
 				"detectGeometry": "186ec65a-8511-418b-8218-8890138c6b12",
 				"trace": false
@@ -424,23 +425,25 @@
 				"quantities": {
 					"active": [
 						{
+							"name": "Quantity",
 							"uuid": "c3499475-9496-4ee5-b705-950b83867dac",
 							"keyword": "DoseGy",
 							"modifiers": []
 						},
 						{
+							"name": "Quantity_1",
 							"uuid": "be97ed10-07af-49d2-b91a-5bfe09c0c228",
 							"keyword": "Fluence",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
 							"modifiers": []
 						},
 						{
+							"name": "Quantity_2",
 							"uuid": "69305c71-de72-466c-86bc-ba5e58635a9e",
 							"keyword": "Fluence",
 							"filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
 							"modifiers": []
-						}],
-					"disabled": []
+						}]
 				},
 				"detectGeometry": "3306e98b-5da2-46ee-8892-ac0191d645a7",
 				"trace": false
@@ -451,36 +454,42 @@
 				"quantities": {
 					"active": [
 						{
+							"name": "Quantity",
 							"uuid": "48b2c7a4-58c4-4ff7-816b-865ce146ae95",
 							"keyword": "AvgEnergy",
 							"filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
 							"modifiers": []
 						},
 						{
+							"name": "Quantity_1",
 							"uuid": "a9164784-1770-48d5-a772-3342fb06efe9",
 							"keyword": "AvgEnergy",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
 							"modifiers": []
 						},
 						{
+							"name": "Quantity_2",
 							"uuid": "2bf3b68d-a855-443a-8ea0-2bf05eeb9e65",
 							"keyword": "AvgEnergy",
 							"filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
 							"modifiers": []
 						},
 						{
+							"name": "Quantity_3",
 							"uuid": "d0c4addd-0775-420e-9240-d5ba3e279a2b",
 							"keyword": "dLET",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
 							"modifiers": []
 						},
 						{
+							"name": "Quantity_4",
 							"uuid": "a4e9cac1-a643-4448-bc4a-89977101cc67",
 							"keyword": "tLET",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
 							"modifiers": []
 						},
 						{
+							"name": "Quantity_5",
 							"uuid": "de64c12b-15cc-4e72-9262-b5507a738c9f",
 							"keyword": "Fluence",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
@@ -493,8 +502,7 @@
 									"isLog": false,
 									"uuid": "1afaf3d8-443f-4bac-8999-be914ff0691a"
 								}]
-						}],
-					"disabled": []
+						}]
 				},
 				"detectGeometry": "53fff3c4-30de-4210-9066-20dc0f90cccb",
 				"trace": false
@@ -505,36 +513,42 @@
 				"quantities": {
 					"active": [
 						{
+							"name": "Quantity",
 							"uuid": "54b85511-c885-41bd-a81d-a97842197764",
 							"keyword": "AvgEnergy",
 							"filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
 							"modifiers": []
 						},
 						{
+							"name": "Quantity_1",
 							"uuid": "e7ff88d1-e46a-4a69-b676-e8e3ed1e67fd",
 							"keyword": "AvgEnergy",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
 							"modifiers": []
 						},
 						{
+							"name": "Quantity_2",
 							"uuid": "95c292b9-966e-42fe-91a0-3d0f0db55876",
 							"keyword": "AvgEnergy",
 							"filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
 							"modifiers": []
 						},
 						{
+							"name": "Quantity_3",
 							"uuid": "efd9f82c-8e0e-4d3d-a22d-70a0cc11ef7b",
 							"keyword": "dLET",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
 							"modifiers": []
 						},
 						{
+							"name": "Quantity_4",
 							"uuid": "dac16bbd-e361-46d3-8eae-9c69571aea96",
 							"keyword": "tLET",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
 							"modifiers": []
 						},
 						{
+							"name": "Quantity_5",
 							"uuid": "65f821c8-a654-4f6f-b666-0fdc8c925cf5",
 							"keyword": "Fluence",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
@@ -547,12 +561,11 @@
 									"isLog": false,
 									"uuid": "07a5db58-a8ea-4175-93e7-9fe74ca14d34"
 								}]
-						}],
-					"disabled": []
+						}]
 				},
 				"detectGeometry": "deb6a8f8-fab3-488e-8a01-9bb3e8ea4649",
 				"trace": false
 			}]
 	},
-	"hash": "9646c25a7efc0d9e83edb12db02d102cc84fda8b"
+	"hash": "709261855545792b10536bdc1336f0510a146ce5"
 }
