@@ -40,6 +40,8 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 
 		const histogram = JSROOT.createHistogram('TH2F', nxpoints, nypoints);
 
+		histogram.fTitle = title;
+
 		histogram.fXaxis.fXmin = x[0];
 		histogram.fXaxis.fXmax = x[nxpoints - 1];
 		histogram.fXaxis.fTitle = `${page.first_axis.name} [${page.first_axis.unit}]`;

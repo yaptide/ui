@@ -1,4 +1,3 @@
-import { Object3D } from 'three';
 import { Editor } from '../../js/Editor';
 import { DetectFilter } from '../Detect/DetectFilter';
 import { DetectGeometry } from '../Detect/DetectGeometry';
