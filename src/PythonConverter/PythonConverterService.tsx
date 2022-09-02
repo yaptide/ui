@@ -64,7 +64,6 @@ const PythonConverter = (props: PythonConverterProps) => {
 	}, []);
 
 	useEffect(() => {
-		return;
 		if (!props.loadPyodide) return console.warn('loadPyodide is not defined');
 
 		async function initPyodide() {
