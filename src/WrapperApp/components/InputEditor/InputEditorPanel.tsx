@@ -111,7 +111,9 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 					color='primary'
 					value={generator}
 					exclusive
-					onChange={(_e, generator) => setGenerator(generator)}>
+					onChange={(_e, generator) => {
+						if (generator) setGenerator(generator);
+					}}>
 					<ToggleButton value='local'>Local</ToggleButton>
 					{!DEMO_MODE && <ToggleButton value='remote'>Remote</ToggleButton>}
 				</ToggleButtonGroup>
