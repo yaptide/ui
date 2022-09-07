@@ -2,37 +2,41 @@ import React from 'react';
 import JsRootGraph1D from './JsRootGraph1D';
 import JsRootGraph2D from './JsRootGraph2D';
 import JsRootGraph0D from './JsRootGraph0D';
-import { Box, Button, Card, CardContent, Grid, Paper, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
 import { saveString } from '../util/File';
-import { estimatorPageToCsv } from '../util/csv/Csv';
+import { estimatorPage1DToCsv } from '../util/csv/Csv';
 import { ScoringOutputJSON } from '../ThreeEditor/util/Scoring/ScoringOutput';
 import { FilterJSON } from '../ThreeEditor/util/Detect/DetectFilter';
-import { ScoringQuantityJSON } from '../ThreeEditor/util/Scoring/ScoringQuantity';
+import { EstimatorResults } from '../WrapperApp/components/Results/ResultsPanel';
 
 export type pageData = {
 	name: string;
 	unit: string;
 	values: number[];
 };
-
-export type Page2D = {
+export interface IPage {
+	filterRef?: FilterJSON;
+	dimension: number;
+	name?: string;
+}
+export interface Page2D extends IPage {
 	data: pageData;
 	dimensions: 2;
 	first_axis: pageData;
 	second_axis: pageData;
-};
+}
 
-export type Page1D = {
+export interface Page1D extends IPage {
 	data: pageData;
 	metadata?: unknown;
 	dimensions: 1;
 	first_axis: pageData;
-};
+}
 
-export type Page0D = {
+export interface Page0D extends IPage {
 	data: pageData;
 	dimensions: 0;
-};
+}
 
 export type Estimator = {
 	name: string;
@@ -59,28 +63,26 @@ const getGraphFromPage = (page: Page, title?: string) => {
 	if (isPage2d(page)) {
 		return <JsRootGraph2D page={page} title={title} />;
 	} else if (isPage1d(page)) {
-		return <JsRootGraph1D page={page} title={title}  />;
+		return <JsRootGraph1D page={page} title={title} />;
 	} else if (isPage0d(page)) {
-		return <JsRootGraph0D page={page} title={title}  />;
+		return <JsRootGraph0D page={page} title={title} />;
 	} else {
 		return <div>Error</div>;
 	}
 };
 
-export function generateGraphs(estimator: Estimator, FiltersJSON: FilterJSON[]) {
-	const { pages, name, scoringOutputJsonRef } = estimator;
+export function generateGraphs(estimator: EstimatorResults) {
+	const { gridPages, name } = estimator;
 
 	const onClickSaveToFile = (page: Page1D) => {
 		saveString(
-			estimatorPageToCsv(estimator, page),
+			estimatorPage1DToCsv(estimator, page),
 			`graph_${name}_${page.data.name.replace(/ /g, '_')}.csv`
 		);
 	};
-	return pages
-		.map((page, idx) => {
-			const quantity = scoringOutputJsonRef?.quantities.active[idx];
-			const filter = FiltersJSON.find(o => o.uuid === quantity?.filter);
-			return { graph: getGraphFromPage(page, quantity?.name), filter };
+	return gridPages
+		.map((page) => {
+			return { graph: getGraphFromPage(page, page.name), filter: page.filterRef };
 		})
 		.map(({ graph, filter }, idx) => {
 			return (
@@ -97,16 +99,24 @@ export function generateGraphs(estimator: Estimator, FiltersJSON: FilterJSON[]) 
 										<Typography>{filter?.name ?? 'None'}</Typography>
 										{filter && (
 											<Box>
-											<Typography variant='h6'>Rules:</Typography>											
-											{filter.rules.map((rule, idx) => (<Typography>{rule.keyword}{rule.operator}{rule.value}</Typography>))}
+												<Typography variant='h6'>Rules:</Typography>
+												{filter.rules.map((rule, idx) => (
+													<Typography>
+														{rule.keyword}
+														{rule.operator}
+														{rule.value}
+													</Typography>
+												))}
 											</Box>
-
 										)}
 									</Box>
 
-									{isPage1d(pages[idx]) && (
-										<Button sx={{ marginTop: '1rem' }}
-											onClick={() => onClickSaveToFile(pages[idx] as Page1D)}>
+									{isPage1d(gridPages[idx]) && (
+										<Button
+											sx={{ marginTop: '1rem' }}
+											onClick={() =>
+												onClickSaveToFile(gridPages[idx] as Page1D)
+											}>
 											EXPORT GRAPH TO CSV
 										</Button>
 									)}

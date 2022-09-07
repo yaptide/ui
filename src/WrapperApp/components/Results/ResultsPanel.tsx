@@ -10,10 +10,16 @@ import {
 	useMediaQuery
 } from '@mui/material';
 import React, { SyntheticEvent, useEffect, useState } from 'react';
-import { generateGraphs } from '../../JsRoot/GraphData';
-import { TabPanel } from './TabPanel';
-import { useStore } from '../../services/StoreService';
-import { saveString } from '../../util/File';
+import { Estimator, generateGraphs, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
+import { TabPanel } from '../TabPanel';
+import { useStore } from '../../../services/StoreService';
+import { saveString } from '../../../util/File';
+import TablePage0D from './ResultsTable';
+
+export interface EstimatorResults extends Estimator {
+	tablePages: Page0D[];
+	gridPages: Page[];
+}
 
 function ResultsPanel() {
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -21,9 +27,11 @@ function ResultsPanel() {
 	const { resultsSimulationData: simulation } = useStore();
 
 	const [tabsValue, setTabsValue] = useState(0);
+	const [estimatorsResults, setEstimatorsResults] = useState<EstimatorResults[]>([]);
 
 	useEffect(() => {
 		setTabsValue(0);
+		setEstimatorsResults(parseEstimators(simulation?.result?.estimators ?? []));
 	}, [simulation]);
 
 	const handleChange = (_event: SyntheticEvent, newValue: number) => {
@@ -32,6 +40,16 @@ function ResultsPanel() {
 
 	const onClickSaveToFile = () => {
 		saveString(JSON.stringify(simulation), `${simulation?.name}_result.json`);
+	};
+
+	const parseEstimators = (estimators: Estimator[]) => {
+		const estimatorResults = estimators.map(estimator => {
+			const tablePages = estimator.pages.filter(isPage0d);
+			const gridPages = estimator.pages.filter(p => !isPage0d(p));
+			const estimatorResults: EstimatorResults = { ...estimator, tablePages, gridPages };
+			return estimatorResults;
+		});
+		return estimatorResults;
 	};
 
 	return (
@@ -71,7 +89,7 @@ function ResultsPanel() {
 					maxWidth: '100vw',
 					width: '100%'
 				}}>
-				{(simulation?.result?.estimators?.length ?? 0) > 0 && (
+				{estimatorsResults.length > 0 && (
 					<>
 						<Card
 							sx={{
@@ -86,7 +104,7 @@ function ResultsPanel() {
 									variant='scrollable'
 									value={tabsValue}
 									onChange={handleChange}>
-									{simulation?.result?.estimators.map((estimator, idx) => {
+									{estimatorsResults.map((estimator, idx) => {
 										return (
 											<Tab
 												key={`tab_${estimator.name}`}
@@ -105,7 +123,7 @@ function ResultsPanel() {
 								bgcolor: prefersDarkMode ? 'text.disabled' : 'background.paper'
 							}}>
 							<CardContent>
-								{simulation?.result?.estimators.map((estimator, idx) => {
+								{estimatorsResults.map((estimator, idx) => {
 									return (
 										<TabPanel
 											key={`tab_panel_${estimator.name}`}
@@ -113,10 +131,10 @@ function ResultsPanel() {
 											index={idx}
 											persistentIfVisited>
 											<Grid container spacing={1}>
-												{generateGraphs(
-													estimator,
-													simulation?.editor?.detectManager?.filters ?? []
+												{estimator.tablePages.length > 0 && (
+													<TablePage0D estimator={estimator}></TablePage0D>
 												)}
+												{generateGraphs(estimator)}
 											</Grid>
 										</TabPanel>
 									);
