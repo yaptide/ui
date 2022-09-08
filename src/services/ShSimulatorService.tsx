@@ -7,6 +7,7 @@ import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { ScoringManagerJSON } from '../ThreeEditor/util/Scoring/ScoringManager';
 import { orderAccordingToList } from '../util/Sort';
+import { FilterJSON } from '../ThreeEditor/util/Detect/DetectFilter';
 
 export interface ShSimulationProps {
 	children: ReactNode;
@@ -118,7 +119,7 @@ export interface SimulationStatusData {
 	editor?: EditorJson;
 }
 
-export const recreateOrderInEstimators = (
+const recreateOrderInEstimators = (
 	estimators: Estimator[],
 	scoringManagerJSON: ScoringManagerJSON
 ): Estimator[] => {
@@ -128,6 +129,32 @@ export const recreateOrderInEstimators = (
 		'name',
 		(e, o) => (e.scoringOutputJsonRef = o)
 	);
+};
+
+const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]): void => {
+	estimators.forEach(estimator => {
+		const { pages, scoringOutputJsonRef } = estimator;
+		pages.forEach((page, idx) => {
+			const quantity = scoringOutputJsonRef?.quantities.active[idx];
+			const filter = FiltersJSON.find(o => o.uuid === quantity?.filter);
+			page.filterRef = filter;
+			page.name = quantity?.name;
+		});
+	});
+};
+
+export const recreateRefsInResults = (results: SimulationStatusData, editor?: EditorJson) => {
+	const targetEditor = editor ?? results.editor;	
+
+	if (!targetEditor) throw new Error('No editor data');
+	if (!results.result) throw new Error('No result data');
+
+	const { scoringManager, detectManager }: EditorJson = targetEditor;
+	results.result.estimators = recreateOrderInEstimators(
+		results.result.estimators,
+		scoringManager
+	);
+	recreateRefToFilters(results.result.estimators, detectManager?.filters);
 };
 
 const [useShSimulation, ShSimulationContextProvider] = createGenericContext<IShSimulation>();
@@ -240,10 +267,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 
 							if (resStatus.input && 'metadata' in resStatus.input) {
 								data.editor = resStatus.input;
-								data.result.estimators = recreateOrderInEstimators(
-									data.result.estimators,
-									data.editor.scoringManager
-								);
+								recreateRefsInResults(data);
 							}
 							break;
 					}

@@ -1,4 +1,4 @@
-import { recreateOrderInEstimators, SimulationStatusData } from "../../services/ShSimulatorService";
+import { recreateRefsInResults, SimulationStatusData } from "../../services/ShSimulatorService";
 import { EditorJson } from "../js/EditorJson";
 
 export interface EditorExample {
@@ -17,11 +17,8 @@ while (canImport) {
 		if (!(editor.project?.title && editor.project.title.length > 0))
 			editor.project.title = `Untitled example ${iterator}`;
 
-		result.result.estimators = recreateOrderInEstimators(
-			result.result.estimators,
-			editor.scoringManager
-		);
-		
+		recreateRefsInResults(result, editor);
+
 		EXAMPLES.push({ editor, result });
 		iterator++;
 	} catch (e) {
