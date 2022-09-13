@@ -112,8 +112,9 @@ jobs:
                       docker container prune --force
 
             # Copy the new files form the github agent onto the machine
+            # rsync option --delete deletes extraneous files from destination dirs
             - name: Copy files to the machine 📁
-              run: rsync -a ~/work/ui/ui ${{ env.FRONTEND_USER }}@${{ env.FRONTEND_HOST }}:~/ui --exclude={node_modules,build}
+              run: rsync --archive --delete ~/work/ui/ui ${{ env.FRONTEND_USER }}@${{ env.FRONTEND_HOST }}:~/ui --exclude={node_modules,build}
 
             - name: Build app and run docker container 🔨 & 🚀
               uses: appleboy/ssh-action@v0.1.5
