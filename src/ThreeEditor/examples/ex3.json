@@ -1,0 +1,547 @@
+{
+	"metadata": {
+		"version": 0.3,
+		"type": "Editor",
+		"generator": "Editor.toJSON"
+	},
+	"project": {
+		"title": "Proton beam scattering on thin target",
+		"description": "TODO",
+		"shadows": true,
+		"shadowType": 1,
+		"physicallyCorrectLights": false,
+		"toneMapping": 0,
+		"toneMappingExposure": 1
+	},
+	"scene": {
+		"metadata": {
+			"version": 4.5,
+			"type": "Object",
+			"generator": "Object3D.toJSON"
+		},
+		"geometries": [
+			{
+				"uuid": "60ee05a3-71b3-4189-b519-47d1cc9704be",
+				"type": "CylinderGeometry",
+				"radiusTop": 5.5,
+				"radiusBottom": 5.5,
+				"height": 70,
+				"radialSegments": 16,
+				"heightSegments": 1,
+				"openEnded": false,
+				"thetaStart": 0,
+				"thetaLength": 6.283185307179586
+			},
+			{
+				"uuid": "e36b081e-4c76-4fbf-9a05-cb6c902da382",
+				"type": "CylinderGeometry",
+				"radiusTop": 5,
+				"radiusBottom": 5,
+				"height": 2.42,
+				"radialSegments": 16,
+				"heightSegments": 1,
+				"openEnded": false,
+				"thetaStart": 0,
+				"thetaLength": 6.283185307179586
+			}],
+		"materials": [
+			{
+				"uuid": "8485707f-07bf-49d2-86ab-070eb9878a00",
+				"type": "MeshBasicMaterial",
+				"color": 0,
+				"reflectivity": 1,
+				"refractionRatio": 0.98,
+				"side": 2,
+				"opacity": 0.5,
+				"transparent": true,
+				"depthFunc": 3,
+				"depthTest": true,
+				"depthWrite": true,
+				"colorWrite": true,
+				"stencilWrite": false,
+				"stencilWriteMask": 255,
+				"stencilFunc": 519,
+				"stencilRef": 0,
+				"stencilFuncMask": 255,
+				"stencilFail": 7680,
+				"stencilZFail": 7680,
+				"stencilZPass": 7680,
+				"wireframe": true
+			},
+			{
+				"uuid": "0a35d734-51b7-48d9-8226-eeec2d488223",
+				"type": "MeshBasicMaterial",
+				"color": 0,
+				"reflectivity": 1,
+				"refractionRatio": 0.98,
+				"side": 2,
+				"opacity": 0.5,
+				"transparent": true,
+				"depthFunc": 3,
+				"depthTest": true,
+				"depthWrite": true,
+				"colorWrite": true,
+				"stencilWrite": false,
+				"stencilWriteMask": 255,
+				"stencilFunc": 519,
+				"stencilRef": 0,
+				"stencilFuncMask": 255,
+				"stencilFail": 7680,
+				"stencilZFail": 7680,
+				"stencilZPass": 7680,
+				"wireframe": true
+			}],
+		"object": {
+			"uuid": "C1BF5EE7-ACC7-4896-8451-A5B358DF9889",
+			"type": "Scene",
+			"name": "Figures",
+			"layers": 1,
+			"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+			"children": [
+				{
+					"uuid": "aeeffad9-ed86-44ae-bfe4-b5f78580741b",
+					"type": "CylinderMesh",
+					"name": "Air",
+					"visible": false,
+					"layers": 1,
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,-20,1],
+					"geometry": "60ee05a3-71b3-4189-b519-47d1cc9704be",
+					"material": "8485707f-07bf-49d2-86ab-070eb9878a00",
+					"geometryData": {
+						"id": 960,
+						"geometryType": "CylinderGeometry",
+						"position": [0,0,-20],
+						"rotation": [0,0,0],
+						"parameters": {
+							"radius": 5.5,
+							"depth": 70
+						}
+					}
+				},
+				{
+					"uuid": "b1b59917-f98b-4fc9-aab8-c78b68616df6",
+					"type": "CylinderMesh",
+					"name": "PMMA",
+					"layers": 1,
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,-40,1],
+					"geometry": "e36b081e-4c76-4fbf-9a05-cb6c902da382",
+					"material": "0a35d734-51b7-48d9-8226-eeec2d488223",
+					"geometryData": {
+						"id": 1098,
+						"geometryType": "CylinderGeometry",
+						"position": [0,0,-40],
+						"rotation": [0,0,0],
+						"parameters": {
+							"radius": 5,
+							"depth": 2.42
+						}
+					}
+				}]
+		}
+	},
+	"history": {
+		"undos": [],
+		"redos": []
+	},
+	"zoneManager": {
+		"zones": [
+			{
+				"uuid": "a2c614cf-7074-4abe-a757-4a850f6731b3",
+				"name": "Air_zone",
+				"materialUuid": "349d8999-11d2-40f8-b99f-b6dcc0f2c844",
+				"unionOperations": [[
+						{
+							"mode": "union",
+							"objectUuid": "aeeffad9-ed86-44ae-bfe4-b5f78580741b"
+						},
+						{
+							"mode": "subtraction",
+							"objectUuid": "b1b59917-f98b-4fc9-aab8-c78b68616df6"
+						}]],
+				"subscribedObjects": {
+					"aeeffad9-ed86-44ae-bfe4-b5f78580741b": 1,
+					"b1b59917-f98b-4fc9-aab8-c78b68616df6": 1
+				}
+			},
+			{
+				"uuid": "cf81c73e-03ef-4df1-b044-61972e539ef1",
+				"name": "PMMA",
+				"materialUuid": "05ec1d44-947a-4388-afe4-3b94ae80434b",
+				"unionOperations": [[
+						{
+							"mode": "union",
+							"objectUuid": "b1b59917-f98b-4fc9-aab8-c78b68616df6"
+						}]],
+				"subscribedObjects": {
+					"b1b59917-f98b-4fc9-aab8-c78b68616df6": 1
+				}
+			}],
+		"uuid": "368269D3-6F9B-4241-84A0-5D908D10E196",
+		"name": "Zones",
+		"worldZone": {
+			"uuid": "cb88e2f6-0e42-4fa7-9e48-1d5ed31d8810",
+			"center": {
+				"x": 0,
+				"y": 0,
+				"z": 0
+			},
+			"size": {
+				"x": 6,
+				"y": 6,
+				"z": 10
+			},
+			"type": "WorldZone",
+			"geometryType": "Cylinder",
+			"name": "World Zone",
+			"marginMultiplier": 1.1,
+			"autoCalculate": false,
+			"materialUuid": "1dd2e8f0-6684-42c2-ad35-7aa55358204e",
+			"geometryData": {
+				"id": 14,
+				"geometryType": "CylinderGeometry",
+				"position": [0,0,0],
+				"rotation": [0,0,0],
+				"parameters": {
+					"radius": 6,
+					"depth": 10
+				}
+			}
+		}
+	},
+	"detectManager": {
+		"uuid": "9A7D17B8-BAE4-441F-965F-490CAA617EC6",
+		"name": "DetectManager",
+		"detectGeometries": [
+			{
+				"uuid": "186ec65a-8511-418b-8218-8890138c6b12",
+				"data": {
+					"radius": 5,
+					"innerRadius": 0,
+					"depth": 50,
+					"radialSegments": 1,
+					"zSegments": 400
+				},
+				"type": "Cyl",
+				"position": [0,0,-25],
+				"name": "CylZ_Mesh",
+				"colorHex": 327424
+			},
+			{
+				"uuid": "3306e98b-5da2-46ee-8892-ac0191d645a7",
+				"data": {
+					"width": 0.5,
+					"height": 4,
+					"depth": 50,
+					"xSegments": 1,
+					"ySegments": 80,
+					"zSegments": 400
+				},
+				"type": "Mesh",
+				"position": [0,0,-25],
+				"name": "YZ_Mesh",
+				"colorHex": 65535
+			},
+			{
+				"uuid": "53fff3c4-30de-4210-9066-20dc0f90cccb",
+				"data": {
+					"radius": 5,
+					"innerRadius": 0,
+					"depth": 0.1,
+					"radialSegments": 1,
+					"zSegments": 1
+				},
+				"type": "Cyl",
+				"position": [0,0,-45],
+				"name": "BeforePMMA",
+				"colorHex": 65535
+			},
+			{
+				"uuid": "deb6a8f8-fab3-488e-8a01-9bb3e8ea4649",
+				"data": {
+					"radius": 5,
+					"innerRadius": 0,
+					"depth": 0.1,
+					"radialSegments": 1,
+					"zSegments": 1
+				},
+				"type": "Cyl",
+				"position": [0,0,3],
+				"name": "Isocenter",
+				"colorHex": 65535
+			}],
+		"filters": [
+			{
+				"uuid": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+				"name": "Protons",
+				"rules": [
+					{
+						"uuid": "e5f50132-6d2a-4606-a58d-24a764d1a413",
+						"keyword": "Z",
+						"operator": "==",
+						"value": 1
+					},
+					{
+						"uuid": "f25fb8bb-fdaa-49ae-9483-76bf6f8de0a6",
+						"keyword": "A",
+						"operator": "==",
+						"value": 1
+					}]
+			},
+			{
+				"uuid": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
+				"name": "Primaries",
+				"rules": [
+					{
+						"uuid": "624050ff-9761-4688-99e3-b3ba9592ae78",
+						"keyword": "Z",
+						"operator": "==",
+						"value": 1
+					},
+					{
+						"uuid": "6cef8b17-9337-46e5-b522-70a9d1b26324",
+						"keyword": "A",
+						"operator": "==",
+						"value": 1
+					},
+					{
+						"uuid": "d9b7c82e-338f-40d9-b316-67ed0bab2eb1",
+						"keyword": "GEN",
+						"operator": "==",
+						"value": 0
+					}]
+			},
+			{
+				"uuid": "6ba215e8-359e-447d-bac9-4f2808faed51",
+				"name": "Secondary_protons",
+				"rules": [
+					{
+						"uuid": "3d485d37-4753-4afa-85ab-ed0f9bc5ae3b",
+						"keyword": "Z",
+						"operator": "==",
+						"value": 1
+					},
+					{
+						"uuid": "b9b5c2a9-6625-409f-81e2-827799cef0a5",
+						"keyword": "A",
+						"operator": "==",
+						"value": 1
+					},
+					{
+						"uuid": "919e4280-15ad-449b-9495-1cf1ac0337bc",
+						"keyword": "GEN",
+						"operator": ">=",
+						"value": 1
+					}]
+			}]
+	},
+	"beam": {
+		"position": [0,0,-51],
+		"direction": [0,0,1],
+		"energy": 58.01,
+		"energySpread": 0.48,
+		"divergence": {
+			"x": 0,
+			"y": 0,
+			"distanceToFocal": 0
+		},
+		"particle": {
+			"id": 2,
+			"a": 1,
+			"z": 1
+		},
+		"colorHex": 16776960,
+		"numberOfParticles": 3000
+	},
+	"materialManager": {
+		"materials": [
+			{
+				"uuid": "1dd2e8f0-6684-42c2-ad35-7aa55358204e",
+				"name": "BLACK HOLE",
+				"icru": 0,
+				"color": 196613
+			},
+			{
+				"uuid": "349d8999-11d2-40f8-b99f-b6dcc0f2c844",
+				"name": "AIR, DRY (NEAR SEA LEVEL)",
+				"icru": 104,
+				"transparent": true,
+				"opacity": 0.1
+			},
+			{
+				"uuid": "05ec1d44-947a-4388-afe4-3b94ae80434b",
+				"name": "POLYMETHYL METHACRALATE (LUCITE, PERSPEX, PMMA)",
+				"icru": 223,
+				"color": 0
+			},
+			{
+				"uuid": "49ce56b9-ee48-4640-88d4-bcfd660d8c0e",
+				"name": "WATER, LIQUID",
+				"icru": 276,
+				"color": 34047,
+				"opacity": 0.4,
+				"transparent": true
+			},
+			{
+				"uuid": "cd7c2eb0-e91f-4144-b4eb-536e4626cc09",
+				"name": "VACUUM",
+				"icru": 1000,
+				"color": 16119285,
+				"transparent": true,
+				"opacity": 0.1
+			}],
+		"selectedMaterials": {
+			"1dd2e8f0-6684-42c2-ad35-7aa55358204e": 1,
+			"349d8999-11d2-40f8-b99f-b6dcc0f2c844": 1,
+			"05ec1d44-947a-4388-afe4-3b94ae80434b": 1
+		}
+	},
+	"scoringManager": {
+		"uuid": "D0F67F59-F311-4F8E-A06F-5A07D618FDE2",
+		"name": "Outputs",
+		"scoringOutputs": [
+			{
+				"name": "z_profile",
+				"uuid": "d24dd7eb-6a7c-40d0-b39e-f4424b3dd937",
+				"quantities": {
+					"active": [
+						{
+							"name": "Quantity_1",
+							"uuid": "53ba1036-4975-4a96-a6bd-3d336fc72612",
+							"keyword": "Fluence",
+							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+							"modifiers": []
+						},
+						{
+							"name": "Quantity_2",
+							"uuid": "050f3919-a59b-45a4-9326-38d788c16ab7",
+							"keyword": "Fluence",
+							"filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
+							"modifiers": []
+						},
+						{
+							"name": "Quantity_4",
+							"uuid": "904e9920-033e-40dd-97fc-1f96a2707d1a",
+							"keyword": "AvgEnergy",
+							"filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
+							"modifiers": []
+						}]
+				},
+				"detectGeometry": "186ec65a-8511-418b-8218-8890138c6b12",
+				"trace": false
+			},
+			{
+				"name": "yz_profile",
+				"uuid": "6e69ee1b-a73c-4936-a5a2-e81f5bf8bc04",
+				"quantities": {
+					"active": [
+						{
+							"name": "Fluence_protons",
+							"uuid": "be97ed10-07af-49d2-b91a-5bfe09c0c228",
+							"keyword": "Fluence",
+							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+							"modifiers": []
+						},
+						{
+							"name": "Fluence_primaries",
+							"uuid": "4a9830b6-66d8-4d42-9035-dd5cceefcef9",
+							"keyword": "Fluence",
+							"filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
+							"modifiers": []
+						}]
+				},
+				"detectGeometry": "3306e98b-5da2-46ee-8892-ac0191d645a7",
+				"trace": false
+			},
+			{
+				"name": "before_pmma",
+				"uuid": "2e46a6ab-35d7-4fce-9de8-406a47fc9180",
+				"quantities": {
+					"active": [
+						{
+							"name": "Quantity",
+							"uuid": "48b2c7a4-58c4-4ff7-816b-865ce146ae95",
+							"keyword": "AvgEnergy",
+							"filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
+							"modifiers": []
+						},
+						{
+							"name": "Quantity_1",
+							"uuid": "a9164784-1770-48d5-a772-3342fb06efe9",
+							"keyword": "AvgEnergy",
+							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+							"modifiers": []
+						},
+						{
+							"name": "Quantity_2",
+							"uuid": "2bf3b68d-a855-443a-8ea0-2bf05eeb9e65",
+							"keyword": "AvgEnergy",
+							"filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
+							"modifiers": []
+						},
+						{
+							"name": "Quantity_5",
+							"uuid": "de64c12b-15cc-4e72-9262-b5507a738c9f",
+							"keyword": "Fluence",
+							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+							"modifiers": [
+								{
+									"diffType": "E",
+									"lowerLimit": 0,
+									"upperLimit": 70,
+									"binsNumber": 700,
+									"isLog": false,
+									"uuid": "1afaf3d8-443f-4bac-8999-be914ff0691a"
+								}]
+						}]
+				},
+				"detectGeometry": "53fff3c4-30de-4210-9066-20dc0f90cccb",
+				"trace": false
+			},
+			{
+				"name": "isocenter",
+				"uuid": "a9e8737f-edae-45fe-9395-1e6b220ef384",
+				"quantities": {
+					"active": [
+						{
+							"name": "Quantity",
+							"uuid": "54b85511-c885-41bd-a81d-a97842197764",
+							"keyword": "AvgEnergy",
+							"filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
+							"modifiers": []
+						},
+						{
+							"name": "Quantity_1",
+							"uuid": "e7ff88d1-e46a-4a69-b676-e8e3ed1e67fd",
+							"keyword": "AvgEnergy",
+							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+							"modifiers": []
+						},
+						{
+							"name": "Quantity_2",
+							"uuid": "95c292b9-966e-42fe-91a0-3d0f0db55876",
+							"keyword": "AvgEnergy",
+							"filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
+							"modifiers": []
+						},
+						{
+							"name": "Quantity_5",
+							"uuid": "65f821c8-a654-4f6f-b666-0fdc8c925cf5",
+							"keyword": "Fluence",
+							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+							"modifiers": [
+								{
+									"diffType": "E",
+									"lowerLimit": 0,
+									"upperLimit": 70,
+									"binsNumber": 700,
+									"isLog": false,
+									"uuid": "07a5db58-a8ea-4175-93e7-9fe74ca14d34"
+								}]
+						}]
+				},
+				"detectGeometry": "deb6a8f8-fab3-488e-8a01-9bb3e8ea4649",
+				"trace": false
+			}]
+	},
+	"hash": "798af530124acf4f954936cee804c2d5a62acd55"
+}
