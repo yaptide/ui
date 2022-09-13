@@ -1,11 +1,16 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import { Estimator, Page0D } from '../../../JsRoot/GraphData';
-import { Button } from '@mui/material';
-import { estimatorPage1DToCsv, pages0DToCsv } from '../../../util/csv/Csv';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { Button, Stack, Switch, Typography } from '@mui/material';
+import { pages0DToCsv } from '../../../util/csv/Csv';
 import { saveString } from '../../../util/File';
 import { EstimatorResults } from './ResultsPanel';
+import { useState } from 'react';
+
+import configureMeasurements from 'convert-units';
+import electronVolt from '../../../util/convertUnits/electronvolt';
+
+const convert = configureMeasurements({ electronVolt });
 
 export interface TablePage0DItem {
 	id: number;
@@ -30,12 +35,19 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 	const { estimator } = props;
 	const { tablePages: pages } = estimator;
 	const tablePages: TablePage0DItem[] = pages.map((page, idx) => {
+		let convertedValue = null;
+		try {
+			convertedValue = convert(page.data.values[0])
+				.from(page.data.unit as any)
+				.toBest();
+		} catch (e) {}
+
 		return {
 			id: idx,
 			name: page.name ?? '',
 			quantity: page.data.name,
-			value: page.data.values[0],
-			unit: page.data.unit,
+			value: convertedValue?.val ?? page.data.values[0],
+			unit: convertedValue?.unit ?? page.data.unit,
 			filterName: page.filterRef?.name ?? '',
 			filterRules:
 				page.filterRef?.rules
@@ -43,6 +55,11 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 					.join('; ') ?? ''
 		};
 	});
+	const [isUnitFixed, setUnitFixed] = useState(false);
+
+	const handleChangeUnitFixed = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setUnitFixed(event.target.checked);
+	};
 
 	const onClickSaveToFile = (pages: TablePage0DItem[]) => {
 		saveString(pages0DToCsv(estimator, pages), `table_${estimator.name}.csv`);
@@ -54,6 +71,11 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 				EXPORT TABLE TO CSV
 			</Button>
 
+			<Stack direction='row' spacing={1} alignItems='center' sx={{ marginLeft: '.5rem' }}>
+				<Typography>Unit: Auto</Typography>
+				<Switch checked={isUnitFixed} onChange={handleChangeUnitFixed} color='primary' />
+				<Typography>Fixed</Typography>
+			</Stack>
 			<DataGrid
 				initialState={{ columns: { columnVisibilityModel: { id: false } } }}
 				rows={tablePages}
