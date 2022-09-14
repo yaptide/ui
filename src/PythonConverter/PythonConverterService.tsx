@@ -1,11 +1,13 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import * as Comlink from 'comlink';
 import { createGenericContext } from '../util/GenericContext';
 import makeAsyncScriptLoader from 'react-async-script';
 import { InputFiles } from '../services/ShSimulatorService';
+import { IPythonWorker, } from './PythonWorker';
 
 // as for now there is no reasonable npm package for pyodide
 // CND method is suggested in https://pyodide.org/en/stable/usage/downloading-and-deploying.html
-const PythonConverterUrl = 'https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js';
+const PyodideUrl = 'https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js';
 
 declare global {
 	interface Window {
@@ -57,6 +59,10 @@ const PYODIDE_LOADED = 'PYODIDE_LOADED';
  */
 const PythonConverter = (props: PythonConverterProps) => {
 	const pyodideRef = useRef(window.pyodide);
+
+	const workerRef = useRef(Comlink.wrap<IPythonWorker>(new Worker(new URL('./PythonWorker.ts', import.meta.url))));
+	workerRef.current.log('import sys');
+	
 	const [isConverterReady, setConverterReady] = useState(false);
 
 	const checkIfConvertReady = useCallback(() => {
@@ -64,6 +70,7 @@ const PythonConverter = (props: PythonConverterProps) => {
 	}, []);
 
 	useEffect(() => {
+		return;
 		if (!props.loadPyodide) return console.warn('loadPyodide is not defined');
 
 		async function initPyodide() {
@@ -132,7 +139,7 @@ print(micropip.list())
 	);
 };
 
-const AsyncLoaderPythonConverter = makeAsyncScriptLoader(PythonConverterUrl, {
+const AsyncLoaderPythonConverter = makeAsyncScriptLoader(PyodideUrl, {
 	globalName: 'loadPyodide'
 })(PythonConverter);
 

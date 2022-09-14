@@ -1,8 +1,6 @@
 import * as Comlink from 'comlink';
 import { Signal } from 'signals';
 import * as THREE from 'three';
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import Worker from 'worker-loader!./CSGWorker';
 import { Editor } from '../../js/Editor';
 import { SimulationSceneGroup } from '../SimulationBase/SimulationGroup';
 import { ISimulationObject } from '../SimulationBase/SimulationObject';
@@ -65,7 +63,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 		light.position.set(15, 15, 15);
 		this.add(light);
 		this.add(this.zoneContainer);
-		this.worker = Comlink.wrap<IZoneWorker>(new Worker());
+		this.worker = Comlink.wrap<IZoneWorker>(new Worker(new URL('./CSGWorker.ts', import.meta.url)));
 		this.editor = editor;
 		this.signals = editor.signals;
 

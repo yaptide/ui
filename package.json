@@ -25,6 +25,7 @@
 		"ky": "^0.31.1",
 		"notistack": "^2.0.5",
 		"object-hash": "^3.0.0",
+		"pyodide": "^0.21.2",
 		"react": "^17.0.2",
 		"react-async-script": "^1.2.0",
 		"react-countdown": "^2.3.2",
@@ -94,7 +95,6 @@
 		"gh-pages": "^4.0.0",
 		"prettier": "2.7.1",
 		"react-app-rewired": "^2.2.1",
-		"use-resize-observer": "^9.0.2",
-		"worker-loader": "^3.0.8"
+		"use-resize-observer": "^9.0.2"
 	}
 }
