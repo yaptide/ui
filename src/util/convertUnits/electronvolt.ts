@@ -1,3 +1,10 @@
+import { Measure } from "convert-units";
+
+export type ReactiveEnergyUnits = ElectronovoltSIUnits;
+export type ElectronovoltSystems = 'SI';
+
+export type ElectronovoltSIUnits = keyof typeof SI;
+
 const SI = {
   eV: {
     name: {
@@ -50,7 +57,7 @@ const SI = {
   },
 };
 
-const electronVolt = {
+const electronVolt: Measure<ElectronovoltSystems, ReactiveEnergyUnits> = {
   systems: {
     SI,
   },

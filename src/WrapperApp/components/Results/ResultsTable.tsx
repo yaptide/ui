@@ -1,17 +1,12 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import { Button, Stack, Switch, Typography } from '@mui/material';
 import { pages0DToCsv } from '../../../util/csv/Csv';
 import { saveString } from '../../../util/File';
 import { EstimatorResults } from './ResultsPanel';
 import { useState } from 'react';
-
-import configureMeasurements from 'convert-units';
-import electronVolt from '../../../util/convertUnits/electronvolt';
-
-const convert = configureMeasurements({ electronVolt });
-
+import { convertValue } from '../../../util/convertUnits/Units';
 export interface TablePage0DItem {
 	id: number;
 	name: string;
@@ -25,22 +20,32 @@ const columns: GridColDef[] = [
 	{ field: 'id', headerName: 'ID' },
 	{ field: 'name', headerName: 'Name' },
 	{ field: 'quantity', headerName: 'Quantity', flex: 1 },
-	{ field: 'value', headerName: 'Value', type: 'number', flex: 1 },
+	{
+		field: 'value',
+		headerName: 'Value',
+		type: 'number',
+		flex: 1,
+		valueGetter: (params: GridValueGetterParams) => formatValue(params.row.value)
+	},
 	{ field: 'unit', headerName: 'Unit', width: 100 },
 	{ field: 'filterName', headerName: 'Filter name', flex: 1 },
 	{ field: 'filterRules', headerName: 'Filter rules', flex: 1 }
 ];
 
+const formatValue = (value: number) => {
+	const precision = 6;
+	if (value >= 0.0001 && value <= 10000) return value.toPrecision(precision);
+	else return value.toExponential(precision);
+};
+
 export default function TablePage0D(props: { estimator: EstimatorResults }) {
 	const { estimator } = props;
 	const { tablePages: pages } = estimator;
-	const tablePages: TablePage0DItem[] = pages.map((page, idx) => {
-		let convertedValue = null;
-		try {
-			convertedValue = convert(page.data.values[0])
-				.from(page.data.unit as any)
-				.toBest();
-		} catch (e) {}
+
+	const [isUnitFixed, setUnitFixed] = useState(false);
+
+	const tablePages: TablePage0DItem[] = pages.map((page, idx) => {		
+		let convertedValue = isUnitFixed ? null : convertValue(page.data.values[0], page.data.unit);
 
 		return {
 			id: idx,
@@ -55,7 +60,8 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 					.join('; ') ?? ''
 		};
 	});
-	const [isUnitFixed, setUnitFixed] = useState(false);
+
+	
 
 	const handleChangeUnitFixed = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setUnitFixed(event.target.checked);
