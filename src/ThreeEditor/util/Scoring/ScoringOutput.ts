@@ -1,25 +1,20 @@
 import { Editor } from '../../js/Editor';
 import { DetectFilter } from '../Detect/DetectFilter';
 import { DetectGeometry } from '../Detect/DetectGeometry';
+import { getNextFreeName, UniqueChildrenNames } from '../Name';
 import { SimulationSceneGroup } from '../SimulationBase/SimulationGroup';
 import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
 
 export type ScoringOutputJSON = {
 	uuid: string;
 	name: string;
-	quantities:
-		| {
-				active: ScoringQuantityJSON[];
-		  }
-		| {
-				disabled: ScoringQuantityJSON[];
-		  };
+	quantities: { active: ScoringQuantityJSON[] };
 	detectGeometry?: string;
 	primaries?: number;
 	trace: boolean;
 	traceFilter?: string;
 };
-export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> {
+export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> implements UniqueChildrenNames {
 	readonly isOutput: true = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -78,21 +73,6 @@ export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> {
 		this._trace = [false, ''];
 	}
 
-	toJSON(): ScoringOutputJSON {
-		return {
-			name: this.name,
-			uuid: this.uuid,
-			quantities: {
-				active: this.children.map(qty => qty.toJSON()),
-				disabled: this._disabledChildren.map(qty => qty.toJSON())
-			},
-			detectGeometry: this._geometry,
-			trace: this._trace[0],
-			...(this.primaries[1] && { primaries: this.primaries[1] }),
-			...(this.trace[1] && { traceFilter: this.trace[1] })
-		};
-	}
-
 	createQuantity(): ScoringQuantity {
 		const quantity = new ScoringQuantity(this.editor);
 		this.addQuantity(quantity);
@@ -102,6 +82,7 @@ export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> {
 	addQuantity(quantity: ScoringQuantity): this {
 		if (this._trace[0]) this._disabledChildren.push(quantity);
 		else this.children.push(quantity);
+		quantity.name = this.getNextFreeName(quantity);
 		quantity.parent = this;
 		return this;
 	}
@@ -115,6 +96,22 @@ export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> {
 
 	getQuantityByUuid(uuid: string): ScoringQuantity | null {
 		return this.children.find(qty => qty.uuid === uuid) || null;
+	}
+
+	getNextFreeName(quantity: ScoringQuantity, newName?: string): string {
+		return getNextFreeName(this, newName ?? quantity.name, quantity);
+	}
+
+	toJSON(): ScoringOutputJSON {
+		return {
+			name: this.name,
+			uuid: this.uuid,
+			quantities: { active: [...this.children.map(qty => qty.toJSON()), ...this._disabledChildren.map(qty => qty.toJSON())] },
+			detectGeometry: this._geometry,
+			trace: this._trace[0],
+			...(this.primaries[1] && { primaries: this.primaries[1] }),
+			...(this.trace[1] && { traceFilter: this.trace[1] })
+		};
 	}
 
 	fromJSON(json: ScoringOutputJSON): this {

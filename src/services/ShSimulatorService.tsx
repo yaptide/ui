@@ -7,6 +7,7 @@ import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { ScoringManagerJSON } from '../ThreeEditor/util/Scoring/ScoringManager';
 import { orderAccordingToList } from '../util/Sort';
+import { FilterJSON } from '../ThreeEditor/util/Detect/DetectFilter';
 
 export interface ShSimulationProps {
 	children: ReactNode;
@@ -35,9 +36,7 @@ export interface IShSimulation {
 }
 
 interface ResShRun extends IResponseMsg {
-	content: {
-		task_id: string;
-	};
+	task_id: string;
 }
 
 export interface SimulationInfo {
@@ -47,9 +46,7 @@ export interface SimulationInfo {
 }
 
 interface ResUserSimulations extends IResponseMsg {
-	content: {
-		simulations: SimulationInfo[];
-	};
+	simulations: SimulationInfo[];
 }
 
 export enum StatusState {
@@ -59,21 +56,17 @@ export enum StatusState {
 	SUCCESS = 'SUCCESS'
 }
 interface ResShStatusPending extends IResponseMsg {
-	content: {
-		state: StatusState.PENDING;
-	};
+	state: StatusState.PENDING;
 }
 
 interface ResShStatusProgress extends IResponseMsg {
-	content: {
-		state: StatusState.PROGRESS;
-		info: {
-			simulated_primaries: number;
-			estimated?: {
-				hours: number;
-				minutes: number;
-				seconds: number;
-			};
+	state: StatusState.PROGRESS;
+	info: {
+		simulated_primaries: number;
+		estimated?: {
+			hours: number;
+			minutes: number;
+			seconds: number;
 		};
 	};
 }
@@ -86,28 +79,22 @@ export interface InputFiles {
 }
 
 interface ResShConvert extends IResponseMsg {
-	content: {
-		input_files: InputFiles;
-	};
+	input_files: InputFiles;
 }
 
 interface ResShStatusFailure extends IResponseMsg {
-	content: {
-		state: StatusState.FAILURE;
-		error: string;
-		input_files?: InputFiles;
-		logfile?: string;
-	};
+	state: StatusState.FAILURE;
+	error: string;
+	input_files?: InputFiles;
+	logfile?: string;
 }
 
 interface ResShStatusSuccess extends IResponseMsg {
-	content: {
-		state: StatusState.SUCCESS;
-		result: {
-			estimators: Estimator[];
-		};
-		input?: EditorJson | { input_files: InputFiles };
+	state: StatusState.SUCCESS;
+	result: {
+		estimators: Estimator[];
 	};
+	input?: EditorJson | { input_files: InputFiles };
 }
 
 type ResShStatus =
@@ -132,11 +119,42 @@ export interface SimulationStatusData {
 	editor?: EditorJson;
 }
 
-export const recreateOrderInEstimators = (
+const recreateOrderInEstimators = (
 	estimators: Estimator[],
 	scoringManagerJSON: ScoringManagerJSON
 ): Estimator[] => {
-	return orderAccordingToList(estimators, scoringManagerJSON.scoringOutputs, 'name');
+	return orderAccordingToList(
+		estimators,
+		scoringManagerJSON.scoringOutputs,
+		'name',
+		(e, o) => (e.scoringOutputJsonRef = o)
+	);
+};
+
+const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]): void => {
+	estimators.forEach(estimator => {
+		const { pages, scoringOutputJsonRef } = estimator;
+		pages.forEach((page, idx) => {
+			const quantity = scoringOutputJsonRef?.quantities.active[idx];
+			const filter = FiltersJSON.find(o => o.uuid === quantity?.filter);
+			page.filterRef = filter;
+			page.name = quantity?.name;
+		});
+	});
+};
+
+export const recreateRefsInResults = (results: SimulationStatusData, editor?: EditorJson) => {
+	const targetEditor = editor ?? results.editor;	
+
+	if (!targetEditor) throw new Error('No editor data');
+	if (!results.result) throw new Error('No result data');
+
+	const { scoringManager, detectManager }: EditorJson = targetEditor;
+	results.result.estimators = recreateOrderInEstimators(
+		results.result.estimators,
+		scoringManager
+	);
+	recreateRefToFilters(results.result.estimators, detectManager?.filters);
 };
 
 const [useShSimulation, ShSimulationContextProvider] = createGenericContext<IShSimulation>();
@@ -166,9 +184,9 @@ const ShSimulation = (props: ShSimulationProps) => {
 					json: json,
 					timeout: 30000
 					/**
-            Timeout in milliseconds for getting a response. Can not be greater than 2147483647.
-            If set to `false`, there will be no timeout.
-            **/
+			Timeout in milliseconds for getting a response. Can not be greater than 2147483647.
+			If set to `false`, there will be no timeout.
+			**/
 				})
 				.json()
 				.then((response: unknown) => {
@@ -212,53 +230,49 @@ const ShSimulation = (props: ShSimulationProps) => {
 				.json()
 				.then((response: unknown) => {
 					const resStatus = response as ResShStatus;
-					const { content } = resStatus;
 
 					const data: SimulationStatusData = {
 						uuid: taskId,
-						status: content.state,
+						status: resStatus.state,
 						name,
 						creationDate
 					};
 
-					switch (content.state) {
+					switch (resStatus.state) {
 						case StatusState.PENDING:
 							break;
 
 						case StatusState.PROGRESS:
-							data.counted = content.info.simulated_primaries;
-							if (content.info.estimated) {
-								const { hours, minutes, seconds } = content.info.estimated;
+							data.counted = resStatus.info.simulated_primaries;
+							if (resStatus.info.estimated) {
+								const { hours, minutes, seconds } = resStatus.info.estimated;
 								data.estimatedTime =
 									Date.now() + (hours * 60 * 60 + minutes * 60 + seconds) * 1000;
 							}
 							break;
 
 						case StatusState.FAILURE:
-							data.message = content.error;
-							data.inputFiles = content.input_files;
-							data.logFile = content.logfile;
+							data.message = resStatus.error;
+							data.inputFiles = resStatus.input_files;
+							data.logFile = resStatus.logfile;
 							break;
 
 						case StatusState.SUCCESS:
-							data.result = content.result;
+							data.result = resStatus.result;
 
 							// remove trailing underscores from estimators names (#530)
 							for (const estimator of data.result.estimators) {
 								estimator.name = estimator.name.replace(/_$/, '');
 							}
 
-							if (content.input && 'metadata' in content.input) {
-								data.editor = content.input;
-								data.result.estimators = recreateOrderInEstimators(
-									data.result.estimators,
-									data.editor.scoringManager
-								);
+							if (resStatus.input && 'metadata' in resStatus.input) {
+								data.editor = resStatus.input;
+								recreateRefsInResults(data);
 							}
 							break;
 					}
 
-					if ([StatusState.FAILURE, StatusState.SUCCESS].includes(content.state)) {
+					if ([StatusState.FAILURE, StatusState.SUCCESS].includes(resStatus.state)) {
 						beforeCacheWrite?.call(null, data.uuid, data);
 						statusDataCache.current.set(data.uuid, data);
 					}
@@ -276,7 +290,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 				.get(`${BACKEND_URL}/user/simulations`, { signal })
 				.json()
 				.then((response: unknown) => {
-					return (response as ResUserSimulations).content.simulations.map(s => {
+					return (response as ResUserSimulations).simulations.map(s => {
 						const creation_date = new Date(s.creation_date as unknown as string);
 						const obj: SimulationInfo = { ...s, creation_date };
 						return obj;

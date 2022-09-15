@@ -1,5 +1,6 @@
 import { Signal } from 'signals';
 import { Editor } from '../../js/Editor';
+import { getNextFreeName, UniqueChildrenNames } from '../Name';
 import { SimulationSceneGroup } from '../SimulationBase/SimulationGroup';
 import { ScoringOutput, ScoringOutputJSON } from './ScoringOutput';
 
@@ -8,7 +9,7 @@ export type ScoringManagerJSON = {
 	name: string;
 	scoringOutputs: ScoringOutputJSON[];
 };
-export class ScoringManager extends SimulationSceneGroup<ScoringOutput> {
+export class ScoringManager extends SimulationSceneGroup<ScoringOutput> implements UniqueChildrenNames {
 	readonly isScoringManager: true = true;
 	readonly notRemovable = true;
 	readonly notMovable = true;
@@ -24,6 +25,11 @@ export class ScoringManager extends SimulationSceneGroup<ScoringOutput> {
 		this.children = [];
 		this.signals = editor.signals;
 	}
+
+	getNextFreeName(output: ScoringOutput, newName?: string): string {
+		return getNextFreeName(this, newName ?? output.name, output);
+	}
+
 	addOutput(output: ScoringOutput) {
 		this.children.push(output);
 		output.parent = this;
@@ -55,8 +61,9 @@ export class ScoringManager extends SimulationSceneGroup<ScoringOutput> {
 		this.name = json.name;
 		json.scoringOutputs.forEach(output => {
 			const scoringOutput = new ScoringOutput(this.editor);
-			scoringOutput.fromJSON(output);
 			this.addOutput(scoringOutput);
+			scoringOutput.fromJSON(output);
+			scoringOutput.name = this.getNextFreeName(scoringOutput);
 		});
 		return this;
 	}

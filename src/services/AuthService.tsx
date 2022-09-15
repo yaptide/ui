@@ -44,21 +44,15 @@ export interface IAuth {
 }
 
 interface ResAuthLogin extends IResponseMsg {
-	content: {
-		access_exp: number;
-		refresh_exp: number;
-	};
+	access_exp: number;
+	refresh_exp: number;
 }
 
 interface ResAuthRefresh extends IResponseMsg {
-	content: {
-		access_exp: number;
-	};
+	access_exp: number;
 }
 interface ResAuthStatus extends IResponseMsg {
-	content: {
-		login_name: string;
-	};
+	login_name: string;
 }
 
 const [useAuth, AuthContextProvider] = createGenericContext<IAuth>();
@@ -100,14 +94,14 @@ const Auth = (props: AuthProps) => {
 			.json()
 			.then((response: unknown) => {
 				const {
-					content: { access_exp }
+					access_exp
 				} = response as ResAuthRefresh;
 
 				const refreshDelay = Math.max((access_exp - new Date().getTime()) / 2, 1000);
 
 				setRefreshInterval(refreshDelay);
 			})
-			.catch((_: HTTPError) => {});
+			.catch((_: HTTPError) => { });
 	}, []);
 
 	const status = useCallback(() => {
@@ -117,7 +111,7 @@ const Auth = (props: AuthProps) => {
 			.json()
 			.then(response => {
 				const {
-					content: { login_name }
+					login_name
 				} = response as ResAuthStatus;
 
 				setUser(() => {
@@ -127,7 +121,7 @@ const Auth = (props: AuthProps) => {
 					return user;
 				});
 			})
-			.catch((_: HTTPError) => {});
+			.catch((_: HTTPError) => { });
 	}, []);
 
 	useEffect(() => {
@@ -153,14 +147,14 @@ const Auth = (props: AuthProps) => {
 			.then((response: unknown) => {
 				setUser({ name: username });
 				const {
-					content: { access_exp }
+					access_exp
 				} = response as ResAuthLogin;
 
 				const refreshDelay = Math.max((access_exp - new Date().getTime()) / 2, 1000);
 
 				setRefreshInterval(refreshDelay);
 			})
-			.catch((_: HTTPError) => {});
+			.catch((_: HTTPError) => { });
 	};
 
 	const logout = () => {
@@ -170,7 +164,7 @@ const Auth = (props: AuthProps) => {
 			.then(() => {
 				setUser(null);
 			})
-			.catch((_: HTTPError) => {});
+			.catch((_: HTTPError) => { });
 	};
 
 	const value: IAuth = {

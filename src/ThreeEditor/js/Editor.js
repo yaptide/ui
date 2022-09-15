@@ -13,6 +13,7 @@ import { History as _History } from './History.js';
 import { Loader } from './Loader.js';
 import { Storage as _Storage } from './Storage.js';
 import hash from 'object-hash';
+import { getNextFreeName } from '../util/Name';
 
 const _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
 _DEFAULT_CAMERA.name = 'Camera';
@@ -152,7 +153,7 @@ export function Editor(container) {
 	this.materialManager = new MaterialManager(this); // Material Manager
 	this.zoneManager = new CSG.ZoneManager(this); // CSG Manager
 	this.detectManager = new DetectManager(this); // Detect Manager
-	this.scoringManager = new ScoringManager(this); // Scoring Manager
+	this.scoringManager = new ScoringManager(this); // Scoring Manager	
 
 	this.beam = new Beam(this);
 	this.sceneHelpers.add(this.beam);
@@ -175,6 +176,15 @@ export function Editor(container) {
 	this.viewportCamera = this.camera;
 
 	this.addCamera(this.camera);
+
+	this.searchableObjectCollections = [
+		this.scene,
+		this.zoneManager,
+		this.beam,
+		this.detectManager,
+		this.detectManager.filterContainer,
+		this.scoringManager
+	];
 }
 
 Editor.prototype = {
@@ -447,7 +457,7 @@ Editor.prototype = {
 
 	select(object) {
 		if (this.selected === object) return;
-		var uuid = null;
+		let uuid = null;
 
 		if (object !== null) {
 			uuid = object.uuid;
@@ -460,20 +470,26 @@ Editor.prototype = {
 		this.signals.objectSelected.dispatch(object);
 	},
 
+	getObjectByName(name) {
+		const objectCollections = [...this.searchableObjectCollections];
+
+		const object =
+			objectCollections.map(e => e.getObjectByName(name)).find(e => typeof e !== 'undefined');
+
+		return object;
+	},
+
+	getNextFreeName(name, object = null) {
+		return getNextFreeName(this, name, object);
+	},
+
 	selectById(id) {
 		if (id === this.camera.id) {
 			this.select(this.camera);
 			return;
 		}
 
-		const objectCollections = [
-			this.scene,
-			this.zoneManager,
-			this.beam,
-			this.detectManager,
-			this.detectManager.filterContainer,
-			this.scoringManager
-		];
+		const objectCollections = [...this.searchableObjectCollections];
 
 		const object =
 			objectCollections.map(e => e.getObjectById(id)).find(e => typeof e !== 'undefined') ??

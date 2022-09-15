@@ -7,7 +7,8 @@ import useResizeObserver from 'use-resize-observer';
 import { throttle } from 'throttle-debounce';
 import { mergeRefs } from 'react-merge-refs';
 
-export function JsRootGraph2D(props: Page2D) {
+export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
+	const { page, title } = props;
 	const { JSROOT } = useJSROOT();
 	const {
 		ref: resizeRef,
@@ -30,9 +31,9 @@ export function JsRootGraph2D(props: Page2D) {
 
 	useEffect(() => {
 		if (!visible) return;
-		const x = props.first_axis.values;
-		const y = props.second_axis.values;
-		const z = props.data.values;
+		const x = page.first_axis.values;
+		const y = page.second_axis.values;
+		const z = page.data.values;
 
 		const nxpoints = x.length;
 		const nypoints = y.length;
@@ -41,11 +42,11 @@ export function JsRootGraph2D(props: Page2D) {
 
 		histogram.fXaxis.fXmin = x[0];
 		histogram.fXaxis.fXmax = x[nxpoints - 1];
-		histogram.fXaxis.fTitle = `${props.first_axis.name} [${props.first_axis.unit}]`;
+		histogram.fXaxis.fTitle = `${page.first_axis.name} [${page.first_axis.unit}]`;
 
 		histogram.fYaxis.fXmin = y[0];
 		histogram.fYaxis.fXmax = y[nypoints - 1];
-		histogram.fYaxis.fTitle = `${props.second_axis.name} [${props.second_axis.unit}]`;
+		histogram.fYaxis.fTitle = `${page.second_axis.name} [${page.second_axis.unit}]`;
 
 		// centering axes labels using method suggested here:
 		// https://github.com/root-project/jsroot/issues/225#issuecomment-998748035
@@ -57,7 +58,7 @@ export function JsRootGraph2D(props: Page2D) {
 		histogram.fXaxis.fTitleOffset = 1.4;
 		histogram.fYaxis.fTitleOffset = 1.4;
 
-		histogram.fTitle = `${props.data.name} [${props.data.unit}]`;
+		histogram.fTitle = title ?? `${page.data.name} [${page.data.unit}]`;
 
 		for (let x = 0; x < nxpoints; x++)
 			for (let y = 0; y < nypoints; y++) {
@@ -67,7 +68,7 @@ export function JsRootGraph2D(props: Page2D) {
 
 		setObj(histogram);
 		setDrawn(false);
-	}, [JSROOT, props, visible]);
+	}, [JSROOT, page, title, visible]);
 
 	useEffect(() => {
 		if (obj && !drawn) {
@@ -79,7 +80,7 @@ export function JsRootGraph2D(props: Page2D) {
 	const resizeHandler = useCallback(() => {
 		if (isVisible) JSROOT.resize(containerEl.current);
 	}, [JSROOT, containerEl, isVisible]);
-	
+
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const debouncedResizeHandler = useCallback(
 		throttle(300, resizeHandler, { noTrailing: false }),

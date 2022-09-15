@@ -13,7 +13,7 @@ import useDocumentTitle from '../util/useDocumentTitle';
 import { AboutPanel } from './components/AboutPanel';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
 import LoginPanel from './components/LoginPanel';
-import ResultsPanel from './components/ResultsPanel';
+import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
 import SimulationPanelDemo from './components/Simulation/SimulationPanelDemo';
 import { TabPanel } from './components/TabPanel';

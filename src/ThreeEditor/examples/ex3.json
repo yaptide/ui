@@ -5,8 +5,8 @@
 		"generator": "Editor.toJSON"
 	},
 	"project": {
-		"title": "Proton pencil beam in water",
-		"description": "Proton pencil beam with initial kinetic energy 150 MeV and 1% energy spread.\nThe target is a cylindrical water phantom with a radius of 10 cm and a length of 20 cm.\n\nWe score dose from all particles and fluence according to primary particles (protons), secondary protons, and all protons.",
+		"title": "Proton beam scattering on thin target",
+		"description": "TODO",
 		"shadows": true,
 		"shadowType": 1,
 		"physicallyCorrectLights": false,
@@ -21,11 +21,11 @@
 		},
 		"geometries": [
 			{
-				"uuid": "744d5753-c4ab-4565-bfbd-77c981e84fec",
+				"uuid": "60ee05a3-71b3-4189-b519-47d1cc9704be",
 				"type": "CylinderGeometry",
-				"radiusTop": 5,
-				"radiusBottom": 5,
-				"height": 20,
+				"radiusTop": 5.5,
+				"radiusBottom": 5.5,
+				"height": 70,
 				"radialSegments": 16,
 				"heightSegments": 1,
 				"openEnded": false,
@@ -33,11 +33,11 @@
 				"thetaLength": 6.283185307179586
 			},
 			{
-				"uuid": "918ef747-7846-462d-ab4d-a1bfef2d196a",
+				"uuid": "e36b081e-4c76-4fbf-9a05-cb6c902da382",
 				"type": "CylinderGeometry",
-				"radiusTop": 5.5,
-				"radiusBottom": 5.5,
-				"height": 22,
+				"radiusTop": 5,
+				"radiusBottom": 5,
+				"height": 2.42,
 				"radialSegments": 16,
 				"heightSegments": 1,
 				"openEnded": false,
@@ -46,7 +46,7 @@
 			}],
 		"materials": [
 			{
-				"uuid": "81a7aa32-b85f-45c4-bcd7-f648a0be12dc",
+				"uuid": "8485707f-07bf-49d2-86ab-070eb9878a00",
 				"type": "MeshBasicMaterial",
 				"color": 0,
 				"reflectivity": 1,
@@ -69,7 +69,7 @@
 				"wireframe": true
 			},
 			{
-				"uuid": "8485707f-07bf-49d2-86ab-070eb9878a00",
+				"uuid": "0a35d734-51b7-48d9-8226-eeec2d488223",
 				"type": "MeshBasicMaterial",
 				"color": 0,
 				"reflectivity": 1,
@@ -95,47 +95,45 @@
 			"uuid": "C1BF5EE7-ACC7-4896-8451-A5B358DF9889",
 			"type": "Scene",
 			"name": "Figures",
-			"visible": false,
 			"layers": 1,
 			"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
 			"children": [
 				{
-					"uuid": "7ab62ba9-6dba-4543-b50b-ce31e143d482",
-					"type": "CylinderMesh",
-					"name": "Water_phantom_cylinder",
-					"visible": false,
-					"layers": 1,
-					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,10,1],
-					"geometry": "744d5753-c4ab-4565-bfbd-77c981e84fec",
-					"material": "81a7aa32-b85f-45c4-bcd7-f648a0be12dc",
-					"geometryData": {
-						"id": 958,
-						"geometryType": "CylinderGeometry",
-						"position": [0,0,10],
-						"rotation": [0,0,0],
-						"parameters": {
-							"radius": 5,
-							"depth": 20
-						}
-					}
-				},
-				{
 					"uuid": "aeeffad9-ed86-44ae-bfe4-b5f78580741b",
 					"type": "CylinderMesh",
-					"name": "Vacuum_cylinder",
+					"name": "Air",
 					"visible": false,
 					"layers": 1,
-					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,10.5,1],
-					"geometry": "918ef747-7846-462d-ab4d-a1bfef2d196a",
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,-20,1],
+					"geometry": "60ee05a3-71b3-4189-b519-47d1cc9704be",
 					"material": "8485707f-07bf-49d2-86ab-070eb9878a00",
 					"geometryData": {
 						"id": 960,
 						"geometryType": "CylinderGeometry",
-						"position": [0,0,10.5],
+						"position": [0,0,-20],
 						"rotation": [0,0,0],
 						"parameters": {
 							"radius": 5.5,
-							"depth": 22
+							"depth": 70
+						}
+					}
+				},
+				{
+					"uuid": "b1b59917-f98b-4fc9-aab8-c78b68616df6",
+					"type": "CylinderMesh",
+					"name": "PMMA",
+					"layers": 1,
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,-40,1],
+					"geometry": "e36b081e-4c76-4fbf-9a05-cb6c902da382",
+					"material": "0a35d734-51b7-48d9-8226-eeec2d488223",
+					"geometryData": {
+						"id": 1098,
+						"geometryType": "CylinderGeometry",
+						"position": [0,0,-40],
+						"rotation": [0,0,0],
+						"parameters": {
+							"radius": 5,
+							"depth": 2.42
 						}
 					}
 				}]
@@ -148,44 +146,49 @@
 	"zoneManager": {
 		"zones": [
 			{
-				"uuid": "9ee041c1-acc0-433f-bc66-90e057b72474",
-				"name": "Water_phantom_zone",
-				"materialUuid": "49ce56b9-ee48-4640-88d4-bcfd660d8c0e",
-				"unionOperations": [[
-						{
-							"mode": "union",
-							"objectUuid": "7ab62ba9-6dba-4543-b50b-ce31e143d482"
-						}]],
-				"subscribedObjects": {
-					"7ab62ba9-6dba-4543-b50b-ce31e143d482": 1
-				}
-			},
-			{
 				"uuid": "a2c614cf-7074-4abe-a757-4a850f6731b3",
-				"name": "Vacuum_zone",
-				"materialUuid": "cd7c2eb0-e91f-4144-b4eb-536e4626cc09",
+				"name": "Air_zone",
+				"materialUuid": "349d8999-11d2-40f8-b99f-b6dcc0f2c844",
 				"unionOperations": [[
 						{
 							"mode": "union",
 							"objectUuid": "aeeffad9-ed86-44ae-bfe4-b5f78580741b"
+						},
+						{
+							"mode": "subtraction",
+							"objectUuid": "b1b59917-f98b-4fc9-aab8-c78b68616df6"
 						}]],
 				"subscribedObjects": {
-					"aeeffad9-ed86-44ae-bfe4-b5f78580741b": 1
+					"aeeffad9-ed86-44ae-bfe4-b5f78580741b": 1,
+					"b1b59917-f98b-4fc9-aab8-c78b68616df6": 1
+				}
+			},
+			{
+				"uuid": "cf81c73e-03ef-4df1-b044-61972e539ef1",
+				"name": "PMMA",
+				"materialUuid": "05ec1d44-947a-4388-afe4-3b94ae80434b",
+				"unionOperations": [[
+						{
+							"mode": "union",
+							"objectUuid": "b1b59917-f98b-4fc9-aab8-c78b68616df6"
+						}]],
+				"subscribedObjects": {
+					"b1b59917-f98b-4fc9-aab8-c78b68616df6": 1
 				}
 			}],
 		"uuid": "368269D3-6F9B-4241-84A0-5D908D10E196",
 		"name": "Zones",
 		"worldZone": {
-			"uuid": "ef88c351-6eb0-4e7c-a546-01a4d621a3ef",
+			"uuid": "cb88e2f6-0e42-4fa7-9e48-1d5ed31d8810",
 			"center": {
 				"x": 0,
 				"y": 0,
-				"z": 10.5
+				"z": 0
 			},
 			"size": {
 				"x": 6,
 				"y": 6,
-				"z": 24
+				"z": 10
 			},
 			"type": "WorldZone",
 			"geometryType": "Cylinder",
@@ -196,11 +199,11 @@
 			"geometryData": {
 				"id": 14,
 				"geometryType": "CylinderGeometry",
-				"position": [0,0,10.5],
+				"position": [0,0,0],
 				"rotation": [0,0,0],
 				"parameters": {
 					"radius": 6,
-					"depth": 24
+					"depth": 10
 				}
 			}
 		}
@@ -214,12 +217,12 @@
 				"data": {
 					"radius": 5,
 					"innerRadius": 0,
-					"depth": 20,
+					"depth": 50,
 					"radialSegments": 1,
 					"zSegments": 400
 				},
 				"type": "Cyl",
-				"position": [0,0,10],
+				"position": [0,0,-25],
 				"name": "CylZ_Mesh",
 				"colorHex": 327424
 			},
@@ -228,13 +231,13 @@
 				"data": {
 					"width": 0.5,
 					"height": 4,
-					"depth": 20,
+					"depth": 50,
 					"xSegments": 1,
 					"ySegments": 80,
 					"zSegments": 400
 				},
 				"type": "Mesh",
-				"position": [0,0,10],
+				"position": [0,0,-25],
 				"name": "YZ_Mesh",
 				"colorHex": 65535
 			},
@@ -248,8 +251,8 @@
 					"zSegments": 1
 				},
 				"type": "Cyl",
-				"position": [0,0,0.05],
-				"name": "EntrySlab",
+				"position": [0,0,-45],
+				"name": "BeforePMMA",
 				"colorHex": 65535
 			},
 			{
@@ -262,8 +265,8 @@
 					"zSegments": 1
 				},
 				"type": "Cyl",
-				"position": [0,0,15.35],
-				"name": "PeakSlab",
+				"position": [0,0,3],
+				"name": "Isocenter",
 				"colorHex": 65535
 			}],
 		"filters": [
@@ -332,10 +335,10 @@
 			}]
 	},
 	"beam": {
-		"position": [0,0,0],
+		"position": [0,0,-51],
 		"direction": [0,0,1],
-		"energy": 150,
-		"energySpread": 1.5,
+		"energy": 58.01,
+		"energySpread": 0.48,
 		"divergence": {
 			"x": 0,
 			"y": 0,
@@ -347,7 +350,7 @@
 			"z": 1
 		},
 		"colorHex": 16776960,
-		"numberOfParticles": 10000
+		"numberOfParticles": 3000
 	},
 	"materialManager": {
 		"materials": [
@@ -356,6 +359,19 @@
 				"name": "BLACK HOLE",
 				"icru": 0,
 				"color": 196613
+			},
+			{
+				"uuid": "349d8999-11d2-40f8-b99f-b6dcc0f2c844",
+				"name": "AIR, DRY (NEAR SEA LEVEL)",
+				"icru": 104,
+				"transparent": true,
+				"opacity": 0.1
+			},
+			{
+				"uuid": "05ec1d44-947a-4388-afe4-3b94ae80434b",
+				"name": "POLYMETHYL METHACRALATE (LUCITE, PERSPEX, PMMA)",
+				"icru": 223,
+				"color": 0
 			},
 			{
 				"uuid": "49ce56b9-ee48-4640-88d4-bcfd660d8c0e",
@@ -374,9 +390,9 @@
 				"opacity": 0.1
 			}],
 		"selectedMaterials": {
-			"49ce56b9-ee48-4640-88d4-bcfd660d8c0e": 1,
-			"cd7c2eb0-e91f-4144-b4eb-536e4626cc09": 1,
-			"1dd2e8f0-6684-42c2-ad35-7aa55358204e": 1
+			"1dd2e8f0-6684-42c2-ad35-7aa55358204e": 1,
+			"349d8999-11d2-40f8-b99f-b6dcc0f2c844": 1,
+			"05ec1d44-947a-4388-afe4-3b94ae80434b": 1
 		}
 	},
 	"scoringManager": {
@@ -388,12 +404,6 @@
 				"uuid": "d24dd7eb-6a7c-40d0-b39e-f4424b3dd937",
 				"quantities": {
 					"active": [
-						{
-							"name": "Quantity",
-							"uuid": "e3488754-9a67-4d3c-b0ea-17300d651a8a",
-							"keyword": "DoseGy",
-							"modifiers": []
-						},
 						{
 							"name": "Quantity_1",
 							"uuid": "53ba1036-4975-4a96-a6bd-3d336fc72612",
@@ -409,10 +419,10 @@
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_3",
-							"uuid": "b3286437-b2a1-4ee9-b7da-8cc2cc435fcd",
-							"keyword": "Fluence",
-							"filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
+							"name": "Quantity_4",
+							"uuid": "904e9920-033e-40dd-97fc-1f96a2707d1a",
+							"keyword": "AvgEnergy",
+							"filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
 							"modifiers": []
 						}]
 				},
@@ -425,23 +435,17 @@
 				"quantities": {
 					"active": [
 						{
-							"name": "Quantity",
-							"uuid": "c3499475-9496-4ee5-b705-950b83867dac",
-							"keyword": "DoseGy",
-							"modifiers": []
-						},
-						{
-							"name": "Quantity_1",
+							"name": "Fluence_protons",
 							"uuid": "be97ed10-07af-49d2-b91a-5bfe09c0c228",
 							"keyword": "Fluence",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_2",
-							"uuid": "69305c71-de72-466c-86bc-ba5e58635a9e",
+							"name": "Fluence_primaries",
+							"uuid": "4a9830b6-66d8-4d42-9035-dd5cceefcef9",
 							"keyword": "Fluence",
-							"filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
+							"filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
 							"modifiers": []
 						}]
 				},
@@ -449,7 +453,7 @@
 				"trace": false
 			},
 			{
-				"name": "entrance",
+				"name": "before_pmma",
 				"uuid": "2e46a6ab-35d7-4fce-9de8-406a47fc9180",
 				"quantities": {
 					"active": [
@@ -475,20 +479,6 @@
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_3",
-							"uuid": "d0c4addd-0775-420e-9240-d5ba3e279a2b",
-							"keyword": "dLET",
-							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
-							"modifiers": []
-						},
-						{
-							"name": "Quantity_4",
-							"uuid": "a4e9cac1-a643-4448-bc4a-89977101cc67",
-							"keyword": "tLET",
-							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
-							"modifiers": []
-						},
-						{
 							"name": "Quantity_5",
 							"uuid": "de64c12b-15cc-4e72-9262-b5507a738c9f",
 							"keyword": "Fluence",
@@ -497,8 +487,8 @@
 								{
 									"diffType": "E",
 									"lowerLimit": 0,
-									"upperLimit": 160,
-									"binsNumber": 640,
+									"upperLimit": 70,
+									"binsNumber": 700,
 									"isLog": false,
 									"uuid": "1afaf3d8-443f-4bac-8999-be914ff0691a"
 								}]
@@ -508,7 +498,7 @@
 				"trace": false
 			},
 			{
-				"name": "peak",
+				"name": "isocenter",
 				"uuid": "a9e8737f-edae-45fe-9395-1e6b220ef384",
 				"quantities": {
 					"active": [
@@ -534,20 +524,6 @@
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_3",
-							"uuid": "efd9f82c-8e0e-4d3d-a22d-70a0cc11ef7b",
-							"keyword": "dLET",
-							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
-							"modifiers": []
-						},
-						{
-							"name": "Quantity_4",
-							"uuid": "dac16bbd-e361-46d3-8eae-9c69571aea96",
-							"keyword": "tLET",
-							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
-							"modifiers": []
-						},
-						{
 							"name": "Quantity_5",
 							"uuid": "65f821c8-a654-4f6f-b666-0fdc8c925cf5",
 							"keyword": "Fluence",
@@ -556,8 +532,8 @@
 								{
 									"diffType": "E",
 									"lowerLimit": 0,
-									"upperLimit": 160,
-									"binsNumber": 640,
+									"upperLimit": 70,
+									"binsNumber": 700,
 									"isLog": false,
 									"uuid": "07a5db58-a8ea-4175-93e7-9fe74ca14d34"
 								}]
@@ -567,5 +543,5 @@
 				"trace": false
 			}]
 	},
-	"hash": "709261855545792b10536bdc1336f0510a146ce5"
+	"hash": "798af530124acf4f954936cee804c2d5a62acd55"
 }

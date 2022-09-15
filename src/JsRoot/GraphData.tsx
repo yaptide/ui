@@ -2,39 +2,47 @@ import React from 'react';
 import JsRootGraph1D from './JsRootGraph1D';
 import JsRootGraph2D from './JsRootGraph2D';
 import JsRootGraph0D from './JsRootGraph0D';
-import { Button, Grid } from '@mui/material';
+import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
 import { saveString } from '../util/File';
-import { estimatorPageToCsv } from '../util/csv/Csv';
+import { estimatorPage1DToCsv } from '../util/csv/Csv';
+import { ScoringOutputJSON } from '../ThreeEditor/util/Scoring/ScoringOutput';
+import { FilterJSON } from '../ThreeEditor/util/Detect/DetectFilter';
+import { EstimatorResults } from '../WrapperApp/components/Results/ResultsPanel';
 
 export type pageData = {
 	name: string;
 	unit: string;
 	values: number[];
 };
-
-export type Page2D = {
+export interface IPage {
+	filterRef?: FilterJSON;
+	dimension: number;
+	name?: string;
+}
+export interface Page2D extends IPage {
 	data: pageData;
 	dimensions: 2;
 	first_axis: pageData;
 	second_axis: pageData;
-};
+}
 
-export type Page1D = {
+export interface Page1D extends IPage {
 	data: pageData;
 	metadata?: unknown;
 	dimensions: 1;
 	first_axis: pageData;
-};
+}
 
-export type Page0D = {
+export interface Page0D extends IPage {
 	data: pageData;
 	dimensions: 0;
-};
+}
 
 export type Estimator = {
 	name: string;
 	metadata?: unknown;
 	pages: Page[];
+	scoringOutputJsonRef?: ScoringOutputJSON;
 };
 
 export type Page = Page2D | Page1D | Page0D;
@@ -51,40 +59,71 @@ export const isPage0d = (page: Page): page is Page0D => {
 	return (page as Page0D).dimensions === 0;
 };
 
-const getGraphFromPage = (page: Page) => {
+const getGraphFromPage = (page: Page, title?: string) => {
 	if (isPage2d(page)) {
-		return <JsRootGraph2D {...page} />;
+		return <JsRootGraph2D page={page} title={title} />;
 	} else if (isPage1d(page)) {
-		return <JsRootGraph1D {...page} />;
+		return <JsRootGraph1D page={page} title={title} />;
 	} else if (isPage0d(page)) {
-		return <JsRootGraph0D {...page} />;
+		return <JsRootGraph0D page={page} title={title} />;
 	} else {
 		return <div>Error</div>;
 	}
 };
 
-export function generateGraphs(estimator: Estimator) {
-	const { pages, name } = estimator;
+export function generateGraphs(estimator: EstimatorResults) {
+	const { gridPages, name } = estimator;
+
 	const onClickSaveToFile = (page: Page1D) => {
 		saveString(
-			estimatorPageToCsv(estimator, page),
+			estimatorPage1DToCsv(estimator, page),
 			`graph_${name}_${page.data.name.replace(/ /g, '_')}.csv`
 		);
 	};
-	return pages
-		.map(page => {
-			return getGraphFromPage(page);
+	return gridPages
+		.map((page) => {
+			return { graph: getGraphFromPage(page, page.name), filter: page.filterRef };
 		})
-		.map((graph, idx) => {
+		.map(({ graph, filter }, idx) => {
 			return (
-				<Grid key={`graph_${name}_${idx}`} item xs={8}>
-					{graph}
+				<Grid key={`graph_${name}_${idx}`} item xs={12}>
+					<Card>
+						<CardContent>
+							<Grid container>
+								<Grid item xs={8}>
+									{graph}
+								</Grid>
+								<Grid item xs={4}>
+									<Box sx={{ marginTop: '1rem' }}>
+										<Typography variant='h5'>Filter:</Typography>
+										<Typography>{filter?.name ?? 'None'}</Typography>
+										{filter && (
+											<Box>
+												<Typography variant='h6'>Rules:</Typography>
+												{filter.rules.map((rule, idx) => (
+													<Typography>
+														{rule.keyword}
+														{rule.operator}
+														{rule.value}
+													</Typography>
+												))}
+											</Box>
+										)}
+									</Box>
 
-					{isPage1d(pages[idx]) && (
-						<Button onClick={() => onClickSaveToFile(pages[idx] as Page1D)}>
-							EXPORT TO CSV
-						</Button>
-					)}
+									{isPage1d(gridPages[idx]) && (
+										<Button
+											sx={{ marginTop: '1rem' }}
+											onClick={() =>
+												onClickSaveToFile(gridPages[idx] as Page1D)
+											}>
+											EXPORT GRAPH TO CSV
+										</Button>
+									)}
+								</Grid>
+							</Grid>
+						</CardContent>
+					</Card>
 				</Grid>
 			);
 		});

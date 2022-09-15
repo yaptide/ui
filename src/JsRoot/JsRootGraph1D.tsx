@@ -7,7 +7,8 @@ import useResizeObserver from 'use-resize-observer';
 import { mergeRefs } from 'react-merge-refs';
 import { throttle } from 'throttle-debounce';
 
-export function JsRootGraph1D(props: Page1D) {
+export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
+	const { page, title } = props;
 	const { JSROOT } = useJSROOT();
 	const {
 		ref: resizeRef,
@@ -31,9 +32,9 @@ export function JsRootGraph1D(props: Page1D) {
 	useEffect(() => {
 		if (!visible) return;
 		// create example graph
-		const npoints = props.data.values.length;
-		const y = props.data.values;
-		const x = props.first_axis.values;
+		const npoints = page.data.values.length;
+		const y = page.data.values;
+		const x = page.first_axis.values;
 
 		const graph = JSROOT.createTGraph(npoints, x, y);
 
@@ -42,11 +43,11 @@ export function JsRootGraph1D(props: Page1D) {
 		const histogram = JSROOT.createHistogram('TH1F', npoints);
 		histogram.fXaxis.fXmin = x[0];
 		histogram.fXaxis.fXmax = x[npoints - 1];
-		histogram.fXaxis.fTitle = `${props.first_axis.name} [${props.first_axis.unit}]`;
+		histogram.fXaxis.fTitle = `${page.first_axis.name} [${page.first_axis.unit}]`;
 
 		histogram.fYaxis.fXmin = y[0];
 		histogram.fYaxis.fXmax = y[npoints - 1];
-		histogram.fYaxis.fTitle = `${props.data.name} [${props.data.unit}]`;
+		histogram.fYaxis.fTitle = `${page.data.name} [${page.data.unit}]`;
 
 		// centering axes labels using method suggested here:
 		// https://github.com/root-project/jsroot/issues/225#issuecomment-998748035
@@ -58,13 +59,13 @@ export function JsRootGraph1D(props: Page1D) {
 		histogram.fXaxis.fTitleOffset = 1.4;
 		histogram.fYaxis.fTitleOffset = 1.4;
 
-		graph.fName = props.data.name;
-		graph.fTitle = `${props.data.name} [${props.data.unit}]`;
+		graph.fName = page.data.name;
+		graph.fTitle = title ?? `${page.data.name} [${page.data.unit}]`;
 		graph.fHistogram = histogram;
 
 		setObj(graph);
 		setDrawn(false);
-	}, [JSROOT, props, visible]);
+	}, [JSROOT, page, title, visible]);
 
 	useEffect(() => {
 		if (obj && !drawn) {
