@@ -1,4 +1,4 @@
-import { Measure } from "convert-units";
+import { Measure, Unit } from "convert-units";
 
 export type BaseUnits = BaseSIUnits;
 export type BaseSystems = 'SI';
@@ -6,7 +6,7 @@ export type BaseSystems = 'SI';
 export type BaseSIUnits = keyof typeof SI;
 
 
-const SI = {
+const SI: Record<string, Unit> = {
   "": {
     name: {
       singular: '',
@@ -35,6 +35,13 @@ const SI = {
     },
     to_anchor: 1e-3,
   },
+  c: {
+    name: {
+      singular: 'Centy',
+      plural: 'Centy',
+    },
+    to_anchor: 1e-2,
+  },
   k: {
     name: {
       singular: 'Kilo',
@@ -58,14 +65,36 @@ const SI = {
   },
 };
 
+
+const createSISystem = (baseUnit: string, anchorFactor: number) => {
+  const newSystem: Record<string, Unit> = {};
+  for (const property in SI) {
+    newSystem[property + baseUnit] = {
+      ...SI[property],
+      to_anchor: Math.pow(SI[property].to_anchor, anchorFactor),
+    }
+  }
+  return newSystem;
+}
+
+export const volumeMeasure: Measure<BaseSystems, BaseUnits> = {
+  systems: {
+    SI: createSISystem('m^3', 3),
+  },
+};
+
+export const fluenceMeasure: Measure<BaseSystems, BaseUnits> = {
+  systems: {
+    SI: createSISystem('m^-2', 2),
+  },
+};
+
 export const possibleBaseUnits = Object.keys(SI) as BaseSIUnits[];
 
 export const isBaseUnit = (unit: string): unit is BaseSIUnits => possibleBaseUnits.includes(unit as BaseSIUnits);
 
-const baseMeasure: Measure<BaseSystems, BaseUnits> = {
+export const baseMeasure: Measure<BaseSystems, BaseUnits> = {
   systems: {
     SI,
   },
 };
-
-export default baseMeasure;

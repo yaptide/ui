@@ -6,7 +6,7 @@ import { pages0DToCsv } from '../../../util/csv/Csv';
 import { saveString } from '../../../util/File';
 import { EstimatorResults } from './ResultsPanel';
 import { useState } from 'react';
-import { convertValue } from '../../../util/convertUnits/Units';
+import { convertToBestUnit } from '../../../util/convertUnits/Units';
 export interface TablePage0DItem {
 	id: number;
 	name: string;
@@ -45,7 +45,7 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 	const [isUnitFixed, setUnitFixed] = useState(false);
 
 	const tablePages: TablePage0DItem[] = pages.map((page, idx) => {		
-		let convertedValue = isUnitFixed ? null : convertValue(page.data.values[0], page.data.unit);
+		let convertedValue = isUnitFixed ? null : convertToBestUnit(page.data.values[0], page.data.unit);
 
 		return {
 			id: idx,
