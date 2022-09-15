@@ -7,7 +7,7 @@ importScripts("https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js");
 
 export interface IPythonWorker {
 	initPyodide: (onReady: () => void) => void;
-	close: (string: string) => void;
+	close: () => void;
 	runPython: <T>(string: string) => T
 	checkConverter: () => boolean;
 	convertJSON: (editorJson: EditorJson) => Promise<Map<keyof InputFiles, string>>;
@@ -38,9 +38,7 @@ checkIfConverterReady()
 class PythonWorkerBase implements IPythonWorker {
 	readonly isPythonWorker: true = true;
 	async initPyodide(onReady: () => void) {
-		console.log('initPyodide');
 		const pyodide = await self.loadPyodide();
-		console.log('initPyodide2');
 		self.pyodide = pyodide;
 
 		console.log(pyodide.runPython('import sys\nsys.version'));
@@ -63,8 +61,7 @@ print(micropip.list())
 		onReady();
 	}
 
-	close(string: string) {
-		console.log('close', string);
+	close() {		
 		self.close();
 	}
 

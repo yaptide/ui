@@ -31,14 +31,10 @@ const PYODIDE_LOADED = 'PYODIDE_LOADED';
  *	PythonConverter  is react wrapper for pyodide.js and converter module.
  *	There can be only one instance of PythonConverter in the whole application.
  */
-
-let counter = 0;
 const PythonConverter = (props: PythonConverterProps) => {
 	const workerRef = useRef<Comlink.Remote<IPythonWorker>>();
 
 	useEffect(() => {
-		counter++;
-		console.log('PythonConverter: useEffect', counter);
 		workerRef.current = Comlink.wrap<IPythonWorker>(
 			new Worker(new URL('./PythonWorker.ts', import.meta.url))
 		);
@@ -49,7 +45,7 @@ const PythonConverter = (props: PythonConverterProps) => {
 			})
 		);
 		return () => {
-			workerRef.current?.close(counter.toString());
+			workerRef.current?.close();
 		};
 	}, []);
 
