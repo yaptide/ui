@@ -3,6 +3,8 @@ import * as Comlink from 'comlink';
 import { InputFiles } from '../services/ShSimulatorService';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 
+// as for now there is no reasonable npm package for pyodide
+// CND method is suggested in https://pyodide.org/en/stable/usage/downloading-and-deploying.html
 importScripts("https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js");
 
 export interface IPythonWorker {
