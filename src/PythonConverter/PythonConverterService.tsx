@@ -1,13 +1,9 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import * as Comlink from 'comlink';
 import { createGenericContext } from '../util/GenericContext';
-import makeAsyncScriptLoader from 'react-async-script';
 import { InputFiles } from '../services/ShSimulatorService';
-import { IPythonWorker, } from './PythonWorker';
-
-// as for now there is no reasonable npm package for pyodide
-// CND method is suggested in https://pyodide.org/en/stable/usage/downloading-and-deploying.html
-const PyodideUrl = 'https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js';
+import { IPythonWorker } from './PythonWorker';
+import { EditorJson } from '../ThreeEditor/js/EditorJson';
 
 declare global {
 	interface Window {
@@ -22,34 +18,12 @@ export interface PythonConverterProps {
 }
 
 export interface IPythonConverter {
-	pyodide: any;
-	convertJSON: (editorJSON: object) => Promise<Map<keyof InputFiles, string>>;
+	convertJSON: (editorJson: EditorJson) => Promise<Map<keyof InputFiles, string>>;
 	isConverterReady: boolean;
 }
 
 const [usePythonConverter, PythonConverterContextProvider] =
 	createGenericContext<IPythonConverter>();
-
-const pythonConverterCode = `
-import os
-from converter.api import run_parser
-from converter.api import get_parser_from_str
-def convertJson(editor_json, parser_name = 'shieldhit'):
-	parser=get_parser_from_str(parser_name)
-	return run_parser(parser, editor_json.to_py(), None, True)
-convertJson`;
-
-const pythonCheckConverterCode = `
-def checkIfConverterReady():
-	try:
-		from converter.api import run_parser
-		print("module 'converter' is installed")
-		return True
-	except ModuleNotFoundError:
-		print("module 'converter' is not installed")
-		return False
-checkIfConverterReady
-`;
 
 const PYODIDE_LOADED = 'PYODIDE_LOADED';
 
@@ -57,62 +31,37 @@ const PYODIDE_LOADED = 'PYODIDE_LOADED';
  *	PythonConverter  is react wrapper for pyodide.js and converter module.
  *	There can be only one instance of PythonConverter in the whole application.
  */
-const PythonConverter = (props: PythonConverterProps) => {
-	const pyodideRef = useRef(window.pyodide);
 
-	const workerRef = useRef(Comlink.wrap<IPythonWorker>(new Worker(new URL('./PythonWorker.ts', import.meta.url))));
-	workerRef.current.log('import sys');
-	
+let counter = 0;
+const PythonConverter = (props: PythonConverterProps) => {
+	const workerRef = useRef<Comlink.Remote<IPythonWorker>>();
+
+	useEffect(() => {
+		counter++;
+		console.log('PythonConverter: useEffect', counter);
+		workerRef.current = Comlink.wrap<IPythonWorker>(
+			new Worker(new URL('./PythonWorker.ts', import.meta.url))
+		);
+		workerRef.current.initPyodide(
+			Comlink.proxy(() => {
+				console.log('PythonConverter: callback from worker');
+				document.dispatchEvent(new CustomEvent(PYODIDE_LOADED));
+			})
+		);
+		return () => {
+			workerRef.current?.close(counter.toString());
+		};
+	}, []);
+
 	const [isConverterReady, setConverterReady] = useState(false);
 
-	const checkIfConvertReady = useCallback(() => {
-		return pyodideRef.current && pyodideRef.current.runPython(pythonCheckConverterCode)();
+	const checkIfConvertReady = useCallback(async () => {
+		return !!(workerRef.current && (await workerRef.current.checkConverter()));
 	}, []);
 
 	useEffect(() => {
-		return;
-		if (!props.loadPyodide) return console.warn('loadPyodide is not defined');
-
-		async function initPyodide() {
-			if (window.pyodide || pyodideRef.current) {
-				pyodideRef.current = window.pyodide;
-				setConverterReady(checkIfConvertReady());
-				return;
-			}
-
-			const pyodide = await props.loadPyodide();
-
-			window.pyodide = pyodide;
-			pyodideRef.current = pyodide;
-
-			console.log(pyodide.runPython('import sys\nsys.version'));
-
-			await pyodide.loadPackage(['scipy', 'micropip']);
-
-			const converterFolder = process.env.PUBLIC_URL + '/libs/converter/dist/';
-
-			const { fileName: converterFileName } = await (
-				await fetch(converterFolder + 'yaptide_converter.json')
-			).json();
-
-			if (!converterFileName) throw new Error('converterFileName is not defined');
-
-			await pyodide.runPythonAsync(`			
-import micropip
-await micropip.install('${process.env.PUBLIC_URL}/libs/converter/dist/${converterFileName}') 
-print(micropip.list())
-			`);
-			document.dispatchEvent(new CustomEvent(PYODIDE_LOADED));
-		}
-
-		initPyodide();
-
-		return () => {};
-	}, [checkIfConvertReady, props]);
-
-	useEffect(() => {
-		const handleLoad = () => {
-			setConverterReady(checkIfConvertReady());
+		const handleLoad = async () => {
+			setConverterReady(await checkIfConvertReady());
 		};
 
 		document.addEventListener(PYODIDE_LOADED, handleLoad);
@@ -121,13 +70,11 @@ print(micropip.list())
 		};
 	});
 
-	const convertJSON = async (editorJSON: object) => {
-		const runPythonConvert = pyodideRef.current.runPython(pythonConverterCode);
-		return runPythonConvert(editorJSON).toJs();
+	const convertJSON = async (editorJSON: EditorJson) => {
+		return await workerRef.current!.convertJSON(editorJSON);
 	};
 
 	const value: IPythonConverter = {
-		pyodide: pyodideRef.current,
 		convertJSON,
 		isConverterReady
 	};
@@ -139,8 +86,4 @@ print(micropip.list())
 	);
 };
 
-const AsyncLoaderPythonConverter = makeAsyncScriptLoader(PyodideUrl, {
-	globalName: 'loadPyodide'
-})(PythonConverter);
-
-export { usePythonConverter, AsyncLoaderPythonConverter as PythonConverterService };
+export { usePythonConverter, PythonConverter as PythonConverterService };

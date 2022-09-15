@@ -1,20 +1,47 @@
+/* eslint-disable no-restricted-globals */
 import * as Comlink from 'comlink';
-var loadPyodide: any;
+import { InputFiles } from '../services/ShSimulatorService';
+import { EditorJson } from '../ThreeEditor/js/EditorJson';
+
 importScripts("https://cdn.jsdelivr.net/pyodide/v0.21.2/full/pyodide.js");
 
 export interface IPythonWorker {
-	log: (json: string) => unknown;
+	initPyodide: (onReady: () => void) => void;
+	close: (string: string) => void;
+	runPython: <T>(string: string) => T
+	checkConverter: () => boolean;
+	convertJSON: (editorJson: EditorJson) => Promise<Map<keyof InputFiles, string>>;
 }
 
 
+const pythonConverterCode = `
+import os
+from converter.api import run_parser
+from converter.api import get_parser_from_str
+def convertJson(editor_json, parser_name = 'shieldhit'):
+	parser=get_parser_from_str(parser_name)
+	return run_parser(parser, editor_json.to_py(), None, True)
+convertJson`;
+
+const pythonCheckConverterCode = `
+def checkIfConverterReady():
+	try:
+		from converter.api import run_parser
+		print("module 'converter' is installed")
+		return True
+	except ModuleNotFoundError:
+		print("module 'converter' is not installed")
+		return False
+checkIfConverterReady()
+`;
 
 class PythonWorkerBase implements IPythonWorker {
 	readonly isPythonWorker: true = true;
-	async initPyodide() {
+	async initPyodide(onReady: () => void) {
 		console.log('initPyodide');
-		const pyodide = await loadPyodide();
+		const pyodide = await self.loadPyodide();
 		console.log('initPyodide2');
-		window.pyodide = pyodide;
+		self.pyodide = pyodide;
 
 		console.log(pyodide.runPython('import sys\nsys.version'));
 
@@ -33,15 +60,28 @@ import micropip
 await micropip.install('${process.env.PUBLIC_URL}/libs/converter/dist/${converterFileName}') 
 print(micropip.list())
 			`);
+		onReady();
 	}
 
-	async log(json: string) {
-		console.log('PythonWorker', json);
-		return json;
+	close(string: string) {
+		console.log('close', string);
+		self.close();
+	}
+
+
+	runPython(string: string) {
+		return self.pyodide.runPython(string);
+	}
+
+	checkConverter() {
+		return self.pyodide.runPython(pythonCheckConverterCode);
+	}
+
+	convertJSON(editorJson: object) {
+		return self.pyodide.runPython(pythonConverterCode)(editorJson).toJs();
 	}
 }
 
 const worker = new PythonWorkerBase();
-worker.initPyodide();
 
 Comlink.expose(worker);
