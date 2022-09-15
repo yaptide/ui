@@ -14,6 +14,13 @@ const SI: Record<string, Unit> = {
     },
     to_anchor: 1,
   },
+  f: {
+    name: {
+      singular: 'Femto',
+      plural: 'Femto',
+    },
+    to_anchor: 1e-15,
+  },
   n: {
     name: {
       singular: 'Nano',
@@ -62,7 +69,14 @@ const SI: Record<string, Unit> = {
       plural: 'Giga',
     },
     to_anchor: 1e+9,
-  },
+  },  
+  P:{
+    name: {
+      singular: 'Peta',
+      plural: 'Peta',
+    },
+    to_anchor: 1e+15,
+  }  
 };
 
 
