@@ -103,6 +103,9 @@ export function Editor(container) {
 
 		animationStopped: new Signal(),
 
+		// config
+		titleChanged: new Signal(),
+
 		// YAPTIDE signals
 		selectModeChanged: new Signal(),
 
@@ -118,7 +121,7 @@ export function Editor(container) {
 
 		CSGManagerStateChanged: new Signal(), // State of CSGmanager changed
 
-		exampleLoaded: new Signal(),
+		exampleLoaded: new Signal()
 	};
 
 	this.container = container;
@@ -128,6 +131,9 @@ export function Editor(container) {
 	this.jsonVersion = JSON_VERSION;
 
 	this.config = new Config();
+	this.config.addListener('project/title', title => {
+		this.signals.titleChanged.dispatch(title);
+	});
 	this.history = new _History(this);
 	this.storage = new _Storage();
 	this.unit = {
@@ -509,14 +515,19 @@ Editor.prototype = {
 		this.focus(this.scene.getObjectById(id));
 	},
 
+	resetCamera() {
+		this.signals.editorCleared.dispatch();
+	},
+
 	clear() {
 		this.history.clear();
 		this.storage.clear();
 
 		this.camera.copy(_DEFAULT_CAMERA);
-		this.signals.cameraResetted.dispatch();
+		this.signals.cameraChanged.dispatch();
 
 		this.scene.name = 'Figures';
+		this.config.setKey('project/title', 'New project');
 		this.scene.userData = {};
 		this.scene.background = null;
 		this.scene.environment = null;
@@ -613,7 +624,7 @@ Editor.prototype = {
 			detectManager: this.detectManager.toJSON(), // serialize DetectManager;
 			beam: this.beam.toJSON(),
 			materialManager: this.materialManager.toJSON(), // serialize MaterialManager
-			scoringManager: this.scoringManager.toJSON(), // serialize ScoringManager
+			scoringManager: this.scoringManager.toJSON() // serialize ScoringManager
 		};
 
 		const hashJsonEditor = hash(jsonEditor);

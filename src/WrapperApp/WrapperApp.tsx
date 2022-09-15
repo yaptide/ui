@@ -9,6 +9,7 @@ import { EditorExample } from '../ThreeEditor/examples/examples';
 import { Editor } from '../ThreeEditor/js/Editor';
 import ThreeEditor from '../ThreeEditor/ThreeEditor';
 import { DEMO_MODE } from '../util/Config';
+import useDocumentTitle from '../util/useDocumentTitle';
 import { AboutPanel } from './components/AboutPanel';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
 import LoginPanel from './components/LoginPanel';
@@ -77,7 +78,7 @@ function WrapperApp() {
 			<TabPanel value={tabsValue} index={'editor'} persistent>
 				<ThreeEditor
 					onEditorInitialized={onEditorInitialized}
-					openSidebar={open}
+					sidebarProps={[open, tabsValue === 'editor']}
 					focus={tabsValue === 'editor'}
 				/>
 			</TabPanel>

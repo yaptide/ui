@@ -30,7 +30,7 @@ export function initEditor(container) {
 	// container.appendChild(toolbar.dom);
 
 	const sidebar = new Sidebar(editor);
-	// container.appendChild(sidebar.dom);
+	container.appendChild(sidebar.dom);
 
 	const menubar = new Menubar(editor);
 	// container.appendChild(menubar.dom);

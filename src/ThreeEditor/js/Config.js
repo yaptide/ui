@@ -8,7 +8,8 @@ function Config() {
 
 		'layout': 'fourViews', //YAPTIDE LAYOUT
 
-		'project/title': '',
+		'project/title': 'New Project',
+		'project/description': '',
 		'project/editable': false,
 
 		'project/renderer/antialias': true,
@@ -25,6 +26,27 @@ function Config() {
 		'settings/shortcuts/scale': 'r',
 		'settings/shortcuts/undo': 'z',
 		'settings/shortcuts/focus': 'f'
+	};
+
+	var listeners = {
+		'language': [],
+		'autosave': [],
+		'layout': [],
+		'project/title': [],
+		'project/description': [],
+		'project/editable': [],
+		'project/renderer/antialias': [],
+		'project/renderer/shadows': [],
+		'project/renderer/shadowType': [],
+		'project/renderer/physicallyCorrectLights': [],
+		'project/renderer/toneMapping': [],
+		'project/renderer/toneMappingExposure': [],
+		'settings/history': [],
+		'settings/shortcuts/translate': [],
+		'settings/shortcuts/rotate': [],
+		'settings/shortcuts/scale': [],
+		'settings/shortcuts/undo': [],
+		'settings/shortcuts/focus': []
 	};
 
 	if (window.localStorage[name] === undefined) {
@@ -46,7 +68,12 @@ function Config() {
 			// key, value, key, value ...
 
 			for (var i = 0, l = arguments.length; i < l; i += 2) {
-				storage[arguments[i]] = arguments[i + 1];
+				let key = arguments[i];
+				let value = arguments[i + 1];
+				storage[key] = value;
+				listeners[key].forEach(listener => {
+					listener(value);
+				});
 			}
 
 			window.localStorage[name] = JSON.stringify(storage);
@@ -59,6 +86,18 @@ function Config() {
 
 		clear: function () {
 			delete window.localStorage[name];
+		},
+
+		addListener: function (key, callback) {
+			listeners[key].push(callback);
+		},
+
+		removeListener: function (key, callback) {
+			var index = listeners[key].indexOf(callback);
+
+			if (index !== -1) {
+				listeners[key].splice(index, 1);
+			}
 		}
 	};
 }
