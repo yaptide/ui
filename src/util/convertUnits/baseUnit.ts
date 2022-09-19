@@ -69,14 +69,21 @@ const SI: Record<string, Unit> = {
       plural: 'Giga',
     },
     to_anchor: 1e+9,
-  },  
-  P:{
+  },
+  T: {
+    name: {
+      singular: 'Tera',
+      plural: 'Tera',
+    },
+    to_anchor: 1e+12,
+  },
+  P: {
     name: {
       singular: 'Peta',
       plural: 'Peta',
     },
     to_anchor: 1e+15,
-  }  
+  }
 };
 
 
@@ -97,7 +104,7 @@ export const volumeMeasure: Measure<BaseSystems, BaseUnits> = {
   },
 };
 
-export const fluenceMeasure: Measure<BaseSystems, BaseUnits> = {
+export const inverseOfSurfaceMeasure: Measure<BaseSystems, BaseUnits> = {
   systems: {
     SI: createSISystem('m^-2', 2),
   },

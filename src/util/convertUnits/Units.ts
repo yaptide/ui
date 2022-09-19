@@ -1,8 +1,8 @@
 
 import configureMeasurements from 'convert-units';
-import { baseMeasure, fluenceMeasure, isBaseUnit, volumeMeasure } from "./baseUnit";
+import { baseMeasure, inverseOfSurfaceMeasure, isBaseUnit, volumeMeasure } from "./baseUnit";
 
-const convert = configureMeasurements({ baseMeasure, fluenceMeasure, volumeMeasure });
+const convert = configureMeasurements({ baseMeasure, fluenceMeasure: inverseOfSurfaceMeasure, volumeMeasure });
 
 const fixedUnits = ['g/cm^3', 'MeV/g', 'MeV/cm', 'keV/um', 'MeV cm^2 / g'];
 
@@ -10,7 +10,7 @@ const isFixedUnit = (unit: string) => {
 	return fixedUnits.includes(unit);
 };
 
-const baseUnits = ['m', 'm^-2', 'm^3', 'eV', 'eV/u', 'eV/nucleon', 'Gy'];
+const baseUnits = ['m', 'm^-2', 'm^3', 'eV', 'eV/u', 'eV/nucleon', 'Gy', 'Sv'];
 
 
 
