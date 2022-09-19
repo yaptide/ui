@@ -8,6 +8,7 @@ import { InputFilesEditor } from './InputFilesEditor';
 import { DEMO_MODE } from '../../../util/Config';
 import { useSnackbar } from 'notistack';
 import { throttle } from 'throttle-debounce';
+import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 
 interface InputEditorPanelProps {
 	goToRun?: () => void;
@@ -28,7 +29,7 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 	const [controller] = useState(new AbortController());
 
 	const handleConvert = useCallback(
-		async (editorJSON: object) => {
+		async (editorJSON: EditorJson) => {
 			switch (generator) {
 				case 'remote':
 					return convertToInputFiles(editorJSON, controller.signal).then(res => {
