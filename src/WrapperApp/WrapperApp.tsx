@@ -1,6 +1,4 @@
 import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
 import React, { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { JsRootService } from '../JsRoot/JsRootService';
 import { useAuth } from '../services/AuthService';
@@ -9,7 +7,6 @@ import { EditorExample } from '../ThreeEditor/examples/examples';
 import { Editor } from '../ThreeEditor/js/Editor';
 import ThreeEditor from '../ThreeEditor/ThreeEditor';
 import { DEMO_MODE } from '../util/Config';
-import useDocumentTitle from '../util/useDocumentTitle';
 import { AboutPanel } from './components/AboutPanel';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
 import LoginPanel from './components/LoginPanel';
@@ -21,7 +18,7 @@ import YapDrawer from './components/YapDrawer/YapDrawer';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
-	const { isAuthorized, logout } = useAuth();
+	const { isAuthorized } = useAuth();
 
 	const [open, setOpen] = React.useState(false);
 	const [tabsValue, setTabsValue] = useState('editor');

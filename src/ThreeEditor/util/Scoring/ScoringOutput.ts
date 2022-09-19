@@ -14,7 +14,10 @@ export type ScoringOutputJSON = {
 	trace: boolean;
 	traceFilter?: string;
 };
-export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> implements UniqueChildrenNames {
+export class ScoringOutput
+	extends SimulationSceneGroup<ScoringQuantity>
+	implements UniqueChildrenNames
+{
 	readonly isOutput: true = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -71,6 +74,7 @@ export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> impleme
 		this.parent = null;
 		this._primaries = [false, 0];
 		this._trace = [false, ''];
+		this.createQuantity();
 	}
 
 	createQuantity(): ScoringQuantity {
@@ -106,7 +110,12 @@ export class ScoringOutput extends SimulationSceneGroup<ScoringQuantity> impleme
 		return {
 			name: this.name,
 			uuid: this.uuid,
-			quantities: { active: [...this.children.map(qty => qty.toJSON()), ...this._disabledChildren.map(qty => qty.toJSON())] },
+			quantities: {
+				active: [
+					...this.children.map(qty => qty.toJSON()),
+					...this._disabledChildren.map(qty => qty.toJSON())
+				]
+			},
 			detectGeometry: this._geometry,
 			trace: this._trace[0],
 			...(this.primaries[1] && { primaries: this.primaries[1] }),

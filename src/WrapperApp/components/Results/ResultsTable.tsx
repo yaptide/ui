@@ -1,9 +1,7 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import { Estimator, Page0D } from '../../../JsRoot/GraphData';
 import { Button } from '@mui/material';
-import { estimatorPage1DToCsv, pages0DToCsv } from '../../../util/csv/Csv';
+import Box from '@mui/material/Box';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { pages0DToCsv } from '../../../util/csv/Csv';
 import { saveString } from '../../../util/File';
 import { EstimatorResults } from './ResultsPanel';
 

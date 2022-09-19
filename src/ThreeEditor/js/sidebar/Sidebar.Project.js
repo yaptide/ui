@@ -47,18 +47,16 @@ function SidebarProject(editor) {
 
 	//
 
-
-
 	// Signals
 
 	signals.projectChanged.add(() => {
 		title.setValue(config.getKey('project/title'));
 		description.setValue(config.getKey('project/description'));
-	})
+	});
 
 	signals.editorCleared.add(() => {
-		title.setValue('');
-		config.setKey('project/title', '');
+		title.setValue('Untitled project');
+		config.setKey('project/title', 'Untitled project');
 		description.setValue('');
 		config.setKey('project/description', '');
 	});

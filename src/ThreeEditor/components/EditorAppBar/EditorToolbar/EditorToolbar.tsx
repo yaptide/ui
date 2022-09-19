@@ -45,7 +45,8 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 			{
 				label: 'Scale',
 				icon: <TransformIcon />,
-				value: Tool.TRANSFORM
+				value: Tool.TRANSFORM,
+				disabled: true
 			}
 		],
 		[]
@@ -86,7 +87,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 					margin: '0 15px'
 				}}
 			/>
-			{toolButtons.map(({ label, icon, value }, idx) => (
+			{toolButtons.map(({ label, icon, value, disabled }, idx) => (
 				<Box key={idx} mr={1}>
 					<Tooltip title={label}>
 						{tool == value ? (
@@ -94,6 +95,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 								size='small'
 								edge='end'
 								color='inherit'
+								disabled={disabled}
 								// component='span'
 								aria-label={'menu-' + label}
 								onClick={() => onClick(value)}>
@@ -104,6 +106,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 								size='small'
 								edge='end'
 								color='inherit'
+								disabled={disabled}
 								component='span'
 								aria-label={'menu-' + label}
 								onClick={() => onClick(value)}>

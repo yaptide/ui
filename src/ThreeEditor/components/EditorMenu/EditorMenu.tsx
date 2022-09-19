@@ -4,7 +4,9 @@ import { Editor } from '../../js/Editor';
 import { toggleFullscreen } from '../../util/toggleFullscreen';
 import {
 	AddDetectGeometryCommand,
+	AddFilterCommand,
 	AddObjectCommand,
+	AddOutputCommand,
 	AddZoneCommand
 } from '../../js/commands/Commands';
 import { BoxMesh, CylinderMesh, SphereMesh } from '../../util/BasicMeshes';
@@ -161,6 +163,18 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 							label: 'Detect Geometry',
 							onClick: () => {
 								editor?.execute(new AddDetectGeometryCommand(editor));
+							}
+						},
+						{
+							label: 'Scoring Filter',
+							onClick: () => {
+								editor?.execute(new AddFilterCommand(editor));
+							}
+						},
+						{
+							label: 'Simulation Output',
+							onClick: () => {
+								editor?.execute(new AddOutputCommand(editor, undefined));
 							}
 						}
 					],

@@ -1,21 +1,19 @@
-import Menu from '@mui/icons-material/Menu';
-import MenuOpen from '@mui/icons-material/MenuOpen';
-import MailIcon from '@mui/icons-material/Mail';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import Folder from '@mui/icons-material/Folder';
-import DescriptionIcon from '@mui/icons-material/Description';
-import ViewInArIcon from '@mui/icons-material/ViewInAr';
-import QueuePlayNextIcon from '@mui/icons-material/QueuePlayNext';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
+import DescriptionIcon from '@mui/icons-material/Description';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import StarBorder from '@mui/icons-material/StarBorder';
-import Collapse from '@mui/material/Collapse';
-import LoginIcon from '@mui/icons-material/Login';
-import LogoutIcon from '@mui/icons-material/Logout';
-import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
-import NotListedLocationIcon from '@mui/icons-material/NotListedLocation';
+import Folder from '@mui/icons-material/Folder';
+import GitHubIcon from '@mui/icons-material/GitHub';
 import InfoIcon from '@mui/icons-material/Info';
+import LoginIcon from '@mui/icons-material/Login';
+import Menu from '@mui/icons-material/Menu';
+import MenuOpen from '@mui/icons-material/MenuOpen';
+import NotListedLocationIcon from '@mui/icons-material/NotListedLocation';
+import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
+import QueuePlayNextIcon from '@mui/icons-material/QueuePlayNext';
+import ViewInArIcon from '@mui/icons-material/ViewInAr';
+import { Tooltip } from '@mui/material';
+import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
@@ -25,12 +23,10 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
-import React, { Dispatch, SetStateAction, SyntheticEvent, useState } from 'react';
+import React, { Dispatch, SetStateAction, SyntheticEvent } from 'react';
 import { useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
 import deployInfo from '../../../util/identify/deployInfo.json';
-import { Box, Link, Tooltip, Typography } from '@mui/material';
-import GitHubIcon from '@mui/icons-material/GitHub';
 
 type MenuOption = {
 	label: string;
@@ -100,8 +96,8 @@ const getDrawer = (width: number) =>
 	}));
 
 function YapDrawer({ drawerWidth = 200, handleChange, tabsValue, open, setOpen }: DrawerProps) {
-	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
-	const { isAuthorized, logout } = useAuth();
+	const { resultsSimulationData } = useStore();
+	const { isAuthorized } = useAuth();
 	const theme = useTheme();
 	const [expand, setExpand] = React.useState(tabsValue === 'login');
 

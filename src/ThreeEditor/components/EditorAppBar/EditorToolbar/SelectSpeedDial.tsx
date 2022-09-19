@@ -11,6 +11,7 @@ import CategoryIcon from '@mui/icons-material/Category';
 import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
 import { SpeedDial, SpeedDialIcon, SpeedDialAction } from '@mui/material';
 import React, { useCallback, useMemo } from 'react';
+import { useTheme } from '@mui/material/styles';
 
 export enum SelectTool {
 	GEOMETRIES,
@@ -32,6 +33,8 @@ type SelectSpeedDialProps = {
 };
 
 export function SelectSpeedDial({ selected, onClick, tool, setTool }: SelectSpeedDialProps) {
+	const theme = useTheme();
+
 	const [open, setOpen] = React.useState(false);
 	const handleOpen = () => setOpen(true);
 	const handleClose = () => setOpen(false);
@@ -87,6 +90,11 @@ export function SelectSpeedDial({ selected, onClick, tool, setTool }: SelectSpee
 				<SpeedDialAction
 					key={action.name}
 					icon={action.icon}
+					sx={{
+						'& .MuiButtonBase-root .MuiSvgIcon-root': {
+							color: theme.palette.mode === 'dark' ? '#fff' : '#000'
+						}
+					}}
 					tooltipTitle={action.name}
 					tooltipOpen
 					onClick={() => {

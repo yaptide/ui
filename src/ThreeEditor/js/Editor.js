@@ -153,7 +153,7 @@ export function Editor(container) {
 	this.materialManager = new MaterialManager(this); // Material Manager
 	this.zoneManager = new CSG.ZoneManager(this); // CSG Manager
 	this.detectManager = new DetectManager(this); // Detect Manager
-	this.scoringManager = new ScoringManager(this); // Scoring Manager	
+	this.scoringManager = new ScoringManager(this); // Scoring Manager
 
 	this.beam = new Beam(this);
 	this.sceneHelpers.add(this.beam);
@@ -473,8 +473,9 @@ Editor.prototype = {
 	getObjectByName(name) {
 		const objectCollections = [...this.searchableObjectCollections];
 
-		const object =
-			objectCollections.map(e => e.getObjectByName(name)).find(e => typeof e !== 'undefined');
+		const object = objectCollections
+			.map(e => e.getObjectByName(name))
+			.find(e => typeof e !== 'undefined');
 
 		return object;
 	},
@@ -543,7 +544,6 @@ Editor.prototype = {
 		this.signals.cameraChanged.dispatch();
 
 		this.scene.name = 'Figures';
-		this.config.setKey('project/title', 'New project');
 		this.scene.userData = {};
 		this.scene.background = null;
 		this.scene.environment = null;
