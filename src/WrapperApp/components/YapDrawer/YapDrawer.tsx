@@ -28,6 +28,9 @@ import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
 import React, { Dispatch, SetStateAction, SyntheticEvent, useState } from 'react';
 import { useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
+import deployInfo from '../../../util/identify/deployInfo.json';
+import { Box, Link, Tooltip, Typography } from '@mui/material';
+import GitHubIcon from '@mui/icons-material/GitHub';
 
 type MenuOption = {
 	label: string;
@@ -115,6 +118,7 @@ function YapDrawer({ drawerWidth = 200, handleChange, tabsValue, open, setOpen }
 		{
 			label: 'Projects',
 			value: 'projects',
+			disabled: true,
 			icon: <Folder />
 		},
 		{
@@ -218,6 +222,40 @@ function YapDrawer({ drawerWidth = 200, handleChange, tabsValue, open, setOpen }
 				))}
 			</List>
 			<Divider />
+
+			<List sx={{ marginTop: 'auto' }}>
+				<Divider />
+				<ListItem disablePadding sx={{ display: 'block' }}>
+					<Tooltip title={`${deployInfo.date} ${deployInfo.commit} ${deployInfo.branch}`}>
+						<ListItemButton
+							sx={{
+								minHeight: 48,
+								justifyContent: open ? 'initial' : 'center',
+								px: 2.5
+							}}
+							component='a'
+							href={'https://github.com/yaptide/ui/commit/' + deployInfo.commit}>
+							<ListItemIcon
+								sx={{
+									minWidth: 0,
+									mr: open ? 1.6 : 'auto',
+									ml: open ? -1.6 : 'auto',
+									justifyContent: 'center'
+								}}>
+								<GitHubIcon
+									fontSize='large'
+									sx={{ marginTop: 'auto', width: '100%', padding: 1 }}
+								/>
+							</ListItemIcon>
+							<ListItemText
+								primary={deployInfo.commit}
+								secondary={deployInfo.date}
+								sx={{ opacity: open ? 1 : 0 }}
+							/>
+						</ListItemButton>
+					</Tooltip>
+				</ListItem>
+			</List>
 		</Drawer>
 	);
 }

@@ -142,7 +142,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 	);
 
 	return (
-		<AppBar position='static'>
+		<AppBar position='static' color='secondary'>
 			<Toolbar>
 				{leftSideOptions}
 				<Typography variant='subtitle1' component='div' align='center' sx={{ flexGrow: 1 }}>

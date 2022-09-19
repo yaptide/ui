@@ -71,6 +71,7 @@ function Config() {
 				let key = arguments[i];
 				let value = arguments[i + 1];
 				storage[key] = value;
+				if (listeners[key] === undefined) listeners[key] = [];
 				listeners[key].forEach(listener => {
 					listener(value);
 				});

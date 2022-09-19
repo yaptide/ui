@@ -108,27 +108,6 @@ function WrapperApp() {
 				<LoginPanel />
 			</TabPanel>
 		</Box>
-		// 	<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-		// 		<Tabs value={tabsValue} onChange={handleChange}>
-		// 			<Tab label='Editor' value={'Editor'} />
-		// 			<Tab label='Input Editor' value={'Input Editor'} />
-		// 			<Tab label='Run' value={'Run'} disabled={!DEMO_MODE && !isAuthorized} />
-		// 			<Tab
-		// 				label='Results'
-		// 				value={'Results'}
-		// 				disabled={(!DEMO_MODE && !isAuthorized) || !resultsSimulationData}
-		// 			/>
-		// 			<Tab label='Projects' value={'Projects'} disabled />
-		// 			<Tab label='About' value={'About'} />
-		// 			<Tab
-		// 				sx={{ marginLeft: 'auto' }}
-		// 				label={isAuthorized && !DEMO_MODE ? 'Logout' : 'Login'}
-		// 				value={'Login'}
-		// 				onClick={() => isAuthorized && logout()}
-		// 				disabled={DEMO_MODE}
-		// 			/>
-		// 		</Tabs>
-		// 	</Box>
 	);
 }
 export default WrapperApp;

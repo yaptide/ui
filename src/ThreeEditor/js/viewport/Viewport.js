@@ -318,6 +318,7 @@ export function Viewport(
 	}
 
 	function handleClick() {
+		console.log('click');
 		if (onDownPosition.distanceTo(onUpPosition) === 0) {
 			const intersects = getIntersects(onUpPosition);
 

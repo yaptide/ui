@@ -2,6 +2,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Button, ButtonGroup, Divider, Menu, MenuItem } from '@mui/material';
 import { Editor } from '../../js/Editor';
 import { toggleFullscreen } from '../../util/toggleFullscreen';
+import {
+	AddDetectGeometryCommand,
+	AddObjectCommand,
+	AddZoneCommand
+} from '../../js/commands/Commands';
+import { BoxMesh, CylinderMesh, SphereMesh } from '../../util/BasicMeshes';
 
 type EditorMenuProps = {
 	editor?: Editor;
@@ -141,14 +147,55 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 				idx={2}
 				openIdx={openIdx}
 				setOpenIdx={setOpenIdx}
-				options={[[{ label: 'Add', onClick: () => {} }]]}
+				options={[
+					[
+						{
+							label: 'Material Zone',
+							onClick: () => {
+								editor?.execute(new AddZoneCommand(editor));
+							}
+						}
+					],
+					[
+						{
+							label: 'Detect Geometry',
+							onClick: () => {
+								editor?.execute(new AddDetectGeometryCommand(editor));
+							}
+						}
+					],
+					[
+						{
+							label: 'Box Mesh',
+							onClick: () => {
+								editor?.execute(new AddObjectCommand(editor, new BoxMesh(editor)));
+							}
+						},
+						{
+							label: 'Sphere Mesh',
+							onClick: () => {
+								editor?.execute(
+									new AddObjectCommand(editor, new SphereMesh(editor))
+								);
+							}
+						},
+						{
+							label: 'Cylinder Mesh',
+							onClick: () => {
+								editor?.execute(
+									new AddObjectCommand(editor, new CylinderMesh(editor))
+								);
+							}
+						}
+					]
+				]}
 			/>
 			<MenuPosition
 				label='Edit'
 				idx={3}
 				openIdx={openIdx}
 				setOpenIdx={setOpenIdx}
-				options={[[{ label: 'Edit', onClick: () => {} }]]}
+				options={[[{ label: 'TODO', disabled: true, onClick: () => {} }]]}
 			/>
 		</ButtonGroup>
 	);
