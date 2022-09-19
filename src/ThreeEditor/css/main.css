@@ -428,6 +428,10 @@ select:hover {
 	margin: 0 !important;
 }
 
+#sidebar.hidden {
+	display: none;
+}
+
 :is(#sidebar, .sidebar) {
 	position: absolute;
 	right: 0;

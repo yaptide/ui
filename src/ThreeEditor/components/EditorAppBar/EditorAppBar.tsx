@@ -1,29 +1,29 @@
-import { Editor } from '../../js/Editor';
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import FiberNewIcon from '@mui/icons-material/FiberNew';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import Tooltip from '@mui/material/Tooltip';
-import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
-import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
-import OpenWithIcon from '@mui/icons-material/OpenWith';
-import ThreeSixtyIcon from '@mui/icons-material/ThreeSixty';
-import TransformIcon from '@mui/icons-material/Transform';
+import UndoIcon from '@mui/icons-material/Undo';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import React, { useEffect, useMemo, useState } from 'react';
 import { saveString } from '../../../util/File';
-import { SelectSpeedDial } from './EditorToolbar/SelectSpeedDial';
-import { ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Editor } from '../../js/Editor';
 import { EditorToolbar } from './EditorToolbar/EditorToolbar';
 
 type AppBarProps = {
 	editor?: Editor;
+};
+
+type AppBarOptions = {
+	label: string;
+	icon: JSX.Element;
+	onClick: () => void;
+	disabled?: boolean;
+	edge?: 'start' | 'end';
 };
 
 function EditorAppBar({ editor }: AppBarProps) {
@@ -49,7 +49,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 		if (editor && fileInput.current?.files) editor.loader.loadFiles(fileInput.current.files);
 		else console.warn('EditorAppBar.tsx: openFile: editor or fileInput.current.files is null');
 	};
-	const ToolbarButton = ({ label, icon, onClick, disabled, edge }: any) => (
+	const ToolbarButton = ({ label, icon, onClick, disabled, edge }: AppBarOptions) => (
 		<Tooltip title={label}>
 			<IconButton
 				size='small'
@@ -138,7 +138,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 					)}
 				</Box>
 			)),
-		[editor?.toJSON, canRedo, canUndo]
+		[editor, editor?.toJSON, canRedo, canUndo, openFile]
 	);
 
 	return (

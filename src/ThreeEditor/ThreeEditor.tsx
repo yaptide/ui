@@ -1,4 +1,4 @@
-import { AppBar, Box, Typography } from '@mui/material';
+import { AppBar, Box, Button, Typography } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import THREE from 'three';
 import './css/main.css';
@@ -38,10 +38,9 @@ function ThreeEditor(props: ThreeEditorProps) {
 
 	useEffect(() => {
 		if (containerEl.current) {
-			const { editor } = initEditor(containerEl.current);
-			setEditor(editor);
+			const { editor: newEditor } = initEditor(containerEl.current);
+			setEditor(newEditor);
 		}
-		console.log('ThreeEditor.tsx: useEffect', editor);
 	}, [containerEl]);
 
 	useEffect(() => {
@@ -54,7 +53,7 @@ function ThreeEditor(props: ThreeEditorProps) {
 			editor?.signals.sceneGraphChanged.dispatch();
 		} else containerEl.current?.blur();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [props.focus]);
+	}, [props.focus, editor]);
 
 	useEffect(
 		() => {
@@ -116,6 +115,12 @@ function ThreeEditor(props: ThreeEditorProps) {
 						padding: 2
 					}}>
 					Tutaj będzie panel properites
+					<Button
+						onClick={() => {
+							document.getElementById('sidebar')?.classList.toggle('hidden');
+						}}>
+						Ukryj strare UI
+					</Button>
 				</Typography>
 			</AppBar>
 		</Box>

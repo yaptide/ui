@@ -1,17 +1,11 @@
-import Box from '@mui/material/Box';
-import Backdrop from '@mui/material/Backdrop';
-import FileCopyIcon from '@mui/icons-material/FileCopyOutlined';
-import SaveIcon from '@mui/icons-material/Save';
-import PrintIcon from '@mui/icons-material/Print';
-import ShareIcon from '@mui/icons-material/Share';
 import BlurOnIcon from '@mui/icons-material/BlurOn';
-import { styled } from '@mui/material/styles';
-import TextureIcon from '@mui/icons-material/Texture';
 import CategoryIcon from '@mui/icons-material/Category';
 import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
-import { SpeedDial, SpeedDialIcon, SpeedDialAction } from '@mui/material';
+import TextureIcon from '@mui/icons-material/Texture';
+import { SpeedDial, SpeedDialAction } from '@mui/material';
+import Box from '@mui/material/Box';
+import { styled, useTheme } from '@mui/material/styles';
 import React, { useCallback, useMemo } from 'react';
-import { useTheme } from '@mui/material/styles';
 
 export enum SelectTool {
 	GEOMETRIES,

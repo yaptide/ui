@@ -1,12 +1,10 @@
-import { Box, Divider, IconButton, styled, Tooltip } from '@mui/material';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { SelectSpeedDial, SelectTool } from './SelectSpeedDial';
-import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
 import OpenWithIcon from '@mui/icons-material/OpenWith';
 import ThreeSixtyIcon from '@mui/icons-material/ThreeSixty';
 import TransformIcon from '@mui/icons-material/Transform';
-import Toolbar from '@mui/material/Toolbar';
+import { Box, Divider, IconButton, styled, Tooltip } from '@mui/material';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Editor } from '../../../js/Editor';
+import { SelectSpeedDial, SelectTool } from './SelectSpeedDial';
 
 enum Tool {
 	SELECT,
@@ -75,7 +73,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 	return (
 		<>
 			<SelectSpeedDial
-				selected={tool == Tool.SELECT}
+				selected={tool === Tool.SELECT}
 				onClick={() => {}}
 				tool={selectTool}
 				setTool={setSelectTool}
@@ -90,7 +88,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 			{toolButtons.map(({ label, icon, value, disabled }, idx) => (
 				<Box key={idx} mr={1}>
 					<Tooltip title={label}>
-						{tool == value ? (
+						{tool === value ? (
 							<SelectedButton
 								size='small'
 								edge='end'

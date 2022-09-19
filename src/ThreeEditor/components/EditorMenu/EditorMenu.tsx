@@ -1,7 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Button, ButtonGroup, Divider, Menu, MenuItem } from '@mui/material';
-import { Editor } from '../../js/Editor';
-import { toggleFullscreen } from '../../util/toggleFullscreen';
+import React, { useEffect, useState } from 'react';
 import {
 	AddDetectGeometryCommand,
 	AddFilterCommand,
@@ -9,7 +7,9 @@ import {
 	AddOutputCommand,
 	AddZoneCommand
 } from '../../js/commands/Commands';
+import { Editor } from '../../js/Editor';
 import { BoxMesh, CylinderMesh, SphereMesh } from '../../util/BasicMeshes';
+import { toggleFullscreen } from '../../util/toggleFullscreen';
 
 type EditorMenuProps = {
 	editor?: Editor;
@@ -28,10 +28,10 @@ type MenuPositionProps = {
 };
 function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPositionProps) {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+	const handleClick = (_: React.MouseEvent<HTMLButtonElement>) => {
 		setOpenIdx(idx);
 	};
-	const handleEnter = (event: React.MouseEvent<HTMLButtonElement>) => {
+	const handleEnter = (_: React.MouseEvent<HTMLButtonElement>) => {
 		if (openIdx !== -1) setOpenIdx(idx);
 	};
 	const handleClose = (action?: () => void) => {
@@ -39,7 +39,7 @@ function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPosition
 		setOpenIdx(-1);
 	};
 	useEffect(() => {
-		if (openIdx === idx) setAnchorEl(document.getElementById('basic-button-' + idx));
+		if (openIdx === idx) setAnchorEl(document.getElementById('basic-button-' + idx.toString()));
 		else setAnchorEl(null);
 	}, [openIdx, idx]);
 
@@ -55,7 +55,7 @@ function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPosition
 					width: 65,
 					color: 'white'
 				}}
-				id={'basic-button-' + idx}
+				id={'basic-button-' + idx.toString()}
 				aria-controls={Boolean(anchorEl) ? 'basic-menu' : undefined}
 				aria-haspopup='true'
 				aria-expanded={Boolean(anchorEl) ? 'true' : undefined}
@@ -100,7 +100,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 		<ButtonGroup
 			sx={{
 				display: 'flex',
-				zIndex: openIdx != -1 ? 2000 : 1,
+				zIndex: openIdx !== -1 ? 2000 : 1,
 				position: 'absolute',
 				top: 80,
 				transform: 'translateX(15px)',

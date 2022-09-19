@@ -1,16 +1,16 @@
 import * as THREE from 'three';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 import {
 	SetPositionCommand,
-	SetValueCommand,
 	SetRotationCommand,
-	SetScaleCommand
+	SetScaleCommand,
+	SetValueCommand
 } from '../commands/Commands';
-import { ViewportClippedView } from './Viewport.ClippedView';
 import { EditorOrbitControls } from '../EditorOrbitControls';
-import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 import { UIDiv, UIPanel } from '../libs/ui';
-import { ViewHelper } from './Viewport.ViewHelper';
 import { ViewportCamera } from './Viewport.Camera.js';
+import { ViewportClippedView } from './Viewport.ClippedView';
+import { ViewHelper } from './Viewport.ViewHelper';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
 
@@ -318,7 +318,6 @@ export function Viewport(
 	}
 
 	function handleClick() {
-		console.log('click');
 		if (onDownPosition.distanceTo(onUpPosition) === 0) {
 			const intersects = getIntersects(onUpPosition);
 

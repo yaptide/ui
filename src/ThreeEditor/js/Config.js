@@ -1,7 +1,7 @@
 function Config() {
-	var name = 'threejs-editor';
+	let name = 'threejs-editor';
 
-	var storage = {
+	let storage = {
 		'language': 'en',
 
 		'autosave': true,
@@ -28,7 +28,7 @@ function Config() {
 		'settings/shortcuts/focus': 'f'
 	};
 
-	var listeners = {
+	let listeners = {
 		'language': [],
 		'autosave': [],
 		'layout': [],
