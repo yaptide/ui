@@ -29,6 +29,9 @@ export function initEditor(container) {
 	const sidebar = new Sidebar(editor);
 	container.appendChild(sidebar.dom);
 
+	const menubar = new Menubar(editor);
+	// menubar has required dependencies for other UI components and will be removed last.
+
 	//
 
 	editor.storage.init(() => {
@@ -94,6 +97,8 @@ export function initEditor(container) {
 		];
 		stateChangedSignals.forEach(signal => signal.add(saveState));
 	});
+
+	editor.signals.sceneGraphChanged.dispatch();
 
 	//
 

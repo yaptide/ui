@@ -114,12 +114,12 @@ function ThreeEditor(props: ThreeEditorProps) {
 					sx={{
 						padding: 2
 					}}>
-					Placeholder for the properties panel
+					Tutaj będzie panel properites
 					<Button
 						onClick={() => {
 							document.getElementById('sidebar')?.classList.toggle('hidden');
 						}}>
-						Toggle old UI
+						Ukryj strare UI
 					</Button>
 				</Typography>
 			</AppBar>

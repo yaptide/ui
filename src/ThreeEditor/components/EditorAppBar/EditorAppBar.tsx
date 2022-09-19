@@ -3,13 +3,14 @@ import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import RedoIcon from '@mui/icons-material/Redo';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 import UndoIcon from '@mui/icons-material/Undo';
+import { CircularProgress } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { saveString } from '../../../util/File';
 import { Editor } from '../../js/Editor';
 import { EditorToolbar } from './EditorToolbar/EditorToolbar';
@@ -31,20 +32,38 @@ function EditorAppBar({ editor }: AppBarProps) {
 	const fileInput = React.useRef<HTMLInputElement>(null);
 	const [canUndo, setCanUndo] = React.useState((editor?.history.undos.length ?? 0) > 0);
 	const [canRedo, setCanRedo] = React.useState((editor?.history.redos.length ?? 0) > 0);
+	const [saving, setSaving] = React.useState(false);
 
 	useEffect(() => {
+		return () => {};
+	}, [editor]);
+
+	const updateHistoryButtons = useCallback(() => {
+		setCanUndo((editor?.history.undos.length ?? 0) > 0);
+		setCanRedo((editor?.history.redos.length ?? 0) > 0);
+	}, [editor]);
+
+	const startSave = useCallback(() => {
+		setSaving(true);
+	}, []);
+
+	const stopSave = useCallback(() => {
+		setTimeout(() => setSaving(false), 700);
+	}, []);
+
+	useEffect(() => {
+		editor?.signals.historyChanged.add(updateHistoryButtons);
 		editor?.signals.titleChanged.add(setTitle);
+		editor?.signals.savingStarted.add(startSave);
+		editor?.signals.savingFinished.add(stopSave);
 		return () => {
+			editor?.signals.historyChanged.remove(updateHistoryButtons);
 			editor?.signals.titleChanged.remove(setTitle);
+			editor?.signals.savingStarted.remove(startSave);
+			editor?.signals.savingFinished.remove(stopSave);
 		};
 	}, [editor]);
 
-	useEffect(() => {
-		editor?.signals.historyChanged.add(() => {
-			setCanUndo((editor?.history.undos.length ?? 0) > 0);
-			setCanRedo((editor?.history.redos.length ?? 0) > 0);
-		});
-	}, [editor]);
 	const openFile = () => {
 		if (editor && fileInput.current?.files) editor.loader.loadFiles(fileInput.current.files);
 		else console.warn('EditorAppBar.tsx: openFile: editor or fileInput.current.files is null');
@@ -147,6 +166,12 @@ function EditorAppBar({ editor }: AppBarProps) {
 				{leftSideOptions}
 				<Typography variant='subtitle1' component='div' align='center' sx={{ flexGrow: 1 }}>
 					{title}
+					{saving && (
+						<CircularProgress
+							size={18}
+							sx={{ ml: 1, position: 'absolute', top: '33%', color: 'inherit' }}
+						/>
+					)}
 				</Typography>
 				<EditorToolbar editor={editor} />
 			</Toolbar>
