@@ -44,8 +44,10 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 
 	const [isUnitFixed, setUnitFixed] = useState(false);
 
-	const tablePages: TablePage0DItem[] = pages.map((page, idx) => {		
-		let convertedValue = isUnitFixed ? null : convertToBestUnit(page.data.values[0], page.data.unit);
+	const tablePages: TablePage0DItem[] = pages.map((page, idx) => {
+		let convertedValue = isUnitFixed
+			? null
+			: convertToBestUnit(page.data.values[0], page.data.unit);
 
 		return {
 			id: idx,
@@ -61,8 +63,6 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 		};
 	});
 
-	
-
 	const handleChangeUnitFixed = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setUnitFixed(event.target.checked);
 	};
@@ -73,7 +73,10 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 
 	return (
 		<Box style={{ width: '100%' }}>
-			<Button sx={{ marginTop: '1rem' }} onClick={() => onClickSaveToFile(tablePages)}>
+			<Button
+				color='info'
+				sx={{ marginTop: '1rem' }}
+				onClick={() => onClickSaveToFile(tablePages)}>
 				EXPORT TABLE TO CSV
 			</Button>
 

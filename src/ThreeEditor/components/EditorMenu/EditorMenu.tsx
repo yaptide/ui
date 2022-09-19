@@ -64,6 +64,12 @@ function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPosition
 				{label}
 			</Button>
 			<Menu
+				sx={{
+					'transform': 'translateY(3px)',
+					'& .MuiPaper-root': {
+						borderRadius: '0 0 5px 5px'
+					}
+				}}
 				id='basic-menu'
 				anchorEl={anchorEl}
 				open={Boolean(anchorEl)}
@@ -71,12 +77,16 @@ function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPosition
 				MenuListProps={{
 					'aria-labelledby': 'basic-button',
 					'dense': true
-				}}
-				sx={{}}>
+				}}>
 				{options.map((section, row) => (
 					<Box key={row}>
 						{section.map((option, idx) => (
 							<MenuItem
+								sx={{
+									fontSize: '.75rem',
+									lineHeight: '1rem',
+									padding: '.2rem .5rem'
+								}}
 								key={idx}
 								onClick={() => {
 									handleClose(option.onClick);

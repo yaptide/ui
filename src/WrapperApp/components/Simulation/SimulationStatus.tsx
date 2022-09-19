@@ -129,12 +129,12 @@ export default function SimulationStatus({
 			</CardContent>
 			<CardActions>
 				{simulation.inputFiles && showInputFiles && (
-					<Button size='small' onClick={onClickInputFiles}>
+					<Button color='info' size='small' onClick={onClickInputFiles}>
 						Show Input Files
 					</Button>
 				)}
 				{simulation.logFile && (
-					<Button size='small' onClick={onClickShowError}>
+					<Button color='info' size='small' onClick={onClickShowError}>
 						Show Error Log
 					</Button>
 				)}
@@ -144,6 +144,7 @@ export default function SimulationStatus({
 						display: simulation.status === StatusState.FAILURE ? 'none' : ''
 					}}
 					size='small'
+					color='info'
 					disabled={simulation.status !== StatusState.SUCCESS}
 					onClick={
 						resultsSimulationData?.uuid !== simulation.uuid
@@ -156,13 +157,13 @@ export default function SimulationStatus({
 				</Button>
 
 				{simulation.status === StatusState.SUCCESS && (
-					<Button size='small' onClick={onClickSaveToFile}>
+					<Button color='info' size='small' onClick={onClickSaveToFile}>
 						Save to file
 					</Button>
 				)}
 
 				{simulation.status === StatusState.PROGRESS && (
-					<Button size='small' disabled>
+					<Button color='info' size='small' disabled>
 						Cancel Simulation
 					</Button>
 				)}

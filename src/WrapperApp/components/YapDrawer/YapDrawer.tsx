@@ -12,7 +12,7 @@ import NotListedLocationIcon from '@mui/icons-material/NotListedLocation';
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
 import QueuePlayNextIcon from '@mui/icons-material/QueuePlayNext';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
-import { Tooltip } from '@mui/material';
+import { colors, Tooltip } from '@mui/material';
 import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
@@ -180,15 +180,22 @@ function YapDrawer({ drawerWidth = 200, handleChange, tabsValue, open, setOpen }
 						component='div'
 						disablePadding
 						sx={{
-							backgroundColor: theme.palette.primary.dark
+							backgroundColor: theme.palette.primary.main
 						}}>
 						<ListItemButton
-							sx={{ pl: open ? 4 : 'auto' }}
+							sx={{
+								pl: open ? 4 : 'auto'
+							}}
 							onClick={event => handleChange(event, 'login')}>
 							<ListItemIcon>
 								<LoginIcon />
 							</ListItemIcon>
-							<ListItemText primary={'Login'} sx={{ opacity: open ? 1 : 0 }} />
+							<ListItemText
+								primary={'Login'}
+								sx={{
+									opacity: open ? 1 : 0
+								}}
+							/>
 						</ListItemButton>
 					</List>
 				</Collapse>
@@ -230,7 +237,8 @@ function YapDrawer({ drawerWidth = 200, handleChange, tabsValue, open, setOpen }
 								px: 2.5
 							}}
 							component='a'
-							href={'https://github.com/yaptide/ui/commit/' + deployInfo.commit}>
+							href={'https://github.com/yaptide/ui/commit/' + deployInfo.commit}
+							target='_blank'>
 							<ListItemIcon
 								sx={{
 									minWidth: 0,

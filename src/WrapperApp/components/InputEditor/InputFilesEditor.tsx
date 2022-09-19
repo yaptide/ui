@@ -1,9 +1,10 @@
-import { Box, Button, Card, CardActions, CardContent } from '@mui/material';
+import { Box, Button, Card, CardActions, CardContent, Divider } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { InputFiles } from '../../../services/ShSimulatorService';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { saveString } from '../../../util/File';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import useTheme from '@mui/system/useTheme';
 
 interface InputFilesEditorProps {
 	inputFiles?: InputFiles;
@@ -20,6 +21,7 @@ const _emptyInputFiles: InputFiles = {
 	'mat.dat': ''
 };
 export function InputFilesEditor(props: InputFilesEditorProps) {
+	const theme = useTheme();
 	const [inputFiles, setInputFiles] = useState<InputFiles>(
 		props.inputFiles ?? { ..._emptyInputFiles }
 	);
@@ -32,7 +34,13 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 
 	return (
 		<Card sx={{ minHeight: '100%' }}>
-			<CardActions sx={{ justifyContent: 'flex-end' }}>
+			<CardActions
+				sx={{
+					justifyContent: 'flex-end',
+					background: prefersDarkMode
+						? theme.palette.grey['800']
+						: theme.palette.grey['300']
+				}}>
 				{props.runSimulation && (
 					<Button
 						color='success'
@@ -42,20 +50,24 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 					</Button>
 				)}
 				<Button
+					color='info'
 					onClick={() =>
 						Object.entries(inputFiles).map(([name, value]) => saveString(value, name))
 					}>
 					Download all
 				</Button>
 				{props.saveAndExit && (
-					<Button onClick={() => props.saveAndExit?.call(null, inputFiles)}>
+					<Button color='info' onClick={() => props.saveAndExit?.call(null, inputFiles)}>
 						Save and exit
 					</Button>
 				)}
 				{props.closeEditor && (
-					<Button onClick={() => props.closeEditor?.call(null)}>Close</Button>
+					<Button color='info' onClick={() => props.closeEditor?.call(null)}>
+						Close
+					</Button>
 				)}
 			</CardActions>
+			<Divider />
 			<CardContent>
 				{Object.entries(inputFiles).map(([name, value]) => {
 					return (
@@ -63,9 +75,11 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 							<h2>
 								{name}
 								<Button
+									color='info'
 									onClick={() => {
 										saveString(value, name);
-									}}>
+									}}
+									sx={{ ml: 1 }}>
 									Download
 								</Button>
 							</h2>

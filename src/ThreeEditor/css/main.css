@@ -741,7 +741,7 @@ select:hover {
 .gutter-col {
 	grid-row: 1/-1;
 	cursor: col-resize;
-	background-color: rgb(53, 203, 248);
+	background-color: rgb(255, 238, 217);
 }
 
 .gutter-col-1 {
@@ -751,7 +751,7 @@ select:hover {
 .gutter-row {
 	grid-column: 1/-1;
 	cursor: row-resize;
-	background-color: rgb(53, 248, 248);
+	background-color: rgb(223, 193, 155);
 }
 
 .gutter-row-1 {

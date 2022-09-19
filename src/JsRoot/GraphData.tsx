@@ -81,7 +81,7 @@ export function generateGraphs(estimator: EstimatorResults) {
 		);
 	};
 	return gridPages
-		.map((page) => {
+		.map(page => {
 			return { graph: getGraphFromPage(page, page.name), filter: page.filterRef };
 		})
 		.map(({ graph, filter }, idx) => {
@@ -113,6 +113,7 @@ export function generateGraphs(estimator: EstimatorResults) {
 
 									{isPage1d(gridPages[idx]) && (
 										<Button
+											color='info'
 											sx={{ marginTop: '1rem' }}
 											onClick={() =>
 												onClickSaveToFile(gridPages[idx] as Page1D)

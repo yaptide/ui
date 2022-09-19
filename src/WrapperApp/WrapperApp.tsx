@@ -1,3 +1,4 @@
+import { useMediaQuery } from '@mui/material';
 import Box from '@mui/material/Box';
 import React, { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { JsRootService } from '../JsRoot/JsRootService';
@@ -19,7 +20,6 @@ import YapDrawer from './components/YapDrawer/YapDrawer';
 function WrapperApp() {
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
 	const { isAuthorized } = useAuth();
-
 	const [open, setOpen] = React.useState(false);
 	const [tabsValue, setTabsValue] = useState('editor');
 

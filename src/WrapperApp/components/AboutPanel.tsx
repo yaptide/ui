@@ -1,9 +1,8 @@
-import { Paper, Link } from '@mui/material';
+import { Link, Box } from '@mui/material';
 
 export function AboutPanel() {
 	return (
-		<Paper
-			elevation={0}
+		<Box
 			sx={{
 				padding: '10px 30px',
 				display: 'flex',
@@ -17,11 +16,13 @@ export function AboutPanel() {
 					href='https://www.cyfronet.pl/18286,artykul,projekt_eurohpc_pl.html'
 					target='_blank'
 					variant='body2'
+					color='secondary'
+					sx={{ fontWeight: 'bold' }}
 					underline='hover'>
 					{'EuroHPC PL Project'}
 				</Link>
 				{', Smart Growth Operational Programme 4.2'}
 			</p>
-		</Paper>
+		</Box>
 	);
 }

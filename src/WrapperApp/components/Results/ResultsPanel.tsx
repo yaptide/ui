@@ -76,7 +76,7 @@ function ResultsPanel() {
 						{simulation.name} [{simulation.creationDate.toLocaleString()}]
 					</Typography>
 
-					<Button size='small' onClick={onClickSaveToFile}>
+					<Button color='info' size='small' onClick={onClickSaveToFile}>
 						Save to file
 					</Button>
 				</Card>
@@ -97,9 +97,23 @@ function ResultsPanel() {
 								height: 'min-content',
 								overflow: 'unset'
 							}}>
-							<CardContent>
+							<CardContent
+								sx={{
+									color: prefersDarkMode ? '#fff' : 'secondary.dark'
+								}}>
 								<Tabs
-									sx={{ flexShrink: 0 }}
+									textColor='inherit'
+									sx={{
+										'flexShrink': 0,
+										'& .MuiTabs-indicator': {
+											backgroundColor: prefersDarkMode
+												? '#fff'
+												: 'secondary.dark'
+										},
+										'& .MuiButtonBase-root': {
+											fontWeight: 'bold'
+										}
+									}}
 									orientation='vertical'
 									variant='scrollable'
 									value={tabsValue}
@@ -132,7 +146,8 @@ function ResultsPanel() {
 											persistentIfVisited>
 											<Grid container spacing={1}>
 												{estimator.tablePages.length > 0 && (
-													<TablePage0D estimator={estimator}></TablePage0D>
+													<TablePage0D
+														estimator={estimator}></TablePage0D>
 												)}
 												{generateGraphs(estimator)}
 											</Grid>
