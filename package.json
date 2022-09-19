@@ -21,6 +21,7 @@
 		"@uiw/react-textarea-code-editor": "^2.0.3",
 		"comlink": "^4.3.1",
 		"command-exists": "^1.2.9",
+		"convert-units": "^3.0.0-beta.4",
 		"glob": "^8.0.3",
 		"ky": "^0.31.1",
 		"notistack": "^2.0.5",
@@ -93,6 +94,7 @@
 		"@types/three": "^0.143.0",
 		"cross-env": "^7.0.3",
 		"gh-pages": "^4.0.0",
+		"jest-matcher-deep-close-to": "^3.0.2",
 		"prettier": "2.7.1",
 		"react-app-rewired": "^2.2.1",
 		"use-resize-observer": "^9.0.2"
