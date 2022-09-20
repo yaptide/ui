@@ -104,6 +104,9 @@ export function Editor(container) {
 
 		animationStopped: new Signal(),
 
+		// config
+		titleChanged: new Signal(),
+
 		// YAPTIDE signals
 		selectModeChanged: new Signal(),
 
@@ -119,7 +122,7 @@ export function Editor(container) {
 
 		CSGManagerStateChanged: new Signal(), // State of CSGmanager changed
 
-		exampleLoaded: new Signal(),
+		exampleLoaded: new Signal()
 	};
 
 	this.container = container;
@@ -129,6 +132,9 @@ export function Editor(container) {
 	this.jsonVersion = JSON_VERSION;
 
 	this.config = new Config();
+	this.config.addListener('project/title', title => {
+		this.signals.titleChanged.dispatch(title);
+	});
 	this.history = new _History(this);
 	this.storage = new _Storage();
 	this.unit = {
@@ -147,7 +153,7 @@ export function Editor(container) {
 	this.materialManager = new MaterialManager(this); // Material Manager
 	this.zoneManager = new CSG.ZoneManager(this); // CSG Manager
 	this.detectManager = new DetectManager(this); // Detect Manager
-	this.scoringManager = new ScoringManager(this); // Scoring Manager	
+	this.scoringManager = new ScoringManager(this); // Scoring Manager
 
 	this.beam = new Beam(this);
 	this.sceneHelpers.add(this.beam);
@@ -467,8 +473,9 @@ Editor.prototype = {
 	getObjectByName(name) {
 		const objectCollections = [...this.searchableObjectCollections];
 
-		const object =
-			objectCollections.map(e => e.getObjectByName(name)).find(e => typeof e !== 'undefined');
+		const object = objectCollections
+			.map(e => e.getObjectByName(name))
+			.find(e => typeof e !== 'undefined');
 
 		return object;
 	},
@@ -525,12 +532,16 @@ Editor.prototype = {
 		this.focus(this.scene.getObjectById(id));
 	},
 
+	resetCamera() {
+		this.signals.editorCleared.dispatch();
+	},
+
 	clear() {
 		this.history.clear();
 		this.storage.clear();
 
 		this.camera.copy(_DEFAULT_CAMERA);
-		this.signals.cameraResetted.dispatch();
+		this.signals.cameraChanged.dispatch();
 
 		this.scene.name = 'Figures';
 		this.scene.userData = {};
@@ -629,7 +640,7 @@ Editor.prototype = {
 			detectManager: this.detectManager.toJSON(), // serialize DetectManager;
 			beam: this.beam.toJSON(),
 			materialManager: this.materialManager.toJSON(), // serialize MaterialManager
-			scoringManager: this.scoringManager.toJSON(), // serialize ScoringManager
+			scoringManager: this.scoringManager.toJSON() // serialize ScoringManager
 		};
 
 		const hashJsonEditor = hash(jsonEditor);

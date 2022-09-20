@@ -4,10 +4,8 @@ import { SimulationMesh, SimulationPoints } from '../../../util/SimulationBase/S
 import {
 	createFullwidthButton,
 	createMaterialSelect,
-	createRowCheckbox,
 	createRowColor,
 	createRowConditionalNumber,
-	createRowParamNumber,
 	createRowText,
 	hideUIElement,
 	showUIElement

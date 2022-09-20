@@ -1,4 +1,4 @@
-import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Box, ToggleButton, ToggleButtonGroup, useMediaQuery } from '@mui/material';
 import { useState, useCallback } from 'react';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
@@ -9,6 +9,7 @@ import { DEMO_MODE } from '../../../util/Config';
 import { useSnackbar } from 'notistack';
 import { throttle } from 'throttle-debounce';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
+import useTheme from '@mui/system/useTheme';
 
 interface InputEditorPanelProps {
 	goToRun?: () => void;
@@ -90,7 +91,9 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 				width: '100%',
 				padding: '3rem',
 				gap: '1.5rem',
-				height: 'min-content'
+				minHeight: '100vh',
+				height: 'min-content',
+				boxSizing: 'border-box'
 			}}>
 			<Box
 				sx={{
@@ -100,6 +103,7 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 					sx={{
 						marginRight: '1rem'
 					}}
+					color='info'
 					loading={generator === 'local' && !isConverterReady}
 					variant='contained'
 					onClick={debouncedOnClickGenerate}
@@ -109,15 +113,19 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 				</LoadingButton>
 
 				<ToggleButtonGroup
-					color='primary'
 					value={generator}
 					exclusive
 					onChange={(_e, generator) => {
-						/*forces ToggleButtonGroup to have at least one toggle active*/
-						if (generator !== null) setGenerator(generator);
+						if (generator) setGenerator(generator);
 					}}>
-					<ToggleButton value='local'>Local</ToggleButton>
-					{!DEMO_MODE && <ToggleButton value='remote'>Remote</ToggleButton>}
+					<ToggleButton color='info' value='local'>
+						Local
+					</ToggleButton>
+					{!DEMO_MODE && (
+						<ToggleButton value='remote' color='warning'>
+							Remote
+						</ToggleButton>
+					)}
 				</ToggleButtonGroup>
 			</Box>
 			<InputFilesEditor

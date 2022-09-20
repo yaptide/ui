@@ -26,17 +26,11 @@ export function initEditor(container) {
 	const viewManager = new ViewManager(editor);
 	container.appendChild(viewManager.dom);
 
-	const toolbar = new Toolbar(editor);
-	container.appendChild(toolbar.dom);
-
 	const sidebar = new Sidebar(editor);
 	container.appendChild(sidebar.dom);
 
 	const menubar = new Menubar(editor);
-	container.appendChild(menubar.dom);
-
-	const resizer = new Resizer(editor);
-	container.appendChild(resizer.dom);
+	// menubar has required dependencies for other UI components and will be removed last.
 
 	//
 
@@ -104,6 +98,8 @@ export function initEditor(container) {
 		stateChangedSignals.forEach(signal => signal.add(saveState));
 	});
 
+	editor.signals.sceneGraphChanged.dispatch();
+
 	//
 
 	document.addEventListener(
@@ -161,5 +157,5 @@ export function initEditor(container) {
 		}
 	}
 
-	return { editor, viewport: viewManager, toolbar, sidebar, menubar, resizer };
+	return { editor, viewport: viewManager, sidebar };
 }

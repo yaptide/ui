@@ -83,13 +83,13 @@ export function KEYWORD_SORT_ORDER(a: string, b: string) {
 const _particles = {
 	1: ['Hadron', 'H'],
 	2: ['Anti-hadron', 'H'],
-	3: ['Pion π−', 'π−'],
-	4: ['Pion π+', 'π+'],
-	5: ['Pion π0', 'π0'],
-	8: ['Kaon κ−', 'κ−'],
-	9: ['Kaon κ+', 'κ+'],
-	10: ['Kaon κ0', 'κ0'],
-	11: ['Kaon κ∼', 'κ∼'],
+	3: ['Pion', 'π−'],
+	4: ['Pion', 'π+'],
+	5: ['Pion', 'π0'],
+	8: ['Kaon', 'κ−'],
+	9: ['Kaon', 'κ+'],
+	10: ['Kaon', 'κ0'],
+	11: ['Kaon', 'κ∼'],
 	12: ['Gamma radiation', 'γ'],
 	13: ['Electron', 'e−'],
 	14: ['Positron', 'e+'],
@@ -101,13 +101,16 @@ const _particles = {
 	20: ['Muon anti-neutrino', 'νµ']
 } as const;
 
-export const PARTICLE_OPTIONS = Object.entries(_particles).reduce((acc, [id, [name]]) => {
-	acc[id] = `<span>${name}</span>`;
+export const PARTICLE_OPTIONS = Object.entries(_particles).reduce((acc, [id, [name, symbol]]) => {
+	const symbolString = textDecoration(+id)
+		? `<span style="text-decoration: ${textDecoration(+id)}">${symbol}</span>`
+		: symbol;
+	acc[id] = `<span>${name} ${symbolString}</span>`;
 	return acc;
 }, {} as Record<string, string>);
 
 function textDecoration(id: number) {
-	return [2, 18, 20].includes(id) ? 'overline' : null;
+	return [2, 18, 20].includes(id) ? 'overline' : 'none';
 }
 
 export type F_Keyword = typeof _float_keywords[number];

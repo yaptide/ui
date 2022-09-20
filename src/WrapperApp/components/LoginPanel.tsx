@@ -1,4 +1,5 @@
 import { Box, Button, TextField, Card, CardContent } from '@mui/material';
+import useTheme from '@mui/system/useTheme';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '../../services/AuthService';
 
@@ -33,11 +34,14 @@ export default function LoginPanel() {
 				margin: '0 auto',
 				display: 'flex',
 				alignItems: 'center',
+				justifyContent: 'center',
+				width: '100%',
 				padding: '5rem'
 			}}>
 			<Card variant='outlined'>
 				<CardContent>
 					<TextField
+						color='secondary'
 						id='loginField'
 						label='Username adress'
 						variant='outlined'
@@ -47,6 +51,7 @@ export default function LoginPanel() {
 				</CardContent>
 				<CardContent>
 					<TextField
+						color='secondary'
 						id='passwordField'
 						label='Password'
 						variant='outlined'
@@ -56,7 +61,10 @@ export default function LoginPanel() {
 					/>
 				</CardContent>
 				<CardContent>
-					<Button variant='outlined' onClick={() => login(username, password)}>
+					<Button
+						color='secondary'
+						variant='outlined'
+						onClick={() => login(username, password)}>
 						Login
 					</Button>
 				</CardContent>

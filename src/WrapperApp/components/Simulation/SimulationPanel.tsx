@@ -169,12 +169,14 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 						Run Simulation
 					</Typography>
 					<LinearProgress
+						color='info'
 						variant={isInProgress ? 'indeterminate' : 'determinate'}
 						value={0}
 					/>
 				</CardContent>
 				<CardActions>
 					<Button
+						color='info'
 						sx={{
 							width: 'min(300px, 100%)',
 							margin: '0 auto'
