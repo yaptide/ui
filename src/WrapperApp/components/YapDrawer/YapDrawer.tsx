@@ -27,6 +27,7 @@ import React, { Dispatch, SetStateAction, SyntheticEvent } from 'react';
 import { useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
 import deployInfo from '../../../util/identify/deployInfo.json';
+import { DEMO_MODE } from '../../../util/Config';
 
 type MenuOption = {
 	label: string;

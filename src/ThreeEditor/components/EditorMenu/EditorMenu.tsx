@@ -219,7 +219,39 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 				idx={3}
 				openIdx={openIdx}
 				setOpenIdx={setOpenIdx}
-				options={[[{ label: 'TODO', disabled: true, onClick: () => {} }]]}
+				options={[
+					[
+						{
+							label: 'Clear history',
+							onClick: () => {
+								if (
+									window.confirm(
+										'The Undo/Redo History will be cleared. Are you sure?'
+									)
+								) {
+									editor?.history.clear();
+								}
+							}
+						}
+					],
+					[
+						{
+							label: 'Duplicate',
+							onClick: () => {},
+							disabled: true
+						},
+						{
+							label: 'Delete',
+							onClick: () => {},
+							disabled: true
+						},
+						{
+							label: 'Move to Center',
+							onClick: () => {},
+							disabled: true
+						}
+					]
+				]}
 			/>
 		</ButtonGroup>
 	);
