@@ -1,9 +1,9 @@
 // Concept from https://www.codemzy.com/blog/react-drag-drop-file-upload
 
-import { Box, Button } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import React, { Component, useCallback, useRef } from 'react';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import { border, positions } from '@mui/system';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 
 type DragDropProps = {
 	id: string;
@@ -15,6 +15,7 @@ export function DragDropFile(props: DragDropProps) {
 	const { id, onSubmit } = props;
 	// drag state
 	const [dragActive, setDragActive] = React.useState(false);
+	const [hasFiles, setHasFiles] = React.useState(false);
 	// ref
 	const inputRef = useRef<HTMLInputElement>(null);
 
@@ -52,6 +53,7 @@ export function DragDropFile(props: DragDropProps) {
 		if (e.target.files && e.target.files[0]) {
 			onSubmit(e.target.files);
 		}
+		setHasFiles((e.target.files?.length ?? 0) > 0);
 	};
 
 	return (
@@ -91,7 +93,7 @@ export function DragDropFile(props: DragDropProps) {
 						flexDirection: 'column',
 						alignItems: 'center',
 						gap: 2,
-						opacity: dragActive ? 0 : 1
+						opacity: dragActive || hasFiles ? 0 : 1
 					}}>
 					<Button component={'label'} htmlFor={id} startIcon={<FileUploadIcon />}>
 						Upload project file
@@ -105,7 +107,7 @@ export function DragDropFile(props: DragDropProps) {
 						top: '50%',
 						left: '50%',
 						transform: 'translate(-50%, -50%)',
-						opacity: dragActive ? 1 : 0
+						opacity: dragActive && !hasFiles ? 1 : 0
 					}}
 					id='drag-file-element'>
 					<FileUploadIcon
@@ -114,6 +116,24 @@ export function DragDropFile(props: DragDropProps) {
 							color: 'grey.500'
 						}}
 					/>
+				</Box>
+				<Box
+					sx={{
+						boxSizing: 'border-box',
+						position: 'absolute',
+						top: '50%',
+						left: '50%',
+						transform: 'translate(-50%, -50%)',
+						opacity: hasFiles ? 1 : 0
+					}}
+					id='drag-file-element'>
+					<InsertDriveFileIcon
+						sx={{
+							fontSize: 100,
+							color: 'grey.500'
+						}}
+					/>
+					<Typography variant='h6'>{inputRef.current?.files?.length}</Typography>
 				</Box>
 			</Box>
 		</form>

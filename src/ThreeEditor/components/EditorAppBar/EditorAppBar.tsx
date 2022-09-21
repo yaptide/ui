@@ -15,6 +15,7 @@ import { saveString } from '../../../util/File';
 import { Editor } from '../../js/Editor';
 import { NewProjectDialog } from '../Dialog/NewProjectDialog';
 import { OpenFileDialog } from '../Dialog/OpenFileDialog';
+import { SaveFileDialog } from '../Dialog/SaveFileDialog';
 import { EditorToolbar } from './EditorToolbar/EditorToolbar';
 
 type AppBarProps = {
@@ -32,8 +33,8 @@ type AppBarOptions = {
 function EditorAppBar({ editor }: AppBarProps) {
 	const [newProjectDialogOpen, setNewProjectDialogOpen] = useState(false);
 	const [openFileDialogOpen, setOpenFileDialogOpen] = useState(false);
+	const [saveFileDialogOpen, setSaveFileDialogOpen] = useState(false);
 	const [title, setTitle] = useState<string>(editor?.config.getKey('project/title'));
-	const fileInput = React.useRef<HTMLInputElement>(null);
 	const [canUndo, setCanUndo] = React.useState((editor?.history.undos.length ?? 0) > 0);
 	const [canRedo, setCanRedo] = React.useState((editor?.history.redos.length ?? 0) > 0);
 	const [saving, setSaving] = React.useState(false);
@@ -72,6 +73,19 @@ function EditorAppBar({ editor }: AppBarProps) {
 		if (editor) editor.loader.loadFiles(files);
 		else console.warn('EditorAppBar.tsx: openFile: editor or fileInput.current.files is null');
 	};
+
+	const saveJson = (data: {}, fileName: string) => {
+		let output = JSON.stringify(data, null, '\t');
+
+		try {
+			output = JSON.stringify(output, null, '\t');
+			output = output.replace(/[\n\t]+([\d.e\-[\]]+)/g, '$1');
+		} catch (e) {
+			output = JSON.stringify(output);
+		}
+		saveString(output, `${fileName}.json`);
+	};
+
 	const openJSON = (json: {}) => {
 		if (editor) editor.loader.loadJSON(json);
 		else console.warn('EditorAppBar.tsx: handleJSON: editor is null');
@@ -115,22 +129,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 					label: 'Save as',
 					icon: <SaveAsIcon />,
 					disabled: false,
-					onClick: () => {
-						let output = editor?.toJSON();
-						let stringfile = '';
-						try {
-							stringfile = JSON.stringify(output, null, '\t').replace(
-								/[\n\t]+([\d.e\-[\]]+)/g,
-								'$1'
-							);
-						} catch (e) {
-							stringfile = JSON.stringify(output);
-						}
-
-						const fileName = window.prompt('Name of the file', 'editor');
-
-						if (fileName) saveString(stringfile, `${fileName}.json`);
-					}
+					onClick: () => setSaveFileDialogOpen(true)
 				},
 				{
 					label: 'Redo (ctrl+y)',
@@ -190,6 +189,14 @@ function EditorAppBar({ editor }: AppBarProps) {
 						});
 				}}
 			/>
+			{editor && (
+				<SaveFileDialog
+					open={saveFileDialogOpen}
+					onClose={() => setSaveFileDialogOpen(false)}
+					onConfirm={saveJson}
+					editor={editor!}
+				/>
+			)}
 		</AppBar>
 	);
 }

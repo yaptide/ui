@@ -36,6 +36,7 @@ function a11yProps(index: number) {
 
 export function OpenFileDialog(props: OpenFileProps) {
 	const { open, onClose, onFileSelected, onPlainTextSubmitted, onUrlSubmitted } = props;
+	const [FileList, setFileList] = useState<FileList | null>(null);
 	const [value, setValue] = React.useState('1');
 	const handleChange = (event: React.SyntheticEvent, newValue: string) => {
 		setValue(newValue);
@@ -107,6 +108,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 								variant='contained'
 								fullWidth
 								sx={{ marginTop: 'auto' }}
+								disabled={exampleIndex === null}
 								onClick={() => {
 									onClose();
 									onPlainTextSubmitted(
@@ -118,13 +120,32 @@ export function OpenFileDialog(props: OpenFileProps) {
 						</Box>
 					</TabPanel>
 					<TabPanel value='1'>
-						<DragDropFile
-							id={'input-file-upload'}
-							onSubmit={files => {
-								onClose();
-								onFileSelected(files);
-							}}
-						/>
+						<Box
+							sx={{
+								display: 'flex',
+								flexDirection: 'column',
+								gap: 2,
+								height: 319,
+								boxSizing: 'border-box'
+							}}>
+							<DragDropFile
+								id={'input-file-upload'}
+								onSubmit={files => {
+									setFileList(files);
+								}}
+							/>
+							<Button
+								variant='contained'
+								fullWidth
+								sx={{ marginTop: 'auto' }}
+								disabled={FileList === null}
+								onClick={() => {
+									onClose();
+									if (FileList) onFileSelected(FileList);
+								}}>
+								Load
+							</Button>
+						</Box>
 					</TabPanel>
 					<TabPanel value='2'>
 						<Box
@@ -147,6 +168,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 								variant='contained'
 								fullWidth
 								sx={{ marginTop: 'auto' }}
+								disabled={url === ''}
 								onClick={() => {
 									onClose();
 									onUrlSubmitted(plainText);
@@ -178,6 +200,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 								variant='contained'
 								fullWidth
 								sx={{ marginTop: 'auto' }}
+								disabled={plainText === ''}
 								onClick={() => {
 									onClose();
 									onPlainTextSubmitted(plainText);
