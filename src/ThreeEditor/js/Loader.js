@@ -105,6 +105,10 @@ function Loader(editor) {
 		}
 	};
 
+	this.loadJSON = function (json) {
+		handleJSON(json);
+	};
+
 	function handleJSON(data) {
 		if (data.metadata === undefined) {
 			// 2.0
