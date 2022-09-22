@@ -40,6 +40,15 @@ function EditorAppBar({ editor }: AppBarProps) {
 	const [saving, setSaving] = React.useState(false);
 
 	useEffect(() => {
+		let path = '';
+		let json = {};
+		if (editor) {
+			path = window.location.href.split('?')[1];
+			if (path) {
+				fetchJsonFromCorsUrl(path);
+				window.history.replaceState({}, document.title, window.location.pathname);
+			}
+		}
 		return () => {};
 	}, [editor]);
 
@@ -47,6 +56,25 @@ function EditorAppBar({ editor }: AppBarProps) {
 		setCanUndo((editor?.history.undos.length ?? 0) > 0);
 		setCanRedo((editor?.history.redos.length ?? 0) > 0);
 	}, [editor]);
+
+	const fetchJsonFromCorsUrl = useCallback(
+		(url: string) => {
+			console.log('fetchJsonFromCorsUrl: ', url);
+			const headers = new Headers();
+			headers.append('Content-Type', 'application/json');
+			fetch(url)
+				.then(response => {
+					console.log(response);
+					if (response.ok) return response.json();
+					else return Promise.reject(response);
+				})
+				.then(openJSON)
+				.catch(error => {
+					console.error(error);
+				});
+		},
+		[editor]
+	);
 
 	const startSave = useCallback(() => {
 		setSaving(true);
@@ -149,7 +177,11 @@ function EditorAppBar({ editor }: AppBarProps) {
 		<AppBar position='static' color='secondary'>
 			<Toolbar>
 				{leftSideOptions}
-				<Typography variant='subtitle1' component='div' align='center' sx={{ flexGrow: 1 }}>
+				<Typography
+					variant='subtitle1'
+					component='div'
+					align='center'
+					sx={{ flexGrow: 1, marginRight: 6 }}>
 					{title}
 					{saving && (
 						<CircularProgress
@@ -176,18 +208,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 					const json = JSON.parse(text);
 					openJSON(json);
 				}}
-				onUrlSubmitted={url => {
-					fetch(url, {
-						headers: {
-							'Content-Type': 'application/json',
-							'Accept': 'application/json'
-						}
-					})
-						.then(res => res.json())
-						.then(json => {
-							openJSON(json);
-						});
-				}}
+				onUrlSubmitted={fetchJsonFromCorsUrl}
 			/>
 			{editor && (
 				<SaveFileDialog

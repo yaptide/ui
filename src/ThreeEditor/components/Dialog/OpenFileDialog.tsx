@@ -171,7 +171,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 								disabled={url === ''}
 								onClick={() => {
 									onClose();
-									onUrlSubmitted(plainText);
+									onUrlSubmitted(url);
 								}}>
 								Load
 							</Button>
