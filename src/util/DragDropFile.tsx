@@ -1,23 +1,28 @@
 // Concept from https://www.codemzy.com/blog/react-drag-drop-file-upload
 
 import { Box, Button, Typography } from '@mui/material';
-import React, { Component, useCallback, useRef } from 'react';
+import React, { Component, useCallback, useEffect, useRef } from 'react';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 
 type DragDropProps = {
 	id: string;
 	onSubmit: (file: FileList) => void;
+	currentFiles: FileList | null;
 };
 
 // drag drop file component
 export function DragDropFile(props: DragDropProps) {
-	const { id, onSubmit } = props;
+	const { id, onSubmit, currentFiles } = props;
 	// drag state
 	const [dragActive, setDragActive] = React.useState(false);
-	const [hasFiles, setHasFiles] = React.useState(false);
+	const [hasFiles, setHasFiles] = React.useState(currentFiles && currentFiles.length > 0);
 	// ref
 	const inputRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		setHasFiles(currentFiles && currentFiles.length > 0);
+	}, [props.currentFiles]);
 
 	// handle drag events
 	const handleDragEnter = function (e: React.DragEvent<HTMLElement>) {
@@ -43,7 +48,13 @@ export function DragDropFile(props: DragDropProps) {
 		e.stopPropagation();
 		setDragActive(false);
 		if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-			onSubmit(e.dataTransfer.files);
+			let files;
+			if (currentFiles) {
+				files = currentFiles;
+				for (let i = 0; i < e.dataTransfer.files.length; i++)
+					files[i + currentFiles.length] = e.dataTransfer.files[i];
+			} else files = e.dataTransfer.files;
+			onSubmit(files);
 		}
 	};
 
@@ -107,7 +118,7 @@ export function DragDropFile(props: DragDropProps) {
 						top: '50%',
 						left: '50%',
 						transform: 'translate(-50%, -50%)',
-						opacity: dragActive && !hasFiles ? 1 : 0
+						display: dragActive ? 'flex' : 'none'
 					}}
 					id='drag-file-element'>
 					<FileUploadIcon
@@ -124,7 +135,9 @@ export function DragDropFile(props: DragDropProps) {
 						top: '50%',
 						left: '50%',
 						transform: 'translate(-50%, -50%)',
-						opacity: hasFiles ? 1 : 0
+						flexDirection: 'column',
+						display: hasFiles && !dragActive ? 'flex' : 'none',
+						alignItems: 'center'
 					}}
 					id='drag-file-element'>
 					<InsertDriveFileIcon
@@ -133,7 +146,13 @@ export function DragDropFile(props: DragDropProps) {
 							color: 'grey.500'
 						}}
 					/>
-					<Typography variant='h6'>{inputRef.current?.files?.length}</Typography>
+					<Typography
+						variant='h6'
+						sx={{
+							height: 10
+						}}>
+						{hasFiles && currentFiles && currentFiles[0].name}
+					</Typography>
 				</Box>
 			</Box>
 		</form>

@@ -36,7 +36,7 @@ function a11yProps(index: number) {
 
 export function OpenFileDialog(props: OpenFileProps) {
 	const { open, onClose, onFileSelected, onPlainTextSubmitted, onUrlSubmitted } = props;
-	const [FileList, setFileList] = useState<FileList | null>(null);
+	const [currentFileList, setCurrentFileList] = useState<FileList | null>(null);
 	const [value, setValue] = React.useState('1');
 	const handleChange = (event: React.SyntheticEvent, newValue: string) => {
 		setValue(newValue);
@@ -130,18 +130,17 @@ export function OpenFileDialog(props: OpenFileProps) {
 							}}>
 							<DragDropFile
 								id={'input-file-upload'}
-								onSubmit={files => {
-									setFileList(files);
-								}}
+								onSubmit={setCurrentFileList}
+								currentFiles={currentFileList}
 							/>
 							<Button
 								variant='contained'
 								fullWidth
 								sx={{ marginTop: 'auto' }}
-								disabled={FileList === null}
+								disabled={currentFileList === null}
 								onClick={() => {
 									onClose();
-									if (FileList) onFileSelected(FileList);
+									if (currentFileList) onFileSelected(currentFileList);
 								}}>
 								Load
 							</Button>
