@@ -102,16 +102,19 @@ function EditorAppBar({ editor }: AppBarProps) {
 		else console.warn('EditorAppBar.tsx: openFile: editor or fileInput.current.files is null');
 	};
 
-	const saveJson = (data: {}, fileName: string) => {
-		let output = JSON.stringify(data, null, '\t');
+	const compressJson = (json: {}) => {};
 
+	const saveJson = (data: {}, fileName: string) => {
+		let output = undefined;
 		try {
-			output = JSON.stringify(output, null, '\t');
+			output = JSON.stringify(data, null, '\t');
 			output = output.replace(/[\n\t]+([\d.e\-[\]]+)/g, '$1');
+			saveString(output, `${fileName}.json`);
 		} catch (e) {
-			output = JSON.stringify(output);
+			console.warn('Could not regex output. Saving without regex...', e);
+			output = JSON.stringify(data);
+			saveString(output, `${fileName}.json`);
 		}
-		saveString(output, `${fileName}.json`);
 	};
 
 	const openJSON = (json: {}) => {
