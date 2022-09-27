@@ -1,0 +1,66 @@
+{
+   "plugins": [
+        "plugins/markdown",
+        "plugins/summarize"
+    ],
+    "recurseDepth": 10,
+    "source": {
+        "include": [ "scripts/JSRoot.core.js",
+                     "scripts/JSRoot.io.js",
+                     "scripts/JSRoot.tree.js",
+                     "scripts/JSRoot.webwindow.js",
+                     "scripts/JSRoot.painter.js",
+                     "scripts/JSRoot.latex.js",
+                     "scripts/JSRoot.gpad.js",
+                     "scripts/JSRoot.interactive.js",
+                     "scripts/JSRoot.hist.js",
+                     "scripts/JSRoot.hist3d.js",
+                     "scripts/JSRoot.more.js",
+                     "scripts/JSRoot.math.js",
+                     "scripts/JSRoot.base3d.js",
+                     "scripts/JSRoot.csg.js",
+                     "scripts/JSRoot.geobase.js",
+                     "scripts/JSRoot.geom.js",
+                     "scripts/JSRoot.hierarchy.js",
+                     "scripts/JSRoot.menu.js",
+                     "scripts/JSRoot.jq2d.js",
+                     "scripts/JSRoot.v7gpad.js",
+                     "scripts/JSRoot.v7hist.js",
+                     "scripts/JSRoot.v7hist3d.js",
+                     "scripts/JSRoot.v7more.js" ],
+        "includePattern": ".+\\.js(doc|x)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "sourceType": "module",
+    "opts": {
+       "destination": "./jsdoc"
+    },
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc","closure"]
+    },
+    "templates": {
+        "cleverLinks": true,
+        "monospaceLinks": true,
+        "name": "JSROOT",
+        "default": {
+			   "outputSourceFiles" : true
+		   },
+		   "applicationName": "JavaScript ROOT",
+		   "disqus": "",
+		   "googleAnalytics": "",
+		   "openGraph": {
+   			"title": "",
+			   "type": "website",
+			   "image": "",
+			   "site_name": "",
+			   "url": ""
+		   },
+		   "meta": {
+   			"title": "",
+			   "description": "",
+			   "keyword": ""
+		   },
+         "linenums": false
+    }
+}
