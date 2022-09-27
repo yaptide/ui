@@ -49,6 +49,15 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const [controller] = useState(new AbortController());
 
 	useEffect(() => {
+		if (editorRef.current) {
+			const hash = editorRef.current.toJSON().hash;
+			const anyResults = simulationsStatusData.find(s => s.editor?.hash === hash);
+			if (anyResults) editorRef.current.results = anyResults;
+			else editorRef.current.results = null;
+		}
+	}, [simulationsStatusData]);
+
+	useEffect(() => {
 		return () => {
 			controller.abort();
 		};

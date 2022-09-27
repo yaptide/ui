@@ -10,6 +10,7 @@ import {
 import { Editor } from '../../js/Editor';
 import { BoxMesh, CylinderMesh, SphereMesh } from '../../util/BasicMeshes';
 import { toggleFullscreen } from '../../util/toggleFullscreen';
+import { ClearHistoryDialog } from '../Dialog/ClearHistoryDialog';
 
 type EditorMenuProps = {
 	editor?: Editor;
@@ -105,122 +106,176 @@ function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPosition
 
 export function EditorMenu({ editor }: EditorMenuProps) {
 	const [openIdx, setOpenIdx] = useState(-1);
+	const [clearHistoryDialogOpen, setClearHistoryDialogOpen] = useState(false);
 
 	return (
-		<ButtonGroup
-			sx={{
-				display: 'flex',
-				zIndex: openIdx !== -1 ? 2000 : 1,
-				position: 'absolute',
-				top: 80,
-				transform: 'translateX(15px)',
-				backgroundColor: 'rgba(0,0,0,.5)'
-			}}>
-			<MenuPosition
-				label='View'
-				idx={0}
-				openIdx={openIdx}
-				setOpenIdx={setOpenIdx}
-				options={[
-					[
-						{
-							label: 'Toggle Fullscreen',
-							onClick: () => {
-								toggleFullscreen();
-							}
-						},
-						{
-							label: 'Reset Camera',
-							onClick: () => {
-								editor?.resetCamera();
-							}
-						}
-					],
-					[
-						{
-							label: 'Simple View',
-							onClick: () => {
-								editor?.signals.layoutChanged.dispatch('singleView');
+		<>
+			<ButtonGroup
+				sx={{
+					display: 'flex',
+					zIndex: openIdx !== -1 ? 2000 : 1,
+					position: 'absolute',
+					top: 80,
+					transform: 'translateX(15px)',
+					backgroundColor: 'rgba(0,0,0,.5)'
+				}}>
+				<MenuPosition
+					label='View'
+					idx={0}
+					openIdx={openIdx}
+					setOpenIdx={setOpenIdx}
+					options={[
+						[
+							{
+								label: 'Toggle Fullscreen',
+								onClick: () => {
+									toggleFullscreen();
+								}
 							},
-							disabled: editor?.config.getKey('layout') === 'singleView'
-						},
-						{
-							label: 'Split View',
-							onClick: () => {
-								editor?.signals.layoutChanged.dispatch('fourViews');
+							{
+								label: 'Reset Camera',
+								onClick: () => {
+									editor?.resetCamera();
+								}
+							}
+						],
+						[
+							{
+								label: 'Simple View',
+								onClick: () => {
+									editor?.signals.layoutChanged.dispatch('singleView');
+								},
+								disabled: editor?.config.getKey('layout') === 'singleView'
 							},
-							disabled: editor?.config.getKey('layout') === 'fourViews'
-						}
-					]
-				]}
+							{
+								label: 'Split View',
+								onClick: () => {
+									editor?.signals.layoutChanged.dispatch('fourViews');
+								},
+								disabled: editor?.config.getKey('layout') === 'fourViews'
+							}
+						]
+					]}
+				/>
+				<MenuPosition
+					label='Add'
+					idx={2}
+					openIdx={openIdx}
+					setOpenIdx={setOpenIdx}
+					options={[
+						[
+							{
+								label: 'Material Zone',
+								onClick: () => {
+									editor?.execute(new AddZoneCommand(editor));
+								}
+							}
+						],
+						[
+							{
+								label: 'Detect Geometry',
+								onClick: () => {
+									editor?.execute(new AddDetectGeometryCommand(editor));
+								}
+							},
+							{
+								label: 'Scoring Filter',
+								onClick: () => {
+									editor?.execute(new AddFilterCommand(editor));
+								}
+							},
+							{
+								label: 'Simulation Output',
+								onClick: () => {
+									editor?.execute(new AddOutputCommand(editor, undefined));
+								}
+							}
+						],
+						[
+							{
+								label: 'Box Mesh',
+								onClick: () => {
+									editor?.execute(
+										new AddObjectCommand(editor, new BoxMesh(editor))
+									);
+								}
+							},
+							{
+								label: 'Sphere Mesh',
+								onClick: () => {
+									editor?.execute(
+										new AddObjectCommand(editor, new SphereMesh(editor))
+									);
+								}
+							},
+							{
+								label: 'Cylinder Mesh',
+								onClick: () => {
+									editor?.execute(
+										new AddObjectCommand(editor, new CylinderMesh(editor))
+									);
+								}
+							}
+						],
+						[
+							{
+								label: 'Paste from Clipboard',
+								onClick: () => {},
+								disabled: true
+							}
+						]
+					]}
+				/>
+				<MenuPosition
+					label='Edit'
+					idx={3}
+					openIdx={openIdx}
+					setOpenIdx={setOpenIdx}
+					options={[
+						[
+							{
+								label: 'Clear history',
+								onClick: () => setClearHistoryDialogOpen(true),
+								disabled:
+									editor?.history.undos.length === 0 &&
+									editor?.history.redos.length === 0
+							}
+						],
+						[
+							{
+								label: 'Duplicate Object',
+								onClick: () => {},
+								disabled: true
+							},
+							{
+								label: 'Delete Object',
+								onClick: () => {},
+								disabled: true
+							},
+							{
+								label: 'Move to Center',
+								onClick: () => {},
+								disabled: true
+							}
+						],
+						[
+							{
+								label: 'Copy to Clipboard',
+								onClick: () => {},
+								disabled: true
+							}
+						]
+					]}
+				/>
+			</ButtonGroup>
+			<ClearHistoryDialog
+				open={clearHistoryDialogOpen}
+				onCancel={() => setClearHistoryDialogOpen(false)}
+				onConfirm={() => {
+					setClearHistoryDialogOpen(false);
+					editor?.history.clear();
+				}}
 			/>
-			<MenuPosition
-				label='Add'
-				idx={2}
-				openIdx={openIdx}
-				setOpenIdx={setOpenIdx}
-				options={[
-					[
-						{
-							label: 'Material Zone',
-							onClick: () => {
-								editor?.execute(new AddZoneCommand(editor));
-							}
-						}
-					],
-					[
-						{
-							label: 'Detect Geometry',
-							onClick: () => {
-								editor?.execute(new AddDetectGeometryCommand(editor));
-							}
-						},
-						{
-							label: 'Scoring Filter',
-							onClick: () => {
-								editor?.execute(new AddFilterCommand(editor));
-							}
-						},
-						{
-							label: 'Simulation Output',
-							onClick: () => {
-								editor?.execute(new AddOutputCommand(editor, undefined));
-							}
-						}
-					],
-					[
-						{
-							label: 'Box Mesh',
-							onClick: () => {
-								editor?.execute(new AddObjectCommand(editor, new BoxMesh(editor)));
-							}
-						},
-						{
-							label: 'Sphere Mesh',
-							onClick: () => {
-								editor?.execute(
-									new AddObjectCommand(editor, new SphereMesh(editor))
-								);
-							}
-						},
-						{
-							label: 'Cylinder Mesh',
-							onClick: () => {
-								editor?.execute(
-									new AddObjectCommand(editor, new CylinderMesh(editor))
-								);
-							}
-						}
-					]
-				]}
-			/>
-			<MenuPosition
-				label='Edit'
-				idx={3}
-				openIdx={openIdx}
-				setOpenIdx={setOpenIdx}
-				options={[[{ label: 'TODO', disabled: true, onClick: () => {} }]]}
-			/>
-		</ButtonGroup>
+		</>
 	);
 }

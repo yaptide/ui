@@ -13,6 +13,9 @@ import Typography from '@mui/material/Typography';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { saveString } from '../../../util/File';
 import { Editor } from '../../js/Editor';
+import { NewProjectDialog } from '../Dialog/NewProjectDialog';
+import { OpenFileDialog } from '../Dialog/OpenFileDialog';
+import { SaveFileDialog } from '../Dialog/SaveFileDialog';
 import { EditorToolbar } from './EditorToolbar/EditorToolbar';
 
 type AppBarProps = {
@@ -28,13 +31,24 @@ type AppBarOptions = {
 };
 
 function EditorAppBar({ editor }: AppBarProps) {
+	const [newProjectDialogOpen, setNewProjectDialogOpen] = useState(false);
+	const [openFileDialogOpen, setOpenFileDialogOpen] = useState(false);
+	const [saveFileDialogOpen, setSaveFileDialogOpen] = useState(false);
 	const [title, setTitle] = useState<string>(editor?.config.getKey('project/title'));
-	const fileInput = React.useRef<HTMLInputElement>(null);
 	const [canUndo, setCanUndo] = React.useState((editor?.history.undos.length ?? 0) > 0);
 	const [canRedo, setCanRedo] = React.useState((editor?.history.redos.length ?? 0) > 0);
 	const [saving, setSaving] = React.useState(false);
 
 	useEffect(() => {
+		let path = '';
+		let json = {};
+		if (editor) {
+			path = window.location.href.split('?')[1];
+			if (path) {
+				fetchJsonFromCorsUrl(path);
+				window.history.replaceState({}, document.title, window.location.pathname);
+			}
+		}
 		return () => {};
 	}, [editor]);
 
@@ -42,6 +56,25 @@ function EditorAppBar({ editor }: AppBarProps) {
 		setCanUndo((editor?.history.undos.length ?? 0) > 0);
 		setCanRedo((editor?.history.redos.length ?? 0) > 0);
 	}, [editor]);
+
+	const fetchJsonFromCorsUrl = useCallback(
+		(url: string) => {
+			console.log('fetchJsonFromCorsUrl: ', url);
+			const headers = new Headers();
+			headers.append('Content-Type', 'application/json');
+			fetch(url)
+				.then(response => {
+					console.log(response);
+					if (response.ok) return response.json();
+					else return Promise.reject(response);
+				})
+				.then(openJSON)
+				.catch(error => {
+					console.error(error);
+				});
+		},
+		[editor]
+	);
 
 	const startSave = useCallback(() => {
 		setSaving(true);
@@ -64,9 +97,29 @@ function EditorAppBar({ editor }: AppBarProps) {
 		};
 	}, [editor]);
 
-	const openFile = () => {
-		if (editor && fileInput.current?.files) editor.loader.loadFiles(fileInput.current.files);
+	const openFile = (files: FileList) => {
+		if (editor) editor.loader.loadFiles(files);
 		else console.warn('EditorAppBar.tsx: openFile: editor or fileInput.current.files is null');
+	};
+
+	const compressJson = (json: {}) => {};
+
+	const saveJson = (data: {}, fileName: string) => {
+		let output = undefined;
+		try {
+			output = JSON.stringify(data, null, '\t');
+			output = output.replace(/[\n\t]+([\d.e\-[\]]+)/g, '$1');
+			saveString(output, `${fileName}.json`);
+		} catch (e) {
+			console.warn('Could not regex output. Saving without regex...', e);
+			output = JSON.stringify(data);
+			saveString(output, `${fileName}.json`);
+		}
+	};
+
+	const openJSON = (json: {}) => {
+		if (editor) editor.loader.loadJSON(json);
+		else console.warn('EditorAppBar.tsx: handleJSON: editor is null');
 	};
 	const ToolbarButton = ({ label, icon, onClick, disabled, edge }: AppBarOptions) => (
 		<Tooltip title={label}>
@@ -89,26 +142,13 @@ function EditorAppBar({ editor }: AppBarProps) {
 					label: 'New',
 					icon: <FiberNewIcon />,
 					disabled: false,
-					onClick: () =>
-						window.confirm('Any unsaved data will be lost. Are you sure?') &&
-						editor?.clear()
+					onClick: () => setNewProjectDialogOpen(true)
 				},
 				{
 					label: 'Open',
 					icon: <FolderOpenIcon />,
 					disabled: false,
-					input: (
-						<input
-							accept='.json'
-							style={{ display: 'none' }}
-							ref={fileInput}
-							id='open-file-button'
-							onChange={openFile}
-							type='file'
-						/>
-					),
-					htmlFor: 'open-file-button',
-					onClick: () => {}
+					onClick: () => setOpenFileDialogOpen(true)
 				},
 				{
 					label: 'Undo (ctrl+z)',
@@ -120,22 +160,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 					label: 'Save as',
 					icon: <SaveAsIcon />,
 					disabled: false,
-					onClick: () => {
-						let output = editor?.toJSON();
-						let stringfile = '';
-						try {
-							stringfile = JSON.stringify(output, null, '\t').replace(
-								/[\n\t]+([\d.e\-[\]]+)/g,
-								'$1'
-							);
-						} catch (e) {
-							stringfile = JSON.stringify(output);
-						}
-
-						const fileName = window.prompt('Name of the file', 'editor');
-
-						if (fileName) saveString(stringfile, `${fileName}.json`);
-					}
+					onClick: () => setSaveFileDialogOpen(true)
 				},
 				{
 					label: 'Redo (ctrl+y)',
@@ -145,16 +170,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 				}
 			].map((option, i) => (
 				<Box key={i} mr={1}>
-					{option.input ? (
-						<>
-							{option.input}
-							<label htmlFor={option.htmlFor}>
-								<ToolbarButton {...option} edge={'start'} />
-							</label>
-						</>
-					) : (
-						<ToolbarButton {...option} />
-					)}
+					<ToolbarButton {...option} />
 				</Box>
 			)),
 		[editor, editor?.toJSON, canRedo, canUndo, openFile]
@@ -164,7 +180,11 @@ function EditorAppBar({ editor }: AppBarProps) {
 		<AppBar position='static' color='secondary'>
 			<Toolbar>
 				{leftSideOptions}
-				<Typography variant='subtitle1' component='div' align='center' sx={{ flexGrow: 1 }}>
+				<Typography
+					variant='subtitle1'
+					component='div'
+					align='center'
+					sx={{ flexGrow: 1, marginRight: 6 }}>
 					{title}
 					{saving && (
 						<CircularProgress
@@ -175,6 +195,32 @@ function EditorAppBar({ editor }: AppBarProps) {
 				</Typography>
 				<EditorToolbar editor={editor} />
 			</Toolbar>
+			<NewProjectDialog
+				open={newProjectDialogOpen}
+				onCancel={() => setNewProjectDialogOpen(false)}
+				onConfirm={() => {
+					editor?.clear();
+					setNewProjectDialogOpen(false);
+				}}
+			/>
+			<OpenFileDialog
+				open={openFileDialogOpen}
+				onClose={() => setOpenFileDialogOpen(false)}
+				onFileSelected={openFile}
+				onPlainTextSubmitted={(text: string) => {
+					const json = JSON.parse(text);
+					openJSON(json);
+				}}
+				onUrlSubmitted={fetchJsonFromCorsUrl}
+			/>
+			{editor && (
+				<SaveFileDialog
+					open={saveFileDialogOpen}
+					onClose={() => setSaveFileDialogOpen(false)}
+					onConfirm={saveJson}
+					editor={editor!}
+				/>
+			)}
 		</AppBar>
 	);
 }

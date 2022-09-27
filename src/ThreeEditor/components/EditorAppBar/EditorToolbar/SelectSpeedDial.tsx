@@ -68,7 +68,8 @@ export function SelectSpeedDial({ selected, onClick, tool, setTool }: SelectSpee
 			sx={{
 				position: 'absolute',
 				right: 170,
-				top: 15,
+				top: '50%',
+				transform: 'translateY(-18px)',
 				padding: 0
 			}}
 			TransitionComponent={Box}

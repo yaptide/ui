@@ -74,8 +74,8 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 	return (
 		<Box style={{ width: '100%' }}>
 			<Button
-				color='info'
-				sx={{ marginTop: '1rem' }}
+				color='secondary'
+				sx={{ mt: '1rem', ml: '.5rem' }}
 				onClick={() => onClickSaveToFile(tablePages)}>
 				EXPORT TABLE TO CSV
 			</Button>
