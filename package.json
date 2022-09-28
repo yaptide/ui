@@ -56,7 +56,8 @@
 		"start-demo": "cross-env REACT_APP_TARGET=demo npm run start",
 		"test-demo": "cross-env REACT_APP_TARGET=demo npm run test",
 		"build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
-		"predeploy": "npm run setup && npm run build-demo",
+		"fix-web-dev": "mkdir -p build/static/js/statis/js && cp build/static/js/*js build/static/js/statis/js/",
+		"predeploy": "npm run setup && npm run build-demo && npm run fix-web-dev",
 		"deploy": "gh-pages -d build"
 	},
 	"contributors": [
