@@ -4,7 +4,7 @@ import { SetValueCommand } from '../../../js/commands/SetValueCommand';
 import { Editor } from '../../../js/Editor';
 import { LabelPropertyField, TextPropertyField, Vector3PropertyField } from './PropertyField';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ISimulationObject } from '../../../util/SimulationBase/SimulationObject';
 import { Beam, isBeam } from '../../../util/Beam';
 import { isWorldZone } from '../../../util/WorldZone/WorldZone';
@@ -14,17 +14,17 @@ import { SetPositionCommand } from '../../../js/commands/SetPositionCommand';
 import { SetRotationCommand } from '../../../js/commands/SetRotationCommand';
 import { SetBeamDirectionCommand } from '../../../js/commands/SetBeamDirectionCommand';
 
-const useObjectChanged = (editor: Editor, object: Object3D, callback: () => void) => {
+const useObjectChanged = (
+	editor: Editor,
+	object: Object3D,
+	callback: (object: Object3D, property: keyof Object3D) => void
+) => {
 	useEffect(() => {
 		editor.signals.objectChanged.add(callback);
 		return () => {
 			editor.signals.objectChanged.remove(callback);
 		};
 	}, [editor.signals.objectChanged, callback]);
-
-	useEffect(() => {
-		callback();
-	}, [callback, object]);
 };
 
 export function PropertiesCategory(props: {
@@ -73,6 +73,7 @@ export function ObjectInfo(props: { editor: Editor; object: Object3D }) {
 
 export function ObjectPlacement(props: { editor: Editor; object: Object3D }) {
 	const { object, editor } = props;
+
 	const [position, setPosition] = useState<Vector3>();
 	const [rotation, setRotation] = useState<Euler>();
 	const [direction, setDirection] = useState<Vector3>();
@@ -96,8 +97,6 @@ export function ObjectPlacement(props: { editor: Editor; object: Object3D }) {
 			else if (isDetectGeometry(object))
 				editor.execute(new SetDetectPositionCommand(editor, object, newPosition));
 			else editor.execute(new SetPositionCommand(editor, object, newPosition));
-
-			setPosition(object.position.clone());
 		}
 	};
 
@@ -109,20 +108,23 @@ export function ObjectPlacement(props: { editor: Editor; object: Object3D }) {
 		);
 		if (!newRotation.equals(object.rotation))
 			editor.execute(new SetRotationCommand(editor, object, newRotation));
-
-		setRotation(object.rotation.clone());
 	};
 
 	const updateDirection = (newDirection: Vector3) => {
 		if (hasDirection(object) && !newDirection.equals(object.direction))
 			editor.execute(new SetBeamDirectionCommand(editor, newDirection));
-
-		setRotation(object.rotation.clone());
 	};
 
-	const update = useCallback(() => {
-		setPosition(object.position.clone());
-		setRotation(object.rotation.clone());
+	const update = useCallback((object: Object3D, property: string) => {		
+		if (property === 'position') setPosition(object.position.clone());
+		if (property === 'rotation') setRotation(object.rotation.clone());
+		if (hasDirection(object) && property === 'direction')
+			setDirection(object.direction.clone());
+	}, []);
+
+	useEffect(() => {
+		if (hasPosition(object)) setPosition(object.position.clone());
+		if (hasRotation(object)) setRotation(object.rotation.clone());
 		if (hasDirection(object)) setDirection(object.direction.clone());
 	}, [object]);
 
@@ -131,8 +133,8 @@ export function ObjectPlacement(props: { editor: Editor; object: Object3D }) {
 	const hasPlacement = hasPosition(object) || hasRotation(object) || hasDirection(object);
 
 	return (
-		<PropertiesCategory category='Placement' visible={hasPlacement}>
-			{hasPosition(object) && position && (
+		<PropertiesCategory category={`Placement`} visible={hasPlacement}>			
+			{position && (
 				<Vector3PropertyField
 					label='Position'
 					value={position}
@@ -141,17 +143,18 @@ export function ObjectPlacement(props: { editor: Editor; object: Object3D }) {
 				/>
 			)}
 
-			{hasRotation(object) && rotation && (
+			{rotation && (
 				<Vector3PropertyField
 					label='Rotation'
-					step={0.1}
+					step={10}
 					unit='°'
+					precision={2}
 					value={new Vector3().setFromEuler(rotation).multiplyScalar(MathUtils.RAD2DEG)}
 					onChange={updateRotation}
 				/>
 			)}
 
-			{hasDirection(object) && direction && (
+			{direction && (
 				<Vector3PropertyField
 					label='Direction'
 					value={direction}
@@ -162,7 +165,6 @@ export function ObjectPlacement(props: { editor: Editor; object: Object3D }) {
 		</PropertiesCategory>
 	);
 }
-
 
 export function ObjectMaterial(props: { editor: Editor; object: Object3D }) {
 	const { object, editor } = props;

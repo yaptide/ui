@@ -1,7 +1,7 @@
-import { Grid, Stack, TextField, Typography } from '@mui/material';
-import { ReactElement, useCallback, useEffect, useState } from 'react';
+import { Box, Grid, Stack, TextField, Typography } from '@mui/material';
+import { ReactElement, useEffect, useRef } from 'react';
 import { Vector3 } from 'three/src/math/Vector3';
-import { isNumeric } from '../../../../util/util';
+import { createNumberInput } from '../../../util/Ui/Number';
 
 export function PropertyField(props: { label: string; field: ReactElement }) {
 	return (
@@ -49,84 +49,78 @@ export function TextPropertyField(props: TextPropertyFieldProps) {
 
 export function NumberInput(props: {
 	value: number;
+	precision?: number;
+	min?: number;
+	max?: number;
 	unit?: string;
+	nudge?: number;
 	step?: number;
 	onChange: (value: number) => void;
 }) {
-	const [value, setValue] = useState('');
+	const boxRef = useRef<HTMLDivElement>(null);
 
-	const updateValue = useCallback(() => {
-		setValue(props.value + '');
-	}, [props.value]);
 
-	const sendChange = () => {
-		if (!isNumeric(value)) return updateValue();
-		const newValue = parseFloat(value);
-		props.onChange(newValue);
-	};
-
-	const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setValue(event.target.value);
-	};
-
-	const onEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
-		if (event.key !== 'Enter') return;
-		console.log('enter');
-		sendChange();
-	};
-
-	const onBlur = () => {
-		sendChange();
-	};
+	// TODO: Update when props change
+	const inputRef = useRef(
+		createNumberInput({
+			...props,
+			update: event => {
+				props.onChange(parseFloat(event.target.value));
+			}
+		})
+	);
 
 	useEffect(() => {
-		updateValue();
-	}, [updateValue]);
+		inputRef.current.setValue(props.value);
+	}, [props.value]);
+
+	useEffect(() => {
+		if (!boxRef.current) return;
+		const input = inputRef.current;
+		const box = boxRef.current;
+		box.appendChild(input.dom);
+		return () => {
+			box?.removeChild(input.dom);
+		};
+	}, []);
+
+	useEffect(() => {
+		(inputRef.current as any).onChange((event: any) => {
+			props.onChange(parseFloat(event.target.value));
+		});
+	}, [props]);
 
 	return (
-		<Stack direction='row' spacing={0} alignItems='center'>
-			<TextField
-				onBlur={onBlur}
-				inputProps={{ inputMode: 'numeric', step: props.step ?? 0.01 }}
-				size='small'
-				variant='standard'
-				value={value}
-				onChange={onChange}
-				onKeyPress={onEnter}
-			/>
-			{props.unit && <Typography>[{props.unit}]</Typography>}
-		</Stack>
+		<Box>
+			<Box ref={boxRef}></Box>
+		</Box>
 	);
 }
 
 interface NumberPropertyFieldProps {
 	label: string;
 	value: number;
+	precision?: number;
+	min?: number;
+	max?: number;
 	unit?: string;
+	nudge?: number;
 	step?: number;
 	onChange: (value: number) => void;
 }
 
 export function NumberPropertyField(props: NumberPropertyFieldProps) {
-	return (
-		<PropertyField
-			label={props.label}
-			field={
-				<NumberInput
-					value={props.value}
-					unit={props.unit}
-					step={props.step}
-					onChange={props.onChange}
-				/>
-			}
-		/>
-	);
+	return <PropertyField label={props.label} field={<NumberInput {...props} />} />;
 }
 
 interface XYZPropertyFieldProps {
 	label: string;
 	value: { x: number; y: number; z: number };
+	precision?: number;
+	min?: number;
+	max?: number;
 	unit?: string;
+	nudge?: number;
 	step?: number;
 	onChange: (value: Vector3) => void;
 }
@@ -137,29 +131,28 @@ export function Vector3PropertyField(props: XYZPropertyFieldProps) {
 		props.onChange(newVector);
 	};
 
+	const getValue = () => {
+		return props.value;
+	};
+
+	const onChangeX = (value: number) => {
+		onChange({ ...getValue(), x: value });
+	};
+	const onChangeY = (value: number) => {
+		onChange({ ...getValue(), y: value });
+	};
+	const onChangeZ = (value: number) => {
+		onChange({ ...getValue(), z: value });
+	};
+
 	return (
 		<PropertyField
 			label={props.label}
 			field={
 				<Stack direction='row' spacing={1}>
-					<NumberInput
-						value={props.value.x}
-						unit={props.unit}
-						step={props.step}
-						onChange={x => onChange({ ...props.value, x })}
-					/>
-					<NumberInput
-						value={props.value.y}
-						unit={props.unit}
-						step={props.step}
-						onChange={y => onChange({ ...props.value, y })}
-					/>
-					<NumberInput
-						value={props.value.z}
-						unit={props.unit}
-						step={props.step}
-						onChange={z => onChange({ ...props.value, z })}
-					/>
+					<NumberInput {...props} value={props.value.x} onChange={onChangeX} />
+					<NumberInput {...props} value={props.value.y} onChange={onChangeY} />
+					<NumberInput {...props} value={props.value.z} onChange={onChangeZ} />
 				</Stack>
 			}
 		/>

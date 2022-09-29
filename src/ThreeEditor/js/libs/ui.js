@@ -170,7 +170,8 @@ events.forEach(function (event) {
 
 	UIElement.prototype[method] = function (callback) {
 
-		this.dom.addEventListener(event.toLowerCase(), callback.bind(this), false);
+		// this.dom.addEventListener(event.toLowerCase(), callback.bind(this), false);
+		this.dom[method.toLowerCase()] = callback.bind(this);
 
 		return this;
 

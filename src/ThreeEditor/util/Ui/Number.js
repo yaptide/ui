@@ -15,7 +15,7 @@ import {
  * @param {{
  *		value?: number,
  *		precision?: number
- *		update: ()=> void,
+ *		update: (event)=> void,
  *		min?: number,
  *		max?: number,
  *		unit?: string,
