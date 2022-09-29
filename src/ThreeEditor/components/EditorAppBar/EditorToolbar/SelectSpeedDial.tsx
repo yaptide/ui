@@ -3,7 +3,6 @@ import CategoryIcon from '@mui/icons-material/Category';
 import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
 import TextureIcon from '@mui/icons-material/Texture';
 import { SpeedDial, SpeedDialAction } from '@mui/material';
-import Box from '@mui/material/Box';
 import { styled, useTheme } from '@mui/material/styles';
 import React, { useCallback, useMemo } from 'react';
 
@@ -71,7 +70,6 @@ export function SelectSpeedDial({ selected, onClick, tool, setTool }: SelectSpee
 				top: 15,
 				padding: 0
 			}}
-			TransitionComponent={Box}
 			icon={getDialIcon()}
 			onClose={handleClose}
 			onOpen={() => {

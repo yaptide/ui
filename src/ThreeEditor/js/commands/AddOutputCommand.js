@@ -7,7 +7,7 @@ export class AddOutputCommand extends Command {
 	 * @param object ScoringOutput
 	 * @constructor
 	 */
-	constructor(editor, object) {
+	constructor(editor, object = undefined) {
 		super(editor);
 
 		this.type = 'AddOutputCommand';

@@ -41,6 +41,8 @@ export class WorldZone extends SimulationObject3D {
 	}
 	readonly notRotatable = true;
 	readonly notScalable = true;
+	readonly notVisibleChildren: boolean = true;
+	readonly notDraggable: boolean = true;
 
 	editor: Editor;
 
@@ -95,7 +97,7 @@ export class WorldZone extends SimulationObject3D {
 		this.type = 'WorldZone';
 		this.name = 'World Zone';
 		this._material = _materialDefault;
-		this._autoCalculate  = false;
+		this._autoCalculate = false;
 		this.editor = editor;
 		this.signals = editor.signals;
 

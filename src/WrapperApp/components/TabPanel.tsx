@@ -16,7 +16,7 @@ const tabPanelCss = (theme: Theme) =>
 		flexGrow: 1,
 		overflow: 'auto',
 		background:
-			theme.palette.mode == 'dark'
+			theme.palette.mode === 'dark'
 				? theme.palette.background.default
 				: theme.palette.grey['50']
 	});
@@ -31,7 +31,7 @@ export function TabPanel(props: TabPanelProps) {
 	}, [index, value]);
 
 	return (
-		<div
+		<Box
 			role='tabpanel'
 			className={tabPanelCss(theme)}
 			style={{ display: value !== index ? 'none' : '' }}
@@ -39,6 +39,6 @@ export function TabPanel(props: TabPanelProps) {
 			{(value === index || persistent || (visited && persistentIfVisited)) && (
 				<Box className={tabPanelCss(theme)}>{children}</Box>
 			)}
-		</div>
+		</Box>
 	);
 }
