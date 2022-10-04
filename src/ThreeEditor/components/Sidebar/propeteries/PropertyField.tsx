@@ -1,7 +1,8 @@
-import { Box, Grid, Stack, TextField, Typography } from '@mui/material';
+import { Box, Checkbox, Grid, Stack, TextField, Typography } from '@mui/material';
 import { ReactElement, useEffect, useRef } from 'react';
 import { Vector3 } from 'three/src/math/Vector3';
 import { createNumberInput } from '../../../util/Ui/Number';
+import { AutoCompleteSelect } from '../../Select/AutoCompleteSelect';
 
 export function PropertyField(props: { label: string; field: ReactElement }) {
 	return (
@@ -58,7 +59,6 @@ export function NumberInput(props: {
 	onChange: (value: number) => void;
 }) {
 	const boxRef = useRef<HTMLDivElement>(null);
-
 
 	// TODO: Update when props change
 	const inputRef = useRef(
@@ -154,6 +154,51 @@ export function Vector3PropertyField(props: XYZPropertyFieldProps) {
 					<NumberInput {...props} value={props.value.y} onChange={onChangeY} />
 					<NumberInput {...props} value={props.value.z} onChange={onChangeZ} />
 				</Stack>
+			}
+		/>
+	);
+}
+
+interface BooleanPropertyFieldProps {
+	label: string;
+	value: boolean;
+	onChange: (value: boolean) => void;
+}
+
+export function BooleanPropertyField(props: BooleanPropertyFieldProps) {
+	return (
+		<PropertyField
+			label={props.label}
+			field={
+				<Checkbox
+					sx={{ padding: 0 }}
+					checked={props.value}
+					onChange={event => props.onChange(event.target.checked)}
+				/>
+			}
+		/>
+	);
+}
+
+interface SelectPropertyFieldProps<T> {
+	label: string;
+	value: T | null;
+	options: T[];
+	onChange: (value: T) => void;
+}
+
+export function SelectPropertyField<T>(props: SelectPropertyFieldProps<T>) {
+	return (
+		<PropertyField
+			label={props.label}
+			field={
+				<AutoCompleteSelect
+					onChange={(_event, newValue) => {
+						if (newValue !== null) props.onChange?.call(null, newValue);
+					}}
+					value={props.value}
+					options={props.options}
+				/>
 			}
 		/>
 	);

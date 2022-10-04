@@ -3,8 +3,11 @@ import { Box } from '@mui/material';
 import { BoxProps } from '@mui/system/Box/Box';
 import { Object3D } from 'three';
 import { Editor } from '../../../js/Editor';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { ObjectInfo, ObjectPlacement } from './PropeteriesCategory';
+import { useCallback, useState } from 'react';
+import { ObjectPlacement } from './category/ObjectPlacement';
+import { ObjectInfo } from './category/ObjectInfo';
+import { useSignal } from '../../../util/hooks/signals';
+import { ObjectDimensions } from './category/ObjectDimensions';
 
 export function PropertiesPanel(props: { boxProps: BoxProps; editor: Editor }) {
 	const { boxProps, editor } = props;
@@ -14,12 +17,7 @@ export function PropertiesPanel(props: { boxProps: BoxProps; editor: Editor }) {
 		setSelectedObject(object);
 	}, []);
 
-	useEffect(() => {
-		editor.signals.objectSelected.add(handleObjectUpdate);
-		return () => {
-			editor.signals.objectSelected.remove(handleObjectUpdate);
-		};
-	}, [editor.signals.objectSelected, handleObjectUpdate]);
+	useSignal(editor, 'objectSelected', handleObjectUpdate);
 
 	return (
 		<Box {...boxProps}>
@@ -27,7 +25,7 @@ export function PropertiesPanel(props: { boxProps: BoxProps; editor: Editor }) {
 				<>
 					<ObjectInfo editor={editor} object={selectedObject} />
 					<ObjectPlacement editor={editor} object={selectedObject} />
-					<ObjectInfo editor={editor} object={selectedObject} />
+					<ObjectDimensions editor={editor} object={selectedObject} />
 				</>
 			)}
 		</Box>

@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Typography } from '@mui/material';
+import { AppBar, Box } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import THREE from 'three';
 import './css/main.css';
@@ -9,7 +9,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { EditorMenu } from './components/EditorMenu/EditorMenu';
 import useDocumentTitle from '../util/useDocumentTitle';
 import { useTheme } from '@mui/material/styles';
-import { SidebarTree } from './components/Sidebar/SidebarTree';
 import { EditorSidebar } from './components/Sidebar/EditorSidebar';
 declare global {
 	interface Window {
