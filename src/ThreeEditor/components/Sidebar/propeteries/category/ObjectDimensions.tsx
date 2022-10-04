@@ -9,7 +9,11 @@ import {
 	TextPropertyField
 } from '../PropertyField';
 import { useCallback, useEffect, useState } from 'react';
-import { useSignalObjectChanged, useSignal } from '../../../../util/hooks/signals';
+import {
+	useSignalObjectChanged,
+	useSignal,
+	useReadEditorState
+} from '../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
 import { Button, Divider, Grid } from '@mui/material';
 import {
@@ -296,6 +300,12 @@ export function ObjectDimensions(props: {
 	}, [object.name]);
 
 	useSignalObjectChanged(editor, update);
+
+	const objectPosition = useReadEditorState(editor, object, 'position');
+
+	useEffect(() => {
+		console.log('objectPosition', objectPosition.state);
+	}, [objectPosition]);
 
 	return (
 		<PropertiesCategory category='Dimensions'>
