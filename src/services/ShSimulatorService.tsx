@@ -40,7 +40,9 @@ interface ResShRun extends IResponseMsg {
 }
 
 export interface SimulationInfo {
-	creation_date: Date;
+	start_time: Date;
+	end_time: Date;
+	cores: number;
 	name: string;
 	task_id: string;
 }
@@ -144,7 +146,7 @@ const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]
 };
 
 export const recreateRefsInResults = (results: SimulationStatusData, editor?: EditorJson) => {
-	const targetEditor = editor ?? results.editor;	
+	const targetEditor = editor ?? results.editor;
 
 	if (!targetEditor) throw new Error('No editor data');
 	if (!results.result) throw new Error('No result data');
@@ -217,7 +219,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 			cache = true,
 			beforeCacheWrite?: (id: string, response: SimulationStatusData) => void
 		) => {
-			const { task_id: taskId, name, creation_date: creationDate } = simulation;
+			const { task_id: taskId, name, start_time: creationDate } = simulation;
 
 			if (cache && statusDataCache.current.has(taskId))
 				return Promise.resolve(statusDataCache.current.get(taskId));
@@ -291,8 +293,8 @@ const ShSimulation = (props: ShSimulationProps) => {
 				.json()
 				.then((response: unknown) => {
 					return (response as ResUserSimulations).simulations.map(s => {
-						const creation_date = new Date(s.creation_date as unknown as string);
-						const obj: SimulationInfo = { ...s, creation_date };
+						const start_time = new Date(s.start_time as unknown as string);
+						const obj: SimulationInfo = { ...s, start_time };
 						return obj;
 					});
 				});
