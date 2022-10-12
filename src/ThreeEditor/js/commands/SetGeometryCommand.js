@@ -28,6 +28,7 @@ class SetGeometryCommand extends Command {
 
 		this.editor.signals.geometryChanged.dispatch(this.object);
 		this.editor.signals.sceneGraphChanged.dispatch();
+		this.editor.signals.objectChanged.dispatch(this.object, 'geometry');
 	}
 
 	undo() {
@@ -37,6 +38,7 @@ class SetGeometryCommand extends Command {
 
 		this.editor.signals.geometryChanged.dispatch(this.object);
 		this.editor.signals.sceneGraphChanged.dispatch();
+		this.editor.signals.objectChanged.dispatch(this.object, 'geometry');
 	}
 
 	update(cmd) {

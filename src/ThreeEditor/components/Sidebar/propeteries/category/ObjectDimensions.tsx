@@ -5,21 +5,17 @@ import {
 	BooleanPropertyField,
 	LabelPropertyField,
 	NumberPropertyField,
-	SelectPropertyField,
-	TextPropertyField
+	SelectPropertyField
 } from '../PropertyField';
 import { useCallback, useEffect, useState } from 'react';
 import {
-	useSignalObjectChanged,
-	useSignal,
-	useReadEditorState
+	useSmartWatchEditorState
 } from '../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
 import { Button, Divider, Grid } from '@mui/material';
 import {
 	BasicMesh,
 	BASIC_GEOMETRY_OPTIONS,
-	BoxMesh,
 	isBasicMesh,
 	isBoxMesh
 } from '../../../../util/BasicMeshes';
@@ -36,46 +32,30 @@ const ObjectTypeField = (props: {
 }) => {
 	const { object, editor } = props;
 
-	const getSelectData = useCallback(() => {
-		if (isDetectGeometry(object)) return { options: DETECT_OPTIONS, value: object.detectType };
-		return { options: BASIC_GEOMETRY_OPTIONS, value: object.geometryType };
-	}, [object]);
+	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
-	const [selectData, setSelectData] = useState(getSelectData());
-
-	useEffect(() => {
-		setSelectData(getSelectData());
-	}, [getSelectData, object]);
+	const selectData = useCallback(() => {
+		if (isDetectGeometry(watchedObject))
+			return { options: DETECT_OPTIONS, value: watchedObject.detectType };
+		return { options: BASIC_GEOMETRY_OPTIONS, value: watchedObject.geometryType };
+	}, [watchedObject])();
 
 	const onChange = useCallback(
 		(value: string) => {
-			if (isDetectGeometry(object))
-				return editor.execute(new SetDetectTypeCommand(editor, object, value));
+			if (isDetectGeometry(watchedObject))
+				return editor.execute(
+					new SetDetectTypeCommand(editor, watchedObject.object, value)
+				);
 
-			if (isWorldZone(object))
-				return editor.execute(new SetValueCommand(editor, object, 'geometryType', value));
+			if (isWorldZone(watchedObject))
+				return editor.execute(
+					new SetValueCommand(editor, watchedObject.object, 'geometryType', value)
+				);
 		},
-		[editor, object]
+		[editor, watchedObject]
 	);
 
-	const handleUpdate = useCallback(
-		(_: Object3D, property: string) => {
-			if (property === 'geometryType') setSelectData(getSelectData());
-		},
-		[getSelectData]
-	);
-
-	useSignalObjectChanged(editor, handleUpdate);
-
-	const handleUpdateDetect = useCallback(() => {
-		setSelectData(getSelectData());
-	}, [getSelectData]);
-
-	useSignal(editor, 'detectTypeChanged', handleUpdateDetect);
-
-	const typeSelectable = !isBasicMesh(object);
-	const renderFlag = isBasicMesh(object) || isDetectGeometry(object) || isWorldZone(object);
-	if (!renderFlag) return null;
+	const typeSelectable = isDetectGeometry(watchedObject) || isWorldZone(watchedObject);
 
 	return (
 		<>
@@ -87,7 +67,7 @@ const ObjectTypeField = (props: {
 					onChange={onChange}
 				/>
 			) : (
-				<LabelPropertyField label='Geometry Type' value={object.geometryType} />
+				<LabelPropertyField label='Geometry Type' value={watchedObject.geometryType} />
 			)}
 		</>
 	);
@@ -96,24 +76,9 @@ const ObjectTypeField = (props: {
 const WorldZoneCalculateField = (props: { editor: Editor; object: WorldZone }) => {
 	const { object, editor } = props;
 
-	const [currentValue, setCurrentValue] = useState(object.autoCalculate);
-	const [renderFlag, setRenderFlag] = useState(object.geometryType === 'Box');
+	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
-	const handleUpdate = useCallback(
-		(_: Object3D, property: string) => {
-			if (property === 'autoCalculate') setCurrentValue(object.autoCalculate);
-			if (property === 'geometryType') setRenderFlag(object.geometryType === 'Box');
-		},
-		[object]
-	);
-
-	useEffect(() => {
-		setCurrentValue(object.autoCalculate);
-		setRenderFlag(object.geometryType === 'Box');
-	}, [object]);
-
-	useSignalObjectChanged(editor, handleUpdate);
-
+	const renderFlag = watchedObject.geometryType === 'Box';
 	if (!renderFlag) return null;
 
 	return (
@@ -123,10 +88,16 @@ const WorldZoneCalculateField = (props: { editor: Editor; object: WorldZone }) =
 			</Grid>
 			<BooleanPropertyField
 				label='Automatic'
-				value={currentValue}
+				value={watchedObject.autoCalculate}
 				onChange={value => {
 					editor.execute(
-						new SetValueCommand(editor, object, 'autoCalculate', value, true)
+						new SetValueCommand(
+							editor,
+							watchedObject.object,
+							'autoCalculate',
+							value,
+							true
+						)
 					);
 				}}
 			/>
@@ -134,7 +105,7 @@ const WorldZoneCalculateField = (props: { editor: Editor; object: WorldZone }) =
 				<Button
 					sx={{ width: '100%' }}
 					variant='contained'
-					onClick={() => object.calculate()}>
+					onClick={() => watchedObject.calculate()}>
 					Calculate
 				</Button>
 			</Grid>
@@ -142,83 +113,81 @@ const WorldZoneCalculateField = (props: { editor: Editor; object: WorldZone }) =
 	);
 };
 
-const BoxDimensionsField = (props: { editor: Editor; object: Object3D }) => {
+const BoxDimensionsField = (props: {
+	editor: Editor;
+	object: BasicMesh | WorldZone | DetectGeometry | Object3D;
+}) => {
 	const { object, editor } = props;
 
+	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
+
 	const getRenderFlag = useCallback(() => {
-		if (isBasicMesh(object) && object.geometryType === 'Box') return true;
+		if (isBasicMesh(watchedObject) && watchedObject.geometryType === 'Box') return true;
 
-		if (isWorldZone(object) && object.geometryType === 'Box') return !object.autoCalculate;
+		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'Box')
+			return !watchedObject.autoCalculate;
 
-		if (isDetectGeometry(object) && object.detectType === 'Mesh') return true;
+		if (isDetectGeometry(watchedObject) && watchedObject.detectType === 'Mesh') return true;
 
 		return false;
-	}, [object]);
+	}, [watchedObject]);
 
 	const [renderFlag, setRenderFlag] = useState(getRenderFlag());
 
 	const [box, setBox] = useState(new Vector3());
 
 	const updateBox = useCallback(() => {
-		if (isWorldZone(object)) setBox(object.size.clone());
+		if (isWorldZone(watchedObject)) setBox(watchedObject.size.clone());
 
 		let v;
-		if (isDetectGeometry(object)) v = object.geometryData;
-		else if (isBoxMesh(object)) v = object.geometry.parameters;
+		if (isDetectGeometry(watchedObject)) v = watchedObject.geometryData;
+		else if (isBoxMesh(watchedObject)) v = watchedObject.geometry.parameters;
 		else return;
 		setBox(new Vector3(v.width, v.height, v.depth));
-	}, [object]);
-
-	const handleUpdate = useCallback(
-		(_: Object3D, property: string) => {
-			if (['geometryType', 'detectType', 'autoCalculate', 'size'].includes(property)) {
-				updateBox();
-				setRenderFlag(getRenderFlag());
-			}
-		},
-		[getRenderFlag, updateBox]
-	);
-
-	useSignalObjectChanged(editor, handleUpdate);
-
-	const handleGeometryUpdate = useCallback(() => {
-		updateBox();
-		setRenderFlag(getRenderFlag());
-	}, [getRenderFlag, updateBox]);
-
-	useSignal(editor, ['geometryChanged', 'detectTypeChanged'], handleGeometryUpdate);
+	}, [watchedObject]);
 
 	useEffect(() => {
 		setRenderFlag(getRenderFlag());
-		updateBox();
-	}, [getRenderFlag, object, updateBox]);
+	}, [getRenderFlag, watchedObject]);
 
 	const handleChanged = useCallback(
 		(v: Vector3) => {
-			if (isDetectGeometry(object)) {
-				const geometryData = {
-					width: v.x,
-					height: v.y,
-					depth: v.z
-				};
+			try {
+				if (isDetectGeometry(watchedObject)) {
+					const geometryData = {
+						width: v.x,
+						height: v.y,
+						depth: v.z
+					};
 
-				return editor.execute(new SetDetectGeometryCommand(editor, object, geometryData));
-			}
+					return editor.execute(
+						new SetDetectGeometryCommand(editor, watchedObject.object, geometryData)
+					);
+				}
 
-			if (isWorldZone(object)) {
-				return editor.execute(new SetValueCommand(editor, object, 'size', v));
-			}
+				if (isWorldZone(watchedObject)) {
+					return editor.execute(
+						new SetValueCommand(editor, watchedObject.object, 'size', v)
+					);
+				}
 
-			if (isBoxMesh(object)) {
-				return editor.execute(
-					new SetGeometryCommand(editor, object, new BoxGeometry(v.x, v.y, v.z))
-				);
+				if (isBoxMesh(watchedObject)) {
+					return editor.execute(
+						new SetGeometryCommand(
+							editor,
+							watchedObject.object,
+							new BoxGeometry(v.x, v.y, v.z)
+						)
+					);
+				}
+			} finally {
+				updateBox();
 			}
 		},
-		[editor, object]
+		[editor, updateBox, watchedObject]
 	);
 
-	if (!renderFlag) return <>{renderFlag}</>;
+	if (!getRenderFlag()) return <>{renderFlag}</>;
 
 	return (
 		<>
@@ -293,22 +262,11 @@ export function ObjectDimensions(props: {
 	object: BasicMesh | DetectGeometry | WorldZone;
 }) {
 	const { object, editor } = props;
-	const [name, setName] = useState(object.name);
 
-	const update = useCallback(() => {
-		setName(object.name);
-	}, [object.name]);
-
-	useSignalObjectChanged(editor, update);
-
-	const objectPosition = useReadEditorState(editor, object, 'position');
-
-	useEffect(() => {
-		console.log('objectPosition', objectPosition.state);
-	}, [objectPosition]);
+	const visibleFlag = isBasicMesh(object) || isDetectGeometry(object) || isWorldZone(object);
 
 	return (
-		<PropertiesCategory category='Dimensions'>
+		<PropertiesCategory category='Dimensions' visible={visibleFlag}>
 			<ObjectTypeField editor={editor} object={object} />
 
 			<DimensionsFields editor={editor} object={object} />

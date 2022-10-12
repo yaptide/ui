@@ -5,7 +5,7 @@ import { BasicMesh } from './BasicMeshes';
 import { ISimulationObject } from './SimulationBase/SimulationObject';
 
 export class FigureScene extends THREE.Scene implements ISimulationObject {
-	readonly notRemovable = true;
+	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;

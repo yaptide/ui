@@ -16,7 +16,7 @@ interface ZoneManagerJSON {
 }
 
 export class ZoneContainer extends SimulationSceneGroup<Zone> {
-	readonly notRemovable = true;
+	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
@@ -36,7 +36,7 @@ export class ZoneContainer extends SimulationSceneGroup<Zone> {
 }
 
 export class ZoneManager extends THREE.Scene implements ISimulationObject {
-	readonly notRemovable = true;
+	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;

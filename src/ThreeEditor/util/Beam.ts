@@ -48,7 +48,7 @@ const _default = {
 };
 
 export class Beam extends SimulationObject3D {
-	readonly notRemovable = true;
+	readonly notRemovable: boolean = true;
 	readonly notMovable = false;
 	readonly notRotatable = true; //TODO: https://github.com/yaptide/ui/issues/242
 	readonly notScalable = true;

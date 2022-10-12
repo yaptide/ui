@@ -11,12 +11,12 @@ export type ScoringManagerJSON = {
 };
 export class ScoringManager extends SimulationSceneGroup<ScoringOutput> implements UniqueChildrenNames {
 	readonly isScoringManager: true = true;
-	readonly notRemovable = true;
+	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
 	readonly notHidable = true;
-	signals: {
+	private signals: {
 		objectAdded: Signal<THREE.Object3D>;
 		objectRemoved: Signal<THREE.Object3D>;
 	};

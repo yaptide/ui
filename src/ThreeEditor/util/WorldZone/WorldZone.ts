@@ -33,8 +33,9 @@ const _materialDefault = new THREE.MeshBasicMaterial({
 
 const _defaultColor = 0xff0000;
 
+
 export class WorldZone extends SimulationObject3D {
-	readonly notRemovable = true;
+	readonly notRemovable: boolean = true;
 	get notMovable() {
 		// custom get function to conditionally return notMoveable property;
 		return this.autoCalculate && this.canCalculate();

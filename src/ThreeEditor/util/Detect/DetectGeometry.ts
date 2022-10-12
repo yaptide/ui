@@ -18,7 +18,7 @@ export interface DetectGeometryJSON {
 type DetectGeometryArgs = Partial<DetectGeometryJSON>;
 
 export class DetectGeometry extends SimulationPoints {
-	readonly notRemovable = false;
+	readonly notRemovable: boolean = false;
 	map: null;
 	alphaMap: null;
 	size: number;

@@ -19,7 +19,7 @@ export interface ZoneJSON {
 }
 
 export class Zone extends SimulationMesh {
-	readonly notRemovable = false;
+	readonly notRemovable: boolean = false;
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
