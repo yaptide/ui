@@ -7,10 +7,10 @@ import { AutoCompleteSelect } from '../../Select/AutoCompleteSelect';
 export function PropertyField(props: { label: string; field: ReactElement }) {
 	return (
 		<>
-			<Grid item xs={3} sx={{ textAlign: 'right' }}>
+			<Grid item xs={4} sx={{ textAlign: 'right' }}>
 				{props.label}
 			</Grid>
-			<Grid item xs={9}>
+			<Grid item xs={8}>
 				{props.field}
 			</Grid>
 		</>
@@ -185,6 +185,9 @@ interface SelectPropertyFieldProps<T> {
 	value: T | null;
 	options: T[];
 	onChange: (value: T) => void;
+	getOptionLabel?: (option: T) => string;
+	isOptionEqualToValue?: (option: T, value: T) => boolean;
+	onEmptied?: () => void;
 }
 
 export function SelectPropertyField<T>(props: SelectPropertyFieldProps<T>) {
@@ -198,6 +201,9 @@ export function SelectPropertyField<T>(props: SelectPropertyFieldProps<T>) {
 					}}
 					value={props.value}
 					options={props.options}
+					getOptionLabel={props.getOptionLabel}
+					isOptionEqualToValue={props.isOptionEqualToValue}
+					onEmptied={props.onEmptied}
 				/>
 			}
 		/>

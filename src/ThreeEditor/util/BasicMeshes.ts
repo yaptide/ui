@@ -16,16 +16,18 @@ export const BASIC_GEOMETRY_OPTIONS = {
 	Sphere: 'Sphere'
 } as const;
 
+export type BasicGeometry = typeof BASIC_GEOMETRY_OPTIONS[keyof typeof BASIC_GEOMETRY_OPTIONS];
+
 export abstract class BasicMesh<
 	TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry
 > extends SimulationMesh<TGeometry> {
-	geometryType: string;
+	geometryType: BasicGeometry;
 	readonly isBasicMesh: true = true;
 	constructor(
 		editor: Editor,
 		name: string | undefined,
 		type: string,
-		geometryType: string,
+		geometryType: BasicGeometry,
 		geometry: TGeometry,
 		material?: THREE.MeshBasicMaterial
 	) {

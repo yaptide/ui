@@ -8,6 +8,7 @@ import { ObjectPlacement } from './category/ObjectPlacement';
 import { ObjectInfo } from './category/ObjectInfo';
 import { useSignal } from '../../../util/hooks/signals';
 import { ObjectDimensions } from './category/ObjectDimensions';
+import { ObjectGrid } from './category/ObjectGrid';
 
 export function PropertiesPanel(props: { boxProps: BoxProps; editor: Editor }) {
 	const { boxProps, editor } = props;
@@ -26,6 +27,7 @@ export function PropertiesPanel(props: { boxProps: BoxProps; editor: Editor }) {
 					<ObjectInfo editor={editor} object={selectedObject} />
 					<ObjectPlacement editor={editor} object={selectedObject} />
 					<ObjectDimensions editor={editor} object={selectedObject} />
+					<ObjectGrid editor={editor} object={selectedObject} />
 				</>
 			)}
 		</Box>

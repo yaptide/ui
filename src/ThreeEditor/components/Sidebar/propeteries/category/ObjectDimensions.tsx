@@ -1,4 +1,4 @@
-import { BoxGeometry, Object3D, Vector3 } from 'three';
+import { BoxGeometry, CylinderGeometry, Object3D, SphereGeometry, Vector3 } from 'three';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { Editor } from '../../../../js/Editor';
 import {
@@ -8,20 +8,20 @@ import {
 	SelectPropertyField
 } from '../PropertyField';
 import { useCallback, useEffect, useState } from 'react';
-import {
-	useSmartWatchEditorState
-} from '../../../../util/hooks/signals';
+import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
 import { Button, Divider, Grid } from '@mui/material';
 import {
 	BasicMesh,
 	BASIC_GEOMETRY_OPTIONS,
 	isBasicMesh,
-	isBoxMesh
+	isBoxMesh,
+	isCylinderMesh,
+	isSphereMesh
 } from '../../../../util/BasicMeshes';
 import { DetectGeometry, isDetectGeometry } from '../../../../util/Detect/DetectGeometry';
 import { isWorldZone, WorldZone } from '../../../../util/WorldZone/WorldZone';
-import { DETECT_OPTIONS } from '../../../../util/Detect/DetectTypes';
+import { CylData, DETECT_OPTIONS } from '../../../../util/Detect/DetectTypes';
 import { SetDetectTypeCommand } from '../../../../js/commands/SetDetectTypeCommand';
 import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
 import { SetGeometryCommand } from '../../../../js/commands/SetGeometryCommand';
@@ -132,91 +132,321 @@ const BoxDimensionsField = (props: {
 		return false;
 	}, [watchedObject]);
 
-	const [renderFlag, setRenderFlag] = useState(getRenderFlag());
-
-	const [box, setBox] = useState(new Vector3());
-
-	const updateBox = useCallback(() => {
-		if (isWorldZone(watchedObject)) setBox(watchedObject.size.clone());
+	const getBox = useCallback(() => {
+		if (isWorldZone(watchedObject)) return watchedObject.size.clone();
 
 		let v;
 		if (isDetectGeometry(watchedObject)) v = watchedObject.geometryData;
 		else if (isBoxMesh(watchedObject)) v = watchedObject.geometry.parameters;
-		else return;
-		setBox(new Vector3(v.width, v.height, v.depth));
+		else return new Vector3(0, 0, 0);
+		return new Vector3(v.width, v.height, v.depth);
 	}, [watchedObject]);
-
-	useEffect(() => {
-		setRenderFlag(getRenderFlag());
-	}, [getRenderFlag, watchedObject]);
 
 	const handleChanged = useCallback(
 		(v: Vector3) => {
-			try {
-				if (isDetectGeometry(watchedObject)) {
-					const geometryData = {
-						width: v.x,
-						height: v.y,
-						depth: v.z
-					};
+			if (isDetectGeometry(watchedObject)) {
+				const geometryData = {
+					width: v.x,
+					height: v.y,
+					depth: v.z
+				};
 
-					return editor.execute(
-						new SetDetectGeometryCommand(editor, watchedObject.object, geometryData)
-					);
-				}
+				return editor.execute(
+					new SetDetectGeometryCommand(editor, watchedObject.object, geometryData)
+				);
+			}
 
-				if (isWorldZone(watchedObject)) {
-					return editor.execute(
-						new SetValueCommand(editor, watchedObject.object, 'size', v)
-					);
-				}
+			if (isWorldZone(watchedObject)) {
+				return editor.execute(new SetValueCommand(editor, watchedObject.object, 'size', v));
+			}
 
-				if (isBoxMesh(watchedObject)) {
-					return editor.execute(
-						new SetGeometryCommand(
-							editor,
-							watchedObject.object,
-							new BoxGeometry(v.x, v.y, v.z)
-						)
-					);
-				}
-			} finally {
-				updateBox();
+			if (isBoxMesh(watchedObject)) {
+				return editor.execute(
+					new SetGeometryCommand(
+						editor,
+						watchedObject.object,
+						new BoxGeometry(v.x, v.y, v.z)
+					)
+				);
 			}
 		},
-		[editor, updateBox, watchedObject]
+		[editor, watchedObject]
 	);
 
-	if (!getRenderFlag()) return <>{renderFlag}</>;
+	if (!getRenderFlag()) return null;
 
 	return (
 		<>
 			<NumberPropertyField
 				label='X side (width)'
-				value={box.x}
+				value={getBox().x}
 				unit={editor.unit.name}
 				min={0}
 				onChange={v => {
-					handleChanged(new Vector3(v, box.y, box.z));
+					handleChanged(new Vector3(v, getBox().y, getBox().z));
 				}}
 			/>
 			<NumberPropertyField
 				label='Y side (height)'
-				value={box.y}
+				value={getBox().y}
 				unit={editor.unit.name}
 				min={0}
 				onChange={v => {
-					handleChanged(new Vector3(box.x, v, box.z));
+					handleChanged(new Vector3(getBox().x, v, getBox().z));
 				}}
 			/>
 			<NumberPropertyField
 				label='Z side (depth)'
-				value={box.z}
+				value={getBox().z}
 				unit={editor.unit.name}
 				min={0}
 				onChange={v => {
-					handleChanged(new Vector3(box.x, box.y, v));
+					handleChanged(new Vector3(getBox().x, getBox().y, v));
 				}}
+			/>
+		</>
+	);
+};
+
+const CylinderDimensionsField = (props: {
+	editor: Editor;
+	object: BasicMesh | WorldZone | DetectGeometry | Object3D;
+}) => {
+	const { object, editor } = props;
+
+	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
+
+	const getRenderFlag = useCallback(() => {
+		if (isBasicMesh(watchedObject) && watchedObject.geometryType === 'Cylinder') return true;
+
+		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'Cylinder')
+			return !watchedObject.autoCalculate;
+
+		if (isDetectGeometry(watchedObject) && watchedObject.detectType === 'Cyl') return true;
+
+		return false;
+	}, [watchedObject]);
+
+	const getCylinder = useCallback(() => {
+		if (isWorldZone(watchedObject)) {
+			const { size } = watchedObject;
+			return { radius: size.x, innerRadius: 0, height: size.z };
+		} else if (isDetectGeometry(watchedObject)) {
+			const parameters = watchedObject.geometryData as CylData;
+			return {
+				radius: parameters.radius,
+				innerRadius: parameters.innerRadius,
+				height: parameters.depth
+			};
+		} else if (isCylinderMesh(watchedObject)) {
+			const parameters = watchedObject.geometry.parameters;
+			return {
+				radius: parameters.radiusTop,
+				innerRadius: 0,
+				height: parameters.height
+			};
+		}
+		return { radius: 0, innerRadius: 0, height: 0 };
+	}, [watchedObject]);
+
+	const handleChanged = useCallback(
+		(v: ReturnType<typeof getCylinder>) => {
+			if (isDetectGeometry(watchedObject)) {
+				const geometryData = {
+					radius: v.radius,
+					innerRadius: v.innerRadius,
+					depth: v.height
+				};
+				return editor.execute(
+					new SetDetectGeometryCommand(editor, watchedObject.object, geometryData)
+				);
+			}
+
+			if (isWorldZone(watchedObject)) {
+				return editor.execute(
+					new SetValueCommand(
+						editor,
+						watchedObject.object,
+						'size',
+						new Vector3(v.radius, v.radius, v.height)
+					)
+				);
+			}
+
+			if (isCylinderMesh(watchedObject)) {
+				const { radius, height } = v;
+				editor.execute(
+					new SetGeometryCommand(
+						editor,
+						watchedObject.object,
+						new CylinderGeometry(
+							radius,
+							radius,
+							height,
+							16,
+							1,
+							false,
+							0,
+							Math.PI * 2
+						).rotateX(Math.PI / 2)
+					)
+				);
+			}
+		},
+		[editor, watchedObject]
+	);
+
+	if (!getRenderFlag()) return null;
+
+	return (
+		<>
+			<NumberPropertyField
+				label='Z side (depth)'
+				value={getCylinder().height}
+				unit={editor.unit.name}
+				min={0}
+				onChange={v => {
+					handleChanged({ ...getCylinder(), height: v });
+				}}
+			/>
+			<NumberPropertyField
+				label='Radius'
+				value={getCylinder().radius}
+				unit={editor.unit.name}
+				min={0}
+				onChange={v => {
+					handleChanged({ ...getCylinder(), radius: v });
+				}}
+			/>
+			{isDetectGeometry(watchedObject) && (
+				<NumberPropertyField
+					label='Inner radius'
+					value={getCylinder().innerRadius}
+					unit={editor.unit.name}
+					min={0}
+					onChange={v => {
+						handleChanged({ ...getCylinder(), innerRadius: v });
+					}}
+				/>
+			)}
+		</>
+	);
+};
+
+const SphereDimensionsField = (props: {
+	editor: Editor;
+	object: BasicMesh | WorldZone | Object3D;
+}) => {
+	const { object, editor } = props;
+
+	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
+
+	const getRenderFlag = useCallback(() => {
+		if (isBasicMesh(watchedObject) && watchedObject.geometryType === 'Sphere') return true;
+
+		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'Sphere')
+			return !watchedObject.autoCalculate;
+		return false;
+	}, [watchedObject]);
+
+	const getSphere = useCallback(() => {
+		if (isWorldZone(watchedObject)) {
+			const { size } = watchedObject;
+			return { radius: size.x };
+		} else if (isSphereMesh(watchedObject))
+			return { radius: watchedObject.geometry.parameters.radius };
+		return { radius: 0 };
+	}, [watchedObject]);
+
+	const handleChanged = useCallback(
+		(v: ReturnType<typeof getSphere>) => {
+			if (isWorldZone(watchedObject)) {
+				return editor.execute(
+					new SetValueCommand(
+						editor,
+						watchedObject.object,
+						'size',
+						new Vector3(v.radius, v.radius, v.radius)
+					)
+				);
+			}
+
+			if (isSphereMesh(watchedObject)) {
+				const { radius } = v;
+				editor.execute(
+					new SetGeometryCommand(
+						editor,
+						watchedObject.object,
+						new SphereGeometry(radius, 16, 8, 0, Math.PI * 2, 0, Math.PI)
+					)
+				);
+			}
+		},
+		[editor, watchedObject]
+	);
+
+	if (!getRenderFlag()) return null;
+
+	return (
+		<>
+			<NumberPropertyField
+				label='Radius'
+				value={getSphere().radius}
+				unit={editor.unit.name}
+				min={0}
+				onChange={v => {
+					handleChanged({ radius: v });
+				}}
+			/>
+		</>
+	);
+};
+
+const ZoneDimensionsField = (props: { editor: Editor; object: DetectGeometry | Object3D }) => {
+	const { object, editor } = props;
+
+	const { state: watchedObject } = useSmartWatchEditorState(editor, object as DetectGeometry);
+
+	const getRenderFlag = useCallback(() => {
+		if (isDetectGeometry(watchedObject) && watchedObject.detectType === 'Zone') return true;
+		return false;
+	}, [watchedObject]);
+
+	type ZoneOptionType = {
+		uuid: string;
+		label: string;
+	};
+	const optionMap = new Map<string, ZoneOptionType>();
+
+	const options = Object.entries(editor.zoneManager.getZoneOptions()).map(([key, value]) => {
+		let option = { uuid: key, label: value };
+		optionMap.set(key, option);
+		return option;
+	});
+
+	const handleChanged = useCallback(
+		(v: ZoneOptionType) => {
+			console.log('handleChanged', v);
+			if (isDetectGeometry(watchedObject)) {
+				editor.execute(
+					new SetDetectGeometryCommand(editor, watchedObject.object, { zoneUuid: v.uuid })
+				);
+			}
+		},
+		[editor, watchedObject]
+	);
+
+	if (!getRenderFlag()) return null;
+
+	return (
+		<>
+			<SelectPropertyField
+				label='Zone ID'
+				value={optionMap.get(watchedObject.geometryData.zoneUuid) ?? null}
+				onChange={handleChanged}
+				options={options}
+				getOptionLabel={option => option.label || ''}
+				isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
 			/>
 		</>
 	);
@@ -228,31 +458,9 @@ const DimensionsFields = (props: { editor: Editor; object: Object3D }) => {
 	return (
 		<>
 			<BoxDimensionsField editor={editor} object={object} />
-
-			<NumberPropertyField
-				label='Radius'
-				value={object.scale.x}
-				unit={editor.unit.name}
-				min={0}
-				onChange={function (value: number): void {
-					throw new Error('Function not implemented.');
-				}}
-			/>
-			<NumberPropertyField
-				label='Inner radius'
-				value={object.scale.x}
-				unit={editor.unit.name}
-				min={0}
-				onChange={function (value: number): void {
-					throw new Error('Function not implemented.');
-				}}
-			/>
-			<SelectPropertyField
-				label='Zone ID'
-				value={'a'}
-				options={['a', 'b', 'c']}
-				onChange={a => console.log(a)}
-			/>
+			<CylinderDimensionsField editor={editor} object={object} />
+			<SphereDimensionsField editor={editor} object={object} />
+			<ZoneDimensionsField editor={editor} object={object} />
 		</>
 	);
 };

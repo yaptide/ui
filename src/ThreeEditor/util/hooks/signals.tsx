@@ -142,9 +142,10 @@ type ProxyState<T> = T & {
 
 /**
  * Warning: This hook return new Proxy object with different reference than original one.
- * 
+ *
  * This hook is used to watch the editor state and return the state.
  * It is used to avoid unnecessary re-rendering of components.
+ * It gathers all accessed properties and watch them.
  * @param editor The editor instance
  * @param watchedObject The object to watch
  * @returns The state of the watched object wrapped in Proxy
@@ -183,7 +184,7 @@ export function useSmartWatchEditorState<T extends Object3D>(
 			if (object === watchedObject) {
 				if (debug) console.log(watchedPropertyArrRef.current, property);
 				if (property && watchedPropertyArrRef.current.has(property)) {
-					console.log('update', object[property]);
+					console.log('update', property, object[property]);
 					setState({ state: proxyObjectRef.current });
 				}
 			}

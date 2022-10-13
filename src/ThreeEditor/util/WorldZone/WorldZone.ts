@@ -192,6 +192,7 @@ export class WorldZone extends SimulationObject3D {
 
 		const object = this.editor.zoneManager.zoneContainer;
 		this.helper.calculateFromObject(object);
+		this.editor.signals.objectChanged.dispatch(this, 'size');
 	}
 
 	updatePosition(): void {
