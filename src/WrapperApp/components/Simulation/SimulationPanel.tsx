@@ -13,7 +13,9 @@ import { useSnackbar } from 'notistack';
 
 import { useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
+import { useLoader } from '../../../services/DataLoaderService';
 import {
+	FinalSimulationStatusData,
 	InputFiles,
 	SimulationInfo,
 	SimulationStatusData,
@@ -29,7 +31,12 @@ interface SimulationPanelProps {
 }
 
 export default function SimulationPanel(props: SimulationPanelProps) {
-	const { editorRef, setResultsSimulationData } = useStore();
+	const {
+		editorRef,
+		setResultsSimulationData,
+		localResultsSimulationData,
+		setLocalResultsSimulationData
+	} = useStore();
 
 	const { sendRun, sendHelloWorld, getSimulations, getSimulationsStatus } = useShSimulation();
 	const { enqueueSnackbar } = useSnackbar();
@@ -43,6 +50,27 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const [trackedId, setTrackedId] = useState<string>();
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
 	const [simulationsStatusData, setSimulationsStatusData] = useState<SimulationStatusData[]>([]);
+	const [localSimulationData, setLocalSimulationData] = useState<SimulationStatusData[]>(
+		localResultsSimulationData ?? []
+	);
+
+	const { resultsProvider, canLoadResultsData, setLoadedResults } = useLoader();
+
+	useEffect(() => {
+		if (canLoadResultsData) {
+			setLoadedResults();
+			setLocalSimulationData(resultsProvider);
+			setLocalResultsSimulationData(resultsProvider);
+		} else {
+			setLocalSimulationData(localResultsSimulationData ?? []);
+		}
+	}, [
+		canLoadResultsData,
+		resultsProvider,
+		setLoadedResults,
+		localResultsSimulationData,
+		setLocalResultsSimulationData
+	]);
 
 	const [simulationIDInterval, setSimulationIDInterval] = useState<number | null>(null);
 
@@ -196,7 +224,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				</CardActions>
 			</Card>
 
-			{simulationsStatusData.map(simulation => (
+			{localSimulationData.concat(simulationsStatusData).map(simulation => (
 				<SimulationStatus
 					key={simulation.uuid}
 					simulation={simulation}

@@ -14,6 +14,7 @@ import {
 import { SxProps, Theme } from '@mui/material/styles';
 import React, { ReactNode } from 'react';
 import Countdown from 'react-countdown';
+import { useLoader } from '../../../services/DataLoaderService';
 import {
 	InputFiles,
 	SimulationStatusData,
@@ -34,6 +35,7 @@ export default function SimulationStatus({
 	showInputFiles
 }: SimulationStatusProps) {
 	const { resultsSimulationData } = useStore();
+	const { loadFromJson } = useLoader();
 
 	const tableRowStyle: SxProps<Theme> = { '&:last-child td, &:last-child th': { border: 0 } };
 
@@ -111,6 +113,11 @@ export default function SimulationStatus({
 		saveString(JSON.stringify(simulation), `${simulation.name}_result.json`);
 	};
 
+	const onClickLoadToEditor = () => {
+		if (!simulation?.editor) return;
+		loadFromJson(simulation.editor);
+	};
+
 	return (
 		<Card sx={{ minWidth: 275 }}>
 			<CardContent>
@@ -159,6 +166,12 @@ export default function SimulationStatus({
 				{simulation.status === StatusState.SUCCESS && (
 					<Button color='info' size='small' onClick={onClickSaveToFile}>
 						Save to file
+					</Button>
+				)}
+
+				{simulation.status === StatusState.SUCCESS && simulation.editor && (
+					<Button color='info' size='small' onClick={onClickLoadToEditor}>
+						Load to editor
 					</Button>
 				)}
 
