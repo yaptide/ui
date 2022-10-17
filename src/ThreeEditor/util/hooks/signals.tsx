@@ -152,14 +152,14 @@ type ProxyState<T> = T & {
  */
 export function useSmartWatchEditorState<T extends Object3D>(
 	editor: Editor,
-	watchedObject: T,
+	watchedObject: T | null,
 	debug: boolean = false
 ): { state: ProxyState<T> } {
 	const watchedPropertyArrRef = useRef<Set<string>>(new Set());
 
 	const createProxy = useCallback(
 		() =>
-			new Proxy(watchedObject, {
+			new Proxy(watchedObject ?? {}, {
 				get(target, property) {
 					if ('object' === property) return target;
 					// gather all properties that are accessed

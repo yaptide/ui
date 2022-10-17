@@ -227,6 +227,7 @@ const CylinderDimensionsField = (props: {
 		return false;
 	}, [watchedObject]);
 
+
 	const getCylinder = useCallback(() => {
 		if (isWorldZone(watchedObject)) {
 			const { size } = watchedObject;
