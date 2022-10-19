@@ -4,19 +4,26 @@ import {
 	Card,
 	CardActions,
 	CardContent,
+	Divider,
 	Fade,
+	Grid,
 	LinearProgress,
 	Modal,
+	Pagination,
+	Stack,
 	Typography
 } from '@mui/material';
+import { flexbox } from '@mui/system';
 import { useSnackbar } from 'notistack';
 
-import { useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
 import { useLoader } from '../../../services/DataLoaderService';
 import {
 	FinalSimulationStatusData,
 	InputFiles,
+	OrderBy,
+	OrderType,
 	SimulationInfo,
 	SimulationStatusData,
 	StatusState,
@@ -25,6 +32,8 @@ import {
 import { useStore } from '../../../services/StoreService';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import SimulationStatus from './SimulationStatus';
+import CableIcon from '@mui/icons-material/Cable';
+import { SimulationPanelGrid } from './SimulationPanelGrid';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
@@ -44,6 +53,9 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const [isInProgress, setInProgress] = useState(false);
 	const [isBackendAlive, setBackendAlive] = useState(false);
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
+	const [page, setPage] = useState(1);
+	const [pageCount, setPageCount] = useState(1);
+	const pageSize = 6;
 
 	const [inputFiles, setInputFiles] = useState<InputFiles>();
 
@@ -93,17 +105,27 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	const updateSimulationInfo = useCallback(
 		() =>
-			getSimulations(controller.signal)
-				.then(s => setSimulationInfo([...s]))
+			getSimulations(page, pageSize, OrderType.DESCEND, OrderBy.START_TIME)
+				.then(({ simulations, page_count, simulations_count }) => {
+					setSimulationInfo([...simulations]);
+					setPageCount(page_count);
+				})
 				.catch(),
 		[controller.signal, getSimulations]
+	);
+
+	const handlePageChange = useCallback(
+		(event: React.ChangeEvent<unknown>, value: number) => {
+			setPage(value);
+		},
+		[setPage]
 	);
 
 	useEffect(() => {
 		sendHelloWorld(controller.signal)
 			.then(() => {
 				setBackendAlive(true);
-				updateSimulationInfo();
+				// updateSimulationInfo();
 				setSimulationIDInterval(10000);
 			})
 			.catch(() => {
@@ -111,7 +133,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			});
 	}, [controller.signal, getSimulations, isBackendAlive, sendHelloWorld, updateSimulationInfo]);
 
-	useInterval(updateSimulationInfo, simulationIDInterval, true);
+	// useInterval(updateSimulationInfo, simulationIDInterval, true);
 
 	const updateSimulationData = useCallback(
 		() =>
@@ -169,8 +191,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				padding: '2rem 5rem',
 				display: 'flex',
 				flexDirection: 'column',
-				gap: '1.5rem',
-				height: 'min-content'
+				gap: '1.5rem'
 			}}>
 			<Modal
 				aria-labelledby='transition-modal-title'
@@ -193,50 +214,66 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			</Modal>
 
 			<Card sx={{ minWidth: 275 }}>
-				<CardContent>
-					<Typography gutterBottom variant='h5' component='div'>
-						Backend Status - {isBackendAlive ? 'ALIVE' : 'DEAD'}
+				<CardContent
+					sx={{
+						display: 'flex',
+						justifyContent: 'center',
+						alignItems: 'center'
+					}}>
+					<Typography
+						gutterBottom
+						variant='h5'
+						component='p'
+						sx={{ mb: 0, lineHeight: '2rem' }}>
+						Server status: {isBackendAlive ? 'Online' : 'Unreachable'}
 					</Typography>
+					<CableIcon
+						color={isBackendAlive ? 'success' : 'disabled'}
+						sx={{ marginLeft: 'auto' }}
+						fontSize='large'></CableIcon>
 				</CardContent>
+				<Divider />
+				{isBackendAlive && (
+					<>
+						<CardContent>
+							<Typography gutterBottom variant='h5' component='div'>
+								Run Simulation
+							</Typography>
+							<LinearProgress
+								color='info'
+								variant={isInProgress ? 'indeterminate' : 'determinate'}
+								value={0}
+							/>
+						</CardContent>
+						<CardActions>
+							<Button
+								color='info'
+								sx={{
+									width: 'min(300px, 100%)',
+									margin: '0 auto'
+								}}
+								onClick={onClickRun}>
+								{isInProgress ? 'Stop' : 'Start'}
+							</Button>
+						</CardActions>
+					</>
+				)}
 			</Card>
-
-			<Card sx={{ minWidth: 275 }}>
-				<CardContent>
-					<Typography gutterBottom variant='h5' component='div'>
-						Run Simulation
-					</Typography>
-					<LinearProgress
-						color='info'
-						variant={isInProgress ? 'indeterminate' : 'determinate'}
-						value={0}
-					/>
-				</CardContent>
-				<CardActions>
-					<Button
-						color='info'
-						sx={{
-							width: 'min(300px, 100%)',
-							margin: '0 auto'
-						}}
-						onClick={onClickRun}>
-						{isInProgress ? 'Stop' : 'Start'}
-					</Button>
-				</CardActions>
-			</Card>
-
-			{localSimulationData.concat(simulationsStatusData).map(simulation => (
-				<SimulationStatus
-					key={simulation.uuid}
-					simulation={simulation}
-					loadResults={id => {
-						if (id === null) props.goToResults?.call(null);
-						else setResultsSimulationData(simulation);
-					}}
-					showInputFiles={inputFiles => {
-						setShowInputFilesEditor(true);
-						setInputFiles(inputFiles);
-					}}></SimulationStatus>
-			))}
+			<SimulationPanelGrid
+				simulationsStatusData={simulationsStatusData}
+				localSimulationData={[]}
+				handleLoadResults={(id, simulation) => {
+					if (id === null) props.goToResults?.call(null);
+					else setResultsSimulationData(simulation);
+				}}
+				handleShowInputFiles={(inputFiles?) => {
+					setShowInputFilesEditor(true);
+					setInputFiles(inputFiles);
+				}}
+				pageCount={0}
+				page={0}
+				handlePageChange={handlePageChange}
+			/>
 		</Box>
 	);
 }

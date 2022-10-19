@@ -9,6 +9,16 @@ import { ScoringManagerJSON } from '../ThreeEditor/util/Scoring/ScoringManager';
 import { orderAccordingToList } from '../util/Sort';
 import { FilterJSON } from '../ThreeEditor/util/Detect/DetectFilter';
 
+export enum OrderType {
+	ASCEND = 'ascend',
+	DESCEND = 'descend'
+}
+
+export enum OrderBy {
+	START_TIME = 'start_time',
+	END_TIME = 'end_time'
+}
+
 export interface ShSimulationProps {
 	children: ReactNode;
 }
@@ -26,10 +36,16 @@ export interface IShSimulation {
 		cache?: boolean,
 		beforeCacheWrite?: (id: string, data: SimulationStatusData) => void
 	) => Promise<SimulationStatusData | undefined>;
-	getSimulations: (signal?: AbortSignal) => Promise<SimulationInfo[]>;
+	getSimulations: (
+		pageNumber: number,
+		pageSize: number,
+		orderType: OrderType,
+		orderBy: OrderBy,
+		signal?: AbortSignal
+	) => Promise<UserSimulationPage>;
 	getSimulationsStatus: (
 		simulationInfo: SimulationInfo[],
-		abortSignal?: AbortSignal,
+		signal?: AbortSignal,
 		cache?: boolean,
 		beforeCacheWrite?: (id: string, data: SimulationStatusData) => void
 	) => Promise<SimulationStatusData[]>;
@@ -47,8 +63,12 @@ export interface SimulationInfo {
 	task_id: string;
 }
 
-interface ResUserSimulations extends IResponseMsg {
+interface ResUserSimulations extends IResponseMsg, UserSimulationPage {}
+
+interface UserSimulationPage {
 	simulations: SimulationInfo[];
+	page_count: number;
+	simulations_count: number;
 }
 
 export enum StatusState {
@@ -314,16 +334,36 @@ const ShSimulation = (props: ShSimulationProps) => {
 	);
 
 	const getSimulations = useCallback(
-		(signal?: AbortSignal) => {
+		(
+			pageNumber: number,
+			pageSize: number,
+			orderType: OrderType,
+			orderBy: OrderBy,
+			signal?: AbortSignal
+		) => {
 			return authKy
-				.get(`${BACKEND_URL}/user/simulations`, { signal })
+				.get(`${BACKEND_URL}/user/simulations`, {
+					signal: signal,
+					json: {
+						page_size: pageSize,
+						page_idx: pageNumber - 1,
+						order_by: 'start_time',
+						order_type: 'descend'
+					}
+				})
 				.json()
 				.then((response: unknown) => {
-					return (response as ResUserSimulations).simulations.map(s => {
-						const start_time = new Date(s.start_time as unknown as string);
-						const obj: SimulationInfo = { ...s, start_time };
-						return obj;
-					});
+					const { simulations, page_count, simulations_count } =
+						response as ResUserSimulations;
+					return {
+						simulations: simulations.map(s => {
+							const start_time = new Date(s.start_time as unknown as string);
+							const obj: SimulationInfo = { ...s, start_time };
+							return obj;
+						}),
+						page_count,
+						simulations_count
+					};
 				});
 		},
 		[authKy]
@@ -332,11 +372,11 @@ const ShSimulation = (props: ShSimulationProps) => {
 	const getSimulationsStatus = useCallback(
 		(
 			simulations: SimulationInfo[],
-			abortSignal?: AbortSignal,
+			signal?: AbortSignal,
 			cache = true,
 			beforeCacheWrite?: (id: string, response: SimulationStatusData) => void
 		) => {
-			const res = simulations.map(s => getStatus(s, abortSignal, cache, beforeCacheWrite));
+			const res = simulations.map(s => getStatus(s, signal, cache, beforeCacheWrite));
 
 			return Promise.all(res).then(values => {
 				return [...values.filter((e): e is SimulationStatusData => !!e)];
