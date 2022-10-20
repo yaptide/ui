@@ -75,7 +75,8 @@ export enum StatusState {
 	PENDING = 'PENDING',
 	PROGRESS = 'PROGRESS',
 	FAILURE = 'FAILURE',
-	SUCCESS = 'SUCCESS'
+	SUCCESS = 'SUCCESS',
+	LOCAL = 'LOCAL'
 }
 interface ResShStatusPending extends IResponseMsg {
 	state: StatusState.PENDING;

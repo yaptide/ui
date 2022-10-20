@@ -73,8 +73,12 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	useEffect(() => {
 		if (canLoadResultsData) {
 			setLoadedResults();
-			setLocalSimulationData(resultsProvider);
-			setLocalResultsSimulationData(resultsProvider);
+			const newLocalData = resultsProvider;
+			newLocalData.forEach(data => {
+				data.status = StatusState.LOCAL;
+			});
+			setLocalSimulationData(newLocalData);
+			setLocalResultsSimulationData(newLocalData);
 		} else {
 			setLocalSimulationData(localResultsSimulationData ?? []);
 		}
@@ -155,7 +159,14 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			.catch(() => {
 				setBackendAlive(false);
 			});
-	}, [controller.signal, getSimulations, isBackendAlive, sendHelloWorld, updateSimulationInfo]);
+	}, [
+		controller.signal,
+		sendHelloWorld,
+		updateSimulationInfo,
+		setSimulationIDInterval,
+		isBackendAlive,
+		setBackendAlive
+	]);
 
 	useInterval(updateSimulationInfo, simulationIDInterval, true);
 
@@ -287,7 +298,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			</Card>
 			<SimulationPanelGrid
 				simulationsStatusData={simulationsStatusData}
-				localSimulationData={[]}
+				localSimulationData={localSimulationData}
 				handleLoadResults={(id, simulation) => {
 					if (id === null) props.goToResults?.call(null);
 					else setResultsSimulationData(simulation);

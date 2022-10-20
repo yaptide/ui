@@ -79,6 +79,8 @@ export default function SimulationStatus({
 				return 'info.main';
 			case StatusState.SUCCESS:
 				return 'success.main';
+			case StatusState.LOCAL:
+				return 'warning.main';
 			default:
 				return '';
 		}
@@ -136,10 +138,12 @@ export default function SimulationStatus({
 			<CardHeader
 				title={`${simulation.name}`}
 				subheader={`${simulation.creationDate.toLocaleString('en-US').split(' ')[0]} ${
-					simulation.creationDate.toTimeString().split(' ')[0]
+					simulation.creationDate?.toTimeString
+						? simulation.creationDate.toTimeString().split(' ')[0]
+						: '00:00:00'
 				} - ${
 					simulation.status === StatusState.SUCCESS &&
-					simulation.completionDate.toTimeString
+					simulation.completionDate?.toTimeString
 						? simulation.completionDate.toTimeString().split(' ')[0]
 						: '?'
 				}`}
@@ -160,9 +164,11 @@ export default function SimulationStatus({
 						}}
 					/>
 					{simulation.metadata &&
-						Object.entries(simulation.metadata).map(([key, value]) => (
-							<Chip key={key} variant='outlined' label={`${key}: ${value}`} />
-						))}
+						Object.entries(simulation.metadata)
+							.filter(([key, value]) => key != 'type')
+							.map(([key, value]) => (
+								<Chip key={key} variant='outlined' label={`${key}: ${value}`} />
+							))}
 					<Chip variant='outlined' label={`cores: ${simulation.cores}`} />
 				</Box>
 				<TableContainer
