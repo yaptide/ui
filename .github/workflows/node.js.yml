@@ -57,7 +57,7 @@ jobs:
               run: npm install
 
             - name: webfactory/ssh-agent 🖥️
-              uses: webfactory/ssh-agent@v0.5.4
+              uses: webfactory/ssh-agent@v0.7.0
               with:
                   # Private SSH key to register in the SSH agent
                   ssh-private-key: ${{ secrets.WEBDEV }}
@@ -87,7 +87,7 @@ jobs:
                 python-version: '3.10'
 
             # Add keys to the SSH agent
-            - uses: webfactory/ssh-agent@v0.5.4
+            - uses: webfactory/ssh-agent@v0.7.0
               with:
                   ssh-private-key: |
                       ${{ secrets.DEPLOY_C3_TEST }}
