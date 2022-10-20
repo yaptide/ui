@@ -149,6 +149,7 @@ export interface SimulationStatusData {
 	uuid: string;
 	status: StatusState;
 	creationDate: Date;
+	completionDate: Date;
 	name: string;
 	estimatedTime?: number;
 	counted?: number;
@@ -264,7 +265,12 @@ const ShSimulation = (props: ShSimulationProps) => {
 			cache = true,
 			beforeCacheWrite?: (id: string, response: SimulationStatusData) => void
 		) => {
-			const { task_id: taskId, name, start_time: creationDate } = simulation;
+			const {
+				task_id: taskId,
+				name,
+				start_time: creationDate,
+				end_time: completionDate
+			} = simulation;
 
 			if (cache && statusDataCache.current.has(taskId))
 				return Promise.resolve(statusDataCache.current.get(taskId));
@@ -282,7 +288,8 @@ const ShSimulation = (props: ShSimulationProps) => {
 						uuid: taskId,
 						status: resStatus.state,
 						name,
-						creationDate
+						creationDate,
+						completionDate
 					};
 
 					switch (resStatus.state) {
@@ -344,11 +351,11 @@ const ShSimulation = (props: ShSimulationProps) => {
 			return authKy
 				.get(`${BACKEND_URL}/user/simulations`, {
 					signal: signal,
-					json: {
+					searchParams: {
 						page_size: pageSize,
 						page_idx: pageNumber - 1,
-						order_by: 'start_time',
-						order_type: 'descend'
+						order_by: orderBy,
+						order_type: orderType
 					}
 				})
 				.json()

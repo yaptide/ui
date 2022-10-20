@@ -55,7 +55,9 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
 	const [page, setPage] = useState(1);
 	const [pageCount, setPageCount] = useState(1);
-	const pageSize = 6;
+	const [orderType, setOrderType] = useState<OrderType>(OrderType.ASCEND);
+	const [orderBy, setOrderBy] = useState<OrderBy>(OrderBy.START_TIME);
+	const [pageSize, setPageSize] = useState(4);
 
 	const [inputFiles, setInputFiles] = useState<InputFiles>();
 
@@ -105,27 +107,49 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	const updateSimulationInfo = useCallback(
 		() =>
-			getSimulations(page, pageSize, OrderType.DESCEND, OrderBy.START_TIME)
+			getSimulations(page, pageSize, orderType, orderBy)
 				.then(({ simulations, page_count, simulations_count }) => {
 					setSimulationInfo([...simulations]);
 					setPageCount(page_count);
 				})
 				.catch(),
-		[controller.signal, getSimulations]
+		[controller.signal, getSimulations, orderType, orderBy, page, pageSize]
 	);
 
-	const handlePageChange = useCallback(
-		(event: React.ChangeEvent<unknown>, value: number) => {
-			setPage(value);
-		},
-		[setPage]
+	const refreshPage = useCallback(
+		(
+			page: number,
+			pageSize: number,
+			orderType: OrderType,
+			orderBy: OrderBy,
+			signal?: AbortSignal | undefined
+		) =>
+			getSimulations(page, pageSize, orderType, orderBy, signal)
+				.then(({ simulations, page_count, simulations_count }) => {
+					setSimulationInfo([...simulations]);
+					setPageCount(page_count);
+				})
+				.catch(),
+		[getSimulations]
 	);
+
+	const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+		setPage(page);
+		refreshPage(page, pageSize, orderType, orderBy, controller.signal);
+	};
+
+	const handleOrderChange = (orderType: OrderType, orderBy: OrderBy, pageSize: number) => {
+		setOrderType(orderType);
+		setOrderBy(orderBy);
+		setPageSize(pageSize);
+		refreshPage(page, pageSize, orderType, orderBy, controller.signal);
+	};
 
 	useEffect(() => {
 		sendHelloWorld(controller.signal)
 			.then(() => {
 				setBackendAlive(true);
-				// updateSimulationInfo();
+				updateSimulationInfo();
 				setSimulationIDInterval(10000);
 			})
 			.catch(() => {
@@ -133,7 +157,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			});
 	}, [controller.signal, getSimulations, isBackendAlive, sendHelloWorld, updateSimulationInfo]);
 
-	// useInterval(updateSimulationInfo, simulationIDInterval, true);
+	useInterval(updateSimulationInfo, simulationIDInterval, true);
 
 	const updateSimulationData = useCallback(
 		() =>
@@ -187,7 +211,9 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		<Box
 			sx={{
 				margin: '0 auto',
-				width: 'min(960px, 100%)',
+				width: 'min(1200px, 100%)',
+				height: '100%',
+				boxSizing: 'border-box',
 				padding: '2rem 5rem',
 				display: 'flex',
 				flexDirection: 'column',
@@ -213,7 +239,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				</Fade>
 			</Modal>
 
-			<Card sx={{ minWidth: 275 }}>
+			<Card sx={{ minWidth: 275, flexShrink: 0 }}>
 				<CardContent
 					sx={{
 						display: 'flex',
@@ -270,9 +296,13 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					setShowInputFilesEditor(true);
 					setInputFiles(inputFiles);
 				}}
-				pageCount={0}
-				page={0}
+				pageCount={pageCount}
+				page={page}
+				pageSize={pageSize}
 				handlePageChange={handlePageChange}
+				orderType={orderType}
+				orderBy={orderBy}
+				handleOrderChange={handleOrderChange}
 			/>
 		</Box>
 	);
