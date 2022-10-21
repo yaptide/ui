@@ -5,6 +5,7 @@ import CodeEditor from '@uiw/react-textarea-code-editor';
 import { saveString } from '../../../util/File';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import useTheme from '@mui/system/useTheme';
+import { DEMO_MODE } from '../../../util/Config';
 
 interface InputFilesEditorProps {
 	inputFiles?: InputFiles;
@@ -45,6 +46,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 					<Button
 						color='success'
 						variant='contained'
+						disabled={DEMO_MODE}
 						onClick={() => props.runSimulation?.call(null, inputFiles)}>
 						Run input files
 					</Button>
@@ -57,7 +59,10 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 					Download all
 				</Button>
 				{props.saveAndExit && (
-					<Button color='info' onClick={() => props.saveAndExit?.call(null, inputFiles)}>
+					<Button
+						disabled={DEMO_MODE}
+						color='info'
+						onClick={() => props.saveAndExit?.call(null, inputFiles)}>
 						Save and exit
 					</Button>
 				)}
