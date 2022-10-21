@@ -4,7 +4,6 @@ import TransformIcon from '@mui/icons-material/Transform';
 import { Box, Divider, IconButton, styled, Tooltip } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Editor } from '../../../js/Editor';
-import { SelectSpeedDial, SelectTool } from './SelectSpeedDial';
 
 enum Tool {
 	SELECT,
@@ -26,7 +25,6 @@ type EditorToolbarProps = {
 
 export function EditorToolbar({ editor }: EditorToolbarProps) {
 	const [tool, setTool] = useState<Tool>(Tool.MOVE);
-	const [selectTool, setSelectTool] = useState<SelectTool | undefined>();
 
 	const toolButtons = useMemo(
 		() => [
@@ -72,12 +70,6 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 	});
 	return (
 		<>
-			<SelectSpeedDial
-				selected={tool === Tool.SELECT}
-				onClick={() => {}}
-				tool={selectTool}
-				setTool={setSelectTool}
-			/>
 			<Divider
 				orientation='vertical'
 				flexItem

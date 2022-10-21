@@ -96,7 +96,15 @@ interface ResShStatusSuccess extends IResponseMsg {
 	result: {
 		estimators: Estimator[];
 	};
-	input?: EditorJson | { input_files: InputFiles };
+	metadata: {
+		source: string;
+		simulator: string;
+		type: 'results';
+	};
+	input_json?: EditorJson;
+	input_files?: InputFiles;
+	end_time: Date;
+	cores: number;
 }
 
 type ResShStatus =
@@ -105,6 +113,18 @@ type ResShStatus =
 	| ResShStatusFailure
 	| ResShStatusSuccess;
 
+export interface FinalSimulationStatusData extends SimulationStatusData {
+	cores: number;
+	inputFiles: InputFiles;
+	result: {
+		estimators: Estimator[];
+	};
+	metadata: {
+		source: string;
+		simulator: string;
+		type: 'results';
+	};
+}
 export interface SimulationStatusData {
 	uuid: string;
 	status: StatusState;
@@ -115,6 +135,12 @@ export interface SimulationStatusData {
 	message?: string;
 	inputFiles?: InputFiles;
 	logFile?: string;
+	cores?: number;
+	metadata?: {
+		source: string;
+		simulator: string;
+		type: 'results';
+	};
 	result?: {
 		estimators: Estimator[];
 	};
@@ -133,7 +159,7 @@ const recreateOrderInEstimators = (
 	);
 };
 
-const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]): void => {
+const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]): Estimator[] => {
 	estimators.forEach(estimator => {
 		const { pages, scoringOutputJsonRef } = estimator;
 		pages.forEach((page, idx) => {
@@ -143,20 +169,19 @@ const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]
 			page.name = quantity?.name;
 		});
 	});
+	return estimators;
 };
 
-export const recreateRefsInResults = (results: SimulationStatusData, editor?: EditorJson) => {
-	const targetEditor = editor ?? results.editor;
+export const recreateRefsInResults = (results: SimulationStatusData) => {
+	const { result, editor } = results;
 
-	if (!targetEditor) throw new Error('No editor data');
-	if (!results.result) throw new Error('No result data');
+	if (!editor) throw new Error('No editor data');
+	if (!result) throw new Error('No result data');
 
-	const { scoringManager, detectManager }: EditorJson = targetEditor;
-	results.result.estimators = recreateOrderInEstimators(
-		results.result.estimators,
-		scoringManager
-	);
-	recreateRefToFilters(results.result.estimators, detectManager?.filters);
+	const { scoringManager, detectManager }: EditorJson = editor;
+
+	result.estimators = recreateOrderInEstimators(result.estimators, scoringManager);
+	result.estimators = recreateRefToFilters(result.estimators, detectManager?.filters);
 };
 
 const [useShSimulation, ShSimulationContextProvider] = createGenericContext<IShSimulation>();
@@ -261,14 +286,16 @@ const ShSimulation = (props: ShSimulationProps) => {
 
 						case StatusState.SUCCESS:
 							data.result = resStatus.result;
-
+							data.inputFiles = resStatus.input_files;
+							data.cores = resStatus.cores;
+							data.metadata = resStatus.metadata;
 							// remove trailing underscores from estimators names (#530)
 							for (const estimator of data.result.estimators) {
 								estimator.name = estimator.name.replace(/_$/, '');
 							}
 
-							if (resStatus.input && 'metadata' in resStatus.input) {
-								data.editor = resStatus.input;
+							if (resStatus.input_json) {
+								data.editor = resStatus.input_json;
 								recreateRefsInResults(data);
 							}
 							break;

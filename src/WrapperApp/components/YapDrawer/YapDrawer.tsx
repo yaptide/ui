@@ -192,7 +192,7 @@ function YapDrawer({ drawerWidth = 200, handleChange, tabsValue, open, setOpen }
 								<LoginIcon />
 							</ListItemIcon>
 							<ListItemText
-								primary={'Login'}
+								primary={isAuthorized ? 'Logout' : 'Login'}
 								sx={{
 									opacity: open ? 1 : 0
 								}}

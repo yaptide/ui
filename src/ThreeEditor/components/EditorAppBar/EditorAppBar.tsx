@@ -59,9 +59,6 @@ function EditorAppBar({ editor }: AppBarProps) {
 
 	const fetchJsonFromCorsUrl = useCallback(
 		(url: string) => {
-			console.log('fetchJsonFromCorsUrl: ', url);
-			const headers = new Headers();
-			headers.append('Content-Type', 'application/json');
 			fetch(url)
 				.then(response => {
 					console.log(response);

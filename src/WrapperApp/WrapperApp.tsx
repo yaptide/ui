@@ -3,8 +3,9 @@ import Box from '@mui/material/Box';
 import React, { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { JsRootService } from '../JsRoot/JsRootService';
 import { useAuth } from '../services/AuthService';
+import { useLoader } from '../services/DataLoaderService';
+import { FinalSimulationStatusData } from '../services/ShSimulatorService';
 import { useStore } from '../services/StoreService';
-import { EditorExample } from '../ThreeEditor/examples/examples';
 import { Editor } from '../ThreeEditor/js/Editor';
 import ThreeEditor from '../ThreeEditor/ThreeEditor';
 import { DEMO_MODE } from '../util/Config';
@@ -19,9 +20,19 @@ import YapDrawer from './components/YapDrawer/YapDrawer';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
-	const { isAuthorized } = useAuth();
+	const { editorProvider, canLoadEditorData, setLoadedEditor } = useLoader();
+	const { isAuthorized, logout } = useAuth();
 	const [open, setOpen] = React.useState(false);
 	const [tabsValue, setTabsValue] = useState('editor');
+
+	useEffect(() => {
+		console.log('WrapperApp: useEffect', editorProvider, editorRef, canLoadEditorData);
+		if (editorRef.current && canLoadEditorData) {
+			setLoadedEditor();
+			setTabsValue('editor');
+			for (const data of editorProvider) editorRef.current.loader.loadJSON(data);
+		}
+	}, [canLoadEditorData, editorRef.current, editorProvider]);
 
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
 		setTabsValue(newValue);
@@ -36,10 +47,14 @@ function WrapperApp() {
 		if (resultsSimulationData) setTabsValue('results');
 	}, [resultsSimulationData]);
 
+	useEffect(() => {
+		if (isAuthorized && tabsValue === 'login') logout();
+	}, [tabsValue]);
+
 	const onLoadExample = useCallback(
-		(example: EditorExample) => {
+		(example: FinalSimulationStatusData) => {
 			if (!DEMO_MODE) return;
-			setResultsSimulationData(example.result);
+			setResultsSimulationData(example);
 			setTabsValue('editor');
 		},
 		[setResultsSimulationData]

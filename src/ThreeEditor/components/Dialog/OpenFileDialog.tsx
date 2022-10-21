@@ -14,10 +14,10 @@ import {
 	TextField
 } from '@mui/material';
 import EXAMPLES from '../../examples/examples';
-import { heIL } from '@mui/x-data-grid';
 import React, { useState } from 'react';
 import { DragDropFile } from '../../../util/DragDropFile';
 import { CustomDialogTitle } from './CustomDialog';
+import { useLoader } from '../../../services/DataLoaderService';
 
 export type OpenFileProps = {
 	open: boolean;
@@ -42,6 +42,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 		setValue(newValue);
 	};
 
+	const { loadFromJson, loadFromFiles, loadFromUrl, loadFromJsonString } = useLoader();
 	const [plainText, setPlainText] = React.useState('');
 	const handlePlainTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setPlainText(event.target.value);
@@ -91,14 +92,14 @@ export function OpenFileDialog(props: OpenFileProps) {
 									<ListItem
 										disablePadding
 										key={
-											example?.editor.project?.title ??
+											example?.editor?.project?.title ??
 											'Example_' + idx.toString()
 										}
 										value={idx}
 										onClick={() => setExampleIndex(idx)}
 										selected={exampleIndex === idx}>
 										<ListItemButton>
-											{example?.editor.project?.title ??
+											{example?.editor?.project?.title ??
 												'Example_' + idx.toString()}
 										</ListItemButton>
 									</ListItem>
@@ -111,9 +112,10 @@ export function OpenFileDialog(props: OpenFileProps) {
 								disabled={exampleIndex === null}
 								onClick={() => {
 									onClose();
-									onPlainTextSubmitted(
-										JSON.stringify(EXAMPLES[exampleIndex ?? 0].editor)
-									);
+									loadFromJson(EXAMPLES[exampleIndex ?? 0]);
+									// onPlainTextSubmitted(
+									// 	JSON.stringify(EXAMPLES[exampleIndex ?? 0].editor)
+									// );
 								}}>
 								Load
 							</Button>
@@ -140,7 +142,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 								disabled={currentFileList === null}
 								onClick={() => {
 									onClose();
-									if (currentFileList) onFileSelected(currentFileList);
+									loadFromFiles(currentFileList);
 								}}>
 								Load
 							</Button>
@@ -170,7 +172,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 								disabled={url === ''}
 								onClick={() => {
 									onClose();
-									onUrlSubmitted(url);
+									loadFromUrl(url);
 								}}>
 								Load
 							</Button>
@@ -202,7 +204,8 @@ export function OpenFileDialog(props: OpenFileProps) {
 								disabled={plainText === ''}
 								onClick={() => {
 									onClose();
-									onPlainTextSubmitted(plainText);
+									loadFromJsonString(plainText);
+									// onPlainTextSubmitted(plainText);
 								}}>
 								Load
 							</Button>
