@@ -34,6 +34,8 @@ import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import SimulationStatus from './SimulationStatus';
 import CableIcon from '@mui/icons-material/Cable';
 import { SimulationPanelGrid } from './SimulationPanelGrid';
+import { DEMO_MODE } from '../../../util/Config';
+import EXAMPLES from '../../../ThreeEditor/examples/examples';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
@@ -54,7 +56,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const [isBackendAlive, setBackendAlive] = useState(false);
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
 	const [page, setPage] = useState(1);
-	const [pageCount, setPageCount] = useState(1);
+	const [pageCount, setPageCount] = useState(0);
 	const [orderType, setOrderType] = useState<OrderType>(OrderType.ASCEND);
 	const [orderBy, setOrderBy] = useState<OrderBy>(OrderBy.START_TIME);
 	const [pageSize, setPageSize] = useState(4);
@@ -70,44 +72,9 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	const { resultsProvider, canLoadResultsData, setLoadedResults } = useLoader();
 
-	useEffect(() => {
-		if (canLoadResultsData) {
-			setLoadedResults();
-			const newLocalData = resultsProvider;
-			newLocalData.forEach(data => {
-				data.status = StatusState.LOCAL;
-			});
-			setLocalSimulationData(newLocalData);
-			setLocalResultsSimulationData(newLocalData);
-		} else {
-			setLocalSimulationData(localResultsSimulationData ?? []);
-		}
-	}, [
-		canLoadResultsData,
-		resultsProvider,
-		setLoadedResults,
-		localResultsSimulationData,
-		setLocalResultsSimulationData
-	]);
-
 	const [simulationIDInterval, setSimulationIDInterval] = useState<number | null>(null);
 
 	const [controller] = useState(new AbortController());
-
-	useEffect(() => {
-		if (editorRef.current) {
-			const hash = editorRef.current.toJSON().hash;
-			const anyResults = simulationsStatusData.find(s => s.editor?.hash === hash);
-			if (anyResults) editorRef.current.results = anyResults;
-			else editorRef.current.results = null;
-		}
-	}, [simulationsStatusData]);
-
-	useEffect(() => {
-		return () => {
-			controller.abort();
-		};
-	}, [controller]);
 
 	const updateSimulationInfo = useCallback(
 		() =>
@@ -119,7 +86,6 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				.catch(),
 		[controller.signal, getSimulations, orderType, orderBy, page, pageSize]
 	);
-
 	const refreshPage = useCallback(
 		(
 			page: number,
@@ -136,7 +102,6 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				.catch(),
 		[getSimulations]
 	);
-
 	const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
 		setPage(page);
 		refreshPage(page, pageSize, orderType, orderBy, controller.signal);
@@ -149,29 +114,9 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		refreshPage(page, pageSize, orderType, orderBy, controller.signal);
 	};
 
-	useEffect(() => {
-		sendHelloWorld(controller.signal)
-			.then(() => {
-				setBackendAlive(true);
-				updateSimulationInfo();
-				setSimulationIDInterval(10000);
-			})
-			.catch(() => {
-				setBackendAlive(false);
-			});
-	}, [
-		controller.signal,
-		sendHelloWorld,
-		updateSimulationInfo,
-		setSimulationIDInterval,
-		isBackendAlive,
-		setBackendAlive
-	]);
-
-	useInterval(updateSimulationInfo, simulationIDInterval, true);
-
 	const updateSimulationData = useCallback(
 		() =>
+			!DEMO_MODE &&
 			getSimulationsStatus(simulationInfo, controller.signal, true, (id, data) => {
 				if (id === trackedId && data.status === StatusState.SUCCESS)
 					setResultsSimulationData(data);
@@ -185,16 +130,6 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			simulationInfo,
 			trackedId
 		]
-	);
-
-	useEffect(() => {
-		updateSimulationData();
-	}, [updateSimulationData]);
-
-	useInterval(
-		updateSimulationData,
-		simulationIDInterval !== null && simulationInfo.length > 0 ? 1000 : null,
-		true
 	);
 
 	const runSimulation = (inputFiles?: InputFiles) => {
@@ -217,6 +152,73 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const handleEditorModal = () => {
 		setShowInputFilesEditor(false);
 	};
+
+	useEffect(() => {
+		if (!DEMO_MODE && editorRef.current) {
+			const hash = editorRef.current.toJSON().hash;
+			const anyResults = simulationsStatusData.find(s => s.editor?.hash === hash);
+			if (anyResults) editorRef.current.results = anyResults;
+			else editorRef.current.results = null;
+		}
+	}, [simulationsStatusData]);
+
+	useEffect(() => {
+		return () => {
+			controller.abort();
+		};
+	}, [controller]);
+
+	useEffect(() => {
+		if (!DEMO_MODE)
+			sendHelloWorld(controller.signal)
+				.then(() => {
+					setBackendAlive(true);
+					updateSimulationInfo();
+					setSimulationIDInterval(10000);
+				})
+				.catch(() => {
+					setBackendAlive(false);
+				});
+	}, [
+		controller.signal,
+		sendHelloWorld,
+		updateSimulationInfo,
+		setSimulationIDInterval,
+		isBackendAlive,
+		setBackendAlive
+	]);
+
+	useInterval(updateSimulationInfo, simulationIDInterval, true);
+
+	useEffect(() => {
+		updateSimulationData();
+	}, [updateSimulationData]);
+
+	useInterval(
+		updateSimulationData,
+		simulationIDInterval !== null && simulationInfo.length > 0 ? 1000 : null,
+		true
+	);
+
+	useEffect(() => {
+		if (canLoadResultsData) {
+			setLoadedResults();
+			const newLocalData = resultsProvider;
+			newLocalData.forEach(data => {
+				data.status = StatusState.LOCAL;
+			});
+			setLocalSimulationData(newLocalData);
+			setLocalResultsSimulationData(newLocalData);
+		} else {
+			setLocalSimulationData(localResultsSimulationData ?? []);
+		}
+	}, [
+		canLoadResultsData,
+		resultsProvider,
+		setLoadedResults,
+		localResultsSimulationData,
+		setLocalResultsSimulationData
+	]);
 
 	return (
 		<Box
@@ -262,7 +264,9 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 						variant='h5'
 						component='p'
 						sx={{ mb: 0, lineHeight: '2rem' }}>
-						Server status: {isBackendAlive ? 'Online' : 'Unreachable'}
+						{!DEMO_MODE
+							? `Server status: ${isBackendAlive ? 'Online' : 'Unreachable'}`
+							: 'Demo results'}
 					</Typography>
 					<CableIcon
 						color={isBackendAlive ? 'success' : 'disabled'}
@@ -297,7 +301,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				)}
 			</Card>
 			<SimulationPanelGrid
-				simulationsStatusData={simulationsStatusData}
+				simulationsStatusData={!DEMO_MODE ? simulationsStatusData : EXAMPLES}
 				localSimulationData={localSimulationData}
 				handleLoadResults={(id, simulation) => {
 					if (id === null) props.goToResults?.call(null);

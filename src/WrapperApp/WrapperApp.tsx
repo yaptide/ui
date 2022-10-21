@@ -14,7 +14,6 @@ import InputEditorPanel from './components/InputEditor/InputEditorPanel';
 import LoginPanel from './components/LoginPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
-import SimulationPanelDemo from './components/Simulation/SimulationPanelDemo';
 import { TabPanel } from './components/TabPanel';
 import YapDrawer from './components/YapDrawer/YapDrawer';
 
@@ -100,11 +99,7 @@ function WrapperApp() {
 			</TabPanel>
 
 			<TabPanel value={tabsValue} index={'simulations'}>
-				{!DEMO_MODE ? (
-					<SimulationPanel goToResults={() => setTabsValue('results')} />
-				) : (
-					<SimulationPanelDemo goToResults={() => setTabsValue('results')} />
-				)}
+				<SimulationPanel goToResults={() => setTabsValue('results')} />
 			</TabPanel>
 
 			<TabPanel value={tabsValue} index={'results'} persistent>

@@ -187,7 +187,7 @@ export default function SimulationStatus({
 			</CardContent>
 			<CardActions>
 				<ButtonGroup fullWidth aria-label='full width outlined button group'>
-					{simulation.status === StatusState.SUCCESS && (
+					{[StatusState.SUCCESS, StatusState.LOCAL].includes(simulation.status) && (
 						<Button
 							sx={{ fontSize: '.8em' }}
 							size='small'
