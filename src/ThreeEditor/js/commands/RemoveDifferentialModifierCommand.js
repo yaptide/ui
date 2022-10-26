@@ -20,11 +20,13 @@ export class RemoveDifferentialModifierCommand {
 	execute() {
 		this.object.removeModifier(this.modifier);
 		this.editor.signals.scoringQuantityChanged.dispatch(this.object);
+		this.editor.signals.objectChanged.dispatch(this.object, 'modifiers');
 	}
 
 	undo() {
 		this.object.addModifier(this.modifier);
 		this.editor.signals.scoringQuantityChanged.dispatch(this.object);
+		this.editor.signals.objectChanged.dispatch(this.object, 'modifiers');
 	}
 
 	toJSON() {

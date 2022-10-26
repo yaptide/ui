@@ -18,7 +18,7 @@ import { FONT_SIZE } from './Uis';
  * @return {[UIOutliner]}
  */
 export function createModifiersOutliner(editor, params) {
-	const { update = () => {} } = params;
+	const { update = () => { } } = params;
 	const outliner = new UIOutliner(editor);
 	outliner.setId('modifiers-outliner');
 	outliner.setHeight('120px');
@@ -49,7 +49,7 @@ export function createModifiersOutliner(editor, params) {
  * @return {[UIOutliner]}
  */
 export function createRulesOutliner(editor, params) {
-	const { update = () => {} } = params;
+	const { update = () => { } } = params;
 	const outliner = new UIOutliner(editor);
 	outliner.setId('rules-outliner');
 	outliner.setHeight('120px');

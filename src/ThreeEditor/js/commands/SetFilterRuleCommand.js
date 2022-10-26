@@ -26,12 +26,14 @@ export class SetFilterRuleCommand extends Command {
 		if (this.object) this.filter.updateOrCreateRule(this.object);
 		else this.filter.removeRule(this.oldRule.uuid);
 		this.editor.signals.detectFilterChanged.dispatch(this.filter);
+		this.editor.signals.objectChanged.dispatch(this.filter, 'rules');
 	}
 
 	undo() {
 		if (this.oldRule) this.filter.updateOrCreateRule(this.oldRule);
 		else this.filter.removeRule(this.object.uuid);
 		this.editor.signals.detectFilterChanged.dispatch(this.filter);
+		this.editor.signals.objectChanged.dispatch(this.filter, 'rules');
 	}
 
 	update(command) {

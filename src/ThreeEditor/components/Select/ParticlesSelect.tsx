@@ -2,7 +2,7 @@ import { createTheme, ThemeProvider, useMediaQuery } from '@mui/material';
 import React from 'react';
 import { AutoCompleteSelect } from './AutoCompleteSelect';
 
-interface IParticleType {
+export interface IParticleType {
 	id: number;
 	name: string;
 }

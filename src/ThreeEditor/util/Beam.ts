@@ -101,7 +101,7 @@ export class Beam extends SimulationObject3D {
 		set: (target: Beam, prop: keyof Beam, value: unknown) => {
 			const result = Reflect.set(target, prop, value);
 
-			const informChange: (keyof Beam)[] = ['direction', 'energy', 'divergence'];
+			const informChange: (keyof Beam)[] = ['direction', 'energy', 'energySpread', 'divergence', 'particleData', 'numberOfParticles'];
 			if (informChange.includes(prop)) {
 				this.debouncedDispatchChanged();
 			}

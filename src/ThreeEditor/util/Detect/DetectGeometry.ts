@@ -48,7 +48,7 @@ export class DetectGeometry extends SimulationPoints {
 	set detectType(value: DETECT.DETECT_TYPE) {
 		this._detectType = value;
 		this.tryUpdateGeometry();
-		this.signals.objectSelected.dispatch(this.proxy);
+		this.signals.objectChanged.dispatch(this.proxy, 'detectType' as any);
 	}
 
 	get geometryData(): DETECT.AnyData {

@@ -1,7 +1,7 @@
 import { Euler, MathUtils, Vector3 } from 'three';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { Editor } from '../../../../js/Editor';
-import { Vector3PropertyField } from '../PropertyField';
+import { Vector3PropertyField } from '../fields/PropertyField';
 import { ISimulationObject } from '../../../../util/SimulationBase/SimulationObject';
 import { Beam, isBeam } from '../../../../util/Beam';
 import { isWorldZone, WorldZone } from '../../../../util/WorldZone/WorldZone';

@@ -18,9 +18,11 @@ export function ZoneOperations(props: { editor: Editor; object: Object3D }) {
 
 	return (
 		<PropertiesCategory category='Zone Operations' visible={visibleFlag}>
-			<Grid item xs={12}>
-				<ZoneManagerPanel editor={editor} zone={watchedObject.object} />
-			</Grid>
+			{watchedObject && (
+				<Grid item xs={12}>
+					<ZoneManagerPanel editor={editor} zone={watchedObject.object} />
+				</Grid>
+			)}
 		</PropertiesCategory>
 	);
 }

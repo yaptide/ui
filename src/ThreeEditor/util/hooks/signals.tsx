@@ -145,16 +145,34 @@ type ProxyState<T> = T & {
  *
  * This hook is used to watch the editor state and return the state.
  * It is used to avoid unnecessary re-rendering of components.
- * It gathers all accessed properties and watch them.
+ * It gathers accessed properties and watch them.
+ * Only one deep level is supported.
+ * ```ts
+ * object.prop1 // prop1 will be watched
+ * object.prop2.prop3 //prop3 won't be watched
+ * ```
  * @param editor The editor instance
  * @param watchedObject The object to watch
  * @returns The state of the watched object wrapped in Proxy
  */
-export function useSmartWatchEditorState<T extends Object3D>(
+function useSmartWatchEditorState<T>(
+	editor: Editor,
+	watchedObject: NonNullable<T>,
+	watchAnyChange?: boolean,
+	debug?: boolean
+): { state: ProxyState<T> };
+function useSmartWatchEditorState<T>(
+	editor: Editor,
+	watchedObject: NonNullable<T> | null,
+	watchAnyChange?: boolean,
+	debug?: boolean
+): { state: ProxyState<T> | null };
+function useSmartWatchEditorState<T>(
 	editor: Editor,
 	watchedObject: T | null,
-	debug: boolean = false
-): { state: ProxyState<T> } {
+	watchAnyChange = false,
+	debug = false
+): { state: unknown } {
 	const watchedPropertyArrRef = useRef<Set<string>>(new Set());
 
 	const createProxy = useCallback(
@@ -173,17 +191,18 @@ export function useSmartWatchEditorState<T extends Object3D>(
 
 	const proxyObjectRef = useRef(createProxy());
 
-	const [state, setState] = useState({ state: proxyObjectRef.current });
+	const [state, setState] = useState({ state: watchedObject ? proxyObjectRef.current : null });
 
 	useEffect(() => {
 		watchedPropertyArrRef.current = new Set();
 		proxyObjectRef.current = createProxy();
-		setState({ state: proxyObjectRef.current });
+		setState({ state: watchedObject ? proxyObjectRef.current : null });
 
 		const callback = (object: any, property?: string) => {
 			if (object === watchedObject) {
 				if (debug) console.log(watchedPropertyArrRef.current, property);
-				if (property && watchedPropertyArrRef.current.has(property)) {
+				if (watchAnyChange) setState({ state: proxyObjectRef.current });
+				else if (property && watchedPropertyArrRef.current.has(property)) {
 					console.log('update', property, object[property]);
 					setState({ state: proxyObjectRef.current });
 				}
@@ -194,9 +213,9 @@ export function useSmartWatchEditorState<T extends Object3D>(
 		return () => {
 			editor.signals.objectChanged.remove(callback);
 		};
-	}, [createProxy, debug, editor.signals.objectChanged, watchedObject]);
+	}, [createProxy, debug, editor.signals.objectChanged, watchAnyChange, watchedObject]);
 
 	return state as { state: ProxyState<T> };
 }
 
-// export { useWatchEditorState };
+export { useSmartWatchEditorState };

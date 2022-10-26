@@ -3,10 +3,10 @@ import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeome
 import { Editor } from '../../../../js/Editor';
 import { DetectGeometry, isDetectGeometry } from '../../../../util/Detect/DetectGeometry';
 import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
-import { NumberPropertyField } from '../PropertyField';
+import { NumberPropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
-export function ObjectGrid(props: { editor: Editor; object: DetectGeometry }) {
+export function DetectorGrid(props: { editor: Editor; object: DetectGeometry }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);

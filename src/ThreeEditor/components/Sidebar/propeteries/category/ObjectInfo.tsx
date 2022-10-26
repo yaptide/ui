@@ -1,7 +1,7 @@
 import { Object3D } from 'three';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { Editor } from '../../../../js/Editor';
-import { LabelPropertyField, TextPropertyField } from '../PropertyField';
+import { LabelPropertyField, TextPropertyField } from '../fields/PropertyField';
 import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
 

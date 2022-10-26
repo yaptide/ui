@@ -31,13 +31,15 @@ class SetMaterialColorCommand extends Command {
 	execute() {
 		this.material[this.attributeName].setHex(this.newValue);
 
-		this.editor.signals.materialChanged.dispatch(this.material);
+		this.editor.signals.materialChanged.dispatch(this.material, this.attributeName);
+		this.editor.signals.materialChanged.dispatch(this.material, this.attributeName);
 	}
 
 	undo() {
 		this.material[this.attributeName].setHex(this.oldValue);
 
-		this.editor.signals.materialChanged.dispatch(this.material);
+		this.editor.signals.materialChanged.dispatch(this.material, this.attributeName);
+		this.editor.signals.materialChanged.dispatch(this.material, this.attributeName);
 	}
 
 	update(cmd) {

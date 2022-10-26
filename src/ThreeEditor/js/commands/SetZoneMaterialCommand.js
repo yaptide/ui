@@ -23,14 +23,15 @@ class SetZoneMaterialCommand extends Command {
 		const simulationMaterial = this.editor.materialManager.materials[this.newIcru];
 		this.object.simulationMaterial = simulationMaterial;
 		this.editor.signals.materialChanged.dispatch(simulationMaterial);
-		this.editor.signals.objectChanged.dispatch(this.object);
+		this.editor.signals.objectChanged.dispatch(this.object, 'simulationMaterial');
 	}
 
 	undo() {
 		const simulationMaterial = this.editor.materialManager.materials[this.oldIcru];
 		this.object.simulationMaterial = simulationMaterial;
 		this.editor.signals.materialChanged.dispatch(simulationMaterial);
-		this.editor.signals.objectChanged.dispatch(this.object);
+		this.editor.signals.objectChanged.dispatch(this.object, 'simulationMaterial');
+
 	}
 
 	toJSON() {

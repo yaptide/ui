@@ -6,7 +6,7 @@ import {
 	LabelPropertyField,
 	NumberPropertyField,
 	SelectPropertyField
-} from '../PropertyField';
+} from '../fields/PropertyField';
 import { useCallback, useEffect, useState } from 'react';
 import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
@@ -25,6 +25,10 @@ import { CylData, DETECT_OPTIONS } from '../../../../util/Detect/DetectTypes';
 import { SetDetectTypeCommand } from '../../../../js/commands/SetDetectTypeCommand';
 import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
 import { SetGeometryCommand } from '../../../../js/commands/SetGeometryCommand';
+import {
+	ObjectSelectOptionType,
+	ObjectSelectPropertyField
+} from '../fields/ObjectSelectPropertyField';
 
 const ObjectTypeField = (props: {
 	editor: Editor;
@@ -227,7 +231,6 @@ const CylinderDimensionsField = (props: {
 		return false;
 	}, [watchedObject]);
 
-
 	const getCylinder = useCallback(() => {
 		if (isWorldZone(watchedObject)) {
 			const { size } = watchedObject;
@@ -413,21 +416,8 @@ const ZoneDimensionsField = (props: { editor: Editor; object: DetectGeometry | O
 		return false;
 	}, [watchedObject]);
 
-	type ZoneOptionType = {
-		uuid: string;
-		label: string;
-	};
-	const optionMap = new Map<string, ZoneOptionType>();
-
-	const options = Object.entries(editor.zoneManager.getZoneOptions()).map(([key, value]) => {
-		let option = { uuid: key, label: value };
-		optionMap.set(key, option);
-		return option;
-	});
-
 	const handleChanged = useCallback(
-		(v: ZoneOptionType) => {
-			console.log('handleChanged', v);
+		(v: ObjectSelectOptionType) => {
 			if (isDetectGeometry(watchedObject)) {
 				editor.execute(
 					new SetDetectGeometryCommand(editor, watchedObject.object, { zoneUuid: v.uuid })
@@ -441,13 +431,11 @@ const ZoneDimensionsField = (props: { editor: Editor; object: DetectGeometry | O
 
 	return (
 		<>
-			<SelectPropertyField
+			<ObjectSelectPropertyField
 				label='Zone ID'
-				value={optionMap.get(watchedObject.geometryData.zoneUuid) ?? null}
+				value={watchedObject.geometryData.zoneUuid}
 				onChange={handleChanged}
-				options={options}
-				getOptionLabel={option => option.label || ''}
-				isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
+				options={editor.zoneManager.getZoneOptions()}
 			/>
 		</>
 	);
