@@ -9,6 +9,16 @@ import { ScoringManagerJSON } from '../ThreeEditor/util/Scoring/ScoringManager';
 import { orderAccordingToList } from '../util/Sort';
 import { FilterJSON } from '../ThreeEditor/util/Detect/DetectFilter';
 
+export enum OrderType {
+	ASCEND = 'ascend',
+	DESCEND = 'descend'
+}
+
+export enum OrderBy {
+	START_TIME = 'start_time',
+	END_TIME = 'end_time'
+}
+
 export interface ShSimulationProps {
 	children: ReactNode;
 }
@@ -26,10 +36,16 @@ export interface IShSimulation {
 		cache?: boolean,
 		beforeCacheWrite?: (id: string, data: SimulationStatusData) => void
 	) => Promise<SimulationStatusData | undefined>;
-	getSimulations: (signal?: AbortSignal) => Promise<SimulationInfo[]>;
+	getSimulations: (
+		pageNumber: number,
+		pageSize: number,
+		orderType: OrderType,
+		orderBy: OrderBy,
+		signal?: AbortSignal
+	) => Promise<UserSimulationPage>;
 	getSimulationsStatus: (
 		simulationInfo: SimulationInfo[],
-		abortSignal?: AbortSignal,
+		signal?: AbortSignal,
 		cache?: boolean,
 		beforeCacheWrite?: (id: string, data: SimulationStatusData) => void
 	) => Promise<SimulationStatusData[]>;
@@ -40,20 +56,27 @@ interface ResShRun extends IResponseMsg {
 }
 
 export interface SimulationInfo {
-	creation_date: Date;
+	start_time: Date;
+	end_time: Date;
+	cores: number;
 	name: string;
 	task_id: string;
 }
 
-interface ResUserSimulations extends IResponseMsg {
+interface ResUserSimulations extends IResponseMsg, UserSimulationPage {}
+
+interface UserSimulationPage {
 	simulations: SimulationInfo[];
+	page_count: number;
+	simulations_count: number;
 }
 
 export enum StatusState {
 	PENDING = 'PENDING',
 	PROGRESS = 'PROGRESS',
 	FAILURE = 'FAILURE',
-	SUCCESS = 'SUCCESS'
+	SUCCESS = 'SUCCESS',
+	LOCAL = 'LOCAL'
 }
 interface ResShStatusPending extends IResponseMsg {
 	state: StatusState.PENDING;
@@ -94,7 +117,15 @@ interface ResShStatusSuccess extends IResponseMsg {
 	result: {
 		estimators: Estimator[];
 	};
-	input?: EditorJson | { input_files: InputFiles };
+	metadata: {
+		source: string;
+		simulator: string;
+		type: 'results';
+	};
+	input_json?: EditorJson;
+	input_files?: InputFiles;
+	end_time: Date;
+	cores: number;
 }
 
 type ResShStatus =
@@ -103,16 +134,35 @@ type ResShStatus =
 	| ResShStatusFailure
 	| ResShStatusSuccess;
 
+export interface FinalSimulationStatusData extends SimulationStatusData {
+	cores: number;
+	inputFiles: InputFiles;
+	result: {
+		estimators: Estimator[];
+	};
+	metadata: {
+		source: string;
+		simulator: string;
+		type: 'results';
+	};
+}
 export interface SimulationStatusData {
 	uuid: string;
 	status: StatusState;
 	creationDate: Date;
+	completionDate: Date;
 	name: string;
 	estimatedTime?: number;
 	counted?: number;
 	message?: string;
 	inputFiles?: InputFiles;
 	logFile?: string;
+	cores?: number;
+	metadata?: {
+		source: string;
+		simulator: string;
+		type: 'results';
+	};
 	result?: {
 		estimators: Estimator[];
 	};
@@ -131,7 +181,7 @@ const recreateOrderInEstimators = (
 	);
 };
 
-const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]): void => {
+const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]): Estimator[] => {
 	estimators.forEach(estimator => {
 		const { pages, scoringOutputJsonRef } = estimator;
 		pages.forEach((page, idx) => {
@@ -141,20 +191,19 @@ const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]
 			page.name = quantity?.name;
 		});
 	});
+	return estimators;
 };
 
-export const recreateRefsInResults = (results: SimulationStatusData, editor?: EditorJson) => {
-	const targetEditor = editor ?? results.editor;	
+export const recreateRefsInResults = (results: SimulationStatusData) => {
+	const { result, editor } = results;
 
-	if (!targetEditor) throw new Error('No editor data');
-	if (!results.result) throw new Error('No result data');
+	if (!editor) throw new Error('No editor data');
+	if (!result) throw new Error('No result data');
 
-	const { scoringManager, detectManager }: EditorJson = targetEditor;
-	results.result.estimators = recreateOrderInEstimators(
-		results.result.estimators,
-		scoringManager
-	);
-	recreateRefToFilters(results.result.estimators, detectManager?.filters);
+	const { scoringManager, detectManager }: EditorJson = editor;
+
+	result.estimators = recreateOrderInEstimators(result.estimators, scoringManager);
+	result.estimators = recreateRefToFilters(result.estimators, detectManager?.filters);
 };
 
 const [useShSimulation, ShSimulationContextProvider] = createGenericContext<IShSimulation>();
@@ -217,7 +266,12 @@ const ShSimulation = (props: ShSimulationProps) => {
 			cache = true,
 			beforeCacheWrite?: (id: string, response: SimulationStatusData) => void
 		) => {
-			const { task_id: taskId, name, creation_date: creationDate } = simulation;
+			const {
+				task_id: taskId,
+				name,
+				start_time: creationDate,
+				end_time: completionDate
+			} = simulation;
 
 			if (cache && statusDataCache.current.has(taskId))
 				return Promise.resolve(statusDataCache.current.get(taskId));
@@ -235,7 +289,8 @@ const ShSimulation = (props: ShSimulationProps) => {
 						uuid: taskId,
 						status: resStatus.state,
 						name,
-						creationDate
+						creationDate,
+						completionDate
 					};
 
 					switch (resStatus.state) {
@@ -259,14 +314,16 @@ const ShSimulation = (props: ShSimulationProps) => {
 
 						case StatusState.SUCCESS:
 							data.result = resStatus.result;
-
+							data.inputFiles = resStatus.input_files;
+							data.cores = resStatus.cores;
+							data.metadata = resStatus.metadata;
 							// remove trailing underscores from estimators names (#530)
 							for (const estimator of data.result.estimators) {
 								estimator.name = estimator.name.replace(/_$/, '');
 							}
 
-							if (resStatus.input && 'metadata' in resStatus.input) {
-								data.editor = resStatus.input;
+							if (resStatus.input_json) {
+								data.editor = resStatus.input_json;
 								recreateRefsInResults(data);
 							}
 							break;
@@ -285,16 +342,36 @@ const ShSimulation = (props: ShSimulationProps) => {
 	);
 
 	const getSimulations = useCallback(
-		(signal?: AbortSignal) => {
+		(
+			pageNumber: number,
+			pageSize: number,
+			orderType: OrderType,
+			orderBy: OrderBy,
+			signal?: AbortSignal
+		) => {
 			return authKy
-				.get(`${BACKEND_URL}/user/simulations`, { signal })
+				.get(`${BACKEND_URL}/user/simulations`, {
+					signal: signal,
+					searchParams: {
+						page_size: pageSize,
+						page_idx: pageNumber - 1,
+						order_by: orderBy,
+						order_type: orderType
+					}
+				})
 				.json()
 				.then((response: unknown) => {
-					return (response as ResUserSimulations).simulations.map(s => {
-						const creation_date = new Date(s.creation_date as unknown as string);
-						const obj: SimulationInfo = { ...s, creation_date };
-						return obj;
-					});
+					const { simulations, page_count, simulations_count } =
+						response as ResUserSimulations;
+					return {
+						simulations: simulations.map(s => {
+							const start_time = new Date(s.start_time as unknown as string);
+							const obj: SimulationInfo = { ...s, start_time };
+							return obj;
+						}),
+						page_count,
+						simulations_count
+					};
 				});
 		},
 		[authKy]
@@ -303,11 +380,11 @@ const ShSimulation = (props: ShSimulationProps) => {
 	const getSimulationsStatus = useCallback(
 		(
 			simulations: SimulationInfo[],
-			abortSignal?: AbortSignal,
+			signal?: AbortSignal,
 			cache = true,
 			beforeCacheWrite?: (id: string, response: SimulationStatusData) => void
 		) => {
-			const res = simulations.map(s => getStatus(s, abortSignal, cache, beforeCacheWrite));
+			const res = simulations.map(s => getStatus(s, signal, cache, beforeCacheWrite));
 
 			return Promise.all(res).then(values => {
 				return [...values.filter((e): e is SimulationStatusData => !!e)];

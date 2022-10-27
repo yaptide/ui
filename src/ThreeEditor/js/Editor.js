@@ -125,6 +125,8 @@ export function Editor(container) {
 		exampleLoaded: new Signal()
 	};
 
+	this.results = null;
+
 	this.container = container;
 	container.setAttribute('tabindex', '-1');
 	this.container.focus();
@@ -539,6 +541,7 @@ Editor.prototype = {
 	clear() {
 		this.history.clear();
 		this.storage.clear();
+		this.results = null;
 
 		this.camera.copy(_DEFAULT_CAMERA);
 		this.signals.cameraChanged.dispatch();

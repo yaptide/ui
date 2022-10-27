@@ -5,6 +5,7 @@ import CodeEditor from '@uiw/react-textarea-code-editor';
 import { saveString } from '../../../util/File';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import useTheme from '@mui/system/useTheme';
+import { DEMO_MODE } from '../../../util/Config';
 
 interface InputFilesEditorProps {
 	inputFiles?: InputFiles;
@@ -27,7 +28,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 	);
 
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-
+	const inputFilesOrder = ['info.json', 'geo.dat', 'mat.dat', 'beam.dat', 'detect.dat'];
 	useEffect(() => {
 		if (!props.innerState) setInputFiles({ ...(props.inputFiles ?? _emptyInputFiles) });
 	}, [props.innerState, props.inputFiles]);
@@ -45,6 +46,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 					<Button
 						color='success'
 						variant='contained'
+						disabled={DEMO_MODE}
 						onClick={() => props.runSimulation?.call(null, inputFiles)}>
 						Run input files
 					</Button>
@@ -57,7 +59,10 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 					Download all
 				</Button>
 				{props.saveAndExit && (
-					<Button color='info' onClick={() => props.saveAndExit?.call(null, inputFiles)}>
+					<Button
+						disabled={DEMO_MODE}
+						color='info'
+						onClick={() => props.saveAndExit?.call(null, inputFiles)}>
 						Save and exit
 					</Button>
 				)}
@@ -69,40 +74,46 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 			</CardActions>
 			<Divider />
 			<CardContent>
-				{Object.entries(inputFiles).map(([name, value]) => {
-					return (
-						<Box key={name}>
-							<h2>
-								{name}
-								<Button
-									color='info'
-									onClick={() => {
-										saveString(value, name);
+				{Object.entries(inputFiles)
+					.sort(([name1, _1], [name2, _2]) => {
+						const index1 = inputFilesOrder.indexOf(name1) + 1;
+						const index2 = inputFilesOrder.indexOf(name2) + 1;
+						return index1 - index2;
+					})
+					.map(([name, value]) => {
+						return (
+							<Box key={name}>
+								<h2>
+									{name}
+									<Button
+										color='info'
+										onClick={() => {
+											saveString(value, name);
+										}}
+										sx={{ ml: 1 }}>
+										Download
+									</Button>
+								</h2>
+								<CodeEditor
+									value={value}
+									language='sql'
+									placeholder={`Please enter ${name} content.`}
+									onChange={evn =>
+										setInputFiles(old => {
+											return { ...old, [name]: evn.target.value };
+										})
+									}
+									padding={15}
+									style={{
+										fontSize: 12,
+										backgroundColor: prefersDarkMode ? '#121212' : '#f5f5f5',
+										fontFamily:
+											'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace'
 									}}
-									sx={{ ml: 1 }}>
-									Download
-								</Button>
-							</h2>
-							<CodeEditor
-								value={value}
-								language='sql'
-								placeholder={`Please enter ${name} content.`}
-								onChange={evn =>
-									setInputFiles(old => {
-										return { ...old, [name]: evn.target.value };
-									})
-								}
-								padding={15}
-								style={{
-									fontSize: 12,
-									backgroundColor: prefersDarkMode ? '#121212' : '#f5f5f5',
-									fontFamily:
-										'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace'
-								}}
-							/>
-						</Box>
-					);
-				})}
+								/>
+							</Box>
+						);
+					})}
 			</CardContent>
 		</Card>
 	);

@@ -9,7 +9,7 @@ import {
 	Typography,
 	useMediaQuery
 } from '@mui/material';
-import React, { SyntheticEvent, useEffect, useState } from 'react';
+import React, { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { Estimator, generateGraphs, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
 import { TabPanel } from '../TabPanel';
 import { useStore } from '../../../services/StoreService';
@@ -95,7 +95,10 @@ function ResultsPanel() {
 							sx={{
 								margin: '0.5rem',
 								height: 'min-content',
-								overflow: 'unset'
+								overflow: 'unset',
+								position: 'sticky',
+								top: '8px',
+								zIndex: 1
 							}}>
 							<CardContent
 								sx={{
@@ -131,10 +134,16 @@ function ResultsPanel() {
 							</CardContent>
 						</Card>
 						<Card
+							variant='outlined'
 							sx={{
-								flexGrow: 1,
-								margin: '0.5rem',
-								bgcolor: prefersDarkMode ? 'text.disabled' : 'background.paper'
+								'flexGrow': 1,
+								'margin': '0.5rem',
+								'bgcolor': prefersDarkMode ? 'text.disabled' : 'background.paper',
+								'& .MuiCardContent-root div': {
+									bgcolor: 'transparent',
+									backgroundImage: 'none',
+									color: 'black'
+								}
 							}}>
 							<CardContent>
 								{estimatorsResults.map((estimator, idx) => {
@@ -144,13 +153,18 @@ function ResultsPanel() {
 											value={tabsValue}
 											index={idx}
 											persistentIfVisited>
-											<Grid container spacing={1}>
+											<Box
+												style={{
+													width: '100%',
+													display: 'flex',
+													flexDirection: 'column'
+												}}>
 												{estimator.tablePages.length > 0 && (
 													<TablePage0D
 														estimator={estimator}></TablePage0D>
 												)}
 												{generateGraphs(estimator)}
-											</Grid>
+											</Box>
 										</TabPanel>
 									);
 								})}

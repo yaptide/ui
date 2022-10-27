@@ -57,7 +57,7 @@ jobs:
               run: npm install
 
             - name: webfactory/ssh-agent 🖥️
-              uses: webfactory/ssh-agent@v0.5.4
+              uses: webfactory/ssh-agent@v0.7.0
               with:
                   # Private SSH key to register in the SSH agent
                   ssh-private-key: ${{ secrets.WEBDEV }}
@@ -87,7 +87,7 @@ jobs:
                 python-version: '3.10'
 
             # Add keys to the SSH agent
-            - uses: webfactory/ssh-agent@v0.5.4
+            - uses: webfactory/ssh-agent@v0.7.0
               with:
                   ssh-private-key: |
                       ${{ secrets.DEPLOY_C3_TEST }}
@@ -101,14 +101,15 @@ jobs:
 
             # Kill docker container, then remove all docker images
             - name: Kill our docker container 💀
-              continue-on-error: true
-              uses: appleboy/ssh-action@v0.1.5
+              uses: appleboy/ssh-action@v0.1.5              
               with:
                   host: ${{ env.FRONTEND_HOST }}
                   username: ${{ env.FRONTEND_USER }}
                   key: ${{ secrets.DEPLOY_C3_TEST }}
+                  script_stop: true  # stop after first failure
                   script: |
-                      docker rm --force yaptide-nginx 
+                      docker stop yaptide-nginx
+                      docker rm --force yaptide-nginx
                       docker container prune --force
 
             # Copy the new files form the github agent onto the machine

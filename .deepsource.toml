@@ -1,8 +1,12 @@
 version = 1
 
 [[analyzers]]
-name = "javascript"
+name = "docker"
+enabled = true
+
+[[analyzers]]
+name = "shell"
 enabled = true
 
   [analyzers.meta]
-  plugins = ["react"]
+    dialect = "bash"

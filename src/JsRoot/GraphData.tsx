@@ -113,7 +113,7 @@ export function generateGraphs(estimator: EstimatorResults) {
 
 									{isPage1d(gridPages[idx]) && (
 										<Button
-											color='info'
+											color='secondary'
 											sx={{ marginTop: '1rem' }}
 											onClick={() =>
 												onClickSaveToFile(gridPages[idx] as Page1D)
