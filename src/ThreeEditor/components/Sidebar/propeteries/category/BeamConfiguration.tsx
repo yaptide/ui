@@ -52,6 +52,14 @@ export function BeamConfiguration(props: { editor: Editor; object: Object3D }) {
 							watchedObject.divergence.distanceToFocal = v;
 						}}
 					/>
+					{console.log(watchedObject.beamSigma)}
+					<Vector2PropertyField
+						label='Beam sigma'
+						value={watchedObject.beamSigma}
+						onChange={v => {
+							watchedObject.beamSigma = v;
+						}}
+					/>
 					<NumberPropertyField
 						label='Number of primary particles'
 						precision={0}

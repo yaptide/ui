@@ -24,6 +24,10 @@ export interface BeamJSON {
 		z: number;
 		a: number;
 	};
+	beamSigma: {
+		x: number;
+		y: number;
+	}
 	colorHex: number;
 	numberOfParticles: number;
 }
@@ -42,6 +46,10 @@ const _default = {
 		id: 2,
 		a: 1,
 		z: 1
+	},
+	beamSigma: {
+		x: 0,
+		y: 0
 	},
 	numberOfParticles: 10000
 
@@ -77,6 +85,11 @@ export class Beam extends SimulationObject3D {
 		y: number;
 		distanceToFocal: number;
 	};
+
+	beamSigma: {
+		x: number;
+		y: number;
+	}
 
 	numberOfParticles: number;
 
@@ -130,6 +143,8 @@ export class Beam extends SimulationObject3D {
 		this.energySpread = _default.energySpread;
 
 		this.divergence = { ..._default.divergence };
+
+		this.beamSigma = { ..._default.beamSigma };
 
 		this.particleData = _default.particle;
 
@@ -230,6 +245,7 @@ export class Beam extends SimulationObject3D {
 			direction: this.direction.toArray(),
 			energy: this.energy,
 			energySpread: this.energySpread,
+			beamSigma: this.beamSigma,
 			divergence: this.divergence,
 			particle: this.particleData,
 			colorHex: this.material.color.getHex(),
@@ -240,14 +256,16 @@ export class Beam extends SimulationObject3D {
 	}
 
 	fromJSON(data: BeamJSON) {
-		this.position.fromArray(data.position);
-		this.direction.fromArray(data.direction);
-		this.energy = data.energy;
-		this.energySpread = data.energySpread;
-		this.divergence = data.divergence;
-		this.particleData = data.particle;
-		this.material.color.setHex(data.colorHex);
-		this.numberOfParticles = data.numberOfParticles;
+		const loadedData = { ..._default, ...data };
+		this.position.fromArray(loadedData.position);
+		this.direction.fromArray(loadedData.direction);
+		this.energy = loadedData.energy;
+		this.energySpread = loadedData.energySpread;
+		this.divergence = loadedData.divergence;
+		this.particleData = loadedData.particle;
+		this.material.color.setHex(loadedData.colorHex);
+		this.numberOfParticles = loadedData.numberOfParticles;
+		this.beamSigma = loadedData.beamSigma;
 		return this;
 	}
 
