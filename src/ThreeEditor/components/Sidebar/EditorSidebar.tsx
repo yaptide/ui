@@ -21,13 +21,13 @@ export function EditorSidebar(props: { editor: Editor }) {
 	const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
 		switch (newValue) {
 			case 'Scoring':
-				editor.signals.contextChanged.dispatch('scoring');
+				editor.contextManager.currentContext = 'scoring';
 				break;
 			case 'Settings':
-				editor.signals.contextChanged.dispatch('settings');
+				editor.contextManager.currentContext = 'settings';
 				break;
 			default:
-				editor.signals.contextChanged.dispatch('scene');
+				editor.contextManager.currentContext = 'scene';
 		}
 	};
 
