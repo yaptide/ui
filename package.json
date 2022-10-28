@@ -15,7 +15,6 @@
 		"@testing-library/react": "^12.1.2",
 		"@testing-library/user-event": "^14.4.3",
 		"@types/jest": "^29.0.3",
-		"@types/node": "^18.7.18",
 		"@types/react-dom": "^17.0.11",
 		"@types/signals": "^1.0.1",
 		"@types/throttle-debounce": "^5.0.0",
@@ -34,7 +33,6 @@
 		"react-dom": "^17.0.2",
 		"react-hooks-visible": "^1.1.1",
 		"react-merge-refs": "^2.0.1",
-		"react-scripts": "5.0.1",
 		"signals": "^1.0.0",
 		"split-grid": "^1.0.11",
 		"three": "^0.144.0",
@@ -48,17 +46,18 @@
 		"build-python": "node buildPython.js",
 		"setup": "npm run identify && npm run build-python",
 		"prestart": "npm run setup skip",
-		"start": "react-scripts start",
+		"start": "vite",
 		"prebuild": "npm run setup",
-		"build": "react-scripts build",
+		"build": "tsc && vite build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
-		"start-demo": "cross-env REACT_APP_TARGET=demo npm run start",
-		"test-demo": "cross-env REACT_APP_TARGET=demo npm run test",
-		"build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
+		"start-demo": "cross-env VITE_TARGET=demo npm run start",
+		"test-demo": "cross-env VITE_TARGET=demo npm run test",
+		"build-demo": "cross-env VITE_TARGET=demo npm run build",
 		"fix-web-dev": "node fixDeploy.mjs",
 		"predeploy": "npm run setup && npm run build-demo && npm run fix-web-dev",
-		"deploy": "gh-pages -d build"
+		"deploy": "gh-pages -d build",
+		"serve": "vite preview"
 	},
 	"contributors": [
 		{
@@ -91,14 +90,19 @@
 		]
 	},
 	"devDependencies": {
+		"@types/node": "^18.11.7",
 		"@types/react": "^18.0.9",
 		"@types/react-async-script": "^1.2.1",
 		"@types/three": "^0.144.0",
+		"@vitejs/plugin-react": "^2.2.0",
 		"cross-env": "^7.0.3",
 		"gh-pages": "^4.0.0",
 		"jest-matcher-deep-close-to": "^3.0.2",
 		"prettier": "2.7.1",
 		"react-app-rewired": "^2.2.1",
-		"use-resize-observer": "^9.0.2"
+		"use-resize-observer": "^9.0.2",
+		"vite": "^3.2.1",
+		"vite-plugin-svgr": "^2.2.2",
+		"vite-tsconfig-paths": "^3.5.2"
 	}
 }

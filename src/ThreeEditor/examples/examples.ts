@@ -1,9 +1,8 @@
 import {
 	FinalSimulationStatusData,
 	recreateRefsInResults,
-	SimulationStatusData
+	
 } from '../../services/ShSimulatorService';
-import { EditorJson } from '../js/EditorJson';
 
 let canImport = true;
 let iterator = 1;

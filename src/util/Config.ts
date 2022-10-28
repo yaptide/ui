@@ -1,2 +1,2 @@
-export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:5000';
-export const DEMO_MODE = process.env.REACT_APP_TARGET === 'demo';
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:5000';
+export const DEMO_MODE = import.meta.env.VITE_TARGET === 'demo';

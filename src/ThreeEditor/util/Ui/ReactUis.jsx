@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { MaterialSelect } from '../../components/Select/MaterialSelect';
 import { ParticleSelect } from '../../components/Select/ParticlesSelect';
