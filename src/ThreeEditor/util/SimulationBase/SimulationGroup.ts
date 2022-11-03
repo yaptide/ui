@@ -3,7 +3,6 @@ import { Editor } from '../../js/Editor';
 import { ISimulationObject } from './SimulationObject';
 
 export interface ISimulationSceneChild extends THREE.Object3D {
-	[x: string]: any;
 	parent: SimulationSceneGroup<this> | null;
 	name: string;
 	type: string;

@@ -35,24 +35,17 @@ export function ObjectMaterial(props: { editor: Editor; object: Object3D }) {
 			{visibleFlag && (
 				<>
 					{(isZone(watchedObject) || isWorldZone(watchedObject)) && (
-						<PropertyField
-							label='Simulation'
-							field={
-								<MaterialSelect
-									materials={editor.materialManager.materials}
-									value={watchedObject.simulationMaterial.icru + ''}
-									onChange={(_, v) => {
-										editor.execute(
-											new SetZoneMaterialCommand(
-												editor,
-												watchedObject.object,
-												v
-											)
-										);
-									}}
-								/>
-							}
-						/>
+						<PropertyField label='Simulation'>
+							<MaterialSelect
+								materials={editor.materialManager.materials}
+								value={watchedObject.simulationMaterial.icru + ''}
+								onChange={(_, v) => {
+									editor.execute(
+										new SetZoneMaterialCommand(editor, watchedObject.object, v)
+									);
+								}}
+							/>
+						</PropertyField>
 					)}
 
 					{isZone(watchedObject) && (
@@ -86,24 +79,21 @@ export function ObjectMaterial(props: { editor: Editor; object: Object3D }) {
 						/>
 					)}
 
-					<PropertyField
-						label={'Color'}
-						field={
-							<ColorInput
-								value={watchedObjectMaterial?.color.getHexString() ?? '#ffffff'}
-								onChange={v =>
-									editor.execute(
-										new SetMaterialColorCommand(
-											editor,
-											watchedObject.object,
-											'color',
-											v
-										)
+					<PropertyField label={'Color'}>
+						<ColorInput
+							value={watchedObjectMaterial?.color.getHexString() ?? '#ffffff'}
+							onChange={v =>
+								editor.execute(
+									new SetMaterialColorCommand(
+										editor,
+										watchedObject.object,
+										'color',
+										v
 									)
-								}
-							/>
-						}
-					/>
+								)
+							}
+						/>
+					</PropertyField>
 				</>
 			)}
 		</PropertiesCategory>

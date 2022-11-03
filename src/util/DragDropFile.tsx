@@ -1,7 +1,7 @@
 // Concept from https://www.codemzy.com/blog/react-drag-drop-file-upload
 
 import { Box, Button, Typography } from '@mui/material';
-import React, { Component, useCallback, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 

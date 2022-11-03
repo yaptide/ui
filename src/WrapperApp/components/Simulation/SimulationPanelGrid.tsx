@@ -3,12 +3,9 @@ import {
 	Button,
 	ButtonGroup,
 	Grid,
-	IconButton,
 	MenuItem,
 	Pagination,
-	Select,
-	Stack
-} from '@mui/material';
+	Select} from '@mui/material';
 import { OrderBy, OrderType, SimulationStatusData } from '../../../services/ShSimulatorService';
 import SimulationStatus from './SimulationStatus';
 import { InputFiles } from '../../../services/ShSimulatorService';

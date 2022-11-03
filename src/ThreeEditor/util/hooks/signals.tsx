@@ -4,13 +4,6 @@ import { Editor } from '../../js/Editor';
 
 type SignalType = keyof Editor['signals'];
 
-export const useSignalObjectChanged = (
-	editor: Editor,
-	callback: (object: Object3D, property: keyof Object3D) => void
-) => {
-	useSignal(editor, 'objectChanged', callback);
-};
-
 export const useSignal = (
 	editor: Editor,
 	signal: SignalType | SignalType[],
@@ -25,17 +18,20 @@ export const useSignal = (
 	}, [callback, editor.signals, signal]);
 };
 
+/**
+ * Object wrapped in `Proxy`, that holds original object under `object` property.
+ */
 type ProxyState<T> = T & {
 	object: T;
 };
 
 /**
- * Warning: This hook return new Proxy object with different reference than original one.
+ * Warning: This hook return a new Proxy object with a different reference than the original one.
  *
  * This hook is used to watch the editor state and return the state.
  * It is used to avoid unnecessary re-rendering of components.
- * It gathers accessed properties and watch them.
- * Only one deep level is supported.
+ * It gathers accessed properties and watches them.
+ * This hook doesn't allow subscription to a multi-level object states.
  * ```ts
  * object.prop1 // prop1 will be watched
  * object.prop2.prop3 //prop3 won't be watched

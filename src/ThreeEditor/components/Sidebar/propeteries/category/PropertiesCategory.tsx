@@ -14,11 +14,9 @@ export function PropertiesCategory(props: {
 				<Typography>{category}</Typography>
 			</AccordionSummary>
 			<AccordionDetails>
-				{visible && (
-					<Grid container spacing={2}>
-						{children}
-					</Grid>
-				)}
+				<Grid container spacing={2}>
+					{children}
+				</Grid>
 			</AccordionDetails>
 		</Accordion>
 	);

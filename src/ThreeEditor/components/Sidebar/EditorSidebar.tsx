@@ -51,6 +51,90 @@ export function EditorSidebar(props: { editor: Editor }) {
 		};
 	}, [editor, handleContextChange]);
 
+	const geometryTabElements = [
+		{
+			title: 'Figures',
+			add: [
+				{
+					title: 'Box',
+					onClick: () => editor.execute(new AddObjectCommand(editor, new BoxMesh(editor)))
+				},
+				{
+					title: 'Cylinder',
+					onClick: () =>
+						editor.execute(new AddObjectCommand(editor, new CylinderMesh(editor)))
+				},
+				{
+					title: 'Sphere',
+					onClick: () =>
+						editor.execute(new AddObjectCommand(editor, new SphereMesh(editor)))
+				}
+			],
+			tree: <SidebarTree editor={editor} sources={[editor.scene.children]} />
+		},
+		{
+			title: 'Zones',
+			add: [
+				{
+					title: 'Zone',
+					onClick: () => editor.execute(new AddZoneCommand(editor))
+				}
+			],
+			tree: (
+				<SidebarTree
+					editor={editor}
+					sources={[
+						editor.zoneManager.worldZone,
+						editor.zoneManager.zoneContainer.children
+					]}
+				/>
+			)
+		},
+		{
+			title: 'Detectors',
+			add: [
+				{
+					title: 'Detector',
+					onClick: () => editor.execute(new AddDetectGeometryCommand(editor))
+				}
+			],
+			tree: (
+				<SidebarTree
+					editor={editor}
+					sources={[editor.detectManager.detectContainer.children]}
+				/>
+			)
+		}
+	];
+
+	const scoringTabElements = [
+		{
+			title: 'Filters',
+			add: [
+				{
+					title: 'Filter',
+					onClick: () => editor.execute(new AddFilterCommand(editor))
+				}
+			],
+			tree: (
+				<SidebarTree
+					editor={editor}
+					sources={[editor.detectManager.filterContainer.children]}
+				/>
+			)
+		},
+		{
+			title: 'Outputs',
+			add: [
+				{
+					title: 'Output',
+					onClick: () => editor.execute(new AddOutputCommand(editor))
+				}
+			],
+			tree: <SidebarTree editor={editor} sources={[editor.scoringManager.children]} />
+		}
+	];
+
 	return (
 		<Box sx={{ height: '100vh', overflowY: 'auto' }}>
 			<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -61,105 +145,10 @@ export function EditorSidebar(props: { editor: Editor }) {
 				</Tabs>
 			</Box>
 			<TabPanel value={value} index={'Geometry'} persistentIfVisited>
-				<EditorSidebarTabTree
-					elements={[
-						{
-							title: 'Figures',
-							add: [
-								{
-									title: 'Box',
-									onClick: () =>
-										editor.execute(
-											new AddObjectCommand(editor, new BoxMesh(editor))
-										)
-								},
-								{
-									title: 'Cylinder',
-									onClick: () =>
-										editor.execute(
-											new AddObjectCommand(editor, new CylinderMesh(editor))
-										)
-								},
-								{
-									title: 'Sphere',
-									onClick: () =>
-										editor.execute(
-											new AddObjectCommand(editor, new SphereMesh(editor))
-										)
-								}
-							],
-							tree: <SidebarTree editor={editor} sources={[editor.scene.children]} />
-						},
-						{
-							title: 'Zones',
-							add: [
-								{
-									title: 'Zone',
-									onClick: () => editor.execute(new AddZoneCommand(editor))
-								}
-							],
-							tree: (
-								<SidebarTree
-									editor={editor}
-									sources={[
-										editor.zoneManager.worldZone,
-										editor.zoneManager.zoneContainer.children
-									]}
-								/>
-							)
-						},
-						{
-							title: 'Detectors',
-							add: [
-								{
-									title: 'Detector',
-									onClick: () =>
-										editor.execute(new AddDetectGeometryCommand(editor))
-								}
-							],
-							tree: (
-								<SidebarTree
-									editor={editor}
-									sources={[editor.detectManager.detectContainer.children]}
-								/>
-							)
-						}
-					]}></EditorSidebarTabTree>
+				<EditorSidebarTabTree elements={geometryTabElements}></EditorSidebarTabTree>
 			</TabPanel>
 			<TabPanel value={value} index={'Scoring'} persistentIfVisited>
-				<EditorSidebarTabTree
-					elements={[
-						{
-							title: 'Filters',
-							add: [
-								{
-									title: 'Filter',
-									onClick: () => editor.execute(new AddFilterCommand(editor))
-								}
-							],
-							tree: (
-								<SidebarTree
-									editor={editor}
-									sources={[editor.detectManager.filterContainer.children]}
-								/>
-							)
-						},
-						{
-							title: 'Outputs',
-							add: [
-								{
-									title: 'Output',
-									onClick: () => editor.execute(new AddOutputCommand(editor))
-								}
-							],
-							tree: (
-								<SidebarTree
-									editor={editor}
-									sources={[editor.scoringManager.children]}
-								/>
-							)
-						}
-					]}></EditorSidebarTabTree>
+				<EditorSidebarTabTree elements={scoringTabElements}></EditorSidebarTabTree>
 			</TabPanel>
 			<TabPanel value={value} index={'Settings'} persistentIfVisited></TabPanel>
 			<PropertiesPanel

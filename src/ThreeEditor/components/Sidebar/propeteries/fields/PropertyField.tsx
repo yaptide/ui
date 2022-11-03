@@ -26,7 +26,7 @@ import { hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
 import { AutoCompleteSelect } from '../../../Select/AutoCompleteSelect';
 import { ObjectSelectProperty, ObjectSelectProps } from './ObjectSelectPropertyField';
 
-export function PropertyField(props: { label?: string; field: ReactElement }) {
+export function PropertyField(props: { label?: string; children: ReactElement }) {
 	return (
 		<>
 			{props.label !== undefined && (
@@ -35,7 +35,7 @@ export function PropertyField(props: { label?: string; field: ReactElement }) {
 				</Grid>
 			)}
 			<Grid item xs={props.label !== undefined ? 8 : 12}>
-				{props.field}
+				{props.children}
 			</Grid>
 		</>
 	);
@@ -47,7 +47,7 @@ interface LabelPropertyFieldProps {
 }
 
 export function LabelPropertyField(props: LabelPropertyFieldProps) {
-	return <PropertyField label={props.label} field={<Typography>{props.value}</Typography>} />;
+	return <PropertyField label={props.label} children={<Typography>{props.value}</Typography>} />;
 }
 
 interface TextPropertyFieldProps {
@@ -58,17 +58,14 @@ interface TextPropertyFieldProps {
 
 export function TextPropertyField(props: TextPropertyFieldProps) {
 	return (
-		<PropertyField
-			label={props.label}
-			field={
-				<TextField
-					size='small'
-					variant='standard'
-					value={props.value}
-					onChange={event => props.onChange(event.target.value)}
-				/>
-			}
-		/>
+		<PropertyField label={props.label}>
+			<TextField
+				size='small'
+				variant='standard'
+				value={props.value}
+				onChange={event => props.onChange(event.target.value)}
+			/>
+		</PropertyField>
 	);
 }
 
@@ -175,7 +172,11 @@ interface NumberPropertyFieldProps {
 }
 
 export function NumberPropertyField(props: NumberPropertyFieldProps) {
-	return <PropertyField label={props.label} field={<NumberInput {...props} />} />;
+	return (
+		<PropertyField label={props.label}>
+			<NumberInput {...props} />
+		</PropertyField>
+	);
 }
 
 type XYZPropertyFieldProps = Modify<
@@ -207,16 +208,13 @@ export function Vector3PropertyField(props: XYZPropertyFieldProps) {
 	};
 
 	return (
-		<PropertyField
-			label={props.label}
-			field={
-				<Stack direction='row' spacing={1}>
-					<NumberInput {...props} value={props.value.x} onChange={onChangeX} />
-					<NumberInput {...props} value={props.value.y} onChange={onChangeY} />
-					<NumberInput {...props} value={props.value.z} onChange={onChangeZ} />
-				</Stack>
-			}
-		/>
+		<PropertyField label={props.label}>
+			<Stack direction='row' spacing={1}>
+				<NumberInput {...props} value={props.value.x} onChange={onChangeX} />
+				<NumberInput {...props} value={props.value.y} onChange={onChangeY} />
+				<NumberInput {...props} value={props.value.z} onChange={onChangeZ} />
+			</Stack>
+		</PropertyField>
 	);
 }
 
@@ -246,15 +244,12 @@ export function Vector2PropertyField(props: XYPropertyFieldProps) {
 	};
 
 	return (
-		<PropertyField
-			label={props.label}
-			field={
-				<Stack direction='row' spacing={1}>
-					<NumberInput {...props} value={props.value.x} onChange={onChangeX} />
-					<NumberInput {...props} value={props.value.y} onChange={onChangeY} />
-				</Stack>
-			}
-		/>
+		<PropertyField label={props.label}>
+			<Stack direction='row' spacing={1}>
+				<NumberInput {...props} value={props.value.x} onChange={onChangeX} />
+				<NumberInput {...props} value={props.value.y} onChange={onChangeY} />
+			</Stack>
+		</PropertyField>
 	);
 }
 
@@ -266,16 +261,13 @@ interface BooleanPropertyFieldProps {
 
 export function BooleanPropertyField(props: BooleanPropertyFieldProps) {
 	return (
-		<PropertyField
-			label={props.label}
-			field={
-				<Checkbox
-					sx={{ padding: 0 }}
-					checked={props.value}
-					onChange={event => props.onChange(event.target.checked)}
-				/>
-			}
-		/>
+		<PropertyField label={props.label}>
+			<Checkbox
+				sx={{ padding: 0 }}
+				checked={props.value}
+				onChange={event => props.onChange(event.target.checked)}
+			/>
+		</PropertyField>
 	);
 }
 
@@ -289,19 +281,16 @@ export function ConditionalPropertyField(
 	props: ConditionalPropertyFieldProps & { children: ReactNode }
 ) {
 	return (
-		<PropertyField
-			label={props.label}
-			field={
-				<Stack direction='row' spacing={1}>
-					<Checkbox
-						sx={{ padding: 0 }}
-						checked={props.enabled}
-						onChange={event => props.onChangeEnabled(event.target.checked)}
-					/>
-					{props.enabled && props.children}
-				</Stack>
-			}
-		/>
+		<PropertyField label={props.label}>
+			<Stack direction='row' spacing={1}>
+				<Checkbox
+					sx={{ padding: 0 }}
+					checked={props.enabled}
+					onChange={event => props.onChangeEnabled(event.target.checked)}
+				/>
+				{props.enabled && props.children}
+			</Stack>
+		</PropertyField>
 	);
 }
 
@@ -339,21 +328,18 @@ interface SelectPropertyFieldProps<T> {
 
 export function SelectPropertyField<T>(props: SelectPropertyFieldProps<T>) {
 	return (
-		<PropertyField
-			label={props.label}
-			field={
-				<AutoCompleteSelect
-					onChange={(_event, newValue) => {
-						if (newValue !== null) props.onChange?.call(null, newValue);
-					}}
-					value={props.value}
-					options={props.options}
-					getOptionLabel={props.getOptionLabel}
-					isOptionEqualToValue={props.isOptionEqualToValue}
-					onEmptied={props.onEmptied}
-				/>
-			}
-		/>
+		<PropertyField label={props.label}>
+			<AutoCompleteSelect
+				onChange={(_event, newValue) => {
+					if (newValue !== null) props.onChange?.call(null, newValue);
+				}}
+				value={props.value}
+				options={props.options}
+				getOptionLabel={props.getOptionLabel}
+				isOptionEqualToValue={props.isOptionEqualToValue}
+				onEmptied={props.onEmptied}
+			/>
+		</PropertyField>
 	);
 }
 
@@ -402,7 +388,7 @@ export function ModifiersOutliner(props: {
 type ModifiersOutlinerFieldProps = Parameters<typeof ModifiersOutliner>[0];
 
 export function ModifiersOutlinerField(props: ModifiersOutlinerFieldProps) {
-	return <PropertyField field={<ModifiersOutliner {...props} />} />;
+	return <PropertyField children={<ModifiersOutliner {...props} />} />;
 }
 
 export function DifferentialConfiguration(props: {
@@ -540,7 +526,7 @@ export function DifferentialConfiguration(props: {
 type DifferentialConfigurationFieldProps = Parameters<typeof DifferentialConfiguration>[0];
 
 export function DifferentialConfigurationField(props: DifferentialConfigurationFieldProps) {
-	return <PropertyField field={<DifferentialConfiguration {...props} />} />;
+	return <PropertyField children={<DifferentialConfiguration {...props} />} />;
 }
 
 export function RulesOutliner(props: {

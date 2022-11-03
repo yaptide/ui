@@ -1,10 +1,8 @@
 import * as THREE from 'three';
 import { Editor } from './js/Editor.js';
 import { ViewManager } from './js/viewport/ViewportManager.js';
-import { Toolbar } from './js/Toolbar.js';
 import { Sidebar } from './js/sidebar/Sidebar.js';
 import { Menubar } from './js/menubar/Menubar.js';
-import { Resizer } from './js/Resizer.js';
 
 export function initEditor(container) {
 	container = container || document.body;
@@ -12,6 +10,7 @@ export function initEditor(container) {
 	window.URL = window.URL || window.webkitURL;
 	window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
 
+	// eslint-disable-next-line no-extend-native
 	Number.prototype.format = function () {
 		return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 	};

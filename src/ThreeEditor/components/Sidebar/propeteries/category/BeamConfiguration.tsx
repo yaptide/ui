@@ -69,19 +69,16 @@ export function BeamConfiguration(props: { editor: Editor; object: Object3D }) {
 							watchedObject.numberOfParticles = v;
 						}}
 					/>
-					<PropertyField
-						label='Particle type'
-						field={
-							<ParticleSelect
-								particles={PARTICLE_TYPES as unknown as IParticleType[]}
-								value={watchedObject.particleData.id}
-								onChange={(_, value) => {
-									watchedObject.particleData.id = value;
-									watchedObject.debouncedDispatchChanged();
-								}}
-							/>
-						}
-					/>
+					<PropertyField label='Particle type'>
+						<ParticleSelect
+							particles={PARTICLE_TYPES as unknown as IParticleType[]}
+							value={watchedObject.particleData.id}
+							onChange={(_, value) => {
+								watchedObject.particleData.id = value;
+								watchedObject.debouncedDispatchChanged();
+							}}
+						/>
+					</PropertyField>
 
 					{watchedObject.particleData.id === 25 && (
 						<>

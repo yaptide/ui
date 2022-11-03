@@ -63,6 +63,31 @@ export interface EditorSidebarTabTreeProps {
 	elements: TreeElement[];
 }
 
+function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
+	return (
+		<Accordion key={props.title}>
+			<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+				<Typography>{props.title}</Typography>
+			</AccordionSummary>
+			<AccordionDetails>
+				<Stack direction='row' spacing={2} alignItems='center'>
+					<Typography>Add:</Typography>
+					<ButtonGroup disableElevation size='small'>
+						{props.add.map(add => (
+							<Button key={add.title} onClick={add.onClick}>
+								{add.title}
+							</Button>
+						))}
+					</ButtonGroup>
+				</Stack>
+				<Divider sx={{ margin: '.5rem 0' }}></Divider>
+
+				{props.tree}
+			</AccordionDetails>
+		</Accordion>
+	);
+}
+
 export function EditorSidebarTabTree(props: EditorSidebarTabTreeProps) {
 	const { elements } = props;
 	return (
@@ -75,26 +100,7 @@ export function EditorSidebarTabTree(props: EditorSidebarTabTreeProps) {
 				padding: '.5rem'
 			}}>
 			{elements.map(element => (
-				<Accordion key={element.title}>
-					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-						<Typography>{element.title}</Typography>
-					</AccordionSummary>
-					<AccordionDetails>
-						<Stack direction='row' spacing={2} alignItems='center'>
-							<Typography>Add:</Typography>
-							<ButtonGroup disableElevation size='small'>
-								{element.add.map(add => (
-									<Button key={add.title} onClick={add.onClick}>
-										{add.title}
-									</Button>
-								))}
-							</ButtonGroup>
-						</Stack>
-						<Divider sx={{ margin: '.5rem 0' }}></Divider>
-
-						{element.tree}
-					</AccordionDetails>
-				</Accordion>
+				<EditorSidebarTabTreeElement key={element.title} {...element} />
 			))}
 		</Box>
 	);

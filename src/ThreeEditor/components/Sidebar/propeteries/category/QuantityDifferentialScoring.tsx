@@ -11,7 +11,10 @@ import { isQuantity, ScoringQuantity } from '../../../../util/Scoring/ScoringQua
 import { Button } from '@mui/material';
 import { AddDifferentialModifierCommand } from '../../../../js/commands/AddDifferentialModifierCommand';
 import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValueCommand';
-import { DETECTOR_MODIFIERS, DETECTOR_MODIFIERS_OPTIONS } from '../../../../util/Scoring/ScoringOutputTypes';
+import {
+	DETECTOR_MODIFIERS,
+	DETECTOR_MODIFIERS_OPTIONS
+} from '../../../../util/Scoring/ScoringOutputTypes';
 import { RemoveDifferentialModifierCommand } from '../../../../js/commands/RemoveDifferentialModifierCommand';
 import { DifferentialModifier } from '../../../../util/Scoring/ScoringQtyModifiers';
 
@@ -26,24 +29,20 @@ export function QuantityDifferentialScoring(props: { editor: Editor; object: Obj
 		<PropertiesCategory category='Differential Scoring' visible={visibleFlag}>
 			{visibleFlag && (
 				<>
-					<PropertyField
-						field={
-							<Button
-								sx={{ width: '100%' }}
-								variant='contained'
-								onClick={() => {
-									if (watchedObject.modifiers.length >= 2) return;
-									editor.execute(
-										new AddDifferentialModifierCommand(
-											editor,
-											watchedObject.object
-										)
-									);
-								}}>
-								Add differential modifier
-							</Button>
-						}
-					/>
+					<PropertyField>
+						<Button
+							sx={{ width: '100%' }}
+							variant='contained'
+							onClick={() => {
+								if (watchedObject.modifiers.length >= 2) return;
+								editor.execute(
+									new AddDifferentialModifierCommand(editor, watchedObject.object)
+								);
+							}}>
+							Add differential modifier
+						</Button>
+					</PropertyField>
+
 					<ModifiersOutlinerField
 						editor={editor}
 						onChange={v => {
@@ -74,7 +73,7 @@ export function QuantityDifferentialScoring(props: { editor: Editor; object: Obj
 										watchedObject.object,
 										DifferentialModifier.fromJSON({
 											uuid: watchedObject.selectedModifier!.uuid,
-											diffType: v.keywordSelect as DETECTOR_MODIFIERS, 
+											diffType: v.keywordSelect as DETECTOR_MODIFIERS,
 											lowerLimit: v.lowerLimit,
 											upperLimit: v.upperLimit,
 											binsNumber: v.binsNumber,

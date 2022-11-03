@@ -27,21 +27,23 @@ export function PropertiesPanel(props: { boxProps: BoxProps; editor: Editor }) {
 
 	useSignal(editor, 'objectSelected', handleObjectUpdate);
 
+	const panelProps = { editor, object: selectedObject };
+
 	return (
 		<Box {...boxProps}>
 			{selectedObject && (
 				<>
-					<ObjectInfo editor={editor} object={selectedObject} />
-					<ObjectPlacement editor={editor} object={selectedObject} />
-					<FilterConfiguration editor={editor} object={selectedObject} />
-					<OutputConfiguration editor={editor} object={selectedObject} />
-					<QuantityConfiguration editor={editor} object={selectedObject} />
-					<QuantityDifferentialScoring editor={editor} object={selectedObject} />
-					<BeamConfiguration editor={editor} object={selectedObject} />
-					<ObjectDimensions editor={editor} object={selectedObject} />
-					<DetectorGrid editor={editor} object={selectedObject} />
-					<ZoneOperations editor={editor} object={selectedObject} />
-					<ObjectMaterial editor={editor} object={selectedObject} />
+					<ObjectInfo {...panelProps} />
+					<ObjectPlacement {...panelProps} />
+					<FilterConfiguration {...panelProps} />
+					<OutputConfiguration {...panelProps} />
+					<QuantityConfiguration {...panelProps} />
+					<QuantityDifferentialScoring {...panelProps} />
+					<BeamConfiguration {...panelProps} />
+					<ObjectDimensions {...panelProps} />
+					<DetectorGrid {...panelProps} />
+					<ZoneOperations {...panelProps} />
+					<ObjectMaterial {...panelProps} />
 				</>
 			)}
 		</Box>

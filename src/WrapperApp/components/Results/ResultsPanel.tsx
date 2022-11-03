@@ -3,13 +3,12 @@ import {
 	Button,
 	Card,
 	CardContent,
-	Grid,
 	Tab,
 	Tabs,
 	Typography,
 	useMediaQuery
 } from '@mui/material';
-import React, { SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { Estimator, generateGraphs, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
 import { TabPanel } from '../TabPanel';
 import { useStore } from '../../../services/StoreService';
