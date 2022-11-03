@@ -5,7 +5,8 @@ import { EditorJson } from '../ThreeEditor/js/EditorJson';
 
 // as for now there is no reasonable npm package for pyodide
 // CND method is suggested in https://pyodide.org/en/stable/usage/downloading-and-deploying.html
-importScripts("https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js");
+import "https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js";
+console.log('pyodide script');
 
 export interface IPythonWorker {
 	initPyodide: (onReady: () => void) => void;
@@ -47,7 +48,7 @@ class PythonWorkerBase implements IPythonWorker {
 
 		await pyodide.loadPackage(['scipy', 'micropip']);
 
-		const converterFolder = import.meta.env.PUBLIC_URL + '/libs/converter/dist/';
+		const converterFolder = import.meta.env.BASE_URL + 'libs/converter/dist/';
 
 		const { fileName: converterFileName } = await (
 			await fetch(converterFolder + 'yaptide_converter.json')
@@ -57,13 +58,13 @@ class PythonWorkerBase implements IPythonWorker {
 
 		await pyodide.runPythonAsync(`			
 import micropip
-await micropip.install('${import.meta.env.PUBLIC_URL}/libs/converter/dist/${converterFileName}') 
+await micropip.install('${import.meta.env.BASE_URL}libs/converter/dist/${converterFileName}') 
 print(micropip.list())
 			`);
 		onReady();
 	}
 
-	close() {		
+	close() {
 		self.close();
 	}
 
