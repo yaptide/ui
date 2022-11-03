@@ -58,7 +58,8 @@
 		"build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
 		"fix-web-dev": "node fixDeploy.mjs",
 		"predeploy": "npm run setup && npm run build-demo && npm run fix-web-dev",
-		"deploy": "gh-pages -d build"
+		"deploy": "gh-pages -d build",
+		"startC": "cross-env REACT_APP_TARGET=demo craco start"
 	},
 	"contributors": [
 		{
