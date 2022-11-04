@@ -2,9 +2,11 @@ import { Command } from '../Command.js';
 import { ScoringOutput } from '../../util/Scoring/ScoringOutput';
 
 export class AddOutputCommand extends Command {
+	// type object is optional
+
 	/**
-	 * @param editor Editor
-	 * @param object ScoringOutput
+	 * @param {Editor} editor
+	 * @param {ScoringOutput} [object]
 	 * @constructor
 	 */
 	constructor(editor, object = undefined) {
