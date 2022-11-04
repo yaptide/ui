@@ -1,3 +1,4 @@
+import { type } from 'os';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Object3D } from 'three';
 import { Editor } from '../../js/Editor';
@@ -17,6 +18,11 @@ export const useSignal = (
 		};
 	}, [callback, editor.signals, signal]);
 };
+
+/**
+ * Type checked if it does not have `object` property
+ */
+type ValidProxyState<T> = T extends { object: any } ? never : T;
 
 /**
  * Object wrapped in `Proxy`, that holds original object under `object` property.
@@ -42,19 +48,19 @@ type ProxyState<T> = T & {
  */
 function useSmartWatchEditorState<T>(
 	editor: Editor,
-	watchedObject: NonNullable<T>,
+	watchedObject: ValidProxyState<NonNullable<T>>,
 	watchAnyChange?: boolean,
 	debug?: boolean
 ): { state: ProxyState<T> };
 function useSmartWatchEditorState<T>(
 	editor: Editor,
-	watchedObject: NonNullable<T> | null,
+	watchedObject: ValidProxyState<NonNullable<T>> | null,
 	watchAnyChange?: boolean,
 	debug?: boolean
 ): { state: ProxyState<T> | null };
 function useSmartWatchEditorState<T>(
 	editor: Editor,
-	watchedObject: T | null,
+	watchedObject: ValidProxyState<T> | null,
 	watchAnyChange = false,
 	debug = false
 ): { state: unknown } {
