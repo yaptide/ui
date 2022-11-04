@@ -14,11 +14,9 @@ import {
 	TableCell,
 	TableContainer,
 	TableRow,
-	Typography,
 	useMediaQuery
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
-import { borderColor } from '@mui/system';
 import React, { ReactNode } from 'react';
 import Countdown from 'react-countdown';
 import { useLoader } from '../../../services/DataLoaderService';
@@ -165,7 +163,7 @@ export default function SimulationStatus({
 					/>
 					{simulation.metadata &&
 						Object.entries(simulation.metadata)
-							.filter(([key, value]) => key != 'type')
+							.filter(([key, value]) => key !== 'type')
 							.map(([key, value]) => (
 								<Chip key={key} variant='outlined' label={`${key}: ${value}`} />
 							))}

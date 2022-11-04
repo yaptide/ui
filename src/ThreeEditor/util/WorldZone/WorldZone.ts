@@ -33,14 +33,17 @@ const _materialDefault = new THREE.MeshBasicMaterial({
 
 const _defaultColor = 0xff0000;
 
+
 export class WorldZone extends SimulationObject3D {
-	readonly notRemovable = true;
+	readonly notRemovable: boolean = true;
 	get notMovable() {
 		// custom get function to conditionally return notMoveable property;
 		return this.autoCalculate && this.canCalculate();
 	}
 	readonly notRotatable = true;
 	readonly notScalable = true;
+	readonly notVisibleChildren: boolean = true;
+	readonly notDraggable: boolean = true;
 
 	editor: Editor;
 
@@ -95,7 +98,7 @@ export class WorldZone extends SimulationObject3D {
 		this.type = 'WorldZone';
 		this.name = 'World Zone';
 		this._material = _materialDefault;
-		this._autoCalculate  = false;
+		this._autoCalculate = false;
 		this.editor = editor;
 		this.signals = editor.signals;
 
@@ -189,6 +192,7 @@ export class WorldZone extends SimulationObject3D {
 
 		const object = this.editor.zoneManager.zoneContainer;
 		this.helper.calculateFromObject(object);
+		this.editor.signals.objectChanged.dispatch(this, 'size');
 	}
 
 	updatePosition(): void {

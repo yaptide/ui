@@ -25,12 +25,18 @@ export class AddDifferentialModifierCommand extends Command {
 		else this.modifier = this.object.createModifier();
 		this.object.selectedModifier = this.modifier;
 		this.editor.signals.scoringQuantityChanged.dispatch(this.object);
+		this.editor.signals.objectChanged.dispatch(this.object, 'modifiers');
+		this.editor.signals.objectChanged.dispatch(this.object, 'selectedModifier');
 	}
 
 	undo() {
 		if (this.oldModifier) this.object.addModifier(this.oldModifier);
 		this.object.removeModifier(this.modifier);
 		this.object.selectedModifier = null;
+		this.editor.signals.scoringQuantityChanged.dispatch(this.object);
+		this.editor.signals.objectChanged.dispatch(this.object, 'modifiers');
+		this.editor.signals.objectChanged.dispatch(this.object, 'selectedModifier');
+
 	}
 
 	toJSON() {

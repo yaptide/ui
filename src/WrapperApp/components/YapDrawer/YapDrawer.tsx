@@ -12,7 +12,7 @@ import NotListedLocationIcon from '@mui/icons-material/NotListedLocation';
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
 import QueuePlayNextIcon from '@mui/icons-material/QueuePlayNext';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
-import { colors, Tooltip } from '@mui/material';
+import { Tooltip } from '@mui/material';
 import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
@@ -27,7 +27,6 @@ import React, { Dispatch, SetStateAction, SyntheticEvent } from 'react';
 import { useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
 import deployInfo from '../../../util/identify/deployInfo.json';
-import { DEMO_MODE } from '../../../util/Config';
 
 type MenuOption = {
 	label: string;

@@ -23,6 +23,9 @@ function App() {
 					secondary: {
 						main: '#37505C'
 					}
+				},
+				typography: {
+					fontSize: 11
 				}
 			}),
 		[prefersDarkMode]

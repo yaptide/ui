@@ -24,6 +24,10 @@ export interface BeamJSON {
 		z: number;
 		a: number;
 	};
+	beamSigma: {
+		x: number;
+		y: number;
+	};
 	colorHex: number;
 	numberOfParticles: number;
 }
@@ -43,15 +47,19 @@ const _default = {
 		a: 1,
 		z: 1
 	},
+	beamSigma: {
+		x: 0,
+		y: 0
+	},
 	numberOfParticles: 10000
-
 };
 
 export class Beam extends SimulationObject3D {
-	readonly notRemovable = true;
+	readonly notRemovable: boolean = true;
 	readonly notMovable = false;
 	readonly notRotatable = true; //TODO: https://github.com/yaptide/ui/issues/242
 	readonly notScalable = true;
+	readonly notVisibleChildren = true;
 
 	readonly isBeam: true = true;
 
@@ -77,6 +85,11 @@ export class Beam extends SimulationObject3D {
 		distanceToFocal: number;
 	};
 
+	beamSigma: {
+		x: number;
+		y: number;
+	};
+
 	numberOfParticles: number;
 
 	particleData: {
@@ -91,8 +104,9 @@ export class Beam extends SimulationObject3D {
 
 	private proxy: Beam; // use proxy if you want inform about changes
 
-	readonly debouncedDispatchChanged = debounce(200, () =>
-		this.editor.signals.objectChanged.dispatch(this.proxy),
+	readonly debouncedDispatchChanged = debounce(
+		200,
+		() => this.editor.signals.objectChanged.dispatch(this.proxy),
 		{ atBegin: false }
 	);
 
@@ -100,7 +114,14 @@ export class Beam extends SimulationObject3D {
 		set: (target: Beam, prop: keyof Beam, value: unknown) => {
 			const result = Reflect.set(target, prop, value);
 
-			const informChange: (keyof Beam)[] = ['direction', 'energy', 'divergence'];
+			const informChange: (keyof Beam)[] = [
+				'direction',
+				'energy',
+				'energySpread',
+				'divergence',
+				'particleData',
+				'numberOfParticles'
+			];
 			if (informChange.includes(prop)) {
 				this.debouncedDispatchChanged();
 			}
@@ -129,6 +150,8 @@ export class Beam extends SimulationObject3D {
 		this.energySpread = _default.energySpread;
 
 		this.divergence = { ..._default.divergence };
+
+		this.beamSigma = { ..._default.beamSigma };
 
 		this.particleData = _default.particle;
 
@@ -229,6 +252,7 @@ export class Beam extends SimulationObject3D {
 			direction: this.direction.toArray(),
 			energy: this.energy,
 			energySpread: this.energySpread,
+			beamSigma: this.beamSigma,
 			divergence: this.divergence,
 			particle: this.particleData,
 			colorHex: this.material.color.getHex(),
@@ -239,14 +263,16 @@ export class Beam extends SimulationObject3D {
 	}
 
 	fromJSON(data: BeamJSON) {
-		this.position.fromArray(data.position);
-		this.direction.fromArray(data.direction);
-		this.energy = data.energy;
-		this.energySpread = data.energySpread;
-		this.divergence = data.divergence;
-		this.particleData = data.particle;
-		this.material.color.setHex(data.colorHex);
-		this.numberOfParticles = data.numberOfParticles;
+		const loadedData = { ..._default, ...data };
+		this.position.fromArray(loadedData.position);
+		this.direction.fromArray(loadedData.direction);
+		this.energy = loadedData.energy;
+		this.energySpread = loadedData.energySpread;
+		this.divergence = loadedData.divergence;
+		this.particleData = loadedData.particle;
+		this.material.color.setHex(loadedData.colorHex);
+		this.numberOfParticles = loadedData.numberOfParticles;
+		this.beamSigma = loadedData.beamSigma;
 		return this;
 	}
 

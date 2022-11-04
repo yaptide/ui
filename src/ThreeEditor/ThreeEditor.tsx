@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Typography } from '@mui/material';
+import { AppBar, Box } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import THREE from 'three';
 import './css/main.css';
@@ -9,6 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { EditorMenu } from './components/EditorMenu/EditorMenu';
 import useDocumentTitle from '../util/useDocumentTitle';
 import { useTheme } from '@mui/material/styles';
+import { EditorSidebar } from './components/Sidebar/EditorSidebar';
 declare global {
 	interface Window {
 		editor: Editor;
@@ -97,32 +98,22 @@ function ThreeEditor(props: ThreeEditorProps) {
 					)}
 				</div>
 			</Box>
-
-			<AppBar
-				position='static'
-				color='secondary'
-				sx={{
-					'width': 350,
-					'&.MuiAppBar-colorSecondary': {
-						backgroundColor:
-							theme.palette.mode === 'dark'
-								? theme.palette.secondary.dark
-								: theme.palette.secondary.light
-					}
-				}}>
-				<Typography
+			{editor && (
+				<AppBar
+					position='static'
+					color='secondary'
 					sx={{
-						padding: 2
+						'width': 350,
+						'&.MuiAppBar-colorSecondary': {
+							backgroundColor:
+								theme.palette.mode === 'dark'
+									? theme.palette.secondary.dark
+									: theme.palette.secondary.light
+						}
 					}}>
-					Placeholder for the properties panel
-					<Button
-						onClick={() => {
-							document.getElementById('sidebar')?.classList.toggle('hidden');
-						}}>
-						Toggle old UI
-					</Button>
-				</Typography>
-			</AppBar>
+					<EditorSidebar editor={editor}></EditorSidebar>
+				</AppBar>
+			)}
 		</Box>
 	);
 }

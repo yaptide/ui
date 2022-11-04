@@ -25,6 +25,7 @@ export class SetDetectGeometryCommand extends Command {
 		this.editor.signals.geometryChanged.dispatch(this.object);
 		this.editor.signals.detectGeometryChanged.dispatch(this.object);
 		this.editor.signals.sceneGraphChanged.dispatch();
+		this.editor.signals.objectChanged.dispatch(this.object, 'geometryData');
 	}
 
 	undo() {
@@ -36,6 +37,7 @@ export class SetDetectGeometryCommand extends Command {
 		this.editor.signals.geometryChanged.dispatch(this.object);
 		this.editor.signals.detectGeometryChanged.dispatch(this.object);
 		this.editor.signals.sceneGraphChanged.dispatch();
+		this.editor.signals.objectChanged.dispatch(this.object, 'geometryData');
 	}
 
 	update(command) {

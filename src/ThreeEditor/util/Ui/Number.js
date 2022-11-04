@@ -15,7 +15,7 @@ import {
  * @param {{
  *		value?: number,
  *		precision?: number
- *		update: ()=> void,
+ *		update: (event)=> void,
  *		min?: number,
  *		max?: number,
  *		unit?: string,
@@ -132,7 +132,7 @@ export class UIScientificNumber extends UINumber {
 			super.setValue(value);
 			return this;
 		}
-		value = 0 + parseFloat(parseFloat(value).toFixed(PRECISION));
+		value = 0 + parseFloat(parseFloat(value).toFixed(this.precision));
 
 		if (value < this.min) value = this.min;
 		if (value > this.max) value = this.max;

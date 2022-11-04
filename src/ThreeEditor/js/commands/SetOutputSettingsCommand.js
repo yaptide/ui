@@ -24,12 +24,12 @@ export class SetOutputSettingsCommand extends Command {
 
 	execute() {
 		this.object[this.attributeName] = this.newValue;
-		this.editor.signals.objectChanged.dispatch(this.object);
+		this.editor.signals.objectChanged.dispatch(this.object, this.attributeName);
 	}
 
 	undo() {
 		this.object[this.attributeName] = this.oldValue;
-		this.editor.signals.objectChanged.dispatch(this.object);
+		this.editor.signals.objectChanged.dispatch(this.object, this.attributeName);
 	}
 
 	update(cmd) {

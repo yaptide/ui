@@ -15,7 +15,7 @@ interface DetectManagerJSON {
 }
 
 export class DetectContainer extends SimulationSceneGroup<DetectGeometry> {
-	readonly notRemovable = true;
+	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
@@ -34,7 +34,7 @@ export class DetectContainer extends SimulationSceneGroup<DetectGeometry> {
 }
 
 export class FilterContainer extends SimulationSceneGroup<DetectFilter> {
-	readonly notRemovable = true;
+	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
@@ -54,7 +54,7 @@ export class FilterContainer extends SimulationSceneGroup<DetectFilter> {
 }
 
 export class DetectManager extends THREE.Scene implements ISimulationObject {
-	readonly notRemovable = true;
+	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;

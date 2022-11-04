@@ -34,7 +34,7 @@ class SetValueCommand extends Command {
 
 	execute() {
 		this.object[this.attributeName] = this.newValue;
-		this.editor.signals.objectChanged.dispatch(this.object);
+		this.editor.signals.objectChanged.dispatch(this.object, this.attributeName);
 	}
 
 	undo() {
@@ -42,7 +42,7 @@ class SetValueCommand extends Command {
 
 		if (this.sideEffect) this.object.fromJSON(this.oldState);
 
-		this.editor.signals.objectChanged.dispatch(this.object);
+		this.editor.signals.objectChanged.dispatch(this.object, this.attributeName);
 	}
 
 	update(cmd) {
