@@ -27,7 +27,7 @@ export interface BeamJSON {
 	beamSigma: {
 		x: number;
 		y: number;
-	}
+	};
 	colorHex: number;
 	numberOfParticles: number;
 }
@@ -52,7 +52,6 @@ const _default = {
 		y: 0
 	},
 	numberOfParticles: 10000
-
 };
 
 export class Beam extends SimulationObject3D {
@@ -89,7 +88,7 @@ export class Beam extends SimulationObject3D {
 	beamSigma: {
 		x: number;
 		y: number;
-	}
+	};
 
 	numberOfParticles: number;
 
@@ -105,8 +104,9 @@ export class Beam extends SimulationObject3D {
 
 	private proxy: Beam; // use proxy if you want inform about changes
 
-	readonly debouncedDispatchChanged = debounce(200, () =>
-		this.editor.signals.objectChanged.dispatch(this.proxy),
+	readonly debouncedDispatchChanged = debounce(
+		200,
+		() => this.editor.signals.objectChanged.dispatch(this.proxy),
 		{ atBegin: false }
 	);
 
@@ -114,7 +114,14 @@ export class Beam extends SimulationObject3D {
 		set: (target: Beam, prop: keyof Beam, value: unknown) => {
 			const result = Reflect.set(target, prop, value);
 
-			const informChange: (keyof Beam)[] = ['direction', 'energy', 'energySpread', 'divergence', 'particleData', 'numberOfParticles'];
+			const informChange: (keyof Beam)[] = [
+				'direction',
+				'energy',
+				'energySpread',
+				'divergence',
+				'particleData',
+				'numberOfParticles'
+			];
 			if (informChange.includes(prop)) {
 				this.debouncedDispatchChanged();
 			}
