@@ -16,7 +16,7 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [16.x]
+                node-version: [16.x, 18.x]
                 # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
         steps:
@@ -52,6 +52,12 @@ jobs:
 
             - name: Install 🔧
               run: npm install
+
+            - name: Use Node.js 18.x
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '18.x'
+                  cache: 'npm'
 
             - name: webfactory/ssh-agent 🖥️
               uses: webfactory/ssh-agent@v0.7.0
