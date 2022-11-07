@@ -25,17 +25,16 @@ for i, elem in enumerate(elements):
 with open('./doc/tex/UsersGuide/07_reftab.tex', 'r') as infile:
   for line in infile.readlines()[335:526]:
     if line.strip():
-        data = line.strip().split()
-        materialId = data[0]
-        materialName = ' '.join(data[2:])[1:-2]
-        line = "	{ icru: "   + materialId + ", name: '" + materialName + "' , density: " + str(densities[int(materialId)-1]) + " },"
+        data = line.strip().split('&')
+        icru_id = data[0].rstrip()
+        name = data[2].rstrip('\\')
+        line = "	{ icru: "   + icru_id + ", name: '" + name + "' , density: " + str(densities[int(icru_id)-1]) + " },"
         print(line)
-
 */
 
 export const MATERIALS = [
-	{ icru: 1000, name: 'VACUUM' },
-	{ icru: 0, name: 'BLACK HOLE' },
+	{ icru: 1000, name: 'VACUUM' , density: 0 },
+	{ icru: 0, name: 'BLACK HOLE' , density: 0 },
 	{ icru: 1, name: 'HYDROGEN' , density: 8.3748e-05 },
 	{ icru: 2, name: 'HELIUM' , density: 0.000166322 },
 	{ icru: 3, name: 'LITHIUM' , density: 0.534 },
@@ -239,8 +238,8 @@ export const MATERIALS = [
 	{ icru: 201, name: 'MUSCLE, SKELETAL (ICRP)' , density: 1.04 },
 	{ icru: 202, name: 'MUSCLE, STRIATED (ICRU)' , density: 1.04 },
 	{ icru: 203, name: 'MUSCLE EQUIVALENT LIQUID, WITH SUCROSE' , density: 1.11 },
-	{ icru: 204, name: 'QUIVALENT LIQUID, NO SUCROSE' , density: 1.07 },
-	{ icru: 205, name: '' , density: 1.145 },
+	{ icru: 204, name: 'MUSCLE EQUIVALENT LIQUID, NO SUCROSE' , density: 1.07 },
+	{ icru: 205, name: 'NAPHTHALENE' , density: 1.145 },
 	{ icru: 206, name: 'NITROBENZENE' , density: 1.19867 },
 	{ icru: 207, name: 'NITROUS OXIDE' , density: 0.00183094 },
 	{ icru: 208, name: 'NYLON, DU PONT ELVAMIDE 8062' , density: 1.08 },
