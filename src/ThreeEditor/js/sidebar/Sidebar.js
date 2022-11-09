@@ -18,9 +18,9 @@ function Sidebar(editor) {
 	const project = new SidebarProject(editor);
 	let ignoreContextChangedSignal = false;
 
-	tabbed.addTab('scene', 'SCENE', scene);
+	tabbed.addTab('geometry', 'SCENE', scene);
 	tabbed.addTab('scoring', 'SCORING', scoring);
-	tabbed.addTab('project', 'PROJECT', project);
+	tabbed.addTab('settings', 'PROJECT', project);
 
 	tabbed._select = tabbed.select;
 	tabbed.select = function (id) {
@@ -30,15 +30,15 @@ function Sidebar(editor) {
 		editor.contextManager.currentContext = id;
 		ignoreContextChangedSignal = false;
 	};
-	tabbed.select('scene');
+	tabbed.select('geometry');
 
 	signals.contextChanged.add(id => {
 		ignoreContextChangedSignal || tabbed._select(id);
 	});
 
 	editor.signals.exampleLoaded.add(() => {
-		tabbed.select('project');
-	})
+		tabbed.select('settings');
+	});
 
 	container.add(tabbed);
 	container.add(properties);
