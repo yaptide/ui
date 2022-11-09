@@ -28,6 +28,17 @@ export function initEditor(container) {
 	const sidebar = new Sidebar(editor);
 	container.appendChild(sidebar.dom);
 
+	Object.defineProperty(editor, "oldSidebarVisible", {
+		get: function () {
+			return sidebar.getDisplay() !== "none";
+		},
+		set: function (val) {
+			sidebar.setDisplay(val ? "" : "none");
+		}
+	});
+
+	editor.oldSidebarVisible = false;
+
 	const menubar = new Menubar(editor);
 	// menubar has required dependencies for other UI components and will be removed last.
 
