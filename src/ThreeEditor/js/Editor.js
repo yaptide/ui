@@ -469,7 +469,7 @@ Editor.prototype = {
 
 		this.config.setKey('selected', uuid);
 
-		this.signals.objectSelected.dispatch(object);
+		this.signals.objectSelected.dispatch(this.selected);
 	},
 
 	getObjectByName(name) {

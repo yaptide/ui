@@ -27,7 +27,7 @@ export function EditorSidebar(props: { editor: Editor }) {
 				editor.contextManager.currentContext = 'settings';
 				break;
 			default:
-				editor.contextManager.currentContext = 'scene';
+				editor.contextManager.currentContext = 'geometry';
 		}
 	};
 
