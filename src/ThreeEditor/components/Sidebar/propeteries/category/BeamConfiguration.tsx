@@ -2,10 +2,73 @@ import { Object3D } from 'three';
 import { Editor } from '../../../../js/Editor';
 import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
-import { Beam, isBeam } from '../../../../util/Beam';
-import { NumberPropertyField, PropertyField, Vector2PropertyField } from '../fields/PropertyField';
+import { Beam, isBeam, SigmaType, SIGMA_TYPE } from '../../../../util/Beam';
+import {
+	NumberPropertyField,
+	PropertyField,
+	SelectPropertyField,
+	Vector2PropertyField
+} from '../fields/PropertyField';
 import { PARTICLE_TYPES } from '../../../../util/particles';
 import { IParticleType, ParticleSelect } from '../../../Select/ParticlesSelect';
+import { Divider } from '@mui/material';
+
+function BeamSigmaField(props: { beam: Beam }) {
+	const configuration = {
+		[SIGMA_TYPE.Gaussian]: {
+			X: {
+				text: 'sigma in X'
+			},
+			Y: {
+				text: 'sigma in Y'
+			}
+		},
+		[SIGMA_TYPE['Flat square']]: {
+			X: {
+				text: 'half-side in X'
+			},
+			Y: {
+				text: 'half-side in Y'
+			}
+		},
+		[SIGMA_TYPE['Flat circular']]: {
+			X: {
+				text: 'radius in X'
+			}
+		}
+	};
+
+	const selectedConfiguration = configuration[props.beam.sigma.type];
+
+	return (
+		<>
+			<SelectPropertyField
+				label='Beam shape'
+				value={props.beam.sigma.type}
+				onChange={value =>
+					(props.beam.sigma = { ...props.beam.sigma, type: value as SigmaType })
+				}
+				options={Object.keys(SIGMA_TYPE)}
+			/>
+			<NumberPropertyField
+				label={selectedConfiguration.X.text}
+				value={props.beam.sigma.x}
+				onChange={value => (props.beam.sigma = { ...props.beam.sigma, x: value })}
+				min={0}
+				unit='cm'
+			/>
+			{'Y' in selectedConfiguration && (
+				<NumberPropertyField
+					label={selectedConfiguration.Y.text}
+					value={props.beam.sigma.y}
+					onChange={value => (props.beam.sigma = { ...props.beam.sigma, y: value })}
+					min={0}
+					unit='cm'
+				/>
+			)}
+		</>
+	);
+}
 
 export function BeamConfiguration(props: { editor: Editor; object: Object3D }) {
 	const { object, editor } = props;
@@ -35,6 +98,7 @@ export function BeamConfiguration(props: { editor: Editor; object: Object3D }) {
 							watchedObject.energySpread = v;
 						}}
 					/>
+					<PropertyField children={<Divider />} />
 					<Vector2PropertyField
 						label='Divergence XY'
 						value={watchedObject.divergence}
@@ -52,14 +116,11 @@ export function BeamConfiguration(props: { editor: Editor; object: Object3D }) {
 							watchedObject.divergence.distanceToFocal = v;
 						}}
 					/>
-					{console.log(watchedObject.beamSigma)}
-					<Vector2PropertyField
-						label='Beam sigma'
-						value={watchedObject.beamSigma}
-						onChange={v => {
-							watchedObject.beamSigma = v;
-						}}
-					/>
+					<PropertyField children={<Divider />} />
+
+					<BeamSigmaField beam={watchedObject} />
+
+					<PropertyField children={<Divider />} />
 					<NumberPropertyField
 						label='Number of primary particles'
 						precision={0}
