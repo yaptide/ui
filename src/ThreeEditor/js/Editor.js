@@ -127,6 +127,8 @@ export function Editor(container) {
 
 	this.results = null;
 
+	this.oldSidebarVisible = true;
+
 	this.container = container;
 	container.setAttribute('tabindex', '-1');
 	this.container.focus();
