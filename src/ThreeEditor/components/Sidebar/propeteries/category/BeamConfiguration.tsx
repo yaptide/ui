@@ -32,8 +32,8 @@ function BeamSigmaField(props: { beam: Beam }) {
 			}
 		},
 		[SIGMA_TYPE['Flat circular']]: {
-			X: {
-				text: 'radius in X'
+			Y: {
+				text: 'radius'
 			}
 		}
 	};
@@ -50,22 +50,22 @@ function BeamSigmaField(props: { beam: Beam }) {
 				}
 				options={Object.keys(SIGMA_TYPE)}
 			/>
-			<NumberPropertyField
-				label={selectedConfiguration.X.text}
-				value={props.beam.sigma.x}
-				onChange={value => (props.beam.sigma = { ...props.beam.sigma, x: value })}
-				min={0}
-				unit='cm'
-			/>
-			{'Y' in selectedConfiguration && (
+			{'X' in selectedConfiguration && (
 				<NumberPropertyField
-					label={selectedConfiguration.Y.text}
-					value={props.beam.sigma.y}
-					onChange={value => (props.beam.sigma = { ...props.beam.sigma, y: value })}
+					label={selectedConfiguration.X.text}
+					value={props.beam.sigma.x}
+					onChange={value => (props.beam.sigma = { ...props.beam.sigma, x: value })}
 					min={0}
 					unit='cm'
 				/>
 			)}
+			<NumberPropertyField
+				label={selectedConfiguration.Y.text}
+				value={props.beam.sigma.y}
+				onChange={value => (props.beam.sigma = { ...props.beam.sigma, y: value })}
+				min={0}
+				unit='cm'
+			/>
 		</>
 	);
 }
