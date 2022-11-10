@@ -6,6 +6,51 @@ import { Beam, isBeam } from '../../../../util/Beam';
 import { NumberPropertyField, PropertyField, Vector2PropertyField } from '../fields/PropertyField';
 import { PARTICLE_TYPES } from '../../../../util/particles';
 import { IParticleType, ParticleSelect } from '../../../Select/ParticlesSelect';
+import { Box, Divider, Stack, TextareaAutosize } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
+import { debounce } from 'throttle-debounce';
+
+function BeamDefinitionField(props: { beam: Beam }) {
+	const [state, setState] = useState(props.beam.definitionFile);
+
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const setStateDebounce = useCallback(
+		debounce(200, (value: string) => setState(value)),
+		[setState]
+	);
+
+	useEffect(() => {
+		setStateDebounce(props.beam.definitionFile);
+	}, [props.beam.definitionFile, setStateDebounce]);
+
+	useEffect(() => {
+		return () => {
+			setStateDebounce.cancel();
+		};
+	}, [setStateDebounce]);
+
+	return (
+		<PropertyField>
+			<Stack gap={1}>
+				<Box>Beam Definition</Box>
+				<TextareaAutosize
+					value={state}
+					style={{
+						width: '100%',
+						borderColor: 'rgba(0,0,0,.5)',
+						maxHeight: 300,
+						overflow: 'auto'
+					}}
+					minRows={5}
+					onChange={e => {
+						props.beam.definitionFile = e.target.value;
+						setState(e.target.value);
+					}}
+				/>
+			</Stack>
+		</PropertyField>
+	);
+}
 
 export function BeamConfiguration(props: { editor: Editor; object: Object3D }) {
 	const { object, editor } = props;
@@ -52,7 +97,6 @@ export function BeamConfiguration(props: { editor: Editor; object: Object3D }) {
 							watchedObject.divergence.distanceToFocal = v;
 						}}
 					/>
-					{console.log(watchedObject.beamSigma)}
 					<Vector2PropertyField
 						label='Beam sigma'
 						value={watchedObject.beamSigma}
@@ -104,6 +148,10 @@ export function BeamConfiguration(props: { editor: Editor; object: Object3D }) {
 							/>
 						</>
 					)}
+
+					<PropertyField children={<Divider />} />
+
+					<BeamDefinitionField beam={watchedObject} />
 				</>
 			)}
 		</PropertiesCategory>

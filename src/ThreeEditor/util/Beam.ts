@@ -30,6 +30,7 @@ export interface BeamJSON {
 	};
 	colorHex: number;
 	numberOfParticles: number;
+	definitionFile: string;
 }
 
 const _default = {
@@ -51,7 +52,9 @@ const _default = {
 		x: 0,
 		y: 0
 	},
-	numberOfParticles: 10000
+	numberOfParticles: 10000,
+
+	definitionFile: '',
 };
 
 export class Beam extends SimulationObject3D {
@@ -98,6 +101,8 @@ export class Beam extends SimulationObject3D {
 		a: number;
 	};
 
+	definitionFile: string;
+
 	get particle(): Particle {
 		return PARTICLE_TYPES.find(p => p.id === this.particleData.id) as Particle;
 	}
@@ -120,7 +125,8 @@ export class Beam extends SimulationObject3D {
 				'energySpread',
 				'divergence',
 				'particleData',
-				'numberOfParticles'
+				'numberOfParticles',
+				'definitionFile'
 			];
 			if (informChange.includes(prop)) {
 				this.debouncedDispatchChanged();
@@ -156,6 +162,8 @@ export class Beam extends SimulationObject3D {
 		this.particleData = _default.particle;
 
 		this.numberOfParticles = _default.numberOfParticles;
+
+		this.definitionFile = _default.definitionFile;
 
 		this.helper = this.initHelper();
 
@@ -233,7 +241,8 @@ export class Beam extends SimulationObject3D {
 	}
 
 	reset(): void {
-		this.debouncedDispatchChanged.cancel();
+		this.debouncedDispatchChanged.cancel({ upcomingOnly: true });
+
 
 		this.rotation.copy(new Euler());
 		this.position.copy(_default.position);
@@ -243,7 +252,11 @@ export class Beam extends SimulationObject3D {
 		this.energySpread = _default.energySpread;
 		this.divergence = { ..._default.divergence };
 		this.particleData = _default.particle;
+		this.definitionFile = _default.definitionFile;
 		this.material.color.setHex(0xffff00); // yellow
+		console.log('reset');
+		console.log('this', this.definitionFile);
+
 	}
 
 	toJSON() {
@@ -256,7 +269,8 @@ export class Beam extends SimulationObject3D {
 			divergence: this.divergence,
 			particle: this.particleData,
 			colorHex: this.material.color.getHex(),
-			numberOfParticles: this.numberOfParticles
+			numberOfParticles: this.numberOfParticles,
+			definitionFile: this.definitionFile
 		};
 
 		return jsonObject;
@@ -273,6 +287,7 @@ export class Beam extends SimulationObject3D {
 		this.material.color.setHex(loadedData.colorHex);
 		this.numberOfParticles = loadedData.numberOfParticles;
 		this.beamSigma = loadedData.beamSigma;
+		this.definitionFile = loadedData.definitionFile;
 		return this;
 	}
 
