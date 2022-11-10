@@ -127,6 +127,8 @@ export function Editor(container) {
 
 	this.results = null;
 
+	this.oldSidebarVisible = true;
+
 	this.container = container;
 	container.setAttribute('tabindex', '-1');
 	this.container.focus();
@@ -469,7 +471,7 @@ Editor.prototype = {
 
 		this.config.setKey('selected', uuid);
 
-		this.signals.objectSelected.dispatch(object);
+		this.signals.objectSelected.dispatch(this.selected);
 	},
 
 	getObjectByName(name) {
