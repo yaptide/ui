@@ -16,6 +16,30 @@ export interface ZoneJSON {
 	unionOperations: OperationTupleJSON[][];
 	subscribedObjects: Record<string, number>;
 	materialUuid: string;
+	materialPropertiesOverrides: MaterialPropertiesOverridesJSON;
+}
+
+interface MaterialPropertiesOverridesJSON {
+	density?: number;
+}
+
+interface MaterialPropertiesOverrides {
+	density: {
+		override: boolean;
+		value: number;
+	};
+}
+
+const _get_default = (material: SimulationMaterial) => {
+
+	return {
+		materialPropertiesOverrides: {
+			density: {
+				override: false,
+				value: material.density
+			}
+		}
+	}
 }
 
 export class Zone extends SimulationMesh {
@@ -26,7 +50,7 @@ export class Zone extends SimulationMesh {
 	private _unionOperations: OperationTuple[][];
 
 	material: SimulationMaterial;
-
+	materialPropertiesOverrides: MaterialPropertiesOverrides;
 	subscribedObjects: CounterMap<string>;
 	needsUpdate: boolean = true;
 	private signals: {
@@ -62,6 +86,7 @@ export class Zone extends SimulationMesh {
 		this.material.increment();
 		this._unionOperations = [];
 		this.subscribedObjects = new CounterMap<string>();
+		this.materialPropertiesOverrides = { ..._get_default(this.material).materialPropertiesOverrides };
 
 		this.signals.geometryChanged.add(object => this.handleChange(object));
 		this.signals.objectChanged.add(object => this.handleChange(object));
@@ -75,6 +100,7 @@ export class Zone extends SimulationMesh {
 	set simulationMaterial(value: SimulationMaterial) {
 		this.material.decrement();
 		this.material = value;
+		this.materialPropertiesOverrides = { ..._get_default(this.material).materialPropertiesOverrides };
 		this.material.increment();
 	}
 
@@ -90,6 +116,7 @@ export class Zone extends SimulationMesh {
 		this.simulationMaterial = source.material;
 		this.subscribedObjects = source.subscribedObjects;
 		this.unionOperations = source.unionOperations;
+		this.materialPropertiesOverrides = { ...source.materialPropertiesOverrides };
 
 		return this;
 	}
@@ -207,13 +234,21 @@ export class Zone extends SimulationMesh {
 		);
 		const { uuid: materialUuid } = this.simulationMaterial;
 		const subscribedObjects = this.subscribedObjects.toJSON();
-		const { uuid, name } = this;
+		const { uuid, name, materialPropertiesOverrides } = this;
+
+		const materialPropertiesOverridesJSON: Record<string, unknown> = {}
+		for (const key in materialPropertiesOverrides) {
+			const value = materialPropertiesOverrides[key as keyof typeof materialPropertiesOverrides];
+			if (value.override) materialPropertiesOverridesJSON[key] = value.value;
+		}
+
 		return {
 			uuid,
 			name,
 			materialUuid,
 			unionOperations,
-			subscribedObjects
+			subscribedObjects,
+			materialPropertiesOverrides: materialPropertiesOverridesJSON
 		};
 	}
 
@@ -230,6 +265,17 @@ export class Zone extends SimulationMesh {
 		this.simulationMaterial =
 			this.editor.materialManager.getMaterialByUuid(data.materialUuid) ??
 			this.editor.materialManager.defaultMaterial;
+
+		for (const prop in data.materialPropertiesOverrides) {
+			const value = data.materialPropertiesOverrides[prop as keyof MaterialPropertiesOverrides] ?? NaN;
+			if (isNaN(value)) continue;
+
+			this.materialPropertiesOverrides[prop as keyof MaterialPropertiesOverrides] = {
+				override: true,
+				value: value
+			};
+
+		}
 
 		return this;
 	}
