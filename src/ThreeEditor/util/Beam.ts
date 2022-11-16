@@ -9,6 +9,13 @@ import { Editor } from '../js/Editor';
 import { Particle, PARTICLE_TYPES } from './particles';
 import { SimulationObject3D } from './SimulationBase/SimulationMesh';
 
+export const SIGMA_TYPE = {
+	'Gaussian': 'Gaussian',
+	'Flat square': 'Flat square',
+	'Flat circular': 'Flat circular'
+} as const;
+export type SigmaType = keyof typeof SIGMA_TYPE;
+
 export interface BeamJSON {
 	position: THREE.Vector3Tuple;
 	direction: THREE.Vector3Tuple;
@@ -24,7 +31,8 @@ export interface BeamJSON {
 		z: number;
 		a: number;
 	};
-	beamSigma: {
+	sigma: {
+		type: SigmaType;
 		x: number;
 		y: number;
 	};
@@ -48,7 +56,8 @@ const _default = {
 		a: 1,
 		z: 1
 	},
-	beamSigma: {
+	sigma: {
+		type: SIGMA_TYPE.Gaussian,
 		x: 0,
 		y: 0
 	},
@@ -88,7 +97,8 @@ export class Beam extends SimulationObject3D {
 		distanceToFocal: number;
 	};
 
-	beamSigma: {
+	sigma: {
+		type: SigmaType
 		x: number;
 		y: number;
 	};
@@ -126,7 +136,7 @@ export class Beam extends SimulationObject3D {
 				'divergence',
 				'particleData',
 				'numberOfParticles',
-				'definitionFile'
+				'sigma'
 			];
 			if (informChange.includes(prop)) {
 				this.debouncedDispatchChanged();
@@ -157,7 +167,7 @@ export class Beam extends SimulationObject3D {
 
 		this.divergence = { ..._default.divergence };
 
-		this.beamSigma = { ..._default.beamSigma };
+		this.sigma = { ..._default.sigma };
 
 		this.particleData = _default.particle;
 
@@ -252,7 +262,7 @@ export class Beam extends SimulationObject3D {
 		this.energySpread = _default.energySpread;
 		this.divergence = { ..._default.divergence };
 		this.particleData = _default.particle;
-		this.definitionFile = _default.definitionFile;
+		this.sigma = { ..._default.sigma };
 		this.material.color.setHex(0xffff00); // yellow
 		console.log('reset');
 		console.log('this', this.definitionFile);
@@ -265,7 +275,7 @@ export class Beam extends SimulationObject3D {
 			direction: this.direction.toArray(),
 			energy: this.energy,
 			energySpread: this.energySpread,
-			beamSigma: this.beamSigma,
+			sigma: this.sigma,
 			divergence: this.divergence,
 			particle: this.particleData,
 			colorHex: this.material.color.getHex(),
@@ -285,9 +295,9 @@ export class Beam extends SimulationObject3D {
 		this.divergence = loadedData.divergence;
 		this.particleData = loadedData.particle;
 		this.material.color.setHex(loadedData.colorHex);
-		this.numberOfParticles = loadedData.numberOfParticles;
-		this.beamSigma = loadedData.beamSigma;
+		this.numberOfParticles = loadedData.numberOfParticles;		
 		this.definitionFile = loadedData.definitionFile;
+		this.sigma = loadedData.sigma;
 		return this;
 	}
 
