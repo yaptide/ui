@@ -16,11 +16,18 @@ export const SIGMA_TYPE = {
 } as const;
 export type SigmaType = keyof typeof SIGMA_TYPE;
 
+export const DEFINITION_TYPE = {
+	'simple': 'simple',
+	'file': 'file',
+} as const;
+export type DefinitionType = keyof typeof DEFINITION_TYPE;
+
 export interface BeamJSON {
 	position: THREE.Vector3Tuple;
 	direction: THREE.Vector3Tuple;
 	energy: number;
 	energySpread: number;
+	definitionType: DefinitionType;
 	divergence: {
 		x: number;
 		y: number;
@@ -38,12 +45,13 @@ export interface BeamJSON {
 	};
 	colorHex: number;
 	numberOfParticles: number;
-	definitionFile: string;
+	definitionFile: DefinitionFile;
 }
 
 const _default = {
 	position: new THREE.Vector3(0, 0, 0),
 	direction: new THREE.Vector3(0, 0, 1),
+	definitionType: DEFINITION_TYPE.simple,
 	energy: 150,
 	energySpread: 1.5,
 	divergence: {
@@ -63,8 +71,16 @@ const _default = {
 	},
 	numberOfParticles: 10000,
 
-	definitionFile: '',
+	definitionFile: {
+		value: '',
+		name: ''
+	}
 };
+
+type DefinitionFile = {
+	value: string;
+	name: string;
+}
 
 export class Beam extends SimulationObject3D {
 	readonly notRemovable: boolean = true;
@@ -91,6 +107,8 @@ export class Beam extends SimulationObject3D {
 	energySpread: number;
 	direction: Vector3;
 
+	definitionType: DefinitionType = _default.definitionType;
+
 	divergence: {
 		x: number;
 		y: number;
@@ -111,7 +129,7 @@ export class Beam extends SimulationObject3D {
 		a: number;
 	};
 
-	definitionFile: string;
+	definitionFile: DefinitionFile;
 
 	get particle(): Particle {
 		return PARTICLE_TYPES.find(p => p.id === this.particleData.id) as Particle;
@@ -136,7 +154,9 @@ export class Beam extends SimulationObject3D {
 				'divergence',
 				'particleData',
 				'numberOfParticles',
-				'sigma'
+				'sigma',
+				'definitionType',
+				'definitionFile'
 			];
 			if (informChange.includes(prop)) {
 				this.debouncedDispatchChanged();
@@ -173,7 +193,7 @@ export class Beam extends SimulationObject3D {
 
 		this.numberOfParticles = _default.numberOfParticles;
 
-		this.definitionFile = _default.definitionFile;
+		this.definitionFile = { ..._default.definitionFile };
 
 		this.helper = this.initHelper();
 
@@ -263,6 +283,8 @@ export class Beam extends SimulationObject3D {
 		this.divergence = { ..._default.divergence };
 		this.particleData = _default.particle;
 		this.sigma = { ..._default.sigma };
+		this.definitionType = _default.definitionType;
+		this.definitionFile = { ..._default.definitionFile };
 		this.material.color.setHex(0xffff00); // yellow
 		console.log('reset');
 		console.log('this', this.definitionFile);
@@ -280,7 +302,8 @@ export class Beam extends SimulationObject3D {
 			particle: this.particleData,
 			colorHex: this.material.color.getHex(),
 			numberOfParticles: this.numberOfParticles,
-			definitionFile: this.definitionFile
+			definitionFile: this.definitionFile,
+			definitionType: this.definitionType
 		};
 
 		return jsonObject;
@@ -295,9 +318,10 @@ export class Beam extends SimulationObject3D {
 		this.divergence = loadedData.divergence;
 		this.particleData = loadedData.particle;
 		this.material.color.setHex(loadedData.colorHex);
-		this.numberOfParticles = loadedData.numberOfParticles;		
+		this.numberOfParticles = loadedData.numberOfParticles;
 		this.definitionFile = loadedData.definitionFile;
 		this.sigma = loadedData.sigma;
+		this.definitionType = loadedData.definitionType;
 		return this;
 	}
 

@@ -2,7 +2,7 @@ import { Object3D } from 'three';
 import { Editor } from '../../../../js/Editor';
 import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
-import { Beam, isBeam, SigmaType, SIGMA_TYPE } from '../../../../util/Beam';
+import { Beam, DEFINITION_TYPE, isBeam, SigmaType, SIGMA_TYPE } from '../../../../util/Beam';
 import {
 	NumberPropertyField,
 	PropertyField,
@@ -11,49 +11,64 @@ import {
 } from '../fields/PropertyField';
 import { PARTICLE_TYPES } from '../../../../util/particles';
 import { IParticleType, ParticleSelect } from '../../../Select/ParticlesSelect';
-import { Box, Divider, Stack, TextareaAutosize } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
-import { debounce } from 'throttle-debounce';
+import { Box, Button, Divider, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { ChangeEvent } from 'react';
 
 function BeamDefinitionField(props: { beam: Beam }) {
-	const [state, setState] = useState(props.beam.definitionFile);
+	const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
+		if (!e.target.files) {
+			return;
+		}
+		const file = e.target.files[0];
 
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const setStateDebounce = useCallback(
-		debounce(200, (value: string) => setState(value)),
-		[setState]
-	);
+		const { name } = file;
 
-	useEffect(() => {
-		setStateDebounce(props.beam.definitionFile);
-	}, [props.beam.definitionFile, setStateDebounce]);
-
-	useEffect(() => {
-		return () => {
-			setStateDebounce.cancel();
+		const reader = new FileReader();
+		reader.onload = evt => {
+			if (!evt?.target?.result) {
+				return;
+			}
+			const { result } = evt.target;
+			if (typeof result === 'string') {
+				props.beam.definitionFile = { name, value: result };
+			} else {
+				console.error('Invalid file type');
+			}
 		};
-	}, [setStateDebounce]);
+		reader.readAsBinaryString(file);
+	};
+
+	const clearFile = () => {
+		props.beam.definitionFile = { name: '', value: '' };
+	};
 
 	return (
-		<PropertyField>
-			<Stack gap={1}>
-				<Box>Beam Definition</Box>
-				<TextareaAutosize
-					value={state}
-					style={{
-						width: '100%',
-						borderColor: 'rgba(0,0,0,.5)',
-						maxHeight: 300,
-						overflow: 'auto'
-					}}
-					minRows={5}
-					onChange={e => {
-						props.beam.definitionFile = e.target.value;
-						setState(e.target.value);
-					}}
-				/>
-			</Stack>
-		</PropertyField>)}
+		<>
+			{props.beam.definitionFile.name && (
+				<PropertyField label='Filename'>{props.beam.definitionFile.name}</PropertyField>
+			)}
+
+			<PropertyField>
+				<Stack gap={1} direction='row'>
+					<Button sx={{ flexGrow: 1 }} variant='contained' component='label'>
+						Upload File
+						<input type='file' hidden onChange={handleFileUpload} />
+					</Button>
+
+					<Button
+						disabled={!props.beam.definitionFile.name}
+						sx={{ flexGrow: 1 }}
+						variant='contained'
+						component='label'
+						onClick={clearFile}
+						color='warning'>
+						Clear File
+					</Button>
+				</Stack>
+			</PropertyField>
+		</>
+	);
+}
 
 function BeamSigmaField(props: { beam: Beam }) {
 	const configuration = {
@@ -112,16 +127,28 @@ function BeamSigmaField(props: { beam: Beam }) {
 	);
 }
 
-export function BeamConfiguration(props: { editor: Editor; object: Object3D }) {
+function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
 	const { object, editor } = props;
 
-	const { state: watchedObject } = useSmartWatchEditorState(editor, object as Beam, true);
-
-	const visibleFlag = isBeam(watchedObject);
+	const { state: watchedObject } = useSmartWatchEditorState(editor, object, true);
 
 	return (
-		<PropertiesCategory category='Beam Configuration' visible={visibleFlag}>
-			{visibleFlag && (
+		<>
+			<PropertyField label='Definition type'>
+				<ToggleButtonGroup
+					color='primary'
+					size='small'
+					value={watchedObject.definitionType}
+					exclusive
+					onChange={(_e, value) => {
+						watchedObject.definitionType = value;
+					}}>
+					<ToggleButton value={DEFINITION_TYPE.simple}>Simple</ToggleButton>
+					<ToggleButton value={DEFINITION_TYPE.file}>File</ToggleButton>
+				</ToggleButtonGroup>
+			</PropertyField>
+
+			{watchedObject.definitionType === DEFINITION_TYPE.simple && (
 				<>
 					<NumberPropertyField
 						label='Energy mean'
@@ -140,6 +167,7 @@ export function BeamConfiguration(props: { editor: Editor; object: Object3D }) {
 							watchedObject.energySpread = v;
 						}}
 					/>
+
 					<PropertyField children={<Divider />} />
 					<Vector2PropertyField
 						label='Divergence XY'
@@ -161,58 +189,74 @@ export function BeamConfiguration(props: { editor: Editor; object: Object3D }) {
 					<PropertyField children={<Divider />} />
 
 					<BeamSigmaField beam={watchedObject} />
+				</>
+			)}
 
-					<PropertyField children={<Divider />} />
+			<PropertyField children={<Divider />} />
+			<NumberPropertyField
+				label='Number of primary particles'
+				precision={0}
+				step={1}
+				value={watchedObject.numberOfParticles}
+				onChange={v => {
+					watchedObject.numberOfParticles = v;
+				}}
+			/>
+			<PropertyField label='Particle type'>
+				<ParticleSelect
+					particles={PARTICLE_TYPES as unknown as IParticleType[]}
+					value={watchedObject.particleData.id}
+					onChange={(_, value) => {
+						watchedObject.particleData.id = value;
+						watchedObject.debouncedDispatchChanged();
+					}}
+				/>
+			</PropertyField>
+
+			{watchedObject.particleData.id === 25 && (
+				<>
 					<NumberPropertyField
-						label='Number of primary particles'
+						label='charge (Z)'
 						precision={0}
 						step={1}
-						value={watchedObject.numberOfParticles}
+						value={watchedObject.particleData.z}
 						onChange={v => {
-							watchedObject.numberOfParticles = v;
+							watchedObject.particleData.z = v;
+							watchedObject.debouncedDispatchChanged();
 						}}
 					/>
-					<PropertyField label='Particle type'>
-						<ParticleSelect
-							particles={PARTICLE_TYPES as unknown as IParticleType[]}
-							value={watchedObject.particleData.id}
-							onChange={(_, value) => {
-								watchedObject.particleData.id = value;
-								watchedObject.debouncedDispatchChanged();
-							}}
-						/>
-					</PropertyField>
+					<NumberPropertyField
+						label='nucleons (A)'
+						precision={0}
+						step={1}
+						value={watchedObject.particleData.a}
+						onChange={v => {
+							watchedObject.particleData.a = v;
+							watchedObject.debouncedDispatchChanged();
+						}}
+					/>
+				</>
+			)}
 
-					{watchedObject.particleData.id === 25 && (
-						<>
-							<NumberPropertyField
-								label='charge (Z)'
-								precision={0}
-								step={1}
-								value={watchedObject.particleData.z}
-								onChange={v => {
-									watchedObject.particleData.z = v;
-									watchedObject.debouncedDispatchChanged();
-								}}
-							/>
-							<NumberPropertyField
-								label='nucleons (A)'
-								precision={0}
-								step={1}
-								value={watchedObject.particleData.a}
-								onChange={v => {
-									watchedObject.particleData.a = v;
-									watchedObject.debouncedDispatchChanged();
-								}}
-							/>
-						</>
-					)}
-
+			{props.object.definitionType === DEFINITION_TYPE.file && (
+				<>
 					<PropertyField children={<Divider />} />
 
 					<BeamDefinitionField beam={watchedObject} />
 				</>
 			)}
+		</>
+	);
+}
+
+export function BeamConfiguration(props: { editor: Editor; object: Object3D }) {
+	const { object, editor } = props;
+
+	const visibleFlag = isBeam(object);
+
+	return (
+		<PropertiesCategory category='Beam Configuration' visible={visibleFlag}>
+			{visibleFlag && <BeamConfigurationFields editor={editor} object={object} />}
 		</PropertiesCategory>
 	);
 }
