@@ -1,13 +1,14 @@
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
-import { DEFAULT_MATERIAL_ICRU, DEFAULT_MATERIAL_NAME } from './materials';
+import { DEFAULT_MATERIAL_DENSITY, DEFAULT_MATERIAL_ICRU, DEFAULT_MATERIAL_NAME } from './materials';
 
-export type RenderProps = Omit<SimulationMaterialJSON, 'uuid' | 'name' | 'icru'>;
+export type RenderProps = Omit<SimulationMaterialJSON, 'uuid' | 'name' | 'icru' | 'density'>;
 
 export type SimulationMaterialJSON = {
 	uuid: string;
 	name: string;
 	icru: number;
+	density: number;
 	transparent?: boolean;
 	opacity?: number;
 	color?: number;
@@ -19,6 +20,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 	private editor: Editor;
 	private colorProxy: THREE.Color;
 	icru: number;
+	density: number;;
 	renderProps: RenderProps;
 	defaultProps: RenderProps;
 	readonly isSimulationMaterial: true = true;
@@ -55,7 +57,8 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 	constructor(
 		editor: Editor,
 		name: string = DEFAULT_MATERIAL_NAME,
-		icru: number = DEFAULT_MATERIAL_ICRU
+		icru: number = DEFAULT_MATERIAL_ICRU,
+		density: number = DEFAULT_MATERIAL_DENSITY
 	) {
 		super({
 			name,
@@ -67,6 +70,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 		this.colorProxy = new Proxy(new THREE.Color(0xff3d3d), this.materialColorHandler);
 		this.editor = editor;
 		this.icru = icru;
+		this.density = density;
 		this.renderProps = {};
 		this.proxy = new Proxy(this, this.overrideHandler);
 		this.defaultProps = {
@@ -79,19 +83,20 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 		return this.proxy;
 	}
 	toJSON(): SimulationMaterialJSON {
-		const { uuid, name, icru, renderProps } = this;
+		const { uuid, name, icru, density, renderProps } = this;
 		return {
 			uuid,
 			name,
 			icru,
+			density,
 			...renderProps
 		};
 	}
 	static fromJSON(
 		editor: Editor,
-		{ uuid, name, icru, ...renderProps }: SimulationMaterialJSON
+		{ uuid, name, icru, density, ...renderProps }: SimulationMaterialJSON
 	): SimulationMaterial {
-		const material = new SimulationMaterial(editor, name, icru);
+		const material = new SimulationMaterial(editor, name, icru, density);
 		material.uuid = uuid;
 		material.renderProps = renderProps;
 		material.applyRenderProps();

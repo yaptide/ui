@@ -1,6 +1,7 @@
 export const COMMON_MATERIAL_ICRUS = [104, 276, 223, 179, 222, 6, 13, 14, 82, 245, 170, 1000];
 export const DEFAULT_MATERIAL_ICRU = 276;
 export const DEFAULT_MATERIAL_NAME = 'WATER, LIQUID';
+export const DEFAULT_MATERIAL_DENSITY = 1.0;
 
 /* made with this Python script:
 # call this script from main repository with SH12A source code
