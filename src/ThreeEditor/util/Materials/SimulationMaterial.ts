@@ -20,7 +20,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 	private editor: Editor;
 	private colorProxy: THREE.Color;
 	icru: number;
-	density: number;;
+	density: number;
 	renderProps: RenderProps;
 	defaultProps: RenderProps;
 	readonly isSimulationMaterial: true = true;
@@ -115,13 +115,16 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 	copy(source: SimulationMaterial): this {
 		const result = super.copy(source);
 		result.renderProps = { ...source.renderProps };
+		result.density = source.density;
+		result.icru = source.icru;
 		return new Proxy(result, this.overrideHandler);
 	}
 
 	clone(): this {
-		const result = this.constructor().copy(this);
-		return new Proxy(result, this.overrideHandler);
+		const result = new SimulationMaterial(this.editor).copy(this) as this;
+		return result;
 	}
+
 	increment = () => this.editor.materialManager.selectedMaterials.increment(this.uuid);
 	decrement = () => this.editor.materialManager.selectedMaterials.decrement(this.uuid);
 }
