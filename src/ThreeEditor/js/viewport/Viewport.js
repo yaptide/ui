@@ -286,7 +286,7 @@ export function Viewport(
 
 	function getIntersects(point) {
 		mouse.set(point.x * 2 - 1, -(point.y * 2) + 1);
-		const clicableObjects = contextManager.getClickableObjects();
+		const clicableObjects = contextManager.getClickables();
 
 		raycaster.setFromCamera(mouse, camera);
 
@@ -413,7 +413,6 @@ export function Viewport(
 
 	function reattachTransformControls(object) {
 		transformControls.detach();
-
 		canBeTransformed(object) && transformControls.attach(object);
 	}
 

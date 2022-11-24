@@ -97,7 +97,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 								<CodeEditor
 									value={value}
 									language='sql'
-									placeholder={`Please enter ${name} content.`}
+									placeholder={`Please enter ${name} content or generate it from editor.`}
 									onChange={evn =>
 										setInputFiles(old => {
 											return { ...old, [name]: evn.target.value };

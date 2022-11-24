@@ -363,13 +363,7 @@ function ViewManager(editor) {
 
 	const canBoxBeUpdated = object =>
 		object &&
-		!(
-			object.isCamera ||
-			object.isFilter ||
-			object.isOutput ||
-			object.isQuantity ||
-			object.isScoringManager
-		);
+		!(object.isCamera || object.isFilter || object.isQuantity || object.isScoringManager);
 
 	const handleSelected = () => {
 		const object = editor.selected;

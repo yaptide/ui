@@ -24,7 +24,7 @@ export function OutputConfiguration(props: { editor: Editor; object: Object3D })
 				new SetOutputSettingsCommand(
 					editor,
 					watchedObject.object,
-					'geometry',
+					'detectGeometry',
 					editor.detectManager.getGeometryByUuid(v.uuid)
 				)
 			);
@@ -40,7 +40,7 @@ export function OutputConfiguration(props: { editor: Editor; object: Object3D })
 				<>
 					<ObjectSelectPropertyField
 						label='Detect geometry'
-						value={watchedObject.geometry?.uuid ?? ''}
+						value={watchedObject.detectGeometry?.uuid ?? ''}
 						options={editor.detectManager.getDetectOptions()}
 						onChange={handleChangedGeometry}
 					/>

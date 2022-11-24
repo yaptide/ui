@@ -23,6 +23,12 @@ export class SetOutputSettingsCommand extends Command {
 	}
 
 	execute() {
+		console.log(
+			'SetOutputSettingsCommand.execute',
+			this.object,
+			this.attributeName,
+			this.newValue
+		);
 		this.object[this.attributeName] = this.newValue;
 		this.editor.signals.objectChanged.dispatch(this.object, this.attributeName);
 	}

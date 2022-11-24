@@ -9,6 +9,7 @@ import { EditorObjectLoader } from '../util/ObjectLoader';
 import { ScoringManager } from '../util/Scoring/ScoringManager';
 import { Config } from './Config.js';
 import { ContextManager } from './Editor.Context';
+import { SimulationEnvManager } from './Editor.SimulationEnv';
 import { History as _History } from './History.js';
 import { Loader } from './Loader.js';
 import { Storage as _Storage } from './Storage.js';
@@ -113,6 +114,7 @@ export function Editor(container) {
 		layoutChanged: new Signal(), // Layout signal
 
 		contextChanged: new Signal(),
+		simulationEnvChanged: new Signal(),
 
 		autocalculateChanged: new Signal(),
 
@@ -164,6 +166,8 @@ export function Editor(container) {
 
 	this.contextManager = new ContextManager(this); //Context Manager must be loaded after all scenes
 
+	this.simEnvManager = new SimulationEnvManager(this); // SimEnv Manager determines which features are available
+
 	this.object = {};
 	this.geometries = {};
 	this.materials = {};
@@ -193,10 +197,10 @@ export function Editor(container) {
 
 Editor.prototype = {
 	set selected(object) {
-		Reflect.set(this.contextManager, 'selected', object);
+		Reflect.set(this.contextManager, 'currentSelected', object);
 	},
 	get selected() {
-		return Reflect.get(this.contextManager, 'selected');
+		return Reflect.get(this.contextManager, 'currentSelected');
 	},
 	setScene(scene) {
 		this.scene.uuid = scene.uuid;
@@ -471,7 +475,7 @@ Editor.prototype = {
 
 		this.config.setKey('selected', uuid);
 
-		this.signals.objectSelected.dispatch(this.selected);
+		// this.signals.objectSelected.dispatch(this.selected);
 	},
 
 	getObjectByName(name) {

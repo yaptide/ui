@@ -9,7 +9,10 @@ export type ScoringManagerJSON = {
 	name: string;
 	scoringOutputs: ScoringOutputJSON[];
 };
-export class ScoringManager extends SimulationSceneGroup<ScoringOutput> implements UniqueChildrenNames {
+export class ScoringManager
+	extends SimulationSceneGroup<ScoringOutput>
+	implements UniqueChildrenNames
+{
 	readonly isScoringManager: true = true;
 	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
@@ -48,6 +51,9 @@ export class ScoringManager extends SimulationSceneGroup<ScoringOutput> implemen
 	}
 	getOutputByUuid(uuid: string) {
 		return this.children.find(output => output.uuid === uuid);
+	}
+	getOutputByGeometryUuid(uuid: string) {
+		return this.children.find(output => output.detectGeometry?.uuid === uuid);
 	}
 	toJSON(): ScoringManagerJSON {
 		return {

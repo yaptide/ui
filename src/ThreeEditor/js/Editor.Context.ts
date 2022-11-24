@@ -1,3 +1,4 @@
+import { stringify } from 'querystring';
 import * as THREE from 'three';
 import { BasicMesh, isBasicMesh } from '../util/BasicMeshes';
 import { Beam, isBeam } from '../util/Beam';
@@ -12,13 +13,16 @@ import {
 	isDetectContainer,
 	isFilterContainer
 } from '../util/Detect/DetectManager';
+import { PropertyManager } from '../util/Manager/PropertyManager';
 import { isScoringManager, ScoringManager } from '../util/Scoring/ScoringManager';
 import { ScoringOutput, isOutput } from '../util/Scoring/ScoringOutput';
 import { isQuantity, ScoringQuantity } from '../util/Scoring/ScoringQuantity';
 import { isWorldZone, WorldZone } from '../util/WorldZone/WorldZone';
 import { Editor } from './Editor';
 
-export type Context = 'geometry' | 'scoring' | 'settings';
+const CONTEXT_VALUES = ['geometry', 'scoring', 'settings'] as const;
+export type Context = typeof CONTEXT_VALUES[number];
+
 export type SceneObject =
 	| CSG.Zone
 	| BasicMesh
@@ -38,134 +42,7 @@ export type OutputObject =
 
 export type SimulationSettingsObject = Beam;
 
-export class ContextManager {
-	private editor: Editor;
-	private _context: Context;
-	private _selected: [SceneObject | null, OutputObject | null, SimulationSettingsObject];
-
-	constructor(editor: Editor, context: Context = 'geometry') {
-		this.editor = editor;
-		this._context = context;
-		this._selected = [null, null, editor.beam];
-		this.editor.signals.contextChanged.add(this.setVisibility.bind(this));
-		this.setVisibility(context);
-	}
-
-	reset = () => {
-		this._selected = [null, null, this.editor.beam];
-		this.editor.signals.objectSelected.dispatch(this.selected);
-	};
-
-	set currentContext(context: Context) {
-		if (this._context !== context) {
-			this._context = context;
-			this.editor.signals.contextChanged.dispatch(context);
-			this.editor.signals.objectSelected.dispatch(this.selected);
-		}
-	}
-
-	get currentContext(): Context {
-		return this._context;
-	}
-
-	getClickableObjects(): THREE.Object3D[] {
-		let clickable: THREE.Object3D[] = [];
-		switch (this._context) {
-			case 'geometry':
-				clickable = clickable.concat(
-					this.editor.scene.visible ? this.editor.scene.children : []
-				);
-				break;
-			case 'scoring':
-				clickable = clickable.concat(
-					this.editor.detectManager.detectContainer.visible
-						? this.editor.detectManager.children
-						: []
-				);
-				break;
-			default:
-				return [];
-		}
-		return clickable;
-	}
-
-	setVisibility(context: Context): void {
-		let visible: THREE.Object3D[] = [this.editor.sceneHelpers];
-		let hidden: THREE.Object3D[] = [];
-		switch (context) {
-			case 'geometry':
-				visible.push(this.editor.scene, this.editor.zoneManager, this.editor.detectManager);
-				hidden.push(this.editor.beam);
-				break;
-			case 'scoring':
-				visible.push(this.editor.detectManager, this.editor.scene);
-				hidden.push(this.editor.zoneManager, this.editor.beam);
-				break;
-			case 'settings':
-				visible.push(this.editor.scene, this.editor.detectManager);
-				hidden.push(this.editor.zoneManager);
-				break;
-			default:
-				visible.push(
-					this.editor.scene,
-					this.editor.zoneManager,
-					this.editor.detectManager,
-					this.editor.sceneHelpers,
-					this.editor.beam
-				);
-				break;
-		}
-		visible.forEach(scene => {
-			scene.visible = true;
-		});
-		hidden.forEach(scene => {
-			scene.visible = false;
-		});
-		this.editor.signals.sceneGraphChanged.dispatch();
-	}
-
-	set selected(selected: SceneObject | OutputObject | SimulationSettingsObject | null) {
-		if (isSimulationSettingsObject(selected)) {
-			if (this._context !== 'settings') {
-				this._context = 'settings';
-				this.editor.signals.contextChanged.dispatch(this._context);
-			}
-		} else if (isOutputObject(selected)) {
-			this._selected[1] = selected;
-			if (this._context !== 'scoring') {
-				this._context = 'scoring';
-				this.editor.signals.contextChanged.dispatch(this._context);
-			}
-		} else if (isInputObject(selected)) {
-			this._selected[0] = selected;
-			if (this._context !== 'geometry') {
-				this._context = 'geometry';
-				this.editor.signals.contextChanged.dispatch(this._context);
-			}
-		} else {
-			this._selected = [null, null, this.editor.beam];
-		}
-	}
-
-	get selected(): SceneObject | OutputObject | SimulationSettingsObject | null {
-		return this.selectedByContext(this._context);
-	}
-
-	selectedByContext(
-		context: Context
-	): SceneObject | OutputObject | SimulationSettingsObject | null {
-		switch (context) {
-			case 'geometry':
-				return this._selected[0];
-			case 'scoring':
-				return this._selected[1];
-			case 'settings':
-				return this._selected[2];
-			default:
-				return null;
-		}
-	}
-}
+type Selectable = SceneObject | OutputObject | SimulationSettingsObject | null;
 
 export const isOutputObject = (x: unknown): x is OutputObject => {
 	return (
@@ -192,3 +69,195 @@ export const isInputObject = (x: unknown): x is SceneObject => {
 export const isSimulationSettingsObject = (x: unknown): x is SimulationSettingsObject => {
 	return isBeam(x);
 };
+
+export class ContextManager extends PropertyManager<Context> {
+	private _selectedManager;
+	private _handleSelection(object: Selectable) {
+		if (object === null) return;
+		if (isInputObject(object)) {
+			this.currentValue = 'geometry';
+		} else if (isOutputObject(object)) {
+			this.currentValue = 'scoring';
+		} else if (isSimulationSettingsObject(object)) {
+			this.currentValue = 'settings';
+		} else {
+			this.currentValue = 'geometry';
+		}
+	}
+
+	private getContextFromObject(object: Selectable) {
+		switch (true) {
+			case isInputObject(object):
+				return 'geometry';
+			case isOutputObject(object):
+				return 'scoring';
+			case isSimulationSettingsObject(object):
+				return 'settings';
+			default:
+				return 'geometry';
+		}
+	}
+
+	private _setVisibility(context: Context) {
+		let objects: Record<
+			string,
+			{
+				value: boolean;
+				array: THREE.Object3D[];
+			}
+		> = {
+			visible: {
+				array: [this.editor.sceneHelpers],
+				value: true
+			},
+			hidden: {
+				array: [],
+				value: false
+			}
+		};
+
+		switch (context) {
+			case 'geometry':
+				objects.visible.array.push(
+					this.editor.scene,
+					this.editor.zoneManager,
+					this.editor.detectManager
+				);
+				objects.hidden.array.push(this.editor.beam);
+				break;
+			case 'scoring':
+				objects.visible.array.push(this.editor.detectManager, this.editor.scene);
+				objects.hidden.array.push(this.editor.zoneManager, this.editor.beam);
+				break;
+			case 'settings':
+				objects.visible.array.push(
+					this.editor.scene,
+					this.editor.detectManager,
+					this.editor.beam
+				);
+				objects.hidden.array.push(this.editor.zoneManager);
+				break;
+			default:
+				objects.visible.array.push(
+					this.editor.scene,
+					this.editor.zoneManager,
+					this.editor.detectManager,
+					this.editor.sceneHelpers,
+					this.editor.beam
+				);
+				break;
+		}
+
+		Object.entries(objects).forEach(([_, { array, value }]) =>
+			array.forEach(object => {
+				object.visible = value;
+			})
+		);
+
+		this.editor.signals.sceneGraphChanged.dispatch();
+	}
+
+	constructor(editor: Editor, value: Context = 'geometry') {
+		super(editor, value);
+		this._selectedManager = {} as Record<Context, PropertyManager<Selectable>>;
+
+		CONTEXT_VALUES.forEach(context => {
+			let value = context === 'settings' ? editor.beam : null;
+			let selectManager = new PropertyManager<Selectable>(editor, value);
+			this._selectedManager[context] = selectManager;
+
+			selectManager.addPropertyChangedListener(editor.signals.objectSelected.dispatch);
+			selectManager.addPropertyChangedListener(this._handleSelection.bind(this));
+		});
+
+		this.addPropertyChangedListener(editor.signals.contextChanged.dispatch);
+		this.addPropertyChangedListener(context =>
+			editor.signals.objectSelected.dispatch(this._selectedManager[context].currentValue)
+		);
+		this.addPropertyChangedListener(this._setVisibility.bind(this));
+	}
+
+	reset() {
+		super.reset();
+
+		CONTEXT_VALUES.forEach(context => this._selectedManager[context].reset());
+	}
+
+	getClickables(): THREE.Object3D[] {
+		let clickables = [] as THREE.Object3D[];
+
+		switch (this.currentValue) {
+			case 'geometry':
+				return clickables
+					.concat(this.editor.scene.visible ? this.editor.scene.children : [])
+					.concat(
+						this.editor.detectManager.detectContainer.visible
+							? this.editor.detectManager.children
+							: []
+					);
+			case 'scoring':
+				return clickables.concat(
+					this.editor.detectManager.detectContainer.visible
+						? this.editor.detectManager.children
+						: []
+				);
+			default:
+				return clickables;
+		}
+	}
+
+	set currentContext(context: Context) {
+		this.currentValue = context;
+	}
+
+	get currentContext(): Context {
+		return this.currentValue;
+	}
+
+	set currentSelected(object: Selectable) {
+		if (object) {
+			const context = this.getContextFromObject(object);
+
+			switch (context) {
+				case 'geometry':
+					//Select output when on scoring tab clicking on detect geometry
+					if (isDetectGeometry(object) && this.currentValue === 'scoring') {
+						const output = this.editor.scoringManager.getOutputByGeometryUuid(
+							object.uuid
+						);
+						this._selectedManager.scoring.currentValue = output ?? null;
+						this.editor.signals.geometryChanged.dispatch(object);
+						return;
+					}
+					this._selectedManager.geometry.currentValue = object;
+					break;
+				case 'scoring':
+					this._selectedManager.scoring.currentValue = object;
+					break;
+
+				default:
+					break;
+			}
+
+			if (context !== this.currentValue) {
+				this.currentValue = context;
+			}
+		} else {
+			switch (this.currentValue) {
+				case 'geometry':
+				case 'scoring':
+					this._selectedManager[this.currentValue].currentValue = null;
+					break;
+				case 'settings':
+					this._selectedManager.settings.currentValue = this.editor.beam;
+					break;
+				default:
+					break;
+			}
+		}
+	}
+
+	get currentSelected(): Selectable {
+		return this._selectedManager[this.currentValue].currentValue;
+	}
+}

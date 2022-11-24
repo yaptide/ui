@@ -26,6 +26,7 @@ export class ScoringOutput
 	private _geometry?: string;
 	private _primaries: [boolean, number | null];
 	private _disabledChildren: ScoringQuantity[] = [];
+	private _proxy: ScoringOutput;
 
 	//TODO: Issue#320
 	private _trace: [boolean, string | null];
@@ -59,13 +60,14 @@ export class ScoringOutput
 			: null;
 	}
 
-	get geometry(): DetectGeometry | null {
+	get detectGeometry(): DetectGeometry | null {
 		if (!this._geometry) return null;
 		return this.editor.detectManager.getGeometryByUuid(this._geometry);
 	}
 
-	set geometry(geometry: DetectGeometry | null) {
+	set detectGeometry(geometry: DetectGeometry | null) {
 		this._geometry = geometry?.uuid;
+		this.editor.signals.geometryChanged.dispatch(this._proxy);
 	}
 
 	constructor(editor: Editor) {
@@ -75,6 +77,25 @@ export class ScoringOutput
 		this._primaries = [false, 0];
 		this._trace = [false, ''];
 		this.createQuantity();
+		this._proxy = new Proxy(this, {
+			get: (target, prop) => {
+				switch (prop) {
+					case 'geometry':
+						return this.detectGeometry?.geometry;
+					case 'material':
+						return this.detectGeometry?.material;
+					case 'updateMatrixWorld':
+						return this.detectGeometry?.updateMatrixWorld;
+					case 'matrixWorld':
+						return this.detectGeometry?.matrixWorld;
+					case 'position':
+						return this.detectGeometry?.position;
+					default:
+						return Reflect.get(target, prop);
+				}
+			}
+		});
+		return this._proxy;
 	}
 
 	createQuantity(): ScoringQuantity {
@@ -88,14 +109,14 @@ export class ScoringOutput
 		else this.children.push(quantity);
 		quantity.name = this.getNextFreeName(quantity);
 		quantity.parent = this;
-		return this;
+		return this._proxy as this;
 	}
 
 	removeQuantity(quantity: ScoringQuantity): this {
 		this.children.splice(this.children.indexOf(quantity), 1);
 		this._disabledChildren.splice(this._disabledChildren.indexOf(quantity), 1);
 		quantity.parent = null;
-		return this;
+		return this._proxy as this;
 	}
 
 	getQuantityByUuid(uuid: string): ScoringQuantity | null {
@@ -131,10 +152,10 @@ export class ScoringOutput
 		Object.values(json.quantities)
 			.flat()
 			.forEach(qty => this.addQuantity(ScoringQuantity.fromJSON(this.editor, qty)));
-		this.geometry = json.detectGeometry
+		this.detectGeometry = json.detectGeometry
 			? this.editor.detectManager.getGeometryByUuid(json.detectGeometry)
 			: null;
-		return this;
+		return this._proxy as this;
 	}
 
 	static fromJSON(editor: Editor, json: ScoringOutputJSON): ScoringOutput {
