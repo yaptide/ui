@@ -58,7 +58,7 @@
 		"test-demo": "cross-env REACT_APP_TARGET=demo npm run test",
 		"build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
 		"fix-web-dev": "node fixDeploy.mjs",
-		"predeploy": "npm run setup && npm run build-demo && npm run fix-web-dev",
+		"predeploy": "npm run setup && npm run build-demo && cross-env PUBLIC_PATH=/web_dev/ npm run fix-web-dev",
 		"deploy": "gh-pages -d build"
 	},
 	"contributors": [

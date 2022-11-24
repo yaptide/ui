@@ -40,6 +40,7 @@ checkIfConverterReady()
 class PythonWorkerBase implements IPythonWorker {
 	readonly isPythonWorker: true = true;
 	async initPyodide(onReady: () => void) {
+
 		const pyodide = await self.loadPyodide();
 		self.pyodide = pyodide;
 
@@ -48,9 +49,10 @@ class PythonWorkerBase implements IPythonWorker {
 		await pyodide.loadPackage(['scipy', 'micropip']);
 
 		const converterFolder = process.env.PUBLIC_URL + '/libs/converter/dist/';
+		const jsonUrl = converterFolder + 'yaptide_converter.json';
 
 		const { fileName: converterFileName } = await (
-			await fetch(converterFolder + 'yaptide_converter.json')
+			await fetch(jsonUrl)
 		).json();
 
 		if (!converterFileName) throw new Error('converterFileName is not defined');
@@ -63,7 +65,7 @@ print(micropip.list())
 		onReady();
 	}
 
-	close() {		
+	close() {
 		self.close();
 	}
 
