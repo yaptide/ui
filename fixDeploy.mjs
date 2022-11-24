@@ -5,11 +5,14 @@ import fse from 'fs-extra';
 import path from 'path';
 import { URL } from 'url';
 
+const PUBLIC_PATH = process.env.PUBLIC_PATH || '/';
+
 (async () => {
 	const repoRootUrl = new URL('./', import.meta.url);
 	const repoRoot = repoRootUrl.pathname;
 	const repoFolder = repoRoot.split('/').filter(Boolean).pop() ?? '/';
 	const sourceFolder = path.join(repoRoot, 'build/static/js');
+	console.dir({ repoRoot, repoFolder, sourceFolder, PUBLIC_PATH });
 
 	if (!fse.existsSync(sourceFolder)) {
 		throw new Error(
@@ -33,7 +36,7 @@ import { URL } from 'url';
 		// replace yaptide_converter references with absolute paths 
 		code = code
 			.split(/\.\/libs\/converter\/dist|\.\"\,\"\/libs\/converter\/dist/)
-			.join(path.join('/', repoFolder, 'libs/converter/dist'));
+			.join(path.join(PUBLIC_PATH, 'libs/converter/dist'));
 		//overwrite the file
 		await fse.writeFile(path.join(sourceFolder, file), code, 'utf8');
 	}
