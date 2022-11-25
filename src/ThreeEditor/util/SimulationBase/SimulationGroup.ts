@@ -31,7 +31,7 @@ export abstract class SimulationSceneGroup<TChild extends ISimulationSceneChild>
 		this.children.forEach(child => {
 			child.parent = null;
 		});
-		this.children = [];
+		this.children.length = 0;
 	}
 	toJSON(): unknown {
 		return this.children.map(child => child.toJSON());

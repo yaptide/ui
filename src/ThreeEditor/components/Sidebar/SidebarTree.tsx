@@ -92,6 +92,7 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 			editor.signals.editorCleared.remove(refreshTreeData);
 			editor.signals.sceneGraphChanged.remove(refreshTreeData);
 			editor.signals.objectChanged.remove(refreshTreeData);
+			editor.signals.objectSelected.remove(handleSelected);
 		};
 	}, [buildOption, editor, refreshTreeData]);
 
