@@ -87,6 +87,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 									{name}
 									<Button
 										color='info'
+										disabled={value === ''}
 										onClick={() => {
 											saveString(value, name);
 										}}
