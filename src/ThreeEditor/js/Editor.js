@@ -224,7 +224,7 @@ Editor.prototype = {
 	},
 
 	addObject(object, parent, index) {
-		var scope = this;
+		const scope = this;
 
 		object.traverse(function (child) {
 			if (child.geometry) scope.addGeometry(child.geometry);
@@ -255,7 +255,7 @@ Editor.prototype = {
 		// sort children array
 
 		if (before) {
-			var index = parent.children.indexOf(before);
+			const index = parent.children.indexOf(before);
 			parent.children.splice(index, 0, object);
 			parent.children.pop();
 		}
@@ -271,7 +271,7 @@ Editor.prototype = {
 	removeObject(object) {
 		if (object.parent === null) return; // avoid deleting the camera or scene
 
-		var scope = this;
+		const scope = this;
 
 		object.traverse(function (child) {
 			scope.removeCamera(child);
@@ -296,7 +296,7 @@ Editor.prototype = {
 
 	addMaterial(material) {
 		if (Array.isArray(material)) {
-			for (var i = 0, l = material.length; i < l; i++) {
+			for (let i = 0, l = material.length; i < l; i++) {
 				this.addMaterialToRefCounter(material[i]);
 			}
 		} else {
@@ -307,9 +307,9 @@ Editor.prototype = {
 	},
 
 	addMaterialToRefCounter(material) {
-		var materialsRefCounter = this.materialsRefCounter;
+		const { materialsRefCounter } = this;
 
-		var count = materialsRefCounter.get(material);
+		let count = materialsRefCounter.get(material);
 
 		if (typeof count === 'undefined') {
 			materialsRefCounter.set(material, 1);
@@ -322,7 +322,7 @@ Editor.prototype = {
 
 	removeMaterial(material) {
 		if (Array.isArray(material)) {
-			for (var i = 0, l = material.length; i < l; i++) {
+			for (let i = 0, l = material.length; i < l; i++) {
 				this.removeMaterialFromRefCounter(material[i]);
 			}
 		} else {
@@ -333,9 +333,9 @@ Editor.prototype = {
 	},
 
 	removeMaterialFromRefCounter(material) {
-		var materialsRefCounter = this.materialsRefCounter;
+		const { materialsRefCounter } = this;
 
-		var count = materialsRefCounter.get(material);
+		const count = materialsRefCounter.get(material);
 		count--;
 
 		if (count === 0) {
@@ -347,10 +347,10 @@ Editor.prototype = {
 	},
 
 	getMaterialById(id) {
-		var material;
-		var materials = Object.values(this.materials);
+		let material;
+		const materials = Object.values(this.materials);
 
-		for (var i = 0; i < materials.length; i++) {
+		for (let i = 0; i < materials.length; i++) {
 			if (materials[i].id === id) {
 				material = materials[i];
 				break;
@@ -390,8 +390,8 @@ Editor.prototype = {
 	//
 
 	addHelper: (() => {
-		var geometry = new THREE.SphereGeometry(2, 4, 2);
-		var material = new THREE.MeshBasicMaterial({ color: 0xff0000, visible: false });
+		const geometry = new THREE.SphereGeometry(2, 4, 2);
+		const material = new THREE.MeshBasicMaterial({ color: 0xff0000, visible: false });
 
 		return (object, helper) => {
 			if (!helper) {
@@ -412,7 +412,7 @@ Editor.prototype = {
 					return;
 				}
 
-				var picker = new THREE.Mesh(geometry, material);
+				const picker = new THREE.Mesh(geometry, material);
 				picker.name = 'picker';
 				picker.userData.object = object;
 				helper.add(picker);
@@ -427,7 +427,7 @@ Editor.prototype = {
 
 	removeHelper(object) {
 		if (this.helpers[object.id]) {
-			var helper = this.helpers[object.id];
+			const helper = this.helpers[object.id];
 			helper.parent.remove(helper);
 
 			delete this.helpers[object.id];
@@ -439,7 +439,7 @@ Editor.prototype = {
 	//
 
 	getObjectMaterial(object, slot) {
-		var material = object.material;
+		let { material } = object;
 
 		if (Array.isArray(material) && Number.isInteger(slot)) {
 			material = material[slot];
@@ -557,7 +557,7 @@ Editor.prototype = {
 		this.scene.background = null;
 		this.scene.environment = null;
 
-		var objects = this.scene.children;
+		const objects = this.scene.children;
 
 		while (objects.length > 0) {
 			this.removeObject(objects[0]);
@@ -613,11 +613,10 @@ Editor.prototype = {
 	toJSON() {
 		// scripts clean up
 
-		var scene = this.scene;
-		var scripts = this.scripts;
+		const { scene, scripts } = this;
 
-		for (var key in scripts) {
-			var script = scripts[key];
+		for (let key in scripts) {
+			const script = scripts[key];
 
 			if (script.length === 0 || scene.getObjectByProperty('uuid', key) === undefined) {
 				delete scripts[key];

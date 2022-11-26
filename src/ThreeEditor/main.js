@@ -28,12 +28,12 @@ export function initEditor(container) {
 	const sidebar = new Sidebar(editor);
 	container.appendChild(sidebar.dom);
 
-	Object.defineProperty(editor, "oldSidebarVisible", {
+	Object.defineProperty(editor, 'oldSidebarVisible', {
 		get: function () {
-			return sidebar.getDisplay() !== "none";
+			return sidebar.getDisplay() !== 'none';
 		},
 		set: function (val) {
-			sidebar.setDisplay(val ? "" : "none");
+			sidebar.setDisplay(val ? '' : 'none');
 		}
 	});
 
@@ -156,7 +156,7 @@ export function initEditor(container) {
 		const file = hash.substr(6);
 
 		if (window.confirm('Any unsaved data will be lost. Are you sure?')) {
-			var loader = new THREE.FileLoader();
+			const loader = new THREE.FileLoader();
 			loader.crossOrigin = '';
 			loader.load(file, text => {
 				editor.clear();

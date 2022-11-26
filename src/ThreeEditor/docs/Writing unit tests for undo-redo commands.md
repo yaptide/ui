@@ -60,14 +60,14 @@ Open the unit test file `test/unit/editor/TestDoSomethingCommand.js` and paste f
 module('DoSomethingCommand');
 
 test('Test DoSomethingCommand (Undo and Redo)', function () {
-	var editor = new Editor();
+	const editor = new Editor();
 
-	var box = aBox('Name your box');
+	const box = aBox('Name your box');
 
 	// other available objects from "CommonUtilities.js"
-	// var sphere = aSphere( 'Name your sphere' );
-	// var pointLight = aPointLight( 'Name your pointLight' );
-	// var perspectiveCamera = aPerspectiveCamera( 'Name your perspectiveCamera' );
+	// const sphere = aSphere( 'Name your sphere' );
+	// const pointLight = aPointLight( 'Name your pointLight' );
+	// const perspectiveCamera = aPerspectiveCamera( 'Name your perspectiveCamera' );
 
 	// in most cases you'll need to add the object to work with
 	editor.execute(new AddObjectCommand(editor, box));

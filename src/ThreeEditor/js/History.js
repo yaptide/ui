@@ -13,10 +13,10 @@ function History(editor) {
 
 History.prototype = {
 	execute: function (cmd, optionalName) {
-		var lastCmd = this.undos[this.undos.length - 1];
-		var timeDifference = new Date().getTime() - this.lastCmdTime.getTime();
+		const lastCmd = this.undos[this.undos.length - 1];
+		const timeDifference = new Date().getTime() - this.lastCmdTime.getTime();
 
-		var isUpdatableCmd =
+		const isUpdatableCmd =
 			lastCmd &&
 			lastCmd.updatable &&
 			cmd.updatable &&
@@ -62,7 +62,7 @@ History.prototype = {
 			return;
 		}
 
-		var cmd = undefined;
+		let cmd = undefined;
 
 		if (this.undos.length > 0) {
 			cmd = this.undos.pop();
@@ -87,7 +87,7 @@ History.prototype = {
 			return;
 		}
 
-		var cmd = undefined;
+		let cmd = undefined;
 
 		if (this.redos.length > 0) {
 			cmd = this.redos.pop();
@@ -107,7 +107,7 @@ History.prototype = {
 	},
 
 	toJSON: function () {
-		var history = {};
+		const history = {};
 		history.undos = [];
 		history.redos = [];
 
@@ -178,7 +178,7 @@ History.prototype = {
 		this.editor.signals.sceneGraphChanged.active = false;
 		this.editor.signals.historyChanged.active = false;
 
-		var cmd = this.undos.length > 0 ? this.undos[this.undos.length - 1] : undefined; // next cmd to pop
+		let cmd = this.undos.length > 0 ? this.undos[this.undos.length - 1] : undefined; // next cmd to pop
 
 		if (cmd === undefined || id > cmd.id) {
 			cmd = this.redo();
@@ -215,7 +215,7 @@ History.prototype = {
 		this.editor.signals.sceneGraphChanged.active = false;
 		this.editor.signals.historyChanged.active = false;
 
-		var cmd = this.redo();
+		let cmd = this.redo();
 		while (cmd !== undefined) {
 			if (!Object.prototype.hasOwnProperty.call(cmd, 'json')) {
 				cmd.json = cmd.toJSON();

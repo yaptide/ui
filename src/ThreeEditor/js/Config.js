@@ -52,9 +52,9 @@ function Config() {
 	if (window.localStorage[name] === undefined) {
 		window.localStorage[name] = JSON.stringify(storage);
 	} else {
-		var data = JSON.parse(window.localStorage[name]);
+		const data = JSON.parse(window.localStorage[name]);
 
-		for (var key in data) {
+		for (let key in data) {
 			storage[key] = data[key];
 		}
 	}
@@ -67,7 +67,7 @@ function Config() {
 		setKey: function () {
 			// key, value, key, value ...
 
-			for (var i = 0, l = arguments.length; i < l; i += 2) {
+			for (let i = 0, l = arguments.length; i < l; i += 2) {
 				let key = arguments[i];
 				let value = arguments[i + 1];
 				storage[key] = value;
@@ -94,7 +94,7 @@ function Config() {
 		},
 
 		removeListener: function (key, callback) {
-			var index = listeners[key].indexOf(callback);
+			const index = listeners[key].indexOf(callback);
 
 			if (index !== -1) {
 				listeners[key].splice(index, 1);

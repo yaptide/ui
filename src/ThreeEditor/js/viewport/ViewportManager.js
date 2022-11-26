@@ -41,6 +41,10 @@ function ViewManager(editor) {
 	let renderer = null;
 	let pmremGenerator = null;
 
+	//
+	let startTime = 0;
+	let endTime = 0;
+
 	// helpers
 
 	const grid = new THREE.Group();
@@ -344,7 +348,7 @@ function ViewManager(editor) {
 
 		pmremGenerator = new THREE.PMREMGenerator(renderer);
 		pmremGenerator.compileEquirectangularShader();
-		
+
 		container.dom.appendChild(renderer.domElement);
 
 		render();
@@ -581,9 +585,6 @@ function ViewManager(editor) {
 	}
 
 	//
-
-	var startTime = 0;
-	var endTime = 0;
 
 	function render() {
 		startTime = performance.now();

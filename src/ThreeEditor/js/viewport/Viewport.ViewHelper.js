@@ -10,7 +10,7 @@ class ViewHelper extends THREE.Object3D {
 		this.disabled = false;
 		this.controls = null;
 
-		var editorCamera = originalCamera;
+		let editorCamera = originalCamera;
 		Object.defineProperty(this, 'editorCamera', {
 			get() {
 				return editorCamera;
@@ -144,7 +144,7 @@ class ViewHelper extends THREE.Object3D {
 			const x = container.dom.offsetWidth - dim;
 
 			renderer.clearDepth();
-			renderer.setViewport(x, 0, dim, dim);			
+			renderer.setViewport(x, 0, dim, dim);
 			renderer.render(this, camera);
 		};
 

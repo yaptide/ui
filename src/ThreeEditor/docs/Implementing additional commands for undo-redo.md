@@ -54,7 +54,7 @@ DoSomethingCommand.prototype = {
 	},
 
 	toJSON: function () {
-		var output = Command.prototype.toJSON.call(this); // Required: Call 'toJSON'-method of prototype 'Command'
+		const output = Command.prototype.toJSON.call(this); // Required: Call 'toJSON'-method of prototype 'Command'
 
 		// TODO: serialize all the necessary information as part of 'output' (JSON-format)
 		// so that it can be restored in 'fromJSON'
