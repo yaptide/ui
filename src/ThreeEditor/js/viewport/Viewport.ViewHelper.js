@@ -144,7 +144,7 @@ class ViewHelper extends THREE.Object3D {
 			const x = container.dom.offsetWidth - dim;
 
 			renderer.clearDepth();
-			renderer.setViewport(x, 0, dim, dim);
+			renderer.setViewport(x, 0, dim, dim);			
 			renderer.render(this, camera);
 		};
 
@@ -165,7 +165,6 @@ class ViewHelper extends THREE.Object3D {
 			const offsetY = rect.top + (container.dom.offsetHeight - dim);
 			mouse.x = ((event.clientX - offsetX) / (rect.right - offsetX)) * 2 - 1;
 			mouse.y = -((event.clientY - offsetY) / (rect.bottom - offsetY)) * 2 + 1;
-
 			raycaster.setFromCamera(mouse, camera);
 
 			const intersects = raycaster.intersectObjects(interactiveObjects);

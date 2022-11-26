@@ -56,9 +56,9 @@ export function Viewport(
 	wrapperDiv.add(container);
 
 	const canvas = document.createElement('canvas');
-	container.dom.appendChild(canvas);
 
 	const context = canvas.getContext('2d');
+	container.dom.appendChild(canvas);
 
 	const cameraPersp = new THREE.PerspectiveCamera(50, 1, 0.001, 10000);
 	cameraPersp.name = 'Perspective';
@@ -130,6 +130,10 @@ export function Viewport(
 		// by default grid plane lies within XZ plane
 		grid.rotation.copy(gridRotation ?? new THREE.Euler(0, 0, 0));
 
+
+		// renderer doesn't need different pixel ration against what is said in: 
+		// https://stackoverflow.com/questions/28821669/three-js-javascript-raycasting-code-not-compatible-with-retina-display-macs
+		// if ever 4k display creates some issues you could try setting pixel ration and size for renderer
 		renderer.setSize(canvas.width, canvas.height);
 
 		renderer.render(scene, camera);
