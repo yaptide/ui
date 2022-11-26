@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Editor } from '../../js/Editor';
-import { Box, Tabs, Tab, Stack } from '@mui/material';
+import { Box, Tabs, Tab } from '@mui/material';
 import { TabPanel } from '../../../WrapperApp/components/TabPanel';
 import { SidebarTree } from './SidebarTree';
 import { PropertiesPanel } from './propeteries/PropeteriesPanel';

@@ -78,10 +78,10 @@ export class MaterialManager {
 	private createMaterialPrefabs = () => {
 		const { editor } = this;
 		const editorMaterials = MATERIALS.reduce(
-			([prevMaterials, prevOptions], { name, icru }) => [
+			([prevMaterials, prevOptions], { name, icru, density }) => [
 				{
 					...prevMaterials,
-					[icru]: new SimulationMaterial(editor, name, icru)
+					[icru]: new SimulationMaterial(editor, name, icru, density)
 				},
 				{
 					...prevOptions,
@@ -98,7 +98,7 @@ export class MaterialManager {
 		const materials = Object.entries(this.customMaterials)
 			.map(([_icru, material]) => material.toJSON())
 			.filter(
-				({ uuid, name, icru, ...rest }) =>
+				({ uuid, name, icru, density, ...rest }) =>
 					this.selectedMaterials.has(uuid) || Object.keys(rest).length !== 0
 			);
 		return { materials, selectedMaterials };
