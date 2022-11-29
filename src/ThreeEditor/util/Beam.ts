@@ -16,18 +16,18 @@ export const SIGMA_TYPE = {
 } as const;
 export type SigmaType = keyof typeof SIGMA_TYPE;
 
-export const DEFINITION_TYPE = {
+export const BEAM_SOURCE_TYPE = {
 	'simple': 'simple',
 	'file': 'file',
 } as const;
-export type DefinitionType = keyof typeof DEFINITION_TYPE;
+export type BeamSourceType = keyof typeof BEAM_SOURCE_TYPE;
 
 export interface BeamJSON {
 	position: THREE.Vector3Tuple;
 	direction: THREE.Vector3Tuple;
 	energy: number;
 	energySpread: number;
-	definitionType: DefinitionType;
+	beamSourceType: BeamSourceType;
 	divergence: {
 		x: number;
 		y: number;
@@ -51,7 +51,7 @@ export interface BeamJSON {
 const _default = {
 	position: new THREE.Vector3(0, 0, 0),
 	direction: new THREE.Vector3(0, 0, 1),
-	definitionType: DEFINITION_TYPE.simple,
+	definitionType: BEAM_SOURCE_TYPE.simple,
 	energy: 150,
 	energySpread: 1.5,
 	divergence: {
@@ -107,7 +107,7 @@ export class Beam extends SimulationObject3D {
 	energySpread: number;
 	direction: Vector3;
 
-	definitionType: DefinitionType = _default.definitionType;
+	definitionType: BeamSourceType = _default.definitionType;
 
 	divergence: {
 		x: number;
@@ -303,7 +303,7 @@ export class Beam extends SimulationObject3D {
 			colorHex: this.material.color.getHex(),
 			numberOfParticles: this.numberOfParticles,
 			definitionFile: this.definitionFile,
-			definitionType: this.definitionType
+			beamSourceType: this.definitionType
 		};
 
 		return jsonObject;
@@ -321,7 +321,7 @@ export class Beam extends SimulationObject3D {
 		this.numberOfParticles = loadedData.numberOfParticles;
 		this.definitionFile = loadedData.definitionFile;
 		this.sigma = loadedData.sigma;
-		this.definitionType = loadedData.definitionType;
+		this.definitionType = loadedData.beamSourceType;
 		return this;
 	}
 

@@ -2,7 +2,7 @@ import { Object3D } from 'three';
 import { Editor } from '../../../../js/Editor';
 import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
-import { Beam, DEFINITION_TYPE, isBeam, SigmaType, SIGMA_TYPE } from '../../../../util/Beam';
+import { Beam, BEAM_SOURCE_TYPE, isBeam, SigmaType, SIGMA_TYPE } from '../../../../util/Beam';
 import {
 	NumberPropertyField,
 	PropertyField,
@@ -143,12 +143,12 @@ function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
 					onChange={(_e, value) => {
 						watchedObject.definitionType = value;
 					}}>
-					<ToggleButton value={DEFINITION_TYPE.simple}>Simple</ToggleButton>
-					<ToggleButton value={DEFINITION_TYPE.file}>File</ToggleButton>
+					<ToggleButton value={BEAM_SOURCE_TYPE.simple}>Simple</ToggleButton>
+					<ToggleButton value={BEAM_SOURCE_TYPE.file}>File</ToggleButton>
 				</ToggleButtonGroup>
 			</PropertyField>
 
-			{watchedObject.definitionType === DEFINITION_TYPE.simple && (
+			{watchedObject.definitionType === BEAM_SOURCE_TYPE.simple && (
 				<>
 					<NumberPropertyField
 						label='Energy mean'
@@ -238,7 +238,7 @@ function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
 				</>
 			)}
 
-			{props.object.definitionType === DEFINITION_TYPE.file && (
+			{props.object.definitionType === BEAM_SOURCE_TYPE.file && (
 				<>
 					<PropertyField children={<Divider />} />
 
