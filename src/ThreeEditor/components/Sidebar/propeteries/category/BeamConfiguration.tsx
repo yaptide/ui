@@ -138,17 +138,17 @@ function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
 				<ToggleButtonGroup
 					color='primary'
 					size='small'
-					value={watchedObject.definitionType}
+					value={watchedObject.beamSourceType}
 					exclusive
 					onChange={(_e, value) => {
-						watchedObject.definitionType = value;
+						watchedObject.beamSourceType = value;
 					}}>
 					<ToggleButton value={BEAM_SOURCE_TYPE.simple}>Simple</ToggleButton>
 					<ToggleButton value={BEAM_SOURCE_TYPE.file}>File</ToggleButton>
 				</ToggleButtonGroup>
 			</PropertyField>
 
-			{watchedObject.definitionType === BEAM_SOURCE_TYPE.simple && (
+			{watchedObject.beamSourceType === BEAM_SOURCE_TYPE.simple && (
 				<>
 					<NumberPropertyField
 						label='Energy mean'
@@ -238,7 +238,7 @@ function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
 				</>
 			)}
 
-			{props.object.definitionType === BEAM_SOURCE_TYPE.file && (
+			{props.object.beamSourceType === BEAM_SOURCE_TYPE.file && (
 				<>
 					<PropertyField children={<Divider />} />
 
