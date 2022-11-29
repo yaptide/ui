@@ -30,7 +30,7 @@ function BeamDefinitionField(props: { beam: Beam }) {
 			}
 			const { result } = evt.target;
 			if (typeof result === 'string') {
-				props.beam.definitionFile = { name, value: result };
+				props.beam.beamSourceFile = { name, value: result };
 			} else {
 				console.error('Invalid file type');
 			}
@@ -39,13 +39,13 @@ function BeamDefinitionField(props: { beam: Beam }) {
 	};
 
 	const clearFile = () => {
-		props.beam.definitionFile = { name: '', value: '' };
+		props.beam.beamSourceFile = { name: '', value: '' };
 	};
 
 	return (
 		<>
-			{props.beam.definitionFile.name && (
-				<PropertyField label='Filename'>{props.beam.definitionFile.name}</PropertyField>
+			{props.beam.beamSourceFile.name && (
+				<PropertyField label='Filename'>{props.beam.beamSourceFile.name}</PropertyField>
 			)}
 
 			<PropertyField>
@@ -56,7 +56,7 @@ function BeamDefinitionField(props: { beam: Beam }) {
 					</Button>
 
 					<Button
-						disabled={!props.beam.definitionFile.name}
+						disabled={!props.beam.beamSourceFile.name}
 						sx={{ flexGrow: 1 }}
 						variant='contained'
 						component='label'

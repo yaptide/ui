@@ -129,7 +129,7 @@ export class Beam extends SimulationObject3D {
 		a: number;
 	};
 
-	definitionFile: DefinitionFile;
+	beamSourceFile: DefinitionFile;
 
 	get particle(): Particle {
 		return PARTICLE_TYPES.find(p => p.id === this.particleData.id) as Particle;
@@ -193,7 +193,7 @@ export class Beam extends SimulationObject3D {
 
 		this.numberOfParticles = _default.numberOfParticles;
 
-		this.definitionFile = { ..._default.definitionFile };
+		this.beamSourceFile = { ..._default.definitionFile };
 
 		this.helper = this.initHelper();
 
@@ -284,10 +284,10 @@ export class Beam extends SimulationObject3D {
 		this.particleData = _default.particle;
 		this.sigma = { ..._default.sigma };
 		this.definitionType = _default.definitionType;
-		this.definitionFile = { ..._default.definitionFile };
+		this.beamSourceFile = { ..._default.definitionFile };
 		this.material.color.setHex(0xffff00); // yellow
 		console.log('reset');
-		console.log('this', this.definitionFile);
+		console.log('this', this.beamSourceFile);
 
 	}
 
@@ -302,7 +302,7 @@ export class Beam extends SimulationObject3D {
 			particle: this.particleData,
 			colorHex: this.material.color.getHex(),
 			numberOfParticles: this.numberOfParticles,
-			definitionFile: this.definitionFile,
+			definitionFile: this.beamSourceFile,
 			beamSourceType: this.definitionType
 		};
 
@@ -319,7 +319,7 @@ export class Beam extends SimulationObject3D {
 		this.particleData = loadedData.particle;
 		this.material.color.setHex(loadedData.colorHex);
 		this.numberOfParticles = loadedData.numberOfParticles;
-		this.definitionFile = loadedData.definitionFile;
+		this.beamSourceFile = loadedData.definitionFile;
 		this.sigma = loadedData.sigma;
 		this.definitionType = loadedData.beamSourceType;
 		return this;
