@@ -16,11 +16,18 @@ export const SIGMA_TYPE = {
 } as const;
 export type SigmaType = keyof typeof SIGMA_TYPE;
 
+export const BEAM_SOURCE_TYPE = {
+	'simple': 'simple',
+	'file': 'file',
+} as const;
+export type BeamSourceType = keyof typeof BEAM_SOURCE_TYPE;
+
 export interface BeamJSON {
 	position: THREE.Vector3Tuple;
 	direction: THREE.Vector3Tuple;
 	energy: number;
 	energySpread: number;
+	beamSourceType: BeamSourceType;
 	divergence: {
 		x: number;
 		y: number;
@@ -38,11 +45,13 @@ export interface BeamJSON {
 	};
 	colorHex: number;
 	numberOfParticles: number;
+	beamSourceFile: BeamSourceFile;
 }
 
 const _default = {
 	position: new THREE.Vector3(0, 0, 0),
 	direction: new THREE.Vector3(0, 0, 1),
+	beamSourceType: BEAM_SOURCE_TYPE.simple,
 	energy: 150,
 	energySpread: 1.5,
 	divergence: {
@@ -60,8 +69,18 @@ const _default = {
 		x: 0,
 		y: 0
 	},
-	numberOfParticles: 10000
+	numberOfParticles: 10000,
+
+	beamSourceFile: {
+		value: '',
+		name: ''
+	}
 };
+
+type BeamSourceFile = {
+	value: string;
+	name: string;
+}
 
 export class Beam extends SimulationObject3D {
 	readonly notRemovable: boolean = true;
@@ -88,6 +107,8 @@ export class Beam extends SimulationObject3D {
 	energySpread: number;
 	direction: Vector3;
 
+	beamSourceType: BeamSourceType = _default.beamSourceType;
+
 	divergence: {
 		x: number;
 		y: number;
@@ -107,6 +128,8 @@ export class Beam extends SimulationObject3D {
 		z: number;
 		a: number;
 	};
+
+	beamSourceFile: BeamSourceFile;
 
 	get particle(): Particle {
 		return PARTICLE_TYPES.find(p => p.id === this.particleData.id) as Particle;
@@ -131,7 +154,9 @@ export class Beam extends SimulationObject3D {
 				'divergence',
 				'particleData',
 				'numberOfParticles',
-				'sigma'
+				'sigma',
+				'beamSourceType',
+				'beamSourceFile'
 			];
 			if (informChange.includes(prop)) {
 				this.debouncedDispatchChanged();
@@ -167,6 +192,8 @@ export class Beam extends SimulationObject3D {
 		this.particleData = _default.particle;
 
 		this.numberOfParticles = _default.numberOfParticles;
+
+		this.beamSourceFile = { ..._default.beamSourceFile };
 
 		this.helper = this.initHelper();
 
@@ -244,7 +271,8 @@ export class Beam extends SimulationObject3D {
 	}
 
 	reset(): void {
-		this.debouncedDispatchChanged.cancel();
+		this.debouncedDispatchChanged.cancel({ upcomingOnly: true });
+
 
 		this.rotation.copy(new Euler());
 		this.position.copy(_default.position);
@@ -255,7 +283,12 @@ export class Beam extends SimulationObject3D {
 		this.divergence = { ..._default.divergence };
 		this.particleData = _default.particle;
 		this.sigma = { ..._default.sigma };
+		this.beamSourceType = _default.beamSourceType;
+		this.beamSourceFile = { ..._default.beamSourceFile };
 		this.material.color.setHex(0xffff00); // yellow
+		console.log('reset');
+		console.log('this', this.beamSourceFile);
+
 	}
 
 	toJSON() {
@@ -268,7 +301,9 @@ export class Beam extends SimulationObject3D {
 			divergence: this.divergence,
 			particle: this.particleData,
 			colorHex: this.material.color.getHex(),
-			numberOfParticles: this.numberOfParticles
+			numberOfParticles: this.numberOfParticles,
+			beamSourceFile: this.beamSourceFile,
+			beamSourceType: this.beamSourceType
 		};
 
 		return jsonObject;
@@ -284,7 +319,9 @@ export class Beam extends SimulationObject3D {
 		this.particleData = loadedData.particle;
 		this.material.color.setHex(loadedData.colorHex);
 		this.numberOfParticles = loadedData.numberOfParticles;
+		this.beamSourceFile = loadedData.beamSourceFile;
 		this.sigma = loadedData.sigma;
+		this.beamSourceType = loadedData.beamSourceType;
 		return this;
 	}
 

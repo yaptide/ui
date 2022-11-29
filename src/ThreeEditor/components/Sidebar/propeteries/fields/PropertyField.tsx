@@ -26,7 +26,7 @@ import { hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
 import { AutoCompleteSelect } from '../../../Select/AutoCompleteSelect';
 import { ObjectSelectProperty, ObjectSelectProps } from './ObjectSelectPropertyField';
 
-export function PropertyField(props: { label?: string; children: ReactElement }) {
+export function PropertyField(props: { label?: string; children:  React.ReactNode }) {
 	return (
 		<>
 			{props.label !== undefined && (

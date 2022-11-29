@@ -27,7 +27,7 @@ type ValidProxyState<T> = T extends { object: any } ? never : T;
 /**
  * Object wrapped in `Proxy`, that holds original object under `object` property.
  */
-type ProxyState<T> = T & {
+export type ProxyState<T> = T & {
 	object: T;
 };
 
