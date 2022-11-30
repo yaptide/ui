@@ -1,4 +1,3 @@
-import { type } from 'os';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Object3D } from 'three';
 import { Editor } from '../../js/Editor';
