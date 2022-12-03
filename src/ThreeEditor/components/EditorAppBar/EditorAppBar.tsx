@@ -13,6 +13,7 @@ import Typography from '@mui/material/Typography';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { saveString } from '../../../util/File';
 import { Editor } from '../../js/Editor';
+import { CreateProjectDialog } from '../Dialog/CreateProjectDialog';
 import { NewProjectDialog } from '../Dialog/NewProjectDialog';
 import { OpenFileDialog } from '../Dialog/OpenFileDialog';
 import { SaveFileDialog } from '../Dialog/SaveFileDialog';
@@ -32,6 +33,7 @@ type AppBarOptions = {
 
 function EditorAppBar({ editor }: AppBarProps) {
 	const [newProjectDialogOpen, setNewProjectDialogOpen] = useState(false);
+	const [createProjectDialogOpen, setCreateProjectDialogOpen] = useState(false);
 	const [openFileDialogOpen, setOpenFileDialogOpen] = useState(false);
 	const [saveFileDialogOpen, setSaveFileDialogOpen] = useState(false);
 	const [title, setTitle] = useState<string>(editor?.config.getKey('project/title'));
@@ -192,31 +194,47 @@ function EditorAppBar({ editor }: AppBarProps) {
 				</Typography>
 				<EditorToolbar editor={editor} />
 			</Toolbar>
-			<NewProjectDialog
-				open={newProjectDialogOpen}
-				onCancel={() => setNewProjectDialogOpen(false)}
-				onConfirm={() => {
-					editor?.clear();
-					setNewProjectDialogOpen(false);
-				}}
-			/>
-			<OpenFileDialog
-				open={openFileDialogOpen}
-				onClose={() => setOpenFileDialogOpen(false)}
-				onFileSelected={openFile}
-				onPlainTextSubmitted={(text: string) => {
-					const json = JSON.parse(text);
-					openJSON(json);
-				}}
-				onUrlSubmitted={fetchJsonFromCorsUrl}
-			/>
 			{editor && (
-				<SaveFileDialog
-					open={saveFileDialogOpen}
-					onClose={() => setSaveFileDialogOpen(false)}
-					onConfirm={saveJson}
-					editor={editor!}
-				/>
+				<>
+					<NewProjectDialog
+						open={newProjectDialogOpen}
+						onCancel={() => setNewProjectDialogOpen(false)}
+						onConfirm={() => {
+							setNewProjectDialogOpen(false);
+							setCreateProjectDialogOpen(true);
+						}}
+					/>
+					<CreateProjectDialog
+						editor={editor}
+						open={createProjectDialogOpen}
+						onCancel={() => setCreateProjectDialogOpen(false)}
+						onConfirm={(name, description, simulationEnv) => {
+							editor?.clear();
+
+							editor.config.setKey('project/title', name);
+							editor.config.setKey('project/description', description);
+							editor.simEnvManager.currentValue = simulationEnv;
+
+							setCreateProjectDialogOpen(false);
+						}}
+					/>
+					<OpenFileDialog
+						open={openFileDialogOpen}
+						onClose={() => setOpenFileDialogOpen(false)}
+						onFileSelected={openFile}
+						onPlainTextSubmitted={(text: string) => {
+							const json = JSON.parse(text);
+							openJSON(json);
+						}}
+						onUrlSubmitted={fetchJsonFromCorsUrl}
+					/>
+					<SaveFileDialog
+						open={saveFileDialogOpen}
+						onClose={() => setSaveFileDialogOpen(false)}
+						onConfirm={saveJson}
+						editor={editor!}
+					/>
+				</>
 			)}
 		</AppBar>
 	);

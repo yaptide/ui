@@ -474,8 +474,6 @@ Editor.prototype = {
 		this.selected = object;
 
 		this.config.setKey('selected', uuid);
-
-		// this.signals.objectSelected.dispatch(this.selected);
 	},
 
 	getObjectByName(name) {
@@ -563,6 +561,7 @@ Editor.prototype = {
 			this.removeObject(objects[0]);
 		}
 
+		this.simEnvManager.reset();
 		this.materialManager.reset();
 		this.zoneManager.reset();
 		this.detectManager.reset();
@@ -602,6 +601,7 @@ Editor.prototype = {
 		this.materialManager.fromJSON(json.materialManager);
 
 		// CSGManager must be loaded after scene and simulation materials
+		this.simEnvManager.fromJSON(json.metadata);
 		this.zoneManager.fromJSON(json.zoneManager); // CSGManager must be loaded in order not to lose reference in components
 		this.detectManager.fromJSON(json.detectManager);
 		this.scoringManager.fromJSON(json.scoringManager);
@@ -629,7 +629,8 @@ Editor.prototype = {
 			metadata: {
 				version: this.jsonVersion,
 				type: 'Editor',
-				generator: 'Editor.toJSON'
+				generator: 'Editor.toJSON',
+				simulationEnviroment: this.simEnvManager.toJSON().simulationEnviroment
 			},
 			project: {
 				title: this.config.getKey('project/title'),

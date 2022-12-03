@@ -12,6 +12,7 @@ import { AddDetectGeometryCommand } from '../../js/commands/AddDetectGeometryCom
 import { AddFilterCommand } from '../../js/commands/AddFilterCommand';
 import { AddOutputCommand } from '../../js/commands/AddOutputCommand';
 import { Context } from '../../js/Editor.Context';
+import { SimulationConfiguration } from './propeteries/category/SimulationConfiguration';
 
 export function EditorSidebar(props: { editor: Editor }) {
 	const { editor } = props;
@@ -150,7 +151,16 @@ export function EditorSidebar(props: { editor: Editor }) {
 			<TabPanel value={value} index={'Scoring'} persistentIfVisited>
 				<EditorSidebarTabTree elements={scoringTabElements}></EditorSidebarTabTree>
 			</TabPanel>
-			<TabPanel value={value} index={'Settings'} persistentIfVisited></TabPanel>
+			<TabPanel value={value} index={'Settings'} persistentIfVisited>
+				<Box
+					sx={{
+						width: '100%',
+						resize: 'vertical',
+						padding: '.5rem'
+					}}>
+					<SimulationConfiguration editor={editor} />
+				</Box>
+			</TabPanel>
 			<PropertiesPanel
 				editor={editor}
 				boxProps={{
