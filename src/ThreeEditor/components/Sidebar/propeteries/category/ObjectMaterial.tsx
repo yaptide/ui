@@ -3,7 +3,11 @@ import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
 import { Object3D } from 'three';
 import { isZone } from '../../../../util/CSG/CSGZone';
-import { ColorInput, ConditionalNumberPropertyField, PropertyField } from '../fields/PropertyField';
+import {
+	ColorInput,
+	ConditionalNumberPropertyField,
+	PropertyField
+} from '../fields/PropertyField';
 import { SetMaterialColorCommand } from '../../../../js/commands/SetMaterialColorCommand';
 import { isBeam } from '../../../../util/Beam';
 import { isBasicMesh } from '../../../../util/BasicMeshes';
@@ -12,6 +16,7 @@ import { MaterialSelect } from '../../../Select/MaterialSelect';
 import { SetZoneMaterialCommand } from '../../../../js/commands/SetZoneMaterialCommand';
 import { SetMaterialValueCommand } from '../../../../js/commands/SetMaterialValueCommand';
 import { isWorldZone } from '../../../../util/WorldZone/WorldZone';
+import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 
 export function ObjectMaterial(props: { editor: Editor; object: Object3D }) {
 	const { object, editor } = props;
@@ -49,34 +54,78 @@ export function ObjectMaterial(props: { editor: Editor; object: Object3D }) {
 					)}
 
 					{isZone(watchedObject) && (
-						<ConditionalNumberPropertyField
-							label='Opacity'
-							value={watchedObjectMaterial?.opacity ?? 0}
-							enabled={watchedObjectMaterial?.transparent ?? false}
-							min={0}
-							max={1}
-							step={0.05}
-							onChange={v =>
-								editor.execute(
-									new SetMaterialValueCommand(
-										editor,
-										watchedObject.object,
-										'opacity',
-										v
+						<>
+							<ConditionalNumberPropertyField
+								min={0.0}
+								unit='g/cm^3'
+								label='Custom density'
+								value={watchedObject.materialPropertiesOverrides.density.value}
+								onChange={v => {
+									const newValue = {
+										...watchedObject.materialPropertiesOverrides,
+										density: {
+											...watchedObject.materialPropertiesOverrides.density,
+											value: v
+										}
+									};
+									editor.execute(
+										new SetValueCommand(
+											editor,
+											watchedObject.object,
+											'materialPropertiesOverrides',
+											newValue
+										)
+									);
+								}}
+								enabled={watchedObject.materialPropertiesOverrides.density.override}
+								onChangeEnabled={v => {
+									const newValue = {
+										...watchedObject.materialPropertiesOverrides,
+										density: {
+											...watchedObject.materialPropertiesOverrides.density,
+											override: v
+										}
+									};
+									editor.execute(
+										new SetValueCommand(
+											editor,
+											watchedObject.object,
+											'materialPropertiesOverrides',
+											newValue
+										)
+									);
+								}}
+							/>
+
+							<ConditionalNumberPropertyField
+								label='Opacity'
+								value={watchedObjectMaterial?.opacity ?? 0}
+								enabled={watchedObjectMaterial?.transparent ?? false}
+								min={0}
+								max={1}
+								step={0.05}
+								onChange={v =>
+									editor.execute(
+										new SetMaterialValueCommand(
+											editor,
+											watchedObject.object,
+											'opacity',
+											v
+										)
 									)
-								)
-							}
-							onChangeEnabled={v =>
-								editor.execute(
-									new SetMaterialValueCommand(
-										editor,
-										watchedObject.object,
-										'transparent',
-										v
+								}
+								onChangeEnabled={v =>
+									editor.execute(
+										new SetMaterialValueCommand(
+											editor,
+											watchedObject.object,
+											'transparent',
+											v
+										)
 									)
-								)
-							}
-						/>
+								}
+							/>
+						</>
 					)}
 
 					<PropertyField label={'Color'}>

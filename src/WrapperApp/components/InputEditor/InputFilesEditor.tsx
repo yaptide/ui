@@ -28,7 +28,14 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 	);
 
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-	const inputFilesOrder = ['info.json', 'geo.dat', 'mat.dat', 'beam.dat', 'detect.dat'];
+	const inputFilesOrder = [
+		'info.json',
+		'geo.dat',
+		'mat.dat',
+		'beam.dat',
+		'detect.dat',
+		'sobp.dat'
+	];
 	useEffect(() => {
 		if (!props.innerState) setInputFiles({ ...(props.inputFiles ?? _emptyInputFiles) });
 	}, [props.innerState, props.inputFiles]);
@@ -87,6 +94,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 									{name}
 									<Button
 										color='info'
+										disabled={value.trim() === ''}
 										onClick={() => {
 											saveString(value, name);
 										}}
