@@ -1,7 +1,7 @@
 import { ReactNode, useRef, useState } from 'react';
 import { Editor } from '../ThreeEditor/js/Editor';
 import { createGenericContext } from '../util/GenericContext';
-import { FinalSimulationStatusData, SimulationStatusData } from './ShSimulatorService';
+import { FinalSimulationStatusData, InputFiles, SimulationStatusData } from './ShSimulatorService';
 
 export interface StoreProps {
 	children: ReactNode;
@@ -17,6 +17,8 @@ export interface IStore {
 	setLocalResultsSimulationData: React.Dispatch<
 		React.SetStateAction<FinalSimulationStatusData[]>
 	>;
+	inputFiles?: InputFiles;
+	setInputFiles: React.Dispatch<React.SetStateAction<InputFiles | undefined>>;
 }
 
 const [useStore, StoreContextProvider] = createGenericContext<IStore>();
@@ -27,13 +29,16 @@ const Store = (props: StoreProps) => {
 	const [localResultsSimulationData, setLocalResultsSimulationData] = useState<
 		FinalSimulationStatusData[]
 	>([]);
+	const [inputFiles, setInputFiles] = useState<InputFiles>();
 
 	const value: IStore = {
 		editorRef,
 		resultsSimulationData,
 		setResultsSimulationData,
 		localResultsSimulationData,
-		setLocalResultsSimulationData
+		setLocalResultsSimulationData,
+		inputFiles,
+		setInputFiles
 	};
 
 	return <StoreContextProvider value={value}>{props.children}</StoreContextProvider>;

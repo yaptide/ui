@@ -18,7 +18,7 @@ import { TabPanel } from './components/TabPanel';
 import YapDrawer from './components/YapDrawer/YapDrawer';
 
 function WrapperApp() {
-	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
+	const { editorRef, resultsSimulationData, setResultsSimulationData, inputFiles } = useStore();
 	const { editorProvider, canLoadEditorData, setLoadedEditor } = useLoader();
 	const { isAuthorized, logout } = useAuth();
 	const [open, setOpen] = React.useState(false);
@@ -58,6 +58,11 @@ function WrapperApp() {
 		},
 		[setResultsSimulationData]
 	);
+
+	useEffect(() => {
+		if (DEMO_MODE || !isAuthorized || !inputFiles) return;
+		setTabsValue('simulations');
+	}, [inputFiles]);
 
 	const onEditorInitialized = (editor: Editor) => {
 		editorRef.current?.signals.exampleLoaded.remove(onLoadExample);

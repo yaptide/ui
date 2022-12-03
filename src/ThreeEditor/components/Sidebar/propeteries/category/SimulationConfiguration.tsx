@@ -10,12 +10,7 @@ import { SimulationEnv } from '../../../../js/Editor.SimulationEnv';
 export function SimulationConfiguration(props: { editor: Editor }) {
 	const { editor } = props;
 
-	const { state: watchedObject } = useSmartWatchEditorState(
-		editor,
-		editor.simEnvManager,
-		false,
-		true
-	);
+	const { state: watchedObject } = useSmartWatchEditorState(editor, editor.simEnvManager);
 
 	return (
 		<PropertiesCategory category='Simulator'>

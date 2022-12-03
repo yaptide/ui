@@ -10,7 +10,6 @@ import { useSnackbar } from 'notistack';
 import { throttle } from 'throttle-debounce';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import useTheme from '@mui/system/useTheme';
-
 interface InputEditorPanelProps {
 	goToRun?: () => void;
 }
@@ -18,13 +17,14 @@ interface InputEditorPanelProps {
 type GeneratorLocation = 'local' | 'remote';
 
 export default function InputEditorPanel(props: InputEditorPanelProps) {
+	const { inputFiles, setInputFiles } = useStore();
 	const { enqueueSnackbar } = useSnackbar();
 	const { editorRef } = useStore();
 	const { convertToInputFiles, sendRun } = useShSimulation();
 	const { isConverterReady, convertJSON } = usePythonConverter();
 
 	const [isInProgress, setInProgress] = useState(false);
-	const [inputFiles, setInputFiles] = useState<InputFiles>();
+	const [localInputFiles, setLocalInputFiles] = useState<InputFiles>();
 	const [generator, setGenerator] = useState<GeneratorLocation>('local');
 
 	const [controller] = useState(new AbortController());
@@ -54,7 +54,15 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 
 		handleConvert(editorJSON)
 			.then(inputFiles => {
-				setInputFiles({ ...inputFiles });
+				setLocalInputFiles({
+					...inputFiles,
+					'info.json': JSON.stringify({
+						name: editorJSON.project.title,
+						version: 'unknown',
+						label: 'local',
+						simulator: 'shieldhit'
+					})
+				});
 				enqueueSnackbar('Input files generated', { variant: 'info' });
 			})
 			.catch(e => {
@@ -71,18 +79,6 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 		throttle(1000, onClickGenerate, { noTrailing: true }),
 		[onClickGenerate]
 	);
-
-	const runSimulation = (inputFiles: InputFiles) => {
-		setInProgress(true);
-		const input = { inputFiles };
-		sendRun(input, controller.signal)
-			.then()
-			.catch()
-			.finally(() => {
-				setInProgress(false);
-				props.goToRun?.call(null);
-			});
-	};
 
 	return (
 		<Box
@@ -128,10 +124,7 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 					)}
 				</ToggleButtonGroup>
 			</Box>
-			<InputFilesEditor
-				inputFiles={inputFiles}
-				runSimulation={!DEMO_MODE ? runSimulation : undefined}
-			/>
+			<InputFilesEditor inputFiles={localInputFiles} />
 		</Box>
 	);
 }

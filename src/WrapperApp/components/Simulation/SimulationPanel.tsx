@@ -11,6 +11,8 @@ import {
 	Modal,
 	Pagination,
 	Stack,
+	ToggleButton,
+	ToggleButtonGroup,
 	Typography
 } from '@mui/material';
 import { flexbox } from '@mui/system';
@@ -36,6 +38,7 @@ import CableIcon from '@mui/icons-material/Cable';
 import { SimulationPanelGrid } from './SimulationPanelGrid';
 import { DEMO_MODE } from '../../../util/Config';
 import EXAMPLES from '../../../ThreeEditor/examples/examples';
+import { SimulationRun } from './SimulationRun';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
@@ -46,7 +49,9 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		editorRef,
 		setResultsSimulationData,
 		localResultsSimulationData,
-		setLocalResultsSimulationData
+		setLocalResultsSimulationData,
+		inputFiles,
+		setInputFiles
 	} = useStore();
 
 	const { sendRun, sendHelloWorld, getSimulations, getSimulationsStatus } = useShSimulation();
@@ -60,8 +65,6 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const [orderType, setOrderType] = useState<OrderType>(OrderType.ASCEND);
 	const [orderBy, setOrderBy] = useState<OrderBy>(OrderBy.START_TIME);
 	const [pageSize, setPageSize] = useState(4);
-
-	const [inputFiles, setInputFiles] = useState<InputFiles>();
 
 	const [trackedId, setTrackedId] = useState<string>();
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
@@ -243,10 +246,8 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 						<InputFilesEditor
 							inputFiles={inputFiles}
 							closeEditor={() => setShowInputFilesEditor(false)}
-							runSimulation={newInputFiles => {
+							selectInputFiles={() => {
 								setShowInputFilesEditor(false);
-								setInputFiles(newInputFiles);
-								runSimulation(newInputFiles);
 							}}></InputFilesEditor>
 					</Box>
 				</Fade>
@@ -275,29 +276,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				</CardContent>
 				<Divider />
 				{isBackendAlive && (
-					<>
-						<CardContent>
-							<Typography gutterBottom variant='h5' component='div'>
-								Run Simulation
-							</Typography>
-							<LinearProgress
-								color='info'
-								variant={isInProgress ? 'indeterminate' : 'determinate'}
-								value={0}
-							/>
-						</CardContent>
-						<CardActions>
-							<Button
-								color='info'
-								sx={{
-									width: 'min(300px, 100%)',
-									margin: '0 auto'
-								}}
-								onClick={onClickRun}>
-								{isInProgress ? 'Stop' : 'Start'}
-							</Button>
-						</CardActions>
-					</>
+					<SimulationRun isInProgress={isInProgress} onClickRun={onClickRun} />
 				)}
 			</Card>
 			<SimulationPanelGrid

@@ -22,4 +22,12 @@ export class SimulationEnvManager extends PropertyManager<SimulationEnv> {
 			return acc;
 		}, {} as Record<SimulationEnv, SimulationEnv>);
 	}
+	getPossibleSimulators(): Partial<Record<Simulator, Simulator>> {
+		if (this.currentValue === 'custom')
+			return SIMULATION_ENVS.reduce<Partial<Record<Simulator, Simulator>>>((acc, curr) => {
+				if (curr !== 'custom') acc[curr] = curr;
+				return acc;
+			}, {} as Partial<Record<Simulator, Simulator>>);
+		else return { [this.currentValue]: this.currentValue };
+	}
 }

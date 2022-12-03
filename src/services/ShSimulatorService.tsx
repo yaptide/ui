@@ -95,6 +95,7 @@ interface ResShStatusProgress extends IResponseMsg {
 }
 
 export interface InputFiles {
+	'info.json'?: string;
 	'beam.dat': string;
 	'detect.dat': string;
 	'geo.dat': string;

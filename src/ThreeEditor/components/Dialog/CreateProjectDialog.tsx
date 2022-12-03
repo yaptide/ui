@@ -81,12 +81,13 @@ export function CreateProjectDialog(props: CreateProjectProps) {
 							onChange={changeEnviroment}>
 							{Object.entries(props.editor.simEnvManager.getPossibleValues()).map(
 								([key, value]) => (
-									<MenuItem value={key}>{value}</MenuItem>
+									<MenuItem key={key} value={key}>
+										{value}
+									</MenuItem>
 								)
 							)}
 						</Select>
 					</FormControl>
-					{/* <ObjectSelectPropertyField editor={editor} /> */}
 				</form>
 			</DialogContent>
 			<DialogActions>

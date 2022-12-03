@@ -1,11 +1,4 @@
-import {
-	Box,
-	Button,
-	ButtonGroup,
-	Grid,
-	MenuItem,
-	Pagination,
-	Select} from '@mui/material';
+import { Box, Button, ButtonGroup, Grid, MenuItem, Pagination, Select } from '@mui/material';
 import { OrderBy, OrderType, SimulationStatusData } from '../../../services/ShSimulatorService';
 import SimulationStatus from './SimulationStatus';
 import { InputFiles } from '../../../services/ShSimulatorService';
@@ -129,9 +122,8 @@ export function SimulationPanelGrid(props: SimulationPanelGridProps) {
 					}
 				}}>
 				{localSimulationData.concat(simulationsStatusData).map(simulation => (
-					<Grid item xs={6}>
+					<Grid key={simulation.uuid} item xs={6}>
 						<SimulationStatus
-							key={simulation.uuid}
 							simulation={simulation}
 							loadResults={taskId => handleLoadResults(taskId, simulation)}
 							showInputFiles={handleShowInputFiles}></SimulationStatus>

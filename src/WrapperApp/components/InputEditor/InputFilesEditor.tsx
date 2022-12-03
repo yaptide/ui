@@ -6,10 +6,12 @@ import { saveString } from '../../../util/File';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import useTheme from '@mui/system/useTheme';
 import { DEMO_MODE } from '../../../util/Config';
+import { useStore } from '../../../services/StoreService';
+import { useAuth } from '../../../services/AuthService';
 
 interface InputFilesEditorProps {
 	inputFiles?: InputFiles;
-	runSimulation?: (inputFiles: InputFiles) => void;
+	selectInputFiles?: () => void;
 	saveAndExit?: (inputFiles: InputFiles) => void;
 	closeEditor?: () => void;
 	innerState?: boolean;
@@ -22,8 +24,10 @@ const _emptyInputFiles: InputFiles = {
 	'mat.dat': ''
 };
 export function InputFilesEditor(props: InputFilesEditorProps) {
+	const { isAuthorized } = useAuth();
+	const { setInputFiles } = useStore();
 	const theme = useTheme();
-	const [inputFiles, setInputFiles] = useState<InputFiles>(
+	const [localInputFiles, setLocalInputFiles] = useState<InputFiles>(
 		props.inputFiles ?? { ..._emptyInputFiles }
 	);
 
@@ -37,7 +41,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 		'sobp.dat'
 	];
 	useEffect(() => {
-		if (!props.innerState) setInputFiles({ ...(props.inputFiles ?? _emptyInputFiles) });
+		if (!props.innerState) setLocalInputFiles({ ...(props.inputFiles ?? _emptyInputFiles) });
 	}, [props.innerState, props.inputFiles]);
 
 	return (
@@ -49,19 +53,24 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 						? theme.palette.grey['800']
 						: theme.palette.grey['300']
 				}}>
-				{props.runSimulation && (
+				{!DEMO_MODE && isAuthorized && (
 					<Button
 						color='success'
 						variant='contained'
 						disabled={DEMO_MODE}
-						onClick={() => props.runSimulation?.call(null, inputFiles)}>
-						Run input files
+						onClick={() => {
+							props.selectInputFiles && props.selectInputFiles();
+							setInputFiles(localInputFiles);
+						}}>
+						Select and Run Simulation
 					</Button>
 				)}
 				<Button
 					color='info'
 					onClick={() =>
-						Object.entries(inputFiles).map(([name, value]) => saveString(value, name))
+						Object.entries(localInputFiles).map(([name, value]) =>
+							saveString(value, name)
+						)
 					}>
 					Download all
 				</Button>
@@ -69,7 +78,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 					<Button
 						disabled={DEMO_MODE}
 						color='info'
-						onClick={() => props.saveAndExit?.call(null, inputFiles)}>
+						onClick={() => props.saveAndExit?.call(null, localInputFiles)}>
 						Save and exit
 					</Button>
 				)}
@@ -81,7 +90,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 			</CardActions>
 			<Divider />
 			<CardContent>
-				{Object.entries(inputFiles)
+				{Object.entries(localInputFiles)
 					.sort(([name1, _1], [name2, _2]) => {
 						const index1 = inputFilesOrder.indexOf(name1) + 1;
 						const index2 = inputFilesOrder.indexOf(name2) + 1;
@@ -107,7 +116,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 									language='sql'
 									placeholder={`Please enter ${name} content or generate it from editor.`}
 									onChange={evn =>
-										setInputFiles(old => {
+										setLocalInputFiles(old => {
 											return { ...old, [name]: evn.target.value };
 										})
 									}
