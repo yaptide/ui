@@ -106,6 +106,7 @@ function ThreeEditor(props: ThreeEditorProps) {
 			</Box>
 			{editor && (
 				<AppBar
+					className='ThreeEditorSidebar'
 					position='static'
 					color='secondary'
 					sx={{

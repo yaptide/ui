@@ -57,8 +57,10 @@ export const useKeyboardEditorControls = (editor: Editor | undefined, containerR
         };
 
         const onKeyDown = (event: KeyboardEvent) => {
+            const eventFromSidebar = (event.target as any).closest('.ThreeEditorSidebar') !== null;
 
-            console.log(event.key, container);
+            if (eventFromSidebar) return;
+
             switch (event.key.toLowerCase()) {
                 case 'delete':
                     const object = editor.selected;
