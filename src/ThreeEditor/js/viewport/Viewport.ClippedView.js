@@ -34,7 +34,7 @@ export function ViewportClippedView(
 
 	this.scene = new THREE.Scene();
 	this.scene.name = `ClippedViewScene-${name}`;
-	this.gui = new GUI({ container } );
+	this.gui = new GUI({ container });
 	this.gui.domElement.style.position = 'absolute';
 	this.gui.domElement.style.top = '5px';
 	this.gui.domElement.style.right = '5px';
@@ -72,7 +72,7 @@ export function ViewportClippedView(
 		get 'Helper Visible'() {
 			return planeHelper.visible;
 		},
-		set 'Helper Visible'(v) {			
+		set 'Helper Visible'(v) {
 			planeHelper.visible = v;
 
 			editor.signals.viewportConfigChanged.dispatch({
@@ -84,8 +84,8 @@ export function ViewportClippedView(
 
 	// adjust range of movement of clipping plane to -size...+size with given step
 	const clipPlaneStep = 0.1;
-	this.gui.add(uiProps, planePosProperty, -CLIPPING_SIZE, CLIPPING_SIZE, clipPlaneStep);
-	this.gui.add(uiProps, 'Helper Visible');
+	this.gui.add(uiProps, planePosProperty, -CLIPPING_SIZE, CLIPPING_SIZE, clipPlaneStep).listen();
+	this.gui.add(uiProps, 'Helper Visible').listen();
 
 	// setup plane to display where geometry is clipped
 	// in fact this is a square being a subset of plane
@@ -220,4 +220,16 @@ export function ViewportClippedView(
 	this.reset = () => {
 		clippedObjects.clear();
 	};
+
+	this.configurationJson = () => {
+		return {
+			planeConstant: uiProps[planePosProperty],
+			visible: uiProps['Helper Visible']
+		};
+	}
+
+	this.fromConfigurationJson = (json) => {
+		uiProps[planePosProperty] = json.planeConstant;
+		uiProps['Helper Visible'] = json.visible;
+	}
 }
