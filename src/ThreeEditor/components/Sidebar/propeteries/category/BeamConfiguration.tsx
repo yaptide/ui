@@ -167,7 +167,22 @@ function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
 							watchedObject.energySpread = v;
 						}}
 					/>
-
+					<NumberPropertyField
+						label='Energy lower cutoff'
+						unit={'MeV/nucl'}
+						value={watchedObject.energyLowCutoff}
+						onChange={v => {
+							watchedObject.energyLowCutoff = v;
+						}}
+					/>
+					<NumberPropertyField
+						label='Energy upper cutoff'
+						unit={'MeV/nucl'}
+						value={watchedObject.energyHighCutoff}
+						onChange={v => {
+							watchedObject.energyHighCutoff = v;
+						}}
+					/>
 					<PropertyField children={<Divider />} />
 					<Vector2PropertyField
 						label='Divergence XY'
