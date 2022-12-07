@@ -3,7 +3,6 @@ import { UIButton, UIColor, UIPanel, UIRow, UISelect, UIText } from '../libs/ui.
 import { UITexture } from '../libs/ui.three.js';
 import { SidebarProjectRenderer } from '../sidebar/Sidebar.Project.Renderer.js';
 import { MenubarSettingsHistory } from './Menubar.Settings.History.js';
-import { MenubarSettingsShortcuts } from './Menubar.Settings.Shortcuts.js';
 import { MenubarSettingsViewport } from './Menubar.Settings.Viewport.js';
 
 const MenubarSettingsEvent = {
@@ -131,7 +130,6 @@ function MenubarSettings(editor) {
 	//
 
 	container.add(new MenubarSettingsViewport(editor));
-	container.add(new MenubarSettingsShortcuts(editor));
 	container.add(new MenubarSettingsHistory(editor));
 	container.add(new SidebarProjectRenderer(editor))
 

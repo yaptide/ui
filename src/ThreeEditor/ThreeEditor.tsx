@@ -10,6 +10,7 @@ import { EditorMenu } from './components/EditorMenu/EditorMenu';
 import useDocumentTitle from '../util/useDocumentTitle';
 import { useTheme } from '@mui/material/styles';
 import { EditorSidebar } from './components/Sidebar/EditorSidebar';
+import { useKeyboardEditorControls } from './util/hooks/useKeyboardEditorControls';
 declare global {
 	interface Window {
 		editor: Editor;
@@ -23,10 +24,13 @@ interface ThreeEditorProps {
 }
 
 function ThreeEditor(props: ThreeEditorProps) {
+	const threeEditorRef = useRef<HTMLDivElement>(null);
 	const [editor, setEditor] = useState<Editor>();
 	const [title, setTitle] = useState<string>(editor?.config.getKey('project/title'));
 	const containerEl = useRef<HTMLDivElement>(null);
 	const theme = useTheme();
+
+	useKeyboardEditorControls(editor, threeEditorRef);
 
 	useEffect(() => {
 		editor?.signals.titleChanged.add(setTitle);
@@ -66,6 +70,8 @@ function ThreeEditor(props: ThreeEditorProps) {
 
 	return (
 		<Box
+			ref={threeEditorRef}
+			tabIndex={-1}
 			sx={{
 				width: '100%',
 				height: '100vh',
@@ -100,6 +106,7 @@ function ThreeEditor(props: ThreeEditorProps) {
 			</Box>
 			{editor && (
 				<AppBar
+					className='ThreeEditorSidebar'
 					position='static'
 					color='secondary'
 					sx={{
@@ -119,3 +126,4 @@ function ThreeEditor(props: ThreeEditorProps) {
 }
 
 export default ThreeEditor;
+
