@@ -17,7 +17,7 @@ export function FilterConfiguration(props: { editor: Editor; object: Object3D })
 	const visibleFlag = isDetectFilter(watchedObject);
 
 	return (
-		<PropertiesCategory category='Differential Scoring' visible={visibleFlag}>
+		<PropertiesCategory category='Filter Rules' visible={visibleFlag}>
 			{visibleFlag && (
 				<>
 					<PropertyField>

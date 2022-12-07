@@ -514,6 +514,17 @@ export function Viewport(
 		else console.error(`No camera with uuid: [${uuid}] in this viewport`);
 	};
 
+	this.configurationJson = () => {
+		const configJson = { cameraMatrix: camera.matrix.toArray(), clipPlane: viewClipPlane?.configurationJson() };
+		return configJson;
+	}
+
+	this.fromConfigurationJson = (configJson) => {
+		camera.matrix.fromArray(configJson.cameraMatrix);
+		camera.matrix.decompose(camera.position, camera.quaternion, camera.scale);
+		viewClipPlane?.fromConfigurationJson(configJson.clipPlane);
+	}
+
 	return {
 		...this,
 		render,

@@ -23,7 +23,9 @@ export function initEditor(container) {
 	window.THREE = THREE; // Expose THREE to APP Scripts and Console
 
 	const viewManager = new ViewManager(editor);
-	container.appendChild(viewManager.dom);
+	container.appendChild(viewManager.container.dom);
+
+	editor.viewManager = viewManager;
 
 	const sidebar = new Sidebar(editor);
 	container.appendChild(sidebar.dom);

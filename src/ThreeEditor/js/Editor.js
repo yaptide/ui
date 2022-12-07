@@ -21,7 +21,7 @@ _DEFAULT_CAMERA.name = 'Camera';
 _DEFAULT_CAMERA.position.set(0, 5, 10);
 _DEFAULT_CAMERA.lookAt(new THREE.Vector3());
 
-export const JSON_VERSION = 0.3;
+export const JSON_VERSION = 0.4;
 
 export function Editor(container) {
 	this.signals = {
@@ -128,6 +128,8 @@ export function Editor(container) {
 	};
 
 	this.results = null;
+
+	this.viewManager = null;
 
 	this.oldSidebarVisible = true;
 
@@ -587,7 +589,7 @@ Editor.prototype = {
 
 	async fromJSON(json) {
 		this.config.setKey('project/title', json.project.title ?? '');
-		this.config.setKey('project/description', json.project.description ?? '');
+		this.config.setKey('project/description', json.project.description ?? '');		
 		this.signals.projectChanged.dispatch();
 
 		const loader = new EditorObjectLoader(this);
@@ -606,6 +608,9 @@ Editor.prototype = {
 		this.detectManager.fromJSON(json.detectManager);
 		this.scoringManager.fromJSON(json.scoringManager);
 		this.beam.fromJSON(json.beam);
+
+		this.viewManager.fromConfigurationJson(json.project.viewManager);
+
 
 		this.signals.sceneGraphChanged.dispatch();
 	},
@@ -641,7 +646,8 @@ Editor.prototype = {
 					'project/renderer/physicallyCorrectLights'
 				),
 				toneMapping: this.config.getKey('project/renderer/toneMapping'),
-				toneMappingExposure: this.config.getKey('project/renderer/toneMappingExposure')
+				toneMappingExposure: this.config.getKey('project/renderer/toneMappingExposure'),
+				viewManager: this.viewManager.configurationJson(), // serialize ViewManager
 			},
 			scene: this.scene.toJSON(),
 			history: this.history.toJSON(),

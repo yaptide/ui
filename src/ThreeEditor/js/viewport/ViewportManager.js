@@ -74,6 +74,8 @@ function ViewManager(editor) {
 	selectionBox.visible = false;
 	sceneHelpers.add(selectionBox);
 
+	const viewportMap = {};
+
 	// Four Views Layout
 
 	const viewsGrid = new UIDiv();
@@ -132,6 +134,7 @@ function ViewManager(editor) {
 		gridRotation: new THREE.Euler(Math.PI / 2, 0, 0)
 	};
 	const viewPlaneXY = new Viewport('ViewPanelXY', editor, viewManagerProps, configPlaneXY);
+	viewportMap[viewPlaneXY.name] = viewPlaneXY;
 	viewsGrid.add(viewPlaneXY.wrapperDiv);
 
 	// fix the view to being from positive part of Z axis: phi = 0*, theta = 0*
@@ -157,6 +160,7 @@ function ViewManager(editor) {
 		cameraPosition: new THREE.Vector3(10, 10, 10)
 	};
 	const view3D = new Viewport('ViewPanel3D', editor, viewManagerProps, config3D);
+	viewportMap[view3D.name] = view3D;
 	viewsGrid.add(view3D.wrapperDiv);
 
 	// --------------- third view, lower left, XZ plane ----------------------------------
@@ -178,6 +182,7 @@ function ViewManager(editor) {
 		planeHelperColor: 0xc2ee00
 	};
 	const viewPlaneXZ = new Viewport('ViewPanelY', editor, viewManagerProps, configPlaneXZ);
+	viewportMap[viewPlaneXZ.name] = viewPlaneXZ;
 	viewsGrid.add(viewPlaneXZ.wrapperDiv);
 
 	// fix the view to being from positive part of Y axis: phi = 0*, theta = 270*
@@ -225,6 +230,7 @@ function ViewManager(editor) {
 		gridRotation: new THREE.Euler(0, 0, Math.PI / 2)
 	};
 	const viewPlaneYZ = new Viewport('ViewPanelX', editor, viewManagerProps, configPlaneYZ);
+	viewportMap[viewPlaneYZ.name] = viewPlaneYZ;
 	viewsGrid.add(viewPlaneYZ.wrapperDiv);
 
 	// fix the view to being from positive part of X axis: phi = 0*, theta = 180*
@@ -276,6 +282,7 @@ function ViewManager(editor) {
 	container.add(viewSingle);
 
 	const viewport = new Viewport('ViewPanel', editor, viewManagerProps);
+	viewportMap[viewport.name] = viewport;
 	viewport.container.setPosition('absolute');
 	viewSingle.add(viewport.container);
 
@@ -595,7 +602,27 @@ function ViewManager(editor) {
 		editor.signals.sceneRendered.dispatch(endTime - startTime);
 	}
 
-	return container;
+	this.configurationJson = () => {
+
+		const configJson = {};
+		for (const key in viewportMap) {
+			configJson[key] = viewportMap[key].configurationJson();
+		}
+
+		return configJson;
+	}
+
+	this.fromConfigurationJson = (configJson) => {
+		for (const key in configJson) {
+			viewportMap[key].fromConfigurationJson(configJson[key]);
+		}
+		render();
+	}
+
+	return {
+		...this,
+		container
+	};
 }
 
 function updateGridColors(grid1, grid2, colors) {

@@ -9,7 +9,6 @@ import { DEMO_MODE } from '../../../util/Config';
 import { useSnackbar } from 'notistack';
 import { throttle } from 'throttle-debounce';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
-import useTheme from '@mui/system/useTheme';
 interface InputEditorPanelProps {
 	goToRun?: () => void;
 }
