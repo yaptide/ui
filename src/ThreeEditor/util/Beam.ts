@@ -27,6 +27,8 @@ export interface BeamJSON {
 	direction: THREE.Vector3Tuple;
 	energy: number;
 	energySpread: number;
+	energyLowCutoff: number;
+	energyHighCutoff: number;
 	beamSourceType: BeamSourceType;
 	divergence: {
 		x: number;
@@ -54,6 +56,8 @@ const _default = {
 	beamSourceType: BEAM_SOURCE_TYPE.simple,
 	energy: 150,
 	energySpread: 1.5,
+	energyLowCutoff: 0,
+	energyHighCutoff: 1000,
 	divergence: {
 		x: 0,
 		y: 0,
@@ -105,6 +109,8 @@ export class Beam extends SimulationObject3D {
 
 	energy: number;
 	energySpread: number;
+	energyLowCutoff: number;
+	energyHighCutoff: number;
 	direction: Vector3;
 
 	beamSourceType: BeamSourceType = _default.beamSourceType;
@@ -151,6 +157,8 @@ export class Beam extends SimulationObject3D {
 				'direction',
 				'energy',
 				'energySpread',
+				'energyLowCutoff',
+				'energyHighCutoff',
 				'divergence',
 				'particleData',
 				'numberOfParticles',
@@ -184,6 +192,8 @@ export class Beam extends SimulationObject3D {
 		this.position.copy(_default.position);
 		this.energy = _default.energy;
 		this.energySpread = _default.energySpread;
+		this.energyLowCutoff = _default.energyLowCutoff;
+		this.energyHighCutoff = _default.energyHighCutoff;
 
 		this.divergence = { ..._default.divergence };
 
@@ -280,6 +290,9 @@ export class Beam extends SimulationObject3D {
 
 		this.energy = _default.energy;
 		this.energySpread = _default.energySpread;
+		this.energyLowCutoff = _default.energyLowCutoff;
+		this.energyHighCutoff = _default.energyHighCutoff;
+
 		this.divergence = { ..._default.divergence };
 		this.particleData = _default.particle;
 		this.sigma = { ..._default.sigma };
@@ -297,6 +310,8 @@ export class Beam extends SimulationObject3D {
 			direction: this.direction.toArray(),
 			energy: this.energy,
 			energySpread: this.energySpread,
+			energyLowCutoff: this.energyLowCutoff,
+			energyHighCutoff: this.energyHighCutoff,
 			sigma: this.sigma,
 			divergence: this.divergence,
 			particle: this.particleData,
@@ -315,6 +330,8 @@ export class Beam extends SimulationObject3D {
 		this.direction.fromArray(loadedData.direction);
 		this.energy = loadedData.energy;
 		this.energySpread = loadedData.energySpread;
+		this.energyLowCutoff = loadedData.energyLowCutoff;
+		this.energyHighCutoff = loadedData.energyHighCutoff;
 		this.divergence = loadedData.divergence;
 		this.particleData = loadedData.particle;
 		this.material.color.setHex(loadedData.colorHex);
