@@ -57,7 +57,7 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 				setLocalInputFiles({
 					...inputFiles,
 					'info.json': JSON.stringify({
-						name: editorJSON.project.title,
+						name: editorJSON.project.title ?? '',
 						version: 'unknown',
 						label: 'local',
 						simulator: 'shieldhit'

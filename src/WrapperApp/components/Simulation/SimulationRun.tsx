@@ -14,8 +14,9 @@ import {
 	ToggleButtonGroup,
 	Typography
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useStore } from '../../../services/StoreService';
+import { Simulator } from '../../../ThreeEditor/js/Editor.SimulationEnv';
 
 type InputSource = 'files' | 'editor';
 type SimulationRunProps = {
@@ -26,13 +27,56 @@ type SimulationRunProps = {
 export function SimulationRun({ isInProgress, onClickRun }: SimulationRunProps) {
 	const { editorRef, inputFiles, setInputFiles } = useStore();
 	const [inputSource, setInputSource] = useState<InputSource>(inputFiles ? 'files' : 'editor');
-	const [simulator, setSimulator] = useState('');
+	const [simulator, setSimulator] = useState<Simulator | ''>('');
+	const [numberOfProcesses, setNumberOfProcesses] = useState(1);
 	const changeSimulator = (event: SelectChangeEvent) => {
-		setSimulator(event.target.value as string);
+		setSimulator(event.target.value as Simulator | '');
+	};
+	const changeNumberOfProcesses = (event: SelectChangeEvent) => {
+		setNumberOfProcesses(Number(event.target.value));
+	};
+	const inputFilesName = () => {
+		if (inputFiles && inputFiles['info.json']) {
+			try {
+				console.log(inputFiles['info.json']);
+				return JSON.parse(inputFiles['info.json'])?.name;
+			} catch (e) {}
+		}
+		return 'Choose input files from previous simulations or generate them in imput editor';
 	};
 	useEffect(() => {
 		setInputSource(inputFiles ? 'files' : 'editor');
 	}, [inputFiles]);
+	const simulatorSelect = useCallback(
+		(options: Partial<Record<Simulator, Simulator>>) => {
+			const entries = Object.entries(options);
+			if (entries.length === 1)
+				return (
+					<Typography variant='h6' sx={{ pt: 1 }}>
+						{'Simulator: ' + entries[0][1]}
+					</Typography>
+				);
+			return (
+				<>
+					<InputLabel id='simulator-select-label'>Simulator</InputLabel>
+					<Select
+						labelId='simulator-select-label'
+						id='simulator-select'
+						value={simulator}
+						label='Simulator'
+						onChange={changeSimulator}>
+						{entries.map(([key, label]) => (
+							<MenuItem key={key} value={key}>
+								{label}
+							</MenuItem>
+						))}
+					</Select>
+				</>
+			);
+		},
+		[simulator]
+	);
+
 	return (
 		<Card>
 			<CardContent
@@ -77,21 +121,9 @@ export function SimulationRun({ isInProgress, onClickRun }: SimulationRunProps) 
 				{inputSource === 'editor' ? (
 					<Box>
 						<FormControl sx={{ minWidth: 100 }}>
-							<InputLabel id='simulator-select-label'>Simulator</InputLabel>
-							<Select
-								labelId='simulator-select-label'
-								id='simulator-select'
-								value={simulator}
-								label='Simulator'
-								onChange={changeSimulator}>
-								{Object.entries(
-									editorRef.current?.simEnvManager.getPossibleSimulators() || {}
-								).map(([key, value]) => (
-									<MenuItem key={key} value={key}>
-										{value}
-									</MenuItem>
-								))}
-							</Select>
+							{simulatorSelect(
+								editorRef.current?.simEnvManager.getPossibleSimulators() || {}
+							)}
 						</FormControl>
 					</Box>
 				) : (
@@ -103,12 +135,33 @@ export function SimulationRun({ isInProgress, onClickRun }: SimulationRunProps) 
 							sx={{
 								pt: 1
 							}}>
-							{inputFiles && inputFiles['info.json']
-								? JSON.parse(inputFiles['info.json'] ?? '')?.name
-								: 'Choose input files from previous simulations or generate them in imput editor'}
+							{inputFilesName()}
 						</Typography>
 					</Box>
 				)}
+			</CardContent>
+			<CardContent
+				sx={{
+					display: 'flex',
+					pb: 0
+				}}>
+				<Box>
+					<FormControl sx={{ minWidth: 218 }}>
+						<InputLabel id='number-of-processes-label'>Number of processes</InputLabel>
+						<Select
+							labelId='number-of-processes-label'
+							id='number-of-processes'
+							value={String(numberOfProcesses)}
+							label='Number of processes'
+							onChange={changeNumberOfProcesses}>
+							{[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(value => (
+								<MenuItem key={value} value={value}>
+									{value}
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+				</Box>
 			</CardContent>
 			<CardContent>
 				<LinearProgress
