@@ -38,6 +38,7 @@ export class ScoringManager extends SimulationSceneGroup<ScoringOutput> implemen
 	}
 	createOutput() {
 		const output = new ScoringOutput(this.editor);
+		output.createQuantity();
 		this.addOutput(output);
 		return output;
 	}
