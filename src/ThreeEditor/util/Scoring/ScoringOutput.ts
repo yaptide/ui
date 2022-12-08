@@ -74,7 +74,6 @@ export class ScoringOutput
 		this.parent = null;
 		this._primaries = [false, 0];
 		this._trace = [false, ''];
-		this.createQuantity();
 	}
 
 	createQuantity(): ScoringQuantity {
