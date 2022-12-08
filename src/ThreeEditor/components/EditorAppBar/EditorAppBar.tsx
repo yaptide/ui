@@ -45,7 +45,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 		let path = '';
 		let json = {};
 		if (editor) {
-			path = window.location.href.split('?')[1];
+			path = window.location.href.split(/\\?(.*)/s)[1];
 			if (path) {
 				fetchJsonFromCorsUrl(path);
 				window.history.replaceState({}, document.title, window.location.pathname);
