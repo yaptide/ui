@@ -146,6 +146,13 @@ export interface FinalSimulationStatusData extends SimulationStatusData {
 		type: 'results';
 	};
 }
+export interface SimulationRunJSON {
+	jobs?: number;
+	sim_type?: string;
+	sim_name?: string;
+	sim_data: unknown;
+}
+
 export interface SimulationStatusData {
 	uuid: string;
 	status: StatusState;
@@ -220,11 +227,13 @@ const ShSimulation = (props: ShSimulationProps) => {
 
 	const sendRun = useCallback(
 		(input: { editorJSON: unknown } | { inputFiles: InputFiles }, signal?: AbortSignal) => {
-			let json;
+			let json: SimulationRunJSON = { sim_data: {} };
 			if ('editorJSON' in input) {
-				json = input.editorJSON;
+				const editorJSON = input.editorJSON;
+				json.sim_data = editorJSON;
+				json.sim_name = (editorJSON as any).project.title;
 			} else if ('inputFiles' in input) {
-				json = { input_files: { ...input.inputFiles } };
+				json.sim_data = { input_files: { ...input.inputFiles } };
 			}
 
 			return authKy
@@ -277,9 +286,11 @@ const ShSimulation = (props: ShSimulationProps) => {
 				return Promise.resolve(statusDataCache.current.get(taskId));
 
 			return authKy
-				.post(`${BACKEND_URL}/sh/status`, {
+				.get(`${BACKEND_URL}/sh/status`, {
 					signal,
-					json: { task_id: taskId }
+					searchParams: {
+						task_id: taskId
+					}
 				})
 				.json()
 				.then((response: unknown) => {
