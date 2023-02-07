@@ -1,6 +1,6 @@
-import { UIHorizontalRule, UIPanel, UIRow, UIText } from '../libs/ui.js';
-import { createOption } from './Menubar.js';
 import { saveString } from '../../../util/File';
+import { UIHorizontalRule, UIPanel } from '../libs/ui.js';
+import { createOption } from './Menubar.js';
 import { MenubarSettings, MenubarSettingsEvent } from './Menubar.Settings.js';
 
 function MenubarFile(editor) {
@@ -94,3 +94,4 @@ function MenubarFile(editor) {
 }
 
 export { MenubarFile };
+

@@ -1,6 +1,6 @@
-import { Command } from '../Command.js';
 import { ScoringOutput } from '../../util/Scoring/ScoringOutput';
 import { ScoringQuantity } from '../../util/Scoring/ScoringQuantity';
+import { Command } from '../Command.js';
 import { Editor } from '../Editor.js';
 
 export class RemoveQuantityCommand extends Command {

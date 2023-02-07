@@ -9,7 +9,6 @@ import {
 	TextField
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { SimulationStatusData } from '../../../services/ShSimulatorService';
 import { Editor } from '../../js/Editor';
 import { CustomDialogTitle } from './CustomDialog';
 
@@ -25,7 +24,7 @@ export function SaveFileDialog(props: SaveFileProps) {
 	const [keepResults, setKeepResults] = useState<boolean>(false);
 	useEffect(() => {
 		setKeepResults(editor?.results?.editor.hash === editor?.toJSON().hash);
-	}, [props, props.editor]);
+	}, [props, props.editor, editor]);
 
 	const [name, setName] = useState<string>('editor');
 	const changeName = (event: React.ChangeEvent<HTMLInputElement>) => {

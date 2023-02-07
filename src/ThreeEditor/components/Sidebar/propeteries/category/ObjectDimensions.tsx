@@ -1,16 +1,11 @@
+import { Button, Divider, Grid } from '@mui/material';
+import { useCallback } from 'react';
 import { BoxGeometry, CylinderGeometry, Object3D, SphereGeometry, Vector3 } from 'three';
+import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
+import { SetDetectTypeCommand } from '../../../../js/commands/SetDetectTypeCommand';
+import { SetGeometryCommand } from '../../../../js/commands/SetGeometryCommand';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { Editor } from '../../../../js/Editor';
-import {
-	BooleanPropertyField,
-	LabelPropertyField,
-	NumberPropertyField,
-	SelectPropertyField
-} from '../fields/PropertyField';
-import { useCallback, useEffect, useState } from 'react';
-import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
-import { PropertiesCategory } from './PropertiesCategory';
-import { Button, Divider, Grid } from '@mui/material';
 import {
 	BasicMesh,
 	BASIC_GEOMETRY_OPTIONS,
@@ -20,15 +15,20 @@ import {
 	isSphereMesh
 } from '../../../../util/BasicMeshes';
 import { DetectGeometry, isDetectGeometry } from '../../../../util/Detect/DetectGeometry';
-import { isWorldZone, WorldZone } from '../../../../util/WorldZone/WorldZone';
 import { CylData, DETECT_OPTIONS } from '../../../../util/Detect/DetectTypes';
-import { SetDetectTypeCommand } from '../../../../js/commands/SetDetectTypeCommand';
-import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
-import { SetGeometryCommand } from '../../../../js/commands/SetGeometryCommand';
+import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
+import { isWorldZone, WorldZone } from '../../../../util/WorldZone/WorldZone';
 import {
 	ObjectSelectOptionType,
 	ObjectSelectPropertyField
 } from '../fields/ObjectSelectPropertyField';
+import {
+	BooleanPropertyField,
+	LabelPropertyField,
+	NumberPropertyField,
+	SelectPropertyField
+} from '../fields/PropertyField';
+import { PropertiesCategory } from './PropertiesCategory';
 
 const ObjectTypeField = (props: {
 	editor: Editor;

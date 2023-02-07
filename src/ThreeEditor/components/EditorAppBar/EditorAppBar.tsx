@@ -39,23 +39,15 @@ function EditorAppBar({ editor }: AppBarProps) {
 	const [canRedo, setCanRedo] = React.useState((editor?.history.redos.length ?? 0) > 0);
 	const [saving, setSaving] = React.useState(false);
 
-	useEffect(() => {
-		let path = '';
-		let json = {};
-		if (editor) {
-			path = window.location.href.split('?')[1];
-			if (path) {
-				fetchJsonFromCorsUrl(path);
-				window.history.replaceState({}, document.title, window.location.pathname);
-			}
-		}
-		return () => {};
-	}, [editor]);
-
 	const updateHistoryButtons = useCallback(() => {
 		setCanUndo((editor?.history.undos.length ?? 0) > 0);
 		setCanRedo((editor?.history.redos.length ?? 0) > 0);
 	}, [editor]);
+
+	const openJSON = (json: {}) => {
+		if (editor) editor.loader.loadJSON(json);
+		else console.warn('EditorAppBar.tsx: handleJSON: editor is null');
+	};
 
 	const fetchJsonFromCorsUrl = useCallback(
 		(url: string) => {
@@ -70,8 +62,20 @@ function EditorAppBar({ editor }: AppBarProps) {
 					console.error(error);
 				});
 		},
-		[editor]
+		[editor, openJSON]
 	);
+
+	useEffect(() => {
+		let path = '';
+		if (editor) {
+			path = window.location.href.split('?')[1];
+			if (path) {
+				fetchJsonFromCorsUrl(path);
+				window.history.replaceState({}, document.title, window.location.pathname);
+			}
+		}
+		return () => {};
+	}, [editor, fetchJsonFromCorsUrl]);
 
 	const startSave = useCallback(() => {
 		setSaving(true);
@@ -92,14 +96,12 @@ function EditorAppBar({ editor }: AppBarProps) {
 			editor?.signals.savingStarted.remove(startSave);
 			editor?.signals.savingFinished.remove(stopSave);
 		};
-	}, [editor]);
+	}, [editor, updateHistoryButtons, setTitle, startSave, stopSave]);
 
 	const openFile = (files: FileList) => {
 		if (editor) editor.loader.loadFiles(files);
 		else console.warn('EditorAppBar.tsx: openFile: editor or fileInput.current.files is null');
 	};
-
-	const compressJson = (json: {}) => {};
 
 	const saveJson = (data: {}, fileName: string) => {
 		let output = undefined;
@@ -112,11 +114,6 @@ function EditorAppBar({ editor }: AppBarProps) {
 			output = JSON.stringify(data);
 			saveString(output, `${fileName}.json`);
 		}
-	};
-
-	const openJSON = (json: {}) => {
-		if (editor) editor.loader.loadJSON(json);
-		else console.warn('EditorAppBar.tsx: handleJSON: editor is null');
 	};
 	const ToolbarButton = ({ label, icon, onClick, disabled, edge }: AppBarOptions) => (
 		<Tooltip title={label}>
@@ -170,7 +167,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 					<ToolbarButton {...option} />
 				</Box>
 			)),
-		[editor, editor?.toJSON, canRedo, canUndo, openFile]
+		[editor, canRedo, canUndo]
 	);
 
 	return (

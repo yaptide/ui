@@ -1,14 +1,14 @@
 import { Box, Checkbox, Grid, Stack, TextField, Typography } from '@mui/material';
-import { ReactElement, ReactNode, useCallback, useEffect, useRef } from 'react';
+import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { Vector2 } from 'three';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Editor } from '../../../../js/Editor';
 import { FilterRule, isFloatRule, isIDRule, isIntRule } from '../../../../util/Detect/DetectRule';
 import {
-	OPERATOR_OPTIONS,
 	KEYWORD_OPTIONS,
-	PARTICLE_OPTIONS,
 	KEYWORD_SORT_ORDER,
+	OPERATOR_OPTIONS,
+	PARTICLE_OPTIONS,
 	RULE_UNITS,
 	RULE_VALUE_RANGES
 } from '../../../../util/Detect/DetectRuleTypes';
@@ -26,7 +26,7 @@ import { hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
 import { AutoCompleteSelect } from '../../../Select/AutoCompleteSelect';
 import { ObjectSelectProperty, ObjectSelectProps } from './ObjectSelectPropertyField';
 
-export function PropertyField(props: { label?: string; children:  React.ReactNode }) {
+export function PropertyField(props: { label?: string; children: React.ReactNode }) {
 	return (
 		<>
 			{props.label !== undefined && (

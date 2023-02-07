@@ -1,4 +1,3 @@
-import { useMediaQuery } from '@mui/material';
 import Box from '@mui/material/Box';
 import React, { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { JsRootService } from '../JsRoot/JsRootService';
@@ -31,7 +30,7 @@ function WrapperApp() {
 			setTabsValue('editor');
 			for (const data of editorProvider) editorRef.current.loader.loadJSON(data);
 		}
-	}, [canLoadEditorData, editorRef.current, editorProvider]);
+	}, [canLoadEditorData, editorRef, editorProvider, setLoadedEditor]);
 
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
 		setTabsValue(newValue);
@@ -48,7 +47,7 @@ function WrapperApp() {
 
 	useEffect(() => {
 		if (isAuthorized && tabsValue === 'login') logout();
-	}, [tabsValue]);
+	}, [tabsValue, isAuthorized, logout]);
 
 	const onLoadExample = useCallback(
 		(example: FinalSimulationStatusData) => {

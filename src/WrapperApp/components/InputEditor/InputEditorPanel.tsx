@@ -1,14 +1,14 @@
-import { Box, ToggleButton, ToggleButtonGroup, useMediaQuery } from '@mui/material';
-import { useState, useCallback } from 'react';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { useSnackbar } from 'notistack';
+import { useCallback, useState } from 'react';
+import { throttle } from 'throttle-debounce';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
 import { InputFiles, useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
-import { InputFilesEditor } from './InputFilesEditor';
-import { DEMO_MODE } from '../../../util/Config';
-import { useSnackbar } from 'notistack';
-import { throttle } from 'throttle-debounce';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
+import { DEMO_MODE } from '../../../util/Config';
+import { InputFilesEditor } from './InputFilesEditor';
 interface InputEditorPanelProps {
 	goToRun?: () => void;
 }

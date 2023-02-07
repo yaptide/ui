@@ -1,18 +1,18 @@
+import { Button, Divider, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { ChangeEvent } from 'react';
 import { Object3D } from 'three';
 import { Editor } from '../../../../js/Editor';
-import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
-import { PropertiesCategory } from './PropertiesCategory';
 import { Beam, BEAM_SOURCE_TYPE, isBeam, SigmaType, SIGMA_TYPE } from '../../../../util/Beam';
+import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
+import { PARTICLE_TYPES } from '../../../../util/particles';
+import { IParticleType, ParticleSelect } from '../../../Select/ParticlesSelect';
 import {
 	NumberPropertyField,
 	PropertyField,
 	SelectPropertyField,
 	Vector2PropertyField
 } from '../fields/PropertyField';
-import { PARTICLE_TYPES } from '../../../../util/particles';
-import { IParticleType, ParticleSelect } from '../../../Select/ParticlesSelect';
-import { Box, Button, Divider, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { ChangeEvent } from 'react';
+import { PropertiesCategory } from './PropertiesCategory';
 
 function BeamDefinitionField(props: { beam: Beam }) {
 	const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {

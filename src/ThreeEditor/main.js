@@ -41,7 +41,7 @@ export function initEditor(container) {
 
 	editor.oldSidebarVisible = false;
 
-	const menubar = new Menubar(editor);
+	new Menubar(editor);
 	// menubar has required dependencies for other UI components and will be removed last.
 
 	//

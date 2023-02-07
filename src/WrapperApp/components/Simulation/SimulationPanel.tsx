@@ -6,21 +6,17 @@ import {
 	CardContent,
 	Divider,
 	Fade,
-	Grid,
 	LinearProgress,
 	Modal,
-	Pagination,
-	Stack,
 	Typography
 } from '@mui/material';
-import { flexbox } from '@mui/system';
 import { useSnackbar } from 'notistack';
 
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import CableIcon from '@mui/icons-material/Cable';
+import { useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
 import { useLoader } from '../../../services/DataLoaderService';
 import {
-	FinalSimulationStatusData,
 	InputFiles,
 	OrderBy,
 	OrderType,
@@ -30,12 +26,10 @@ import {
 	useShSimulation
 } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
-import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
-import SimulationStatus from './SimulationStatus';
-import CableIcon from '@mui/icons-material/Cable';
-import { SimulationPanelGrid } from './SimulationPanelGrid';
-import { DEMO_MODE } from '../../../util/Config';
 import EXAMPLES from '../../../ThreeEditor/examples/examples';
+import { DEMO_MODE } from '../../../util/Config';
+import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
+import { SimulationPanelGrid } from './SimulationPanelGrid';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
@@ -160,7 +154,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			if (anyResults) editorRef.current.results = anyResults;
 			else editorRef.current.results = null;
 		}
-	}, [simulationsStatusData]);
+	}, [simulationsStatusData, editorRef]);
 
 	useEffect(() => {
 		return () => {
