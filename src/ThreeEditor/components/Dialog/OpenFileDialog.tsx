@@ -4,13 +4,11 @@ import {
 	Button,
 	Dialog,
 	DialogContent,
-	DialogTitle,
 	Divider,
 	List,
 	ListItem,
 	ListItemButton,
 	Tab,
-	Tabs,
 	TextField
 } from '@mui/material';
 import EXAMPLES from '../../examples/examples';

@@ -9,7 +9,6 @@ import {
 	TextField
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { SimulationStatusData } from '../../../services/ShSimulatorService';
 import { Editor } from '../../js/Editor';
 import { CustomDialogTitle } from './CustomDialog';
 
