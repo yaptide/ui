@@ -1,9 +1,7 @@
 import {
 	FinalSimulationStatusData,
-	recreateRefsInResults,
-	SimulationStatusData
+	recreateRefsInResults	
 } from '../../services/ShSimulatorService';
-import { EditorJson } from '../js/EditorJson';
 
 let canImport = true;
 let iterator = 1;
@@ -14,13 +12,15 @@ while (canImport) {
 		if (!(example.editor.project.title && example.editor.project.title.length > 0))
 			example.editor.project.title = `Untitled example ${iterator}`;
 
-		recreateRefsInResults(example);
-
 		EXAMPLES.push(example);
 		iterator++;
 	} catch (e) {
 		canImport = false;
 	}
+}
+
+for (const example of EXAMPLES) {
+	recreateRefsInResults(example);
 }
 
 export default EXAMPLES;
