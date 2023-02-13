@@ -1,5 +1,4 @@
 import { Command } from '../Command.js';
-import { DetectFilter } from '../../util/Detect/DetectFilter';
 
 /**
  * @param editor Editor

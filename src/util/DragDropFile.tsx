@@ -22,7 +22,7 @@ export function DragDropFile(props: DragDropProps) {
 
 	useEffect(() => {
 		setHasFiles(currentFiles && currentFiles.length > 0);
-	}, [props.currentFiles]);
+	}, [props.currentFiles, currentFiles]);
 
 	// handle drag events
 	const handleDragEnter = function (e: React.DragEvent<HTMLElement>) {

@@ -24,7 +24,7 @@ export function SaveFileDialog(props: SaveFileProps) {
 	const [keepResults, setKeepResults] = useState<boolean>(false);
 	useEffect(() => {
 		setKeepResults(editor?.results?.editor.hash === editor?.toJSON().hash);
-	}, [props, props.editor]);
+	}, [props, props.editor, editor]);
 
 	const [name, setName] = useState<string>('editor');
 	const changeName = (event: React.ChangeEvent<HTMLInputElement>) => {

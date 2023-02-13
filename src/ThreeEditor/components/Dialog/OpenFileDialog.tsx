@@ -11,11 +11,11 @@ import {
 	Tab,
 	TextField
 } from '@mui/material';
-import EXAMPLES from '../../examples/examples';
 import React, { useState } from 'react';
-import { DragDropFile } from '../../../util/DragDropFile';
-import { CustomDialogTitle } from './CustomDialog';
 import { useLoader } from '../../../services/DataLoaderService';
+import { DragDropFile } from '../../../util/DragDropFile';
+import EXAMPLES from '../../examples/examples';
+import { CustomDialogTitle } from './CustomDialog';
 
 export type OpenFileProps = {
 	open: boolean;
@@ -25,15 +25,8 @@ export type OpenFileProps = {
 	onUrlSubmitted: (url: string) => void;
 };
 
-function a11yProps(index: number) {
-	return {
-		'id': `simple-tab-${index}`,
-		'aria-controls': `simple-tabpanel-${index}`
-	};
-}
-
 export function OpenFileDialog(props: OpenFileProps) {
-	const { open, onClose, onFileSelected, onPlainTextSubmitted, onUrlSubmitted } = props;
+	const { open, onClose } = props;
 	const [currentFileList, setCurrentFileList] = useState<FileList | null>(null);
 	const [value, setValue] = React.useState('1');
 	const handleChange = (event: React.SyntheticEvent, newValue: string) => {

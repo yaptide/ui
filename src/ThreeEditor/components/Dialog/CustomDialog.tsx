@@ -1,3 +1,4 @@
+import CloseIcon from '@mui/icons-material/Close';
 import {
 	Dialog,
 	DialogActions,
@@ -7,8 +8,7 @@ import {
 	DialogTitleProps,
 	IconButton
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 type CustomDialogProps = {
 	title: string;
