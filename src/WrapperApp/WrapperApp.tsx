@@ -33,6 +33,7 @@ function WrapperApp() {
 	}, [canLoadEditorData, editorRef, editorProvider, setLoadedEditor]);
 
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
+		if (newValue === 'login' && isAuthorized) logout();
 		setTabsValue(newValue);
 	};
 
@@ -46,8 +47,8 @@ function WrapperApp() {
 	}, [resultsSimulationData]);
 
 	useEffect(() => {
-		if (isAuthorized && tabsValue === 'login') logout();
-	}, [tabsValue, isAuthorized, logout]);
+		if (isAuthorized && tabsValue === 'login') setTabsValue('editor');
+	}, [isAuthorized, tabsValue]);
 
 	const onLoadExample = useCallback(
 		(example: FinalSimulationStatusData) => {
