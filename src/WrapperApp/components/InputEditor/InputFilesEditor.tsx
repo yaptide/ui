@@ -6,6 +6,7 @@ import { saveString } from '../../../util/File';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import useTheme from '@mui/system/useTheme';
 import { DEMO_MODE } from '../../../util/Config';
+import { maxHeight } from '@mui/system';
 
 interface InputFilesEditorProps {
 	inputFiles?: InputFiles;
@@ -116,7 +117,9 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 										fontSize: 12,
 										backgroundColor: prefersDarkMode ? '#121212' : '#f5f5f5',
 										fontFamily:
-											'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace'
+											'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+										maxHeight: name === 'sobp.dat' ? '15rem' : 'unset',
+										overflowY: name === 'sobp.dat' ? 'auto' : 'unset'
 									}}
 								/>
 							</Box>
