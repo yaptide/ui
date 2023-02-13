@@ -44,10 +44,13 @@ function EditorAppBar({ editor }: AppBarProps) {
 		setCanRedo((editor?.history.redos.length ?? 0) > 0);
 	}, [editor]);
 
-	const openJSON = (json: {}) => {
-		if (editor) editor.loader.loadJSON(json);
-		else console.warn('EditorAppBar.tsx: handleJSON: editor is null');
-	};
+	const openJSON = useCallback(
+		(json: {}) => {
+			if (editor) editor.loader.loadJSON(json);
+			else console.warn('EditorAppBar.tsx: handleJSON: editor is null');
+		},
+		[editor]
+	);
 
 	const fetchJsonFromCorsUrl = useCallback(
 		(url: string) => {
@@ -62,7 +65,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 					console.error(error);
 				});
 		},
-		[editor, openJSON]
+		[openJSON]
 	);
 
 	useEffect(() => {
@@ -75,7 +78,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 			}
 		}
 		return () => {};
-	}, [editor, fetchJsonFromCorsUrl]);
+	}, [fetchJsonFromCorsUrl, editor]);
 
 	const startSave = useCallback(() => {
 		setSaving(true);

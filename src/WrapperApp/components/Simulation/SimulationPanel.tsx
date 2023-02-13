@@ -78,7 +78,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					setPageCount(page_count);
 				})
 				.catch(),
-		[controller.signal, getSimulations, orderType, orderBy, page, pageSize]
+		[getSimulations, orderType, orderBy, page, pageSize]
 	);
 	const refreshPage = useCallback(
 		(
