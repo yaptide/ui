@@ -9,7 +9,7 @@ export function PropertiesCategory(props: {
 	const { category, children, visible = true } = props;
 
 	return (
-		<Accordion key={category} sx={{ display: visible ? '' : 'none' }}>
+		<Accordion square key={category} sx={{ display: visible ? '' : 'none' }}>
 			<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 				<Typography>{category}</Typography>
 			</AccordionSummary>

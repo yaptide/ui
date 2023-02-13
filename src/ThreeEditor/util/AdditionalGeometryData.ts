@@ -59,7 +59,7 @@ export function generateSimulationInfo(geometryMesh: THREE.Mesh) {
 			rotation: geometryMesh.rotation
 				.toArray()
 				.slice(0, 3)
-				.map(v => v * THREE.MathUtils.RAD2DEG) as THREE.Vector3Tuple
+				.map(v => v as number * THREE.MathUtils.RAD2DEG) as THREE.Vector3Tuple
 		};
 
 	return geometryData;

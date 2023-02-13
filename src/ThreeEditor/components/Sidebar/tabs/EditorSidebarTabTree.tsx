@@ -9,7 +9,8 @@ import {
 	AccordionSummaryProps,
 	styled,
 	Divider,
-	Stack
+	Stack,
+	AccordionProps
 } from '@mui/material';
 import { ReactElement } from 'react';
 import { Object3D } from 'three';
@@ -47,11 +48,13 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 	paddingTop: 0
 }));
 
-const Accordion = styled(MuiAccordion)(({ theme }) => ({
-	'&.Mui-expanded': {
-		margin: '0'
-	}
-}));
+const Accordion = styled((props: AccordionProps) => <MuiAccordion square {...props} />)(
+	({ theme }) => ({
+		'&.Mui-expanded': {
+			margin: '0'
+		}
+	})
+);
 
 interface TreeElement {
 	title: string;

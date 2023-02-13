@@ -1,6 +1,6 @@
 import {
 	FinalSimulationStatusData,
-	recreateRefsInResults
+	recreateRefsInResults	
 } from '../../services/ShSimulatorService';
 
 let canImport = true;
@@ -12,13 +12,15 @@ while (canImport) {
 		if (!(example.editor.project.title && example.editor.project.title.length > 0))
 			example.editor.project.title = `Untitled example ${iterator}`;
 
-		recreateRefsInResults(example);
-
 		EXAMPLES.push(example);
 		iterator++;
 	} catch (e) {
 		canImport = false;
 	}
+}
+
+for (const example of EXAMPLES) {
+	recreateRefsInResults(example);
 }
 
 export default EXAMPLES;

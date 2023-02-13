@@ -103,11 +103,14 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 		super();
 		this.detectContainer = new DetectContainer(editor);
 		this.detectHelper = new THREE.Mesh(undefined, this._detectWireMaterial);
+		this.detectHelper.visible = false;
 		this.name = 'DetectManager';
 		this.editor = editor;
 		this.filterContainer = new FilterContainer(editor);
+
 		this.add(this.detectContainer);
 		this.add(this.detectHelper);
+
 		this.signals = editor.signals;
 		this.signals.objectSelected.add(this.onObjectSelected);
 		this.signals.detectGeometryChanged.add(this.onObjectSelected);
@@ -116,13 +119,17 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 
 	onObjectSelected = (object: THREE.Object3D) => {
 		this.detectHelper.geometry.dispose();
+		this.detectHelper.visible = false;
+
 		if (isDetectGeometry(object) && this.editor.selected === object) {
 			this.detectHelper.position.copy(object.position);
 			this._detectWireMaterial.color.copy(object.material.color);
 			this.detectHelper.geometry = object.geometry.clone();
+			this.detectHelper.visible = true;
 		} else {
 			this.detectHelper.geometry = new THREE.BufferGeometry();
 		}
+
 		this.signals.sceneGraphChanged.dispatch();
 	};
 
