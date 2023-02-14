@@ -64,7 +64,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		localResultsSimulationData ?? []
 	);
 
-	const { resultsProvider, canLoadResultsData, setLoadedResults } = useLoader();
+	const { resultsProvider, canLoadResultsData, clearLoadedResults } = useLoader();
 
 	const [simulationIDInterval, setSimulationIDInterval] = useState<number | null>(null);
 
@@ -196,7 +196,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	useEffect(() => {
 		if (canLoadResultsData) {
-			setLoadedResults();
+			clearLoadedResults();
 			const newLocalData = resultsProvider;
 			newLocalData.forEach(data => {
 				data.status = StatusState.LOCAL;
@@ -209,7 +209,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	}, [
 		canLoadResultsData,
 		resultsProvider,
-		setLoadedResults,
+		clearLoadedResults,
 		localResultsSimulationData,
 		setLocalResultsSimulationData
 	]);
