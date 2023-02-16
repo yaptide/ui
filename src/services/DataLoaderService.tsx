@@ -8,8 +8,8 @@ export interface ILoader {
 	resultsProvider: FinalSimulationStatusData[];
 	canLoadEditorData: boolean;
 	canLoadResultsData: boolean;
-	setLoadedEditor: () => void;
-	setLoadedResults: () => void;
+	clearLoadedEditor: () => void;
+	clearLoadedResults: () => void;
 	loadFromFiles: (files: FileList | null) => void;
 	loadFromUrl: (url: string) => void;
 	loadFromJson: (raw_json: {}) => void;
@@ -20,8 +20,8 @@ const [useLoader, LoaderContextProvider] = createGenericContext<ILoader>();
 const isFinalSimulationStatusData = (data: unknown): data is FinalSimulationStatusData => {
 	return (data as FinalSimulationStatusData)?.metadata?.type === 'results';
 };
+
 const isEditorJson = (data: unknown): data is EditorJson => {
-	console.log(data, (data as EditorJson)?.metadata?.type);
 	return (data as EditorJson)?.metadata?.type === 'Editor';
 };
 
@@ -32,12 +32,12 @@ const Loader = (props: { children: ReactNode }) => {
 	const [editorProvider, setEditorProvider] = useState<EditorJson[]>([]);
 	const [resultsProvider, setResultsProvider] = useState<FinalSimulationStatusData[]>([]);
 
-	const setLoadedEditor = useCallback(() => {
+	const clearLoadedEditor = useCallback(() => {
 		setCanLoadEditorData(false);
 		setEditorProvider([]);
 	}, []);
 
-	const setLoadedResults = useCallback(() => {
+	const clearLoadedResults = useCallback(() => {
 		setCanLoadResultsData(false);
 		setResultsProvider([]);
 	}, []);
@@ -50,6 +50,7 @@ const Loader = (props: { children: ReactNode }) => {
 				setCanLoadResultsData(result.length > 0);
 				return result;
 			});
+
 			setEditorProvider(prev => {
 				const result = prev.concat(dataArray.filter(isEditorJson)).concat(
 					dataArray
@@ -62,6 +63,7 @@ const Loader = (props: { children: ReactNode }) => {
 			});
 		}
 	}, []);
+
 	const readFile = useCallback((file: File) => {
 		return new Promise((resolve, reject) => {
 			const reader = new FileReader();
@@ -70,6 +72,7 @@ const Loader = (props: { children: ReactNode }) => {
 			reader.readAsText(file);
 		});
 	}, []);
+
 	const loadFromFiles = useCallback(
 		(files: FileList | null) => {
 			if (!files) return;
@@ -84,6 +87,7 @@ const Loader = (props: { children: ReactNode }) => {
 		},
 		[loadData, readFile]
 	);
+
 	const loadFromJson = useCallback(
 		(raw_json: {}) => {
 			if (Array.isArray(raw_json)) {
@@ -94,6 +98,7 @@ const Loader = (props: { children: ReactNode }) => {
 		},
 		[loadData]
 	);
+
 	const loadFromUrl = useCallback(
 		(url: string) => {
 			fetch(url)
@@ -108,6 +113,7 @@ const Loader = (props: { children: ReactNode }) => {
 		},
 		[loadFromJson]
 	);
+
 	const loadFromJsonString = useCallback(
 		(json_string: string) => {
 			const json = JSON.parse(json_string);
@@ -115,18 +121,20 @@ const Loader = (props: { children: ReactNode }) => {
 		},
 		[loadFromJson]
 	);
+
 	const value: ILoader = {
 		editorProvider,
 		resultsProvider,
 		canLoadEditorData,
 		canLoadResultsData,
-		setLoadedEditor,
-		setLoadedResults,
+		clearLoadedEditor,
+		clearLoadedResults,
 		loadFromFiles,
 		loadFromUrl,
 		loadFromJson,
 		loadFromJsonString
 	};
+
 	return <LoaderContextProvider value={value}>{props.children}</LoaderContextProvider>;
 };
 

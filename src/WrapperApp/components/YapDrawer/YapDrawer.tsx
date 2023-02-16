@@ -136,7 +136,7 @@ function YapDrawer({ drawerWidth = 200, handleChange, tabsValue, open, setOpen }
 		{
 			label: 'Results',
 			value: 'results',
-			disabled: !resultsSimulationData && !isAuthorized,
+			disabled: !resultsSimulationData,
 			icon: <AutoGraphIcon />
 		},
 		{
