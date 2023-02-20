@@ -132,7 +132,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		sendRun(input, controller.signal)
 			.then(res => {
 				updateSimulationInfo();
-				setTrackedId(res.task_id);
+				setTrackedId(res.job_id);
 			})
 			.catch(e => {
 				enqueueSnackbar('Error while starting simulation', { variant: 'error' });
@@ -297,6 +297,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			<SimulationPanelGrid
 				simulationsStatusData={!DEMO_MODE ? simulationsStatusData : EXAMPLES}
 				localSimulationData={localSimulationData}
+				simulationInfo={simulationInfo}
 				handleLoadResults={(id, simulation) => {
 					if (id === null) props.goToResults?.call(null);
 					else setResultsSimulationData(simulation);

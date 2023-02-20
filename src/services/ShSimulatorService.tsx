@@ -28,6 +28,7 @@ export interface IShSimulation {
 		input: { editorJSON: unknown } | { inputFiles: InputFiles },
 		signal?: AbortSignal
 	) => Promise<ResShRun>;
+	cancelSimulation: (simulation: SimulationInfo, signal?: AbortSignal) => Promise<unknown>;
 	convertToInputFiles: (editorJSON: unknown, signal?: AbortSignal) => Promise<ResShConvert>;
 	sendHelloWorld: (signal?: AbortSignal) => Promise<unknown>;
 	getStatus: (
@@ -52,7 +53,7 @@ export interface IShSimulation {
 }
 
 interface ResShRun extends IResponseMsg {
-	task_id: string;
+	job_id: string;
 }
 
 export interface SimulationInfo {
@@ -60,7 +61,7 @@ export interface SimulationInfo {
 	end_time: Date;
 	cores: number;
 	name: string;
-	task_id: string;
+	job_id: string;
 }
 
 interface ResUserSimulations extends IResponseMsg, UserSimulationPage {}
@@ -237,7 +238,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 			}
 
 			return authKy
-				.post(`${BACKEND_URL}/sh/run`, {
+				.post(`${BACKEND_URL}/jobs/direct`, {
 					signal,
 					json: json,
 					timeout: 30000
@@ -275,21 +276,16 @@ const ShSimulation = (props: ShSimulationProps) => {
 			cache = true,
 			beforeCacheWrite?: (id: string, response: SimulationStatusData) => void
 		) => {
-			const {
-				task_id: taskId,
-				name,
-				start_time: creationDate,
-				end_time: completionDate
-			} = simulation;
+			const { job_id, name, start_time: creationDate, end_time: completionDate } = simulation;
 
-			if (cache && statusDataCache.current.has(taskId))
-				return Promise.resolve(statusDataCache.current.get(taskId));
+			if (cache && statusDataCache.current.has(job_id))
+				return Promise.resolve(statusDataCache.current.get(job_id));
 
 			return authKy
-				.get(`${BACKEND_URL}/sh/status`, {
+				.get(`${BACKEND_URL}/jobs/direct`, {
 					signal,
 					searchParams: {
-						task_id: taskId
+						job_id
 					}
 				})
 				.json()
@@ -297,7 +293,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 					const resStatus = response as ResShStatus;
 
 					const data: SimulationStatusData = {
-						uuid: taskId,
+						uuid: job_id,
 						status: resStatus.state,
 						name,
 						creationDate,
@@ -348,6 +344,19 @@ const ShSimulation = (props: ShSimulationProps) => {
 					return data;
 				})
 				.catch(() => undefined);
+		},
+		[authKy]
+	);
+
+	const cancelSimulation = useCallback(
+		(simulation: SimulationInfo, signal?: AbortSignal) => {
+			const { job_id } = simulation;
+			return authKy.delete(`${BACKEND_URL}/jobs/direct`, {
+				signal: signal,
+				searchParams: {
+					job_id
+				}
+			});
 		},
 		[authKy]
 	);
@@ -406,6 +415,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 
 	const value: IShSimulation = {
 		sendRun,
+		cancelSimulation,
 		convertToInputFiles,
 		sendHelloWorld,
 		getStatus,
