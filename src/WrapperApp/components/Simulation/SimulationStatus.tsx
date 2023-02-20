@@ -22,24 +22,28 @@ import Countdown from 'react-countdown';
 import { useLoader } from '../../../services/DataLoaderService';
 import {
 	InputFiles,
+	SimulationInfo,
 	SimulationStatusData,
 	StatusState
 } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
-
+import { useShSimulation } from '../../../services/ShSimulatorService';
 interface SimulationStatusProps {
 	simulation: SimulationStatusData;
+	info?: SimulationInfo;
 	loadResults?: (taskId: string | null) => void;
 	showInputFiles?: (inputFiles?: InputFiles) => void;
 }
 
 export default function SimulationStatus({
 	simulation,
+	info,
 	loadResults,
 	showInputFiles
 }: SimulationStatusProps) {
 	const { resultsSimulationData } = useStore();
+	const { cancelSimulation } = useShSimulation();
 	const { loadFromJson } = useLoader();
 
 	const tableRowStyle: SxProps<Theme> = { '&:last-child td, &:last-child th': { border: 0 } };
@@ -200,15 +204,17 @@ export default function SimulationStatus({
 								: 'Go to Results'}
 						</Button>
 					)}
-					{[StatusState.PROGRESS, StatusState.PENDING].includes(simulation.status) && (
-						<Button
-							sx={{ fontSize: '.8em' }}
-							color='info'
-							size='small'
-							disabled={simulation.status === StatusState.PENDING}>
-							Cancel
-						</Button>
-					)}
+					{[StatusState.PROGRESS, StatusState.PENDING].includes(simulation.status) &&
+						info && (
+							<Button
+								sx={{ fontSize: '.8em' }}
+								color='info'
+								size='small'
+								onClick={() => cancelSimulation(info)}
+								disabled={simulation.status === StatusState.PENDING}>
+								Cancel
+							</Button>
+						)}
 					{simulation.status === StatusState.FAILURE && (
 						<Button
 							sx={{ fontSize: '.8em' }}

@@ -297,6 +297,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			<SimulationPanelGrid
 				simulationsStatusData={!DEMO_MODE ? simulationsStatusData : EXAMPLES}
 				localSimulationData={localSimulationData}
+				simulationInfo={simulationInfo}
 				handleLoadResults={(id, simulation) => {
 					if (id === null) props.goToResults?.call(null);
 					else setResultsSimulationData(simulation);

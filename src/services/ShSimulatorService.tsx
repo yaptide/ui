@@ -28,6 +28,7 @@ export interface IShSimulation {
 		input: { editorJSON: unknown } | { inputFiles: InputFiles },
 		signal?: AbortSignal
 	) => Promise<ResShRun>;
+	cancelSimulation: (simulation: SimulationInfo, signal?: AbortSignal) => Promise<unknown>;
 	convertToInputFiles: (editorJSON: unknown, signal?: AbortSignal) => Promise<ResShConvert>;
 	sendHelloWorld: (signal?: AbortSignal) => Promise<unknown>;
 	getStatus: (
@@ -237,7 +238,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 			}
 
 			return authKy
-				.post(`${BACKEND_URL}/sh/run`, {
+				.post(`${BACKEND_URL}/jobs/direct`, {
 					signal,
 					json: json,
 					timeout: 30000
@@ -275,6 +276,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 			cache = true,
 			beforeCacheWrite?: (id: string, response: SimulationStatusData) => void
 		) => {
+			console.log('getStatus', simulation);
 			const {
 				task_id: taskId,
 				name,
@@ -286,7 +288,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 				return Promise.resolve(statusDataCache.current.get(taskId));
 
 			return authKy
-				.get(`${BACKEND_URL}/sh/status`, {
+				.get(`${BACKEND_URL}/jobs/direct`, {
 					signal,
 					searchParams: {
 						task_id: taskId
@@ -352,6 +354,19 @@ const ShSimulation = (props: ShSimulationProps) => {
 		[authKy]
 	);
 
+	const cancelSimulation = useCallback(
+		(simulation: SimulationInfo, signal?: AbortSignal) => {
+			const { task_id: taskId } = simulation;
+			return authKy.delete(`${BACKEND_URL}/jobs/direct`, {
+				signal: signal,
+				searchParams: {
+					task_id: taskId
+				}
+			});
+		},
+		[authKy]
+	);
+
 	const getSimulations = useCallback(
 		(
 			pageNumber: number,
@@ -406,6 +421,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 
 	const value: IShSimulation = {
 		sendRun,
+		cancelSimulation,
 		convertToInputFiles,
 		sendHelloWorld,
 		getStatus,
