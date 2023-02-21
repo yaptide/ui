@@ -138,16 +138,18 @@ export function SimulationPanelGrid(props: SimulationPanelGridProps) {
 								showInputFiles={handleShowInputFiles}></SimulationStatus>
 						</Grid>
 					))}
-					{simulationsStatusData.forEach((simulation, index) => (
-						<Grid item xs={6}>
-							<SimulationStatus
-								key={simulation.uuid}
-								simulation={simulation}
-								loadResults={taskId => handleLoadResults(taskId, simulation)}
-								showInputFiles={handleShowInputFiles}
-								info={simulationInfo[index]}></SimulationStatus>
-						</Grid>
-					))}
+					{simulationsStatusData.map((simulation, index) => {
+						return (
+							<Grid item xs={6}>
+								<SimulationStatus
+									key={simulation.uuid}
+									simulation={simulation}
+									loadResults={taskId => handleLoadResults(taskId, simulation)}
+									showInputFiles={handleShowInputFiles}
+									info={simulationInfo[index]}></SimulationStatus>
+							</Grid>
+						);
+					})}
 				</>
 			</Grid>
 			{!DEMO_MODE && (

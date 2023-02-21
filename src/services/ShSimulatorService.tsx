@@ -59,7 +59,8 @@ interface ResShRun extends IResponseMsg {
 export interface SimulationInfo {
 	start_time: Date;
 	end_time: Date;
-	cores: number;
+	ntasks: number;
+	platform: string;
 	name: string;
 	job_id: string;
 }
@@ -74,25 +75,10 @@ interface UserSimulationPage {
 
 export enum StatusState {
 	PENDING = 'PENDING',
-	PROGRESS = 'PROGRESS',
-	FAILURE = 'FAILURE',
-	SUCCESS = 'SUCCESS',
+	RUNNING = 'RUNNING',
+	FAILED = 'FAILED',
+	COMPLETED = 'COMPLETED',
 	LOCAL = 'LOCAL'
-}
-interface ResShStatusPending extends IResponseMsg {
-	state: StatusState.PENDING;
-}
-
-interface ResShStatusProgress extends IResponseMsg {
-	state: StatusState.PROGRESS;
-	info: {
-		simulated_primaries: number;
-		estimated?: {
-			hours: number;
-			minutes: number;
-			seconds: number;
-		};
-	};
 }
 
 export interface InputFiles {
@@ -102,19 +88,44 @@ export interface InputFiles {
 	'mat.dat': string;
 }
 
+type TaskInfo = {
+	requested_particles: number;
+	simulated_primaries: number;
+};
+
+type TimeEstimated = {
+	hours: number;
+	minutes: number;
+	seconds: number;
+};
+
 interface ResShConvert extends IResponseMsg {
 	input_files: InputFiles;
 }
 
-interface ResShStatusFailure extends IResponseMsg {
-	state: StatusState.FAILURE;
+interface ResShStatusPending extends IResponseMsg {
+	job_state: StatusState.PENDING;
+}
+
+interface ResShStatusRunning extends IResponseMsg {
+	job_state: StatusState.RUNNING;
+	job_tasks_status: {
+		task_id: number;
+		task_state: StatusState;
+		task_info: TaskInfo;
+		estimated?: TimeEstimated;
+	}[];
+}
+
+interface ResShStatusFailed extends IResponseMsg {
+	job_state: StatusState.FAILED;
 	error: string;
 	input_files?: InputFiles;
 	logfile?: string;
 }
 
-interface ResShStatusSuccess extends IResponseMsg {
-	state: StatusState.SUCCESS;
+interface ResShStatusCompleted extends IResponseMsg {
+	job_state: StatusState.COMPLETED;
 	result: {
 		estimators: Estimator[];
 	};
@@ -126,17 +137,16 @@ interface ResShStatusSuccess extends IResponseMsg {
 	input_json?: EditorJson;
 	input_files?: InputFiles;
 	end_time: Date;
-	cores: number;
 }
 
 type ResShStatus =
 	| ResShStatusPending
-	| ResShStatusProgress
-	| ResShStatusFailure
-	| ResShStatusSuccess;
+	| ResShStatusRunning
+	| ResShStatusFailed
+	| ResShStatusCompleted;
 
 export interface FinalSimulationStatusData extends SimulationStatusData {
-	cores: number;
+	ntasks: number;
 	inputFiles: InputFiles;
 	result: {
 		estimators: Estimator[];
@@ -156,16 +166,17 @@ export interface SimulationRunJSON {
 
 export interface SimulationStatusData {
 	uuid: string;
-	status: StatusState;
+	job_state: StatusState;
 	creationDate: Date;
 	completionDate: Date;
 	name: string;
-	estimatedTime?: number;
-	counted?: number;
+	estimatedTime?: number[];
+	task_info?: TaskInfo[];
 	message?: string;
 	inputFiles?: InputFiles;
 	logFile?: string;
-	cores?: number;
+	ntasks?: number;
+	platform?: string;
 	metadata?: {
 		source: string;
 		simulator: string;
@@ -212,6 +223,12 @@ export const recreateRefsInResults = (results: SimulationStatusData) => {
 
 	result.estimators = recreateOrderInEstimators(result.estimators, scoringManager);
 	result.estimators = recreateRefToFilters(result.estimators, detectManager?.filters);
+};
+
+const getDateFromEstimation = (estimated: TimeEstimated) => {
+	const { hours, minutes, seconds } = estimated;
+	const date = Date.now() + (hours * 60 * 60 + minutes * 60 + seconds) * 1000;
+	return date;
 };
 
 const [useShSimulation, ShSimulationContextProvider] = createGenericContext<IShSimulation>();
@@ -276,7 +293,14 @@ const ShSimulation = (props: ShSimulationProps) => {
 			cache = true,
 			beforeCacheWrite?: (id: string, response: SimulationStatusData) => void
 		) => {
-			const { job_id, name, start_time: creationDate, end_time: completionDate } = simulation;
+			const {
+				job_id,
+				name,
+				start_time: creationDate,
+				end_time: completionDate,
+				platform,
+				ntasks
+			} = simulation;
 
 			if (cache && statusDataCache.current.has(job_id))
 				return Promise.resolve(statusDataCache.current.get(job_id));
@@ -290,39 +314,39 @@ const ShSimulation = (props: ShSimulationProps) => {
 				})
 				.json()
 				.then((response: unknown) => {
+					console.log(response);
 					const resStatus = response as ResShStatus;
-
 					const data: SimulationStatusData = {
 						uuid: job_id,
-						status: resStatus.state,
+						job_state: resStatus.job_state,
+						platform,
+						ntasks,
 						name,
 						creationDate,
 						completionDate
 					};
+					console.log(simulation, resStatus);
 
-					switch (resStatus.state) {
+					switch (resStatus.job_state) {
 						case StatusState.PENDING:
 							break;
 
-						case StatusState.PROGRESS:
-							data.counted = resStatus.info.simulated_primaries;
-							if (resStatus.info.estimated) {
-								const { hours, minutes, seconds } = resStatus.info.estimated;
-								data.estimatedTime =
-									Date.now() + (hours * 60 * 60 + minutes * 60 + seconds) * 1000;
-							}
+						case StatusState.RUNNING:
+							data.task_info = resStatus.job_tasks_status.map(o => o.task_info);
+							data.estimatedTime = resStatus.job_tasks_status.map(o =>
+								o.estimated ? getDateFromEstimation(o.estimated) : -1
+							);
 							break;
 
-						case StatusState.FAILURE:
+						case StatusState.FAILED:
 							data.message = resStatus.error;
 							data.inputFiles = resStatus.input_files;
 							data.logFile = resStatus.logfile;
 							break;
 
-						case StatusState.SUCCESS:
+						case StatusState.COMPLETED:
 							data.result = resStatus.result;
 							data.inputFiles = resStatus.input_files;
-							data.cores = resStatus.cores;
 							data.metadata = resStatus.metadata;
 							// remove trailing underscores from estimators names (#530)
 							for (const estimator of data.result.estimators) {
@@ -336,7 +360,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 							break;
 					}
 
-					if ([StatusState.FAILURE, StatusState.SUCCESS].includes(resStatus.state)) {
+					if ([StatusState.FAILED, StatusState.COMPLETED].includes(resStatus.job_state)) {
 						beforeCacheWrite?.call(null, data.uuid, data);
 						statusDataCache.current.set(data.uuid, data);
 					}
@@ -407,7 +431,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 			const res = simulations.map(s => getStatus(s, signal, cache, beforeCacheWrite));
 
 			return Promise.all(res).then(values => {
-				return [...values.filter((e): e is SimulationStatusData => !!e)];
+				return [...values.filter((e): e is SimulationStatusData => e !== undefined)];
 			});
 		},
 		[getStatus]

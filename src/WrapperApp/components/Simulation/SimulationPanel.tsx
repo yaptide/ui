@@ -53,7 +53,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const [pageCount, setPageCount] = useState(0);
 	const [orderType, setOrderType] = useState<OrderType>(OrderType.ASCEND);
 	const [orderBy, setOrderBy] = useState<OrderBy>(OrderBy.START_TIME);
-	const [pageSize, setPageSize] = useState(4);
+	const [pageSize, setPageSize] = useState(6);
 
 	const [inputFiles, setInputFiles] = useState<InputFiles>();
 
@@ -112,7 +112,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		() =>
 			!DEMO_MODE &&
 			getSimulationsStatus(simulationInfo, controller.signal, true, (id, data) => {
-				if (id === trackedId && data.status === StatusState.SUCCESS)
+				if (id === trackedId && data.job_state === StatusState.COMPLETED)
 					setResultsSimulationData(data);
 			}).then(s => {
 				setSimulationsStatusData([...s.reverse()]);
@@ -199,7 +199,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			setLoadedResults();
 			const newLocalData = resultsProvider;
 			newLocalData.forEach(data => {
-				data.status = StatusState.LOCAL;
+				data.job_state = StatusState.LOCAL;
 			});
 			setLocalSimulationData(newLocalData);
 			setLocalResultsSimulationData(newLocalData);

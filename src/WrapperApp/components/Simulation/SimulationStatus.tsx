@@ -64,10 +64,12 @@ export default function SimulationStatus({
 	const rows = [
 		row(
 			'Estimated time',
-			<Countdown date={simulation.estimatedTime} />,
-			!!simulation.estimatedTime
+			<Countdown date={simulation.estimatedTime?.[0]} />,
+			simulation.job_state == StatusState.RUNNING &&
+				simulation.estimatedTime &&
+				simulation.estimatedTime[0] > 0
 		),
-		row('Counted', simulation.counted, !!simulation.counted),
+		row('Counted', simulation.task_info?.[0].simulated_primaries, !!simulation.task_info),
 		row('Message', simulation.message, !!simulation.message)
 	];
 
@@ -75,11 +77,11 @@ export default function SimulationStatus({
 
 	const statusColor = (status: StatusState) => {
 		switch (status) {
-			case StatusState.FAILURE:
+			case StatusState.FAILED:
 				return 'error.main';
-			case StatusState.PROGRESS:
+			case StatusState.RUNNING:
 				return 'info.main';
-			case StatusState.SUCCESS:
+			case StatusState.COMPLETED:
 				return 'success.main';
 			case StatusState.LOCAL:
 				return 'warning.main';
@@ -134,7 +136,7 @@ export default function SimulationStatus({
 			<Divider
 				sx={{
 					borderTopWidth: 5,
-					borderColor: statusColor(simulation.status)
+					borderColor: statusColor(simulation.job_state)
 				}}
 			/>
 			<CardHeader
@@ -144,7 +146,7 @@ export default function SimulationStatus({
 						? simulation.creationDate.toTimeString().split(' ')[0]
 						: '00:00:00'
 				} - ${
-					simulation.status === StatusState.SUCCESS &&
+					simulation.job_state === StatusState.COMPLETED &&
 					simulation.completionDate?.toTimeString
 						? simulation.completionDate.toTimeString().split(' ')[0]
 						: '?'
@@ -160,9 +162,9 @@ export default function SimulationStatus({
 					}}>
 					<Chip
 						variant='outlined'
-						label={simulation.status}
+						label={simulation.job_state}
 						sx={{
-							borderColor: statusColor(simulation.status)
+							borderColor: statusColor(simulation.job_state)
 						}}
 					/>
 					{simulation.metadata &&
@@ -171,7 +173,8 @@ export default function SimulationStatus({
 							.map(([key, value]) => (
 								<Chip key={key} variant='outlined' label={`${key}: ${value}`} />
 							))}
-					<Chip variant='outlined' label={`cores: ${simulation.cores}`} />
+					<Chip variant='outlined' label={`ntasks: ${simulation.ntasks}`} />
+					<Chip variant='outlined' label={`platform: ${simulation.platform}`} />
 				</Box>
 				<TableContainer
 					component={Paper}
@@ -189,7 +192,7 @@ export default function SimulationStatus({
 			</CardContent>
 			<CardActions>
 				<ButtonGroup fullWidth aria-label='full width outlined button group'>
-					{[StatusState.SUCCESS, StatusState.LOCAL].includes(simulation.status) && (
+					{[StatusState.COMPLETED, StatusState.LOCAL].includes(simulation.job_state) && (
 						<Button
 							sx={{ fontSize: '.8em' }}
 							size='small'
@@ -204,18 +207,18 @@ export default function SimulationStatus({
 								: 'Go to Results'}
 						</Button>
 					)}
-					{[StatusState.PROGRESS, StatusState.PENDING].includes(simulation.status) &&
+					{[StatusState.RUNNING, StatusState.PENDING].includes(simulation.job_state) &&
 						info && (
 							<Button
 								sx={{ fontSize: '.8em' }}
 								color='info'
 								size='small'
 								onClick={() => cancelSimulation(info)}
-								disabled={simulation.status === StatusState.PENDING}>
+								disabled={simulation.job_state === StatusState.PENDING}>
 								Cancel
 							</Button>
 						)}
-					{simulation.status === StatusState.FAILURE && (
+					{simulation.job_state === StatusState.FAILED && (
 						<Button
 							sx={{ fontSize: '.8em' }}
 							color='info'
@@ -238,7 +241,7 @@ export default function SimulationStatus({
 						color='info'
 						size='small'
 						onClick={onClickSaveToFile}
-						disabled={!Boolean(simulation.status === StatusState.SUCCESS)}>
+						disabled={!Boolean(simulation.job_state === StatusState.COMPLETED)}>
 						Save to file
 					</Button>
 					<Button
@@ -247,7 +250,9 @@ export default function SimulationStatus({
 						size='small'
 						onClick={onClickLoadToEditor}
 						disabled={
-							!Boolean(simulation.status === StatusState.SUCCESS && simulation.editor)
+							!Boolean(
+								simulation.job_state === StatusState.COMPLETED && simulation.editor
+							)
 						}>
 						Load to editor
 					</Button>
