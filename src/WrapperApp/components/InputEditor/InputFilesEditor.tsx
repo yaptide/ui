@@ -6,7 +6,6 @@ import { saveString } from '../../../util/File';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import useTheme from '@mui/system/useTheme';
 import { DEMO_MODE } from '../../../util/Config';
-import { maxHeight } from '@mui/system';
 
 interface InputFilesEditorProps {
 	inputFiles?: InputFiles;
