@@ -11,6 +11,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useLoader } from '../../../services/DataLoaderService';
 import { saveString } from '../../../util/File';
 import { Editor } from '../../js/Editor';
 import { NewProjectDialog } from '../Dialog/NewProjectDialog';
@@ -31,6 +32,8 @@ type AppBarOptions = {
 };
 
 function EditorAppBar({ editor }: AppBarProps) {
+	const { loadFromUrl } = useLoader();
+
 	const [newProjectDialogOpen, setNewProjectDialogOpen] = useState(false);
 	const [openFileDialogOpen, setOpenFileDialogOpen] = useState(false);
 	const [saveFileDialogOpen, setSaveFileDialogOpen] = useState(false);
@@ -52,33 +55,17 @@ function EditorAppBar({ editor }: AppBarProps) {
 		[editor]
 	);
 
-	const fetchJsonFromCorsUrl = useCallback(
-		(url: string) => {
-			fetch(url)
-				.then(response => {
-					console.log(response);
-					if (response.ok) return response.json();
-					else return Promise.reject(response);
-				})
-				.then(openJSON)
-				.catch(error => {
-					console.error(error);
-				});
-		},
-		[openJSON]
-	);
-
 	useEffect(() => {
 		let path = '';
 		if (editor) {
 			path = window.location.href.split('?')[1];
 			if (path) {
-				fetchJsonFromCorsUrl(path);
+				loadFromUrl(path);
 				window.history.replaceState({}, document.title, window.location.pathname);
 			}
 		}
 		return () => {};
-	}, [fetchJsonFromCorsUrl, editor]);
+	}, [editor, loadFromUrl]);
 
 	const startSave = useCallback(() => {
 		setSaving(true);
@@ -208,7 +195,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 					const json = JSON.parse(text);
 					openJSON(json);
 				}}
-				onUrlSubmitted={fetchJsonFromCorsUrl}
+				onUrlSubmitted={loadFromUrl}
 			/>
 			{editor && (
 				<SaveFileDialog

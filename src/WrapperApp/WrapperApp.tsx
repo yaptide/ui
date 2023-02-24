@@ -18,19 +18,19 @@ import YapDrawer from './components/YapDrawer/YapDrawer';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
-	const { editorProvider, canLoadEditorData, setLoadedEditor } = useLoader();
+	const { editorProvider, resultsProvider, canLoadEditorData, clearLoadedEditor } = useLoader();
 	const { isAuthorized, logout } = useAuth();
-	const [open, setOpen] = React.useState(false);
+	const [open, setOpen] = useState(false);
 	const [tabsValue, setTabsValue] = useState('editor');
 
 	useEffect(() => {
 		console.log('WrapperApp: useEffect', editorProvider, editorRef, canLoadEditorData);
 		if (editorRef.current && canLoadEditorData) {
-			setLoadedEditor();
+			clearLoadedEditor();
 			setTabsValue('editor');
 			for (const data of editorProvider) editorRef.current.loader.loadJSON(data);
 		}
-	}, [canLoadEditorData, editorRef, editorProvider, setLoadedEditor]);
+	}, [canLoadEditorData, editorRef, editorProvider, clearLoadedEditor]);
 
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
 		if (newValue === 'login' && isAuthorized) logout();
@@ -38,12 +38,20 @@ function WrapperApp() {
 	};
 
 	useEffect(() => {
+		if (resultsProvider.length > 0) {
+			setResultsSimulationData(resultsProvider[resultsProvider.length - 1]);
+			setTabsValue('editor');
+		}
+	}, [resultsProvider, setResultsSimulationData]);
+
+	useEffect(() => {
 		if (!isAuthorized && !DEMO_MODE) setTabsValue('login');
 		else setTabsValue('editor');
 	}, [isAuthorized]);
 
 	useEffect(() => {
-		if (resultsSimulationData) setTabsValue('results');
+		if (resultsSimulationData)
+			setTabsValue(prev => (prev === 'simulations' ? 'results' : prev)); // switch tab to 'results' if user is on 'simulations' tab
 	}, [resultsSimulationData]);
 
 	useEffect(() => {

@@ -8,6 +8,18 @@ It is released automatically after every commit to the main branch of this repos
 
 The stable version is not released yet, have patience.
 
+### Loading a project file with results from URL
+
+You can load a project file with results from a URL by adding `?<project_file_url>` to the end of the editor URL.
+
+```txt
+https://<editor_url>?<project_file_url>
+```
+
+Example: <https://yaptide.github.io/web_dev/?https://raw.githubusercontent.com/yaptide/ui/master/src/ThreeEditor/examples/ex1.json>
+
+To see the results, you need to navigate to the `Results` tab in the main menu.
+
 ## For developers
 
 Start by downloading submodules:

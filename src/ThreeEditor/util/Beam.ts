@@ -4,7 +4,6 @@ import { Euler, Vector3 } from 'three';
 import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
-import { debounce } from 'throttle-debounce';
 import { Editor } from '../js/Editor';
 import { Particle, PARTICLE_TYPES } from './particles';
 import { SimulationObject3D } from './SimulationBase/SimulationMesh';
@@ -141,39 +140,6 @@ export class Beam extends SimulationObject3D {
 		return PARTICLE_TYPES.find(p => p.id === this.particleData.id) as Particle;
 	}
 
-	private proxy: Beam; // use proxy if you want inform about changes
-
-	readonly debouncedDispatchChanged = debounce(
-		200,
-		() => this.editor.signals.objectChanged.dispatch(this.proxy),
-		{ atBegin: false }
-	);
-
-	private overrideHandler = {
-		set: (target: Beam, prop: keyof Beam, value: unknown) => {
-			const result = Reflect.set(target, prop, value);
-
-			const informChange: (keyof Beam)[] = [
-				'direction',
-				'energy',
-				'energySpread',
-				'energyLowCutoff',
-				'energyHighCutoff',
-				'divergence',
-				'particleData',
-				'numberOfParticles',
-				'sigma',
-				'beamSourceType',
-				'beamSourceFile'
-			];
-			if (informChange.includes(prop)) {
-				this.debouncedDispatchChanged();
-			}
-
-			return result;
-		}
-	};
-
 	constructor(editor: Editor) {
 		super(editor, 'Beam', 'Beam');
 
@@ -181,7 +147,6 @@ export class Beam extends SimulationObject3D {
 			set: (target: THREE.Vector3, prop: keyof THREE.Vector3, value: unknown) => {
 				const result = Reflect.set(target, prop, value);
 				this.helper.setDirection(target.clone().normalize());
-				this.debouncedDispatchChanged();
 				return result;
 			}
 		};
@@ -221,10 +186,6 @@ export class Beam extends SimulationObject3D {
 				return result;
 			}
 		});
-
-		this.proxy = new Proxy(this, this.overrideHandler);
-
-		return this.proxy;
 	}
 
 	initHelper() {
@@ -281,9 +242,6 @@ export class Beam extends SimulationObject3D {
 	}
 
 	reset(): void {
-		this.debouncedDispatchChanged.cancel({ upcomingOnly: true });
-
-
 		this.rotation.copy(new Euler());
 		this.position.copy(_default.position);
 		this.direction.copy(_default.direction);
@@ -299,9 +257,6 @@ export class Beam extends SimulationObject3D {
 		this.beamSourceType = _default.beamSourceType;
 		this.beamSourceFile = { ..._default.beamSourceFile };
 		this.material.color.setHex(0xffff00); // yellow
-		console.log('reset');
-		console.log('this', this.beamSourceFile);
-
 	}
 
 	toJSON() {
