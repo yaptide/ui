@@ -51,6 +51,7 @@ interface ResAuthLogin extends IResponse {
 interface ResAuthRefresh extends IResponse {
 	access_exp: number;
 }
+
 interface ResAuthStatus extends IResponse {
 	login_name: string;
 }
@@ -103,6 +104,7 @@ const Auth = (props: AuthProps) => {
 	}, []);
 
 	const status = useCallback(() => {
+		//not used
 		if (DEMO_MODE) return;
 		return kyRef.current
 			.get(`${BACKEND_URL}/auth/status`)
