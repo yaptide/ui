@@ -134,7 +134,7 @@ export default function SimulationStatus({
 				}}
 			/>
 			<CardHeader
-				title={`${simulation.name}`}
+				title={`${simulation.editor?.project.title ?? simulation.name}`}
 				subheader={`${simulation.creationDate.toLocaleString('en-US').split(' ')[0]} ${
 					simulation.creationDate?.toTimeString
 						? simulation.creationDate.toTimeString().split(' ')[0]
