@@ -65,7 +65,7 @@ export default function SimulationStatus({
 		row(
 			'Estimated time',
 			<Countdown date={simulation.estimatedTime?.[0]} />,
-			simulation.job_state == StatusState.RUNNING &&
+			simulation.job_state === StatusState.RUNNING &&
 				simulation.estimatedTime &&
 				simulation.estimatedTime[0] > 0
 		),

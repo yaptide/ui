@@ -2,7 +2,7 @@ import { ReactNode, useCallback, useRef } from 'react';
 import { BACKEND_URL } from '../util/Config';
 import { createGenericContext } from '../util/GenericContext';
 import { useAuth } from './AuthService';
-import { IResponseMsg } from './ResponseTypes';
+import { IResponse } from './ResponseTypes';
 import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { ScoringManagerJSON } from '../ThreeEditor/util/Scoring/ScoringManager';
@@ -52,7 +52,7 @@ export interface IShSimulation {
 	) => Promise<SimulationStatusData[]>;
 }
 
-interface ResShRun extends IResponseMsg {
+interface ResShRun extends IResponse {
 	job_id: string;
 }
 
@@ -65,7 +65,7 @@ export interface SimulationInfo {
 	job_id: string;
 }
 
-interface ResUserSimulations extends IResponseMsg, UserSimulationPage {}
+interface ResUserSimulations extends IResponse, UserSimulationPage {}
 
 interface UserSimulationPage {
 	simulations: SimulationInfo[];
@@ -99,15 +99,21 @@ type TimeEstimated = {
 	seconds: number;
 };
 
-interface ResShConvert extends IResponseMsg {
+type ResShMetadata = {
+	input: string;
+	simulator: string;
+	type: 'results';
+};
+
+interface ResShConvert extends IResponse {
 	input_files: InputFiles;
 }
 
-interface ResShStatusPending extends IResponseMsg {
+interface ResShJobStatusPending extends IResponse {
 	job_state: StatusState.PENDING;
 }
 
-interface ResShStatusRunning extends IResponseMsg {
+interface ResShJobStatusRunning extends IResponse {
 	job_state: StatusState.RUNNING;
 	job_tasks_status: {
 		task_id: number;
@@ -117,33 +123,29 @@ interface ResShStatusRunning extends IResponseMsg {
 	}[];
 }
 
-interface ResShStatusFailed extends IResponseMsg {
+interface ResShJobStatusFailed extends IResponse {
 	job_state: StatusState.FAILED;
 	error: string;
 	input_files?: InputFiles;
 	logfile?: string;
 }
 
-interface ResShStatusCompleted extends IResponseMsg {
+interface ResShJobStatusCompleted extends IResponse {
 	job_state: StatusState.COMPLETED;
 	result: {
 		estimators: Estimator[];
 	};
-	metadata: {
-		source: string;
-		simulator: string;
-		type: 'results';
-	};
+	metadata: ResShMetadata;
 	input_json?: EditorJson;
 	input_files?: InputFiles;
 	end_time: Date;
 }
 
-type ResShStatus =
-	| ResShStatusPending
-	| ResShStatusRunning
-	| ResShStatusFailed
-	| ResShStatusCompleted;
+type ResShJobStatus =
+	| ResShJobStatusPending
+	| ResShJobStatusRunning
+	| ResShJobStatusFailed
+	| ResShJobStatusCompleted;
 
 export interface FinalSimulationStatusData extends SimulationStatusData {
 	ntasks: number;
@@ -151,11 +153,7 @@ export interface FinalSimulationStatusData extends SimulationStatusData {
 	result: {
 		estimators: Estimator[];
 	};
-	metadata: {
-		source: string;
-		simulator: string;
-		type: 'results';
-	};
+	metadata: ResShMetadata;
 }
 export interface SimulationRunJSON {
 	jobs?: number;
@@ -177,11 +175,7 @@ export interface SimulationStatusData {
 	logFile?: string;
 	ntasks?: number;
 	platform?: string;
-	metadata?: {
-		source: string;
-		simulator: string;
-		type: 'results';
-	};
+	metadata?: ResShMetadata;
 	result?: {
 		estimators: Estimator[];
 	};
@@ -315,7 +309,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 				.json()
 				.then((response: unknown) => {
 					console.log(response);
-					const resStatus = response as ResShStatus;
+					const resStatus = response as ResShJobStatus;
 					const data: SimulationStatusData = {
 						uuid: job_id,
 						job_state: resStatus.job_state,
