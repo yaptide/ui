@@ -287,6 +287,7 @@ const ShSimulation = (props: ShSimulationProps) => {
 			cache = true,
 			beforeCacheWrite?: (id: string, response: SimulationStatusData) => void
 		) => {
+			console.log('getStatus', simulation);
 			const {
 				job_id,
 				name,
