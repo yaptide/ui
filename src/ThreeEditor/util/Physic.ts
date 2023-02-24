@@ -1,10 +1,10 @@
 
-export const ENERGY_MODEL_STRAGGLE = {
+export const ENERGY_MODEL_STRAGGLING = {
     'no straggling': 'no straggling',
     'Gaussian': 'Gaussian',
     'Vavilov': 'Vavilov',
 } as const;
-export type EnergyModelStraggle = keyof typeof ENERGY_MODEL_STRAGGLE;
+export type EnergyModelStraggling = keyof typeof ENERGY_MODEL_STRAGGLING;
 
 export const MULTIPLE_SCATTERING = {
     'no scattering': 'no scattering',
@@ -16,7 +16,7 @@ export type MultipleScattering = keyof typeof MULTIPLE_SCATTERING;
 export interface PhysicJSON {
     energyLoss: number;
     enableNuclearReactions: boolean;
-    energyModelStraggle: EnergyModelStraggle;
+    energyModelStraggling: EnergyModelStraggling;
     multipleScattering: MultipleScattering;
 }
 
@@ -24,7 +24,7 @@ export interface PhysicJSON {
 const _default = {
     energyLoss: 0.03,
     enableNuclearReactions: true,
-    energyModelStraggle: ENERGY_MODEL_STRAGGLE['Vavilov'],
+    energyModelStraggling: ENERGY_MODEL_STRAGGLING['Vavilov'],
     multipleScattering: MULTIPLE_SCATTERING['Moliere'],
 }
 
@@ -32,20 +32,20 @@ export class Physic {
 
     energyLoss: number;
     enableNuclearReactions: boolean;
-    energyModelStraggle: EnergyModelStraggle;
+    energyModelStraggling: EnergyModelStraggling;
     multipleScattering: MultipleScattering;
 
     constructor() {
         this.energyLoss = _default.energyLoss;
         this.enableNuclearReactions = _default.enableNuclearReactions;
-        this.energyModelStraggle = _default.energyModelStraggle;
+        this.energyModelStraggling = _default.energyModelStraggling;
         this.multipleScattering = _default.multipleScattering;
     }
 
     reset(): void {
         this.energyLoss = _default.energyLoss;
         this.enableNuclearReactions = _default.enableNuclearReactions;
-        this.energyModelStraggle = _default.energyModelStraggle;
+        this.energyModelStraggling = _default.energyModelStraggling;
         this.multipleScattering = _default.multipleScattering;
     }
 
@@ -53,7 +53,7 @@ export class Physic {
         const jsonObject: PhysicJSON = {
             energyLoss: this.energyLoss,
             enableNuclearReactions: this.enableNuclearReactions,
-            energyModelStraggle: this.energyModelStraggle,
+            energyModelStraggling: this.energyModelStraggling,
             multipleScattering: this.multipleScattering,
         };
 
@@ -64,7 +64,7 @@ export class Physic {
         const loadedData = { ..._default, ...data };
         this.energyLoss = loadedData.energyLoss;
         this.enableNuclearReactions = loadedData.enableNuclearReactions;
-        this.energyModelStraggle = loadedData.energyModelStraggle;
+        this.energyModelStraggling = loadedData.energyModelStraggling;
         this.multipleScattering = loadedData.multipleScattering;
 
         return this;

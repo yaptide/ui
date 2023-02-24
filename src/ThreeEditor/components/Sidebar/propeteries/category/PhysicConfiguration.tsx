@@ -7,7 +7,7 @@ import {
 } from '../fields/PropertyField';
 import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
-import { ENERGY_MODEL_STRAGGLE, MULTIPLE_SCATTERING, Physic } from '../../../../util/Physic';
+import { ENERGY_MODEL_STRAGGLING, MULTIPLE_SCATTERING, Physic } from '../../../../util/Physic';
 
 export function PhysicConfiguration(props: { editor: Editor; object: Physic }) {
 	const { object, editor } = props;
@@ -32,10 +32,10 @@ export function PhysicConfiguration(props: { editor: Editor; object: Physic }) {
 			/>
 
 			<SelectPropertyField
-				label='Energy Model Straggle (STRAGG)'
-				value={watchedObject.energyModelStraggle}
-				onChange={value => setValue('energyModelStraggle', value)}
-				options={Object.keys(ENERGY_MODEL_STRAGGLE)}
+				label='Energy Model Straggling (STRAGG)'
+				value={watchedObject.energyModelStraggling}
+				onChange={value => setValue('energyModelStraggling', value)}
+				options={Object.keys(ENERGY_MODEL_STRAGGLING)}
 			/>
 
 			<SelectPropertyField
