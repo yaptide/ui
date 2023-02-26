@@ -65,6 +65,9 @@ const Auth = (props: AuthProps) => {
 	const kyRef = useRef<KyInstance>(
 		ky.create({
 			credentials: 'include',
+			prefixUrl: BACKEND_URL,
+			//overwrite default json parser to convert snake_case to camelCase
+			parseJson: (text: string) => snakeToCamelCase(JSON.parse(text)),
 			hooks: {
 				afterResponse: [
 					async (_request, _options, response) => {
