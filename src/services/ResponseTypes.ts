@@ -4,22 +4,19 @@ type CamelToSnakeCase<S extends string> = S extends `${infer T}${infer U}`
 
 type SnakeCaseKeys<T> = { [K in keyof T as CamelToSnakeCase<string & K>]: T[K] };
 
-type CamelToSnakeCaseObject<T> = T extends Array<unknown>
+export type CamelToSnakeCaseObject<T> = T extends Array<unknown>
 	? Array<CamelToSnakeCaseObject<T[number]>>
 	: T extends object
 	? SnakeCaseKeys<T>
 	: T;
 
-// Define type that has key K of type T and all other keys of type U
-type TypeIdentifiedByKey<K extends string, T, U extends Object> = {
-	[P in K]: T;
-} & U;
-
 // Example usage:
-type _ = CamelToSnakeCaseObject<{ someProperty: string; anotherProperty: number }>;
+// type _ = CamelToSnakeCaseObject<{ someProperty: string; anotherProperty: number }>;
 // Result: { some_property: string; another_property: number }
 
-function camelToSnakeCase<T extends Record<string, unknown>>(obj: T): CamelToSnakeCaseObject<T> {
+export function camelToSnakeCase<T extends Record<string, unknown>>(
+	obj: T
+): CamelToSnakeCaseObject<T> {
 	const result: Record<string, unknown> = {};
 	for (const key in obj) {
 		const snakeCaseKey = key.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
@@ -34,13 +31,15 @@ type SnakeToCamelCase<S extends string> = S extends `${infer T}_${infer U}`
 
 type CamelCaseKeys<T> = { [K in keyof T as SnakeToCamelCase<string & K>]: T[K] };
 
-type SnakeToCamelCaseObject<T> = T extends Array<unknown>
+export type SnakeToCamelCaseObject<T> = T extends Array<unknown>
 	? Array<SnakeToCamelCaseObject<T[number]>>
 	: T extends object
 	? CamelCaseKeys<T>
 	: T;
 
-function snakeToCamelCase<T extends Record<string, unknown>>(obj: T): SnakeToCamelCaseObject<T> {
+export function snakeToCamelCase<T extends Record<string, unknown>>(
+	obj: T
+): SnakeToCamelCaseObject<T> {
 	const result: Record<string, unknown> = {};
 	for (const key in obj) {
 		const camelCaseKey = key.replace(/_([a-z])/g, (_, char) => char.toUpperCase());
@@ -48,6 +47,11 @@ function snakeToCamelCase<T extends Record<string, unknown>>(obj: T): SnakeToCam
 	}
 	return result as SnakeToCamelCaseObject<T>;
 }
+
+// Define type that has key K of type T and all other keys of type U
+type TypeIdentifiedByKey<K extends string, T, U extends Object> = {
+	[P in K]: T;
+} & U;
 
 export enum StatusState {
 	PENDING = 'PENDING',
@@ -170,16 +174,16 @@ type JobAllStatuses =
 	| IJobStatusPending
 	| IJobStatusFailed;
 
-export type ResponseAuthStatus = CamelToSnakeCaseObject<IAuthStatus>;
+export type ResponseAuthStatus = IAuthStatus;
 
-export type ResponseAuthRefresh = CamelToSnakeCaseObject<IAuthData>;
+export type ResponseAuthRefresh = IAuthData;
 
-export type ResponseAuthLogin = CamelToSnakeCaseObject<Required<IAuthData>>;
+export type ResponseAuthLogin = Required<IAuthData>;
 
-export type ResponseShConvert = CamelToSnakeCaseObject<IDataConverted>;
+export type ResponseShConvert = IDataConverted;
 
-export type ResponsePostJobs = CamelToSnakeCaseObject<IJobCreated>;
+export type ResponsePostJobs = IJobCreated;
 
-export type ResponseGetSimulations = CamelToSnakeCaseObject<ISimulationsList>;
+export type ResponseGetSimulations = ISimulationsList;
 
-export type ResponseGetJobs = CamelToSnakeCaseObject<JobAllStatuses>;
+export type ResponseGetJobs = JobAllStatuses;

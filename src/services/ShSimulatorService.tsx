@@ -287,7 +287,6 @@ const ShSimulation = (props: ShSimulationProps) => {
 			cache = true,
 			beforeCacheWrite?: (id: string, response: SimulationStatusData) => void
 		) => {
-			console.log('getStatus', simulation);
 			const {
 				job_id,
 				name,
@@ -309,7 +308,6 @@ const ShSimulation = (props: ShSimulationProps) => {
 				})
 				.json()
 				.then((response: unknown) => {
-					console.log(response);
 					const resStatus = response as ResShJobStatus;
 					const data: SimulationStatusData = {
 						uuid: job_id,
