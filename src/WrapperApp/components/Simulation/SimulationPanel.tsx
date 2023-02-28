@@ -15,18 +15,17 @@ import { useSnackbar } from 'notistack';
 import CableIcon from '@mui/icons-material/Cable';
 import { useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
-import { useLoader } from '../../../services/DataLoaderService';
-import {
-	InputFiles,
-	OrderBy,
-	OrderType,
-	SimulationInfo,
-	SimulationStatusData,
-	StatusState,
-	useShSimulation
-} from '../../../services/ShSimulatorService';
-import { useStore } from '../../../services/StoreService';
 import EXAMPLES from '../../../ThreeEditor/examples/examples';
+import { useLoader } from '../../../services/DataLoaderService';
+import { InputFiles, OrderBy, OrderType } from '../../../services/RequestTypes';
+import {
+	JobStatusData,
+	SimulationInfo,
+	StatusState,
+	currentJobStatusData
+} from '../../../services/ResponseTypes';
+import { useShSimulation } from '../../../services/ShSimulatorService';
+import { useStore } from '../../../services/StoreService';
 import { DEMO_MODE } from '../../../util/Config';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import { SimulationPanelGrid } from './SimulationPanelGrid';
@@ -43,7 +42,13 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		setLocalResultsSimulationData
 	} = useStore();
 
-	const { sendRun, sendHelloWorld, getSimulations, getSimulationsStatus } = useShSimulation();
+	const {
+		cancelJob,
+		postJob: sendRun,
+		getHelloWorld: sendHelloWorld,
+		getPageContents: getSimulations,
+		getPageStatus: getSimulationsStatus
+	} = useShSimulation();
 	const { enqueueSnackbar } = useSnackbar();
 
 	const [isInProgress, setInProgress] = useState(false);
@@ -59,8 +64,8 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	const [trackedId, setTrackedId] = useState<string>();
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
-	const [simulationsStatusData, setSimulationsStatusData] = useState<SimulationStatusData[]>([]);
-	const [localSimulationData, setLocalSimulationData] = useState<SimulationStatusData[]>(
+	const [simulationsStatusData, setSimulationsStatusData] = useState<JobStatusData[]>([]);
+	const [localSimulationData, setLocalSimulationData] = useState<JobStatusData[]>(
 		localResultsSimulationData ?? []
 	);
 
@@ -72,10 +77,11 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	const updateSimulationInfo = useCallback(
 		() =>
-			getSimulations(page, pageSize, orderType, orderBy)
-				.then(({ simulations, page_count, simulations_count }) => {
+			getSimulations(page - 1, pageSize, orderType, orderBy)
+				.then(results => {
+					const { simulations, pageCount } = results;
 					setSimulationInfo([...simulations]);
-					setPageCount(page_count);
+					setPageCount(pageCount);
 				})
 				.catch(),
 		[getSimulations, orderType, orderBy, page, pageSize]
@@ -88,10 +94,10 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			orderBy: OrderBy,
 			signal?: AbortSignal | undefined
 		) =>
-			getSimulations(page, pageSize, orderType, orderBy, signal)
-				.then(({ simulations, page_count, simulations_count }) => {
+			getSimulations(page - 1, pageSize, orderType, orderBy, signal)
+				.then(({ simulations, pageCount }) => {
 					setSimulationInfo([...simulations]);
-					setPageCount(page_count);
+					setPageCount(pageCount);
 				})
 				.catch(),
 		[getSimulations]
@@ -101,6 +107,12 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		refreshPage(page, pageSize, orderType, orderBy, controller.signal);
 	};
 
+	const handleJobCancel = (simulationInfo: SimulationInfo) => {
+		cancelJob(simulationInfo, controller.signal).then(() => {
+			refreshPage(page, pageSize, orderType, orderBy, controller.signal);
+		});
+	};
+
 	const handleOrderChange = (orderType: OrderType, orderBy: OrderBy, pageSize: number) => {
 		setOrderType(orderType);
 		setOrderBy(orderBy);
@@ -108,31 +120,36 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		refreshPage(page, pageSize, orderType, orderBy, controller.signal);
 	};
 
+	const handleBeforeCacheWrite = useCallback(
+		(id: string, response: JobStatusData) => {
+			if (id === trackedId && currentJobStatusData[StatusState.COMPLETED](response))
+				setResultsSimulationData(response);
+		},
+		[setResultsSimulationData, trackedId]
+	);
+
 	const updateSimulationData = useCallback(
 		() =>
 			!DEMO_MODE &&
-			getSimulationsStatus(simulationInfo, controller.signal, true, (id, data) => {
-				if (id === trackedId && data.job_state === StatusState.COMPLETED)
-					setResultsSimulationData(data);
-			}).then(s => {
+			getSimulationsStatus(
+				simulationInfo,
+				true,
+				handleBeforeCacheWrite,
+				controller.signal
+			).then(s => {
 				setSimulationsStatusData([...s.reverse()]);
 			}),
-		[
-			controller.signal,
-			getSimulationsStatus,
-			setResultsSimulationData,
-			simulationInfo,
-			trackedId
-		]
+		[handleBeforeCacheWrite, controller.signal, getSimulationsStatus, simulationInfo]
 	);
 
 	const runSimulation = (inputFiles?: InputFiles) => {
 		setInProgress(true);
-		const input = inputFiles ? { inputFiles } : { editorJSON: editorRef.current?.toJSON() };
-		sendRun(input, controller.signal)
+		if (!editorRef.current && !inputFiles) return;
+		const simData = inputFiles ? { inputFiles } : editorRef.current!.toJSON();
+		sendRun(simData, undefined, undefined, undefined, controller.signal)
 			.then(res => {
 				updateSimulationInfo();
-				setTrackedId(res.job_id);
+				setTrackedId(res.jobId);
 			})
 			.catch(e => {
 				enqueueSnackbar('Error while starting simulation', { variant: 'error' });
@@ -150,7 +167,9 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	useEffect(() => {
 		if (!DEMO_MODE && editorRef.current) {
 			const hash = editorRef.current.toJSON().hash;
-			const anyResults = simulationsStatusData.find(s => s.editor?.hash === hash);
+			const anyResults = simulationsStatusData.find(
+				s => currentJobStatusData[StatusState.COMPLETED](s) && s.inputJson?.hash === hash
+			);
 			if (anyResults) editorRef.current.results = anyResults;
 			else editorRef.current.results = null;
 		}
@@ -197,10 +216,13 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	useEffect(() => {
 		if (canLoadResultsData) {
 			clearLoadedResults();
-			const newLocalData = resultsProvider;
-			newLocalData.forEach(data => {
-				data.job_state = StatusState.LOCAL;
-			});
+			const newLocalData = resultsProvider.map(data => {
+				const newData = {
+					...data,
+					jobState: StatusState.LOCAL
+				};
+				return currentJobStatusData[StatusState.LOCAL](newData) && newData;
+			}) as JobStatusData<StatusState.LOCAL>[];
 			setLocalSimulationData(newLocalData);
 			setLocalResultsSimulationData(newLocalData);
 		} else {
@@ -297,10 +319,11 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			<SimulationPanelGrid
 				simulationsStatusData={!DEMO_MODE ? simulationsStatusData : EXAMPLES}
 				localSimulationData={localSimulationData}
-				simulationInfo={simulationInfo}
 				handleLoadResults={(id, simulation) => {
 					if (id === null) props.goToResults?.call(null);
-					else setResultsSimulationData(simulation);
+					else
+						currentJobStatusData[StatusState.COMPLETED](simulation) &&
+							setResultsSimulationData(simulation);
 				}}
 				handleShowInputFiles={(inputFiles?) => {
 					setShowInputFilesEditor(true);

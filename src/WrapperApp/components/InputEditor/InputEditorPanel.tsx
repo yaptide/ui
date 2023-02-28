@@ -4,11 +4,12 @@ import { useSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
 import { throttle } from 'throttle-debounce';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
-import { InputFiles, useShSimulation } from '../../../services/ShSimulatorService';
+import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { DEMO_MODE } from '../../../util/Config';
 import { InputFilesEditor } from './InputFilesEditor';
+import { InputFiles } from '../../../services/RequestTypes';
 interface InputEditorPanelProps {
 	goToRun?: () => void;
 }
@@ -18,7 +19,7 @@ type GeneratorLocation = 'local' | 'remote';
 export default function InputEditorPanel(props: InputEditorPanelProps) {
 	const { enqueueSnackbar } = useSnackbar();
 	const { editorRef } = useStore();
-	const { convertToInputFiles, sendRun } = useShSimulation();
+	const { convertToInputFiles, postJob: sendRun } = useShSimulation();
 	const { isConverterReady, convertJSON } = usePythonConverter();
 
 	const [isInProgress, setInProgress] = useState(false);
@@ -32,7 +33,7 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 			switch (generator) {
 				case 'remote':
 					return convertToInputFiles(editorJSON, controller.signal).then(res => {
-						return res.input_files;
+						return res.inputFiles;
 					});
 				case 'local':
 					return convertJSON(editorJSON).then(
@@ -73,7 +74,7 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 	const runSimulation = (inputFiles: InputFiles) => {
 		setInProgress(true);
 		const input = { inputFiles };
-		sendRun(input, controller.signal)
+		sendRun(input, undefined, undefined, undefined, controller.signal)
 			.then()
 			.catch()
 			.finally(() => {

@@ -1,11 +1,11 @@
 import { Box, Button, Card, CardActions, CardContent, Divider } from '@mui/material';
 import React, { useState, useEffect } from 'react';
-import { InputFiles } from '../../../services/ShSimulatorService';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { saveString } from '../../../util/File';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import useTheme from '@mui/system/useTheme';
 import { DEMO_MODE } from '../../../util/Config';
+import { InputFiles } from '../../../services/RequestTypes';
 
 interface InputFilesEditorProps {
 	inputFiles?: InputFiles;

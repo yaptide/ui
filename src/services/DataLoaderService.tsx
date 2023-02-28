@@ -1,11 +1,11 @@
 import { ReactNode, useCallback, useState } from 'react';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { createGenericContext } from '../util/GenericContext';
-import { FinalSimulationStatusData } from './ShSimulatorService';
+import { JobStatusData, StatusState, currentJobStatusData } from './ResponseTypes';
 
 export interface ILoader {
 	editorProvider: EditorJson[];
-	resultsProvider: FinalSimulationStatusData[];
+	resultsProvider: JobStatusData<StatusState.COMPLETED>[];
 	canLoadEditorData: boolean;
 	canLoadResultsData: boolean;
 	clearLoadedEditor: () => void;
@@ -17,10 +17,6 @@ export interface ILoader {
 }
 const [useLoader, LoaderContextProvider] = createGenericContext<ILoader>();
 
-const isFinalSimulationStatusData = (data: unknown): data is FinalSimulationStatusData => {
-	return (data as FinalSimulationStatusData)?.metadata?.type === 'results';
-};
-
 const isEditorJson = (data: unknown): data is EditorJson => {
 	return (data as EditorJson)?.metadata?.type === 'Editor';
 };
@@ -30,7 +26,9 @@ const Loader = (props: { children: ReactNode }) => {
 	const [canLoadResultsData, setCanLoadResultsData] = useState<boolean>(false);
 
 	const [editorProvider, setEditorProvider] = useState<EditorJson[]>([]);
-	const [resultsProvider, setResultsProvider] = useState<FinalSimulationStatusData[]>([]);
+	const [resultsProvider, setResultsProvider] = useState<JobStatusData<StatusState.COMPLETED>[]>(
+		[]
+	);
 
 	const clearLoadedEditor = useCallback(() => {
 		setCanLoadEditorData(false);
@@ -42,27 +40,45 @@ const Loader = (props: { children: ReactNode }) => {
 		setResultsProvider([]);
 	}, []);
 
-	const loadData = useCallback((dataArray: (EditorJson | FinalSimulationStatusData)[]) => {
-		console.log('loadData', dataArray);
-		if (Array.isArray(dataArray)) {
-			setResultsProvider(prev => {
-				const result = prev.concat(dataArray.filter(isFinalSimulationStatusData));
-				setCanLoadResultsData(result.length > 0);
-				return result;
-			});
+	const loadData = useCallback(
+		(dataArray: (EditorJson | JobStatusData<StatusState.COMPLETED>)[]) => {
+			console.log(
+				'loadData',
+				dataArray,
+				isEditorJson((dataArray[0] as any).inputJson),
+				(dataArray[0] as any).jobState,
+				currentJobStatusData[StatusState.COMPLETED](dataArray[0] as any),
+				currentJobStatusData[StatusState.LOCAL](dataArray[0] as any),
+				dataArray.filter(o => {
+					return (
+						currentJobStatusData[StatusState.COMPLETED](o) ||
+						currentJobStatusData[StatusState.LOCAL](o)
+					);
+				})
+			);
+			if (Array.isArray(dataArray)) {
+				setResultsProvider(prev => {
+					const result = prev.concat(
+						dataArray.filter(currentJobStatusData[StatusState.COMPLETED])
+					);
+					setCanLoadResultsData(result.length > 0);
+					return result;
+				});
 
-			setEditorProvider(prev => {
-				const result = prev.concat(dataArray.filter(isEditorJson)).concat(
-					dataArray
-						.filter(isFinalSimulationStatusData)
-						.map(data => data.editor)
-						.filter(isEditorJson)
-				);
-				setCanLoadEditorData(result.length > 0);
-				return result;
-			});
-		}
-	}, []);
+				setEditorProvider(prev => {
+					const result = prev.concat(dataArray.filter(isEditorJson)).concat(
+						dataArray
+							.filter(currentJobStatusData[StatusState.COMPLETED])
+							.map(data => data.inputJson)
+							.filter(isEditorJson)
+					);
+					setCanLoadEditorData(result.length > 0);
+					return result;
+				});
+			}
+		},
+		[]
+	);
 
 	const readFile = useCallback((file: File) => {
 		return new Promise((resolve, reject) => {
@@ -93,7 +109,7 @@ const Loader = (props: { children: ReactNode }) => {
 			if (Array.isArray(raw_json)) {
 				loadData(raw_json);
 			} else {
-				loadData([raw_json as EditorJson | FinalSimulationStatusData]);
+				loadData([raw_json as EditorJson | JobStatusData<StatusState.COMPLETED>]);
 			}
 		},
 		[loadData]

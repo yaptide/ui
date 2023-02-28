@@ -1,57 +1,6 @@
-type CamelToSnakeCase<S extends string> = S extends `${infer T}${infer U}`
-	? `${T extends Uppercase<T> ? '_' : ''}${Lowercase<T>}${CamelToSnakeCase<U>}`
-	: S;
-
-type SnakeCaseKeys<T> = { [K in keyof T as CamelToSnakeCase<string & K>]: T[K] };
-
-export type CamelToSnakeCaseObject<T> = T extends Array<unknown>
-	? Array<CamelToSnakeCaseObject<T[number]>>
-	: T extends object
-	? SnakeCaseKeys<T>
-	: T;
-
-// Example usage:
-// type _ = CamelToSnakeCaseObject<{ someProperty: string; anotherProperty: number }>;
-// Result: { some_property: string; another_property: number }
-
-export function camelToSnakeCase<T extends Record<string, unknown>>(
-	obj: T
-): CamelToSnakeCaseObject<T> {
-	const result: Record<string, unknown> = {};
-	for (const key in obj) {
-		const snakeCaseKey = key.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
-		result[snakeCaseKey] = obj[key];
-	}
-	return result as CamelToSnakeCaseObject<T>;
-}
-
-type SnakeToCamelCase<S extends string> = S extends `${infer T}_${infer U}`
-	? `${T}${Capitalize<SnakeToCamelCase<U>>}`
-	: S;
-
-type CamelCaseKeys<T> = { [K in keyof T as SnakeToCamelCase<string & K>]: T[K] };
-
-export type SnakeToCamelCaseObject<T> = T extends Array<unknown>
-	? Array<SnakeToCamelCaseObject<T[number]>>
-	: T extends object
-	? CamelCaseKeys<T>
-	: T;
-
-export function snakeToCamelCase<T extends Record<string, unknown>>(
-	obj: T
-): SnakeToCamelCaseObject<T> {
-	const result: Record<string, unknown> = {};
-	for (const key in obj) {
-		const camelCaseKey = key.replace(/_([a-z])/g, (_, char) => char.toUpperCase());
-		result[camelCaseKey] = obj[key];
-	}
-	return result as SnakeToCamelCaseObject<T>;
-}
-
-// Define type that has key K of type T and all other keys of type U
-type TypeIdentifiedByKey<K extends string, T, U extends Object> = {
-	[P in K]: T;
-} & U;
+import { Estimator } from '../JsRoot/GraphData';
+import { EditorJson } from '../ThreeEditor/js/EditorJson';
+import { DataWithStatus, MergeObjects, TypeIdentifiedByKey } from './TypeTransformUtil';
 
 export enum StatusState {
 	PENDING = 'PENDING',
@@ -61,14 +10,17 @@ export enum StatusState {
 	LOCAL = 'LOCAL'
 }
 
-export interface IResponse {
+export type Response = {
 	message: string;
-}
+};
 
-interface IAuthData extends IResponse {
-	accessExp: number;
-	refreshExp?: number;
-}
+type AuthData = MergeObjects<
+	{
+		accessExp: number;
+		refreshExp?: number;
+	},
+	Response
+>;
 
 type InputFiles = {
 	'beam.dat': string;
@@ -82,108 +34,176 @@ type TaskInfo = {
 	simulatedPrimaries: number;
 };
 
-type TaskTime = {
+export type TaskTime = {
 	hours: string;
 	minutes: string;
 	seconds: string;
 };
 
-interface IAuthStatus extends IResponse {
-	loginName: string;
-}
+type AuthStatus = MergeObjects<
+	{
+		username: string;
+	},
+	Response
+>;
 
-interface IDataConverted extends IResponse {
-	inputFiles: InputFiles;
-}
+type DataConverted = MergeObjects<
+	{
+		inputFiles: InputFiles;
+	},
+	Response
+>;
 
-interface IJobCreated extends IResponse {
-	jobId: string;
-}
+type JobCreated = MergeObjects<
+	{
+		jobId: string;
+	},
+	Response
+>;
 
-type ISimulation = {
+export type SimulationInfo = {
 	jobId: string;
 	name: string; //title
-	metaparameters: Record<string, string>;
+	metadata: Record<string, string>;
 	startTime: Date;
 	endTime?: Date;
 };
 
-interface ISimulationsList extends IResponse {
-	pageCount: number;
-	simulationsCount: number;
-	simulations: Array<ISimulation>;
-}
+export type SimulationsPage = MergeObjects<
+	{
+		pageCount: number;
+		simulationsCount: number;
+		simulations: Array<SimulationInfo>;
+	},
+	Response
+>;
 
-type TaskStatusType<T extends StatusState, U extends Object> = TypeIdentifiedByKey<
+type TaskStatusType<T extends StatusState, U extends {}> = TypeIdentifiedByKey<
 	'taskState',
 	T,
 	U & {
-		taskId: string;
+		taskId: number;
 		taskInfo: TaskInfo;
+		taskState: T;
 	}
 >;
 
-interface ITaskSatusCompleted
-	extends TaskStatusType<StatusState.COMPLETED, { runTime: TaskTime }>,
-		IResponse {}
+export type TaskSatusCompleted = TaskStatusType<StatusState.COMPLETED, { runTime: TaskTime }>;
 
-interface ITaskSatusIncompleted
-	extends TaskStatusType<
-			Exclude<StatusState, StatusState.COMPLETED>,
-			{ estimatedTime?: TaskTime }
-		>,
-		IResponse {}
+export type TaskStatusPending = TaskStatusType<StatusState.PENDING, {}>;
 
-type JobStatusType<T extends StatusState, U extends Object> = TypeIdentifiedByKey<'jobState', T, U>;
+export type TaskStatusFailed = TaskStatusType<StatusState.FAILED, {}>;
 
-interface IJobStatusCompleted
-	extends JobStatusType<
-			StatusState.COMPLETED,
-			{
-				inputFiles: InputFiles;
-				inputJson?: Record<string, unknown>;
-				result: Record<string, unknown>;
-				jobTasksStatus: Array<ITaskSatusCompleted | ITaskSatusIncompleted>;
-			}
-		>,
-		IResponse {}
+export type TaskStatusRunning = TaskStatusType<StatusState.RUNNING, { estimatedTime?: TaskTime }>;
 
-interface IJobStatusRunning
-	extends JobStatusType<
-			StatusState.RUNNING,
-			{ jobTasksStatus: Array<ITaskSatusCompleted | ITaskSatusIncompleted> }
-		>,
-		IResponse {}
+export type TaskAllStatuses =
+	| TaskSatusCompleted
+	| TaskStatusPending
+	| TaskStatusFailed
+	| TaskStatusRunning;
 
-interface IJobStatusPending extends JobStatusType<StatusState.PENDING, {}>, IResponse {}
+type JobStatusType<T extends StatusState, U extends Object> = TypeIdentifiedByKey<
+	'jobState',
+	T,
+	U & Response
+>;
 
-interface IJobStatusFailed
-	extends JobStatusType<
-			StatusState.FAILED,
-			{
-				error: string;
-				input_files: InputFiles;
-				logfile: string;
-			}
-		>,
-		IResponse {}
+type JobStatusCompleted = JobStatusType<
+	StatusState.COMPLETED,
+	{
+		inputFiles: InputFiles;
+		inputJson?: EditorJson;
+		result: {
+			estimators: Estimator[];
+		};
+		jobTasksStatus: Array<TaskAllStatuses>;
+	}
+>;
+
+type JobStatusLocal = JobStatusType<
+	StatusState.LOCAL,
+	{
+		inputFiles: InputFiles;
+		inputJson?: EditorJson;
+		result: {
+			estimators: Estimator[];
+		};
+		jobTasksStatus: Array<TaskAllStatuses>;
+	}
+>;
+
+type JobStatusRunning = JobStatusType<
+	StatusState.RUNNING,
+	{ jobTasksStatus: Array<TaskAllStatuses> }
+>;
+
+type JobStatusPending = JobStatusType<StatusState.PENDING, {}>;
+
+type JobStatusFailed = JobStatusType<
+	StatusState.FAILED,
+	{
+		error: string;
+		inputFiles: InputFiles;
+		logfile: string;
+	}
+>;
 
 type JobAllStatuses =
-	| IJobStatusCompleted
-	| IJobStatusRunning
-	| IJobStatusPending
-	| IJobStatusFailed;
+	| JobStatusCompleted
+	| JobStatusRunning
+	| JobStatusPending
+	| JobStatusFailed
+	| JobStatusLocal;
 
-export type ResponseAuthStatus = IAuthStatus;
+export type JobStatusData<T = null> = DataWithStatus<JobAllStatuses, 'jobState', T, SimulationInfo>;
 
-export type ResponseAuthRefresh = IAuthData;
+function jobStatusGuard<T extends StatusState>(data: unknown, value: T): data is JobStatusData<T> {
+	return (data as JobStatusData<T>).jobState === value;
+}
 
-export type ResponseAuthLogin = Required<IAuthData>;
+export const currentJobStatusData = {
+	[StatusState.COMPLETED]: (data: unknown): data is JobStatusData<StatusState.COMPLETED> =>
+		jobStatusGuard(data, StatusState.COMPLETED),
+	[StatusState.RUNNING]: (data: unknown): data is JobStatusData<StatusState.RUNNING> =>
+		jobStatusGuard(data, StatusState.RUNNING),
+	[StatusState.PENDING]: (data: unknown): data is JobStatusData<StatusState.PENDING> =>
+		jobStatusGuard(data, StatusState.PENDING),
+	[StatusState.FAILED]: (data: unknown): data is JobStatusData<StatusState.FAILED> =>
+		jobStatusGuard(data, StatusState.FAILED),
+	[StatusState.LOCAL]: (data: unknown): data is JobStatusData<StatusState.LOCAL> =>
+		jobStatusGuard(data, StatusState.LOCAL)
+};
 
-export type ResponseShConvert = IDataConverted;
+export type TaskStatusData<T = null> = DataWithStatus<TaskAllStatuses, 'taskState', T>;
 
-export type ResponsePostJobs = IJobCreated;
+function taskStatusGuard<T extends StatusState>(
+	data: unknown,
+	value: T
+): data is TaskStatusData<T> {
+	return (data as TaskStatusData<T>).taskState === value;
+}
 
-export type ResponseGetSimulations = ISimulationsList;
+export const currentTaskStatusData = {
+	[StatusState.COMPLETED]: (data: unknown): data is TaskStatusData<StatusState.COMPLETED> =>
+		taskStatusGuard(data, StatusState.COMPLETED),
+	[StatusState.RUNNING]: (data: unknown): data is TaskStatusData<StatusState.RUNNING> =>
+		taskStatusGuard(data, StatusState.RUNNING),
+	[StatusState.PENDING]: (data: unknown): data is TaskStatusData<StatusState.PENDING> =>
+		taskStatusGuard(data, StatusState.PENDING),
+	[StatusState.FAILED]: (data: unknown): data is TaskStatusData<StatusState.FAILED> =>
+		taskStatusGuard(data, StatusState.FAILED)
+};
 
-export type ResponseGetJobs = JobAllStatuses;
+export type ResponseAuthStatus = AuthStatus;
+
+export type ResponseAuthRefresh = AuthData;
+
+export type ResponseAuthLogin = Required<AuthData>;
+
+export type ResponseShConvert = DataConverted;
+
+export type ResponsePostJob = JobCreated;
+
+export type ResponseGetPageContents = SimulationsPage;
+
+export type ResponseGetJobStatus = JobAllStatuses;
