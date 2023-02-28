@@ -72,7 +72,7 @@ function ResultsPanel() {
 						sx={{
 							margin: '1.5rem 1rem'
 						}}>
-						{simulation.name} [{simulation.startTime.toLocaleString()}]
+						{simulation.inputJson?.project.title ?? simulation.name} [{simulation.startTime.toLocaleString()}]
 					</Typography>
 
 					<Button color='info' size='small' onClick={onClickSaveToFile}>
