@@ -14,6 +14,7 @@ import { TabPanel } from '../TabPanel';
 import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
 import TablePage0D from './ResultsTable';
+import { StatusState, currentJobStatusData } from '../../../services/ResponseTypes';
 
 export interface EstimatorResults extends Estimator {
 	tablePages: Page0D[];
@@ -72,7 +73,8 @@ function ResultsPanel() {
 						sx={{
 							margin: '1.5rem 1rem'
 						}}>
-						{simulation.inputJson?.project.title ?? simulation.name} [{simulation.startTime.toLocaleString()}]
+						{simulation.inputJson?.project.title ?? simulation.name} [
+						{simulation.startTime.toLocaleString()}]
 					</Typography>
 
 					<Button color='info' size='small' onClick={onClickSaveToFile}>
