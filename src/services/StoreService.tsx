@@ -13,10 +13,8 @@ export interface IStore {
 	setResultsSimulationData: React.Dispatch<
 		React.SetStateAction<JobStatusData<StatusState.COMPLETED> | undefined>
 	>;
-	localResultsSimulationData?: JobStatusData<StatusState.LOCAL>[];
-	setLocalResultsSimulationData: React.Dispatch<
-		React.SetStateAction<JobStatusData<StatusState.LOCAL>[]>
-	>;
+	localResultsSimulationData?: JobStatusData[];
+	setLocalResultsSimulationData: React.Dispatch<React.SetStateAction<JobStatusData[]>>;
 }
 
 const [useStore, StoreContextProvider] = createGenericContext<IStore>();
@@ -25,9 +23,9 @@ const Store = (props: StoreProps) => {
 	const editorRef = useRef<Editor>();
 	const [resultsSimulationData, setResultsSimulationData] =
 		useState<JobStatusData<StatusState.COMPLETED>>();
-	const [localResultsSimulationData, setLocalResultsSimulationData] = useState<
-		JobStatusData<StatusState.LOCAL>[]
-	>([]);
+	const [localResultsSimulationData, setLocalResultsSimulationData] = useState<JobStatusData[]>(
+		[]
+	);
 
 	const value: IStore = {
 		editorRef,

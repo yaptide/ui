@@ -74,7 +74,7 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 	const runSimulation = (inputFiles: InputFiles) => {
 		setInProgress(true);
 		const input = { inputFiles };
-		sendRun(input, undefined, undefined, undefined, controller.signal)
+		sendRun(input, undefined, undefined, undefined, undefined, controller.signal)
 			.then()
 			.catch()
 			.finally(() => {

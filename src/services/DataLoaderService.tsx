@@ -42,20 +42,6 @@ const Loader = (props: { children: ReactNode }) => {
 
 	const loadData = useCallback(
 		(dataArray: (EditorJson | JobStatusData<StatusState.COMPLETED>)[]) => {
-			console.log(
-				'loadData',
-				dataArray,
-				isEditorJson((dataArray[0] as any).inputJson),
-				(dataArray[0] as any).jobState,
-				currentJobStatusData[StatusState.COMPLETED](dataArray[0] as any),
-				currentJobStatusData[StatusState.LOCAL](dataArray[0] as any),
-				dataArray.filter(o => {
-					return (
-						currentJobStatusData[StatusState.COMPLETED](o) ||
-						currentJobStatusData[StatusState.LOCAL](o)
-					);
-				})
-			);
 			if (Array.isArray(dataArray)) {
 				setResultsProvider(prev => {
 					const result = prev.concat(

@@ -123,18 +123,16 @@ export function SimulationPanelGrid(props: SimulationPanelGridProps) {
 				}}>
 				<>
 					{localSimulationData.map(simulation => (
-						<Grid item xs={6}>
+						<Grid key={simulation.jobId} item xs={6}>
 							<SimulationStatus
-								key={simulation.jobId}
 								simulation={simulation}
 								loadResults={taskId => handleLoadResults(taskId, simulation)}
 								showInputFiles={handleShowInputFiles}></SimulationStatus>
 						</Grid>
 					))}
 					{simulationsStatusData.map((simulation, index) => (
-						<Grid item xs={6}>
+						<Grid key={simulation.jobId} item xs={6}>
 							<SimulationStatus
-								key={simulation.jobId}
 								simulation={simulation}
 								loadResults={taskId => handleLoadResults(taskId, simulation)}
 								showInputFiles={handleShowInputFiles}></SimulationStatus>

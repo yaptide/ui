@@ -106,7 +106,8 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		setPage(page);
 		refreshPage(page, pageSize, orderType, orderBy, controller.signal);
 	};
-
+	// will be used later
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const handleJobCancel = (simulationInfo: SimulationInfo) => {
 		cancelJob(simulationInfo, controller.signal).then(() => {
 			refreshPage(page, pageSize, orderType, orderBy, controller.signal);
@@ -146,7 +147,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		setInProgress(true);
 		if (!editorRef.current && !inputFiles) return;
 		const simData = inputFiles ? { inputFiles } : editorRef.current!.toJSON();
-		sendRun(simData, undefined, undefined, undefined, controller.signal)
+		sendRun(simData, undefined, undefined, undefined, undefined, controller.signal)
 			.then(res => {
 				updateSimulationInfo();
 				setTrackedId(res.jobId);
@@ -219,10 +220,10 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			const newLocalData = resultsProvider.map(data => {
 				const newData = {
 					...data,
-					jobState: StatusState.LOCAL
+					localData: true
 				};
-				return currentJobStatusData[StatusState.LOCAL](newData) && newData;
-			}) as JobStatusData<StatusState.LOCAL>[];
+				return newData;
+			});
 			setLocalSimulationData(newLocalData);
 			setLocalResultsSimulationData(newLocalData);
 		} else {

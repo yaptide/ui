@@ -100,3 +100,5 @@ export type TypeIdentifiedByKey<K extends PropertyKey, V, T extends {}> = {
 export type DataWithStatus<T, K extends keyof T, V, U = {}> = V extends null
 	? MergeObjects<Partial<T>, U>
 	: MergeObjects<Extract<T, { [X in K]: V }>, U>;
+
+export type LookUp<U, K extends PropertyKey, V = unknown> = U extends { [X in K]: V } ? U : never;

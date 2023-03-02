@@ -33,7 +33,7 @@ import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
 interface SimulationStatusProps {
 	simulation: JobStatusData;
-	loadResults?: (job_id: string | null) => void;
+	loadResults?: (jobId: string | null) => void;
 	showInputFiles?: (inputFiles?: InputFiles) => void;
 }
 
@@ -75,7 +75,7 @@ export default function SimulationStatus({
 			for (const task of simulation.jobTasksStatus) {
 				if (currentTaskStatusData[StatusState.RUNNING](task)) {
 					const date = getDateFromEstimation(task.estimatedTime);
-					const primaries = task.taskInfo.simulatedPrimaries;
+					const primaries = task.simulatedPrimaries;
 					rows.push(
 						row(
 							task.taskId,
@@ -120,7 +120,6 @@ export default function SimulationStatus({
 	const onClickInputFiles = (
 		simulation: JobStatusData<StatusState.COMPLETED | StatusState.FAILED>
 	) => {
-		// console.log(simulation);
 		showInputFiles?.call(null, simulation.inputFiles);
 	};
 
@@ -144,7 +143,7 @@ export default function SimulationStatus({
 	};
 
 	const onClickSaveToFile = () => {
-		saveString(JSON.stringify(simulation), `${simulation.name}_result.json`);
+		saveString(JSON.stringify(simulation), `${simulation.title}_result.json`);
 	};
 
 	const onClickLoadToEditor = (simulation: JobStatusData<StatusState.COMPLETED>) => {
@@ -157,23 +156,22 @@ export default function SimulationStatus({
 			<Divider
 				sx={{
 					borderTopWidth: 5,
-					borderColor: statusColor(simulation.jobState)
+					borderColor: statusColor(
+						simulation.localData ? StatusState.LOCAL : simulation.jobState
+					)
 				}}
 			/>
 			<CardHeader
 				title={`${
 					currentJobStatusData[StatusState.COMPLETED](simulation)
 						? simulation.inputJson?.project.title
-						: simulation.name
+						: simulation.title
 				}`}
 				subheader={`${simulation.startTime.toLocaleString('en-US').split(' ')[0]} ${
-					simulation.startTime?.toTimeString
-						? simulation.startTime.toTimeString().split(' ')[0]
-						: '00:00:00'
+					simulation.startTime.toLocaleString('en-US').split(' ')[4] ?? '00:00:00'
 				} - ${
-					simulation.jobState === StatusState.COMPLETED &&
-					simulation.endTime?.toTimeString
-						? simulation.endTime.toTimeString().split(' ')[0]
+					currentJobStatusData[StatusState.COMPLETED](simulation) && simulation.endTime
+						? simulation.endTime.toLocaleString('en-US').split(' ')[4] ?? '?'
 						: '?'
 				}`}
 			/>
@@ -187,11 +185,34 @@ export default function SimulationStatus({
 					}}>
 					<Chip
 						variant='outlined'
-						label={simulation.jobState}
+						label={simulation.localData ? StatusState.LOCAL : simulation.jobState}
 						sx={{
-							borderColor: statusColor(simulation.jobState)
+							borderColor: statusColor(
+								simulation.localData ? StatusState.LOCAL : simulation.jobState
+							)
 						}}
 					/>
+					{currentJobStatusData['hasSpecificProperty'](simulation, 'jobTasksStatus') && (
+						<>
+							<Chip
+								variant='outlined'
+								label={`requestedPrimaries: ${simulation.jobTasksStatus.reduce(
+									(acc, taskStatus) =>
+										currentTaskStatusData['hasSpecificProperty'](
+											taskStatus,
+											'requestedPrimaries'
+										)
+											? acc + taskStatus.requestedPrimaries
+											: acc,
+									0 as number
+								)}`}
+							/>
+							<Chip
+								variant='outlined'
+								label={`ntask: ${simulation.jobTasksStatus.length}`}
+							/>
+						</>
+					)}
 					{simulation.metadata &&
 						Object.entries(simulation.metadata)
 							.filter(([key, value]) => key !== 'type')
@@ -217,10 +238,7 @@ export default function SimulationStatus({
 				<ButtonGroup fullWidth aria-label='full width outlined button group'>
 					{simulation.jobState &&
 						(() => {
-							if (
-								currentJobStatusData[StatusState.COMPLETED](simulation) ||
-								currentJobStatusData[StatusState.LOCAL](simulation)
-							) {
+							if (currentJobStatusData[StatusState.COMPLETED](simulation)) {
 								return (
 									<Button
 										sx={{ fontSize: '.8em' }}

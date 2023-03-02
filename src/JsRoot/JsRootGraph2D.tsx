@@ -8,6 +8,7 @@ import { throttle } from 'throttle-debounce';
 import { mergeRefs } from 'react-merge-refs';
 
 export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
+	console.log('JsRootGraph2D', props);
 	const { page, title } = props;
 	const { JSROOT } = useJSROOT();
 	const {
@@ -97,7 +98,8 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 				width: '100%',
 				height: 500
 			}}
-			ref={mergeRefs([containerEl, resizeRef])}>
+			// ref={mergeRefs([containerEl, resizeRef])}
+		>
 			<Skeleton hidden={drawn} variant='rectangular' width={'80%'} height={'80%'} />
 		</div>
 	);

@@ -17,7 +17,7 @@ export default function LoginPanel() {
 
 	const handleEnter = useCallback(
 		(e: KeyboardEvent) => {
-			if (e.key === 'Enter') login({ username, password });
+			if (e.key === 'Enter') login(username, password);
 		},
 		[login, password, username]
 	);
@@ -63,7 +63,7 @@ export default function LoginPanel() {
 					<Button
 						color='secondary'
 						variant='outlined'
-						onClick={() => login({ username, password })}>
+						onClick={() => login(username, password)}>
 						Login
 					</Button>
 				</CardContent>

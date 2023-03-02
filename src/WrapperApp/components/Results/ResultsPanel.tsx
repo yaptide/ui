@@ -8,13 +8,12 @@ import {
 	Typography,
 	useMediaQuery
 } from '@mui/material';
-import React, { SyntheticEvent, useEffect, useState } from 'react';
-import { Estimator, generateGraphs, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
-import { TabPanel } from '../TabPanel';
+import { SyntheticEvent, useEffect, useState } from 'react';
+import { Estimator, Page, Page0D, generateGraphs, isPage0d } from '../../../JsRoot/GraphData';
 import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
+import { TabPanel } from '../TabPanel';
 import TablePage0D from './ResultsTable';
-import { StatusState, currentJobStatusData } from '../../../services/ResponseTypes';
 
 export interface EstimatorResults extends Estimator {
 	tablePages: Page0D[];
@@ -39,7 +38,7 @@ function ResultsPanel() {
 	};
 
 	const onClickSaveToFile = () => {
-		saveString(JSON.stringify(simulation), `${simulation?.name}_result.json`);
+		saveString(JSON.stringify(simulation), `${simulation?.title}_result.json`);
 	};
 
 	const parseEstimators = (estimators: Estimator[]) => {
@@ -73,7 +72,7 @@ function ResultsPanel() {
 						sx={{
 							margin: '1.5rem 1rem'
 						}}>
-						{simulation.inputJson?.project.title ?? simulation.name} [
+						{simulation.inputJson?.project.title ?? simulation.title} [
 						{simulation.startTime.toLocaleString()}]
 					</Typography>
 

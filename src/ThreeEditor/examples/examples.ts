@@ -3,10 +3,10 @@ import { JobStatusData, StatusState } from '../../services/ResponseTypes';
 
 let canImport = true;
 let iterator = 1;
-const EXAMPLES: JobStatusData<StatusState.LOCAL>[] = [];
+const EXAMPLES: JobStatusData<StatusState.COMPLETED>[] = [];
 while (canImport) {
 	try {
-		const example: JobStatusData<StatusState.LOCAL> = require(`./ex${iterator}.json`);
+		const example: JobStatusData<StatusState.COMPLETED> = require(`./ex${iterator}.json`);
 		if (
 			example.inputJson &&
 			example.inputJson.project.title &&

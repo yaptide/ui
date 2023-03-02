@@ -10,7 +10,7 @@ import {
 	ResponseAuthRefresh,
 	ResponseAuthStatus
 } from './ResponseTypes';
-import { snakeToCamelCase, camelToSnakeCase } from './TypeTransformUtil';
+import { snakeToCamelCase } from './TypeTransformUtil';
 import { RequestAuthLogin } from './RequestTypes';
 
 export interface AuthProps {
@@ -103,14 +103,13 @@ const Auth = ({ children }: AuthProps) => {
 			.catch((_: HTTPError) => {});
 	}, []);
 
-	const login = useCallback((...[json]: RequestAuthLogin) => {
+	const login = useCallback((...[username, password]: RequestAuthLogin) => {
 		kyRef.current
 			.post(`auth/login`, {
-				json: camelToSnakeCase(json)
+				json: { username, password }
 			})
 			.json<ResponseAuthLogin>()
 			.then(({ accessExp }) => {
-				const { username } = json;
 				setUser({ username });
 				setRefreshInterval(getRefreshDelay(accessExp));
 			})

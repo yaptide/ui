@@ -23,12 +23,16 @@ export type RequestParam = [signal?: AbortSignal];
 
 type InputDataParam = [
 	simData: EditorJson | { inputFiles: InputFiles },
-	jobs?: number,
+	ntasks?: number,
 	simType?: string,
-	simName?: string
+	title?: string,
+	batchOptions?: {
+		advanced?: string;
+		cmdOptions?: Record<string, string>;
+	}
 ];
 
-type LoginParams = [json: { username: string; password: string }];
+type LoginParams = [username: string, password: string];
 
 type CachedDataParams = [
 	cache: boolean,

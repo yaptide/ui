@@ -586,7 +586,7 @@ Editor.prototype = {
 
 	async fromJSON(json) {
 		this.config.setKey('project/title', json.project.title ?? '');
-		this.config.setKey('project/description', json.project.description ?? '');		
+		this.config.setKey('project/description', json.project.description ?? '');
 		this.signals.projectChanged.dispatch();
 
 		const loader = new EditorObjectLoader(this);
@@ -610,7 +610,6 @@ Editor.prototype = {
 
 		this.signals.sceneGraphChanged.dispatch();
 	},
-
 	toJSON() {
 		// scripts clean up
 

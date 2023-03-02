@@ -26,7 +26,6 @@ import {
 	ResponseShConvert,
 	SimulationsPage,
 	StatusState,
-	TaskStatusRunning,
 	currentJobStatusData
 } from './ResponseTypes';
 
@@ -106,16 +105,17 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 	);
 
 	const postJob = useCallback(
-		(...[simData, jobs, simType, simName, signal]: RequestPostJob) => {
-			if (simName === undefined && isEditorJson(simData)) simName = simData.project.title;
+		(...[simData, ntasks = 5, simType, title, batchOptions, signal]: RequestPostJob) => {
+			if (title === undefined && isEditorJson(simData)) title = simData.project.title;
 
 			return authKy
 				.post(`jobs/direct`, {
 					json: camelToSnakeCase({
-						jobs,
+						ntasks,
 						simType,
-						simName,
-						simData
+						title,
+						simData,
+						batchOptions
 					}),
 					signal,
 					timeout: 30000
@@ -155,14 +155,11 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 				.json<ResponseGetJobStatus>()
 				.then(response => {
 					const data: Partial<JobStatusData> = {
-						...info,
-						...response
+						...response,
+						...info
 					};
-					console.log(info, response);
 					if (currentJobStatusData[StatusState.PENDING](data)) {
-						console.log(data.metadata);
 					} else if (currentJobStatusData[StatusState.RUNNING](data)) {
-						console.log((data.jobTasksStatus[0] as TaskStatusRunning)?.estimatedTime);
 					} else if (currentJobStatusData[StatusState.FAILED](data)) {
 						console.log(data.error);
 

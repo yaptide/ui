@@ -1,6 +1,6 @@
 import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { DataWithStatus, MergeObjects, TypeIdentifiedByKey } from './TypeTransformUtil';
+import { DataWithStatus, LookUp, MergeObjects, TypeIdentifiedByKey } from './TypeTransformUtil';
 
 export enum StatusState {
 	PENDING = 'PENDING',
@@ -27,11 +27,6 @@ type InputFiles = {
 	'detect.dat': string;
 	'geo.dat': string;
 	'mat.dat': string;
-};
-
-type TaskInfo = {
-	requestedParticles: number;
-	simulatedPrimaries: number;
 };
 
 export type TaskTime = {
@@ -61,12 +56,15 @@ type JobCreated = MergeObjects<
 	Response
 >;
 
+type MetaKey = 'server' | 'platform' | 'input' | 'simType';
+
 export type SimulationInfo = {
 	jobId: string;
-	name: string; //title
-	metadata: Record<string, string>;
+	title: string;
+	metadata: Record<MetaKey, string>;
 	startTime: Date;
 	endTime?: Date;
+	localData?: boolean;
 };
 
 export type SimulationsPage = MergeObjects<
@@ -82,8 +80,9 @@ type TaskStatusType<T extends StatusState, U extends {}> = TypeIdentifiedByKey<
 	'taskState',
 	T,
 	U & {
+		requestedPrimaries: number;
+		simulatedPrimaries: number;
 		taskId: number;
-		taskInfo: TaskInfo;
 		taskState: T;
 	}
 >;
@@ -120,18 +119,6 @@ type JobStatusCompleted = JobStatusType<
 	}
 >;
 
-type JobStatusLocal = JobStatusType<
-	StatusState.LOCAL,
-	{
-		inputFiles: InputFiles;
-		inputJson?: EditorJson;
-		result: {
-			estimators: Estimator[];
-		};
-		jobTasksStatus: Array<TaskAllStatuses>;
-	}
->;
-
 type JobStatusRunning = JobStatusType<
 	StatusState.RUNNING,
 	{ jobTasksStatus: Array<TaskAllStatuses> }
@@ -148,12 +135,15 @@ type JobStatusFailed = JobStatusType<
 	}
 >;
 
-type JobAllStatuses =
-	| JobStatusCompleted
-	| JobStatusRunning
-	| JobStatusPending
-	| JobStatusFailed
-	| JobStatusLocal;
+type JobAllStatuses = JobStatusCompleted | JobStatusRunning | JobStatusPending | JobStatusFailed;
+
+type ResponseJobRequestFailure = MergeObjects<
+	{
+		exitCode: number;
+		output: string;
+	},
+	Response
+>;
 
 export type JobStatusData<T = null> = DataWithStatus<JobAllStatuses, 'jobState', T, SimulationInfo>;
 
@@ -170,8 +160,12 @@ export const currentJobStatusData = {
 		jobStatusGuard(data, StatusState.PENDING),
 	[StatusState.FAILED]: (data: unknown): data is JobStatusData<StatusState.FAILED> =>
 		jobStatusGuard(data, StatusState.FAILED),
-	[StatusState.LOCAL]: (data: unknown): data is JobStatusData<StatusState.LOCAL> =>
-		jobStatusGuard(data, StatusState.LOCAL)
+	// eslint-disable-next-line no-useless-computed-key
+	['hasSpecificProperty']: <T extends string>(
+		data: unknown,
+		property: T
+	): data is LookUp<JobAllStatuses, T> =>
+		(data as LookUp<JobAllStatuses, T>)[property] !== undefined
 };
 
 export type TaskStatusData<T = null> = DataWithStatus<TaskAllStatuses, 'taskState', T>;
@@ -191,7 +185,13 @@ export const currentTaskStatusData = {
 	[StatusState.PENDING]: (data: unknown): data is TaskStatusData<StatusState.PENDING> =>
 		taskStatusGuard(data, StatusState.PENDING),
 	[StatusState.FAILED]: (data: unknown): data is TaskStatusData<StatusState.FAILED> =>
-		taskStatusGuard(data, StatusState.FAILED)
+		taskStatusGuard(data, StatusState.FAILED),
+	// eslint-disable-next-line no-useless-computed-key
+	['hasSpecificProperty']: <T extends string>(
+		data: unknown,
+		property: T
+	): data is LookUp<TaskAllStatuses, T> =>
+		(data as LookUp<TaskAllStatuses, T>)[property] !== undefined
 };
 
 export type ResponseAuthStatus = AuthStatus;
@@ -207,3 +207,5 @@ export type ResponsePostJob = JobCreated;
 export type ResponseGetPageContents = SimulationsPage;
 
 export type ResponseGetJobStatus = JobAllStatuses;
+
+export type ResponseCancelJob = ResponseJobRequestFailure | Response;
