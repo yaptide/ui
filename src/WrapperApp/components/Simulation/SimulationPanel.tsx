@@ -29,6 +29,7 @@ import { useStore } from '../../../services/StoreService';
 import { DEMO_MODE } from '../../../util/Config';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import { SimulationPanelGrid } from './SimulationPanelGrid';
+import { TextField } from '@mui/material';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
@@ -59,6 +60,10 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const [orderType, setOrderType] = useState<OrderType>(OrderType.ASCEND);
 	const [orderBy, setOrderBy] = useState<OrderBy>(OrderBy.START_TIME);
 	const [pageSize, setPageSize] = useState(6);
+
+	const [simName, setSimName] = useState<string>(editorRef.current!.toJSON().project.title);
+	const [nTasks, setNTasks] = useState<number>(1);
+	const [simulator, setSimulator] = useState<string>('shieldhit');
 
 	const [inputFiles, setInputFiles] = useState<InputFiles>();
 
@@ -147,7 +152,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		setInProgress(true);
 		if (!editorRef.current && !inputFiles) return;
 		const simData = inputFiles ? { inputFiles } : editorRef.current!.toJSON();
-		sendRun(simData, undefined, undefined, undefined, undefined, controller.signal)
+		sendRun(simData, nTasks, simulator, simName, undefined, controller.signal)
 			.then(res => {
 				updateSimulationInfo();
 				setTrackedId(res.jobId);
@@ -304,6 +309,31 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 							/>
 						</CardContent>
 						<CardActions>
+							<CardContent
+								sx={{
+									display: 'flex',
+									gap: 3
+								}}>
+								<TextField
+									size='small'
+									label='Simulation Name'
+									value={simName}
+									onChange={e => setSimName(e.target.value)}
+								/>
+								<TextField
+									size='small'
+									type='number'
+									label='Number of tasks'
+									value={nTasks}
+									onChange={e => setNTasks(parseInt(e.target.value))}
+								/>
+								<TextField
+									size='small'
+									label='Simulation software'
+									value={simulator}
+									disabled={true}
+								/>
+							</CardContent>
 							<Button
 								color='info'
 								sx={{

@@ -8,7 +8,6 @@ import { throttle } from 'throttle-debounce';
 import { mergeRefs } from 'react-merge-refs';
 
 export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
-	console.log('JsRootGraph2D', props);
 	const { page, title } = props;
 	const { JSROOT } = useJSROOT();
 	const {

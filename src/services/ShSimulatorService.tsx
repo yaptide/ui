@@ -105,9 +105,9 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 	);
 
 	const postJob = useCallback(
-		(...[simData, ntasks = 5, simType, title, batchOptions, signal]: RequestPostJob) => {
+		(...[simData, ntasks, simType, title, batchOptions, signal]: RequestPostJob) => {
 			if (title === undefined && isEditorJson(simData)) title = simData.project.title;
-
+			console.log('postJob', ntasks, simType, title, batchOptions, signal);
 			return authKy
 				.post(`jobs/direct`, {
 					json: camelToSnakeCase({
