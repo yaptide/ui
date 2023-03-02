@@ -23,7 +23,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
-import React, { Dispatch, SetStateAction, SyntheticEvent } from 'react';
+import React, { Dispatch, SetStateAction, SyntheticEvent, useState } from 'react';
 import { useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
 import deployInfo from '../../../util/identify/deployInfo.json';
@@ -99,7 +99,7 @@ function YapDrawer({ drawerWidth = 200, handleChange, tabsValue, open, setOpen }
 	const { resultsSimulationData } = useStore();
 	const { isAuthorized } = useAuth();
 	const theme = useTheme();
-	const [expand, setExpand] = React.useState(tabsValue === 'login');
+	const [expand, setExpand] = useState(tabsValue === 'login');
 
 	const handleDrawerToggle = () => {
 		setOpen(prev => !prev);

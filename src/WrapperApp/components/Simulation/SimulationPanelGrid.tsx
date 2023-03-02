@@ -1,22 +1,15 @@
-import {
-	Box,
-	Button,
-	ButtonGroup,
-	Grid,
-	MenuItem,
-	Pagination,
-	Select} from '@mui/material';
-import { OrderBy, OrderType, SimulationStatusData } from '../../../services/ShSimulatorService';
-import SimulationStatus from './SimulationStatus';
-import { InputFiles } from '../../../services/ShSimulatorService';
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
+import { Box, Button, ButtonGroup, Grid, MenuItem, Pagination, Select } from '@mui/material';
+import { InputFiles, OrderBy, OrderType } from '../../../services/RequestTypes';
+import { JobStatusData } from '../../../services/ResponseTypes';
 import { DEMO_MODE } from '../../../util/Config';
+import SimulationStatus from './SimulationStatus';
 
 export type SimulationPanelGridProps = {
-	localSimulationData: SimulationStatusData[];
-	simulationsStatusData: SimulationStatusData[];
-	handleLoadResults: (id: string | null, simulation: SimulationStatusData) => void;
+	localSimulationData: JobStatusData[];
+	simulationsStatusData: JobStatusData[];
+	handleLoadResults: (id: string | null, simulation: JobStatusData) => void;
 	handleShowInputFiles: (inputFiles?: InputFiles) => void;
 	pageCount: number;
 	page: number;
@@ -123,20 +116,29 @@ export function SimulationPanelGrid(props: SimulationPanelGridProps) {
 				columns={{ md: 12, sm: 6, lg: 18 }}
 				sx={{
 					'flexGrow': 1,
-					'align-content': 'flex-start',
+					'alignContent': 'flex-start',
 					'& .MuiGrid-item': {
 						minHeight: '350px'
 					}
 				}}>
-				{localSimulationData.concat(simulationsStatusData).map(simulation => (
-					<Grid item xs={6}>
-						<SimulationStatus
-							key={simulation.uuid}
-							simulation={simulation}
-							loadResults={taskId => handleLoadResults(taskId, simulation)}
-							showInputFiles={handleShowInputFiles}></SimulationStatus>
-					</Grid>
-				))}
+				<>
+					{localSimulationData.map(simulation => (
+						<Grid key={simulation.jobId} item xs={6}>
+							<SimulationStatus
+								simulation={simulation}
+								loadResults={taskId => handleLoadResults(taskId, simulation)}
+								showInputFiles={handleShowInputFiles}></SimulationStatus>
+						</Grid>
+					))}
+					{simulationsStatusData.map((simulation, index) => (
+						<Grid key={simulation.jobId} item xs={6}>
+							<SimulationStatus
+								simulation={simulation}
+								loadResults={taskId => handleLoadResults(taskId, simulation)}
+								showInputFiles={handleShowInputFiles}></SimulationStatus>
+						</Grid>
+					))}
+				</>
 			</Grid>
 			{!DEMO_MODE && (
 				<Pagination

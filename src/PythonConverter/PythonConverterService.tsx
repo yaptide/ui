@@ -1,9 +1,9 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import * as Comlink from 'comlink';
 import { createGenericContext } from '../util/GenericContext';
-import { InputFiles } from '../services/ShSimulatorService';
 import { IPythonWorker } from './PythonWorker';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
+import { InputFiles } from '../services/RequestTypes';
 
 declare global {
 	interface Window {

@@ -16,6 +16,7 @@ import { useLoader } from '../../../services/DataLoaderService';
 import { DragDropFile } from '../../../util/DragDropFile';
 import EXAMPLES from '../../examples/examples';
 import { CustomDialogTitle } from './CustomDialog';
+import { JobStatusData, StatusState } from '../../../services/ResponseTypes';
 
 export type OpenFileProps = {
 	open: boolean;
@@ -83,14 +84,14 @@ export function OpenFileDialog(props: OpenFileProps) {
 									<ListItem
 										disablePadding
 										key={
-											example?.editor?.project?.title ??
+											example?.inputJson?.project?.title ??
 											'Example_' + idx.toString()
 										}
 										value={idx}
 										onClick={() => setExampleIndex(idx)}
 										selected={exampleIndex === idx}>
 										<ListItemButton>
-											{example?.editor?.project?.title ??
+											{example?.inputJson?.project?.title ??
 												'Example_' + idx.toString()}
 										</ListItemButton>
 									</ListItem>
@@ -103,7 +104,14 @@ export function OpenFileDialog(props: OpenFileProps) {
 								disabled={exampleIndex === null}
 								onClick={() => {
 									onClose();
-									loadFromJson(EXAMPLES[exampleIndex ?? 0]);
+									loadFromJson(
+										[EXAMPLES[exampleIndex ?? 0]].map(e => {
+											return {
+												...e,
+												jobState: StatusState.COMPLETED
+											} as JobStatusData<StatusState.COMPLETED>;
+										})
+									);
 									// onPlainTextSubmitted(
 									// 	JSON.stringify(EXAMPLES[exampleIndex ?? 0].editor)
 									// );

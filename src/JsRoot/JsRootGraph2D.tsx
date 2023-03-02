@@ -31,8 +31,8 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 
 	useEffect(() => {
 		if (!visible) return;
-		const x = page.first_axis.values;
-		const y = page.second_axis.values;
+		const x = page.firstAxis.values;
+		const y = page.secondAxis.values;
 		const z = page.data.values;
 
 		const nxpoints = x.length;
@@ -42,11 +42,11 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 
 		histogram.fXaxis.fXmin = x[0];
 		histogram.fXaxis.fXmax = x[nxpoints - 1];
-		histogram.fXaxis.fTitle = `${page.first_axis.name} [${page.first_axis.unit}]`;
+		histogram.fXaxis.fTitle = `${page.firstAxis.name} [${page.firstAxis.unit}]`;
 
 		histogram.fYaxis.fXmin = y[0];
 		histogram.fYaxis.fXmax = y[nypoints - 1];
-		histogram.fYaxis.fTitle = `${page.second_axis.name} [${page.second_axis.unit}]`;
+		histogram.fYaxis.fTitle = `${page.secondAxis.name} [${page.secondAxis.unit}]`;
 
 		// centering axes labels using method suggested here:
 		// https://github.com/root-project/jsroot/issues/225#issuecomment-998748035

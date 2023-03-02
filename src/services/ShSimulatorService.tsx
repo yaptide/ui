@@ -1,179 +1,46 @@
 import { ReactNode, useCallback, useRef } from 'react';
-import { BACKEND_URL } from '../util/Config';
-import { createGenericContext } from '../util/GenericContext';
-import { useAuth } from './AuthService';
-import { IResponseMsg } from './ResponseTypes';
 import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { ScoringManagerJSON } from '../ThreeEditor/util/Scoring/ScoringManager';
-import { orderAccordingToList } from '../util/Sort';
 import { FilterJSON } from '../ThreeEditor/util/Detect/DetectFilter';
-
-export enum OrderType {
-	ASCEND = 'ascend',
-	DESCEND = 'descend'
-}
-
-export enum OrderBy {
-	START_TIME = 'start_time',
-	END_TIME = 'end_time'
-}
+import { ScoringManagerJSON } from '../ThreeEditor/util/Scoring/ScoringManager';
+import { createGenericContext } from '../util/GenericContext';
+import { orderAccordingToList } from '../util/Sort';
+import { useAuth } from './AuthService';
+import { camelToSnakeCase } from './TypeTransformUtil';
+import {
+	RequestCancelJob,
+	RequestGetJobStatus,
+	RequestGetPageContents,
+	RequestGetPageStatus,
+	RequestParam,
+	RequestPostJob,
+	RequestShConvert,
+	isEditorJson
+} from './RequestTypes';
+import {
+	JobStatusData,
+	Response,
+	ResponseGetJobStatus,
+	ResponseGetPageContents,
+	ResponsePostJob,
+	ResponseShConvert,
+	SimulationsPage,
+	StatusState,
+	currentJobStatusData
+} from './ResponseTypes';
 
 export interface ShSimulationProps {
 	children: ReactNode;
 }
 
 export interface IShSimulation {
-	sendRun: (
-		input: { editorJSON: unknown } | { inputFiles: InputFiles },
-		signal?: AbortSignal
-	) => Promise<ResShRun>;
-	convertToInputFiles: (editorJSON: unknown, signal?: AbortSignal) => Promise<ResShConvert>;
-	sendHelloWorld: (signal?: AbortSignal) => Promise<unknown>;
-	getStatus: (
-		simulation: SimulationInfo,
-		signal?: AbortSignal,
-		cache?: boolean,
-		beforeCacheWrite?: (id: string, data: SimulationStatusData) => void
-	) => Promise<SimulationStatusData | undefined>;
-	getSimulations: (
-		pageNumber: number,
-		pageSize: number,
-		orderType: OrderType,
-		orderBy: OrderBy,
-		signal?: AbortSignal
-	) => Promise<UserSimulationPage>;
-	getSimulationsStatus: (
-		simulationInfo: SimulationInfo[],
-		signal?: AbortSignal,
-		cache?: boolean,
-		beforeCacheWrite?: (id: string, data: SimulationStatusData) => void
-	) => Promise<SimulationStatusData[]>;
-}
-
-interface ResShRun extends IResponseMsg {
-	task_id: string;
-}
-
-export interface SimulationInfo {
-	start_time: Date;
-	end_time: Date;
-	cores: number;
-	name: string;
-	task_id: string;
-}
-
-interface ResUserSimulations extends IResponseMsg, UserSimulationPage {}
-
-interface UserSimulationPage {
-	simulations: SimulationInfo[];
-	page_count: number;
-	simulations_count: number;
-}
-
-export enum StatusState {
-	PENDING = 'PENDING',
-	PROGRESS = 'PROGRESS',
-	FAILURE = 'FAILURE',
-	SUCCESS = 'SUCCESS',
-	LOCAL = 'LOCAL'
-}
-interface ResShStatusPending extends IResponseMsg {
-	state: StatusState.PENDING;
-}
-
-interface ResShStatusProgress extends IResponseMsg {
-	state: StatusState.PROGRESS;
-	info: {
-		simulated_primaries: number;
-		estimated?: {
-			hours: number;
-			minutes: number;
-			seconds: number;
-		};
-	};
-}
-
-export interface InputFiles {
-	'beam.dat': string;
-	'detect.dat': string;
-	'geo.dat': string;
-	'mat.dat': string;
-}
-
-interface ResShConvert extends IResponseMsg {
-	input_files: InputFiles;
-}
-
-interface ResShStatusFailure extends IResponseMsg {
-	state: StatusState.FAILURE;
-	error: string;
-	input_files?: InputFiles;
-	logfile?: string;
-}
-
-interface ResShStatusSuccess extends IResponseMsg {
-	state: StatusState.SUCCESS;
-	result: {
-		estimators: Estimator[];
-	};
-	metadata: {
-		source: string;
-		simulator: string;
-		type: 'results';
-	};
-	input_json?: EditorJson;
-	input_files?: InputFiles;
-	end_time: Date;
-	cores: number;
-}
-
-type ResShStatus =
-	| ResShStatusPending
-	| ResShStatusProgress
-	| ResShStatusFailure
-	| ResShStatusSuccess;
-
-export interface FinalSimulationStatusData extends SimulationStatusData {
-	cores: number;
-	inputFiles: InputFiles;
-	result: {
-		estimators: Estimator[];
-	};
-	metadata: {
-		source: string;
-		simulator: string;
-		type: 'results';
-	};
-}
-export interface SimulationRunJSON {
-	jobs?: number;
-	sim_type?: string;
-	sim_name?: string;
-	sim_data: unknown;
-}
-
-export interface SimulationStatusData {
-	uuid: string;
-	status: StatusState;
-	creationDate: Date;
-	completionDate: Date;
-	name: string;
-	estimatedTime?: number;
-	counted?: number;
-	message?: string;
-	inputFiles?: InputFiles;
-	logFile?: string;
-	cores?: number;
-	metadata?: {
-		source: string;
-		simulator: string;
-		type: 'results';
-	};
-	result?: {
-		estimators: Estimator[];
-	};
-	editor?: EditorJson;
+	postJob: (...args: RequestPostJob) => Promise<ResponsePostJob>;
+	cancelJob: (...args: RequestCancelJob) => Promise<unknown>;
+	convertToInputFiles: (...args: RequestShConvert) => Promise<ResponseShConvert>;
+	getHelloWorld: (...args: RequestParam) => Promise<unknown>;
+	getJobStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
+	getPageContents: (...args: RequestGetPageContents) => Promise<SimulationsPage>;
+	getPageStatus: (...args: RequestGetPageStatus) => Promise<JobStatusData[]>;
 }
 
 const recreateOrderInEstimators = (
@@ -201,150 +68,112 @@ const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]
 	return estimators;
 };
 
-export const recreateRefsInResults = (results: SimulationStatusData) => {
-	const { result, editor } = results;
+export const recreateRefsInResults = (
+	results: JobStatusData<StatusState.COMPLETED | StatusState.LOCAL>
+) => {
+	const { result, inputJson } = results;
 
-	if (!editor) throw new Error('No editor data');
+	if (!inputJson) throw new Error('No editor data');
 	if (!result) throw new Error('No result data');
 
-	const { scoringManager, detectManager }: EditorJson = editor;
+	const { scoringManager, detectManager }: EditorJson = inputJson;
 
 	result.estimators = recreateOrderInEstimators(result.estimators, scoringManager);
 	result.estimators = recreateRefToFilters(result.estimators, detectManager?.filters);
 };
 
+const updateEstimators = (estimators: Estimator[]) => {
+	for (const estimator of estimators) {
+		estimator.name = estimator.name.replace(/_$/, '');
+	}
+};
+
 const [useShSimulation, ShSimulationContextProvider] = createGenericContext<IShSimulation>();
 
-const ShSimulation = (props: ShSimulationProps) => {
+const ShSimulation = ({ children }: ShSimulationProps) => {
 	const { authKy } = useAuth();
 
-	const statusDataCache = useRef(new Map<string, SimulationStatusData>());
+	const statusDataCache = useRef(new Map<string, JobStatusData>());
 
-	const sendHelloWorld = useCallback(
-		(signal?: AbortSignal) => authKy.get(`${BACKEND_URL}`, { signal }).json(),
+	const getHelloWorld = useCallback(
+		(signal?: AbortSignal) =>
+			authKy
+				.get(``, { signal })
+				.json<Response>()
+				.then(r => !!r.message),
 		[authKy]
 	);
 
-	const sendRun = useCallback(
-		(input: { editorJSON: unknown } | { inputFiles: InputFiles }, signal?: AbortSignal) => {
-			let json: SimulationRunJSON = { sim_data: {} };
-			if ('editorJSON' in input) {
-				const editorJSON = input.editorJSON;
-				json.sim_data = editorJSON;
-				json.sim_name = (editorJSON as any).project.title;
-			} else if ('inputFiles' in input) {
-				json.sim_data = { input_files: { ...input.inputFiles } };
-			}
-
+	const postJob = useCallback(
+		(...[simData, ntasks, simType, title, batchOptions, signal]: RequestPostJob) => {
+			if (title === undefined && isEditorJson(simData)) title = simData.project.title;
+			console.log('postJob', ntasks, simType, title, batchOptions, signal);
 			return authKy
-				.post(`${BACKEND_URL}/sh/run`, {
+				.post(`jobs/direct`, {
+					json: camelToSnakeCase({
+						ntasks,
+						simType,
+						title,
+						simData,
+						batchOptions
+					}),
 					signal,
-					json: json,
 					timeout: 30000
 					/**
-			Timeout in milliseconds for getting a response. Can not be greater than 2147483647.
-			If set to `false`, there will be no timeout.
-			**/
+					Timeout in milliseconds for getting a response. Can not be greater than 2147483647.
+					If set to `false`, there will be no timeout.
+					**/
 				})
-				.json()
-				.then((response: unknown) => {
-					return response as ResShRun;
-				});
+				.json<ResponsePostJob>();
 		},
 		[authKy]
 	);
 
 	const convertToInputFiles = useCallback(
-		(editorJSON: unknown, signal?: AbortSignal) =>
+		(...[simData, signal]: RequestShConvert) =>
 			authKy
-				.post(`${BACKEND_URL}/sh/convert`, {
+				.post(`sh/convert`, {
 					signal,
-					json: editorJSON
+					json: simData
 				})
-				.json()
-				.then((response: unknown) => {
-					return response as ResShConvert;
-				}),
+				.json<ResponseShConvert>(),
 		[authKy]
 	);
 
-	const getStatus = useCallback(
-		(
-			simulation: SimulationInfo,
-			signal?: AbortSignal,
-			cache = true,
-			beforeCacheWrite?: (id: string, response: SimulationStatusData) => void
-		) => {
-			const {
-				task_id: taskId,
-				name,
-				start_time: creationDate,
-				end_time: completionDate
-			} = simulation;
+	const getJobStatus = useCallback(
+		(...[info, cache = true, beforeCacheWrite, signal]: RequestGetJobStatus) => {
+			const { jobId } = info;
 
-			if (cache && statusDataCache.current.has(taskId))
-				return Promise.resolve(statusDataCache.current.get(taskId));
+			if (cache && statusDataCache.current.has(jobId))
+				return Promise.resolve(statusDataCache.current.get(jobId));
 
 			return authKy
-				.get(`${BACKEND_URL}/sh/status`, {
+				.get(`jobs/direct`, {
 					signal,
-					searchParams: {
-						task_id: taskId
-					}
+					searchParams: camelToSnakeCase({ jobId })
 				})
-				.json()
-				.then((response: unknown) => {
-					const resStatus = response as ResShStatus;
-
-					const data: SimulationStatusData = {
-						uuid: taskId,
-						status: resStatus.state,
-						name,
-						creationDate,
-						completionDate
+				.json<ResponseGetJobStatus>()
+				.then(response => {
+					const data: Partial<JobStatusData> = {
+						...response,
+						...info
 					};
+					if (currentJobStatusData[StatusState.PENDING](data)) {
+					} else if (currentJobStatusData[StatusState.RUNNING](data)) {
+					} else if (currentJobStatusData[StatusState.FAILED](data)) {
+						console.log(data.error);
 
-					switch (resStatus.state) {
-						case StatusState.PENDING:
-							break;
+						beforeCacheWrite?.call(null, data.jobId, data);
+						statusDataCache.current.set(data.jobId, data);
+					} else if (currentJobStatusData[StatusState.COMPLETED](data)) {
+						updateEstimators(data.result.estimators);
+						if (data.inputJson) recreateRefsInResults(data);
 
-						case StatusState.PROGRESS:
-							data.counted = resStatus.info.simulated_primaries;
-							if (resStatus.info.estimated) {
-								const { hours, minutes, seconds } = resStatus.info.estimated;
-								data.estimatedTime =
-									Date.now() + (hours * 60 * 60 + minutes * 60 + seconds) * 1000;
-							}
-							break;
-
-						case StatusState.FAILURE:
-							data.message = resStatus.error;
-							data.inputFiles = resStatus.input_files;
-							data.logFile = resStatus.logfile;
-							break;
-
-						case StatusState.SUCCESS:
-							data.result = resStatus.result;
-							data.inputFiles = resStatus.input_files;
-							data.cores = resStatus.cores;
-							data.metadata = resStatus.metadata;
-							// remove trailing underscores from estimators names (#530)
-							for (const estimator of data.result.estimators) {
-								estimator.name = estimator.name.replace(/_$/, '');
-							}
-
-							if (resStatus.input_json) {
-								data.editor = resStatus.input_json;
-								recreateRefsInResults(data);
-							}
-							break;
+						beforeCacheWrite?.call(null, data.jobId, data);
+						statusDataCache.current.set(data.jobId, data);
+					} else {
+						return undefined;
 					}
-
-					if ([StatusState.FAILURE, StatusState.SUCCESS].includes(resStatus.state)) {
-						beforeCacheWrite?.call(null, data.uuid, data);
-						statusDataCache.current.set(data.uuid, data);
-					}
-
 					return data;
 				})
 				.catch(() => undefined);
@@ -352,69 +181,52 @@ const ShSimulation = (props: ShSimulationProps) => {
 		[authKy]
 	);
 
-	const getSimulations = useCallback(
-		(
-			pageNumber: number,
-			pageSize: number,
-			orderType: OrderType,
-			orderBy: OrderBy,
-			signal?: AbortSignal
-		) => {
-			return authKy
-				.get(`${BACKEND_URL}/user/simulations`, {
-					signal: signal,
-					searchParams: {
-						page_size: pageSize,
-						page_idx: pageNumber - 1,
-						order_by: orderBy,
-						order_type: orderType
-					}
+	const cancelJob = useCallback(
+		(...[{ jobId }, signal]: RequestCancelJob) =>
+			authKy
+				.delete(`jobs/direct`, {
+					signal,
+					searchParams: camelToSnakeCase({ jobId })
 				})
-				.json()
-				.then((response: unknown) => {
-					const { simulations, page_count, simulations_count } =
-						response as ResUserSimulations;
-					return {
-						simulations: simulations.map(s => {
-							const start_time = new Date(s.start_time as unknown as string);
-							const obj: SimulationInfo = { ...s, start_time };
-							return obj;
-						}),
-						page_count,
-						simulations_count
-					};
-				});
-		},
+				.then(() => {
+					statusDataCache.current.delete(jobId);
+				}),
 		[authKy]
 	);
 
-	const getSimulationsStatus = useCallback(
-		(
-			simulations: SimulationInfo[],
-			signal?: AbortSignal,
-			cache = true,
-			beforeCacheWrite?: (id: string, response: SimulationStatusData) => void
-		) => {
-			const res = simulations.map(s => getStatus(s, signal, cache, beforeCacheWrite));
-
-			return Promise.all(res).then(values => {
-				return [...values.filter((e): e is SimulationStatusData => !!e)];
-			});
-		},
-		[getStatus]
+	const getPageContents = useCallback(
+		(...[pageIdx, pageSize, orderType, orderBy, signal]: RequestGetPageContents) =>
+			authKy
+				.get(`user/simulations`, {
+					signal,
+					searchParams: camelToSnakeCase({ pageIdx, pageSize, orderType, orderBy })
+				})
+				.json<ResponseGetPageContents>(),
+		[authKy]
 	);
 
-	const value: IShSimulation = {
-		sendRun,
-		convertToInputFiles,
-		sendHelloWorld,
-		getStatus,
-		getSimulations,
-		getSimulationsStatus
-	};
+	const getPageStatus = useCallback(
+		(...[infoList, cache = true, beforeCacheWrite, signal]: RequestGetPageStatus) => {
+			return Promise.all(
+				infoList.map(info => getJobStatus(info, cache, beforeCacheWrite, signal))
+			).then(values => [...values.filter((e): e is JobStatusData => e !== undefined)]);
+		},
+		[getJobStatus]
+	);
 
 	return (
-		<ShSimulationContextProvider value={value}>{props.children}</ShSimulationContextProvider>
+		<ShSimulationContextProvider
+			value={{
+				postJob,
+				cancelJob,
+				convertToInputFiles,
+				getHelloWorld,
+				getJobStatus,
+				getPageContents,
+				getPageStatus
+			}}>
+			{children}
+		</ShSimulationContextProvider>
 	);
 };
 

@@ -17,22 +17,39 @@ import {
 	useMediaQuery
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import Countdown from 'react-countdown';
 import { useLoader } from '../../../services/DataLoaderService';
+import { InputFiles } from '../../../services/RequestTypes';
 import {
-	InputFiles,
-	SimulationStatusData,
-	StatusState
-} from '../../../services/ShSimulatorService';
+	JobStatusData,
+	StatusState,
+	TaskTime,
+	currentJobStatusData,
+	currentTaskStatusData
+} from '../../../services/ResponseTypes';
+import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
-
 interface SimulationStatusProps {
-	simulation: SimulationStatusData;
-	loadResults?: (taskId: string | null) => void;
+	simulation: JobStatusData;
+	loadResults?: (jobId: string | null) => void;
 	showInputFiles?: (inputFiles?: InputFiles) => void;
 }
+
+const tableRowStyle: SxProps<Theme> = { '&:last-child td, &:last-child th': { border: 0 } };
+const row = (id: number, title: string, value: string | undefined | ReactNode, guard = true) => (
+	<React.Fragment key={id}>
+		{guard && (
+			<TableRow sx={tableRowStyle}>
+				<TableCell component='th' scope='row'>
+					{title}
+				</TableCell>
+				<TableCell align='right'>{value}</TableCell>
+			</TableRow>
+		)}
+	</React.Fragment>
+);
 
 export default function SimulationStatus({
 	simulation,
@@ -40,42 +57,50 @@ export default function SimulationStatus({
 	showInputFiles
 }: SimulationStatusProps) {
 	const { resultsSimulationData } = useStore();
+	const { cancelJob: cancelSimulation } = useShSimulation();
 	const { loadFromJson } = useLoader();
 
-	const tableRowStyle: SxProps<Theme> = { '&:last-child td, &:last-child th': { border: 0 } };
+	const getDateFromEstimation = (estimated?: TaskTime) => {
+		if (!estimated) return undefined;
+		const { hours, minutes, seconds } = estimated;
+		const date =
+			Date.now() +
+			(parseInt(hours) * 60 * 60 + parseInt(minutes) * 60 + parseInt(seconds)) * 1000;
+		return date;
+	};
 
-	const row = (title: string, value: string | undefined | ReactNode, guard = true) => (
-		<React.Fragment key={title}>
-			{guard && (
-				<TableRow sx={tableRowStyle}>
-					<TableCell component='th' scope='row'>
-						{title}
-					</TableCell>
-					<TableCell align='right'>{value}</TableCell>
-				</TableRow>
-			)}
-		</React.Fragment>
-	);
-
-	const rows = [
-		row(
-			'Estimated time',
-			<Countdown date={simulation.estimatedTime} />,
-			!!simulation.estimatedTime
-		),
-		row('Counted', simulation.counted, !!simulation.counted),
-		row('Message', simulation.message, !!simulation.message)
-	];
+	const rows = useMemo(() => {
+		const rows: any[] = [];
+		if (currentJobStatusData[StatusState.RUNNING](simulation)) {
+			for (const task of simulation.jobTasksStatus) {
+				if (currentTaskStatusData[StatusState.RUNNING](task)) {
+					const date = getDateFromEstimation(task.estimatedTime);
+					const primaries = task.simulatedPrimaries;
+					rows.push(
+						row(
+							task.taskId,
+							'Estimated time',
+							<Countdown date={date} />,
+							date !== undefined && date > 0
+						)
+					);
+					rows.push(row(0, 'Counted', primaries, !!primaries));
+				}
+			}
+			row(-1, 'Message', simulation.message, !!simulation.message);
+		}
+		return rows;
+	}, [simulation]);
 
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
-	const statusColor = (status: StatusState) => {
+	const statusColor = (status?: StatusState) => {
 		switch (status) {
-			case StatusState.FAILURE:
+			case StatusState.FAILED:
 				return 'error.main';
-			case StatusState.PROGRESS:
+			case StatusState.RUNNING:
 				return 'info.main';
-			case StatusState.SUCCESS:
+			case StatusState.COMPLETED:
 				return 'success.main';
 			case StatusState.LOCAL:
 				return 'warning.main';
@@ -85,19 +110,20 @@ export default function SimulationStatus({
 	};
 
 	const onClickLoadResults = () => {
-		loadResults?.call(null, simulation.uuid);
+		loadResults?.call(null, simulation.jobId);
 	};
 
 	const onClickGoToResults = () => {
 		loadResults?.call(null, null);
 	};
 
-	const onClickInputFiles = () => {
-		console.log(simulation);
+	const onClickInputFiles = (
+		simulation: JobStatusData<StatusState.COMPLETED | StatusState.FAILED>
+	) => {
 		showInputFiles?.call(null, simulation.inputFiles);
 	};
 
-	const onClickShowError = () => {
+	const onClickShowError = (simulation: JobStatusData<StatusState.FAILED>) => {
 		const errorWindow = window.open();
 
 		if (!errorWindow) return console.error('Could not open new window');
@@ -109,7 +135,7 @@ export default function SimulationStatus({
 			</head>
 			<body>
 			<h1>Log File</h1>
-			<pre>${simulation?.logFile}</pre>
+			<pre>${simulation.logfile}</pre>
 			</body>
 			</html>`
 		);
@@ -117,12 +143,12 @@ export default function SimulationStatus({
 	};
 
 	const onClickSaveToFile = () => {
-		saveString(JSON.stringify(simulation), `${simulation.name}_result.json`);
+		saveString(JSON.stringify(simulation), `${simulation.title}_result.json`);
 	};
 
-	const onClickLoadToEditor = () => {
-		if (!simulation?.editor) return;
-		loadFromJson(simulation.editor);
+	const onClickLoadToEditor = (simulation: JobStatusData<StatusState.COMPLETED>) => {
+		if (!simulation?.inputJson) return;
+		loadFromJson(simulation.inputJson);
 	};
 
 	return (
@@ -130,19 +156,22 @@ export default function SimulationStatus({
 			<Divider
 				sx={{
 					borderTopWidth: 5,
-					borderColor: statusColor(simulation.status)
+					borderColor: statusColor(
+						simulation.localData ? StatusState.LOCAL : simulation.jobState
+					)
 				}}
 			/>
 			<CardHeader
-				title={`${simulation.editor?.project.title ?? simulation.name}`}
-				subheader={`${simulation.creationDate.toLocaleString('en-US').split(' ')[0]} ${
-					simulation.creationDate?.toTimeString
-						? simulation.creationDate.toTimeString().split(' ')[0]
-						: '00:00:00'
+				title={`${
+					currentJobStatusData[StatusState.COMPLETED](simulation)
+						? simulation.inputJson?.project.title
+						: simulation.title
+				}`}
+				subheader={`${simulation.startTime.toLocaleString('en-US').split(' ')[0]} ${
+					simulation.startTime.toLocaleString('en-US').split(' ')[4] ?? '00:00:00'
 				} - ${
-					simulation.status === StatusState.SUCCESS &&
-					simulation.completionDate?.toTimeString
-						? simulation.completionDate.toTimeString().split(' ')[0]
+					currentJobStatusData[StatusState.COMPLETED](simulation) && simulation.endTime
+						? simulation.endTime.toLocaleString('en-US').split(' ')[4] ?? '?'
 						: '?'
 				}`}
 			/>
@@ -156,18 +185,40 @@ export default function SimulationStatus({
 					}}>
 					<Chip
 						variant='outlined'
-						label={simulation.status}
+						label={simulation.localData ? StatusState.LOCAL : simulation.jobState}
 						sx={{
-							borderColor: statusColor(simulation.status)
+							borderColor: statusColor(
+								simulation.localData ? StatusState.LOCAL : simulation.jobState
+							)
 						}}
 					/>
+					{currentJobStatusData['hasSpecificProperty'](simulation, 'jobTasksStatus') && (
+						<>
+							<Chip
+								variant='outlined'
+								label={`requestedPrimaries: ${simulation.jobTasksStatus.reduce(
+									(acc, taskStatus) =>
+										currentTaskStatusData['hasSpecificProperty'](
+											taskStatus,
+											'requestedPrimaries'
+										)
+											? acc + taskStatus.requestedPrimaries
+											: acc,
+									0 as number
+								)}`}
+							/>
+							<Chip
+								variant='outlined'
+								label={`ntask: ${simulation.jobTasksStatus.length}`}
+							/>
+						</>
+					)}
 					{simulation.metadata &&
 						Object.entries(simulation.metadata)
 							.filter(([key, value]) => key !== 'type')
 							.map(([key, value]) => (
 								<Chip key={key} variant='outlined' label={`${key}: ${value}`} />
 							))}
-					<Chip variant='outlined' label={`cores: ${simulation.cores}`} />
 				</Box>
 				<TableContainer
 					component={Paper}
@@ -185,45 +236,68 @@ export default function SimulationStatus({
 			</CardContent>
 			<CardActions>
 				<ButtonGroup fullWidth aria-label='full width outlined button group'>
-					{[StatusState.SUCCESS, StatusState.LOCAL].includes(simulation.status) && (
-						<Button
-							sx={{ fontSize: '.8em' }}
-							size='small'
-							color='info'
-							onClick={
-								resultsSimulationData?.uuid !== simulation.uuid
-									? onClickLoadResults
-									: onClickGoToResults
-							}>
-							{resultsSimulationData?.uuid !== simulation.uuid
-								? 'Load Results'
-								: 'Go to Results'}
-						</Button>
-					)}
-					{[StatusState.PROGRESS, StatusState.PENDING].includes(simulation.status) && (
-						<Button
-							sx={{ fontSize: '.8em' }}
-							color='info'
-							size='small'
-							disabled={simulation.status === StatusState.PENDING}>
-							Cancel
-						</Button>
-					)}
-					{simulation.status === StatusState.FAILURE && (
-						<Button
-							sx={{ fontSize: '.8em' }}
-							color='info'
-							size='small'
-							onClick={onClickShowError}>
-							Error Log
-						</Button>
-					)}
+					{simulation.jobState &&
+						(() => {
+							if (currentJobStatusData[StatusState.COMPLETED](simulation)) {
+								return (
+									<Button
+										sx={{ fontSize: '.8em' }}
+										size='small'
+										color='info'
+										onClick={
+											resultsSimulationData?.jobId !== simulation.jobId
+												? onClickLoadResults
+												: onClickGoToResults
+										}>
+										{resultsSimulationData?.jobId !== simulation.jobId
+											? 'Load Results'
+											: 'Go to Results'}
+									</Button>
+								);
+							} else if (
+								currentJobStatusData[StatusState.RUNNING](simulation) ||
+								currentJobStatusData[StatusState.PENDING](simulation)
+							) {
+								return (
+									<Button
+										sx={{ fontSize: '.8em' }}
+										color='info'
+										size='small'
+										onClick={() => cancelSimulation(simulation)}
+										disabled={simulation.jobState === StatusState.PENDING}>
+										Cancel
+									</Button>
+								);
+							} else if (currentJobStatusData[StatusState.FAILED](simulation)) {
+								return (
+									<Button
+										sx={{ fontSize: '.8em' }}
+										color='info'
+										size='small'
+										onClick={() => onClickShowError(simulation)}>
+										Error Log
+									</Button>
+								);
+							}
+							return <></>;
+						})()}
+
 					<Button
 						sx={{ fontSize: '.8em' }}
 						color='info'
 						size='small'
-						onClick={onClickInputFiles}
-						disabled={!Boolean(simulation.inputFiles && showInputFiles)}>
+						onClick={() =>
+							currentJobStatusData[StatusState.COMPLETED](simulation) ||
+							(currentJobStatusData[StatusState.FAILED](simulation) &&
+								onClickInputFiles(simulation))
+						}
+						disabled={
+							!Boolean(
+								currentJobStatusData[StatusState.COMPLETED](simulation) ||
+									(currentJobStatusData[StatusState.FAILED](simulation) &&
+										showInputFiles)
+							)
+						}>
 						Input Files
 					</Button>
 
@@ -232,16 +306,22 @@ export default function SimulationStatus({
 						color='info'
 						size='small'
 						onClick={onClickSaveToFile}
-						disabled={!Boolean(simulation.status === StatusState.SUCCESS)}>
+						disabled={!Boolean(simulation.jobState === StatusState.COMPLETED)}>
 						Save to file
 					</Button>
 					<Button
 						sx={{ fontSize: '.8em' }}
 						color='info'
 						size='small'
-						onClick={onClickLoadToEditor}
+						onClick={() =>
+							currentJobStatusData[StatusState.COMPLETED](simulation) &&
+							onClickLoadToEditor(simulation)
+						}
 						disabled={
-							!Boolean(simulation.status === StatusState.SUCCESS && simulation.editor)
+							!Boolean(
+								currentJobStatusData[StatusState.COMPLETED](simulation) &&
+									simulation.inputJson
+							)
 						}>
 						Load to editor
 					</Button>

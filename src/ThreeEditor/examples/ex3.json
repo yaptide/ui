@@ -1,8 +1,8 @@
 {
-	"uuid": "a308354e-5013-4fea-8f88-e8a2ec53ccae",
-	"status": "SUCCESS",
+	"jobId": "a308354e-5013-4fea-8f88-e8a2ec53ccae",
+	"jobState": "LOCAL",
 	"name": "example3",
-	"creationDate": "2022-10-13T16:40:07.000Z",
+	"startTime": "2022-10-13T16:40:07.000Z",
 	"result": {
 		"estimators": [
 			{
@@ -29506,7 +29506,7 @@
 		"mat.dat": "MEDIUM 1\nICRU 104\nEND\nMEDIUM 2\nICRU 223\nEND\nMEDIUM 3\nICRU 276\nEND\n"
 	},
 	"metadata": { "simulator": "shieldhit", "source": "YAPTIIDE", "type": "results" },
-	"editor": {
+	"inputJson": {
 		"beam": {
 			"colorHex": 16776960,
 			"direction": [0, 0, 1],

@@ -1,16 +1,18 @@
-import {
-	FinalSimulationStatusData,
-	recreateRefsInResults	
-} from '../../services/ShSimulatorService';
+import { recreateRefsInResults } from '../../services/ShSimulatorService';
+import { JobStatusData, StatusState } from '../../services/ResponseTypes';
 
 let canImport = true;
 let iterator = 1;
-const EXAMPLES: FinalSimulationStatusData[] = [];
+const EXAMPLES: JobStatusData<StatusState.COMPLETED>[] = [];
 while (canImport) {
 	try {
-		const example = require(`./ex${iterator}.json`);
-		if (!(example.editor.project.title && example.editor.project.title.length > 0))
-			example.editor.project.title = `Untitled example ${iterator}`;
+		const example: JobStatusData<StatusState.COMPLETED> = require(`./ex${iterator}.json`);
+		if (
+			example.inputJson &&
+			example.inputJson.project.title &&
+			example.inputJson.project.title.length === 0
+		)
+			example.inputJson.project.title = `Untitled example ${iterator}`;
 
 		EXAMPLES.push(example);
 		iterator++;

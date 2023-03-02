@@ -14,23 +14,23 @@ export type pageData = {
 	unit: string;
 	values: number[];
 };
-export interface IPage {
+interface IPage {
 	filterRef?: FilterJSON;
-	dimension: number;
 	name?: string;
+	dimensions: number;
 }
 export interface Page2D extends IPage {
 	data: pageData;
 	dimensions: 2;
-	first_axis: pageData;
-	second_axis: pageData;
+	firstAxis: pageData;
+	secondAxis: pageData;
 }
 
 export interface Page1D extends IPage {
 	data: pageData;
 	metadata?: unknown;
 	dimensions: 1;
-	first_axis: pageData;
+	firstAxis: pageData;
 }
 
 export interface Page0D extends IPage {

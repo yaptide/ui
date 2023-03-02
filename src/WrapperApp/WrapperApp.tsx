@@ -3,7 +3,6 @@ import React, { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { JsRootService } from '../JsRoot/JsRootService';
 import { useAuth } from '../services/AuthService';
 import { useLoader } from '../services/DataLoaderService';
-import { FinalSimulationStatusData } from '../services/ShSimulatorService';
 import { useStore } from '../services/StoreService';
 import { Editor } from '../ThreeEditor/js/Editor';
 import ThreeEditor from '../ThreeEditor/ThreeEditor';
@@ -15,6 +14,7 @@ import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
 import { TabPanel } from './components/TabPanel';
 import YapDrawer from './components/YapDrawer/YapDrawer';
+import { JobStatusData, currentJobStatusData, StatusState } from '../services/ResponseTypes';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
@@ -24,7 +24,6 @@ function WrapperApp() {
 	const [tabsValue, setTabsValue] = useState('editor');
 
 	useEffect(() => {
-		console.log('WrapperApp: useEffect', editorProvider, editorRef, canLoadEditorData);
 		if (editorRef.current && canLoadEditorData) {
 			clearLoadedEditor();
 			setTabsValue('editor');
@@ -59,10 +58,12 @@ function WrapperApp() {
 	}, [isAuthorized, tabsValue]);
 
 	const onLoadExample = useCallback(
-		(example: FinalSimulationStatusData) => {
+		(example: JobStatusData) => {
 			if (!DEMO_MODE) return;
-			setResultsSimulationData(example);
-			setTabsValue('editor');
+			if (currentJobStatusData[StatusState.COMPLETED](example)) {
+				setResultsSimulationData(example);
+				setTabsValue('editor');
+			}
 		},
 		[setResultsSimulationData]
 	);
