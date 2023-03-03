@@ -3,11 +3,7 @@ import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
 import { Object3D } from 'three';
 import { isZone } from '../../../../util/CSG/CSGZone';
-import {
-	ColorInput,
-	ConditionalNumberPropertyField,
-	PropertyField
-} from '../fields/PropertyField';
+import { ColorInput, ConditionalNumberPropertyField, PropertyField } from '../fields/PropertyField';
 import { SetMaterialColorCommand } from '../../../../js/commands/SetMaterialColorCommand';
 import { isBeam } from '../../../../util/Beam';
 import { isBasicMesh } from '../../../../util/BasicMeshes';
@@ -36,7 +32,9 @@ export function ObjectMaterial(props: { editor: Editor; object: Object3D }) {
 	);
 
 	return (
-		<PropertiesCategory category='Material' visible={visibleFlag}>
+		<PropertiesCategory
+			category={isBeam(watchedObject) ? 'Visual properties' : 'Material'}
+			visible={visibleFlag}>
 			{visibleFlag && (
 				<>
 					{(isZone(watchedObject) || isWorldZone(watchedObject)) && (

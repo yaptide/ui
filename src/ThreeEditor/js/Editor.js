@@ -614,7 +614,6 @@ Editor.prototype = {
 
 		this.signals.sceneGraphChanged.dispatch();
 	},
-
 	toJSON() {
 		// scripts clean up
 

@@ -1,6 +1,5 @@
 import { Button } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { parseZone } from '../../../util/parseZone/parseZone';
 import { Editor } from '../../js/Editor';
 import * as CSG from '../../util/CSG/CSG';
 import BooleanAlgebraRow, { AlgebraRow } from './BooleanAlgebraRow';
@@ -69,8 +68,6 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 		setRows(prev => [...prev, { geometriesId: [], operations: [] }]);
 		zoneRef.current?.addUnion();
 	};
-
-	const handleParse = () => parseZone(rows, props!.zone!.simulationMaterial);
 
 	const removeRow = (removeId: number) => () => {
 		setRows(prev => {
@@ -146,9 +143,6 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 			})}
 			<Button className='addRowButton' onClick={addAlgebraRow}>
 				+
-			</Button>
-			<Button className='parseZoneButton' onClick={handleParse}>
-				Parse Zone
 			</Button>
 		</div>
 	);

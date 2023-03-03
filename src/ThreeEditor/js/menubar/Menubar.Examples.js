@@ -20,16 +20,20 @@ export function MenubarExamples(editor) {
 	options.setClass('options');
 	container.add(options);
 
+	/**
+	 * 
+	 * @param {import('../EditorJson').EditorJson} example 
+	 */
 	function loadExample(example) {
 		editor.clear();
-		editor.fromJSON(example.editor);
+		editor.fromJSON(example.inputJson);
 		editor.signals.exampleLoaded.dispatch(example);
 	}
 
 	// YAPTIDE examples
 	options.add(
 		...EXAMPLES.map(example =>
-			createOption('option', example.editor.project?.title ?? 'Example', () => {
+			createOption('option', example.inputJson.project?.title ?? 'Example', () => {
 				window.confirm('Any unsaved data will be lost. Are you sure?') && loadExample(example);
 			})
 		),

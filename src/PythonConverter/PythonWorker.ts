@@ -1,20 +1,19 @@
 /* eslint-disable no-restricted-globals */
 import * as Comlink from 'comlink';
-import { InputFiles } from '../services/ShSimulatorService';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
+import { InputFiles } from '../services/RequestTypes';
 
 // as for now there is no reasonable npm package for pyodide
 // CND method is suggested in https://pyodide.org/en/stable/usage/downloading-and-deploying.html
-importScripts("https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js");
+importScripts('https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js');
 
 export interface IPythonWorker {
 	initPyodide: (onReady: () => void) => void;
 	close: () => void;
-	runPython: <T>(string: string) => T
+	runPython: <T>(string: string) => T;
 	checkConverter: () => boolean;
 	convertJSON: (editorJson: EditorJson) => Promise<Map<keyof InputFiles, string>>;
 }
-
 
 const pythonConverterCode = `
 import os
@@ -40,7 +39,6 @@ checkIfConverterReady()
 class PythonWorkerBase implements IPythonWorker {
 	readonly isPythonWorker: true = true;
 	async initPyodide(onReady: () => void) {
-
 		const pyodide = await self.loadPyodide();
 		self.pyodide = pyodide;
 
@@ -51,9 +49,7 @@ class PythonWorkerBase implements IPythonWorker {
 		const converterFolder = process.env.PUBLIC_URL + '/libs/converter/dist/';
 		const jsonUrl = converterFolder + 'yaptide_converter.json';
 
-		const { fileName: converterFileName } = await (
-			await fetch(jsonUrl)
-		).json();
+		const { fileName: converterFileName } = await (await fetch(jsonUrl)).json();
 
 		if (!converterFileName) throw new Error('converterFileName is not defined');
 
@@ -68,7 +64,6 @@ print(micropip.list())
 	close() {
 		self.close();
 	}
-
 
 	runPython(string: string) {
 		return self.pyodide.runPython(string);

@@ -1,18 +1,23 @@
-import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createGenericContext } from '../util/GenericContext';
 import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
 import { BACKEND_URL, DEMO_MODE } from '../util/Config';
 import useInterval from 'use-interval';
-import { IResponseMsg } from './ResponseTypes';
+import {
+	ResponseAuthLogin,
+	Response,
+	ResponseAuthRefresh,
+	ResponseAuthStatus
+} from './ResponseTypes';
+import { snakeToCamelCase } from './TypeTransformUtil';
+import { RequestAuthLogin } from './RequestTypes';
 
 export interface AuthProps {
 	children: ReactNode;
 }
 
-interface AuthUser {
-	name: string;
-}
+type AuthUser = Pick<ResponseAuthStatus, 'username'>;
 
 const load = (key: string) => {
 	const item = localStorage.getItem(key);
@@ -29,6 +34,8 @@ const save = (key: string, value: unknown) => {
 	return localStorage.setItem(key, JSON.stringify(value));
 };
 
+const getRefreshDelay = (exp: number) => Math.max((exp - new Date().getTime()) / 2, 1000);
+
 enum StorageKey {
 	USER = 'editor.user'
 }
@@ -36,34 +43,25 @@ enum StorageKey {
 export interface IAuth {
 	user: AuthUser | null;
 	isAuthorized: boolean;
-	login: (username: string, password: string) => void;
+	login: (...args: RequestAuthLogin) => void;
 	logout: () => void;
 	refresh: () => void;
 	status: () => void;
 	authKy: KyInstance;
 }
 
-interface ResAuthLogin extends IResponseMsg {
-	access_exp: number;
-	refresh_exp: number;
-}
-
-interface ResAuthRefresh extends IResponseMsg {
-	access_exp: number;
-}
-interface ResAuthStatus extends IResponseMsg {
-	login_name: string;
-}
-
 const [useAuth, AuthContextProvider] = createGenericContext<IAuth>();
 
-const Auth = (props: AuthProps) => {
+const Auth = ({ children }: AuthProps) => {
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER));
 	const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
 
 	const kyRef = useRef<KyInstance>(
 		ky.create({
 			credentials: 'include',
+			prefixUrl: BACKEND_URL,
+			//overwrite default json parser to convert snake_case to camelCase
+			parseJson: (text: string) => snakeToCamelCase(JSON.parse(text), true),
 			hooks: {
 				afterResponse: [
 					async (_request, _options, response) => {
@@ -75,7 +73,10 @@ const Auth = (props: AuthProps) => {
 								break;
 						}
 						if (response?.status > 300) {
-							console.error(response.status, await response.json());
+							console.error(
+								response.status,
+								await response.json().then(r => r.message)
+							);
 						}
 					}
 				]
@@ -83,46 +84,51 @@ const Auth = (props: AuthProps) => {
 		})
 	);
 
-	useEffect(() => {
-		save(StorageKey.USER, user);
-	}, [user]);
-
 	const refresh = useCallback(() => {
 		if (DEMO_MODE) return;
 		return kyRef.current
-			.get(`${BACKEND_URL}/auth/refresh`)
-			.json()
-			.then((response: unknown) => {
-				const {
-					access_exp
-				} = response as ResAuthRefresh;
-
-				const refreshDelay = Math.max((access_exp - new Date().getTime()) / 2, 1000);
-
-				setRefreshInterval(refreshDelay);
-			})
-			.catch((_: HTTPError) => { });
+			.get(`auth/refresh`)
+			.json<ResponseAuthRefresh>()
+			.then(({ accessExp }) => setRefreshInterval(getRefreshDelay(accessExp)))
+			.catch((_: HTTPError) => {});
 	}, []);
 
 	const status = useCallback(() => {
+		//not used
 		if (DEMO_MODE) return;
 		return kyRef.current
-			.get(`${BACKEND_URL}/auth/status`)
-			.json()
-			.then(response => {
-				const {
-					login_name
-				} = response as ResAuthStatus;
-
-				setUser(() => {
-					const user: AuthUser = {
-						name: login_name
-					};
-					return user;
-				});
-			})
-			.catch((_: HTTPError) => { });
+			.get(`auth/status`)
+			.json<ResponseAuthStatus>()
+			.then(({ username }) => setUser({ username }))
+			.catch((_: HTTPError) => {});
 	}, []);
+
+	const login = useCallback((...[username, password]: RequestAuthLogin) => {
+		kyRef.current
+			.post(`auth/login`, {
+				json: { username, password }
+			})
+			.json<ResponseAuthLogin>()
+			.then(({ accessExp }) => {
+				setUser({ username });
+				setRefreshInterval(getRefreshDelay(accessExp));
+			})
+			.catch((_: HTTPError) => {});
+	}, []);
+
+	const logout = useCallback(() => {
+		kyRef.current
+			.delete(`auth/logout`)
+			.json<Response>()
+			.then(_response => setUser(null))
+			.catch((_: HTTPError) => {});
+	}, []);
+	const authKy = useMemo(() => kyRef.current, []);
+	const isAuthorized = useMemo(() => user !== null || DEMO_MODE, [user]);
+
+	useEffect(() => {
+		save(StorageKey.USER, user);
+	}, [user]);
 
 	useEffect(() => {
 		if (user !== null) refresh();
@@ -135,49 +141,20 @@ const Auth = (props: AuthProps) => {
 		user !== null ? refreshInterval : null
 	);
 
-	const login = (username: string, password: string) => {
-		kyRef.current
-			.post(`${BACKEND_URL}/auth/login`, {
-				json: {
-					login_name: username,
-					password
-				}
-			})
-			.json()
-			.then((response: unknown) => {
-				setUser({ name: username });
-				const {
-					access_exp
-				} = response as ResAuthLogin;
-
-				const refreshDelay = Math.max((access_exp - new Date().getTime()) / 2, 1000);
-
-				setRefreshInterval(refreshDelay);
-			})
-			.catch((_: HTTPError) => { });
-	};
-
-	const logout = () => {
-		kyRef.current
-			.delete(`${BACKEND_URL}/auth/logout`)
-			.json()
-			.then(() => {
-				setUser(null);
-			})
-			.catch((_: HTTPError) => { });
-	};
-
-	const value: IAuth = {
-		user,
-		isAuthorized: user !== null || DEMO_MODE,
-		login,
-		logout,
-		authKy: kyRef.current,
-		status,
-		refresh
-	};
-
-	return <AuthContextProvider value={value}>{props.children}</AuthContextProvider>;
+	return (
+		<AuthContextProvider
+			value={{
+				user,
+				isAuthorized,
+				login,
+				logout,
+				authKy,
+				status,
+				refresh
+			}}>
+			{children}
+		</AuthContextProvider>
+	);
 };
 
 export { useAuth, Auth };

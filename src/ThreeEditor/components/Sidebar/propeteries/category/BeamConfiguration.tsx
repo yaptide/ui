@@ -1,6 +1,7 @@
 import { Button, Divider, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { ChangeEvent } from 'react';
 import { Object3D } from 'three';
+import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { Editor } from '../../../../js/Editor';
 import { Beam, BEAM_SOURCE_TYPE, isBeam, SigmaType, SIGMA_TYPE } from '../../../../util/Beam';
 import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
@@ -14,7 +15,10 @@ import {
 } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
-function BeamDefinitionField(props: { beam: Beam }) {
+function BeamDefinitionField(props: {
+	beam: Beam;
+	onChange: (value: Beam['beamSourceFile']) => void;
+}) {
 	const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
 		if (!e.target.files) {
 			return;
@@ -30,7 +34,7 @@ function BeamDefinitionField(props: { beam: Beam }) {
 			}
 			const { result } = evt.target;
 			if (typeof result === 'string') {
-				props.beam.beamSourceFile = { name, value: result };
+				props.onChange({ name, value: result });
 			} else {
 				console.error('Invalid file type');
 			}
@@ -39,7 +43,7 @@ function BeamDefinitionField(props: { beam: Beam }) {
 	};
 
 	const clearFile = () => {
-		props.beam.beamSourceFile = { name: '', value: '' };
+		props.onChange({ name: '', value: '' });
 	};
 
 	return (
@@ -70,7 +74,7 @@ function BeamDefinitionField(props: { beam: Beam }) {
 	);
 }
 
-function BeamSigmaField(props: { beam: Beam }) {
+function BeamSigmaField(props: { beam: Beam; onChange: (value: Beam['sigma']) => void }) {
 	const configuration = {
 		[SIGMA_TYPE.Gaussian]: {
 			X: {
@@ -103,7 +107,7 @@ function BeamSigmaField(props: { beam: Beam }) {
 				label='Beam shape'
 				value={props.beam.sigma.type}
 				onChange={value =>
-					(props.beam.sigma = { ...props.beam.sigma, type: value as SigmaType })
+					props.onChange({ ...props.beam.sigma, type: value as SigmaType })
 				}
 				options={Object.keys(SIGMA_TYPE)}
 			/>
@@ -111,7 +115,7 @@ function BeamSigmaField(props: { beam: Beam }) {
 				<NumberPropertyField
 					label={selectedConfiguration.X.text}
 					value={props.beam.sigma.x}
-					onChange={value => (props.beam.sigma = { ...props.beam.sigma, x: value })}
+					onChange={value => props.onChange({ ...props.beam.sigma, x: value })}
 					min={0}
 					unit='cm'
 				/>
@@ -119,7 +123,7 @@ function BeamSigmaField(props: { beam: Beam }) {
 			<NumberPropertyField
 				label={selectedConfiguration.Y.text}
 				value={props.beam.sigma.y}
-				onChange={value => (props.beam.sigma = { ...props.beam.sigma, y: value })}
+				onChange={value => props.onChange({ ...props.beam.sigma, y: value })}
 				min={0}
 				unit='cm'
 			/>
@@ -132,6 +136,10 @@ function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object, true);
 
+	const setValueCommand = (value: any, key: string) => {
+		editor.execute(new SetValueCommand(editor, watchedObject.object, key, value));
+	};
+
 	return (
 		<>
 			<PropertyField label='Definition type'>
@@ -140,8 +148,8 @@ function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
 					size='small'
 					value={watchedObject.beamSourceType}
 					exclusive
-					onChange={(_e, value) => {
-						watchedObject.beamSourceType = value;
+					onChange={(_, v) => {
+						if (v) setValueCommand(v, 'beamSourceType');
 					}}>
 					<ToggleButton value={BEAM_SOURCE_TYPE.simple}>Simple</ToggleButton>
 					<ToggleButton value={BEAM_SOURCE_TYPE.file}>File</ToggleButton>
@@ -155,55 +163,55 @@ function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
 						min={1e-12}
 						unit={'MeV/nucl'}
 						value={watchedObject.energy}
-						onChange={v => {
-							watchedObject.energy = v;
-						}}
+						onChange={v => setValueCommand(v, 'energy')}
 					/>
 					<NumberPropertyField
 						label='Energy spread'
 						unit={watchedObject.energySpread < 0 ? 'Mev/c' : 'MeV/nucl'}
 						value={watchedObject.energySpread}
-						onChange={v => {
-							watchedObject.energySpread = v;
-						}}
+						onChange={v => setValueCommand(v, 'energySpread')}
 					/>
 					<NumberPropertyField
 						label='Energy lower cutoff'
 						unit={'MeV/nucl'}
 						value={watchedObject.energyLowCutoff}
-						onChange={v => {
-							watchedObject.energyLowCutoff = v;
-						}}
+						onChange={v => setValueCommand(v, 'energyLowCutoff')}
 					/>
 					<NumberPropertyField
 						label='Energy upper cutoff'
 						unit={'MeV/nucl'}
 						value={watchedObject.energyHighCutoff}
-						onChange={v => {
-							watchedObject.energyHighCutoff = v;
-						}}
+						onChange={v => setValueCommand(v, 'energyHighCutoff')}
 					/>
 					<PropertyField children={<Divider />} />
 					<Vector2PropertyField
 						label='Divergence XY'
 						value={watchedObject.divergence}
 						unit={'mrad'}
-						onChange={v => {
-							watchedObject.divergence = { ...watchedObject.divergence, ...v };
-						}}
+						onChange={v =>
+							setValueCommand({ ...watchedObject.divergence, ...v }, 'divergence')
+						}
 					/>
 
 					<NumberPropertyField
 						label='Divergence distance to focal point'
 						unit={editor.unit.name}
 						value={watchedObject.divergence.distanceToFocal}
-						onChange={v => {
-							watchedObject.divergence.distanceToFocal = v;
-						}}
+						onChange={v =>
+							setValueCommand(
+								{ ...watchedObject.divergence, distanceToFocal: v },
+								'divergence'
+							)
+						}
 					/>
 					<PropertyField children={<Divider />} />
 
-					<BeamSigmaField beam={watchedObject} />
+					<BeamSigmaField
+						beam={watchedObject}
+						onChange={v => {
+							setValueCommand(v, 'sigma');
+						}}
+					/>
 				</>
 			)}
 
@@ -213,18 +221,15 @@ function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
 				precision={0}
 				step={1}
 				value={watchedObject.numberOfParticles}
-				onChange={v => {
-					watchedObject.numberOfParticles = v;
-				}}
+				onChange={v => setValueCommand(v, 'numberOfParticles')}
 			/>
 			<PropertyField label='Particle type'>
 				<ParticleSelect
 					particles={PARTICLE_TYPES as unknown as IParticleType[]}
 					value={watchedObject.particleData.id}
-					onChange={(_, value) => {
-						watchedObject.particleData.id = value;
-						watchedObject.debouncedDispatchChanged();
-					}}
+					onChange={(_, v) =>
+						setValueCommand({ ...watchedObject.particleData, id: v }, 'particleData')
+					}
 				/>
 			</PropertyField>
 
@@ -235,29 +240,32 @@ function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
 						precision={0}
 						step={1}
 						value={watchedObject.particleData.z}
-						onChange={v => {
-							watchedObject.particleData.z = v;
-							watchedObject.debouncedDispatchChanged();
-						}}
+						onChange={v =>
+							setValueCommand({ ...watchedObject.particleData, z: v }, 'particleData')
+						}
 					/>
 					<NumberPropertyField
 						label='nucleons (A)'
 						precision={0}
 						step={1}
 						value={watchedObject.particleData.a}
-						onChange={v => {
-							watchedObject.particleData.a = v;
-							watchedObject.debouncedDispatchChanged();
-						}}
+						onChange={v =>
+							setValueCommand({ ...watchedObject.particleData, a: v }, 'particleData')
+						}
 					/>
 				</>
 			)}
 
-			{props.object.beamSourceType === BEAM_SOURCE_TYPE.file && (
+			{watchedObject.beamSourceType === BEAM_SOURCE_TYPE.file && (
 				<>
 					<PropertyField children={<Divider />} />
 
-					<BeamDefinitionField beam={watchedObject} />
+					<BeamDefinitionField
+						beam={watchedObject}
+						onChange={v => {
+							setValueCommand(v, 'beamSourceFile');
+						}}
+					/>
 				</>
 			)}
 		</>
