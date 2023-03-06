@@ -169,7 +169,7 @@
 							]
 						},
 						"dimensions": 1,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -397,7 +397,7 @@
 							]
 						},
 						"dimensions": 1,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -644,7 +644,7 @@
 							]
 						},
 						"dimensions": 1,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -897,7 +897,7 @@
 							]
 						},
 						"dimensions": 1,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -10077,7 +10077,7 @@
 							]
 						},
 						"dimensions": 2,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Y)",
 							"unit": "cm",
 							"values": [
@@ -10115,7 +10115,7 @@
 							"page_unit_ids": "[40 40 40]",
 							"unit": "MeV/g"
 						},
-						"second_axis": {
+						"secondAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -19246,7 +19246,7 @@
 							]
 						},
 						"dimensions": 2,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Y)",
 							"unit": "cm",
 							"values": [
@@ -19285,7 +19285,7 @@
 							"page_unit_ids": "[14 14 14]",
 							"unit": "/cm^2"
 						},
-						"second_axis": {
+						"secondAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -28311,7 +28311,7 @@
 							]
 						},
 						"dimensions": 2,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Y)",
 							"unit": "cm",
 							"values": [
@@ -28350,7 +28350,7 @@
 							"page_unit_ids": "[14 14 14]",
 							"unit": "/cm^2"
 						},
-						"second_axis": {
+						"secondAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -28751,7 +28751,7 @@
 							]
 						},
 						"dimensions": 1,
-						"first_axis": {
+						"firstAxis": {
 							"name": "",
 							"unit": "/cm^2/MeV",
 							"values": [
@@ -29282,7 +29282,7 @@
 							]
 						},
 						"dimensions": 1,
-						"first_axis": {
+						"firstAxis": {
 							"name": "",
 							"unit": "/cm^2/MeV",
 							"values": [
@@ -29694,7 +29694,7 @@
 				"349d8999-11d2-40f8-b99f-b6dcc0f2c844": 1
 			}
 		},
-		"metadata": { "generator": "Editor.toJSON", "type": "Editor", "version": 0.3 },
+		"metadata": { "generator": "Editor.toJSON", "type": "Editor", "version": 0.4 },
 		"project": {
 			"description": "TODO",
 			"physicallyCorrectLights": false,
