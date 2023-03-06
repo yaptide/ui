@@ -7,7 +7,7 @@
 		"@emotion/css": "^11.10.6",
 		"@emotion/react": "^11.10.6",
 		"@emotion/styled": "^11.10.6",
-		"@minoru/react-dnd-treeview": "^1.6.1",
+		"@minoru/react-dnd-treeview": "^3.4.1",
 		"@mui/icons-material": "^5.11.11",
 		"@mui/lab": "^5.0.0-alpha.121",
 		"@mui/material": "^5.11.10",
