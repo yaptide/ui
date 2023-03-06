@@ -104,7 +104,7 @@ function ThreeEditor(props: ThreeEditorProps) {
 					)}
 				</div>
 			</Box>
-			{editor && (
+			{editor && props.focus && (
 				<AppBar
 					className='ThreeEditorSidebar'
 					position='static'
@@ -126,4 +126,3 @@ function ThreeEditor(props: ThreeEditorProps) {
 }
 
 export default ThreeEditor;
-

@@ -149,7 +149,7 @@ function ResultsPanel() {
 								{estimatorsResults.map((estimator, idx) => {
 									return (
 										<TabPanel
-											key={`tab_panel_${estimator.name}`}
+											key={`tab_panel_${estimator.name}_${idx}`}
 											value={tabsValue}
 											index={idx}
 											persistentIfVisited>
