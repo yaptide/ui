@@ -3582,7 +3582,7 @@
 							]
 						},
 						"dimensions": 2,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Y)",
 							"unit": "cm",
 							"values": [
@@ -3691,7 +3691,7 @@
 							"page_unit_ids": "[40 40 40]",
 							"unit": "MeV/g"
 						},
-						"second_axis": {
+						"secondAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -7301,7 +7301,7 @@
 							]
 						},
 						"dimensions": 2,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Y)",
 							"unit": "cm",
 							"values": [
@@ -7410,7 +7410,7 @@
 							"page_unit_ids": "[40 40 40]",
 							"unit": "MeV/g"
 						},
-						"second_axis": {
+						"secondAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -10996,7 +10996,7 @@
 							]
 						},
 						"dimensions": 2,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Y)",
 							"unit": "cm",
 							"values": [
@@ -11106,7 +11106,7 @@
 							"page_unit_ids": "[70 70 70]",
 							"unit": "MeV"
 						},
-						"second_axis": {
+						"secondAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -11328,7 +11328,7 @@
 				"edebc384-945d-499d-86a1-a9ba93cea36e": 1
 			}
 		},
-		"metadata": { "generator": "Editor.toJSON", "type": "Editor", "version": 0.3 },
+		"metadata": { "generator": "Editor.toJSON", "type": "Editor", "version": 0.4 },
 		"project": {
 			"description": "",
 			"physicallyCorrectLights": false,

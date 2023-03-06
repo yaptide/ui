@@ -178,7 +178,7 @@
 							]
 						},
 						"dimensions": 1,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -525,7 +525,7 @@
 							]
 						},
 						"dimensions": 1,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -825,7 +825,7 @@
 							]
 						},
 						"dimensions": 1,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -1120,7 +1120,7 @@
 							]
 						},
 						"dimensions": 1,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -1472,7 +1472,7 @@
 							]
 						},
 						"dimensions": 1,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -10813,7 +10813,7 @@
 							]
 						},
 						"dimensions": 2,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Y)",
 							"unit": "cm",
 							"values": [
@@ -10851,7 +10851,7 @@
 							"page_unit_ids": "[40 40 40]",
 							"unit": "MeV/g"
 						},
-						"second_axis": {
+						"secondAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -22532,7 +22532,7 @@
 							]
 						},
 						"dimensions": 2,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Y)",
 							"unit": "cm",
 							"values": [
@@ -22570,7 +22570,7 @@
 							"page_unit_ids": "[41 41 41]",
 							"unit": "Gy"
 						},
-						"second_axis": {
+						"secondAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -31993,7 +31993,7 @@
 							]
 						},
 						"dimensions": 2,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Y)",
 							"unit": "cm",
 							"values": [
@@ -32032,7 +32032,7 @@
 							"page_unit_ids": "[14 14 14]",
 							"unit": "/cm^2"
 						},
-						"second_axis": {
+						"secondAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -41385,7 +41385,7 @@
 							]
 						},
 						"dimensions": 2,
-						"first_axis": {
+						"firstAxis": {
 							"name": "Position (Y)",
 							"unit": "cm",
 							"values": [
@@ -41424,7 +41424,7 @@
 							"page_unit_ids": "[14 14 14]",
 							"unit": "/cm^2"
 						},
-						"second_axis": {
+						"secondAxis": {
 							"name": "Position (Z)",
 							"unit": "cm",
 							"values": [
@@ -42032,7 +42032,7 @@
 							]
 						},
 						"dimensions": 1,
-						"first_axis": {
+						"firstAxis": {
 							"name": "",
 							"unit": "/cm^2/MeV",
 							"values": [
@@ -42624,7 +42624,7 @@
 							]
 						},
 						"dimensions": 1,
-						"first_axis": {
+						"firstAxis": {
 							"name": "",
 							"unit": "/cm^2/MeV",
 							"values": [
@@ -43005,7 +43005,7 @@
 				"cd7c2eb0-e91f-4144-b4eb-536e4626cc09": 1
 			}
 		},
-		"metadata": { "generator": "Editor.toJSON", "type": "Editor", "version": 0.3 },
+		"metadata": { "generator": "Editor.toJSON", "type": "Editor", "version": 0.4 },
 		"project": {
 			"description": "Proton pencil beam with initial kinetic energy 150 MeV and 1% energy spread.\nThe target is a cylindrical water phantom with a radius of 10 cm and a length of 20 cm.\n\nWe score dose from all particles and fluence according to primary particles (protons), secondary protons, and all protons.",
 			"physicallyCorrectLights": false,
