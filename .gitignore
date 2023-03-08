@@ -257,3 +257,4 @@ src/util/identify/deployInfo.json
 build/
 
 venv/
+.vscode/settings.json

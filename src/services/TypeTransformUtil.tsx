@@ -67,24 +67,7 @@ export const snakeToCamelCase = <T extends unknown>(
 	return obj as SnakeToCamelCaseObject<T>;
 };
 
-export type MergeObjects<T, U> = {
-	[K in keyof T | keyof U]: (T & U)[K] extends never
-		? K extends keyof T
-			? K extends keyof U
-				? T[K] | U[K]
-				: T[K]
-			: K extends keyof U
-			? U[K]
-			: never
-		: (T & U)[K];
-};
-
-export type MergeAllObjects<T extends {}[]> = T extends [
-	infer U extends {},
-	...infer V extends {}[]
-]
-	? MergeObjects<U, MergeAllObjects<V>>
-	: {};
+export type IntersectionToObject<T> = Omit<T, never>;
 
 export type Concat<T extends unknown[][]> = T extends [
 	infer H extends unknown[],
@@ -97,8 +80,15 @@ export type TypeIdentifiedByKey<K extends PropertyKey, V, T extends {}> = {
 	[P in K | keyof T]: P extends K ? V : (T & Record<K, never>)[P];
 };
 
-export type DataWithStatus<T, K extends keyof T, V, U = {}> = V extends null
-	? MergeObjects<Partial<T>, U>
-	: MergeObjects<Extract<T, { [X in K]: V }>, U>;
+export type DataWithStatus<T, K extends keyof T, V, U = {}, I = Partial<T>> = V extends null
+	? keyof U extends never
+		? I
+		: IntersectionToObject<I & U>
+	: IntersectionToObject<Extract<T, { [X in K]: V }> & U>;
 
 export type LookUp<U, K extends PropertyKey, V = unknown> = U extends { [X in K]: V } ? U : never;
+
+export type ValueOrNever<
+	T extends Record<PropertyKey, unknown>,
+	K extends PropertyKey
+> = K extends keyof T ? T[K] : never;

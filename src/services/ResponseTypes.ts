@@ -1,6 +1,11 @@
 import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { DataWithStatus, LookUp, MergeObjects, TypeIdentifiedByKey } from './TypeTransformUtil';
+import {
+	DataWithStatus,
+	IntersectionToObject,
+	LookUp,
+	TypeIdentifiedByKey
+} from './TypeTransformUtil';
 
 export enum StatusState {
 	PENDING = 'PENDING',
@@ -14,12 +19,11 @@ export type Response = {
 	message: string;
 };
 
-type AuthData = MergeObjects<
+type AuthData = IntersectionToObject<
 	{
 		accessExp: number;
 		refreshExp?: number;
-	},
-	Response
+	} & Response
 >;
 
 type InputFiles = {
@@ -35,25 +39,22 @@ export type TaskTime = {
 	seconds: string;
 };
 
-type AuthStatus = MergeObjects<
+type AuthStatus = IntersectionToObject<
 	{
 		username: string;
-	},
-	Response
+	} & Response
 >;
 
-type DataConverted = MergeObjects<
+type DataConverted = IntersectionToObject<
 	{
 		inputFiles: InputFiles;
-	},
-	Response
+	} & Response
 >;
 
-type JobCreated = MergeObjects<
+type JobCreated = IntersectionToObject<
 	{
 		jobId: string;
-	},
-	Response
+	} & Response
 >;
 
 type MetaKey = 'server' | 'platform' | 'input' | 'simType';
@@ -67,13 +68,12 @@ export type SimulationInfo = {
 	localData?: boolean;
 };
 
-export type SimulationsPage = MergeObjects<
+export type SimulationsPage = IntersectionToObject<
 	{
 		pageCount: number;
 		simulationsCount: number;
 		simulations: Array<SimulationInfo>;
-	},
-	Response
+	} & Response
 >;
 
 type TaskStatusType<T extends StatusState, U extends {}> = TypeIdentifiedByKey<
@@ -101,6 +101,27 @@ export type TaskAllStatuses =
 	| TaskStatusFailed
 	| TaskStatusRunning;
 
+type UnionToIntersection<U> = (U extends U ? (x: U) => unknown : never) extends (
+	x: infer R
+) => unknown
+	? R
+	: never;
+export type ObjUnionToKeyUnion<T extends {}, Obj extends {} = {}> = UnionToIntersection<
+	T extends any ? () => T : never
+> extends () => infer ReturnType
+	? ObjUnionToKeyUnion<
+			Exclude<T, ReturnType>,
+			Omit<
+				Omit<Obj, keyof ReturnType> & {
+					[K in keyof ReturnType]: (K extends keyof Obj ? Obj[K] : never) | ReturnType[K];
+				},
+				never
+			>
+	  >
+	: Omit<Obj, never>;
+
+type TaskUnknownStatus = Partial<ObjUnionToKeyUnion<TaskAllStatuses>>;
+
 type JobStatusType<T extends StatusState, U extends Object> = TypeIdentifiedByKey<
 	'jobState',
 	T,
@@ -115,13 +136,13 @@ type JobStatusCompleted = JobStatusType<
 		result: {
 			estimators: Estimator[];
 		};
-		jobTasksStatus: Array<TaskAllStatuses>;
+		jobTasksStatus: Array<TaskUnknownStatus>;
 	}
 >;
 
 type JobStatusRunning = JobStatusType<
 	StatusState.RUNNING,
-	{ jobTasksStatus: Array<TaskAllStatuses> }
+	{ jobTasksStatus: Array<TaskUnknownStatus> }
 >;
 
 type JobStatusPending = JobStatusType<StatusState.PENDING, {}>;
@@ -135,17 +156,28 @@ type JobStatusFailed = JobStatusType<
 	}
 >;
 
-type JobAllStatuses = JobStatusCompleted | JobStatusRunning | JobStatusPending | JobStatusFailed;
+export type JobAllStatuses =
+	| JobStatusCompleted
+	| JobStatusRunning
+	| JobStatusPending
+	| JobStatusFailed;
 
-type ResponseJobRequestFailure = MergeObjects<
+type JobUnknownStatus = Partial<ObjUnionToKeyUnion<JobAllStatuses>>;
+
+type ResponseJobRequestFailure = IntersectionToObject<
 	{
 		exitCode: number;
 		output: string;
-	},
-	Response
+	} & Response
 >;
 
-export type JobStatusData<T = null> = DataWithStatus<JobAllStatuses, 'jobState', T, SimulationInfo>;
+export type JobStatusData<T = null> = DataWithStatus<
+	JobAllStatuses,
+	'jobState',
+	T,
+	SimulationInfo,
+	JobUnknownStatus
+>;
 
 function jobStatusGuard<T extends StatusState>(data: unknown, value: T): data is JobStatusData<T> {
 	return (data as JobStatusData<T>).jobState === value;
@@ -168,7 +200,13 @@ export const currentJobStatusData = {
 		(data as LookUp<JobAllStatuses, T>)[property] !== undefined
 };
 
-export type TaskStatusData<T = null> = DataWithStatus<TaskAllStatuses, 'taskState', T>;
+export type TaskStatusData<T = null> = DataWithStatus<
+	TaskAllStatuses,
+	'taskState',
+	T,
+	{},
+	TaskUnknownStatus
+>;
 
 function taskStatusGuard<T extends StatusState>(
 	data: unknown,
