@@ -4,9 +4,11 @@ import {
 	DataWithStatus,
 	IntersectionToObject,
 	LookUp,
+	ObjUnionToKeyUnion,
 	TypeIdentifiedByKey
 } from './TypeTransformUtil';
 
+/* ------------Utility types------------ */
 export enum StatusState {
 	PENDING = 'PENDING',
 	RUNNING = 'RUNNING',
@@ -19,14 +21,7 @@ export type Response = {
 	message: string;
 };
 
-type AuthData = IntersectionToObject<
-	{
-		accessExp: number;
-		refreshExp?: number;
-	} & Response
->;
-
-type InputFiles = {
+export type InputFiles = {
 	'beam.dat': string;
 	'detect.dat': string;
 	'geo.dat': string;
@@ -38,6 +33,25 @@ export type TaskTime = {
 	minutes: string;
 	seconds: string;
 };
+
+export type MetaKey = 'server' | 'platform' | 'input' | 'simType';
+
+export type SimulationInfo = {
+	jobId: string;
+	title: string;
+	metadata: Record<MetaKey, string>;
+	startTime: Date;
+	endTime?: Date;
+	localData?: boolean;
+};
+/* ------------------------------------ */
+
+type AuthData = IntersectionToObject<
+	{
+		accessExp: number;
+		refreshExp?: number;
+	} & Response
+>;
 
 type AuthStatus = IntersectionToObject<
 	{
@@ -57,18 +71,7 @@ type JobCreated = IntersectionToObject<
 	} & Response
 >;
 
-type MetaKey = 'server' | 'platform' | 'input' | 'simType';
-
-export type SimulationInfo = {
-	jobId: string;
-	title: string;
-	metadata: Record<MetaKey, string>;
-	startTime: Date;
-	endTime?: Date;
-	localData?: boolean;
-};
-
-export type SimulationsPage = IntersectionToObject<
+type SimulationsPage = IntersectionToObject<
 	{
 		pageCount: number;
 		simulationsCount: number;
@@ -76,6 +79,8 @@ export type SimulationsPage = IntersectionToObject<
 	} & Response
 >;
 
+/* ------------------------------------ */
+// Types defining all posible types of task status data
 type TaskStatusType<T extends StatusState, U extends {}> = TypeIdentifiedByKey<
 	'taskState',
 	T,
@@ -87,41 +92,25 @@ type TaskStatusType<T extends StatusState, U extends {}> = TypeIdentifiedByKey<
 	}
 >;
 
-export type TaskSatusCompleted = TaskStatusType<StatusState.COMPLETED, { runTime: TaskTime }>;
+type TaskSatusCompleted = TaskStatusType<StatusState.COMPLETED, { runTime: TaskTime }>;
 
-export type TaskStatusPending = TaskStatusType<StatusState.PENDING, {}>;
+type TaskStatusPending = TaskStatusType<StatusState.PENDING, {}>;
 
-export type TaskStatusFailed = TaskStatusType<StatusState.FAILED, {}>;
+type TaskStatusFailed = TaskStatusType<StatusState.FAILED, {}>;
 
-export type TaskStatusRunning = TaskStatusType<StatusState.RUNNING, { estimatedTime?: TaskTime }>;
+type TaskStatusRunning = TaskStatusType<StatusState.RUNNING, { estimatedTime?: TaskTime }>;
 
-export type TaskAllStatuses =
+type TaskAllStatuses =
 	| TaskSatusCompleted
 	| TaskStatusPending
 	| TaskStatusFailed
 	| TaskStatusRunning;
 
-type UnionToIntersection<U> = (U extends U ? (x: U) => unknown : never) extends (
-	x: infer R
-) => unknown
-	? R
-	: never;
-export type ObjUnionToKeyUnion<T extends {}, Obj extends {} = {}> = UnionToIntersection<
-	T extends any ? () => T : never
-> extends () => infer ReturnType
-	? ObjUnionToKeyUnion<
-			Exclude<T, ReturnType>,
-			Omit<
-				Omit<Obj, keyof ReturnType> & {
-					[K in keyof ReturnType]: (K extends keyof Obj ? Obj[K] : never) | ReturnType[K];
-				},
-				never
-			>
-	  >
-	: Omit<Obj, never>;
-
 type TaskUnknownStatus = Partial<ObjUnionToKeyUnion<TaskAllStatuses>>;
+/* ------------------------------------ */
 
+/* ------------------------------------ */
+// Types defining all posible types of job status data
 type JobStatusType<T extends StatusState, U extends Object> = TypeIdentifiedByKey<
 	'jobState',
 	T,
@@ -156,11 +145,7 @@ type JobStatusFailed = JobStatusType<
 	}
 >;
 
-export type JobAllStatuses =
-	| JobStatusCompleted
-	| JobStatusRunning
-	| JobStatusPending
-	| JobStatusFailed;
+type JobAllStatuses = JobStatusCompleted | JobStatusRunning | JobStatusPending | JobStatusFailed;
 
 type JobUnknownStatus = Partial<ObjUnionToKeyUnion<JobAllStatuses>>;
 
@@ -170,18 +155,37 @@ type ResponseJobRequestFailure = IntersectionToObject<
 		output: string;
 	} & Response
 >;
+/* ------------------------------------ */
 
-export type JobStatusData<T = null> = DataWithStatus<
-	JobAllStatuses,
-	'jobState',
-	T,
-	SimulationInfo,
-	JobUnknownStatus
->;
+function taskStatusGuard<T extends StatusState>(
+	data: unknown,
+	value: T
+): data is TaskStatusData<T> {
+	return (data as TaskStatusData<T>).taskState === value;
+}
 
 function jobStatusGuard<T extends StatusState>(data: unknown, value: T): data is JobStatusData<T> {
 	return (data as JobStatusData<T>).jobState === value;
 }
+
+/* ------------------------------------ */
+// Util maps to check if data is of specific status type
+export const currentTaskStatusData = {
+	[StatusState.COMPLETED]: (data: unknown): data is TaskStatusData<StatusState.COMPLETED> =>
+		taskStatusGuard(data, StatusState.COMPLETED),
+	[StatusState.RUNNING]: (data: unknown): data is TaskStatusData<StatusState.RUNNING> =>
+		taskStatusGuard(data, StatusState.RUNNING),
+	[StatusState.PENDING]: (data: unknown): data is TaskStatusData<StatusState.PENDING> =>
+		taskStatusGuard(data, StatusState.PENDING),
+	[StatusState.FAILED]: (data: unknown): data is TaskStatusData<StatusState.FAILED> =>
+		taskStatusGuard(data, StatusState.FAILED),
+	// eslint-disable-next-line no-useless-computed-key
+	['hasSpecificProperty']: <T extends string>(
+		data: unknown,
+		property: T
+	): data is LookUp<TaskAllStatuses, T> =>
+		(data as LookUp<TaskAllStatuses, T>)[property] !== undefined
+};
 
 export const currentJobStatusData = {
 	[StatusState.COMPLETED]: (data: unknown): data is JobStatusData<StatusState.COMPLETED> =>
@@ -199,7 +203,10 @@ export const currentJobStatusData = {
 	): data is LookUp<JobAllStatuses, T> =>
 		(data as LookUp<JobAllStatuses, T>)[property] !== undefined
 };
+/* ------------------------------------ */
 
+/* ------------------------------------ */
+// Types for responses
 export type TaskStatusData<T = null> = DataWithStatus<
 	TaskAllStatuses,
 	'taskState',
@@ -208,29 +215,13 @@ export type TaskStatusData<T = null> = DataWithStatus<
 	TaskUnknownStatus
 >;
 
-function taskStatusGuard<T extends StatusState>(
-	data: unknown,
-	value: T
-): data is TaskStatusData<T> {
-	return (data as TaskStatusData<T>).taskState === value;
-}
-
-export const currentTaskStatusData = {
-	[StatusState.COMPLETED]: (data: unknown): data is TaskStatusData<StatusState.COMPLETED> =>
-		taskStatusGuard(data, StatusState.COMPLETED),
-	[StatusState.RUNNING]: (data: unknown): data is TaskStatusData<StatusState.RUNNING> =>
-		taskStatusGuard(data, StatusState.RUNNING),
-	[StatusState.PENDING]: (data: unknown): data is TaskStatusData<StatusState.PENDING> =>
-		taskStatusGuard(data, StatusState.PENDING),
-	[StatusState.FAILED]: (data: unknown): data is TaskStatusData<StatusState.FAILED> =>
-		taskStatusGuard(data, StatusState.FAILED),
-	// eslint-disable-next-line no-useless-computed-key
-	['hasSpecificProperty']: <T extends string>(
-		data: unknown,
-		property: T
-	): data is LookUp<TaskAllStatuses, T> =>
-		(data as LookUp<TaskAllStatuses, T>)[property] !== undefined
-};
+export type JobStatusData<T = null> = DataWithStatus<
+	JobAllStatuses,
+	'jobState',
+	T,
+	SimulationInfo,
+	JobUnknownStatus
+>;
 
 export type ResponseAuthStatus = AuthStatus;
 

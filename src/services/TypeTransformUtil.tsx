@@ -1,17 +1,21 @@
+// Transform string key from camelCase to snake_case
 type CamelToSnakeCase<S extends string> = S extends `${infer T}${infer U}`
 	? `${T extends Uppercase<T> ? '_' : ''}${Lowercase<T>}${CamelToSnakeCase<U>}`
 	: S;
 
+// Transform string key from snake_case to camelCase
 type SnakeToCamelCase<S extends string> = S extends `${infer T}_${infer U}`
 	? `${T}${Capitalize<SnakeToCamelCase<U>>}`
 	: S;
 
+// Map of transformation functions
 type TransformerMap<A extends string = never> = {
 	Snake: CamelToSnakeCase<A>;
 	Camel: SnakeToCamelCase<A>;
 };
 
-type TransformCase<T, M extends keyof TransformerMap> = T extends string
+// Parametrized type for transforming keys of an object
+type TransformCase<T, M extends keyof TransformerMap = keyof TransformerMap> = T extends string
 	? TransformerMap<T>[M]
 	: T extends Array<unknown>
 	? Array<TransformCase<T[number], M>>
@@ -19,14 +23,15 @@ type TransformCase<T, M extends keyof TransformerMap> = T extends string
 	? { [K in keyof T as TransformCase<K, M>]: TransformCase<T[K], M> }
 	: T;
 
+// Generalized types for transforming keys of an object
 export type CamelToSnakeCaseObject<T> = TransformCase<T, 'Snake'>;
-
 export type SnakeToCamelCaseObject<T> = TransformCase<T, 'Camel'>;
 
 // Example usage:
 // type _ = CamelToSnakeCaseObject<{ someProperty: string; anotherProperty: number }>;
 // Result: { some_property: string; another_property: number }
 
+// Utility functions for transforming keys of an object
 const camelize = <T extends string>(str: T): SnakeToCamelCase<T> =>
 	str.replace(/_([a-z])/g, (_, char) => char.toUpperCase()) as SnakeToCamelCase<T>;
 
@@ -67,28 +72,50 @@ export const snakeToCamelCase = <T extends unknown>(
 	return obj as SnakeToCamelCaseObject<T>;
 };
 
+// Merge intersection of two object types into one object type
 export type IntersectionToObject<T> = Omit<T, never>;
 
-export type Concat<T extends unknown[][]> = T extends [
+// Flatten array of arrays type
+export type Flatten<T extends unknown[][]> = T extends [
 	infer H extends unknown[],
 	...infer R extends unknown[][]
 ]
-	? [...H, ...Concat<R>]
+	? [...H, ...Flatten<R>]
 	: [];
 
+// Parametrized object type with required key K of value type V
 export type TypeIdentifiedByKey<K extends PropertyKey, V, T extends {}> = {
 	[P in K | keyof T]: P extends K ? V : (T & Record<K, never>)[P];
 };
 
+// Type of object union type with required key K of value type V
+export type LookUp<U, K extends PropertyKey, V = unknown> = Extract<U, { [X in K]: V }>;
+
+// Parametrized object union type with Generalized type T, wanted key K and value type V and additional static object intersection U
 export type DataWithStatus<T, K extends keyof T, V, U = {}, I = Partial<T>> = V extends null
 	? keyof U extends never
 		? I
 		: IntersectionToObject<I & U>
-	: IntersectionToObject<Extract<T, { [X in K]: V }> & U>;
+	: IntersectionToObject<LookUp<T, K, V> & U>;
 
-export type LookUp<U, K extends PropertyKey, V = unknown> = U extends { [X in K]: V } ? U : never;
+// Type transformation from union to intersection ex: {a: string} | {b: number} => {a: string, b: number}
+type UnionToIntersection<U> = (U extends U ? (x: U) => unknown : never) extends (
+	x: infer R
+) => unknown
+	? R
+	: never;
 
-export type ValueOrNever<
-	T extends Record<PropertyKey, unknown>,
-	K extends PropertyKey
-> = K extends keyof T ? T[K] : never;
+// Specific type transformation for object where shared keys are unioned ex: {a: string, b: number} | {a: number} => {a: string | number, b: number}
+export type ObjUnionToKeyUnion<T extends {}, Obj extends {} = {}> = UnionToIntersection<
+	T extends any ? () => T : never
+> extends () => infer ReturnType
+	? ObjUnionToKeyUnion<
+			Exclude<T, ReturnType>,
+			Omit<
+				Omit<Obj, keyof ReturnType> & {
+					[K in keyof ReturnType]: (K extends keyof Obj ? Obj[K] : never) | ReturnType[K];
+				},
+				never
+			>
+	  >
+	: Omit<Obj, never>;

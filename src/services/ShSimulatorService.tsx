@@ -24,7 +24,6 @@ import {
 	ResponseGetPageContents,
 	ResponsePostJob,
 	ResponseShConvert,
-	SimulationsPage,
 	StatusState,
 	currentJobStatusData
 } from './ResponseTypes';
@@ -39,7 +38,7 @@ export interface IShSimulation {
 	convertToInputFiles: (...args: RequestShConvert) => Promise<ResponseShConvert>;
 	getHelloWorld: (...args: RequestParam) => Promise<unknown>;
 	getJobStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
-	getPageContents: (...args: RequestGetPageContents) => Promise<SimulationsPage>;
+	getPageContents: (...args: RequestGetPageContents) => Promise<ResponseGetPageContents>;
 	getPageStatus: (...args: RequestGetPageStatus) => Promise<JobStatusData[]>;
 }
 
@@ -68,9 +67,7 @@ const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]
 	return estimators;
 };
 
-export const recreateRefsInResults = (
-	results: JobStatusData<StatusState.COMPLETED | StatusState.LOCAL>
-) => {
+export const recreateRefsInResults = (results: JobStatusData<StatusState.COMPLETED>) => {
 	const { result, inputJson } = results;
 
 	if (!inputJson) throw new Error('No editor data');
