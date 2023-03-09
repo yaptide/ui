@@ -65,6 +65,7 @@ const Auth = ({ children }: AuthProps) => {
 		ky.create({
 			credentials: 'include',
 			prefixUrl: BACKEND_URL,
+			retry: 0,
 			//overwrite default json parser to convert snake_case to camelCase
 			parseJson: (text: string) => snakeToCamelCase(JSON.parse(text), true),
 			hooks: {
