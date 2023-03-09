@@ -1,7 +1,8 @@
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { JobStatusData, SimulationInfo } from './ResponseTypes';
-import { Concat } from './TypeTransformUtil';
+import { Flatten } from './TypeTransformUtil';
 
+/* ------------Utility types------------ */
 export enum OrderType {
 	ASCEND = 'ascend',
 	DESCEND = 'descend'
@@ -20,7 +21,7 @@ export enum OrderBy {
 }
 
 export type RequestParam = [signal?: AbortSignal];
-
+/* ------------------------------------ */
 type InputDataParam = [
 	simData: EditorJson | { inputFiles: InputFiles },
 	ntasks?: number,
@@ -46,24 +47,30 @@ type SimInfoArrayParam = [infoList: Array<SimulationInfo>];
 
 type InputConvertParam = [simData: EditorJson];
 
-// export type RequestAuthStatus = AuthStatus;
-
-// export type RequestAuthRefresh = AuthData;
-
+/* ------------------------------------ */
+// Types for request functions
 export type RequestAuthLogin = LoginParams;
 
-export type RequestShConvert = Concat<[InputConvertParam, RequestParam]>;
+export type RequestAuthLogout = [];
 
-export type RequestPostJob = Concat<[InputDataParam, RequestParam]>;
+export type RequestAuthRefresh = [];
+
+export type RequestAuthStatus = [];
+
+export type RequestShConvert = Flatten<[InputConvertParam, RequestParam]>;
+
+export type RequestPostJob = Flatten<[InputDataParam, RequestParam]>;
 
 export const isEditorJson = (data: any): data is EditorJson => {
 	return data && data.metadata && data.metadata.title;
 };
 
-export type RequestCancelJob = Concat<[SimInfoParam, RequestParam]>;
+export type RequestCancelJob = Flatten<[SimInfoParam, RequestParam]>;
 
-export type RequestGetPageContents = Concat<[PageParams, RequestParam]>;
+export type RequestGetPageContents = Flatten<[PageParams, RequestParam]>;
 
-export type RequestGetPageStatus = Concat<[SimInfoArrayParam, CachedDataParams, RequestParam]>;
+export type RequestGetPageStatus = Flatten<[SimInfoArrayParam, CachedDataParams, RequestParam]>;
 
-export type RequestGetJobStatus = Concat<[SimInfoParam, CachedDataParams, RequestParam]>;
+export type RequestGetJobStatus = Flatten<[SimInfoParam, CachedDataParams, RequestParam]>;
+
+/* ------------------------------------ */

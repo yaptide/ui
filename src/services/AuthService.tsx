@@ -11,7 +11,12 @@ import {
 	ResponseAuthStatus
 } from './ResponseTypes';
 import { snakeToCamelCase } from './TypeTransformUtil';
-import { RequestAuthLogin } from './RequestTypes';
+import {
+	RequestAuthLogin,
+	RequestAuthLogout,
+	RequestAuthRefresh,
+	RequestAuthStatus
+} from './RequestTypes';
 
 export interface AuthProps {
 	children: ReactNode;
@@ -44,9 +49,9 @@ export interface IAuth {
 	user: AuthUser | null;
 	isAuthorized: boolean;
 	login: (...args: RequestAuthLogin) => void;
-	logout: () => void;
-	refresh: () => void;
-	status: () => void;
+	logout: (...args: RequestAuthLogout) => void;
+	refresh: (...args: RequestAuthRefresh) => void;
+	status: (...args: RequestAuthStatus) => void;
 	authKy: KyInstance;
 }
 

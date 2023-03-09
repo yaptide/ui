@@ -5,7 +5,7 @@ import { JobStatusData, StatusState, currentJobStatusData } from './ResponseType
 
 export interface ILoader {
 	editorProvider: EditorJson[];
-	resultsProvider: JobStatusData<StatusState.COMPLETED>[];
+	resultsProvider: JobStatusData[];
 	canLoadEditorData: boolean;
 	canLoadResultsData: boolean;
 	clearLoadedEditor: () => void;
@@ -26,9 +26,7 @@ const Loader = (props: { children: ReactNode }) => {
 	const [canLoadResultsData, setCanLoadResultsData] = useState<boolean>(false);
 
 	const [editorProvider, setEditorProvider] = useState<EditorJson[]>([]);
-	const [resultsProvider, setResultsProvider] = useState<JobStatusData<StatusState.COMPLETED>[]>(
-		[]
-	);
+	const [resultsProvider, setResultsProvider] = useState<JobStatusData[]>([]);
 
 	const clearLoadedEditor = useCallback(() => {
 		setCanLoadEditorData(false);
@@ -40,31 +38,28 @@ const Loader = (props: { children: ReactNode }) => {
 		setResultsProvider([]);
 	}, []);
 
-	const loadData = useCallback(
-		(dataArray: (EditorJson | JobStatusData<StatusState.COMPLETED>)[]) => {
-			if (Array.isArray(dataArray)) {
-				setResultsProvider(prev => {
-					const result = prev.concat(
-						dataArray.filter(currentJobStatusData[StatusState.COMPLETED])
-					);
-					setCanLoadResultsData(result.length > 0);
-					return result;
-				});
+	const loadData = useCallback((dataArray: unknown[]) => {
+		if (Array.isArray(dataArray)) {
+			setResultsProvider(prev => {
+				const result: JobStatusData[] = prev.concat(
+					dataArray.filter(currentJobStatusData[StatusState.COMPLETED]) as JobStatusData[]
+				);
+				setCanLoadResultsData(result.length > 0);
+				return result;
+			});
 
-				setEditorProvider(prev => {
-					const result = prev.concat(dataArray.filter(isEditorJson)).concat(
-						dataArray
-							.filter(currentJobStatusData[StatusState.COMPLETED])
-							.map(data => data.inputJson)
-							.filter(isEditorJson)
-					);
-					setCanLoadEditorData(result.length > 0);
-					return result;
-				});
-			}
-		},
-		[]
-	);
+			setEditorProvider(prev => {
+				const result = prev.concat(dataArray.filter(isEditorJson)).concat(
+					dataArray
+						.filter(currentJobStatusData[StatusState.COMPLETED])
+						.map(data => data.inputJson)
+						.filter(isEditorJson)
+				);
+				setCanLoadEditorData(result.length > 0);
+				return result;
+			});
+		}
+	}, []);
 
 	const readFile = useCallback((file: File) => {
 		return new Promise((resolve, reject) => {
@@ -95,7 +90,7 @@ const Loader = (props: { children: ReactNode }) => {
 			if (Array.isArray(raw_json)) {
 				loadData(raw_json);
 			} else {
-				loadData([raw_json as EditorJson | JobStatusData<StatusState.COMPLETED>]);
+				loadData([raw_json as EditorJson | JobStatusData]);
 			}
 		},
 		[loadData]

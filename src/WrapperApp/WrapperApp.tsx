@@ -38,7 +38,9 @@ function WrapperApp() {
 
 	useEffect(() => {
 		if (resultsProvider.length > 0) {
-			setResultsSimulationData(resultsProvider[resultsProvider.length - 1]);
+			setResultsSimulationData(
+				resultsProvider.reverse().find(currentJobStatusData[StatusState.COMPLETED])
+			);
 			setTabsValue('editor');
 		}
 	}, [resultsProvider, setResultsSimulationData]);
