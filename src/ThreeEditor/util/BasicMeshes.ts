@@ -13,7 +13,8 @@ const defaultMaterial = new THREE.MeshBasicMaterial({
 export const BASIC_GEOMETRY_OPTIONS = {
 	Box: 'Box',
 	Cylinder: 'Cylinder',
-	Sphere: 'Sphere'
+	Sphere: 'Sphere',
+	CT: 'CT',
 } as const;
 
 export type BasicGeometry = typeof BASIC_GEOMETRY_OPTIONS[keyof typeof BASIC_GEOMETRY_OPTIONS];
@@ -78,6 +79,26 @@ export class SphereMesh extends BasicMesh<THREE.SphereGeometry> {
 	}
 }
 
+const ctGeometry = new THREE.BoxGeometry(2, .5, 1, 1, 1, 1);
+const ctMaterial = defaultMaterial.clone()
+ctMaterial.color.setHex(0x00ff00);
+export class CTMesh extends BasicMesh<THREE.BoxGeometry> {
+	readonly notScalable = true;
+
+	pathOnServer: string = '';
+
+	constructor(editor: Editor, geometry?: THREE.BoxGeometry, material?: THREE.MeshBasicMaterial) {
+		super(editor, 'CT', 'CTMesh', 'CT', geometry ?? ctGeometry, material ?? ctMaterial.clone());
+	}
+
+	toJSON(meta: { geometries: unknown; materials: unknown; textures: unknown; images: unknown; } | undefined) {
+		const json = super.toJSON(meta);
+		json.object.pathOnServer = this.pathOnServer;
+		return json;
+	}
+}
+
+
 export const isBasicMesh = (x: unknown): x is BasicMesh => x instanceof BasicMesh;
 
 export const isBoxMesh = (x: unknown): x is BoxMesh => x instanceof BoxMesh;
@@ -85,3 +106,5 @@ export const isBoxMesh = (x: unknown): x is BoxMesh => x instanceof BoxMesh;
 export const isCylinderMesh = (x: unknown): x is CylinderMesh => x instanceof CylinderMesh;
 
 export const isSphereMesh = (x: unknown): x is SphereMesh => x instanceof SphereMesh;
+
+export const isCTMesh = (x: unknown): x is CTMesh => x instanceof CTMesh;

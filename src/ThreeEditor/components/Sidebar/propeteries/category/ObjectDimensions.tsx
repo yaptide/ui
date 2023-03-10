@@ -11,6 +11,7 @@ import {
 	BASIC_GEOMETRY_OPTIONS,
 	isBasicMesh,
 	isBoxMesh,
+	isCTMesh,
 	isCylinderMesh,
 	isSphereMesh
 } from '../../../../util/BasicMeshes';
@@ -460,7 +461,9 @@ export function ObjectDimensions(props: {
 }) {
 	const { object, editor } = props;
 
-	const visibleFlag = isBasicMesh(object) || isDetectGeometry(object) || isWorldZone(object);
+	const visibleFlag =
+		!isCTMesh(object) &&
+		(isBasicMesh(object) || isDetectGeometry(object) || isWorldZone(object));
 
 	return (
 		<PropertiesCategory category='Dimensions' visible={visibleFlag}>

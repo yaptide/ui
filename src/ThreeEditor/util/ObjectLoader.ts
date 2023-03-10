@@ -1,6 +1,6 @@
 import { Object3D, ObjectLoader } from 'three';
 import { Editor } from '../js/Editor';
-import { BoxMesh, CylinderMesh, SphereMesh } from './BasicMeshes';
+import { BoxMesh, CTMesh, CylinderMesh, SphereMesh } from './BasicMeshes';
 
 export class EditorObjectLoader extends ObjectLoader {
 	private editor: Editor;
@@ -17,6 +17,7 @@ export class EditorObjectLoader extends ObjectLoader {
 		const geometry = geometries[data.geometry];
 		const material = materials[data.material];
 
+
 		let object = super.parseObject<T>(data, geometries, materials, animations);
 		let editorObject;
 		switch (data.type) {
@@ -29,6 +30,10 @@ export class EditorObjectLoader extends ObjectLoader {
 			case 'CylinderMesh':
 				editorObject = new CylinderMesh(this.editor);
 				geometry.rotateX(Math.PI / 2);
+				break;
+			case 'CTMesh':
+				editorObject = new CTMesh(this.editor);
+				editorObject.pathOnServer = data.pathOnServer;
 				break;
 			default:
 			// not custom object type

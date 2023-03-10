@@ -5,7 +5,7 @@ import { TabPanel } from '../../../WrapperApp/components/TabPanel';
 import { SidebarTree } from './SidebarTree';
 import { PropertiesPanel } from './propeteries/PropeteriesPanel';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
-import { BoxMesh, CylinderMesh, SphereMesh } from '../../util/BasicMeshes';
+import { BoxMesh, CTMesh, CylinderMesh, SphereMesh } from '../../util/BasicMeshes';
 import { AddObjectCommand } from '../../js/commands/AddObjectCommand';
 import { AddZoneCommand } from '../../js/commands/AddZoneCommand';
 import { AddDetectGeometryCommand } from '../../js/commands/AddDetectGeometryCommand';
@@ -68,6 +68,11 @@ export function EditorSidebar(props: { editor: Editor }) {
 					title: 'Sphere',
 					onClick: () =>
 						editor.execute(new AddObjectCommand(editor, new SphereMesh(editor)))
+				},
+				{
+					title: 'CT',
+					onClick: () =>
+						editor.execute(new AddObjectCommand(editor, new CTMesh(editor)))
 				}
 			],
 			tree: <SidebarTree editor={editor} sources={[editor.scene.children]} />
