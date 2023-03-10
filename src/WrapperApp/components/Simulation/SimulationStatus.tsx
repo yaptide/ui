@@ -23,8 +23,6 @@ import { InputFiles } from '../../../services/RequestTypes';
 import {
 	JobStatusData,
 	StatusState,
-	TaskStatusData,
-	TaskTime,
 	currentJobStatusData,
 	currentTaskStatusData
 } from '../../../services/ResponseTypes';

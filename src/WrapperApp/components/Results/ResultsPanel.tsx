@@ -13,7 +13,6 @@ import { Estimator, Page, Page0D, generateGraphs, isPage0d } from '../../../JsRo
 import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
 import { TabPanel } from '../TabPanel';
-import ResultCT from './ResultsCT';
 import TablePage0D from './ResultsTable';
 
 export interface EstimatorResults extends Estimator {
