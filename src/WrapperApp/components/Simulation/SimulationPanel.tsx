@@ -13,6 +13,7 @@ import {
 import { useSnackbar } from 'notistack';
 
 import CableIcon from '@mui/icons-material/Cable';
+import { TextField } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
 import EXAMPLES from '../../../ThreeEditor/examples/examples';
@@ -29,7 +30,6 @@ import { useStore } from '../../../services/StoreService';
 import { DEMO_MODE } from '../../../util/Config';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import { SimulationPanelGrid } from './SimulationPanelGrid';
-import { TextField } from '@mui/material';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;

@@ -18,12 +18,12 @@ import {
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
 import React, { ReactNode, useMemo } from 'react';
-import Countdown from 'react-countdown';
 import { useLoader } from '../../../services/DataLoaderService';
 import { InputFiles } from '../../../services/RequestTypes';
 import {
 	JobStatusData,
 	StatusState,
+	TaskStatusData,
 	TaskTime,
 	currentJobStatusData,
 	currentTaskStatusData
@@ -31,6 +31,8 @@ import {
 import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
+import { SimulationProgressBar } from './SimulationProgressBar';
+import { LinearProgress } from '@mui/material';
 interface SimulationStatusProps {
 	simulation: JobStatusData;
 	loadResults?: (jobId: string | null) => void;
@@ -60,34 +62,10 @@ export default function SimulationStatus({
 	const { cancelJob: cancelSimulation } = useShSimulation();
 	const { loadFromJson } = useLoader();
 
-	const getDateFromEstimation = (estimated?: TaskTime) => {
-		if (!estimated) return undefined;
-		const { hours, minutes, seconds } = estimated;
-		const date =
-			Date.now() +
-			(parseInt(hours) * 60 * 60 + parseInt(minutes) * 60 + parseInt(seconds)) * 1000;
-		return date;
-	};
-
 	const rows = useMemo(() => {
 		const rows: any[] = [];
 		if (currentJobStatusData[StatusState.RUNNING](simulation)) {
-			for (const task of simulation.jobTasksStatus) {
-				if (currentTaskStatusData[StatusState.RUNNING](task)) {
-					const date = getDateFromEstimation(task.estimatedTime);
-					const primaries = task.simulatedPrimaries;
-					rows.push(
-						row(
-							task.taskId,
-							'Estimated time',
-							<Countdown date={date} />,
-							date !== undefined && date > 0
-						)
-					);
-					rows.push(row(0, 'Counted', primaries, !!primaries));
-				}
-			}
-			row(-1, 'Message', simulation.message, !!simulation.message);
+			row(0, 'Message', simulation.message, !!simulation.message);
 		}
 		return rows;
 	}, [simulation]);
@@ -233,6 +211,43 @@ export default function SimulationStatus({
 						<TableBody>{rows}</TableBody>
 					</Table>
 				</TableContainer>
+				{currentJobStatusData['hasSpecificProperty'](simulation, 'jobTasksStatus') && (
+					<>
+						<LinearProgress
+							variant='buffer'
+							sx={{ height: 16, mb: 1 }}
+							valueBuffer={
+								Math.max(
+									...simulation.jobTasksStatus.map(
+										status =>
+											(status?.simulatedPrimaries ?? 0) /
+											(status?.requestedPrimaries ?? 1)
+									)
+								) * 100
+							}
+							value={
+								(simulation.jobTasksStatus.reduce(
+									(acc, status) =>
+										acc +
+										(status?.simulatedPrimaries ?? 0) /
+											(status?.requestedPrimaries ?? 1),
+									0 as number
+								) /
+									(simulation.jobTasksStatus.length ?? 1)) *
+								100
+							}
+						/>
+						<Box
+							sx={{
+								display: 'grid',
+								gridTemplateColumns: 'repeat(auto-fill, minmax(55px, 1fr))'
+							}}>
+							{simulation.jobTasksStatus.map((taskStatus, index) => (
+								<SimulationProgressBar key={index} status={taskStatus} />
+							))}
+						</Box>
+					</>
+				)}
 			</CardContent>
 			<CardActions>
 				<ButtonGroup fullWidth aria-label='full width outlined button group'>

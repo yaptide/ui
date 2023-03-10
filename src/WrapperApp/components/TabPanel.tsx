@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/css';
 import { Box, Theme, useTheme } from '@mui/material';
+import { BoxProps } from '@mui/system';
 
-interface TabPanelProps {
+interface TabPanelProps extends BoxProps {
 	children?: React.ReactNode;
 	index: string | number;
 	value?: string | number;
 	persistent?: boolean;
 	persistentIfVisited?: boolean;
+	customCss?: React.CSSProperties;
 }
 
-const tabPanelCss = (theme: Theme) =>
+const tabPanelCss = (theme: Theme, customCss?: React.CSSProperties) =>
 	css({
 		display: 'flex',
 		flexGrow: 1,
@@ -18,11 +20,12 @@ const tabPanelCss = (theme: Theme) =>
 		background:
 			theme.palette.mode === 'dark'
 				? theme.palette.background.default
-				: theme.palette.grey['50']
+				: theme.palette.grey['50'],
+		...customCss
 	});
 
 export function TabPanel(props: TabPanelProps) {
-	const { children, value, index, persistent, persistentIfVisited, ...other } = props;
+	const { children, value, index, persistent, persistentIfVisited, customCss, ...other } = props;
 	const theme = useTheme();
 	const [visited, setVisited] = useState(false);
 
@@ -33,11 +36,11 @@ export function TabPanel(props: TabPanelProps) {
 	return (
 		<Box
 			role='tabpanel'
-			className={tabPanelCss(theme)}
+			className={tabPanelCss(theme, customCss)}
 			style={{ display: value !== index ? 'none' : '' }}
 			{...other}>
 			{(value === index || persistent || (visited && persistentIfVisited)) && (
-				<Box className={tabPanelCss(theme)}>{children}</Box>
+				<Box className={tabPanelCss(theme, customCss)}>{children}</Box>
 			)}
 		</Box>
 	);

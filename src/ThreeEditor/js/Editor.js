@@ -14,13 +14,14 @@ import { Loader } from './Loader.js';
 import { Storage as _Storage } from './Storage.js';
 import hash from 'object-hash';
 import { getNextFreeName } from '../util/Name';
+import { Physic } from '../util/Physic';
 
 const _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
 _DEFAULT_CAMERA.name = 'Camera';
 _DEFAULT_CAMERA.position.set(0, 5, 10);
 _DEFAULT_CAMERA.lookAt(new THREE.Vector3());
 
-export const JSON_VERSION = 0.4;
+export const JSON_VERSION = 0.5;
 
 export function Editor(container) {
 	this.signals = {
@@ -162,6 +163,7 @@ export function Editor(container) {
 	this.scoringManager = new ScoringManager(this); // Scoring Manager
 
 	this.beam = new Beam(this);
+	this.physic = new Physic();
 	this.sceneHelpers.add(this.beam);
 
 	this.contextManager = new ContextManager(this); //Context Manager must be loaded after all scenes
@@ -566,6 +568,7 @@ Editor.prototype = {
 		this.detectManager.reset();
 		this.scoringManager.reset();
 		this.beam.reset();
+		this.physic.reset();
 
 		this.geometries = {};
 		this.materials = {};
@@ -604,6 +607,7 @@ Editor.prototype = {
 		this.detectManager.fromJSON(json.detectManager);
 		this.scoringManager.fromJSON(json.scoringManager);
 		this.beam.fromJSON(json.beam);
+		this.physic.fromJSON(json.physic);
 
 		this.viewManager.fromConfigurationJson(json.project.viewManager);
 
@@ -649,6 +653,7 @@ Editor.prototype = {
 			zoneManager: this.zoneManager.toJSON(), // serialize CSGManager
 			detectManager: this.detectManager.toJSON(), // serialize DetectManager;
 			beam: this.beam.toJSON(),
+			physic: this.physic.toJSON(),
 			materialManager: this.materialManager.toJSON(), // serialize MaterialManager
 			scoringManager: this.scoringManager.toJSON() // serialize ScoringManager
 		};
