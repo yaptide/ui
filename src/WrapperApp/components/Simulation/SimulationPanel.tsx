@@ -151,7 +151,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const runSimulation = (inputFiles?: InputFiles) => {
 		setInProgress(true);
 		if (!editorRef.current && !inputFiles) return;
-		const simData = inputFiles ? { inputFiles } : editorRef.current!.toJSON();
+		const simData = inputFiles ?? editorRef.current!.toJSON();
 		sendRun(simData, nTasks, simulator, simName, undefined, controller.signal)
 			.then(res => {
 				updateSimulationInfo();
