@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Box, Button, IconButton, Tooltip } from '@mui/material';
 import React from 'react';
 import { Fragment, useEffect, useState } from 'react';
 import { Operation } from '../../util/Operation';
@@ -7,7 +7,6 @@ import OperationInput from './OperationInput';
 
 type BooleanAlgebraRowProps = {
 	id: number;
-	del: () => void;
 	change: (row: AlgebraRow) => void;
 	value?: AlgebraRow;
 	possibleObjects: THREE.Object3D[];
@@ -70,8 +69,18 @@ export default function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
 		setAlgebraRow(props.value ?? { geometriesId: [], operations: [] });
 	}, [props.value]);
 
+	const endRef = React.useRef<HTMLDivElement>(null);
+
+	const scrollToBottom = () => {
+		endRef.current?.scrollIntoView();
+	};
+
+	useEffect(() => {
+		algebraRow.operations.length < algebraRow.geometriesId.length && scrollToBottom();
+	}, [algebraRow]);
+
 	return (
-		<div className='zoneManagerRow'>
+		<Box>
 			{algebraRow.geometriesId.map((geo, id) => {
 				return (
 					<Fragment key={id}>
@@ -98,9 +107,38 @@ export default function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
 					pushGeometry={pushGeometry(algebraRow.geometriesId.length)}
 				/>
 			)}
-			<Button className='deleteButton' onClick={props.del}>
-				X
-			</Button>
-		</div>
+			<div ref={endRef} />
+		</Box>
+		// <div className='zoneManagerRow'>
+		// 	{algebraRow.geometriesId.map((geo, id) => {
+		// 		return (
+		// <Fragment key={id}>
+		// 	<GeometryInput
+		// 		id={id}
+		// 		geometries={props.possibleObjects}
+		// 		pushGeometry={pushGeometry(id)}
+		// 		value={geo}
+		// 	/>
+		// 	<OperationInput
+		// 		id={id}
+		// 		pushOperation={pushOperation(id)}
+		// 		removeOperation={removeOperation(id)}
+		// 		value={algebraRow.operations?.[id]}
+		// 		canClear={algebraRow.operations.length <= id + 1}
+		// 	/>
+		// </Fragment>
+		// 		);
+		// 	})}
+		// 	{algebraRow.operations.length === algebraRow.geometriesId.length && (
+		// 	<GeometryInput
+		// 		id={algebraRow.geometriesId.length}
+		// 		geometries={props.possibleObjects}
+		// 		pushGeometry={pushGeometry(algebraRow.geometriesId.length)}
+		// 	/>
+		// )}
+		// 	<Button className='deleteButton' onClick={props.del}>
+		// 		X
+		// 	</Button>
+		// </div>
 	);
 }

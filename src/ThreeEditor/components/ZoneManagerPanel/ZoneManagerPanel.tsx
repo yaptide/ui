@@ -1,9 +1,10 @@
-import { Button } from '@mui/material';
+import { Box, Button, IconButton, Tab, Tabs, Tooltip } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Editor } from '../../js/Editor';
 import * as CSG from '../../util/CSG/CSG';
 import BooleanAlgebraRow, { AlgebraRow } from './BooleanAlgebraRow';
 import './zoneManagerPanel.css';
+import ClearIcon from '@mui/icons-material/Clear';
 
 type ZoneManagerPanelProps = {
 	editor: Editor;
@@ -11,7 +12,7 @@ type ZoneManagerPanelProps = {
 };
 
 function ZoneManagerPanel(props: ZoneManagerPanelProps) {
-	const [rows, setRows] = useState<AlgebraRow[]>([]);
+	const [rows, setRows] = useState<AlgebraRow[]>([{ geometriesId: [], operations: [] }]);
 
 	const [allObjects, setAllObjects] = useState<THREE.Object3D[]>([]);
 
@@ -65,16 +66,24 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 	};
 
 	const addAlgebraRow = () => {
-		setRows(prev => [...prev, { geometriesId: [], operations: [] }]);
-		zoneRef.current?.addUnion();
+		setRows(prev => {
+			const newRows = [...prev, { geometriesId: [], operations: [] }];
+			setCurrentRow(newRows.length - 1);
+			zoneRef.current?.addUnion();
+			return newRows;
+		});
 	};
 
 	const removeRow = (removeId: number) => () => {
 		setRows(prev => {
-			const newRows = [...prev.filter((el, id) => id !== removeId)];
+			let newRows = [...prev.filter((el, id) => id !== removeId)];
+			if (newRows.length === 0) newRows = [{ geometriesId: [], operations: [] }];
+			else {
+				setCurrentRow(prev => (prev >= removeId && prev !== 0 ? prev - 1 : prev));
+				zoneRef.current?.removeUnion(removeId);
+			}
 			return newRows;
 		});
-		zoneRef.current?.removeUnion(removeId);
 	};
 
 	const refreshObjectsList = useCallback(() => {
@@ -128,24 +137,141 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 		};
 	}, [props.editor, refreshObjectsList]);
 
+	const [currentRow, setCurrentRow] = useState<number>(0);
+	const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+		setCurrentRow(newValue);
+	};
+
+	function a11yProps(index: number) {
+		return {
+			'id': `vertical-tab-${index}`,
+			'aria-controls': `vertical-tabpanel-${index}`,
+			'key': index,
+			'label': `#${index + 1}`,
+			'sx': { minWidth: 30, borderRadius: 0 }
+		};
+	}
+	interface TabPanelProps {
+		children?: React.ReactNode;
+		index: number;
+		value: number;
+	}
+	function TabPanel(props: TabPanelProps) {
+		const { children, value, index, ...other } = props;
+
+		return (
+			<Box
+				role='tabpanel'
+				hidden={value !== index}
+				id={`vertical-tabpanel-${index}`}
+				aria-labelledby={`vertical-tab-${index}`}
+				sx={{
+					height: '100%',
+					width: '100%',
+					maxHeight: '100%',
+					maxWidth: '100%'
+				}}
+				{...other}>
+				<Box
+					sx={{
+						overflow: 'auto',
+						position: 'relative',
+						height: '100%',
+						display: 'flex',
+						flexDirection: 'column'
+					}}>
+					<Box
+						sx={{
+							position: 'sticky',
+							top: 0,
+							marginLeft: 'auto'
+						}}>
+						<Tooltip title='Delete row' placement='left'>
+							<IconButton
+								aria-label='delete'
+								onClick={removeRow(index)}
+								color='error'
+								sx={{
+									'ml': 'auto',
+									'width': '24px',
+									'height': '24px',
+									'borderRadius': 0,
+									'color': 'secondary.main',
+									'&:hover': {
+										color: 'error.main'
+									}
+								}}>
+								<ClearIcon />
+							</IconButton>
+						</Tooltip>
+					</Box>
+					{value === index && children}
+				</Box>
+			</Box>
+		);
+	}
+
 	return (
-		<div className='zoneManagerWrapper'>
+		<Box
+			sx={{
+				flexGrow: 1,
+				bgcolor: 'background.paper',
+				display: 'grid',
+				height: 224,
+				gridTemplateRows: '100%',
+				gridTemplateColumns: '40px 1fr'
+			}}>
+			<Tabs
+				orientation='vertical'
+				variant='scrollable'
+				value={currentRow}
+				onChange={handleChange}
+				aria-label='Vertical tabs example'
+				sx={{ borderRight: 1, borderColor: 'divider', minWidth: 30 }}>
+				{rows.map((row, id) => {
+					return <Tab {...a11yProps(id)} />;
+				})}
+				<Tooltip title='Add row' placement='right'>
+					<Button
+						color='secondary'
+						sx={{
+							minWidth: 30,
+							borderRadius: 0,
+							color: 'text.secondary'
+						}}
+						onClick={addAlgebraRow}>{` + `}</Button>
+				</Tooltip>
+			</Tabs>
+			<TabPanel value={currentRow} index={-1}></TabPanel>
 			{rows.map((row, id) => {
 				return (
-					<BooleanAlgebraRow
-						key={id}
-						id={id}
-						del={removeRow(id)}
-						change={changeRowValues(id)}
-						value={row}
-						possibleObjects={allObjects}></BooleanAlgebraRow>
+					<TabPanel value={currentRow} key={id} index={id}>
+						<BooleanAlgebraRow
+							id={id}
+							change={changeRowValues(id)}
+							value={row}
+							possibleObjects={allObjects}></BooleanAlgebraRow>
+					</TabPanel>
 				);
 			})}
-			<Button className='addRowButton' onClick={addAlgebraRow}>
-				+
-			</Button>
-		</div>
+		</Box>
 	);
+	// <div className='zoneManagerWrapper'>
+	// 	{rows.map((row, id) => {
+	// 		return (
+	// 			<BooleanAlgebraRow
+	// 				key={id}
+	// 				id={id}
+	// 				del={removeRow(id)}
+	// 				change={changeRowValues(id)}
+	// 				value={row}
+	// 				possibleObjects={allObjects}></BooleanAlgebraRow>
+	// 		);
+	// 	})}
+	// 	<Button className='addRowButton' onClick={addAlgebraRow}>
+	// 		+
+	// 	</Button>
+	// </div>
 }
 
 export default ZoneManagerPanel;
