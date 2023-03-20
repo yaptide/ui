@@ -25,7 +25,7 @@
 		"command-exists": "^1.2.9",
 		"convert-units": "^3.0.0-beta.5",
 		"glob": "^9.3.0",
-		"ky": "^0.33.2",
+		"ky": "^0.33.3",
 		"notistack": "^2.0.5",
 		"object-hash": "^3.0.0",
 		"pyodide": "^0.22.1",
