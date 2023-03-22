@@ -40,7 +40,7 @@ export interface Page0D extends IPage {
 }
 
 export interface PageCT extends IPage {
-	dimensions: 'CT';
+	dimensions: '3D_datafile_CT';
 	resultsUrl: string;
 }
 
@@ -66,7 +66,7 @@ export const isPage0d = (page: Page): page is Page0D => {
 };
 
 export const isCT = (page: Page): page is PageCT => {
-	return (page as PageCT).dimensions === 'CT';
+	return (page as PageCT).dimensions === '3D_datafile_CT';
 };
 
 const getGraphFromPage = (page: Page, title?: string) => {
