@@ -1,14 +1,14 @@
-import { Box, Button, IconButton, Tooltip } from '@mui/material';
-import React from 'react';
-import { Fragment, useEffect, useState } from 'react';
+import { Box, Divider } from '@mui/material';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Operation } from '../../util/Operation';
 import GeometryInput from './GeometryInput';
 import OperationInput from './OperationInput';
 
 type BooleanAlgebraRowProps = {
 	id: number;
-	change: (row: AlgebraRow) => void;
-	value?: AlgebraRow;
+	onGeometrySelect: (id: number) => void;
+	handleSwitchOperation: (op: Operation | null) => void;
+	value: AlgebraRow;
 	possibleObjects: THREE.Object3D[];
 };
 
@@ -18,56 +18,26 @@ export type AlgebraRow = {
 };
 
 export default function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
-	const [algebraRow, setAlgebraRow] = useState<AlgebraRow>(
-		props.value ?? { geometriesId: [], operations: [] }
-	);
-
-	const pushGeometry = (index: number) => (id: number) => {
-		setAlgebraRow(prev => {
-			const newRow: AlgebraRow = {
-				geometriesId: [...prev.geometriesId],
-				operations: prev.operations
-			};
-
-			newRow.geometriesId.splice(index, 1, id);
-
-			props.change(newRow);
-
-			return newRow;
-		});
-	};
-
-	const pushOperation = (index: number) => (op: Operation) => {
-		setAlgebraRow(prev => {
-			const newRow: AlgebraRow = {
-				geometriesId: prev.geometriesId,
-				operations: [...prev.operations]
-			};
-
-			newRow.operations.splice(index, 1, op);
-
-			if (index < newRow.geometriesId.length - 1) props.change(newRow);
-
-			return newRow;
-		});
-	};
-
-	const removeOperation = (id: number) => () => {
-		setAlgebraRow(prev => {
-			const newRow: AlgebraRow = {
-				geometriesId: [...prev.geometriesId.slice(0, id + 1)],
-				operations: [...prev.operations.slice(0, id)]
-			};
-
-			props.change(newRow);
-
-			return newRow;
-		});
-	};
+	const [algebraRow, setAlgebraRow] = useState<AlgebraRow>(props.value);
+	const [scroll, setScroll] = useState(false);
 
 	useEffect(() => {
-		setAlgebraRow(props.value ?? { geometriesId: [], operations: [] });
+		console.log('props.value', props.value);
+		setAlgebraRow(prev => {
+			return props.value ?? { geometriesId: [], operations: [] };
+		});
+		console.log('algebraRow', algebraRow.geometriesId.length, props.value.geometriesId.length);
+		if (algebraRow.geometriesId.length < props.value.geometriesId.length) setScroll(true);
 	}, [props.value]);
+
+	useEffect(() => {
+		if (scroll) {
+			setScroll(false);
+		} else {
+			console.log('scrolling');
+			scrollToBottom();
+		}
+	}, [scroll]);
 
 	const endRef = React.useRef<HTMLDivElement>(null);
 
@@ -75,70 +45,123 @@ export default function BooleanAlgebraRow(props: BooleanAlgebraRowProps) {
 		endRef.current?.scrollIntoView();
 	};
 
-	useEffect(() => {
-		algebraRow.operations.length < algebraRow.geometriesId.length && scrollToBottom();
-	}, [algebraRow]);
-
 	return (
-		<Box>
+		<Box
+			sx={{
+				display: 'flex',
+				flexDirection: 'column',
+				alignItems: 'center',
+				marginTop: '-36px',
+				paddingTop: '12px',
+				position: 'relative',
+				height: '100%'
+			}}>
 			{algebraRow.geometriesId.map((geo, id) => {
 				return (
-					<Fragment key={id}>
+					<Box
+						key={id}
+						sx={{
+							display: 'flex',
+							flexDirection: 'column',
+							alignItems: 'stretch'
+						}}>
+						{id > 0 && (
+							<>
+								<Divider
+									orientation='vertical'
+									sx={{
+										width: '1px',
+										height: '36px',
+										backgroundColor: 'primary.main',
+										margin: '0 auto'
+									}}
+								/>
+								<OperationInput
+									id={id - 1}
+									switchOperation={op => {
+										setAlgebraRow(prev => {
+											prev.operations[id - 1] = op;
+											props.handleSwitchOperation(op);
+											return prev;
+										});
+										if (algebraRow.operations.length >= id - 1) {
+											console.log('scrolling');
+											setScroll(true);
+										}
+									}}
+									value={algebraRow.operations[id - 1]}
+									canClear={algebraRow.operations.length <= id}
+								/>
+							</>
+						)}
 						<GeometryInput
 							id={id}
 							geometries={props.possibleObjects}
-							pushGeometry={pushGeometry(id)}
+							onClick={() => {
+								props.onGeometrySelect(id);
+							}}
 							value={geo}
 						/>
-						<OperationInput
-							id={id}
-							pushOperation={pushOperation(id)}
-							removeOperation={removeOperation(id)}
-							value={algebraRow.operations?.[id]}
-							canClear={algebraRow.operations.length <= id + 1}
-						/>
-					</Fragment>
+					</Box>
 				);
 			})}
-			{algebraRow.operations.length === algebraRow.geometriesId.length && (
-				<GeometryInput
-					id={algebraRow.geometriesId.length}
-					geometries={props.possibleObjects}
-					pushGeometry={pushGeometry(algebraRow.geometriesId.length)}
-				/>
-			)}
+			{
+				<Box
+					sx={{
+						display: 'flex',
+						flexDirection: 'column',
+						alignItems: 'stretch'
+					}}>
+					{algebraRow.geometriesId.length > 0 && (
+						<>
+							<Divider
+								orientation='vertical'
+								sx={{
+									width: '1px',
+									height: '36px',
+									backgroundColor: 'primary.main',
+									margin: '0 auto'
+								}}
+							/>
+							<OperationInput
+								id={algebraRow.geometriesId.length - 1}
+								switchOperation={op => {
+									setAlgebraRow(prev => {
+										prev.operations[algebraRow.geometriesId.length - 1] = op;
+										props.handleSwitchOperation(op);
+										return prev;
+									});
+									if (
+										algebraRow.operations.length >=
+										algebraRow.geometriesId.length - 1
+									) {
+										console.log('scrolling');
+										setScroll(true);
+									}
+								}}
+								value={
+									algebraRow.operations[algebraRow.geometriesId.length - 1] ??
+									null
+								}
+								canClear={
+									algebraRow.operations.length <= algebraRow.geometriesId.length
+								}
+							/>
+						</>
+					)}
+					{algebraRow.geometriesId.length === algebraRow.operations.length && (
+						<GeometryInput
+							id={algebraRow.geometriesId.length}
+							geometries={props.possibleObjects}
+							onClick={() => {
+								props.onGeometrySelect(algebraRow.geometriesId.length);
+							}}
+							value={null}
+						/>
+					)}
+				</Box>
+			}
 			<div ref={endRef} />
 		</Box>
-		// <div className='zoneManagerRow'>
-		// 	{algebraRow.geometriesId.map((geo, id) => {
-		// 		return (
-		// <Fragment key={id}>
-		// 	<GeometryInput
-		// 		id={id}
-		// 		geometries={props.possibleObjects}
-		// 		pushGeometry={pushGeometry(id)}
-		// 		value={geo}
-		// 	/>
-		// 	<OperationInput
-		// 		id={id}
-		// 		pushOperation={pushOperation(id)}
-		// 		removeOperation={removeOperation(id)}
-		// 		value={algebraRow.operations?.[id]}
-		// 		canClear={algebraRow.operations.length <= id + 1}
-		// 	/>
-		// </Fragment>
-		// 		);
-		// 	})}
-		// 	{algebraRow.operations.length === algebraRow.geometriesId.length && (
-		// 	<GeometryInput
-		// 		id={algebraRow.geometriesId.length}
-		// 		geometries={props.possibleObjects}
-		// 		pushGeometry={pushGeometry(algebraRow.geometriesId.length)}
-		// 	/>
-		// )}
-		// 	<Button className='deleteButton' onClick={props.del}>
-		// 		X
-		// 	</Button>
-		// </div>
 	);
 }

@@ -1,45 +1,55 @@
-import { MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import {
+	Avatar,
+	Box,
+	Chip,
+	MenuItem,
+	Select,
+	SelectChangeEvent,
+	Tooltip,
+	Typography
+} from '@mui/material';
 import { useState, useEffect } from 'react';
 
 type GeometryInputProps = {
 	id: number;
 	geometries: THREE.Object3D[];
-	pushGeometry: (uuid: number) => void;
 	value?: number | null;
+	onClick?: React.MouseEventHandler<HTMLElement>;
 };
 
 function GeometryInput(props: GeometryInputProps) {
-	const [selected, setSelected] = useState(props?.value ?? 0);
+	const [selected, setSelected] = useState<THREE.Object3D | null>(null);
 
-	const handleChange = (event: SelectChangeEvent<number>) => {
-		const value = event.target.value as number;
-		setSelected(value);
-		props.pushGeometry(value);
-	};
 	useEffect(() => {
-		setSelected(props.value ?? 0);
-	}, [props, props.value]);
+		setSelected(props.geometries.find(geo => geo.id === props.value) ?? null);
+	}, [props.value, props.geometries]);
 
 	return (
-		<Select
-			labelId={'GeometryLabel' + props.id}
-			id={'GeometryInput' + props.id}
-			label={props.id}
-			className='geometrySelect'
-			displayEmpty
-			value={selected}
-			onChange={handleChange}>
-			<MenuItem disabled value={0}>
-				<em>Geometry</em>
-			</MenuItem>
-			{props.geometries.map((geo, index) => {
-				return (
-					<MenuItem key={geo.id} value={geo.id}>
-						{geo.name}:{geo.id}
-					</MenuItem>
-				);
-			})}
-		</Select>
+		<Chip
+			onClick={props.onClick}
+			color='secondary'
+			label={selected?.name ?? 'Select'}
+			avatar={
+				<Avatar>
+					<Tooltip title={selected?.id ?? ''} placement='right'>
+						<Box>ID</Box>
+					</Tooltip>
+				</Avatar>
+			}
+			sx={{
+				'minWidth': '70px',
+				'display': 'flex',
+				'flexDirection': 'row-reverse',
+				'borderRadius': '0 0 16px 16px',
+				'padding': '5px 2px',
+				'minHeight': 40,
+				'height': 40,
+				'& .MuiChip-avatar': {
+					marginLeft: '-6px',
+					marginRight: '5px'
+				}
+			}}
+		/>
 	);
 }
 export default GeometryInput;

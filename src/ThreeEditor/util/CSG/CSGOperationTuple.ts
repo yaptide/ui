@@ -21,6 +21,7 @@ export class OperationTuple {
 	execute(csg: CSG) {
 		const { object } = this;
 		object.updateMatrix();
+		console.log(this.mode);
 		return executeOperation(this.mode)(csg)(CSG.fromMesh(object));
 	}
 

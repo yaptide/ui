@@ -1,51 +1,66 @@
-import { MenuItem, Select, SelectChangeEvent } from '@mui/material';
-import { useState, useEffect } from 'react';
+import JoinInnerIcon from '@mui/icons-material/JoinInner';
+import JoinLeftIcon from '@mui/icons-material/JoinLeft';
+import UndoIcon from '@mui/icons-material/Undo';
+import { IconButton, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { Operation } from '../../util/Operation';
 
 type OperationInputProps = {
 	id: number;
-	pushOperation: (op: Operation) => void;
-	removeOperation: () => void;
-	value?: Operation | null;
+	switchOperation: (op: SelectType) => void;
+	value?: SelectType;
 	canClear?: boolean;
 };
 
-type SelectType = Operation | '';
+type SelectType = Operation | null;
 
 function OperationInput(props: OperationInputProps) {
-	const [selected, setSelected] = useState<SelectType>(props?.value ?? '');
+	const [selected, setSelected] = useState<SelectType | null>(props?.value ?? null);
 
-	const handleChange = (event: SelectChangeEvent<SelectType>) => {
-		const value = event.target.value as SelectType;
-
-		setSelected(value);
-
-		if (event.target.value !== '') props.pushOperation(event.target.value as Operation);
-		else props.removeOperation();
+	const handleChange = (value: any) => {
+		if (props.canClear || value !== null) {
+			setSelected(value);
+			props.switchOperation(value);
+		}
 	};
 
 	useEffect(() => {
-		setSelected(props.value ?? '');
+		setSelected(props.value ?? null);
 	}, [props, props.value]);
 
 	return (
-		<Select
-			id={'OperationInput' + props.id}
-			label={props.id}
-			className='operationSelect'
-			value={selected}
-			onChange={handleChange}>
-			<MenuItem disabled value={0}>
-				<em>Operation</em>
-			</MenuItem>
-			{props.canClear && <MenuItem value={''}>X</MenuItem>}
-			<MenuItem value={'subtraction'}>
-				<img src='./images/L.png' alt='subtraction' />
-			</MenuItem>
-			<MenuItem value={'intersection'}>
-				<img src='./images/S.png' alt='intersection' />
-			</MenuItem>
-		</Select>
+		<>
+			{props.canClear && selected !== null && (
+				<IconButton
+					onClick={() => handleChange(null)}
+					sx={{
+						margin: '0 auto'
+					}}>
+					<UndoIcon />
+				</IconButton>
+			)}
+			<ToggleButtonGroup
+				value={selected}
+				exclusive
+				onChange={(e, v) => handleChange(v)}
+				sx={{
+					'width': '100%',
+					'& .MuiToggleButton-root': {
+						borderRadius: '4px 4px 0 0',
+						width: '100%'
+					}
+				}}
+				aria-label='operation-select'>
+				<ToggleButton value='intersection' aria-label='intersection'>
+					<JoinInnerIcon />
+					{/* <img src='./images/S.png' alt='intersection' /> */}
+				</ToggleButton>
+				<ToggleButton value='subtraction' aria-label='subtraction'>
+					<JoinLeftIcon />
+					{/* <img src='./images/L.png' alt='subtraction' /> */}
+				</ToggleButton>
+			</ToggleButtonGroup>
+		</>
 	);
 }
 export default OperationInput;
