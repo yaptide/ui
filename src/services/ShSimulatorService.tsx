@@ -33,11 +33,14 @@ export interface ShSimulationProps {
 }
 
 export interface IShSimulation {
-	postJob: (...args: RequestPostJob) => Promise<ResponsePostJob>;
-	cancelJob: (...args: RequestCancelJob) => Promise<unknown>;
+	postJobDirect: (...args: RequestPostJob) => Promise<ResponsePostJob>;
+	postJobBatch: (...args: RequestPostJob) => Promise<ResponsePostJob>;
+	cancelJobDirect: (...args: RequestCancelJob) => Promise<unknown>;
+	cancelJobBatch: (...args: RequestCancelJob) => Promise<unknown>;
 	convertToInputFiles: (...args: RequestShConvert) => Promise<ResponseShConvert>;
 	getHelloWorld: (...args: RequestParam) => Promise<unknown>;
-	getJobStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
+	getJobDirectStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
+	getJobBatchStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
 	getPageContents: (...args: RequestGetPageContents) => Promise<ResponseGetPageContents>;
 	getPageStatus: (...args: RequestGetPageStatus) => Promise<JobStatusData[]>;
 }
@@ -102,27 +105,28 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 	);
 
 	const postJob = useCallback(
-		(...[simData, ntasks, simType, title, batchOptions, signal]: RequestPostJob) => {
-			if (title === undefined && isEditorJson(simData)) title = simData.project.title;
-			console.log('postJob', ntasks, simType, title, batchOptions, signal);
-			return authKy
-				.post(`jobs/direct`, {
-					json: camelToSnakeCase({
-						ntasks,
-						simType,
-						title,
-						simData,
-						batchOptions
-					}),
-					signal,
-					timeout: 30000
-					/**
-					Timeout in milliseconds for getting a response. Can not be greater than 2147483647.
-					If set to `false`, there will be no timeout.
-					**/
-				})
-				.json<ResponsePostJob>();
-		},
+		(endPoint: string) =>
+			(...[simData, ntasks, simType, title, batchOptions, signal]: RequestPostJob) => {
+				if (title === undefined && isEditorJson(simData)) title = simData.project.title;
+				console.log('postJob', endPoint, ntasks, simType, title, batchOptions, signal);
+				return authKy
+					.post(`jobs/batch`, {
+						json: camelToSnakeCase({
+							ntasks,
+							simType,
+							title,
+							simData,
+							batchOptions
+						}),
+						signal,
+						timeout: 30000
+						/**
+						 * Timeout in milliseconds for getting a response. Can not be greater than 2147483647.
+						 * If set to `false`, there will be no timeout.
+						 * */
+					})
+					.json<ResponsePostJob>();
+			},
 		[authKy]
 	);
 
@@ -138,56 +142,58 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 	);
 
 	const getJobStatus = useCallback(
-		(...[info, cache = true, beforeCacheWrite, signal]: RequestGetJobStatus) => {
-			const { jobId } = info;
+		(endPoint: string) =>
+			(...[info, cache = true, beforeCacheWrite, signal]: RequestGetJobStatus) => {
+				const { jobId } = info;
 
-			if (cache && statusDataCache.current.has(jobId))
-				return Promise.resolve(statusDataCache.current.get(jobId));
+				if (cache && statusDataCache.current.has(jobId))
+					return Promise.resolve(statusDataCache.current.get(jobId));
 
-			return authKy
-				.get(`jobs/direct`, {
-					signal,
-					searchParams: camelToSnakeCase({ jobId })
-				})
-				.json<ResponseGetJobStatus>()
-				.then(response => {
-					const data: Partial<JobStatusData> = {
-						...response,
-						...info
-					};
-					if (currentJobStatusData[StatusState.PENDING](data)) {
-					} else if (currentJobStatusData[StatusState.RUNNING](data)) {
-					} else if (currentJobStatusData[StatusState.FAILED](data)) {
-						console.log(data.error);
+				return authKy
+					.get(`jobs/direct`, {
+						signal,
+						searchParams: camelToSnakeCase({ jobId })
+					})
+					.json<ResponseGetJobStatus>()
+					.then(response => {
+						const data: Partial<JobStatusData> = {
+							...response,
+							...info
+						};
+						if (currentJobStatusData[StatusState.PENDING](data)) {
+						} else if (currentJobStatusData[StatusState.RUNNING](data)) {
+						} else if (currentJobStatusData[StatusState.FAILED](data)) {
+							console.log(data.error);
 
-						beforeCacheWrite?.call(null, data.jobId, data);
-						statusDataCache.current.set(data.jobId, data);
-					} else if (currentJobStatusData[StatusState.COMPLETED](data)) {
-						updateEstimators(data.result.estimators);
-						if (data.inputJson) recreateRefsInResults(data);
+							beforeCacheWrite?.call(null, data.jobId, data);
+							statusDataCache.current.set(data.jobId, data);
+						} else if (currentJobStatusData[StatusState.COMPLETED](data)) {
+							updateEstimators(data.result.estimators);
+							if (data.inputJson) recreateRefsInResults(data);
 
-						beforeCacheWrite?.call(null, data.jobId, data);
-						statusDataCache.current.set(data.jobId, data);
-					} else {
-						return undefined;
-					}
-					return data;
-				})
-				.catch(() => undefined);
-		},
+							beforeCacheWrite?.call(null, data.jobId, data);
+							statusDataCache.current.set(data.jobId, data);
+						} else {
+							return undefined;
+						}
+						return data;
+					})
+					.catch(() => undefined);
+			},
 		[authKy]
 	);
 
 	const cancelJob = useCallback(
-		(...[{ jobId }, signal]: RequestCancelJob) =>
-			authKy
-				.delete(`jobs/direct`, {
-					signal,
-					searchParams: camelToSnakeCase({ jobId })
-				})
-				.then(() => {
-					statusDataCache.current.delete(jobId);
-				}),
+		(endPoint: string) =>
+			(...[{ jobId }, signal]: RequestCancelJob) =>
+				authKy
+					.delete(`jobs/direct`, {
+						signal,
+						searchParams: camelToSnakeCase({ jobId })
+					})
+					.then(() => {
+						statusDataCache.current.delete(jobId);
+					}),
 		[authKy]
 	);
 
@@ -205,8 +211,17 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 	const getPageStatus = useCallback(
 		(...[infoList, cache = true, beforeCacheWrite, signal]: RequestGetPageStatus) => {
 			return Promise.all(
-				infoList.map(info => getJobStatus(info, cache, beforeCacheWrite, signal))
-			).then(values => [...values.filter((e): e is JobStatusData => e !== undefined)]);
+				infoList.map(info => {
+					if (info.metadata.platform === undefined) {
+						console.error('info.metadata.platform is undefined');
+						return undefined;
+					}
+					const endPoint = `jobs/${info.metadata.platform.toLowerCase()}`;
+					return getJobStatus(endPoint)(info, cache, beforeCacheWrite, signal);
+				})
+			).then(dataList => {
+				return dataList.filter(data => data !== undefined) as JobStatusData[];
+			});
 		},
 		[getJobStatus]
 	);
@@ -214,11 +229,14 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 	return (
 		<ShSimulationContextProvider
 			value={{
-				postJob,
-				cancelJob,
+				postJobDirect: postJob('jobs/direct'),
+				postJobBatch: postJob('jobs/batch'),
+				cancelJobDirect: cancelJob('jobs/direct'),
+				cancelJobBatch: cancelJob('jobs/batch'),
 				convertToInputFiles,
 				getHelloWorld,
-				getJobStatus,
+				getJobDirectStatus: getJobStatus('jobs/direct'),
+				getJobBatchStatus: getJobStatus('jobs/batch'),
 				getPageContents,
 				getPageStatus
 			}}>

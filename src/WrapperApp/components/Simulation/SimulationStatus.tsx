@@ -59,7 +59,7 @@ export default function SimulationStatus({
 	showInputFiles
 }: SimulationStatusProps) {
 	const { resultsSimulationData } = useStore();
-	const { cancelJob: cancelSimulation } = useShSimulation();
+	const { cancelJobDirect: cancelSimulation } = useShSimulation();
 	const { loadFromJson } = useLoader();
 
 	const rows = useMemo(() => {

@@ -19,7 +19,7 @@ type GeneratorLocation = 'local' | 'remote';
 export default function InputEditorPanel(props: InputEditorPanelProps) {
 	const { enqueueSnackbar } = useSnackbar();
 	const { editorRef } = useStore();
-	const { convertToInputFiles, postJob: sendRun } = useShSimulation();
+	const { convertToInputFiles, postJobDirect } = useShSimulation();
 	const { isConverterReady, convertJSON } = usePythonConverter();
 
 	const [isInProgress, setInProgress] = useState(false);
@@ -73,7 +73,7 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 
 	const runSimulation = (inputFiles: InputFiles) => {
 		setInProgress(true);
-		sendRun(inputFiles, undefined, undefined, undefined, undefined, controller.signal)
+		postJobDirect(inputFiles, undefined, undefined, undefined, undefined, controller.signal)
 			.then()
 			.catch()
 			.finally(() => {
