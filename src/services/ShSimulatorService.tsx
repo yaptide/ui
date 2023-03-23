@@ -110,7 +110,7 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 				if (title === undefined && isEditorJson(simData)) title = simData.project.title;
 				console.log('postJob', endPoint, ntasks, simType, title, batchOptions, signal);
 				return authKy
-					.post(`jobs/batch`, {
+					.post(endPoint, {
 						json: camelToSnakeCase({
 							ntasks,
 							simType,
@@ -150,7 +150,7 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 					return Promise.resolve(statusDataCache.current.get(jobId));
 
 				return authKy
-					.get(`jobs/direct`, {
+					.get(endPoint, {
 						signal,
 						searchParams: camelToSnakeCase({ jobId })
 					})
@@ -187,7 +187,7 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 		(endPoint: string) =>
 			(...[{ jobId }, signal]: RequestCancelJob) =>
 				authKy
-					.delete(`jobs/direct`, {
+					.delete(endPoint, {
 						signal,
 						searchParams: camelToSnakeCase({ jobId })
 					})
