@@ -36,10 +36,12 @@ export type TaskTime = {
 
 export type MetaKey = 'server' | 'platform' | 'input' | 'simType';
 
+type PlatformType = 'DIRECT' | 'BATCH';
+
 export type SimulationInfo = {
 	jobId: string;
 	title: string;
-	metadata: Record<MetaKey, string>;
+	metadata: Record<MetaKey, string> & { platform: PlatformType };
 	startTime: Date;
 	endTime?: Date;
 	localData?: boolean;
