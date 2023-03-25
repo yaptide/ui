@@ -21,7 +21,6 @@ export class OperationTuple {
 	execute(csg: CSG) {
 		const { object } = this;
 		object.updateMatrix();
-		console.log(this.mode);
 		return executeOperation(this.mode)(csg)(CSG.fromMesh(object));
 	}
 
@@ -42,6 +41,10 @@ export class OperationTuple {
 		if (!isOperation(mode)) throw new Error('Mode contains not known operation: ' + mode);
 
 		return new OperationTuple(object as THREE.Mesh, mode);
+	}
+
+	toRawData() {
+		return { operation: this.mode, objectId: this.object.id };
 	}
 }
 
