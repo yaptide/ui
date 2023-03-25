@@ -8,7 +8,8 @@ import {
 	SelectChangeEvent,
 	Tab,
 	Tabs,
-	Tooltip
+	Tooltip,
+	useMediaQuery
 } from '@mui/material';
 import React, { LegacyRef, useCallback, useEffect, useRef, useState } from 'react';
 import ScrollManager from '../../../libs/ScrollManager';
@@ -271,7 +272,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 		<Box
 			sx={{
 				flexGrow: 1,
-				bgcolor: 'background.paper',
+				bgcolor: theme => (theme.palette.mode === 'dark' ? 'background.paper' : 'grey.100'),
 				display: 'grid',
 				height: PANEL_HEIGHT,
 				gridTemplateRows: '100%',
