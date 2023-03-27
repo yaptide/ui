@@ -2,7 +2,6 @@ import { Box, Button, Card, CardActions, CardContent, Divider } from '@mui/mater
 import React, { useState, useEffect } from 'react';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { saveString } from '../../../util/File';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import useTheme from '@mui/system/useTheme';
 import { DEMO_MODE } from '../../../util/Config';
 import { InputFiles } from '../../../services/RequestTypes';
@@ -27,7 +26,6 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 		props.inputFiles ?? { ..._emptyInputFiles }
 	);
 
-	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 	const inputFilesOrder = [
 		'info.json',
 		'geo.dat',
@@ -45,9 +43,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 			<CardActions
 				sx={{
 					justifyContent: 'flex-end',
-					background: prefersDarkMode
-						? theme.palette.grey['800']
-						: theme.palette.grey['300']
+					background: theme => (theme.palette.mode === 'dark' ? 'grey.800' : 'grey.300')
 				}}>
 				{props.runSimulation && (
 					<Button
@@ -111,10 +107,12 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 											return { ...old, [name]: evn.target.value };
 										})
 									}
+									data-color-mode={theme.palette.mode}
 									padding={15}
 									style={{
 										fontSize: 12,
-										backgroundColor: prefersDarkMode ? '#121212' : '#f5f5f5',
+										backgroundColor:
+											theme.palette.mode === 'dark' ? '#121212' : '#f5f5f5',
 										fontFamily:
 											'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
 										maxHeight: name === 'sobp.dat' ? '15rem' : 'unset',

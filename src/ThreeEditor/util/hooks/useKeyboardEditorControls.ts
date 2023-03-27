@@ -1,121 +1,115 @@
-import { RefObject, useEffect } from "react";
-import { Object3D } from "three";
-import { RemoveDetectGeometryCommand } from "../../js/commands/RemoveDetectGeometryCommand";
-import { RemoveDifferentialModifierCommand } from "../../js/commands/RemoveDifferentialModifierCommand";
-import { RemoveFilterCommand } from "../../js/commands/RemoveFilterCommand";
-import { RemoveObjectCommand } from "../../js/commands/RemoveObjectCommand";
-import { RemoveQuantityCommand } from "../../js/commands/RemoveQuantityCommand";
-import { RemoveZoneCommand } from "../../js/commands/RemoveZoneCommand";
-import { SetFilterRuleCommand } from "../../js/commands/SetFilterRuleCommand";
-import { Editor } from "../../js/Editor";
-import { isZone } from "../CSG/CSGZone";
-import { isDetectFilter } from "../Detect/DetectFilter";
-import { isDetectGeometry } from "../Detect/DetectGeometry";
-import { isOutput } from "../Scoring/ScoringOutput";
-import { isQuantity } from "../Scoring/ScoringQuantity";
+import { RefObject, useEffect } from 'react';
+import { Object3D } from 'three';
+import { RemoveDetectGeometryCommand } from '../../js/commands/RemoveDetectGeometryCommand';
+import { RemoveDifferentialModifierCommand } from '../../js/commands/RemoveDifferentialModifierCommand';
+import { RemoveFilterCommand } from '../../js/commands/RemoveFilterCommand';
+import { RemoveObjectCommand } from '../../js/commands/RemoveObjectCommand';
+import { RemoveQuantityCommand } from '../../js/commands/RemoveQuantityCommand';
+import { RemoveZoneCommand } from '../../js/commands/RemoveZoneCommand';
+import { SetFilterRuleCommand } from '../../js/commands/SetFilterRuleCommand';
+import { Editor } from '../../js/Editor';
+import { isZone } from '../CSG/CSGZone';
+import { isDetectFilter } from '../Detect/DetectFilter';
+import { isDetectGeometry } from '../Detect/DetectGeometry';
+import { isOutput } from '../Scoring/ScoringOutput';
+import { isQuantity } from '../Scoring/ScoringQuantity';
 
+export const useKeyboardEditorControls = (
+	editor: Editor | undefined,
+	containerRef: RefObject<HTMLElement>
+) => {
+	useEffect(() => {
+		if (!editor || !containerRef.current) return;
 
-export const useKeyboardEditorControls = (editor: Editor | undefined, containerRef: RefObject<HTMLElement>) => {
-    useEffect(() => {
-        if (!editor || !containerRef.current) return;
+		const container = containerRef.current;
 
-        const container = containerRef.current;
+		const { config } = editor;
 
-        const { config } = editor;
+		const IS_MAC = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 
-        const IS_MAC = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+		const getRemoveCommand = (object: Object3D) => {
+			if (isDetectGeometry(object)) {
+				return new RemoveDetectGeometryCommand(editor, object);
+			} else if (isZone(object)) {
+				return new RemoveZoneCommand(editor, object);
+			} else if (isDetectFilter(object)) {
+				if (object.selectedRule) return new SetFilterRuleCommand(editor, object);
+				return new RemoveFilterCommand(editor, object);
+			} else if (isQuantity(object)) {
+				if (object.selectedModifier)
+					return new RemoveDifferentialModifierCommand(
+						editor,
+						object,
+						object.selectedModifier
+					);
 
-        const getRemoveCommand = (object: Object3D) => {
+				if (isOutput(object.parent))
+					return new RemoveQuantityCommand(editor, object, object.parent);
+				else throw new Error('Quantity has no parent output');
+			}
 
-            if (isDetectGeometry(object)) {
-                return new RemoveDetectGeometryCommand(editor, object);
+			return new RemoveObjectCommand(editor, object);
+		};
 
-            } else if (isZone(object)) {
-                return new RemoveZoneCommand(editor, object);
+		const onKeyDown = (event: KeyboardEvent) => {
+			const eventFromSidebar = (event.target as any).closest('.ThreeEditorSidebar') !== null;
 
-            }
-            else if (isDetectFilter(object)) {
-                if (object.selectedRule) return new SetFilterRuleCommand(editor, object);
-                return new RemoveFilterCommand(editor, object);
+			if (eventFromSidebar) return;
 
-            } else if (isQuantity(object)) {
-                if (object.selectedModifier)
-                    return new RemoveDifferentialModifierCommand(
-                        editor,
-                        object,
-                        object.selectedModifier
-                    );
+			switch (event.key.toLowerCase()) {
+				case 'delete':
+					const object = editor.selected;
 
-                if (isOutput(object.parent))
-                    return new RemoveQuantityCommand(editor, object, object.parent);
-                else throw new Error('Quantity has no parent output');
-            }
+					if (object === null || object.notRemovable === true) return;
 
-            return new RemoveObjectCommand(editor, object);
+					const parent = object.parent;
+					if (parent !== null) editor.execute(getRemoveCommand(object));
+					break;
 
+				// Disabled features
+				// case config.getKey('settings/shortcuts/translate'):
+				//     signals.transformModeChanged.dispatch('translate');
 
-        };
+				//     break;
 
-        const onKeyDown = (event: KeyboardEvent) => {
-            const eventFromSidebar = (event.target as any).closest('.ThreeEditorSidebar') !== null;
+				// case config.getKey('settings/shortcuts/rotate'):
+				//     signals.transformModeChanged.dispatch('rotate');
 
-            if (eventFromSidebar) return;
+				//     break;
 
-            switch (event.key.toLowerCase()) {
-                case 'delete':
-                    const object = editor.selected;
+				// case config.getKey('settings/shortcuts/scale'):
+				//     signals.transformModeChanged.dispatch('scale');
 
-                    if (object === null || object.notRemovable === true) return;
+				// break;
 
-                    const parent = object.parent;
-                    if (parent !== null) editor.execute(getRemoveCommand(object));
-                    break;
+				case config.getKey('settings/shortcuts/undo'):
+					if (IS_MAC ? event.metaKey : event.ctrlKey) {
+						event.preventDefault(); // Prevent browser specific hotkeys
 
-                // Disabled features
-                // case config.getKey('settings/shortcuts/translate'):
-                //     signals.transformModeChanged.dispatch('translate');
+						if (event.shiftKey) {
+							editor.redo();
+						} else {
+							editor.undo();
+						}
+					}
 
-                //     break;
+					break;
 
-                // case config.getKey('settings/shortcuts/rotate'):
-                //     signals.transformModeChanged.dispatch('rotate');
+				case config.getKey('settings/shortcuts/focus'):
+					if (editor.selected !== null) {
+						editor.focus(editor.selected);
+					}
 
-                //     break;
+					break;
 
-                // case config.getKey('settings/shortcuts/scale'):
-                //     signals.transformModeChanged.dispatch('scale');
+				default:
+					break;
+			}
+		};
 
-                // break;
-
-                case config.getKey('settings/shortcuts/undo'):
-                    if (IS_MAC ? event.metaKey : event.ctrlKey) {
-                        event.preventDefault(); // Prevent browser specific hotkeys
-
-                        if (event.shiftKey) {
-                            editor.redo();
-                        } else {
-                            editor.undo();
-                        }
-                    }
-
-                    break;
-
-                case config.getKey('settings/shortcuts/focus'):
-                    if (editor.selected !== null) {
-                        editor.focus(editor.selected);
-                    }
-
-                    break;
-
-                default:
-                    break;
-            }
-        }
-
-        container.addEventListener("keydown", onKeyDown);
-        return () => {
-            container.removeEventListener("keydown", onKeyDown);
-        };
-    }, [containerRef, editor]);
-
-}
+		container.addEventListener('keydown', onKeyDown);
+		return () => {
+			container.removeEventListener('keydown', onKeyDown);
+		};
+	}, [containerRef, editor]);
+};

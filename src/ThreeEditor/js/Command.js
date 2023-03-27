@@ -20,6 +20,8 @@ export class Command {
 	 * 		id: number,
 	 * 		name: string,
 	 * 		object?: Object
+	 * }&{
+	 * 		[key: string]: any
 	 * }}
 	 */
 	toJSON() {

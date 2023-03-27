@@ -42,6 +42,10 @@ export class OperationTuple {
 
 		return new OperationTuple(object as THREE.Mesh, mode);
 	}
+
+	toRawData() {
+		return { operation: this.mode, objectId: this.object.id };
+	}
 }
 
 export const isOperationTuple = (x: unknown): x is OperationTuple => x instanceof OperationTuple;
