@@ -163,6 +163,10 @@ function OperationInput({
 								'height': 55,
 								'width': 55,
 								'margin': '0 auto',
+								'color': theme =>
+									theme.palette.mode === 'dark'
+										? 'text.primary'
+										: 'secondary.main',
 								'&:hover': {
 									color: 'error.main'
 								}
@@ -200,9 +204,19 @@ function OperationInput({
 							value={operation}
 							aria-label={operation}
 							selected={operation === value}
+							color='primary'
 							sx={{
-								display: 'flex',
-								flexDirection: 'column'
+								'display': 'flex',
+								'padding': '4px 0',
+								'minWidth': '56px',
+								'flexDirection': 'column',
+								'&.Mui-selected': theme =>
+									theme.palette.mode === 'dark'
+										? {}
+										: {
+												backgroundColor: 'primary.main',
+												color: 'primary.contrastText'
+										  }
 							}}>
 							{OperationToIcon(
 								operation,

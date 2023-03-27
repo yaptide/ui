@@ -278,7 +278,8 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 				display: 'grid',
 				height: PANEL_HEIGHT,
 				gridTemplateRows: '100%',
-				gridTemplateColumns: '40px 1fr'
+				gridTemplateColumns: '40px 1fr',
+				margin: -2
 			}}>
 			<Tabs
 				orientation='vertical'
@@ -286,7 +287,13 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 				value={algebraRow.index}
 				onChange={handleTabsChange}
 				aria-label='Vertical tabs example'
-				sx={{ borderRight: 1, borderColor: 'divider', minWidth: 30 }}>
+				sx={{
+					borderRight: 1,
+					borderColor: 'divider',
+					minWidth: 30,
+					backgroundColor: theme =>
+						theme.palette.mode === 'dark' ? 'background.paper' : 'secondary.light'
+				}}>
 				{algebraDataRef.current.map((row, id) => {
 					return <Tab {...a11yProps(id)} />;
 				})}
@@ -327,7 +334,10 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 										'width': '24px',
 										'height': '24px',
 										'borderRadius': 0,
-										'color': 'secondary.main',
+										'color': theme =>
+											theme.palette.mode === 'dark'
+												? 'text.primary'
+												: 'secondary.main',
 										'&:hover': {
 											color: 'error.main'
 										}

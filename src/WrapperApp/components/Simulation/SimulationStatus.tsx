@@ -14,8 +14,7 @@ import {
 	TableBody,
 	TableCell,
 	TableContainer,
-	TableRow,
-	useMediaQuery
+	TableRow
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
 import React, { ReactNode, useMemo } from 'react';
@@ -67,8 +66,6 @@ export default function SimulationStatus({
 		}
 		return rows;
 	}, [simulation]);
-
-	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
 	const statusColor = (status?: StatusState) => {
 		switch (status) {
@@ -200,9 +197,10 @@ export default function SimulationStatus({
 					component={Paper}
 					sx={{
 						'& .MuiTableRow-root': {
-							backgroundColor: prefersDarkMode
-								? 'rgba(255, 255, 255, 0.05)'
-								: 'rgba(0, 0, 0, 0.05)'
+							backgroundColor: theme =>
+								theme.palette.mode === 'dark'
+									? 'rgba(255, 255, 255, 0.05)'
+									: 'rgba(0, 0, 0, 0.05)'
 						}
 					}}>
 					<Table aria-label='simple table'>
