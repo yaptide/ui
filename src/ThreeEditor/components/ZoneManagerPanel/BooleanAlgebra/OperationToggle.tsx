@@ -16,7 +16,7 @@ import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import zIndex from '@mui/material/styles/zIndex';
 import { Typography } from '@mui/material';
 
-const TOOLTIP_DELAY = 300;
+const TOOLTIP_DELAY = 400;
 
 type OperationInputProps = ToggleButtonGroupProps & {
 	value?: SelectType;
@@ -40,20 +40,40 @@ function LeftSubtract(props: SvgIconProps) {
 						strokeWidth: 2,
 						rx: 6,
 						ry: 6,
-						transform: 'translate(4px)'
-					}
+						transform: 'translate(3.9px)'
+					},
+					...(props.sx ?? {})
 				}}
 			/>
 		</>
 	);
 }
 
-function OperationToIcon(operation: Operation) {
+function OperationToIcon(operation: Operation, isSelected: boolean) {
 	switch (operation) {
 		case 'intersection':
-			return <JoinInnerIcon />;
+			return (
+				<>
+					<JoinInnerIcon sx={{ transform: 'scale(1.3)' }} />
+					{isSelected && (
+						<Typography variant={'body1'} sx={{ fontSize: 10, textTransform: 'none' }}>
+							Intersect
+						</Typography>
+					)}
+				</>
+			);
 		case 'subtraction':
-			return <LeftSubtract />;
+			return (
+				<>
+					<LeftSubtract sx={{ transform: 'scale(1.3)' }} />
+					{isSelected && (
+						<Typography variant={'body1'} sx={{ fontSize: 10, textTransform: 'none' }}>
+							Subtract
+						</Typography>
+					)}
+				</>
+			);
+
 		default:
 			return null;
 	}
@@ -64,17 +84,31 @@ function OperationToTooltip(operation: Operation, objectName: string = 'object')
 		case 'intersection':
 			return (
 				<Typography>
-					{'Intersect '}
-					<Chip label={objectName} size='small' color='primary' />
-					{' with a zone area'}
+					{'Intersect'}
+					<Chip
+						label={objectName}
+						size='small'
+						color='primary'
+						sx={{
+							margin: '0 6px'
+						}}
+					/>
+					{'with a zone area'}
 				</Typography>
 			);
 		case 'subtraction':
 			return (
 				<Typography>
-					{'Subtract '}
-					<Chip label={objectName} size='small' color='primary' />
-					{' from a zone area'}
+					{'Subtract'}
+					<Chip
+						label={objectName}
+						size='small'
+						color='primary'
+						sx={{
+							margin: '0 6px'
+						}}
+					/>
+					{'from a zone area'}
 				</Typography>
 			);
 		default:
@@ -107,18 +141,20 @@ function OperationInput({
 							display: 'flex',
 							justifyContent: 'center',
 							overflow: 'hidden',
-							height: 45
+							height: 40
 						}}>
 						<IconButton
 							onClick={onChange}
 							sx={{
 								padding: 3,
-								borderRadius: '100% 100% 0 0',
-								height: 75
+								borderRadius: '45% 45% 0 0',
+								height: 75,
+								width: 55,
+								margin: '0 auto'
 							}}>
 							<RestoreFromTrashIcon
 								sx={{
-									transform: 'scale(1.3) translate(0, -50%)'
+									transform: 'scale(1.3) translate(0, -70%)'
 								}}
 							/>
 						</IconButton>
@@ -148,8 +184,12 @@ function OperationInput({
 						<ToggleButton
 							value={operation}
 							aria-label={operation}
-							selected={operation === value}>
-							{OperationToIcon(operation)}
+							selected={operation === value}
+							sx={{
+								display: 'flex',
+								flexDirection: 'column'
+							}}>
+							{OperationToIcon(operation, !value)}
 							{/* <JoinInnerIcon /> */}
 							{/* <img src='./images/S.png' alt='intersection' /> */}
 						</ToggleButton>
