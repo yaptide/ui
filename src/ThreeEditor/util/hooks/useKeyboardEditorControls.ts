@@ -52,7 +52,6 @@ export const getRemoveCommand = (editor: Editor, object: Object3D) => {
 	return new RemoveObjectCommand(editor, object);
 };
 
-
 export const useKeyboardEditorControls = (
 	editor: Editor | undefined,
 	containerRef: RefObject<HTMLElement>
@@ -65,9 +64,6 @@ export const useKeyboardEditorControls = (
 		const { config } = editor;
 
 		const IS_MAC = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-
-
-
 		const onKeyDown = (event: KeyboardEvent) => {
 			const eventFromSidebar = (event.target as any).closest('.ThreeEditorSidebar') !== null;
 
@@ -76,7 +72,6 @@ export const useKeyboardEditorControls = (
 			switch (event.key.toLowerCase()) {
 				case 'delete':
 					const object = editor.selected;
-
 					if (isRemovable(object)) editor.execute(getRemoveCommand(editor, object));
 					break;
 

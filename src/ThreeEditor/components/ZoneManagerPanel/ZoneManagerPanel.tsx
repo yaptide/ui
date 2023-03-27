@@ -274,12 +274,12 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 		<Box
 			sx={{
 				flexGrow: 1,
-				bgcolor: theme => (theme.palette.mode === 'dark' ? 'background.paper' : 'grey.100'),
+				bgcolor: theme => (theme.palette.mode === 'dark' ? 'grey.900' : 'grey.100'),
 				display: 'grid',
 				height: PANEL_HEIGHT,
 				gridTemplateRows: '100%',
 				gridTemplateColumns: '40px 1fr',
-				margin: -2
+				margin: '-8px -16px -16px -16px'
 			}}>
 			<Tabs
 				orientation='vertical'
