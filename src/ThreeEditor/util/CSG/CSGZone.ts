@@ -32,7 +32,6 @@ interface MaterialPropertiesOverrides {
 }
 
 const _get_default = (material: SimulationMaterial) => {
-
 	return {
 		materialPropertiesOverrides: {
 			density: {
@@ -40,8 +39,8 @@ const _get_default = (material: SimulationMaterial) => {
 				value: material.density
 			}
 		}
-	}
-}
+	};
+};
 
 export class Zone extends SimulationMesh {
 	readonly notRemovable: boolean = false;
@@ -78,7 +77,6 @@ export class Zone extends SimulationMesh {
 	}
 
 	set materialPropertiesOverrides(overrides: MaterialPropertiesOverrides) {
-
 		this._materialPropertiesOverrides = {
 			...overrides
 		};
@@ -88,10 +86,8 @@ export class Zone extends SimulationMesh {
 		if (isCurrentlyUsingCustomMaterial !== this.usingCustomMaterial) {
 			this.usingCustomMaterial = isCurrentlyUsingCustomMaterial;
 
-			if (this.usingCustomMaterial)
-				this.material.decrement();
-			else
-				this.material.increment();
+			if (this.usingCustomMaterial) this.material.decrement();
+			else this.material.increment();
 		}
 	}
 
@@ -110,11 +106,14 @@ export class Zone extends SimulationMesh {
 		this.material.increment();
 		this._unionOperations = [];
 		this.subscribedObjects = new CounterMap<string>();
-		this._materialPropertiesOverrides = { ..._get_default(this.material).materialPropertiesOverrides };
+		this._materialPropertiesOverrides = {
+			..._get_default(this.material).materialPropertiesOverrides
+		};
 
 		this.signals.geometryChanged.add(object => this.handleChange(object));
 		this.signals.objectChanged.add(object => this.handleChange(object));
 		this.signals.objectRemoved.add(object => this.handleRemoved(object));
+		this.addUnion();
 	}
 
 	get simulationMaterial(): SimulationMaterial {
@@ -166,8 +165,10 @@ export class Zone extends SimulationMesh {
 		console.timeEnd('CSGZone');
 	}
 
-	addUnion(): void {
-		this.unionOperations.push([]);
+	addUnion(unionIndex?: number, operations: OperationTuple[] = []): void {
+		if (unionIndex === undefined) unionIndex = this.unionOperations.length;
+		const rest = this.unionOperations.splice(unionIndex);
+		this.unionOperations.push(...[operations, ...rest]);
 
 		this.announceChangedState();
 	}
@@ -186,7 +187,7 @@ export class Zone extends SimulationMesh {
 		this.announceChangedState();
 	}
 
-	removeUnion(unionIndex: number): void {
+	removeUnion(unionIndex: number = this.unionOperations.length - 1): void {
 		this.unionOperations[unionIndex].forEach((e, i) => this.removeOperation(unionIndex, i));
 
 		this.unionOperations.splice(unionIndex, 1);
@@ -253,13 +254,18 @@ export class Zone extends SimulationMesh {
 	}
 
 	private resetCustomMaterial(): void {
-		this._materialPropertiesOverrides = { ..._get_default(this.material).materialPropertiesOverrides };
+		this._materialPropertiesOverrides = {
+			..._get_default(this.material).materialPropertiesOverrides
+		};
 		this.usingCustomMaterial = false;
 	}
 
 	private somePropertyOverridden(): boolean {
 		for (const key in this.materialPropertiesOverrides) {
-			const value = this.materialPropertiesOverrides[key as keyof typeof this.materialPropertiesOverrides];
+			const value =
+				this.materialPropertiesOverrides[
+					key as keyof typeof this.materialPropertiesOverrides
+				];
 			if (!value.override) continue;
 			return true;
 		}
@@ -277,9 +283,10 @@ export class Zone extends SimulationMesh {
 		const customMaterial = this.simulationMaterial.clone().toJSON() as Record<string, unknown>;
 		let saveCustomMaterial = false;
 
-		const materialPropertiesOverridesJSON: Record<string, unknown> = {}
+		const materialPropertiesOverridesJSON: Record<string, unknown> = {};
 		for (const key in materialPropertiesOverrides) {
-			const value = materialPropertiesOverrides[key as keyof typeof materialPropertiesOverrides];
+			const value =
+				materialPropertiesOverrides[key as keyof typeof materialPropertiesOverrides];
 
 			if (!value.override) continue;
 			materialPropertiesOverridesJSON[key] = value.value;
@@ -294,7 +301,7 @@ export class Zone extends SimulationMesh {
 			unionOperations,
 			subscribedObjects,
 			materialPropertiesOverrides: materialPropertiesOverridesJSON,
-			customMaterial: saveCustomMaterial ? customMaterial : undefined,
+			customMaterial: saveCustomMaterial ? customMaterial : undefined
 		};
 	}
 
@@ -313,14 +320,14 @@ export class Zone extends SimulationMesh {
 			this.editor.materialManager.defaultMaterial;
 
 		for (const prop in data.materialPropertiesOverrides) {
-			const value = data.materialPropertiesOverrides[prop as keyof MaterialPropertiesOverrides] ?? NaN;
+			const value =
+				data.materialPropertiesOverrides[prop as keyof MaterialPropertiesOverrides] ?? NaN;
 			if (isNaN(value)) continue;
 
 			this.materialPropertiesOverrides[prop as keyof MaterialPropertiesOverrides] = {
 				override: true,
 				value: value
 			};
-
 		}
 
 		return this;

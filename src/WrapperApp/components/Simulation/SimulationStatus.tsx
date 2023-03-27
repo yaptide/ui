@@ -8,13 +8,13 @@ import {
 	CardHeader,
 	Chip,
 	Divider,
+	LinearProgress,
 	Paper,
 	Table,
 	TableBody,
 	TableCell,
 	TableContainer,
-	TableRow,
-	useMediaQuery
+	TableRow
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
 import React, { ReactNode, useMemo } from 'react';
@@ -23,8 +23,6 @@ import { InputFiles } from '../../../services/RequestTypes';
 import {
 	JobStatusData,
 	StatusState,
-	TaskStatusData,
-	TaskTime,
 	currentJobStatusData,
 	currentTaskStatusData
 } from '../../../services/ResponseTypes';
@@ -32,7 +30,6 @@ import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
 import { SimulationProgressBar } from './SimulationProgressBar';
-import { LinearProgress } from '@mui/material';
 interface SimulationStatusProps {
 	simulation: JobStatusData;
 	loadResults?: (jobId: string | null) => void;
@@ -59,7 +56,7 @@ export default function SimulationStatus({
 	showInputFiles
 }: SimulationStatusProps) {
 	const { resultsSimulationData } = useStore();
-	const { cancelJob: cancelSimulation } = useShSimulation();
+	const { cancelJobDirect: cancelSimulation } = useShSimulation();
 	const { loadFromJson } = useLoader();
 
 	const rows = useMemo(() => {
@@ -69,8 +66,6 @@ export default function SimulationStatus({
 		}
 		return rows;
 	}, [simulation]);
-
-	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
 	const statusColor = (status?: StatusState) => {
 		switch (status) {
@@ -202,9 +197,10 @@ export default function SimulationStatus({
 					component={Paper}
 					sx={{
 						'& .MuiTableRow-root': {
-							backgroundColor: prefersDarkMode
-								? 'rgba(255, 255, 255, 0.05)'
-								: 'rgba(0, 0, 0, 0.05)'
+							backgroundColor: theme =>
+								theme.palette.mode === 'dark'
+									? 'rgba(255, 255, 255, 0.05)'
+									: 'rgba(0, 0, 0, 0.05)'
 						}
 					}}>
 					<Table aria-label='simple table'>

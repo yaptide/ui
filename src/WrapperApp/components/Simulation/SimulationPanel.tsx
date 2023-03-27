@@ -8,6 +8,7 @@ import {
 	Fade,
 	LinearProgress,
 	Modal,
+	Switch,
 	Typography
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
@@ -44,11 +45,12 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	} = useStore();
 
 	const {
-		cancelJob,
-		postJob: sendRun,
-		getHelloWorld: sendHelloWorld,
-		getPageContents: getSimulations,
-		getPageStatus: getSimulationsStatus
+		cancelJobDirect,
+		postJobDirect,
+		postJobBatch,
+		getHelloWorld,
+		getPageContents,
+		getPageStatus
 	} = useShSimulation();
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -66,6 +68,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const [simulator, setSimulator] = useState<string>('shieldhit');
 
 	const [inputFiles, setInputFiles] = useState<InputFiles>();
+	const [directRun, setDirectRun] = useState<boolean>(true);
 
 	const [trackedId, setTrackedId] = useState<string>();
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
@@ -82,14 +85,14 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	const updateSimulationInfo = useCallback(
 		() =>
-			getSimulations(page - 1, pageSize, orderType, orderBy)
+			getPageContents(page - 1, pageSize, orderType, orderBy)
 				.then(results => {
 					const { simulations, pageCount } = results;
 					setSimulationInfo([...simulations]);
 					setPageCount(pageCount);
 				})
 				.catch(),
-		[getSimulations, orderType, orderBy, page, pageSize]
+		[getPageContents, orderType, orderBy, page, pageSize]
 	);
 	const refreshPage = useCallback(
 		(
@@ -99,13 +102,13 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			orderBy: OrderBy,
 			signal?: AbortSignal | undefined
 		) =>
-			getSimulations(page - 1, pageSize, orderType, orderBy, signal)
+			getPageContents(page - 1, pageSize, orderType, orderBy, signal)
 				.then(({ simulations, pageCount }) => {
 					setSimulationInfo([...simulations]);
 					setPageCount(pageCount);
 				})
 				.catch(),
-		[getSimulations]
+		[getPageContents]
 	);
 	const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
 		setPage(page);
@@ -114,7 +117,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	// will be used later
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const handleJobCancel = (simulationInfo: SimulationInfo) => {
-		cancelJob(simulationInfo, controller.signal).then(() => {
+		cancelJobDirect(simulationInfo, controller.signal).then(() => {
 			refreshPage(page, pageSize, orderType, orderBy, controller.signal);
 		});
 	};
@@ -137,22 +140,28 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const updateSimulationData = useCallback(
 		() =>
 			!DEMO_MODE &&
-			getSimulationsStatus(
-				simulationInfo,
-				true,
-				handleBeforeCacheWrite,
-				controller.signal
-			).then(s => {
-				setSimulationsStatusData([...s.reverse()]);
-			}),
-		[handleBeforeCacheWrite, controller.signal, getSimulationsStatus, simulationInfo]
+			getPageStatus(simulationInfo, true, handleBeforeCacheWrite, controller.signal).then(
+				s => {
+					setSimulationsStatusData([...s.reverse()]);
+				}
+			),
+		[handleBeforeCacheWrite, controller.signal, getPageStatus, simulationInfo]
 	);
 
 	const runSimulation = (inputFiles?: InputFiles) => {
 		setInProgress(true);
 		if (!editorRef.current && !inputFiles) return;
 		const simData = inputFiles ?? editorRef.current!.toJSON();
-		sendRun(simData, nTasks, simulator, simName, undefined, controller.signal)
+		console.log(directRun);
+
+		(directRun ? postJobDirect : postJobBatch)(
+			simData,
+			nTasks,
+			simulator,
+			simName,
+			undefined,
+			controller.signal
+		)
 			.then(res => {
 				updateSimulationInfo();
 				setTrackedId(res.jobId);
@@ -189,7 +198,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	useEffect(() => {
 		if (!DEMO_MODE)
-			sendHelloWorld(controller.signal)
+			getHelloWorld(controller.signal)
 				.then(() => {
 					setBackendAlive(true);
 					updateSimulationInfo();
@@ -200,7 +209,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				});
 	}, [
 		controller.signal,
-		sendHelloWorld,
+		getHelloWorld,
 		updateSimulationInfo,
 		setSimulationIDInterval,
 		isBackendAlive,
@@ -333,6 +342,23 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 									value={simulator}
 									disabled={true}
 								/>
+								<Box
+									sx={{
+										display: 'flex',
+										flexDirection: 'row',
+										textAlign: 'center'
+									}}>
+									<Typography variant='body2' component='p'>
+										Direct Run
+									</Typography>
+									<Switch
+										checked={!directRun}
+										onChange={e => setDirectRun(!e.target.checked)}
+									/>
+									<Typography variant='body2' component='p'>
+										Batch Run
+									</Typography>
+								</Box>
 							</CardContent>
 							<Button
 								color='info'
