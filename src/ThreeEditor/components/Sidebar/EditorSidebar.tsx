@@ -16,9 +16,21 @@ import { Typography } from '@mui/material';
 import { Divider } from '@mui/material';
 import { PhysicConfiguration } from './propeteries/category/PhysicConfiguration';
 import { SidebarTree } from './tree/SidebarTree';
+import { AddQuantityCommand } from '../../js/commands/AddQuantityCommand';
+import { isOutput } from '../../util/Scoring/ScoringOutput';
+import { Object3D } from 'three';
+import { useSignal } from '../../util/hooks/signals';
 
 export function EditorSidebar(props: { editor: Editor }) {
 	const { editor } = props;
+
+	const [selectedObject, setSelectedObject] = useState(editor.selected);
+
+	const handleObjectUpdate = useCallback((o: Object3D) => {
+		setSelectedObject(o);
+	}, []);
+
+	useSignal(editor, 'objectSelected', handleObjectUpdate);
 
 	const [selectedTab, setValue] = useState('Geometry');
 
@@ -55,6 +67,7 @@ export function EditorSidebar(props: { editor: Editor }) {
 		};
 	}, [editor, handleContextChange]);
 
+	// TODO: consider splitting tabs into components
 	const geometryTabElements = [
 		{
 			title: 'Figures',
@@ -111,6 +124,7 @@ export function EditorSidebar(props: { editor: Editor }) {
 		}
 	];
 
+	
 	const scoringTabElements = [
 		{
 			title: 'Filters',
@@ -133,6 +147,11 @@ export function EditorSidebar(props: { editor: Editor }) {
 				{
 					title: 'Output',
 					onClick: () => editor.execute(new AddOutputCommand(editor))
+				},
+				{
+					title: 'Quantity',
+					onClick: () => editor.execute(new AddQuantityCommand(editor, selectedObject)),
+					isDisabled: () => !isOutput(selectedObject)
 				}
 			],
 			tree: <SidebarTree editor={editor} sources={[editor.scoringManager.children]} />

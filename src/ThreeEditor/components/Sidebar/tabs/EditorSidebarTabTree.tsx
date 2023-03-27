@@ -34,7 +34,9 @@ export interface TreeItem {
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
 	<MuiAccordionSummary {...props} />
 ))(({ theme }) => ({
-	'backgroundColor': useMediaQuery('(prefers-color-scheme: dark)') ? theme.palette.grey['800'] : theme.palette.grey['300'],
+	'backgroundColor': useMediaQuery('(prefers-color-scheme: dark)')
+		? theme.palette.grey['800']
+		: theme.palette.grey['300'],
 
 	'& .MuiAccordionSummary-content:is(.MuiAccordionSummary-content,.Mui-expanded)': {
 		margin: theme.spacing(1),
@@ -62,7 +64,7 @@ const Accordion = styled((props: AccordionProps) => <MuiAccordion square {...pro
 
 interface TreeElement {
 	title: string;
-	add: { title: string; onClick: () => void }[];
+	add: { title: string; onClick: () => void; isDisabled?: () => boolean }[];
 	tree: ReactElement;
 }
 
@@ -81,7 +83,10 @@ function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
 					<Typography>Add:</Typography>
 					<ButtonGroup size='small'>
 						{props.add.map(add => (
-							<Button key={add.title} onClick={add.onClick}>
+							<Button
+								key={add.title}
+								onClick={add.onClick}
+								disabled={add.isDisabled?.call(null) ?? false}>
 								{add.title}
 							</Button>
 						))}
