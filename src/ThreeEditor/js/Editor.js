@@ -488,6 +488,21 @@ Editor.prototype = {
 		return object;
 	},
 
+	getObjectById(id) {
+		const objectCollections = [
+			this.scene,
+			this.zoneManager,
+			this.beam,
+			this.detectManager,
+			this.detectManager.filterContainer,
+			this.scoringManager
+		];
+		const object =
+			objectCollections.map(e => e.getObjectById(id)).find(e => typeof e !== 'undefined') ??
+			null;
+		return object;
+	},
+
 	getNextFreeName(name, object = null) {
 		return getNextFreeName(this, name, object);
 	},

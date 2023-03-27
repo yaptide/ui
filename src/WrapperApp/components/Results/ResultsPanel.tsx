@@ -1,13 +1,4 @@
-import {
-	Box,
-	Button,
-	Card,
-	CardContent,
-	Tab,
-	Tabs,
-	Typography,
-	useMediaQuery
-} from '@mui/material';
+import { Box, Button, Card, CardContent, Tab, Tabs, Typography } from '@mui/material';
 import { SyntheticEvent, useEffect, useState } from 'react';
 import { Estimator, Page, Page0D, generateGraphs, isPage0d } from '../../../JsRoot/GraphData';
 import { useStore } from '../../../services/StoreService';
@@ -21,8 +12,6 @@ export interface EstimatorResults extends Estimator {
 }
 
 function ResultsPanel() {
-	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-
 	const { resultsSimulationData: simulation } = useStore();
 
 	const [tabsValue, setTabsValue] = useState(0);
@@ -102,16 +91,20 @@ function ResultsPanel() {
 							}}>
 							<CardContent
 								sx={{
-									color: prefersDarkMode ? '#fff' : 'secondary.dark'
+									color: theme =>
+										theme.palette.mode === 'dark'
+											? 'secondary.contrastText'
+											: 'secondary.dark'
 								}}>
 								<Tabs
 									textColor='inherit'
 									sx={{
 										'flexShrink': 0,
 										'& .MuiTabs-indicator': {
-											backgroundColor: prefersDarkMode
-												? '#fff'
-												: 'secondary.dark'
+											backgroundColor: theme =>
+												theme.palette.mode === 'dark'
+													? 'secondary.contrastText'
+													: 'secondary.dark'
 										},
 										'& .MuiButtonBase-root': {
 											fontWeight: 'bold'
@@ -138,7 +131,10 @@ function ResultsPanel() {
 							sx={{
 								'flexGrow': 1,
 								'margin': '0.5rem',
-								'bgcolor': prefersDarkMode ? 'text.disabled' : 'background.paper',
+								'bgcolor': theme =>
+									theme.palette.mode === 'dark'
+										? 'text.disabled'
+										: 'background.paper',
 								'& .MuiCardContent-root div': {
 									bgcolor: 'transparent',
 									backgroundImage: 'none',

@@ -48,6 +48,7 @@ The page will reload if you make edits.
 
 - Node.js 16.x or higher
 - Python 3.9+
+- pip
 
 ## Credits
 
