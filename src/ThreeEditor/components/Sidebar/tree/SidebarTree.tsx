@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Tree } from '@minoru/react-dnd-treeview';
+import { Tree, TreeMethods } from '@minoru/react-dnd-treeview';
 import { Object3D } from 'three';
 import './SidebarTree.style.css';
 import { Editor } from '../../../js/Editor';
@@ -11,6 +11,8 @@ type TreeSource = (Object3D[] | Object3D)[];
 //TODO: Remove react-dnd-treeview and use normal tree view from material-ui
 export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 	const { editor, sources } = props;
+
+	const treeRef = useRef<TreeMethods>(null);
 
 	const buildOption = useCallback(
 		(
@@ -79,6 +81,7 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 			classes={{
 				root: 'editor-sidebar-tree'
 			}}
+			ref={treeRef}
 			tree={treeData}
 			rootId={0}
 			onDrop={() => {}}
@@ -88,6 +91,7 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 			dropTargetOffset={5}
 			render={(node, { depth, isOpen, onToggle }) => (
 				<SidebarTreeItem
+					treeRef={treeRef.current}
 					node={node}
 					depth={depth}
 					isOpen={isOpen}

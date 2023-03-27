@@ -9,7 +9,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Editor } from '../../../js/Editor';
 import { ISimulationObject } from '../../../util/SimulationBase/SimulationObject';
-import { NodeModel } from '@minoru/react-dnd-treeview/dist/types';
+import { NodeModel, TreeMethods } from '@minoru/react-dnd-treeview/dist/types';
 import {
 	canChangeName,
 	getRemoveCommand,
@@ -18,8 +18,8 @@ import {
 import { isOutput } from '../../../util/Scoring/ScoringOutput';
 import { AddQuantityCommand } from '../../../js/commands/AddQuantityCommand';
 import Box from '@mui/material/Box';
-import { useSmartWatchEditorState } from '../../../util/hooks/signals';
-import { useEffect, useRef, useState } from 'react';
+import { useSignal, useSmartWatchEditorState } from '../../../util/hooks/signals';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface TreeItem {
 	id: number;
@@ -39,6 +39,7 @@ function isHidable(object: Object3D | ISimulationObject) {
 }
 
 export function SidebarTreeItem(props: {
+	treeRef: TreeMethods | null;
 	objectRefs: React.MutableRefObject<Map<string, HTMLDivElement>>;
 	node: NodeModel<{
 		object: Object3D | SimulationObject3D;
@@ -48,7 +49,7 @@ export function SidebarTreeItem(props: {
 	onToggle: () => void;
 	editor: Editor;
 }) {
-	const { objectRefs, node, depth, isOpen, onToggle, editor } = props;
+	const { objectRefs, node, depth, isOpen, onToggle, editor, treeRef } = props;
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const theme = useTheme();
@@ -107,6 +108,17 @@ export function SidebarTreeItem(props: {
 			inputRef?.current?.focus();
 		}
 	}, [mode]);
+
+	const onObjectAdded = useCallback(
+		(newObject: Object3D) => {
+			if (newObject.parent === object) {
+				treeRef?.open(node.id);
+			}
+		},
+		[node.id, object, treeRef]
+	);
+
+	useSignal(editor, 'objectAdded', onObjectAdded);
 
 	return (
 		<>

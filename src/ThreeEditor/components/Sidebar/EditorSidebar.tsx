@@ -20,6 +20,7 @@ import { AddQuantityCommand } from '../../js/commands/AddQuantityCommand';
 import { isOutput } from '../../util/Scoring/ScoringOutput';
 import { Object3D } from 'three';
 import { useSignal } from '../../util/hooks/signals';
+import { isQuantity } from '../../util/Scoring/ScoringQuantity';
 
 export function EditorSidebar(props: { editor: Editor }) {
 	const { editor } = props;
@@ -124,7 +125,6 @@ export function EditorSidebar(props: { editor: Editor }) {
 		}
 	];
 
-	
 	const scoringTabElements = [
 		{
 			title: 'Filters',
@@ -150,8 +150,14 @@ export function EditorSidebar(props: { editor: Editor }) {
 				},
 				{
 					title: 'Quantity',
-					onClick: () => editor.execute(new AddQuantityCommand(editor, selectedObject)),
-					isDisabled: () => !isOutput(selectedObject)
+					onClick: () =>
+						editor.execute(
+							new AddQuantityCommand(
+								editor,
+								isQuantity(selectedObject) ? selectedObject.parent : selectedObject
+							)
+						),
+					isDisabled: () => !isOutput(selectedObject) && !isQuantity(selectedObject)
 				}
 			],
 			tree: <SidebarTree editor={editor} sources={[editor.scoringManager.children]} />
