@@ -108,6 +108,7 @@ export default function BooleanAlgebraRow({
 										onChange={onOperationChange(index)}
 										canClear={index === value.length - 1}
 										value={operation}
+										objectName={label}
 									/>
 								</>
 							)}

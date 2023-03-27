@@ -3,19 +3,25 @@ import JoinLeftIcon from '@mui/icons-material/JoinLeft';
 import UndoIcon from '@mui/icons-material/Undo';
 import {
 	Box,
+	Chip,
 	IconButton,
 	SvgIconProps,
 	ToggleButton,
 	ToggleButtonGroup,
-	ToggleButtonGroupProps
+	ToggleButtonGroupProps,
+	Tooltip
 } from '@mui/material';
 import { Operation } from '../../../util/Operation';
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import zIndex from '@mui/material/styles/zIndex';
+import { Typography } from '@mui/material';
+
+const TOOLTIP_DELAY = 300;
 
 type OperationInputProps = ToggleButtonGroupProps & {
 	value?: SelectType;
 	canClear?: boolean;
+	objectName?: string;
 	onChange?: (event: React.MouseEvent<HTMLElement, MouseEvent>, value?: SelectType) => void;
 	allowedOperations?: Operation[];
 };
@@ -42,10 +48,45 @@ function LeftSubtract(props: SvgIconProps) {
 	);
 }
 
+function OperationToIcon(operation: Operation) {
+	switch (operation) {
+		case 'intersection':
+			return <JoinInnerIcon />;
+		case 'subtraction':
+			return <LeftSubtract />;
+		default:
+			return null;
+	}
+}
+
+function OperationToTooltip(operation: Operation, objectName: string = 'object') {
+	switch (operation) {
+		case 'intersection':
+			return (
+				<Typography>
+					{'Intersect '}
+					<Chip label={objectName} size='small' color='primary' />
+					{' with a zone area'}
+				</Typography>
+			);
+		case 'subtraction':
+			return (
+				<Typography>
+					{'Subtract '}
+					<Chip label={objectName} size='small' color='primary' />
+					{' from a zone area'}
+				</Typography>
+			);
+		default:
+			return null;
+	}
+}
+
 function OperationInput({
 	exclusive = true,
 	value,
 	canClear,
+	objectName,
 	onChange,
 	allowedOperations = ['intersection', 'subtraction'],
 	...restProps
@@ -53,27 +94,36 @@ function OperationInput({
 	return (
 		<>
 			{canClear && value && (
-				<Box
-					sx={{
-						display: 'flex',
-						justifyContent: 'center',
-						overflow: 'hidden',
-						height: 45
-					}}>
-					<IconButton
-						onClick={onChange}
+				<Tooltip
+					title={
+						<Typography>{'Remove operation from a zone area calculations'}</Typography>
+					}
+					placement='left'
+					arrow
+					followCursor
+					enterDelay={TOOLTIP_DELAY}>
+					<Box
 						sx={{
-							padding: 3,
-							borderRadius: '100% 100% 0 0',
-							height: 75
+							display: 'flex',
+							justifyContent: 'center',
+							overflow: 'hidden',
+							height: 45
 						}}>
-						<RestoreFromTrashIcon
+						<IconButton
+							onClick={onChange}
 							sx={{
-								transform: 'scale(1.3) translate(0, -50%)'
-							}}
-						/>
-					</IconButton>
-				</Box>
+								padding: 3,
+								borderRadius: '100% 100% 0 0',
+								height: 75
+							}}>
+							<RestoreFromTrashIcon
+								sx={{
+									transform: 'scale(1.3) translate(0, -50%)'
+								}}
+							/>
+						</IconButton>
+					</Box>
+				</Tooltip>
 			)}
 			<ToggleButtonGroup
 				{...restProps}
@@ -88,14 +138,23 @@ function OperationInput({
 					}
 				}}
 				aria-label='operation-select'>
-				<ToggleButton value='intersection' aria-label='intersection'>
-					<JoinInnerIcon />
-					{/* <img src='./images/S.png' alt='intersection' /> */}
-				</ToggleButton>
-				<ToggleButton value='subtraction' aria-label='subtraction'>
-					<LeftSubtract />
-					{/* <img src='./images/L.png' alt='subtraction' /> */}
-				</ToggleButton>
+				{allowedOperations.map(operation => (
+					<Tooltip
+						title={OperationToTooltip(operation, objectName)}
+						placement='left'
+						arrow
+						followCursor
+						enterDelay={TOOLTIP_DELAY}>
+						<ToggleButton
+							value={operation}
+							aria-label={operation}
+							selected={operation === value}>
+							{OperationToIcon(operation)}
+							{/* <JoinInnerIcon /> */}
+							{/* <img src='./images/S.png' alt='intersection' /> */}
+						</ToggleButton>
+					</Tooltip>
+				))}
 			</ToggleButtonGroup>
 		</>
 	);
