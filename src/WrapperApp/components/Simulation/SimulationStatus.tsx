@@ -8,6 +8,7 @@ import {
 	CardHeader,
 	Chip,
 	Divider,
+	LinearProgress,
 	Paper,
 	Table,
 	TableBody,
@@ -23,8 +24,6 @@ import { InputFiles } from '../../../services/RequestTypes';
 import {
 	JobStatusData,
 	StatusState,
-	TaskStatusData,
-	TaskTime,
 	currentJobStatusData,
 	currentTaskStatusData
 } from '../../../services/ResponseTypes';
@@ -32,7 +31,6 @@ import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
 import { SimulationProgressBar } from './SimulationProgressBar';
-import { LinearProgress } from '@mui/material';
 interface SimulationStatusProps {
 	simulation: JobStatusData;
 	loadResults?: (jobId: string | null) => void;

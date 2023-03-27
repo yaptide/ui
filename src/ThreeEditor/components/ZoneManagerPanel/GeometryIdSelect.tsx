@@ -1,7 +1,7 @@
 import { MenuItem, Select } from '@mui/material';
-import { SelectChangeEvent, SelectProps } from '@mui/material/Select/Select';
+import { SelectProps } from '@mui/material/Select/Select';
 import { useRef } from 'react';
-import { Object3D, Color } from 'three';
+import { Object3D } from 'three';
 
 type GeometryIdSelectProps = SelectProps<string> & {
 	allObjects: Object3D[];

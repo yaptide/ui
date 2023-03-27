@@ -9,12 +9,10 @@ import {
 	ToggleButton,
 	ToggleButtonGroup,
 	ToggleButtonGroupProps,
-	Tooltip
+	Tooltip,
+	Typography
 } from '@mui/material';
 import { Operation } from '../../../util/Operation';
-import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
-import zIndex from '@mui/material/styles/zIndex';
-import { Typography } from '@mui/material';
 
 const TOOLTIP_DELAY = 400;
 

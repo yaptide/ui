@@ -48,7 +48,7 @@ export default function BooleanAlgebraRow({
 		}
 		setLastObj(Object.assign({}, lastRef));
 		setLastLength(displayValueRef.current.length);
-	}, [value]);
+	}, [value, lastObj?.objectId, lastLength]);
 
 	const endRef = React.useRef<HTMLDivElement>(null);
 

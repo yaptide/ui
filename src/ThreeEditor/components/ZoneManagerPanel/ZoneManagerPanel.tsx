@@ -8,8 +8,7 @@ import {
 	SelectChangeEvent,
 	Tab,
 	Tabs,
-	Tooltip,
-	useMediaQuery
+	Tooltip
 } from '@mui/material';
 import React, { LegacyRef, useCallback, useEffect, useRef, useState } from 'react';
 import ScrollManager from '../../../libs/ScrollManager';
@@ -29,84 +28,14 @@ type ZoneManagerPanelProps = {
 };
 
 function ZoneManagerPanel(props: ZoneManagerPanelProps) {
+	const { editor, zone, handleChanged, handleAdd, handleRemove } = props;
 	const PANEL_HEIGHT = 450;
-
-	/*------------------------------------CSG.Zone-------------------------------------*/
-	const zoneRef = useRef<CSG.Zone>();
-
-	const initZone = useCallback(() => {
-		const manager = props.editor.zoneManager;
-		props.zone
-			? (() => {
-					zoneRef.current = props.zone;
-			  })()
-			: (zoneRef.current = manager.createZone());
-		loadAlgebraDataFromZone();
-	}, [props.editor.zoneManager, props.zone]);
-
-	useEffect(() => {
-		initZone();
-	}, [initZone]);
-
-	/*----------------------------------AlgebraData-----------------------------------*/
-	const algebraDataRef = useRef<BooleanAlgebraData[]>([new BooleanAlgebraData()]);
-
-	const loadAlgebraDataFromZone = useCallback(() => {
-		const newData: BooleanAlgebraData[] =
-			zoneRef.current?.unionOperations.map(union =>
-				BooleanAlgebraData.fromValue(
-					union.map(operation => operation.toRawData()) as OperationDataList
-				)
-			) ?? [];
-
-		algebraDataRef.current = newData;
-		setAlgebraRow(refreshAlgebraRow);
-	}, []);
-
-	useEffect(() => {
-		props.editor.signals.zoneChanged.add(loadAlgebraDataFromZone);
-		return () => {
-			props.editor.signals.zoneChanged.remove(loadAlgebraDataFromZone);
-		};
-	}, [loadAlgebraDataFromZone, props.editor.signals.zoneChanged]);
-
-	const pushAlgebraDataRow = useCallback(() => {
-		algebraDataRef.current.push(new BooleanAlgebraData());
-		const newIndex = algebraDataRef.current.length - 1;
-		setAlgebraRow({
-			index: newIndex,
-			data: algebraDataRef.current[newIndex]
-		});
-		props.handleAdd();
-	}, []);
-
-	const removeAlgebraDataRow = useCallback(
-		(removeId: number) => () => {
-			algebraDataRef.current = algebraDataRef.current.filter((el, id) => id !== removeId);
-			if (algebraDataRef.current.length === 0) {
-				algebraDataRef.current.push(new BooleanAlgebraData());
-				setAlgebraRow({ index: 0, data: algebraDataRef.current[0] });
-				props.handleChanged(0, algebraDataRef.current[0]);
-			} else {
-				setAlgebraRow(prev => {
-					const newIndex =
-						removeId <= prev.index ? Math.max(prev.index - 1, 0) : prev.index;
-					return {
-						index: newIndex,
-						data: algebraDataRef.current[newIndex]
-					};
-				});
-				props.handleRemove(removeId);
-			}
-		},
-		[]
-	);
 
 	/*-------------------------------------State-------------------------------------*/
 	const [algebraRow, setAlgebraRow] = useState<{
 		index: number;
 		data: BooleanAlgebraData;
-	}>({ index: 0, data: algebraDataRef.current[0] });
+	}>({ index: 0, data: new BooleanAlgebraData() });
 
 	const refreshAlgebraRow = useCallback(
 		(prev: typeof algebraRow) => ({
@@ -115,6 +44,30 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 		}),
 		[]
 	);
+
+	/*-----------------------------------Backdrop-----------------------------------*/
+	const [backdropOpen, setBackdropOpen] = useState(false);
+	const backdropRef = useRef<HTMLDivElement>(null);
+	const openBackdrop = useCallback(() => setBackdropOpen(true), []);
+	const closeBackdrop = useCallback(() => setBackdropOpen(false), []);
+	const backdropHandleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
+		// get the element that was clicked
+		const target = event.target as HTMLElement;
+		// if the element that was clicked is not the backdrop element return
+		if (target !== backdropRef.current) return;
+		// otherwise close the backdrop
+		setBackdropOpen(false);
+	}, []);
+	const selectedGeometryIdRef = useRef<number>(0);
+	const changeSelectedGeometryId = useCallback(
+		(index: number) => (_: React.MouseEvent<HTMLElement>) => {
+			selectedGeometryIdRef.current = index;
+			openBackdrop();
+		},
+		[selectedGeometryIdRef, openBackdrop]
+	);
+
+	/*----------------------------------UpdateState----------------------------------*/
 
 	const updateCurrentObjectId = useCallback(
 		(rowIndex: number, valueIndex: number) => (event: SelectChangeEvent) => {
@@ -132,10 +85,10 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 				});
 				selectedGeometryIdRef.current = 0;
 				closeBackdrop();
-				props.handleChanged(rowIndex, algebraDataRef.current[rowIndex]);
+				handleChanged(rowIndex, algebraDataRef.current[rowIndex]);
 			}
 		},
-		[]
+		[closeBackdrop, handleChanged]
 	);
 
 	const updateCurrentOperation = useCallback(
@@ -154,28 +107,99 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 						valueIndex !== last ||
 						algebraDataRef.current[rowIndex].value[last].objectId !== null
 					)
-						props.handleChanged(rowIndex, algebraDataRef.current[rowIndex]);
+						handleChanged(rowIndex, algebraDataRef.current[rowIndex]);
 				} else console.warn('not changed');
 			},
-		[]
+		[handleChanged]
 	);
+
+	/*----------------------------------AlgebraData-----------------------------------*/
+	const algebraDataRef = useRef<BooleanAlgebraData[]>([new BooleanAlgebraData()]);
+
+	const loadAlgebraDataFromZone = useCallback(() => {
+		const newData: BooleanAlgebraData[] =
+			zoneRef.current?.unionOperations.map(union =>
+				BooleanAlgebraData.fromValue(
+					union.map(operation => operation.toRawData()) as OperationDataList
+				)
+			) ?? [];
+
+		algebraDataRef.current = newData;
+		setAlgebraRow(refreshAlgebraRow);
+	}, [refreshAlgebraRow]);
+
+	useEffect(() => {
+		editor.signals.zoneChanged.add(loadAlgebraDataFromZone);
+		return () => {
+			editor.signals.zoneChanged.remove(loadAlgebraDataFromZone);
+		};
+	}, [loadAlgebraDataFromZone, editor.signals.zoneChanged]);
+
+	const pushAlgebraDataRow = useCallback(() => {
+		algebraDataRef.current.push(new BooleanAlgebraData());
+		const newIndex = algebraDataRef.current.length - 1;
+		setAlgebraRow({
+			index: newIndex,
+			data: algebraDataRef.current[newIndex]
+		});
+		handleAdd();
+	}, [handleAdd]);
+
+	const removeAlgebraDataRow = useCallback(
+		(removeId: number) => () => {
+			algebraDataRef.current = algebraDataRef.current.filter((el, id) => id !== removeId);
+			if (algebraDataRef.current.length === 0) {
+				algebraDataRef.current.push(new BooleanAlgebraData());
+				setAlgebraRow({ index: 0, data: algebraDataRef.current[0] });
+				handleChanged(0, algebraDataRef.current[0]);
+			} else {
+				setAlgebraRow(prev => {
+					const newIndex =
+						removeId <= prev.index ? Math.max(prev.index - 1, 0) : prev.index;
+					return {
+						index: newIndex,
+						data: algebraDataRef.current[newIndex]
+					};
+				});
+				handleRemove(removeId);
+			}
+		},
+		[handleChanged, handleRemove]
+	);
+
+	/*------------------------------------CSG.Zone-------------------------------------*/
+	const zoneRef = useRef<CSG.Zone>();
+
+	const initZone = useCallback(() => {
+		const manager = editor.zoneManager;
+		zone
+			? (() => {
+					zoneRef.current = zone;
+			  })()
+			: (zoneRef.current = manager.createZone());
+		loadAlgebraDataFromZone();
+	}, [editor.zoneManager, zone, loadAlgebraDataFromZone]);
+
+	useEffect(() => {
+		initZone();
+	}, [initZone]);
 
 	/*---------------------------------AllGeometries---------------------------------*/
 	const allObjectsRef = useRef<THREE.Object3D[]>([]);
 
 	const refreshObjectsList = useCallback(() => {
-		allObjectsRef.current = [...props.editor.scene.children];
-	}, [props.editor]);
+		allObjectsRef.current = [...editor.scene.children];
+	}, [editor]);
 
 	useEffect(() => {
 		refreshObjectsList();
-		props.editor.signals.objectAdded.add(refreshObjectsList);
-		props.editor.signals.objectRemoved.add(refreshObjectsList);
+		editor.signals.objectAdded.add(refreshObjectsList);
+		editor.signals.objectRemoved.add(refreshObjectsList);
 		return () => {
-			props.editor.signals.objectAdded.remove(refreshObjectsList);
-			props.editor.signals.objectRemoved.remove(refreshObjectsList);
+			editor.signals.objectAdded.remove(refreshObjectsList);
+			editor.signals.objectRemoved.remove(refreshObjectsList);
 		};
-	}, [props.editor, refreshObjectsList]);
+	}, [editor, refreshObjectsList]);
 
 	/*-------------------------------AlgebraDataPanel-------------------------------*/
 	interface AlgebraDataPanelProps {
@@ -184,7 +208,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 		value: typeof algebraRow;
 	}
 	function AlgebraDataPanel(props: AlgebraDataPanelProps) {
-		const { children, value, index, ...other } = props;
+		const { children, value, index, ...restProps } = props;
 
 		return (
 			<Box
@@ -198,7 +222,7 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 					maxHeight: '100%',
 					maxWidth: '100%'
 				}}
-				{...other}>
+				{...restProps}>
 				<ScrollManager scrollKey={`vertical-tabpanel-${index}`}>
 					{({
 						connectScrollTarget,
@@ -224,28 +248,6 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 			</Box>
 		);
 	}
-
-	/*-----------------------------------Backdrop-----------------------------------*/
-	const [backdropOpen, setBackdropOpen] = useState(false);
-	const backdropRef = useRef<HTMLDivElement>(null);
-	const openBackdrop = useCallback(() => setBackdropOpen(true), []);
-	const closeBackdrop = useCallback(() => setBackdropOpen(false), []);
-	const backdropHandleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
-		// get the element that was clicked
-		const target = event.target as HTMLElement;
-		// if the element that was clicked is not the backdrop element return
-		if (target !== backdropRef.current) return;
-		// otherwise close the backdrop
-		setBackdropOpen(false);
-	}, []);
-	const selectedGeometryIdRef = useRef<number>(0);
-	const changeSelectedGeometryId = useCallback(
-		(index: number) => (_: React.MouseEvent<HTMLElement>) => {
-			selectedGeometryIdRef.current = index;
-			openBackdrop();
-		},
-		[selectedGeometryIdRef]
-	);
 
 	/*------------------------------------Render------------------------------------*/
 	function a11yProps(index: number) {
