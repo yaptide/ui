@@ -49,13 +49,13 @@ function LeftSubtract(props: SvgIconProps) {
 	);
 }
 
-function OperationToIcon(operation: Operation, isSelected: boolean) {
+function OperationToIcon(operation: Operation, showLabel: boolean) {
 	switch (operation) {
 		case 'intersection':
 			return (
 				<>
 					<JoinInnerIcon sx={{ transform: 'scale(1.3)' }} />
-					{isSelected && (
+					{showLabel && (
 						<Typography variant={'body1'} sx={{ fontSize: 10, textTransform: 'none' }}>
 							Intersect
 						</Typography>
@@ -66,7 +66,7 @@ function OperationToIcon(operation: Operation, isSelected: boolean) {
 			return (
 				<>
 					<LeftSubtract sx={{ transform: 'scale(1.3)' }} />
-					{isSelected && (
+					{showLabel && (
 						<Typography variant={'body1'} sx={{ fontSize: 10, textTransform: 'none' }}>
 							Subtract
 						</Typography>
@@ -189,7 +189,10 @@ function OperationInput({
 								display: 'flex',
 								flexDirection: 'column'
 							}}>
-							{OperationToIcon(operation, !value)}
+							{OperationToIcon(
+								operation,
+								true // pass `!value` to show label only on a last operationToggle
+							)}
 							{/* <JoinInnerIcon /> */}
 							{/* <img src='./images/S.png' alt='intersection' /> */}
 						</ToggleButton>
