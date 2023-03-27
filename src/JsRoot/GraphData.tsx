@@ -18,7 +18,7 @@ export type pageData = {
 interface IPage {
 	filterRef?: FilterJSON;
 	name?: string;
-	dimensions: number | string;
+	dimensions: number;
 }
 export interface Page2D extends IPage {
 	data: pageData;
@@ -40,7 +40,7 @@ export interface Page0D extends IPage {
 }
 
 export interface PageCT extends IPage {
-	dimensions: '3D_datafile_CT';
+	dimensions: 3;
 	resultsUrl: string;
 }
 
@@ -66,7 +66,7 @@ export const isPage0d = (page: Page): page is Page0D => {
 };
 
 export const isCT = (page: Page): page is PageCT => {
-	return (page as PageCT).dimensions === '3D_datafile_CT';
+	return (page as PageCT).dimensions === 3;
 };
 
 const getGraphFromPage = (page: Page, title?: string) => {
