@@ -128,38 +128,55 @@ function OperationInput({
 	return (
 		<>
 			{canClear && value && (
-				<Tooltip
-					title={
-						<Typography>{'Remove operation from a zone area calculations'}</Typography>
-					}
-					placement='left'
-					arrow
-					followCursor
-					enterDelay={TOOLTIP_DELAY}>
-					<Box
-						sx={{
-							display: 'flex',
-							justifyContent: 'center',
-							overflow: 'hidden',
-							height: 40
-						}}>
+				<Box
+					sx={{
+						'display': 'flex',
+						'justifyContent': 'center',
+						'overflow': 'hidden',
+						'position': 'relative',
+						'marginTop': '-40px',
+						'&:before': {
+							content: '""',
+							position: 'absolute',
+							width: '100%',
+							height: '20px',
+							backgroundColor: theme =>
+								theme.palette.mode === 'dark' ? 'background.paper' : 'grey.100',
+							top: 10,
+							left: 0
+						},
+						'height': 40
+					}}>
+					<Tooltip
+						title={
+							<Typography>
+								{'Remove operation from a zone area calculations'}
+							</Typography>
+						}
+						placement='left'
+						arrow
+						followCursor
+						enterDelay={TOOLTIP_DELAY}>
 						<IconButton
 							onClick={onChange}
 							sx={{
-								padding: 3,
-								borderRadius: '45% 45% 0 0',
-								height: 75,
-								width: 55,
-								margin: '0 auto'
+								'padding': 3,
+								'borderRadius': '45% 45% 0 0',
+								'height': 55,
+								'width': 55,
+								'margin': '0 auto',
+								'&:hover': {
+									color: 'error.main'
+								}
 							}}>
-							<RestoreFromTrashIcon
+							<UndoIcon
 								sx={{
-									transform: 'scale(1.3) translate(0, -70%)'
+									transform: 'translate(0, -40%)'
 								}}
 							/>
 						</IconButton>
-					</Box>
-				</Tooltip>
+					</Tooltip>
+				</Box>
 			)}
 			<ToggleButtonGroup
 				{...restProps}

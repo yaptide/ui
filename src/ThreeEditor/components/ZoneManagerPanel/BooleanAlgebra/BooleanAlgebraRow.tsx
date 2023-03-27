@@ -89,7 +89,7 @@ export default function BooleanAlgebraRow({
 										sx={{
 											'width': '1px',
 											'overflow': 'visible',
-											'height': '24px',
+											'height': index === value.length - 1 ? '44px' : '24px',
 											'backgroundColor': 'primary.main',
 											'margin': '0 auto',
 											'position': 'relative',
