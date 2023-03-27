@@ -8,11 +8,56 @@ import { RemoveQuantityCommand } from "../../js/commands/RemoveQuantityCommand";
 import { RemoveZoneCommand } from "../../js/commands/RemoveZoneCommand";
 import { SetFilterRuleCommand } from "../../js/commands/SetFilterRuleCommand";
 import { Editor } from "../../js/Editor";
+import { isBeam } from "../Beam";
 import { isZone } from "../CSG/CSGZone";
 import { isDetectFilter } from "../Detect/DetectFilter";
 import { isDetectGeometry } from "../Detect/DetectGeometry";
 import { isOutput } from "../Scoring/ScoringOutput";
 import { isQuantity } from "../Scoring/ScoringQuantity";
+
+export const isRemovable = (object: Object3D) => {
+    if (object === null) return false;
+    if (object.parent === null) return false;
+    if ('notRemovable' in object) {
+        return !object.notRemovable;
+    }
+    return true;
+}
+
+export const canChangeName = (object: Object3D) => {
+    return !isBeam(object);
+}
+
+export const getRemoveCommand = (editor: Editor, object: Object3D) => {
+
+    if (isDetectGeometry(object)) {
+        return new RemoveDetectGeometryCommand(editor, object);
+
+    } else if (isZone(object)) {
+        return new RemoveZoneCommand(editor, object);
+
+    }
+    else if (isDetectFilter(object)) {
+        if (object.selectedRule) return new SetFilterRuleCommand(editor, object);
+        return new RemoveFilterCommand(editor, object);
+
+    } else if (isQuantity(object)) {
+        if (object.selectedModifier)
+            return new RemoveDifferentialModifierCommand(
+                editor,
+                object,
+                object.selectedModifier
+            );
+
+        if (isOutput(object.parent))
+            return new RemoveQuantityCommand(editor, object, object.parent);
+        else throw new Error('Quantity has no parent output');
+    }
+
+    return new RemoveObjectCommand(editor, object);
+
+
+};
 
 
 export const useKeyboardEditorControls = (editor: Editor | undefined, containerRef: RefObject<HTMLElement>) => {
@@ -25,37 +70,6 @@ export const useKeyboardEditorControls = (editor: Editor | undefined, containerR
 
         const IS_MAC = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 
-        const getRemoveCommand = (object: Object3D) => {
-
-            if (isDetectGeometry(object)) {
-                return new RemoveDetectGeometryCommand(editor, object);
-
-            } else if (isZone(object)) {
-                return new RemoveZoneCommand(editor, object);
-
-            }
-            else if (isDetectFilter(object)) {
-                if (object.selectedRule) return new SetFilterRuleCommand(editor, object);
-                return new RemoveFilterCommand(editor, object);
-
-            } else if (isQuantity(object)) {
-                if (object.selectedModifier)
-                    return new RemoveDifferentialModifierCommand(
-                        editor,
-                        object,
-                        object.selectedModifier
-                    );
-
-                if (isOutput(object.parent))
-                    return new RemoveQuantityCommand(editor, object, object.parent);
-                else throw new Error('Quantity has no parent output');
-            }
-
-            return new RemoveObjectCommand(editor, object);
-
-
-        };
-
         const onKeyDown = (event: KeyboardEvent) => {
             const eventFromSidebar = (event.target as any).closest('.ThreeEditorSidebar') !== null;
 
@@ -64,11 +78,7 @@ export const useKeyboardEditorControls = (editor: Editor | undefined, containerR
             switch (event.key.toLowerCase()) {
                 case 'delete':
                     const object = editor.selected;
-
-                    if (object === null || object.notRemovable === true) return;
-
-                    const parent = object.parent;
-                    if (parent !== null) editor.execute(getRemoveCommand(object));
+                    if (isRemovable(object)) editor.execute(getRemoveCommand(editor, object));
                     break;
 
                 // Disabled features

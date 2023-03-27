@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { Editor } from '../../js/Editor';
 import { Box, Tabs, Tab } from '@mui/material';
 import { TabPanel } from '../../../WrapperApp/components/TabPanel';
-import { SidebarTree } from './SidebarTree';
 import { PropertiesPanel } from './propeteries/PropeteriesPanel';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
 import { BoxMesh, CylinderMesh, SphereMesh } from '../../util/BasicMeshes';
@@ -16,6 +15,7 @@ import { Stack } from '@mui/material';
 import { Typography } from '@mui/material';
 import { Divider } from '@mui/material';
 import { PhysicConfiguration } from './propeteries/category/PhysicConfiguration';
+import { SidebarTree } from './tree/SidebarTree';
 
 export function EditorSidebar(props: { editor: Editor }) {
 	const { editor } = props;

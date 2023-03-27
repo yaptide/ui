@@ -10,13 +10,16 @@ import {
 	styled,
 	Divider,
 	Stack,
-	AccordionProps
+	AccordionProps,
+	useMediaQuery
 } from '@mui/material';
 import { ReactElement } from 'react';
 import { Object3D } from 'three';
 import { SimulationObject3D } from '../../../util/SimulationBase/SimulationMesh';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { DndProvider } from 'react-dnd';
+import { getBackendOptions, MultiBackend } from '@minoru/react-dnd-treeview';
 
 export interface TreeItem {
 	id: number;
@@ -31,10 +34,11 @@ export interface TreeItem {
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
 	<MuiAccordionSummary {...props} />
 ))(({ theme }) => ({
+	'backgroundColor': useMediaQuery('(prefers-color-scheme: dark)') ? theme.palette.grey['800'] : theme.palette.grey['300'],
+
 	'& .MuiAccordionSummary-content:is(.MuiAccordionSummary-content,.Mui-expanded)': {
-		marginLeft: theme.spacing(1),
-		marginBottom: theme.spacing(1),
-		marginTop: theme.spacing(1)
+		margin: theme.spacing(1),
+		marginLeft: theme.spacing(0)
 	},
 
 	'minHeight': 'unset',
@@ -44,8 +48,8 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
 }));
 
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-	padding: theme.spacing(2),
-	paddingTop: 0
+	padding: theme.spacing(1),
+	paddingTop: theme.spacing(1)
 }));
 
 const Accordion = styled((props: AccordionProps) => <MuiAccordion square {...props} />)(
@@ -75,7 +79,7 @@ function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
 			<AccordionDetails>
 				<Stack direction='row' spacing={2} alignItems='center'>
 					<Typography>Add:</Typography>
-					<ButtonGroup disableElevation size='small'>
+					<ButtonGroup size='small'>
 						{props.add.map(add => (
 							<Button key={add.title} onClick={add.onClick}>
 								{add.title}
@@ -94,17 +98,19 @@ function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
 export function EditorSidebarTabTree(props: EditorSidebarTabTreeProps) {
 	const { elements } = props;
 	return (
-		<Box
-			sx={{
-				width: '100%',
-				resize: 'vertical',
-				overflowY: 'scroll',
-				height: '300px',
-				padding: '.5rem'
-			}}>
-			{elements.map(element => (
-				<EditorSidebarTabTreeElement key={element.title} {...element} />
-			))}
-		</Box>
+		<DndProvider backend={MultiBackend} options={getBackendOptions()}>
+			<Box
+				sx={{
+					width: '100%',
+					resize: 'vertical',
+					overflowY: 'scroll',
+					height: '300px',
+					padding: '.5rem'
+				}}>
+				{elements.map(element => (
+					<EditorSidebarTabTreeElement key={element.title} {...element} />
+				))}
+			</Box>
+		</DndProvider>
 	);
 }
