@@ -10,8 +10,7 @@ import {
 	styled,
 	Divider,
 	Stack,
-	AccordionProps,
-	useMediaQuery
+	AccordionProps
 } from '@mui/material';
 import { ReactElement } from 'react';
 import { Object3D } from 'three';
@@ -34,9 +33,8 @@ export interface TreeItem {
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
 	<MuiAccordionSummary {...props} />
 ))(({ theme }) => ({
-	'backgroundColor': useMediaQuery('(prefers-color-scheme: dark)')
-		? theme.palette.grey['800']
-		: theme.palette.grey['300'],
+	'backgroundColor':
+		theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[300],
 
 	'& .MuiAccordionSummary-content:is(.MuiAccordionSummary-content,.Mui-expanded)': {
 		margin: theme.spacing(1),

@@ -1,4 +1,4 @@
-import { Typography, Checkbox, Menu, MenuItem, useTheme, TextField } from '@mui/material';
+import { Typography, Checkbox, Menu, MenuItem, TextField } from '@mui/material';
 import { Stack } from '@mui/system';
 import { usePopupState, bindContextMenu, bindMenu } from 'material-ui-popup-state/hooks';
 import { Object3D } from 'three';
@@ -51,8 +51,6 @@ export function SidebarTreeItem(props: {
 }) {
 	const { objectRefs, node, depth, isOpen, onToggle, editor, treeRef } = props;
 	const inputRef = useRef<HTMLInputElement>(null);
-
-	const theme = useTheme();
 
 	const object = node.data!.object;
 
@@ -125,14 +123,14 @@ export function SidebarTreeItem(props: {
 			<Box
 				ref={ref => objectRefs.current.set(object.uuid, ref! as HTMLDivElement)}
 				sx={{
-					'marginLeft': theme.spacing(depth * 2.5),
+					'marginLeft': ({ spacing }) => spacing(depth * 2.5),
 
 					'display': 'flex',
 					'flexDirection': 'row',
 					'alignItems': 'center',
-					'paddingLeft': theme.spacing(0.5),
+					'paddingLeft': ({ spacing }) => spacing(0.5),
 					':hover': {
-						backgroundColor: theme.palette.action.hover
+						backgroundColor: ({ palette }) => palette.action.hover
 					}
 				}}>
 				{object.children.length > 0 &&
@@ -159,14 +157,14 @@ export function SidebarTreeItem(props: {
 							}
 						}}
 						sx={{
-							color:
+							color: ({ palette }) =>
 								editor.selected === object
-									? theme.palette.primary.main
-									: theme.palette.text.primary,
-							fontWeight:
+									? palette.primary.main
+									: palette.text.primary,
+							fontWeight: ({ typography }) =>
 								editor.selected === object
-									? theme.typography.fontWeightBold
-									: theme.typography.fontWeightRegular
+									? typography.fontWeightBold
+									: typography.fontWeightRegular
 						}}>
 						<TextField
 							inputRef={inputRef}
