@@ -123,7 +123,9 @@ export function Editor(container) {
 
 		CSGManagerStateChanged: new Signal(), // State of CSGmanager changed
 
-		exampleLoaded: new Signal()
+		exampleLoaded: new Signal(),
+
+		requestRenameAction: new Signal()
 	};
 
 	this.results = null;

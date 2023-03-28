@@ -68,7 +68,6 @@ export function EditorSidebar(props: { editor: Editor }) {
 		};
 	}, [editor, handleContextChange]);
 
-	// TODO: consider splitting tabs into components
 	const geometryTabElements = [
 		{
 			title: 'Figures',

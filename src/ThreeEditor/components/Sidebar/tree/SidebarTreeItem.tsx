@@ -120,6 +120,17 @@ export function SidebarTreeItem(props: {
 
 	useSignal(editor, 'objectAdded', onObjectAdded);
 
+	const onRequestRenameAction = useCallback(
+		(objectToRename: Object3D) => {
+			if (objectToRename === object) {
+				setMode('edit');
+			}
+		},
+		[object]
+	);
+
+	useSignal(editor, 'requestRenameAction', onRequestRenameAction);
+
 	return (
 		<>
 			<Box
@@ -152,12 +163,6 @@ export function SidebarTreeItem(props: {
 					sx={{ cursor: 'pointer' }}
 					{...bindContextMenu(popupState)}>
 					<Typography
-						onKeyDown={ev => {
-							if (ev.key === 'F2') {
-								ev.preventDefault();
-								setMode('edit');
-							}
-						}}
 						sx={{
 							color:
 								editor.selected === object

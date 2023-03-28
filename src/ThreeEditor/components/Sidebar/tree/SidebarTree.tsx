@@ -8,7 +8,6 @@ import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
 
 type TreeSource = (Object3D[] | Object3D)[];
 
-//TODO: Remove react-dnd-treeview and use normal tree view from material-ui
 export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 	const { editor, sources } = props;
 

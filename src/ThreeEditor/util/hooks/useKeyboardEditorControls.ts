@@ -111,6 +111,12 @@ export const useKeyboardEditorControls = (
 
 					break;
 
+				case 'f2':
+					if (editor.selected !== null) 
+						if (canChangeName(editor.selected)) 
+							editor.signals.requestRenameAction.dispatch(editor.selected);
+							break;
+
 				default:
 					break;
 			}
