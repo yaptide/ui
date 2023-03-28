@@ -34,8 +34,8 @@ export interface TreeItem {
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
 	<MuiAccordionSummary {...props} />
 ))(({ theme }) => ({
-	'backgroundColor': useMediaQuery('(prefers-color-scheme: dark)')
-		? theme.palette.grey['800']
+	'backgroundColor': theme.palette.mode === 'dark' 
+		? theme.palette.grey['800'] 
 		: theme.palette.grey['300'],
 
 	'& .MuiAccordionSummary-content:is(.MuiAccordionSummary-content,.Mui-expanded)': {
