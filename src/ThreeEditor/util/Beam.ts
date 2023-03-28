@@ -52,7 +52,7 @@ export interface BeamJSON {
 		y: number;
 	};
 
-	sad?: {
+	sad: {
 		type: SadType;
 		x: number;
 		y: number;
@@ -296,6 +296,7 @@ export class Beam extends SimulationObject3D {
 			energyLowCutoff: this.energyLowCutoff,
 			energyHighCutoff: this.energyHighCutoff,
 			sigma: this.sigma,
+			sad: this.sad,
 			divergence: this.divergence,
 			particle: this.particleData,
 			colorHex: this.material.color.getHex(),
@@ -321,6 +322,7 @@ export class Beam extends SimulationObject3D {
 		this.numberOfParticles = loadedData.numberOfParticles;
 		this.beamSourceFile = loadedData.beamSourceFile;
 		this.sigma = loadedData.sigma;
+		this.sad = loadedData.sad;
 		this.beamSourceType = loadedData.beamSourceType;
 		return this;
 	}
