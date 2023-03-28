@@ -3,7 +3,7 @@ import { ChangeEvent } from 'react';
 import { Object3D } from 'three';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { Editor } from '../../../../js/Editor';
-import { Beam, BEAM_SOURCE_TYPE, isBeam, SigmaType, SIGMA_TYPE } from '../../../../util/Beam';
+import { Beam, BEAM_SOURCE_TYPE, isBeam, SadType, SAD_TYPE, SigmaType, SIGMA_TYPE } from '../../../../util/Beam';
 import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { PARTICLE_TYPES } from '../../../../util/particles';
 import { IParticleType, ParticleSelect } from '../../../Select/ParticlesSelect';
@@ -130,6 +130,68 @@ function BeamSigmaField(props: { beam: Beam; onChange: (value: Beam['sigma']) =>
 		</>
 	);
 }
+
+
+function BeamSadField(props: { beam: Beam; onChange: (value: Beam['sad']) => void }) {
+	const configuration = {
+		[SAD_TYPE.Rectangular]: {
+			X: {
+				text: 'sad in X'
+			},
+			Y: {
+				text: 'sad in Y'
+			}
+		},
+		[SAD_TYPE.Square]: {
+			Y: {
+				text: 'value'
+			}
+		},
+		[SAD_TYPE.None]: {
+
+		},
+
+	};
+
+	const selectedConfiguration = configuration[props.beam.sad.type];
+
+	return (
+		<>
+			<SelectPropertyField
+				label='Sad type'
+				value={props.beam.sad.type}
+				onChange={value =>
+					props.onChange({ ...props.beam.sad, type: value as SadType })
+				}
+				options={Object.keys(SAD_TYPE)}
+			/>
+			{props.beam.sad.type !== SAD_TYPE.None && (
+				<>
+					{'X' in selectedConfiguration && (
+						<NumberPropertyField
+							label={selectedConfiguration.X.text}
+							value={props.beam.sad.x}
+							onChange={value => props.onChange({ ...props.beam.sad, x: value })}
+							min={0}
+							unit='cm'
+						/>
+					)}
+
+					{'Y' in selectedConfiguration && (
+						<NumberPropertyField
+							label={selectedConfiguration.Y.text}
+							value={props.beam.sad.y}
+							onChange={value => props.onChange({ ...props.beam.sad, y: value })}
+							min={0}
+							unit='cm'
+						/>
+					)}
+				</>
+			)}
+		</>
+	);
+}
+
 
 function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
 	const { object, editor } = props;
@@ -258,6 +320,14 @@ function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
 
 			{watchedObject.beamSourceType === BEAM_SOURCE_TYPE.file && (
 				<>
+					{/* TODO */}
+					<BeamSadField
+						beam={watchedObject}
+						onChange={v => {
+							setValueCommand(v, 'sad');
+						}}
+					/>
+
 					<PropertyField children={<Divider />} />
 
 					<BeamDefinitionField
