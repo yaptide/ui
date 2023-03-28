@@ -7,7 +7,6 @@ import {
 	AccordionProps,
 	AccordionSummaryProps,
 	styled,
-	useMediaQuery
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -36,7 +35,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 const Accordion = styled((props: AccordionProps) => <MuiAccordion square {...props} />)(
 	({ theme }) => ({
 		'&.Mui-expanded': {
-			margin: '0'
+			margin: theme.spacing(0)
 		}
 	})
 );
