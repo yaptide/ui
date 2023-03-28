@@ -13,7 +13,14 @@ export const SIGMA_TYPE = {
 	'Flat square': 'Flat square',
 	'Flat circular': 'Flat circular'
 } as const;
-export type SigmaType = keyof typeof SIGMA_TYPE;
+export type SigmaType = keyof typeof SIGMA_TYPE
+
+export const SAD_TYPE = {
+	'None' : 'None',
+	'Rectangular': 'Rectangular',
+	'Square': 'Square'
+} as const;
+export type SadType = keyof typeof SAD_TYPE
 
 export const BEAM_SOURCE_TYPE = {
 	'simple': 'simple',
@@ -44,6 +51,13 @@ export interface BeamJSON {
 		x: number;
 		y: number;
 	};
+
+	sad?: {
+		type: SadType;
+		x: number;
+		y: number;
+	};
+
 	colorHex: number;
 	numberOfParticles: number;
 	beamSourceFile: BeamSourceFile;
@@ -72,6 +86,12 @@ const _default = {
 		x: 0,
 		y: 0
 	},
+	sad: {
+		type: SAD_TYPE.None,
+		x: 0,
+		y: 0
+	},
+
 	numberOfParticles: 10000,
 
 	beamSourceFile: {
@@ -126,6 +146,12 @@ export class Beam extends SimulationObject3D {
 		y: number;
 	};
 
+	sad: {
+		type: SadType;
+		x: number;
+		y: number;
+	};
+
 	numberOfParticles: number;
 
 	particleData: {
@@ -163,6 +189,8 @@ export class Beam extends SimulationObject3D {
 		this.divergence = { ..._default.divergence };
 
 		this.sigma = { ..._default.sigma };
+
+		this.sad = { ..._default.sad };
 
 		this.particleData = _default.particle;
 
