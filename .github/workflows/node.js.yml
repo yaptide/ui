@@ -60,7 +60,7 @@ jobs:
                   cache: 'npm'
 
             - name: webfactory/ssh-agent 🖥️
-              uses: webfactory/ssh-agent@v0.7.0
+              uses: webfactory/ssh-agent@v0.8.0
               with:
                   # Private SSH key to register in the SSH agent
                   ssh-private-key: ${{ secrets.WEBDEV }}
