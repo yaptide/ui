@@ -1,5 +1,6 @@
 const fs = require("fs");
 const glob = require("glob")
+const path = require("path")
 const { execSync } = require("child_process");
 const { exit } = require("process");
 
@@ -41,8 +42,8 @@ const saveFileName = (destFolder, fileName) => {
     console.log(`\nUsing: ${PYTHON}`);
 
     const installedPath = await glob(destFolder + 'yaptide_converter-*-py3-none-any.whl').then(files => files[0]);
-    const installedFileName = installedPath?.split('/').pop();
-    
+    const installedFileName = path.basename(installedPath ?? '');
+
     if (installedPath && SKIP === true) {
         //file exists
         console.log(`${installedFileName} is already installed`);
@@ -80,7 +81,7 @@ const saveFileName = (destFolder, fileName) => {
         }
 
         const buildFilePath = await glob(srcFolder + 'dist/yaptide_converter-*-py3-none-any.whl').then(files => files[0]);
-        const buildFileName = buildFilePath?.split('/').pop();
+        const buildFileName = path.basename(buildFilePath ?? '')
 
         const destFullPath = destFolder + buildFileName;
 
