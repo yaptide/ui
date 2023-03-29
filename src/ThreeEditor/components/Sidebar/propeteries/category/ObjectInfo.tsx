@@ -1,7 +1,7 @@
 import { Object3D } from 'three';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { Editor } from '../../../../js/Editor';
-import { LabelPropertyField, TextPropertyField } from '../fields/PropertyField';
+import { TextPropertyField } from '../fields/PropertyField';
 import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
 import { isBeam } from '../../../../util/Beam';
@@ -17,8 +17,6 @@ export function ObjectInfo(props: { editor: Editor; object: Object3D }) {
 		<PropertiesCategory category='Information' visible={visibleFlag}>
 			{visibleFlag && (
 				<>
-					<LabelPropertyField label='ID' value={watchedObject.id.toString()} />
-					<LabelPropertyField label='Type' value={watchedObject.type} />
 					<TextPropertyField
 						label='Name'
 						value={watchedObject.name}

@@ -139,7 +139,7 @@ function OperationInput({
 							width: '100%',
 							height: '20px',
 							backgroundColor: theme =>
-								theme.palette.mode === 'dark' ? 'background.paper' : 'grey.100',
+								theme.palette.mode === 'dark' ? 'grey.900' : 'grey.100',
 							top: 10,
 							left: 0
 						},
