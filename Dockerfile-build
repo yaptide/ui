@@ -22,7 +22,9 @@ RUN npm run setup
 
 EXPOSE 3000
 
-RUN chown -R 1000630000:0 "/.npm"
+RUN rm -rf /.npm
+
+RUN rm -rf .npm
 
 # run the app via npm run start-demo
 CMD [ "npm", "run", "start-demo" ]
