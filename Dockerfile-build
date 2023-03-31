@@ -24,6 +24,9 @@ RUN apt-get update && apt-get install -y python3-pip && rm -rf /var/lib/apt/list
 
 RUN npm run setup
 
+RUN chgrp -R 0 /usr/src/app
+RUN chmod -R g=u /usr/src/app
+
 EXPOSE 3000
 
 # run the app via npm run start-demo
