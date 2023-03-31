@@ -41,4 +41,4 @@ RUN chmod -R g=u /usr/src/app
 EXPOSE 3000
 
 # Run the app
-CMD [ "npm", "run", "start-demo" ]
+CMD [ "npm", "run", "start" ]
