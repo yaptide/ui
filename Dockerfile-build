@@ -24,6 +24,10 @@ RUN apt-get update && apt-get install -y python3-pip && rm -rf /var/lib/apt/list
 
 RUN npm run setup
 
+# set HOME to /usr/src/app
+ENV HOME /usr/src/app
+RUN git config --global --add safe.directory /usr/src/app
+
 RUN chgrp -R 0 /usr/src/app
 RUN chmod -R g=u /usr/src/app
 
