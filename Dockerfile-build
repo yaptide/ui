@@ -3,6 +3,10 @@ FROM node:18
 # Create app directory
 WORKDIR /usr/src/app
 
+# fix permissions for openshift container, such that any user can read/write
+RUN chgrp -R 0 /usr/src/app
+RUN chmod -R g=u /usr/src/app
+
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
@@ -21,10 +25,6 @@ RUN apt-get update && apt-get install -y python3-pip && rm -rf /var/lib/apt/list
 RUN npm run setup
 
 EXPOSE 3000
-
-RUN rm -rf /.npm
-
-RUN rm -rf .npm
 
 # run the app via npm run start-demo
 CMD [ "npm", "run", "start-demo" ]
