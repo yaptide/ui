@@ -133,39 +133,44 @@ function BeamSigmaField(props: { beam: Beam; onChange: (value: Beam['sigma']) =>
 
 
 function BeamSadField(props: { beam: Beam; onChange: (value: Beam['sad']) => void }) {
+	
 	const configuration = {
-		[SAD_TYPE.Rectangular]: {
+		'double': {
 			X: {
-				text: 'sad in X'
+				text: 'SAD X'
 			},
 			Y: {
-				text: 'sad in Y'
+				text: 'SAD Y'
 			}
 		},
-		[SAD_TYPE.Square]: {
-			Y: {
+		'single': {
+			X: {
 				text: 'value'
 			}
 		},
-		[SAD_TYPE.None]: {
+		'none': {
 
 		},
 
 	};
 
 	const selectedConfiguration = configuration[props.beam.sad.type];
+	const getOptionLabel = (option: string) =>  {
+		return  Object.entries<string>(SAD_TYPE).find((entry) => entry[0] == option)?.[1] || SAD_TYPE.none
+	}
 
 	return (
 		<>
 			<SelectPropertyField
-				label='Sad type'
+				label='Sad planes'
 				value={props.beam.sad.type}
 				onChange={value =>
 					props.onChange({ ...props.beam.sad, type: value as SadType })
 				}
 				options={Object.keys(SAD_TYPE)}
+				getOptionLabel={getOptionLabel}
 			/>
-			{props.beam.sad.type !== SAD_TYPE.None && (
+			{props.beam.sad.type !== SAD_TYPE.none && (
 				<>
 					{'X' in selectedConfiguration && (
 						<NumberPropertyField
@@ -320,7 +325,6 @@ function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
 
 			{watchedObject.beamSourceType === BEAM_SOURCE_TYPE.file && (
 				<>
-					{/* TODO */}
 					<BeamSadField
 						beam={watchedObject}
 						onChange={v => {

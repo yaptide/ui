@@ -16,9 +16,9 @@ export const SIGMA_TYPE = {
 export type SigmaType = keyof typeof SIGMA_TYPE
 
 export const SAD_TYPE = {
-	'None' : 'None',
-	'Rectangular': 'Rectangular',
-	'Square': 'Square'
+	'none' : 'none',
+	'single': 'single (X=Y)',
+	'double': 'double (X and Y)'
 } as const;
 export type SadType = keyof typeof SAD_TYPE
 
@@ -87,7 +87,7 @@ const _default = {
 		y: 0
 	},
 	sad: {
-		type: SAD_TYPE.None,
+		type: SAD_TYPE.none,
 		x: 0,
 		y: 0
 	},
