@@ -10,15 +10,25 @@ export const DETECTOR_KEYWORD_DESCRIPTION = {
 	'DDD': 'as Dose, but specially for TRiP98 depth-dose kernel file generation',
 	'DoseGy': 'Dose [Gy]',
 	'dLET': 'Dose-averaged LET [MeV/cm]',
+	'dQ': 'Dose-averaged Q',
+	'dQeff': 'as dZeff2Beta2',
 	'Energy': 'Total amount of energy deposited [MeV]',
 	'EqvDose': 'Equivalent dose (see notes below) [Sv]',
 	'Fluence': 'Fluence [/cm2]',
 	'MATERIAL': 'Maps material ID as assigned in geo.dat. Useful for debugging geometries.',
 	'NEqvDose': 'Equivalent dose from neutron kerma (see notes below) [Sv]',
 	'NKERMA': 'Neutron Kerma in [Gy]',
+	'Q': 'alias for DQ',
+	'Qeff': 'as dZeff2Beta2',
 	'ZONE': 'Maps zone number. Useful for debugging geometries',
 	'Rho': 'Maps material density as assigned in geo.dat and mat.dat [g/cm³]. Useful for debugging geometries.',
-	'tLET': 'Track-averaged LET [MeV/cm]'
+	'tQ': 'Track-averaged Q',
+	'tQeff': 'as tZeff2Beta2',
+	'tLET': 'Track-averaged LET [MeV/cm]',
+	'dZ2Beta2': 'Dose-averaged Z²/beta²',
+	'tZ2Beta2': 'Track-averaged Z²/beta²',
+	'dZeff2Beta2': 'Dose-averaged Zeff²/beta²',
+	'tZeff2Beta2': 'Track-averaged Zeff²/beta²'
 } as const;
 
 export type DETECTOR_KEYWORD = keyof typeof DETECTOR_KEYWORD_DESCRIPTION;
