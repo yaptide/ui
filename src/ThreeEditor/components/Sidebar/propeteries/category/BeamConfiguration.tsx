@@ -170,7 +170,8 @@ function BeamSadField(props: { beam: Beam; onChange: (value: Beam['sad']) => voi
 				options={Object.keys(SAD_TYPE)}
 				getOptionLabel={getOptionLabel}
 			/>
-			{props.beam.sad.type !== SAD_TYPE.none && (
+
+			{(props.beam.sad.type === 'single' || props.beam.sad.type === 'double')  && (
 				<>
 					{'X' in selectedConfiguration && (
 						<NumberPropertyField
