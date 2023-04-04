@@ -8,7 +8,7 @@ import { estimatorPage1DToCsv } from '../util/csv/Csv';
 import { ScoringOutputJSON } from '../ThreeEditor/util/Scoring/ScoringOutput';
 import { FilterJSON } from '../ThreeEditor/util/Detect/DetectFilter';
 import { EstimatorResults } from '../WrapperApp/components/Results/ResultsPanel';
-import ResultCT from '../WrapperApp/components/Results/ResultsCT';
+import Result3D from '../WrapperApp/components/Results/Results3D';
 
 export type pageData = {
 	name: string;
@@ -39,7 +39,7 @@ export interface Page0D extends IPage {
 	dimensions: 0;
 }
 
-export interface PageCT extends IPage {
+export interface Page3D extends IPage {
 	dimensions: 3;
 	resultsUrl: string;
 }
@@ -51,7 +51,7 @@ export type Estimator = {
 	scoringOutputJsonRef?: ScoringOutputJSON;
 };
 
-export type Page = Page2D | Page1D | Page0D | PageCT;
+export type Page = Page2D | Page1D | Page0D | Page3D;
 
 export const isPage2d = (page: Page): page is Page2D => {
 	return (page as Page2D).dimensions === 2;
@@ -65,8 +65,8 @@ export const isPage0d = (page: Page): page is Page0D => {
 	return (page as Page0D).dimensions === 0;
 };
 
-export const isCT = (page: Page): page is PageCT => {
-	return (page as PageCT).dimensions === 3;
+export const isPage3D = (page: Page): page is Page3D => {
+	return (page as Page3D).dimensions === 3;
 };
 
 const getGraphFromPage = (page: Page, title?: string) => {
@@ -76,8 +76,8 @@ const getGraphFromPage = (page: Page, title?: string) => {
 		return <JsRootGraph1D page={page} title={title} />;
 	} else if (isPage0d(page)) {
 		return <JsRootGraph0D page={page} title={title} />;
-	} else if (isCT(page)) {
-		return <ResultCT page={page} title={title} />;
+	} else if (isPage3D(page)) {
+		return <Result3D page={page} title={title} />;
 	} else {
 		return <div>Error</div>;
 	}

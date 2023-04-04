@@ -1,9 +1,9 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
-import { PageCT } from '../../../JsRoot/GraphData';
+import { Page3D } from '../../../JsRoot/GraphData';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
-export function ResultCT(props: { page: PageCT; title?: string }) {
+export function Result3D(props: { page: Page3D; title?: string }) {
 	const { page, title } = props;
 
 	return (
@@ -31,4 +31,4 @@ export function ResultCT(props: { page: PageCT; title?: string }) {
 	);
 }
 
-export default ResultCT;
+export default Result3D;
