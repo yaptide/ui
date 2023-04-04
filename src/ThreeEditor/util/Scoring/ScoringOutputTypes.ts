@@ -10,6 +10,8 @@ export const DETECTOR_KEYWORD_DESCRIPTION = {
 	'DDD': 'as Dose, but specially for TRiP98 depth-dose kernel file generation',
 	'DoseGy': 'Dose [Gy]',
 	'dLET': 'Dose-averaged LET [MeV/cm]',
+	'dQ': 'Dose-averaged Q',
+	'dQeff': 'Dose-averaged Qeff',
 	'Energy': 'Total amount of energy deposited [MeV]',
 	'EqvDose': 'Equivalent dose (see notes below) [Sv]',
 	'Fluence': 'Fluence [/cm2]',
@@ -18,7 +20,13 @@ export const DETECTOR_KEYWORD_DESCRIPTION = {
 	'NKERMA': 'Neutron Kerma in [Gy]',
 	'ZONE': 'Maps zone number. Useful for debugging geometries',
 	'Rho': 'Maps material density as assigned in geo.dat and mat.dat [g/cm³]. Useful for debugging geometries.',
-	'tLET': 'Track-averaged LET [MeV/cm]'
+	'tQ': 'Track-averaged Q',
+	'tQeff': 'Track-averaged Qeff',
+	'tLET': 'Track-averaged LET [MeV/cm]',
+	'dZ2Beta2': 'Dose-averaged Z²/beta²',
+	'tZ2Beta2': 'Track-averaged Z²/beta²',
+	'dZeff2Beta2': 'Dose-averaged Zeff²/beta²',
+	'tZeff2Beta2': 'Track-averaged Zeff²/beta²'
 } as const;
 
 export type DETECTOR_KEYWORD = keyof typeof DETECTOR_KEYWORD_DESCRIPTION;
