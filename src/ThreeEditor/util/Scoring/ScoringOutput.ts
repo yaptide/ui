@@ -87,6 +87,7 @@ export class ScoringOutput
 		else this.children.push(quantity);
 		quantity.name = this.getNextFreeName(quantity);
 		quantity.parent = this;
+		this.editor.signals.objectAdded.dispatch(quantity);
 		return this;
 	}
 
@@ -94,6 +95,7 @@ export class ScoringOutput
 		this.children.splice(this.children.indexOf(quantity), 1);
 		this._disabledChildren.splice(this._disabledChildren.indexOf(quantity), 1);
 		quantity.parent = null;
+		this.editor.signals.objectRemoved.dispatch(quantity);
 		return this;
 	}
 

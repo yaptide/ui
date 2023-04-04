@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { Editor } from '../../js/Editor';
 import { Box, Tabs, Tab } from '@mui/material';
 import { TabPanel } from '../../../WrapperApp/components/TabPanel';
-import { SidebarTree } from './SidebarTree';
 import { PropertiesPanel } from './propeteries/PropeteriesPanel';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
 import { BoxMesh, CTMesh, CylinderMesh, SphereMesh } from '../../util/BasicMeshes';
@@ -16,9 +15,23 @@ import { Stack } from '@mui/material';
 import { Typography } from '@mui/material';
 import { Divider } from '@mui/material';
 import { PhysicConfiguration } from './propeteries/category/PhysicConfiguration';
+import { SidebarTree } from './tree/SidebarTree';
+import { AddQuantityCommand } from '../../js/commands/AddQuantityCommand';
+import { isOutput } from '../../util/Scoring/ScoringOutput';
+import { Object3D } from 'three';
+import { useSignal } from '../../util/hooks/signals';
+import { isQuantity } from '../../util/Scoring/ScoringQuantity';
 
 export function EditorSidebar(props: { editor: Editor }) {
 	const { editor } = props;
+
+	const [selectedObject, setSelectedObject] = useState(editor.selected);
+
+	const handleObjectUpdate = useCallback((o: Object3D) => {
+		setSelectedObject(o);
+	}, []);
+
+	useSignal(editor, 'objectSelected', handleObjectUpdate);
 
 	const [selectedTab, setValue] = useState('Geometry');
 
@@ -138,6 +151,17 @@ export function EditorSidebar(props: { editor: Editor }) {
 				{
 					title: 'Output',
 					onClick: () => editor.execute(new AddOutputCommand(editor))
+				},
+				{
+					title: 'Quantity',
+					onClick: () =>
+						editor.execute(
+							new AddQuantityCommand(
+								editor,
+								isQuantity(selectedObject) ? selectedObject.parent : selectedObject
+							)
+						),
+					isDisabled: () => !isOutput(selectedObject) && !isQuantity(selectedObject)
 				}
 			],
 			tree: <SidebarTree editor={editor} sources={[editor.scoringManager.children]} />

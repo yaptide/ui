@@ -23,7 +23,7 @@ export enum OrderBy {
 export type RequestParam = [signal?: AbortSignal];
 /* ------------------------------------ */
 type InputDataParam = [
-	simData: EditorJson | { inputFiles: InputFiles },
+	simData: EditorJson | InputFiles,
 	ntasks?: number,
 	simType?: string,
 	title?: string,

@@ -22,7 +22,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { CSSObject, styled, Theme, useTheme } from '@mui/material/styles';
+import { CSSObject, styled, Theme } from '@mui/material/styles';
 import React, { Dispatch, SetStateAction, SyntheticEvent, useState } from 'react';
 import { useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
@@ -43,24 +43,24 @@ type DrawerProps = {
 	setOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-const openedMixin = (width: number, theme: Theme): CSSObject => ({
+const openedMixin = (width: number, { transitions }: Theme): CSSObject => ({
 	width,
-	transition: theme.transitions.create('width', {
-		easing: theme.transitions.easing.sharp,
-		duration: theme.transitions.duration.enteringScreen
+	transition: transitions.create('width', {
+		easing: transitions.easing.sharp,
+		duration: transitions.duration.enteringScreen
 	}),
 	overflowX: 'hidden'
 });
 
-const closedMixin = (theme: Theme): CSSObject => ({
-	transition: theme.transitions.create('width', {
-		easing: theme.transitions.easing.sharp,
-		duration: theme.transitions.duration.leavingScreen
+const closedMixin = ({ transitions, breakpoints, spacing }: Theme): CSSObject => ({
+	transition: transitions.create('width', {
+		easing: transitions.easing.sharp,
+		duration: transitions.duration.leavingScreen
 	}),
 	overflowX: 'hidden',
-	width: `calc(${theme.spacing(7)} + 1px)`,
-	[theme.breakpoints.up('sm')]: {
-		width: `calc(${theme.spacing(8)} + 1px)`
+	width: `calc(${spacing(7)} + 1px)`,
+	[breakpoints.up('sm')]: {
+		width: `calc(${spacing(8)} + 1px)`
 	}
 });
 
@@ -98,7 +98,6 @@ const getDrawer = (width: number) =>
 function YapDrawer({ drawerWidth = 200, handleChange, tabsValue, open, setOpen }: DrawerProps) {
 	const { resultsSimulationData } = useStore();
 	const { isAuthorized } = useAuth();
-	const theme = useTheme();
 	const [expand, setExpand] = useState(tabsValue === 'login');
 
 	const handleDrawerToggle = () => {
@@ -180,7 +179,7 @@ function YapDrawer({ drawerWidth = 200, handleChange, tabsValue, open, setOpen }
 						component='div'
 						disablePadding
 						sx={{
-							backgroundColor: theme.palette.primary.main
+							backgroundColor: ({ palette }) => palette.primary.main
 						}}>
 						<ListItemButton
 							sx={{

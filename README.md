@@ -28,7 +28,7 @@ Start by downloading submodules:
 git submodule update --init --recursive
 ```
 
-Before starting the local version of the web interface, you need to install the necessary dependencies by typing:
+Before starting the local version of the web interface, you need to install the necessary dependencies by typing command:
 
 ```bash
 npm install
@@ -48,6 +48,7 @@ The page will reload if you make edits.
 
 - Node.js 16.x or higher
 - Python 3.9+
+- pip
 
 ## Credits
 
@@ -61,3 +62,5 @@ This project adapts source code from the following libraries:
   - most of copied code adapted to yaptide needs
 
 This work was partially funded by EuroHPC PL Project, Smart Growth Operational Programme 4.2
+
+

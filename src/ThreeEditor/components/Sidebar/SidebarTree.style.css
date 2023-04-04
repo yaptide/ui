@@ -1,8 +1,0 @@
-.editor-sidebar-tree {}
-
-.editor-sidebar-tree :is(ul, li),
-.editor-sidebar-tree:is(ul, li) {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}

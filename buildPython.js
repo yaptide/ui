@@ -1,24 +1,13 @@
 const fs = require("fs");
 const glob = require("glob")
+const path = require("path")
 const { execSync } = require("child_process");
 const { exit } = require("process");
-const commandExists = require('command-exists');
 
 const SKIP = process.argv[2] === 'skip';
 
 const destFolder = 'public/libs/converter/dist/';
 const srcFolder = 'src/libs/converter/';
-
-const globPromise = (pattern) => {
-    return new Promise((resolve, reject) => {
-        glob(pattern, (err, files) => {
-            if (err) {
-                reject(err);
-            }
-            resolve(files);
-        });
-    });
-}
 
 const saveFileName = (destFolder, fileName) => {
     const data = JSON.stringify({ 'fileName': fileName });
@@ -52,8 +41,8 @@ const saveFileName = (destFolder, fileName) => {
 
     console.log(`\nUsing: ${PYTHON}`);
 
-    const installedPath = await globPromise(destFolder + 'yaptide_converter-*-py3-none-any.whl').then(files => files[0]);
-    const installedFileName = installedPath?.split('/').pop();
+    const installedPath = await glob(destFolder + 'yaptide_converter-*-py3-none-any.whl').then(files => files[0]);
+    const installedFileName = path.basename(installedPath ?? '');
 
     if (installedPath && SKIP === true) {
         //file exists
@@ -91,8 +80,8 @@ const saveFileName = (destFolder, fileName) => {
             fs.mkdirSync(destFolder, { recursive: true });
         }
 
-        const buildFilePath = await globPromise(srcFolder + 'dist/yaptide_converter-*-py3-none-any.whl').then(files => files[0]);
-        const buildFileName = buildFilePath?.split('/').pop();
+        const buildFilePath = await glob(srcFolder + 'dist/yaptide_converter-*-py3-none-any.whl').then(files => files[0]);
+        const buildFileName = path.basename(buildFilePath ?? '')
 
         const destFullPath = destFolder + buildFileName;
 

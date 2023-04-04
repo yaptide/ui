@@ -123,7 +123,9 @@ export function Editor(container) {
 
 		CSGManagerStateChanged: new Signal(), // State of CSGmanager changed
 
-		exampleLoaded: new Signal()
+		exampleLoaded: new Signal(),
+
+		requestRenameAction: new Signal()
 	};
 
 	this.results = null;
@@ -485,6 +487,21 @@ Editor.prototype = {
 			.map(e => e.getObjectByName(name))
 			.find(e => typeof e !== 'undefined');
 
+		return object;
+	},
+
+	getObjectById(id) {
+		const objectCollections = [
+			this.scene,
+			this.zoneManager,
+			this.beam,
+			this.detectManager,
+			this.detectManager.filterContainer,
+			this.scoringManager
+		];
+		const object =
+			objectCollections.map(e => e.getObjectById(id)).find(e => typeof e !== 'undefined') ??
+			null;
 		return object;
 	},
 
