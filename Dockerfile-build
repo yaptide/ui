@@ -1,0 +1,44 @@
+# Dockerfile needed to build the application and run it via npm 
+# This Dockerfile is used by the OpenShift build process
+FROM node:18
+
+# Directory where the app is installed and run
+WORKDIR /usr/src/app
+
+# First copy package.json and package-lock.json to install dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+COPY package*.json ./
+
+# Install app dependencies
+RUN npm install
+
+# Bundle app source
+COPY . .
+
+# Install python3-pip via apt and clean cache
+# pip is needed to generate wheel package for converter part of the UI
+# which later is being called using pyodide (python in the browser)
+RUN apt-get update && apt-get install -y python3-pip && rm -rf /var/lib/apt/lists/*
+
+# set HOME to /usr/src/app
+# this is needed to make sure that the git config is stored in the correct directory
+# otherwise the git config is stored in the root directory which is not allowed
+# also pip installs some packages using --user option which requires HOME to be set
+ENV HOME /usr/src/app
+RUN git config --global --add safe.directory /usr/src/app
+
+# Run setup script to identify the git commit hash and write it to a file
+# This file is later used to display the commit hash in the UI
+# We also generate the wheel package for the converter part of the UI
+RUN npm run setup
+
+# Openshift uses a random user id to run the container at a later stage
+# therefore we need to make sure that the user has the correct permissions
+RUN chgrp -R 0 /usr/src/app
+RUN chmod -R g=u /usr/src/app
+
+# Expose port 3000 on which the app is running
+EXPOSE 3000
+
+# Run the app
+CMD [ "npm", "run", "start" ]
