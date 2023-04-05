@@ -10,7 +10,7 @@ export interface ILoader {
 	canLoadResultsData: boolean;
 	clearLoadedEditor: () => void;
 	clearLoadedResults: () => void;
-	loadFromFiles: (files: FileList | null) => void;
+	loadFromFiles: (files: FileList | undefined) => void;
 	loadFromUrl: (url: string) => void;
 	loadFromJson: (raw_json: {}) => void;
 	loadFromJsonString: (json_string: string) => void;
@@ -19,6 +19,15 @@ const [useLoader, LoaderContextProvider] = createGenericContext<ILoader>();
 
 const isEditorJson = (data: unknown): data is EditorJson => {
 	return (data as EditorJson)?.metadata?.type === 'Editor';
+};
+
+const readFile = (file: File) => {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.addEventListener('load', () => resolve(reader.result));
+		reader.addEventListener('error', reject);
+		reader.readAsText(file);
+	});
 };
 
 const Loader = (props: { children: ReactNode }) => {
@@ -61,17 +70,8 @@ const Loader = (props: { children: ReactNode }) => {
 		}
 	}, []);
 
-	const readFile = useCallback((file: File) => {
-		return new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.addEventListener('load', () => resolve(reader.result));
-			reader.addEventListener('error', reject);
-			reader.readAsText(file);
-		});
-	}, []);
-
 	const loadFromFiles = useCallback(
-		(files: FileList | null) => {
+		(files: FileList | undefined) => {
 			if (!files) return;
 			const promises = [];
 			for (const file of Array.from(files)) {
@@ -82,15 +82,15 @@ const Loader = (props: { children: ReactNode }) => {
 				loadData(dataArray);
 			});
 		},
-		[loadData, readFile]
+		[loadData]
 	);
 
 	const loadFromJson = useCallback(
-		(raw_json: {}) => {
-			if (Array.isArray(raw_json)) {
-				loadData(raw_json);
+		(rawJson: {}) => {
+			if (Array.isArray(rawJson)) {
+				loadData(rawJson);
 			} else {
-				loadData([raw_json as EditorJson | JobStatusData]);
+				loadData([rawJson as EditorJson | JobStatusData]);
 			}
 		},
 		[loadData]
@@ -135,4 +135,4 @@ const Loader = (props: { children: ReactNode }) => {
 	return <LoaderContextProvider value={value}>{props.children}</LoaderContextProvider>;
 };
 
-export { useLoader, Loader };
+export { useLoader, Loader, readFile };

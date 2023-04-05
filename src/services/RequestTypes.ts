@@ -13,6 +13,7 @@ export interface InputFiles {
 	'detect.dat': string;
 	'geo.dat': string;
 	'mat.dat': string;
+	[fileName: string]: string;
 }
 
 export enum OrderBy {

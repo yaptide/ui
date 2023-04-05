@@ -10,6 +10,8 @@ import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { DEMO_MODE } from '../../../util/Config';
 import { InputFilesEditor } from './InputFilesEditor';
 import { InputFiles } from '../../../services/RequestTypes';
+import { DragDropFile } from '../../../util/DragDropFile';
+import { readFile } from '../../../services/DataLoaderService';
 interface InputEditorPanelProps {
 	goToRun?: () => void;
 }
@@ -126,6 +128,32 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 					)}
 				</ToggleButtonGroup>
 			</Box>
+
+			<DragDropFile
+				id={'input-file-upload-ediotr'}
+				onSubmit={files => {
+					if (!files) return;
+
+					const submitedFiles: Record<string, string> = {};
+
+					const promises = Array.from(files).map(async file => {
+						const content = readFile(file) as Promise<string>;
+						submitedFiles[file.name] = await content;
+						return content;
+					});
+
+					Promise.all(promises).then(_ => {
+						setInputFiles(oldInput => {
+							if (!oldInput) return submitedFiles as InputFiles;
+
+							const inputFiles = { ...oldInput, ...submitedFiles };
+							return inputFiles as InputFiles;
+						});
+					});
+				}}
+				acceptedFiles={'.dat'}
+			/>
+
 			<InputFilesEditor
 				inputFiles={inputFiles}
 				runSimulation={!DEMO_MODE ? runSimulation : undefined}

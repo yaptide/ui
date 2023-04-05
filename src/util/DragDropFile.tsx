@@ -1,28 +1,29 @@
 // Concept from https://www.codemzy.com/blog/react-drag-drop-file-upload
 
 import { Box, Button, Typography } from '@mui/material';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 
 type DragDropProps = {
 	id: string;
 	onSubmit: (file: FileList) => void;
-	currentFiles: FileList | null;
+	currentFiles?: FileList;
+	acceptedFiles: string;
 };
 
 // drag drop file component
 export function DragDropFile(props: DragDropProps) {
-	const { id, onSubmit, currentFiles } = props;
+	const { id, onSubmit, currentFiles, acceptedFiles } = props;
 	// drag state
-	const [dragActive, setDragActive] = React.useState(false);
-	const [hasFiles, setHasFiles] = React.useState(currentFiles && currentFiles.length > 0);
+	const [dragActive, setDragActive] = useState(false);
+	const [hasFiles, setHasFiles] = useState(currentFiles && currentFiles.length > 0);
 	// ref
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
 		setHasFiles(currentFiles && currentFiles.length > 0);
-	}, [props.currentFiles, currentFiles]);
+	}, [currentFiles]);
 
 	// handle drag events
 	const handleDragEnter = function (e: React.DragEvent<HTMLElement>) {
@@ -69,7 +70,6 @@ export function DragDropFile(props: DragDropProps) {
 
 	return (
 		<form
-			id='form-file-upload'
 			onDragEnter={handleDragEnter}
 			onDragLeave={handleDragLeave}
 			onDragOver={handleDragEnter}
@@ -81,11 +81,13 @@ export function DragDropFile(props: DragDropProps) {
 			<input
 				id={id}
 				hidden
-				accept='.json'
+				accept={acceptedFiles}
 				ref={inputRef}
 				type='file'
 				onChange={handleChange}
+				multiple
 			/>
+
 			<Box
 				sx={{
 					borderRadius: 1,
@@ -111,6 +113,7 @@ export function DragDropFile(props: DragDropProps) {
 					</Button>
 					or drag and drop it here.
 				</Box>
+
 				<Box
 					sx={{
 						boxSizing: 'border-box',
@@ -119,8 +122,7 @@ export function DragDropFile(props: DragDropProps) {
 						left: '50%',
 						transform: 'translate(-50%, -50%)',
 						display: dragActive ? 'flex' : 'none'
-					}}
-					id='drag-file-element'>
+					}}>
 					<FileUploadIcon
 						sx={{
 							fontSize: 100,
@@ -128,6 +130,7 @@ export function DragDropFile(props: DragDropProps) {
 						}}
 					/>
 				</Box>
+
 				<Box
 					sx={{
 						boxSizing: 'border-box',
@@ -138,8 +141,7 @@ export function DragDropFile(props: DragDropProps) {
 						flexDirection: 'column',
 						display: hasFiles && !dragActive ? 'flex' : 'none',
 						alignItems: 'center'
-					}}
-					id='drag-file-element'>
+					}}>
 					<InsertDriveFileIcon
 						sx={{
 							fontSize: 100,

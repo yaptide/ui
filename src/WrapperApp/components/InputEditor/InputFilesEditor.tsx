@@ -14,17 +14,19 @@ interface InputFilesEditorProps {
 	innerState?: boolean;
 }
 
-const _emptyInputFiles: InputFiles = {
+const _defaultInputFiles: InputFiles = {
 	'geo.dat': '',
 	'beam.dat': '',
 	'detect.dat': '',
 	'mat.dat': ''
 };
+
 export function InputFilesEditor(props: InputFilesEditorProps) {
 	const theme = useTheme();
-	const [inputFiles, setInputFiles] = useState<InputFiles>(
-		props.inputFiles ?? { ..._emptyInputFiles }
-	);
+	const [inputFiles, setInputFiles] = useState<InputFiles>({
+		..._defaultInputFiles,
+		...(props.inputFiles ?? {})
+	});
 
 	const inputFilesOrder = [
 		'info.json',
@@ -34,9 +36,15 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 		'detect.dat',
 		'sobp.dat'
 	];
+
 	useEffect(() => {
-		if (!props.innerState) setInputFiles({ ...(props.inputFiles ?? _emptyInputFiles) });
+		if (!props.innerState)
+			setInputFiles({ ..._defaultInputFiles, ...(props.inputFiles ?? {}) });
 	}, [props.innerState, props.inputFiles]);
+
+	const canBeDeleted = (name: string) => {
+		return !(name in _defaultInputFiles);
+	};
 
 	return (
 		<Card sx={{ minHeight: '100%' }}>
@@ -97,6 +105,32 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 										sx={{ ml: 1 }}>
 										Download
 									</Button>
+									<Button
+										color='warning'
+										disabled={value.trim() === ''}
+										onClick={() => {
+											setInputFiles(old => {
+												return { ...old, [name]: '' };
+											});
+										}}
+										sx={{ ml: 1 }}>
+										Clear
+									</Button>
+
+									{canBeDeleted(name) && (
+										<Button
+											color='error'
+											disabled={value.trim() === ''}
+											onClick={() => {
+												setInputFiles(old => {
+													delete old[name];
+													return { ...old };
+												});
+											}}
+											sx={{ ml: 1 }}>
+											Delete
+										</Button>
+									)}
 								</h2>
 								<CodeEditor
 									value={value}

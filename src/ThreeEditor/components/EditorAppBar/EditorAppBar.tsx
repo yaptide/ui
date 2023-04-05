@@ -191,10 +191,6 @@ function EditorAppBar({ editor }: AppBarProps) {
 				open={openFileDialogOpen}
 				onClose={() => setOpenFileDialogOpen(false)}
 				onFileSelected={openFile}
-				onPlainTextSubmitted={(text: string) => {
-					const json = JSON.parse(text);
-					openJSON(json);
-				}}
 				onUrlSubmitted={loadFromUrl}
 			/>
 			{editor && (
