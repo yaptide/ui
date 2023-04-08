@@ -20,7 +20,7 @@ ${commentCsvString(estimatorMetaData)}
 ${commentCsvString(pageMetaData)}
 # --------------------------------
 ${titleXaxis}, ${titleYaxis}
-${page.axisDim1.values.map((x, idx) => `${x}, ${page.data.values[idx]}`).join('\n')} `;
+${page.axisDim1.values.map((x, idx) => `${x}, ${page.data.values[idx]}`).join('\n')}`;
 
 	return fileTemplate;
 };
