@@ -9,7 +9,7 @@ export const estimatorPage1DToCsv = (estimator: Estimator, page: Page1D) => {
 	const estimatorMetaData = JSON.stringify(estimator.metadata ?? {}, null, 4);
 	const pageMetaData = JSON.stringify(page.metadata ?? {}, null, 4);
 
-	const titleXaxis = `${page.axis1.name} [${page.axis1.unit}]`;
+	const titleXaxis = `${page.axisDim1.name} [${page.axisDim1.unit}]`;
 	const titleYaxis = `${page.data.name} [${page.data.unit}]`;
 
 	const fileTemplate = `# --------------------------------
@@ -20,7 +20,7 @@ ${commentCsvString(estimatorMetaData)}
 ${commentCsvString(pageMetaData)}
 # --------------------------------
 ${titleXaxis}, ${titleYaxis}
-${page.axis1.values.map((x, idx) => `${x}, ${page.data.values[idx]}`).join('\n')} `;
+${page.axisDim1.values.map((x, idx) => `${x}, ${page.data.values[idx]}`).join('\n')} `;
 
 	return fileTemplate;
 };
