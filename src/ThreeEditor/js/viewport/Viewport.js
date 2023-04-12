@@ -106,6 +106,7 @@ export function Viewport(
 			signals.zoneGeometryChanged,
 			signals.zoneAdded,
 			signals.zoneRemoved,
+			signals.objectChanged,
 			wrapperDiv.dom,
 			{
 				clipPlane,

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
+import { isZone } from '../../util/CSG/CSGZone';
 
 /*
 This function is responsible for preparing scene with clipping plane and stencil materials
@@ -18,6 +19,7 @@ export function ViewportClippedView(
 	signalGeometryChanged,
 	signalGeometryAdded,
 	signalGeometryRemoved,
+	signalObjectChanged,
 	container,
 	{ clipPlane, planeHelperColor, planePosLabel }
 ) {
@@ -103,6 +105,7 @@ export function ViewportClippedView(
 		name: 'CrossSectionPlaneMaterial',
 		color: 0x00ff00,
 		emissive: 0x00ff00,
+		visible: false,
 
 		stencilWrite: true,
 		stencilRef: 0,
@@ -160,9 +163,11 @@ export function ViewportClippedView(
 			clipPlane,
 			STENCIL_RENDER_ORDER
 		);
+
 		stencilGroup.name = object3D.uuid;
 		clippedObjects.add(stencilGroup);
 	}
+
 
 	signalGeometryChanged.add(object3D => {
 		updateMeshWithStencilMaterial(object3D);
@@ -174,6 +179,16 @@ export function ViewportClippedView(
 
 	signalGeometryRemoved.add(object3D => {
 		clippedObjects.remove(clippedObjects.getObjectByName(object3D.uuid));
+	});
+
+	signalObjectChanged.add((object3D, property) => {
+		const stencilGroup = clippedObjects.getObjectByName(object3D.uuid);
+
+		if (!stencilGroup) return;
+
+		if (property === 'visible') {
+			stencilGroup.visible = object3D.visible;
+		}
 	});
 
 	// https://github.com/mrdoob/three.js/blob/r132/examples/webgl_clipping_stencil.html
