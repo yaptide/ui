@@ -8,10 +8,10 @@ import { InputFiles } from '../../../services/RequestTypes';
 
 interface InputFilesEditorProps {
 	inputFiles?: InputFiles;
+	onChange?: (inputFiles: InputFiles) => void;
 	runSimulation?: (inputFiles: InputFiles) => void;
 	saveAndExit?: (inputFiles: InputFiles) => void;
 	closeEditor?: () => void;
-	innerState?: boolean;
 }
 
 const _defaultInputFiles: InputFiles = {
@@ -38,9 +38,8 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 	];
 
 	useEffect(() => {
-		if (!props.innerState)
-			setInputFiles({ ..._defaultInputFiles, ...(props.inputFiles ?? {}) });
-	}, [props.innerState, props.inputFiles]);
+		setInputFiles({ ..._defaultInputFiles, ...(props.inputFiles ?? {}) });
+	}, [props.inputFiles]);
 
 	const canBeDeleted = (name: string) => {
 		return !(name in _defaultInputFiles);

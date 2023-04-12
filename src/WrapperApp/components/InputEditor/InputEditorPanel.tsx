@@ -130,7 +130,7 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 			</Box>
 
 			<DragDropFile
-				id={'input-file-upload-ediotr'}
+				id={'input-file-upload-editor'}
 				onSubmit={files => {
 					if (!files) return;
 
