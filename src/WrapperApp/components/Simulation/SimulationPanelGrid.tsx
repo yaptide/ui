@@ -1,10 +1,19 @@
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
-import { Box, Button, ButtonGroup, Grid, MenuItem, Pagination, Select } from '@mui/material';
+import {
+	AppBar,
+	Box,
+	Button,
+	ButtonGroup,
+	Grid,
+	MenuItem,
+	Pagination,
+	Select
+} from '@mui/material';
 import { InputFiles, OrderBy, OrderType } from '../../../services/RequestTypes';
 import { JobStatusData } from '../../../services/ResponseTypes';
 import { DEMO_MODE } from '../../../util/Config';
-import SimulationStatus from './SimulationStatus';
+import SimulationCard from './SimulationCard';
 
 export type SimulationPanelGridProps = {
 	localSimulationData: JobStatusData[];
@@ -40,7 +49,7 @@ export function SimulationPanelGrid(props: SimulationPanelGridProps) {
 	} = props;
 	return (
 		<>
-			{!DEMO_MODE && (
+			{/* {!DEMO_MODE && (
 				<Box
 					sx={{
 						display: 'flex',
@@ -100,16 +109,12 @@ export function SimulationPanelGrid(props: SimulationPanelGridProps) {
 						onChange={e =>
 							handleOrderChange(orderType, orderBy, e.target.value as number)
 						}>
-						<MenuItem value={2}>2</MenuItem>
-						<MenuItem value={4}>4</MenuItem>
-						<MenuItem value={6}>6</MenuItem>
-						<MenuItem value={8}>8</MenuItem>
-						<MenuItem value={12}>12</MenuItem>
-						<MenuItem value={16}>16</MenuItem>
-						<MenuItem value={20}>20</MenuItem>
+						{new Array(10).fill(NaN).map((_, index) => (
+							<MenuItem value={2 * (index + 1)}>{2 * (index + 1)}</MenuItem>
+						))}
 					</Select>
 				</Box>
-			)}
+			)} */}
 			<Grid
 				container
 				spacing={2}
@@ -124,29 +129,53 @@ export function SimulationPanelGrid(props: SimulationPanelGridProps) {
 				<>
 					{localSimulationData.map(simulation => (
 						<Grid key={simulation.jobId} item xs={6}>
-							<SimulationStatus
+							<SimulationCard
 								simulation={simulation}
 								loadResults={taskId => handleLoadResults(taskId, simulation)}
-								showInputFiles={handleShowInputFiles}></SimulationStatus>
+								showInputFiles={handleShowInputFiles}></SimulationCard>
 						</Grid>
 					))}
 					{simulationsStatusData.map((simulation, index) => (
 						<Grid key={simulation.jobId} item xs={6}>
-							<SimulationStatus
+							<SimulationCard
 								simulation={simulation}
 								loadResults={taskId => handleLoadResults(taskId, simulation)}
-								showInputFiles={handleShowInputFiles}></SimulationStatus>
+								showInputFiles={handleShowInputFiles}></SimulationCard>
 						</Grid>
 					))}
 				</>
 			</Grid>
 			{!DEMO_MODE && (
-				<Pagination
-					sx={{ display: 'flex', justifyContent: 'end', pb: 3 }}
-					count={pageCount}
-					page={page}
-					onChange={handlePageChange}
-				/>
+				<AppBar
+					position={'sticky'}
+					color={'inherit'}
+					elevation={1}
+					sx={{
+						'borderRadius': 1,
+						'mb': ({ spacing }) => spacing(4),
+						'p': ({ spacing }) => spacing(2, 2, 0, 2),
+						'bottom': ({ spacing }) => spacing(2),
+						'&:before': {
+							content: '""',
+							position: 'absolute',
+							top: '100%',
+							width: '100%',
+							left: 0,
+							height: ({ spacing }) => spacing(2),
+							background: ({ palette }) => palette.background.default
+						}
+					}}>
+					<Pagination
+						sx={{
+							display: 'flex',
+							justifyContent: 'end',
+							pb: 3
+						}}
+						count={pageCount}
+						page={page}
+						onChange={handlePageChange}
+					/>
+				</AppBar>
 			)}
 		</>
 	);

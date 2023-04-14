@@ -10,7 +10,7 @@ import Menu from '@mui/icons-material/Menu';
 import MenuOpen from '@mui/icons-material/MenuOpen';
 import NotListedLocationIcon from '@mui/icons-material/NotListedLocation';
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
-import QueuePlayNextIcon from '@mui/icons-material/QueuePlayNext';
+import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
 import { Tooltip } from '@mui/material';
 import Collapse from '@mui/material/Collapse';
@@ -130,7 +130,7 @@ function YapDrawer({ drawerWidth = 200, handleChange, tabsValue, open, setOpen }
 			label: 'Simulations',
 			value: 'simulations',
 			disabled: !isAuthorized,
-			icon: <QueuePlayNextIcon />
+			icon: <OndemandVideoIcon />
 		},
 		{
 			label: 'Results',

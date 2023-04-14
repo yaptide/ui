@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Editor } from '../../js/Editor';
 import { Box, Tabs, Tab } from '@mui/material';
-import { TabPanel } from '../../../WrapperApp/components/TabPanel';
+import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import { PropertiesPanel } from './propeteries/PropeteriesPanel';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
 import { BoxMesh, CylinderMesh, SphereMesh } from '../../util/BasicMeshes';

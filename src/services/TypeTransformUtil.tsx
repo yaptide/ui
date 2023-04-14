@@ -1,11 +1,17 @@
+type IsLetter<T extends string> = Uppercase<T> extends Lowercase<T> ? false : true;
+
 // Transform string key from camelCase to snake_case
-type CamelToSnakeCase<S extends string> = S extends `${infer T}${infer U}`
-	? `${T extends Uppercase<T> ? '_' : ''}${Lowercase<T>}${CamelToSnakeCase<U>}`
+type CamelToSnakeCase<S extends string> = S extends `${infer F}${infer S}${infer R}`
+	? [S, IsLetter<S>] extends [Uppercase<S>, true]
+		? `${Lowercase<F>}_${CamelToSnakeCase<`${Lowercase<S>}${R}`>}`
+		: `${Lowercase<F>}${CamelToSnakeCase<`${Lowercase<S>}${R}`>}`
 	: S;
 
 // Transform string key from snake_case to camelCase
-type SnakeToCamelCase<S extends string> = S extends `${infer T}_${infer U}`
-	? `${T}${Capitalize<SnakeToCamelCase<U>>}`
+type SnakeToCamelCase<S extends string> = S extends `${infer L}${infer R}`
+	? L extends '_'
+		? `${Capitalize<SnakeToCamelCase<R>>}`
+		: `${Lowercase<L>}${SnakeToCamelCase<R>}`
 	: S;
 
 // Map of transformation functions

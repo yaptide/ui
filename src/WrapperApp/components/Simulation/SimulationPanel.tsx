@@ -31,6 +31,12 @@ import { useStore } from '../../../services/StoreService';
 import { DEMO_MODE } from '../../../util/Config';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import { SimulationPanelGrid } from './SimulationPanelGrid';
+import { SimulationAppBar } from './SimulationPanelBar';
+import {
+	DemoCardGrid,
+	PaginatedSimulationCardGrid,
+	SimulationCardGrid
+} from './SimulationCardGrid';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
@@ -58,14 +64,14 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const [isBackendAlive, setBackendAlive] = useState(false);
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
 	const [page, setPage] = useState(1);
-	const [pageCount, setPageCount] = useState(0);
+	const [pageCount, setPageCount] = useState(3);
 	const [orderType, setOrderType] = useState<OrderType>(OrderType.ASCEND);
 	const [orderBy, setOrderBy] = useState<OrderBy>(OrderBy.START_TIME);
 	const [pageSize, setPageSize] = useState(6);
 
 	const [simName, setSimName] = useState<string>(editorRef.current!.toJSON().project.title);
 	const [nTasks, setNTasks] = useState<number>(1);
-	const [simulator, setSimulator] = useState<string>('shieldhit');
+	const [simulator] = useState<string>('shieldhit');
 
 	const [inputFiles, setInputFiles] = useState<InputFiles>();
 	const [directRun, setDirectRun] = useState<boolean>(true);
@@ -255,13 +261,16 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		<Box
 			sx={{
 				margin: '0 auto',
-				width: 'min(1200px, 100%)',
+				width: 'min(1600px, 100%)',
+				maxWidth: 'max(75%,966px)',
 				height: '100%',
 				boxSizing: 'border-box',
-				padding: '2rem 5rem',
+				padding: ({ spacing }) => spacing(2, 5),
+				position: 'relative',
 				display: 'flex',
 				flexDirection: 'column',
-				gap: '1.5rem'
+				gap: '1.5rem',
+				scrollPadding: ({ spacing }) => spacing(2)
 			}}>
 			<Modal
 				aria-labelledby='transition-modal-title'
@@ -282,8 +291,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					</Box>
 				</Fade>
 			</Modal>
-
-			<Card sx={{ minWidth: 275, flexShrink: 0 }}>
+			{/* <Card sx={{ minWidth: 275, flexShrink: 0 }}>
 				<CardContent
 					sx={{
 						display: 'flex',
@@ -372,27 +380,60 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 						</CardActions>
 					</>
 				)}
-			</Card>
-			<SimulationPanelGrid
-				simulationsStatusData={!DEMO_MODE ? simulationsStatusData : EXAMPLES}
-				localSimulationData={localSimulationData}
-				handleLoadResults={(id, simulation) => {
-					if (id === null) props.goToResults?.call(null);
-					else
-						currentJobStatusData[StatusState.COMPLETED](simulation) &&
-							setResultsSimulationData(simulation);
+			</Card> */}
+			<DemoCardGrid
+				simulations={new Array(12).fill(NaN).map(() => ({
+					jobState: StatusState.PENDING,
+					message: 'Pending',
+					jobId: '123',
+					title: 'Simulation 1',
+					metadata: {
+						input: 'input',
+						server: 'server',
+						platform: 'DIRECT',
+						simType: 'simType'
+					},
+					startTime: new Date()
+				}))}
+			/>
+			<DemoCardGrid
+				simulations={new Array(12).fill(NaN).map(() => ({
+					jobState: StatusState.PENDING,
+					message: 'Pending',
+					jobId: '123',
+					title: 'Simulation 1',
+					metadata: {
+						input: 'input',
+						server: 'server',
+						platform: 'DIRECT',
+						simType: 'simType'
+					},
+					startTime: new Date()
+				}))}
+			/>
+			<PaginatedSimulationCardGrid
+				simulations={new Array(12).fill(NaN).map(() => ({
+					jobState: StatusState.PENDING,
+					message: 'Pending',
+					jobId: '123',
+					title: 'Simulation 1',
+					metadata: {
+						input: 'input',
+						server: 'server',
+						platform: 'DIRECT',
+						simType: 'simType'
+					},
+					startTime: new Date()
+				}))}
+				pageData={{
+					orderType,
+					orderBy,
+					pageCount,
+					page,
+					pageSize,
+					handleOrderChange,
+					handlePageChange
 				}}
-				handleShowInputFiles={(inputFiles?) => {
-					setShowInputFilesEditor(true);
-					setInputFiles(inputFiles);
-				}}
-				pageCount={pageCount}
-				page={page}
-				pageSize={pageSize}
-				handlePageChange={handlePageChange}
-				orderType={orderType}
-				orderBy={orderBy}
-				handleOrderChange={handleOrderChange}
 			/>
 		</Box>
 	);

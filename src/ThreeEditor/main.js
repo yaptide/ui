@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import { FileLoader } from 'three';
 import { Editor } from './js/Editor.js';
 import { ViewManager } from './js/viewport/ViewportManager.js';
 import { Sidebar } from './js/sidebar/Sidebar.js';
@@ -15,12 +15,10 @@ export function initEditor(container) {
 		return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 	};
 
-	//
-
 	const editor = new Editor(container);
 
 	window.editor = editor; // Expose editor to Console
-	window.THREE = THREE; // Expose THREE to APP Scripts and Console
+	// window.THREE = THREE; // Expose THREE to APP Scripts and Console
 
 	const viewManager = new ViewManager(editor);
 	container.appendChild(viewManager.container.dom);
@@ -158,7 +156,7 @@ export function initEditor(container) {
 		const file = hash.substr(6);
 
 		if (window.confirm('Any unsaved data will be lost. Are you sure?')) {
-			var loader = new THREE.FileLoader();
+			var loader = new FileLoader();
 			loader.crossOrigin = '';
 			loader.load(file, text => {
 				editor.clear();
