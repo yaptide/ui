@@ -22,15 +22,15 @@ interface IPage {
 export interface Page2D extends IPage {
 	data: pageData;
 	dimensions: 2;
-	firstAxis: pageData;
-	secondAxis: pageData;
+	axisDim1: pageData;
+	axisDim2: pageData;
 }
 
 export interface Page1D extends IPage {
 	data: pageData;
 	metadata?: unknown;
 	dimensions: 1;
-	firstAxis: pageData;
+	axisDim1: pageData;
 }
 
 export interface Page0D extends IPage {

@@ -34,7 +34,7 @@ export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 		// create example graph
 		const npoints = page.data.values.length;
 		const y = page.data.values;
-		const x = page.firstAxis.values;
+		const x = page.axisDim1.values;
 
 		const graph = JSROOT.createTGraph(npoints, x, y);
 
@@ -43,7 +43,7 @@ export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 		const histogram = JSROOT.createHistogram('TH1F', npoints);
 		histogram.fXaxis.fXmin = x[0];
 		histogram.fXaxis.fXmax = x[npoints - 1];
-		histogram.fXaxis.fTitle = `${page.firstAxis.name} [${page.firstAxis.unit}]`;
+		histogram.fXaxis.fTitle = `${page.axisDim1.name} [${page.axisDim1.unit}]`;
 
 		histogram.fYaxis.fXmin = y[0];
 		histogram.fYaxis.fXmax = y[npoints - 1];
