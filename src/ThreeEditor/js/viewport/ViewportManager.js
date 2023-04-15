@@ -48,6 +48,8 @@ function ViewManager(editor) {
 
 	const minorGrid = new THREE.GridHelper(100, 100, 0x888888);
 	minorGrid.material.color.setHex(0x888888); // 0x888888 -> light grey (53% lightness)
+	minorGrid.material.transparent = true;
+	minorGrid.material.opacity = 0.5;
 	minorGrid.material.vertexColors = false;
 	grid.add(minorGrid);
 

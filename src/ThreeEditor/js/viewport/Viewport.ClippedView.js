@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
-import { isZone } from '../../util/CSG/CSGZone';
 
 /*
 This function is responsible for preparing scene with clipping plane and stencil materials
@@ -60,7 +59,7 @@ export function ViewportClippedView(
 		set [planePosProperty](v) {
 			// take the previous location of clipping plane and shift stencil plane to the desired location of clipping plane
 			// we translate in the plane in local coordinate system
-			stencilPlane.translateZ(v - clipPlane.constant);
+			crossSectionGroup.children.forEach((stencilPlane) => { stencilPlane.translateZ(v - clipPlane.constant); });
 
 			// align clipping plane with stencil plane
 			clipPlane.constant = v;
@@ -101,73 +100,87 @@ export function ViewportClippedView(
 	crossSectionGroup.name = 'crossSectionGroup';
 	this.scene.add(crossSectionGroup);
 
-	const planeMat = new THREE.MeshBasicMaterial({
-		name: 'CrossSectionPlaneMaterial',
-		color: 0x00ff00,
-		emissive: 0x00ff00,
-		visible: false,
+	function addStencilPlane(objectRenderOrder, object3D) {
+		const planeMat = new THREE.MeshBasicMaterial({
+			name: `CrossSectionPlaneMaterial-${object3D.material.color.getHex()}`,
+			color: object3D.material.color.getHex(),
+			// opacity: object3D.material.opacity,
+			// transparent: object3D.material.transparent,
+			visible: true,
+			depthWrite: false,
+			side: THREE.FrontSide,
 
-		stencilWrite: true,
-		stencilRef: 0,
-		stencilFunc: THREE.NotEqualStencilFunc,
-		stencilFail: THREE.ReplaceStencilOp,
-		stencilZFail: THREE.ReplaceStencilOp,
-		stencilZPass: THREE.ReplaceStencilOp
-	});
+			stencilWrite: true,
+			stencilRef: 1,
+			stencilFunc: THREE.EqualStencilFunc,
+			// stencilZPass: THREE.ReplaceStencilOp
+		});
 
-	const stencilPlane = new THREE.Mesh(planeGeom, planeMat); // Cross Section Plane - fill stencil
-	stencilPlane.name = 'stencilPlane';
-	stencilPlane.onAfterRender = function (renderer) {
-		renderer.clearStencil();
-	};
-	// increase render order to have stencil plane being rendered after other objects
-	// we increase the render object by 0.1 following the original code from threejs repo
-	stencilPlane.renderOrder = STENCIL_RENDER_ORDER + 0.1;
+		const stencilPlane = new THREE.Mesh(planeGeom, planeMat); // Cross Section Plane - fill stencil
+		stencilPlane.name = 'stencilPlane-' + object3D.uuid;
+		stencilPlane.onAfterRender = function (renderer) {
+			renderer.clearStencil();
+		};
 
-	crossSectionGroup.add(stencilPlane);
+		// increase render order to have stencil plane being rendered after other objects
+		// we increase the render object by 0.1 following the original code from threejs repo
+		stencilPlane.renderOrder = objectRenderOrder + 0.1;
 
-	// align stencil plane to clipping plane
-	clipPlane.coplanarPoint(stencilPlane.position);
-	stencilPlane.lookAt(
-		stencilPlane.position.x - clipPlane.normal.x,
-		stencilPlane.position.y - clipPlane.normal.y,
-		stencilPlane.position.z - clipPlane.normal.z
-	);
+		crossSectionGroup.add(stencilPlane);
 
-	// put stencil plane at the same distance from the origin of coord. system as clipping plane
-	// in fact there will be completely aligned then
-	stencilPlane.translateZ(clipPlane.constant);
+		// align stencil plane to clipping plane
+		clipPlane.coplanarPoint(stencilPlane.position);
+		stencilPlane.lookAt(
+			stencilPlane.position.x - clipPlane.normal.x,
+			stencilPlane.position.y - clipPlane.normal.y,
+			stencilPlane.position.z - clipPlane.normal.z
+		);
 
-	// move back stencil plane by epsilon distance (here 1nm)
-	// TODO why back and not to the front ?  # skipcq: JS-0099
-	// TODO try to decrease this value in such way that creating geometry of small objects (i.e. um size is still possible)  # skipcq: JS-0099
-	stencilPlane.translateZ(-1e-2);
+		// put stencil plane at the same distance from the origin of coord. system as clipping plane
+		// in fact there will be completely aligned then
+		stencilPlane.translateZ(clipPlane.constant);
+
+		// move back stencil plane by epsilon distance (here 1nm)
+		// TODO why back and not to the front ?  # skipcq: JS-0099
+		// TODO try to decrease this value in such way that creating geometry of small objects (i.e. um size is still possible)  # skipcq: JS-0099
+		stencilPlane.translateZ(-1e-2);
+
+		return stencilPlane;
+	}
+
+
 
 	// Initialize view with objects
-	initialObjects.forEach(object3D => {
+	initialObjects.forEach((object3D, index) => {
+		// add stencil plane to the scene
+
 		const stencilGroup = createPlaneStencilGroup(
 			object3D.geometry,
-			clipPlane,
-			STENCIL_RENDER_ORDER
+			index + 1
 		);
 		stencilGroup.name = object3D.uuid;
 		clippedObjects.add(stencilGroup);
+
+		addStencilPlane(index + 1, object3D);
 	});
 
 	// update stencil materials when geometry of bodies and zones is updated
 	function updateMeshWithStencilMaterial(object3D) {
-		clippedObjects.remove(clippedObjects.getObjectByName(object3D.uuid));
+		const oldGroup = clippedObjects.getObjectByName(object3D.uuid);
+		const renderOrder = oldGroup?.userData.renderOrder ?? clippedObjects.children.length + 1;
+		clippedObjects.remove(oldGroup);
 
 		const stencilGroup = createPlaneStencilGroup(
 			object3D.geometry,
-			clipPlane,
-			STENCIL_RENDER_ORDER
+			renderOrder
 		);
 
 		stencilGroup.name = object3D.uuid;
 		clippedObjects.add(stencilGroup);
-	}
 
+		crossSectionGroup.remove(crossSectionGroup.getObjectByName('stencilPlane-' + object3D.uuid));
+		addStencilPlane(renderOrder, object3D);
+	}
 
 	signalGeometryChanged.add(object3D => {
 		updateMeshWithStencilMaterial(object3D);
@@ -179,6 +192,7 @@ export function ViewportClippedView(
 
 	signalGeometryRemoved.add(object3D => {
 		clippedObjects.remove(clippedObjects.getObjectByName(object3D.uuid));
+		crossSectionGroup.remove(crossSectionGroup.getObjectByName('stencilPlane-' + object3D.uuid));
 	});
 
 	signalObjectChanged.add((object3D, property) => {
@@ -193,41 +207,45 @@ export function ViewportClippedView(
 
 	// https://github.com/mrdoob/three.js/blob/r132/examples/webgl_clipping_stencil.html
 	// Creates mask with stencil where stencil plane should be visible
-	function createPlaneStencilGroup(geometry, plane, renderOrder) {
+	const baseMat = new THREE.MeshBasicMaterial();
+	baseMat.depthWrite = true;
+	baseMat.depthTest = true;
+	baseMat.colorWrite = false;
+	baseMat.stencilWrite = true;
+	baseMat.stencilFunc = THREE.AlwaysStencilFunc;
+
+	// back faces - add stencil
+	const backFaceMaterial = baseMat.clone();
+	backFaceMaterial.name = 'back faces - add stencil';
+	backFaceMaterial.color = new THREE.Color(0x0000FF);
+	backFaceMaterial.side = THREE.BackSide;
+	backFaceMaterial.clippingPlanes = [clipPlane];
+	backFaceMaterial.stencilZPass = THREE.IncrementWrapStencilOp;
+
+	// front faces - remove stencil
+	const frontFaceMaterial = baseMat.clone();
+	frontFaceMaterial.name = 'front faces - remove stencil';
+	frontFaceMaterial.color = new THREE.Color(0xFF0000);
+	frontFaceMaterial.side = THREE.FrontSide;
+	frontFaceMaterial.clippingPlanes = [clipPlane];
+	frontFaceMaterial.stencilZPass = THREE.DecrementWrapStencilOp;
+
+	// const otherObjectsMaterial = frontFaceMaterial.clone();
+	// otherObjectsMaterial.name = 'other objects - remove stencil';
+	// otherObjectsMaterial.side = THREE.DoubleSide;
+
+	function createPlaneStencilGroup(geometry, renderOrder) {
 		const group = new THREE.Group();
-		const baseMat = new THREE.MeshBasicMaterial();
-		baseMat.depthWrite = false;
-		baseMat.depthTest = false;
-		baseMat.colorWrite = false;
-		baseMat.stencilWrite = true;
-		baseMat.stencilFunc = THREE.AlwaysStencilFunc;
 
-		// back faces - add stencil
-		const mat0 = baseMat.clone();
-		mat0.name = 'back faces - add stencil';
-		mat0.side = THREE.BackSide;
-		mat0.clippingPlanes = [plane];
-		mat0.stencilFail = THREE.IncrementWrapStencilOp;
-		mat0.stencilZFail = THREE.IncrementWrapStencilOp;
-		mat0.stencilZPass = THREE.IncrementWrapStencilOp;
-
-		const mesh0 = new THREE.Mesh(geometry, mat0);
+		const mesh0 = new THREE.Mesh(geometry, backFaceMaterial);
 		mesh0.renderOrder = renderOrder;
 		group.add(mesh0);
 
-		// front faces - remove stencil
-		const mat1 = baseMat.clone();
-		mat1.name = 'front faces - remove stencil';
-		mat1.side = THREE.FrontSide;
-		mat1.clippingPlanes = [plane];
-		mat1.stencilFail = THREE.DecrementWrapStencilOp;
-		mat1.stencilZFail = THREE.DecrementWrapStencilOp;
-		mat1.stencilZPass = THREE.DecrementWrapStencilOp;
-
-		const mesh1 = new THREE.Mesh(geometry, mat1);
+		const mesh1 = new THREE.Mesh(geometry, frontFaceMaterial);
 		mesh1.renderOrder = renderOrder;
-
 		group.add(mesh1);
+
+		group.userData = { renderOrder }
 
 		return group;
 	}

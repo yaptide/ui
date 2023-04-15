@@ -132,17 +132,19 @@ export function Viewport(
 		grid.rotation.copy(gridRotation ?? new THREE.Euler(0, 0, 0));
 
 		renderer.setSize(canvas.width, canvas.height);
-
-		renderer.render(scene, camera);
+		
+		renderer.clear();
 
 		renderer.autoClear = false;
 
-		renderer.render(zoneManager, camera);
-
-		renderer.render(detectManager, camera);
-
 		if (clipPlane) {
 			renderer.render(viewClipPlane.scene, camera);
+		} else {
+			renderer.render(scene, camera);
+
+			renderer.render(zoneManager, camera);
+
+			renderer.render(detectManager, camera);
 		}
 
 		renderer.clippingPlanes = []; // clear clipping planes for next renders
