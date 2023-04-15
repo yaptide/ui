@@ -7,42 +7,32 @@ import { DEMO_MODE } from '../../../util/Config';
 import { InputFiles } from '../../../services/RequestTypes';
 
 interface InputFilesEditorProps {
-	inputFiles?: InputFiles;
+	inputFiles: InputFiles | undefined;
 	onChange?: (inputFiles: InputFiles) => void;
 	runSimulation?: (inputFiles: InputFiles) => void;
 	saveAndExit?: (inputFiles: InputFiles) => void;
 	closeEditor?: () => void;
 }
 
-const _defaultInputFiles: InputFiles = {
+export const _defaultInputFiles: InputFiles = {
 	'geo.dat': '',
 	'beam.dat': '',
 	'detect.dat': '',
 	'mat.dat': ''
 };
 
+const inputFilesOrder = ['info.json', 'geo.dat', 'mat.dat', 'beam.dat', 'detect.dat', 'sobp.dat'];
+
 export function InputFilesEditor(props: InputFilesEditorProps) {
+	const inputFiles = props.inputFiles ?? _defaultInputFiles;
 	const theme = useTheme();
-	const [inputFiles, setInputFiles] = useState<InputFiles>({
-		..._defaultInputFiles,
-		...(props.inputFiles ?? {})
-	});
-
-	const inputFilesOrder = [
-		'info.json',
-		'geo.dat',
-		'mat.dat',
-		'beam.dat',
-		'detect.dat',
-		'sobp.dat'
-	];
-
-	useEffect(() => {
-		setInputFiles({ ..._defaultInputFiles, ...(props.inputFiles ?? {}) });
-	}, [props.inputFiles]);
 
 	const canBeDeleted = (name: string) => {
 		return !(name in _defaultInputFiles);
+	};
+
+	const updateInputFiles = (updateFn: (old: InputFiles) => InputFiles) => {
+		props.onChange?.call(null, updateFn(inputFiles));
 	};
 
 	return (
@@ -108,7 +98,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 										color='warning'
 										disabled={value.trim() === ''}
 										onClick={() => {
-											setInputFiles(old => {
+											updateInputFiles(old => {
 												return { ...old, [name]: '' };
 											});
 										}}
@@ -119,9 +109,9 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 									{canBeDeleted(name) && (
 										<Button
 											color='error'
-											disabled={value.trim() === ''}
+											disabled={name in _defaultInputFiles}
 											onClick={() => {
-												setInputFiles(old => {
+												updateInputFiles(old => {
 													delete old[name];
 													return { ...old };
 												});
@@ -131,12 +121,13 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 										</Button>
 									)}
 								</h2>
+
 								<CodeEditor
 									value={value}
 									language='sql'
 									placeholder={`Please enter ${name} content.`}
 									onChange={evn =>
-										setInputFiles(old => {
+										updateInputFiles(old => {
 											return { ...old, [name]: evn.target.value };
 										})
 									}

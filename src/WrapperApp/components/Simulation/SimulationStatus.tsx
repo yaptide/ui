@@ -90,9 +90,7 @@ export default function SimulationStatus({
 		loadResults?.call(null, null);
 	};
 
-	const onClickInputFiles = (
-		simulation: JobStatusData<StatusState.COMPLETED | StatusState.FAILED>
-	) => {
+	const onClickInputFiles = () => {
 		showInputFiles?.call(null, simulation.inputFiles);
 	};
 
@@ -297,11 +295,7 @@ export default function SimulationStatus({
 						sx={{ fontSize: '.8em' }}
 						color='info'
 						size='small'
-						onClick={() =>
-							currentJobStatusData[StatusState.COMPLETED](simulation) ||
-							(currentJobStatusData[StatusState.FAILED](simulation) &&
-								onClickInputFiles(simulation))
-						}
+						onClick={onClickInputFiles}
 						disabled={
 							!Boolean(
 								currentJobStatusData[StatusState.COMPLETED](simulation) ||

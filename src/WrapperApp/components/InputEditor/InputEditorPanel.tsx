@@ -8,7 +8,7 @@ import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { DEMO_MODE } from '../../../util/Config';
-import { InputFilesEditor } from './InputFilesEditor';
+import { InputFilesEditor, _defaultInputFiles } from './InputFilesEditor';
 import { InputFiles } from '../../../services/RequestTypes';
 import { DragDropFile } from '../../../util/DragDropFile';
 import { readFile } from '../../../services/DataLoaderService';
@@ -25,7 +25,7 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 	const { isConverterReady, convertJSON } = usePythonConverter();
 
 	const [isInProgress, setInProgress] = useState(false);
-	const [inputFiles, setInputFiles] = useState<InputFiles>();
+	const [inputFiles, setInputFiles] = useState<InputFiles>(_defaultInputFiles);
 	const [generator, setGenerator] = useState<GeneratorLocation>('local');
 
 	const [controller] = useState(new AbortController());
@@ -156,6 +156,7 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 
 			<InputFilesEditor
 				inputFiles={inputFiles}
+				onChange={inputFiles => setInputFiles(inputFiles)}
 				runSimulation={!DEMO_MODE ? runSimulation : undefined}
 			/>
 		</Box>

@@ -8,13 +8,12 @@ export enum OrderType {
 	DESCEND = 'descend'
 }
 
-export interface InputFiles {
-	'beam.dat': string;
-	'detect.dat': string;
-	'geo.dat': string;
-	'mat.dat': string;
+type InputFilesName = 'beam.dat' | 'detect.dat' | 'geo.dat' | 'mat.dat';
+export type InputFiles = {
+	[fileName in InputFilesName]: string;
+} & {
 	[fileName: string]: string;
-}
+};
 
 export enum OrderBy {
 	START_TIME = 'start_time',

@@ -274,6 +274,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 						<InputFilesEditor
 							inputFiles={inputFiles}
 							closeEditor={() => setShowInputFilesEditor(false)}
+							onChange={newInputFiles => setInputFiles(newInputFiles)}
 							runSimulation={newInputFiles => {
 								setShowInputFilesEditor(false);
 								setInputFiles(newInputFiles);
