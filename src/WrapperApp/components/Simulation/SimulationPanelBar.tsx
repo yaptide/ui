@@ -186,9 +186,9 @@ export function SimulationAppBar({
 	return (
 		<Box
 			position={'sticky'}
-			p={({ spacing }) => spacing(4, 0)}
-			mt={({ spacing }) => spacing(-4)}
-			mb={({ spacing }) => spacing(-4)}
+			p={({ spacing }) => spacing(3, 0)}
+			mt={({ spacing }) => spacing(-3)}
+			mb={({ spacing }) => spacing(-3)}
 			sx={{
 				width: '100%',
 				inset: ({ spacing }) => spacing(-2, 0),

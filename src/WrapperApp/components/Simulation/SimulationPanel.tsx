@@ -291,7 +291,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					</Box>
 				</Fade>
 			</Modal>
-			{/* <Card sx={{ minWidth: 275, flexShrink: 0 }}>
+			<Card sx={{ minWidth: 275, flexShrink: 0 }}>
 				<CardContent
 					sx={{
 						display: 'flex',
@@ -380,8 +380,9 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 						</CardActions>
 					</>
 				)}
-			</Card> */}
-			<DemoCardGrid
+			</Card>
+			<DemoCardGrid simulations={localSimulationData} />
+			{/* <DemoCardGrid
 				simulations={new Array(12).fill(NaN).map(() => ({
 					jobState: StatusState.PENDING,
 					message: 'Pending',
@@ -395,36 +396,9 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					},
 					startTime: new Date()
 				}))}
-			/>
-			<DemoCardGrid
-				simulations={new Array(12).fill(NaN).map(() => ({
-					jobState: StatusState.PENDING,
-					message: 'Pending',
-					jobId: '123',
-					title: 'Simulation 1',
-					metadata: {
-						input: 'input',
-						server: 'server',
-						platform: 'DIRECT',
-						simType: 'simType'
-					},
-					startTime: new Date()
-				}))}
-			/>
+			/> */}
 			<PaginatedSimulationCardGrid
-				simulations={new Array(12).fill(NaN).map(() => ({
-					jobState: StatusState.PENDING,
-					message: 'Pending',
-					jobId: '123',
-					title: 'Simulation 1',
-					metadata: {
-						input: 'input',
-						server: 'server',
-						platform: 'DIRECT',
-						simType: 'simType'
-					},
-					startTime: new Date()
-				}))}
+				simulations={simulationsStatusData}
 				pageData={{
 					orderType,
 					orderBy,
@@ -435,6 +409,36 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					handlePageChange
 				}}
 			/>
+			{/* <DemoCardGrid
+				simulations={new Array(12).fill(NaN).map(() => ({
+					jobState: StatusState.PENDING,
+					message: 'Pending',
+					jobId: '123',
+					title: 'Simulation 1',
+					metadata: {
+						input: 'input',
+						server: 'server',
+						platform: 'DIRECT',
+						simType: 'simType'
+					},
+					startTime: new Date()
+				}))}
+			/>
+			<DemoCardGrid
+				simulations={new Array(12).fill(NaN).map(() => ({
+					jobState: StatusState.PENDING,
+					message: 'Pending',
+					jobId: '123',
+					title: 'Simulation 1',
+					metadata: {
+						input: 'input',
+						server: 'server',
+						platform: 'DIRECT',
+						simType: 'simType'
+					},
+					startTime: new Date()
+				}))}
+			/> */}
 		</Box>
 	);
 }

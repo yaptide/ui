@@ -18,6 +18,7 @@ import {
 	SimulationLabelBar,
 	SimulationPaginationFooter
 } from './SimulationPanelBar';
+import FolderOffIcon from '@mui/icons-material/FolderOff';
 import { useState } from 'react';
 
 type SimulationCardGridProps = {
@@ -67,11 +68,34 @@ export function SimulationCardGrid({ simulations, layout, sx, ...other }: Simula
 				...sx
 			}}>
 			<Grid {...gridContainerProps} {...other}>
-				{simulations.map(simulation => (
-					<Grid key={simulation.jobId} {...gridItemProps}>
-						<SimulationCard simulation={simulation} />
-					</Grid>
-				))}
+				{simulations.length ? (
+					simulations.map(simulation => (
+						<Grid key={simulation.jobId} {...gridItemProps}>
+							<SimulationCard simulation={simulation} />
+						</Grid>
+					))
+				) : (
+					<Typography
+						variant='h5'
+						color={({ palette }) => palette.text.disabled}
+						sx={{
+							textAlign: 'center',
+							width: '100%',
+							p: ({ spacing }) => spacing(4),
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center'
+						}}>
+						<FolderOffIcon
+							sx={{
+								m: ({ spacing }) => spacing(0, 2),
+								pb: ({ spacing }) => spacing(0.5),
+								fontSize: ({ spacing }) => spacing(4)
+							}}
+						/>
+						No simulations found
+					</Typography>
+				)}
 			</Grid>
 		</Box>
 	);
@@ -97,11 +121,15 @@ export function PaginatedSimulationCardGrid({
 				title={'Yaptide Simulations'}
 				isBackendAlive={false}
 				{...pageData}
+				sx={{
+					mb: ({ spacing }) => spacing(6)
+				}}
 			/>
 			<SimulationCardGrid
 				layout={layout}
 				{...other}
 				sx={{
+					mt: ({ spacing }) => spacing(-10),
 					mb: ({ spacing }) => spacing(-8)
 				}}
 			/>
