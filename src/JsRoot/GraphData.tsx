@@ -51,7 +51,7 @@ export type Estimator = {
 	scoringOutputJsonRef?: ScoringOutputJSON;
 };
 
-export type Page = Page2D | Page1D | Page0D | Page3D;
+export type Page = Page3D | Page2D | Page1D | Page0D;
 
 export const isPage2d = (page: Page): page is Page2D => {
 	return (page as Page2D).dimensions === 2;
