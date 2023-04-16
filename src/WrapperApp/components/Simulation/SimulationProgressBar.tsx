@@ -1,4 +1,4 @@
-import { Box, LinearProgress, Divider, Tooltip } from '@mui/material';
+import { Box, LinearProgress, Tooltip } from '@mui/material';
 import { TaskStatusData, TaskTime, StatusState } from '../../../services/ResponseTypes';
 import { useRef, useCallback, useEffect } from 'react';
 import Countdown from 'react-countdown';

@@ -65,7 +65,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	const [simName, setSimName] = useState<string>(editorRef.current!.toJSON().project.title);
 	const [nTasks, setNTasks] = useState<number>(1);
-	const [simulator, setSimulator] = useState<string>('shieldhit');
+	const [simulator] = useState<string>('shieldhit');
 
 	const [inputFiles, setInputFiles] = useState<InputFiles>();
 	const [directRun, setDirectRun] = useState<boolean>(true);

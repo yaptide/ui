@@ -16,6 +16,7 @@ import { QuantityDifferentialScoring } from './category/QuantityDifferentialScor
 import { BeamConfiguration } from './category/BeamConfiguration';
 import { ObjectMaterial } from './category/ObjectMaterial';
 import { FilterConfiguration } from './category/FilterConfiguration';
+import { CTConfiguration } from './category/CTConfiguration';
 
 export function PropertiesPanel(props: { boxProps: BoxProps; editor: Editor }) {
 	const { boxProps, editor } = props;
@@ -40,6 +41,7 @@ export function PropertiesPanel(props: { boxProps: BoxProps; editor: Editor }) {
 					<QuantityConfiguration {...panelProps} />
 					<QuantityDifferentialScoring {...panelProps} />
 					<BeamConfiguration {...panelProps} />
+					<CTConfiguration {...panelProps} />
 					<ObjectDimensions {...panelProps} />
 					<DetectorGrid {...panelProps} />
 					<ZoneOperations {...panelProps} />
