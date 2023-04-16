@@ -7,6 +7,7 @@ export default class CSG extends LibCSG {
     static toGeometry(unionsResultBsp: CSG, matrix: Matrix4): THREE.BufferGeometry {
         throw new Error("Method not implemented.");
     }
+    
     static fromMesh(emptyMesh: Mesh<BufferGeometry, Material | Material[]>): CSG {
         throw new Error("Function not implemented.");
     }
