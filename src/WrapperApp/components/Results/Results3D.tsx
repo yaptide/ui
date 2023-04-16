@@ -7,7 +7,7 @@ export function Result3D(props: { page: Page3D; title?: string }) {
 	const { page, title } = props;
 
 	return (
-		<Box sx={{ margin: '1rem 0' }}>
+		<Box sx={{ margin: ({spacing}) => spacing(1, 0) }}>
 			<Typography variant='h4'>{title ?? 'Quantity'}</Typography>
 			<Box
 				style={{
@@ -22,7 +22,7 @@ export function Result3D(props: { page: Page3D; title?: string }) {
 					</Typography>
 					<CopyToClipboard text={page.resultsUrl}>
 						<Button variant='text' color='secondary'>
-							<ContentCopyIcon sx={{ marginRight: '0.5rem' }} /> Copy to clipboard
+							<ContentCopyIcon sx={{ marginRight: ({spacing}) => spacing(.5) }} /> Copy to clipboard
 						</Button>
 					</CopyToClipboard>
 				</Stack>
