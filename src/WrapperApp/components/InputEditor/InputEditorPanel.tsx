@@ -10,8 +10,8 @@ import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { DEMO_MODE } from '../../../util/Config';
 import { InputFilesEditor, _defaultInputFiles } from './InputFilesEditor';
 import { InputFiles } from '../../../services/RequestTypes';
-import { DragDropFile } from '../../../util/DragDropFile';
 import { readFile } from '../../../services/DataLoaderService';
+import { DragDropFiles } from './DragDropFiles';
 interface InputEditorPanelProps {
 	goToRun?: () => void;
 }
@@ -129,7 +129,7 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 				</ToggleButtonGroup>
 			</Box>
 
-			<DragDropFile
+			<DragDropFiles
 				id={'input-file-upload-editor'}
 				onSubmit={files => {
 					if (!files) return;

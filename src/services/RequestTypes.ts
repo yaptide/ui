@@ -21,6 +21,7 @@ export enum OrderBy {
 }
 
 export type RequestParam = [signal?: AbortSignal];
+
 /* ------------------------------------ */
 type InputDataParam = [
 	simData: EditorJson | InputFiles,
