@@ -19,8 +19,9 @@ import { useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
 import EXAMPLES from '../../../ThreeEditor/examples/examples';
 import { useLoader } from '../../../services/DataLoaderService';
-import { InputFiles, OrderBy, OrderType } from '../../../services/RequestTypes';
+import { OrderBy, OrderType } from '../../../services/RequestTypes';
 import {
+	InputFiles,
 	JobStatusData,
 	SimulationInfo,
 	StatusState,

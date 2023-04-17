@@ -47,14 +47,6 @@ function EditorAppBar({ editor }: AppBarProps) {
 		setCanRedo((editor?.history.redos.length ?? 0) > 0);
 	}, [editor]);
 
-	const openJSON = useCallback(
-		(json: {}) => {
-			if (editor) editor.loader.loadJSON(json);
-			else console.warn('EditorAppBar.tsx: handleJSON: editor is null');
-		},
-		[editor]
-	);
-
 	useEffect(() => {
 		let path = '';
 		if (editor) {

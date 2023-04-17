@@ -15,6 +15,19 @@ import { BooleanAlgebraData } from '../../../ZoneManagerPanel/BooleanAlgebra/Boo
 import ZoneManagerPanel from '../../../ZoneManagerPanel/ZoneManagerPanel';
 import { PropertiesCategory } from './PropertiesCategory';
 
+const parseAlgebraData = (editor: Editor, { value }: BooleanAlgebraData) => {
+	const operations: CSG.OperationTuple[] = [];
+
+	value.forEach(({ operation, objectId }, index) => {
+		let object;
+		if (objectId) object = editor.getObjectById(objectId);
+		if (object && isBasicMesh(object))
+			operations.push(new CSG.OperationTuple(object, operation));
+		else return operations;
+	});
+	return operations;
+};
+
 export function ZoneOperations(props: { editor: Editor; object: Object3D }) {
 	const { object, editor } = props;
 
@@ -25,43 +38,35 @@ export function ZoneOperations(props: { editor: Editor; object: Object3D }) {
 
 	const visibleFlag = isZone(watchedObject);
 
-	const parseAlgebraData = ({ value }: BooleanAlgebraData) => {
-		const operations: CSG.OperationTuple[] = [];
-
-		value.forEach(({ operation, objectId }, index) => {
-			let object;
-			if (objectId) object = props.editor.getObjectById(objectId);
-			if (object && isBasicMesh(object))
-				operations.push(new CSG.OperationTuple(object, operation));
-			else return operations;
-		});
-
-		return operations;
-	};
-
-	const handleChanged = useCallback((algebraIndex: number, algebraRow: BooleanAlgebraData) => {
-		if (!watchedObject) return;
-		editor.execute(
-			new SetZoneOperationTupleCommand(
-				editor,
-				watchedObject?.object,
-				parseAlgebraData(algebraRow),
-				algebraIndex
-			)
-		);
-	}, []);
+	const handleChanged = useCallback(
+		(algebraIndex: number, algebraRow: BooleanAlgebraData) => {
+			if (!watchedObject) return;
+			editor.execute(
+				new SetZoneOperationTupleCommand(
+					editor,
+					watchedObject?.object,
+					parseAlgebraData(editor, algebraRow),
+					algebraIndex
+				)
+			);
+		},
+		[editor, watchedObject]
+	);
 
 	const handleAdd = useCallback(() => {
 		if (!watchedObject) return;
 		editor.execute(new AddZoneOperationTupleCommand(editor, watchedObject?.object));
-	}, []);
+	}, [editor, watchedObject]);
 
-	const handleRemove = useCallback((algebraIndex: number) => {
-		if (!watchedObject) return;
-		editor.execute(
-			new RemoveZoneOperationTupleCommand(editor, watchedObject?.object, algebraIndex)
-		);
-	}, []);
+	const handleRemove = useCallback(
+		(algebraIndex: number) => {
+			if (!watchedObject) return;
+			editor.execute(
+				new RemoveZoneOperationTupleCommand(editor, watchedObject?.object, algebraIndex)
+			);
+		},
+		[editor, watchedObject]
+	);
 
 	return (
 		<PropertiesCategory category='Zone Operations' visible={visibleFlag}>

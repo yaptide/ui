@@ -1,5 +1,5 @@
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { JobStatusData, SimulationInfo } from './ResponseTypes';
+import { InputFiles, JobStatusData, SimulationInfo } from './ResponseTypes';
 import { Flatten } from './TypeTransformUtil';
 
 /* ------------Utility types------------ */
@@ -7,13 +7,6 @@ export enum OrderType {
 	ASCEND = 'ascend',
 	DESCEND = 'descend'
 }
-
-type InputFilesName = 'beam.dat' | 'detect.dat' | 'geo.dat' | 'mat.dat';
-export type InputFiles = {
-	[fileName in InputFilesName]: string;
-} & {
-	[fileName: string]: string;
-};
 
 export enum OrderBy {
 	START_TIME = 'start_time',

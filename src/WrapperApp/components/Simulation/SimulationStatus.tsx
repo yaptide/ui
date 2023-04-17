@@ -19,8 +19,8 @@ import {
 import { SxProps, Theme } from '@mui/material/styles';
 import React, { ReactNode, useMemo } from 'react';
 import { useLoader } from '../../../services/DataLoaderService';
-import { InputFiles } from '../../../services/RequestTypes';
 import {
+	InputFiles,
 	JobStatusData,
 	StatusState,
 	currentJobStatusData,

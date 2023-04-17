@@ -1,10 +1,13 @@
 import { Box, Button, Card, CardActions, CardContent, Divider } from '@mui/material';
-import React, { useState, useEffect } from 'react';
-import CodeEditor from '@uiw/react-textarea-code-editor';
-import { saveString } from '../../../util/File';
 import useTheme from '@mui/system/useTheme';
+import CodeEditor from '@uiw/react-textarea-code-editor';
+import {
+	InputFiles,
+	OrderedInputFilesNames,
+	isKnownInputFile
+} from '../../../services/ResponseTypes';
 import { DEMO_MODE } from '../../../util/Config';
-import { InputFiles } from '../../../services/RequestTypes';
+import { saveString } from '../../../util/File';
 
 interface InputFilesEditorProps {
 	inputFiles: InputFiles | undefined;
@@ -76,8 +79,12 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 			<CardContent>
 				{Object.entries(inputFiles)
 					.sort(([name1, _1], [name2, _2]) => {
-						const index1 = inputFilesOrder.indexOf(name1) + 1;
-						const index2 = inputFilesOrder.indexOf(name2) + 1;
+						const index1 = isKnownInputFile(name1)
+							? OrderedInputFilesNames.indexOf(name1)
+							: -1 + 1;
+						const index2 = isKnownInputFile(name2)
+							? OrderedInputFilesNames.indexOf(name2)
+							: -1 + 1;
 						return index1 - index2;
 					})
 					.map(([name, value]) => {

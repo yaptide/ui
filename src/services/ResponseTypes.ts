@@ -20,12 +20,26 @@ export enum StatusState {
 export type Response = {
 	message: string;
 };
+export const OrderedInputFilesNames = [
+	'info.json',
+	'geo.dat',
+	'mat.dat',
+	'beam.dat',
+	'detect.dat',
+	'sobp.dat'
+] as const;
+export function isKnownInputFile(name: string): name is InputFilesNames {
+	return OrderedInputFilesNames.includes(name as InputFilesNames);
+}
+export type InputFilesNames = (typeof OrderedInputFilesNames)[number];
+export type RequiredInputFilesNames = Exclude<InputFilesNames, 'info.json' | 'sobp.dat'>;
 
 export type InputFiles = {
-	'beam.dat': string;
-	'detect.dat': string;
-	'geo.dat': string;
-	'mat.dat': string;
+	[Key in RequiredInputFilesNames]: string;
+} & {
+	[Key in Exclude<InputFilesNames, RequiredInputFilesNames>]?: string;
+} & {
+	[Key in Exclude<string, InputFilesNames>]: string;
 };
 
 export type TaskTime = {
