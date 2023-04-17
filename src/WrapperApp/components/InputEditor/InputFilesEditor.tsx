@@ -3,7 +3,8 @@ import useTheme from '@mui/system/useTheme';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import {
 	InputFiles,
-	OrderedInputFilesNames,
+	_defaultInputFiles,
+	_orderedInputFilesNames,
 	isKnownInputFile
 } from '../../../services/ResponseTypes';
 import { DEMO_MODE } from '../../../util/Config';
@@ -16,15 +17,6 @@ interface InputFilesEditorProps {
 	saveAndExit?: (inputFiles: InputFiles) => void;
 	closeEditor?: () => void;
 }
-
-export const _defaultInputFiles: InputFiles = {
-	'geo.dat': '',
-	'beam.dat': '',
-	'detect.dat': '',
-	'mat.dat': ''
-};
-
-const inputFilesOrder = ['info.json', 'geo.dat', 'mat.dat', 'beam.dat', 'detect.dat', 'sobp.dat'];
 
 export function InputFilesEditor(props: InputFilesEditorProps) {
 	const inputFiles = props.inputFiles ?? _defaultInputFiles;
@@ -80,10 +72,10 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 				{Object.entries(inputFiles)
 					.sort(([name1, _1], [name2, _2]) => {
 						const index1 = isKnownInputFile(name1)
-							? OrderedInputFilesNames.indexOf(name1)
+							? _orderedInputFilesNames.indexOf(name1)
 							: -1 + 1;
 						const index2 = isKnownInputFile(name2)
-							? OrderedInputFilesNames.indexOf(name2)
+							? _orderedInputFilesNames.indexOf(name2)
 							: -1 + 1;
 						return index1 - index2;
 					})

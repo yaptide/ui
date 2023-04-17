@@ -8,10 +8,10 @@ import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { DEMO_MODE } from '../../../util/Config';
-import { InputFilesEditor, _defaultInputFiles } from './InputFilesEditor';
+import { InputFilesEditor } from './InputFilesEditor';
 import { readFile } from '../../../services/DataLoaderService';
 import { DragDropFiles } from './DragDropFiles';
-import { InputFiles } from '../../../services/ResponseTypes';
+import { InputFiles, _defaultInputFiles } from '../../../services/ResponseTypes';
 interface InputEditorPanelProps {
 	goToRun?: () => void;
 }
