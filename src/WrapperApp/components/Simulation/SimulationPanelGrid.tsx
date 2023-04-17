@@ -1,8 +1,8 @@
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import { Box, Button, ButtonGroup, Grid, MenuItem, Pagination, Select } from '@mui/material';
-import { InputFiles, OrderBy, OrderType } from '../../../services/RequestTypes';
-import { JobStatusData } from '../../../services/ResponseTypes';
+import { OrderBy, OrderType } from '../../../services/RequestTypes';
+import { InputFiles, JobStatusData } from '../../../services/ResponseTypes';
 import { DEMO_MODE } from '../../../util/Config';
 import SimulationStatus from './SimulationStatus';
 

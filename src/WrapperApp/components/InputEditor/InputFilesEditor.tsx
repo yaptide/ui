@@ -1,42 +1,34 @@
 import { Box, Button, Card, CardActions, CardContent, Divider } from '@mui/material';
-import React, { useState, useEffect } from 'react';
-import CodeEditor from '@uiw/react-textarea-code-editor';
-import { saveString } from '../../../util/File';
 import useTheme from '@mui/system/useTheme';
+import CodeEditor from '@uiw/react-textarea-code-editor';
+import {
+	InputFiles,
+	_defaultInputFiles,
+	_orderedInputFilesNames,
+	isKnownInputFile
+} from '../../../services/ResponseTypes';
 import { DEMO_MODE } from '../../../util/Config';
-import { InputFiles } from '../../../services/RequestTypes';
+import { saveString } from '../../../util/File';
 
 interface InputFilesEditorProps {
-	inputFiles?: InputFiles;
+	inputFiles: InputFiles | undefined;
+	onChange?: (inputFiles: InputFiles) => void;
 	runSimulation?: (inputFiles: InputFiles) => void;
 	saveAndExit?: (inputFiles: InputFiles) => void;
 	closeEditor?: () => void;
-	innerState?: boolean;
 }
 
-const _emptyInputFiles: InputFiles = {
-	'geo.dat': '',
-	'beam.dat': '',
-	'detect.dat': '',
-	'mat.dat': ''
-};
 export function InputFilesEditor(props: InputFilesEditorProps) {
+	const inputFiles = props.inputFiles ?? _defaultInputFiles;
 	const theme = useTheme();
-	const [inputFiles, setInputFiles] = useState<InputFiles>(
-		props.inputFiles ?? { ..._emptyInputFiles }
-	);
 
-	const inputFilesOrder = [
-		'info.json',
-		'geo.dat',
-		'mat.dat',
-		'beam.dat',
-		'detect.dat',
-		'sobp.dat'
-	];
-	useEffect(() => {
-		if (!props.innerState) setInputFiles({ ...(props.inputFiles ?? _emptyInputFiles) });
-	}, [props.innerState, props.inputFiles]);
+	const canBeDeleted = (name: string) => {
+		return !(name in _defaultInputFiles);
+	};
+
+	const updateInputFiles = (updateFn: (old: InputFiles) => InputFiles) => {
+		props.onChange?.call(null, updateFn(inputFiles));
+	};
 
 	return (
 		<Card sx={{ minHeight: '100%' }}>
@@ -79,8 +71,12 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 			<CardContent>
 				{Object.entries(inputFiles)
 					.sort(([name1, _1], [name2, _2]) => {
-						const index1 = inputFilesOrder.indexOf(name1) + 1;
-						const index2 = inputFilesOrder.indexOf(name2) + 1;
+						const index1 = isKnownInputFile(name1)
+							? _orderedInputFilesNames.indexOf(name1)
+							: -1 + 1;
+						const index2 = isKnownInputFile(name2)
+							? _orderedInputFilesNames.indexOf(name2)
+							: -1 + 1;
 						return index1 - index2;
 					})
 					.map(([name, value]) => {
@@ -97,13 +93,40 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 										sx={{ ml: 1 }}>
 										Download
 									</Button>
+									<Button
+										color='warning'
+										disabled={value.trim() === ''}
+										onClick={() => {
+											updateInputFiles(old => {
+												return { ...old, [name]: '' };
+											});
+										}}
+										sx={{ ml: 1 }}>
+										Clear
+									</Button>
+
+									{canBeDeleted(name) && (
+										<Button
+											color='error'
+											disabled={name in _defaultInputFiles}
+											onClick={() => {
+												updateInputFiles(old => {
+													delete old[name];
+													return { ...old };
+												});
+											}}
+											sx={{ ml: 1 }}>
+											Delete
+										</Button>
+									)}
 								</h2>
+
 								<CodeEditor
 									value={value}
 									language='sql'
 									placeholder={`Please enter ${name} content.`}
 									onChange={evn =>
-										setInputFiles(old => {
+										updateInputFiles(old => {
 											return { ...old, [name]: evn.target.value };
 										})
 									}

@@ -13,22 +13,21 @@ import {
 } from '@mui/material';
 import React, { useState } from 'react';
 import { useLoader } from '../../../services/DataLoaderService';
-import { DragDropFile } from '../../../util/DragDropFile';
 import EXAMPLES from '../../examples/examples';
 import { CustomDialogTitle } from './CustomDialog';
 import { JobStatusData, StatusState } from '../../../services/ResponseTypes';
+import { DragDropProject } from './DragDropProject';
 
 export type OpenFileProps = {
 	open: boolean;
 	onClose: () => void;
 	onFileSelected: (files: FileList) => void;
-	onPlainTextSubmitted: (text: string) => void;
 	onUrlSubmitted: (url: string) => void;
 };
 
 export function OpenFileDialog(props: OpenFileProps) {
 	const { open, onClose } = props;
-	const [currentFileList, setCurrentFileList] = useState<FileList | null>(null);
+	const [currentFileList, setCurrentFileList] = useState<FileList>();
 	const [value, setValue] = React.useState('1');
 	const handleChange = (event: React.SyntheticEvent, newValue: string) => {
 		setValue(newValue);
@@ -45,6 +44,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 	const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setUrl(event.target.value);
 	};
+	
 	return (
 		<Dialog
 			open={open}
@@ -112,9 +112,6 @@ export function OpenFileDialog(props: OpenFileProps) {
 											} as JobStatusData<StatusState.COMPLETED>;
 										})
 									);
-									// onPlainTextSubmitted(
-									// 	JSON.stringify(EXAMPLES[exampleIndex ?? 0].editor)
-									// );
 								}}>
 								Load
 							</Button>
@@ -129,16 +126,19 @@ export function OpenFileDialog(props: OpenFileProps) {
 								height: 319,
 								boxSizing: 'border-box'
 							}}>
-							<DragDropFile
-								id={'input-file-upload'}
+
+							<DragDropProject
+								id={'input-file-upload-open'}
 								onSubmit={setCurrentFileList}
 								currentFiles={currentFileList}
+								acceptedFiles={'.json'}
 							/>
+							
 							<Button
 								variant='contained'
 								fullWidth
 								sx={{ marginTop: 'auto' }}
-								disabled={currentFileList === null}
+								disabled={currentFileList === undefined}
 								onClick={() => {
 									onClose();
 									loadFromFiles(currentFileList);
@@ -204,7 +204,6 @@ export function OpenFileDialog(props: OpenFileProps) {
 								onClick={() => {
 									onClose();
 									loadFromJsonString(plainText);
-									// onPlainTextSubmitted(plainText);
 								}}>
 								Load
 							</Button>
