@@ -1,34 +1,32 @@
+import CableIcon from '@mui/icons-material/Cable';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
+import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import {
 	AppBar,
 	AppBarProps,
 	Box,
 	Button,
 	ButtonGroup,
-	Container,
-	Toolbar,
-	ToolbarProps,
-	Typography,
 	ButtonProps,
-	MenuItem,
-	Select,
-	SelectProps,
-	styled,
 	Card,
-	Tooltip,
 	CardProps,
 	IconButton,
-	Pagination
+	MenuItem,
+	Pagination,
+	Select,
+	SelectProps,
+	Toolbar,
+	Tooltip,
+	Typography,
+	styled
 } from '@mui/material';
-import { OrderBy, OrderType } from '../../../services/RequestTypes';
-import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
-import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import React from 'react';
-import CableIcon from '@mui/icons-material/Cable';
-import QueuePlayNextIcon from '@mui/icons-material/QueuePlayNext';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { OrderBy, OrderType } from '../../../services/RequestTypes';
 
 export type SimulationAppBarProps = AppBarProps & {
 	stickTo?: 'top' | 'bottom';
+	accordion?: SimulationAccordionProps | { [key: string]: never };
 };
 
 type OrderButtonProps = Omit<ButtonProps, 'onChange'> & {
@@ -85,6 +83,7 @@ export function PageSizeSelect({
 		<MenuItem
 			value={4 * index + 2}
 			dense={true}
+			key={index}
 			sx={{
 				display: 'block',
 				lineHeight: ({ spacing }) => spacing(2.5),
@@ -108,7 +107,7 @@ export function PageSizeSelect({
 	);
 }
 
-const InputGroup: typeof ButtonGroup = styled(ButtonGroup)(
+export const InputGroup: typeof ButtonGroup = styled(ButtonGroup)(
 	({
 		theme: {
 			shape: { borderRadius },
@@ -118,7 +117,7 @@ const InputGroup: typeof ButtonGroup = styled(ButtonGroup)(
 		'height': spacing(5),
 		'&:not(.MuiButtonGroup-vertical) > *': {
 			'borderRadius': '0',
-			'&:first-child': {
+			'&:first-of-type': {
 				borderEndStartRadius: borderRadius,
 				borderStartStartRadius: borderRadius
 			},
@@ -129,7 +128,7 @@ const InputGroup: typeof ButtonGroup = styled(ButtonGroup)(
 		},
 		'&.MuiButtonGroup-vertical > *': {
 			'borderRadius': '0',
-			'&:first-child': {
+			'&:first-of-type': {
 				borderStartEndRadius: borderRadius,
 				borderStartStartRadius: borderRadius
 			},
@@ -141,7 +140,7 @@ const InputGroup: typeof ButtonGroup = styled(ButtonGroup)(
 	})
 );
 
-function BackendStatusIndicator({
+export function BackendStatusIndicator({
 	isBackendAlive,
 	...other
 }: { isBackendAlive: boolean } & CardProps) {
@@ -162,7 +161,6 @@ function BackendStatusIndicator({
 					p: ({ spacing }) => spacing(1),
 					...other.sx
 				}}
-				elevation={1}
 				variant='outlined'>
 				<CableIcon
 					color={isBackendAlive ? 'success' : 'error'}
@@ -179,6 +177,7 @@ export function SimulationAppBar({
 	color = 'inherit',
 	elevation = 1,
 	children,
+	accordion = {},
 	sx,
 	...other
 }: SimulationAppBarProps) {
@@ -208,25 +207,34 @@ export function SimulationAppBar({
 				sx={{
 					borderRadius: 1
 				}}>
-				{children}
+				<Toolbar
+					sx={{
+						gap: ({ spacing }) => spacing(2),
+						p: ({ spacing }) => spacing(1, 3)
+					}}>
+					{children}
+					{isAccordionHeader(accordion) && (
+						<IconButton
+							aria-label='expand'
+							onClick={accordion.toggleExpanded}
+							sx={{
+								transform: accordion.expanded ? 'rotate(180deg)' : undefined,
+								// animate rotation
+								transition: ({ transitions }) =>
+									transitions.create('transform', {
+										duration: transitions.duration.standard
+									})
+							}}>
+							<ExpandMoreIcon />
+						</IconButton>
+					)}
+				</Toolbar>
 			</AppBar>
-			{/* <Container>
-				<Typography sx={{ my: 2 }} variant='h5'>
-					{[...new Array(48)]
-						.map(
-							() => `Cras mattis consectetur purus sit amet fermentum.
-Cras justo odio, dapibus ac facilisis in, egestas eget quam.
-Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`
-						)
-						.join('\n')}
-				</Typography>
-			</Container> */}
 		</Box>
 	);
 }
 
-type SimulationAccordionProps = {
+export type SimulationAccordionProps = {
 	expanded?: boolean;
 	toggleExpanded?: () => void;
 };
@@ -250,30 +258,42 @@ export function SimulationLabelBar({
 }: SimulationLabelBarProps) {
 	return (
 		<SimulationAppBar {...other}>
-			<Toolbar
+			<Typography
+				variant='h5'
+				component='div'
 				sx={{
-					gap: ({ spacing }) => spacing(2)
+					flexGrow: 1,
+					display: 'flex',
+					flexDirection: 'column'
 				}}>
-				<Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
-					{title}
-				</Typography>
-				{children}
-				{isAccordionHeader(accordion) && (
-					<IconButton
-						aria-label='expand'
-						onClick={accordion.toggleExpanded}
+				<Box>{title}</Box>
+				{subtitle && (
+					<Typography
+						variant='subtitle1'
+						component='div'
 						sx={{
-							transform: accordion.expanded ? 'rotate(180deg)' : undefined,
-							// animate rotation
-							transition: ({ transitions }) =>
-								transitions.create('transform', {
-									duration: transitions.duration.standard
-								})
+							color: ({ palette }) => palette.text.secondary
 						}}>
-						<ExpandMoreIcon />
-					</IconButton>
+						{subtitle}
+					</Typography>
 				)}
-			</Toolbar>
+			</Typography>
+			{children}
+			{isAccordionHeader(accordion) && (
+				<IconButton
+					aria-label='expand'
+					onClick={accordion.toggleExpanded}
+					sx={{
+						transform: accordion.expanded ? 'rotate(180deg)' : undefined,
+						// animate rotation
+						transition: ({ transitions }) =>
+							transitions.create('transform', {
+								duration: transitions.duration.standard
+							})
+					}}>
+					<ExpandMoreIcon />
+				</IconButton>
+			)}
 		</SimulationAppBar>
 	);
 }
@@ -285,17 +305,14 @@ export type PageParamProps = {
 	handleOrderChange: (orderType: OrderType, orderBy: OrderBy, pageSize: number) => void;
 };
 
-type SimulationBackendHeaderBar = {
-	isBackendAlive: boolean;
-} & PageParamProps &
-	SimulationLabelBarProps;
+type SimulationBackendHeaderBar = PageParamProps & SimulationLabelBarProps;
 
 export function SimulationBackendHeader({
-	isBackendAlive,
 	orderType,
 	orderBy,
 	pageSize,
 	handleOrderChange,
+	children,
 	...other
 }: SimulationBackendHeaderBar) {
 	return (
@@ -322,24 +339,7 @@ export function SimulationBackendHeader({
 					onChange={pageSize => handleOrderChange(orderType, orderBy, pageSize)}
 				/>
 			</InputGroup>
-			<InputGroup
-				sx={{
-					marginLeft: 'auto'
-				}}>
-				<Button
-					variant='contained'
-					color='info'
-					startIcon={<QueuePlayNextIcon />}
-					disabled={!isBackendAlive}>
-					Run new simulation
-				</Button>
-				<BackendStatusIndicator
-					sx={{
-						p: ({ spacing }) => spacing(2)
-					}}
-					isBackendAlive={isBackendAlive}
-				/>
-			</InputGroup>
+			{children}
 		</SimulationLabelBar>
 	);
 }

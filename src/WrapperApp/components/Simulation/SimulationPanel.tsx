@@ -30,11 +30,11 @@ import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { DEMO_MODE } from '../../../util/Config';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
-import { SimulationPanelGrid } from './SimulationPanelGrid';
 import { SimulationAppBar } from './SimulationPanelBar';
 import {
 	DemoCardGrid,
 	PaginatedSimulationCardGrid,
+	PaginatedSimulationsFromBackend,
 	SimulationCardGrid
 } from './SimulationCardGrid';
 
@@ -63,6 +63,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	const [isInProgress, setInProgress] = useState(false);
 	const [isBackendAlive, setBackendAlive] = useState(false);
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
+	const [showRunSimulationsForm, setShowRunSimulationsForm] = useState(false);
 	const [page, setPage] = useState(1);
 	const [pageCount, setPageCount] = useState(3);
 	const [orderType, setOrderType] = useState<OrderType>(OrderType.ASCEND);
@@ -179,7 +180,10 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			.finally(() => setInProgress(false));
 	};
 
-	const onClickRun = () => runSimulation();
+	const onClickRun = () => {
+		setShowRunSimulationsForm(false);
+		runSimulation();
+	};
 
 	const handleEditorModal = () => {
 		setShowInputFilesEditor(false);
@@ -291,30 +295,16 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					</Box>
 				</Fade>
 			</Modal>
-			<Card sx={{ minWidth: 275, flexShrink: 0 }}>
-				<CardContent
-					sx={{
-						display: 'flex',
-						justifyContent: 'center',
-						alignItems: 'center'
-					}}>
-					<Typography
-						gutterBottom
-						variant='h5'
-						component='p'
-						sx={{ mb: 0, lineHeight: '2rem' }}>
-						{!DEMO_MODE
-							? `Server status: ${isBackendAlive ? 'Online' : 'Unreachable'}`
-							: 'Demo results'}
-					</Typography>
-					<CableIcon
-						color={isBackendAlive ? 'success' : 'disabled'}
-						sx={{ marginLeft: 'auto' }}
-						fontSize='large'></CableIcon>
-				</CardContent>
-				<Divider />
-				{isBackendAlive && (
-					<>
+			<Modal
+				open={isBackendAlive && showRunSimulationsForm}
+				onClose={() => setShowRunSimulationsForm(false)}
+				sx={{
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'center'
+				}}>
+				<Fade in={showRunSimulationsForm}>
+					<Card sx={{ maxWidth: '600px' }}>
 						<CardContent>
 							<Typography gutterBottom variant='h5' component='div'>
 								Run Simulation
@@ -378,27 +368,13 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 								{isInProgress ? 'Stop' : 'Start'}
 							</Button>
 						</CardActions>
-					</>
-				)}
-			</Card>
-			<DemoCardGrid simulations={localSimulationData} />
-			{/* <DemoCardGrid
-				simulations={new Array(12).fill(NaN).map(() => ({
-					jobState: StatusState.PENDING,
-					message: 'Pending',
-					jobId: '123',
-					title: 'Simulation 1',
-					metadata: {
-						input: 'input',
-						server: 'server',
-						platform: 'DIRECT',
-						simType: 'simType'
-					},
-					startTime: new Date()
-				}))}
-			/> */}
-			<PaginatedSimulationCardGrid
+					</Card>
+				</Fade>
+			</Modal>
+			<DemoCardGrid simulations={localSimulationData} title='Local Simulation Results' />
+			<PaginatedSimulationsFromBackend
 				simulations={simulationsStatusData}
+				subtitle={'Yaptide backend server'}
 				pageData={{
 					orderType,
 					orderBy,
@@ -408,23 +384,12 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					handleOrderChange,
 					handlePageChange
 				}}
+				isBackendAlive={isBackendAlive}
+				runSimulation={(): void => {
+					setShowRunSimulationsForm(true);
+				}}
 			/>
 			{/* <DemoCardGrid
-				simulations={new Array(12).fill(NaN).map(() => ({
-					jobState: StatusState.PENDING,
-					message: 'Pending',
-					jobId: '123',
-					title: 'Simulation 1',
-					metadata: {
-						input: 'input',
-						server: 'server',
-						platform: 'DIRECT',
-						simType: 'simType'
-					},
-					startTime: new Date()
-				}))}
-			/>
-			<DemoCardGrid
 				simulations={new Array(12).fill(NaN).map(() => ({
 					jobState: StatusState.PENDING,
 					message: 'Pending',

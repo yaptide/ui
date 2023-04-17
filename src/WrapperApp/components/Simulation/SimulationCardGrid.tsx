@@ -3,23 +3,29 @@ import {
 	AccordionDetails,
 	AccordionSummary,
 	Box,
+	Button,
 	Grid,
 	GridProps,
+	Toolbar,
 	Typography
 } from '@mui/material';
 import { JobStatusData } from '../../../services/ResponseTypes';
 import SimulationCard from './SimulationCard';
 import { OrderBy, OrderType } from '../../../services/RequestTypes';
 import {
+	BackendStatusIndicator,
+	InputGroup,
 	PageNavigationProps,
 	PageParamProps,
-	SimulationAppBar,
+	SimulationAccordionProps,
 	SimulationBackendHeader,
 	SimulationLabelBar,
 	SimulationPaginationFooter
 } from './SimulationPanelBar';
+import QueuePlayNextIcon from '@mui/icons-material/QueuePlayNext';
+
 import FolderOffIcon from '@mui/icons-material/FolderOff';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 
 type SimulationCardGridProps = {
 	simulations: JobStatusData[];
@@ -35,7 +41,8 @@ export function SimulationCardGrid({ simulations, layout, sx, ...other }: Simula
 				...gridContainerProps,
 				rowSpacing: { sm: 2, md: 4 },
 				columnSpacing: 2,
-				columns: { sm: 1, md: 2, lg: 3, xl: 4 }
+				columns: { sm: 1, md: 2, lg: 3, xl: 4 },
+				justifyContent: 'space-evenly'
 			};
 			gridItemProps = { ...gridItemProps, xs: 1 };
 			break;
@@ -100,52 +107,109 @@ export function SimulationCardGrid({ simulations, layout, sx, ...other }: Simula
 		</Box>
 	);
 }
-type DemoCardGridProps = {
-	layout?: 'grid' | 'inline-list' | 'block-list';
-} & Omit<SimulationCardGridProps, 'layout'>;
 
 type PaginatedCardGridProps = {
 	layout?: 'grid' | 'inline-list' | 'block-list';
+	title?: string;
+	subtitle?: string;
 	pageData: PageParamProps & PageNavigationProps;
+	isAccordion?: boolean;
 } & Omit<SimulationCardGridProps, 'layout'>;
 
 export function PaginatedSimulationCardGrid({
 	pageData,
 	layout = 'grid',
+	title = 'Simulations',
+	subtitle,
+	children,
+	isAccordion = false,
+	simulations,
 	...other
 }: PaginatedCardGridProps) {
 	return (
-		<Box>
-			<SimulationBackendHeader
-				stickTo='top'
-				title={'Yaptide Simulations'}
-				isBackendAlive={false}
-				{...pageData}
-				sx={{
-					mb: ({ spacing }) => spacing(6)
-				}}
-			/>
-			<SimulationCardGrid
-				layout={layout}
-				{...other}
-				sx={{
-					mt: ({ spacing }) => spacing(-10),
-					mb: ({ spacing }) => spacing(-8)
-				}}
-			/>
-			<SimulationPaginationFooter
-				{...pageData}
-				stickTo='bottom'
-				sx={{
-					mt: ({ spacing }) => spacing(6)
-				}}
-			/>
-		</Box>
+		<AccordionCardGrid
+			isAccordion={isAccordion}
+			simulations={simulations}
+			layout={layout}
+			header={accordion =>
+				SimulationBackendHeader({
+					title,
+					subtitle,
+					accordion,
+					sx: {
+						mb: ({ spacing }) => spacing(0)
+					},
+					children,
+					...pageData
+				})
+			}
+			footer={() =>
+				SimulationPaginationFooter({
+					...pageData,
+					stickTo: 'bottom',
+					sx: {
+						mt: ({ spacing }) => spacing(0)
+					}
+				})
+			}
+			{...other}
+		/>
 	);
 }
 
-export function DemoCardGrid({ layout = 'block-list', ...other }: DemoCardGridProps) {
-	const [expanded, setExpanded] = useState(true);
+type SimulationsFromBackendProps = PaginatedCardGridProps & {
+	isBackendAlive: boolean;
+	runSimulation: () => void;
+};
+
+export function PaginatedSimulationsFromBackend({
+	isBackendAlive,
+	runSimulation,
+	children,
+	...other
+}: SimulationsFromBackendProps) {
+	return (
+		<PaginatedSimulationCardGrid {...other}>
+			<InputGroup
+				sx={{
+					marginLeft: 'auto'
+				}}>
+				<Button
+					variant='contained'
+					color='info'
+					startIcon={<QueuePlayNextIcon />}
+					disabled={!isBackendAlive}
+					onClick={runSimulation}>
+					Run new simulation
+				</Button>
+				<BackendStatusIndicator
+					sx={{
+						p: ({ spacing }) => spacing(2)
+					}}
+					isBackendAlive={isBackendAlive}
+				/>
+			</InputGroup>
+			{children}
+		</PaginatedSimulationCardGrid>
+	);
+}
+
+type AccordionCardGridProps = {
+	isAccordion: boolean;
+	header?: React.FC<SimulationAccordionProps>;
+	footer?: React.FC<{}>;
+} & SimulationCardGridProps;
+
+export function AccordionCardGrid({
+	isAccordion,
+	header,
+	footer,
+	children,
+	simulations,
+	sx,
+	...other
+}: AccordionCardGridProps) {
+	const [expanded, setExpanded] = useState(!!simulations.length || !isAccordion);
 
 	return (
 		<Accordion
@@ -158,22 +222,62 @@ export function DemoCardGrid({ layout = 'block-list', ...other }: DemoCardGridPr
 				},
 				'p': ({ spacing }) => spacing(0)
 			}}>
-			<SimulationLabelBar
-				title={'Demo results'}
-				accordion={{
-					expanded: expanded,
-					toggleExpanded: () => setExpanded(!expanded)
-				}}
+			<AccordionSummary
 				sx={{
-					mb: ({ spacing }) => spacing(expanded ? 0 : -3)
-				}}
-			/>
+					p: ({ spacing }) => spacing(0),
+					m: ({ spacing }) => spacing(0),
+					position: 'sticky',
+					inset: ({ spacing }) => spacing(0, 0, 0, 0),
+					zIndex: ({ zIndex }) => zIndex.appBar,
+					mb: ({ spacing }) => (expanded ? spacing(7) : spacing(0))
+				}}>
+				{header &&
+					header(
+						isAccordion
+							? { expanded, toggleExpanded: () => setExpanded(!expanded) }
+							: {}
+					)}
+			</AccordionSummary>
 			<AccordionDetails
 				sx={{
-					p: 0
+					mt: ({ spacing }) => (expanded ? spacing(-14) : spacing(0)),
+					p: 0,
+					...sx
 				}}>
-				<SimulationCardGrid layout={layout} {...other} />
+				<SimulationCardGrid simulations={simulations} {...other} />
+				{footer && footer({})}
 			</AccordionDetails>
 		</Accordion>
+	);
+}
+
+type DemoCardGridProps = {
+	layout?: 'grid' | 'inline-list' | 'block-list';
+	isAccordion?: boolean;
+} & Omit<SimulationCardGridProps, 'layout'>;
+
+export function DemoCardGrid({
+	layout = 'block-list',
+	simulations,
+	isAccordion = true,
+	title = 'Demo results',
+	...other
+}: DemoCardGridProps) {
+	return (
+		<AccordionCardGrid
+			isAccordion={isAccordion}
+			simulations={simulations}
+			layout={layout}
+			header={accordion =>
+				SimulationLabelBar({
+					title: title,
+					accordion,
+					sx: {
+						mb: ({ spacing }) => spacing(accordion.expanded ? 4 : -2)
+					}
+				})
+			}
+			{...other}
+		/>
 	);
 }

@@ -66,6 +66,7 @@ export function SidebarTreeItem(props: {
 		if (canChangeName(object)) {
 			options.push(
 				<MenuItem
+					key={'rename'}
 					onClick={() => {
 						popupState.close();
 						setMode('edit');
@@ -78,6 +79,7 @@ export function SidebarTreeItem(props: {
 		if (isOutput(object))
 			options.push(
 				<MenuItem
+					key={'addQuantity'}
 					onClick={() => {
 						editor.execute(new AddQuantityCommand(editor, object));
 						if (!isOpen) onToggle();
@@ -90,6 +92,7 @@ export function SidebarTreeItem(props: {
 		if (isRemovable(object))
 			options.push(
 				<MenuItem
+					key={'delete'}
 					onClick={() => {
 						editor.execute(getRemoveCommand(editor, object));
 						popupState.close();
@@ -161,6 +164,7 @@ export function SidebarTreeItem(props: {
 					sx={{ cursor: 'pointer' }}
 					{...bindContextMenu(popupState)}>
 					<Typography
+						component={Box}
 						sx={{
 							color: ({ palette }) =>
 								editor.selected === object
