@@ -23,13 +23,16 @@ export enum OrderBy {
 export type RequestParam = [signal?: AbortSignal];
 /* ------------------------------------ */
 type InputDataParam = [
-	simData: EditorJson | InputFiles,
+	simData: EditorJson | Partial<InputFiles>,
 	ntasks?: number,
 	simType?: string,
 	title?: string,
 	batchOptions?: {
-		advanced?: string;
-		cmdOptions?: Record<string, string>;
+		clusterName?: string;
+		arrayOptions?: Record<string, string>;
+		arrayHeader?: string;
+		collectOptions?: Record<string, string>;
+		collectHeader?: string;
 	}
 ];
 

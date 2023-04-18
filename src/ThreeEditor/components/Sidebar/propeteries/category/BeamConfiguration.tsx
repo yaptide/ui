@@ -3,7 +3,15 @@ import { ChangeEvent } from 'react';
 import { Object3D } from 'three';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { Editor } from '../../../../js/Editor';
-import { Beam, BEAM_SOURCE_TYPE, isBeam, SadType, SAD_TYPE, SigmaType, SIGMA_TYPE } from '../../../../util/Beam';
+import {
+	Beam,
+	BEAM_SOURCE_TYPE,
+	isBeam,
+	SadType,
+	SAD_TYPE,
+	SigmaType,
+	SIGMA_TYPE
+} from '../../../../util/Beam';
 import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { PARTICLE_TYPES } from '../../../../util/particles';
 import { IParticleType, ParticleSelect } from '../../../Select/ParticlesSelect';
@@ -131,11 +139,9 @@ function BeamSigmaField(props: { beam: Beam; onChange: (value: Beam['sigma']) =>
 	);
 }
 
-
 function BeamSadField(props: { beam: Beam; onChange: (value: Beam['sad']) => void }) {
-	
 	const configuration = {
-		'double': {
+		double: {
 			X: {
 				text: 'SAD X'
 			},
@@ -143,35 +149,33 @@ function BeamSadField(props: { beam: Beam; onChange: (value: Beam['sad']) => voi
 				text: 'SAD Y'
 			}
 		},
-		'single': {
+		single: {
 			X: {
 				text: 'value'
 			}
 		},
-		'none': {
-
-		},
-
+		none: {}
 	};
 
 	const selectedConfiguration = configuration[props.beam.sad.type];
-	const getOptionLabel = (option: string) =>  {
-		return  Object.entries<string>(SAD_TYPE).find((entry) => entry[0] == option)?.[1] || SAD_TYPE.none
-	}
+	const getOptionLabel = (option: string) => {
+		return (
+			Object.entries<string>(SAD_TYPE).find(entry => entry[0] === option)?.[1] ||
+			SAD_TYPE.none
+		);
+	};
 
 	return (
 		<>
 			<SelectPropertyField
 				label='Sad planes'
 				value={props.beam.sad.type}
-				onChange={value =>
-					props.onChange({ ...props.beam.sad, type: value as SadType })
-				}
+				onChange={value => props.onChange({ ...props.beam.sad, type: value as SadType })}
 				options={Object.keys(SAD_TYPE)}
 				getOptionLabel={getOptionLabel}
 			/>
 
-			{(props.beam.sad.type === 'single' || props.beam.sad.type === 'double')  && (
+			{(props.beam.sad.type === 'single' || props.beam.sad.type === 'double') && (
 				<>
 					{'X' in selectedConfiguration && (
 						<NumberPropertyField
@@ -197,7 +201,6 @@ function BeamSadField(props: { beam: Beam; onChange: (value: Beam['sad']) => voi
 		</>
 	);
 }
-
 
 function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
 	const { object, editor } = props;

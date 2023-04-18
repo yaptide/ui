@@ -4,7 +4,6 @@ import {
 	Card,
 	CardActions,
 	CardContent,
-	Divider,
 	Fade,
 	LinearProgress,
 	Modal,
@@ -13,11 +12,9 @@ import {
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 
-import CableIcon from '@mui/icons-material/Cable';
 import { TextField } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
-import EXAMPLES from '../../../ThreeEditor/examples/examples';
 import { useLoader } from '../../../services/DataLoaderService';
 import { InputFiles, OrderBy, OrderType } from '../../../services/RequestTypes';
 import {
@@ -30,13 +27,14 @@ import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { DEMO_MODE } from '../../../util/Config';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
-import { SimulationAppBar } from './SimulationPanelBar';
+import { DemoCardGrid, PaginatedSimulationsFromBackend } from './SimulationCardGrid';
 import {
-	DemoCardGrid,
-	PaginatedSimulationCardGrid,
-	PaginatedSimulationsFromBackend,
-	SimulationCardGrid
-} from './SimulationCardGrid';
+	BatchOptionsType,
+	RunSimulationForm,
+	SimulationRunType,
+	SimulationSourceType
+} from './RunSimulationForm';
+import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
@@ -72,6 +70,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	const [simName, setSimName] = useState<string>(editorRef.current!.toJSON().project.title);
 	const [nTasks, setNTasks] = useState<number>(1);
+	const [availableClusters] = useState<string[]>(['default']);
 	const [simulator] = useState<string>('shieldhit');
 
 	const [inputFiles, setInputFiles] = useState<InputFiles>();
@@ -179,6 +178,43 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			})
 			.finally(() => setInProgress(false));
 	};
+	const runTotalSimulation = (
+		editorJson: EditorJson,
+		inputFiles: Partial<InputFiles>,
+		runType: SimulationRunType,
+		sourceType: SimulationSourceType,
+		simName: string,
+		nTasks: number,
+		simulator: string,
+		batchOptions: BatchOptionsType
+	) => {
+		setShowRunSimulationsForm(false);
+		setInProgress(true);
+		const simData = sourceType === 'project' ? editorJson : inputFiles;
+		const options =
+			runType === 'batch'
+				? {
+						...batchOptions,
+						cluster: undefined,
+						arrayOptions: batchOptions.arrayOptions?.reduce((acc, curr) => {
+							acc[curr.optionKey] = curr.optionValue;
+							return acc;
+						}, {} as Record<string, string>),
+						collectOptions: batchOptions.collectOptions?.reduce((acc, curr) => {
+							acc[curr.optionKey] = curr.optionValue;
+							return acc;
+						}, {} as Record<string, string>)
+				  }
+				: undefined;
+		(runType === 'direct' ? postJobDirect : postJobBatch)(
+			simData,
+			nTasks,
+			simulator,
+			simName,
+			options,
+			controller.signal
+		);
+	};
 
 	const onClickRun = () => {
 		setShowRunSimulationsForm(false);
@@ -216,6 +252,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				})
 				.catch(() => {
 					setBackendAlive(false);
+					setPageCount(0);
 				});
 	}, [
 		controller.signal,
@@ -295,82 +332,40 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					</Box>
 				</Fade>
 			</Modal>
-			<Modal
-				open={isBackendAlive && showRunSimulationsForm}
-				onClose={() => setShowRunSimulationsForm(false)}
-				sx={{
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'center'
-				}}>
-				<Fade in={showRunSimulationsForm}>
-					<Card sx={{ maxWidth: '600px' }}>
-						<CardContent>
-							<Typography gutterBottom variant='h5' component='div'>
-								Run Simulation
-							</Typography>
-							<LinearProgress
-								color='info'
-								variant={isInProgress ? 'indeterminate' : 'determinate'}
-								value={0}
-							/>
-						</CardContent>
-						<CardActions>
+			{editorRef.current && (
+				<Modal
+					keepMounted
+					open={isBackendAlive && showRunSimulationsForm}
+					onClose={() => setShowRunSimulationsForm(false)}
+					sx={{
+						display: 'flex',
+						alignItems: 'flex-start',
+						mt: '15vh',
+						justifyContent: 'center'
+					}}>
+					<Fade in={showRunSimulationsForm}>
+						<Card sx={{ maxWidth: '660px' }}>
 							<CardContent
 								sx={{
 									display: 'flex',
 									gap: 3
 								}}>
-								<TextField
-									size='small'
-									label='Simulation Name'
-									value={simName}
-									onChange={e => setSimName(e.target.value)}
+								<RunSimulationForm
+									availableClusters={availableClusters}
+									editorJson={editorRef.current.toJSON()}
+									inputFiles={{
+										'beam.dat': '',
+										'detect.dat': '',
+										'geo.dat': '',
+										...inputFiles
+									}}
+									runSimulation={runTotalSimulation}
 								/>
-								<TextField
-									size='small'
-									type='number'
-									label='Number of tasks'
-									value={nTasks}
-									onChange={e => setNTasks(parseInt(e.target.value))}
-								/>
-								<TextField
-									size='small'
-									label='Simulation software'
-									value={simulator}
-									disabled={true}
-								/>
-								<Box
-									sx={{
-										display: 'flex',
-										flexDirection: 'row',
-										textAlign: 'center'
-									}}>
-									<Typography variant='body2' component='p'>
-										Direct Run
-									</Typography>
-									<Switch
-										checked={!directRun}
-										onChange={e => setDirectRun(!e.target.checked)}
-									/>
-									<Typography variant='body2' component='p'>
-										Batch Run
-									</Typography>
-								</Box>
 							</CardContent>
-							<Button
-								color='info'
-								sx={{
-									width: 'min(300px, 100%)',
-									margin: '0 auto'
-								}}
-								onClick={onClickRun}>
-								{isInProgress ? 'Stop' : 'Start'}
-							</Button>
-						</CardActions>
-					</Card>
-				</Fade>
-			</Modal>
+						</Card>
+					</Fade>
+				</Modal>
+			)}
 			<DemoCardGrid simulations={localSimulationData} title='Local Simulation Results' />
 			<PaginatedSimulationsFromBackend
 				simulations={simulationsStatusData}
@@ -389,21 +384,6 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					setShowRunSimulationsForm(true);
 				}}
 			/>
-			{/* <DemoCardGrid
-				simulations={new Array(12).fill(NaN).map(() => ({
-					jobState: StatusState.PENDING,
-					message: 'Pending',
-					jobId: '123',
-					title: 'Simulation 1',
-					metadata: {
-						input: 'input',
-						server: 'server',
-						platform: 'DIRECT',
-						simType: 'simType'
-					},
-					startTime: new Date()
-				}))}
-			/> */}
 		</Box>
 	);
 }
