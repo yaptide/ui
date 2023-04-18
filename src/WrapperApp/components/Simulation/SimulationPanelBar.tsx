@@ -74,35 +74,31 @@ export function OrderBySelect({ children, onChange, ...other }: OrderBySelectPro
 	);
 }
 
-type PageSizeSelectProps = Omit<SelectProps<number>, 'onChange'> & {
+type PageSizeSelectProps = Omit<SelectProps<number>, 'onChange' | 'children'> & {
 	onChange?: (pageSize: number) => void;
 };
 
-export function PageSizeSelect({
-	children = new Array(6).fill(NaN).map((_, index) => (
-		<MenuItem
-			value={4 * index + 2}
-			dense={true}
-			key={index}
-			sx={{
-				display: 'block',
-				lineHeight: ({ spacing }) => spacing(2.5),
-				minHeight: 'unset',
-				height: ({ spacing }) => spacing(3.5)
-			}}>
-			{4 * index + 2}
-		</MenuItem>
-	)),
-	onChange,
-	...other
-}: PageSizeSelectProps) {
+export function PageSizeSelect({ onChange, ...other }: PageSizeSelectProps) {
 	return (
 		<Select
 			onChange={({ target: { value } }) =>
 				onChange?.(typeof value === 'string' ? parseInt(value) : value)
 			}
 			{...other}>
-			{children}
+			{new Array(6).fill(NaN).map((_, index) => (
+				<MenuItem
+					value={4 * index + 2}
+					dense={true}
+					key={index}
+					sx={{
+						display: 'block',
+						lineHeight: ({ spacing }) => spacing(2.5),
+						minHeight: 'unset',
+						height: ({ spacing }) => spacing(3.5)
+					}}>
+					{4 * index + 2}
+				</MenuItem>
+			))}
 		</Select>
 	);
 }
