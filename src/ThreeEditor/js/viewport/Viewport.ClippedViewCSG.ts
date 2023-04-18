@@ -57,7 +57,7 @@ export function ViewportClippedViewCSG<T extends THREE.Mesh<THREE.BufferGeometry
 
 	const planePosProperty = `${planePosLabel ?? 'PlanePos'} ${editor.unit.name}`;
 
-	const uiProps: Record<string, any> = {
+	const uiProps: Record<string, number | boolean> = {
 		get [planePosProperty](): number {
 			// distance from a plane to the origin of coordinate system
 			// as our planes are parallel to OXY, OYZ or OXZ, this reduces to the distance along normal vector

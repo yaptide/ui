@@ -124,7 +124,6 @@ export function Viewport(
 
 		if (!renderer) return;
 
-		// if (clipPlane) renderer.clippingPlanes = [clipPlane];
 
 		// applying rotation to the grid plane, if not provided set default rotation to none
 		// by default grid plane lies within XZ plane
@@ -151,7 +150,6 @@ export function Viewport(
 			renderer.render(viewClipPlane.scene, camera);
 
 
-		renderer.clippingPlanes = []; // clear clipping planes for next renders
 
 		if (config.showSceneHelpers) {
 			planeHelpers.visible = showPlaneHelpers ?? false;
