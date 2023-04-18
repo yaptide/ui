@@ -663,7 +663,7 @@ Editor.prototype = {
 				),
 				toneMapping: this.config.getKey('project/renderer/toneMapping'),
 				toneMappingExposure: this.config.getKey('project/renderer/toneMappingExposure'),
-				viewManager: this.viewManager.configurationJson(), // serialize ViewManager
+				viewManager: this.viewManager.configurationToJson(), // serialize ViewManager
 			},
 			scene: this.scene.toJSON(),
 			history: this.history.toJSON(),

@@ -9,7 +9,7 @@ import {
 import { EditorOrbitControls } from '../EditorOrbitControls';
 import { UIDiv, UIPanel } from '../libs/ui';
 import { ViewportCamera } from './Viewport.Camera.js';
-import { ViewportClippedView2 } from './Viewport.ClippedView2';
+import { ViewportClippedViewCSG } from './Viewport.ClippedViewCSG';
 import { ViewHelper } from './Viewport.ViewHelper';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
@@ -97,7 +97,7 @@ export function Viewport(
 
 	let viewClipPlane = null;
 	if (clipPlane) {
-		viewClipPlane = new ViewportClippedView2(
+		viewClipPlane = new ViewportClippedViewCSG(
 			name,
 			editor,
 			this,
@@ -518,8 +518,8 @@ export function Viewport(
 		else console.error(`No camera with uuid: [${uuid}] in this viewport`);
 	};
 
-	this.configurationJson = () => {
-		const configJson = { cameraMatrix: camera.matrix.toArray(), clipPlane: viewClipPlane?.configurationJson() };
+	this.configurationToJson = () => {
+		const configJson = { cameraMatrix: camera.matrix.toArray(), clipPlane: viewClipPlane?.configurationToJson() };
 		return configJson;
 	}
 

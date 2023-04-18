@@ -1,13 +1,16 @@
 import * as THREE from 'three';
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
 
-/*
-This function is responsible for preparing scene with clipping plane and stencil materials
-It creates and manages controls for shifting clipping planes in X,Y,Z axis.
-Stencil materials are used as a trick in order to avoid display of transparent inner walls of clipped objects (zones/bodies).
-We aim at assigning stencil materials to hold different colors than the walls of the objects and represent the internal material which is filling the zone.
-This is especially useful for such clipped views where at the same time internal material and wall of the object is visible at same time
-(for example torus clipped by a plane containing its axis of symmetry, stencil material fills two full circles, while wall material is drawn on the visible outer wall).
+
+/**
+ *	@deprecated Use Viewport.ClippedViewCSG instead
+ *
+ * This function is responsible for preparing scene with clipping plane and stencil materials
+ * It creates and manages controls for shifting clipping planes in X,Y,Z axis.
+ * Stencil materials are used as a trick in order to avoid display of transparent inner walls of clipped objects (zones/bodies).
+ * We aim at assigning stencil materials to hold different colors than the walls of the objects and represent the internal material which is filling the zone.
+ * This is especially useful for such clipped views where at the same time internal material and wall of the object is visible at same time
+ * (for example torus clipped by a plane containing its axis of symmetry, stencil material fills two full circles, while wall material is drawn on the visible outer wall).
  */
 export function ViewportClippedView(
 	name,
@@ -221,7 +224,7 @@ export function ViewportClippedView(
 		clippedObjects.clear();
 	};
 
-	this.configurationJson = () => {
+	this.configurationToJson = () => {
 		return {
 			planeConstant: uiProps[planePosProperty],
 			visible: uiProps['Helper Visible']
