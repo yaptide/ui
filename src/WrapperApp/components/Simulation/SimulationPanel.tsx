@@ -155,6 +155,18 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		[handleBeforeCacheWrite, controller.signal, getPageStatus, simulationInfo]
 	);
 
+	const handleLoadResults = (taskId: string | null, simulation: unknown) => {
+		if (taskId === null) props.goToResults?.call(null);
+		else
+			currentJobStatusData[StatusState.COMPLETED](simulation) &&
+				setResultsSimulationData(simulation);
+	};
+
+	const handleShowInputFiles = (inputFiles?: InputFiles) => {
+		setShowInputFilesEditor(true);
+		setInputFiles(inputFiles);
+	};
+
 	const runSimulation = (inputFiles?: InputFiles) => {
 		setInProgress(true);
 		if (!editorRef.current && !inputFiles) return;
@@ -367,7 +379,12 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					</Fade>
 				</Modal>
 			)}
-			<DemoCardGrid simulations={localSimulationData} title='Local Simulation Results' />
+			<DemoCardGrid
+				simulations={localSimulationData}
+				title='Local Simulation Results'
+				handleLoadResults={handleLoadResults}
+				handleShowInputFiles={handleShowInputFiles}
+			/>
 			<PaginatedSimulationsFromBackend
 				simulations={simulationsStatusData}
 				subtitle={'Yaptide backend server'}
@@ -380,6 +397,8 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					handleOrderChange,
 					handlePageChange
 				}}
+				handleLoadResults={handleLoadResults}
+				handleShowInputFiles={handleShowInputFiles}
 				isBackendAlive={isBackendAlive}
 				runSimulation={(): void => {
 					setShowRunSimulationsForm(true);

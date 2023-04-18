@@ -253,6 +253,7 @@ export default function SimulationCard({
 										sx={{ fontSize: '.8em' }}
 										size='small'
 										color='info'
+										disabled={!Boolean(loadResults)}
 										onClick={
 											resultsSimulationData?.jobId !== simulation.jobId
 												? onClickLoadResults
@@ -297,9 +298,9 @@ export default function SimulationCard({
 						onClick={onClickInputFiles}
 						disabled={
 							!Boolean(
-								currentJobStatusData[StatusState.COMPLETED](simulation) ||
-									(currentJobStatusData[StatusState.FAILED](simulation) &&
-										showInputFiles)
+								showInputFiles &&
+									(currentJobStatusData[StatusState.COMPLETED](simulation) ||
+										currentJobStatusData[StatusState.FAILED](simulation))
 							)
 						}>
 						Input Files

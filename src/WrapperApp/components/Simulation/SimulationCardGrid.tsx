@@ -9,7 +9,7 @@ import {
 	Toolbar,
 	Typography
 } from '@mui/material';
-import { JobStatusData } from '../../../services/ResponseTypes';
+import { InputFiles, JobStatusData } from '../../../services/ResponseTypes';
 import SimulationCard from './SimulationCard';
 import { OrderBy, OrderType } from '../../../services/RequestTypes';
 import {
@@ -29,10 +29,19 @@ import { ReactNode, useState } from 'react';
 
 type SimulationCardGridProps = {
 	simulations: JobStatusData[];
+	handleLoadResults?: (taskId: string | null, simulation: unknown) => void;
+	handleShowInputFiles?: (inputFiles?: InputFiles) => void;
 	layout: 'grid' | 'inline-list' | 'block-list';
 } & GridProps;
 
-export function SimulationCardGrid({ simulations, layout, sx, ...other }: SimulationCardGridProps) {
+export function SimulationCardGrid({
+	simulations,
+	layout,
+	sx,
+	handleLoadResults,
+	handleShowInputFiles,
+	...other
+}: SimulationCardGridProps) {
 	let gridContainerProps: GridProps = { container: true };
 	let gridItemProps: GridProps = { item: true };
 	switch (layout) {
@@ -78,7 +87,14 @@ export function SimulationCardGrid({ simulations, layout, sx, ...other }: Simula
 				{simulations.length ? (
 					simulations.map(simulation => (
 						<Grid key={simulation.jobId} {...gridItemProps}>
-							<SimulationCard simulation={simulation} />
+							<SimulationCard
+								simulation={simulation}
+								loadResults={
+									handleLoadResults &&
+									(taskId => handleLoadResults(taskId, simulation))
+								}
+								showInputFiles={handleShowInputFiles}
+							/>
 						</Grid>
 					))
 				) : (
