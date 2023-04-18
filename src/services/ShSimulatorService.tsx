@@ -111,13 +111,23 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 				console.log('postJob', endPoint, ntasks, simType, title, batchOptions, signal);
 				return authKy
 					.post(endPoint, {
-						json: camelToSnakeCase({
-							ntasks,
-							simType,
-							title,
-							simData,
-							batchOptions
-						}),
+						json: {
+							...camelToSnakeCase(
+								{
+									simData
+								},
+								false // converter expects camelCase for simData
+							),
+							...camelToSnakeCase(
+								{
+									ntasks,
+									simType,
+									title,
+									batchOptions
+								},
+								true
+							)
+						},
 						signal,
 						timeout: 30000
 						/**
