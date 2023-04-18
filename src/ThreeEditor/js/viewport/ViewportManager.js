@@ -610,11 +610,11 @@ function ViewManager(editor) {
 		editor.signals.sceneRendered.dispatch(endTime - startTime);
 	}
 
-	this.configurationJson = () => {
+	this.configurationToJson = () => {
 
 		const configJson = {};
 		for (const key in viewportMap) {
-			configJson[key] = viewportMap[key].configurationJson();
+			configJson[key] = viewportMap[key].configurationToJson();
 		}
 
 		return configJson;

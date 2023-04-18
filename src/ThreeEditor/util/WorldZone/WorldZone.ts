@@ -95,7 +95,6 @@ export class WorldZone extends SimulationObject3D {
 
 	constructor(editor: Editor) {
 		super(editor, 'World Zone', 'WorldZone');
-		this.type = 'WorldZone';
 		this.name = 'World Zone';
 		this._material = _materialDefault;
 		this._autoCalculate = false;

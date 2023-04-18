@@ -11,6 +11,7 @@ export abstract class SimulationMesh<
 	implements ISimulationObject, ISimulationSceneChild {
 	editor: Editor;
 	parent: SimulationSceneGroup<this> | null = null;
+	readonly type: string;
 
 	constructor(
 		editor: Editor,
@@ -35,6 +36,7 @@ export abstract class SimulationObject3D
 	readonly notVisibleChildren?: boolean = undefined;
 	readonly notDraggable?: boolean = undefined;
 	readonly notHidable?: boolean = undefined;
+	readonly type: string;
 
 
 	constructor(editor: Editor, name: string | undefined, type: string) {
@@ -58,11 +60,13 @@ export abstract class SimulationPoints
 	editor: Editor;
 	parent: SimulationSceneGroup<this> | null = null;
 	material: THREE.PointsMaterial;
+	readonly type: string;
 
 	constructor(editor: Editor, name: string | undefined, type: string) {
 		super();
 		this.editor = editor;
 		this.name = name ?? `Detect`;
+		this.type = type;
 		this.parent = null;
 		this.material = SimulationPoints._detectPointsMaterial.clone();
 	}

@@ -58,6 +58,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 
 	constructor(editor: Editor) {
 		super();
+		this.name = 'ZoneManager';
 		this.zoneContainer = new ZoneContainer(editor);
 		const light = new THREE.HemisphereLight(0xffffff, 0x222222, 1);
 		light.position.set(15, 15, 15);

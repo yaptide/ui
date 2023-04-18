@@ -149,6 +149,7 @@ export class Zone extends SimulationMesh {
 		this.geometry.dispose();
 
 		if (this.unionOperations && this.unionOperations.length) {
+			
 			const unionsResultBsp = this.unionOperations.reduce((result, operationRow) => {
 				const rowResult = operationRow.reduce((result, operation) => {
 					return operation.execute(result);
@@ -158,6 +159,7 @@ export class Zone extends SimulationMesh {
 
 			this.geometry = CSG.toGeometry(unionsResultBsp, this.matrix);
 		}
+		
 		this.geometry.computeBoundingSphere();
 		this.updateMatrixWorld(true);
 

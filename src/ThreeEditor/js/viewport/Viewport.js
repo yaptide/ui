@@ -9,7 +9,7 @@ import {
 import { EditorOrbitControls } from '../EditorOrbitControls';
 import { UIDiv, UIPanel } from '../libs/ui';
 import { ViewportCamera } from './Viewport.Camera.js';
-import { ViewportClippedView } from './Viewport.ClippedView';
+import { ViewportClippedViewCSG } from './Viewport.ClippedViewCSG';
 import { ViewHelper } from './Viewport.ViewHelper';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
@@ -97,7 +97,7 @@ export function Viewport(
 
 	let viewClipPlane = null;
 	if (clipPlane) {
-		viewClipPlane = new ViewportClippedView(
+		viewClipPlane = new ViewportClippedViewCSG(
 			name,
 			editor,
 			this,
@@ -124,7 +124,6 @@ export function Viewport(
 
 		if (!renderer) return;
 
-		if (clipPlane) renderer.clippingPlanes = [clipPlane];
 
 		// applying rotation to the grid plane, if not provided set default rotation to none
 		// by default grid plane lies within XZ plane
@@ -132,19 +131,25 @@ export function Viewport(
 
 		renderer.setSize(canvas.width, canvas.height);
 
-		renderer.render(scene, camera);
-
 		renderer.autoClear = false;
 
-		renderer.render(zoneManager, camera);
+		renderer.clear();
 
-		renderer.render(detectManager, camera);
 
-		if (clipPlane) {
-			renderer.render(viewClipPlane.scene, camera);
+		if (!clipPlane) {
+
+			renderer.render(scene, camera);
+
+			renderer.render(zoneManager, camera);
+
+			renderer.render(detectManager, camera);
 		}
 
-		renderer.clippingPlanes = []; // clear clipping planes for next renders
+
+		if (clipPlane)
+			renderer.render(viewClipPlane.scene, camera);
+
+
 
 		if (config.showSceneHelpers) {
 			planeHelpers.visible = showPlaneHelpers ?? false;
@@ -511,8 +516,8 @@ export function Viewport(
 		else console.error(`No camera with uuid: [${uuid}] in this viewport`);
 	};
 
-	this.configurationJson = () => {
-		const configJson = { cameraMatrix: camera.matrix.toArray(), clipPlane: viewClipPlane?.configurationJson() };
+	this.configurationToJson = () => {
+		const configJson = { cameraMatrix: camera.matrix.toArray(), clipPlane: viewClipPlane?.configurationToJson() };
 		return configJson;
 	}
 
