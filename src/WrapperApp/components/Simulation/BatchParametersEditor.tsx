@@ -1,32 +1,22 @@
+import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
+import IntegrationInstructionsOutlinedIcon from '@mui/icons-material/IntegrationInstructionsOutlined';
 import {
+	Autocomplete,
 	Box,
 	Checkbox,
-	Chip,
 	FormControl,
-	FormControlLabel,
-	IconButton,
-	InputLabel,
 	ListItem,
 	ListItemButton,
-	ListItemIcon,
 	ListItemText,
-	MenuItem,
-	OutlinedInput,
-	Select,
-	SelectChangeEvent,
-	Typography,
-	useTheme,
-	Autocomplete,
 	TextField,
-	Avatar,
-	createFilterOptions
+	Typography,
+	createFilterOptions,
+	useTheme
 } from '@mui/material';
 import CodeEditor from '@uiw/react-textarea-code-editor';
-import IntegrationInstructionsOutlinedIcon from '@mui/icons-material/IntegrationInstructionsOutlined';
-import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
 import { useState } from 'react';
-import { ScriptOption } from './RunSimulationForm';
 import { EditableChip } from './EditableChip';
+import { ScriptOption } from './RunSimulationForm';
 
 type BatchParametersEditorProps = {
 	scriptHeader: string;
@@ -208,11 +198,6 @@ export function BatchScriptParametersEditor({
 								option.optionLabel ? ' "' + option.optionLabel + '"' : ''
 							}`;
 						}}
-						// renderOption={(props, option) => (
-						// 	<li {...props}>{`${option.optionKey}${
-						// 		option.optionLabel ? ' "' + option.optionLabel + '"' : ''
-						// 	}`}</li>
-						// )}
 						renderInput={params => (
 							<TextField
 								{...params}

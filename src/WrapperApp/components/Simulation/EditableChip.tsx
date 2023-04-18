@@ -21,7 +21,6 @@ export function EditableChip({ option, onDelete, onChange }: EditableChipProps) 
 			sx={{
 				'display': 'flex',
 				'width': 'fit-content',
-				// padding: ({ spacing }) => spacing(3, 1),
 				'& .MuiChip-label': {}
 			}}
 			variant='outlined'
