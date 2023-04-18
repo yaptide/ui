@@ -3,7 +3,7 @@ import * as Comlink from 'comlink';
 import { createGenericContext } from '../util/GenericContext';
 import { IPythonWorker } from './PythonWorker';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { InputFiles } from '../services/RequestTypes';
+import { InputFiles } from '../services/ResponseTypes';
 
 declare global {
 	interface Window {

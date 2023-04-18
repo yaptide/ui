@@ -9,7 +9,9 @@ import { useStore } from '../../../services/StoreService';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { DEMO_MODE } from '../../../util/Config';
 import { InputFilesEditor } from './InputFilesEditor';
-import { InputFiles } from '../../../services/RequestTypes';
+import { readFile } from '../../../services/DataLoaderService';
+import { DragDropFiles } from './DragDropFiles';
+import { InputFiles, _defaultInputFiles } from '../../../services/ResponseTypes';
 interface InputEditorPanelProps {
 	goToRun?: () => void;
 }
@@ -23,7 +25,7 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 	const { isConverterReady, convertJSON } = usePythonConverter();
 
 	const [isInProgress, setInProgress] = useState(false);
-	const [inputFiles, setInputFiles] = useState<InputFiles>();
+	const [inputFiles, setInputFiles] = useState<InputFiles>(_defaultInputFiles);
 	const [generator, setGenerator] = useState<GeneratorLocation>('local');
 
 	const [controller] = useState(new AbortController());
@@ -126,8 +128,35 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 					)}
 				</ToggleButtonGroup>
 			</Box>
+
+			<DragDropFiles
+				id={'input-file-upload-editor'}
+				onSubmit={files => {
+					if (!files) return;
+
+					const submitedFiles: Record<string, string> = {};
+
+					const promises = Array.from(files).map(async file => {
+						const content = readFile(file) as Promise<string>;
+						submitedFiles[file.name] = await content;
+						return content;
+					});
+
+					Promise.all(promises).then(_ => {
+						setInputFiles(oldInput => {
+							if (!oldInput) return submitedFiles as InputFiles;
+
+							const inputFiles = { ...oldInput, ...submitedFiles };
+							return inputFiles as InputFiles;
+						});
+					});
+				}}
+				acceptedFiles={'.dat'}
+			/>
+
 			<InputFilesEditor
 				inputFiles={inputFiles}
+				onChange={inputFiles => setInputFiles(inputFiles)}
 				runSimulation={!DEMO_MODE ? runSimulation : undefined}
 			/>
 		</Box>

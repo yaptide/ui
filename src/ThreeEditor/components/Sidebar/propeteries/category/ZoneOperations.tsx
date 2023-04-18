@@ -15,6 +15,19 @@ import { BooleanAlgebraData } from '../../../ZoneManagerPanel/BooleanAlgebra/Boo
 import ZoneManagerPanel from '../../../ZoneManagerPanel/ZoneManagerPanel';
 import { PropertiesCategory } from './PropertiesCategory';
 
+const parseAlgebraData = (editor: Editor, { value }: BooleanAlgebraData) => {
+	const operations: CSG.OperationTuple[] = [];
+
+	value.forEach(({ operation, objectId }, index) => {
+		let object;
+		if (objectId) object = editor.getObjectById(objectId);
+		if (object && isBasicMesh(object))
+			operations.push(new CSG.OperationTuple(object, operation));
+		else return operations;
+	});
+	return operations;
+};
+
 export function ZoneOperations(props: { editor: Editor; object: Object3D }) {
 	const { object, editor } = props;
 
@@ -25,23 +38,6 @@ export function ZoneOperations(props: { editor: Editor; object: Object3D }) {
 
 	const visibleFlag = isZone(watchedObject);
 
-	const parseAlgebraData = useCallback(
-		({ value }: BooleanAlgebraData) => {
-			const operations: CSG.OperationTuple[] = [];
-
-			value.forEach(({ operation, objectId }, index) => {
-				let object;
-				if (objectId) object = editor.getObjectById(objectId);
-				if (object && isBasicMesh(object))
-					operations.push(new CSG.OperationTuple(object, operation));
-				else return operations;
-			});
-
-			return operations;
-		},
-		[editor]
-	);
-
 	const handleChanged = useCallback(
 		(algebraIndex: number, algebraRow: BooleanAlgebraData) => {
 			if (!watchedObject) return;
@@ -49,12 +45,12 @@ export function ZoneOperations(props: { editor: Editor; object: Object3D }) {
 				new SetZoneOperationTupleCommand(
 					editor,
 					watchedObject?.object,
-					parseAlgebraData(algebraRow),
+					parseAlgebraData(editor, algebraRow),
 					algebraIndex
 				)
 			);
 		},
-		[editor, parseAlgebraData, watchedObject]
+		[editor, watchedObject]
 	);
 
 	const handleAdd = useCallback(() => {

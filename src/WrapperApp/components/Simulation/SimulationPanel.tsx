@@ -16,8 +16,9 @@ import { TextField } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
 import { useLoader } from '../../../services/DataLoaderService';
-import { InputFiles, OrderBy, OrderType } from '../../../services/RequestTypes';
+import { OrderBy, OrderType } from '../../../services/RequestTypes';
 import {
+	InputFiles,
 	JobStatusData,
 	SimulationInfo,
 	StatusState,
@@ -195,7 +196,6 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			runType === 'batch'
 				? {
 						...batchOptions,
-						cluster: undefined,
 						arrayOptions: batchOptions.arrayOptions?.reduce((acc, curr) => {
 							acc[curr.optionKey] = curr.optionValue;
 							return acc;
@@ -324,6 +324,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 						<InputFilesEditor
 							inputFiles={inputFiles}
 							closeEditor={() => setShowInputFilesEditor(false)}
+							onChange={newInputFiles => setInputFiles(newInputFiles)}
 							runSimulation={newInputFiles => {
 								setShowInputFilesEditor(false);
 								setInputFiles(newInputFiles);

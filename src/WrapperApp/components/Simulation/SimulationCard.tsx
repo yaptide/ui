@@ -20,8 +20,8 @@ import {
 import { SxProps, Theme } from '@mui/material/styles';
 import React, { ReactNode, useMemo } from 'react';
 import { useLoader } from '../../../services/DataLoaderService';
-import { InputFiles } from '../../../services/RequestTypes';
 import {
+	InputFiles,
 	JobStatusData,
 	StatusState,
 	currentJobStatusData,
@@ -90,9 +90,7 @@ export default function SimulationCard({
 		loadResults?.call(null, null);
 	};
 
-	const onClickInputFiles = (
-		simulation: JobStatusData<StatusState.COMPLETED | StatusState.FAILED>
-	) => {
+	const onClickInputFiles = () => {
 		showInputFiles?.call(null, simulation.inputFiles);
 	};
 
@@ -296,11 +294,7 @@ export default function SimulationCard({
 						sx={{ fontSize: '.8em' }}
 						color='info'
 						size='small'
-						onClick={() =>
-							currentJobStatusData[StatusState.COMPLETED](simulation) ||
-							(currentJobStatusData[StatusState.FAILED](simulation) &&
-								onClickInputFiles(simulation))
-						}
+						onClick={onClickInputFiles}
 						disabled={
 							!Boolean(
 								currentJobStatusData[StatusState.COMPLETED](simulation) ||
