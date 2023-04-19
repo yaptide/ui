@@ -4,6 +4,7 @@ import {
 	Autocomplete,
 	Box,
 	Checkbox,
+	FilterOptionsState,
 	FormControl,
 	ListItem,
 	ListItemButton,
@@ -17,6 +18,7 @@ import CodeEditor from '@uiw/react-textarea-code-editor';
 import { useState } from 'react';
 import { EditableChip } from './EditableChip';
 import { ScriptOption } from './RunSimulationForm';
+import { useCallback } from 'react';
 
 type BatchParametersEditorProps = {
 	scriptHeader: string;
@@ -27,10 +29,11 @@ type BatchParametersEditorProps = {
 };
 
 const _PROPOSED_OPTIONS = [
-	{ optionKey: '-a', optionLabel: 'option a', optionValue: '' },
-	{ optionKey: '-b', optionLabel: 'option b', optionValue: '' },
-	{ optionKey: '-c', optionLabel: 'option c', optionValue: '' },
-	{ optionKey: '-d', optionLabel: 'option d', optionValue: '' }
+	{
+		optionKey: 'time',
+		optionLabel: 'Time limit on the total run time of the job allocation',
+		optionValue: '0:15:00'
+	}
 ] as const;
 
 export function BatchScriptParametersEditor({
@@ -44,10 +47,81 @@ export function BatchScriptParametersEditor({
 	const [useCommandLineOptionsChecked, setUseCommandLineOptionsChecked] = useState(
 		scriptOptions.length > 0
 	);
+
 	const filterKeysAndLabels = createFilterOptions<ScriptOption>({
 		matchFrom: 'any',
-		stringify: option => option.optionKey
+		stringify: ({ optionKey }) => optionKey
 	});
+
+	const handleFilterOptions = useCallback(
+		(options: ScriptOption[], state: FilterOptionsState<ScriptOption>): ScriptOption[] => {
+			let filtered: (ScriptOption & { optionTitle?: string })[] = filterKeysAndLabels(
+				options,
+				state
+			);
+
+			// Filter out existing options
+			filtered = filtered.filter(
+				o => !scriptOptions.some(so => so.optionKey === o.optionKey)
+			);
+
+			const { inputValue } = state;
+			// Suggest the creation of a new value
+			const isExisting = options.some(
+				o =>
+					inputValue === o.optionKey ||
+					`-${inputValue}` === o.optionKey ||
+					`--${inputValue}` === o.optionKey
+			);
+			if (inputValue !== '' && !isExisting) {
+				filtered.push(
+					{
+						optionKey: inputValue,
+						optionLabel: '',
+						optionValue: '',
+						optionTitle: `Add new option "${inputValue}"`
+					},
+					{
+						optionKey: `-${inputValue}`,
+						optionLabel: '',
+						optionValue: '',
+						optionTitle: `Add new option "-${inputValue}"`
+					},
+					{
+						optionKey: `--${inputValue}`,
+						optionLabel: '',
+						optionValue: '',
+						optionTitle: `Add new option "--${inputValue}"`
+					}
+				);
+			}
+			return filtered;
+		},
+		[filterKeysAndLabels, scriptOptions]
+	);
+
+	const handleAutocompleteChange = useCallback(
+		(newValue: (string | ScriptOption)[]) => {
+			const newOptions: ScriptOption[] = newValue.map(option => {
+				if (typeof option === 'string')
+					return {
+						optionKey: option,
+						optionLabel: '',
+						optionValue: ''
+					};
+
+				const existingOption = scriptOptions.find(o => o.optionKey === option.optionKey);
+				return {
+					optionKey: option.optionKey,
+					optionLabel: option.optionLabel || '',
+					optionValue: existingOption?.optionValue || option.optionValue || ''
+				};
+			});
+			handleScriptOptionsChange(newOptions);
+		},
+		[handleScriptOptionsChange, scriptOptions]
+	);
+
 	return (
 		<Box
 			sx={{
@@ -113,73 +187,12 @@ export function BatchScriptParametersEditor({
 						}}
 						multiple
 						freeSolo
-						filterOptions={(options, params) => {
-							let filtered: (ScriptOption & { optionTitle?: string })[] =
-								filterKeysAndLabels(options, params);
-
-							// Filter out existing options
-							filtered = filtered.filter(
-								o => !scriptOptions.some(so => so.optionKey === o.optionKey)
-							);
-
-							const { inputValue } = params;
-							// Suggest the creation of a new value
-							const isExisting = options.some(
-								o =>
-									inputValue === o.optionKey ||
-									`-${inputValue}` === o.optionKey ||
-									`--${inputValue}` === o.optionKey
-							);
-							if (inputValue !== '' && !isExisting) {
-								filtered.push(
-									{
-										optionKey: inputValue,
-										optionLabel: '',
-										optionValue: '',
-										optionTitle: `Add new option "${inputValue}"`
-									},
-									{
-										optionKey: `-${inputValue}`,
-										optionLabel: '',
-										optionValue: '',
-										optionTitle: `Add new option "-${inputValue}"`
-									},
-									{
-										optionKey: `--${inputValue}`,
-										optionLabel: '',
-										optionValue: '',
-										optionTitle: `Add new option "--${inputValue}"`
-									}
-								);
-							}
-							return filtered;
-						}}
+						filterOptions={handleFilterOptions}
 						id={`tags-options-${scriptName}`}
 						options={_PROPOSED_OPTIONS}
-						// getOptionLabel={option => option.optionLabel}
 						defaultValue={[]}
 						value={scriptOptions}
-						onChange={(_e, newValue) => {
-							const newOptions: ScriptOption[] = newValue.map(option => {
-								if (typeof option === 'string')
-									return {
-										optionKey: option,
-										optionLabel: '',
-										optionValue: ''
-									};
-
-								const existingOption = scriptOptions.find(
-									o => o.optionKey === option.optionKey
-								);
-								return {
-									optionKey: option.optionKey,
-									optionLabel: option.optionLabel || '',
-									optionValue:
-										existingOption?.optionValue || option.optionValue || ''
-								};
-							});
-							handleScriptOptionsChange(newOptions);
-						}}
+						onChange={(_, newValue) => handleAutocompleteChange(newValue)}
 						filterSelectedOptions
 						getOptionLabel={option => {
 							// Value selected with enter, right from the input

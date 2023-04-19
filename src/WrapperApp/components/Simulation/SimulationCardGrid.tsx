@@ -27,12 +27,40 @@ import QueuePlayNextIcon from '@mui/icons-material/QueuePlayNext';
 import FolderOffIcon from '@mui/icons-material/FolderOff';
 import { ReactNode, useState } from 'react';
 
+type GridLayout = 'grid' | 'inline-list' | 'block-list';
+
 type SimulationCardGridProps = {
 	simulations: JobStatusData[];
 	handleLoadResults?: (taskId: string | null, simulation: unknown) => void;
 	handleShowInputFiles?: (inputFiles?: InputFiles) => void;
-	layout: 'grid' | 'inline-list' | 'block-list';
+	layout: GridLayout;
 } & GridProps;
+
+const stylesByLayout: Record<GridLayout, { gridContainerProps: {}; gridItemProps: {} }> = {
+	'grid': {
+		gridContainerProps: {
+			rowSpacing: { sm: 2, md: 4 },
+			columnSpacing: 2,
+			columns: { sm: 1, md: 2, lg: 3, xl: 4 },
+			justifyContent: 'space-evenly'
+		},
+		gridItemProps: { xs: 1 }
+	},
+	'inline-list': {
+		gridContainerProps: {
+			spacing: 2
+		},
+		gridItemProps: { xs: 12 }
+	},
+	'block-list': {
+		gridContainerProps: {
+			wrap: 'nowrap',
+			gap: 2,
+			pb: 2
+		},
+		gridItemProps: {}
+	}
+};
 
 export function SimulationCardGrid({
 	simulations,
@@ -44,37 +72,14 @@ export function SimulationCardGrid({
 }: SimulationCardGridProps) {
 	let gridContainerProps: GridProps = { container: true };
 	let gridItemProps: GridProps = { item: true };
-	switch (layout) {
-		case 'grid':
-			gridContainerProps = {
-				...gridContainerProps,
-				rowSpacing: { sm: 2, md: 4 },
-				columnSpacing: 2,
-				columns: { sm: 1, md: 2, lg: 3, xl: 4 },
-				justifyContent: 'space-evenly'
-			};
-			gridItemProps = { ...gridItemProps, xs: 1 };
-			break;
-		case 'inline-list':
-			gridContainerProps = {
-				...gridContainerProps,
-				spacing: 2
-			};
-			gridItemProps = { ...gridItemProps, xs: 12 };
-			break;
-		case 'block-list':
-			gridContainerProps = {
-				...gridContainerProps,
-				wrap: 'nowrap',
-				gap: 2,
-				pb: 2
-			};
-			gridItemProps = { ...gridItemProps };
-			break;
-		default:
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const _exhaustiveCheck: never = layout;
-			return <>Grid layout error</>;
+	if (layout in stylesByLayout) {
+		gridContainerProps = {
+			...gridContainerProps,
+			...stylesByLayout[layout].gridContainerProps
+		};
+		gridItemProps = { ...gridItemProps, ...stylesByLayout[layout].gridItemProps };
+	} else {
+		console.warn(`Unknown layout: ${layout}`);
 	}
 
 	return (

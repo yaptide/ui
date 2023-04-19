@@ -128,7 +128,6 @@ export function Editor(container) {
 		requestRenameAction: new Signal()
 	};
 
-
 	this.results = null;
 
 	this.viewManager = null;

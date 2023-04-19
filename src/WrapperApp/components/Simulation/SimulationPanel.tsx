@@ -1,20 +1,9 @@
-import {
-	Box,
-	Button,
-	Card,
-	CardActions,
-	CardContent,
-	Fade,
-	LinearProgress,
-	Modal,
-	Switch,
-	Typography
-} from '@mui/material';
+import { Box, Card, CardContent, Fade, Modal } from '@mui/material';
 import { useSnackbar } from 'notistack';
 
-import { TextField } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
+import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { useLoader } from '../../../services/DataLoaderService';
 import { OrderBy, OrderType } from '../../../services/RequestTypes';
 import {
@@ -28,14 +17,14 @@ import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { DEMO_MODE } from '../../../util/Config';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
-import { DemoCardGrid, PaginatedSimulationsFromBackend } from './SimulationCardGrid';
 import {
 	BatchOptionsType,
 	RunSimulationForm,
 	SimulationRunType,
 	SimulationSourceType
 } from './RunSimulationForm';
-import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
+import { DemoCardGrid, PaginatedSimulationsFromBackend } from './SimulationCardGrid';
+import { PageNavigationProps, PageParamProps } from './SimulationPanelBar';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
@@ -48,7 +37,6 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		localResultsSimulationData,
 		setLocalResultsSimulationData
 	} = useStore();
-
 	const {
 		cancelJobDirect,
 		postJobDirect,
@@ -58,25 +46,28 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		getPageStatus
 	} = useShSimulation();
 	const { enqueueSnackbar } = useSnackbar();
+	const { resultsProvider, canLoadResultsData, clearLoadedResults } = useLoader();
 
-	const [isInProgress, setInProgress] = useState(false);
+	/** Visibility Flags */
 	const [isBackendAlive, setBackendAlive] = useState(false);
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
 	const [showRunSimulationsForm, setShowRunSimulationsForm] = useState(false);
-	const [page, setPage] = useState(1);
-	const [pageCount, setPageCount] = useState(3);
+
+	const [pageIdx, setPageIdx] = useState(0);
+	const [pageCount, setPageCount] = useState(0);
 	const [orderType, setOrderType] = useState<OrderType>(OrderType.ASCEND);
 	const [orderBy, setOrderBy] = useState<OrderBy>(OrderBy.START_TIME);
 	const [pageSize, setPageSize] = useState(6);
+	type PageState = Omit<
+		PageParamProps & PageNavigationProps,
+		'handlePageChange' | 'handleOrderChange'
+	>;
 
-	const [simName, setSimName] = useState<string>(editorRef.current!.toJSON().project.title);
-	const [nTasks, setNTasks] = useState<number>(1);
+	/** Simulation Run Options */
 	const [availableClusters] = useState<string[]>(['default']);
-	const [simulator] = useState<string>('shieldhit');
-
 	const [inputFiles, setInputFiles] = useState<InputFiles>();
-	const [directRun, setDirectRun] = useState<boolean>(true);
 
+	/** Queued Simulation Data */
 	const [trackedId, setTrackedId] = useState<string>();
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
 	const [simulationsStatusData, setSimulationsStatusData] = useState<JobStatusData[]>([]);
@@ -84,57 +75,20 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		localResultsSimulationData ?? []
 	);
 
-	const { resultsProvider, canLoadResultsData, clearLoadedResults } = useLoader();
-
 	const [simulationIDInterval, setSimulationIDInterval] = useState<number | null>(null);
-
 	const [controller] = useState(new AbortController());
 
 	const updateSimulationInfo = useCallback(
 		() =>
-			getPageContents(page - 1, pageSize, orderType, orderBy)
+			getPageContents(pageIdx - 1, pageSize, orderType, orderBy)
 				.then(results => {
 					const { simulations, pageCount } = results;
 					setSimulationInfo([...simulations]);
 					setPageCount(pageCount);
 				})
 				.catch(),
-		[getPageContents, orderType, orderBy, page, pageSize]
+		[getPageContents, orderType, orderBy, pageIdx, pageSize]
 	);
-	const refreshPage = useCallback(
-		(
-			page: number,
-			pageSize: number,
-			orderType: OrderType,
-			orderBy: OrderBy,
-			signal?: AbortSignal | undefined
-		) =>
-			getPageContents(page - 1, pageSize, orderType, orderBy, signal)
-				.then(({ simulations, pageCount }) => {
-					setSimulationInfo([...simulations]);
-					setPageCount(pageCount);
-				})
-				.catch(),
-		[getPageContents]
-	);
-	const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
-		setPage(page);
-		refreshPage(page, pageSize, orderType, orderBy, controller.signal);
-	};
-	// will be used later
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const handleJobCancel = (simulationInfo: SimulationInfo) => {
-		cancelJobDirect(simulationInfo, controller.signal).then(() => {
-			refreshPage(page, pageSize, orderType, orderBy, controller.signal);
-		});
-	};
-
-	const handleOrderChange = (orderType: OrderType, orderBy: OrderBy, pageSize: number) => {
-		setOrderType(orderType);
-		setOrderBy(orderBy);
-		setPageSize(pageSize);
-		refreshPage(page, pageSize, orderType, orderBy, controller.signal);
-	};
 
 	const handleBeforeCacheWrite = useCallback(
 		(id: string, response: JobStatusData) => {
@@ -154,105 +108,6 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 			),
 		[handleBeforeCacheWrite, controller.signal, getPageStatus, simulationInfo]
 	);
-
-	const handleLoadResults = (taskId: string | null, simulation: unknown) => {
-		if (taskId === null) props.goToResults?.call(null);
-		else
-			currentJobStatusData[StatusState.COMPLETED](simulation) &&
-				setResultsSimulationData(simulation);
-	};
-
-	const handleShowInputFiles = (inputFiles?: InputFiles) => {
-		setShowInputFilesEditor(true);
-		setInputFiles(inputFiles);
-	};
-
-	const runSimulation = (inputFiles?: InputFiles) => {
-		setInProgress(true);
-		if (!editorRef.current && !inputFiles) return;
-		const simData = inputFiles ?? editorRef.current!.toJSON();
-		console.log(directRun);
-
-		(directRun ? postJobDirect : postJobBatch)(
-			simData,
-			nTasks,
-			simulator,
-			simName,
-			undefined,
-			controller.signal
-		)
-			.then(res => {
-				updateSimulationInfo();
-				setTrackedId(res.jobId);
-			})
-			.catch(e => {
-				enqueueSnackbar('Error while starting simulation', { variant: 'error' });
-				console.error(e);
-			})
-			.finally(() => setInProgress(false));
-	};
-	const runTotalSimulation = (
-		editorJson: EditorJson,
-		inputFiles: Partial<InputFiles>,
-		runType: SimulationRunType,
-		sourceType: SimulationSourceType,
-		simName: string,
-		nTasks: number,
-		simulator: string,
-		batchOptions: BatchOptionsType
-	) => {
-		setShowRunSimulationsForm(false);
-		setInProgress(true);
-		const simData = sourceType === 'project' ? editorJson : inputFiles;
-		const options =
-			runType === 'batch'
-				? {
-						...batchOptions,
-						arrayOptions: batchOptions.arrayOptions?.reduce((acc, curr) => {
-							acc[curr.optionKey] = curr.optionValue;
-							return acc;
-						}, {} as Record<string, string>),
-						collectOptions: batchOptions.collectOptions?.reduce((acc, curr) => {
-							acc[curr.optionKey] = curr.optionValue;
-							return acc;
-						}, {} as Record<string, string>)
-				  }
-				: undefined;
-		(runType === 'direct' ? postJobDirect : postJobBatch)(
-			simData,
-			nTasks,
-			simulator,
-			simName,
-			options,
-			controller.signal
-		);
-	};
-
-	const onClickRun = () => {
-		setShowRunSimulationsForm(false);
-		runSimulation();
-	};
-
-	const handleEditorModal = () => {
-		setShowInputFilesEditor(false);
-	};
-
-	useEffect(() => {
-		if (!DEMO_MODE && editorRef.current) {
-			const hash = editorRef.current.toJSON().hash;
-			const anyResults = simulationsStatusData.find(
-				s => currentJobStatusData[StatusState.COMPLETED](s) && s.inputJson?.hash === hash
-			);
-			if (anyResults) editorRef.current.results = anyResults;
-			else editorRef.current.results = null;
-		}
-	}, [simulationsStatusData, editorRef]);
-
-	useEffect(() => {
-		return () => {
-			controller.abort();
-		};
-	}, [controller]);
 
 	useEffect(() => {
 		if (!DEMO_MODE)
@@ -287,6 +142,113 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		true
 	);
 
+	const handleLoadResults = (taskId: string | null, simulation: unknown) => {
+		if (taskId === null) props.goToResults?.call(null);
+		else
+			currentJobStatusData[StatusState.COMPLETED](simulation) &&
+				setResultsSimulationData(simulation);
+	};
+
+	const handleShowInputFiles = (inputFiles?: InputFiles) => {
+		setShowInputFilesEditor(true);
+		setInputFiles(inputFiles);
+	};
+
+	/**
+	 * @deprecated
+	 */ // eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const runSimulation = (
+		inputFiles?: InputFiles,
+		directRun: boolean = true,
+		nTasks: number = 1,
+		simulator: string = 'shieldhit',
+		simName: string = 'Unrecognized Simulation Request'
+	) => {
+		if (!editorRef.current && !inputFiles) return;
+		const simData = inputFiles ?? editorRef.current!.toJSON();
+		console.log(directRun);
+
+		(directRun ? postJobDirect : postJobBatch)(
+			simData,
+			nTasks,
+			simulator,
+			simName,
+			undefined,
+			controller.signal
+		)
+			.then(res => {
+				updateSimulationInfo();
+				setTrackedId(res.jobId);
+			})
+			.catch(e => {
+				enqueueSnackbar('Error while starting simulation', { variant: 'error' });
+				console.error(e);
+			});
+	};
+
+	const sendSimulationRequest = (
+		editorJson: EditorJson,
+		inputFiles: Partial<InputFiles>,
+		runType: SimulationRunType,
+		sourceType: SimulationSourceType,
+		simName: string,
+		nTasks: number,
+		simulator: string,
+		batchOptions: BatchOptionsType
+	) => {
+		setShowRunSimulationsForm(false);
+		const simData = sourceType === 'project' ? editorJson : inputFiles;
+
+		const options =
+			runType === 'batch'
+				? {
+						...batchOptions,
+						arrayOptions: batchOptions.arrayOptions?.reduce((acc, curr) => {
+							acc[curr.optionKey] = curr.optionValue;
+							return acc;
+						}, {} as Record<string, string>),
+						collectOptions: batchOptions.collectOptions?.reduce((acc, curr) => {
+							acc[curr.optionKey] = curr.optionValue;
+							return acc;
+						}, {} as Record<string, string>)
+				  }
+				: undefined;
+
+		(runType === 'direct' ? postJobDirect : postJobBatch)(
+			simData,
+			nTasks,
+			simulator,
+			simName,
+			options,
+			controller.signal
+		)
+			.then(res => {
+				updateSimulationInfo();
+				setTrackedId(res.jobId);
+			})
+			.catch(e => {
+				enqueueSnackbar('Error while starting simulation', { variant: 'error' });
+				console.error(e);
+			});
+	};
+
+	useEffect(() => {
+		if (!DEMO_MODE && editorRef.current) {
+			const hash = editorRef.current.toJSON().hash;
+			const anyResults = simulationsStatusData.find(
+				s => currentJobStatusData[StatusState.COMPLETED](s) && s.inputJson?.hash === hash
+			);
+			if (anyResults) editorRef.current.results = anyResults;
+			else editorRef.current.results = null;
+		}
+	}, [simulationsStatusData, editorRef]);
+
+	useEffect(() => {
+		return () => {
+			controller.abort();
+		};
+	}, [controller]);
+
 	useEffect(() => {
 		if (canLoadResultsData) {
 			clearLoadedResults();
@@ -310,12 +272,64 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 		setLocalResultsSimulationData
 	]);
 
+	const refreshPage = useCallback(
+		(
+			newPageIdx: number = pageIdx,
+			newPageSize: number = pageSize,
+			newOrderType: OrderType = orderType,
+			newOrderBy: OrderBy = orderBy
+		) =>
+			getPageContents(
+				newPageIdx - 1,
+				newPageSize,
+				newOrderType,
+				newOrderBy,
+				controller.signal
+			)
+				.then(({ simulations, pageCount }) => {
+					setSimulationInfo([...simulations]);
+					setPageCount(pageCount);
+				})
+				.catch(),
+		[getPageContents, pageIdx, pageSize, orderType, orderBy, controller.signal]
+	);
+
+	const autoRefreshPage = useCallback(
+		(pageState: Partial<PageState> = {}) => {
+			const stateToSetter: Record<keyof PageState, Function> = {
+				pageIdx: setPageIdx,
+				pageSize: setPageSize,
+				orderType: setOrderType,
+				orderBy: setOrderBy,
+				pageCount: setPageCount
+			};
+			Object.entries(pageState).forEach(([key, value]) =>
+				stateToSetter[key as keyof PageState](value)
+			);
+			const { pageIdx, pageSize, orderType, orderBy } = pageState;
+			refreshPage(pageIdx, pageSize, orderType, orderBy);
+		},
+		[refreshPage]
+	);
+
+	// will be used later
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const handleJobCancel = (simulationInfo: SimulationInfo) => {
+		cancelJobDirect(simulationInfo, controller.signal).finally(autoRefreshPage);
+	};
+
+	const handlePageChange = (event: React.ChangeEvent<unknown>, pageIdx: number) =>
+		autoRefreshPage({ pageIdx });
+
+	const handleOrderChange = (orderType: OrderType, orderBy: OrderBy, pageSize: number) =>
+		autoRefreshPage({ orderType, orderBy, pageSize });
+
 	return (
 		<Box
 			sx={{
 				margin: '0 auto',
 				width: 'min(1600px, 100%)',
-				maxWidth: 'max(75%,966px)',
+				maxWidth: 'max(75%, 966px)',
 				height: '100%',
 				boxSizing: 'border-box',
 				padding: ({ spacing }) => spacing(2, 5),
@@ -329,7 +343,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				aria-labelledby='transition-modal-title'
 				aria-describedby='transition-modal-description'
 				open={showInputFilesEditor}
-				onClose={handleEditorModal}
+				onClose={() => setShowInputFilesEditor(false)}
 				closeAfterTransition>
 				<Fade in={showInputFilesEditor}>
 					<Box sx={{ height: '100vh', width: '100vw', overflow: 'auto' }}>
@@ -340,7 +354,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 							runSimulation={newInputFiles => {
 								setShowInputFilesEditor(false);
 								setInputFiles(newInputFiles);
-								runSimulation(newInputFiles);
+								setShowRunSimulationsForm(true);
 							}}></InputFilesEditor>
 					</Box>
 				</Fade>
@@ -372,7 +386,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 										'geo.dat': '',
 										...inputFiles
 									}}
-									runSimulation={runTotalSimulation}
+									runSimulation={sendSimulationRequest}
 								/>
 							</CardContent>
 						</Card>
@@ -392,7 +406,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 					orderType,
 					orderBy,
 					pageCount,
-					page,
+					pageIdx,
 					pageSize,
 					handleOrderChange,
 					handlePageChange
@@ -400,7 +414,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				handleLoadResults={handleLoadResults}
 				handleShowInputFiles={handleShowInputFiles}
 				isBackendAlive={isBackendAlive}
-				runSimulation={(): void => {
+				runSimulation={() => {
 					setShowRunSimulationsForm(true);
 				}}
 			/>

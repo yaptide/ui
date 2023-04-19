@@ -41,7 +41,6 @@ export function OrderButton({ orderType, color, onChange, ...other }: OrderButto
 			sx={{
 				'&.MuiButton-root': {
 					p: '.5rem'
-					// borderRadius: '4px 0 0 4px'
 				},
 				'& .MuiSvgIcon-root': {
 					fontSize: '1rem'
@@ -113,7 +112,7 @@ export const InputGroup: typeof ButtonGroup = styled(ButtonGroup)(
 		'height': spacing(5),
 		'&:not(.MuiButtonGroup-vertical) > *': {
 			'borderRadius': '0',
-			'&:first-of-type': {
+			'&:first-child': {
 				borderEndStartRadius: borderRadius,
 				borderStartStartRadius: borderRadius
 			},
@@ -124,7 +123,7 @@ export const InputGroup: typeof ButtonGroup = styled(ButtonGroup)(
 		},
 		'&.MuiButtonGroup-vertical > *': {
 			'borderRadius': '0',
-			'&:first-of-type': {
+			'&:first-child': {
 				borderStartEndRadius: borderRadius,
 				borderStartStartRadius: borderRadius
 			},
@@ -342,7 +341,7 @@ export function SimulationBackendHeader({
 
 export type PageNavigationProps = {
 	pageCount: number;
-	page: number;
+	pageIdx: number;
 	handlePageChange: (event: React.ChangeEvent<unknown>, value: number) => void;
 };
 
@@ -350,7 +349,7 @@ type SimulationPaginationFooterProps = SimulationAppBarProps & PageNavigationPro
 
 export function SimulationPaginationFooter({
 	pageCount,
-	page,
+	pageIdx,
 	handlePageChange,
 	...other
 }: SimulationPaginationFooterProps) {
@@ -363,7 +362,7 @@ export function SimulationPaginationFooter({
 					p: ({ spacing }) => spacing(2)
 				}}
 				count={pageCount}
-				page={page}
+				page={pageIdx}
 				onChange={handlePageChange}
 			/>
 		</SimulationAppBar>

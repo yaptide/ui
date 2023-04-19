@@ -108,7 +108,6 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 		(endPoint: string) =>
 			(...[simData, ntasks, simType, title, batchOptions, signal]: RequestPostJob) => {
 				if (title === undefined && isEditorJson(simData)) title = simData.project.title;
-				console.log('postJob', endPoint, ntasks, simType, title, batchOptions, signal);
 				return authKy
 					.post(endPoint, {
 						json: {
