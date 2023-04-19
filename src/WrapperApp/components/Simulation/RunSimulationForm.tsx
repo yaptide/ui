@@ -1,31 +1,29 @@
-import {
-	Box,
-	Tabs,
-	Tab,
-	Switch,
-	TextField,
-	ButtonGroup,
-	ToggleButtonGroup,
-	ToggleButton,
-	Select,
-	SelectChangeEvent,
-	MenuItem,
-	InputLabel,
-	FormControl,
-	useTheme,
-	CardActions,
-	Button
-} from '@mui/material';
-import { TabPanel } from '../Panels/TabPanel';
-import { ChangeEvent, useEffect, useState } from 'react';
-import Typography from '@mui/material/Typography';
-import { Chip } from '@mui/material';
-import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
-import { InputFiles } from '../../../services/ResponseTypes';
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
-import CodeEditor from '@uiw/react-textarea-code-editor';
+import {
+	Box,
+	Button,
+	CardActions,
+	Chip,
+	FormControl,
+	InputLabel,
+	MenuItem,
+	Select,
+	SelectChangeEvent,
+	Tab,
+	Tabs,
+	TextField,
+	ToggleButton,
+	ToggleButtonGroup,
+	useTheme
+} from '@mui/material';
+import Typography from '@mui/material/Typography';
+import { useState } from 'react';
+import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
+import { InputFiles } from '../../../services/ResponseTypes';
+import { TabPanel } from '../Panels/TabPanel';
 import { BatchScriptParametersEditor } from './BatchParametersEditor';
+import { useEffect } from 'react';
 
 function a11yProps(index: number, name: string = 'RunSimulation') {
 	return {
@@ -95,6 +93,9 @@ export function RunSimulationForm({
 	) => {
 		if (newSourceType === null) return;
 		setSimulationSourceType(newSourceType);
+		if (newSourceType === 'files') {
+			setSelectedFiles(Object.keys(inputFiles));
+		}
 	};
 
 	const [simName, setSimName] = useState(editorJson.project.title ?? '');
@@ -103,7 +104,6 @@ export function RunSimulationForm({
 	const [arrayHeader, setArrayHeader] = useState<string>('');
 	const [collectHeader, setCollectHeader] = useState<string>('');
 	const [selectedScriptParamsTab, setSelectedScriptParamsTab] = useState(0);
-	const theme = useTheme();
 
 	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
 		setTabValue(newValue);
@@ -185,7 +185,7 @@ export function RunSimulationForm({
 						size='small'
 						label='Simulation software'
 						value={simulator}
-						disabled={true}
+						disabled
 					/>
 					<ToggleButtonGroup
 						exclusive
@@ -195,7 +195,11 @@ export function RunSimulationForm({
 						<ToggleButton size='small' value='project' color='primary'>
 							Editor Project Data
 						</ToggleButton>
-						<ToggleButton size='small' value='files' color='success' disabled>
+						<ToggleButton
+							size='small'
+							value='files'
+							color='success'
+							disabled={Object.keys(inputFiles).length === 0}>
 							Input Files Data
 						</ToggleButton>
 					</ToggleButtonGroup>

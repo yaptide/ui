@@ -381,9 +381,6 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 									availableClusters={availableClusters}
 									editorJson={editorRef.current.toJSON()}
 									inputFiles={{
-										'beam.dat': '',
-										'detect.dat': '',
-										'geo.dat': '',
 										...inputFiles
 									}}
 									runSimulation={sendSimulationRequest}
