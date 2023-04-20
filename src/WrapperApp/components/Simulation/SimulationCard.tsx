@@ -6,6 +6,7 @@ import {
 	CardActions,
 	CardContent,
 	CardHeader,
+	CardProps,
 	Chip,
 	Divider,
 	LinearProgress,
@@ -26,15 +27,14 @@ import {
 	currentJobStatusData,
 	currentTaskStatusData
 } from '../../../services/ResponseTypes';
-import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
 import { SimulationProgressBar } from './SimulationProgressBar';
-interface SimulationStatusProps {
+type SimulationCardProps = {
 	simulation: JobStatusData;
 	loadResults?: (jobId: string | null) => void;
 	showInputFiles?: (inputFiles?: InputFiles) => void;
-}
+} & CardProps;
 
 const tableRowStyle: SxProps<Theme> = { '&:last-child td, &:last-child th': { border: 0 } };
 const row = (id: number, title: string, value: string | undefined | ReactNode, guard = true) => (
@@ -50,13 +50,13 @@ const row = (id: number, title: string, value: string | undefined | ReactNode, g
 	</React.Fragment>
 );
 
-export default function SimulationStatus({
+export default function SimulationCard({
 	simulation,
 	loadResults,
-	showInputFiles
-}: SimulationStatusProps) {
+	showInputFiles,
+	...other
+}: SimulationCardProps) {
 	const { resultsSimulationData } = useStore();
-	const { cancelJobDirect: cancelSimulation } = useShSimulation();
 	const { loadFromJson } = useLoader();
 
 	const rows = useMemo(() => {
@@ -123,7 +123,7 @@ export default function SimulationStatus({
 	};
 
 	return (
-		<Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+		<Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }} {...other}>
 			<Divider
 				sx={{
 					borderTopWidth: 5,
@@ -253,6 +253,7 @@ export default function SimulationStatus({
 										sx={{ fontSize: '.8em' }}
 										size='small'
 										color='info'
+										disabled={!Boolean(loadResults)}
 										onClick={
 											resultsSimulationData?.jobId !== simulation.jobId
 												? onClickLoadResults
@@ -272,8 +273,7 @@ export default function SimulationStatus({
 										sx={{ fontSize: '.8em' }}
 										color='info'
 										size='small'
-										onClick={() => cancelSimulation(simulation)}
-										disabled={simulation.jobState === StatusState.PENDING}>
+										disabled={true}>
 										Cancel
 									</Button>
 								);
@@ -298,9 +298,9 @@ export default function SimulationStatus({
 						onClick={onClickInputFiles}
 						disabled={
 							!Boolean(
-								currentJobStatusData[StatusState.COMPLETED](simulation) ||
-									(currentJobStatusData[StatusState.FAILED](simulation) &&
-										showInputFiles)
+								showInputFiles &&
+									(currentJobStatusData[StatusState.COMPLETED](simulation) ||
+										currentJobStatusData[StatusState.FAILED](simulation))
 							)
 						}>
 						Input Files

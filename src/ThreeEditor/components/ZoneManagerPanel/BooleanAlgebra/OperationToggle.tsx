@@ -222,8 +222,6 @@ function OperationInput({
 								operation,
 								true // pass `!value` to show label only on a last operationToggle
 							)}
-							{/* <JoinInnerIcon /> */}
-							{/* <img src='./images/S.png' alt='intersection' /> */}
 						</ToggleButton>
 					</Tooltip>
 				))}

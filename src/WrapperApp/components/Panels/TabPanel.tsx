@@ -17,10 +17,7 @@ const tabPanelCss = (theme: Theme, customCss?: React.CSSProperties) =>
 		display: 'flex',
 		flexGrow: 1,
 		overflow: 'auto',
-		background:
-			theme.palette.mode === 'dark'
-				? theme.palette.background.default
-				: theme.palette.grey['50'],
+		background: theme.palette.background.default,
 		...customCss
 	});
 

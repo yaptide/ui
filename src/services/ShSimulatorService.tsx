@@ -108,16 +108,25 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 		(endPoint: string) =>
 			(...[simData, ntasks, simType, title, batchOptions, signal]: RequestPostJob) => {
 				if (title === undefined && isEditorJson(simData)) title = simData.project.title;
-				console.log('postJob', endPoint, ntasks, simType, title, batchOptions, signal);
 				return authKy
 					.post(endPoint, {
-						json: camelToSnakeCase({
-							ntasks,
-							simType,
-							title,
-							simData,
-							batchOptions
-						}),
+						json: {
+							...camelToSnakeCase(
+								{
+									simData
+								},
+								false // converter expects camelCase for simData
+							),
+							...camelToSnakeCase(
+								{
+									ntasks,
+									simType,
+									title,
+									batchOptions
+								},
+								true
+							)
+						},
 						signal,
 						timeout: 30000
 						/**

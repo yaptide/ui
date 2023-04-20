@@ -11,6 +11,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { Editor } from '../../js/Editor';
 import { CustomDialogTitle } from './CustomDialog';
+import { JobStatusData, StatusState } from '../../../services/ResponseTypes';
 
 export type SaveFileProps = {
 	open: boolean;
@@ -21,9 +22,14 @@ export type SaveFileProps = {
 
 export function SaveFileDialog(props: SaveFileProps) {
 	const { open, onClose, onConfirm, editor } = props;
+	const {
+		results
+	}: {
+		results: JobStatusData<StatusState.COMPLETED>;
+	} = editor;
 	const [keepResults, setKeepResults] = useState<boolean>(false);
 	useEffect(() => {
-		setKeepResults(editor?.results?.editor.hash === editor?.toJSON().hash);
+		setKeepResults(results?.inputJson?.hash === editor?.toJSON().hash);
 	}, [props, props.editor, editor]);
 
 	const [name, setName] = useState<string>('editor');
@@ -65,7 +71,7 @@ export function SaveFileDialog(props: SaveFileProps) {
 						control={
 							<Checkbox
 								value={keepResults}
-								disabled={editor?.results?.editor.hash !== editor?.toJSON().hash}
+								disabled={results?.inputJson?.hash !== editor?.toJSON().hash}
 								onChange={changeKeepResults}
 							/>
 						}
@@ -75,7 +81,7 @@ export function SaveFileDialog(props: SaveFileProps) {
 			<DialogActions>
 				<Button
 					onClick={() => {
-						if (keepResults) onConfirm(editor?.results, name);
+						if (keepResults) onConfirm(results, name);
 						else onConfirm(editor?.toJSON(), name);
 					}}>
 					Save

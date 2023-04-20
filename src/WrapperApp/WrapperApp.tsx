@@ -7,12 +7,12 @@ import { useStore } from '../services/StoreService';
 import { Editor } from '../ThreeEditor/js/Editor';
 import ThreeEditor from '../ThreeEditor/ThreeEditor';
 import { DEMO_MODE } from '../util/Config';
-import { AboutPanel } from './components/AboutPanel';
+import { AboutPanel } from './components/Panels/AboutPanel';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
-import LoginPanel from './components/LoginPanel';
+import LoginPanel from './components/Panels/LoginPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
-import { TabPanel } from './components/TabPanel';
+import { TabPanel } from './components/Panels/TabPanel';
 import YapDrawer from './components/YapDrawer/YapDrawer';
 import { JobStatusData, currentJobStatusData, StatusState } from '../services/ResponseTypes';
 

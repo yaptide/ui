@@ -22,6 +22,9 @@ function App() {
 					},
 					secondary: {
 						main: '#37505C'
+					},
+					background: {
+						default: prefersDarkMode ? '#121212' : '#f5f5f5'
 					}
 				},
 				typography: {

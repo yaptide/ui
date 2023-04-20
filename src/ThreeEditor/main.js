@@ -15,8 +15,6 @@ export function initEditor(container) {
 		return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 	};
 
-	//
-
 	const editor = new Editor(container);
 
 	window.editor = editor; // Expose editor to Console

@@ -164,7 +164,7 @@ export function SidebarTreeItem(props: {
 					sx={{ cursor: 'pointer' }}
 					{...bindContextMenu(popupState)}>
 					<Typography
-					    component={"div"}
+						component={Box}
 						sx={{
 							color: ({ palette }) =>
 								editor.selected === object
