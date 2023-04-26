@@ -41,6 +41,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 	const [canUndo, setCanUndo] = React.useState((editor?.history.undos.length ?? 0) > 0);
 	const [canRedo, setCanRedo] = React.useState((editor?.history.redos.length ?? 0) > 0);
 	const [saving, setSaving] = React.useState(false);
+	const [urlInPath, setUrlInPath] = useState<string>();
 
 	const updateHistoryButtons = useCallback(() => {
 		setCanUndo((editor?.history.undos.length ?? 0) > 0);
@@ -51,13 +52,12 @@ function EditorAppBar({ editor }: AppBarProps) {
 		let path = '';
 		if (editor) {
 			path = window.location.href.split('?')[1];
-			if (path) {
+			if (path && path !== urlInPath) {
 				loadFromUrl(path);
-				window.history.replaceState({}, document.title, window.location.pathname);
+				setUrlInPath(path);
 			}
 		}
-		return () => {};
-	}, [editor, loadFromUrl]);
+	}, [editor, loadFromUrl, urlInPath]);
 
 	const startSave = useCallback(() => {
 		setSaving(true);

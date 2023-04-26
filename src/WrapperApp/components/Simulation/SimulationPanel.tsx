@@ -25,12 +25,17 @@ import {
 } from './RunSimulationForm';
 import { DemoCardGrid, PaginatedSimulationsFromBackend } from './SimulationCardGrid';
 import { PageNavigationProps, PageParamProps } from './SimulationPanelBar';
+import EXAMPLES from '../../../ThreeEditor/examples/examples';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
+	forwardedInputFiles?: InputFiles;
 }
 
-export default function SimulationPanel(props: SimulationPanelProps) {
+export default function SimulationPanel({
+	goToResults,
+	forwardedInputFiles
+}: SimulationPanelProps) {
 	const {
 		editorRef,
 		setResultsSimulationData,
@@ -51,7 +56,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	/** Visibility Flags */
 	const [isBackendAlive, setBackendAlive] = useState(false);
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
-	const [showRunSimulationsForm, setShowRunSimulationsForm] = useState(false);
+	const [showRunSimulationsForm, setShowRunSimulationsForm] = useState(!!forwardedInputFiles);
 
 	const [pageIdx, setPageIdx] = useState(0);
 	const [pageCount, setPageCount] = useState(0);
@@ -65,7 +70,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 
 	/** Simulation Run Options */
 	const [availableClusters] = useState<string[]>(['default']);
-	const [inputFiles, setInputFiles] = useState<InputFiles>();
+	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
 
 	/** Queued Simulation Data */
 	const [trackedId, setTrackedId] = useState<string>();
@@ -143,7 +148,7 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 	);
 
 	const handleLoadResults = (taskId: string | null, simulation: unknown) => {
-		if (taskId === null) props.goToResults?.call(null);
+		if (taskId === null) goToResults?.call(null);
 		else
 			currentJobStatusData[StatusState.COMPLETED](simulation) &&
 				setResultsSimulationData(simulation);
@@ -396,25 +401,34 @@ export default function SimulationPanel(props: SimulationPanelProps) {
 				handleLoadResults={handleLoadResults}
 				handleShowInputFiles={handleShowInputFiles}
 			/>
-			<PaginatedSimulationsFromBackend
-				simulations={simulationsStatusData}
-				subtitle={'Yaptide backend server'}
-				pageData={{
-					orderType,
-					orderBy,
-					pageCount,
-					pageIdx,
-					pageSize,
-					handleOrderChange,
-					handlePageChange
-				}}
-				handleLoadResults={handleLoadResults}
-				handleShowInputFiles={handleShowInputFiles}
-				isBackendAlive={isBackendAlive}
-				runSimulation={() => {
-					setShowRunSimulationsForm(true);
-				}}
-			/>
+			{DEMO_MODE ? (
+				<DemoCardGrid
+					simulations={EXAMPLES}
+					title='Demo Simulation Results'
+					handleLoadResults={handleLoadResults}
+					handleShowInputFiles={handleShowInputFiles}
+				/>
+			) : (
+				<PaginatedSimulationsFromBackend
+					simulations={simulationsStatusData}
+					subtitle={'Yaptide backend server'}
+					pageData={{
+						orderType,
+						orderBy,
+						pageCount,
+						pageIdx,
+						pageSize,
+						handleOrderChange,
+						handlePageChange
+					}}
+					handleLoadResults={handleLoadResults}
+					handleShowInputFiles={handleShowInputFiles}
+					isBackendAlive={isBackendAlive}
+					runSimulation={() => {
+						setShowRunSimulationsForm(true);
+					}}
+				/>
+			)}
 		</Box>
 	);
 }

@@ -43,7 +43,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 						variant='contained'
 						disabled={DEMO_MODE}
 						onClick={() => props.runSimulation?.call(null, inputFiles)}>
-						Run input files
+						Run with these input files
 					</Button>
 				)}
 				<Button
