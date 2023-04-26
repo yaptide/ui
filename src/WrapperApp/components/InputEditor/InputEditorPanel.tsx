@@ -75,7 +75,8 @@ export default function InputEditorPanel(props: InputEditorPanelProps) {
 
 	const runSimulation = (inputFiles: InputFiles) => {
 		setInProgress(true);
-		postJobDirect(inputFiles, undefined, undefined, undefined, undefined, controller.signal)
+		// run user uploaded simulation on a single tasks, multi-tasked run will be implemented later
+		postJobDirect(inputFiles, 1, undefined, undefined, undefined, controller.signal)
 			.then()
 			.catch()
 			.finally(() => {
