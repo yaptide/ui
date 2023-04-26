@@ -14,6 +14,17 @@ import { ViewHelper } from './Viewport.ViewHelper';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
 
+const callWithHidden = (object, fn) => {
+	if (!object) return fn();
+	const visible = object.visible;
+
+	object.visible = false;
+
+	fn();
+
+	object.visible = visible;
+}
+
 export function Viewport(
 	name,
 	editor,
@@ -25,7 +36,7 @@ export function Viewport(
 		clipPlane,
 		planePosLabel,
 		planeHelperColor,
-		showPlaneHelpers,
+		showPlaneHelpers = true,
 		gridRotation
 	} = {}
 ) {
@@ -124,7 +135,6 @@ export function Viewport(
 
 		if (!renderer) return;
 
-
 		// applying rotation to the grid plane, if not provided set default rotation to none
 		// by default grid plane lies within XZ plane
 		grid.rotation.copy(gridRotation ?? new THREE.Euler(0, 0, 0));
@@ -135,9 +145,7 @@ export function Viewport(
 
 		renderer.clear();
 
-
 		if (!clipPlane) {
-
 			renderer.render(scene, camera);
 
 			renderer.render(zoneManager, camera);
@@ -145,16 +153,15 @@ export function Viewport(
 			renderer.render(detectManager, camera);
 		}
 
-
-		if (clipPlane)
-			renderer.render(viewClipPlane.scene, camera);
-
-
+		if (clipPlane) renderer.render(viewClipPlane.scene, camera);
 
 		if (config.showSceneHelpers) {
 			planeHelpers.visible = showPlaneHelpers ?? false;
 
-			renderer.render(sceneHelpers, camera);
+			callWithHidden(viewClipPlane?.planeHelper, () => {
+				renderer.render(sceneHelpers, camera);
+			});
+
 			renderer.render(sceneViewHelpers, camera);
 			viewHelper.render(renderer);
 		}
@@ -517,15 +524,18 @@ export function Viewport(
 	};
 
 	this.configurationToJson = () => {
-		const configJson = { cameraMatrix: camera.matrix.toArray(), clipPlane: viewClipPlane?.configurationToJson() };
+		const configJson = {
+			cameraMatrix: camera.matrix.toArray(),
+			clipPlane: viewClipPlane?.configurationToJson()
+		};
 		return configJson;
-	}
+	};
 
-	this.fromConfigurationJson = (configJson) => {
+	this.fromConfigurationJson = configJson => {
 		camera.matrix.fromArray(configJson.cameraMatrix);
 		camera.matrix.decompose(camera.position, camera.quaternion, camera.scale);
 		viewClipPlane?.fromConfigurationJson(configJson.clipPlane);
-	}
+	};
 
 	return {
 		...this,

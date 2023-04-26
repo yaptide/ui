@@ -9,19 +9,23 @@ import { Signal } from 'signals';
 type ClippedViewConfigurationJson = {
 	visible: boolean;
 	planeConstant: number;
-}
+};
 
-interface ViewportClippedView {
+export interface ViewportClippedView {
 	name: string;
 	editor: Editor;
 	scene: THREE.Scene;
 	gui: GUI;
+	planeHelper: THREE.PlaneHelper;
 	reset: () => void;
 	configurationToJson: () => ClippedViewConfigurationJson;
 	fromConfigurationJson: (config: ClippedViewConfigurationJson) => void;
 }
 
-export function ViewportClippedViewCSG<T extends THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>>(this: ViewportClippedView,
+export function ViewportClippedViewCSG<
+	T extends THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>
+>(
+	this: ViewportClippedView,
 	name: string,
 	editor: Editor,
 	viewport: typeof Viewport,
@@ -31,7 +35,11 @@ export function ViewportClippedViewCSG<T extends THREE.Mesh<THREE.BufferGeometry
 	signalGeometryAdded: Signal<T>,
 	signalGeometryRemoved: Signal<T>,
 	container: HTMLElement,
-	{ clipPlane, planeHelperColor, planePosLabel }: { clipPlane: THREE.Plane; planeHelperColor: number; planePosLabel: string; }
+	{
+		clipPlane,
+		planeHelperColor,
+		planePosLabel
+	}: { clipPlane: THREE.Plane; planeHelperColor: number; planePosLabel: string }
 ) {
 	this.name = name;
 	this.editor = editor;
@@ -53,7 +61,14 @@ export function ViewportClippedViewCSG<T extends THREE.Mesh<THREE.BufferGeometry
 		INTERSECTION_SIZE,
 		planeHelperColor ?? 0xffff00
 	); // default helper color is yellow
+
+	planeHelper.name = `planeHelper-${name}`;
+	(planeHelper.material as THREE.LineBasicMaterial).linewidth = 3;
+	(planeHelper.material as THREE.LineBasicMaterial).depthTest = false;
+	planeHelper.renderOrder = 1; // render on top of everything else
+
 	planeHelpers.add(planeHelper);
+	this.planeHelper = planeHelper;
 
 	const planePosProperty = `${planePosLabel ?? 'PlanePos'} ${editor.unit.name}`;
 
@@ -93,11 +108,16 @@ export function ViewportClippedViewCSG<T extends THREE.Mesh<THREE.BufferGeometry
 	};
 
 	// adjust range of movement of clipping plane to -size...+size with given step
-	this.gui.add(uiProps, planePosProperty, -INTERSECTION_SIZE, INTERSECTION_SIZE, CLIP_PLANE_STEP).listen();
+	this.gui
+		.add(uiProps, planePosProperty, -INTERSECTION_SIZE, INTERSECTION_SIZE, CLIP_PLANE_STEP)
+		.listen();
 	this.gui.add(uiProps, 'Helper Visible').listen();
 
-
-	const intersectionCsgGeometry = new THREE.BoxGeometry(INTERSECTION_SIZE, INTERSECTION_SIZE, INTERSECTION_WIDTH);
+	const intersectionCsgGeometry = new THREE.BoxGeometry(
+		INTERSECTION_SIZE,
+		INTERSECTION_SIZE,
+		INTERSECTION_WIDTH
+	);
 	const intersectionBox = new THREE.Mesh(intersectionCsgGeometry); // Cross Section Plane - fill stencil
 	intersectionBox.name = `intersectionBox-${name}`;
 
@@ -127,7 +147,9 @@ export function ViewportClippedViewCSG<T extends THREE.Mesh<THREE.BufferGeometry
 	function updatePreview() {
 		intersectionBox.updateMatrix();
 		intersectionCsg = CSG.fromMesh(intersectionBox);
-		clippedObjects.children.map(o => o.userData.originalObject).forEach((object3D: T) => updateMeshIntersection(object3D));
+		clippedObjects.children
+			.map(o => o.userData.originalObject)
+			.forEach((object3D: T) => updateMeshIntersection(object3D));
 
 		editor.signals.sceneGraphChanged.dispatch();
 	}
@@ -139,11 +161,14 @@ export function ViewportClippedViewCSG<T extends THREE.Mesh<THREE.BufferGeometry
 		object3D.updateMatrix();
 		let crossSectionMesh: T;
 
-		if ("position" in object3D.geometry.attributes && object3D.geometry.attributes.position.count > 0) {
+		if (
+			'position' in object3D.geometry.attributes &&
+			object3D.geometry.attributes.position.count > 0
+		) {
 			const objectMesh = CSG.fromMesh(object3D).intersect(intersectionCsg);
 
 			const crossSectionMaterial = new THREE.MeshBasicMaterial({
-				color: object3D.material.color.clone(),
+				color: object3D.material.color.clone()
 			});
 
 			crossSectionMesh = CSG.toMesh(objectMesh, object3D.matrix, crossSectionMaterial) as T;
@@ -181,7 +206,6 @@ export function ViewportClippedViewCSG<T extends THREE.Mesh<THREE.BufferGeometry
 		}
 	});
 
-
 	this.reset = () => {
 		clippedObjects.clear();
 	};
@@ -191,10 +215,10 @@ export function ViewportClippedViewCSG<T extends THREE.Mesh<THREE.BufferGeometry
 			planeConstant: uiProps[planePosProperty],
 			visible: uiProps['Helper Visible']
 		};
-	}
+	};
 
 	this.fromConfigurationJson = (json: ClippedViewConfigurationJson) => {
 		uiProps[planePosProperty] = json.planeConstant;
 		uiProps['Helper Visible'] = json.visible;
-	}
+	};
 }
