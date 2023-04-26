@@ -14,7 +14,12 @@ import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
 import { TabPanel } from './components/Panels/TabPanel';
 import YapDrawer from './components/YapDrawer/YapDrawer';
-import { JobStatusData, currentJobStatusData, StatusState } from '../services/ResponseTypes';
+import {
+	JobStatusData,
+	currentJobStatusData,
+	StatusState,
+	InputFiles
+} from '../services/ResponseTypes';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
@@ -22,6 +27,11 @@ function WrapperApp() {
 	const { isAuthorized, logout } = useAuth();
 	const [open, setOpen] = useState(false);
 	const [tabsValue, setTabsValue] = useState('editor');
+
+	const [providedInputFiles, setProvidedInputFiles] = useState<InputFiles>();
+	useEffect(() => {
+		if (providedInputFiles && tabsValue !== 'simulations') setProvidedInputFiles(undefined);
+	}, [providedInputFiles, tabsValue]);
 
 	useEffect(() => {
 		if (editorRef.current && canLoadEditorData) {
@@ -106,11 +116,19 @@ function WrapperApp() {
 			</TabPanel>
 
 			<TabPanel value={tabsValue} index={'inputFiles'} persistentIfVisited>
-				<InputEditorPanel goToRun={() => setTabsValue('simulations')} />
+				<InputEditorPanel
+					goToRun={(inputFiles?: InputFiles) => {
+						setProvidedInputFiles(inputFiles);
+						setTabsValue('simulations');
+					}}
+				/>
 			</TabPanel>
 
 			<TabPanel value={tabsValue} index={'simulations'}>
-				<SimulationPanel goToResults={() => setTabsValue('results')} />
+				<SimulationPanel
+					goToResults={() => setTabsValue('results')}
+					forwardedInputFiles={providedInputFiles}
+				/>
 			</TabPanel>
 
 			<TabPanel value={tabsValue} index={'results'} persistent>
