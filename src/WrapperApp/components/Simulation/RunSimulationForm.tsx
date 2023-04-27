@@ -38,6 +38,7 @@ export type ScriptOption = {
 	optionKey: string;
 	optionLabel?: string;
 	optionValue: string;
+	optionList?: Omit<ScriptOption, 'optionList'>[];
 };
 export type BatchOptionsType = {
 	clusterName?: string;

@@ -209,7 +209,15 @@ export default function SimulationCard({
 					<>
 						<LinearProgress
 							variant='buffer'
-							sx={{ height: 16, mb: 1 }}
+							sx={{
+								'height': 18,
+								'mb': 1,
+								'& .MuiLinearProgress-dashed': {
+									overflow: 'hidden',
+									backgroundSize: '5.75px 5.75px',
+									animationDuration: '4s'
+								}
+							}}
 							valueBuffer={
 								Math.max(
 									...simulation.jobTasksStatus.map(
