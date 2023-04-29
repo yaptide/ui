@@ -14,16 +14,14 @@ import {
 	Tabs,
 	TextField,
 	ToggleButton,
-	ToggleButtonGroup,
-	useTheme
+	ToggleButtonGroup
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
-import { InputFiles } from '../../../services/ResponseTypes';
 import { TabPanel } from '../Panels/TabPanel';
 import { BatchScriptParametersEditor } from './BatchParametersEditor';
-import { useEffect } from 'react';
+import { SimulationInputFiles } from '../../../types/ResponseTypes';
 
 function a11yProps(index: number, name: string = 'RunSimulation') {
 	return {
@@ -51,10 +49,10 @@ export type BatchOptionsType = {
 type RunSimulationFormProps = {
 	availableClusters: string[];
 	editorJson: EditorJson;
-	inputFiles?: Partial<InputFiles>;
+	inputFiles?: Partial<SimulationInputFiles>;
 	runSimulation?: (
 		editorJson: EditorJson,
-		inputFiles: Partial<InputFiles>,
+		inputFiles: Partial<SimulationInputFiles>,
 		runType: SimulationRunType,
 		sourceType: SimulationSourceType,
 		simName: string,

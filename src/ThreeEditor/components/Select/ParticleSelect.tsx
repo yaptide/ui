@@ -1,5 +1,5 @@
 import React from 'react';
-import { AutoCompleteSelect } from './AutoCompleteSelect';
+import { AutoCompleteSelect } from '../../../util/genericComponents/AutoCompleteSelect';
 
 export interface IParticleType {
 	id: number;

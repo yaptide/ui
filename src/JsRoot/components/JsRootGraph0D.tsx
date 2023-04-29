@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import React from 'react';
-import { Page0D } from './GraphData';
+import { Page0D } from '../GraphData';
 
 export function JsRootGraph0D(props: { page: Page0D; title?: string }) {
 	const { page, title } = props;

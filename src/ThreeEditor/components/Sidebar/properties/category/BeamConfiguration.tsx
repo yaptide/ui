@@ -14,7 +14,7 @@ import {
 } from '../../../../util/Beam';
 import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { PARTICLE_TYPES } from '../../../../util/particles';
-import { IParticleType, ParticleSelect } from '../../../Select/ParticlesSelect';
+import { IParticleType, ParticleSelect } from '../../../Select/ParticleSelect';
 import {
 	NumberPropertyField,
 	PropertyField,

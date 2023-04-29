@@ -11,12 +11,12 @@ import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useLoader } from '../../../services/DataLoaderService';
-import { saveString } from '../../../util/File';
-import { Editor } from '../../js/Editor';
-import { NewProjectDialog } from '../Dialog/NewProjectDialog';
-import { OpenFileDialog } from '../Dialog/OpenFileDialog';
-import { SaveFileDialog } from '../Dialog/SaveFileDialog';
+import { useLoader } from '../../../../services/DataLoaderService';
+import { saveString } from '../../../../util/File';
+import { Editor } from '../../../js/Editor';
+import { NewProjectDialog } from '../../Dialog/NewProjectDialog';
+import { OpenFileDialog } from '../../Dialog/OpenFileDialog';
+import { SaveFileDialog } from '../../Dialog/SaveFileDialog';
 import { EditorToolbar } from './EditorToolbar/EditorToolbar';
 
 type AppBarProps = {

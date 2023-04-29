@@ -1,7 +1,7 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { MaterialSelect } from '../../components/Select/MaterialSelect';
-import { ParticleSelect } from '../../components/Select/ParticlesSelect';
+import { ParticleSelect } from '../../components/Select/ParticleSelect';
 import ZoneManagerPanel from '../../components/ZoneManagerPanel/ZoneManagerPanel';
 import { UIDiv, UINumber, UIRow, UISelect, UIText } from '../../js/libs/ui.js';
 import { PARTICLE_TYPES } from '../particles';

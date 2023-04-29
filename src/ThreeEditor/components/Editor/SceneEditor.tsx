@@ -1,29 +1,29 @@
 import { AppBar, Box } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import THREE from 'three';
-import './css/main.css';
-import { Editor } from './js/Editor';
-import { initEditor } from './main';
-import EditorAppBar from './components/EditorAppBar/EditorAppBar';
+import '../../css/main.css';
+import { Editor } from '../../js/Editor';
+import { initEditor } from '../../main';
 import CircularProgress from '@mui/material/CircularProgress';
-import { EditorMenu } from './components/EditorMenu/EditorMenu';
-import useDocumentTitle from '../util/useDocumentTitle';
+import { EditorMenu } from './EditorMenu/EditorMenu';
+import useDocumentTitle from '../../../util/hooks/useDocumentTitle';
 import { useTheme } from '@mui/material/styles';
-import { EditorSidebar } from './components/Sidebar/EditorSidebar';
-import { useKeyboardEditorControls } from './util/hooks/useKeyboardEditorControls';
+import { EditorSidebar } from '../Sidebar/EditorSidebar';
+import { useKeyboardEditorControls } from '../../util/hooks/useKeyboardEditorControls';
+import EditorAppBar from './EditorAppBar/EditorAppBar';
 declare global {
 	interface Window {
 		editor: Editor;
 		THREE: typeof THREE;
 	}
 }
-interface ThreeEditorProps {
+interface SceneEditorProps {
 	onEditorInitialized?: (editor: Editor) => void;
 	focus: boolean;
 	sidebarProps: boolean[];
 }
 
-function ThreeEditor(props: ThreeEditorProps) {
+function SceneEditor(props: SceneEditorProps) {
 	const threeEditorRef = useRef<HTMLDivElement>(null);
 	const [editor, setEditor] = useState<Editor>();
 	const [title, setTitle] = useState<string>(editor?.config.getKey('project/title'));
@@ -125,4 +125,4 @@ function ThreeEditor(props: ThreeEditorProps) {
 	);
 }
 
-export default ThreeEditor;
+export default SceneEditor;

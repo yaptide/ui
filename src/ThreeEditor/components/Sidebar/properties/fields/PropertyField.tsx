@@ -23,7 +23,7 @@ import {
 	createRulesOutliner
 } from '../../../../util/Ui/PropertiesOutliner';
 import { hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
-import { AutoCompleteSelect } from '../../../Select/AutoCompleteSelect';
+import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
 import { ObjectSelectProperty, ObjectSelectProps } from './ObjectSelectPropertyField';
 
 export function PropertyField(props: { label?: string; children: React.ReactNode }) {

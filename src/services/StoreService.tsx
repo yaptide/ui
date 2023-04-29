@@ -1,7 +1,7 @@
 import { ReactNode, useRef, useState } from 'react';
 import { Editor } from '../ThreeEditor/js/Editor';
-import { createGenericContext } from '../util/GenericContext';
-import { JobStatusData, StatusState } from './ResponseTypes';
+import { createGenericContext } from './GenericContext';
+import { JobStatusData, StatusState } from '../types/ResponseTypes';
 
 export interface StoreProps {
 	children: ReactNode;

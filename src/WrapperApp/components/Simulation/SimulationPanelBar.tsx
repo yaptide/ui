@@ -7,22 +7,25 @@ import {
 	AppBarProps,
 	Box,
 	Button,
+	ButtonBase,
 	ButtonGroup,
 	ButtonProps,
 	Card,
 	CardProps,
 	IconButton,
-	MenuItem,
 	Pagination,
-	Select,
-	SelectProps,
 	Toolbar,
 	Tooltip,
 	Typography,
 	styled
 } from '@mui/material';
+
 import React from 'react';
-import { OrderBy, OrderType } from '../../../services/RequestTypes';
+import { OrderBy, OrderType } from '../../../types/RequestTypes';
+import {
+	ButtonWithPopperList,
+	ButtonWithPopperListProps
+} from '../../../util/genericComponents/ButtonWithPopperList';
 
 export type SimulationAppBarProps = AppBarProps & {
 	stickTo?: 'top' | 'bottom';
@@ -59,47 +62,32 @@ export function OrderButton({ orderType, color, onChange, ...other }: OrderButto
 	);
 }
 
-type OrderBySelectProps = Omit<SelectProps<OrderBy>, 'onChange'> & {
-	onChange?: (orderBy: OrderBy) => void;
-};
+type OrderBySelectProps = Omit<ButtonWithPopperListProps<OrderBy>, 'options'>;
 
-export function OrderBySelect({ children, onChange, ...other }: OrderBySelectProps) {
-	return (
-		<Select onChange={({ target }) => onChange?.(target.value as OrderBy)} {...other}>
-			{children}
-			<MenuItem value={OrderBy.START_TIME}>Start Time</MenuItem>
-			<MenuItem value={OrderBy.END_TIME}>End Time</MenuItem>
-		</Select>
-	);
+const OrderByOptions = [
+	{
+		value: OrderBy.START_TIME,
+		label: 'Start Time'
+	},
+	{
+		value: OrderBy.END_TIME,
+		label: 'End Time'
+	}
+];
+
+const PageSelectOptions = new Array(6).fill(NaN).map((_, index) => ({
+	value: 4 * index + 2,
+	label: `${4 * index + 2}`
+}));
+
+export function OrderBySelect(props: OrderBySelectProps) {
+	return <ButtonWithPopperList options={OrderByOptions} {...props} />;
 }
 
-type PageSizeSelectProps = Omit<SelectProps<number>, 'onChange' | 'children'> & {
-	onChange?: (pageSize: number) => void;
-};
+type PageSizeSelectProps = Omit<ButtonWithPopperListProps<number>, 'options'>;
 
-export function PageSizeSelect({ onChange, ...other }: PageSizeSelectProps) {
-	return (
-		<Select
-			onChange={({ target: { value } }) =>
-				onChange?.(typeof value === 'string' ? parseInt(value) : value)
-			}
-			{...other}>
-			{new Array(6).fill(NaN).map((_, index) => (
-				<MenuItem
-					value={4 * index + 2}
-					dense={true}
-					key={index}
-					sx={{
-						display: 'block',
-						lineHeight: ({ spacing }) => spacing(2.5),
-						minHeight: 'unset',
-						height: ({ spacing }) => spacing(3.5)
-					}}>
-					{4 * index + 2}
-				</MenuItem>
-			))}
-		</Select>
-	);
+export function PageSizeSelect(props: PageSizeSelectProps) {
+	return <ButtonWithPopperList options={PageSelectOptions} {...props} />;
 }
 
 export const InputGroup: typeof ButtonGroup = styled(ButtonGroup)(
@@ -112,7 +100,7 @@ export const InputGroup: typeof ButtonGroup = styled(ButtonGroup)(
 		'height': spacing(5),
 		'&:not(.MuiButtonGroup-vertical) > *': {
 			'borderRadius': '0',
-			'&:first-child': {
+			'&:first-of-type': {
 				borderEndStartRadius: borderRadius,
 				borderStartStartRadius: borderRadius
 			},
@@ -123,7 +111,7 @@ export const InputGroup: typeof ButtonGroup = styled(ButtonGroup)(
 		},
 		'&.MuiButtonGroup-vertical > *': {
 			'borderRadius': '0',
-			'&:first-child': {
+			'&:first-of-type': {
 				borderStartEndRadius: borderRadius,
 				borderStartStartRadius: borderRadius
 			},
@@ -148,6 +136,7 @@ export function BackendStatusIndicator({
 			}
 			arrow>
 			<Card
+				component={ButtonBase}
 				{...other}
 				sx={{
 					display: 'flex',

@@ -1,3 +1,4 @@
+import QueuePlayNextIcon from '@mui/icons-material/QueuePlayNext';
 import {
 	Accordion,
 	AccordionDetails,
@@ -6,12 +7,9 @@ import {
 	Button,
 	Grid,
 	GridProps,
-	Toolbar,
 	Typography
 } from '@mui/material';
-import { InputFiles, JobStatusData } from '../../../services/ResponseTypes';
 import SimulationCard from './SimulationCard';
-import { OrderBy, OrderType } from '../../../services/RequestTypes';
 import {
 	BackendStatusIndicator,
 	InputGroup,
@@ -22,17 +20,17 @@ import {
 	SimulationLabelBar,
 	SimulationPaginationFooter
 } from './SimulationPanelBar';
-import QueuePlayNextIcon from '@mui/icons-material/QueuePlayNext';
 
 import FolderOffIcon from '@mui/icons-material/FolderOff';
-import { ReactNode, useState } from 'react';
+import { useState } from 'react';
+import { SimulationInputFiles, JobStatusData } from '../../../types/ResponseTypes';
 
 type GridLayout = 'grid' | 'inline-list' | 'block-list';
 
 type SimulationCardGridProps = {
 	simulations: JobStatusData[];
 	handleLoadResults?: (taskId: string | null, simulation: unknown) => void;
-	handleShowInputFiles?: (inputFiles?: InputFiles) => void;
+	handleShowInputFiles?: (inputFiles?: SimulationInputFiles) => void;
 	layout: GridLayout;
 } & GridProps;
 
@@ -109,7 +107,7 @@ export function SimulationCardGrid({
 						sx={{
 							textAlign: 'center',
 							width: '100%',
-							p: ({ spacing }) => spacing(4),
+							p: ({ spacing }) => spacing(8, 4),
 							display: 'flex',
 							alignItems: 'center',
 							justifyContent: 'center'
@@ -169,7 +167,8 @@ export function PaginatedSimulationCardGrid({
 					...pageData,
 					stickTo: 'bottom',
 					sx: {
-						mt: ({ spacing }) => spacing(0)
+						mt: ({ spacing }) => spacing(0),
+						zIndex: ({ zIndex }) => zIndex.appBar
 					}
 				})
 			}
@@ -237,6 +236,8 @@ export function AccordionCardGrid({
 			expanded={expanded}
 			sx={{
 				'background': 'transparent',
+
+				// 'isolation': 'isolate',
 				'boxShadow': 'none',
 				'&:before': {
 					display: 'none'
@@ -249,7 +250,7 @@ export function AccordionCardGrid({
 					m: ({ spacing }) => spacing(0),
 					position: 'sticky',
 					inset: ({ spacing }) => spacing(0, 0, 0, 0),
-					zIndex: ({ zIndex }) => zIndex.appBar,
+					zIndex: ({ zIndex }) => zIndex.appBar + 1,
 					mb: ({ spacing }) => (expanded ? spacing(7) : spacing(0))
 				}}>
 				{header &&

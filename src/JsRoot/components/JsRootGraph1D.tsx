@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Skeleton from '@mui/material/Skeleton';
-import { useJSROOT } from './JsRootService';
+import { useJSROOT } from '../../services/JsRootService';
 import { useVisible } from 'react-hooks-visible';
-import { Page1D } from './GraphData';
+import { Page1D } from '../GraphData';
 import useResizeObserver from 'use-resize-observer';
 import { mergeRefs } from 'react-merge-refs';
 import { throttle } from 'throttle-debounce';

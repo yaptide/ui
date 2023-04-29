@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Skeleton from '@mui/material/Skeleton';
-import { useJSROOT } from './JsRootService';
+import { useJSROOT } from '../../services/JsRootService';
 import { useVisible } from 'react-hooks-visible';
-import { Page2D } from './GraphData';
 import useResizeObserver from 'use-resize-observer';
 import { throttle } from 'throttle-debounce';
 import { mergeRefs } from 'react-merge-refs';
+import { Page2D } from '../GraphData';
 
 export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 	const { page, title } = props;

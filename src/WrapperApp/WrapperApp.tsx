@@ -1,34 +1,34 @@
 import Box from '@mui/material/Box';
-import React, { SyntheticEvent, useCallback, useEffect, useState } from 'react';
-import { JsRootService } from '../JsRoot/JsRootService';
+import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
+import { Editor } from '../ThreeEditor/js/Editor';
+import { DEMO_MODE } from '../config/Config';
 import { useAuth } from '../services/AuthService';
 import { useLoader } from '../services/DataLoaderService';
+import { JsRootService } from '../services/JsRootService';
 import { useStore } from '../services/StoreService';
-import { Editor } from '../ThreeEditor/js/Editor';
-import ThreeEditor from '../ThreeEditor/ThreeEditor';
-import { DEMO_MODE } from '../util/Config';
-import { AboutPanel } from './components/Panels/AboutPanel';
+import {
+	SimulationInputFiles,
+	JobStatusData,
+	StatusState,
+	currentJobStatusData
+} from '../types/ResponseTypes';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
+import { AboutPanel } from './components/Panels/AboutPanel';
 import LoginPanel from './components/Panels/LoginPanel';
+import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
-import { TabPanel } from './components/Panels/TabPanel';
 import YapDrawer from './components/YapDrawer/YapDrawer';
-import {
-	JobStatusData,
-	currentJobStatusData,
-	StatusState,
-	InputFiles
-} from '../services/ResponseTypes';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
 	const { editorProvider, resultsProvider, canLoadEditorData, clearLoadedEditor } = useLoader();
 	const { isAuthorized, logout } = useAuth();
-	const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(true);
 	const [tabsValue, setTabsValue] = useState('editor');
 
-	const [providedInputFiles, setProvidedInputFiles] = useState<InputFiles>();
+	const [providedInputFiles, setProvidedInputFiles] = useState<SimulationInputFiles>();
 	useEffect(() => {
 		if (providedInputFiles && tabsValue !== 'simulations') setProvidedInputFiles(undefined);
 	}, [providedInputFiles, tabsValue]);
@@ -108,7 +108,7 @@ function WrapperApp() {
 				setOpen={setOpen}
 			/>
 			<TabPanel value={tabsValue} index={'editor'} persistent>
-				<ThreeEditor
+				<SceneEditor
 					onEditorInitialized={onEditorInitialized}
 					sidebarProps={[open, tabsValue === 'editor']}
 					focus={tabsValue === 'editor'}
@@ -117,7 +117,7 @@ function WrapperApp() {
 
 			<TabPanel value={tabsValue} index={'inputFiles'} persistentIfVisited>
 				<InputEditorPanel
-					goToRun={(inputFiles?: InputFiles) => {
+					goToRun={(inputFiles?: SimulationInputFiles) => {
 						setProvidedInputFiles(inputFiles);
 						setTabsValue('simulations');
 					}}

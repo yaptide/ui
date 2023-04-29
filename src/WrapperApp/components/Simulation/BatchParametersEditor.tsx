@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { useState } from 'react';
-import { EditableChip } from './EditableChip';
+import { EditableChip } from '../../../util/genericComponents/EditableChip';
 import { ScriptOption } from './RunSimulationForm';
 import { useCallback } from 'react';
 

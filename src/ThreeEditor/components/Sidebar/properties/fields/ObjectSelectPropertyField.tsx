@@ -1,4 +1,4 @@
-import { AutoCompleteSelect } from '../../../Select/AutoCompleteSelect';
+import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
 import { PropertyField } from './PropertyField';
 
 export interface ObjectSelectProps {

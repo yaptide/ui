@@ -1,5 +1,5 @@
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { InputFiles, JobStatusData, SimulationInfo } from './ResponseTypes';
+import { SimulationInputFiles, JobStatusData, SimulationInfo } from './ResponseTypes';
 import { Flatten } from './TypeTransformUtil';
 
 /* ------------Utility types------------ */
@@ -17,7 +17,7 @@ export type RequestParam = [signal?: AbortSignal];
 
 /* ------------------------------------ */
 type InputDataParam = [
-	simData: EditorJson | Partial<InputFiles>,
+	simData: EditorJson | Partial<SimulationInputFiles>,
 	ntasks?: number,
 	simType?: string,
 	title?: string,

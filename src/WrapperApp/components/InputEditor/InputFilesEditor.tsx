@@ -2,19 +2,19 @@ import { Box, Button, Card, CardActions, CardContent, Divider } from '@mui/mater
 import useTheme from '@mui/system/useTheme';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import {
-	InputFiles,
+	SimulationInputFiles,
 	_defaultInputFiles,
 	_orderedInputFilesNames,
 	isKnownInputFile
-} from '../../../services/ResponseTypes';
-import { DEMO_MODE } from '../../../util/Config';
+} from '../../../types/ResponseTypes';
+import { DEMO_MODE } from '../../../config/Config';
 import { saveString } from '../../../util/File';
 
 interface InputFilesEditorProps {
-	inputFiles: InputFiles | undefined;
-	onChange?: (inputFiles: InputFiles) => void;
-	runSimulation?: (inputFiles: InputFiles) => void;
-	saveAndExit?: (inputFiles: InputFiles) => void;
+	inputFiles: SimulationInputFiles | undefined;
+	onChange?: (inputFiles: SimulationInputFiles) => void;
+	runSimulation?: (inputFiles: SimulationInputFiles) => void;
+	saveAndExit?: (inputFiles: SimulationInputFiles) => void;
 	closeEditor?: () => void;
 }
 
@@ -26,7 +26,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 		return !(name in _defaultInputFiles);
 	};
 
-	const updateInputFiles = (updateFn: (old: InputFiles) => InputFiles) => {
+	const updateInputFiles = (updateFn: (old: SimulationInputFiles) => SimulationInputFiles) => {
 		props.onChange?.call(null, updateFn(inputFiles));
 	};
 

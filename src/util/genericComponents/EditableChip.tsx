@@ -1,11 +1,4 @@
-import {
-	AutocompleteRenderGetTagProps,
-	Box,
-	Chip,
-	ChipProps,
-	TextField,
-	Typography
-} from '@mui/material';
+import { Box, Chip, ChipProps, TextField, Typography } from '@mui/material';
 import { useRef } from 'react';
 
 type EditableChipProps = {

@@ -11,7 +11,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { Editor } from '../../js/Editor';
 import { CustomDialogTitle } from './CustomDialog';
-import { JobStatusData, StatusState } from '../../../services/ResponseTypes';
+import { JobStatusData, StatusState } from '../../../types/ResponseTypes';
 
 export type SaveFileProps = {
 	open: boolean;

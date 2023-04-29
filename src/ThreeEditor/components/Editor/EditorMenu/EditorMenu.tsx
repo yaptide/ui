@@ -6,11 +6,11 @@ import {
 	AddObjectCommand,
 	AddOutputCommand,
 	AddZoneCommand
-} from '../../js/commands/Commands';
-import { Editor } from '../../js/Editor';
-import { BoxMesh, CylinderMesh, SphereMesh } from '../../util/BasicMeshes';
-import { toggleFullscreen } from '../../util/toggleFullscreen';
-import { ClearHistoryDialog } from '../Dialog/ClearHistoryDialog';
+} from '../../../js/commands/Commands';
+import { Editor } from '../../../js/Editor';
+import { BoxMesh, CylinderMesh, SphereMesh } from '../../../util/BasicMeshes';
+import { toggleFullscreen } from '../../../util/toggleFullscreen';
+import { ClearHistoryDialog } from '../../Dialog/ClearHistoryDialog';
 
 type EditorMenuProps = {
 	editor?: Editor;

@@ -1,7 +1,7 @@
 import React from 'react';
-import JsRootGraph1D from './JsRootGraph1D';
-import JsRootGraph2D from './JsRootGraph2D';
-import JsRootGraph0D from './JsRootGraph0D';
+import JsRootGraph1D from './components/JsRootGraph1D';
+import JsRootGraph2D from './components/JsRootGraph2D';
+import JsRootGraph0D from './components/JsRootGraph0D';
 import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
 import { saveString } from '../util/File';
 import { estimatorPage1DToCsv } from '../util/csv/Csv';

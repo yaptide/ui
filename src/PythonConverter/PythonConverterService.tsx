@@ -1,9 +1,9 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import * as Comlink from 'comlink';
-import { createGenericContext } from '../util/GenericContext';
+import { createGenericContext } from '../services/GenericContext';
 import { IPythonWorker } from './PythonWorker';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { InputFiles } from '../services/ResponseTypes';
+import { SimulationInputFiles } from '../types/ResponseTypes';
 
 declare global {
 	interface Window {
@@ -18,7 +18,7 @@ export interface PythonConverterProps {
 }
 
 export interface IPythonConverter {
-	convertJSON: (editorJson: EditorJson) => Promise<Map<keyof InputFiles, string>>;
+	convertJSON: (editorJson: EditorJson) => Promise<Map<keyof SimulationInputFiles, string>>;
 	isConverterReady: boolean;
 }
 

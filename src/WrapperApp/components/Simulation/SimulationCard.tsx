@@ -21,19 +21,19 @@ import { SxProps, Theme } from '@mui/material/styles';
 import React, { ReactNode, useMemo } from 'react';
 import { useLoader } from '../../../services/DataLoaderService';
 import {
-	InputFiles,
+	SimulationInputFiles,
 	JobStatusData,
 	StatusState,
 	currentJobStatusData,
 	currentTaskStatusData
-} from '../../../services/ResponseTypes';
+} from '../../../types/ResponseTypes';
 import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
 import { SimulationProgressBar } from './SimulationProgressBar';
 type SimulationCardProps = {
 	simulation: JobStatusData;
 	loadResults?: (jobId: string | null) => void;
-	showInputFiles?: (inputFiles?: InputFiles) => void;
+	showInputFiles?: (inputFiles?: SimulationInputFiles) => void;
 } & CardProps;
 
 const tableRowStyle: SxProps<Theme> = { '&:last-child td, &:last-child th': { border: 0 } };

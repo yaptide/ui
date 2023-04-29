@@ -1,11 +1,11 @@
 import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import {
-	DataWithStatus,
 	IntersectionToObject,
-	LookUp,
+	TypeIdentifiedByKey,
 	ObjUnionToKeyUnion,
-	TypeIdentifiedByKey
+	LookUp,
+	DataWithStatus
 } from './TypeTransformUtil';
 
 /* ------------Utility types------------ */
@@ -17,7 +17,7 @@ export enum StatusState {
 	LOCAL = 'LOCAL'
 }
 
-export type Response = {
+export type YaptideResponse = {
 	message: string;
 };
 export const _orderedInputFilesNames = [
@@ -36,18 +36,18 @@ export const _defaultInputFiles = {
 	'mat.dat': ''
 } as const;
 
-export function isKnownInputFile(name: string): name is InputFilesNames {
-	return _orderedInputFilesNames.includes(name as InputFilesNames);
+export function isKnownInputFile(name: string): name is SimulationInputFilesNames {
+	return _orderedInputFilesNames.includes(name as SimulationInputFilesNames);
 }
-export type InputFilesNames = (typeof _orderedInputFilesNames)[number];
-export type RequiredInputFilesNames = Exclude<InputFilesNames, 'info.json' | 'sobp.dat'>;
+export type SimulationInputFilesNames = (typeof _orderedInputFilesNames)[number];
+export type RequiredInputFilesNames = Exclude<SimulationInputFilesNames, 'info.json' | 'sobp.dat'>;
 
-export type InputFiles = {
+export type SimulationInputFiles = {
 	[Key in RequiredInputFilesNames]: string;
 } & {
-	[Key in Exclude<InputFilesNames, RequiredInputFilesNames>]?: string;
+	[Key in Exclude<SimulationInputFilesNames, RequiredInputFilesNames>]?: string;
 } & {
-	[Key in Exclude<string, InputFilesNames>]: string;
+	[Key in Exclude<string, SimulationInputFilesNames>]: string;
 };
 
 export type TaskTime = {
@@ -74,25 +74,25 @@ type AuthData = IntersectionToObject<
 	{
 		accessExp: number;
 		refreshExp?: number;
-	} & Response
+	} & YaptideResponse
 >;
 
 type AuthStatus = IntersectionToObject<
 	{
 		username: string;
-	} & Response
+	} & YaptideResponse
 >;
 
 type DataConverted = IntersectionToObject<
 	{
-		inputFiles: InputFiles;
-	} & Response
+		inputFiles: SimulationInputFiles;
+	} & YaptideResponse
 >;
 
 type JobCreated = IntersectionToObject<
 	{
 		jobId: string;
-	} & Response
+	} & YaptideResponse
 >;
 
 type SimulationsPage = IntersectionToObject<
@@ -100,7 +100,7 @@ type SimulationsPage = IntersectionToObject<
 		pageCount: number;
 		simulationsCount: number;
 		simulations: Array<SimulationInfo>;
-	} & Response
+	} & YaptideResponse
 >;
 
 /* ------------------------------------ */
@@ -138,13 +138,13 @@ type TaskUnknownStatus = Partial<ObjUnionToKeyUnion<TaskAllStatuses>>;
 type JobStatusType<T extends StatusState, U extends Object> = TypeIdentifiedByKey<
 	'jobState',
 	T,
-	U & Response
+	U & YaptideResponse
 >;
 
 type JobStatusCompleted = JobStatusType<
 	StatusState.COMPLETED,
 	{
-		inputFiles: InputFiles;
+		inputFiles: SimulationInputFiles;
 		inputJson?: EditorJson;
 		result: {
 			estimators: Estimator[];
@@ -164,7 +164,7 @@ type JobStatusFailed = JobStatusType<
 	StatusState.FAILED,
 	{
 		error: string;
-		inputFiles: InputFiles;
+		inputFiles: SimulationInputFiles;
 		logfile: string;
 	}
 >;
@@ -177,7 +177,7 @@ type ResponseJobRequestFailure = IntersectionToObject<
 	{
 		exitCode: number;
 		output: string;
-	} & Response
+	} & YaptideResponse
 >;
 /* ------------------------------------ */
 
@@ -261,4 +261,4 @@ export type ResponseGetPageContents = SimulationsPage;
 
 export type ResponseGetJobStatus = JobAllStatuses;
 
-export type ResponseCancelJob = ResponseJobRequestFailure | Response;
+export type ResponseCancelJob = ResponseJobRequestFailure | YaptideResponse;

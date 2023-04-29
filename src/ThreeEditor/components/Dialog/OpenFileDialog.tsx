@@ -15,7 +15,7 @@ import React, { useState } from 'react';
 import { useLoader } from '../../../services/DataLoaderService';
 import EXAMPLES from '../../examples/examples';
 import { CustomDialogTitle } from './CustomDialog';
-import { JobStatusData, StatusState } from '../../../services/ResponseTypes';
+import { JobStatusData, StatusState } from '../../../types/ResponseTypes';
 import { DragDropProject } from './DragDropProject';
 
 export type OpenFileProps = {
@@ -44,7 +44,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 	const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setUrl(event.target.value);
 	};
-	
+
 	return (
 		<Dialog
 			open={open}
@@ -126,14 +126,13 @@ export function OpenFileDialog(props: OpenFileProps) {
 								height: 319,
 								boxSizing: 'border-box'
 							}}>
-
 							<DragDropProject
 								id={'input-file-upload-open'}
 								onSubmit={setCurrentFileList}
 								currentFiles={currentFileList}
 								acceptedFiles={'.json'}
 							/>
-							
+
 							<Button
 								variant='contained'
 								fullWidth
