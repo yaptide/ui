@@ -19,7 +19,7 @@ import LoginPanel from './components/Panels/LoginPanel';
 import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
-import YapDrawer from './components/YapDrawer/YapDrawer';
+import NavDrawer from './components/NavDrawer/NavDrawer';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
@@ -101,7 +101,7 @@ function WrapperApp() {
 				display: 'flex',
 				flexDirection: 'row'
 			}}>
-			<YapDrawer
+			<NavDrawer
 				handleChange={handleChange}
 				tabsValue={tabsValue}
 				open={open}

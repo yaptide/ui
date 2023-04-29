@@ -12,7 +12,7 @@ import NotListedLocationIcon from '@mui/icons-material/NotListedLocation';
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
-import { Tooltip } from '@mui/material';
+import { Tooltip, Typography } from '@mui/material';
 import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
@@ -35,12 +35,12 @@ type MenuOption = {
 	icon: React.ReactElement;
 };
 
-type DrawerProps = {
+type NavDrawerProps = {
 	drawerWidth?: number;
 	handleChange: (event: SyntheticEvent, value: string) => void;
 	tabsValue: string;
 	open: boolean;
-	setOpen: Dispatch<SetStateAction<boolean>>;
+	setOpen: (open: boolean) => void;
 };
 
 const openedMixin = (width: number, { transitions }: Theme): CSSObject => ({
@@ -95,13 +95,13 @@ const getDrawer = (width: number) =>
 		})
 	}));
 
-function YapDrawer({ drawerWidth = 200, handleChange, tabsValue, open, setOpen }: DrawerProps) {
+function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 	const { resultsSimulationData } = useStore();
 	const { isAuthorized } = useAuth();
 	const [expand, setExpand] = useState(tabsValue === 'login');
 
 	const handleDrawerToggle = () => {
-		setOpen(prev => !prev);
+		setOpen(!open);
 	};
 	const handleProfileToggle = () => {
 		setExpand(prev => !prev);
@@ -110,12 +110,12 @@ function YapDrawer({ drawerWidth = 200, handleChange, tabsValue, open, setOpen }
 	const Drawer = getDrawer(drawerWidth);
 
 	const MenuOptions: MenuOption[] = [
-		{
-			label: 'Projects',
-			value: 'projects',
-			disabled: true,
-			icon: <Folder />
-		},
+		// {
+		// 	label: 'Projects',
+		// 	value: 'projects',
+		// 	disabled: true,
+		// 	icon: <Folder />
+		// },
 		{
 			label: 'Editor',
 			value: 'editor',
@@ -148,7 +148,10 @@ function YapDrawer({ drawerWidth = 200, handleChange, tabsValue, open, setOpen }
 	return (
 		<Drawer variant='permanent' open={open}>
 			<DrawerHeader onClick={handleDrawerToggle}>
-				<ListItemText primary={'YAPTIDE'} sx={{ opacity: open ? 1 : 0 }} />
+				<ListItemText
+					primary={<Typography variant='h5'>YAPTIDE</Typography>}
+					sx={{ opacity: open ? 1 : 0 }}
+				/>
 				<IconButton>{open ? <Menu /> : <MenuOpen />}</IconButton>
 			</DrawerHeader>
 			<Divider />
@@ -263,4 +266,4 @@ function YapDrawer({ drawerWidth = 200, handleChange, tabsValue, open, setOpen }
 	);
 }
 
-export default YapDrawer;
+export default NavDrawer;
