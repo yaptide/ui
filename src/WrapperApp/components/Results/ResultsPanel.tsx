@@ -65,7 +65,10 @@ function ResultsPanel() {
 						{simulation.startTime.toLocaleString()}]
 					</Typography>
 
-					<Button color='info' size='small' onClick={onClickSaveToFile}>
+					<Button
+						color='info'
+						size='small'
+						onClick={onClickSaveToFile}>
 						Save to file
 					</Button>
 				</Card>

@@ -71,13 +71,33 @@ export const isPage3D = (page: Page): page is Page3D => {
 
 const getGraphFromPage = (page: Page, title?: string) => {
 	if (isPage2d(page)) {
-		return <JsRootGraph2D page={page} title={title} />;
+		return (
+			<JsRootGraph2D
+				page={page}
+				title={title}
+			/>
+		);
 	} else if (isPage1d(page)) {
-		return <JsRootGraph1D page={page} title={title} />;
+		return (
+			<JsRootGraph1D
+				page={page}
+				title={title}
+			/>
+		);
 	} else if (isPage0d(page)) {
-		return <JsRootGraph0D page={page} title={title} />;
+		return (
+			<JsRootGraph0D
+				page={page}
+				title={title}
+			/>
+		);
 	} else if (isPage3D(page)) {
-		return <Result3D page={page} title={title} />;
+		return (
+			<Result3D
+				page={page}
+				title={title}
+			/>
+		);
 	} else {
 		return <div>Error</div>;
 	}
@@ -98,14 +118,21 @@ export function generateGraphs(estimator: EstimatorResults) {
 		})
 		.map(({ graph, filter }, idx) => {
 			return (
-				<Grid key={`graph_${name}_${idx}`} item xs={12}>
+				<Grid
+					key={`graph_${name}_${idx}`}
+					item
+					xs={12}>
 					<Card>
 						<CardContent>
 							<Grid container>
-								<Grid item xs={8}>
+								<Grid
+									item
+									xs={8}>
 									{graph}
 								</Grid>
-								<Grid item xs={4}>
+								<Grid
+									item
+									xs={4}>
 									<Box sx={{ marginTop: '1rem' }}>
 										<Typography variant='h5'>Filter:</Typography>
 										<Typography>{filter?.name ?? 'None'}</Typography>

@@ -80,9 +80,17 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 				EXPORT TABLE TO CSV
 			</Button>
 
-			<Stack direction='row' spacing={1} alignItems='center' sx={{ marginLeft: '.5rem' }}>
+			<Stack
+				direction='row'
+				spacing={1}
+				alignItems='center'
+				sx={{ marginLeft: '.5rem' }}>
 				<Typography>Unit: Auto</Typography>
-				<Switch checked={isUnitFixed} onChange={handleChangeUnitFixed} color='primary' />
+				<Switch
+					checked={isUnitFixed}
+					onChange={handleChangeUnitFixed}
+					color='primary'
+				/>
 				<Typography>Fixed</Typography>
 			</Stack>
 			<DataGrid

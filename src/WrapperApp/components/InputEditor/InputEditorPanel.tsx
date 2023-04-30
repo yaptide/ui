@@ -121,11 +121,15 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 					onChange={(_e, generator) => {
 						if (generator) setGenerator(generator);
 					}}>
-					<ToggleButton color='info' value='local'>
+					<ToggleButton
+						color='info'
+						value='local'>
 						Local
 					</ToggleButton>
 					{!DEMO_MODE && (
-						<ToggleButton value='remote' color='warning'>
+						<ToggleButton
+							value='remote'
+							color='warning'>
 							Remote
 						</ToggleButton>
 					)}

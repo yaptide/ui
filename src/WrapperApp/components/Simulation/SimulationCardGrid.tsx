@@ -86,10 +86,14 @@ export function SimulationCardGrid({
 			sx={{
 				...sx
 			}}>
-			<Grid {...gridContainerProps} {...other}>
+			<Grid
+				{...gridContainerProps}
+				{...other}>
 				{simulations.length ? (
 					simulations.map(simulation => (
-						<Grid key={simulation.jobId} {...gridItemProps}>
+						<Grid
+							key={simulation.jobId}
+							{...gridItemProps}>
 							<SimulationCard
 								simulation={simulation}
 								loadResults={
@@ -266,7 +270,10 @@ export function AccordionCardGrid({
 					p: 0,
 					...sx
 				}}>
-				<SimulationCardGrid simulations={simulations} {...other} />
+				<SimulationCardGrid
+					simulations={simulations}
+					{...other}
+				/>
 				{footer && footer({})}
 			</AccordionDetails>
 		</Accordion>

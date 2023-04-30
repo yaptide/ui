@@ -54,7 +54,9 @@ function OperationToIcon(operation: Operation, showLabel: boolean) {
 				<>
 					<JoinInnerIcon sx={{ transform: 'scale(1.3)' }} />
 					{showLabel && (
-						<Typography variant={'body1'} sx={{ fontSize: 10, textTransform: 'none' }}>
+						<Typography
+							variant={'body1'}
+							sx={{ fontSize: 10, textTransform: 'none' }}>
 							Intersect
 						</Typography>
 					)}
@@ -65,7 +67,9 @@ function OperationToIcon(operation: Operation, showLabel: boolean) {
 				<>
 					<LeftSubtract sx={{ transform: 'scale(1.3)' }} />
 					{showLabel && (
-						<Typography variant={'body1'} sx={{ fontSize: 10, textTransform: 'none' }}>
+						<Typography
+							variant={'body1'}
+							sx={{ fontSize: 10, textTransform: 'none' }}>
 							Subtract
 						</Typography>
 					)}

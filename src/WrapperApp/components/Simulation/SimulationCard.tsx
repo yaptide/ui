@@ -41,7 +41,9 @@ const row = (id: number, title: string, value: string | undefined | ReactNode, g
 	<React.Fragment key={id}>
 		{guard && (
 			<TableRow sx={tableRowStyle}>
-				<TableCell component='th' scope='row'>
+				<TableCell
+					component='th'
+					scope='row'>
 					{title}
 				</TableCell>
 				<TableCell align='right'>{value}</TableCell>
@@ -123,7 +125,9 @@ export default function SimulationCard({
 	};
 
 	return (
-		<Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }} {...other}>
+		<Card
+			sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+			{...other}>
 			<Divider
 				sx={{
 					borderTopWidth: 5,
@@ -188,7 +192,11 @@ export default function SimulationCard({
 						Object.entries(simulation.metadata)
 							.filter(([key, value]) => key !== 'type')
 							.map(([key, value]) => (
-								<Chip key={key} variant='outlined' label={`${key}: ${value}`} />
+								<Chip
+									key={key}
+									variant='outlined'
+									label={`${key}: ${value}`}
+								/>
 							))}
 				</Box>
 				<TableContainer
@@ -245,14 +253,19 @@ export default function SimulationCard({
 								gridTemplateColumns: 'repeat(auto-fill, minmax(55px, 1fr))'
 							}}>
 							{simulation.jobTasksStatus.map((taskStatus, index) => (
-								<SimulationProgressBar key={index} status={taskStatus} />
+								<SimulationProgressBar
+									key={index}
+									status={taskStatus}
+								/>
 							))}
 						</Box>
 					</>
 				)}
 			</CardContent>
 			<CardActions>
-				<ButtonGroup fullWidth aria-label='full width outlined button group'>
+				<ButtonGroup
+					fullWidth
+					aria-label='full width outlined button group'>
 					{simulation.jobState &&
 						(() => {
 							if (currentJobStatusData[StatusState.COMPLETED](simulation)) {

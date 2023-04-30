@@ -41,7 +41,10 @@ export function GeometryIdSelect({
 			)}
 			{allObjects.map((geo, index) => {
 				return (
-					<MenuItem key={geo.id} value={geo.id} dense>
+					<MenuItem
+						key={geo.id}
+						value={geo.id}
+						dense>
 						{geo.name}:{geo.id}
 					</MenuItem>
 				);

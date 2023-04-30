@@ -1,5 +1,6 @@
 #ignore ThreeEditor libs files
 src/ThreeEditor/js/libs/
+src/libs/
 
 #ignore npm files
 node_modules/

@@ -10,7 +10,7 @@ import { WorldZoneHelper } from './WorldZoneHelper';
 
 export const BOUNDING_ZONE_TYPE = ['Sphere', 'Cylinder', 'Box'] as const;
 
-export type WorldZoneType = typeof BOUNDING_ZONE_TYPE[number];
+export type WorldZoneType = (typeof BOUNDING_ZONE_TYPE)[number];
 
 export interface WorldZoneJSON {
 	uuid: string;
@@ -32,7 +32,6 @@ const _materialDefault = new THREE.MeshBasicMaterial({
 });
 
 const _defaultColor = 0xff0000;
-
 
 export class WorldZone extends SimulationObject3D {
 	readonly notRemovable: boolean = true;

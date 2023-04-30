@@ -33,9 +33,8 @@ export interface TreeItem {
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
 	<MuiAccordionSummary {...props} />
 ))(({ theme }) => ({
-	'backgroundColor': theme.palette.mode === 'dark' 
-		? theme.palette.grey['800'] 
-		: theme.palette.grey['300'],
+	'backgroundColor':
+		theme.palette.mode === 'dark' ? theme.palette.grey['800'] : theme.palette.grey['300'],
 
 	'& .MuiAccordionSummary-content:is(.MuiAccordionSummary-content,.Mui-expanded)': {
 		margin: theme.spacing(1),
@@ -53,13 +52,16 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 	paddingTop: theme.spacing(1)
 }));
 
-const Accordion = styled((props: AccordionProps) => <MuiAccordion square {...props} />)(
-	({ theme }) => ({
-		'&.Mui-expanded': {
-			margin: '0'
-		}
-	})
-);
+const Accordion = styled((props: AccordionProps) => (
+	<MuiAccordion
+		square
+		{...props}
+	/>
+))(({ theme }) => ({
+	'&.Mui-expanded': {
+		margin: '0'
+	}
+}));
 
 interface TreeElement {
 	title: string;
@@ -78,7 +80,10 @@ function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
 				<Typography>{props.title}</Typography>
 			</AccordionSummary>
 			<AccordionDetails>
-				<Stack direction='row' spacing={2} alignItems='center'>
+				<Stack
+					direction='row'
+					spacing={2}
+					alignItems='center'>
 					<Typography>Add:</Typography>
 					<ButtonGroup size='small'>
 						{props.add.map(add => (
@@ -102,7 +107,9 @@ function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
 export function EditorSidebarTabTree(props: EditorSidebarTabTreeProps) {
 	const { elements } = props;
 	return (
-		<DndProvider backend={MultiBackend} options={getBackendOptions()}>
+		<DndProvider
+			backend={MultiBackend}
+			options={getBackendOptions()}>
 			<Box
 				sx={{
 					width: '100%',
@@ -112,7 +119,10 @@ export function EditorSidebarTabTree(props: EditorSidebarTabTreeProps) {
 					padding: '.5rem'
 				}}>
 				{elements.map(element => (
-					<EditorSidebarTabTreeElement key={element.title} {...element} />
+					<EditorSidebarTabTreeElement
+						key={element.title}
+						{...element}
+					/>
 				))}
 			</Box>
 		</DndProvider>

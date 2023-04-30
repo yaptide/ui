@@ -64,7 +64,9 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 		light.position.set(15, 15, 15);
 		this.add(light);
 		this.add(this.zoneContainer);
-		this.worker = Comlink.wrap<IZoneWorker>(new Worker(new URL('./CSGWorker.ts', import.meta.url)));
+		this.worker = Comlink.wrap<IZoneWorker>(
+			new Worker(new URL('./CSGWorker.ts', import.meta.url))
+		);
 		this.editor = editor;
 		this.signals = editor.signals;
 

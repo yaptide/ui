@@ -19,7 +19,9 @@ export function GeometryLabel({
 			label={label}
 			avatar={
 				<Avatar>
-					<Tooltip title={tooltipId} placement='right'>
+					<Tooltip
+						title={tooltipId}
+						placement='right'>
 						<Box>ID</Box>
 					</Tooltip>
 				</Avatar>

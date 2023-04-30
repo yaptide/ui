@@ -13,18 +13,18 @@ export const SIGMA_TYPE = {
 	'Flat square': 'Flat square',
 	'Flat circular': 'Flat circular'
 } as const;
-export type SigmaType = keyof typeof SIGMA_TYPE
+export type SigmaType = keyof typeof SIGMA_TYPE;
 
 export const SAD_TYPE = {
-	'none' : 'none',
-	'single': 'single (X=Y)',
-	'double': 'double (X and Y)'
+	none: 'none',
+	single: 'single (X=Y)',
+	double: 'double (X and Y)'
 } as const;
-export type SadType = keyof typeof SAD_TYPE
+export type SadType = keyof typeof SAD_TYPE;
 
 export const BEAM_SOURCE_TYPE = {
-	'simple': 'simple',
-	'file': 'file',
+	simple: 'simple',
+	file: 'file'
 } as const;
 export type BeamSourceType = keyof typeof BEAM_SOURCE_TYPE;
 
@@ -103,7 +103,7 @@ const _default = {
 type BeamSourceFile = {
 	value: string;
 	name: string;
-}
+};
 
 export class Beam extends SimulationObject3D {
 	readonly notRemovable: boolean = true;
@@ -141,7 +141,7 @@ export class Beam extends SimulationObject3D {
 	};
 
 	sigma: {
-		type: SigmaType
+		type: SigmaType;
 		x: number;
 		y: number;
 	};

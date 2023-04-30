@@ -611,21 +611,20 @@ function ViewManager(editor) {
 	}
 
 	this.configurationToJson = () => {
-
 		const configJson = {};
 		for (const key in viewportMap) {
 			configJson[key] = viewportMap[key].configurationToJson();
 		}
 
 		return configJson;
-	}
+	};
 
-	this.fromConfigurationJson = (configJson) => {
+	this.fromConfigurationJson = configJson => {
 		for (const key in configJson) {
 			viewportMap[key].fromConfigurationJson(configJson[key]);
 		}
 		render();
-	}
+	};
 
 	return {
 		...this,

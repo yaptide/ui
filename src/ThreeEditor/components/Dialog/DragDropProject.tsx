@@ -32,7 +32,10 @@ const innerElement = (props: DragDropInnerElementProps) => {
 					gap: 2,
 					opacity: dragActive || hasFiles ? 0 : 1
 				}}>
-				<Button component={'label'} htmlFor={id} startIcon={<FileUploadIcon />}>
+				<Button
+					component={'label'}
+					htmlFor={id}
+					startIcon={<FileUploadIcon />}>
 					Upload project file
 				</Button>
 				or drag and drop it here.
@@ -87,5 +90,10 @@ const innerElement = (props: DragDropInnerElementProps) => {
 type DragDropProjectProps = Omit<DragDropProps, 'innerElement'>;
 
 export function DragDropProject(props: DragDropProjectProps) {
-	return <DragDropFile {...props} innerElement={innerElement} />;
+	return (
+		<DragDropFile
+			{...props}
+			innerElement={innerElement}
+		/>
+	);
 }

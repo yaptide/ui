@@ -95,7 +95,12 @@ export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 				height: 500
 			}}
 			ref={mergeRefs([containerEl, resizeRef])}>
-			<Skeleton hidden={drawn} variant='rectangular' width={'80%'} height={'80%'} />
+			<Skeleton
+				hidden={drawn}
+				variant='rectangular'
+				width={'80%'}
+				height={'80%'}
+			/>
 		</div>
 	);
 }

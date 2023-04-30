@@ -107,7 +107,10 @@ function WrapperApp() {
 				open={open}
 				setOpen={setOpen}
 			/>
-			<TabPanel value={tabsValue} index={'editor'} persistent>
+			<TabPanel
+				value={tabsValue}
+				index={'editor'}
+				persistent>
 				<SceneEditor
 					onEditorInitialized={onEditorInitialized}
 					sidebarProps={[open, tabsValue === 'editor']}
@@ -115,7 +118,10 @@ function WrapperApp() {
 				/>
 			</TabPanel>
 
-			<TabPanel value={tabsValue} index={'inputFiles'} persistentIfVisited>
+			<TabPanel
+				value={tabsValue}
+				index={'inputFiles'}
+				persistentIfVisited>
 				<InputEditorPanel
 					goToRun={(inputFiles?: SimulationInputFiles) => {
 						setProvidedInputFiles(inputFiles);
@@ -124,23 +130,33 @@ function WrapperApp() {
 				/>
 			</TabPanel>
 
-			<TabPanel value={tabsValue} index={'simulations'}>
+			<TabPanel
+				value={tabsValue}
+				index={'simulations'}>
 				<SimulationPanel
 					goToResults={() => setTabsValue('results')}
 					forwardedInputFiles={providedInputFiles}
 				/>
 			</TabPanel>
 
-			<TabPanel value={tabsValue} index={'results'} persistent>
+			<TabPanel
+				value={tabsValue}
+				index={'results'}
+				persistent>
 				<JsRootService>
 					<ResultsPanel />
 				</JsRootService>
 			</TabPanel>
 
-			<TabPanel value={tabsValue} index={'about'} persistentIfVisited>
+			<TabPanel
+				value={tabsValue}
+				index={'about'}
+				persistentIfVisited>
 				<AboutPanel />
 			</TabPanel>
-			<TabPanel value={tabsValue} index={'login'}>
+			<TabPanel
+				value={tabsValue}
+				index={'login'}>
 				<LoginPanel />
 			</TabPanel>
 		</Box>

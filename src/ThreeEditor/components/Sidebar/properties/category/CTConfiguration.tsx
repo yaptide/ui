@@ -14,7 +14,9 @@ export function CTConfiguration(props: { editor: Editor; object: Object3D }) {
 	const visibleFlag = isCTMesh(watchedObject);
 
 	return (
-		<PropertiesCategory category='CT Configuration' visible={visibleFlag}>
+		<PropertiesCategory
+			category='CT Configuration'
+			visible={visibleFlag}>
 			{visibleFlag && (
 				<>
 					<TextPropertyField

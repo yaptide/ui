@@ -7,9 +7,7 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../util/Ui/Uis';
-import {
-	SetQuantityValueCommand
-} from '../../commands/Commands';
+import { SetQuantityValueCommand } from '../../commands/Commands';
 import { Editor } from '../../Editor';
 import { UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';

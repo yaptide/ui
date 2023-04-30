@@ -34,7 +34,11 @@ export function createParticleTypeSelect(update) {
 		value => {
 			input.setValue(value);
 			ReactDOM.render(
-				<ParticleSelect particles={PARTICLE_TYPES} value={value} onChange={onChange} />,
+				<ParticleSelect
+					particles={PARTICLE_TYPES}
+					value={value}
+					onChange={onChange}
+				/>,
 				container.dom
 			);
 		}
@@ -68,7 +72,11 @@ export function createMaterialSelect(materialManager, update) {
 			input.setOptions(materialOptions);
 			input.setValue(value);
 			ReactDOM.render(
-				<MaterialSelect materials={materials} value={value} onChange={onChange} />,
+				<MaterialSelect
+					materials={materials}
+					value={value}
+					onChange={onChange}
+				/>,
 				container.dom
 			);
 		}
@@ -87,7 +95,13 @@ export function createZoneRulesPanel(editor) {
 	return [
 		row,
 		zone => {
-			ReactDOM.render(<ZoneManagerPanel editor={editor} zone={zone} />, container.dom);
+			ReactDOM.render(
+				<ZoneManagerPanel
+					editor={editor}
+					zone={zone}
+				/>,
+				container.dom
+			);
 		}
 	];
 }

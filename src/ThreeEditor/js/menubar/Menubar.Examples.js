@@ -21,8 +21,8 @@ export function MenubarExamples(editor) {
 	container.add(options);
 
 	/**
-	 * 
-	 * @param {import('../EditorJson').EditorJson} example 
+	 *
+	 * @param {import('../EditorJson').EditorJson} example
 	 */
 	function loadExample(example) {
 		editor.clear();
@@ -34,7 +34,8 @@ export function MenubarExamples(editor) {
 	options.add(
 		...EXAMPLES.map(example =>
 			createOption('option', example.inputJson.project?.title ?? 'Example', () => {
-				window.confirm('Any unsaved data will be lost. Are you sure?') && loadExample(example);
+				window.confirm('Any unsaved data will be lost. Are you sure?') &&
+					loadExample(example);
 			})
 		),
 		new UIHorizontalRule()

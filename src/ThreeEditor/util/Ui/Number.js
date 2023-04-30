@@ -1,9 +1,5 @@
 import { UINumber, UIRow, UIText } from '../../js/libs/ui.js';
-import {
-	LABEL_MARGIN,
-	LABEL_WIDTH, PRECISION_FRACTION,
-	TRIPLE_LABEL_WIDTH
-} from './Uis';
+import { LABEL_MARGIN, LABEL_WIDTH, PRECISION_FRACTION, TRIPLE_LABEL_WIDTH } from './Uis';
 
 /**
  * @typedef {import('../js/libs/ui').UIElement} UIElement

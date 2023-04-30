@@ -21,7 +21,9 @@ type CustomDialogProps = {
 export function CustomDialog(props: CustomDialogProps) {
 	const { open, onClose, title, contentText, children } = props;
 	return (
-		<Dialog open={open} onClose={onClose}>
+		<Dialog
+			open={open}
+			onClose={onClose}>
 			<DialogTitle>{title}</DialogTitle>
 			<DialogContent>
 				<DialogContentText id='alert-dialog-description'>{contentText}</DialogContentText>
@@ -38,7 +40,9 @@ export function CustomDialogTitle(props: CustomTitleProps) {
 	const { children, onClose, ...other } = props;
 
 	return (
-		<DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+		<DialogTitle
+			sx={{ m: 0, p: 2 }}
+			{...other}>
 			{children}
 			{onClose ? (
 				<IconButton

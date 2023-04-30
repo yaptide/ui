@@ -14,7 +14,9 @@ export function ObjectInfo(props: { editor: Editor; object: Object3D }) {
 	const visibleFlag = !isBeam(watchedObject);
 
 	return (
-		<PropertiesCategory category='Information' visible={visibleFlag}>
+		<PropertiesCategory
+			category='Information'
+			visible={visibleFlag}>
 			{visibleFlag && (
 				<>
 					<TextPropertyField

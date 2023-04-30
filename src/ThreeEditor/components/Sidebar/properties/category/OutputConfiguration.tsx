@@ -35,7 +35,9 @@ export function OutputConfiguration(props: { editor: Editor; object: Object3D })
 	const visibleFlag = isOutput(watchedObject);
 
 	return (
-		<PropertiesCategory category='Output Configuration' visible={visibleFlag}>
+		<PropertiesCategory
+			category='Output Configuration'
+			visible={visibleFlag}>
 			{visibleFlag && (
 				<>
 					<ObjectSelectPropertyField
@@ -74,7 +76,9 @@ export function OutputConfiguration(props: { editor: Editor; object: Object3D })
 							);
 						}}
 					/>
-					<Grid item xs={12}>
+					<Grid
+						item
+						xs={12}>
 						<Button
 							sx={{ width: '100%' }}
 							variant='contained'
