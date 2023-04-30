@@ -14,16 +14,14 @@ import {
 	Tabs,
 	TextField,
 	ToggleButton,
-	ToggleButtonGroup,
-	useTheme
+	ToggleButtonGroup
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
-import { InputFiles } from '../../../services/ResponseTypes';
 import { TabPanel } from '../Panels/TabPanel';
 import { BatchScriptParametersEditor } from './BatchParametersEditor';
-import { useEffect } from 'react';
+import { SimulationInputFiles } from '../../../types/ResponseTypes';
 
 function a11yProps(index: number, name: string = 'RunSimulation') {
 	return {
@@ -38,6 +36,7 @@ export type ScriptOption = {
 	optionKey: string;
 	optionLabel?: string;
 	optionValue: string;
+	optionList?: Omit<ScriptOption, 'optionList'>[];
 };
 export type BatchOptionsType = {
 	clusterName?: string;
@@ -50,10 +49,10 @@ export type BatchOptionsType = {
 type RunSimulationFormProps = {
 	availableClusters: string[];
 	editorJson: EditorJson;
-	inputFiles?: Partial<InputFiles>;
+	inputFiles?: Partial<SimulationInputFiles>;
 	runSimulation?: (
 		editorJson: EditorJson,
-		inputFiles: Partial<InputFiles>,
+		inputFiles: Partial<SimulationInputFiles>,
 		runType: SimulationRunType,
 		sourceType: SimulationSourceType,
 		simName: string,
@@ -157,7 +156,10 @@ export function RunSimulationForm({
 							tabValue === 1 ? palette.info.main : palette.primary.main
 					}
 				}}>
-				<Tab label='General Config' {...a11yProps(0)} />
+				<Tab
+					label='General Config'
+					{...a11yProps(0)}
+				/>
 				<Tab
 					sx={{
 						'&,&.Mui-selected': {
@@ -172,7 +174,9 @@ export function RunSimulationForm({
 					{...a11yProps(1)}
 				/>
 			</Tabs>
-			<TabPanel value={tabValue} index={0}>
+			<TabPanel
+				value={tabValue}
+				index={0}>
 				<Box
 					sx={{
 						display: 'grid',
@@ -189,10 +193,15 @@ export function RunSimulationForm({
 						fullWidth
 						value={simulationRunType}
 						onChange={handleRunTypeChange}>
-						<ToggleButton size='small' value='direct'>
+						<ToggleButton
+							size='small'
+							value='direct'>
 							Direct Run
 						</ToggleButton>
-						<ToggleButton size='small' color='info' value='batch'>
+						<ToggleButton
+							size='small'
+							color='info'
+							value='batch'>
 							Batch Run
 						</ToggleButton>
 					</ToggleButtonGroup>
@@ -221,7 +230,10 @@ export function RunSimulationForm({
 						fullWidth
 						value={simulationSourceType}
 						onChange={handleSourceTypeChange}>
-						<ToggleButton size='small' value='project' color='primary'>
+						<ToggleButton
+							size='small'
+							value='project'
+							color='primary'>
 							Editor Project Data
 						</ToggleButton>
 						<ToggleButton
@@ -274,7 +286,9 @@ export function RunSimulationForm({
 					</Box>
 				</Box>
 			</TabPanel>
-			<TabPanel value={tabValue} index={1}>
+			<TabPanel
+				value={tabValue}
+				index={1}>
 				<Box
 					sx={{
 						display: 'grid',
@@ -295,17 +309,30 @@ export function RunSimulationForm({
 							value={`${selectedCluster}`}
 							onChange={handleChangeCluster}>
 							{availableClusters.map((cluster, index) => (
-								<MenuItem key={index} value={index}>
+								<MenuItem
+									key={index}
+									value={index}>
 									{cluster}
 								</MenuItem>
 							))}
 						</Select>
 					</FormControl>
-					<Tabs value={selectedScriptParamsTab} onChange={handleParamsTabChange}>
-						<Tab label='Array Script' {...a11yProps(0, 'BatchScriptParams')} />
-						<Tab label='Collect Script' {...a11yProps(1, 'BatchScriptParams')} />
+					<Tabs
+						value={selectedScriptParamsTab}
+						onChange={handleParamsTabChange}>
+						<Tab
+							label='Array Script'
+							{...a11yProps(0, 'BatchScriptParams')}
+						/>
+						<Tab
+							label='Collect Script'
+							{...a11yProps(1, 'BatchScriptParams')}
+						/>
 					</Tabs>
-					<TabPanel component={Box} value={selectedScriptParamsTab} index={0}>
+					<TabPanel
+						component={Box}
+						value={selectedScriptParamsTab}
+						index={0}>
 						<BatchScriptParametersEditor
 							scriptHeader={arrayHeader}
 							scriptOptions={arrayOptions}
@@ -314,7 +341,9 @@ export function RunSimulationForm({
 							scriptName={'array'}
 						/>
 					</TabPanel>
-					<TabPanel value={selectedScriptParamsTab} index={1}>
+					<TabPanel
+						value={selectedScriptParamsTab}
+						index={1}>
 						<BatchScriptParametersEditor
 							scriptHeader={collectHeader}
 							scriptOptions={collectOptions}

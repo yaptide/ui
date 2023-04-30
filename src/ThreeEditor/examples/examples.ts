@@ -1,5 +1,5 @@
 import { recreateRefsInResults } from '../../services/ShSimulatorService';
-import { JobStatusData, StatusState } from '../../services/ResponseTypes';
+import { JobStatusData, StatusState } from '../../types/ResponseTypes';
 
 let canImport = true;
 let iterator = 1;

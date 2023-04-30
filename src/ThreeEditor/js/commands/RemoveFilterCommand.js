@@ -1,4 +1,3 @@
-
 /**
  * @param editor Editor
  * @param filter DetectFilter

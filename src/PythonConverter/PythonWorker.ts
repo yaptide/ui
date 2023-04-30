@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-globals */
 import * as Comlink from 'comlink';
+import { SimulationInputFiles } from '../types/ResponseTypes';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { InputFiles } from '../services/ResponseTypes';
 
 // as for now there is no reasonable npm package for pyodide
 // CND method is suggested in https://pyodide.org/en/stable/usage/downloading-and-deploying.html
@@ -12,7 +12,7 @@ export interface IPythonWorker {
 	close: () => void;
 	runPython: <T>(string: string) => T;
 	checkConverter: () => boolean;
-	convertJSON: (editorJson: EditorJson) => Promise<Map<keyof InputFiles, string>>;
+	convertJSON: (editorJson: EditorJson) => Promise<Map<keyof SimulationInputFiles, string>>;
 }
 
 const pythonConverterCode = `

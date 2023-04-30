@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Editor } from '../../js/Editor';
 import { Box, Tabs, Tab } from '@mui/material';
 import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
-import { PropertiesPanel } from './propeteries/PropeteriesPanel';
+import { PropertiesPanel } from './properties/PropertiesPanel';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
 import { BoxMesh, CTMesh, CylinderMesh, SphereMesh } from '../../util/BasicMeshes';
 import { AddObjectCommand } from '../../js/commands/AddObjectCommand';
@@ -14,8 +14,8 @@ import { Context } from '../../js/Editor.Context';
 import { Stack } from '@mui/material';
 import { Typography } from '@mui/material';
 import { Divider } from '@mui/material';
-import { PhysicConfiguration } from './propeteries/category/PhysicConfiguration';
-import { SidebarTree } from './tree/SidebarTree';
+import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
+import { SidebarTree } from './SidebarTree/SidebarTree';
 import { AddQuantityCommand } from '../../js/commands/AddQuantityCommand';
 import { isOutput } from '../../util/Scoring/ScoringOutput';
 import { Object3D } from 'three';
@@ -88,11 +88,15 @@ export function EditorSidebar(props: { editor: Editor }) {
 				},
 				{
 					title: 'CT',
-					onClick: () =>
-						editor.execute(new AddObjectCommand(editor, new CTMesh(editor)))
+					onClick: () => editor.execute(new AddObjectCommand(editor, new CTMesh(editor)))
 				}
 			],
-			tree: <SidebarTree editor={editor} sources={[editor.scene.children]} />
+			tree: (
+				<SidebarTree
+					editor={editor}
+					sources={[editor.scene.children]}
+				/>
+			)
 		},
 		{
 			title: 'Zones',
@@ -164,23 +168,46 @@ export function EditorSidebar(props: { editor: Editor }) {
 					isDisabled: () => !isOutput(selectedObject) && !isQuantity(selectedObject)
 				}
 			],
-			tree: <SidebarTree editor={editor} sources={[editor.scoringManager.children]} />
+			tree: (
+				<SidebarTree
+					editor={editor}
+					sources={[editor.scoringManager.children]}
+				/>
+			)
 		}
 	];
 
 	return (
 		<Box sx={{ height: '100vh', overflowY: 'auto' }}>
 			<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-				<Tabs value={selectedTab} onChange={handleChange} aria-label='basic tabs example'>
-					<Tab label='Geometry' value={'Geometry'} />
-					<Tab label='Scoring' value={'Scoring'} />
-					<Tab label='Settings' value={'Settings'} />
+				<Tabs
+					value={selectedTab}
+					onChange={handleChange}
+					aria-label='basic tabs example'>
+					<Tab
+						label='Geometry'
+						value={'Geometry'}
+					/>
+					<Tab
+						label='Scoring'
+						value={'Scoring'}
+					/>
+					<Tab
+						label='Settings'
+						value={'Settings'}
+					/>
 				</Tabs>
 			</Box>
-			<TabPanel value={selectedTab} index={'Geometry'} persistentIfVisited>
+			<TabPanel
+				value={selectedTab}
+				index={'Geometry'}
+				persistentIfVisited>
 				<EditorSidebarTabTree elements={geometryTabElements}></EditorSidebarTabTree>
 			</TabPanel>
-			<TabPanel value={selectedTab} index={'Scoring'} persistentIfVisited>
+			<TabPanel
+				value={selectedTab}
+				index={'Scoring'}
+				persistentIfVisited>
 				<EditorSidebarTabTree elements={scoringTabElements}></EditorSidebarTabTree>
 			</TabPanel>
 
@@ -189,9 +216,13 @@ export function EditorSidebar(props: { editor: Editor }) {
 				value={selectedTab}
 				index={'Settings'}
 				persistentIfVisited>
-				<Stack sx={{ padding: '.5rem' }} spacing={2}>
+				<Stack
+					sx={{ padding: '.5rem' }}
+					spacing={2}>
 					<Box>
-						<Typography variant='h6' sx={{ margin: '0.5rem 0' }}>
+						<Typography
+							variant='h6'
+							sx={{ margin: '0.5rem 0' }}>
 							Beam
 						</Typography>
 						<PropertiesPanel
@@ -203,10 +234,15 @@ export function EditorSidebar(props: { editor: Editor }) {
 					</Box>
 					<Divider light />
 					<Box>
-						<Typography variant='h6' sx={{ margin: '0.5rem 0' }}>
+						<Typography
+							variant='h6'
+							sx={{ margin: '0.5rem 0' }}>
 							Physics
 						</Typography>
-						<PhysicConfiguration editor={editor} object={editor.physic} />
+						<PhysicConfiguration
+							editor={editor}
+							object={editor.physic}
+						/>
 					</Box>
 				</Stack>
 			</TabPanel>

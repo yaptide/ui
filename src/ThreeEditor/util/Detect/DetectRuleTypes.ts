@@ -113,9 +113,9 @@ function textDecoration(id: number) {
 	return [2, 18, 20].includes(id) ? 'overline' : 'none';
 }
 
-export type F_Keyword = typeof _float_keywords[number];
-export type I_Keyword = typeof _int_keywords[number];
-export type ID_Keyword = typeof _id_keywords[number];
+export type F_Keyword = (typeof _float_keywords)[number];
+export type I_Keyword = (typeof _int_keywords)[number];
+export type ID_Keyword = (typeof _id_keywords)[number];
 
 export type Keyword = F_Keyword | I_Keyword | ID_Keyword;
 export function isValidKeyword(
@@ -143,14 +143,14 @@ export function isValidOperator(operator: string): operator is Operator {
 	return operator in _operators;
 }
 
-export type OperatorSymbol = typeof _operators[Operator];
+export type OperatorSymbol = (typeof _operators)[Operator];
 
 export type ParticleId = keyof typeof _particles;
 export function isValidID(id: number): id is ParticleId {
 	return id in Object.keys(_particles);
 }
 
-export type Particle = typeof _particles[ParticleId];
+export type Particle = (typeof _particles)[ParticleId];
 export function getParticle(id: number) {
 	return isValidID(id) ? _particles[id] : null;
 }

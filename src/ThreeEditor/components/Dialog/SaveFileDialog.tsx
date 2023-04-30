@@ -11,7 +11,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { Editor } from '../../js/Editor';
 import { CustomDialogTitle } from './CustomDialog';
-import { JobStatusData, StatusState } from '../../../services/ResponseTypes';
+import { JobStatusData, StatusState } from '../../../types/ResponseTypes';
 
 export type SaveFileProps = {
 	open: boolean;
@@ -40,7 +40,9 @@ export function SaveFileDialog(props: SaveFileProps) {
 		setKeepResults(event.target.checked);
 	};
 	return (
-		<Dialog open={open} onClose={onClose}>
+		<Dialog
+			open={open}
+			onClose={onClose}>
 			<CustomDialogTitle onClose={onClose}>Save project file</CustomDialogTitle>
 			<DialogContent>
 				<DialogContentText id='save-dialog-description'>

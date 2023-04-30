@@ -1,34 +1,34 @@
 import Box from '@mui/material/Box';
-import React, { SyntheticEvent, useCallback, useEffect, useState } from 'react';
-import { JsRootService } from '../JsRoot/JsRootService';
+import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
+import { Editor } from '../ThreeEditor/js/Editor';
+import { DEMO_MODE } from '../config/Config';
 import { useAuth } from '../services/AuthService';
 import { useLoader } from '../services/DataLoaderService';
+import { JsRootService } from '../services/JsRootService';
 import { useStore } from '../services/StoreService';
-import { Editor } from '../ThreeEditor/js/Editor';
-import ThreeEditor from '../ThreeEditor/ThreeEditor';
-import { DEMO_MODE } from '../util/Config';
-import { AboutPanel } from './components/Panels/AboutPanel';
+import {
+	SimulationInputFiles,
+	JobStatusData,
+	StatusState,
+	currentJobStatusData
+} from '../types/ResponseTypes';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
+import { AboutPanel } from './components/Panels/AboutPanel';
 import LoginPanel from './components/Panels/LoginPanel';
+import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
-import { TabPanel } from './components/Panels/TabPanel';
-import YapDrawer from './components/YapDrawer/YapDrawer';
-import {
-	JobStatusData,
-	currentJobStatusData,
-	StatusState,
-	InputFiles
-} from '../services/ResponseTypes';
+import NavDrawer from './components/NavDrawer/NavDrawer';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
 	const { editorProvider, resultsProvider, canLoadEditorData, clearLoadedEditor } = useLoader();
 	const { isAuthorized, logout } = useAuth();
-	const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(true);
 	const [tabsValue, setTabsValue] = useState('editor');
 
-	const [providedInputFiles, setProvidedInputFiles] = useState<InputFiles>();
+	const [providedInputFiles, setProvidedInputFiles] = useState<SimulationInputFiles>();
 	useEffect(() => {
 		if (providedInputFiles && tabsValue !== 'simulations') setProvidedInputFiles(undefined);
 	}, [providedInputFiles, tabsValue]);
@@ -101,46 +101,62 @@ function WrapperApp() {
 				display: 'flex',
 				flexDirection: 'row'
 			}}>
-			<YapDrawer
+			<NavDrawer
 				handleChange={handleChange}
 				tabsValue={tabsValue}
 				open={open}
 				setOpen={setOpen}
 			/>
-			<TabPanel value={tabsValue} index={'editor'} persistent>
-				<ThreeEditor
+			<TabPanel
+				value={tabsValue}
+				index={'editor'}
+				persistent>
+				<SceneEditor
 					onEditorInitialized={onEditorInitialized}
 					sidebarProps={[open, tabsValue === 'editor']}
 					focus={tabsValue === 'editor'}
 				/>
 			</TabPanel>
 
-			<TabPanel value={tabsValue} index={'inputFiles'} persistentIfVisited>
+			<TabPanel
+				value={tabsValue}
+				index={'inputFiles'}
+				persistentIfVisited>
 				<InputEditorPanel
-					goToRun={(inputFiles?: InputFiles) => {
+					goToRun={(inputFiles?: SimulationInputFiles) => {
 						setProvidedInputFiles(inputFiles);
 						setTabsValue('simulations');
 					}}
 				/>
 			</TabPanel>
 
-			<TabPanel value={tabsValue} index={'simulations'}>
+			<TabPanel
+				value={tabsValue}
+				index={'simulations'}>
 				<SimulationPanel
 					goToResults={() => setTabsValue('results')}
 					forwardedInputFiles={providedInputFiles}
 				/>
 			</TabPanel>
 
-			<TabPanel value={tabsValue} index={'results'} persistent>
+			<TabPanel
+				value={tabsValue}
+				index={'results'}
+				persistent>
 				<JsRootService>
 					<ResultsPanel />
 				</JsRootService>
 			</TabPanel>
 
-			<TabPanel value={tabsValue} index={'about'} persistentIfVisited>
+			<TabPanel
+				value={tabsValue}
+				index={'about'}
+				persistentIfVisited>
 				<AboutPanel />
 			</TabPanel>
-			<TabPanel value={tabsValue} index={'login'}>
+			<TabPanel
+				value={tabsValue}
+				index={'login'}>
 				<LoginPanel />
 			</TabPanel>
 		</Box>

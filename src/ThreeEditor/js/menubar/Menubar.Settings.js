@@ -6,8 +6,8 @@ import { MenubarSettingsHistory } from './Menubar.Settings.History.js';
 import { MenubarSettingsViewport } from './Menubar.Settings.Viewport.js';
 
 const MenubarSettingsEvent = {
-	close: 'closeMenubarSettings',
-}
+	close: 'closeMenubarSettings'
+};
 
 function MenubarSettings(editor) {
 	const { signals, scene } = editor;
@@ -16,11 +16,12 @@ function MenubarSettings(editor) {
 
 	const headerRow = new UIRow();
 	headerRow.add(new UIText('Settings'.toUpperCase()));
-	const closeButton = new UIButton('Close').onClick(() => {
-		const event = new CustomEvent(MenubarSettingsEvent.close);
-		container.dom.dispatchEvent(event);
-
-	}).setMarginLeft('auto');
+	const closeButton = new UIButton('Close')
+		.onClick(() => {
+			const event = new CustomEvent(MenubarSettingsEvent.close);
+			container.dom.dispatchEvent(event);
+		})
+		.setMarginLeft('auto');
 	headerRow.add(closeButton);
 	container.add(headerRow);
 
@@ -131,7 +132,7 @@ function MenubarSettings(editor) {
 
 	container.add(new MenubarSettingsViewport(editor));
 	container.add(new MenubarSettingsHistory(editor));
-	container.add(new SidebarProjectRenderer(editor))
+	container.add(new SidebarProjectRenderer(editor));
 
 	//
 
@@ -179,4 +180,4 @@ function MenubarSettings(editor) {
 	return container;
 }
 
-export { MenubarSettings,MenubarSettingsEvent };
+export { MenubarSettings, MenubarSettingsEvent };

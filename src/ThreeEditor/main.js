@@ -28,12 +28,12 @@ export function initEditor(container) {
 	const sidebar = new Sidebar(editor);
 	container.appendChild(sidebar.dom);
 
-	Object.defineProperty(editor, "oldSidebarVisible", {
+	Object.defineProperty(editor, 'oldSidebarVisible', {
 		get: function () {
-			return sidebar.getDisplay() !== "none";
+			return sidebar.getDisplay() !== 'none';
 		},
 		set: function (val) {
-			sidebar.setDisplay(val ? "" : "none");
+			sidebar.setDisplay(val ? '' : 'none');
 		}
 	});
 

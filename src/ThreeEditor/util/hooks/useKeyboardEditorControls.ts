@@ -22,11 +22,11 @@ export const isRemovable = (object: Object3D) => {
 		return !object.notRemovable;
 	}
 	return true;
-}
+};
 
 export const canChangeName = (object: Object3D) => {
 	return !isBeam(object);
-}
+};
 
 export const getRemoveCommand = (editor: Editor, object: Object3D) => {
 	if (isDetectGeometry(object)) {
@@ -38,11 +38,7 @@ export const getRemoveCommand = (editor: Editor, object: Object3D) => {
 		return new RemoveFilterCommand(editor, object);
 	} else if (isQuantity(object)) {
 		if (object.selectedModifier)
-			return new RemoveDifferentialModifierCommand(
-				editor,
-				object,
-				object.selectedModifier
-			);
+			return new RemoveDifferentialModifierCommand(editor, object, object.selectedModifier);
 
 		if (isOutput(object.parent))
 			return new RemoveQuantityCommand(editor, object, object.parent);
@@ -112,10 +108,10 @@ export const useKeyboardEditorControls = (
 					break;
 
 				case 'f2':
-					if (editor.selected !== null) 
-						if (canChangeName(editor.selected)) 
+					if (editor.selected !== null)
+						if (canChangeName(editor.selected))
 							editor.signals.requestRenameAction.dispatch(editor.selected);
-							break;
+					break;
 
 				default:
 					break;

@@ -5,17 +5,17 @@ import { useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { useLoader } from '../../../services/DataLoaderService';
-import { OrderBy, OrderType } from '../../../services/RequestTypes';
+import { OrderBy, OrderType } from '../../../types/RequestTypes';
 import {
-	InputFiles,
+	SimulationInputFiles,
 	JobStatusData,
 	SimulationInfo,
 	StatusState,
 	currentJobStatusData
-} from '../../../services/ResponseTypes';
+} from '../../../types/ResponseTypes';
 import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
-import { DEMO_MODE } from '../../../util/Config';
+import { DEMO_MODE } from '../../../config/Config';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import {
 	BatchOptionsType,
@@ -29,7 +29,7 @@ import EXAMPLES from '../../../ThreeEditor/examples/examples';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
-	forwardedInputFiles?: InputFiles;
+	forwardedInputFiles?: SimulationInputFiles;
 }
 
 export default function SimulationPanel({
@@ -154,7 +154,7 @@ export default function SimulationPanel({
 				setResultsSimulationData(simulation);
 	};
 
-	const handleShowInputFiles = (inputFiles?: InputFiles) => {
+	const handleShowInputFiles = (inputFiles?: SimulationInputFiles) => {
 		setShowInputFilesEditor(true);
 		setInputFiles(inputFiles);
 	};
@@ -163,7 +163,7 @@ export default function SimulationPanel({
 	 * @deprecated
 	 */ // eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const runSimulation = (
-		inputFiles?: InputFiles,
+		inputFiles?: SimulationInputFiles,
 		directRun: boolean = true,
 		nTasks: number = 1,
 		simulator: string = 'shieldhit',
@@ -193,7 +193,7 @@ export default function SimulationPanel({
 
 	const sendSimulationRequest = (
 		editorJson: EditorJson,
-		inputFiles: Partial<InputFiles>,
+		inputFiles: Partial<SimulationInputFiles>,
 		runType: SimulationRunType,
 		sourceType: SimulationSourceType,
 		simName: string,

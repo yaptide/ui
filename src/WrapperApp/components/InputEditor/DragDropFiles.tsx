@@ -1,7 +1,11 @@
 import { Box, Button } from '@mui/material';
 import React from 'react';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import { DragDropFile, DragDropInnerElementProps, DragDropProps } from '../../../util/DragDropFile';
+import {
+	DragDropFile,
+	DragDropInnerElementProps,
+	DragDropProps
+} from '../../../util/genericComponents/DragDropFile';
 
 const innerElement = (props: DragDropInnerElementProps) => {
 	const { dragActive, id } = props;
@@ -27,7 +31,10 @@ const innerElement = (props: DragDropInnerElementProps) => {
 					alignItems: 'center',
 					opacity: dragActive ? 0 : 1
 				}}>
-				<Button component={'label'} htmlFor={id} startIcon={<FileUploadIcon />}>
+				<Button
+					component={'label'}
+					htmlFor={id}
+					startIcon={<FileUploadIcon />}>
 					Upload files
 				</Button>
 				or drag and drop it here.
@@ -56,5 +63,10 @@ const innerElement = (props: DragDropInnerElementProps) => {
 type DragDropFilesProps = Omit<DragDropProps, 'innerElement'>;
 
 export function DragDropFiles(props: DragDropFilesProps) {
-	return <DragDropFile {...props} innerElement={innerElement} />;
+	return (
+		<DragDropFile
+			{...props}
+			innerElement={innerElement}
+		/>
+	);
 }

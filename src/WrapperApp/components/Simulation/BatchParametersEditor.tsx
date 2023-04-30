@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { useState } from 'react';
-import { EditableChip } from './EditableChip';
+import { EditableChip } from '../../../util/genericComponents/EditableChip';
 import { ScriptOption } from './RunSimulationForm';
 import { useCallback } from 'react';
 
@@ -34,7 +34,24 @@ const _PROPOSED_OPTIONS = [
 		optionLabel: 'Time limit on the total run time of the job allocation',
 		optionValue: '0:15:00'
 	}
-] as const;
+] as readonly ScriptOption[];
+
+function parseOptions(input: string): ScriptOption[] {
+	const options: ScriptOption[] = [];
+	const regex =
+		/[\s]--([\w-]+)=([^"\s]+|"[^"]*")|[\s]-([\w-])+[\s]([^"\s]+|"[^"]*")|[\s]--([\w-]+)/g;
+	let match: RegExpExecArray | null;
+
+	while ((match = regex.exec(` ${input}`)) !== null) {
+		const [, key1, value1, key2, value2, key3] = match;
+		const optionKey = key1 ?? key2 ?? key3;
+		const optionValue = key1 ? value1 : key2 ? value2 : '';
+		options.push({ optionKey, optionValue });
+	}
+	console.log(options);
+
+	return options;
+}
 
 export function BatchScriptParametersEditor({
 	scriptHeader,
@@ -66,34 +83,46 @@ export function BatchScriptParametersEditor({
 			);
 
 			const { inputValue } = state;
-			// Suggest the creation of a new value
-			const isExisting = options.some(
-				o =>
-					inputValue === o.optionKey ||
-					`-${inputValue}` === o.optionKey ||
-					`--${inputValue}` === o.optionKey
-			);
-			if (inputValue !== '' && !isExisting) {
-				filtered.push(
+			// if inputValue has whitespace, parse it with regex and filter out existing options
+			if (inputValue.includes(' ') || inputValue.includes('=')) {
+				const newOptions = parseOptions(inputValue);
+				filtered = [
 					{
-						optionKey: inputValue,
-						optionLabel: '',
+						optionKey: '',
 						optionValue: '',
-						optionTitle: `Add new option "${inputValue}"`
-					},
-					{
-						optionKey: `-${inputValue}`,
-						optionLabel: '',
-						optionValue: '',
-						optionTitle: `Add new option "-${inputValue}"`
-					},
-					{
-						optionKey: `--${inputValue}`,
-						optionLabel: '',
-						optionValue: '',
-						optionTitle: `Add new option "--${inputValue}"`
+						optionTitle: `Parse all options "${
+							inputValue.length > 20 ? inputValue.slice(0, 20) + '(...)' : inputValue
+						}"`,
+						optionList: newOptions
 					}
+				];
+			} else {
+				// Suggest the creation of a new value
+				const isExisting = options.some(
+					o =>
+						inputValue === o.optionKey ||
+						`-${inputValue}` === o.optionKey ||
+						`--${inputValue}` === o.optionKey
 				);
+				if (inputValue !== '' && !isExisting) {
+					filtered.push(
+						{
+							optionKey: inputValue,
+							optionValue: '',
+							optionTitle: `Add new option "${inputValue}"`
+						},
+						{
+							optionKey: `-${inputValue}`,
+							optionValue: '',
+							optionTitle: `Add new option "-${inputValue}"`
+						},
+						{
+							optionKey: `--${inputValue}`,
+							optionValue: '',
+							optionTitle: `Add new option "--${inputValue}"`
+						}
+					);
+				}
 			}
 			return filtered;
 		},
@@ -102,21 +131,28 @@ export function BatchScriptParametersEditor({
 
 	const handleAutocompleteChange = useCallback(
 		(newValue: (string | ScriptOption)[]) => {
-			const newOptions: ScriptOption[] = newValue.map(option => {
-				if (typeof option === 'string')
-					return {
-						optionKey: option,
-						optionLabel: '',
-						optionValue: ''
-					};
+			const newOptions: ScriptOption[] = newValue.reduce((acc, option) => {
+				let candidateOptions: ScriptOption[] = [];
+				if (typeof option === 'string') {
+					candidateOptions = parseOptions(option);
+					if (candidateOptions.length === 0 && option.includes(' '))
+						candidateOptions = parseOptions(`-${option}`);
+				} else candidateOptions = option.optionList ? option.optionList : [option];
 
-				const existingOption = scriptOptions.find(o => o.optionKey === option.optionKey);
-				return {
-					optionKey: option.optionKey,
-					optionLabel: option.optionLabel || '',
-					optionValue: existingOption?.optionValue || option.optionValue || ''
-				};
-			});
+				return [
+					...acc,
+					...candidateOptions
+						.filter(o => !acc.some(a => a.optionKey === o.optionKey))
+						.map(o => ({
+							optionKey: o.optionKey,
+							optionValue:
+								scriptOptions.find(so => so.optionKey === o.optionKey)
+									?.optionValue ||
+								o.optionValue ||
+								''
+						}))
+				];
+			}, [] as ScriptOption[]);
 			handleScriptOptionsChange(newOptions);
 		},
 		[handleScriptOptionsChange, scriptOptions]
@@ -218,6 +254,7 @@ export function BatchScriptParametersEditor({
 								label={`Add ${scriptName.toLocaleLowerCase()} command line options`}
 							/>
 						)}
+						// Value is rendered as chips below the input
 						renderTags={() => null}
 					/>
 					<Box

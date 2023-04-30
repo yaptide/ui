@@ -31,7 +31,6 @@ class SetZoneMaterialCommand extends Command {
 		this.object.simulationMaterial = simulationMaterial;
 		this.editor.signals.materialChanged.dispatch(simulationMaterial);
 		this.editor.signals.objectChanged.dispatch(this.object, 'simulationMaterial');
-
 	}
 
 	toJSON() {

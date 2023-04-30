@@ -50,7 +50,6 @@ function MenubarFile(editor) {
 
 	options.add(
 		createOption('option', 'Save', () => {
-
 			let output = editor.toJSON();
 
 			try {
@@ -67,7 +66,6 @@ function MenubarFile(editor) {
 		new UIHorizontalRule()
 	);
 
-
 	// Settings
 	const settingsModal = new UIPanel();
 	settingsModal.setClass('sidebar');
@@ -77,21 +75,17 @@ function MenubarFile(editor) {
 	const settings = new MenubarSettings(editor);
 	settings.dom.addEventListener(MenubarSettingsEvent.close, () => {
 		settingsModal.setDisplay('none');
-	})
+	});
 	settingsModal.add(settings);
 	editor.container.appendChild(settingsModal.dom);
-
 
 	options.add(
 		createOption('option', 'Settings', () => {
 			settingsModal.setDisplay('');
 		})
-
 	);
-
 
 	return container;
 }
 
 export { MenubarFile };
-

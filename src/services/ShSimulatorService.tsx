@@ -3,10 +3,6 @@ import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { FilterJSON } from '../ThreeEditor/util/Detect/DetectFilter';
 import { ScoringManagerJSON } from '../ThreeEditor/util/Scoring/ScoringManager';
-import { createGenericContext } from '../util/GenericContext';
-import { orderAccordingToList } from '../util/Sort';
-import { useAuth } from './AuthService';
-import { camelToSnakeCase } from './TypeTransformUtil';
 import {
 	RequestCancelJob,
 	RequestGetJobStatus,
@@ -16,17 +12,21 @@ import {
 	RequestPostJob,
 	RequestShConvert,
 	isEditorJson
-} from './RequestTypes';
+} from '../types/RequestTypes';
 import {
+	YaptideResponse,
 	JobStatusData,
-	Response,
 	ResponseGetJobStatus,
 	ResponseGetPageContents,
 	ResponsePostJob,
 	ResponseShConvert,
 	StatusState,
 	currentJobStatusData
-} from './ResponseTypes';
+} from '../types/ResponseTypes';
+import { camelToSnakeCase } from '../types/TypeTransformUtil';
+import { orderAccordingToList } from '../util/Sort';
+import { useAuth } from './AuthService';
+import { createGenericContext } from './GenericContext';
 
 export interface ShSimulationProps {
 	children: ReactNode;
@@ -99,7 +99,7 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 		(signal?: AbortSignal) =>
 			authKy
 				.get(``, { signal })
-				.json<Response>()
+				.json<YaptideResponse>()
 				.then(r => !!r.message),
 		[authKy]
 	);
@@ -254,4 +254,4 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 	);
 };
 
-export { useShSimulation, ShSimulation };
+export { ShSimulation, useShSimulation };

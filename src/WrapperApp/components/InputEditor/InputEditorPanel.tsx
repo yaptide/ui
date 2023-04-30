@@ -7,13 +7,13 @@ import { usePythonConverter } from '../../../PythonConverter/PythonConverterServ
 import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
-import { DEMO_MODE } from '../../../util/Config';
+import { DEMO_MODE } from '../../../config/Config';
 import { InputFilesEditor } from './InputFilesEditor';
 import { readFile } from '../../../services/DataLoaderService';
 import { DragDropFiles } from './DragDropFiles';
-import { InputFiles, _defaultInputFiles } from '../../../services/ResponseTypes';
+import { SimulationInputFiles, _defaultInputFiles } from '../../../types/ResponseTypes';
 interface InputEditorPanelProps {
-	goToRun?: (InputFiles?: InputFiles) => void;
+	goToRun?: (InputFiles?: SimulationInputFiles) => void;
 }
 
 type GeneratorLocation = 'local' | 'remote';
@@ -25,7 +25,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const { isConverterReady, convertJSON } = usePythonConverter();
 
 	const [isInProgress, setInProgress] = useState(false);
-	const [inputFiles, setInputFiles] = useState<InputFiles>(_defaultInputFiles);
+	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>(_defaultInputFiles);
 	const [generator, setGenerator] = useState<GeneratorLocation>('local');
 
 	const [controller] = useState(new AbortController());
@@ -39,7 +39,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 					});
 				case 'local':
 					return convertJSON(editorJSON).then(
-						res => Object.fromEntries(res) as unknown as InputFiles
+						res => Object.fromEntries(res) as unknown as SimulationInputFiles
 					);
 				default:
 					throw new Error('Unknown generator: ' + generator);
@@ -76,7 +76,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	/**
 	 * @deprecated
 	 */
-	const runSimulation = (inputFiles: InputFiles) => {
+	const runSimulation = (inputFiles: SimulationInputFiles) => {
 		setInProgress(true);
 		postJobDirect(inputFiles, undefined, undefined, undefined, undefined, controller.signal)
 			.then()
@@ -121,11 +121,15 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 					onChange={(_e, generator) => {
 						if (generator) setGenerator(generator);
 					}}>
-					<ToggleButton color='info' value='local'>
+					<ToggleButton
+						color='info'
+						value='local'>
 						Local
 					</ToggleButton>
 					{!DEMO_MODE && (
-						<ToggleButton value='remote' color='warning'>
+						<ToggleButton
+							value='remote'
+							color='warning'>
 							Remote
 						</ToggleButton>
 					)}
@@ -147,10 +151,10 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 
 					Promise.all(promises).then(_ => {
 						setInputFiles(oldInput => {
-							if (!oldInput) return submitedFiles as InputFiles;
+							if (!oldInput) return submitedFiles as SimulationInputFiles;
 
 							const inputFiles = { ...oldInput, ...submitedFiles };
-							return inputFiles as InputFiles;
+							return inputFiles as SimulationInputFiles;
 						});
 					});
 				}}
