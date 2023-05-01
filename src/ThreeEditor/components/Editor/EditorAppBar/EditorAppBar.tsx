@@ -145,7 +145,9 @@ function EditorAppBar({ editor }: AppBarProps) {
 					onClick: () => editor?.history.redo()
 				}
 			].map((option, i) => (
-				<Box key={i} mr={1}>
+				<Box
+					key={i}
+					mr={1}>
 					<ToolbarButton {...option} />
 				</Box>
 			)),
@@ -153,7 +155,9 @@ function EditorAppBar({ editor }: AppBarProps) {
 	);
 
 	return (
-		<AppBar position='static' color='secondary'>
+		<AppBar
+			position='static'
+			color='secondary'>
 			<Toolbar>
 				{leftSideOptions}
 				<Typography

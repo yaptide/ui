@@ -72,7 +72,10 @@ const ObjectTypeField = (props: {
 					onChange={onChange}
 				/>
 			) : (
-				<LabelPropertyField label='Geometry Type' value={watchedObject.geometryType} />
+				<LabelPropertyField
+					label='Geometry Type'
+					value={watchedObject.geometryType}
+				/>
 			)}
 		</>
 	);
@@ -88,7 +91,9 @@ const WorldZoneCalculateField = (props: { editor: Editor; object: WorldZone }) =
 
 	return (
 		<>
-			<Grid item xs={12}>
+			<Grid
+				item
+				xs={12}>
 				<Divider />
 			</Grid>
 			<BooleanPropertyField
@@ -106,7 +111,9 @@ const WorldZoneCalculateField = (props: { editor: Editor; object: WorldZone }) =
 					);
 				}}
 			/>
-			<Grid item xs={12}>
+			<Grid
+				item
+				xs={12}>
 				<Button
 					sx={{ width: '100%' }}
 					variant='contained'
@@ -447,10 +454,22 @@ const DimensionsFields = (props: { editor: Editor; object: Object3D }) => {
 
 	return (
 		<>
-			<BoxDimensionsField editor={editor} object={object} />
-			<CylinderDimensionsField editor={editor} object={object} />
-			<SphereDimensionsField editor={editor} object={object} />
-			<ZoneDimensionsField editor={editor} object={object} />
+			<BoxDimensionsField
+				editor={editor}
+				object={object}
+			/>
+			<CylinderDimensionsField
+				editor={editor}
+				object={object}
+			/>
+			<SphereDimensionsField
+				editor={editor}
+				object={object}
+			/>
+			<ZoneDimensionsField
+				editor={editor}
+				object={object}
+			/>
 		</>
 	);
 };
@@ -466,12 +485,25 @@ export function ObjectDimensions(props: {
 		(isBasicMesh(object) || isDetectGeometry(object) || isWorldZone(object));
 
 	return (
-		<PropertiesCategory category='Dimensions' visible={visibleFlag}>
-			<ObjectTypeField editor={editor} object={object} />
+		<PropertiesCategory
+			category='Dimensions'
+			visible={visibleFlag}>
+			<ObjectTypeField
+				editor={editor}
+				object={object}
+			/>
 
-			<DimensionsFields editor={editor} object={object} />
+			<DimensionsFields
+				editor={editor}
+				object={object}
+			/>
 
-			{isWorldZone(object) && <WorldZoneCalculateField editor={editor} object={object} />}
+			{isWorldZone(object) && (
+				<WorldZoneCalculateField
+					editor={editor}
+					object={object}
+				/>
+			)}
 		</PropertiesCategory>
 	);
 }

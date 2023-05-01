@@ -628,7 +628,6 @@ Editor.prototype = {
 
 		this.viewManager.fromConfigurationJson(json.project.viewManager);
 
-
 		this.signals.sceneGraphChanged.dispatch();
 	},
 	toJSON() {
@@ -663,7 +662,7 @@ Editor.prototype = {
 				),
 				toneMapping: this.config.getKey('project/renderer/toneMapping'),
 				toneMappingExposure: this.config.getKey('project/renderer/toneMappingExposure'),
-				viewManager: this.viewManager.configurationToJson(), // serialize ViewManager
+				viewManager: this.viewManager.configurationToJson() // serialize ViewManager
 			},
 			scene: this.scene.toJSON(),
 			history: this.history.toJSON(),

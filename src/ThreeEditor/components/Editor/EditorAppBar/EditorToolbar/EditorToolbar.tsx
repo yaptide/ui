@@ -78,7 +78,9 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 				}}
 			/>
 			{toolButtons.map(({ label, icon, value, disabled }, idx) => (
-				<Box key={idx} mr={1}>
+				<Box
+					key={idx}
+					mr={1}>
 					<Tooltip title={label}>
 						{tool === value ? (
 							<SelectedButton

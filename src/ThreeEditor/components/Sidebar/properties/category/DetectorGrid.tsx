@@ -45,7 +45,9 @@ export function DetectorGrid(props: { editor: Editor; object: DetectGeometry }) 
 	const visibleFlag = isDetectGeometry(watchedObject);
 
 	return (
-		<PropertiesCategory category='Grid' visible={visibleFlag}>
+		<PropertiesCategory
+			category='Grid'
+			visible={visibleFlag}>
 			{visibleFlag && (
 				<>
 					{watchedObject.detectType === 'Mesh' && (

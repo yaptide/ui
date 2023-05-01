@@ -4,11 +4,12 @@ import { ISimulationSceneChild, SimulationSceneGroup } from './SimulationGroup';
 import { ISimulationObject } from './SimulationObject';
 
 export abstract class SimulationMesh<
-	TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry,
-	TMaterial extends THREE.Material = THREE.MeshBasicMaterial
->
+		TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry,
+		TMaterial extends THREE.Material = THREE.MeshBasicMaterial
+	>
 	extends THREE.Mesh<TGeometry, TMaterial>
-	implements ISimulationObject, ISimulationSceneChild {
+	implements ISimulationObject, ISimulationSceneChild
+{
 	editor: Editor;
 	parent: SimulationSceneGroup<this> | null = null;
 	readonly type: string;
@@ -30,14 +31,14 @@ export abstract class SimulationMesh<
 
 export abstract class SimulationObject3D
 	extends THREE.Object3D
-	implements ISimulationObject, ISimulationSceneChild {
+	implements ISimulationObject, ISimulationSceneChild
+{
 	editor: Editor;
 	parent: SimulationSceneGroup<this> | null = null;
 	readonly notVisibleChildren?: boolean = undefined;
 	readonly notDraggable?: boolean = undefined;
 	readonly notHidable?: boolean = undefined;
 	readonly type: string;
-
 
 	constructor(editor: Editor, name: string | undefined, type: string) {
 		super();
@@ -46,12 +47,12 @@ export abstract class SimulationObject3D
 		this.type = type;
 		this.parent = null;
 	}
-
 }
 
 export abstract class SimulationPoints
 	extends THREE.Points
-	implements ISimulationObject, ISimulationSceneChild {
+	implements ISimulationObject, ISimulationSceneChild
+{
 	private static _detectPointsMaterial: THREE.PointsMaterial = new THREE.PointsMaterial({
 		color: new THREE.Color('cyan'),
 		size: 0.1

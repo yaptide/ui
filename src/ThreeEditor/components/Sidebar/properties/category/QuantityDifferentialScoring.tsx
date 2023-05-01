@@ -26,7 +26,9 @@ export function QuantityDifferentialScoring(props: { editor: Editor; object: Obj
 	const visibleFlag = isQuantity(watchedObject);
 
 	return (
-		<PropertiesCategory category='Differential Scoring' visible={visibleFlag}>
+		<PropertiesCategory
+			category='Differential Scoring'
+			visible={visibleFlag}>
 			{visibleFlag && (
 				<>
 					<PropertyField>

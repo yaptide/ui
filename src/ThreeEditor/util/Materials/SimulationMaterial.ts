@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
-import { DEFAULT_MATERIAL_DENSITY, DEFAULT_MATERIAL_ICRU, DEFAULT_MATERIAL_NAME } from './materials';
+import {
+	DEFAULT_MATERIAL_DENSITY,
+	DEFAULT_MATERIAL_ICRU,
+	DEFAULT_MATERIAL_NAME
+} from './materials';
 
 export type RenderProps = Omit<SimulationMaterialJSON, 'uuid' | 'name' | 'icru' | 'density'>;
 

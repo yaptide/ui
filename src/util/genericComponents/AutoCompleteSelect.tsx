@@ -21,7 +21,11 @@ export function AutoCompleteSelect<
 >(props: AutoCompleteSelectProps<T, Multiple, FreeSolo>) {
 	const CustomPopper = (popperProps: PopperProps) => {
 		return (
-			<Popper {...popperProps} style={{ width: 'fit-content' }} placement='bottom-start' />
+			<Popper
+				{...popperProps}
+				style={{ width: 'fit-content' }}
+				placement='bottom-start'
+			/>
 		);
 	};
 

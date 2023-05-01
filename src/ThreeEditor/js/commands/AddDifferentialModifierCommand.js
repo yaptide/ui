@@ -36,7 +36,6 @@ export class AddDifferentialModifierCommand extends Command {
 		this.editor.signals.scoringQuantityChanged.dispatch(this.object);
 		this.editor.signals.objectChanged.dispatch(this.object, 'modifiers');
 		this.editor.signals.objectChanged.dispatch(this.object, 'selectedModifier');
-
 	}
 
 	toJSON() {

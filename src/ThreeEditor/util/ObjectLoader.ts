@@ -17,7 +17,6 @@ export class EditorObjectLoader extends ObjectLoader {
 		const geometry = geometries[data.geometry];
 		const material = materials[data.material];
 
-
 		let object = super.parseObject<T>(data, geometries, materials, animations);
 		let editorObject;
 		switch (data.type) {

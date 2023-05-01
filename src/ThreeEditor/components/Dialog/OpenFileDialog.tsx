@@ -63,10 +63,22 @@ export function OpenFileDialog(props: OpenFileProps) {
 							centered
 							onChange={handleChange}
 							aria-label='open project tabs example'>
-							<Tab label='Examples' value='0' />
-							<Tab label='Send' value='1' />
-							<Tab label='From URL' value='2' />
-							<Tab label='Plain text' value='3' />
+							<Tab
+								label='Examples'
+								value='0'
+							/>
+							<Tab
+								label='Send'
+								value='1'
+							/>
+							<Tab
+								label='From URL'
+								value='2'
+							/>
+							<Tab
+								label='Plain text'
+								value='3'
+							/>
 						</TabList>
 					</Box>
 					<Divider />

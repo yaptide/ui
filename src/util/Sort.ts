@@ -21,7 +21,7 @@ export const orderAccordingToList = <A extends C, B extends C, C extends Common<
 		foundCallback?.call(null, listCopy[index], orderElement);
 
 		listOrdered.push(listCopy[index]);
-		listCopy.splice(index, 1);	
+		listCopy.splice(index, 1);
 	}
 
 	if (listCopy.length > 0) {

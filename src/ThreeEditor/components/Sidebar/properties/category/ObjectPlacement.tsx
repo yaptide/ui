@@ -67,7 +67,9 @@ export function ObjectPlacement(props: {
 		hasPosition(watchedObject) || hasRotation(watchedObject) || hasDirection(watchedObject);
 
 	return (
-		<PropertiesCategory category={`Placement`} visible={hasPlacement}>
+		<PropertiesCategory
+			category={`Placement`}
+			visible={hasPlacement}>
 			{hasPosition(watchedObject) && (
 				<Vector3PropertyField
 					label='Position'

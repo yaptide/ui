@@ -14,7 +14,9 @@ export function ClearHistoryDialog(props: ClearHistoryProps) {
 			onClose={props.onCancel}
 			title='Clear History'
 			contentText='The Undo/Redo history will be lost. Are you sure you want to continue?'>
-			<Button onClick={props.onCancel} autoFocus>
+			<Button
+				onClick={props.onCancel}
+				autoFocus>
 				Cancel
 			</Button>
 			<Button onClick={props.onConfirm}>Clear and Proceed</Button>

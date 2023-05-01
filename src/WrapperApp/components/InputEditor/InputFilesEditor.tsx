@@ -62,7 +62,9 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 					</Button>
 				)}
 				{props.closeEditor && (
-					<Button color='info' onClick={() => props.closeEditor?.call(null)}>
+					<Button
+						color='info'
+						onClick={() => props.closeEditor?.call(null)}>
 						Close
 					</Button>
 				)}

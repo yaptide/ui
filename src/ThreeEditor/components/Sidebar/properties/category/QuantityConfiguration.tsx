@@ -69,7 +69,9 @@ export function QuantityConfiguration(props: { editor: Editor; object: Object3D 
 	);
 
 	return (
-		<PropertiesCategory category='Quantity configuration' visible={visibleFlag}>
+		<PropertiesCategory
+			category='Quantity configuration'
+			visible={visibleFlag}>
 			{visibleFlag && fields}
 		</PropertiesCategory>
 	);

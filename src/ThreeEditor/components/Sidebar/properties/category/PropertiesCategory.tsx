@@ -6,7 +6,7 @@ import {
 	Grid,
 	AccordionProps,
 	AccordionSummaryProps,
-	styled,
+	styled
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -32,13 +32,16 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 	paddingTop: theme.spacing(1)
 }));
 
-const Accordion = styled((props: AccordionProps) => <MuiAccordion square {...props} />)(
-	({ theme }) => ({
-		'&.Mui-expanded': {
-			margin: theme.spacing(0)
-		}
-	})
-);
+const Accordion = styled((props: AccordionProps) => (
+	<MuiAccordion
+		square
+		{...props}
+	/>
+))(({ theme }) => ({
+	'&.Mui-expanded': {
+		margin: theme.spacing(0)
+	}
+}));
 
 export function PropertiesCategory(props: {
 	category: string;
@@ -48,12 +51,18 @@ export function PropertiesCategory(props: {
 	const { category, children, visible = true } = props;
 
 	return (
-		<Accordion defaultExpanded square key={category} sx={{ display: visible ? '' : 'none' }}>
+		<Accordion
+			defaultExpanded
+			square
+			key={category}
+			sx={{ display: visible ? '' : 'none' }}>
 			<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 				<Typography>{category}</Typography>
 			</AccordionSummary>
 			<AccordionDetails>
-				<Grid container spacing={2}>
+				<Grid
+					container
+					spacing={2}>
 					{children}
 				</Grid>
 			</AccordionDetails>

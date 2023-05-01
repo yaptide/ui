@@ -39,5 +39,10 @@ export interface ObjectSelectPropertyFieldProps extends ObjectSelectProps {
 }
 
 export function ObjectSelectPropertyField(props: ObjectSelectPropertyFieldProps) {
-	return <PropertyField label={props.label} children={<ObjectSelectProperty {...props} />} />;
+	return (
+		<PropertyField
+			label={props.label}
+			children={<ObjectSelectProperty {...props} />}
+		/>
+	);
 }

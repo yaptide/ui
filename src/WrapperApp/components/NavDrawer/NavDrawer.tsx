@@ -146,7 +146,9 @@ function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }
 	];
 
 	return (
-		<Drawer variant='permanent' open={open}>
+		<Drawer
+			variant='permanent'
+			open={open}>
 			<DrawerHeader onClick={handleDrawerToggle}>
 				<ListItemText
 					primary={<Typography variant='h5'>YAPTIDE</Typography>}
@@ -177,7 +179,10 @@ function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }
 					/>
 					{expand ? <ExpandLess /> : <ExpandMore />}
 				</ListItemButton>
-				<Collapse in={expand} timeout='auto' unmountOnExit>
+				<Collapse
+					in={expand}
+					timeout='auto'
+					unmountOnExit>
 					<List
 						component='div'
 						disablePadding
@@ -203,7 +208,10 @@ function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }
 				</Collapse>
 				<Divider />
 				{MenuOptions.map(({ label, value, disabled, icon }) => (
-					<ListItem key={label} disablePadding sx={{ display: 'block' }}>
+					<ListItem
+						key={label}
+						disablePadding
+						sx={{ display: 'block' }}>
 						<ListItemButton
 							sx={{
 								minHeight: 48,
@@ -221,7 +229,10 @@ function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }
 								}}>
 								{icon}
 							</ListItemIcon>
-							<ListItemText primary={label} sx={{ opacity: open ? 1 : 0 }} />
+							<ListItemText
+								primary={label}
+								sx={{ opacity: open ? 1 : 0 }}
+							/>
 						</ListItemButton>
 					</ListItem>
 				))}
@@ -230,7 +241,9 @@ function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }
 
 			<List sx={{ marginTop: 'auto' }}>
 				<Divider />
-				<ListItem disablePadding sx={{ display: 'block' }}>
+				<ListItem
+					disablePadding
+					sx={{ display: 'block' }}>
 					<Tooltip title={`${deployInfo.date} ${deployInfo.commit} ${deployInfo.branch}`}>
 						<ListItemButton
 							sx={{

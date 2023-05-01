@@ -30,11 +30,16 @@ export function PropertyField(props: { label?: string; children: React.ReactNode
 	return (
 		<>
 			{props.label !== undefined && (
-				<Grid item xs={4} sx={{ textAlign: 'right' }}>
+				<Grid
+					item
+					xs={4}
+					sx={{ textAlign: 'right' }}>
 					{props.label}
 				</Grid>
 			)}
-			<Grid item xs={props.label !== undefined ? 8 : 12}>
+			<Grid
+				item
+				xs={props.label !== undefined ? 8 : 12}>
 				{props.children}
 			</Grid>
 		</>
@@ -47,7 +52,12 @@ interface LabelPropertyFieldProps {
 }
 
 export function LabelPropertyField(props: LabelPropertyFieldProps) {
-	return <PropertyField label={props.label} children={<Typography>{props.value}</Typography>} />;
+	return (
+		<PropertyField
+			label={props.label}
+			children={<Typography>{props.value}</Typography>}
+		/>
+	);
 }
 
 interface TextPropertyFieldProps {
@@ -209,10 +219,24 @@ export function Vector3PropertyField(props: XYZPropertyFieldProps) {
 
 	return (
 		<PropertyField label={props.label}>
-			<Stack direction='row' spacing={1}>
-				<NumberInput {...props} value={props.value.x} onChange={onChangeX} />
-				<NumberInput {...props} value={props.value.y} onChange={onChangeY} />
-				<NumberInput {...props} value={props.value.z} onChange={onChangeZ} />
+			<Stack
+				direction='row'
+				spacing={1}>
+				<NumberInput
+					{...props}
+					value={props.value.x}
+					onChange={onChangeX}
+				/>
+				<NumberInput
+					{...props}
+					value={props.value.y}
+					onChange={onChangeY}
+				/>
+				<NumberInput
+					{...props}
+					value={props.value.z}
+					onChange={onChangeZ}
+				/>
 			</Stack>
 		</PropertyField>
 	);
@@ -245,9 +269,19 @@ export function Vector2PropertyField(props: XYPropertyFieldProps) {
 
 	return (
 		<PropertyField label={props.label}>
-			<Stack direction='row' spacing={1}>
-				<NumberInput {...props} value={props.value.x} onChange={onChangeX} />
-				<NumberInput {...props} value={props.value.y} onChange={onChangeY} />
+			<Stack
+				direction='row'
+				spacing={1}>
+				<NumberInput
+					{...props}
+					value={props.value.x}
+					onChange={onChangeX}
+				/>
+				<NumberInput
+					{...props}
+					value={props.value.y}
+					onChange={onChangeY}
+				/>
 			</Stack>
 		</PropertyField>
 	);
@@ -282,7 +316,9 @@ export function ConditionalPropertyField(
 ) {
 	return (
 		<PropertyField label={props.label}>
-			<Stack direction='row' spacing={1}>
+			<Stack
+				direction='row'
+				spacing={1}>
 				<Checkbox
 					sx={{ padding: 0 }}
 					checked={props.enabled}

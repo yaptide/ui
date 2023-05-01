@@ -40,7 +40,9 @@ export function SaveFileDialog(props: SaveFileProps) {
 		setKeepResults(event.target.checked);
 	};
 	return (
-		<Dialog open={open} onClose={onClose}>
+		<Dialog
+			open={open}
+			onClose={onClose}>
 			<CustomDialogTitle onClose={onClose}>Save project file</CustomDialogTitle>
 			<DialogContent>
 				<DialogContentText id='save-dialog-description'>

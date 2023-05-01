@@ -61,10 +61,19 @@ function BeamDefinitionField(props: {
 			)}
 
 			<PropertyField>
-				<Stack gap={1} direction='row'>
-					<Button sx={{ flexGrow: 1 }} variant='contained' component='label'>
+				<Stack
+					gap={1}
+					direction='row'>
+					<Button
+						sx={{ flexGrow: 1 }}
+						variant='contained'
+						component='label'>
 						Upload File
-						<input type='file' hidden onChange={handleFileUpload} />
+						<input
+							type='file'
+							hidden
+							onChange={handleFileUpload}
+						/>
 					</Button>
 
 					<Button
@@ -356,8 +365,15 @@ export function BeamConfiguration(props: { editor: Editor; object: Object3D }) {
 	const visibleFlag = isBeam(object);
 
 	return (
-		<PropertiesCategory category='Beam Configuration' visible={visibleFlag}>
-			{visibleFlag && <BeamConfigurationFields editor={editor} object={object} />}
+		<PropertiesCategory
+			category='Beam Configuration'
+			visible={visibleFlag}>
+			{visibleFlag && (
+				<BeamConfigurationFields
+					editor={editor}
+					object={object}
+				/>
+			)}
 		</PropertiesCategory>
 	);
 }

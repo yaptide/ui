@@ -81,13 +81,23 @@ const PageSelectOptions = new Array(6).fill(NaN).map((_, index) => ({
 }));
 
 export function OrderBySelect(props: OrderBySelectProps) {
-	return <ButtonWithPopperList options={OrderByOptions} {...props} />;
+	return (
+		<ButtonWithPopperList
+			options={OrderByOptions}
+			{...props}
+		/>
+	);
 }
 
 type PageSizeSelectProps = Omit<ButtonWithPopperListProps<number>, 'options'>;
 
 export function PageSizeSelect(props: PageSizeSelectProps) {
-	return <ButtonWithPopperList options={PageSelectOptions} {...props} />;
+	return (
+		<ButtonWithPopperList
+			options={PageSelectOptions}
+			{...props}
+		/>
+	);
 }
 
 export const InputGroup: typeof ButtonGroup = styled(ButtonGroup)(

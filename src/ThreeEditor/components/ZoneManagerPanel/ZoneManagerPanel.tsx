@@ -298,7 +298,9 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 					return <Tab {...a11yProps(id)} />;
 				})}
 				<VoidTab>
-					<Tooltip title='Add row' placement='right'>
+					<Tooltip
+						title='Add row'
+						placement='right'>
 						<IconButton
 							color='secondary'
 							aria-label='add new data row'
@@ -313,10 +315,15 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 					</Tooltip>
 				</VoidTab>
 			</Tabs>
-			<AlgebraDataPanel value={algebraRow} index={-1}></AlgebraDataPanel>
+			<AlgebraDataPanel
+				value={algebraRow}
+				index={-1}></AlgebraDataPanel>
 			{algebraDataRef.current.map((row, id) => {
 				return (
-					<AlgebraDataPanel value={algebraRow} key={id} index={id}>
+					<AlgebraDataPanel
+						value={algebraRow}
+						key={id}
+						index={id}>
 						<Box
 							sx={{
 								position: 'sticky',
@@ -324,7 +331,9 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 								marginLeft: 'auto',
 								zIndex: 1
 							}}>
-							<Tooltip title='Delete row' placement='left'>
+							<Tooltip
+								title='Delete row'
+								placement='left'>
 								<IconButton
 									aria-label='delete'
 									onClick={removeAlgebraDataRow(id)}
