@@ -12,6 +12,7 @@ const getObjectType = object => {
 			return 'Figure';
 		case 'DetectGroup':
 		case 'Points':
+		case 'Detect':
 			return 'Detect';
 		case 'Filter':
 		case 'FilterGroup':
@@ -36,12 +37,11 @@ const getAdditionalInfo = object => {
 		case 'BoxMesh':
 		case 'CylinderMesh':
 		case 'SphereMesh':
-			return ` [${
-				object.id
-			}] <span class="type Geometry"></span> <span class="type-value">${object.type.slice(
-				0,
-				-4
-			)}</span>`;
+			return ` [${object.id
+				}] <span class="type Geometry"></span> <span class="type-value">${object.type.slice(
+					0,
+					-4
+				)}</span>`;
 		case 'Beam':
 			let particle = object.particle;
 			return ` [${object.id}] <span class="type Particle Beam"></span> ${particle.name} [${particle.id}]`;
@@ -55,31 +55,26 @@ const getAdditionalInfo = object => {
             <span class="type-value">${material.name} [${material.icru}]</span>`;
 		case 'Points':
 			let { zone, detectType } = object;
-			return ` [${object.id}] <span class="type Geometry ${
-				detectType === 'Zone' ? 'Zone' : ''
-			}"></span> <span class="type-value">${
-				zone ? `${escapeHTML(zone.name)} [${zone.id}]` : detectType
-			}</span>`;
+			return ` [${object.id}] <span class="type Geometry ${detectType === 'Zone' ? 'Zone' : ''
+				}"></span> <span class="type-value">${zone ? `${escapeHTML(zone.name)} [${zone.id}]` : detectType
+				}</span>`;
 		case 'Filter':
 			return ` [${object.id}]`;
 		case 'Output':
 			let { geometry } = object;
-			return ` [${object.id}] <span class="type-value">${
-				object.geometry
-					? `<span class="type Detect Geometry"></span>${escapeHTML(geometry.name)} [${
-							geometry.id
-					  }]`
+			return ` [${object.id}] <span class="type-value">${object.geometry
+					? `<span class="type Detect Geometry"></span>${escapeHTML(geometry.name)} [${geometry.id
+					}]`
 					: ''
-			}</span>`;
+				}</span>`;
 		case 'Quantity':
 			let filter = object.filter;
-			return ` [${object.id}] ${
-				filter
+			return ` [${object.id}] ${filter
 					? `<span class="type Filter Modifier"></span> <span class="type-value">${escapeHTML(
-							filter.name
-					  )} [${filter.id}]`
+						filter.name
+					)} [${filter.id}]`
 					: ''
-			}</span>`;
+				}</span>`;
 		default:
 			return '';
 	}
