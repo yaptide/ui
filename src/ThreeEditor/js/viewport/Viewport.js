@@ -14,6 +14,17 @@ import { ViewHelper } from './Viewport.ViewHelper';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
 
+const callWithHidden = (object, fn) => {
+	if (!object) return fn();
+	const visible = object.visible;
+
+	object.visible = false;
+
+	fn();
+
+	object.visible = visible;
+}
+
 export function Viewport(
 	name,
 	editor,
@@ -25,7 +36,7 @@ export function Viewport(
 		clipPlane,
 		planePosLabel,
 		planeHelperColor,
-		showPlaneHelpers,
+		showPlaneHelpers = true,
 		gridRotation
 	} = {}
 ) {
@@ -147,7 +158,10 @@ export function Viewport(
 		if (config.showSceneHelpers) {
 			planeHelpers.visible = showPlaneHelpers ?? false;
 
-			renderer.render(sceneHelpers, camera);
+			callWithHidden(viewClipPlane?.planeHelper, () => {
+				renderer.render(sceneHelpers, camera);
+			});
+
 			renderer.render(sceneViewHelpers, camera);
 			viewHelper.render(renderer);
 		}

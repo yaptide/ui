@@ -11,11 +11,12 @@ type ClippedViewConfigurationJson = {
 	planeConstant: number;
 };
 
-interface ViewportClippedView {
+export interface ViewportClippedView {
 	name: string;
 	editor: Editor;
 	scene: THREE.Scene;
 	gui: GUI;
+	planeHelper: THREE.PlaneHelper;
 	reset: () => void;
 	configurationToJson: () => ClippedViewConfigurationJson;
 	fromConfigurationJson: (config: ClippedViewConfigurationJson) => void;
@@ -60,7 +61,14 @@ export function ViewportClippedViewCSG<
 		INTERSECTION_SIZE,
 		planeHelperColor ?? 0xffff00
 	); // default helper color is yellow
+
+	planeHelper.name = `planeHelper-${name}`;
+	(planeHelper.material as THREE.LineBasicMaterial).linewidth = 3;
+	(planeHelper.material as THREE.LineBasicMaterial).depthTest = false;
+	planeHelper.renderOrder = 1; // render on top of everything else
+
 	planeHelpers.add(planeHelper);
+	this.planeHelper = planeHelper;
 
 	const planePosProperty = `${planePosLabel ?? 'PlanePos'} ${editor.unit.name}`;
 
