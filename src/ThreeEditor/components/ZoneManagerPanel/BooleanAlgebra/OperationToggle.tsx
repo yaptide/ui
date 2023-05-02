@@ -197,9 +197,10 @@ function OperationInput({
 					}
 				}}
 				aria-label='operation-select'>
-				{allowedOperations.map(operation => (
+				{allowedOperations.map((operation, index) => (
 					<Tooltip
 						title={OperationToTooltip(operation, objectName)}
+						key={`${operation}_${index}`}
 						placement='left'
 						arrow
 						followCursor

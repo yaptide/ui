@@ -10,13 +10,13 @@ import {
 	Tabs,
 	Tooltip
 } from '@mui/material';
-import React, { LegacyRef, useCallback, useEffect, useRef, useState } from 'react';
-import ScrollManager from '../../../libs/ScrollManager';
+import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import ScrollPositionManager from '../../../libs/ScrollPositionManager';
 import { Editor } from '../../js/Editor';
 import * as CSG from '../../util/CSG/CSG';
 import { OperationDataList, isOperation } from '../../util/Operation';
 import { BooleanAlgebraData } from './BooleanAlgebra/BooleanAlgebraData';
-import BooleanAlgebraRow from './BooleanAlgebra/BooleanAlgebraRow';
+import BooleanAlgebraRow, { BooleanAlgebraRowProps } from './BooleanAlgebra/BooleanAlgebraRow';
 import { GeometryIdSelect } from './GeometryIdSelect';
 
 type ZoneManagerPanelProps = {
@@ -203,13 +203,19 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 
 	/*-------------------------------AlgebraDataPanel-------------------------------*/
 	interface AlgebraDataPanelProps {
+		rowComponent?: React.FC<Pick<BooleanAlgebraRowProps, 'scrollWrapperRef'>>;
 		children?: React.ReactNode;
 		index: number;
 		value: typeof algebraRow;
 	}
-	function AlgebraDataPanel(props: AlgebraDataPanelProps) {
-		const { children, value, index, ...restProps } = props;
-
+	function AlgebraDataPanel({
+		children = <Fragment />,
+		rowComponent = () => <Fragment />,
+		value,
+		index,
+		...restProps
+	}: AlgebraDataPanelProps) {
+		const wrapperRef = useRef<HTMLDivElement | null>(null);
 		return (
 			<Box
 				role='tabpanel'
@@ -223,28 +229,35 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 					maxWidth: '100%'
 				}}
 				{...restProps}>
-				<ScrollManager scrollKey={`vertical-tabpanel-${index}`}>
+				<ScrollPositionManager scrollKey={`vertical-tabpanel-${index}`}>
 					{({
-						connectScrollTarget,
-						...props
+						connectScrollTarget
 					}: {
-						connectScrollTarget: LegacyRef<HTMLDivElement>;
+						connectScrollTarget: (node: unknown) => void;
 					}) => {
 						return (
-							<div
-								ref={connectScrollTarget}
-								style={{
+							<Box
+								ref={(node: HTMLDivElement) => {
+									connectScrollTarget(node);
+									wrapperRef.current = node;
+								}}
+								sx={{
 									overflow: 'auto',
 									position: 'relative',
 									height: '100%',
 									display: 'flex',
 									flexDirection: 'column'
 								}}>
-								{value.index === index && children}
-							</div>
+								{value.index === index && (
+									<>
+										{children}
+										{rowComponent({ scrollWrapperRef: wrapperRef })}
+									</>
+								)}
+							</Box>
 						);
 					}}
-				</ScrollManager>
+				</ScrollPositionManager>
 			</Box>
 		);
 	}
@@ -273,10 +286,9 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 	return (
 		<Box
 			sx={{
-				flexGrow: 1,
 				bgcolor: theme => (theme.palette.mode === 'dark' ? 'grey.900' : 'grey.100'),
 				display: 'grid',
-				height: PANEL_HEIGHT,
+				maxHeight: PANEL_HEIGHT,
 				gridTemplateRows: '100%',
 				gridTemplateColumns: '40px 1fr',
 				margin: '-8px -16px -16px -16px'
@@ -323,7 +335,16 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 					<AlgebraDataPanel
 						value={algebraRow}
 						key={id}
-						index={id}>
+						index={id}
+						rowComponent={({ scrollWrapperRef }) => (
+							<BooleanAlgebraRow
+								scrollWrapperRef={scrollWrapperRef}
+								onGeometryClick={changeSelectedGeometryId}
+								onOperationChange={updateCurrentOperation(id)}
+								allObjects={allObjectsRef.current}
+								value={row.value}
+							/>
+						)}>
 						<Box
 							sx={{
 								position: 'sticky',
@@ -355,11 +376,6 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 								</IconButton>
 							</Tooltip>
 						</Box>
-						<BooleanAlgebraRow
-							onGeometryClick={changeSelectedGeometryId}
-							onOperationChange={updateCurrentOperation(id)}
-							allObjects={allObjectsRef.current}
-							value={row.value}></BooleanAlgebraRow>
 					</AlgebraDataPanel>
 				);
 			})}
