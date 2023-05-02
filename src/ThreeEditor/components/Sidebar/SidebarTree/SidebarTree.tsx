@@ -5,6 +5,9 @@ import './SidebarTree.style.css';
 import { Editor } from '../../../js/Editor';
 import { SimulationObject3D } from '../../../util/SimulationBase/SimulationMesh';
 import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
+import { isQuantity } from '../../../util/Scoring/ScoringQuantity';
+import { Divider } from '@mui/material';
+import { ChangeObjectOrderCommand } from '../../../js/commands/ChangeObjectOrderCommand';
 
 type TreeSource = (Object3D[] | Object3D)[];
 
@@ -44,6 +47,7 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 	);
 
 	const [treeData, setTreeData] = useState<TreeItem[]>([]);
+
 	const refreshTreeData = useCallback(() => {
 		const options = sources.flat().flatMap(source => buildOption(source, source.children, 0));
 		setTreeData(options);
@@ -83,11 +87,25 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 			ref={treeRef}
 			tree={treeData}
 			rootId={0}
-			onDrop={() => {}}
-			canDrag={() => false}
+			onDrop={(_tree, { dragSource, relativeIndex }) => {
+				if (relativeIndex === undefined)
+					return console.warn(
+						'relativeIndex is undefined. Probably you need disable sort option.'
+					);
+
+				if (dragSource?.data)
+					editor.execute(
+						new ChangeObjectOrderCommand(editor, dragSource.data.object, relativeIndex)
+					);
+			}}
+			canDrop={(_, { dropTarget, dragSource }) => {
+				return dropTarget?.data?.object === dragSource?.data?.object.parent;
+			}}
+			canDrag={node => isQuantity(node?.data?.object)}
 			sort={false}
 			insertDroppableFirst={false}
 			dropTargetOffset={5}
+			placeholderRender={() => <Divider sx={{ borderBottomWidth: t => t.spacing(1) }} />}
 			render={(node, { depth, isOpen, onToggle }) => (
 				<SidebarTreeItem
 					treeRef={treeRef.current}
