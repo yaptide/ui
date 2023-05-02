@@ -8,6 +8,7 @@ import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
 import { isQuantity } from '../../../util/Scoring/ScoringQuantity';
 import { Divider } from '@mui/material';
 import { ChangeObjectOrderCommand } from '../../../js/commands/ChangeObjectOrderCommand';
+import { isOutput } from '../../../util/Scoring/ScoringOutput';
 
 type TreeSource = (Object3D[] | Object3D)[];
 
@@ -79,6 +80,24 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 
 	const objectRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
+	const canDrop = (
+		object: TreeItem | undefined,
+		target: TreeItem | undefined,
+		dropTargetId: string | number
+	) => {
+		if (!object) return false;
+
+		const object3d = object.data?.object;
+
+		if (isQuantity(object3d)) return object3d.parent === target?.data?.object;
+
+		if (isOutput(object3d)) {
+			return object.parent === dropTargetId;
+		}
+
+		return false;
+	};
+
 	return (
 		<Tree
 			classes={{
@@ -98,10 +117,10 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 						new ChangeObjectOrderCommand(editor, dragSource.data.object, relativeIndex)
 					);
 			}}
-			canDrop={(_, { dropTarget, dragSource }) => {
-				return dropTarget?.data?.object === dragSource?.data?.object.parent;
+			canDrop={(_, { dropTarget, dragSource, dropTargetId }) => {
+				return canDrop(dragSource, dropTarget, dropTargetId);
 			}}
-			canDrag={node => isQuantity(node?.data?.object)}
+			canDrag={node => isQuantity(node?.data?.object) || isOutput(node?.data?.object)}
 			sort={false}
 			insertDroppableFirst={false}
 			dropTargetOffset={5}
