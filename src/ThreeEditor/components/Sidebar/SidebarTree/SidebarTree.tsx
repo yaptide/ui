@@ -81,19 +81,17 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 	const objectRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
 	const canDrop = (
-		object: TreeItem | undefined,
+		source: TreeItem | undefined,
 		target: TreeItem | undefined,
 		dropTargetId: string | number
 	) => {
-		if (!object) return false;
+		if (!source) return false;
 
-		const object3d = object.data?.object;
+		const object3d = source.data?.object;
 
 		if (isQuantity(object3d)) return object3d.parent === target?.data?.object;
 
-		if (isOutput(object3d)) {
-			return object.parent === dropTargetId;
-		}
+		if (isOutput(object3d)) return source.parent === dropTargetId;
 
 		return false;
 	};
