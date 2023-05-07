@@ -1,16 +1,16 @@
 import { AppBar, Box } from '@mui/material';
-import React, { useEffect, useRef, useState } from 'react';
+import CircularProgress from '@mui/material/CircularProgress';
+import { useTheme } from '@mui/material/styles';
+import { useEffect, useRef, useState } from 'react';
 import THREE from 'three';
+import useDocumentTitle from '../../../util/hooks/useDocumentTitle';
 import '../../css/main.css';
 import { Editor } from '../../js/Editor';
 import { initEditor } from '../../main';
-import CircularProgress from '@mui/material/CircularProgress';
-import { EditorMenu } from './EditorMenu/EditorMenu';
-import useDocumentTitle from '../../../util/hooks/useDocumentTitle';
-import { useTheme } from '@mui/material/styles';
-import { EditorSidebar } from '../Sidebar/EditorSidebar';
 import { useKeyboardEditorControls } from '../../util/hooks/useKeyboardEditorControls';
+import { EditorSidebar } from '../Sidebar/EditorSidebar';
 import EditorAppBar from './EditorAppBar/EditorAppBar';
+import { EditorMenu } from './EditorMenu/EditorMenu';
 declare global {
 	interface Window {
 		editor: Editor;
@@ -110,7 +110,7 @@ function SceneEditor(props: SceneEditorProps) {
 					position='static'
 					color='secondary'
 					sx={{
-						'width': 350,
+						'width': 370,
 						'&.MuiAppBar-colorSecondary': {
 							backgroundColor:
 								theme.palette.mode === 'dark'

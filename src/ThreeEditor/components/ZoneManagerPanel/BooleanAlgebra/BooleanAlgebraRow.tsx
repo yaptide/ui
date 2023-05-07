@@ -5,13 +5,14 @@ import { Operation, OperationData, OperationDataList } from '../../../util/Opera
 import { GeometryLabel } from './GeometryLabel';
 import OperationToggle from './OperationToggle';
 
-type BooleanAlgebraRowProps = {
+export type BooleanAlgebraRowProps = {
 	onGeometryClick: (index: number) => (event: React.MouseEvent<HTMLElement>) => void;
 	onOperationChange: (
 		valueIndex: number
 	) => (event: React.MouseEvent<HTMLElement>, value?: string | null) => void;
 	value: OperationDataList;
 	allObjects: Object3D[];
+	scrollWrapperRef: React.MutableRefObject<HTMLDivElement | null>;
 };
 
 export type AlgebraRow = {
@@ -23,7 +24,8 @@ export default function BooleanAlgebraRow({
 	value,
 	onGeometryClick,
 	onOperationChange,
-	allObjects
+	allObjects,
+	scrollWrapperRef
 }: BooleanAlgebraRowProps) {
 	const displayValueRef = useRef<Partial<OperationData>[]>([...value]);
 	const [lastObj, setLastObj] = useState<Partial<OperationData>>(
@@ -31,6 +33,17 @@ export default function BooleanAlgebraRow({
 	);
 	const [lastLength, setLastLength] = useState<number>(value.length);
 	useEffect(() => {
+		const scrollToBottom = () => {
+			// scroll to bottom using scrollTop function on scrollWrapperRef and offsetTop of endRef
+			if (scrollWrapperRef)
+				setTimeout(() => {
+					scrollWrapperRef.current?.scrollTo({
+						top: endRef.current?.offsetTop,
+						behavior: 'smooth'
+					});
+				}, 1);
+		};
+
 		displayValueRef.current = [...value];
 		// if the last object is defined, add ui to create a new one
 		if (value.length === 0 || value[value.length - 1].objectId !== null)
@@ -48,15 +61,9 @@ export default function BooleanAlgebraRow({
 		}
 		setLastObj(Object.assign({}, lastRef));
 		setLastLength(displayValueRef.current.length);
-	}, [value, lastObj?.objectId, lastLength]);
+	}, [value, lastObj?.objectId, lastLength, scrollWrapperRef]);
 
 	const endRef = React.useRef<HTMLDivElement>(null);
-
-	const scrollToBottom = () => {
-		setTimeout(() => {
-			endRef.current?.scrollIntoView({ behavior: 'smooth' });
-		}, 1);
-	};
 
 	return (
 		<Box
