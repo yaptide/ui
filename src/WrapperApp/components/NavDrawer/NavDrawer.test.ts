@@ -10,6 +10,7 @@ describe('NavDrawer component', () => {
       .setChromeOptions(new chrome.Options().headless())
       .build();
   }, 30000);
+  //test timeouts are set to 30000 ms, as default timeout of 5000 ms is not enough for the test to pass in github actions
 
   afterAll(async () => {
     await driver.quit();
