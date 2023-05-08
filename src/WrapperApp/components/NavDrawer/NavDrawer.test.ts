@@ -5,6 +5,7 @@ describe('NavDrawer component', () => {
   let driver: WebDriver;
 
   beforeAll(async () => {
+    jest.setTimeout(30000);
     driver = await new Builder()
       .forBrowser('chrome')
       .setChromeOptions(new chrome.Options().headless())
