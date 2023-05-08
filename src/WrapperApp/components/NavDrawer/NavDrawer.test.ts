@@ -9,11 +9,11 @@ describe('NavDrawer component', () => {
       .forBrowser('chrome')
       .setChromeOptions(new chrome.Options().headless())
       .build();
-  });
+  }, 30000);
 
   afterAll(async () => {
     await driver.quit();
-  });
+  }, 30000);
 
   test('renders a menu button', async () => {
     await driver.get('http://localhost:3000');
