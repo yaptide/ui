@@ -1,14 +1,12 @@
 import * as Comlink from 'comlink';
 import { Signal } from 'signals';
 import * as THREE from 'three';
-import { Editor } from '../../js/Editor';
-import { SimulationSceneContainer } from '../../Simulation/Base/SimScene';
 import { SimulationPropertiesType } from '../../../types/SimProperties';
+import { SimulationSceneContainer } from '../../Simulation/Base/SimScene';
+import { Editor } from '../../js/Editor';
 import { WorldZone, WorldZoneJSON } from '../WorldZone/WorldZone';
-import { IZoneWorker } from './CSGWorker';
 import { BooleanZone, BooleanZoneJSON } from './BooleanZone';
-import { UniqueChildrenNames, getNextFreeName } from '../Name';
-import { SimulationZone } from '../../Simulation/Base/SimZone';
+import { IZoneWorker } from './CSGWorker';
 
 interface ZoneManagerJSON {
 	uuid: string;
@@ -37,10 +35,7 @@ export class ZoneContainer extends SimulationSceneContainer<BooleanZone> {
 	}
 }
 
-export class ZoneManager
-	extends THREE.Scene
-	implements SimulationPropertiesType, UniqueChildrenNames
-{
+export class ZoneManager extends THREE.Scene implements SimulationPropertiesType {
 	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -82,10 +77,6 @@ export class ZoneManager
 		this.add(this.worldZone);
 
 		this.signals.zoneEmpty.add((zone: BooleanZone) => this.handleZoneEmpty(zone));
-	}
-
-	getNextFreeName(zone: SimulationZone, newName?: string): string {
-		return getNextFreeName(this, newName ?? zone.name, zone);
 	}
 
 	createZone() {

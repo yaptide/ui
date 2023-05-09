@@ -1,8 +1,7 @@
 import { Editor } from '../../js/Editor';
+import { SimulationSceneContainer } from '../../Simulation/Base/SimScene';
 import { DetectFilter } from '../Detect/DetectFilter';
 import { DetectGeometry } from '../Detect/DetectGeometry';
-import { getNextFreeName, UniqueChildrenNames } from '../Name';
-import { SimulationSceneContainer } from '../../Simulation/Base/SimScene';
 import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
 
 export type ScoringOutputJSON = {
@@ -14,10 +13,7 @@ export type ScoringOutputJSON = {
 	trace: boolean;
 	traceFilter?: string;
 };
-export class ScoringOutput
-	extends SimulationSceneContainer<ScoringQuantity>
-	implements UniqueChildrenNames
-{
+export class ScoringOutput extends SimulationSceneContainer<ScoringQuantity> {
 	readonly isOutput: true = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -101,10 +97,6 @@ export class ScoringOutput
 
 	getQuantityByUuid(uuid: string): ScoringQuantity | null {
 		return this.children.find(qty => qty.uuid === uuid) || null;
-	}
-
-	getNextFreeName(quantity: ScoringQuantity, newName?: string): string {
-		return getNextFreeName(this, newName ?? quantity.name, quantity);
 	}
 
 	toJSON(): ScoringOutputJSON {

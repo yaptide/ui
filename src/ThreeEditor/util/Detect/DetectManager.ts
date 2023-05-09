@@ -169,8 +169,7 @@ export class DetectManager extends THREE.Scene implements SimulationPropertiesTy
 	}
 
 	addFilter(filter: DetectFilter): void {
-		filter.parent = this.filterContainer;
-		this.filters.push(filter);
+		this.filterContainer.add(filter);
 	}
 
 	removeFilter(filter: DetectFilter): void {

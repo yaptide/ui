@@ -1,7 +1,7 @@
 import { Signal } from 'signals';
 import { Editor } from '../../js/Editor';
-import { getNextFreeName, UniqueChildrenNames } from '../Name';
 import { SimulationSceneContainer } from '../../Simulation/Base/SimScene';
+import { UniqueChildrenNames } from '../Name';
 import { ScoringOutput, ScoringOutputJSON } from './ScoringOutput';
 
 export type ScoringManagerJSON = {
@@ -29,13 +29,8 @@ export class ScoringManager
 		this.signals = editor.signals;
 	}
 
-	getNextFreeName(output: ScoringOutput, newName?: string): string {
-		return getNextFreeName(this, newName ?? output.name, output);
-	}
-
 	addOutput(output: ScoringOutput) {
-		this.children.push(output);
-		output.parent = this;
+		this.add(output);
 
 		this.signals.objectAdded.dispatch(output);
 	}
@@ -45,7 +40,9 @@ export class ScoringManager
 		this.addOutput(output);
 		return output;
 	}
+
 	removeOutput(output: ScoringOutput) {
+		this.remove(output);
 		this.children.splice(this.children.indexOf(output), 1);
 		output.parent = null;
 		this.signals.objectRemoved.dispatch(output);

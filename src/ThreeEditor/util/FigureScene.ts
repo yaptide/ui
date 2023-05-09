@@ -3,8 +3,12 @@ import { Editor } from '../js/Editor';
 import { generateSimulationInfo } from './AdditionalGeometryData';
 import { BasicMesh } from './BasicMeshes';
 import { SimulationPropertiesType } from '../../types/SimProperties';
+import { UniqueChildrenNames, getNextFreeName } from './Name';
 
-export class FigureScene extends THREE.Scene implements SimulationPropertiesType {
+export class FigureScene
+	extends THREE.Scene
+	implements SimulationPropertiesType, UniqueChildrenNames
+{
 	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -17,6 +21,13 @@ export class FigureScene extends THREE.Scene implements SimulationPropertiesType
 
 		this.name = 'Figures';
 		this.editor = editor;
+	}
+	getNextFreeName(object: THREE.Object3D<THREE.Event>, newName?: string | undefined): string {
+		return getNextFreeName(this, newName ?? object.name, object);
+	}
+	add(object: THREE.Object3D<THREE.Event>): this {
+		object.name = this.getNextFreeName(object);
+		return super.add(object);
 	}
 	toJSON(): unknown {
 		const data = super.toJSON();
