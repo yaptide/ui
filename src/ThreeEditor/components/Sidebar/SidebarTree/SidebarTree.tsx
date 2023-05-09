@@ -3,8 +3,9 @@ import { Tree, TreeMethods } from '@minoru/react-dnd-treeview';
 import { Object3D } from 'three';
 import './SidebarTree.style.css';
 import { Editor } from '../../../js/Editor';
-import { SimulationObject3D } from '../../../util/SimulationBase/SimulationMesh';
+import { SimulationElement } from '../../../Simulation/Base/SimElement';
 import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
+import { hasVisibleChildren } from '../../../util/hooks/useKeyboardEditorControls';
 
 type TreeSource = (Object3D[] | Object3D)[];
 
@@ -15,7 +16,7 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 
 	const buildOption = useCallback(
 		(
-			object: Object3D | SimulationObject3D | undefined,
+			object: Object3D | SimulationElement | undefined,
 			items: Object3D[] | undefined,
 			parentId: number
 		): TreeItem[] => {
@@ -24,7 +25,7 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 			if (!items) items = object.children;
 
 			let children: TreeItem[] = [];
-			if (!(object as SimulationObject3D).notVisibleChildren)
+			if (hasVisibleChildren(object))
 				children = items.map(child => buildOption(child, child.children, object.id)).flat();
 
 			return [

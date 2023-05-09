@@ -9,7 +9,7 @@ import {
 } from '../../../../js/commands/Commands';
 import { isBasicMesh } from '../../../../util/BasicMeshes';
 import * as CSG from '../../../../util/CSG/CSG';
-import { isZone } from '../../../../util/CSG/CSGZone';
+import { isZone } from '../../../../util/CSG/BooleanZone';
 import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { BooleanAlgebraData } from '../../../ZoneManagerPanel/BooleanAlgebra/BooleanAlgebraData';
 import ZoneManagerPanel from '../../../ZoneManagerPanel/ZoneManagerPanel';

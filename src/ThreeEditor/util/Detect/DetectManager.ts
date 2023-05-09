@@ -2,8 +2,8 @@ import { Signal } from 'signals';
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
 import * as CSG from '../CSG/CSG';
-import { SimulationSceneGroup } from '../SimulationBase/SimulationGroup';
-import { ISimulationObject } from '../SimulationBase/SimulationObject';
+import { SimulationSceneContainer } from '../../Simulation/Base/SimScene';
+import { SimulationPropertiesType } from '../../../types/SimProperties';
 import { DetectFilter, FilterJSON } from './DetectFilter';
 import { DetectGeometry, DetectGeometryJSON, isDetectGeometry } from './DetectGeometry';
 
@@ -14,7 +14,7 @@ interface DetectManagerJSON {
 	filters: FilterJSON[];
 }
 
-export class DetectContainer extends SimulationSceneGroup<DetectGeometry> {
+export class DetectContainer extends SimulationSceneContainer<DetectGeometry> {
 	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -33,7 +33,7 @@ export class DetectContainer extends SimulationSceneGroup<DetectGeometry> {
 	}
 }
 
-export class FilterContainer extends SimulationSceneGroup<DetectFilter> {
+export class FilterContainer extends SimulationSceneContainer<DetectFilter> {
 	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -53,7 +53,7 @@ export class FilterContainer extends SimulationSceneGroup<DetectFilter> {
 	}
 }
 
-export class DetectManager extends THREE.Scene implements ISimulationObject {
+export class DetectManager extends THREE.Scene implements SimulationPropertiesType {
 	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -117,18 +117,26 @@ export class DetectManager extends THREE.Scene implements ISimulationObject {
 		this.signals.materialChanged.add(this.onMaterialChanged.bind(this));
 	}
 
+	private hasUsefulGeometry(object: THREE.Object3D): object is DetectGeometry {
+		return Boolean(
+			isDetectGeometry(object) &&
+				this.editor.selected === object &&
+				object.geometry &&
+				object.geometry.boundingSphere &&
+				object.geometry.boundingSphere.radius > 0
+		);
+	}
+
 	onObjectSelected = (object: THREE.Object3D) => {
 		this.detectHelper.geometry.dispose();
+		this.detectHelper.geometry = new THREE.BufferGeometry();
 		this.detectHelper.visible = false;
 
-		if (isDetectGeometry(object) && this.editor.selected === object) {
-			this.detectHelper.position.copy(object.position);
-			this._detectWireMaterial.color.copy(object.material.color);
-			this.detectHelper.geometry = object.geometry.clone();
-			this.detectHelper.visible = true;
-		} else {
-			this.detectHelper.geometry = new THREE.BufferGeometry();
-		}
+		if (!this.hasUsefulGeometry(object)) return;
+		this.detectHelper.position.copy(object.position);
+		this._detectWireMaterial.color.copy(object.material.color);
+		this.detectHelper.geometry = object.geometry.clone();
+		this.detectHelper.visible = object.visible;
 
 		this.signals.sceneGraphChanged.dispatch();
 	};

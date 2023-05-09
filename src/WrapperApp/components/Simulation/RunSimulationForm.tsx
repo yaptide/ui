@@ -21,7 +21,7 @@ import { useState } from 'react';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { TabPanel } from '../Panels/TabPanel';
 import { BatchScriptParametersEditor } from './BatchParametersEditor';
-import { SimulationInputFiles } from '../../../types/ResponseTypes';
+import { SimulationInputFiles } from '../../../types/Response';
 
 function a11yProps(index: number, name: string = 'RunSimulation') {
 	return {

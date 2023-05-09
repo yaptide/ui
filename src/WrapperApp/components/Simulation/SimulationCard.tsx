@@ -26,7 +26,7 @@ import {
 	StatusState,
 	currentJobStatusData,
 	currentTaskStatusData
-} from '../../../types/ResponseTypes';
+} from '../../../types/Response';
 import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
 import { SimulationProgressBar } from './SimulationProgressBar';

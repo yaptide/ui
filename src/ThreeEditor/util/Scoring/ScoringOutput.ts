@@ -2,7 +2,7 @@ import { Editor } from '../../js/Editor';
 import { DetectFilter } from '../Detect/DetectFilter';
 import { DetectGeometry } from '../Detect/DetectGeometry';
 import { getNextFreeName, UniqueChildrenNames } from '../Name';
-import { SimulationSceneGroup } from '../SimulationBase/SimulationGroup';
+import { SimulationSceneContainer } from '../../Simulation/Base/SimScene';
 import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
 
 export type ScoringOutputJSON = {
@@ -15,7 +15,7 @@ export type ScoringOutputJSON = {
 	traceFilter?: string;
 };
 export class ScoringOutput
-	extends SimulationSceneGroup<ScoringQuantity>
+	extends SimulationSceneContainer<ScoringQuantity>
 	implements UniqueChildrenNames
 {
 	readonly isOutput: true = true;

@@ -9,7 +9,7 @@ import { RemoveZoneCommand } from '../../js/commands/RemoveZoneCommand';
 import { SetFilterRuleCommand } from '../../js/commands/SetFilterRuleCommand';
 import { Editor } from '../../js/Editor';
 import { isBeam } from '../Beam';
-import { isZone } from '../CSG/CSGZone';
+import { isZone } from '../CSG/BooleanZone';
 import { isDetectFilter } from '../Detect/DetectFilter';
 import { isDetectGeometry } from '../Detect/DetectGeometry';
 import { isOutput } from '../Scoring/ScoringOutput';
@@ -26,6 +26,15 @@ export const isRemovable = (object: Object3D) => {
 
 export const canChangeName = (object: Object3D) => {
 	return !isBeam(object);
+};
+
+export const hasVisibleChildren = (object: Object3D) => {
+	if (object === null) return false;
+	if (object.children.length === 0) return false;
+	if ('notVisibleChildren' in object) {
+		return !object.notVisibleChildren;
+	}
+	return true;
 };
 
 export const getRemoveCommand = (editor: Editor, object: Object3D) => {

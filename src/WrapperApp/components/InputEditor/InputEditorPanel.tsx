@@ -11,7 +11,7 @@ import { DEMO_MODE } from '../../../config/Config';
 import { InputFilesEditor } from './InputFilesEditor';
 import { readFile } from '../../../services/DataLoaderService';
 import { DragDropFiles } from './DragDropFiles';
-import { SimulationInputFiles, _defaultInputFiles } from '../../../types/ResponseTypes';
+import { SimulationInputFiles, _defaultInputFiles } from '../../../types/Response';
 interface InputEditorPanelProps {
 	goToRun?: (InputFiles?: SimulationInputFiles) => void;
 }
@@ -21,7 +21,7 @@ type GeneratorLocation = 'local' | 'remote';
 export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const { enqueueSnackbar } = useSnackbar();
 	const { editorRef } = useStore();
-	const { convertToInputFiles, postJobDirect } = useShSimulation();
+	const { convertToInputFiles } = useShSimulation();
 	const { isConverterReady, convertJSON } = usePythonConverter();
 
 	const [isInProgress, setInProgress] = useState(false);
@@ -72,20 +72,6 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 		throttle(1000, onClickGenerate, { noTrailing: true }),
 		[onClickGenerate]
 	);
-
-	/**
-	 * @deprecated
-	 */
-	const runSimulation = (inputFiles: SimulationInputFiles) => {
-		setInProgress(true);
-		postJobDirect(inputFiles, undefined, undefined, undefined, undefined, controller.signal)
-			.then()
-			.catch()
-			.finally(() => {
-				setInProgress(false);
-				goToRun?.call(null);
-			});
-	};
 
 	return (
 		<Box

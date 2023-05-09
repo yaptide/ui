@@ -6,52 +6,46 @@ import * as Comlink from 'comlink';
 import { Editor } from '../../js/Editor';
 import CSG from '../../js/libs/csg/three-csg';
 import { OperationTuple, OperationTupleJSON } from './CSGOperationTuple';
-import SimulationMaterial, { SimulationMaterialJSON } from '../Materials/SimulationMaterial';
 import { CounterMap } from './CounterMap';
-import { SimulationMesh } from '../SimulationBase/SimulationMesh';
+import { SimulationZone, SimulationZoneJSON } from '../../Simulation/Base/SimZone';
 
-export interface ZoneJSON {
-	uuid: string;
-	name: string;
+export interface BooleanZoneJSON extends SimulationZoneJSON {
 	unionOperations: OperationTupleJSON[][];
 	subscribedObjects: Record<string, number>;
-	materialUuid: string;
-	materialPropertiesOverrides: MaterialPropertiesOverridesJSON;
-	customMaterial?: SimulationMaterialJSON;
 }
 
-interface MaterialPropertiesOverridesJSON {
-	density?: number;
-}
+// interface MaterialPropertiesOverridesJSON {
+// 	density?: number;
+// }
 
-interface MaterialPropertiesOverrides {
-	density: {
-		override: boolean;
-		value: number;
-	};
-}
+// interface MaterialPropertiesOverrides {
+// 	density: {
+// 		override: boolean;
+// 		value: number;
+// 	};
+// }
 
-const _get_default = (material: SimulationMaterial) => {
-	return {
-		materialPropertiesOverrides: {
-			density: {
-				override: false,
-				value: material.density
-			}
-		}
-	};
-};
+// const _get_default = (material: SimulationMaterial) => {
+// 	return {
+// 		materialPropertiesOverrides: {
+// 			density: {
+// 				override: false,
+// 				value: material.density
+// 			}
+// 		}
+// 	};
+// };
 
-export class Zone extends SimulationMesh {
-	readonly notRemovable: boolean = false;
+export class BooleanZone extends SimulationZone {
+	// readonly notRemovable: boolean = false;
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
 	private _unionOperations: OperationTuple[][];
-	private _materialPropertiesOverrides: MaterialPropertiesOverrides;
-	private usingCustomMaterial = false;
+	// private _materialPropertiesOverrides: MaterialPropertiesOverrides;
+	// private usingCustomMaterial = false;
 
-	material: SimulationMaterial;
+	// material: SimulationMaterial;
 	subscribedObjects: CounterMap<string>;
 	needsUpdate: boolean = true;
 	private signals: {
@@ -59,14 +53,16 @@ export class Zone extends SimulationMesh {
 		objectRemoved: Signal<THREE.Object3D>;
 		geometryChanged: Signal<THREE.Object3D>;
 		sceneGraphChanged: Signal;
-		zoneAdded: Signal<Zone>;
-		zoneGeometryChanged: Signal<Zone>;
-		zoneRemoved: Signal<Zone>;
-		zoneChanged: Signal<Zone>;
-		zoneEmpty: Signal<Zone>;
+		zoneAdded: Signal<BooleanZone>;
+		zoneGeometryChanged: Signal<BooleanZone>;
+		zoneRemoved: Signal<BooleanZone>;
+		zoneChanged: Signal<BooleanZone>;
+		zoneEmpty: Signal<BooleanZone>;
 		CSGManagerStateChanged: Signal;
 	};
-	readonly isZone: true = true;
+	// readonly isZone: true = true;
+
+	//CSG OPERATIONS
 	set unionOperations(operations: OperationTuple[][]) {
 		this._unionOperations = operations;
 		// If operations are specified, we have to generate geometry.
@@ -76,39 +72,39 @@ export class Zone extends SimulationMesh {
 		return this._unionOperations;
 	}
 
-	set materialPropertiesOverrides(overrides: MaterialPropertiesOverrides) {
-		this._materialPropertiesOverrides = {
-			...overrides
-		};
+	// set materialPropertiesOverrides(overrides: MaterialPropertiesOverrides) {
+	// 	this._materialPropertiesOverrides = {
+	// 		...overrides
+	// 	};
 
-		const isCurrentlyUsingCustomMaterial = this.somePropertyOverridden();
+	// 	const isCurrentlyUsingCustomMaterial = this.somePropertyOverridden();
 
-		if (isCurrentlyUsingCustomMaterial !== this.usingCustomMaterial) {
-			this.usingCustomMaterial = isCurrentlyUsingCustomMaterial;
+	// 	if (isCurrentlyUsingCustomMaterial !== this.usingCustomMaterial) {
+	// 		this.usingCustomMaterial = isCurrentlyUsingCustomMaterial;
 
-			if (this.usingCustomMaterial) this.material.decrement();
-			else this.material.increment();
-		}
-	}
+	// 		if (this.usingCustomMaterial) this.material.decrement();
+	// 		else this.material.increment();
+	// 	}
+	// }
 
-	get materialPropertiesOverrides() {
-		return this._materialPropertiesOverrides;
-	}
+	// get materialPropertiesOverrides() {
+	// 	return this._materialPropertiesOverrides;
+	// }
 
 	worker?: Comlink.Remote<IZoneWorker>;
 	readonly debouncedUpdatePreview = debounce(200, () => this.updatePreview(), { atBegin: false });
 
 	constructor(editor: Editor, name?: string) {
-		super(editor, name, 'Zone');
+		super(editor, name ?? 'BooleanZone');
 		this.signals = editor.signals;
-		this.name = name || `Zone`;
-		this.material = editor.materialManager.defaultMaterial;
-		this.material.increment();
+		// this.name = name || `Zone`;
+		// this.material = editor.materialManager.defaultMaterial;
+		// this.material.increment();
 		this._unionOperations = [];
 		this.subscribedObjects = new CounterMap<string>();
-		this._materialPropertiesOverrides = {
-			..._get_default(this.material).materialPropertiesOverrides
-		};
+		// this._materialPropertiesOverrides = {
+		// 	..._get_default(this.material).materialPropertiesOverrides
+		// };
 
 		this.signals.geometryChanged.add(object => this.handleChange(object));
 		this.signals.objectChanged.add(object => this.handleChange(object));
@@ -116,19 +112,22 @@ export class Zone extends SimulationMesh {
 		this.addUnion();
 	}
 
-	get simulationMaterial(): SimulationMaterial {
-		return this.material;
-	}
+	// get simulationMaterial(): SimulationMaterial {
+	// 	return this.material;
+	// }
 
-	set simulationMaterial(value: SimulationMaterial) {
-		this.material.decrement();
-		this.material = value;
-		this.resetCustomMaterial();
-		this.material.increment();
-	}
+	// set simulationMaterial(value: SimulationMaterial) {
+	// 	this.material.decrement();
+	// 	this.material = value;
+	// 	this.resetCustomMaterial();
+	// 	this.material.increment();
+	// }
 
 	clone(recursive: boolean) {
-		const clonedZone: this = new Zone(this.editor, this.name).copy(this, recursive) as this;
+		const clonedZone: this = new BooleanZone(this.editor, this.name).copy(
+			this,
+			recursive
+		) as this;
 
 		return clonedZone;
 	}
@@ -136,10 +135,10 @@ export class Zone extends SimulationMesh {
 	copy(source: this, recursive: boolean): this {
 		super.copy(source, recursive);
 
-		this.simulationMaterial = source.material;
+		// this.simulationMaterial = source.material;
 		this.subscribedObjects = source.subscribedObjects;
 		this.unionOperations = source.unionOperations;
-		this._materialPropertiesOverrides = { ...source.materialPropertiesOverrides };
+		// this._materialPropertiesOverrides = { ...source.materialPropertiesOverrides };
 
 		return this;
 	}
@@ -254,90 +253,60 @@ export class Zone extends SimulationMesh {
 		this.signals.sceneGraphChanged.dispatch();
 	}
 
-	private resetCustomMaterial(): void {
-		this._materialPropertiesOverrides = {
-			..._get_default(this.material).materialPropertiesOverrides
-		};
-		this.usingCustomMaterial = false;
-	}
+	// private resetCustomMaterial(): void {
+	// 	this._materialPropertiesOverrides = {
+	// 		..._get_default(this.material).materialPropertiesOverrides
+	// 	};
+	// 	this.usingCustomMaterial = false;
+	// }
 
-	private somePropertyOverridden(): boolean {
-		for (const key in this.materialPropertiesOverrides) {
-			const value =
-				this.materialPropertiesOverrides[
-					key as keyof typeof this.materialPropertiesOverrides
-				];
-			if (!value.override) continue;
-			return true;
-		}
-		return false;
-	}
+	// private somePropertyOverridden(): boolean {
+	// 	for (const key in this.materialPropertiesOverrides) {
+	// 		const value =
+	// 			this.materialPropertiesOverrides[
+	// 				key as keyof typeof this.materialPropertiesOverrides
+	// 			];
+	// 		if (!value.override) continue;
+	// 		return true;
+	// 	}
+	// 	return false;
+	// }
 
-	toJSON() {
+	toJSON(): BooleanZoneJSON {
+		const json = super.toJSON();
 		const unionOperations = this.unionOperations.map(union =>
 			union.map(operation => operation.toJSON())
 		);
-		const { uuid: materialUuid } = this.simulationMaterial;
 		const subscribedObjects = this.subscribedObjects.toJSON();
-		const { uuid, name, materialPropertiesOverrides } = this;
-
-		const customMaterial = this.simulationMaterial.clone().toJSON() as Record<string, unknown>;
-		let saveCustomMaterial = false;
-
-		const materialPropertiesOverridesJSON: Record<string, unknown> = {};
-		for (const key in materialPropertiesOverrides) {
-			const value =
-				materialPropertiesOverrides[key as keyof typeof materialPropertiesOverrides];
-
-			if (!value.override) continue;
-			materialPropertiesOverridesJSON[key] = value.value;
-			customMaterial[key] = value.value;
-			saveCustomMaterial = true;
-		}
 
 		return {
-			uuid,
-			name,
-			materialUuid: saveCustomMaterial ? customMaterial.uuid : materialUuid,
+			...json,
 			unionOperations,
-			subscribedObjects,
-			materialPropertiesOverrides: materialPropertiesOverridesJSON,
-			customMaterial: saveCustomMaterial ? customMaterial : undefined
+			subscribedObjects
 		};
 	}
 
-	fromJSON(editor: Editor, data: ZoneJSON): Zone {
-		this.uuid = data.uuid;
-		this.name = data.name;
-
-		this.unionOperations = data.unionOperations.map(union =>
+	fromJSON(json: BooleanZoneJSON): this {
+		const { editor } = this;
+		const {
+			unionOperations: operationsJSON,
+			subscribedObjects: objectsJSON,
+			...basicJSON
+		} = json;
+		super.fromJSON(basicJSON);
+		this.unionOperations = operationsJSON.map(union =>
 			union.map(operation => OperationTuple.fromJSON(editor, operation))
 		);
 
-		this.subscribedObjects = new CounterMap().fromJSON(data.subscribedObjects);
-
-		this.simulationMaterial =
-			this.editor.materialManager.getMaterialByUuid(data.materialUuid) ??
-			this.editor.materialManager.defaultMaterial;
-
-		for (const prop in data.materialPropertiesOverrides) {
-			const value =
-				data.materialPropertiesOverrides[prop as keyof MaterialPropertiesOverrides] ?? NaN;
-			if (isNaN(value)) continue;
-
-			this.materialPropertiesOverrides[prop as keyof MaterialPropertiesOverrides] = {
-				override: true,
-				value: value
-			};
-		}
+		this.subscribedObjects = new CounterMap().fromJSON(objectsJSON);
 
 		return this;
 	}
 
-	static fromJSON(editor: Editor, data: ZoneJSON) {
-		const zone = new Zone(editor);
-		return zone.fromJSON(editor, data);
+	static fromJSON(editor: Editor, json: BooleanZoneJSON) {
+		const zone = new BooleanZone(editor);
+		return zone.fromJSON(json);
 	}
 }
 
-export const isZone = (x: unknown): x is Zone => x instanceof Zone;
+export const isZone = (x: unknown): x is BooleanZone => x instanceof BooleanZone;

@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { ReactElement } from 'react';
 import { Object3D } from 'three';
-import { SimulationObject3D } from '../../../util/SimulationBase/SimulationMesh';
+import { SimulationElement } from '../../../Simulation/Base/SimElement';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { DndProvider } from 'react-dnd';
@@ -26,7 +26,7 @@ export interface TreeItem {
 	droppable: boolean;
 	text: string;
 	data: {
-		object: Object3D | SimulationObject3D;
+		object: Object3D | SimulationElement;
 	};
 }
 

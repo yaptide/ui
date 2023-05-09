@@ -1,23 +1,24 @@
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
-import { ISimulationObject } from './SimulationObject';
+import { SimulationPropertiesType } from '../../../types/SimProperties';
+import { getNextFreeName } from '../../util/Name';
 
 export interface ISimulationSceneChild extends THREE.Object3D {
-	parent: SimulationSceneGroup<this> | null;
+	parent: SimulationSceneContainer<this> | null;
 	name: string;
 	type: string;
 	readonly id: number;
 	uuid: string;
 }
 
-export abstract class SimulationSceneGroup<TChild extends ISimulationSceneChild>
+export abstract class SimulationSceneContainer<TChild extends ISimulationSceneChild>
 	extends THREE.Object3D
-	implements ISimulationObject
+	implements SimulationPropertiesType
 {
 	children: TChild[];
 	editor: Editor;
 	private _name: string;
-	parent: SimulationSceneGroup<this> | null;
+	parent: SimulationSceneContainer<this> | null;
 	type: string;
 	constructor(editor: Editor, name: string, type: string) {
 		super();

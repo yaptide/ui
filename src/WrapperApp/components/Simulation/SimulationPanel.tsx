@@ -5,14 +5,14 @@ import { useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { useLoader } from '../../../services/DataLoaderService';
-import { OrderBy, OrderType } from '../../../types/RequestTypes';
+import { OrderBy, OrderType } from '../../../types/Request';
 import {
 	SimulationInputFiles,
 	JobStatusData,
 	SimulationInfo,
 	StatusState,
 	currentJobStatusData
-} from '../../../types/ResponseTypes';
+} from '../../../types/Response';
 import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { DEMO_MODE } from '../../../config/Config';

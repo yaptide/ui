@@ -2,7 +2,7 @@ import { Editor } from '../../../../js/Editor';
 import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
 import { Object3D } from 'three';
-import { isZone } from '../../../../util/CSG/CSGZone';
+import { isZone } from '../../../../util/CSG/BooleanZone';
 import { ColorInput, ConditionalNumberPropertyField, PropertyField } from '../fields/PropertyField';
 import { SetMaterialColorCommand } from '../../../../js/commands/SetMaterialColorCommand';
 import { isBeam } from '../../../../util/Beam';

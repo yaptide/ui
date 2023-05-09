@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
 import * as Comlink from 'comlink';
-import { SimulationInputFiles } from '../types/ResponseTypes';
+import { SimulationInputFiles } from '../types/Response';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 
 // as for now there is no reasonable npm package for pyodide

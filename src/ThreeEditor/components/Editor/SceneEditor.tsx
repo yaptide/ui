@@ -112,10 +112,7 @@ function SceneEditor(props: SceneEditorProps) {
 					sx={{
 						'width': 370,
 						'&.MuiAppBar-colorSecondary': {
-							backgroundColor:
-								theme.palette.mode === 'dark'
-									? theme.palette.secondary.dark
-									: theme.palette.secondary.light
+							backgroundColor: theme.palette.background.secondary
 						}
 					}}>
 					<EditorSidebar editor={editor}></EditorSidebar>

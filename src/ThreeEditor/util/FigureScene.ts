@@ -2,9 +2,9 @@ import * as THREE from 'three';
 import { Editor } from '../js/Editor';
 import { generateSimulationInfo } from './AdditionalGeometryData';
 import { BasicMesh } from './BasicMeshes';
-import { ISimulationObject } from './SimulationBase/SimulationObject';
+import { SimulationPropertiesType } from '../../types/SimProperties';
 
-export class FigureScene extends THREE.Scene implements ISimulationObject {
+export class FigureScene extends THREE.Scene implements SimulationPropertiesType {
 	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;

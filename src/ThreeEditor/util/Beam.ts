@@ -6,7 +6,7 @@ import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { Editor } from '../js/Editor';
 import { Particle, PARTICLE_TYPES } from './particles';
-import { SimulationObject3D } from './SimulationBase/SimulationMesh';
+import { SimulationElement } from '../Simulation/Base/SimElement';
 
 export const SIGMA_TYPE = {
 	'Gaussian': 'Gaussian',
@@ -105,7 +105,7 @@ type BeamSourceFile = {
 	name: string;
 };
 
-export class Beam extends SimulationObject3D {
+export class Beam extends SimulationElement {
 	readonly notRemovable: boolean = true;
 	readonly notMovable = false;
 	readonly notRotatable = true; //TODO: https://github.com/yaptide/ui/issues/242

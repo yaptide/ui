@@ -425,7 +425,7 @@ export function Viewport(
 
 	function reattachTransformControls(object) {
 		transformControls.detach();
-
+		console.log('reattachTransformControls', object, canBeTransformed(object))
 		canBeTransformed(object) && transformControls.attach(object);
 	}
 
@@ -482,6 +482,7 @@ export function Viewport(
 
 	signals.objectSelected.add(reattachTransformControls);
 	signals.autocalculateChanged.add(() => reattachTransformControls(editor.selected));
+	signals.detectGeometryChanged.add(reattachTransformControls);
 	signals.contextChanged.add(() => reattachTransformControls(editor.selected));
 
 	signals.objectRemoved.add(object => {

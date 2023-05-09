@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Editor } from '../../js/Editor';
-import { Box, Tabs, Tab } from '@mui/material';
+import { Box, Tabs, Tab, AppBar } from '@mui/material';
 import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import { PropertiesPanel } from './properties/PropertiesPanel';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
@@ -22,6 +22,12 @@ import { Object3D } from 'three';
 import { useSignal } from '../../util/hooks/signals';
 import { isQuantity } from '../../util/Scoring/ScoringQuantity';
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
+import ViewInArIcon from '@mui/icons-material/ViewInAr';
+import SpeedIcon from '@mui/icons-material/Speed';
+import SettingsIcon from '@mui/icons-material/Settings';
+import TokenIcon from '@mui/icons-material/Token';
+import { Beam } from '../../util/Beam';
+import { BeamModifiersConfiguration } from './properties/category/RangeModulatorConfiguration';
 
 export function EditorSidebar(props: { editor: Editor }) {
 	const { editor } = props;
@@ -34,7 +40,7 @@ export function EditorSidebar(props: { editor: Editor }) {
 
 	useSignal(editor, 'objectSelected', handleObjectUpdate);
 
-	const [selectedTab, setValue] = useState('Geometry');
+	const [selectedTab, setSelectedTab] = useState<Capitalize<Context>>();
 
 	const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
 		switch (newValue) {
@@ -52,17 +58,18 @@ export function EditorSidebar(props: { editor: Editor }) {
 	const handleContextChange = useCallback((context: Context) => {
 		switch (context) {
 			case 'scoring':
-				setValue('Scoring');
+				setSelectedTab('Scoring');
 				break;
 			case 'settings':
-				setValue('Settings');
+				setSelectedTab('Settings');
 				break;
 			default:
-				setValue('Geometry');
+				setSelectedTab('Geometry');
 		}
 	}, []);
 
 	useEffect(() => {
+		handleContextChange(editor.contextManager.currentContext);
 		editor.signals.contextChanged.add(handleContextChange);
 		return () => {
 			editor.signals.contextChanged.remove(handleContextChange);
@@ -179,101 +186,133 @@ export function EditorSidebar(props: { editor: Editor }) {
 	];
 
 	return (
-		<ScrollPositionManager scrollKey={`vertical-editor-sidebar`}>
-			{({ connectScrollTarget }: { connectScrollTarget: (node: unknown) => void }) => {
-				return (
-					<div
-						style={{
-							overflow: 'auto',
-							position: 'relative',
-							height: '100%'
+		<>
+			<AppBar
+				position='relative'
+				color='secondary'
+				elevation={2}
+				style={{
+					borderBottom: 1,
+					borderColor: 'divider',
+					display: 'flex',
+					alignItems: 'stretch'
+				}}>
+				<Tabs
+					value={selectedTab}
+					onChange={handleChange}
+					aria-label='basic tabs example'
+					variant='fullWidth'>
+					<Tab
+						icon={<TokenIcon />}
+						label='Geometry'
+						value={'Geometry'}
+						sx={{
+							minHeight: 64
 						}}
-						ref={(node: HTMLDivElement) => connectScrollTarget(node)}>
-						<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-							<Tabs
+					/>
+					<Tab
+						icon={<SpeedIcon />}
+						label='Scoring'
+						value={'Scoring'}
+						sx={{
+							minHeight: 64
+						}}
+					/>
+					<Tab
+						icon={<SettingsIcon />}
+						label='Settings'
+						value={'Settings'}
+						sx={{
+							minHeight: 64
+						}}
+					/>
+				</Tabs>
+			</AppBar>
+			<ScrollPositionManager scrollKey={`vertical-editor-sidebar`}>
+				{({ connectScrollTarget }: { connectScrollTarget: (node: unknown) => void }) => {
+					return (
+						<div
+							style={{
+								overflow: 'auto',
+								position: 'relative',
+								height: '100%'
+							}}
+							ref={(node: HTMLDivElement) => connectScrollTarget(node)}>
+							<TabPanel
 								value={selectedTab}
-								onChange={handleChange}
-								aria-label='basic tabs example'>
-								<Tab
-									label='Geometry'
-									value={'Geometry'}
-								/>
-								<Tab
-									label='Scoring'
-									value={'Scoring'}
-								/>
-								<Tab
-									label='Settings'
-									value={'Settings'}
-								/>
-							</Tabs>
-						</Box>
-						<TabPanel
-							value={selectedTab}
-							index={'Geometry'}
-							persistentIfVisited>
-							<EditorSidebarTabTree
-								elements={geometryTabElements}></EditorSidebarTabTree>
-						</TabPanel>
-						<TabPanel
-							value={selectedTab}
-							index={'Scoring'}
-							persistentIfVisited>
-							<EditorSidebarTabTree
-								elements={scoringTabElements}></EditorSidebarTabTree>
-						</TabPanel>
+								index={'Geometry'}
+								persistentIfVisited>
+								<EditorSidebarTabTree
+									elements={geometryTabElements}></EditorSidebarTabTree>
+							</TabPanel>
+							<TabPanel
+								value={selectedTab}
+								index={'Scoring'}
+								persistentIfVisited>
+								<EditorSidebarTabTree
+									elements={scoringTabElements}></EditorSidebarTabTree>
+							</TabPanel>
+							<TabPanel
+								customCss={{ background: 'none' }}
+								value={selectedTab}
+								index={'Settings'}
+								persistentIfVisited>
+								<Stack
+									sx={{ padding: '.5rem' }}
+									spacing={2}>
+									<Box>
+										<Typography
+											variant='h6'
+											sx={{ margin: '0.5rem 0' }}>
+											Beam
+										</Typography>
+										<PropertiesPanel
+											editor={editor}
+											boxProps={{
+												sx: { marginTop: '.5rem', overflowY: 'auto' }
+											}}
+										/>
+									</Box>
+									<Divider light />
+									<Box>
+										<Typography
+											variant='h6'
+											sx={{ margin: '0.5rem 0' }}>
+											Physics
+										</Typography>
+										<PhysicConfiguration
+											editor={editor}
+											object={editor.physic}
+										/>
+									</Box>
+									<Divider light />
+									<Box>
+										<Typography
+											variant='h6'
+											sx={{ margin: '0.5rem 0' }}>
+											Special Components
+										</Typography>
+										<BeamModifiersConfiguration editor={editor} />
+									</Box>
+								</Stack>
+							</TabPanel>
 
-						<TabPanel
-							customCss={{ background: 'none' }}
-							value={selectedTab}
-							index={'Settings'}
-							persistentIfVisited>
-							<Stack
-								sx={{ padding: '.5rem' }}
-								spacing={2}>
-								<Box>
-									<Typography
-										variant='h6'
-										sx={{ margin: '0.5rem 0' }}>
-										Beam
-									</Typography>
-									<PropertiesPanel
-										editor={editor}
-										boxProps={{
-											sx: { marginTop: '.5rem', overflowY: 'auto' }
-										}}
-									/>
-								</Box>
-								<Divider light />
-								<Box>
-									<Typography
-										variant='h6'
-										sx={{ margin: '0.5rem 0' }}>
-										Physics
-									</Typography>
-									<PhysicConfiguration
-										editor={editor}
-										object={editor.physic}
-									/>
-								</Box>
-							</Stack>
-						</TabPanel>
-
-						{selectedTab !== 'Settings' && (
-							<PropertiesPanel
-								editor={editor}
-								boxProps={{
-									sx: {
-										marginTop: '1rem',
-										padding: '0 .5rem',
-										overflowY: 'auto'
-									}
-								}}
-							/>
-						)}
-					</div>
-				);
-			}}
-		</ScrollPositionManager>
+							{selectedTab !== 'Settings' && (
+								<PropertiesPanel
+									editor={editor}
+									boxProps={{
+										sx: {
+											marginTop: '1rem',
+											padding: '0 .5rem',
+											overflowY: 'auto'
+										}
+									}}
+								/>
+							)}
+						</div>
+					);
+				}}
+			</ScrollPositionManager>
+		</>
 	);
 }

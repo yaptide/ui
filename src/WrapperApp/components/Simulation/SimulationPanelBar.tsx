@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 
 import React from 'react';
-import { OrderBy, OrderType } from '../../../types/RequestTypes';
+import { OrderBy, OrderType } from '../../../types/Request';
 import {
 	ButtonWithPopperList,
 	ButtonWithPopperListProps

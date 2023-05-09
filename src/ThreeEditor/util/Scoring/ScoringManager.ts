@@ -1,7 +1,7 @@
 import { Signal } from 'signals';
 import { Editor } from '../../js/Editor';
 import { getNextFreeName, UniqueChildrenNames } from '../Name';
-import { SimulationSceneGroup } from '../SimulationBase/SimulationGroup';
+import { SimulationSceneContainer } from '../../Simulation/Base/SimScene';
 import { ScoringOutput, ScoringOutputJSON } from './ScoringOutput';
 
 export type ScoringManagerJSON = {
@@ -10,7 +10,7 @@ export type ScoringManagerJSON = {
 	scoringOutputs: ScoringOutputJSON[];
 };
 export class ScoringManager
-	extends SimulationSceneGroup<ScoringOutput>
+	extends SimulationSceneContainer<ScoringOutput>
 	implements UniqueChildrenNames
 {
 	readonly isScoringManager: true = true;

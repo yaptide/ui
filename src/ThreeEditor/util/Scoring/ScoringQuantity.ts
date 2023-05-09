@@ -1,6 +1,6 @@
 import { Editor } from '../../js/Editor';
 import { DetectFilter } from '../Detect/DetectFilter';
-import { SimulationObject3D } from '../SimulationBase/SimulationMesh';
+import { SimulationElement } from '../../Simulation/Base/SimElement';
 import * as Scoring from './ScoringOutputTypes';
 import { DifferentialJSON, DifferentialModifier } from './ScoringQtyModifiers';
 
@@ -14,7 +14,7 @@ export type ScoringQuantityJSON = {
 	rescale?: number;
 };
 
-export class ScoringQuantity extends SimulationObject3D {
+export class ScoringQuantity extends SimulationElement {
 	readonly isQuantity: true = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;

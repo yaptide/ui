@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Editor } from '../js/Editor';
-import { SimulationMesh } from './SimulationBase/SimulationMesh';
+import { SimulationMesh } from '../Simulation/Base/SimMesh';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
 	color: 0x000000,

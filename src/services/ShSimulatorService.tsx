@@ -12,7 +12,7 @@ import {
 	RequestPostJob,
 	RequestShConvert,
 	isEditorJson
-} from '../types/RequestTypes';
+} from '../types/Request';
 import {
 	YaptideResponse,
 	JobStatusData,
@@ -22,7 +22,7 @@ import {
 	ResponseShConvert,
 	StatusState,
 	currentJobStatusData
-} from '../types/ResponseTypes';
+} from '../types/Response';
 import { camelToSnakeCase } from '../types/TypeTransformUtil';
 import { orderAccordingToList } from '../util/Sort';
 import { useAuth } from './AuthService';

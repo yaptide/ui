@@ -12,7 +12,7 @@ import {
 	JobStatusData,
 	StatusState,
 	currentJobStatusData
-} from '../types/ResponseTypes';
+} from '../types/Response';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
 import { AboutPanel } from './components/Panels/AboutPanel';
 import LoginPanel from './components/Panels/LoginPanel';

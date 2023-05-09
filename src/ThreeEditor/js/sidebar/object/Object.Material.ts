@@ -1,6 +1,6 @@
 import { Beam } from '../../../util/Beam';
 import * as CSG from '../../../util/CSG/CSG';
-import { SimulationMesh, SimulationPoints } from '../../../util/SimulationBase/SimulationMesh';
+import { SimulationMesh } from '../../../Simulation/Base/SimMesh';
 import {
 	createFullwidthButton,
 	createMaterialSelect,
@@ -21,6 +21,7 @@ import { UIButton, UICheckbox, UIColor, UINumber, UIRow, UISelect, UIText } from
 import { SidebarMaterialBooleanProperty } from '../Sidebar.Material.BooleanProperty';
 import { SidebarMaterialConstantProperty } from '../Sidebar.Material.ConstantProperty';
 import { ObjectAbstract } from './Object.Abstract';
+import { SimulationPoints } from '../../../Simulation/Base/SimPoints';
 
 const MATERIAL_BLENDING_OPTIONS = {
 	0: 'No',

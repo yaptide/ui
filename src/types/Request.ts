@@ -1,5 +1,5 @@
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { SimulationInputFiles, JobStatusData, SimulationInfo } from './ResponseTypes';
+import { SimulationInputFiles, JobStatusData, SimulationInfo } from './Response';
 import { Flatten } from './TypeTransformUtil';
 
 /* ------------Utility types------------ */

@@ -1,5 +1,5 @@
 import { Editor } from '../../js/Editor';
-import { SimulationObject3D } from '../SimulationBase/SimulationMesh';
+import { SimulationElement } from '../../Simulation/Base/SimElement';
 import {
 	FilterRule,
 	FloatRule,
@@ -17,7 +17,7 @@ export type FilterJSON = {
 	rules: RuleJSON[];
 };
 
-export class DetectFilter extends SimulationObject3D {
+export class DetectFilter extends SimulationElement {
 	private _rules: Record<string, FilterRule>;
 	private _selectedRule?: string;
 	readonly isFilter: true = true;
@@ -26,7 +26,7 @@ export class DetectFilter extends SimulationObject3D {
 	readonly notScalable = true;
 	readonly notHidable = true;
 
-	private onObjectSelected(object: SimulationObject3D): void {
+	private onObjectSelected(object: SimulationElement): void {
 		this._selectedRule = undefined;
 	}
 

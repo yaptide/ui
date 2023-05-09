@@ -2,20 +2,22 @@ import * as Comlink from 'comlink';
 import { Signal } from 'signals';
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
-import { SimulationSceneGroup } from '../SimulationBase/SimulationGroup';
-import { ISimulationObject } from '../SimulationBase/SimulationObject';
+import { SimulationSceneContainer } from '../../Simulation/Base/SimScene';
+import { SimulationPropertiesType } from '../../../types/SimProperties';
 import { WorldZone, WorldZoneJSON } from '../WorldZone/WorldZone';
 import { IZoneWorker } from './CSGWorker';
-import { Zone, ZoneJSON } from './CSGZone';
+import { BooleanZone, BooleanZoneJSON } from './BooleanZone';
+import { UniqueChildrenNames, getNextFreeName } from '../Name';
+import { SimulationZone } from '../../Simulation/Base/SimZone';
 
 interface ZoneManagerJSON {
 	uuid: string;
 	name: string;
-	zones: ZoneJSON[];
+	zones: BooleanZoneJSON[];
 	worldZone: WorldZoneJSON;
 }
 
-export class ZoneContainer extends SimulationSceneGroup<Zone> {
+export class ZoneContainer extends SimulationSceneContainer<BooleanZone> {
 	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -29,13 +31,16 @@ export class ZoneContainer extends SimulationSceneGroup<Zone> {
 		this.children.forEach(({ simulationMaterial }) => simulationMaterial.decrement());
 		super.reset();
 	}
-	remove(zone: Zone): this {
+	remove(zone: BooleanZone): this {
 		zone.simulationMaterial.decrement();
 		return super.remove(zone);
 	}
 }
 
-export class ZoneManager extends THREE.Scene implements ISimulationObject {
+export class ZoneManager
+	extends THREE.Scene
+	implements SimulationPropertiesType, UniqueChildrenNames
+{
 	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -47,10 +52,10 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 	zoneContainer: ZoneContainer;
 	private signals: {
 		objectAdded: Signal<THREE.Object3D>;
-		zoneAdded: Signal<Zone>;
-		zoneEmpty: Signal<Zone>;
+		zoneAdded: Signal<BooleanZone>;
+		zoneEmpty: Signal<BooleanZone>;
 		objectRemoved: Signal<THREE.Object3D>;
-		zoneRemoved: Signal<Zone>;
+		zoneRemoved: Signal<BooleanZone>;
 		sceneGraphChanged: Signal;
 		CSGManagerStateChanged: Signal;
 	};
@@ -76,16 +81,20 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 
 		this.add(this.worldZone);
 
-		this.signals.zoneEmpty.add((zone: Zone) => this.handleZoneEmpty(zone));
+		this.signals.zoneEmpty.add((zone: BooleanZone) => this.handleZoneEmpty(zone));
+	}
+
+	getNextFreeName(zone: SimulationZone, newName?: string): string {
+		return getNextFreeName(this, newName ?? zone.name, zone);
 	}
 
 	createZone() {
-		const zone = new Zone(this.editor);
+		const zone = new BooleanZone(this.editor);
 		this.addZone(zone);
 		return zone;
 	}
 
-	addZone(zone: Zone): void {
+	addZone(zone: BooleanZone): void {
 		zone.worker = this.worker;
 		this.zoneContainer.add(zone);
 
@@ -95,7 +104,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 		this.signals.CSGManagerStateChanged.dispatch();
 	}
 
-	removeZone(zone: Zone): void {
+	removeZone(zone: BooleanZone): void {
 		this.zoneContainer.remove(zone);
 
 		this.signals.objectRemoved.dispatch(zone);
@@ -105,7 +114,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 	}
 
 	toJSON() {
-		const zones = this.zoneContainer.toJSON() as ZoneJSON[];
+		const zones = this.zoneContainer.toJSON() as BooleanZoneJSON[];
 		const uuid = this.uuid;
 		const name = this.name;
 		const worldZone = this.worldZone.toJSON();
@@ -128,7 +137,7 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 		this.name = data.name;
 
 		data.zones.forEach(zone => {
-			this.addZone(Zone.fromJSON(this.editor, zone));
+			this.addZone(BooleanZone.fromJSON(this.editor, zone));
 		});
 
 		this.worldZone.removeHelpersFromSceneHelpers();
@@ -144,21 +153,10 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 		return new ZoneManager(editor).fromJSON(data);
 	}
 
-	clone(recursive: boolean) {
-		return new ZoneManager(this.editor).copy(this, recursive) as this;
-	}
-
 	reset() {
 		this.name = 'Zones';
-
-		this.userData = {};
-		this.background = null;
-		this.environment = null;
-
 		this.zoneContainer.reset();
-
 		this.worldZone.reset();
-
 		return this;
 	}
 
@@ -166,20 +164,20 @@ export class ZoneManager extends THREE.Scene implements ISimulationObject {
 		return this.worldZone.getObjectById(id) ?? super.getObjectById(id);
 	}
 
-	getZoneById(id: number): Zone | undefined {
-		return this.zoneContainer.children.find((zone: Zone) => zone.id === id);
+	getZoneById(id: number): BooleanZone | undefined {
+		return this.zoneContainer.children.find((zone: BooleanZone) => zone.id === id);
 	}
 
-	getZoneByUuid(uuid: string): Zone | undefined {
-		return this.zoneContainer.children.find((zone: Zone) => zone.uuid === uuid);
+	getZoneByUuid(uuid: string): BooleanZone | undefined {
+		return this.zoneContainer.children.find((zone: BooleanZone) => zone.uuid === uuid);
 	}
 
-	handleZoneEmpty(zone: Zone): void {
+	handleZoneEmpty(zone: BooleanZone): void {
 		this.removeZone(zone);
 	}
 
 	getZoneOptions(): Record<string, string> {
-		const zoneOptions = this.zoneContainer.children.reduce((acc, zone: Zone) => {
+		const zoneOptions = this.zoneContainer.children.reduce((acc, zone: BooleanZone) => {
 			acc[zone.uuid] = `${zone.name} [${zone.id}]`;
 			return acc;
 		}, {} as Record<string, string>);

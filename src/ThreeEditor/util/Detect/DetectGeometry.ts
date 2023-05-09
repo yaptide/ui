@@ -2,7 +2,7 @@ import { Signal } from 'signals';
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
 import * as CSG from '../CSG/CSG';
-import { SimulationPoints } from '../SimulationBase/SimulationMesh';
+import { SimulationPoints } from '../../Simulation/Base/SimPoints';
 import { DetectManager } from './DetectManager';
 import * as DETECT from './DetectTypes';
 
@@ -48,7 +48,6 @@ export class DetectGeometry extends SimulationPoints {
 	set detectType(value: DETECT.DETECT_TYPE) {
 		this._detectType = value;
 		this.tryUpdateGeometry();
-		this.signals.objectChanged.dispatch(this.proxy, 'detectType' as any);
 	}
 
 	get geometryData(): DETECT.AnyData {
@@ -74,7 +73,6 @@ export class DetectGeometry extends SimulationPoints {
 		CSGManagerStateChanged: Signal;
 		detectGeometryAdded: Signal<DetectGeometry>;
 		detectGeometryRemoved: Signal<DetectGeometry>;
-		detectGeometryChanged: Signal<DetectGeometry>;
 		objectSelected: Signal<THREE.Object3D>;
 	};
 	readonly isDetectGeo: true = true;

@@ -5,7 +5,7 @@ import { debounce } from 'throttle-debounce';
 import { Editor } from '../../js/Editor';
 import { AdditionalGeometryDataType, generateSimulationInfo } from '../AdditionalGeometryData';
 import SimulationMaterial from '../Materials/SimulationMaterial';
-import { SimulationObject3D } from '../SimulationBase/SimulationMesh';
+import { SimulationElement } from '../../Simulation/Base/SimElement';
 import { WorldZoneHelper } from './WorldZoneHelper';
 
 export const BOUNDING_ZONE_TYPE = ['Sphere', 'Cylinder', 'Box'] as const;
@@ -33,7 +33,7 @@ const _materialDefault = new THREE.MeshBasicMaterial({
 
 const _defaultColor = 0xff0000;
 
-export class WorldZone extends SimulationObject3D {
+export class WorldZone extends SimulationElement {
 	readonly notRemovable: boolean = true;
 	get notMovable() {
 		// custom get function to conditionally return notMoveable property;
