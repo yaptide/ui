@@ -35,7 +35,7 @@ jobs:
             - run: npm run build --if-present
             - run: npm run start &
             - name: Wait for the app to start
-              run: sleep 60
+              run: npm install wait-on && npx wait-on http://localhost:3000
             - run: npm test
 
     deploy_gh_pages:
