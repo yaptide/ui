@@ -3,8 +3,8 @@ import {
 	createRowCheckbox,
 	hideUIElement,
 	showUIElement
-} from '../../../util/Ui/Uis';
-import { WorldZone } from '../../../util/WorldZone/WorldZone';
+} from '../../../../util/Ui/Uis';
+import { WorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
 import { SetValueCommand } from '../../commands/Commands';
 import { Editor } from '../../Editor';
 import { UIButton, UICheckbox, UIRow } from '../../libs/ui';

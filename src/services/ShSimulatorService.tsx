@@ -1,8 +1,8 @@
 import { ReactNode, useCallback, useRef } from 'react';
 import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { FilterJSON } from '../ThreeEditor/util/Detect/DetectFilter';
-import { ScoringManagerJSON } from '../ThreeEditor/util/Scoring/ScoringManager';
+import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/DetectFilter';
+import { ScoringManagerJSON } from '../ThreeEditor/Simulation/Scoring/ScoringManager';
 import {
 	RequestCancelJob,
 	RequestGetJobStatus,
@@ -12,7 +12,7 @@ import {
 	RequestPostJob,
 	RequestShConvert,
 	isEditorJson
-} from '../types/Request';
+} from '../types/RequestTypes';
 import {
 	YaptideResponse,
 	JobStatusData,
@@ -22,7 +22,7 @@ import {
 	ResponseShConvert,
 	StatusState,
 	currentJobStatusData
-} from '../types/Response';
+} from '../types/ResponseTypes';
 import { camelToSnakeCase } from '../types/TypeTransformUtil';
 import { orderAccordingToList } from '../util/Sort';
 import { useAuth } from './AuthService';

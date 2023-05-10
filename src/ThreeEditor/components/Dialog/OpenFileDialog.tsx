@@ -15,7 +15,7 @@ import React, { useState } from 'react';
 import { useLoader } from '../../../services/DataLoaderService';
 import EXAMPLES from '../../examples/examples';
 import { CustomDialogTitle } from './CustomDialog';
-import { JobStatusData, StatusState } from '../../../types/Response';
+import { JobStatusData, StatusState } from '../../../types/ResponseTypes';
 import { DragDropProject } from './DragDropProject';
 
 export type OpenFileProps = {

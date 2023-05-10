@@ -5,7 +5,7 @@ import './SidebarTree.style.css';
 import { Editor } from '../../../js/Editor';
 import { SimulationElement } from '../../../Simulation/Base/SimElement';
 import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
-import { hasVisibleChildren } from '../../../util/hooks/useKeyboardEditorControls';
+import { hasVisibleChildren } from '../../../../util/hooks/useKeyboardEditorControls';
 
 type TreeSource = (Object3D[] | Object3D)[];
 

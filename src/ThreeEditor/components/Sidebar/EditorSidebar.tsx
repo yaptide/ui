@@ -1,33 +1,28 @@
+import SettingsIcon from '@mui/icons-material/Settings';
+import SpeedIcon from '@mui/icons-material/Speed';
+import TokenIcon from '@mui/icons-material/Token';
+import { AppBar, Box, Divider, Stack, Tab, Tabs, Typography } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { Editor } from '../../js/Editor';
-import { Box, Tabs, Tab, AppBar } from '@mui/material';
+import { Object3D } from 'three';
 import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
-import { PropertiesPanel } from './properties/PropertiesPanel';
-import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
-import { BoxMesh, CTMesh, CylinderMesh, SphereMesh } from '../../util/BasicMeshes';
-import { AddObjectCommand } from '../../js/commands/AddObjectCommand';
-import { AddZoneCommand } from '../../js/commands/AddZoneCommand';
+import ScrollPositionManager from '../../../libs/ScrollPositionManager';
+import { BoxMesh, CTMesh, CylinderMesh, SphereMesh } from '../../Simulation/Figues/BasicMeshes';
+import { isOutput } from '../../Simulation/Scoring/ScoringOutput';
+import { isQuantity } from '../../Simulation/Scoring/ScoringQuantity';
+import { Editor } from '../../js/Editor';
+import { Context } from '../../js/Editor.Context';
 import { AddDetectGeometryCommand } from '../../js/commands/AddDetectGeometryCommand';
 import { AddFilterCommand } from '../../js/commands/AddFilterCommand';
+import { AddObjectCommand } from '../../js/commands/AddObjectCommand';
 import { AddOutputCommand } from '../../js/commands/AddOutputCommand';
-import { Context } from '../../js/Editor.Context';
-import { Stack } from '@mui/material';
-import { Typography } from '@mui/material';
-import { Divider } from '@mui/material';
-import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
-import { SidebarTree } from './SidebarTree/SidebarTree';
 import { AddQuantityCommand } from '../../js/commands/AddQuantityCommand';
-import { isOutput } from '../../util/Scoring/ScoringOutput';
-import { Object3D } from 'three';
-import { useSignal } from '../../util/hooks/signals';
-import { isQuantity } from '../../util/Scoring/ScoringQuantity';
-import ScrollPositionManager from '../../../libs/ScrollPositionManager';
-import ViewInArIcon from '@mui/icons-material/ViewInAr';
-import SpeedIcon from '@mui/icons-material/Speed';
-import SettingsIcon from '@mui/icons-material/Settings';
-import TokenIcon from '@mui/icons-material/Token';
-import { Beam } from '../../util/Beam';
+import { AddZoneCommand } from '../../js/commands/AddZoneCommand';
+import { useSignal } from '../../../util/hooks/signals';
+import { SidebarTree } from './SidebarTree/SidebarTree';
+import { PropertiesPanel } from './properties/PropertiesPanel';
+import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
 import { BeamModifiersConfiguration } from './properties/category/RangeModulatorConfiguration';
+import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
 
 export function EditorSidebar(props: { editor: Editor }) {
 	const { editor } = props;
@@ -40,7 +35,7 @@ export function EditorSidebar(props: { editor: Editor }) {
 
 	useSignal(editor, 'objectSelected', handleObjectUpdate);
 
-	const [selectedTab, setSelectedTab] = useState<Capitalize<Context>>();
+	const [selectedTab, setSelectedTab] = useState<Capitalize<Context>>('Geometry');
 
 	const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
 		switch (newValue) {

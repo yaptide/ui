@@ -6,17 +6,17 @@ import {
 	isBoxMesh,
 	isCylinderMesh,
 	isSphereMesh
-} from '../../../util/BasicMeshes';
-import { DetectGeometry, isDetectGeometry } from '../../../util/Detect/DetectGeometry';
-import { DETECT_OPTIONS } from '../../../util/Detect/DetectTypes';
+} from '../../../Simulation/Figues/BasicMeshes';
+import { DetectGeometry, isDetectGeometry } from '../../../Simulation/Detectors/DetectGeometry';
+import { DETECT_OPTIONS } from '../../../../types/DetectTypes';
 import {
 	createRowParamNumber,
 	createRowSelect,
 	createRowText,
 	hideUIElement,
 	showUIElement
-} from '../../../util/Ui/Uis';
-import { isWorldZone, WorldZone } from '../../../util/WorldZone/WorldZone';
+} from '../../../../util/Ui/Uis';
+import { isWorldZone, WorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
 import {
 	SetDetectGeometryCommand,
 	SetDetectTypeCommand,

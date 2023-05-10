@@ -8,8 +8,8 @@ import {
 	AddZoneCommand
 } from '../../../js/commands/Commands';
 import { Editor } from '../../../js/Editor';
-import { BoxMesh, CylinderMesh, SphereMesh } from '../../../util/BasicMeshes';
-import { toggleFullscreen } from '../../../util/toggleFullscreen';
+import { BoxMesh, CylinderMesh, SphereMesh } from '../../../Simulation/Figues/BasicMeshes';
+import { toggleFullscreen } from '../../../../util/toggleFullscreen';
 import { ClearHistoryDialog } from '../../Dialog/ClearHistoryDialog';
 
 type EditorMenuProps = {

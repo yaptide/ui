@@ -5,11 +5,15 @@ import {
 	NumberPropertyField,
 	SelectPropertyField
 } from '../fields/PropertyField';
-import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
-import { ENERGY_MODEL_STRAGGLING, MULTIPLE_SCATTERING, Physic } from '../../../../util/Physic';
+import {
+	ENERGY_MODEL_STRAGGLING,
+	MULTIPLE_SCATTERING,
+	Physics
+} from '../../../../Simulation/Physics/Physics';
 
-export function PhysicConfiguration(props: { editor: Editor; object: Physic }) {
+export function PhysicConfiguration(props: { editor: Editor; object: Physics }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);

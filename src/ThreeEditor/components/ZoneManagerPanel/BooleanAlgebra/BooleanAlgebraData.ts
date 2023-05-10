@@ -1,4 +1,4 @@
-import { Operation, OperationDataList } from '../../../util/Operation';
+import { Operation, OperationDataList } from '../../../../types/Operation';
 
 export class BooleanAlgebraData {
 	value: OperationDataList;

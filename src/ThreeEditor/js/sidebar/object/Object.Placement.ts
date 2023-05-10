@@ -1,10 +1,10 @@
 import * as THREE from 'three';
-import { Beam, isBeam } from '../../../util/Beam';
-import { isDetectGeometry } from '../../../util/Detect/DetectGeometry';
+import { Beam, isBeam } from '../../../Simulation/Physics/Beam';
+import { isDetectGeometry } from '../../../Simulation/Detectors/DetectGeometry';
 import { SimulationElement } from '../../../Simulation/Base/SimElement';
 import { SimulationPropertiesType } from '../../../../types/SimProperties';
-import { createRowParamNumberXYZ, hideUIElement, showUIElement } from '../../../util/Ui/Uis';
-import { isWorldZone } from '../../../util/WorldZone/WorldZone';
+import { createRowParamNumberXYZ, hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
+import { isWorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
 import {
 	SetBeamDirectionCommand,
 	SetDetectPositionCommand,

@@ -11,9 +11,9 @@ import {
 	SAD_TYPE,
 	SigmaType,
 	SIGMA_TYPE
-} from '../../../../util/Beam';
-import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
-import { PARTICLE_TYPES } from '../../../../util/particles';
+} from '../../../../Simulation/Physics/Beam';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import { PARTICLE_TYPES } from '../../../../../types/Particle';
 import { IParticleType, ParticleSelect } from '../../../Select/ParticleSelect';
 import {
 	NumberPropertyField,

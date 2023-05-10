@@ -1,7 +1,7 @@
 import { ReactNode, useCallback, useState } from 'react';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { createGenericContext } from './GenericContext';
-import { JobStatusData, currentJobStatusData, StatusState } from '../types/Response';
+import { JobStatusData, currentJobStatusData, StatusState } from '../types/ResponseTypes';
 
 export interface ILoader {
 	editorProvider: EditorJson[];

@@ -1,4 +1,4 @@
-import { ScoringOutput } from '../../util/Scoring/ScoringOutput';
+import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
 import { Command } from '../Command';
 
 /**
@@ -9,51 +9,51 @@ import { Command } from '../Command';
  * @constructor
  */
 export class SetOutputSettingsCommand extends Command {
-	constructor(editor, object, settingName, newValue) {
-		super(editor);
+   constructor(editor, object, settingName, newValue) {
+      super(editor);
 
-		this.type = 'SetOutputSettings';
-		this.name = `Set ${settingName}`;
+      this.type = 'SetOutputSettings';
+      this.name = `Set ${settingName}`;
 
-		this.object = object;
-		this.attributeName = settingName;
+      this.object = object;
+      this.attributeName = settingName;
 
-		this.oldValue = object !== undefined ? object[settingName] : undefined;
-		this.newValue = newValue;
-	}
+      this.oldValue = object !== undefined ? object[settingName] : undefined;
+      this.newValue = newValue;
+   }
 
-	execute() {
-		this.object[this.attributeName] = this.newValue;
-		this.editor.signals.objectChanged.dispatch(this.object, this.attributeName);
-	}
+   execute() {
+      this.object[this.attributeName] = this.newValue;
+      this.editor.signals.objectChanged.dispatch(this.object, this.attributeName);
+   }
 
-	undo() {
-		this.object[this.attributeName] = this.oldValue;
-		this.editor.signals.objectChanged.dispatch(this.object, this.attributeName);
-	}
+   undo() {
+      this.object[this.attributeName] = this.oldValue;
+      this.editor.signals.objectChanged.dispatch(this.object, this.attributeName);
+   }
 
-	update(cmd) {
-		this.newValue = cmd.newValue;
-	}
+   update(cmd) {
+      this.newValue = cmd.newValue;
+   }
 
-	toJSON() {
-		const output = super.toJSON(this);
-		output.object = this.object.toJSON();
-		output.attributeName = this.attributeName;
-		output.oldValue = this.oldValue;
-		output.newValue = this.newValue;
+   toJSON() {
+      const output = super.toJSON(this);
+      output.object = this.object.toJSON();
+      output.attributeName = this.attributeName;
+      output.oldValue = this.oldValue;
+      output.newValue = this.newValue;
 
-		return output;
-	}
+      return output;
+   }
 
-	fromJSON(json) {
-		super.fromJSON(json);
+   fromJSON(json) {
+      super.fromJSON(json);
 
-		this.attributeName = json.attributeName;
-		this.oldValue = json.oldValue;
-		this.newValue = json.newValue;
-		this.object =
-			this.editor.scoringManager.getObjectByUuid(json.object.uuid) ??
-			ScoringOutput.fromJSON(json.object);
-	}
+      this.attributeName = json.attributeName;
+      this.oldValue = json.oldValue;
+      this.newValue = json.newValue;
+      this.object =
+         this.editor.scoringManager.getObjectByUuid(json.object.uuid) ??
+         ScoringOutput.fromJSON(json.object);
+   }
 }

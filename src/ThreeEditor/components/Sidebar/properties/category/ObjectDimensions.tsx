@@ -14,11 +14,11 @@ import {
 	isCTMesh,
 	isCylinderMesh,
 	isSphereMesh
-} from '../../../../util/BasicMeshes';
-import { DetectGeometry, isDetectGeometry } from '../../../../util/Detect/DetectGeometry';
-import { CylData, DETECT_OPTIONS } from '../../../../util/Detect/DetectTypes';
-import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
-import { isWorldZone, WorldZone } from '../../../../util/WorldZone/WorldZone';
+} from '../../../../Simulation/Figues/BasicMeshes';
+import { DetectGeometry, isDetectGeometry } from '../../../../Simulation/Detectors/DetectGeometry';
+import { CylData, DETECT_OPTIONS } from '../../../../../types/DetectTypes';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import { isWorldZone, WorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
 import {
 	ObjectSelectOptionType,
 	ObjectSelectPropertyField

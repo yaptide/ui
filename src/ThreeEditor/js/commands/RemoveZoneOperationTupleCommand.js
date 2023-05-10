@@ -3,8 +3,8 @@ import { Command } from '../Command.js';
 class RemoveZoneOperationTupleCommand extends Command {
    /**
     * @typedef {import('../Editor.js').Editor} Editor
-    * @typedef {import('../../util/CSG/BooleanZone.js').BooleanZone} CSGZone
-    * @typedef {import('../../util/CSG/CSGOperationTuple.js').OperationTuple} OperationTuple
+    * @typedef {import('../../Simulation/Zones/BooleanZone.js').BooleanZone} CSGZone
+    * @typedef {import('../../CSG/CSGOperationTuple.js').OperationTuple} OperationTuple
     * @param {Editor} editor
     * @param {CSGZone} object
     * @param {number} index

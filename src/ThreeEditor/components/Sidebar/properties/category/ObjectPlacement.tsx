@@ -3,15 +3,15 @@ import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { Editor } from '../../../../js/Editor';
 import { Vector3PropertyField } from '../fields/PropertyField';
 import { SimulationPropertiesType } from '../../../../../types/SimProperties';
-import { Beam, isBeam } from '../../../../util/Beam';
-import { isWorldZone, WorldZone } from '../../../../util/WorldZone/WorldZone';
-import { isDetectGeometry } from '../../../../util/Detect/DetectGeometry';
+import { Beam, isBeam } from '../../../../Simulation/Physics/Beam';
+import { isWorldZone, WorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
+import { isDetectGeometry } from '../../../../Simulation/Detectors/DetectGeometry';
 import { SetDetectPositionCommand } from '../../../../js/commands/SetDetectPositionCommand';
 import { SetPositionCommand } from '../../../../js/commands/SetPositionCommand';
 import { SetRotationCommand } from '../../../../js/commands/SetRotationCommand';
 import { SetBeamDirectionCommand } from '../../../../js/commands/SetBeamDirectionCommand';
 import { PropertiesCategory } from './PropertiesCategory';
-import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { ISimulationSceneChild } from '../../../../Simulation/Base/SimScene';
 
 export function ObjectPlacement(props: {

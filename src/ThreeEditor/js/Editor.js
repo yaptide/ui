@@ -1,15 +1,15 @@
 import hash from 'object-hash';
 import Signal from 'signals';
 import * as THREE from 'three';
-import { Beam } from '../util/Beam';
-import * as CSG from '../util/CSG/CSG';
-import { DetectManager } from '../util/Detect/DetectManager';
-import { FigureScene } from '../util/FigureScene';
-import { MaterialManager } from '../util/Materials/MaterialManager';
-import { getNextFreeName } from '../util/Name';
-import { EditorObjectLoader } from '../util/ObjectLoader';
-import { Physic } from '../util/Physic';
-import { ScoringManager } from '../util/Scoring/ScoringManager';
+import { Beam } from '../Simulation/Physics/Beam';
+import { DetectManager } from '../Simulation/Detectors/DetectManager';
+import { ZoneManager } from '../Simulation/Zones/ZoneManager';
+import { FigureScene } from '../Simulation/Figues/FigureScene';
+import { MaterialManager } from '../Simulation/Materials/MaterialManager';
+import { getNextFreeName } from '../../util/Name/Name';
+import { EditorObjectLoader } from '../../util/ObjectLoader';
+import { Physics } from '../Simulation/Physics/Physics';
+import { ScoringManager } from '../Simulation/Scoring/ScoringManager';
 import { Config } from './Config.js';
 import { ContextManager } from './Editor.Context';
 import { History as _History } from './History.js';
@@ -160,12 +160,12 @@ export function Editor(container) {
    this.sceneHelpers = new THREE.Scene();
 
    this.materialManager = new MaterialManager(this); // Material Manager
-   this.zoneManager = new CSG.ZoneManager(this); // CSG Manager
+   this.zoneManager = new ZoneManager(this); // Zone Manager
    this.detectManager = new DetectManager(this); // Detect Manager
    this.scoringManager = new ScoringManager(this); // Scoring Manager
 
    this.beam = new Beam(this);
-   this.physic = new Physic();
+   this.physic = new Physics();
    this.sceneHelpers.add(this.beam);
 
    this.contextManager = new ContextManager(this); //Context Manager must be loaded after all scenes

@@ -6,7 +6,7 @@ import {
 	_defaultInputFiles,
 	_orderedInputFilesNames,
 	isKnownInputFile
-} from '../../../types/Response';
+} from '../../../types/ResponseTypes';
 import { DEMO_MODE } from '../../../config/Config';
 import { saveString } from '../../../util/File';
 

@@ -3,7 +3,6 @@ import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { Vector2 } from 'three';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Editor } from '../../../../js/Editor';
-import { FilterRule, isFloatRule, isIDRule, isIntRule } from '../../../../util/Detect/DetectRule';
 import {
 	KEYWORD_OPTIONS,
 	KEYWORD_SORT_ORDER,
@@ -11,20 +10,26 @@ import {
 	PARTICLE_OPTIONS,
 	RULE_UNITS,
 	RULE_VALUE_RANGES
-} from '../../../../util/Detect/DetectRuleTypes';
-import { DETECTOR_MODIFIERS_OPTIONS } from '../../../../util/Scoring/ScoringOutputTypes';
-import { DifferentialModifier } from '../../../../util/Scoring/ScoringQtyModifiers';
-import { createRowColor } from '../../../../util/Ui/Color';
-import { createNumberInput } from '../../../../util/Ui/Number';
+} from '../../../../../types/DetectRuleTypes';
+import { DETECTOR_MODIFIERS_OPTIONS } from '../../../../Simulation/Scoring/ScoringOutputTypes';
+import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
+import { createRowColor } from '../../../../../util/Ui/Color';
+import { createNumberInput } from '../../../../../util/Ui/Number';
 import {
 	createDifferentialConfigurationRow,
 	createModifiersOutliner,
 	createRuleConfigurationRow,
 	createRulesOutliner
-} from '../../../../util/Ui/PropertiesOutliner';
-import { hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
+} from '../../../../../util/Ui/PropertiesOutliner';
+import { hideUIElement, showUIElement } from '../../../../../util/Ui/Uis';
 import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
 import { ObjectSelectProperty, ObjectSelectProps } from './ObjectSelectPropertyField';
+import {
+	FilterRule,
+	isFloatRule,
+	isIDRule,
+	isIntRule
+} from '../../../../Simulation/Scoring/DetectRule';
 
 export function PropertyField(props: { label?: string; children: React.ReactNode }) {
 	return (

@@ -2,10 +2,8 @@ import * as THREE from 'three';
 import { SimulationMesh } from './SimMesh';
 import { SimulationPropertiesType } from '../../../types/SimProperties';
 import { ISimulationSceneChild, SimulationSceneContainer } from './SimScene';
-import SimulationMaterial, {
-	SimulationMaterialJSON
-} from '../../util/Materials/SimulationMaterial';
 import { Editor } from '../../js/Editor';
+import SimulationMaterial, { SimulationMaterialJSON } from '../Materials/SimulationMaterial';
 
 export interface SimulationZoneJSON {
 	uuid: string;
@@ -92,11 +90,11 @@ export abstract class SimulationZone
 		this.material.increment();
 	}
 
-	constructor(editor: Editor, name: string) {
+	constructor(editor: Editor, name: string, type: string = 'Zone') {
 		super(
 			editor,
 			name,
-			'Zone',
+			type,
 			new THREE.BufferGeometry(),
 			editor.materialManager.defaultMaterial
 		);

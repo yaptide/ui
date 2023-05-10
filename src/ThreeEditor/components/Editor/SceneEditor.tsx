@@ -7,7 +7,7 @@ import useDocumentTitle from '../../../util/hooks/useDocumentTitle';
 import '../../css/main.css';
 import { Editor } from '../../js/Editor';
 import { initEditor } from '../../main';
-import { useKeyboardEditorControls } from '../../util/hooks/useKeyboardEditorControls';
+import { useKeyboardEditorControls } from '../../../util/hooks/useKeyboardEditorControls';
 import { EditorSidebar } from '../Sidebar/EditorSidebar';
 import EditorAppBar from './EditorAppBar/EditorAppBar';
 import { EditorMenu } from './EditorMenu/EditorMenu';

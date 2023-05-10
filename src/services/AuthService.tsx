@@ -9,7 +9,7 @@ import {
 	RequestAuthLogout,
 	RequestAuthRefresh,
 	RequestAuthStatus
-} from '../types/Request';
+} from '../types/RequestTypes';
 import useThrottledInterval from '../util/hooks/useThrottledInterval';
 import { useSnackbar } from 'notistack';
 import {
@@ -17,7 +17,7 @@ import {
 	ResponseAuthRefresh,
 	ResponseAuthLogin,
 	YaptideResponse
-} from '../types/Response';
+} from '../types/ResponseTypes';
 
 export interface AuthProps {
 	children: ReactNode;

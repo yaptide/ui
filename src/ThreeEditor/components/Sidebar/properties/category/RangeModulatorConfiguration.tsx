@@ -1,13 +1,5 @@
-import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { Editor } from '../../../../js/Editor';
-import {
-	BooleanPropertyField,
-	NumberPropertyField,
-	SelectPropertyField
-} from '../fields/PropertyField';
-import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
-import { ENERGY_MODEL_STRAGGLING, MULTIPLE_SCATTERING, Physic } from '../../../../util/Physic';
 
 export function BeamModifiersConfiguration(props: { editor: Editor }) {
 	const { editor } = props;

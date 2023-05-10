@@ -1,19 +1,24 @@
 import { MathUtils } from 'three';
-import { DetectFilter } from '../../../util/Detect/DetectFilter';
-import { FilterRule, isFloatRule, isIDRule, isIntRule } from '../../../util/Detect/DetectRule';
-import * as Rule from '../../../util/Detect/DetectRuleTypes';
+import { DetectFilter } from '../../../Simulation/Scoring/DetectFilter';
+import * as Rule from '../../../../types/DetectRuleTypes';
 import {
 	createFullwidthButton,
 	createRuleConfigurationRow,
 	createRulesOutliner,
 	hideUIElement,
 	showUIElement
-} from '../../../util/Ui/Uis';
+} from '../../../../util/Ui/Uis';
 import { SetFilterRuleCommand } from '../../commands/SetFilterRuleCommand';
 import { Editor } from '../../Editor';
 import { UIBreak, UIButton, UINumber, UIRow, UISelect } from '../../libs/ui';
 import { UIOutliner } from '../../libs/ui.three';
 import { ObjectAbstract } from './Object.Abstract';
+import {
+	FilterRule,
+	isFloatRule,
+	isIDRule,
+	isIntRule
+} from '../../../Simulation/Scoring/DetectRule';
 
 export class ObjectFilter extends ObjectAbstract {
 	object?: DetectFilter;

@@ -1,5 +1,5 @@
 import { Command } from '../Command.js';
-import { DetectGeometry } from '../../util/Detect/DetectGeometry';
+import { DetectGeometry } from '../../Simulation/Detectors/DetectGeometry';
 
 /**
  * @param editor Editor
@@ -7,41 +7,41 @@ import { DetectGeometry } from '../../util/Detect/DetectGeometry';
  * @constructor
  */
 class AddDetectGeometryCommand extends Command {
-	constructor(editor, object) {
-		super(editor);
+   constructor(editor, object) {
+      super(editor);
 
-		this.type = 'AddDetectGeometryCommand';
+      this.type = 'AddDetectGeometryCommand';
 
-		this.object = object;
-		this.name = object ? `Add Detect Geometry: ${object.name}` : `Create Detect Geometry`;
-	}
+      this.object = object;
+      this.name = object ? `Add Detect Geometry: ${object.name}` : `Create Detect Geometry`;
+   }
 
-	execute() {
-		if (this.object) this.editor.detectManager.addGeometry(this.object);
-		else this.object = this.editor.detectManager.createGeometry();
+   execute() {
+      if (this.object) this.editor.detectManager.addGeometry(this.object);
+      else this.object = this.editor.detectManager.createGeometry();
 
-		this.editor.select(this.object);
-	}
+      this.editor.select(this.object);
+   }
 
-	undo() {
-		this.editor.detectManager.removeGeometry(this.object);
-		this.editor.deselect();
-	}
+   undo() {
+      this.editor.detectManager.removeGeometry(this.object);
+      this.editor.deselect();
+   }
 
-	toJSON() {
-		const output = super.toJSON(this);
+   toJSON() {
+      const output = super.toJSON(this);
 
-		output.object = this.object.toJSON();
+      output.object = this.object.toJSON();
 
-		return output;
-	}
+      return output;
+   }
 
-	fromJSON(json) {
-		super.fromJSON(json);
-		this.object =
-			this.editor.detectManager.getGeometryByUuid(json.object.uuid) ??
-			DetectGeometry.fromJSON(this.editor, json.object);
-	}
+   fromJSON(json) {
+      super.fromJSON(json);
+      this.object =
+         this.editor.detectManager.getGeometryByUuid(json.object.uuid) ??
+         DetectGeometry.fromJSON(this.editor, json.object);
+   }
 }
 
 export { AddDetectGeometryCommand };

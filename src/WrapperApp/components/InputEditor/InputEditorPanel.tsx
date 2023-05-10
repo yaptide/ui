@@ -11,7 +11,7 @@ import { DEMO_MODE } from '../../../config/Config';
 import { InputFilesEditor } from './InputFilesEditor';
 import { readFile } from '../../../services/DataLoaderService';
 import { DragDropFiles } from './DragDropFiles';
-import { SimulationInputFiles, _defaultInputFiles } from '../../../types/Response';
+import { SimulationInputFiles, _defaultInputFiles } from '../../../types/ResponseTypes';
 interface InputEditorPanelProps {
 	goToRun?: (InputFiles?: SimulationInputFiles) => void;
 }

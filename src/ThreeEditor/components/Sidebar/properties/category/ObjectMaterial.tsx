@@ -1,17 +1,17 @@
 import { Editor } from '../../../../js/Editor';
-import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
 import { Object3D } from 'three';
-import { isZone } from '../../../../util/CSG/BooleanZone';
+import { isZone } from '../../../../Simulation/Zones/BooleanZone';
 import { ColorInput, ConditionalNumberPropertyField, PropertyField } from '../fields/PropertyField';
 import { SetMaterialColorCommand } from '../../../../js/commands/SetMaterialColorCommand';
-import { isBeam } from '../../../../util/Beam';
-import { isBasicMesh } from '../../../../util/BasicMeshes';
-import { isDetectGeometry } from '../../../../util/Detect/DetectGeometry';
+import { isBeam } from '../../../../Simulation/Physics/Beam';
+import { isBasicMesh } from '../../../../Simulation/Figues/BasicMeshes';
+import { isDetectGeometry } from '../../../../Simulation/Detectors/DetectGeometry';
 import { MaterialSelect } from '../../../Select/MaterialSelect';
 import { SetZoneMaterialCommand } from '../../../../js/commands/SetZoneMaterialCommand';
 import { SetMaterialValueCommand } from '../../../../js/commands/SetMaterialValueCommand';
-import { isWorldZone } from '../../../../util/WorldZone/WorldZone';
+import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 
 export function ObjectMaterial(props: { editor: Editor; object: Object3D }) {

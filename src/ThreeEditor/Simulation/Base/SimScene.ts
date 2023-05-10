@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { SimulationPropertiesType } from '../../../types/SimProperties';
 import { Editor } from '../../js/Editor';
-import { UniqueChildrenNames, getNextFreeName } from '../../util/Name';
+import { UniqueChildrenNames, getNextFreeName } from '../../../util/Name/Name';
 
 export interface ISimulationSceneChild extends THREE.Object3D {
 	parent: SimulationSceneContainer<this> | null;

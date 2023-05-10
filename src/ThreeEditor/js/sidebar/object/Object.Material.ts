@@ -1,5 +1,4 @@
-import { Beam } from '../../../util/Beam';
-import * as CSG from '../../../util/CSG/CSG';
+import { Beam } from '../../../Simulation/Physics/Beam';
 import { SimulationMesh } from '../../../Simulation/Base/SimMesh';
 import {
 	createFullwidthButton,
@@ -9,8 +8,8 @@ import {
 	createRowText,
 	hideUIElement,
 	showUIElement
-} from '../../../util/Ui/Uis';
-import { isWorldZone } from '../../../util/WorldZone/WorldZone';
+} from '../../../../util/Ui/Uis';
+import { isWorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
 import {
 	SetMaterialColorCommand,
 	SetMaterialValueCommand,
@@ -22,6 +21,7 @@ import { SidebarMaterialBooleanProperty } from '../Sidebar.Material.BooleanPrope
 import { SidebarMaterialConstantProperty } from '../Sidebar.Material.ConstantProperty';
 import { ObjectAbstract } from './Object.Abstract';
 import { SimulationPoints } from '../../../Simulation/Base/SimPoints';
+import { isZone } from '../../../Simulation/Zones/BooleanZone';
 
 const MATERIAL_BLENDING_OPTIONS = {
 	0: 'No',
@@ -120,10 +120,10 @@ export class ObjectMaterial extends ObjectAbstract {
 		hideUIElement(this.opacityRow);
 		hideUIElement(this.exportMaterialsRow);
 		this.color.setHexValue(color.getHexString());
-		if (isWorldZone(object) || CSG.isZone(object)) {
+		if (isWorldZone(object) || isZone(object)) {
 			const { icru } = object.simulationMaterial;
 			showUIElement(this.typeSelectRow);
-			if (CSG.isZone(object)) {
+			if (isZone(object)) {
 				showUIElement(this.opacityRow);
 				if (transparent) showUIElement(this.opacity);
 				else hideUIElement(this.opacity);
@@ -143,7 +143,7 @@ export class ObjectMaterial extends ObjectAbstract {
 		const { editor, object } = this;
 		if (!object) return;
 		if (
-			(isWorldZone(object) || CSG.isZone(object)) &&
+			(isWorldZone(object) || isZone(object)) &&
 			object.simulationMaterial.icru !== parseInt(this.typeSelect.getValue())
 		)
 			editor.execute(new SetZoneMaterialCommand(editor, object, this.typeSelect.getValue()));
@@ -153,7 +153,7 @@ export class ObjectMaterial extends ObjectAbstract {
 				new SetMaterialColorCommand(editor, object, 'color', this.color.getHexValue())
 			);
 		console.log(object.material.transparent, this.transparent.getValue());
-		if (CSG.isZone(object) && object.material.transparent !== this.transparent.getValue())
+		if (isZone(object) && object.material.transparent !== this.transparent.getValue())
 			editor.execute(
 				new SetMaterialValueCommand(
 					editor,
@@ -162,15 +162,15 @@ export class ObjectMaterial extends ObjectAbstract {
 					this.transparent.getValue()
 				)
 			);
-		console.log(CSG.isZone(object) && object.material.opacity, this.opacity.getValue());
-		if (CSG.isZone(object) && object.material.opacity !== this.opacity.getValue())
+		console.log(isZone(object) && object.material.opacity, this.opacity.getValue());
+		if (isZone(object) && object.material.opacity !== this.opacity.getValue())
 			editor.execute(
 				new SetMaterialValueCommand(editor, object, 'opacity', this.opacity.getValue())
 			);
 	}
 
 	render(): void {
-		if (!isWorldZone(this.object) && !CSG.isZone(this.object)) return;
+		if (!isWorldZone(this.object) && !isZone(this.object)) return;
 		this.renderTypeSelect(this.object.simulationMaterial.icru);
 	}
 	materialConsole(): void {

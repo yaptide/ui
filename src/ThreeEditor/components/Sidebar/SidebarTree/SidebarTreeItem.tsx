@@ -15,11 +15,11 @@ import {
 	getRemoveCommand,
 	isRemovable,
 	hasVisibleChildren
-} from '../../../util/hooks/useKeyboardEditorControls';
-import { isOutput } from '../../../util/Scoring/ScoringOutput';
+} from '../../../../util/hooks/useKeyboardEditorControls';
+import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
 import { AddQuantityCommand } from '../../../js/commands/AddQuantityCommand';
 import Box from '@mui/material/Box';
-import { useSignal, useSmartWatchEditorState } from '../../../util/hooks/signals';
+import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface TreeItem {

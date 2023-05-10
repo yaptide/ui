@@ -1,4 +1,4 @@
-import { ScoringOutput } from '../../../util/Scoring/ScoringOutput';
+import { ScoringOutput } from '../../../Simulation/Scoring/ScoringOutput';
 import {
 	createFullwidthButton,
 	createRowConditionalNumber,
@@ -6,7 +6,7 @@ import {
 	createRowSelect,
 	hideUIElement,
 	showUIElement
-} from '../../../util/Ui/Uis';
+} from '../../../../util/Ui/Uis';
 import { AddQuantityCommand, SetOutputSettingsCommand } from '../../commands/Commands';
 import { Editor } from '../../Editor';
 import { UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';

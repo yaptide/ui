@@ -23,7 +23,7 @@ import {
 
 import FolderOffIcon from '@mui/icons-material/FolderOff';
 import { useState } from 'react';
-import { SimulationInputFiles, JobStatusData } from '../../../types/Response';
+import { SimulationInputFiles, JobStatusData } from '../../../types/ResponseTypes';
 
 type GridLayout = 'grid' | 'inline-list' | 'block-list';
 

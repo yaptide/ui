@@ -1,4 +1,4 @@
-import { hideUIElement, showUIElement } from '../../../util/Ui/Uis';
+import { hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
 import { Editor } from '../../Editor';
 import { UIPanel, UIRow, UIText } from '../../libs/ui';
 
