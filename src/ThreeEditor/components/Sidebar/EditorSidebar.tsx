@@ -16,14 +16,14 @@ import { AddFilterCommand } from '../../js/commands/AddFilterCommand';
 import { AddObjectCommand } from '../../js/commands/AddObjectCommand';
 import { AddOutputCommand } from '../../js/commands/AddOutputCommand';
 import { AddQuantityCommand } from '../../js/commands/AddQuantityCommand';
-import { AddZoneCommand } from '../../js/commands/AddZoneCommand';
 import { useSignal } from '../../../util/hooks/signals';
+import { CTCube } from '../../Simulation/SpecialComponents/CTCube';
+import { AddZoneCommand } from '../../js/commands/AddZoneCommand';
 import { SidebarTree } from './SidebarTree/SidebarTree';
 import { PropertiesPanel } from './properties/PropertiesPanel';
 import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
 import { BeamModifiersConfiguration } from './properties/category/RangeModulatorConfiguration';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
-import { CTCube } from '../../Simulation/SpecialComponents/CTCube';
 
 export function EditorSidebar(props: { editor: Editor }) {
 	const { editor } = props;

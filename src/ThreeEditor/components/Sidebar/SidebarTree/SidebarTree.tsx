@@ -5,7 +5,11 @@ import './SidebarTree.style.css';
 import { Editor } from '../../../js/Editor';
 import { SimulationElement } from '../../../Simulation/Base/SimElement';
 import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
+import { Divider } from '@mui/material';
 import { hasVisibleChildren } from '../../../../util/hooks/useKeyboardEditorControls';
+import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
+import { isQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
+import { ChangeObjectOrderCommand } from '../../../js/commands/ChangeObjectOrderCommand';
 
 type TreeSource = (Object3D[] | Object3D)[];
 
@@ -45,6 +49,7 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 	);
 
 	const [treeData, setTreeData] = useState<TreeItem[]>([]);
+
 	const refreshTreeData = useCallback(() => {
 		const options = sources.flat().flatMap(source => buildOption(source, source.children, 0));
 		setTreeData(options);
@@ -76,6 +81,22 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 
 	const objectRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
+	const canDrop = (
+		source: TreeItem | undefined,
+		target: TreeItem | undefined,
+		dropTargetId: string | number
+	) => {
+		if (!source) return false;
+
+		const object3d = source.data?.object;
+
+		if (isQuantity(object3d)) return object3d.parent === target?.data?.object;
+
+		if (isOutput(object3d)) return source.parent === dropTargetId;
+
+		return false;
+	};
+
 	return (
 		<Tree
 			classes={{
@@ -84,11 +105,25 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 			ref={treeRef}
 			tree={treeData}
 			rootId={0}
-			onDrop={() => {}}
-			canDrag={() => false}
+			onDrop={(_tree, { dragSource, relativeIndex }) => {
+				if (relativeIndex === undefined)
+					return console.warn(
+						'relativeIndex is undefined. Probably you need disable sort option.'
+					);
+
+				if (dragSource?.data)
+					editor.execute(
+						new ChangeObjectOrderCommand(editor, dragSource.data.object, relativeIndex)
+					);
+			}}
+			canDrop={(_, { dropTarget, dragSource, dropTargetId }) => {
+				return canDrop(dragSource, dropTarget, dropTargetId);
+			}}
+			canDrag={node => isQuantity(node?.data?.object) || isOutput(node?.data?.object)}
 			sort={false}
 			insertDroppableFirst={false}
 			dropTargetOffset={5}
+			placeholderRender={() => <Divider sx={{ borderBottomWidth: t => t.spacing(1) }} />}
 			render={(node, { depth, isOpen, onToggle }) => (
 				<SidebarTreeItem
 					treeRef={treeRef.current}

@@ -22,15 +22,9 @@ import Box from '@mui/material/Box';
 import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-export interface TreeItem {
-	id: number;
-	parent: number;
-	droppable: boolean;
-	text: string;
-	data: {
-		object: Object3D | SimulationElement;
-	};
-}
+export type TreeItem = NodeModel<{
+	object: Object3D<THREE.Event> | SimulationElement;
+}>;
 
 function isHidable(object: Object3D | SimulationPropertiesType) {
 	if ('notHidable' in object) {
