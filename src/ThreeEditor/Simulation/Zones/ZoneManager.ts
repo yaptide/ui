@@ -45,6 +45,7 @@ export class ZoneManager extends THREE.Scene implements SimulationPropertiesType
 	worker: Comlink.Remote<IZoneWorker>;
 	worldZone: WorldZone;
 	zoneContainer: ZoneContainer;
+
 	private signals: {
 		objectAdded: Signal<THREE.Object3D>;
 		zoneAdded: Signal<BooleanZone>;
@@ -54,6 +55,7 @@ export class ZoneManager extends THREE.Scene implements SimulationPropertiesType
 		sceneGraphChanged: Signal;
 		CSGManagerStateChanged: Signal;
 	};
+
 	readonly isZoneManager: true = true;
 
 	constructor(editor: Editor) {

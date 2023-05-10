@@ -45,7 +45,6 @@ export function Viewport(
 	const { scene, zoneManager, detectManager, sceneHelpers, signals, contextManager } = editor;
 
 	const config = {
-		showSceneHelpers: true,
 		selectFigures: true,
 		selectZones: false,
 		selectGeometries: false,
@@ -155,16 +154,14 @@ export function Viewport(
 
 		if (clipPlane) renderer.render(viewClipPlane.scene, camera);
 
-		if (config.showSceneHelpers) {
-			planeHelpers.visible = showPlaneHelpers ?? false;
+		planeHelpers.visible = showPlaneHelpers ?? false;
 
-			callWithHidden(viewClipPlane?.planeHelper, () => {
-				renderer.render(sceneHelpers, camera);
-			});
+		callWithHidden(viewClipPlane?.planeHelper, () => {
+			renderer.render(sceneHelpers, camera);
+		});
 
-			renderer.render(sceneViewHelpers, camera);
-			viewHelper.render(renderer);
-		}
+		renderer.render(sceneViewHelpers, camera);
+		viewHelper.render(renderer);
 
 		renderer.autoClear = true;
 
@@ -425,7 +422,6 @@ export function Viewport(
 
 	function reattachTransformControls(object) {
 		transformControls.detach();
-		console.log('reattachTransformControls', object, canBeTransformed(object))
 		canBeTransformed(object) && transformControls.attach(object);
 	}
 

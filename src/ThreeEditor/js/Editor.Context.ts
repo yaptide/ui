@@ -1,6 +1,4 @@
 import * as THREE from 'three';
-import { BasicMesh, isBasicMesh } from '../Simulation/Figues/BasicMeshes';
-import { Beam, isBeam } from '../Simulation/Physics/Beam';
 import { DetectFilter, isDetectFilter } from '../Simulation/Scoring/DetectFilter';
 import { DetectGeometry, isDetectGeometry } from '../Simulation/Detectors/DetectGeometry';
 import {
@@ -18,6 +16,8 @@ import { Editor } from './Editor';
 import { SimulationZone } from '../Simulation/Base/SimZone';
 import { ZoneContainer, ZoneManager, isZoneContainer } from '../Simulation/Zones/ZoneManager';
 import { isZone } from '../Simulation/Zones/BooleanZone';
+import { Beam, isBeam } from '../Simulation/Physics/Beam';
+import { BasicMesh, isBasicMesh } from '../Simulation/Figues/BasicMeshes';
 
 export type Context = 'geometry' | 'scoring' | 'settings';
 export type SceneObject =
@@ -103,7 +103,7 @@ export class ContextManager {
 				hidden.push(this.editor.zoneManager, this.editor.beam);
 				break;
 			case 'settings':
-				visible.push(this.editor.scene, this.editor.detectManager);
+				visible.push(this.editor.scene, this.editor.detectManager, this.editor.beam);
 				hidden.push(this.editor.zoneManager);
 				break;
 			default:
@@ -111,7 +111,6 @@ export class ContextManager {
 					this.editor.scene,
 					this.editor.zoneManager,
 					this.editor.detectManager,
-					this.editor.sceneHelpers,
 					this.editor.beam
 				);
 				break;

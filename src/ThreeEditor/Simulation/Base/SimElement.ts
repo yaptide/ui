@@ -9,9 +9,6 @@ export abstract class SimulationElement
 {
 	editor: Editor;
 	parent: SimulationSceneContainer<this> | null = null;
-	// readonly notVisibleChildren?: boolean = undefined;
-	// readonly notDraggable?: boolean = undefined;
-	// readonly notHidable?: boolean = undefined;
 	readonly type: string;
 
 	constructor(editor: Editor, name: string | undefined, type: string) {
@@ -19,6 +16,5 @@ export abstract class SimulationElement
 		this.editor = editor;
 		this.name = name ?? type;
 		this.type = type;
-		this.parent = null;
 	}
 }

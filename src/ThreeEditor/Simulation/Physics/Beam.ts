@@ -111,6 +111,7 @@ export class Beam extends SimulationElement {
 	readonly notRotatable = true; //TODO: https://github.com/yaptide/ui/issues/242
 	readonly notScalable = true;
 	readonly notVisibleChildren = true;
+	readonly notHidable = true;
 
 	readonly isBeam: true = true;
 
