@@ -407,7 +407,7 @@
 						"material": "6c14896e-7623-4fe8-b539-8e7de1dee5e4",
 						"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
 						"name": "AirBox",
-						"type": "BoxMesh",
+						"type": "BoxFigure",
 						"uuid": "60b54b29-3fbc-4fed-8667-cc676caab5bc"
 					},
 					{
@@ -427,7 +427,7 @@
 						"material": "673750a2-8da8-4bf1-9528-b9590014c5a8",
 						"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -1.15, 1],
 						"name": "SolidWaterFrontBox",
-						"type": "BoxMesh",
+						"type": "BoxFigure",
 						"uuid": "f9d8bb8d-8d20-4c62-b98a-f6f2bd7b654e"
 					},
 					{
@@ -447,7 +447,7 @@
 						"material": "177f5e8b-4d0e-4b9b-9a5b-bfbd0c045c20",
 						"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
 						"name": "PMMABox",
-						"type": "BoxMesh",
+						"type": "BoxFigure",
 						"uuid": "a3dac4cf-e96e-4c9b-9854-ae18a05d6453"
 					},
 					{
@@ -467,7 +467,7 @@
 						"material": "21441541-623f-47ff-8ed9-aa59cf1b8c41",
 						"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 8.875, 1],
 						"name": "SolidWaterBackBox",
-						"type": "BoxMesh",
+						"type": "BoxFigure",
 						"uuid": "6dde232f-5f48-455e-9c9f-03bf4b5b2c44"
 					}
 				],

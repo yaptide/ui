@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { Beam } from '../Simulation/Physics/Beam';
 import { DetectManager } from '../Simulation/Detectors/DetectManager';
 import { ZoneManager } from '../Simulation/Zones/ZoneManager';
-import { FigureScene } from '../Simulation/Figues/FigureScene';
+import { FigureScene } from '../Simulation/Figures/FigureScene';
 import { MaterialManager } from '../Simulation/Materials/MaterialManager';
 import { getNextFreeName } from '../../util/Name/Name';
 import { EditorObjectLoader } from '../../util/ObjectLoader';

@@ -1,11 +1,11 @@
 import { Object3D, ObjectLoader } from 'three';
 import { Editor } from '../ThreeEditor/js/Editor';
 import {
-	BoxMesh,
-	CTMesh,
-	CylinderMesh,
-	SphereMesh
-} from '../ThreeEditor/Simulation/Figues/BasicMeshes';
+	BoxFigure,
+	CylinderFigure,
+	SphereFigure
+} from '../ThreeEditor/Simulation/Figures/BasicFigures';
+import { CTCube } from '../ThreeEditor/Simulation/SpecialComponents/CTCube';
 
 export class EditorObjectLoader extends ObjectLoader {
 	private editor: Editor;
@@ -25,18 +25,18 @@ export class EditorObjectLoader extends ObjectLoader {
 		let object = super.parseObject<T>(data, geometries, materials, animations);
 		let editorObject;
 		switch (data.type) {
-			case 'SphereMesh':
-				editorObject = new SphereMesh(this.editor);
+			case 'SphereFigure':
+				editorObject = new SphereFigure(this.editor);
 				break;
-			case 'BoxMesh':
-				editorObject = new BoxMesh(this.editor);
+			case 'BoxFigure':
+				editorObject = new BoxFigure(this.editor);
 				break;
-			case 'CylinderMesh':
-				editorObject = new CylinderMesh(this.editor);
+			case 'CylinderFigure':
+				editorObject = new CylinderFigure(this.editor);
 				geometry.rotateX(Math.PI / 2);
 				break;
-			case 'CTMesh':
-				editorObject = new CTMesh(this.editor);
+			case 'CTCube':
+				editorObject = new CTCube(this.editor);
 				editorObject.pathOnServer = data.pathOnServer;
 				break;
 			default:

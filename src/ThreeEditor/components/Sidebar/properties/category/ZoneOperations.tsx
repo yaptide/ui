@@ -7,7 +7,7 @@ import {
 	RemoveZoneOperationTupleCommand,
 	SetZoneOperationTupleCommand
 } from '../../../../js/commands/Commands';
-import { isBasicMesh } from '../../../../Simulation/Figues/BasicMeshes';
+import { isBasicMesh } from '../../../../Simulation/Figures/BasicFigures';
 import * as CSG from '../../../../CSG/CSG';
 import { isZone } from '../../../../Simulation/Zones/BooleanZone';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';

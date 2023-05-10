@@ -375,7 +375,7 @@
 						"material": "59FDD25B-7350-43BD-9667-DC8564ABB28A",
 						"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, -10, 0, 1],
 						"name": "LowerBody",
-						"type": "SphereMesh",
+						"type": "SphereFigure",
 						"userData": {
 							"geometryType": "SphereGeometry",
 							"id": 853,
@@ -398,7 +398,7 @@
 						"material": "E44D3D60-0E8A-4A2C-A308-845DDE22421E",
 						"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 3, 0, 1],
 						"name": "Head",
-						"type": "SphereMesh",
+						"type": "SphereFigure",
 						"userData": {
 							"geometryType": "SphereGeometry",
 							"id": 855,
@@ -424,7 +424,7 @@
 							2.220446049250313e-16, 0, 0, 8.5, 0, 1
 						],
 						"name": "HatEdge",
-						"type": "CylinderMesh",
+						"type": "CylinderFigure",
 						"userData": {
 							"geometryType": "CylinderGeometry",
 							"id": 857,
@@ -450,7 +450,7 @@
 							2.220446049250313e-16, 0, 0, 12, 0, 1
 						],
 						"name": "HatOutside",
-						"type": "CylinderMesh",
+						"type": "CylinderFigure",
 						"userData": {
 							"geometryType": "CylinderGeometry",
 							"id": 859,
@@ -476,7 +476,7 @@
 							2.220446049250313e-16, 0, 0, 11, 0, 1
 						],
 						"name": "HatInside",
-						"type": "CylinderMesh",
+						"type": "CylinderFigure",
 						"userData": {
 							"geometryType": "CylinderGeometry",
 							"id": 861,

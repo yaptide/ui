@@ -6,9 +6,9 @@ import { SetValueCommand } from '../commands/SetValueCommand.js';
 const getObjectType = object => {
    switch (object.type) {
       case 'Scene':
-      case 'BoxMesh':
-      case 'CylinderMesh':
-      case 'SphereMesh':
+      case 'BoxFigure':
+      case 'CylinderFigure':
+      case 'SphereFigure':
          return 'Figure';
       case 'DetectGroup':
       case 'Points':
@@ -33,9 +33,9 @@ const getObjectType = object => {
 };
 const getAdditionalInfo = object => {
    switch (object.type) {
-      case 'BoxMesh':
-      case 'CylinderMesh':
-      case 'SphereMesh':
+      case 'BoxFigure':
+      case 'CylinderFigure':
+      case 'SphereFigure':
          return ` [${object.id
             }] <span class="type Geometry"></span> <span class="type-value">${object.type.slice(
                0,

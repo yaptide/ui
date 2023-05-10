@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
-import { BoxMesh, CTMesh, CylinderMesh, SphereMesh } from '../../Simulation/Figues/BasicMeshes';
+import { BoxFigure, CylinderFigure, SphereFigure } from '../../Simulation/Figures/BasicFigures';
 import { isOutput } from '../../Simulation/Scoring/ScoringOutput';
 import { isQuantity } from '../../Simulation/Scoring/ScoringQuantity';
 import { Editor } from '../../js/Editor';
@@ -23,6 +23,7 @@ import { PropertiesPanel } from './properties/PropertiesPanel';
 import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
 import { BeamModifiersConfiguration } from './properties/category/RangeModulatorConfiguration';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
+import { CTCube } from '../../Simulation/SpecialComponents/CTCube';
 
 export function EditorSidebar(props: { editor: Editor }) {
 	const { editor } = props;
@@ -77,21 +78,22 @@ export function EditorSidebar(props: { editor: Editor }) {
 			add: [
 				{
 					title: 'Box',
-					onClick: () => editor.execute(new AddObjectCommand(editor, new BoxMesh(editor)))
+					onClick: () =>
+						editor.execute(new AddObjectCommand(editor, new BoxFigure(editor)))
 				},
 				{
 					title: 'Cylinder',
 					onClick: () =>
-						editor.execute(new AddObjectCommand(editor, new CylinderMesh(editor)))
+						editor.execute(new AddObjectCommand(editor, new CylinderFigure(editor)))
 				},
 				{
 					title: 'Sphere',
 					onClick: () =>
-						editor.execute(new AddObjectCommand(editor, new SphereMesh(editor)))
+						editor.execute(new AddObjectCommand(editor, new SphereFigure(editor)))
 				},
 				{
 					title: 'CT',
-					onClick: () => editor.execute(new AddObjectCommand(editor, new CTMesh(editor)))
+					onClick: () => editor.execute(new AddObjectCommand(editor, new CTCube(editor)))
 				}
 			],
 			tree: (

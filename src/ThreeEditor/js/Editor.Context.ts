@@ -17,12 +17,12 @@ import { SimulationZone } from '../Simulation/Base/SimZone';
 import { ZoneContainer, ZoneManager, isZoneContainer } from '../Simulation/Zones/ZoneManager';
 import { isZone } from '../Simulation/Zones/BooleanZone';
 import { Beam, isBeam } from '../Simulation/Physics/Beam';
-import { BasicMesh, isBasicMesh } from '../Simulation/Figues/BasicMeshes';
+import { BasicFigure, isBasicMesh } from '../Simulation/Figures/BasicFigures';
 
 export type Context = 'geometry' | 'scoring' | 'settings';
 export type SceneObject =
 	| SimulationZone
-	| BasicMesh
+	| BasicFigure
 	| WorldZone
 	| DetectGeometry
 	| DetectContainer

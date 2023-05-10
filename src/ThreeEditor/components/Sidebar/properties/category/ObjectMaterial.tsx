@@ -6,7 +6,7 @@ import { isZone } from '../../../../Simulation/Zones/BooleanZone';
 import { ColorInput, ConditionalNumberPropertyField, PropertyField } from '../fields/PropertyField';
 import { SetMaterialColorCommand } from '../../../../js/commands/SetMaterialColorCommand';
 import { isBeam } from '../../../../Simulation/Physics/Beam';
-import { isBasicMesh } from '../../../../Simulation/Figues/BasicMeshes';
+import { isBasicMesh } from '../../../../Simulation/Figures/BasicFigures';
 import { isDetectGeometry } from '../../../../Simulation/Detectors/DetectGeometry';
 import { MaterialSelect } from '../../../Select/MaterialSelect';
 import { SetZoneMaterialCommand } from '../../../../js/commands/SetZoneMaterialCommand';

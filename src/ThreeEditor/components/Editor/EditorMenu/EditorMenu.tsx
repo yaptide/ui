@@ -8,7 +8,7 @@ import {
 	AddZoneCommand
 } from '../../../js/commands/Commands';
 import { Editor } from '../../../js/Editor';
-import { BoxMesh, CylinderMesh, SphereMesh } from '../../../Simulation/Figues/BasicMeshes';
+import { BoxFigure, CylinderFigure, SphereFigure } from '../../../Simulation/Figures/BasicFigures';
 import { toggleFullscreen } from '../../../../util/toggleFullscreen';
 import { ClearHistoryDialog } from '../../Dialog/ClearHistoryDialog';
 
@@ -196,7 +196,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 								label: 'Box Mesh',
 								onClick: () => {
 									editor?.execute(
-										new AddObjectCommand(editor, new BoxMesh(editor))
+										new AddObjectCommand(editor, new BoxFigure(editor))
 									);
 								}
 							},
@@ -204,7 +204,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 								label: 'Sphere Mesh',
 								onClick: () => {
 									editor?.execute(
-										new AddObjectCommand(editor, new SphereMesh(editor))
+										new AddObjectCommand(editor, new SphereFigure(editor))
 									);
 								}
 							},
@@ -212,7 +212,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 								label: 'Cylinder Mesh',
 								onClick: () => {
 									editor?.execute(
-										new AddObjectCommand(editor, new CylinderMesh(editor))
+										new AddObjectCommand(editor, new CylinderFigure(editor))
 									);
 								}
 							}
