@@ -54,13 +54,8 @@ describe('NavDrawer component', () => {
     await filesButton.click();
 
     //wait until the "generate from editor" button and click it (it takes some time for the button to change from "initializing")
-    //classname is used as again the id changes every time
-    const generateButton = await driver.findElement(By.className(`MuiButtonBase-root MuiButton-root MuiLoadingButton-root MuiLoadingButton-loading
-      MuiButton-contained MuiButton-containedInfo MuiButton-sizeMedium
-      MuiButton-containedSizeMedium Mui-disabled MuiButton-root
-      MuiLoadingButton-root MuiLoadingButton-loading MuiButton-contained
-      MuiButton-containedInfo MuiButton-sizeMedium MuiButton-containedSizeMedium
-      css-ul6m2m-MuiButtonBase-root-MuiButton-root-MuiLoadingButton-root`));
+    //xpath is used as again the id changes every time
+    const generateButton = await driver.findElement(By.xpath("/html/body/div/div/div[3]/div/div/div[1]/button"));
     await driver.wait(until.elementIsEnabled(generateButton), 15000);
     await generateButton.click();
 
