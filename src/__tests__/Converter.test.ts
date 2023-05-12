@@ -61,19 +61,19 @@ describe('NavDrawer component', () => {
 
     //find all the text fields and check if they contain the correct text. characters other than text, numbers and dots are removed from the text before comparison
     const geoText = (await driver.findElement(By.css('.MuiCardContent-root > div:nth-child(2) > div:nth-child(2) > textarea:nth-child(1)')).getText()).replace(/[^a-zA-Z0-9.]/g, '');
-    const expectedGeoText = readFileSync('src\\libs\\converter\\input_examples\\expected_shieldhit_output\\geo.dat', 'utf-8').replace(/[^a-zA-Z0-9.]/g, '');
+    const expectedGeoText = readFileSync('src/libs/converter/input_examples/expected_shieldhit_output/geo.dat', 'utf-8').replace(/[^a-zA-Z0-9.]/g, '');
     expect (geoText).toContain(expectedGeoText);
 
     const matText = (await driver.findElement(By.css('.MuiCardContent-root > div:nth-child(3) > div:nth-child(2) > textarea:nth-child(1)')).getText()).replace(/[^a-zA-Z0-9.]/g, '');
-    const expectedMatText = readFileSync('src\\libs\\converter\\input_examples\\expected_shieldhit_output\\mat.dat', 'utf-8').replace(/[^a-zA-Z0-9.]/g, '');
+    const expectedMatText = readFileSync('src/libs/converter/input_examples/expected_shieldhit_output/mat.dat', 'utf-8').replace(/[^a-zA-Z0-9.]/g, '');
     expect (matText).toContain(expectedMatText);
 
     const beamText = (await driver.findElement(By.css('.MuiCardContent-root > div:nth-child(4) > div:nth-child(2) > textarea:nth-child(1)')).getText()).replace(/[^a-zA-Z0-9.]/g, '');
-    const expectedBeamText = readFileSync('src\\libs\\converter\\input_examples\\expected_shieldhit_output\\beam.dat', 'utf-8').replace(/[^a-zA-Z0-9.]/g, '');
+    const expectedBeamText = readFileSync('src/libs/converter/input_examples/expected_shieldhit_output/beam.dat', 'utf-8').replace(/[^a-zA-Z0-9.]/g, '');
     expect (beamText).toContain(expectedBeamText);
     
     const detectText = (await driver.findElement(By.css('.MuiCardContent-root > div:nth-child(5) > div:nth-child(2) > textarea:nth-child(1)')).getText()).replace(/[^a-zA-Z0-9.]/g, '');
-    const expectedDetectText = readFileSync('src\\libs\\converter\\input_examples\\expected_shieldhit_output\\detect.dat', 'utf-8').replace(/[^a-zA-Z0-9.]/g, '');
+    const expectedDetectText = readFileSync('src/libs/converter/input_examples/expected_shieldhit_output/detect.dat', 'utf-8').replace(/[^a-zA-Z0-9.]/g, '');
     expect (detectText).toContain(expectedDetectText);
 
   }, 30000);
