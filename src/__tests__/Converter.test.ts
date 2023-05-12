@@ -59,6 +59,9 @@ describe('NavDrawer component', () => {
     await driver.wait(until.elementIsEnabled(generateButton), 15000);
     await generateButton.click();
 
+    //wait until the text has appeared in the first text field
+    await driver.wait(until.elementTextMatches(driver.findElement(By.css('.MuiCardContent-root > div:nth-child(2) > div:nth-child(2) > textarea:nth-child(1)')), /\S/));
+
     //find all the text fields and check if they contain the correct text. characters other than text, numbers and dots are removed from the text before comparison
     const geoText = (await driver.findElement(By.css('.MuiCardContent-root > div:nth-child(2) > div:nth-child(2) > textarea:nth-child(1)')).getText()).replace(/[^a-zA-Z0-9.]/g, '');
     const expectedGeoText = readFileSync('src/libs/converter/input_examples/expected_shieldhit_output/geo.dat', 'utf-8').replace(/[^a-zA-Z0-9.]/g, '');
