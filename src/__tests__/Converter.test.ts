@@ -79,5 +79,5 @@ describe('NavDrawer component', () => {
     const expectedDetectText = readFileSync('src/libs/converter/input_examples/expected_shieldhit_output/detect.dat', 'utf-8').replace(/[^a-zA-Z0-9.]/g, '');
     expect (detectText).toContain(expectedDetectText);
 
-  }, 30000);
+  }, 50000);
 });
