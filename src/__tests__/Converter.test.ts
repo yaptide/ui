@@ -1,6 +1,7 @@
 import { Builder, By, WebDriver, until } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import { readFileSync, writeFileSync } from 'fs';
+import exp from 'constants';
 
 describe('NavDrawer component', () => {
   let driver: WebDriver;
@@ -63,20 +64,25 @@ describe('NavDrawer component', () => {
     await driver.wait(until.elementTextMatches(driver.findElement(By.css('.MuiCardContent-root > div:nth-child(2) > div:nth-child(2) > textarea:nth-child(1)')), /\S/));
 
     //find all the text fields and check if they contain the correct text. characters other than text, numbers and dots are removed from the text before comparison
+    //also check if expected text loaded from file is not empty
     const geoText = (await driver.findElement(By.css('.MuiCardContent-root > div:nth-child(2) > div:nth-child(2) > textarea:nth-child(1)')).getText()).replace(/[^a-zA-Z0-9.]/g, '');
     const expectedGeoText = readFileSync('src/libs/converter/input_examples/expected_shieldhit_output/geo.dat', 'utf-8').replace(/[^a-zA-Z0-9.]/g, '');
+    expect (expectedGeoText).not.toBe("");
     expect (geoText).toContain(expectedGeoText);
 
     const matText = (await driver.findElement(By.css('.MuiCardContent-root > div:nth-child(3) > div:nth-child(2) > textarea:nth-child(1)')).getText()).replace(/[^a-zA-Z0-9.]/g, '');
     const expectedMatText = readFileSync('src/libs/converter/input_examples/expected_shieldhit_output/mat.dat', 'utf-8').replace(/[^a-zA-Z0-9.]/g, '');
+    expect (expectedMatText).not.toBe("");
     expect (matText).toContain(expectedMatText);
 
     const beamText = (await driver.findElement(By.css('.MuiCardContent-root > div:nth-child(4) > div:nth-child(2) > textarea:nth-child(1)')).getText()).replace(/[^a-zA-Z0-9.]/g, '');
     const expectedBeamText = readFileSync('src/libs/converter/input_examples/expected_shieldhit_output/beam.dat', 'utf-8').replace(/[^a-zA-Z0-9.]/g, '');
+    expect (expectedBeamText).not.toBe("");
     expect (beamText).toContain(expectedBeamText);
     
     const detectText = (await driver.findElement(By.css('.MuiCardContent-root > div:nth-child(5) > div:nth-child(2) > textarea:nth-child(1)')).getText()).replace(/[^a-zA-Z0-9.]/g, '');
     const expectedDetectText = readFileSync('src/libs/converter/input_examples/expected_shieldhit_output/detect.dat', 'utf-8').replace(/[^a-zA-Z0-9.]/g, '');
+    expect (expectedDetectText).not.toBe("");
     expect (detectText).toContain(expectedDetectText);
 
   }, 50000);
