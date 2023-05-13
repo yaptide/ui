@@ -56,6 +56,8 @@ export type RequestAuthStatus = [];
 
 export type RequestShConvert = Flatten<[InputConvertParam, RequestParam]>;
 
+export type RequestTopasConvert = Flatten<[InputConvertParam, RequestParam]>;
+
 export type RequestPostJob = Flatten<[InputDataParam, RequestParam]>;
 
 export const isEditorJson = (data: any): data is EditorJson => {

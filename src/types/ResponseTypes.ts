@@ -255,6 +255,8 @@ export type ResponseAuthLogin = Required<AuthData>;
 
 export type ResponseShConvert = DataConverted;
 
+export type ResponseTopasConvert = DataConverted;
+
 export type ResponsePostJob = JobCreated;
 
 export type ResponseGetPageContents = SimulationsPage;
