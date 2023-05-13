@@ -17,6 +17,7 @@ interface InputEditorPanelProps {
 }
 
 type GeneratorLocation = 'local' | 'remote';
+type Simulator = 'shieldhit' | 'topas' | 'fluka';
 
 export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const { enqueueSnackbar } = useSnackbar();
@@ -27,6 +28,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const [isInProgress, setInProgress] = useState(false);
 	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>(_defaultInputFiles);
 	const [generator, setGenerator] = useState<GeneratorLocation>('local');
+	const [simulator, setSimulator] = useState<Simulator>('shieldhit');
 
 	const [controller] = useState(new AbortController());
 
@@ -133,6 +135,34 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 							Remote
 						</ToggleButton>
 					)}
+				</ToggleButtonGroup>
+
+				<ToggleButtonGroup
+					sx={{
+						marginLeft: '1rem'
+					}}
+					value={simulator}
+					exclusive
+					onChange={(_e, simulator) => {
+						if (simulator) setSimulator(simulator);
+					}}>
+					<ToggleButton
+						value='shieldhit'
+						color='info'>
+						SHIELDHIT-12A
+					</ToggleButton>
+
+					<ToggleButton
+						value='topas'
+						color='info'>
+						TOPAS
+					</ToggleButton>
+
+					<ToggleButton
+						value='fluka'
+						color='info'>
+						Fluka
+					</ToggleButton>
 				</ToggleButtonGroup>
 			</Box>
 
