@@ -100,7 +100,7 @@ describe('NavDrawer component', () => {
 				.getText()
 		).replace(regex, '');
 		const expectedGeoText = readFileSync(
-			'src/libs/converter/input_examples/expected_shieldhit_output/geo.dat',
+			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/geo.dat',
 			'utf-8'
 		).replace(regex, '');
 		expect(expectedGeoText).not.toBe('');
@@ -116,7 +116,7 @@ describe('NavDrawer component', () => {
 				.getText()
 		).replace(regex, '');
 		const expectedMatText = readFileSync(
-			'src/libs/converter/input_examples/expected_shieldhit_output/mat.dat',
+			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/mat.dat',
 			'utf-8'
 		).replace(regex, '');
 		expect(expectedMatText).not.toBe('');
@@ -132,7 +132,7 @@ describe('NavDrawer component', () => {
 				.getText()
 		).replace(regex, '');
 		const expectedBeamText = readFileSync(
-			'src/libs/converter/input_examples/expected_shieldhit_output/beam.dat',
+			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/beam.dat',
 			'utf-8'
 		).replace(regex, '');
 		expect(expectedBeamText).not.toBe('');
@@ -148,7 +148,7 @@ describe('NavDrawer component', () => {
 				.getText()
 		).replace(regex, '');
 		const expectedDetectText = readFileSync(
-			'src/libs/converter/input_examples/expected_shieldhit_output/detect.dat',
+			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/detect.dat',
 			'utf-8'
 		).replace(regex, '');
 		expect(expectedDetectText).not.toBe('');
