@@ -103,7 +103,6 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 					marginBottom: '2rem'
 				}}>
 				<LoadingButton
-					aria-label = 'generateFromEditorButton'
 					sx={{
 						marginRight: '1rem'
 					}}
