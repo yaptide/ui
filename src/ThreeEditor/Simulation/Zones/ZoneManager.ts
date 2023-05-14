@@ -1,12 +1,12 @@
 import * as Comlink from 'comlink';
 import { Signal } from 'signals';
 import * as THREE from 'three';
-import { SimulationPropertiesType } from '../../../types/SimProperties';
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { SimulationSceneContainer } from '../Base/SimulationScene';
 import { Editor } from '../../js/Editor';
 import { WorldZone, WorldZoneJSON } from './WorldZone/WorldZone';
 import { BooleanZone, BooleanZoneJSON } from './BooleanZone';
-import { IZoneWorker } from '../../CSG/CSGWorker';
+import { ZoneWorker } from '../../CSG/CSGWorker';
 
 interface ZoneManagerJSON {
 	uuid: string;
@@ -42,7 +42,7 @@ export class ZoneManager extends THREE.Scene implements SimulationPropertiesType
 	readonly notScalable = true;
 
 	editor: Editor;
-	worker: Comlink.Remote<IZoneWorker>;
+	worker: Comlink.Remote<ZoneWorker>;
 	worldZone: WorldZone;
 	zoneContainer: ZoneContainer;
 
@@ -66,7 +66,7 @@ export class ZoneManager extends THREE.Scene implements SimulationPropertiesType
 		light.position.set(15, 15, 15);
 		this.add(light);
 		this.add(this.zoneContainer);
-		this.worker = Comlink.wrap<IZoneWorker>(
+		this.worker = Comlink.wrap<ZoneWorker>(
 			new Worker(new URL('../../CSG/CSGWorker.ts', import.meta.url))
 		);
 		this.editor = editor;

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
-import { SimulationPropertiesType } from '../../../types/SimProperties';
-import { ISimulationSceneChild, SimulationSceneContainer } from './SimulationScene';
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { SimulationSceneChild, SimulationSceneContainer } from './SimulationScene';
 import { SimulationElement } from './SimulationElement';
 
 /**
@@ -9,7 +9,7 @@ import { SimulationElement } from './SimulationElement';
  */
 export abstract class SimulationPoints
 	extends THREE.Points
-	implements SimulationPropertiesType, ISimulationSceneChild, SimulationElement
+	implements SimulationPropertiesType, SimulationSceneChild, SimulationElement
 {
 	private static _detectPointsMaterial: THREE.PointsMaterial = new THREE.PointsMaterial({
 		color: new THREE.Color('cyan'),

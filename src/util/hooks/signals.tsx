@@ -21,7 +21,7 @@ export const useSignal = (
 /**
  * Type checked if it does not have `object` property
  */
-type ValidProxyState<T> = T extends { object: any } ? never : T;
+type ValidProxyState<T> = T extends { object: Record<string, unknown> } ? never : T;
 
 /**
  * Object wrapped in `Proxy`, that holds original object under `object` property.
@@ -88,7 +88,7 @@ function useSmartWatchEditorState<T>(
 		proxyObjectRef.current = createProxy();
 		setState({ state: watchedObject ? proxyObjectRef.current : null });
 
-		const callback = (object: any, property?: string) => {
+		const callback = (object: Record<string, unknown>, property?: string) => {
 			if (object === watchedObject) {
 				if (debug) console.log(watchedPropertyArrRef.current, property);
 				if (watchAnyChange) setState({ state: proxyObjectRef.current });

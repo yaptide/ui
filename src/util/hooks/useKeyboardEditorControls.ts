@@ -70,6 +70,7 @@ export const useKeyboardEditorControls = (
 
 		const IS_MAC = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 		const onKeyDown = (event: KeyboardEvent) => {
+			//TODO: Fix types to remove any
 			const eventFromSidebar = (event.target as any).closest('.ThreeEditorSidebar') !== null;
 
 			if (eventFromSidebar) return;

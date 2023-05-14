@@ -10,23 +10,20 @@ const JsRootKey = 'JSROOT';
 
 declare global {
 	interface Window {
-		[JsRootKey]: {};
+		[JsRootKey]: Record<string, any>;
 	}
 }
 
-export interface JsRootProps {
+export interface JsRootProps extends Partial<JsRootWindow> {
 	children: ReactNode;
-	JSROOT?: any;
 }
 
-export interface IJsRoot {
-	JSROOT: any;
-}
+export type JsRootWindow = Pick<Window, typeof JsRootKey>;
 
-const [useJSROOT, JsRootContextProvider] = createGenericContext<IJsRoot>();
+const [useJSROOT, JsRootContextProvider] = createGenericContext<JsRootWindow>();
 
 const JsRoot = (props: JsRootProps) => {
-	const [value, setValue] = useState<IJsRoot>();
+	const [value, setValue] = useState<JsRootWindow>();
 	const painterScript = useRef<HTMLScriptElement>();
 
 	useEffect(() => {

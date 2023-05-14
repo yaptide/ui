@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { SimulationMesh } from './SimulationMesh';
-import { SimulationPropertiesType } from '../../../types/SimProperties';
-import { ISimulationSceneChild, SimulationSceneContainer } from './SimulationScene';
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { SimulationSceneChild, SimulationSceneContainer } from './SimulationScene';
 import { Editor } from '../../js/Editor';
 import SimulationMaterial, { SimulationMaterialJSON } from '../Materials/SimulationMaterial';
 
@@ -39,7 +39,7 @@ const _get_default = (material: SimulationMaterial) => {
 
 export abstract class SimulationZone
 	extends SimulationMesh<THREE.BufferGeometry, SimulationMaterial>
-	implements SimulationPropertiesType, ISimulationSceneChild
+	implements SimulationPropertiesType, SimulationSceneChild
 {
 	editor: Editor;
 	parent: SimulationSceneContainer<this> | null = null;

@@ -9,6 +9,7 @@
  * @property {string} name
  * @property {Editor} editor
  * @property {SimulationElement} [object]
+ *
  */
 export class Command {
 	id;

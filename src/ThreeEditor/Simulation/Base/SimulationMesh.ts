@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
-import { ISimulationSceneChild, SimulationSceneContainer } from './SimulationScene';
-import { SimulationPropertiesType } from '../../../types/SimProperties';
+import { SimulationSceneChild, SimulationSceneContainer } from './SimulationScene';
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { SimulationElement } from './SimulationElement';
 
 /**
@@ -12,7 +12,7 @@ export abstract class SimulationMesh<
 		TMaterial extends THREE.Material = THREE.MeshBasicMaterial
 	>
 	extends THREE.Mesh<TGeometry, TMaterial>
-	implements SimulationPropertiesType, ISimulationSceneChild, SimulationElement
+	implements SimulationPropertiesType, SimulationSceneChild, SimulationElement
 {
 	editor: Editor;
 	parent: SimulationSceneContainer<this> | null = null;

@@ -8,7 +8,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Editor } from '../../../js/Editor';
-import { SimulationPropertiesType } from '../../../../types/SimProperties';
+import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
 import { NodeModel, TreeMethods } from '@minoru/react-dnd-treeview/dist/types';
 import {
 	canChangeName,

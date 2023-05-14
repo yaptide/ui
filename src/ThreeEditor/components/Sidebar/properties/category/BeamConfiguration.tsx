@@ -1,20 +1,20 @@
 import { Button, Divider, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { ChangeEvent } from 'react';
 import { Object3D } from 'three';
-import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
-import { Editor } from '../../../../js/Editor';
-import {
-	Beam,
-	BEAM_SOURCE_TYPE,
-	isBeam,
-	SadType,
-	SAD_TYPE,
-	SigmaType,
-	SIGMA_TYPE
-} from '../../../../Simulation/Physics/Beam';
-import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PARTICLE_TYPES } from '../../../../../types/Particle';
-import { IParticleType, ParticleSelect } from '../../../Select/ParticleSelect';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import {
+	BEAM_SOURCE_TYPE,
+	Beam,
+	SAD_TYPE,
+	SIGMA_TYPE,
+	SadType,
+	SigmaType,
+	isBeam
+} from '../../../../Simulation/Physics/Beam';
+import { Editor } from '../../../../js/Editor';
+import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import { ParticleSelect } from '../../../Select/ParticleSelect';
 import {
 	NumberPropertyField,
 	PropertyField,
@@ -305,7 +305,7 @@ function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
 			/>
 			<PropertyField label='Particle type'>
 				<ParticleSelect
-					particles={PARTICLE_TYPES as unknown as IParticleType[]}
+					particles={PARTICLE_TYPES}
 					value={watchedObject.particleData.id}
 					onChange={(_, v) =>
 						setValueCommand({ ...watchedObject.particleData, id: v }, 'particleData')

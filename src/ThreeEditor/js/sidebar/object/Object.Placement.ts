@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { Beam, isBeam } from '../../../Simulation/Physics/Beam';
 import { isDetectGeometry } from '../../../Simulation/Detectors/DetectGeometry';
 import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
-import { SimulationPropertiesType } from '../../../../types/SimProperties';
+import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
 import { createRowParamNumberXYZ, hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
 import { isWorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
 import {

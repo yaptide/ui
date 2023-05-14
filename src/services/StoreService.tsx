@@ -7,7 +7,7 @@ export interface StoreProps {
 	children: ReactNode;
 }
 
-export interface IStore {
+export interface StoreContext {
 	editorRef: React.MutableRefObject<Editor | undefined>;
 	resultsSimulationData?: JobStatusData<StatusState.COMPLETED>;
 	setResultsSimulationData: React.Dispatch<
@@ -17,7 +17,7 @@ export interface IStore {
 	setLocalResultsSimulationData: React.Dispatch<React.SetStateAction<JobStatusData[]>>;
 }
 
-const [useStore, StoreContextProvider] = createGenericContext<IStore>();
+const [useStore, StoreContextProvider] = createGenericContext<StoreContext>();
 
 const Store = (props: StoreProps) => {
 	const editorRef = useRef<Editor>();
@@ -27,7 +27,7 @@ const Store = (props: StoreProps) => {
 		[]
 	);
 
-	const value: IStore = {
+	const value: StoreContext = {
 		editorRef,
 		resultsSimulationData,
 		setResultsSimulationData,

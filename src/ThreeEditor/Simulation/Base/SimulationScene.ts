@@ -1,10 +1,10 @@
 import * as THREE from 'three';
-import { SimulationPropertiesType } from '../../../types/SimProperties';
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { Editor } from '../../js/Editor';
 import { UniqueChildrenNames, getNextFreeName } from '../../../util/Name/Name';
 import { SimulationElement } from './SimulationElement';
 
-export interface ISimulationSceneChild extends THREE.Object3D {
+export interface SimulationSceneChild extends THREE.Object3D {
 	parent: SimulationSceneContainer<this> | null;
 	name: string;
 	type: string;
@@ -15,7 +15,7 @@ export interface ISimulationSceneChild extends THREE.Object3D {
 /**
  * This is the base class for groups of simulation elements.
  */
-export abstract class SimulationSceneContainer<TChild extends ISimulationSceneChild>
+export abstract class SimulationSceneContainer<TChild extends SimulationSceneChild>
 	extends SimulationElement
 	implements SimulationPropertiesType, UniqueChildrenNames
 {
@@ -40,7 +40,8 @@ export abstract class SimulationSceneContainer<TChild extends ISimulationSceneCh
 		});
 		this.children.length = 0;
 	}
-	toJSON(): Array<ReturnType<TChild['toJSON']>> {
+	// toJSON(): Array<ReturnType<TChild['toJSON']>> { TODO: Make it work for all SimulationSceneContainers.
+	toJSON(): Object {
 		return this.children.map(child => child.toJSON());
 	}
 }

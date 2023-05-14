@@ -1,7 +1,7 @@
 import { Signal } from 'signals';
 import * as THREE from 'three';
 import { debounce } from 'throttle-debounce';
-import { IZoneWorker } from '../../CSG/CSGWorker';
+import { ZoneWorker } from '../../CSG/CSGWorker';
 import * as Comlink from 'comlink';
 import { Editor } from '../../js/Editor';
 import CSG from '../../js/libs/csg/three-csg';
@@ -44,7 +44,7 @@ export class BooleanZone extends SimulationZone {
 		return this._unionOperations;
 	}
 
-	worker?: Comlink.Remote<IZoneWorker>;
+	worker?: Comlink.Remote<ZoneWorker>;
 	readonly debouncedUpdatePreview = debounce(200, () => this.updatePreview(), { atBegin: false });
 
 	constructor(editor: Editor, name?: string) {

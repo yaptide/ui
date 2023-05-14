@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
 import { generateSimulationInfo } from '../../../util/AdditionalGeometryData';
 import { BasicFigure } from './BasicFigures';
-import { SimulationPropertiesType } from '../../../types/SimProperties';
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { UniqueChildrenNames, getNextFreeName } from '../../../util/Name/Name';
 
 export class FigureScene

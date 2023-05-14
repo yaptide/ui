@@ -122,7 +122,7 @@ export function NumberInput(props: {
 	}, []);
 
 	useEffect(() => {
-		(inputRef.current as any).onChange((event: any) => {
+		inputRef.current.onChange((event: any) => {
 			props.onChange(parseFloat(event.target.value));
 		});
 	}, [props]);
@@ -162,7 +162,7 @@ export function ColorInput(props: { value: string; onChange: (value: number) => 
 	}, []);
 
 	useEffect(() => {
-		(inputRef.current as any).onChange(() => {
+		inputRef.current.onChange(() => {
 			props.onChange(inputRef.current.getHexValue());
 		});
 	}, [props]);
@@ -412,7 +412,7 @@ export function ModifiersOutliner(props: {
 	}, []);
 
 	useEffect(() => {
-		(inputRef.current as any).onChange(() => {
+		inputRef.current.onChange(() => {
 			props.onChange(inputRef.current.getValue());
 		});
 		inputRef.current.setOptions(props.options);
@@ -526,7 +526,7 @@ export function DifferentialConfiguration(props: {
 		} = inputRef.current;
 
 		inputRef.current.group.updateFields.forEach(field => {
-			(field as any).onChange(() => {
+			field.onChange(() => {
 				const keywordSelect = keywordSelectField.getValue();
 				const lowerLimit = lowerLimitField.getValue();
 				const upperLimit = upperLimitField.getValue();
@@ -545,7 +545,7 @@ export function DifferentialConfiguration(props: {
 		});
 
 		inputRef.current.group.deleteFields.forEach(field => {
-			(field as any).onClick(() => {
+			field.onClick(() => {
 				props.onDelete();
 			});
 		});
@@ -598,7 +598,7 @@ export function RulesOutliner(props: {
 	}, []);
 
 	useEffect(() => {
-		(inputRef.current as any).onChange(() => {
+		inputRef.current.onChange(() => {
 			props.onChange(inputRef.current.getValue());
 		});
 		inputRef.current.setOptions(props.options);
@@ -728,7 +728,7 @@ export function RulesConfiguration(props: {
 		const { keywordSelectField, operatorSelectField, idSelectField } = inputRef.current;
 
 		inputRef.current.group.updateFields.forEach(field => {
-			(field as any).onChange(() => {
+			field.onChange(() => {
 				const keywordSelect = keywordSelectField.getValue();
 				const operatorSelect = operatorSelectField.getValue();
 				const idSelect = idSelectField.getValue();
@@ -743,7 +743,7 @@ export function RulesConfiguration(props: {
 		});
 
 		inputRef.current.group.deleteFields.forEach(field => {
-			(field as any).onClick(() => {
+			field.onClick(() => {
 				props.onDelete();
 			});
 		});

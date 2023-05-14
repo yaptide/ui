@@ -2,7 +2,7 @@ import { Signal } from 'signals';
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
 import { SimulationSceneContainer } from '../Base/SimulationScene';
-import { SimulationPropertiesType } from '../../../types/SimProperties';
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { DetectFilter, FilterJSON } from '../Scoring/DetectFilter';
 import { DetectGeometry, DetectGeometryJSON, isDetectGeometry } from './DetectGeometry';
 import { SimulationZone } from '../Base/SimZone';

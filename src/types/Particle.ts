@@ -1,3 +1,5 @@
+import { ParticleType } from '../ThreeEditor/components/Select/ParticleSelect';
+
 export type Particle = {
 	id: number;
 	name: string;
@@ -79,4 +81,4 @@ export const PARTICLE_TYPES = [
 		id: 25,
 		name: 'Heavy ions'
 	}
-] as const;
+] as const satisfies readonly ParticleType[];

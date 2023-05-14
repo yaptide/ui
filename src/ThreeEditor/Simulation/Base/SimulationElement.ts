@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
-import { SimulationPropertiesType } from '../../../types/SimProperties';
-import { ISimulationSceneChild, SimulationSceneContainer } from './SimulationScene';
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { SimulationSceneChild, SimulationSceneContainer } from './SimulationScene';
 
 /**
  * This is the base class for all simulation elements.
@@ -10,7 +10,7 @@ import { ISimulationSceneChild, SimulationSceneContainer } from './SimulationSce
  */
 export abstract class SimulationElement
 	extends THREE.Object3D
-	implements SimulationPropertiesType, ISimulationSceneChild
+	implements SimulationPropertiesType, SimulationSceneChild
 {
 	editor: Editor;
 	parent: SimulationSceneContainer<this> | null = null;
