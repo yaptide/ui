@@ -55,6 +55,10 @@ describe('NavDrawer component', () => {
 		const loadButton = await openProjectWidget.findElement(By.css('.MuiButton-contained'));
 		await loadButton.click();
 
+		//check if the "current data will be lost" alert has appeared
+		const alertText = await driver.switchTo().alert().getText();
+		expect(alertText).toBe('Current editor data will be lost. Are you sure?');
+
 		//accept the "current data will be lost" alert
 		await driver.switchTo().alert().accept();
 
