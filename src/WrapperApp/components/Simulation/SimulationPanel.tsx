@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { useLoader } from '../../../services/DataLoaderService';
-import { OrderBy, OrderType } from '../../../types/RequestTypes';
+import { OrderBy, OrderType, SimulatorType } from '../../../types/RequestTypes';
 import {
 	SimulationInputFiles,
 	JobStatusData,
@@ -353,6 +353,7 @@ export default function SimulationPanel({
 				<Fade in={showInputFilesEditor}>
 					<Box sx={{ height: '100vh', width: '100vw', overflow: 'auto' }}>
 						<InputFilesEditor
+							simulator={SimulatorType.SHIELDHIT}
 							inputFiles={inputFiles}
 							closeEditor={() => setShowInputFilesEditor(false)}
 							onChange={newInputFiles => setInputFiles(newInputFiles)}

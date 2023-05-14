@@ -22,10 +22,6 @@ export type YaptideResponse = {
 };
 export const _orderedInputFilesNames = [
 	'info.json',
-	'geo.dat',
-	'mat.dat',
-	'beam.dat',
-	'detect.dat',
 	'sobp.dat'
 ] as const;
 
@@ -34,6 +30,14 @@ export const _defaultInputFiles = {
 	'beam.dat': '',
 	'detect.dat': '',
 	'mat.dat': ''
+} as const;
+
+export const _defaultTopasInputFiles = {
+	'config.txt': '',
+} as const;
+
+export const _defaultFlukaInputFiles = {
+	'fl_sim.inp': '',
 } as const;
 
 export function isKnownInputFile(name: string): name is SimulationInputFilesNames {

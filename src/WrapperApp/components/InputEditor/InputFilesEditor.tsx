@@ -4,13 +4,16 @@ import CodeEditor from '@uiw/react-textarea-code-editor';
 import {
 	SimulationInputFiles,
 	_defaultInputFiles,
+	_defaultTopasInputFiles,
 	_orderedInputFilesNames,
 	isKnownInputFile
 } from '../../../types/ResponseTypes';
 import { DEMO_MODE } from '../../../config/Config';
 import { saveString } from '../../../util/File';
+import { SimulatorType } from '../../../types/RequestTypes';
 
 interface InputFilesEditorProps {
+	simulator: SimulatorType;
 	inputFiles: SimulationInputFiles | undefined;
 	onChange?: (inputFiles: SimulationInputFiles) => void;
 	runSimulation?: (inputFiles: SimulationInputFiles) => void;
