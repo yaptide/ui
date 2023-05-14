@@ -154,7 +154,7 @@ function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }
 					primary={<Typography variant='h5'>YAPTIDE</Typography>}
 					sx={{ opacity: open ? 1 : 0 }}
 				/>
-				<IconButton aria-label={'Drawer button'}>{open ? <Menu /> : <MenuOpen />}</IconButton>
+				<IconButton aria-label={'Toggle drawer button'}>{open ? <Menu /> : <MenuOpen />}</IconButton>
 			</DrawerHeader>
 			<Divider />
 			<List>
