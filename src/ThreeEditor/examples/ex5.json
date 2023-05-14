@@ -157,7 +157,7 @@
 				"be881070-c34e-4a41-83ca-2110cb0395b7": 1
 			}
 		},
-		"metadata": { "generator": "Editor.toJSON", "type": "Editor", "version": 0.6 },
+		"metadata": { "generator": "Editor.toJSON", "type": "Editor", "version": 0.7 },
 		"physic": {
 			"enableNuclearReactions": true,
 			"energyLoss": 0.01,

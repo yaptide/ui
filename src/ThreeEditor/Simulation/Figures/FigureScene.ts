@@ -5,6 +5,7 @@ import { BasicFigure } from './BasicFigures';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { UniqueChildrenNames, getNextFreeName } from '../../../util/Name/Name';
 
+//TODO: FigureScene should implement from SimulationSceneContainer or define container of this type
 export class FigureScene
 	extends THREE.Scene
 	implements SimulationPropertiesType, UniqueChildrenNames

@@ -125,7 +125,7 @@
 				"edebc384-945d-499d-86a1-a9ba93cea36e": 1
 			}
 		},
-		"metadata": { "generator": "Editor.toJSON", "type": "Editor", "version": 0.6 },
+		"metadata": { "generator": "Editor.toJSON", "type": "Editor", "version": 0.7 },
 		"physic": {
 			"enableNuclearReactions": true,
 			"energyLoss": 0.03,

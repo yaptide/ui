@@ -190,7 +190,7 @@
 				"cd7c2eb0-e91f-4144-b4eb-536e4626cc09": 1
 			}
 		},
-		"metadata": { "generator": "Editor.toJSON", "type": "Editor", "version": 0.6 },
+		"metadata": { "generator": "Editor.toJSON", "type": "Editor", "version": 0.7 },
 		"physic": {
 			"enableNuclearReactions": true,
 			"energyLoss": 0.03,

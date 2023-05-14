@@ -179,7 +179,7 @@
 		"metadata": {
 			"generator": "Editor.toJSON",
 			"type": "Editor",
-			"version": 0.6
+			"version": 0.7
 		},
 		"physic": {
 			"enableNuclearReactions": true,
