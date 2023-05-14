@@ -154,7 +154,7 @@ function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }
 					primary={<Typography variant='h5'>YAPTIDE</Typography>}
 					sx={{ opacity: open ? 1 : 0 }}
 				/>
-				<IconButton id={'drawerButton'}>{open ? <Menu /> : <MenuOpen />}</IconButton>
+				<IconButton aria-label={'drawerButton'}>{open ? <Menu /> : <MenuOpen />}</IconButton>
 			</DrawerHeader>
 			<Divider />
 			<List>
@@ -213,7 +213,7 @@ function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }
 						disablePadding
 						sx={{ display: 'block' }}>
 						<ListItemButton
-							id={label}
+							aria-label={label}
 							sx={{
 								minHeight: 48,
 								justifyContent: open ? 'initial' : 'center',

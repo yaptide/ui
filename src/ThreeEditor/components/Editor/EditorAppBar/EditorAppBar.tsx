@@ -101,7 +101,6 @@ function EditorAppBar({ editor }: AppBarProps) {
 	const ToolbarButton = ({id, label, icon, onClick, disabled, edge }: AppBarOptions) => (
 		<Tooltip title={label}>
 			<IconButton
-				id={id}
 				size='small'
 				edge={edge}
 				color='inherit'

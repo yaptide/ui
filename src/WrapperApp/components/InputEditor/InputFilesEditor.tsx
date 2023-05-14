@@ -124,7 +124,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 								</h2>
 
 								<CodeEditor
-									id={name+'TextField'}
+									aria-label={name+'TextField'}
 									value={value}
 									language='sql'
 									placeholder={`Please enter ${name} content.`}

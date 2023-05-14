@@ -47,7 +47,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 
 	return (
 		<Dialog
-			id={'openProjectDialog'}
+			aria-label={'openProjectDialog'}
 			open={open}
 			onClose={onClose}
 			sx={{
@@ -111,7 +111,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 								))}
 							</List>
 							<Button
-								id = 'loadExampleButton'
+								aria-label = 'loadExampleButton'
 								variant='contained'
 								fullWidth
 								sx={{ marginTop: 'auto' }}
