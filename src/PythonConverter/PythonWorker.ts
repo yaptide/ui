@@ -2,6 +2,7 @@
 import * as Comlink from 'comlink';
 import { SimulationInputFiles } from '../types/ResponseTypes';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
+import { SimulatorType } from '../types/RequestTypes';
 
 // as for now there is no reasonable npm package for pyodide
 // CND method is suggested in https://pyodide.org/en/stable/usage/downloading-and-deploying.html
@@ -12,17 +13,8 @@ export interface IPythonWorker {
 	close: () => void;
 	runPython: <T>(string: string) => T;
 	checkConverter: () => boolean;
-	convertJSON: (editorJson: EditorJson) => Promise<Map<keyof SimulationInputFiles, string>>;
+	convertJSON: (editorJson: EditorJson, simulator: SimulatorType) => Promise<Map<keyof SimulationInputFiles, string>>;
 }
-
-const pythonConverterCode = `
-import os
-from converter.api import run_parser
-from converter.api import get_parser_from_str
-def convertJson(editor_json, parser_name = 'shieldhit'):
-	parser=get_parser_from_str(parser_name)
-	return run_parser(parser, editor_json.to_py(), None, True)
-convertJson`;
 
 const pythonCheckConverterCode = `
 def checkIfConverterReady():
@@ -73,7 +65,18 @@ print(micropip.list())
 		return self.pyodide.runPython(pythonCheckConverterCode);
 	}
 
-	convertJSON(editorJson: object) {
+	convertJSON(editorJson: object, simulator: SimulatorType) {
+		const pythonConverterCode = `
+		import os
+		from converter.api import run_parser
+		from converter.api import get_parser_from_str
+		def convertJson(editor_json, parser_name = '${simulator}'):
+			parser=get_parser_from_str(parser_name)
+			return run_parser(parser, editor_json.to_py(), None, True)
+		convertJson`;
+
+		console.log(pythonConverterCode);
+
 		return self.pyodide.runPython(pythonConverterCode)(editorJson).toJs();
 	}
 }

@@ -1,53 +1,81 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { throttle } from 'throttle-debounce';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
 import { useShSimulation } from '../../../services/ShSimulatorService';
+import { useTopasSimulation } from '../../../services/TopasSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { DEMO_MODE } from '../../../config/Config';
 import { InputFilesEditor } from './InputFilesEditor';
 import { readFile } from '../../../services/DataLoaderService';
 import { DragDropFiles } from './DragDropFiles';
-import { SimulationInputFiles, _defaultInputFiles } from '../../../types/ResponseTypes';
+import { ResponsePostJob, ResponseShConvert, ResponseTopasConvert, SimulationInputFiles, _defaultInputFiles } from '../../../types/ResponseTypes';
+import { RequestPostJob, RequestShConvert, RequestTopasConvert, SimulatorType } from '../../../types/RequestTypes';
 interface InputEditorPanelProps {
 	goToRun?: (InputFiles?: SimulationInputFiles) => void;
 }
 
 type GeneratorLocation = 'local' | 'remote';
-type Simulator = 'shieldhit' | 'topas' | 'fluka';
+
+type ConvertToInputFiles = 
+  | ((...args: RequestShConvert) => Promise<ResponseShConvert>)
+  | ((...args: RequestTopasConvert) => Promise<ResponseTopasConvert>);
 
 export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const { enqueueSnackbar } = useSnackbar();
 	const { editorRef } = useStore();
-	const { convertToInputFiles, postJobDirect } = useShSimulation();
+	//const { convertToInputFiles, postJobDirect } = useShSimulation();
+	const shContext = useShSimulation();
+	const topasContext = useTopasSimulation();
+	const convertToInputFilesRef = useRef<ConvertToInputFiles>(useShSimulation().convertToInputFiles);
+	const postJobDirectRef = useRef<(...args: RequestPostJob) => Promise<ResponsePostJob>>(useShSimulation().postJobDirect);
 	const { isConverterReady, convertJSON } = usePythonConverter();
 
 	const [isInProgress, setInProgress] = useState(false);
 	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>(_defaultInputFiles);
 	const [generator, setGenerator] = useState<GeneratorLocation>('local');
-	const [simulator, setSimulator] = useState<Simulator>('shieldhit');
+	const [simulator, setSimulator] = useState<SimulatorType>(SimulatorType.SHIELDHIT);
 
 	const [controller] = useState(new AbortController());
 
 	const handleConvert = useCallback(
 		async (editorJSON: EditorJson) => {
+			switch (simulator) {
+				case SimulatorType.SHIELDHIT: {
+					convertToInputFilesRef.current = shContext.convertToInputFiles;
+					postJobDirectRef.current = shContext.postJobDirect;
+					break;
+				}
+				case SimulatorType.TOPAS: {
+					convertToInputFilesRef.current = topasContext.convertToInputFiles;
+					postJobDirectRef.current = topasContext.postJobDirect;
+					break;
+				}
+				//case 'fluka': {
+				//	let  { convertToInputFiles, postJobDirect } = useFlukaSimulation();
+				//	break;
+				//}
+				default:
+					throw new Error('Unknown simulator: ' + simulator);
+			}
+
 			switch (generator) {
 				case 'remote':
-					return convertToInputFiles(editorJSON, controller.signal).then(res => {
+					return convertToInputFilesRef.current(editorJSON, controller.signal).then(res => {
 						return res.inputFiles;
 					});
 				case 'local':
-					return convertJSON(editorJSON).then(
+					return convertJSON(editorJSON, simulator).then(
 						res => Object.fromEntries(res) as unknown as SimulationInputFiles
 					);
 				default:
 					throw new Error('Unknown generator: ' + generator);
 			}
 		},
-		[controller.signal, convertJSON, convertToInputFiles, generator]
+		[controller.signal, convertJSON, shContext.convertToInputFiles, shContext.postJobDirect, topasContext.convertToInputFiles, topasContext.postJobDirect, generator, simulator]
 	);
 
 	const onClickGenerate = useCallback(() => {
@@ -80,7 +108,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	 */
 	const runSimulation = (inputFiles: SimulationInputFiles) => {
 		setInProgress(true);
-		postJobDirect(inputFiles, undefined, undefined, undefined, undefined, controller.signal)
+		postJobDirectRef.current(inputFiles, undefined, undefined, undefined, undefined, controller.signal)
 			.then()
 			.catch()
 			.finally(() => {

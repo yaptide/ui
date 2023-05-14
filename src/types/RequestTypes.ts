@@ -13,6 +13,12 @@ export enum OrderBy {
 	END_TIME = 'end_time'
 }
 
+export enum SimulatorType {
+	SHIELDHIT = 'shieldhit',
+	TOPAS = 'topas',
+	FLUKA = 'fluka'
+}
+
 export type RequestParam = [signal?: AbortSignal];
 
 /* ------------------------------------ */

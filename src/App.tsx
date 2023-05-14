@@ -9,6 +9,7 @@ import { Loader } from './services/DataLoaderService';
 import { ShSimulation } from './services/ShSimulatorService';
 import { Store } from './services/StoreService';
 import WrapperApp from './WrapperApp/WrapperApp';
+import { TopasSimulation } from './services/TopasSimulatorService';
 
 function App() {
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -39,13 +40,15 @@ function App() {
 				<ThemeProvider theme={theme}>
 					<Auth>
 						<ShSimulation>
-							<PythonConverterService>
-								<Loader>
-									<Store>
-										<WrapperApp />
-									</Store>
-								</Loader>
-							</PythonConverterService>
+							<TopasSimulation>
+								<PythonConverterService>
+									<Loader>
+										<Store>
+											<WrapperApp />
+										</Store>
+									</Loader>
+								</PythonConverterService>
+							</TopasSimulation>
 						</ShSimulation>
 					</Auth>
 				</ThemeProvider>
