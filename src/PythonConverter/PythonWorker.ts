@@ -75,8 +75,6 @@ print(micropip.list())
 			return run_parser(parser, editor_json.to_py(), None, True)
 		convertJson`;
 
-		console.log(pythonConverterCode);
-
 		return self.pyodide.runPython(pythonConverterCode)(editorJson).toJs();
 	}
 }

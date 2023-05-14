@@ -54,10 +54,14 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 					postJobDirectRef.current = topasContext.postJobDirect;
 					break;
 				}
-				//case 'fluka': {
+				case SimulatorType.FLUKA: {
+					convertToInputFilesRef.current = shContext.convertToInputFiles;
+					postJobDirectRef.current = shContext.postJobDirect;
+					break;
+					//not implemented yet
 				//	let  { convertToInputFiles, postJobDirect } = useFlukaSimulation();
 				//	break;
-				//}
+				}
 				default:
 					throw new Error('Unknown simulator: ' + simulator);
 			}
