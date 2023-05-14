@@ -83,17 +83,17 @@ export const useKeyboardEditorControls = (
 
 				// Disabled features
 				// case config.getKey('settings/shortcuts/translate'):
-				//     signals.transformModeChanged.dispatch('translate');
+				//		signals.transformModeChanged.dispatch('translate');
 
-				//     break;
+				//		break;
 
 				// case config.getKey('settings/shortcuts/rotate'):
-				//     signals.transformModeChanged.dispatch('rotate');
+				//		signals.transformModeChanged.dispatch('rotate');
 
-				//     break;
+				//		break;
 
 				// case config.getKey('settings/shortcuts/scale'):
-				//     signals.transformModeChanged.dispatch('scale');
+				//		signals.transformModeChanged.dispatch('scale');
 
 				// break;
 

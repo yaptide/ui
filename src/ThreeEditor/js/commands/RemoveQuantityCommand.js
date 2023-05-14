@@ -1,8 +1,6 @@
 import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
 import { ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
 import { Command } from '../Command.js';
-// eslint-disable-next-line no-unused-vars
-import { Editor } from '../Editor.js';
 export class RemoveQuantityCommand extends Command {
 	/**
 	 * @typedef {import('../Editor.js').Editor} Editor

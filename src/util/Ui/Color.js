@@ -7,10 +7,10 @@ import { LABEL_MARGIN, LABEL_WIDTH } from './Uis.js';
 
 /**
  * @param {{
- *      text?: string,
- *      value?: string,
- *      update?: ()=> void,
- *      }} params
+ *		text?: string,
+ *		value?: string,
+ *		update?: ()=> void,
+ *		}} params
  * @return {[UIRow, UIColor, UIText]}
  */
 export function createRowColor(params) {

@@ -21,8 +21,8 @@ import { FONT_SIZE } from './Uis';
 /**
  * @param {Editor} editor
  * @param {{
- *      update?: ()=> void,
- *      }} params
+ *		update?: ()=> void,
+ *		}} params
  * @return {[UIOutliner]}
  */
 export function createModifiersOutliner(editor, params) {
@@ -52,8 +52,8 @@ export function createModifiersOutliner(editor, params) {
 /**
  * @param {Editor} editor
  * @param {{
- *      update?: ()=> void,
- *      }} params
+ *		update?: ()=> void,
+ *		}} params
  * @return {[UIOutliner]}
  */
 export function createRulesOutliner(editor, params) {
@@ -83,10 +83,10 @@ export function createRulesOutliner(editor, params) {
 /**
  * @param {Editor} editor
  * @param {{
- *      update: ()=> void,
+ *		update: ()=> void,
  * 		options: Object,
  * 		delete: ()=> void
- *      }} params
+ *		}} params
  * @return {[UIRow, UISelect, UINumber, UINumber, UINumber, UICheckbox, UIButton]}
  */
 export function createDifferentialConfigurationRow(params) {
@@ -116,13 +116,13 @@ export function createDifferentialConfigurationRow(params) {
 /**
  * @param {Editor} editor
  * @param {{
- *      update: ()=> void,
+ *		update: ()=> void,
  * 		options: Object,
  * 		sortFunc: (a: string, b: string)=> number,
  * 		operators: Object,
  * 		particles: Object,
  * 		delete: ()=> void
- *      }} params
+ *		}} params
  * @return {[UIRow, UISelect, UISelect, UISelect, UINumber, UIButton]}
  */
 export function createRuleConfigurationRow(params) {

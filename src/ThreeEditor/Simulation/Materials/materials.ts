@@ -3,34 +3,37 @@ export const DEFAULT_MATERIAL_ICRU = 276;
 export const DEFAULT_MATERIAL_NAME = 'WATER, LIQUID';
 export const DEFAULT_MATERIAL_DENSITY = 1.0;
 
-/* made with this Python script:
+// made with this Python script:
+/*
 # call this script from main repository with SH12A source code
 import json
-from periodictable import elements # pip install periodictable
+from periodictable import elements  # pip install periodictable
 
 densities = []
 with open('./src/shieldhit/microdhi/icru.f', 'r') as icru_file:
-    for line in icru_file.readlines()[494:565]:
-        if line.rstrip().endswith(','):
-            numbers = [float(entry.rstrip(',')) for entry in line.split()[1:5]]
-            densities.extend(numbers)
-        if len(line.split()) > 4 and line.split()[4] == '/':
-            numbers = [float(entry.rstrip(',')) for entry in line.split()[1:4]]
-            densities.extend(numbers)
-           
+	for line in icru_file.readlines()[494:565]:
+		if line.rstrip().endswith(','):
+			numbers = [float(entry.rstrip(',')) for entry in line.split()[1:5]]
+			densities.extend(numbers)
+		if len(line.split()) > 4 and line.split()[4] == '/':
+			numbers = [float(entry.rstrip(',')) for entry in line.split()[1:4]]
+			densities.extend(numbers)
+
 for i, elem in enumerate(elements):
-    if i > 0 and i < 99:
-        line = "	{ icru: "   + str(i) + ", name: '" + elem.name.upper() + "' , density: " + str(densities[i-1]) + " },"
-        print(line)
+	if i > 0 and i < 99:
+		line = "	{ icru: " + str(i) + ", name: '" + elem.name.upper() + \
+			"' , density: " + str(densities[i-1]) + " },"
+		print(line)
 
 with open('./doc/tex/UsersGuide/07_reftab.tex', 'r') as infile:
-  for line in infile.readlines()[335:526]:
-    if line.strip():
-        data = line.strip().split('&')
-        icru_id = data[0].rstrip()
-        name = data[2].rstrip('\\')
-        line = "	{ icru: "   + icru_id + ", name: '" + name + "' , density: " + str(densities[int(icru_id)-1]) + " },"
-        print(line)
+	for line in infile.readlines()[335:526]:
+		if line.strip():
+			data = line.strip().split('&')
+			icru_id = data[0].rstrip()
+			name = data[2].rstrip('\\')
+			line = "	{ icru: " + icru_id + ", name: '" + name + \
+				"' , density: " + str(densities[int(icru_id)-1]) + " },"
+			print(line)
 */
 
 export const MATERIALS = [

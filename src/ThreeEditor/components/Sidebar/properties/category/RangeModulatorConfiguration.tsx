@@ -5,8 +5,8 @@ export function BeamModifiersConfiguration(props: { editor: Editor }) {
 	return (
 		<PropertiesCategory category='Beam Modulator'>
 			{/*
-         TODO: implement configuration for beam modifiers
-         */}
+		   TODO: implement configuration for beam modifiers
+		   */}
 		</PropertiesCategory>
 	);
 }

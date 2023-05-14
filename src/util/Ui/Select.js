@@ -7,11 +7,11 @@ import { FONT_SIZE, INPUT_WIDTH, LABEL_MARGIN, LABEL_WIDTH } from './Uis.js';
 
 /**
  * @param {{
- *      text?: string,
- *      options?: {[key:string]:string},
- *      value?: string,
- *      update: ()=> void,
- *      }} params
+ *		text?: string,
+ *		options?: {[key:string]:string},
+ *		value?: string,
+ *		update: ()=> void,
+ *		}} params
  * @return {[UIRow, UISelect, UIText]}
  */
 export function createRowSelect({ text = 'Label', options = [], value, update }) {

@@ -8,10 +8,10 @@ import { LABEL_MARGIN, LABEL_WIDTH } from './Uis.js';
 
 /**
  * @param {{
- *      text?: string,
- *      value?: boolean,
- *      update?: ()=> void,
- *      }} params
+ *		text?: string,
+ *		value?: boolean,
+ *		update?: ()=> void,
+ *		}} params
  * @return {[UIRow, UICheckbox, UIText]}
  */
 export function createRowCheckbox(params) {
@@ -26,9 +26,9 @@ export function createRowCheckbox(params) {
 
 /**
  * @param {{
- *      text?: string,
- *      value?: [boolean,number],
- *      update?: ()=> void,
+ *		text?: string,
+ *		value?: [boolean,number],
+ *		update?: ()=> void,
  *		precision?: number
  * 		min?: number,
  * 		max?: number,
@@ -50,9 +50,9 @@ export function createRowConditionalNumber(params) {
 
 /**
  * @param {{
- *      text?: string,
- *      value?: [boolean,string],
- *      update?: ()=> void,
+ *		text?: string,
+ *		value?: [boolean,string],
+ *		update?: ()=> void,
  * 		options?: {[key:string]:string}
  * 	}} params
  * @return {[UIRow, UICheckbox, UISelect, UIText]}

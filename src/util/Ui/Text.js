@@ -7,9 +7,9 @@ import { FONT_SIZE, INPUT_WIDTH, LABEL_MARGIN, LABEL_WIDTH } from './Uis.js';
 
 /**
  * @param {{
- *      text?: string,
- *      value?: string
- *      }} params
+ *		text?: string,
+ *		value?: string
+ *		}} params
  * @return {[UIRow, UIText, UIText]}
  */
 export function createRowText(params) {
@@ -26,10 +26,10 @@ export function createRowText(params) {
 
 /**
  * @param {{
- *      text?: string,
- *      value?: string,
- *      update: ()=> void
- *      }} params
+ *		text?: string,
+ *		value?: string,
+ *		update: ()=> void
+ *		}} params
  * @return {[UIRow, UIInput, UIText]}
  */
 export function createRowParamInput(params) {

@@ -6,9 +6,9 @@ import { UIButton, UIRow } from '../../ThreeEditor/js/libs/ui.js';
 
 /**
  * @param {{
- *      text?: string,
- *      update?: ()=> void,
- *      }} params
+ *		text?: string,
+ *		update?: ()=> void,
+ *		}} params
  * @return {[UIRow, UIButton]}
  */
 export function createFullwidthButton(params) {
