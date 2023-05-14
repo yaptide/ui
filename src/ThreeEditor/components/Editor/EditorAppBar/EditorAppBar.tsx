@@ -24,6 +24,7 @@ type AppBarProps = {
 };
 
 type AppBarOptions = {
+	id: string;
 	label: string;
 	icon: JSX.Element;
 	onClick: () => void;
@@ -97,9 +98,10 @@ function EditorAppBar({ editor }: AppBarProps) {
 			saveString(output, `${fileName}.json`);
 		}
 	};
-	const ToolbarButton = ({ label, icon, onClick, disabled, edge }: AppBarOptions) => (
+	const ToolbarButton = ({id, label, icon, onClick, disabled, edge }: AppBarOptions) => (
 		<Tooltip title={label}>
 			<IconButton
+				id={id}
 				size='small'
 				edge={edge}
 				color='inherit'
@@ -116,30 +118,35 @@ function EditorAppBar({ editor }: AppBarProps) {
 			[
 				{
 					label: 'New',
+					id: 'newButton',
 					icon: <FiberNewIcon />,
 					disabled: false,
 					onClick: () => setNewProjectDialogOpen(true)
 				},
 				{
 					label: 'Open',
+					id: 'openButton',
 					icon: <FolderOpenIcon />,
 					disabled: false,
 					onClick: () => setOpenFileDialogOpen(true)
 				},
 				{
 					label: 'Undo (ctrl+z)',
+					id: 'undoButton',
 					icon: <UndoIcon />,
 					disabled: !canUndo,
 					onClick: () => editor?.history.undo()
 				},
 				{
 					label: 'Save as',
+					id: 'saveAsButton',
 					icon: <SaveAsIcon />,
 					disabled: false,
 					onClick: () => setSaveFileDialogOpen(true)
 				},
 				{
 					label: 'Redo (ctrl+y)',
+					id: 'redoButton',
 					icon: <RedoIcon />,
 					disabled: !canRedo,
 					onClick: () => editor?.history.redo()
