@@ -3,7 +3,7 @@ import { Tree, TreeMethods } from '@minoru/react-dnd-treeview';
 import { Object3D } from 'three';
 import './SidebarTree.style.css';
 import { Editor } from '../../../js/Editor';
-import { SimulationElement } from '../../../Simulation/Base/SimElement';
+import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
 import { Divider } from '@mui/material';
 import { hasVisibleChildren } from '../../../../util/hooks/useKeyboardEditorControls';

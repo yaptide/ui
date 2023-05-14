@@ -1,5 +1,5 @@
 import { Editor } from '../../js/Editor';
-import { SimulationSceneContainer } from '../Base/SimScene';
+import { SimulationSceneContainer } from '../Base/SimulationScene';
 import { DetectFilter } from './DetectFilter';
 import { DetectGeometry } from '../Detectors/DetectGeometry';
 import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';

@@ -9,7 +9,7 @@ import { Editor } from '../../../../js/Editor';
 import {
 	BasicFigure,
 	BASIC_GEOMETRY_OPTIONS,
-	isBasicMesh,
+	isBasicFigure,
 	isBoxFigure,
 	isCylinderFigure,
 	isSphereFigure
@@ -134,7 +134,7 @@ const BoxDimensionsField = (props: {
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const getRenderFlag = useCallback(() => {
-		if (isBasicMesh(watchedObject) && watchedObject.geometryType === 'Box') return true;
+		if (isBasicFigure(watchedObject) && watchedObject.geometryType === 'Box') return true;
 
 		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'Box')
 			return !watchedObject.autoCalculate;
@@ -229,7 +229,7 @@ const CylinderDimensionsField = (props: {
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const getRenderFlag = useCallback(() => {
-		if (isBasicMesh(watchedObject) && watchedObject.geometryType === 'Cylinder') return true;
+		if (isBasicFigure(watchedObject) && watchedObject.geometryType === 'Cylinder') return true;
 
 		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'Cylinder')
 			return !watchedObject.autoCalculate;
@@ -354,7 +354,7 @@ const SphereDimensionsField = (props: {
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const getRenderFlag = useCallback(() => {
-		if (isBasicMesh(watchedObject) && watchedObject.geometryType === 'Sphere') return true;
+		if (isBasicFigure(watchedObject) && watchedObject.geometryType === 'Sphere') return true;
 
 		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'Sphere')
 			return !watchedObject.autoCalculate;
@@ -482,7 +482,7 @@ export function ObjectDimensions(props: {
 
 	const visibleFlag =
 		!isCTCube(object) &&
-		(isBasicMesh(object) || isDetectGeometry(object) || isWorldZone(object));
+		(isBasicFigure(object) || isDetectGeometry(object) || isWorldZone(object));
 
 	return (
 		<PropertiesCategory

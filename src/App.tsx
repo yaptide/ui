@@ -13,7 +13,7 @@ import WrapperApp from './WrapperApp/WrapperApp';
 declare module '@mui/material/styles' {
 	// add new variables to the theme type
 	interface TypeBackground {
-		secondary?: string;
+		secondary: string;
 	}
 }
 

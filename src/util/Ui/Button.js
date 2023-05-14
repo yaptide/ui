@@ -12,10 +12,10 @@ import { UIButton, UIRow } from '../../ThreeEditor/js/libs/ui.js';
  * @return {[UIRow, UIButton]}
  */
 export function createFullwidthButton(params) {
-   const { text = 'Button', update = () => { } } = params;
-   const row = new UIRow();
-   const button = new UIButton(text).onClick(update);
-   button.setWidth('100%');
-   row.add(button);
-   return [row, button];
+	const { text = 'Button', update = () => {} } = params;
+	const row = new UIRow();
+	const button = new UIButton(text).onClick(update);
+	button.setWidth('100%');
+	row.add(button);
+	return [row, button];
 }

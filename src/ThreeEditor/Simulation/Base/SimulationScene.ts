@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { SimulationPropertiesType } from '../../../types/SimProperties';
 import { Editor } from '../../js/Editor';
 import { UniqueChildrenNames, getNextFreeName } from '../../../util/Name/Name';
+import { SimulationElement } from './SimulationElement';
 
 export interface ISimulationSceneChild extends THREE.Object3D {
 	parent: SimulationSceneContainer<this> | null;
@@ -11,15 +12,15 @@ export interface ISimulationSceneChild extends THREE.Object3D {
 	uuid: string;
 }
 
+/**
+ * This is the base class for groups of simulation elements.
+ */
 export abstract class SimulationSceneContainer<TChild extends ISimulationSceneChild>
-	extends THREE.Object3D
+	extends SimulationElement
 	implements SimulationPropertiesType, UniqueChildrenNames
 {
 	children: TChild[];
-	editor: Editor;
-	private _name: string;
 	parent: SimulationSceneContainer<this> | null;
-	type: string;
 	getNextFreeName(child: TChild, newName?: string): string {
 		return getNextFreeName(this, newName ?? child.name, child);
 	}
@@ -28,10 +29,7 @@ export abstract class SimulationSceneContainer<TChild extends ISimulationSceneCh
 		return super.add(child);
 	}
 	constructor(editor: Editor, name: string, type: string) {
-		super();
-		this.name = this._name = name;
-		this.type = type;
-		this.editor = editor;
+		super(editor, name, type);
 		this.children = [];
 		this.parent = null;
 	}
@@ -42,7 +40,7 @@ export abstract class SimulationSceneContainer<TChild extends ISimulationSceneCh
 		});
 		this.children.length = 0;
 	}
-	toJSON(): unknown {
+	toJSON(): Array<ReturnType<TChild['toJSON']>> {
 		return this.children.map(child => child.toJSON());
 	}
 }

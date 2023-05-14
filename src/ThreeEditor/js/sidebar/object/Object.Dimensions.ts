@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import {
 	BasicFigure,
 	BASIC_GEOMETRY_OPTIONS,
-	isBasicMesh,
+	isBasicFigure,
 	isBoxFigure,
 	isCylinderFigure,
 	isSphereFigure
@@ -111,7 +111,7 @@ export class ObjectDimensions extends ObjectAbstract {
 
 	private setGeometryType(object: BasicFigure | DetectGeometry | WorldZone): string | undefined {
 		let geometryType;
-		if (isBasicMesh(object)) {
+		if (isBasicFigure(object)) {
 			showUIElement(this.typeRow);
 			hideUIElement(this.typeSelectRow);
 			this.type.setValue(object.geometryType);

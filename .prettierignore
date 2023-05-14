@@ -1,6 +1,7 @@
-#ignore ThreeEditor libs files
+#ignore libs files
 src/ThreeEditor/js/libs/
 src/libs/
+public/libs
 
 #ignore npm files
 node_modules/
@@ -14,3 +15,5 @@ dockerBuild.ps1
 .github/
 .notebook/
 .vscode/
+README.md
+

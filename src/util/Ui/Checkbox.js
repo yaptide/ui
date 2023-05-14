@@ -15,13 +15,13 @@ import { LABEL_MARGIN, LABEL_WIDTH } from './Uis.js';
  * @return {[UIRow, UICheckbox, UIText]}
  */
 export function createRowCheckbox(params) {
-   const { text = 'Label', value = false, update = () => { } } = params;
+	const { text = 'Label', value = false, update = () => {} } = params;
 
-   const row = new UIRow();
-   const checkbox = new UICheckbox(value).onChange(update);
-   const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
-   row.add(label, checkbox);
-   return [row, checkbox, label];
+	const row = new UIRow();
+	const checkbox = new UICheckbox(value).onChange(update);
+	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
+	row.add(label, checkbox);
+	return [row, checkbox, label];
 }
 
 /**
@@ -38,14 +38,14 @@ export function createRowCheckbox(params) {
  * @return {[UIRow, UICheckbox, UINumber, UIText]}
  */
 export function createRowConditionalNumber(params) {
-   const { text = 'Label', value = [false, 0], update = () => { } } = params;
+	const { text = 'Label', value = [false, 0], update = () => {} } = params;
 
-   const row = new UIRow();
-   const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
-   const checkbox = new UICheckbox(value[0]).onChange(update);
-   const input = createNumberInput({ ...params, value: value[1], update });
-   row.add(label, checkbox, input);
-   return [row, checkbox, input, label];
+	const row = new UIRow();
+	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
+	const checkbox = new UICheckbox(value[0]).onChange(update);
+	const input = createNumberInput({ ...params, value: value[1], update });
+	row.add(label, checkbox, input);
+	return [row, checkbox, input, label];
 }
 
 /**
@@ -58,12 +58,12 @@ export function createRowConditionalNumber(params) {
  * @return {[UIRow, UICheckbox, UISelect, UIText]}
  */
 export function createRowConditionalSelect(params) {
-   const { text = 'Label', value = [false, ''], options = {}, update = () => { } } = params;
+	const { text = 'Label', value = [false, ''], options = {}, update = () => {} } = params;
 
-   const row = new UIRow();
-   const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
-   const checkbox = new UICheckbox(value[0]).onChange(update);
-   const select = new UISelect(options).setValue(value[1]).onChange(update);
-   row.add(label, checkbox, select);
-   return [row, checkbox, select, label];
+	const row = new UIRow();
+	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
+	const checkbox = new UICheckbox(value[0]).onChange(update);
+	const select = new UISelect(options).setValue(value[1]).onChange(update);
+	row.add(label, checkbox, select);
+	return [row, checkbox, select, label];
 }

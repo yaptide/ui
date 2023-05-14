@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
-import { SimulationMesh } from '../Base/SimMesh';
+import { SimulationMesh } from '../Base/SimulationMesh';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
 	color: 0x000000,
@@ -23,7 +23,7 @@ export abstract class BasicFigure<
 	TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry
 > extends SimulationMesh<TGeometry> {
 	geometryType: BasicGeometry;
-	readonly isBasicMesh: true = true;
+	readonly isBasicFigure: true = true;
 	constructor(
 		editor: Editor,
 		name: string | undefined,
@@ -79,7 +79,7 @@ export class SphereFigure extends BasicFigure<THREE.SphereGeometry> {
 	}
 }
 
-export const isBasicMesh = (x: unknown): x is BasicFigure => x instanceof BasicFigure;
+export const isBasicFigure = (x: unknown): x is BasicFigure => x instanceof BasicFigure;
 
 export const isBoxFigure = (x: unknown): x is BoxFigure => x instanceof BoxFigure;
 

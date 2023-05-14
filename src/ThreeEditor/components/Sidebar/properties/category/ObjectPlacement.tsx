@@ -12,7 +12,7 @@ import { SetRotationCommand } from '../../../../js/commands/SetRotationCommand';
 import { SetBeamDirectionCommand } from '../../../../js/commands/SetBeamDirectionCommand';
 import { PropertiesCategory } from './PropertiesCategory';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
-import { ISimulationSceneChild } from '../../../../Simulation/Base/SimScene';
+import { ISimulationSceneChild } from '../../../../Simulation/Base/SimulationScene';
 
 export function ObjectPlacement(props: {
 	editor: Editor;

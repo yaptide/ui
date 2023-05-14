@@ -1,5 +1,5 @@
 import { Editor } from '../../js/Editor';
-import { SimulationElement } from '../Base/SimElement';
+import { SimulationElement } from '../Base/SimulationElement';
 import {
 	FilterRule,
 	FloatRule,

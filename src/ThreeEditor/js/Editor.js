@@ -21,677 +21,677 @@ _DEFAULT_CAMERA.name = 'Camera';
 _DEFAULT_CAMERA.position.set(0, 5, 10);
 _DEFAULT_CAMERA.lookAt(new THREE.Vector3());
 
-export const JSON_VERSION = 0.6;
+export const JSON_VERSION = 0.7;
 
 export function Editor(container) {
-   this.signals = {
-      // script
+	this.signals = {
+		// script
 
-      editScript: new Signal(),
+		editScript: new Signal(),
 
-      // notifications
+		// notifications
 
-      editorCleared: new Signal(),
+		editorCleared: new Signal(),
 
-      savingStarted: new Signal(),
-      savingFinished: new Signal(),
+		savingStarted: new Signal(),
+		savingFinished: new Signal(),
 
-      transformModeChanged: new Signal(),
-      snapChanged: new Signal(),
-      spaceChanged: new Signal(),
-      rendererCreated: new Signal(),
-      rendererUpdated: new Signal(),
+		transformModeChanged: new Signal(),
+		snapChanged: new Signal(),
+		spaceChanged: new Signal(),
+		rendererCreated: new Signal(),
+		rendererUpdated: new Signal(),
 
-      sceneBackgroundChanged: new Signal(),
-      sceneEnvironmentChanged: new Signal(),
-      sceneGraphChanged: new Signal(),
-      sceneRendered: new Signal(),
-      projectChanged: new Signal(),
+		sceneBackgroundChanged: new Signal(),
+		sceneEnvironmentChanged: new Signal(),
+		sceneGraphChanged: new Signal(),
+		sceneRendered: new Signal(),
+		projectChanged: new Signal(),
 
-      cameraChanged: new Signal(),
-      cameraResetted: new Signal(),
+		cameraChanged: new Signal(),
+		cameraResetted: new Signal(),
 
-      geometryChanged: new Signal(),
+		geometryChanged: new Signal(),
 
-      objectSelected: new Signal(),
-      objectFocused: new Signal(),
+		objectSelected: new Signal(),
+		objectFocused: new Signal(),
 
-      objectAdded: new Signal(),
-      objectChanged: new Signal(),
-      objectRemoved: new Signal(),
+		objectAdded: new Signal(),
+		objectChanged: new Signal(),
+		objectRemoved: new Signal(),
 
-      //YAPTIDE zones
-      zoneAdded: new Signal(),
-      zoneChanged: new Signal(),
-      zoneGeometryChanged: new Signal(),
-      zoneEmpty: new Signal(),
-      zoneRemoved: new Signal(),
-      zoneTypeChanged: new Signal(),
+		//YAPTIDE zones
+		zoneAdded: new Signal(),
+		zoneChanged: new Signal(),
+		zoneGeometryChanged: new Signal(),
+		zoneEmpty: new Signal(),
+		zoneRemoved: new Signal(),
+		zoneTypeChanged: new Signal(),
 
-      //YAPTIDE detect
-      detectGeometryAdded: new Signal(),
-      detectGeometryRemoved: new Signal(),
-      detectGeometryChanged: new Signal(),
-      detectTypeChanged: new Signal(),
+		//YAPTIDE detect
+		detectGeometryAdded: new Signal(),
+		detectGeometryRemoved: new Signal(),
+		detectGeometryChanged: new Signal(),
+		detectTypeChanged: new Signal(),
 
-      detectFilterAdded: new Signal(),
-      detectFilterRemoved: new Signal(),
-      detectFilterChanged: new Signal(),
+		detectFilterAdded: new Signal(),
+		detectFilterRemoved: new Signal(),
+		detectFilterChanged: new Signal(),
 
-      scoringQuantityChanged: new Signal(),
+		scoringQuantityChanged: new Signal(),
 
-      cameraAdded: new Signal(),
-      cameraRemoved: new Signal(),
+		cameraAdded: new Signal(),
+		cameraRemoved: new Signal(),
 
-      helperAdded: new Signal(),
-      helperRemoved: new Signal(),
+		helperAdded: new Signal(),
+		helperRemoved: new Signal(),
 
-      materialAdded: new Signal(),
-      materialChanged: new Signal(),
-      materialRemoved: new Signal(),
+		materialAdded: new Signal(),
+		materialChanged: new Signal(),
+		materialRemoved: new Signal(),
 
-      scriptAdded: new Signal(),
-      scriptChanged: new Signal(),
-      scriptRemoved: new Signal(),
+		scriptAdded: new Signal(),
+		scriptChanged: new Signal(),
+		scriptRemoved: new Signal(),
 
-      windowResize: new Signal(),
+		windowResize: new Signal(),
 
-      showGridChanged: new Signal(),
-      showHelpersChanged: new Signal(),
-      refreshSidebarObject3D: new Signal(),
-      historyChanged: new Signal(),
+		showGridChanged: new Signal(),
+		showHelpersChanged: new Signal(),
+		refreshSidebarObject3D: new Signal(),
+		historyChanged: new Signal(),
 
-      viewportCameraChanged: new Signal(),
+		viewportCameraChanged: new Signal(),
 
-      animationStopped: new Signal(),
+		animationStopped: new Signal(),
 
-      // config
-      titleChanged: new Signal(),
+		// config
+		titleChanged: new Signal(),
 
-      // YAPTIDE signals
-      selectModeChanged: new Signal(),
+		// YAPTIDE signals
+		selectModeChanged: new Signal(),
 
-      layoutChanged: new Signal(), // Layout signal
+		layoutChanged: new Signal(), // Layout signal
 
-      contextChanged: new Signal(),
+		contextChanged: new Signal(),
 
-      autocalculateChanged: new Signal(),
+		autocalculateChanged: new Signal(),
 
-      CSGZoneAdded: new Signal(), // Sidebar.Properties signal
+		CSGZoneAdded: new Signal(), // Sidebar.Properties signal
 
-      viewportConfigChanged: new Signal(), // Viewport config signal
+		viewportConfigChanged: new Signal(), // Viewport config signal
 
-      CSGManagerStateChanged: new Signal(), // State of CSGmanager changed
+		CSGManagerStateChanged: new Signal(), // State of CSGmanager changed
 
-      exampleLoaded: new Signal(),
+		exampleLoaded: new Signal(),
 
-      requestRenameAction: new Signal()
-   };
+		requestRenameAction: new Signal()
+	};
 
-   this.results = null;
+	this.results = null;
 
-   this.viewManager = null;
+	this.viewManager = null;
 
-   this.oldSidebarVisible = true;
+	this.oldSidebarVisible = true;
 
-   this.container = container;
-   container.setAttribute('tabindex', '-1');
-   this.container.focus();
+	this.container = container;
+	container.setAttribute('tabindex', '-1');
+	this.container.focus();
 
-   this.jsonVersion = JSON_VERSION;
+	this.jsonVersion = JSON_VERSION;
 
-   this.config = new Config();
-   this.config.addListener('project/title', title => {
-      this.signals.titleChanged.dispatch(title);
-   });
-   this.history = new _History(this);
-   this.storage = new _Storage();
-   this.unit = {
-      name: 'cm',
-      multiplier: 1
-   };
+	this.config = new Config();
+	this.config.addListener('project/title', title => {
+		this.signals.titleChanged.dispatch(title);
+	});
+	this.history = new _History(this);
+	this.storage = new _Storage();
+	this.unit = {
+		name: 'cm',
+		multiplier: 1
+	};
 
-   this.loader = new Loader(this);
+	this.loader = new Loader(this);
 
-   this.camera = _DEFAULT_CAMERA.clone();
+	this.camera = _DEFAULT_CAMERA.clone();
 
-   this.scene = new FigureScene(this);
+	this.scene = new FigureScene(this);
 
-   this.sceneHelpers = new THREE.Scene();
+	this.sceneHelpers = new THREE.Scene();
 
-   this.materialManager = new MaterialManager(this); // Material Manager
-   this.zoneManager = new ZoneManager(this); // Zone Manager
-   this.detectManager = new DetectManager(this); // Detect Manager
-   this.scoringManager = new ScoringManager(this); // Scoring Manager
+	this.materialManager = new MaterialManager(this); // Material Manager
+	this.zoneManager = new ZoneManager(this); // Zone Manager
+	this.detectManager = new DetectManager(this); // Detect Manager
+	this.scoringManager = new ScoringManager(this); // Scoring Manager
 
-   this.beam = new Beam(this);
-   this.physic = new Physics();
-   this.sceneHelpers.add(this.beam);
+	this.beam = new Beam(this);
+	this.physic = new Physics();
+	this.sceneHelpers.add(this.beam);
 
-   this.contextManager = new ContextManager(this); //Context Manager must be loaded after all scenes
+	this.contextManager = new ContextManager(this); //Context Manager must be loaded after all scenes
 
-   this.object = {};
-   this.geometries = {};
-   this.materials = {};
-   this.textures = {};
-   this.scripts = {};
+	this.object = {};
+	this.geometries = {};
+	this.materials = {};
+	this.textures = {};
+	this.scripts = {};
 
-   this.materialsRefCounter = new Map(); // tracks how often is a material used by a 3D object
+	this.materialsRefCounter = new Map(); // tracks how often is a material used by a 3D object
 
-   this.mixer = new THREE.AnimationMixer(this.scene);
+	this.mixer = new THREE.AnimationMixer(this.scene);
 
-   this.helpers = {};
+	this.helpers = {};
 
-   this.cameras = {};
-   this.viewportCamera = this.camera;
+	this.cameras = {};
+	this.viewportCamera = this.camera;
 
-   this.addCamera(this.camera);
+	this.addCamera(this.camera);
 
-   this.searchableObjectCollections = [
-      this.scene,
-      this.zoneManager,
-      this.beam,
-      this.detectManager,
-      this.detectManager.filterContainer,
-      this.scoringManager
-   ];
+	this.searchableObjectCollections = [
+		this.scene,
+		this.zoneManager,
+		this.beam,
+		this.detectManager,
+		this.detectManager.filterContainer,
+		this.scoringManager
+	];
 }
 
 Editor.prototype = {
-   set selected(object) {
-      Reflect.set(this.contextManager, 'selected', object);
-   },
-   get selected() {
-      return Reflect.get(this.contextManager, 'selected');
-   },
-   setScene(scene) {
-      this.scene.uuid = scene.uuid;
-      this.scene.name = scene.name;
-
-      this.scene.background = scene.background;
-      this.scene.environment = scene.environment;
-
-      this.scene.userData = JSON.parse(JSON.stringify(scene.userData));
-
-      // avoid render per object
+	set selected(object) {
+		Reflect.set(this.contextManager, 'selected', object);
+	},
+	get selected() {
+		return Reflect.get(this.contextManager, 'selected');
+	},
+	setScene(scene) {
+		this.scene.uuid = scene.uuid;
+		this.scene.name = scene.name;
+
+		this.scene.background = scene.background;
+		this.scene.environment = scene.environment;
+
+		this.scene.userData = JSON.parse(JSON.stringify(scene.userData));
+
+		// avoid render per object
 
-      this.signals.sceneGraphChanged.active = false;
-
-      while (scene.children.length > 0) {
-         this.addObject(scene.children[0]);
-      }
-
-      this.signals.sceneGraphChanged.active = true;
-      this.signals.sceneGraphChanged.dispatch();
-   },
-
-   addObject(object, parent, index) {
-      var scope = this;
-
-      object.traverse(function (child) {
-         if (child.geometry) scope.addGeometry(child.geometry);
-         if (child.material) scope.addMaterial(child.material);
-
-         scope.addCamera(child);
-         scope.addHelper(child);
-      });
-
-      if (!parent) {
-         this.scene.add(object);
-      } else {
-         parent.children.splice(index, 0, object);
-         object.parent = parent;
-      }
-
-      this.signals.objectAdded.dispatch(object);
-      this.signals.sceneGraphChanged.dispatch();
-   },
-
-   moveObject(object, parent, before) {
-      if (!parent) {
-         parent = this.scene;
-      }
-
-      parent.add(object);
-
-      // sort children array
-
-      if (before) {
-         var index = parent.children.indexOf(before);
-         parent.children.splice(index, 0, object);
-         parent.children.pop();
-      }
-
-      this.signals.sceneGraphChanged.dispatch();
-   },
-
-   nameObject(object, name) {
-      object.name = name;
-      this.signals.sceneGraphChanged.dispatch();
-   },
-
-   removeObject(object) {
-      if (object.parent === null) return; // avoid deleting the camera or scene
-
-      var scope = this;
-
-      object.traverse(function (child) {
-         scope.removeCamera(child);
-         scope.removeHelper(child);
-
-         if (child.material) scope.removeMaterial(child.material);
-      });
-
-      object.parent.remove(object);
-      this.signals.sceneGraphChanged.dispatch();
-      this.signals.objectRemoved.dispatch(object);
-   },
-
-   addGeometry(geometry) {
-      this.geometries[geometry.uuid] = geometry;
-   },
-
-   setGeometryName(geometry, name) {
-      geometry.name = name;
-      this.signals.sceneGraphChanged.dispatch();
-   },
-
-   addMaterial(material) {
-      if (Array.isArray(material)) {
-         for (var i = 0, l = material.length; i < l; i++) {
-            this.addMaterialToRefCounter(material[i]);
-         }
-      } else {
-         this.addMaterialToRefCounter(material);
-      }
-
-      this.signals.materialAdded.dispatch();
-   },
-
-   addMaterialToRefCounter(material) {
-      var materialsRefCounter = this.materialsRefCounter;
-
-      var count = materialsRefCounter.get(material);
-
-      if (typeof count === 'undefined') {
-         materialsRefCounter.set(material, 1);
-         this.materials[material.uuid] = material;
-      } else {
-         count++;
-         materialsRefCounter.set(material, count);
-      }
-   },
-
-   removeMaterial(material) {
-      if (Array.isArray(material)) {
-         for (var i = 0, l = material.length; i < l; i++) {
-            this.removeMaterialFromRefCounter(material[i]);
-         }
-      } else {
-         this.removeMaterialFromRefCounter(material);
-      }
-
-      this.signals.materialRemoved.dispatch();
-   },
-
-   removeMaterialFromRefCounter(material) {
-      var materialsRefCounter = this.materialsRefCounter;
-
-      var count = materialsRefCounter.get(material);
-      count--;
-
-      if (count === 0) {
-         materialsRefCounter.delete(material);
-         delete this.materials[material.uuid];
-      } else {
-         materialsRefCounter.set(material, count);
-      }
-   },
-
-   getMaterialById(id) {
-      var material;
-      var materials = Object.values(this.materials);
-
-      for (var i = 0; i < materials.length; i++) {
-         if (materials[i].id === id) {
-            material = materials[i];
-            break;
-         }
-      }
-
-      return material;
-   },
-
-   setMaterialName(material, name) {
-      material.name = name;
-      this.signals.sceneGraphChanged.dispatch();
-   },
-
-   addTexture(texture) {
-      this.textures[texture.uuid] = texture;
-   },
-
-   //
-
-   addCamera(camera) {
-      if (camera.isCamera) {
-         this.cameras[camera.uuid] = camera;
-
-         this.signals.cameraAdded.dispatch(camera);
-      }
-   },
-
-   removeCamera(camera) {
-      if (this.cameras[camera.uuid]) {
-         delete this.cameras[camera.uuid];
-
-         this.signals.cameraRemoved.dispatch(camera);
-      }
-   },
-
-   //
-
-   addHelper: (() => {
-      var geometry = new THREE.SphereGeometry(2, 4, 2);
-      var material = new THREE.MeshBasicMaterial({ color: 0xff0000, visible: false });
-
-      return (object, helper) => {
-         if (!helper) {
-            if (object.isCamera) {
-               helper = new THREE.CameraHelper(object);
-            } else if (object.isPointLight) {
-               helper = new THREE.PointLightHelper(object, 1);
-            } else if (object.isDirectionalLight) {
-               helper = new THREE.DirectionalLightHelper(object, 1);
-            } else if (object.isSpotLight) {
-               helper = new THREE.SpotLightHelper(object);
-            } else if (object.isHemisphereLight) {
-               helper = new THREE.HemisphereLightHelper(object, 1);
-            } else if (object.isSkinnedMesh) {
-               helper = new THREE.SkeletonHelper(object.skeleton.bones[0]);
-            } else {
-               // No helper for this object type
-               return;
-            }
-
-            var picker = new THREE.Mesh(geometry, material);
-            picker.name = 'picker';
-            picker.userData.object = object;
-            helper.add(picker);
-         }
-
-         this.sceneHelpers.add(helper);
-         this.helpers[object.id] = helper;
-
-         this.signals.helperAdded.dispatch(helper);
-      };
-   })(),
-
-   removeHelper(object) {
-      if (this.helpers[object.id]) {
-         var helper = this.helpers[object.id];
-         helper.parent.remove(helper);
-
-         delete this.helpers[object.id];
-
-         this.signals.helperRemoved.dispatch(helper);
-      }
-   },
-
-   //
-
-   getObjectMaterial(object, slot) {
-      var material = object.material;
-
-      if (Array.isArray(material) && Number.isInteger(slot)) {
-         material = material[slot];
-      }
-
-      return material;
-   },
-
-   setObjectMaterial(object, slot, newMaterial) {
-      if (Array.isArray(object.material) && Number.isInteger(slot)) {
-         object.material[slot] = newMaterial;
-      } else {
-         object.material = newMaterial;
-      }
-   },
-
-   setViewportCamera(uuid) {
-      this.viewportCamera = this.cameras[uuid];
-      this.signals.viewportCameraChanged.dispatch();
-   },
-
-   //
-
-   select(object) {
-      if (this.selected === object) return;
-      let uuid = null;
-
-      if (object !== null) {
-         uuid = object.uuid;
-      }
-
-      this.selected = object;
-
-      this.config.setKey('selected', uuid);
-
-      this.signals.objectSelected.dispatch(this.selected);
-   },
-
-   getObjectByName(name) {
-      const objectCollections = [...this.searchableObjectCollections];
-
-      const object = objectCollections
-         .map(e => e.getObjectByName(name))
-         .find(e => typeof e !== 'undefined');
-
-      return object;
-   },
-
-   getObjectById(id) {
-      const objectCollections = [
-         this.scene,
-         this.zoneManager,
-         this.beam,
-         this.detectManager,
-         this.detectManager.filterContainer,
-         this.scoringManager
-      ];
-      const object =
-         objectCollections.map(e => e.getObjectById(id)).find(e => typeof e !== 'undefined') ??
-         null;
-      return object;
-   },
-
-   getNextFreeName(name, object = null) {
-      return getNextFreeName(this, name, object);
-   },
-
-   selectById(id) {
-      if (id === this.camera.id) {
-         this.select(this.camera);
-         return;
-      }
-
-      const objectCollections = [...this.searchableObjectCollections];
-
-      const object =
-         objectCollections.map(e => e.getObjectById(id)).find(e => typeof e !== 'undefined') ??
-         null;
-
-      this.select(object);
-   },
-
-   selectByUuid(uuid) {
-      const objectCollections = [
-         this.scene,
-         this.zoneManager,
-         this.beam,
-         this.detectManager,
-         this.detectManager.filterContainer,
-         this.scoringManager
-      ];
-      const object =
-         objectCollections.find(e => e.uuid === uuid) ??
-         objectCollections
-            .map(e => e.getObjectByProperty('uuid', uuid))
-            .find(e => typeof e !== 'undefined') ??
-         null;
-
-      this.select(object);
-   },
-
-   deselect() {
-      this.select(null);
-   },
-
-   focus(object) {
-      if (object) {
-         this.signals.objectFocused.dispatch(object);
-      }
-   },
-
-   focusById(id) {
-      this.focus(this.scene.getObjectById(id));
-   },
-
-   resetCamera() {
-      this.signals.editorCleared.dispatch();
-   },
-
-   clear() {
-      this.history.clear();
-      this.storage.clear();
-      this.results = null;
-
-      this.camera.copy(_DEFAULT_CAMERA);
-      this.signals.cameraChanged.dispatch();
-
-      this.scene.name = 'Figures';
-      this.scene.userData = {};
-      this.scene.background = null;
-      this.scene.environment = null;
-
-      var objects = this.scene.children;
-
-      while (objects.length > 0) {
-         this.removeObject(objects[0]);
-      }
-
-      this.materialManager.reset();
-      this.zoneManager.reset();
-      this.detectManager.reset();
-      this.scoringManager.reset();
-      this.beam.reset();
-      this.physic.reset();
-
-      this.geometries = {};
-      this.materials = {};
-      this.textures = {};
-
-      this.materialsRefCounter.clear();
-
-      this.animations = {};
-      this.mixer.stopAllAction();
-
-      this.deselect();
-      this.contextManager.reset();
-
-      this.signals.editorCleared.dispatch();
-   },
-
-   //
-
-   async fromJSON(json) {
-      this.config.setKey('project/title', json.project.title ?? '');
-      this.config.setKey('project/description', json.project.description ?? '');
-      this.signals.projectChanged.dispatch();
-
-      const loader = new EditorObjectLoader(this);
-
-      this.signals.cameraResetted.dispatch();
-
-      this.history.fromJSON(json.history);
-
-      this.setScene(await loader.parseAsync(json.scene));
-
-      this.materialManager.fromJSON(json.materialManager);
-
-      // CSGManager must be loaded after scene and simulation materials
-      this.zoneManager.fromJSON(json.zoneManager); // CSGManager must be loaded in order not to lose reference in components
-      this.detectManager.fromJSON(json.detectManager);
-      this.scoringManager.fromJSON(json.scoringManager);
-      this.beam.fromJSON(json.beam);
-      this.physic.fromJSON(json.physic);
-
-      this.viewManager.fromConfigurationJson(json.project.viewManager);
-
-      this.signals.sceneGraphChanged.dispatch();
-   },
-   toJSON() {
-      // scripts clean up
-
-      var scene = this.scene;
-      var scripts = this.scripts;
-
-      for (var key in scripts) {
-         var script = scripts[key];
-
-         if (script.length === 0 || scene.getObjectByProperty('uuid', key) === undefined) {
-            delete scripts[key];
-         }
-      }
-
-      //
-
-      const jsonEditor = {
-         metadata: {
-            version: this.jsonVersion,
-            type: 'Editor',
-            generator: 'Editor.toJSON'
-         },
-         project: {
-            title: this.config.getKey('project/title'),
-            description: this.config.getKey('project/description'),
-            shadows: this.config.getKey('project/renderer/shadows'),
-            shadowType: this.config.getKey('project/renderer/shadowType'),
-            physicallyCorrectLights: this.config.getKey(
-               'project/renderer/physicallyCorrectLights'
-            ),
-            toneMapping: this.config.getKey('project/renderer/toneMapping'),
-            toneMappingExposure: this.config.getKey('project/renderer/toneMappingExposure'),
-            viewManager: this.viewManager.configurationToJson() // serialize ViewManager
-         },
-         scene: this.scene.toJSON(),
-         history: this.history.toJSON(),
-         zoneManager: this.zoneManager.toJSON(), // serialize CSGManager
-         detectManager: this.detectManager.toJSON(), // serialize DetectManager;
-         beam: this.beam.toJSON(),
-         physic: this.physic.toJSON(),
-         materialManager: this.materialManager.toJSON(), // serialize MaterialManager
-         scoringManager: this.scoringManager.toJSON() // serialize ScoringManager
-      };
-
-      const hashJsonEditor = hash(jsonEditor);
-
-      return { ...jsonEditor, hash: hashJsonEditor };
-   },
-
-   objectByUuid(uuid) {
-      return this.scene.getObjectByProperty('uuid', uuid, true);
-   },
-
-   execute(cmd, optionalName) {
-      this.history.execute(cmd, optionalName);
-   },
-
-   undo() {
-      this.history.undo();
-   },
-
-   redo() {
-      this.history.redo();
-   }
+		this.signals.sceneGraphChanged.active = false;
+
+		while (scene.children.length > 0) {
+			this.addObject(scene.children[0]);
+		}
+
+		this.signals.sceneGraphChanged.active = true;
+		this.signals.sceneGraphChanged.dispatch();
+	},
+
+	addObject(object, parent, index) {
+		var scope = this;
+
+		object.traverse(function (child) {
+			if (child.geometry) scope.addGeometry(child.geometry);
+			if (child.material) scope.addMaterial(child.material);
+
+			scope.addCamera(child);
+			scope.addHelper(child);
+		});
+
+		if (!parent) {
+			this.scene.add(object);
+		} else {
+			parent.children.splice(index, 0, object);
+			object.parent = parent;
+		}
+
+		this.signals.objectAdded.dispatch(object);
+		this.signals.sceneGraphChanged.dispatch();
+	},
+
+	moveObject(object, parent, before) {
+		if (!parent) {
+			parent = this.scene;
+		}
+
+		parent.add(object);
+
+		// sort children array
+
+		if (before) {
+			var index = parent.children.indexOf(before);
+			parent.children.splice(index, 0, object);
+			parent.children.pop();
+		}
+
+		this.signals.sceneGraphChanged.dispatch();
+	},
+
+	nameObject(object, name) {
+		object.name = name;
+		this.signals.sceneGraphChanged.dispatch();
+	},
+
+	removeObject(object) {
+		if (object.parent === null) return; // avoid deleting the camera or scene
+
+		var scope = this;
+
+		object.traverse(function (child) {
+			scope.removeCamera(child);
+			scope.removeHelper(child);
+
+			if (child.material) scope.removeMaterial(child.material);
+		});
+
+		object.parent.remove(object);
+		this.signals.sceneGraphChanged.dispatch();
+		this.signals.objectRemoved.dispatch(object);
+	},
+
+	addGeometry(geometry) {
+		this.geometries[geometry.uuid] = geometry;
+	},
+
+	setGeometryName(geometry, name) {
+		geometry.name = name;
+		this.signals.sceneGraphChanged.dispatch();
+	},
+
+	addMaterial(material) {
+		if (Array.isArray(material)) {
+			for (var i = 0, l = material.length; i < l; i++) {
+				this.addMaterialToRefCounter(material[i]);
+			}
+		} else {
+			this.addMaterialToRefCounter(material);
+		}
+
+		this.signals.materialAdded.dispatch();
+	},
+
+	addMaterialToRefCounter(material) {
+		var materialsRefCounter = this.materialsRefCounter;
+
+		var count = materialsRefCounter.get(material);
+
+		if (typeof count === 'undefined') {
+			materialsRefCounter.set(material, 1);
+			this.materials[material.uuid] = material;
+		} else {
+			count++;
+			materialsRefCounter.set(material, count);
+		}
+	},
+
+	removeMaterial(material) {
+		if (Array.isArray(material)) {
+			for (var i = 0, l = material.length; i < l; i++) {
+				this.removeMaterialFromRefCounter(material[i]);
+			}
+		} else {
+			this.removeMaterialFromRefCounter(material);
+		}
+
+		this.signals.materialRemoved.dispatch();
+	},
+
+	removeMaterialFromRefCounter(material) {
+		var materialsRefCounter = this.materialsRefCounter;
+
+		var count = materialsRefCounter.get(material);
+		count--;
+
+		if (count === 0) {
+			materialsRefCounter.delete(material);
+			delete this.materials[material.uuid];
+		} else {
+			materialsRefCounter.set(material, count);
+		}
+	},
+
+	getMaterialById(id) {
+		var material;
+		var materials = Object.values(this.materials);
+
+		for (var i = 0; i < materials.length; i++) {
+			if (materials[i].id === id) {
+				material = materials[i];
+				break;
+			}
+		}
+
+		return material;
+	},
+
+	setMaterialName(material, name) {
+		material.name = name;
+		this.signals.sceneGraphChanged.dispatch();
+	},
+
+	addTexture(texture) {
+		this.textures[texture.uuid] = texture;
+	},
+
+	//
+
+	addCamera(camera) {
+		if (camera.isCamera) {
+			this.cameras[camera.uuid] = camera;
+
+			this.signals.cameraAdded.dispatch(camera);
+		}
+	},
+
+	removeCamera(camera) {
+		if (this.cameras[camera.uuid]) {
+			delete this.cameras[camera.uuid];
+
+			this.signals.cameraRemoved.dispatch(camera);
+		}
+	},
+
+	//
+
+	addHelper: (() => {
+		var geometry = new THREE.SphereGeometry(2, 4, 2);
+		var material = new THREE.MeshBasicMaterial({ color: 0xff0000, visible: false });
+
+		return (object, helper) => {
+			if (!helper) {
+				if (object.isCamera) {
+					helper = new THREE.CameraHelper(object);
+				} else if (object.isPointLight) {
+					helper = new THREE.PointLightHelper(object, 1);
+				} else if (object.isDirectionalLight) {
+					helper = new THREE.DirectionalLightHelper(object, 1);
+				} else if (object.isSpotLight) {
+					helper = new THREE.SpotLightHelper(object);
+				} else if (object.isHemisphereLight) {
+					helper = new THREE.HemisphereLightHelper(object, 1);
+				} else if (object.isSkinnedMesh) {
+					helper = new THREE.SkeletonHelper(object.skeleton.bones[0]);
+				} else {
+					// No helper for this object type
+					return;
+				}
+
+				var picker = new THREE.Mesh(geometry, material);
+				picker.name = 'picker';
+				picker.userData.object = object;
+				helper.add(picker);
+			}
+
+			this.sceneHelpers.add(helper);
+			this.helpers[object.id] = helper;
+
+			this.signals.helperAdded.dispatch(helper);
+		};
+	})(),
+
+	removeHelper(object) {
+		if (this.helpers[object.id]) {
+			var helper = this.helpers[object.id];
+			helper.parent.remove(helper);
+
+			delete this.helpers[object.id];
+
+			this.signals.helperRemoved.dispatch(helper);
+		}
+	},
+
+	//
+
+	getObjectMaterial(object, slot) {
+		var material = object.material;
+
+		if (Array.isArray(material) && Number.isInteger(slot)) {
+			material = material[slot];
+		}
+
+		return material;
+	},
+
+	setObjectMaterial(object, slot, newMaterial) {
+		if (Array.isArray(object.material) && Number.isInteger(slot)) {
+			object.material[slot] = newMaterial;
+		} else {
+			object.material = newMaterial;
+		}
+	},
+
+	setViewportCamera(uuid) {
+		this.viewportCamera = this.cameras[uuid];
+		this.signals.viewportCameraChanged.dispatch();
+	},
+
+	//
+
+	select(object) {
+		if (this.selected === object) return;
+		let uuid = null;
+
+		if (object !== null) {
+			uuid = object.uuid;
+		}
+
+		this.selected = object;
+
+		this.config.setKey('selected', uuid);
+
+		this.signals.objectSelected.dispatch(this.selected);
+	},
+
+	getObjectByName(name) {
+		const objectCollections = [...this.searchableObjectCollections];
+
+		const object = objectCollections
+			.map(e => e.getObjectByName(name))
+			.find(e => typeof e !== 'undefined');
+
+		return object;
+	},
+
+	getObjectById(id) {
+		const objectCollections = [
+			this.scene,
+			this.zoneManager,
+			this.beam,
+			this.detectManager,
+			this.detectManager.filterContainer,
+			this.scoringManager
+		];
+		const object =
+			objectCollections.map(e => e.getObjectById(id)).find(e => typeof e !== 'undefined') ??
+			null;
+		return object;
+	},
+
+	getNextFreeName(name, object = null) {
+		return getNextFreeName(this, name, object);
+	},
+
+	selectById(id) {
+		if (id === this.camera.id) {
+			this.select(this.camera);
+			return;
+		}
+
+		const objectCollections = [...this.searchableObjectCollections];
+
+		const object =
+			objectCollections.map(e => e.getObjectById(id)).find(e => typeof e !== 'undefined') ??
+			null;
+
+		this.select(object);
+	},
+
+	selectByUuid(uuid) {
+		const objectCollections = [
+			this.scene,
+			this.zoneManager,
+			this.beam,
+			this.detectManager,
+			this.detectManager.filterContainer,
+			this.scoringManager
+		];
+		const object =
+			objectCollections.find(e => e.uuid === uuid) ??
+			objectCollections
+				.map(e => e.getObjectByProperty('uuid', uuid))
+				.find(e => typeof e !== 'undefined') ??
+			null;
+
+		this.select(object);
+	},
+
+	deselect() {
+		this.select(null);
+	},
+
+	focus(object) {
+		if (object) {
+			this.signals.objectFocused.dispatch(object);
+		}
+	},
+
+	focusById(id) {
+		this.focus(this.scene.getObjectById(id));
+	},
+
+	resetCamera() {
+		this.signals.editorCleared.dispatch();
+	},
+
+	clear() {
+		this.history.clear();
+		this.storage.clear();
+		this.results = null;
+
+		this.camera.copy(_DEFAULT_CAMERA);
+		this.signals.cameraChanged.dispatch();
+
+		this.scene.name = 'Figures';
+		this.scene.userData = {};
+		this.scene.background = null;
+		this.scene.environment = null;
+
+		var objects = this.scene.children;
+
+		while (objects.length > 0) {
+			this.removeObject(objects[0]);
+		}
+
+		this.materialManager.reset();
+		this.zoneManager.reset();
+		this.detectManager.reset();
+		this.scoringManager.reset();
+		this.beam.reset();
+		this.physic.reset();
+
+		this.geometries = {};
+		this.materials = {};
+		this.textures = {};
+
+		this.materialsRefCounter.clear();
+
+		this.animations = {};
+		this.mixer.stopAllAction();
+
+		this.deselect();
+		this.contextManager.reset();
+
+		this.signals.editorCleared.dispatch();
+	},
+
+	//
+
+	async fromJSON(json) {
+		this.config.setKey('project/title', json.project.title ?? '');
+		this.config.setKey('project/description', json.project.description ?? '');
+		this.signals.projectChanged.dispatch();
+
+		const loader = new EditorObjectLoader(this);
+
+		this.signals.cameraResetted.dispatch();
+
+		this.history.fromJSON(json.history);
+
+		this.setScene(await loader.parseAsync(json.scene));
+
+		this.materialManager.fromJSON(json.materialManager);
+
+		// CSGManager must be loaded after scene and simulation materials
+		this.zoneManager.fromJSON(json.zoneManager); // CSGManager must be loaded in order not to lose reference in components
+		this.detectManager.fromJSON(json.detectManager);
+		this.scoringManager.fromJSON(json.scoringManager);
+		this.beam.fromJSON(json.beam);
+		this.physic.fromJSON(json.physic);
+
+		this.viewManager.fromConfigurationJson(json.project.viewManager);
+
+		this.signals.sceneGraphChanged.dispatch();
+	},
+	toJSON() {
+		// scripts clean up
+
+		var scene = this.scene;
+		var scripts = this.scripts;
+
+		for (var key in scripts) {
+			var script = scripts[key];
+
+			if (script.length === 0 || scene.getObjectByProperty('uuid', key) === undefined) {
+				delete scripts[key];
+			}
+		}
+
+		//
+
+		const jsonEditor = {
+			metadata: {
+				version: this.jsonVersion,
+				type: 'Editor',
+				generator: 'Editor.toJSON'
+			},
+			project: {
+				title: this.config.getKey('project/title'),
+				description: this.config.getKey('project/description'),
+				shadows: this.config.getKey('project/renderer/shadows'),
+				shadowType: this.config.getKey('project/renderer/shadowType'),
+				physicallyCorrectLights: this.config.getKey(
+					'project/renderer/physicallyCorrectLights'
+				),
+				toneMapping: this.config.getKey('project/renderer/toneMapping'),
+				toneMappingExposure: this.config.getKey('project/renderer/toneMappingExposure'),
+				viewManager: this.viewManager.configurationToJson() // serialize ViewManager
+			},
+			scene: this.scene.toJSON(),
+			history: this.history.toJSON(),
+			zoneManager: this.zoneManager.toJSON(), // serialize CSGManager
+			detectManager: this.detectManager.toJSON(), // serialize DetectManager;
+			beam: this.beam.toJSON(),
+			physic: this.physic.toJSON(),
+			materialManager: this.materialManager.toJSON(), // serialize MaterialManager
+			scoringManager: this.scoringManager.toJSON() // serialize ScoringManager
+		};
+
+		const hashJsonEditor = hash(jsonEditor);
+
+		return { ...jsonEditor, hash: hashJsonEditor };
+	},
+
+	objectByUuid(uuid) {
+		return this.scene.getObjectByProperty('uuid', uuid, true);
+	},
+
+	execute(cmd, optionalName) {
+		this.history.execute(cmd, optionalName);
+	},
+
+	undo() {
+		this.history.undo();
+	},
+
+	redo() {
+		this.history.redo();
+	}
 };

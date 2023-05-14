@@ -22,7 +22,6 @@ export class SetDetectTypeCommand extends Command {
 
 	execute() {
 		this.object.detectType = this.newType;
-		console.log('SetDetectTypeCommand', this.object, this.newType);
 		this.editor.signals.geometryChanged.dispatch(this.object);
 		this.editor.signals.detectTypeChanged.dispatch(this.object);
 		this.editor.signals.detectGeometryChanged.dispatch(this.object);

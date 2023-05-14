@@ -23,7 +23,7 @@ const callWithHidden = (object, fn) => {
 	fn();
 
 	object.visible = visible;
-}
+};
 
 export function Viewport(
 	name,

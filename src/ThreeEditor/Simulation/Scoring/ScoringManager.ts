@@ -1,6 +1,6 @@
 import { Signal } from 'signals';
 import { Editor } from '../../js/Editor';
-import { SimulationSceneContainer } from '../Base/SimScene';
+import { SimulationSceneContainer } from '../Base/SimulationScene';
 import { ScoringOutput, ScoringOutputJSON } from './ScoringOutput';
 import { UniqueChildrenNames } from '../../../util/Name/Name';
 

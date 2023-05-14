@@ -7,7 +7,7 @@ import {
 	RemoveZoneOperationTupleCommand,
 	SetZoneOperationTupleCommand
 } from '../../../../js/commands/Commands';
-import { isBasicMesh } from '../../../../Simulation/Figures/BasicFigures';
+import { isBasicFigure } from '../../../../Simulation/Figures/BasicFigures';
 import * as CSG from '../../../../CSG/CSG';
 import { isZone } from '../../../../Simulation/Zones/BooleanZone';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
@@ -21,7 +21,7 @@ const parseAlgebraData = (editor: Editor, { value }: BooleanAlgebraData) => {
 	value.forEach(({ operation, objectId }, index) => {
 		let object;
 		if (objectId) object = editor.getObjectById(objectId);
-		if (object && isBasicMesh(object))
+		if (object && isBasicFigure(object))
 			operations.push(new CSG.OperationTuple(object, operation));
 		else return operations;
 	});

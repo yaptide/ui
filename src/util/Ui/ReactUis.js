@@ -16,33 +16,33 @@ import { INPUT_WIDTH, LABEL_MARGIN, LABEL_WIDTH } from './Uis';
  * @return {[UIRow,UINumber,(value:number)=>void]} render function
  */
 export function createParticleTypeSelect(update) {
-   const row = new UIRow();
-   const container = new UIDiv().setWidth(INPUT_WIDTH).setDisplay('inline-block');
-   const input = new UINumber();
-   row.add(new UIText('Particle type').setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN));
-   row.add(container);
-   const onChange = (_, newValue) => {
-      if (newValue) {
-         input.setValue(newValue);
-         update();
-      }
-   };
+	const row = new UIRow();
+	const container = new UIDiv().setWidth(INPUT_WIDTH).setDisplay('inline-block');
+	const input = new UINumber();
+	row.add(new UIText('Particle type').setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN));
+	row.add(container);
+	const onChange = (_, newValue) => {
+		if (newValue) {
+			input.setValue(newValue);
+			update();
+		}
+	};
 
-   return [
-      row,
-      input,
-      value => {
-         input.setValue(value);
-         ReactDOM.render(
-            <ParticleSelect
-               particles={PARTICLE_TYPES}
-               value={value}
-               onChange={onChange}
-            />,
-            container.dom
-         );
-      }
-   ];
+	return [
+		row,
+		input,
+		value => {
+			input.setValue(value);
+			ReactDOM.render(
+				<ParticleSelect
+					particles={PARTICLE_TYPES}
+					value={value}
+					onChange={onChange}
+				/>,
+				container.dom
+			);
+		}
+	];
 }
 
 /**
@@ -51,36 +51,36 @@ export function createParticleTypeSelect(update) {
  * @return {[UIRow,UISelect,(value:number)=>void]} render function
  */
 export function createMaterialSelect(materialManager, update) {
-   const { materialOptions, materials } = materialManager;
+	const { materialOptions, materials } = materialManager;
 
-   const row = new UIRow();
-   const container = new UIDiv().setWidth(INPUT_WIDTH).setDisplay('inline-block');
-   const input = new UISelect().setWidth(INPUT_WIDTH);
-   row.add(new UIText('Material Type').setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN));
-   row.add(container);
-   const onChange = (_, newValue) => {
-      if (typeof newValue === 'number') {
-         input.setValue(newValue);
-         update();
-      }
-   };
+	const row = new UIRow();
+	const container = new UIDiv().setWidth(INPUT_WIDTH).setDisplay('inline-block');
+	const input = new UISelect().setWidth(INPUT_WIDTH);
+	row.add(new UIText('Material Type').setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN));
+	row.add(container);
+	const onChange = (_, newValue) => {
+		if (typeof newValue === 'number') {
+			input.setValue(newValue);
+			update();
+		}
+	};
 
-   return [
-      row,
-      input,
-      value => {
-         input.setOptions(materialOptions);
-         input.setValue(value);
-         ReactDOM.render(
-            <MaterialSelect
-               materials={materials}
-               value={value}
-               onChange={onChange}
-            />,
-            container.dom
-         );
-      }
-   ];
+	return [
+		row,
+		input,
+		value => {
+			input.setOptions(materialOptions);
+			input.setValue(value);
+			ReactDOM.render(
+				<MaterialSelect
+					materials={materials}
+					value={value}
+					onChange={onChange}
+				/>,
+				container.dom
+			);
+		}
+	];
 }
 
 /**
@@ -88,20 +88,20 @@ export function createMaterialSelect(materialManager, update) {
  * @return {[UIRow,(zone: CSG.Zone) => void]} render function
  */
 export function createZoneRulesPanel(editor) {
-   const row = new UIRow();
-   const container = new UIDiv().setWidth('100%').setDisplay('inline-block');
-   row.add(container);
+	const row = new UIRow();
+	const container = new UIDiv().setWidth('100%').setDisplay('inline-block');
+	row.add(container);
 
-   return [
-      row,
-      zone => {
-         ReactDOM.render(
-            <ZoneManagerPanel
-               editor={editor}
-               zone={zone}
-            />,
-            container.dom
-         );
-      }
-   ];
+	return [
+		row,
+		zone => {
+			ReactDOM.render(
+				<ZoneManagerPanel
+					editor={editor}
+					zone={zone}
+				/>,
+				container.dom
+			);
+		}
+	];
 }

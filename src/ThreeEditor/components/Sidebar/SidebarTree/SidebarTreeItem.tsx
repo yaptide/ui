@@ -3,7 +3,7 @@ import { Stack } from '@mui/system';
 import { usePopupState, bindContextMenu, bindMenu } from 'material-ui-popup-state/hooks';
 import { Object3D } from 'three';
 import { SetValueCommand } from '../../../js/commands/SetValueCommand';
-import { SimulationElement } from '../../../Simulation/Base/SimElement';
+import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';

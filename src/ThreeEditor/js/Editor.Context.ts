@@ -17,7 +17,7 @@ import { SimulationZone } from '../Simulation/Base/SimZone';
 import { ZoneContainer, ZoneManager, isZoneContainer } from '../Simulation/Zones/ZoneManager';
 import { isZone } from '../Simulation/Zones/BooleanZone';
 import { Beam, isBeam } from '../Simulation/Physics/Beam';
-import { BasicFigure, isBasicMesh } from '../Simulation/Figures/BasicFigures';
+import { BasicFigure, isBasicFigure } from '../Simulation/Figures/BasicFigures';
 
 export type Context = 'geometry' | 'scoring' | 'settings';
 export type SceneObject =
@@ -183,7 +183,7 @@ export const isInputObject = (x: unknown): x is SceneObject => {
 		isDetectContainer(x) ||
 		isZone(x) ||
 		isWorldZone(x) ||
-		isBasicMesh(x) ||
+		isBasicFigure(x) ||
 		isZoneContainer(x) ||
 		x instanceof THREE.Scene
 	);

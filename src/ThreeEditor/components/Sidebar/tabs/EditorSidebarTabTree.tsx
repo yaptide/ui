@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { ReactElement } from 'react';
 import { Object3D } from 'three';
-import { SimulationElement } from '../../../Simulation/Base/SimElement';
+import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { DndProvider } from 'react-dnd';

@@ -1,5 +1,5 @@
 import { Beam } from '../../../Simulation/Physics/Beam';
-import { SimulationMesh } from '../../../Simulation/Base/SimMesh';
+import { SimulationMesh } from '../../../Simulation/Base/SimulationMesh';
 import {
 	createFullwidthButton,
 	createMaterialSelect,
@@ -20,7 +20,7 @@ import { UIButton, UICheckbox, UIColor, UINumber, UIRow, UISelect, UIText } from
 import { SidebarMaterialBooleanProperty } from '../Sidebar.Material.BooleanProperty';
 import { SidebarMaterialConstantProperty } from '../Sidebar.Material.ConstantProperty';
 import { ObjectAbstract } from './Object.Abstract';
-import { SimulationPoints } from '../../../Simulation/Base/SimPoints';
+import { SimulationPoints } from '../../../Simulation/Base/SimulationPoints';
 import { isZone } from '../../../Simulation/Zones/BooleanZone';
 
 const MATERIAL_BLENDING_OPTIONS = {

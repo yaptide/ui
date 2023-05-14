@@ -7,7 +7,7 @@ import {
 	AdditionalGeometryDataType,
 	generateSimulationInfo
 } from '../../../../util/AdditionalGeometryData';
-import { SimulationElement } from '../../Base/SimElement';
+import { SimulationElement } from '../../Base/SimulationElement';
 import { WorldZoneHelper } from './WorldZoneHelper';
 import SimulationMaterial from '../../Materials/SimulationMaterial';
 

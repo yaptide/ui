@@ -23,14 +23,14 @@ export class WorldZoneHelper extends THREE.Object3D {
 			case 'Cylinder':
 				return this.cylinderMesh;
 			case 'Sphere':
-				return this.SphereFigure;
+				return this.sphereMesh;
 		}
 	}
 	get allHelpers(): Record<WorldZoneType, THREE.Object3D> {
 		const obj = {
 			Box: this._boxHelper,
 			Cylinder: this.cylinderMesh,
-			Sphere: this.SphereFigure
+			Sphere: this.sphereMesh
 		};
 		return obj;
 	}
@@ -40,17 +40,17 @@ export class WorldZoneHelper extends THREE.Object3D {
 	private _boxHelper: THREE.Box3Helper;
 	private _box: THREE.Box3;
 	private _cylinderMesh: THREE.Mesh<THREE.CylinderGeometry, MeshBasicMaterial>;
-	private _SphereFigure: THREE.Mesh<THREE.SphereGeometry, MeshBasicMaterial>;
+	private _sphereMesh: THREE.Mesh<THREE.SphereGeometry, MeshBasicMaterial>;
 
 	get cylinderMesh(): THREE.Mesh<THREE.CylinderGeometry, MeshBasicMaterial> {
 		return this._cylinderMesh;
 	}
-	get SphereFigure(): THREE.Mesh<THREE.SphereGeometry, MeshBasicMaterial> {
-		return this._SphereFigure;
+	get sphereMesh(): THREE.Mesh<THREE.SphereGeometry, MeshBasicMaterial> {
+		return this._sphereMesh;
 	}
 	get boxMesh(): THREE.Mesh<THREE.BoxGeometry, MeshBasicMaterial> {
 		const { x, y, z } = this._box.getSize(new THREE.Vector3());
-		return new THREE.Mesh(new THREE.BoxGeometry(x, y, z), this._SphereFigure.material);
+		return new THREE.Mesh(new THREE.BoxGeometry(x, y, z), this._sphereMesh.material);
 	}
 
 	set geometryType(type: WorldZoneType) {
@@ -75,11 +75,11 @@ export class WorldZoneHelper extends THREE.Object3D {
 		// (this._boxHelper.material as THREE.LineBasicMaterial).color = material.color;
 
 		this._cylinderMesh = new THREE.Mesh(_cylinderGeometry, material);
-		this._SphereFigure = new THREE.Mesh(_sphereGeometry, material);
+		this._sphereMesh = new THREE.Mesh(_sphereGeometry, material);
 
 		this.add(this._boxHelper);
 		this.add(this._cylinderMesh);
-		this.add(this._SphereFigure);
+		this.add(this._sphereMesh);
 	}
 
 	/**
@@ -121,7 +121,7 @@ export class WorldZoneHelper extends THREE.Object3D {
 		).rotateX(Math.PI / 2) as THREE.CylinderGeometry;
 
 		// Sphere
-		this._SphereFigure.geometry = new THREE.SphereGeometry(
+		this._sphereMesh.geometry = new THREE.SphereGeometry(
 			size.x,
 			16,
 			8,

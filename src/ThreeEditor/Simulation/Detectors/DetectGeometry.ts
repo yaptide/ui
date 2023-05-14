@@ -2,7 +2,7 @@ import { Signal } from 'signals';
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
 import * as CSG from '../../CSG/CSG';
-import { SimulationPoints } from '../Base/SimPoints';
+import { SimulationPoints } from '../Base/SimulationPoints';
 import { DetectManager } from './DetectManager';
 import * as DETECT from '../../../types/DetectTypes';
 import { SimulationZone } from '../Base/SimZone';

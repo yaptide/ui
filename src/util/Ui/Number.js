@@ -19,32 +19,32 @@ import { LABEL_MARGIN, LABEL_WIDTH, PRECISION_FRACTION, TRIPLE_LABEL_WIDTH } fro
  * @return {UIScientificNumber}
  */
 export function createNumberInput(params) {
-   const {
-      value = 0,
-      precision = PRECISION_FRACTION,
-      update,
-      min,
-      max,
-      unit,
-      nudge,
-      step
-   } = params;
+	const {
+		value = 0,
+		precision = PRECISION_FRACTION,
+		update,
+		min,
+		max,
+		unit,
+		nudge,
+		step
+	} = params;
 
-   const input = new UIScientificNumber(value)
-      .setPrecision(precision)
-      .setWidth('50px')
-      .onChange(update);
-   if (unit !== undefined) input.setUnit(unit);
+	const input = new UIScientificNumber(value)
+		.setPrecision(precision)
+		.setWidth('50px')
+		.onChange(update);
+	if (unit !== undefined) input.setUnit(unit);
 
-   if (nudge !== undefined) input.setNudge(nudge);
+	if (nudge !== undefined) input.setNudge(nudge);
 
-   if (step !== undefined) input.setStep(step);
+	if (step !== undefined) input.setStep(step);
 
-   if (min !== undefined) input.min = min;
+	if (min !== undefined) input.min = min;
 
-   if (max !== undefined) input.max = max;
+	if (max !== undefined) input.max = max;
 
-   return input;
+	return input;
 }
 
 /**
@@ -62,15 +62,15 @@ export function createNumberInput(params) {
  * @return {[UIRow, UINumber, UIText]}
  */
 export function createRowParamNumber(params) {
-   const { text = 'Label' } = params;
+	const { text = 'Label' } = params;
 
-   const row = new UIRow();
-   const input = createNumberInput({ ...params }).setWidth('auto');
-   const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
+	const row = new UIRow();
+	const input = createNumberInput({ ...params }).setWidth('auto');
+	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
 
-   row.add(label);
-   row.add(input);
-   return [row, input, label];
+	row.add(label);
+	row.add(input);
+	return [row, input, label];
 }
 
 /**
@@ -88,59 +88,59 @@ export function createRowParamNumber(params) {
  * @return {[UIRow, UINumber, UINumber, UINumber, UIText]}
  */
 export function createRowParamNumberXYZ(params) {
-   const { text = 'Label', value: { x, y, z } = {}, precision = 5 } = params;
+	const { text = 'Label', value: { x, y, z } = {}, precision = 5 } = params;
 
-   const row = new UIRow();
-   row.dom.style.display = 'grid';
-   row.dom.style.gridTemplateColumns = `${TRIPLE_LABEL_WIDTH} repeat(3, 1fr)`;
-   const inputX = createNumberInput({ ...params, value: x, precision }).setWidth('100%');
-   const inputY = createNumberInput({ ...params, value: y, precision }).setWidth('100%');
-   const inputZ = createNumberInput({ ...params, value: z, precision }).setWidth('100%');
-   const label = new UIText(text).setWidth(TRIPLE_LABEL_WIDTH).setMargin(LABEL_MARGIN);
+	const row = new UIRow();
+	row.dom.style.display = 'grid';
+	row.dom.style.gridTemplateColumns = `${TRIPLE_LABEL_WIDTH} repeat(3, 1fr)`;
+	const inputX = createNumberInput({ ...params, value: x, precision }).setWidth('100%');
+	const inputY = createNumberInput({ ...params, value: y, precision }).setWidth('100%');
+	const inputZ = createNumberInput({ ...params, value: z, precision }).setWidth('100%');
+	const label = new UIText(text).setWidth(TRIPLE_LABEL_WIDTH).setMargin(LABEL_MARGIN);
 
-   row.add(label);
-   row.add(inputX, inputY, inputZ);
-   return [row, inputX, inputY, inputZ, label];
+	row.add(label);
+	row.add(inputX, inputY, inputZ);
+	return [row, inputX, inputY, inputZ, label];
 }
 
 export class UIScientificNumber extends UINumber {
-   constructor(value = 0) {
-      super(value);
-      this.scientificNotation = true;
-   }
-   setScientificNotation(flag) {
-      this.scientificNotation = flag;
-      return this;
-   }
-   getScientificNotation() {
-      return this.scientificNotation;
-   }
-   /**
-    *
-    * @param {number} value
-    * @returns
-    */
-   setValue(value) {
-      if (value === undefined) return this;
-      if (!this.scientificNotation) {
-         super.setValue(value);
-         return this;
-      }
-      value = 0 + parseFloat(parseFloat(value).toFixed(this.precision));
+	constructor(value = 0) {
+		super(value);
+		this.scientificNotation = true;
+	}
+	setScientificNotation(flag) {
+		this.scientificNotation = flag;
+		return this;
+	}
+	getScientificNotation() {
+		return this.scientificNotation;
+	}
+	/**
+	 *
+	 * @param {number} value
+	 * @returns
+	 */
+	setValue(value) {
+		if (value === undefined) return this;
+		if (!this.scientificNotation) {
+			super.setValue(value);
+			return this;
+		}
+		value = 0 + parseFloat(parseFloat(value).toFixed(this.precision));
 
-      if (value < this.min) value = this.min;
-      if (value > this.max) value = this.max;
+		if (value < this.min) value = this.min;
+		if (value > this.max) value = this.max;
 
-      this.value = value;
-      this.dom.value = value;
-      this.dom.value.length > value.toFixed(this.precision).length &&
-         parseFloat(value.toFixed(this.precision)) !== 0 &&
-         (this.dom.value = value.toFixed(this.precision));
-      this.dom.value.length > value.toExponential(this.precision).length &&
-         (this.dom.value = value.toExponential(this.precision));
-      this.dom.value.length > value.toExponential().length &&
-         (this.dom.value = value.toExponential());
-      if (this.unit !== '') this.dom.value += ' ' + this.unit;
-      return this;
-   }
+		this.value = value;
+		this.dom.value = value;
+		this.dom.value.length > value.toFixed(this.precision).length &&
+			parseFloat(value.toFixed(this.precision)) !== 0 &&
+			(this.dom.value = value.toFixed(this.precision));
+		this.dom.value.length > value.toExponential(this.precision).length &&
+			(this.dom.value = value.toExponential(this.precision));
+		this.dom.value.length > value.toExponential().length &&
+			(this.dom.value = value.toExponential());
+		if (this.unit !== '') this.dom.value += ' ' + this.unit;
+		return this;
+	}
 }

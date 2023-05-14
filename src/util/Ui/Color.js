@@ -14,10 +14,10 @@ import { LABEL_MARGIN, LABEL_WIDTH } from './Uis.js';
  * @return {[UIRow, UIColor, UIText]}
  */
 export function createRowColor(params) {
-   const { text = 'Label', value = '#ffffff', update = () => { } } = params;
-   const row = new UIRow();
-   const color = new UIColor(value).onInput(update);
-   const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
-   row.add(label, color);
-   return [row, color, label];
+	const { text = 'Label', value = '#ffffff', update = () => {} } = params;
+	const row = new UIRow();
+	const color = new UIColor(value).onInput(update);
+	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
+	row.add(label, color);
+	return [row, color, label];
 }

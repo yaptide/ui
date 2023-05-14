@@ -1,10 +1,27 @@
 /**
- * @param editor pointer to main editor object used to initialize
- *        each command object with a reference to the editor
- * @constructor
+ * @typedef {import('./Editor.js').Editor} Editor
+ * @typedef {import('../Simulation/Base/SimulationElement').SimulationElement} SimulationElement
+ * @typedef  {Object} Command
+ * @property {number} id
+ * @property {boolean} inMemory
+ * @property {boolean} updatable
+ * @property {string} type
+ * @property {string} name
+ * @property {Editor} editor
+ * @property {SimulationElement} [object]
  */
-
 export class Command {
+	id;
+	inMemory;
+	updatable;
+	type;
+	name;
+	editor;
+	object;
+
+	/**
+	 * @param {Editor} editor
+	 */
 	constructor(editor) {
 		this.id = -1;
 		this.inMemory = false;

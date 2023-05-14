@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
-import { ISimulationSceneChild, SimulationSceneContainer } from './SimScene';
+import { ISimulationSceneChild, SimulationSceneContainer } from './SimulationScene';
 import { SimulationPropertiesType } from '../../../types/SimProperties';
+import { SimulationElement } from './SimulationElement';
 
 /**
  * This is the base class for all simulation objects that have a basic mesh.
@@ -11,11 +12,13 @@ export abstract class SimulationMesh<
 		TMaterial extends THREE.Material = THREE.MeshBasicMaterial
 	>
 	extends THREE.Mesh<TGeometry, TMaterial>
-	implements SimulationPropertiesType, ISimulationSceneChild
+	implements SimulationPropertiesType, ISimulationSceneChild, SimulationElement
 {
 	editor: Editor;
 	parent: SimulationSceneContainer<this> | null = null;
+	_name: string;
 	readonly type: string;
+	readonly isSimulationElement = true;
 
 	constructor(
 		editor: Editor,
@@ -26,7 +29,7 @@ export abstract class SimulationMesh<
 	) {
 		super(geometry, material);
 		this.editor = editor;
-		this.name = name ?? type;
+		this.name = this._name = name ?? type;
 		this.type = type;
 		this.parent = null;
 	}

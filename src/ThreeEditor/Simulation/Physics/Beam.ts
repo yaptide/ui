@@ -6,7 +6,7 @@ import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { Editor } from '../../js/Editor';
 import { Particle, PARTICLE_TYPES } from '../../../types/Particle';
-import { SimulationElement } from '../Base/SimElement';
+import { SimulationElement } from '../Base/SimulationElement';
 
 export const SIGMA_TYPE = {
 	'Gaussian': 'Gaussian',

@@ -1,6 +1,6 @@
 import { Editor } from '../../js/Editor';
 import { DetectFilter } from './DetectFilter';
-import { SimulationElement } from '../Base/SimElement';
+import { SimulationElement } from '../Base/SimulationElement';
 import * as Scoring from './ScoringOutputTypes';
 import { DifferentialJSON, DifferentialModifier } from './ScoringQtyModifiers';
 

@@ -2,7 +2,7 @@ import * as Comlink from 'comlink';
 import { Signal } from 'signals';
 import * as THREE from 'three';
 import { SimulationPropertiesType } from '../../../types/SimProperties';
-import { SimulationSceneContainer } from '../Base/SimScene';
+import { SimulationSceneContainer } from '../Base/SimulationScene';
 import { Editor } from '../../js/Editor';
 import { WorldZone, WorldZoneJSON } from './WorldZone/WorldZone';
 import { BooleanZone, BooleanZoneJSON } from './BooleanZone';
@@ -107,7 +107,7 @@ export class ZoneManager extends THREE.Scene implements SimulationPropertiesType
 	}
 
 	toJSON() {
-		const zones = this.zoneContainer.toJSON() as BooleanZoneJSON[];
+		const zones = this.zoneContainer.toJSON();
 		const uuid = this.uuid;
 		const name = this.name;
 		const worldZone = this.worldZone.toJSON();
