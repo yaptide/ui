@@ -40,7 +40,7 @@ jobs:
                 resource: http://localhost:3000
             - name: Run tests 
               uses: nick-fields/retry@v2
-	      with:
+	            with:
                 max_attempts: 2
                 retry_on: error
                 timeout_seconds: 5
