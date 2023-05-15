@@ -57,6 +57,7 @@ describe('NavDrawer component', () => {
 
 		//check if the "current data will be lost" alert has appeared
 		const alertText = await driver.switchTo().alert().getText();
+
 		expect(alertText).toBe('Current editor data will be lost. Are you sure?');
 
 		//accept the "current data will be lost" alert
@@ -103,6 +104,7 @@ describe('NavDrawer component', () => {
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/geo.dat',
 			'utf-8'
 		).replace(regex, '');
+
 		expect(expectedGeoText).not.toBe('');
 		expect(geoText).toContain(expectedGeoText);
 
@@ -119,6 +121,7 @@ describe('NavDrawer component', () => {
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/mat.dat',
 			'utf-8'
 		).replace(regex, '');
+
 		expect(expectedMatText).not.toBe('');
 		expect(matText).toContain(expectedMatText);
 
@@ -135,6 +138,7 @@ describe('NavDrawer component', () => {
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/beam.dat',
 			'utf-8'
 		).replace(regex, '');
+
 		expect(expectedBeamText).not.toBe('');
 		expect(beamText).toContain(expectedBeamText);
 
@@ -151,6 +155,7 @@ describe('NavDrawer component', () => {
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/detect.dat',
 			'utf-8'
 		).replace(regex, '');
+
 		expect(expectedDetectText).not.toBe('');
 		expect(detectText).toContain(expectedDetectText);
 	}, 50000);
