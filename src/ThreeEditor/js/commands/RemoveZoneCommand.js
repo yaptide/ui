@@ -1,13 +1,15 @@
 import { Command } from '../Command.js';
-
-import * as CSG from '../../util/CSG/CSG';
+import { BooleanZone } from '../../Simulation/Zones/BooleanZone';
 
 /**
- * @param editor Editor
- * @param zone CSG.Zone
- * @constructor
+ * @typedef {import('../Editor.js').Editor} Editor
  */
 class RemoveZoneCommand extends Command {
+	/**
+	 * @param {Editor} editor
+	 * @param {BooleanZone} object
+	 * @constructor
+	 */
 	constructor(editor, object) {
 		super(editor);
 
@@ -40,7 +42,7 @@ class RemoveZoneCommand extends Command {
 
 		this.object =
 			this.editor.zoneManager.getZoneByUuid(json.object.uuid) ??
-			CSG.Zone.fromJSON(this.editor, json.object);
+			BooleanZone.fromJSON(this.editor, json.object);
 	}
 }
 

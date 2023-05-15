@@ -1,4 +1,4 @@
-import { implementsUniqueChildrenNames } from '../../util/Name';
+import { implementsUniqueChildrenNames } from '../../../util/Name/Name';
 import { Command } from '../Command.js';
 
 /**

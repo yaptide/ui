@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
 import { Editor } from '../../../../js/Editor';
-import { DetectGeometry, isDetectGeometry } from '../../../../util/Detect/DetectGeometry';
-import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
+import { DetectGeometry, isDetectGeometry } from '../../../../Simulation/Detectors/DetectGeometry';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { NumberPropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 

@@ -1,6 +1,6 @@
 import { Command } from '../Command.js';
-import { ScoringOutput } from '../../util/Scoring/ScoringOutput';
-import { ScoringQuantity } from '../../util/Scoring/ScoringQuantity';
+import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
+import { ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
 // eslint-disable-next-line  no-unused-vars
 import { Editor } from '../Editor.js';
 export class AddQuantityCommand extends Command {

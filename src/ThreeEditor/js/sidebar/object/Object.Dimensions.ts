@@ -1,22 +1,22 @@
 import * as THREE from 'three';
 import {
-	BasicMesh,
+	BasicFigure,
 	BASIC_GEOMETRY_OPTIONS,
-	isBasicMesh,
-	isBoxMesh,
-	isCylinderMesh,
-	isSphereMesh
-} from '../../../util/BasicMeshes';
-import { DetectGeometry, isDetectGeometry } from '../../../util/Detect/DetectGeometry';
-import { DETECT_OPTIONS } from '../../../util/Detect/DetectTypes';
+	isBasicFigure,
+	isBoxFigure,
+	isCylinderFigure,
+	isSphereFigure
+} from '../../../Simulation/Figures/BasicFigures';
+import { DetectGeometry, isDetectGeometry } from '../../../Simulation/Detectors/DetectGeometry';
+import { DETECT_OPTIONS } from '../../../../types/DetectTypes';
 import {
 	createRowParamNumber,
 	createRowSelect,
 	createRowText,
 	hideUIElement,
 	showUIElement
-} from '../../../util/Ui/Uis';
-import { isWorldZone, WorldZone } from '../../../util/WorldZone/WorldZone';
+} from '../../../../util/Ui/Uis';
+import { isWorldZone, WorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
 import {
 	SetDetectGeometryCommand,
 	SetDetectTypeCommand,
@@ -28,7 +28,7 @@ import { UINumber, UIRow, UISelect, UIText } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectDimensions extends ObjectAbstract {
-	object?: BasicMesh | DetectGeometry | WorldZone;
+	object?: BasicFigure | DetectGeometry | WorldZone;
 
 	typeRow: UIRow;
 	type: UIText;
@@ -109,9 +109,9 @@ export class ObjectDimensions extends ObjectAbstract {
 		);
 	}
 
-	private setGeometryType(object: BasicMesh | DetectGeometry | WorldZone): string | undefined {
+	private setGeometryType(object: BasicFigure | DetectGeometry | WorldZone): string | undefined {
 		let geometryType;
-		if (isBasicMesh(object)) {
+		if (isBasicFigure(object)) {
 			showUIElement(this.typeRow);
 			hideUIElement(this.typeSelectRow);
 			this.type.setValue(object.geometryType);
@@ -132,7 +132,7 @@ export class ObjectDimensions extends ObjectAbstract {
 		return geometryType;
 	}
 
-	private setBox(object: BasicMesh | DetectGeometry | WorldZone): void {
+	private setBox(object: BasicFigure | DetectGeometry | WorldZone): void {
 		showUIElement(this.xLengthRow);
 		showUIElement(this.yLengthRow);
 		showUIElement(this.zLengthRow);
@@ -150,7 +150,7 @@ export class ObjectDimensions extends ObjectAbstract {
 		} else {
 			let parameters;
 			if (isDetectGeometry(object)) parameters = object.geometryData;
-			else if (isBoxMesh(object)) parameters = object.geometry.parameters;
+			else if (isBoxFigure(object)) parameters = object.geometry.parameters;
 			else return;
 			this.xLength.setValue(parameters.width);
 			this.yLength.setValue(parameters.height);
@@ -158,7 +158,7 @@ export class ObjectDimensions extends ObjectAbstract {
 		}
 	}
 
-	private setSphere(object: BasicMesh | DetectGeometry | WorldZone): void {
+	private setSphere(object: BasicFigure | DetectGeometry | WorldZone): void {
 		showUIElement(this.radiusRow);
 		if (isWorldZone(object)) {
 			const { size } = object;
@@ -166,13 +166,13 @@ export class ObjectDimensions extends ObjectAbstract {
 		} else {
 			let parameters;
 			if (isDetectGeometry(object)) parameters = { radius: object.geometryData.radius };
-			else if (isSphereMesh(object)) parameters = object.geometry.parameters;
+			else if (isSphereFigure(object)) parameters = object.geometry.parameters;
 			else return;
 			this.radius.setValue(parameters.radius);
 		}
 	}
 
-	private setCylinder(object: BasicMesh | DetectGeometry | WorldZone): void {
+	private setCylinder(object: BasicFigure | DetectGeometry | WorldZone): void {
 		showUIElement(this.zLengthRow);
 		showUIElement(this.radiusRow);
 		if (isWorldZone(object)) {
@@ -187,7 +187,7 @@ export class ObjectDimensions extends ObjectAbstract {
 			this.radius.min = parameters.innerRadius + 1e-5; // Prevent radius from being lower than innerRadius
 			this.radius2.max = parameters.radius - 1e-5; // innerRadius cannot be greater than radius
 			this.zLength.setValue(parameters.depth);
-		} else if (isCylinderMesh(object)) {
+		} else if (isCylinderFigure(object)) {
 			const parameters = object.geometry.parameters;
 			this.radius.setValue(parameters.radiusTop);
 			this.zLength.setValue(parameters.height);
@@ -204,7 +204,7 @@ export class ObjectDimensions extends ObjectAbstract {
 		}
 	}
 
-	setObject(object: BasicMesh | DetectGeometry | WorldZone): void {
+	setObject(object: BasicFigure | DetectGeometry | WorldZone): void {
 		super.setObject(object);
 		if (!object) return;
 
@@ -305,7 +305,7 @@ export class ObjectDimensions extends ObjectAbstract {
 			const size = this.getZoneSize(geometryType);
 			editor.execute(new SetValueCommand(editor, object, 'size', size));
 		} else {
-			if (isBoxMesh(object)) {
+			if (isBoxFigure(object)) {
 				const { width, height, depth } = this.getBoxData();
 				editor.execute(
 					new SetGeometryCommand(
@@ -314,7 +314,7 @@ export class ObjectDimensions extends ObjectAbstract {
 						new THREE.BoxGeometry(width, height, depth)
 					)
 				);
-			} else if (isSphereMesh(object)) {
+			} else if (isSphereFigure(object)) {
 				const { radius } = this.getSphereData();
 				editor.execute(
 					new SetGeometryCommand(
@@ -323,7 +323,7 @@ export class ObjectDimensions extends ObjectAbstract {
 						new THREE.SphereGeometry(radius, 16, 8, 0, Math.PI * 2, 0, Math.PI)
 					)
 				);
-			} else if (isCylinderMesh(object)) {
+			} else if (isCylinderFigure(object)) {
 				const { radius, depth } = this.getCylinderData();
 				editor.execute(
 					new SetGeometryCommand(

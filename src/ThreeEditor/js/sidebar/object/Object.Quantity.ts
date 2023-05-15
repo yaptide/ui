@@ -1,12 +1,12 @@
-import * as Scoring from '../../../util/Scoring/ScoringOutputTypes';
-import { ScoringQuantity } from '../../../util/Scoring/ScoringQuantity';
+import * as Scoring from '../../../Simulation/Scoring/ScoringOutputTypes';
+import { ScoringQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
 import {
 	createRowConditionalNumber,
 	createRowConditionalSelect,
 	createRowSelect,
 	hideUIElement,
 	showUIElement
-} from '../../../util/Ui/Uis';
+} from '../../../../util/Ui/Uis';
 import { SetQuantityValueCommand } from '../../commands/Commands';
 import { Editor } from '../../Editor';
 import { UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';

@@ -1,9 +1,9 @@
 import { Object3D } from 'three';
 import { Editor } from '../../../../js/Editor';
 import { ConditionalNumberPropertyField } from '../fields/PropertyField';
-import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
-import { isOutput, ScoringOutput } from '../../../../util/Scoring/ScoringOutput';
+import { isOutput, ScoringOutput } from '../../../../Simulation/Scoring/ScoringOutput';
 import {
 	ObjectSelectOptionType,
 	ObjectSelectPropertyField

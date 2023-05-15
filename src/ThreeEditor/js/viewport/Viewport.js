@@ -23,7 +23,7 @@ const callWithHidden = (object, fn) => {
 	fn();
 
 	object.visible = visible;
-}
+};
 
 export function Viewport(
 	name,
@@ -45,7 +45,6 @@ export function Viewport(
 	const { scene, zoneManager, detectManager, sceneHelpers, signals, contextManager } = editor;
 
 	const config = {
-		showSceneHelpers: true,
 		selectFigures: true,
 		selectZones: false,
 		selectGeometries: false,
@@ -155,16 +154,14 @@ export function Viewport(
 
 		if (clipPlane) renderer.render(viewClipPlane.scene, camera);
 
-		if (config.showSceneHelpers) {
-			planeHelpers.visible = showPlaneHelpers ?? false;
+		planeHelpers.visible = showPlaneHelpers ?? false;
 
-			callWithHidden(viewClipPlane?.planeHelper, () => {
-				renderer.render(sceneHelpers, camera);
-			});
+		callWithHidden(viewClipPlane?.planeHelper, () => {
+			renderer.render(sceneHelpers, camera);
+		});
 
-			renderer.render(sceneViewHelpers, camera);
-			viewHelper.render(renderer);
-		}
+		renderer.render(sceneViewHelpers, camera);
+		viewHelper.render(renderer);
 
 		renderer.autoClear = true;
 
@@ -425,7 +422,6 @@ export function Viewport(
 
 	function reattachTransformControls(object) {
 		transformControls.detach();
-
 		canBeTransformed(object) && transformControls.attach(object);
 	}
 
@@ -482,6 +478,7 @@ export function Viewport(
 
 	signals.objectSelected.add(reattachTransformControls);
 	signals.autocalculateChanged.add(() => reattachTransformControls(editor.selected));
+	signals.detectGeometryChanged.add(reattachTransformControls);
 	signals.contextChanged.add(() => reattachTransformControls(editor.selected));
 
 	signals.objectRemoved.add(object => {

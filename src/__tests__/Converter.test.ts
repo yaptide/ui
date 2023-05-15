@@ -65,22 +65,22 @@ describe('NavDrawer component', () => {
     const regex = /[^a-zA-Z0-9.]/g;
 
     const geoText = (await driver.findElement(By.xpath("//textarea[@aria-label = 'geo.dat text field']")).getText()).replace(regex, '');
-    const expectedGeoText = readFileSync('src/libs/converter/input_examples/expected_shieldhit_output/geo.dat', 'utf-8').replace(regex, '');
+    const expectedGeoText = readFileSync('src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/geo.dat', 'utf-8').replace(regex, '');
     expect (expectedGeoText).not.toBe("");
     expect (geoText).toContain(expectedGeoText);
 
     const matText = (await driver.findElement(By.xpath("//textarea[@aria-label = 'mat.dat text field']")).getText()).replace(regex, '');
-    const expectedMatText = readFileSync('src/libs/converter/input_examples/expected_shieldhit_output/mat.dat', 'utf-8').replace(regex, '');
+    const expectedMatText = readFileSync('src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/mat.dat', 'utf-8').replace(regex, '');
     expect (expectedMatText).not.toBe("");
     expect (matText).toContain(expectedMatText);
 
     const beamText = (await driver.findElement(By.xpath("//textarea[@aria-label = 'beam.dat text field']")).getText()).replace(regex, '');
-    const expectedBeamText = readFileSync('src/libs/converter/input_examples/expected_shieldhit_output/beam.dat', 'utf-8').replace(regex, '');
+    const expectedBeamText = readFileSync('src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/beam.dat', 'utf-8').replace(regex, '');
     expect (expectedBeamText).not.toBe("");
     expect (beamText).toContain(expectedBeamText);
     
     const detectText = (await driver.findElement(By.xpath("//textarea[@aria-label = 'detect.dat text field']")).getText()).replace(regex, '');
-    const expectedDetectText = readFileSync('src/libs/converter/input_examples/expected_shieldhit_output/detect.dat', 'utf-8').replace(regex, '');
+    const expectedDetectText = readFileSync('src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/detect.dat', 'utf-8').replace(regex, '');
     expect (expectedDetectText).not.toBe("");
     expect (detectText).toContain(expectedDetectText);
 

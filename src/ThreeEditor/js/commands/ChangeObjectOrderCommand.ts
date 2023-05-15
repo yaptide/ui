@@ -58,8 +58,8 @@ export class ChangeObjectOrderCommand extends Command {
 
 	fromJSON(json: { object: { object: { uuid: string } }; oldIndex: number; newIndex: number }) {
 		super.fromJSON(json);
-
-		this.object = this.editor.objectByUuid(json.object.object.uuid);
+		const newObject = this.editor.objectByUuid(json.object.object.uuid);
+		if (newObject) this.object = newObject;
 		this.oldIndex = json.oldIndex;
 		this.newIndex = json.newIndex;
 	}

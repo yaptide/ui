@@ -1,4 +1,4 @@
-import { ScoringQuantity } from '../../util/Scoring/ScoringQuantity';
+import { ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
 import { Command } from '../Command';
 
 export class SetQuantityValueCommand extends Command {

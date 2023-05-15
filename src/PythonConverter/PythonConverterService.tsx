@@ -1,7 +1,7 @@
 import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import * as Comlink from 'comlink';
 import { createGenericContext } from '../services/GenericContext';
-import { IPythonWorker } from './PythonWorker';
+import { PythonWorker } from './PythonWorker';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulationInputFiles } from '../types/ResponseTypes';
 
@@ -17,13 +17,15 @@ export interface PythonConverterProps {
 	onLoad?: (pyodide: any) => void;
 }
 
-export interface IPythonConverter {
-	convertJSON: (editorJson: EditorJson) => Promise<Map<keyof SimulationInputFiles, string>>;
+export interface PythonConverterContext {
+	convertJSON: (
+		editorJson: EditorJson
+	) => Promise<Map<keyof RemoveIndex<SimulationInputFiles>, string>>;
 	isConverterReady: boolean;
 }
 
 const [usePythonConverter, PythonConverterContextProvider] =
-	createGenericContext<IPythonConverter>();
+	createGenericContext<PythonConverterContext>();
 
 const PYODIDE_LOADED = 'PYODIDE_LOADED';
 
@@ -32,10 +34,10 @@ const PYODIDE_LOADED = 'PYODIDE_LOADED';
  *	There can be only one instance of PythonConverter in the whole application.
  */
 const PythonConverter = (props: PythonConverterProps) => {
-	const workerRef = useRef<Comlink.Remote<IPythonWorker>>();
+	const workerRef = useRef<Comlink.Remote<PythonWorker>>();
 
 	useEffect(() => {
-		workerRef.current = Comlink.wrap<IPythonWorker>(
+		workerRef.current = Comlink.wrap<PythonWorker>(
 			new Worker(new URL('./PythonWorker.ts', import.meta.url))
 		);
 		workerRef.current.initPyodide(
@@ -70,7 +72,7 @@ const PythonConverter = (props: PythonConverterProps) => {
 		return await workerRef.current!.convertJSON(editorJSON);
 	};
 
-	const value: IPythonConverter = {
+	const value: PythonConverterContext = {
 		convertJSON,
 		isConverterReady
 	};

@@ -3,7 +3,6 @@ import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { Vector2 } from 'three';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Editor } from '../../../../js/Editor';
-import { FilterRule, isFloatRule, isIDRule, isIntRule } from '../../../../util/Detect/DetectRule';
 import {
 	KEYWORD_OPTIONS,
 	KEYWORD_SORT_ORDER,
@@ -11,20 +10,26 @@ import {
 	PARTICLE_OPTIONS,
 	RULE_UNITS,
 	RULE_VALUE_RANGES
-} from '../../../../util/Detect/DetectRuleTypes';
-import { DETECTOR_MODIFIERS_OPTIONS } from '../../../../util/Scoring/ScoringOutputTypes';
-import { DifferentialModifier } from '../../../../util/Scoring/ScoringQtyModifiers';
-import { createRowColor } from '../../../../util/Ui/Color';
-import { createNumberInput } from '../../../../util/Ui/Number';
+} from '../../../../../types/DetectRuleTypes';
+import { DETECTOR_MODIFIERS_OPTIONS } from '../../../../Simulation/Scoring/ScoringOutputTypes';
+import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
+import { createRowColor } from '../../../../../util/Ui/Color';
+import { createNumberInput } from '../../../../../util/Ui/Number';
 import {
 	createDifferentialConfigurationRow,
 	createModifiersOutliner,
 	createRuleConfigurationRow,
 	createRulesOutliner
-} from '../../../../util/Ui/PropertiesOutliner';
-import { hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
+} from '../../../../../util/Ui/PropertiesOutliner';
+import { hideUIElement, showUIElement } from '../../../../../util/Ui/Uis';
 import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
 import { ObjectSelectProperty, ObjectSelectProps } from './ObjectSelectPropertyField';
+import {
+	FilterRule,
+	isFloatRule,
+	isIDRule,
+	isIntRule
+} from '../../../../Simulation/Scoring/DetectRule';
 
 export function PropertyField(props: { label?: string; children: React.ReactNode }) {
 	return (
@@ -117,7 +122,7 @@ export function NumberInput(props: {
 	}, []);
 
 	useEffect(() => {
-		(inputRef.current as any).onChange((event: any) => {
+		inputRef.current.onChange((event: any) => {
 			props.onChange(parseFloat(event.target.value));
 		});
 	}, [props]);
@@ -157,7 +162,7 @@ export function ColorInput(props: { value: string; onChange: (value: number) => 
 	}, []);
 
 	useEffect(() => {
-		(inputRef.current as any).onChange(() => {
+		inputRef.current.onChange(() => {
 			props.onChange(inputRef.current.getHexValue());
 		});
 	}, [props]);
@@ -407,7 +412,7 @@ export function ModifiersOutliner(props: {
 	}, []);
 
 	useEffect(() => {
-		(inputRef.current as any).onChange(() => {
+		inputRef.current.onChange(() => {
 			props.onChange(inputRef.current.getValue());
 		});
 		inputRef.current.setOptions(props.options);
@@ -521,7 +526,7 @@ export function DifferentialConfiguration(props: {
 		} = inputRef.current;
 
 		inputRef.current.group.updateFields.forEach(field => {
-			(field as any).onChange(() => {
+			field.onChange(() => {
 				const keywordSelect = keywordSelectField.getValue();
 				const lowerLimit = lowerLimitField.getValue();
 				const upperLimit = upperLimitField.getValue();
@@ -540,7 +545,7 @@ export function DifferentialConfiguration(props: {
 		});
 
 		inputRef.current.group.deleteFields.forEach(field => {
-			(field as any).onClick(() => {
+			field.onClick(() => {
 				props.onDelete();
 			});
 		});
@@ -593,7 +598,7 @@ export function RulesOutliner(props: {
 	}, []);
 
 	useEffect(() => {
-		(inputRef.current as any).onChange(() => {
+		inputRef.current.onChange(() => {
 			props.onChange(inputRef.current.getValue());
 		});
 		inputRef.current.setOptions(props.options);
@@ -723,7 +728,7 @@ export function RulesConfiguration(props: {
 		const { keywordSelectField, operatorSelectField, idSelectField } = inputRef.current;
 
 		inputRef.current.group.updateFields.forEach(field => {
-			(field as any).onChange(() => {
+			field.onChange(() => {
 				const keywordSelect = keywordSelectField.getValue();
 				const operatorSelect = operatorSelectField.getValue();
 				const idSelect = idSelectField.getValue();
@@ -738,7 +743,7 @@ export function RulesConfiguration(props: {
 		});
 
 		inputRef.current.group.deleteFields.forEach(field => {
-			(field as any).onClick(() => {
+			field.onClick(() => {
 				props.onDelete();
 			});
 		});

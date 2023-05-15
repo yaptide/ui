@@ -1,6 +1,6 @@
 import { Command } from '../Command.js';
-import { DifferentialModifier } from '../../util/Scoring/ScoringQtyModifiers';
-import { ScoringQuantity } from '../../util/Scoring/ScoringQuantity';
+import { DifferentialModifier } from '../../Simulation/Scoring/ScoringQtyModifiers';
+import { ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
 
 export class AddDifferentialModifierCommand extends Command {
 	/**
