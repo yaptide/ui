@@ -7,12 +7,14 @@ import { EditorJson } from '../ThreeEditor/js/EditorJson';
 // CND method is suggested in https://pyodide.org/en/stable/usage/downloading-and-deploying.html
 importScripts('https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js');
 
-export interface IPythonWorker {
+export interface PythonWorker {
 	initPyodide: (onReady: () => void) => void;
 	close: () => void;
 	runPython: <T>(string: string) => T;
 	checkConverter: () => boolean;
-	convertJSON: (editorJson: EditorJson) => Promise<Map<keyof SimulationInputFiles, string>>;
+	convertJSON: (
+		editorJson: EditorJson
+	) => Promise<Map<keyof RemoveIndex<SimulationInputFiles>, string>>;
 }
 
 const pythonConverterCode = `
@@ -36,7 +38,7 @@ def checkIfConverterReady():
 checkIfConverterReady()
 `;
 
-class PythonWorkerBase implements IPythonWorker {
+class PythonWorkerBase implements PythonWorker {
 	readonly isPythonWorker: true = true;
 	async initPyodide(onReady: () => void) {
 		const pyodide = await self.loadPyodide();

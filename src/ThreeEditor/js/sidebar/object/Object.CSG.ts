@@ -1,17 +1,17 @@
-import * as CSG from '../../../util/CSG/CSG';
-import { createRowText, createZoneRulesPanel } from '../../../util/Ui/Uis';
+import { BooleanZone } from '../../../Simulation/Zones/BooleanZone';
+import { createRowText, createZoneRulesPanel } from '../../../../util/Ui/Uis';
 import { Editor } from '../../Editor';
 import { UIRow, UIText } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectCSG extends ObjectAbstract {
-	object?: CSG.Zone;
+	object?: BooleanZone;
 
 	typeRow: UIRow;
 	type: UIText;
 
 	zoneRulesRow: UIRow;
-	renderZoneRules: (zone: CSG.Zone) => void;
+	renderZoneRules: (zone: BooleanZone) => void;
 
 	constructor(editor: Editor) {
 		super(editor, 'Zone Operations');
@@ -21,7 +21,7 @@ export class ObjectCSG extends ObjectAbstract {
 
 		this.panel.add(this.typeRow, this.zoneRulesRow);
 	}
-	setObject(object: CSG.Zone): void {
+	setObject(object: BooleanZone): void {
 		super.setObject(object);
 		if (!object) return;
 

@@ -28,12 +28,12 @@ const PUBLIC_PATH = process.env.PUBLIC_PATH || '/';
 	for (const file of filesToFix) {
 		console.log(`Fixing ${file}`);
 		let code = await fse.readFile(path.join(sourceFolder, file), 'utf8');
-		// remove duplicate 'static/js' from paths 
+		// remove duplicate 'static/js' from paths
 		// in some chunk files the 'static/js' is already present in the path, therefore adding it by string concatenation results in corrupted paths with 'static/js/static/js' entries
 		// here we solve that issues by replacing all occurrences of 'static/js' by empty string, so only single 'static/js' item will be propagated into chunks path
 		// the problem is reported here: https://github.com/facebook/create-react-app/issues/12503 , once solved in react-script, the hacking below will be obsolete
 		code = code.split('static/js/').join('');
-		// replace yaptide_converter references with absolute paths 
+		// replace yaptide_converter references with absolute paths
 		code = code
 			.split(/\.\/libs\/converter\/dist|\.\"\,\"\/libs\/converter\/dist/)
 			.join(path.join(PUBLIC_PATH, 'libs/converter/dist'));

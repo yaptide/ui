@@ -1,11 +1,11 @@
 import { MathUtils, Object3D } from 'three';
 import { Editor } from '../../../../js/Editor';
 import { PropertyField, RulesConfiguration, RulesOutliner } from '../fields/PropertyField';
-import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
 import { Button } from '@mui/material';
-import { DetectFilter, isDetectFilter } from '../../../../util/Detect/DetectFilter';
-import { Keyword, RULE_DEFAULTS } from '../../../../util/Detect/DetectRuleTypes';
+import { DetectFilter, isDetectFilter } from '../../../../Simulation/Scoring/DetectFilter';
+import { Keyword, RULE_DEFAULTS } from '../../../../../types/DetectRuleTypes';
 import { SetFilterRuleCommand } from '../../../../js/commands/SetFilterRuleCommand';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 

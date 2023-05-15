@@ -13,21 +13,21 @@ import {
 import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
 import { Editor } from '../../js/Editor';
-import * as CSG from '../../util/CSG/CSG';
-import { OperationDataList, isOperation } from '../../util/Operation';
+import { OperationDataList, isOperation } from '../../../types/Operation';
 import { BooleanAlgebraData } from './BooleanAlgebra/BooleanAlgebraData';
 import BooleanAlgebraRow, { BooleanAlgebraRowProps } from './BooleanAlgebra/BooleanAlgebraRow';
 import { GeometryIdSelect } from './GeometryIdSelect';
+import { BooleanZone } from '../../Simulation/Zones/BooleanZone';
 
-type ZoneManagerPanelProps = {
+type BooleanZoneManagerPanelProps = {
 	editor: Editor;
-	zone?: CSG.Zone;
+	zone?: BooleanZone;
 	handleChanged: (index: number, data: BooleanAlgebraData) => void;
 	handleAdd: () => void;
 	handleRemove: (index: number) => void;
 };
 
-function ZoneManagerPanel(props: ZoneManagerPanelProps) {
+function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 	const { editor, zone, handleChanged, handleAdd, handleRemove } = props;
 	const PANEL_HEIGHT = 450;
 
@@ -167,8 +167,8 @@ function ZoneManagerPanel(props: ZoneManagerPanelProps) {
 		[handleChanged, handleRemove]
 	);
 
-	/*------------------------------------CSG.Zone-------------------------------------*/
-	const zoneRef = useRef<CSG.Zone>();
+	/*------------------------------------BooleanZone-------------------------------------*/
+	const zoneRef = useRef<BooleanZone>();
 
 	const initZone = useCallback(() => {
 		const manager = editor.zoneManager;

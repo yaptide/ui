@@ -190,7 +190,7 @@
 				"cd7c2eb0-e91f-4144-b4eb-536e4626cc09": 1
 			}
 		},
-		"metadata": { "generator": "Editor.toJSON", "type": "Editor", "version": 0.6 },
+		"metadata": { "generator": "Editor.toJSON", "type": "Editor", "version": 0.7 },
 		"physic": {
 			"enableNuclearReactions": true,
 			"energyLoss": 0.03,
@@ -338,7 +338,7 @@
 						"material": "81a7aa32-b85f-45c4-bcd7-f648a0be12dc",
 						"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 10, 1],
 						"name": "Water_phantom_cylinder",
-						"type": "CylinderMesh",
+						"type": "CylinderFigure",
 						"uuid": "7ab62ba9-6dba-4543-b50b-ce31e143d482",
 						"visible": false
 					},
@@ -355,7 +355,7 @@
 						"material": "8485707f-07bf-49d2-86ab-070eb9878a00",
 						"matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 10.5, 1],
 						"name": "Vacuum_cylinder",
-						"type": "CylinderMesh",
+						"type": "CylinderFigure",
 						"uuid": "aeeffad9-ed86-44ae-bfe4-b5f78580741b",
 						"visible": false
 					}

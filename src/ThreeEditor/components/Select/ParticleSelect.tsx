@@ -1,19 +1,19 @@
 import React from 'react';
 import { AutoCompleteSelect } from '../../../util/genericComponents/AutoCompleteSelect';
 
-export interface IParticleType {
+export interface ParticleType {
 	id: number;
 	name: string;
 }
 
 export interface ParticleSelectProps {
 	onChange?: (event: React.SyntheticEvent<Element, Event>, newValue: number) => void;
-	particles: IParticleType[];
+	particles: readonly ParticleType[];
 	value?: number;
 }
 
 export function ParticleSelect(props: ParticleSelectProps) {
-	const getOptionLabel = ({ id, name }: IParticleType) => {
+	const getOptionLabel = ({ id, name }: ParticleType) => {
 		return `[${id}] ${name}`;
 	};
 

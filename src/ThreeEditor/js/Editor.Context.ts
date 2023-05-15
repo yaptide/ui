@@ -1,33 +1,34 @@
 import * as THREE from 'three';
-import { BasicMesh, isBasicMesh } from '../util/BasicMeshes';
-import { Beam, isBeam } from '../util/Beam';
-import * as CSG from '../util/CSG/CSG';
-import { isZone, isZoneContainer } from '../util/CSG/CSG';
-import { DetectFilter, isDetectFilter } from '../util/Detect/DetectFilter';
-import { DetectGeometry, isDetectGeometry } from '../util/Detect/DetectGeometry';
+import { DetectFilter, isDetectFilter } from '../Simulation/Scoring/DetectFilter';
+import { DetectGeometry, isDetectGeometry } from '../Simulation/Detectors/DetectGeometry';
 import {
 	DetectContainer,
 	DetectManager,
 	FilterContainer,
 	isDetectContainer,
 	isFilterContainer
-} from '../util/Detect/DetectManager';
-import { isScoringManager, ScoringManager } from '../util/Scoring/ScoringManager';
-import { ScoringOutput, isOutput } from '../util/Scoring/ScoringOutput';
-import { isQuantity, ScoringQuantity } from '../util/Scoring/ScoringQuantity';
-import { isWorldZone, WorldZone } from '../util/WorldZone/WorldZone';
+} from '../Simulation/Detectors/DetectManager';
+import { isScoringManager, ScoringManager } from '../Simulation/Scoring/ScoringManager';
+import { ScoringOutput, isOutput } from '../Simulation/Scoring/ScoringOutput';
+import { isQuantity, ScoringQuantity } from '../Simulation/Scoring/ScoringQuantity';
+import { isWorldZone, WorldZone } from '../Simulation/Zones/WorldZone/WorldZone';
 import { Editor } from './Editor';
+import { SimulationZone } from '../Simulation/Base/SimZone';
+import { ZoneContainer, ZoneManager, isZoneContainer } from '../Simulation/Zones/ZoneManager';
+import { isZone } from '../Simulation/Zones/BooleanZone';
+import { Beam, isBeam } from '../Simulation/Physics/Beam';
+import { BasicFigure, isBasicFigure } from '../Simulation/Figures/BasicFigures';
 
 export type Context = 'geometry' | 'scoring' | 'settings';
 export type SceneObject =
-	| CSG.Zone
-	| BasicMesh
+	| SimulationZone
+	| BasicFigure
 	| WorldZone
 	| DetectGeometry
 	| DetectContainer
 	| DetectManager
-	| CSG.ZoneContainer
-	| CSG.ZoneManager
+	| ZoneContainer
+	| ZoneManager
 	| THREE.Scene;
 export type OutputObject =
 	| DetectFilter
@@ -102,7 +103,7 @@ export class ContextManager {
 				hidden.push(this.editor.zoneManager, this.editor.beam);
 				break;
 			case 'settings':
-				visible.push(this.editor.scene, this.editor.detectManager);
+				visible.push(this.editor.scene, this.editor.detectManager, this.editor.beam);
 				hidden.push(this.editor.zoneManager);
 				break;
 			default:
@@ -110,7 +111,6 @@ export class ContextManager {
 					this.editor.scene,
 					this.editor.zoneManager,
 					this.editor.detectManager,
-					this.editor.sceneHelpers,
 					this.editor.beam
 				);
 				break;
@@ -183,7 +183,7 @@ export const isInputObject = (x: unknown): x is SceneObject => {
 		isDetectContainer(x) ||
 		isZone(x) ||
 		isWorldZone(x) ||
-		isBasicMesh(x) ||
+		isBasicFigure(x) ||
 		isZoneContainer(x) ||
 		x instanceof THREE.Scene
 	);

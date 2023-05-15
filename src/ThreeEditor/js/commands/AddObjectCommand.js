@@ -1,12 +1,14 @@
 import { Command } from '../Command.js';
 import { ObjectLoader } from 'three';
-
 /**
- * @param editor Editor
- * @param object THREE.Object3D
- * @constructor
+ * @typedef {import('../Editor.js').Editor} Editor
  */
 export class AddObjectCommand extends Command {
+	/**
+	 * @param {Editor} editor
+	 * @param {THREE.Object3D} object
+	 * @constructor
+	 */
 	constructor(editor, object) {
 		super(editor);
 

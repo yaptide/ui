@@ -4,14 +4,14 @@ import {
 	ConditionalNumberPropertyField,
 	ConditionalObjectSelectPropertyField
 } from '../fields/PropertyField';
-import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
 import { ObjectSelectPropertyField } from '../fields/ObjectSelectPropertyField';
-import { isQuantity, ScoringQuantity } from '../../../../util/Scoring/ScoringQuantity';
+import { isQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import {
 	DETECTOR_KEYWORD_OPTIONS,
 	MEDIUM_KEYWORD_OPTIONS
-} from '../../../../util/Scoring/ScoringOutputTypes';
+} from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValueCommand';
 
 export function QuantityConfiguration(props: { editor: Editor; object: Object3D }) {

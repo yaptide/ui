@@ -7,18 +7,17 @@ import { SetGeometryCommand } from '../../../../js/commands/SetGeometryCommand';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { Editor } from '../../../../js/Editor';
 import {
-	BasicMesh,
+	BasicFigure,
 	BASIC_GEOMETRY_OPTIONS,
-	isBasicMesh,
-	isBoxMesh,
-	isCTMesh,
-	isCylinderMesh,
-	isSphereMesh
-} from '../../../../util/BasicMeshes';
-import { DetectGeometry, isDetectGeometry } from '../../../../util/Detect/DetectGeometry';
-import { CylData, DETECT_OPTIONS } from '../../../../util/Detect/DetectTypes';
-import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
-import { isWorldZone, WorldZone } from '../../../../util/WorldZone/WorldZone';
+	isBasicFigure,
+	isBoxFigure,
+	isCylinderFigure,
+	isSphereFigure
+} from '../../../../Simulation/Figures/BasicFigures';
+import { DetectGeometry, isDetectGeometry } from '../../../../Simulation/Detectors/DetectGeometry';
+import { CylData, DETECT_OPTIONS } from '../../../../../types/DetectTypes';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import { isWorldZone, WorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
 import {
 	ObjectSelectOptionType,
 	ObjectSelectPropertyField
@@ -30,10 +29,11 @@ import {
 	SelectPropertyField
 } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
+import { isCTCube } from '../../../../Simulation/SpecialComponents/CTCube';
 
 const ObjectTypeField = (props: {
 	editor: Editor;
-	object: BasicMesh | DetectGeometry | WorldZone;
+	object: BasicFigure | DetectGeometry | WorldZone;
 }) => {
 	const { object, editor } = props;
 
@@ -127,14 +127,14 @@ const WorldZoneCalculateField = (props: { editor: Editor; object: WorldZone }) =
 
 const BoxDimensionsField = (props: {
 	editor: Editor;
-	object: BasicMesh | WorldZone | DetectGeometry | Object3D;
+	object: BasicFigure | WorldZone | DetectGeometry | Object3D;
 }) => {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const getRenderFlag = useCallback(() => {
-		if (isBasicMesh(watchedObject) && watchedObject.geometryType === 'Box') return true;
+		if (isBasicFigure(watchedObject) && watchedObject.geometryType === 'Box') return true;
 
 		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'Box')
 			return !watchedObject.autoCalculate;
@@ -149,7 +149,7 @@ const BoxDimensionsField = (props: {
 
 		let v;
 		if (isDetectGeometry(watchedObject)) v = watchedObject.geometryData;
-		else if (isBoxMesh(watchedObject)) v = watchedObject.geometry.parameters;
+		else if (isBoxFigure(watchedObject)) v = watchedObject.geometry.parameters;
 		else return new Vector3(0, 0, 0);
 		return new Vector3(v.width, v.height, v.depth);
 	}, [watchedObject]);
@@ -172,7 +172,7 @@ const BoxDimensionsField = (props: {
 				return editor.execute(new SetValueCommand(editor, watchedObject.object, 'size', v));
 			}
 
-			if (isBoxMesh(watchedObject)) {
+			if (isBoxFigure(watchedObject)) {
 				return editor.execute(
 					new SetGeometryCommand(
 						editor,
@@ -222,14 +222,14 @@ const BoxDimensionsField = (props: {
 
 const CylinderDimensionsField = (props: {
 	editor: Editor;
-	object: BasicMesh | WorldZone | DetectGeometry | Object3D;
+	object: BasicFigure | WorldZone | DetectGeometry | Object3D;
 }) => {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const getRenderFlag = useCallback(() => {
-		if (isBasicMesh(watchedObject) && watchedObject.geometryType === 'Cylinder') return true;
+		if (isBasicFigure(watchedObject) && watchedObject.geometryType === 'Cylinder') return true;
 
 		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'Cylinder')
 			return !watchedObject.autoCalculate;
@@ -250,7 +250,7 @@ const CylinderDimensionsField = (props: {
 				innerRadius: parameters.innerRadius,
 				height: parameters.depth
 			};
-		} else if (isCylinderMesh(watchedObject)) {
+		} else if (isCylinderFigure(watchedObject)) {
 			const parameters = watchedObject.geometry.parameters;
 			return {
 				radius: parameters.radiusTop,
@@ -285,7 +285,7 @@ const CylinderDimensionsField = (props: {
 				);
 			}
 
-			if (isCylinderMesh(watchedObject)) {
+			if (isCylinderFigure(watchedObject)) {
 				const { radius, height } = v;
 				editor.execute(
 					new SetGeometryCommand(
@@ -347,14 +347,14 @@ const CylinderDimensionsField = (props: {
 
 const SphereDimensionsField = (props: {
 	editor: Editor;
-	object: BasicMesh | WorldZone | Object3D;
+	object: BasicFigure | WorldZone | Object3D;
 }) => {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const getRenderFlag = useCallback(() => {
-		if (isBasicMesh(watchedObject) && watchedObject.geometryType === 'Sphere') return true;
+		if (isBasicFigure(watchedObject) && watchedObject.geometryType === 'Sphere') return true;
 
 		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'Sphere')
 			return !watchedObject.autoCalculate;
@@ -365,7 +365,7 @@ const SphereDimensionsField = (props: {
 		if (isWorldZone(watchedObject)) {
 			const { size } = watchedObject;
 			return { radius: size.x };
-		} else if (isSphereMesh(watchedObject))
+		} else if (isSphereFigure(watchedObject))
 			return { radius: watchedObject.geometry.parameters.radius };
 		return { radius: 0 };
 	}, [watchedObject]);
@@ -383,7 +383,7 @@ const SphereDimensionsField = (props: {
 				);
 			}
 
-			if (isSphereMesh(watchedObject)) {
+			if (isSphereFigure(watchedObject)) {
 				const { radius } = v;
 				editor.execute(
 					new SetGeometryCommand(
@@ -476,13 +476,13 @@ const DimensionsFields = (props: { editor: Editor; object: Object3D }) => {
 
 export function ObjectDimensions(props: {
 	editor: Editor;
-	object: BasicMesh | DetectGeometry | WorldZone;
+	object: BasicFigure | DetectGeometry | WorldZone;
 }) {
 	const { object, editor } = props;
 
 	const visibleFlag =
-		!isCTMesh(object) &&
-		(isBasicMesh(object) || isDetectGeometry(object) || isWorldZone(object));
+		!isCTCube(object) &&
+		(isBasicFigure(object) || isDetectGeometry(object) || isWorldZone(object));
 
 	return (
 		<PropertiesCategory

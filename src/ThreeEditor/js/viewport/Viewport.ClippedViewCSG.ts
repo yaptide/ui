@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min';
 import { debounce } from 'throttle-debounce';
 import { Viewport } from './Viewport';
-import { CSG } from '../../util/CSG/CSG';
+import { CSG } from '../../CSG/CSG';
 import { Editor } from '../Editor';
 import { Signal } from 'signals';
 

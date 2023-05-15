@@ -1,13 +1,13 @@
-import * as Scoring from '../../../util/Scoring/ScoringOutputTypes';
-import { DifferentialModifier } from '../../../util/Scoring/ScoringQtyModifiers';
-import { ScoringQuantity } from '../../../util/Scoring/ScoringQuantity';
+import * as Scoring from '../../../Simulation/Scoring/ScoringOutputTypes';
+import { DifferentialModifier } from '../../../Simulation/Scoring/ScoringQtyModifiers';
+import { ScoringQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
 import {
 	createDifferentialConfigurationRow,
 	createFullwidthButton,
 	createModifiersOutliner,
 	hideUIElement,
 	showUIElement
-} from '../../../util/Ui/Uis';
+} from '../../../../util/Ui/Uis';
 import {
 	RemoveDifferentialModifierCommand,
 	AddDifferentialModifierCommand

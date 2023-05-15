@@ -1,18 +1,17 @@
 import { UIOutliner } from '../libs/ui.three.js';
-import { escapeHTML } from '../../util/escapeHTML.js';
+import { escapeHTML } from '../../../util/escapeHTML';
 import { UICheckbox } from '../libs/ui.js';
 import { SetValueCommand } from '../commands/SetValueCommand.js';
 
 const getObjectType = object => {
 	switch (object.type) {
 		case 'Scene':
-		case 'BoxMesh':
-		case 'CylinderMesh':
-		case 'SphereMesh':
+		case 'BoxFigure':
+		case 'CylinderFigure':
+		case 'SphereFigure':
 			return 'Figure';
 		case 'DetectGroup':
 		case 'Points':
-		case 'Detect':
 			return 'Detect';
 		case 'Filter':
 		case 'FilterGroup':
@@ -34,47 +33,53 @@ const getObjectType = object => {
 };
 const getAdditionalInfo = object => {
 	switch (object.type) {
-		case 'BoxMesh':
-		case 'CylinderMesh':
-		case 'SphereMesh':
-			return ` [${object.id
-				}] <span class="type Geometry"></span> <span class="type-value">${object.type.slice(
-					0,
-					-4
-				)}</span>`;
+		case 'BoxFigure':
+		case 'CylinderFigure':
+		case 'SphereFigure':
+			return ` [${
+				object.id
+			}] <span class="type Geometry"></span> <span class="type-value">${object.type.slice(
+				0,
+				-4
+			)}</span>`;
 		case 'Beam':
 			let particle = object.particle;
 			return ` [${object.id}] <span class="type Particle Beam"></span> ${particle.name} [${particle.id}]`;
 		case 'WorldZone':
 			let { simulationMaterial: worldMaterial } = object;
 			return `<span class="type Material"></span> 
-            <span class="type-value">${worldMaterial.name} [${worldMaterial.icru}]</span>`;
+				<span class="type-value">${worldMaterial.name} [${worldMaterial.icru}]</span>`;
 		case 'Zone':
 			let { simulationMaterial: material } = object;
 			return ` [${object.id}] <span class="type Material"></span> 
-            <span class="type-value">${material.name} [${material.icru}]</span>`;
+				<span class="type-value">${material.name} [${material.icru}]</span>`;
 		case 'Points':
 			let { zone, detectType } = object;
-			return ` [${object.id}] <span class="type Geometry ${detectType === 'Zone' ? 'Zone' : ''
-				}"></span> <span class="type-value">${zone ? `${escapeHTML(zone.name)} [${zone.id}]` : detectType
-				}</span>`;
+			return ` [${object.id}] <span class="type Geometry ${
+				detectType === 'Zone' ? 'Zone' : ''
+			}"></span> <span class="type-value">${
+				zone ? `${escapeHTML(zone.name)} [${zone.id}]` : detectType
+			}</span>`;
 		case 'Filter':
 			return ` [${object.id}]`;
 		case 'Output':
 			let { geometry } = object;
-			return ` [${object.id}] <span class="type-value">${object.geometry
-					? `<span class="type Detect Geometry"></span>${escapeHTML(geometry.name)} [${geometry.id
-					}]`
+			return ` [${object.id}] <span class="type-value">${
+				object.geometry
+					? `<span class="type Detect Geometry"></span>${escapeHTML(geometry.name)} [${
+							geometry.id
+					  }]`
 					: ''
-				}</span>`;
+			}</span>`;
 		case 'Quantity':
 			let filter = object.filter;
-			return ` [${object.id}] ${filter
+			return ` [${object.id}] ${
+				filter
 					? `<span class="type Filter Modifier"></span> <span class="type-value">${escapeHTML(
-						filter.name
-					)} [${filter.id}]`
+							filter.name
+					  )} [${filter.id}]`
 					: ''
-				}</span>`;
+			}</span>`;
 		default:
 			return '';
 	}

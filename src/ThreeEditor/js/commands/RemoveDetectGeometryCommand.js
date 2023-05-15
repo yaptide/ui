@@ -1,5 +1,5 @@
 import { Command } from '../Command.js';
-import { DetectGeometry } from '../../util/Detect/DetectGeometry';
+import { DetectGeometry } from '../../Simulation/Detectors/DetectGeometry';
 
 /**
  * @param editor Editor

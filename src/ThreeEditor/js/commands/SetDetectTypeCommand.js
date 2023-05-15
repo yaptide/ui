@@ -22,9 +22,9 @@ export class SetDetectTypeCommand extends Command {
 
 	execute() {
 		this.object.detectType = this.newType;
-
 		this.editor.signals.geometryChanged.dispatch(this.object);
 		this.editor.signals.detectTypeChanged.dispatch(this.object);
+		this.editor.signals.detectGeometryChanged.dispatch(this.object);
 		this.editor.signals.objectChanged.dispatch(this.object, 'detectType');
 		this.editor.signals.sceneGraphChanged.dispatch(this.object);
 	}
@@ -38,6 +38,7 @@ export class SetDetectTypeCommand extends Command {
 		this.editor.select(this.object);
 		this.editor.signals.geometryChanged.dispatch(this.object);
 		this.editor.signals.detectTypeChanged.dispatch(this.object);
+		this.editor.signals.detectGeometryChanged.dispatch(this.object);
 		this.editor.signals.objectChanged.dispatch(this.object, 'detectType');
 		this.editor.signals.sceneGraphChanged.dispatch(this.object);
 	}

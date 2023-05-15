@@ -1,5 +1,5 @@
 import { UIPanel, UIText, UIRow, UIButton } from '../libs/ui.js';
-import { BoxMesh, CylinderMesh, SphereMesh } from '../../util/BasicMeshes';
+import { BoxFigure, CylinderFigure, SphereFigure } from '../../Simulation/Figures/BasicFigures';
 import {
 	AddDetectGeometryCommand,
 	AddFilterCommand,
@@ -62,9 +62,9 @@ export function SceneAddPanel(editor, container) {
 		'Add new',
 		['Box', 'Cylinder', 'Sphere', 'Constructive solid Zone'],
 		[
-			() => editor.execute(new AddObjectCommand(editor, new BoxMesh())),
-			() => editor.execute(new AddObjectCommand(editor, new CylinderMesh())),
-			() => editor.execute(new AddObjectCommand(editor, new SphereMesh())),
+			() => editor.execute(new AddObjectCommand(editor, new BoxFigure())),
+			() => editor.execute(new AddObjectCommand(editor, new CylinderFigure())),
+			() => editor.execute(new AddObjectCommand(editor, new SphereFigure())),
 			() => editor.execute(new AddZoneCommand(editor))
 		],
 		['a', 'b', 'c', 'd'],

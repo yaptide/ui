@@ -62,7 +62,7 @@ export default function SimulationCard({
 	const { loadFromJson } = useLoader();
 
 	const rows = useMemo(() => {
-		const rows: any[] = [];
+		const rows: JSX.Element[] = [];
 		if (currentJobStatusData[StatusState.RUNNING](simulation)) {
 			row(0, 'Message', simulation.message, !!simulation.message);
 		}

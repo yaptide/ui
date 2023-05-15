@@ -1,5 +1,5 @@
-import { DetectGeometry } from '../../../util/Detect/DetectGeometry';
-import { createRowParamNumber, hideUIElement, showUIElement } from '../../../util/Ui/Uis';
+import { DetectGeometry } from '../../../Simulation/Detectors/DetectGeometry';
+import { createRowParamNumber, hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
 import { SetDetectGeometryCommand } from '../../commands/Commands';
 import { Editor } from '../../Editor';
 import { UINumber, UIRow } from '../../libs/ui';

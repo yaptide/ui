@@ -1,12 +1,15 @@
 import { Command } from '../Command.js';
 
+/**
+ *
+ * @typedef {import('../Editor').Editor} Editor
+ * @typedef {import('../../Simulation/Zones/BooleanZone').BooleanZone} BooleanZone
+ * @typedef {import('../../CSG/CSGOperationTuple.js').OperationTuple} OperationTuple
+ */
 class SetZoneOperationTupleCommand extends Command {
 	/**
-	 * @typedef {import('../Editor.js').Editor} Editor
-	 * @typedef {import('../../util/CSG/CSGZone.js').Zone} CSGZone
-	 * @typedef {import('../../util/CSG/CSGOperationTuple.js').OperationTuple} OperationTuple
 	 * @param {Editor} editor
-	 * @param {CSGZone} object
+	 * @param {BooleanZone} object
 	 * @param {OperationTuple[]} operationTuple
 	 * @param {number} index
 	 * @constructor

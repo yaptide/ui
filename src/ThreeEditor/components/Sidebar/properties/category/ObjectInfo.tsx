@@ -2,9 +2,9 @@ import { Object3D } from 'three';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { Editor } from '../../../../js/Editor';
 import { TextPropertyField } from '../fields/PropertyField';
-import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
-import { isBeam } from '../../../../util/Beam';
+import { isBeam } from '../../../../Simulation/Physics/Beam';
 
 export function ObjectInfo(props: { editor: Editor; object: Object3D }) {
 	const { object, editor } = props;

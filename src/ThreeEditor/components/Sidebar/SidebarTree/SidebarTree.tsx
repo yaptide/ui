@@ -3,12 +3,13 @@ import { Tree, TreeMethods } from '@minoru/react-dnd-treeview';
 import { Object3D } from 'three';
 import './SidebarTree.style.css';
 import { Editor } from '../../../js/Editor';
-import { SimulationObject3D } from '../../../util/SimulationBase/SimulationMesh';
+import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
-import { isQuantity } from '../../../util/Scoring/ScoringQuantity';
 import { Divider } from '@mui/material';
+import { hasVisibleChildren } from '../../../../util/hooks/useKeyboardEditorControls';
+import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
+import { isQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
 import { ChangeObjectOrderCommand } from '../../../js/commands/ChangeObjectOrderCommand';
-import { isOutput } from '../../../util/Scoring/ScoringOutput';
 
 type TreeSource = (Object3D[] | Object3D)[];
 
@@ -19,7 +20,7 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 
 	const buildOption = useCallback(
 		(
-			object: Object3D | SimulationObject3D | undefined,
+			object: Object3D | SimulationElement | undefined,
 			items: Object3D[] | undefined,
 			parentId: number
 		): TreeItem[] => {
@@ -28,7 +29,7 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 			if (!items) items = object.children;
 
 			let children: TreeItem[] = [];
-			if (!(object as SimulationObject3D).notVisibleChildren)
+			if (hasVisibleChildren(object))
 				children = items.map(child => buildOption(child, child.children, object.id)).flat();
 
 			return [
