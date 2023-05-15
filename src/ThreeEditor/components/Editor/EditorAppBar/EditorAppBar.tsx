@@ -97,7 +97,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 			saveString(output, `${fileName}.json`);
 		}
 	};
-	const ToolbarButton = ({label, icon, onClick, disabled, edge }: AppBarOptions) => (
+	const ToolbarButton = ({ label, icon, onClick, disabled, edge }: AppBarOptions) => (
 		<Tooltip title={label}>
 			<IconButton
 				size='small'

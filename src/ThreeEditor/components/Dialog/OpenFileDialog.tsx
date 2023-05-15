@@ -111,7 +111,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 								))}
 							</List>
 							<Button
-								aria-labelledby = 'Load example button'
+								aria-labelledby='Load example button'
 								variant='contained'
 								fullWidth
 								sx={{ marginTop: 'auto' }}
