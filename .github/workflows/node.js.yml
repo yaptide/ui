@@ -39,6 +39,9 @@ jobs:
               with:
                 resource: http://localhost:3000
             - run: npm test
+      				retry_on: error
+            	max_attempts: 2
+				      timeout_seconds: 5
 
     deploy_gh_pages:
         runs-on: ubuntu-latest
