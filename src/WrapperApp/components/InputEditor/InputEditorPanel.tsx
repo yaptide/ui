@@ -12,7 +12,7 @@ import { DEMO_MODE } from '../../../config/Config';
 import { InputFilesEditor } from './InputFilesEditor';
 import { readFile } from '../../../services/DataLoaderService';
 import { DragDropFiles } from './DragDropFiles';
-import { ResponsePostJob, ResponseShConvert, ResponseTopasConvert, SimulationInputFiles, _defaultFlukaInputFiles, _defaultInputFiles, _defaultTopasInputFiles } from '../../../types/ResponseTypes';
+import { ResponsePostJob, ResponseShConvert, ResponseTopasConvert, SimulationInputFiles, _defaultFlukaInputFiles, _defaultShInputFiles, _defaultTopasInputFiles } from '../../../types/ResponseTypes';
 import { RequestPostJob, RequestShConvert, RequestTopasConvert, SimulatorType } from '../../../types/RequestTypes';
 interface InputEditorPanelProps {
 	goToRun?: (InputFiles?: SimulationInputFiles) => void;
@@ -35,7 +35,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const { isConverterReady, convertJSON } = usePythonConverter();
 
 	const [isInProgress, setInProgress] = useState(false);
-	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>(_defaultInputFiles);
+	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>(_defaultShInputFiles);
 	const [generator, setGenerator] = useState<GeneratorLocation>('local');
 	const [simulator, setSimulator] = useState<SimulatorType>(SimulatorType.SHIELDHIT);
 
@@ -176,22 +176,23 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 					value={simulator}
 					exclusive
 					onChange={(_e, simulator) => {
-						if (simulator) {
-							setSimulator(simulator);
-							switch (simulator) {
-								case SimulatorType.SHIELDHIT:
-									setInputFiles(_defaultInputFiles);
-									break;
-								case SimulatorType.TOPAS:
-									setInputFiles(_defaultTopasInputFiles);
-									break;
-								case SimulatorType.FLUKA:
-									setInputFiles(_defaultFlukaInputFiles);
-									break;
-								default:
-									throw new Error('Unknown simulator: ' + simulator);
+						if (window.confirm('Current editor data will be lost. Are you sure?'))
+							if (simulator) {
+								setSimulator(simulator);
+								switch (simulator) {
+									case SimulatorType.SHIELDHIT:
+										setInputFiles(_defaultShInputFiles);
+										break;
+									case SimulatorType.TOPAS:
+										setInputFiles(_defaultTopasInputFiles);
+										break;
+									case SimulatorType.FLUKA:
+										setInputFiles(_defaultFlukaInputFiles);
+										break;
+									default:
+										throw new Error('Unknown simulator: ' + simulator);
+								}
 							}
-						}
 					}}>
 					<ToggleButton
 						value='shieldhit'
