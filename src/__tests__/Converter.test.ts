@@ -25,7 +25,7 @@ describe('NavDrawer component', () => {
 
 		//find the "Editor" button on the left menu and click it to open the editor
 		const editorButton = await driver.findElement(
-			By.xpath("//div[@aria-labelledby = 'Editor']")
+			By.xpath("//div[@aria-label = 'Editor']")
 		);
 		await editorButton.click();
 
@@ -45,15 +45,27 @@ describe('NavDrawer component', () => {
 		);
 		await examplesButton.click();
 
-		//find the first example option and click it
-		const firstExample = await openProjectWidget.findElement(
-			By.xpath("//div[contains(text(),'Proton pencil beam in water')]")
+		//find the list of examples
+		const examplesList = await openProjectWidget.findElement(By.id("Examples list"));
+
+		//find the first option in the list
+		//it has value=0 and is li element
+		const firstExample = await examplesList.findElement(
+		  By.xpath("//li[@value = '0']")
 		);
+	
+		//check if the first example is "Proton pencil beam in water"
+		//text is located in element with id corresponding to aria-labelledby of the list element
+		const exampleLabelId = await firstExample.getAttribute("aria-labelledby");
+		const exampleLabel = await openProjectWidget.findElement(By.id(exampleLabelId));
+		expect(await exampleLabel.getText()).toBe("Proton pencil beam in water");
+	
+		//click the first example
 		await firstExample.click();
 
 		//find the "load" button and click it
 		const loadButton = await openProjectWidget.findElement(
-			By.xpath("//button[@aria-labelledby = 'Load example button']")
+			By.xpath("//button[@aria-label = 'Load example button']")
 		);
 		await loadButton.click();
 
@@ -62,7 +74,7 @@ describe('NavDrawer component', () => {
 
 		//find the "Input Files" button on the left menu and click it to open the editor
 		const filesButton = await driver.findElement(
-			By.xpath("//div[@aria-labelledby = 'Input files']")
+			By.xpath("//div[@aria-label = 'Input files']")
 		);
 		await filesButton.click();
 

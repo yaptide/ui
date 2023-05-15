@@ -215,7 +215,7 @@ function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }
 						disablePadding
 						sx={{ display: 'block' }}>
 						<ListItemButton
-							aria-labelledby={label}
+							aria-label={label}
 							sx={{
 								minHeight: 48,
 								justifyContent: open ? 'initial' : 'center',

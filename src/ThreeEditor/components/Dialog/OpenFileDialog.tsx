@@ -92,26 +92,29 @@ export function OpenFileDialog(props: OpenFileProps) {
 								height: 319,
 								boxSizing: 'border-box'
 							}}>
-							<List>
+							<List id={'Examples list'}>
 								{EXAMPLES.map((example, idx) => (
 									<ListItem
-										disablePadding
-										key={
-											example?.inputJson?.project?.title ??
-											'Example_' + idx.toString()
-										}
-										value={idx}
-										onClick={() => setExampleIndex(idx)}
+									disablePadding
+									key={
+										example?.inputJson?.project?.title ??
+										'Example_' + idx.toString()
+									}
+									value={idx}
+									aria-labelledby={`example-btn-${idx}`}
+									aria-selected={exampleIndex === idx}
+									onClick={() => setExampleIndex(idx)}>
+									<ListItemButton
+										id={`example-btn-${idx}`}
 										selected={exampleIndex === idx}>
-										<ListItemButton>
-											{example?.inputJson?.project?.title ??
-												'Example_' + idx.toString()}
-										</ListItemButton>
-									</ListItem>
+										{example?.inputJson?.project?.title ??
+											'Example_' + idx.toString()}
+									</ListItemButton>
+								</ListItem>
 								))}
 							</List>
 							<Button
-								aria-labelledby='Load example button'
+								aria-label='Load example button'
 								variant='contained'
 								fullWidth
 								sx={{ marginTop: 'auto' }}
