@@ -105,7 +105,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 				color='inherit'
 				component='span'
 				disabled={disabled}
-				aria-label={'menu-' + label}
+				aria-label={'Menu ' + label}
 				onClick={onClick}>
 				{icon}
 			</IconButton>

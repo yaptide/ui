@@ -20,7 +20,7 @@ describe('NavDrawer component', () => {
 	test('renders a menu button', async () => {
 		await driver.get('http://localhost:3000');
 		const menuButton = await driver.findElement(
-			By.css('button.MuiIconButton-root:nth-child(2)')
+			By.xpath("//button[@aria-label = 'Toggle drawer button']")
 		);
 		expect(await menuButton.isDisplayed()).toBeTruthy();
 	}, 30000);
@@ -31,7 +31,7 @@ describe('NavDrawer component', () => {
 
 		//find the menu button and then click it
 		const menuButton = await driver.findElement(
-			By.css('button.MuiIconButton-root:nth-child(2)')
+			By.xpath("//button[@aria-label = 'Toggle drawer button']")
 		);
 		await menuButton.click();
 
@@ -49,7 +49,7 @@ describe('NavDrawer component', () => {
 
 		//find the menu button again and click it
 		const menuButton2 = await driver.findElement(
-			By.css('button.MuiIconButton-root:nth-child(2)')
+			By.xpath("//button[@aria-label = 'Toggle drawer button']")
 		);
 		await menuButton2.click();
 

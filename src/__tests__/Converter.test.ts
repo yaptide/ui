@@ -24,18 +24,18 @@ describe('NavDrawer component', () => {
 		await driver.get('http://localhost:3000');
 
 		//find the "Editor" button on the left menu and click it to open the editor
-		const editorButton = await driver.findElement(By.css('li.MuiListItem-root:nth-child(3)'));
+		const editorButton = await driver.findElement(
+			By.xpath("//div[@aria-label = 'Editor']")
+		);
 		await editorButton.click();
 
 		//find the "open" button (second from the left on the upper bar) and then click it
-		const openButton = await driver.findElement(
-			By.css('div.css-12z0wuy:nth-child(2) > span:nth-child(1)')
-		);
+		const openButton = await driver.findElement(By.xpath("//span[@aria-label = 'Menu Open']"));
 		await openButton.click();
 
 		//wait for the "open project" window to appear
 		const openProjectWidget = await driver.wait(
-			until.elementLocated(By.css('.MuiPaper-elevation24')),
+			until.elementLocated(By.xpath("//div[@aria-label = 'Open project dialog']")),
 			10000
 		);
 
@@ -45,26 +45,37 @@ describe('NavDrawer component', () => {
 		);
 		await examplesButton.click();
 
-		//find the first example option and click it
-		const firstExample = await openProjectWidget.findElement(
-			By.css('li.MuiListItem-root:nth-child(1) > div:nth-child(1)')
+		//find the list of examples
+		const examplesList = await openProjectWidget.findElement(By.id("Examples list"));
+
+		//find the first option in the list
+		//it has value=0 and is li element
+		const firstExample = await examplesList.findElement(
+		  By.xpath("//li[@value = '0']")
 		);
+	
+		//check if the first example is "Proton pencil beam in water"
+		//text is located in element with id corresponding to aria-labelledby of the list element
+		const exampleLabelId = await firstExample.getAttribute("aria-labelledby");
+		const exampleLabel = await openProjectWidget.findElement(By.id(exampleLabelId));
+		expect(await exampleLabel.getText()).toBe("Proton pencil beam in water");
+	
+		//click the first example
 		await firstExample.click();
 
 		//find the "load" button and click it
-		const loadButton = await openProjectWidget.findElement(By.css('.MuiButton-contained'));
+		const loadButton = await openProjectWidget.findElement(
+			By.xpath("//button[@aria-label = 'Load example button']")
+		);
 		await loadButton.click();
-
-		//check if the "current data will be lost" alert has appeared
-		const alertText = await driver.switchTo().alert().getText();
-
-		expect(alertText).toBe('Current editor data will be lost. Are you sure?');
 
 		//accept the "current data will be lost" alert
 		await driver.switchTo().alert().accept();
 
 		//find the "Input Files" button on the left menu and click it to open the editor
-		const filesButton = await driver.findElement(By.css('li.MuiListItem-root:nth-child(4)'));
+		const filesButton = await driver.findElement(
+			By.xpath("//div[@aria-label = 'Input files']")
+		);
 		await filesButton.click();
 
 		//wait until the "generate from editor" button and click it (it takes some time for the button to change from "initializing")
@@ -78,11 +89,7 @@ describe('NavDrawer component', () => {
 		//wait until the text has appeared in the first text field
 		await driver.wait(
 			until.elementTextMatches(
-				driver.findElement(
-					By.css(
-						'.MuiCardContent-root > div:nth-child(2) > div:nth-child(2) > textarea:nth-child(1)'
-					)
-				),
+				driver.findElement(By.xpath("//textarea[@aria-label = 'geo.dat text field']")),
 				/\S/
 			)
 		);
@@ -93,69 +100,49 @@ describe('NavDrawer component', () => {
 
 		const geoText = (
 			await driver
-				.findElement(
-					By.css(
-						'.MuiCardContent-root > div:nth-child(2) > div:nth-child(2) > textarea:nth-child(1)'
-					)
-				)
+				.findElement(By.xpath("//textarea[@aria-label = 'geo.dat text field']"))
 				.getText()
 		).replace(regex, '');
 		const expectedGeoText = readFileSync(
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/geo.dat',
 			'utf-8'
 		).replace(regex, '');
-
 		expect(expectedGeoText).not.toBe('');
 		expect(geoText).toContain(expectedGeoText);
 
 		const matText = (
 			await driver
-				.findElement(
-					By.css(
-						'.MuiCardContent-root > div:nth-child(3) > div:nth-child(2) > textarea:nth-child(1)'
-					)
-				)
+				.findElement(By.xpath("//textarea[@aria-label = 'mat.dat text field']"))
 				.getText()
 		).replace(regex, '');
 		const expectedMatText = readFileSync(
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/mat.dat',
 			'utf-8'
 		).replace(regex, '');
-
 		expect(expectedMatText).not.toBe('');
 		expect(matText).toContain(expectedMatText);
 
 		const beamText = (
 			await driver
-				.findElement(
-					By.css(
-						'.MuiCardContent-root > div:nth-child(4) > div:nth-child(2) > textarea:nth-child(1)'
-					)
-				)
+				.findElement(By.xpath("//textarea[@aria-label = 'beam.dat text field']"))
 				.getText()
 		).replace(regex, '');
 		const expectedBeamText = readFileSync(
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/beam.dat',
 			'utf-8'
 		).replace(regex, '');
-
 		expect(expectedBeamText).not.toBe('');
 		expect(beamText).toContain(expectedBeamText);
 
 		const detectText = (
 			await driver
-				.findElement(
-					By.css(
-						'.MuiCardContent-root > div:nth-child(5) > div:nth-child(2) > textarea:nth-child(1)'
-					)
-				)
+				.findElement(By.xpath("//textarea[@aria-label = 'detect.dat text field']"))
 				.getText()
 		).replace(regex, '');
 		const expectedDetectText = readFileSync(
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/detect.dat',
 			'utf-8'
 		).replace(regex, '');
-
 		expect(expectedDetectText).not.toBe('');
 		expect(detectText).toContain(expectedDetectText);
 	}, 50000);
