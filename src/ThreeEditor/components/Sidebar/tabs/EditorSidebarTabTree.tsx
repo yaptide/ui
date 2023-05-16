@@ -57,7 +57,7 @@ const Accordion = styled((props: AccordionProps) => (
 		square
 		{...props}
 	/>
-))(({ theme }) => ({
+))(() => ({
 	'&.Mui-expanded': {
 		margin: '0'
 	}

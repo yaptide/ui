@@ -24,6 +24,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type TreeItem = NodeModel<{
 	object: Object3D<THREE.Event> | SimulationElement;
+	treeId: string;
 }>;
 
 function isHidable(object: Object3D | SimulationPropertiesType) {

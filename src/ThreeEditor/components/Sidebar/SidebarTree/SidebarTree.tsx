@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Tree, TreeMethods } from '@minoru/react-dnd-treeview';
 import { Object3D } from 'three';
 import './SidebarTree.style.css';
@@ -7,9 +7,10 @@ import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
 import { Divider } from '@mui/material';
 import { hasVisibleChildren } from '../../../../util/hooks/useKeyboardEditorControls';
-import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
 import { isQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
 import { ChangeObjectOrderCommand } from '../../../js/commands/ChangeObjectOrderCommand';
+import { isWorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
+import { generateUUID } from 'three/src/math/MathUtils';
 
 type TreeSource = (Object3D[] | Object3D)[];
 
@@ -17,6 +18,7 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 	const { editor, sources } = props;
 
 	const treeRef = useRef<TreeMethods>(null);
+	const treeId = useMemo(() => generateUUID(), []);
 
 	const buildOption = useCallback(
 		(
@@ -39,13 +41,14 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 					droppable: true,
 					text: object.name,
 					data: {
-						object: object
+						object: object,
+						treeId: treeId
 					}
 				},
 				...children
 			];
 		},
-		[]
+		[treeId]
 	);
 
 	const [treeData, setTreeData] = useState<TreeItem[]>([]);
@@ -85,16 +88,16 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 		source: TreeItem | undefined,
 		target: TreeItem | undefined,
 		dropTargetId: string | number
-	) => {
+	): boolean => {
 		if (!source) return false;
+
+		if (source.data?.treeId !== treeId) return false;
 
 		const object3d = source.data?.object;
 
 		if (isQuantity(object3d)) return object3d.parent === target?.data?.object;
 
-		if (isOutput(object3d)) return source.parent === dropTargetId;
-
-		return false;
+		return source.parent === dropTargetId;
 	};
 
 	return (
@@ -111,15 +114,18 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 						'relativeIndex is undefined. Probably you need disable sort option.'
 					);
 
-				if (dragSource?.data)
+				if (dragSource?.data) {
+					console.log(dragSource.data.object);
 					editor.execute(
 						new ChangeObjectOrderCommand(editor, dragSource.data.object, relativeIndex)
 					);
+				}
 			}}
 			canDrop={(_, { dropTarget, dragSource, dropTargetId }) => {
 				return canDrop(dragSource, dropTarget, dropTargetId);
 			}}
-			canDrag={node => isQuantity(node?.data?.object) || isOutput(node?.data?.object)}
+			extraAcceptTypes={['']}
+			canDrag={node => !isWorldZone(node?.data?.object)}
 			sort={false}
 			insertDroppableFirst={false}
 			dropTargetOffset={5}

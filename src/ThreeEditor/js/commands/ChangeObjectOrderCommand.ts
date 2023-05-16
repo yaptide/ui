@@ -1,6 +1,13 @@
 import { Object3D, Event } from 'three';
-import { Command } from '../Command.js';
+import { Command } from '../Command';
 import { Editor } from '../Editor.js';
+
+interface ChangeObjectOrderCommandJSON {
+	oldIndex: number;
+	newIndex: number;
+	objectUuid: string;
+	selectedUuid: string;
+}
 
 /**
  * @param editor Editor
@@ -13,6 +20,7 @@ export class ChangeObjectOrderCommand extends Command {
 	parent: THREE.Object3D;
 	newIndex: number;
 	oldIndex: number;
+	oldSelect: THREE.Object3D | null;
 	constructor(editor: Editor, object: THREE.Object3D, newIndex: number) {
 		super(editor);
 
@@ -23,44 +31,63 @@ export class ChangeObjectOrderCommand extends Command {
 		this.newIndex = newIndex;
 		this.parent = object.parent;
 		this.oldIndex = object.parent.children.indexOf(object);
+		this.oldSelect = editor.selected;
 
 		if (this.oldIndex === -1) throw new Error('The object is not a child of the given parent.'); // should never happen.
 	}
 
 	execute() {
 		this.changeOrderOfObject(this.object, this.newIndex, this.oldIndex);
+		this.editor.select(this.object);
 	}
 
 	undo() {
-		this.changeOrderOfObject(this.object, this.oldIndex, this.newIndex);
+		this.changeOrderOfObject(this.object, this.oldIndex, this.newIndex, true);
+		this.editor.select(this.oldSelect);
 	}
 
-	private changeOrderOfObject(object: Object3D<Event>, newIndex: number, oldIndex: number) {
+	private changeOrderOfObject(
+		object: Object3D<Event>,
+		newIndex: number,
+		oldIndex: number,
+		undo = false
+	) {
 		if (newIndex === oldIndex)
 			return console.warn('ChangeObjectOrderCommand: oldIndex and newIndex are the same.');
 
-		const offset = newIndex >= oldIndex ? -1 : 0;
-		this.parent.children.splice(oldIndex, 1);
-		this.parent.children.splice(newIndex + offset, 0, object);
+		let oldOffset = (!undo && (oldIndex > newIndex ? 1 : 0)) || 0;
+
+		let newOffset = (undo && (oldIndex > newIndex ? 0 : 1)) || 0;
+
+		console.log('offset', oldOffset + oldIndex, newIndex + newOffset);
+		this.parent.children.splice(newIndex + newOffset, 0, object);
+		this.parent.children.splice(oldIndex + oldOffset, 1);
 		this.editor.signals.objectChanged.dispatch(this.parent, 'children');
 		this.editor.signals.sceneGraphChanged.dispatch();
 	}
 
 	toJSON() {
-		const output = super.toJSON();
+		const output: ChangeObjectOrderCommandJSON = {
+			objectUuid: this.object.uuid,
+			oldIndex: this.oldIndex,
+			newIndex: this.newIndex,
+			selectedUuid: this.editor.selected ? this.editor.selected.uuid : ''
+		};
 
-		output.object = this.object.uuid;
-		output.oldIndex = this.oldIndex;
-		output.newIndex = this.newIndex;
-
-		return output;
+		return { ...super.toJSON(), output };
 	}
 
-	fromJSON(json: { object: { object: { uuid: string } }; oldIndex: number; newIndex: number }) {
+	fromJSON(json: ChangeObjectOrderCommandJSON) {
 		super.fromJSON(json);
-		const newObject = this.editor.objectByUuid(json.object.object.uuid);
-		if (newObject) this.object = newObject;
+
+		const found = this.editor.objectByUuid(json.objectUuid);
+
+		if (!found) throw new Error('The object was not found in the scene.');
+
+		this.object = found;
 		this.oldIndex = json.oldIndex;
 		this.newIndex = json.newIndex;
+
+		this.oldSelect = this.editor.objectByUuid(json.selectedUuid) ?? null;
 	}
 }
