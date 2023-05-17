@@ -1,4 +1,4 @@
-import { UICustomTabbedPanel, hideUIElement, showUIElement } from '../../util/Ui/Uis';
+import { UICustomTabbedPanel, hideUIElement, showUIElement } from '../../../util/Ui/Uis';
 import * as Panel from './object/Objects';
 
 function SidebarProperties(editor, id = 'properties') {
@@ -87,7 +87,7 @@ function SidebarProperties(editor, id = 'properties') {
 				[grid].forEach(item => item.setObject(null));
 				[dimensions, calculate].forEach(item => item.setObject(object));
 				break;
-			case object.isBasicMesh:
+			case object.isBasicFigure:
 				[grid, calculate].forEach(item => item.setObject(null));
 				[dimensions].forEach(item => item.setObject(object));
 				break;
@@ -99,7 +99,7 @@ function SidebarProperties(editor, id = 'properties') {
 
 	const WITHOUT_DESCRIPTORS = [
 		'isScene',
-		'isBasicMesh',
+		'isBasicFigure',
 		'isDetectContainer',
 		'isScoringManager',
 		'isDetectGeometry',
@@ -121,7 +121,7 @@ function SidebarProperties(editor, id = 'properties') {
 
 	const WITHOUT_MODIFIERS = [
 		'isScene',
-		'isBasicMesh',
+		'isBasicFigure',
 		'isDetectContainer',
 		'isDetectGeometry',
 		'isZoneContainer',

@@ -27,7 +27,6 @@ type ConvertToInputFiles =
 export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const { enqueueSnackbar } = useSnackbar();
 	const { editorRef } = useStore();
-	//const { convertToInputFiles, postJobDirect } = useShSimulation();
 	const shContext = useShSimulation();
 	const topasContext = useTopasSimulation();
 	const convertToInputFilesRef = useRef<ConvertToInputFiles>(useShSimulation().convertToInputFiles);
@@ -106,20 +105,6 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 		throttle(1000, onClickGenerate, { noTrailing: true }),
 		[onClickGenerate]
 	);
-
-	/**
-	 * @deprecated
-	 */
-	const runSimulation = (inputFiles: SimulationInputFiles) => {
-		setInProgress(true);
-		postJobDirectRef.current(inputFiles, undefined, undefined, undefined, undefined, controller.signal)
-			.then()
-			.catch()
-			.finally(() => {
-				setInProgress(false);
-				goToRun?.call(null);
-			});
-	};
 
 	return (
 		<Box

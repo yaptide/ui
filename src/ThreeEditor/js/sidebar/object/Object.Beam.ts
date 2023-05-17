@@ -1,11 +1,11 @@
-import { Beam } from '../../../util/Beam';
+import { Beam } from '../../../Simulation/Physics/Beam';
 import {
 	createParticleTypeSelect,
 	createRowParamNumber,
 	createRowParamNumberXYZ,
 	hideUIElement,
 	showUIElement
-} from '../../../util/Ui/Uis';
+} from '../../../../util/Ui/Uis';
 import { Editor } from '../../Editor';
 import { UINumber, UIRow, UIText } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';

@@ -6,7 +6,7 @@ import { Editor } from '../../../js/Editor';
 import { useCallback, useState } from 'react';
 import { ObjectPlacement } from './category/ObjectPlacement';
 import { ObjectInfo } from './category/ObjectInfo';
-import { useSignal } from '../../../util/hooks/signals';
+import { useSignal } from '../../../../util/hooks/signals';
 import { ObjectDimensions } from './category/ObjectDimensions';
 import { DetectorGrid } from './category/DetectorGrid';
 import { ZoneOperations } from './category/ZoneOperations';

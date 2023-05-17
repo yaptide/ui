@@ -1,10 +1,10 @@
 import * as THREE from 'three';
-import { Beam, isBeam } from '../../../util/Beam';
-import { isDetectGeometry } from '../../../util/Detect/DetectGeometry';
-import { SimulationObject3D } from '../../../util/SimulationBase/SimulationMesh';
-import { ISimulationObject } from '../../../util/SimulationBase/SimulationObject';
-import { createRowParamNumberXYZ, hideUIElement, showUIElement } from '../../../util/Ui/Uis';
-import { isWorldZone } from '../../../util/WorldZone/WorldZone';
+import { Beam, isBeam } from '../../../Simulation/Physics/Beam';
+import { isDetectGeometry } from '../../../Simulation/Detectors/DetectGeometry';
+import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
+import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
+import { createRowParamNumberXYZ, hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
+import { isWorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
 import {
 	SetBeamDirectionCommand,
 	SetDetectPositionCommand,
@@ -17,7 +17,7 @@ import { UINumber, UIRow } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectPlacement extends ObjectAbstract {
-	object?: SimulationObject3D | Beam;
+	object?: SimulationElement | Beam;
 
 	positionRow: UIRow;
 	positionX: UINumber;
@@ -65,19 +65,19 @@ export class ObjectPlacement extends ObjectAbstract {
 		this.panel.add(this.positionRow, this.rotationRow, this.directionRow);
 	}
 
-	private hasPosition(object: ISimulationObject): boolean {
+	private hasPosition(object: SimulationPropertiesType): boolean {
 		return !object.notMovable;
 	}
 
-	private hasRotation(object: ISimulationObject): boolean {
+	private hasRotation(object: SimulationPropertiesType): boolean {
 		return !object.notRotatable && !isBeam(object);
 	}
 
-	private hasDirection(object: ISimulationObject): object is Beam {
+	private hasDirection(object: SimulationPropertiesType): object is Beam {
 		return isBeam(object);
 	}
 
-	setObject(object: SimulationObject3D | Beam): void {
+	setObject(object: SimulationElement | Beam): void {
 		super.setObject(object);
 		if (!object) return;
 

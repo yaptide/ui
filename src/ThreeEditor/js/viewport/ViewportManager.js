@@ -16,7 +16,7 @@ import { Viewport } from './Viewport.js';
 //   - reference plane being XZ plane
 // polar (phi) angle is being measured from fixed zenith direction (positive Y axis)
 //   - point on positive part of Y axis: Y>0 X=Z=0  			--> phi = 0
-//   - point on XZ plane: 				 Y=0, X=!0 or Z!=0      --> phi = pi/2 = 90*
+//   - point on XZ plane: 				 Y=0, X=!0 or Z!=0		 --> phi = pi/2 = 90*
 //   - point on negative part of Y axis: Y<0 X=Z=0  			--> phi = pi = 180*
 // azimuthal (theta) angle is being measured starting at positive Z axis on reference plane,
 // in principle theta = atan2(x,z)

@@ -3,29 +3,30 @@ import { Stack } from '@mui/system';
 import { usePopupState, bindContextMenu, bindMenu } from 'material-ui-popup-state/hooks';
 import { Object3D } from 'three';
 import { SetValueCommand } from '../../../js/commands/SetValueCommand';
-import { SimulationObject3D } from '../../../util/SimulationBase/SimulationMesh';
+import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Editor } from '../../../js/Editor';
-import { ISimulationObject } from '../../../util/SimulationBase/SimulationObject';
+import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
 import { NodeModel, TreeMethods } from '@minoru/react-dnd-treeview/dist/types';
 import {
 	canChangeName,
 	getRemoveCommand,
-	isRemovable
-} from '../../../util/hooks/useKeyboardEditorControls';
-import { isOutput } from '../../../util/Scoring/ScoringOutput';
+	isRemovable,
+	hasVisibleChildren
+} from '../../../../util/hooks/useKeyboardEditorControls';
+import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
 import { AddQuantityCommand } from '../../../js/commands/AddQuantityCommand';
 import Box from '@mui/material/Box';
-import { useSignal, useSmartWatchEditorState } from '../../../util/hooks/signals';
+import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type TreeItem = NodeModel<{
-	object: Object3D<THREE.Event> | SimulationObject3D;
+	object: Object3D<THREE.Event> | SimulationElement;
 }>;
 
-function isHidable(object: Object3D | ISimulationObject) {
+function isHidable(object: Object3D | SimulationPropertiesType) {
 	if ('notHidable' in object) {
 		return !object.notHidable;
 	}
@@ -36,7 +37,7 @@ export function SidebarTreeItem(props: {
 	treeRef: TreeMethods | null;
 	objectRefs: React.MutableRefObject<Map<string, HTMLDivElement>>;
 	node: NodeModel<{
-		object: Object3D | SimulationObject3D;
+		object: Object3D | SimulationElement;
 	}>;
 	depth: number;
 	isOpen: boolean;
@@ -141,16 +142,15 @@ export function SidebarTreeItem(props: {
 						backgroundColor: ({ palette }) => palette.action.hover
 					}
 				}}>
-				{object.children.length > 0 &&
-					!(object as SimulationObject3D).notVisibleChildren && (
-						<ChevronRightIcon
-							onClick={onToggle}
-							sx={{
-								transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-								transition: 'transform 0.2s'
-							}}
-						/>
-					)}
+				{hasVisibleChildren(object) && (
+					<ChevronRightIcon
+						onClick={onToggle}
+						sx={{
+							transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+							transition: 'transform 0.2s'
+						}}
+					/>
+				)}
 				<Stack
 					direction='row'
 					onClick={() => editor.selectById(object.id)}

@@ -11,6 +11,13 @@ import { Store } from './services/StoreService';
 import WrapperApp from './WrapperApp/WrapperApp';
 import { TopasSimulation } from './services/TopasSimulatorService';
 
+declare module '@mui/material/styles' {
+	// add new variables to the theme type
+	interface TypeBackground {
+		secondary: string;
+	}
+}
+
 function App() {
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 	const theme = React.useMemo(
@@ -25,7 +32,8 @@ function App() {
 						main: '#37505C'
 					},
 					background: {
-						default: prefersDarkMode ? '#121212' : '#f5f5f5'
+						default: prefersDarkMode ? '#121212' : '#f5f5f5',
+						secondary: prefersDarkMode ? '#121212' : '#5f737c'
 					}
 				},
 				typography: {

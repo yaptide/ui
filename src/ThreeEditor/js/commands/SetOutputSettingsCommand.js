@@ -1,4 +1,4 @@
-import { ScoringOutput } from '../../util/Scoring/ScoringOutput';
+import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
 import { Command } from '../Command';
 
 /**

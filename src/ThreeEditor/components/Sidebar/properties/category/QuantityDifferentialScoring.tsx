@@ -5,18 +5,18 @@ import {
 	ModifiersOutlinerField,
 	PropertyField
 } from '../fields/PropertyField';
-import { useSmartWatchEditorState } from '../../../../util/hooks/signals';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
-import { isQuantity, ScoringQuantity } from '../../../../util/Scoring/ScoringQuantity';
+import { isQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import { Button } from '@mui/material';
 import { AddDifferentialModifierCommand } from '../../../../js/commands/AddDifferentialModifierCommand';
 import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValueCommand';
 import {
 	DETECTOR_MODIFIERS,
 	DETECTOR_MODIFIERS_OPTIONS
-} from '../../../../util/Scoring/ScoringOutputTypes';
+} from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { RemoveDifferentialModifierCommand } from '../../../../js/commands/RemoveDifferentialModifierCommand';
-import { DifferentialModifier } from '../../../../util/Scoring/ScoringQtyModifiers';
+import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
 
 export function QuantityDifferentialScoring(props: { editor: Editor; object: Object3D }) {
 	const { object, editor } = props;

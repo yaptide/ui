@@ -12,7 +12,7 @@ import {
 	Tooltip,
 	Typography
 } from '@mui/material';
-import { Operation } from '../../../util/Operation';
+import { Operation } from '../../../../types/Operation';
 
 const TOOLTIP_DELAY = 400;
 
