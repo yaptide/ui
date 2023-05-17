@@ -24,7 +24,8 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 		(
 			object: Object3D | SimulationElement | undefined,
 			items: Object3D[] | undefined,
-			parentId: number
+			parentId: number,
+			index?: number
 		): TreeItem[] => {
 			if (!object) return [];
 
@@ -32,7 +33,9 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 
 			let children: TreeItem[] = [];
 			if (hasVisibleChildren(object))
-				children = items.map(child => buildOption(child, child.children, object.id)).flat();
+				children = items
+					.map((child, idx) => buildOption(child, child.children, object.id, idx))
+					.flat();
 
 			return [
 				{
@@ -42,7 +45,8 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 					text: object.name,
 					data: {
 						object: object,
-						treeId: treeId
+						treeId: treeId,
+						index: index
 					}
 				},
 				...children
@@ -54,7 +58,9 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 	const [treeData, setTreeData] = useState<TreeItem[]>([]);
 
 	const refreshTreeData = useCallback(() => {
-		const options = sources.flat().flatMap(source => buildOption(source, source.children, 0));
+		const options = sources
+			.flat()
+			.flatMap((source, idx) => buildOption(source, source.children, 0, idx));
 		setTreeData(options);
 	}, [buildOption, sources]);
 
@@ -115,16 +121,25 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 					);
 
 				if (dragSource?.data) {
-					console.log(dragSource.data.object);
+					if (
+						relativeIndex === dragSource.data.index ||
+						relativeIndex - 1 === dragSource.data.index
+					)
+						return; // no change needed
+
+					let newPosition =
+						relativeIndex > (dragSource.data.index ?? 0)
+							? relativeIndex - 1
+							: relativeIndex;
+
 					editor.execute(
-						new ChangeObjectOrderCommand(editor, dragSource.data.object, relativeIndex)
+						new ChangeObjectOrderCommand(editor, dragSource.data.object, newPosition)
 					);
 				}
 			}}
 			canDrop={(_, { dropTarget, dragSource, dropTargetId }) => {
 				return canDrop(dragSource, dropTarget, dropTargetId);
 			}}
-			extraAcceptTypes={['']}
 			canDrag={node => !isWorldZone(node?.data?.object)}
 			sort={false}
 			insertDroppableFirst={false}

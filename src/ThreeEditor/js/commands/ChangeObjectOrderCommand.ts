@@ -1,4 +1,3 @@
-import { Object3D, Event } from 'three';
 import { Command } from '../Command';
 import { Editor } from '../Editor.js';
 
@@ -33,35 +32,31 @@ export class ChangeObjectOrderCommand extends Command {
 		this.oldIndex = object.parent.children.indexOf(object);
 		this.oldSelect = editor.selected;
 
+		if (this.parent.children[this.newIndex] === undefined)
+			throw new Error('The new index is not valid.');
+
 		if (this.oldIndex === -1) throw new Error('The object is not a child of the given parent.'); // should never happen.
 	}
 
 	execute() {
-		this.changeOrderOfObject(this.object, this.newIndex, this.oldIndex);
+		this.changeOrderOfObject(this.newIndex, this.oldIndex);
 		this.editor.select(this.object);
 	}
 
 	undo() {
-		this.changeOrderOfObject(this.object, this.oldIndex, this.newIndex, true);
+		this.changeOrderOfObject(this.oldIndex, this.newIndex);
 		this.editor.select(this.oldSelect);
 	}
 
-	private changeOrderOfObject(
-		object: Object3D<Event>,
-		newIndex: number,
-		oldIndex: number,
-		undo = false
-	) {
-		if (newIndex === oldIndex)
+	private changeOrderOfObject(newIndex: number, oldIndex: number) {
+		if (oldIndex === newIndex)
 			return console.warn('ChangeObjectOrderCommand: oldIndex and newIndex are the same.');
 
-		let oldOffset = (!undo && (oldIndex > newIndex ? 1 : 0)) || 0;
+		const element = this.parent.children.splice(oldIndex, 1)[0];
+		if (element !== this.object) throw new Error('Object not in expected position.');
 
-		let newOffset = (undo && (oldIndex > newIndex ? 0 : 1)) || 0;
+		this.parent.children.splice(newIndex, 0, this.object);
 
-		console.log('offset', oldOffset + oldIndex, newIndex + newOffset);
-		this.parent.children.splice(newIndex + newOffset, 0, object);
-		this.parent.children.splice(oldIndex + oldOffset, 1);
 		this.editor.signals.objectChanged.dispatch(this.parent, 'children');
 		this.editor.signals.sceneGraphChanged.dispatch();
 	}
