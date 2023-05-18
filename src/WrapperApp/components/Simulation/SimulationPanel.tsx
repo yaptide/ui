@@ -159,38 +159,6 @@ export default function SimulationPanel({
 		setInputFiles(inputFiles);
 	};
 
-	/**
-	 * @deprecated
-	 */ // eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const runSimulation = (
-		inputFiles?: SimulationInputFiles,
-		directRun: boolean = true,
-		nTasks: number = 1,
-		simulator: string = 'shieldhit',
-		simName: string = 'Unrecognized Simulation Request'
-	) => {
-		if (!editorRef.current && !inputFiles) return;
-		const simData = inputFiles ?? editorRef.current!.toJSON();
-		console.log(directRun);
-
-		(directRun ? postJobDirect : postJobBatch)(
-			simData,
-			nTasks,
-			simulator,
-			simName,
-			undefined,
-			controller.signal
-		)
-			.then(res => {
-				updateSimulationInfo();
-				setTrackedId(res.jobId);
-			})
-			.catch(e => {
-				enqueueSnackbar('Error while starting simulation', { variant: 'error' });
-				console.error(e);
-			});
-	};
-
 	const sendSimulationRequest = (
 		editorJson: EditorJson,
 		inputFiles: Partial<SimulationInputFiles>,
@@ -202,7 +170,7 @@ export default function SimulationPanel({
 		batchOptions: BatchOptionsType
 	) => {
 		setShowRunSimulationsForm(false);
-		const simData = sourceType === 'project' ? editorJson : inputFiles;
+		const simData = sourceType === 'editor' ? editorJson : inputFiles;
 
 		const options =
 			runType === 'batch'
@@ -221,6 +189,7 @@ export default function SimulationPanel({
 
 		(runType === 'direct' ? postJobDirect : postJobBatch)(
 			simData,
+			sourceType,
 			nTasks,
 			simulator,
 			simName,

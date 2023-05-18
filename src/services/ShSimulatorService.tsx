@@ -107,19 +107,25 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 
 	const postJob = useCallback(
 		(endPoint: string) =>
-			(...[simData, ntasks, simType, title, batchOptions, signal]: RequestPostJob) => {
+			(
+				...[
+					simData,
+					inputType,
+					ntasks,
+					simType,
+					title,
+					batchOptions,
+					signal
+				]: RequestPostJob
+			) => {
 				if (title === undefined && isEditorJson(simData)) title = simData.project.title;
 				return authKy
 					.post(endPoint, {
 						json: {
+							[`input_${inputType}`]: simData,
 							...camelToSnakeCase(
 								{
-									simData
-								},
-								false // converter expects camelCase for simData
-							),
-							...camelToSnakeCase(
-								{
+									inputType,
 									ntasks,
 									simType,
 									title,

@@ -31,7 +31,7 @@ function a11yProps(index: number, name: string = 'RunSimulation') {
 }
 
 export type SimulationRunType = 'direct' | 'batch';
-export type SimulationSourceType = 'project' | 'files';
+export type SimulationSourceType = 'editor' | 'files';
 export type ScriptOption = {
 	optionKey: string;
 	optionLabel?: string;
@@ -71,7 +71,7 @@ export function RunSimulationForm({
 	const [tabValue, setTabValue] = useState(0);
 	const [simulationRunType, setSimulationRunType] = useState<SimulationRunType>('direct');
 	const [simulationSourceType, setSimulationSourceType] = useState<SimulationSourceType>(
-		Object.keys(inputFiles).length > 0 ? 'files' : 'project'
+		Object.keys(inputFiles).length > 0 ? 'files' : 'editor'
 	);
 
 	const [selectedFiles, setSelectedFiles] = useState<string[]>(Object.keys(inputFiles));
@@ -248,7 +248,7 @@ export function RunSimulationForm({
 						sx={{
 							minHeight: ({ spacing }) => spacing(5)
 						}}>
-						{simulationSourceType === 'project' ? (
+						{simulationSourceType === 'editor' ? (
 							<Typography
 								sx={{
 									p: ({ spacing }) => spacing(0, 2)
