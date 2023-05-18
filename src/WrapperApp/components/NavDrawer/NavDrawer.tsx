@@ -19,17 +19,28 @@ import MuiDrawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
+import ListItemButton, { ListItemButtonProps } from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { CSSObject, styled, Theme } from '@mui/material/styles';
-import React, { Dispatch, SetStateAction, SyntheticEvent, useState } from 'react';
+import React, {
+	Dispatch,
+	ReactNode,
+	SetStateAction,
+	SyntheticEvent,
+	useRef,
+	useState
+} from 'react';
 import { useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
 import deployInfo from '../../../util/identify/deployInfo.json';
+import { DEMO_MODE } from '../../../config/Config';
+import { NavDrawerList } from './NavDrawerList';
 
-type MenuOption = {
+export type MenuOption = {
 	label: string;
+	richLabel?: ReactNode;
+	description?: ReactNode;
 	value: string;
 	disabled?: boolean;
 	icon: React.ReactElement;
@@ -98,75 +109,89 @@ const getDrawer = (width: number) =>
 function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 	const { resultsSimulationData } = useStore();
 	const { isAuthorized } = useAuth();
-	const [expand, setExpand] = useState(tabsValue === 'login');
 
 	const handleDrawerToggle = () => {
 		setOpen(!open);
 	};
-	const handleProfileToggle = () => {
-		setExpand(prev => !prev);
-	};
 
 	const Drawer = getDrawer(drawerWidth);
 
-	const MenuOptions: MenuOption[] = [
-		// {
-		// 	label: 'Projects',
-		// 	value: 'projects',
-		// 	disabled: true,
-		// 	icon: <Folder />
-		// },
+	const menuOptions: MenuOption[] = [
 		{
 			label: 'Editor',
 			value: 'editor',
-			icon: <ViewInArIcon />
+			icon: <ViewInArIcon fontSize='large' />
 		},
 		{
 			label: 'Input files',
 			value: 'inputFiles',
-			icon: <DescriptionIcon />
+			icon: <DescriptionIcon fontSize='large' />
 		},
 		{
 			label: 'Simulations',
 			value: 'simulations',
 			disabled: !isAuthorized,
-			icon: <OndemandVideoIcon />
+			icon: <OndemandVideoIcon fontSize='large' />
 		},
 		{
 			label: 'Results',
 			value: 'results',
 			disabled: !resultsSimulationData,
-			icon: <AutoGraphIcon />
+			icon: <AutoGraphIcon fontSize='large' />
 		},
 		{
 			label: 'About',
 			value: 'about',
-			icon: <InfoIcon />
+			icon: <InfoIcon fontSize='large' />
 		}
 	];
 
 	return (
-		<Drawer
-			variant='permanent'
-			open={open}>
-			<DrawerHeader onClick={handleDrawerToggle}>
-				<ListItemText
-					primary={<Typography variant='h5'>YAPTIDE</Typography>}
-					sx={{ opacity: open ? 1 : 0 }}
+		<>
+			<IconButton
+				sx={{
+					position: 'absolute',
+					left: 0,
+					top: 0,
+					margin: ({ spacing }) => spacing(1.5, 2)
+				}}
+				aria-label={'Toggle drawer button'}
+				onClick={handleDrawerToggle}>
+				{open ? <Menu /> : <MenuOpen />}
+			</IconButton>
+			<Drawer
+				variant='permanent'
+				anchor='left'
+				open={open}>
+				<DrawerHeader onClick={handleDrawerToggle}>
+					<ListItemText
+						primary={<Typography variant='h5'>YAPTIDE</Typography>}
+						sx={{ opacity: open ? 1 : 0 }}
+					/>
+					<IconButton aria-label={'Toggle drawer button'}>
+						{open ? <Menu /> : <MenuOpen />}
+					</IconButton>
+				</DrawerHeader>
+				<Divider />
+				<NavDrawerList
+					menuOptions={menuOptions}
+					layout={open ? 'open' : 'closed'}
+					handleChange={handleChange}
+					tabsValue={tabsValue}
 				/>
-				<IconButton aria-label={'Toggle drawer button'}>
-					{open ? <Menu /> : <MenuOpen />}
-				</IconButton>
-			</DrawerHeader>
-			<Divider />
-			<List>
+				{/* <List>
 				<ListItemButton
+					ref={userElementRef}
 					sx={{
 						minHeight: 48,
 						justifyContent: open ? 'initial' : 'center',
 						px: 2.5
 					}}
-					onClick={handleProfileToggle}>
+					onBlur={() => setExpand(false)}
+					onClick={() => {
+						userElementRef.current?.focus();
+						handleProfileToggle();
+					}}>
 					<ListItemIcon
 						sx={{
 							minWidth: 0,
@@ -176,7 +201,7 @@ function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }
 						{isAuthorized ? <PersonPinCircleIcon /> : <NotListedLocationIcon />}
 					</ListItemIcon>
 					<ListItemText
-						primary={isAuthorized ? 'User' : 'Guest'}
+						primary={DEMO_MODE ? 'Guest' : isAuthorized ? user!.username : 'Log in'}
 						sx={{ opacity: open ? 1 : 0 }}
 					/>
 					{expand ? <ExpandLess /> : <ExpandMore />}
@@ -209,7 +234,7 @@ function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }
 					</List>
 				</Collapse>
 				<Divider />
-				{MenuOptions.map(({ label, value, disabled, icon }) => (
+				{menuOptions.map(({ label, value, disabled, icon }) => (
 					<ListItem
 						key={label}
 						disablePadding
@@ -277,8 +302,9 @@ function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }
 						</ListItemButton>
 					</Tooltip>
 				</ListItem>
-			</List>
-		</Drawer>
+			</List> */}
+			</Drawer>
+		</>
 	);
 }
 

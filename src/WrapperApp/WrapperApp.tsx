@@ -22,10 +22,11 @@ import SimulationPanel from './components/Simulation/SimulationPanel';
 import NavDrawer from './components/NavDrawer/NavDrawer';
 
 function WrapperApp() {
+	const drawerWidth = 160;
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
 	const { editorProvider, resultsProvider, canLoadEditorData, clearLoadedEditor } = useLoader();
 	const { isAuthorized, logout } = useAuth();
-	const [open, setOpen] = useState(true);
+	const [open, setOpen] = useState(false);
 	const [tabsValue, setTabsValue] = useState('editor');
 
 	const [providedInputFiles, setProvidedInputFiles] = useState<SimulationInputFiles>();
@@ -106,6 +107,7 @@ function WrapperApp() {
 				tabsValue={tabsValue}
 				open={open}
 				setOpen={setOpen}
+				drawerWidth={drawerWidth}
 			/>
 			<TabPanel
 				value={tabsValue}
