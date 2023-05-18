@@ -1,4 +1,5 @@
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
+import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import { SimulationInputFiles, JobStatusData, SimulationInfo } from './ResponseTypes';
 import { Flatten } from './TypeTransformUtil';
 
@@ -24,6 +25,7 @@ export type RequestParam = [signal?: AbortSignal];
 /* ------------------------------------ */
 type InputDataParam = [
 	simData: EditorJson | Partial<SimulationInputFiles>,
+	inputType: SimulationSourceType,
 	ntasks?: number,
 	simType?: string,
 	title?: string,
