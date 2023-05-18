@@ -123,6 +123,7 @@ export class MaterialManager {
 	}
 
 	reset(): void {
+		this.selectedMaterials.clear();
 		this.customMaterials = {};
 	}
 }

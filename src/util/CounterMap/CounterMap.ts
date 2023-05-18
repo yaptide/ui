@@ -1,3 +1,17 @@
+export class CounterMapError<K extends string> extends Error {
+	type = 'CounterMapError';
+
+	constructor(message: string, public readonly origin: { origin: string; key: K }) {
+		super(message);
+	}
+}
+
+export const isCounterMapError = <T extends string>(
+	error: unknown
+): error is CounterMapError<T> => {
+	return error instanceof CounterMapError;
+};
+
 export class CounterMap<K extends string> {
 	private map: Map<K, number> = new Map();
 
@@ -15,7 +29,11 @@ export class CounterMap<K extends string> {
 	decrement(key: K): number {
 		const lastCount = this.map.get(key);
 
-		if (!lastCount) throw Error(`No item to decrement for key: ${key}`);
+		if (!lastCount)
+			throw new CounterMapError(`No item to decrement for key: ${key}`, {
+				origin: 'NoItemToDecrement',
+				key: key
+			});
 		const newValue = lastCount - 1;
 		this.map.set(key, newValue);
 		return newValue;
