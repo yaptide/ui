@@ -116,6 +116,7 @@ export function EditorSidebar(props: { editor: Editor }) {
 					<SidebarTree
 						editor={editor}
 						sources={[editor.zoneManager.worldZone]}
+						dragDisabled
 					/>
 					<Divider sx={{ marginBottom: t => t.spacing(1) }} />
 					<SidebarTree

@@ -7,14 +7,16 @@ import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
 import { Divider } from '@mui/material';
 import { hasVisibleChildren } from '../../../../util/hooks/useKeyboardEditorControls';
-import { isQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
 import { ChangeObjectOrderCommand } from '../../../js/commands/ChangeObjectOrderCommand';
-import { isWorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
 import { generateUUID } from 'three/src/math/MathUtils';
 
 type TreeSource = (Object3D[] | Object3D)[];
 
-export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
+export function SidebarTree(props: {
+	editor: Editor;
+	sources: TreeSource;
+	dragDisabled?: boolean;
+}) {
 	const { editor, sources } = props;
 
 	const treeRef = useRef<TreeMethods>(null);
@@ -90,20 +92,12 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 
 	const objectRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
-	const canDrop = (
-		source: TreeItem | undefined,
-		target: TreeItem | undefined,
-		dropTargetId: string | number
-	): boolean => {
+	const canDrop = (source: TreeItem | undefined, dropTargetId: string | number): boolean => {
 		if (!source) return false;
 
 		if (source.data?.treeId !== treeId) return false;
 
-		const object3d = source.data?.object;
-
-		if (isQuantity(object3d)) return object3d.parent === target?.data?.object;
-
-		return source.parent === dropTargetId;
+		return source.parent === dropTargetId; // only allow drop on same parent
 	};
 
 	return (
@@ -137,10 +131,10 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 					);
 				}
 			}}
-			canDrop={(_, { dropTarget, dragSource, dropTargetId }) => {
-				return canDrop(dragSource, dropTarget, dropTargetId);
+			canDrop={(_, { dragSource, dropTargetId }) => {
+				return canDrop(dragSource, dropTargetId);
 			}}
-			canDrag={node => !isWorldZone(node?.data?.object)}
+			canDrag={node => !props.dragDisabled}
 			sort={false}
 			insertDroppableFirst={false}
 			dropTargetOffset={5}
