@@ -57,11 +57,11 @@ const Accordion = styled((props: AccordionProps) => (
 		square
 		{...props}
 	/>
-))(() => ({
+))({
 	'&.Mui-expanded': {
 		margin: '0'
 	}
-}));
+});
 
 interface TreeElement {
 	title: string;
