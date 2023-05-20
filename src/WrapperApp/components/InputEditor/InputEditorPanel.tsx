@@ -156,7 +156,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 					<ToggleButton
 						value='shieldhit'
 						color='info'>
-						SHIELDHIT-12A
+						SHIELD-HIT12A
 					</ToggleButton>
 					{!DEMO_MODE && (
 					<ToggleButton

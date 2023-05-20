@@ -1,6 +1,5 @@
 import { Builder, By, WebDriver, until } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
-import { readFileSync } from 'fs';
 
 describe('NavDrawer component', () => {
 	let driver: WebDriver;
@@ -78,11 +77,11 @@ describe('NavDrawer component', () => {
 		);
 		await filesButton.click();
 
-		//find the "Topas" button and click it
-		const topasButton = await driver.findElement(
+		//find the "Fluka" button and click it
+		const flukaButton = await driver.findElement(
 			By.xpath("//button[@value = 'fluka']")
 		)
-		await topasButton.click();
+		await flukaButton.click();
 
 		//accept the "current data will be lost" alert
 		await driver.switchTo().alert().accept();
