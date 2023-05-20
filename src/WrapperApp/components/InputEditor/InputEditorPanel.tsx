@@ -33,6 +33,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>(_defaultShInputFiles);
 	const [generator, setGenerator] = useState<GeneratorLocation>('local');
 	const [simulator, setSimulator] = useState<SimulatorType>(SimulatorType.SHIELDHIT);
+	const [chosenSimulator, setChosenSimulator] = useState<SimulatorType>(SimulatorType.SHIELDHIT);
 
 	const [controller] = useState(new AbortController());
 
@@ -131,42 +132,43 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 					sx={{
 						marginLeft: '1rem'
 					}}
-					value={simulator}
+					value={chosenSimulator}
 					exclusive
-					onChange={(_e, simulator) => {
-						if (window.confirm('Current input files will be lost. Are you sure?'))
-							if (simulator) {
-								setSimulator(simulator);
-								switch (simulator) {
-									case SimulatorType.SHIELDHIT:
-										setInputFiles(_defaultShInputFiles);
-										break;
-									case SimulatorType.TOPAS:
-										setInputFiles(_defaultTopasInputFiles);
-										break;
-									case SimulatorType.FLUKA:
-										setInputFiles(_defaultFlukaInputFiles);
-										break;
-									default:
-										throw new Error('Unknown simulator: ' + simulator);
+					onChange={(_e, chosenSimulator) => {
+						if (chosenSimulator){
+							setChosenSimulator(chosenSimulator);
+							if (chosenSimulator!==simulator)
+								if (window.confirm('Current input files will be lost. Are you sure?'))
+									setSimulator(chosenSimulator);
+									switch (chosenSimulator) {
+										case SimulatorType.SHIELDHIT:
+											setInputFiles(_defaultShInputFiles);
+											break;
+										case SimulatorType.TOPAS:
+											setInputFiles(_defaultTopasInputFiles);
+											break;
+										case SimulatorType.FLUKA:
+											setInputFiles(_defaultFlukaInputFiles);
+											break;
+										default:
+											throw new Error('Unknown simulator: ' + chosenSimulator);
 								}
-							}
-					}}>
+					}}}>
 					<ToggleButton
-						value='shieldhit'
+						value={SimulatorType.SHIELDHIT}
 						color='info'>
 						SHIELD-HIT12A
 					</ToggleButton>
 					{!DEMO_MODE && (
 					<ToggleButton
-						value='topas'
+						value={SimulatorType.TOPAS}
 						color='info'>
 						TOPAS
 					</ToggleButton>
 					)}
 					{!DEMO_MODE && (
 					<ToggleButton
-						value='fluka'
+						value={SimulatorType.FLUKA}
 						color='info'>
 						Fluka
 					</ToggleButton>
