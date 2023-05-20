@@ -26,7 +26,7 @@ function WrapperApp() {
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
 	const { editorProvider, resultsProvider, canLoadEditorData, clearLoadedEditor } = useLoader();
 	const { isAuthorized, logout } = useAuth();
-	const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(true);
 	const [tabsValue, setTabsValue] = useState('editor');
 
 	const [providedInputFiles, setProvidedInputFiles] = useState<SimulationInputFiles>();

@@ -134,7 +134,7 @@ function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }
 			aria-label='Navigation drawer for the YAPTIDE application'
 			aria-expanded={open ? 'true' : 'false'}
 			open={open}>
-			<DrawerHeader id='NavDrawerHeader'>
+			<DrawerHeader>
 				<ListItemText
 					primary={
 						<FormControlLabel
