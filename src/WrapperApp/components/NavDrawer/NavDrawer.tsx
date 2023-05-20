@@ -5,7 +5,7 @@ import Menu from '@mui/icons-material/Menu';
 import MenuOpen from '@mui/icons-material/MenuOpen';
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
-import { Typography } from '@mui/material';
+import { FormControlLabel, Typography } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
@@ -131,15 +131,36 @@ function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }
 	return (
 		<Drawer
 			variant='permanent'
+			aria-label='Navigation drawer for the YAPTIDE application'
+			aria-expanded={open ? 'true' : 'false'}
 			open={open}>
-			<DrawerHeader onClick={handleDrawerToggle}>
+			<DrawerHeader id='NavDrawerHeader'>
 				<ListItemText
-					primary={<Typography variant='h5'>YAPTIDE</Typography>}
-					sx={{ opacity: open ? 1 : 0 }}
+					primary={
+						<FormControlLabel
+							labelPlacement='start'
+							sx={{
+								margin: 0,
+								display: 'flex',
+								justifyContent: 'space-between'
+							}}
+							control={
+								<IconButton
+									aria-label={'Toggle drawer button'}
+									onClick={handleDrawerToggle}>
+									{open ? <Menu /> : <MenuOpen />}
+								</IconButton>
+							}
+							label={
+								<Typography
+									variant='h5'
+									sx={{ opacity: open ? 1 : 0 }}>
+									YAPTIDE
+								</Typography>
+							}
+						/>
+					}
 				/>
-				<IconButton aria-label={'Toggle drawer button'}>
-					{open ? <Menu /> : <MenuOpen />}
-				</IconButton>
 			</DrawerHeader>
 			<Divider />
 			<NavDrawerList

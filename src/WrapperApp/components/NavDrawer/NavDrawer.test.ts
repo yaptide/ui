@@ -36,15 +36,12 @@ describe('NavDrawer component', () => {
 		await menuButton.click();
 
 		//check if the drawer has closed (by looking if the "closed drawer" component is rendered)
-		await driver.wait(
-			until.elementLocated(
-				By.className('MuiDrawer-root MuiDrawer-docked css-2dum1v-MuiDrawer-docked')
-			),
-			1000
-		);
-		const closedDrawer = await driver.findElement(
-			By.className('MuiDrawer-root MuiDrawer-docked css-2dum1v-MuiDrawer-docked')
-		);
+		function getDrawerPath(open: boolean) {
+			return `//div[@aria-label = 'Navigation drawer for the YAPTIDE application' and @aria-expanded = '${open}']`;
+		}
+		await driver.wait(until.elementLocated(By.xpath(getDrawerPath(false))), 1000);
+
+		const closedDrawer = await driver.findElement(By.xpath(getDrawerPath(false)));
 		expect(await closedDrawer.isDisplayed()).toBeTruthy();
 
 		//find the menu button again and click it
@@ -54,15 +51,8 @@ describe('NavDrawer component', () => {
 		await menuButton2.click();
 
 		//check if the drawer is open again
-		await driver.wait(
-			until.elementLocated(
-				By.className('MuiDrawer-root MuiDrawer-docked css-14if1t4-MuiDrawer-docked')
-			),
-			1000
-		);
-		const openDrawer = await driver.findElement(
-			By.className('MuiDrawer-root MuiDrawer-docked css-14if1t4-MuiDrawer-docked')
-		);
+		await driver.wait(until.elementLocated(By.className(getDrawerPath(true))), 1000);
+		const openDrawer = await driver.findElement(By.className(getDrawerPath(true)));
 		expect(await openDrawer.isDisplayed()).toBeTruthy();
 	}, 30000);
 });
