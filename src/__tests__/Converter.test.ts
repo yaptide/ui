@@ -24,9 +24,7 @@ describe('NavDrawer component', () => {
 		await driver.get('http://localhost:3000');
 
 		//find the "Editor" button on the left menu and click it to open the editor
-		const editorButton = await driver.findElement(
-			By.xpath("//div[@aria-label = 'Editor']")
-		);
+		const editorButton = await driver.findElement(By.xpath("//div[@aria-label = 'Editor']"));
 		await editorButton.click();
 
 		//find the "open" button (second from the left on the upper bar) and then click it
@@ -46,20 +44,18 @@ describe('NavDrawer component', () => {
 		await examplesButton.click();
 
 		//find the list of examples
-		const examplesList = await openProjectWidget.findElement(By.id("Examples list"));
+		const examplesList = await openProjectWidget.findElement(By.id('Examples list'));
 
 		//find the first option in the list
 		//it has value=0 and is li element
-		const firstExample = await examplesList.findElement(
-		  By.xpath("//li[@value = '0']")
-		);
-	
+		const firstExample = await examplesList.findElement(By.xpath("//li[@value = '0']"));
+
 		//check if the first example is "Proton pencil beam in water"
 		//text is located in element with id corresponding to aria-labelledby of the list element
-		const exampleLabelId = await firstExample.getAttribute("aria-labelledby");
+		const exampleLabelId = await firstExample.getAttribute('aria-labelledby');
 		const exampleLabel = await openProjectWidget.findElement(By.id(exampleLabelId));
-		expect(await exampleLabel.getText()).toBe("Proton pencil beam in water");
-	
+		expect(await exampleLabel.getText()).toBe('Proton pencil beam in water');
+
 		//click the first example
 		await firstExample.click();
 
