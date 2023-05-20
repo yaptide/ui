@@ -127,7 +127,10 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 											disabled={name in _defaultShInputFiles}
 											onClick={() => {
 												updateInputFiles(old => {
-													delete old[name];
+													if (name in old)
+														delete old[
+															name as keyof SimulationInputFiles
+														];
 													return { ...old };
 												});
 											}}

@@ -61,36 +61,21 @@ export type ShInputFilesNames = (typeof _orderedShInputFilesNames)[number];
 export type TopasInputFilesNames = (typeof _orderedTopasInputFilesNames)[number];
 export type FlukaInputFilesNames = (typeof _orderedFlukaInputFilesNames)[number];
 
-export type RequiredInputFilesNames = Exclude<ShInputFilesNames, 'info.json' | 'sobp.dat'>;
-export type RequiredTopasInputFilesNames = Exclude<TopasInputFilesNames, 'info.json'>;
-export type RequiredFlukaInputFilesNames = Exclude<FlukaInputFilesNames, 'info.json'>;
-
-export type SimulationInputFiles = 
-	|{
-		[Key in RequiredInputFilesNames]: string;
-	} & {
-		[Key in Exclude<ShInputFilesNames, RequiredInputFilesNames>]?: string;
-	} & {
-		[Key in Exclude<string, ShInputFilesNames>]: string;
-	}
-	|{
-		[Key in RequiredTopasInputFilesNames]: string;
-	} & {
-		[Key in Exclude<TopasInputFilesNames, RequiredTopasInputFilesNames>]?: string;
-	} & {
-		[Key in Exclude<string, TopasInputFilesNames>]: string;
-	}
-	|{
-		[Key in RequiredFlukaInputFilesNames]: string;
-	} & {
-		[Key in Exclude<FlukaInputFilesNames, RequiredFlukaInputFilesNames>]?: string;
-	} & {
-		[Key in Exclude<string, FlukaInputFilesNames>]: string;
-	}
-	|{
-		[key: string]: string;
-	};
-;
+export type InputFilesRecord<FileNames extends string, OptionalNames extends string> = Omit<
+	| {
+			[Key in Exclude<FileNames, OptionalNames>]: string;
+	  } & {
+			[Key in OptionalNames]?: string;
+	  },
+	never
+>;
+type ShInputFilesRecord = InputFilesRecord<ShInputFilesNames, 'info.json' | 'sobp.dat'>;
+type TopasInputFilesRecord = InputFilesRecord<TopasInputFilesNames, 'info.json'>;
+type FlukaInputFilesRecord = InputFilesRecord<FlukaInputFilesNames, 'info.json'>;
+export type SimulationInputFiles =
+	| ShInputFilesRecord
+	| TopasInputFilesRecord
+	| FlukaInputFilesRecord;
 
 export type TaskTime = {
 	hours: string;

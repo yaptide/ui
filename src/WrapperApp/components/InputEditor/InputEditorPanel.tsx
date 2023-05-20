@@ -37,13 +37,12 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const [controller] = useState(new AbortController());
 
 	const handleConvert = useCallback(
-		async (editorJSON: EditorJson) => {
+		async (editorJSON: EditorJson): Promise<SimulationInputFiles> => {
 			switch (generator) {
 				case 'remote':
-					convertToInputFiles(editorJSON, controller.signal).then(res => {
+					return convertToInputFiles(editorJSON, controller.signal).then(res => {
 						return res.inputFiles;
 					});
-					break;
 				case 'local':
 					return convertJSON(editorJSON, simulator).then(
 						res => Object.fromEntries(res) as unknown as SimulationInputFiles
@@ -135,7 +134,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 					value={simulator}
 					exclusive
 					onChange={(_e, simulator) => {
-						if (window.confirm('Current editor data will be lost. Are you sure?'))
+						if (window.confirm('Current input files will be lost. Are you sure?'))
 							if (simulator) {
 								setSimulator(simulator);
 								switch (simulator) {
