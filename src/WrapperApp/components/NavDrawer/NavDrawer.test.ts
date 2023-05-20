@@ -51,8 +51,8 @@ describe('NavDrawer component', () => {
 		await menuButton2.click();
 
 		//check if the drawer is open again
-		await driver.wait(until.elementLocated(By.className(getDrawerPath(true))), 1000);
-		const openDrawer = await driver.findElement(By.className(getDrawerPath(true)));
+		await driver.wait(until.elementLocated(By.xpath(getDrawerPath(true))), 1000);
+		const openDrawer = await driver.findElement(By.xpath(getDrawerPath(true)));
 		expect(await openDrawer.isDisplayed()).toBeTruthy();
 	}, 30000);
 });
