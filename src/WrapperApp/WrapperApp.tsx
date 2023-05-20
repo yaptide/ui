@@ -20,6 +20,7 @@ import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
 import NavDrawer from './components/NavDrawer/NavDrawer';
+import { SimulatorType } from '../types/RequestTypes';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
@@ -29,6 +30,7 @@ function WrapperApp() {
 	const [tabsValue, setTabsValue] = useState('editor');
 
 	const [providedInputFiles, setProvidedInputFiles] = useState<SimulationInputFiles>();
+	const [currentSimulator, setCurrentSimulator] = useState<SimulatorType>(SimulatorType.SHIELDHIT);
 	useEffect(() => {
 		if (providedInputFiles && tabsValue !== 'simulations') setProvidedInputFiles(undefined);
 	}, [providedInputFiles, tabsValue]);
@@ -123,8 +125,9 @@ function WrapperApp() {
 				index={'inputFiles'}
 				persistentIfVisited>
 				<InputEditorPanel
-					goToRun={(inputFiles?: SimulationInputFiles) => {
+					goToRun={(simulator: SimulatorType, inputFiles?: SimulationInputFiles) => {
 						setProvidedInputFiles(inputFiles);
+						setCurrentSimulator(simulator);
 						setTabsValue('simulations');
 					}}
 				/>
@@ -136,6 +139,7 @@ function WrapperApp() {
 				<SimulationPanel
 					goToResults={() => setTabsValue('results')}
 					forwardedInputFiles={providedInputFiles}
+					forwardedSimulator={currentSimulator}
 				/>
 			</TabPanel>
 

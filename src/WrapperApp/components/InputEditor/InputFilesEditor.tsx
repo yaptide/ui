@@ -17,13 +17,14 @@ interface InputFilesEditorProps {
 	simulator: SimulatorType;
 	inputFiles: SimulationInputFiles | undefined;
 	onChange?: (inputFiles: SimulationInputFiles) => void;
-	runSimulation?: (inputFiles: SimulationInputFiles) => void;
+	runSimulation?: (simulator: SimulatorType, inputFiles: SimulationInputFiles) => void;
 	saveAndExit?: (inputFiles: SimulationInputFiles) => void;
 	closeEditor?: () => void;
 }
 
 export function InputFilesEditor(props: InputFilesEditorProps) {
 	const inputFiles = props.inputFiles ?? _defaultShInputFiles;
+	const simulator = props.simulator;
 	const theme = useTheme();
 
 	const canBeDeleted = (name: string) => {
@@ -55,7 +56,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 						color='success'
 						variant='contained'
 						disabled={DEMO_MODE}
-						onClick={() => props.runSimulation?.call(null, inputFiles)}>
+						onClick={() => props.runSimulation?.call(null, simulator, inputFiles)}>
 						Run with these input files
 					</Button>
 				)}

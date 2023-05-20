@@ -22,6 +22,7 @@ import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { TabPanel } from '../Panels/TabPanel';
 import { BatchScriptParametersEditor } from './BatchParametersEditor';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
+import { SimulatorType } from '../../../types/RequestTypes';
 
 function a11yProps(index: number, name: string = 'RunSimulation') {
 	return {
@@ -50,6 +51,7 @@ type RunSimulationFormProps = {
 	availableClusters: string[];
 	editorJson: EditorJson;
 	inputFiles?: Partial<SimulationInputFiles>;
+	forwardedSimulator: SimulatorType;
 	runSimulation?: (
 		editorJson: EditorJson,
 		inputFiles: Partial<SimulationInputFiles>,
@@ -57,7 +59,7 @@ type RunSimulationFormProps = {
 		sourceType: SimulationSourceType,
 		simName: string,
 		nTasks: number,
-		simulator: string,
+		forwardedSimulator: SimulatorType,
 		batchOptions: BatchOptionsType
 	) => void;
 };
@@ -66,6 +68,7 @@ export function RunSimulationForm({
 	availableClusters,
 	editorJson,
 	inputFiles = {},
+	forwardedSimulator,
 	runSimulation = () => {}
 }: RunSimulationFormProps) {
 	const [tabValue, setTabValue] = useState(0);
@@ -79,7 +82,7 @@ export function RunSimulationForm({
 
 	const [simName, setSimName] = useState(editorJson.project.title ?? '');
 	const [nTasks, setNTasks] = useState(1);
-	const [simulator] = useState<string>('shieldhit');
+	const [simulator] = useState<SimulatorType>(forwardedSimulator);
 	const [arrayHeader, setArrayHeader] = useState<string>('');
 	const [collectHeader, setCollectHeader] = useState<string>('');
 	const [arrayOptions, setArrayOptions] = useState<ScriptOption[]>([]);

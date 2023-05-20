@@ -14,7 +14,7 @@ import { DragDropFiles } from './DragDropFiles';
 import { ResponsePostJob, ResponseShConvert, ResponseTopasConvert, SimulationInputFiles, _defaultFlukaInputFiles, _defaultShInputFiles, _defaultTopasInputFiles } from '../../../types/ResponseTypes';
 import { RequestPostJob, RequestShConvert, RequestTopasConvert, SimulatorType } from '../../../types/RequestTypes';
 interface InputEditorPanelProps {
-	goToRun?: (InputFiles?: SimulationInputFiles) => void;
+	goToRun?: (simulator:SimulatorType, InputFiles?: SimulationInputFiles) => void;
 }
 
 type GeneratorLocation = 'local' | 'remote';

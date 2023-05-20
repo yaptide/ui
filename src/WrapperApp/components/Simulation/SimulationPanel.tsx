@@ -30,11 +30,13 @@ import EXAMPLES from '../../../ThreeEditor/examples/examples';
 interface SimulationPanelProps {
 	goToResults?: () => void;
 	forwardedInputFiles?: SimulationInputFiles;
+	forwardedSimulator: SimulatorType;
 }
 
 export default function SimulationPanel({
 	goToResults,
-	forwardedInputFiles
+	forwardedInputFiles,
+	forwardedSimulator
 }: SimulationPanelProps) {
 	const {
 		editorRef,
@@ -71,6 +73,7 @@ export default function SimulationPanel({
 	/** Simulation Run Options */
 	const [availableClusters] = useState<string[]>(['default']);
 	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
+	const [simulator, setSimulator] = useState<SimulatorType>(forwardedSimulator);
 
 	/** Queued Simulation Data */
 	const [trackedId, setTrackedId] = useState<string>();
@@ -166,7 +169,6 @@ export default function SimulationPanel({
 		inputFiles?: SimulationInputFiles,
 		directRun: boolean = true,
 		nTasks: number = 1,
-		simulator: string = 'shieldhit',
 		simName: string = 'Unrecognized Simulation Request'
 	) => {
 		if (!editorRef.current && !inputFiles) return;
@@ -198,7 +200,7 @@ export default function SimulationPanel({
 		sourceType: SimulationSourceType,
 		simName: string,
 		nTasks: number,
-		simulator: string,
+		simulator: SimulatorType,
 		batchOptions: BatchOptionsType
 	) => {
 		setShowRunSimulationsForm(false);
@@ -353,11 +355,11 @@ export default function SimulationPanel({
 				<Fade in={showInputFilesEditor}>
 					<Box sx={{ height: '100vh', width: '100vw', overflow: 'auto' }}>
 						<InputFilesEditor
-							simulator={SimulatorType.SHIELDHIT}
+							simulator={simulator}
 							inputFiles={inputFiles}
 							closeEditor={() => setShowInputFilesEditor(false)}
 							onChange={newInputFiles => setInputFiles(newInputFiles)}
-							runSimulation={newInputFiles => {
+							runSimulation={(simulator, newInputFiles) => {
 								setShowInputFilesEditor(false);
 								setInputFiles(newInputFiles);
 								setShowRunSimulationsForm(true);
@@ -389,6 +391,7 @@ export default function SimulationPanel({
 									inputFiles={{
 										...inputFiles
 									}}
+									forwardedSimulator={simulator}
 									runSimulation={sendSimulationRequest}
 								/>
 							</CardContent>
