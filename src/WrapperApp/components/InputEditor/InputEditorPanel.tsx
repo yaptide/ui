@@ -1,11 +1,10 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { throttle } from 'throttle-debounce';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
 import { useShSimulation } from '../../../services/ShSimulatorService';
-import { useTopasSimulation } from '../../../services/TopasSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { DEMO_MODE } from '../../../config/Config';
@@ -27,10 +26,7 @@ type ConvertToInputFiles =
 export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const { enqueueSnackbar } = useSnackbar();
 	const { editorRef } = useStore();
-	const shContext = useShSimulation();
-	const topasContext = useTopasSimulation();
-	const convertToInputFilesRef = useRef<ConvertToInputFiles>(useShSimulation().convertToInputFiles);
-	const postJobDirectRef = useRef<(...args: RequestPostJob) => Promise<ResponsePostJob>>(useShSimulation().postJobDirect);
+	const { convertToInputFiles } = useShSimulation();
 	const { isConverterReady, convertJSON } = usePythonConverter();
 
 	const [isInProgress, setInProgress] = useState(false);
@@ -42,34 +38,12 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 
 	const handleConvert = useCallback(
 		async (editorJSON: EditorJson) => {
-			switch (simulator) {
-				case SimulatorType.SHIELDHIT: {
-					convertToInputFilesRef.current = shContext.convertToInputFiles;
-					postJobDirectRef.current = shContext.postJobDirect;
-					break;
-				}
-				case SimulatorType.TOPAS: {
-					convertToInputFilesRef.current = topasContext.convertToInputFiles;
-					postJobDirectRef.current = topasContext.postJobDirect;
-					break;
-				}
-				case SimulatorType.FLUKA: {
-					convertToInputFilesRef.current = shContext.convertToInputFiles;
-					postJobDirectRef.current = shContext.postJobDirect;
-					break;
-					//not implemented yet
-				//	let  { convertToInputFiles, postJobDirect } = useFlukaSimulation();
-				//	break;
-				}
-				default:
-					throw new Error('Unknown simulator: ' + simulator);
-			}
-
 			switch (generator) {
 				case 'remote':
-					return convertToInputFilesRef.current(editorJSON, controller.signal).then(res => {
+					convertToInputFiles(editorJSON, controller.signal).then(res => {
 						return res.inputFiles;
 					});
+					break;
 				case 'local':
 					return convertJSON(editorJSON, simulator).then(
 						res => Object.fromEntries(res) as unknown as SimulationInputFiles
@@ -78,7 +52,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 					throw new Error('Unknown generator: ' + generator);
 			}
 		},
-		[controller.signal, convertJSON, shContext.convertToInputFiles, shContext.postJobDirect, topasContext.convertToInputFiles, topasContext.postJobDirect, generator, simulator]
+		[controller.signal, convertJSON, convertToInputFiles, generator, simulator]
 	);
 
 	const onClickGenerate = useCallback(() => {
@@ -184,18 +158,20 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 						color='info'>
 						SHIELDHIT-12A
 					</ToggleButton>
-
+					{!DEMO_MODE && (
 					<ToggleButton
 						value='topas'
 						color='info'>
 						TOPAS
 					</ToggleButton>
-
+					)}
+					{!DEMO_MODE && (
 					<ToggleButton
 						value='fluka'
 						color='info'>
 						Fluka
 					</ToggleButton>
+					)}
 				</ToggleButtonGroup>
 			</Box>
 

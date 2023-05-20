@@ -9,7 +9,6 @@ import { Loader } from './services/DataLoaderService';
 import { ShSimulation } from './services/ShSimulatorService';
 import { Store } from './services/StoreService';
 import WrapperApp from './WrapperApp/WrapperApp';
-import { TopasSimulation } from './services/TopasSimulatorService';
 
 declare module '@mui/material/styles' {
 	// add new variables to the theme type
@@ -48,15 +47,13 @@ function App() {
 				<ThemeProvider theme={theme}>
 					<Auth>
 						<ShSimulation>
-							<TopasSimulation>
-								<PythonConverterService>
-									<Loader>
-										<Store>
-											<WrapperApp />
-										</Store>
-									</Loader>
-								</PythonConverterService>
-							</TopasSimulation>
+							<PythonConverterService>
+								<Loader>
+									<Store>
+										<WrapperApp />
+									</Store>
+								</Loader>
+							</PythonConverterService>
 						</ShSimulation>
 					</Auth>
 				</ThemeProvider>

@@ -87,6 +87,9 @@ export type SimulationInputFiles =
 	} & {
 		[Key in Exclude<string, FlukaInputFilesNames>]: string;
 	}
+	|{
+		[key: string]: string;
+	};
 ;
 
 export type TaskTime = {
