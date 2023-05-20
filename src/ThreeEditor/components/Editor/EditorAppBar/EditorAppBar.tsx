@@ -164,7 +164,14 @@ function EditorAppBar({ editor }: AppBarProps) {
 					variant='subtitle1'
 					component='div'
 					align='center'
-					sx={{ flexGrow: 1, marginRight: 6 }}>
+					sx={{
+						width: 'auto',
+						flexGrow: 1,
+						flexShrink: 1,
+						textOverflow: 'ellipsis',
+						overflow: 'hidden',
+						whiteSpace: 'nowrap'
+					}}>
 					{title}
 					{saving && (
 						<CircularProgress

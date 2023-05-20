@@ -1,10 +1,10 @@
 import {
 	Box,
+	Chip,
 	Divider,
 	IconButton,
 	ListItem,
 	ListItemButton,
-	ListItemButtonProps,
 	ListItemIcon,
 	ListItemText,
 	SxProps,
@@ -16,13 +16,12 @@ import { MenuOption } from './NavDrawer';
 import deployInfo from '../../../util/identify/deployInfo.json';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { useAuth } from '../../../services/AuthService';
-import NotListedLocationIcon from '@mui/icons-material/NotListedLocation';
-import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
 import { DEMO_MODE } from '../../../config/Config';
 import { Button } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { ReactNode, SyntheticEvent } from 'react';
+import { ReactNode, SyntheticEvent, useMemo } from 'react';
 import PersonIcon from '@mui/icons-material/Person';
+import LoginIcon from '@mui/icons-material/Login';
 
 export type NavDrawerListProps = {
 	tabsValue: string;
@@ -57,9 +56,9 @@ export function NavDrawerList({
 	tabsValue
 }: NavDrawerListProps) {
 	const { isAuthorized, user, logout } = useAuth();
-	const userLogout =
-		!DEMO_MODE || !isAuthorized ? (
-			<Tooltip title={<Typography>Log out</Typography>}>
+	const userLogout = useMemo(
+		() => (
+			<Tooltip title={<Typography>{isAuthorized ? 'Log out' : 'Log in'}</Typography>}>
 				<IconButton
 					sx={
 						layout === 'closed'
@@ -73,17 +72,31 @@ export function NavDrawerList({
 							  }
 					}
 					onClick={event => {
-						logout();
-						handleChange(event, 'login');
+						if (isAuthorized) logout();
+						else handleChange(event, 'login');
 					}}>
-					<LogoutIcon
-						sx={{
-							fontSize: 14
-						}}
-					/>
+					{isAuthorized ? (
+						<LogoutIcon
+							sx={{
+								fontSize: 14
+							}}
+						/>
+					) : (
+						<LoginIcon
+							sx={{
+								fontSize: 14
+							}}
+						/>
+					)}
 				</IconButton>
 			</Tooltip>
-		) : undefined;
+		),
+		[isAuthorized, layout, logout, handleChange]
+	);
+	const username = useMemo(
+		() => (DEMO_MODE ? 'Guest' : isAuthorized ? user!.username : 'Log in'),
+		[isAuthorized, user]
+	);
 	return (
 		<Box
 			sx={{
@@ -95,30 +108,28 @@ export function NavDrawerList({
 			<Box>
 				<NavDrawerElement
 					menuOption={{
-						label: DEMO_MODE
-							? 'Guest'
-							: isAuthorized
-							? user!.username
-							: 'Not logged in',
+						label: username,
 						richLabel: (
 							<Typography
-								textAlign='right'
-								marginRight={1}
-								fontSize={16}>
-								{DEMO_MODE ? (
-									'Guest'
-								) : isAuthorized ? (
-									user!.username
-								) : (
-									<Button
-										variant='outlined'
-										onClick={event => handleChange(event, 'login')}>
-										Log in
-									</Button>
-								)}
+								sx={{
+									textAlign: 'right',
+									marginRight: 1,
+									textOverflow: 'ellipsis',
+									overflow: 'hidden'
+								}}>
+								{username}
 							</Typography>
 						),
-						description: layout === 'open' ? userLogout : undefined,
+						description:
+							layout === 'open' ? (
+								userLogout
+							) : (
+								<Typography
+									sx={{
+										marginTop: 4.5
+									}}
+								/>
+							),
 						value: 'deployInfo',
 						disabled: false,
 						icon: (
@@ -157,36 +168,34 @@ export function NavDrawerList({
 			</Box>
 			<Box>
 				<Divider />
-				<Tooltip
-					title={
-						<Typography>
-							{`${deployInfo.date} ${deployInfo.commit}`}
-							<br />
-							{deployInfo.branch}
-						</Typography>
-					}>
-					<NavDrawerElement
-						menuOption={{
-							label: deployInfo.commit,
-							value: 'deployInfo',
-							disabled: false,
-							description: deployInfo.date,
-							icon: <GitHubIcon fontSize='large' />
-						}}
-						open={layout === 'open'}
-						buttonProps={{
-							href: 'https://github.com/yaptide/ui/commit/' + deployInfo.commit,
-							type: 'link'
-						}}
-					/>
-				</Tooltip>
+				<NavDrawerElement
+					menuOption={{
+						label: deployInfo.commit,
+						value: 'deployInfo',
+						disabled: false,
+						info: (
+							<>
+								{`${deployInfo.date} ${deployInfo.commit}`}
+								<br />
+								{deployInfo.branch}
+							</>
+						),
+						description: deployInfo.date,
+						icon: <GitHubIcon fontSize='large' />
+					}}
+					open={layout === 'open'}
+					buttonProps={{
+						href: 'https://github.com/yaptide/ui/commit/' + deployInfo.commit,
+						type: 'link'
+					}}
+				/>
 			</Box>
 		</Box>
 	);
 }
 
 function NavDrawerElement({
-	menuOption: { label, richLabel, value, disabled, description, icon },
+	menuOption: { label, richLabel, value, disabled, info, description, icon },
 	open,
 	selected,
 	secondaryAction,
@@ -212,40 +221,44 @@ function NavDrawerElement({
 		</>
 	);
 	return (
-		<ListItem
-			secondaryAction={secondaryAction}
-			disablePadding
-			sx={{ display: 'block' }}>
-			{buttonProps.type === 'label' ? (
-				<ListItem
-					aria-label={label}
-					sx={{
-						minHeight: 64,
-						justifyContent: open ? 'initial' : 'center',
-						px: 2.5,
-						...sx
-					}}
-					disabled={disabled}>
-					{listItemContent}
-				</ListItem>
-			) : (
-				<ListItemButton
-					aria-label={label}
-					sx={{
-						minHeight: 64,
-						justifyContent: open ? 'initial' : 'center',
-						px: 2.5,
-						...sx
-					}}
-					disabled={disabled}
-					{...(buttonProps.type === 'link'
-						? { component: 'a', href: buttonProps.href, target: '_blank' }
-						: {})}
-					selected={selected}
-					onClick={event => handleChange(event, value)}>
-					{listItemContent}
-				</ListItemButton>
-			)}
-		</ListItem>
+		<Tooltip
+			title={info ? <Typography>{info}</Typography> : undefined}
+			placement='right'>
+			<ListItem
+				secondaryAction={secondaryAction}
+				disablePadding
+				sx={{ display: 'block' }}>
+				{buttonProps.type === 'label' ? (
+					<ListItem
+						aria-label={label}
+						sx={{
+							minHeight: 64,
+							justifyContent: open ? 'initial' : 'center',
+							px: 2.5,
+							...sx
+						}}
+						disabled={disabled}>
+						{listItemContent}
+					</ListItem>
+				) : (
+					<ListItemButton
+						aria-label={label}
+						sx={{
+							minHeight: 64,
+							justifyContent: open ? 'initial' : 'center',
+							px: 2.5,
+							...sx
+						}}
+						disabled={disabled}
+						{...(buttonProps.type === 'link'
+							? { component: 'a', href: buttonProps.href, target: '_blank' }
+							: {})}
+						selected={selected}
+						onClick={event => handleChange(event, value)}>
+						{listItemContent}
+					</ListItemButton>
+				)}
+			</ListItem>
+		</Tooltip>
 	);
 }
