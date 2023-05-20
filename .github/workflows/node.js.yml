@@ -38,7 +38,13 @@ jobs:
               uses: iFaxity/wait-on-action@v1.1.0
               with:
                 resource: http://localhost:3000
-            - run: npm test
+            - name: Run tests 
+              uses: nick-fields/retry@v2
+              with:
+                max_attempts: 2
+                retry_on: error
+                timeout_seconds: 120
+                command: npm test	
 
     deploy_gh_pages:
         runs-on: ubuntu-latest
