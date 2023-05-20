@@ -112,13 +112,18 @@ export function EditorSidebar(props: { editor: Editor }) {
 				}
 			],
 			tree: (
-				<SidebarTree
-					editor={editor}
-					sources={[
-						editor.zoneManager.worldZone,
-						editor.zoneManager.zoneContainer.children
-					]}
-				/>
+				<>
+					<SidebarTree
+						editor={editor}
+						sources={[editor.zoneManager.worldZone]}
+						dragDisabled
+					/>
+					<Divider sx={{ marginBottom: t => t.spacing(1) }} />
+					<SidebarTree
+						editor={editor}
+						sources={[editor.zoneManager.zoneContainer.children]}
+					/>
+				</>
 			)
 		},
 		{

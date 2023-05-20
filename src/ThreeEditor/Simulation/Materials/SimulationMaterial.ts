@@ -5,6 +5,7 @@ import {
 	DEFAULT_MATERIAL_ICRU,
 	DEFAULT_MATERIAL_NAME
 } from './materials';
+import { isCounterMapError } from '../../../util/CounterMap/CounterMap';
 
 export type RenderProps = Omit<SimulationMaterialJSON, 'uuid' | 'name' | 'icru' | 'density'>;
 
@@ -130,7 +131,14 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 	}
 
 	increment = () => this.editor.materialManager.selectedMaterials.increment(this.uuid);
-	decrement = () => this.editor.materialManager.selectedMaterials.decrement(this.uuid);
+	decrement = () => {
+		try {
+			this.editor.materialManager.selectedMaterials.decrement(this.uuid);
+		} catch (e: unknown) {
+			if (isCounterMapError(e)) console.error(e.message);
+			else throw e;
+		}
+	};
 }
 
 export const isSimulationMaterial = (m: unknown): m is SimulationMaterial =>

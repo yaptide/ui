@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Tree, TreeMethods } from '@minoru/react-dnd-treeview';
 import { Object3D } from 'three';
 import './SidebarTree.style.css';
@@ -7,22 +7,27 @@ import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
 import { Divider } from '@mui/material';
 import { hasVisibleChildren } from '../../../../util/hooks/useKeyboardEditorControls';
-import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
-import { isQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
 import { ChangeObjectOrderCommand } from '../../../js/commands/ChangeObjectOrderCommand';
+import { generateUUID } from 'three/src/math/MathUtils';
 
 type TreeSource = (Object3D[] | Object3D)[];
 
-export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
+export function SidebarTree(props: {
+	editor: Editor;
+	sources: TreeSource;
+	dragDisabled?: boolean;
+}) {
 	const { editor, sources } = props;
 
 	const treeRef = useRef<TreeMethods>(null);
+	const treeId = useMemo(() => generateUUID(), []);
 
 	const buildOption = useCallback(
 		(
 			object: Object3D | SimulationElement | undefined,
 			items: Object3D[] | undefined,
-			parentId: number
+			parentId: number,
+			index?: number
 		): TreeItem[] => {
 			if (!object) return [];
 
@@ -30,7 +35,9 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 
 			let children: TreeItem[] = [];
 			if (hasVisibleChildren(object))
-				children = items.map(child => buildOption(child, child.children, object.id)).flat();
+				children = items
+					.map((child, idx) => buildOption(child, child.children, object.id, idx))
+					.flat();
 
 			return [
 				{
@@ -39,19 +46,23 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 					droppable: true,
 					text: object.name,
 					data: {
-						object: object
+						object: object,
+						treeId: treeId,
+						index: index
 					}
 				},
 				...children
 			];
 		},
-		[]
+		[treeId]
 	);
 
 	const [treeData, setTreeData] = useState<TreeItem[]>([]);
 
 	const refreshTreeData = useCallback(() => {
-		const options = sources.flat().flatMap(source => buildOption(source, source.children, 0));
+		const options = sources
+			.flat()
+			.flatMap((source, idx) => buildOption(source, source.children, 0, idx));
 		setTreeData(options);
 	}, [buildOption, sources]);
 
@@ -81,20 +92,12 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 
 	const objectRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
-	const canDrop = (
-		source: TreeItem | undefined,
-		target: TreeItem | undefined,
-		dropTargetId: string | number
-	) => {
+	const canDrop = (source: TreeItem | undefined, dropTargetId: string | number): boolean => {
 		if (!source) return false;
 
-		const object3d = source.data?.object;
+		if (source.data?.treeId !== treeId) return false;
 
-		if (isQuantity(object3d)) return object3d.parent === target?.data?.object;
-
-		if (isOutput(object3d)) return source.parent === dropTargetId;
-
-		return false;
+		return source.parent === dropTargetId; // only allow drop on same parent
 	};
 
 	return (
@@ -111,15 +114,27 @@ export function SidebarTree(props: { editor: Editor; sources: TreeSource }) {
 						'relativeIndex is undefined. Probably you need disable sort option.'
 					);
 
-				if (dragSource?.data)
+				if (dragSource?.data) {
+					if (
+						relativeIndex === dragSource.data.index ||
+						relativeIndex - 1 === dragSource.data.index
+					)
+						return; // no change needed
+
+					let newPosition =
+						relativeIndex > (dragSource.data.index ?? 0)
+							? relativeIndex - 1
+							: relativeIndex;
+
 					editor.execute(
-						new ChangeObjectOrderCommand(editor, dragSource.data.object, relativeIndex)
+						new ChangeObjectOrderCommand(editor, dragSource.data.object, newPosition)
 					);
+				}
 			}}
-			canDrop={(_, { dropTarget, dragSource, dropTargetId }) => {
-				return canDrop(dragSource, dropTarget, dropTargetId);
+			canDrop={(_, { dragSource, dropTargetId }) => {
+				return canDrop(dragSource, dropTargetId);
 			}}
-			canDrag={node => isQuantity(node?.data?.object) || isOutput(node?.data?.object)}
+			canDrag={node => !props.dragDisabled}
 			sort={false}
 			insertDroppableFirst={false}
 			dropTargetOffset={5}
