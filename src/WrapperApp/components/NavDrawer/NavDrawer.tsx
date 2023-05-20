@@ -129,40 +129,26 @@ function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }
 	];
 
 	return (
-		<>
-			<IconButton
-				sx={{
-					position: 'absolute',
-					left: 0,
-					top: 0,
-					margin: ({ spacing }) => spacing(1.5, 2)
-				}}
-				aria-label={'Toggle drawer button'}
-				onClick={handleDrawerToggle}>
-				{open ? <Menu /> : <MenuOpen />}
-			</IconButton>
-			<Drawer
-				variant='permanent'
-				anchor='left'
-				open={open}>
-				<DrawerHeader onClick={handleDrawerToggle}>
-					<ListItemText
-						primary={<Typography variant='h5'>YAPTIDE</Typography>}
-						sx={{ opacity: open ? 1 : 0 }}
-					/>
-					<IconButton aria-label={'Toggle drawer button'}>
-						{open ? <Menu /> : <MenuOpen />}
-					</IconButton>
-				</DrawerHeader>
-				<Divider />
-				<NavDrawerList
-					menuOptions={menuOptions}
-					layout={open ? 'open' : 'closed'}
-					handleChange={handleChange}
-					tabsValue={tabsValue}
+		<Drawer
+			variant='permanent'
+			open={open}>
+			<DrawerHeader onClick={handleDrawerToggle}>
+				<ListItemText
+					primary={<Typography variant='h5'>YAPTIDE</Typography>}
+					sx={{ opacity: open ? 1 : 0 }}
 				/>
-			</Drawer>
-		</>
+				<IconButton aria-label={'Toggle drawer button'}>
+					{open ? <Menu /> : <MenuOpen />}
+				</IconButton>
+			</DrawerHeader>
+			<Divider />
+			<NavDrawerList
+				menuOptions={menuOptions}
+				layout={open ? 'open' : 'closed'}
+				handleChange={handleChange}
+				tabsValue={tabsValue}
+			/>
+		</Drawer>
 	);
 }
 
