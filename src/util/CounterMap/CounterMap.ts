@@ -20,6 +20,7 @@ export class CounterMap<K extends string> {
 	}
 
 	increment(key: K): number {
+		console.error('CounterMap inc', key);
 		const lastCount = this.map.get(key) ?? 0;
 		const newValue = lastCount + 1;
 		this.map.set(key, newValue);
@@ -27,6 +28,7 @@ export class CounterMap<K extends string> {
 	}
 
 	decrement(key: K): number {
+		console.error('CounterMap dec', key);
 		const lastCount = this.map.get(key);
 
 		if (!lastCount)

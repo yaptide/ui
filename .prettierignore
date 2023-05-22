@@ -13,3 +13,5 @@ node_modules/
 .devcontainer/
 .gitpod.yml
 README.md
+
+src/ThreeEditor/examples/

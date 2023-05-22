@@ -30,8 +30,9 @@ import {
 import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
 import { SimulationProgressBar } from './SimulationProgressBar';
+import { FullSimulationData } from '../../../services/ShSimulatorService';
 type SimulationCardProps = {
-	simulation: JobStatusData;
+	simulation: FullSimulationData;
 	loadResults?: (jobId: string | null) => void;
 	showInputFiles?: (inputFiles?: SimulationInputFiles) => void;
 } & CardProps;
@@ -93,7 +94,7 @@ export default function SimulationCard({
 	};
 
 	const onClickInputFiles = () => {
-		showInputFiles?.call(null, simulation.inputFiles);
+		showInputFiles?.call(null, simulation.input.inputFiles);
 	};
 
 	const onClickShowError = (simulation: JobStatusData<StatusState.FAILED>) => {
@@ -119,9 +120,10 @@ export default function SimulationCard({
 		saveString(JSON.stringify(simulation), `${simulation.title}_result.json`);
 	};
 
-	const onClickLoadToEditor = (simulation: JobStatusData<StatusState.COMPLETED>) => {
-		if (!simulation?.inputJson) return;
-		loadFromJson(simulation.inputJson);
+	const onClickLoadToEditor = (simulation: FullSimulationData) => {
+		if (!simulation?.input.inputJson) return;
+		console.log(simulation?.input.inputJson);
+		loadFromJson(simulation.input.inputJson);
 	};
 
 	return (
@@ -137,11 +139,7 @@ export default function SimulationCard({
 				}}
 			/>
 			<CardHeader
-				title={`${
-					currentJobStatusData[StatusState.COMPLETED](simulation)
-						? simulation.inputJson?.project.title
-						: simulation.title
-				}`}
+				title={`${simulation.title}`}
 				subheader={`${simulation.startTime.toLocaleString('en-US').split(' ')[0]} ${
 					simulation.startTime.toLocaleString('en-US').split(' ')[4] ?? '00:00:00'
 				} - ${
@@ -317,13 +315,7 @@ export default function SimulationCard({
 						color='info'
 						size='small'
 						onClick={onClickInputFiles}
-						disabled={
-							!Boolean(
-								showInputFiles &&
-									(currentJobStatusData[StatusState.COMPLETED](simulation) ||
-										currentJobStatusData[StatusState.FAILED](simulation))
-							)
-						}>
+						disabled={!Boolean(showInputFiles && simulation?.input.inputFiles)}>
 						Input Files
 					</Button>
 
@@ -335,20 +327,13 @@ export default function SimulationCard({
 						disabled={!Boolean(simulation.jobState === StatusState.COMPLETED)}>
 						Save to file
 					</Button>
+
 					<Button
 						sx={{ fontSize: '.8em' }}
 						color='info'
 						size='small'
-						onClick={() =>
-							currentJobStatusData[StatusState.COMPLETED](simulation) &&
-							onClickLoadToEditor(simulation)
-						}
-						disabled={
-							!Boolean(
-								currentJobStatusData[StatusState.COMPLETED](simulation) &&
-									simulation.inputJson
-							)
-						}>
+						onClick={() => simulation && onClickLoadToEditor(simulation)}
+						disabled={!Boolean(simulation?.input.inputJson)}>
 						Load to editor
 					</Button>
 				</ButtonGroup>

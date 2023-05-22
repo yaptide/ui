@@ -11,7 +11,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { Editor } from '../../js/Editor';
 import { CustomDialogTitle } from './CustomDialog';
-import { JobStatusData, StatusState } from '../../../types/ResponseTypes';
+import { FullSimulationData } from '../../../services/ShSimulatorService';
 
 export type SaveFileProps = {
 	open: boolean;
@@ -22,15 +22,13 @@ export type SaveFileProps = {
 
 export function SaveFileDialog(props: SaveFileProps) {
 	const { open, onClose, onConfirm, editor } = props;
-	const {
-		results
-	}: {
-		results: JobStatusData<StatusState.COMPLETED>;
-	} = editor;
+	const results: FullSimulationData = editor.getResults();
+
 	const [keepResults, setKeepResults] = useState<boolean>(false);
+
 	useEffect(() => {
-		setKeepResults(results?.inputJson?.hash === editor?.toJSON().hash);
-	}, [props, props.editor, editor, results?.inputJson?.hash]);
+		setKeepResults(results?.input.inputJson?.hash === editor?.toJSON().hash);
+	}, [props, props.editor, editor, results?.input.inputJson?.hash]);
 
 	const [name, setName] = useState<string>('editor');
 	const changeName = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,7 +71,7 @@ export function SaveFileDialog(props: SaveFileProps) {
 						control={
 							<Checkbox
 								value={keepResults}
-								disabled={results?.inputJson?.hash !== editor?.toJSON().hash}
+								disabled={results?.input.inputJson?.hash !== editor?.toJSON().hash}
 								onChange={changeKeepResults}
 							/>
 						}

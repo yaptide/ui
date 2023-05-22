@@ -1,28 +1,31 @@
-import { recreateRefsInResults } from '../../services/ShSimulatorService';
-import { JobStatusData, StatusState } from '../../types/ResponseTypes';
+import { FullSimulationData, recreateRefsInResults } from '../../services/ShSimulatorService';
 
 let canImport = true;
 let iterator = 1;
-const EXAMPLES: JobStatusData<StatusState.COMPLETED>[] = [];
+const EXAMPLES: FullSimulationData[] = [];
 while (canImport) {
 	try {
-		const example: JobStatusData<StatusState.COMPLETED> = require(`./ex${iterator}.json`);
+		const example: FullSimulationData = require(`./ex${iterator}.json`);
 		if (
-			example.inputJson &&
-			example.inputJson.project.title &&
-			example.inputJson.project.title.length === 0
+			example.input.inputJson &&
+			example.input.inputJson.project.title &&
+			example.input.inputJson.project.title.length === 0
 		)
-			example.inputJson.project.title = `Untitled example ${iterator}`;
+			example.input.inputJson.project.title = `Untitled example ${iterator}`;
 
 		EXAMPLES.push(example);
+      //TODO: fix following examples
+		break;
 		iterator++;
 	} catch (e) {
 		canImport = false;
 	}
 }
 
+
 for (const example of EXAMPLES) {
-	recreateRefsInResults(example);
+	if(example?.input.inputJson)
+		example.estimators = recreateRefsInResults(example?.input.inputJson, example.estimators);;
 }
 
 export default EXAMPLES;
