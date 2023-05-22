@@ -20,35 +20,56 @@ export enum StatusState {
 export type YaptideResponse = {
 	message: string;
 };
-export const _orderedInputFilesNames = [
+export const _orderedShInputFilesNames = [
 	'info.json',
 	'geo.dat',
-	'mat.dat',
 	'beam.dat',
 	'detect.dat',
+	'mat.dat',
 	'sobp.dat'
 ] as const;
 
-export const _defaultInputFiles = {
+export const _defaultShInputFiles = {
 	'geo.dat': '',
 	'beam.dat': '',
 	'detect.dat': '',
 	'mat.dat': ''
 } as const;
 
-export function isKnownInputFile(name: string): name is SimulationInputFilesNames {
-	return _orderedInputFilesNames.includes(name as SimulationInputFilesNames);
-}
-export type SimulationInputFilesNames = (typeof _orderedInputFilesNames)[number];
-export type RequiredInputFilesNames = Exclude<SimulationInputFilesNames, 'info.json' | 'sobp.dat'>;
+export const _orderedTopasInputFilesNames = ['info.json', 'topas_config.txt'] as const;
 
-export type SimulationInputFiles = {
-	[Key in RequiredInputFilesNames]: string;
-} & {
-	[Key in Exclude<SimulationInputFilesNames, RequiredInputFilesNames>]?: string;
-} & {
-	[Key in Exclude<string, SimulationInputFilesNames>]: string;
-};
+export const _defaultTopasInputFiles = {
+	'topas_config.txt': ''
+} as const;
+
+export const _orderedFlukaInputFilesNames = ['info.json', 'fl_sim.inp'] as const;
+
+export const _defaultFlukaInputFiles = {
+	'fl_sim.inp': ''
+} as const;
+
+export function isKnownInputFile(name: string): name is ShInputFilesNames {
+	return _orderedShInputFilesNames.includes(name as ShInputFilesNames);
+}
+export type ShInputFilesNames = (typeof _orderedShInputFilesNames)[number];
+export type TopasInputFilesNames = (typeof _orderedTopasInputFilesNames)[number];
+export type FlukaInputFilesNames = (typeof _orderedFlukaInputFilesNames)[number];
+
+export type InputFilesRecord<FileNames extends string, OptionalNames extends string> = Omit<
+	| {
+			[Key in Exclude<FileNames, OptionalNames>]: string;
+	  } & {
+			[Key in OptionalNames]?: string;
+	  },
+	never
+>;
+type ShInputFilesRecord = InputFilesRecord<ShInputFilesNames, 'info.json' | 'sobp.dat'>;
+type TopasInputFilesRecord = InputFilesRecord<TopasInputFilesNames, 'info.json'>;
+type FlukaInputFilesRecord = InputFilesRecord<FlukaInputFilesNames, 'info.json'>;
+export type SimulationInputFiles =
+	| ShInputFilesRecord
+	| TopasInputFilesRecord
+	| FlukaInputFilesRecord;
 
 export type TaskTime = {
 	hours: string;
@@ -254,6 +275,8 @@ export type ResponseAuthRefresh = AuthData;
 export type ResponseAuthLogin = Required<AuthData>;
 
 export type ResponseShConvert = DataConverted;
+
+export type ResponseTopasConvert = DataConverted;
 
 export type ResponsePostJob = JobCreated;
 

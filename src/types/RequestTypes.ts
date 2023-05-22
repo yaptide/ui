@@ -13,6 +13,12 @@ export enum OrderBy {
 	END_TIME = 'end_time'
 }
 
+export enum SimulatorType {
+	SHIELDHIT = 'shieldhit',
+	TOPAS = 'topas',
+	FLUKA = 'fluka'
+}
+
 export type RequestParam = [signal?: AbortSignal];
 
 /* ------------------------------------ */
@@ -55,6 +61,8 @@ export type RequestAuthRefresh = [];
 export type RequestAuthStatus = [];
 
 export type RequestShConvert = Flatten<[InputConvertParam, RequestParam]>;
+
+export type RequestTopasConvert = Flatten<[InputConvertParam, RequestParam]>;
 
 export type RequestPostJob = Flatten<[InputDataParam, RequestParam]>;
 
