@@ -7,13 +7,9 @@ public/libs
 node_modules/
 
 #ignore auto generated config files
-package.json
-package-lock.json
-tsconfig.json
-dockerRun.ps1
-dockerBuild.ps1
 .github/
-.notebook/
+.prettierrc
 .vscode/
+.devcontainer/
+.gitpod.yml
 README.md
-

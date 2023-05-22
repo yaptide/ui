@@ -48,6 +48,7 @@
 		"web-vitals": "^3.3.1"
 	},
 	"scripts": {
+		"format": "prettier --ignore-path .gitignore --ignore-path .prettierignore --write --plugin-search-dir=. .",
 		"identify": "node ./src/util/identify/identify.js > ./src/util/identify/deployInfo.json",
 		"build-python": "node buildPython.js",
 		"setup": "npm run identify && npm run build-python",
@@ -62,7 +63,8 @@
 		"build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
 		"fix-web-dev": "node fixDeploy.mjs",
 		"predeploy": "npm run setup && npm run build-demo && cross-env PUBLIC_PATH=/web_dev/ npm run fix-web-dev",
-		"deploy": "gh-pages -d build"
+		"deploy": "gh-pages -d build",
+		"prepare": "husky install"
 	},
 	"contributors": [
 		{
@@ -102,10 +104,16 @@
 		"@types/three": "^0.150.1",
 		"cross-env": "^7.0.3",
 		"gh-pages": "^5.0.0",
+		"husky": "^8.0.3",
 		"jest-matcher-deep-close-to": "^3.0.2",
+		"lint-staged": "^13.2.2",
 		"prettier": "2.8.7",
 		"react-app-rewired": "^2.2.1",
 		"selenium-webdriver": "^4.9.0",
 		"use-resize-observer": "^9.0.2"
+	},
+	"lint-staged": {
+		"*.{ts,tsx,js,jsx}": "prettier --ignore-unknown --ignore-path .gitignore --ignore-path .prettierignore --write",
+		"*.{json,less,md,css,html}": "prettier --ignore-unknown --ignore-path .gitignore --ignore-path .prettierignore --write"
 	}
 }
