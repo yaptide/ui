@@ -7,12 +7,7 @@ import { useAuth } from '../services/AuthService';
 import { useLoader } from '../services/DataLoaderService';
 import { JsRootService } from '../services/JsRootService';
 import { useStore } from '../services/StoreService';
-import {
-	SimulationInputFiles,
-	JobStatusData,
-	StatusState,
-	currentJobStatusData
-} from '../types/ResponseTypes';
+import { SimulationInputFiles, StatusState, currentJobStatusData } from '../types/ResponseTypes';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
 import { AboutPanel } from './components/Panels/AboutPanel';
 import LoginPanel from './components/Panels/LoginPanel';
@@ -20,6 +15,7 @@ import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
 import NavDrawer from './components/NavDrawer/NavDrawer';
+import { FullSimulationData } from '../services/ShSimulatorService';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
@@ -70,12 +66,10 @@ function WrapperApp() {
 	}, [isAuthorized, tabsValue]);
 
 	const onLoadExample = useCallback(
-		(example: JobStatusData) => {
+		(example: FullSimulationData) => {
 			if (!DEMO_MODE) return;
-			if (currentJobStatusData[StatusState.COMPLETED](example)) {
-				setResultsSimulationData(example);
-				setTabsValue('editor');
-			}
+			setResultsSimulationData(example);
+			setTabsValue('editor');
 		},
 		[setResultsSimulationData]
 	);

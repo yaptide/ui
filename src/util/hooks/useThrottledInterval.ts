@@ -1,12 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
-
-const useThrottledInterval = (
-	callback: () => PromiseLike<void>,
-	interval: number | null
-): boolean => {
+import { useEffect, useRef } from 'react';
+const useThrottledInterval = (callback: () => PromiseLike<void>, interval: number | null): void => {
 	const timeoutRef = useRef<number | null>(null);
 	const callbackRef = useRef(callback);
-	const [isRunning, setIsRunning] = useState(false);
 
 	// Update callback function if it changes
 	useEffect(() => {
@@ -19,6 +14,8 @@ const useThrottledInterval = (
 			// Clear any previous timeout
 			if (timeoutRef.current) {
 				clearTimeout(timeoutRef.current);
+				if (interval !== null) timeoutRef.current = window.setTimeout(tick, interval);
+				return; // exit function
 			}
 
 			// Call callback function
@@ -28,16 +25,10 @@ const useThrottledInterval = (
 			promise.then(() => {
 				if (interval !== null) timeoutRef.current = window.setTimeout(tick, interval);
 			});
-
-			// Set running state to true
-			setIsRunning(true);
 		}
 
 		// Start interval
 		tick();
-
-		// Set running state to true
-		setIsRunning(true);
 
 		// Clean up function
 		return () => {
@@ -46,9 +37,6 @@ const useThrottledInterval = (
 			}
 		};
 	}, [interval]);
-
-	// Return isRunning state
-	return isRunning;
 };
 
 export default useThrottledInterval;

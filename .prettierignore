@@ -17,3 +17,4 @@ dockerBuild.ps1
 .vscode/
 README.md
 
+src/ThreeEditor/examples/

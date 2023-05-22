@@ -4,12 +4,7 @@ import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
 import { BACKEND_URL, DEMO_MODE } from '../config/Config';
 import { snakeToCamelCase } from '../types/TypeTransformUtil';
-import {
-	RequestAuthLogin,
-	RequestAuthLogout,
-	RequestAuthRefresh,
-	RequestAuthStatus
-} from '../types/RequestTypes';
+import { RequestAuthLogin, RequestAuthLogout, RequestAuthRefresh } from '../types/RequestTypes';
 import useThrottledInterval from '../util/hooks/useThrottledInterval';
 import { useSnackbar } from 'notistack';
 import {
@@ -53,10 +48,6 @@ export interface AuthContext {
 	login: (...args: RequestAuthLogin) => void;
 	logout: (...args: RequestAuthLogout) => void;
 	refresh: (...args: RequestAuthRefresh) => void;
-	/**
-	 * @deprecated  //not used
-	 */
-	status: (...args: RequestAuthStatus) => void;
 	authKy: KyInstance;
 }
 
@@ -134,25 +125,12 @@ const Auth = ({ children }: AuthProps) => {
 	useThrottledInterval(reachServer, reachInterval);
 
 	const refresh = useCallback(() => {
-		if (DEMO_MODE || !isServerReachable) return Promise.resolve();
 		return kyRef.current
 			.get(`auth/refresh`)
 			.json<ResponseAuthRefresh>()
 			.then(({ accessExp }) => setRefreshInterval(getRefreshDelay(accessExp)))
 			.catch((_: HTTPError) => {});
-	}, [isServerReachable]);
-
-	/**
-	 * @deprecated  //not used
-	 */
-	const status = useCallback(() => {
-		if (DEMO_MODE || !isServerReachable) return;
-		return kyRef.current
-			.get(`auth/status`)
-			.json<ResponseAuthStatus>()
-			.then(({ username }) => setUser({ username }))
-			.catch((_: HTTPError) => {});
-	}, [isServerReachable]);
+	}, []);
 
 	const login = useCallback(
 		(...[username, password]: RequestAuthLogin) => {
@@ -185,9 +163,9 @@ const Auth = ({ children }: AuthProps) => {
 		save(StorageKey.USER, user);
 	}, [user]);
 
-	// useEffect(() => {
-	// 	if (user !== null) refresh();
-	// }, [refresh, user]);
+	useEffect(() => {
+		if (user !== null) refresh();
+	}, [refresh, user]);
 
 	useThrottledInterval(refresh, isServerReachable && user !== null ? refreshInterval : null);
 
@@ -200,7 +178,6 @@ const Auth = ({ children }: AuthProps) => {
 				login,
 				logout,
 				authKy,
-				status,
 				refresh
 			}}>
 			{children}

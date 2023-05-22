@@ -15,7 +15,7 @@ import React, { useState } from 'react';
 import { useLoader } from '../../../services/DataLoaderService';
 import EXAMPLES from '../../examples/examples';
 import { CustomDialogTitle } from './CustomDialog';
-import { JobStatusData, StatusState } from '../../../types/ResponseTypes';
+import { StatusState } from '../../../types/ResponseTypes';
 import { DragDropProject } from './DragDropProject';
 
 export type OpenFileProps = {
@@ -95,22 +95,22 @@ export function OpenFileDialog(props: OpenFileProps) {
 							<List id={'Examples list'}>
 								{EXAMPLES.map((example, idx) => (
 									<ListItem
-									disablePadding
-									key={
-										example?.inputJson?.project?.title ??
-										'Example_' + idx.toString()
-									}
-									value={idx}
-									aria-labelledby={`example-btn-${idx}`}
-									aria-selected={exampleIndex === idx}
-									onClick={() => setExampleIndex(idx)}>
-									<ListItemButton
-										id={`example-btn-${idx}`}
-										selected={exampleIndex === idx}>
-										{example?.inputJson?.project?.title ??
-											'Example_' + idx.toString()}
-									</ListItemButton>
-								</ListItem>
+										disablePadding
+										key={
+											example?.input.inputJson?.project?.title ??
+											'Example_' + idx.toString()
+										}
+										value={idx}
+										aria-labelledby={`example-btn-${idx}`}
+										aria-selected={exampleIndex === idx}
+										onClick={() => setExampleIndex(idx)}>
+										<ListItemButton
+											id={`example-btn-${idx}`}
+											selected={exampleIndex === idx}>
+											{example?.input.inputJson?.project?.title ??
+												'Example_' + idx.toString()}
+										</ListItemButton>
+									</ListItem>
 								))}
 							</List>
 							<Button
@@ -126,7 +126,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 											return {
 												...e,
 												jobState: StatusState.COMPLETED
-											} as JobStatusData<StatusState.COMPLETED>;
+											};
 										})
 									);
 								}}>

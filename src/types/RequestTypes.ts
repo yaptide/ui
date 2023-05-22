@@ -1,5 +1,6 @@
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
+import { JobInputs, JobResults } from '../services/ShSimulatorService';
 import { SimulationInputFiles, JobStatusData, SimulationInfo } from './ResponseTypes';
 import { Flatten } from './TypeTransformUtil';
 
@@ -34,10 +35,7 @@ type InputDataParam = [
 
 type LoginParams = [username: string, password: string];
 
-type CachedDataParams = [
-	cache: boolean,
-	beforeCacheWrite?: (id: string, response: JobStatusData) => void
-];
+type CachedDataParams<T> = [cache?: boolean, beforeCacheWrite?: (id: string, response: T) => void];
 
 type PageParams = [pageIdx: number, pageSize: number, orderType: OrderType, orderBy: OrderBy];
 
@@ -68,8 +66,20 @@ export type RequestCancelJob = Flatten<[SimInfoParam, RequestParam]>;
 
 export type RequestGetPageContents = Flatten<[PageParams, RequestParam]>;
 
-export type RequestGetPageStatus = Flatten<[SimInfoArrayParam, CachedDataParams, RequestParam]>;
+export type RequestGetPageStatus = Flatten<
+	[SimInfoArrayParam, CachedDataParams<JobStatusData>, RequestParam]
+>;
 
-export type RequestGetJobStatus = Flatten<[SimInfoParam, CachedDataParams, RequestParam]>;
+export type RequestGetJobStatus = Flatten<
+	[SimInfoParam, CachedDataParams<JobStatusData>, RequestParam]
+>;
+
+export type RequestGetJobInputs = Flatten<
+	[[{ jobId: string }], RequestParam, CachedDataParams<JobInputs>]
+>;
+
+export type RequestGetJobResults = Flatten<
+	[[{ jobId: string }], RequestParam, CachedDataParams<JobResults>]
+>;
 
 /* ------------------------------------ */

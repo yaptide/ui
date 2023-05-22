@@ -13,7 +13,7 @@ import {
 	StatusState,
 	currentJobStatusData
 } from '../../../types/ResponseTypes';
-import { useShSimulation } from '../../../services/ShSimulatorService';
+import { FullSimulationData, useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { DEMO_MODE } from '../../../config/Config';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
@@ -44,11 +44,13 @@ export default function SimulationPanel({
 	} = useStore();
 	const {
 		cancelJobDirect,
+		getJobInputs,
 		postJobDirect,
 		postJobBatch,
 		getHelloWorld,
 		getPageContents,
-		getPageStatus
+		getPageStatus,
+		getFullSimulationData
 	} = useShSimulation();
 	const { enqueueSnackbar } = useSnackbar();
 	const { resultsProvider, canLoadResultsData, clearLoadedResults } = useLoader();
@@ -76,7 +78,8 @@ export default function SimulationPanel({
 	const [trackedId, setTrackedId] = useState<string>();
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
 	const [simulationsStatusData, setSimulationsStatusData] = useState<JobStatusData[]>([]);
-	const [localSimulationData, setLocalSimulationData] = useState<JobStatusData[]>(
+	const [simulationsFullState, setSimulationsFullState] = useState<FullSimulationData[]>([]);
+	const [localSimulationData, setLocalSimulationData] = useState<FullSimulationData[]>(
 		localResultsSimulationData ?? []
 	);
 
@@ -96,11 +99,13 @@ export default function SimulationPanel({
 	);
 
 	const handleBeforeCacheWrite = useCallback(
-		(id: string, response: JobStatusData) => {
-			if (id === trackedId && currentJobStatusData[StatusState.COMPLETED](response))
-				setResultsSimulationData(response);
+		async (id: string, response: JobStatusData) => {
+			if (id === trackedId && currentJobStatusData[StatusState.COMPLETED](response)) {
+				const fullData = await getFullSimulationData(response, controller.signal);
+				setResultsSimulationData(fullData);
+			}
 		},
-		[setResultsSimulationData, trackedId]
+		[controller.signal, getFullSimulationData, setResultsSimulationData, trackedId]
 	);
 
 	const updateSimulationData = useCallback(
@@ -137,21 +142,29 @@ export default function SimulationPanel({
 
 	useInterval(updateSimulationInfo, simulationIDInterval, true);
 
-	useEffect(() => {
-		updateSimulationData();
-	}, [updateSimulationData]);
-
 	useInterval(
 		updateSimulationData,
 		simulationIDInterval !== null && simulationInfo.length > 0 ? 1000 : null,
 		true
 	);
 
-	const handleLoadResults = (taskId: string | null, simulation: unknown) => {
-		if (taskId === null) goToResults?.call(null);
-		else
-			currentJobStatusData[StatusState.COMPLETED](simulation) &&
-				setResultsSimulationData(simulation);
+	useEffect(() => {
+		Promise.all(
+			simulationsStatusData.map(s => getFullSimulationData(s, controller.signal))
+		).then(s => {
+			const fullData = s.filter(s => s !== undefined) as FullSimulationData[];
+			if (controller.signal.aborted) return;
+			setSimulationsFullState(fullData);
+		});
+	}, [controller.signal, getFullSimulationData, simulationsStatusData]);
+
+	const handleLoadResults = async (taskId: string | null, simulation: unknown) => {
+		if (taskId === null) return goToResults?.call(null);
+
+		if (currentJobStatusData[StatusState.COMPLETED](simulation)) {
+			const fullData = await getFullSimulationData(simulation, controller.signal);
+			setResultsSimulationData(fullData);
+		}
 	};
 
 	const handleShowInputFiles = (inputFiles?: SimulationInputFiles) => {
@@ -199,6 +212,7 @@ export default function SimulationPanel({
 			.then(res => {
 				updateSimulationInfo();
 				setTrackedId(res.jobId);
+				enqueueSnackbar('Simulation submitted', { variant: 'success' });
 			})
 			.catch(e => {
 				enqueueSnackbar('Error while starting simulation', { variant: 'error' });
@@ -207,15 +221,28 @@ export default function SimulationPanel({
 	};
 
 	useEffect(() => {
-		if (!DEMO_MODE && editorRef.current) {
-			const hash = editorRef.current.toJSON().hash;
-			const anyResults = simulationsStatusData.find(
-				s => currentJobStatusData[StatusState.COMPLETED](s) && s.inputJson?.hash === hash
-			);
-			if (anyResults) editorRef.current.results = anyResults;
-			else editorRef.current.results = null;
-		}
-	}, [simulationsStatusData, editorRef]);
+		const updateCurrentSimulation = async () => {
+			if (!DEMO_MODE && editorRef.current) {
+				const hash = editorRef.current.toJSON().hash;
+				const currentStatus = simulationsStatusData.find(async s => {
+					if (currentJobStatusData[StatusState.COMPLETED](s)) {
+						const jobInputs = await getJobInputs(s, controller.signal);
+						return jobInputs?.input.inputJson?.hash === hash;
+					}
+
+					return false;
+				});
+
+				const currentSimulation = currentStatus
+					? await getFullSimulationData(currentStatus, controller.signal)
+					: undefined;
+
+				if (currentSimulation) editorRef.current.setResults(currentSimulation);
+				else editorRef.current.setResults(null);
+			}
+		};
+		updateCurrentSimulation();
+	}, [simulationsStatusData, editorRef, getJobInputs, controller.signal, getFullSimulationData]);
 
 	useEffect(() => {
 		return () => {
@@ -264,7 +291,7 @@ export default function SimulationPanel({
 					setSimulationInfo([...simulations]);
 					setPageCount(pageCount);
 				})
-				.catch(),
+				.catch(e => console.error(e)),
 		[getPageContents, pageIdx, pageSize, orderType, orderBy, controller.signal]
 	);
 
@@ -379,7 +406,7 @@ export default function SimulationPanel({
 				/>
 			) : (
 				<PaginatedSimulationsFromBackend
-					simulations={simulationsStatusData}
+					simulations={simulationsFullState}
 					subtitle={'Yaptide backend server'}
 					pageData={{
 						orderType,
