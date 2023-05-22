@@ -21,7 +21,7 @@ export interface PythonConverterProps {
 export interface PythonConverterContext {
 	convertJSON: (
 		editorJson: EditorJson,
-    simulator: SimulatorType
+		simulator: SimulatorType
 	) => Promise<Map<keyof RemoveIndex<SimulationInputFiles>, string>>;
 	isConverterReady: boolean;
 }

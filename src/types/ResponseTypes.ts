@@ -36,22 +36,16 @@ export const _defaultShInputFiles = {
 	'mat.dat': ''
 } as const;
 
-export const _orderedTopasInputFilesNames = [
-	'info.json',
-	'topas_config.txt'
-] as const;
+export const _orderedTopasInputFilesNames = ['info.json', 'topas_config.txt'] as const;
 
 export const _defaultTopasInputFiles = {
-	'topas_config.txt': '',
+	'topas_config.txt': ''
 } as const;
 
-export const _orderedFlukaInputFilesNames = [
-	'info.json',
-	'fl_sim.inp'
-] as const;
+export const _orderedFlukaInputFilesNames = ['info.json', 'fl_sim.inp'] as const;
 
 export const _defaultFlukaInputFiles = {
-	'fl_sim.inp': '',
+	'fl_sim.inp': ''
 } as const;
 
 export function isKnownInputFile(name: string): name is ShInputFilesNames {

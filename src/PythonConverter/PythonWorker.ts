@@ -16,7 +16,7 @@ export interface PythonWorker {
 
 	convertJSON: (
 		editorJson: EditorJson,
-    simulator: SimulatorType
+		simulator: SimulatorType
 	) => Promise<Map<keyof RemoveIndex<SimulationInputFiles>, string>>;
 }
 

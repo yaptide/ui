@@ -11,17 +11,30 @@ import { DEMO_MODE } from '../../../config/Config';
 import { InputFilesEditor } from './InputFilesEditor';
 import { readFile } from '../../../services/DataLoaderService';
 import { DragDropFiles } from './DragDropFiles';
-import { ResponsePostJob, ResponseShConvert, ResponseTopasConvert, SimulationInputFiles, _defaultFlukaInputFiles, _defaultShInputFiles, _defaultTopasInputFiles } from '../../../types/ResponseTypes';
-import { RequestPostJob, RequestShConvert, RequestTopasConvert, SimulatorType } from '../../../types/RequestTypes';
+import {
+	ResponsePostJob,
+	ResponseShConvert,
+	ResponseTopasConvert,
+	SimulationInputFiles,
+	_defaultFlukaInputFiles,
+	_defaultShInputFiles,
+	_defaultTopasInputFiles
+} from '../../../types/ResponseTypes';
+import {
+	RequestPostJob,
+	RequestShConvert,
+	RequestTopasConvert,
+	SimulatorType
+} from '../../../types/RequestTypes';
 interface InputEditorPanelProps {
-	goToRun?: (simulator:SimulatorType, InputFiles?: SimulationInputFiles) => void;
+	goToRun?: (simulator: SimulatorType, InputFiles?: SimulationInputFiles) => void;
 }
 
 type GeneratorLocation = 'local' | 'remote';
 
-type ConvertToInputFiles = 
-  | ((...args: RequestShConvert) => Promise<ResponseShConvert>)
-  | ((...args: RequestTopasConvert) => Promise<ResponseTopasConvert>);
+type ConvertToInputFiles =
+	| ((...args: RequestShConvert) => Promise<ResponseShConvert>)
+	| ((...args: RequestTopasConvert) => Promise<ResponseTopasConvert>);
 
 export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const { enqueueSnackbar } = useSnackbar();
@@ -135,43 +148,48 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 					value={chosenSimulator}
 					exclusive
 					onChange={(_e, chosenSimulator) => {
-						if (chosenSimulator){
+						if (chosenSimulator) {
 							setChosenSimulator(chosenSimulator);
-							if (chosenSimulator!==simulator)
-								if (window.confirm('Current input files will be lost. Are you sure?'))
+							if (chosenSimulator !== simulator)
+								if (
+									window.confirm(
+										'Current input files will be lost. Are you sure?'
+									)
+								)
 									setSimulator(chosenSimulator);
-									switch (chosenSimulator) {
-										case SimulatorType.SHIELDHIT:
-											setInputFiles(_defaultShInputFiles);
-											break;
-										case SimulatorType.TOPAS:
-											setInputFiles(_defaultTopasInputFiles);
-											break;
-										case SimulatorType.FLUKA:
-											setInputFiles(_defaultFlukaInputFiles);
-											break;
-										default:
-											throw new Error('Unknown simulator: ' + chosenSimulator);
-								}
-					}}}>
+							switch (chosenSimulator) {
+								case SimulatorType.SHIELDHIT:
+									setInputFiles(_defaultShInputFiles);
+									break;
+								case SimulatorType.TOPAS:
+									setInputFiles(_defaultTopasInputFiles);
+									break;
+								case SimulatorType.FLUKA:
+									setInputFiles(_defaultFlukaInputFiles);
+									break;
+								default:
+									throw new Error('Unknown simulator: ' + chosenSimulator);
+							}
+						}
+					}}>
 					<ToggleButton
 						value={SimulatorType.SHIELDHIT}
 						color='info'>
 						SHIELD-HIT12A
 					</ToggleButton>
 					{!DEMO_MODE && (
-					<ToggleButton
-						value={SimulatorType.TOPAS}
-						color='info'>
-						TOPAS
-					</ToggleButton>
+						<ToggleButton
+							value={SimulatorType.TOPAS}
+							color='info'>
+							TOPAS
+						</ToggleButton>
 					)}
 					{!DEMO_MODE && (
-					<ToggleButton
-						value={SimulatorType.FLUKA}
-						color='info'>
-						Fluka
-					</ToggleButton>
+						<ToggleButton
+							value={SimulatorType.FLUKA}
+							color='info'>
+							Fluka
+						</ToggleButton>
 					)}
 				</ToggleButtonGroup>
 			</Box>
@@ -202,8 +220,8 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 			/>
 
 			<InputFilesEditor
-				simulator = {simulator}
-				inputFiles = {inputFiles}
+				simulator={simulator}
+				inputFiles={inputFiles}
 				onChange={inputFiles => setInputFiles(inputFiles)}
 				runSimulation={!DEMO_MODE ? goToRun : undefined}
 			/>

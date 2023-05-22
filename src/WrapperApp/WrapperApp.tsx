@@ -30,7 +30,9 @@ function WrapperApp() {
 	const [tabsValue, setTabsValue] = useState('editor');
 
 	const [providedInputFiles, setProvidedInputFiles] = useState<SimulationInputFiles>();
-	const [currentSimulator, setCurrentSimulator] = useState<SimulatorType>(SimulatorType.SHIELDHIT);
+	const [currentSimulator, setCurrentSimulator] = useState<SimulatorType>(
+		SimulatorType.SHIELDHIT
+	);
 	useEffect(() => {
 		if (providedInputFiles && tabsValue !== 'simulations') setProvidedInputFiles(undefined);
 	}, [providedInputFiles, tabsValue]);

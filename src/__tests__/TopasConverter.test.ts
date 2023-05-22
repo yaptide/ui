@@ -23,9 +23,7 @@ describe('NavDrawer component', () => {
 		await driver.get('http://localhost:3000');
 
 		//find the "Editor" button on the left menu and click it to open the editor
-		const editorButton = await driver.findElement(
-			By.xpath("//div[@aria-label = 'Editor']")
-		);
+		const editorButton = await driver.findElement(By.xpath("//div[@aria-label = 'Editor']"));
 		await editorButton.click();
 
 		//find the "open" button (second from the left on the upper bar) and then click it
@@ -45,20 +43,18 @@ describe('NavDrawer component', () => {
 		await examplesButton.click();
 
 		//find the list of examples
-		const examplesList = await openProjectWidget.findElement(By.id("Examples list"));
+		const examplesList = await openProjectWidget.findElement(By.id('Examples list'));
 
 		//find the first option in the list
 		//it has value=0 and is li element
-		const firstExample = await examplesList.findElement(
-		  By.xpath("//li[@value = '0']")
-		);
-	
+		const firstExample = await examplesList.findElement(By.xpath("//li[@value = '0']"));
+
 		//check if the first example is "Proton pencil beam in water"
 		//text is located in element with id corresponding to aria-labelledby of the list element
-		const exampleLabelId = await firstExample.getAttribute("aria-labelledby");
+		const exampleLabelId = await firstExample.getAttribute('aria-labelledby');
 		const exampleLabel = await openProjectWidget.findElement(By.id(exampleLabelId));
-		expect(await exampleLabel.getText()).toBe("Proton pencil beam in water");
-	
+		expect(await exampleLabel.getText()).toBe('Proton pencil beam in water');
+
 		//click the first example
 		await firstExample.click();
 
@@ -78,9 +74,7 @@ describe('NavDrawer component', () => {
 		await filesButton.click();
 
 		//find the "Topas" button and click it
-		const topasButton = await driver.findElement(
-			By.xpath("//button[@value = 'topas']")
-		)
+		const topasButton = await driver.findElement(By.xpath("//button[@value = 'topas']"));
 		await topasButton.click();
 
 		//accept the "current data will be lost" alert
@@ -97,18 +91,18 @@ describe('NavDrawer component', () => {
 		//wait until the text has appeared in the first text field
 		await driver.wait(
 			until.elementTextMatches(
-				driver.findElement(By.xpath("//textarea[@aria-label = 'topas_config.txt text field']")),
+				driver.findElement(
+					By.xpath("//textarea[@aria-label = 'topas_config.txt text field']")
+				),
 				/\S/
 			)
 		);
 
 		//find the text field with config file and check if it is not empty
 
-		const configText = (
-			await driver
-				.findElement(By.xpath("//textarea[@aria-label = 'topas_config.txt text field']"))
-				.getText()
-		);
+		const configText = await driver
+			.findElement(By.xpath("//textarea[@aria-label = 'topas_config.txt text field']"))
+			.getText();
 		expect(configText).not.toBe('');
 	}, 50000);
 });
