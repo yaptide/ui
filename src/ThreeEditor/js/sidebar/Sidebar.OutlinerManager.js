@@ -3,6 +3,9 @@ import { escapeHTML } from '../../../util/escapeHTML';
 import { UICheckbox } from '../libs/ui.js';
 import { SetValueCommand } from '../commands/SetValueCommand.js';
 
+/**
+ * @deprecated
+ */
 const getObjectType = object => {
 	switch (object.type) {
 		case 'Scene':
@@ -27,7 +30,6 @@ const getObjectType = object => {
 		case 'Beam':
 			return 'Beam';
 		default:
-			console.warn(`could not parse object of type ${object.type}`, typeof object, object);
 			return 'Unknown';
 	}
 };
@@ -36,12 +38,11 @@ const getAdditionalInfo = object => {
 		case 'BoxFigure':
 		case 'CylinderFigure':
 		case 'SphereFigure':
-			return ` [${
-				object.id
-			}] <span class="type Geometry"></span> <span class="type-value">${object.type.slice(
-				0,
-				-4
-			)}</span>`;
+			return ` [${object.id
+				}] <span class="type Geometry"></span> <span class="type-value">${object.type.slice(
+					0,
+					-4
+				)}</span>`;
 		case 'Beam':
 			let particle = object.particle;
 			return ` [${object.id}] <span class="type Particle Beam"></span> ${particle.name} [${particle.id}]`;
@@ -55,31 +56,26 @@ const getAdditionalInfo = object => {
 				<span class="type-value">${material.name} [${material.icru}]</span>`;
 		case 'Points':
 			let { zone, detectType } = object;
-			return ` [${object.id}] <span class="type Geometry ${
-				detectType === 'Zone' ? 'Zone' : ''
-			}"></span> <span class="type-value">${
-				zone ? `${escapeHTML(zone.name)} [${zone.id}]` : detectType
-			}</span>`;
+			return ` [${object.id}] <span class="type Geometry ${detectType === 'Zone' ? 'Zone' : ''
+				}"></span> <span class="type-value">${zone ? `${escapeHTML(zone.name)} [${zone.id}]` : detectType
+				}</span>`;
 		case 'Filter':
 			return ` [${object.id}]`;
 		case 'Output':
 			let { geometry } = object;
-			return ` [${object.id}] <span class="type-value">${
-				object.geometry
-					? `<span class="type Detect Geometry"></span>${escapeHTML(geometry.name)} [${
-							geometry.id
-					  }]`
-					: ''
-			}</span>`;
+			return ` [${object.id}] <span class="type-value">${object.geometry
+				? `<span class="type Detect Geometry"></span>${escapeHTML(geometry.name)} [${geometry.id
+				}]`
+				: ''
+				}</span>`;
 		case 'Quantity':
 			let filter = object.filter;
-			return ` [${object.id}] ${
-				filter
-					? `<span class="type Filter Modifier"></span> <span class="type-value">${escapeHTML(
-							filter.name
-					  )} [${filter.id}]`
-					: ''
-			}</span>`;
+			return ` [${object.id}] ${filter
+				? `<span class="type Filter Modifier"></span> <span class="type-value">${escapeHTML(
+					filter.name
+				)} [${filter.id}]`
+				: ''
+				}</span>`;
 		default:
 			return '';
 	}

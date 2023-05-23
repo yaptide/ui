@@ -4,17 +4,24 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { SnackbarProvider } from 'notistack';
 import * as React from 'react';
 import { PythonConverterService } from './PythonConverter/PythonConverterService';
+import WrapperApp from './WrapperApp/WrapperApp';
 import { Auth } from './services/AuthService';
 import { Loader } from './services/DataLoaderService';
 import { ShSimulation } from './services/ShSimulatorService';
 import { Store } from './services/StoreService';
-import WrapperApp from './WrapperApp/WrapperApp';
 
 declare module '@mui/material/styles' {
 	// add new variables to the theme type
 	interface TypeBackground {
 		secondary: string;
 	}
+
+	interface ThemeOptions {
+		dimensions: {
+			navDrawerWidth: number;
+		};
+	}
+	interface Theme extends ThemeOptions {}
 }
 
 function App() {
@@ -37,6 +44,9 @@ function App() {
 				},
 				typography: {
 					fontSize: 11
+				},
+				dimensions: {
+					navDrawerWidth: 160
 				}
 			}),
 		[prefersDarkMode]

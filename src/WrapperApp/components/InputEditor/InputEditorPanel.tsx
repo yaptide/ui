@@ -4,37 +4,25 @@ import { useSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
 import { throttle } from 'throttle-debounce';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
-import { useShSimulation } from '../../../services/ShSimulatorService';
-import { useStore } from '../../../services/StoreService';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { DEMO_MODE } from '../../../config/Config';
-import { InputFilesEditor } from './InputFilesEditor';
 import { readFile } from '../../../services/DataLoaderService';
-import { DragDropFiles } from './DragDropFiles';
+import { useShSimulation } from '../../../services/ShSimulatorService';
+import { useStore } from '../../../services/StoreService';
+import { SimulatorType } from '../../../types/RequestTypes';
 import {
-	ResponsePostJob,
-	ResponseShConvert,
-	ResponseTopasConvert,
 	SimulationInputFiles,
 	_defaultFlukaInputFiles,
 	_defaultShInputFiles,
 	_defaultTopasInputFiles
 } from '../../../types/ResponseTypes';
-import {
-	RequestPostJob,
-	RequestShConvert,
-	RequestTopasConvert,
-	SimulatorType
-} from '../../../types/RequestTypes';
+import { DragDropFiles } from './DragDropFiles';
+import { InputFilesEditor } from './InputFilesEditor';
 interface InputEditorPanelProps {
 	goToRun?: (simulator: SimulatorType, InputFiles?: SimulationInputFiles) => void;
 }
 
 type GeneratorLocation = 'local' | 'remote';
-
-type ConvertToInputFiles =
-	| ((...args: RequestShConvert) => Promise<ResponseShConvert>)
-	| ((...args: RequestTopasConvert) => Promise<ResponseTopasConvert>);
 
 export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const { enqueueSnackbar } = useSnackbar();

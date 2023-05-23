@@ -10,7 +10,7 @@ import {
 	RequestAuthRefresh,
 	RequestAuthStatus
 } from '../types/RequestTypes';
-import useThrottledInterval from '../util/hooks/useThrottledInterval';
+import useIntervalAsync from '../util/hooks/useIntervalAsync';
 import { useSnackbar } from 'notistack';
 import {
 	ResponseAuthStatus,
@@ -40,7 +40,7 @@ const save = (key: string, value: unknown) => {
 	return localStorage.setItem(key, JSON.stringify(value));
 };
 
-const getRefreshDelay = (exp: number) => Math.max((exp - new Date().getTime()) / 2, 1000);
+const getRefreshDelay = (exp: number) => Math.max((exp - new Date().getTime()) / 3, 1000);
 
 enum StorageKey {
 	USER = 'editor.user'
@@ -65,7 +65,7 @@ const [useAuth, AuthContextProvider] = createGenericContext<AuthContext>();
 const Auth = ({ children }: AuthProps) => {
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER));
 	const [reachInterval, setReachInterval] = useState<number>(30000);
-	const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
+	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(undefined);
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -93,9 +93,11 @@ const Auth = ({ children }: AuthProps) => {
 								break;
 						}
 						if (response?.status > 300) {
-							enqueueSnackbar(await response.json().then(r => r.message), {
-								variant: 'error'
-							});
+							const message = await response.json().then(r => r.message);
+							if (message !== 'No token provided')
+								enqueueSnackbar(await response.json().then(r => r.message), {
+									variant: 'error'
+								});
 							console.error(
 								response.status,
 								await response.json().then(r => r.message)
@@ -116,38 +118,49 @@ const Auth = ({ children }: AuthProps) => {
 		if (DEMO_MODE) enqueueSnackbar('Demo mode enabled.', { variant: 'info' });
 	}, [enqueueSnackbar]);
 
-	const reachServer = useCallback(async () => {
-		const status = await kyIntervalRef.current
+	const reachServer = useCallback(() => {
+		return kyIntervalRef.current
 			.get(``)
 			.json<YaptideResponse>()
 			.then(r => !!r.message)
-			.catch(() => false);
-		setIsServerReachable(prev => {
-			if (prev !== null && status !== prev)
-				status
-					? enqueueSnackbar('Server is reachable.', { variant: 'success' })
-					: enqueueSnackbar('Server is unreachable.', { variant: 'error' });
-			return status;
-		});
+			.then(status =>
+				setIsServerReachable(prev => {
+					if (prev !== null && status !== prev)
+						status
+							? enqueueSnackbar('Server is reachable.', { variant: 'success' })
+							: enqueueSnackbar('Server is unreachable.', { variant: 'error' });
+					return status;
+				})
+			)
+			.catch(() => setIsServerReachable(false));
 	}, [enqueueSnackbar]);
 
-	useThrottledInterval(reachServer, reachInterval);
+	useIntervalAsync(reachServer, reachInterval);
+	useEffect(() => {
+		reachServer();
+	}, [reachServer]);
 
 	const refresh = useCallback(() => {
-		if (DEMO_MODE || !isServerReachable) return Promise.resolve();
-		return kyRef.current
+		if (DEMO_MODE || !isServerReachable) return Promise.resolve(setRefreshInterval(undefined));
+		return kyIntervalRef.current
 			.get(`auth/refresh`)
 			.json<ResponseAuthRefresh>()
 			.then(({ accessExp }) => setRefreshInterval(getRefreshDelay(accessExp)))
 			.catch((_: HTTPError) => {});
 	}, [isServerReachable]);
 
+	useEffect(() => {
+		if (user !== null && refreshInterval === undefined && isServerReachable)
+			setRefreshInterval(3000);
+		else if (!isServerReachable || user === null) setRefreshInterval(undefined);
+	}, [isServerReachable, refreshInterval, user]);
+
 	/**
 	 * @deprecated  //not used
 	 */
 	const status = useCallback(() => {
 		if (DEMO_MODE || !isServerReachable) return;
-		return kyRef.current
+		kyRef.current
 			.get(`auth/status`)
 			.json<ResponseAuthStatus>()
 			.then(({ username }) => setUser({ username }))
@@ -185,11 +198,7 @@ const Auth = ({ children }: AuthProps) => {
 		save(StorageKey.USER, user);
 	}, [user]);
 
-	// useEffect(() => {
-	// 	if (user !== null) refresh();
-	// }, [refresh, user]);
-
-	useThrottledInterval(refresh, isServerReachable && user !== null ? refreshInterval : null);
+	useIntervalAsync(refresh, isServerReachable && user !== null ? refreshInterval : undefined);
 
 	return (
 		<AuthContextProvider

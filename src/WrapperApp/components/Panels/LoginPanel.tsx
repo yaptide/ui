@@ -1,9 +1,11 @@
-import { Box, Button, Card, CardContent, TextField } from '@mui/material';
+import { Box, Button, Card, CardContent, TextField, Typography, useTheme } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '../../../services/AuthService';
+import { ALT_AUTH } from '../../../config/Config';
 
 export default function LoginPanel() {
 	const { login } = useAuth();
+	const theme = useTheme();
 
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
@@ -44,6 +46,7 @@ export default function LoginPanel() {
 						id='loginField'
 						label='Username adress'
 						variant='outlined'
+						fullWidth
 						value={username}
 						onChange={handleUsernameChange}
 					/>
@@ -54,18 +57,44 @@ export default function LoginPanel() {
 						id='passwordField'
 						label='Password'
 						variant='outlined'
+						fullWidth
 						type='password'
 						value={password}
 						onChange={handlePasswordChange}
 					/>
 				</CardContent>
-				<CardContent>
+				<CardContent
+					sx={{
+						display: 'flex',
+						flexDirection: 'column',
+						justifyContent: 'space-between',
+						alignItems: 'center'
+					}}>
 					<Button
-						color='secondary'
-						variant='outlined'
+						color='primary'
+						fullWidth
+						variant={theme.palette.mode === 'dark' ? 'outlined' : 'contained'}
 						onClick={() => login(username, password)}>
 						Login
 					</Button>
+					{ALT_AUTH && (
+						<>
+							<Typography
+								color='text.secondary'
+								sx={{
+									padding: 1
+								}}>
+								or
+							</Typography>
+							<Button
+								color='info'
+								fullWidth
+								variant={theme.palette.mode === 'dark' ? 'outlined' : 'contained'}
+								onClick={() => login('demo', 'demo')}>
+								Connect with PLGrid
+							</Button>
+						</>
+					)}
 				</CardContent>
 			</Card>
 		</Box>

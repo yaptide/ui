@@ -73,7 +73,7 @@ export default function SimulationPanel({
 	/** Simulation Run Options */
 	const [availableClusters] = useState<string[]>(['default']);
 	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
-	const [simulator, setSimulator] = useState<SimulatorType>(forwardedSimulator);
+	const [simulator] = useState<SimulatorType>(forwardedSimulator);
 
 	/** Queued Simulation Data */
 	const [trackedId, setTrackedId] = useState<string>();

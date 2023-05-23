@@ -1,42 +1,32 @@
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import DescriptionIcon from '@mui/icons-material/Description';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import Folder from '@mui/icons-material/Folder';
-import GitHubIcon from '@mui/icons-material/GitHub';
 import InfoIcon from '@mui/icons-material/Info';
-import LoginIcon from '@mui/icons-material/Login';
 import Menu from '@mui/icons-material/Menu';
 import MenuOpen from '@mui/icons-material/MenuOpen';
-import NotListedLocationIcon from '@mui/icons-material/NotListedLocation';
-import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
-import { Tooltip, Typography } from '@mui/material';
-import Collapse from '@mui/material/Collapse';
+import { Box, FormControlLabel, Typography } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { CSSObject, styled, Theme } from '@mui/material/styles';
-import React, { Dispatch, SetStateAction, SyntheticEvent, useState } from 'react';
+import { CSSObject, Theme, styled } from '@mui/material/styles';
+import React, { ReactNode, SyntheticEvent } from 'react';
 import { useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
-import deployInfo from '../../../util/identify/deployInfo.json';
+import { NavDrawerList } from './NavDrawerList';
 
-type MenuOption = {
+export type MenuOption = {
 	label: string;
+	richLabel?: ReactNode;
+	description?: ReactNode;
+	info?: ReactNode;
 	value: string;
 	disabled?: boolean;
 	icon: React.ReactElement;
 };
 
 type NavDrawerProps = {
-	drawerWidth?: number;
 	handleChange: (event: SyntheticEvent, value: string) => void;
 	tabsValue: string;
 	open: boolean;
@@ -79,15 +69,15 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 	...theme.mixins.toolbar
 }));
 
-const getDrawer = (width: number) =>
+const getDrawer = () =>
 	styled(MuiDrawer, { shouldForwardProp: prop => prop !== 'open' })(({ theme, open }) => ({
-		width,
+		width: theme.dimensions.navDrawerWidth,
 		flexShrink: 0,
 		whiteSpace: 'nowrap',
 		boxSizing: 'border-box',
 		...(open && {
-			...openedMixin(width, theme),
-			'& .MuiDrawer-paper': openedMixin(width, theme)
+			...openedMixin(theme.dimensions.navDrawerWidth, theme),
+			'& .MuiDrawer-paper': openedMixin(theme.dimensions.navDrawerWidth, theme)
 		}),
 		...(!open && {
 			...closedMixin(theme),
@@ -95,189 +85,98 @@ const getDrawer = (width: number) =>
 		})
 	}));
 
-function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
+function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 	const { resultsSimulationData } = useStore();
 	const { isAuthorized } = useAuth();
-	const [expand, setExpand] = useState(tabsValue === 'login');
 
 	const handleDrawerToggle = () => {
 		setOpen(!open);
 	};
-	const handleProfileToggle = () => {
-		setExpand(prev => !prev);
-	};
 
-	const Drawer = getDrawer(drawerWidth);
+	const Drawer = getDrawer();
 
-	const MenuOptions: MenuOption[] = [
-		// {
-		// 	label: 'Projects',
-		// 	value: 'projects',
-		// 	disabled: true,
-		// 	icon: <Folder />
-		// },
+	const menuOptions: MenuOption[] = [
 		{
 			label: 'Editor',
 			value: 'editor',
-			icon: <ViewInArIcon />
+			icon: <ViewInArIcon fontSize='large' />
 		},
 		{
 			label: 'Input files',
 			value: 'inputFiles',
-			icon: <DescriptionIcon />
+			icon: <DescriptionIcon fontSize='large' />
 		},
 		{
 			label: 'Simulations',
 			value: 'simulations',
 			disabled: !isAuthorized,
-			icon: <OndemandVideoIcon />
+			info: !isAuthorized ? 'You need to be logged in to use this feature.' : undefined,
+			icon: <OndemandVideoIcon fontSize='large' />
 		},
 		{
 			label: 'Results',
 			value: 'results',
 			disabled: !resultsSimulationData,
-			icon: <AutoGraphIcon />
+			info: !resultsSimulationData ? 'There are no results to display.' : undefined,
+			icon: <AutoGraphIcon fontSize='large' />
 		},
 		{
 			label: 'About',
 			value: 'about',
-			icon: <InfoIcon />
+			icon: <InfoIcon fontSize='large' />
 		}
 	];
 
 	return (
 		<Drawer
 			variant='permanent'
+			aria-label='Navigation drawer for the YAPTIDE application'
+			aria-expanded={open ? 'true' : 'false'}
 			open={open}>
-			<DrawerHeader onClick={handleDrawerToggle}>
-				<ListItemText
-					primary={<Typography variant='h5'>YAPTIDE</Typography>}
-					sx={{ opacity: open ? 1 : 0 }}
-				/>
-				<IconButton aria-label={'Toggle drawer button'}>
-					{open ? <Menu /> : <MenuOpen />}
-				</IconButton>
-			</DrawerHeader>
-			<Divider />
-			<List>
-				<ListItemButton
-					sx={{
-						minHeight: 48,
-						justifyContent: open ? 'initial' : 'center',
-						px: 2.5
-					}}
-					onClick={handleProfileToggle}>
-					<ListItemIcon
-						sx={{
-							minWidth: 0,
-							mr: open ? 3 : 'auto',
-							justifyContent: 'center'
-						}}>
-						{isAuthorized ? <PersonPinCircleIcon /> : <NotListedLocationIcon />}
-					</ListItemIcon>
+			<Box
+				sx={{
+					position: 'sticky',
+					top: 0,
+					left: 0,
+					background: ({ palette }) => palette.background.default,
+					zIndex: ({ zIndex }) => zIndex.drawer
+				}}>
+				<DrawerHeader>
 					<ListItemText
-						primary={isAuthorized ? 'User' : 'Guest'}
-						sx={{ opacity: open ? 1 : 0 }}
-					/>
-					{expand ? <ExpandLess /> : <ExpandMore />}
-				</ListItemButton>
-				<Collapse
-					in={expand}
-					timeout='auto'
-					unmountOnExit>
-					<List
-						component='div'
-						disablePadding
-						sx={{
-							backgroundColor: ({ palette }) => palette.primary.main
-						}}>
-						<ListItemButton
-							sx={{
-								pl: open ? 4 : 'auto'
-							}}
-							onClick={event => handleChange(event, 'login')}>
-							<ListItemIcon>
-								<LoginIcon />
-							</ListItemIcon>
-							<ListItemText
-								primary={isAuthorized ? 'Logout' : 'Login'}
+						primary={
+							<FormControlLabel
+								labelPlacement='start'
 								sx={{
-									opacity: open ? 1 : 0
+									margin: 0,
+									display: 'flex',
+									justifyContent: 'space-between'
 								}}
+								control={
+									<IconButton
+										aria-label={'Toggle drawer button'}
+										onClick={handleDrawerToggle}>
+										{open ? <Menu /> : <MenuOpen />}
+									</IconButton>
+								}
+								label={
+									<Typography
+										variant='h5'
+										sx={{ opacity: open ? 1 : 0 }}>
+										YAPTIDE
+									</Typography>
+								}
 							/>
-						</ListItemButton>
-					</List>
-				</Collapse>
+						}
+					/>
+				</DrawerHeader>
 				<Divider />
-				{MenuOptions.map(({ label, value, disabled, icon }) => (
-					<ListItem
-						key={label}
-						disablePadding
-						sx={{ display: 'block' }}>
-						<ListItemButton
-							aria-label={label}
-							sx={{
-								minHeight: 48,
-								justifyContent: open ? 'initial' : 'center',
-								px: 2.5
-							}}
-							disabled={disabled}
-							selected={tabsValue === value}
-							onClick={event => handleChange(event, value)}>
-							<ListItemIcon
-								sx={{
-									minWidth: 0,
-									mr: open ? 3 : 'auto',
-									justifyContent: 'center'
-								}}>
-								{icon}
-							</ListItemIcon>
-							<ListItemText
-								primary={label}
-								sx={{ opacity: open ? 1 : 0 }}
-							/>
-						</ListItemButton>
-					</ListItem>
-				))}
-			</List>
-			<Divider />
-
-			<List sx={{ marginTop: 'auto' }}>
-				<Divider />
-				<ListItem
-					disablePadding
-					sx={{ display: 'block' }}>
-					<Tooltip title={`${deployInfo.date} ${deployInfo.commit} ${deployInfo.branch}`}>
-						<ListItemButton
-							sx={{
-								minHeight: 48,
-								justifyContent: open ? 'initial' : 'center',
-								px: 2.5
-							}}
-							component='a'
-							href={'https://github.com/yaptide/ui/commit/' + deployInfo.commit}
-							target='_blank'>
-							<ListItemIcon
-								sx={{
-									minWidth: 0,
-									mr: open ? 1.6 : 'auto',
-									ml: open ? -1.6 : 'auto',
-									justifyContent: 'center'
-								}}>
-								<GitHubIcon
-									fontSize='large'
-									sx={{ marginTop: 'auto', width: '100%', padding: 1 }}
-								/>
-							</ListItemIcon>
-							<ListItemText
-								primary={deployInfo.commit}
-								secondary={deployInfo.date}
-								sx={{ opacity: open ? 1 : 0 }}
-							/>
-						</ListItemButton>
-					</Tooltip>
-				</ListItem>
-			</List>
+			</Box>
+			<NavDrawerList
+				menuOptions={menuOptions}
+				layout={open ? 'open' : 'closed'}
+				handleChange={handleChange}
+				tabsValue={tabsValue}
+			/>
 		</Drawer>
 	);
 }
