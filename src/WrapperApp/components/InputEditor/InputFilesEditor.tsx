@@ -3,27 +3,41 @@ import useTheme from '@mui/system/useTheme';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import {
 	SimulationInputFiles,
-	_defaultInputFiles,
-	_orderedInputFilesNames,
+	_defaultFlukaInputFiles,
+	_defaultShInputFiles,
+	_defaultTopasInputFiles,
+	_orderedShInputFilesNames,
 	isKnownInputFile
 } from '../../../types/ResponseTypes';
 import { DEMO_MODE } from '../../../config/Config';
 import { saveString } from '../../../util/File';
+import { SimulatorType } from '../../../types/RequestTypes';
 
 interface InputFilesEditorProps {
+	simulator: SimulatorType;
 	inputFiles: SimulationInputFiles | undefined;
 	onChange?: (inputFiles: SimulationInputFiles) => void;
-	runSimulation?: (inputFiles: SimulationInputFiles) => void;
+	runSimulation?: (simulator: SimulatorType, inputFiles: SimulationInputFiles) => void;
 	saveAndExit?: (inputFiles: SimulationInputFiles) => void;
 	closeEditor?: () => void;
 }
 
 export function InputFilesEditor(props: InputFilesEditorProps) {
-	const inputFiles = props.inputFiles ?? _defaultInputFiles;
+	const inputFiles = props.inputFiles ?? _defaultShInputFiles;
+	const simulator = props.simulator;
 	const theme = useTheme();
 
 	const canBeDeleted = (name: string) => {
-		return !(name in _defaultInputFiles);
+		switch (props.simulator) {
+			case SimulatorType.SHIELDHIT:
+				return !(name in _defaultShInputFiles);
+			case SimulatorType.TOPAS:
+				return !(name in _defaultTopasInputFiles);
+			case SimulatorType.FLUKA:
+				return !(name in _defaultFlukaInputFiles);
+			default:
+				return false;
+		}
 	};
 
 	const updateInputFiles = (updateFn: (old: SimulationInputFiles) => SimulationInputFiles) => {
@@ -42,7 +56,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 						color='success'
 						variant='contained'
 						disabled={DEMO_MODE}
-						onClick={() => props.runSimulation?.call(null, inputFiles)}>
+						onClick={() => props.runSimulation?.call(null, simulator, inputFiles)}>
 						Run with these input files
 					</Button>
 				)}
@@ -74,10 +88,10 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 				{Object.entries(inputFiles)
 					.sort(([name1, _1], [name2, _2]) => {
 						const index1 = isKnownInputFile(name1)
-							? _orderedInputFilesNames.indexOf(name1)
+							? _orderedShInputFilesNames.indexOf(name1)
 							: -1 + 1;
 						const index2 = isKnownInputFile(name2)
-							? _orderedInputFilesNames.indexOf(name2)
+							? _orderedShInputFilesNames.indexOf(name2)
 							: -1 + 1;
 						return index1 - index2;
 					})
@@ -110,10 +124,13 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 									{canBeDeleted(name) && (
 										<Button
 											color='error'
-											disabled={name in _defaultInputFiles}
+											disabled={name in _defaultShInputFiles}
 											onClick={() => {
 												updateInputFiles(old => {
-													delete old[name];
+													if (name in old)
+														delete old[
+															name as keyof SimulationInputFiles
+														];
 													return { ...old };
 												});
 											}}

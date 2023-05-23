@@ -11,12 +11,30 @@ import { DEMO_MODE } from '../../../config/Config';
 import { InputFilesEditor } from './InputFilesEditor';
 import { readFile } from '../../../services/DataLoaderService';
 import { DragDropFiles } from './DragDropFiles';
-import { SimulationInputFiles, _defaultInputFiles } from '../../../types/ResponseTypes';
+import {
+	ResponsePostJob,
+	ResponseShConvert,
+	ResponseTopasConvert,
+	SimulationInputFiles,
+	_defaultFlukaInputFiles,
+	_defaultShInputFiles,
+	_defaultTopasInputFiles
+} from '../../../types/ResponseTypes';
+import {
+	RequestPostJob,
+	RequestShConvert,
+	RequestTopasConvert,
+	SimulatorType
+} from '../../../types/RequestTypes';
 interface InputEditorPanelProps {
-	goToRun?: (InputFiles?: SimulationInputFiles) => void;
+	goToRun?: (simulator: SimulatorType, InputFiles?: SimulationInputFiles) => void;
 }
 
 type GeneratorLocation = 'local' | 'remote';
+
+type ConvertToInputFiles =
+	| ((...args: RequestShConvert) => Promise<ResponseShConvert>)
+	| ((...args: RequestTopasConvert) => Promise<ResponseTopasConvert>);
 
 export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const { enqueueSnackbar } = useSnackbar();
@@ -25,27 +43,29 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const { isConverterReady, convertJSON } = usePythonConverter();
 
 	const [isInProgress, setInProgress] = useState(false);
-	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>(_defaultInputFiles);
+	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>(_defaultShInputFiles);
 	const [generator, setGenerator] = useState<GeneratorLocation>('local');
+	const [simulator, setSimulator] = useState<SimulatorType>(SimulatorType.SHIELDHIT);
+	const [chosenSimulator, setChosenSimulator] = useState<SimulatorType>(SimulatorType.SHIELDHIT);
 
 	const [controller] = useState(new AbortController());
 
 	const handleConvert = useCallback(
-		async (editorJSON: EditorJson) => {
+		async (editorJSON: EditorJson): Promise<SimulationInputFiles> => {
 			switch (generator) {
 				case 'remote':
 					return convertToInputFiles(editorJSON, controller.signal).then(res => {
 						return res.inputFiles;
 					});
 				case 'local':
-					return convertJSON(editorJSON).then(
+					return convertJSON(editorJSON, simulator).then(
 						res => Object.fromEntries(res) as unknown as SimulationInputFiles
 					);
 				default:
 					throw new Error('Unknown generator: ' + generator);
 			}
 		},
-		[controller.signal, convertJSON, convertToInputFiles, generator]
+		[controller.signal, convertJSON, convertToInputFiles, generator, simulator]
 	);
 
 	const onClickGenerate = useCallback(() => {
@@ -120,6 +140,58 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 						</ToggleButton>
 					)}
 				</ToggleButtonGroup>
+
+				<ToggleButtonGroup
+					sx={{
+						marginLeft: '1rem'
+					}}
+					value={chosenSimulator}
+					exclusive
+					onChange={(_e, chosenSimulator) => {
+						if (chosenSimulator) {
+							setChosenSimulator(chosenSimulator);
+							if (chosenSimulator !== simulator)
+								if (
+									window.confirm(
+										'Current input files will be lost. Are you sure?'
+									)
+								)
+									setSimulator(chosenSimulator);
+							switch (chosenSimulator) {
+								case SimulatorType.SHIELDHIT:
+									setInputFiles(_defaultShInputFiles);
+									break;
+								case SimulatorType.TOPAS:
+									setInputFiles(_defaultTopasInputFiles);
+									break;
+								case SimulatorType.FLUKA:
+									setInputFiles(_defaultFlukaInputFiles);
+									break;
+								default:
+									throw new Error('Unknown simulator: ' + chosenSimulator);
+							}
+						}
+					}}>
+					<ToggleButton
+						value={SimulatorType.SHIELDHIT}
+						color='info'>
+						SHIELD-HIT12A
+					</ToggleButton>
+					{!DEMO_MODE && (
+						<ToggleButton
+							value={SimulatorType.TOPAS}
+							color='info'>
+							TOPAS
+						</ToggleButton>
+					)}
+					{!DEMO_MODE && (
+						<ToggleButton
+							value={SimulatorType.FLUKA}
+							color='info'>
+							Fluka
+						</ToggleButton>
+					)}
+				</ToggleButtonGroup>
 			</Box>
 
 			<DragDropFiles
@@ -148,6 +220,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 			/>
 
 			<InputFilesEditor
+				simulator={simulator}
 				inputFiles={inputFiles}
 				onChange={inputFiles => setInputFiles(inputFiles)}
 				runSimulation={!DEMO_MODE ? goToRun : undefined}

@@ -4,6 +4,7 @@ import { createGenericContext } from '../services/GenericContext';
 import { PythonWorker } from './PythonWorker';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulationInputFiles } from '../types/ResponseTypes';
+import { SimulatorType } from '../types/RequestTypes';
 
 declare global {
 	interface Window {
@@ -19,7 +20,8 @@ export interface PythonConverterProps {
 
 export interface PythonConverterContext {
 	convertJSON: (
-		editorJson: EditorJson
+		editorJson: EditorJson,
+		simulator: SimulatorType
 	) => Promise<Map<keyof RemoveIndex<SimulationInputFiles>, string>>;
 	isConverterReady: boolean;
 }
@@ -68,8 +70,8 @@ const PythonConverter = (props: PythonConverterProps) => {
 		};
 	});
 
-	const convertJSON = async (editorJSON: EditorJson) => {
-		return await workerRef.current!.convertJSON(editorJSON);
+	const convertJSON = async (editorJSON: EditorJson, simulator: SimulatorType) => {
+		return await workerRef.current!.convertJSON(editorJSON, simulator);
 	};
 
 	const value: PythonConverterContext = {

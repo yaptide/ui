@@ -55,7 +55,6 @@ export function NavDrawerList({
 	handleChange,
 	tabsValue
 }: NavDrawerListProps) {
-	const DEMO_MODE = true;
 	const { isAuthorized, user, logout } = useAuth();
 	const userLogout = useMemo(
 		() => (

@@ -65,7 +65,7 @@ export default class ScrollPositionManager extends React.Component {
 		if (this.props.scrollKey !== prevProps.scrollKey) {
 			this.saveScrollPosition();
 		}
-      return null;
+		return null;
 	}
 
 	componentDidUpdate(prevProps) {
