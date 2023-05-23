@@ -1,6 +1,9 @@
+import GitHubIcon from '@mui/icons-material/GitHub';
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
+import PersonIcon from '@mui/icons-material/Person';
 import {
 	Box,
-	Chip,
 	Divider,
 	IconButton,
 	ListItem,
@@ -12,16 +15,11 @@ import {
 	Tooltip,
 	Typography
 } from '@mui/material';
-import { MenuOption } from './NavDrawer';
-import deployInfo from '../../../util/identify/deployInfo.json';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import { useAuth } from '../../../services/AuthService';
-import { DEMO_MODE } from '../../../config/Config';
-import { Button } from '@mui/material';
-import LogoutIcon from '@mui/icons-material/Logout';
 import { ReactNode, SyntheticEvent, useMemo } from 'react';
-import PersonIcon from '@mui/icons-material/Person';
-import LoginIcon from '@mui/icons-material/Login';
+import { DEMO_MODE } from '../../../config/Config';
+import { useAuth } from '../../../services/AuthService';
+import deployInfo from '../../../util/identify/deployInfo.json';
+import { MenuOption } from './NavDrawer';
 
 export type NavDrawerListProps = {
 	tabsValue: string;
@@ -100,70 +98,65 @@ export function NavDrawerList({
 	return (
 		<Box
 			sx={{
-				display: 'flex',
-				flexDirection: 'column',
-				justifyContent: 'space-between',
-				flexGrow: 1
+				display: 'grid',
+				gridTemplateRows: `${DEMO_MODE ? '2fr' : 'auto 1fr'} auto 2fr auto`,
+				height: '100%'
 			}}>
 			{!DEMO_MODE ? (
-				<Box>
-					<NavDrawerElement
-						menuOption={{
-							label: username,
-							richLabel: (
-								<Typography
-									sx={{
-										textAlign: 'right',
-										marginRight: 1,
-										textOverflow: 'ellipsis',
-										overflow: 'hidden'
-									}}>
-									{username}
-								</Typography>
-							),
-							description:
-								layout === 'open' ? (
-									userLogout
-								) : (
+				<>
+					<Box>
+						<NavDrawerElement
+							menuOption={{
+								label: username,
+								richLabel: (
 									<Typography
 										sx={{
-											marginTop: 4.5
+											textAlign: 'right',
+											marginRight: 1,
+											textOverflow: 'ellipsis',
+											overflow: 'hidden'
+										}}>
+										{username}
+									</Typography>
+								),
+								description:
+									layout === 'open' ? (
+										userLogout
+									) : (
+										<Typography
+											sx={{
+												marginTop: 4.5
+											}}
+										/>
+									),
+								value: 'deployInfo',
+								disabled: false,
+								icon: (
+									<PersonIcon
+										fontSize='large'
+										sx={{
+											marginBottom: !DEMO_MODE ? 4.5 : undefined
 										}}
 									/>
-								),
-							value: 'deployInfo',
-							disabled: false,
-							icon: (
-								<PersonIcon
-									fontSize='large'
-									sx={{
-										marginBottom: !DEMO_MODE ? 4.5 : undefined
-									}}
-								/>
-							)
-						}}
-						secondaryAction={layout === 'closed' ? userLogout : undefined}
-						open={layout === 'open'}
-						buttonProps={{
-							type: 'label'
-						}}
-						sx={{
-							minHeight: !DEMO_MODE ? 96 : 64
-						}}
-					/>
-					<Divider />
-				</Box>
+								)
+							}}
+							secondaryAction={layout === 'closed' ? userLogout : undefined}
+							open={layout === 'open'}
+							buttonProps={{
+								type: 'label'
+							}}
+							sx={{
+								minHeight: !DEMO_MODE ? 96 : 64
+							}}
+						/>
+						<Divider />
+					</Box>
+					<Box />
+				</>
 			) : (
-				<Box
-					sx={{
-						marginBottom: 12
-					}}
-				/>
+				<Box />
 			)}
-			<Box
-				sx={{
-					paddingBottom: 25
-				}}>
+			<Box>
 				{menuOptions.map(menuOption => (
 					<NavDrawerElement
 						key={menuOption.value}
@@ -174,7 +167,12 @@ export function NavDrawerList({
 					/>
 				))}
 			</Box>
-			<Box>
+
+			<Box />
+			<Box
+				sx={{
+					marginTop: 'auto'
+				}}>
 				<Divider />
 				<NavDrawerElement
 					menuOption={{

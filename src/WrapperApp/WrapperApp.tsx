@@ -23,7 +23,6 @@ import NavDrawer from './components/NavDrawer/NavDrawer';
 import { SimulatorType } from '../types/RequestTypes';
 
 function WrapperApp() {
-	const drawerWidth = 160;
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
 	const { editorProvider, resultsProvider, canLoadEditorData, clearLoadedEditor } = useLoader();
 	const { isAuthorized, logout } = useAuth();
@@ -111,7 +110,6 @@ function WrapperApp() {
 				tabsValue={tabsValue}
 				open={open}
 				setOpen={setOpen}
-				drawerWidth={drawerWidth}
 			/>
 			<TabPanel
 				value={tabsValue}

@@ -5,7 +5,7 @@ import Menu from '@mui/icons-material/Menu';
 import MenuOpen from '@mui/icons-material/MenuOpen';
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
-import { FormControlLabel, Typography } from '@mui/material';
+import { Box, FormControlLabel, Typography } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
@@ -27,7 +27,6 @@ export type MenuOption = {
 };
 
 type NavDrawerProps = {
-	drawerWidth?: number;
 	handleChange: (event: SyntheticEvent, value: string) => void;
 	tabsValue: string;
 	open: boolean;
@@ -70,15 +69,15 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 	...theme.mixins.toolbar
 }));
 
-const getDrawer = (width: number) =>
+const getDrawer = () =>
 	styled(MuiDrawer, { shouldForwardProp: prop => prop !== 'open' })(({ theme, open }) => ({
-		width,
+		width: theme.dimensions.navDrawerWidth,
 		flexShrink: 0,
 		whiteSpace: 'nowrap',
 		boxSizing: 'border-box',
 		...(open && {
-			...openedMixin(width, theme),
-			'& .MuiDrawer-paper': openedMixin(width, theme)
+			...openedMixin(theme.dimensions.navDrawerWidth, theme),
+			'& .MuiDrawer-paper': openedMixin(theme.dimensions.navDrawerWidth, theme)
 		}),
 		...(!open && {
 			...closedMixin(theme),
@@ -86,7 +85,7 @@ const getDrawer = (width: number) =>
 		})
 	}));
 
-function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
+function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 	const { resultsSimulationData } = useStore();
 	const { isAuthorized } = useAuth();
 
@@ -94,7 +93,7 @@ function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }
 		setOpen(!open);
 	};
 
-	const Drawer = getDrawer(drawerWidth);
+	const Drawer = getDrawer();
 
 	const menuOptions: MenuOption[] = [
 		{
@@ -134,35 +133,44 @@ function NavDrawer({ drawerWidth = 160, handleChange, tabsValue, open, setOpen }
 			aria-label='Navigation drawer for the YAPTIDE application'
 			aria-expanded={open ? 'true' : 'false'}
 			open={open}>
-			<DrawerHeader>
-				<ListItemText
-					primary={
-						<FormControlLabel
-							labelPlacement='start'
-							sx={{
-								margin: 0,
-								display: 'flex',
-								justifyContent: 'space-between'
-							}}
-							control={
-								<IconButton
-									aria-label={'Toggle drawer button'}
-									onClick={handleDrawerToggle}>
-									{open ? <Menu /> : <MenuOpen />}
-								</IconButton>
-							}
-							label={
-								<Typography
-									variant='h5'
-									sx={{ opacity: open ? 1 : 0 }}>
-									YAPTIDE
-								</Typography>
-							}
-						/>
-					}
-				/>
-			</DrawerHeader>
-			<Divider />
+			<Box
+				sx={{
+					position: 'sticky',
+					top: 0,
+					left: 0,
+					background: ({ palette }) => palette.background.default,
+					zIndex: ({ zIndex }) => zIndex.drawer
+				}}>
+				<DrawerHeader>
+					<ListItemText
+						primary={
+							<FormControlLabel
+								labelPlacement='start'
+								sx={{
+									margin: 0,
+									display: 'flex',
+									justifyContent: 'space-between'
+								}}
+								control={
+									<IconButton
+										aria-label={'Toggle drawer button'}
+										onClick={handleDrawerToggle}>
+										{open ? <Menu /> : <MenuOpen />}
+									</IconButton>
+								}
+								label={
+									<Typography
+										variant='h5'
+										sx={{ opacity: open ? 1 : 0 }}>
+										YAPTIDE
+									</Typography>
+								}
+							/>
+						}
+					/>
+				</DrawerHeader>
+				<Divider />
+			</Box>
 			<NavDrawerList
 				menuOptions={menuOptions}
 				layout={open ? 'open' : 'closed'}

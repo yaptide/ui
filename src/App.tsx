@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material';
-import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
+import { StyledEngineProvider, ThemeOptions, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { SnackbarProvider } from 'notistack';
 import * as React from 'react';
@@ -15,6 +15,13 @@ declare module '@mui/material/styles' {
 	interface TypeBackground {
 		secondary: string;
 	}
+
+	interface ThemeOptions {
+		dimensions: {
+			navDrawerWidth: number;
+		};
+	}
+	interface Theme extends ThemeOptions {}
 }
 
 function App() {
@@ -37,6 +44,9 @@ function App() {
 				},
 				typography: {
 					fontSize: 11
+				},
+				dimensions: {
+					navDrawerWidth: 160
 				}
 			}),
 		[prefersDarkMode]
