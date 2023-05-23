@@ -99,60 +99,57 @@ export function NavDrawerList({
 		<Box
 			sx={{
 				display: 'grid',
-				gridTemplateRows: `${DEMO_MODE ? '2fr' : 'auto 1fr'} auto 2fr auto`,
-				height: '100%'
+				gridAutoRows: '1fr auto',
+				height: 'calc(100% - 64px)'
 			}}>
 			{!DEMO_MODE ? (
-				<>
-					<Box>
-						<NavDrawerElement
-							menuOption={{
-								label: username,
-								richLabel: (
+				<Box>
+					<NavDrawerElement
+						menuOption={{
+							label: username,
+							richLabel: (
+								<Typography
+									sx={{
+										textAlign: 'right',
+										marginRight: 1,
+										textOverflow: 'ellipsis',
+										overflow: 'hidden'
+									}}>
+									{username}
+								</Typography>
+							),
+							description:
+								layout === 'open' ? (
+									userLogout
+								) : (
 									<Typography
 										sx={{
-											textAlign: 'right',
-											marginRight: 1,
-											textOverflow: 'ellipsis',
-											overflow: 'hidden'
-										}}>
-										{username}
-									</Typography>
-								),
-								description:
-									layout === 'open' ? (
-										userLogout
-									) : (
-										<Typography
-											sx={{
-												marginTop: 4.5
-											}}
-										/>
-									),
-								value: 'deployInfo',
-								disabled: false,
-								icon: (
-									<PersonIcon
-										fontSize='large'
-										sx={{
-											marginBottom: !DEMO_MODE ? 4.5 : undefined
+											marginTop: 4.5
 										}}
 									/>
-								)
-							}}
-							secondaryAction={layout === 'closed' ? userLogout : undefined}
-							open={layout === 'open'}
-							buttonProps={{
-								type: 'label'
-							}}
-							sx={{
-								minHeight: !DEMO_MODE ? 96 : 64
-							}}
-						/>
-						<Divider />
-					</Box>
-					<Box />
-				</>
+								),
+							value: 'deployInfo',
+							disabled: false,
+							icon: (
+								<PersonIcon
+									fontSize='large'
+									sx={{
+										marginBottom: !DEMO_MODE ? 4.5 : undefined
+									}}
+								/>
+							)
+						}}
+						secondaryAction={layout === 'closed' ? userLogout : undefined}
+						open={layout === 'open'}
+						buttonProps={{
+							type: 'label'
+						}}
+						sx={{
+							minHeight: !DEMO_MODE ? 96 : 64
+						}}
+					/>
+					<Divider />
+				</Box>
 			) : (
 				<Box />
 			)}
