@@ -32,6 +32,9 @@ RUN git config --global --add safe.directory /usr/src/app
 # We also generate the wheel package for the converter part of the UI
 RUN npm run setup
 
+# 
+RUN rm -rf .git
+
 # Openshift uses a random user id to run the container at a later stage
 # therefore we need to make sure that the user has the correct permissions
 RUN chgrp -R 0 /usr/src/app
