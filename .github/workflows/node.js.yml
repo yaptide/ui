@@ -46,6 +46,42 @@ jobs:
                 timeout_seconds: 120
                 command: npm test	
 
+    deploy-to-github-registry:
+      needs: build_and_test
+      runs-on: ubuntu-latest
+      env:
+        USERNAME: ${{ github.actor }}
+        PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        REGISTRY: ghcr.io
+        IMAGE_NAME: ${{ github.repository }}-ui
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v2
+          with:
+            submodules: true
+              
+        - name: Login to GitHub Container Registry
+          uses: docker/login-action@v1
+          with:
+            registry: ${{ env.REGISTRY }}
+            username: ${{ env.USERNAME }}
+            password: ${{ env.PASSWORD }}
+              
+        - name: Extract metadata (tags, labels) for Docker
+          id: meta
+          uses: docker/metadata-action@v4.4.0
+          with:
+            images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+              
+        - name: Build and push Docker image
+          uses: docker/build-push-action@v2
+          with:
+            file: Dockerfile-build
+            push: true
+            tags: ${{ steps.meta.outputs.tags }}
+            labels: ${{ steps.meta.outputs.labels }}
+              
+
     deploy_gh_pages:
         runs-on: ubuntu-latest
         needs: [build_and_test]
