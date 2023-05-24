@@ -1,7 +1,7 @@
 # Dockerfile needed to build the application and run it via npm 
 # This Dockerfile is used by the OpenShift build process
 # This is a multi-stage build to reduce the size of the final image
-FROM node:18
+FROM node:18 AS build
 
 # Install python3-pip via apt and clean cache
 # pip is needed to generate wheel package for converter part of the UI
