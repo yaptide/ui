@@ -1,24 +1,24 @@
 # Dockerfile needed to build the application and run it via npm 
 # This Dockerfile is used by the OpenShift build process
+# This is a multi-stage build to reduce the size of the final image
 FROM node:18
-
-# Directory where the app is installed and run
-WORKDIR /usr/src/app
-
-# First copy package.json and package-lock.json to install dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-COPY package*.json ./
-
-# Install app dependencies
-RUN npm install
-
-# Bundle app source
-COPY . .
 
 # Install python3-pip via apt and clean cache
 # pip is needed to generate wheel package for converter part of the UI
 # which later is being called using pyodide (python in the browser)
 RUN apt-get update && apt-get install -y --no-install-recommends python3-pip && rm -rf /var/lib/apt/lists/*
+
+# Directory where the app is installed and run
+WORKDIR /usr/src/app
+
+# First copy package.json and package-lock.json to install dependencies
+COPY package.json package-lock.json ./
+
+# Install app dependencies using npm ci as it is preferred for automated builds
+RUN npm ci --only=production
+
+# Bundle app source
+COPY . .
 
 # set HOME to /usr/src/app
 # this is needed to make sure that the git config is stored in the correct directory
@@ -32,8 +32,14 @@ RUN git config --global --add safe.directory /usr/src/app
 # We also generate the wheel package for the converter part of the UI
 RUN npm run setup
 
-# 
-RUN rm -rf .git
+# Build the app
+RUN npm run build
+
+# Stage 2: Production environment
+FROM node:18-alpine
+WORKDIR /app
+COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/node_modules ./node_modules
 
 # Openshift uses a random user id to run the container at a later stage
 # therefore we need to make sure that the user has the correct permissions
