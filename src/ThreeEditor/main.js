@@ -1,8 +1,7 @@
 import * as THREE from 'three';
 import { Editor } from './js/Editor.js';
+import { SidebarProjectRenderer } from './js/sidebar/Sidebar.Project.Renderer.js';
 import { ViewManager } from './js/viewport/ViewportManager.js';
-import { Sidebar } from './js/sidebar/Sidebar.js';
-import { Menubar } from './js/menubar/Menubar.js';
 
 export function initEditor(container) {
 	container = container || document.body;
@@ -25,23 +24,8 @@ export function initEditor(container) {
 
 	editor.viewManager = viewManager;
 
-	const sidebar = new Sidebar(editor);
-	container.appendChild(sidebar.dom);
-
-	Object.defineProperty(editor, 'oldSidebarVisible', {
-		get: function () {
-			return sidebar.getDisplay() !== 'none';
-		},
-		set: function (val) {
-			sidebar.setDisplay(val ? '' : 'none');
-		}
-	});
-
-	editor.oldSidebarVisible = false;
-
-	new Menubar(editor);
-	// menubar has required dependencies for other UI components and will be removed last.
-
+	// SidebarProjectRenderer has createRenderer function that is required for editor to work
+	new SidebarProjectRenderer(editor);
 	//
 
 	editor.storage.init(() => {
@@ -167,5 +151,5 @@ export function initEditor(container) {
 		}
 	}
 
-	return { editor, viewport: viewManager, sidebar };
+	return { editor, viewport: viewManager };
 }

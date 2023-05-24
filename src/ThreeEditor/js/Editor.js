@@ -26,10 +26,6 @@ export const JSON_VERSION = 0.7;
 
 export function Editor(container) {
 	this.signals = {
-		// script
-
-		editScript: new Signal(),
-
 		// notifications
 
 		editorCleared: new Signal(),
@@ -132,8 +128,6 @@ export function Editor(container) {
 	this.results = null;
 
 	this.viewManager = null;
-
-	this.oldSidebarVisible = true;
 
 	this.container = container;
 	container.setAttribute('tabindex', '-1');
