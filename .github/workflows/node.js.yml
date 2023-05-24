@@ -53,7 +53,7 @@ jobs:
         USERNAME: ${{ github.actor }}
         PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         REGISTRY: ghcr.io
-        IMAGE_NAME: ${{ github.repository }}-ui
+        IMAGE_NAME: ${{ github.repository }}-web
       steps:
         - name: Checkout
           uses: actions/checkout@v2

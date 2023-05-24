@@ -15,7 +15,7 @@ WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
 
 # Install app dependencies using npm ci as it is preferred for automated builds
-RUN npm ci --only=production
+RUN npm ci
 
 # Bundle app source
 COPY . .
