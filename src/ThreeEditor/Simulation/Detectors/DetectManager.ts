@@ -253,12 +253,19 @@ export class DetectManager extends THREE.Scene implements SimulationPropertiesTy
 		return options;
 	}
 
-	getDetectOptions(): Record<string, string> {
+	getDetectOptions(
+		additionalPredicate?: (
+			value: DetectGeometry,
+			index: number,
+			array: DetectGeometry[]
+		) => boolean
+	): Record<string, string> {
 		const options = this.detects
 			.filter(({ detectType, geometryData }) => {
 				if (detectType !== 'Zone') return true;
 				return this.editor.zoneManager.getZoneByUuid(geometryData.zoneUuid) !== undefined;
 			})
+			.filter(additionalPredicate || (() => true))
 			.reduce((acc, geometry) => {
 				acc[geometry.uuid] = `${geometry.name} [${geometry.id}]`;
 				return acc;

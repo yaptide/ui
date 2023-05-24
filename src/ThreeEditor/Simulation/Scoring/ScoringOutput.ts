@@ -55,6 +55,10 @@ export class ScoringOutput extends SimulationSceneContainer<ScoringQuantity> {
 			: null;
 	}
 
+	getTakenDetector(): string | null {
+		return this._geometry ?? null;
+	}
+
 	get geometry(): DetectGeometry | null {
 		if (!this._geometry) return null;
 		return this.editor.detectManager.getGeometryByUuid(this._geometry);

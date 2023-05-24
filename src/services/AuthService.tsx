@@ -24,12 +24,35 @@ export interface AuthProps {
 }
 
 type AuthUser = Pick<ResponseAuthStatus, 'username'>;
+const isAuthUser = (obj: unknown): obj is AuthUser => {
+	return (
+		typeof obj === 'object' &&
+		obj !== null &&
+		'username' in obj &&
+		typeof obj.username === 'string'
+	);
+};
+const isYaptideResponse = (obj: unknown): obj is YaptideResponse => {
+	return (
+		typeof obj === 'object' &&
+		obj !== null &&
+		'message' in obj &&
+		typeof obj.message === 'string'
+	);
+};
+const parseYaptideResponseMessage = (obj: unknown): string =>
+	isYaptideResponse(obj) ? obj.message : [obj].toString();
 
-const load = (key: string) => {
+const load = <T extends unknown = unknown>(
+	key: string,
+	guard: (obj: unknown) => obj is T = (obj): obj is T => true
+): T | null => {
 	const item = localStorage.getItem(key);
 	try {
-		const [obj] = JSON.parse(`[${item}]`);
-		return obj;
+		const data = JSON.parse(`[${item}]`);
+		const obj = Array.isArray(data) && data.length === 1 ? data[0] : null;
+		if (guard(obj)) return obj;
+		return null;
 	} catch {
 		return null;
 	}
@@ -63,7 +86,7 @@ export interface AuthContext {
 const [useAuth, AuthContextProvider] = createGenericContext<AuthContext>();
 
 const Auth = ({ children }: AuthProps) => {
-	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER));
+	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER, isAuthUser));
 	const [reachInterval, setReachInterval] = useState<number>(30000);
 	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(undefined);
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
@@ -93,14 +116,17 @@ const Auth = ({ children }: AuthProps) => {
 								break;
 						}
 						if (response?.status > 300) {
-							const message = await response.json().then(r => r.message);
+							const message = await response.json().then(parseYaptideResponseMessage);
 							if (message !== 'No token provided')
-								enqueueSnackbar(await response.json().then(r => r.message), {
-									variant: 'error'
-								});
+								enqueueSnackbar(
+									await response.json().then(parseYaptideResponseMessage),
+									{
+										variant: 'error'
+									}
+								);
 							console.error(
 								response.status,
-								await response.json().then(r => r.message)
+								await response.json().then(parseYaptideResponseMessage)
 							);
 						}
 					}

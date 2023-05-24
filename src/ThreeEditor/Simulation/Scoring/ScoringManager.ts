@@ -50,6 +50,13 @@ export class ScoringManager
 	getOutputByUuid(uuid: string) {
 		return this.children.find(output => output.uuid === uuid);
 	}
+	getTakenDetectors(): string[] {
+		return this.children
+			.reduce<(string | null)[]>((acc, output) => {
+				return acc.concat(output.getTakenDetector());
+			}, [])
+			.filter(Boolean);
+	}
 	toJSON(): ScoringManagerJSON {
 		return {
 			uuid: this.uuid,

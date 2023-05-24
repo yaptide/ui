@@ -45,7 +45,9 @@ class PythonWorkerBase implements PythonWorker {
 		const converterFolder = process.env.PUBLIC_URL + '/libs/converter/dist/';
 		const jsonUrl = converterFolder + 'yaptide_converter.json';
 
-		const { fileName: converterFileName } = await (await fetch(jsonUrl)).json();
+		const json = await (await fetch(jsonUrl)).json();
+		const { fileName: converterFileName } =
+			typeof json === 'object' && json && 'fileName' in json ? json : { fileName: undefined };
 
 		if (!converterFileName) throw new Error('converterFileName is not defined');
 
