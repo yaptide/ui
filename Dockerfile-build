@@ -35,19 +35,13 @@ RUN npm run setup
 # Build the app
 RUN npm run build
 
-# Stage 2: Production environment
-FROM node:18-alpine
-WORKDIR /app
-COPY --from=build /usr/src/app/build ./build
-COPY --from=build /usr/src/app/node_modules ./node_modules
+# Stage 2: Serve the app using Nginx
+FROM nginx:alpine
+COPY --from=build /usr/src/app/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
 
 # Openshift uses a random user id to run the container at a later stage
 # therefore we need to make sure that the user has the correct permissions
 #RUN chgrp -R 0 /usr/src/app
 #RUN chmod -R g=u /usr/src/app
-
-# Expose port 3000 on which the app is running
-EXPOSE 3000
-
-# Run the app
-CMD [ "npm", "run", "start" ]
