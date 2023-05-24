@@ -10,6 +10,7 @@ import { getNextFreeName } from '../../util/Name/Name';
 import { EditorObjectLoader } from '../../util/ObjectLoader';
 import { Physics } from '../Simulation/Physics/Physics';
 import { ScoringManager } from '../Simulation/Scoring/ScoringManager';
+import { SpecialComponentManager } from '../Simulation/SpecialComponents/SpecialComponentManager';
 import { Config } from './Config.js';
 import { ContextManager } from './Editor.Context';
 import { History as _History } from './History.js';
@@ -163,6 +164,7 @@ export function Editor(container) {
 	this.zoneManager = new ZoneManager(this); // Zone Manager
 	this.detectManager = new DetectManager(this); // Detect Manager
 	this.scoringManager = new ScoringManager(this); // Scoring Manager
+	this.specialComponentsManager = new SpecialComponentManager(this); // Special Components Manager
 
 	this.beam = new Beam(this);
 	this.physic = new Physics();

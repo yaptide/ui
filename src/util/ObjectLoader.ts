@@ -5,7 +5,7 @@ import {
 	CylinderFigure,
 	SphereFigure
 } from '../ThreeEditor/Simulation/Figures/BasicFigures';
-import { CTCube } from '../ThreeEditor/Simulation/SpecialComponents/CTCube';
+import { CTCube } from '../ThreeEditor/Simulation/SpecialComponents/CtCube';
 
 export class EditorObjectLoader extends ObjectLoader {
 	private editor: Editor;

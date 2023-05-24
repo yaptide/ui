@@ -17,7 +17,7 @@ import { AddObjectCommand } from '../../js/commands/AddObjectCommand';
 import { AddOutputCommand } from '../../js/commands/AddOutputCommand';
 import { AddQuantityCommand } from '../../js/commands/AddQuantityCommand';
 import { useSignal } from '../../../util/hooks/signals';
-import { CTCube } from '../../Simulation/SpecialComponents/CTCube';
+import { CTCube } from '../../Simulation/SpecialComponents/CtCube';
 import { AddZoneCommand } from '../../js/commands/AddZoneCommand';
 import { SidebarTree } from './SidebarTree/SidebarTree';
 import { PropertiesPanel } from './properties/PropertiesPanel';
@@ -90,10 +90,6 @@ export function EditorSidebar(props: { editor: Editor }) {
 					title: 'Sphere',
 					onClick: () =>
 						editor.execute(new AddObjectCommand(editor, new SphereFigure(editor)))
-				},
-				{
-					title: 'CT',
-					onClick: () => editor.execute(new AddObjectCommand(editor, new CTCube(editor)))
 				}
 			],
 			tree: (
@@ -139,6 +135,40 @@ export function EditorSidebar(props: { editor: Editor }) {
 					editor={editor}
 					sources={[editor.detectManager.detectContainer.children]}
 				/>
+			)
+		},
+		{
+			title: 'Special Components',
+			add: [
+				{
+					title: 'CT Cube',
+					onClick: () => {},
+					isDisabled: () =>
+						editor.specialComponentsManager.CTCubeContainer.children.length > 0
+				},
+				{
+					title: 'Beam Modulator',
+					onClick: () => {},
+					isDisabled: () =>
+						editor.specialComponentsManager.modulatorContainer.children.length > 0
+				}
+			],
+			tree: (
+				<>
+					<SidebarTree
+						editor={editor}
+						sources={editor.specialComponentsManager.CTCubeContainer.children}
+						dragDisabled
+					/>
+					{editor.specialComponentsManager.CTCubeContainer.children.length > 0 ? (
+						<Divider sx={{ marginBottom: t => t.spacing(1) }} />
+					) : undefined}
+					<SidebarTree
+						editor={editor}
+						sources={editor.specialComponentsManager.modulatorContainer.children}
+						dragDisabled
+					/>
+				</>
 			)
 		}
 	];

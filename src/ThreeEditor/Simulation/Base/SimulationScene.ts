@@ -40,8 +40,52 @@ export abstract class SimulationSceneContainer<TChild extends SimulationSceneChi
 		});
 		this.children.length = 0;
 	}
-	// toJSON(): Array<ReturnType<TChild['toJSON']>> { TODO: Make it work for all SimulationSceneContainers.
+	// TODO: Make it work for all SimulationSceneContainers.
+	// toJSON(): Array<ReturnType<TChild['toJSON']>> {
 	toJSON(): Object {
 		return this.children.map(child => child.toJSON());
 	}
 }
+
+export class SingletonContainer<TChild extends SimulationSceneChild>
+	extends SimulationSceneContainer<TChild>
+	implements UniqueChildrenNames
+{
+	readonly isSingletonContainer: true = true;
+	add(child: TChild): this {
+		if (this.children.length > 0) {
+			this.children.forEach(child => {
+				this.remove(child);
+			});
+		}
+		return super.add(child);
+	}
+}
+
+type ChildMethods<
+	ChildName extends string,
+	Prefix extends string = '',
+	Suffix extends string = ''
+> = `${Prefix}${'' extends Prefix ? ChildName : Capitalize<ChildName>}${Capitalize<Suffix>}`;
+
+type ChildMethodsManage<ChildName extends string> = ChildMethods<ChildName, 'add' | 'remove'>;
+
+type ChildMethodsCreate<ChildName extends string> = ChildMethods<ChildName, 'create'>;
+
+type ChildMethodsGet<ChildName extends string> = ChildMethods<
+	ChildName,
+	'get',
+	'byUuid' | 'byName'
+>;
+
+type ChildPropertiesContainer<ChildName extends string> = ChildMethods<ChildName, '', 'container'>;
+
+export type SimulationElementManager<TName extends string, TChild extends SimulationSceneChild> = {
+	[Method in ChildMethodsManage<TName>]: (child: TChild) => void;
+} & {
+	[Method in ChildMethodsCreate<TName>]: () => TChild;
+} & {
+	[Method in ChildMethodsGet<TName>]: (value: string) => TChild | null;
+} & {
+	[Property in ChildPropertiesContainer<TName>]: SimulationSceneContainer<TChild>;
+};
