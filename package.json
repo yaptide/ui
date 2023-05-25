@@ -23,6 +23,7 @@
 		"@types/three": "^0.150.1",
 		"@types/throttle-debounce": "^5.0.0",
 		"@uiw/react-textarea-code-editor": "^2.0.3",
+		"jest-matcher-deep-close-to": "^3.0.2",
 		"comlink": "^4.3.1",
 		"command-exists": "^1.2.9",
 		"convert-units": "^3.0.0-beta.5",
@@ -111,7 +112,6 @@
 		"@types/selenium-webdriver": "^4.1.14",
 		"cross-env": "^7.0.3",
 		"gh-pages": "^5.0.0",
-		"jest-matcher-deep-close-to": "^3.0.2",
 		"lint-staged": "^13.2.2",
 		"prettier": "2.8.7",
 		"selenium-webdriver": "^4.9.0"
