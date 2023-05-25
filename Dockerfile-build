@@ -15,7 +15,10 @@ WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
 
 # Install app dependencies using npm ci as it is preferred for automated builds
-ENV HUSKY 0
+# We also need to set HUSKY=0 enviromental variable as we don't want to run the husky hooks during the build
+# This is needed as the husky hooks are not installed during the build process
+ENV HUSKY=0
+
 RUN npm ci --omit=dev
 
 # Bundle app source
