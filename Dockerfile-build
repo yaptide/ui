@@ -37,6 +37,9 @@ RUN npm run setup
 # Build the app
 RUN npm run build
 
+# Fix deploy
+RUN npm run fix-web-dev
+
 # Stage 2: Serve the app using Nginx
 FROM nginx:alpine
 COPY --from=build /usr/src/app/build /usr/share/nginx/html
