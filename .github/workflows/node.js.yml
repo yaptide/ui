@@ -80,13 +80,12 @@ jobs:
         - name: Build and push Docker image
           uses: docker/build-push-action@v2
           with:
-#            file: Dockerfile
             context: .
             push: true
             tags: ${{ steps.meta.outputs.tags }}
             labels: ${{ steps.meta.outputs.labels }}
-            cache-from: type=gha
-            cache-to: type=gha,mode=max
+            # cache-from: type=gha
+            # cache-to: type=gha,mode=max
             build-args: |
               BUILDKIT_CONTEXT_KEEP_GIT_DIR=true              
 
