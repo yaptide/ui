@@ -1,4 +1,5 @@
 import { ReactNode, useCallback } from 'react';
+import defineLazyProperty from 'define-lazy-prop';
 import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/DetectFilter';
@@ -34,6 +35,7 @@ import { createGenericContext } from './GenericContext';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import { useCacheMap } from '../util/hooks/useCacheMap';
 import { ValidateShape } from '../util/Types';
+import { MapToLazy, lazyProperty } from '../util/LazyObject';
 
 export type JobInputs = {
 	jobId: string;
@@ -47,8 +49,6 @@ export interface ShSimulationProps {
 }
 
 export type FullSimulationData = Omit<JobInputs & JobStatusData & JobResults, 'message'>;
-
-export const fetchItSymbol = Symbol('fetchItSymbol');
 
 export interface RestSimulationContext {
 	postJobDirect: (...args: RequestPostJob) => Promise<ResponsePostJob>;
@@ -68,6 +68,11 @@ export interface RestSimulationContext {
 		signal?: AbortSignal,
 		cache?: boolean
 	) => Promise<FullSimulationData | undefined>;
+	getFullSimulationDataLazy: (
+		jobStatus: JobStatusData,
+		signal?: AbortSignal,
+		cache?: boolean
+	) => Promise<MapToLazy<FullSimulationData>>;
 }
 
 const recreateOrderInEstimators = (
@@ -373,6 +378,26 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 		[getJobInputs, getJobResults, getJobStatus]
 	);
 
+	const getFullSimulationDataLazy = useCallback(
+		async (jobStatus: JobStatusData, signal?: AbortSignal, cache = true) => {
+			const status = await getJobStatus('jobs/direct')(jobStatus, cache, undefined, signal);
+			const mergedData = {
+				estimators: lazyProperty<FullSimulationData['estimators'] | undefined>(async () => {
+					return status?.jobState === StatusState.COMPLETED
+						? (await getJobResults(jobStatus, signal, cache))?.estimators
+						: undefined;
+				}),
+				input: lazyProperty<FullSimulationData['input'] | undefined>(
+					async () => (await getJobInputs(jobStatus, signal, cache))?.input
+				),
+				...status
+			};
+
+			return mergedData as unknown as MapToLazy<FullSimulationData>;
+		},
+		[getJobInputs, getJobResults, getJobStatus]
+	);
+
 	return (
 		<ShSimulationContextProvider
 			value={{
@@ -388,7 +413,8 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 				getPageStatus,
 				getJobInputs,
 				getJobResults,
-				getFullSimulationData
+				getFullSimulationData,
+				getFullSimulationDataLazy
 			}}>
 			{children}
 		</ShSimulationContextProvider>

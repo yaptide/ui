@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
 import React, { ReactNode, useMemo } from 'react';
-import { useLoader } from '../../../services/DataLoaderService';
+import { isFullSimulationData, useLoader } from '../../../services/DataLoaderService';
 import {
 	SimulationInputFiles,
 	JobStatusData,
@@ -31,8 +31,10 @@ import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
 import { SimulationProgressBar } from './SimulationProgressBar';
 import { FullSimulationData } from '../../../services/ShSimulatorService';
+import { MapToLazy, useLazyObjectState } from '../../../util/LazyObject';
+
 type SimulationCardProps = {
-	simulation: FullSimulationData;
+	simulation: MapToLazy<FullSimulationData>;
 	loadResults?: (jobId: string | null) => void;
 	showInputFiles?: (inputFiles?: SimulationInputFiles) => void;
 } & CardProps;
@@ -54,7 +56,7 @@ const row = (id: number, title: string, value: string | undefined | ReactNode, g
 );
 
 export default function SimulationCard({
-	simulation,
+	simulation: lazySimulation,
 	loadResults,
 	showInputFiles,
 	...other
@@ -62,13 +64,18 @@ export default function SimulationCard({
 	const { resultsSimulationData } = useStore();
 	const { loadFromJson } = useLoader();
 
+	const [simulation] = useLazyObjectState(lazySimulation);
+
 	const rows = useMemo(() => {
 		const rows: JSX.Element[] = [];
+
 		if (currentJobStatusData[StatusState.RUNNING](simulation)) {
 			row(0, 'Message', simulation.message, !!simulation.message);
 		}
 		return rows;
 	}, [simulation]);
+
+	if (!simulation) return <Box>Loading</Box>;
 
 	const statusColor = (status?: StatusState) => {
 		switch (status) {
@@ -86,6 +93,7 @@ export default function SimulationCard({
 	};
 
 	const onClickLoadResults = () => {
+		if (!simulation.jobId) return;
 		loadResults?.call(null, simulation.jobId);
 	};
 
@@ -94,7 +102,7 @@ export default function SimulationCard({
 	};
 
 	const onClickInputFiles = () => {
-		showInputFiles?.call(null, simulation.input.inputFiles);
+		showInputFiles?.call(null, simulation.input?.inputFiles);
 	};
 
 	const onClickShowError = (simulation: JobStatusData<StatusState.FAILED>) => {
@@ -140,8 +148,8 @@ export default function SimulationCard({
 			/>
 			<CardHeader
 				title={`${simulation.title}`}
-				subheader={`${simulation.startTime.toLocaleString('en-US').split(' ')[0]} ${
-					simulation.startTime.toLocaleString('en-US').split(' ')[4] ?? '00:00:00'
+				subheader={`${simulation.startTime?.toLocaleString('en-US').split(' ')[0]} ${
+					simulation.startTime?.toLocaleString('en-US').split(' ')[4] ?? '00:00:00'
 				} - ${
 					currentJobStatusData[StatusState.COMPLETED](simulation) && simulation.endTime
 						? simulation.endTime.toLocaleString('en-US').split(' ')[4] ?? '?'
@@ -315,7 +323,13 @@ export default function SimulationCard({
 						color='info'
 						size='small'
 						onClick={onClickInputFiles}
-						disabled={!Boolean(showInputFiles && simulation?.input.inputFiles)}>
+						disabled={
+							!Boolean(
+								showInputFiles &&
+									'input' in simulation &&
+									simulation?.input?.inputFiles
+							)
+						}>
 						Input Files
 					</Button>
 
@@ -332,8 +346,10 @@ export default function SimulationCard({
 						sx={{ fontSize: '.8em' }}
 						color='info'
 						size='small'
-						onClick={() => simulation && onClickLoadToEditor(simulation)}
-						disabled={!Boolean(simulation?.input.inputJson)}>
+						onClick={() =>
+							isFullSimulationData(simulation) && onClickLoadToEditor(simulation)
+						}
+						disabled={!Boolean('input' in simulation && simulation?.input?.inputJson)}>
 						Load to editor
 					</Button>
 				</ButtonGroup>

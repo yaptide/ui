@@ -184,7 +184,7 @@ function taskStatusGuard<T extends StatusState>(
 }
 
 function jobStatusGuard<T extends StatusState>(data: unknown, value: T): data is JobStatusData<T> {
-	return (data as JobStatusData<T>).jobState === value;
+	return !!data && (data as JobStatusData<T>).jobState === value;
 }
 
 /* ------------------------------------ */

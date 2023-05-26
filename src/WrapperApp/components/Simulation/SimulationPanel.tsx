@@ -26,6 +26,7 @@ import {
 import { DemoCardGrid, PaginatedSimulationsFromBackend } from './SimulationCardGrid';
 import { PageNavigationProps, PageParamProps } from './SimulationPanelBar';
 import EXAMPLES from '../../../ThreeEditor/examples/examples';
+import { MapToLazy } from '../../../util/LazyObject';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
@@ -50,7 +51,8 @@ export default function SimulationPanel({
 		getHelloWorld,
 		getPageContents,
 		getPageStatus,
-		getFullSimulationData
+		getFullSimulationData,
+		getFullSimulationDataLazy
 	} = useShSimulation();
 	const { enqueueSnackbar } = useSnackbar();
 	const { resultsProvider, canLoadResultsData, clearLoadedResults } = useLoader();
@@ -78,7 +80,9 @@ export default function SimulationPanel({
 	const [trackedId, setTrackedId] = useState<string>();
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
 	const [simulationsStatusData, setSimulationsStatusData] = useState<JobStatusData[]>([]);
-	const [simulationsFullState, setSimulationsFullState] = useState<FullSimulationData[]>([]);
+	const [simulationsFullState, setSimulationsFullState] = useState<
+		MapToLazy<FullSimulationData>[]
+	>([]);
 	const [localSimulationData, setLocalSimulationData] = useState<FullSimulationData[]>(
 		localResultsSimulationData ?? []
 	);
@@ -150,13 +154,13 @@ export default function SimulationPanel({
 
 	useEffect(() => {
 		Promise.all(
-			simulationsStatusData.map(s => getFullSimulationData(s, controller.signal))
+			simulationsStatusData.map(s => getFullSimulationDataLazy(s, controller.signal))
 		).then(s => {
 			const fullData = s.filter(s => s !== undefined) as FullSimulationData[];
 			if (controller.signal.aborted) return;
 			setSimulationsFullState(fullData);
 		});
-	}, [controller.signal, getFullSimulationData, simulationsStatusData]);
+	}, [controller.signal, getFullSimulationDataLazy, simulationsStatusData]);
 
 	const handleLoadResults = async (taskId: string | null, simulation: unknown) => {
 		if (taskId === null) return goToResults?.call(null);

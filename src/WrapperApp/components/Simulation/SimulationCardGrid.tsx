@@ -25,11 +25,12 @@ import FolderOffIcon from '@mui/icons-material/FolderOff';
 import { useState } from 'react';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import { FullSimulationData } from '../../../services/ShSimulatorService';
+import { MapToLazy } from '../../../util/LazyObject';
 
 type GridLayout = 'grid' | 'inline-list' | 'block-list';
 
 type SimulationCardGridProps = {
-	simulations: FullSimulationData[];
+	simulations: MapToLazy<FullSimulationData>[];
 	handleLoadResults?: (taskId: string | null, simulation: unknown) => void;
 	handleShowInputFiles?: (inputFiles?: SimulationInputFiles) => void;
 	layout: GridLayout;
@@ -93,7 +94,7 @@ export function SimulationCardGrid({
 				{simulations.length ? (
 					simulations.map(simulation => (
 						<Grid
-							key={simulation.jobId}
+							key={simulation.jobId.toString()}
 							{...gridItemProps}>
 							<SimulationCard
 								simulation={simulation}
@@ -241,8 +242,6 @@ export function AccordionCardGrid({
 			expanded={expanded}
 			sx={{
 				'background': 'transparent',
-
-				// 'isolation': 'isolate',
 				'boxShadow': 'none',
 				'&:before': {
 					display: 'none'
