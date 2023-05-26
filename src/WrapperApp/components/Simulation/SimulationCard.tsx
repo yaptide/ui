@@ -18,7 +18,7 @@ import {
 	TableRow
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
-import React, { ReactNode, useMemo } from 'react';
+import React, { ReactNode, useMemo, useState } from 'react';
 import { useLoader } from '../../../services/DataLoaderService';
 import {
 	SimulationInputFiles,
@@ -30,9 +30,10 @@ import {
 import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
 import { SimulationProgressBar } from './SimulationProgressBar';
-import { FullSimulationData, useShSimulation } from '../../../services/ShSimulatorService';
+import { useShSimulation } from '../../../services/ShSimulatorService';
+import { useSnackbar } from 'notistack';
 type SimulationCardProps = {
-	simulation: FullSimulationData;
+	simulationStatus: JobStatusData;
 	loadResults?: (jobId: string | null) => void;
 	showInputFiles?: (inputFiles?: SimulationInputFiles) => void;
 } & CardProps;
@@ -54,22 +55,25 @@ const row = (id: number, title: string, value: string | undefined | ReactNode, g
 );
 
 export default function SimulationCard({
-	simulation,
+	simulationStatus,
 	loadResults,
 	showInputFiles,
 	...other
 }: SimulationCardProps) {
 	const { resultsSimulationData } = useStore();
 	const { loadFromJson } = useLoader();
-	const { getJobLogs } = useShSimulation();
+	const { getJobLogs, getJobInputs } = useShSimulation();
+	const { enqueueSnackbar } = useSnackbar();
+
+	const [disableLoadJson, setDisableLoadJson] = useState(false);
 
 	const rows = useMemo(() => {
 		const rows: JSX.Element[] = [];
-		if (currentJobStatusData[StatusState.RUNNING](simulation)) {
-			row(0, 'Message', simulation.message, !!simulation.message);
+		if (currentJobStatusData[StatusState.RUNNING](simulationStatus)) {
+			row(0, 'Message', simulationStatus.message, !!simulationStatus.message);
 		}
 		return rows;
-	}, [simulation]);
+	}, [simulationStatus]);
 
 	const statusColor = (status?: StatusState) => {
 		switch (status) {
@@ -87,15 +91,17 @@ export default function SimulationCard({
 	};
 
 	const onClickLoadResults = () => {
-		loadResults?.call(null, simulation.jobId);
+		loadResults?.call(null, simulationStatus.jobId);
 	};
 
 	const onClickGoToResults = () => {
 		loadResults?.call(null, null);
 	};
 
-	const onClickInputFiles = () => {
-		showInputFiles?.call(null, simulation.input.inputFiles);
+	const onClickInputFiles = async () => {
+		const inputFiles = await getJobInputs(simulationStatus);
+
+		showInputFiles?.call(null, inputFiles?.input.inputFiles);
 	};
 
 	const onClickShowError = async (simulation: JobStatusData<StatusState.FAILED>) => {
@@ -123,13 +129,17 @@ export default function SimulationCard({
 	};
 
 	const onClickSaveToFile = () => {
-		saveString(JSON.stringify(simulation), `${simulation.title}_result.json`);
+		saveString(JSON.stringify(simulationStatus), `${simulationStatus.title}_result.json`);
 	};
 
-	const onClickLoadToEditor = (simulation: FullSimulationData) => {
-		if (!simulation?.input.inputJson) return;
-		console.log(simulation?.input.inputJson);
-		loadFromJson(simulation.input.inputJson);
+	const onClickLoadToEditor = async (simulation: JobStatusData) => {
+		const inputJson = (await getJobInputs(simulation))?.input.inputJson;
+
+		if (!inputJson) {
+			setDisableLoadJson(true);
+			return enqueueSnackbar('Could not load json file', { variant: 'error' });
+		}
+		loadFromJson(inputJson);
 	};
 
 	return (
@@ -140,17 +150,18 @@ export default function SimulationCard({
 				sx={{
 					borderTopWidth: 5,
 					borderColor: statusColor(
-						simulation.localData ? StatusState.LOCAL : simulation.jobState
+						simulationStatus.localData ? StatusState.LOCAL : simulationStatus.jobState
 					)
 				}}
 			/>
 			<CardHeader
-				title={`${simulation.title}`}
-				subheader={`${simulation.startTime.toLocaleString('en-US').split(' ')[0]} ${
-					simulation.startTime.toLocaleString('en-US').split(' ')[4] ?? '00:00:00'
+				title={`${simulationStatus.title}`}
+				subheader={`${simulationStatus.startTime.toLocaleString('en-US').split(' ')[0]} ${
+					simulationStatus.startTime.toLocaleString('en-US').split(' ')[4] ?? '00:00:00'
 				} - ${
-					currentJobStatusData[StatusState.COMPLETED](simulation) && simulation.endTime
-						? simulation.endTime.toLocaleString('en-US').split(' ')[4] ?? '?'
+					currentJobStatusData[StatusState.COMPLETED](simulationStatus) &&
+					simulationStatus.endTime
+						? simulationStatus.endTime.toLocaleString('en-US').split(' ')[4] ?? '?'
 						: '?'
 				}`}
 			/>
@@ -164,18 +175,27 @@ export default function SimulationCard({
 					}}>
 					<Chip
 						variant='outlined'
-						label={simulation.localData ? StatusState.LOCAL : simulation.jobState}
+						label={
+							simulationStatus.localData
+								? StatusState.LOCAL
+								: simulationStatus.jobState
+						}
 						sx={{
 							borderColor: statusColor(
-								simulation.localData ? StatusState.LOCAL : simulation.jobState
+								simulationStatus.localData
+									? StatusState.LOCAL
+									: simulationStatus.jobState
 							)
 						}}
 					/>
-					{currentJobStatusData['hasSpecificProperty'](simulation, 'jobTasksStatus') && (
+					{currentJobStatusData['hasSpecificProperty'](
+						simulationStatus,
+						'jobTasksStatus'
+					) && (
 						<>
 							<Chip
 								variant='outlined'
-								label={`requestedPrimaries: ${simulation.jobTasksStatus.reduce(
+								label={`requestedPrimaries: ${simulationStatus.jobTasksStatus.reduce(
 									(acc, taskStatus) =>
 										currentTaskStatusData['hasSpecificProperty'](
 											taskStatus,
@@ -188,12 +208,12 @@ export default function SimulationCard({
 							/>
 							<Chip
 								variant='outlined'
-								label={`ntask: ${simulation.jobTasksStatus.length}`}
+								label={`ntask: ${simulationStatus.jobTasksStatus.length}`}
 							/>
 						</>
 					)}
-					{simulation.metadata &&
-						Object.entries(simulation.metadata)
+					{simulationStatus.metadata &&
+						Object.entries(simulationStatus.metadata)
 							.filter(([key, value]) => key !== 'type')
 							.map(([key, value]) => (
 								<Chip
@@ -217,7 +237,10 @@ export default function SimulationCard({
 						<TableBody>{rows}</TableBody>
 					</Table>
 				</TableContainer>
-				{currentJobStatusData['hasSpecificProperty'](simulation, 'jobTasksStatus') && (
+				{currentJobStatusData['hasSpecificProperty'](
+					simulationStatus,
+					'jobTasksStatus'
+				) && (
 					<>
 						<LinearProgress
 							variant='buffer'
@@ -232,7 +255,7 @@ export default function SimulationCard({
 							}}
 							valueBuffer={
 								Math.max(
-									...simulation.jobTasksStatus.map(
+									...simulationStatus.jobTasksStatus.map(
 										status =>
 											(status?.simulatedPrimaries ?? 0) /
 											(status?.requestedPrimaries ?? 1)
@@ -240,14 +263,14 @@ export default function SimulationCard({
 								) * 100
 							}
 							value={
-								(simulation.jobTasksStatus.reduce(
+								(simulationStatus.jobTasksStatus.reduce(
 									(acc, status) =>
 										acc +
 										(status?.simulatedPrimaries ?? 0) /
 											(status?.requestedPrimaries ?? 1),
 									0 as number
 								) /
-									(simulation.jobTasksStatus.length ?? 1)) *
+									(simulationStatus.jobTasksStatus.length ?? 1)) *
 								100
 							}
 						/>
@@ -256,7 +279,7 @@ export default function SimulationCard({
 								display: 'grid',
 								gridTemplateColumns: 'repeat(auto-fill, minmax(55px, 1fr))'
 							}}>
-							{simulation.jobTasksStatus.map((taskStatus, index) => (
+							{simulationStatus.jobTasksStatus.map((taskStatus, index) => (
 								<SimulationProgressBar
 									key={index}
 									status={taskStatus}
@@ -270,9 +293,9 @@ export default function SimulationCard({
 				<ButtonGroup
 					fullWidth
 					aria-label='full width outlined button group'>
-					{simulation.jobState &&
+					{simulationStatus.jobState &&
 						(() => {
-							if (currentJobStatusData[StatusState.COMPLETED](simulation)) {
+							if (currentJobStatusData[StatusState.COMPLETED](simulationStatus)) {
 								return (
 									<Button
 										sx={{ fontSize: '.8em' }}
@@ -280,18 +303,18 @@ export default function SimulationCard({
 										color='info'
 										disabled={!Boolean(loadResults)}
 										onClick={
-											resultsSimulationData?.jobId !== simulation.jobId
+											resultsSimulationData?.jobId !== simulationStatus.jobId
 												? onClickLoadResults
 												: onClickGoToResults
 										}>
-										{resultsSimulationData?.jobId !== simulation.jobId
+										{resultsSimulationData?.jobId !== simulationStatus.jobId
 											? 'Load Results'
 											: 'Go to Results'}
 									</Button>
 								);
 							} else if (
-								currentJobStatusData[StatusState.RUNNING](simulation) ||
-								currentJobStatusData[StatusState.PENDING](simulation)
+								currentJobStatusData[StatusState.RUNNING](simulationStatus) ||
+								currentJobStatusData[StatusState.PENDING](simulationStatus)
 							) {
 								return (
 									<Button
@@ -302,13 +325,13 @@ export default function SimulationCard({
 										Cancel
 									</Button>
 								);
-							} else if (currentJobStatusData[StatusState.FAILED](simulation)) {
+							} else if (currentJobStatusData[StatusState.FAILED](simulationStatus)) {
 								return (
 									<Button
 										sx={{ fontSize: '.8em' }}
 										color='info'
 										size='small'
-										onClick={() => onClickShowError(simulation)}>
+										onClick={() => onClickShowError(simulationStatus)}>
 										Error Log
 									</Button>
 								);
@@ -321,7 +344,7 @@ export default function SimulationCard({
 						color='info'
 						size='small'
 						onClick={onClickInputFiles}
-						disabled={!Boolean(showInputFiles && simulation?.input.inputFiles)}>
+						disabled={!Boolean(showInputFiles)}>
 						Input Files
 					</Button>
 
@@ -330,7 +353,7 @@ export default function SimulationCard({
 						color='info'
 						size='small'
 						onClick={onClickSaveToFile}
-						disabled={!Boolean(simulation.jobState === StatusState.COMPLETED)}>
+						disabled={!Boolean(simulationStatus.jobState === StatusState.COMPLETED)}>
 						Save to file
 					</Button>
 
@@ -338,8 +361,8 @@ export default function SimulationCard({
 						sx={{ fontSize: '.8em' }}
 						color='info'
 						size='small'
-						onClick={() => simulation && onClickLoadToEditor(simulation)}
-						disabled={!Boolean(simulation?.input.inputJson)}>
+						disabled={disableLoadJson}
+						onClick={() => simulationStatus && onClickLoadToEditor(simulationStatus)}>
 						Load to editor
 					</Button>
 				</ButtonGroup>

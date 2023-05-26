@@ -81,7 +81,6 @@ export default function SimulationPanel({
 	const [trackedId, setTrackedId] = useState<string>();
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
 	const [simulationsStatusData, setSimulationsStatusData] = useState<JobStatusData[]>([]);
-	const [simulationsFullState, setSimulationsFullState] = useState<FullSimulationData[]>([]);
 	const [localSimulationData, setLocalSimulationData] = useState<FullSimulationData[]>(
 		localResultsSimulationData ?? []
 	);
@@ -150,16 +149,6 @@ export default function SimulationPanel({
 		simulationIDInterval !== null && simulationInfo.length > 0 ? 1000 : null,
 		true
 	);
-
-	useEffect(() => {
-		Promise.all(
-			simulationsStatusData.map(s => getFullSimulationData(s, controller.signal))
-		).then(s => {
-			const fullData = s.filter(s => s !== undefined) as FullSimulationData[];
-			if (controller.signal.aborted) return;
-			setSimulationsFullState(fullData);
-		});
-	}, [controller.signal, getFullSimulationData, simulationsStatusData]);
 
 	const handleLoadResults = async (taskId: string | null, simulation: unknown) => {
 		if (taskId === null) return goToResults?.call(null);
@@ -411,7 +400,7 @@ export default function SimulationPanel({
 				/>
 			) : (
 				<PaginatedSimulationsFromBackend
-					simulations={simulationsFullState}
+					simulations={simulationsStatusData}
 					subtitle={'Yaptide backend server'}
 					pageData={{
 						orderType,

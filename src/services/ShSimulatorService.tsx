@@ -325,7 +325,7 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 						if (currentJobStatusData[StatusState.PENDING](data)) {
 						} else if (currentJobStatusData[StatusState.RUNNING](data)) {
 						} else if (currentJobStatusData[StatusState.FAILED](data)) {
-							console.log(data.error);
+							console.log(data.message);
 
 							statusDataCache.set(data.jobId, data, beforeCacheWrite);
 						} else if (currentJobStatusData[StatusState.COMPLETED](data))

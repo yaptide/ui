@@ -177,13 +177,7 @@ type JobStatusRunning = JobStatusType<
 
 type JobStatusPending = JobStatusType<StatusState.PENDING, {}>;
 
-type JobStatusFailed = JobStatusType<
-	StatusState.FAILED,
-	{
-		error: string;
-		logfile: string;
-	}
->;
+type JobStatusFailed = JobStatusType<StatusState.FAILED, {}>;
 
 type JobAllStatuses = JobStatusCompleted | JobStatusRunning | JobStatusPending | JobStatusFailed;
 
