@@ -1,6 +1,6 @@
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
-import { JobInputs, JobResults } from '../services/ShSimulatorService';
+import { JobInputs, JobLogs, JobResults } from '../services/ShSimulatorService';
 import { SimulationInputFiles, JobStatusData, SimulationInfo } from './ResponseTypes';
 import { Flatten } from './TypeTransformUtil';
 
@@ -80,6 +80,10 @@ export type RequestGetPageStatus = Flatten<
 
 export type RequestGetJobStatus = Flatten<
 	[SimInfoParam, CachedDataParams<JobStatusData>, RequestParam]
+>;
+
+export type RequestGetJobLogs = Flatten<
+	[[{ jobId: string }], RequestParam, CachedDataParams<JobLogs>]
 >;
 
 export type RequestGetJobInputs = Flatten<

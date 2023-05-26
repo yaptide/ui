@@ -30,7 +30,7 @@ import {
 import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
 import { SimulationProgressBar } from './SimulationProgressBar';
-import { FullSimulationData } from '../../../services/ShSimulatorService';
+import { FullSimulationData, useShSimulation } from '../../../services/ShSimulatorService';
 type SimulationCardProps = {
 	simulation: FullSimulationData;
 	loadResults?: (jobId: string | null) => void;
@@ -61,6 +61,7 @@ export default function SimulationCard({
 }: SimulationCardProps) {
 	const { resultsSimulationData } = useStore();
 	const { loadFromJson } = useLoader();
+	const { getJobLogs } = useShSimulation();
 
 	const rows = useMemo(() => {
 		const rows: JSX.Element[] = [];
@@ -97,19 +98,24 @@ export default function SimulationCard({
 		showInputFiles?.call(null, simulation.input.inputFiles);
 	};
 
-	const onClickShowError = (simulation: JobStatusData<StatusState.FAILED>) => {
+	const onClickShowError = async (simulation: JobStatusData<StatusState.FAILED>) => {
 		const errorWindow = window.open();
+
+		const logfile = await getJobLogs(simulation);
+		const logfiles = Object.entries(logfile?.logfiles ?? {}).map(([key, value]) => {
+			return `<details><summary><h2 style="display: inline;">${key}</h2></summary><pre>${value}</pre></details>`;
+		});
 
 		if (!errorWindow) return console.error('Could not open new window');
 		errorWindow.document.open();
 		errorWindow.document.write(
 			`<html>
 			<head>
-				<title>Log File</title>
+				<title>Log Files</title>
 			</head>
 			<body>
-			<h1>Log File</h1>
-			<pre>${simulation.logfile}</pre>
+			<h1>Log Files</h1>
+			${logfiles}
 			</body>
 			</html>`
 		);

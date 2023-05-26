@@ -271,6 +271,10 @@ export type ResponseGetJobInputs = {
 	};
 } & YaptideResponse;
 
+export type ResponseGetJobLogs = {
+	logfiles: Record<string, string>;
+} & YaptideResponse;
+
 export type ResponseGetJobResults = {
 	estimators: Estimator[];
 } & YaptideResponse;

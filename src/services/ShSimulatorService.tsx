@@ -6,6 +6,7 @@ import { ScoringManagerJSON } from '../ThreeEditor/Simulation/Scoring/ScoringMan
 import {
 	RequestCancelJob,
 	RequestGetJobInputs,
+	RequestGetJobLogs,
 	RequestGetJobResults,
 	RequestGetJobStatus,
 	RequestGetPageContents,
@@ -25,7 +26,8 @@ import {
 	StatusState,
 	currentJobStatusData,
 	ResponseGetJobInputs,
-	ResponseGetJobResults
+	ResponseGetJobResults,
+	ResponseGetJobLogs
 } from '../types/ResponseTypes';
 import { camelToSnakeCase } from '../types/TypeTransformUtil';
 import { orderAccordingToList } from '../util/Sort';
@@ -34,6 +36,10 @@ import { createGenericContext } from './GenericContext';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import { useCacheMap } from '../util/hooks/useCacheMap';
 import { ValidateShape } from '../util/Types';
+
+export type JobLogs = {
+	jobId: string;
+} & ResponseGetJobLogs;
 
 export type JobInputs = {
 	jobId: string;
@@ -61,6 +67,7 @@ export interface RestSimulationContext {
 	getJobBatchStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
 	getJobInputs: (...args: RequestGetJobInputs) => Promise<JobInputs | undefined>;
 	getJobResults: (...args: RequestGetJobResults) => Promise<JobResults | undefined>;
+	getJobLogs: (...args: RequestGetJobLogs) => Promise<JobLogs | undefined>;
 	getPageContents: (...args: RequestGetPageContents) => Promise<ResponseGetPageContents>;
 	getPageStatus: (...args: RequestGetPageStatus) => Promise<JobStatusData[]>;
 	getFullSimulationData: (
@@ -125,6 +132,7 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 	const statusDataCache = useCacheMap<JobStatusData>();
 	const inputsCache = useCacheMap<JobInputs>();
 	const resultsCache = useCacheMap<JobResults>();
+	const logsCache = useCacheMap<JobLogs>();
 
 	const getHelloWorld = useCallback(
 		(signal?: AbortSignal) =>
@@ -223,6 +231,35 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 			return await cachePromise;
 		},
 		[authKy, inputsCache]
+	);
+
+	const getJobLogs = useCallback(
+		async (...[info, signal, cache = true, beforeCacheWrite]: RequestGetJobLogs) => {
+			const { jobId } = info;
+
+			if (cache && logsCache.has(jobId)) return Promise.resolve(logsCache.get(jobId));
+
+			const cachePromise = logsCache.createPromise(
+				async resolve => {
+					const response = await authKy
+						.get('logfiles', {
+							signal,
+							searchParams: camelToSnakeCase({ jobId })
+						})
+						.json<ResponseGetJobLogs>();
+					const data: JobLogs = {
+						...response,
+						jobId
+					};
+					resolve(data);
+				},
+				jobId,
+				beforeCacheWrite
+			);
+
+			return await cachePromise;
+		},
+		[authKy, logsCache]
 	);
 
 	const getJobResults = useCallback(
@@ -388,6 +425,7 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 				getPageStatus,
 				getJobInputs,
 				getJobResults,
+				getJobLogs,
 				getFullSimulationData
 			}}>
 			{children}
