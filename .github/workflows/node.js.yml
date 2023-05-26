@@ -47,7 +47,8 @@ jobs:
                 command: npm test	
 
     deploy-to-github-registry:
-      needs: build_and_test
+      # needs: build_and_test
+      # this is a lengthy process, lets run it in parallel to build_and_test
       runs-on: ubuntu-latest
       env:
         USERNAME: ${{ github.actor }}
@@ -84,6 +85,7 @@ jobs:
             push: true
             tags: ${{ steps.meta.outputs.tags }}
             labels: ${{ steps.meta.outputs.labels }}
+            # it seems that cache is not giving any benefit in speed, lets keep it disabled for now
             # cache-from: type=gha
             # cache-to: type=gha,mode=max
             build-args: |

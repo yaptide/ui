@@ -2,7 +2,7 @@
 
 ## For users
 
-The development version is unstable, without many features and with lot o bugs.
+The development version is unstable, without many features and with lot of bugs.
 It is released automatically after every commit to the main branch of this repository and is available for testing here:
 <https://yaptide.github.io/web_dev/>
 
@@ -73,5 +73,3 @@ This project adapts source code from the following libraries:
   - most of copied code adapted to yaptide needs
 
 This work was partially funded by EuroHPC PL Project, Smart Growth Operational Programme 4.2
-
-
