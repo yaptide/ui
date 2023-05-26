@@ -86,7 +86,6 @@ export function initEditor(container) {
 			signals.historyChanged,
 			signals.detectFilterChanged,
 			signals.scoringQuantityChanged,
-			signals.CSGManagerStateChanged,
 			signals.projectChanged
 		];
 		stateChangedSignals.forEach(signal => signal.add(saveState));

@@ -1,9 +1,9 @@
 import { Command } from '../Command.js';
-import { DetectGeometry } from '../../Simulation/Detectors/DetectGeometry';
+import { Detector } from '../../Simulation/Detectors/Detector';
 
 /**
  * @param editor Editor
- * @param object DetectGeometry
+ * @param object Detector
  * @constructor
  */
 class AddDetectGeometryCommand extends Command {
@@ -17,14 +17,14 @@ class AddDetectGeometryCommand extends Command {
 	}
 
 	execute() {
-		if (this.object) this.editor.detectManager.addGeometry(this.object);
-		else this.object = this.editor.detectManager.createGeometry();
+		if (this.object) this.editor.detectorManager.addDetector(this.object);
+		else this.object = this.editor.detectorManager.createDetector();
 
 		this.editor.select(this.object);
 	}
 
 	undo() {
-		this.editor.detectManager.removeGeometry(this.object);
+		this.editor.detectorManager.removeDetector(this.object);
 		this.editor.deselect();
 	}
 
@@ -39,8 +39,8 @@ class AddDetectGeometryCommand extends Command {
 	fromJSON(json) {
 		super.fromJSON(json);
 		this.object =
-			this.editor.detectManager.getGeometryByUuid(json.object.uuid) ??
-			DetectGeometry.fromJSON(this.editor, json.object);
+			this.editor.detectorManager.getGeometryByUuid(json.object.uuid) ??
+			Detector.fromJSON(this.editor, json.object);
 	}
 }
 

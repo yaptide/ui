@@ -14,7 +14,7 @@ import {
 	isCylinderFigure,
 	isSphereFigure
 } from '../../../../Simulation/Figures/BasicFigures';
-import { DetectGeometry, isDetectGeometry } from '../../../../Simulation/Detectors/DetectGeometry';
+import { Detector, isDetectGeometry } from '../../../../Simulation/Detectors/Detector';
 import { CylData, DETECT_OPTIONS } from '../../../../../types/DetectTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { isWorldZone, WorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
@@ -31,10 +31,7 @@ import {
 import { PropertiesCategory } from './PropertiesCategory';
 import { isCTCube } from '../../../../Simulation/SpecialComponents/CtCube';
 
-const ObjectTypeField = (props: {
-	editor: Editor;
-	object: BasicFigure | DetectGeometry | WorldZone;
-}) => {
+const ObjectTypeField = (props: { editor: Editor; object: BasicFigure | Detector | WorldZone }) => {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
@@ -127,7 +124,7 @@ const WorldZoneCalculateField = (props: { editor: Editor; object: WorldZone }) =
 
 const BoxDimensionsField = (props: {
 	editor: Editor;
-	object: BasicFigure | WorldZone | DetectGeometry | Object3D;
+	object: BasicFigure | WorldZone | Detector | Object3D;
 }) => {
 	const { object, editor } = props;
 
@@ -222,7 +219,7 @@ const BoxDimensionsField = (props: {
 
 const CylinderDimensionsField = (props: {
 	editor: Editor;
-	object: BasicFigure | WorldZone | DetectGeometry | Object3D;
+	object: BasicFigure | WorldZone | Detector | Object3D;
 }) => {
 	const { object, editor } = props;
 
@@ -414,10 +411,10 @@ const SphereDimensionsField = (props: {
 	);
 };
 
-const ZoneDimensionsField = (props: { editor: Editor; object: DetectGeometry | Object3D }) => {
+const ZoneDimensionsField = (props: { editor: Editor; object: Detector | Object3D }) => {
 	const { object, editor } = props;
 
-	const { state: watchedObject } = useSmartWatchEditorState(editor, object as DetectGeometry);
+	const { state: watchedObject } = useSmartWatchEditorState(editor, object as Detector);
 
 	const getRenderFlag = useCallback(() => {
 		if (isDetectGeometry(watchedObject) && watchedObject.detectType === 'Zone') return true;
@@ -443,7 +440,7 @@ const ZoneDimensionsField = (props: { editor: Editor; object: DetectGeometry | O
 				label='Zone ID'
 				value={watchedObject.geometryData.zoneUuid}
 				onChange={handleChanged}
-				options={editor.zoneManager.getZoneOptions()}
+				options={editor.zoneManager.getBooleanZoneOptions()}
 			/>
 		</>
 	);
@@ -476,7 +473,7 @@ const DimensionsFields = (props: { editor: Editor; object: Object3D }) => {
 
 export function ObjectDimensions(props: {
 	editor: Editor;
-	object: BasicFigure | DetectGeometry | WorldZone;
+	object: BasicFigure | Detector | WorldZone;
 }) {
 	const { object, editor } = props;
 

@@ -7,7 +7,7 @@ import {
 	isCylinderFigure,
 	isSphereFigure
 } from '../../../Simulation/Figures/BasicFigures';
-import { DetectGeometry, isDetectGeometry } from '../../../Simulation/Detectors/DetectGeometry';
+import { Detector, isDetectGeometry } from '../../../Simulation/Detectors/Detector';
 import { DETECT_OPTIONS } from '../../../../types/DetectTypes';
 import {
 	createRowParamNumber,
@@ -28,7 +28,7 @@ import { UINumber, UIRow, UISelect, UIText } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectDimensions extends ObjectAbstract {
-	object?: BasicFigure | DetectGeometry | WorldZone;
+	object?: BasicFigure | Detector | WorldZone;
 
 	typeRow: UIRow;
 	type: UIText;
@@ -109,7 +109,7 @@ export class ObjectDimensions extends ObjectAbstract {
 		);
 	}
 
-	private setGeometryType(object: BasicFigure | DetectGeometry | WorldZone): string | undefined {
+	private setGeometryType(object: BasicFigure | Detector | WorldZone): string | undefined {
 		let geometryType;
 		if (isBasicFigure(object)) {
 			showUIElement(this.typeRow);
@@ -132,7 +132,7 @@ export class ObjectDimensions extends ObjectAbstract {
 		return geometryType;
 	}
 
-	private setBox(object: BasicFigure | DetectGeometry | WorldZone): void {
+	private setBox(object: BasicFigure | Detector | WorldZone): void {
 		showUIElement(this.xLengthRow);
 		showUIElement(this.yLengthRow);
 		showUIElement(this.zLengthRow);
@@ -158,7 +158,7 @@ export class ObjectDimensions extends ObjectAbstract {
 		}
 	}
 
-	private setSphere(object: BasicFigure | DetectGeometry | WorldZone): void {
+	private setSphere(object: BasicFigure | Detector | WorldZone): void {
 		showUIElement(this.radiusRow);
 		if (isWorldZone(object)) {
 			const { size } = object;
@@ -172,7 +172,7 @@ export class ObjectDimensions extends ObjectAbstract {
 		}
 	}
 
-	private setCylinder(object: BasicFigure | DetectGeometry | WorldZone): void {
+	private setCylinder(object: BasicFigure | Detector | WorldZone): void {
 		showUIElement(this.zLengthRow);
 		showUIElement(this.radiusRow);
 		if (isWorldZone(object)) {
@@ -198,13 +198,13 @@ export class ObjectDimensions extends ObjectAbstract {
 		const { object } = this;
 		if (!object) return;
 		showUIElement(this.zoneUuidRow);
-		this.zoneUuid.setOptions(this.editor.zoneManager.getZoneOptions());
+		this.zoneUuid.setOptions(this.editor.zoneManager.getBooleanZoneOptions());
 		if (isDetectGeometry(object)) {
 			this.zoneUuid.setValue(object.geometryData.zoneUuid);
 		}
 	}
 
-	setObject(object: BasicFigure | DetectGeometry | WorldZone): void {
+	setObject(object: BasicFigure | Detector | WorldZone): void {
 		super.setObject(object);
 		if (!object) return;
 

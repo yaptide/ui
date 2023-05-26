@@ -224,7 +224,7 @@
 			}
 		}
 	},
-	"detectManager": {
+	"detectorManager": {
 		"uuid": "E3635B58-BFC9-423A-B384-2838D32353E8",
 		"name": "DetectManager",
 		"detectGeometries": [

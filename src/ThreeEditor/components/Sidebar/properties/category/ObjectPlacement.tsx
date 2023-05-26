@@ -5,7 +5,7 @@ import { Vector3PropertyField } from '../fields/PropertyField';
 import { SimulationPropertiesType } from '../../../../../types/SimulationProperties';
 import { Beam, isBeam } from '../../../../Simulation/Physics/Beam';
 import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
-import { isDetectGeometry } from '../../../../Simulation/Detectors/DetectGeometry';
+import { isDetectGeometry } from '../../../../Simulation/Detectors/Detector';
 import { SetDetectPositionCommand } from '../../../../js/commands/SetDetectPositionCommand';
 import { SetPositionCommand } from '../../../../js/commands/SetPositionCommand';
 import { SetRotationCommand } from '../../../../js/commands/SetRotationCommand';

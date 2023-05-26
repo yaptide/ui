@@ -2,7 +2,7 @@ import hash from 'object-hash';
 import Signal from 'signals';
 import * as THREE from 'three';
 import { Beam } from '../Simulation/Physics/Beam';
-import { DetectManager } from '../Simulation/Detectors/DetectManager';
+import { DetectorManager } from '../Simulation/Detectors/DetectorManager';
 import { ZoneManager } from '../Simulation/Zones/ZoneManager';
 import { FigureScene } from '../Simulation/Figures/FigureScene';
 import { MaterialManager } from '../Simulation/Materials/MaterialManager';
@@ -26,7 +26,25 @@ export const JSON_VERSION = 0.7;
 
 export function Editor(container) {
 	this.signals = {
-		// notifications
+		/*
+      digraph finite_state_machine {
+         rankdir=LR;
+         size="15,15"
+         node [shape = circle];
+         useKeyboardEditorControls -> SidebarTreeItem [ label = "requestRenameAction" ];
+         ViewportClippedViewCSG -> ViewportManager [ label = "viewportConfigChanged" ];
+         WorldZone -> Viewport [ label = "autocalculateChanged" ];
+         EditorContext -> EditorContext [ label = "contextChanged" ];
+         EditorContext -> EditorSidebar [ label = "contextChanged" ];
+         EditorContext -> Viewport [ label = "contextChanged" ];
+         EditorContext -> ViewportManager [ label = "contextChanged" ];
+         EditorMenu -> ViewportManager [ label = "layoutChanged" ];
+         Editor -> SceneEditor [ label = "titleChanged" ];
+         Editor -> EditorAppBar[ label = "titleChanged" ];
+         Editor -> ViewportManager [ label = "viewportCameraChanged" ];
+         History -> EditorAppBar [ label = "historyChanged" ];
+      }
+      */
 
 		editorCleared: new Signal(),
 
@@ -42,7 +60,6 @@ export function Editor(container) {
 		sceneBackgroundChanged: new Signal(),
 		sceneEnvironmentChanged: new Signal(),
 		sceneGraphChanged: new Signal(),
-		sceneRendered: new Signal(),
 		projectChanged: new Signal(),
 
 		cameraChanged: new Signal(),
@@ -56,6 +73,10 @@ export function Editor(container) {
 		objectAdded: new Signal(),
 		objectChanged: new Signal(),
 		objectRemoved: new Signal(),
+
+		figureAdded: new Signal(),
+		figureChanged: new Signal(),
+		figureRemoved: new Signal(),
 
 		//YAPTIDE zones
 		zoneAdded: new Signal(),
@@ -87,42 +108,96 @@ export function Editor(container) {
 		materialChanged: new Signal(),
 		materialRemoved: new Signal(),
 
-		scriptAdded: new Signal(),
-		scriptChanged: new Signal(),
-		scriptRemoved: new Signal(),
-
 		windowResize: new Signal(),
 
 		showGridChanged: new Signal(),
 		showHelpersChanged: new Signal(),
+
+		/**
+		 * @deprecated
+		 * ViewportManager signal
+		 */
+		sceneRendered: new Signal(),
+
+		/**
+		 * @deprecated
+		 * Viewport signal
+		 */
 		refreshSidebarObject3D: new Signal(),
+
+		/**
+		 * History -> EditorAppBar
+		 */
 		historyChanged: new Signal(),
 
+		/**
+		 * Editor -> ViewportManager
+		 */
 		viewportCameraChanged: new Signal(),
 
-		animationStopped: new Signal(),
-
-		// config
+		/**
+		 * Editor -> SceneEditor
+		 * Editor -> EditorAppBar
+		 */
 		titleChanged: new Signal(),
 
-		// YAPTIDE signals
-		selectModeChanged: new Signal(),
+		/**
+		 * EditorMenu -> ViewportManager
+		 */
+		layoutChanged: new Signal(),
 
-		layoutChanged: new Signal(), // Layout signal
-
+		/**
+		 * EditorContext -><-
+		 * EditorContext -> EditorSidebar
+		 * EditorContext -> Viewport
+		 * EditorContext -> ViewportManager
+		 */
 		contextChanged: new Signal(),
 
+		/**
+		 * WorldZone -> Viewport
+		 */
 		autocalculateChanged: new Signal(),
 
-		CSGZoneAdded: new Signal(), // Sidebar.Properties signal
+		/**
+		 * ViewportClippedViewCSG -> ViewportManager
+		 */
+		viewportConfigChanged: new Signal(),
 
-		viewportConfigChanged: new Signal(), // Viewport config signal
+		/**
+		 * useKeyboardEditorControls -> SidebarTreeItem
+		 */
+		requestRenameAction: new Signal(),
 
-		CSGManagerStateChanged: new Signal(), // State of CSGmanager changed
+		/**
+		 * @deprecated
+		 * YAPTIDE signals
+		 */
+		selectModeChanged: new Signal(),
 
+		/**
+		 * @deprecated
+		 * State of CSGmanager changed
+		 */
+		ZoneManagerStateChanged: new Signal(),
+
+		/**
+		 * @deprecated
+		 * Sidebar.Properties signal
+		 */
+		CSGZoneAdded: new Signal(),
+
+		/**
+		 * @deprecated
+		 * Menubar.Examples signal
+		 */
 		exampleLoaded: new Signal(),
 
-		requestRenameAction: new Signal()
+		/**
+		 * @deprecated
+		 * ViewportManager signal
+		 */
+		animationStopped: new Signal()
 	};
 
 	this.results = null;
@@ -156,7 +231,7 @@ export function Editor(container) {
 
 	this.materialManager = new MaterialManager(this); // Material Manager
 	this.zoneManager = new ZoneManager(this); // Zone Manager
-	this.detectManager = new DetectManager(this); // Detect Manager
+	this.detectorManager = new DetectorManager(this); // Detect Manager
 	this.scoringManager = new ScoringManager(this); // Scoring Manager
 	this.specialComponentsManager = new SpecialComponentManager(this); // Special Components Manager
 
@@ -187,9 +262,9 @@ export function Editor(container) {
 		this.scene,
 		this.zoneManager,
 		this.beam,
-		this.detectManager,
-		this.detectManager.filterContainer,
-		this.scoringManager
+		this.detectorManager,
+		this.scoringManager,
+		this.specialComponentsManager
 	];
 }
 
@@ -477,9 +552,7 @@ Editor.prototype = {
 	},
 
 	getObjectByName(name) {
-		const objectCollections = [...this.searchableObjectCollections];
-
-		const object = objectCollections
+		const object = this.searchableObjectCollections
 			.map(e => e.getObjectByName(name))
 			.find(e => typeof e !== 'undefined');
 
@@ -487,17 +560,10 @@ Editor.prototype = {
 	},
 
 	getObjectById(id) {
-		const objectCollections = [
-			this.scene,
-			this.zoneManager,
-			this.beam,
-			this.detectManager,
-			this.detectManager.filterContainer,
-			this.scoringManager
-		];
 		const object =
-			objectCollections.map(e => e.getObjectById(id)).find(e => typeof e !== 'undefined') ??
-			null;
+			this.searchableObjectCollections
+				.map(e => e.getObjectById(id))
+				.find(e => typeof e !== 'undefined') ?? null;
 		return object;
 	},
 
@@ -506,35 +572,19 @@ Editor.prototype = {
 	},
 
 	selectById(id) {
-		if (id === this.camera.id) {
-			this.select(this.camera);
-			return;
-		}
-
-		const objectCollections = [...this.searchableObjectCollections];
-
 		const object =
-			objectCollections.map(e => e.getObjectById(id)).find(e => typeof e !== 'undefined') ??
-			null;
+			this.searchableObjectCollections
+				.map(e => e.getObjectById(id))
+				.find(e => typeof e !== 'undefined') ?? null;
 
 		this.select(object);
 	},
 
 	selectByUuid(uuid) {
-		const objectCollections = [
-			this.scene,
-			this.zoneManager,
-			this.beam,
-			this.detectManager,
-			this.detectManager.filterContainer,
-			this.scoringManager
-		];
 		const object =
-			objectCollections.find(e => e.uuid === uuid) ??
-			objectCollections
+			this.searchableObjectCollections
 				.map(e => e.getObjectByProperty('uuid', uuid))
-				.find(e => typeof e !== 'undefined') ??
-			null;
+				.find(e => typeof e !== 'undefined') ?? null;
 
 		this.select(object);
 	},
@@ -578,7 +628,7 @@ Editor.prototype = {
 
 		this.materialManager.reset();
 		this.zoneManager.reset();
-		this.detectManager.reset();
+		this.detectorManager.reset();
 		this.scoringManager.reset();
 		this.beam.reset();
 		this.physic.reset();
@@ -617,7 +667,7 @@ Editor.prototype = {
 
 		// CSGManager must be loaded after scene and simulation materials
 		this.zoneManager.fromJSON(json.zoneManager); // CSGManager must be loaded in order not to lose reference in components
-		this.detectManager.fromJSON(json.detectManager);
+		this.detectorManager.fromJSON(json.detectorManager);
 		this.scoringManager.fromJSON(json.scoringManager);
 		this.beam.fromJSON(json.beam);
 		this.physic.fromJSON(json.physic);
@@ -663,7 +713,7 @@ Editor.prototype = {
 			scene: this.scene.toJSON(),
 			history: this.history.toJSON(),
 			zoneManager: this.zoneManager.toJSON(), // serialize CSGManager
-			detectManager: this.detectManager.toJSON(), // serialize DetectManager;
+			detectorManager: this.detectorManager.toJSON(), // serialize DetectManager;
 			beam: this.beam.toJSON(),
 			physic: this.physic.toJSON(),
 			materialManager: this.materialManager.toJSON(), // serialize MaterialManager

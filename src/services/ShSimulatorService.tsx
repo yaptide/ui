@@ -76,10 +76,10 @@ export const recreateRefsInResults = (results: JobStatusData<StatusState.COMPLET
 	if (!inputJson) throw new Error('No editor data');
 	if (!result) throw new Error('No result data');
 
-	const { scoringManager, detectManager }: EditorJson = inputJson;
+	const { scoringManager, detectorManager }: EditorJson = inputJson;
 
 	result.estimators = recreateOrderInEstimators(result.estimators, scoringManager);
-	result.estimators = recreateRefToFilters(result.estimators, detectManager?.filters);
+	result.estimators = recreateRefToFilters(result.estimators, detectorManager?.filters);
 };
 
 const updateEstimators = (estimators: Estimator[]) => {

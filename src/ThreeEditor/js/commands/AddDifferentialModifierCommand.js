@@ -51,7 +51,7 @@ export class AddDifferentialModifierCommand extends Command {
 	fromJSON(json) {
 		super.fromJSON(json);
 		this.object =
-			this.editor.detectManager.getGeometryByUuid(json.object.uuid) ??
+			this.editor.detectorManager.getGeometryByUuid(json.object.uuid) ??
 			ScoringQuantity.fromJSON(this.editor, json.object);
 		this.modifier = DifferentialModifier.fromJSON(json.modifier);
 		if (json.oldModifier) this.oldModifier = DifferentialModifier.fromJSON(json.oldModifier);

@@ -63,11 +63,17 @@ const Accordion = styled((props: AccordionProps) => (
 	}
 });
 
-interface TreeElement {
+export type TreeElement = {
 	title: string;
-	add: { title: string; onClick: () => void; isDisabled?: () => boolean }[];
+	add: TreeAddButtonProps[];
 	tree: ReactElement;
-}
+};
+
+export type TreeAddButtonProps = {
+	title: string;
+	onClick: () => void;
+	isDisabled?: () => boolean;
+};
 
 export interface EditorSidebarTabTreeProps {
 	elements: TreeElement[];
@@ -84,8 +90,23 @@ function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
 					direction='row'
 					spacing={2}
 					alignItems='center'>
-					<Typography>Add:</Typography>
-					<ButtonGroup size='small'>
+					<ButtonGroup
+						size='small'
+						fullWidth>
+						<Button
+							disableRipple
+							disableFocusRipple
+							sx={{
+								'maxWidth': '40px',
+								'&:hover': {
+									backgroundColor: ({ palette }) => palette.primary.main,
+									boxShadow: 'none',
+									cursor: 'default'
+								}
+							}}
+							variant='contained'>
+							Add:
+						</Button>
 						{props.add.map(add => (
 							<Button
 								key={add.title}

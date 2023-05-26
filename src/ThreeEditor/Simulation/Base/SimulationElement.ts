@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { SimulationSceneChild, SimulationSceneContainer } from './SimulationScene';
+import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 
 /**
  * This is the base class for all simulation elements.

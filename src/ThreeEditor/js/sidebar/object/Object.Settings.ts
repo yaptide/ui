@@ -60,11 +60,11 @@ export class ObjectSettings extends ObjectAbstract {
 		const { trace, primaries, children: quantities } = object;
 		this.object = object;
 
-		this.geometry.setOptions(this.editor.detectManager.getDetectOptions());
+		this.geometry.setOptions(this.editor.detectorManager.getDetectOptions());
 		this.geometry.setValue(object.geometry?.uuid);
 
 		if (trace[0]) {
-			const options = this.editor.detectManager.getFilterOptions();
+			const options = this.editor.detectorManager.getFilterOptions();
 			hideUIElement(this.primariesRow);
 			hideUIElement(this.addQuantityRow);
 			if (Object.keys(options).length > 0) {
@@ -108,7 +108,7 @@ export class ObjectSettings extends ObjectAbstract {
 			this.editor,
 			this.object,
 			'geometry',
-			this.editor.detectManager.getGeometryByUuid(this.geometry.getValue())
+			this.editor.detectorManager.getGeometryByUuid(this.geometry.getValue())
 		);
 		[primaries, trace, geometry].forEach(command => this.editor.execute(command));
 	}

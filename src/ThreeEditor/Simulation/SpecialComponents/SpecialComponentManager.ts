@@ -1,14 +1,13 @@
+import * as THREE from 'three';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { Editor } from '../../js/Editor';
-import {
-	SimulationElementManager,
-	SimulationSceneContainer,
-	SingletonContainer
-} from '../Base/SimulationScene';
-import { BeamModulator } from './BeamModulator';
-import { CTCube } from './CtCube';
+import { SimulationSceneContainer, SingletonContainer } from '../Base/SimulationContainer';
+import { BeamModulator, isBeamModulator } from './BeamModulator';
+import { CTCube, isCTCube } from './CtCube';
+import { SimulationElementManager } from '../Base/SimulationManager';
 
 export class SpecialComponentManager
+	extends THREE.Scene
 	implements
 		SimulationElementManager<'CTCube', CTCube>,
 		SimulationElementManager<'modulator', BeamModulator>,
@@ -24,19 +23,26 @@ export class SpecialComponentManager
 	CTCubeContainer: SimulationSceneContainer<CTCube>;
 	modulatorContainer: SimulationSceneContainer<BeamModulator>;
 	constructor(editor: Editor) {
+		super();
+
 		this.editor = editor;
+		this.name = 'Special Components';
 		this.CTCubeContainer = new SingletonContainer<CTCube>(editor, 'CT Cube', 'CTCube');
 		this.modulatorContainer = new SingletonContainer<BeamModulator>(
 			editor,
 			'Beam Modulator',
 			'BeamModulator'
 		);
+		this.add(this.CTCubeContainer);
+		this.add(this.modulatorContainer);
 	}
 	addCTCube(ctCube: CTCube) {
 		this.CTCubeContainer.add(ctCube);
+		this.editor.select(ctCube);
 	}
 	addModulator(modulator: BeamModulator) {
 		this.modulatorContainer.add(modulator);
+		this.editor.select(modulator);
 	}
 	removeCTCube(ctCube: CTCube) {
 		this.CTCubeContainer.remove(ctCube);
@@ -72,4 +78,8 @@ export class SpecialComponentManager
 			modulator: this.modulatorContainer.toJSON()
 		};
 	}
+}
+
+export function isSpecialComponent(object: unknown): object is CTCube | BeamModulator {
+	return isCTCube(object) || isBeamModulator(object);
 }

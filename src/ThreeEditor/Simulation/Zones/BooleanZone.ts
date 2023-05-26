@@ -32,7 +32,6 @@ export class BooleanZone extends SimulationZone {
 		zoneRemoved: Signal<BooleanZone>;
 		zoneChanged: Signal<BooleanZone>;
 		zoneEmpty: Signal<BooleanZone>;
-		CSGManagerStateChanged: Signal;
 	};
 
 	set unionOperations(operations: OperationTuple[][]) {
@@ -173,7 +172,6 @@ export class BooleanZone extends SimulationZone {
 		this.debouncedUpdatePreview();
 
 		this.signals.zoneChanged.dispatch(this);
-		this.signals.CSGManagerStateChanged.dispatch();
 	}
 
 	updatePreview(): void {
@@ -224,4 +222,4 @@ export class BooleanZone extends SimulationZone {
 	}
 }
 
-export const isZone = (x: unknown): x is BooleanZone => x instanceof BooleanZone;
+export const isBooleanZone = (x: unknown): x is BooleanZone => x instanceof BooleanZone;

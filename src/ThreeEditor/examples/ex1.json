@@ -23,7 +23,7 @@
 			"sad": { "type": "none", "x": 0, "y": 0 },
 			"sigma": { "type": "Gaussian", "x": 0, "y": 0 }
 		},
-		"detectManager": {
+		"detectorManager": {
 			"detectGeometries": [
 				{
 					"colorHex": 327424,

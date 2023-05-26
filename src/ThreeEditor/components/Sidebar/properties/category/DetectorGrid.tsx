@@ -1,12 +1,12 @@
 import { useCallback } from 'react';
 import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
 import { Editor } from '../../../../js/Editor';
-import { DetectGeometry, isDetectGeometry } from '../../../../Simulation/Detectors/DetectGeometry';
+import { Detector, isDetectGeometry } from '../../../../Simulation/Detectors/Detector';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { NumberPropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
-export function DetectorGrid(props: { editor: Editor; object: DetectGeometry }) {
+export function DetectorGrid(props: { editor: Editor; object: Detector }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);

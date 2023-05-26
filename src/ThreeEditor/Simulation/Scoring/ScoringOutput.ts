@@ -1,7 +1,7 @@
 import { Editor } from '../../js/Editor';
-import { SimulationSceneContainer } from '../Base/SimulationScene';
+import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { DetectFilter } from './DetectFilter';
-import { DetectGeometry } from '../Detectors/DetectGeometry';
+import { Detector } from '../Detectors/Detector';
 import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
 
 export type ScoringOutputJSON = {
@@ -51,7 +51,7 @@ export class ScoringOutput extends SimulationSceneContainer<ScoringQuantity> {
 
 	get traceFilter(): DetectFilter | null {
 		return this._trace[0] && this._trace[1]
-			? this.editor.detectManager.getFilterByUuid(this._trace[1])
+			? this.editor.detectorManager.getFilterByUuid(this._trace[1])
 			: null;
 	}
 
@@ -59,12 +59,12 @@ export class ScoringOutput extends SimulationSceneContainer<ScoringQuantity> {
 		return this._geometry ?? null;
 	}
 
-	get geometry(): DetectGeometry | null {
+	get geometry(): Detector | null {
 		if (!this._geometry) return null;
-		return this.editor.detectManager.getGeometryByUuid(this._geometry);
+		return this.editor.detectorManager.getGeometryByUuid(this._geometry);
 	}
 
-	set geometry(geometry: DetectGeometry | null) {
+	set geometry(geometry: Detector | null) {
 		this._geometry = geometry?.uuid;
 	}
 
@@ -129,7 +129,7 @@ export class ScoringOutput extends SimulationSceneContainer<ScoringQuantity> {
 			.flat()
 			.forEach(qty => this.addQuantity(ScoringQuantity.fromJSON(this.editor, qty)));
 		this.geometry = json.detectGeometry
-			? this.editor.detectManager.getGeometryByUuid(json.detectGeometry)
+			? this.editor.detectorManager.getGeometryByUuid(json.detectGeometry)
 			: null;
 		return this;
 	}

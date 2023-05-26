@@ -44,7 +44,7 @@ export class ScoringQuantity extends SimulationElement {
 
 	get filter(): DetectFilter | null {
 		if (!this.hasFilter) return null;
-		return this.editor.detectManager.getFilterByUuid(this._filter);
+		return this.editor.detectorManager.getFilterByUuid(this._filter);
 	}
 	set filter(filter: DetectFilter | null) {
 		this._filter = filter?.uuid ?? '';
@@ -115,7 +115,7 @@ export class ScoringQuantity extends SimulationElement {
 			acc[modifier.uuid] = modifier;
 			return acc;
 		}, {} as Record<string, DifferentialModifier>);
-		this.filter = json.filter ? this.editor.detectManager.getFilterByUuid(json.filter) : null;
+		this.filter = json.filter ? this.editor.detectorManager.getFilterByUuid(json.filter) : null;
 		if (this._filter.length) this.hasFilter = true;
 		this.keyword = json.keyword;
 		return this;

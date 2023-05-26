@@ -2,11 +2,13 @@ import * as Comlink from 'comlink';
 import { Signal } from 'signals';
 import * as THREE from 'three';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { SimulationSceneContainer } from '../Base/SimulationScene';
+import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { Editor } from '../../js/Editor';
 import { WorldZone, WorldZoneJSON } from './WorldZone/WorldZone';
-import { BooleanZone, BooleanZoneJSON } from './BooleanZone';
+import { BooleanZone, BooleanZoneJSON, isBooleanZone } from './BooleanZone';
 import { ZoneWorker } from '../../CSG/CSGWorker';
+import { SimulationZone } from '../Base/SimZone';
+import { SimulationElementManager } from '../Base/SimulationManager';
 
 interface ZoneManagerJSON {
 	uuid: string;
@@ -15,7 +17,7 @@ interface ZoneManagerJSON {
 	worldZone: WorldZoneJSON;
 }
 
-export class ZoneContainer extends SimulationSceneContainer<BooleanZone> {
+export class ZoneContainer extends SimulationSceneContainer<SimulationZone> {
 	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -29,13 +31,16 @@ export class ZoneContainer extends SimulationSceneContainer<BooleanZone> {
 		this.children.forEach(({ simulationMaterial }) => simulationMaterial.decrement());
 		super.reset();
 	}
-	remove(zone: BooleanZone): this {
+	remove(zone: SimulationZone): this {
 		zone.simulationMaterial.decrement();
 		return super.remove(zone);
 	}
 }
 
-export class ZoneManager extends THREE.Scene implements SimulationPropertiesType {
+export class ZoneManager
+	extends THREE.Scene
+	implements SimulationPropertiesType, SimulationElementManager<'zone', SimulationZone>
+{
 	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -48,12 +53,11 @@ export class ZoneManager extends THREE.Scene implements SimulationPropertiesType
 
 	private signals: {
 		objectAdded: Signal<THREE.Object3D>;
-		zoneAdded: Signal<BooleanZone>;
+		zoneAdded: Signal<SimulationZone>;
 		zoneEmpty: Signal<BooleanZone>;
 		objectRemoved: Signal<THREE.Object3D>;
-		zoneRemoved: Signal<BooleanZone>;
+		zoneRemoved: Signal<SimulationZone>;
 		sceneGraphChanged: Signal;
-		CSGManagerStateChanged: Signal;
 	};
 
 	readonly isZoneManager: true = true;
@@ -87,23 +91,23 @@ export class ZoneManager extends THREE.Scene implements SimulationPropertiesType
 		return zone;
 	}
 
-	addZone(zone: BooleanZone): void {
-		zone.worker = this.worker;
+	addZone(zone: SimulationZone): void {
+		if (isBooleanZone(zone)) zone.worker = this.worker;
 		this.zoneContainer.add(zone);
+		this.editor.select(zone);
 
 		this.signals.objectAdded.dispatch(zone);
 		this.signals.zoneAdded.dispatch(zone);
 		this.signals.sceneGraphChanged.dispatch();
-		this.signals.CSGManagerStateChanged.dispatch();
 	}
 
-	removeZone(zone: BooleanZone): void {
+	removeZone(zone: SimulationZone): void {
 		this.zoneContainer.remove(zone);
+		this.editor.deselect();
 
 		this.signals.objectRemoved.dispatch(zone);
 		this.signals.zoneRemoved.dispatch(zone);
 		this.signals.sceneGraphChanged.dispatch();
-		this.signals.CSGManagerStateChanged.dispatch();
 	}
 
 	toJSON() {
@@ -153,27 +157,40 @@ export class ZoneManager extends THREE.Scene implements SimulationPropertiesType
 		return this;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	getObjectById(id: number) {
 		return this.worldZone.getObjectById(id) ?? super.getObjectById(id);
 	}
 
-	getZoneById(id: number): BooleanZone | undefined {
-		return this.zoneContainer.children.find((zone: BooleanZone) => zone.id === id);
+	getZoneByName(value: string) {
+		return (
+			[this.worldZone as unknown as SimulationZone, ...this.zoneContainer.children].find(
+				(zone: SimulationZone) => zone.name === value
+			) ?? null
+		);
 	}
 
-	getZoneByUuid(uuid: string): BooleanZone | undefined {
-		return this.zoneContainer.children.find((zone: BooleanZone) => zone.uuid === uuid);
+	getZoneByUuid(uuid: string) {
+		return (
+			[this.worldZone as unknown as SimulationZone, ...this.zoneContainer.children].find(
+				(zone: SimulationZone) => zone.uuid === uuid
+			) ?? null
+		);
 	}
 
 	handleZoneEmpty(zone: BooleanZone): void {
 		this.removeZone(zone);
 	}
 
-	getZoneOptions(): Record<string, string> {
-		const zoneOptions = this.zoneContainer.children.reduce((acc, zone: BooleanZone) => {
-			acc[zone.uuid] = `${zone.name} [${zone.id}]`;
-			return acc;
-		}, {} as Record<string, string>);
+	getBooleanZoneOptions(): Record<string, string> {
+		const zoneOptions = this.zoneContainer.children
+			.filter(isBooleanZone)
+			.reduce((acc, zone: BooleanZone) => {
+				acc[zone.uuid] = `${zone.name} [${zone.id}]`;
+				return acc;
+			}, {} as Record<string, string>);
 		return zoneOptions;
 	}
 }

@@ -429,10 +429,6 @@ function ViewManager(editor) {
 		render();
 	});
 
-	signals.animationStopped.add(() => {
-		render();
-	});
-
 	// background
 
 	signals.sceneBackgroundChanged.add(

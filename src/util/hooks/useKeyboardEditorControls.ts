@@ -9,9 +9,9 @@ import { RemoveZoneCommand } from '../../ThreeEditor/js/commands/RemoveZoneComma
 import { SetFilterRuleCommand } from '../../ThreeEditor/js/commands/SetFilterRuleCommand';
 import { Editor } from '../../ThreeEditor/js/Editor';
 import { isBeam } from '../../ThreeEditor/Simulation/Physics/Beam';
-import { isZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
+import { isBooleanZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
 import { isDetectFilter } from '../../ThreeEditor/Simulation/Scoring/DetectFilter';
-import { isDetectGeometry } from '../../ThreeEditor/Simulation/Detectors/DetectGeometry';
+import { isDetectGeometry } from '../../ThreeEditor/Simulation/Detectors/Detector';
 import { isOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
 import { isQuantity } from '../../ThreeEditor/Simulation/Scoring/ScoringQuantity';
 
@@ -40,7 +40,7 @@ export const hasVisibleChildren = (object: Object3D) => {
 export const getRemoveCommand = (editor: Editor, object: Object3D) => {
 	if (isDetectGeometry(object)) {
 		return new RemoveDetectGeometryCommand(editor, object);
-	} else if (isZone(object)) {
+	} else if (isBooleanZone(object)) {
 		return new RemoveZoneCommand(editor, object);
 	} else if (isDetectFilter(object)) {
 		if (object.selectedRule) return new SetFilterRuleCommand(editor, object);

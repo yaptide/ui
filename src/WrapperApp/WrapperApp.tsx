@@ -73,29 +73,9 @@ function WrapperApp() {
 		if (isAuthorized && tabsValue === 'login') setTabsValue('editor');
 	}, [isAuthorized, tabsValue]);
 
-	const onLoadExample = useCallback(
-		(example: JobStatusData) => {
-			if (!DEMO_MODE) return;
-			if (currentJobStatusData[StatusState.COMPLETED](example)) {
-				setResultsSimulationData(example);
-				setTabsValue('editor');
-			}
-		},
-		[setResultsSimulationData]
-	);
-
 	const onEditorInitialized = (editor: Editor) => {
-		editorRef.current?.signals.exampleLoaded.remove(onLoadExample);
 		editorRef.current = editor;
-		editorRef.current?.signals.exampleLoaded.add(onLoadExample);
 	};
-
-	useEffect(() => {
-		editorRef.current?.signals.exampleLoaded.add(onLoadExample);
-		return () => {
-			editorRef.current?.signals.exampleLoaded.remove(onLoadExample);
-		};
-	}, [editorRef, onLoadExample]);
 
 	return (
 		<Box

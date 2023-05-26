@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Editor } from '../../js/Editor';
-import { SimulationSceneChild, SimulationSceneContainer } from './SimulationScene';
+import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { SimulationElement } from './SimulationElement';
 

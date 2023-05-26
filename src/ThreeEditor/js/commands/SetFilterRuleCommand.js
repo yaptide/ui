@@ -51,8 +51,8 @@ export class SetFilterRuleCommand extends Command {
 	fromJSON(json) {
 		super.fromJSON(json);
 		this.filter =
-			this.editor.detectManager.getFilterByUuid(json.filter.uuid) ??
-			this.editor.detectManager.createFilter().fromJSON(json.filter);
+			this.editor.detectorManager.getFilterByUuid(json.filter.uuid) ??
+			this.editor.detectorManager.createFilter().fromJSON(json.filter);
 		this.object = json.object;
 		this.oldRule = json.oldRule;
 	}

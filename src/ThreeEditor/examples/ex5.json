@@ -27,7 +27,7 @@
 			"sad": { "type": "double", "x": 200, "y": 256 },
 			"sigma": { "type": "Flat square", "x": 0.2, "y": 0.2 }
 		},
-		"detectManager": {
+		"detectorManager": {
 			"detectGeometries": [
 				{
 					"colorHex": 65535,

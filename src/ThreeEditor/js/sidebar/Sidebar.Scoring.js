@@ -5,14 +5,14 @@ import { OutlinerManager } from './Sidebar.OutlinerManager';
 export class SidebarScoring extends UIPanel {
 	editor;
 	signals;
-	detectManager;
+	detectorManager;
 	detectAddPanel;
 	outlinerManager;
 
 	refreshOptions() {
 		const sources = [
-			this.editor.detectManager.detectContainer,
-			this.editor.detectManager.filterContainer,
+			this.editor.detectorManager.detectContainer,
+			this.editor.detectorManager.filterContainer,
 			this.editor.scoringManager
 		];
 		this.outlinerManager.setOptionsFromSources(sources);
@@ -22,7 +22,7 @@ export class SidebarScoring extends UIPanel {
 		super();
 		this.editor = editor;
 		this.signals = editor.signals;
-		this.detectManager = editor.detectManager;
+		this.detectorManager = editor.detectorManager;
 
 		this.outlinerManager = new OutlinerManager(editor, this);
 		this.outlinerManager.id = 'filter-outliner';

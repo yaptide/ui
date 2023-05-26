@@ -42,7 +42,7 @@ export function Viewport(
 ) {
 	this.name = name;
 
-	const { scene, zoneManager, detectManager, sceneHelpers, signals, contextManager } = editor;
+	const { scene, zoneManager, detectorManager, sceneHelpers, signals, contextManager } = editor;
 
 	const config = {
 		selectFigures: true,
@@ -149,7 +149,7 @@ export function Viewport(
 
 			renderer.render(zoneManager, camera);
 
-			renderer.render(detectManager, camera);
+			renderer.render(detectorManager, camera);
 		}
 
 		if (clipPlane) renderer.render(viewClipPlane.scene, camera);
@@ -199,8 +199,6 @@ export function Viewport(
 			if (helper !== undefined && helper.isSkeconstonHelper !== true) {
 				helper.update();
 			}
-
-			signals.refreshSidebarObject3D.dispatch(object);
 		}
 
 		render();
@@ -431,7 +429,6 @@ export function Viewport(
 	controls.screenSpacePanning = false;
 	controls.addEventListener('change', () => {
 		signals.cameraChanged.dispatch(camera);
-		signals.refreshSidebarObject3D.dispatch(camera);
 	});
 	viewHelper.controls = controls;
 

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { SimulationMesh } from './SimulationMesh';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { SimulationSceneChild, SimulationSceneContainer } from './SimulationScene';
+import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 import { Editor } from '../../js/Editor';
 import SimulationMaterial, { SimulationMaterialJSON } from '../Materials/SimulationMaterial';
 

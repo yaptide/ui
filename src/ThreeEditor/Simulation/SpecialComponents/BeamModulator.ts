@@ -7,3 +7,7 @@ export class BeamModulator extends SimulationZone {
 		super(editor, 'Beam Modulator', 'BeamModulator');
 	}
 }
+
+export function isBeamModulator(object: unknown): object is BeamModulator {
+	return object instanceof BeamModulator;
+}

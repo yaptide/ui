@@ -25,7 +25,7 @@ export function OutputConfiguration(props: { editor: Editor; object: Object3D })
 					editor,
 					watchedObject.object,
 					'geometry',
-					editor.detectManager.getGeometryByUuid(v.uuid)
+					editor.detectorManager.getGeometryByUuid(v.uuid)
 				)
 			);
 		},
@@ -43,7 +43,7 @@ export function OutputConfiguration(props: { editor: Editor; object: Object3D })
 					<ObjectSelectPropertyField
 						label='Detect geometry'
 						value={watchedObject.geometry?.uuid ?? ''}
-						options={editor.detectManager.getDetectOptions(value => {
+						options={editor.detectorManager.getDetectOptions(value => {
 							return (
 								!editor.scoringManager.getTakenDetectors().includes(value.uuid) ||
 								value.uuid === watchedObject.geometry?.uuid

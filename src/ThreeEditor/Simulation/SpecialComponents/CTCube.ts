@@ -18,7 +18,14 @@ export class CTCube extends BasicFigure<THREE.BoxGeometry> {
 	pathOnServer: string = '';
 
 	constructor(editor: Editor, geometry?: THREE.BoxGeometry, material?: THREE.MeshBasicMaterial) {
-		super(editor, 'CT', 'CTCube', 'CT', geometry ?? ctGeometry, material ?? ctMaterial.clone());
+		super(
+			editor,
+			'CT Cube',
+			'CTCube',
+			'CT',
+			geometry ?? ctGeometry,
+			material ?? ctMaterial.clone()
+		);
 	}
 
 	toJSON(

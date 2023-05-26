@@ -1,13 +1,13 @@
 import * as THREE from 'three';
 import { DetectFilter, isDetectFilter } from '../Simulation/Scoring/DetectFilter';
-import { DetectGeometry, isDetectGeometry } from '../Simulation/Detectors/DetectGeometry';
+import { Detector, isDetectGeometry } from '../Simulation/Detectors/Detector';
 import {
-	DetectContainer,
-	DetectManager,
+	DetectorContainer,
+	DetectorManager,
 	FilterContainer,
 	isDetectContainer,
 	isFilterContainer
-} from '../Simulation/Detectors/DetectManager';
+} from '../Simulation/Detectors/DetectorManager';
 import { isScoringManager, ScoringManager } from '../Simulation/Scoring/ScoringManager';
 import { ScoringOutput, isOutput } from '../Simulation/Scoring/ScoringOutput';
 import { isQuantity, ScoringQuantity } from '../Simulation/Scoring/ScoringQuantity';
@@ -15,34 +15,41 @@ import { isWorldZone, WorldZone } from '../Simulation/Zones/WorldZone/WorldZone'
 import { Editor } from './Editor';
 import { SimulationZone } from '../Simulation/Base/SimZone';
 import { ZoneContainer, ZoneManager, isZoneContainer } from '../Simulation/Zones/ZoneManager';
-import { isZone } from '../Simulation/Zones/BooleanZone';
+import { isBooleanZone } from '../Simulation/Zones/BooleanZone';
 import { Beam, isBeam } from '../Simulation/Physics/Beam';
 import { BasicFigure, isBasicFigure } from '../Simulation/Figures/BasicFigures';
+import { SingletonContainer } from '../Simulation/Base/SimulationContainer';
+import { BeamModulator } from '../Simulation/SpecialComponents/BeamModulator';
+import { CTCube } from '../Simulation/SpecialComponents/CtCube';
+import { isSpecialComponent } from '../Simulation/SpecialComponents/SpecialComponentManager';
 
 export type Context = 'geometry' | 'scoring' | 'settings';
-export type SceneObject =
+export type GeometryObject =
 	| SimulationZone
 	| BasicFigure
 	| WorldZone
-	| DetectGeometry
-	| DetectContainer
-	| DetectManager
+	| Detector
+	| DetectorContainer
+	| DetectorManager
 	| ZoneContainer
 	| ZoneManager
-	| THREE.Scene;
-export type OutputObject =
+	| THREE.Scene
+	| SingletonContainer<CTCube | BeamModulator>
+	| CTCube
+	| BeamModulator;
+export type ScoringContextObject =
 	| DetectFilter
 	| ScoringOutput
 	| ScoringManager
 	| ScoringQuantity
 	| FilterContainer;
 
-export type SimulationSettingsObject = Beam;
+export type SettingsContextObject = Beam;
 
 export class ContextManager {
 	private editor: Editor;
 	private _context: Context;
-	private _selected: [SceneObject | null, OutputObject | null, SimulationSettingsObject];
+	private _selected: [GeometryObject | null, ScoringContextObject | null, SettingsContextObject];
 
 	constructor(editor: Editor, context: Context = 'geometry') {
 		this.editor = editor;
@@ -79,8 +86,8 @@ export class ContextManager {
 				break;
 			case 'scoring':
 				clickable = clickable.concat(
-					this.editor.detectManager.detectContainer.visible
-						? this.editor.detectManager.children
+					this.editor.detectorManager.detectorContainer.visible
+						? this.editor.detectorManager.children
 						: []
 				);
 				break;
@@ -95,22 +102,32 @@ export class ContextManager {
 		let hidden: THREE.Object3D[] = [];
 		switch (context) {
 			case 'geometry':
-				visible.push(this.editor.scene, this.editor.zoneManager, this.editor.detectManager);
-				hidden.push(this.editor.beam);
+				visible.push(
+					this.editor.scene,
+					this.editor.zoneManager,
+					this.editor.detectorManager,
+					this.editor.specialComponentsManager
+				);
+				hidden.push();
 				break;
 			case 'scoring':
-				visible.push(this.editor.detectManager, this.editor.scene);
-				hidden.push(this.editor.zoneManager, this.editor.beam);
+				visible.push(this.editor.detectorManager, this.editor.scene);
+				hidden.push(
+					this.editor.zoneManager,
+					this.editor.specialComponentsManager,
+					this.editor.beam
+				);
 				break;
 			case 'settings':
-				visible.push(this.editor.scene, this.editor.detectManager, this.editor.beam);
-				hidden.push(this.editor.zoneManager);
+				visible.push(this.editor.scene, this.editor.detectorManager, this.editor.beam);
+				hidden.push(this.editor.zoneManager, this.editor.specialComponentsManager);
 				break;
 			default:
 				visible.push(
 					this.editor.scene,
 					this.editor.zoneManager,
-					this.editor.detectManager,
+					this.editor.detectorManager,
+					this.editor.specialComponentsManager,
 					this.editor.beam
 				);
 				break;
@@ -124,19 +141,19 @@ export class ContextManager {
 		this.editor.signals.sceneGraphChanged.dispatch();
 	}
 
-	set selected(selected: SceneObject | OutputObject | SimulationSettingsObject | null) {
-		if (isSimulationSettingsObject(selected)) {
+	set selected(selected: GeometryObject | ScoringContextObject | SettingsContextObject | null) {
+		if (isSettingsContextObject(selected)) {
 			if (this._context !== 'settings') {
 				this._context = 'settings';
 				this.editor.signals.contextChanged.dispatch(this._context);
 			}
-		} else if (isOutputObject(selected)) {
+		} else if (isScoringContextObject(selected)) {
 			this._selected[1] = selected;
 			if (this._context !== 'scoring') {
 				this._context = 'scoring';
 				this.editor.signals.contextChanged.dispatch(this._context);
 			}
-		} else if (isInputObject(selected)) {
+		} else if (isGeometryContextObject(selected)) {
 			this._selected[0] = selected;
 			if (this._context !== 'geometry') {
 				this._context = 'geometry';
@@ -147,13 +164,13 @@ export class ContextManager {
 		}
 	}
 
-	get selected(): SceneObject | OutputObject | SimulationSettingsObject | null {
+	get selected(): GeometryObject | ScoringContextObject | SettingsContextObject | null {
 		return this.selectedByContext(this._context);
 	}
 
 	selectedByContext(
 		context: Context
-	): SceneObject | OutputObject | SimulationSettingsObject | null {
+	): GeometryObject | ScoringContextObject | SettingsContextObject | null {
 		switch (context) {
 			case 'geometry':
 				return this._selected[0];
@@ -167,7 +184,7 @@ export class ContextManager {
 	}
 }
 
-export const isOutputObject = (x: unknown): x is OutputObject => {
+export const isScoringContextObject = (x: unknown): x is ScoringContextObject => {
 	return (
 		isDetectFilter(x) ||
 		isFilterContainer(x) ||
@@ -177,18 +194,19 @@ export const isOutputObject = (x: unknown): x is OutputObject => {
 	);
 };
 
-export const isInputObject = (x: unknown): x is SceneObject => {
+export const isGeometryContextObject = (x: unknown): x is GeometryObject => {
 	return (
 		isDetectGeometry(x) ||
 		isDetectContainer(x) ||
-		isZone(x) ||
+		isBooleanZone(x) ||
 		isWorldZone(x) ||
 		isBasicFigure(x) ||
 		isZoneContainer(x) ||
+		isSpecialComponent(x) ||
 		x instanceof THREE.Scene
 	);
 };
 
-export const isSimulationSettingsObject = (x: unknown): x is SimulationSettingsObject => {
+export const isSettingsContextObject = (x: unknown): x is SettingsContextObject => {
 	return isBeam(x);
 };

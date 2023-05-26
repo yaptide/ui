@@ -45,13 +45,13 @@ export function QuantityConfiguration(props: { editor: Editor; object: Object3D 
 				</>
 			)}
 
-			{Object.keys(editor.detectManager.getFilterOptions()).length > 0 && (
+			{Object.keys(editor.detectorManager.getFilterOptions()).length > 0 && (
 				<ConditionalObjectSelectPropertyField
 					label='Filter'
 					value={watchedObject.filter?.uuid ?? ''}
-					options={editor.detectManager.getFilterOptions()}
+					options={editor.detectorManager.getFilterOptions()}
 					onChange={v =>
-						setQuantityValue('filter', editor.detectManager.getFilterByUuid(v.uuid))
+						setQuantityValue('filter', editor.detectorManager.getFilterByUuid(v.uuid))
 					}
 					enabled={watchedObject.hasFilter}
 					onChangeEnabled={v => setQuantityValue('hasFilter', v)}

@@ -9,7 +9,7 @@ import {
 } from '../../../../js/commands/Commands';
 import { isBasicFigure } from '../../../../Simulation/Figures/BasicFigures';
 import * as CSG from '../../../../CSG/CSG';
-import { isZone } from '../../../../Simulation/Zones/BooleanZone';
+import { isBooleanZone } from '../../../../Simulation/Zones/BooleanZone';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { BooleanAlgebraData } from '../../../ZoneManagerPanel/BooleanAlgebra/BooleanAlgebraData';
 import ZoneManagerPanel from '../../../ZoneManagerPanel/ZoneManagerPanel';
@@ -33,10 +33,10 @@ export function ZoneOperations(props: { editor: Editor; object: Object3D }) {
 
 	const { state: watchedObject } = useSmartWatchEditorState(
 		editor,
-		isZone(object) ? object : null
+		isBooleanZone(object) ? object : null
 	);
 
-	const visibleFlag = isZone(watchedObject);
+	const visibleFlag = isBooleanZone(watchedObject);
 
 	const handleChanged = useCallback(
 		(algebraIndex: number, algebraRow: BooleanAlgebraData) => {

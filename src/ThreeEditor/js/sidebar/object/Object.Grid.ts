@@ -1,11 +1,11 @@
-import { DetectGeometry } from '../../../Simulation/Detectors/DetectGeometry';
+import { Detector } from '../../../Simulation/Detectors/Detector';
 import { createRowParamNumber, hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
 import { SetDetectGeometryCommand } from '../../commands/Commands';
 import { Editor } from '../../Editor';
 import { UINumber, UIRow } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 export class ObjectGrid extends ObjectAbstract {
-	object?: DetectGeometry;
+	object?: Detector;
 
 	xLengthRow: UIRow;
 	xLength: UINumber;
@@ -53,7 +53,7 @@ export class ObjectGrid extends ObjectAbstract {
 		this.panel.add(this.xLengthRow, this.yLengthRow, this.zLengthRow, this.radiusRow);
 	}
 
-	setObject(object: DetectGeometry): void {
+	setObject(object: Detector): void {
 		super.setObject(object);
 		if (!object) return;
 
