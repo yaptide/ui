@@ -46,9 +46,20 @@ The page will reload if you make edits.
 
 ## Requirements
 
-- Node.js 16.x or higher
+- Node.js 18.x or higher
 - Python 3.9+
 - pip
+
+## Private docker image generated in the GHCR
+
+The docker image is generated automatically after every commit to the main branch of this repository.
+The package is here https://github.com/yaptide/ui/pkgs/container/ui-web
+
+Command below will run the docker container named `ui` and serve the UI on port 80:
+
+```bash
+docker run --rm -d -p 80:80/tcp --name ui ghcr.io/yaptide/ui-web:latest
+```
 
 ## Credits
 
