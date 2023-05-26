@@ -3,7 +3,7 @@ import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { Editor } from '../../js/Editor';
 import { SimulationSceneContainer, SingletonContainer } from '../Base/SimulationContainer';
 import { BeamModulator, isBeamModulator } from './BeamModulator';
-import { CTCube, isCTCube } from './CtCube';
+import { CTCube, isCTCube } from './CTCube';
 import { SimulationElementManager } from '../Base/SimulationManager';
 
 export class SpecialComponentManager

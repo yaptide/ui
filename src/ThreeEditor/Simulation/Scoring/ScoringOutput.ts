@@ -3,6 +3,7 @@ import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { DetectFilter } from './DetectFilter';
 import { Detector } from '../Detectors/Detector';
 import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
+import { SimulationElementManager } from '../Base/SimulationManager';
 
 export type ScoringOutputJSON = {
 	uuid: string;
@@ -13,18 +14,25 @@ export type ScoringOutputJSON = {
 	trace: boolean;
 	traceFilter?: string;
 };
-export class ScoringOutput extends SimulationSceneContainer<ScoringQuantity> {
+export class ScoringOutput
+	extends SimulationSceneContainer<ScoringQuantity>
+	implements SimulationElementManager<'quantity', ScoringQuantity>
+{
 	readonly isOutput: true = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
 	readonly notHidable = true;
+	get notVisibleChildren(): boolean {
+		return this._trace[0];
+	}
 	private _geometry?: string;
 	private _primaries: [boolean, number | null];
-	private _disabledChildren: ScoringQuantity[] = [];
 
 	//TODO: Issue#320
 	private _trace: [boolean, string | null];
+
+	quantityContainer: SimulationSceneContainer<ScoringQuantity>;
 
 	get primaries(): [boolean, number | null] {
 		return [this._primaries[0], this._primaries[0] ? this._primaries[1] : null];
@@ -40,13 +48,6 @@ export class ScoringOutput extends SimulationSceneContainer<ScoringQuantity> {
 
 	set trace(filter: [boolean, string | null]) {
 		this._trace = [filter[0], filter[0] && filter[1] ? filter[1] : this._trace[1]];
-		if (!this._trace[0]) {
-			this._disabledChildren.forEach(qty => this.children.push(qty));
-			this._disabledChildren = [];
-		} else {
-			this.children.forEach(qty => this._disabledChildren.push(qty));
-			this.children = [];
-		}
 	}
 
 	get traceFilter(): DetectFilter | null {
@@ -74,6 +75,14 @@ export class ScoringOutput extends SimulationSceneContainer<ScoringQuantity> {
 		this.parent = null;
 		this._primaries = [false, 0];
 		this._trace = [false, ''];
+		this.quantityContainer = this;
+	}
+	getQuantityByName(name: string) {
+		return this.children.find(qty => qty.name === name) ?? null;
+	}
+
+	getObjectById(id: number) {
+		return !this.notVisibleChildren ? this.children.find(qty => qty.id === id) : undefined;
 	}
 
 	createQuantity(): ScoringQuantity {
@@ -82,18 +91,13 @@ export class ScoringOutput extends SimulationSceneContainer<ScoringQuantity> {
 		return quantity;
 	}
 
-	addQuantity(quantity: ScoringQuantity): this {
-		if (this._trace[0]) this._disabledChildren.push(quantity);
-		else this.children.push(quantity);
-		quantity.name = this.getNextFreeName(quantity);
-		quantity.parent = this;
-		this.editor.signals.objectAdded.dispatch(quantity);
-		return this;
+	addQuantity(quantity: ScoringQuantity) {
+		this.add(quantity);
+		this.editor.select(quantity);
 	}
 
 	removeQuantity(quantity: ScoringQuantity): this {
 		this.children.splice(this.children.indexOf(quantity), 1);
-		this._disabledChildren.splice(this._disabledChildren.indexOf(quantity), 1);
 		quantity.parent = null;
 		this.editor.signals.objectRemoved.dispatch(quantity);
 		return this;
@@ -108,10 +112,7 @@ export class ScoringOutput extends SimulationSceneContainer<ScoringQuantity> {
 			name: this.name,
 			uuid: this.uuid,
 			quantities: {
-				active: [
-					...this.children.map(qty => qty.toJSON()),
-					...this._disabledChildren.map(qty => qty.toJSON())
-				]
+				active: [...this.children.map(qty => qty.toJSON())]
 			},
 			detectGeometry: this._geometry,
 			trace: this._trace[0],

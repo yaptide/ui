@@ -6,33 +6,16 @@ import { useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
+import { getAddElementButtonProps } from '../../../util/Ui/CommandButtonProps';
 import { useSignal } from '../../../util/hooks/signals';
-import { SimulationZone } from '../../Simulation/Base/SimZone';
-import { Detector } from '../../Simulation/Detectors/Detector';
-import {
-	BasicFigure,
-	BoxFigure,
-	CylinderFigure,
-	SphereFigure
-} from '../../Simulation/Figures/BasicFigures';
-import { isOutput } from '../../Simulation/Scoring/ScoringOutput';
-import { isQuantity } from '../../Simulation/Scoring/ScoringQuantity';
-import { BooleanZone } from '../../Simulation/Zones/BooleanZone';
-import { Command } from '../../commands/basic/AbstractCommand';
-import { ObjectManagementFactory } from '../../commands/factories/ObjectManagementFactory';
 import { Editor } from '../../js/Editor';
 import { Context } from '../../js/Editor.Context';
-import { AddFilterCommand } from '../../js/commands/AddFilterCommand';
-import { AddOutputCommand } from '../../js/commands/AddOutputCommand';
-import { AddQuantityCommand } from '../../js/commands/AddQuantityCommand';
 import { SidebarTree } from './SidebarTree/SidebarTree';
 import { PropertiesPanel } from './properties/PropertiesPanel';
 import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
 import { BeamModifiersConfiguration } from './properties/category/RangeModulatorConfiguration';
-import { EditorSidebarTabTree, TreeAddButtonProps } from './tabs/EditorSidebarTabTree';
-import { CTCube } from '../../Simulation/SpecialComponents/CtCube';
-import { BeamModulator } from '../../Simulation/SpecialComponents/BeamModulator';
-import { DetectFilter } from '../../Simulation/Scoring/DetectFilter';
+import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
+import { useMemo } from 'react';
 
 export function EditorSidebar(props: { editor: Editor }) {
 	const { editor } = props;
@@ -81,47 +64,14 @@ export function EditorSidebar(props: { editor: Editor }) {
 		};
 	}, [editor, handleContextChange]);
 
-	const commandFactory = new ObjectManagementFactory(editor);
-
-	const createTreeAddButtonProps = (
-		data: ([string, Command | undefined] | [string, Command | undefined, () => boolean])[]
-	): TreeAddButtonProps[] => {
-		return data.map(([title, command, isDisabled]) => ({
-			title,
-			onClick: () => (command ? editor.execute(command) : undefined),
-			isDisabled
-		}));
-	};
+	const groupedCommandButtonProps = useMemo(() => {
+		return getAddElementButtonProps(editor, selectedObject);
+	}, [editor, selectedObject]);
 
 	const geometryTabElements = [
 		{
 			title: 'Figures',
-			add: createTreeAddButtonProps([
-				[
-					'Box',
-					commandFactory.createAddCommand<'figure', BasicFigure>(
-						'figure',
-						new BoxFigure(editor),
-						editor.scene
-					)
-				],
-				[
-					'Cylinder',
-					commandFactory.createAddCommand<'figure', BasicFigure>(
-						'figure',
-						new CylinderFigure(editor),
-						editor.scene
-					)
-				],
-				[
-					'Sphere',
-					commandFactory.createAddCommand<'figure', BasicFigure>(
-						'figure',
-						new SphereFigure(editor),
-						editor.scene
-					)
-				]
-			]),
+			add: groupedCommandButtonProps['Figures'],
 			tree: (
 				<SidebarTree
 					editor={editor}
@@ -131,17 +81,7 @@ export function EditorSidebar(props: { editor: Editor }) {
 		},
 		{
 			title: 'Zones',
-			add: createTreeAddButtonProps([
-				[
-					'Boolean Zone',
-					commandFactory.createAddCommand<'zone', SimulationZone>(
-						'zone',
-						new BooleanZone(editor),
-						editor.zoneManager
-					)
-				],
-				['Tree Zone', undefined, () => true]
-			]),
+			add: groupedCommandButtonProps['Zones'],
 			tree: (
 				<>
 					<SidebarTree
@@ -159,16 +99,7 @@ export function EditorSidebar(props: { editor: Editor }) {
 		},
 		{
 			title: 'Detectors',
-			add: createTreeAddButtonProps([
-				[
-					'Detector',
-					commandFactory.createAddCommand(
-						'detector',
-						new Detector(editor),
-						editor.detectorManager
-					)
-				]
-			]),
+			add: groupedCommandButtonProps['Detectors'],
 			tree: (
 				<SidebarTree
 					editor={editor}
@@ -178,35 +109,19 @@ export function EditorSidebar(props: { editor: Editor }) {
 		},
 		{
 			title: 'Special Components',
-			add: createTreeAddButtonProps([
-				[
-					'CT Cube',
-					commandFactory.createAddCommand(
-						'CTCube',
-						new CTCube(editor),
-						editor.specialComponentsManager
-					),
-					() => editor.specialComponentsManager.CTCubeContainer.children.length > 0
-				],
-				[
-					'Beam Modulator',
-					commandFactory.createAddCommand(
-						'modulator',
-						new BeamModulator(editor),
-						editor.specialComponentsManager
-					),
-					() => editor.specialComponentsManager.modulatorContainer.children.length > 0
-				]
-			]),
+			add: groupedCommandButtonProps['Special Components'],
 			tree: (
 				<>
-					<SidebarTree
-						editor={editor}
-						sources={[editor.specialComponentsManager.CTCubeContainer.children]}
-						dragDisabled
-					/>
 					{editor.specialComponentsManager.CTCubeContainer.children.length > 0 ? (
-						<Divider sx={{ marginBottom: t => t.spacing(1) }} />
+						<>
+							<SidebarTree
+								editor={editor}
+								sources={[editor.specialComponentsManager.CTCubeContainer.children]}
+								dragDisabled
+							/>
+
+							<Divider sx={{ marginBottom: t => t.spacing(1) }} />
+						</>
 					) : undefined}
 					<SidebarTree
 						editor={editor}
@@ -221,16 +136,7 @@ export function EditorSidebar(props: { editor: Editor }) {
 	const scoringTabElements = [
 		{
 			title: 'Filters',
-			add: createTreeAddButtonProps([
-				[
-					'Filter',
-					commandFactory.createAddCommand(
-						'filter',
-						new DetectFilter(editor),
-						editor.detectorManager
-					)
-				]
-			]),
+			add: groupedCommandButtonProps['Filters'],
 			tree: (
 				<SidebarTree
 					editor={editor}
@@ -240,23 +146,7 @@ export function EditorSidebar(props: { editor: Editor }) {
 		},
 		{
 			title: 'Outputs',
-			add: [
-				{
-					title: 'Output',
-					onClick: () => editor.execute(new AddOutputCommand(editor))
-				},
-				{
-					title: 'Quantity',
-					onClick: () =>
-						editor.execute(
-							new AddQuantityCommand(
-								editor,
-								isQuantity(selectedObject) ? selectedObject.parent : selectedObject
-							)
-						),
-					isDisabled: () => !isOutput(selectedObject) && !isQuantity(selectedObject)
-				}
-			],
+			add: groupedCommandButtonProps['Outputs'],
 			tree: (
 				<SidebarTree
 					editor={editor}

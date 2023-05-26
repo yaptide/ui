@@ -42,7 +42,15 @@ export function Viewport(
 ) {
 	this.name = name;
 
-	const { scene, zoneManager, detectorManager, sceneHelpers, signals, contextManager } = editor;
+	const {
+		scene,
+		zoneManager,
+		detectorManager,
+		sceneHelpers,
+		specialComponentsManager,
+		signals,
+		contextManager
+	} = editor;
 
 	const config = {
 		selectFigures: true,
@@ -150,6 +158,8 @@ export function Viewport(
 			renderer.render(zoneManager, camera);
 
 			renderer.render(detectorManager, camera);
+
+			renderer.render(specialComponentsManager, camera);
 		}
 
 		if (clipPlane) renderer.render(viewClipPlane.scene, camera);

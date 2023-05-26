@@ -19,6 +19,7 @@ import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { DndProvider } from 'react-dnd';
 import { getBackendOptions, MultiBackend } from '@minoru/react-dnd-treeview';
+import { CommandButtonProps } from '../../../../util/Ui/CommandButtonProps';
 
 export interface TreeItem {
 	id: number;
@@ -65,14 +66,8 @@ const Accordion = styled((props: AccordionProps) => (
 
 export type TreeElement = {
 	title: string;
-	add: TreeAddButtonProps[];
+	add: CommandButtonProps[];
 	tree: ReactElement;
-};
-
-export type TreeAddButtonProps = {
-	title: string;
-	onClick: () => void;
-	isDisabled?: () => boolean;
 };
 
 export interface EditorSidebarTabTreeProps {
@@ -81,7 +76,13 @@ export interface EditorSidebarTabTreeProps {
 
 function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
 	return (
-		<Accordion key={props.title}>
+		<Accordion
+			key={props.title}
+			sx={{
+				'&.MuiAccordion-root.Mui-expanded:before': {
+					opacity: 1
+				}
+			}}>
 			<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 				<Typography>{props.title}</Typography>
 			</AccordionSummary>
@@ -109,10 +110,10 @@ function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
 						</Button>
 						{props.add.map(add => (
 							<Button
-								key={add.title}
+								key={add.label}
 								onClick={add.onClick}
-								disabled={add.isDisabled?.call(null) ?? false}>
-								{add.title}
+								disabled={add.disabled}>
+								{add.label}
 							</Button>
 						))}
 					</ButtonGroup>

@@ -20,7 +20,7 @@ import { Beam, isBeam } from '../Simulation/Physics/Beam';
 import { BasicFigure, isBasicFigure } from '../Simulation/Figures/BasicFigures';
 import { SingletonContainer } from '../Simulation/Base/SimulationContainer';
 import { BeamModulator } from '../Simulation/SpecialComponents/BeamModulator';
-import { CTCube } from '../Simulation/SpecialComponents/CtCube';
+import { CTCube } from '../Simulation/SpecialComponents/CTCube';
 import { isSpecialComponent } from '../Simulation/SpecialComponents/SpecialComponentManager';
 
 export type Context = 'geometry' | 'scoring' | 'settings';

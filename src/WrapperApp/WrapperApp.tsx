@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
 import { Editor } from '../ThreeEditor/js/Editor';
 import { DEMO_MODE } from '../config/Config';
@@ -7,20 +7,15 @@ import { useAuth } from '../services/AuthService';
 import { useLoader } from '../services/DataLoaderService';
 import { JsRootService } from '../services/JsRootService';
 import { useStore } from '../services/StoreService';
-import {
-	SimulationInputFiles,
-	JobStatusData,
-	StatusState,
-	currentJobStatusData
-} from '../types/ResponseTypes';
+import { SimulatorType } from '../types/RequestTypes';
+import { SimulationInputFiles, StatusState, currentJobStatusData } from '../types/ResponseTypes';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
+import NavDrawer from './components/NavDrawer/NavDrawer';
 import { AboutPanel } from './components/Panels/AboutPanel';
 import LoginPanel from './components/Panels/LoginPanel';
 import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
-import NavDrawer from './components/NavDrawer/NavDrawer';
-import { SimulatorType } from '../types/RequestTypes';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();

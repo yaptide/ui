@@ -1,31 +1,25 @@
 import { Box, Button, ButtonGroup, Divider, Menu, MenuItem } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Object3D } from 'three';
 import {
-	AddDetectGeometryCommand,
-	AddFilterCommand,
-	AddObjectCommand,
-	AddOutputCommand,
-	AddZoneCommand
-} from '../../../js/commands/Commands';
-import { Editor } from '../../../js/Editor';
-import { BoxFigure, CylinderFigure, SphereFigure } from '../../../Simulation/Figures/BasicFigures';
+	CommandButtonProps,
+	getAddElementButtonProps
+} from '../../../../util/Ui/CommandButtonProps';
+import { useSignal } from '../../../../util/hooks/signals';
 import { toggleFullscreen } from '../../../../util/toggleFullscreen';
+import { Editor } from '../../../js/Editor';
 import { ClearHistoryDialog } from '../../Dialog/ClearHistoryDialog';
 
 type EditorMenuProps = {
 	editor?: Editor;
 };
-type MenuOption = {
-	label: string;
-	onClick: () => void;
-	disabled?: boolean;
-};
+
 type MenuPositionProps = {
 	label: string;
 	idx: number;
 	openIdx: number;
 	setOpenIdx: (open: number) => void;
-	options: MenuOption[][];
+	options: CommandButtonProps[][];
 };
 function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPositionProps) {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -107,6 +101,17 @@ function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPosition
 export function EditorMenu({ editor }: EditorMenuProps) {
 	const [openIdx, setOpenIdx] = useState(-1);
 	const [clearHistoryDialogOpen, setClearHistoryDialogOpen] = useState(false);
+	const [selectedObject, setSelectedObject] = useState(editor?.selected);
+
+	const handleObjectUpdate = useCallback((o: Object3D) => {
+		setSelectedObject(o);
+	}, []);
+
+	useSignal(editor, 'objectSelected', handleObjectUpdate);
+
+	const commandButtonPropsArray = useMemo(() => {
+		return editor ? Object.values(getAddElementButtonProps(editor, selectedObject)) : [];
+	}, [editor, selectedObject]);
 
 	return (
 		<>
@@ -163,60 +168,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 					openIdx={openIdx}
 					setOpenIdx={setOpenIdx}
 					options={[
-						[
-							{
-								label: 'Material Zone',
-								onClick: () => {
-									editor?.execute(new AddZoneCommand(editor));
-								}
-							}
-						],
-						[
-							{
-								label: 'Detect Geometry',
-								onClick: () => {
-									editor?.execute(new AddDetectGeometryCommand(editor));
-								}
-							},
-							{
-								label: 'Scoring Filter',
-								onClick: () => {
-									editor?.execute(new AddFilterCommand(editor));
-								}
-							},
-							{
-								label: 'Simulation Output',
-								onClick: () => {
-									editor?.execute(new AddOutputCommand(editor, undefined));
-								}
-							}
-						],
-						[
-							{
-								label: 'Box Mesh',
-								onClick: () => {
-									editor?.execute(
-										new AddObjectCommand(editor, new BoxFigure(editor))
-									);
-								}
-							},
-							{
-								label: 'Sphere Mesh',
-								onClick: () => {
-									editor?.execute(
-										new AddObjectCommand(editor, new SphereFigure(editor))
-									);
-								}
-							},
-							{
-								label: 'Cylinder Mesh',
-								onClick: () => {
-									editor?.execute(
-										new AddObjectCommand(editor, new CylinderFigure(editor))
-									);
-								}
-							}
-						],
+						...Object.values(commandButtonPropsArray),
 						[
 							{
 								label: 'Paste from Clipboard',

@@ -176,18 +176,28 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 
 	addFilter(filter: DetectFilter): void {
 		this.filterContainer.add(filter);
+		this.editor.select(filter);
+		this.signals.detectFilterAdded.dispatch(filter);
 	}
 
 	removeFilter(filter: DetectFilter): void {
 		this.filterContainer.remove(filter);
+		this.editor.deselect();
 		this.signals.detectFilterRemoved.dispatch(filter);
 	}
 
 	createFilter(): DetectFilter {
 		const filter = new DetectFilter(this.editor);
 		this.addFilter(filter);
-		this.signals.detectFilterAdded.dispatch(filter);
 		return filter;
+	}
+
+	getFilterByName(name: string) {
+		return this.filters.find(filter => filter.name === name) ?? null;
+	}
+
+	getFilterByUuid(uuid: string) {
+		return this.filters.find(filter => filter.uuid === uuid) ?? null;
 	}
 
 	fromJSON(data: DetectManagerJSON): void {
@@ -243,8 +253,10 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 		) as Detector | null;
 	}
 
-	getFilterByUuid(uuid: string): DetectFilter | null {
-		return this.filters.find(filter => filter.uuid === uuid) as DetectFilter | null;
+	getGeometryByName(name: string) {
+		return this.detectorContainer.children.find(
+			child => child.name === name
+		) as Detector | null;
 	}
 
 	getFilterOptions(): Record<string, string> {

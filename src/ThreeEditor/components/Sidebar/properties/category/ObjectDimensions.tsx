@@ -29,7 +29,7 @@ import {
 	SelectPropertyField
 } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
-import { isCTCube } from '../../../../Simulation/SpecialComponents/CtCube';
+import { isCTCube } from '../../../../Simulation/SpecialComponents/CTCube';
 
 const ObjectTypeField = (props: { editor: Editor; object: BasicFigure | Detector | WorldZone }) => {
 	const { object, editor } = props;

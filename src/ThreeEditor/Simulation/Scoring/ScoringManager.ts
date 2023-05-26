@@ -1,8 +1,8 @@
 import { Signal } from 'signals';
 import { Editor } from '../../js/Editor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
+import { SimulationElementManager } from '../Base/SimulationManager';
 import { ScoringOutput, ScoringOutputJSON } from './ScoringOutput';
-import { UniqueChildrenNames } from '../../../util/Name/Name';
 
 export type ScoringManagerJSON = {
 	uuid: string;
@@ -11,7 +11,7 @@ export type ScoringManagerJSON = {
 };
 export class ScoringManager
 	extends SimulationSceneContainer<ScoringOutput>
-	implements UniqueChildrenNames
+	implements SimulationElementManager<'output', ScoringOutput>
 {
 	readonly isScoringManager: true = true;
 	readonly notRemovable: boolean = true;
@@ -23,16 +23,18 @@ export class ScoringManager
 		objectAdded: Signal<THREE.Object3D>;
 		objectRemoved: Signal<THREE.Object3D>;
 	};
+	outputContainer: SimulationSceneContainer<ScoringOutput>;
+
 	constructor(editor: Editor) {
 		super(editor, 'Outputs', 'OutputGroup');
 		this.children = [];
 		this.signals = editor.signals;
+		this.outputContainer = this;
 	}
 
 	addOutput(output: ScoringOutput) {
 		this.add(output);
-
-		this.signals.objectAdded.dispatch(output);
+		this.editor.select(output);
 	}
 	createOutput() {
 		const output = new ScoringOutput(this.editor);
@@ -48,7 +50,10 @@ export class ScoringManager
 		this.signals.objectRemoved.dispatch(output);
 	}
 	getOutputByUuid(uuid: string) {
-		return this.children.find(output => output.uuid === uuid);
+		return this.children.find(output => output.uuid === uuid) ?? null;
+	}
+	getOutputByName(name: string) {
+		return this.children.find(output => output.name === name) ?? null;
 	}
 	getTakenDetectors(): string[] {
 		return this.children
