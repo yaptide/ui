@@ -14,18 +14,18 @@ To run this script using Node.js, follow these steps:
 2. Navigate to the `/examples` directory.
 3. Run the following command:
 
-\```bash
+```bash
 node migrations/migrateEx<old_version>_<new_version>.js <filename>
-\```
+```
 
 Replace `<old_version>` and `<new_version>` with the version numbers of the JSON files you want to migrate and the version you want to migrate to, respectively. 
 Replace `<filename>` with the name of the JSON file you want to migrate.
 
 For example, to migrate the `ex1.json` file from version `0.1` to version `0.2`, run the following command:
 
-\```bash
+```bash
 node migrations/migrateEx0.1_0.2.js ex1.json
-\```
+```
 
 The migrated file will be saved in the `/migrations` directory with the same name as the original file.
 Backups of the original file will be saved in the `/migrations/temp` directory.
