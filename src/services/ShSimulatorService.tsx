@@ -350,27 +350,26 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 
 	const getFullSimulationData = useCallback(
 		async (jobStatus: JobStatusData, signal?: AbortSignal, cache = true) => {
-			const status = await getJobStatus('jobs/direct')(jobStatus, cache, undefined, signal);
-			const inputs = await getJobInputs(jobStatus, signal, cache);
-			const results =
-				status?.jobState === StatusState.COMPLETED
+			const inputs: JobInputs | undefined = await getJobInputs(jobStatus, signal, cache);
+			const results: JobResults | undefined =
+				jobStatus.jobState === StatusState.COMPLETED
 					? await getJobResults(jobStatus, signal, cache)
 					: undefined;
-
+			if (!inputs || !results) return undefined;
 			const { message, ...mergedData } = {
 				...inputs,
 				...results,
-				...status
+				...jobStatus
 			};
 
-			const simData: ValidateShape<
+			const simData: FullSimulationData = mergedData satisfies ValidateShape<
 				typeof mergedData,
-				Partial<FullSimulationData>
-			> = mergedData;
+				FullSimulationData
+			>;
 
-			return simData as FullSimulationData;
+			return simData;
 		},
-		[getJobInputs, getJobResults, getJobStatus]
+		[getJobInputs, getJobResults]
 	);
 
 	return (
