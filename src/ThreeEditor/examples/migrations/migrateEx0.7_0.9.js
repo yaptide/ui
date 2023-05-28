@@ -7,6 +7,10 @@ const fileNameToMigrate = process.argv[2];
 const pathToMigrate = path.resolve(process.cwd(), fileNameToMigrate);
 const fileJson = require(pathToMigrate);
 
+// create temp dir if not exists
+if (!fs.existsSync('./migrations/temp'))
+    fs.mkdirSync('./migrations/temp');
+
 fs.writeFileSync(`./migrations/temp/${Date.now()}_${fileNameToMigrate}`, JSON.stringify(fileJson, null, 2));
 
 
