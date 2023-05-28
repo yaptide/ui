@@ -142,7 +142,6 @@ export abstract class SimulationZone
 		const { uuid, name, materialUuid, materialPropertiesOverrides: overrides } = json;
 		this.uuid = uuid;
 		this.name = name;
-		console.log('lodain zone material', materialUuid);
 		this.simulationMaterial =
 			this.editor.materialManager.getMaterialByUuid(materialUuid) ??
 			this.editor.materialManager.defaultMaterial;

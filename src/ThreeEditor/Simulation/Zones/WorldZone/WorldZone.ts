@@ -103,7 +103,6 @@ export class WorldZone extends SimulationElement {
 
 		this._simulationMaterial = editor.materialManager.defaultMaterial;
 		this._simulationMaterial.increment();
-		console.log('this._simulationMaterial', this._simulationMaterial.uuid);
 
 		// watch for changes on material color
 		const materialColorHandler = {
