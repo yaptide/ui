@@ -1,3 +1,4 @@
+import { is } from '@babel/types';
 import { SimulationZone } from '../../ThreeEditor/Simulation/Base/SimZone';
 import { Detector } from '../../ThreeEditor/Simulation/Detectors/Detector';
 import {
@@ -21,7 +22,9 @@ export type CommandButtonProps = {
 	onClick: () => void;
 	disabled?: boolean;
 };
-type CommandButtonTuple = [string, Command | undefined] | [string, Command | undefined, boolean];
+type CommandButtonTuple =
+	| [string, (() => Command) | undefined]
+	| [string, (() => Command) | undefined, boolean];
 
 type ManagerName = 'Figures' | 'Zones' | 'Detectors' | 'Special Components' | 'Filters' | 'Outputs';
 
@@ -33,110 +36,115 @@ export const createCommandButtonProps = (
 ): CommandButtonProps[] => {
 	return data.map(([label, command, disabled]) => ({
 		label,
-		onClick: () => (command ? editor.execute(command) : undefined),
+		onClick: () => (command ? editor.execute(command()) : undefined),
 		disabled
 	}));
 };
 
-export const getAddElementButtonProps = (
-	editor: YaptideEditor,
-	selectedObject: YaptideEditor['selected']
-): GroupedCommandButtonProps => {
+export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandButtonProps => {
 	const commandFactory = new ObjectManagementFactory(editor);
 	const figuresTuple: CommandButtonTuple[] = [
 		[
 			'Box',
-			commandFactory.createAddCommand<'figure', BasicFigure>(
-				'figure',
-				new BoxFigure(editor),
-				editor.figureManager
-			)
+			(obj = new BoxFigure(editor)) => {
+				return commandFactory.createAddCommand<'figure', BasicFigure>(
+					'figure',
+					obj,
+					editor.figureManager
+				);
+			}
 		],
 		[
 			'Cylinder',
-			commandFactory.createAddCommand<'figure', BasicFigure>(
-				'figure',
-				new CylinderFigure(editor),
-				editor.figureManager
-			)
+			(obj = new BoxFigure(editor)) => {
+				return commandFactory.createAddCommand<'figure', BasicFigure>(
+					'figure',
+					new CylinderFigure(editor),
+					editor.figureManager
+				);
+			}
 		],
 		[
 			'Sphere',
-			commandFactory.createAddCommand<'figure', BasicFigure>(
-				'figure',
-				new SphereFigure(editor),
-				editor.figureManager
-			)
+			(obj = new SphereFigure(editor)) => {
+				return commandFactory.createAddCommand<'figure', BasicFigure>(
+					'figure',
+					obj,
+					editor.figureManager
+				);
+			}
 		]
 	];
 	const zonesTuple: CommandButtonTuple[] = [
 		[
 			'Boolean Zone',
-			commandFactory.createAddCommand<'zone', SimulationZone>(
-				'zone',
-				new BooleanZone(editor),
-				editor.zoneManager
-			)
+			(obj = new BooleanZone(editor)) => {
+				return commandFactory.createAddCommand<'zone', SimulationZone>(
+					'zone',
+					obj,
+					editor.zoneManager
+				);
+			}
 		],
 		['Tree Zone', undefined, true]
 	];
 	const detectorsTuple: CommandButtonTuple[] = [
 		[
 			'Detector',
-			commandFactory.createAddCommand(
-				'detector',
-				new Detector(editor),
-				editor.detectorManager
-			)
+			(obj = new Detector(editor)) => {
+				return commandFactory.createAddCommand('detector', obj, editor.detectorManager);
+			}
 		]
 	];
 	const specialComponentsTuple: CommandButtonTuple[] = [
 		[
 			'CT Cube',
-			commandFactory.createAddCommand(
-				'CTCube',
-				new CTCube(editor),
-				editor.specialComponentsManager
-			),
+			(obj = new CTCube(editor)) => {
+				return commandFactory.createAddCommand(
+					'CTCube',
+					obj,
+					editor.specialComponentsManager
+				);
+			},
 			editor.specialComponentsManager.CTCubeContainer.children.length > 0
 		],
 		[
 			'Beam Modulator',
-			commandFactory.createAddCommand(
-				'modulator',
-				new BeamModulator(editor),
-				editor.specialComponentsManager
-			),
+			(obj = new BeamModulator(editor)) => {
+				return commandFactory.createAddCommand(
+					'modulator',
+					obj,
+					editor.specialComponentsManager
+				);
+			},
 			editor.specialComponentsManager.modulatorContainer.children.length > 0
 		]
 	];
 	const filtersTuple: CommandButtonTuple[] = [
 		[
 			'Filter',
-			commandFactory.createAddCommand(
-				'filter',
-				new DetectFilter(editor),
-				editor.detectorManager
-			)
+			(obj = new DetectFilter(editor)) => {
+				return commandFactory.createAddCommand('filter', obj, editor.detectorManager);
+			}
 		]
 	];
 	const outputsTuple: CommandButtonTuple[] = [
 		[
 			'Output',
-			commandFactory.createAddCommand(
-				'output',
-				new ScoringOutput(editor),
-				editor.scoringManager
-			)
+			(obj = new ScoringOutput(editor)) => {
+				return commandFactory.createAddCommand('output', obj, editor.scoringManager);
+			}
 		],
 		[
 			'Quantity',
-			commandFactory.createAddCommand(
-				'quantity',
-				new ScoringQuantity(editor),
-				isQuantity(selectedObject) ? selectedObject.parent : selectedObject
-			),
-			!isOutput(selectedObject) && !isQuantity(selectedObject)
+			(obj = new ScoringQuantity(editor)) => {
+				return commandFactory.createAddCommand(
+					'quantity',
+					obj,
+					isQuantity(editor.selected) ? editor.selected.parent : editor.selected
+				);
+			},
+			!isOutput(editor.selected) && !isQuantity(editor.selected)
 		]
 	];
 	return {

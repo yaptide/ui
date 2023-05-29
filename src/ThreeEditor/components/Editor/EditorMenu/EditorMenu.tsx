@@ -101,7 +101,7 @@ function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPosition
 export function EditorMenu({ editor }: EditorMenuProps) {
 	const [openIdx, setOpenIdx] = useState(-1);
 	const [clearHistoryDialogOpen, setClearHistoryDialogOpen] = useState(false);
-	const [selectedObject, setSelectedObject] = useState(editor?.selected);
+	const [, setSelectedObject] = useState(editor?.selected);
 
 	const handleObjectUpdate = useCallback((o: Object3D) => {
 		setSelectedObject(o);
@@ -110,8 +110,8 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 	useSignal(editor, 'objectSelected', handleObjectUpdate);
 
 	const commandButtonPropsArray = useMemo(() => {
-		return editor ? Object.values(getAddElementButtonProps(editor, selectedObject)) : [];
-	}, [editor, selectedObject]);
+		return;
+	}, [editor]);
 
 	return (
 		<>
@@ -168,7 +168,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 					openIdx={openIdx}
 					setOpenIdx={setOpenIdx}
 					options={[
-						...Object.values(commandButtonPropsArray),
+						...(editor ? Object.values(getAddElementButtonProps(editor)) : []),
 						[
 							{
 								label: 'Paste from Clipboard',

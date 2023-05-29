@@ -15,12 +15,11 @@ import { PropertiesPanel } from './properties/PropertiesPanel';
 import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
 import { BeamModifiersConfiguration } from './properties/category/RangeModulatorConfiguration';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
-import { useMemo } from 'react';
 
 export function EditorSidebar(props: { editor: YaptideEditor }) {
 	const { editor } = props;
 
-	const [selectedObject, setSelectedObject] = useState(editor.selected);
+	const [, setSelectedObject] = useState(editor.selected);
 
 	const handleObjectUpdate = useCallback((o: Object3D) => {
 		setSelectedObject(o);
@@ -64,9 +63,7 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 		};
 	}, [editor, handleContextChange]);
 
-	const groupedCommandButtonProps = useMemo(() => {
-		return getAddElementButtonProps(editor, selectedObject);
-	}, [editor, selectedObject]);
+	const groupedCommandButtonProps = getAddElementButtonProps(editor);
 
 	const geometryTabElements = [
 		{
