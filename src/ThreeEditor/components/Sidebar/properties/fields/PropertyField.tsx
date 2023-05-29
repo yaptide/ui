@@ -2,7 +2,7 @@ import { Box, Checkbox, Grid, Stack, TextField, Typography } from '@mui/material
 import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { Vector2 } from 'three';
 import { Vector3 } from 'three/src/math/Vector3';
-import { YaptideEditor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	KEYWORD_OPTIONS,
 	KEYWORD_SORT_ORDER,
@@ -31,7 +31,7 @@ import {
 	isIntRule
 } from '../../../../Simulation/Scoring/DetectRule';
 
-export function PropertyField(props: { label?: string; children: React.ReactNode }) {
+export function PropertyField(props: { label?: string; children: ReactNode }) {
 	return (
 		<>
 			{props.label !== undefined && (

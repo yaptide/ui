@@ -6,7 +6,7 @@ import {
 } from '../../../../util/Ui/Uis';
 import { WorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
 import { SetValueCommand } from '../../commands/Commands';
-import { YaptideEditor } from '../../Editor';
+import { YaptideEditor } from '../../YaptideEditor';
 import { UIButton, UICheckbox, UIRow } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 

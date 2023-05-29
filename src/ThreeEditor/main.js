@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { YaptideEditor } from './js/Editor.js';
+import { YaptideEditor } from './js/YaptideEditor.js';
 import { SidebarProjectRenderer } from './js/sidebar/Sidebar.Project.Renderer.js';
 import { ViewManager } from './js/viewport/ViewportManager.js';
 

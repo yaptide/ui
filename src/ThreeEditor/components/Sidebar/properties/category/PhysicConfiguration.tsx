@@ -1,5 +1,5 @@
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
-import { YaptideEditor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	BooleanPropertyField,
 	NumberPropertyField,

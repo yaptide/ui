@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Tree, TreeMethods } from '@minoru/react-dnd-treeview';
 import { Object3D } from 'three';
 import './SidebarTree.style.css';
-import { YaptideEditor } from '../../../js/Editor';
+import { YaptideEditor } from '../../../js/YaptideEditor';
 import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
 import { Divider } from '@mui/material';

@@ -1,5 +1,5 @@
 import { hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
-import { YaptideEditor } from '../../Editor';
+import { YaptideEditor } from '../../YaptideEditor';
 import { UIPanel, UIRow, UIText } from '../../libs/ui';
 
 export abstract class ObjectAbstract {

@@ -5,7 +5,7 @@ import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeome
 import { SetDetectTypeCommand } from '../../../../js/commands/SetDetectTypeCommand';
 import { SetGeometryCommand } from '../../../../js/commands/SetGeometryCommand';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
-import { YaptideEditor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	BasicFigure,
 	BASIC_GEOMETRY_OPTIONS,

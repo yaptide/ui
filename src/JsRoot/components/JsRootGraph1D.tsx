@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
 import Skeleton from '@mui/material/Skeleton';
-import { useJSROOT } from '../../services/JsRootService';
+import { useCallback, useEffect, useState } from 'react';
 import { useVisible } from 'react-hooks-visible';
-import { Page1D } from '../GraphData';
-import useResizeObserver from 'use-resize-observer';
 import { mergeRefs } from 'react-merge-refs';
 import { throttle } from 'throttle-debounce';
+import useResizeObserver from 'use-resize-observer';
+import { useJSROOT } from '../../services/JsRootService';
+import { Page1D } from '../GraphData';
 
 export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 	const { page, title } = props;

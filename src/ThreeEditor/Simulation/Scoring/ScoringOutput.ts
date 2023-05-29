@@ -1,4 +1,4 @@
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { DetectFilter } from './DetectFilter';
 import { Detector } from '../Detectors/Detector';

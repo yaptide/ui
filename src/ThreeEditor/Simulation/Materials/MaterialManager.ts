@@ -4,7 +4,7 @@ import SimulationMaterial, {
 	SimulationMaterialJSON
 } from './SimulationMaterial';
 import * as THREE from 'three';
-import { YaptideEditor } from '../../js/Editor.js';
+import { YaptideEditor } from '../../js/YaptideEditor.js';
 import { CounterMap } from '../../../util/CounterMap/CounterMap';
 
 export type MaterialManagerJSON = {

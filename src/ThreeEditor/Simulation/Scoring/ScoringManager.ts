@@ -1,5 +1,5 @@
 import { Signal } from 'signals';
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { ScoringOutput, ScoringOutputJSON } from './ScoringOutput';

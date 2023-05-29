@@ -1,4 +1,4 @@
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 
 export type MethodArgs<T extends Record<string, unknown>, K extends keyof T> = T[K] extends (
 	...args: any[]

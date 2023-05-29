@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { SimulationMesh } from './SimulationMesh';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import SimulationMaterial, { SimulationMaterialJSON } from '../Materials/SimulationMaterial';
 
 export interface SimulationZoneJSON {

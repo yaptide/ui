@@ -10,9 +10,19 @@ import {
 	Tabs,
 	Tooltip
 } from '@mui/material';
-import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+	FC,
+	Fragment,
+	ReactNode,
+	SyntheticEvent,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+	MouseEvent
+} from 'react';
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { OperationDataList, isOperation } from '../../../types/Operation';
 import { BooleanAlgebraData } from './BooleanAlgebra/BooleanAlgebraData';
 import BooleanAlgebraRow, { BooleanAlgebraRowProps } from './BooleanAlgebra/BooleanAlgebraRow';
@@ -50,7 +60,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 	const backdropRef = useRef<HTMLDivElement>(null);
 	const openBackdrop = useCallback(() => setBackdropOpen(true), []);
 	const closeBackdrop = useCallback(() => setBackdropOpen(false), []);
-	const backdropHandleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
+	const backdropHandleClick = useCallback((event: MouseEvent<HTMLElement>) => {
 		// get the element that was clicked
 		const target = event.target as HTMLElement;
 		// if the element that was clicked is not the backdrop element return
@@ -60,7 +70,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 	}, []);
 	const selectedGeometryIdRef = useRef<number>(0);
 	const changeSelectedGeometryId = useCallback(
-		(index: number) => (_: React.MouseEvent<HTMLElement>) => {
+		(index: number) => (_: MouseEvent<HTMLElement>) => {
 			selectedGeometryIdRef.current = index;
 			openBackdrop();
 		},
@@ -94,7 +104,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 	const updateCurrentOperation = useCallback(
 		(rowIndex: number) =>
 			(valueIndex: number) =>
-			(_: React.MouseEvent<HTMLElement>, value?: string | null) => {
+			(_: MouseEvent<HTMLElement>, value?: string | null) => {
 				if (value === null) return;
 				const newOperation = isOperation(value) ? value : null;
 				if (algebraDataRef.current[rowIndex].changeOperation(valueIndex, newOperation)) {
@@ -203,8 +213,8 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 
 	/*-------------------------------AlgebraDataPanel-------------------------------*/
 	interface AlgebraDataPanelProps {
-		rowComponent?: React.FC<Pick<BooleanAlgebraRowProps, 'scrollWrapperRef'>>;
-		children?: React.ReactNode;
+		rowComponent?: FC<Pick<BooleanAlgebraRowProps, 'scrollWrapperRef'>>;
+		children?: ReactNode;
 		index: number;
 		value: typeof algebraRow;
 	}
@@ -272,11 +282,11 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 			'sx': { minWidth: 30, borderRadius: 0 }
 		};
 	}
-	function VoidTab({ children }: { children: React.ReactNode }) {
+	function VoidTab({ children }: { children: ReactNode }) {
 		return <>{children}</>;
 	}
 
-	function handleTabsChange(event: React.SyntheticEvent, newValue: number) {
+	function handleTabsChange(event: SyntheticEvent, newValue: number) {
 		setAlgebraRow({
 			index: newValue,
 			data: algebraDataRef.current[newValue]

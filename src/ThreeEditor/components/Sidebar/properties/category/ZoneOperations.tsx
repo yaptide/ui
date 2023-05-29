@@ -1,7 +1,7 @@
 import { Grid } from '@mui/material';
 import { useCallback } from 'react';
 import { Object3D } from 'three';
-import { YaptideEditor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	AddZoneOperationTupleCommand,
 	RemoveZoneOperationTupleCommand,

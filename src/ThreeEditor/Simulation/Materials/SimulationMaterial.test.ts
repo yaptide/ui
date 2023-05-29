@@ -1,4 +1,4 @@
-import { YaptideEditor } from '../../js/Editor.js';
+import { YaptideEditor } from '../../js/YaptideEditor.js';
 import {
 	DEFAULT_MATERIAL_DENSITY,
 	DEFAULT_MATERIAL_ICRU,

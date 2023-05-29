@@ -1,15 +1,15 @@
+import * as Scoring from '../../ThreeEditor/Simulation/Scoring/ScoringOutputTypes';
 import {
 	UIButton,
+	UICheckbox,
+	UIDiv,
 	UINumber,
 	UIRow,
-	UIText,
-	UICheckbox,
 	UISelect,
-	UIDiv
+	UIText
 } from '../../ThreeEditor/js/libs/ui';
 import { UIOutliner } from '../../ThreeEditor/js/libs/ui.three';
 import * as Rule from '../../types/DetectRuleTypes';
-import * as Scoring from '../../ThreeEditor/Simulation/Scoring/ScoringOutputTypes';
 import { FONT_SIZE } from './Uis';
 
 /**

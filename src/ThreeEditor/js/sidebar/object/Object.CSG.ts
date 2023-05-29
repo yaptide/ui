@@ -1,6 +1,6 @@
 import { BooleanZone } from '../../../Simulation/Zones/BooleanZone';
 import { createRowText, createZoneRulesPanel } from '../../../../util/Ui/Uis';
-import { YaptideEditor } from '../../Editor';
+import { YaptideEditor } from '../../YaptideEditor';
 import { UIRow, UIText } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 

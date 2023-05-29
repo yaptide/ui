@@ -3,7 +3,7 @@ import { UIHorizontalRule, UIPanel } from '../libs/ui.js';
 import { createOption } from './Menubar.js';
 
 /**
- * @typedef {import('../Editor').YaptideEditor} Editor
+ * @typedef {import('../YaptideEditor').YaptideEditor} Editor
  * @param {Editor} editor
  * @constructor
  * @deprecated

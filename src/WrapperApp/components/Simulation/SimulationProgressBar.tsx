@@ -1,7 +1,7 @@
 import { Box, LinearProgress, Tooltip } from '@mui/material';
 import { useCallback, useEffect, useRef } from 'react';
 import Countdown from 'react-countdown';
-import { TaskTime, TaskStatusData, StatusState } from '../../../types/ResponseTypes';
+import { StatusState, TaskStatusData, TaskTime } from '../../../types/ResponseTypes';
 
 const getDateFromEstimation = (estimated?: TaskTime) => {
 	if (!estimated) return undefined;

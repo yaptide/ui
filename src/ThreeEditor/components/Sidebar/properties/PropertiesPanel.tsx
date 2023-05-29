@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Box } from '@mui/material';
 import { BoxProps } from '@mui/system/Box/Box';
 import { Object3D } from 'three';
-import { YaptideEditor } from '../../../js/Editor';
+import { YaptideEditor } from '../../../js/YaptideEditor';
 import { useCallback, useState } from 'react';
 import { ObjectPlacement } from './category/ObjectPlacement';
 import { ObjectInfo } from './category/ObjectInfo';

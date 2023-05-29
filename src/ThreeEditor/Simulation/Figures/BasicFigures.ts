@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationMesh } from '../Base/SimulationMesh';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({

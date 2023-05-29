@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { MeshBasicMaterial, Vector3 } from 'three';
-import { YaptideEditor } from '../../../js/Editor';
+import { YaptideEditor } from '../../../js/YaptideEditor';
 import { PossibleGeometryType } from '../../../../util/AdditionalGeometryData';
 import { WorldZoneType } from './WorldZone';
 

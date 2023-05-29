@@ -8,7 +8,7 @@ import {
 	showUIElement
 } from '../../../../util/Ui/Uis';
 import { AddQuantityCommand, SetOutputSettingsCommand } from '../../commands/Commands';
-import { YaptideEditor } from '../../Editor';
+import { YaptideEditor } from '../../YaptideEditor';
 import { UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 

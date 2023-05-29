@@ -1,6 +1,6 @@
 import { createRowParamInput, createRowText } from '../../../../util/Ui/Uis';
 import { SetValueCommand } from '../../commands/Commands';
-import { YaptideEditor } from '../../Editor';
+import { YaptideEditor } from '../../YaptideEditor';
 import { UIInput, UIRow, UIText } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 

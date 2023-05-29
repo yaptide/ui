@@ -1,7 +1,7 @@
 import { Detector } from '../../../Simulation/Detectors/Detector';
 import { createRowParamNumber, hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
 import { SetDetectGeometryCommand } from '../../commands/Commands';
-import { YaptideEditor } from '../../Editor';
+import { YaptideEditor } from '../../YaptideEditor';
 import { UINumber, UIRow } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 export class ObjectGrid extends ObjectAbstract {

@@ -1,18 +1,18 @@
-import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { createGenericContext } from './GenericContext';
 import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
-import { BACKEND_URL, DEMO_MODE } from '../config/Config';
-import { snakeToCamelCase } from '../types/TypeTransformUtil';
-import { RequestAuthLogin, RequestAuthLogout, RequestAuthRefresh } from '../types/RequestTypes';
-import useIntervalAsync from '../util/hooks/useIntervalAsync';
 import { useSnackbar } from 'notistack';
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { BACKEND_URL, DEMO_MODE } from '../config/Config';
+import { RequestAuthLogin, RequestAuthLogout, RequestAuthRefresh } from '../types/RequestTypes';
 import {
-	ResponseAuthStatus,
-	ResponseAuthRefresh,
 	ResponseAuthLogin,
+	ResponseAuthRefresh,
+	ResponseAuthStatus,
 	YaptideResponse
 } from '../types/ResponseTypes';
+import { snakeToCamelCase } from '../types/TypeTransformUtil';
+import useIntervalAsync from '../util/hooks/useIntervalAsync';
+import { createGenericContext } from './GenericContext';
 
 export interface AuthProps {
 	children: ReactNode;
@@ -221,4 +221,4 @@ const Auth = ({ children }: AuthProps) => {
 	);
 };
 
-export { useAuth, Auth };
+export { Auth, useAuth };

@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
-import { YaptideEditor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { Detector, isDetectGeometry } from '../../../../Simulation/Detectors/Detector';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { NumberPropertyField } from '../fields/PropertyField';

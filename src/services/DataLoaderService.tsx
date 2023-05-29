@@ -156,4 +156,4 @@ const Loader = (props: { children: ReactNode }) => {
 	return <LoaderContextProvider value={value}>{props.children}</LoaderContextProvider>;
 };
 
-export { useLoader, Loader, readFile };
+export { Loader, readFile, useLoader };

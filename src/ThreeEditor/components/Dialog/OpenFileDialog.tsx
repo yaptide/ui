@@ -11,7 +11,7 @@ import {
 	Tab,
 	TextField
 } from '@mui/material';
-import React, { useState } from 'react';
+import { ChangeEvent, SyntheticEvent, useState } from 'react';
 import { useLoader } from '../../../services/DataLoaderService';
 import EXAMPLES from '../../examples/examples';
 import { CustomDialogTitle } from './CustomDialog';
@@ -28,20 +28,20 @@ export type OpenFileProps = {
 export function OpenFileDialog(props: OpenFileProps) {
 	const { open, onClose } = props;
 	const [currentFileList, setCurrentFileList] = useState<FileList>();
-	const [value, setValue] = React.useState('1');
-	const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+	const [value, setValue] = useState('1');
+	const handleChange = (event: SyntheticEvent, newValue: string) => {
 		setValue(newValue);
 	};
 
 	const { loadFromJson, loadFromFiles, loadFromUrl, loadFromJsonString } = useLoader();
-	const [plainText, setPlainText] = React.useState('');
-	const handlePlainTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const [plainText, setPlainText] = useState('');
+	const handlePlainTextChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setPlainText(event.target.value);
 	};
 
-	const [url, setUrl] = React.useState('');
+	const [url, setUrl] = useState('');
 	const [exampleIndex, setExampleIndex] = useState<number | null>(null);
-	const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setUrl(event.target.value);
 	};
 

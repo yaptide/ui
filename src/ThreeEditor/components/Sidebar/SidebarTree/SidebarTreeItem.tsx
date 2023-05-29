@@ -7,7 +7,7 @@ import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { YaptideEditor } from '../../../js/Editor';
+import { YaptideEditor } from '../../../js/YaptideEditor';
 import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
 import { NodeModel, TreeMethods } from '@minoru/react-dnd-treeview/dist/types';
 import {
@@ -20,7 +20,7 @@ import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
 import { AddQuantityCommand } from '../../../js/commands/AddQuantityCommand';
 import Box from '@mui/material/Box';
 import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 
 export type TreeItem = NodeModel<{
 	object: Object3D<THREE.Event> | SimulationElement;
@@ -37,7 +37,7 @@ function isHidable(object: Object3D | SimulationPropertiesType) {
 
 export function SidebarTreeItem(props: {
 	treeRef: TreeMethods | null;
-	objectRefs: React.MutableRefObject<Map<string, HTMLDivElement>>;
+	objectRefs: MutableRefObject<Map<string, HTMLDivElement>>;
 	node: NodeModel<{
 		object: Object3D | SimulationElement;
 	}>;

@@ -23,7 +23,7 @@ import {
 	SetGeometryCommand,
 	SetValueCommand
 } from '../../commands/Commands';
-import { YaptideEditor } from '../../Editor';
+import { YaptideEditor } from '../../YaptideEditor';
 import { UINumber, UIRow, UISelect, UIText } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 

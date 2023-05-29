@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 import { SimulationElement } from './SimulationElement';

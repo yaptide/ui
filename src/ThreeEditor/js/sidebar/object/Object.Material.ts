@@ -15,7 +15,7 @@ import {
 	SetMaterialValueCommand,
 	SetZoneMaterialCommand
 } from '../../commands/Commands';
-import { YaptideEditor } from '../../Editor';
+import { YaptideEditor } from '../../YaptideEditor';
 import { UIButton, UICheckbox, UIColor, UINumber, UIRow, UISelect, UIText } from '../../libs/ui';
 import { SidebarMaterialBooleanProperty } from '../Sidebar.Material.BooleanProperty';
 import { SidebarMaterialConstantProperty } from '../Sidebar.Material.ConstantProperty';

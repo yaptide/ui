@@ -1,5 +1,5 @@
 import { Object3D } from 'three';
-import { YaptideEditor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { ConditionalNumberPropertyField } from '../fields/PropertyField';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';

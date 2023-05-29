@@ -3,7 +3,7 @@ import { Signal } from 'signals';
 import * as THREE from 'three';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { WorldZone, WorldZoneJSON } from './WorldZone/WorldZone';
 import { BooleanZone, BooleanZoneJSON, isBooleanZone } from './BooleanZone';
 import { ZoneWorker } from '../../CSG/CSGWorker';

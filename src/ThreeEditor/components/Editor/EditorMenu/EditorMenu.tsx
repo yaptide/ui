@@ -1,5 +1,5 @@
 import { Box, Button, ButtonGroup, Divider, Menu, MenuItem } from '@mui/material';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState, MouseEvent } from 'react';
 import { Object3D } from 'three';
 import {
 	CommandButtonProps,
@@ -7,7 +7,7 @@ import {
 } from '../../../../util/Ui/CommandButtonProps';
 import { useSignal } from '../../../../util/hooks/signals';
 import { toggleFullscreen } from '../../../../util/toggleFullscreen';
-import { YaptideEditor } from '../../../js/Editor';
+import { YaptideEditor } from '../../../js/YaptideEditor';
 import { ClearHistoryDialog } from '../../Dialog/ClearHistoryDialog';
 
 type EditorMenuProps = {
@@ -23,10 +23,10 @@ type MenuPositionProps = {
 };
 function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPositionProps) {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	const handleClick = (_: React.MouseEvent<HTMLButtonElement>) => {
+	const handleClick = (_: MouseEvent<HTMLButtonElement>) => {
 		setOpenIdx(idx);
 	};
-	const handleEnter = (_: React.MouseEvent<HTMLButtonElement>) => {
+	const handleEnter = (_: MouseEvent<HTMLButtonElement>) => {
 		if (openIdx !== -1) setOpenIdx(idx);
 	};
 	const handleClose = (action?: () => void) => {
@@ -108,10 +108,6 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 	}, []);
 
 	useSignal(editor, 'objectSelected', handleObjectUpdate);
-
-	const commandButtonPropsArray = useMemo(() => {
-		return;
-	}, [editor]);
 
 	return (
 		<>

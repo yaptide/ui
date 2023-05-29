@@ -1,5 +1,5 @@
 import { Command } from '../Command';
-import { YaptideEditor } from '../Editor.js';
+import { YaptideEditor } from '../YaptideEditor.js';
 
 interface ChangeObjectOrderCommandJSON {
 	oldIndex: number;

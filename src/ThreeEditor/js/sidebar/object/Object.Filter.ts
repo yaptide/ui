@@ -9,7 +9,7 @@ import {
 	showUIElement
 } from '../../../../util/Ui/Uis';
 import { SetFilterRuleCommand } from '../../commands/SetFilterRuleCommand';
-import { YaptideEditor } from '../../Editor';
+import { YaptideEditor } from '../../YaptideEditor';
 import { UIBreak, UIButton, UINumber, UIRow, UISelect } from '../../libs/ui';
 import { UIOutliner } from '../../libs/ui.three';
 import { ObjectAbstract } from './Object.Abstract';

@@ -12,7 +12,7 @@ import {
 	SigmaType,
 	isBeam
 } from '../../../../Simulation/Physics/Beam';
-import { YaptideEditor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { ParticleSelect } from '../../../Select/ParticleSelect';
 import {

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer, SingletonContainer } from '../Base/SimulationContainer';
 import { BeamModulator, isBeamModulator } from './BeamModulator';
 import { CTCube, isCTCube } from './CTCube';

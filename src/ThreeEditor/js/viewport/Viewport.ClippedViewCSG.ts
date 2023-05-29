@@ -3,7 +3,7 @@ import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min';
 import { debounce } from 'throttle-debounce';
 import { Viewport } from './Viewport';
 import { CSG } from '../../CSG/CSG';
-import { YaptideEditor } from '../Editor';
+import { YaptideEditor } from '../YaptideEditor';
 import { Signal } from 'signals';
 
 type ClippedViewConfigurationJson = {

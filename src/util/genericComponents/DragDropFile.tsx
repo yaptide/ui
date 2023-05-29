@@ -1,13 +1,13 @@
 // Concept from https://www.codemzy.com/blog/react-drag-drop-file-upload
 
-import React, { useEffect, useRef, useState } from 'react';
+import { ChangeEvent, DragEvent, FC, useEffect, useRef, useState } from 'react';
 
 export interface DragDropProps {
 	id: string;
 	onSubmit: (file: FileList) => void;
 	currentFiles?: FileList;
 	acceptedFiles: string;
-	innerElement: React.FC<DragDropInnerElementProps>;
+	innerElement: FC<DragDropInnerElementProps>;
 }
 
 export interface DragDropInnerElementProps {
@@ -31,7 +31,7 @@ export function DragDropFile(props: DragDropProps) {
 	}, [currentFiles]);
 
 	// handle drag events
-	const handleDragEnter = function (e: React.DragEvent<HTMLElement>) {
+	const handleDragEnter = function (e: DragEvent<HTMLElement>) {
 		e.preventDefault();
 		e.stopPropagation();
 		if (disableDrag) clearTimeout(disableDrag);
@@ -39,7 +39,7 @@ export function DragDropFile(props: DragDropProps) {
 	};
 	let disableDrag: NodeJS.Timeout | undefined;
 
-	const handleDragLeave = function (e: React.DragEvent<HTMLElement>) {
+	const handleDragLeave = function (e: DragEvent<HTMLElement>) {
 		e.preventDefault();
 		e.stopPropagation();
 		if (disableDrag) clearTimeout(disableDrag);
@@ -49,7 +49,7 @@ export function DragDropFile(props: DragDropProps) {
 	};
 
 	// triggers when file is dropped
-	const handleDrop = function (e: React.DragEvent<HTMLElement>) {
+	const handleDrop = function (e: DragEvent<HTMLElement>) {
 		e.preventDefault();
 		e.stopPropagation();
 		setDragActive(false);
@@ -65,7 +65,7 @@ export function DragDropFile(props: DragDropProps) {
 	};
 
 	// triggers when file is selected with click
-	const handleChange = function (e: React.ChangeEvent<HTMLInputElement>) {
+	const handleChange = function (e: ChangeEvent<HTMLInputElement>) {
 		e.preventDefault();
 		if (e.target.files && e.target.files[0]) {
 			onSubmit(e.target.files);

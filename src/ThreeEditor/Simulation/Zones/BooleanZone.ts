@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { debounce } from 'throttle-debounce';
 import { ZoneWorker } from '../../CSG/CSGWorker';
 import * as Comlink from 'comlink';
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import CSG from '../../js/libs/csg/three-csg';
 import { OperationTuple, OperationTupleJSON } from '../../CSG/CSGOperationTuple';
 import { CounterMap } from '../../../util/CounterMap/CounterMap';

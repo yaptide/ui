@@ -1,6 +1,6 @@
 import { Signal } from 'signals';
 import * as THREE from 'three';
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { DetectFilter, FilterJSON } from '../Scoring/DetectFilter';

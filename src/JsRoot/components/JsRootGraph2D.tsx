@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
 import Skeleton from '@mui/material/Skeleton';
-import { useJSROOT } from '../../services/JsRootService';
+import { useCallback, useEffect, useState } from 'react';
 import { useVisible } from 'react-hooks-visible';
-import useResizeObserver from 'use-resize-observer';
-import { throttle } from 'throttle-debounce';
 import { mergeRefs } from 'react-merge-refs';
+import { throttle } from 'throttle-debounce';
+import useResizeObserver from 'use-resize-observer';
+import { useJSROOT } from '../../services/JsRootService';
 import { Page2D } from '../GraphData';
 
 export function JsRootGraph2D(props: { page: Page2D; title?: string }) {

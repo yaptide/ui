@@ -1,21 +1,22 @@
 import { Box, Card, CardContent, Fade, Modal } from '@mui/material';
 import { useSnackbar } from 'notistack';
 
-import { useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
+import EXAMPLES from '../../../ThreeEditor/examples/examples';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
+import { DEMO_MODE } from '../../../config/Config';
 import { useLoader } from '../../../services/DataLoaderService';
+import { FullSimulationData, useShSimulation } from '../../../services/ShSimulatorService';
+import { useStore } from '../../../services/StoreService';
 import { OrderBy, OrderType, SimulatorType } from '../../../types/RequestTypes';
 import {
-	SimulationInputFiles,
 	JobStatusData,
 	SimulationInfo,
+	SimulationInputFiles,
 	StatusState,
 	currentJobStatusData
 } from '../../../types/ResponseTypes';
-import { FullSimulationData, useShSimulation } from '../../../services/ShSimulatorService';
-import { useStore } from '../../../services/StoreService';
-import { DEMO_MODE } from '../../../config/Config';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import {
 	BatchOptionsType,
@@ -25,7 +26,6 @@ import {
 } from './RunSimulationForm';
 import { DemoCardGrid, PaginatedSimulationsFromBackend } from './SimulationCardGrid';
 import { PageNavigationProps, PageParamProps } from './SimulationPanelBar';
-import EXAMPLES from '../../../ThreeEditor/examples/examples';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
@@ -311,7 +311,7 @@ export default function SimulationPanel({
 		cancelJobDirect(simulationInfo, controller.signal).finally(autoRefreshPage);
 	};
 
-	const handlePageChange = (event: React.ChangeEvent<unknown>, pageIdx: number) =>
+	const handlePageChange = (event: ChangeEvent<unknown>, pageIdx: number) =>
 		autoRefreshPage({ pageIdx });
 
 	const handleOrderChange = (orderType: OrderType, orderBy: OrderBy, pageSize: number) =>

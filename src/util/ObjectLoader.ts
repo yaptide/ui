@@ -1,11 +1,11 @@
 import { Object3D, ObjectLoader } from 'three';
-import { YaptideEditor } from '../ThreeEditor/js/Editor';
 import {
 	BoxFigure,
 	CylinderFigure,
 	SphereFigure
 } from '../ThreeEditor/Simulation/Figures/BasicFigures';
 import { CTCube } from '../ThreeEditor/Simulation/SpecialComponents/CTCube';
+import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
 
 export class EditorObjectLoader extends ObjectLoader {
 	private editor: YaptideEditor;

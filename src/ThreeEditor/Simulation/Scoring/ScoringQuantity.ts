@@ -1,4 +1,4 @@
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { DetectFilter } from './DetectFilter';
 import { SimulationElement } from '../Base/SimulationElement';
 import * as Scoring from './ScoringOutputTypes';

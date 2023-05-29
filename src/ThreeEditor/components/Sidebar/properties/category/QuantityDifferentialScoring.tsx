@@ -1,5 +1,5 @@
 import { Object3D } from 'three';
-import { YaptideEditor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	DifferentialConfigurationField,
 	ModifiersOutlinerField,

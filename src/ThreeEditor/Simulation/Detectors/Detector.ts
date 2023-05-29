@@ -1,6 +1,6 @@
 import { Signal } from 'signals';
 import * as THREE from 'three';
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import * as CSG from '../../CSG/CSG';
 import { SimulationPoints } from '../Base/SimulationPoints';
 import { DetectorManager } from './DetectorManager';

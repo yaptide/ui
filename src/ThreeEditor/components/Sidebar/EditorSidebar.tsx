@@ -2,13 +2,13 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import SpeedIcon from '@mui/icons-material/Speed';
 import TokenIcon from '@mui/icons-material/Token';
 import { AppBar, Box, Divider, Stack, Tab, Tabs, Typography } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
 import { getAddElementButtonProps } from '../../../util/Ui/CommandButtonProps';
 import { useSignal } from '../../../util/hooks/signals';
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { Context } from '../../js/Editor.Context';
 import { SidebarTree } from './SidebarTree/SidebarTree';
 import { PropertiesPanel } from './properties/PropertiesPanel';
@@ -29,7 +29,7 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 
 	const [selectedTab, setSelectedTab] = useState<Capitalize<Context>>('Geometry');
 
-	const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
+	const handleChange = (_event: SyntheticEvent, newValue: string) => {
 		switch (newValue) {
 			case 'Scoring':
 				editor.contextManager.currentContext = 'scoring';

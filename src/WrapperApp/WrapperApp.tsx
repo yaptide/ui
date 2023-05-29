@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import { SyntheticEvent, useEffect, useState } from 'react';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
-import { YaptideEditor } from '../ThreeEditor/js/Editor';
+import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
 import { DEMO_MODE } from '../config/Config';
 import { useAuth } from '../services/AuthService';
 import { useLoader } from '../services/DataLoaderService';

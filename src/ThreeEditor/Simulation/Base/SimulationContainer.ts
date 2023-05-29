@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { UniqueChildrenNames, getNextFreeName } from '../../../util/Name/Name';
 import { SimulationElement } from './SimulationElement';
 

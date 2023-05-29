@@ -12,7 +12,7 @@ import {
 	RemoveDifferentialModifierCommand,
 	AddDifferentialModifierCommand
 } from '../../commands/Commands';
-import { YaptideEditor } from '../../Editor';
+import { YaptideEditor } from '../../YaptideEditor';
 import { UIBreak, UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
 import { UIOutliner } from '../../libs/ui.three';
 import { ObjectAbstract } from './Object.Abstract';

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { generateSimulationInfo } from '../../../util/AdditionalGeometryData';
 import { BasicFigure, BoxFigure } from './BasicFigures';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';

@@ -1,4 +1,4 @@
-import { YaptideEditor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { PropertiesCategory } from './PropertiesCategory';
 
 export function BeamModifiersConfiguration(props: { editor: YaptideEditor }) {

@@ -20,7 +20,7 @@ import {
 	styled
 } from '@mui/material';
 
-import React from 'react';
+import { ChangeEvent } from 'react';
 import { OrderBy, OrderType } from '../../../types/RequestTypes';
 import {
 	ButtonWithPopperList,
@@ -341,7 +341,7 @@ export function SimulationBackendHeader({
 export type PageNavigationProps = {
 	pageCount: number;
 	pageIdx: number;
-	handlePageChange: (event: React.ChangeEvent<unknown>, value: number) => void;
+	handlePageChange: (event: ChangeEvent<unknown>, value: number) => void;
 };
 
 type SimulationPaginationFooterProps = SimulationAppBarProps & PageNavigationProps;

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { BasicFigure } from '../Figures/BasicFigures';
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
 	color: 0x00ff00,

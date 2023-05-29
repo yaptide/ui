@@ -4,7 +4,7 @@ import { Euler, Vector3 } from 'three';
 import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
-import { YaptideEditor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { Particle, PARTICLE_TYPES } from '../../../types/Particle';
 import { SimulationElement } from '../Base/SimulationElement';
 

@@ -1,4 +1,3 @@
-import { is } from '@babel/types';
 import { SimulationZone } from '../../ThreeEditor/Simulation/Base/SimZone';
 import { Detector } from '../../ThreeEditor/Simulation/Detectors/Detector';
 import {
@@ -15,7 +14,7 @@ import { CTCube } from '../../ThreeEditor/Simulation/SpecialComponents/CTCube';
 import { BooleanZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
 import { Command } from '../../ThreeEditor/commands/basic/AbstractCommand';
 import { ObjectManagementFactory } from '../../ThreeEditor/commands/factories/ObjectManagementFactory';
-import { YaptideEditor } from '../../ThreeEditor/js/Editor';
+import { YaptideEditor } from '../../ThreeEditor/js/YaptideEditor';
 
 export type CommandButtonProps = {
 	label: string;

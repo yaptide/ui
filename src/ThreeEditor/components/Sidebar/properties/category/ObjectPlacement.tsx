@@ -1,6 +1,6 @@
 import { Euler, MathUtils, Vector3 } from 'three';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
-import { YaptideEditor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { Vector3PropertyField } from '../fields/PropertyField';
 import { SimulationPropertiesType } from '../../../../../types/SimulationProperties';
 import { Beam, isBeam } from '../../../../Simulation/Physics/Beam';
