@@ -1,5 +1,6 @@
 import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
+import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import {
 	IntersectionToObject,
 	TypeIdentifiedByKey,
@@ -165,11 +166,6 @@ type JobStatusType<T extends StatusState, U extends Object> = TypeIdentifiedByKe
 type JobStatusCompleted = JobStatusType<
 	StatusState.COMPLETED,
 	{
-		inputFiles: SimulationInputFiles;
-		inputJson?: EditorJson;
-		result: {
-			estimators: Estimator[];
-		};
 		jobTasksStatus: Array<TaskUnknownStatus>;
 	}
 >;
@@ -181,14 +177,7 @@ type JobStatusRunning = JobStatusType<
 
 type JobStatusPending = JobStatusType<StatusState.PENDING, {}>;
 
-type JobStatusFailed = JobStatusType<
-	StatusState.FAILED,
-	{
-		error: string;
-		inputFiles: SimulationInputFiles;
-		logfile: string;
-	}
->;
+type JobStatusFailed = JobStatusType<StatusState.FAILED, {}>;
 
 type JobAllStatuses = JobStatusCompleted | JobStatusRunning | JobStatusPending | JobStatusFailed;
 
@@ -267,6 +256,22 @@ export type JobStatusData<T = null> = DataWithStatus<
 	SimulationInfo,
 	JobUnknownStatus
 >;
+
+export type ResponseGetJobInputs = {
+	input: {
+		inputFiles: SimulationInputFiles;
+		inputJson?: EditorJson;
+		inputType: SimulationSourceType;
+	};
+} & YaptideResponse;
+
+export type ResponseGetJobLogs = {
+	logfiles: Record<string, string>;
+} & YaptideResponse;
+
+export type ResponseGetJobResults = {
+	estimators: Estimator[];
+} & YaptideResponse;
 
 export type ResponseAuthStatus = AuthStatus;
 

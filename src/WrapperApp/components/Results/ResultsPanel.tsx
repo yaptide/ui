@@ -19,7 +19,7 @@ function ResultsPanel() {
 
 	useEffect(() => {
 		setTabsValue(0);
-		setEstimatorsResults(parseEstimators(simulation?.result?.estimators ?? []));
+		setEstimatorsResults(parseEstimators(simulation?.estimators ?? []));
 	}, [simulation]);
 
 	const handleChange = (_event: SyntheticEvent, newValue: number) => {
@@ -61,7 +61,7 @@ function ResultsPanel() {
 						sx={{
 							margin: '1.5rem 1rem'
 						}}>
-						{simulation.inputJson?.project.title ?? simulation.title} [
+						{simulation.input.inputJson?.project.title ?? simulation.title} [
 						{simulation.startTime.toLocaleString()}]
 					</Typography>
 

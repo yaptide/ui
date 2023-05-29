@@ -203,7 +203,7 @@ export class WorldZone extends SimulationElement {
 
 		this._material.color.set(_defaultColor);
 		this.name = 'World Zone';
-		this.simulationMaterial = this.editor.materialManager.defaultMaterial;
+		this._simulationMaterial = this.editor.materialManager.defaultMaterial;
 		this.geometryType = 'Box';
 		this.helper.reset();
 	}

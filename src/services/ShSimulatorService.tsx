@@ -1,10 +1,13 @@
-import { ReactNode, useCallback, useRef } from 'react';
+import { ReactNode, useCallback } from 'react';
 import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/DetectFilter';
 import { ScoringManagerJSON } from '../ThreeEditor/Simulation/Scoring/ScoringManager';
 import {
 	RequestCancelJob,
+	RequestGetJobInputs,
+	RequestGetJobLogs,
+	RequestGetJobResults,
 	RequestGetJobStatus,
 	RequestGetPageContents,
 	RequestGetPageStatus,
@@ -21,16 +24,37 @@ import {
 	ResponsePostJob,
 	ResponseShConvert,
 	StatusState,
-	currentJobStatusData
+	currentJobStatusData,
+	ResponseGetJobInputs,
+	ResponseGetJobResults,
+	ResponseGetJobLogs
 } from '../types/ResponseTypes';
 import { camelToSnakeCase } from '../types/TypeTransformUtil';
 import { orderAccordingToList } from '../util/Sort';
 import { useAuth } from './AuthService';
 import { createGenericContext } from './GenericContext';
+import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
+import { useCacheMap } from '../util/hooks/useCacheMap';
+import { ValidateShape } from '../util/Types';
 
+export type JobLogs = {
+	jobId: string;
+} & ResponseGetJobLogs;
+
+export type JobInputs = {
+	jobId: string;
+} & ResponseGetJobInputs;
+
+export type JobResults = {
+	jobId: string;
+} & ResponseGetJobResults;
 export interface ShSimulationProps {
 	children: ReactNode;
 }
+
+export type FullSimulationData = Omit<JobInputs & JobStatusData & JobResults, 'message'>;
+
+export const fetchItSymbol = Symbol('fetchItSymbol');
 
 export interface RestSimulationContext {
 	postJobDirect: (...args: RequestPostJob) => Promise<ResponsePostJob>;
@@ -41,8 +65,16 @@ export interface RestSimulationContext {
 	getHelloWorld: (...args: RequestParam) => Promise<unknown>;
 	getJobDirectStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
 	getJobBatchStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
+	getJobInputs: (...args: RequestGetJobInputs) => Promise<JobInputs | undefined>;
+	getJobResults: (...args: RequestGetJobResults) => Promise<JobResults | undefined>;
+	getJobLogs: (...args: RequestGetJobLogs) => Promise<JobLogs | undefined>;
 	getPageContents: (...args: RequestGetPageContents) => Promise<ResponseGetPageContents>;
 	getPageStatus: (...args: RequestGetPageStatus) => Promise<JobStatusData[]>;
+	getFullSimulationData: (
+		jobStatus: JobStatusData,
+		signal?: AbortSignal,
+		cache?: boolean
+	) => Promise<FullSimulationData | undefined>;
 }
 
 const recreateOrderInEstimators = (
@@ -70,16 +102,19 @@ const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]
 	return estimators;
 };
 
-export const recreateRefsInResults = (results: JobStatusData<StatusState.COMPLETED>) => {
-	const { result, inputJson } = results;
-
+export const recreateRefsInResults = (inputJson: EditorJson, estimators: Estimator[]) => {
 	if (!inputJson) throw new Error('No editor data');
-	if (!result) throw new Error('No result data');
+	if (!estimators) throw new Error('No esitamtors data');
 
 	const { scoringManager, detectManager }: EditorJson = inputJson;
 
-	result.estimators = recreateOrderInEstimators(result.estimators, scoringManager);
-	result.estimators = recreateRefToFilters(result.estimators, detectManager?.filters);
+	const estimatorsOrdered = recreateOrderInEstimators(estimators, scoringManager);
+	const estimatorsWithFixedFilters = recreateRefToFilters(
+		estimatorsOrdered,
+		detectManager?.filters
+	);
+
+	return estimatorsWithFixedFilters;
 };
 
 const updateEstimators = (estimators: Estimator[]) => {
@@ -94,7 +129,10 @@ const [useShSimulation, ShSimulationContextProvider] =
 const ShSimulation = ({ children }: ShSimulationProps) => {
 	const { authKy } = useAuth();
 
-	const statusDataCache = useRef(new Map<string, JobStatusData>());
+	const statusDataCache = useCacheMap<JobStatusData>();
+	const inputsCache = useCacheMap<JobInputs>();
+	const resultsCache = useCacheMap<JobResults>();
+	const logsCache = useCacheMap<JobLogs>();
 
 	const getHelloWorld = useCallback(
 		(signal?: AbortSignal) =>
@@ -107,19 +145,34 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 
 	const postJob = useCallback(
 		(endPoint: string) =>
-			(...[simData, ntasks, simType, title, batchOptions, signal]: RequestPostJob) => {
+			(
+				...[
+					simData,
+					inputType,
+					ntasks,
+					simType,
+					title,
+					batchOptions,
+					signal
+				]: RequestPostJob
+			) => {
 				if (title === undefined && isEditorJson(simData)) title = simData.project.title;
+				const mapType: { [k in SimulationSourceType]: string } = {
+					editor: 'json',
+					files: 'files'
+				};
+
+				const filedName = mapType[inputType];
+
+				if (filedName === undefined) throw new Error('Invalid input type ' + inputType);
+
 				return authKy
 					.post(endPoint, {
 						json: {
+							[`input_${filedName}`]: simData,
 							...camelToSnakeCase(
 								{
-									simData
-								},
-								false // converter expects camelCase for simData
-							),
-							...camelToSnakeCase(
-								{
+									inputType,
 									ntasks,
 									simType,
 									title,
@@ -151,13 +204,111 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 		[authKy]
 	);
 
+	const getJobInputs = useCallback(
+		async (...[info, signal, cache = true, beforeCacheWrite]: RequestGetJobInputs) => {
+			const { jobId } = info;
+
+			if (cache && inputsCache.has(jobId)) return Promise.resolve(inputsCache.get(jobId));
+
+			const cachePromise = inputsCache.createPromise(
+				async resolve => {
+					const response = await authKy
+						.get('inputs', {
+							signal,
+							searchParams: camelToSnakeCase({ jobId })
+						})
+						.json<ResponseGetJobInputs>();
+					const data: JobInputs = {
+						...response,
+						jobId
+					};
+					resolve(data);
+				},
+				jobId,
+				beforeCacheWrite
+			);
+
+			return await cachePromise;
+		},
+		[authKy, inputsCache]
+	);
+
+	const getJobLogs = useCallback(
+		async (...[info, signal, cache = true, beforeCacheWrite]: RequestGetJobLogs) => {
+			const { jobId } = info;
+
+			if (cache && logsCache.has(jobId)) return Promise.resolve(logsCache.get(jobId));
+
+			const cachePromise = logsCache.createPromise(
+				async resolve => {
+					const response = await authKy
+						.get('logfiles', {
+							signal,
+							searchParams: camelToSnakeCase({ jobId })
+						})
+						.json<ResponseGetJobLogs>();
+					const data: JobLogs = {
+						...response,
+						jobId
+					};
+					resolve(data);
+				},
+				jobId,
+				beforeCacheWrite
+			);
+
+			return await cachePromise;
+		},
+		[authKy, logsCache]
+	);
+
+	const getJobResults = useCallback(
+		async (...[info, signal, cache = true, beforeCacheWrite]: RequestGetJobResults) => {
+			const { jobId } = info;
+
+			if (cache && resultsCache.has(jobId)) return Promise.resolve(resultsCache.get(jobId));
+
+			const cachePromise = resultsCache.createPromise(
+				async resolve => {
+					const response = await authKy
+						.get('results', {
+							signal,
+							searchParams: camelToSnakeCase({ jobId })
+						})
+						.json<ResponseGetJobResults>();
+
+					updateEstimators(response.estimators);
+
+					const jobInputs = await getJobInputs(info, signal, cache);
+
+					const refsInResults =
+						jobInputs?.input.inputJson &&
+						recreateRefsInResults(jobInputs?.input.inputJson, response.estimators);
+
+					const data: JobResults = {
+						...response,
+						jobId,
+						estimators: refsInResults ?? response.estimators
+					};
+
+					resolve(data);
+				},
+				jobId,
+				beforeCacheWrite
+			);
+
+			return await cachePromise;
+		},
+		[authKy, getJobInputs, resultsCache]
+	);
+
 	const getJobStatus = useCallback(
 		(endPoint: string) =>
 			(...[info, cache = true, beforeCacheWrite, signal]: RequestGetJobStatus) => {
 				const { jobId } = info;
 
-				if (cache && statusDataCache.current.has(jobId))
-					return Promise.resolve(statusDataCache.current.get(jobId));
+				if (cache && statusDataCache.has(jobId))
+					return Promise.resolve(statusDataCache.get(jobId));
 
 				return authKy
 					.get(endPoint, {
@@ -170,27 +321,25 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 							...response,
 							...info
 						};
+
 						if (currentJobStatusData[StatusState.PENDING](data)) {
 						} else if (currentJobStatusData[StatusState.RUNNING](data)) {
 						} else if (currentJobStatusData[StatusState.FAILED](data)) {
-							console.log(data.error);
+							console.log(data.message);
 
-							beforeCacheWrite?.call(null, data.jobId, data);
-							statusDataCache.current.set(data.jobId, data);
-						} else if (currentJobStatusData[StatusState.COMPLETED](data)) {
-							updateEstimators(data.result.estimators);
-							if (data.inputJson) recreateRefsInResults(data);
+							statusDataCache.set(data.jobId, data, beforeCacheWrite);
+						} else if (currentJobStatusData[StatusState.COMPLETED](data))
+							statusDataCache.set(data.jobId, data, beforeCacheWrite);
+						else return undefined;
 
-							beforeCacheWrite?.call(null, data.jobId, data);
-							statusDataCache.current.set(data.jobId, data);
-						} else {
-							return undefined;
-						}
 						return data;
 					})
-					.catch(() => undefined);
+					.catch(e => {
+						console.error(e);
+						return undefined;
+					});
 			},
-		[authKy]
+		[authKy, statusDataCache]
 	);
 
 	const cancelJob = useCallback(
@@ -202,9 +351,9 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 						searchParams: camelToSnakeCase({ jobId })
 					})
 					.then(() => {
-						statusDataCache.current.delete(jobId);
+						statusDataCache.delete(jobId);
 					}),
-		[authKy]
+		[authKy, statusDataCache]
 	);
 
 	const getPageContents = useCallback(
@@ -236,6 +385,30 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 		[getJobStatus]
 	);
 
+	const getFullSimulationData = useCallback(
+		async (jobStatus: JobStatusData, signal?: AbortSignal, cache = true) => {
+			const inputs: JobInputs | undefined = await getJobInputs(jobStatus, signal, cache);
+			const results: JobResults | undefined =
+				jobStatus.jobState === StatusState.COMPLETED
+					? await getJobResults(jobStatus, signal, cache)
+					: undefined;
+			if (!inputs || !results) return undefined;
+			const { message, ...mergedData } = {
+				...inputs,
+				...results,
+				...jobStatus
+			};
+
+			const simData: FullSimulationData = mergedData satisfies ValidateShape<
+				typeof mergedData,
+				FullSimulationData
+			>;
+
+			return simData;
+		},
+		[getJobInputs, getJobResults]
+	);
+
 	return (
 		<ShSimulationContextProvider
 			value={{
@@ -248,7 +421,11 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 				getJobDirectStatus: getJobStatus('jobs/direct'),
 				getJobBatchStatus: getJobStatus('jobs/batch'),
 				getPageContents,
-				getPageStatus
+				getPageStatus,
+				getJobInputs,
+				getJobResults,
+				getJobLogs,
+				getFullSimulationData
 			}}>
 			{children}
 		</ShSimulationContextProvider>

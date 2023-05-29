@@ -15,7 +15,7 @@ import React, { useState } from 'react';
 import { useLoader } from '../../../services/DataLoaderService';
 import EXAMPLES from '../../examples/examples';
 import { CustomDialogTitle } from './CustomDialog';
-import { JobStatusData, StatusState } from '../../../types/ResponseTypes';
+import { StatusState } from '../../../types/ResponseTypes';
 import { DragDropProject } from './DragDropProject';
 
 export type OpenFileProps = {
@@ -97,7 +97,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 									<ListItem
 										disablePadding
 										key={
-											example?.inputJson?.project?.title ??
+											example?.input.inputJson?.project?.title ??
 											'Example_' + idx.toString()
 										}
 										value={idx}
@@ -107,7 +107,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 										<ListItemButton
 											id={`example-btn-${idx}`}
 											selected={exampleIndex === idx}>
-											{example?.inputJson?.project?.title ??
+											{example?.input.inputJson?.project?.title ??
 												'Example_' + idx.toString()}
 										</ListItemButton>
 									</ListItem>
@@ -126,7 +126,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 											return {
 												...e,
 												jobState: StatusState.COMPLETED
-											} as JobStatusData<StatusState.COMPLETED>;
+											};
 										})
 									);
 								}}>
