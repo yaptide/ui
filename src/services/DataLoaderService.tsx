@@ -1,11 +1,11 @@
 import { ReactNode, useCallback, useState } from 'react';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { createGenericContext } from './GenericContext';
-import { JobStatusData, currentJobStatusData, StatusState } from '../types/ResponseTypes';
+import { FullSimulationData } from './ShSimulatorService';
 
 export interface ILoader {
 	editorProvider: EditorJson[];
-	resultsProvider: JobStatusData[];
+	resultsProvider: FullSimulationData[];
 	canLoadEditorData: boolean;
 	canLoadResultsData: boolean;
 	clearLoadedEditor: () => void;
@@ -19,6 +19,19 @@ const [useLoader, LoaderContextProvider] = createGenericContext<ILoader>();
 
 const isEditorJson = (data: unknown): data is EditorJson => {
 	return (data as EditorJson)?.metadata?.type === 'Editor';
+};
+
+const isFullSimulationData = (data: unknown): data is FullSimulationData => {
+	const keys: (keyof FullSimulationData)[] = [
+		'input',
+		'estimators',
+		'jobState',
+		'jobId',
+		'jobTasksStatus',
+		'metadata',
+		'startTime'
+	];
+	return keys.every(key => key in (data as any));
 };
 
 const readFile = (file: File) => {
@@ -35,7 +48,7 @@ const Loader = (props: { children: ReactNode }) => {
 	const [canLoadResultsData, setCanLoadResultsData] = useState<boolean>(false);
 
 	const [editorProvider, setEditorProvider] = useState<EditorJson[]>([]);
-	const [resultsProvider, setResultsProvider] = useState<JobStatusData[]>([]);
+	const [resultsProvider, setResultsProvider] = useState<FullSimulationData[]>([]);
 
 	const clearLoadedEditor = useCallback(() => {
 		setCanLoadEditorData(false);
@@ -50,9 +63,12 @@ const Loader = (props: { children: ReactNode }) => {
 	const loadData = useCallback((dataArray: unknown[]) => {
 		if (Array.isArray(dataArray)) {
 			setResultsProvider(prev => {
-				const result: JobStatusData[] = prev.concat(
-					dataArray.filter(currentJobStatusData[StatusState.COMPLETED]) as JobStatusData[]
+				const result: FullSimulationData[] = prev.concat(
+					dataArray.filter(isFullSimulationData)
 				);
+
+				if (result.length === 0) console.warn('No results data found in loaded data');
+
 				setCanLoadResultsData(result.length > 0);
 				return result;
 			});
@@ -60,10 +76,13 @@ const Loader = (props: { children: ReactNode }) => {
 			setEditorProvider(prev => {
 				const result = prev.concat(dataArray.filter(isEditorJson)).concat(
 					dataArray
-						.filter(currentJobStatusData[StatusState.COMPLETED])
-						.map(data => data.inputJson)
+						.filter(isFullSimulationData)
+						.map(data => data.input.inputJson)
 						.filter(isEditorJson)
 				);
+
+				if (result.length === 0) console.warn('No editor data found in loaded data');
+
 				setCanLoadEditorData(result.length > 0);
 				return result;
 			});
@@ -90,7 +109,7 @@ const Loader = (props: { children: ReactNode }) => {
 			if (Array.isArray(rawJson)) {
 				loadData(rawJson);
 			} else {
-				loadData([rawJson as EditorJson | JobStatusData]);
+				loadData([rawJson]);
 			}
 		},
 		[loadData]

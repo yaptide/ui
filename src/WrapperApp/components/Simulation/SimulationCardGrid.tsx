@@ -23,7 +23,7 @@ import {
 
 import FolderOffIcon from '@mui/icons-material/FolderOff';
 import { useState } from 'react';
-import { SimulationInputFiles, JobStatusData } from '../../../types/ResponseTypes';
+import { JobStatusData, SimulationInputFiles } from '../../../types/ResponseTypes';
 
 type GridLayout = 'grid' | 'inline-list' | 'block-list';
 
@@ -95,7 +95,7 @@ export function SimulationCardGrid({
 							key={simulation.jobId}
 							{...gridItemProps}>
 							<SimulationCard
-								simulation={simulation}
+								simulationStatus={simulation}
 								loadResults={
 									handleLoadResults &&
 									(taskId => handleLoadResults(taskId, simulation))

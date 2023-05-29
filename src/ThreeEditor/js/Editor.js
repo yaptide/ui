@@ -22,7 +22,7 @@ _DEFAULT_CAMERA.name = 'Camera';
 _DEFAULT_CAMERA.position.set(0, 5, 10);
 _DEFAULT_CAMERA.lookAt(new THREE.Vector3());
 
-export const JSON_VERSION = 0.7;
+export const JSON_VERSION = 0.9;
 
 export function Editor(container) {
 	this.signals = {
@@ -200,7 +200,7 @@ export function Editor(container) {
 		animationStopped: new Signal()
 	};
 
-	this.results = null;
+	this._results = null;
 
 	this.viewManager = null;
 
@@ -269,6 +269,12 @@ export function Editor(container) {
 }
 
 Editor.prototype = {
+	setResults(results) {
+		this._results = results;
+	},
+	getResults() {
+		return this._results;
+	},
 	set selected(object) {
 		Reflect.set(this.contextManager, 'selected', object);
 	},

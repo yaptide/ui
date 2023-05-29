@@ -16,6 +16,7 @@ import LoginPanel from './components/Panels/LoginPanel';
 import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
+import { FullSimulationData } from '../services/ShSimulatorService';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
@@ -67,6 +68,15 @@ function WrapperApp() {
 	useEffect(() => {
 		if (isAuthorized && tabsValue === 'login') setTabsValue('editor');
 	}, [isAuthorized, tabsValue]);
+
+	const onLoadExample = useCallback(
+		(example: FullSimulationData) => {
+			if (!DEMO_MODE) return;
+			setResultsSimulationData(example);
+			setTabsValue('editor');
+		},
+		[setResultsSimulationData]
+	);
 
 	const onEditorInitialized = (editor: Editor) => {
 		editorRef.current = editor;

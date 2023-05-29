@@ -4,12 +4,7 @@ import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
 import { BACKEND_URL, DEMO_MODE } from '../config/Config';
 import { snakeToCamelCase } from '../types/TypeTransformUtil';
-import {
-	RequestAuthLogin,
-	RequestAuthLogout,
-	RequestAuthRefresh,
-	RequestAuthStatus
-} from '../types/RequestTypes';
+import { RequestAuthLogin, RequestAuthLogout, RequestAuthRefresh } from '../types/RequestTypes';
 import useIntervalAsync from '../util/hooks/useIntervalAsync';
 import { useSnackbar } from 'notistack';
 import {
@@ -76,10 +71,6 @@ export interface AuthContext {
 	login: (...args: RequestAuthLogin) => void;
 	logout: (...args: RequestAuthLogout) => void;
 	refresh: (...args: RequestAuthRefresh) => void;
-	/**
-	 * @deprecated  //not used
-	 */
-	status: (...args: RequestAuthStatus) => void;
 	authKy: KyInstance;
 }
 
@@ -181,18 +172,6 @@ const Auth = ({ children }: AuthProps) => {
 		else if (!isServerReachable || user === null) setRefreshInterval(undefined);
 	}, [isServerReachable, refreshInterval, user]);
 
-	/**
-	 * @deprecated  //not used
-	 */
-	const status = useCallback(() => {
-		if (DEMO_MODE || !isServerReachable) return;
-		kyRef.current
-			.get(`auth/status`)
-			.json<ResponseAuthStatus>()
-			.then(({ username }) => setUser({ username }))
-			.catch((_: HTTPError) => {});
-	}, [isServerReachable]);
-
 	const login = useCallback(
 		(...[username, password]: RequestAuthLogin) => {
 			kyRef.current
@@ -235,7 +214,6 @@ const Auth = ({ children }: AuthProps) => {
 				login,
 				logout,
 				authKy,
-				status,
 				refresh
 			}}>
 			{children}
