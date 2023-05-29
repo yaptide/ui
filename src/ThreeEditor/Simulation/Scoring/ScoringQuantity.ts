@@ -1,4 +1,4 @@
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { DetectFilter } from './DetectFilter';
 import { SimulationElement } from '../Base/SimulationElement';
 import * as Scoring from './ScoringOutputTypes';
@@ -83,7 +83,7 @@ export class ScoringQuantity extends SimulationElement {
 		return this._modifiers[uuid];
 	}
 
-	constructor(editor: Editor, keyword: Scoring.DETECTOR_KEYWORD = 'Dose') {
+	constructor(editor: YaptideEditor, keyword: Scoring.DETECTOR_KEYWORD = 'Dose') {
 		super(editor, 'Quantity', 'Quantity');
 		this._modifiers = {};
 		this.keyword = keyword;
@@ -121,7 +121,7 @@ export class ScoringQuantity extends SimulationElement {
 		return this;
 	}
 
-	static fromJSON(editor: Editor, json: ScoringQuantityJSON): ScoringQuantity {
+	static fromJSON(editor: YaptideEditor, json: ScoringQuantityJSON): ScoringQuantity {
 		return new ScoringQuantity(editor).fromJSON(json);
 	}
 }

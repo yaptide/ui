@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 import { SimulationElement } from './SimulationElement';
@@ -16,14 +16,14 @@ export abstract class SimulationPoints
 		size: 0.1
 	});
 
-	editor: Editor;
+	editor: YaptideEditor;
 	parent: SimulationSceneContainer<this> | null = null;
 	material: THREE.PointsMaterial;
 	readonly type: string;
 	readonly isSimulationElement = true;
 	_name: string;
 
-	constructor(editor: Editor, name: string | undefined, type: string) {
+	constructor(editor: YaptideEditor, name: string | undefined, type: string) {
 		super();
 		this.editor = editor;
 		this.name = this._name = name ?? `Detect`;

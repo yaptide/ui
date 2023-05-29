@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 
@@ -12,13 +12,13 @@ export abstract class SimulationElement
 	extends THREE.Object3D
 	implements SimulationPropertiesType, SimulationSceneChild
 {
-	editor: Editor;
+	editor: YaptideEditor;
 	parent: SimulationSceneContainer<this> | null = null;
 	readonly type: string;
 	readonly isSimulationElement = true;
 	_name: string;
 
-	constructor(editor: Editor, name: string | undefined, type: string) {
+	constructor(editor: YaptideEditor, name: string | undefined, type: string) {
 		super();
 		this.editor = editor;
 		this.name = this._name = name ?? type;

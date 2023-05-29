@@ -3,9 +3,10 @@ import { UIHorizontalRule, UIPanel } from '../libs/ui.js';
 import { createOption } from './Menubar.js';
 
 /**
- * @typedef {import('../Editor').Editor} Editor
+ * @typedef {import('../Editor').YaptideEditor} Editor
  * @param {Editor} editor
  * @constructor
+ * @deprecated
  */
 export function MenubarExamples(editor) {
 	const container = new UIPanel();

@@ -9,7 +9,7 @@ import {
 	showUIElement
 } from '../../../../util/Ui/Uis';
 import { SetFilterRuleCommand } from '../../commands/SetFilterRuleCommand';
-import { Editor } from '../../Editor';
+import { YaptideEditor } from '../../Editor';
 import { UIBreak, UIButton, UINumber, UIRow, UISelect } from '../../libs/ui';
 import { UIOutliner } from '../../libs/ui.three';
 import { ObjectAbstract } from './Object.Abstract';
@@ -36,7 +36,7 @@ export class ObjectFilter extends ObjectAbstract {
 	valueInput: UINumber;
 	removeButton: UIButton;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Scoring rules');
 		[this.addRow, this.add] = createFullwidthButton({
 			text: 'Add rule',

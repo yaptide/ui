@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { SimulationElement } from './SimulationElement';
@@ -14,14 +14,14 @@ export abstract class SimulationMesh<
 	extends THREE.Mesh<TGeometry, TMaterial>
 	implements SimulationPropertiesType, SimulationSceneChild, SimulationElement
 {
-	editor: Editor;
+	editor: YaptideEditor;
 	parent: SimulationSceneContainer<this> | null = null;
 	_name: string;
 	readonly type: string;
 	readonly isSimulationElement = true;
 
 	constructor(
-		editor: Editor,
+		editor: YaptideEditor,
 		name: string | undefined,
 		type: string,
 		geometry?: TGeometry,

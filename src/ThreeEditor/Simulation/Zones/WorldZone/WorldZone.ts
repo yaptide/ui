@@ -2,7 +2,7 @@ import { Signal } from 'signals';
 import * as THREE from 'three';
 import { Color, MeshBasicMaterial, Object3D, Vector3 } from 'three';
 import { debounce } from 'throttle-debounce';
-import { Editor } from '../../../js/Editor';
+import { YaptideEditor } from '../../../js/Editor';
 import {
 	AdditionalGeometryDataType,
 	generateSimulationInfo
@@ -47,7 +47,7 @@ export class WorldZone extends SimulationElement {
 	readonly notVisibleChildren: boolean = true;
 	readonly notDraggable: boolean = true;
 
-	editor: Editor;
+	editor: YaptideEditor;
 
 	private _material: MeshBasicMaterial;
 	private _simulationMaterial: SimulationMaterial;
@@ -93,7 +93,7 @@ export class WorldZone extends SimulationElement {
 
 	readonly debouncedCalculate = debounce(200, () => this.calculate(), { atBegin: false });
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'World Zone', 'WorldZone');
 		this.name = 'World Zone';
 		this._material = _materialDefault;
@@ -251,7 +251,7 @@ export class WorldZone extends SimulationElement {
 		return this;
 	}
 
-	static fromJSON(editor: Editor, data: WorldZoneJSON) {
+	static fromJSON(editor: YaptideEditor, data: WorldZoneJSON) {
 		return new WorldZone(editor).fromJSON(data);
 	}
 

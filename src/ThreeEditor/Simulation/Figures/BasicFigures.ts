@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { SimulationMesh } from '../Base/SimulationMesh';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
@@ -25,7 +25,7 @@ export abstract class BasicFigure<
 	geometryType: BasicGeometry;
 	readonly isBasicFigure: true = true;
 	constructor(
-		editor: Editor,
+		editor: YaptideEditor,
 		name: string | undefined,
 		type: string,
 		geometryType: BasicGeometry,
@@ -40,7 +40,11 @@ export abstract class BasicFigure<
 
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
 export class BoxFigure extends BasicFigure<THREE.BoxGeometry> {
-	constructor(editor: Editor, geometry?: THREE.BoxGeometry, material?: THREE.MeshBasicMaterial) {
+	constructor(
+		editor: YaptideEditor,
+		geometry?: THREE.BoxGeometry,
+		material?: THREE.MeshBasicMaterial
+	) {
 		super(editor, 'Box', 'BoxFigure', 'Box', geometry ?? boxGeometry, material);
 	}
 }
@@ -51,7 +55,7 @@ const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Ma
 
 export class CylinderFigure extends BasicFigure<THREE.CylinderGeometry> {
 	constructor(
-		editor: Editor,
+		editor: YaptideEditor,
 		geometry?: THREE.CylinderGeometry,
 		material?: THREE.MeshBasicMaterial
 	) {
@@ -71,7 +75,7 @@ const sphereGeometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Mat
 export class SphereFigure extends BasicFigure<THREE.SphereGeometry> {
 	readonly notRotatable = true;
 	constructor(
-		editor: Editor,
+		editor: YaptideEditor,
 		geometry?: THREE.SphereGeometry,
 		material?: THREE.MeshBasicMaterial
 	) {

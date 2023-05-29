@@ -1,5 +1,5 @@
 import { Object3D, ObjectLoader } from 'three';
-import { Editor } from '../ThreeEditor/js/Editor';
+import { YaptideEditor } from '../ThreeEditor/js/Editor';
 import {
 	BoxFigure,
 	CylinderFigure,
@@ -8,8 +8,8 @@ import {
 import { CTCube } from '../ThreeEditor/Simulation/SpecialComponents/CTCube';
 
 export class EditorObjectLoader extends ObjectLoader {
-	private editor: Editor;
-	constructor(editor: Editor) {
+	private editor: YaptideEditor;
+	constructor(editor: YaptideEditor) {
 		super();
 		this.editor = editor;
 	}

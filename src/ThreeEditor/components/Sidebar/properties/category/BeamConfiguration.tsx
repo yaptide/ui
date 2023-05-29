@@ -12,7 +12,7 @@ import {
 	SigmaType,
 	isBeam
 } from '../../../../Simulation/Physics/Beam';
-import { Editor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/Editor';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { ParticleSelect } from '../../../Select/ParticleSelect';
 import {
@@ -211,7 +211,7 @@ function BeamSadField(props: { beam: Beam; onChange: (value: Beam['sad']) => voi
 	);
 }
 
-function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
+function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object, true);
@@ -359,7 +359,7 @@ function BeamConfigurationFields(props: { editor: Editor; object: Beam }) {
 	);
 }
 
-export function BeamConfiguration(props: { editor: Editor; object: Object3D }) {
+export function BeamConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
 	const visibleFlag = isBeam(object);

@@ -1,5 +1,5 @@
 import { Object3D } from 'three';
-import { Editor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/Editor';
 import { ConditionalNumberPropertyField } from '../fields/PropertyField';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
@@ -13,7 +13,7 @@ import { SetOutputSettingsCommand } from '../../../../js/commands/SetOutputSetti
 import { Grid, Button } from '@mui/material';
 import { AddQuantityCommand } from '../../../../js/commands/AddQuantityCommand';
 
-export function OutputConfiguration(props: { editor: Editor; object: Object3D }) {
+export function OutputConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object as ScoringOutput);

@@ -1,5 +1,5 @@
 import { Object3D } from 'three';
-import { Editor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/Editor';
 import {
 	ConditionalNumberPropertyField,
 	ConditionalObjectSelectPropertyField
@@ -14,7 +14,7 @@ import {
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValueCommand';
 
-export function QuantityConfiguration(props: { editor: Editor; object: Object3D }) {
+export function QuantityConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object as ScoringQuantity);

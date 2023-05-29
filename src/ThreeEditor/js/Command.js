@@ -1,5 +1,5 @@
 /**
- * @typedef {import('./Editor.js').Editor} Editor
+ * @typedef {import('./Editor.js').YaptideEditor} Editor
  * @typedef {import('../Simulation/Base/SimulationElement').SimulationElement} SimulationElement
  * @typedef  {Object} Command
  * @property {number} id

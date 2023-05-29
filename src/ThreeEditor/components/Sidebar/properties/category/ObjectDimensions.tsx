@@ -5,7 +5,7 @@ import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeome
 import { SetDetectTypeCommand } from '../../../../js/commands/SetDetectTypeCommand';
 import { SetGeometryCommand } from '../../../../js/commands/SetGeometryCommand';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
-import { Editor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/Editor';
 import {
 	BasicFigure,
 	BASIC_GEOMETRY_OPTIONS,
@@ -31,7 +31,10 @@ import {
 import { PropertiesCategory } from './PropertiesCategory';
 import { isCTCube } from '../../../../Simulation/SpecialComponents/CTCube';
 
-const ObjectTypeField = (props: { editor: Editor; object: BasicFigure | Detector | WorldZone }) => {
+const ObjectTypeField = (props: {
+	editor: YaptideEditor;
+	object: BasicFigure | Detector | WorldZone;
+}) => {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
@@ -78,7 +81,7 @@ const ObjectTypeField = (props: { editor: Editor; object: BasicFigure | Detector
 	);
 };
 
-const WorldZoneCalculateField = (props: { editor: Editor; object: WorldZone }) => {
+const WorldZoneCalculateField = (props: { editor: YaptideEditor; object: WorldZone }) => {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
@@ -123,7 +126,7 @@ const WorldZoneCalculateField = (props: { editor: Editor; object: WorldZone }) =
 };
 
 const BoxDimensionsField = (props: {
-	editor: Editor;
+	editor: YaptideEditor;
 	object: BasicFigure | WorldZone | Detector | Object3D;
 }) => {
 	const { object, editor } = props;
@@ -218,7 +221,7 @@ const BoxDimensionsField = (props: {
 };
 
 const CylinderDimensionsField = (props: {
-	editor: Editor;
+	editor: YaptideEditor;
 	object: BasicFigure | WorldZone | Detector | Object3D;
 }) => {
 	const { object, editor } = props;
@@ -343,7 +346,7 @@ const CylinderDimensionsField = (props: {
 };
 
 const SphereDimensionsField = (props: {
-	editor: Editor;
+	editor: YaptideEditor;
 	object: BasicFigure | WorldZone | Object3D;
 }) => {
 	const { object, editor } = props;
@@ -411,7 +414,7 @@ const SphereDimensionsField = (props: {
 	);
 };
 
-const ZoneDimensionsField = (props: { editor: Editor; object: Detector | Object3D }) => {
+const ZoneDimensionsField = (props: { editor: YaptideEditor; object: Detector | Object3D }) => {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object as Detector);
@@ -446,7 +449,7 @@ const ZoneDimensionsField = (props: { editor: Editor; object: Detector | Object3
 	);
 };
 
-const DimensionsFields = (props: { editor: Editor; object: Object3D }) => {
+const DimensionsFields = (props: { editor: YaptideEditor; object: Object3D }) => {
 	const { object, editor } = props;
 
 	return (
@@ -472,7 +475,7 @@ const DimensionsFields = (props: { editor: Editor; object: Object3D }) => {
 };
 
 export function ObjectDimensions(props: {
-	editor: Editor;
+	editor: YaptideEditor;
 	object: BasicFigure | Detector | WorldZone;
 }) {
 	const { object, editor } = props;

@@ -1,21 +1,22 @@
 import * as THREE from 'three';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { generateSimulationInfo } from '../../../util/AdditionalGeometryData';
 import { BasicFigure, BoxFigure } from './BasicFigures';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { UniqueChildrenNames, getNextFreeName } from '../../../util/Name/Name';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElementManager } from '../Base/SimulationManager';
+import { EditorObjectLoader } from '../../../util/ObjectLoader';
 
 export class FigureContainer extends SimulationSceneContainer<BasicFigure> {
 	readonly isFigureContainer: true = true;
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Figures', 'Figures');
 	}
 }
 
 //TODO: FigureScene should implement from SimulationSceneContainer or define container of this type
-export class FigureScene
+export class FigureManager
 	extends THREE.Scene
 	implements
 		SimulationPropertiesType,
@@ -26,15 +27,17 @@ export class FigureScene
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
+	readonly loader: EditorObjectLoader;
 
-	private editor: Editor;
+	private editor: YaptideEditor;
 	readonly isFigureScene: true = true;
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super();
 
 		this.editor = editor;
 		this.name = 'Figures';
 		this.figureContainer = new FigureContainer(editor);
+		this.loader = new EditorObjectLoader(editor);
 	}
 
 	addFigure(figure: BasicFigure<THREE.BufferGeometry>) {
@@ -61,11 +64,11 @@ export class FigureScene
 
 	figureContainer;
 
-	getNextFreeName(object: THREE.Object3D<THREE.Event>, newName?: string | undefined): string {
+	uniqueNameForChild(object: THREE.Object3D<THREE.Event>, newName?: string | undefined): string {
 		return getNextFreeName(this, newName ?? object.name, object);
 	}
 	add(object: THREE.Object3D<THREE.Event>): this {
-		object.name = this.getNextFreeName(object);
+		object.name = this.uniqueNameForChild(object);
 		return super.add(object);
 	}
 	toJSON(): unknown {
@@ -76,5 +79,15 @@ export class FigureScene
 			return object;
 		});
 		return data;
+	}
+	fromJSON(json: any) {
+		const tmpScene = this.loader.parse(json);
+		this.uuid = tmpScene.uuid;
+		this.name = tmpScene.name;
+
+		while (tmpScene.children.length > 0) {
+			const child = tmpScene.children[0];
+			this.add(child);
+		}
 	}
 }

@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { debounce } from 'throttle-debounce';
 import { ZoneWorker } from '../../CSG/CSGWorker';
 import * as Comlink from 'comlink';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import CSG from '../../js/libs/csg/three-csg';
 import { OperationTuple, OperationTupleJSON } from '../../CSG/CSGOperationTuple';
 import { CounterMap } from '../../../util/CounterMap/CounterMap';
@@ -27,9 +27,7 @@ export class BooleanZone extends SimulationZone {
 		objectRemoved: Signal<THREE.Object3D>;
 		geometryChanged: Signal<THREE.Object3D>;
 		sceneGraphChanged: Signal;
-		zoneAdded: Signal<BooleanZone>;
 		zoneGeometryChanged: Signal<BooleanZone>;
-		zoneRemoved: Signal<BooleanZone>;
 		zoneChanged: Signal<BooleanZone>;
 		zoneEmpty: Signal<BooleanZone>;
 	};
@@ -46,7 +44,7 @@ export class BooleanZone extends SimulationZone {
 	worker?: Comlink.Remote<ZoneWorker>;
 	readonly debouncedUpdatePreview = debounce(200, () => this.updatePreview(), { atBegin: false });
 
-	constructor(editor: Editor, name?: string) {
+	constructor(editor: YaptideEditor, name?: string) {
 		super(editor, name ?? 'BooleanZone');
 		this.signals = editor.signals;
 		this._unionOperations = [];
@@ -216,7 +214,7 @@ export class BooleanZone extends SimulationZone {
 		return this;
 	}
 
-	static fromJSON(editor: Editor, json: BooleanZoneJSON) {
+	static fromJSON(editor: YaptideEditor, json: BooleanZoneJSON) {
 		const zone = new BooleanZone(editor);
 		return zone.fromJSON(json);
 	}

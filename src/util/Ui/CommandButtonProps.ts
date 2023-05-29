@@ -14,7 +14,7 @@ import { CTCube } from '../../ThreeEditor/Simulation/SpecialComponents/CTCube';
 import { BooleanZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
 import { Command } from '../../ThreeEditor/commands/basic/AbstractCommand';
 import { ObjectManagementFactory } from '../../ThreeEditor/commands/factories/ObjectManagementFactory';
-import { Editor } from '../../ThreeEditor/js/Editor';
+import { YaptideEditor } from '../../ThreeEditor/js/Editor';
 
 export type CommandButtonProps = {
 	label: string;
@@ -28,7 +28,7 @@ type ManagerName = 'Figures' | 'Zones' | 'Detectors' | 'Special Components' | 'F
 type GroupedCommandButtonProps = Record<ManagerName, CommandButtonProps[]>;
 
 export const createCommandButtonProps = (
-	editor: Editor,
+	editor: YaptideEditor,
 	data: CommandButtonTuple[]
 ): CommandButtonProps[] => {
 	return data.map(([label, command, disabled]) => ({
@@ -39,8 +39,8 @@ export const createCommandButtonProps = (
 };
 
 export const getAddElementButtonProps = (
-	editor: Editor,
-	selectedObject: Editor['selected']
+	editor: YaptideEditor,
+	selectedObject: YaptideEditor['selected']
 ): GroupedCommandButtonProps => {
 	const commandFactory = new ObjectManagementFactory(editor);
 	const figuresTuple: CommandButtonTuple[] = [
@@ -49,7 +49,7 @@ export const getAddElementButtonProps = (
 			commandFactory.createAddCommand<'figure', BasicFigure>(
 				'figure',
 				new BoxFigure(editor),
-				editor.scene
+				editor.figureManager
 			)
 		],
 		[
@@ -57,7 +57,7 @@ export const getAddElementButtonProps = (
 			commandFactory.createAddCommand<'figure', BasicFigure>(
 				'figure',
 				new CylinderFigure(editor),
-				editor.scene
+				editor.figureManager
 			)
 		],
 		[
@@ -65,7 +65,7 @@ export const getAddElementButtonProps = (
 			commandFactory.createAddCommand<'figure', BasicFigure>(
 				'figure',
 				new SphereFigure(editor),
-				editor.scene
+				editor.figureManager
 			)
 		]
 	];

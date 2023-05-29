@@ -4,10 +4,8 @@ import * as THREE from 'three';
 import { Beam } from '../Simulation/Physics/Beam';
 import { DetectorManager } from '../Simulation/Detectors/DetectorManager';
 import { ZoneManager } from '../Simulation/Zones/ZoneManager';
-import { FigureScene } from '../Simulation/Figures/FigureScene';
+import { FigureManager } from '../Simulation/Figures/FigureManager';
 import { MaterialManager } from '../Simulation/Materials/MaterialManager';
-import { getNextFreeName } from '../../util/Name/Name';
-import { EditorObjectLoader } from '../../util/ObjectLoader';
 import { Physics } from '../Simulation/Physics/Physics';
 import { ScoringManager } from '../Simulation/Scoring/ScoringManager';
 import { SpecialComponentManager } from '../Simulation/SpecialComponents/SpecialComponentManager';
@@ -24,7 +22,7 @@ _DEFAULT_CAMERA.lookAt(new THREE.Vector3());
 
 export const JSON_VERSION = 0.9;
 
-export function Editor(container) {
+export function YaptideEditor(container) {
 	this.signals = {
 		/*
       digraph finite_state_machine {
@@ -225,7 +223,7 @@ export function Editor(container) {
 
 	this.camera = _DEFAULT_CAMERA.clone();
 
-	this.scene = new FigureScene(this);
+	this.figureManager = new FigureManager(this);
 
 	this.sceneHelpers = new THREE.Scene();
 
@@ -249,7 +247,7 @@ export function Editor(container) {
 
 	this.materialsRefCounter = new Map(); // tracks how often is a material used by a 3D object
 
-	this.mixer = new THREE.AnimationMixer(this.scene);
+	this.mixer = new THREE.AnimationMixer(this.figureManager);
 
 	this.helpers = {};
 
@@ -259,7 +257,7 @@ export function Editor(container) {
 	this.addCamera(this.camera);
 
 	this.searchableObjectCollections = [
-		this.scene,
+		this.figureManager,
 		this.zoneManager,
 		this.beam,
 		this.detectorManager,
@@ -268,7 +266,7 @@ export function Editor(container) {
 	];
 }
 
-Editor.prototype = {
+YaptideEditor.prototype = {
 	setResults(results) {
 		this._results = results;
 	},
@@ -281,14 +279,17 @@ Editor.prototype = {
 	get selected() {
 		return Reflect.get(this.contextManager, 'selected');
 	},
+	/**
+	 * @deprecated
+	 */
 	setScene(scene) {
-		this.scene.uuid = scene.uuid;
-		this.scene.name = scene.name;
+		this.figureManager.uuid = scene.uuid;
+		this.figureManager.name = scene.name;
 
-		this.scene.background = scene.background;
-		this.scene.environment = scene.environment;
+		this.figureManager.background = scene.background;
+		this.figureManager.environment = scene.environment;
 
-		this.scene.userData = JSON.parse(JSON.stringify(scene.userData));
+		this.figureManager.userData = JSON.parse(JSON.stringify(scene.userData));
 
 		// avoid render per object
 
@@ -314,7 +315,7 @@ Editor.prototype = {
 		});
 
 		if (!parent) {
-			this.scene.add(object);
+			this.figureManager.add(object);
 		} else {
 			parent.children.splice(index, 0, object);
 			object.parent = parent;
@@ -326,7 +327,7 @@ Editor.prototype = {
 
 	moveObject(object, parent, before) {
 		if (!parent) {
-			parent = this.scene;
+			parent = this.figureManager;
 		}
 
 		parent.add(object);
@@ -573,10 +574,6 @@ Editor.prototype = {
 		return object;
 	},
 
-	getNextFreeName(name, object = null) {
-		return getNextFreeName(this, name, object);
-	},
-
 	selectById(id) {
 		const object =
 			this.searchableObjectCollections
@@ -606,7 +603,7 @@ Editor.prototype = {
 	},
 
 	focusById(id) {
-		this.focus(this.scene.getObjectById(id));
+		this.focus(this.figureManager.getObjectById(id));
 	},
 
 	resetCamera() {
@@ -621,12 +618,12 @@ Editor.prototype = {
 		this.camera.copy(_DEFAULT_CAMERA);
 		this.signals.cameraChanged.dispatch();
 
-		this.scene.name = 'Figures';
-		this.scene.userData = {};
-		this.scene.background = null;
-		this.scene.environment = null;
+		this.figureManager.name = 'Figures';
+		this.figureManager.userData = {};
+		this.figureManager.background = null;
+		this.figureManager.environment = null;
 
-		var objects = this.scene.children;
+		var objects = this.figureManager.children;
 
 		while (objects.length > 0) {
 			this.removeObject(objects[0]);
@@ -657,35 +654,79 @@ Editor.prototype = {
 	//
 
 	async fromJSON(json) {
-		this.config.setKey('project/title', json.project.title ?? '');
-		this.config.setKey('project/description', json.project.description ?? '');
-		this.signals.projectChanged.dispatch();
+		const {
+			project,
+			history,
+			materialManager,
+			scene: figureManager,
+			zoneManager,
+			detectManager: detectorManager,
+			scoringManager,
+			beam,
+			physic
+		} = json;
+		try {
+			if (project) {
+				this.config.setKey('project/title', project.title ?? '');
+				this.config.setKey('project/description', project.description ?? '');
+			} else
+				console.warn('Project info was not found in JSON data. Skipping part 1 out of 10');
 
-		const loader = new EditorObjectLoader(this);
+			if (project && project.viewManager)
+				this.viewManager.fromConfigurationJson(project.viewManager);
+			else console.warn('View Manager was not found in JSON data. Skipping part 2 out of 10');
 
-		this.signals.cameraResetted.dispatch();
+			if (history) this.history.fromJSON(history);
+			else console.warn('History was not found in JSON data. Skipping part 3 out of 10');
 
-		this.history.fromJSON(json.history);
+			if (materialManager) this.materialManager.fromJSON(materialManager);
+			else
+				throw new Error(
+					'Material Manager was not found in JSON data. Aborting load on part 4 out of 10'
+				);
+			if (figureManager) this.figureManager.fromJSON(figureManager);
+			else
+				throw new Error(
+					'Scene was not found in JSON data. Aborting load on part 5 out of 10'
+				);
 
-		this.setScene(await loader.parseAsync(json.scene));
+			// CSGManager must be loaded after scene and simulation materials
+			if (zoneManager) this.zoneManager.fromJSON(zoneManager);
+			else
+				throw new Error(
+					'Zone Manager was not found in JSON data. Aborting load on part 6 out of 10'
+				);
 
-		this.materialManager.fromJSON(json.materialManager);
+			if (detectorManager) this.detectorManager.fromJSON(detectorManager);
+			else
+				throw new Error(
+					'Detector Manager was not found in JSON data. Aborting load on part 7 out of 10'
+				);
 
-		// CSGManager must be loaded after scene and simulation materials
-		this.zoneManager.fromJSON(json.zoneManager); // CSGManager must be loaded in order not to lose reference in components
-		this.detectorManager.fromJSON(json.detectorManager);
-		this.scoringManager.fromJSON(json.scoringManager);
-		this.beam.fromJSON(json.beam);
-		this.physic.fromJSON(json.physic);
+			if (scoringManager) this.scoringManager.fromJSON(scoringManager);
+			else
+				console.warn(
+					'Scoring Manager was not found in JSON data. Skipping part 8 out of 10'
+				);
 
-		this.viewManager.fromConfigurationJson(json.project.viewManager);
+			if (beam) this.beam.fromJSON(beam);
+			else console.warn('Beam was not found in JSON data. Skipping part 9 out of 10');
 
-		this.signals.sceneGraphChanged.dispatch();
+			if (physic) this.physic.fromJSON(physic);
+			else console.warn('Physic was not found in JSON data. Skipping part 10 out of 10');
+
+			this.signals.cameraResetted.dispatch();
+			this.signals.sceneGraphChanged.dispatch();
+			this.signals.projectChanged.dispatch();
+		} catch (e) {
+			console.error(e);
+			this.clear();
+		}
 	},
 	toJSON() {
 		// scripts clean up
 
-		var scene = this.scene;
+		var scene = this.figureManager;
 		var scripts = this.scripts;
 
 		for (var key in scripts) {
@@ -701,25 +742,18 @@ Editor.prototype = {
 		const jsonEditor = {
 			metadata: {
 				version: this.jsonVersion,
-				type: 'Editor',
-				generator: 'Editor.toJSON'
+				type: 'YaptideEditor',
+				generator: 'YaptideEditor.toJSON'
 			},
 			project: {
 				title: this.config.getKey('project/title'),
 				description: this.config.getKey('project/description'),
-				shadows: this.config.getKey('project/renderer/shadows'),
-				shadowType: this.config.getKey('project/renderer/shadowType'),
-				physicallyCorrectLights: this.config.getKey(
-					'project/renderer/physicallyCorrectLights'
-				),
-				toneMapping: this.config.getKey('project/renderer/toneMapping'),
-				toneMappingExposure: this.config.getKey('project/renderer/toneMappingExposure'),
 				viewManager: this.viewManager.configurationToJson() // serialize ViewManager
 			},
-			scene: this.scene.toJSON(),
+			scene: this.figureManager.toJSON(),
 			history: this.history.toJSON(),
 			zoneManager: this.zoneManager.toJSON(), // serialize CSGManager
-			detectorManager: this.detectorManager.toJSON(), // serialize DetectManager;
+			detectManager: this.detectorManager.toJSON(), // serialize DetectorManager;
 			beam: this.beam.toJSON(),
 			physic: this.physic.toJSON(),
 			materialManager: this.materialManager.toJSON(), // serialize MaterialManager
@@ -732,7 +766,7 @@ Editor.prototype = {
 	},
 
 	objectByUuid(uuid) {
-		return this.scene.getObjectByProperty('uuid', uuid, true);
+		return this.figureManager.getObjectByProperty('uuid', uuid, true);
 	},
 
 	execute(cmd, optionalName) {

@@ -1,7 +1,7 @@
 import { Detector } from '../../../Simulation/Detectors/Detector';
 import { createRowParamNumber, hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
 import { SetDetectGeometryCommand } from '../../commands/Commands';
-import { Editor } from '../../Editor';
+import { YaptideEditor } from '../../Editor';
 import { UINumber, UIRow } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 export class ObjectGrid extends ObjectAbstract {
@@ -19,7 +19,7 @@ export class ObjectGrid extends ObjectAbstract {
 	radiusRow: UIRow;
 	radius: UINumber;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Grid');
 
 		[this.xLengthRow, this.xLength] = createRowParamNumber({

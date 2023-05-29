@@ -13,7 +13,6 @@ function useIntervalAsync(
 	}, [callback]);
 
 	useEffect(() => {
-		console.log('useIntervalAsync', setIntervalAsync, clearIntervalAsync);
 		let interval: ReturnType<typeof setIntervalAsync> | null = null;
 		if (immediate) callbackRef.current();
 		else interval = setIntervalAsync(callbackRef.current, delay!);

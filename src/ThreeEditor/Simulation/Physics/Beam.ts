@@ -4,7 +4,7 @@ import { Euler, Vector3 } from 'three';
 import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { Particle, PARTICLE_TYPES } from '../../../types/Particle';
 import { SimulationElement } from '../Base/SimulationElement';
 
@@ -167,7 +167,7 @@ export class Beam extends SimulationElement {
 		return PARTICLE_TYPES.find(p => p.id === this.particleData.id) as Particle;
 	}
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Beam', 'Beam');
 
 		const overrideHandlerDirection = {
@@ -328,7 +328,7 @@ export class Beam extends SimulationElement {
 		return this;
 	}
 
-	static fromJSON(editor: Editor, data: BeamJSON) {
+	static fromJSON(editor: YaptideEditor, data: BeamJSON) {
 		return new Beam(editor).fromJSON(data);
 	}
 }

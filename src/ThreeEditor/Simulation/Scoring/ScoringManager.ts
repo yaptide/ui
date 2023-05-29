@@ -1,5 +1,5 @@
 import { Signal } from 'signals';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { ScoringOutput, ScoringOutputJSON } from './ScoringOutput';
@@ -25,7 +25,7 @@ export class ScoringManager
 	};
 	outputContainer: SimulationSceneContainer<ScoringOutput>;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Outputs', 'OutputGroup');
 		this.children = [];
 		this.signals = editor.signals;
@@ -76,11 +76,11 @@ export class ScoringManager
 			const scoringOutput = new ScoringOutput(this.editor);
 			this.addOutput(scoringOutput);
 			scoringOutput.fromJSON(output);
-			scoringOutput.name = this.getNextFreeName(scoringOutput);
+			scoringOutput.name = this.uniqueNameForChild(scoringOutput);
 		});
 		return this;
 	}
-	static fromJSON(editor: Editor, json: ScoringManagerJSON) {
+	static fromJSON(editor: YaptideEditor, json: ScoringManagerJSON) {
 		return new ScoringManager(editor).fromJSON(json);
 	}
 	reset(): void {

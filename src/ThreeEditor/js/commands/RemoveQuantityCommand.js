@@ -3,7 +3,7 @@ import { ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
 import { Command } from '../Command.js';
 export class RemoveQuantityCommand extends Command {
 	/**
-	 * @typedef {import('../Editor.js').Editor} Editor
+	 * @typedef {import('../Editor.js').YaptideEditor} Editor
 	 * @param {Editor} editor
 	 * @param {ScoringQuantity} object
 	 * @param {ScoringOutput} output

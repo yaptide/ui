@@ -12,7 +12,7 @@ import {
 	RemoveDifferentialModifierCommand,
 	AddDifferentialModifierCommand
 } from '../../commands/Commands';
-import { Editor } from '../../Editor';
+import { YaptideEditor } from '../../Editor';
 import { UIBreak, UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
 import { UIOutliner } from '../../libs/ui.three';
 import { ObjectAbstract } from './Object.Abstract';
@@ -32,7 +32,7 @@ export class ObjectDifferentials extends ObjectAbstract {
 	binsNumber: UINumber;
 	logCheckbox: UICheckbox;
 	removeButton: UIButton;
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Differential scoring');
 		[this.addRow, this.add] = createFullwidthButton({
 			text: 'Add differential modifier',

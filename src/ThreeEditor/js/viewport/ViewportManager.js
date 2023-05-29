@@ -29,7 +29,7 @@ import { Viewport } from './Viewport.js';
 //   then code reader would be free from understanding unusual convention of spherical coordinates system in threejs
 
 function ViewManager(editor) {
-	const { camera, scene, signals, sceneHelpers } = editor;
+	const { camera, figureManager: scene, signals, sceneHelpers } = editor;
 
 	const container = new UIPanel();
 	container.setId('viewport');

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { MeshBasicMaterial, Vector3 } from 'three';
-import { Editor } from '../../../js/Editor';
+import { YaptideEditor } from '../../../js/Editor';
 import { PossibleGeometryType } from '../../../../util/AdditionalGeometryData';
 import { WorldZoneType } from './WorldZone';
 
@@ -35,7 +35,7 @@ export class WorldZoneHelper extends THREE.Object3D {
 		return obj;
 	}
 
-	editor: Editor;
+	editor: YaptideEditor;
 	marginMultiplier: number;
 	private _boxHelper: THREE.Box3Helper;
 	private _box: THREE.Box3;
@@ -65,7 +65,7 @@ export class WorldZoneHelper extends THREE.Object3D {
 		return this._box.getSize(new THREE.Vector3());
 	}
 
-	constructor(editor: Editor, material: MeshBasicMaterial) {
+	constructor(editor: YaptideEditor, material: MeshBasicMaterial) {
 		super();
 		this.editor = editor;
 		this.marginMultiplier = _defaultMarginMultiplier;

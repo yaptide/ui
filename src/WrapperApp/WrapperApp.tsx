@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import { SyntheticEvent, useEffect, useState } from 'react';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
-import { Editor } from '../ThreeEditor/js/Editor';
+import { YaptideEditor } from '../ThreeEditor/js/Editor';
 import { DEMO_MODE } from '../config/Config';
 import { useAuth } from '../services/AuthService';
 import { useLoader } from '../services/DataLoaderService';
@@ -16,7 +16,6 @@ import LoginPanel from './components/Panels/LoginPanel';
 import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
-import { FullSimulationData } from '../services/ShSimulatorService';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
@@ -69,16 +68,7 @@ function WrapperApp() {
 		if (isAuthorized && tabsValue === 'login') setTabsValue('editor');
 	}, [isAuthorized, tabsValue]);
 
-	const onLoadExample = useCallback(
-		(example: FullSimulationData) => {
-			if (!DEMO_MODE) return;
-			setResultsSimulationData(example);
-			setTabsValue('editor');
-		},
-		[setResultsSimulationData]
-	);
-
-	const onEditorInitialized = (editor: Editor) => {
+	const onEditorInitialized = (editor: YaptideEditor) => {
 		editorRef.current = editor;
 	};
 

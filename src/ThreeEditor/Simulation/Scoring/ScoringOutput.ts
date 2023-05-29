@@ -1,4 +1,4 @@
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { DetectFilter } from './DetectFilter';
 import { Detector } from '../Detectors/Detector';
@@ -69,7 +69,7 @@ export class ScoringOutput
 		this._geometry = geometry?.uuid;
 	}
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Output', 'Output');
 		this.children = [];
 		this.parent = null;
@@ -135,7 +135,7 @@ export class ScoringOutput
 		return this;
 	}
 
-	static fromJSON(editor: Editor, json: ScoringOutputJSON): ScoringOutput {
+	static fromJSON(editor: YaptideEditor, json: ScoringOutputJSON): ScoringOutput {
 		return new ScoringOutput(editor).fromJSON(json);
 	}
 }

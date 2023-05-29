@@ -1,6 +1,6 @@
 import { Signal } from 'signals';
 import * as THREE from 'three';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import * as CSG from '../../CSG/CSG';
 import { SimulationPoints } from '../Base/SimulationPoints';
 import { DetectorManager } from './DetectorManager';
@@ -158,7 +158,7 @@ export class Detector extends SimulationPoints {
 	}
 
 	constructor(
-		editor: Editor,
+		editor: YaptideEditor,
 		{ data = {}, type = 'Mesh', position = [0, 0, 0], name }: DetectGeometryArgs = {
 			data: {},
 			type: 'Mesh',
@@ -288,7 +288,7 @@ export class Detector extends SimulationPoints {
 		return this;
 	}
 
-	static fromJSON(editor: Editor, data: DetectGeometryJSON): Detector {
+	static fromJSON(editor: YaptideEditor, data: DetectGeometryJSON): Detector {
 		return new Detector(editor, data).fromJSON(data);
 	}
 }

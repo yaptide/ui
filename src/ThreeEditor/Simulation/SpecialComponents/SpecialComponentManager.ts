@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { SimulationSceneContainer, SingletonContainer } from '../Base/SimulationContainer';
 import { BeamModulator, isBeamModulator } from './BeamModulator';
 import { CTCube, isCTCube } from './CTCube';
@@ -19,10 +19,10 @@ export class SpecialComponentManager
 	readonly notRotatable = true;
 	readonly notScalable = true;
 	readonly notHidable = true;
-	editor: Editor;
+	editor: YaptideEditor;
 	CTCubeContainer: SimulationSceneContainer<CTCube>;
 	modulatorContainer: SimulationSceneContainer<BeamModulator>;
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super();
 
 		this.editor = editor;

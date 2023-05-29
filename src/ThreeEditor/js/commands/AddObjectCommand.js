@@ -1,7 +1,7 @@
 import { Command } from '../Command.js';
 import { ObjectLoader } from 'three';
 /**
- * @typedef {import('../Editor.js').Editor} Editor
+ * @typedef {import('../Editor.js').YaptideEditor} Editor
  */
 export class AddObjectCommand extends Command {
 	/**

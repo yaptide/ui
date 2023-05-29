@@ -1,6 +1,6 @@
 import { Euler, MathUtils, Vector3 } from 'three';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
-import { Editor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/Editor';
 import { Vector3PropertyField } from '../fields/PropertyField';
 import { SimulationPropertiesType } from '../../../../../types/SimulationProperties';
 import { Beam, isBeam } from '../../../../Simulation/Physics/Beam';
@@ -14,7 +14,7 @@ import { PropertiesCategory } from './PropertiesCategory';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SimulationElement } from '../../../../Simulation/Base/SimulationElement';
 
-export function ObjectPlacement(props: { editor: Editor; object: SimulationElement }) {
+export function ObjectPlacement(props: { editor: YaptideEditor; object: SimulationElement }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);

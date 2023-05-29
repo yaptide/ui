@@ -8,7 +8,7 @@ import {
 	showUIElement
 } from '../../../../util/Ui/Uis';
 import { AddQuantityCommand, SetOutputSettingsCommand } from '../../commands/Commands';
-import { Editor } from '../../Editor';
+import { YaptideEditor } from '../../Editor';
 import { UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
@@ -29,7 +29,7 @@ export class ObjectSettings extends ObjectAbstract {
 	addQuantity: UIButton;
 	addQuantityRow: UIRow;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Output configuration');
 
 		[this.geometryRow, this.geometry] = createRowSelect({

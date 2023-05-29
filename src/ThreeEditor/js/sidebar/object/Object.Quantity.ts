@@ -8,7 +8,7 @@ import {
 	showUIElement
 } from '../../../../util/Ui/Uis';
 import { SetQuantityValueCommand } from '../../commands/Commands';
-import { Editor } from '../../Editor';
+import { YaptideEditor } from '../../Editor';
 import { UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
@@ -28,7 +28,7 @@ export class ObjectQuantity extends ObjectAbstract {
 	rescaleRow: UIRow;
 	rescaleCheckbox: UICheckbox;
 	rescale: UINumber;
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Quantity configuration');
 		[this.keywordRow, this.keyword] = createRowSelect({
 			text: 'Quantity type',

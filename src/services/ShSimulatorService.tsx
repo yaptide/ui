@@ -106,12 +106,12 @@ export const recreateRefsInResults = (inputJson: EditorJson, estimators: Estimat
 	if (!inputJson) throw new Error('No editor data');
 	if (!estimators) throw new Error('No esitamtors data');
 
-	const { scoringManager, detectorManager }: EditorJson = inputJson;
+	const { scoringManager, detectManager: detectorManager }: EditorJson = inputJson;
 
 	const estimatorsOrdered = recreateOrderInEstimators(estimators, scoringManager);
 	const estimatorsWithFixedFilters = recreateRefToFilters(
 		estimatorsOrdered,
-		detectorManager?.filters
+		detectorManager.filters
 	);
 
 	return estimatorsWithFixedFilters;
@@ -283,7 +283,7 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 
 					const refsInResults =
 						jobInputs?.input.inputJson &&
-						recreateRefsInResults(jobInputs?.input.inputJson, response.estimators);
+						recreateRefsInResults(jobInputs.input.inputJson, response.estimators);
 
 					const data: JobResults = {
 						...response,

@@ -12,7 +12,7 @@ import {
 	SetRotationCommand,
 	SetValueCommand
 } from '../../commands/Commands';
-import { Editor } from '../../Editor';
+import { YaptideEditor } from '../../Editor';
 import { UINumber, UIRow } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
@@ -35,7 +35,7 @@ export class ObjectPlacement extends ObjectAbstract {
 	directionY: UINumber;
 	directionZ: UINumber;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Placement');
 
 		[this.positionRow, this.positionX, this.positionY, this.positionZ] =

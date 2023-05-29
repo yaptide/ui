@@ -2,7 +2,7 @@ import { Box, Checkbox, Grid, Stack, TextField, Typography } from '@mui/material
 import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { Vector2 } from 'three';
 import { Vector3 } from 'three/src/math/Vector3';
-import { Editor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/Editor';
 import {
 	KEYWORD_OPTIONS,
 	KEYWORD_SORT_ORDER,
@@ -385,7 +385,7 @@ export function SelectPropertyField<T>(props: SelectPropertyFieldProps<T>) {
 }
 
 export function ModifiersOutliner(props: {
-	editor: Editor;
+	editor: YaptideEditor;
 	value: string | null;
 	options: DifferentialModifier[];
 	onChange: (value: string) => void;
@@ -571,7 +571,7 @@ export function DifferentialConfigurationField(props: DifferentialConfigurationF
 }
 
 export function RulesOutliner(props: {
-	editor: Editor;
+	editor: YaptideEditor;
 	value: string | null;
 	options: FilterRule[];
 	onChange: (value: string) => void;

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import THREE from 'three';
 import useDocumentTitle from '../../../util/hooks/useDocumentTitle';
 import '../../css/main.css';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { initEditor } from '../../main';
 import { useKeyboardEditorControls } from '../../../util/hooks/useKeyboardEditorControls';
 import { EditorSidebar } from '../Sidebar/EditorSidebar';
@@ -13,19 +13,19 @@ import EditorAppBar from './EditorAppBar/EditorAppBar';
 import { EditorMenu } from './EditorMenu/EditorMenu';
 declare global {
 	interface Window {
-		editor: Editor;
+		editor: YaptideEditor;
 		THREE: typeof THREE;
 	}
 }
 interface SceneEditorProps {
-	onEditorInitialized?: (editor: Editor) => void;
+	onEditorInitialized?: (editor: YaptideEditor) => void;
 	focus: boolean;
 	sidebarProps: boolean[];
 }
 
 function SceneEditor(props: SceneEditorProps) {
 	const threeEditorRef = useRef<HTMLDivElement>(null);
-	const [editor, setEditor] = useState<Editor>();
+	const [editor, setEditor] = useState<YaptideEditor>();
 	const [title, setTitle] = useState<string>(editor?.config.getKey('project/title'));
 	const containerEl = useRef<HTMLDivElement>(null);
 	const theme = useTheme();

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Tree, TreeMethods } from '@minoru/react-dnd-treeview';
 import { Object3D } from 'three';
 import './SidebarTree.style.css';
-import { Editor } from '../../../js/Editor';
+import { YaptideEditor } from '../../../js/Editor';
 import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
 import { Divider } from '@mui/material';
@@ -13,7 +13,7 @@ import { generateUUID } from 'three/src/math/MathUtils';
 type TreeSource = (Object3D[] | Object3D)[];
 
 export function SidebarTree(props: {
-	editor: Editor;
+	editor: YaptideEditor;
 	sources: TreeSource;
 	dragDisabled?: boolean;
 }) {

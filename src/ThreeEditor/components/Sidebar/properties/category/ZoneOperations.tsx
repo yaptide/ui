@@ -1,7 +1,7 @@
 import { Grid } from '@mui/material';
 import { useCallback } from 'react';
 import { Object3D } from 'three';
-import { Editor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/Editor';
 import {
 	AddZoneOperationTupleCommand,
 	RemoveZoneOperationTupleCommand,
@@ -15,7 +15,7 @@ import { BooleanAlgebraData } from '../../../ZoneManagerPanel/BooleanAlgebra/Boo
 import ZoneManagerPanel from '../../../ZoneManagerPanel/ZoneManagerPanel';
 import { PropertiesCategory } from './PropertiesCategory';
 
-const parseAlgebraData = (editor: Editor, { value }: BooleanAlgebraData) => {
+const parseAlgebraData = (editor: YaptideEditor, { value }: BooleanAlgebraData) => {
 	const operations: CSG.OperationTuple[] = [];
 
 	value.forEach(({ operation, objectId }, index) => {
@@ -28,7 +28,7 @@ const parseAlgebraData = (editor: Editor, { value }: BooleanAlgebraData) => {
 	return operations;
 };
 
-export function ZoneOperations(props: { editor: Editor; object: Object3D }) {
+export function ZoneOperations(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(

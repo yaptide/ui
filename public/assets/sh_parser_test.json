@@ -226,7 +226,7 @@
 	},
 	"detectorManager": {
 		"uuid": "E3635B58-BFC9-423A-B384-2838D32353E8",
-		"name": "DetectManager",
+		"name": "DetectorManager",
 		"detectGeometries": [
 			{
 				"uuid": "563DBCFF-0B85-4511-B557-DE55AB4FA692",

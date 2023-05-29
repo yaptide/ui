@@ -1,13 +1,13 @@
 import { Signal } from 'signals';
 import * as THREE from 'three';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { DetectFilter, FilterJSON } from '../Scoring/DetectFilter';
 import { Detector, DetectGeometryJSON, isDetectGeometry } from './Detector';
 import { SimulationZone } from '../Base/SimZone';
 
-interface DetectManagerJSON {
+interface DetectorManagerJSON {
 	uuid: string;
 	name: string;
 	detectGeometries: DetectGeometryJSON[];
@@ -22,7 +22,7 @@ export class DetectorContainer extends SimulationSceneContainer<Detector> {
 
 	children: Detector[];
 	readonly isDetectContainer: true = true;
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Detects', 'DetectGroup');
 		this.children = [];
 	}
@@ -42,7 +42,7 @@ export class FilterContainer extends SimulationSceneContainer<DetectFilter> {
 
 	children: DetectFilter[];
 	readonly isFilterContainer: true = true;
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Filters', 'FilterGroup');
 		this.children = [];
 	}
@@ -95,16 +95,16 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 		detectFilterChanged: Signal<DetectFilter>;
 		materialChanged: Signal<THREE.Material>;
 	};
-	readonly isDetectManager: true = true;
+	readonly isDetectorManager: true = true;
 
-	private editor: Editor;
+	private editor: YaptideEditor;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super();
 		this.detectorContainer = new DetectorContainer(editor);
 		this.detectHelper = new THREE.Mesh(undefined, this._detectWireMaterial);
 		this.detectHelper.visible = false;
-		this.name = 'DetectManager';
+		this.name = 'DetectorManager';
 		this.editor = editor;
 		this.filterContainer = new FilterContainer(editor);
 
@@ -200,7 +200,7 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 		return this.filters.find(filter => filter.uuid === uuid) ?? null;
 	}
 
-	fromJSON(data: DetectManagerJSON): void {
+	fromJSON(data: DetectorManagerJSON): void {
 		if (!data) console.error('Passed empty data to load CSGManager', data);
 
 		this.uuid = data.uuid;
@@ -215,7 +215,7 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 		this.signals.detectFilterAdded.dispatch(this.filters[this.filters.length - 1]);
 	}
 
-	toJSON(): DetectManagerJSON {
+	toJSON(): DetectorManagerJSON {
 		const detectGeometries = this.detectorContainer.toJSON() as DetectGeometryJSON[];
 
 		const filters = this.filterContainer.toJSON() as FilterJSON[];
@@ -231,7 +231,7 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 	}
 
 	reset(): void {
-		this.name = 'DetectManager';
+		this.name = 'DetectorManager';
 
 		this.userData = {};
 		this.background = null;
@@ -291,6 +291,6 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 export const isDetectContainer = (x: unknown): x is DetectorContainer =>
 	x instanceof DetectorContainer;
 
-export const isDetectManager = (x: unknown): x is DetectorManager => x instanceof DetectorManager;
+export const isDetectorManager = (x: unknown): x is DetectorManager => x instanceof DetectorManager;
 
 export const isFilterContainer = (x: unknown): x is FilterContainer => x instanceof FilterContainer;

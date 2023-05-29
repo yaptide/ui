@@ -1,5 +1,5 @@
 import { MathUtils, Object3D } from 'three';
-import { Editor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/Editor';
 import { PropertyField, RulesConfiguration, RulesOutliner } from '../fields/PropertyField';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
@@ -9,7 +9,7 @@ import { Keyword, RULE_DEFAULTS } from '../../../../../types/DetectRuleTypes';
 import { SetFilterRuleCommand } from '../../../../js/commands/SetFilterRuleCommand';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 
-export function FilterConfiguration(props: { editor: Editor; object: Object3D }) {
+export function FilterConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object as DetectFilter);

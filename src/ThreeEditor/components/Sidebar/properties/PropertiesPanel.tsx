@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Box } from '@mui/material';
 import { BoxProps } from '@mui/system/Box/Box';
 import { Object3D } from 'three';
-import { Editor } from '../../../js/Editor';
+import { YaptideEditor } from '../../../js/Editor';
 import { useCallback, useState } from 'react';
 import { ObjectPlacement } from './category/ObjectPlacement';
 import { ObjectInfo } from './category/ObjectInfo';
@@ -18,7 +18,7 @@ import { ObjectMaterial } from './category/ObjectMaterial';
 import { FilterConfiguration } from './category/FilterConfiguration';
 import { CTConfiguration } from './category/CTConfiguration';
 
-export function PropertiesPanel(props: { boxProps: BoxProps; editor: Editor }) {
+export function PropertiesPanel(props: { boxProps: BoxProps; editor: YaptideEditor }) {
 	const { boxProps, editor } = props;
 	const [selectedObject, setSelectedObject] = useState(editor.selected);
 

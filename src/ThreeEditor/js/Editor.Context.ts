@@ -12,7 +12,7 @@ import { isScoringManager, ScoringManager } from '../Simulation/Scoring/ScoringM
 import { ScoringOutput, isOutput } from '../Simulation/Scoring/ScoringOutput';
 import { isQuantity, ScoringQuantity } from '../Simulation/Scoring/ScoringQuantity';
 import { isWorldZone, WorldZone } from '../Simulation/Zones/WorldZone/WorldZone';
-import { Editor } from './Editor';
+import { YaptideEditor } from './Editor';
 import { SimulationZone } from '../Simulation/Base/SimZone';
 import { ZoneContainer, ZoneManager, isZoneContainer } from '../Simulation/Zones/ZoneManager';
 import { isBooleanZone } from '../Simulation/Zones/BooleanZone';
@@ -47,11 +47,11 @@ export type ScoringContextObject =
 export type SettingsContextObject = Beam;
 
 export class ContextManager {
-	private editor: Editor;
+	private editor: YaptideEditor;
 	private _context: Context;
 	private _selected: [GeometryObject | null, ScoringContextObject | null, SettingsContextObject];
 
-	constructor(editor: Editor, context: Context = 'geometry') {
+	constructor(editor: YaptideEditor, context: Context = 'geometry') {
 		this.editor = editor;
 		this._context = context;
 		this._selected = [null, null, editor.beam];
@@ -81,7 +81,7 @@ export class ContextManager {
 		switch (this._context) {
 			case 'geometry':
 				clickable = clickable.concat(
-					this.editor.scene.visible ? this.editor.scene.children : []
+					this.editor.figureManager.visible ? this.editor.figureManager.children : []
 				);
 				break;
 			case 'scoring':
@@ -103,7 +103,7 @@ export class ContextManager {
 		switch (context) {
 			case 'geometry':
 				visible.push(
-					this.editor.scene,
+					this.editor.figureManager,
 					this.editor.zoneManager,
 					this.editor.detectorManager,
 					this.editor.specialComponentsManager
@@ -111,7 +111,7 @@ export class ContextManager {
 				hidden.push();
 				break;
 			case 'scoring':
-				visible.push(this.editor.detectorManager, this.editor.scene);
+				visible.push(this.editor.detectorManager, this.editor.figureManager);
 				hidden.push(
 					this.editor.zoneManager,
 					this.editor.specialComponentsManager,
@@ -119,12 +119,16 @@ export class ContextManager {
 				);
 				break;
 			case 'settings':
-				visible.push(this.editor.scene, this.editor.detectorManager, this.editor.beam);
+				visible.push(
+					this.editor.figureManager,
+					this.editor.detectorManager,
+					this.editor.beam
+				);
 				hidden.push(this.editor.zoneManager, this.editor.specialComponentsManager);
 				break;
 			default:
 				visible.push(
-					this.editor.scene,
+					this.editor.figureManager,
 					this.editor.zoneManager,
 					this.editor.detectorManager,
 					this.editor.specialComponentsManager,

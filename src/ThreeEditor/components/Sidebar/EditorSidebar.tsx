@@ -8,7 +8,7 @@ import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
 import { getAddElementButtonProps } from '../../../util/Ui/CommandButtonProps';
 import { useSignal } from '../../../util/hooks/signals';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { Context } from '../../js/Editor.Context';
 import { SidebarTree } from './SidebarTree/SidebarTree';
 import { PropertiesPanel } from './properties/PropertiesPanel';
@@ -17,7 +17,7 @@ import { BeamModifiersConfiguration } from './properties/category/RangeModulator
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
 import { useMemo } from 'react';
 
-export function EditorSidebar(props: { editor: Editor }) {
+export function EditorSidebar(props: { editor: YaptideEditor }) {
 	const { editor } = props;
 
 	const [selectedObject, setSelectedObject] = useState(editor.selected);
@@ -75,7 +75,7 @@ export function EditorSidebar(props: { editor: Editor }) {
 			tree: (
 				<SidebarTree
 					editor={editor}
-					sources={[editor.scene.children]}
+					sources={[editor.figureManager.children]}
 				/>
 			)
 		},

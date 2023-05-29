@@ -6,7 +6,7 @@ import {
 } from '../../../../util/Ui/Uis';
 import { WorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
 import { SetValueCommand } from '../../commands/Commands';
-import { Editor } from '../../Editor';
+import { YaptideEditor } from '../../Editor';
 import { UIButton, UICheckbox, UIRow } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
@@ -19,7 +19,7 @@ export class ObjectZoneCalculate extends ObjectAbstract {
 	calculate: UIButton;
 	calculateRow: UIRow;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Automatic');
 		[this.autoRow, this.auto] = createRowCheckbox({
 			text: 'Autocalculate',

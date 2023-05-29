@@ -7,7 +7,7 @@ import { RemoveObjectCommand } from '../../ThreeEditor/js/commands/RemoveObjectC
 import { RemoveQuantityCommand } from '../../ThreeEditor/js/commands/RemoveQuantityCommand';
 import { RemoveZoneCommand } from '../../ThreeEditor/js/commands/RemoveZoneCommand';
 import { SetFilterRuleCommand } from '../../ThreeEditor/js/commands/SetFilterRuleCommand';
-import { Editor } from '../../ThreeEditor/js/Editor';
+import { YaptideEditor } from '../../ThreeEditor/js/Editor';
 import { isBeam } from '../../ThreeEditor/Simulation/Physics/Beam';
 import { isBooleanZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
 import { isDetectFilter } from '../../ThreeEditor/Simulation/Scoring/DetectFilter';
@@ -37,7 +37,7 @@ export const hasVisibleChildren = (object: Object3D) => {
 	return true;
 };
 
-export const getRemoveCommand = (editor: Editor, object: Object3D) => {
+export const getRemoveCommand = (editor: YaptideEditor, object: Object3D) => {
 	if (isDetectGeometry(object)) {
 		return new RemoveDetectGeometryCommand(editor, object);
 	} else if (isBooleanZone(object)) {
@@ -58,7 +58,7 @@ export const getRemoveCommand = (editor: Editor, object: Object3D) => {
 };
 
 export const useKeyboardEditorControls = (
-	editor: Editor | undefined,
+	editor: YaptideEditor | undefined,
 	containerRef: RefObject<HTMLElement>
 ) => {
 	useEffect(() => {

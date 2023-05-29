@@ -7,7 +7,7 @@ import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { Editor } from '../../../js/Editor';
+import { YaptideEditor } from '../../../js/Editor';
 import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
 import { NodeModel, TreeMethods } from '@minoru/react-dnd-treeview/dist/types';
 import {
@@ -44,7 +44,7 @@ export function SidebarTreeItem(props: {
 	depth: number;
 	isOpen: boolean;
 	onToggle: () => void;
-	editor: Editor;
+	editor: YaptideEditor;
 }) {
 	const { objectRefs, node, depth, isOpen, onToggle, editor, treeRef } = props;
 	const inputRef = useRef<HTMLInputElement>(null);

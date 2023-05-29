@@ -1,4 +1,4 @@
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 
 export type MethodArgs<T extends Record<string, unknown>, K extends keyof T> = T[K] extends (
 	...args: any[]
@@ -27,7 +27,7 @@ export abstract class Command<Target extends Record<string, unknown> = Record<st
 	inMemory;
 
 	constructor(
-		editor: Editor,
+		editor: YaptideEditor,
 		target: Target,
 		type: string,
 		name: string,

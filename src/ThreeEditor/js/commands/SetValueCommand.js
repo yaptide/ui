@@ -27,7 +27,7 @@ class SetValueCommand extends Command {
 
 		if (attributeName === 'name') {
 			if (implementsUniqueChildrenNames(object.parent)) {
-				this.newValue = object.parent.getNextFreeName(object, this.newValue);
+				this.newValue = object.parent.getNextFreeNameFromChildren(object, this.newValue);
 			}
 		}
 	}

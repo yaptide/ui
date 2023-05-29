@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { OperationDataList, isOperation } from '../../../types/Operation';
 import { BooleanAlgebraData } from './BooleanAlgebra/BooleanAlgebraData';
 import BooleanAlgebraRow, { BooleanAlgebraRowProps } from './BooleanAlgebra/BooleanAlgebraRow';
@@ -20,7 +20,7 @@ import { GeometryIdSelect } from './GeometryIdSelect';
 import { BooleanZone } from '../../Simulation/Zones/BooleanZone';
 
 type BooleanZoneManagerPanelProps = {
-	editor: Editor;
+	editor: YaptideEditor;
 	zone?: BooleanZone;
 	handleChanged: (index: number, data: BooleanAlgebraData) => void;
 	handleAdd: () => void;
@@ -188,7 +188,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 	const allObjectsRef = useRef<THREE.Object3D[]>([]);
 
 	const refreshObjectsList = useCallback(() => {
-		allObjectsRef.current = [...editor.scene.children];
+		allObjectsRef.current = [...editor.figureManager.children];
 	}, [editor]);
 
 	useEffect(() => {

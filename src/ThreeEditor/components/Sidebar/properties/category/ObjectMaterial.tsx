@@ -1,4 +1,4 @@
-import { Editor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/Editor';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
 import { Object3D } from 'three';
@@ -14,7 +14,7 @@ import { SetMaterialValueCommand } from '../../../../js/commands/SetMaterialValu
 import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 
-export function ObjectMaterial(props: { editor: Editor; object: Object3D }) {
+export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);

@@ -1,6 +1,6 @@
 import { BooleanZone } from '../../../Simulation/Zones/BooleanZone';
 import { createRowText, createZoneRulesPanel } from '../../../../util/Ui/Uis';
-import { Editor } from '../../Editor';
+import { YaptideEditor } from '../../Editor';
 import { UIRow, UIText } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
@@ -13,7 +13,7 @@ export class ObjectCSG extends ObjectAbstract {
 	zoneRulesRow: UIRow;
 	renderZoneRules: (zone: BooleanZone) => void;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Zone Operations');
 
 		[this.typeRow, this.type] = createRowText({ text: 'Geometry Type', value: 'CSG' });

@@ -7,11 +7,11 @@ import {
 } from '../../../../util/Ui/CommandButtonProps';
 import { useSignal } from '../../../../util/hooks/signals';
 import { toggleFullscreen } from '../../../../util/toggleFullscreen';
-import { Editor } from '../../../js/Editor';
+import { YaptideEditor } from '../../../js/Editor';
 import { ClearHistoryDialog } from '../../Dialog/ClearHistoryDialog';
 
 type EditorMenuProps = {
-	editor?: Editor;
+	editor?: YaptideEditor;
 };
 
 type MenuPositionProps = {

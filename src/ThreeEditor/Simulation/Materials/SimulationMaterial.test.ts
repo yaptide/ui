@@ -1,4 +1,4 @@
-import { Editor } from '../../js/Editor.js';
+import { YaptideEditor } from '../../js/Editor.js';
 import {
 	DEFAULT_MATERIAL_DENSITY,
 	DEFAULT_MATERIAL_ICRU,
@@ -6,10 +6,10 @@ import {
 } from './materials';
 import SimulationMaterial from './SimulationMaterial';
 
-let editor: Editor;
+let editor: YaptideEditor;
 
 beforeEach(async () => {
-	editor = {} as Editor;
+	editor = {} as YaptideEditor;
 });
 
 test('constructor default', () => {

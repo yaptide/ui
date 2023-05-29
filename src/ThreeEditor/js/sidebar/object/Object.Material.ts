@@ -15,7 +15,7 @@ import {
 	SetMaterialValueCommand,
 	SetZoneMaterialCommand
 } from '../../commands/Commands';
-import { Editor } from '../../Editor';
+import { YaptideEditor } from '../../Editor';
 import { UIButton, UICheckbox, UIColor, UINumber, UIRow, UISelect, UIText } from '../../libs/ui';
 import { SidebarMaterialBooleanProperty } from '../Sidebar.Material.BooleanProperty';
 import { SidebarMaterialConstantProperty } from '../Sidebar.Material.ConstantProperty';
@@ -54,7 +54,7 @@ export class ObjectMaterial extends ObjectAbstract {
 	exportMaterialsRow: UIRow;
 	exportMaterials: UIButton;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Visuals');
 
 		[this.typeRow, this.type] = createRowText({ text: 'Material Type' });

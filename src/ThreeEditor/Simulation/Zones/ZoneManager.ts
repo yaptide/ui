@@ -3,7 +3,7 @@ import { Signal } from 'signals';
 import * as THREE from 'three';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { WorldZone, WorldZoneJSON } from './WorldZone/WorldZone';
 import { BooleanZone, BooleanZoneJSON, isBooleanZone } from './BooleanZone';
 import { ZoneWorker } from '../../CSG/CSGWorker';
@@ -24,7 +24,7 @@ export class ZoneContainer extends SimulationSceneContainer<SimulationZone> {
 	readonly notScalable = true;
 
 	readonly isZoneContainer: true = true;
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Zones', 'ZoneGroup');
 	}
 	reset() {
@@ -46,7 +46,7 @@ export class ZoneManager
 	readonly notRotatable = true;
 	readonly notScalable = true;
 
-	editor: Editor;
+	editor: YaptideEditor;
 	worker: Comlink.Remote<ZoneWorker>;
 	worldZone: WorldZone;
 	zoneContainer: ZoneContainer;
@@ -62,7 +62,7 @@ export class ZoneManager
 
 	readonly isZoneManager: true = true;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super();
 		this.name = 'ZoneManager';
 		this.zoneContainer = new ZoneContainer(editor);
@@ -146,7 +146,7 @@ export class ZoneManager
 		return this;
 	}
 
-	static fromJSON(editor: Editor, data: ZoneManagerJSON) {
+	static fromJSON(editor: YaptideEditor, data: ZoneManagerJSON) {
 		return new ZoneManager(editor).fromJSON(data);
 	}
 

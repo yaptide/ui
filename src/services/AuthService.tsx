@@ -78,13 +78,13 @@ const [useAuth, AuthContextProvider] = createGenericContext<AuthContext>();
 
 const Auth = ({ children }: AuthProps) => {
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER, isAuthUser));
-	const [reachInterval, setReachInterval] = useState<number>(30000);
-	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(undefined);
+	const [reachInterval, setReachInterval] = useState<number | undefined>(undefined);
+	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(180000);
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
 	const { enqueueSnackbar } = useSnackbar();
 
 	useEffect(() => {
-		setReachInterval(isServerReachable ? 180000 : 30000);
+		setReachInterval(isServerReachable ? 180000 : undefined);
 	}, [isServerReachable]);
 
 	const kyRef = useRef<KyInstance>(

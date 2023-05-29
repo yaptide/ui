@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Editor } from './js/Editor.js';
+import { YaptideEditor } from './js/Editor.js';
 import { SidebarProjectRenderer } from './js/sidebar/Sidebar.Project.Renderer.js';
 import { ViewManager } from './js/viewport/ViewportManager.js';
 
@@ -14,7 +14,7 @@ export function initEditor(container) {
 		return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 	};
 
-	const editor = new Editor(container);
+	const editor = new YaptideEditor(container);
 
 	window.editor = editor; // Expose editor to Console
 	window.THREE = THREE; // Expose THREE to APP Scripts and Console

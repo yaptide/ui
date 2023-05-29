@@ -9,7 +9,7 @@ import {
 	TextField
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { CustomDialogTitle } from './CustomDialog';
 import { FullSimulationData } from '../../../services/ShSimulatorService';
 
@@ -17,7 +17,7 @@ export type SaveFileProps = {
 	open: boolean;
 	onClose: () => void;
 	onConfirm: (data: {}, fileName: string) => void;
-	editor: Editor;
+	editor: YaptideEditor;
 };
 
 export function SaveFileDialog(props: SaveFileProps) {

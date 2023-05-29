@@ -1,5 +1,5 @@
 import { ReactNode, useRef, useState } from 'react';
-import { Editor } from '../ThreeEditor/js/Editor';
+import { YaptideEditor } from '../ThreeEditor/js/Editor';
 import { createGenericContext } from './GenericContext';
 import { FullSimulationData } from './ShSimulatorService';
 
@@ -8,7 +8,7 @@ export interface StoreProps {
 }
 
 export interface StoreContext {
-	editorRef: React.MutableRefObject<Editor | undefined>;
+	editorRef: React.MutableRefObject<YaptideEditor | undefined>;
 	resultsSimulationData?: FullSimulationData;
 	setResultsSimulationData: React.Dispatch<React.SetStateAction<FullSimulationData | undefined>>;
 	localResultsSimulationData?: FullSimulationData[];
@@ -18,7 +18,7 @@ export interface StoreContext {
 const [useStore, StoreContextProvider] = createGenericContext<StoreContext>();
 
 const Store = (props: StoreProps) => {
-	const editorRef = useRef<Editor>();
+	const editorRef = useRef<YaptideEditor>();
 	const [resultsSimulationData, setResultsSimulationData] = useState<FullSimulationData>();
 	const [localResultsSimulationData, setLocalResultsSimulationData] = useState<
 		FullSimulationData[]

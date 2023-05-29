@@ -43,7 +43,7 @@ export function Viewport(
 	this.name = name;
 
 	const {
-		scene,
+		figureManager: scene,
 		zoneManager,
 		detectorManager,
 		sceneHelpers,

@@ -1,12 +1,12 @@
 import { useCallback } from 'react';
 import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
-import { Editor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/Editor';
 import { Detector, isDetectGeometry } from '../../../../Simulation/Detectors/Detector';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { NumberPropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
-export function DetectorGrid(props: { editor: Editor; object: Detector }) {
+export function DetectorGrid(props: { editor: YaptideEditor; object: Detector }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);

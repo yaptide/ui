@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { UniqueChildrenNames, getNextFreeName } from '../../../util/Name/Name';
 import { SimulationElement } from './SimulationElement';
 
@@ -21,14 +21,16 @@ export abstract class SimulationSceneContainer<TChild extends SimulationSceneChi
 {
 	children: TChild[];
 	parent: SimulationSceneContainer<this> | null;
-	getNextFreeName(child: TChild, newName?: string): string {
+
+	uniqueNameForChild(child: TChild, newName?: string): string {
 		return getNextFreeName(this, newName ?? child.name, child);
 	}
+
 	add(child: TChild): this {
-		child.name = this.getNextFreeName(child);
+		child.name = this.uniqueNameForChild(child);
 		return super.add(child);
 	}
-	constructor(editor: Editor, name: string, type: string) {
+	constructor(editor: YaptideEditor, name: string, type: string) {
 		super(editor, name, type);
 		this.children = [];
 		this.parent = null;

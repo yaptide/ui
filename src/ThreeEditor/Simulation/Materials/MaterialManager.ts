@@ -4,7 +4,7 @@ import SimulationMaterial, {
 	SimulationMaterialJSON
 } from './SimulationMaterial';
 import * as THREE from 'three';
-import { Editor } from '../../js/Editor.js';
+import { YaptideEditor } from '../../js/Editor.js';
 import { CounterMap } from '../../../util/CounterMap/CounterMap';
 
 export type MaterialManagerJSON = {
@@ -13,14 +13,14 @@ export type MaterialManagerJSON = {
 };
 
 export class MaterialManager {
-	private editor: Editor;
+	private editor: YaptideEditor;
 	private prefabMaterials: Record<string, SimulationMaterial>;
 	private customMaterials: Record<string, SimulationMaterial>;
 	materialOptions: Record<string, string>;
 	materials: Record<string, SimulationMaterial>;
 	selectedMaterials: CounterMap<string>;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		this.editor = editor;
 		[this.prefabMaterials, this.materialOptions] = this.createMaterialPrefabs();
 		this.customMaterials = {};

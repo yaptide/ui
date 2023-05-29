@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { BasicFigure } from '../Figures/BasicFigures';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
 	color: 0x00ff00,
@@ -17,7 +17,11 @@ export class CTCube extends BasicFigure<THREE.BoxGeometry> {
 
 	pathOnServer: string = '';
 
-	constructor(editor: Editor, geometry?: THREE.BoxGeometry, material?: THREE.MeshBasicMaterial) {
+	constructor(
+		editor: YaptideEditor,
+		geometry?: THREE.BoxGeometry,
+		material?: THREE.MeshBasicMaterial
+	) {
 		super(
 			editor,
 			'CT Cube',

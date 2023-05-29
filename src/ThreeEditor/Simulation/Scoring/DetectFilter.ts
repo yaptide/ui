@@ -1,4 +1,4 @@
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import { SimulationElement } from '../Base/SimulationElement';
 import {
 	FilterRule,
@@ -37,7 +37,7 @@ export class DetectFilter extends SimulationElement {
 		return this._selectedRule ? this._rules[this._selectedRule] : undefined;
 	}
 
-	constructor(editor: Editor, rules: FilterRule[] = []) {
+	constructor(editor: YaptideEditor, rules: FilterRule[] = []) {
 		super(editor, 'Filter', 'Filter');
 		this._rules = {};
 		this.parent = null;
@@ -134,7 +134,7 @@ export class DetectFilter extends SimulationElement {
 		return this;
 	}
 
-	static fromJSON(editor: Editor, json: FilterJSON): DetectFilter {
+	static fromJSON(editor: YaptideEditor, json: FilterJSON): DetectFilter {
 		return new DetectFilter(editor).fromJSON(json);
 	}
 

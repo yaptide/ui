@@ -23,7 +23,7 @@ import {
 	SetGeometryCommand,
 	SetValueCommand
 } from '../../commands/Commands';
-import { Editor } from '../../Editor';
+import { YaptideEditor } from '../../Editor';
 import { UINumber, UIRow, UISelect, UIText } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
@@ -54,7 +54,7 @@ export class ObjectDimensions extends ObjectAbstract {
 	zoneUuidRow: UIRow;
 	zoneUuid: UISelect;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Dimensions');
 
 		[this.typeRow, this.type] = createRowText({ text: 'Geometry Type' });

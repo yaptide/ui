@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { SimulationMesh } from './SimulationMesh';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
-import { Editor } from '../../js/Editor';
+import { YaptideEditor } from '../../js/Editor';
 import SimulationMaterial, { SimulationMaterialJSON } from '../Materials/SimulationMaterial';
 
 export interface SimulationZoneJSON {
@@ -41,7 +41,7 @@ export abstract class SimulationZone
 	extends SimulationMesh<THREE.BufferGeometry, SimulationMaterial>
 	implements SimulationPropertiesType, SimulationSceneChild
 {
-	editor: Editor;
+	editor: YaptideEditor;
 	parent: SimulationSceneContainer<this> | null = null;
 	readonly isZone: true = true;
 	private _materialPropertiesOverrides: OverrideMap;
@@ -90,7 +90,7 @@ export abstract class SimulationZone
 		this.material.increment();
 	}
 
-	constructor(editor: Editor, name: string, type: string = 'Zone') {
+	constructor(editor: YaptideEditor, name: string, type: string = 'Zone') {
 		super(
 			editor,
 			name,
