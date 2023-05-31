@@ -5,6 +5,8 @@ on:
         branches: [master]
     pull_request:
         branches: [master]
+    issue_comment:
+        types: [created]
 
 # see https://github.community/t/treating-warnings-as-errors-because-process-env-ci-true/18032
 env:
@@ -47,9 +49,8 @@ jobs:
                 command: npm test	
 
     deploy-to-github-registry:
-      # needs: build_and_test
-      # this is a lengthy process, lets run it in parallel to build_and_test
       runs-on: ubuntu-latest
+      if: ${{ github.event.issue.pull_request }}
       env:
         USERNAME: ${{ github.actor }}
         PASSWORD: ${{ secrets.GITHUB_TOKEN }}
