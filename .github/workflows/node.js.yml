@@ -89,6 +89,23 @@ jobs:
             sha: ${{ steps.comment-branch.outputs.head_sha }}
             token: ${{ secrets.GITHUB_TOKEN }}
             status: ${{ job.status }}          
+
+        - name: Add comment to PR
+          uses: actions/github-script@v6
+          if: always()
+          with:
+              script: |
+                const name = '${{ github.workflow   }}';
+                const url = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
+                const success = '${{ job.status }}' === 'success';
+                const body = `${name}: ${success ? 'succeeded ✅' : 'failed ❌'}\n${url}`;
+    
+                await github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: body
+                })
         # - name: Login to GitHub Container Registry
         #   uses: docker/login-action@v1
         #   with:
