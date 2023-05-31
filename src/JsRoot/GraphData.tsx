@@ -1,5 +1,5 @@
 import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
-import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/DetectFilter';
+import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { ScoringOutputJSON } from '../ThreeEditor/Simulation/Scoring/ScoringOutput';
 import Result3D from '../WrapperApp/components/Results/Results3D';
 import { EstimatorResults } from '../WrapperApp/components/Results/ResultsPanel';

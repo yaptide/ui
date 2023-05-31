@@ -618,21 +618,12 @@ YaptideEditor.prototype = {
 		this.camera.copy(_DEFAULT_CAMERA);
 		this.signals.cameraChanged.dispatch();
 
-		this.figureManager.name = 'Figures';
-		this.figureManager.userData = {};
-		this.figureManager.background = null;
-		this.figureManager.environment = null;
-
-		var objects = this.figureManager.children;
-
-		while (objects.length > 0) {
-			this.removeObject(objects[0]);
-		}
-
+		this.figureManager.reset();
 		this.materialManager.reset();
 		this.zoneManager.reset();
 		this.detectorManager.reset();
 		this.scoringManager.reset();
+		this.specialComponentsManager.reset();
 		this.beam.reset();
 		this.physic.reset();
 

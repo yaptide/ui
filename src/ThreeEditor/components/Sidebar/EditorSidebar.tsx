@@ -72,7 +72,7 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 			tree: (
 				<SidebarTree
 					editor={editor}
-					sources={[editor.figureManager.children]}
+					sources={[editor.figureManager.figureContainer]}
 				/>
 			)
 		},
@@ -89,7 +89,7 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 					<Divider sx={{ marginBottom: t => t.spacing(1) }} />
 					<SidebarTree
 						editor={editor}
-						sources={[editor.zoneManager.zoneContainer.children]}
+						sources={[editor.zoneManager.zoneContainer]}
 					/>
 				</>
 			)
@@ -100,7 +100,7 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 			tree: (
 				<SidebarTree
 					editor={editor}
-					sources={[editor.detectorManager.detectorContainer.children]}
+					sources={[editor.detectorManager.detectorContainer]}
 				/>
 			)
 		},
@@ -113,7 +113,7 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 						<>
 							<SidebarTree
 								editor={editor}
-								sources={[editor.specialComponentsManager.CTCubeContainer.children]}
+								sources={[editor.specialComponentsManager.CTCubeContainer]}
 								dragDisabled
 							/>
 
@@ -122,7 +122,7 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 					) : undefined}
 					<SidebarTree
 						editor={editor}
-						sources={[editor.specialComponentsManager.modulatorContainer.children]}
+						sources={[editor.specialComponentsManager.beamModulatorContainer]}
 						dragDisabled
 					/>
 				</>
@@ -137,7 +137,7 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 			tree: (
 				<SidebarTree
 					editor={editor}
-					sources={[editor.detectorManager.filterContainer.children]}
+					sources={[editor.scoringManager.filterContainer]}
 				/>
 			)
 		},
@@ -147,7 +147,7 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 			tree: (
 				<SidebarTree
 					editor={editor}
-					sources={[editor.scoringManager.children]}
+					sources={[editor.scoringManager.outputContainer]}
 				/>
 			)
 		}

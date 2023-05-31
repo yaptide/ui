@@ -15,7 +15,7 @@ import {
 	isSphereFigure
 } from '../../../../Simulation/Figures/BasicFigures';
 import { Detector, isDetectGeometry } from '../../../../Simulation/Detectors/Detector';
-import { CylData, DETECT_OPTIONS } from '../../../../../types/DetectTypes';
+import { CylData, DETECTOR_OPTIONS } from '../../../../../types/DetectTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { isWorldZone, WorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
 import {
@@ -41,7 +41,7 @@ const ObjectTypeField = (props: {
 
 	const selectData = useCallback(() => {
 		if (isDetectGeometry(watchedObject))
-			return { options: DETECT_OPTIONS, value: watchedObject.detectorType };
+			return { options: DETECTOR_OPTIONS, value: watchedObject.detectorType };
 		return { options: BASIC_GEOMETRY_OPTIONS, value: watchedObject.geometryType };
 	}, [watchedObject])();
 

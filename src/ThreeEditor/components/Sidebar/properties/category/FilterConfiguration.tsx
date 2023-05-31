@@ -4,7 +4,7 @@ import { PropertyField, RulesConfiguration, RulesOutliner } from '../fields/Prop
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
 import { Button } from '@mui/material';
-import { DetectFilter, isDetectFilter } from '../../../../Simulation/Scoring/DetectFilter';
+import { ScoringFilter, isDetectFilter } from '../../../../Simulation/Scoring/ScoringFilter';
 import { Keyword, RULE_DEFAULTS } from '../../../../../types/DetectRuleTypes';
 import { SetFilterRuleCommand } from '../../../../js/commands/SetFilterRuleCommand';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
@@ -12,7 +12,7 @@ import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 export function FilterConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
-	const { state: watchedObject } = useSmartWatchEditorState(editor, object as DetectFilter);
+	const { state: watchedObject } = useSmartWatchEditorState(editor, object as ScoringFilter);
 
 	const visibleFlag = isDetectFilter(watchedObject);
 

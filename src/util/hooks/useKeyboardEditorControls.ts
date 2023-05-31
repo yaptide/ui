@@ -1,8 +1,8 @@
 import { RefObject, useEffect } from 'react';
 import { Object3D } from 'three';
-import { isDetectGeometry } from '../../ThreeEditor/Simulation/Detectors/Detector';
+import { isDetectGeometry as isDetector } from '../../ThreeEditor/Simulation/Detectors/Detector';
 import { isBeam } from '../../ThreeEditor/Simulation/Physics/Beam';
-import { isDetectFilter } from '../../ThreeEditor/Simulation/Scoring/DetectFilter';
+import { isDetectFilter as isFilter } from '../../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { isOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
 import { isQuantity } from '../../ThreeEditor/Simulation/Scoring/ScoringQuantity';
 import { isBooleanZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
@@ -38,11 +38,11 @@ export const hasVisibleChildren = (object: Object3D) => {
 };
 
 export const getRemoveCommand = (editor: YaptideEditor, object: Object3D) => {
-	if (isDetectGeometry(object)) {
+	if (isDetector(object)) {
 		return new RemoveDetectGeometryCommand(editor, object);
 	} else if (isBooleanZone(object)) {
 		return new RemoveZoneCommand(editor, object);
-	} else if (isDetectFilter(object)) {
+	} else if (isFilter(object)) {
 		if (object.selectedRule) return new SetFilterRuleCommand(editor, object);
 		return new RemoveFilterCommand(editor, object);
 	} else if (isQuantity(object)) {

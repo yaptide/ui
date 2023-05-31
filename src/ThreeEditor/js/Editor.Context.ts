@@ -1,14 +1,17 @@
 import * as THREE from 'three';
-import { DetectFilter, isDetectFilter } from '../Simulation/Scoring/DetectFilter';
+import { ScoringFilter, isDetectFilter } from '../Simulation/Scoring/ScoringFilter';
 import { Detector, isDetectGeometry } from '../Simulation/Detectors/Detector';
 import {
 	DetectorContainer,
 	DetectorManager,
-	FilterContainer,
-	isDetectContainer,
-	isFilterContainer
+	isDetectContainer
 } from '../Simulation/Detectors/DetectorManager';
-import { isScoringManager, ScoringManager } from '../Simulation/Scoring/ScoringManager';
+import {
+	FilterContainer,
+	isFilterContainer,
+	isScoringManager,
+	ScoringManager
+} from '../Simulation/Scoring/ScoringManager';
 import { ScoringOutput, isOutput } from '../Simulation/Scoring/ScoringOutput';
 import { isQuantity, ScoringQuantity } from '../Simulation/Scoring/ScoringQuantity';
 import { isWorldZone, WorldZone } from '../Simulation/Zones/WorldZone/WorldZone';
@@ -38,7 +41,7 @@ export type GeometryObject =
 	| CTCube
 	| BeamModulator;
 export type ScoringContextObject =
-	| DetectFilter
+	| ScoringFilter
 	| ScoringOutput
 	| ScoringManager
 	| ScoringQuantity

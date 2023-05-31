@@ -1,17 +1,16 @@
 import { Signal } from 'signals';
 import * as THREE from 'three';
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
-import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { DetectFilter, FilterJSON } from '../Scoring/DetectFilter';
-import { Detector, DetectorJSON, isDetectGeometry } from './Detector';
+import { SimulationElementManager } from '../Base/SimulationManager';
 import { SimulationZone } from '../Base/SimulationZone';
+import { Detector, DetectorJSON, isDetectGeometry } from './Detector';
 
 interface DetectorManagerJSON {
 	uuid: string;
 	name: string;
 	detectGeometries: DetectorJSON[];
-	filters: FilterJSON[];
 }
 
 export class DetectorContainer extends SimulationSceneContainer<Detector> {
@@ -28,21 +27,10 @@ export class DetectorContainer extends SimulationSceneContainer<Detector> {
 	}
 }
 
-export class FilterContainer extends SimulationSceneContainer<DetectFilter> {
-	children: DetectFilter[];
-	readonly isFilterContainer: true = true;
-	constructor(editor: YaptideEditor) {
-		super(editor, 'Filters', 'FilterGroup', json => new DetectFilter(editor).fromJSON(json));
-		this.children = [];
-	}
-
-	reset() {
-		this.name = 'Filters';
-		this.clear();
-	}
-}
-
-export class DetectorManager extends THREE.Scene implements SimulationPropertiesType {
+export class DetectorManager
+	extends THREE.Scene
+	implements SimulationPropertiesType, SimulationElementManager<'detector', Detector>
+{
 	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -60,12 +48,7 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 
 	detectHelper: THREE.Mesh;
 
-	filterContainer: FilterContainer;
-
-	get filters() {
-		return this.filterContainer.children;
-	}
-	get detects() {
+	get detectors() {
 		return this.detectorContainer.children;
 	}
 
@@ -79,9 +62,6 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 		detectGeometryAdded: Signal<Detector>;
 		detectGeometryRemoved: Signal<Detector>;
 		detectGeometryChanged: Signal<Detector>;
-		detectFilterRemoved: Signal<DetectFilter>;
-		detectFilterAdded: Signal<DetectFilter>;
-		detectFilterChanged: Signal<DetectFilter>;
 		materialChanged: Signal<THREE.Material>;
 	};
 	readonly isDetectorManager: true = true;
@@ -95,10 +75,8 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 		this.detectHelper.visible = false;
 		this.name = 'DetectorManager';
 		this.editor = editor;
-		this.filterContainer = new FilterContainer(editor);
 
 		this.add(this.detectorContainer);
-		this.add(this.filterContainer);
 		this.add(this.detectHelper);
 
 		this.signals = editor.signals;
@@ -149,44 +127,10 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 		this.signals.detectGeometryAdded.dispatch(geometry);
 	}
 
-	getDetectorByUuid(uuid: string) {
-		return this.detectorContainer.children.find(child => child.uuid === uuid) ?? null;
-	}
-
-	getDetectorByName(name: string) {
-		return this.detectorContainer.children.find(child => child.name === name) ?? null;
-	}
-
 	removeDetector(geometry: Detector): void {
 		this.detectorContainer.remove(geometry);
 		this.editor.deselect();
 		this.signals.detectGeometryRemoved.dispatch(geometry);
-	}
-
-	addFilter(filter: DetectFilter): void {
-		this.filterContainer.add(filter);
-		this.editor.select(filter);
-		this.signals.detectFilterAdded.dispatch(filter);
-	}
-
-	removeFilter(filter: DetectFilter): void {
-		this.filterContainer.remove(filter);
-		this.editor.deselect();
-		this.signals.detectFilterRemoved.dispatch(filter);
-	}
-
-	createFilter(): DetectFilter {
-		const filter = new DetectFilter(this.editor);
-		this.addFilter(filter);
-		return filter;
-	}
-
-	getFilterByName(name: string) {
-		return this.filters.find(filter => filter.name === name) ?? null;
-	}
-
-	getFilterByUuid(uuid: string) {
-		return this.filters.find(filter => filter.uuid === uuid) ?? null;
 	}
 
 	fromJSON(data: DetectorManagerJSON): void {
@@ -198,24 +142,17 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 		data.detectGeometries.forEach(geometryData => {
 			this.addDetector(new Detector(this.editor).fromJSON(geometryData));
 		});
-		data.filters.forEach(filterData => {
-			this.addFilter(DetectFilter.fromJSON(this.editor, filterData));
-		});
-		this.signals.detectFilterAdded.dispatch(this.filters[this.filters.length - 1]);
 	}
 
 	toJSON(): DetectorManagerJSON {
 		const detectGeometries = this.detectorContainer.toJSON() as DetectorJSON[];
-
-		const filters = this.filterContainer.toJSON() as FilterJSON[];
 
 		const { uuid, name } = this;
 
 		return {
 			uuid,
 			name,
-			detectGeometries,
-			filters
+			detectGeometries
 		};
 	}
 
@@ -227,7 +164,6 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 		this.environment = null;
 
 		this.detectorContainer.reset();
-		this.filterContainer.reset();
 
 		this.detectHelper.geometry.dispose();
 	}
@@ -236,34 +172,18 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 		return new DetectorManager(this.editor).copy(this, recursive) as this;
 	}
 
-	getGeometryByUuid(uuid: string): Detector | null {
-		return this.detectorContainer.children.find(
-			child => child.uuid === uuid
-		) as Detector | null;
+	getDetectorByUuid(uuid: string): Detector | null {
+		return this.detectors.find(child => child.uuid === uuid) as Detector | null;
 	}
 
-	getGeometryByName(name: string) {
-		return this.detectorContainer.children.find(
-			child => child.name === name
-		) as Detector | null;
-	}
-
-	getFilterOptions(): Record<string, string> {
-		const options = this.filters
-			.filter(filter => {
-				return filter.rules.length;
-			})
-			.reduce((acc, filter) => {
-				acc[filter.uuid] = `${filter.name} [${filter.id}]`;
-				return acc;
-			}, {} as Record<string, string>);
-		return options;
+	getDetectorByName(name: string) {
+		return this.detectors.find(child => child.name === name) as Detector | null;
 	}
 
 	getDetectOptions(
 		additionalPredicate?: (value: Detector, index: number, array: Detector[]) => boolean
 	): Record<string, string> {
-		const options = this.detects
+		const options = this.detectors
 			.filter(({ detectorType: detectType, geometryData }) => {
 				if (detectType !== 'Zone') return true;
 				return this.editor.zoneManager.getZoneByUuid(geometryData.zoneUuid) !== undefined;
@@ -281,5 +201,3 @@ export const isDetectContainer = (x: unknown): x is DetectorContainer =>
 	x instanceof DetectorContainer;
 
 export const isDetectorManager = (x: unknown): x is DetectorManager => x instanceof DetectorManager;
-
-export const isFilterContainer = (x: unknown): x is FilterContainer => x instanceof FilterContainer;

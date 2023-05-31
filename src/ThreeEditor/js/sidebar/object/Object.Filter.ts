@@ -1,5 +1,5 @@
 import { MathUtils } from 'three';
-import { DetectFilter } from '../../../Simulation/Scoring/DetectFilter';
+import { ScoringFilter } from '../../../Simulation/Scoring/ScoringFilter';
 import * as Rule from '../../../../types/DetectRuleTypes';
 import {
 	createFullwidthButton,
@@ -18,10 +18,10 @@ import {
 	isFloatRule,
 	isIDRule,
 	isIntRule
-} from '../../../Simulation/Scoring/DetectRule';
+} from '../../../Simulation/Scoring/FilterRule';
 
 export class ObjectFilter extends ObjectAbstract {
-	object?: DetectFilter;
+	object?: ScoringFilter;
 	rule?: FilterRule;
 
 	add: UIButton;
@@ -164,7 +164,7 @@ export class ObjectFilter extends ObjectAbstract {
 		this.outliner.setValue(rule.uuid);
 		this.updateSelectedRule();
 	}
-	setObject(object: DetectFilter): void {
+	setObject(object: ScoringFilter): void {
 		super.setObject(object);
 		if (!object) return;
 

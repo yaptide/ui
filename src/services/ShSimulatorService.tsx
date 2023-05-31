@@ -1,6 +1,6 @@
 import { ReactNode, useCallback } from 'react';
 import { Estimator } from '../JsRoot/GraphData';
-import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/DetectFilter';
+import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { ScoringManagerJSON } from '../ThreeEditor/Simulation/Scoring/ScoringManager';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
@@ -106,12 +106,12 @@ export const recreateRefsInResults = (inputJson: EditorJson, estimators: Estimat
 	if (!inputJson) throw new Error('No editor data');
 	if (!estimators) throw new Error('No esitamtors data');
 
-	const { scoringManager, detectManager: detectorManager }: EditorJson = inputJson;
+	const { scoringManager }: EditorJson = inputJson;
 
 	const estimatorsOrdered = recreateOrderInEstimators(estimators, scoringManager);
 	const estimatorsWithFixedFilters = recreateRefToFilters(
 		estimatorsOrdered,
-		detectorManager.filters
+		scoringManager.filters
 	);
 
 	return estimatorsWithFixedFilters;

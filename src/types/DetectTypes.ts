@@ -136,11 +136,11 @@ export const DEFAULT_ANY: AnyData = {
 	zoneUuid: ''
 };
 
-export const DETECT_OPTIONS = {
+export const DETECTOR_OPTIONS = {
 	Mesh: 'Mesh',
 	Cyl: 'Cyl',
 	Zone: 'Zone',
 	All: 'All'
 } as const;
 
-export type DETECT_TYPE = keyof typeof DETECT_OPTIONS;
+export type DETECTOR_TYPE = keyof typeof DETECTOR_OPTIONS;

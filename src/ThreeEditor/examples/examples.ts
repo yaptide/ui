@@ -14,6 +14,7 @@ while (canImport) {
 			example.input.inputJson.project.title = `Untitled example ${iterator}`;
 
 		EXAMPLES.push(example);;
+		break;
 		iterator++;
 	} catch (e) {
 		canImport = false;

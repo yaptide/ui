@@ -1,13 +1,12 @@
 import * as THREE from 'three';
-import { YaptideEditor } from '../../js/YaptideEditor';
-import { getGeometryData } from '../../../util/AdditionalGeometryData';
-import { BasicFigure, BoxFigure, CylinderFigure, SphereFigure } from './BasicFigures';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { UniqueChildrenNames, getNextFreeName } from '../../../util/Name/Name';
-import { SimulationSceneContainer } from '../Base/SimulationContainer';
-import { SimulationElementManager } from '../Base/SimulationManager';
 import { EditorObjectLoader } from '../../../util/ObjectLoader';
+import { YaptideEditor } from '../../js/YaptideEditor';
+import { SimulationSceneContainer } from '../Base/SimulationContainer';
+import { SimulationElementJSON } from '../Base/SimulationElement';
+import { SimulationElementManager } from '../Base/SimulationManager';
 import { SimulationMeshJSON } from '../Base/SimulationMesh';
+import { BasicFigure, BoxFigure, CylinderFigure, SphereFigure } from './BasicFigures';
 
 const figureLoader = (editor: YaptideEditor) => (json: SimulationMeshJSON) => {
 	switch (json.type) {
@@ -32,6 +31,13 @@ export class FigureContainer extends SimulationSceneContainer<BasicFigure> {
 	}
 }
 
+type FigureManagerJSON = Omit<
+	SimulationElementJSON & {
+		figures: SimulationMeshJSON[];
+	},
+	never
+>;
+
 export class FigureManager
 	extends THREE.Scene
 	implements SimulationPropertiesType, SimulationElementManager<'figure', BasicFigure>
@@ -43,6 +49,10 @@ export class FigureManager
 	readonly loader: EditorObjectLoader;
 
 	figureContainer: SimulationSceneContainer<BasicFigure>;
+	_name: string;
+	get figures() {
+		return this.figureContainer.children;
+	}
 
 	private editor: YaptideEditor;
 	readonly isFigureScene: true = true;
@@ -50,10 +60,16 @@ export class FigureManager
 		super();
 
 		this.editor = editor;
-		this.name = 'Figures';
+		this.name = this._name = 'Figures';
 		this.figureContainer = new FigureContainer(editor);
 		this.add(this.figureContainer);
 		this.loader = new EditorObjectLoader(editor);
+	}
+
+	reset(): this {
+		this.name = this._name;
+		this.figureContainer.reset();
+		return this;
 	}
 
 	addFigure(figure: BasicFigure<THREE.BufferGeometry>) {
@@ -70,29 +86,26 @@ export class FigureManager
 		return figure;
 	}
 	getFigureByUuid(uuid: string) {
-		return this.figureContainer.children.find(figure => figure.uuid === uuid) ?? null;
+		return this.figures.find(figure => figure.uuid === uuid) ?? null;
 	}
 	getFigureByName(name: string) {
-		return this.figureContainer.children.find(figure => figure.name === name) ?? null;
+		return this.figures.find(figure => figure.name === name) ?? null;
 	}
 
-	toJSON(): unknown {
-		const data = super.toJSON();
-		data.object.children = this.children.map(child => {
-			const { object } = child.toJSON();
-			object.geometryData = getGeometryData(child as BasicFigure);
-			return object;
-		});
-		return data;
+	toJSON() {
+		const { uuid, name, type } = this;
+		return {
+			uuid,
+			name,
+			type,
+			figures: this.figures.map(child => child.toJSON())
+		};
 	}
-	fromJSON(json: any) {
-		const tmpScene = this.loader.parse(json);
-		this.uuid = tmpScene.uuid;
-		this.name = tmpScene.name;
-
-		while (tmpScene.children.length > 0) {
-			const child = tmpScene.children[0];
-			this.add(child);
-		}
+	fromJSON(json: FigureManagerJSON) {
+		const { figures, uuid, name } = json;
+		this.uuid = uuid;
+		this.name = name;
+		this.figureContainer.fromJSON(figures);
+		return this;
 	}
 }

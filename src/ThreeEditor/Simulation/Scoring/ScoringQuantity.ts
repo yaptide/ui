@@ -1,5 +1,5 @@
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { DetectFilter } from './DetectFilter';
+import { ScoringFilter } from './ScoringFilter';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import * as Scoring from './ScoringOutputTypes';
 import { DifferentialJSON, DifferentialModifier } from './ScoringQtyModifiers';
@@ -43,11 +43,11 @@ export class ScoringQuantity extends SimulationElement {
 		return this._selectedModifier ? this._modifiers[this._selectedModifier] : undefined;
 	}
 
-	get filter(): DetectFilter | null {
+	get filter(): ScoringFilter | null {
 		if (!this.hasFilter) return null;
-		return this.editor.detectorManager.getFilterByUuid(this._filter);
+		return this.editor.scoringManager.getFilterByUuid(this._filter);
 	}
-	set filter(filter: DetectFilter | null) {
+	set filter(filter: ScoringFilter | null) {
 		this._filter = filter?.uuid ?? '';
 	}
 
@@ -117,7 +117,7 @@ export class ScoringQuantity extends SimulationElement {
 			acc[modifier.uuid] = modifier;
 			return acc;
 		}, {} as Record<string, DifferentialModifier>);
-		this.filter = json.filter ? this.editor.detectorManager.getFilterByUuid(json.filter) : null;
+		this.filter = json.filter ? this.editor.scoringManager.getFilterByUuid(json.filter) : null;
 		if (this._filter.length) this.hasFilter = true;
 		this.keyword = json.keyword;
 		return this;

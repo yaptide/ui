@@ -64,7 +64,7 @@ export class ObjectSettings extends ObjectAbstract {
 		this.geometry.setValue(object.geometry?.uuid);
 
 		if (trace[0]) {
-			const options = this.editor.detectorManager.getFilterOptions();
+			const options = this.editor.scoringManager.getFilterOptions();
 			hideUIElement(this.primariesRow);
 			hideUIElement(this.addQuantityRow);
 			if (Object.keys(options).length > 0) {
@@ -108,7 +108,7 @@ export class ObjectSettings extends ObjectAbstract {
 			this.editor,
 			this.object,
 			'geometry',
-			this.editor.detectorManager.getGeometryByUuid(this.geometry.getValue())
+			this.editor.detectorManager.getDetectorByUuid(this.geometry.getValue())
 		);
 		[primaries, trace, geometry].forEach(command => this.editor.execute(command));
 	}

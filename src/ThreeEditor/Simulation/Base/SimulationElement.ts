@@ -48,3 +48,7 @@ export abstract class SimulationElement
 		this.name = this._name;
 	}
 }
+
+export function isSimulationElement(obj: unknown): obj is SimulationElement {
+	return (obj as SimulationElement).isSimulationElement === true;
+}

@@ -1,8 +1,7 @@
 import * as THREE from 'three';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { YaptideEditor } from '../../js/YaptideEditor';
 import { UniqueChildrenNames, getNextFreeName } from '../../../util/Name/Name';
-import { SimulationElement } from './SimulationElement';
+import { YaptideEditor } from '../../js/YaptideEditor';
 
 export interface SimulationSceneChild extends THREE.Object3D {
 	parent: SimulationSceneContainer<this> | null;
@@ -15,7 +14,9 @@ export interface SimulationSceneChild extends THREE.Object3D {
 /**
  * This is the base class for groups of simulation elements.
  */
-export abstract class SimulationSceneContainer<TChild extends SimulationSceneChild>
+export abstract class SimulationSceneContainer<
+		TChild extends SimulationSceneChild = SimulationSceneChild
+	>
 	extends THREE.Group
 	implements SimulationSceneChild, SimulationPropertiesType, UniqueChildrenNames
 {
@@ -28,7 +29,8 @@ export abstract class SimulationSceneContainer<TChild extends SimulationSceneChi
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
-	private _name: string;
+	readonly flattenOnOutliner: boolean = true;
+	_name: string;
 	private _loader: (json: ReturnType<TChild['toJSON']>) => TChild;
 
 	uniqueNameForChild(child: TChild, newName?: string): string {
@@ -91,4 +93,8 @@ export class SingletonContainer<TChild extends SimulationSceneChild>
 	fromJSON(json: ReturnType<TChild['toJSON']>[]): void {
 		throw new Error('Method not implemented.');
 	}
+}
+
+export function isSimulationSceneContainer(object: unknown): object is SimulationSceneContainer {
+	return (object as SimulationSceneContainer).isSimulationContainer === true;
 }

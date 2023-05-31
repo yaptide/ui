@@ -45,13 +45,13 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 				</>
 			)}
 
-			{Object.keys(editor.detectorManager.getFilterOptions()).length > 0 && (
+			{Object.keys(editor.scoringManager.getFilterOptions()).length > 0 && (
 				<ConditionalObjectSelectPropertyField
 					label='Filter'
 					value={watchedObject.filter?.uuid ?? ''}
-					options={editor.detectorManager.getFilterOptions()}
+					options={editor.scoringManager.getFilterOptions()}
 					onChange={v =>
-						setQuantityValue('filter', editor.detectorManager.getFilterByUuid(v.uuid))
+						setQuantityValue('filter', editor.scoringManager.getFilterByUuid(v.uuid))
 					}
 					enabled={watchedObject.hasFilter}
 					onChangeEnabled={v => setQuantityValue('hasFilter', v)}

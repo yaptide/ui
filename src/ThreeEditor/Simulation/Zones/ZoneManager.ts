@@ -50,6 +50,10 @@ export class ZoneManager
 	worldZone: WorldZone;
 	zoneContainer: ZoneContainer;
 
+	get zones() {
+		return this.zoneContainer.children;
+	}
+
 	private signals: {
 		objectAdded: Signal<THREE.Object3D>;
 		zoneAdded: Signal<SimulationZone>;
@@ -165,7 +169,7 @@ export class ZoneManager
 
 	getZoneByName(value: string) {
 		return (
-			[this.worldZone as unknown as SimulationZone, ...this.zoneContainer.children].find(
+			[this.worldZone as unknown as SimulationZone, ...this.zones].find(
 				(zone: SimulationZone) => zone.name === value
 			) ?? null
 		);
@@ -173,7 +177,7 @@ export class ZoneManager
 
 	getZoneByUuid(uuid: string) {
 		return (
-			[this.worldZone as unknown as SimulationZone, ...this.zoneContainer.children].find(
+			[this.worldZone as unknown as SimulationZone, ...this.zones].find(
 				(zone: SimulationZone) => zone.uuid === uuid
 			) ?? null
 		);
@@ -184,12 +188,10 @@ export class ZoneManager
 	}
 
 	getBooleanZoneOptions(): Record<string, string> {
-		const zoneOptions = this.zoneContainer.children
-			.filter(isBooleanZone)
-			.reduce((acc, zone: BooleanZone) => {
-				acc[zone.uuid] = `${zone.name} [${zone.id}]`;
-				return acc;
-			}, {} as Record<string, string>);
+		const zoneOptions = this.zones.filter(isBooleanZone).reduce((acc, zone: BooleanZone) => {
+			acc[zone.uuid] = `${zone.name} [${zone.id}]`;
+			return acc;
+		}, {} as Record<string, string>);
 		return zoneOptions;
 	}
 }

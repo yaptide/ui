@@ -3,7 +3,7 @@ import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { Detector } from '../Detectors/Detector';
-import { DetectFilter } from './DetectFilter';
+import { ScoringFilter } from './ScoringFilter';
 import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
 
 export type ScoringOutputJSON = Omit<
@@ -35,7 +35,7 @@ export class QuantityContainer extends SimulationSceneContainer<ScoringQuantity>
 
 export class ScoringOutput
 	extends SimulationElement
-	implements SimulationElementManager<'quantity', ScoringQuantity>
+	implements SimulationElementManager<'quantity', ScoringQuantity, 'quantities'>
 {
 	readonly isOutput: true = true;
 	readonly notMovable = true;
@@ -53,6 +53,10 @@ export class ScoringOutput
 
 	quantityContainer: SimulationSceneContainer<ScoringQuantity>;
 
+	get quantities() {
+		return this.quantityContainer.children;
+	}
+
 	get primaries(): [boolean, number | null] {
 		return [this._primaries[0], this._primaries[0] ? this._primaries[1] : null];
 	}
@@ -69,9 +73,9 @@ export class ScoringOutput
 		this._trace = [filter[0], filter[0] && filter[1] ? filter[1] : this._trace[1]];
 	}
 
-	get traceFilter(): DetectFilter | null {
+	get traceFilter(): ScoringFilter | null {
 		return this._trace[0] && this._trace[1]
-			? this.editor.detectorManager.getFilterByUuid(this._trace[1])
+			? this.editor.scoringManager.getFilterByUuid(this._trace[1])
 			: null;
 	}
 
@@ -81,7 +85,7 @@ export class ScoringOutput
 
 	get geometry(): Detector | null {
 		if (!this._geometry) return null;
-		return this.editor.detectorManager.getGeometryByUuid(this._geometry);
+		return this.editor.detectorManager.getDetectorByUuid(this._geometry);
 	}
 
 	set geometry(geometry: Detector | null) {
@@ -95,10 +99,11 @@ export class ScoringOutput
 		this._primaries = [false, 0];
 		this._trace = [false, ''];
 		this.quantityContainer = new QuantityContainer(editor);
+		this.add(this.quantityContainer);
 	}
 
 	getQuantityByName(name: string) {
-		return this.quantityContainer.children.find(qty => qty.name === name) ?? null;
+		return this.quantities.find(qty => qty.name === name) ?? null;
 	}
 
 	/**
@@ -125,7 +130,7 @@ export class ScoringOutput
 	}
 
 	getQuantityByUuid(uuid: string): ScoringQuantity | null {
-		return this.quantityContainer.children.find(qty => qty.uuid === uuid) ?? null;
+		return this.quantities.find(qty => qty.uuid === uuid) ?? null;
 	}
 
 	toJSON(): ScoringOutputJSON {
@@ -150,7 +155,7 @@ export class ScoringOutput
 			.flat()
 			.forEach(qty => this.addQuantity(ScoringQuantity.fromJSON(this.editor, qty)));
 		this.geometry = json.detectGeometry
-			? this.editor.detectorManager.getGeometryByUuid(json.detectGeometry)
+			? this.editor.detectorManager.getDetectorByUuid(json.detectGeometry)
 			: null;
 		return this;
 	}

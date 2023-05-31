@@ -12,7 +12,7 @@ import { AdditionalGeometryDataType } from '../../../util/AdditionalGeometryData
 type AdditionalDetectGeometryDataType = Omit<
 	AdditionalGeometryDataType & {
 		parameters: DETECT.Any;
-		geometryType: DETECT.DETECT_TYPE;
+		geometryType: DETECT.DETECTOR_TYPE;
 	},
 	never
 >;
@@ -70,13 +70,13 @@ export class Detector extends SimulationPoints {
 		}
 	});
 	private proxy: Detector;
-	private _detectorType: DETECT.DETECT_TYPE;
+	private _detectorType: DETECT.DETECTOR_TYPE;
 
-	get detectorType(): DETECT.DETECT_TYPE {
+	get detectorType(): DETECT.DETECTOR_TYPE {
 		return this._detectorType;
 	}
 
-	set detectorType(value: DETECT.DETECT_TYPE) {
+	set detectorType(value: DETECT.DETECTOR_TYPE) {
 		this._detectorType = value;
 		this.tryUpdateGeometry();
 	}
@@ -109,7 +109,7 @@ export class Detector extends SimulationPoints {
 
 	private _geometryData: DETECT.AnyData = DETECT.DEFAULT_ANY;
 
-	private tryUpdateGeometry = (type: DETECT.DETECT_TYPE = this.detectorType) => {
+	private tryUpdateGeometry = (type: DETECT.DETECTOR_TYPE = this.detectorType) => {
 		this.geometry.dispose();
 		this.geometry = this.generateGeometry(undefined, type);
 		this.geometry.computeBoundingSphere();
@@ -143,7 +143,7 @@ export class Detector extends SimulationPoints {
 
 	private generateGeometry(
 		data: DETECT.AnyData = this.geometryData,
-		type: DETECT.DETECT_TYPE = this.detectorType
+		type: DETECT.DETECTOR_TYPE = this.detectorType
 	): THREE.BufferGeometry {
 		let geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
 
@@ -191,7 +191,7 @@ export class Detector extends SimulationPoints {
 		editor: YaptideEditor,
 		name: string | undefined = 'Detector',
 		type: string = 'Detector',
-		detectorType: DETECT.DETECT_TYPE = 'Mesh'
+		detectorType: DETECT.DETECTOR_TYPE = 'Mesh'
 	) {
 		super(editor, name, type);
 		this.signals = editor.signals;
@@ -230,7 +230,7 @@ export class Detector extends SimulationPoints {
 		return new DETECT.All(this._geometryData);
 	}
 
-	getData(type: DETECT.DETECT_TYPE = this.detectorType): Partial<DETECT.Any> {
+	getData(type: DETECT.DETECTOR_TYPE = this.detectorType): Partial<DETECT.Any> {
 		switch (type) {
 			case 'Mesh':
 				return this.getMesh().toJSON();

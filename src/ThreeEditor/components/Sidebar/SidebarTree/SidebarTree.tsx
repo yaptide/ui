@@ -1,16 +1,20 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Tree, TreeMethods } from '@minoru/react-dnd-treeview';
-import { Object3D } from 'three';
-import './SidebarTree.style.css';
-import { YaptideEditor } from '../../../js/YaptideEditor';
-import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
-import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
 import { Divider } from '@mui/material';
-import { hasVisibleChildren } from '../../../../util/hooks/useKeyboardEditorControls';
-import { ChangeObjectOrderCommand } from '../../../js/commands/ChangeObjectOrderCommand';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Object3D } from 'three';
 import { generateUUID } from 'three/src/math/MathUtils';
+import { hasVisibleChildren } from '../../../../util/hooks/useKeyboardEditorControls';
+import {
+	SimulationSceneChild,
+	isSimulationSceneContainer
+} from '../../../Simulation/Base/SimulationContainer';
+import { YaptideEditor } from '../../../js/YaptideEditor';
+import { ChangeObjectOrderCommand } from '../../../js/commands/ChangeObjectOrderCommand';
+import './SidebarTree.style.css';
+import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
+import { isSimulationElement } from '../../../Simulation/Base/SimulationElement';
 
-type TreeSource = (Object3D[] | Object3D)[];
+type TreeSource = SimulationSceneChild[];
 
 export function SidebarTree(props: {
 	editor: YaptideEditor;
@@ -22,37 +26,53 @@ export function SidebarTree(props: {
 	const treeRef = useRef<TreeMethods>(null);
 	const treeId = useMemo(() => generateUUID(), []);
 
-	const buildOption = useCallback(
-		(
-			object: Object3D | SimulationElement | undefined,
-			items: Object3D[] | undefined,
-			parentId: number,
-			index?: number
-		): TreeItem[] => {
-			if (!object) return [];
-
-			if (!items) items = object.children;
-
-			let children: TreeItem[] = [];
-			if (hasVisibleChildren(object))
-				children = items
-					.map((child, idx) => buildOption(child, child.children, object.id, idx))
-					.flat();
-
-			return [
-				{
-					id: object.id,
-					parent: parentId,
+	const buildOptionsRecursively = useCallback(
+		(object: SimulationSceneChild, index: number, parent: number = 0): TreeItem[] => {
+			let nextParent = object.id;
+			const validateElement = (object: Object3D): object is SimulationSceneChild => {
+				return isSimulationElement(object) || isSimulationSceneContainer(object);
+			};
+			const elementToTreeItem = (
+				object: SimulationSceneChild,
+				parent: number,
+				index: number
+			): TreeItem => {
+				const { id, name: text } = object;
+				return {
+					id,
+					parent,
 					droppable: true,
-					text: object.name,
+					text,
 					data: {
-						object: object,
-						treeId: treeId,
-						index: index
+						object,
+						treeId,
+						index
 					}
-				},
-				...children
-			];
+				};
+			};
+
+			const children: TreeItem[] = [];
+
+			if (!isSimulationSceneContainer(object))
+				children.push(elementToTreeItem(object, parent, index));
+			else if (!object.flattenOnOutliner)
+				children.push(elementToTreeItem(object, parent, index));
+			else nextParent = parent;
+
+			if (object.children.length > 0) {
+				const { children: items } = object;
+
+				if (hasVisibleChildren(object))
+					children.push(
+						...items
+							.filter(validateElement)
+							.flatMap((child, idx) =>
+								buildOptionsRecursively(child, idx, nextParent)
+							)
+					);
+			}
+
+			return children;
 		},
 		[treeId]
 	);
@@ -60,11 +80,9 @@ export function SidebarTree(props: {
 	const [treeData, setTreeData] = useState<TreeItem[]>([]);
 
 	const refreshTreeData = useCallback(() => {
-		const options = sources
-			.flat()
-			.flatMap((source, idx) => buildOption(source, source.children, 0, idx));
+		const options = sources.flatMap((source, idx) => buildOptionsRecursively(source, idx));
 		setTreeData(options);
-	}, [buildOption, sources]);
+	}, [buildOptionsRecursively, sources]);
 
 	const handleSelected = (object: Object3D | null) => {
 		if (!object) return;
@@ -88,7 +106,7 @@ export function SidebarTree(props: {
 			editor.signals.objectChanged.remove(refreshTreeData);
 			editor.signals.objectSelected.remove(handleSelected);
 		};
-	}, [buildOption, editor, refreshTreeData]);
+	}, [buildOptionsRecursively, editor, refreshTreeData]);
 
 	const objectRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 

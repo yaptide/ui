@@ -39,7 +39,7 @@ class AddDetectGeometryCommand extends Command {
 	fromJSON(json) {
 		super.fromJSON(json);
 		this.object =
-			this.editor.detectorManager.getGeometryByUuid(json.object.uuid) ??
+			this.editor.detectorManager.getDetectorByUuid(json.object.uuid) ??
 			Detector.fromJSON(this.editor, json.object);
 	}
 }

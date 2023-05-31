@@ -8,7 +8,7 @@ import {
 	isSphereFigure
 } from '../../../Simulation/Figures/BasicFigures';
 import { Detector, isDetectGeometry } from '../../../Simulation/Detectors/Detector';
-import { DETECT_OPTIONS } from '../../../../types/DetectTypes';
+import { DETECTOR_OPTIONS } from '../../../../types/DetectTypes';
 import {
 	createRowParamNumber,
 	createRowSelect,
@@ -124,7 +124,7 @@ export class ObjectDimensions extends ObjectAbstract {
 				this.typeSelect.setValue(object.geometryType);
 				geometryType = object.geometryType;
 			} else if (isDetectGeometry(object)) {
-				this.typeSelect.setOptions(DETECT_OPTIONS);
+				this.typeSelect.setOptions(DETECTOR_OPTIONS);
 				this.typeSelect.setValue(object.detectorType);
 				geometryType = object.detectorType;
 			}

@@ -29,7 +29,7 @@ import {
 	isFloatRule,
 	isIDRule,
 	isIntRule
-} from '../../../../Simulation/Scoring/DetectRule';
+} from '../../../../Simulation/Scoring/FilterRule';
 
 export function PropertyField(props: { label?: string; children: ReactNode }) {
 	return (

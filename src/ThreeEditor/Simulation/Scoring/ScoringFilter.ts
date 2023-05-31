@@ -9,7 +9,7 @@ import {
 	IntRule,
 	IntRuleJSON,
 	RuleJSON
-} from './DetectRule';
+} from './FilterRule';
 
 export type FilterJSON = Omit<
 	SimulationElementJSON & {
@@ -18,7 +18,7 @@ export type FilterJSON = Omit<
 	never
 >;
 
-export class DetectFilter extends SimulationElement {
+export class ScoringFilter extends SimulationElement {
 	private _rules: Record<string, FilterRule>;
 	private _selectedRule?: string;
 	readonly isFilter: true = true;
@@ -135,8 +135,8 @@ export class DetectFilter extends SimulationElement {
 		return this;
 	}
 
-	static fromJSON(editor: YaptideEditor, json: FilterJSON): DetectFilter {
-		return new DetectFilter(editor).fromJSON(json);
+	static fromJSON(editor: YaptideEditor, json: FilterJSON): ScoringFilter {
+		return new ScoringFilter(editor).fromJSON(json);
 	}
 
 	toString(): string {
@@ -147,4 +147,4 @@ export class DetectFilter extends SimulationElement {
 	}
 }
 
-export const isDetectFilter = (x: unknown): x is DetectFilter => x instanceof DetectFilter;
+export const isDetectFilter = (x: unknown): x is ScoringFilter => x instanceof ScoringFilter;

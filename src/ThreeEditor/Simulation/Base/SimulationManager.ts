@@ -18,7 +18,11 @@ type ChildMethodsGet<ChildName extends string> = ChildMethods<
 
 type ChildPropertiesContainer<ChildName extends string> = ChildMethods<ChildName, '', 'container'>;
 
-export type SimulationElementManager<TName extends string, TChild extends SimulationSceneChild> = {
+export type SimulationElementManager<
+	TName extends string,
+	TChild extends SimulationSceneChild,
+	TPluralName extends string = `${TName}s`
+> = {
 	[Method in ChildMethodsManage<TName>]: (...args: [TChild]) => void;
 } & {
 	[Method in ChildMethodsCreate<TName>]: () => TChild;
@@ -26,4 +30,6 @@ export type SimulationElementManager<TName extends string, TChild extends Simula
 	[Method in ChildMethodsGet<TName>]: (value: string) => TChild | null;
 } & {
 	[Property in ChildPropertiesContainer<TName>]: SimulationSceneContainer<TChild>;
+} & {
+	readonly [Property in TPluralName]: TChild[];
 };

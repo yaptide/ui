@@ -25,7 +25,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 					editor,
 					watchedObject.object,
 					'geometry',
-					editor.detectorManager.getGeometryByUuid(v.uuid)
+					editor.detectorManager.getDetectorByUuid(v.uuid)
 				)
 			);
 		},

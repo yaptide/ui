@@ -6,7 +6,7 @@ import {
 	CylinderFigure,
 	SphereFigure
 } from '../../ThreeEditor/Simulation/Figures/BasicFigures';
-import { DetectFilter } from '../../ThreeEditor/Simulation/Scoring/DetectFilter';
+import { ScoringFilter } from '../../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { ScoringOutput, isOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
 import { ScoringQuantity, isQuantity } from '../../ThreeEditor/Simulation/Scoring/ScoringQuantity';
 import { BeamModulator } from '../../ThreeEditor/Simulation/SpecialComponents/BeamModulator';
@@ -111,19 +111,19 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 			'Beam Modulator',
 			(obj = new BeamModulator(editor)) => {
 				return commandFactory.createAddCommand(
-					'modulator',
+					'beamModulator',
 					obj,
 					editor.specialComponentsManager
 				);
 			},
-			editor.specialComponentsManager.modulatorContainer.children.length > 0
+			editor.specialComponentsManager.beamModulatorContainer.children.length > 0
 		]
 	];
 	const filtersTuple: CommandButtonTuple[] = [
 		[
 			'Filter',
-			(obj = new DetectFilter(editor)) => {
-				return commandFactory.createAddCommand('filter', obj, editor.detectorManager);
+			(obj = new ScoringFilter(editor)) => {
+				return commandFactory.createAddCommand('filter', obj, editor.scoringManager);
 			}
 		]
 	];
