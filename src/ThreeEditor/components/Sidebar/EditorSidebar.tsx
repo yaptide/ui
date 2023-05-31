@@ -2,7 +2,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import SpeedIcon from '@mui/icons-material/Speed';
 import TokenIcon from '@mui/icons-material/Token';
 import { AppBar, Box, Divider, Stack, Tab, Tabs, Typography } from '@mui/material';
-import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Object3D } from 'three';
 import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
@@ -19,10 +19,10 @@ import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
 export function EditorSidebar(props: { editor: YaptideEditor }) {
 	const { editor } = props;
 
-	const [, setSelectedObject] = useState(editor.selected);
+	const [btnProps, setBtnProps] = useState(getAddElementButtonProps(editor));
 
 	const handleObjectUpdate = useCallback((o: Object3D) => {
-		setSelectedObject(o);
+		setBtnProps(getAddElementButtonProps(editor));
 	}, []);
 
 	useSignal(editor, 'objectSelected', handleObjectUpdate);
@@ -63,12 +63,10 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 		};
 	}, [editor, handleContextChange]);
 
-	const groupedCommandButtonProps = getAddElementButtonProps(editor);
-
 	const geometryTabElements = [
 		{
 			title: 'Figures',
-			add: groupedCommandButtonProps['Figures'],
+			add: btnProps['Figures'],
 			tree: (
 				<SidebarTree
 					editor={editor}
@@ -78,7 +76,7 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 		},
 		{
 			title: 'Zones',
-			add: groupedCommandButtonProps['Zones'],
+			add: btnProps['Zones'],
 			tree: (
 				<>
 					<SidebarTree
@@ -96,7 +94,7 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 		},
 		{
 			title: 'Detectors',
-			add: groupedCommandButtonProps['Detectors'],
+			add: btnProps['Detectors'],
 			tree: (
 				<SidebarTree
 					editor={editor}
@@ -106,7 +104,7 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 		},
 		{
 			title: 'Special Components',
-			add: groupedCommandButtonProps['Special Components'],
+			add: btnProps['Special Components'],
 			tree: (
 				<>
 					{editor.specialComponentsManager.CTCubeContainer.children.length > 0 ? (
@@ -133,7 +131,7 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 	const scoringTabElements = [
 		{
 			title: 'Filters',
-			add: groupedCommandButtonProps['Filters'],
+			add: btnProps['Filters'],
 			tree: (
 				<SidebarTree
 					editor={editor}
@@ -143,7 +141,7 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 		},
 		{
 			title: 'Outputs',
-			add: groupedCommandButtonProps['Outputs'],
+			add: btnProps['Outputs'],
 			tree: (
 				<SidebarTree
 					editor={editor}

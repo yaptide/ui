@@ -140,7 +140,7 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 				return commandFactory.createAddCommand(
 					'quantity',
 					obj,
-					isQuantity(editor.selected) ? editor.selected.parent : editor.selected
+					isQuantity(editor.selected) ? editor.selected.parent?.parent : editor.selected
 				);
 			},
 			!isOutput(editor.selected) && !isQuantity(editor.selected)
