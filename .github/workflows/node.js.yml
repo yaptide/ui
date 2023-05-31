@@ -1,172 +1,66 @@
-name: Node.js CI
+name: "Deploy on Comment"
 
+# https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
 on:
-    push:
-        branches: [master]
-    pull_request:
-        branches: [master]
-    issue_comment:
-        types: [created]
-
-# see https://github.community/t/treating-warnings-as-errors-because-process-env-ci-true/18032
-env:
-    CI: false
+  issue_comment:
+    types: [created]
 
 jobs:
-    build_and_test:
-        runs-on: ubuntu-latest
+  deploy:
+    name: Deploy
+    # Only run if it#s a PR and the comment contains /deploy
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/deploy')
+    runs-on: ubuntu-latest
 
-        strategy:
-            matrix:
-                node-version: [18.x]
-                # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    steps:
+      - name: Get branch of PR
+        uses: xt0rted/pull-request-comment-branch@v1
+        id: comment-branch
 
-        steps:
-            - uses: actions/checkout@v3
-              with:
-                submodules: recursive
-            # - uses: actions/setup-python@v4
-            #   with:
-            #     python-version: '3.10'
-            # - name: Use Node.js ${{ matrix.node-version }}
-            #   uses: actions/setup-node@v3
-            #   with:
-            #       node-version: ${{ matrix.node-version }}
-            #       cache: 'npm'
-            # - run: npm ci
-            # - run: npm run build --if-present
-            # - run: npm run start &
-            # - name: Wait for the app to start
-            #   uses: iFaxity/wait-on-action@v1.1.0
-            #   with:
-            #     resource: http://localhost:3000
-            # - name: Run tests 
-            #   uses: nick-fields/retry@v2
-            #   with:
-            #     max_attempts: 2
-            #     retry_on: error
-            #     timeout_seconds: 120
-            #     command: npm test	
+      - name: Set latest commit status as pending
+        uses: myrotvorets/set-commit-status-action@master
+        with:
+          sha: ${{ steps.comment-branch.outputs.head_sha }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: pending
 
-    deploy-to-github-registry:
-      runs-on: ubuntu-latest
-      if: ${{ github.event.issue.pull_request }}
-      env:
-        USERNAME: ${{ github.actor }}
-        PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-        REGISTRY: ghcr.io
-        IMAGE_NAME: ${{ github.repository }}-web
-      steps:
-        - name: Get PR branch
-          uses: xt0rted/pull-request-comment-branch@v1
-          id: comment-branch
-        
-        - name: Set latest commit status as pending
-          uses: myrotvorets/set-commit-status-action@master
-          with:
-            sha: ${{ steps.comment-branch.outputs.head_sha }}
-            token: ${{ secrets.GITHUB_TOKEN }}
-            status: pending
+      - name: Checkout PR branch ${{ steps.comment-branch.outputs.head_ref }}
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ steps.comment-branch.outputs.head_ref }}
 
-        - name: Checkout PR branch
-          uses: actions/checkout@v3
-          with:
-            ref: ${{ steps.comment-branch.outputs.head_ref }}
-    
-        - name: Setup Node.js 16
-          uses: actions/setup-node@v3
-          with:
-            node-version: 16
-    
-        - name: Deploy
-          run: |
-            echo "Deploying..."
-    
-        - name: Set latest commit status as ${{ job.status }}
-          uses: myrotvorets/set-commit-status-action@master
-          if: always()
-          with:
-            sha: ${{ steps.comment-branch.outputs.head_sha }}
-            token: ${{ secrets.GITHUB_TOKEN }}
-            status: ${{ job.status }}          
+      - name: Setup Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
 
-        - name: Add comment to PR
-          uses: actions/github-script@v6
-          if: always()
-          with:
-              script: |
-                const name = '${{ github.workflow   }}';
-                const url = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
-                const success = '${{ job.status }}' === 'success';
-                const body = `${name}: ${success ? 'succeeded ✅' : 'failed ❌'}\n${url}`;
-    
-                await github.rest.issues.createComment({
-                  issue_number: context.issue.number,
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  body: body
-                })
-        # - name: Login to GitHub Container Registry
-        #   uses: docker/login-action@v1
-        #   with:
-        #     registry: ${{ env.REGISTRY }}
-        #     username: ${{ env.USERNAME }}
-        #     password: ${{ env.PASSWORD }}
-        
-        # - name: Set up Docker Buildx
-        #   uses: docker/setup-buildx-action@v2
-                  
-        # - name: Extract metadata (tags, labels) for Docker
-        #   id: meta
-        #   uses: docker/metadata-action@v4.4.0
-        #   with:
-        #     images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-              
-        # # see https://github.com/docker/build-push-action/issues/513#issuecomment-987951050
-        # - name: Build and push Docker image
-        #   uses: docker/build-push-action@v2
-        #   with:
-        #     context: .
-        #     push: true
-        #     tags: ${{ steps.meta.outputs.tags }}
-        #     labels: ${{ steps.meta.outputs.labels }}
-        #     # it seems that cache is not giving any benefit in speed, lets keep it disabled for now
-        #     # cache-from: type=gha
-        #     # cache-to: type=gha,mode=max
-        #     build-args: |
-        #       BUILDKIT_CONTEXT_KEEP_GIT_DIR=true              
+      # Do the actual deployment (exit randomly with 0 or 1)
+      - name: Deploy
+        run: |
+          echo "Deploying..."
+          exit $(($RANDOM%2))
 
-    deploy_gh_pages:
-        runs-on: ubuntu-latest
-        needs: [build_and_test]
-        if: github.ref == 'refs/heads/master'
+      - name: Add workflow result as comment on PR
+        uses: actions/github-script@v6
+        if: always()
+        with:
+          script: |
+            const name = '${{ github.workflow	}}';
+            const url = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
+            const success = '${{ job.status }}' === 'success';
+            const body = `${name}: ${success ? 'succeeded ✅' : 'failed ❌'}\n${url}`;
 
-        steps:
-            - name: Checkout 🛎️
-              uses: actions/checkout@v3
-              with:
-                submodules: recursive
-            
-            - uses: actions/setup-python@v4
-              with:
-                python-version: '3.10'
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            })
 
-            - name: Install 🔧
-              run: npm install
-
-            - name: Use Node.js 18.x
-              uses: actions/setup-node@v3
-              with:
-                  node-version: '18.x'
-                  cache: 'npm'
-
-            - name: webfactory/ssh-agent 🖥️
-              uses: webfactory/ssh-agent@v0.8.0
-              with:
-                  # Private SSH key to register in the SSH agent
-                  ssh-private-key: ${{ secrets.WEBDEV }}
-
-            - name: Deploy 🚀
-              run: |
-                  git remote set-url origin git@github.com:yaptide/web_dev.git
-                  npm run deploy -- -u "github-actions-bot <support+actions@github.com>" -r "git@github.com:yaptide/web_dev.git"
+      - name: Set latest commit status as ${{ job.status }}
+        uses: myrotvorets/set-commit-status-action@master
+        if: always()
+        with:
+          sha: ${{ steps.comment-branch.outputs.head_sha }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
