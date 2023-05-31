@@ -41,7 +41,7 @@ const ObjectTypeField = (props: {
 
 	const selectData = useCallback(() => {
 		if (isDetectGeometry(watchedObject))
-			return { options: DETECT_OPTIONS, value: watchedObject.detectType };
+			return { options: DETECT_OPTIONS, value: watchedObject.detectorType };
 		return { options: BASIC_GEOMETRY_OPTIONS, value: watchedObject.geometryType };
 	}, [watchedObject])();
 
@@ -86,7 +86,7 @@ const WorldZoneCalculateField = (props: { editor: YaptideEditor; object: WorldZo
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
-	const renderFlag = watchedObject.geometryType === 'Box';
+	const renderFlag = watchedObject.geometryType === 'BoxGeometry';
 	if (!renderFlag) return null;
 
 	return (
@@ -134,12 +134,13 @@ const BoxDimensionsField = (props: {
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const getRenderFlag = useCallback(() => {
-		if (isBasicFigure(watchedObject) && watchedObject.geometryType === 'Box') return true;
+		if (isBasicFigure(watchedObject) && watchedObject.geometryType === 'BoxGeometry')
+			return true;
 
-		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'Box')
+		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'BoxGeometry')
 			return !watchedObject.autoCalculate;
 
-		if (isDetectGeometry(watchedObject) && watchedObject.detectType === 'Mesh') return true;
+		if (isDetectGeometry(watchedObject) && watchedObject.detectorType === 'Mesh') return true;
 
 		return false;
 	}, [watchedObject]);
@@ -229,12 +230,13 @@ const CylinderDimensionsField = (props: {
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const getRenderFlag = useCallback(() => {
-		if (isBasicFigure(watchedObject) && watchedObject.geometryType === 'Cylinder') return true;
+		if (isBasicFigure(watchedObject) && watchedObject.geometryType === 'CylinderGeometry')
+			return true;
 
-		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'Cylinder')
+		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'CylinderGeometry')
 			return !watchedObject.autoCalculate;
 
-		if (isDetectGeometry(watchedObject) && watchedObject.detectType === 'Cyl') return true;
+		if (isDetectGeometry(watchedObject) && watchedObject.detectorType === 'Cyl') return true;
 
 		return false;
 	}, [watchedObject]);
@@ -354,9 +356,10 @@ const SphereDimensionsField = (props: {
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const getRenderFlag = useCallback(() => {
-		if (isBasicFigure(watchedObject) && watchedObject.geometryType === 'Sphere') return true;
+		if (isBasicFigure(watchedObject) && watchedObject.geometryType === 'SphereGeometry')
+			return true;
 
-		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'Sphere')
+		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'SphereGeometry')
 			return !watchedObject.autoCalculate;
 		return false;
 	}, [watchedObject]);
@@ -420,7 +423,7 @@ const ZoneDimensionsField = (props: { editor: YaptideEditor; object: Detector | 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object as Detector);
 
 	const getRenderFlag = useCallback(() => {
-		if (isDetectGeometry(watchedObject) && watchedObject.detectType === 'Zone') return true;
+		if (isDetectGeometry(watchedObject) && watchedObject.detectorType === 'Zone') return true;
 		return false;
 	}, [watchedObject]);
 

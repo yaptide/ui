@@ -16,11 +16,20 @@ export interface SimulationSceneChild extends THREE.Object3D {
  * This is the base class for groups of simulation elements.
  */
 export abstract class SimulationSceneContainer<TChild extends SimulationSceneChild>
-	extends SimulationElement
-	implements SimulationPropertiesType, UniqueChildrenNames
+	extends THREE.Group
+	implements SimulationSceneChild, SimulationPropertiesType, UniqueChildrenNames
 {
-	children: TChild[];
-	parent: SimulationSceneContainer<this> | null;
+	editor: YaptideEditor;
+	parent: SimulationSceneContainer<this> | null = null;
+	children: TChild[] = [];
+	readonly type: string;
+	readonly isSimulationContainer = true;
+	readonly notRemovable: boolean = true;
+	readonly notMovable = true;
+	readonly notRotatable = true;
+	readonly notScalable = true;
+	private _name: string;
+	private _loader: (json: ReturnType<TChild['toJSON']>) => TChild;
 
 	uniqueNameForChild(child: TChild, newName?: string): string {
 		return getNextFreeName(this, newName ?? child.name, child);
@@ -30,11 +39,20 @@ export abstract class SimulationSceneContainer<TChild extends SimulationSceneChi
 		child.name = this.uniqueNameForChild(child);
 		return super.add(child);
 	}
-	constructor(editor: YaptideEditor, name: string, type: string) {
-		super(editor, name, type);
-		this.children = [];
-		this.parent = null;
+
+	constructor(
+		editor: YaptideEditor,
+		name: string | undefined,
+		type: string,
+		loader: (json: ReturnType<TChild['toJSON']>) => TChild
+	) {
+		super();
+		this.editor = editor;
+		this.name = this._name = name ?? type;
+		this.type = type;
+		this._loader = loader;
 	}
+
 	reset() {
 		this.name = this._name;
 		this.children.forEach(child => {
@@ -42,10 +60,17 @@ export abstract class SimulationSceneContainer<TChild extends SimulationSceneChi
 		});
 		this.children.length = 0;
 	}
-	// TODO: Make it work for all SimulationSceneContainers.
-	// toJSON(): Array<ReturnType<TChild['toJSON']>> {
-	toJSON(): Object {
+
+	toJSON(): ReturnType<TChild['toJSON']>[] {
 		return this.children.map(child => child.toJSON());
+	}
+
+	fromJSON(json: ReturnType<TChild['toJSON']>[]) {
+		this.reset();
+		json.forEach(json => {
+			const child = this._loader(json);
+			this.add(child);
+		});
 	}
 }
 
@@ -61,5 +86,9 @@ export class SingletonContainer<TChild extends SimulationSceneChild>
 			});
 		}
 		return super.add(child);
+	}
+
+	fromJSON(json: ReturnType<TChild['toJSON']>[]): void {
+		throw new Error('Method not implemented.');
 	}
 }

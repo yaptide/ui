@@ -7,7 +7,7 @@ import { YaptideEditor } from '../../js/YaptideEditor';
 import CSG from '../../js/libs/csg/three-csg';
 import { OperationTuple, OperationTupleJSON } from '../../CSG/CSGOperationTuple';
 import { CounterMap } from '../../../util/CounterMap/CounterMap';
-import { SimulationZone, SimulationZoneJSON } from '../Base/SimZone';
+import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
 
 export interface BooleanZoneJSON extends SimulationZoneJSON {
 	unionOperations: OperationTupleJSON[][];

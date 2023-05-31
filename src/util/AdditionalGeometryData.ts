@@ -11,19 +11,20 @@ const geometryParameters = {
 		['radius', 'radiusTop'],
 		['depth', 'height']
 	],
-	SphereGeometry: ['radius']
+	SphereGeometry: ['radius'],
+	RingGeometry: ['innerRadius', 'outerRadius']
 };
 
-export interface AdditionalGeometryDataType {
+export type AdditionalGeometryDataType = {
 	id: number;
 	geometryType: string;
 	position: THREE.Vector3Tuple;
 	rotation: THREE.Vector3Tuple;
 	parameters: {
-		[key: string]: number;
+		[key: string]: number | string;
 	};
 	userSetRotation?: boolean;
-}
+};
 
 export const getGeometryParameters = (geometry: PossibleGeometryType) => {
 	const parameters: { [key: string]: number } = {};
@@ -40,7 +41,7 @@ export const getGeometryParameters = (geometry: PossibleGeometryType) => {
 	return parameters;
 };
 
-export function generateSimulationInfo(geometryMesh: THREE.Mesh) {
+export function getGeometryData(geometryMesh: THREE.Mesh | THREE.Points) {
 	const geometry = geometryMesh.geometry as PossibleGeometryType;
 
 	const parameters = getGeometryParameters(geometry);

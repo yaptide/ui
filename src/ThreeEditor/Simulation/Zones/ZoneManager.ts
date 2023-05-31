@@ -7,7 +7,7 @@ import { YaptideEditor } from '../../js/YaptideEditor';
 import { WorldZone, WorldZoneJSON } from './WorldZone/WorldZone';
 import { BooleanZone, BooleanZoneJSON, isBooleanZone } from './BooleanZone';
 import { ZoneWorker } from '../../CSG/CSGWorker';
-import { SimulationZone } from '../Base/SimZone';
+import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
 import { SimulationElementManager } from '../Base/SimulationManager';
 
 interface ZoneManagerJSON {
@@ -18,14 +18,13 @@ interface ZoneManagerJSON {
 }
 
 export class ZoneContainer extends SimulationSceneContainer<SimulationZone> {
-	readonly notRemovable: boolean = true;
-	readonly notMovable = true;
-	readonly notRotatable = true;
-	readonly notScalable = true;
-
 	readonly isZoneContainer: true = true;
 	constructor(editor: YaptideEditor) {
-		super(editor, 'Zones', 'ZoneGroup');
+		super(editor, 'Zones', 'ZoneGroup', (zone: SimulationZoneJSON) => {
+			if (zone.type === 'BooleanZone')
+				return BooleanZone.fromJSON(editor, zone as BooleanZoneJSON);
+			throw new Error(`Unknown zone type ${zone.type}`);
+		});
 	}
 	reset() {
 		this.children.forEach(({ simulationMaterial }) => simulationMaterial.decrement());

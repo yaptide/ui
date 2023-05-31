@@ -12,4 +12,5 @@ export type SimulationPropertiesType = {
 	readonly notHidable?: boolean;
 	readonly notCloneable?: boolean;
 	readonly notVisibleChildren?: boolean;
+	readonly flattenOnOutliner?: boolean;
 };

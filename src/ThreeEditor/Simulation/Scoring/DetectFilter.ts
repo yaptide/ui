@@ -1,5 +1,5 @@
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationElement } from '../Base/SimulationElement';
+import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import {
 	FilterRule,
 	FloatRule,
@@ -11,11 +11,12 @@ import {
 	RuleJSON
 } from './DetectRule';
 
-export type FilterJSON = {
-	uuid: string;
-	name: string;
-	rules: RuleJSON[];
-};
+export type FilterJSON = Omit<
+	SimulationElementJSON & {
+		rules: RuleJSON[];
+	},
+	never
+>;
 
 export class DetectFilter extends SimulationElement {
 	private _rules: Record<string, FilterRule>;
@@ -123,10 +124,10 @@ export class DetectFilter extends SimulationElement {
 	}
 
 	toJSON(): FilterJSON {
-		const { uuid, name, _rules: rules } = this;
-		return { uuid, name, rules: Object.values(rules).map(rule => rule.toJSON()) };
+		const { uuid, name, _rules: rules, type } = this;
+		return { uuid, name, type, rules: Object.values(rules).map(rule => rule.toJSON()) };
 	}
-	fromJSON(json: FilterJSON): this {
+	fromJSON(json: FilterJSON) {
 		this.clear();
 		this.uuid = json.uuid;
 		this.name = json.name;

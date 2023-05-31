@@ -13,7 +13,7 @@ import { ScoringOutput, isOutput } from '../Simulation/Scoring/ScoringOutput';
 import { isQuantity, ScoringQuantity } from '../Simulation/Scoring/ScoringQuantity';
 import { isWorldZone, WorldZone } from '../Simulation/Zones/WorldZone/WorldZone';
 import { YaptideEditor } from './YaptideEditor';
-import { SimulationZone } from '../Simulation/Base/SimZone';
+import { SimulationZone } from '../Simulation/Base/SimulationZone';
 import { ZoneContainer, ZoneManager, isZoneContainer } from '../Simulation/Zones/ZoneManager';
 import { isBooleanZone } from '../Simulation/Zones/BooleanZone';
 import { Beam, isBeam } from '../Simulation/Physics/Beam';

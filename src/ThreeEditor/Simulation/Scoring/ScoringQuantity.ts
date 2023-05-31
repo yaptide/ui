@@ -1,18 +1,19 @@
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { DetectFilter } from './DetectFilter';
-import { SimulationElement } from '../Base/SimulationElement';
+import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import * as Scoring from './ScoringOutputTypes';
 import { DifferentialJSON, DifferentialModifier } from './ScoringQtyModifiers';
 
-export type ScoringQuantityJSON = {
-	uuid: string;
-	name: string;
-	keyword: Scoring.DETECTOR_KEYWORD;
-	medium?: Scoring.MEDIUM;
-	filter?: string;
-	modifiers: DifferentialJSON[];
-	rescale?: number;
-};
+export type ScoringQuantityJSON = Omit<
+	SimulationElementJSON & {
+		keyword: Scoring.DETECTOR_KEYWORD;
+		medium?: Scoring.MEDIUM;
+		filter?: string;
+		modifiers: DifferentialJSON[];
+		rescale?: number;
+	},
+	never
+>;
 
 export class ScoringQuantity extends SimulationElement {
 	readonly isQuantity: true = true;
@@ -95,10 +96,11 @@ export class ScoringQuantity extends SimulationElement {
 	}
 
 	toJSON(): ScoringQuantityJSON {
-		let { filter, name, hasFilter, uuid, keyword, modifiers, medium, rescale } = this;
+		let { filter, name, type, hasFilter, uuid, keyword, modifiers, medium, rescale } = this;
 		return {
 			name,
 			uuid,
+			type,
 			keyword,
 			...(hasFilter && { filter: filter?.uuid }),
 			...(medium && { medium }),

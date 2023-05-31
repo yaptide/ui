@@ -5,28 +5,34 @@ import * as CSG from '../../CSG/CSG';
 import { SimulationPoints } from '../Base/SimulationPoints';
 import { DetectorManager } from './DetectorManager';
 import * as DETECT from '../../../types/DetectTypes';
-import { SimulationZone } from '../Base/SimZone';
+import { SimulationZone } from '../Base/SimulationZone';
+import { SimulationMeshJSON } from '../Base/SimulationMesh';
+import { AdditionalGeometryDataType } from '../../../util/AdditionalGeometryData';
 
-export interface DetectGeometryJSON {
-	uuid: string;
-	data: DETECT.Any;
-	type: DETECT.DETECT_TYPE;
-	position: THREE.Vector3Tuple;
-	name: string;
-	colorHex: number;
-}
+type AdditionalDetectGeometryDataType = Omit<
+	AdditionalGeometryDataType & {
+		parameters: DETECT.Any;
+		geometryType: DETECT.DETECT_TYPE;
+	},
+	never
+>;
 
-type DetectGeometryArgs = Partial<DetectGeometryJSON>;
+export type DetectorJSON = Omit<
+	Omit<SimulationMeshJSON, 'geometryData'> & {
+		geometryData: AdditionalDetectGeometryDataType;
+	},
+	never
+>;
 
 export class Detector extends SimulationPoints {
 	readonly notRemovable: boolean = false;
-	map: null;
-	alphaMap: null;
-	size: number;
-	sizeAttenuation: boolean;
+	map: null = null;
+	alphaMap: null = null;
+	size: number = 1;
+	sizeAttenuation: boolean = true;
 	get notMovable() {
 		// custom get function to conditionally return notMoveable property;
-		return ['Zone', 'All'].includes(this.detectType);
+		return ['Zone', 'All'].includes(this.detectorType);
 	}
 
 	get zone(): SimulationZone | null {
@@ -38,16 +44,40 @@ export class Detector extends SimulationPoints {
 	readonly notScalable = true;
 	readonly isDetectGeometry: true = true;
 
-	private positionProxy: THREE.Vector3;
+	private positionProxy: THREE.Vector3 = new Proxy(this.position, {
+		get: (target: THREE.Vector3, p: keyof THREE.Vector3) => {
+			const scope = this;
+			const parent: DetectorManager | undefined = this.parent?.parent as
+				| DetectorManager
+				| undefined;
+			switch (p) {
+				case 'copy':
+					return function (v: THREE.Vector3) {
+						target[p].apply(target, [v]);
+						return scope.positionProxy;
+					};
+				case 'add':
+					if (parent)
+						return function (v: THREE.Vector3) {
+							const nV = target[p].apply(target, [v]);
+							parent.detectHelper.position.copy(nV);
+							return nV;
+						};
+					return Reflect.get(target, p);
+				default:
+					return Reflect.get(target, p);
+			}
+		}
+	});
 	private proxy: Detector;
-	private _detectType: DETECT.DETECT_TYPE;
+	private _detectorType: DETECT.DETECT_TYPE;
 
-	get detectType(): DETECT.DETECT_TYPE {
-		return this._detectType;
+	get detectorType(): DETECT.DETECT_TYPE {
+		return this._detectorType;
 	}
 
-	set detectType(value: DETECT.DETECT_TYPE) {
-		this._detectType = value;
+	set detectorType(value: DETECT.DETECT_TYPE) {
+		this._detectorType = value;
 		this.tryUpdateGeometry();
 	}
 
@@ -77,9 +107,9 @@ export class Detector extends SimulationPoints {
 	};
 	readonly isDetectGeo: true = true;
 
-	private _geometryData: DETECT.AnyData;
+	private _geometryData: DETECT.AnyData = DETECT.DEFAULT_ANY;
 
-	private tryUpdateGeometry = (type: DETECT.DETECT_TYPE = this.detectType) => {
+	private tryUpdateGeometry = (type: DETECT.DETECT_TYPE = this.detectorType) => {
 		this.geometry.dispose();
 		this.geometry = this.generateGeometry(undefined, type);
 		this.geometry.computeBoundingSphere();
@@ -113,7 +143,7 @@ export class Detector extends SimulationPoints {
 
 	private generateGeometry(
 		data: DETECT.AnyData = this.geometryData,
-		type: DETECT.DETECT_TYPE = this.detectType
+		type: DETECT.DETECT_TYPE = this.detectorType
 	): THREE.BufferGeometry {
 		let geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
 
@@ -159,85 +189,48 @@ export class Detector extends SimulationPoints {
 
 	constructor(
 		editor: YaptideEditor,
-		{ data = {}, type = 'Mesh', position = [0, 0, 0], name }: DetectGeometryArgs = {
-			data: {},
-			type: 'Mesh',
-			position: [0, 0, 0],
-			name: 'Detector'
-		}
+		name: string | undefined = 'Detector',
+		type: string = 'Detector',
+		detectorType: DETECT.DETECT_TYPE = 'Mesh'
 	) {
-		super(editor, name, 'Detect');
-		this.map = null;
-
-		this.alphaMap = null;
-
-		this.size = 1;
-		this.sizeAttenuation = true;
-		this.proxy = new Proxy(this, this.overrideHandler);
+		super(editor, name, type);
 		this.signals = editor.signals;
-		this.position.fromArray(position);
-		this._geometryData = { ...DETECT.DEFAULT_ANY, ...data };
-		this._detectType = type;
+		this._detectorType = detectorType;
+		this.geometry = this.generateGeometry();
 
-		this.positionProxy = new Proxy(this.position, {
-			get: (target: THREE.Vector3, p: keyof THREE.Vector3) => {
-				const scope = this;
-				const parent: DetectorManager | undefined = this.parent?.parent as
-					| DetectorManager
-					| undefined;
-				switch (p) {
-					case 'copy':
-						return function (v: THREE.Vector3) {
-							target[p].apply(target, [v]);
-							return scope.positionProxy;
-						};
-					case 'add':
-						if (parent)
-							return function (v: THREE.Vector3) {
-								const nV = target[p].apply(target, [v]);
-								parent.detectHelper.position.copy(nV);
-								return nV;
-							};
-						return Reflect.get(target, p);
-					default:
-						return Reflect.get(target, p);
-				}
-			}
-		});
-
-		this.geometry = this.generateGeometry(this._geometryData, type);
 		this.signals.zoneGeometryChanged.add(zone => {
 			if (zone.uuid === this._geometryData.zoneUuid) this.geometry = this.generateGeometry();
 		});
 
+		this.proxy = new Proxy(this, this.overrideHandler);
 		return this.proxy;
 	}
 
 	getMesh(): DETECT.Mesh {
-		if (this.detectType !== 'Mesh')
+		if (this.detectorType !== 'Mesh')
 			throw new Error(`DetectGeo of uuid=${this.uuid} isn't of 'Mesh' type`);
 		return new DETECT.Mesh(this._geometryData);
 	}
 
 	getCyl(): DETECT.Cyl {
-		if (this.detectType !== 'Cyl')
+		if (this.detectorType !== 'Cyl')
 			throw new Error(`DetectGeo of uuid=${this.uuid} isn't of 'Cyl' type`);
 		return new DETECT.Cyl(this._geometryData);
 	}
 
 	getZone(): DETECT.Zone {
-		if (this.detectType !== 'Zone')
+		if (this.detectorType !== 'Zone')
 			throw new Error(`DetectGeo of uuid=${this.uuid} isn't of 'Zone' type`);
 		return new DETECT.Zone(this._geometryData);
 	}
 
 	getAll(): DETECT.All {
-		if (this.detectType !== 'All')
+		if (this.detectorType !== 'All')
 			throw new Error(`DetectGeo of uuid=${this.uuid} isn't of 'All' type`);
 		return new DETECT.All(this._geometryData);
 	}
 
-	getData(type: DETECT.DETECT_TYPE = this.detectType): Partial<DETECT.Any> {
+	getData(type: DETECT.DETECT_TYPE = this.detectorType): Partial<DETECT.Any> {
 		switch (type) {
 			case 'Mesh':
 				return this.getMesh().toJSON();
@@ -260,36 +253,40 @@ export class Detector extends SimulationPoints {
 		return new Proxy(super.copy(source, recursive), this.overrideHandler) as this;
 	}
 
-	toJSON(): DetectGeometryJSON {
-		const data = this.getData();
-		const type = this.detectType;
-		const position = this.position.toArray();
-		const name = this.name;
-		const colorHex = this.material.color.getHex();
-		const uuid = this.uuid;
+	toJSON(): DetectorJSON {
+		const { geometryData: partialData, colorHex } = super.toJSON();
+		const { uuid, type, visible, name } = this;
+		const geometryType = this.detectorType;
+		const geometryData: AdditionalDetectGeometryDataType = {
+			...partialData,
+			parameters: this.getData(),
+			geometryType
+		};
 		return {
+			geometryData,
+			colorHex,
 			uuid,
-			data,
 			type,
-			position,
-			name,
-			colorHex
+			visible,
+			name
 		};
 	}
 
-	fromJSON(data: DetectGeometryJSON): Detector {
-		this._geometryData = { ...DETECT.DEFAULT_ANY, ...data.data };
-		this.uuid = data.uuid;
-		this.detectType = data.type;
-		this.name = data.name;
-		this.geometry = this.generateGeometry();
-		this.position.fromArray(data.position);
-		this.material.color.setHex(data.colorHex);
+	fromJSON(data: DetectorJSON) {
+		const { geometryData, uuid, name, colorHex, visible } = data;
+		this.reconstructGeometryFromData(geometryData);
+		this.uuid = uuid;
+		this.name = name;
+		this.visible = visible;
+		this.material.color.setHex(colorHex);
 		return this;
 	}
 
-	static fromJSON(editor: YaptideEditor, data: DetectGeometryJSON): Detector {
-		return new Detector(editor, data).fromJSON(data);
+	reconstructGeometryFromData(data: AdditionalDetectGeometryDataType): void {
+		const { geometryType, ...detectGeometryData } = data;
+		this._geometryData = { ...DETECT.DEFAULT_ANY, ...detectGeometryData };
+		this.detectorType = geometryType;
+		this.geometry = this.generateGeometry();
 	}
 }
 

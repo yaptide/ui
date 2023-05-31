@@ -3,6 +3,12 @@ import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 
+export type SimulationElementJSON = {
+	name: string;
+	type: string;
+	uuid: string;
+};
+
 /**
  * This is the base class for all simulation elements.
  * It is a THREE.Object3D only for integration purposes.
@@ -23,5 +29,22 @@ export abstract class SimulationElement
 		this.editor = editor;
 		this.name = this._name = name ?? type;
 		this.type = type;
+	}
+	toJSON(): SimulationElementJSON {
+		const { name, type, uuid } = this;
+		return {
+			name,
+			type,
+			uuid
+		};
+	}
+
+	fromJSON(json: SimulationElementJSON): this {
+		this.name = json.name;
+		this.uuid = json.uuid;
+		return this;
+	}
+	reset() {
+		this.name = this._name;
 	}
 }

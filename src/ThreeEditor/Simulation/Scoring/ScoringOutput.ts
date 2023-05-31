@@ -1,21 +1,40 @@
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
-import { DetectFilter } from './DetectFilter';
-import { Detector } from '../Detectors/Detector';
-import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
+import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
+import { Detector } from '../Detectors/Detector';
+import { DetectFilter } from './DetectFilter';
+import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
 
-export type ScoringOutputJSON = {
-	uuid: string;
-	name: string;
-	quantities: { active: ScoringQuantityJSON[] };
-	detectGeometry?: string;
-	primaries?: number;
-	trace: boolean;
-	traceFilter?: string;
-};
+export type ScoringOutputJSON = Omit<
+	SimulationElementJSON & {
+		quantities: { active: ScoringQuantityJSON[] };
+		detectGeometry?: string;
+		primaries?: number;
+		trace: boolean;
+		traceFilter?: string;
+	},
+	never
+>;
+
+export class QuantityContainer extends SimulationSceneContainer<ScoringQuantity> {
+	children: ScoringQuantity[];
+	readonly isQuantityContainer: true = true;
+	constructor(editor: YaptideEditor) {
+		super(editor, 'Quantities', 'QuantityGroup', json =>
+			new ScoringQuantity(editor).fromJSON(json)
+		);
+		this.children = [];
+	}
+
+	reset() {
+		this.name = 'Quantities';
+		this.clear();
+	}
+}
+
 export class ScoringOutput
-	extends SimulationSceneContainer<ScoringQuantity>
+	extends SimulationElement
 	implements SimulationElementManager<'quantity', ScoringQuantity>
 {
 	readonly isOutput: true = true;
@@ -75,12 +94,16 @@ export class ScoringOutput
 		this.parent = null;
 		this._primaries = [false, 0];
 		this._trace = [false, ''];
-		this.quantityContainer = this;
-	}
-	getQuantityByName(name: string) {
-		return this.children.find(qty => qty.name === name) ?? null;
+		this.quantityContainer = new QuantityContainer(editor);
 	}
 
+	getQuantityByName(name: string) {
+		return this.quantityContainer.children.find(qty => qty.name === name) ?? null;
+	}
+
+	/**
+	 * @deprecated Use getQuantityByUuid or getQuantityByName instead
+	 */
 	getObjectById(id: number) {
 		return !this.notVisibleChildren ? this.children.find(qty => qty.id === id) : undefined;
 	}
@@ -92,27 +115,24 @@ export class ScoringOutput
 	}
 
 	addQuantity(quantity: ScoringQuantity) {
-		this.add(quantity);
+		this.quantityContainer.add(quantity);
 		this.editor.select(quantity);
 	}
 
-	removeQuantity(quantity: ScoringQuantity): this {
-		this.children.splice(this.children.indexOf(quantity), 1);
-		quantity.parent = null;
-		this.editor.signals.objectRemoved.dispatch(quantity);
-		return this;
+	removeQuantity(quantity: ScoringQuantity) {
+		this.quantityContainer.remove(quantity);
+		this.editor.select(this);
 	}
 
 	getQuantityByUuid(uuid: string): ScoringQuantity | null {
-		return this.children.find(qty => qty.uuid === uuid) || null;
+		return this.quantityContainer.children.find(qty => qty.uuid === uuid) ?? null;
 	}
 
 	toJSON(): ScoringOutputJSON {
 		return {
-			name: this.name,
-			uuid: this.uuid,
+			...super.toJSON(),
 			quantities: {
-				active: [...this.children.map(qty => qty.toJSON())]
+				active: this.quantityContainer.toJSON()
 			},
 			detectGeometry: this._geometry,
 			trace: this._trace[0],

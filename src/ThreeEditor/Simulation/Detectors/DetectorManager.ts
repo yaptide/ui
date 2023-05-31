@@ -4,26 +4,21 @@ import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { DetectFilter, FilterJSON } from '../Scoring/DetectFilter';
-import { Detector, DetectGeometryJSON, isDetectGeometry } from './Detector';
-import { SimulationZone } from '../Base/SimZone';
+import { Detector, DetectorJSON, isDetectGeometry } from './Detector';
+import { SimulationZone } from '../Base/SimulationZone';
 
 interface DetectorManagerJSON {
 	uuid: string;
 	name: string;
-	detectGeometries: DetectGeometryJSON[];
+	detectGeometries: DetectorJSON[];
 	filters: FilterJSON[];
 }
 
 export class DetectorContainer extends SimulationSceneContainer<Detector> {
-	readonly notRemovable: boolean = true;
-	readonly notMovable = true;
-	readonly notRotatable = true;
-	readonly notScalable = true;
-
 	children: Detector[];
 	readonly isDetectContainer: true = true;
 	constructor(editor: YaptideEditor) {
-		super(editor, 'Detects', 'DetectGroup');
+		super(editor, 'Detects', 'DetectGroup', json => new Detector(editor).fromJSON(json));
 		this.children = [];
 	}
 
@@ -34,16 +29,10 @@ export class DetectorContainer extends SimulationSceneContainer<Detector> {
 }
 
 export class FilterContainer extends SimulationSceneContainer<DetectFilter> {
-	readonly notRemovable: boolean = true;
-	readonly notMovable = true;
-	readonly notRotatable = true;
-	readonly notScalable = true;
-	readonly notHidable = true;
-
 	children: DetectFilter[];
 	readonly isFilterContainer: true = true;
 	constructor(editor: YaptideEditor) {
-		super(editor, 'Filters', 'FilterGroup');
+		super(editor, 'Filters', 'FilterGroup', json => new DetectFilter(editor).fromJSON(json));
 		this.children = [];
 	}
 
@@ -149,7 +138,7 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 	}
 
 	createDetector(): Detector {
-		const geometry = new Detector(this.editor, {});
+		const geometry = new Detector(this.editor);
 		this.addDetector(geometry);
 		return geometry;
 	}
@@ -207,7 +196,7 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 
 		this.name = data.name;
 		data.detectGeometries.forEach(geometryData => {
-			this.addDetector(Detector.fromJSON(this.editor, geometryData));
+			this.addDetector(new Detector(this.editor).fromJSON(geometryData));
 		});
 		data.filters.forEach(filterData => {
 			this.addFilter(DetectFilter.fromJSON(this.editor, filterData));
@@ -216,7 +205,7 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 	}
 
 	toJSON(): DetectorManagerJSON {
-		const detectGeometries = this.detectorContainer.toJSON() as DetectGeometryJSON[];
+		const detectGeometries = this.detectorContainer.toJSON() as DetectorJSON[];
 
 		const filters = this.filterContainer.toJSON() as FilterJSON[];
 
@@ -275,7 +264,7 @@ export class DetectorManager extends THREE.Scene implements SimulationProperties
 		additionalPredicate?: (value: Detector, index: number, array: Detector[]) => boolean
 	): Record<string, string> {
 		const options = this.detects
-			.filter(({ detectType, geometryData }) => {
+			.filter(({ detectorType: detectType, geometryData }) => {
 				if (detectType !== 'Zone') return true;
 				return this.editor.zoneManager.getZoneByUuid(geometryData.zoneUuid) !== undefined;
 			})

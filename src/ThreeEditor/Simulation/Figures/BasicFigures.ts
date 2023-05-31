@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationMesh } from '../Base/SimulationMesh';
+import { AdditionalGeometryDataType } from '../../../util/AdditionalGeometryData';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
 	color: 0x000000,
@@ -11,10 +12,10 @@ const defaultMaterial = new THREE.MeshBasicMaterial({
 });
 
 export const BASIC_GEOMETRY_OPTIONS = {
-	Box: 'Box',
-	Cylinder: 'Cylinder',
-	Sphere: 'Sphere',
-	CT: 'CT'
+	BoxGeometry: 'BoxGeometry',
+	CylinderGeometry: 'CylinderGeometry',
+	SphereGeometry: 'SphereGeometry',
+	HollowCylinderGeometry: 'HollowCylinderGeometry'
 } as const;
 
 export type BasicGeometry = (typeof BASIC_GEOMETRY_OPTIONS)[keyof typeof BASIC_GEOMETRY_OPTIONS];
@@ -45,7 +46,14 @@ export class BoxFigure extends BasicFigure<THREE.BoxGeometry> {
 		geometry?: THREE.BoxGeometry,
 		material?: THREE.MeshBasicMaterial
 	) {
-		super(editor, 'Box', 'BoxFigure', 'Box', geometry ?? boxGeometry, material);
+		super(editor, 'Box', 'BoxFigure', 'BoxGeometry', geometry ?? boxGeometry, material);
+	}
+	reconstructGeometryFromData(data: AdditionalGeometryDataType): void {
+		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
+		const {
+			parameters: { width, height, depth }
+		} = data;
+		this.geometry = new THREE.BoxGeometry(width as number, height as number, depth as number);
 	}
 }
 
@@ -63,9 +71,20 @@ export class CylinderFigure extends BasicFigure<THREE.CylinderGeometry> {
 			editor,
 			'Cylinder',
 			'CylinderFigure',
-			'Cylinder',
+			'CylinderGeometry',
 			geometry ?? cylinderGeometry,
 			material
+		);
+	}
+	reconstructGeometryFromData(data: AdditionalGeometryDataType): void {
+		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
+		const {
+			parameters: { depth, radius }
+		} = data;
+		this.geometry = new THREE.CylinderGeometry(
+			radius as number,
+			radius as number,
+			depth as number
 		);
 	}
 }
@@ -79,7 +98,21 @@ export class SphereFigure extends BasicFigure<THREE.SphereGeometry> {
 		geometry?: THREE.SphereGeometry,
 		material?: THREE.MeshBasicMaterial
 	) {
-		super(editor, 'Sphere', 'SphereFigure', 'Sphere', geometry ?? sphereGeometry, material);
+		super(
+			editor,
+			'Sphere',
+			'SphereFigure',
+			'SphereGeometry',
+			geometry ?? sphereGeometry,
+			material
+		);
+	}
+	reconstructGeometryFromData(data: AdditionalGeometryDataType): void {
+		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
+		const {
+			parameters: { radius }
+		} = data;
+		this.geometry = new THREE.SphereGeometry(radius as number);
 	}
 }
 

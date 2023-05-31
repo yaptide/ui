@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import { BasicFigure } from '../Figures/BasicFigures';
 import { YaptideEditor } from '../../js/YaptideEditor';
+import { SimulationZoneJSON } from '../Base/SimulationZone';
+import { SimulationMesh, SimulationMeshJSON } from '../Base/SimulationMesh';
+import { PartialSubtype } from '../../../types/TypeTransformUtil';
+import { AdditionalGeometryDataType } from '../../../util/AdditionalGeometryData';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
 	color: 0x00ff00,
@@ -12,6 +16,11 @@ const defaultMaterial = new THREE.MeshBasicMaterial({
 
 const ctGeometry = new THREE.BoxGeometry(2, 0.5, 1, 1, 1, 1);
 const ctMaterial = defaultMaterial.clone();
+
+type CTCubeJSON = SimulationMeshJSON & {
+	pathOnServer: string;
+};
+
 export class CTCube extends BasicFigure<THREE.BoxGeometry> {
 	readonly notScalable = true;
 
@@ -26,20 +35,25 @@ export class CTCube extends BasicFigure<THREE.BoxGeometry> {
 			editor,
 			'CT Cube',
 			'CTCube',
-			'CT',
+			'BoxGeometry',
 			geometry ?? ctGeometry,
 			material ?? ctMaterial.clone()
 		);
 	}
 
-	toJSON(
-		meta:
-			| { geometries: unknown; materials: unknown; textures: unknown; images: unknown }
-			| undefined
-	) {
-		const json = super.toJSON(meta);
-		json.object.pathOnServer = this.pathOnServer;
-		return json;
+	toJSON(): CTCubeJSON {
+		const { pathOnServer } = this;
+		return {
+			...super.toJSON(),
+			pathOnServer
+		};
+	}
+	reconstructGeometryFromData(data: AdditionalGeometryDataType): void {
+		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
+		const {
+			parameters: { width, height, depth }
+		} = data;
+		this.geometry = new THREE.BoxGeometry(width as number, height as number, depth as number);
 	}
 }
 

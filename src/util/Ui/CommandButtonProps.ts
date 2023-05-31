@@ -1,4 +1,4 @@
-import { SimulationZone } from '../../ThreeEditor/Simulation/Base/SimZone';
+import { SimulationZone } from '../../ThreeEditor/Simulation/Base/SimulationZone';
 import { Detector } from '../../ThreeEditor/Simulation/Detectors/Detector';
 import {
 	BasicFigure,

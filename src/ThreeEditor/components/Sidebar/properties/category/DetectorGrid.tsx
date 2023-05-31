@@ -13,7 +13,7 @@ export function DetectorGrid(props: { editor: YaptideEditor; object: Detector })
 
 	const handleChanged = useCallback(
 		(v: typeof watchedObject.geometryData) => {
-			const { detectType } = watchedObject;
+			const { detectorType: detectType } = watchedObject;
 			const { xSegments, ySegments, zSegments, radialSegments } = v;
 			switch (detectType) {
 				case 'Mesh':
@@ -50,7 +50,7 @@ export function DetectorGrid(props: { editor: YaptideEditor; object: Detector })
 			visible={visibleFlag}>
 			{visibleFlag && (
 				<>
-					{watchedObject.detectType === 'Mesh' && (
+					{watchedObject.detectorType === 'Mesh' && (
 						<>
 							<NumberPropertyField
 								label='number of bins along X axis'
@@ -78,7 +78,7 @@ export function DetectorGrid(props: { editor: YaptideEditor; object: Detector })
 							handleChanged({ ...watchedObject.geometryData, zSegments: v })
 						}
 					/>
-					{watchedObject.detectType === 'Cyl' && (
+					{watchedObject.detectorType === 'Cyl' && (
 						<NumberPropertyField
 							label='number of bins along the radius'
 							value={watchedObject.geometryData.radialSegments}

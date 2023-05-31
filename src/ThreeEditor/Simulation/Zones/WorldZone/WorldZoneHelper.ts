@@ -18,19 +18,19 @@ export class WorldZoneHelper extends THREE.Object3D {
 	 */
 	getMeshType(type: WorldZoneType): THREE.Mesh<PossibleGeometryType, MeshBasicMaterial> {
 		switch (type) {
-			case 'Box':
+			case 'BoxGeometry':
 				return this.boxMesh;
-			case 'Cylinder':
+			case 'CylinderGeometry':
 				return this.cylinderMesh;
-			case 'Sphere':
+			case 'SphereGeometry':
 				return this.sphereMesh;
 		}
 	}
 	get allHelpers(): Record<WorldZoneType, THREE.Object3D> {
 		const obj = {
-			Box: this._boxHelper,
-			Cylinder: this.cylinderMesh,
-			Sphere: this.sphereMesh
+			BoxGeometry: this._boxHelper,
+			CylinderGeometry: this.cylinderMesh,
+			SphereGeometry: this.sphereMesh
 		};
 		return obj;
 	}

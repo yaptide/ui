@@ -6,6 +6,11 @@ import { BeamModulator, isBeamModulator } from './BeamModulator';
 import { CTCube, isCTCube } from './CTCube';
 import { SimulationElementManager } from '../Base/SimulationManager';
 
+type SpecialComponentManagerJSON = {
+	CTCube: ReturnType<SimulationSceneContainer<CTCube>['toJSON']>;
+	modulator: ReturnType<SimulationSceneContainer<BeamModulator>['toJSON']>;
+};
+
 export class SpecialComponentManager
 	extends THREE.Scene
 	implements
@@ -19,6 +24,7 @@ export class SpecialComponentManager
 	readonly notRotatable = true;
 	readonly notScalable = true;
 	readonly notHidable = true;
+	readonly flattenOnOutliner = true;
 	editor: YaptideEditor;
 	CTCubeContainer: SimulationSceneContainer<CTCube>;
 	modulatorContainer: SimulationSceneContainer<BeamModulator>;
@@ -27,11 +33,14 @@ export class SpecialComponentManager
 
 		this.editor = editor;
 		this.name = 'Special Components';
-		this.CTCubeContainer = new SingletonContainer<CTCube>(editor, 'CT Cube', 'CTCube');
+		this.CTCubeContainer = new SingletonContainer<CTCube>(editor, 'CT Cube', 'CTCube', json =>
+			new CTCube(editor).fromJSON(json)
+		);
 		this.modulatorContainer = new SingletonContainer<BeamModulator>(
 			editor,
 			'Beam Modulator',
-			'BeamModulator'
+			'BeamModulator',
+			json => new BeamModulator(editor).fromJSON(json)
 		);
 		this.add(this.CTCubeContainer);
 		this.add(this.modulatorContainer);
@@ -78,6 +87,7 @@ export class SpecialComponentManager
 			modulator: this.modulatorContainer.toJSON()
 		};
 	}
+	fromJSON({ CTCube, modulator }: SpecialComponentManagerJSON) {}
 }
 
 export function isSpecialComponent(object: unknown): object is CTCube | BeamModulator {

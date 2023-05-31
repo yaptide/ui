@@ -125,8 +125,8 @@ export class ObjectDimensions extends ObjectAbstract {
 				geometryType = object.geometryType;
 			} else if (isDetectGeometry(object)) {
 				this.typeSelect.setOptions(DETECT_OPTIONS);
-				this.typeSelect.setValue(object.detectType);
-				geometryType = object.detectType;
+				this.typeSelect.setValue(object.detectorType);
+				geometryType = object.detectorType;
 			}
 		}
 		return geometryType;
@@ -255,19 +255,19 @@ export class ObjectDimensions extends ObjectAbstract {
 
 	getZoneSize(geometryType: keyof typeof BASIC_GEOMETRY_OPTIONS): THREE.Vector3 | undefined {
 		switch (geometryType) {
-			case 'Box':
+			case 'BoxGeometry':
 				return new THREE.Vector3(
 					this.xLength.getValue(),
 					this.yLength.getValue(),
 					this.zLength.getValue()
 				);
-			case 'Sphere':
+			case 'SphereGeometry':
 				return new THREE.Vector3(
 					this.radius.getValue(),
 					this.radius.getValue(),
 					this.radius.getValue()
 				);
-			case 'Cylinder':
+			case 'CylinderGeometry':
 				return new THREE.Vector3(
 					this.radius.getValue(),
 					this.radius.getValue(),
@@ -282,7 +282,7 @@ export class ObjectDimensions extends ObjectAbstract {
 		const { object, editor } = this;
 		if (!object) return;
 		if (isDetectGeometry(object)) {
-			const { detectType } = object;
+			const { detectorType: detectType } = object;
 			let geometryData;
 			switch (detectType) {
 				case 'Mesh':

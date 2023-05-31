@@ -6,7 +6,7 @@ import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { Particle, PARTICLE_TYPES } from '../../../types/Particle';
-import { SimulationElement } from '../Base/SimulationElement';
+import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 
 export const SIGMA_TYPE = {
 	'Gaussian': 'Gaussian',
@@ -28,40 +28,43 @@ export const BEAM_SOURCE_TYPE = {
 } as const;
 export type BeamSourceType = keyof typeof BEAM_SOURCE_TYPE;
 
-export interface BeamJSON {
-	position: THREE.Vector3Tuple;
-	direction: THREE.Vector3Tuple;
-	energy: number;
-	energySpread: number;
-	energyLowCutoff: number;
-	energyHighCutoff: number;
-	beamSourceType: BeamSourceType;
-	divergence: {
-		x: number;
-		y: number;
-		distanceToFocal: number;
-	};
-	particle: {
-		id: number;
-		z: number;
-		a: number;
-	};
-	sigma: {
-		type: SigmaType;
-		x: number;
-		y: number;
-	};
+export type BeamJSON = Omit<
+	SimulationElementJSON & {
+		position: THREE.Vector3Tuple;
+		direction: THREE.Vector3Tuple;
+		energy: number;
+		energySpread: number;
+		energyLowCutoff: number;
+		energyHighCutoff: number;
+		beamSourceType: BeamSourceType;
+		divergence: {
+			x: number;
+			y: number;
+			distanceToFocal: number;
+		};
+		particle: {
+			id: number;
+			z: number;
+			a: number;
+		};
+		sigma: {
+			type: SigmaType;
+			x: number;
+			y: number;
+		};
 
-	sad: {
-		type: SadType;
-		x: number;
-		y: number;
-	};
+		sad: {
+			type: SadType;
+			x: number;
+			y: number;
+		};
 
-	colorHex: number;
-	numberOfParticles: number;
-	beamSourceFile: BeamSourceFile;
-}
+		colorHex: number;
+		numberOfParticles: number;
+		beamSourceFile: BeamSourceFile;
+	},
+	never
+>;
 
 const _default = {
 	position: new THREE.Vector3(0, 0, 0),
@@ -290,6 +293,7 @@ export class Beam extends SimulationElement {
 
 	toJSON() {
 		const jsonObject: BeamJSON = {
+			...super.toJSON(),
 			position: this.position.toArray(),
 			direction: this.direction.toArray(),
 			energy: this.energy,
@@ -310,6 +314,7 @@ export class Beam extends SimulationElement {
 	}
 
 	fromJSON(data: BeamJSON) {
+		super.fromJSON(data);
 		const loadedData = { ..._default, ...data };
 		this.position.fromArray(loadedData.position);
 		this.direction.fromArray(loadedData.direction);

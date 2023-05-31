@@ -1,5 +1,5 @@
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationZone } from '../Base/SimZone';
+import { SimulationZone } from '../Base/SimulationZone';
 
 export class BeamModulator extends SimulationZone {
 	readonly isBeamModulator: true = true;

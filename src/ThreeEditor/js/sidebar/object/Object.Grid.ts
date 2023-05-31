@@ -58,7 +58,7 @@ export class ObjectGrid extends ObjectAbstract {
 		if (!object) return;
 
 		this.object = object;
-		const { detectType, geometryData } = object;
+		const { detectorType: detectType, geometryData } = object;
 		hideUIElement(this.xLengthRow);
 		hideUIElement(this.yLengthRow);
 		hideUIElement(this.zLengthRow);
@@ -85,7 +85,7 @@ export class ObjectGrid extends ObjectAbstract {
 	update(): void {
 		const { editor, object } = this;
 		if (!object) return;
-		const { detectType } = object;
+		const { detectorType: detectType } = object;
 		switch (detectType) {
 			case 'Mesh':
 				editor.execute(

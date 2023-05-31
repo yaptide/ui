@@ -5,13 +5,13 @@ import { debounce } from 'throttle-debounce';
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import {
 	AdditionalGeometryDataType,
-	generateSimulationInfo
+	getGeometryData
 } from '../../../../util/AdditionalGeometryData';
 import { SimulationElement } from '../../Base/SimulationElement';
 import { WorldZoneHelper } from './WorldZoneHelper';
 import SimulationMaterial from '../../Materials/SimulationMaterial';
 
-export const BOUNDING_ZONE_TYPE = ['Sphere', 'Cylinder', 'Box'] as const;
+export const BOUNDING_ZONE_TYPE = ['SphereGeometry', 'CylinderGeometry', 'BoxGeometry'] as const;
 
 export type WorldZoneType = (typeof BOUNDING_ZONE_TYPE)[number];
 
@@ -55,7 +55,7 @@ export class WorldZone extends SimulationElement {
 	readonly isWorldZone: true = true;
 
 	private _autoCalculate: boolean;
-	private _geometryType: WorldZoneType = 'Box';
+	private _geometryType: WorldZoneType = 'BoxGeometry';
 	private _helper!: WorldZoneHelper;
 	public get helperMesh(): THREE.Mesh {
 		return this._helper.getMeshType(this.geometryType);
@@ -116,7 +116,7 @@ export class WorldZone extends SimulationElement {
 		this._material.color = proxyColor;
 
 		this.helper = new WorldZoneHelper(editor, this._material);
-		this.geometryType = 'Box';
+		this.geometryType = 'BoxGeometry';
 
 		editor.sceneHelpers.add(this.helper);
 
@@ -183,7 +183,7 @@ export class WorldZone extends SimulationElement {
 	}
 
 	canCalculate(): boolean {
-		return this._geometryType === 'Box';
+		return this._geometryType === 'BoxGeometry';
 	}
 
 	calculate(): void {
@@ -204,7 +204,7 @@ export class WorldZone extends SimulationElement {
 		this._material.color.set(_defaultColor);
 		this.name = 'World Zone';
 		this._simulationMaterial = this.editor.materialManager.defaultMaterial;
-		this.geometryType = 'Box';
+		this.geometryType = 'BoxGeometry';
 		this.helper.reset();
 	}
 
@@ -218,7 +218,7 @@ export class WorldZone extends SimulationElement {
 
 	toJSON() {
 		const { uuid: materialUuid } = this.simulationMaterial;
-		const geometryData = generateSimulationInfo(this.helper.getMeshType(this.geometryType));
+		const geometryData = getGeometryData(this.helper.getMeshType(this.geometryType));
 		geometryData.position = this.position.toArray();
 		const jsonObject: WorldZoneJSON = {
 			uuid: this.uuid,
