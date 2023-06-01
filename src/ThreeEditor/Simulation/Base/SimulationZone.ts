@@ -177,3 +177,7 @@ export abstract class SimulationZone
 		return this;
 	}
 }
+
+export function isZone(object: unknown): object is SimulationZone {
+	return object instanceof SimulationZone;
+}

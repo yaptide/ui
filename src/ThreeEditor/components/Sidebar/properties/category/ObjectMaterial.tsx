@@ -2,7 +2,6 @@ import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
 import { Object3D } from 'three';
-import { isBooleanZone } from '../../../../Simulation/Zones/BooleanZone';
 import { ColorInput, ConditionalNumberPropertyField, PropertyField } from '../fields/PropertyField';
 import { SetMaterialColorCommand } from '../../../../js/commands/SetMaterialColorCommand';
 import { isBeam } from '../../../../Simulation/Physics/Beam';
@@ -13,6 +12,7 @@ import { SetZoneMaterialCommand } from '../../../../js/commands/SetZoneMaterialC
 import { SetMaterialValueCommand } from '../../../../js/commands/SetMaterialValueCommand';
 import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import { isZone } from '../../../../Simulation/Base/SimulationZone';
 
 export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
@@ -20,7 +20,7 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const visibleFlag =
-		isBooleanZone(watchedObject) ||
+		isZone(watchedObject) ||
 		isBeam(watchedObject) ||
 		isWorldZone(watchedObject) ||
 		isBasicFigure(watchedObject) ||
@@ -37,7 +37,7 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 			visible={visibleFlag}>
 			{visibleFlag && (
 				<>
-					{(isBooleanZone(watchedObject) || isWorldZone(watchedObject)) && (
+					{(isZone(watchedObject) || isWorldZone(watchedObject)) && (
 						<PropertyField label='Simulation'>
 							<MaterialSelect
 								materials={editor.materialManager.materials}
@@ -51,7 +51,7 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 						</PropertyField>
 					)}
 
-					{isBooleanZone(watchedObject) && (
+					{isZone(watchedObject) && (
 						<>
 							<ConditionalNumberPropertyField
 								min={0.0}

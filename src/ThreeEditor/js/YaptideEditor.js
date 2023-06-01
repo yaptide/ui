@@ -653,6 +653,7 @@ YaptideEditor.prototype = {
 			zoneManager,
 			detectManager: detectorManager,
 			scoringManager,
+			specialComponentsManager,
 			beam,
 			physic
 		} = json;
@@ -661,50 +662,56 @@ YaptideEditor.prototype = {
 				this.config.setKey('project/title', project.title ?? '');
 				this.config.setKey('project/description', project.description ?? '');
 			} else
-				console.warn('Project info was not found in JSON data. Skipping part 1 out of 10');
+				console.warn('Project info was not found in JSON data. Skipping part 1 out of 11');
 
 			if (project && project.viewManager)
 				this.viewManager.fromConfigurationJson(project.viewManager);
-			else console.warn('View Manager was not found in JSON data. Skipping part 2 out of 10');
+			else console.warn('View Manager was not found in JSON data. Skipping part 2 out of 11');
 
 			if (history) this.history.fromJSON(history);
-			else console.warn('History was not found in JSON data. Skipping part 3 out of 10');
+			else console.warn('History was not found in JSON data. Skipping part 3 out of 11');
 
 			if (materialManager) this.materialManager.fromJSON(materialManager);
 			else
 				throw new Error(
-					'Material Manager was not found in JSON data. Aborting load on part 4 out of 10'
+					'Material Manager was not found in JSON data. Aborting load on part 4 out of 11'
 				);
 			if (figureManager) this.figureManager.fromJSON(figureManager);
 			else
 				throw new Error(
-					'Scene was not found in JSON data. Aborting load on part 5 out of 10'
+					'Scene was not found in JSON data. Aborting load on part 5 out of 11'
 				);
 
 			// CSGManager must be loaded after scene and simulation materials
 			if (zoneManager) this.zoneManager.fromJSON(zoneManager);
 			else
 				throw new Error(
-					'Zone Manager was not found in JSON data. Aborting load on part 6 out of 10'
+					'Zone Manager was not found in JSON data. Aborting load on part 6 out of 11'
 				);
 
 			if (detectorManager) this.detectorManager.fromJSON(detectorManager);
 			else
 				throw new Error(
-					'Detector Manager was not found in JSON data. Aborting load on part 7 out of 10'
+					'Detector Manager was not found in JSON data. Aborting load on part 7 out of 11'
+				);
+			if (specialComponentsManager)
+				this.specialComponentsManager.fromJSON(specialComponentsManager);
+			else
+				console.warn(
+					'Special Components Manager was not found in JSON data. Skipping part 8 out of 11'
 				);
 
 			if (scoringManager) this.scoringManager.fromJSON(scoringManager);
 			else
 				console.warn(
-					'Scoring Manager was not found in JSON data. Skipping part 8 out of 10'
+					'Scoring Manager was not found in JSON data. Skipping part 9 out of 11'
 				);
 
 			if (beam) this.beam.fromJSON(beam);
-			else console.warn('Beam was not found in JSON data. Skipping part 9 out of 10');
+			else console.warn('Beam was not found in JSON data. Skipping part 10 out of 11');
 
 			if (physic) this.physic.fromJSON(physic);
-			else console.warn('Physic was not found in JSON data. Skipping part 10 out of 10');
+			else console.warn('Physic was not found in JSON data. Skipping part 11 out of 11');
 
 			this.signals.cameraResetted.dispatch();
 			this.signals.sceneGraphChanged.dispatch();
@@ -745,6 +752,7 @@ YaptideEditor.prototype = {
 			history: this.history.toJSON(),
 			zoneManager: this.zoneManager.toJSON(), // serialize CSGManager
 			detectManager: this.detectorManager.toJSON(), // serialize DetectorManager;
+			specialComponentsManager: this.specialComponentsManager.toJSON(), // serialize SpecialComponentsManager
 			beam: this.beam.toJSON(),
 			physic: this.physic.toJSON(),
 			materialManager: this.materialManager.toJSON(), // serialize MaterialManager

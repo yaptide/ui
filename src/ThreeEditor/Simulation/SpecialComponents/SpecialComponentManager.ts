@@ -5,6 +5,7 @@ import { SimulationSceneContainer, SingletonContainer } from '../Base/Simulation
 import { BeamModulator, isBeamModulator } from './BeamModulator';
 import { CTCube, isCTCube } from './CTCube';
 import { SimulationElementManager } from '../Base/SimulationManager';
+import { SimulationMeshJSON } from '../Base/SimulationMesh';
 
 type SpecialComponentManagerJSON = {
 	CTCube: ReturnType<SimulationSceneContainer<CTCube>['toJSON']>;
@@ -107,7 +108,10 @@ export class SpecialComponentManager
 			modulator: this.beamModulatorContainer.toJSON()
 		};
 	}
-	fromJSON({ CTCube, modulator }: SpecialComponentManagerJSON) {}
+	fromJSON({ CTCube, modulator }: SpecialComponentManagerJSON) {
+		this.CTCubeContainer.fromJSON(CTCube);
+		this.beamModulatorContainer.fromJSON(modulator);
+	}
 }
 
 export function isSpecialComponent(object: unknown): object is CTCube | BeamModulator {

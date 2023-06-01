@@ -89,10 +89,6 @@ export class SingletonContainer<TChild extends SimulationSceneChild>
 		}
 		return super.add(child);
 	}
-
-	fromJSON(json: ReturnType<TChild['toJSON']>[]): void {
-		throw new Error('Method not implemented.');
-	}
 }
 
 export function isSimulationSceneContainer(object: unknown): object is SimulationSceneContainer {
