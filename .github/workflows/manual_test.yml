@@ -62,7 +62,6 @@ jobs:
               with:
                 script: |
                   const workflow_name = '${{ github.workflow	}}';
-                  const job_name = '${{ github.	}}';
                   const url = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
                   const success = '${{ job.status }}' === 'success';
                   const body = `${workflow_name}: ${success ? 'succeeded ✅' : 'failed ❌'}\n${url}`;
