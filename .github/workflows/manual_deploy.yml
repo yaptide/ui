@@ -10,7 +10,11 @@ jobs:
         runs-on: ubuntu-latest
         # Only run if it is a PR and the comment contains /deploy
         if: github.event.issue.pull_request && contains(github.event.comment.body, '/deploy')
-
+        env:
+          REGISTRY: ghcr.io
+          IMAGE_NAME: ${{ github.repository }}-web
+        permissions:
+          packages: write
         steps:
             - name: Get branch of PR
               uses: xt0rted/pull-request-comment-branch@v1
@@ -25,7 +29,7 @@ jobs:
               with:
                 submodules: recursive
                 ref: ${{ steps.comment-branch.outputs.head_ref }}
-            - name: Use Node.js ${{ matrix.node-version }}
+            - name: Setup node
               uses: actions/setup-node@v3
 
             - name: Login to GitHub Container Registry
