@@ -38,8 +38,13 @@ RUN git config --global --add safe.directory /usr/src/app
 # We also generate the wheel package for the converter part of the UI.
 RUN npm run setup
 
+# Default deployment type can be overwritten by docker build --build-arg DEPLOYMENT=dev ...
+ARG DEPLOYMENT=prod
+
+RUN echo "Deploying for ${DEPLOYMENT}"
+
 # Build the app.
-RUN npm run build
+RUN npx cross-env REACT_APP_DEPLOYMENT=${DEPLOYMENT} npm run build
 
 # The step below is a JavaScript module that fixes a bug 
 # related to the paths of static assets in a React application. 
