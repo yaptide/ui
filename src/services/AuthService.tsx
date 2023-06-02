@@ -1,8 +1,8 @@
-import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { createGenericContext } from './GenericContext';
 import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
-import { BACKEND_URL, DEMO_MODE } from '../config/Config';
+import { BACKEND_URL, DEMO_MODE, DEPLOYMENT } from '../config/Config';
 import { snakeToCamelCase } from '../types/TypeTransformUtil';
 import { RequestAuthLogin, RequestAuthLogout, RequestAuthRefresh } from '../types/RequestTypes';
 import useIntervalAsync from '../util/hooks/useIntervalAsync';
@@ -13,6 +13,12 @@ import {
 	ResponseAuthLogin,
 	YaptideResponse
 } from '../types/ResponseTypes';
+
+declare global {
+	interface Window {
+		BACKEND_URL?: string;
+	}
+}
 
 export interface AuthProps {
 	children: ReactNode;
@@ -119,16 +125,21 @@ const Auth = ({ children }: AuthProps) => {
 		[setBackendUrl]
 	);
 
-	useEffect(() => {
-		Object.defineProperty(window, 'BACKEND_URL', {
-			set: function (url: string) {
-				setBackendUrlCallback(url);
-			},
-			get: function () {
-				return backendUrl;
-			}
-		});
-	}, [backendUrl, setBackendUrlCallback]);
+	// Enable backend url change in dev mode
+	if (DEPLOYMENT === 'dev') {
+		// eslint-disable-next-line react-hooks/rules-of-hooks
+		useEffect(() => {
+			Object.defineProperty(window, 'BACKEND_URL', {
+				set: function (url: string) {
+					setBackendUrlCallback(url);
+				},
+				get: function () {
+					return backendUrl;
+				},
+				configurable: true
+			});
+		}, [backendUrl, setBackendUrlCallback]);
+	}
 
 	useEffect(() => {
 		if (DEMO_MODE) enqueueSnackbar('Demo mode enabled.', { variant: 'info' });
