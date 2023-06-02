@@ -1,8 +1,8 @@
-import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { createGenericContext } from './GenericContext';
 import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
-import { BACKEND_URL, DEMO_MODE } from '../config/Config';
+import { BACKEND_URL, DEMO_MODE, DEPLOYMENT } from '../config/Config';
 import { snakeToCamelCase } from '../types/TypeTransformUtil';
 import { RequestAuthLogin, RequestAuthLogout, RequestAuthRefresh } from '../types/RequestTypes';
 import useIntervalAsync from '../util/hooks/useIntervalAsync';
@@ -13,6 +13,12 @@ import {
 	ResponseAuthLogin,
 	YaptideResponse
 } from '../types/ResponseTypes';
+
+declare global {
+	interface Window {
+		BACKEND_URL?: string;
+	}
+}
 
 export interface AuthProps {
 	children: ReactNode;
@@ -60,57 +66,87 @@ const Auth = ({ children }: AuthProps) => {
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
 	const { enqueueSnackbar } = useSnackbar();
 
+	const [backendUrl, setBackendUrl] = useState<string>(BACKEND_URL);
+
 	useEffect(() => {
 		setReachInterval(isServerReachable ? 180000 : 30000);
 	}, [isServerReachable]);
 
-	const kyRef = useRef<KyInstance>(
-		ky.create({
-			credentials: 'include',
-			prefixUrl: BACKEND_URL,
-			//overwrite default json parser to convert snake_case to camelCase
-			parseJson: (text: string) => snakeToCamelCase(JSON.parse(text), true),
-			hooks: {
-				afterResponse: [
-					async (_request, _options, response) => {
-						switch (response?.status) {
-							case 401:
-								enqueueSnackbar('Please log in.', { variant: 'warning' });
-								setUser(null);
-								break;
-							case 403:
-								enqueueSnackbar('Please log in again.', { variant: 'warning' });
-								setUser(null);
-								break;
+	const kyRef = useMemo(
+		() =>
+			ky.create({
+				credentials: 'include',
+				prefixUrl: backendUrl,
+				//overwrite default json parser to convert snake_case to camelCase
+				parseJson: (text: string) => snakeToCamelCase(JSON.parse(text), true),
+				hooks: {
+					afterResponse: [
+						async (_request, _options, response) => {
+							switch (response?.status) {
+								case 401:
+									enqueueSnackbar('Please log in.', { variant: 'warning' });
+									setUser(null);
+									break;
+								case 403:
+									enqueueSnackbar('Please log in again.', { variant: 'warning' });
+									setUser(null);
+									break;
+							}
+							if (response?.status > 300) {
+								const message = await response.json().then(r => r.message);
+								if (message !== 'No token provided')
+									enqueueSnackbar(await response.json().then(r => r.message), {
+										variant: 'error'
+									});
+								console.error(
+									response.status,
+									await response.json().then(r => r.message)
+								);
+							}
 						}
-						if (response?.status > 300) {
-							const message = await response.json().then(r => r.message);
-							if (message !== 'No token provided')
-								enqueueSnackbar(await response.json().then(r => r.message), {
-									variant: 'error'
-								});
-							console.error(
-								response.status,
-								await response.json().then(r => r.message)
-							);
-						}
-					}
-				]
-			}
-		})
+					]
+				}
+			}),
+		[backendUrl, enqueueSnackbar]
 	);
-	const kyIntervalRef = useRef<KyInstance>(
-		kyRef.current.extend({
-			retry: 0
-		})
+
+	const kyIntervalRef = useMemo(
+		() =>
+			kyRef.extend({
+				retry: 0
+			}),
+		[kyRef]
 	);
+
+	const setBackendUrlCallback = useCallback(
+		(url: string) => {
+			setBackendUrl(url);
+		},
+		[setBackendUrl]
+	);
+
+	// Enable backend url change in dev mode
+	if (DEPLOYMENT === 'dev') {
+		// eslint-disable-next-line react-hooks/rules-of-hooks
+		useEffect(() => {
+			Object.defineProperty(window, 'BACKEND_URL', {
+				set: function (url: string) {
+					setBackendUrlCallback(url);
+				},
+				get: function () {
+					return backendUrl;
+				},
+				configurable: true
+			});
+		}, [backendUrl, setBackendUrlCallback]);
+	}
 
 	useEffect(() => {
 		if (DEMO_MODE) enqueueSnackbar('Demo mode enabled.', { variant: 'info' });
 	}, [enqueueSnackbar]);
 
 	const reachServer = useCallback(() => {
-		return kyIntervalRef.current
+		return kyIntervalRef
 			.get(``)
 			.json<YaptideResponse>()
 			.then(r => !!r.message)
@@ -124,7 +160,7 @@ const Auth = ({ children }: AuthProps) => {
 				})
 			)
 			.catch(() => setIsServerReachable(false));
-	}, [enqueueSnackbar]);
+	}, [enqueueSnackbar, kyIntervalRef]);
 
 	useIntervalAsync(reachServer, reachInterval);
 	useEffect(() => {
@@ -133,12 +169,12 @@ const Auth = ({ children }: AuthProps) => {
 
 	const refresh = useCallback(() => {
 		if (DEMO_MODE || !isServerReachable) return Promise.resolve(setRefreshInterval(undefined));
-		return kyIntervalRef.current
+		return kyIntervalRef
 			.get(`auth/refresh`)
 			.json<ResponseAuthRefresh>()
 			.then(({ accessExp }) => setRefreshInterval(getRefreshDelay(accessExp)))
 			.catch((_: HTTPError) => {});
-	}, [isServerReachable]);
+	}, [isServerReachable, kyIntervalRef]);
 
 	useEffect(() => {
 		if (user !== null && refreshInterval === undefined && isServerReachable)
@@ -148,7 +184,7 @@ const Auth = ({ children }: AuthProps) => {
 
 	const login = useCallback(
 		(...[username, password]: RequestAuthLogin) => {
-			kyRef.current
+			kyRef
 				.post(`auth/login`, {
 					json: { username, password }
 				})
@@ -160,17 +196,18 @@ const Auth = ({ children }: AuthProps) => {
 				})
 				.catch((_: HTTPError) => {});
 		},
-		[enqueueSnackbar]
+		[enqueueSnackbar, kyRef]
 	);
 
 	const logout = useCallback(() => {
-		kyRef.current
+		kyRef
 			.delete(`auth/logout`)
 			.json<YaptideResponse>()
 			.then(_response => setUser(null))
 			.catch((_: HTTPError) => {});
-	}, []);
-	const authKy = useMemo(() => kyRef.current, []);
+	}, [kyRef]);
+
+	const authKy = useMemo(() => kyRef, [kyRef]);
 	const isAuthorized = useMemo(() => user !== null || DEMO_MODE, [user]);
 
 	useEffect(() => {
