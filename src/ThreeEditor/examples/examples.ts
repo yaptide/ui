@@ -23,7 +23,7 @@ while (canImport) {
 
 for (const example of EXAMPLES) {
 	if(example?.input.inputJson)
-		example.estimators = recreateRefsInResults(example?.input.inputJson, example.estimators);;
+		example.estimators = recreateRefsInResults(example?.input.inputJson, example.estimators);
 }
 
 export default EXAMPLES;

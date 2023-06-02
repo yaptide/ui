@@ -2,12 +2,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Skeleton from '@mui/material/Skeleton';
 import { useJSROOT } from '../../services/JsRootService';
 import { useVisible } from 'react-hooks-visible';
-import { Page1D } from '../GraphData';
+import { GroupedPage1D } from '../GraphData';
 import useResizeObserver from 'use-resize-observer';
 import { mergeRefs } from 'react-merge-refs';
 import { throttle } from 'throttle-debounce';
 
-export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
+export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string }) {
 	const { page, title } = props;
 	const { JSROOT } = useJSROOT();
 	const {
@@ -31,23 +31,47 @@ export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 
 	useEffect(() => {
 		if (!visible) return;
+		function CreateLegendEntry(obj: any, lbl: any) {
+			let entry = JSROOT.create('TLegendEntry');
+			entry.fObject = obj;
+			entry.fLabel = lbl;
+			entry.fOption = 'l';
+			return entry;
+		}
+
 		// create example graph
-		const npoints = page.data.values.length;
-		const x = page.axisDim1.values;
-		const y = page.data.values;
+		const graphs = page.pages.map((page, index) => {
+			const npoints = page.data.values.length;
+			const y = page.data.values;
+			const x = page.axisDim1.values;
 
-		const graph = JSROOT.createTGraph(npoints, x, y);
+			const graph = JSROOT.createTGraph(npoints, x, y);
+			graph.fName = page.name;
+			graph.fLineColor = index;
 
-		// adding name using method suggested here:
-		// https://github.com/root-project/jsroot/issues/225#issuecomment-998260751
-		const histogram = JSROOT.createHistogram('TH1F', npoints);
-		histogram.fXaxis.fXmin = x[0];
-		histogram.fXaxis.fXmax = x[npoints - 1];
-		histogram.fXaxis.fTitle = `${page.axisDim1.name} [${page.axisDim1.unit}]`;
+			return graph;
+		});
 
-		histogram.fYaxis.fXmin = y[0];
-		histogram.fYaxis.fXmax = y[npoints - 1];
-		histogram.fYaxis.fTitle = `${page.data.name} [${page.data.unit}]`;
+		const multiGraph = JSROOT.createTMultiGraph(...graphs);
+
+		const histogram = JSROOT.createHistogram(
+			'TH1F',
+			Math.max(...page.pages.map(p => p.data.values.length))
+		);
+
+		histogram.fXaxis.fXmin = Math.min(...page.pages.map(p => p.axisDim1.values[0]));
+		histogram.fXaxis.fXmax = Math.max(
+			...page.pages.map(p => p.axisDim1.values[p.axisDim1.values.length - 1])
+		);
+
+		histogram.fYaxis.fXmin = Math.min(...page.pages.map(p => p.data.values[0]));
+		histogram.fYaxis.fXmax = Math.max(
+			...page.pages.map(p => p.data.values[p.data.values.length - 1])
+		);
+
+		histogram.fXaxis.fTitle = `[${page.axisDim1Unit}]`;
+		histogram.fYaxis.fTitle = `[${page.dataUnit}]`;
+		histogram.fTitle = `${page.name}`;
 
 		// centering axes labels using method suggested here:
 		// https://github.com/root-project/jsroot/issues/225#issuecomment-998748035
@@ -59,11 +83,17 @@ export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 		histogram.fXaxis.fTitleOffset = 1.4;
 		histogram.fYaxis.fTitleOffset = 1.4;
 
-		graph.fName = page.data.name;
-		graph.fTitle = title ?? `${page.data.name} [${page.data.unit}]`;
-		graph.fHistogram = histogram;
+		multiGraph.fHistogram = histogram;
 
-		setObj(graph);
+		const leg = JSROOT.create('TLegend');
+
+		graphs.forEach((graph, index) => {
+			leg.fPrimitives.Add(CreateLegendEntry(graph, graph.fName));
+		});
+
+		multiGraph.fFunctions.Add(leg, '');
+
+		setObj(multiGraph);
 		setDrawn(false);
 	}, [JSROOT, page, title, visible]);
 
@@ -105,4 +135,4 @@ export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 	);
 }
 
-export default JsRootGraph1D;
+export default JsRootMultiGraph1D;
