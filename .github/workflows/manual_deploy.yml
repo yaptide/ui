@@ -38,9 +38,6 @@ jobs:
           submodules: recursive
           ref: ${{ steps.comment-branch.outputs.head_ref }}
 
-      - name: Setup node
-        uses: actions/setup-node@v3
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
@@ -70,6 +67,9 @@ jobs:
       #     # cache-to: type=gha,mode=max
       #     build-args: |
       #       BUILDKIT_CONTEXT_KEEP_GIT_DIR=true   
+
+      # - name: Setup node
+      #   uses: actions/setup-node@v3
 
       - name: Add workflow result as comment on PR
         uses: actions/github-script@v6
