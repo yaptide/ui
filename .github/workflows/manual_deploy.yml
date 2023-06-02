@@ -5,19 +5,20 @@ on:
   issue_comment:
     types: [created]
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}-web
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     
     # Only run if it is a PR and the comment contains /deploy
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/deploy')
-    
-    env:
-      REGISTRY: ghcr.io
-      IMAGE_NAME: ${{ github.repository }}-web
-    
+       
     # when we run this action as depenabot, we need to give it write permissions to the package registry
     permissions:
+      contents: read
       packages: write
     
     steps:
