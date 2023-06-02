@@ -60,10 +60,11 @@ jobs:
       REGISTRY: ghcr.io
       IMAGE_NAME: ${{ github.repository }}-web
     
-    # when we run this action as depenabot, we need to give it write permissions to the package registry
+    # when we run this action as depenabot, we need to give it write permissions to the package registry and to the statuses
     permissions:
         contents: read
         packages: write
+        statuses: write
 
     steps:
       - name: Checkout
@@ -99,7 +100,8 @@ jobs:
           # cache-from: type=gha
           # cache-to: type=gha,mode=max
           build-args: |
-            BUILDKIT_CONTEXT_KEEP_GIT_DIR=true              
+            BUILDKIT_CONTEXT_KEEP_GIT_DIR=true
+            DEPLOYMENT=dev
 
   deploy_gh_pages:
     runs-on: ubuntu-latest
