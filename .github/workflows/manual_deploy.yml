@@ -16,6 +16,7 @@ jobs:
       REGISTRY: ghcr.io
       IMAGE_NAME: ${{ github.repository }}-web
     
+    # when we run this action as depenabot, we need to give it write permissions to the package registry
     permissions:
       packages: write
     
