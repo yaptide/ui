@@ -23,6 +23,11 @@ COPY package.json package-lock.json ./
 # Install app dependencies using npm ci as it is preferred for automated builds.
 RUN npm ci
 
+# Default deployment type can be overwritten by docker build --build-arg DEPLOYMENT=dev ...
+ARG DEPLOYMENT=prod
+
+RUN echo "Deploying for ${DEPLOYMENT}"
+
 # Bundle app source.
 COPY . .
 
@@ -39,7 +44,7 @@ RUN git config --global --add safe.directory /usr/src/app
 RUN npm run setup
 
 # Build the app.
-RUN npm run build
+RUN npx cross-env REACT_APP_DEPLOYMENT=${DEPLOYMENT} npm run build
 
 # The step below is a JavaScript module that fixes a bug 
 # related to the paths of static assets in a React application. 
@@ -47,7 +52,8 @@ RUN npm run build
 # which results in duplicate static/js entries in the paths of some chunk files.
 RUN npm run fix-web-dev
 
-# Stage 2: Serve the app using Nginx.
+
+# # Stage 2: Serve the app using Nginx.
 FROM nginx:alpine
 COPY --from=build /usr/src/app/build /usr/share/nginx/html
 EXPOSE 80
