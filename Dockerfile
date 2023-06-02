@@ -53,7 +53,7 @@ RUN npx cross-env REACT_APP_DEPLOYMENT=${DEPLOYMENT} npm run build
 RUN npm run fix-web-dev
 
 
-# # Stage 2: Serve the app using Nginx.
+# Stage 2: Serve the app using Nginx.
 FROM nginx:alpine
 COPY --from=build /usr/src/app/build /usr/share/nginx/html
 EXPOSE 80
