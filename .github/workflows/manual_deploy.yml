@@ -21,6 +21,7 @@ jobs:
       contents: read
       packages: write
       statuses: write
+      pull-requests: write
     
     steps:
       - name: Get branch of PR
