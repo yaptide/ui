@@ -4,44 +4,44 @@ import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
 
 export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 	const { page, title } = props;
-	const { isVisible, JSROOT, setObjToDraw, ref, drawn } = useJsRootCanvas('AL;gridxy;tickxy');
+	const { update, ref, drawn } = useJsRootCanvas('AL;gridxy;tickxy');
 
 	useEffect(() => {
-		if (!isVisible) return;
-		// create example graph
-		const npoints = page.data.values.length;
-		const x = page.axisDim1.values;
-		const y = page.data.values;
+		update(JSROOT => {
+			const npoints = page.data.values.length;
+			const x = page.axisDim1.values;
+			const y = page.data.values;
 
-		const graph = JSROOT.createTGraph(npoints, x, y);
+			const graph = JSROOT.createTGraph(npoints, x, y);
 
-		// adding name using method suggested here:
-		// https://github.com/root-project/jsroot/issues/225#issuecomment-998260751
-		const histogram = JSROOT.createHistogram('TH1F', npoints);
-		histogram.fXaxis.fXmin = x[0];
-		histogram.fXaxis.fXmax = x[npoints - 1];
-		histogram.fXaxis.fTitle = `${page.axisDim1.name} [${page.axisDim1.unit}]`;
+			// adding name using method suggested here:
+			// https://github.com/root-project/jsroot/issues/225#issuecomment-998260751
+			const histogram = JSROOT.createHistogram('TH1F', npoints);
+			histogram.fXaxis.fXmin = x[0];
+			histogram.fXaxis.fXmax = x[npoints - 1];
+			histogram.fXaxis.fTitle = `${page.axisDim1.name} [${page.axisDim1.unit}]`;
 
-		histogram.fYaxis.fXmin = y[0];
-		histogram.fYaxis.fXmax = y[npoints - 1];
-		histogram.fYaxis.fTitle = `${page.data.name} [${page.data.unit}]`;
+			histogram.fYaxis.fXmin = y[0];
+			histogram.fYaxis.fXmax = y[npoints - 1];
+			histogram.fYaxis.fTitle = `${page.data.name} [${page.data.unit}]`;
 
-		// centering axes labels using method suggested here:
-		// https://github.com/root-project/jsroot/issues/225#issuecomment-998748035
-		histogram.fXaxis.InvertBit(JSROOT.BIT(12));
-		histogram.fYaxis.InvertBit(JSROOT.BIT(12));
+			// centering axes labels using method suggested here:
+			// https://github.com/root-project/jsroot/issues/225#issuecomment-998748035
+			histogram.fXaxis.InvertBit(JSROOT.BIT(12));
+			histogram.fYaxis.InvertBit(JSROOT.BIT(12));
 
-		// moving axes labels a bit away from axis object, as described here:
-		// https://github.com/root-project/jsroot/issues/239
-		histogram.fXaxis.fTitleOffset = 1.4;
-		histogram.fYaxis.fTitleOffset = 1.4;
+			// moving axes labels a bit away from axis object, as described here:
+			// https://github.com/root-project/jsroot/issues/239
+			histogram.fXaxis.fTitleOffset = 1.4;
+			histogram.fYaxis.fTitleOffset = 1.4;
 
-		graph.fName = page.data.name;
-		graph.fTitle = title ?? `${page.data.name} [${page.data.unit}]`;
-		graph.fHistogram = histogram;
+			graph.fName = page.data.name;
+			graph.fTitle = title ?? `${page.data.name} [${page.data.unit}]`;
+			graph.fHistogram = histogram;
 
-		setObjToDraw(graph);
-	}, [JSROOT, page, title, isVisible, setObjToDraw]);
+			return graph;
+		});
+	}, [page, title, update]);
 
 	return (
 		<GraphCanvas

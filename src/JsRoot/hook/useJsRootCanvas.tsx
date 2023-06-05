@@ -1,10 +1,9 @@
-import { LegacyRef, forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useVisible } from 'react-hooks-visible';
 import { useElementSize } from 'usehooks-ts';
 import { useJSROOT } from '../../services/JsRootService';
 import { throttle } from 'throttle-debounce';
 import { mergeRefs } from 'react-merge-refs';
-import Skeleton from '@mui/material/Skeleton';
 
 export const useJsRootCanvas = (redrawParam: string) => {
 	const { JSROOT } = useJSROOT();
@@ -13,15 +12,21 @@ export const useJsRootCanvas = (redrawParam: string) => {
 	// that is currently visible on screen
 	const [containerEl, visible] = useVisible<HTMLDivElement>();
 
-	const [obj, setObj] = useState(undefined);
+	const [obj, setObj] = useState<Object | undefined>(undefined);
 	const [drawn, setDrawn] = useState(false);
 	const [isVisible, setIsVisible] = useState(false);
+	const visibleRef = useRef(isVisible);
 
 	useEffect(() => {
 		// Update isVisible if more than 30% of containerEl is visible
 		setIsVisible(visible > 0.3);
 		return () => setIsVisible(false);
 	}, [visible]);
+
+	// Update visibleRef when isVisible changes
+	useEffect(() => {
+		visibleRef.current = isVisible;
+	}, [isVisible]);
 
 	useEffect(() => {
 		if (obj && !drawn) {
@@ -31,8 +36,8 @@ export const useJsRootCanvas = (redrawParam: string) => {
 	}, [JSROOT, containerEl, drawn, obj, redrawParam]);
 
 	const resizeHandler = useCallback(() => {
-		if (isVisible) JSROOT.resize(containerEl.current);
-	}, [JSROOT, containerEl, isVisible]);
+		if (visibleRef.current) JSROOT.resize(containerEl.current);
+	}, [JSROOT, containerEl]);
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const debouncedResizeHandler = useCallback(
@@ -43,6 +48,22 @@ export const useJsRootCanvas = (redrawParam: string) => {
 	useEffect(() => {
 		debouncedResizeHandler();
 	}, [debouncedResizeHandler, resizeHeight, resizeWidth]);
+
+	const update = useCallback(
+		(updateObject: (root: typeof JSROOT) => Object) => {
+			if (!isVisible) return;
+
+			setDrawn(old => {
+				if (old) return true;
+
+				const obj = updateObject(JSROOT);
+				if (!obj) return old;
+				setObj(obj);
+				return false;
+			});
+		},
+		[isVisible, JSROOT]
+	);
 
 	const setObjToDraw = useCallback(
 		(obj: any) => {
@@ -59,6 +80,7 @@ export const useJsRootCanvas = (redrawParam: string) => {
 		isVisible,
 		setObjToDraw,
 		drawn,
+		update,
 		ref
 	};
 };
@@ -75,14 +97,7 @@ export const GraphCanvas = forwardRef<HTMLDivElement, GraphCanvasProps>(
 					width: '100%',
 					height: 500
 				}}
-				ref={ref}>
-				<Skeleton
-					hidden={props.drawn}
-					variant='rectangular'
-					width={'80%'}
-					height={'80%'}
-				/>
-			</div>
+				ref={ref}></div>
 		);
 	}
 );
