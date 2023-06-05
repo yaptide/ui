@@ -1,36 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import Skeleton from '@mui/material/Skeleton';
-import { useJSROOT } from '../../services/JsRootService';
-import { useVisible } from 'react-hooks-visible';
+import React, { useEffect } from 'react';
 import { GroupedPage1D } from '../GraphData';
-import useResizeObserver from 'use-resize-observer';
-import { mergeRefs } from 'react-merge-refs';
-import { throttle } from 'throttle-debounce';
+import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
 
 export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string }) {
 	const { page, title } = props;
-	const { JSROOT } = useJSROOT();
-	const {
-		ref: resizeRef,
-		width: resizeWidth,
-		height: resizeHeight
-	} = useResizeObserver<HTMLDivElement>();
-	// Custom react hook, visible contains the percentage of the containterEl
-	// that is currently visible on screen
-	const [containerEl, visible] = useVisible<HTMLDivElement>();
-
-	const [obj, setObj] = useState(undefined);
-	const [drawn, setDrawn] = useState(false);
-	const [isVisible, setIsVisible] = useState(false);
+	const { isVisible, JSROOT, setObjToDraw, ref, drawn } = useJsRootCanvas('AL;gridxy;tickxy');
 
 	useEffect(() => {
-		// Update isVisible if more than 30% of containerEl is visible
-		setIsVisible(visible > 0.3);
-		return () => setIsVisible(false);
-	}, [visible]);
-
-	useEffect(() => {
-		if (!visible) return;
+		if (!isVisible) return;
 		function CreateLegendEntry(obj: any, lbl: any) {
 			let entry = JSROOT.create('TLegendEntry');
 			entry.fObject = obj;
@@ -47,7 +24,7 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 
 			const graph = JSROOT.createTGraph(npoints, x, y);
 			graph.fName = page.name;
-			graph.fLineColor = index;
+			graph.fLineColor = index + 2;
 
 			return graph;
 		});
@@ -64,10 +41,8 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 			...page.pages.map(p => p.axisDim1.values[p.axisDim1.values.length - 1])
 		);
 
-		histogram.fYaxis.fXmin = Math.min(...page.pages.map(p => p.data.values[0]));
-		histogram.fYaxis.fXmax = Math.max(
-			...page.pages.map(p => p.data.values[p.data.values.length - 1])
-		);
+		histogram.fYaxis.fXmin = Math.min(...page.pages.flatMap(p => p.data.values));
+		histogram.fYaxis.fXmax = Math.max(...page.pages.flatMap(p => p.data.values)) * 1.05;
 
 		histogram.fXaxis.fTitle = `[${page.axisDim1Unit}]`;
 		histogram.fYaxis.fTitle = `[${page.dataUnit}]`;
@@ -86,52 +61,21 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 		multiGraph.fHistogram = histogram;
 
 		const leg = JSROOT.create('TLegend');
+		JSROOT.extend(leg, { fX1NDC: 0.1, fY1NDC: 0.5, fX2NDC: 0.5, fY2NDC: 0.7 });
 
 		graphs.forEach((graph, index) => {
-			leg.fPrimitives.Add(CreateLegendEntry(graph, graph.fName));
+			leg.fPrimitives.Add(CreateLegendEntry(graph, graph.fName), 'autoplace');
 		});
-
 		multiGraph.fFunctions.Add(leg, '');
 
-		setObj(multiGraph);
-		setDrawn(false);
-	}, [JSROOT, page, title, visible]);
-
-	useEffect(() => {
-		if (obj && !drawn) {
-			JSROOT.redraw(containerEl.current, obj, 'gridxy;tickxy');
-			setDrawn(true);
-		}
-	}, [JSROOT, containerEl, drawn, obj]);
-
-	const resizeHandler = useCallback(() => {
-		if (isVisible) JSROOT.resize(containerEl.current);
-	}, [JSROOT, containerEl, isVisible]);
-
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const debouncedResizeHandler = useCallback(
-		throttle(300, resizeHandler, { noTrailing: false }),
-		[resizeHandler]
-	);
-
-	useEffect(() => {
-		debouncedResizeHandler();
-	}, [debouncedResizeHandler, resizeHeight, resizeWidth]);
+		setObjToDraw(multiGraph);
+	}, [JSROOT, page, title, isVisible, setObjToDraw]);
 
 	return (
-		<div
-			style={{
-				width: '100%',
-				height: 500
-			}}
-			ref={mergeRefs([containerEl, resizeRef])}>
-			<Skeleton
-				hidden={drawn}
-				variant='rectangular'
-				width={'80%'}
-				height={'80%'}
-			/>
-		</div>
+		<GraphCanvas
+			ref={ref}
+			drawn={drawn}
+		/>
 	);
 }
 

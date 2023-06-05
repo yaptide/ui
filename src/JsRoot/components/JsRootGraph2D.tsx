@@ -1,36 +1,15 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import Skeleton from '@mui/material/Skeleton';
-import { useJSROOT } from '../../services/JsRootService';
-import { useVisible } from 'react-hooks-visible';
-import useResizeObserver from 'use-resize-observer';
-import { throttle } from 'throttle-debounce';
-import { mergeRefs } from 'react-merge-refs';
+import React, { useEffect } from 'react';
 import { Page2D } from '../GraphData';
+import { useJsRootCanvas, GraphCanvas } from '../hook/useJsRootCanvas';
 
 export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 	const { page, title } = props;
-	const { JSROOT } = useJSROOT();
-	const {
-		ref: resizeRef,
-		width: resizeWidth,
-		height: resizeHeight
-	} = useResizeObserver<HTMLDivElement>();
-	// Custom react hook, visible contains the percentage of the containterEl
-	// that is currently visible on screen
-	const [containerEl, visible] = useVisible<HTMLDivElement>();
-
-	const [obj, setObj] = useState(undefined);
-	const [drawn, setDrawn] = useState(false);
-	const [isVisible, setIsVisible] = useState(false);
+	const { isVisible, JSROOT, setObjToDraw, ref, drawn } = useJsRootCanvas(
+		'colz;gridxy;nostat;tickxy'
+	);
 
 	useEffect(() => {
-		// Update isVisible if more than 30% of containerEl is visible
-		setIsVisible(visible > 0.3);
-		return () => setIsVisible(false);
-	}, [visible]);
-
-	useEffect(() => {
-		if (!visible) return;
+		if (!isVisible) return;
 		const x = page.axisDim1.values;
 		const y = page.axisDim2.values;
 		const z = page.data.values;
@@ -66,45 +45,14 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 				histogram.setBinContent(histogram.getBin(x + 1, y + 1), z[x + y * nxpoints]);
 			}
 
-		setObj(histogram);
-		setDrawn(false);
-	}, [JSROOT, page, title, visible]);
-
-	useEffect(() => {
-		if (obj && !drawn) {
-			JSROOT.redraw(containerEl.current, obj, 'colz;gridxy;nostat;tickxy');
-			setDrawn(true);
-		}
-	}, [JSROOT, containerEl, drawn, obj]);
-
-	const resizeHandler = useCallback(() => {
-		if (isVisible) JSROOT.resize(containerEl.current);
-	}, [JSROOT, containerEl, isVisible]);
-
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const debouncedResizeHandler = useCallback(
-		throttle(300, resizeHandler, { noTrailing: false }),
-		[resizeHandler]
-	);
-
-	useEffect(() => {
-		debouncedResizeHandler();
-	}, [debouncedResizeHandler, resizeHeight, resizeWidth]);
+		setObjToDraw(histogram);
+	}, [JSROOT, page, title, isVisible, setObjToDraw]);
 
 	return (
-		<div
-			style={{
-				width: '100%',
-				height: 500
-			}}
-			ref={mergeRefs([containerEl, resizeRef])}>
-			<Skeleton
-				hidden={drawn}
-				variant='rectangular'
-				width={'80%'}
-				height={'80%'}
-			/>
-		</div>
+		<GraphCanvas
+			ref={ref}
+			drawn={drawn}
+		/>
 	);
 }
 
