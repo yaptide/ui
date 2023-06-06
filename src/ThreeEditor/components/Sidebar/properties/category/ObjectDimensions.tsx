@@ -1,23 +1,25 @@
 import { Button, Divider, Grid } from '@mui/material';
 import { useCallback } from 'react';
-import { BoxGeometry, CylinderGeometry, Object3D, SphereGeometry, Vector3 } from 'three';
-import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
-import { SetDetectTypeCommand } from '../../../../js/commands/SetDetectTypeCommand';
-import { SetGeometryCommand } from '../../../../js/commands/SetGeometryCommand';
-import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { BoxGeometry, Object3D, SphereGeometry, Vector3 } from 'three';
+import { CylData, DETECTOR_OPTIONS } from '../../../../../types/DetectTypes';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import { Detector, isDetectGeometry } from '../../../../Simulation/Detectors/Detector';
+import { HollowCylinderGeometry } from '../../../../Simulation/Detectors/HollowCylinderGeometry';
 import {
-	BasicFigure,
 	BASIC_GEOMETRY_OPTIONS,
+	BasicFigure,
 	isBasicFigure,
 	isBoxFigure,
 	isCylinderFigure,
 	isSphereFigure
 } from '../../../../Simulation/Figures/BasicFigures';
-import { Detector, isDetectGeometry } from '../../../../Simulation/Detectors/Detector';
-import { CylData, DETECTOR_OPTIONS } from '../../../../../types/DetectTypes';
-import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
-import { isWorldZone, WorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
+import { isCTCube } from '../../../../Simulation/SpecialComponents/CTCube';
+import { WorldZone, isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
+import { SetDetectTypeCommand } from '../../../../js/commands/SetDetectTypeCommand';
+import { SetGeometryCommand } from '../../../../js/commands/SetGeometryCommand';
+import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import {
 	ObjectSelectOptionType,
 	ObjectSelectPropertyField
@@ -29,8 +31,6 @@ import {
 	SelectPropertyField
 } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
-import { isCTCube } from '../../../../Simulation/SpecialComponents/CTCube';
-import { HollowCylinderGeometry } from '../../../../Simulation/Detectors/HollowCylinderGeometry';
 
 const ObjectTypeField = (props: {
 	editor: YaptideEditor;
