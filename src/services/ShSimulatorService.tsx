@@ -83,7 +83,7 @@ const recreateOrderInEstimators = (
 ): Estimator[] => {
 	return orderAccordingToList(
 		estimators,
-		scoringManagerJSON.scoringOutputs,
+		scoringManagerJSON.outputs,
 		'name',
 		(e, o) => (e.scoringOutputJsonRef = o)
 	);

@@ -114,9 +114,10 @@ export class ContextManager {
 				hidden.push();
 				break;
 			case 'scoring':
-				visible.push(this.editor.detectorManager, this.editor.figureManager);
+				visible.push(this.editor.detectorManager);
 				hidden.push(
 					this.editor.zoneManager,
+					this.editor.figureManager,
 					this.editor.specialComponentsManager,
 					this.editor.beam
 				);

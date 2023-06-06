@@ -21,9 +21,12 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 
 	const [btnProps, setBtnProps] = useState(getAddElementButtonProps(editor));
 
-	const handleObjectUpdate = useCallback((o: Object3D) => {
-		setBtnProps(getAddElementButtonProps(editor));
-	}, []);
+	const handleObjectUpdate = useCallback(
+		(o: Object3D) => {
+			setBtnProps(getAddElementButtonProps(editor));
+		},
+		[editor]
+	);
 
 	useSignal(editor, 'objectSelected', handleObjectUpdate);
 

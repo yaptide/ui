@@ -370,7 +370,7 @@
 						"uuid": "6ba215e8-359e-447d-bac9-4f2808faed51"
 					}
 				],
-				"scoringOutputs": [
+				"outputs": [
 					{
 						"detectGeometry": "186ec65a-8511-418b-8218-8890138c6b12",
 						"name": "z_profile",

@@ -171,9 +171,9 @@ export class Detector extends SimulationPoints {
 		detectorType: DETECT.DETECTOR_TYPE = 'Mesh'
 	) {
 		super(editor, name, type, detectPointsMaterial.clone());
-		console.log('Detector constructor', this.material);
+
 		this.signals = editor.signals;
-		this.pointsHelper = editor.detectorManager.detectHelper;
+		this.pointsHelper = editor.detectorManager.detectorHelper;
 		this._detectorType = detectorType;
 		this.geometry = this.generateGeometry();
 

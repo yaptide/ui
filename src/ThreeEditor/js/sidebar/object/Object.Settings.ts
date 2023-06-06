@@ -60,7 +60,7 @@ export class ObjectSettings extends ObjectAbstract {
 		const { trace, primaries, children: quantities } = object;
 		this.object = object;
 
-		this.geometry.setOptions(this.editor.detectorManager.getDetectOptions());
+		this.geometry.setOptions(this.editor.detectorManager.getDetectorOptions());
 		this.geometry.setValue(object.geometry?.uuid);
 
 		if (trace[0]) {

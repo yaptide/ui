@@ -1,8 +1,10 @@
 import * as THREE from 'three';
-import { AdditionalGeometryDataType } from '../../../util/AdditionalGeometryData';
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationPoints } from '../Base/SimulationPoints';
-import { SimulationZone } from '../Base/SimulationZone';
+import { SimulationPoints, SimulationPointsJSON } from '../Base/SimulationPoints';
+
+type ModulatorParameters = {};
+
+export type BeamModulatorJSON = Omit<SimulationPointsJSON & ModulatorParameters, never>;
 
 export class BeamModulator extends SimulationPoints {
 	pointsHelper: THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>;

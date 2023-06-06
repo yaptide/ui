@@ -43,7 +43,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 					<ObjectSelectPropertyField
 						label='Detect geometry'
 						value={watchedObject.geometry?.uuid ?? ''}
-						options={editor.detectorManager.getDetectOptions(value => {
+						options={editor.detectorManager.getDetectorOptions(value => {
 							return (
 								!editor.scoringManager.getTakenDetectors().includes(value.uuid) ||
 								value.uuid === watchedObject.geometry?.uuid

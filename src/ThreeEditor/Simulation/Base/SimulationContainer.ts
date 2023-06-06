@@ -57,10 +57,7 @@ export abstract class SimulationSceneContainer<
 
 	reset() {
 		this.name = this._name;
-		this.children.forEach(child => {
-			child.parent = null;
-		});
-		this.children.length = 0;
+		this.clear();
 	}
 
 	toJSON(): ReturnType<TChild['toJSON']>[] {

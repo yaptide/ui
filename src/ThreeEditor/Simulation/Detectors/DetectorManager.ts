@@ -3,27 +3,25 @@ import * as THREE from 'three';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
+import { SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
-import { SimulationZone } from '../Base/SimulationZone';
 import { Detector, DetectorJSON, isDetectGeometry } from './Detector';
 
-interface DetectorManagerJSON {
-	uuid: string;
-	name: string;
-	detectGeometries: DetectorJSON[];
-}
+type DetectorManagerJSON = Omit<
+	SimulationElementJSON & {
+		detectors: DetectorJSON[];
+		metadata: Record<string, string | number>;
+	},
+	never
+>;
+
+const detectorLoader = (editor: YaptideEditor) => (json: DetectorJSON) =>
+	new Detector(editor).fromJSON(json);
 
 export class DetectorContainer extends SimulationSceneContainer<Detector> {
-	children: Detector[];
 	readonly isDetectContainer: true = true;
 	constructor(editor: YaptideEditor) {
-		super(editor, 'Detects', 'DetectGroup', json => new Detector(editor).fromJSON(json));
-		this.children = [];
-	}
-
-	reset() {
-		this.name = 'Detects';
-		this.clear();
+		super(editor, 'Detectors', 'DetectorGroup', detectorLoader(editor));
 	}
 }
 
@@ -31,60 +29,23 @@ export class DetectorManager
 	extends THREE.Scene
 	implements SimulationPropertiesType, SimulationElementManager<'detector', Detector>
 {
-	readonly notRemovable: boolean = true;
-	readonly notMovable = true;
-	readonly notRotatable = true;
-	readonly notScalable = true;
+	/****************************Private****************************/
+	private readonly metadata = {
+		version: 0.9, //update this to current YaptideEditor version when format changes
+		type: 'Manager',
+		generator: 'DetectorManager.toJSON'
+	} satisfies Record<string, string | number>;
 
-	private _detectWireMaterial = new THREE.MeshBasicMaterial({
-		side: THREE.DoubleSide,
-		transparent: true,
-		opacity: 0.5,
-		wireframe: true,
-		color: new THREE.Color('cyan')
-	});
-
-	detectorContainer: DetectorContainer;
-
-	detectHelper: THREE.Mesh;
-
-	get detectors() {
-		return this.detectorContainer.children;
-	}
-
+	private editor: YaptideEditor;
 	private signals: {
-		objectAdded: Signal<THREE.Object3D>;
-		objectChanged: Signal<THREE.Object3D>;
-		objectRemoved: Signal<THREE.Object3D>;
 		objectSelected: Signal<THREE.Object3D>;
-		zoneGeometryChanged: Signal<SimulationZone>;
 		sceneGraphChanged: Signal;
 		detectGeometryAdded: Signal<Detector>;
 		detectGeometryRemoved: Signal<Detector>;
 		detectGeometryChanged: Signal<Detector>;
 		materialChanged: Signal<THREE.Material>;
 	};
-	readonly isDetectorManager: true = true;
-
-	private editor: YaptideEditor;
-
-	constructor(editor: YaptideEditor) {
-		super();
-		this.detectorContainer = new DetectorContainer(editor);
-		this.detectHelper = new THREE.Mesh(undefined, this._detectWireMaterial);
-		this.detectHelper.visible = false;
-		this.name = 'DetectorManager';
-		this.editor = editor;
-
-		this.add(this.detectorContainer);
-		this.add(this.detectHelper);
-
-		this.signals = editor.signals;
-		this.signals.objectSelected.add(this.onObjectSelected);
-		this.signals.detectGeometryChanged.add(this.onObjectSelected);
-		this.signals.materialChanged.add(this.onMaterialChanged.bind(this));
-	}
-
+	private managerType: 'DetectorManager' = 'DetectorManager';
 	private hasUsefulGeometry(object: THREE.Object3D): object is Detector {
 		return Boolean(
 			isDetectGeometry(object) &&
@@ -95,30 +56,30 @@ export class DetectorManager
 		);
 	}
 
-	onObjectSelected = (object: THREE.Object3D) => {
-		this.detectHelper.geometry.dispose();
-		this.detectHelper.geometry = new THREE.BufferGeometry();
-		this.detectHelper.visible = false;
+	private _detectWireMaterial = new THREE.MeshBasicMaterial({
+		side: THREE.DoubleSide,
+		transparent: true,
+		opacity: 0.5,
+		wireframe: true,
+		color: new THREE.Color('cyan')
+	});
+	private _name: string;
+	/***************************************************************/
 
-		if (!this.hasUsefulGeometry(object)) return;
-		this.detectHelper.position.copy(object.position);
-		this._detectWireMaterial.color.copy(object.material.color);
-		this.detectHelper.geometry = object.geometry.clone();
-		this.detectHelper.visible = object.visible;
+	/*******************SimulationPropertiesType********************/
+	readonly notRemovable: boolean = true;
+	readonly notMovable = true;
+	readonly notRotatable = true;
+	readonly notScalable = true;
+	readonly flattenOnOutliner = true;
+	readonly isDetectorManager: true = true;
+	/***************************************************************/
 
-		this.signals.sceneGraphChanged.dispatch();
-	};
-
-	onMaterialChanged() {
-		if (isDetectGeometry(this.editor.selected)) {
-			this._detectWireMaterial.color.copy(this.editor.selected.material.color);
-		}
-	}
-
-	createDetector(): Detector {
-		const geometry = new Detector(this.editor);
-		this.addDetector(geometry);
-		return geometry;
+	/************************DetectorMethods************************/
+	detectorContainer: DetectorContainer;
+	detectorHelper: THREE.Mesh;
+	get detectors() {
+		return this.detectorContainer.children;
 	}
 
 	addDetector(geometry: Detector): void {
@@ -126,61 +87,23 @@ export class DetectorManager
 		this.editor.select(geometry);
 		this.signals.detectGeometryAdded.dispatch(geometry);
 	}
-
 	removeDetector(geometry: Detector): void {
 		this.detectorContainer.remove(geometry);
 		this.editor.deselect();
 		this.signals.detectGeometryRemoved.dispatch(geometry);
 	}
-
-	fromJSON(data: DetectorManagerJSON): void {
-		if (!data) console.error('Passed empty data to load CSGManager', data);
-
-		this.uuid = data.uuid;
-
-		this.name = data.name;
-		data.detectGeometries.forEach(geometryData => {
-			this.addDetector(new Detector(this.editor).fromJSON(geometryData));
-		});
+	createDetector(): Detector {
+		const geometry = new Detector(this.editor);
+		this.addDetector(geometry);
+		return geometry;
 	}
-
-	toJSON(): DetectorManagerJSON {
-		const detectGeometries = this.detectorContainer.toJSON() as DetectorJSON[];
-
-		const { uuid, name } = this;
-
-		return {
-			uuid,
-			name,
-			detectGeometries
-		};
-	}
-
-	reset(): void {
-		this.name = 'DetectorManager';
-
-		this.userData = {};
-		this.background = null;
-		this.environment = null;
-
-		this.detectorContainer.reset();
-
-		this.detectHelper.geometry.dispose();
-	}
-
-	clone(recursive: boolean) {
-		return new DetectorManager(this.editor).copy(this, recursive) as this;
-	}
-
 	getDetectorByUuid(uuid: string): Detector | null {
 		return this.detectors.find(child => child.uuid === uuid) as Detector | null;
 	}
-
 	getDetectorByName(name: string) {
 		return this.detectors.find(child => child.name === name) as Detector | null;
 	}
-
-	getDetectOptions(
+	getDetectorOptions(
 		additionalPredicate?: (value: Detector, index: number, array: Detector[]) => boolean
 	): Record<string, string> {
 		const options = this.detectors
@@ -194,6 +117,85 @@ export class DetectorManager
 				return acc;
 			}, {} as Record<string, string>);
 		return options;
+	}
+	/***************************************************************/
+
+	constructor(editor: YaptideEditor) {
+		super();
+
+		this.editor = editor;
+		this.name = this._name = 'Detector Manager';
+
+		this.detectorContainer = new DetectorContainer(editor);
+		this.detectorHelper = new THREE.Mesh(undefined, this._detectWireMaterial);
+		this.detectorHelper.visible = false;
+
+		this.add(this.detectorContainer);
+		this.add(this.detectorHelper);
+
+		this.signals = editor.signals;
+		this.signals.objectSelected.add(this.onObjectSelected.bind(this));
+		this.signals.detectGeometryChanged.add(this.onObjectSelected.bind(this));
+		this.signals.materialChanged.add(this.onMaterialChanged.bind(this));
+	}
+
+	private onObjectSelected = (object: THREE.Object3D) => {
+		this.detectorHelper.geometry.dispose();
+		this.detectorHelper.geometry = new THREE.BufferGeometry();
+		this.detectorHelper.visible = false;
+
+		if (!this.hasUsefulGeometry(object)) return;
+		this.detectorHelper.position.copy(object.position);
+		this._detectWireMaterial.color.copy(object.material.color);
+		this.detectorHelper.geometry = object.geometry.clone();
+		this.detectorHelper.visible = object.visible;
+
+		this.signals.sceneGraphChanged.dispatch();
+	};
+
+	private onMaterialChanged() {
+		if (isDetectGeometry(this.editor.selected)) {
+			this._detectWireMaterial.color.copy(this.editor.selected.material.color);
+		}
+	}
+
+	copy(source: this, recursive?: boolean | undefined) {
+		super.copy(source, recursive);
+		return this.fromJSON(source.toJSON());
+	}
+
+	reset() {
+		this.name = this._name;
+		this.detectorContainer.reset();
+
+		this.detectorHelper.geometry.dispose();
+
+		return this;
+	}
+
+	toJSON(): DetectorManagerJSON {
+		const { uuid, name, managerType: type, metadata } = this;
+		return {
+			uuid,
+			name,
+			type,
+			metadata,
+			detectors: this.detectorContainer.toJSON()
+		};
+	}
+
+	fromJSON(json: DetectorManagerJSON) {
+		const {
+			metadata: { version }
+		} = this;
+		const { uuid, name, detectors, metadata } = json;
+		if (!metadata || metadata.version !== version)
+			console.warn(`DetectorManager version mismatch: ${metadata?.version} !== ${version}`);
+
+		this.uuid = uuid;
+		this.name = name;
+		this.detectorContainer.fromJSON(detectors);
+		return this;
 	}
 }
 

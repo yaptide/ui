@@ -44,8 +44,8 @@ export class BooleanZone extends SimulationZone {
 	worker?: Comlink.Remote<ZoneWorker>;
 	readonly debouncedUpdatePreview = debounce(200, () => this.updatePreview(), { atBegin: false });
 
-	constructor(editor: YaptideEditor, name?: string) {
-		super(editor, name ?? 'BooleanZone');
+	constructor(editor: YaptideEditor) {
+		super(editor, 'Boolean Zone', 'BooleanZone');
 		this.signals = editor.signals;
 		this._unionOperations = [];
 		this.subscribedObjects = new CounterMap<string>();
@@ -54,15 +54,6 @@ export class BooleanZone extends SimulationZone {
 		this.signals.objectChanged.add(object => this.handleChange(object));
 		this.signals.objectRemoved.add(object => this.handleRemoved(object));
 		this.addUnion();
-	}
-
-	clone(recursive: boolean) {
-		const clonedZone: this = new BooleanZone(this.editor, this.name).copy(
-			this,
-			recursive
-		) as this;
-
-		return clonedZone;
 	}
 
 	copy(source: this, recursive: boolean): this {

@@ -67,7 +67,7 @@ const Loader = (props: { children: ReactNode }) => {
 					dataArray.filter(isFullSimulationData)
 				);
 
-				if (result.length === 0) console.warn('No results data found in loaded data');
+				if (result.length === 0) console.info('No results data found in loaded data');
 
 				setCanLoadResultsData(result.length > 0);
 				return result;

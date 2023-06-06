@@ -1,10 +1,8 @@
 import * as THREE from 'three';
-import { BasicFigure } from '../Figures/BasicFigures';
-import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationZoneJSON } from '../Base/SimulationZone';
-import { SimulationMesh, SimulationMeshJSON } from '../Base/SimulationMesh';
-import { PartialSubtype } from '../../../types/TypeTransformUtil';
 import { AdditionalGeometryDataType } from '../../../util/AdditionalGeometryData';
+import { YaptideEditor } from '../../js/YaptideEditor';
+import { SimulationMeshJSON } from '../Base/SimulationMesh';
+import { BasicFigure } from '../Figures/BasicFigures';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
 	color: 0x00ff00,
@@ -17,9 +15,12 @@ const defaultMaterial = new THREE.MeshBasicMaterial({
 const ctGeometry = new THREE.BoxGeometry(2, 0.5, 1, 1, 1, 1);
 const ctMaterial = defaultMaterial.clone();
 
-type CTCubeJSON = SimulationMeshJSON & {
-	pathOnServer: string;
-};
+export type CTCubeJSON = Omit<
+	SimulationMeshJSON & {
+		pathOnServer: string;
+	},
+	never
+>;
 
 export class CTCube extends BasicFigure<THREE.BoxGeometry> {
 	readonly notScalable = true;
