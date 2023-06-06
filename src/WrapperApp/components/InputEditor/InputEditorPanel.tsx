@@ -14,7 +14,8 @@ import {
 	SimulationInputFiles,
 	_defaultFlukaInputFiles,
 	_defaultShInputFiles,
-	_defaultTopasInputFiles
+	_defaultTopasInputFiles,
+	toSimulationInputFiles
 } from '../../../types/ResponseTypes';
 import { DragDropFiles } from './DragDropFiles';
 import { InputFilesEditor } from './InputFilesEditor';
@@ -63,7 +64,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 
 		handleConvert(editorJSON)
 			.then(inputFiles => {
-				setInputFiles({ ...inputFiles });
+				setInputFiles(toSimulationInputFiles(simulator, inputFiles));
 				enqueueSnackbar('Input files generated', { variant: 'info' });
 			})
 			.catch(e => {
@@ -73,7 +74,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 			.finally(() => {
 				setInProgress(false);
 			});
-	}, [editorRef, enqueueSnackbar, handleConvert]);
+	}, [editorRef, enqueueSnackbar, handleConvert, simulator]);
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const debouncedOnClickGenerate = useCallback(
