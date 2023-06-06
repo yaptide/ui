@@ -7,6 +7,7 @@ import { SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { SimulationMeshJSON } from '../Base/SimulationMesh';
 import { BasicFigure, BoxFigure, CylinderFigure, SphereFigure } from './BasicFigures';
+import { HollowCylinderGeometry } from '../Detectors/HollowCylinderGeometry';
 
 const figureLoader = (editor: YaptideEditor) => (json: SimulationMeshJSON) => {
 	switch (json.type) {

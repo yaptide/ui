@@ -46,8 +46,10 @@ export class HollowCylinderGeometry extends BufferGeometry {
 		const scope = this;
 
 		thetaSegments = Math.floor(Math.max(3, thetaSegments));
-		phiSegments = Math.floor(Math.max(1, phiSegments));
-		heightSegments = Math.floor(heightSegments);
+		phiSegments = Math.floor(
+			Math.max(1, outerRadius > 0 && outerRadius > innerRadius ? phiSegments : 0)
+		);
+		heightSegments = Math.floor(height > 0 ? heightSegments : 1);
 
 		// buffers
 
@@ -59,17 +61,20 @@ export class HollowCylinderGeometry extends BufferGeometry {
 		// helper variables
 
 		let index = 0;
-		const indexArray: number[][] = [];
 		const halfHeight = height / 2;
 		let groupStart = 0;
+		let outerTorsoIndexArray: number[][] = [];
+		let innerTorsoIndexArray: number[][] = [];
 
 		if (height > 0) {
-			generateTorso(true);
-			if (innerRadius > 0) generateTorso(false);
+			outerTorsoIndexArray = generateTorso(true);
+			if (innerRadius > 0 && outerRadius > innerRadius)
+				innerTorsoIndexArray = generateTorso(false);
 		}
-		if (outerRadius > 0) {
-			generateRing(true);
-			generateRing(false);
+
+		if (outerRadius > 0 && outerRadius > innerRadius) {
+			generateRing(true, 0);
+			if (height > 0) generateRing(false, 2);
 		}
 
 		// build geometry
@@ -79,14 +84,13 @@ export class HollowCylinderGeometry extends BufferGeometry {
 		this.setAttribute('normal', new Float32BufferAttribute(normals, 3));
 		this.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
 
-		function generateTorso(outer: boolean) {
+		function generateTorso(outer: boolean, groupIndex: number = outer ? 1 : 3) {
+			const indexArray: number[][] = [];
+
 			const normal = new Vector3();
 			const vertex = new Vector3();
 
 			let groupCount = 0;
-
-			// this will be used to calculate the normal
-			const slope = 0;
 
 			// generate vertices, normals and uvs
 
@@ -99,7 +103,7 @@ export class HollowCylinderGeometry extends BufferGeometry {
 
 				const radius = outer ? outerRadius : innerRadius;
 
-				for (let x = 0; x <= thetaSegments; x++) {
+				for (let x = 0; x < thetaSegments; x++) {
 					const u = x / thetaSegments;
 
 					const theta = u * thetaLength + thetaStart;
@@ -110,13 +114,13 @@ export class HollowCylinderGeometry extends BufferGeometry {
 					// vertex
 
 					vertex.x = radius * sinTheta;
-					vertex.y = -v * height + halfHeight;
-					vertex.z = radius * cosTheta;
+					vertex.y = radius * cosTheta;
+					vertex.z = -v * height + halfHeight;
 					vertices.push(vertex.x, vertex.y, vertex.z);
 
 					// normal
 
-					normal.set(sinTheta, slope, cosTheta).normalize();
+					normal.set(sinTheta, 0, cosTheta).normalize();
 					normals.push(normal.x, normal.y, normal.z);
 
 					// uv
@@ -127,6 +131,8 @@ export class HollowCylinderGeometry extends BufferGeometry {
 
 					indexRow.push(index++);
 				}
+
+				indexRow.push(indexRow[0]);
 
 				// now save vertices of the row in our index array
 
@@ -144,9 +150,13 @@ export class HollowCylinderGeometry extends BufferGeometry {
 					const d = indexArray[y][x + 1];
 
 					// faces
-
-					indices.push(a, b, d);
-					indices.push(b, c, d);
+					if (outer) {
+						indices.push(a, d, b);
+						indices.push(b, d, c);
+					} else {
+						indices.push(a, b, d);
+						indices.push(b, c, d);
+					}
 
 					// update group counter
 
@@ -156,90 +166,209 @@ export class HollowCylinderGeometry extends BufferGeometry {
 
 			// add a group to the geometry. this will ensure multi material support
 
-			scope.addGroup(groupStart, groupCount, outer ? 0 : 1);
+			scope.addGroup(groupStart, groupCount, groupIndex);
+			groupIndex++;
 
 			// calculate new start value for groups
 
 			groupStart += groupCount;
+			return indexArray;
 		}
 
-		function generateRing(top: boolean) {
-			// some helper variables
+		function generateRing(top: boolean, groupIndex: number = top ? 0 : 2) {
+			const indexArray: number[][] = [];
+
+			const normal = new Vector3();
+			const vertex = new Vector3();
+			const uv = new Vector2();
 
 			let groupCount = 0;
 
 			const sign = top ? 1 : -1;
 
-			let radius = innerRadius;
-			const radiusStep = (outerRadius - innerRadius) / phiSegments;
-			const vertex = new Vector3();
-			const uv = new Vector2();
+			// add edge vertex to index array from innerTorso
+			if (innerTorsoIndexArray.length > 0)
+				indexArray.push(innerTorsoIndexArray[top ? 0 : innerTorsoIndexArray.length - 1]);
 
 			// generate vertices, normals and uvs
+			for (
+				let y = innerTorsoIndexArray.length > 0 ? 1 : 0;
+				y <= phiSegments - (outerTorsoIndexArray.length > 0 ? 1 : 0);
+				y++
+			) {
+				const indexRow = [];
 
-			for (let j = 0; j <= phiSegments; j++) {
-				for (let i = 0; i <= thetaSegments; i++) {
-					// values are generate from the inside of the ring to the outside
+				// calculate the radius of the current row
 
-					const segment = thetaStart + (i / thetaSegments) * thetaLength;
+				const v = y / phiSegments;
+				const radius = innerRadius + (outerRadius - innerRadius) * v;
+
+				for (let x = 0; x < thetaSegments; x++) {
+					const u = x / thetaSegments;
+
+					const theta = u * thetaLength + thetaStart;
+
+					const sinTheta = Math.sin(theta);
+					const cosTheta = Math.cos(theta);
 
 					// vertex
 
-					vertex.x = radius * Math.cos(segment);
-					vertex.z = radius * Math.sin(segment);
-					vertex.y = halfHeight * sign;
+					vertex.x = radius * sinTheta;
+					vertex.y = radius * cosTheta;
+					vertex.z = sign * halfHeight;
 
 					vertices.push(vertex.x, vertex.y, vertex.z);
 
 					// normal
 
-					normals.push(0, sign, 0);
+					normal.set(0, sign, 0).normalize();
+					normals.push(normal.x, normal.y, normal.z);
 
 					// uv
 
-					uv.x = (vertex.x / outerRadius + 1) / 2;
-					uv.y = ((sign * vertex.y) / outerRadius + 1) / 2;
-
+					uv.x = cosTheta * 0.5 + 0.5;
+					uv.y = sinTheta * 0.5 * sign + 0.5;
 					uvs.push(uv.x, uv.y);
+
+					// save index of vertex in respective row
+					indexRow.push(index++);
+
+					if (radius === 0) {
+						indexRow.push(...new Array<number>(thetaSegments - 1).fill(indexRow[0]));
+						break;
+					}
 				}
+				indexRow.push(indexRow[0]);
 
-				// increase the radius for next row of vertices
+				// now save vertices of the row in our index array
 
-				radius += radiusStep;
+				indexArray.push(indexRow);
 			}
 
-			// indices
+			// add edge vertex to index array from outerTorso
+			if (outerTorsoIndexArray.length > 0)
+				indexArray.push(outerTorsoIndexArray[top ? 0 : outerTorsoIndexArray.length - 1]);
 
-			for (let j = 0; j < phiSegments; j++) {
-				const thetaSegmentLevel = j * (thetaSegments + 1);
+			// generate indices
 
-				for (let i = 0; i < thetaSegments; i++) {
-					const segment = i + thetaSegmentLevel;
+			for (let x = 0; x < thetaSegments; x++) {
+				for (let y = 0; y < phiSegments; y++) {
+					// we use the index array to access the correct indices
 
-					const a = segment;
-					const b = segment + thetaSegments + 1;
-					const c = segment + thetaSegments + 2;
-					const d = segment + 1;
+					const a = indexArray[y][x];
+					const b = indexArray[y + 1][x];
+					const c = indexArray[y + 1][x + 1];
+					const d = indexArray[y][x + 1];
 
 					// faces
-					if (top === true) {
-						indices.push(a, b, d);
-						indices.push(b, c, d);
+					if (top) {
+						if (d !== a) indices.push(a, d, b);
+						indices.push(b, d, c);
 					} else {
-						indices.push(b, a, d);
-						indices.push(c, b, d);
+						if (d !== a) indices.push(a, b, d);
+						indices.push(b, c, d);
 					}
-					groupCount += 6;
+
+					// update group counter
+
+					groupCount += d !== a ? 6 : 3;
 				}
 			}
 
 			// add a group to the geometry. this will ensure multi material support
 
-			scope.addGroup(groupStart, groupCount, top === true ? 2 : 3);
+			scope.addGroup(groupStart, groupCount, groupIndex);
+			groupIndex++;
 
 			// calculate new start value for groups
 
 			groupStart += groupCount;
+			return indexArray;
+
+			// // save the index of the first center vertex
+			// const centerIndexStart = index;
+
+			// // some helper variables
+
+			// let groupCount = 0;
+
+			// const sign = top ? 1 : -1;
+
+			// let radius = innerRadius;
+			// const radiusStep = (outerRadius - innerRadius) / phiSegments;
+			// const vertex = new Vector3();
+			// const uv = new Vector2();
+
+			// // generate vertices, normals and uvs
+
+			// for (let j = 0; j <= phiSegments; j++) {
+			// 	for (let i = 0; i <= thetaSegments; i++) {
+			// 		// values are generate from the inside of the ring to the outside
+
+			// 		const segment = thetaStart + (i / thetaSegments) * thetaLength;
+
+			// 		// vertex
+
+			// 		vertex.x = radius * Math.cos(segment);
+			// 		vertex.y = radius * Math.sin(segment);
+			// 		vertex.z = halfHeight * sign;
+
+			// 		vertices.push(vertex.x, vertex.y, vertex.z);
+
+			// 		// normal
+
+			// 		normals.push(0, 0, sign);
+
+			// 		// uv
+
+			// 		uv.x = (vertex.x / outerRadius + 1) / 2;
+			// 		uv.y = ((sign * vertex.y) / outerRadius + 1) / 2;
+
+			// 		uvs.push(uv.x, uv.y);
+
+			// 		// increase index
+
+			// 		index++;
+			// 	}
+
+			// 	// increase the radius for next row of vertices
+
+			// 	radius += radiusStep;
+			// }
+
+			// // indices
+
+			// for (let j = 0; j < phiSegments; j++) {
+			// 	const thetaSegmentLevel = j * (thetaSegments + 1);
+
+			// 	for (let i = centerIndexStart; i < centerIndexStart + thetaSegments; i++) {
+			// 		const segment = i + thetaSegmentLevel;
+
+			// 		const a = segment;
+			// 		const b = segment + thetaSegments + 1;
+			// 		const c = segment + thetaSegments + 2;
+			// 		const d = segment + 1;
+
+			// 		// faces
+			// 		if (top === true) {
+			// 			indices.push(a, b, d);
+			// 			indices.push(b, c, d);
+			// 		} else {
+			// 			indices.push(b, a, d);
+			// 			indices.push(c, b, d);
+			// 		}
+			// 		groupCount += 6;
+			// 	}
+			// }
+
+			// // add a group to the geometry. this will ensure multi material support
+
+			// scope.addGroup(groupStart, groupCount, groupIndex);
+			// groupIndex++;
+
+			// // calculate new start value for groups
+
+			// groupStart += groupCount;
 		}
 	}
 }

@@ -1,13 +1,12 @@
 import { Signal } from 'signals';
 import * as THREE from 'three';
-import { YaptideEditor } from '../../js/YaptideEditor';
-import * as CSG from '../../CSG/CSG';
-import { SimulationPoints } from '../Base/SimulationPoints';
-import { DetectorManager } from './DetectorManager';
 import * as DETECT from '../../../types/DetectTypes';
+import { AdditionalGeometryDataType, getGeometryData } from '../../../util/AdditionalGeometryData';
+import * as CSG from '../../CSG/CSG';
+import { YaptideEditor } from '../../js/YaptideEditor';
+import { SimulationPoints, SimulationPointsJSON } from '../Base/SimulationPoints';
 import { SimulationZone } from '../Base/SimulationZone';
-import { SimulationMeshJSON } from '../Base/SimulationMesh';
-import { AdditionalGeometryDataType } from '../../../util/AdditionalGeometryData';
+import { HollowCylinderGeometry } from './HollowCylinderGeometry';
 
 type AdditionalDetectGeometryDataType = Omit<
 	AdditionalGeometryDataType & {
@@ -18,11 +17,16 @@ type AdditionalDetectGeometryDataType = Omit<
 >;
 
 export type DetectorJSON = Omit<
-	Omit<SimulationMeshJSON, 'geometryData'> & {
+	SimulationPointsJSON & {
 		geometryData: AdditionalDetectGeometryDataType;
 	},
 	never
 >;
+
+const detectPointsMaterial: THREE.PointsMaterial = new THREE.PointsMaterial({
+	color: new THREE.Color('cyan'),
+	size: 0.1
+});
 
 export class Detector extends SimulationPoints {
 	readonly notRemovable: boolean = false;
@@ -30,6 +34,8 @@ export class Detector extends SimulationPoints {
 	alphaMap: null = null;
 	size: number = 1;
 	sizeAttenuation: boolean = true;
+	pointsHelper: THREE.Mesh;
+
 	get notMovable() {
 		// custom get function to conditionally return notMoveable property;
 		return ['Zone', 'All'].includes(this.detectorType);
@@ -43,34 +49,8 @@ export class Detector extends SimulationPoints {
 	readonly notRotatable = true;
 	readonly notScalable = true;
 	readonly isDetectGeometry: true = true;
-
-	private positionProxy: THREE.Vector3 = new Proxy(this.position, {
-		get: (target: THREE.Vector3, p: keyof THREE.Vector3) => {
-			const scope = this;
-			const parent: DetectorManager | undefined = this.parent?.parent as
-				| DetectorManager
-				| undefined;
-			switch (p) {
-				case 'copy':
-					return function (v: THREE.Vector3) {
-						target[p].apply(target, [v]);
-						return scope.positionProxy;
-					};
-				case 'add':
-					if (parent)
-						return function (v: THREE.Vector3) {
-							const nV = target[p].apply(target, [v]);
-							parent.detectHelper.position.copy(nV);
-							return nV;
-						};
-					return Reflect.get(target, p);
-				default:
-					return Reflect.get(target, p);
-			}
-		}
-	});
-	private proxy: Detector;
 	private _detectorType: DETECT.DETECTOR_TYPE;
+	private proxy: Detector;
 
 	get detectorType(): DETECT.DETECTOR_TYPE {
 		return this._detectorType;
@@ -115,31 +95,9 @@ export class Detector extends SimulationPoints {
 		this.geometry.computeBoundingSphere();
 	};
 
-	private overrideHandler = {
-		get: (target: Detector, p: keyof Detector) => {
-			let result: unknown;
-			switch (p) {
-				case 'position':
-					result = this.positionProxy;
-					break;
-				default:
-					result = Reflect.get(target, p);
-			}
-			return result;
-		},
-		set: (target: Detector, p: keyof Detector, value: unknown, receiver: unknown) => {
-			const result = Reflect.set(target, p, value, receiver);
-			switch (p) {
-				case 'geometry':
-					this.geometry.computeBoundingSphere();
-					this.updateMatrixWorld(true);
-					break;
-				default:
-					break;
-			}
-			return result;
-		}
-	};
+	reset(): void {
+		throw new Error('Method not implemented.');
+	}
 
 	private generateGeometry(
 		data: DETECT.AnyData = this.geometryData,
@@ -154,21 +112,40 @@ export class Detector extends SimulationPoints {
 					data.height,
 					data.depth,
 					Math.min(
+						data.xSegments * 2,
 						Detector.maxSegmentsAmount,
 						Math.max(1, Math.floor(data.width * Detector.maxDisplayDensity))
 					),
 					Math.min(
+						data.ySegments * 2,
 						Detector.maxSegmentsAmount,
 						Math.max(1, Math.floor(data.height * Detector.maxDisplayDensity))
 					),
 					Math.min(
+						data.zSegments * 2,
 						Detector.maxSegmentsAmount,
 						Math.max(1, Math.floor(data.depth * Detector.maxDisplayDensity))
 					)
 				);
 				break;
 			case 'Cyl':
-				geometry = createCylindricalGeometry(data, new THREE.Matrix4());
+				geometry = new HollowCylinderGeometry(
+					data.innerRadius,
+					data.radius,
+					data.depth,
+					16,
+					Math.min(
+						data.radialSegments * 2,
+						Detector.maxSegmentsAmount,
+						Math.max(1, Math.floor(data.radius * Detector.maxDisplayDensity))
+					),
+
+					Math.min(
+						data.zSegments * 2,
+						Detector.maxSegmentsAmount,
+						Math.max(1, Math.floor(data.depth * 2 * Detector.maxDisplayDensity))
+					)
+				);
 				break;
 			case 'Zone':
 				const zone = this.editor.zoneManager.getZoneByUuid(data.zoneUuid);
@@ -193,8 +170,10 @@ export class Detector extends SimulationPoints {
 		type: string = 'Detector',
 		detectorType: DETECT.DETECTOR_TYPE = 'Mesh'
 	) {
-		super(editor, name, type);
+		super(editor, name, type, detectPointsMaterial.clone());
+		console.log('Detector constructor', this.material);
 		this.signals = editor.signals;
+		this.pointsHelper = editor.detectorManager.detectHelper;
 		this._detectorType = detectorType;
 		this.geometry = this.generateGeometry();
 
@@ -202,7 +181,7 @@ export class Detector extends SimulationPoints {
 			if (zone.uuid === this._geometryData.zoneUuid) this.geometry = this.generateGeometry();
 		});
 
-		this.proxy = new Proxy(this, this.overrideHandler);
+		this.proxy = new Proxy<Detector>(this, this.overrideHandler);
 		return this.proxy;
 	}
 
@@ -249,13 +228,8 @@ export class Detector extends SimulationPoints {
 		this.tryUpdateGeometry();
 	}
 
-	copy(source: this, recursive = true) {
-		return new Proxy(super.copy(source, recursive), this.overrideHandler) as this;
-	}
-
 	toJSON(): DetectorJSON {
-		const { geometryData: partialData, colorHex } = super.toJSON();
-		const { uuid, type, visible, name } = this;
+		const partialData = getGeometryData(this);
 		const geometryType = this.detectorType;
 		const geometryData: AdditionalDetectGeometryDataType = {
 			...partialData,
@@ -263,22 +237,15 @@ export class Detector extends SimulationPoints {
 			geometryType
 		};
 		return {
-			geometryData,
-			colorHex,
-			uuid,
-			type,
-			visible,
-			name
+			...super.toJSON(),
+			geometryData
 		};
 	}
 
 	fromJSON(data: DetectorJSON) {
-		const { geometryData, uuid, name, colorHex, visible } = data;
+		const { geometryData, ...pointsJSON } = data;
+		super.fromJSON(pointsJSON);
 		this.reconstructGeometryFromData(geometryData);
-		this.uuid = uuid;
-		this.name = name;
-		this.visible = visible;
-		this.material.color.setHex(colorHex);
 		return this;
 	}
 
@@ -292,6 +259,9 @@ export class Detector extends SimulationPoints {
 
 export const isDetectGeometry = (x: unknown): x is Detector => x instanceof Detector;
 
+/**
+ * @deprecated
+ */
 function createCylindricalGeometry(data: DETECT.CylData, matrix: THREE.Matrix4) {
 	const geometry1 = new THREE.CylinderGeometry(
 		data.radius,

@@ -11,7 +11,11 @@ import { SimulationElement } from '../../Base/SimulationElement';
 import { WorldZoneHelper } from './WorldZoneHelper';
 import SimulationMaterial from '../../Materials/SimulationMaterial';
 
-export const BOUNDING_ZONE_TYPE = ['SphereGeometry', 'CylinderGeometry', 'BoxGeometry'] as const;
+export const BOUNDING_ZONE_TYPE = [
+	'SphereGeometry',
+	'HollowCylinderGeometry',
+	'BoxGeometry'
+] as const;
 
 export type WorldZoneType = (typeof BOUNDING_ZONE_TYPE)[number];
 

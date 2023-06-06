@@ -30,6 +30,7 @@ import {
 } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 import { isCTCube } from '../../../../Simulation/SpecialComponents/CTCube';
+import { HollowCylinderGeometry } from '../../../../Simulation/Detectors/HollowCylinderGeometry';
 
 const ObjectTypeField = (props: {
 	editor: YaptideEditor;
@@ -230,10 +231,10 @@ const CylinderDimensionsField = (props: {
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const getRenderFlag = useCallback(() => {
-		if (isBasicFigure(watchedObject) && watchedObject.geometryType === 'CylinderGeometry')
+		if (isBasicFigure(watchedObject) && watchedObject.geometryType === 'HollowCylinderGeometry')
 			return true;
 
-		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'CylinderGeometry')
+		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'HollowCylinderGeometry')
 			return !watchedObject.autoCalculate;
 
 		if (isDetectGeometry(watchedObject) && watchedObject.detectorType === 'Cyl') return true;
@@ -255,7 +256,7 @@ const CylinderDimensionsField = (props: {
 		} else if (isCylinderFigure(watchedObject)) {
 			const parameters = watchedObject.geometry.parameters;
 			return {
-				radius: parameters.radiusTop,
+				radius: parameters.outerRadius,
 				innerRadius: 0,
 				height: parameters.height
 			};
@@ -288,21 +289,12 @@ const CylinderDimensionsField = (props: {
 			}
 
 			if (isCylinderFigure(watchedObject)) {
-				const { radius, height } = v;
+				const { radius, innerRadius, height } = v;
 				editor.execute(
 					new SetGeometryCommand(
 						editor,
 						watchedObject.object,
-						new CylinderGeometry(
-							radius,
-							radius,
-							height,
-							16,
-							1,
-							false,
-							0,
-							Math.PI * 2
-						).rotateX(Math.PI / 2)
+						new HollowCylinderGeometry(innerRadius, radius, height)
 					)
 				);
 			}
@@ -389,11 +381,7 @@ const SphereDimensionsField = (props: {
 			if (isSphereFigure(watchedObject)) {
 				const { radius } = v;
 				editor.execute(
-					new SetGeometryCommand(
-						editor,
-						watchedObject.object,
-						new SphereGeometry(radius, 16, 8, 0, Math.PI * 2, 0, Math.PI)
-					)
+					new SetGeometryCommand(editor, watchedObject.object, new SphereGeometry(radius))
 				);
 			}
 		},

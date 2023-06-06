@@ -197,85 +197,93 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 			<ScrollPositionManager scrollKey={`vertical-editor-sidebar`}>
 				{({ connectScrollTarget }: { connectScrollTarget: (node: unknown) => void }) => {
 					return (
-						<div
-							style={{
-								overflow: 'auto',
-								position: 'relative',
-								height: '100%'
-							}}
-							ref={(node: HTMLDivElement) => connectScrollTarget(node)}>
-							<TabPanel
-								value={selectedTab}
-								index={'Geometry'}
-								persistentIfVisited>
-								<EditorSidebarTabTree
-									elements={geometryTabElements}></EditorSidebarTabTree>
-							</TabPanel>
-							<TabPanel
-								value={selectedTab}
-								index={'Scoring'}
-								persistentIfVisited>
-								<EditorSidebarTabTree
-									elements={scoringTabElements}></EditorSidebarTabTree>
-							</TabPanel>
-							<TabPanel
-								customCss={{ background: 'none' }}
-								value={selectedTab}
-								index={'Settings'}
-								persistentIfVisited>
-								<Stack
-									sx={{ padding: '.5rem' }}
-									spacing={2}>
-									<Box>
-										<Typography
-											variant='h6'
-											sx={{ margin: '0.5rem 0' }}>
-											Beam
-										</Typography>
-										<PropertiesPanel
-											editor={editor}
-											boxProps={{
-												sx: { marginTop: '.5rem', overflowY: 'auto' }
-											}}
-										/>
-									</Box>
-									<Divider light />
-									<Box>
-										<Typography
-											variant='h6'
-											sx={{ margin: '0.5rem 0' }}>
-											Physics
-										</Typography>
-										<PhysicConfiguration
-											editor={editor}
-											object={editor.physic}
-										/>
-									</Box>
-									<Divider light />
-									<Box>
-										<Typography
-											variant='h6'
-											sx={{ margin: '0.5rem 0' }}>
-											Special Components
-										</Typography>
-										<BeamModifiersConfiguration editor={editor} />
-									</Box>
-								</Stack>
-							</TabPanel>
+						<>
+							<div
+								style={{
+									position: 'relative',
+									height: 'fit-content'
+								}}>
+								<TabPanel
+									value={selectedTab}
+									index={'Geometry'}
+									persistentIfVisited>
+									<EditorSidebarTabTree
+										elements={geometryTabElements}></EditorSidebarTabTree>
+								</TabPanel>
+								<TabPanel
+									value={selectedTab}
+									index={'Scoring'}
+									persistentIfVisited>
+									<EditorSidebarTabTree
+										elements={scoringTabElements}></EditorSidebarTabTree>
+								</TabPanel>
+								<TabPanel
+									customCss={{ background: 'none' }}
+									value={selectedTab}
+									index={'Settings'}
+									persistentIfVisited>
+									<Stack
+										sx={{ padding: '.5rem' }}
+										spacing={2}>
+										<Box>
+											<Typography
+												variant='h6'
+												sx={{ margin: '0.5rem 0' }}>
+												Beam
+											</Typography>
+											<PropertiesPanel
+												editor={editor}
+												boxProps={{
+													sx: { marginTop: '.5rem', overflowY: 'auto' }
+												}}
+											/>
+										</Box>
+										<Divider light />
+										<Box>
+											<Typography
+												variant='h6'
+												sx={{ margin: '0.5rem 0' }}>
+												Physics
+											</Typography>
+											<PhysicConfiguration
+												editor={editor}
+												object={editor.physic}
+											/>
+										</Box>
+										<Divider light />
+										<Box>
+											<Typography
+												variant='h6'
+												sx={{ margin: '0.5rem 0' }}>
+												Special Components
+											</Typography>
+											<BeamModifiersConfiguration editor={editor} />
+										</Box>
+									</Stack>
+								</TabPanel>
+							</div>
 
 							{selectedTab !== 'Settings' && (
-								<PropertiesPanel
-									editor={editor}
-									boxProps={{
-										sx: {
-											marginTop: '1rem',
-											padding: '0 .5rem',
-											overflowY: 'auto'
-										}
+								<div
+									style={{
+										overflow: 'auto',
+										position: 'relative',
+										height: '100%'
 									}}
-								/>
+									ref={(node: HTMLDivElement) => connectScrollTarget(node)}>
+									<PropertiesPanel
+										editor={editor}
+										boxProps={{
+											sx: {
+												marginTop: '1rem',
+												padding: '0 .5rem',
+												overflowY: 'auto'
+											}
+										}}
+									/>
+								</div>
 							)}
-						</div>
+						</>
 					);
 				}}
 			</ScrollPositionManager>

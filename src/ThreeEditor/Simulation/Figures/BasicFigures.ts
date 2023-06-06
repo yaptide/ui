@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationMesh } from '../Base/SimulationMesh';
 import { AdditionalGeometryDataType } from '../../../util/AdditionalGeometryData';
+import { HollowCylinderGeometry } from '../Detectors/HollowCylinderGeometry';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
 	color: 0x000000,
@@ -39,7 +40,7 @@ export abstract class BasicFigure<
 	}
 }
 
-const boxGeometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
+const boxGeometry = new THREE.BoxGeometry();
 export class BoxFigure extends BasicFigure<THREE.BoxGeometry> {
 	constructor(
 		editor: YaptideEditor,
@@ -57,21 +58,19 @@ export class BoxFigure extends BasicFigure<THREE.BoxGeometry> {
 	}
 }
 
-const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2).rotateX(
-	Math.PI / 2
-) as THREE.CylinderGeometry;
+const cylinderGeometry = new HollowCylinderGeometry();
 
-export class CylinderFigure extends BasicFigure<THREE.CylinderGeometry> {
+export class CylinderFigure extends BasicFigure<HollowCylinderGeometry> {
 	constructor(
 		editor: YaptideEditor,
-		geometry?: THREE.CylinderGeometry,
+		geometry?: HollowCylinderGeometry,
 		material?: THREE.MeshBasicMaterial
 	) {
 		super(
 			editor,
 			'Cylinder',
 			'CylinderFigure',
-			'CylinderGeometry',
+			'HollowCylinderGeometry',
 			geometry ?? cylinderGeometry,
 			material
 		);
@@ -79,17 +78,17 @@ export class CylinderFigure extends BasicFigure<THREE.CylinderGeometry> {
 	reconstructGeometryFromData(data: AdditionalGeometryDataType): void {
 		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
 		const {
-			parameters: { depth, radius }
+			parameters: { depth, outerRadius, innerRadius }
 		} = data;
-		this.geometry = new THREE.CylinderGeometry(
-			radius as number,
-			radius as number,
+		this.geometry = new HollowCylinderGeometry(
+			innerRadius as number,
+			outerRadius as number,
 			depth as number
 		);
 	}
 }
 
-const sphereGeometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI);
+const sphereGeometry = new THREE.SphereGeometry();
 
 export class SphereFigure extends BasicFigure<THREE.SphereGeometry> {
 	readonly notRotatable = true;

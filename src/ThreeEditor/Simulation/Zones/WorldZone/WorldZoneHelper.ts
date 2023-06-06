@@ -3,12 +3,11 @@ import { MeshBasicMaterial, Vector3 } from 'three';
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { PossibleGeometryType } from '../../../../util/AdditionalGeometryData';
 import { WorldZoneType } from './WorldZone';
+import { HollowCylinderGeometry } from '../../Detectors/HollowCylinderGeometry';
 
-const _cylinderGeometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2).rotateX(
-	Math.PI / 2
-) as THREE.CylinderGeometry;
+const _cylinderGeometry = new HollowCylinderGeometry();
 
-const _sphereGeometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI);
+const _sphereGeometry = new THREE.SphereGeometry();
 
 const _defaultMarginMultiplier = 1.1;
 
@@ -20,7 +19,7 @@ export class WorldZoneHelper extends THREE.Object3D {
 		switch (type) {
 			case 'BoxGeometry':
 				return this.boxMesh;
-			case 'CylinderGeometry':
+			case 'HollowCylinderGeometry':
 				return this.cylinderMesh;
 			case 'SphereGeometry':
 				return this.sphereMesh;
@@ -29,7 +28,7 @@ export class WorldZoneHelper extends THREE.Object3D {
 	get allHelpers(): Record<WorldZoneType, THREE.Object3D> {
 		const obj = {
 			BoxGeometry: this._boxHelper,
-			CylinderGeometry: this.cylinderMesh,
+			HollowCylinderGeometry: this.cylinderMesh,
 			SphereGeometry: this.sphereMesh
 		};
 		return obj;
@@ -39,10 +38,10 @@ export class WorldZoneHelper extends THREE.Object3D {
 	marginMultiplier: number;
 	private _boxHelper: THREE.Box3Helper;
 	private _box: THREE.Box3;
-	private _cylinderMesh: THREE.Mesh<THREE.CylinderGeometry, MeshBasicMaterial>;
+	private _cylinderMesh: THREE.Mesh<HollowCylinderGeometry, MeshBasicMaterial>;
 	private _sphereMesh: THREE.Mesh<THREE.SphereGeometry, MeshBasicMaterial>;
 
-	get cylinderMesh(): THREE.Mesh<THREE.CylinderGeometry, MeshBasicMaterial> {
+	get cylinderMesh(): THREE.Mesh<HollowCylinderGeometry, MeshBasicMaterial> {
 		return this._cylinderMesh;
 	}
 	get sphereMesh(): THREE.Mesh<THREE.SphereGeometry, MeshBasicMaterial> {
@@ -109,16 +108,7 @@ export class WorldZoneHelper extends THREE.Object3D {
 		this._box.setFromCenterAndSize(new Vector3(), size);
 
 		// Cylinder
-		this._cylinderMesh.geometry = new THREE.CylinderGeometry(
-			size.x,
-			size.x,
-			size.z,
-			16,
-			1,
-			false,
-			0,
-			Math.PI * 2
-		).rotateX(Math.PI / 2) as THREE.CylinderGeometry;
+		this._cylinderMesh.geometry = new HollowCylinderGeometry(0, size.x, size.z);
 
 		// Sphere
 		this._sphereMesh.geometry = new THREE.SphereGeometry(

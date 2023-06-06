@@ -63,7 +63,7 @@ export function PropertiesCategory(props: {
 			<AccordionDetails>
 				<Grid
 					container
-					spacing={2}>
+					spacing={1}>
 					{children}
 				</Grid>
 			</AccordionDetails>

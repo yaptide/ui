@@ -35,6 +35,7 @@ export class SpecialComponentManager
 	get beamModulators() {
 		return this.beamModulatorContainer.children;
 	}
+
 	_name: string;
 	constructor(editor: YaptideEditor) {
 		super();

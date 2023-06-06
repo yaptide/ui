@@ -67,7 +67,7 @@ export class Cyl extends Data<CylData> {
 	radialSegments: number;
 	zSegments: number;
 	constructor({
-		radius = DEFAULT_ANY.radius,
+		radius: radius = DEFAULT_ANY.radius,
 		innerRadius = DEFAULT_ANY.innerRadius,
 		depth = DEFAULT_ANY.depth,
 		radialSegments = DEFAULT_ANY.radialSegments,

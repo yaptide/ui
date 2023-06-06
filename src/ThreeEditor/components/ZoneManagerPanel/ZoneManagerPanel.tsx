@@ -198,7 +198,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 	const allObjectsRef = useRef<THREE.Object3D[]>([]);
 
 	const refreshObjectsList = useCallback(() => {
-		allObjectsRef.current = [...editor.figureManager.children];
+		allObjectsRef.current = [...editor.figureManager.figures];
 	}, [editor]);
 
 	useEffect(() => {

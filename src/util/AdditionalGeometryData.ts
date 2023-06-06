@@ -1,9 +1,11 @@
 import * as THREE from 'three';
+import { HollowCylinderGeometry } from '../ThreeEditor/Simulation/Detectors/HollowCylinderGeometry';
 
 export type PossibleGeometryType =
 	| THREE.BoxGeometry
 	| THREE.CylinderGeometry
-	| THREE.SphereGeometry;
+	| THREE.SphereGeometry
+	| HollowCylinderGeometry;
 
 const geometryParameters = {
 	BoxGeometry: ['width', 'height', 'depth'],
@@ -12,7 +14,7 @@ const geometryParameters = {
 		['depth', 'height']
 	],
 	SphereGeometry: ['radius'],
-	RingGeometry: ['innerRadius', 'outerRadius']
+	HollowCylinderGeometry: ['innerRadius', 'outerRadius', ['depth', 'height']]
 };
 
 export type AdditionalGeometryDataType = {
@@ -31,7 +33,7 @@ export const getGeometryParameters = (geometry: PossibleGeometryType) => {
 
 	const type = geometry.type as keyof typeof geometryParameters;
 
-	geometryParameters[type].forEach(prop => {
+	geometryParameters[type]?.forEach(prop => {
 		parameters[Array.isArray(prop) ? prop[0] : prop] =
 			geometry.parameters[
 				(Array.isArray(prop) ? prop[1] : prop) as keyof typeof geometry.parameters

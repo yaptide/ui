@@ -26,6 +26,7 @@ import {
 import { YaptideEditor } from '../../YaptideEditor';
 import { UINumber, UIRow, UISelect, UIText } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
+import { HollowCylinderGeometry } from '../../../Simulation/Detectors/HollowCylinderGeometry';
 
 export class ObjectDimensions extends ObjectAbstract {
 	object?: BasicFigure | Detector | WorldZone;
@@ -188,8 +189,9 @@ export class ObjectDimensions extends ObjectAbstract {
 			this.radius2.max = parameters.radius - 1e-5; // innerRadius cannot be greater than radius
 			this.zLength.setValue(parameters.depth);
 		} else if (isCylinderFigure(object)) {
+			console.log(object, object.geometry.parameters);
 			const parameters = object.geometry.parameters;
-			this.radius.setValue(parameters.radiusTop);
+			this.radius.setValue(parameters.outerRadius);
 			this.zLength.setValue(parameters.height);
 		}
 	}
@@ -239,11 +241,11 @@ export class ObjectDimensions extends ObjectAbstract {
 		};
 	}
 
-	getCylinderData(): { radius: number; innerRadius: number; depth: number } {
+	getCylinderData(): { outerRadius: number; innerRadius: number; height: number } {
 		return {
-			radius: this.radius.getValue(),
+			outerRadius: this.radius.getValue(),
 			innerRadius: this.radius2.getValue(),
-			depth: this.zLength.getValue()
+			height: this.zLength.getValue()
 		};
 	}
 
@@ -267,7 +269,7 @@ export class ObjectDimensions extends ObjectAbstract {
 					this.radius.getValue(),
 					this.radius.getValue()
 				);
-			case 'CylinderGeometry':
+			case 'HollowCylinderGeometry':
 				return new THREE.Vector3(
 					this.radius.getValue(),
 					this.radius.getValue(),
@@ -291,7 +293,7 @@ export class ObjectDimensions extends ObjectAbstract {
 				case 'Cyl':
 					geometryData = this.getCylinderData();
 					this.radius.min = geometryData.innerRadius + 1e-5; // Prevent radius from being lower than innerRadius
-					this.radius2.max = geometryData.radius - 1e-5; // innerRadius cannot be greater than radius
+					this.radius2.max = geometryData.outerRadius - 1e-5; // innerRadius cannot be greater than radius
 					break;
 				case 'Zone':
 					geometryData = { zoneUuid: this.zoneUuid.getValue() };
@@ -317,28 +319,15 @@ export class ObjectDimensions extends ObjectAbstract {
 			} else if (isSphereFigure(object)) {
 				const { radius } = this.getSphereData();
 				editor.execute(
-					new SetGeometryCommand(
-						editor,
-						object,
-						new THREE.SphereGeometry(radius, 16, 8, 0, Math.PI * 2, 0, Math.PI)
-					)
+					new SetGeometryCommand(editor, object, new THREE.SphereGeometry(radius))
 				);
 			} else if (isCylinderFigure(object)) {
-				const { radius, depth } = this.getCylinderData();
+				const { outerRadius, innerRadius, height } = this.getCylinderData();
 				editor.execute(
 					new SetGeometryCommand(
 						editor,
 						object,
-						new THREE.CylinderGeometry(
-							radius,
-							radius,
-							depth,
-							16,
-							1,
-							false,
-							0,
-							Math.PI * 2
-						).rotateX(Math.PI / 2)
+						new HollowCylinderGeometry(innerRadius, outerRadius, height, 16)
 					)
 				);
 			}
