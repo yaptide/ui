@@ -26,7 +26,7 @@ function ResultsPanel() {
 
 	const [tabsValue, setTabsValue] = useState(0);
 	const [estimatorsResults, setEstimatorsResults] = useState<EstimatorResults[]>([]);
-	const [groupQuantities, setGroupQuantities] = useState(true);
+	const [groupQuantities, setGroupQuantities] = useState(false);
 
 	useEffect(() => {
 		setTabsValue(0);
