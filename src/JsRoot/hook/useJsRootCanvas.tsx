@@ -46,8 +46,8 @@ export const useJsRootCanvas = (redrawParam: string) => {
 	);
 
 	useEffect(() => {
-		debouncedResizeHandler();
-	}, [debouncedResizeHandler, resizeHeight, resizeWidth]);
+		if (visible) debouncedResizeHandler();
+	}, [debouncedResizeHandler, resizeHeight, resizeWidth, visible]);
 
 	const update = useCallback(
 		(updateObject: (root: typeof JSROOT) => Object) => {
@@ -85,19 +85,13 @@ export const useJsRootCanvas = (redrawParam: string) => {
 	};
 };
 
-interface GraphCanvasProps {
-	drawn: boolean;
-}
-
-export const GraphCanvas = forwardRef<HTMLDivElement, GraphCanvasProps>(
-	(props: GraphCanvasProps, ref) => {
-		return (
-			<div
-				style={{
-					width: '100%',
-					height: 500
-				}}
-				ref={ref}></div>
-		);
-	}
-);
+export const GraphCanvas = forwardRef<HTMLDivElement>((_props: {}, ref) => {
+	return (
+		<div
+			style={{
+				width: '100%',
+				height: 500
+			}}
+			ref={ref}></div>
+	);
+});

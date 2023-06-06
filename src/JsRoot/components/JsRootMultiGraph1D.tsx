@@ -4,7 +4,7 @@ import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
 
 export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string }) {
 	const { page } = props;
-	const { ref, drawn, update } = useJsRootCanvas('AL;gridxy;tickxy');
+	const { ref, update } = useJsRootCanvas('AL;gridxy;tickxy');
 
 	useEffect(() => {
 		update(JSROOT => {
@@ -16,11 +16,17 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 				return entry;
 			}
 
+			let yLabels = new Set<string>();
+			let xLabels = new Set<string>();
+
 			// create example graph
 			const graphs = page.pages.map((page, index) => {
 				const npoints = page.data.values.length;
 				const y = page.data.values;
 				const x = page.axisDim1.values;
+
+				yLabels.add(page.data.name);
+				xLabels.add(page.axisDim1.name);
 
 				const graph = JSROOT.createTGraph(npoints, x, y);
 				graph.fName = page.name;
@@ -44,8 +50,12 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 			histogram.fYaxis.fXmin = Math.min(...page.pages.flatMap(p => p.data.values));
 			histogram.fYaxis.fXmax = Math.max(...page.pages.flatMap(p => p.data.values)) * 1.05;
 
-			histogram.fXaxis.fTitle = `[${page.axisDim1Unit}]`;
-			histogram.fYaxis.fTitle = `[${page.dataUnit}]`;
+			const joinLabels = (labels: Set<string>) => {
+				return Array.from(labels.values()).join(' | ');
+			};
+
+			histogram.fXaxis.fTitle = `${joinLabels(xLabels)} [${page.axisDim1Unit}]`;
+			histogram.fYaxis.fTitle = `${joinLabels(yLabels)} [${page.dataUnit}]`;
 			histogram.fTitle = `${page.name}`;
 
 			// centering axes labels using method suggested here:
@@ -60,8 +70,15 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 
 			multiGraph.fHistogram = histogram;
 
+			const legHeight = Math.min(graphs.length * 0.05, 0.25);
+
 			const leg = JSROOT.create('TLegend');
-			JSROOT.extend(leg, { fX1NDC: 0.1, fY1NDC: 0.5, fX2NDC: 0.5, fY2NDC: 0.7 });
+			JSROOT.extend(leg, {
+				fX1NDC: 0.1,
+				fY1NDC: 0.5,
+				fX2NDC: 0.5,
+				fY2NDC: 0.5 + legHeight
+			});
 
 			graphs.forEach((graph, index) => {
 				leg.fPrimitives.Add(CreateLegendEntry(graph, graph.fName), 'autoplace');
@@ -72,12 +89,7 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 		});
 	}, [page, update]);
 
-	return (
-		<GraphCanvas
-			ref={ref}
-			drawn={drawn}
-		/>
-	);
+	return <GraphCanvas ref={ref} />;
 }
 
 export default JsRootMultiGraph1D;

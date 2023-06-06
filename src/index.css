@@ -9,3 +9,7 @@ body {
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+#jsroot_enlarge_div#jsroot_enlarge_div {
+	z-index: 2000;
+}

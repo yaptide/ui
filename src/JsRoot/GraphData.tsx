@@ -198,7 +198,7 @@ export function generateGraphs(estimator: EstimatorResults, groupQuantities?: bo
 											<Box>
 												<Typography variant='h6'>Rules:</Typography>
 												{filter.rules.map((rule, idx) => (
-													<Typography>
+													<Typography key={rule.uuid}>
 														{rule.keyword}
 														{rule.operator}
 														{rule.value}
