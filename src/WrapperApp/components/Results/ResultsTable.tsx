@@ -71,7 +71,7 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 	};
 
 	return (
-		<Box style={{ width: '100%' }}>
+		<Box style={{ width: '100%', minHeight: '100px' }}>
 			<Button
 				color='secondary'
 				sx={{ mt: '1rem', ml: '.5rem' }}
@@ -100,6 +100,7 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 				getRowHeight={() => 'auto'}
 				getEstimatedRowHeight={() => 200}
 				sx={{
+					'width': '100%',
 					'& .MuiDataGrid-cell': {
 						whiteSpace: 'normal !important',
 						wordWrap: 'break-word !important'

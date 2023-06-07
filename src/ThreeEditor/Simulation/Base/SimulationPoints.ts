@@ -1,10 +1,9 @@
 import * as THREE from 'three';
-import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from './SimulationElement';
 import { SimulationMeshJSON } from './SimulationMesh';
-import { getGeometryParameters } from '../../../util/AdditionalGeometryData';
 
 /**
  * This is the base class for detectors that are represented by points.
@@ -116,12 +115,11 @@ export abstract class SimulationPoints<GeometryDataType = unknown>
 		} as SimulationPointsJSON<GeometryDataType>;
 	}
 	fromJSON(json: SimulationPointsJSON<GeometryDataType>) {
-		const { name, uuid, visible, colorHex, geometryData } = json;
+		const { name, uuid, visible, colorHex } = json;
 		this.name = name;
 		this.uuid = uuid;
 		this.visible = visible;
 		this.material.color.setHex(colorHex);
-		// this.geometryData = geometryData;
 		return this;
 	}
 

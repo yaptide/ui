@@ -6,7 +6,7 @@ import useInterval from 'use-interval';
 import EXAMPLES from '../../../ThreeEditor/examples/examples';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { DEMO_MODE } from '../../../config/Config';
-import { useLoader } from '../../../services/DataLoaderService';
+import { isFullSimulationData, useLoader } from '../../../services/DataLoaderService';
 import { FullSimulationData, useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { OrderBy, OrderType, SimulatorType } from '../../../types/RequestTypes';
@@ -154,7 +154,9 @@ export default function SimulationPanel({
 		if (taskId === null) return goToResults?.call(null);
 
 		if (currentJobStatusData[StatusState.COMPLETED](simulation)) {
-			const fullData = await getFullSimulationData(simulation, controller.signal);
+			const fullData = isFullSimulationData(simulation)
+				? simulation
+				: await getFullSimulationData(simulation, controller.signal);
 			setResultsSimulationData(fullData);
 		}
 	};

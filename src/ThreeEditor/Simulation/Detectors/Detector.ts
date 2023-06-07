@@ -4,9 +4,9 @@ import * as DETECT from '../../../types/DetectTypes';
 import { AdditionalGeometryDataType, getGeometryData } from '../../../util/AdditionalGeometryData';
 import * as CSG from '../../CSG/CSG';
 import { YaptideEditor } from '../../js/YaptideEditor';
+import { HollowCylinderGeometry } from '../Base/HollowCylinderGeometry';
 import { SimulationPoints, SimulationPointsJSON } from '../Base/SimulationPoints';
 import { SimulationZone } from '../Base/SimulationZone';
-import { HollowCylinderGeometry } from '../Base/HollowCylinderGeometry';
 
 type AdditionalDetectGeometryDataType = Omit<
 	AdditionalGeometryDataType & {

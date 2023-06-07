@@ -1,10 +1,10 @@
 import { Button, Divider, Grid } from '@mui/material';
 import { useCallback } from 'react';
-import { BoxGeometry, Object3D, SphereGeometry, Vector3 } from 'three';
+import { BoxGeometry, SphereGeometry, Vector3 } from 'three';
 import { CylData, DETECTOR_OPTIONS } from '../../../../../types/DetectTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
-import { Detector, isDetector } from '../../../../Simulation/Detectors/Detector';
 import { HollowCylinderGeometry } from '../../../../Simulation/Base/HollowCylinderGeometry';
+import { Detector, isDetector } from '../../../../Simulation/Detectors/Detector';
 import {
 	BASIC_GEOMETRY_OPTIONS,
 	BasicFigure,
@@ -13,7 +13,10 @@ import {
 	isCylinderFigure,
 	isSphereFigure
 } from '../../../../Simulation/Figures/BasicFigures';
-import { isCTCube } from '../../../../Simulation/SpecialComponents/CTCube';
+import {
+	BeamModulator,
+	isBeamModulator
+} from '../../../../Simulation/SpecialComponents/BeamModulator';
 import { WorldZone, isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
@@ -31,10 +34,6 @@ import {
 	SelectPropertyField
 } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
-import {
-	BeamModulator,
-	isBeamModulator
-} from '../../../../Simulation/SpecialComponents/BeamModulator';
 
 const ObjectTypeField = (props: {
 	editor: YaptideEditor;

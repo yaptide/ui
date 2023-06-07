@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { useSignal, useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { Detector, isDetector } from '../../../../Simulation/Detectors/Detector';
-import { ProxyState, useSignal, useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
 import { NumberPropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 

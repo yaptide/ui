@@ -1,6 +1,6 @@
 import { RefObject, useEffect } from 'react';
 import { Object3D } from 'three';
-import { isDetector as isDetector } from '../../ThreeEditor/Simulation/Detectors/Detector';
+import { isDetector } from '../../ThreeEditor/Simulation/Detectors/Detector';
 import { isBeam } from '../../ThreeEditor/Simulation/Physics/Beam';
 import { isDetectFilter as isFilter } from '../../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { isOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
