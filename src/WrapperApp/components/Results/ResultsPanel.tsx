@@ -1,4 +1,14 @@
-import { Box, Button, Card, CardContent, Tab, Tabs, Typography } from '@mui/material';
+import {
+	Box,
+	Button,
+	Card,
+	CardContent,
+	FormControlLabel,
+	Switch,
+	Tab,
+	Tabs,
+	Typography
+} from '@mui/material';
 import { SyntheticEvent, useEffect, useState } from 'react';
 import { Estimator, Page, Page0D, generateGraphs, isPage0d } from '../../../JsRoot/GraphData';
 import { useStore } from '../../../services/StoreService';
@@ -16,6 +26,7 @@ function ResultsPanel() {
 
 	const [tabsValue, setTabsValue] = useState(0);
 	const [estimatorsResults, setEstimatorsResults] = useState<EstimatorResults[]>([]);
+	const [groupQuantities, setGroupQuantities] = useState(false);
 
 	useEffect(() => {
 		setTabsValue(0);
@@ -64,13 +75,29 @@ function ResultsPanel() {
 						{simulation.input.inputJson?.project.title ?? simulation.title} [
 						{simulation.startTime.toLocaleString()}]
 					</Typography>
-
-					<Button
-						color='info'
-						size='small'
-						onClick={onClickSaveToFile}>
-						Save to file
-					</Button>
+					<Box
+						sx={{
+							display: 'flex',
+							justifyContent: 'center',
+							alignItems: 'center',
+							gap: '0.5rem'
+						}}>
+						<FormControlLabel
+							control={
+								<Switch
+									checked={groupQuantities}
+									onChange={e => setGroupQuantities(e.target.checked)}
+								/>
+							}
+							label='Group Quantities'
+						/>
+						<Button
+							color='info'
+							size='small'
+							onClick={onClickSaveToFile}>
+							Save to file
+						</Button>
+					</Box>
 				</Card>
 			)}
 
@@ -162,7 +189,7 @@ function ResultsPanel() {
 													<TablePage0D
 														estimator={estimator}></TablePage0D>
 												)}
-												{generateGraphs(estimator)}
+												{generateGraphs(estimator, groupQuantities)}
 											</Box>
 										</TabPanel>
 									);

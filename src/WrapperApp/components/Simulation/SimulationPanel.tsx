@@ -4,7 +4,7 @@ import { useSnackbar } from 'notistack';
 import { useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
-import { useLoader } from '../../../services/DataLoaderService';
+import { isFullSimulationData, useLoader } from '../../../services/DataLoaderService';
 import { OrderBy, OrderType, SimulatorType } from '../../../types/RequestTypes';
 import {
 	SimulationInputFiles,
@@ -154,7 +154,9 @@ export default function SimulationPanel({
 		if (taskId === null) return goToResults?.call(null);
 
 		if (currentJobStatusData[StatusState.COMPLETED](simulation)) {
-			const fullData = await getFullSimulationData(simulation, controller.signal);
+			const fullData = isFullSimulationData(simulation)
+				? simulation
+				: await getFullSimulationData(simulation, controller.signal);
 			setResultsSimulationData(fullData);
 		}
 	};

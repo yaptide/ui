@@ -21,7 +21,7 @@ const isEditorJson = (data: unknown): data is EditorJson => {
 	return (data as EditorJson)?.metadata?.type === 'Editor';
 };
 
-const isFullSimulationData = (data: unknown): data is FullSimulationData => {
+export const isFullSimulationData = (data: unknown): data is FullSimulationData => {
 	const keys: (keyof FullSimulationData)[] = [
 		'input',
 		'estimators',
