@@ -34,6 +34,7 @@ import {
 	SelectPropertyField
 } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
+import { isCTCube } from '../../../../Simulation/SpecialComponents/CTCube';
 
 const ObjectTypeField = (props: {
 	editor: YaptideEditor;
@@ -430,7 +431,9 @@ const ZoneDimensionsField = (props: {
 				);
 			} else if (isBeamModulator(watchedObject)) {
 				editor.execute(
-					new SetValueCommand(editor, watchedObject.object, 'zoneUuid', v.uuid)
+					new SetValueCommand(editor, watchedObject.object, 'geometryParameters', {
+						zoneUuid: v.uuid
+					})
 				);
 			}
 		},
@@ -453,30 +456,38 @@ const ZoneDimensionsField = (props: {
 
 const DimensionsFields = (props: {
 	editor: YaptideEditor;
-	object: BasicFigure | WorldZone | Detector;
+	object: BasicFigure | WorldZone | Detector | BeamModulator;
 }) => {
 	const { object, editor } = props;
 
 	return (
 		<>
-			<BoxDimensionsField
-				editor={editor}
-				object={object}
-			/>
-			<CylinderDimensionsField
-				editor={editor}
-				object={object}
-			/>
-			{isDetector(object) ? (
+			{!isBasicFigure(object) && !isWorldZone(object) && (
 				<ZoneDimensionsField
 					editor={editor}
 					object={object}
 				/>
-			) : (
-				<SphereDimensionsField
-					editor={editor}
-					object={object}
-				/>
+			)}
+			{!isBeamModulator(object) && (
+				<>
+					{!isDetector(object) ? (
+						<SphereDimensionsField
+							editor={editor}
+							object={object}
+						/>
+					) : (
+						<>
+							<BoxDimensionsField
+								editor={editor}
+								object={object}
+							/>
+							<CylinderDimensionsField
+								editor={editor}
+								object={object}
+							/>
+						</>
+					)}
+				</>
 			)}
 		</>
 	);
@@ -491,7 +502,7 @@ export function ObjectDimensions(props: {
 	const visibleFlag =
 		isDetector(object) ||
 		isBeamModulator(object) ||
-		isBasicFigure(object) ||
+		(isBasicFigure(object) && !isCTCube(object)) ||
 		isWorldZone(object);
 
 	return (

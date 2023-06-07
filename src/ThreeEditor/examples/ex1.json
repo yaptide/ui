@@ -84,6 +84,74 @@
 						"uuid": "deb6a8f8-fab3-488e-8a01-9bb3e8ea4649"
 					}
 				],
+				"filters": [
+					{
+						"name": "Protons",
+						"rules": [
+							{
+								"keyword": "Z",
+								"operator": "==",
+								"uuid": "e5f50132-6d2a-4606-a58d-24a764d1a413",
+								"value": 1
+							},
+							{
+								"keyword": "A",
+								"operator": "==",
+								"uuid": "f25fb8bb-fdaa-49ae-9483-76bf6f8de0a6",
+								"value": 1
+							}
+						],
+						"uuid": "9d0bae09-9ebe-46fe-9e59-bd7888db9442"
+					},
+					{
+						"name": "Primaries",
+						"rules": [
+							{
+								"keyword": "Z",
+								"operator": "==",
+								"uuid": "624050ff-9761-4688-99e3-b3ba9592ae78",
+								"value": 1
+							},
+							{
+								"keyword": "A",
+								"operator": "==",
+								"uuid": "6cef8b17-9337-46e5-b522-70a9d1b26324",
+								"value": 1
+							},
+							{
+								"keyword": "GEN",
+								"operator": "==",
+								"uuid": "d9b7c82e-338f-40d9-b316-67ed0bab2eb1",
+								"value": 0
+							}
+						],
+						"uuid": "eacf5223-2411-4529-8abe-2c0fb2daf57f"
+					},
+					{
+						"name": "Secondary_protons",
+						"rules": [
+							{
+								"keyword": "Z",
+								"operator": "==",
+								"uuid": "3d485d37-4753-4afa-85ab-ed0f9bc5ae3b",
+								"value": 1
+							},
+							{
+								"keyword": "A",
+								"operator": "==",
+								"uuid": "b9b5c2a9-6625-409f-81e2-827799cef0a5",
+								"value": 1
+							},
+							{
+								"keyword": "GEN",
+								"operator": ">=",
+								"uuid": "919e4280-15ad-449b-9495-1cf1ac0337bc",
+								"value": 1
+							}
+						],
+						"uuid": "6ba215e8-359e-447d-bac9-4f2808faed51"
+					}
+				],
 				"name": "DetectManager",
 				"uuid": "9A7D17B8-BAE4-441F-965F-490CAA617EC6"
 			},
@@ -302,75 +370,7 @@
 			},
 			"scoringManager": {
 				"name": "Outputs",
-				"filters": [
-					{
-						"name": "Protons",
-						"rules": [
-							{
-								"keyword": "Z",
-								"operator": "==",
-								"uuid": "e5f50132-6d2a-4606-a58d-24a764d1a413",
-								"value": 1
-							},
-							{
-								"keyword": "A",
-								"operator": "==",
-								"uuid": "f25fb8bb-fdaa-49ae-9483-76bf6f8de0a6",
-								"value": 1
-							}
-						],
-						"uuid": "9d0bae09-9ebe-46fe-9e59-bd7888db9442"
-					},
-					{
-						"name": "Primaries",
-						"rules": [
-							{
-								"keyword": "Z",
-								"operator": "==",
-								"uuid": "624050ff-9761-4688-99e3-b3ba9592ae78",
-								"value": 1
-							},
-							{
-								"keyword": "A",
-								"operator": "==",
-								"uuid": "6cef8b17-9337-46e5-b522-70a9d1b26324",
-								"value": 1
-							},
-							{
-								"keyword": "GEN",
-								"operator": "==",
-								"uuid": "d9b7c82e-338f-40d9-b316-67ed0bab2eb1",
-								"value": 0
-							}
-						],
-						"uuid": "eacf5223-2411-4529-8abe-2c0fb2daf57f"
-					},
-					{
-						"name": "Secondary_protons",
-						"rules": [
-							{
-								"keyword": "Z",
-								"operator": "==",
-								"uuid": "3d485d37-4753-4afa-85ab-ed0f9bc5ae3b",
-								"value": 1
-							},
-							{
-								"keyword": "A",
-								"operator": "==",
-								"uuid": "b9b5c2a9-6625-409f-81e2-827799cef0a5",
-								"value": 1
-							},
-							{
-								"keyword": "GEN",
-								"operator": ">=",
-								"uuid": "919e4280-15ad-449b-9495-1cf1ac0337bc",
-								"value": 1
-							}
-						],
-						"uuid": "6ba215e8-359e-447d-bac9-4f2808faed51"
-					}
-				],
-				"outputs": [
+				"scoringOutputs": [
 					{
 						"detectGeometry": "186ec65a-8511-418b-8218-8890138c6b12",
 						"name": "z_profile",

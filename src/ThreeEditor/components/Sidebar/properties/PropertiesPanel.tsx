@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Box } from '@mui/material';
-import { BoxProps } from '@mui/system/Box/Box';
+import { Box, BoxProps } from '@mui/material';
 import { Object3D } from 'three';
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { useCallback, useState } from 'react';
@@ -16,7 +15,7 @@ import { QuantityDifferentialScoring } from './category/QuantityDifferentialScor
 import { BeamConfiguration } from './category/BeamConfiguration';
 import { ObjectMaterial } from './category/ObjectMaterial';
 import { FilterConfiguration } from './category/FilterConfiguration';
-import { CTConfiguration } from './category/CTConfiguration';
+import { Configuration } from './category/Configuration';
 
 export function PropertiesPanel(props: { boxProps: BoxProps; editor: YaptideEditor }) {
 	const { boxProps, editor } = props;
@@ -41,7 +40,7 @@ export function PropertiesPanel(props: { boxProps: BoxProps; editor: YaptideEdit
 					<QuantityConfiguration {...panelProps} />
 					<QuantityDifferentialScoring {...panelProps} />
 					<BeamConfiguration {...panelProps} />
-					<CTConfiguration {...panelProps} />
+					<Configuration {...panelProps} />
 					<ObjectDimensions {...panelProps} />
 					<DetectorGrid {...panelProps} />
 					<ZoneOperations {...panelProps} />

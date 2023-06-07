@@ -9,15 +9,12 @@ import { SimulationMeshJSON } from './SimulationMesh';
  * This is the base class for detectors that are represented by points.
  */
 
-export type SimulationPointsJSON<GeometryDataType> = Omit<
-	SimulationElementJSON &
-		Omit<SimulationMeshJSON, 'geometryData'> & {
-			geometryData: GeometryDataType;
-		},
+export type SimulationPointsJSON = Omit<
+	SimulationElementJSON & Omit<SimulationMeshJSON, 'geometryData'>,
 	never
 >;
 
-export abstract class SimulationPoints<GeometryDataType = unknown>
+export abstract class SimulationPoints
 	extends THREE.Points
 	implements SimulationPropertiesType, SimulationSceneChild, SimulationElement
 {
@@ -55,11 +52,8 @@ export abstract class SimulationPoints<GeometryDataType = unknown>
 		}
 	});
 
-	protected overrideHandler: ProxyHandler<SimulationPoints<GeometryDataType>> = {
-		get: (
-			target: SimulationPoints<GeometryDataType>,
-			p: keyof SimulationPoints<GeometryDataType>
-		) => {
+	protected overrideHandler: ProxyHandler<SimulationPoints> = {
+		get: (target: SimulationPoints, p: keyof SimulationPoints) => {
 			let result: any;
 			switch (p) {
 				case 'position':
@@ -103,7 +97,7 @@ export abstract class SimulationPoints<GeometryDataType = unknown>
 		this.type = type;
 	}
 	abstract pointsHelper: THREE.Mesh;
-	toJSON(): SimulationPointsJSON<GeometryDataType> {
+	toJSON(): SimulationPointsJSON {
 		const { name, type, uuid, visible } = this;
 		const colorHex = this.material.color.getHex();
 		return {
@@ -112,9 +106,9 @@ export abstract class SimulationPoints<GeometryDataType = unknown>
 			uuid,
 			visible,
 			colorHex
-		} as SimulationPointsJSON<GeometryDataType>;
+		};
 	}
-	fromJSON(json: SimulationPointsJSON<GeometryDataType>) {
+	fromJSON(json: SimulationPointsJSON) {
 		const { name, uuid, visible, colorHex } = json;
 		this.name = name;
 		this.uuid = uuid;
@@ -130,7 +124,7 @@ export abstract class SimulationPoints<GeometryDataType = unknown>
 	}
 
 	copy(source: this, recursive = true) {
-		return new Proxy<SimulationPoints<GeometryDataType>>(
+		return new Proxy<SimulationPoints>(
 			super.copy(source, recursive),
 			this.overrideHandler
 		) as this;

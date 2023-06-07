@@ -16,14 +16,17 @@ type AdditionalDetectGeometryDataType = Omit<
 	never
 >;
 
-export type DetectorJSON = SimulationPointsJSON<AdditionalDetectGeometryDataType>;
+export type DetectorJSON = Omit<
+	SimulationPointsJSON & { geometryData: AdditionalDetectGeometryDataType },
+	never
+>;
 
 const detectPointsMaterial: THREE.PointsMaterial = new THREE.PointsMaterial({
 	color: new THREE.Color('cyan'),
 	size: 0.1
 });
 
-export class Detector extends SimulationPoints<AdditionalDetectGeometryDataType> {
+export class Detector extends SimulationPoints {
 	readonly notRemovable: boolean = false;
 	map: null = null;
 	alphaMap: null = null;
@@ -256,77 +259,11 @@ export class Detector extends SimulationPoints<AdditionalDetectGeometryDataType>
 	}
 
 	fromJSON(json: DetectorJSON) {
-		const {
-			geometryData: { geometryType }
-		} = json;
-		this._detectorType = geometryType;
+		const { geometryData } = json;
 		super.fromJSON(json);
+		this.geometryData = geometryData;
 		return this;
 	}
 }
 
 export const isDetector = (x: unknown): x is Detector => x instanceof Detector;
-
-/**
- * @deprecated
- */
-function createCylindricalGeometry(data: DETECT.CylData, matrix: THREE.Matrix4) {
-	const geometry1 = new THREE.CylinderGeometry(
-		data.radius,
-		data.radius,
-		data.depth,
-		Math.min(
-			Detector.maxSegmentsAmount,
-			Math.max(10, Math.floor(Math.PI * data.radius * Detector.maxDisplayDensity))
-		),
-		Math.min(
-			Detector.maxSegmentsAmount,
-			Math.max(1, Math.floor(data.depth * Detector.maxDisplayDensity))
-		)
-	);
-	const geometry2 = new THREE.BoxGeometry(
-		data.radius * 2,
-		data.depth,
-		data.radius * 2,
-		Math.min(
-			Detector.maxSegmentsAmount,
-			Math.max(2, Math.floor(data.radius * 2 * Detector.maxDisplayDensity))
-		),
-		Math.min(
-			Detector.maxSegmentsAmount,
-			Math.max(2, Math.floor(data.depth * Detector.maxDisplayDensity))
-		),
-		Math.min(
-			Detector.maxSegmentsAmount,
-			Math.max(2, Math.floor(data.radius * 2 * Detector.maxDisplayDensity))
-		)
-	);
-
-	const geometry3 = new THREE.CylinderGeometry(
-		Math.min(data.innerRadius, data.radius - 1e-4),
-		Math.min(data.innerRadius, data.radius - 1e-4),
-		data.depth,
-		Math.min(
-			Detector.maxSegmentsAmount,
-			Math.max(10, Math.floor(Math.PI * data.innerRadius * Detector.maxDisplayDensity))
-		),
-		Math.min(
-			Detector.maxSegmentsAmount,
-			Math.max(1, Math.floor(data.depth * Detector.maxDisplayDensity))
-		)
-	);
-	const cyl1 = new THREE.Mesh(geometry1);
-	const cyl2 = new THREE.Mesh(geometry2);
-	const cyl3 = new THREE.Mesh(geometry3);
-	cyl1.updateMatrix();
-	cyl2.updateMatrix();
-	cyl3.updateMatrix();
-	const BSP1 = CSG.CSG.fromMesh(cyl1);
-	const BSP2 = CSG.CSG.fromMesh(cyl2);
-	const BSP3 = CSG.CSG.fromMesh(cyl3);
-	const newGeometry = CSG.CSG.toGeometry(
-		data.innerRadius ? BSP2.intersect(BSP1).subtract(BSP3) : BSP2.intersect(BSP1),
-		matrix
-	);
-	return newGeometry.rotateX(Math.PI / 2); // rotate to align along the z axis
-}

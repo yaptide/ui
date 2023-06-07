@@ -360,7 +360,7 @@ export function ConditionalObjectSelectPropertyField(
 interface SelectPropertyFieldProps<T> {
 	label: string;
 	value: T | null;
-	options: T[];
+	options: readonly T[];
 	onChange: (value: T) => void;
 	getOptionLabel?: (option: T) => string;
 	isOptionEqualToValue?: (option: T, value: T) => boolean;

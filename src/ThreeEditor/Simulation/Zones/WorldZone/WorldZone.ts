@@ -150,6 +150,10 @@ export class WorldZone extends SimulationElement {
 		this._simulationMaterial.increment();
 	}
 
+	get geometry() {
+		return this.helperMesh.geometry;
+	}
+
 	get geometryType() {
 		return this._geometryType;
 	}
