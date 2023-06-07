@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationMesh } from '../Base/SimulationMesh';
 import { AdditionalGeometryDataType } from '../../../util/AdditionalGeometryData';
-import { HollowCylinderGeometry } from '../Detectors/HollowCylinderGeometry';
+import { HollowCylinderGeometry } from '../Base/HollowCylinderGeometry';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
 	color: 0x000000,
@@ -20,6 +20,22 @@ export const BASIC_GEOMETRY_OPTIONS = {
 } as const;
 
 export type BasicGeometry = (typeof BASIC_GEOMETRY_OPTIONS)[keyof typeof BASIC_GEOMETRY_OPTIONS];
+
+export type BoxParameters = {
+	width: number;
+	height: number;
+	depth: number;
+};
+
+export type CylinderParameters = {
+	depth: number;
+	outerRadius: number;
+	innerRadius: number;
+};
+
+export type SphereParameters = {
+	radius: number;
+};
 
 export abstract class BasicFigure<
 	TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry
@@ -49,7 +65,7 @@ export class BoxFigure extends BasicFigure<THREE.BoxGeometry> {
 	) {
 		super(editor, 'Box', 'BoxFigure', 'BoxGeometry', geometry ?? boxGeometry, material);
 	}
-	reconstructGeometryFromData(data: AdditionalGeometryDataType): void {
+	reconstructGeometryFromData(data: AdditionalGeometryDataType<BoxParameters>): void {
 		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
 		const {
 			parameters: { width, height, depth }
@@ -75,7 +91,7 @@ export class CylinderFigure extends BasicFigure<HollowCylinderGeometry> {
 			material
 		);
 	}
-	reconstructGeometryFromData(data: AdditionalGeometryDataType): void {
+	reconstructGeometryFromData(data: AdditionalGeometryDataType<CylinderParameters>): void {
 		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
 		const {
 			parameters: { depth, outerRadius, innerRadius }
@@ -106,7 +122,7 @@ export class SphereFigure extends BasicFigure<THREE.SphereGeometry> {
 			material
 		);
 	}
-	reconstructGeometryFromData(data: AdditionalGeometryDataType): void {
+	reconstructGeometryFromData(data: AdditionalGeometryDataType<SphereParameters>): void {
 		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
 		const {
 			parameters: { radius }

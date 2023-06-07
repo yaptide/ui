@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { AdditionalGeometryDataType } from '../../../util/AdditionalGeometryData';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationMeshJSON } from '../Base/SimulationMesh';
-import { BasicFigure } from '../Figures/BasicFigures';
+import { BasicFigure, BoxParameters } from '../Figures/BasicFigures';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
 	color: 0x00ff00,
@@ -49,7 +49,7 @@ export class CTCube extends BasicFigure<THREE.BoxGeometry> {
 			pathOnServer
 		};
 	}
-	reconstructGeometryFromData(data: AdditionalGeometryDataType): void {
+	reconstructGeometryFromData(data: AdditionalGeometryDataType<BoxParameters>): void {
 		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
 		const {
 			parameters: { width, height, depth }

@@ -68,3 +68,7 @@ export abstract class SimulationMesh<
 	}
 	abstract reconstructGeometryFromData(data: AdditionalGeometryDataType): void;
 }
+
+export function isSimulationMesh(x: unknown): x is SimulationMesh {
+	return x instanceof SimulationMesh;
+}

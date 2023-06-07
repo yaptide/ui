@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { ScoringFilter, isDetectFilter } from '../Simulation/Scoring/ScoringFilter';
-import { Detector, isDetectGeometry } from '../Simulation/Detectors/Detector';
+import { Detector, isDetector } from '../Simulation/Detectors/Detector';
 import {
 	DetectorContainer,
 	DetectorManager,
@@ -204,7 +204,7 @@ export const isScoringContextObject = (x: unknown): x is ScoringContextObject =>
 
 export const isGeometryContextObject = (x: unknown): x is GeometryObject => {
 	return (
-		isDetectGeometry(x) ||
+		isDetector(x) ||
 		isDetectContainer(x) ||
 		isBooleanZone(x) ||
 		isWorldZone(x) ||

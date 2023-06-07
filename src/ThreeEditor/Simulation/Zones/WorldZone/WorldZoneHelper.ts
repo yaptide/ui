@@ -3,7 +3,7 @@ import { MeshBasicMaterial, Vector3 } from 'three';
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { PossibleGeometryType } from '../../../../util/AdditionalGeometryData';
 import { WorldZoneType } from './WorldZone';
-import { HollowCylinderGeometry } from '../../Detectors/HollowCylinderGeometry';
+import { HollowCylinderGeometry } from '../../Base/HollowCylinderGeometry';
 
 const _cylinderGeometry = new HollowCylinderGeometry();
 

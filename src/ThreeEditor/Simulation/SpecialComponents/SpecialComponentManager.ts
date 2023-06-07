@@ -163,8 +163,8 @@ export class SpecialComponentManager
 
 		this.uuid = uuid;
 		this.name = name;
-		this.CTCubeContainer.fromJSON([CTCube]);
-		this.beamModulatorContainer.fromJSON([modulator]);
+		this.CTCubeContainer.fromJSON(CTCube ? [CTCube] : []);
+		this.beamModulatorContainer.fromJSON(modulator ? [modulator] : []);
 		return this;
 	}
 }

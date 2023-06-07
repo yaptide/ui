@@ -2,16 +2,67 @@ import * as THREE from 'three';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationPoints, SimulationPointsJSON } from '../Base/SimulationPoints';
 
-type ModulatorParameters = {};
+type ModulatorGeometryDataType = {
+	geometryType: 'Zone';
+	parameters: ModulatorParameters;
+};
 
-export type BeamModulatorJSON = Omit<SimulationPointsJSON & ModulatorParameters, never>;
+type ModulatorParameters = {
+	zoneUuid: string;
+	modulatorMode: 'Modulus' | 'MonteCarloSampling';
+};
 
-export class BeamModulator extends SimulationPoints {
+export type BeamModulatorJSON = Omit<SimulationPointsJSON<ModulatorGeometryDataType>, never>;
+
+export class BeamModulator extends SimulationPoints<ModulatorGeometryDataType> {
 	pointsHelper: THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>;
 	reset(): void {
-		throw new Error('Method not implemented.');
+		super.reset();
 	}
+	tryUpdateGeometry(): void {
+		this.geometry.dispose();
+		if (this._zoneUuid) {
+			const zone = this.editor.zoneManager.getZoneByUuid(this._zoneUuid);
+			this.geometry = zone?.geometry?.clone() ?? new THREE.BufferGeometry();
+		}
+		this.geometry.computeBoundingSphere();
+	}
+	get geometryParameters(): ModulatorParameters {
+		return {
+			zoneUuid: this._zoneUuid,
+			modulatorMode: this._modulatorMode
+		};
+	}
+	set geometryParameters(parameters: ModulatorParameters) {
+		const { zoneUuid, modulatorMode } = parameters;
+		this._zoneUuid = zoneUuid;
+		this._modulatorMode = modulatorMode;
+		this.tryUpdateGeometry();
+	}
+
+	readonly geometryType: 'Zone' = 'Zone';
 	readonly isBeamModulator: true = true;
+	private _zoneUuid: string = '';
+	private _modulatorMode: 'Modulus' | 'MonteCarloSampling' = 'Modulus';
+	get geometryData(): ModulatorGeometryDataType {
+		const { _zoneUuid: zoneUuid, _modulatorMode: modulatorMode, geometryType } = this;
+		return {
+			geometryType,
+			parameters: {
+				zoneUuid,
+				modulatorMode
+			}
+		};
+	}
+	set geometryData(data: ModulatorGeometryDataType) {
+		console.error('set geometryData', data, this);
+		const { geometryType, parameters } = data;
+		if (geometryType !== 'Zone') throw new Error('Invalid geometry type');
+		const { zoneUuid, modulatorMode } = parameters;
+		this._zoneUuid = zoneUuid;
+		this._modulatorMode = modulatorMode;
+		this.tryUpdateGeometry();
+	}
 	constructor(editor: YaptideEditor) {
 		super(
 			editor,
@@ -36,6 +87,6 @@ export class BeamModulator extends SimulationPoints {
 	}
 }
 
-export function isBeamModulator(object: unknown): object is BeamModulator {
-	return object instanceof BeamModulator;
+export function isBeamModulator(x: unknown): x is BeamModulator {
+	return x instanceof BeamModulator;
 }

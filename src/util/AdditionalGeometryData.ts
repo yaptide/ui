@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { HollowCylinderGeometry } from '../ThreeEditor/Simulation/Detectors/HollowCylinderGeometry';
+import { HollowCylinderGeometry } from '../ThreeEditor/Simulation/Base/HollowCylinderGeometry';
 
 export type PossibleGeometryType =
 	| THREE.BoxGeometry
@@ -17,14 +17,12 @@ const geometryParameters = {
 	HollowCylinderGeometry: ['innerRadius', 'outerRadius', ['depth', 'height']]
 };
 
-export type AdditionalGeometryDataType = {
+export type AdditionalGeometryDataType<ParametersType extends {} = {}> = {
 	id: number;
 	geometryType: string;
 	position: THREE.Vector3Tuple;
 	rotation: THREE.Vector3Tuple;
-	parameters: {
-		[key: string]: number | string;
-	};
+	parameters: ParametersType;
 	userSetRotation?: boolean;
 };
 

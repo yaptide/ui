@@ -1,18 +1,18 @@
-import { YaptideEditor } from '../../../../js/YaptideEditor';
-import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
-import { PropertiesCategory } from './PropertiesCategory';
 import { Object3D } from 'three';
-import { ColorInput, ConditionalNumberPropertyField, PropertyField } from '../fields/PropertyField';
-import { SetMaterialColorCommand } from '../../../../js/commands/SetMaterialColorCommand';
-import { isBeam } from '../../../../Simulation/Physics/Beam';
-import { isBasicFigure } from '../../../../Simulation/Figures/BasicFigures';
-import { isDetectGeometry } from '../../../../Simulation/Detectors/Detector';
-import { MaterialSelect } from '../../../Select/MaterialSelect';
-import { SetZoneMaterialCommand } from '../../../../js/commands/SetZoneMaterialCommand';
-import { SetMaterialValueCommand } from '../../../../js/commands/SetMaterialValueCommand';
-import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
-import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import { isSimulationMesh } from '../../../../Simulation/Base/SimulationMesh';
+import { isSimulationPoints } from '../../../../Simulation/Base/SimulationPoints';
 import { isZone } from '../../../../Simulation/Base/SimulationZone';
+import { isBeam } from '../../../../Simulation/Physics/Beam';
+import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { SetMaterialColorCommand } from '../../../../js/commands/SetMaterialColorCommand';
+import { SetMaterialValueCommand } from '../../../../js/commands/SetMaterialValueCommand';
+import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import { SetZoneMaterialCommand } from '../../../../js/commands/SetZoneMaterialCommand';
+import { MaterialSelect } from '../../../Select/MaterialSelect';
+import { ColorInput, ConditionalNumberPropertyField, PropertyField } from '../fields/PropertyField';
+import { PropertiesCategory } from './PropertiesCategory';
 
 export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
@@ -21,10 +21,10 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 
 	const visibleFlag =
 		isZone(watchedObject) ||
+		isWorldZone(watchedObject) || //TODO: Refactor WorldZone to extend  a Zone
+		isSimulationMesh(watchedObject) ||
 		isBeam(watchedObject) ||
-		isWorldZone(watchedObject) ||
-		isBasicFigure(watchedObject) ||
-		isDetectGeometry(watchedObject);
+		isSimulationPoints(watchedObject);
 
 	const { state: watchedObjectMaterial } = useSmartWatchEditorState(
 		editor,

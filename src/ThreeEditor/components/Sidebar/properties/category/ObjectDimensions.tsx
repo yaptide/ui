@@ -3,8 +3,8 @@ import { useCallback } from 'react';
 import { BoxGeometry, Object3D, SphereGeometry, Vector3 } from 'three';
 import { CylData, DETECTOR_OPTIONS } from '../../../../../types/DetectTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
-import { Detector, isDetectGeometry } from '../../../../Simulation/Detectors/Detector';
-import { HollowCylinderGeometry } from '../../../../Simulation/Detectors/HollowCylinderGeometry';
+import { Detector, isDetector } from '../../../../Simulation/Detectors/Detector';
+import { HollowCylinderGeometry } from '../../../../Simulation/Base/HollowCylinderGeometry';
 import {
 	BASIC_GEOMETRY_OPTIONS,
 	BasicFigure,
@@ -31,6 +31,10 @@ import {
 	SelectPropertyField
 } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
+import {
+	BeamModulator,
+	isBeamModulator
+} from '../../../../Simulation/SpecialComponents/BeamModulator';
 
 const ObjectTypeField = (props: {
 	editor: YaptideEditor;
@@ -41,14 +45,14 @@ const ObjectTypeField = (props: {
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const selectData = useCallback(() => {
-		if (isDetectGeometry(watchedObject))
+		if (isDetector(watchedObject))
 			return { options: DETECTOR_OPTIONS, value: watchedObject.detectorType };
 		return { options: BASIC_GEOMETRY_OPTIONS, value: watchedObject.geometryType };
 	}, [watchedObject])();
 
 	const onChange = useCallback(
 		(value: string) => {
-			if (isDetectGeometry(watchedObject))
+			if (isDetector(watchedObject))
 				return editor.execute(
 					new SetDetectTypeCommand(editor, watchedObject.object, value)
 				);
@@ -61,7 +65,7 @@ const ObjectTypeField = (props: {
 		[editor, watchedObject]
 	);
 
-	const typeSelectable = isDetectGeometry(watchedObject) || isWorldZone(watchedObject);
+	const typeSelectable = isDetector(watchedObject) || isWorldZone(watchedObject);
 
 	return (
 		<>
@@ -128,7 +132,7 @@ const WorldZoneCalculateField = (props: { editor: YaptideEditor; object: WorldZo
 
 const BoxDimensionsField = (props: {
 	editor: YaptideEditor;
-	object: BasicFigure | WorldZone | Detector | Object3D;
+	object: BasicFigure | WorldZone | Detector;
 }) => {
 	const { object, editor } = props;
 
@@ -141,7 +145,7 @@ const BoxDimensionsField = (props: {
 		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'BoxGeometry')
 			return !watchedObject.autoCalculate;
 
-		if (isDetectGeometry(watchedObject) && watchedObject.detectorType === 'Mesh') return true;
+		if (isDetector(watchedObject) && watchedObject.detectorType === 'Mesh') return true;
 
 		return false;
 	}, [watchedObject]);
@@ -150,7 +154,7 @@ const BoxDimensionsField = (props: {
 		if (isWorldZone(watchedObject)) return watchedObject.size.clone();
 
 		let v;
-		if (isDetectGeometry(watchedObject)) v = watchedObject.geometryData;
+		if (isDetector(watchedObject)) v = watchedObject.geometryParameters;
 		else if (isBoxFigure(watchedObject)) v = watchedObject.geometry.parameters;
 		else return new Vector3(0, 0, 0);
 		return new Vector3(v.width, v.height, v.depth);
@@ -158,7 +162,7 @@ const BoxDimensionsField = (props: {
 
 	const handleChanged = useCallback(
 		(v: Vector3) => {
-			if (isDetectGeometry(watchedObject)) {
+			if (isDetector(watchedObject)) {
 				const geometryData = {
 					width: v.x,
 					height: v.y,
@@ -224,7 +228,7 @@ const BoxDimensionsField = (props: {
 
 const CylinderDimensionsField = (props: {
 	editor: YaptideEditor;
-	object: BasicFigure | WorldZone | Detector | Object3D;
+	object: BasicFigure | WorldZone | Detector;
 }) => {
 	const { object, editor } = props;
 
@@ -237,7 +241,7 @@ const CylinderDimensionsField = (props: {
 		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'HollowCylinderGeometry')
 			return !watchedObject.autoCalculate;
 
-		if (isDetectGeometry(watchedObject) && watchedObject.detectorType === 'Cyl') return true;
+		if (isDetector(watchedObject) && watchedObject.detectorType === 'Cyl') return true;
 
 		return false;
 	}, [watchedObject]);
@@ -246,8 +250,8 @@ const CylinderDimensionsField = (props: {
 		if (isWorldZone(watchedObject)) {
 			const { size } = watchedObject;
 			return { radius: size.x, innerRadius: 0, height: size.z };
-		} else if (isDetectGeometry(watchedObject)) {
-			const parameters = watchedObject.geometryData as CylData;
+		} else if (isDetector(watchedObject)) {
+			const parameters = watchedObject.geometryParameters as CylData;
 			return {
 				radius: parameters.radius,
 				innerRadius: parameters.innerRadius,
@@ -266,7 +270,7 @@ const CylinderDimensionsField = (props: {
 
 	const handleChanged = useCallback(
 		(v: ReturnType<typeof getCylinder>) => {
-			if (isDetectGeometry(watchedObject)) {
+			if (isDetector(watchedObject)) {
 				const geometryData = {
 					radius: v.radius,
 					innerRadius: v.innerRadius,
@@ -324,7 +328,7 @@ const CylinderDimensionsField = (props: {
 					handleChanged({ ...getCylinder(), radius: v });
 				}}
 			/>
-			{isDetectGeometry(watchedObject) && (
+			{isDetector(watchedObject) && (
 				<NumberPropertyField
 					label='Inner radius'
 					value={getCylinder().innerRadius}
@@ -341,7 +345,7 @@ const CylinderDimensionsField = (props: {
 
 const SphereDimensionsField = (props: {
 	editor: YaptideEditor;
-	object: BasicFigure | WorldZone | Object3D;
+	object: BasicFigure | WorldZone;
 }) => {
 	const { object, editor } = props;
 
@@ -405,21 +409,29 @@ const SphereDimensionsField = (props: {
 	);
 };
 
-const ZoneDimensionsField = (props: { editor: YaptideEditor; object: Detector | Object3D }) => {
+const ZoneDimensionsField = (props: {
+	editor: YaptideEditor;
+	object: Detector | BeamModulator;
+}) => {
 	const { object, editor } = props;
 
-	const { state: watchedObject } = useSmartWatchEditorState(editor, object as Detector);
+	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const getRenderFlag = useCallback(() => {
-		if (isDetectGeometry(watchedObject) && watchedObject.detectorType === 'Zone') return true;
+		if (isDetector(watchedObject) && watchedObject.detectorType === 'Zone') return true;
+		if (isBeamModulator(watchedObject)) return true;
 		return false;
 	}, [watchedObject]);
 
 	const handleChanged = useCallback(
 		(v: ObjectSelectOptionType) => {
-			if (isDetectGeometry(watchedObject)) {
+			if (isDetector(watchedObject)) {
 				editor.execute(
 					new SetDetectGeometryCommand(editor, watchedObject.object, { zoneUuid: v.uuid })
+				);
+			} else if (isBeamModulator(watchedObject)) {
+				editor.execute(
+					new SetValueCommand(editor, watchedObject.object, 'zoneUuid', v.uuid)
 				);
 			}
 		},
@@ -432,15 +444,18 @@ const ZoneDimensionsField = (props: { editor: YaptideEditor; object: Detector | 
 		<>
 			<ObjectSelectPropertyField
 				label='Zone ID'
-				value={watchedObject.geometryData.zoneUuid}
+				value={watchedObject.geometryParameters.zoneUuid}
 				onChange={handleChanged}
-				options={editor.zoneManager.getBooleanZoneOptions()}
+				options={editor.zoneManager.getZoneOptions()}
 			/>
 		</>
 	);
 };
 
-const DimensionsFields = (props: { editor: YaptideEditor; object: Object3D }) => {
+const DimensionsFields = (props: {
+	editor: YaptideEditor;
+	object: BasicFigure | WorldZone | Detector;
+}) => {
 	const { object, editor } = props;
 
 	return (
@@ -453,14 +468,17 @@ const DimensionsFields = (props: { editor: YaptideEditor; object: Object3D }) =>
 				editor={editor}
 				object={object}
 			/>
-			<SphereDimensionsField
-				editor={editor}
-				object={object}
-			/>
-			<ZoneDimensionsField
-				editor={editor}
-				object={object}
-			/>
+			{isDetector(object) ? (
+				<ZoneDimensionsField
+					editor={editor}
+					object={object}
+				/>
+			) : (
+				<SphereDimensionsField
+					editor={editor}
+					object={object}
+				/>
+			)}
 		</>
 	);
 };
@@ -472,28 +490,34 @@ export function ObjectDimensions(props: {
 	const { object, editor } = props;
 
 	const visibleFlag =
-		!isCTCube(object) &&
-		(isBasicFigure(object) || isDetectGeometry(object) || isWorldZone(object));
+		isDetector(object) ||
+		isBeamModulator(object) ||
+		isBasicFigure(object) ||
+		isWorldZone(object);
 
 	return (
 		<PropertiesCategory
 			category='Dimensions'
 			visible={visibleFlag}>
-			<ObjectTypeField
-				editor={editor}
-				object={object}
-			/>
+			{visibleFlag && (
+				<>
+					<ObjectTypeField
+						editor={editor}
+						object={object}
+					/>
 
-			<DimensionsFields
-				editor={editor}
-				object={object}
-			/>
+					<DimensionsFields
+						editor={editor}
+						object={object}
+					/>
 
-			{isWorldZone(object) && (
-				<WorldZoneCalculateField
-					editor={editor}
-					object={object}
-				/>
+					{isWorldZone(object) && (
+						<WorldZoneCalculateField
+							editor={editor}
+							object={object}
+						/>
+					)}
+				</>
 			)}
 		</PropertiesCategory>
 	);

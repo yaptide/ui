@@ -6,7 +6,7 @@ import * as CSG from '../../CSG/CSG';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationPoints, SimulationPointsJSON } from '../Base/SimulationPoints';
 import { SimulationZone } from '../Base/SimulationZone';
-import { HollowCylinderGeometry } from './HollowCylinderGeometry';
+import { HollowCylinderGeometry } from '../Base/HollowCylinderGeometry';
 
 type AdditionalDetectGeometryDataType = Omit<
 	AdditionalGeometryDataType & {
@@ -16,19 +16,14 @@ type AdditionalDetectGeometryDataType = Omit<
 	never
 >;
 
-export type DetectorJSON = Omit<
-	SimulationPointsJSON & {
-		geometryData: AdditionalDetectGeometryDataType;
-	},
-	never
->;
+export type DetectorJSON = SimulationPointsJSON<AdditionalDetectGeometryDataType>;
 
 const detectPointsMaterial: THREE.PointsMaterial = new THREE.PointsMaterial({
 	color: new THREE.Color('cyan'),
 	size: 0.1
 });
 
-export class Detector extends SimulationPoints {
+export class Detector extends SimulationPoints<AdditionalDetectGeometryDataType> {
 	readonly notRemovable: boolean = false;
 	map: null = null;
 	alphaMap: null = null;
@@ -48,7 +43,7 @@ export class Detector extends SimulationPoints {
 	}
 	readonly notRotatable = true;
 	readonly notScalable = true;
-	readonly isDetectGeometry: true = true;
+	readonly isDetector: true = true;
 	private _detectorType: DETECT.DETECTOR_TYPE;
 	private proxy: Detector;
 
@@ -61,12 +56,30 @@ export class Detector extends SimulationPoints {
 		this.tryUpdateGeometry();
 	}
 
-	get geometryData(): DETECT.AnyData {
+	get geometryData(): AdditionalDetectGeometryDataType {
+		const partialData = getGeometryData(this);
+		const geometryType = this.detectorType;
+		const geometryData: AdditionalDetectGeometryDataType = {
+			...partialData,
+			parameters: this.getData(),
+			geometryType
+		};
+		return geometryData;
+	}
+
+	set geometryData(value: AdditionalDetectGeometryDataType) {
+		const { geometryType, parameters } = value;
+		this._detectorType = geometryType;
+		this.geometryParameters = { ...DETECT.DEFAULT_ANY, ...parameters };
+		this.tryUpdateGeometry();
+	}
+
+	get geometryParameters(): DETECT.AnyData {
 		return this._geometryData;
 	}
 
-	set geometryData(value: DETECT.AnyData) {
-		this._geometryData = value;
+	set geometryParameters(value: DETECT.AnyData) {
+		this._geometryData = { ...DETECT.DEFAULT_ANY, ...value };
 		this.tryUpdateGeometry();
 	}
 
@@ -89,22 +102,15 @@ export class Detector extends SimulationPoints {
 
 	private _geometryData: DETECT.AnyData = DETECT.DEFAULT_ANY;
 
-	private tryUpdateGeometry = (type: DETECT.DETECTOR_TYPE = this.detectorType) => {
+	tryUpdateGeometry = () => {
 		this.geometry.dispose();
-		this.geometry = this.generateGeometry(undefined, type);
+		this.geometry = this.generateGeometry();
 		this.geometry.computeBoundingSphere();
 	};
 
-	reset(): void {
-		throw new Error('Method not implemented.');
-	}
-
-	private generateGeometry(
-		data: DETECT.AnyData = this.geometryData,
-		type: DETECT.DETECTOR_TYPE = this.detectorType
-	): THREE.BufferGeometry {
+	private generateGeometry(): THREE.BufferGeometry {
 		let geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
-
+		const { geometryParameters: data, detectorType: type } = this;
 		switch (type) {
 			case 'Mesh':
 				geometry = new THREE.BoxGeometry(
@@ -187,25 +193,33 @@ export class Detector extends SimulationPoints {
 
 	getMesh(): DETECT.Mesh {
 		if (this.detectorType !== 'Mesh')
-			throw new Error(`DetectGeo of uuid=${this.uuid} isn't of 'Mesh' type`);
+			throw new Error(
+				`Detector of uuid=${this.uuid} is of type '${this.detectorType}' not 'Mesh'`
+			);
 		return new DETECT.Mesh(this._geometryData);
 	}
 
 	getCyl(): DETECT.Cyl {
 		if (this.detectorType !== 'Cyl')
-			throw new Error(`DetectGeo of uuid=${this.uuid} isn't of 'Cyl' type`);
+			throw new Error(
+				`Detector of uuid=${this.uuid} is of type '${this.detectorType}' not 'Cyl'`
+			);
 		return new DETECT.Cyl(this._geometryData);
 	}
 
 	getZone(): DETECT.Zone {
 		if (this.detectorType !== 'Zone')
-			throw new Error(`DetectGeo of uuid=${this.uuid} isn't of 'Zone' type`);
+			throw new Error(
+				`Detector of uuid=${this.uuid} is of type '${this.detectorType}' not 'Zone'`
+			);
 		return new DETECT.Zone(this._geometryData);
 	}
 
 	getAll(): DETECT.All {
 		if (this.detectorType !== 'All')
-			throw new Error(`DetectGeo of uuid=${this.uuid} isn't of 'All' type`);
+			throw new Error(
+				`Detector of uuid=${this.uuid} is of type '${this.detectorType}' not 'All'`
+			);
 		return new DETECT.All(this._geometryData);
 	}
 
@@ -228,36 +242,30 @@ export class Detector extends SimulationPoints {
 		this.tryUpdateGeometry();
 	}
 
+	reset(): void {
+		super.reset();
+		this.setData(DETECT.DEFAULT_ANY);
+	}
+
 	toJSON(): DetectorJSON {
-		const partialData = getGeometryData(this);
-		const geometryType = this.detectorType;
-		const geometryData: AdditionalDetectGeometryDataType = {
-			...partialData,
-			parameters: this.getData(),
-			geometryType
-		};
+		const { geometryData } = this;
 		return {
 			...super.toJSON(),
 			geometryData
 		};
 	}
 
-	fromJSON(data: DetectorJSON) {
-		const { geometryData, ...pointsJSON } = data;
-		super.fromJSON(pointsJSON);
-		this.reconstructGeometryFromData(geometryData);
+	fromJSON(json: DetectorJSON) {
+		const {
+			geometryData: { geometryType }
+		} = json;
+		this._detectorType = geometryType;
+		super.fromJSON(json);
 		return this;
-	}
-
-	reconstructGeometryFromData(data: AdditionalDetectGeometryDataType): void {
-		const { geometryType, ...detectGeometryData } = data;
-		this._geometryData = { ...DETECT.DEFAULT_ANY, ...detectGeometryData };
-		this.detectorType = geometryType;
-		this.geometry = this.generateGeometry();
 	}
 }
 
-export const isDetectGeometry = (x: unknown): x is Detector => x instanceof Detector;
+export const isDetector = (x: unknown): x is Detector => x instanceof Detector;
 
 /**
  * @deprecated

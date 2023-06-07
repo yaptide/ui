@@ -4,17 +4,21 @@ import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from './SimulationElement';
 import { SimulationMeshJSON } from './SimulationMesh';
+import { getGeometryParameters } from '../../../util/AdditionalGeometryData';
 
 /**
  * This is the base class for detectors that are represented by points.
  */
 
-export type SimulationPointsJSON = Omit<
-	SimulationElementJSON & Omit<SimulationMeshJSON, 'geometryData'>,
+export type SimulationPointsJSON<GeometryDataType> = Omit<
+	SimulationElementJSON &
+		Omit<SimulationMeshJSON, 'geometryData'> & {
+			geometryData: GeometryDataType;
+		},
 	never
 >;
 
-export abstract class SimulationPoints
+export abstract class SimulationPoints<GeometryDataType = unknown>
 	extends THREE.Points
 	implements SimulationPropertiesType, SimulationSceneChild, SimulationElement
 {
@@ -23,8 +27,9 @@ export abstract class SimulationPoints
 	material!: THREE.PointsMaterial;
 	readonly type: string;
 	readonly isSimulationElement = true;
+	readonly isSimulationPoints = true;
 	_name: string;
-	abstract pointsHelper: THREE.Mesh;
+	_colorHex: number;
 
 	protected positionProxy: THREE.Vector3 = new Proxy(this.position, {
 		get: (target: THREE.Vector3, p: keyof THREE.Vector3) => {
@@ -51,9 +56,12 @@ export abstract class SimulationPoints
 		}
 	});
 
-	protected overrideHandler = {
-		get: (target: SimulationPoints, p: keyof SimulationPoints) => {
-			let result: unknown;
+	protected overrideHandler: ProxyHandler<SimulationPoints<GeometryDataType>> = {
+		get: (
+			target: SimulationPoints<GeometryDataType>,
+			p: keyof SimulationPoints<GeometryDataType>
+		) => {
+			let result: any;
 			switch (p) {
 				case 'position':
 					result = this.positionProxy;
@@ -92,9 +100,11 @@ export abstract class SimulationPoints
 		this.material = material;
 		this.editor = editor;
 		this.name = this._name = name ?? type;
+		this._colorHex = this.material.color.getHex();
 		this.type = type;
 	}
-	toJSON(): SimulationPointsJSON {
+	abstract pointsHelper: THREE.Mesh;
+	toJSON(): SimulationPointsJSON<GeometryDataType> {
 		const { name, type, uuid, visible } = this;
 		const colorHex = this.material.color.getHex();
 		return {
@@ -103,22 +113,32 @@ export abstract class SimulationPoints
 			uuid,
 			visible,
 			colorHex
-		};
+		} as SimulationPointsJSON<GeometryDataType>;
 	}
-	fromJSON(json: SimulationPointsJSON) {
-		this.name = json.name;
-		this.uuid = json.uuid;
-		this.visible = json.visible;
-		this.material.color.setHex(json.colorHex);
+	fromJSON(json: SimulationPointsJSON<GeometryDataType>) {
+		const { name, uuid, visible, colorHex, geometryData } = json;
+		this.name = name;
+		this.uuid = uuid;
+		this.visible = visible;
+		this.material.color.setHex(colorHex);
+		// this.geometryData = geometryData;
 		return this;
 	}
 
-	abstract reset(): void;
+	reset() {
+		this.name = this._name;
+		this.visible = true;
+		this.material.color.setHex(this._colorHex);
+	}
 
 	copy(source: this, recursive = true) {
-		return new Proxy<SimulationPoints>(
+		return new Proxy<SimulationPoints<GeometryDataType>>(
 			super.copy(source, recursive),
 			this.overrideHandler
 		) as this;
 	}
+}
+
+export function isSimulationPoints(x: unknown): x is SimulationPoints {
+	return x instanceof SimulationPoints;
 }

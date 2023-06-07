@@ -58,7 +58,7 @@ export class ObjectGrid extends ObjectAbstract {
 		if (!object) return;
 
 		this.object = object;
-		const { detectorType: detectType, geometryData } = object;
+		const { detectorType: detectType, geometryParameters: geometryData } = object;
 		hideUIElement(this.xLengthRow);
 		hideUIElement(this.yLengthRow);
 		hideUIElement(this.zLengthRow);

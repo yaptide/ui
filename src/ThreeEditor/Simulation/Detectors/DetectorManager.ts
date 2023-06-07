@@ -5,7 +5,7 @@ import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
-import { Detector, DetectorJSON, isDetectGeometry } from './Detector';
+import { Detector, DetectorJSON, isDetector } from './Detector';
 
 type DetectorManagerJSON = Omit<
 	SimulationElementJSON & {
@@ -48,7 +48,7 @@ export class DetectorManager
 	private managerType: 'DetectorManager' = 'DetectorManager';
 	private hasUsefulGeometry(object: THREE.Object3D): object is Detector {
 		return Boolean(
-			isDetectGeometry(object) &&
+			isDetector(object) &&
 				this.editor.selected === object &&
 				object.geometry &&
 				object.geometry.boundingSphere &&
@@ -107,7 +107,7 @@ export class DetectorManager
 		additionalPredicate?: (value: Detector, index: number, array: Detector[]) => boolean
 	): Record<string, string> {
 		const options = this.detectors
-			.filter(({ detectorType: detectType, geometryData }) => {
+			.filter(({ detectorType: detectType, geometryParameters: geometryData }) => {
 				if (detectType !== 'Zone') return true;
 				return this.editor.zoneManager.getZoneByUuid(geometryData.zoneUuid) !== undefined;
 			})
@@ -154,7 +154,7 @@ export class DetectorManager
 	};
 
 	private onMaterialChanged() {
-		if (isDetectGeometry(this.editor.selected)) {
+		if (isDetector(this.editor.selected)) {
 			this._detectWireMaterial.color.copy(this.editor.selected.material.color);
 		}
 	}
