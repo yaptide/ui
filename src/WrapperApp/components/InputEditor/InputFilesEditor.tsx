@@ -139,10 +139,10 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 										</Button>
 									)}
 								</h2>
-
+								{(() => {console.log("name=", name, "length", value.length); return false})() && (<p></p>)}
 								<CodeEditor
 									aria-label={name + ' text field'}
-									value={value}
+									value={value.substring(0, 10_000)}
 									language='sql'
 									placeholder={`Please enter ${name} content.`}
 									onChange={evn =>
