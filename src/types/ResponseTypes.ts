@@ -1,7 +1,6 @@
 import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
-import { SimulatorType } from './RequestTypes';
 import {
 	IntersectionToObject,
 	TypeIdentifiedByKey,
@@ -72,35 +71,6 @@ export type SimulationInputFiles =
 	| ShInputFilesRecord
 	| TopasInputFilesRecord
 	| FlukaInputFilesRecord;
-
-export function toSimulationInputFiles(simulator: SimulatorType, inputFiles: ShInputFilesRecord | TopasInputFilesRecord | FlukaInputFilesRecord ): SimulationInputFiles {
-	switch (simulator) {
-		case SimulatorType.SHIELDHIT: return toShieldhitInputFiles(inputFiles as unknown as ShInputFilesRecord);
-		case SimulatorType.TOPAS: return toTopasInputFiles(inputFiles as unknown as TopasInputFilesRecord);
-		case SimulatorType.FLUKA: return toFlukaInputFiles(inputFiles as unknown as FlukaInputFilesRecord);
-	}
-}
-
-function toShieldhitInputFiles(inputFiles: ShInputFilesRecord): SimulationInputFiles {
-	return {
-		"beam.dat": inputFiles["beam.dat"],
-		"geo.dat": inputFiles["geo.dat"],
-		"detect.dat": inputFiles["detect.dat"],
-		"mat.dat": inputFiles["mat.dat"],
-	}
-}
-
-function toTopasInputFiles(inputFiles: TopasInputFilesRecord): SimulationInputFiles {
-	return {
-		"topas_config.txt": inputFiles["topas_config.txt"],
-	}
-}
-
-function toFlukaInputFiles(inputFiles: FlukaInputFilesRecord): SimulationInputFiles {
-	return {
-		"fl_sim.inp": inputFiles["fl_sim.inp"],
-	}
-}
 
 export type TaskTime = {
 	hours: string;
