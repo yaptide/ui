@@ -1,6 +1,6 @@
 import { FullSimulationData, recreateRefsInResults } from '../../services/ShSimulatorService';
 
-let canImport = false;
+let canImport = true;
 let iterator = 1;
 const EXAMPLES: FullSimulationData[] = [];
 while (canImport) {

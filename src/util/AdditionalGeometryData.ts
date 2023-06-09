@@ -18,7 +18,6 @@ const geometryParameters = {
 };
 
 export type AdditionalGeometryDataType<ParametersType extends {} = {}> = {
-	id: number;
 	geometryType: string;
 	position: THREE.Vector3Tuple;
 	rotation: THREE.Vector3Tuple;
@@ -47,7 +46,6 @@ export function getGeometryData(geometryMesh: THREE.Mesh | THREE.Points) {
 	const parameters = getGeometryParameters(geometry);
 
 	let geometryData: AdditionalGeometryDataType = {
-		id: geometryMesh.id,
 		geometryType: geometryMesh.geometry.type,
 		position: geometryMesh.position.toArray(),
 		rotation: geometryMesh.userData['rotation'],

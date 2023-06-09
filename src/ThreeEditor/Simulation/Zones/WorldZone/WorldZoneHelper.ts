@@ -15,7 +15,7 @@ export class WorldZoneHelper extends THREE.Object3D {
 	/**
 	 * Function returns THREE.Mesh based on type name on input
 	 */
-	getMeshType(type: WorldZoneType): THREE.Mesh<PossibleGeometryType, MeshBasicMaterial> {
+	getMeshByType(type: WorldZoneType): THREE.Mesh<PossibleGeometryType, MeshBasicMaterial> {
 		switch (type) {
 			case 'BoxGeometry':
 				return this.boxMesh;

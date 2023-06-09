@@ -66,8 +66,9 @@ export abstract class SimulationSceneContainer<
 
 	fromJSON(json: ReturnType<TChild['toJSON']>[]) {
 		this.reset();
-		json.forEach(json => {
-			const child = this._loader(json);
+		if (!Array.isArray(json)) throw new Error(`Expected array, got ${typeof json}`);
+		json.forEach(childJson => {
+			const child = this._loader(childJson);
 			this.add(child);
 		});
 	}

@@ -2,7 +2,6 @@ import { Signal } from 'signals';
 import * as THREE from 'three';
 import * as DETECT from '../../../types/DetectTypes';
 import { AdditionalGeometryDataType, getGeometryData } from '../../../util/AdditionalGeometryData';
-import * as CSG from '../../CSG/CSG';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { HollowCylinderGeometry } from '../Base/HollowCylinderGeometry';
 import { SimulationPoints, SimulationPointsJSON } from '../Base/SimulationPoints';

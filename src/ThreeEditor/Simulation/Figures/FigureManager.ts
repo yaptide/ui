@@ -42,7 +42,7 @@ export class FigureManager
 {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: 0.9, //update this to current YaptideEditor version when format changes
+		version: 1.0, //update this to current YaptideEditor version when format changes
 		type: 'Manager',
 		generator: 'FigureManager.toJSON'
 	} satisfies Record<string, string | number>;

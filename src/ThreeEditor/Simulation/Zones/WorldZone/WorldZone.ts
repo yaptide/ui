@@ -22,14 +22,12 @@ export type WorldZoneType = (typeof BOUNDING_ZONE_TYPE)[number];
 export interface WorldZoneJSON {
 	uuid: string;
 	type: string;
-	center: THREE.Vector3;
-	size: THREE.Vector3;
-	geometryType: WorldZoneType;
 	name: string;
 	marginMultiplier: number;
 	autoCalculate: boolean;
 	materialUuid: string;
-	geometryData?: AdditionalGeometryDataType;
+	geometryData: AdditionalGeometryDataType;
+	visible: boolean;
 }
 
 const _materialDefault = new THREE.MeshBasicMaterial({
@@ -62,20 +60,21 @@ export class WorldZone extends SimulationElement {
 	private _geometryType: WorldZoneType = 'BoxGeometry';
 	private _helper!: WorldZoneHelper;
 	public get helperMesh(): THREE.Mesh {
-		return this._helper.getMeshType(this.geometryType);
+		return this._helper.getMeshByType(this.geometryType);
 	}
 	helperProxy!: WorldZoneHelper;
 
-	private _handleHelperUpdate = {
-		get: (target: WorldZoneHelper, prop: keyof WorldZoneHelper) => {
-			switch (prop) {
+	private _handleHelperUpdate: ProxyHandler<WorldZoneHelper> = {
+		apply: (target: WorldZoneHelper, thisArg: keyof WorldZoneHelper, args: any[]) => {
+			const result = Reflect.apply(target[thisArg] as Function, target, args);
+			switch (thisArg) {
 				case 'reset':
 				case 'updateHelper':
 				case 'calculateFromObject':
 					this.updatePosition();
 					this.signals.objectChanged.dispatch(this);
 			}
-			return Reflect.get(target, prop);
+			return result;
 		}
 	};
 
@@ -127,8 +126,8 @@ export class WorldZone extends SimulationElement {
 		const handleSignal = (object: Object3D) => {
 			if (this.autoCalculate && !isWorldZone(object)) this.debouncedCalculate();
 			else if (object === this) {
-				this._helper.getMeshType(this.geometryType).visible = object.visible;
-				this.signals.objectChanged.dispatch(this._helper.getMeshType(this.geometryType));
+				this._helper.getMeshByType(this.geometryType).visible = object.visible;
+				this.signals.objectChanged.dispatch(this._helper.getMeshByType(this.geometryType));
 			}
 		};
 		this.signals.objectChanged.add(handleSignal);
@@ -225,19 +224,18 @@ export class WorldZone extends SimulationElement {
 	}
 
 	toJSON() {
+		console.log('toJSON', this.geometryType);
 		const { uuid: materialUuid } = this.simulationMaterial;
-		const geometryData = getGeometryData(this.helper.getMeshType(this.geometryType));
+		const geometryData = getGeometryData(this.helper.getMeshByType(this.geometryType));
 		geometryData.position = this.position.toArray();
 		const jsonObject: WorldZoneJSON = {
 			uuid: this.uuid,
-			center: this.center,
-			size: this.size,
 			type: this.type,
-			geometryType: this.geometryType,
 			name: this.name,
 			marginMultiplier: this.helper.marginMultiplier,
 			autoCalculate: this.autoCalculate,
 			materialUuid,
+			visible: this.visible,
 			geometryData
 		};
 
@@ -245,15 +243,25 @@ export class WorldZone extends SimulationElement {
 	}
 
 	fromJSON(data: WorldZoneJSON) {
-		this.geometryType = data.geometryType;
-		this.name = data.name;
-		this.helper.marginMultiplier = data.marginMultiplier;
-		this.helper.updateHelper(data.center, data.size);
-		this.position.copy(data.center);
+		const {
+			geometryData: { position, parameters, geometryType },
+			name,
+			marginMultiplier,
+			autoCalculate,
+			materialUuid
+		} = data;
+		const center = new Vector3().fromArray(position);
+		const { width, height, depth, radius } = parameters as Record<string, number>;
+		const size = new Vector3(width ?? radius, height ?? radius, depth ?? radius);
+		this.geometryType = geometryType as WorldZoneType;
+		this.name = name;
+		this.helper.marginMultiplier = marginMultiplier;
+		this.helper.updateHelper(center, size);
+		this.position.copy(center);
 
-		this.autoCalculate = data.autoCalculate;
+		this.autoCalculate = autoCalculate;
 		this.simulationMaterial =
-			this.editor.materialManager.getMaterialByUuid(data.materialUuid) ??
+			this.editor.materialManager.getMaterialByUuid(materialUuid) ??
 			this.editor.materialManager.defaultMaterial;
 
 		return this;

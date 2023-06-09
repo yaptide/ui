@@ -93,7 +93,7 @@ const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]
 	estimators.forEach(estimator => {
 		const { pages, scoringOutputJsonRef } = estimator;
 		pages.forEach((page, idx) => {
-			const quantity = scoringOutputJsonRef?.quantities.active[idx];
+			const quantity = scoringOutputJsonRef?.quantities[idx];
 			const filter = FiltersJSON.find(o => o.uuid === quantity?.filter);
 			page.filterRef = filter;
 			page.name = quantity?.name;

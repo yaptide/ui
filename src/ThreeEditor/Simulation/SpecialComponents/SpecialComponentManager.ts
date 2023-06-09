@@ -9,8 +9,8 @@ import { SimulationElementJSON } from '../Base/SimulationElement';
 
 type SpecialComponentManagerJSON = Omit<
 	SimulationElementJSON & {
-		CTCube: CTCubeJSON;
-		modulator: BeamModulatorJSON;
+		CTCube?: CTCubeJSON;
+		modulator?: BeamModulatorJSON;
 		metadata: Record<string, string | number>;
 	},
 	never
@@ -25,7 +25,7 @@ export class SpecialComponentManager
 {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: 0.9, //update this to current YaptideEditor version when format changes
+		version: 1.0, //update this to current YaptideEditor version when format changes
 		type: 'Manager',
 		generator: 'SpecialComponentManager.toJSON'
 	} satisfies Record<string, string | number>;

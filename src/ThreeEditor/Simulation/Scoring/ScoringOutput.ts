@@ -8,7 +8,7 @@ import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
 
 export type ScoringOutputJSON = Omit<
 	SimulationElementJSON & {
-		quantities: { active: ScoringQuantityJSON[] };
+		quantities: ScoringQuantityJSON[];
 		detectGeometry?: string;
 		primaries?: number;
 		trace: boolean;
@@ -136,9 +136,7 @@ export class ScoringOutput
 	toJSON(): ScoringOutputJSON {
 		return {
 			...super.toJSON(),
-			quantities: {
-				active: this.quantityContainer.toJSON()
-			},
+			quantities: this.quantityContainer.toJSON(),
 			detectGeometry: this._geometry,
 			trace: this._trace[0],
 			...(this.primaries[1] && { primaries: this.primaries[1] }),
@@ -151,9 +149,7 @@ export class ScoringOutput
 		this.name = json.name;
 		this._primaries = [json.primaries !== undefined, json.primaries ?? null];
 		this._trace = [json.trace, json.traceFilter ?? null];
-		Object.values(json.quantities)
-			.flat()
-			.forEach(qty => this.addQuantity(ScoringQuantity.fromJSON(this.editor, qty)));
+		this.quantityContainer.fromJSON(json.quantities);
 		this.geometry = json.detectGeometry
 			? this.editor.detectorManager.getDetectorByUuid(json.detectGeometry)
 			: null;
