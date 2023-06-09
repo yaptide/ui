@@ -15,11 +15,11 @@ export function DetectorGrid(props: { editor: YaptideEditor; object: Detector })
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
-	const [visibleFlag, setVisibleFlag] = useState(flagValue(watchedObject));
+	const [visibleFlag, setVisibleFlag] = useState(flagValue(object));
 
 	useEffect(() => {
-		setVisibleFlag(flagValue(watchedObject));
-	}, [watchedObject]);
+		setVisibleFlag(flagValue(object));
+	}, [object]);
 
 	useSignal(editor, 'detectTypeChanged', obj => setVisibleFlag(flagValue(obj as Detector)));
 
