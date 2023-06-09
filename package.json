@@ -26,7 +26,7 @@
 		"convert-units": "^3.0.0-beta.5",
 		"glob": "^9.3.0",
 		"ky": "^0.33.2",
-		"material-ui-popup-state": "^5.0.8",
+		"material-ui-popup-state": "^5.0.9",
 		"notistack": "^3.0.1",
 		"object-hash": "^3.0.0",
 		"pyodide": "^0.23.2",
