@@ -1,7 +1,6 @@
 import { Button, Divider, Grid } from '@mui/material';
 import { useCallback } from 'react';
 import { BoxGeometry, SphereGeometry, Vector3 } from 'three';
-import { CylData, DETECTOR_OPTIONS } from '../../../../../types/DetectTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { HollowCylinderGeometry } from '../../../../Simulation/Base/HollowCylinderGeometry';
 import { Detector, isDetector } from '../../../../Simulation/Detectors/Detector';
@@ -35,6 +34,10 @@ import {
 } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 import { isCTCube } from '../../../../Simulation/SpecialComponents/CTCube';
+import {
+	CylData,
+	DETECTOR_OPTIONS
+} from '../../../../../types/SimulationTypes/DetectTypes/DetectTypes';
 
 const ObjectTypeField = (props: {
 	editor: YaptideEditor;

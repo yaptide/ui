@@ -61,7 +61,7 @@ export class ObjectSettings extends ObjectAbstract {
 		this.object = object;
 
 		this.geometry.setOptions(this.editor.detectorManager.getDetectorOptions());
-		this.geometry.setValue(object.geometry?.uuid);
+		this.geometry.setValue(object.detector?.uuid);
 
 		if (trace[0]) {
 			const options = this.editor.scoringManager.getFilterOptions();

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationPoints, SimulationPointsJSON } from '../Base/SimulationPoints';
+import { ConfigSourceFile } from '../../../types/SimulationTypes/ConfigTypes';
 
 type ModulatorGeometryDataType = {
 	geometryType: 'Zone';
@@ -15,6 +16,7 @@ export type BeamModulatorJSON = Omit<
 	SimulationPointsJSON & {
 		geometryData: ModulatorGeometryDataType;
 		modulatorMode: BeamModulatorMode;
+		sourceFile: ConfigSourceFile;
 	},
 	never
 >;
@@ -25,8 +27,19 @@ export type BeamModulatorMode = (typeof BEAM_MODULATOR_MODE_OPTIONS)[number];
 
 export class BeamModulator extends SimulationPoints {
 	pointsHelper: THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>;
+	sourceFile: ConfigSourceFile = {
+		name: '',
+		value: ''
+	};
 	reset(): void {
 		super.reset();
+		this._zoneUuid = '';
+		this.modulatorMode = 'Modulus';
+		this.sourceFile = {
+			name: '',
+			value: ''
+		};
+		this.tryUpdateGeometry();
 	}
 	tryUpdateGeometry(): void {
 		this.geometry.dispose();
@@ -93,18 +106,20 @@ export class BeamModulator extends SimulationPoints {
 		);
 	}
 	toJSON(): BeamModulatorJSON {
-		const { geometryData, modulatorMode } = this;
+		const { geometryData, modulatorMode, sourceFile } = this;
 		return {
 			...super.toJSON(),
 			geometryData,
-			modulatorMode
+			modulatorMode,
+			sourceFile
 		};
 	}
 	fromJSON(json: BeamModulatorJSON): this {
-		const { geometryData, modulatorMode, ...rest } = json;
+		const { geometryData, modulatorMode, sourceFile, ...rest } = json;
 		super.fromJSON(rest);
-		this.geometryData = json.geometryData;
-		this.modulatorMode = json.modulatorMode;
+		this.geometryData = geometryData;
+		this.modulatorMode = modulatorMode;
+		this.sourceFile = sourceFile;
 		return this;
 	}
 }

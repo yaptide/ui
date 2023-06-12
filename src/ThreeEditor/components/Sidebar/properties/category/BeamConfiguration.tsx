@@ -1,5 +1,4 @@
-import { Button, Divider, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { ChangeEvent } from 'react';
+import { Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { Object3D } from 'three';
 import { PARTICLE_TYPES } from '../../../../../types/Particle';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
@@ -21,75 +20,8 @@ import {
 	SelectPropertyField,
 	Vector2PropertyField
 } from '../fields/PropertyField';
+import { SourceFileDefinitionField } from '../fields/SourceFileField';
 import { PropertiesCategory } from './PropertiesCategory';
-
-function BeamDefinitionField(props: {
-	beam: Beam;
-	onChange: (value: Beam['beamSourceFile']) => void;
-}) {
-	const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
-		if (!e.target.files) {
-			return;
-		}
-		const file = e.target.files[0];
-
-		const { name } = file;
-
-		const reader = new FileReader();
-		reader.onload = evt => {
-			if (!evt?.target?.result) {
-				return;
-			}
-			const { result } = evt.target;
-			if (typeof result === 'string') {
-				props.onChange({ name, value: result });
-			} else {
-				console.error('Invalid file type');
-			}
-		};
-		reader.readAsBinaryString(file);
-	};
-
-	const clearFile = () => {
-		props.onChange({ name: '', value: '' });
-	};
-
-	return (
-		<>
-			{props.beam.beamSourceFile.name && (
-				<PropertyField label='Filename'>{props.beam.beamSourceFile.name}</PropertyField>
-			)}
-
-			<PropertyField>
-				<Stack
-					gap={1}
-					direction='row'>
-					<Button
-						sx={{ flexGrow: 1 }}
-						variant='contained'
-						component='label'>
-						Upload File
-						<input
-							type='file'
-							hidden
-							onChange={handleFileUpload}
-						/>
-					</Button>
-
-					<Button
-						disabled={!props.beam.beamSourceFile.name}
-						sx={{ flexGrow: 1 }}
-						variant='contained'
-						component='label'
-						onClick={clearFile}
-						color='warning'>
-						Clear File
-					</Button>
-				</Stack>
-			</PropertyField>
-		</>
-	);
-}
 
 function BeamSigmaField(props: { beam: Beam; onChange: (value: Beam['sigma']) => void }) {
 	const configuration = {
@@ -226,17 +158,17 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 				<ToggleButtonGroup
 					color='primary'
 					size='small'
-					value={watchedObject.beamSourceType}
+					value={watchedObject.sourceType}
 					exclusive
 					onChange={(_, v) => {
-						if (v) setValueCommand(v, 'beamSourceType');
+						if (v) setValueCommand(v, 'sourceType');
 					}}>
 					<ToggleButton value={BEAM_SOURCE_TYPE.simple}>Simple</ToggleButton>
 					<ToggleButton value={BEAM_SOURCE_TYPE.file}>File</ToggleButton>
 				</ToggleButtonGroup>
 			</PropertyField>
 
-			{watchedObject.beamSourceType === BEAM_SOURCE_TYPE.simple && (
+			{watchedObject.sourceType === BEAM_SOURCE_TYPE.simple && (
 				<>
 					<NumberPropertyField
 						label='Energy mean'
@@ -336,7 +268,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 				</>
 			)}
 
-			{watchedObject.beamSourceType === BEAM_SOURCE_TYPE.file && (
+			{watchedObject.sourceType === BEAM_SOURCE_TYPE.file && (
 				<>
 					<BeamSadField
 						beam={watchedObject}
@@ -347,10 +279,10 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 
 					<PropertyField children={<Divider />} />
 
-					<BeamDefinitionField
-						beam={watchedObject}
+					<SourceFileDefinitionField
+						object={watchedObject}
 						onChange={v => {
-							setValueCommand(v, 'beamSourceFile');
+							setValueCommand(v, 'sourceFile');
 						}}
 					/>
 				</>

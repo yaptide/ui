@@ -1,6 +1,6 @@
 import { MathUtils } from 'three';
 import { ScoringFilter } from '../../../Simulation/Scoring/ScoringFilter';
-import * as Rule from '../../../../types/DetectRuleTypes';
+import * as Rule from '../../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
 import {
 	createFullwidthButton,
 	createRuleConfigurationRow,

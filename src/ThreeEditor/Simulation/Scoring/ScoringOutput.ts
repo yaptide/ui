@@ -9,7 +9,7 @@ import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
 export type ScoringOutputJSON = Omit<
 	SimulationElementJSON & {
 		quantities: ScoringQuantityJSON[];
-		detectGeometry?: string;
+		detectorUuid?: string;
 		primaries?: number;
 		trace: boolean;
 		traceFilter?: string;
@@ -45,7 +45,7 @@ export class ScoringOutput
 	get notVisibleChildren(): boolean {
 		return this._trace[0];
 	}
-	private _geometry?: string;
+	private _detector?: string;
 	private _primaries: [boolean, number | null];
 
 	//TODO: Issue#320
@@ -80,16 +80,16 @@ export class ScoringOutput
 	}
 
 	getTakenDetector(): string | null {
-		return this._geometry ?? null;
+		return this._detector ?? null;
 	}
 
-	get geometry(): Detector | null {
-		if (!this._geometry) return null;
-		return this.editor.detectorManager.getDetectorByUuid(this._geometry);
+	get detector(): Detector | null {
+		if (!this._detector) return null;
+		return this.editor.detectorManager.getDetectorByUuid(this._detector);
 	}
 
-	set geometry(geometry: Detector | null) {
-		this._geometry = geometry?.uuid;
+	set detector(detector: Detector | null) {
+		this._detector = detector?.uuid;
 	}
 
 	constructor(editor: YaptideEditor) {
@@ -137,7 +137,7 @@ export class ScoringOutput
 		return {
 			...super.toJSON(),
 			quantities: this.quantityContainer.toJSON(),
-			detectGeometry: this._geometry,
+			detectorUuid: this._detector,
 			trace: this._trace[0],
 			...(this.primaries[1] && { primaries: this.primaries[1] }),
 			...(this.trace[1] && { traceFilter: this.trace[1] })
@@ -150,8 +150,8 @@ export class ScoringOutput
 		this._primaries = [json.primaries !== undefined, json.primaries ?? null];
 		this._trace = [json.trace, json.traceFilter ?? null];
 		this.quantityContainer.fromJSON(json.quantities);
-		this.geometry = json.detectGeometry
-			? this.editor.detectorManager.getDetectorByUuid(json.detectGeometry)
+		this.detector = json.detectorUuid
+			? this.editor.detectorManager.getDetectorByUuid(json.detectorUuid)
 			: null;
 		return this;
 	}

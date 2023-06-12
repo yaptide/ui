@@ -57,12 +57,13 @@ const migrateInputJson = (inputJson) => {
         figures: oldScene.object.children.map(child => {
                 const {
                     name,
-                    type,
+                    type: meshType,
                     uuid,
                     geometryData: partialGeometryData,
                 }
                 = child;
-                checkEmpty({name, uuid, geometryData: partialGeometryData});
+                checkEmpty({name, uuid, type: meshType, geometryData: partialGeometryData});
+                const type = meshType.replace('Mesh', 'Figure');
                 return {
                     name,
                     type,
@@ -181,7 +182,7 @@ const migrateInputJson = (inputJson) => {
         }),
         outputs: oldScoringManager.scoringOutputs.map(output=>{
             return {
-                detectGeometry: output.detectGeometry,
+                detectorUuid: output.detectGeometry,
                 uuid: output.uuid,
                 name: output.name,
                 quantities: output.quantities.active,
@@ -190,8 +191,11 @@ const migrateInputJson = (inputJson) => {
             }
         })
     }
+    const { beamSourceType: sourceType, sourceFile: sourceFile, ...beamParams } = oldBeam;
     const beam = {
-        ...oldBeam,
+        ...beamParams,
+        sourceType,
+        sourceFile,
         uuid: '0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0FFFFF',
         name: 'Beam',
         type: 'Beam',

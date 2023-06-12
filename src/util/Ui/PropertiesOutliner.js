@@ -9,7 +9,7 @@ import {
 	UIText
 } from '../../ThreeEditor/js/libs/ui';
 import { UIOutliner } from '../../ThreeEditor/js/libs/ui.three';
-import * as Rule from '../../types/DetectRuleTypes';
+import * as Rule from '../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
 import { FONT_SIZE } from './Uis';
 
 /**

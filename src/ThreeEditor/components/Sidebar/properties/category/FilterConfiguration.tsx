@@ -5,7 +5,10 @@ import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
 import { Button } from '@mui/material';
 import { ScoringFilter, isDetectFilter } from '../../../../Simulation/Scoring/ScoringFilter';
-import { Keyword, RULE_DEFAULTS } from '../../../../../types/DetectRuleTypes';
+import {
+	Keyword,
+	RULE_DEFAULTS
+} from '../../../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
 import { SetFilterRuleCommand } from '../../../../js/commands/SetFilterRuleCommand';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 

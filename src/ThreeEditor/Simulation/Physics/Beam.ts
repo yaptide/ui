@@ -7,6 +7,7 @@ import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { Particle, PARTICLE_TYPES } from '../../../types/Particle';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
+import { ConfigSourceFile } from '../../../types/SimulationTypes/ConfigTypes';
 
 export const SIGMA_TYPE = {
 	'Gaussian': 'Gaussian',
@@ -36,7 +37,7 @@ export type BeamJSON = Omit<
 		energySpread: number;
 		energyLowCutoff: number;
 		energyHighCutoff: number;
-		beamSourceType: BeamSourceType;
+		sourceType: BeamSourceType;
 		divergence: {
 			x: number;
 			y: number;
@@ -61,7 +62,7 @@ export type BeamJSON = Omit<
 
 		colorHex: number;
 		numberOfParticles: number;
-		beamSourceFile: BeamSourceFile;
+		sourceFile: ConfigSourceFile;
 	},
 	never
 >;
@@ -69,7 +70,7 @@ export type BeamJSON = Omit<
 const _default = {
 	position: new THREE.Vector3(0, 0, 0),
 	direction: new THREE.Vector3(0, 0, 1),
-	beamSourceType: BEAM_SOURCE_TYPE.simple,
+	sourceType: BEAM_SOURCE_TYPE.simple,
 	energy: 150,
 	energySpread: 1.5,
 	energyLowCutoff: 0,
@@ -97,15 +98,10 @@ const _default = {
 
 	numberOfParticles: 10000,
 
-	beamSourceFile: {
+	sourceFile: {
 		value: '',
 		name: ''
 	}
-};
-
-type BeamSourceFile = {
-	value: string;
-	name: string;
 };
 
 export class Beam extends SimulationElement {
@@ -136,7 +132,7 @@ export class Beam extends SimulationElement {
 	energyHighCutoff: number;
 	direction: Vector3;
 
-	beamSourceType: BeamSourceType = _default.beamSourceType;
+	sourceType: BeamSourceType = _default.sourceType;
 
 	divergence: {
 		x: number;
@@ -164,7 +160,7 @@ export class Beam extends SimulationElement {
 		a: number;
 	};
 
-	beamSourceFile: BeamSourceFile;
+	sourceFile: ConfigSourceFile;
 
 	get particle(): Particle {
 		return PARTICLE_TYPES.find(p => p.id === this.particleData.id) as Particle;
@@ -200,7 +196,7 @@ export class Beam extends SimulationElement {
 
 		this.numberOfParticles = _default.numberOfParticles;
 
-		this.beamSourceFile = { ..._default.beamSourceFile };
+		this.sourceFile = { ..._default.sourceFile };
 
 		this.helper = this.initHelper();
 
@@ -286,8 +282,8 @@ export class Beam extends SimulationElement {
 		this.divergence = { ..._default.divergence };
 		this.particleData = _default.particle;
 		this.sigma = { ..._default.sigma };
-		this.beamSourceType = _default.beamSourceType;
-		this.beamSourceFile = { ..._default.beamSourceFile };
+		this.sourceType = _default.sourceType;
+		this.sourceFile = { ..._default.sourceFile };
 		this.material.color.setHex(0xffff00); // yellow
 	}
 
@@ -306,8 +302,8 @@ export class Beam extends SimulationElement {
 			particle: this.particleData,
 			colorHex: this.material.color.getHex(),
 			numberOfParticles: this.numberOfParticles,
-			beamSourceFile: this.beamSourceFile,
-			beamSourceType: this.beamSourceType
+			sourceFile: this.sourceFile,
+			sourceType: this.sourceType
 		};
 
 		return jsonObject;
@@ -326,10 +322,11 @@ export class Beam extends SimulationElement {
 		this.particleData = loadedData.particle;
 		this.material.color.setHex(loadedData.colorHex);
 		this.numberOfParticles = loadedData.numberOfParticles;
-		this.beamSourceFile = loadedData.beamSourceFile;
+		this.sourceFile = loadedData.sourceFile;
 		this.sigma = loadedData.sigma;
 		this.sad = loadedData.sad;
-		this.beamSourceType = loadedData.beamSourceType;
+		this.sourceType = loadedData.sourceType;
+		this.sourceFile = loadedData.sourceFile;
 		return this;
 	}
 

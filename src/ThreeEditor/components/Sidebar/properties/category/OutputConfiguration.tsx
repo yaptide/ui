@@ -42,11 +42,11 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 				<>
 					<ObjectSelectPropertyField
 						label='Detect geometry'
-						value={watchedObject.geometry?.uuid ?? ''}
+						value={watchedObject.detector?.uuid ?? ''}
 						options={editor.detectorManager.getDetectorOptions(value => {
 							return (
 								!editor.scoringManager.getTakenDetectors().includes(value.uuid) ||
-								value.uuid === watchedObject.geometry?.uuid
+								value.uuid === watchedObject.detector?.uuid
 							);
 						})}
 						onChange={handleChangedGeometry}

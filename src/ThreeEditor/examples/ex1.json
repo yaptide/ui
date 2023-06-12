@@ -683,11 +683,11 @@
         ]
       },
       "beam": {
-        "beamSourceFile": {
+        "sourceFile": {
           "name": "",
           "value": ""
         },
-        "beamSourceType": "simple",
+        "sourceType": "simple",
         "colorHex": 16776960,
         "direction": [
           0,

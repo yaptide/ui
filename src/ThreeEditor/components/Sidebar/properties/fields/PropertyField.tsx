@@ -10,7 +10,7 @@ import {
 	PARTICLE_OPTIONS,
 	RULE_UNITS,
 	RULE_VALUE_RANGES
-} from '../../../../../types/DetectRuleTypes';
+} from '../../../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
 import { DETECTOR_MODIFIERS_OPTIONS } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
 import { createRowColor } from '../../../../../util/Ui/Color';

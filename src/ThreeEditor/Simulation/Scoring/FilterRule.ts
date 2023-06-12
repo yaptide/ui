@@ -7,7 +7,7 @@ import {
 	Keyword,
 	Operator,
 	isValidID
-} from '../../../types/DetectRuleTypes';
+} from '../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
 
 //https://stackoverflow.com/questions/48757095/typescript-class-composition
 

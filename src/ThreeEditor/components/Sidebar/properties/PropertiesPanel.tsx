@@ -15,7 +15,7 @@ import { QuantityDifferentialScoring } from './category/QuantityDifferentialScor
 import { BeamConfiguration } from './category/BeamConfiguration';
 import { ObjectMaterial } from './category/ObjectMaterial';
 import { FilterConfiguration } from './category/FilterConfiguration';
-import { Configuration } from './category/Configuration';
+import { ObjectConfiguration } from './category/ObjectConfiguration';
 
 export function PropertiesPanel(props: { boxProps: BoxProps; editor: YaptideEditor }) {
 	const { boxProps, editor } = props;
@@ -40,7 +40,7 @@ export function PropertiesPanel(props: { boxProps: BoxProps; editor: YaptideEdit
 					<QuantityConfiguration {...panelProps} />
 					<QuantityDifferentialScoring {...panelProps} />
 					<BeamConfiguration {...panelProps} />
-					<Configuration {...panelProps} />
+					<ObjectConfiguration {...panelProps} />
 					<ObjectDimensions {...panelProps} />
 					<DetectorGrid {...panelProps} />
 					<ZoneOperations {...panelProps} />
