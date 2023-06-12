@@ -8,7 +8,6 @@ import {
 	isSphereFigure
 } from '../../../Simulation/Figures/BasicFigures';
 import { Detector, isDetector } from '../../../Simulation/Detectors/Detector';
-import { DETECTOR_OPTIONS } from '../../../../types/DetectTypes';
 import {
 	createRowParamNumber,
 	createRowSelect,
@@ -27,6 +26,7 @@ import { YaptideEditor } from '../../YaptideEditor';
 import { UINumber, UIRow, UISelect, UIText } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 import { HollowCylinderGeometry } from '../../../Simulation/Base/HollowCylinderGeometry';
+import { DETECTOR_OPTIONS } from '../../../../types/SimulationTypes/DetectTypes/DetectTypes';
 
 export class ObjectDimensions extends ObjectAbstract {
 	object?: BasicFigure | Detector | WorldZone;

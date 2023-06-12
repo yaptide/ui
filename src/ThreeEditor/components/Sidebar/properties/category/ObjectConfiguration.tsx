@@ -47,13 +47,13 @@ export function ObjectConfiguration(props: { editor: YaptideEditor; object: Obje
 						<>
 							<SelectPropertyField
 								label='Modulator mode'
-								value={watchedObject.modulatorMode}
+								value={watchedObject.simulationMethod}
 								onChange={value => {
 									editor.execute(
 										new SetValueCommand(
 											editor,
 											watchedObject.object,
-											'modulatorMode',
+											'simulationMethod',
 											value
 										)
 									);

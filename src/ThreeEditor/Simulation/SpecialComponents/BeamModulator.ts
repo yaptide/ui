@@ -15,15 +15,15 @@ type ModulatorParameters = {
 export type BeamModulatorJSON = Omit<
 	SimulationPointsJSON & {
 		geometryData: ModulatorGeometryDataType;
-		modulatorMode: BeamModulatorMode;
+		simulationMethod: BeamsimulationMethod;
 		sourceFile: ConfigSourceFile;
 	},
 	never
 >;
 
-export const BEAM_MODULATOR_MODE_OPTIONS = ['Modulus', 'MonteCarloSampling'] as const;
+export const BEAM_MODULATOR_MODE_OPTIONS = ['modulus', 'sampling'] as const;
 
-export type BeamModulatorMode = (typeof BEAM_MODULATOR_MODE_OPTIONS)[number];
+export type BeamsimulationMethod = (typeof BEAM_MODULATOR_MODE_OPTIONS)[number];
 
 export class BeamModulator extends SimulationPoints {
 	pointsHelper: THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>;
@@ -34,7 +34,7 @@ export class BeamModulator extends SimulationPoints {
 	reset(): void {
 		super.reset();
 		this._zoneUuid = '';
-		this.modulatorMode = 'Modulus';
+		this.simulationMethod = 'modulus';
 		this.sourceFile = {
 			name: '',
 			value: ''
@@ -75,7 +75,7 @@ export class BeamModulator extends SimulationPoints {
 			}
 		};
 	}
-	modulatorMode: BeamModulatorMode = 'Modulus';
+	simulationMethod: BeamsimulationMethod = 'modulus';
 	set geometryData(data: ModulatorGeometryDataType) {
 		const { geometryType, parameters } = data;
 		if (geometryType !== 'Zone') throw new Error('Invalid geometry type');
@@ -106,19 +106,19 @@ export class BeamModulator extends SimulationPoints {
 		);
 	}
 	toJSON(): BeamModulatorJSON {
-		const { geometryData, modulatorMode, sourceFile } = this;
+		const { geometryData, simulationMethod, sourceFile } = this;
 		return {
 			...super.toJSON(),
 			geometryData,
-			modulatorMode,
+			simulationMethod,
 			sourceFile
 		};
 	}
 	fromJSON(json: BeamModulatorJSON): this {
-		const { geometryData, modulatorMode, sourceFile, ...rest } = json;
+		const { geometryData, simulationMethod, sourceFile, ...rest } = json;
 		super.fromJSON(rest);
 		this.geometryData = geometryData;
-		this.modulatorMode = modulatorMode;
+		this.simulationMethod = simulationMethod;
 		this.sourceFile = sourceFile;
 		return this;
 	}
