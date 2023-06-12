@@ -26,6 +26,8 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 	const inputFiles = props.inputFiles ?? _defaultShInputFiles;
 	const simulator = props.simulator;
 	const theme = useTheme();
+	const largeFileSize = 10_000;
+	const largeFileLinesLimit = 100;
 
 	const canBeDeleted = (name: string) => {
 		switch (props.simulator) {
@@ -96,6 +98,11 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 						return index1 - index2;
 					})
 					.map(([name, value]) => {
+						const isLargeFile = value.length > largeFileSize;
+						const content = !isLargeFile
+							? value
+							: value.split('\n').slice(0, largeFileLinesLimit).join('\n') +
+							  '\n\n... Output truncated ...';
 						return (
 							<Box key={name}>
 								<h2>
@@ -138,18 +145,24 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 											Delete
 										</Button>
 									)}
+									{isLargeFile && (
+										<Box
+											color='error.main'
+											sx={{
+												ml: 1,
+												display: 'inline-flex',
+												fontSize: 'initial'
+											}}>
+											File is to large and was truncated...
+										</Box>
+									)}
 								</h2>
-								{(() => {console.log("name=", name, "length", value.length); return false})() && (<p></p>)}
 								<CodeEditor
 									aria-label={name + ' text field'}
-									value={value.substring(0, 10_000)}
+									value={content}
 									language='sql'
 									placeholder={`Please enter ${name} content.`}
-									onChange={evn =>
-										updateInputFiles(old => {
-											return { ...old, [name]: evn.target.value };
-										})
-									}
+									disabled={isLargeFile}
 									data-color-mode={theme.palette.mode}
 									padding={15}
 									style={{
