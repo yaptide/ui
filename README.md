@@ -44,11 +44,25 @@ Then open [http://localhost:3000/web_dev](http://localhost:3000/web_dev) to view
 
 The page will reload if you make edits.
 
+### Building the app using the Dockerfile
+
+To build the docker image, type:
+
+```bash
+docker build -t ui .
+```
+
+Then you can run the docker container named `ui` and serve the UI on port 80:
+
+```bash
+docker run --rm -d -p 80:80/tcp --name ui ui
+```
+
 ## Requirements
 
 - Node.js 18.x or higher
 - Python 3.9+
-- pip
+- pip and venv
 
 ## Private docker image generated in the GHCR
 
@@ -58,7 +72,7 @@ The package is here https://github.com/yaptide/ui/pkgs/container/ui-web
 Command below will run the docker container named `ui` and serve the UI on port 80:
 
 ```bash
-docker run --rm -d -p 80:80/tcp --name ui ghcr.io/yaptide/ui-web:latest
+docker run --rm -d -p 80:80/tcp --name ui ghcr.io/yaptide/ui-web:master
 ```
 
 ## Credits
