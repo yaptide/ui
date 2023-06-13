@@ -484,7 +484,7 @@
         ],
         "outputs": [
           {
-            "detectGeometry": "186ec65a-8511-418b-8218-8890138c6b12",
+            "detectorUuid": "186ec65a-8511-418b-8218-8890138c6b12",
             "uuid": "d24dd7eb-6a7c-40d0-b39e-f4424b3dd937",
             "name": "z_profile",
             "quantities": [
@@ -520,7 +520,7 @@
             "type": "ScoringOutput"
           },
           {
-            "detectGeometry": "3306e98b-5da2-46ee-8892-ac0191d645a7",
+            "detectorUuid": "3306e98b-5da2-46ee-8892-ac0191d645a7",
             "uuid": "6e69ee1b-a73c-4936-a5a2-e81f5bf8bc04",
             "name": "yz_profile",
             "quantities": [
@@ -549,7 +549,7 @@
             "type": "ScoringOutput"
           },
           {
-            "detectGeometry": "53fff3c4-30de-4210-9066-20dc0f90cccb",
+            "detectorUuid": "53fff3c4-30de-4210-9066-20dc0f90cccb",
             "uuid": "2e46a6ab-35d7-4fce-9de8-406a47fc9180",
             "name": "entrance",
             "quantities": [
@@ -615,7 +615,7 @@
             "type": "ScoringOutput"
           },
           {
-            "detectGeometry": "deb6a8f8-fab3-488e-8a01-9bb3e8ea4649",
+            "detectorUuid": "deb6a8f8-fab3-488e-8a01-9bb3e8ea4649",
             "uuid": "a9e8737f-edae-45fe-9395-1e6b220ef384",
             "name": "peak",
             "quantities": [
@@ -4376,7 +4376,7 @@
         }
       ],
       "scoringOutputJsonRef": {
-        "detectGeometry": "186ec65a-8511-418b-8218-8890138c6b12",
+        "detectorUuid": "186ec65a-8511-418b-8218-8890138c6b12",
         "name": "z_profile",
         "quantities": {
           "active": [
@@ -102026,7 +102026,7 @@
         }
       ],
       "scoringOutputJsonRef": {
-        "detectGeometry": "3306e98b-5da2-46ee-8892-ac0191d645a7",
+        "detectorUuid": "3306e98b-5da2-46ee-8892-ac0191d645a7",
         "name": "yz_profile",
         "quantities": {
           "active": [
@@ -103663,7 +103663,7 @@
         }
       ],
       "scoringOutputJsonRef": {
-        "detectGeometry": "53fff3c4-30de-4210-9066-20dc0f90cccb",
+        "detectorUuid": "53fff3c4-30de-4210-9066-20dc0f90cccb",
         "name": "entrance",
         "quantities": {
           "active": [
@@ -105337,7 +105337,7 @@
         }
       ],
       "scoringOutputJsonRef": {
-        "detectGeometry": "deb6a8f8-fab3-488e-8a01-9bb3e8ea4649",
+        "detectorUuid": "deb6a8f8-fab3-488e-8a01-9bb3e8ea4649",
         "name": "peak",
         "quantities": {
           "active": [

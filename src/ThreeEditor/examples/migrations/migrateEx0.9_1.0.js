@@ -191,7 +191,7 @@ const migrateInputJson = (inputJson) => {
             }
         })
     }
-    const { beamSourceType: sourceType, sourceFile: sourceFile, ...beamParams } = oldBeam;
+    const { beamSourceType: sourceType, sourceFile, ...beamParams } = oldBeam;
     const beam = {
         ...beamParams,
         sourceType,

@@ -224,7 +224,6 @@ export class WorldZone extends SimulationElement {
 	}
 
 	toJSON() {
-		console.log('toJSON', this.geometryType);
 		const { uuid: materialUuid } = this.simulationMaterial;
 		const geometryData = getGeometryData(this.helper.getMeshByType(this.geometryType));
 		geometryData.position = this.position.toArray();

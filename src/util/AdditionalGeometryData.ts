@@ -14,7 +14,7 @@ const geometryParameters = {
 		['depth', 'height']
 	],
 	SphereGeometry: ['radius'],
-	HollowCylinderGeometry: ['innerRadius', 'outerRadius', ['depth', 'height']]
+	HollowCylinderGeometry: ['innerRadius', ['radius', 'outerRadius'], ['depth', 'height']]
 };
 
 export type AdditionalGeometryDataType<ParametersType extends {} = {}> = {

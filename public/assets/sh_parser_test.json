@@ -315,7 +315,7 @@
 					],
 					"disabled": []
 				},
-				"detectGeometry": "563DBCFF-0B85-4511-B557-DE55AB4FA692",
+				"detectorUuid": "563DBCFF-0B85-4511-B557-DE55AB4FA692",
 				"trace": false
 			},
 			{
@@ -332,7 +332,7 @@
 					],
 					"disabled": []
 				},
-				"detectGeometry": "87D9453D-ED04-4A7C-97F0-6E6A28DFF382",
+				"detectorUuid": "87D9453D-ED04-4A7C-97F0-6E6A28DFF382",
 				"trace": false
 			}
 		]
