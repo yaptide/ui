@@ -62,14 +62,20 @@ const saveFileName = (destFolder, fileName) => {
 			console.timeEnd(label);
 		};
 
+		measureTime('Create venv environment', () => {
+			execSync(`${PYTHON} -m venv venv`, {
+				cwd: srcFolder
+			});
+		});
+
 		measureTime('Installing build module for python', () => {
-			execSync(`${PYTHON} -m pip install build wheel`, {
+			execSync(`. venv/bin/activate && ${PYTHON} -m pip install build wheel`, {
 				cwd: srcFolder
 			});
 		});
 
 		measureTime('Building yaptide_converter', () => {
-			execSync(`${PYTHON} -m build --wheel --no-isolation`, {
+			execSync(`. venv/bin/activate && ${PYTHON} -m build --wheel --no-isolation`, {
 				cwd: srcFolder
 			});
 		});
