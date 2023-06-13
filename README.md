@@ -2,13 +2,13 @@
 
 ## For users
 
-The development version is unstable, without many features and with lot of bugs.
+The development version is unstable, without many features and with a lot of bugs.
 It is released automatically after every commit to the main branch of this repository and is available for testing here:
 <https://yaptide.github.io/web_dev/>
 
 The stable version is not released yet, have patience.
 
-### Loading a project file with results from URL
+### Loading a project file with results from a URL
 
 You can load a project file with results from a URL by adding `?<project_file_url>` to the end of the editor URL.
 
@@ -28,7 +28,7 @@ Start by downloading submodules:
 git submodule update --init --recursive
 ```
 
-Before starting the local version of the web interface, you need to install the necessary dependencies by typing command:
+Before starting the local version of the web interface, you need to install the necessary dependencies by typing the command:
 
 ```bash
 npm install
@@ -69,7 +69,7 @@ docker run --rm -d -p 80:80/tcp --name ui ui
 The docker image is generated automatically after every commit to the main branch of this repository.
 The package is here https://github.com/yaptide/ui/pkgs/container/ui-web
 
-Command below will run the docker container named `ui` and serve the UI on port 80:
+The command below will run the docker container named `ui` and serve the UI on port 80:
 
 ```bash
 docker run --rm -d -p 80:80/tcp --name ui ghcr.io/yaptide/ui-web:master
@@ -81,9 +81,9 @@ This project adapts source code from the following libraries:
 
 - CSG javascript library <https://github.com/manthrax/THREE-CSGMesh>
   - parts of its code copied into `src/ThreeEditor/js/libs/csg/`
-  - adapted by adding types in separate file
-- ThreeJS editor <https://threejs.org/editor/>
-  - most of its code copied from [github mrdoob repo](https://github.com/mrdoob/three.js/tree/r132/editor) into `src/ThreeEditor`, starting from v.132
-  - most of copied code adapted to yaptide needs
+  - adapted by adding types in a separate file
+- ThreeJS Editor <https://threejs.org/editor/>
+  - most of its code is copied from [mrdoob's GitHub repo](https://github.com/mrdoob/three.js/tree/r132/editor) into `src/ThreeEditor`, starting from v.132
+  - the copied code is heavily adapted to "yaptide needs"
 
 This work was partially funded by EuroHPC PL Project, Smart Growth Operational Programme 4.2
