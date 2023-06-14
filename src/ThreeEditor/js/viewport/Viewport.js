@@ -152,17 +152,16 @@ export function Viewport(
 
 		renderer.clear();
 
-		if (!clipPlane) {
-			renderer.render(scene, camera);
-
-			renderer.render(zoneManager, camera);
-
+		if (clipPlane) renderer.render(viewClipPlane.scene, camera);
+		else {
 			renderer.render(detectorManager, camera);
 
-			renderer.render(specialComponentsManager, camera);
-		}
+			renderer.render(scene, camera);
 
-		if (clipPlane) renderer.render(viewClipPlane.scene, camera);
+			renderer.render(specialComponentsManager, camera);
+
+			renderer.render(zoneManager, camera);
+		}
 
 		planeHelpers.visible = showPlaneHelpers ?? false;
 

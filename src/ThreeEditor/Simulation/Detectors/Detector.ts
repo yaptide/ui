@@ -70,9 +70,13 @@ export class Detector extends SimulationPoints {
 	}
 
 	set geometryData(value: AdditionalDetectGeometryDataType) {
-		const { geometryType, parameters } = value;
+		const { geometryType, parameters, position, rotation } = value;
 		this._detectorType = geometryType;
 		this.geometryParameters = { ...DETECT.DEFAULT_ANY, ...parameters };
+		if (!(geometryType in ['Zone', 'All'])) {
+			this.position.fromArray(position);
+			this.rotation.fromArray(rotation);
+		}
 		this.tryUpdateGeometry();
 	}
 

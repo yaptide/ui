@@ -29,7 +29,7 @@ export type BoxParameters = {
 
 export type CylinderParameters = {
 	depth: number;
-	outerRadius: number;
+	radius: number;
 	innerRadius: number;
 };
 
@@ -54,6 +54,12 @@ export abstract class BasicFigure<
 		this.name = name ?? `Figure`;
 		this.geometryType = geometryType;
 	}
+	reconstructGeometryFromData(data: AdditionalGeometryDataType): void {
+		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
+		const { position, rotation } = data;
+		this.position.fromArray(position);
+		this.rotation.fromArray(rotation);
+	}
 }
 
 const boxGeometry = new THREE.BoxGeometry();
@@ -66,7 +72,7 @@ export class BoxFigure extends BasicFigure<THREE.BoxGeometry> {
 		super(editor, 'Box', 'BoxFigure', 'BoxGeometry', geometry ?? boxGeometry, material);
 	}
 	reconstructGeometryFromData(data: AdditionalGeometryDataType<BoxParameters>): void {
-		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
+		super.reconstructGeometryFromData(data);
 		const {
 			parameters: { width, height, depth }
 		} = data;
@@ -92,13 +98,13 @@ export class CylinderFigure extends BasicFigure<HollowCylinderGeometry> {
 		);
 	}
 	reconstructGeometryFromData(data: AdditionalGeometryDataType<CylinderParameters>): void {
-		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
+		super.reconstructGeometryFromData(data);
 		const {
-			parameters: { depth, outerRadius, innerRadius }
+			parameters: { depth, radius, innerRadius }
 		} = data;
 		this.geometry = new HollowCylinderGeometry(
 			innerRadius as number,
-			outerRadius as number,
+			radius as number,
 			depth as number
 		);
 	}
@@ -123,7 +129,7 @@ export class SphereFigure extends BasicFigure<THREE.SphereGeometry> {
 		);
 	}
 	reconstructGeometryFromData(data: AdditionalGeometryDataType<SphereParameters>): void {
-		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
+		super.reconstructGeometryFromData(data);
 		const {
 			parameters: { radius }
 		} = data;

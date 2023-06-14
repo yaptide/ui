@@ -90,8 +90,9 @@ describe('NavDrawer component', () => {
 			)
 		);
 
-		//find all the text fields and check if they contain the correct text. characters other than text, numbers and dots are removed from the text before comparison
-		//also check if expected text loaded from file is not empty
+		// find all the text fields and check if they contain the correct text.
+		// characters other than text, numbers and dots are removed from the text before comparison
+		// also check if expected text loaded from file is not empty
 		const regex = /[^a-zA-Z0-9.]/g;
 
 		const geoText = (

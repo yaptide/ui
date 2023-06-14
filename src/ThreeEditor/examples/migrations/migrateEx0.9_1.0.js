@@ -72,6 +72,7 @@ const migrateInputJson = (inputJson) => {
                     geometryData: {
                         ...partialGeometryData,
                         geometryType: partialGeometryData.geometryType === 'CylinderGeometry' ? 'HollowCylinderGeometry' : partialGeometryData.geometryType,
+                        rotation: [0,0,0]
                     },
                     colorHex: 0
                 }

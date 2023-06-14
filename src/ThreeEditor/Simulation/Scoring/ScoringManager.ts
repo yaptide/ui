@@ -165,7 +165,7 @@ export class ScoringManager
 	reset() {
 		this.name = this._name;
 		this.outputContainer.reset();
-
+		this.filterContainer.reset();
 		return this;
 	}
 
@@ -189,8 +189,8 @@ export class ScoringManager
 
 		this.uuid = uuid;
 		this.name = name;
-		this.outputContainer.fromJSON(outputs);
 		this.filterContainer.fromJSON(filters);
+		this.outputContainer.fromJSON(outputs);
 		return this;
 	}
 }
