@@ -12,7 +12,7 @@ FROM node:18 AS build
 # Install python3-pip via apt and clean cache.
 # pip is needed to generate a wheel package for the converter part of the UI,
 # which is later called using pyodide (Python in the browser).
-RUN apt-get update && apt-get install -y --no-install-recommends python3-pip && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends python3-pip python3-venv && rm -rf /var/lib/apt/lists/*
 
 # Directory where the app is installed and run.
 WORKDIR /usr/src/app

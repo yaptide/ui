@@ -3,6 +3,7 @@ const glob = require('glob');
 const path = require('path');
 const { execSync } = require('child_process');
 const { exit } = require('process');
+const os = require('os');
 
 const SKIP = process.argv[2] === 'skip';
 
@@ -62,14 +63,23 @@ const saveFileName = (destFolder, fileName) => {
 			console.timeEnd(label);
 		};
 
+		measureTime('Create venv environment', () => {
+			execSync(`${PYTHON} -m venv venv`, {
+				cwd: srcFolder
+			});
+		});
+
+		const activateCmd =
+			os.platform() === 'win32' ? 'venv\\Scripts\\activate.ps1' : '. venv/bin/activate';
+
 		measureTime('Installing build module for python', () => {
-			execSync(`${PYTHON} -m pip install build wheel`, {
+			execSync(`${activateCmd} && ${PYTHON} -m pip install build wheel`, {
 				cwd: srcFolder
 			});
 		});
 
 		measureTime('Building yaptide_converter', () => {
-			execSync(`${PYTHON} -m build --wheel --no-isolation`, {
+			execSync(`${activateCmd} && ${PYTHON} -m build --wheel --no-isolation`, {
 				cwd: srcFolder
 			});
 		});
