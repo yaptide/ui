@@ -26,8 +26,8 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 	const inputFiles = props.inputFiles ?? _defaultShInputFiles;
 	const simulator = props.simulator;
 	const theme = useTheme();
-	const largeFileSize = 10_000;
-	const largeFileLinesLimit = 100;
+	const largeFileSize = 100_000;
+	const largeFileLinesLimit = 1000;
 
 	const canBeDeleted = (name: string) => {
 		switch (props.simulator) {
