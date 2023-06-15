@@ -462,7 +462,6 @@ const DimensionsFields = (props: {
 	object: BasicFigure | WorldZone | Detector | BeamModulator;
 }) => {
 	const { object, editor } = props;
-	console.log('DimensionsFields', object);
 
 	return (
 		<>

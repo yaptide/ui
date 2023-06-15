@@ -170,6 +170,7 @@ export function Viewport(
 		});
 
 		renderer.render(sceneViewHelpers, camera);
+
 		viewHelper.render(renderer);
 
 		renderer.autoClear = true;

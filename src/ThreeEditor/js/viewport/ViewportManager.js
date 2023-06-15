@@ -46,12 +46,12 @@ function ViewManager(editor) {
 	const grid = new THREE.Group();
 	sceneHelpers.add(grid);
 
-	const minorGrid = new THREE.GridHelper(100, 100, 0x888888);
+	const minorGrid = new THREE.GridHelper(110, 110, 0x888888);
 	minorGrid.material.color.setHex(0x888888); // 0x888888 -> light grey (53% lightness)
 	minorGrid.material.vertexColors = false;
 	grid.add(minorGrid);
 
-	const majorGrid = new THREE.GridHelper(100, 10, 0x222222);
+	const majorGrid = new THREE.GridHelper(110, 11, 0x222222);
 	majorGrid.material.color.setHex(0x222222); // 0x222222 -> very dark grey (13% lightness)
 	majorGrid.material.depthFunc = THREE.AlwaysDepth;
 	majorGrid.material.vertexColors = false;
@@ -376,20 +376,21 @@ function ViewManager(editor) {
 		!(
 			object.isCamera ||
 			object.isFilter ||
-			object.isOutput ||
 			object.isQuantity ||
-			object.isScoringManager
+			object.isScoringManager ||
+			object.isOutput
 		);
 
 	const handleSelected = () => {
 		const object = editor.selected;
 		selectionBox.visible = false;
 
-		if (canBoxBeUpdated(object)) {
-			box.setFromObject(object);
+		if (canBoxBeUpdated(object) || (object?.isOutput && object?.detector?.isDetector)) {
+			const selectionScope = object.isOutput ? object.detector : object;
+			box.setFromObject(selectionScope);
 
 			if (box.isEmpty() === false) {
-				selectionBox.setFromObject(object);
+				selectionBox.setFromObject(selectionScope);
 				selectionBox.visible = true;
 			}
 		}
@@ -407,15 +408,20 @@ function ViewManager(editor) {
 	signals.geometryChanged.add(object => {
 		if (canBoxBeUpdated(object)) {
 			selectionBox.setFromObject(object);
+		} else if (object?.isOutput && object?.detector?.isDetector) {
+			selectionBox.setFromObject(object.detector);
 		}
 
 		render();
 	});
 
 	signals.objectChanged.add(object => {
-		if (editor.selected === object && canBoxBeUpdated(object)) {
-			selectionBox.setFromObject(object);
-		}
+		if (editor.selected === object)
+			if (canBoxBeUpdated(object)) {
+				selectionBox.setFromObject(object);
+			} else if (object?.isOutput && object?.detector?.isDetector) {
+				selectionBox.setFromObject(object.detector);
+			}
 
 		if (object.isPerspectiveCamera) {
 			object.updateProjectionMatrix();

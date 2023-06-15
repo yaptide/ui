@@ -14,7 +14,6 @@ const defaultMaterial = new THREE.MeshBasicMaterial({
 
 export const BASIC_GEOMETRY_OPTIONS = {
 	BoxGeometry: 'BoxGeometry',
-	CylinderGeometry: 'CylinderGeometry',
 	SphereGeometry: 'SphereGeometry',
 	HollowCylinderGeometry: 'HollowCylinderGeometry'
 } as const;
@@ -84,7 +83,7 @@ export class BoxFigure extends BasicFigure<THREE.BoxGeometry> {
 	}
 }
 
-const cylinderGeometry = new HollowCylinderGeometry();
+const cylinderGeometry = new HollowCylinderGeometry(0, 1, 1, 32, 2, 2);
 
 export class CylinderFigure extends BasicFigure<HollowCylinderGeometry> {
 	constructor(
@@ -109,7 +108,10 @@ export class CylinderFigure extends BasicFigure<HollowCylinderGeometry> {
 		this.geometry = new HollowCylinderGeometry(
 			innerRadius as number,
 			radius as number,
-			depth as number
+			depth as number,
+			32,
+			2,
+			2
 		);
 	}
 }

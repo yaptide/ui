@@ -6,6 +6,7 @@ import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { Detector, DetectorJSON, isDetector } from './Detector';
+import { ScoringOutput, isOutput } from '../Scoring/ScoringOutput';
 
 type DetectorManagerJSON = Omit<
 	SimulationElementJSON & {
@@ -46,13 +47,14 @@ export class DetectorManager
 		materialChanged: Signal<THREE.Material>;
 	};
 	private managerType: 'DetectorManager' = 'DetectorManager';
-	private hasUsefulGeometry(object: THREE.Object3D): object is Detector {
+	private hasUsefulGeometry(object: THREE.Object3D): object is Detector | ScoringOutput {
 		return Boolean(
-			isDetector(object) &&
-				this.editor.selected === object &&
-				object.geometry &&
-				object.geometry.boundingSphere &&
-				object.geometry.boundingSphere.radius > 0
+			isDetector(object) ||
+				(isOutput(object) &&
+					this.editor.selected === object &&
+					object.geometry &&
+					object.geometry.boundingSphere &&
+					object.geometry.boundingSphere.radius > 0)
 		);
 	}
 
@@ -145,10 +147,11 @@ export class DetectorManager
 		this.detectorHelper.visible = false;
 
 		if (!this.hasUsefulGeometry(object)) return;
-		this.detectorHelper.position.copy(object.position);
-		this._detectWireMaterial.color.copy(object.material.color);
-		this.detectorHelper.geometry = object.geometry.clone();
-		this.detectorHelper.visible = object.visible;
+		const selectionScope = isDetector(object) ? object : object.detector!;
+		this.detectorHelper.position.copy(selectionScope.position);
+		this._detectWireMaterial.color.copy(selectionScope.material.color);
+		this.detectorHelper.geometry = selectionScope.geometry.clone();
+		this.detectorHelper.visible = selectionScope.visible;
 
 		this.signals.sceneGraphChanged.dispatch();
 	};

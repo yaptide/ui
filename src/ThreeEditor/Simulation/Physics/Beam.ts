@@ -219,7 +219,7 @@ export class Beam extends SimulationElement {
 	initHelper() {
 		const dir = this.direction.clone().normalize();
 		const origin = new THREE.Vector3(0, 0, 0);
-		const length = 1;
+		const length = 4;
 		const hex = 0xffff00; //yellow
 		const helper = new THREE.ArrowHelper(dir, origin, length, hex, length * 0.3, length * 0.2);
 

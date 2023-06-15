@@ -101,7 +101,7 @@ export class ContextManager {
 	}
 
 	setVisibility(context: Context): void {
-		let visible: THREE.Object3D[] = [this.editor.sceneHelpers];
+		let visible: THREE.Object3D[] = [this.editor.sceneHelpers, this.editor.beam];
 		let hidden: THREE.Object3D[] = [];
 		switch (context) {
 			case 'geometry':
@@ -118,25 +118,23 @@ export class ContextManager {
 				hidden.push(
 					this.editor.zoneManager,
 					this.editor.figureManager,
-					this.editor.specialComponentsManager,
-					this.editor.beam
+					this.editor.specialComponentsManager
 				);
 				break;
 			case 'settings':
-				visible.push(
+				hidden.push(
 					this.editor.figureManager,
 					this.editor.detectorManager,
-					this.editor.beam
+					this.editor.zoneManager,
+					this.editor.specialComponentsManager
 				);
-				hidden.push(this.editor.zoneManager, this.editor.specialComponentsManager);
 				break;
 			default:
 				visible.push(
 					this.editor.figureManager,
 					this.editor.zoneManager,
 					this.editor.detectorManager,
-					this.editor.specialComponentsManager,
-					this.editor.beam
+					this.editor.specialComponentsManager
 				);
 				break;
 		}

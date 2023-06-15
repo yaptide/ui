@@ -104,7 +104,6 @@ export class Detector extends SimulationPoints {
 		detectGeometryRemoved: Signal<Detector>;
 		objectSelected: Signal<THREE.Object3D>;
 	};
-	readonly isDetectGeo: true = true;
 
 	private _geometryData: DETECT.AnyData = DETECT.DEFAULT_ANY;
 

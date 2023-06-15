@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
@@ -5,6 +6,7 @@ import { SimulationElementManager } from '../Base/SimulationManager';
 import { Detector } from '../Detectors/Detector';
 import { ScoringFilter } from './ScoringFilter';
 import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
+import { Signal } from 'signals';
 
 export type ScoringOutputJSON = Omit<
 	SimulationElementJSON & {
@@ -45,6 +47,9 @@ export class ScoringOutput
 	get notVisibleChildren(): boolean {
 		return this._trace[0];
 	}
+	private signals: {
+		objectSelected: Signal<THREE.Object3D>;
+	};
 	private _detector?: string;
 	private _primaries: [boolean, number | null];
 
@@ -52,6 +57,7 @@ export class ScoringOutput
 	private _trace: [boolean, string | null];
 
 	quantityContainer: SimulationSceneContainer<ScoringQuantity>;
+	geometry: THREE.BufferGeometry | null = null;
 
 	get quantities() {
 		return this.quantityContainer.children;
@@ -90,6 +96,9 @@ export class ScoringOutput
 
 	set detector(detector: Detector | null) {
 		this._detector = detector?.uuid;
+		this.geometry =
+			detector?.geometry.clone().translate(...detector.position.toArray()) ?? null;
+		this.signals.objectSelected.dispatch(this);
 	}
 
 	constructor(editor: YaptideEditor) {
@@ -100,6 +109,7 @@ export class ScoringOutput
 		this._trace = [false, ''];
 		this.quantityContainer = new QuantityContainer(editor);
 		this.add(this.quantityContainer);
+		this.signals = editor.signals;
 	}
 
 	getQuantityByName(name: string) {

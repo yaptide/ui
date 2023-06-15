@@ -18,13 +18,13 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object as ScoringOutput);
 
-	const handleChangedGeometry = useCallback(
+	const handleChangedDetector = useCallback(
 		(v: ObjectSelectOptionType) => {
 			editor.execute(
 				new SetOutputSettingsCommand(
 					editor,
 					watchedObject.object,
-					'geometry',
+					'detector',
 					editor.detectorManager.getDetectorByUuid(v.uuid)
 				)
 			);
@@ -41,7 +41,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 			{visibleFlag && (
 				<>
 					<ObjectSelectPropertyField
-						label='Detect geometry'
+						label='Detector'
 						value={watchedObject.detector?.uuid ?? ''}
 						options={editor.detectorManager.getDetectorOptions(value => {
 							return (
@@ -49,7 +49,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 								value.uuid === watchedObject.detector?.uuid
 							);
 						})}
-						onChange={handleChangedGeometry}
+						onChange={handleChangedDetector}
 					/>
 
 					<ConditionalNumberPropertyField
