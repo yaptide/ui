@@ -97,10 +97,8 @@ export class MaterialManager {
 		const selectedMaterials = this.selectedMaterials.toJSON();
 		const materials = Object.entries(this.customMaterials)
 			.map(([_icru, material]) => material.toJSON())
-			.filter(
-				({ uuid, name, icru, density, ...rest }) =>
-					this.selectedMaterials.has(uuid) || Object.keys(rest).length !== 0
-			);
+			.filter(({ uuid }) => this.selectedMaterials.has(uuid));
+
 		return { materials, selectedMaterials };
 	}
 
@@ -123,7 +121,9 @@ export class MaterialManager {
 	}
 
 	reset(): void {
-		this.selectedMaterials.clear();
+		console.log('this.selectedMaterials.size(', this.selectedMaterials.size());
+		// console.log('this.customMaterials.size(', this.selectedMaterials.);
+
 		this.customMaterials = {};
 	}
 }

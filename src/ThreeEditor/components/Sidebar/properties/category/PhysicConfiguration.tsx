@@ -10,7 +10,8 @@ import { PropertiesCategory } from './PropertiesCategory';
 import {
 	ENERGY_MODEL_STRAGGLING,
 	MULTIPLE_SCATTERING,
-	Physics
+	Physics,
+	STOPPING_POWER_TABLE
 } from '../../../../Simulation/Physics/Physics';
 
 export function PhysicConfiguration(props: { editor: Editor; object: Physics }) {
@@ -47,6 +48,13 @@ export function PhysicConfiguration(props: { editor: Editor; object: Physics }) 
 				value={watchedObject.multipleScattering}
 				onChange={value => setValue('multipleScattering', value)}
 				options={Object.keys(MULTIPLE_SCATTERING)}
+			/>
+
+			<SelectPropertyField
+				label='Custom Stopping Power Table'
+				value={watchedObject.stoppingPowerTable}
+				onChange={value => setValue('stoppingPowerTable', value)}
+				options={Object.keys(STOPPING_POWER_TABLE)}
 			/>
 		</PropertiesCategory>
 	);

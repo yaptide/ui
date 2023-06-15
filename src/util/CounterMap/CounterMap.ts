@@ -35,8 +35,14 @@ export class CounterMap<K extends string> {
 				key: key
 			});
 		const newValue = lastCount - 1;
-		this.map.set(key, newValue);
+		if (newValue === 0) this.map.delete(key);
+		else this.map.set(key, newValue);
+
 		return newValue;
+	}
+
+	size() {
+		return this.map.size;
 	}
 
 	get(key: K) {

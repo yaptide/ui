@@ -14,6 +14,7 @@ export type SimulationMaterialJSON = {
 	name: string;
 	icru: number;
 	density: number;
+	customStoppingPower?: boolean;
 	transparent?: boolean;
 	opacity?: number;
 	color?: number;
@@ -26,6 +27,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 	private colorProxy: THREE.Color;
 	icru: number;
 	density: number;
+	customStoppingPower: boolean = false;
 	renderProps: RenderProps;
 	defaultProps: RenderProps;
 	readonly isSimulationMaterial: true = true;
@@ -88,21 +90,23 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 		return this.proxy;
 	}
 	toJSON(): SimulationMaterialJSON {
-		const { uuid, name, icru, density, renderProps } = this;
+		const { uuid, name, icru, density, renderProps, customStoppingPower } = this;
 		return {
 			uuid,
 			name,
 			icru,
 			density,
+			...(customStoppingPower && { customStoppingPower }),
 			...renderProps
 		};
 	}
 	static fromJSON(
 		editor: Editor,
-		{ uuid, name, icru, density, ...renderProps }: SimulationMaterialJSON
+		{ uuid, name, icru, density, customStoppingPower, ...renderProps }: SimulationMaterialJSON
 	): SimulationMaterial {
 		const material = new SimulationMaterial(editor, name, icru, density);
 		material.uuid = uuid;
+		material.customStoppingPower = customStoppingPower ?? false;
 		material.renderProps = renderProps;
 		material.applyRenderProps();
 		return material.proxy;
@@ -122,6 +126,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 		result.renderProps = { ...source.renderProps };
 		result.density = source.density;
 		result.icru = source.icru;
+		result.customStoppingPower = source.customStoppingPower;
 		return new Proxy(result, this.overrideHandler) as this;
 	}
 

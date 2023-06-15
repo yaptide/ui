@@ -586,12 +586,12 @@ Editor.prototype = {
 			this.removeObject(objects[0]);
 		}
 
-		this.materialManager.reset();
 		this.zoneManager.reset();
 		this.detectManager.reset();
 		this.scoringManager.reset();
 		this.beam.reset();
 		this.physic.reset();
+		this.materialManager.reset();
 
 		this.geometries = {};
 		this.materials = {};

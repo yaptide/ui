@@ -3,7 +3,12 @@ import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
 import { Object3D } from 'three';
 import { isZone } from '../../../../Simulation/Zones/BooleanZone';
-import { ColorInput, ConditionalNumberPropertyField, PropertyField } from '../fields/PropertyField';
+import {
+	ColorInput,
+	ConditionalNumberPropertyField,
+	ConditionalPropertyField,
+	PropertyField
+} from '../fields/PropertyField';
 import { SetMaterialColorCommand } from '../../../../js/commands/SetMaterialColorCommand';
 import { isBeam } from '../../../../Simulation/Physics/Beam';
 import { isBasicFigure } from '../../../../Simulation/Figures/BasicFigures';
@@ -13,6 +18,9 @@ import { SetZoneMaterialCommand } from '../../../../js/commands/SetZoneMaterialC
 import { SetMaterialValueCommand } from '../../../../js/commands/SetMaterialValueCommand';
 import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import Typography from '@mui/material/Typography/Typography';
+import { InfoTooltip } from '../../../../../shared/components/tooltip/InfoTooltip';
+import { Stack } from '@mui/material';
 
 export function ObjectMaterial(props: { editor: Editor; object: Object3D }) {
 	const { object, editor } = props;
@@ -94,6 +102,38 @@ export function ObjectMaterial(props: { editor: Editor; object: Object3D }) {
 									);
 								}}
 							/>
+							<ConditionalPropertyField
+								label='Custom stopping power'
+								enabled={
+									watchedObject.materialPropertiesOverrides.customStoppingPower
+										.value
+								}
+								onChangeEnabled={v => {
+									const newValue = {
+										...watchedObject.materialPropertiesOverrides,
+										customStoppingPower: {
+											value: v,
+											override: v
+										}
+									};
+									editor.execute(
+										new SetValueCommand(
+											editor,
+											watchedObject.object,
+											'materialPropertiesOverrides',
+											newValue
+										)
+									);
+								}}>
+								<Stack
+									direction='row'
+									spacing={1}
+									justifyContent='center'
+									alignItems='center'>
+									<Typography>{editor.physic.stoppingPowerTable}</Typography>
+									<InfoTooltip title='Stopping table can be changed in settings' />
+								</Stack>
+							</ConditionalPropertyField>
 
 							<ConditionalNumberPropertyField
 								label='Opacity'
