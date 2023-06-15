@@ -52,10 +52,9 @@ jobs:
           command: npm test	
 
   deploy-to-github-registry:
-    # needs: build_and_test
-    # this is a lengthy process, lets run it in parallel to build_and_test
+    needs: [build_and_test]
     runs-on: ubuntu-latest
-    
+    if: github.ref == 'refs/heads/master'    
     env:
       REGISTRY: ghcr.io
       IMAGE_NAME: ${{ github.repository }}-web

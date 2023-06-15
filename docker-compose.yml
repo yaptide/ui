@@ -1,0 +1,11 @@
+version: "3.3"
+
+services:
+    yaptide_ui:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: yaptide_ui
+        container_name: yaptide_ui
+        ports:
+            - 80:80

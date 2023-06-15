@@ -64,7 +64,7 @@ export default function SimulationPanel({
 
 	const [pageIdx, setPageIdx] = useState(1);
 	const [pageCount, setPageCount] = useState(1);
-	const [orderType, setOrderType] = useState<OrderType>(OrderType.ASCEND);
+  const [orderType, setOrderType] = useState<OrderType>(OrderType.DESCEND);
 	const [orderBy, setOrderBy] = useState<OrderBy>(OrderBy.START_TIME);
 	const [pageSize, setPageSize] = useState(6);
 	type PageState = Omit<
