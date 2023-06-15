@@ -2,7 +2,7 @@
   "input": {
     "inputJson": {
       "metadata": {
-        "version": 1,
+        "version": "0.10",
         "type": "Editor",
         "generator": "YaptideEditor.toJSON"
       },
@@ -130,7 +130,7 @@
       },
       "figureManager": {
         "metadata": {
-          "version": 1,
+          "version": "0.10",
           "type": "Manager",
           "generator": "FigureManager.toJSON"
         },
@@ -266,7 +266,7 @@
           "visible": true
         },
         "metadata": {
-          "version": 1,
+          "version": "0.10",
           "type": "Manager",
           "generator": "ZoneManager.toJSON"
         }
@@ -387,7 +387,7 @@
           }
         ],
         "metadata": {
-          "version": 1,
+          "version": "0.10",
           "type": "Manager",
           "generator": "DetectorManager.toJSON"
         }
@@ -397,7 +397,7 @@
         "name": "Special Components",
         "type": "SpecialComponentManager",
         "metadata": {
-          "version": 1,
+          "version": "0.10",
           "type": "Manager",
           "generator": "SpecialComponentManager.toJSON"
         }
@@ -407,7 +407,7 @@
         "uuid": "D0F67F59-F311-4F8E-A06F-5A07D618FDE2",
         "type": "ScoringManager",
         "metadata": {
-          "version": 1,
+          "version": "0.10",
           "type": "Manager",
           "generator": "ScoringManager.toJSON"
         },
@@ -765,7 +765,7 @@
         "name": "Material Manager",
         "type": "MaterialManager",
         "metadata": {
-          "version": 1,
+          "version": "0.10",
           "type": "Manager",
           "generator": "MaterialManager.toJSON"
         }

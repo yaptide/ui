@@ -22,7 +22,7 @@ export type MaterialManagerJSON = Omit<
 export class MaterialManager extends THREE.Object3D implements SimulationPropertiesType {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: 1.0, //update this to current YaptideEditor version when format changes
+		version: `0.10`, //update this to current YaptideEditor version when format changes
 		type: 'Manager',
 		generator: 'MaterialManager.toJSON'
 	} satisfies Record<string, string | number>;

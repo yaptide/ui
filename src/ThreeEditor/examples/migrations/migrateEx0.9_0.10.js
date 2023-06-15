@@ -35,7 +35,7 @@ const migrateInputJson = (inputJson) => {
         history
     });
     const metadata = {
-        version: 1.0,
+        version: `0.10`,
 		type: "Editor",
 		generator: "YaptideEditor.toJSON"
     };
@@ -47,7 +47,7 @@ const migrateInputJson = (inputJson) => {
     }
     const figureManager = {
         metadata: {
-            version: 1.0,
+            version: `0.10`,
             type: "Manager",
 			generator: "FigureManager.toJSON"
         },
@@ -113,7 +113,7 @@ const migrateInputJson = (inputJson) => {
             }
         })[0],
 		metadata: {
-			version: 1.0,
+			version: `0.10`,
 			type: "Manager",
 			generator: "ZoneManager.toJSON"
 		},
@@ -149,7 +149,7 @@ const migrateInputJson = (inputJson) => {
             }
         ),
 		metadata: {
-			version: 1.0,
+			version: `0.10`,
 			type: "Manager",
 			generator: "DetectorManager.toJSON"
 		},
@@ -159,7 +159,7 @@ const migrateInputJson = (inputJson) => {
 		name: "Special Components",
         type: "SpecialComponentManager",
 		metadata: {
-			version: 1.0,
+			version: `0.10`,
 			type: "Manager",
 			generator: "SpecialComponentManager.toJSON"
 		}
@@ -169,7 +169,7 @@ const migrateInputJson = (inputJson) => {
         uuid: oldScoringManager.uuid,
         type: 'ScoringManager',
 		metadata: {
-			version: 1.0,
+			version: `0.10`,
 			type: "Manager",
 			generator: "ScoringManager.toJSON"
 		},
@@ -207,7 +207,7 @@ const migrateInputJson = (inputJson) => {
         name: 'Material Manager',
         type: 'MaterialManager',
 		metadata: {
-			version: 1.0,
+			version: `0.10`,
 			type: "Manager",
 			generator: "MaterialManager.toJSON"
 		},

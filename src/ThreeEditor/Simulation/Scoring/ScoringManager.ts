@@ -43,7 +43,7 @@ export class ScoringManager
 {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: 1.0, //update this to current YaptideEditor version when format changes
+		version: `0.10`, //update this to current YaptideEditor version when format changes
 		type: 'Manager',
 		generator: 'ScoringManager.toJSON'
 	} satisfies Record<string, string | number>;
