@@ -6,6 +6,7 @@ import { BeamModulator, BeamModulatorJSON, isBeamModulator } from './BeamModulat
 import { CTCube, CTCubeJSON, isCTCube } from './CTCube';
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { SimulationElementJSON } from '../Base/SimulationElement';
+import { Signal } from 'signals';
 
 type SpecialComponentManagerJSON = Omit<
 	SimulationElementJSON & {
@@ -31,7 +32,11 @@ export class SpecialComponentManager
 	} satisfies Record<string, string | number>;
 
 	private editor: YaptideEditor;
-	private signals: {};
+	private signals: {
+		objectSelected: Signal<THREE.Object3D>;
+		sceneGraphChanged: Signal;
+		materialChanged: Signal<THREE.Material>;
+	};
 	private managerType: 'SpecialComponentManager' = 'SpecialComponentManager';
 
 	private _name: string;
@@ -70,10 +75,28 @@ export class SpecialComponentManager
 	getCTCubeByName(name: string) {
 		return this.CTCubeContainer.children.find(ctCube => ctCube.name === name) ?? null;
 	}
+	private hasUsefulGeometry(object: THREE.Object3D): object is BeamModulator {
+		return Boolean(
+			isBeamModulator(object) &&
+				this.editor.selected === object &&
+				object.geometry &&
+				object.geometry.boundingSphere &&
+				object.geometry.boundingSphere.radius > 0
+		);
+	}
+
+	private _detectWireMaterial = new THREE.MeshBasicMaterial({
+		color: 0x000000,
+		side: THREE.DoubleSide,
+		transparent: true,
+		opacity: 0.5,
+		wireframe: true
+	});
 	/***************************************************************/
 
 	/***********************ModulatorMethods************************/
 	beamModulatorContainer: SimulationSceneContainer<BeamModulator>;
+	beamModulatorHelper: THREE.Mesh;
 	get beamModulators() {
 		return this.beamModulatorContainer.children;
 	}
@@ -119,10 +142,37 @@ export class SpecialComponentManager
 			'BeamModulator',
 			json => new BeamModulator(editor).fromJSON(json)
 		);
+		this.beamModulatorHelper = new THREE.Mesh(undefined, this._detectWireMaterial);
+		this.beamModulatorHelper.visible = false;
+
+		this.add(this.beamModulatorHelper);
+
 		this.add(this.CTCubeContainer);
 		this.add(this.beamModulatorContainer);
 
 		this.signals = editor.signals;
+		this.signals.objectSelected.add(this.onObjectSelected.bind(this));
+		this.signals.materialChanged.add(this.onMaterialChanged.bind(this));
+	}
+
+	private onObjectSelected = (object: THREE.Object3D) => {
+		this.beamModulatorHelper.geometry.dispose();
+		this.beamModulatorHelper.geometry = new THREE.BufferGeometry();
+		this.beamModulatorHelper.visible = false;
+
+		if (!this.hasUsefulGeometry(object)) return;
+		this.beamModulatorHelper.position.copy(object.position);
+		this._detectWireMaterial.color.copy(object.material.color);
+		this.beamModulatorHelper.geometry = object.geometry.clone();
+		this.beamModulatorHelper.visible = object.visible;
+
+		this.signals.sceneGraphChanged.dispatch();
+	};
+
+	private onMaterialChanged() {
+		if (isBeamModulator(this.editor.selected)) {
+			this._detectWireMaterial.color.copy(this.editor.selected.material.color);
+		}
 	}
 
 	copy(source: this, recursive?: boolean | undefined) {
@@ -134,6 +184,8 @@ export class SpecialComponentManager
 		this.name = this._name;
 		this.CTCubeContainer.reset();
 		this.beamModulatorContainer.reset();
+
+		this.beamModulatorHelper.geometry.dispose();
 
 		return this;
 	}

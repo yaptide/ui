@@ -58,7 +58,11 @@ export abstract class BasicFigure<
 		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
 		const { position, rotation } = data;
 		this.position.fromArray(position);
-		this.rotation.fromArray(rotation);
+		//From deg to rad
+		this.rotation.fromArray([
+			...rotation.slice(0, 3).map(v => (v as number) * THREE.MathUtils.DEG2RAD),
+			undefined
+		] as [number, number, number, undefined]);
 	}
 }
 

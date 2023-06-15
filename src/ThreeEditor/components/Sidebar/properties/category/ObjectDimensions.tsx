@@ -462,6 +462,7 @@ const DimensionsFields = (props: {
 	object: BasicFigure | WorldZone | Detector | BeamModulator;
 }) => {
 	const { object, editor } = props;
+	console.log('DimensionsFields', object);
 
 	return (
 		<>
@@ -473,23 +474,20 @@ const DimensionsFields = (props: {
 			)}
 			{!isBeamModulator(object) && (
 				<>
-					{!isDetector(object) ? (
+					{!isDetector(object) && (
 						<SphereDimensionsField
 							editor={editor}
 							object={object}
 						/>
-					) : (
-						<>
-							<BoxDimensionsField
-								editor={editor}
-								object={object}
-							/>
-							<CylinderDimensionsField
-								editor={editor}
-								object={object}
-							/>
-						</>
 					)}
+					<BoxDimensionsField
+						editor={editor}
+						object={object}
+					/>
+					<CylinderDimensionsField
+						editor={editor}
+						object={object}
+					/>
 				</>
 			)}
 		</>

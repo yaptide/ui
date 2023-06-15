@@ -26,11 +26,13 @@ export const BEAM_MODULATOR_MODE_OPTIONS = ['modulus', 'sampling'] as const;
 export type BeamsimulationMethod = (typeof BEAM_MODULATOR_MODE_OPTIONS)[number];
 
 export class BeamModulator extends SimulationPoints {
-	pointsHelper: THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>;
 	sourceFile: ConfigSourceFile = {
 		name: '',
 		value: ''
 	};
+	notMovable = true;
+	pointsHelper: THREE.Mesh;
+
 	reset(): void {
 		super.reset();
 		this._zoneUuid = '';
@@ -45,12 +47,17 @@ export class BeamModulator extends SimulationPoints {
 		this.geometry.dispose();
 		if (this._zoneUuid) {
 			const zone = this.editor.zoneManager.getZoneByUuid(this._zoneUuid);
-			this.geometry = zone?.geometry?.clone() ?? new THREE.BufferGeometry();
+			this.geometry =
+				zone?.geometry
+					?.clone()
+					.translate(zone.position.x, zone.position.y, zone.position.z) ??
+				new THREE.BufferGeometry();
 
 			this.material.color =
 				zone?.material.color ?? this.editor.materialManager.defaultMaterial.color.clone();
 		}
 		this.geometry.computeBoundingSphere();
+		this.editor.signals.objectSelected.dispatch(this);
 	}
 	get geometryParameters(): ModulatorParameters {
 		return {
@@ -90,20 +97,11 @@ export class BeamModulator extends SimulationPoints {
 			'BeamModulator',
 			new THREE.PointsMaterial({
 				color: editor.materialManager.defaultMaterial.color.clone(),
-				size: 0.3
+				size: 0.5
 			})
 		);
 		this.geometry = new THREE.BufferGeometry();
-		this.pointsHelper = new THREE.Mesh(
-			new THREE.BufferGeometry(),
-			new THREE.MeshBasicMaterial({
-				color: 0x000000,
-				side: THREE.DoubleSide,
-				transparent: true,
-				opacity: 0.5,
-				wireframe: true
-			})
-		);
+		this.pointsHelper = editor.specialComponentsManager.beamModulatorHelper;
 	}
 	toJSON(): BeamModulatorJSON {
 		const { geometryData, simulationMethod, sourceFile } = this;
