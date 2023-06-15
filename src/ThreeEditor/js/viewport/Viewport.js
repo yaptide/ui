@@ -36,7 +36,7 @@ export function Viewport(
 		clipPlane,
 		planePosLabel,
 		planeHelperColor,
-		showPlaneHelpers = true,
+		showPlaneHelpers = false,
 		gridRotation
 	} = {}
 ) {
@@ -163,7 +163,7 @@ export function Viewport(
 			renderer.render(zoneManager, camera);
 		}
 
-		planeHelpers.visible = showPlaneHelpers ?? false;
+		planeHelpers.visible = showPlaneHelpers;
 
 		callWithHidden(viewClipPlane?.planeHelper, () => {
 			renderer.render(sceneHelpers, camera);

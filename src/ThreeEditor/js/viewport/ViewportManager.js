@@ -107,6 +107,7 @@ function ViewManager(editor) {
 
 	const configPlaneXY = {
 		orthographic: true,
+		showPlaneHelpers: true,
 
 		// camera looking from above XY plane
 		cameraPosition: new THREE.Vector3(0, 0, 100),
@@ -166,6 +167,7 @@ function ViewManager(editor) {
 	// (phi = 90*, theta = any in threejs spherical coordinates, see comment in top part of this file)
 	const configPlaneXZ = {
 		orthographic: true,
+		showPlaneHelpers: true,
 
 		// camera looking from above XZ plane
 		cameraPosition: new THREE.Vector3(0, 100, 0),
@@ -204,6 +206,7 @@ function ViewManager(editor) {
 
 	const configPlaneYZ = {
 		orthographic: true,
+		showPlaneHelpers: true,
 
 		// camera looking from above YZ plane
 		cameraPosition: new THREE.Vector3(100, 0, 0),
