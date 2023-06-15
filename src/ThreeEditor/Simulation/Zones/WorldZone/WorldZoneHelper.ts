@@ -108,7 +108,7 @@ export class WorldZoneHelper extends THREE.Object3D {
 		this._box.setFromCenterAndSize(new Vector3(), size);
 
 		// Cylinder
-		this._cylinderMesh.geometry = new HollowCylinderGeometry(0, size.x, size.z);
+		this._cylinderMesh.geometry = new HollowCylinderGeometry(size.x, size.x, size.z);
 
 		// Sphere
 		this._sphereMesh.geometry = new THREE.SphereGeometry(

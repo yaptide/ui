@@ -1,5 +1,5 @@
 import { Box, Checkbox, Grid, Stack, TextField, Typography } from '@mui/material';
-import { ReactNode, useCallback, useEffect, useRef } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Vector2 } from 'three';
 import { Vector3 } from 'three/src/math/Vector3';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
@@ -137,35 +137,28 @@ export function NumberInput(props: {
 export function ColorInput(props: { value: string; onChange: (value: number) => void }) {
 	const boxRef = useRef<HTMLDivElement>(null);
 
-	// TODO: Update when props change
-	const inputRef = useRef(
-		createRowColor({
-			...props,
-			update: () => {
-				props.onChange(inputRef.current.getHexValue());
-			}
-		})[1]
-	);
-
-	useEffect(() => {
-		inputRef.current.setHexValue(props.value);
-	}, [props.value]);
+	const input = useMemo(() => {
+		return createRowColor({})[1];
+	}, []);
 
 	useEffect(() => {
 		if (!boxRef.current) return;
-		const input = inputRef.current;
 		const box = boxRef.current;
 		box.appendChild(input.dom);
 		return () => {
 			box?.removeChild(input.dom);
 		};
-	}, []);
+	}, [input.dom]);
 
 	useEffect(() => {
-		inputRef.current.onChange(() => {
-			props.onChange(inputRef.current.getHexValue());
+		input.setHexValue(props.value);
+	}, [input, props.value]);
+
+	useEffect(() => {
+		input.onChange(() => {
+			props.onChange(input.getHexValue());
 		});
-	}, [props]);
+	}, [input, props]);
 
 	return (
 		<Box>

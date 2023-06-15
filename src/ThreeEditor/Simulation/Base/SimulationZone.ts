@@ -9,7 +9,9 @@ export type SimulationZoneJSON = Omit<
 	SimulationElementJSON & {
 		materialUuid: string;
 		materialPropertiesOverrides: Partial<MaterialOverridable>;
-		customMaterial?: SimulationMaterialJSON;
+		customMaterial?: SimulationMaterialJSON & {
+			originalMaterialUuid: string;
+		};
 		visible: boolean;
 	},
 	never
@@ -113,9 +115,13 @@ export abstract class SimulationZone
 	}
 
 	toJSON(): SimulationZoneJSON {
+		console.log('toJSON');
 		const { uuid, name, type, visible, materialPropertiesOverrides: overrides } = this;
 		const customMaterial = this.usingCustomMaterial
-			? this.simulationMaterial.clone().toJSON()
+			? {
+					...this.simulationMaterial.clone().toJSON(),
+					originalMaterialUuid: this.simulationMaterial.uuid
+			  }
 			: undefined;
 		const { uuid: materialUuid } = this.usingCustomMaterial
 			? customMaterial!
@@ -147,19 +153,28 @@ export abstract class SimulationZone
 		return this;
 	}
 
+	reconstructMaterialFromJSON(json: SimulationZoneJSON) {
+		const { materialUuid, customMaterial } = json;
+		const simulationMaterial =
+			this.editor.materialManager.getMaterialByUuid(
+				customMaterial && materialUuid === customMaterial.uuid
+					? customMaterial.originalMaterialUuid
+					: materialUuid
+			) ?? this.editor.materialManager.defaultMaterial;
+		if (simulationMaterial === undefined) throw new Error('SimulationMaterial not found');
+		this.simulationMaterial = simulationMaterial;
+	}
+
 	fromJSON(json: SimulationZoneJSON) {
 		this.reset();
-		const { uuid, name, visible, materialUuid, materialPropertiesOverrides: overrides } = json;
-		const simulationMaterial =
-			this.editor.materialManager.getMaterialByUuid(materialUuid) ??
-			this.editor.materialManager.defaultMaterial;
+		const { uuid, name, visible, materialPropertiesOverrides: overrides } = json;
 
 		this.uuid = uuid;
 		this.name = name;
 		this.visible = visible;
-		this.simulationMaterial = simulationMaterial;
+		this.reconstructMaterialFromJSON(json);
 		this.materialPropertiesOverrides = {
-			...Object.entries(overrides).reduce<OverrideMap>(
+			...Object.entries(overrides ?? {}).reduce<OverrideMap>(
 				(acc, [key, value]) => {
 					return {
 						...acc,

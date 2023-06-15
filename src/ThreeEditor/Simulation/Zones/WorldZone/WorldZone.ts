@@ -247,7 +247,8 @@ export class WorldZone extends SimulationElement {
 			name,
 			marginMultiplier,
 			autoCalculate,
-			materialUuid
+			materialUuid,
+			visible
 		} = data;
 		const center = new Vector3().fromArray(position);
 		const { width, height, depth, radius } = parameters as Record<string, number>;
@@ -262,6 +263,9 @@ export class WorldZone extends SimulationElement {
 		this.simulationMaterial =
 			this.editor.materialManager.getMaterialByUuid(materialUuid) ??
 			this.editor.materialManager.defaultMaterial;
+
+		this.visible = visible;
+		this._helper.getMeshByType(this.geometryType).visible = visible;
 
 		return this;
 	}
