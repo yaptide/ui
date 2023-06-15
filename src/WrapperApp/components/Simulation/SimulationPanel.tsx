@@ -62,9 +62,9 @@ export default function SimulationPanel({
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
 	const [showRunSimulationsForm, setShowRunSimulationsForm] = useState(!!forwardedInputFiles);
 
-	const [pageIdx, setPageIdx] = useState(0);
-	const [pageCount, setPageCount] = useState(0);
-	const [orderType, setOrderType] = useState<OrderType>(OrderType.ASCEND);
+	const [pageIdx, setPageIdx] = useState(1);
+	const [pageCount, setPageCount] = useState(1);
+  const [orderType, setOrderType] = useState<OrderType>(OrderType.DESCEND);
 	const [orderBy, setOrderBy] = useState<OrderBy>(OrderBy.START_TIME);
 	const [pageSize, setPageSize] = useState(6);
 	type PageState = Omit<
@@ -90,7 +90,7 @@ export default function SimulationPanel({
 
 	const updateSimulationInfo = useCallback(
 		() =>
-			getPageContents(pageIdx - 1, pageSize, orderType, orderBy)
+			getPageContents(pageIdx, pageSize, orderType, orderBy)
 				.then(results => {
 					const { simulations, pageCount } = results;
 					setSimulationInfo([...simulations]);
@@ -115,7 +115,7 @@ export default function SimulationPanel({
 			!DEMO_MODE &&
 			getPageStatus(simulationInfo, true, handleBeforeCacheWrite, controller.signal).then(
 				s => {
-					setSimulationsStatusData([...s.reverse()]);
+					setSimulationsStatusData([...s]);
 				}
 			),
 		[handleBeforeCacheWrite, controller.signal, getPageStatus, simulationInfo]
@@ -275,7 +275,7 @@ export default function SimulationPanel({
 			newOrderBy: OrderBy = orderBy
 		) =>
 			getPageContents(
-				newPageIdx - 1,
+				newPageIdx,
 				newPageSize,
 				newOrderType,
 				newOrderBy,
