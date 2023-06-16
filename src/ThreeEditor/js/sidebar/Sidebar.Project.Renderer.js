@@ -3,6 +3,25 @@ import * as THREE from 'three';
 import { UINumber, UIPanel, UIRow, UISelect, UIText } from '../libs/ui.js';
 import { UIBoolean } from '../libs/ui.three.js';
 
+/**
+ * @example relevant code from Sidebar.Project.Renderer.js
+ * ```ts
+ * function createRenderer() {
+ * 	currentRenderer = new THREE.WebGLRenderer({
+ * 		antialias: antialiasBoolean.getValue()
+ * 	});
+ * 	currentRenderer.outputEncoding = THREE.sRGBEncoding;
+ * 	currentRenderer.useLegacyLights = physicallyCorrectLightsBoolean.getValue();
+ * 	currentRenderer.shadowMap.enabled = shadowsBoolean.getValue();
+ * 	currentRenderer.shadowMap.type = parseFloat(shadowTypeSelect.getValue());
+ * 	currentRenderer.toneMapping = parseFloat(toneMappingSelect.getValue());
+ * 	currentRenderer.toneMappingExposure = toneMappingExposure.getValue();
+ *
+ * 	signals.rendererCreated.dispatch(currentRenderer);
+ * 	signals.rendererUpdated.dispatch();
+ * }
+ * ```
+ */
 function SidebarProjectRenderer(editor) {
 	const { signals, config } = editor;
 

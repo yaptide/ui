@@ -25,13 +25,22 @@ export const BEAM_MODULATOR_MODE_OPTIONS = ['modulus', 'sampling'] as const;
 
 export type BeamsimulationMethod = (typeof BEAM_MODULATOR_MODE_OPTIONS)[number];
 
+/**
+ * Simulation component for beam modulator
+ * used to simulate the effect of compex geometries such as:
+ * - ripple filters
+ * - ridge filters
+ * - modulator wheels
+ *
+ * Element defines a method, file with definition and zone to apply to the changes in physics.
+ */
 export class BeamModulator extends SimulationPoints {
 	sourceFile: ConfigSourceFile = {
 		name: '',
 		value: ''
 	};
 	notMovable = true;
-	pointsHelper: THREE.Mesh;
+	wireframeHelper: THREE.Mesh;
 
 	reset(): void {
 		super.reset();
@@ -101,7 +110,7 @@ export class BeamModulator extends SimulationPoints {
 			})
 		);
 		this.geometry = new THREE.BufferGeometry();
-		this.pointsHelper = editor.specialComponentsManager.beamModulatorHelper;
+		this.wireframeHelper = editor.specialComponentsManager.beamModulatorHelper;
 	}
 	toJSON(): BeamModulatorJSON {
 		const { geometryData, simulationMethod, sourceFile } = this;

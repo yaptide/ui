@@ -13,6 +13,24 @@ type HollowCylinderGeometryParameters = {
 	phiLength: number;
 };
 
+/**
+ * A class for generating cylindrical geometries with an optional hole in the center.
+ *
+ * Geometry is oriented along the z axis to match the standards for particle simulations.
+ * @example
+ * ```typescript
+ * declare const scene: THREE.Scene;
+ * const geometry = new HollowCylinderGeometry(3, 5, 20, 32);
+ * const material = new THREE.MeshBasicMaterial({
+ *     color: 0xffff00
+ * });
+ * const hollowCylinder = new THREE.Mesh(geometry, material);
+ * scene.add(hollowCylinder);
+ * ```
+ * Implementation was based on:
+ * @see {@link https://threejs.org/docs/index.html#api/en/geometries/CylinderGeometry | THREE.CylinderGeometry class}
+ * @see {@link https://threejs.org/docs/?q=Cir#api/en/geometries/CircleGeometry | THREE.CircleGeometry class}
+ */
 export class HollowCylinderGeometry extends BufferGeometry {
 	type: string;
 	parameters: HollowCylinderGeometryParameters;

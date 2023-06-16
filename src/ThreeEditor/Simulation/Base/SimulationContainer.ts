@@ -3,16 +3,18 @@ import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { UniqueChildrenNames, getNextFreeName } from '../../../util/Name/Name';
 import { YaptideEditor } from '../../js/YaptideEditor';
 
+/**
+ * Interface that narrows down the type for the parent of Object3D
+ * to container for objects of the same type.
+ */
 export interface SimulationSceneChild extends THREE.Object3D {
 	parent: SimulationSceneContainer<this> | null;
-	name: string;
-	type: string;
-	readonly id: number;
-	uuid: string;
 }
 
 /**
- * This is the base class for groups of simulation elements.
+ * This is the base class for objects storing simulation elements of the same type.
+ *
+ * Implements {@link UniqueChildrenNames} system for unique names for the children.
  */
 export abstract class SimulationSceneContainer<
 		TChild extends SimulationSceneChild = SimulationSceneChild
@@ -25,6 +27,7 @@ export abstract class SimulationSceneContainer<
 	children: TChild[] = [];
 	readonly type: string;
 	readonly isSimulationContainer = true;
+	readonly isSimulationElement = true;
 	readonly notRemovable: boolean = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -74,6 +77,10 @@ export abstract class SimulationSceneContainer<
 	}
 }
 
+/**
+ * Variant of SimulationSceneContainer that can only have one child.
+ * @see {@link SimulationSceneContainer}
+ */
 export class SingletonContainer<TChild extends SimulationSceneChild>
 	extends SimulationSceneContainer<TChild>
 	implements UniqueChildrenNames
@@ -89,6 +96,9 @@ export class SingletonContainer<TChild extends SimulationSceneChild>
 	}
 }
 
+/**
+ * Type guard for {@link SimulationSceneContainer}
+ */
 export function isSimulationSceneContainer(object: unknown): object is SimulationSceneContainer {
 	return (object as SimulationSceneContainer).isSimulationContainer === true;
 }

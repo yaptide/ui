@@ -8,7 +8,7 @@ import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
 import { getAddElementButtonProps } from '../../../util/Ui/CommandButtonProps';
 import { useSignal } from '../../../util/hooks/signals';
-import { Context } from '../../js/Editor.Context';
+import { Context } from '../../js/EditorContext';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SidebarTree } from './SidebarTree/SidebarTree';
 import { PropertiesPanel } from './properties/PropertiesPanel';

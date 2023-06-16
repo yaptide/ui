@@ -37,6 +37,7 @@ function WrapperApp() {
 			clearLoadedEditor();
 			setTabsValue('editor');
 			for (const data of editorProvider) editorRef.current.loader.loadJSON(data);
+			//TODO: rewrite to support our versioning and types of data. Default loader is now mostly useless
 		}
 	}, [canLoadEditorData, editorRef, editorProvider, clearLoadedEditor]);
 

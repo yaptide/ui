@@ -16,19 +16,9 @@ import { Command } from '../../ThreeEditor/commands/basic/AbstractCommand';
 import { ObjectManagementFactory } from '../../ThreeEditor/commands/factories/ObjectManagementFactory';
 import { YaptideEditor } from '../../ThreeEditor/js/YaptideEditor';
 
-export type CommandButtonProps = {
-	label: string;
-	onClick: () => void;
-	disabled?: boolean;
-};
-type CommandButtonTuple =
-	| [string, (() => Command) | undefined]
-	| [string, (() => Command) | undefined, boolean];
-
-type ManagerName = 'Figures' | 'Zones' | 'Detectors' | 'Special Components' | 'Filters' | 'Outputs';
-
-type GroupedCommandButtonProps = Record<ManagerName, CommandButtonProps[]>;
-
+/**
+ * A function that returns an array of {@link CommandButtonProps} based on editor instance and condensed data.
+ */
 export const createCommandButtonProps = (
 	editor: YaptideEditor,
 	data: CommandButtonTuple[]
@@ -40,6 +30,10 @@ export const createCommandButtonProps = (
 	}));
 };
 
+/**
+ * A function that returns {@link CommandButtonProps} grouped by category.
+ * Each category is generated from a const data defined directly in this function.
+ */
 export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandButtonProps => {
 	const commandFactory = new ObjectManagementFactory(editor);
 	const figuresTuple: CommandButtonTuple[] = [
@@ -155,3 +149,18 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 		'Outputs': createCommandButtonProps(editor, outputsTuple)
 	};
 };
+
+//-----------------------------------------UtilityTypes-----------------------------------------//
+export type CommandButtonProps = {
+	label: string;
+	onClick: () => void;
+	disabled?: boolean;
+};
+type CommandButtonTuple =
+	| [string, (() => Command) | undefined]
+	| [string, (() => Command) | undefined, boolean];
+
+type ManagerName = 'Figures' | 'Zones' | 'Detectors' | 'Special Components' | 'Filters' | 'Outputs';
+
+type GroupedCommandButtonProps = Record<ManagerName, CommandButtonProps[]>;
+//----------------------------------------------------------------------------------------------//

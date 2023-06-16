@@ -9,6 +9,7 @@ export class AddQuantityCommand extends Command {
 	 * @param {ScoringOutput} output
 	 * @param {ScoringQuantity} [object]
 	 * @constructor
+	 * @deprecated Use ObjectManagementFactory to create adder commands
 	 */
 	constructor(editor, output, object) {
 		super(editor);

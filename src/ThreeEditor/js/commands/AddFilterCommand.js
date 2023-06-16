@@ -4,6 +4,7 @@ import { Command } from '../Command.js';
  * @param editor Editor
  * @param filter DetectFilter
  * @constructor
+ * @deprecated Use ObjectManagementFactory to create adder commands
  */
 export class AddFilterCommand extends Command {
 	constructor(editor, object) {

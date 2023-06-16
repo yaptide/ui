@@ -17,7 +17,11 @@ const geometryParameters = {
 	HollowCylinderGeometry: ['innerRadius', ['radius', 'outerRadius'], ['depth', 'height']]
 };
 
-export type AdditionalGeometryDataType<ParametersType extends {} = {}> = {
+export type AdditionalGeometryDataType<
+	ParametersType extends {} = {
+		[key: string]: number | string;
+	}
+> = {
 	geometryType: string;
 	position: THREE.Vector3Tuple;
 	rotation: THREE.Vector3Tuple;

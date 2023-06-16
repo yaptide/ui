@@ -48,6 +48,7 @@ export class SpecialComponentManager
 	readonly notRotatable = true;
 	readonly notScalable = true;
 	readonly flattenOnOutliner = true;
+	readonly isSimulationElement = true;
 	readonly isSpecialComponentsManager: true = true;
 	/***************************************************************/
 

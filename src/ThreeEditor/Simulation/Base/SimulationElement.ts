@@ -12,7 +12,8 @@ export type SimulationElementJSON = {
 /**
  * This is the base class for all simulation elements.
  * It is a THREE.Object3D only for integration purposes.
- * Even elements that are not represented by a mesh or position in a space should inherit from this class.
+ * Even elements that are not represented by a mesh or position in a space
+ * should inherit from this class.
  */
 export abstract class SimulationElement
 	extends THREE.Object3D

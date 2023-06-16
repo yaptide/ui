@@ -74,6 +74,7 @@ export class DetectorManager
 	readonly notRotatable = true;
 	readonly notScalable = true;
 	readonly flattenOnOutliner = true;
+	readonly isSimulationElement = true;
 	readonly isDetectorManager: true = true;
 	/***************************************************************/
 

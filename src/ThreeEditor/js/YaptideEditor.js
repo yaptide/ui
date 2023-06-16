@@ -10,7 +10,7 @@ import { Physics } from '../Simulation/Physics/Physics';
 import { ScoringManager } from '../Simulation/Scoring/ScoringManager';
 import { SpecialComponentManager } from '../Simulation/SpecialComponents/SpecialComponentManager';
 import { Config } from './Config.js';
-import { ContextManager } from './Editor.Context';
+import { ContextManager } from './EditorContext';
 import { History as _History } from './History.js';
 import { Loader } from './Loader.js';
 import { Storage as _Storage } from './Storage.js';
@@ -24,26 +24,6 @@ export const JSON_VERSION = `0.10`;
 
 export function YaptideEditor(container) {
 	this.signals = {
-		/*
-      digraph finite_state_machine {
-         rankdir=LR;
-         size="15,15"
-         node [shape = circle];
-         useKeyboardEditorControls -> SidebarTreeItem [ label = "requestRenameAction" ];
-         ViewportClippedViewCSG -> ViewportManager [ label = "viewportConfigChanged" ];
-         WorldZone -> Viewport [ label = "autocalculateChanged" ];
-         EditorContext -> EditorContext [ label = "contextChanged" ];
-         EditorContext -> EditorSidebar [ label = "contextChanged" ];
-         EditorContext -> Viewport [ label = "contextChanged" ];
-         EditorContext -> ViewportManager [ label = "contextChanged" ];
-         EditorMenu -> ViewportManager [ label = "layoutChanged" ];
-         Editor -> SceneEditor [ label = "titleChanged" ];
-         Editor -> EditorAppBar[ label = "titleChanged" ];
-         Editor -> ViewportManager [ label = "viewportCameraChanged" ];
-         History -> EditorAppBar [ label = "historyChanged" ];
-      }
-      */
-
 		editorCleared: new Signal(),
 
 		savingStarted: new Signal(),
@@ -220,6 +200,7 @@ export function YaptideEditor(container) {
 	};
 
 	this.loader = new Loader(this);
+	//TODO: rewrite to support our versioning and types of data. Default loader is now mostly useless
 
 	this.camera = _DEFAULT_CAMERA.clone();
 

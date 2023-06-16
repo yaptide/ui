@@ -67,6 +67,7 @@ export class ZoneManager
 	readonly notRotatable = true;
 	readonly notScalable = true;
 	readonly flattenOnOutliner = true;
+	readonly isSimulationElement = true;
 	readonly isZoneManager: true = true;
 	/***************************************************************/
 

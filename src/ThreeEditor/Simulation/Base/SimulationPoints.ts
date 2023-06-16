@@ -5,15 +5,20 @@ import { SimulationSceneChild, SimulationSceneContainer } from './SimulationCont
 import { SimulationElement, SimulationElementJSON } from './SimulationElement';
 import { SimulationMeshJSON } from './SimulationMesh';
 
-/**
- * This is the base class for detectors that are represented by points.
- */
-
 export type SimulationPointsJSON = Omit<
 	SimulationElementJSON & Omit<SimulationMeshJSON, 'geometryData'>,
 	never
 >;
-
+/**
+ * This is the base class for elements that are represented by grid of points.
+ *
+ * Compared to {@link SimulationMesh}, this class has two geometries:
+ *
+ * - one for points with color and toggleable visibility
+ * - one for wireframe visualization when object is selected.
+ *
+ * wireframe visualization is done by {@link SimulationPoints.wireframeHelper}
+ */
 export abstract class SimulationPoints
 	extends THREE.Points
 	implements SimulationPropertiesType, SimulationSceneChild, SimulationElement
@@ -42,7 +47,7 @@ export abstract class SimulationPoints
 					if (parent)
 						return function (v: THREE.Vector3) {
 							const nV = target[p].apply(target, [v]);
-							scope.pointsHelper.position.copy(nV);
+							scope.wireframeHelper.position.copy(nV);
 							return nV;
 						};
 					return Reflect.get(target, p);
@@ -96,7 +101,7 @@ export abstract class SimulationPoints
 		this._colorHex = this.material.color.getHex();
 		this.type = type;
 	}
-	abstract pointsHelper: THREE.Mesh;
+	abstract wireframeHelper: THREE.Mesh;
 	toJSON(): SimulationPointsJSON {
 		const { name, type, uuid, visible } = this;
 		const colorHex = this.material.color.getHex();

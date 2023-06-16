@@ -31,7 +31,7 @@ export class Detector extends SimulationPoints {
 	alphaMap: null = null;
 	size: number = 1;
 	sizeAttenuation: boolean = true;
-	pointsHelper: THREE.Mesh;
+	wireframeHelper: THREE.Mesh;
 
 	get notMovable() {
 		// custom get function to conditionally return notMoveable property;
@@ -184,7 +184,7 @@ export class Detector extends SimulationPoints {
 		super(editor, name, type, detectPointsMaterial.clone());
 
 		this.signals = editor.signals;
-		this.pointsHelper = editor.detectorManager.detectorHelper;
+		this.wireframeHelper = editor.detectorManager.detectorHelper;
 		this._detectorType = detectorType;
 		this.geometry = this.generateGeometry();
 

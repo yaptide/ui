@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { EditorObjectLoader } from '../../../util/ObjectLoader';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElementJSON } from '../Base/SimulationElement';
@@ -60,13 +59,9 @@ export class FigureManager
 	readonly notRotatable = true;
 	readonly notScalable = true;
 	readonly flattenOnOutliner = true;
+	readonly isSimulationElement = true;
 	readonly isFigureManager: true = true;
 	/***************************************************************/
-
-	/**
-	 * @deprecated
-	 */
-	readonly loader: EditorObjectLoader;
 
 	/*************************FigureMethods*************************/
 	figureContainer: SimulationSceneContainer<BasicFigure>;
@@ -102,7 +97,6 @@ export class FigureManager
 		this.name = this._name = 'Figure Manager';
 
 		this.figureContainer = new FigureContainer(editor);
-		this.loader = new EditorObjectLoader(editor);
 
 		this.add(this.figureContainer);
 

@@ -1,17 +1,13 @@
 import { Editor } from '../../js/Command';
 import { BaseCommandJSON, Command } from './AbstractCommand';
 
-type UpdateCommandJSON<
-	Target extends Record<string, unknown>,
-	Property extends keyof Target
-> = BaseCommandJSON<Target> & {
-	data: {
-		property: Property;
-		oldValue: Target[Property];
-		newValue: Target[Property];
-	};
-};
-
+/**
+ * UpdateCommand is a command that updates a property of a target
+ * and stores the old value for undo purposes
+ *
+ * The property must be of a type that can be serialized to JSON and can't be read-only
+ * Any listeners to the property must be a pure functions so that the command can be undone
+ */
 export class UpdateCommand<
 	Target extends Record<string, unknown> & Record<Property, Target[Property]>,
 	Property extends keyof Target
@@ -51,3 +47,16 @@ export class UpdateCommand<
 		this.newValue = newValue;
 	}
 }
+
+//-----------------------------------------UtilityTypes-----------------------------------------//
+type UpdateCommandJSON<
+	Target extends Record<string, unknown>,
+	Property extends keyof Target
+> = BaseCommandJSON<Target> & {
+	data: {
+		property: Property;
+		oldValue: Target[Property];
+		newValue: Target[Property];
+	};
+};
+//----------------------------------------------------------------------------------------------//

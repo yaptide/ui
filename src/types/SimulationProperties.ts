@@ -1,10 +1,14 @@
 /**
  * Type for properties of a simulation object.
- * isObject3D is always true and is defined in the type because you can't implement a type in a class without defining at least one property.
+ * isSimulationElement is always true and is defined in the type
+ * because you can't implement a type in a class without defining at least one property.
  * all other properties are optional and are used to properly handle the object in the editor.
  */
 export type SimulationPropertiesType = {
-	readonly isSimulationElement?: true;
+	//required
+	readonly isSimulationElement: true;
+
+	//optional
 	readonly notRemovable?: boolean;
 	readonly notMovable?: boolean;
 	readonly notRotatable?: boolean;

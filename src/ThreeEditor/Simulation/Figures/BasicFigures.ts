@@ -36,6 +36,15 @@ export type SphereParameters = {
 	radius: number;
 };
 
+/**
+ * This is the base class for all objects defined by specific geometry definition located in the point in simulation space.
+ *
+ * Type of geometry can be one of the following:
+ * @template BoxGeometry - defined with THREE.BoxGeometry class
+ * @template SphereGeometry - defined with THREE.SphereGeometry class
+ * @template HollowCylinderGeometry - defined with custom HollowCylinderGeometry class
+ * @see {HollowCylinderGeometry}
+ */
 export abstract class BasicFigure<
 	TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry
 > extends SimulationMesh<TGeometry> {

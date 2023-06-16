@@ -82,6 +82,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 
 	const openFile = (files: FileList) => {
 		if (editor) editor.loader.loadFiles(files);
+		//TODO: rewrite to support our versioning and types of data. Default loader is now mostly useless
 		else console.warn('EditorAppBar.tsx: openFile: editor or fileInput.current.files is null');
 	};
 

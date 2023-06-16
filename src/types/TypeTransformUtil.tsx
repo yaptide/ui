@@ -125,8 +125,3 @@ export type ObjUnionToKeyUnion<T extends {}, Obj extends {} = {}> = UnionToInter
 			>
 	  >
 	: Omit<Obj, never>;
-
-export type PartialSubtype<T, Required extends keyof T> = Omit<
-	Partial<Omit<T, Required>> & Pick<T, Required>,
-	never
->;

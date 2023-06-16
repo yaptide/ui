@@ -44,7 +44,7 @@ const PythonConverter = (props: PythonConverterProps) => {
 		);
 		workerRef.current.initPyodide(
 			Comlink.proxy(() => {
-				console.info('PythonConverter: callback from worker');
+				console.log('PythonConverter: callback from worker');
 				document.dispatchEvent(new CustomEvent(PYODIDE_LOADED));
 			})
 		);

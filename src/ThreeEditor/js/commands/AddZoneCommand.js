@@ -4,6 +4,7 @@ import { Command } from '../Command.js';
  * @param editor Editor
  * @param object THREE.Object3D
  * @constructor
+ * @deprecated Use ObjectManagementFactory to create adder commands
  */
 export class AddZoneCommand extends Command {
 	constructor(editor, object) {

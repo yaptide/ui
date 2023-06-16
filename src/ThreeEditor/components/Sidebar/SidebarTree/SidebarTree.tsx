@@ -16,6 +16,10 @@ import { isSimulationElement } from '../../../Simulation/Base/SimulationElement'
 
 type TreeSource = SimulationSceneChild[];
 
+const validateElement = (object: Object3D): object is SimulationSceneChild => {
+	return isSimulationElement(object) || isSimulationSceneContainer(object);
+};
+
 export function SidebarTree(props: {
 	editor: YaptideEditor;
 	sources: TreeSource;
@@ -26,12 +30,20 @@ export function SidebarTree(props: {
 	const treeRef = useRef<TreeMethods>(null);
 	const treeId = useMemo(() => generateUUID(), []);
 
+	/**
+	 * Build tree options recursively
+	 *
+	 * Provided object is added to the tree if it is not a container
+	 * or if it is a container but its flattenOnOutliner flag is false
+	 *
+	 * Then function runs recursively on all children of the provided object
+	 * if it is a container and has visible children
+	 *
+	 * All elements that don't pass a validation with {@link validateElement} are filtered out
+	 */
 	const buildOptionsRecursively = useCallback(
 		(object: SimulationSceneChild, index: number, parent: number = 0): TreeItem[] => {
 			let nextParent = object.id;
-			const validateElement = (object: Object3D): object is SimulationSceneChild => {
-				return isSimulationElement(object) || isSimulationSceneContainer(object);
-			};
 			const elementToTreeItem = (
 				object: SimulationSceneChild,
 				parent: number,
@@ -53,9 +65,7 @@ export function SidebarTree(props: {
 
 			const children: TreeItem[] = [];
 
-			if (!isSimulationSceneContainer(object))
-				children.push(elementToTreeItem(object, parent, index));
-			else if (!object.flattenOnOutliner)
+			if (!isSimulationSceneContainer(object) || !object.flattenOnOutliner)
 				children.push(elementToTreeItem(object, parent, index));
 			else nextParent = parent;
 

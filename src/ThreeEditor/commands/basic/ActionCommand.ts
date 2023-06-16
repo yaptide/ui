@@ -1,19 +1,12 @@
 import { Editor } from '../../js/Command';
 import { MethodArgs, Command, BaseCommandJSON } from './AbstractCommand';
 
-type ActionCommandJSON<
-	Target extends Record<string, unknown>,
-	Key extends keyof Target,
-	UndoMethod extends keyof Target,
-	Args extends MethodArgs<Target, Key>
-> = BaseCommandJSON<Target> & {
-	data: {
-		method: Key;
-		undoMethod: UndoMethod;
-		args: Args;
-	};
-};
-
+/**
+ * ActionCommand is a command that executes a method on a target
+ * and undoes it by executing another method on the same target
+ *
+ * Method and undoMethod must perform opposite actions with the same arguments
+ */
 export class ActionCommand<
 	Target extends Record<string, unknown> & Record<Method, (...args: any[]) => unknown>,
 	Method extends keyof Target,
@@ -56,3 +49,18 @@ export class ActionCommand<
 		this.args = args;
 	}
 }
+
+//-----------------------------------------UtilityTypes-----------------------------------------//
+type ActionCommandJSON<
+	Target extends Record<string, unknown>,
+	Key extends keyof Target,
+	UndoMethod extends keyof Target,
+	Args extends MethodArgs<Target, Key>
+> = BaseCommandJSON<Target> & {
+	data: {
+		method: Key;
+		undoMethod: UndoMethod;
+		args: Args;
+	};
+};
+//----------------------------------------------------------------------------------------------//

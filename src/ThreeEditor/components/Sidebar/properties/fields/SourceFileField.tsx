@@ -5,6 +5,9 @@ import { PropertyField } from './PropertyField';
 
 type ObjectWithSourceFile = { sourceFile: ConfigSourceFile };
 
+/**
+ * Field that allows to upload additional files to the simulation config
+ */
 export function SourceFileDefinitionField(props: {
 	object: ObjectWithSourceFile;
 	onChange: (value: ObjectWithSourceFile['sourceFile']) => void;

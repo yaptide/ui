@@ -1,10 +1,27 @@
-import { Capitalize as CapitalizeWord } from '../../../util/Capitalize';
+import { CapitalizeString } from '../../../util/Capitalize';
 import { Editor } from '../../js/Command';
 import { SimulationSceneChild } from '../../Simulation/Base/SimulationContainer';
 import { MethodArgs } from '../basic/AbstractCommand';
 import { ActionCommand } from '../basic/ActionCommand';
 import { SimulationElementManager } from '../../Simulation/Base/SimulationManager';
 
+/**
+ * General factory for creating commands that add or remove objects from a manager.
+ * @example
+ * ```ts
+ * declare const editor: Editor;
+ * declare class Particle extends SimulationElement {}
+ * declare const particleManager: SimulationElementManager<'particle', Particle>;
+ *
+ * const factory = new ObjectManagementFactory(editor);
+ * const addParticleCommand = factory.createAddCommand(
+ * 	'particle',
+ * 	new Particle(editor, 'particle', 'particle'),
+ * 	particleManager
+ * );
+ * addParticleCommand.execute(); // adds particle to manager
+ * ```
+ */
 export class ObjectManagementFactory {
 	editor: Editor;
 	constructor(editor: Editor) {
@@ -19,8 +36,8 @@ export class ObjectManagementFactory {
 			this.editor,
 			target,
 			`Add ${name}`,
-			`add${CapitalizeWord(name)}`,
-			`remove${CapitalizeWord(name)}`,
+			`add${CapitalizeString(name)}`,
+			`remove${CapitalizeString(name)}`,
 			[element] as MethodArgs<
 				SimulationElementManager<TName, TChild>,
 				`add${Capitalize<TName>}`
@@ -36,8 +53,8 @@ export class ObjectManagementFactory {
 			this.editor,
 			target,
 			`Remove ${name}`,
-			`remove${CapitalizeWord(name)}`,
-			`add${CapitalizeWord(name)}`,
+			`remove${CapitalizeString(name)}`,
+			`add${CapitalizeString(name)}`,
 			[element] as MethodArgs<
 				SimulationElementManager<TName, TChild>,
 				`remove${Capitalize<TName>}`

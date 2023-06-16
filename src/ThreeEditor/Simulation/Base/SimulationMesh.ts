@@ -15,7 +15,11 @@ export type SimulationMeshJSON = Omit<
 >;
 
 /**
- * This is the base class for all simulation objects that have a basic mesh.
+ * This is the base class for all simulation objects
+ * that displayable elements on a scene.
+ *
+ * All classes that inherit from this will have toggleable visibility
+ * and configurable color.
  */
 export abstract class SimulationMesh<
 		TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry,
@@ -64,7 +68,7 @@ export abstract class SimulationMesh<
 		return this;
 	}
 	reset(): void {
-		throw new Error('Method not implemented.');
+		this.name = this._name;
 	}
 	abstract reconstructGeometryFromData(data: AdditionalGeometryDataType): void;
 }

@@ -3,9 +3,6 @@ import { AddObjectCommand, SetSceneCommand } from './commands/Commands';
 import { LoaderUtils } from './LoaderUtils.js';
 import { TGALoader } from 'three/examples/jsm/loaders/TGALoader.js';
 
-/**
- * @deprecated
- */
 function Loader(editor) {
 	const scope = this;
 

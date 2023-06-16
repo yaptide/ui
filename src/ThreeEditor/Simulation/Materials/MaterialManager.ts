@@ -62,6 +62,7 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 	readonly notRotatable = true;
 	readonly notScalable = true;
 	readonly flattenOnOutliner = true;
+	readonly isSimulationElement = true;
 	readonly isMaterialsManager: true = true;
 	/***************************************************************/
 

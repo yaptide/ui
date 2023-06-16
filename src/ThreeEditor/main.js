@@ -95,33 +95,6 @@ export function initEditor(container) {
 
 	//
 
-	document.addEventListener(
-		'dragover',
-		event => {
-			event.preventDefault();
-			event.dataTransfer.dropEffect = 'copy';
-		},
-		false
-	);
-
-	document.addEventListener(
-		'drop',
-		event => {
-			event.preventDefault();
-
-			if (event.dataTransfer.types[0] === 'text/plain') return; // Outliner drop
-
-			if (event.dataTransfer.items) {
-				// DataTransferItemList supports folders
-
-				editor.loader.loadItemList(event.dataTransfer.items);
-			} else {
-				editor.loader.loadFiles(event.dataTransfer.files);
-			}
-		},
-		false
-	);
-
 	function onWindowResize() {
 		editor.signals.windowResize.dispatch();
 	}

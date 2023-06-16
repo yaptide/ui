@@ -5,6 +5,7 @@ import { Detector } from '../../Simulation/Detectors/Detector';
  * @param editor Editor
  * @param object Detector
  * @constructor
+ * @deprecated Use ObjectManagementFactory to create adder commands
  */
 class AddDetectGeometryCommand extends Command {
 	constructor(editor, object) {

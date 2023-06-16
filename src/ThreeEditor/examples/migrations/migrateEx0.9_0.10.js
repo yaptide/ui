@@ -77,6 +77,17 @@ const migrateInputJson = (inputJson) => {
                 }
             })
     }
+    const materialManager = {
+        ...oldMaterialManager,
+        uuid: '0F0F0F0F-0F0F-0F0F-0F0F-0F0F0FFFFFFF',
+        name: 'Material Manager',
+        type: 'MaterialManager',
+		metadata: {
+			version: `0.10`,
+			type: "Manager",
+			generator: "MaterialManager.toJSON"
+		},
+    }
     const zoneManager = {
         uuid: oldZoneManager.uuid,
         name: oldZoneManager.name,
@@ -85,7 +96,11 @@ const migrateInputJson = (inputJson) => {
             return {
                 ...zone,
                 visible: true,
-                type: 'BooleanZone'
+                type: 'BooleanZone',
+                customMaterial: zone.customMaterial ? {
+                    ...zone.customMaterial,
+                    originalMaterialUuid: materialManager.materials.find(material => (material.icru === zone.customMaterial.icru)).uuid,
+                } : undefined,
             }
         }),
         worldZone: [oldZoneManager.worldZone].map(zone => {
@@ -200,17 +215,6 @@ const migrateInputJson = (inputJson) => {
         uuid: '0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0FFFFF',
         name: 'Beam',
         type: 'Beam',
-    }
-    const materialManager = {
-        ...oldMaterialManager,
-        uuid: '0F0F0F0F-0F0F-0F0F-0F0F-0F0F0FFFFFFF',
-        name: 'Material Manager',
-        type: 'MaterialManager',
-		metadata: {
-			version: `0.10`,
-			type: "Manager",
-			generator: "MaterialManager.toJSON"
-		},
     }
     return {
         metadata,

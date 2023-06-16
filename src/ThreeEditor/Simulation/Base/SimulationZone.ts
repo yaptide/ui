@@ -41,6 +41,14 @@ const _get_default = (material: SimulationMaterial) => {
 	};
 };
 
+/**
+ * This is the base class for all zone objects
+ * Zones are objects that have specified simulation material.
+ *
+ * Geometry is not specified, because their definition can vary depending on the type of zone
+ * @see {@link BooleanZone}
+ * @see {@link TreeZone}
+ */
 export abstract class SimulationZone
 	extends THREE.Mesh<THREE.BufferGeometry, SimulationMaterial>
 	implements SimulationElement, SimulationPropertiesType, SimulationSceneChild
@@ -115,7 +123,6 @@ export abstract class SimulationZone
 	}
 
 	toJSON(): SimulationZoneJSON {
-		console.log('toJSON');
 		const { uuid, name, type, visible, materialPropertiesOverrides: overrides } = this;
 		const customMaterial = this.usingCustomMaterial
 			? {
