@@ -2,7 +2,7 @@ import { Command } from '../Command.js';
 
 class RemoveZoneOperationTupleCommand extends Command {
 	/**
-	 * @typedef {import('../Editor.js').Editor} Editor
+	 * @typedef {import('../YaptideEditor.js').YaptideEditor} Editor
 	 * @typedef {import('../../Simulation/Zones/BooleanZone.js').BooleanZone} CSGZone
 	 * @typedef {import('../../CSG/CSGOperationTuple.js').OperationTuple} OperationTuple
 	 * @param {Editor} editor

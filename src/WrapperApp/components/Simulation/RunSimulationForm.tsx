@@ -17,12 +17,12 @@ import {
 	ToggleButtonGroup
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { MouseEvent, SyntheticEvent, useState } from 'react';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
+import { SimulatorType } from '../../../types/RequestTypes';
+import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import { TabPanel } from '../Panels/TabPanel';
 import { BatchScriptParametersEditor } from './BatchParametersEditor';
-import { SimulationInputFiles } from '../../../types/ResponseTypes';
-import { SimulatorType } from '../../../types/RequestTypes';
 
 function a11yProps(index: number, name: string = 'RunSimulation') {
 	return {
@@ -98,14 +98,14 @@ export function RunSimulationForm({
 		setSelectedCluster(parseInt(event.target.value));
 	};
 	const handleRunTypeChange = (
-		event: React.MouseEvent<HTMLElement>,
+		event: MouseEvent<HTMLElement>,
 		newRunType: SimulationRunType | null
 	) => {
 		if (newRunType === null) return;
 		setSimulationRunType(newRunType);
 	};
 	const handleSourceTypeChange = (
-		event: React.MouseEvent<HTMLElement>,
+		event: MouseEvent<HTMLElement>,
 		newSourceType: SimulationSourceType | null
 	) => {
 		if (newSourceType === null) return;
@@ -114,10 +114,10 @@ export function RunSimulationForm({
 			setSelectedFiles(Object.keys(inputFiles));
 		}
 	};
-	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+	const handleTabChange = (event: SyntheticEvent, newValue: number) => {
 		setTabValue(newValue);
 	};
-	const handleParamsTabChange = (event: React.SyntheticEvent, newValue: number) => {
+	const handleParamsTabChange = (event: SyntheticEvent, newValue: number) => {
 		setSelectedScriptParamsTab(newValue);
 	};
 	const handleRunSimulationClick = () => {

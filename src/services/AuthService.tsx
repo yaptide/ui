@@ -1,5 +1,4 @@
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { createGenericContext } from './GenericContext';
 import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
 import { BACKEND_URL, DEMO_MODE, DEPLOYMENT } from '../config/Config';
@@ -8,11 +7,13 @@ import { RequestAuthLogin, RequestAuthLogout, RequestAuthRefresh } from '../type
 import useIntervalAsync from '../util/hooks/useIntervalAsync';
 import { useSnackbar } from 'notistack';
 import {
-	ResponseAuthStatus,
-	ResponseAuthRefresh,
 	ResponseAuthLogin,
+	ResponseAuthRefresh,
+	ResponseAuthStatus,
 	YaptideResponse
 } from '../types/ResponseTypes';
+import { createGenericContext } from './GenericContext';
+import { hasField } from '../util/hasField';
 
 declare global {
 	interface Window {
@@ -25,12 +26,25 @@ export interface AuthProps {
 }
 
 type AuthUser = Pick<ResponseAuthStatus, 'username'>;
+const isAuthUser = (obj: unknown): obj is AuthUser => {
+	return hasField<string>(obj, 'username') && typeof obj.username === 'string';
+};
+const isYaptideResponse = (obj: unknown): obj is YaptideResponse => {
+	return hasField<string>(obj, 'message') && typeof obj.message === 'string';
+};
+const parseYaptideResponseMessage = (obj: unknown): string =>
+	isYaptideResponse(obj) ? obj.message : [obj].toString();
 
-const load = (key: string) => {
+const load = <T extends unknown = unknown>(
+	key: string,
+	guard: (obj: unknown) => obj is T = (obj): obj is T => true
+): T | null => {
 	const item = localStorage.getItem(key);
 	try {
-		const [obj] = JSON.parse(`[${item}]`);
-		return obj;
+		const data = JSON.parse(`[${item}]`);
+		const obj = Array.isArray(data) && data.length === 1 ? data[0] : null;
+		if (guard(obj)) return obj;
+		return null;
 	} catch {
 		return null;
 	}
@@ -60,16 +74,16 @@ export interface AuthContext {
 const [useAuth, AuthContextProvider] = createGenericContext<AuthContext>();
 
 const Auth = ({ children }: AuthProps) => {
-	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER));
-	const [reachInterval, setReachInterval] = useState<number>(30000);
-	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(undefined);
+	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER, isAuthUser));
+	const [reachInterval, setReachInterval] = useState<number | undefined>(undefined);
+	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(180000);
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
 	const { enqueueSnackbar } = useSnackbar();
 
 	const [backendUrl, setBackendUrl] = useState<string>(BACKEND_URL);
 
 	useEffect(() => {
-		setReachInterval(isServerReachable ? 180000 : 30000);
+		setReachInterval(isServerReachable ? 180000 : undefined);
 	}, [isServerReachable]);
 
 	const kyRef = useMemo(
@@ -93,14 +107,19 @@ const Auth = ({ children }: AuthProps) => {
 									break;
 							}
 							if (response?.status > 300) {
-								const message = await response.json().then(r => r.message);
+								const message = await response
+									.json()
+									.then(parseYaptideResponseMessage);
 								if (message !== 'No token provided')
-									enqueueSnackbar(await response.json().then(r => r.message), {
-										variant: 'error'
-									});
+									enqueueSnackbar(
+										await response.json().then(parseYaptideResponseMessage),
+										{
+											variant: 'error'
+										}
+									);
 								console.error(
 									response.status,
-									await response.json().then(r => r.message)
+									await response.json().then(parseYaptideResponseMessage)
 								);
 							}
 						}
@@ -232,4 +251,4 @@ const Auth = ({ children }: AuthProps) => {
 	);
 };
 
-export { useAuth, Auth };
+export { Auth, useAuth };

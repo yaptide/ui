@@ -36,13 +36,21 @@ export function Viewport(
 		clipPlane,
 		planePosLabel,
 		planeHelperColor,
-		showPlaneHelpers = true,
+		showPlaneHelpers = false,
 		gridRotation
 	} = {}
 ) {
 	this.name = name;
 
-	const { scene, zoneManager, detectManager, sceneHelpers, signals, contextManager } = editor;
+	const {
+		figureManager: scene,
+		zoneManager,
+		detectorManager,
+		sceneHelpers,
+		specialComponentsManager,
+		signals,
+		contextManager
+	} = editor;
 
 	const config = {
 		selectFigures: true,
@@ -144,23 +152,25 @@ export function Viewport(
 
 		renderer.clear();
 
-		if (!clipPlane) {
+		if (clipPlane) renderer.render(viewClipPlane.scene, camera);
+		else {
+			renderer.render(detectorManager, camera);
+
 			renderer.render(scene, camera);
 
-			renderer.render(zoneManager, camera);
+			renderer.render(specialComponentsManager, camera);
 
-			renderer.render(detectManager, camera);
+			renderer.render(zoneManager, camera);
 		}
 
-		if (clipPlane) renderer.render(viewClipPlane.scene, camera);
-
-		planeHelpers.visible = showPlaneHelpers ?? false;
+		planeHelpers.visible = showPlaneHelpers;
 
 		callWithHidden(viewClipPlane?.planeHelper, () => {
 			renderer.render(sceneHelpers, camera);
 		});
 
 		renderer.render(sceneViewHelpers, camera);
+
 		viewHelper.render(renderer);
 
 		renderer.autoClear = true;
@@ -199,8 +209,6 @@ export function Viewport(
 			if (helper !== undefined && helper.isSkeconstonHelper !== true) {
 				helper.update();
 			}
-
-			signals.refreshSidebarObject3D.dispatch(object);
 		}
 
 		render();
@@ -431,7 +439,6 @@ export function Viewport(
 	controls.screenSpacePanning = false;
 	controls.addEventListener('change', () => {
 		signals.cameraChanged.dispatch(camera);
-		signals.refreshSidebarObject3D.dispatch(camera);
 	});
 	viewHelper.controls = controls;
 

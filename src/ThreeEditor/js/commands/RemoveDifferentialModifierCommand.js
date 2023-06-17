@@ -39,7 +39,7 @@ export class RemoveDifferentialModifierCommand {
 	fromJSON(json) {
 		super.fromJSON(json);
 		this.object =
-			this.editor.detectManager.getGeometryByUuid(json.object.uuid) ??
+			this.editor.detectorManager.getGeometryByUuid(json.object.uuid) ??
 			ScoringQuantity.fromJSON(this.editor, json.object);
 		this.modifier = DifferentialModifier.fromJSON(json.modifier);
 	}

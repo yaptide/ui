@@ -79,7 +79,7 @@ function SidebarProperties(editor, id = 'properties') {
 		if (WITHOUT_GEOMETRIES.some(key => object[key])) return container.hideTab('geometry');
 		container.showTab('geometry');
 		switch (true) {
-			case object.isDetectGeometry:
+			case object.isDetector:
 				[calculate].forEach(item => item.setObject(null));
 				[grid, dimensions].forEach(item => item.setObject(object));
 				break;
@@ -102,7 +102,7 @@ function SidebarProperties(editor, id = 'properties') {
 		'isBasicFigure',
 		'isDetectContainer',
 		'isScoringManager',
-		'isDetectGeometry',
+		'isDetector',
 		'isZoneContainer',
 		'isZone',
 		'isWorldZone',
@@ -123,7 +123,7 @@ function SidebarProperties(editor, id = 'properties') {
 		'isScene',
 		'isBasicFigure',
 		'isDetectContainer',
-		'isDetectGeometry',
+		'isDetector',
 		'isZoneContainer',
 		'isWorldZone',
 		'isBeam',

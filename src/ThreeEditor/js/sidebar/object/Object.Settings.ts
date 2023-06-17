@@ -8,7 +8,7 @@ import {
 	showUIElement
 } from '../../../../util/Ui/Uis';
 import { AddQuantityCommand, SetOutputSettingsCommand } from '../../commands/Commands';
-import { Editor } from '../../Editor';
+import { YaptideEditor } from '../../YaptideEditor';
 import { UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
@@ -29,7 +29,7 @@ export class ObjectSettings extends ObjectAbstract {
 	addQuantity: UIButton;
 	addQuantityRow: UIRow;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Output configuration');
 
 		[this.geometryRow, this.geometry] = createRowSelect({
@@ -60,11 +60,11 @@ export class ObjectSettings extends ObjectAbstract {
 		const { trace, primaries, children: quantities } = object;
 		this.object = object;
 
-		this.geometry.setOptions(this.editor.detectManager.getDetectOptions());
-		this.geometry.setValue(object.geometry?.uuid);
+		this.geometry.setOptions(this.editor.detectorManager.getDetectorOptions());
+		this.geometry.setValue(object.detector?.uuid);
 
 		if (trace[0]) {
-			const options = this.editor.detectManager.getFilterOptions();
+			const options = this.editor.scoringManager.getFilterOptions();
 			hideUIElement(this.primariesRow);
 			hideUIElement(this.addQuantityRow);
 			if (Object.keys(options).length > 0) {
@@ -108,7 +108,7 @@ export class ObjectSettings extends ObjectAbstract {
 			this.editor,
 			this.object,
 			'geometry',
-			this.editor.detectManager.getGeometryByUuid(this.geometry.getValue())
+			this.editor.detectorManager.getDetectorByUuid(this.geometry.getValue())
 		);
 		[primaries, trace, geometry].forEach(command => this.editor.execute(command));
 	}

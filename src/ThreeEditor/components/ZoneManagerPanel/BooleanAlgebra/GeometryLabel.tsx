@@ -1,8 +1,9 @@
 import { Avatar, Box, Chip, ChipProps, Tooltip } from '@mui/material';
+import { MouseEventHandler } from 'react';
 
 type GeometryInputProps = ChipProps & {
 	label?: string;
-	onClick?: React.MouseEventHandler<HTMLElement>;
+	onClick?: MouseEventHandler<HTMLElement>;
 	tooltipId?: string;
 };
 

@@ -2,7 +2,7 @@ import { createTheme } from '@mui/material';
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { SnackbarProvider } from 'notistack';
-import * as React from 'react';
+import { useMemo } from 'react';
 import { PythonConverterService } from './PythonConverter/PythonConverterService';
 import WrapperApp from './WrapperApp/WrapperApp';
 import { Auth } from './services/AuthService';
@@ -26,7 +26,7 @@ declare module '@mui/material/styles' {
 
 function App() {
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-	const theme = React.useMemo(
+	const theme = useMemo(
 		() =>
 			createTheme({
 				palette: {

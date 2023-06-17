@@ -1,18 +1,18 @@
 import { Box, Divider } from '@mui/material';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, MouseEvent, MutableRefObject } from 'react';
 import { Object3D } from 'three';
 import { Operation, OperationData, OperationDataList } from '../../../../types/Operation';
 import { GeometryLabel } from './GeometryLabel';
 import OperationToggle from './OperationToggle';
 
 export type BooleanAlgebraRowProps = {
-	onGeometryClick: (index: number) => (event: React.MouseEvent<HTMLElement>) => void;
+	onGeometryClick: (index: number) => (event: MouseEvent<HTMLElement>) => void;
 	onOperationChange: (
 		valueIndex: number
-	) => (event: React.MouseEvent<HTMLElement>, value?: string | null) => void;
+	) => (event: MouseEvent<HTMLElement>, value?: string | null) => void;
 	value: OperationDataList;
 	allObjects: Object3D[];
-	scrollWrapperRef: React.MutableRefObject<HTMLDivElement | null>;
+	scrollWrapperRef: MutableRefObject<HTMLDivElement | null>;
 };
 
 export type AlgebraRow = {
@@ -63,7 +63,7 @@ export default function BooleanAlgebraRow({
 		setLastLength(displayValueRef.current.length);
 	}, [value, lastObj?.objectId, lastLength, scrollWrapperRef]);
 
-	const endRef = React.useRef<HTMLDivElement>(null);
+	const endRef = useRef<HTMLDivElement>(null);
 
 	return (
 		<Box

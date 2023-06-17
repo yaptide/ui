@@ -13,14 +13,14 @@ import Typography from '@mui/material/Typography';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLoader } from '../../../../services/DataLoaderService';
 import { saveString } from '../../../../util/File';
-import { Editor } from '../../../js/Editor';
+import { YaptideEditor } from '../../../js/YaptideEditor';
 import { NewProjectDialog } from '../../Dialog/NewProjectDialog';
 import { OpenFileDialog } from '../../Dialog/OpenFileDialog';
 import { SaveFileDialog } from '../../Dialog/SaveFileDialog';
 import { EditorToolbar } from './EditorToolbar/EditorToolbar';
 
 type AppBarProps = {
-	editor?: Editor;
+	editor?: YaptideEditor;
 };
 
 type AppBarOptions = {
@@ -38,9 +38,9 @@ function EditorAppBar({ editor }: AppBarProps) {
 	const [openFileDialogOpen, setOpenFileDialogOpen] = useState(false);
 	const [saveFileDialogOpen, setSaveFileDialogOpen] = useState(false);
 	const [title, setTitle] = useState<string>(editor?.config.getKey('project/title'));
-	const [canUndo, setCanUndo] = React.useState((editor?.history.undos.length ?? 0) > 0);
-	const [canRedo, setCanRedo] = React.useState((editor?.history.redos.length ?? 0) > 0);
-	const [saving, setSaving] = React.useState(false);
+	const [canUndo, setCanUndo] = useState((editor?.history.undos.length ?? 0) > 0);
+	const [canRedo, setCanRedo] = useState((editor?.history.redos.length ?? 0) > 0);
+	const [saving, setSaving] = useState(false);
 	const [urlInPath, setUrlInPath] = useState<string>();
 
 	const updateHistoryButtons = useCallback(() => {
@@ -82,6 +82,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 
 	const openFile = (files: FileList) => {
 		if (editor) editor.loader.loadFiles(files);
+		//TODO: #1089 rewrite to support our versioning and types of data. Default loader is now mostly useless
 		else console.warn('EditorAppBar.tsx: openFile: editor or fileInput.current.files is null');
 	};
 

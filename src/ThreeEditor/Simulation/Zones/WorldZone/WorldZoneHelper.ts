@@ -1,14 +1,13 @@
 import * as THREE from 'three';
 import { MeshBasicMaterial, Vector3 } from 'three';
-import { Editor } from '../../../js/Editor';
+import { YaptideEditor } from '../../../js/YaptideEditor';
 import { PossibleGeometryType } from '../../../../util/AdditionalGeometryData';
 import { WorldZoneType } from './WorldZone';
+import { HollowCylinderGeometry } from '../../Base/HollowCylinderGeometry';
 
-const _cylinderGeometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2).rotateX(
-	Math.PI / 2
-) as THREE.CylinderGeometry;
+const _cylinderGeometry = new HollowCylinderGeometry();
 
-const _sphereGeometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI);
+const _sphereGeometry = new THREE.SphereGeometry();
 
 const _defaultMarginMultiplier = 1.1;
 
@@ -16,38 +15,41 @@ export class WorldZoneHelper extends THREE.Object3D {
 	/**
 	 * Function returns THREE.Mesh based on type name on input
 	 */
-	getMeshType(type: WorldZoneType): THREE.Mesh<PossibleGeometryType, MeshBasicMaterial> {
+	getMeshByType(type: WorldZoneType): THREE.Mesh<PossibleGeometryType, MeshBasicMaterial> {
 		switch (type) {
-			case 'Box':
+			case 'BoxGeometry':
 				return this.boxMesh;
-			case 'Cylinder':
+			case 'HollowCylinderGeometry':
 				return this.cylinderMesh;
-			case 'Sphere':
+			case 'SphereGeometry':
 				return this.sphereMesh;
 		}
 	}
+
 	get allHelpers(): Record<WorldZoneType, THREE.Object3D> {
 		const obj = {
-			Box: this._boxHelper,
-			Cylinder: this.cylinderMesh,
-			Sphere: this.sphereMesh
+			BoxGeometry: this._boxHelper,
+			HollowCylinderGeometry: this.cylinderMesh,
+			SphereGeometry: this.sphereMesh
 		};
 		return obj;
 	}
 
-	editor: Editor;
+	editor: YaptideEditor;
 	marginMultiplier: number;
 	private _boxHelper: THREE.Box3Helper;
 	private _box: THREE.Box3;
-	private _cylinderMesh: THREE.Mesh<THREE.CylinderGeometry, MeshBasicMaterial>;
+	private _cylinderMesh: THREE.Mesh<HollowCylinderGeometry, MeshBasicMaterial>;
 	private _sphereMesh: THREE.Mesh<THREE.SphereGeometry, MeshBasicMaterial>;
 
-	get cylinderMesh(): THREE.Mesh<THREE.CylinderGeometry, MeshBasicMaterial> {
+	get cylinderMesh(): THREE.Mesh<HollowCylinderGeometry, MeshBasicMaterial> {
 		return this._cylinderMesh;
 	}
+
 	get sphereMesh(): THREE.Mesh<THREE.SphereGeometry, MeshBasicMaterial> {
 		return this._sphereMesh;
 	}
+
 	get boxMesh(): THREE.Mesh<THREE.BoxGeometry, MeshBasicMaterial> {
 		const { x, y, z } = this._box.getSize(new THREE.Vector3());
 		return new THREE.Mesh(new THREE.BoxGeometry(x, y, z), this._sphereMesh.material);
@@ -65,7 +67,7 @@ export class WorldZoneHelper extends THREE.Object3D {
 		return this._box.getSize(new THREE.Vector3());
 	}
 
-	constructor(editor: Editor, material: MeshBasicMaterial) {
+	constructor(editor: YaptideEditor, material: MeshBasicMaterial) {
 		super();
 		this.editor = editor;
 		this.marginMultiplier = _defaultMarginMultiplier;
@@ -109,16 +111,7 @@ export class WorldZoneHelper extends THREE.Object3D {
 		this._box.setFromCenterAndSize(new Vector3(), size);
 
 		// Cylinder
-		this._cylinderMesh.geometry = new THREE.CylinderGeometry(
-			size.x,
-			size.x,
-			size.z,
-			16,
-			1,
-			false,
-			0,
-			Math.PI * 2
-		).rotateX(Math.PI / 2) as THREE.CylinderGeometry;
+		this._cylinderMesh.geometry = new HollowCylinderGeometry(size.x, size.x, size.z);
 
 		// Sphere
 		this._sphereMesh.geometry = new THREE.SphereGeometry(

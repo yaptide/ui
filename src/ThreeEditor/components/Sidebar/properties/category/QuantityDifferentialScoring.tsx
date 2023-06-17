@@ -1,5 +1,5 @@
 import { Object3D } from 'three';
-import { Editor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	DifferentialConfigurationField,
 	ModifiersOutlinerField,
@@ -18,7 +18,7 @@ import {
 import { RemoveDifferentialModifierCommand } from '../../../../js/commands/RemoveDifferentialModifierCommand';
 import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
 
-export function QuantityDifferentialScoring(props: { editor: Editor; object: Object3D }) {
+export function QuantityDifferentialScoring(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object as ScoringQuantity);

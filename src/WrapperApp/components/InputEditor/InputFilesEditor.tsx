@@ -1,6 +1,8 @@
 import { Box, Button, Card, CardActions, CardContent, Divider } from '@mui/material';
 import useTheme from '@mui/system/useTheme';
 import CodeEditor from '@uiw/react-textarea-code-editor';
+import { DEMO_MODE } from '../../../config/Config';
+import { SimulatorType } from '../../../types/RequestTypes';
 import {
 	SimulationInputFiles,
 	_defaultFlukaInputFiles,
@@ -9,9 +11,7 @@ import {
 	_orderedShInputFilesNames,
 	isKnownInputFile
 } from '../../../types/ResponseTypes';
-import { DEMO_MODE } from '../../../config/Config';
 import { saveString } from '../../../util/File';
-import { SimulatorType } from '../../../types/RequestTypes';
 
 interface InputFilesEditorProps {
 	simulator: SimulatorType;

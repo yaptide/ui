@@ -232,17 +232,18 @@ function NavDrawerElement({
 				disablePadding
 				sx={{ display: 'block' }}>
 				{buttonProps.type === 'label' ? (
-					<ListItem
+					<Box
 						aria-label={label}
 						sx={{
+							display: 'flex',
 							minHeight: 64,
+							alignItems: 'center',
 							justifyContent: open ? 'initial' : 'center',
 							px: 2.5,
 							...sx
-						}}
-						disabled={disabled}>
+						}}>
 						{listItemContent}
-					</ListItem>
+					</Box>
 				) : (
 					<ListItemButton
 						aria-label={label}

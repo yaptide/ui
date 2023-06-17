@@ -3,7 +3,7 @@ import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min';
 import { debounce } from 'throttle-debounce';
 import { Viewport } from './Viewport';
 import { CSG } from '../../CSG/CSG';
-import { Editor } from '../Editor';
+import { YaptideEditor } from '../YaptideEditor';
 import { Signal } from 'signals';
 
 type ClippedViewConfigurationJson = {
@@ -13,7 +13,7 @@ type ClippedViewConfigurationJson = {
 
 export interface ViewportClippedView {
 	name: string;
-	editor: Editor;
+	editor: YaptideEditor;
 	scene: THREE.Scene;
 	gui: GUI;
 	planeHelper: THREE.PlaneHelper;
@@ -27,7 +27,7 @@ export function ViewportClippedViewCSG<
 >(
 	this: ViewportClippedView,
 	name: string,
-	editor: Editor,
+	editor: YaptideEditor,
 	viewport: typeof Viewport,
 	planeHelpers: THREE.Group,
 	initialObjects: T[],

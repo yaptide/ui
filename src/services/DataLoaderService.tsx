@@ -12,7 +12,7 @@ export interface ILoader {
 	clearLoadedResults: () => void;
 	loadFromFiles: (files: FileList | undefined) => void;
 	loadFromUrl: (url: string) => void;
-	loadFromJson: (raw_json: {}) => void;
+	loadFromJson: (raw_json: object | null) => void;
 	loadFromJsonString: (json_string: string) => void;
 }
 const [useLoader, LoaderContextProvider] = createGenericContext<ILoader>();
@@ -67,7 +67,7 @@ const Loader = (props: { children: ReactNode }) => {
 					dataArray.filter(isFullSimulationData)
 				);
 
-				if (result.length === 0) console.warn('No results data found in loaded data');
+				if (result.length === 0) console.info('No results data found in loaded data');
 
 				setCanLoadResultsData(result.length > 0);
 				return result;
@@ -105,7 +105,7 @@ const Loader = (props: { children: ReactNode }) => {
 	);
 
 	const loadFromJson = useCallback(
-		(rawJson: {}) => {
+		(rawJson: object | null) => {
 			if (Array.isArray(rawJson)) {
 				loadData(rawJson);
 			} else {
@@ -122,7 +122,9 @@ const Loader = (props: { children: ReactNode }) => {
 					if (response.ok) return response.json();
 					else return Promise.reject(response);
 				})
-				.then(loadFromJson)
+				.then(response =>
+					typeof response === 'object' ? loadFromJson(response) : Promise.reject(response)
+				)
 				.catch(error => {
 					console.error(error);
 				});
@@ -133,7 +135,7 @@ const Loader = (props: { children: ReactNode }) => {
 	const loadFromJsonString = useCallback(
 		(json_string: string) => {
 			const json = JSON.parse(json_string);
-			loadFromJson(json);
+			if (typeof json === 'object') loadFromJson(json);
 		},
 		[loadFromJson]
 	);
@@ -154,4 +156,4 @@ const Loader = (props: { children: ReactNode }) => {
 	return <LoaderContextProvider value={value}>{props.children}</LoaderContextProvider>;
 };
 
-export { useLoader, Loader, readFile };
+export { Loader, readFile, useLoader };

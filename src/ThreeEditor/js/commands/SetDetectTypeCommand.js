@@ -21,17 +21,17 @@ export class SetDetectTypeCommand extends Command {
 	}
 
 	execute() {
-		this.object.detectType = this.newType;
+		this.object.detectorType = this.newType;
 		this.editor.signals.geometryChanged.dispatch(this.object);
 		this.editor.signals.detectTypeChanged.dispatch(this.object);
 		this.editor.signals.detectGeometryChanged.dispatch(this.object);
-		this.editor.signals.objectChanged.dispatch(this.object, 'detectType');
+		this.editor.signals.objectChanged.dispatch(this.object, 'detectorType');
 		this.editor.signals.sceneGraphChanged.dispatch(this.object);
 	}
 
 	undo() {
-		let tmp = this.object.detectType;
-		this.object.detectType = this.oldType;
+		let tmp = this.object.detectorType;
+		this.object.detectorType = this.oldType;
 		this.newType = this.oldType;
 		this.oldType = tmp;
 
@@ -39,7 +39,7 @@ export class SetDetectTypeCommand extends Command {
 		this.editor.signals.geometryChanged.dispatch(this.object);
 		this.editor.signals.detectTypeChanged.dispatch(this.object);
 		this.editor.signals.detectGeometryChanged.dispatch(this.object);
-		this.editor.signals.objectChanged.dispatch(this.object, 'detectType');
+		this.editor.signals.objectChanged.dispatch(this.object, 'detectorType');
 		this.editor.signals.sceneGraphChanged.dispatch(this.object);
 	}
 

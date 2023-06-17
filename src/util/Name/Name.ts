@@ -24,7 +24,7 @@ export const incrementName = (name: string, until: (name: string) => boolean) =>
 };
 
 export interface UniqueChildrenNames {
-	getNextFreeName(object: Object3D, newName?: string): string;
+	uniqueNameForChild(object: Object3D, newName?: string): string;
 }
 
 export const implementsUniqueChildrenNames = (x: unknown): x is UniqueChildrenNames => {

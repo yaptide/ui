@@ -1,11 +1,11 @@
-import { DetectGeometry } from '../../../Simulation/Detectors/DetectGeometry';
+import { Detector } from '../../../Simulation/Detectors/Detector';
 import { createRowParamNumber, hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
 import { SetDetectGeometryCommand } from '../../commands/Commands';
-import { Editor } from '../../Editor';
+import { YaptideEditor } from '../../YaptideEditor';
 import { UINumber, UIRow } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 export class ObjectGrid extends ObjectAbstract {
-	object?: DetectGeometry;
+	object?: Detector;
 
 	xLengthRow: UIRow;
 	xLength: UINumber;
@@ -19,7 +19,7 @@ export class ObjectGrid extends ObjectAbstract {
 	radiusRow: UIRow;
 	radius: UINumber;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Grid');
 
 		[this.xLengthRow, this.xLength] = createRowParamNumber({
@@ -53,12 +53,12 @@ export class ObjectGrid extends ObjectAbstract {
 		this.panel.add(this.xLengthRow, this.yLengthRow, this.zLengthRow, this.radiusRow);
 	}
 
-	setObject(object: DetectGeometry): void {
+	setObject(object: Detector): void {
 		super.setObject(object);
 		if (!object) return;
 
 		this.object = object;
-		const { detectType, geometryData } = object;
+		const { detectorType: detectType, geometryParameters: geometryData } = object;
 		hideUIElement(this.xLengthRow);
 		hideUIElement(this.yLengthRow);
 		hideUIElement(this.zLengthRow);
@@ -85,7 +85,7 @@ export class ObjectGrid extends ObjectAbstract {
 	update(): void {
 		const { editor, object } = this;
 		if (!object) return;
-		const { detectType } = object;
+		const { detectorType: detectType } = object;
 		switch (detectType) {
 			case 'Mesh':
 				editor.execute(

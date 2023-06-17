@@ -3,7 +3,7 @@ import ThreeSixtyIcon from '@mui/icons-material/ThreeSixty';
 import TransformIcon from '@mui/icons-material/Transform';
 import { Box, Divider, IconButton, styled, Tooltip } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Editor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 
 enum Tool {
 	SELECT,
@@ -20,7 +20,7 @@ const ToolStrings = {
 };
 
 type EditorToolbarProps = {
-	editor?: Editor;
+	editor?: YaptideEditor;
 };
 
 export function EditorToolbar({ editor }: EditorToolbarProps) {

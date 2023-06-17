@@ -18,20 +18,21 @@ import {
 	TableRow
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
-import React, { ReactNode, useMemo, useState } from 'react';
+import { useSnackbar } from 'notistack';
+import { Fragment, ReactNode, useMemo, useState } from 'react';
 import { useLoader } from '../../../services/DataLoaderService';
+import { useShSimulation } from '../../../services/ShSimulatorService';
+import { useStore } from '../../../services/StoreService';
 import {
-	SimulationInputFiles,
 	JobStatusData,
+	SimulationInputFiles,
 	StatusState,
 	currentJobStatusData,
 	currentTaskStatusData
 } from '../../../types/ResponseTypes';
-import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
 import { SimulationProgressBar } from './SimulationProgressBar';
-import { useShSimulation } from '../../../services/ShSimulatorService';
-import { useSnackbar } from 'notistack';
+
 type SimulationCardProps = {
 	simulationStatus: JobStatusData;
 	loadResults?: (jobId: string | null) => void;
@@ -40,7 +41,7 @@ type SimulationCardProps = {
 
 const tableRowStyle: SxProps<Theme> = { '&:last-child td, &:last-child th': { border: 0 } };
 const row = (id: number, title: string, value: string | undefined | ReactNode, guard = true) => (
-	<React.Fragment key={id}>
+	<Fragment key={id}>
 		{guard && (
 			<TableRow sx={tableRowStyle}>
 				<TableCell
@@ -51,7 +52,7 @@ const row = (id: number, title: string, value: string | undefined | ReactNode, g
 				<TableCell align='right'>{value}</TableCell>
 			</TableRow>
 		)}
-	</React.Fragment>
+	</Fragment>
 );
 
 export default function SimulationCard({

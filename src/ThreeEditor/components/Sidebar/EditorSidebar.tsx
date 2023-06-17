@@ -2,43 +2,37 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import SpeedIcon from '@mui/icons-material/Speed';
 import TokenIcon from '@mui/icons-material/Token';
 import { AppBar, Box, Divider, Stack, Tab, Tabs, Typography } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
-import { BoxFigure, CylinderFigure, SphereFigure } from '../../Simulation/Figures/BasicFigures';
-import { isOutput } from '../../Simulation/Scoring/ScoringOutput';
-import { isQuantity } from '../../Simulation/Scoring/ScoringQuantity';
-import { Editor } from '../../js/Editor';
-import { Context } from '../../js/Editor.Context';
-import { AddDetectGeometryCommand } from '../../js/commands/AddDetectGeometryCommand';
-import { AddFilterCommand } from '../../js/commands/AddFilterCommand';
-import { AddObjectCommand } from '../../js/commands/AddObjectCommand';
-import { AddOutputCommand } from '../../js/commands/AddOutputCommand';
-import { AddQuantityCommand } from '../../js/commands/AddQuantityCommand';
+import { getAddElementButtonProps } from '../../../util/Ui/CommandButtonProps';
 import { useSignal } from '../../../util/hooks/signals';
-import { CTCube } from '../../Simulation/SpecialComponents/CTCube';
-import { AddZoneCommand } from '../../js/commands/AddZoneCommand';
+import { Context } from '../../js/EditorContext';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { SidebarTree } from './SidebarTree/SidebarTree';
 import { PropertiesPanel } from './properties/PropertiesPanel';
 import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
 import { BeamModifiersConfiguration } from './properties/category/RangeModulatorConfiguration';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
 
-export function EditorSidebar(props: { editor: Editor }) {
+export function EditorSidebar(props: { editor: YaptideEditor }) {
 	const { editor } = props;
 
-	const [selectedObject, setSelectedObject] = useState(editor.selected);
+	const [btnProps, setBtnProps] = useState(getAddElementButtonProps(editor));
 
-	const handleObjectUpdate = useCallback((o: Object3D) => {
-		setSelectedObject(o);
-	}, []);
+	const handleObjectUpdate = useCallback(
+		(o: Object3D) => {
+			setBtnProps(getAddElementButtonProps(editor));
+		},
+		[editor]
+	);
 
 	useSignal(editor, 'objectSelected', handleObjectUpdate);
 
 	const [selectedTab, setSelectedTab] = useState<Capitalize<Context>>('Geometry');
 
-	const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
+	const handleChange = (_event: SyntheticEvent, newValue: string) => {
 		switch (newValue) {
 			case 'Scoring':
 				editor.contextManager.currentContext = 'scoring';
@@ -75,42 +69,17 @@ export function EditorSidebar(props: { editor: Editor }) {
 	const geometryTabElements = [
 		{
 			title: 'Figures',
-			add: [
-				{
-					title: 'Box',
-					onClick: () =>
-						editor.execute(new AddObjectCommand(editor, new BoxFigure(editor)))
-				},
-				{
-					title: 'Cylinder',
-					onClick: () =>
-						editor.execute(new AddObjectCommand(editor, new CylinderFigure(editor)))
-				},
-				{
-					title: 'Sphere',
-					onClick: () =>
-						editor.execute(new AddObjectCommand(editor, new SphereFigure(editor)))
-				},
-				{
-					title: 'CT',
-					onClick: () => editor.execute(new AddObjectCommand(editor, new CTCube(editor)))
-				}
-			],
+			add: btnProps['Figures'],
 			tree: (
 				<SidebarTree
 					editor={editor}
-					sources={[editor.scene.children]}
+					sources={[editor.figureManager.figureContainer]}
 				/>
 			)
 		},
 		{
 			title: 'Zones',
-			add: [
-				{
-					title: 'Zone',
-					onClick: () => editor.execute(new AddZoneCommand(editor))
-				}
-			],
+			add: btnProps['Zones'],
 			tree: (
 				<>
 					<SidebarTree
@@ -121,24 +90,43 @@ export function EditorSidebar(props: { editor: Editor }) {
 					<Divider sx={{ marginBottom: t => t.spacing(1) }} />
 					<SidebarTree
 						editor={editor}
-						sources={[editor.zoneManager.zoneContainer.children]}
+						sources={[editor.zoneManager.zoneContainer]}
 					/>
 				</>
 			)
 		},
 		{
 			title: 'Detectors',
-			add: [
-				{
-					title: 'Detector',
-					onClick: () => editor.execute(new AddDetectGeometryCommand(editor))
-				}
-			],
+			add: btnProps['Detectors'],
 			tree: (
 				<SidebarTree
 					editor={editor}
-					sources={[editor.detectManager.detectContainer.children]}
+					sources={[editor.detectorManager.detectorContainer]}
 				/>
+			)
+		},
+		{
+			title: 'Special Components',
+			add: btnProps['Special Components'],
+			tree: (
+				<>
+					{editor.specialComponentsManager.CTCubeContainer.children.length > 0 ? (
+						<>
+							<SidebarTree
+								editor={editor}
+								sources={[editor.specialComponentsManager.CTCubeContainer]}
+								dragDisabled
+							/>
+
+							<Divider sx={{ marginBottom: t => t.spacing(1) }} />
+						</>
+					) : undefined}
+					<SidebarTree
+						editor={editor}
+						sources={[editor.specialComponentsManager.beamModulatorContainer]}
+						dragDisabled
+					/>
+				</>
 			)
 		}
 	];
@@ -146,42 +134,21 @@ export function EditorSidebar(props: { editor: Editor }) {
 	const scoringTabElements = [
 		{
 			title: 'Filters',
-			add: [
-				{
-					title: 'Filter',
-					onClick: () => editor.execute(new AddFilterCommand(editor))
-				}
-			],
+			add: btnProps['Filters'],
 			tree: (
 				<SidebarTree
 					editor={editor}
-					sources={[editor.detectManager.filterContainer.children]}
+					sources={[editor.scoringManager.filterContainer]}
 				/>
 			)
 		},
 		{
 			title: 'Outputs',
-			add: [
-				{
-					title: 'Output',
-					onClick: () => editor.execute(new AddOutputCommand(editor))
-				},
-				{
-					title: 'Quantity',
-					onClick: () =>
-						editor.execute(
-							new AddQuantityCommand(
-								editor,
-								isQuantity(selectedObject) ? selectedObject.parent : selectedObject
-							)
-						),
-					isDisabled: () => !isOutput(selectedObject) && !isQuantity(selectedObject)
-				}
-			],
+			add: btnProps['Outputs'],
 			tree: (
 				<SidebarTree
 					editor={editor}
-					sources={[editor.scoringManager.children]}
+					sources={[editor.scoringManager.outputContainer]}
 				/>
 			)
 		}
@@ -233,85 +200,93 @@ export function EditorSidebar(props: { editor: Editor }) {
 			<ScrollPositionManager scrollKey={`vertical-editor-sidebar`}>
 				{({ connectScrollTarget }: { connectScrollTarget: (node: unknown) => void }) => {
 					return (
-						<div
-							style={{
-								overflow: 'auto',
-								position: 'relative',
-								height: '100%'
-							}}
-							ref={(node: HTMLDivElement) => connectScrollTarget(node)}>
-							<TabPanel
-								value={selectedTab}
-								index={'Geometry'}
-								persistentIfVisited>
-								<EditorSidebarTabTree
-									elements={geometryTabElements}></EditorSidebarTabTree>
-							</TabPanel>
-							<TabPanel
-								value={selectedTab}
-								index={'Scoring'}
-								persistentIfVisited>
-								<EditorSidebarTabTree
-									elements={scoringTabElements}></EditorSidebarTabTree>
-							</TabPanel>
-							<TabPanel
-								customCss={{ background: 'none' }}
-								value={selectedTab}
-								index={'Settings'}
-								persistentIfVisited>
-								<Stack
-									sx={{ padding: '.5rem' }}
-									spacing={2}>
-									<Box>
-										<Typography
-											variant='h6'
-											sx={{ margin: '0.5rem 0' }}>
-											Beam
-										</Typography>
-										<PropertiesPanel
-											editor={editor}
-											boxProps={{
-												sx: { marginTop: '.5rem', overflowY: 'auto' }
-											}}
-										/>
-									</Box>
-									<Divider light />
-									<Box>
-										<Typography
-											variant='h6'
-											sx={{ margin: '0.5rem 0' }}>
-											Physics
-										</Typography>
-										<PhysicConfiguration
-											editor={editor}
-											object={editor.physic}
-										/>
-									</Box>
-									<Divider light />
-									<Box>
-										<Typography
-											variant='h6'
-											sx={{ margin: '0.5rem 0' }}>
-											Special Components
-										</Typography>
-										<BeamModifiersConfiguration editor={editor} />
-									</Box>
-								</Stack>
-							</TabPanel>
+						<>
+							<div
+								style={{
+									position: 'relative',
+									height: 'fit-content'
+								}}>
+								<TabPanel
+									value={selectedTab}
+									index={'Geometry'}
+									persistentIfVisited>
+									<EditorSidebarTabTree
+										elements={geometryTabElements}></EditorSidebarTabTree>
+								</TabPanel>
+								<TabPanel
+									value={selectedTab}
+									index={'Scoring'}
+									persistentIfVisited>
+									<EditorSidebarTabTree
+										elements={scoringTabElements}></EditorSidebarTabTree>
+								</TabPanel>
+								<TabPanel
+									customCss={{ background: 'none' }}
+									value={selectedTab}
+									index={'Settings'}
+									persistentIfVisited>
+									<Stack
+										sx={{ padding: '.5rem' }}
+										spacing={2}>
+										<Box>
+											<Typography
+												variant='h6'
+												sx={{ margin: '0.5rem 0' }}>
+												Beam
+											</Typography>
+											<PropertiesPanel
+												editor={editor}
+												boxProps={{
+													sx: { marginTop: '.5rem', overflowY: 'auto' }
+												}}
+											/>
+										</Box>
+										<Divider light />
+										<Box>
+											<Typography
+												variant='h6'
+												sx={{ margin: '0.5rem 0' }}>
+												Physics
+											</Typography>
+											<PhysicConfiguration
+												editor={editor}
+												object={editor.physic}
+											/>
+										</Box>
+										<Divider light />
+										<Box>
+											<Typography
+												variant='h6'
+												sx={{ margin: '0.5rem 0' }}>
+												Special Components
+											</Typography>
+											<BeamModifiersConfiguration editor={editor} />
+										</Box>
+									</Stack>
+								</TabPanel>
+							</div>
 
 							{selectedTab !== 'Settings' && (
-								<PropertiesPanel
-									editor={editor}
-									boxProps={{
-										sx: {
-											marginTop: '1rem',
-											padding: '0 .5rem',
-											overflowY: 'auto'
-										}
+								<div
+									style={{
+										overflow: 'auto',
+										position: 'relative',
+										height: '100%'
 									}}
-								/>
+									ref={(node: HTMLDivElement) => connectScrollTarget(node)}>
+									<PropertiesPanel
+										editor={editor}
+										boxProps={{
+											sx: {
+												marginTop: '1rem',
+												padding: '0 .5rem',
+												overflowY: 'auto'
+											}
+										}}
+									/>
+								</div>
 							)}
-						</div>
+						</>
 					);
 				}}
 			</ScrollPositionManager>

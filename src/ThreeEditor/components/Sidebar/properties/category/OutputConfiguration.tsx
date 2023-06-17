@@ -1,5 +1,5 @@
 import { Object3D } from 'three';
-import { Editor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { ConditionalNumberPropertyField } from '../fields/PropertyField';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
@@ -13,19 +13,19 @@ import { SetOutputSettingsCommand } from '../../../../js/commands/SetOutputSetti
 import { Grid, Button } from '@mui/material';
 import { AddQuantityCommand } from '../../../../js/commands/AddQuantityCommand';
 
-export function OutputConfiguration(props: { editor: Editor; object: Object3D }) {
+export function OutputConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object as ScoringOutput);
 
-	const handleChangedGeometry = useCallback(
+	const handleChangedDetector = useCallback(
 		(v: ObjectSelectOptionType) => {
 			editor.execute(
 				new SetOutputSettingsCommand(
 					editor,
 					watchedObject.object,
-					'geometry',
-					editor.detectManager.getGeometryByUuid(v.uuid)
+					'detector',
+					editor.detectorManager.getDetectorByUuid(v.uuid)
 				)
 			);
 		},
@@ -41,10 +41,15 @@ export function OutputConfiguration(props: { editor: Editor; object: Object3D })
 			{visibleFlag && (
 				<>
 					<ObjectSelectPropertyField
-						label='Detect geometry'
-						value={watchedObject.geometry?.uuid ?? ''}
-						options={editor.detectManager.getDetectOptions()}
-						onChange={handleChangedGeometry}
+						label='Detector'
+						value={watchedObject.detector?.uuid ?? ''}
+						options={editor.detectorManager.getDetectorOptions(value => {
+							return (
+								!editor.scoringManager.getTakenDetectors().includes(value.uuid) ||
+								value.uuid === watchedObject.detector?.uuid
+							);
+						})}
+						onChange={handleChangedDetector}
 					/>
 
 					<ConditionalNumberPropertyField

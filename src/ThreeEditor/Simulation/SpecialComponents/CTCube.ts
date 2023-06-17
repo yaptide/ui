@@ -1,6 +1,9 @@
 import * as THREE from 'three';
-import { BasicFigure } from '../Figures/BasicFigures';
-import { Editor } from '../../js/Editor';
+
+import { AdditionalGeometryDataType } from '../../../util/AdditionalGeometryData';
+import { YaptideEditor } from '../../js/YaptideEditor';
+import { SimulationMeshJSON } from '../Base/SimulationMesh';
+import { BasicFigure, BoxParameters } from '../Figures/BasicFigures';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
 	color: 0x00ff00,
@@ -12,23 +15,48 @@ const defaultMaterial = new THREE.MeshBasicMaterial({
 
 const ctGeometry = new THREE.BoxGeometry(2, 0.5, 1, 1, 1, 1);
 const ctMaterial = defaultMaterial.clone();
+
+export type CTCubeJSON = Omit<
+	SimulationMeshJSON & {
+		pathOnServer: string;
+	},
+	never
+>;
+
 export class CTCube extends BasicFigure<THREE.BoxGeometry> {
 	readonly notScalable = true;
 
 	pathOnServer: string = '';
 
-	constructor(editor: Editor, geometry?: THREE.BoxGeometry, material?: THREE.MeshBasicMaterial) {
-		super(editor, 'CT', 'CTCube', 'CT', geometry ?? ctGeometry, material ?? ctMaterial.clone());
+	constructor(
+		editor: YaptideEditor,
+		geometry?: THREE.BoxGeometry,
+		material?: THREE.MeshBasicMaterial
+	) {
+		super(
+			editor,
+			'CT Cube',
+			'CTCube',
+			'BoxGeometry',
+			geometry ?? ctGeometry,
+			material ?? ctMaterial.clone()
+		);
 	}
 
-	toJSON(
-		meta:
-			| { geometries: unknown; materials: unknown; textures: unknown; images: unknown }
-			| undefined
-	) {
-		const json = super.toJSON(meta);
-		json.object.pathOnServer = this.pathOnServer;
-		return json;
+	toJSON(): CTCubeJSON {
+		const { pathOnServer } = this;
+		return {
+			...super.toJSON(),
+			pathOnServer
+		};
+	}
+
+	reconstructGeometryFromData(data: AdditionalGeometryDataType<BoxParameters>): void {
+		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
+		const {
+			parameters: { width, height, depth }
+		} = data;
+		this.geometry = new THREE.BoxGeometry(width as number, height as number, depth as number);
 	}
 }
 

@@ -15,15 +15,14 @@ import {
 	useTheme
 } from '@mui/material';
 import CodeEditor from '@uiw/react-textarea-code-editor';
-import { useState } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
 import { EditableChip } from '../../../util/genericComponents/EditableChip';
 import { ScriptOption } from './RunSimulationForm';
-import { useCallback } from 'react';
 
 type BatchParametersEditorProps = {
 	scriptHeader: string;
 	scriptOptions: ScriptOption[];
-	handleScriptHeaderChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
+	handleScriptHeaderChange: (event: ChangeEvent<HTMLTextAreaElement>) => void;
 	handleScriptOptionsChange: (newValue: ScriptOption[]) => void;
 	scriptName: string;
 };
@@ -270,7 +269,7 @@ export function BatchScriptParametersEditor({
 							<EditableChip
 								key={option.optionKey}
 								option={option}
-								onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+								onChange={(event: ChangeEvent<HTMLInputElement>) => {
 									const { value } = event.target;
 									const newOptions = [...scriptOptions];
 									newOptions[index].optionValue = value;

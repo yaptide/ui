@@ -1,4 +1,3 @@
-import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { MaterialSelect } from '../../ThreeEditor/components/Select/MaterialSelect';
 import { ParticleSelect } from '../../ThreeEditor/components/Select/ParticleSelect';

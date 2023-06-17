@@ -1,5 +1,5 @@
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
-import { Editor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	BooleanPropertyField,
 	NumberPropertyField,
@@ -13,7 +13,7 @@ import {
 	Physics
 } from '../../../../Simulation/Physics/Physics';
 
-export function PhysicConfiguration(props: { editor: Editor; object: Physics }) {
+export function PhysicConfiguration(props: { editor: YaptideEditor; object: Physics }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
