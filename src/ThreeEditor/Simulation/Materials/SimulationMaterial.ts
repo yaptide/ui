@@ -49,6 +49,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 			return result;
 		}
 	};
+
 	private materialColorHandler = {
 		get: (target: THREE.Color, prop: keyof THREE.Color) => {
 			const result = Reflect.get(target, prop);
@@ -87,8 +88,10 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 			wireframe: false,
 			wireframeLinewidth: 1
 		};
+
 		return this.proxy;
 	}
+
 	toJSON(): SimulationMaterialJSON {
 		const { uuid, name, icru, density, renderProps, customStoppingPower } = this;
 		return {

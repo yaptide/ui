@@ -13,7 +13,7 @@ while (canImport) {
 		)
 			example.input.inputJson.project.title = `Untitled example ${iterator}`;
 
-		EXAMPLES.push(example);;
+		EXAMPLES.push(example);
 		iterator++;
 	} catch (e) {
 		canImport = false;

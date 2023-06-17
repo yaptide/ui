@@ -102,38 +102,42 @@ export function ObjectMaterial(props: { editor: Editor; object: Object3D }) {
 									);
 								}}
 							/>
-							<ConditionalPropertyField
-								label='Custom stopping power'
-								enabled={
-									watchedObject.materialPropertiesOverrides.customStoppingPower
-										.value
-								}
-								onChangeEnabled={v => {
-									const newValue = {
-										...watchedObject.materialPropertiesOverrides,
-										customStoppingPower: {
-											value: v,
-											override: v
-										}
-									};
-									editor.execute(
-										new SetValueCommand(
-											editor,
-											watchedObject.object,
-											'materialPropertiesOverrides',
-											newValue
-										)
-									);
-								}}>
-								<Stack
-									direction='row'
-									spacing={1}
-									justifyContent='center'
-									alignItems='center'>
-									<Typography>{editor.physic.stoppingPowerTable}</Typography>
-									<InfoTooltip title='Stopping table can be changed in settings' />
-								</Stack>
-							</ConditionalPropertyField>
+
+							{watchedObject.material.icru in
+								editor.physic.stoppingPowerTableFiles && (
+								<ConditionalPropertyField
+									label='Custom stopping power'
+									enabled={
+										watchedObject.materialPropertiesOverrides
+											.customStoppingPower.value
+									}
+									onChangeEnabled={v => {
+										const newValue = {
+											...watchedObject.materialPropertiesOverrides,
+											customStoppingPower: {
+												value: v,
+												override: v
+											}
+										};
+										editor.execute(
+											new SetValueCommand(
+												editor,
+												watchedObject.object,
+												'materialPropertiesOverrides',
+												newValue
+											)
+										);
+									}}>
+									<Stack
+										direction='row'
+										spacing={1}
+										justifyContent='center'
+										alignItems='center'>
+										<Typography>{editor.physic.stoppingPowerTable}</Typography>
+										<InfoTooltip title='Stopping table can be changed in settings' />
+									</Stack>
+								</ConditionalPropertyField>
+							)}
 
 							<ConditionalNumberPropertyField
 								label='Opacity'
@@ -165,11 +169,11 @@ export function ObjectMaterial(props: { editor: Editor; object: Object3D }) {
 							/>
 						</>
 					)}
-
 					<PropertyField label={'Color'}>
 						<ColorInput
 							value={watchedObjectMaterial?.color.getHexString() ?? '#ffffff'}
-							onChange={v =>
+							onChange={v => {
+								console.log(watchedObject.object);
 								editor.execute(
 									new SetMaterialColorCommand(
 										editor,
@@ -177,8 +181,8 @@ export function ObjectMaterial(props: { editor: Editor; object: Object3D }) {
 										'color',
 										v
 									)
-								)
-							}
+								);
+							}}
 						/>
 					</PropertyField>
 				</>

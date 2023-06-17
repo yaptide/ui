@@ -1,3 +1,5 @@
+import { CustomStoppingPowerModels } from '../CustomStoppingPower/CustomStoppingPower';
+
 export const ENERGY_MODEL_STRAGGLING = {
 	'no straggling': 'no straggling',
 	'Gaussian': 'Gaussian',
@@ -31,7 +33,8 @@ const _default = {
 	enableNuclearReactions: true,
 	energyModelStraggling: ENERGY_MODEL_STRAGGLING['Vavilov'],
 	multipleScattering: MULTIPLE_SCATTERING['Moliere'],
-	stoppingPowerTable: STOPPING_POWER_TABLE.ICRU91
+	stoppingPowerTable: STOPPING_POWER_TABLE.ICRU91,
+	zonesWithCustomStoppingPower: {}
 };
 
 export class Physics {
@@ -40,6 +43,10 @@ export class Physics {
 	energyModelStraggling: EnergyModelStraggling;
 	multipleScattering: MultipleScattering;
 	stoppingPowerTable: StoppingPowerTable;
+
+	get stoppingPowerTableFiles() {
+		return CustomStoppingPowerModels[this.stoppingPowerTable];
+	}
 
 	constructor() {
 		this.energyLoss = _default.energyLoss;
