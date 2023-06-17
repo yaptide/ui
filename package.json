@@ -89,7 +89,7 @@
 			"react-app/jest"
 		],
 		"rules": {
-			"class-methods-use-this": "error",
+			"class-methods-use-this": "warn",
 			"lines-between-class-members": [
 				"error",
 				"always",

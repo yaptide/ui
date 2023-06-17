@@ -283,7 +283,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 		};
 	}
 	/**
-	 * @description Wrapper for the custom content int the tabs bar
+	 * @description Wrapper for the custom content in the tabs bar
 	 */
 	function ActionTab({ children }: { children: ReactNode }) {
 		return <>{children}</>;
