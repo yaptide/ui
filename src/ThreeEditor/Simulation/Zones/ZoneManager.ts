@@ -1,15 +1,16 @@
 import * as Comlink from 'comlink';
 import { Signal } from 'signals';
 import * as THREE from 'three';
+
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { SimulationSceneContainer } from '../Base/SimulationContainer';
-import { YaptideEditor } from '../../js/YaptideEditor';
-import { WorldZone, WorldZoneJSON } from './WorldZone/WorldZone';
-import { BooleanZone, BooleanZoneJSON, isBooleanZone } from './BooleanZone';
 import { ZoneWorker } from '../../CSG/CSGWorker';
-import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
-import { SimulationElementManager } from '../Base/SimulationManager';
+import { YaptideEditor } from '../../js/YaptideEditor';
+import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElementJSON } from '../Base/SimulationElement';
+import { SimulationElementManager } from '../Base/SimulationManager';
+import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
+import { BooleanZone, BooleanZoneJSON, isBooleanZone } from './BooleanZone';
+import { WorldZone, WorldZoneJSON } from './WorldZone/WorldZone';
 
 type ZoneManagerJSON = Omit<
 	SimulationElementJSON & {
@@ -30,6 +31,7 @@ export class ZoneContainer extends SimulationSceneContainer<SimulationZone> {
 	constructor(editor: YaptideEditor) {
 		super(editor, 'Zones', 'ZoneGroup', zoneLoader(editor));
 	}
+
 	remove(zone: SimulationZone): this {
 		zone.simulationMaterial.decrement();
 		return super.remove(zone);
@@ -56,6 +58,7 @@ export class ZoneManager
 		zoneRemoved: Signal<SimulationZone>;
 		sceneGraphChanged: Signal;
 	};
+
 	private managerType: 'ZoneManager' = 'ZoneManager';
 
 	private _name: string;
@@ -96,6 +99,7 @@ export class ZoneManager
 		this.signals.zoneAdded.dispatch(zone);
 		this.signals.sceneGraphChanged.dispatch();
 	}
+
 	removeZone(zone: SimulationZone): void {
 		this.zoneContainer.remove(zone);
 		this.editor.deselect();
@@ -104,11 +108,13 @@ export class ZoneManager
 		this.signals.zoneRemoved.dispatch(zone);
 		this.signals.sceneGraphChanged.dispatch();
 	}
+
 	createZone() {
 		const zone = new BooleanZone(this.editor);
 		this.addZone(zone);
 		return zone;
 	}
+
 	getZoneByName(value: string) {
 		return (
 			[this.worldZone as unknown as SimulationZone, ...this.zones].find(
@@ -116,6 +122,7 @@ export class ZoneManager
 			) ?? null
 		);
 	}
+
 	getZoneByUuid(uuid: string) {
 		return (
 			[this.worldZone as unknown as SimulationZone, ...this.zones].find(
@@ -123,6 +130,7 @@ export class ZoneManager
 			) ?? null
 		);
 	}
+
 	getZoneOptions(
 		additionalPredicate?: (
 			value: SimulationZone,

@@ -1,11 +1,12 @@
+import { BasicFigure, BoxFigure, CylinderFigure, SphereFigure } from './BasicFigures';
 import * as THREE from 'three';
+
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { SimulationMeshJSON } from '../Base/SimulationMesh';
-import { BasicFigure, BoxFigure, CylinderFigure, SphereFigure } from './BasicFigures';
 
 type FigureManagerJSON = Omit<
 	SimulationElementJSON & {
@@ -73,18 +74,22 @@ export class FigureManager
 		this.figureContainer.add(figure);
 		this.editor.select(figure);
 	}
+
 	removeFigure(figure: BasicFigure<THREE.BufferGeometry>) {
 		this.figureContainer.remove(figure);
 		this.editor.deselect();
 	}
+
 	createFigure() {
 		const figure = new BoxFigure(this.editor);
 		this.addFigure(figure);
 		return figure;
 	}
+
 	getFigureByUuid(uuid: string) {
 		return this.figures.find(figure => figure.uuid === uuid) ?? null;
 	}
+
 	getFigureByName(name: string) {
 		return this.figures.find(figure => figure.name === name) ?? null;
 	}

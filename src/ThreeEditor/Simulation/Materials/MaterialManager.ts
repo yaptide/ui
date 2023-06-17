@@ -1,14 +1,15 @@
+import { Signal } from 'signals';
+import * as THREE from 'three';
+
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { CounterMap } from '../../../util/CounterMap/CounterMap';
+import { YaptideEditor } from '../../js/YaptideEditor.js';
+import { SimulationElementJSON } from '../Base/SimulationElement';
 import { DEFAULT_MATERIAL_ICRU, MATERIALS } from './materials';
 import SimulationMaterial, {
 	isSimulationMaterial,
 	SimulationMaterialJSON
 } from './SimulationMaterial';
-import * as THREE from 'three';
-import { YaptideEditor } from '../../js/YaptideEditor.js';
-import { CounterMap } from '../../../util/CounterMap/CounterMap';
-import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { Signal } from 'signals';
-import { SimulationElementJSON } from '../Base/SimulationElement';
 
 export type MaterialManagerJSON = Omit<
 	SimulationElementJSON & {
@@ -31,6 +32,7 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 	private signals: {
 		materialChanged: Signal<SimulationMaterial>;
 	};
+
 	private managerType: 'MaterialManager' = 'MaterialManager';
 
 	private _name: string;
@@ -53,6 +55,7 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 		);
 		return editorMaterials;
 	};
+
 	private prefabMaterials: Record<string, SimulationMaterial>;
 	/***************************************************************/
 
@@ -75,6 +78,7 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 		this._customMaterials[DEFAULT_MATERIAL_ICRU] = defaultMaterial;
 		return defaultMaterial;
 	}
+
 	selectedMaterials: CounterMap<string> = new CounterMap<string>();
 
 	getMaterialByUuid(uuid: string): SimulationMaterial | undefined {
@@ -115,6 +119,7 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 			};
 		}
 	};
+
 	protected materialsProxy: Record<string, SimulationMaterial>;
 	get materials(): Record<string, SimulationMaterial> {
 		return this.materialsProxy;

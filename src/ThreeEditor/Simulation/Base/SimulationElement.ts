@@ -1,6 +1,7 @@
 import * as THREE from 'three';
-import { YaptideEditor } from '../../js/YaptideEditor';
+
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 
 export type SimulationElementJSON = {
@@ -31,6 +32,7 @@ export abstract class SimulationElement
 		this.name = this._name = name ?? type;
 		this.type = type;
 	}
+
 	toJSON(): SimulationElementJSON {
 		const { name, type, uuid } = this;
 		return {
@@ -45,6 +47,7 @@ export abstract class SimulationElement
 		this.uuid = json.uuid;
 		return this;
 	}
+
 	reset() {
 		this.name = this._name;
 	}

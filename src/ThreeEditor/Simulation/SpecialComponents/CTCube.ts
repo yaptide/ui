@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+
 import { AdditionalGeometryDataType } from '../../../util/AdditionalGeometryData';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationMeshJSON } from '../Base/SimulationMesh';
@@ -49,6 +50,7 @@ export class CTCube extends BasicFigure<THREE.BoxGeometry> {
 			pathOnServer
 		};
 	}
+
 	reconstructGeometryFromData(data: AdditionalGeometryDataType<BoxParameters>): void {
 		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
 		const {

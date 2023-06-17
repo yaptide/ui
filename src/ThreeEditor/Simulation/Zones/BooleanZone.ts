@@ -1,13 +1,13 @@
+import { CounterMap } from '../../../util/CounterMap/CounterMap';
+import { OperationTuple, OperationTupleJSON } from '../../CSG/CSGOperationTuple';
+import { ZoneWorker } from '../../CSG/CSGWorker';
+import CSG from '../../js/libs/csg/three-csg';
+import { YaptideEditor } from '../../js/YaptideEditor';
+import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
+import * as Comlink from 'comlink';
 import { Signal } from 'signals';
 import * as THREE from 'three';
 import { debounce } from 'throttle-debounce';
-import { ZoneWorker } from '../../CSG/CSGWorker';
-import * as Comlink from 'comlink';
-import { YaptideEditor } from '../../js/YaptideEditor';
-import CSG from '../../js/libs/csg/three-csg';
-import { OperationTuple, OperationTupleJSON } from '../../CSG/CSGOperationTuple';
-import { CounterMap } from '../../../util/CounterMap/CounterMap';
-import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
 
 export interface BooleanZoneJSON extends SimulationZoneJSON {
 	unionOperations: OperationTupleJSON[][];
@@ -37,6 +37,7 @@ export class BooleanZone extends SimulationZone {
 		// If operations are specified, we have to generate geometry.
 		this.updateGeometry();
 	}
+
 	get unionOperations() {
 		return this._unionOperations;
 	}

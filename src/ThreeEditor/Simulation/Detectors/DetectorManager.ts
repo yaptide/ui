@@ -46,6 +46,7 @@ export class DetectorManager
 		detectGeometryChanged: Signal<Detector>;
 		materialChanged: Signal<THREE.Material>;
 	};
+
 	private managerType: 'DetectorManager' = 'DetectorManager';
 	private hasUsefulGeometry(object: THREE.Object3D): object is Detector | ScoringOutput {
 		return Boolean(
@@ -65,6 +66,7 @@ export class DetectorManager
 		wireframe: true,
 		color: new THREE.Color('cyan')
 	});
+
 	private _name: string;
 	/***************************************************************/
 
@@ -90,22 +92,27 @@ export class DetectorManager
 		this.editor.select(geometry);
 		this.signals.detectGeometryAdded.dispatch(geometry);
 	}
+
 	removeDetector(geometry: Detector): void {
 		this.detectorContainer.remove(geometry);
 		this.editor.deselect();
 		this.signals.detectGeometryRemoved.dispatch(geometry);
 	}
+
 	createDetector(): Detector {
 		const geometry = new Detector(this.editor);
 		this.addDetector(geometry);
 		return geometry;
 	}
+
 	getDetectorByUuid(uuid: string): Detector | null {
 		return this.detectors.find(child => child.uuid === uuid) as Detector | null;
 	}
+
 	getDetectorByName(name: string) {
 		return this.detectors.find(child => child.name === name) as Detector | null;
 	}
+
 	getDetectorOptions(
 		additionalPredicate?: (value: Detector, index: number, array: Detector[]) => boolean
 	): Record<string, string> {

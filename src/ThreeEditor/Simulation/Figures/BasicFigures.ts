@@ -1,8 +1,9 @@
 import * as THREE from 'three';
-import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationMesh } from '../Base/SimulationMesh';
+
 import { AdditionalGeometryDataType } from '../../../util/AdditionalGeometryData';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { HollowCylinderGeometry } from '../Base/HollowCylinderGeometry';
+import { SimulationMesh } from '../Base/SimulationMesh';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
 	color: 0x000000,
@@ -62,6 +63,7 @@ export abstract class BasicFigure<
 		this.name = name ?? `Figure`;
 		this.geometryType = geometryType;
 	}
+
 	reconstructGeometryFromData(data: AdditionalGeometryDataType): void {
 		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
 		const { position, rotation } = data;
@@ -83,6 +85,7 @@ export class BoxFigure extends BasicFigure<THREE.BoxGeometry> {
 	) {
 		super(editor, 'Box', 'BoxFigure', 'BoxGeometry', geometry ?? boxGeometry, material);
 	}
+
 	reconstructGeometryFromData(data: AdditionalGeometryDataType<BoxParameters>): void {
 		super.reconstructGeometryFromData(data);
 		const {
@@ -109,6 +112,7 @@ export class CylinderFigure extends BasicFigure<HollowCylinderGeometry> {
 			material
 		);
 	}
+
 	reconstructGeometryFromData(data: AdditionalGeometryDataType<CylinderParameters>): void {
 		super.reconstructGeometryFromData(data);
 		const {
@@ -143,6 +147,7 @@ export class SphereFigure extends BasicFigure<THREE.SphereGeometry> {
 			material
 		);
 	}
+
 	reconstructGeometryFromData(data: AdditionalGeometryDataType<SphereParameters>): void {
 		super.reconstructGeometryFromData(data);
 		const {

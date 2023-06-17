@@ -32,6 +32,7 @@ export class DifferentialModifier {
 		this.binsNumber = binsNumber;
 		this.isLog = isLog;
 	}
+
 	toJSON(): DifferentialJSON {
 		return {
 			diffType: this.diffType,
@@ -42,6 +43,7 @@ export class DifferentialModifier {
 			uuid: this.uuid
 		};
 	}
+
 	static fromJSON(json: DifferentialJSON): DifferentialModifier {
 		const mod = new DifferentialModifier(
 			json.diffType,

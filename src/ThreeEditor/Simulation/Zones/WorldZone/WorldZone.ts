@@ -44,6 +44,7 @@ export class WorldZone extends SimulationElement {
 		// custom get function to conditionally return notMoveable property;
 		return this.autoCalculate && this.canCalculate();
 	}
+
 	readonly notRotatable = true;
 	readonly notScalable = true;
 	readonly notVisibleChildren: boolean = true;
@@ -62,6 +63,7 @@ export class WorldZone extends SimulationElement {
 	public get helperMesh(): THREE.Mesh {
 		return this._helper.getMeshByType(this.geometryType);
 	}
+
 	helperProxy!: WorldZoneHelper;
 
 	private _handleHelperUpdate: ProxyHandler<WorldZoneHelper> = {

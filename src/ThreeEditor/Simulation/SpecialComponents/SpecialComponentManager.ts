@@ -1,12 +1,13 @@
+import { Signal } from 'signals';
 import * as THREE from 'three';
+
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationSceneContainer, OneSlotContainer } from '../Base/SimulationContainer';
+import { OneSlotContainer, SimulationSceneContainer } from '../Base/SimulationContainer';
+import { SimulationElementJSON } from '../Base/SimulationElement';
+import { SimulationElementManager } from '../Base/SimulationManager';
 import { BeamModulator, BeamModulatorJSON, isBeamModulator } from './BeamModulator';
 import { CTCube, CTCubeJSON, isCTCube } from './CTCube';
-import { SimulationElementManager } from '../Base/SimulationManager';
-import { SimulationElementJSON } from '../Base/SimulationElement';
-import { Signal } from 'signals';
 
 type SpecialComponentManagerJSON = Omit<
 	SimulationElementJSON & {
@@ -37,6 +38,7 @@ export class SpecialComponentManager
 		sceneGraphChanged: Signal;
 		materialChanged: Signal<THREE.Material>;
 	};
+
 	private managerType: 'SpecialComponentManager' = 'SpecialComponentManager';
 
 	private _name: string;
@@ -62,20 +64,25 @@ export class SpecialComponentManager
 		this.CTCubeContainer.add(ctCube);
 		this.editor.select(ctCube);
 	}
+
 	removeCTCube(ctCube: CTCube) {
 		this.CTCubeContainer.remove(ctCube);
 	}
+
 	createCTCube() {
 		const ctCube = new CTCube(this.editor);
 		this.addCTCube(ctCube);
 		return ctCube;
 	}
+
 	getCTCubeByUuid(uuid: string) {
 		return this.CTCubeContainer.children.find(ctCube => ctCube.uuid === uuid) ?? null;
 	}
+
 	getCTCubeByName(name: string) {
 		return this.CTCubeContainer.children.find(ctCube => ctCube.name === name) ?? null;
 	}
+
 	private hasUsefulGeometry(object: THREE.Object3D): object is BeamModulator {
 		return Boolean(
 			isBeamModulator(object) &&
@@ -106,19 +113,23 @@ export class SpecialComponentManager
 		this.beamModulatorContainer.add(modulator);
 		this.editor.select(modulator);
 	}
+
 	removeBeamModulator(modulator: BeamModulator) {
 		this.beamModulatorContainer.remove(modulator);
 	}
+
 	createBeamModulator() {
 		const modulator = new BeamModulator(this.editor);
 		this.addBeamModulator(modulator);
 		return modulator;
 	}
+
 	getBeamModulatorByUuid(uuid: string) {
 		return (
 			this.beamModulatorContainer.children.find(modulator => modulator.uuid === uuid) ?? null
 		);
 	}
+
 	getBeamModulatorByName(name: string) {
 		return (
 			this.beamModulatorContainer.children.find(modulator => modulator.name === name) ?? null
@@ -204,6 +215,7 @@ export class SpecialComponentManager
 			metadata
 		};
 	}
+
 	fromJSON(json: SpecialComponentManagerJSON) {
 		const {
 			metadata: { version }

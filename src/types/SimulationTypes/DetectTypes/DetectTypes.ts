@@ -3,6 +3,7 @@ export abstract class Data<T> {
 	constructor(info: string) {
 		this.info = info;
 	}
+
 	abstract toJSON(): T;
 }
 export interface MeshData {
@@ -44,6 +45,7 @@ export class Mesh extends Data<MeshData> implements MeshData {
 		this.ySegments = ySegments;
 		this.zSegments = zSegments;
 	}
+
 	toJSON(): MeshData {
 		return {
 			width: this.width,
@@ -80,6 +82,7 @@ export class Cyl extends Data<CylData> {
 		this.radialSegments = radialSegments;
 		this.zSegments = zSegments;
 	}
+
 	toJSON(): CylData {
 		return {
 			radius: this.radius,
@@ -97,6 +100,7 @@ export class Zone extends Data<ZoneData> implements ZoneData {
 		super('Scoring within one or more zones');
 		this.zoneUuid = zoneUuid;
 	}
+
 	toJSON(): ZoneData {
 		return {
 			zoneUuid: this.zoneUuid
@@ -112,6 +116,7 @@ export class All extends Data<AllData> implements AllData {
 	constructor(_data: Any) {
 		super('Scoring within the entire universe, only useful with certain detectors');
 	}
+
 	toJSON(): AllData {
 		return {
 			info: this.info

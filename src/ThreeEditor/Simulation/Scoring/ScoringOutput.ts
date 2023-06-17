@@ -1,4 +1,6 @@
+import { Signal } from 'signals';
 import * as THREE from 'three';
+
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
@@ -6,7 +8,6 @@ import { SimulationElementManager } from '../Base/SimulationManager';
 import { Detector } from '../Detectors/Detector';
 import { ScoringFilter } from './ScoringFilter';
 import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
-import { Signal } from 'signals';
 
 export type ScoringOutputJSON = Omit<
 	SimulationElementJSON & {
@@ -47,9 +48,11 @@ export class ScoringOutput
 	get notVisibleChildren(): boolean {
 		return this._trace[0];
 	}
+
 	private signals: {
 		objectSelected: Signal<THREE.Object3D>;
 	};
+
 	private _detector?: string;
 	private _primaries: [boolean, number | null];
 

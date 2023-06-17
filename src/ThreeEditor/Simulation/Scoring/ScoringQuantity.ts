@@ -39,6 +39,7 @@ export class ScoringQuantity extends SimulationElement {
 	set selectedModifier(mod: DifferentialModifier | undefined) {
 		this._selectedModifier = mod?.uuid;
 	}
+
 	get selectedModifier(): DifferentialModifier | undefined {
 		return this._selectedModifier ? this._modifiers[this._selectedModifier] : undefined;
 	}
@@ -47,6 +48,7 @@ export class ScoringQuantity extends SimulationElement {
 		if (!this.hasFilter) return null;
 		return this.editor.scoringManager.getFilterByUuid(this._filter);
 	}
+
 	set filter(filter: ScoringFilter | null) {
 		this._filter = filter?.uuid ?? '';
 	}
@@ -55,6 +57,7 @@ export class ScoringQuantity extends SimulationElement {
 		if (['NEqvDose', 'NKERMA'].includes(this.keyword)) return this._medium;
 		return null;
 	}
+
 	set medium(medium: Scoring.MEDIUM | null) {
 		this._medium = medium ?? Scoring.MEDIUM_KEYWORD_OPTIONS.WATER;
 	}
@@ -62,6 +65,7 @@ export class ScoringQuantity extends SimulationElement {
 	set rescale(rescale: number) {
 		this._rescale = rescale;
 	}
+
 	get rescale(): number {
 		return this.hasRescale ? this._rescale : 1;
 	}

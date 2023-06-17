@@ -34,6 +34,7 @@ export class ScoringFilter extends SimulationElement {
 	set selectedRule(rule: FilterRule | undefined) {
 		this._selectedRule = rule?.uuid;
 	}
+
 	get selectedRule(): FilterRule | undefined {
 		return this._selectedRule ? this._rules[this._selectedRule] : undefined;
 	}
@@ -127,6 +128,7 @@ export class ScoringFilter extends SimulationElement {
 		const { uuid, name, _rules: rules, type } = this;
 		return { uuid, name, type, rules: Object.values(rules).map(rule => rule.toJSON()) };
 	}
+
 	fromJSON(json: FilterJSON) {
 		this.clear();
 		this.uuid = json.uuid;

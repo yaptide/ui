@@ -25,6 +25,7 @@ export class WorldZoneHelper extends THREE.Object3D {
 				return this.sphereMesh;
 		}
 	}
+
 	get allHelpers(): Record<WorldZoneType, THREE.Object3D> {
 		const obj = {
 			BoxGeometry: this._boxHelper,
@@ -44,9 +45,11 @@ export class WorldZoneHelper extends THREE.Object3D {
 	get cylinderMesh(): THREE.Mesh<HollowCylinderGeometry, MeshBasicMaterial> {
 		return this._cylinderMesh;
 	}
+
 	get sphereMesh(): THREE.Mesh<THREE.SphereGeometry, MeshBasicMaterial> {
 		return this._sphereMesh;
 	}
+
 	get boxMesh(): THREE.Mesh<THREE.BoxGeometry, MeshBasicMaterial> {
 		const { x, y, z } = this._box.getSize(new THREE.Vector3());
 		return new THREE.Mesh(new THREE.BoxGeometry(x, y, z), this._sphereMesh.material);

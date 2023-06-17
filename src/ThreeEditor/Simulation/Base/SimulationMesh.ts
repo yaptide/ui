@@ -46,6 +46,7 @@ export abstract class SimulationMesh<
 		this.name = this._name = name ?? type;
 		this.type = type;
 	}
+
 	toJSON(): SimulationMeshJSON {
 		const { name, type, uuid, visible } = this;
 		const geometryData = getGeometryData(this);
@@ -59,6 +60,7 @@ export abstract class SimulationMesh<
 			colorHex
 		};
 	}
+
 	fromJSON(json: SimulationMeshJSON) {
 		this.name = json.name;
 		this.uuid = json.uuid;
@@ -67,9 +69,11 @@ export abstract class SimulationMesh<
 		this.reconstructGeometryFromData(json.geometryData);
 		return this;
 	}
+
 	reset(): void {
 		this.name = this._name;
 	}
+
 	abstract reconstructGeometryFromData(data: AdditionalGeometryDataType): void;
 }
 

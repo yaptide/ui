@@ -1,10 +1,11 @@
 import { Signal } from 'signals';
+
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
-import { SimulationElementManager } from '../Base/SimulationManager';
-import { ScoringOutput, ScoringOutputJSON as OutputJSON } from './ScoringOutput';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
+import { SimulationElementManager } from '../Base/SimulationManager';
 import { FilterJSON, ScoringFilter } from './ScoringFilter';
+import { ScoringOutputJSON as OutputJSON, ScoringOutput } from './ScoringOutput';
 
 export type ScoringManagerJSON = Omit<
 	SimulationElementJSON & {
@@ -54,7 +55,6 @@ export class ScoringManager
 		detectFilterAdded: Signal<ScoringFilter>;
 		detectFilterRemoved: Signal<ScoringFilter>;
 	};
-	private managerType: 'ScoringManager' = 'ScoringManager';
 	/***************************************************************/
 
 	/*******************SimulationPropertiesType********************/
@@ -77,22 +77,27 @@ export class ScoringManager
 		this.editor.select(filter);
 		this.signals.detectFilterAdded.dispatch(filter);
 	}
+
 	removeFilter(filter: ScoringFilter): void {
 		this.filterContainer.remove(filter);
 		this.editor.deselect();
 		this.signals.detectFilterRemoved.dispatch(filter);
 	}
+
 	createFilter(): ScoringFilter {
 		const filter = new ScoringFilter(this.editor);
 		this.addFilter(filter);
 		return filter;
 	}
+
 	getFilterByUuid(uuid: string) {
 		return this.filters.find(filter => filter.uuid === uuid) ?? null;
 	}
+
 	getFilterByName(name: string) {
 		return this.filters.find(filter => filter.name === name) ?? null;
 	}
+
 	getFilterOptions(): Record<string, string> {
 		const options = this.filters
 			.filter(filter => {
@@ -116,24 +121,29 @@ export class ScoringManager
 		this.outputContainer.add(output);
 		this.editor.select(output);
 	}
+
 	removeOutput(output: ScoringOutput) {
 		this.remove(output);
 		this.children.splice(this.children.indexOf(output), 1);
 		output.parent = null;
 		this.signals.objectRemoved.dispatch(output);
 	}
+
 	createOutput() {
 		const output = new ScoringOutput(this.editor);
 		output.createQuantity();
 		this.addOutput(output);
 		return output;
 	}
+
 	getOutputByUuid(uuid: string) {
 		return this.outputs.find(output => output.uuid === uuid) ?? null;
 	}
+
 	getOutputByName(name: string) {
 		return this.outputs.find(output => output.name === name) ?? null;
 	}
+
 	getTakenDetectors(): string[] {
 		return this.outputs
 			.reduce<(string | null)[]>((acc, output) => {

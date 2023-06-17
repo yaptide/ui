@@ -1,5 +1,6 @@
 import { Signal } from 'signals';
 import * as THREE from 'three';
+
 import * as DETECT from '../../../types/SimulationTypes/DetectTypes/DetectTypes';
 import { AdditionalGeometryDataType, getGeometryData } from '../../../util/AdditionalGeometryData';
 import { YaptideEditor } from '../../js/YaptideEditor';
@@ -43,6 +44,7 @@ export class Detector extends SimulationPoints {
 		if (data.zoneUuid) return this.editor.zoneManager.getZoneByUuid(data.zoneUuid) ?? null;
 		else return null;
 	}
+
 	readonly notRotatable = true;
 	readonly notScalable = true;
 	readonly isDetector: true = true;

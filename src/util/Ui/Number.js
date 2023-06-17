@@ -109,13 +109,16 @@ export class UIScientificNumber extends UINumber {
 		super(value);
 		this.scientificNotation = true;
 	}
+
 	setScientificNotation(flag) {
 		this.scientificNotation = flag;
 		return this;
 	}
+
 	getScientificNotation() {
 		return this.scientificNotation;
 	}
+
 	/**
 	 *
 	 * @param {number} value

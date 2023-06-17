@@ -1,11 +1,12 @@
 import * as THREE from 'three';
+
+import { isCounterMapError } from '../../../util/CounterMap/CounterMap';
 import { YaptideEditor } from '../../js/YaptideEditor.js';
 import {
 	DEFAULT_MATERIAL_DENSITY,
 	DEFAULT_MATERIAL_ICRU,
 	DEFAULT_MATERIAL_NAME
 } from './materials';
-import { isCounterMapError } from '../../../util/CounterMap/CounterMap';
 
 export type RenderProps = Omit<SimulationMaterialJSON, 'uuid' | 'name' | 'icru' | 'density'>;
 
@@ -47,6 +48,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 			return result;
 		}
 	};
+
 	private materialColorHandler = {
 		get: (target: THREE.Color, prop: keyof THREE.Color) => {
 			const result = Reflect.get(target, prop);
@@ -59,6 +61,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 			return result;
 		}
 	};
+
 	constructor(
 		editor: YaptideEditor,
 		name: string = DEFAULT_MATERIAL_NAME,
@@ -87,6 +90,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 		};
 		return this.proxy;
 	}
+
 	toJSON(): SimulationMaterialJSON {
 		const { uuid, name, icru, density, renderProps } = this;
 		return {
@@ -97,6 +101,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 			...renderProps
 		};
 	}
+
 	static fromJSON(
 		editor: YaptideEditor,
 		{ uuid, name, icru, density, ...renderProps }: SimulationMaterialJSON
