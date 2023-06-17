@@ -14,6 +14,7 @@ export abstract class Command<Target extends Record<string, unknown> = Record<st
 	get type() {
 		return this._type;
 	}
+
 	name;
 	id;
 	readonly updatable;
@@ -47,6 +48,7 @@ export abstract class Command<Target extends Record<string, unknown> = Record<st
 			data: {}
 		};
 	}
+
 	fromJSON(json: BaseCommandJSON<Target>): void {
 		this._type = json.type;
 		this.id = json.id;

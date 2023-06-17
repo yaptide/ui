@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationSceneContainer, SingletonContainer } from '../Base/SimulationContainer';
+import { SimulationSceneContainer, OneSlotContainer } from '../Base/SimulationContainer';
 import { BeamModulator, BeamModulatorJSON, isBeamModulator } from './BeamModulator';
 import { CTCube, CTCubeJSON, isCTCube } from './CTCube';
 import { SimulationElementManager } from '../Base/SimulationManager';
@@ -131,13 +131,13 @@ export class SpecialComponentManager
 
 		this.editor = editor;
 		this.name = this._name = 'Special Components';
-		this.CTCubeContainer = new SingletonContainer<CTCube>(
+		this.CTCubeContainer = new OneSlotContainer<CTCube>(
 			editor,
 			'CT Cube Singleton',
 			'CTCube',
 			json => new CTCube(editor).fromJSON(json)
 		);
-		this.beamModulatorContainer = new SingletonContainer<BeamModulator>(
+		this.beamModulatorContainer = new OneSlotContainer<BeamModulator>(
 			editor,
 			'Beam Modulator Singleton',
 			'BeamModulator',

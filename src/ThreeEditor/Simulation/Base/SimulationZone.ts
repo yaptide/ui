@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import SimulationMaterial, { SimulationMaterialJSON } from '../Materials/SimulationMaterial';
@@ -93,6 +94,18 @@ export abstract class SimulationZone
 		this.usingCustomMaterial = false;
 	}
 
+	private reconstructMaterialFromJSON(json: SimulationZoneJSON) {
+		const { materialUuid, customMaterial } = json;
+		const simulationMaterial =
+			this.editor.materialManager.getMaterialByUuid(
+				customMaterial && materialUuid === customMaterial.uuid
+					? customMaterial.originalMaterialUuid
+					: materialUuid
+			) ?? this.editor.materialManager.defaultMaterial;
+		if (simulationMaterial === undefined) throw new Error('SimulationMaterial not found');
+		this.simulationMaterial = simulationMaterial;
+	}
+
 	get simulationMaterial(): SimulationMaterial {
 		return this.material;
 	}
@@ -103,6 +116,7 @@ export abstract class SimulationZone
 		this.resetCustomMaterial();
 		this.material.increment();
 	}
+
 	readonly isSimulationElement = true;
 
 	constructor(editor: YaptideEditor, name: string, type: string = 'Zone') {
@@ -160,18 +174,6 @@ export abstract class SimulationZone
 		return this;
 	}
 
-	reconstructMaterialFromJSON(json: SimulationZoneJSON) {
-		const { materialUuid, customMaterial } = json;
-		const simulationMaterial =
-			this.editor.materialManager.getMaterialByUuid(
-				customMaterial && materialUuid === customMaterial.uuid
-					? customMaterial.originalMaterialUuid
-					: materialUuid
-			) ?? this.editor.materialManager.defaultMaterial;
-		if (simulationMaterial === undefined) throw new Error('SimulationMaterial not found');
-		this.simulationMaterial = simulationMaterial;
-	}
-
 	fromJSON(json: SimulationZoneJSON) {
 		this.reset();
 		const { uuid, name, visible, materialPropertiesOverrides: overrides } = json;
@@ -200,6 +202,6 @@ export abstract class SimulationZone
 	}
 }
 
-export function isZone(object: unknown): object is SimulationZone {
+export function isSimulationZone(object: unknown): object is SimulationZone {
 	return object instanceof SimulationZone;
 }

@@ -1,4 +1,4 @@
-import { Editor } from '../../js/Command';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { BaseCommandJSON, Command } from './AbstractCommand';
 
 /**
@@ -16,7 +16,7 @@ export class UpdateCommand<
 	oldValue: Target[Property];
 	newValue: Target[Property];
 	constructor(
-		editor: Editor,
+		editor: YaptideEditor,
 		target: Target,
 		name: string,
 		property: Property,
@@ -29,16 +29,20 @@ export class UpdateCommand<
 		this.oldValue = target[property];
 		this.newValue = newValue;
 	}
+
 	execute() {
 		this.target[this.property] = this.newValue;
 	}
+
 	undo() {
 		this.target[this.property] = this.oldValue;
 	}
+
 	toJSON(): UpdateCommandJSON<Target, Property> {
 		const data = { property: this.property, oldValue: this.oldValue, newValue: this.newValue };
 		return { ...super.toJSON(), data };
 	}
+
 	fromJSON(json: UpdateCommandJSON<Target, Property>): void {
 		super.fromJSON(json);
 		const { property, oldValue, newValue } = json.data;

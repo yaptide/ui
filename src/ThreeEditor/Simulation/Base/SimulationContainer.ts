@@ -1,6 +1,7 @@
 import * as THREE from 'three';
+
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { UniqueChildrenNames, getNextFreeName } from '../../../util/Name/Name';
+import { getNextFreeName, UniqueChildrenNames } from '../../../util/Name/Name';
 import { YaptideEditor } from '../../js/YaptideEditor';
 
 /**
@@ -81,16 +82,13 @@ export abstract class SimulationSceneContainer<
  * Variant of SimulationSceneContainer that can only have one child.
  * @see {@link SimulationSceneContainer}
  */
-export class SingletonContainer<TChild extends SimulationSceneChild>
+export class OneSlotContainer<TChild extends SimulationSceneChild>
 	extends SimulationSceneContainer<TChild>
 	implements UniqueChildrenNames
 {
-	readonly isSingletonContainer: true = true;
 	add(child: TChild): this {
 		if (this.children.length > 0) {
-			this.children.forEach(child => {
-				this.remove(child);
-			});
+			throw new Error('OneSlotContainer can only have one child');
 		}
 		return super.add(child);
 	}

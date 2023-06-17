@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
@@ -26,6 +27,7 @@ export abstract class SimulationPoints
 	editor: YaptideEditor;
 	parent: SimulationSceneContainer<this> | null = null;
 	material!: THREE.PointsMaterial;
+	abstract wireframeHelper: THREE.Mesh;
 	readonly type: string;
 	readonly isSimulationElement = true;
 	readonly isSimulationPoints = true;
@@ -101,7 +103,7 @@ export abstract class SimulationPoints
 		this._colorHex = this.material.color.getHex();
 		this.type = type;
 	}
-	abstract wireframeHelper: THREE.Mesh;
+
 	toJSON(): SimulationPointsJSON {
 		const { name, type, uuid, visible } = this;
 		const colorHex = this.material.color.getHex();
@@ -113,6 +115,7 @@ export abstract class SimulationPoints
 			colorHex
 		};
 	}
+
 	fromJSON(json: SimulationPointsJSON) {
 		const { name, uuid, visible, colorHex } = json;
 		this.name = name;

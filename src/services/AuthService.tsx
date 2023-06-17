@@ -13,6 +13,7 @@ import {
 	YaptideResponse
 } from '../types/ResponseTypes';
 import { createGenericContext } from './GenericContext';
+import { hasField } from '../util/hasField';
 
 declare global {
 	interface Window {
@@ -26,20 +27,10 @@ export interface AuthProps {
 
 type AuthUser = Pick<ResponseAuthStatus, 'username'>;
 const isAuthUser = (obj: unknown): obj is AuthUser => {
-	return (
-		typeof obj === 'object' &&
-		obj !== null &&
-		'username' in obj &&
-		typeof obj.username === 'string'
-	);
+	return hasField<string>(obj, 'username') && typeof obj.username === 'string';
 };
 const isYaptideResponse = (obj: unknown): obj is YaptideResponse => {
-	return (
-		typeof obj === 'object' &&
-		obj !== null &&
-		'message' in obj &&
-		typeof obj.message === 'string'
-	);
+	return hasField<string>(obj, 'message') && typeof obj.message === 'string';
 };
 const parseYaptideResponseMessage = (obj: unknown): string =>
 	isYaptideResponse(obj) ? obj.message : [obj].toString();

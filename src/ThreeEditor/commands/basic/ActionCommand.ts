@@ -1,4 +1,4 @@
-import { Editor } from '../../js/Command';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { MethodArgs, Command, BaseCommandJSON } from './AbstractCommand';
 
 /**
@@ -17,7 +17,7 @@ export class ActionCommand<
 	undoMethod: UndoMethod;
 	args: Args;
 	constructor(
-		editor: Editor,
+		editor: YaptideEditor,
 		target: Target,
 		name: string,
 		method: Method,
@@ -31,16 +31,20 @@ export class ActionCommand<
 		this.undoMethod = undoMethod;
 		this.args = args;
 	}
+
 	execute() {
 		this.target[this.method](...this.args);
 	}
+
 	undo() {
 		this.target[this.undoMethod](...this.args);
 	}
+
 	toJSON(): ActionCommandJSON<Target, Method, UndoMethod, Args> {
 		const data = { method: this.method, undoMethod: this.undoMethod, args: this.args };
 		return { ...super.toJSON(), data };
 	}
+
 	fromJSON(json: ActionCommandJSON<Target, Method, UndoMethod, Args>): void {
 		super.fromJSON(json);
 		const { method, undoMethod, args } = json.data;

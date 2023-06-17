@@ -200,7 +200,7 @@ export function YaptideEditor(container) {
 	};
 
 	this.loader = new Loader(this);
-	//TODO: rewrite to support our versioning and types of data. Default loader is now mostly useless
+	//TODO: #1089 rewrite to support our versioning and types of data. Default loader is now mostly useless
 
 	this.camera = _DEFAULT_CAMERA.clone();
 

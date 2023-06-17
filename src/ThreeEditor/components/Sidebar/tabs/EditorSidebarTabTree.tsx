@@ -91,23 +91,10 @@ function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
 					direction='row'
 					spacing={2}
 					alignItems='center'>
+					<Box>Add:</Box>
 					<ButtonGroup
 						size='small'
 						fullWidth>
-						<Button
-							disableRipple
-							disableFocusRipple
-							sx={{
-								'maxWidth': '40px',
-								'&:hover': {
-									backgroundColor: ({ palette }) => palette.primary.main,
-									boxShadow: 'none',
-									cursor: 'default'
-								}
-							}}
-							variant='contained'>
-							Add:
-						</Button>
 						{props.add.map(add => (
 							<Button
 								key={add.label}

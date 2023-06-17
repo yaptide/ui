@@ -5,10 +5,8 @@
  * all other properties are optional and are used to properly handle the object in the editor.
  */
 export type SimulationPropertiesType = {
-	//required
 	readonly isSimulationElement: true;
 
-	//optional
 	readonly notRemovable?: boolean;
 	readonly notMovable?: boolean;
 	readonly notRotatable?: boolean;

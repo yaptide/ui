@@ -2,7 +2,7 @@ import { Object3D } from 'three';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { isSimulationMesh } from '../../../../Simulation/Base/SimulationMesh';
 import { isSimulationPoints } from '../../../../Simulation/Base/SimulationPoints';
-import { isZone } from '../../../../Simulation/Base/SimulationZone';
+import { isSimulationZone } from '../../../../Simulation/Base/SimulationZone';
 import { isBeam } from '../../../../Simulation/Physics/Beam';
 import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
@@ -20,7 +20,7 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const visibleFlag =
-		isZone(watchedObject) ||
+		isSimulationZone(watchedObject) ||
 		isWorldZone(watchedObject) || //TODO: Refactor WorldZone to extend  a Zone
 		isSimulationMesh(watchedObject) ||
 		isBeam(watchedObject) ||
@@ -37,7 +37,7 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 			visible={visibleFlag}>
 			{visibleFlag && (
 				<>
-					{(isZone(watchedObject) || isWorldZone(watchedObject)) && (
+					{(isSimulationZone(watchedObject) || isWorldZone(watchedObject)) && (
 						<PropertyField label='Simulation'>
 							<MaterialSelect
 								materials={editor.materialManager.materials}
@@ -51,7 +51,7 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 						</PropertyField>
 					)}
 
-					{isZone(watchedObject) && (
+					{isSimulationZone(watchedObject) && (
 						<>
 							<ConditionalNumberPropertyField
 								min={0.0}

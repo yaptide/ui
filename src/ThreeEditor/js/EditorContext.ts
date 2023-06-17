@@ -21,7 +21,7 @@ import { ZoneContainer, ZoneManager, isZoneContainer } from '../Simulation/Zones
 import { isBooleanZone } from '../Simulation/Zones/BooleanZone';
 import { Beam, isBeam } from '../Simulation/Physics/Beam';
 import { BasicFigure, isBasicFigure } from '../Simulation/Figures/BasicFigures';
-import { SingletonContainer } from '../Simulation/Base/SimulationContainer';
+import { OneSlotContainer } from '../Simulation/Base/SimulationContainer';
 import { BeamModulator } from '../Simulation/SpecialComponents/BeamModulator';
 import { CTCube } from '../Simulation/SpecialComponents/CTCube';
 import { isSpecialComponent } from '../Simulation/SpecialComponents/SpecialComponentManager';
@@ -37,7 +37,7 @@ export type GeometryObject =
 	| ZoneContainer
 	| ZoneManager
 	| THREE.Scene
-	| SingletonContainer<CTCube | BeamModulator>
+	| OneSlotContainer<CTCube | BeamModulator>
 	| CTCube
 	| BeamModulator;
 export type ScoringContextObject =

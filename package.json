@@ -87,7 +87,24 @@
 		"extends": [
 			"react-app",
 			"react-app/jest"
-		]
+		],
+		"rules": {
+			"class-methods-use-this": "error",
+			"lines-between-class-members": [
+				"error",
+				"always",
+				{
+					"exceptAfterSingleLine": true
+				}
+			],
+			"sort-imports": [
+				"warn",
+				{
+					"ignoreCase": true,
+					"ignoreMemberSort": true
+				}
+			]
+		}
 	},
 	"browserslist": {
 		"production": [

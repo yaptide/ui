@@ -1,9 +1,9 @@
 import { CapitalizeString } from '../../../util/Capitalize';
-import { Editor } from '../../js/Command';
 import { SimulationSceneChild } from '../../Simulation/Base/SimulationContainer';
 import { MethodArgs } from '../basic/AbstractCommand';
 import { ActionCommand } from '../basic/ActionCommand';
 import { SimulationElementManager } from '../../Simulation/Base/SimulationManager';
+import { YaptideEditor } from '../../js/YaptideEditor';
 
 /**
  * General factory for creating commands that add or remove objects from a manager.
@@ -23,10 +23,11 @@ import { SimulationElementManager } from '../../Simulation/Base/SimulationManage
  * ```
  */
 export class ObjectManagementFactory {
-	editor: Editor;
-	constructor(editor: Editor) {
+	editor: YaptideEditor;
+	constructor(editor: YaptideEditor) {
 		this.editor = editor;
 	}
+
 	createAddCommand<TName extends string, TChild extends SimulationSceneChild>(
 		name: TName,
 		element: TChild,
@@ -44,6 +45,7 @@ export class ObjectManagementFactory {
 			>
 		);
 	}
+
 	createRemoveCommand<TName extends string, TChild extends SimulationSceneChild>(
 		name: TName,
 		element: TChild,

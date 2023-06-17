@@ -10,24 +10,24 @@ import {
 	Tabs,
 	Tooltip
 } from '@mui/material';
-import React, {
+import {
 	FC,
 	Fragment,
+	MouseEvent,
 	ReactNode,
 	SyntheticEvent,
 	useCallback,
 	useEffect,
 	useRef,
-	useState,
-	MouseEvent
+	useState
 } from 'react';
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
-import { YaptideEditor } from '../../js/YaptideEditor';
 import { OperationDataList, isOperation } from '../../../types/Operation';
+import { BooleanZone } from '../../Simulation/Zones/BooleanZone';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { BooleanAlgebraData } from './BooleanAlgebra/BooleanAlgebraData';
 import BooleanAlgebraRow, { BooleanAlgebraRowProps } from './BooleanAlgebra/BooleanAlgebraRow';
 import { GeometryIdSelect } from './GeometryIdSelect';
-import { BooleanZone } from '../../Simulation/Zones/BooleanZone';
 
 type BooleanZoneManagerPanelProps = {
 	editor: YaptideEditor;
@@ -282,7 +282,10 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 			'sx': { minWidth: 30, borderRadius: 0 }
 		};
 	}
-	function VoidTab({ children }: { children: ReactNode }) {
+	/**
+	 * @description Wrapper for the custom content int the tabs bar
+	 */
+	function ActionTab({ children }: { children: ReactNode }) {
 		return <>{children}</>;
 	}
 
@@ -319,7 +322,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 				{algebraDataRef.current.map((row, id) => {
 					return <Tab {...a11yProps(id)} />;
 				})}
-				<VoidTab>
+				<ActionTab>
 					<Tooltip
 						title='Add row'
 						placement='right'>
@@ -335,7 +338,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 							<AddIcon />
 						</IconButton>
 					</Tooltip>
-				</VoidTab>
+				</ActionTab>
 			</Tabs>
 			<AlgebraDataPanel
 				value={algebraRow}
