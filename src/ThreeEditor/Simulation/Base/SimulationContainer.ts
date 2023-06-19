@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { getNextFreeName, UniqueChildrenNames } from '../../../util/Name/Name';
+import { UniqueChildrenNames, getNextFreeName } from '../../../util/Name/Name';
 import { YaptideEditor } from '../../js/YaptideEditor';
 
 /**

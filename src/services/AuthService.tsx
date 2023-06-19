@@ -1,11 +1,7 @@
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import ky, { HTTPError } from 'ky';
-import { KyInstance } from 'ky/distribution/types/ky';
 import { BACKEND_URL, DEMO_MODE, DEPLOYMENT } from '../config/Config';
-import { snakeToCamelCase } from '../types/TypeTransformUtil';
+import { KyInstance } from 'ky/distribution/types/ky';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { RequestAuthLogin, RequestAuthLogout, RequestAuthRefresh } from '../types/RequestTypes';
-import useIntervalAsync from '../util/hooks/useIntervalAsync';
-import { useSnackbar } from 'notistack';
 import {
 	ResponseAuthLogin,
 	ResponseAuthRefresh,
@@ -14,6 +10,10 @@ import {
 } from '../types/ResponseTypes';
 import { createGenericContext } from './GenericContext';
 import { hasField } from '../util/hasField';
+import { snakeToCamelCase } from '../types/TypeTransformUtil';
+import { useSnackbar } from 'notistack';
+import ky, { HTTPError } from 'ky';
+import useIntervalAsync from '../util/hooks/useIntervalAsync';
 
 declare global {
 	interface Window {

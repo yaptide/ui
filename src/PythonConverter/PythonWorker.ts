@@ -1,8 +1,8 @@
 /* eslint-disable no-restricted-globals */
 import * as Comlink from 'comlink';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles } from '../types/ResponseTypes';
+import { SimulatorType } from '../types/RequestTypes';
 
 // as for now there is no reasonable npm package for pyodide
 // CND method is suggested in https://pyodide.org/en/stable/usage/downloading-and-deploying.html

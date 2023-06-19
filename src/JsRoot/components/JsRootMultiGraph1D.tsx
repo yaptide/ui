@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { GroupedPage1D } from '../GraphData';
 import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
+import { GroupedPage1D } from '../GraphData';
+import React, { useEffect } from 'react';
 
 export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string }) {
 	const { page } = props;

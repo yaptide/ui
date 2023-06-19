@@ -1,16 +1,16 @@
 import * as Comlink from 'comlink';
-import { Signal } from 'signals';
 import * as THREE from 'three';
+import { Signal } from 'signals';
 
-import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { ZoneWorker } from '../../CSG/CSGWorker';
-import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationSceneContainer } from '../Base/SimulationContainer';
+import { BooleanZone, BooleanZoneJSON, isBooleanZone } from './BooleanZone';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
-import { BooleanZone, BooleanZoneJSON, isBooleanZone } from './BooleanZone';
 import { WorldZone, WorldZoneJSON } from './WorldZone/WorldZone';
+import { YaptideEditor } from '../../js/YaptideEditor';
+import { ZoneWorker } from '../../CSG/CSGWorker';
 
 type ZoneManagerJSON = Omit<
 	SimulationElementJSON & {

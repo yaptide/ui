@@ -1,19 +1,19 @@
-import { SimulationZone } from '../../ThreeEditor/Simulation/Base/SimulationZone';
-import { Detector } from '../../ThreeEditor/Simulation/Detectors/Detector';
 import {
 	BasicFigure,
 	BoxFigure,
 	CylinderFigure,
 	SphereFigure
 } from '../../ThreeEditor/Simulation/Figures/BasicFigures';
+import { BeamModulator } from '../../ThreeEditor/Simulation/SpecialComponents/BeamModulator';
+import { BooleanZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
+import { CTCube } from '../../ThreeEditor/Simulation/SpecialComponents/CTCube';
+import { Command } from '../../ThreeEditor/commands/basic/AbstractCommand';
+import { Detector } from '../../ThreeEditor/Simulation/Detectors/Detector';
+import { ObjectManagementFactory } from '../../ThreeEditor/commands/factories/ObjectManagementFactory';
 import { ScoringFilter } from '../../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { ScoringOutput, isOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
 import { ScoringQuantity, isQuantity } from '../../ThreeEditor/Simulation/Scoring/ScoringQuantity';
-import { BeamModulator } from '../../ThreeEditor/Simulation/SpecialComponents/BeamModulator';
-import { CTCube } from '../../ThreeEditor/Simulation/SpecialComponents/CTCube';
-import { BooleanZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
-import { Command } from '../../ThreeEditor/commands/basic/AbstractCommand';
-import { ObjectManagementFactory } from '../../ThreeEditor/commands/factories/ObjectManagementFactory';
+import { SimulationZone } from '../../ThreeEditor/Simulation/Base/SimulationZone';
 import { YaptideEditor } from '../../ThreeEditor/js/YaptideEditor';
 
 /**

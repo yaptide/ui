@@ -1,14 +1,14 @@
-import { createTheme } from '@mui/material';
-import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { SnackbarProvider } from 'notistack';
-import { useMemo } from 'react';
-import { PythonConverterService } from './PythonConverter/PythonConverterService';
-import WrapperApp from './WrapperApp/WrapperApp';
 import { Auth } from './services/AuthService';
 import { Loader } from './services/DataLoaderService';
+import { PythonConverterService } from './PythonConverter/PythonConverterService';
 import { ShSimulation } from './services/ShSimulatorService';
+import { SnackbarProvider } from 'notistack';
 import { Store } from './services/StoreService';
+import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
+import { createTheme } from '@mui/material';
+import { useMemo } from 'react';
+import WrapperApp from './WrapperApp/WrapperApp';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 declare module '@mui/material/styles' {
 	// add new variables to the theme type

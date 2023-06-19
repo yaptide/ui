@@ -1,7 +1,3 @@
-import { Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { Object3D } from 'three';
-import { PARTICLE_TYPES } from '../../../../../types/Particle';
-import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import {
 	BEAM_SOURCE_TYPE,
 	Beam,
@@ -11,17 +7,21 @@ import {
 	SigmaType,
 	isBeam
 } from '../../../../Simulation/Physics/Beam';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
-import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
-import { ParticleSelect } from '../../../Select/ParticleSelect';
+import { Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import {
 	NumberPropertyField,
 	PropertyField,
 	SelectPropertyField,
 	Vector2PropertyField
 } from '../fields/PropertyField';
-import { SourceFileDefinitionField } from '../fields/SourceFileField';
+import { Object3D } from 'three';
+import { PARTICLE_TYPES } from '../../../../../types/Particle';
+import { ParticleSelect } from '../../../Select/ParticleSelect';
 import { PropertiesCategory } from './PropertiesCategory';
+import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import { SourceFileDefinitionField } from '../fields/SourceFileField';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 
 function BeamSigmaField(props: { beam: Beam; onChange: (value: Beam['sigma']) => void }) {
 	const configuration = {

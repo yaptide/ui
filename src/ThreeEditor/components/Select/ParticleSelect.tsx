@@ -1,5 +1,5 @@
-import { SyntheticEvent } from 'react';
 import { AutoCompleteSelect } from '../../../util/genericComponents/AutoCompleteSelect';
+import { SyntheticEvent } from 'react';
 
 export interface ParticleType {
 	id: number;

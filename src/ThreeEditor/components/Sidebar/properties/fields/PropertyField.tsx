@@ -1,8 +1,13 @@
+import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
 import { Box, Checkbox, Grid, Stack, TextField, Typography } from '@mui/material';
-import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
-import { Vector2 } from 'three';
-import { Vector3 } from 'three/src/math/Vector3';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { DETECTOR_MODIFIERS_OPTIONS } from '../../../../Simulation/Scoring/ScoringOutputTypes';
+import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
+import {
+	FilterRule,
+	isFloatRule,
+	isIDRule,
+	isIntRule
+} from '../../../../Simulation/Scoring/FilterRule';
 import {
 	KEYWORD_OPTIONS,
 	KEYWORD_SORT_ORDER,
@@ -11,25 +16,20 @@ import {
 	RULE_UNITS,
 	RULE_VALUE_RANGES
 } from '../../../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
-import { DETECTOR_MODIFIERS_OPTIONS } from '../../../../Simulation/Scoring/ScoringOutputTypes';
-import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
-import { createRowColor } from '../../../../../util/Ui/Color';
-import { createNumberInput } from '../../../../../util/Ui/Number';
+import { ObjectSelectProperty, ObjectSelectProps } from './ObjectSelectPropertyField';
+import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
+import { Vector2 } from 'three';
+import { Vector3 } from 'three/src/math/Vector3';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	createDifferentialConfigurationRow,
 	createModifiersOutliner,
 	createRuleConfigurationRow,
 	createRulesOutliner
 } from '../../../../../util/Ui/PropertiesOutliner';
+import { createNumberInput } from '../../../../../util/Ui/Number';
+import { createRowColor } from '../../../../../util/Ui/Color';
 import { hideUIElement, showUIElement } from '../../../../../util/Ui/Uis';
-import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
-import { ObjectSelectProperty, ObjectSelectProps } from './ObjectSelectPropertyField';
-import {
-	FilterRule,
-	isFloatRule,
-	isIDRule,
-	isIntRule
-} from '../../../../Simulation/Scoring/FilterRule';
 
 export function PropertyField(props: { label?: string; children: ReactNode }) {
 	return (

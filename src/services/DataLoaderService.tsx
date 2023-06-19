@@ -1,7 +1,7 @@
-import { ReactNode, useCallback, useState } from 'react';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { createGenericContext } from './GenericContext';
 import { FullSimulationData } from './ShSimulatorService';
+import { ReactNode, useCallback, useState } from 'react';
+import { createGenericContext } from './GenericContext';
 
 export interface ILoader {
 	editorProvider: EditorJson[];

@@ -1,9 +1,9 @@
-import { YaptideEditor } from '../../js/YaptideEditor.js';
 import {
 	DEFAULT_MATERIAL_DENSITY,
 	DEFAULT_MATERIAL_ICRU,
 	DEFAULT_MATERIAL_NAME
 } from './materials';
+import { YaptideEditor } from '../../js/YaptideEditor.js';
 import SimulationMaterial from './SimulationMaterial';
 
 let editor: YaptideEditor;

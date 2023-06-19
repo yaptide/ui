@@ -1,6 +1,3 @@
-import JoinInnerIcon from '@mui/icons-material/JoinInner';
-import JoinLeftIcon from '@mui/icons-material/JoinLeft';
-import UndoIcon from '@mui/icons-material/Undo';
 import {
 	Box,
 	Chip,
@@ -14,6 +11,9 @@ import {
 } from '@mui/material';
 import { MouseEvent } from 'react';
 import { Operation } from '../../../../types/Operation';
+import JoinInnerIcon from '@mui/icons-material/JoinInner';
+import JoinLeftIcon from '@mui/icons-material/JoinLeft';
+import UndoIcon from '@mui/icons-material/Undo';
 
 const TOOLTIP_DELAY = 400;
 

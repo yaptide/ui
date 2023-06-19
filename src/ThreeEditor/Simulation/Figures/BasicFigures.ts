@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 
 import { AdditionalGeometryDataType } from '../../../util/AdditionalGeometryData';
-import { YaptideEditor } from '../../js/YaptideEditor';
 import { HollowCylinderGeometry } from '../Base/HollowCylinderGeometry';
 import { SimulationMesh } from '../Base/SimulationMesh';
+import { YaptideEditor } from '../../js/YaptideEditor';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
 	color: 0x000000,

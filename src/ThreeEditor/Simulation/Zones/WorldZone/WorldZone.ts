@@ -1,14 +1,14 @@
-import { Signal } from 'signals';
 import * as THREE from 'three';
-import { Color, MeshBasicMaterial, Object3D, Vector3 } from 'three';
-import { debounce } from 'throttle-debounce';
-import { YaptideEditor } from '../../../js/YaptideEditor';
 import {
 	AdditionalGeometryDataType,
 	getGeometryData
 } from '../../../../util/AdditionalGeometryData';
+import { Color, MeshBasicMaterial, Object3D, Vector3 } from 'three';
+import { Signal } from 'signals';
 import { SimulationElement } from '../../Base/SimulationElement';
 import { WorldZoneHelper } from './WorldZoneHelper';
+import { YaptideEditor } from '../../../js/YaptideEditor';
+import { debounce } from 'throttle-debounce';
 import SimulationMaterial from '../../Materials/SimulationMaterial';
 
 export const BOUNDING_ZONE_TYPE = [

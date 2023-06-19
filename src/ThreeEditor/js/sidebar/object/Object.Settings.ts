@@ -1,4 +1,8 @@
+import { AddQuantityCommand, SetOutputSettingsCommand } from '../../commands/Commands';
+import { ObjectAbstract } from './Object.Abstract';
 import { ScoringOutput } from '../../../Simulation/Scoring/ScoringOutput';
+import { UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
 import {
 	createFullwidthButton,
 	createRowConditionalNumber,
@@ -7,10 +11,6 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
-import { AddQuantityCommand, SetOutputSettingsCommand } from '../../commands/Commands';
-import { YaptideEditor } from '../../YaptideEditor';
-import { UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
-import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectSettings extends ObjectAbstract {
 	object?: ScoringOutput;

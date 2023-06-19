@@ -1,11 +1,11 @@
 import { Signal } from 'signals';
 
-import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationSceneContainer } from '../Base/SimulationContainer';
-import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
-import { SimulationElementManager } from '../Base/SimulationManager';
 import { FilterJSON, ScoringFilter } from './ScoringFilter';
 import { ScoringOutputJSON as OutputJSON, ScoringOutput } from './ScoringOutput';
+import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
+import { SimulationElementManager } from '../Base/SimulationManager';
+import { SimulationSceneContainer } from '../Base/SimulationContainer';
+import { YaptideEditor } from '../../js/YaptideEditor';
 
 export type ScoringManagerJSON = Omit<
 	SimulationElementJSON & {

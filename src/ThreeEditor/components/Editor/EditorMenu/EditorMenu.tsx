@@ -1,14 +1,14 @@
 import { Box, Button, ButtonGroup, Divider, Menu, MenuItem } from '@mui/material';
-import { useCallback, useEffect, useState, MouseEvent } from 'react';
-import { Object3D } from 'three';
+import { ClearHistoryDialog } from '../../Dialog/ClearHistoryDialog';
 import {
 	CommandButtonProps,
 	getAddElementButtonProps
 } from '../../../../util/Ui/CommandButtonProps';
-import { useSignal } from '../../../../util/hooks/signals';
-import { toggleFullscreen } from '../../../../util/toggleFullscreen';
+import { MouseEvent, useCallback, useEffect, useState } from 'react';
+import { Object3D } from 'three';
 import { YaptideEditor } from '../../../js/YaptideEditor';
-import { ClearHistoryDialog } from '../../Dialog/ClearHistoryDialog';
+import { toggleFullscreen } from '../../../../util/toggleFullscreen';
+import { useSignal } from '../../../../util/hooks/signals';
 
 type EditorMenuProps = {
 	editor?: YaptideEditor;

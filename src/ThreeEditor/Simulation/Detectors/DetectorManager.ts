@@ -1,12 +1,12 @@
-import { Signal } from 'signals';
 import * as THREE from 'three';
-import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationSceneContainer } from '../Base/SimulationContainer';
-import { SimulationElementJSON } from '../Base/SimulationElement';
-import { SimulationElementManager } from '../Base/SimulationManager';
 import { Detector, DetectorJSON, isDetector } from './Detector';
 import { ScoringOutput, isOutput } from '../Scoring/ScoringOutput';
+import { Signal } from 'signals';
+import { SimulationElementJSON } from '../Base/SimulationElement';
+import { SimulationElementManager } from '../Base/SimulationManager';
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { SimulationSceneContainer } from '../Base/SimulationContainer';
+import { YaptideEditor } from '../../js/YaptideEditor';
 
 type DetectorManagerJSON = Omit<
 	SimulationElementJSON & {

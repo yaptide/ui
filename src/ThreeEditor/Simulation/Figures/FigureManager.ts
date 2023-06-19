@@ -1,12 +1,12 @@
-import { BasicFigure, BoxFigure, CylinderFigure, SphereFigure } from './BasicFigures';
 import * as THREE from 'three';
+import { BasicFigure, BoxFigure, CylinderFigure, SphereFigure } from './BasicFigures';
 
-import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { SimulationMeshJSON } from '../Base/SimulationMesh';
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { SimulationSceneContainer } from '../Base/SimulationContainer';
+import { YaptideEditor } from '../../js/YaptideEditor';
 
 type FigureManagerJSON = Omit<
 	SimulationElementJSON & {

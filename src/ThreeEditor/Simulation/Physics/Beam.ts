@@ -1,13 +1,13 @@
 import * as THREE from 'three';
 import { Euler, Vector3 } from 'three';
 // Import of 'lines' from examples subfolder follows the official guidelines of threejs.editor (see https://threejs.org/docs/#manual/en/introduction/Installation)
+import { ConfigSourceFile } from '../../../types/SimulationTypes/ConfigTypes';
 import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
-import { YaptideEditor } from '../../js/YaptideEditor';
-import { Particle, PARTICLE_TYPES } from '../../../types/Particle';
+import { PARTICLE_TYPES, Particle } from '../../../types/Particle';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
-import { ConfigSourceFile } from '../../../types/SimulationTypes/ConfigTypes';
+import { YaptideEditor } from '../../js/YaptideEditor';
 
 export const SIGMA_TYPE = {
 	'Gaussian': 'Gaussian',

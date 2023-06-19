@@ -1,10 +1,10 @@
 import * as Comlink from 'comlink';
-import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { createGenericContext } from '../services/GenericContext';
-import { SimulatorType } from '../types/RequestTypes';
-import { SimulationInputFiles } from '../types/ResponseTypes';
 import { PythonWorker } from './PythonWorker';
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { SimulationInputFiles } from '../types/ResponseTypes';
+import { SimulatorType } from '../types/RequestTypes';
+import { createGenericContext } from '../services/GenericContext';
 
 declare global {
 	interface Window {

@@ -1,17 +1,17 @@
-import { Object3D } from 'three';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { AddQuantityCommand } from '../../../../js/commands/AddQuantityCommand';
+import { Button, Grid } from '@mui/material';
 import { ConditionalNumberPropertyField } from '../fields/PropertyField';
-import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
-import { PropertiesCategory } from './PropertiesCategory';
-import { isOutput, ScoringOutput } from '../../../../Simulation/Scoring/ScoringOutput';
+import { Object3D } from 'three';
 import {
 	ObjectSelectOptionType,
 	ObjectSelectPropertyField
 } from '../fields/ObjectSelectPropertyField';
-import { useCallback } from 'react';
+import { PropertiesCategory } from './PropertiesCategory';
+import { ScoringOutput, isOutput } from '../../../../Simulation/Scoring/ScoringOutput';
 import { SetOutputSettingsCommand } from '../../../../js/commands/SetOutputSettingsCommand';
-import { Grid, Button } from '@mui/material';
-import { AddQuantityCommand } from '../../../../js/commands/AddQuantityCommand';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { useCallback } from 'react';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 
 export function OutputConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;

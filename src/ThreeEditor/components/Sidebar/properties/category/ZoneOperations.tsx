@@ -1,19 +1,19 @@
-import { Grid } from '@mui/material';
-import { useCallback } from 'react';
-import { Object3D } from 'three';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
+import * as CSG from '../../../../CSG/CSG';
 import {
 	AddZoneOperationTupleCommand,
 	RemoveZoneOperationTupleCommand,
 	SetZoneOperationTupleCommand
 } from '../../../../js/commands/Commands';
-import { isBasicFigure } from '../../../../Simulation/Figures/BasicFigures';
-import * as CSG from '../../../../CSG/CSG';
-import { isBooleanZone } from '../../../../Simulation/Zones/BooleanZone';
-import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { BooleanAlgebraData } from '../../../ZoneManagerPanel/BooleanAlgebra/BooleanAlgebraData';
-import ZoneManagerPanel from '../../../ZoneManagerPanel/ZoneManagerPanel';
+import { Grid } from '@mui/material';
+import { Object3D } from 'three';
 import { PropertiesCategory } from './PropertiesCategory';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { isBasicFigure } from '../../../../Simulation/Figures/BasicFigures';
+import { isBooleanZone } from '../../../../Simulation/Zones/BooleanZone';
+import { useCallback } from 'react';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import ZoneManagerPanel from '../../../ZoneManagerPanel/ZoneManagerPanel';
 
 const parseAlgebraData = (editor: YaptideEditor, { value }: BooleanAlgebraData) => {
 	const operations: CSG.OperationTuple[] = [];

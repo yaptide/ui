@@ -88,6 +88,9 @@
 			"react-app",
 			"react-app/jest"
 		],
+		"plugins": [
+			"sort-imports-es6-autofix"
+		],
 		"rules": {
 			"class-methods-use-this": "warn",
 			"lines-between-class-members": [
@@ -97,11 +100,17 @@
 					"exceptAfterSingleLine": true
 				}
 			],
-			"sort-imports": [
-				"warn",
+			"sort-imports-es6-autofix/sort-imports-es6": [
+				2,
 				{
-					"ignoreCase": true,
-					"ignoreMemberSort": true
+					"ignoreCase": false,
+					"ignoreMemberSort": false,
+					"memberSyntaxSortOrder": [
+						"none",
+						"all",
+						"multiple",
+						"single"
+					]
 				}
 			]
 		}
@@ -126,6 +135,7 @@
 		"@types/selenium-webdriver": "^4.1.14",
 		"@types/three": "^0.150.1",
 		"cross-env": "^7.0.3",
+		"eslint-plugin-sort-imports-es6-autofix": "^0.6.0",
 		"gh-pages": "^5.0.0",
 		"husky": "^8.0.3",
 		"jest-matcher-deep-close-to": "^3.0.2",

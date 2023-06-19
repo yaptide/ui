@@ -1,5 +1,5 @@
-import { DETECTOR_MODIFIERS } from './ScoringOutputTypes';
 import * as THREE from 'three';
+import { DETECTOR_MODIFIERS } from './ScoringOutputTypes';
 
 export type DifferentialJSON = {
 	diffType: DETECTOR_MODIFIERS;

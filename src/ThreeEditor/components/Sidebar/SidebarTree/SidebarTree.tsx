@@ -1,18 +1,18 @@
-import { Tree, TreeMethods } from '@minoru/react-dnd-treeview';
+import './SidebarTree.style.css';
+import { ChangeObjectOrderCommand } from '../../../js/commands/ChangeObjectOrderCommand';
 import { Divider } from '@mui/material';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Object3D } from 'three';
-import { generateUUID } from 'three/src/math/MathUtils';
-import { hasVisibleChildren } from '../../../../util/hooks/useKeyboardEditorControls';
+import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
 import {
 	SimulationSceneChild,
 	isSimulationSceneContainer
 } from '../../../Simulation/Base/SimulationContainer';
+import { Tree, TreeMethods } from '@minoru/react-dnd-treeview';
 import { YaptideEditor } from '../../../js/YaptideEditor';
-import { ChangeObjectOrderCommand } from '../../../js/commands/ChangeObjectOrderCommand';
-import './SidebarTree.style.css';
-import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
+import { generateUUID } from 'three/src/math/MathUtils';
+import { hasVisibleChildren } from '../../../../util/hooks/useKeyboardEditorControls';
 import { isSimulationElement } from '../../../Simulation/Base/SimulationElement';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type TreeSource = SimulationSceneChild[];
 

@@ -1,26 +1,26 @@
-import { Typography, Checkbox, Menu, MenuItem, TextField } from '@mui/material';
-import { Stack } from '@mui/system';
-import { usePopupState, bindContextMenu, bindMenu } from 'material-ui-popup-state/hooks';
+import { AddQuantityCommand } from '../../../js/commands/AddQuantityCommand';
+import { Checkbox, Menu, MenuItem, TextField, Typography } from '@mui/material';
+import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { NodeModel, TreeMethods } from '@minoru/react-dnd-treeview/dist/types';
 import { Object3D } from 'three';
 import { SetValueCommand } from '../../../js/commands/SetValueCommand';
 import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { YaptideEditor } from '../../../js/YaptideEditor';
 import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
-import { NodeModel, TreeMethods } from '@minoru/react-dnd-treeview/dist/types';
+import { Stack } from '@mui/system';
+import { YaptideEditor } from '../../../js/YaptideEditor';
+import { bindContextMenu, bindMenu, usePopupState } from 'material-ui-popup-state/hooks';
 import {
 	canChangeName,
 	getRemoveCommand,
-	isRemovable,
-	hasVisibleChildren
+	hasVisibleChildren,
+	isRemovable
 } from '../../../../util/hooks/useKeyboardEditorControls';
 import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
-import { AddQuantityCommand } from '../../../js/commands/AddQuantityCommand';
-import Box from '@mui/material/Box';
 import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
-import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import Box from '@mui/material/Box';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 export type TreeItem = NodeModel<{
 	object: Object3D<THREE.Event> | SimulationElement;

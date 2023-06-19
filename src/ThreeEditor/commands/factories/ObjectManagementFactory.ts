@@ -1,8 +1,8 @@
-import { CapitalizeString } from '../../../util/Capitalize';
-import { SimulationSceneChild } from '../../Simulation/Base/SimulationContainer';
-import { MethodArgs } from '../basic/AbstractCommand';
 import { ActionCommand } from '../basic/ActionCommand';
+import { CapitalizeString } from '../../../util/Capitalize';
+import { MethodArgs } from '../basic/AbstractCommand';
 import { SimulationElementManager } from '../../Simulation/Base/SimulationManager';
+import { SimulationSceneChild } from '../../Simulation/Base/SimulationContainer';
 import { YaptideEditor } from '../../js/YaptideEditor';
 
 /**

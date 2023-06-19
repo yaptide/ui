@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useSignal, useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { Detector, isDetector } from '../../../../Simulation/Detectors/Detector';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
-import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
 import { NumberPropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
+import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { useCallback, useEffect, useState } from 'react';
+import { useSignal, useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 
 function flagValue(watchedObject: Detector) {
 	return isDetector(watchedObject) && ['Mesh', 'Cyl'].some(v => v === watchedObject.detectorType);

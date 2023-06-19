@@ -1,12 +1,12 @@
 import * as THREE from 'three';
 
-import { isCounterMapError } from '../../../util/CounterMap/CounterMap';
-import { YaptideEditor } from '../../js/YaptideEditor.js';
 import {
 	DEFAULT_MATERIAL_DENSITY,
 	DEFAULT_MATERIAL_ICRU,
 	DEFAULT_MATERIAL_NAME
 } from './materials';
+import { YaptideEditor } from '../../js/YaptideEditor.js';
+import { isCounterMapError } from '../../../util/CounterMap/CounterMap';
 
 export type RenderProps = Omit<SimulationMaterialJSON, 'uuid' | 'name' | 'icru' | 'density'>;
 

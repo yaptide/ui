@@ -1,17 +1,17 @@
-import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	BooleanPropertyField,
 	NumberPropertyField,
 	SelectPropertyField
 } from '../fields/PropertyField';
-import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
-import { PropertiesCategory } from './PropertiesCategory';
 import {
 	ENERGY_MODEL_STRAGGLING,
 	MULTIPLE_SCATTERING,
 	Physics
 } from '../../../../Simulation/Physics/Physics';
+import { PropertiesCategory } from './PropertiesCategory';
+import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 
 export function PhysicConfiguration(props: { editor: YaptideEditor; object: Physics }) {
 	const { object, editor } = props;

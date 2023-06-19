@@ -1,23 +1,23 @@
-import LoadingButton from '@mui/lab/LoadingButton';
 import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { useSnackbar } from 'notistack';
-import { useCallback, useState } from 'react';
-import { throttle } from 'throttle-debounce';
-import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
-import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { DEMO_MODE } from '../../../config/Config';
-import { readFile } from '../../../services/DataLoaderService';
-import { useShSimulation } from '../../../services/ShSimulatorService';
-import { useStore } from '../../../services/StoreService';
-import { SimulatorType } from '../../../types/RequestTypes';
+import { DragDropFiles } from './DragDropFiles';
+import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
+import { InputFilesEditor } from './InputFilesEditor';
 import {
 	SimulationInputFiles,
 	_defaultFlukaInputFiles,
 	_defaultShInputFiles,
 	_defaultTopasInputFiles
 } from '../../../types/ResponseTypes';
-import { DragDropFiles } from './DragDropFiles';
-import { InputFilesEditor } from './InputFilesEditor';
+import { SimulatorType } from '../../../types/RequestTypes';
+import { readFile } from '../../../services/DataLoaderService';
+import { throttle } from 'throttle-debounce';
+import { useCallback, useState } from 'react';
+import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
+import { useShSimulation } from '../../../services/ShSimulatorService';
+import { useSnackbar } from 'notistack';
+import { useStore } from '../../../services/StoreService';
+import LoadingButton from '@mui/lab/LoadingButton';
 interface InputEditorPanelProps {
 	goToRun?: (simulator: SimulatorType, InputFiles?: SimulationInputFiles) => void;
 }

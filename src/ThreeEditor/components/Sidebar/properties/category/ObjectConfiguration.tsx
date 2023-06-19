@@ -1,15 +1,15 @@
-import { Object3D } from 'three';
-import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import {
 	BEAM_MODULATOR_MODE_OPTIONS,
 	isBeamModulator
 } from '../../../../Simulation/SpecialComponents/BeamModulator';
-import { isCTCube } from '../../../../Simulation/SpecialComponents/CTCube';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
-import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
-import { SelectPropertyField, TextPropertyField } from '../fields/PropertyField';
-import { SourceFileDefinitionField } from '../fields/SourceFileField';
+import { Object3D } from 'three';
 import { PropertiesCategory } from './PropertiesCategory';
+import { SelectPropertyField, TextPropertyField } from '../fields/PropertyField';
+import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import { SourceFileDefinitionField } from '../fields/SourceFileField';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { isCTCube } from '../../../../Simulation/SpecialComponents/CTCube';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 
 export function ObjectConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;

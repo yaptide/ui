@@ -1,4 +1,3 @@
-import QueuePlayNextIcon from '@mui/icons-material/QueuePlayNext';
 import {
 	Accordion,
 	AccordionDetails,
@@ -9,7 +8,6 @@ import {
 	GridProps,
 	Typography
 } from '@mui/material';
-import SimulationCard from './SimulationCard';
 import {
 	BackendStatusIndicator,
 	InputGroup,
@@ -20,10 +18,12 @@ import {
 	SimulationLabelBar,
 	SimulationPaginationFooter
 } from './SimulationPanelBar';
+import QueuePlayNextIcon from '@mui/icons-material/QueuePlayNext';
+import SimulationCard from './SimulationCard';
 
-import FolderOffIcon from '@mui/icons-material/FolderOff';
 import { FC, useState } from 'react';
 import { JobStatusData, SimulationInputFiles } from '../../../types/ResponseTypes';
+import FolderOffIcon from '@mui/icons-material/FolderOff';
 
 type GridLayout = 'grid' | 'inline-list' | 'block-list';
 

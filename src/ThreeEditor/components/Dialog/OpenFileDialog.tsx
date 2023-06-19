@@ -1,4 +1,3 @@
-import { TabContext, TabList, TabPanel } from '@mui/lab';
 import {
 	Box,
 	Button,
@@ -12,11 +11,12 @@ import {
 	TextField
 } from '@mui/material';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
+import { CustomDialogTitle } from './CustomDialog';
+import { DragDropProject } from './DragDropProject';
+import { StatusState } from '../../../types/ResponseTypes';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { useLoader } from '../../../services/DataLoaderService';
 import EXAMPLES from '../../examples/examples';
-import { CustomDialogTitle } from './CustomDialog';
-import { StatusState } from '../../../types/ResponseTypes';
-import { DragDropProject } from './DragDropProject';
 
 export type OpenFileProps = {
 	open: boolean;

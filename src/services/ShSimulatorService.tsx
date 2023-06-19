@@ -1,22 +1,6 @@
-import { ReactNode, useCallback } from 'react';
+import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { Estimator } from '../JsRoot/GraphData';
 import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/ScoringFilter';
-import { ScoringManagerJSON } from '../ThreeEditor/Simulation/Scoring/ScoringManager';
-import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
-import {
-	RequestCancelJob,
-	RequestGetJobInputs,
-	RequestGetJobLogs,
-	RequestGetJobResults,
-	RequestGetJobStatus,
-	RequestGetPageContents,
-	RequestGetPageStatus,
-	RequestParam,
-	RequestPostJob,
-	RequestShConvert,
-	isEditorJson
-} from '../types/RequestTypes';
 import {
 	JobStatusData,
 	ResponseGetJobInputs,
@@ -30,12 +14,28 @@ import {
 	YaptideResponse,
 	currentJobStatusData
 } from '../types/ResponseTypes';
-import { camelToSnakeCase } from '../types/TypeTransformUtil';
-import { orderAccordingToList } from '../util/Sort';
+import { ReactNode, useCallback } from 'react';
+import {
+	RequestCancelJob,
+	RequestGetJobInputs,
+	RequestGetJobLogs,
+	RequestGetJobResults,
+	RequestGetJobStatus,
+	RequestGetPageContents,
+	RequestGetPageStatus,
+	RequestParam,
+	RequestPostJob,
+	RequestShConvert,
+	isEditorJson
+} from '../types/RequestTypes';
+import { ScoringManagerJSON } from '../ThreeEditor/Simulation/Scoring/ScoringManager';
+import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import { ValidateShape } from '../util/Types';
-import { useCacheMap } from '../util/hooks/useCacheMap';
-import { useAuth } from './AuthService';
+import { camelToSnakeCase } from '../types/TypeTransformUtil';
 import { createGenericContext } from './GenericContext';
+import { orderAccordingToList } from '../util/Sort';
+import { useAuth } from './AuthService';
+import { useCacheMap } from '../util/hooks/useCacheMap';
 
 export type JobLogs = {
 	jobId: string;

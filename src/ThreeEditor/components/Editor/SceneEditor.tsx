@@ -1,16 +1,16 @@
-import { AppBar, Box } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
-import { useTheme } from '@mui/material/styles';
-import { useEffect, useRef, useState } from 'react';
-import THREE from 'three';
-import useDocumentTitle from '../../../util/hooks/useDocumentTitle';
 import '../../css/main.css';
+import { AppBar, Box } from '@mui/material';
+import { EditorMenu } from './EditorMenu/EditorMenu';
+import { EditorSidebar } from '../Sidebar/EditorSidebar';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { initEditor } from '../../main';
+import { useEffect, useRef, useState } from 'react';
 import { useKeyboardEditorControls } from '../../../util/hooks/useKeyboardEditorControls';
-import { EditorSidebar } from '../Sidebar/EditorSidebar';
+import { useTheme } from '@mui/material/styles';
+import CircularProgress from '@mui/material/CircularProgress';
 import EditorAppBar from './EditorAppBar/EditorAppBar';
-import { EditorMenu } from './EditorMenu/EditorMenu';
+import THREE from 'three';
+import useDocumentTitle from '../../../util/hooks/useDocumentTitle';
 declare global {
 	interface Window {
 		editor: YaptideEditor;

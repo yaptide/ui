@@ -9,11 +9,11 @@ import {
 	Tabs,
 	Typography
 } from '@mui/material';
-import { SyntheticEvent, useEffect, useState } from 'react';
 import { Estimator, Page, Page0D, generateGraphs, isPage0d } from '../../../JsRoot/GraphData';
-import { useStore } from '../../../services/StoreService';
-import { saveString } from '../../../util/File';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import { TabPanel } from '../Panels/TabPanel';
+import { saveString } from '../../../util/File';
+import { useStore } from '../../../services/StoreService';
 import TablePage0D from './ResultsTable';
 
 export interface EstimatorResults extends Estimator {

@@ -1,6 +1,14 @@
 import * as Scoring from '../../../Simulation/Scoring/ScoringOutputTypes';
+import {
+	AddDifferentialModifierCommand,
+	RemoveDifferentialModifierCommand
+} from '../../commands/Commands';
 import { DifferentialModifier } from '../../../Simulation/Scoring/ScoringQtyModifiers';
+import { ObjectAbstract } from './Object.Abstract';
 import { ScoringQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
+import { UIBreak, UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
+import { UIOutliner } from '../../libs/ui.three';
+import { YaptideEditor } from '../../YaptideEditor';
 import {
 	createDifferentialConfigurationRow,
 	createFullwidthButton,
@@ -8,14 +16,6 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
-import {
-	RemoveDifferentialModifierCommand,
-	AddDifferentialModifierCommand
-} from '../../commands/Commands';
-import { YaptideEditor } from '../../YaptideEditor';
-import { UIBreak, UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
-import { UIOutliner } from '../../libs/ui.three';
-import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectDifferentials extends ObjectAbstract {
 	object?: ScoringQuantity;
@@ -59,6 +59,7 @@ export class ObjectDifferentials extends ObjectAbstract {
 			this.object ? this.setObject(this.object) : null
 		);
 	}
+
 	setObject(object: ScoringQuantity): void {
 		super.setObject(object);
 		if (!object) return;
@@ -80,6 +81,7 @@ export class ObjectDifferentials extends ObjectAbstract {
 		if (mods.length < 2) this.add.setDisabled(false);
 		else this.add.setDisabled(true);
 	}
+
 	update(): void {
 		const { object, modifier } = this;
 		if (!object || !modifier) return;
@@ -106,12 +108,14 @@ export class ObjectDifferentials extends ObjectAbstract {
 			)
 		);
 	}
+
 	addModifier(): void {
 		const { editor, object } = this;
 		if (!object) return;
 		if (object.modifiers.length >= 2) return;
 		editor.execute(new AddDifferentialModifierCommand(editor, object));
 	}
+
 	selectModifier(): void {
 		const { object } = this;
 		if (!object) return;
@@ -125,12 +129,14 @@ export class ObjectDifferentials extends ObjectAbstract {
 			hideUIElement(this.modifierRow);
 		}
 	}
+
 	setModifier(modifier: DifferentialModifier) {
 		showUIElement(this.modifierRow, 'grid');
 		this.modifier = modifier;
 		this.outliner.setValue(modifier.uuid);
 		this.updateSelectedModifier();
 	}
+
 	updateSelectedModifier() {
 		const { modifier } = this;
 		if (!modifier) return;

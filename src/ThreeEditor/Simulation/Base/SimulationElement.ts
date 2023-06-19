@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
+import { YaptideEditor } from '../../js/YaptideEditor';
 
 export type SimulationElementJSON = {
 	name: string;

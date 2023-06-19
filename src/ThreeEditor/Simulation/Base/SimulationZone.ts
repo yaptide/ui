@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 
+import { SimulationElement, SimulationElementJSON } from './SimulationElement';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import SimulationMaterial, { SimulationMaterialJSON } from '../Materials/SimulationMaterial';
-import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
-import { SimulationElement, SimulationElementJSON } from './SimulationElement';
 
 export type SimulationZoneJSON = Omit<
 	SimulationElementJSON & {

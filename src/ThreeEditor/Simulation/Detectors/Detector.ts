@@ -1,12 +1,12 @@
-import { Signal } from 'signals';
 import * as THREE from 'three';
+import { Signal } from 'signals';
 
 import * as DETECT from '../../../types/SimulationTypes/DetectTypes/DetectTypes';
 import { AdditionalGeometryDataType, getGeometryData } from '../../../util/AdditionalGeometryData';
-import { YaptideEditor } from '../../js/YaptideEditor';
 import { HollowCylinderGeometry } from '../Base/HollowCylinderGeometry';
 import { SimulationPoints, SimulationPointsJSON } from '../Base/SimulationPoints';
 import { SimulationZone } from '../Base/SimulationZone';
+import { YaptideEditor } from '../../js/YaptideEditor';
 
 type AdditionalDetectGeometryDataType = Omit<
 	AdditionalGeometryDataType & {

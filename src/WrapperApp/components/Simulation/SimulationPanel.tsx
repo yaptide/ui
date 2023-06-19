@@ -1,15 +1,18 @@
 import { Box, Card, CardContent, Fade, Modal } from '@mui/material';
 import { useSnackbar } from 'notistack';
 
+import {
+	BatchOptionsType,
+	RunSimulationForm,
+	SimulationRunType,
+	SimulationSourceType
+} from './RunSimulationForm';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
-import useInterval from 'use-interval';
-import EXAMPLES from '../../../ThreeEditor/examples/examples';
-import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { DEMO_MODE } from '../../../config/Config';
-import { isFullSimulationData, useLoader } from '../../../services/DataLoaderService';
+import { DemoCardGrid, PaginatedSimulationsFromBackend } from './SimulationCardGrid';
+import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { FullSimulationData, useShSimulation } from '../../../services/ShSimulatorService';
-import { useStore } from '../../../services/StoreService';
-import { OrderBy, OrderType, SimulatorType } from '../../../types/RequestTypes';
+import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import {
 	JobStatusData,
 	SimulationInfo,
@@ -17,15 +20,12 @@ import {
 	StatusState,
 	currentJobStatusData
 } from '../../../types/ResponseTypes';
-import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
-import {
-	BatchOptionsType,
-	RunSimulationForm,
-	SimulationRunType,
-	SimulationSourceType
-} from './RunSimulationForm';
-import { DemoCardGrid, PaginatedSimulationsFromBackend } from './SimulationCardGrid';
+import { OrderBy, OrderType, SimulatorType } from '../../../types/RequestTypes';
 import { PageNavigationProps, PageParamProps } from './SimulationPanelBar';
+import { isFullSimulationData, useLoader } from '../../../services/DataLoaderService';
+import { useStore } from '../../../services/StoreService';
+import EXAMPLES from '../../../ThreeEditor/examples/examples';
+import useInterval from 'use-interval';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
@@ -64,7 +64,7 @@ export default function SimulationPanel({
 
 	const [pageIdx, setPageIdx] = useState(1);
 	const [pageCount, setPageCount] = useState(1);
-  const [orderType, setOrderType] = useState<OrderType>(OrderType.DESCEND);
+	const [orderType, setOrderType] = useState<OrderType>(OrderType.DESCEND);
 	const [orderBy, setOrderBy] = useState<OrderBy>(OrderBy.START_TIME);
 	const [pageSize, setPageSize] = useState(6);
 	type PageState = Omit<
@@ -274,13 +274,7 @@ export default function SimulationPanel({
 			newOrderType: OrderType = orderType,
 			newOrderBy: OrderBy = orderBy
 		) =>
-			getPageContents(
-				newPageIdx,
-				newPageSize,
-				newOrderType,
-				newOrderBy,
-				controller.signal
-			)
+			getPageContents(newPageIdx, newPageSize, newOrderType, newOrderBy, controller.signal)
 				.then(({ simulations, pageCount }) => {
 					setSimulationInfo([...simulations]);
 					setPageCount(pageCount);

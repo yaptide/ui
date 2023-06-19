@@ -1,9 +1,9 @@
 import * as THREE from 'three';
+import { HollowCylinderGeometry } from '../../Base/HollowCylinderGeometry';
 import { MeshBasicMaterial, Vector3 } from 'three';
-import { YaptideEditor } from '../../../js/YaptideEditor';
 import { PossibleGeometryType } from '../../../../util/AdditionalGeometryData';
 import { WorldZoneType } from './WorldZone';
-import { HollowCylinderGeometry } from '../../Base/HollowCylinderGeometry';
+import { YaptideEditor } from '../../../js/YaptideEditor';
 
 const _cylinderGeometry = new HollowCylinderGeometry();
 

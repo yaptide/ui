@@ -1,5 +1,3 @@
-import AddIcon from '@mui/icons-material/Add';
-import ClearIcon from '@mui/icons-material/Clear';
 import {
 	Backdrop,
 	Box,
@@ -10,6 +8,8 @@ import {
 	Tabs,
 	Tooltip
 } from '@mui/material';
+import { BooleanAlgebraData } from './BooleanAlgebra/BooleanAlgebraData';
+import { BooleanZone } from '../../Simulation/Zones/BooleanZone';
 import {
 	FC,
 	Fragment,
@@ -21,13 +21,13 @@ import {
 	useRef,
 	useState
 } from 'react';
-import ScrollPositionManager from '../../../libs/ScrollPositionManager';
-import { OperationDataList, isOperation } from '../../../types/Operation';
-import { BooleanZone } from '../../Simulation/Zones/BooleanZone';
-import { YaptideEditor } from '../../js/YaptideEditor';
-import { BooleanAlgebraData } from './BooleanAlgebra/BooleanAlgebraData';
-import BooleanAlgebraRow, { BooleanAlgebraRowProps } from './BooleanAlgebra/BooleanAlgebraRow';
 import { GeometryIdSelect } from './GeometryIdSelect';
+import { OperationDataList, isOperation } from '../../../types/Operation';
+import { YaptideEditor } from '../../js/YaptideEditor';
+import AddIcon from '@mui/icons-material/Add';
+import BooleanAlgebraRow, { BooleanAlgebraRowProps } from './BooleanAlgebra/BooleanAlgebraRow';
+import ClearIcon from '@mui/icons-material/Clear';
+import ScrollPositionManager from '../../../libs/ScrollPositionManager';
 
 type BooleanZoneManagerPanelProps = {
 	editor: YaptideEditor;

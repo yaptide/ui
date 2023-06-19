@@ -1,6 +1,6 @@
+import { Operation, executeOperation, isOperation } from '../../types/Operation';
 import { YaptideEditor } from '../js/YaptideEditor';
 import CSG from '../js/libs/csg/three-csg';
-import { executeOperation, isOperation, Operation } from '../../types/Operation';
 import THREE from 'three';
 
 export interface OperationTupleJSON {

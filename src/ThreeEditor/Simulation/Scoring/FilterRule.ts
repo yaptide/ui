@@ -1,13 +1,13 @@
-import { MathUtils } from 'three';
 import {
 	F_Keyword,
-	ParticleId,
 	ID_Keyword,
 	I_Keyword,
 	Keyword,
 	Operator,
+	ParticleId,
 	isValidID
 } from '../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
+import { MathUtils } from 'three';
 
 //https://stackoverflow.com/questions/48757095/typescript-class-composition
 

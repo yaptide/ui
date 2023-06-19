@@ -1,10 +1,6 @@
 import * as THREE from 'three';
 import { Beam, isBeam } from '../../../Simulation/Physics/Beam';
-import { isDetector } from '../../../Simulation/Detectors/Detector';
-import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
-import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
-import { createRowParamNumberXYZ, hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
-import { isWorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
+import { ObjectAbstract } from './Object.Abstract';
 import {
 	SetBeamDirectionCommand,
 	SetDetectPositionCommand,
@@ -12,9 +8,13 @@ import {
 	SetRotationCommand,
 	SetValueCommand
 } from '../../commands/Commands';
-import { YaptideEditor } from '../../YaptideEditor';
+import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
+import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
 import { UINumber, UIRow } from '../../libs/ui';
-import { ObjectAbstract } from './Object.Abstract';
+import { YaptideEditor } from '../../YaptideEditor';
+import { createRowParamNumberXYZ, hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
+import { isDetector } from '../../../Simulation/Detectors/Detector';
+import { isWorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
 
 export class ObjectPlacement extends ObjectAbstract {
 	object?: SimulationElement | Beam;

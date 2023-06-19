@@ -1,11 +1,11 @@
 import { Button, Stack, Switch, Typography } from '@mui/material';
-import Box from '@mui/material/Box';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import { ChangeEvent, useState } from 'react';
-import { saveString } from '../../../util/File';
+import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { EstimatorResults } from './ResultsPanel';
 import { convertToBestUnit } from '../../../util/convertUnits/Units';
 import { pages0DToCsv } from '../../../util/csv/Csv';
-import { EstimatorResults } from './ResultsPanel';
+import { saveString } from '../../../util/File';
+import Box from '@mui/material/Box';
 export interface TablePage0DItem {
 	id: number;
 	name: string;

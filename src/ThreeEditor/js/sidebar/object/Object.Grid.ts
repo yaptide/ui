@@ -1,9 +1,9 @@
 import { Detector } from '../../../Simulation/Detectors/Detector';
-import { createRowParamNumber, hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
-import { SetDetectGeometryCommand } from '../../commands/Commands';
-import { YaptideEditor } from '../../YaptideEditor';
-import { UINumber, UIRow } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
+import { SetDetectGeometryCommand } from '../../commands/Commands';
+import { UINumber, UIRow } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
+import { createRowParamNumber, hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
 export class ObjectGrid extends ObjectAbstract {
 	object?: Detector;
 
@@ -82,6 +82,7 @@ export class ObjectGrid extends ObjectAbstract {
 				break;
 		}
 	}
+
 	update(): void {
 		const { editor, object } = this;
 		if (!object) return;

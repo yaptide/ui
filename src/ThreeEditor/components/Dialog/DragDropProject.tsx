@@ -1,12 +1,12 @@
 import { Box, Button, Typography } from '@mui/material';
-import React from 'react';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import {
 	DragDropFile,
 	DragDropInnerElementProps,
 	DragDropProps
 } from '../../../util/genericComponents/DragDropFile';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import React from 'react';
 
 const innerElement = (props: DragDropInnerElementProps) => {
 	const { dragActive, hasFiles, id, currentFiles } = props;

@@ -1,18 +1,18 @@
+import { ColorInput, ConditionalNumberPropertyField, PropertyField } from '../fields/PropertyField';
+import { MaterialSelect } from '../../../Select/MaterialSelect';
 import { Object3D } from 'three';
-import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
-import { isSimulationMesh } from '../../../../Simulation/Base/SimulationMesh';
-import { isSimulationPoints } from '../../../../Simulation/Base/SimulationPoints';
-import { isSimulationZone } from '../../../../Simulation/Base/SimulationZone';
-import { isBeam } from '../../../../Simulation/Physics/Beam';
-import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { PropertiesCategory } from './PropertiesCategory';
 import { SetMaterialColorCommand } from '../../../../js/commands/SetMaterialColorCommand';
 import { SetMaterialValueCommand } from '../../../../js/commands/SetMaterialValueCommand';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { SetZoneMaterialCommand } from '../../../../js/commands/SetZoneMaterialCommand';
-import { MaterialSelect } from '../../../Select/MaterialSelect';
-import { ColorInput, ConditionalNumberPropertyField, PropertyField } from '../fields/PropertyField';
-import { PropertiesCategory } from './PropertiesCategory';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { isBeam } from '../../../../Simulation/Physics/Beam';
+import { isSimulationMesh } from '../../../../Simulation/Base/SimulationMesh';
+import { isSimulationPoints } from '../../../../Simulation/Base/SimulationPoints';
+import { isSimulationZone } from '../../../../Simulation/Base/SimulationZone';
+import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 
 export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;

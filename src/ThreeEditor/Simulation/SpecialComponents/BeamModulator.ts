@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 
 import { ConfigSourceFile } from '../../../types/SimulationTypes/ConfigTypes';
-import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationPoints, SimulationPointsJSON } from '../Base/SimulationPoints';
+import { YaptideEditor } from '../../js/YaptideEditor';
 
 type ModulatorGeometryDataType = {
 	geometryType: 'Zone';

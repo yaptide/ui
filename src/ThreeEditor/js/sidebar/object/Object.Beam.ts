@@ -1,4 +1,7 @@
 import { Beam } from '../../../Simulation/Physics/Beam';
+import { ObjectAbstract } from './Object.Abstract';
+import { UINumber, UIRow, UIText } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
 import {
 	createParticleTypeSelect,
 	createRowParamNumber,
@@ -6,9 +9,6 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
-import { YaptideEditor } from '../../YaptideEditor';
-import { UINumber, UIRow, UIText } from '../../libs/ui';
-import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectBeam extends ObjectAbstract {
 	object?: Beam;
@@ -115,6 +115,7 @@ export class ObjectBeam extends ObjectAbstract {
 			this.particleARow
 		);
 	}
+
 	setObject(object: Beam): void {
 		super.setObject(object);
 		if (!object) return;

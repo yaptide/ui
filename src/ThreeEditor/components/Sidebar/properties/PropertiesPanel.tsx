@@ -1,21 +1,21 @@
 import * as React from 'react';
+import { BeamConfiguration } from './category/BeamConfiguration';
 import { Box, BoxProps } from '@mui/material';
-import { Object3D } from 'three';
-import { YaptideEditor } from '../../../js/YaptideEditor';
-import { useCallback, useState } from 'react';
-import { ObjectPlacement } from './category/ObjectPlacement';
-import { ObjectInfo } from './category/ObjectInfo';
-import { useSignal } from '../../../../util/hooks/signals';
-import { ObjectDimensions } from './category/ObjectDimensions';
 import { DetectorGrid } from './category/DetectorGrid';
-import { ZoneOperations } from './category/ZoneOperations';
+import { FilterConfiguration } from './category/FilterConfiguration';
+import { Object3D } from 'three';
+import { ObjectConfiguration } from './category/ObjectConfiguration';
+import { ObjectDimensions } from './category/ObjectDimensions';
+import { ObjectInfo } from './category/ObjectInfo';
+import { ObjectMaterial } from './category/ObjectMaterial';
+import { ObjectPlacement } from './category/ObjectPlacement';
 import { OutputConfiguration } from './category/OutputConfiguration';
 import { QuantityConfiguration } from './category/QuantityConfiguration';
 import { QuantityDifferentialScoring } from './category/QuantityDifferentialScoring';
-import { BeamConfiguration } from './category/BeamConfiguration';
-import { ObjectMaterial } from './category/ObjectMaterial';
-import { FilterConfiguration } from './category/FilterConfiguration';
-import { ObjectConfiguration } from './category/ObjectConfiguration';
+import { YaptideEditor } from '../../../js/YaptideEditor';
+import { ZoneOperations } from './category/ZoneOperations';
+import { useCallback, useState } from 'react';
+import { useSignal } from '../../../../util/hooks/signals';
 
 export function PropertiesPanel(props: { boxProps: BoxProps; editor: YaptideEditor }) {
 	const { boxProps, editor } = props;

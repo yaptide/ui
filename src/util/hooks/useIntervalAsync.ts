@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
 import { clearIntervalAsync, setIntervalAsync } from 'set-interval-async';
+import { useEffect, useRef } from 'react';
 
 function useIntervalAsync(
 	callback: () => Promise<void>,

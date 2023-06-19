@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import { Page1D } from '../GraphData';
 import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
+import { Page1D } from '../GraphData';
+import { useEffect } from 'react';
 
 export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 	const { page, title } = props;

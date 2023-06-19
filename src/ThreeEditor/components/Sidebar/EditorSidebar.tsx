@@ -1,20 +1,20 @@
+import { AppBar, Box, Divider, Stack, Tab, Tabs, Typography } from '@mui/material';
+import { BeamModifiersConfiguration } from './properties/category/RangeModulatorConfiguration';
+import { Context } from '../../js/EditorContext';
+import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
+import { Object3D } from 'three';
+import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
+import { PropertiesPanel } from './properties/PropertiesPanel';
+import { SidebarTree } from './SidebarTree/SidebarTree';
+import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
+import { YaptideEditor } from '../../js/YaptideEditor';
+import { getAddElementButtonProps } from '../../../util/Ui/CommandButtonProps';
+import { useSignal } from '../../../util/hooks/signals';
+import ScrollPositionManager from '../../../libs/ScrollPositionManager';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SpeedIcon from '@mui/icons-material/Speed';
 import TokenIcon from '@mui/icons-material/Token';
-import { AppBar, Box, Divider, Stack, Tab, Tabs, Typography } from '@mui/material';
-import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
-import { Object3D } from 'three';
-import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
-import ScrollPositionManager from '../../../libs/ScrollPositionManager';
-import { getAddElementButtonProps } from '../../../util/Ui/CommandButtonProps';
-import { useSignal } from '../../../util/hooks/signals';
-import { Context } from '../../js/EditorContext';
-import { YaptideEditor } from '../../js/YaptideEditor';
-import { SidebarTree } from './SidebarTree/SidebarTree';
-import { PropertiesPanel } from './properties/PropertiesPanel';
-import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
-import { BeamModifiersConfiguration } from './properties/category/RangeModulatorConfiguration';
-import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
 
 export function EditorSidebar(props: { editor: YaptideEditor }) {
 	const { editor } = props;

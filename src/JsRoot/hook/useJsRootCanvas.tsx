@@ -1,9 +1,9 @@
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useVisible } from 'react-hooks-visible';
+import { mergeRefs } from 'react-merge-refs';
+import { throttle } from 'throttle-debounce';
 import { useElementSize } from 'usehooks-ts';
 import { useJSROOT } from '../../services/JsRootService';
-import { throttle } from 'throttle-debounce';
-import { mergeRefs } from 'react-merge-refs';
+import { useVisible } from 'react-hooks-visible';
 
 export const useJsRootCanvas = (redrawParam: string) => {
 	const { JSROOT } = useJSROOT();
