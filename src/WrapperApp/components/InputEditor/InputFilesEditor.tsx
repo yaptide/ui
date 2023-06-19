@@ -102,7 +102,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 						const content = !isLargeFile
 							? value
 							: value.split('\n').slice(0, largeFileLinesLimit).join('\n') +
-							  '\n\n... Output truncated ...';
+							'\n\n... Output truncated ...';
 						return (
 							<Box key={name}>
 								<h2>
@@ -162,6 +162,13 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 									value={content}
 									language='sql'
 									placeholder={`Please enter ${name} content.`}
+									onChange={evn => {
+										if (!isLargeFile) {
+											updateInputFiles(old => {
+												return { ...old, [name]: evn.target.value };
+											})
+										}
+									}}
 									disabled={isLargeFile}
 									data-color-mode={theme.palette.mode}
 									padding={15}
