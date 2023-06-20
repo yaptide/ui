@@ -16,7 +16,7 @@ import {
 	Typography
 } from '@mui/material';
 import { ReactNode, SyntheticEvent, useMemo } from 'react';
-import { DEMO_MODE } from '../../../config/Config';
+import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
 import deployInfo from '../../../util/identify/deployInfo.json';
 import { MenuOption } from './NavDrawer';
@@ -53,6 +53,7 @@ export function NavDrawerList({
 	handleChange,
 	tabsValue
 }: NavDrawerListProps) {
+	const { demoMode: DEMO_MODE } = useConfig();
 	const { isAuthorized, user, logout } = useAuth();
 	const userLogout = useMemo(
 		() => (

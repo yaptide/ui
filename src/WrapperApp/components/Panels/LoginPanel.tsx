@@ -1,9 +1,10 @@
 import { Box, Button, Card, CardContent, TextField, Typography, useTheme } from '@mui/material';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
-import { ALT_AUTH } from '../../../config/Config';
+import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
 
 export default function LoginPanel() {
+	const { altAuth: ALT_AUTH } = useConfig();
 	const { login } = useAuth();
 	const theme = useTheme();
 

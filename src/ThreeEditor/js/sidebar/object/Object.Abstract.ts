@@ -15,8 +15,10 @@ export abstract class ObjectAbstract {
 		this.panel = new UIPanel();
 		this.panel.add(this.titleRow);
 	}
+
 	setObject(object: unknown): void {
 		object ? showUIElement(this.panel) : hideUIElement(this.panel);
 	}
+
 	abstract update(): void;
 }

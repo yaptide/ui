@@ -147,12 +147,10 @@ export class ObjectMaterial extends ObjectAbstract {
 			object.simulationMaterial.icru !== parseInt(this.typeSelect.getValue())
 		)
 			editor.execute(new SetZoneMaterialCommand(editor, object, this.typeSelect.getValue()));
-		console.log(object.material.color.getHex(), this.color.getHexValue());
 		if (object.material.color.getHex() !== this.color.getHexValue())
 			editor.execute(
 				new SetMaterialColorCommand(editor, object, 'color', this.color.getHexValue())
 			);
-		console.log(object.material.transparent, this.transparent.getValue());
 		if (isBooleanZone(object) && object.material.transparent !== this.transparent.getValue())
 			editor.execute(
 				new SetMaterialValueCommand(
@@ -162,7 +160,6 @@ export class ObjectMaterial extends ObjectAbstract {
 					this.transparent.getValue()
 				)
 			);
-		console.log(isBooleanZone(object) && object.material.opacity, this.opacity.getValue());
 		if (isBooleanZone(object) && object.material.opacity !== this.opacity.getValue())
 			editor.execute(
 				new SetMaterialValueCommand(editor, object, 'opacity', this.opacity.getValue())
@@ -173,6 +170,7 @@ export class ObjectMaterial extends ObjectAbstract {
 		if (!isWorldZone(this.object) && !isBooleanZone(this.object)) return;
 		this.renderTypeSelect(this.object.simulationMaterial.icru);
 	}
+
 	materialConsole(): void {
 		console.log(this.editor.materialManager.toJSON().materials);
 	}

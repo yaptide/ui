@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react';
 import { throttle } from 'throttle-debounce';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
-import { DEMO_MODE } from '../../../config/Config';
+import { useConfig } from '../../../config/ConfigService';
 import { readFile } from '../../../services/DataLoaderService';
 import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
@@ -25,6 +25,7 @@ interface InputEditorPanelProps {
 type GeneratorLocation = 'local' | 'remote';
 
 export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
+	const { demoMode: DEMO_MODE } = useConfig();
 	const { enqueueSnackbar } = useSnackbar();
 	const { editorRef } = useStore();
 	const { convertToInputFiles } = useShSimulation();

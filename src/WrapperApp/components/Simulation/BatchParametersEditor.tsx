@@ -47,7 +47,6 @@ function parseOptions(input: string): ScriptOption[] {
 		const optionValue = key1 ? value1 : key2 ? value2 : '';
 		options.push({ optionKey, optionValue });
 	}
-	console.log(options);
 
 	return options;
 }

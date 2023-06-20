@@ -70,7 +70,9 @@ const saveFileName = (destFolder, fileName) => {
 		});
 
 		const activateCmd =
-			os.platform() === 'win32' ? 'venv\\Scripts\\activate.ps1' : '. venv/bin/activate';
+			os.platform() === 'win32'
+				? 'PowerShell.exe -ExecutionPolicy RemoteSigned -File venv\\Scripts\\activate.ps1'
+				: '. venv/bin/activate';
 
 		measureTime('Installing build module for python', () => {
 			execSync(`${activateCmd} && ${PYTHON} -m pip install build wheel`, {

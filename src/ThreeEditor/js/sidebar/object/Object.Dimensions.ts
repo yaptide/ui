@@ -189,7 +189,6 @@ export class ObjectDimensions extends ObjectAbstract {
 			this.radius2.max = parameters.radius - 1e-5; // innerRadius cannot be greater than radius
 			this.zLength.setValue(parameters.depth);
 		} else if (isCylinderFigure(object)) {
-			console.log(object, object.geometry.parameters);
 			const parameters = object.geometry.parameters;
 			this.radius.setValue(parameters.outerRadius);
 			this.zLength.setValue(parameters.height);

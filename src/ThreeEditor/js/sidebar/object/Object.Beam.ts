@@ -115,6 +115,7 @@ export class ObjectBeam extends ObjectAbstract {
 			this.particleARow
 		);
 	}
+
 	setObject(object: Beam): void {
 		super.setObject(object);
 		if (!object) return;

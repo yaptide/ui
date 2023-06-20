@@ -158,12 +158,14 @@ export class ObjectFilter extends ObjectAbstract {
 		}
 		this.valueInput.setValue(rule.value);
 	}
+
 	setRule(rule: FilterRule): void {
 		showUIElement(this.ruleRow, 'grid');
 		this.rule = rule;
 		this.outliner.setValue(rule.uuid);
 		this.updateSelectedRule();
 	}
+
 	setObject(object: ScoringFilter): void {
 		super.setObject(object);
 		if (!object) return;

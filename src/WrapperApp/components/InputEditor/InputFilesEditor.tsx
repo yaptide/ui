@@ -1,7 +1,7 @@
 import { Box, Button, Card, CardActions, CardContent, Divider } from '@mui/material';
 import useTheme from '@mui/system/useTheme';
 import CodeEditor from '@uiw/react-textarea-code-editor';
-import { DEMO_MODE } from '../../../config/Config';
+import { useConfig } from '../../../config/ConfigService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
 	SimulationInputFiles,
@@ -23,6 +23,7 @@ interface InputFilesEditorProps {
 }
 
 export function InputFilesEditor(props: InputFilesEditorProps) {
+	const { demoMode: DEMO_MODE } = useConfig();
 	const inputFiles = props.inputFiles ?? _defaultShInputFiles;
 	const simulator = props.simulator;
 	const theme = useTheme();

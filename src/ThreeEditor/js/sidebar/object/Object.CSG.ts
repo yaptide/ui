@@ -21,6 +21,7 @@ export class ObjectCSG extends ObjectAbstract {
 
 		this.panel.add(this.typeRow, this.zoneRulesRow);
 	}
+
 	setObject(object: BooleanZone): void {
 		super.setObject(object);
 		if (!object) return;
@@ -28,9 +29,11 @@ export class ObjectCSG extends ObjectAbstract {
 		this.object = object;
 		this.render();
 	}
+
 	update(): void {
 		throw new Error('Method not implemented.');
 	}
+
 	render(): void {
 		if (!this.object) return;
 		this.renderZoneRules(this.object);

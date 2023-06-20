@@ -1,3 +1,4 @@
+import { DEPLOYMENT } from '../../../config/ConfigService';
 import { CounterMap } from '../../../util/CounterMap/CounterMap';
 import { OperationTuple, OperationTupleJSON } from '../../CSG/CSGOperationTuple';
 import { ZoneWorker } from '../../CSG/CSGWorker';
@@ -67,7 +68,7 @@ export class BooleanZone extends SimulationZone {
 	}
 
 	updateGeometry(): void {
-		console.time('CSGZone');
+		if (DEPLOYMENT === 'dev') console.time('CSGZone');
 		this.geometry.dispose();
 
 		if (this.unionOperations && this.unionOperations.length) {
@@ -85,7 +86,7 @@ export class BooleanZone extends SimulationZone {
 		this.updateMatrixWorld(true);
 
 		this.signals.zoneGeometryChanged.dispatch(this);
-		console.timeEnd('CSGZone');
+		if (DEPLOYMENT === 'dev') console.timeEnd('CSGZone');
 	}
 
 	addUnion(unionIndex?: number, operations: OperationTuple[] = []): void {

@@ -82,6 +82,7 @@ export class ObjectGrid extends ObjectAbstract {
 				break;
 		}
 	}
+
 	update(): void {
 		const { editor, object } = this;
 		if (!object) return;
