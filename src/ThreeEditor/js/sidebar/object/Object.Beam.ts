@@ -6,7 +6,7 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
-import { Editor } from '../../Editor';
+import { YaptideEditor } from '../../YaptideEditor';
 import { UINumber, UIRow, UIText } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
@@ -41,7 +41,7 @@ export class ObjectBeam extends ObjectAbstract {
 	particleARow: UIRow;
 	particleA: UINumber;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Energy');
 
 		// set minimum energy to 1ueV (as lower limit of reasonable cross-section used in neutron transport)

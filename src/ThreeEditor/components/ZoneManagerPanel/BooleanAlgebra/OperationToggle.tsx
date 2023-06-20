@@ -12,6 +12,7 @@ import {
 	Tooltip,
 	Typography
 } from '@mui/material';
+import { MouseEvent } from 'react';
 import { Operation } from '../../../../types/Operation';
 
 const TOOLTIP_DELAY = 400;
@@ -20,7 +21,7 @@ type OperationInputProps = ToggleButtonGroupProps & {
 	value?: SelectType;
 	canClear?: boolean;
 	objectName?: string;
-	onChange?: (event: React.MouseEvent<HTMLElement, MouseEvent>, value?: SelectType) => void;
+	onChange?: (event: MouseEvent<HTMLElement>, value?: SelectType) => void;
 	allowedOperations?: Operation[];
 };
 

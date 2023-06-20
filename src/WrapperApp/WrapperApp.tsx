@@ -1,22 +1,21 @@
 import Box from '@mui/material/Box';
-import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
-import { Editor } from '../ThreeEditor/js/Editor';
+import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
 import { DEMO_MODE } from '../config/Config';
 import { useAuth } from '../services/AuthService';
 import { useLoader } from '../services/DataLoaderService';
 import { JsRootService } from '../services/JsRootService';
 import { useStore } from '../services/StoreService';
+import { SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles, StatusState, currentJobStatusData } from '../types/ResponseTypes';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
+import NavDrawer from './components/NavDrawer/NavDrawer';
 import { AboutPanel } from './components/Panels/AboutPanel';
 import LoginPanel from './components/Panels/LoginPanel';
 import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
-import NavDrawer from './components/NavDrawer/NavDrawer';
-import { FullSimulationData } from '../services/ShSimulatorService';
-import { SimulatorType } from '../types/RequestTypes';
 
 function WrapperApp() {
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
@@ -38,6 +37,7 @@ function WrapperApp() {
 			clearLoadedEditor();
 			setTabsValue('editor');
 			for (const data of editorProvider) editorRef.current.loader.loadJSON(data);
+			//TODO: #1089 rewrite to support our versioning and types of data. Default loader is now mostly useless
 		}
 	}, [canLoadEditorData, editorRef, editorProvider, clearLoadedEditor]);
 
@@ -69,27 +69,9 @@ function WrapperApp() {
 		if (isAuthorized && tabsValue === 'login') setTabsValue('editor');
 	}, [isAuthorized, tabsValue]);
 
-	const onLoadExample = useCallback(
-		(example: FullSimulationData) => {
-			if (!DEMO_MODE) return;
-			setResultsSimulationData(example);
-			setTabsValue('editor');
-		},
-		[setResultsSimulationData]
-	);
-
-	const onEditorInitialized = (editor: Editor) => {
-		editorRef.current?.signals.exampleLoaded.remove(onLoadExample);
+	const onEditorInitialized = (editor: YaptideEditor) => {
 		editorRef.current = editor;
-		editorRef.current?.signals.exampleLoaded.add(onLoadExample);
 	};
-
-	useEffect(() => {
-		editorRef.current?.signals.exampleLoaded.add(onLoadExample);
-		return () => {
-			editorRef.current?.signals.exampleLoaded.remove(onLoadExample);
-		};
-	}, [editorRef, onLoadExample]);
 
 	return (
 		<Box

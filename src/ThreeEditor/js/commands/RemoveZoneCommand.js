@@ -2,7 +2,7 @@ import { Command } from '../Command.js';
 import { BooleanZone } from '../../Simulation/Zones/BooleanZone';
 
 /**
- * @typedef {import('../Editor.js').Editor} Editor
+ * @typedef {import('../YaptideEditor.js').YaptideEditor} Editor
  */
 class RemoveZoneCommand extends Command {
 	/**

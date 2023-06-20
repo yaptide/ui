@@ -8,8 +8,8 @@ import {
 	FormControlLabel,
 	TextField
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { Editor } from '../../js/Editor';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { CustomDialogTitle } from './CustomDialog';
 import { FullSimulationData } from '../../../services/ShSimulatorService';
 
@@ -17,7 +17,7 @@ export type SaveFileProps = {
 	open: boolean;
 	onClose: () => void;
 	onConfirm: (data: {}, fileName: string) => void;
-	editor: Editor;
+	editor: YaptideEditor;
 };
 
 export function SaveFileDialog(props: SaveFileProps) {
@@ -31,10 +31,10 @@ export function SaveFileDialog(props: SaveFileProps) {
 	}, [props, props.editor, editor, results?.input.inputJson?.hash]);
 
 	const [name, setName] = useState<string>('editor');
-	const changeName = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const changeName = (event: ChangeEvent<HTMLInputElement>) => {
 		setName(event.target.value);
 	};
-	const changeKeepResults = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const changeKeepResults = (event: ChangeEvent<HTMLInputElement>) => {
 		setKeepResults(event.target.checked);
 	};
 	return (

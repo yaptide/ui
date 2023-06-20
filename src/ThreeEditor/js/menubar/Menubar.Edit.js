@@ -46,7 +46,7 @@ function MenubarEdit(editor) {
 	// Object
 	const getRemoveCommand = (editor, object) => {
 		switch (true) {
-			case object.isDetectGeometry:
+			case object.isDetector:
 				return new RemoveDetectGeometryCommand(editor, object);
 			case object.isZone:
 				return new RemoveZoneCommand(editor, object);

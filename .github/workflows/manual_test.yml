@@ -67,7 +67,7 @@ jobs:
         with:
           max_attempts: 2
           retry_on: error
-          timeout_seconds: 120
+          timeout_seconds: 240
           command: npm test	
 
       - name: Add workflow result as comment on PR

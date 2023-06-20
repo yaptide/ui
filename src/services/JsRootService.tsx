@@ -71,4 +71,4 @@ const AsyncLoaderJsRoot = makeAsyncScriptLoader(JsRootUrl, {
 	globalName: JsRootKey
 })(JsRoot);
 
-export { useJSROOT, AsyncLoaderJsRoot as JsRootService, JsRootUrl, JsRootKey };
+export { JsRootKey, AsyncLoaderJsRoot as JsRootService, JsRootUrl, useJSROOT };

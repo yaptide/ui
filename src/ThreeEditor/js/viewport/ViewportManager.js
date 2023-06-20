@@ -29,7 +29,7 @@ import { Viewport } from './Viewport.js';
 //   then code reader would be free from understanding unusual convention of spherical coordinates system in threejs
 
 function ViewManager(editor) {
-	const { camera, scene, signals, sceneHelpers } = editor;
+	const { camera, figureManager: scene, signals, sceneHelpers } = editor;
 
 	const container = new UIPanel();
 	container.setId('viewport');
@@ -46,12 +46,12 @@ function ViewManager(editor) {
 	const grid = new THREE.Group();
 	sceneHelpers.add(grid);
 
-	const minorGrid = new THREE.GridHelper(100, 100, 0x888888);
+	const minorGrid = new THREE.GridHelper(110, 110, 0x888888);
 	minorGrid.material.color.setHex(0x888888); // 0x888888 -> light grey (53% lightness)
 	minorGrid.material.vertexColors = false;
 	grid.add(minorGrid);
 
-	const majorGrid = new THREE.GridHelper(100, 10, 0x222222);
+	const majorGrid = new THREE.GridHelper(110, 11, 0x222222);
 	majorGrid.material.color.setHex(0x222222); // 0x222222 -> very dark grey (13% lightness)
 	majorGrid.material.depthFunc = THREE.AlwaysDepth;
 	majorGrid.material.vertexColors = false;
@@ -107,6 +107,7 @@ function ViewManager(editor) {
 
 	const configPlaneXY = {
 		orthographic: true,
+		showPlaneHelpers: true,
 
 		// camera looking from above XY plane
 		cameraPosition: new THREE.Vector3(0, 0, 100),
@@ -166,6 +167,7 @@ function ViewManager(editor) {
 	// (phi = 90*, theta = any in threejs spherical coordinates, see comment in top part of this file)
 	const configPlaneXZ = {
 		orthographic: true,
+		showPlaneHelpers: true,
 
 		// camera looking from above XZ plane
 		cameraPosition: new THREE.Vector3(0, 100, 0),
@@ -204,6 +206,7 @@ function ViewManager(editor) {
 
 	const configPlaneYZ = {
 		orthographic: true,
+		showPlaneHelpers: true,
 
 		// camera looking from above YZ plane
 		cameraPosition: new THREE.Vector3(100, 0, 0),
@@ -373,20 +376,21 @@ function ViewManager(editor) {
 		!(
 			object.isCamera ||
 			object.isFilter ||
-			object.isOutput ||
 			object.isQuantity ||
-			object.isScoringManager
+			object.isScoringManager ||
+			object.isOutput
 		);
 
 	const handleSelected = () => {
 		const object = editor.selected;
 		selectionBox.visible = false;
 
-		if (canBoxBeUpdated(object)) {
-			box.setFromObject(object);
+		if (canBoxBeUpdated(object) || (object?.isOutput && object?.detector?.isDetector)) {
+			const selectionScope = object.isOutput ? object.detector : object;
+			box.setFromObject(selectionScope);
 
 			if (box.isEmpty() === false) {
-				selectionBox.setFromObject(object);
+				selectionBox.setFromObject(selectionScope);
 				selectionBox.visible = true;
 			}
 		}
@@ -404,15 +408,20 @@ function ViewManager(editor) {
 	signals.geometryChanged.add(object => {
 		if (canBoxBeUpdated(object)) {
 			selectionBox.setFromObject(object);
+		} else if (object?.isOutput && object?.detector?.isDetector) {
+			selectionBox.setFromObject(object.detector);
 		}
 
 		render();
 	});
 
 	signals.objectChanged.add(object => {
-		if (editor.selected === object && canBoxBeUpdated(object)) {
-			selectionBox.setFromObject(object);
-		}
+		if (editor.selected === object)
+			if (canBoxBeUpdated(object)) {
+				selectionBox.setFromObject(object);
+			} else if (object?.isOutput && object?.detector?.isDetector) {
+				selectionBox.setFromObject(object.detector);
+			}
 
 		if (object.isPerspectiveCamera) {
 			object.updateProjectionMatrix();
@@ -426,10 +435,6 @@ function ViewManager(editor) {
 	});
 
 	signals.materialChanged.add(() => {
-		render();
-	});
-
-	signals.animationStopped.add(() => {
 		render();
 	});
 

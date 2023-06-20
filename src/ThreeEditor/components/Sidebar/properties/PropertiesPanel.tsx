@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { Box } from '@mui/material';
-import { BoxProps } from '@mui/system/Box/Box';
+import { Box, BoxProps } from '@mui/material';
 import { Object3D } from 'three';
-import { Editor } from '../../../js/Editor';
+import { YaptideEditor } from '../../../js/YaptideEditor';
 import { useCallback, useState } from 'react';
 import { ObjectPlacement } from './category/ObjectPlacement';
 import { ObjectInfo } from './category/ObjectInfo';
@@ -16,9 +15,9 @@ import { QuantityDifferentialScoring } from './category/QuantityDifferentialScor
 import { BeamConfiguration } from './category/BeamConfiguration';
 import { ObjectMaterial } from './category/ObjectMaterial';
 import { FilterConfiguration } from './category/FilterConfiguration';
-import { CTConfiguration } from './category/CTConfiguration';
+import { ObjectConfiguration } from './category/ObjectConfiguration';
 
-export function PropertiesPanel(props: { boxProps: BoxProps; editor: Editor }) {
+export function PropertiesPanel(props: { boxProps: BoxProps; editor: YaptideEditor }) {
 	const { boxProps, editor } = props;
 	const [selectedObject, setSelectedObject] = useState(editor.selected);
 
@@ -41,7 +40,7 @@ export function PropertiesPanel(props: { boxProps: BoxProps; editor: Editor }) {
 					<QuantityConfiguration {...panelProps} />
 					<QuantityDifferentialScoring {...panelProps} />
 					<BeamConfiguration {...panelProps} />
-					<CTConfiguration {...panelProps} />
+					<ObjectConfiguration {...panelProps} />
 					<ObjectDimensions {...panelProps} />
 					<DetectorGrid {...panelProps} />
 					<ZoneOperations {...panelProps} />

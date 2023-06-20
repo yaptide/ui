@@ -1,6 +1,6 @@
 import { MathUtils } from 'three';
-import { DetectFilter } from '../../../Simulation/Scoring/DetectFilter';
-import * as Rule from '../../../../types/DetectRuleTypes';
+import { ScoringFilter } from '../../../Simulation/Scoring/ScoringFilter';
+import * as Rule from '../../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
 import {
 	createFullwidthButton,
 	createRuleConfigurationRow,
@@ -9,7 +9,7 @@ import {
 	showUIElement
 } from '../../../../util/Ui/Uis';
 import { SetFilterRuleCommand } from '../../commands/SetFilterRuleCommand';
-import { Editor } from '../../Editor';
+import { YaptideEditor } from '../../YaptideEditor';
 import { UIBreak, UIButton, UINumber, UIRow, UISelect } from '../../libs/ui';
 import { UIOutliner } from '../../libs/ui.three';
 import { ObjectAbstract } from './Object.Abstract';
@@ -18,10 +18,10 @@ import {
 	isFloatRule,
 	isIDRule,
 	isIntRule
-} from '../../../Simulation/Scoring/DetectRule';
+} from '../../../Simulation/Scoring/FilterRule';
 
 export class ObjectFilter extends ObjectAbstract {
-	object?: DetectFilter;
+	object?: ScoringFilter;
 	rule?: FilterRule;
 
 	add: UIButton;
@@ -36,7 +36,7 @@ export class ObjectFilter extends ObjectAbstract {
 	valueInput: UINumber;
 	removeButton: UIButton;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Scoring rules');
 		[this.addRow, this.add] = createFullwidthButton({
 			text: 'Add rule',
@@ -164,7 +164,7 @@ export class ObjectFilter extends ObjectAbstract {
 		this.outliner.setValue(rule.uuid);
 		this.updateSelectedRule();
 	}
-	setObject(object: DetectFilter): void {
+	setObject(object: ScoringFilter): void {
 		super.setObject(object);
 		if (!object) return;
 

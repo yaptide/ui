@@ -1,8 +1,8 @@
 import { Box, Checkbox, Grid, Stack, TextField, Typography } from '@mui/material';
-import { ReactNode, useCallback, useEffect, useRef } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Vector2 } from 'three';
 import { Vector3 } from 'three/src/math/Vector3';
-import { Editor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	KEYWORD_OPTIONS,
 	KEYWORD_SORT_ORDER,
@@ -10,7 +10,7 @@ import {
 	PARTICLE_OPTIONS,
 	RULE_UNITS,
 	RULE_VALUE_RANGES
-} from '../../../../../types/DetectRuleTypes';
+} from '../../../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
 import { DETECTOR_MODIFIERS_OPTIONS } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
 import { createRowColor } from '../../../../../util/Ui/Color';
@@ -29,9 +29,9 @@ import {
 	isFloatRule,
 	isIDRule,
 	isIntRule
-} from '../../../../Simulation/Scoring/DetectRule';
+} from '../../../../Simulation/Scoring/FilterRule';
 
-export function PropertyField(props: { label?: string; children: React.ReactNode }) {
+export function PropertyField(props: { label?: string; children: ReactNode }) {
 	return (
 		<>
 			{props.label !== undefined && (
@@ -137,35 +137,28 @@ export function NumberInput(props: {
 export function ColorInput(props: { value: string; onChange: (value: number) => void }) {
 	const boxRef = useRef<HTMLDivElement>(null);
 
-	// TODO: Update when props change
-	const inputRef = useRef(
-		createRowColor({
-			...props,
-			update: () => {
-				props.onChange(inputRef.current.getHexValue());
-			}
-		})[1]
-	);
-
-	useEffect(() => {
-		inputRef.current.setHexValue(props.value);
-	}, [props.value]);
+	const input = useMemo(() => {
+		return createRowColor({})[1];
+	}, []);
 
 	useEffect(() => {
 		if (!boxRef.current) return;
-		const input = inputRef.current;
 		const box = boxRef.current;
 		box.appendChild(input.dom);
 		return () => {
 			box?.removeChild(input.dom);
 		};
-	}, []);
+	}, [input.dom]);
 
 	useEffect(() => {
-		inputRef.current.onChange(() => {
-			props.onChange(inputRef.current.getHexValue());
+		input.setHexValue(props.value);
+	}, [input, props.value]);
+
+	useEffect(() => {
+		input.onChange(() => {
+			props.onChange(input.getHexValue());
 		});
-	}, [props]);
+	}, [input, props]);
 
 	return (
 		<Box>
@@ -360,7 +353,7 @@ export function ConditionalObjectSelectPropertyField(
 interface SelectPropertyFieldProps<T> {
 	label: string;
 	value: T | null;
-	options: T[];
+	options: readonly T[];
 	onChange: (value: T) => void;
 	getOptionLabel?: (option: T) => string;
 	isOptionEqualToValue?: (option: T, value: T) => boolean;
@@ -385,7 +378,7 @@ export function SelectPropertyField<T>(props: SelectPropertyFieldProps<T>) {
 }
 
 export function ModifiersOutliner(props: {
-	editor: Editor;
+	editor: YaptideEditor;
 	value: string | null;
 	options: DifferentialModifier[];
 	onChange: (value: string) => void;
@@ -571,7 +564,7 @@ export function DifferentialConfigurationField(props: DifferentialConfigurationF
 }
 
 export function RulesOutliner(props: {
-	editor: Editor;
+	editor: YaptideEditor;
 	value: string | null;
 	options: FilterRule[];
 	onChange: (value: string) => void;

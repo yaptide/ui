@@ -6,7 +6,7 @@ import {
 } from '../../../../util/Ui/Uis';
 import { WorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
 import { SetValueCommand } from '../../commands/Commands';
-import { Editor } from '../../Editor';
+import { YaptideEditor } from '../../YaptideEditor';
 import { UIButton, UICheckbox, UIRow } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
@@ -19,7 +19,7 @@ export class ObjectZoneCalculate extends ObjectAbstract {
 	calculate: UIButton;
 	calculateRow: UIRow;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Automatic');
 		[this.autoRow, this.auto] = createRowCheckbox({
 			text: 'Autocalculate',
@@ -33,7 +33,7 @@ export class ObjectZoneCalculate extends ObjectAbstract {
 		this.editor.signals.objectChanged.add((object: THREE.Object3D) =>
 			(object === this.object &&
 				object === this.editor.selected &&
-				this.object.geometryType === 'Box'
+				this.object.geometryType === 'BoxGeometry'
 				? showUIElement
 				: hideUIElement)(this.panel)
 		);
@@ -44,7 +44,7 @@ export class ObjectZoneCalculate extends ObjectAbstract {
 		if (!object) return;
 
 		this.object = object;
-		if (object.geometryType !== 'Box') return hideUIElement(this.panel);
+		if (object.geometryType !== 'BoxGeometry') return hideUIElement(this.panel);
 		this.object = object;
 		this.auto.setValue(object.autoCalculate);
 	}

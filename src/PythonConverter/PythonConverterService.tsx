@@ -1,10 +1,10 @@
-import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import * as Comlink from 'comlink';
-import { createGenericContext } from '../services/GenericContext';
-import { PythonWorker } from './PythonWorker';
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { SimulationInputFiles } from '../types/ResponseTypes';
+import { createGenericContext } from '../services/GenericContext';
 import { SimulatorType } from '../types/RequestTypes';
+import { SimulationInputFiles } from '../types/ResponseTypes';
+import { PythonWorker } from './PythonWorker';
 
 declare global {
 	interface Window {
@@ -86,4 +86,4 @@ const PythonConverter = (props: PythonConverterProps) => {
 	);
 };
 
-export { usePythonConverter, PythonConverter as PythonConverterService };
+export { PythonConverter as PythonConverterService, usePythonConverter };

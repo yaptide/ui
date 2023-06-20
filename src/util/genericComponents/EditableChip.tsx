@@ -1,9 +1,9 @@
 import { Box, Chip, ChipProps, TextField, Typography } from '@mui/material';
-import { useRef } from 'react';
+import { ChangeEvent, useRef } from 'react';
 
 type EditableChipProps = {
 	option: { optionKey: string; optionValue: string };
-	onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 	onDelete?: () => void;
 } & ChipProps;
 

@@ -43,8 +43,8 @@ export class SetFilterNameCommand extends Command {
 	fromJSON(json) {
 		super.fromJSON(json);
 		this.object =
-			this.editor.detectManager.getFilterByUuid(json.object.uuid) ??
-			this.editor.detectManager.createFilter().fromJSON(json.object);
+			this.editor.detectorManager.getFilterByUuid(json.object.uuid) ??
+			this.editor.detectorManager.createFilter().fromJSON(json.object);
 		this.newName = json.newName;
 		this.oldName = json.oldName;
 	}

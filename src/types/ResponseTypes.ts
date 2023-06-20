@@ -2,11 +2,11 @@ import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import {
+	DataWithStatus,
 	IntersectionToObject,
-	TypeIdentifiedByKey,
-	ObjUnionToKeyUnion,
 	LookUp,
-	DataWithStatus
+	ObjUnionToKeyUnion,
+	TypeIdentifiedByKey
 } from './TypeTransformUtil';
 
 /* ------------Utility types------------ */

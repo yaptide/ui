@@ -1,5 +1,5 @@
 import { Object3D } from 'three';
-import { Editor } from '../../../../js/Editor';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	ConditionalNumberPropertyField,
 	ConditionalObjectSelectPropertyField
@@ -14,7 +14,7 @@ import {
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValueCommand';
 
-export function QuantityConfiguration(props: { editor: Editor; object: Object3D }) {
+export function QuantityConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object as ScoringQuantity);
@@ -45,13 +45,13 @@ export function QuantityConfiguration(props: { editor: Editor; object: Object3D 
 				</>
 			)}
 
-			{Object.keys(editor.detectManager.getFilterOptions()).length > 0 && (
+			{Object.keys(editor.scoringManager.getFilterOptions()).length > 0 && (
 				<ConditionalObjectSelectPropertyField
 					label='Filter'
 					value={watchedObject.filter?.uuid ?? ''}
-					options={editor.detectManager.getFilterOptions()}
+					options={editor.scoringManager.getFilterOptions()}
 					onChange={v =>
-						setQuantityValue('filter', editor.detectManager.getFilterByUuid(v.uuid))
+						setQuantityValue('filter', editor.scoringManager.getFilterByUuid(v.uuid))
 					}
 					enabled={watchedObject.hasFilter}
 					onChangeEnabled={v => setQuantityValue('hasFilter', v)}

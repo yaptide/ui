@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Beam, isBeam } from '../../../Simulation/Physics/Beam';
-import { isDetectGeometry } from '../../../Simulation/Detectors/DetectGeometry';
+import { isDetector } from '../../../Simulation/Detectors/Detector';
 import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
 import { createRowParamNumberXYZ, hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
@@ -12,7 +12,7 @@ import {
 	SetRotationCommand,
 	SetValueCommand
 } from '../../commands/Commands';
-import { Editor } from '../../Editor';
+import { YaptideEditor } from '../../YaptideEditor';
 import { UINumber, UIRow } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
@@ -35,7 +35,7 @@ export class ObjectPlacement extends ObjectAbstract {
 	directionY: UINumber;
 	directionZ: UINumber;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Placement');
 
 		[this.positionRow, this.positionX, this.positionY, this.positionZ] =
@@ -120,7 +120,7 @@ export class ObjectPlacement extends ObjectAbstract {
 			if (object.position.distanceTo(newPosition) >= 0.01) {
 				if (isWorldZone(object))
 					this.editor.execute(new SetValueCommand(editor, object, 'center', newPosition));
-				else if (isDetectGeometry(object))
+				else if (isDetector(object))
 					this.editor.execute(new SetDetectPositionCommand(editor, object, newPosition));
 				else this.editor.execute(new SetPositionCommand(editor, object, newPosition));
 			}

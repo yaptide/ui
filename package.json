@@ -6,7 +6,7 @@
 	"dependencies": {
 		"@emotion/css": "^11.11.0",
 		"@emotion/react": "^11.10.8",
-		"@emotion/styled": "^11.10.8",
+		"@emotion/styled": "^11.11.0",
 		"@minoru/react-dnd-treeview": "^3.4.4",
 		"@mui/icons-material": "^5.11.16",
 		"@mui/lab": "^5.0.0-alpha.133",
@@ -87,7 +87,24 @@
 		"extends": [
 			"react-app",
 			"react-app/jest"
-		]
+		],
+		"rules": {
+			"class-methods-use-this": "warn",
+			"lines-between-class-members": [
+				"error",
+				"always",
+				{
+					"exceptAfterSingleLine": true
+				}
+			],
+			"sort-imports": [
+				"warn",
+				{
+					"ignoreCase": true,
+					"ignoreMemberSort": true
+				}
+			]
+		}
 	},
 	"browserslist": {
 		"production": [
@@ -102,6 +119,7 @@
 		]
 	},
 	"devDependencies": {
+		"@total-typescript/ts-reset": "^0.4.2",
 		"@types/react": "^18.0.9",
 		"@types/react-async-script": "^1.2.1",
 		"@types/react-copy-to-clipboard": "^5.0.4",

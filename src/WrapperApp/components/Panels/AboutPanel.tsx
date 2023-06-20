@@ -1,4 +1,4 @@
-import { Link, Box } from '@mui/material';
+import { Box, Link } from '@mui/material';
 
 export function AboutPanel() {
 	return (

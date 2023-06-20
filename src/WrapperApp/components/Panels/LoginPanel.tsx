@@ -1,7 +1,7 @@
 import { Box, Button, Card, CardContent, TextField, Typography, useTheme } from '@mui/material';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useAuth } from '../../../services/AuthService';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { ALT_AUTH } from '../../../config/Config';
+import { useAuth } from '../../../services/AuthService';
 
 export default function LoginPanel() {
 	const { login } = useAuth();
@@ -10,10 +10,10 @@ export default function LoginPanel() {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 
-	const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleUsernameChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setUsername(event.target.value);
 	};
-	const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setPassword(event.target.value);
 	};
 

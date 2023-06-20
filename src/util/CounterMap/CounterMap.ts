@@ -61,6 +61,7 @@ export class CounterMap<K extends string> {
 		}
 		return this;
 	}
+
 	clear() {
 		this.map.clear();
 	}

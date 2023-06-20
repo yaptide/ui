@@ -1,13 +1,14 @@
 import { Command } from '../Command.js';
 import { ObjectLoader } from 'three';
 /**
- * @typedef {import('../Editor.js').Editor} Editor
+ * @typedef {import('../YaptideEditor.js').YaptideEditor} Editor
  */
 export class AddObjectCommand extends Command {
 	/**
 	 * @param {Editor} editor
 	 * @param {THREE.Object3D} object
 	 * @constructor
+	 * @deprecated Use ObjectManagementFactory to create adder commands
 	 */
 	constructor(editor, object) {
 		super(editor);

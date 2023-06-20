@@ -48,7 +48,7 @@ jobs:
         with:
           max_attempts: 2
           retry_on: error
-          timeout_seconds: 120
+          timeout_seconds: 240
           command: npm test	
 
   deploy-to-github-registry:
@@ -67,7 +67,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
 
@@ -83,7 +83,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v4.5.0
+        uses: docker/metadata-action@v4.6.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 

@@ -1,5 +1,5 @@
 import { Command } from '../Command';
-import { Editor } from '../Editor.js';
+import { YaptideEditor } from '../YaptideEditor.js';
 
 interface ChangeObjectOrderCommandJSON {
 	oldIndex: number;
@@ -20,7 +20,7 @@ export class ChangeObjectOrderCommand extends Command {
 	newIndex: number;
 	oldIndex: number;
 	oldSelect: THREE.Object3D | null;
-	constructor(editor: Editor, object: THREE.Object3D, newIndex: number) {
+	constructor(editor: YaptideEditor, object: THREE.Object3D, newIndex: number) {
 		super(editor);
 
 		if (!object.parent) throw new Error('The object does not have a parent.');

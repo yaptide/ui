@@ -7,7 +7,7 @@ import {
 	Keyword,
 	Operator,
 	isValidID
-} from '../../../types/DetectRuleTypes';
+} from '../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
 
 //https://stackoverflow.com/questions/48757095/typescript-class-composition
 
@@ -61,6 +61,7 @@ export class FloatRule extends FilterRule {
 		const precision = 100;
 		this._value = Math.round((value + Number.EPSILON) * precision) / precision;
 	}
+
 	get value(): number {
 		return this._value;
 	}
@@ -90,6 +91,7 @@ export class IntRule extends FilterRule {
 	set value(value: number) {
 		this._value = Math.floor(value);
 	}
+
 	get value(): number {
 		return this._value;
 	}
@@ -120,6 +122,7 @@ export class IDRule extends FilterRule {
 		const id = Math.floor(value);
 		this._value = isValidID(id) ? id : 1;
 	}
+
 	get value(): ParticleId {
 		return this._value;
 	}

@@ -1,8 +1,8 @@
 /* eslint-disable no-restricted-globals */
 import * as Comlink from 'comlink';
-import { SimulationInputFiles } from '../types/ResponseTypes';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulatorType } from '../types/RequestTypes';
+import { SimulationInputFiles } from '../types/ResponseTypes';
 
 // as for now there is no reasonable npm package for pyodide
 // CND method is suggested in https://pyodide.org/en/stable/usage/downloading-and-deploying.html
@@ -45,7 +45,9 @@ class PythonWorkerBase implements PythonWorker {
 		const converterFolder = process.env.PUBLIC_URL + '/libs/converter/dist/';
 		const jsonUrl = converterFolder + 'yaptide_converter.json';
 
-		const { fileName: converterFileName } = await (await fetch(jsonUrl)).json();
+		const json = await (await fetch(jsonUrl)).json();
+		const { fileName: converterFileName } =
+			typeof json === 'object' && json && 'fileName' in json ? json : { fileName: undefined };
 
 		if (!converterFileName) throw new Error('converterFileName is not defined');
 

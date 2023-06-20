@@ -2,16 +2,15 @@ import hash from 'object-hash';
 import Signal from 'signals';
 import * as THREE from 'three';
 import { Beam } from '../Simulation/Physics/Beam';
-import { DetectManager } from '../Simulation/Detectors/DetectManager';
+import { DetectorManager } from '../Simulation/Detectors/DetectorManager';
 import { ZoneManager } from '../Simulation/Zones/ZoneManager';
-import { FigureScene } from '../Simulation/Figures/FigureScene';
+import { FigureManager } from '../Simulation/Figures/FigureManager';
 import { MaterialManager } from '../Simulation/Materials/MaterialManager';
-import { getNextFreeName } from '../../util/Name/Name';
-import { EditorObjectLoader } from '../../util/ObjectLoader';
 import { Physics } from '../Simulation/Physics/Physics';
 import { ScoringManager } from '../Simulation/Scoring/ScoringManager';
+import { SpecialComponentManager } from '../Simulation/SpecialComponents/SpecialComponentManager';
 import { Config } from './Config.js';
-import { ContextManager } from './Editor.Context';
+import { ContextManager } from './EditorContext';
 import { History as _History } from './History.js';
 import { Loader } from './Loader.js';
 import { Storage as _Storage } from './Storage.js';
@@ -21,16 +20,10 @@ _DEFAULT_CAMERA.name = 'Camera';
 _DEFAULT_CAMERA.position.set(0, 5, 10);
 _DEFAULT_CAMERA.lookAt(new THREE.Vector3());
 
-export const JSON_VERSION = 0.9;
+export const JSON_VERSION = `0.10`;
 
-export function Editor(container) {
+export function YaptideEditor(container) {
 	this.signals = {
-		// script
-
-		editScript: new Signal(),
-
-		// notifications
-
 		editorCleared: new Signal(),
 
 		savingStarted: new Signal(),
@@ -45,7 +38,6 @@ export function Editor(container) {
 		sceneBackgroundChanged: new Signal(),
 		sceneEnvironmentChanged: new Signal(),
 		sceneGraphChanged: new Signal(),
-		sceneRendered: new Signal(),
 		projectChanged: new Signal(),
 
 		cameraChanged: new Signal(),
@@ -59,6 +51,10 @@ export function Editor(container) {
 		objectAdded: new Signal(),
 		objectChanged: new Signal(),
 		objectRemoved: new Signal(),
+
+		figureAdded: new Signal(),
+		figureChanged: new Signal(),
+		figureRemoved: new Signal(),
 
 		//YAPTIDE zones
 		zoneAdded: new Signal(),
@@ -90,49 +86,101 @@ export function Editor(container) {
 		materialChanged: new Signal(),
 		materialRemoved: new Signal(),
 
-		scriptAdded: new Signal(),
-		scriptChanged: new Signal(),
-		scriptRemoved: new Signal(),
-
 		windowResize: new Signal(),
 
 		showGridChanged: new Signal(),
 		showHelpersChanged: new Signal(),
+
+		/**
+		 * @deprecated
+		 * ViewportManager signal
+		 */
+		sceneRendered: new Signal(),
+
+		/**
+		 * @deprecated
+		 * Viewport signal
+		 */
 		refreshSidebarObject3D: new Signal(),
+
+		/**
+		 * History -> EditorAppBar
+		 */
 		historyChanged: new Signal(),
 
+		/**
+		 * Editor -> ViewportManager
+		 */
 		viewportCameraChanged: new Signal(),
 
-		animationStopped: new Signal(),
-
-		// config
+		/**
+		 * Editor -> SceneEditor
+		 * Editor -> EditorAppBar
+		 */
 		titleChanged: new Signal(),
 
-		// YAPTIDE signals
-		selectModeChanged: new Signal(),
+		/**
+		 * EditorMenu -> ViewportManager
+		 */
+		layoutChanged: new Signal(),
 
-		layoutChanged: new Signal(), // Layout signal
-
+		/**
+		 * EditorContext -><-
+		 * EditorContext -> EditorSidebar
+		 * EditorContext -> Viewport
+		 * EditorContext -> ViewportManager
+		 */
 		contextChanged: new Signal(),
 
+		/**
+		 * WorldZone -> Viewport
+		 */
 		autocalculateChanged: new Signal(),
 
-		CSGZoneAdded: new Signal(), // Sidebar.Properties signal
+		/**
+		 * ViewportClippedViewCSG -> ViewportManager
+		 */
+		viewportConfigChanged: new Signal(),
 
-		viewportConfigChanged: new Signal(), // Viewport config signal
+		/**
+		 * useKeyboardEditorControls -> SidebarTreeItem
+		 */
+		requestRenameAction: new Signal(),
 
-		CSGManagerStateChanged: new Signal(), // State of CSGmanager changed
+		/**
+		 * @deprecated
+		 * YAPTIDE signals
+		 */
+		selectModeChanged: new Signal(),
 
+		/**
+		 * @deprecated
+		 * State of CSGmanager changed
+		 */
+		ZoneManagerStateChanged: new Signal(),
+
+		/**
+		 * @deprecated
+		 * Sidebar.Properties signal
+		 */
+		CSGZoneAdded: new Signal(),
+
+		/**
+		 * @deprecated
+		 * Menubar.Examples signal
+		 */
 		exampleLoaded: new Signal(),
 
-		requestRenameAction: new Signal()
+		/**
+		 * @deprecated
+		 * ViewportManager signal
+		 */
+		animationStopped: new Signal()
 	};
 
 	this._results = null;
 
 	this.viewManager = null;
-
-	this.oldSidebarVisible = true;
 
 	this.container = container;
 	container.setAttribute('tabindex', '-1');
@@ -152,17 +200,19 @@ export function Editor(container) {
 	};
 
 	this.loader = new Loader(this);
+	//TODO: #1089 rewrite to support our versioning and types of data. Default loader is now mostly useless
 
 	this.camera = _DEFAULT_CAMERA.clone();
 
-	this.scene = new FigureScene(this);
+	this.figureManager = new FigureManager(this);
 
 	this.sceneHelpers = new THREE.Scene();
 
 	this.materialManager = new MaterialManager(this); // Material Manager
 	this.zoneManager = new ZoneManager(this); // Zone Manager
-	this.detectManager = new DetectManager(this); // Detect Manager
+	this.detectorManager = new DetectorManager(this); // Detect Manager
 	this.scoringManager = new ScoringManager(this); // Scoring Manager
+	this.specialComponentsManager = new SpecialComponentManager(this); // Special Components Manager
 
 	this.beam = new Beam(this);
 	this.physic = new Physics();
@@ -178,7 +228,7 @@ export function Editor(container) {
 
 	this.materialsRefCounter = new Map(); // tracks how often is a material used by a 3D object
 
-	this.mixer = new THREE.AnimationMixer(this.scene);
+	this.mixer = new THREE.AnimationMixer(this.figureManager);
 
 	this.helpers = {};
 
@@ -188,16 +238,16 @@ export function Editor(container) {
 	this.addCamera(this.camera);
 
 	this.searchableObjectCollections = [
-		this.scene,
+		this.figureManager,
 		this.zoneManager,
 		this.beam,
-		this.detectManager,
-		this.detectManager.filterContainer,
-		this.scoringManager
+		this.detectorManager,
+		this.scoringManager,
+		this.specialComponentsManager
 	];
 }
 
-Editor.prototype = {
+YaptideEditor.prototype = {
 	setResults(results) {
 		this._results = results;
 	},
@@ -210,14 +260,17 @@ Editor.prototype = {
 	get selected() {
 		return Reflect.get(this.contextManager, 'selected');
 	},
+	/**
+	 * @deprecated
+	 */
 	setScene(scene) {
-		this.scene.uuid = scene.uuid;
-		this.scene.name = scene.name;
+		this.figureManager.uuid = scene.uuid;
+		this.figureManager.name = scene.name;
 
-		this.scene.background = scene.background;
-		this.scene.environment = scene.environment;
+		this.figureManager.background = scene.background;
+		this.figureManager.environment = scene.environment;
 
-		this.scene.userData = JSON.parse(JSON.stringify(scene.userData));
+		this.figureManager.userData = JSON.parse(JSON.stringify(scene.userData));
 
 		// avoid render per object
 
@@ -243,7 +296,7 @@ Editor.prototype = {
 		});
 
 		if (!parent) {
-			this.scene.add(object);
+			this.figureManager.add(object);
 		} else {
 			parent.children.splice(index, 0, object);
 			object.parent = parent;
@@ -255,7 +308,7 @@ Editor.prototype = {
 
 	moveObject(object, parent, before) {
 		if (!parent) {
-			parent = this.scene;
+			parent = this.figureManager;
 		}
 
 		parent.add(object);
@@ -487,9 +540,7 @@ Editor.prototype = {
 	},
 
 	getObjectByName(name) {
-		const objectCollections = [...this.searchableObjectCollections];
-
-		const object = objectCollections
+		const object = this.searchableObjectCollections
 			.map(e => e.getObjectByName(name))
 			.find(e => typeof e !== 'undefined');
 
@@ -497,54 +548,27 @@ Editor.prototype = {
 	},
 
 	getObjectById(id) {
-		const objectCollections = [
-			this.scene,
-			this.zoneManager,
-			this.beam,
-			this.detectManager,
-			this.detectManager.filterContainer,
-			this.scoringManager
-		];
 		const object =
-			objectCollections.map(e => e.getObjectById(id)).find(e => typeof e !== 'undefined') ??
-			null;
+			this.searchableObjectCollections
+				.map(e => e.getObjectById(id))
+				.find(e => typeof e !== 'undefined') ?? null;
 		return object;
 	},
 
-	getNextFreeName(name, object = null) {
-		return getNextFreeName(this, name, object);
-	},
-
 	selectById(id) {
-		if (id === this.camera.id) {
-			this.select(this.camera);
-			return;
-		}
-
-		const objectCollections = [...this.searchableObjectCollections];
-
 		const object =
-			objectCollections.map(e => e.getObjectById(id)).find(e => typeof e !== 'undefined') ??
-			null;
+			this.searchableObjectCollections
+				.map(e => e.getObjectById(id))
+				.find(e => typeof e !== 'undefined') ?? null;
 
 		this.select(object);
 	},
 
 	selectByUuid(uuid) {
-		const objectCollections = [
-			this.scene,
-			this.zoneManager,
-			this.beam,
-			this.detectManager,
-			this.detectManager.filterContainer,
-			this.scoringManager
-		];
 		const object =
-			objectCollections.find(e => e.uuid === uuid) ??
-			objectCollections
+			this.searchableObjectCollections
 				.map(e => e.getObjectByProperty('uuid', uuid))
-				.find(e => typeof e !== 'undefined') ??
-			null;
+				.find(e => typeof e !== 'undefined') ?? null;
 
 		this.select(object);
 	},
@@ -560,7 +584,7 @@ Editor.prototype = {
 	},
 
 	focusById(id) {
-		this.focus(this.scene.getObjectById(id));
+		this.focus(this.figureManager.getObjectById(id));
 	},
 
 	resetCamera() {
@@ -575,21 +599,12 @@ Editor.prototype = {
 		this.camera.copy(_DEFAULT_CAMERA);
 		this.signals.cameraChanged.dispatch();
 
-		this.scene.name = 'Figures';
-		this.scene.userData = {};
-		this.scene.background = null;
-		this.scene.environment = null;
-
-		var objects = this.scene.children;
-
-		while (objects.length > 0) {
-			this.removeObject(objects[0]);
-		}
-
+		this.figureManager.reset();
 		this.materialManager.reset();
 		this.zoneManager.reset();
-		this.detectManager.reset();
+		this.detectorManager.reset();
 		this.scoringManager.reset();
+		this.specialComponentsManager.reset();
 		this.beam.reset();
 		this.physic.reset();
 
@@ -611,35 +626,85 @@ Editor.prototype = {
 	//
 
 	async fromJSON(json) {
-		this.config.setKey('project/title', json.project.title ?? '');
-		this.config.setKey('project/description', json.project.description ?? '');
-		this.signals.projectChanged.dispatch();
+		const {
+			project,
+			materialManager,
+			figureManager,
+			zoneManager,
+			detectorManager,
+			scoringManager,
+			specialComponentsManager,
+			beam,
+			physic
+		} = json;
+		try {
+			if (project) {
+				this.config.setKey('project/title', project.title ?? '');
+				this.config.setKey('project/description', project.description ?? '');
+			} else
+				console.warn('Project info was not found in JSON data. Skipping part 1 out of 11');
 
-		const loader = new EditorObjectLoader(this);
+			if (project && project.viewManager)
+				this.viewManager.fromConfigurationJson(project.viewManager);
+			else console.warn('View Manager was not found in JSON data. Skipping part 2 out of 11');
 
-		this.signals.cameraResetted.dispatch();
+			if (project && project.history) this.history.fromJSON(project.history);
+			else console.warn('History was not found in JSON data. Skipping part 3 out of 11');
 
-		this.history.fromJSON(json.history);
+			if (materialManager) this.materialManager.fromJSON(materialManager);
+			else
+				throw new Error(
+					'Material Manager was not found in JSON data. Aborting load on part 4 out of 11'
+				);
+			if (figureManager) this.figureManager.fromJSON(figureManager);
+			else
+				throw new Error(
+					'Figure Manager was not found in JSON data. Aborting load on part 5 out of 11'
+				);
 
-		this.setScene(await loader.parseAsync(json.scene));
+			// CSGManager must be loaded after scene and simulation materials
+			if (zoneManager) this.zoneManager.fromJSON(zoneManager);
+			else
+				throw new Error(
+					'Zone Manager was not found in JSON data. Aborting load on part 6 out of 11'
+				);
 
-		this.materialManager.fromJSON(json.materialManager);
+			if (detectorManager) this.detectorManager.fromJSON(detectorManager);
+			else
+				throw new Error(
+					'Detector Manager was not found in JSON data. Aborting load on part 7 out of 11'
+				);
+			if (specialComponentsManager)
+				this.specialComponentsManager.fromJSON(specialComponentsManager);
+			else
+				console.warn(
+					'Special Components Manager was not found in JSON data. Skipping part 8 out of 11'
+				);
 
-		// CSGManager must be loaded after scene and simulation materials
-		this.zoneManager.fromJSON(json.zoneManager); // CSGManager must be loaded in order not to lose reference in components
-		this.detectManager.fromJSON(json.detectManager);
-		this.scoringManager.fromJSON(json.scoringManager);
-		this.beam.fromJSON(json.beam);
-		this.physic.fromJSON(json.physic);
+			if (scoringManager) this.scoringManager.fromJSON(scoringManager);
+			else
+				console.warn(
+					'Scoring Manager was not found in JSON data. Skipping part 9 out of 11'
+				);
 
-		this.viewManager.fromConfigurationJson(json.project.viewManager);
+			if (beam) this.beam.fromJSON(beam);
+			else console.warn('Beam was not found in JSON data. Skipping part 10 out of 11');
 
-		this.signals.sceneGraphChanged.dispatch();
+			if (physic) this.physic.fromJSON(physic);
+			else console.warn('Physic was not found in JSON data. Skipping part 11 out of 11');
+
+			this.signals.cameraResetted.dispatch();
+			this.signals.sceneGraphChanged.dispatch();
+			this.signals.projectChanged.dispatch();
+		} catch (e) {
+			console.error(e);
+			this.clear();
+		}
 	},
 	toJSON() {
 		// scripts clean up
 
-		var scene = this.scene;
+		var scene = this.figureManager;
 		var scripts = this.scripts;
 
 		for (var key in scripts) {
@@ -656,28 +721,23 @@ Editor.prototype = {
 			metadata: {
 				version: this.jsonVersion,
 				type: 'Editor',
-				generator: 'Editor.toJSON'
+				generator: 'YaptideEditor.toJSON'
 			},
 			project: {
 				title: this.config.getKey('project/title'),
 				description: this.config.getKey('project/description'),
-				shadows: this.config.getKey('project/renderer/shadows'),
-				shadowType: this.config.getKey('project/renderer/shadowType'),
-				physicallyCorrectLights: this.config.getKey(
-					'project/renderer/physicallyCorrectLights'
-				),
-				toneMapping: this.config.getKey('project/renderer/toneMapping'),
-				toneMappingExposure: this.config.getKey('project/renderer/toneMappingExposure'),
-				viewManager: this.viewManager.configurationToJson() // serialize ViewManager
+				viewManager: this.viewManager.configurationToJson(), // serialize ViewManager
+				history: this.history.toJSON() // serialize History
 			},
-			scene: this.scene.toJSON(),
-			history: this.history.toJSON(),
-			zoneManager: this.zoneManager.toJSON(), // serialize CSGManager
-			detectManager: this.detectManager.toJSON(), // serialize DetectManager;
-			beam: this.beam.toJSON(),
-			physic: this.physic.toJSON(),
+			figureManager: this.figureManager.toJSON(),
+			zoneManager: this.zoneManager.toJSON(), // serialize ZoneManager
+			detectorManager: this.detectorManager.toJSON(), // serialize DetectorManager;
+			specialComponentsManager: this.specialComponentsManager.toJSON(), // serialize SpecialComponentsManager
 			materialManager: this.materialManager.toJSON(), // serialize MaterialManager
-			scoringManager: this.scoringManager.toJSON() // serialize ScoringManager
+			scoringManager: this.scoringManager.toJSON(), // serialize ScoringManager
+
+			beam: this.beam.toJSON(),
+			physic: this.physic.toJSON()
 		};
 
 		const hashJsonEditor = hash(jsonEditor);
@@ -686,7 +746,7 @@ Editor.prototype = {
 	},
 
 	objectByUuid(uuid) {
-		return this.scene.getObjectByProperty('uuid', uuid, true);
+		return this.figureManager.getObjectByProperty('uuid', uuid, true);
 	},
 
 	execute(cmd, optionalName) {

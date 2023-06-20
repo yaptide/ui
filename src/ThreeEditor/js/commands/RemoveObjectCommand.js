@@ -46,7 +46,7 @@ class RemoveObjectCommand extends Command {
 
 		this.parent = this.editor.objectByUuid(json.parentUuid);
 		if (this.parent === undefined) {
-			this.parent = this.editor.scene;
+			this.parent = this.editor.figureManager;
 		}
 
 		this.index = json.index;

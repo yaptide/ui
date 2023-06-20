@@ -22,7 +22,7 @@ import {
 } from './SimulationPanelBar';
 
 import FolderOffIcon from '@mui/icons-material/FolderOff';
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import { JobStatusData, SimulationInputFiles } from '../../../types/ResponseTypes';
 
 type GridLayout = 'grid' | 'inline-list' | 'block-list';
@@ -220,8 +220,8 @@ export function PaginatedSimulationsFromBackend({
 
 type AccordionCardGridProps = {
 	isAccordion: boolean;
-	header?: React.FC<SimulationAccordionProps>;
-	footer?: React.FC<{}>;
+	header?: FC<SimulationAccordionProps>;
+	footer?: FC<{}>;
 } & SimulationCardGridProps;
 
 export function AccordionCardGrid({

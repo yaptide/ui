@@ -1,10 +1,10 @@
-import React from 'react';
+import { SyntheticEvent } from 'react';
 import { AutoCompleteSelect } from '../../../util/genericComponents/AutoCompleteSelect';
 import SimulationMaterial from '../../Simulation/Materials/SimulationMaterial';
 import { COMMON_MATERIAL_ICRUS } from '../../Simulation/Materials/materials';
 
 export interface MaterialSelectProps {
-	onChange?: (event: React.SyntheticEvent<Element, Event>, newValue: number) => void;
+	onChange?: (event: SyntheticEvent<Element, Event>, newValue: number) => void;
 	materials: Record<string, SimulationMaterial>;
 	value?: string;
 }

@@ -1,5 +1,5 @@
-import { Editor } from '../../js/Editor';
-import { SimulationElement } from '../Base/SimulationElement';
+import { YaptideEditor } from '../../js/YaptideEditor';
+import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import {
 	FilterRule,
 	FloatRule,
@@ -9,15 +9,16 @@ import {
 	IntRule,
 	IntRuleJSON,
 	RuleJSON
-} from './DetectRule';
+} from './FilterRule';
 
-export type FilterJSON = {
-	uuid: string;
-	name: string;
-	rules: RuleJSON[];
-};
+export type FilterJSON = Omit<
+	SimulationElementJSON & {
+		rules: RuleJSON[];
+	},
+	never
+>;
 
-export class DetectFilter extends SimulationElement {
+export class ScoringFilter extends SimulationElement {
 	private _rules: Record<string, FilterRule>;
 	private _selectedRule?: string;
 	readonly isFilter: true = true;
@@ -33,11 +34,12 @@ export class DetectFilter extends SimulationElement {
 	set selectedRule(rule: FilterRule | undefined) {
 		this._selectedRule = rule?.uuid;
 	}
+
 	get selectedRule(): FilterRule | undefined {
 		return this._selectedRule ? this._rules[this._selectedRule] : undefined;
 	}
 
-	constructor(editor: Editor, rules: FilterRule[] = []) {
+	constructor(editor: YaptideEditor, rules: FilterRule[] = []) {
 		super(editor, 'Filter', 'Filter');
 		this._rules = {};
 		this.parent = null;
@@ -123,10 +125,11 @@ export class DetectFilter extends SimulationElement {
 	}
 
 	toJSON(): FilterJSON {
-		const { uuid, name, _rules: rules } = this;
-		return { uuid, name, rules: Object.values(rules).map(rule => rule.toJSON()) };
+		const { uuid, name, _rules: rules, type } = this;
+		return { uuid, name, type, rules: Object.values(rules).map(rule => rule.toJSON()) };
 	}
-	fromJSON(json: FilterJSON): this {
+
+	fromJSON(json: FilterJSON) {
 		this.clear();
 		this.uuid = json.uuid;
 		this.name = json.name;
@@ -134,8 +137,8 @@ export class DetectFilter extends SimulationElement {
 		return this;
 	}
 
-	static fromJSON(editor: Editor, json: FilterJSON): DetectFilter {
-		return new DetectFilter(editor).fromJSON(json);
+	static fromJSON(editor: YaptideEditor, json: FilterJSON): ScoringFilter {
+		return new ScoringFilter(editor).fromJSON(json);
 	}
 
 	toString(): string {
@@ -146,4 +149,4 @@ export class DetectFilter extends SimulationElement {
 	}
 }
 
-export const isDetectFilter = (x: unknown): x is DetectFilter => x instanceof DetectFilter;
+export const isDetectFilter = (x: unknown): x is ScoringFilter => x instanceof ScoringFilter;

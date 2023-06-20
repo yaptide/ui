@@ -8,7 +8,7 @@ import {
 	showUIElement
 } from '../../../../util/Ui/Uis';
 import { SetQuantityValueCommand } from '../../commands/Commands';
-import { Editor } from '../../Editor';
+import { YaptideEditor } from '../../YaptideEditor';
 import { UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
 import { ObjectAbstract } from './Object.Abstract';
 
@@ -28,7 +28,7 @@ export class ObjectQuantity extends ObjectAbstract {
 	rescaleRow: UIRow;
 	rescaleCheckbox: UICheckbox;
 	rescale: UINumber;
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Quantity configuration');
 		[this.keywordRow, this.keyword] = createRowSelect({
 			text: 'Quantity type',
@@ -66,7 +66,7 @@ export class ObjectQuantity extends ObjectAbstract {
 		else hideUIElement(this.mediumRow);
 		this.medium.setValue(medium ?? Scoring.MEDIUM_KEYWORD_OPTIONS.WATER);
 
-		const options = this.editor.detectManager.getFilterOptions();
+		const options = this.editor.scoringManager.getFilterOptions();
 		if (Object.keys(options).length > 0) {
 			showUIElement(this.filterRow);
 			this.filterCheckbox.setValue(hasFilter);
@@ -90,7 +90,7 @@ export class ObjectQuantity extends ObjectAbstract {
 		const { filter, keyword, hasFilter, medium, rescale, hasRescale } = this.object;
 		const newKeyword = this.keyword.getValue();
 		const newMedium = this.medium.getValue();
-		const newFilter = editor.detectManager.getFilterByUuid(this.filter.getValue());
+		const newFilter = editor.scoringManager.getFilterByUuid(this.filter.getValue());
 		const newHasFilter = this.filterCheckbox.getValue();
 		const newRescale = this.rescale.getValue();
 		const newHasRescale = this.rescaleCheckbox.getValue();

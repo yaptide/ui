@@ -1,21 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Object3D } from 'three';
-import { Editor } from '../../ThreeEditor/js/Editor';
+import { YaptideEditor } from '../../ThreeEditor/js/YaptideEditor';
 
-type SignalType = keyof Editor['signals'];
+type SignalType = keyof YaptideEditor['signals'];
 
 export const useSignal = (
-	editor: Editor,
+	editor: YaptideEditor | undefined,
 	signal: SignalType | SignalType[],
 	callback: (object: Object3D, ...args: any[]) => void
 ) => {
 	useEffect(() => {
 		let signalArray = Array.isArray(signal) ? signal : [signal];
-		signalArray.forEach(signal => editor.signals[signal].add(callback));
+		signalArray.forEach(signal => editor?.signals[signal].add(callback));
 		return () => {
-			signalArray.forEach(signal => editor.signals[signal].remove(callback));
+			signalArray.forEach(signal => editor?.signals[signal].remove(callback));
 		};
-	}, [callback, editor.signals, signal]);
+	}, [callback, editor?.signals, signal]);
 };
 
 /**
@@ -46,19 +46,19 @@ export type ProxyState<T> = T & {
  * @returns The state of the watched object wrapped in Proxy
  */
 function useSmartWatchEditorState<T>(
-	editor: Editor,
+	editor: YaptideEditor,
 	watchedObject: ValidProxyState<NonNullable<T>>,
 	watchAnyChange?: boolean,
 	debug?: boolean
 ): { state: ProxyState<T> };
 function useSmartWatchEditorState<T>(
-	editor: Editor,
+	editor: YaptideEditor,
 	watchedObject: ValidProxyState<NonNullable<T>> | null,
 	watchAnyChange?: boolean,
 	debug?: boolean
 ): { state: ProxyState<T> | null };
 function useSmartWatchEditorState<T>(
-	editor: Editor,
+	editor: YaptideEditor,
 	watchedObject: ValidProxyState<T> | null,
 	watchAnyChange = false,
 	debug = false

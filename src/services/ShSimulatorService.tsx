@@ -1,8 +1,9 @@
 import { ReactNode, useCallback } from 'react';
 import { Estimator } from '../JsRoot/GraphData';
-import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/DetectFilter';
+import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { ScoringManagerJSON } from '../ThreeEditor/Simulation/Scoring/ScoringManager';
+import { EditorJson } from '../ThreeEditor/js/EditorJson';
+import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import {
 	RequestCancelJob,
 	RequestGetJobInputs,
@@ -17,25 +18,24 @@ import {
 	isEditorJson
 } from '../types/RequestTypes';
 import {
-	YaptideResponse,
 	JobStatusData,
+	ResponseGetJobInputs,
+	ResponseGetJobLogs,
+	ResponseGetJobResults,
 	ResponseGetJobStatus,
 	ResponseGetPageContents,
 	ResponsePostJob,
 	ResponseShConvert,
 	StatusState,
-	currentJobStatusData,
-	ResponseGetJobInputs,
-	ResponseGetJobResults,
-	ResponseGetJobLogs
+	YaptideResponse,
+	currentJobStatusData
 } from '../types/ResponseTypes';
 import { camelToSnakeCase } from '../types/TypeTransformUtil';
 import { orderAccordingToList } from '../util/Sort';
+import { ValidateShape } from '../util/Types';
+import { useCacheMap } from '../util/hooks/useCacheMap';
 import { useAuth } from './AuthService';
 import { createGenericContext } from './GenericContext';
-import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
-import { useCacheMap } from '../util/hooks/useCacheMap';
-import { ValidateShape } from '../util/Types';
 
 export type JobLogs = {
 	jobId: string;
@@ -83,7 +83,7 @@ const recreateOrderInEstimators = (
 ): Estimator[] => {
 	return orderAccordingToList(
 		estimators,
-		scoringManagerJSON.scoringOutputs,
+		scoringManagerJSON.outputs,
 		'name',
 		(e, o) => (e.scoringOutputJsonRef = o)
 	);
@@ -93,7 +93,7 @@ const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]
 	estimators.forEach(estimator => {
 		const { pages, scoringOutputJsonRef } = estimator;
 		pages.forEach((page, idx) => {
-			const quantity = scoringOutputJsonRef?.quantities.active[idx];
+			const quantity = scoringOutputJsonRef?.quantities[idx];
 			const filter = FiltersJSON.find(o => o.uuid === quantity?.filter);
 			page.filterRef = filter;
 			page.name = quantity?.name;
@@ -106,12 +106,12 @@ export const recreateRefsInResults = (inputJson: EditorJson, estimators: Estimat
 	if (!inputJson) throw new Error('No editor data');
 	if (!estimators) throw new Error('No esitamtors data');
 
-	const { scoringManager, detectManager }: EditorJson = inputJson;
+	const { scoringManager }: EditorJson = inputJson;
 
 	const estimatorsOrdered = recreateOrderInEstimators(estimators, scoringManager);
 	const estimatorsWithFixedFilters = recreateRefToFilters(
 		estimatorsOrdered,
-		detectManager?.filters
+		scoringManager.filters
 	);
 
 	return estimatorsWithFixedFilters;
@@ -283,7 +283,7 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 
 					const refsInResults =
 						jobInputs?.input.inputJson &&
-						recreateRefsInResults(jobInputs?.input.inputJson, response.estimators);
+						recreateRefsInResults(jobInputs.input.inputJson, response.estimators);
 
 					const data: JobResults = {
 						...response,
