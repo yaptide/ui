@@ -1,5 +1,5 @@
-import { UIPanel, UIText, UIRow } from '../libs/ui.js';
 import { UIBoolean } from '../libs/ui.three.js';
+import { UIPanel, UIRow, UIText } from '../libs/ui.js';
 
 function MenubarSettingsViewport(editor) {
 	const { signals } = editor;

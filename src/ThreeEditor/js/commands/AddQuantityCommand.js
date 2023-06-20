@@ -1,8 +1,7 @@
 import { Command } from '../Command.js';
 import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
 import { ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
-// eslint-disable-next-line  no-unused-vars
-import { YaptideEditor } from '../YaptideEditor.js';
+
 export class AddQuantityCommand extends Command {
 	/**
 	 * @param {YaptideEditor} editor

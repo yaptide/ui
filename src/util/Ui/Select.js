@@ -1,5 +1,5 @@
-import { UIRow, UISelect, UIText } from '../../ThreeEditor/js/libs/ui.js';
 import { FONT_SIZE, INPUT_WIDTH, LABEL_MARGIN, LABEL_WIDTH } from './Uis.js';
+import { UIRow, UISelect, UIText } from '../../ThreeEditor/js/libs/ui.js';
 
 /**
  * @typedef {import('../js/libs/ui').UIElement} UIElement

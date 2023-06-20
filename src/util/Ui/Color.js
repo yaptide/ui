@@ -1,5 +1,5 @@
-import { UIColor, UIRow, UIText } from '../../ThreeEditor/js/libs/ui.js';
 import { LABEL_MARGIN, LABEL_WIDTH } from './Uis.js';
+import { UIColor, UIRow, UIText } from '../../ThreeEditor/js/libs/ui.js';
 
 /**
  * @typedef {import('../js/libs/ui').UIElement} UIElement

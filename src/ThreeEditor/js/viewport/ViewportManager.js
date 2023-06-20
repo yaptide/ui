@@ -1,8 +1,8 @@
-import Split from 'split-grid';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { UIDiv, UIPanel } from '../libs/ui.js';
 import { Viewport } from './Viewport.js';
+import Split from 'split-grid';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js, file was split to add multiple viewports
 

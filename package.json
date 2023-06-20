@@ -145,7 +145,10 @@
 		"selenium-webdriver": "^4.9.0"
 	},
 	"lint-staged": {
-		"*.{ts,tsx,js,jsx}": "prettier --ignore-unknown --ignore-path .gitignore --ignore-path .prettierignore --write",
+		"*.{ts,tsx,js,jsx}": [
+			"prettier --ignore-unknown --ignore-path .gitignore --ignore-path .prettierignore --write",
+			"npx eslint --fix"
+		],
 		"*.{json,less,md,css,html}": "prettier --ignore-unknown --ignore-path .gitignore --ignore-path .prettierignore --write"
 	}
 }

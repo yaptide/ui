@@ -1,4 +1,6 @@
+import * as Rule from '../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
 import * as Scoring from '../../ThreeEditor/Simulation/Scoring/ScoringOutputTypes';
+import { FONT_SIZE } from './Uis';
 import {
 	UIButton,
 	UICheckbox,
@@ -9,8 +11,6 @@ import {
 	UIText
 } from '../../ThreeEditor/js/libs/ui';
 import { UIOutliner } from '../../ThreeEditor/js/libs/ui.three';
-import * as Rule from '../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
-import { FONT_SIZE } from './Uis';
 
 /**
  * @typedef {import('../js/libs/ui').UIElement} UIElement

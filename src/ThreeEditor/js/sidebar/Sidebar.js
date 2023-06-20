@@ -1,8 +1,8 @@
-import { UISpan, UITabbedPanel } from '../libs/ui.js';
-import { SidebarScoring } from './Sidebar.Scoring';
 import { SidebarProject } from './Sidebar.Project';
 import { SidebarProperties } from './Sidebar.Properties';
 import { SidebarScene } from './Sidebar.Scene';
+import { SidebarScoring } from './Sidebar.Scoring';
+import { UISpan, UITabbedPanel } from '../libs/ui.js';
 
 function Sidebar(editor) {
 	const { signals } = editor;

@@ -1,5 +1,5 @@
-import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
 import { Command } from '../Command';
+import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
 
 /**
  * @param editor Editor

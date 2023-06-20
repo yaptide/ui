@@ -1,12 +1,12 @@
-import { UIPanel, UIText, UIRow, UIButton } from '../libs/ui.js';
-import { BoxFigure, CylinderFigure, SphereFigure } from '../../Simulation/Figures/BasicFigures';
 import {
 	AddDetectGeometryCommand,
 	AddFilterCommand,
 	AddObjectCommand,
-	AddZoneCommand,
-	AddOutputCommand
+	AddOutputCommand,
+	AddZoneCommand
 } from '../commands/Commands';
+import { BoxFigure, CylinderFigure, SphereFigure } from '../../Simulation/Figures/BasicFigures';
+import { UIButton, UIPanel, UIRow, UIText } from '../libs/ui.js';
 
 function createButtons(
 	parent,

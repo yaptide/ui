@@ -1,6 +1,6 @@
-import EXAMPLES from '../../examples/examples';
 import { UIHorizontalRule, UIPanel } from '../libs/ui.js';
 import { createOption } from './Menubar.js';
+import EXAMPLES from '../../examples/examples';
 
 /**
  * @typedef {import('../YaptideEditor').YaptideEditor} Editor

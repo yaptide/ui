@@ -11,6 +11,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import EditorAppBar from './EditorAppBar/EditorAppBar';
 import THREE from 'three';
 import useDocumentTitle from '../../../util/hooks/useDocumentTitle';
+
 declare global {
 	interface Window {
 		editor: YaptideEditor;

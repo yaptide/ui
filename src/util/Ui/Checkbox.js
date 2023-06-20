@@ -1,6 +1,6 @@
+import { LABEL_MARGIN, LABEL_WIDTH } from './Uis.js';
 import { UICheckbox, UIRow, UISelect, UIText } from '../../ThreeEditor/js/libs/ui.js';
 import { createNumberInput } from './Number.js';
-import { LABEL_MARGIN, LABEL_WIDTH } from './Uis.js';
 
 /**
  * @typedef {import('../js/libs/ui').UIElement} UIElement
