@@ -1,3 +1,6 @@
+import { Estimator } from '../JsRoot/GraphData';
+import { EditorJson } from '../ThreeEditor/js/EditorJson';
+import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import {
 	DataWithStatus,
 	IntersectionToObject,
@@ -5,9 +8,6 @@ import {
 	ObjUnionToKeyUnion,
 	TypeIdentifiedByKey
 } from './TypeTransformUtil';
-import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { Estimator } from '../JsRoot/GraphData';
-import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 
 /* ------------Utility types------------ */
 export enum StatusState {

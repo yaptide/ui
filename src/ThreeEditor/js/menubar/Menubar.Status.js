@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 
-import { UIBoolean } from '../libs/ui.three.js';
-import { UIElement, UIPanel, UIText } from '../libs/ui.js';
 import deployInfo from '../../../util/identify/deployInfo.json';
+import { UIElement, UIPanel, UIText } from '../libs/ui.js';
+import { UIBoolean } from '../libs/ui.three.js';
 
 function MenubarStatus(editor) {
 	const container = new UIPanel();

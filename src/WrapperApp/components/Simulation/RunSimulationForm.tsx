@@ -1,4 +1,5 @@
-import { BatchScriptParametersEditor } from './BatchParametersEditor';
+import ControlPointIcon from '@mui/icons-material/ControlPoint';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import {
 	Box,
 	Button,
@@ -15,14 +16,14 @@ import {
 	ToggleButton,
 	ToggleButtonGroup
 } from '@mui/material';
-import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
-import { MouseEvent, SyntheticEvent, useState } from 'react';
-import { SimulationInputFiles } from '../../../types/ResponseTypes';
-import { SimulatorType } from '../../../types/RequestTypes';
-import { TabPanel } from '../Panels/TabPanel';
-import ControlPointIcon from '@mui/icons-material/ControlPoint';
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import Typography from '@mui/material/Typography';
+import { MouseEvent, SyntheticEvent, useState } from 'react';
+
+import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
+import { SimulatorType } from '../../../types/RequestTypes';
+import { SimulationInputFiles } from '../../../types/ResponseTypes';
+import { TabPanel } from '../Panels/TabPanel';
+import { BatchScriptParametersEditor } from './BatchParametersEditor';
 
 function a11yProps(index: number, name: string = 'RunSimulation') {
 	return {

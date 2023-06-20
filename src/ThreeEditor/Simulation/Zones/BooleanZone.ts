@@ -1,13 +1,14 @@
 import * as Comlink from 'comlink';
+import { Signal } from 'signals';
 import * as THREE from 'three';
+import { debounce } from 'throttle-debounce';
+
 import { CounterMap } from '../../../util/CounterMap/CounterMap';
 import { OperationTuple, OperationTupleJSON } from '../../CSG/CSGOperationTuple';
-import { Signal } from 'signals';
-import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
-import { YaptideEditor } from '../../js/YaptideEditor';
 import { ZoneWorker } from '../../CSG/CSGWorker';
-import { debounce } from 'throttle-debounce';
 import CSG from '../../js/libs/csg/three-csg';
+import { YaptideEditor } from '../../js/YaptideEditor';
+import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
 
 export interface BooleanZoneJSON extends SimulationZoneJSON {
 	unionOperations: OperationTupleJSON[][];

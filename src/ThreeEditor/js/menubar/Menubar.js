@@ -1,5 +1,4 @@
 import { UIPanel, UIRow } from '../libs/ui.js';
-
 import { MenubarAdd } from './Menubar.Add.js';
 import { MenubarEdit } from './Menubar.Edit.js';
 import { MenubarExamples } from './Menubar.Examples.js';
@@ -38,4 +37,4 @@ function Menubar(editor) {
 	return container;
 }
 
-export { Menubar, createOption };
+export { createOption, Menubar };

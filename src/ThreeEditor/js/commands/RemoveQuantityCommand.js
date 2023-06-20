@@ -1,6 +1,6 @@
-import { Command } from '../Command.js';
 import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
 import { ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
+import { Command } from '../Command.js';
 export class RemoveQuantityCommand extends Command {
 	/**
 	 * @typedef {import('../YaptideEditor.js').YaptideEditor} Editor

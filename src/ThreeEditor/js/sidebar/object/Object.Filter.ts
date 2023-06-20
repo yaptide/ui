@@ -1,17 +1,6 @@
-import * as Rule from '../../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
-import {
-	FilterRule,
-	isFloatRule,
-	isIDRule,
-	isIntRule
-} from '../../../Simulation/Scoring/FilterRule';
 import { MathUtils } from 'three';
-import { ObjectAbstract } from './Object.Abstract';
-import { ScoringFilter } from '../../../Simulation/Scoring/ScoringFilter';
-import { SetFilterRuleCommand } from '../../commands/SetFilterRuleCommand';
-import { UIBreak, UIButton, UINumber, UIRow, UISelect } from '../../libs/ui';
-import { UIOutliner } from '../../libs/ui.three';
-import { YaptideEditor } from '../../YaptideEditor';
+
+import * as Rule from '../../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
 import {
 	createFullwidthButton,
 	createRuleConfigurationRow,
@@ -19,6 +8,18 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
+import {
+	FilterRule,
+	isFloatRule,
+	isIDRule,
+	isIntRule
+} from '../../../Simulation/Scoring/FilterRule';
+import { ScoringFilter } from '../../../Simulation/Scoring/ScoringFilter';
+import { SetFilterRuleCommand } from '../../commands/SetFilterRuleCommand';
+import { UIBreak, UIButton, UINumber, UIRow, UISelect } from '../../libs/ui';
+import { UIOutliner } from '../../libs/ui.three';
+import { YaptideEditor } from '../../YaptideEditor';
+import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectFilter extends ObjectAbstract {
 	object?: ScoringFilter;

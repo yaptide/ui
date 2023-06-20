@@ -1,3 +1,5 @@
+import { YaptideEditor } from '../../js/YaptideEditor';
+import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import {
 	FilterRule,
 	FloatRule,
@@ -8,8 +10,6 @@ import {
 	IntRuleJSON,
 	RuleJSON
 } from './FilterRule';
-import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
-import { YaptideEditor } from '../../js/YaptideEditor';
 
 export type FilterJSON = Omit<
 	SimulationElementJSON & {

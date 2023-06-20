@@ -1,5 +1,5 @@
-import { AddDetectGeometryCommand, AddObjectCommand, AddZoneCommand } from '../commands/Commands';
 import { BoxFigure, CylinderFigure, SphereFigure } from '../../Simulation/Figures/BasicFigures';
+import { AddDetectGeometryCommand, AddObjectCommand, AddZoneCommand } from '../commands/Commands';
 import { UIHorizontalRule, UIPanel } from '../libs/ui.js';
 import { createOption } from './Menubar.js';
 

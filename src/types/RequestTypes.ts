@@ -1,8 +1,8 @@
-import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { Flatten } from './TypeTransformUtil';
 import { JobInputs, JobLogs, JobResults } from '../services/ShSimulatorService';
-import { JobStatusData, SimulationInfo, SimulationInputFiles } from './ResponseTypes';
+import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
+import { JobStatusData, SimulationInfo, SimulationInputFiles } from './ResponseTypes';
+import { Flatten } from './TypeTransformUtil';
 
 /* ------------Utility types------------ */
 export enum OrderType {

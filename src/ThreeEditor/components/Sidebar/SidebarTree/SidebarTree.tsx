@@ -1,18 +1,20 @@
 import './SidebarTree.style.css';
-import { ChangeObjectOrderCommand } from '../../../js/commands/ChangeObjectOrderCommand';
-import { Divider } from '@mui/material';
-import { Object3D } from 'three';
-import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
-import {
-	SimulationSceneChild,
-	isSimulationSceneContainer
-} from '../../../Simulation/Base/SimulationContainer';
+
 import { Tree, TreeMethods } from '@minoru/react-dnd-treeview';
-import { YaptideEditor } from '../../../js/YaptideEditor';
-import { generateUUID } from 'three/src/math/MathUtils';
-import { hasVisibleChildren } from '../../../../util/hooks/useKeyboardEditorControls';
-import { isSimulationElement } from '../../../Simulation/Base/SimulationElement';
+import { Divider } from '@mui/material';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Object3D } from 'three';
+import { generateUUID } from 'three/src/math/MathUtils';
+
+import { hasVisibleChildren } from '../../../../util/hooks/useKeyboardEditorControls';
+import { ChangeObjectOrderCommand } from '../../../js/commands/ChangeObjectOrderCommand';
+import { YaptideEditor } from '../../../js/YaptideEditor';
+import {
+	isSimulationSceneContainer,
+	SimulationSceneChild
+} from '../../../Simulation/Base/SimulationContainer';
+import { isSimulationElement } from '../../../Simulation/Base/SimulationElement';
+import { SidebarTreeItem, TreeItem } from './SidebarTreeItem';
 
 type TreeSource = SimulationSceneChild[];
 

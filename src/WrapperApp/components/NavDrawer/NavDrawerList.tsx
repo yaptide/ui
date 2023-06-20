@@ -1,3 +1,7 @@
+import GitHubIcon from '@mui/icons-material/GitHub';
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
+import PersonIcon from '@mui/icons-material/Person';
 import {
 	Box,
 	Divider,
@@ -11,15 +15,12 @@ import {
 	Tooltip,
 	Typography
 } from '@mui/material';
-import { DEMO_MODE } from '../../../config/Config';
-import { MenuOption } from './NavDrawer';
 import { ReactNode, SyntheticEvent, useMemo } from 'react';
+
+import { DEMO_MODE } from '../../../config/Config';
 import { useAuth } from '../../../services/AuthService';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import LoginIcon from '@mui/icons-material/Login';
-import LogoutIcon from '@mui/icons-material/Logout';
-import PersonIcon from '@mui/icons-material/Person';
 import deployInfo from '../../../util/identify/deployInfo.json';
+import { MenuOption } from './NavDrawer';
 
 export type NavDrawerListProps = {
 	tabsValue: string;

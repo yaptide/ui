@@ -1,21 +1,11 @@
-import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { Estimator } from '../JsRoot/GraphData';
-import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/ScoringFilter';
-import {
-	JobStatusData,
-	ResponseGetJobInputs,
-	ResponseGetJobLogs,
-	ResponseGetJobResults,
-	ResponseGetJobStatus,
-	ResponseGetPageContents,
-	ResponsePostJob,
-	ResponseShConvert,
-	StatusState,
-	YaptideResponse,
-	currentJobStatusData
-} from '../types/ResponseTypes';
 import { ReactNode, useCallback } from 'react';
+
+import { Estimator } from '../JsRoot/GraphData';
+import { EditorJson } from '../ThreeEditor/js/EditorJson';
+import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/ScoringFilter';
+import { ScoringManagerJSON } from '../ThreeEditor/Simulation/Scoring/ScoringManager';
 import {
+	isEditorJson,
 	RequestCancelJob,
 	RequestGetJobInputs,
 	RequestGetJobLogs,
@@ -25,17 +15,28 @@ import {
 	RequestGetPageStatus,
 	RequestParam,
 	RequestPostJob,
-	RequestShConvert,
-	isEditorJson
+	RequestShConvert
 } from '../types/RequestTypes';
-import { ScoringManagerJSON } from '../ThreeEditor/Simulation/Scoring/ScoringManager';
-import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
-import { ValidateShape } from '../util/Types';
+import {
+	currentJobStatusData,
+	JobStatusData,
+	ResponseGetJobInputs,
+	ResponseGetJobLogs,
+	ResponseGetJobResults,
+	ResponseGetJobStatus,
+	ResponseGetPageContents,
+	ResponsePostJob,
+	ResponseShConvert,
+	StatusState,
+	YaptideResponse
+} from '../types/ResponseTypes';
 import { camelToSnakeCase } from '../types/TypeTransformUtil';
-import { createGenericContext } from './GenericContext';
-import { orderAccordingToList } from '../util/Sort';
-import { useAuth } from './AuthService';
 import { useCacheMap } from '../util/hooks/useCacheMap';
+import { orderAccordingToList } from '../util/Sort';
+import { ValidateShape } from '../util/Types';
+import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
+import { useAuth } from './AuthService';
+import { createGenericContext } from './GenericContext';
 
 export type JobLogs = {
 	jobId: string;

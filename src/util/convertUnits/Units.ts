@@ -1,5 +1,6 @@
-import { baseMeasure, inverseOfSurfaceMeasure, isBaseUnit, volumeMeasure } from './baseUnit';
 import configureMeasurements from 'convert-units';
+
+import { baseMeasure, inverseOfSurfaceMeasure, isBaseUnit, volumeMeasure } from './baseUnit';
 
 const convert = configureMeasurements({
 	baseMeasure,

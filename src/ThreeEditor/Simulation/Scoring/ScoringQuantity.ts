@@ -1,8 +1,8 @@
+import { YaptideEditor } from '../../js/YaptideEditor';
+import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
+import { ScoringFilter } from './ScoringFilter';
 import * as Scoring from './ScoringOutputTypes';
 import { DifferentialJSON, DifferentialModifier } from './ScoringQtyModifiers';
-import { ScoringFilter } from './ScoringFilter';
-import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
-import { YaptideEditor } from '../../js/YaptideEditor';
 
 export type ScoringQuantityJSON = Omit<
 	SimulationElementJSON & {

@@ -1,9 +1,9 @@
-import { ActionCommand } from '../basic/ActionCommand';
 import { CapitalizeString } from '../../../util/Capitalize';
-import { MethodArgs } from '../basic/AbstractCommand';
-import { SimulationElementManager } from '../../Simulation/Base/SimulationManager';
-import { SimulationSceneChild } from '../../Simulation/Base/SimulationContainer';
 import { YaptideEditor } from '../../js/YaptideEditor';
+import { SimulationSceneChild } from '../../Simulation/Base/SimulationContainer';
+import { SimulationElementManager } from '../../Simulation/Base/SimulationManager';
+import { MethodArgs } from '../basic/AbstractCommand';
+import { ActionCommand } from '../basic/ActionCommand';
 
 /**
  * General factory for creating commands that add or remove objects from a manager.

@@ -17,21 +17,22 @@ import {
 	TableContainer,
 	TableRow
 } from '@mui/material';
-import { Fragment, ReactNode, useMemo, useState } from 'react';
-import {
-	JobStatusData,
-	SimulationInputFiles,
-	StatusState,
-	currentJobStatusData,
-	currentTaskStatusData
-} from '../../../types/ResponseTypes';
-import { SimulationProgressBar } from './SimulationProgressBar';
 import { SxProps, Theme } from '@mui/material/styles';
-import { saveString } from '../../../util/File';
+import { useSnackbar } from 'notistack';
+import { Fragment, ReactNode, useMemo, useState } from 'react';
+
 import { useLoader } from '../../../services/DataLoaderService';
 import { useShSimulation } from '../../../services/ShSimulatorService';
-import { useSnackbar } from 'notistack';
 import { useStore } from '../../../services/StoreService';
+import {
+	currentJobStatusData,
+	currentTaskStatusData,
+	JobStatusData,
+	SimulationInputFiles,
+	StatusState
+} from '../../../types/ResponseTypes';
+import { saveString } from '../../../util/File';
+import { SimulationProgressBar } from './SimulationProgressBar';
 
 type SimulationCardProps = {
 	simulationStatus: JobStatusData;

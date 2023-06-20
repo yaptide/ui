@@ -1,7 +1,7 @@
-import { MenubarSettings, MenubarSettingsEvent } from './Menubar.Settings.js';
+import { saveString } from '../../../util/File';
 import { UIHorizontalRule, UIPanel } from '../libs/ui.js';
 import { createOption } from './Menubar.js';
-import { saveString } from '../../../util/File';
+import { MenubarSettings, MenubarSettingsEvent } from './Menubar.Settings.js';
 
 function MenubarFile(editor) {
 	const container = new UIPanel();

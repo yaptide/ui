@@ -1,5 +1,5 @@
-import { BaseCommandJSON, Command, MethodArgs } from './AbstractCommand';
 import { YaptideEditor } from '../../js/YaptideEditor';
+import { BaseCommandJSON, Command, MethodArgs } from './AbstractCommand';
 
 /**
  * ActionCommand is a command that executes a method on a target

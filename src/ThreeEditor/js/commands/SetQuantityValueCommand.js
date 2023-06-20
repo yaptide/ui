@@ -1,5 +1,5 @@
-import { Command } from '../Command';
 import { ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
+import { Command } from '../Command';
 
 export class SetQuantityValueCommand extends Command {
 	/**

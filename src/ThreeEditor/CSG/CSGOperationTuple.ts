@@ -1,7 +1,8 @@
-import { Operation, executeOperation, isOperation } from '../../types/Operation';
-import { YaptideEditor } from '../js/YaptideEditor';
-import CSG from '../js/libs/csg/three-csg';
 import THREE from 'three';
+
+import { executeOperation, isOperation, Operation } from '../../types/Operation';
+import CSG from '../js/libs/csg/three-csg';
+import { YaptideEditor } from '../js/YaptideEditor';
 
 export interface OperationTupleJSON {
 	objectUuid: string;

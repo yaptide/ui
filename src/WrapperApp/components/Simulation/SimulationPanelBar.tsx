@@ -1,3 +1,7 @@
+import CableIcon from '@mui/icons-material/Cable';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
+import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import {
 	AppBar,
 	AppBarProps,
@@ -10,22 +14,18 @@ import {
 	CardProps,
 	IconButton,
 	Pagination,
+	styled,
 	Toolbar,
 	Tooltip,
-	Typography,
-	styled
+	Typography
 } from '@mui/material';
-import CableIcon from '@mui/icons-material/Cable';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
-import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
+import { ChangeEvent } from 'react';
 
+import { OrderBy, OrderType } from '../../../types/RequestTypes';
 import {
 	ButtonWithPopperList,
 	ButtonWithPopperListProps
 } from '../../../util/genericComponents/ButtonWithPopperList';
-import { ChangeEvent } from 'react';
-import { OrderBy, OrderType } from '../../../types/RequestTypes';
 
 export type SimulationAppBarProps = AppBarProps & {
 	stickTo?: 'top' | 'bottom';

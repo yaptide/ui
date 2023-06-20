@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+
 import { DETECTOR_MODIFIERS } from './ScoringOutputTypes';
 
 export type DifferentialJSON = {

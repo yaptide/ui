@@ -1,14 +1,3 @@
-import * as Scoring from '../../../Simulation/Scoring/ScoringOutputTypes';
-import {
-	AddDifferentialModifierCommand,
-	RemoveDifferentialModifierCommand
-} from '../../commands/Commands';
-import { DifferentialModifier } from '../../../Simulation/Scoring/ScoringQtyModifiers';
-import { ObjectAbstract } from './Object.Abstract';
-import { ScoringQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
-import { UIBreak, UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
-import { UIOutliner } from '../../libs/ui.three';
-import { YaptideEditor } from '../../YaptideEditor';
 import {
 	createDifferentialConfigurationRow,
 	createFullwidthButton,
@@ -16,6 +5,17 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
+import * as Scoring from '../../../Simulation/Scoring/ScoringOutputTypes';
+import { DifferentialModifier } from '../../../Simulation/Scoring/ScoringQtyModifiers';
+import { ScoringQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
+import {
+	AddDifferentialModifierCommand,
+	RemoveDifferentialModifierCommand
+} from '../../commands/Commands';
+import { UIBreak, UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
+import { UIOutliner } from '../../libs/ui.three';
+import { YaptideEditor } from '../../YaptideEditor';
+import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectDifferentials extends ObjectAbstract {
 	object?: ScoringQuantity;

@@ -1,6 +1,6 @@
+import { UIBreak, UIPanel } from '../libs/ui';
 import { DetectAddPanel } from './Sidebar.AddPanel';
 import { OutlinerManager } from './Sidebar.OutlinerManager';
-import { UIBreak, UIPanel } from '../libs/ui';
 
 export class SidebarScoring extends UIPanel {
 	editor;

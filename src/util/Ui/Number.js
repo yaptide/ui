@@ -1,5 +1,5 @@
-import { LABEL_MARGIN, LABEL_WIDTH, PRECISION_FRACTION, TRIPLE_LABEL_WIDTH } from './Uis.js';
 import { UINumber, UIRow, UIText } from '../../ThreeEditor/js/libs/ui.js';
+import { LABEL_MARGIN, LABEL_WIDTH, PRECISION_FRACTION, TRIPLE_LABEL_WIDTH } from './Uis.js';
 
 //TODO: extend UIElement type to include all events and properties
 /**

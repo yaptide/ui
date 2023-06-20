@@ -1,9 +1,13 @@
-import * as React from 'react';
-import { BeamConfiguration } from './category/BeamConfiguration';
 import { Box, BoxProps } from '@mui/material';
+import * as React from 'react';
+import { useCallback, useState } from 'react';
+import { Object3D } from 'three';
+
+import { useSignal } from '../../../../util/hooks/signals';
+import { YaptideEditor } from '../../../js/YaptideEditor';
+import { BeamConfiguration } from './category/BeamConfiguration';
 import { DetectorGrid } from './category/DetectorGrid';
 import { FilterConfiguration } from './category/FilterConfiguration';
-import { Object3D } from 'three';
 import { ObjectConfiguration } from './category/ObjectConfiguration';
 import { ObjectDimensions } from './category/ObjectDimensions';
 import { ObjectInfo } from './category/ObjectInfo';
@@ -12,10 +16,7 @@ import { ObjectPlacement } from './category/ObjectPlacement';
 import { OutputConfiguration } from './category/OutputConfiguration';
 import { QuantityConfiguration } from './category/QuantityConfiguration';
 import { QuantityDifferentialScoring } from './category/QuantityDifferentialScoring';
-import { YaptideEditor } from '../../../js/YaptideEditor';
 import { ZoneOperations } from './category/ZoneOperations';
-import { useCallback, useState } from 'react';
-import { useSignal } from '../../../../util/hooks/signals';
 
 export function PropertiesPanel(props: { boxProps: BoxProps; editor: YaptideEditor }) {
 	const { boxProps, editor } = props;

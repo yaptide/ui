@@ -1,20 +1,21 @@
-import { AboutPanel } from './components/Panels/AboutPanel';
-import { DEMO_MODE } from '../config/Config';
-import { JsRootService } from '../services/JsRootService';
-import { SimulationInputFiles, StatusState, currentJobStatusData } from '../types/ResponseTypes';
-import { SimulatorType } from '../types/RequestTypes';
+import Box from '@mui/material/Box';
 import { SyntheticEvent, useEffect, useState } from 'react';
-import { TabPanel } from './components/Panels/TabPanel';
-import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
+
+import { DEMO_MODE } from '../config/Config';
 import { useAuth } from '../services/AuthService';
 import { useLoader } from '../services/DataLoaderService';
+import { JsRootService } from '../services/JsRootService';
 import { useStore } from '../services/StoreService';
-import Box from '@mui/material/Box';
-import InputEditorPanel from './components/InputEditor/InputEditorPanel';
-import LoginPanel from './components/Panels/LoginPanel';
-import NavDrawer from './components/NavDrawer/NavDrawer';
-import ResultsPanel from './components/Results/ResultsPanel';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
+import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
+import { SimulatorType } from '../types/RequestTypes';
+import { currentJobStatusData, SimulationInputFiles, StatusState } from '../types/ResponseTypes';
+import InputEditorPanel from './components/InputEditor/InputEditorPanel';
+import NavDrawer from './components/NavDrawer/NavDrawer';
+import { AboutPanel } from './components/Panels/AboutPanel';
+import LoginPanel from './components/Panels/LoginPanel';
+import { TabPanel } from './components/Panels/TabPanel';
+import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
 
 function WrapperApp() {

@@ -1,13 +1,13 @@
-import * as THREE from 'three';
 import { Signal } from 'signals';
+import * as THREE from 'three';
 
+import { YaptideEditor } from '../../js/YaptideEditor';
+import { SimulationSceneContainer } from '../Base/SimulationContainer';
+import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
+import { SimulationElementManager } from '../Base/SimulationManager';
 import { Detector } from '../Detectors/Detector';
 import { ScoringFilter } from './ScoringFilter';
 import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
-import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
-import { SimulationElementManager } from '../Base/SimulationManager';
-import { SimulationSceneContainer } from '../Base/SimulationContainer';
-import { YaptideEditor } from '../../js/YaptideEditor';
 
 export type ScoringOutputJSON = Omit<
 	SimulationElementJSON & {

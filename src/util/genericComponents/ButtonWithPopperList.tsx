@@ -1,5 +1,7 @@
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import {
 	Button,
+	buttonClasses,
 	ButtonProps,
 	ClickAwayListener,
 	Grow,
@@ -7,12 +9,9 @@ import {
 	MenuList,
 	Paper,
 	Popper,
-	Typography,
-	buttonClasses
+	Typography
 } from '@mui/material';
 import { Fragment, useRef, useState } from 'react';
-
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 export type ButtonWithPopperListProps<T = undefined> = Omit<
 	ButtonProps,

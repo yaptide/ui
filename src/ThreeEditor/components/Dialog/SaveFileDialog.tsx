@@ -9,9 +9,10 @@ import {
 	TextField
 } from '@mui/material';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { CustomDialogTitle } from './CustomDialog';
+
 import { FullSimulationData } from '../../../services/ShSimulatorService';
 import { YaptideEditor } from '../../js/YaptideEditor';
+import { CustomDialogTitle } from './CustomDialog';
 
 export type SaveFileProps = {
 	open: boolean;

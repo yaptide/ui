@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-import { UIBoolean } from '../libs/ui.three.js';
 import { UINumber, UIPanel, UIRow, UISelect, UIText } from '../libs/ui.js';
+import { UIBoolean } from '../libs/ui.three.js';
 
 /**
  * @example relevant code from Sidebar.Project.Renderer.js

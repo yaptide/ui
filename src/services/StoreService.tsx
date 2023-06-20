@@ -1,7 +1,8 @@
 import { Dispatch, MutableRefObject, ReactNode, SetStateAction, useRef, useState } from 'react';
-import { FullSimulationData } from './ShSimulatorService';
+
 import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
 import { createGenericContext } from './GenericContext';
+import { FullSimulationData } from './ShSimulatorService';
 
 export interface StoreProps {
 	children: ReactNode;

@@ -1,30 +1,31 @@
 import * as THREE from 'three';
-import { BasicFigure, isBasicFigure } from '../Simulation/Figures/BasicFigures';
-import { Beam, isBeam } from '../Simulation/Physics/Beam';
-import { BeamModulator } from '../Simulation/SpecialComponents/BeamModulator';
-import { CTCube } from '../Simulation/SpecialComponents/CTCube';
+
+import { OneSlotContainer } from '../Simulation/Base/SimulationContainer';
+import { SimulationZone } from '../Simulation/Base/SimulationZone';
 import { Detector, isDetector } from '../Simulation/Detectors/Detector';
 import {
 	DetectorContainer,
 	DetectorManager,
 	isDetectContainer
 } from '../Simulation/Detectors/DetectorManager';
+import { BasicFigure, isBasicFigure } from '../Simulation/Figures/BasicFigures';
+import { Beam, isBeam } from '../Simulation/Physics/Beam';
+import { isDetectFilter, ScoringFilter } from '../Simulation/Scoring/ScoringFilter';
 import {
 	FilterContainer,
-	ScoringManager,
 	isFilterContainer,
-	isScoringManager
+	isScoringManager,
+	ScoringManager
 } from '../Simulation/Scoring/ScoringManager';
-import { OneSlotContainer } from '../Simulation/Base/SimulationContainer';
-import { ScoringFilter, isDetectFilter } from '../Simulation/Scoring/ScoringFilter';
-import { ScoringOutput, isOutput } from '../Simulation/Scoring/ScoringOutput';
-import { ScoringQuantity, isQuantity } from '../Simulation/Scoring/ScoringQuantity';
-import { SimulationZone } from '../Simulation/Base/SimulationZone';
-import { WorldZone, isWorldZone } from '../Simulation/Zones/WorldZone/WorldZone';
-import { YaptideEditor } from './YaptideEditor';
-import { ZoneContainer, ZoneManager, isZoneContainer } from '../Simulation/Zones/ZoneManager';
-import { isBooleanZone } from '../Simulation/Zones/BooleanZone';
+import { isOutput, ScoringOutput } from '../Simulation/Scoring/ScoringOutput';
+import { isQuantity, ScoringQuantity } from '../Simulation/Scoring/ScoringQuantity';
+import { BeamModulator } from '../Simulation/SpecialComponents/BeamModulator';
+import { CTCube } from '../Simulation/SpecialComponents/CTCube';
 import { isSpecialComponent } from '../Simulation/SpecialComponents/SpecialComponentManager';
+import { isBooleanZone } from '../Simulation/Zones/BooleanZone';
+import { isWorldZone, WorldZone } from '../Simulation/Zones/WorldZone/WorldZone';
+import { isZoneContainer, ZoneContainer, ZoneManager } from '../Simulation/Zones/ZoneManager';
+import { YaptideEditor } from './YaptideEditor';
 
 export type Context = 'geometry' | 'scoring' | 'settings';
 export type GeometryObject =

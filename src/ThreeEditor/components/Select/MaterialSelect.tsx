@@ -1,6 +1,7 @@
+import { SyntheticEvent } from 'react';
+
 import { AutoCompleteSelect } from '../../../util/genericComponents/AutoCompleteSelect';
 import { COMMON_MATERIAL_ICRUS } from '../../Simulation/Materials/materials';
-import { SyntheticEvent } from 'react';
 import SimulationMaterial from '../../Simulation/Materials/SimulationMaterial';
 
 export interface MaterialSelectProps {

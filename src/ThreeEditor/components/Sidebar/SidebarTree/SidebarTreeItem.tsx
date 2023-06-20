@@ -1,26 +1,27 @@
-import { AddQuantityCommand } from '../../../js/commands/AddQuantityCommand';
-import { Checkbox, Menu, MenuItem, TextField, Typography } from '@mui/material';
-import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { NodeModel, TreeMethods } from '@minoru/react-dnd-treeview/dist/types';
-import { Object3D } from 'three';
-import { SetValueCommand } from '../../../js/commands/SetValueCommand';
-import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
-import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { Checkbox, Menu, MenuItem, TextField, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
 import { Stack } from '@mui/system';
-import { YaptideEditor } from '../../../js/YaptideEditor';
 import { bindContextMenu, bindMenu, usePopupState } from 'material-ui-popup-state/hooks';
+import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { Object3D } from 'three';
+
+import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
+import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import {
 	canChangeName,
 	getRemoveCommand,
 	hasVisibleChildren,
 	isRemovable
 } from '../../../../util/hooks/useKeyboardEditorControls';
+import { AddQuantityCommand } from '../../../js/commands/AddQuantityCommand';
+import { SetValueCommand } from '../../../js/commands/SetValueCommand';
+import { YaptideEditor } from '../../../js/YaptideEditor';
+import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
-import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
-import Box from '@mui/material/Box';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 export type TreeItem = NodeModel<{
 	object: Object3D<THREE.Event> | SimulationElement;

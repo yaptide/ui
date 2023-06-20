@@ -1,10 +1,11 @@
-import { INPUT_WIDTH, LABEL_MARGIN, LABEL_WIDTH } from './Uis';
-import { MaterialSelect } from '../../ThreeEditor/components/Select/MaterialSelect';
-import { PARTICLE_TYPES } from '../../types/Particle';
-import { ParticleSelect } from '../../ThreeEditor/components/Select/ParticleSelect';
-import { UIDiv, UINumber, UIRow, UISelect, UIText } from '../../ThreeEditor/js/libs/ui.js';
 import ReactDOM from 'react-dom';
+
+import { MaterialSelect } from '../../ThreeEditor/components/Select/MaterialSelect';
+import { ParticleSelect } from '../../ThreeEditor/components/Select/ParticleSelect';
 import ZoneManagerPanel from '../../ThreeEditor/components/ZoneManagerPanel/ZoneManagerPanel';
+import { UIDiv, UINumber, UIRow, UISelect, UIText } from '../../ThreeEditor/js/libs/ui.js';
+import { PARTICLE_TYPES } from '../../types/Particle';
+import { INPUT_WIDTH, LABEL_MARGIN, LABEL_WIDTH } from './Uis';
 
 /**
  * @typedef {import('../js/libs/ui').UIElement} UIElement

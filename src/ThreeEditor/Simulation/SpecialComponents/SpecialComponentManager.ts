@@ -1,13 +1,13 @@
-import * as THREE from 'three';
 import { Signal } from 'signals';
+import * as THREE from 'three';
 
-import { BeamModulator, BeamModulatorJSON, isBeamModulator } from './BeamModulator';
-import { CTCube, CTCubeJSON, isCTCube } from './CTCube';
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { OneSlotContainer, SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
-import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { YaptideEditor } from '../../js/YaptideEditor';
+import { BeamModulator, BeamModulatorJSON, isBeamModulator } from './BeamModulator';
+import { CTCube, CTCubeJSON, isCTCube } from './CTCube';
 
 type SpecialComponentManagerJSON = Omit<
 	SimulationElementJSON & {

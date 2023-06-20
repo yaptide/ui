@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
-import { createGenericContext } from './GenericContext';
 import makeAsyncScriptLoader from 'react-async-script';
+
+import { createGenericContext } from './GenericContext';
 
 // submodule copy of JSROOT v6.3.4
 // https://github.com/root-project/jsroot/tree/6.3.4

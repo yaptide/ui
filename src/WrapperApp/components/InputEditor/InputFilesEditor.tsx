@@ -1,17 +1,18 @@
 import { Box, Button, Card, CardActions, CardContent, Divider } from '@mui/material';
+import useTheme from '@mui/system/useTheme';
+import CodeEditor from '@uiw/react-textarea-code-editor';
+
 import { DEMO_MODE } from '../../../config/Config';
+import { SimulatorType } from '../../../types/RequestTypes';
 import {
-	SimulationInputFiles,
 	_defaultFlukaInputFiles,
 	_defaultShInputFiles,
 	_defaultTopasInputFiles,
 	_orderedShInputFilesNames,
-	isKnownInputFile
+	isKnownInputFile,
+	SimulationInputFiles
 } from '../../../types/ResponseTypes';
-import { SimulatorType } from '../../../types/RequestTypes';
 import { saveString } from '../../../util/File';
-import CodeEditor from '@uiw/react-textarea-code-editor';
-import useTheme from '@mui/system/useTheme';
 
 interface InputFilesEditorProps {
 	simulator: SimulatorType;

@@ -1,7 +1,7 @@
+import { escapeHTML } from '../../../util/escapeHTML';
 import { SetValueCommand } from '../commands/SetValueCommand.js';
 import { UICheckbox } from '../libs/ui.js';
 import { UIOutliner } from '../libs/ui.three.js';
-import { escapeHTML } from '../../../util/escapeHTML';
 
 /**
  * @deprecated

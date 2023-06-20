@@ -1,6 +1,6 @@
-import { OutlinerManager } from './Sidebar.OutlinerManager';
-import { SceneAddPanel } from './Sidebar.AddPanel';
 import { UIBreak, UIPanel } from '../libs/ui.js';
+import { SceneAddPanel } from './Sidebar.AddPanel';
+import { OutlinerManager } from './Sidebar.OutlinerManager';
 
 function SidebarScene(editor) {
 	const { signals, figureManager: scene, zoneManager, beam } = editor;

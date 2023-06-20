@@ -1,16 +1,17 @@
 import * as THREE from 'three';
-import { EditorOrbitControls } from '../EditorOrbitControls';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
+
 import {
 	SetPositionCommand,
 	SetRotationCommand,
 	SetScaleCommand,
 	SetValueCommand
 } from '../commands/Commands';
-import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
+import { EditorOrbitControls } from '../EditorOrbitControls';
 import { UIDiv, UIPanel } from '../libs/ui';
-import { ViewHelper } from './Viewport.ViewHelper';
 import { ViewportCamera } from './Viewport.Camera.js';
 import { ViewportClippedViewCSG } from './Viewport.ClippedViewCSG';
+import { ViewHelper } from './Viewport.ViewHelper';
 
 // Part of code from https://github.com/mrdoob/three.js/blob/r131/editor/js/Viewport.js
 

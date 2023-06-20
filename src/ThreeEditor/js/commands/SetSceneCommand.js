@@ -1,5 +1,5 @@
-import { AddObjectCommand } from './AddObjectCommand.js';
 import { Command } from '../Command.js';
+import { AddObjectCommand } from './AddObjectCommand.js';
 import { SetUuidCommand } from './SetUuidCommand.js';
 import { SetValueCommand } from './SetValueCommand.js';
 

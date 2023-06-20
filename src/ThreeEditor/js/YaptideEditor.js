@@ -1,19 +1,20 @@
+import hash from 'object-hash';
+import Signal from 'signals';
 import * as THREE from 'three';
-import { Beam } from '../Simulation/Physics/Beam';
-import { Config } from './Config.js';
-import { ContextManager } from './EditorContext';
+
 import { DetectorManager } from '../Simulation/Detectors/DetectorManager';
 import { FigureManager } from '../Simulation/Figures/FigureManager';
-import { Loader } from './Loader.js';
 import { MaterialManager } from '../Simulation/Materials/MaterialManager';
+import { Beam } from '../Simulation/Physics/Beam';
 import { Physics } from '../Simulation/Physics/Physics';
 import { ScoringManager } from '../Simulation/Scoring/ScoringManager';
 import { SpecialComponentManager } from '../Simulation/SpecialComponents/SpecialComponentManager';
 import { ZoneManager } from '../Simulation/Zones/ZoneManager';
+import { Config } from './Config.js';
+import { ContextManager } from './EditorContext';
 import { History as _History } from './History.js';
+import { Loader } from './Loader.js';
 import { Storage as _Storage } from './Storage.js';
-import Signal from 'signals';
-import hash from 'object-hash';
 
 const _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
 _DEFAULT_CAMERA.name = 'Camera';

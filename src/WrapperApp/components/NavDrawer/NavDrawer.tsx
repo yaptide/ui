@@ -1,20 +1,21 @@
-import { Box, FormControlLabel, Typography } from '@mui/material';
-import { CSSObject, Theme, styled } from '@mui/material/styles';
-import { NavDrawerList } from './NavDrawerList';
-import { ReactElement, ReactNode, SyntheticEvent } from 'react';
-import { useAuth } from '../../../services/AuthService';
-import { useStore } from '../../../services/StoreService';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import DescriptionIcon from '@mui/icons-material/Description';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
 import InfoIcon from '@mui/icons-material/Info';
-import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/icons-material/Menu';
 import MenuOpen from '@mui/icons-material/MenuOpen';
-import MuiDrawer from '@mui/material/Drawer';
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
+import { Box, FormControlLabel, Typography } from '@mui/material';
+import Divider from '@mui/material/Divider';
+import MuiDrawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import ListItemText from '@mui/material/ListItemText';
+import { CSSObject, styled, Theme } from '@mui/material/styles';
+import { ReactElement, ReactNode, SyntheticEvent } from 'react';
+
+import { useAuth } from '../../../services/AuthService';
+import { useStore } from '../../../services/StoreService';
+import { NavDrawerList } from './NavDrawerList';
 
 export type MenuOption = {
 	label: string;

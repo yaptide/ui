@@ -1,14 +1,14 @@
-import * as THREE from 'three';
 import { Signal } from 'signals';
+import * as THREE from 'three';
 
-import { CounterMap } from '../../../util/CounterMap/CounterMap';
-import { DEFAULT_MATERIAL_ICRU, MATERIALS } from './materials';
-import { SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { CounterMap } from '../../../util/CounterMap/CounterMap';
 import { YaptideEditor } from '../../js/YaptideEditor.js';
+import { SimulationElementJSON } from '../Base/SimulationElement';
+import { DEFAULT_MATERIAL_ICRU, MATERIALS } from './materials';
 import SimulationMaterial, {
-	SimulationMaterialJSON,
-	isSimulationMaterial
+	isSimulationMaterial,
+	SimulationMaterialJSON
 } from './SimulationMaterial';
 
 export type MaterialManagerJSON = Omit<

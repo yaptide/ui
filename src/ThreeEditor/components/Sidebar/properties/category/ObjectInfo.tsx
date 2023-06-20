@@ -1,10 +1,11 @@
 import { Object3D } from 'three';
-import { PropertiesCategory } from './PropertiesCategory';
+
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
-import { TextPropertyField } from '../fields/PropertyField';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { isBeam } from '../../../../Simulation/Physics/Beam';
-import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import { TextPropertyField } from '../fields/PropertyField';
+import { PropertiesCategory } from './PropertiesCategory';
 
 export function ObjectInfo(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;

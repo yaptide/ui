@@ -1,14 +1,15 @@
 import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
-import { EstimatorResults } from '../WrapperApp/components/Results/ResultsPanel';
+
 import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { ScoringOutputJSON } from '../ThreeEditor/Simulation/Scoring/ScoringOutput';
 import { estimatorPage1DToCsv } from '../util/csv/Csv';
 import { saveString } from '../util/File';
+import Result3D from '../WrapperApp/components/Results/Results3D';
+import { EstimatorResults } from '../WrapperApp/components/Results/ResultsPanel';
 import JsRootGraph0D from './components/JsRootGraph0D';
 import JsRootGraph1D from './components/JsRootGraph1D';
 import JsRootGraph2D from './components/JsRootGraph2D';
 import JsRootMultiGraph1D from './components/JsRootMultiGraph1D';
-import Result3D from '../WrapperApp/components/Results/Results3D';
 
 export type pageData = {
 	name: string;

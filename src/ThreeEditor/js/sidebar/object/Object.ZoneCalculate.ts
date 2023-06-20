@@ -1,14 +1,14 @@
-import { ObjectAbstract } from './Object.Abstract';
-import { SetValueCommand } from '../../commands/Commands';
-import { UIButton, UICheckbox, UIRow } from '../../libs/ui';
-import { WorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
-import { YaptideEditor } from '../../YaptideEditor';
 import {
 	createFullwidthButton,
 	createRowCheckbox,
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
+import { WorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
+import { SetValueCommand } from '../../commands/Commands';
+import { UIButton, UICheckbox, UIRow } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
+import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectZoneCalculate extends ObjectAbstract {
 	object?: WorldZone;

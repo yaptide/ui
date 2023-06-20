@@ -1,7 +1,3 @@
-import { Beam } from '../../../Simulation/Physics/Beam';
-import { ObjectAbstract } from './Object.Abstract';
-import { UINumber, UIRow, UIText } from '../../libs/ui';
-import { YaptideEditor } from '../../YaptideEditor';
 import {
 	createParticleTypeSelect,
 	createRowParamNumber,
@@ -9,6 +5,10 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
+import { Beam } from '../../../Simulation/Physics/Beam';
+import { UINumber, UIRow, UIText } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
+import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectBeam extends ObjectAbstract {
 	object?: Beam;

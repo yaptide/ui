@@ -1,3 +1,19 @@
+import { Button, Divider, Grid } from '@mui/material';
+import { useCallback } from 'react';
+import { BoxGeometry, SphereGeometry, Vector3 } from 'three';
+
+import {
+	CylData,
+	DETECTOR_OPTIONS
+} from '../../../../../types/SimulationTypes/DetectTypes/DetectTypes';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
+import { SetDetectTypeCommand } from '../../../../js/commands/SetDetectTypeCommand';
+import { SetGeometryCommand } from '../../../../js/commands/SetGeometryCommand';
+import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { HollowCylinderGeometry } from '../../../../Simulation/Base/HollowCylinderGeometry';
+import { Detector, isDetector } from '../../../../Simulation/Detectors/Detector';
 import {
 	BASIC_GEOMETRY_OPTIONS,
 	BasicFigure,
@@ -10,34 +26,19 @@ import {
 	BeamModulator,
 	isBeamModulator
 } from '../../../../Simulation/SpecialComponents/BeamModulator';
+import { isCTCube } from '../../../../Simulation/SpecialComponents/CTCube';
+import { isWorldZone, WorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
+import {
+	ObjectSelectOptionType,
+	ObjectSelectPropertyField
+} from '../fields/ObjectSelectPropertyField';
 import {
 	BooleanPropertyField,
 	LabelPropertyField,
 	NumberPropertyField,
 	SelectPropertyField
 } from '../fields/PropertyField';
-import { BoxGeometry, SphereGeometry, Vector3 } from 'three';
-import { Button, Divider, Grid } from '@mui/material';
-import {
-	CylData,
-	DETECTOR_OPTIONS
-} from '../../../../../types/SimulationTypes/DetectTypes/DetectTypes';
-import { Detector, isDetector } from '../../../../Simulation/Detectors/Detector';
-import { HollowCylinderGeometry } from '../../../../Simulation/Base/HollowCylinderGeometry';
-import {
-	ObjectSelectOptionType,
-	ObjectSelectPropertyField
-} from '../fields/ObjectSelectPropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
-import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
-import { SetDetectTypeCommand } from '../../../../js/commands/SetDetectTypeCommand';
-import { SetGeometryCommand } from '../../../../js/commands/SetGeometryCommand';
-import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
-import { WorldZone, isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
-import { isCTCube } from '../../../../Simulation/SpecialComponents/CTCube';
-import { useCallback } from 'react';
-import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 
 const ObjectTypeField = (props: {
 	editor: YaptideEditor;

@@ -1,5 +1,6 @@
-import { Command } from '../Command.js';
 import { Euler } from 'three';
+
+import { Command } from '../Command.js';
 
 /**
  * @param editor Editor

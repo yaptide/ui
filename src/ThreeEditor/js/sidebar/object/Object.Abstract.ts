@@ -1,6 +1,6 @@
+import { hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
 import { UIPanel, UIRow, UIText } from '../../libs/ui';
 import { YaptideEditor } from '../../YaptideEditor';
-import { hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
 
 export abstract class ObjectAbstract {
 	editor: YaptideEditor;

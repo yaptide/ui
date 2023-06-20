@@ -1,5 +1,5 @@
+import { hideUIElement, showUIElement, UICustomTabbedPanel } from '../../../util/Ui/Uis';
 import * as Panel from './object/Objects';
-import { UICustomTabbedPanel, hideUIElement, showUIElement } from '../../../util/Ui/Uis';
 
 function SidebarProperties(editor, id = 'properties') {
 	const { signals } = editor;

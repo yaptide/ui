@@ -1,7 +1,10 @@
+import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
+import IntegrationInstructionsOutlinedIcon from '@mui/icons-material/IntegrationInstructionsOutlined';
 import {
 	Autocomplete,
 	Box,
 	Checkbox,
+	createFilterOptions,
 	FilterOptionsState,
 	FormControl,
 	ListItem,
@@ -9,15 +12,13 @@ import {
 	ListItemText,
 	TextField,
 	Typography,
-	createFilterOptions,
 	useTheme
 } from '@mui/material';
+import CodeEditor from '@uiw/react-textarea-code-editor';
 import { ChangeEvent, useCallback, useState } from 'react';
+
 import { EditableChip } from '../../../util/genericComponents/EditableChip';
 import { ScriptOption } from './RunSimulationForm';
-import CodeEditor from '@uiw/react-textarea-code-editor';
-import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
-import IntegrationInstructionsOutlinedIcon from '@mui/icons-material/IntegrationInstructionsOutlined';
 
 type BatchParametersEditorProps = {
 	scriptHeader: string;

@@ -1,9 +1,10 @@
 import * as THREE from 'three';
-import { AdditionalGeometryDataType, getGeometryData } from '../../../util/AdditionalGeometryData';
-import { SimulationElement, SimulationElementJSON } from './SimulationElement';
+
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
+import { AdditionalGeometryDataType, getGeometryData } from '../../../util/AdditionalGeometryData';
 import { YaptideEditor } from '../../js/YaptideEditor';
+import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
+import { SimulationElement, SimulationElementJSON } from './SimulationElement';
 
 export type SimulationMeshJSON = Omit<
 	SimulationElementJSON & {

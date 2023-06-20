@@ -1,9 +1,10 @@
 import * as THREE from 'three';
-import { MenubarSettingsHistory } from './Menubar.Settings.History.js';
-import { MenubarSettingsViewport } from './Menubar.Settings.Viewport.js';
-import { SidebarProjectRenderer } from '../sidebar/Sidebar.Project.Renderer.js';
+
 import { UIButton, UIColor, UIPanel, UIRow, UISelect, UIText } from '../libs/ui.js';
 import { UITexture } from '../libs/ui.three.js';
+import { SidebarProjectRenderer } from '../sidebar/Sidebar.Project.Renderer.js';
+import { MenubarSettingsHistory } from './Menubar.Settings.History.js';
+import { MenubarSettingsViewport } from './Menubar.Settings.Viewport.js';
 
 const MenubarSettingsEvent = {
 	close: 'closeMenubarSettings'

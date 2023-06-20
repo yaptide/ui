@@ -1,15 +1,15 @@
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
-	AccordionProps,
-	AccordionSummaryProps,
-	Grid,
 	Accordion as MuiAccordion,
 	AccordionDetails as MuiAccordionDetails,
+	AccordionProps,
 	AccordionSummary as MuiAccordionSummary,
-	Typography,
-	styled
+	AccordionSummaryProps,
+	Grid,
+	styled,
+	Typography
 } from '@mui/material';
 import { ReactNode } from 'react';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
 	<MuiAccordionSummary {...props} />

@@ -1,13 +1,8 @@
-import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
 import { Box, Checkbox, Grid, Stack, TextField, Typography } from '@mui/material';
-import { DETECTOR_MODIFIERS_OPTIONS } from '../../../../Simulation/Scoring/ScoringOutputTypes';
-import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
-import {
-	FilterRule,
-	isFloatRule,
-	isIDRule,
-	isIntRule
-} from '../../../../Simulation/Scoring/FilterRule';
+import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
+import { Vector2 } from 'three';
+import { Vector3 } from 'three/src/math/Vector3';
+
 import {
 	KEYWORD_OPTIONS,
 	KEYWORD_SORT_ORDER,
@@ -16,20 +11,26 @@ import {
 	RULE_UNITS,
 	RULE_VALUE_RANGES
 } from '../../../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
-import { ObjectSelectProperty, ObjectSelectProps } from './ObjectSelectPropertyField';
-import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
-import { Vector2 } from 'three';
-import { Vector3 } from 'three/src/math/Vector3';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
+import { createRowColor } from '../../../../../util/Ui/Color';
+import { createNumberInput } from '../../../../../util/Ui/Number';
 import {
 	createDifferentialConfigurationRow,
 	createModifiersOutliner,
 	createRuleConfigurationRow,
 	createRulesOutliner
 } from '../../../../../util/Ui/PropertiesOutliner';
-import { createNumberInput } from '../../../../../util/Ui/Number';
-import { createRowColor } from '../../../../../util/Ui/Color';
 import { hideUIElement, showUIElement } from '../../../../../util/Ui/Uis';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
+import {
+	FilterRule,
+	isFloatRule,
+	isIDRule,
+	isIntRule
+} from '../../../../Simulation/Scoring/FilterRule';
+import { DETECTOR_MODIFIERS_OPTIONS } from '../../../../Simulation/Scoring/ScoringOutputTypes';
+import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
+import { ObjectSelectProperty, ObjectSelectProps } from './ObjectSelectPropertyField';
 
 export function PropertyField(props: { label?: string; children: ReactNode }) {
 	return (

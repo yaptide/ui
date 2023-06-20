@@ -1,5 +1,5 @@
-import { Builder, By, WebDriver, until } from 'selenium-webdriver';
 import { readFileSync } from 'fs';
+import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
 describe('NavDrawer component', () => {

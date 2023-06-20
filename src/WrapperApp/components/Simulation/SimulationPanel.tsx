@@ -1,31 +1,31 @@
 import { Box, Card, CardContent, Fade, Modal } from '@mui/material';
 import { useSnackbar } from 'notistack';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import useInterval from 'use-interval';
 
+import { DEMO_MODE } from '../../../config/Config';
+import { isFullSimulationData, useLoader } from '../../../services/DataLoaderService';
+import { FullSimulationData, useShSimulation } from '../../../services/ShSimulatorService';
+import { useStore } from '../../../services/StoreService';
+import EXAMPLES from '../../../ThreeEditor/examples/examples';
+import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
+import { OrderBy, OrderType, SimulatorType } from '../../../types/RequestTypes';
+import {
+	currentJobStatusData,
+	JobStatusData,
+	SimulationInfo,
+	SimulationInputFiles,
+	StatusState
+} from '../../../types/ResponseTypes';
+import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import {
 	BatchOptionsType,
 	RunSimulationForm,
 	SimulationRunType,
 	SimulationSourceType
 } from './RunSimulationForm';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
-import { DEMO_MODE } from '../../../config/Config';
 import { DemoCardGrid, PaginatedSimulationsFromBackend } from './SimulationCardGrid';
-import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
-import { FullSimulationData, useShSimulation } from '../../../services/ShSimulatorService';
-import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
-import {
-	JobStatusData,
-	SimulationInfo,
-	SimulationInputFiles,
-	StatusState,
-	currentJobStatusData
-} from '../../../types/ResponseTypes';
-import { OrderBy, OrderType, SimulatorType } from '../../../types/RequestTypes';
 import { PageNavigationProps, PageParamProps } from './SimulationPanelBar';
-import { isFullSimulationData, useLoader } from '../../../services/DataLoaderService';
-import { useStore } from '../../../services/StoreService';
-import EXAMPLES from '../../../ThreeEditor/examples/examples';
-import useInterval from 'use-interval';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;

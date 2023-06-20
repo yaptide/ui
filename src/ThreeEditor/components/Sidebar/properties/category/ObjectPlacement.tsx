@@ -1,18 +1,19 @@
-import { Beam, isBeam } from '../../../../Simulation/Physics/Beam';
 import { Euler, MathUtils, Vector3 } from 'three';
-import { PropertiesCategory } from './PropertiesCategory';
+
+import { SimulationPropertiesType } from '../../../../../types/SimulationProperties';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetBeamDirectionCommand } from '../../../../js/commands/SetBeamDirectionCommand';
 import { SetDetectPositionCommand } from '../../../../js/commands/SetDetectPositionCommand';
 import { SetPositionCommand } from '../../../../js/commands/SetPositionCommand';
 import { SetRotationCommand } from '../../../../js/commands/SetRotationCommand';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
-import { SimulationElement } from '../../../../Simulation/Base/SimulationElement';
-import { SimulationPropertiesType } from '../../../../../types/SimulationProperties';
-import { Vector3PropertyField } from '../fields/PropertyField';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { SimulationElement } from '../../../../Simulation/Base/SimulationElement';
 import { isDetector } from '../../../../Simulation/Detectors/Detector';
+import { Beam, isBeam } from '../../../../Simulation/Physics/Beam';
 import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
-import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import { Vector3PropertyField } from '../fields/PropertyField';
+import { PropertiesCategory } from './PropertiesCategory';
 
 export function ObjectPlacement(props: { editor: YaptideEditor; object: SimulationElement }) {
 	const { object, editor } = props;
