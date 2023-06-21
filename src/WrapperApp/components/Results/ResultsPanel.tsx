@@ -10,7 +10,8 @@ import {
 	Typography
 } from '@mui/material';
 import { SyntheticEvent, useEffect, useState } from 'react';
-import { Estimator, Page, Page0D, generateGraphs, isPage0d } from '../../../JsRoot/GraphData';
+
+import { Estimator, generateGraphs, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
 import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
 import { TabPanel } from '../Panels/TabPanel';

@@ -1,4 +1,3 @@
-import * as Scoring from '../../ThreeEditor/Simulation/Scoring/ScoringOutputTypes';
 import {
 	UIButton,
 	UICheckbox,
@@ -9,6 +8,7 @@ import {
 	UIText
 } from '../../ThreeEditor/js/libs/ui';
 import { UIOutliner } from '../../ThreeEditor/js/libs/ui.three';
+import * as Scoring from '../../ThreeEditor/Simulation/Scoring/ScoringOutputTypes';
 import * as Rule from '../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
 import { FONT_SIZE } from './Uis';
 

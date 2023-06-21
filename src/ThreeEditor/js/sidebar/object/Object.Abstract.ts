@@ -1,6 +1,6 @@
 import { hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
-import { YaptideEditor } from '../../YaptideEditor';
 import { UIPanel, UIRow, UIText } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
 
 export abstract class ObjectAbstract {
 	editor: YaptideEditor;
@@ -15,8 +15,10 @@ export abstract class ObjectAbstract {
 		this.panel = new UIPanel();
 		this.panel.add(this.titleRow);
 	}
+
 	setObject(object: unknown): void {
 		object ? showUIElement(this.panel) : hideUIElement(this.panel);
 	}
+
 	abstract update(): void;
 }

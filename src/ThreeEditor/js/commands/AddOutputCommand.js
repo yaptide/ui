@@ -1,5 +1,5 @@
-import { Command } from '../Command.js';
 import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
+import { Command } from '../Command.js';
 
 export class AddOutputCommand extends Command {
 	// type object is optional

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+
 import { Page2D } from '../GraphData';
 import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
 

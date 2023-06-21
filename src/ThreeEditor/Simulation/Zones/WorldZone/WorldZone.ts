@@ -2,14 +2,15 @@ import { Signal } from 'signals';
 import * as THREE from 'three';
 import { Color, MeshBasicMaterial, Object3D, Vector3 } from 'three';
 import { debounce } from 'throttle-debounce';
-import { YaptideEditor } from '../../../js/YaptideEditor';
+
 import {
 	AdditionalGeometryDataType,
 	getGeometryData
 } from '../../../../util/AdditionalGeometryData';
+import { YaptideEditor } from '../../../js/YaptideEditor';
 import { SimulationElement } from '../../Base/SimulationElement';
-import { WorldZoneHelper } from './WorldZoneHelper';
 import SimulationMaterial from '../../Materials/SimulationMaterial';
+import { WorldZoneHelper } from './WorldZoneHelper';
 
 export const BOUNDING_ZONE_TYPE = [
 	'SphereGeometry',

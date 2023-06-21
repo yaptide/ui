@@ -1,4 +1,4 @@
-import { UIPanel, UIBreak, UIText } from '../libs/ui.js';
+import { UIBreak, UIPanel, UIText } from '../libs/ui.js';
 import { UIBoolean, UIOutliner } from '../libs/ui.three.js';
 
 function MenubarSettingsHistory(editor) {

@@ -1,9 +1,10 @@
 import * as THREE from 'three';
-import { Beam, isBeam } from '../../../Simulation/Physics/Beam';
-import { isDetector } from '../../../Simulation/Detectors/Detector';
-import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
+
 import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
 import { createRowParamNumberXYZ, hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
+import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
+import { isDetector } from '../../../Simulation/Detectors/Detector';
+import { Beam, isBeam } from '../../../Simulation/Physics/Beam';
 import { isWorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
 import {
 	SetBeamDirectionCommand,
@@ -12,8 +13,8 @@ import {
 	SetRotationCommand,
 	SetValueCommand
 } from '../../commands/Commands';
-import { YaptideEditor } from '../../YaptideEditor';
 import { UINumber, UIRow } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectPlacement extends ObjectAbstract {

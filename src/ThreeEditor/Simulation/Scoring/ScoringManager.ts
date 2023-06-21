@@ -5,7 +5,7 @@ import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { FilterJSON, ScoringFilter } from './ScoringFilter';
-import { ScoringOutputJSON as OutputJSON, ScoringOutput } from './ScoringOutput';
+import { ScoringOutput, ScoringOutputJSON as OutputJSON } from './ScoringOutput';
 
 export type ScoringManagerJSON = Omit<
 	SimulationElementJSON & {

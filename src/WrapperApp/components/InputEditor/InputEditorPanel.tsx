@@ -3,21 +3,23 @@ import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
 import { throttle } from 'throttle-debounce';
-import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
-import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
+
 import { DEMO_MODE } from '../../../config/Config';
+import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
 import { readFile } from '../../../services/DataLoaderService';
 import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
+import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
-	SimulationInputFiles,
 	_defaultFlukaInputFiles,
 	_defaultShInputFiles,
-	_defaultTopasInputFiles
+	_defaultTopasInputFiles,
+	SimulationInputFiles
 } from '../../../types/ResponseTypes';
 import { DragDropFiles } from './DragDropFiles';
 import { InputFilesEditor } from './InputFilesEditor';
+
 interface InputEditorPanelProps {
 	goToRun?: (simulator: SimulatorType, InputFiles?: SimulationInputFiles) => void;
 }

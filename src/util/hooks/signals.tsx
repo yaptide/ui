@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Object3D } from 'three';
+
 import { YaptideEditor } from '../../ThreeEditor/js/YaptideEditor';
 
 type SignalType = keyof YaptideEditor['signals'];

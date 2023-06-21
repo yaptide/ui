@@ -1,4 +1,4 @@
-import { UIPanel, UIRow, UIInput, UIText, UISpan, UITextArea } from '../libs/ui.js';
+import { UIInput, UIPanel, UIRow, UISpan, UIText, UITextArea } from '../libs/ui.js';
 
 function SidebarProject(editor) {
 	const { signals, config } = editor;

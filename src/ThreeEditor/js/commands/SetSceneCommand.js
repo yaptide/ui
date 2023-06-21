@@ -1,7 +1,7 @@
 import { Command } from '../Command.js';
+import { AddObjectCommand } from './AddObjectCommand.js';
 import { SetUuidCommand } from './SetUuidCommand.js';
 import { SetValueCommand } from './SetValueCommand.js';
-import { AddObjectCommand } from './AddObjectCommand.js';
 
 /**
  * @param editor Editor

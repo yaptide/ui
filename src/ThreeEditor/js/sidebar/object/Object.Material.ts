@@ -1,5 +1,3 @@
-import { Beam } from '../../../Simulation/Physics/Beam';
-import { SimulationMesh } from '../../../Simulation/Base/SimulationMesh';
 import {
 	createFullwidthButton,
 	createMaterialSelect,
@@ -9,19 +7,21 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
+import { SimulationMesh } from '../../../Simulation/Base/SimulationMesh';
+import { SimulationPoints } from '../../../Simulation/Base/SimulationPoints';
+import { Beam } from '../../../Simulation/Physics/Beam';
+import { isBooleanZone } from '../../../Simulation/Zones/BooleanZone';
 import { isWorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
 import {
 	SetMaterialColorCommand,
 	SetMaterialValueCommand,
 	SetZoneMaterialCommand
 } from '../../commands/Commands';
-import { YaptideEditor } from '../../YaptideEditor';
 import { UIButton, UICheckbox, UIColor, UINumber, UIRow, UISelect, UIText } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
 import { SidebarMaterialBooleanProperty } from '../Sidebar.Material.BooleanProperty';
 import { SidebarMaterialConstantProperty } from '../Sidebar.Material.ConstantProperty';
 import { ObjectAbstract } from './Object.Abstract';
-import { SimulationPoints } from '../../../Simulation/Base/SimulationPoints';
-import { isBooleanZone } from '../../../Simulation/Zones/BooleanZone';
 
 const MATERIAL_BLENDING_OPTIONS = {
 	0: 'No',
@@ -173,6 +173,7 @@ export class ObjectMaterial extends ObjectAbstract {
 		if (!isWorldZone(this.object) && !isBooleanZone(this.object)) return;
 		this.renderTypeSelect(this.object.simulationMaterial.icru);
 	}
+
 	materialConsole(): void {
 		console.log(this.editor.materialManager.toJSON().materials);
 	}

@@ -4,16 +4,17 @@ import TokenIcon from '@mui/icons-material/Token';
 import { AppBar, Box, Divider, Stack, Tab, Tabs, Typography } from '@mui/material';
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
-import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
+
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
-import { getAddElementButtonProps } from '../../../util/Ui/CommandButtonProps';
 import { useSignal } from '../../../util/hooks/signals';
+import { getAddElementButtonProps } from '../../../util/Ui/CommandButtonProps';
+import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import { Context } from '../../js/EditorContext';
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { SidebarTree } from './SidebarTree/SidebarTree';
-import { PropertiesPanel } from './properties/PropertiesPanel';
 import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
 import { BeamModifiersConfiguration } from './properties/category/RangeModulatorConfiguration';
+import { PropertiesPanel } from './properties/PropertiesPanel';
+import { SidebarTree } from './SidebarTree/SidebarTree';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
 
 export function EditorSidebar(props: { editor: YaptideEditor }) {

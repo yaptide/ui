@@ -12,10 +12,11 @@ import {
 	TextField
 } from '@mui/material';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
+
 import { useLoader } from '../../../services/DataLoaderService';
+import { StatusState } from '../../../types/ResponseTypes';
 import EXAMPLES from '../../examples/examples';
 import { CustomDialogTitle } from './CustomDialog';
-import { StatusState } from '../../../types/ResponseTypes';
 import { DragDropProject } from './DragDropProject';
 
 export type OpenFileProps = {

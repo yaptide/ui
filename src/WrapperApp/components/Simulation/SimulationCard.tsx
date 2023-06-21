@@ -20,15 +20,16 @@ import {
 import { SxProps, Theme } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { Fragment, ReactNode, useMemo, useState } from 'react';
+
 import { useLoader } from '../../../services/DataLoaderService';
 import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import {
+	currentJobStatusData,
+	currentTaskStatusData,
 	JobStatusData,
 	SimulationInputFiles,
-	StatusState,
-	currentJobStatusData,
-	currentTaskStatusData
+	StatusState
 } from '../../../types/ResponseTypes';
 import { saveString } from '../../../util/File';
 import { SimulationProgressBar } from './SimulationProgressBar';

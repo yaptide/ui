@@ -16,6 +16,7 @@ import {
 	Typography
 } from '@mui/material';
 import { ReactNode, SyntheticEvent, useMemo } from 'react';
+
 import { DEMO_MODE } from '../../../config/Config';
 import { useAuth } from '../../../services/AuthService';
 import deployInfo from '../../../util/identify/deployInfo.json';
