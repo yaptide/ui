@@ -7,6 +7,7 @@ import { convertToBestUnit } from '../../../util/convertUnits/Units';
 import { pages0DToCsv } from '../../../util/csv/Csv';
 import { saveString } from '../../../util/File';
 import { EstimatorResults } from './ResultsPanel';
+
 export interface TablePage0DItem {
 	id: number;
 	name: string;

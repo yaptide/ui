@@ -19,6 +19,7 @@ import {
 } from '../../../types/ResponseTypes';
 import { DragDropFiles } from './DragDropFiles';
 import { InputFilesEditor } from './InputFilesEditor';
+
 interface InputEditorPanelProps {
 	goToRun?: (simulator: SimulatorType, InputFiles?: SimulationInputFiles) => void;
 }

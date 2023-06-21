@@ -4,6 +4,7 @@ import { SetDetectGeometryCommand } from '../../commands/Commands';
 import { UINumber, UIRow } from '../../libs/ui';
 import { YaptideEditor } from '../../YaptideEditor';
 import { ObjectAbstract } from './Object.Abstract';
+
 export class ObjectGrid extends ObjectAbstract {
 	object?: Detector;
 

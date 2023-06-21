@@ -89,7 +89,7 @@
 			"react-app/jest"
 		],
 		"plugins": [
-			"eslint-plugin-simple-import-sort"
+			"simple-import-sort"
 		],
 		"rules": {
 			"class-methods-use-this": "warn",
@@ -101,7 +101,10 @@
 				}
 			],
 			"simple-import-sort/imports": "error",
-			"simple-import-sort/exports": "error"
+			"simple-import-sort/exports": "error",
+			"import/first": "warn",
+			"import/newline-after-import": "warn",
+			"import/no-duplicates": "error"
 		}
 	},
 	"browserslist": {
