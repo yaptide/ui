@@ -54,7 +54,21 @@ RUN npm run fix-web-dev
 
 # Stage 2: Serve the app using Nginx.
 FROM nginx:alpine
+
+# Copy SSL certificates to the container
+COPY ssl_certificates/server.crt /etc/nginx/conf.d/server.crt
+COPY ssl_certificates/server.key /etc/nginx/conf.d/server.key
+
+# Remove the default Nginx configuration
+RUN rm /etc/nginx/conf.d/default.conf
+
 COPY --from=build /usr/src/app/build /usr/share/nginx/html
+
+# Copy the custom Nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/app.conf
+
 EXPOSE 80
+EXPOSE 443
+
 CMD ["nginx", "-g", "daemon off;"]
 
