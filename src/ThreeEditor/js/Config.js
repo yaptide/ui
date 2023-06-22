@@ -1,4 +1,5 @@
 import { DEPLOYMENT } from '../../config/ConfigService';
+
 function Config() {
 	let name = 'yaptide-config';
 

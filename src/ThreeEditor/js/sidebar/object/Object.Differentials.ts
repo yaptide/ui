@@ -1,6 +1,3 @@
-import * as Scoring from '../../../Simulation/Scoring/ScoringOutputTypes';
-import { DifferentialModifier } from '../../../Simulation/Scoring/ScoringQtyModifiers';
-import { ScoringQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
 import {
 	createDifferentialConfigurationRow,
 	createFullwidthButton,
@@ -8,13 +5,16 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
+import * as Scoring from '../../../Simulation/Scoring/ScoringOutputTypes';
+import { DifferentialModifier } from '../../../Simulation/Scoring/ScoringQtyModifiers';
+import { ScoringQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
 import {
-	RemoveDifferentialModifierCommand,
-	AddDifferentialModifierCommand
+	AddDifferentialModifierCommand,
+	RemoveDifferentialModifierCommand
 } from '../../commands/Commands';
-import { YaptideEditor } from '../../YaptideEditor';
 import { UIBreak, UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
 import { UIOutliner } from '../../libs/ui.three';
+import { YaptideEditor } from '../../YaptideEditor';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectDifferentials extends ObjectAbstract {

@@ -1,3 +1,8 @@
+import * as Comlink from 'comlink';
+import { Signal } from 'signals';
+import * as THREE from 'three';
+import { debounce } from 'throttle-debounce';
+
 import { DEPLOYMENT } from '../../../config/ConfigService';
 import { CounterMap } from '../../../util/CounterMap/CounterMap';
 import { OperationTuple, OperationTupleJSON } from '../../CSG/CSGOperationTuple';
@@ -5,10 +10,6 @@ import { ZoneWorker } from '../../CSG/CSGWorker';
 import CSG from '../../js/libs/csg/three-csg';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
-import * as Comlink from 'comlink';
-import { Signal } from 'signals';
-import * as THREE from 'three';
-import { debounce } from 'throttle-debounce';
 
 export interface BooleanZoneJSON extends SimulationZoneJSON {
 	unionOperations: OperationTupleJSON[][];

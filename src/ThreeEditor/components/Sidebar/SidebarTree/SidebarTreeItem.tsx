@@ -1,26 +1,27 @@
-import { Typography, Checkbox, Menu, MenuItem, TextField } from '@mui/material';
-import { Stack } from '@mui/system';
-import { usePopupState, bindContextMenu, bindMenu } from 'material-ui-popup-state/hooks';
-import { Object3D } from 'three';
-import { SetValueCommand } from '../../../js/commands/SetValueCommand';
-import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
+import { NodeModel, TreeMethods } from '@minoru/react-dnd-treeview/dist/types';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { YaptideEditor } from '../../../js/YaptideEditor';
+import { Checkbox, Menu, MenuItem, TextField, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import { Stack } from '@mui/system';
+import { bindContextMenu, bindMenu, usePopupState } from 'material-ui-popup-state/hooks';
+import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { Object3D } from 'three';
+
 import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
-import { NodeModel, TreeMethods } from '@minoru/react-dnd-treeview/dist/types';
+import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import {
 	canChangeName,
 	getRemoveCommand,
-	isRemovable,
-	hasVisibleChildren
+	hasVisibleChildren,
+	isRemovable
 } from '../../../../util/hooks/useKeyboardEditorControls';
-import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
 import { AddQuantityCommand } from '../../../js/commands/AddQuantityCommand';
-import Box from '@mui/material/Box';
-import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
-import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { SetValueCommand } from '../../../js/commands/SetValueCommand';
+import { YaptideEditor } from '../../../js/YaptideEditor';
+import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
+import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
 
 export type TreeItem = NodeModel<{
 	object: Object3D<THREE.Event> | SimulationElement;

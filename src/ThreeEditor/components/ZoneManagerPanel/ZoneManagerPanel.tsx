@@ -21,10 +21,11 @@ import {
 	useRef,
 	useState
 } from 'react';
+
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
-import { OperationDataList, isOperation } from '../../../types/Operation';
-import { BooleanZone } from '../../Simulation/Zones/BooleanZone';
+import { isOperation, OperationDataList } from '../../../types/Operation';
 import { YaptideEditor } from '../../js/YaptideEditor';
+import { BooleanZone } from '../../Simulation/Zones/BooleanZone';
 import { BooleanAlgebraData } from './BooleanAlgebra/BooleanAlgebraData';
 import BooleanAlgebraRow, { BooleanAlgebraRowProps } from './BooleanAlgebra/BooleanAlgebraRow';
 import { GeometryIdSelect } from './GeometryIdSelect';

@@ -1,16 +1,17 @@
 import { Grid } from '@mui/material';
 import { useCallback } from 'react';
 import { Object3D } from 'three';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
+
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import * as CSG from '../../../../CSG/CSG';
 import {
 	AddZoneOperationTupleCommand,
 	RemoveZoneOperationTupleCommand,
 	SetZoneOperationTupleCommand
 } from '../../../../js/commands/Commands';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { isBasicFigure } from '../../../../Simulation/Figures/BasicFigures';
-import * as CSG from '../../../../CSG/CSG';
 import { isBooleanZone } from '../../../../Simulation/Zones/BooleanZone';
-import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { BooleanAlgebraData } from '../../../ZoneManagerPanel/BooleanAlgebra/BooleanAlgebraData';
 import ZoneManagerPanel from '../../../ZoneManagerPanel/ZoneManagerPanel';
 import { PropertiesCategory } from './PropertiesCategory';

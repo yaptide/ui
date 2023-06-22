@@ -1,7 +1,7 @@
-import { BooleanZone } from '../../../Simulation/Zones/BooleanZone';
 import { createRowText, createZoneRulesPanel } from '../../../../util/Ui/Uis';
-import { YaptideEditor } from '../../YaptideEditor';
+import { BooleanZone } from '../../../Simulation/Zones/BooleanZone';
 import { UIRow, UIText } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectCSG extends ObjectAbstract {

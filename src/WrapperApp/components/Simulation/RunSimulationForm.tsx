@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { MouseEvent, SyntheticEvent, useState } from 'react';
+
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';

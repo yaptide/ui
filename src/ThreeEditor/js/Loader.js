@@ -1,7 +1,8 @@
 import * as THREE from 'three';
+import { TGALoader } from 'three/examples/jsm/loaders/TGALoader.js';
+
 import { AddObjectCommand, SetSceneCommand } from './commands/Commands';
 import { LoaderUtils } from './LoaderUtils.js';
-import { TGALoader } from 'three/examples/jsm/loaders/TGALoader.js';
 
 function Loader(editor) {
 	const scope = this;

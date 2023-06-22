@@ -1,7 +1,8 @@
-import { Box, Button, Typography } from '@mui/material';
-import React from 'react';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import { Box, Button, Typography } from '@mui/material';
+import React from 'react';
+
 import {
 	DragDropFile,
 	DragDropInnerElementProps,

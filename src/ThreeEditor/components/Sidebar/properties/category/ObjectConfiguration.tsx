@@ -1,12 +1,13 @@
 import { Object3D } from 'three';
+
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	BEAM_MODULATOR_MODE_OPTIONS,
 	isBeamModulator
 } from '../../../../Simulation/SpecialComponents/BeamModulator';
 import { isCTCube } from '../../../../Simulation/SpecialComponents/CTCube';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
-import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { SelectPropertyField, TextPropertyField } from '../fields/PropertyField';
 import { SourceFileDefinitionField } from '../fields/SourceFileField';
 import { PropertiesCategory } from './PropertiesCategory';

@@ -2,6 +2,7 @@ import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
 import { useSnackbar } from 'notistack';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+
 import { useConfig } from '../config/ConfigService';
 import { RequestAuthLogin, RequestAuthLogout, RequestAuthRefresh } from '../types/RequestTypes';
 import {

@@ -1,18 +1,19 @@
 import { Object3D } from 'three';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
-import {
-	ConditionalNumberPropertyField,
-	ConditionalObjectSelectPropertyField
-} from '../fields/PropertyField';
+
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
-import { PropertiesCategory } from './PropertiesCategory';
-import { ObjectSelectPropertyField } from '../fields/ObjectSelectPropertyField';
-import { isQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
+import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValueCommand';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	DETECTOR_KEYWORD_OPTIONS,
 	MEDIUM_KEYWORD_OPTIONS
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
-import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValueCommand';
+import { isQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
+import { ObjectSelectPropertyField } from '../fields/ObjectSelectPropertyField';
+import {
+	ConditionalNumberPropertyField,
+	ConditionalObjectSelectPropertyField
+} from '../fields/PropertyField';
+import { PropertiesCategory } from './PropertiesCategory';
 
 export function QuantityConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;

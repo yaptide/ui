@@ -1,14 +1,15 @@
 import Box from '@mui/material/Box';
 import { SyntheticEvent, useEffect, useState } from 'react';
-import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
-import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
+
 import { useConfig } from '../config/ConfigService';
 import { useAuth } from '../services/AuthService';
 import { useLoader } from '../services/DataLoaderService';
 import { JsRootService } from '../services/JsRootService';
 import { useStore } from '../services/StoreService';
+import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
+import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
 import { SimulatorType } from '../types/RequestTypes';
-import { SimulationInputFiles, StatusState, currentJobStatusData } from '../types/ResponseTypes';
+import { currentJobStatusData, SimulationInputFiles, StatusState } from '../types/ResponseTypes';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
 import NavDrawer from './components/NavDrawer/NavDrawer';
 import { AboutPanel } from './components/Panels/AboutPanel';

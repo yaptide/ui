@@ -1,12 +1,13 @@
 import { Box, Button, ButtonGroup, Divider, Menu, MenuItem } from '@mui/material';
-import { useCallback, useEffect, useState, MouseEvent } from 'react';
+import { MouseEvent, useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
+
+import { useSignal } from '../../../../util/hooks/signals';
+import { toggleFullscreen } from '../../../../util/toggleFullscreen';
 import {
 	CommandButtonProps,
 	getAddElementButtonProps
 } from '../../../../util/Ui/CommandButtonProps';
-import { useSignal } from '../../../../util/hooks/signals';
-import { toggleFullscreen } from '../../../../util/toggleFullscreen';
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { ClearHistoryDialog } from '../../Dialog/ClearHistoryDialog';
 

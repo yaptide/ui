@@ -1,13 +1,6 @@
 import * as THREE from 'three';
-import {
-	BasicFigure,
-	BASIC_GEOMETRY_OPTIONS,
-	isBasicFigure,
-	isBoxFigure,
-	isCylinderFigure,
-	isSphereFigure
-} from '../../../Simulation/Figures/BasicFigures';
-import { Detector, isDetector } from '../../../Simulation/Detectors/Detector';
+
+import { DETECTOR_OPTIONS } from '../../../../types/SimulationTypes/DetectTypes/DetectTypes';
 import {
 	createRowParamNumber,
 	createRowSelect,
@@ -15,6 +8,16 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
+import { HollowCylinderGeometry } from '../../../Simulation/Base/HollowCylinderGeometry';
+import { Detector, isDetector } from '../../../Simulation/Detectors/Detector';
+import {
+	BASIC_GEOMETRY_OPTIONS,
+	BasicFigure,
+	isBasicFigure,
+	isBoxFigure,
+	isCylinderFigure,
+	isSphereFigure
+} from '../../../Simulation/Figures/BasicFigures';
 import { isWorldZone, WorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
 import {
 	SetDetectGeometryCommand,
@@ -22,11 +25,9 @@ import {
 	SetGeometryCommand,
 	SetValueCommand
 } from '../../commands/Commands';
-import { YaptideEditor } from '../../YaptideEditor';
 import { UINumber, UIRow, UISelect, UIText } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
 import { ObjectAbstract } from './Object.Abstract';
-import { HollowCylinderGeometry } from '../../../Simulation/Base/HollowCylinderGeometry';
-import { DETECTOR_OPTIONS } from '../../../../types/SimulationTypes/DetectTypes/DetectTypes';
 
 export class ObjectDimensions extends ObjectAbstract {
 	object?: BasicFigure | Detector | WorldZone;

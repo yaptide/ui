@@ -1,5 +1,6 @@
 import * as Comlink from 'comlink';
 import * as THREE from 'three';
+
 import { DEPLOYMENT } from '../../config/ConfigService';
 
 export class ZoneWorker {

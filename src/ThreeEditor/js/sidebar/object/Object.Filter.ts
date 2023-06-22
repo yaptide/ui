@@ -1,5 +1,5 @@
 import { MathUtils } from 'three';
-import { ScoringFilter } from '../../../Simulation/Scoring/ScoringFilter';
+
 import * as Rule from '../../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
 import {
 	createFullwidthButton,
@@ -8,17 +8,18 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
-import { SetFilterRuleCommand } from '../../commands/SetFilterRuleCommand';
-import { YaptideEditor } from '../../YaptideEditor';
-import { UIBreak, UIButton, UINumber, UIRow, UISelect } from '../../libs/ui';
-import { UIOutliner } from '../../libs/ui.three';
-import { ObjectAbstract } from './Object.Abstract';
 import {
 	FilterRule,
 	isFloatRule,
 	isIDRule,
 	isIntRule
 } from '../../../Simulation/Scoring/FilterRule';
+import { ScoringFilter } from '../../../Simulation/Scoring/ScoringFilter';
+import { SetFilterRuleCommand } from '../../commands/SetFilterRuleCommand';
+import { UIBreak, UIButton, UINumber, UIRow, UISelect } from '../../libs/ui';
+import { UIOutliner } from '../../libs/ui.three';
+import { YaptideEditor } from '../../YaptideEditor';
+import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectFilter extends ObjectAbstract {
 	object?: ScoringFilter;

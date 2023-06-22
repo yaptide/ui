@@ -1,18 +1,19 @@
 import { Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { Object3D } from 'three';
+
 import { PARTICLE_TYPES } from '../../../../../types/Particle';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
-import {
-	BEAM_SOURCE_TYPE,
-	Beam,
-	SAD_TYPE,
-	SIGMA_TYPE,
-	SadType,
-	SigmaType,
-	isBeam
-} from '../../../../Simulation/Physics/Beam';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
+import {
+	Beam,
+	BEAM_SOURCE_TYPE,
+	isBeam,
+	SAD_TYPE,
+	SadType,
+	SIGMA_TYPE,
+	SigmaType
+} from '../../../../Simulation/Physics/Beam';
 import { ParticleSelect } from '../../../Select/ParticleSelect';
 import {
 	NumberPropertyField,

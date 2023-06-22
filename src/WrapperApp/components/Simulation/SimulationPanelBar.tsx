@@ -14,13 +14,13 @@ import {
 	CardProps,
 	IconButton,
 	Pagination,
+	styled,
 	Toolbar,
 	Tooltip,
-	Typography,
-	styled
+	Typography
 } from '@mui/material';
-
 import { ChangeEvent } from 'react';
+
 import { OrderBy, OrderType } from '../../../types/RequestTypes';
 import {
 	ButtonWithPopperList,

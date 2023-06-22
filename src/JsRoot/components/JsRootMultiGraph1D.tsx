@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+
 import { GroupedPage1D } from '../GraphData';
 import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
 

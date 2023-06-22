@@ -10,8 +10,9 @@ import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
-import { CSSObject, Theme, styled } from '@mui/material/styles';
+import { CSSObject, styled, Theme } from '@mui/material/styles';
 import { ReactElement, ReactNode, SyntheticEvent } from 'react';
+
 import { useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
 import { NavDrawerList } from './NavDrawerList';

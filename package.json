@@ -90,6 +90,9 @@
 			"react-app",
 			"react-app/jest"
 		],
+		"plugins": [
+			"simple-import-sort"
+		],
 		"rules": {
 			"class-methods-use-this": "warn",
 			"lines-between-class-members": [
@@ -99,13 +102,11 @@
 					"exceptAfterSingleLine": true
 				}
 			],
-			"sort-imports": [
-				"warn",
-				{
-					"ignoreCase": true,
-					"ignoreMemberSort": true
-				}
-			]
+			"simple-import-sort/imports": "error",
+			"simple-import-sort/exports": "error",
+			"import/first": "warn",
+			"import/newline-after-import": "warn",
+			"import/no-duplicates": "error"
 		}
 	},
 	"browserslist": {
@@ -128,6 +129,7 @@
 		"@types/selenium-webdriver": "^4.1.14",
 		"@types/three": "^0.150.1",
 		"cross-env": "^7.0.3",
+		"eslint-plugin-simple-import-sort": "^10.0.0",
 		"gh-pages": "^5.0.0",
 		"husky": "^8.0.3",
 		"jest-matcher-deep-close-to": "^3.0.2",
@@ -137,7 +139,10 @@
 		"selenium-webdriver": "^4.9.0"
 	},
 	"lint-staged": {
-		"*.{ts,tsx,js,jsx}": "prettier --ignore-unknown --ignore-path .gitignore --ignore-path .prettierignore --write",
+		"*.{ts,tsx,js,jsx}": [
+			"prettier --ignore-unknown --ignore-path .gitignore --ignore-path .prettierignore --write",
+			"npx eslint --fix"
+		],
 		"*.{json,less,md,css,html}": "prettier --ignore-unknown --ignore-path .gitignore --ignore-path .prettierignore --write"
 	}
 }

@@ -1,3 +1,6 @@
+import { Command } from '../../ThreeEditor/commands/basic/AbstractCommand';
+import { ObjectManagementFactory } from '../../ThreeEditor/commands/factories/ObjectManagementFactory';
+import { YaptideEditor } from '../../ThreeEditor/js/YaptideEditor';
 import { SimulationZone } from '../../ThreeEditor/Simulation/Base/SimulationZone';
 import { Detector } from '../../ThreeEditor/Simulation/Detectors/Detector';
 import {
@@ -7,14 +10,11 @@ import {
 	SphereFigure
 } from '../../ThreeEditor/Simulation/Figures/BasicFigures';
 import { ScoringFilter } from '../../ThreeEditor/Simulation/Scoring/ScoringFilter';
-import { ScoringOutput, isOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
-import { ScoringQuantity, isQuantity } from '../../ThreeEditor/Simulation/Scoring/ScoringQuantity';
+import { isOutput, ScoringOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
+import { isQuantity, ScoringQuantity } from '../../ThreeEditor/Simulation/Scoring/ScoringQuantity';
 import { BeamModulator } from '../../ThreeEditor/Simulation/SpecialComponents/BeamModulator';
 import { CTCube } from '../../ThreeEditor/Simulation/SpecialComponents/CTCube';
 import { BooleanZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
-import { Command } from '../../ThreeEditor/commands/basic/AbstractCommand';
-import { ObjectManagementFactory } from '../../ThreeEditor/commands/factories/ObjectManagementFactory';
-import { YaptideEditor } from '../../ThreeEditor/js/YaptideEditor';
 
 /**
  * A function that returns an array of {@link CommandButtonProps} based on editor instance and condensed data.

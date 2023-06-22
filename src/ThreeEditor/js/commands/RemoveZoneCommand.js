@@ -1,5 +1,5 @@
-import { Command } from '../Command.js';
 import { BooleanZone } from '../../Simulation/Zones/BooleanZone';
+import { Command } from '../Command.js';
 
 /**
  * @typedef {import('../YaptideEditor.js').YaptideEditor} Editor

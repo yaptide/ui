@@ -1,22 +1,23 @@
+import { Button } from '@mui/material';
 import { Object3D } from 'three';
+
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import { AddDifferentialModifierCommand } from '../../../../js/commands/AddDifferentialModifierCommand';
+import { RemoveDifferentialModifierCommand } from '../../../../js/commands/RemoveDifferentialModifierCommand';
+import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
+import {
+	DETECTOR_MODIFIERS,
+	DETECTOR_MODIFIERS_OPTIONS
+} from '../../../../Simulation/Scoring/ScoringOutputTypes';
+import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
+import { isQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import {
 	DifferentialConfigurationField,
 	ModifiersOutlinerField,
 	PropertyField
 } from '../fields/PropertyField';
-import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { PropertiesCategory } from './PropertiesCategory';
-import { isQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
-import { Button } from '@mui/material';
-import { AddDifferentialModifierCommand } from '../../../../js/commands/AddDifferentialModifierCommand';
-import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValueCommand';
-import {
-	DETECTOR_MODIFIERS,
-	DETECTOR_MODIFIERS_OPTIONS
-} from '../../../../Simulation/Scoring/ScoringOutputTypes';
-import { RemoveDifferentialModifierCommand } from '../../../../js/commands/RemoveDifferentialModifierCommand';
-import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
 
 export function QuantityDifferentialScoring(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;

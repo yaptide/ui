@@ -1,4 +1,5 @@
 import { Box, Typography } from '@mui/material';
+
 import { Page0D } from '../GraphData';
 
 export function JsRootGraph0D(props: { page: Page0D; title?: string }) {
