@@ -309,7 +309,10 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 				const { jobId } = info;
 
 				if (cache && statusDataCache.has(jobId))
-					return Promise.resolve(statusDataCache.get(jobId));
+					return Promise.resolve<ReturnType<typeof statusDataCache.get>>({
+						...statusDataCache.get(jobId),
+						...info
+					});
 
 				return authKy
 					.get(endPoint, {
