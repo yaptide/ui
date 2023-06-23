@@ -1,4 +1,4 @@
-import { DEPLOYMENT } from '../../config/ConfigService';
+import { devLog } from '../../util/devLog';
 
 function Config() {
 	let name = 'yaptide-config';
@@ -80,11 +80,7 @@ function Config() {
 			}
 
 			window.localStorage[name] = JSON.stringify(storage);
-			if (DEPLOYMENT === 'dev')
-				console.log(
-					'[' + /\d\d\:\d\d\:\d\d/.exec(new Date().toString())[0] + ']', // eslint-disable-line
-					'Saved config to LocalStorage.'
-				);
+			devLog('Saved config to LocalStorage.');
 		},
 
 		clear: function () {

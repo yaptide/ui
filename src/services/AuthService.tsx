@@ -69,7 +69,7 @@ export interface AuthContext {
 const [useAuth, AuthContextProvider] = createGenericContext<AuthContext>();
 
 const Auth = ({ children }: AuthProps) => {
-	const { backendUrl, demoMode: DEMO_MODE } = useConfig();
+	const { backendUrl, demoMode } = useConfig();
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER, isAuthUser));
 	const [reachInterval, setReachInterval] = useState<number | undefined>(undefined);
 	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(180000);
@@ -132,11 +132,11 @@ const Auth = ({ children }: AuthProps) => {
 	);
 
 	useEffect(() => {
-		if (DEMO_MODE) enqueueSnackbar('Demo mode enabled.', { variant: 'info' });
-	}, [DEMO_MODE, enqueueSnackbar]);
+		if (demoMode) enqueueSnackbar('Demo mode enabled.', { variant: 'info' });
+	}, [demoMode, enqueueSnackbar]);
 
 	const reachServer = useCallback(() => {
-		if (DEMO_MODE) return Promise.resolve(setIsServerReachable(false));
+		if (demoMode) return Promise.resolve(setIsServerReachable(false));
 		return kyIntervalRef
 			.get(``)
 			.json<YaptideResponse>()
@@ -151,7 +151,7 @@ const Auth = ({ children }: AuthProps) => {
 				})
 			)
 			.catch(() => setIsServerReachable(false));
-	}, [DEMO_MODE, enqueueSnackbar, kyIntervalRef]);
+	}, [demoMode, enqueueSnackbar, kyIntervalRef]);
 
 	useIntervalAsync(reachServer, reachInterval);
 	useEffect(() => {
@@ -159,13 +159,13 @@ const Auth = ({ children }: AuthProps) => {
 	}, [reachServer]);
 
 	const refresh = useCallback(() => {
-		if (DEMO_MODE || !isServerReachable) return Promise.resolve(setRefreshInterval(undefined));
+		if (demoMode || !isServerReachable) return Promise.resolve(setRefreshInterval(undefined));
 		return kyIntervalRef
 			.get(`auth/refresh`)
 			.json<ResponseAuthRefresh>()
 			.then(({ accessExp }) => setRefreshInterval(getRefreshDelay(accessExp)))
 			.catch((_: HTTPError) => {});
-	}, [DEMO_MODE, isServerReachable, kyIntervalRef]);
+	}, [demoMode, isServerReachable, kyIntervalRef]);
 
 	useEffect(() => {
 		if (user !== null && refreshInterval === undefined && isServerReachable)
@@ -199,7 +199,7 @@ const Auth = ({ children }: AuthProps) => {
 	}, [kyRef]);
 
 	const authKy = useMemo(() => kyRef, [kyRef]);
-	const isAuthorized = useMemo(() => user !== null || DEMO_MODE, [DEMO_MODE, user]);
+	const isAuthorized = useMemo(() => user !== null || demoMode, [demoMode, user]);
 
 	useEffect(() => {
 		save(StorageKey.USER, user);

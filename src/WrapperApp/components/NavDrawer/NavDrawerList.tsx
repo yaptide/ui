@@ -54,7 +54,7 @@ export function NavDrawerList({
 	handleChange,
 	tabsValue
 }: NavDrawerListProps) {
-	const { demoMode: DEMO_MODE } = useConfig();
+	const { demoMode } = useConfig();
 	const { isAuthorized, user, logout } = useAuth();
 	const userLogout = useMemo(
 		() => (
@@ -104,7 +104,7 @@ export function NavDrawerList({
 				gridAutoRows: '1fr auto',
 				height: 'calc(100% - 64px)'
 			}}>
-			{!DEMO_MODE ? (
+			{!demoMode ? (
 				<Box>
 					<NavDrawerElement
 						menuOption={{
@@ -136,7 +136,7 @@ export function NavDrawerList({
 								<PersonIcon
 									fontSize='large'
 									sx={{
-										marginBottom: !DEMO_MODE ? 4.5 : undefined
+										marginBottom: !demoMode ? 4.5 : undefined
 									}}
 								/>
 							)
@@ -147,7 +147,7 @@ export function NavDrawerList({
 							type: 'label'
 						}}
 						sx={{
-							minHeight: !DEMO_MODE ? 96 : 64
+							minHeight: !demoMode ? 96 : 64
 						}}
 					/>
 					<Divider />

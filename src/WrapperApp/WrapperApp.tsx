@@ -19,7 +19,7 @@ import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
 
 function WrapperApp() {
-	const { demoMode: DEMO_MODE } = useConfig();
+	const { demoMode } = useConfig();
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
 	const { editorProvider, resultsProvider, canLoadEditorData, clearLoadedEditor } = useLoader();
 	const { isAuthorized, logout } = useAuth();
@@ -58,9 +58,9 @@ function WrapperApp() {
 	}, [resultsProvider, setResultsSimulationData]);
 
 	useEffect(() => {
-		if (!isAuthorized && !DEMO_MODE) setTabsValue('login');
+		if (!isAuthorized && !demoMode) setTabsValue('login');
 		else setTabsValue('editor');
-	}, [isAuthorized]);
+	}, [demoMode, isAuthorized]);
 
 	useEffect(() => {
 		if (resultsSimulationData)

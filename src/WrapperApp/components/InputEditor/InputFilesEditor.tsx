@@ -24,7 +24,7 @@ interface InputFilesEditorProps {
 }
 
 export function InputFilesEditor(props: InputFilesEditorProps) {
-	const { demoMode: DEMO_MODE } = useConfig();
+	const { demoMode } = useConfig();
 	const inputFiles = props.inputFiles ?? _defaultShInputFiles;
 	const simulator = props.simulator;
 	const theme = useTheme();
@@ -57,7 +57,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 					<Button
 						color='success'
 						variant='contained'
-						disabled={DEMO_MODE}
+						disabled={demoMode}
 						onClick={() => props.runSimulation?.call(null, simulator, inputFiles)}>
 						Run with these input files
 					</Button>
@@ -71,7 +71,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 				</Button>
 				{props.saveAndExit && (
 					<Button
-						disabled={DEMO_MODE}
+						disabled={demoMode}
 						color='info'
 						onClick={() => props.saveAndExit?.call(null, inputFiles)}>
 						Save and exit

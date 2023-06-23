@@ -38,7 +38,7 @@ export default function SimulationPanel({
 	forwardedInputFiles,
 	forwardedSimulator
 }: SimulationPanelProps) {
-	const { demoMode: DEMO_MODE } = useConfig();
+	const { demoMode } = useConfig();
 	const {
 		editorRef,
 		setResultsSimulationData,
@@ -113,17 +113,17 @@ export default function SimulationPanel({
 
 	const updateSimulationData = useCallback(
 		() =>
-			!DEMO_MODE &&
+			!demoMode &&
 			getPageStatus(simulationInfo, true, handleBeforeCacheWrite, controller.signal).then(
 				s => {
 					setSimulationsStatusData([...s]);
 				}
 			),
-		[DEMO_MODE, getPageStatus, simulationInfo, handleBeforeCacheWrite, controller.signal]
+		[demoMode, getPageStatus, simulationInfo, handleBeforeCacheWrite, controller.signal]
 	);
 
 	useEffect(() => {
-		if (!DEMO_MODE)
+		if (!demoMode)
 			getHelloWorld(controller.signal)
 				.then(() => {
 					setBackendAlive(true);
@@ -141,7 +141,7 @@ export default function SimulationPanel({
 		setSimulationIDInterval,
 		isBackendAlive,
 		setBackendAlive,
-		DEMO_MODE
+		demoMode
 	]);
 
 	useInterval(updateSimulationInfo, simulationIDInterval, true);
@@ -218,7 +218,7 @@ export default function SimulationPanel({
 
 	useEffect(() => {
 		const updateCurrentSimulation = async () => {
-			if (!DEMO_MODE && editorRef.current) {
+			if (!demoMode && editorRef.current) {
 				const hash = editorRef.current.toJSON().hash;
 				const currentStatus = simulationsStatusData.find(async s => {
 					if (currentJobStatusData[StatusState.COMPLETED](s)) {
@@ -244,7 +244,7 @@ export default function SimulationPanel({
 		getJobInputs,
 		controller.signal,
 		getFullSimulationData,
-		DEMO_MODE
+		demoMode
 	]);
 
 	useEffect(() => {
@@ -396,7 +396,7 @@ export default function SimulationPanel({
 				handleLoadResults={handleLoadResults}
 				handleShowInputFiles={handleShowInputFiles}
 			/>
-			{DEMO_MODE ? (
+			{demoMode ? (
 				<DemoCardGrid
 					simulations={EXAMPLES}
 					title='Demo Simulation Results'

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Object3D } from 'three';
 
 import { YaptideEditor } from '../../ThreeEditor/js/YaptideEditor';
+import { devLog } from '../devLog';
 
 type SignalType = keyof YaptideEditor['signals'];
 
@@ -94,7 +95,7 @@ function useSmartWatchEditorState<T>(
 				if (debug) console.log(watchedPropertyArrRef.current, property);
 				if (watchAnyChange) setState({ state: proxyObjectRef.current });
 				else if (property && watchedPropertyArrRef.current.has(property)) {
-					console.log('update', property, object[property]);
+					devLog('Updated watched object property.', object, property, object[property]);
 					setState({ state: proxyObjectRef.current });
 				}
 			}

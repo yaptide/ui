@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 
 import { createGenericContext } from '../services/GenericContext';
+import { snakeToCamelCase } from '../types/TypeTransformUtil';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:5000';
 const DEMO_MODE = process.env.REACT_APP_TARGET === 'demo';
@@ -17,6 +18,10 @@ interface Config {
 	altAuth: boolean;
 }
 
+function isKeyForConfig(key: string): key is keyof Config {
+	return ['backendUrl', 'deployment', 'demoMode', 'altAuth'].includes(key);
+}
+
 const ConfigProvider = ({ children }: { children: ReactNode }) => {
 	const [config, setConfig] = useState<Config>({
 		backendUrl: BACKEND_URL,
@@ -26,40 +31,38 @@ const ConfigProvider = ({ children }: { children: ReactNode }) => {
 	});
 
 	useEffect(() => {
-		if (config.deployment === 'dev') {
+		const defineProperty = (
+			name: string,
+			readonly = false,
+			configKey = snakeToCamelCase(name)
+		) => {
 			try {
-				Object.defineProperties(window, {
-					BACKEND_URL: {
-						set: function (url: string) {
-							setConfig(prevConfig => ({ ...prevConfig, backendUrl: url }));
-						},
-						get: function () {
-							return config.backendUrl;
-						}
+				if (!isKeyForConfig(configKey))
+					throw new Error(`Config key ${configKey} not found`);
+
+				if (Object.prototype.hasOwnProperty.call(window, name)) return;
+
+				Object.defineProperty(window, name, {
+					get() {
+						return config[configKey];
 					},
-					DEPLOYMENT: {
-						get: function () {
-							return config.deployment;
-						}
-					},
-					DEMO_MODE: {
-						set: function (demoMode: boolean) {
-							setConfig(prevConfig => ({ ...prevConfig, demoMode }));
-						},
-						get: function () {
-							return config.demoMode;
-						}
-					},
-					ALT_AUTH: {
-						set: function (altAuth: boolean) {
-							setConfig(prevConfig => ({ ...prevConfig, altAuth }));
-						},
-						get: function () {
-							return config.altAuth;
-						}
-					}
+					set: readonly
+						? undefined
+						: value =>
+								setConfig(prevConfig => ({
+									...prevConfig,
+									[configKey]: value
+								}))
 				});
-			} catch (e) {}
+			} catch (e) {
+				console.error(`Failed to define global property ${name}: ${e}`);
+			}
+		};
+		if (config.deployment === 'dev') {
+			defineProperty('BACKEND_URL');
+			defineProperty('DEPLOYMENT', true);
+			defineProperty('DEMO_MODE');
+			defineProperty('ALT_AUTH');
 		}
 	}, [config]);
 

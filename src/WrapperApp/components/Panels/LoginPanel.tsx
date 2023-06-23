@@ -5,7 +5,7 @@ import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
 
 export default function LoginPanel() {
-	const { altAuth: ALT_AUTH } = useConfig();
+	const { altAuth } = useConfig();
 	const { login } = useAuth();
 	const theme = useTheme();
 
@@ -79,7 +79,7 @@ export default function LoginPanel() {
 						onClick={() => login(username, password)}>
 						Login
 					</Button>
-					{ALT_AUTH && (
+					{altAuth && (
 						<>
 							<Typography
 								color='text.secondary'
