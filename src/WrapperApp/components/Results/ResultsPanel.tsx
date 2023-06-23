@@ -31,7 +31,6 @@ function ResultsPanel() {
 
 	useEffect(() => {
 		setTabsValue(0);
-		console.log('simulation', simulation);
 		setEstimatorsResults(parseEstimators(simulation?.estimators ?? []));
 	}, [simulation]);
 

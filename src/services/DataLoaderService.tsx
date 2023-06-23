@@ -42,23 +42,27 @@ const readFile = (file: File) => {
 const Loader = (props: { children: ReactNode }) => {
 	const { editorRef, setResultsSimulationData, setLocalResultsSimulationData } = useStore();
 
-	const loadData = useCallback((dataArray: unknown[]) => {
-		if (Array.isArray(dataArray)) {
-			const loadedResults = dataArray.filter(isFullSimulationData);
-			if (loadedResults.length === 0) console.info('No results data found in loaded data');
-			setLocalResultsSimulationData(prev => {
-				const result: FullSimulationData[] = prev.concat(loadedResults);
-				return result;
-			});
-			console.log('loadedResults', loadedResults);
-			setResultsSimulationData([...loadedResults].pop());
-			const loadedEditor = dataArray.find(isEditorJson);
-			if (loadedEditor) {
-				editorRef.current?.loader.loadJSON(loadedEditor);
-				//TODO: #1089 rewrite to support our versioning and types of data. Default loader is now mostly useless
+	const loadData = useCallback(
+		(dataArray: unknown[]) => {
+			if (Array.isArray(dataArray)) {
+				const loadedResults = dataArray.filter(isFullSimulationData);
+				if (loadedResults.length === 0)
+					console.info('No results data found in loaded data');
+				setLocalResultsSimulationData(prev => {
+					const result: FullSimulationData[] = prev.concat(loadedResults);
+					return result;
+				});
+				console.log('loadedResults', loadedResults);
+				setResultsSimulationData([...loadedResults].pop());
+				const loadedEditor = dataArray.find(isEditorJson);
+				if (loadedEditor) {
+					editorRef.current?.loader.loadJSON(loadedEditor);
+					//TODO: #1089 rewrite to support our versioning and types of data. Default loader is now mostly useless
+				}
 			}
-		}
-	}, []);
+		},
+		[editorRef, setLocalResultsSimulationData, setResultsSimulationData]
+	);
 
 	const loadFromFiles = useCallback(
 		(files: FileList | undefined) => {

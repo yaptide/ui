@@ -4,7 +4,7 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
 
 import { useConfig } from '../../../config/ConfigService';
-import { isFullSimulationData, useLoader } from '../../../services/DataLoaderService';
+import { isFullSimulationData } from '../../../services/DataLoaderService';
 import { FullSimulationData, useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import EXAMPLES from '../../../ThreeEditor/examples/examples';
@@ -42,8 +42,7 @@ export default function SimulationPanel({
 	const {
 		editorRef,
 		setResultsSimulationData,
-		localResultsSimulationData,
-		setLocalResultsSimulationData
+		localResultsSimulationData
 	} = useStore();
 	const {
 		cancelJobDirect,
@@ -81,9 +80,6 @@ export default function SimulationPanel({
 	const [trackedId, setTrackedId] = useState<string>();
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
 	const [simulationsStatusData, setSimulationsStatusData] = useState<JobStatusData[]>([]);
-	const [localSimulationData, setLocalSimulationData] = useState<FullSimulationData[]>(
-		localResultsSimulationData ?? []
-	);
 
 	const [simulationIDInterval, setSimulationIDInterval] = useState<number | null>(null);
 	const [controller] = useState(new AbortController());
@@ -367,7 +363,7 @@ export default function SimulationPanel({
 				</Modal>
 			)}
 			<DemoCardGrid
-				simulations={localSimulationData}
+				simulations={localResultsSimulationData ?? []}
 				title='Local Simulation Results'
 				handleLoadResults={handleLoadResults}
 				handleShowInputFiles={handleShowInputFiles}
