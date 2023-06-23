@@ -4,6 +4,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { SnackbarProvider } from 'notistack';
 import { useMemo } from 'react';
 
+import { ConfigProvider } from './config/ConfigService';
 import { PythonConverterService } from './PythonConverter/PythonConverterService';
 import { Auth } from './services/AuthService';
 import { Loader } from './services/DataLoaderService';
@@ -56,17 +57,19 @@ function App() {
 		<StyledEngineProvider injectFirst>
 			<SnackbarProvider maxSnack={3}>
 				<ThemeProvider theme={theme}>
-					<Auth>
-						<ShSimulation>
-							<PythonConverterService>
-								<Loader>
-									<Store>
-										<WrapperApp />
-									</Store>
-								</Loader>
-							</PythonConverterService>
-						</ShSimulation>
-					</Auth>
+					<ConfigProvider>
+						<Auth>
+							<ShSimulation>
+								<PythonConverterService>
+									<Loader>
+										<Store>
+											<WrapperApp />
+										</Store>
+									</Loader>
+								</PythonConverterService>
+							</ShSimulation>
+						</Auth>
+					</ConfigProvider>
 				</ThemeProvider>
 			</SnackbarProvider>
 		</StyledEngineProvider>

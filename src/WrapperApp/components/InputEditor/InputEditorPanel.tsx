@@ -4,7 +4,7 @@ import { useSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
 import { throttle } from 'throttle-debounce';
 
-import { DEMO_MODE } from '../../../config/Config';
+import { useConfig } from '../../../config/ConfigService';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
 import { readFile } from '../../../services/DataLoaderService';
 import { useShSimulation } from '../../../services/ShSimulatorService';
@@ -27,6 +27,7 @@ interface InputEditorPanelProps {
 type GeneratorLocation = 'local' | 'remote';
 
 export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
+	const { demoMode } = useConfig();
 	const { enqueueSnackbar } = useSnackbar();
 	const { editorRef } = useStore();
 	const { convertToInputFiles } = useShSimulation();
@@ -122,7 +123,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 						value='local'>
 						Local
 					</ToggleButton>
-					{!DEMO_MODE && (
+					{!demoMode && (
 						<ToggleButton
 							value='remote'
 							color='warning'>
@@ -167,14 +168,14 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 						color='info'>
 						SHIELD-HIT12A
 					</ToggleButton>
-					{!DEMO_MODE && (
+					{!demoMode && (
 						<ToggleButton
 							value={SimulatorType.TOPAS}
 							color='info'>
 							TOPAS
 						</ToggleButton>
 					)}
-					{!DEMO_MODE && (
+					{!demoMode && (
 						<ToggleButton
 							value={SimulatorType.FLUKA}
 							color='info'>
@@ -213,7 +214,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 				simulator={simulator}
 				inputFiles={inputFiles}
 				onChange={inputFiles => setInputFiles(inputFiles)}
-				runSimulation={!DEMO_MODE ? goToRun : undefined}
+				runSimulation={!demoMode ? goToRun : undefined}
 			/>
 		</Box>
 	);

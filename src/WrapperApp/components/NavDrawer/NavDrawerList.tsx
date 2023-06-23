@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import { ReactNode, SyntheticEvent, useMemo } from 'react';
 
-import { DEMO_MODE } from '../../../config/Config';
+import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
 import deployInfo from '../../../util/identify/deployInfo.json';
 import { MenuOption } from './NavDrawer';
@@ -54,6 +54,7 @@ export function NavDrawerList({
 	handleChange,
 	tabsValue
 }: NavDrawerListProps) {
+	const { demoMode } = useConfig();
 	const { isAuthorized, user, logout } = useAuth();
 	const userLogout = useMemo(
 		() => (
@@ -103,7 +104,7 @@ export function NavDrawerList({
 				gridAutoRows: '1fr auto',
 				height: 'calc(100% - 64px)'
 			}}>
-			{!DEMO_MODE ? (
+			{!demoMode ? (
 				<Box>
 					<NavDrawerElement
 						menuOption={{
@@ -135,7 +136,7 @@ export function NavDrawerList({
 								<PersonIcon
 									fontSize='large'
 									sx={{
-										marginBottom: !DEMO_MODE ? 4.5 : undefined
+										marginBottom: !demoMode ? 4.5 : undefined
 									}}
 								/>
 							)
@@ -146,7 +147,7 @@ export function NavDrawerList({
 							type: 'label'
 						}}
 						sx={{
-							minHeight: !DEMO_MODE ? 96 : 64
+							minHeight: !demoMode ? 96 : 64
 						}}
 					/>
 					<Divider />

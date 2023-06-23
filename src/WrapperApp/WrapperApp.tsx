@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import { SyntheticEvent, useEffect, useState } from 'react';
 
-import { DEMO_MODE } from '../config/Config';
+import { useConfig } from '../config/ConfigService';
 import { useAuth } from '../services/AuthService';
 import { useLoader } from '../services/DataLoaderService';
 import { JsRootService } from '../services/JsRootService';
@@ -19,6 +19,7 @@ import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
 
 function WrapperApp() {
+	const { demoMode } = useConfig();
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
 	const { editorProvider, resultsProvider, canLoadEditorData, clearLoadedEditor } = useLoader();
 	const { isAuthorized, logout } = useAuth();
@@ -57,9 +58,9 @@ function WrapperApp() {
 	}, [resultsProvider, setResultsSimulationData]);
 
 	useEffect(() => {
-		if (!isAuthorized && !DEMO_MODE) setTabsValue('login');
+		if (!isAuthorized && !demoMode) setTabsValue('login');
 		else setTabsValue('editor');
-	}, [isAuthorized]);
+	}, [demoMode, isAuthorized]);
 
 	useEffect(() => {
 		if (resultsSimulationData)

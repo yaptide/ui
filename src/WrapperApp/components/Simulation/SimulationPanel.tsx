@@ -3,7 +3,7 @@ import { useSnackbar } from 'notistack';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
 
-import { DEMO_MODE } from '../../../config/Config';
+import { useConfig } from '../../../config/ConfigService';
 import { isFullSimulationData, useLoader } from '../../../services/DataLoaderService';
 import { FullSimulationData, useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
@@ -38,6 +38,7 @@ export default function SimulationPanel({
 	forwardedInputFiles,
 	forwardedSimulator
 }: SimulationPanelProps) {
+	const { demoMode } = useConfig();
 	const {
 		editorRef,
 		setResultsSimulationData,
@@ -112,17 +113,17 @@ export default function SimulationPanel({
 
 	const updateSimulationData = useCallback(
 		() =>
-			!DEMO_MODE &&
+			!demoMode &&
 			getPageStatus(simulationInfo, true, handleBeforeCacheWrite, controller.signal).then(
 				s => {
 					setSimulationsStatusData([...s]);
 				}
 			),
-		[handleBeforeCacheWrite, controller.signal, getPageStatus, simulationInfo]
+		[demoMode, getPageStatus, simulationInfo, handleBeforeCacheWrite, controller.signal]
 	);
 
 	useEffect(() => {
-		if (!DEMO_MODE)
+		if (!demoMode)
 			getHelloWorld(controller.signal)
 				.then(() => {
 					setBackendAlive(true);
@@ -139,7 +140,8 @@ export default function SimulationPanel({
 		updateSimulationInfo,
 		setSimulationIDInterval,
 		isBackendAlive,
-		setBackendAlive
+		setBackendAlive,
+		demoMode
 	]);
 
 	useInterval(updateSimulationInfo, simulationIDInterval, true);
@@ -216,7 +218,7 @@ export default function SimulationPanel({
 
 	useEffect(() => {
 		const updateCurrentSimulation = async () => {
-			if (!DEMO_MODE && editorRef.current) {
+			if (!demoMode && editorRef.current) {
 				const hash = editorRef.current.toJSON().hash;
 				const currentStatus = simulationsStatusData.find(async s => {
 					if (currentJobStatusData[StatusState.COMPLETED](s)) {
@@ -236,7 +238,14 @@ export default function SimulationPanel({
 			}
 		};
 		updateCurrentSimulation();
-	}, [simulationsStatusData, editorRef, getJobInputs, controller.signal, getFullSimulationData]);
+	}, [
+		simulationsStatusData,
+		editorRef,
+		getJobInputs,
+		controller.signal,
+		getFullSimulationData,
+		demoMode
+	]);
 
 	useEffect(() => {
 		return () => {
@@ -387,7 +396,7 @@ export default function SimulationPanel({
 				handleLoadResults={handleLoadResults}
 				handleShowInputFiles={handleShowInputFiles}
 			/>
-			{DEMO_MODE ? (
+			{demoMode ? (
 				<DemoCardGrid
 					simulations={EXAMPLES}
 					title='Demo Simulation Results'
