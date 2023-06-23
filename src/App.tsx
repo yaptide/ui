@@ -61,11 +61,11 @@ function App() {
 						<Auth>
 							<ShSimulation>
 								<PythonConverterService>
-									<Loader>
-										<Store>
+									<Store>
+										<Loader>
 											<WrapperApp />
-										</Store>
-									</Loader>
+										</Loader>
+									</Store>
 								</PythonConverterService>
 							</ShSimulation>
 						</Auth>

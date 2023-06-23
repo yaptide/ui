@@ -56,7 +56,6 @@ export default function SimulationPanel({
 		getFullSimulationData
 	} = useShSimulation();
 	const { enqueueSnackbar } = useSnackbar();
-	const { resultsProvider, canLoadResultsData, clearLoadedResults } = useLoader();
 
 	/** Visibility Flags */
 	const [isBackendAlive, setBackendAlive] = useState(false);
@@ -252,29 +251,6 @@ export default function SimulationPanel({
 			controller.abort();
 		};
 	}, [controller]);
-
-	useEffect(() => {
-		if (canLoadResultsData) {
-			clearLoadedResults();
-			const newLocalData = resultsProvider.map(data => {
-				const newData = {
-					...data,
-					localData: true
-				};
-				return newData;
-			});
-			setLocalSimulationData(newLocalData);
-			setLocalResultsSimulationData(newLocalData);
-		} else {
-			setLocalSimulationData(localResultsSimulationData ?? []);
-		}
-	}, [
-		canLoadResultsData,
-		resultsProvider,
-		clearLoadedResults,
-		localResultsSimulationData,
-		setLocalResultsSimulationData
-	]);
 
 	const refreshPage = useCallback(
 		(

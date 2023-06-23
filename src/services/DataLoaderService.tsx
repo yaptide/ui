@@ -1,16 +1,11 @@
-import { ReactNode, useCallback, useState } from 'react';
+import { ReactNode, useCallback } from 'react';
 
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { createGenericContext } from './GenericContext';
 import { FullSimulationData } from './ShSimulatorService';
+import { useStore } from './StoreService';
 
 export interface ILoader {
-	editorProvider: EditorJson[];
-	resultsProvider: FullSimulationData[];
-	canLoadEditorData: boolean;
-	canLoadResultsData: boolean;
-	clearLoadedEditor: () => void;
-	clearLoadedResults: () => void;
 	loadFromFiles: (files: FileList | undefined) => void;
 	loadFromUrl: (url: string) => void;
 	loadFromJson: (raw_json: object | null) => void;
@@ -45,48 +40,23 @@ const readFile = (file: File) => {
 };
 
 const Loader = (props: { children: ReactNode }) => {
-	const [canLoadEditorData, setCanLoadEditorData] = useState<boolean>(false);
-	const [canLoadResultsData, setCanLoadResultsData] = useState<boolean>(false);
-
-	const [editorProvider, setEditorProvider] = useState<EditorJson[]>([]);
-	const [resultsProvider, setResultsProvider] = useState<FullSimulationData[]>([]);
-
-	const clearLoadedEditor = useCallback(() => {
-		setCanLoadEditorData(false);
-		setEditorProvider([]);
-	}, []);
-
-	const clearLoadedResults = useCallback(() => {
-		setCanLoadResultsData(false);
-		setResultsProvider([]);
-	}, []);
+	const { editorRef, setResultsSimulationData, setLocalResultsSimulationData } = useStore();
 
 	const loadData = useCallback((dataArray: unknown[]) => {
 		if (Array.isArray(dataArray)) {
-			setResultsProvider(prev => {
-				const result: FullSimulationData[] = prev.concat(
-					dataArray.filter(isFullSimulationData)
-				);
-
-				if (result.length === 0) console.info('No results data found in loaded data');
-
-				setCanLoadResultsData(result.length > 0);
+			const loadedResults = dataArray.filter(isFullSimulationData);
+			if (loadedResults.length === 0) console.info('No results data found in loaded data');
+			setLocalResultsSimulationData(prev => {
+				const result: FullSimulationData[] = prev.concat(loadedResults);
 				return result;
 			});
-
-			setEditorProvider(prev => {
-				const result = prev.concat(dataArray.filter(isEditorJson)).concat(
-					dataArray
-						.filter(isFullSimulationData)
-						.map(data => data.input.inputJson)
-						.filter(isEditorJson)
-				);
-
-				if (result.length === 0) console.warn('No editor data found in loaded data');
-
-				setCanLoadEditorData(result.length > 0);
-				return result;
-			});
+			console.log('loadedResults', loadedResults);
+			setResultsSimulationData([...loadedResults].pop());
+			const loadedEditor = dataArray.find(isEditorJson);
+			if (loadedEditor) {
+				editorRef.current?.loader.loadJSON(loadedEditor);
+				//TODO: #1089 rewrite to support our versioning and types of data. Default loader is now mostly useless
+			}
 		}
 	}, []);
 
@@ -142,12 +112,6 @@ const Loader = (props: { children: ReactNode }) => {
 	);
 
 	const value: ILoader = {
-		editorProvider,
-		resultsProvider,
-		canLoadEditorData,
-		canLoadResultsData,
-		clearLoadedEditor,
-		clearLoadedResults,
 		loadFromFiles,
 		loadFromUrl,
 		loadFromJson,

@@ -1,14 +1,8 @@
 import { Button } from '@mui/material';
 
-import { CustomDialog } from './CustomDialog';
+import { CustomDialog, WarnDialogProps } from './CustomDialog';
 
-export type NewProjectProps = {
-	open: boolean;
-	onCancel: () => void;
-	onConfirm: () => void;
-};
-
-export function NewProjectDialog(props: NewProjectProps) {
+export function NewProjectDialog(props: WarnDialogProps) {
 	return (
 		<CustomDialog
 			open={props.open}

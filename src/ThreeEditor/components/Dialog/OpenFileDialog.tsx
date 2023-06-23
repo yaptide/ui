@@ -161,7 +161,6 @@ export function OpenFileDialog(props: OpenFileProps) {
 								}}>
 								Clear Input
 							</Button>
-
 							<Button
 								variant='contained'
 								fullWidth

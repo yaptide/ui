@@ -18,6 +18,12 @@ type CustomDialogProps = {
 	children: ReactNode;
 };
 
+export type WarnDialogProps = {
+	open: boolean;
+	onCancel: () => void;
+	onConfirm: () => void;
+};
+
 export function CustomDialog(props: CustomDialogProps) {
 	const { open, onClose, title, contentText, children } = props;
 	return (

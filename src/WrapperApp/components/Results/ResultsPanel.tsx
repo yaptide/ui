@@ -31,6 +31,7 @@ function ResultsPanel() {
 
 	useEffect(() => {
 		setTabsValue(0);
+		console.log('simulation', simulation);
 		setEstimatorsResults(parseEstimators(simulation?.estimators ?? []));
 	}, [simulation]);
 
@@ -73,8 +74,10 @@ function ResultsPanel() {
 						sx={{
 							margin: '1.5rem 1rem'
 						}}>
-						{simulation.input.inputJson?.project.title ?? simulation.title} [
-						{simulation.startTime.toLocaleString()}]
+						{simulation.title ??
+							simulation.input.inputJson?.project.title ??
+							'Unknown simulation'}{' '}
+						[{simulation.startTime.toLocaleString()}]
 					</Typography>
 					<Box
 						sx={{
@@ -190,7 +193,11 @@ function ResultsPanel() {
 													<TablePage0D
 														estimator={estimator}></TablePage0D>
 												)}
-												{generateGraphs(estimator, groupQuantities)}
+												{generateGraphs(
+													estimator,
+													groupQuantities,
+													simulation?.jobId
+												)}
 											</Box>
 										</TabPanel>
 									);
