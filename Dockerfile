@@ -68,7 +68,7 @@ RUN npx cross-env REACT_APP_DEPLOYMENT=${DEPLOYMENT} npm run build
 # which results in duplicate static/js entries in the paths of some chunk files.
 RUN npm run fix-web-dev
 
-# Stage 2: Serve the app using Nginx.
+# Stage 3: Serve the app using Nginx.
 FROM nginx:alpine
 
 # Remove the default Nginx configuration
