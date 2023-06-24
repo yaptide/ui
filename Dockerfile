@@ -30,8 +30,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends python3-pip pyt
 WORKDIR /usr/src/app
 
 # Copy SSL certificate from the cert-gen stage
-COPY --from=cert-gen /certs/server.key /usr/src/app/server.key
-COPY --from=cert-gen /certs/server.crt /usr/src/app/server.crt
 
 # First, copy package.json and package-lock.json to install dependencies.
 COPY package.json package-lock.json ./
@@ -75,8 +73,7 @@ FROM nginx:alpine
 RUN rm /etc/nginx/conf.d/default.conf
 
 # Copy SSL certificate from the build stage
-COPY --from=build /usr/src/app/server.key /etc/nginx/conf.d/server.key
-COPY --from=build /usr/src/app/server.crt /etc/nginx/conf.d/server.crt
+COPY --from=cert-gen /certs /etc/nginx/conf.d
 
 # Copy the build folder from the build stage
 COPY --from=build /usr/src/app/build /usr/share/nginx/html
