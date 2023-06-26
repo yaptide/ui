@@ -1,26 +1,20 @@
 import { Button } from '@mui/material';
 
-import { CustomDialog } from './CustomDialog';
+import { CustomDialog, WarnDialogProps } from './CustomDialog';
 
-export type ClearHistoryProps = {
-	open: boolean;
-	onCancel: () => void;
-	onConfirm: () => void;
-};
-
-export function ClearHistoryDialog(props: ClearHistoryProps) {
+export function ClearHistoryDialog({ open, onClose, onConfirm }: WarnDialogProps) {
 	return (
 		<CustomDialog
-			open={props.open}
-			onClose={props.onCancel}
+			open={open}
+			onClose={onClose}
 			title='Clear History'
 			contentText='The Undo/Redo history will be lost. Are you sure you want to continue?'>
 			<Button
-				onClick={props.onCancel}
+				onClick={onClose}
 				autoFocus>
 				Cancel
 			</Button>
-			<Button onClick={props.onConfirm}>Clear and Proceed</Button>
+			<Button onClick={onConfirm}>Clear and Proceed</Button>
 		</CustomDialog>
 	);
 }

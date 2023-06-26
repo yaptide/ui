@@ -21,7 +21,7 @@ import { SxProps, Theme } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { Fragment, ReactNode, useMemo, useState } from 'react';
 
-import { useLoader } from '../../../services/DataLoaderService';
+import { useLoader } from '../../../services/LoaderService';
 import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import {

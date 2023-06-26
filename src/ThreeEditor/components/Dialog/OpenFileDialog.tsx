@@ -13,28 +13,27 @@ import {
 } from '@mui/material';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
 
-import { useLoader } from '../../../services/DataLoaderService';
+import { LoaderContext, useLoader } from '../../../services/LoaderService';
 import { StatusState } from '../../../types/ResponseTypes';
 import EXAMPLES from '../../examples/examples';
-import { CustomDialogTitle } from './CustomDialog';
+import { CustomDialogTitle, WarnDialogProps } from './CustomDialog';
 import { DragDropProject } from './DragDropProject';
 
-export type OpenFileProps = {
-	open: boolean;
-	onClose: () => void;
-	onFileSelected: (files: FileList) => void;
-	onUrlSubmitted: (url: string) => void;
-};
-
-export function OpenFileDialog(props: OpenFileProps) {
-	const { open, onClose } = props;
+export function OpenFileDialog({
+	open = true,
+	onClose,
+	onConfirm = onClose,
+	loadFromJson,
+	loadFromFiles,
+	loadFromUrl,
+	loadFromJsonString
+}: WarnDialogProps<LoaderContext>) {
 	const [currentFileList, setCurrentFileList] = useState<FileList>();
 	const [value, setValue] = useState('1');
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
 		setValue(newValue);
 	};
 
-	const { loadFromJson, loadFromFiles, loadFromUrl, loadFromJsonString } = useLoader();
 	const [plainText, setPlainText] = useState('');
 	const handlePlainTextChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setPlainText(event.target.value);
@@ -121,7 +120,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 								sx={{ marginTop: 'auto' }}
 								disabled={exampleIndex === null}
 								onClick={() => {
-									onClose();
+									onConfirm();
 									loadFromJson(
 										[EXAMPLES[exampleIndex ?? 0]].map(e => {
 											return {
@@ -167,7 +166,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 								sx={{ marginTop: 'auto' }}
 								disabled={currentFileList === undefined}
 								onClick={() => {
-									onClose();
+									onConfirm();
 									loadFromFiles(currentFileList);
 									setCurrentFileList(undefined);
 								}}>
@@ -198,7 +197,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 								sx={{ marginTop: 'auto' }}
 								disabled={url === ''}
 								onClick={() => {
-									onClose();
+									onConfirm();
 									loadFromUrl(url);
 								}}>
 								Load
@@ -230,7 +229,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 								sx={{ marginTop: 'auto' }}
 								disabled={plainText === ''}
 								onClick={() => {
-									onClose();
+									onConfirm();
 									loadFromJsonString(plainText);
 								}}>
 								Load

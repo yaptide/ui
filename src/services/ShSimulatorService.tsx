@@ -1,4 +1,4 @@
-import { ReactNode, useCallback } from 'react';
+import { useCallback } from 'react';
 
 import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
@@ -30,13 +30,13 @@ import {
 	StatusState,
 	YaptideResponse
 } from '../types/ResponseTypes';
-import { camelToSnakeCase } from '../types/TypeTransformUtil';
 import { useCacheMap } from '../util/hooks/useCacheMap';
+import { camelToSnakeCase } from '../util/Notation/Notation';
 import { orderAccordingToList } from '../util/Sort';
 import { ValidateShape } from '../util/Types';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import { useAuth } from './AuthService';
-import { createGenericContext } from './GenericContext';
+import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 
 export type JobLogs = {
 	jobId: string;
@@ -49,9 +49,6 @@ export type JobInputs = {
 export type JobResults = {
 	jobId: string;
 } & ResponseGetJobResults;
-export interface ShSimulationProps {
-	children: ReactNode;
-}
 
 export type FullSimulationData = Omit<JobInputs & JobStatusData & JobResults, 'message'>;
 
@@ -127,7 +124,7 @@ const updateEstimators = (estimators: Estimator[]) => {
 const [useShSimulation, ShSimulationContextProvider] =
 	createGenericContext<RestSimulationContext>();
 
-const ShSimulation = ({ children }: ShSimulationProps) => {
+const ShSimulation = ({ children }: GenericContextProviderProps) => {
 	const { authKy } = useAuth();
 
 	const statusDataCache = useCacheMap<JobStatusData>();

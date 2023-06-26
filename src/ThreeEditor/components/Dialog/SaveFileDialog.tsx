@@ -11,25 +11,36 @@ import {
 import { ChangeEvent, useEffect, useState } from 'react';
 
 import { FullSimulationData } from '../../../services/ShSimulatorService';
+import { saveString } from '../../../util/File';
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { CustomDialogTitle } from './CustomDialog';
+import { CustomDialogTitle, WarnDialogProps } from './CustomDialog';
 
-export type SaveFileProps = {
-	open: boolean;
-	onClose: () => void;
-	onConfirm: (data: {}, fileName: string) => void;
-	editor: YaptideEditor;
+const saveJson = (data: {}, fileName: string) => {
+	let output = undefined;
+	try {
+		output = JSON.stringify(data, null, '\t');
+		output = output.replace(/[\n\t]+([\d.e\-[\]]+)/g, '$1');
+		saveString(output, `${fileName}.json`);
+	} catch (e) {
+		console.warn('Could not regex output. Saving without regex...', e);
+		output = JSON.stringify(data);
+		saveString(output, `${fileName}.json`);
+	}
 };
 
-export function SaveFileDialog(props: SaveFileProps) {
-	const { open, onClose, onConfirm, editor } = props;
+export function SaveFileDialog({
+	open = true,
+	onClose,
+	onConfirm = onClose,
+	editor
+}: WarnDialogProps<{ editor: YaptideEditor }>) {
 	const results: FullSimulationData = editor.getResults();
 
 	const [keepResults, setKeepResults] = useState<boolean>(false);
 
 	useEffect(() => {
 		setKeepResults(results?.input.inputJson?.hash === editor?.toJSON().hash);
-	}, [props, props.editor, editor, results?.input.inputJson?.hash]);
+	}, [editor, results?.input.inputJson?.hash]);
 
 	const [name, setName] = useState<string>('editor');
 	const changeName = (event: ChangeEvent<HTMLInputElement>) => {
@@ -82,8 +93,8 @@ export function SaveFileDialog(props: SaveFileProps) {
 			<DialogActions>
 				<Button
 					onClick={() => {
-						if (keepResults) onConfirm(results, name);
-						else onConfirm(editor?.toJSON(), name);
+						onConfirm();
+						editor && saveJson(keepResults ? results : editor?.toJSON(), name);
 					}}>
 					Save
 				</Button>

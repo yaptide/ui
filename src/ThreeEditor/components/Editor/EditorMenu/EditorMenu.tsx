@@ -2,6 +2,7 @@ import { Box, Button, ButtonGroup, Divider, Menu, MenuItem } from '@mui/material
 import { MouseEvent, useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 
+import { useDialog } from '../../../../services/DialogService';
 import { useSignal } from '../../../../util/hooks/signals';
 import { toggleFullscreen } from '../../../../util/toggleFullscreen';
 import {
@@ -100,8 +101,8 @@ function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPosition
 }
 
 export function EditorMenu({ editor }: EditorMenuProps) {
+	const { updateDialogComponent, showDialog, hideDialog } = useDialog();
 	const [openIdx, setOpenIdx] = useState(-1);
-	const [clearHistoryDialogOpen, setClearHistoryDialogOpen] = useState(false);
 	const [, setSelectedObject] = useState(editor?.selected);
 
 	const handleObjectUpdate = useCallback((o: Object3D) => {
@@ -109,6 +110,21 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 	}, []);
 
 	useSignal(editor, 'objectSelected', handleObjectUpdate);
+
+	useEffect(() => {
+		updateDialogComponent(
+			'clearHistory',
+			editor && (
+				<ClearHistoryDialog
+					onClose={() => hideDialog('clearHistory')}
+					onConfirm={() => {
+						hideDialog('clearHistory');
+						editor.history.clear();
+					}}
+				/>
+			)
+		);
+	}, [editor, hideDialog, updateDialogComponent]);
 
 	return (
 		<>
@@ -184,7 +200,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 						[
 							{
 								label: 'Clear history',
-								onClick: () => setClearHistoryDialogOpen(true),
+								onClick: () => showDialog('clearHistory'),
 								disabled:
 									editor?.history.undos.length === 0 &&
 									editor?.history.redos.length === 0
@@ -217,14 +233,6 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 					]}
 				/>
 			</ButtonGroup>
-			<ClearHistoryDialog
-				open={clearHistoryDialogOpen}
-				onCancel={() => setClearHistoryDialogOpen(false)}
-				onConfirm={() => {
-					setClearHistoryDialogOpen(false);
-					editor?.history.clear();
-				}}
-			/>
 		</>
 	);
 }

@@ -4,7 +4,7 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
 
 import { useConfig } from '../../../config/ConfigService';
-import { isFullSimulationData } from '../../../services/DataLoaderService';
+import { isFullSimulationData } from '../../../services/LoaderService';
 import { FullSimulationData, useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import EXAMPLES from '../../../ThreeEditor/examples/examples';
@@ -39,11 +39,7 @@ export default function SimulationPanel({
 	forwardedSimulator
 }: SimulationPanelProps) {
 	const { demoMode } = useConfig();
-	const {
-		editorRef,
-		setResultsSimulationData,
-		localResultsSimulationData
-	} = useStore();
+	const { editorRef, setResultsSimulationData, localResultsSimulationData } = useStore();
 	const {
 		cancelJobDirect,
 		getJobInputs,

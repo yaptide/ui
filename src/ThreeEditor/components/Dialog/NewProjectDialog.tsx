@@ -1,20 +1,32 @@
 import { Button } from '@mui/material';
 
+import { YaptideEditor } from '../../js/YaptideEditor';
 import { CustomDialog, WarnDialogProps } from './CustomDialog';
 
-export function NewProjectDialog(props: WarnDialogProps) {
+export function NewProjectDialog({
+	open,
+	onClose,
+	onConfirm = onClose,
+	editor
+}: WarnDialogProps<{ editor: YaptideEditor }>) {
 	return (
 		<CustomDialog
-			open={props.open}
-			onClose={props.onCancel}
+			open={open}
+			onClose={onClose}
 			title='Create a new project'
 			contentText='Your current project will be lost. Are you sure you want to continue?'>
 			<Button
-				onClick={props.onCancel}
+				onClick={onClose}
 				autoFocus>
 				Cancel
 			</Button>
-			<Button onClick={props.onConfirm}>Clear and Proceed</Button>
+			<Button
+				onClick={() => {
+					editor.clear();
+					onConfirm();
+				}}>
+				Clear and Proceed
+			</Button>
 		</CustomDialog>
 	);
 }

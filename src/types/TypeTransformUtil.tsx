@@ -1,17 +1,68 @@
 type IsLetter<T extends string> = Uppercase<T> extends Lowercase<T> ? false : true;
 
+// Determine if a string is valid for snakeize
+// Should not contain underscores, whitespace, or dashes
+// First character should not be the only uppercase character
+// return T or never
+export type ValidForSnakeize<
+	T extends string,
+	First extends boolean = true,
+	Full extends string = T
+> = T extends `${infer F}${infer R}`
+	? F extends '_' | ' ' | '-' | '\n' | '\t' | '\r' | '\v' | '\f' | '\b' | '\0'
+		? never
+		: First extends true
+		? [
+				(F extends Uppercase<F> ? true : false) | (R extends Lowercase<R> ? true : false)
+		  ] extends [true]
+			? ValidForCamelize<R, false, Full>
+			: never
+		: ValidForSnakeize<R, false, Full>
+	: Full;
+
+// Determine if a string is valid for camelize
+// Should not contain whitespace, or dashes
+// Should not start with an underscore
+// Should not contain mixed case
+// return T or never
+export type ValidForCamelize<
+	T extends string,
+	First extends boolean = true,
+	Full extends string = T
+> = T extends `${infer F}${infer R}`
+	? F extends ' ' | '-' | '\n' | '\t' | '\r' | '\v' | '\f' | '\b' | '\0'
+		? never
+		: First extends true
+		? F extends '_'
+			? never
+			: boolean extends
+					| (T extends Uppercase<T> ? true : false)
+					| (T extends Lowercase<T> ? true : false)
+			? ValidForCamelize<R, false, Full>
+			: never
+		: ValidForCamelize<R, false, Full>
+	: Full;
+
 // Transform string key from camelCase to snake_case
-type CamelToSnakeCase<S extends string> = S extends `${infer F}${infer S}${infer R}`
+export type CamelToSnakeCase<S extends string, First extends string = S> = [
+	ValidForSnakeize<First>
+] extends [never]
+	? S
+	: S extends `${infer F}${infer S}${infer R}`
 	? [S, IsLetter<S>] extends [Uppercase<S>, true]
-		? `${Lowercase<F>}_${CamelToSnakeCase<`${Lowercase<S>}${R}`>}`
-		: `${Lowercase<F>}${CamelToSnakeCase<`${Lowercase<S>}${R}`>}`
+		? `${Lowercase<F>}_${CamelToSnakeCase<`${Lowercase<S>}${R}`, First>}`
+		: `${Lowercase<F>}${CamelToSnakeCase<`${Lowercase<S>}${R}`, First>}`
 	: S;
 
 // Transform string key from snake_case to camelCase
-type SnakeToCamelCase<S extends string> = S extends `${infer L}${infer R}`
+export type SnakeToCamelCase<S extends string, First extends string = S> = [
+	ValidForCamelize<First>
+] extends [never]
+	? S
+	: S extends `${infer L}${infer R}`
 	? L extends '_'
-		? `${Capitalize<SnakeToCamelCase<R>>}`
-		: `${Lowercase<L>}${SnakeToCamelCase<R>}`
+		? `${Capitalize<SnakeToCamelCase<R, First>>}`
+		: `${Lowercase<L>}${SnakeToCamelCase<R, First>}`
 	: S;
 
 // Map of transformation functions
@@ -36,47 +87,6 @@ export type SnakeToCamelCaseObject<T> = TransformCase<T, 'Camel'>;
 // Example usage:
 // type _ = CamelToSnakeCaseObject<{ someProperty: string; anotherProperty: number }>;
 // Result: { some_property: string; another_property: number }
-
-// Utility functions for transforming keys of an object
-const camelize = <T extends string>(str: T): SnakeToCamelCase<T> =>
-	str.replace(/_([a-z])/g, (_, char) => char.toUpperCase()) as SnakeToCamelCase<T>;
-
-const snakeize = <T extends string>(str: T): CamelToSnakeCase<T> =>
-	str.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase() as CamelToSnakeCase<T>;
-
-export const camelToSnakeCase = <T extends unknown>(
-	obj: T,
-	recursive = false
-): CamelToSnakeCaseObject<T> => {
-	if (recursive && Array.isArray(obj) && typeof obj !== 'string')
-		return obj.map(o => camelToSnakeCase(o, recursive)) as CamelToSnakeCaseObject<T>;
-	if (typeof obj === 'object') {
-		return Object.fromEntries(
-			Object.entries(obj as Object).map(([key, value]) => [
-				snakeize(key),
-				recursive ? camelToSnakeCase(value, recursive) : value
-			])
-		) as CamelToSnakeCaseObject<T>;
-	}
-	return obj as CamelToSnakeCaseObject<T>;
-};
-
-export const snakeToCamelCase = <T extends unknown>(
-	obj: T,
-	recursive = false
-): SnakeToCamelCaseObject<T> => {
-	if (recursive && Array.isArray(obj) && typeof obj !== 'string')
-		return obj.map(o => snakeToCamelCase(o, recursive)) as SnakeToCamelCaseObject<T>;
-	if (obj && typeof obj === 'object')
-		return Object.fromEntries(
-			Object.entries(obj as Object).map(([key, value]) => [
-				camelize(key),
-				recursive ? snakeToCamelCase(value, recursive) : value
-			])
-		) as SnakeToCamelCaseObject<T>;
-
-	return obj as SnakeToCamelCaseObject<T>;
-};
 
 // Merge intersection of two object types into one object type
 export type IntersectionToObject<T> = Omit<T, never>;

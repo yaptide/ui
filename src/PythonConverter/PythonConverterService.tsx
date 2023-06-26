@@ -14,7 +14,7 @@ declare global {
 	}
 }
 export interface PythonConverterProps {
-	children: ReactNode;
+	children?: ReactNode;
 	loadPyodide?: any;
 	onLoad?: (pyodide: any) => void;
 }

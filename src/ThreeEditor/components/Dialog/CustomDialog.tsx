@@ -13,19 +13,26 @@ import { ReactNode } from 'react';
 type CustomDialogProps = {
 	title: string;
 	contentText: string;
-	open: boolean;
+	body?: ReactNode;
+	open?: boolean;
 	onClose: () => void;
 	children: ReactNode;
 };
 
-export type WarnDialogProps = {
-	open: boolean;
-	onCancel: () => void;
-	onConfirm: () => void;
-};
+export type WarnDialogProps<T = {}> = {
+	open?: boolean;
+	onClose: () => void;
+	onConfirm?: () => void;
+} & T;
 
-export function CustomDialog(props: CustomDialogProps) {
-	const { open, onClose, title, contentText, children } = props;
+export function CustomDialog({
+	open = true,
+	onClose,
+	title,
+	contentText,
+	body,
+	children
+}: CustomDialogProps) {
 	return (
 		<Dialog
 			open={open}
@@ -33,6 +40,7 @@ export function CustomDialog(props: CustomDialogProps) {
 			<DialogTitle>{title}</DialogTitle>
 			<DialogContent>
 				<DialogContentText id='alert-dialog-description'>{contentText}</DialogContentText>
+				{body}
 			</DialogContent>
 			<DialogActions>{children}</DialogActions>
 		</Dialog>
@@ -42,9 +50,7 @@ interface CustomTitleProps extends DialogTitleProps {
 	onClose: () => void;
 }
 
-export function CustomDialogTitle(props: CustomTitleProps) {
-	const { children, onClose, ...other } = props;
-
+export function CustomDialogTitle({ children, onClose, ...other }: CustomTitleProps) {
 	return (
 		<DialogTitle
 			sx={{ m: 0, p: 2 }}
