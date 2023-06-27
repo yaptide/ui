@@ -11,7 +11,7 @@
 		"@mui/icons-material": "^5.11.16",
 		"@mui/lab": "^5.0.0-alpha.133",
 		"@mui/material": "^5.11.13",
-		"@mui/x-data-grid": "^6.3.0",
+		"@mui/x-data-grid": "^6.9.0",
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "^12.1.2",
 		"@testing-library/user-event": "^14.4.3",
@@ -134,7 +134,7 @@
 		"husky": "^8.0.3",
 		"jest-matcher-deep-close-to": "^3.0.2",
 		"lint-staged": "^13.2.2",
-		"prettier": "2.8.7",
+		"prettier": "2.8.8",
 		"react-app-rewired": "^2.2.1",
 		"selenium-webdriver": "^4.9.0"
 	},

@@ -9,3 +9,4 @@ services:
         container_name: yaptide_ui
         ports:
             - 80:80
+            - 443:443
