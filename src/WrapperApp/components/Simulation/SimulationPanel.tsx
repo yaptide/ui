@@ -1,14 +1,14 @@
-import { Box, Card, CardContent, Fade, Modal } from '@mui/material';
-import { useSnackbar } from 'notistack';
+import { Box, Fade, Modal } from '@mui/material';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
 
 import { useConfig } from '../../../config/ConfigService';
+import { useDialog } from '../../../services/DialogService';
 import { isFullSimulationData } from '../../../services/LoaderService';
 import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
+import { RunSimulationDialog } from '../../../ThreeEditor/components/Dialog/RunSimulationDialog';
 import EXAMPLES from '../../../ThreeEditor/examples/examples';
-import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { OrderBy, OrderType, SimulatorType } from '../../../types/RequestTypes';
 import {
 	currentJobStatusData,
@@ -18,12 +18,6 @@ import {
 	StatusState
 } from '../../../types/ResponseTypes';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
-import {
-	BatchOptionsType,
-	RunSimulationForm,
-	SimulationRunType,
-	SimulationSourceType
-} from './RunSimulationForm';
 import { DemoCardGrid, PaginatedSimulationsFromBackend } from './SimulationCardGrid';
 import { PageNavigationProps, PageParamProps } from './SimulationPanelBar';
 
@@ -43,19 +37,16 @@ export default function SimulationPanel({
 	const {
 		cancelJobDirect,
 		getJobInputs,
-		postJobDirect,
-		postJobBatch,
 		getHelloWorld,
 		getPageContents,
 		getPageStatus,
 		getFullSimulationData
 	} = useShSimulation();
-	const { enqueueSnackbar } = useSnackbar();
+	const { updateDialogComponent, hideDialog } = useDialog();
 
 	/** Visibility Flags */
 	const [isBackendAlive, setBackendAlive] = useState(false);
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
-	const [showRunSimulationsForm, setShowRunSimulationsForm] = useState(!!forwardedInputFiles);
 
 	const [pageIdx, setPageIdx] = useState(1);
 	const [pageCount, setPageCount] = useState(1);
@@ -68,7 +59,6 @@ export default function SimulationPanel({
 	>;
 
 	/** Simulation Run Options */
-	const [availableClusters] = useState<string[]>(['default']);
 	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
 	const [simulator] = useState<SimulatorType>(forwardedSimulator);
 
@@ -158,54 +148,23 @@ export default function SimulationPanel({
 		setShowInputFilesEditor(true);
 		setInputFiles(inputFiles);
 	};
-
-	const sendSimulationRequest = (
-		editorJson: EditorJson,
-		inputFiles: Partial<SimulationInputFiles>,
-		runType: SimulationRunType,
-		sourceType: SimulationSourceType,
-		simName: string,
-		nTasks: number,
-		simulator: SimulatorType,
-		batchOptions: BatchOptionsType
-	) => {
-		setShowRunSimulationsForm(false);
-		const simData = sourceType === 'editor' ? editorJson : inputFiles;
-
-		const options =
-			runType === 'batch'
-				? {
-						...batchOptions,
-						arrayOptions: batchOptions.arrayOptions?.reduce((acc, curr) => {
-							acc[curr.optionKey] = curr.optionValue;
-							return acc;
-						}, {} as Record<string, string>),
-						collectOptions: batchOptions.collectOptions?.reduce((acc, curr) => {
-							acc[curr.optionKey] = curr.optionValue;
-							return acc;
-						}, {} as Record<string, string>)
-				  }
-				: undefined;
-
-		(runType === 'direct' ? postJobDirect : postJobBatch)(
-			simData,
-			sourceType,
-			nTasks,
-			simulator,
-			simName,
-			options,
-			controller.signal
-		)
-			.then(res => {
-				updateSimulationInfo();
-				setTrackedId(res.jobId);
-				enqueueSnackbar('Simulation submitted', { variant: 'success' });
-			})
-			.catch(e => {
-				enqueueSnackbar('Error while starting simulation', { variant: 'error' });
-				console.error(e);
-			});
-	};
+	useEffect(() => {
+		updateDialogComponent(
+			'runSimulations',
+			editorRef.current && (
+				<RunSimulationDialog
+					onClose={() => hideDialog('runSimulations')}
+					onConfirm={jobId => {
+						updateSimulationInfo();
+						setTrackedId(jobId);
+					}}
+					editor={editorRef.current}
+					inputFiles={{}}
+					simulator={SimulatorType.SHIELDHIT}
+				/>
+			)
+		);
+	}, [editorRef, hideDialog, updateDialogComponent, updateSimulationInfo]);
 
 	useEffect(() => {
 		const updateCurrentSimulation = async () => {
@@ -317,47 +276,12 @@ export default function SimulationPanel({
 							simulator={simulator}
 							inputFiles={inputFiles}
 							closeEditor={() => setShowInputFilesEditor(false)}
-							onChange={newInputFiles => setInputFiles(newInputFiles)}
-							runSimulation={(simulator, newInputFiles) => {
-								setShowInputFilesEditor(false);
-								setInputFiles(newInputFiles);
-								setShowRunSimulationsForm(true);
-							}}></InputFilesEditor>
+							onChange={newInputFiles =>
+								setInputFiles(newInputFiles)
+							}></InputFilesEditor>
 					</Box>
 				</Fade>
 			</Modal>
-			{editorRef.current && (
-				<Modal
-					keepMounted
-					open={isBackendAlive && showRunSimulationsForm}
-					onClose={() => setShowRunSimulationsForm(false)}
-					sx={{
-						display: 'flex',
-						alignItems: 'flex-start',
-						mt: '15vh',
-						justifyContent: 'center'
-					}}>
-					<Fade in={showRunSimulationsForm}>
-						<Card sx={{ maxWidth: '660px' }}>
-							<CardContent
-								sx={{
-									display: 'flex',
-									gap: 3
-								}}>
-								<RunSimulationForm
-									availableClusters={availableClusters}
-									editorJson={editorRef.current.toJSON()}
-									inputFiles={{
-										...inputFiles
-									}}
-									forwardedSimulator={simulator}
-									runSimulation={sendSimulationRequest}
-								/>
-							</CardContent>
-						</Card>
-					</Fade>
-				</Modal>
-			)}
 			<DemoCardGrid
 				simulations={localResultsSimulationData ?? []}
 				title='Local Simulation Results'
@@ -387,9 +311,6 @@ export default function SimulationPanel({
 					handleLoadResults={handleLoadResults}
 					handleShowInputFiles={handleShowInputFiles}
 					isBackendAlive={isBackendAlive}
-					runSimulation={() => {
-						setShowRunSimulationsForm(true);
-					}}
 				/>
 			)}
 		</Box>

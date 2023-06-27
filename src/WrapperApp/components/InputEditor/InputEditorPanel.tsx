@@ -214,7 +214,6 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 				simulator={simulator}
 				inputFiles={inputFiles}
 				onChange={inputFiles => setInputFiles(inputFiles)}
-				runSimulation={!demoMode ? goToRun : undefined}
 			/>
 		</Box>
 	);

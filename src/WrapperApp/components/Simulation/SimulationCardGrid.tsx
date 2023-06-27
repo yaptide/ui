@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { FC, useState } from 'react';
 
+import { useDialog } from '../../../services/DialogService';
 import { JobStatusData, SimulationInputFiles } from '../../../types/ResponseTypes';
 import SimulationCard from './SimulationCard';
 import {
@@ -183,15 +184,14 @@ export function PaginatedSimulationCardGrid({
 
 type SimulationsFromBackendProps = PaginatedCardGridProps & {
 	isBackendAlive: boolean;
-	runSimulation: () => void;
 };
 
 export function PaginatedSimulationsFromBackend({
 	isBackendAlive,
-	runSimulation,
 	children,
 	...other
 }: SimulationsFromBackendProps) {
+	const { showDialog } = useDialog();
 	return (
 		<PaginatedSimulationCardGrid {...other}>
 			<InputGroup
@@ -203,7 +203,7 @@ export function PaginatedSimulationsFromBackend({
 					color='info'
 					startIcon={<QueuePlayNextIcon />}
 					disabled={!isBackendAlive}
-					onClick={runSimulation}>
+					onClick={() => showDialog('runSimulations')}>
 					Run new simulation
 				</Button>
 				<BackendStatusIndicator

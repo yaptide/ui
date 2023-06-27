@@ -74,10 +74,10 @@ function App() {
 				<StyledEngineProvider injectFirst />,
 				<ThemeProvider theme={theme} />,
 				<SnackbarProvider maxSnack={3} />,
-				<DialogProvider />,
 				<Auth />,
 				<ShSimulation />,
 				<PythonConverterService />,
+				<DialogProvider />,
 				<Store />,
 				<Loader />
 			]}>

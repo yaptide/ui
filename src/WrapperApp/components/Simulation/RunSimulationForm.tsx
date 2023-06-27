@@ -49,7 +49,7 @@ export type BatchOptionsType = {
 };
 
 type RunSimulationFormProps = {
-	availableClusters: string[];
+	availableClusters?: string[];
 	editorJson: EditorJson;
 	inputFiles?: Partial<SimulationInputFiles>;
 	forwardedSimulator: SimulatorType;
@@ -66,7 +66,7 @@ type RunSimulationFormProps = {
 };
 
 export function RunSimulationForm({
-	availableClusters,
+	availableClusters = ['default'],
 	editorJson,
 	inputFiles = {},
 	forwardedSimulator,

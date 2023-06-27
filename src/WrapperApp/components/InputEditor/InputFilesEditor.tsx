@@ -1,8 +1,12 @@
 import { Box, Button, Card, CardActions, CardContent, Divider } from '@mui/material';
 import useTheme from '@mui/system/useTheme';
 import CodeEditor from '@uiw/react-textarea-code-editor';
+import { useEffect } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
+import { useDialog } from '../../../services/DialogService';
+import { useStore } from '../../../services/StoreService';
+import { RunSimulationDialog } from '../../../ThreeEditor/components/Dialog/RunSimulationDialog';
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
 	_defaultFlukaInputFiles,
@@ -18,12 +22,13 @@ interface InputFilesEditorProps {
 	simulator: SimulatorType;
 	inputFiles: SimulationInputFiles | undefined;
 	onChange?: (inputFiles: SimulationInputFiles) => void;
-	runSimulation?: (simulator: SimulatorType, inputFiles: SimulationInputFiles) => void;
 	saveAndExit?: (inputFiles: SimulationInputFiles) => void;
 	closeEditor?: () => void;
 }
 
 export function InputFilesEditor(props: InputFilesEditorProps) {
+	const { updateDialogComponent, showDialog, hideDialog } = useDialog();
+	const { editorRef } = useStore();
 	const { demoMode } = useConfig();
 	const inputFiles = props.inputFiles ?? _defaultShInputFiles;
 	const simulator = props.simulator;
@@ -46,6 +51,22 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 		props.onChange?.call(null, updateFn(inputFiles));
 	};
 
+	useEffect(() => {
+		updateDialogComponent(
+			'runSimulations',
+			editorRef.current && (
+				<RunSimulationDialog
+					onClose={() => hideDialog('runSimulations')}
+					editor={editorRef.current}
+					inputFiles={Object.fromEntries(
+						Object.entries(inputFiles).filter(([, data]) => data.length > 0)
+					)}
+					simulator={simulator}
+				/>
+			)
+		);
+	}, [editorRef, hideDialog, inputFiles, simulator, updateDialogComponent]);
+
 	return (
 		<Card sx={{ minHeight: '100%' }}>
 			<CardActions
@@ -53,15 +74,13 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 					justifyContent: 'flex-end',
 					background: theme => (theme.palette.mode === 'dark' ? 'grey.800' : 'grey.300')
 				}}>
-				{props.runSimulation && (
-					<Button
-						color='success'
-						variant='contained'
-						disabled={demoMode}
-						onClick={() => props.runSimulation?.call(null, simulator, inputFiles)}>
-						Run with these input files
-					</Button>
-				)}
+				<Button
+					color='success'
+					variant='contained'
+					disabled={demoMode}
+					onClick={() => showDialog('runSimulations')}>
+					Run with these input files
+				</Button>
 				<Button
 					color='info'
 					onClick={() =>
