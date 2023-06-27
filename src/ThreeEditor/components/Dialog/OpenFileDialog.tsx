@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
 
-import { LoaderContext, useLoader } from '../../../services/LoaderService';
+import { LoaderContext } from '../../../services/LoaderService';
 import { StatusState } from '../../../types/ResponseTypes';
 import EXAMPLES from '../../examples/examples';
 import { CustomDialogTitle, WarnDialogProps } from './CustomDialog';

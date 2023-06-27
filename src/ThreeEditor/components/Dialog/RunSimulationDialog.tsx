@@ -2,7 +2,7 @@ import { Card, CardContent, Fade, Modal } from '@mui/material';
 import { enqueueSnackbar } from 'notistack';
 import { useState } from 'react';
 
-import { RestSimulationContext, useShSimulation } from '../../../services/ShSimulatorService';
+import { useShSimulation } from '../../../services/ShSimulatorService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import {

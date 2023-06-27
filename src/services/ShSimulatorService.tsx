@@ -19,7 +19,10 @@ import {
 } from '../types/RequestTypes';
 import {
 	currentJobStatusData,
+	currentTaskStatusData,
+	JobStatusCompleted,
 	JobStatusData,
+	JobStatusFailed,
 	ResponseGetJobInputs,
 	ResponseGetJobLogs,
 	ResponseGetJobResults,
@@ -300,13 +303,35 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 		[authKy, getJobInputs, resultsCache]
 	);
 
+	const validStatusToCache = (data: JobStatusCompleted | JobStatusFailed) => {
+		if (data.jobState === StatusState.COMPLETED) {
+			return data.jobTasksStatus.every(task => {
+				if (currentTaskStatusData[StatusState.FAILED](task)) return true;
+				else if (currentTaskStatusData[StatusState.COMPLETED](task)) {
+					if (task.startTime && task.endTime) {
+						if (task.requestedPrimaries !== task.simulatedPrimaries) {
+							console.error(
+								'Requested primaries and simulated primaries are not equal in COMPLETED task:',
+								task
+							);
+							task.simulatedPrimaries = task.requestedPrimaries; //TODO: fix backend response and remove this line
+						}
+						return true;
+					}
+				}
+				return false;
+			});
+		}
+		return true;
+	};
+
 	const getJobStatus = useCallback(
 		(endPoint: string) =>
 			(...[info, cache = true, beforeCacheWrite, signal]: RequestGetJobStatus) => {
 				const { jobId } = info;
 
 				if (cache && statusDataCache.has(jobId))
-					return Promise.resolve<ReturnType<typeof statusDataCache.get>>({
+					return Promise.resolve<JobStatusData>({
 						...statusDataCache.get(jobId),
 						...info
 					});
@@ -318,7 +343,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 					})
 					.json<ResponseGetJobStatus>()
 					.then(response => {
-						const data: Partial<JobStatusData> = {
+						const data = {
 							...response,
 							...info
 						};
@@ -329,10 +354,10 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 							console.log(data.message);
 
 							statusDataCache.set(data.jobId, data, beforeCacheWrite);
-						} else if (currentJobStatusData[StatusState.COMPLETED](data))
-							statusDataCache.set(data.jobId, data, beforeCacheWrite);
-						else return undefined;
-
+						} else if (currentJobStatusData[StatusState.COMPLETED](data)) {
+							if (validStatusToCache(data))
+								statusDataCache.set(data.jobId, data, beforeCacheWrite);
+						} else return undefined;
 						return data;
 					})
 					.catch(e => {

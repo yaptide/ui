@@ -138,13 +138,16 @@ type TaskStatusType<T extends StatusState, U extends {}> = TypeIdentifiedByKey<
 	}
 >;
 
-type TaskSatusCompleted = TaskStatusType<StatusState.COMPLETED, { runTime: TaskTime }>;
+export type TaskSatusCompleted = TaskStatusType<
+	StatusState.COMPLETED,
+	{ startTime: Date; endTime: Date }
+>;
 
-type TaskStatusPending = TaskStatusType<StatusState.PENDING, {}>;
+export type TaskStatusPending = TaskStatusType<StatusState.PENDING, {}>;
 
-type TaskStatusFailed = TaskStatusType<StatusState.FAILED, {}>;
+export type TaskStatusFailed = TaskStatusType<StatusState.FAILED, {}>;
 
-type TaskStatusRunning = TaskStatusType<StatusState.RUNNING, { estimatedTime?: TaskTime }>;
+export type TaskStatusRunning = TaskStatusType<StatusState.RUNNING, { estimatedTime?: TaskTime }>;
 
 type TaskAllStatuses =
 	| TaskSatusCompleted
@@ -163,21 +166,21 @@ type JobStatusType<T extends StatusState, U extends Object> = TypeIdentifiedByKe
 	U & YaptideResponse
 >;
 
-type JobStatusCompleted = JobStatusType<
+export type JobStatusCompleted = JobStatusType<
 	StatusState.COMPLETED,
 	{
 		jobTasksStatus: Array<TaskUnknownStatus>;
 	}
 >;
 
-type JobStatusRunning = JobStatusType<
+export type JobStatusRunning = JobStatusType<
 	StatusState.RUNNING,
 	{ jobTasksStatus: Array<TaskUnknownStatus> }
 >;
 
-type JobStatusPending = JobStatusType<StatusState.PENDING, {}>;
+export type JobStatusPending = JobStatusType<StatusState.PENDING, {}>;
 
-type JobStatusFailed = JobStatusType<StatusState.FAILED, {}>;
+export type JobStatusFailed = JobStatusType<StatusState.FAILED, {}>;
 
 type JobAllStatuses = JobStatusCompleted | JobStatusRunning | JobStatusPending | JobStatusFailed;
 
@@ -205,13 +208,13 @@ function jobStatusGuard<T extends StatusState>(data: unknown, value: T): data is
 /* ------------------------------------ */
 // Util maps to check if data is of specific status type
 export const currentTaskStatusData = {
-	[StatusState.COMPLETED]: (data: unknown): data is TaskStatusData<StatusState.COMPLETED> =>
+	[StatusState.COMPLETED]: (data: unknown): data is TaskStatusMap[StatusState.COMPLETED] =>
 		taskStatusGuard(data, StatusState.COMPLETED),
-	[StatusState.RUNNING]: (data: unknown): data is TaskStatusData<StatusState.RUNNING> =>
+	[StatusState.RUNNING]: (data: unknown): data is TaskStatusMap[StatusState.RUNNING] =>
 		taskStatusGuard(data, StatusState.RUNNING),
-	[StatusState.PENDING]: (data: unknown): data is TaskStatusData<StatusState.PENDING> =>
+	[StatusState.PENDING]: (data: unknown): data is TaskStatusMap[StatusState.PENDING] =>
 		taskStatusGuard(data, StatusState.PENDING),
-	[StatusState.FAILED]: (data: unknown): data is TaskStatusData<StatusState.FAILED> =>
+	[StatusState.FAILED]: (data: unknown): data is TaskStatusMap[StatusState.FAILED] =>
 		taskStatusGuard(data, StatusState.FAILED),
 	// eslint-disable-next-line no-useless-computed-key
 	['hasSpecificProperty']: <T extends string>(
@@ -222,13 +225,13 @@ export const currentTaskStatusData = {
 };
 
 export const currentJobStatusData = {
-	[StatusState.COMPLETED]: (data: unknown): data is JobStatusData<StatusState.COMPLETED> =>
+	[StatusState.COMPLETED]: (data: unknown): data is JobStatusMap[StatusState.COMPLETED] =>
 		jobStatusGuard(data, StatusState.COMPLETED),
-	[StatusState.RUNNING]: (data: unknown): data is JobStatusData<StatusState.RUNNING> =>
+	[StatusState.RUNNING]: (data: unknown): data is JobStatusMap[StatusState.RUNNING] =>
 		jobStatusGuard(data, StatusState.RUNNING),
-	[StatusState.PENDING]: (data: unknown): data is JobStatusData<StatusState.PENDING> =>
+	[StatusState.PENDING]: (data: unknown): data is JobStatusMap[StatusState.PENDING] =>
 		jobStatusGuard(data, StatusState.PENDING),
-	[StatusState.FAILED]: (data: unknown): data is JobStatusData<StatusState.FAILED> =>
+	[StatusState.FAILED]: (data: unknown): data is JobStatusMap[StatusState.FAILED] =>
 		jobStatusGuard(data, StatusState.FAILED),
 	// eslint-disable-next-line no-useless-computed-key
 	['hasSpecificProperty']: <T extends string>(
@@ -256,6 +259,20 @@ export type JobStatusData<T = null> = DataWithStatus<
 	SimulationInfo,
 	JobUnknownStatus
 >;
+
+type JobStatusMap = {
+	[StatusState.COMPLETED]: JobStatusCompleted & SimulationInfo;
+	[StatusState.RUNNING]: JobStatusRunning & SimulationInfo;
+	[StatusState.PENDING]: JobStatusPending & SimulationInfo;
+	[StatusState.FAILED]: JobStatusFailed & SimulationInfo;
+};
+
+type TaskStatusMap = {
+	[StatusState.COMPLETED]: TaskSatusCompleted;
+	[StatusState.RUNNING]: TaskStatusRunning;
+	[StatusState.PENDING]: TaskStatusPending;
+	[StatusState.FAILED]: TaskStatusFailed;
+};
 
 export type ResponseGetJobInputs = {
 	input: {
