@@ -3,6 +3,7 @@ type IsLetter<T extends string> = Uppercase<T> extends Lowercase<T> ? false : tr
 // Determine if a string is valid for snakeize
 // Should not contain underscores, whitespace, or dashes
 // First character should not be the only uppercase character
+// Should contain at least one uppercase character
 // return T or never
 export type ValidForSnakeize<
 	T extends string,
@@ -12,9 +13,7 @@ export type ValidForSnakeize<
 	? F extends '_' | ' ' | '-' | '\n' | '\t' | '\r' | '\v' | '\f' | '\b' | '\0'
 		? never
 		: First extends true
-		? [
-				(F extends Uppercase<F> ? true : false) | (R extends Lowercase<R> ? true : false)
-		  ] extends [true]
+		? (R extends Lowercase<R> ? true : false) extends false
 			? ValidForCamelize<R, false, Full>
 			: never
 		: ValidForSnakeize<R, false, Full>
@@ -23,6 +22,7 @@ export type ValidForSnakeize<
 // Determine if a string is valid for camelize
 // Should not contain whitespace, or dashes
 // Should not start with an underscore
+// Should contain at least one underscore
 // Should not contain mixed case
 // return T or never
 export type ValidForCamelize<
@@ -38,7 +38,9 @@ export type ValidForCamelize<
 			: boolean extends
 					| (T extends Uppercase<T> ? true : false)
 					| (T extends Lowercase<T> ? true : false)
-			? ValidForCamelize<R, false, Full>
+			? Full extends `${string}_${string}`
+				? ValidForCamelize<R, false, Full>
+				: never
 			: never
 		: ValidForCamelize<R, false, Full>
 	: Full;

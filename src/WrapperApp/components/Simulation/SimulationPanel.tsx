@@ -5,7 +5,7 @@ import useInterval from 'use-interval';
 
 import { useConfig } from '../../../config/ConfigService';
 import { isFullSimulationData } from '../../../services/LoaderService';
-import { FullSimulationData, useShSimulation } from '../../../services/ShSimulatorService';
+import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import EXAMPLES from '../../../ThreeEditor/examples/examples';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';

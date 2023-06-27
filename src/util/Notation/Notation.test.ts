@@ -8,7 +8,8 @@ describe('Notation', () => {
 				lastName: 'Doe',
 				address: {
 					streetName: 'Main St',
-					zipCode: '12345'
+					zipCode: '12345',
+					country: 'USA'
 				}
 			};
 			const expected = {
@@ -16,7 +17,8 @@ describe('Notation', () => {
 				last_name: 'Doe',
 				address: {
 					streetName: 'Main St',
-					zipCode: '12345'
+					zipCode: '12345',
+					country: 'USA'
 				}
 			};
 			expect(camelToSnakeCase(obj)).toEqual(expected);
@@ -28,7 +30,8 @@ describe('Notation', () => {
 				lastName: 'Doe',
 				address: {
 					streetName: 'Main St',
-					zipCode: '12345'
+					zipCode: '12345',
+					country: 'USA'
 				}
 			};
 			const expected = {
@@ -36,7 +39,8 @@ describe('Notation', () => {
 				last_name: 'Doe',
 				address: {
 					street_name: 'Main St',
-					zip_code: '12345'
+					zip_code: '12345',
+					country: 'USA'
 				}
 			};
 			expect(camelToSnakeCase(obj, true)).toEqual(expected);
@@ -56,7 +60,8 @@ describe('Notation', () => {
 				last_name: 'Doe',
 				address: {
 					street_name: 'Main St',
-					zip_code: '12345'
+					zip_code: '12345',
+					country: 'USA'
 				}
 			};
 			const expected = {
@@ -64,7 +69,8 @@ describe('Notation', () => {
 				lastName: 'Doe',
 				address: {
 					street_name: 'Main St',
-					zip_code: '12345'
+					zip_code: '12345',
+					country: 'USA'
 				}
 			};
 			expect(snakeToCamelCase(obj)).toEqual(expected);
@@ -76,7 +82,8 @@ describe('Notation', () => {
 				last_name: 'Doe',
 				address: {
 					street_name: 'Main St',
-					zip_code: '12345'
+					zip_code: '12345',
+					country: 'USA'
 				}
 			};
 			const expected = {
@@ -84,7 +91,8 @@ describe('Notation', () => {
 				lastName: 'Doe',
 				address: {
 					streetName: 'Main St',
-					zipCode: '12345'
+					zipCode: '12345',
+					country: 'USA'
 				}
 			};
 			expect(snakeToCamelCase(obj, true)).toEqual(expected);

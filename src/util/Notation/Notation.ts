@@ -15,8 +15,11 @@ export function camelize<T extends string>(str: T): SnakeToCamelCase<T> {
 	if (
 		str.match(/[\s-]/) || // Should not contain whitespace or dashes
 		str.match(/^_/) || // Should not start with an underscore
-		(str.match(/[A-Z]/) && str.match(/[a-z]/) !== null) || // If it contains an uppercase letter, there should be no lowercase letters
-		(str.match(/[a-z]/) && str.match(/[A-Z]/) !== null) // and vice versa
+		str.match(/_$/) || // Should not end with an underscore
+		str.match(/__/) || // Should not contain consecutive underscores
+		!str.match(/[_]/) || // Should contain at least one underscore
+		(str.match(/[A-Z]/) && // If it contains uppercase letters
+			str.match(/[a-z]/)) // Should not contain lowercase letters and vice versa
 	)
 		return str as any;
 	return str.toLowerCase().replace(/_([a-z])/g, (_, char) => char.toUpperCase()) as any;
@@ -31,8 +34,7 @@ export function camelize<T extends string>(str: T): SnakeToCamelCase<T> {
 export function snakeize<T extends string>(str: T): CamelToSnakeCase<T> {
 	if (
 		str.match(/[_\s-]/) || // Should not contain underscores, whitespace, or dashes
-		str.match(/^[A-Z]$/) || // Should not be a single uppercase letter
-		str.match(/^[A-Z][a-z]+$/) // Should not be a single capitalized word
+		!str.match(/^.+[A-Z]/) // Should contain at least one uppercase letter (not at the beginning)
 	)
 		return str as any;
 	return str.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase() as any;

@@ -89,7 +89,8 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				parseJson: (text: string) => {
 					const json = JSON.parse(text);
 					if (typeof json === 'object' && json) return snakeToCamelCase(json, true);
-					return json;
+					console.warn('Could not parse JSON: ', text);
+					return text;
 				},
 				hooks: {
 					afterResponse: [

@@ -86,7 +86,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 					label: 'New',
 					icon: <FiberNewIcon />,
 					disabled: false,
-					onClick: () => showDialog('saveFile')
+					onClick: () => showDialog('newProject')
 				},
 				{
 					label: 'Open',
@@ -161,7 +161,14 @@ function EditorAppBar({ editor }: AppBarProps) {
 				loadFromJsonString={loadFromJsonString}
 			/>
 		);
-	}, [hideDialog, updateDialogComponent]);
+	}, [
+		hideDialog,
+		loadFromFiles,
+		loadFromJson,
+		loadFromJsonString,
+		loadFromUrl,
+		updateDialogComponent
+	]);
 	/***********************************************************************************/
 
 	return (

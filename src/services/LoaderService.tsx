@@ -46,7 +46,7 @@ const readFile = (file: File) => {
 const Loader = ({ children }: GenericContextProviderProps) => {
 	const { updateDialogComponent, showDialog, hideDialog } = useDialog();
 	const { editorRef, setResultsSimulationData, setLocalResultsSimulationData } = useStore();
-	const [urlInPath, setUrlInPath] = useState<string>();
+	const [, setUrlInPath] = useState<string>();
 
 	const handleJSON = useCallback(
 		(json: EditorJson) => {
@@ -146,15 +146,15 @@ const Loader = ({ children }: GenericContextProviderProps) => {
 	);
 
 	useEffect(() => {
-		let path = '';
 		if (editorRef.current) {
-			path = window.location.href.split('?')[1];
-			if (path && path !== urlInPath) {
+			const path = window.location.href.split('?')[1];
+			setUrlInPath(prev => {
+				if (!path || path === prev) return prev;
 				loadFromUrl(path);
-				setUrlInPath(path);
-			}
+				return path;
+			});
 		}
-	}, [editorRef, loadFromUrl, urlInPath]);
+	}, [editorRef, loadFromUrl]);
 
 	const value: LoaderContext = {
 		loadFromFiles,
