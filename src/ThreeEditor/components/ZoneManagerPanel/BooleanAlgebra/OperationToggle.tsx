@@ -13,6 +13,7 @@ import {
 	Typography
 } from '@mui/material';
 import { MouseEvent } from 'react';
+
 import { Operation } from '../../../../types/Operation';
 
 const TOOLTIP_DELAY = 400;

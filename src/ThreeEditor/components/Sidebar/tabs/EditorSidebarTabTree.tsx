@@ -1,25 +1,25 @@
+import { getBackendOptions, MultiBackend } from '@minoru/react-dnd-treeview';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
-	Box,
 	Accordion as MuiAccordion,
 	AccordionDetails as MuiAccordionDetails,
+	AccordionProps,
 	AccordionSummary as MuiAccordionSummary,
-	Typography,
+	AccordionSummaryProps,
+	Box,
 	Button,
 	ButtonGroup,
-	AccordionSummaryProps,
-	styled,
 	Divider,
 	Stack,
-	AccordionProps
+	styled,
+	Typography
 } from '@mui/material';
 import { ReactElement } from 'react';
-import { Object3D } from 'three';
-import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
-
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { DndProvider } from 'react-dnd';
-import { getBackendOptions, MultiBackend } from '@minoru/react-dnd-treeview';
+import { Object3D } from 'three';
+
 import { CommandButtonProps } from '../../../../util/Ui/CommandButtonProps';
+import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 
 export interface TreeItem {
 	id: number;

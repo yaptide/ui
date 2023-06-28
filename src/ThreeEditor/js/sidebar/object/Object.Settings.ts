@@ -1,4 +1,3 @@
-import { ScoringOutput } from '../../../Simulation/Scoring/ScoringOutput';
 import {
 	createFullwidthButton,
 	createRowConditionalNumber,
@@ -7,9 +6,10 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
+import { ScoringOutput } from '../../../Simulation/Scoring/ScoringOutput';
 import { AddQuantityCommand, SetOutputSettingsCommand } from '../../commands/Commands';
-import { YaptideEditor } from '../../YaptideEditor';
 import { UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectSettings extends ObjectAbstract {

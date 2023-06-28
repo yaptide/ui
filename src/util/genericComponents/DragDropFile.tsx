@@ -28,6 +28,7 @@ export function DragDropFile(props: DragDropProps) {
 
 	useEffect(() => {
 		setHasFiles(currentFiles && currentFiles.length > 0);
+		if (inputRef.current) inputRef.current.files = currentFiles ?? null;
 	}, [currentFiles]);
 
 	// handle drag events

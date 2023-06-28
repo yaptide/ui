@@ -1,14 +1,15 @@
 import Box from '@mui/material/Box';
 import { SyntheticEvent, useEffect, useState } from 'react';
-import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
-import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
-import { DEMO_MODE } from '../config/Config';
+
+import { useConfig } from '../config/ConfigService';
 import { useAuth } from '../services/AuthService';
 import { useLoader } from '../services/DataLoaderService';
 import { JsRootService } from '../services/JsRootService';
 import { useStore } from '../services/StoreService';
+import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
+import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
 import { SimulatorType } from '../types/RequestTypes';
-import { SimulationInputFiles, StatusState, currentJobStatusData } from '../types/ResponseTypes';
+import { currentJobStatusData, SimulationInputFiles, StatusState } from '../types/ResponseTypes';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
 import NavDrawer from './components/NavDrawer/NavDrawer';
 import { AboutPanel } from './components/Panels/AboutPanel';
@@ -18,6 +19,7 @@ import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
 
 function WrapperApp() {
+	const { demoMode } = useConfig();
 	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
 	const { editorProvider, resultsProvider, canLoadEditorData, clearLoadedEditor } = useLoader();
 	const { isAuthorized, logout } = useAuth();
@@ -56,9 +58,9 @@ function WrapperApp() {
 	}, [resultsProvider, setResultsSimulationData]);
 
 	useEffect(() => {
-		if (!isAuthorized && !DEMO_MODE) setTabsValue('login');
+		if (!isAuthorized && !demoMode) setTabsValue('login');
 		else setTabsValue('editor');
-	}, [isAuthorized]);
+	}, [demoMode, isAuthorized]);
 
 	useEffect(() => {
 		if (resultsSimulationData)

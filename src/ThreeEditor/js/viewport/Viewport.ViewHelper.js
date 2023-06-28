@@ -1,6 +1,6 @@
-import { UIPanel } from '../libs/ui.js';
-
 import * as THREE from 'three';
+
+import { UIPanel } from '../libs/ui.js';
 
 class ViewHelper extends THREE.Object3D {
 	constructor(originalCamera, container) {

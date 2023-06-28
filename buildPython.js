@@ -63,25 +63,33 @@ const saveFileName = (destFolder, fileName) => {
 			console.timeEnd(label);
 		};
 
-		measureTime('Create venv environment', () => {
-			execSync(`${PYTHON} -m venv venv`, {
+		const executeCommand = command => {
+			console.log(`Executing: ${command}`);
+			const output = execSync(command, {
+				encoding: 'utf-8',
 				cwd: srcFolder
 			});
+			console.log('Output:', output);
+		};
+
+		const venvCommandPrefix =
+			os.platform() === 'win32'
+				? 'powershell -NoProfile -Command "& { .\\venv\\Scripts\\Activate.ps1 ; '
+				: '. venv/bin/activate &&';
+		const venvCommandSuffix = os.platform() === 'win32' ? ' }"' : '';
+
+		measureTime('Create venv environment', () => {
+			executeCommand(`${PYTHON} -m venv venv`);
 		});
 
-		const activateCmd =
-			os.platform() === 'win32' ? 'venv\\Scripts\\activate.ps1' : '. venv/bin/activate';
-
 		measureTime('Installing build module for python', () => {
-			execSync(`${activateCmd} && ${PYTHON} -m pip install build wheel`, {
-				cwd: srcFolder
-			});
+			executeCommand(`${venvCommandPrefix} pip install build wheel ${venvCommandSuffix}`);
 		});
 
 		measureTime('Building yaptide_converter', () => {
-			execSync(`${activateCmd} && ${PYTHON} -m build --wheel --no-isolation`, {
-				cwd: srcFolder
-			});
+			executeCommand(
+				`${venvCommandPrefix} python -m build --wheel --no-isolation ${venvCommandSuffix}`
+			);
 		});
 
 		console.log('Checking destination folder');

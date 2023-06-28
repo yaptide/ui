@@ -1,7 +1,17 @@
 import { Button, Divider, Grid } from '@mui/material';
 import { useCallback } from 'react';
 import { BoxGeometry, SphereGeometry, Vector3 } from 'three';
+
+import {
+	CylData,
+	DETECTOR_OPTIONS
+} from '../../../../../types/SimulationTypes/DetectTypes/DetectTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
+import { SetDetectTypeCommand } from '../../../../js/commands/SetDetectTypeCommand';
+import { SetGeometryCommand } from '../../../../js/commands/SetGeometryCommand';
+import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { HollowCylinderGeometry } from '../../../../Simulation/Base/HollowCylinderGeometry';
 import { Detector, isDetector } from '../../../../Simulation/Detectors/Detector';
 import {
@@ -16,12 +26,8 @@ import {
 	BeamModulator,
 	isBeamModulator
 } from '../../../../Simulation/SpecialComponents/BeamModulator';
-import { WorldZone, isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
-import { SetDetectGeometryCommand } from '../../../../js/commands/SetDetectGeometryCommand';
-import { SetDetectTypeCommand } from '../../../../js/commands/SetDetectTypeCommand';
-import { SetGeometryCommand } from '../../../../js/commands/SetGeometryCommand';
-import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import { isCTCube } from '../../../../Simulation/SpecialComponents/CTCube';
+import { isWorldZone, WorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
 import {
 	ObjectSelectOptionType,
 	ObjectSelectPropertyField
@@ -33,11 +39,6 @@ import {
 	SelectPropertyField
 } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
-import { isCTCube } from '../../../../Simulation/SpecialComponents/CTCube';
-import {
-	CylData,
-	DETECTOR_OPTIONS
-} from '../../../../../types/SimulationTypes/DetectTypes/DetectTypes';
 
 const ObjectTypeField = (props: {
 	editor: YaptideEditor;

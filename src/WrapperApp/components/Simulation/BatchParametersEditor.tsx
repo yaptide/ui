@@ -4,6 +4,7 @@ import {
 	Autocomplete,
 	Box,
 	Checkbox,
+	createFilterOptions,
 	FilterOptionsState,
 	FormControl,
 	ListItem,
@@ -11,11 +12,11 @@ import {
 	ListItemText,
 	TextField,
 	Typography,
-	createFilterOptions,
 	useTheme
 } from '@mui/material';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { ChangeEvent, useCallback, useState } from 'react';
+
 import { EditableChip } from '../../../util/genericComponents/EditableChip';
 import { ScriptOption } from './RunSimulationForm';
 
@@ -47,7 +48,6 @@ function parseOptions(input: string): ScriptOption[] {
 		const optionValue = key1 ? value1 : key2 ? value2 : '';
 		options.push({ optionKey, optionValue });
 	}
-	console.log(options);
 
 	return options;
 }

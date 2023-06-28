@@ -1,14 +1,15 @@
 import hash from 'object-hash';
 import Signal from 'signals';
 import * as THREE from 'three';
-import { Beam } from '../Simulation/Physics/Beam';
+
 import { DetectorManager } from '../Simulation/Detectors/DetectorManager';
-import { ZoneManager } from '../Simulation/Zones/ZoneManager';
 import { FigureManager } from '../Simulation/Figures/FigureManager';
 import { MaterialManager } from '../Simulation/Materials/MaterialManager';
+import { Beam } from '../Simulation/Physics/Beam';
 import { Physics } from '../Simulation/Physics/Physics';
 import { ScoringManager } from '../Simulation/Scoring/ScoringManager';
 import { SpecialComponentManager } from '../Simulation/SpecialComponents/SpecialComponentManager';
+import { ZoneManager } from '../Simulation/Zones/ZoneManager';
 import { Config } from './Config.js';
 import { ContextManager } from './EditorContext';
 import { History as _History } from './History.js';

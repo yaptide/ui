@@ -1,5 +1,6 @@
 /* eslint-disable no-restricted-globals */
 import * as Comlink from 'comlink';
+
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles } from '../types/ResponseTypes';

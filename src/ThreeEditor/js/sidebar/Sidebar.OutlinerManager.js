@@ -1,7 +1,7 @@
-import { UIOutliner } from '../libs/ui.three.js';
 import { escapeHTML } from '../../../util/escapeHTML';
-import { UICheckbox } from '../libs/ui.js';
 import { SetValueCommand } from '../commands/SetValueCommand.js';
+import { UICheckbox } from '../libs/ui.js';
+import { UIOutliner } from '../libs/ui.three.js';
 
 /**
  * @deprecated
@@ -38,11 +38,12 @@ const getAdditionalInfo = object => {
 		case 'BoxFigure':
 		case 'CylinderFigure':
 		case 'SphereFigure':
-			return ` [${object.id
-				}] <span class="type Geometry"></span> <span class="type-value">${object.type.slice(
-					0,
-					-4
-				)}</span>`;
+			return ` [${
+				object.id
+			}] <span class="type Geometry"></span> <span class="type-value">${object.type.slice(
+				0,
+				-4
+			)}</span>`;
 		case 'Beam':
 			let particle = object.particle;
 			return ` [${object.id}] <span class="type Particle Beam"></span> ${particle.name} [${particle.id}]`;
@@ -56,26 +57,31 @@ const getAdditionalInfo = object => {
 				<span class="type-value">${material.name} [${material.icru}]</span>`;
 		case 'Points':
 			let { zone, detectType } = object;
-			return ` [${object.id}] <span class="type Geometry ${detectType === 'Zone' ? 'Zone' : ''
-				}"></span> <span class="type-value">${zone ? `${escapeHTML(zone.name)} [${zone.id}]` : detectType
-				}</span>`;
+			return ` [${object.id}] <span class="type Geometry ${
+				detectType === 'Zone' ? 'Zone' : ''
+			}"></span> <span class="type-value">${
+				zone ? `${escapeHTML(zone.name)} [${zone.id}]` : detectType
+			}</span>`;
 		case 'Filter':
 			return ` [${object.id}]`;
 		case 'Output':
 			let { geometry } = object;
-			return ` [${object.id}] <span class="type-value">${object.geometry
-				? `<span class="type Detect Geometry"></span>${escapeHTML(geometry.name)} [${geometry.id
-				}]`
-				: ''
-				}</span>`;
+			return ` [${object.id}] <span class="type-value">${
+				object.geometry
+					? `<span class="type Detect Geometry"></span>${escapeHTML(geometry.name)} [${
+							geometry.id
+					  }]`
+					: ''
+			}</span>`;
 		case 'Quantity':
 			let filter = object.filter;
-			return ` [${object.id}] ${filter
-				? `<span class="type Filter Modifier"></span> <span class="type-value">${escapeHTML(
-					filter.name
-				)} [${filter.id}]`
-				: ''
-				}</span>`;
+			return ` [${object.id}] ${
+				filter
+					? `<span class="type Filter Modifier"></span> <span class="type-value">${escapeHTML(
+							filter.name
+					  )} [${filter.id}]`
+					: ''
+			}</span>`;
 		default:
 			return '';
 	}
@@ -134,14 +140,17 @@ export class OutlinerManager {
 		this.editor.signals.objectSelected.add(this.onObjectSelected.bind(this));
 		this.editor.signals.contextChanged.add(() => this.outliner.setValue(null));
 	}
+
 	setOptionsFromSources(sources) {
 		const options = sources.flatMap(parent => buildOptions(this.editor, parent, 0));
 		this.outliner.setOptions(options);
 		this.outliner.setValue(this._selected);
 	}
+
 	set id(id) {
 		this.outliner.setId(id);
 	}
+
 	onChange() {
 		const selectedUuid = this.outliner.getValue();
 		this._selected = this.outliner.selectedValue;
@@ -149,6 +158,7 @@ export class OutlinerManager {
 		this.editor.selectByUuid(selectedUuid);
 		this.ignoreObjectSelectedSignal = false;
 	}
+
 	onObjectSelected(object) {
 		if (this.ignoreObjectSelectedSignal) return;
 		this._selected = object?.uuid ?? null;

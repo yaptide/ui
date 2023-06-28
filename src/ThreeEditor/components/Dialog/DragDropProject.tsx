@@ -1,7 +1,8 @@
-import { Box, Button, Typography } from '@mui/material';
-import React from 'react';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import { Box, Button, Typography } from '@mui/material';
+import React from 'react';
+
 import {
 	DragDropFile,
 	DragDropInnerElementProps,
@@ -24,8 +25,8 @@ const innerElement = (props: DragDropInnerElementProps) => {
 			<Box
 				sx={{
 					p: 6,
-					pb: 13,
-					pt: 11,
+					pb: 10,
+					pt: 8,
 					display: 'flex',
 					flexDirection: 'column',
 					alignItems: 'center',

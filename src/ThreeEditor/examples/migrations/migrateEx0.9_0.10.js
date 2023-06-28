@@ -249,6 +249,7 @@ const migrateSimulationJob = (fileJson) => {
 
 const path = require('path');
 const fs = require('fs');
+
 const fileNameToMigrate = process.argv[2];
 
 const pathToMigrate = path.resolve(process.cwd(), fileNameToMigrate);

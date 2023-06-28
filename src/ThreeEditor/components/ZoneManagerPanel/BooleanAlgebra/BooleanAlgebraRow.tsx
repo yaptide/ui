@@ -1,6 +1,7 @@
 import { Box, Divider } from '@mui/material';
-import { useEffect, useRef, useState, MouseEvent, MutableRefObject } from 'react';
+import { MouseEvent, MutableRefObject, useEffect, useRef, useState } from 'react';
 import { Object3D } from 'three';
+
 import { Operation, OperationData, OperationDataList } from '../../../../types/Operation';
 import { GeometryLabel } from './GeometryLabel';
 import OperationToggle from './OperationToggle';

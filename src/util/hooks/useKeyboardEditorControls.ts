@@ -1,12 +1,6 @@
 import { RefObject, useEffect } from 'react';
 import { Object3D } from 'three';
-import { isDetector } from '../../ThreeEditor/Simulation/Detectors/Detector';
-import { isBeam } from '../../ThreeEditor/Simulation/Physics/Beam';
-import { isDetectFilter as isFilter } from '../../ThreeEditor/Simulation/Scoring/ScoringFilter';
-import { isOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
-import { isQuantity } from '../../ThreeEditor/Simulation/Scoring/ScoringQuantity';
-import { isBooleanZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
-import { YaptideEditor } from '../../ThreeEditor/js/YaptideEditor';
+
 import { RemoveDetectGeometryCommand } from '../../ThreeEditor/js/commands/RemoveDetectGeometryCommand';
 import { RemoveDifferentialModifierCommand } from '../../ThreeEditor/js/commands/RemoveDifferentialModifierCommand';
 import { RemoveFilterCommand } from '../../ThreeEditor/js/commands/RemoveFilterCommand';
@@ -14,6 +8,13 @@ import { RemoveObjectCommand } from '../../ThreeEditor/js/commands/RemoveObjectC
 import { RemoveQuantityCommand } from '../../ThreeEditor/js/commands/RemoveQuantityCommand';
 import { RemoveZoneCommand } from '../../ThreeEditor/js/commands/RemoveZoneCommand';
 import { SetFilterRuleCommand } from '../../ThreeEditor/js/commands/SetFilterRuleCommand';
+import { YaptideEditor } from '../../ThreeEditor/js/YaptideEditor';
+import { isDetector } from '../../ThreeEditor/Simulation/Detectors/Detector';
+import { isBeam } from '../../ThreeEditor/Simulation/Physics/Beam';
+import { isDetectFilter as isFilter } from '../../ThreeEditor/Simulation/Scoring/ScoringFilter';
+import { isOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
+import { isQuantity } from '../../ThreeEditor/Simulation/Scoring/ScoringQuantity';
+import { isBooleanZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
 
 export const isRemovable = (object: Object3D) => {
 	if (object === null) return false;

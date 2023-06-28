@@ -1,7 +1,8 @@
 import * as Comlink from 'comlink';
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
-import { EditorJson } from '../ThreeEditor/js/EditorJson';
+
 import { createGenericContext } from '../services/GenericContext';
+import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles } from '../types/ResponseTypes';
 import { PythonWorker } from './PythonWorker';
@@ -44,7 +45,6 @@ const PythonConverter = (props: PythonConverterProps) => {
 		);
 		workerRef.current.initPyodide(
 			Comlink.proxy(() => {
-				console.log('PythonConverter: callback from worker');
 				document.dispatchEvent(new CustomEvent(PYODIDE_LOADED));
 			})
 		);

@@ -6,8 +6,8 @@ import {
 } from '../../../../util/Ui/Uis';
 import { WorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
 import { SetValueCommand } from '../../commands/Commands';
-import { YaptideEditor } from '../../YaptideEditor';
 import { UIButton, UICheckbox, UIRow } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectZoneCalculate extends ObjectAbstract {

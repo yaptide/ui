@@ -1,15 +1,16 @@
 import { Box, Button, Card, CardActions, CardContent, Divider } from '@mui/material';
 import useTheme from '@mui/system/useTheme';
 import CodeEditor from '@uiw/react-textarea-code-editor';
-import { DEMO_MODE } from '../../../config/Config';
+
+import { useConfig } from '../../../config/ConfigService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
-	SimulationInputFiles,
 	_defaultFlukaInputFiles,
 	_defaultShInputFiles,
 	_defaultTopasInputFiles,
 	_orderedShInputFilesNames,
-	isKnownInputFile
+	isKnownInputFile,
+	SimulationInputFiles
 } from '../../../types/ResponseTypes';
 import { saveString } from '../../../util/File';
 
@@ -23,6 +24,7 @@ interface InputFilesEditorProps {
 }
 
 export function InputFilesEditor(props: InputFilesEditorProps) {
+	const { demoMode } = useConfig();
 	const inputFiles = props.inputFiles ?? _defaultShInputFiles;
 	const simulator = props.simulator;
 	const theme = useTheme();
@@ -57,7 +59,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 					<Button
 						color='success'
 						variant='contained'
-						disabled={DEMO_MODE}
+						disabled={demoMode}
 						onClick={() => props.runSimulation?.call(null, simulator, inputFiles)}>
 						Run with these input files
 					</Button>
@@ -71,7 +73,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 				</Button>
 				{props.saveAndExit && (
 					<Button
-						disabled={DEMO_MODE}
+						disabled={demoMode}
 						color='info'
 						onClick={() => props.saveAndExit?.call(null, inputFiles)}>
 						Save and exit

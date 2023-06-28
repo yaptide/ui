@@ -1,25 +1,20 @@
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
-import { BACKEND_URL, DEMO_MODE, DEPLOYMENT } from '../config/Config';
-import { snakeToCamelCase } from '../types/TypeTransformUtil';
-import { RequestAuthLogin, RequestAuthLogout, RequestAuthRefresh } from '../types/RequestTypes';
-import useIntervalAsync from '../util/hooks/useIntervalAsync';
 import { useSnackbar } from 'notistack';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+
+import { useConfig } from '../config/ConfigService';
+import { RequestAuthLogin, RequestAuthLogout, RequestAuthRefresh } from '../types/RequestTypes';
 import {
 	ResponseAuthLogin,
 	ResponseAuthRefresh,
 	ResponseAuthStatus,
 	YaptideResponse
 } from '../types/ResponseTypes';
-import { createGenericContext } from './GenericContext';
+import { snakeToCamelCase } from '../types/TypeTransformUtil';
 import { hasField } from '../util/hasField';
-
-declare global {
-	interface Window {
-		BACKEND_URL?: string;
-	}
-}
+import useIntervalAsync from '../util/hooks/useIntervalAsync';
+import { createGenericContext } from './GenericContext';
 
 export interface AuthProps {
 	children: ReactNode;
@@ -74,13 +69,12 @@ export interface AuthContext {
 const [useAuth, AuthContextProvider] = createGenericContext<AuthContext>();
 
 const Auth = ({ children }: AuthProps) => {
+	const { backendUrl, demoMode } = useConfig();
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER, isAuthUser));
 	const [reachInterval, setReachInterval] = useState<number | undefined>(undefined);
 	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(180000);
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
 	const { enqueueSnackbar } = useSnackbar();
-
-	const [backendUrl, setBackendUrl] = useState<string>(BACKEND_URL);
 
 	useEffect(() => {
 		setReachInterval(isServerReachable ? 180000 : undefined);
@@ -137,34 +131,12 @@ const Auth = ({ children }: AuthProps) => {
 		[kyRef]
 	);
 
-	const setBackendUrlCallback = useCallback(
-		(url: string) => {
-			setBackendUrl(url);
-		},
-		[setBackendUrl]
-	);
-
-	// Enable backend url change in dev mode
-	if (DEPLOYMENT === 'dev') {
-		// eslint-disable-next-line react-hooks/rules-of-hooks
-		useEffect(() => {
-			Object.defineProperty(window, 'BACKEND_URL', {
-				set: function (url: string) {
-					setBackendUrlCallback(url);
-				},
-				get: function () {
-					return backendUrl;
-				},
-				configurable: true
-			});
-		}, [backendUrl, setBackendUrlCallback]);
-	}
-
 	useEffect(() => {
-		if (DEMO_MODE) enqueueSnackbar('Demo mode enabled.', { variant: 'info' });
-	}, [enqueueSnackbar]);
+		if (demoMode) enqueueSnackbar('Demo mode enabled.', { variant: 'info' });
+	}, [demoMode, enqueueSnackbar]);
 
 	const reachServer = useCallback(() => {
+		if (demoMode) return Promise.resolve(setIsServerReachable(false));
 		return kyIntervalRef
 			.get(``)
 			.json<YaptideResponse>()
@@ -179,7 +151,7 @@ const Auth = ({ children }: AuthProps) => {
 				})
 			)
 			.catch(() => setIsServerReachable(false));
-	}, [enqueueSnackbar, kyIntervalRef]);
+	}, [demoMode, enqueueSnackbar, kyIntervalRef]);
 
 	useIntervalAsync(reachServer, reachInterval);
 	useEffect(() => {
@@ -187,13 +159,13 @@ const Auth = ({ children }: AuthProps) => {
 	}, [reachServer]);
 
 	const refresh = useCallback(() => {
-		if (DEMO_MODE || !isServerReachable) return Promise.resolve(setRefreshInterval(undefined));
+		if (demoMode || !isServerReachable) return Promise.resolve(setRefreshInterval(undefined));
 		return kyIntervalRef
 			.get(`auth/refresh`)
 			.json<ResponseAuthRefresh>()
 			.then(({ accessExp }) => setRefreshInterval(getRefreshDelay(accessExp)))
 			.catch((_: HTTPError) => {});
-	}, [isServerReachable, kyIntervalRef]);
+	}, [demoMode, isServerReachable, kyIntervalRef]);
 
 	useEffect(() => {
 		if (user !== null && refreshInterval === undefined && isServerReachable)
@@ -227,7 +199,7 @@ const Auth = ({ children }: AuthProps) => {
 	}, [kyRef]);
 
 	const authKy = useMemo(() => kyRef, [kyRef]);
-	const isAuthorized = useMemo(() => user !== null || DEMO_MODE, [user]);
+	const isAuthorized = useMemo(() => user !== null || demoMode, [demoMode, user]);
 
 	useEffect(() => {
 		save(StorageKey.USER, user);

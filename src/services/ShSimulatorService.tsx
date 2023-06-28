@@ -1,10 +1,11 @@
 import { ReactNode, useCallback } from 'react';
+
 import { Estimator } from '../JsRoot/GraphData';
+import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { ScoringManagerJSON } from '../ThreeEditor/Simulation/Scoring/ScoringManager';
-import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import {
+	isEditorJson,
 	RequestCancelJob,
 	RequestGetJobInputs,
 	RequestGetJobLogs,
@@ -14,10 +15,10 @@ import {
 	RequestGetPageStatus,
 	RequestParam,
 	RequestPostJob,
-	RequestShConvert,
-	isEditorJson
+	RequestShConvert
 } from '../types/RequestTypes';
 import {
+	currentJobStatusData,
 	JobStatusData,
 	ResponseGetJobInputs,
 	ResponseGetJobLogs,
@@ -27,13 +28,13 @@ import {
 	ResponsePostJob,
 	ResponseShConvert,
 	StatusState,
-	YaptideResponse,
-	currentJobStatusData
+	YaptideResponse
 } from '../types/ResponseTypes';
 import { camelToSnakeCase } from '../types/TypeTransformUtil';
+import { useCacheMap } from '../util/hooks/useCacheMap';
 import { orderAccordingToList } from '../util/Sort';
 import { ValidateShape } from '../util/Types';
-import { useCacheMap } from '../util/hooks/useCacheMap';
+import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import { useAuth } from './AuthService';
 import { createGenericContext } from './GenericContext';
 
@@ -308,7 +309,10 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 				const { jobId } = info;
 
 				if (cache && statusDataCache.has(jobId))
-					return Promise.resolve(statusDataCache.get(jobId));
+					return Promise.resolve<ReturnType<typeof statusDataCache.get>>({
+						...statusDataCache.get(jobId),
+						...info
+					});
 
 				return authKy
 					.get(endPoint, {

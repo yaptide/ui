@@ -1,5 +1,3 @@
-import * as Scoring from '../../../Simulation/Scoring/ScoringOutputTypes';
-import { ScoringQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
 import {
 	createRowConditionalNumber,
 	createRowConditionalSelect,
@@ -7,9 +5,11 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
+import * as Scoring from '../../../Simulation/Scoring/ScoringOutputTypes';
+import { ScoringQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
 import { SetQuantityValueCommand } from '../../commands/Commands';
-import { YaptideEditor } from '../../YaptideEditor';
 import { UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectQuantity extends ObjectAbstract {

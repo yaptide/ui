@@ -1,21 +1,21 @@
 import { Box, Card, CardContent, Fade, Modal } from '@mui/material';
 import { useSnackbar } from 'notistack';
-
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
-import EXAMPLES from '../../../ThreeEditor/examples/examples';
-import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
-import { DEMO_MODE } from '../../../config/Config';
+
+import { useConfig } from '../../../config/ConfigService';
 import { isFullSimulationData, useLoader } from '../../../services/DataLoaderService';
 import { FullSimulationData, useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
+import EXAMPLES from '../../../ThreeEditor/examples/examples';
+import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { OrderBy, OrderType, SimulatorType } from '../../../types/RequestTypes';
 import {
+	currentJobStatusData,
 	JobStatusData,
 	SimulationInfo,
 	SimulationInputFiles,
-	StatusState,
-	currentJobStatusData
+	StatusState
 } from '../../../types/ResponseTypes';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import {
@@ -38,6 +38,7 @@ export default function SimulationPanel({
 	forwardedInputFiles,
 	forwardedSimulator
 }: SimulationPanelProps) {
+	const { demoMode } = useConfig();
 	const {
 		editorRef,
 		setResultsSimulationData,
@@ -64,7 +65,7 @@ export default function SimulationPanel({
 
 	const [pageIdx, setPageIdx] = useState(1);
 	const [pageCount, setPageCount] = useState(1);
-  const [orderType, setOrderType] = useState<OrderType>(OrderType.DESCEND);
+	const [orderType, setOrderType] = useState<OrderType>(OrderType.DESCEND);
 	const [orderBy, setOrderBy] = useState<OrderBy>(OrderBy.START_TIME);
 	const [pageSize, setPageSize] = useState(6);
 	type PageState = Omit<
@@ -112,17 +113,17 @@ export default function SimulationPanel({
 
 	const updateSimulationData = useCallback(
 		() =>
-			!DEMO_MODE &&
+			!demoMode &&
 			getPageStatus(simulationInfo, true, handleBeforeCacheWrite, controller.signal).then(
 				s => {
 					setSimulationsStatusData([...s]);
 				}
 			),
-		[handleBeforeCacheWrite, controller.signal, getPageStatus, simulationInfo]
+		[demoMode, getPageStatus, simulationInfo, handleBeforeCacheWrite, controller.signal]
 	);
 
 	useEffect(() => {
-		if (!DEMO_MODE)
+		if (!demoMode)
 			getHelloWorld(controller.signal)
 				.then(() => {
 					setBackendAlive(true);
@@ -139,7 +140,8 @@ export default function SimulationPanel({
 		updateSimulationInfo,
 		setSimulationIDInterval,
 		isBackendAlive,
-		setBackendAlive
+		setBackendAlive,
+		demoMode
 	]);
 
 	useInterval(updateSimulationInfo, simulationIDInterval, true);
@@ -216,7 +218,7 @@ export default function SimulationPanel({
 
 	useEffect(() => {
 		const updateCurrentSimulation = async () => {
-			if (!DEMO_MODE && editorRef.current) {
+			if (!demoMode && editorRef.current) {
 				const hash = editorRef.current.toJSON().hash;
 				const currentStatus = simulationsStatusData.find(async s => {
 					if (currentJobStatusData[StatusState.COMPLETED](s)) {
@@ -236,7 +238,14 @@ export default function SimulationPanel({
 			}
 		};
 		updateCurrentSimulation();
-	}, [simulationsStatusData, editorRef, getJobInputs, controller.signal, getFullSimulationData]);
+	}, [
+		simulationsStatusData,
+		editorRef,
+		getJobInputs,
+		controller.signal,
+		getFullSimulationData,
+		demoMode
+	]);
 
 	useEffect(() => {
 		return () => {
@@ -274,13 +283,7 @@ export default function SimulationPanel({
 			newOrderType: OrderType = orderType,
 			newOrderBy: OrderBy = orderBy
 		) =>
-			getPageContents(
-				newPageIdx,
-				newPageSize,
-				newOrderType,
-				newOrderBy,
-				controller.signal
-			)
+			getPageContents(newPageIdx, newPageSize, newOrderType, newOrderBy, controller.signal)
 				.then(({ simulations, pageCount }) => {
 					setSimulationInfo([...simulations]);
 					setPageCount(pageCount);
@@ -393,7 +396,7 @@ export default function SimulationPanel({
 				handleLoadResults={handleLoadResults}
 				handleShowInputFiles={handleShowInputFiles}
 			/>
-			{DEMO_MODE ? (
+			{demoMode ? (
 				<DemoCardGrid
 					simulations={EXAMPLES}
 					title='Demo Simulation Results'

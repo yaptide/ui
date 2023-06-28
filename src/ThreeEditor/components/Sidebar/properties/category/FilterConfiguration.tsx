@@ -1,16 +1,17 @@
-import { MathUtils, Object3D } from 'three';
-import { YaptideEditor } from '../../../../js/YaptideEditor';
-import { PropertyField, RulesConfiguration, RulesOutliner } from '../fields/PropertyField';
-import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
-import { PropertiesCategory } from './PropertiesCategory';
 import { Button } from '@mui/material';
-import { ScoringFilter, isDetectFilter } from '../../../../Simulation/Scoring/ScoringFilter';
+import { MathUtils, Object3D } from 'three';
+
 import {
 	Keyword,
 	RULE_DEFAULTS
 } from '../../../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetFilterRuleCommand } from '../../../../js/commands/SetFilterRuleCommand';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { isDetectFilter, ScoringFilter } from '../../../../Simulation/Scoring/ScoringFilter';
+import { PropertyField, RulesConfiguration, RulesOutliner } from '../fields/PropertyField';
+import { PropertiesCategory } from './PropertiesCategory';
 
 export function FilterConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;

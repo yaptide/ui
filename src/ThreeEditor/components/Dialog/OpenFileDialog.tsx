@@ -12,10 +12,11 @@ import {
 	TextField
 } from '@mui/material';
 import { ChangeEvent, SyntheticEvent, useState } from 'react';
+
 import { useLoader } from '../../../services/DataLoaderService';
+import { StatusState } from '../../../types/ResponseTypes';
 import EXAMPLES from '../../examples/examples';
 import { CustomDialogTitle } from './CustomDialog';
-import { StatusState } from '../../../types/ResponseTypes';
 import { DragDropProject } from './DragDropProject';
 
 export type OpenFileProps = {
@@ -149,6 +150,17 @@ export function OpenFileDialog(props: OpenFileProps) {
 								currentFiles={currentFileList}
 								acceptedFiles={'.json'}
 							/>
+							<Button
+								variant='contained'
+								color='error'
+								fullWidth
+								sx={{ marginTop: 'auto' }}
+								disabled={currentFileList === undefined}
+								onClick={() => {
+									setCurrentFileList(undefined);
+								}}>
+								Clear Input
+							</Button>
 
 							<Button
 								variant='contained'
@@ -158,6 +170,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 								onClick={() => {
 									onClose();
 									loadFromFiles(currentFileList);
+									setCurrentFileList(undefined);
 								}}>
 								Load
 							</Button>

@@ -1,10 +1,11 @@
+import { Signal } from 'signals';
 import * as THREE from 'three';
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min';
 import { debounce } from 'throttle-debounce';
-import { Viewport } from './Viewport';
+
 import { CSG } from '../../CSG/CSG';
 import { YaptideEditor } from '../YaptideEditor';
-import { Signal } from 'signals';
+import { Viewport } from './Viewport';
 
 type ClippedViewConfigurationJson = {
 	visible: boolean;
