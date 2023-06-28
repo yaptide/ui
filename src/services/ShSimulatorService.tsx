@@ -310,7 +310,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 				else if (currentTaskStatusData[StatusState.COMPLETED](task)) {
 					if (task.startTime && task.endTime) {
 						if (task.requestedPrimaries !== task.simulatedPrimaries) {
-							console.error(
+							console.warn(
 								'Requested primaries and simulated primaries are not equal in COMPLETED task:',
 								task
 							);

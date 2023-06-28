@@ -1,19 +1,10 @@
-import {
-	Button,
-	Checkbox,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogContentText,
-	FormControlLabel,
-	TextField
-} from '@mui/material';
+import { Button, Checkbox, FormControlLabel, TextField } from '@mui/material';
 import { ChangeEvent, useEffect, useState } from 'react';
 
 import { FullSimulationData } from '../../../services/ShSimulatorService';
 import { saveString } from '../../../util/File';
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { CustomDialogTitle, WarnDialogProps } from './CustomDialog';
+import { CustomDialog, WarnDialogProps } from './CustomDialog';
 
 const saveJson = (data: {}, fileName: string) => {
 	let output = undefined;
@@ -50,14 +41,12 @@ export function SaveFileDialog({
 		setKeepResults(event.target.checked);
 	};
 	return (
-		<Dialog
+		<CustomDialog
 			open={open}
-			onClose={onClose}>
-			<CustomDialogTitle onClose={onClose}>Save project file</CustomDialogTitle>
-			<DialogContent>
-				<DialogContentText id='save-dialog-description'>
-					This will generate a JSON file that can be loaded later.
-				</DialogContentText>
+			onClose={onClose}
+			title='Save Project File'
+			contentText={`This will generate a JSON file that can be loaded later.`}
+			body={
 				<form
 					style={{
 						display: 'flex',
@@ -66,7 +55,6 @@ export function SaveFileDialog({
 						paddingTop: 20
 					}}>
 					<TextField
-						id='outlined-basic-name'
 						label='File name'
 						value={name}
 						variant='outlined'
@@ -89,16 +77,14 @@ export function SaveFileDialog({
 						}
 					/>
 				</form>
-			</DialogContent>
-			<DialogActions>
-				<Button
-					onClick={() => {
-						onConfirm();
-						editor && saveJson(keepResults ? results : editor?.toJSON(), name);
-					}}>
-					Save
-				</Button>
-			</DialogActions>
-		</Dialog>
+			}>
+			<Button
+				onClick={() => {
+					onConfirm();
+					editor && saveJson(keepResults ? results : editor?.toJSON(), name);
+				}}>
+				Save
+			</Button>
+		</CustomDialog>
 	);
 }

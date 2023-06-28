@@ -1,22 +1,23 @@
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import {
 	Box,
 	Button,
-	Dialog,
-	DialogContent,
 	Divider,
+	IconButton,
 	List,
 	ListItem,
 	ListItemButton,
 	Tab,
-	TextField
+	TextField,
+	Tooltip
 } from '@mui/material';
-import { ChangeEvent, SyntheticEvent, useState } from 'react';
+import { ChangeEvent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 
 import { LoaderContext } from '../../../services/LoaderService';
 import { StatusState } from '../../../types/ResponseTypes';
 import EXAMPLES from '../../examples/examples';
-import { CustomDialogTitle, WarnDialogProps } from './CustomDialog';
+import { CustomDialog, WarnDialogProps } from './CustomDialog';
 import { DragDropProject } from './DragDropProject';
 
 export function OpenFileDialog({
@@ -44,46 +45,45 @@ export function OpenFileDialog({
 	const handleUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setUrl(event.target.value);
 	};
+	const tabList = useMemo(() => ['Examples', 'Upload file', 'From URL', 'Plain text'], []);
+	const tabPanelProps = useCallback(
+		(index: number) => ({
+			value: index.toString(),
+			hidden: value !== index.toString() ? true : undefined
+		}),
+		[value]
+	);
 
 	return (
-		<Dialog
-			aria-label={'Open project dialog'}
+		<CustomDialog
 			open={open}
 			onClose={onClose}
+			title='Open Project'
+			contentText='Select a project to open'
 			sx={{
 				'& .MuiDialog-paper': {
 					minWidth: '600px',
 					minHeight: '500px'
 				}
-			}}>
-			<CustomDialogTitle onClose={onClose}>Open project</CustomDialogTitle>
-			<DialogContent>
+			}}
+			body={
 				<TabContext value={value}>
 					<Box>
 						<TabList
 							centered
 							onChange={handleChange}
 							aria-label='open project tabs example'>
-							<Tab
-								label='Examples'
-								value='0'
-							/>
-							<Tab
-								label='Send'
-								value='1'
-							/>
-							<Tab
-								label='From URL'
-								value='2'
-							/>
-							<Tab
-								label='Plain text'
-								value='3'
-							/>
+							{tabList.map((tab, idx) => (
+								<Tab
+									label={tab}
+									value={idx.toString()}
+									key={tab}
+								/>
+							))}
 						</TabList>
 					</Box>
 					<Divider />
-					<TabPanel value='0'>
+					<TabPanel {...tabPanelProps(0)}>
 						<Box
 							sx={{
 								display: 'flex',
@@ -134,14 +134,15 @@ export function OpenFileDialog({
 							</Button>
 						</Box>
 					</TabPanel>
-					<TabPanel value='1'>
+					<TabPanel {...tabPanelProps(1)}>
 						<Box
 							sx={{
 								display: 'flex',
 								flexDirection: 'column',
 								gap: 2,
 								height: 319,
-								boxSizing: 'border-box'
+								boxSizing: 'border-box',
+								position: 'relative'
 							}}>
 							<DragDropProject
 								id={'input-file-upload-open'}
@@ -149,17 +150,26 @@ export function OpenFileDialog({
 								currentFiles={currentFileList}
 								acceptedFiles={'.json'}
 							/>
-							<Button
-								variant='contained'
-								color='error'
-								fullWidth
-								sx={{ marginTop: 'auto' }}
-								disabled={currentFileList === undefined}
-								onClick={() => {
-									setCurrentFileList(undefined);
-								}}>
-								Clear Input
-							</Button>
+							<Tooltip title='Clear selection'>
+								{/* Tooltip requires a non disabled child to properly handle events */}
+								<span>
+									<IconButton
+										color='error'
+										sx={{
+											position: 'absolute',
+											right: 20,
+											top: 5,
+											opacity: currentFileList === undefined ? 0 : 1
+										}}
+										edge='end'
+										disabled={currentFileList === undefined}
+										onClick={() => {
+											setCurrentFileList(undefined);
+										}}>
+										<RemoveCircleOutlineIcon />
+									</IconButton>
+								</span>
+							</Tooltip>
 							<Button
 								variant='contained'
 								fullWidth
@@ -174,7 +184,7 @@ export function OpenFileDialog({
 							</Button>
 						</Box>
 					</TabPanel>
-					<TabPanel value='2'>
+					<TabPanel {...tabPanelProps(2)}>
 						<Box
 							sx={{
 								display: 'flex',
@@ -204,7 +214,7 @@ export function OpenFileDialog({
 							</Button>
 						</Box>
 					</TabPanel>
-					<TabPanel value='3'>
+					<TabPanel {...tabPanelProps(3)}>
 						<Box
 							sx={{
 								display: 'flex',
@@ -237,7 +247,6 @@ export function OpenFileDialog({
 						</Box>
 					</TabPanel>
 				</TabContext>
-			</DialogContent>
-		</Dialog>
+			}></CustomDialog>
 	);
 }

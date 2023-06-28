@@ -13,7 +13,8 @@ export function NewProjectDialog({
 		<CustomDialog
 			open={open}
 			onClose={onClose}
-			title='Create a new project'
+			alert={true}
+			title='New Project Alert'
 			contentText='Your current project will be lost. Are you sure you want to continue?'>
 			<Button
 				onClick={onClose}
@@ -25,7 +26,7 @@ export function NewProjectDialog({
 					editor.clear();
 					onConfirm();
 				}}>
-				Clear and Proceed
+				Clear and proceed
 			</Button>
 		</CustomDialog>
 	);

@@ -20,8 +20,9 @@ export function LoadFileDialog({
 	return (
 		<CustomDialog
 			open={open}
+			alert={true}
 			onClose={onClose}
-			title='Load file - Warning'
+			title='Load File Alert'
 			contentText={`Loaded data will replace current project data. Are you sure you want to continue?`}
 			body={
 				!validVersion && (
@@ -29,6 +30,7 @@ export function LoadFileDialog({
 						variant='body1'
 						color='error'
 						component={'div'}
+						id={`load-file-dialog-version-warning`}
 						sx={{
 							marginTop: '1rem',
 							fontWeight: 'bold'
@@ -52,7 +54,7 @@ export function LoadFileDialog({
 					editor.clear();
 					editor.fromJSON(data);
 				}}>
-				Clear and Proceed
+				Clear and proceed
 			</Button>
 		</CustomDialog>
 	);

@@ -4,6 +4,7 @@ import {
 	DialogActions,
 	DialogContent,
 	DialogContentText,
+	DialogProps,
 	DialogTitle,
 	DialogTitleProps,
 	IconButton
@@ -12,12 +13,20 @@ import { ReactNode } from 'react';
 
 type CustomDialogProps = {
 	title: string;
+	titleId?: string;
+	contentId?: string;
+	alert?: boolean;
 	contentText: string;
 	body?: ReactNode;
 	open?: boolean;
+	sx?: DialogProps['sx'];
 	onClose: () => void;
-	children: ReactNode;
+	children?: ReactNode;
 };
+
+export function titleToKebabCase(title: string) {
+	return title.toLowerCase().replace(/\s/g, '-');
+}
 
 export type WarnDialogProps<T = {}> = Omit<
 	{
@@ -31,19 +40,28 @@ export type WarnDialogProps<T = {}> = Omit<
 
 export function CustomDialog({
 	open = true,
+	alert = false,
 	onClose,
 	title,
+	titleId = `${titleToKebabCase(title)}-dialog-title`,
+	contentId = `${titleToKebabCase(title)}-dialog-content`,
 	contentText,
+	sx,
 	body,
 	children
 }: CustomDialogProps) {
 	return (
 		<Dialog
+			sx={sx}
+			role={`${alert ? 'alert' : ''}dialog`}
+			aria-modal='true'
+			aria-labelledby={titleId}
+			aria-describedby={contentId}
 			open={open}
 			onClose={onClose}>
-			<DialogTitle>{title}</DialogTitle>
+			<DialogTitle id={titleId}>{title}</DialogTitle>
 			<DialogContent>
-				<DialogContentText id='alert-dialog-description'>{contentText}</DialogContentText>
+				<DialogContentText id={contentId}>{contentText}</DialogContentText>
 				{body}
 			</DialogContent>
 			<DialogActions>{children}</DialogActions>

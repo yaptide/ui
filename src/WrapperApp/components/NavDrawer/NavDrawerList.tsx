@@ -260,6 +260,7 @@ function NavDrawerElement({
 							? { component: 'a', href: buttonProps.href, target: '_blank' }
 							: {})}
 						selected={selected}
+						aria-selected={selected}
 						onClick={event => handleChange(event, value)}>
 						{listItemContent}
 					</ListItemButton>
