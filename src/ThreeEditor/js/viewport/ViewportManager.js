@@ -353,7 +353,7 @@ function ViewManager(editor) {
 			);
 		}
 
-		renderer.setPixelRatio(window.devicePixelRatio);
+		renderer.setPixelRatio(1);
 		renderer.setSize(container.dom.offsetWidth, container.dom.offsetHeight);
 
 		pmremGenerator = new THREE.PMREMGenerator(renderer);
