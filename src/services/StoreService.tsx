@@ -6,6 +6,8 @@ import { FullSimulationData } from './ShSimulatorService';
 
 export interface StoreContext {
 	editorRef: MutableRefObject<YaptideEditor | undefined>;
+	trackedId?: string;
+	setTrackedId: Dispatch<SetStateAction<string | undefined>>;
 	resultsSimulationData?: FullSimulationData;
 	setResultsSimulationData: Dispatch<SetStateAction<FullSimulationData | undefined>>;
 	localResultsSimulationData?: FullSimulationData[];
@@ -20,9 +22,12 @@ const Store = ({ children }: GenericContextProviderProps) => {
 	const [localResultsSimulationData, setLocalResultsSimulationData] = useState<
 		FullSimulationData[]
 	>([]);
+	const [trackedId, setTrackedId] = useState<string>();
 
 	const value: StoreContext = {
 		editorRef,
+		trackedId,
+		setTrackedId,
 		resultsSimulationData,
 		setResultsSimulationData,
 		localResultsSimulationData,

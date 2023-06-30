@@ -1,22 +1,21 @@
 import { Button } from '@mui/material';
 import Typography from '@mui/material/Typography';
 
+import { useStore } from '../../../services/StoreService';
 import { EditorJson } from '../../js/EditorJson';
-import { YaptideEditor } from '../../js/YaptideEditor';
 import { CustomDialog, WarnDialogProps } from './CustomDialog';
 
 export function LoadFileDialog({
 	open,
 	onClose,
-	validVersion,
+	validVersion = true,
 	onConfirm = onClose,
-	editor,
 	data
 }: WarnDialogProps<{
-	validVersion: boolean;
-	editor: YaptideEditor;
-	data: EditorJson;
+	validVersion?: boolean;
+	data?: EditorJson;
 }>) {
+	const { editorRef } = useStore();
 	return (
 		<CustomDialog
 			open={open}
@@ -49,10 +48,13 @@ export function LoadFileDialog({
 				Cancel
 			</Button>
 			<Button
+				disabled={!data}
 				onClick={() => {
 					onConfirm();
-					editor.clear();
-					editor.fromJSON(data);
+					if (data && editorRef.current) {
+						editorRef.current.clear();
+						editorRef.current.fromJSON(data);
+					}
 				}}>
 				Clear and proceed
 			</Button>

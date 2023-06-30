@@ -77,8 +77,8 @@ function App() {
 				<Auth />,
 				<ShSimulation />,
 				<PythonConverterService />,
-				<DialogProvider />,
 				<Store />,
+				<DialogProvider />,
 				<Loader />
 			]}>
 			<WrapperApp />

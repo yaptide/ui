@@ -1,7 +1,7 @@
 import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
 import { useSnackbar } from 'notistack';
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useConfig } from '../config/ConfigService';
 import { RequestAuthLogin, RequestAuthLogout, RequestAuthRefresh } from '../types/RequestTypes';
@@ -15,10 +15,6 @@ import { hasFields } from '../util/customGuards';
 import useIntervalAsync from '../util/hooks/useIntervalAsync';
 import { snakeToCamelCase } from '../util/Notation/Notation';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
-
-export interface AuthProps {
-	children?: ReactNode;
-}
 
 type AuthUser = Pick<ResponseAuthStatus, 'username'>;
 const isAuthUser = (obj: unknown): obj is AuthUser => {

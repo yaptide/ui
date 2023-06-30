@@ -303,26 +303,33 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 		[authKy, getJobInputs, resultsCache]
 	);
 
+	//TODO: fix backend responses and remove this function
 	const validStatusToCache = (data: JobStatusCompleted | JobStatusFailed) => {
-		if (data.jobState === StatusState.COMPLETED) {
-			return data.jobTasksStatus.every(task => {
-				if (currentTaskStatusData[StatusState.FAILED](task)) return true;
-				else if (currentTaskStatusData[StatusState.COMPLETED](task)) {
-					if (task.startTime && task.endTime) {
-						if (task.requestedPrimaries !== task.simulatedPrimaries) {
-							console.warn(
-								'Requested primaries and simulated primaries are not equal in COMPLETED task:',
-								task
-							);
-							task.simulatedPrimaries = task.requestedPrimaries; //TODO: fix backend response and remove this line
-						}
-						return true;
-					}
+		if (data.jobState === StatusState.FAILED) return true;
+		return data.jobTasksStatus.every(task => {
+			if (currentTaskStatusData[StatusState.FAILED](task)) return true;
+			else if (currentTaskStatusData[StatusState.COMPLETED](task)) {
+				if (!task.startTime || !task.endTime)
+					console.warn('There are missing times in COMPLETED task:', task);
+				if (typeof task.startTime === 'string') {
+					task.startTime = new Date(task.startTime);
+					console.warn('Converted startTime to Date in COMPLETED task:', task);
 				}
-				return false;
-			});
-		}
-		return true;
+				if (typeof task.endTime === 'string') {
+					task.endTime = new Date(task.endTime);
+					console.warn('Converted endTime to Date in COMPLETED task:', task);
+				}
+				if (task.requestedPrimaries !== task.simulatedPrimaries) {
+					console.warn(
+						'Requested primaries and simulated primaries are not equal in COMPLETED task:',
+						task
+					);
+					task.simulatedPrimaries = task.requestedPrimaries;
+				}
+				return true;
+			}
+			return false;
+		});
 	};
 
 	const getJobStatus = useCallback(

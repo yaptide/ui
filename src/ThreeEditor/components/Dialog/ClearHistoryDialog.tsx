@@ -1,8 +1,10 @@
 import { Button } from '@mui/material';
 
+import { useStore } from '../../../services/StoreService';
 import { CustomDialog, WarnDialogProps } from './CustomDialog';
 
-export function ClearHistoryDialog({ open, onClose, onConfirm }: WarnDialogProps) {
+export function ClearHistoryDialog({ open, onClose, onConfirm = onClose }: WarnDialogProps) {
+	const { editorRef } = useStore();
 	return (
 		<CustomDialog
 			open={open}
@@ -15,7 +17,18 @@ export function ClearHistoryDialog({ open, onClose, onConfirm }: WarnDialogProps
 				autoFocus>
 				Cancel
 			</Button>
-			<Button onClick={onConfirm}>Clear and proceed</Button>
+			<Button
+				disabled={
+					!editorRef.current ||
+					(!editorRef.current.history.undos.length &&
+						!editorRef.current.history.redos.length)
+				}
+				onClick={() => {
+					if (editorRef.current) editorRef.current.history.clear();
+					onConfirm();
+				}}>
+				Clear and proceed
+			</Button>
 		</CustomDialog>
 	);
 }

@@ -1,12 +1,10 @@
 import { Box, Button, Card, CardActions, CardContent, Divider } from '@mui/material';
 import useTheme from '@mui/system/useTheme';
 import CodeEditor from '@uiw/react-textarea-code-editor';
-import { useEffect } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
 import { useDialog } from '../../../services/DialogService';
 import { useStore } from '../../../services/StoreService';
-import { RunSimulationDialog } from '../../../ThreeEditor/components/Dialog/RunSimulationDialog';
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
 	_defaultFlukaInputFiles,
@@ -27,11 +25,10 @@ interface InputFilesEditorProps {
 }
 
 export function InputFilesEditor(props: InputFilesEditorProps) {
-	const { updateDialogComponent, showDialog, hideDialog } = useDialog();
-	const { editorRef } = useStore();
+	const [open] = useDialog('runSimulation');
+	const { setTrackedId } = useStore();
 	const { demoMode } = useConfig();
 	const inputFiles = props.inputFiles ?? _defaultShInputFiles;
-	const simulator = props.simulator;
 	const theme = useTheme();
 
 	const canBeDeleted = (name: string) => {
@@ -51,22 +48,6 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 		props.onChange?.call(null, updateFn(inputFiles));
 	};
 
-	useEffect(() => {
-		updateDialogComponent(
-			'runSimulations',
-			editorRef.current && (
-				<RunSimulationDialog
-					onClose={() => hideDialog('runSimulations')}
-					editor={editorRef.current}
-					inputFiles={Object.fromEntries(
-						Object.entries(inputFiles).filter(([, data]) => data.length > 0)
-					)}
-					simulator={simulator}
-				/>
-			)
-		);
-	}, [editorRef, hideDialog, inputFiles, simulator, updateDialogComponent]);
-
 	return (
 		<Card sx={{ minHeight: '100%' }}>
 			<CardActions
@@ -78,7 +59,15 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 					color='success'
 					variant='contained'
 					disabled={demoMode}
-					onClick={() => showDialog('runSimulations')}>
+					onClick={() =>
+						open({
+							inputFiles: Object.fromEntries(
+								Object.entries(inputFiles).filter(([, data]) => data.length > 0)
+							),
+							simulator: props.simulator,
+							onSubmit: setTrackedId
+						})
+					}>
 					Run with these input files
 				</Button>
 				<Button

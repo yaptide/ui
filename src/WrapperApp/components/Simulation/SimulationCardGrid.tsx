@@ -13,6 +13,7 @@ import {
 import { FC, useState } from 'react';
 
 import { useDialog } from '../../../services/DialogService';
+import { useStore } from '../../../services/StoreService';
 import { JobStatusData, SimulationInputFiles } from '../../../types/ResponseTypes';
 import SimulationCard from './SimulationCard';
 import {
@@ -191,7 +192,8 @@ export function PaginatedSimulationsFromBackend({
 	children,
 	...other
 }: SimulationsFromBackendProps) {
-	const { showDialog } = useDialog();
+	const { setTrackedId } = useStore();
+	const [open] = useDialog('runSimulation');
 	return (
 		<PaginatedSimulationCardGrid {...other}>
 			<InputGroup
@@ -203,7 +205,11 @@ export function PaginatedSimulationsFromBackend({
 					color='info'
 					startIcon={<QueuePlayNextIcon />}
 					disabled={!isBackendAlive}
-					onClick={() => showDialog('runSimulations')}>
+					onClick={() =>
+						open({
+							onSubmit: setTrackedId
+						})
+					}>
 					Run new simulation
 				</Button>
 				<BackendStatusIndicator

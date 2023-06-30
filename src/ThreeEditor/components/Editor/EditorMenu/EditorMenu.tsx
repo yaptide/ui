@@ -10,7 +10,6 @@ import {
 	getAddElementButtonProps
 } from '../../../../util/Ui/CommandButtonProps';
 import { YaptideEditor } from '../../../js/YaptideEditor';
-import { ClearHistoryDialog } from '../../Dialog/ClearHistoryDialog';
 
 type EditorMenuProps = {
 	editor?: YaptideEditor;
@@ -101,7 +100,7 @@ function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPosition
 }
 
 export function EditorMenu({ editor }: EditorMenuProps) {
-	const { updateDialogComponent, showDialog, hideDialog } = useDialog();
+	const [open] = useDialog('clearHistory');
 	const [openIdx, setOpenIdx] = useState(-1);
 	const [, setSelectedObject] = useState(editor?.selected);
 
@@ -110,21 +109,6 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 	}, []);
 
 	useSignal(editor, 'objectSelected', handleObjectUpdate);
-
-	useEffect(() => {
-		updateDialogComponent(
-			'clearHistory',
-			editor && (
-				<ClearHistoryDialog
-					onClose={() => hideDialog('clearHistory')}
-					onConfirm={() => {
-						hideDialog('clearHistory');
-						editor.history.clear();
-					}}
-				/>
-			)
-		);
-	}, [editor, hideDialog, updateDialogComponent]);
 
 	return (
 		<>
@@ -200,7 +184,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 						[
 							{
 								label: 'Clear history',
-								onClick: () => showDialog('clearHistory'),
+								onClick: () => open({}),
 								disabled:
 									editor?.history.undos.length === 0 &&
 									editor?.history.redos.length === 0

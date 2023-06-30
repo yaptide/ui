@@ -3,6 +3,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useState } from 'react';
 
 import { useShSimulation } from '../../../services/ShSimulatorService';
+import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import {
@@ -12,22 +13,21 @@ import {
 	SimulationSourceType
 } from '../../../WrapperApp/components/Simulation/RunSimulationForm';
 import { EditorJson } from '../../js/EditorJson';
-import { YaptideEditor } from '../../js/YaptideEditor';
 import { WarnDialogProps } from './CustomDialog';
 
 export function RunSimulationDialog({
 	open = true,
-	editor,
-	inputFiles,
-	simulator,
+	inputFiles = {},
+	simulator = SimulatorType.SHIELDHIT,
 	onClose,
-	onConfirm = onClose
+	onConfirm = onClose,
+	onSubmit = () => {}
 }: WarnDialogProps<{
-	onConfirm?: (jobId: string) => void;
-	editor: YaptideEditor;
-	inputFiles: Record<string, string>;
-	simulator: SimulatorType;
+	onSubmit?: (jobId: string) => void;
+	inputFiles?: Record<string, string>;
+	simulator?: SimulatorType;
 }>) {
+	const { editorRef } = useStore();
 	const [controller] = useState(new AbortController());
 	const { postJobDirect, postJobBatch } = useShSimulation();
 	const sendSimulationRequest = (
@@ -40,6 +40,7 @@ export function RunSimulationDialog({
 		simulator: SimulatorType,
 		batchOptions: BatchOptionsType
 	) => {
+		onConfirm();
 		const simData = sourceType === 'editor' ? editorJson : inputFiles;
 
 		const options =
@@ -67,7 +68,7 @@ export function RunSimulationDialog({
 			controller.signal
 		)
 			.then(res => {
-				onConfirm(res.jobId);
+				onSubmit(res.jobId);
 				enqueueSnackbar('Simulation submitted', { variant: 'success' });
 			})
 			.catch(e => {
@@ -94,7 +95,7 @@ export function RunSimulationDialog({
 							gap: 3
 						}}>
 						<RunSimulationForm
-							editorJson={editor.toJSON()}
+							editorJson={editorRef.current?.toJSON()}
 							inputFiles={{
 								...inputFiles
 							}}

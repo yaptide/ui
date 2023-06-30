@@ -28,7 +28,7 @@ export function OpenFileDialog({
 	loadFromFiles,
 	loadFromUrl,
 	loadFromJsonString
-}: WarnDialogProps<LoaderContext>) {
+}: WarnDialogProps<Partial<LoaderContext>>) {
 	const [currentFileList, setCurrentFileList] = useState<FileList>();
 	const [value, setValue] = useState('1');
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
@@ -118,17 +118,18 @@ export function OpenFileDialog({
 								variant='contained'
 								fullWidth
 								sx={{ marginTop: 'auto' }}
-								disabled={exampleIndex === null}
+								disabled={exampleIndex === null || !loadFromJson}
 								onClick={() => {
 									onConfirm();
-									loadFromJson(
-										[EXAMPLES[exampleIndex ?? 0]].map(e => {
-											return {
-												...e,
-												jobState: StatusState.COMPLETED
-											};
-										})
-									);
+									if (loadFromJson)
+										loadFromJson(
+											[EXAMPLES[exampleIndex ?? 0]].map(e => {
+												return {
+													...e,
+													jobState: StatusState.COMPLETED
+												};
+											})
+										);
 								}}>
 								Load
 							</Button>
@@ -174,10 +175,10 @@ export function OpenFileDialog({
 								variant='contained'
 								fullWidth
 								sx={{ marginTop: 'auto' }}
-								disabled={currentFileList === undefined}
+								disabled={currentFileList === undefined && !loadFromFiles}
 								onClick={() => {
 									onConfirm();
-									loadFromFiles(currentFileList);
+									if (loadFromFiles) loadFromFiles(currentFileList);
 									setCurrentFileList(undefined);
 								}}>
 								Load
@@ -205,10 +206,10 @@ export function OpenFileDialog({
 								variant='contained'
 								fullWidth
 								sx={{ marginTop: 'auto' }}
-								disabled={url === ''}
+								disabled={url === '' || !loadFromUrl}
 								onClick={() => {
 									onConfirm();
-									loadFromUrl(url);
+									if (loadFromUrl) loadFromUrl(url);
 								}}>
 								Load
 							</Button>
@@ -237,10 +238,10 @@ export function OpenFileDialog({
 								variant='contained'
 								fullWidth
 								sx={{ marginTop: 'auto' }}
-								disabled={plainText === ''}
+								disabled={plainText === '' || !loadFromJsonString}
 								onClick={() => {
 									onConfirm();
-									loadFromJsonString(plainText);
+									if (loadFromJsonString) loadFromJsonString(plainText);
 								}}>
 								Load
 							</Button>

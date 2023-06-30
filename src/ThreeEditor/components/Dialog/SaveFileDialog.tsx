@@ -1,15 +1,16 @@
 import { Button, Checkbox, FormControlLabel, TextField } from '@mui/material';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 import { FullSimulationData } from '../../../services/ShSimulatorService';
+import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
-import { YaptideEditor } from '../../js/YaptideEditor';
 import { CustomDialog, WarnDialogProps } from './CustomDialog';
 
 const saveJson = (data: {}, fileName: string) => {
 	let output = undefined;
 	try {
 		output = JSON.stringify(data, null, '\t');
+		// this regex matches new lines and tabs that are followed by a number and replaces them with just the number
 		output = output.replace(/[\n\t]+([\d.e\-[\]]+)/g, '$1');
 		saveString(output, `${fileName}.json`);
 	} catch (e) {
@@ -23,17 +24,24 @@ export function SaveFileDialog({
 	open = true,
 	onClose,
 	onConfirm = onClose,
-	editor
-}: WarnDialogProps<{ editor: YaptideEditor }>) {
-	const results: FullSimulationData = editor.getResults();
+	name: defaultName = 'editor',
+	results: providedResults
+}: WarnDialogProps<{ name?: string; results?: FullSimulationData }>) {
+	const { editorRef } = useStore();
+	const results: FullSimulationData | undefined =
+		providedResults ?? editorRef.current?.getResults();
 
 	const [keepResults, setKeepResults] = useState<boolean>(false);
 
-	useEffect(() => {
-		setKeepResults(results?.input.inputJson?.hash === editor?.toJSON().hash);
-	}, [editor, results?.input.inputJson?.hash]);
+	const canKeepResults = useCallback(() => {
+		return results?.input.inputJson?.hash === editorRef.current?.toJSON().hash;
+	}, [editorRef, results?.input.inputJson?.hash]);
 
-	const [name, setName] = useState<string>('editor');
+	useEffect(() => {
+		setKeepResults(canKeepResults() || !!providedResults);
+	}, [canKeepResults, providedResults]);
+
+	const [name, setName] = useState<string>(defaultName);
 	const changeName = (event: ChangeEvent<HTMLInputElement>) => {
 		setName(event.target.value);
 	};
@@ -56,32 +64,38 @@ export function SaveFileDialog({
 					}}>
 					<TextField
 						label='File name'
-						value={name}
+						value={defaultName}
 						variant='outlined'
 						onChange={changeName}
 					/>
-					<FormControlLabel
-						label='Include simulation results'
-						sx={{
-							'userSelect': 'none',
-							'&.MuiFormControlLabel-root': {
-								paddingLeft: 1
-							}
-						}}
-						control={
-							<Checkbox
-								value={keepResults}
-								disabled={results?.input.inputJson?.hash !== editor?.toJSON().hash}
-								onChange={changeKeepResults}
+					{!canKeepResults() ||
+						(!!providedResults && (
+							<FormControlLabel
+								label='Include simulation results'
+								sx={{
+									'userSelect': 'none',
+									'&.MuiFormControlLabel-root': {
+										paddingLeft: 1
+									}
+								}}
+								control={
+									<Checkbox
+										value={keepResults}
+										onChange={changeKeepResults}
+									/>
+								}
 							/>
-						}
-					/>
+						))}
 				</form>
 			}>
 			<Button
 				onClick={() => {
 					onConfirm();
-					editor && saveJson(keepResults ? results : editor?.toJSON(), name);
+					editorRef.current &&
+						saveJson(
+							keepResults && results ? results : editorRef.current?.toJSON(),
+							name
+						);
 				}}>
 				Save
 			</Button>

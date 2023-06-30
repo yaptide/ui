@@ -36,7 +36,6 @@ export function SimulationProgressBar({ status }: SimulationProgressBarProps) {
 	useEffect(() => {
 		progress.current = updateProgress();
 	}, [updateProgress]);
-	console.log('progress', typeof status.endTime, typeof status.startTime);
 	return (
 		<Tooltip
 			followCursor={true}

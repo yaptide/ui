@@ -3,11 +3,9 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
 
 import { useConfig } from '../../../config/ConfigService';
-import { useDialog } from '../../../services/DialogService';
 import { isFullSimulationData } from '../../../services/LoaderService';
 import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
-import { RunSimulationDialog } from '../../../ThreeEditor/components/Dialog/RunSimulationDialog';
 import EXAMPLES from '../../../ThreeEditor/examples/examples';
 import { OrderBy, OrderType, SimulatorType } from '../../../types/RequestTypes';
 import {
@@ -33,7 +31,13 @@ export default function SimulationPanel({
 	forwardedSimulator
 }: SimulationPanelProps) {
 	const { demoMode } = useConfig();
-	const { editorRef, setResultsSimulationData, localResultsSimulationData } = useStore();
+	const {
+		editorRef,
+		/** Queued Simulation Data */
+		trackedId,
+		setResultsSimulationData,
+		localResultsSimulationData
+	} = useStore();
 	const {
 		cancelJobDirect,
 		getJobInputs,
@@ -42,7 +46,6 @@ export default function SimulationPanel({
 		getPageStatus,
 		getFullSimulationData
 	} = useShSimulation();
-	const { updateDialogComponent, hideDialog } = useDialog();
 
 	/** Visibility Flags */
 	const [isBackendAlive, setBackendAlive] = useState(false);
@@ -62,8 +65,6 @@ export default function SimulationPanel({
 	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
 	const [simulator] = useState<SimulatorType>(forwardedSimulator);
 
-	/** Queued Simulation Data */
-	const [trackedId, setTrackedId] = useState<string>();
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
 	const [simulationsStatusData, setSimulationsStatusData] = useState<JobStatusData[]>([]);
 
@@ -115,6 +116,10 @@ export default function SimulationPanel({
 					setBackendAlive(false);
 					setPageCount(0);
 				});
+		return () => {
+			controller.abort();
+			setSimulationIDInterval(null);
+		};
 	}, [
 		controller.signal,
 		getHelloWorld,
@@ -122,7 +127,8 @@ export default function SimulationPanel({
 		setSimulationIDInterval,
 		isBackendAlive,
 		setBackendAlive,
-		demoMode
+		demoMode,
+		controller
 	]);
 
 	useInterval(updateSimulationInfo, simulationIDInterval, true);
@@ -148,23 +154,6 @@ export default function SimulationPanel({
 		setShowInputFilesEditor(true);
 		setInputFiles(inputFiles);
 	};
-	useEffect(() => {
-		updateDialogComponent(
-			'runSimulations',
-			editorRef.current && (
-				<RunSimulationDialog
-					onClose={() => hideDialog('runSimulations')}
-					onConfirm={jobId => {
-						updateSimulationInfo();
-						setTrackedId(jobId);
-					}}
-					editor={editorRef.current}
-					inputFiles={{}}
-					simulator={SimulatorType.SHIELDHIT}
-				/>
-			)
-		);
-	}, [editorRef, hideDialog, updateDialogComponent, updateSimulationInfo]);
 
 	useEffect(() => {
 		const updateCurrentSimulation = async () => {

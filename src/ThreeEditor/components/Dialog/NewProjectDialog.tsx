@@ -1,14 +1,10 @@
 import { Button } from '@mui/material';
 
-import { YaptideEditor } from '../../js/YaptideEditor';
+import { useStore } from '../../../services/StoreService';
 import { CustomDialog, WarnDialogProps } from './CustomDialog';
 
-export function NewProjectDialog({
-	open,
-	onClose,
-	onConfirm = onClose,
-	editor
-}: WarnDialogProps<{ editor: YaptideEditor }>) {
+export function NewProjectDialog({ open, onClose, onConfirm = onClose }: WarnDialogProps) {
+	const { editorRef } = useStore();
 	return (
 		<CustomDialog
 			open={open}
@@ -23,7 +19,7 @@ export function NewProjectDialog({
 			</Button>
 			<Button
 				onClick={() => {
-					editor.clear();
+					if (editorRef.current) editorRef.current.clear();
 					onConfirm();
 				}}>
 				Clear and proceed

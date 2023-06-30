@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { LoadFileDialog } from '../ThreeEditor/components/Dialog/LoadFileDialog';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { JSON_VERSION } from '../ThreeEditor/js/YaptideEditor';
 import { hasFields } from '../util/customGuards';
@@ -44,35 +43,26 @@ const readFile = (file: File) => {
 };
 
 const Loader = ({ children }: GenericContextProviderProps) => {
-	const { updateDialogComponent, showDialog, hideDialog } = useDialog();
+	const [open] = useDialog('loadFile');
 	const { editorRef, setResultsSimulationData, setLocalResultsSimulationData } = useStore();
 	const [, setUrlInPath] = useState<string>();
 
 	const handleJSON = useCallback(
 		(json: EditorJson) => {
-			if (!editorRef.current) return;
 			const type = json.metadata.type;
 			switch (type) {
 				case 'Editor':
-					updateDialogComponent(
-						'loadFile',
-						editorRef.current && (
-							<LoadFileDialog
-								editor={editorRef.current}
-								data={json}
-								onClose={() => hideDialog('loadFile')}
-								validVersion={json.metadata.version === JSON_VERSION}
-							/>
-						)
-					);
-					showDialog('loadFile');
+					open({
+						data: json,
+						validVersion: json.metadata.version === JSON_VERSION
+					});
 					break;
 				default:
 					console.error('Unknown JSON type', type);
 					break;
 			}
 		},
-		[editorRef, hideDialog, showDialog, updateDialogComponent]
+		[open]
 	);
 
 	const loadData = useCallback(

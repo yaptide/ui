@@ -3,7 +3,6 @@ import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import {
 	DataWithStatus,
-	IntersectionToObject,
 	LookUp,
 	ObjUnionToKeyUnion,
 	TypeIdentifiedByKey
@@ -92,37 +91,42 @@ export type SimulationInfo = {
 };
 /* ------------------------------------ */
 
-type AuthData = IntersectionToObject<
+type AuthData = Omit<
 	{
 		accessExp: number;
 		refreshExp?: number;
-	} & YaptideResponse
+	} & YaptideResponse,
+	never
 >;
 
-type AuthStatus = IntersectionToObject<
+type AuthStatus = Omit<
 	{
 		username: string;
-	} & YaptideResponse
+	} & YaptideResponse,
+	never
 >;
 
-type DataConverted = IntersectionToObject<
+type DataConverted = Omit<
 	{
 		inputFiles: SimulationInputFiles;
-	} & YaptideResponse
+	} & YaptideResponse,
+	never
 >;
 
-type JobCreated = IntersectionToObject<
+type JobCreated = Omit<
 	{
 		jobId: string;
-	} & YaptideResponse
+	} & YaptideResponse,
+	never
 >;
 
-type SimulationsPage = IntersectionToObject<
+type SimulationsPage = Omit<
 	{
 		pageCount: number;
 		simulationsCount: number;
 		simulations: Array<SimulationInfo>;
-	} & YaptideResponse
+	} & YaptideResponse,
+	never
 >;
 
 /* ------------------------------------ */
@@ -186,11 +190,12 @@ type JobAllStatuses = JobStatusCompleted | JobStatusRunning | JobStatusPending |
 
 type JobUnknownStatus = Partial<ObjUnionToKeyUnion<JobAllStatuses>>;
 
-type ResponseJobRequestFailure = IntersectionToObject<
+type ResponseJobRequestFailure = Omit<
 	{
 		exitCode: number;
 		output: string;
-	} & YaptideResponse
+	} & YaptideResponse,
+	never
 >;
 /* ------------------------------------ */
 

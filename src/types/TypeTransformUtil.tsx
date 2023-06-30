@@ -1,10 +1,15 @@
 type IsLetter<T extends string> = Uppercase<T> extends Lowercase<T> ? false : true;
 
-// Determine if a string is valid for snakeize
-// Should not contain underscores, whitespace, or dashes
-// First character should not be the only uppercase character
-// Should contain at least one uppercase character
-// return T or never
+/**
+ * Determines if a string is valid for snakeize.
+ * Should not contain underscores, whitespace, or dashes.
+ * First character should not be the only uppercase character.
+ * Should contain at least one uppercase character.
+ * @template T The string to validate.
+ * @template First A boolean indicating if this is the first character being validated.
+ * @template Full The full string being validated.
+ * @returns T if the string is valid for snakeize, otherwise never.
+ */
 export type ValidForSnakeize<
 	T extends string,
 	First extends boolean = true,
@@ -19,12 +24,17 @@ export type ValidForSnakeize<
 		: ValidForSnakeize<R, false, Full>
 	: Full;
 
-// Determine if a string is valid for camelize
-// Should not contain whitespace, or dashes
-// Should not start with an underscore
-// Should contain at least one underscore
-// Should not contain mixed case
-// return T or never
+/**
+ * Determines if a string is valid for camelize.
+ * Should not contain whitespace, or dashes.
+ * Should not start with an underscore.
+ * Should contain at least one underscore.
+ * Should not contain mixed case.
+ * @template T The string to validate.
+ * @template First A boolean indicating if this is the first character being validated.
+ * @template Full The full string being validated.
+ * @returns T if the string is valid for camelize, otherwise never.
+ */
 export type ValidForCamelize<
 	T extends string,
 	First extends boolean = true,
@@ -45,7 +55,9 @@ export type ValidForCamelize<
 		: ValidForCamelize<R, false, Full>
 	: Full;
 
-// Transform string key from camelCase to snake_case
+/**
+ * Transforms a string key from camelCase to snake_case.
+ */
 export type CamelToSnakeCase<S extends string, First extends string = S> = [
 	ValidForSnakeize<First>
 ] extends [never]
@@ -56,7 +68,9 @@ export type CamelToSnakeCase<S extends string, First extends string = S> = [
 		: `${Lowercase<F>}${CamelToSnakeCase<`${Lowercase<S>}${R}`, First>}`
 	: S;
 
-// Transform string key from snake_case to camelCase
+/**
+ * Transforms a string key from snake_case to camelCase.
+ */
 export type SnakeToCamelCase<S extends string, First extends string = S> = [
 	ValidForCamelize<First>
 ] extends [never]
@@ -82,18 +96,35 @@ type TransformCase<T, M extends keyof TransformerMap = keyof TransformerMap> = T
 	? { [K in keyof T as TransformCase<K, M>]: TransformCase<T[K], M> }
 	: T;
 
-// Generalized types for transforming keys of an object
+/**
+ * Transforms all keys of an object from camelCase to snake_case.
+ * @example
+ * ```ts
+ * declare x: CamelToSnakeCaseObject<{ someProperty: string; anotherProperty: number }>;
+ * x.some_property; // string
+ * x.another_property; // number
+ * ```
+ */
 export type CamelToSnakeCaseObject<T> = TransformCase<T, 'Snake'>;
+/**
+ * Transforms all keys of an object from snake_case to camelCase.
+ * @example
+ * ```ts
+ * declare x: SnakeToCamelCaseObject<{ some_property: string; another_property: number }>;
+ * x.someProperty; // string
+ * x.anotherProperty; // number
+ * ```
+ */
 export type SnakeToCamelCaseObject<T> = TransformCase<T, 'Camel'>;
 
-// Example usage:
-// type _ = CamelToSnakeCaseObject<{ someProperty: string; anotherProperty: number }>;
-// Result: { some_property: string; another_property: number }
-
-// Merge intersection of two object types into one object type
-export type IntersectionToObject<T> = Omit<T, never>;
-
-// Flatten array of arrays type
+/**
+ * Flattens a nested array of unknown type into a single array.
+ * @example
+ * ```ts
+ * type NestedArray = [[1, 2], [3, 4], [5, 6]];
+ * type FlatArray = Flatten<NestedArray>; // [1, 2, 3, 4, 5, 6]
+ * ```
+ */
 export type Flatten<T extends unknown[][]> = T extends [
 	infer H extends unknown[],
 	...infer R extends unknown[][]
@@ -101,29 +132,71 @@ export type Flatten<T extends unknown[][]> = T extends [
 	? [...H, ...Flatten<R>]
 	: [];
 
-// Parametrized object type with required key K of value type V
+/**
+ * Creates a new type by adding or replacing a key of type `K` with a value of type `V` to an existing type `T`.
+ * @example
+ * ```ts
+ * type Person = { name: string; age: number };
+ * type PersonWithId = TypeIdentifiedByKey<'id', string, Person>; // { id: string; name: string; age: number }
+ * ```
+ */
 export type TypeIdentifiedByKey<K extends PropertyKey, V, T extends {}> = {
 	[P in K | keyof T]: P extends K ? V : (T & Record<K, never>)[P];
 };
 
-// Type of object union type with required key K of value type V
+/**
+ * Extracts a subset of a union type `U` that has a required key `K` of value type `V`.
+ * @example
+ * ```ts
+ * type User = { id: number; name: string } | { id: string; name: string };
+ * type UserWithStringId = LookUp<User, 'id', string>; // { id: string; name: string }
+ * ```
+ */
 export type LookUp<U, K extends PropertyKey, V = unknown> = Extract<U, { [X in K]: V }>;
 
+/**
+ * A parametrized object union type with Generalized type T, wanted key K and value type V and additional static object intersection U.
+ * @template T - The generalized type of the object union.
+ * @template K - The key of the object union to be looked up.
+ * @template V - The value type of the key to be looked up.
+ * @template U - The additional static object intersection.
+ * @template I - The partial type of the generalized type T.
+ * @example
+ * ```ts
+ * type Animal = { name: string; voice: 'bark' } | { name: string; voice: 'meow' };
+ * type AnimalWithVoice<T=null> = DataWithStatus<Animal, 'voice', T>; // { name: string; voice: 'bark' | 'meow' }
+ * declare dog: AnimalWithVoice<'bark'>; // { name: string; voice: 'bark' }
+ * ```
+ */
 // Parametrized object union type with Generalized type T, wanted key K and value type V and additional static object intersection U
 export type DataWithStatus<T, K extends keyof T, V, U = {}, I = Partial<T>> = V extends null
 	? keyof U extends never
 		? I
-		: IntersectionToObject<I & U>
-	: IntersectionToObject<LookUp<T, K, V> & U>;
+		: Omit<I & U, never>
+	: Omit<LookUp<T, K, V> & U, never>;
 
-// Type transformation from union to intersection ex: {a: string} | {b: number} => {a: string, b: number}
+/**
+ * Transforms a union type to an intersection type.
+ * @example
+ * ```ts
+ * type Union = {a: string} | {b: number};
+ * type Intersection = UnionToIntersection<Union>; // {a: string, b: number}
+ * ```
+ */
 type UnionToIntersection<U> = (U extends U ? (x: U) => unknown : never) extends (
 	x: infer R
 ) => unknown
 	? R
 	: never;
 
-// Specific type transformation for object where shared keys are unioned ex: {a: string, b: number} | {a: number} => {a: string | number, b: number}
+/**
+ * Transforms an object type where shared keys are unioned into a key union type.
+ * @example
+ * ```ts
+ * type Obj = { a: string, b: number } | { a: number };
+ * type KeyUnion = ObjUnionToKeyUnion<Obj>; // { a: string | number, b: number }
+ * ```
+ */
 export type ObjUnionToKeyUnion<T extends {}, Obj extends {} = {}> = UnionToIntersection<
 	T extends any ? () => T : never
 > extends () => infer ReturnType
@@ -137,3 +210,18 @@ export type ObjUnionToKeyUnion<T extends {}, Obj extends {} = {}> = UnionToInter
 			>
 	  >
 	: Omit<Obj, never>;
+
+/**
+ * Extracts the type of the arguments of a function type.
+ * @example
+ * ```ts
+ * declare function foo(a: number, b: string): void;
+ * declare const args: ArgumentsType<typeof foo>; // [number, string]
+ * foo(...args); // valid
+ * ```
+ */
+export type ArgumentsType<T extends (...args: any[]) => unknown> = T extends (
+	...args: infer A
+) => unknown
+	? A
+	: never;

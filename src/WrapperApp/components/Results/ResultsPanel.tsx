@@ -12,7 +12,9 @@ import {
 import { SyntheticEvent, useEffect, useState } from 'react';
 
 import { Estimator, generateGraphs, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
+import { useDialog } from '../../../services/DialogService';
 import { useStore } from '../../../services/StoreService';
+import { titleToKebabCase } from '../../../ThreeEditor/components/Dialog/CustomDialog';
 import { saveString } from '../../../util/File';
 import { TabPanel } from '../Panels/TabPanel';
 import TablePage0D from './ResultsTable';
@@ -23,6 +25,7 @@ export interface EstimatorResults extends Estimator {
 }
 
 function ResultsPanel() {
+	const [open, close] = useDialog('saveFile');
 	const { resultsSimulationData: simulation } = useStore();
 
 	const [tabsValue, setTabsValue] = useState(0);
@@ -39,7 +42,10 @@ function ResultsPanel() {
 	};
 
 	const onClickSaveToFile = () => {
-		saveString(JSON.stringify(simulation), `${simulation?.title}_result.json`);
+		open({
+			name: `${titleToKebabCase(simulation?.title ?? 'simulation')}-result.json`,
+			results: simulation
+		});
 	};
 
 	const parseEstimators = (estimators: Estimator[]) => {
