@@ -1,6 +1,6 @@
 import { Card, CardContent, Fade, Modal } from '@mui/material';
 import { enqueueSnackbar } from 'notistack';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
@@ -16,31 +16,30 @@ import { EditorJson } from '../../js/EditorJson';
 import { ConcreteDialogProps } from './CustomDialog';
 
 export function RunSimulationDialog({
-	open = true,
 	inputFiles = {},
-	simulator = SimulatorType.SHIELDHIT,
+	simulator,
 	onClose,
-	onConfirm = onClose,
 	onSubmit = () => {}
 }: ConcreteDialogProps<{
 	onSubmit?: (jobId: string) => void;
 	inputFiles?: Record<string, string>;
-	simulator?: SimulatorType;
+	simulator: SimulatorType;
 }>) {
 	const { editorRef } = useStore();
 	const [controller] = useState(new AbortController());
 	const { postJobDirect, postJobBatch } = useShSimulation();
 	const sendSimulationRequest = (
+		postJobFn: typeof postJobDirect,
+		runType: SimulationRunType,
 		editorJson: EditorJson,
 		inputFiles: Partial<SimulationInputFiles>,
-		runType: SimulationRunType,
 		sourceType: SimulationSourceType,
 		simName: string,
 		nTasks: number,
 		simulator: SimulatorType,
 		batchOptions: BatchOptionsType
 	) => {
-		onConfirm();
+		onClose();
 		const simData = sourceType === 'editor' ? editorJson : inputFiles;
 
 		const options =
@@ -60,15 +59,7 @@ export function RunSimulationDialog({
 				  }
 				: undefined;
 
-		(runType === 'direct' ? postJobDirect : postJobBatch)(
-			simData,
-			sourceType,
-			nTasks,
-			simulator,
-			simName,
-			options,
-			controller.signal
-		)
+		postJobFn(simData, sourceType, nTasks, simulator, simName, options, controller.signal)
 			.then(res => {
 				onSubmit(res.jobId);
 				enqueueSnackbar('Simulation submitted', { variant: 'success' });
@@ -82,7 +73,7 @@ export function RunSimulationDialog({
 	return (
 		<Modal
 			keepMounted
-			open={open}
+			open={true}
 			onClose={onClose}
 			sx={{
 				display: 'flex',
@@ -90,7 +81,7 @@ export function RunSimulationDialog({
 				mt: '15vh',
 				justifyContent: 'center'
 			}}>
-			<Fade in={open}>
+			<Fade in={true}>
 				<Card sx={{ maxWidth: '660px' }}>
 					<CardContent
 						sx={{
@@ -103,7 +94,13 @@ export function RunSimulationDialog({
 								...inputFiles
 							}}
 							forwardedSimulator={simulator}
-							runSimulation={sendSimulationRequest}
+							runSimulation={(runType, ...rest) =>
+								sendSimulationRequest(
+									runType === 'direct' ? postJobDirect : postJobBatch,
+									runType,
+									...rest
+								)
+							}
 						/>
 					</CardContent>
 				</Card>

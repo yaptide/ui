@@ -4,7 +4,7 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { FullSimulationData } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
-import { ConcreteDialogProps,CustomDialog } from './CustomDialog';
+import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
 const saveJson = (data: {}, fileName: string) => {
 	let output = undefined;
@@ -22,9 +22,7 @@ const saveJson = (data: {}, fileName: string) => {
 };
 
 export function SaveFileDialog({
-	open = true,
 	onClose,
-	onConfirm = onClose,
 	name: defaultName = 'editor',
 	results: providedResults
 }: ConcreteDialogProps<{ name?: string; results?: FullSimulationData }>) {
@@ -52,7 +50,6 @@ export function SaveFileDialog({
 
 	return (
 		<CustomDialog
-			open={open}
 			onClose={onClose}
 			title='Save Project File'
 			contentText={`This will generate a JSON file that can be loaded later.`}
@@ -92,7 +89,7 @@ export function SaveFileDialog({
 			}>
 			<Button
 				onClick={() => {
-					onConfirm();
+					onClose();
 					editorRef.current &&
 						saveJson(
 							keepResults && results ? results : editorRef.current?.toJSON(),

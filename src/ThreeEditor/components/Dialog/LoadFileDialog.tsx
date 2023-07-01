@@ -10,8 +10,8 @@ export function LoadFileDialog({
 	validVersion = true,
 	data
 }: ConcreteDialogProps<{
-	validVersion?: boolean;
-	data?: EditorJson;
+	validVersion: boolean;
+	data: EditorJson;
 }>) {
 	const { editorRef } = useStore();
 

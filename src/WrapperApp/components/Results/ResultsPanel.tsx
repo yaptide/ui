@@ -15,7 +15,6 @@ import { Estimator, generateGraphs, isPage0d, Page, Page0D } from '../../../JsRo
 import { useDialog } from '../../../services/DialogService';
 import { useStore } from '../../../services/StoreService';
 import { titleToKebabCase } from '../../../ThreeEditor/components/Dialog/CustomDialog';
-import { saveString } from '../../../util/File';
 import { TabPanel } from '../Panels/TabPanel';
 import TablePage0D from './ResultsTable';
 
@@ -25,7 +24,7 @@ export interface EstimatorResults extends Estimator {
 }
 
 function ResultsPanel() {
-	const [open, close] = useDialog('saveFile');
+	const [open] = useDialog('saveFile');
 	const { resultsSimulationData: simulation } = useStore();
 
 	const [tabsValue, setTabsValue] = useState(0);
@@ -53,8 +52,10 @@ function ResultsPanel() {
 			const tablePages = estimator.pages.filter(isPage0d);
 			const gridPages = estimator.pages.filter(p => !isPage0d(p));
 			const estimatorResults: EstimatorResults = { ...estimator, tablePages, gridPages };
+
 			return estimatorResults;
 		});
+
 		return estimatorResults;
 	};
 

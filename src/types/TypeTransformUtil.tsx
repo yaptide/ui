@@ -212,16 +212,45 @@ export type ObjUnionToKeyUnion<T extends {}, Obj extends {} = {}> = UnionToInter
 	: Omit<Obj, never>;
 
 /**
- * Extracts the type of the arguments of a function type.
+ * Transforms an array of key-value pairs into an object type.
  * @example
  * ```ts
- * declare function foo(a: number, b: string): void;
- * declare const args: ArgumentsType<typeof foo>; // [number, string]
- * foo(...args); // valid
+ * const entries = [['a', 1], ['b', '2']] as const;
+ * type Result = EntriesToObj<typeof entries>; // { a: 1, b: '2' }
  * ```
  */
-export type ArgumentsType<T extends (...args: any[]) => unknown> = T extends (
-	...args: infer A
-) => unknown
-	? A
-	: never;
+export type EntriesToObj<T extends readonly [PropertyKey, unknown][]> = {
+	[K in T[number][0]]: Extract<T[number], [K, unknown]>[1];
+};
+
+/**
+ * Returns the keys of an object type that are optional.
+ * @example
+ * ```ts
+ * type Obj = { a: string; b?: number; c: boolean };
+ * type OptionalKeys = OptionalKeys<Obj>; // 'b'
+ * ```
+ */
+export type OptionalKeys<T> = keyof {
+	[K in keyof T as [<S>() => S extends { [Z in K]: Exclude<T, T> } ? 1 : 0] extends [
+		<S>() => S extends { [Z in K]-?: Exclude<T, T> } ? 1 : 0
+	]
+		? never
+		: K]: never;
+};
+
+/**
+ * Returns the keys of an object type that are required.
+ * @example
+ * ```ts
+ * type Obj = { a: string; b?: number; c: boolean };
+ * type RequiredKeys = RequiredKeys<Obj>; // 'a' | 'c'
+ * ```
+ */
+export type RequiredKeys<T extends object> = keyof {
+	[K in keyof T as [<S>() => S extends { [Z in K]: Exclude<T, T> } ? 1 : 0] extends [
+		<S>() => S extends { [Z in K]-?: Exclude<T, T> } ? 1 : 0
+	]
+		? K
+		: never]: never;
+};

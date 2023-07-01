@@ -17,18 +17,16 @@ import { ChangeEvent, SyntheticEvent, useCallback, useMemo, useState } from 'rea
 import { LoaderContext } from '../../../services/LoaderService';
 import { StatusState } from '../../../types/ResponseTypes';
 import EXAMPLES from '../../examples/examples';
-import { ConcreteDialogProps,CustomDialog } from './CustomDialog';
+import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 import { DragDropProject } from './DragDropProject';
 
 export function OpenFileDialog({
-	open = true,
 	onClose,
-	onConfirm = onClose,
 	loadFromJson,
 	loadFromFiles,
 	loadFromUrl,
 	loadFromJsonString
-}: ConcreteDialogProps<Partial<LoaderContext>>) {
+}: ConcreteDialogProps<LoaderContext>) {
 	const [currentFileList, setCurrentFileList] = useState<FileList>();
 	const [value, setValue] = useState('1');
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
@@ -56,7 +54,6 @@ export function OpenFileDialog({
 
 	return (
 		<CustomDialog
-			open={open}
 			onClose={onClose}
 			title='Open Project'
 			contentText='Select a project to open'
@@ -118,18 +115,17 @@ export function OpenFileDialog({
 								variant='contained'
 								fullWidth
 								sx={{ marginTop: 'auto' }}
-								disabled={exampleIndex === null || !loadFromJson}
+								disabled={exampleIndex === null}
 								onClick={() => {
-									onConfirm();
-									if (loadFromJson)
-										loadFromJson(
-											[EXAMPLES[exampleIndex ?? 0]].map(e => {
-												return {
-													...e,
-													jobState: StatusState.COMPLETED
-												};
-											})
-										);
+									onClose();
+									loadFromJson(
+										[EXAMPLES[exampleIndex ?? 0]].map(e => {
+											return {
+												...e,
+												jobState: StatusState.COMPLETED
+											};
+										})
+									);
 								}}>
 								Load
 							</Button>
@@ -175,10 +171,10 @@ export function OpenFileDialog({
 								variant='contained'
 								fullWidth
 								sx={{ marginTop: 'auto' }}
-								disabled={currentFileList === undefined && !loadFromFiles}
+								disabled={currentFileList === undefined}
 								onClick={() => {
-									onConfirm();
-									if (loadFromFiles) loadFromFiles(currentFileList);
+									onClose();
+									loadFromFiles(currentFileList);
 									setCurrentFileList(undefined);
 								}}>
 								Load
@@ -206,10 +202,10 @@ export function OpenFileDialog({
 								variant='contained'
 								fullWidth
 								sx={{ marginTop: 'auto' }}
-								disabled={url === '' || !loadFromUrl}
+								disabled={url === ''}
 								onClick={() => {
-									onConfirm();
-									if (loadFromUrl) loadFromUrl(url);
+									onClose();
+									loadFromUrl(url);
 								}}>
 								Load
 							</Button>
@@ -238,10 +234,10 @@ export function OpenFileDialog({
 								variant='contained'
 								fullWidth
 								sx={{ marginTop: 'auto' }}
-								disabled={plainText === '' || !loadFromJsonString}
+								disabled={plainText === ''}
 								onClick={() => {
-									onConfirm();
-									if (loadFromJsonString) loadFromJsonString(plainText);
+									onClose();
+									loadFromJsonString(plainText);
 								}}>
 								Load
 							</Button>

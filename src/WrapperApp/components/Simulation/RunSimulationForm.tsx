@@ -54,9 +54,9 @@ type RunSimulationFormProps = {
 	inputFiles?: Partial<SimulationInputFiles>;
 	forwardedSimulator: SimulatorType;
 	runSimulation?: (
+		runType: SimulationRunType,
 		editorJson: EditorJson,
 		inputFiles: Partial<SimulationInputFiles>,
-		runType: SimulationRunType,
 		sourceType: SimulationSourceType,
 		simName: string,
 		nTasks: number,
@@ -126,6 +126,7 @@ export function RunSimulationForm({
 			if (selectedFiles.includes(key)) {
 				return { ...acc, [key]: value };
 			}
+
 			return acc;
 		}, {});
 		const batchOptions = {
@@ -138,9 +139,9 @@ export function RunSimulationForm({
 
 		if (editorJson && simulationSourceType)
 			runSimulation(
+				simulationRunType,
 				editorJson,
 				filteredInputFiles,
-				simulationRunType,
 				simulationSourceType,
 				simName,
 				nTasks,

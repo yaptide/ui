@@ -36,6 +36,8 @@ export type ConcreteDialogProps<T = {}> = Omit<
 > &
 	T;
 
+export type ConcreteDialogComponent = (...args: [ConcreteDialogProps]) => JSX.Element;
+
 export function CustomDialog({
 	open = true,
 	alert = false,

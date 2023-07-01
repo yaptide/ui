@@ -14,6 +14,7 @@ import { FC, useState } from 'react';
 
 import { useDialog } from '../../../services/DialogService';
 import { useStore } from '../../../services/StoreService';
+import { SimulatorType } from '../../../types/RequestTypes';
 import { JobStatusData, SimulationInputFiles } from '../../../types/ResponseTypes';
 import SimulationCard from './SimulationCard';
 import {
@@ -72,6 +73,7 @@ export function SimulationCardGrid({
 }: SimulationCardGridProps) {
 	let gridContainerProps: GridProps = { container: true };
 	let gridItemProps: GridProps = { item: true };
+
 	if (layout in stylesByLayout) {
 		gridContainerProps = {
 			...gridContainerProps,
@@ -194,6 +196,7 @@ export function PaginatedSimulationsFromBackend({
 }: SimulationsFromBackendProps) {
 	const { setTrackedId } = useStore();
 	const [open] = useDialog('runSimulation');
+
 	return (
 		<PaginatedSimulationCardGrid {...other}>
 			<InputGroup
@@ -207,7 +210,8 @@ export function PaginatedSimulationsFromBackend({
 					disabled={!isBackendAlive}
 					onClick={() =>
 						open({
-							onSubmit: setTrackedId
+							onSubmit: setTrackedId,
+							simulator: SimulatorType.SHIELDHIT
 						})
 					}>
 					Run new simulation

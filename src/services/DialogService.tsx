@@ -6,41 +6,38 @@ import { NewProjectDialog } from '../ThreeEditor/components/Dialog/NewProjectDia
 import { OpenFileDialog } from '../ThreeEditor/components/Dialog/OpenFileDialog';
 import { RunSimulationDialog } from '../ThreeEditor/components/Dialog/RunSimulationDialog';
 import { SaveFileDialog } from '../ThreeEditor/components/Dialog/SaveFileDialog';
-import { ArgumentsType } from '../types/TypeTransformUtil';
+import {
+	DefaultDialogPropsType,
+	DialogComponentNames,
+	DialogComponentTuple,
+	DialogComponentTypeMap,
+	DialogContext,
+	DialogNameTuple,
+	OptionalConfigDialogNames,
+	RequiredConfigDialogNames,
+	RestDialogPropsType
+} from '../types/DialogServiceTypes';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
-import { useStore } from './StoreService';
 
-type DialogComponentTypeMap = {
-	clearHistory: typeof ClearHistoryDialog;
-	loadFile: typeof LoadFileDialog;
-	newProject: typeof NewProjectDialog;
-	openFile: typeof OpenFileDialog;
-	runSimulation: typeof RunSimulationDialog;
-	saveFile: typeof SaveFileDialog;
-};
-
-type DialogPropsTypeMap = {
-	[K in keyof DialogComponentTypeMap]: ArgumentsType<DialogComponentTypeMap[K]>[0];
-};
-
-type DialogTuple<T extends keyof DialogComponentTypeMap = keyof DialogComponentTypeMap> =
-	T extends T ? [T, Partial<DialogPropsTypeMap[T]>] : never;
-
-export interface DialogContext {
-	openDialog<T extends keyof DialogPropsTypeMap>(
-		name: T,
-		props: Partial<DialogPropsTypeMap[T]>
-	): void;
-	closeDialog<T extends keyof DialogPropsTypeMap>(name: T): void;
-	getIsOpen<T extends keyof DialogPropsTypeMap>(name: T): boolean;
-}
 const [useDialogContext, DialogContextProvider] = createGenericContext<DialogContext>();
 
-function useDialog<T extends keyof DialogPropsTypeMap>(name: T) {
+function useDialog<T extends RequiredConfigDialogNames>(
+	name: T
+): readonly [(props: RestDialogPropsType[T]) => void, () => void, boolean];
+function useDialog<T extends OptionalConfigDialogNames>(
+	name: T
+): readonly [(props?: RestDialogPropsType[T]) => void, () => void, boolean];
+function useDialog<T extends DialogComponentNames>(
+	name: T
+): readonly [
+	((props?: RestDialogPropsType[T]) => void) | ((props: RestDialogPropsType[T]) => void),
+	() => void,
+	boolean
+] {
 	const { openDialog, closeDialog, getIsOpen } = useDialogContext();
 	const open = useCallback(
-		(props?: Partial<DialogPropsTypeMap[T]>) => {
-			openDialog(name, props ?? {});
+		(props: RestDialogPropsType[T] = {} as RestDialogPropsType[T]) => {
+			openDialog(name, props as RestDialogPropsType[T]);
 		},
 		[name, openDialog]
 	);
@@ -52,10 +49,32 @@ function useDialog<T extends keyof DialogPropsTypeMap>(name: T) {
 	return [open, close, isOpen] as const;
 }
 const DialogProvider = ({ children }: GenericContextProviderProps) => {
-	const { editorRef } = useStore();
-	const [openDialogArray, setOpenDialogArray] = useState<DialogTuple[]>([]);
+	const [openDialogArray, setOpenDialogArray] = useState<DialogNameTuple[]>([]);
 
-	const dialogMap = useMemo(
+	const closeDialog = useCallback((name: DialogComponentNames) => {
+		setOpenDialogArray(prev => prev.filter(([n]) => n !== name));
+	}, []);
+
+	const openDialog = useCallback(
+		(name: DialogComponentNames, props: RestDialogPropsType[DialogComponentNames]) => {
+			setOpenDialogArray(prev => {
+				const index = prev.findIndex(([n]) => n === name);
+
+				if (index === -1) {
+					return [...prev, [name, props]] as DialogNameTuple[];
+				}
+
+				return [
+					...prev.slice(0, index),
+					[name, props],
+					...prev.slice(index + 1)
+				] as DialogNameTuple[];
+			});
+		},
+		[]
+	);
+
+	const dialogMap = useMemo<DialogComponentTypeMap>(
 		() => ({
 			clearHistory: ClearHistoryDialog,
 			loadFile: LoadFileDialog,
@@ -67,64 +86,21 @@ const DialogProvider = ({ children }: GenericContextProviderProps) => {
 		[]
 	);
 
-	const closeDialog = useCallback((name: keyof DialogComponentTypeMap) => {
-		setOpenDialogArray(prev => prev.filter(([n]) => n !== name));
-	}, []);
-
-	const openDialog = useCallback(
-		(
-			name: keyof DialogComponentTypeMap,
-			props: Partial<DialogPropsTypeMap[keyof DialogPropsTypeMap]>
-		) => {
-			setOpenDialogArray(prev => {
-				const index = prev.findIndex(([n]) => n === name);
-
-				if (index === -1) {
-					return [...prev, [name, props]] as DialogTuple[];
-				}
-
-				return [
-					...prev.slice(0, index),
-					[name, props],
-					...prev.slice(index + 1)
-				] as DialogTuple[];
-			});
-		},
-		[]
-	);
-
-	const defaultDialogProps = useMemo<DialogPropsTypeMap>(
-		() => ({
-			clearHistory: {
-				onClose: () => closeDialog('clearHistory'),
-				editor: editorRef.current
-			},
-			loadFile: {
-				onClose: () => closeDialog('loadFile'),
-				editor: editorRef.current
-			},
-			newProject: {
-				onClose: () => closeDialog('newProject'),
-				editor: editorRef.current
-			},
-			openFile: {
-				onClose: () => closeDialog('openFile'),
-				editor: editorRef.current
-			},
-			runSimulation: {
-				onClose: () => closeDialog('runSimulation'),
-				editor: editorRef.current
-			},
-			saveFile: {
-				onClose: () => closeDialog('saveFile'),
-				editor: editorRef.current
-			}
-		}),
-		[closeDialog, editorRef]
+	const defaultDialogProps = useMemo<DefaultDialogPropsType>(
+		() =>
+			Object.fromEntries(
+				Object.keys(dialogMap).map(name => [
+					name,
+					{
+						onClose: () => closeDialog(name as DialogComponentNames)
+					}
+				])
+			) as DefaultDialogPropsType,
+		[closeDialog, dialogMap]
 	);
 
 	const getIsOpen = useCallback(
-		(name: keyof DialogComponentTypeMap) => {
+		(name: DialogComponentNames) => {
 			return openDialogArray.some(([n]) => n === name);
 		},
 		[openDialogArray]
@@ -138,17 +114,22 @@ const DialogProvider = ({ children }: GenericContextProviderProps) => {
 
 	return (
 		<DialogContextProvider value={value}>
-			{openDialogArray.map(([name, props]) => {
-				const Dialog = dialogMap[name];
-
-				return (
-					<Dialog
-						key={name}
-						{...defaultDialogProps[name]}
-						{...props}
-					/>
-				);
-			})}
+			{openDialogArray
+				.map(
+					([name, props]) =>
+						[
+							dialogMap[name],
+							{ ...defaultDialogProps[name], ...props }
+						] as DialogComponentTuple
+				)
+				.map(([Dialog, props], i) => {
+					return (
+						<Dialog
+							key={i}
+							{...(props as any)}
+						/>
+					);
+				})}
 			{children}
 		</DialogContextProvider>
 	);
