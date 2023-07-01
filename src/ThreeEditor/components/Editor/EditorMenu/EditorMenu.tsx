@@ -184,7 +184,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 						[
 							{
 								label: 'Clear history',
-								onClick: () => open({}),
+								onClick: () => open(),
 								disabled:
 									editor?.history.undos.length === 0 &&
 									editor?.history.redos.length === 0
