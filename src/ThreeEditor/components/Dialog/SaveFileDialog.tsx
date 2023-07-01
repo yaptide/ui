@@ -4,10 +4,11 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { FullSimulationData } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
-import { CustomDialog, WarnDialogProps } from './CustomDialog';
+import { ConcreteDialogProps,CustomDialog } from './CustomDialog';
 
 const saveJson = (data: {}, fileName: string) => {
 	let output = undefined;
+
 	try {
 		output = JSON.stringify(data, null, '\t');
 		// this regex matches new lines and tabs that are followed by a number and replaces them with just the number
@@ -26,7 +27,7 @@ export function SaveFileDialog({
 	onConfirm = onClose,
 	name: defaultName = 'editor',
 	results: providedResults
-}: WarnDialogProps<{ name?: string; results?: FullSimulationData }>) {
+}: ConcreteDialogProps<{ name?: string; results?: FullSimulationData }>) {
 	const { editorRef } = useStore();
 	const results: FullSimulationData | undefined =
 		providedResults ?? editorRef.current?.getResults();
@@ -48,6 +49,7 @@ export function SaveFileDialog({
 	const changeKeepResults = (event: ChangeEvent<HTMLInputElement>) => {
 		setKeepResults(event.target.checked);
 	};
+
 	return (
 		<CustomDialog
 			open={open}

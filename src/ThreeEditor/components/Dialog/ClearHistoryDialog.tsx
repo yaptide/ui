@@ -1,13 +1,13 @@
 import { Button } from '@mui/material';
 
 import { useStore } from '../../../services/StoreService';
-import { CustomDialog, WarnDialogProps } from './CustomDialog';
+import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
-export function ClearHistoryDialog({ open, onClose, onConfirm = onClose }: WarnDialogProps) {
+export function ClearHistoryDialog({ onClose }: ConcreteDialogProps) {
 	const { editorRef } = useStore();
+
 	return (
 		<CustomDialog
-			open={open}
 			onClose={onClose}
 			alert={true}
 			title='Clear History'
@@ -25,7 +25,7 @@ export function ClearHistoryDialog({ open, onClose, onConfirm = onClose }: WarnD
 				}
 				onClick={() => {
 					if (editorRef.current) editorRef.current.history.clear();
-					onConfirm();
+					onClose();
 				}}>
 				Clear and proceed
 			</Button>

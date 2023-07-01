@@ -28,11 +28,9 @@ export function titleToKebabCase(title: string) {
 	return title.toLowerCase().replace(/\s/g, '-');
 }
 
-export type WarnDialogProps<T = {}> = Omit<
+export type ConcreteDialogProps<T = {}> = Omit<
 	{
-		open?: boolean;
 		onClose: () => void;
-		onConfirm?: () => void;
 	},
 	keyof T
 > &

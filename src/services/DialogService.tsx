@@ -26,7 +26,7 @@ type DialogPropsTypeMap = {
 type DialogTuple<T extends keyof DialogComponentTypeMap = keyof DialogComponentTypeMap> =
 	T extends T ? [T, Partial<DialogPropsTypeMap[T]>] : never;
 
-export interface DialogContext2 {
+export interface DialogContext {
 	openDialog<T extends keyof DialogPropsTypeMap>(
 		name: T,
 		props: Partial<DialogPropsTypeMap[T]>
@@ -34,7 +34,8 @@ export interface DialogContext2 {
 	closeDialog<T extends keyof DialogPropsTypeMap>(name: T): void;
 	getIsOpen<T extends keyof DialogPropsTypeMap>(name: T): boolean;
 }
-const [useDialogContext, DialogContextProvider2] = createGenericContext<DialogContext2>();
+const [useDialogContext, DialogContextProvider] = createGenericContext<DialogContext>();
+
 function useDialog<T extends keyof DialogPropsTypeMap>(name: T) {
 	const { openDialog, closeDialog, getIsOpen } = useDialogContext();
 	const open = useCallback(
@@ -47,6 +48,7 @@ function useDialog<T extends keyof DialogPropsTypeMap>(name: T) {
 		closeDialog(name);
 	}, [name, closeDialog]);
 	const isOpen = useMemo(() => getIsOpen(name), [name, getIsOpen]);
+
 	return [open, close, isOpen] as const;
 }
 const DialogProvider = ({ children }: GenericContextProviderProps) => {
@@ -76,9 +78,11 @@ const DialogProvider = ({ children }: GenericContextProviderProps) => {
 		) => {
 			setOpenDialogArray(prev => {
 				const index = prev.findIndex(([n]) => n === name);
+
 				if (index === -1) {
 					return [...prev, [name, props]] as DialogTuple[];
 				}
+
 				return [
 					...prev.slice(0, index),
 					[name, props],
@@ -126,16 +130,17 @@ const DialogProvider = ({ children }: GenericContextProviderProps) => {
 		[openDialogArray]
 	);
 
-	const value: DialogContext2 = {
+	const value: DialogContext = {
 		openDialog,
 		closeDialog,
 		getIsOpen
 	};
 
 	return (
-		<DialogContextProvider2 value={value}>
+		<DialogContextProvider value={value}>
 			{openDialogArray.map(([name, props]) => {
 				const Dialog = dialogMap[name];
+
 				return (
 					<Dialog
 						key={name}
@@ -145,7 +150,7 @@ const DialogProvider = ({ children }: GenericContextProviderProps) => {
 				);
 			})}
 			{children}
-		</DialogContextProvider2>
+		</DialogContextProvider>
 	);
 };
 

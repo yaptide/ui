@@ -17,7 +17,7 @@ import { ChangeEvent, SyntheticEvent, useCallback, useMemo, useState } from 'rea
 import { LoaderContext } from '../../../services/LoaderService';
 import { StatusState } from '../../../types/ResponseTypes';
 import EXAMPLES from '../../examples/examples';
-import { CustomDialog, WarnDialogProps } from './CustomDialog';
+import { ConcreteDialogProps,CustomDialog } from './CustomDialog';
 import { DragDropProject } from './DragDropProject';
 
 export function OpenFileDialog({
@@ -28,7 +28,7 @@ export function OpenFileDialog({
 	loadFromFiles,
 	loadFromUrl,
 	loadFromJsonString
-}: WarnDialogProps<Partial<LoaderContext>>) {
+}: ConcreteDialogProps<Partial<LoaderContext>>) {
 	const [currentFileList, setCurrentFileList] = useState<FileList>();
 	const [value, setValue] = useState('1');
 	const handleChange = (event: SyntheticEvent, newValue: string) => {

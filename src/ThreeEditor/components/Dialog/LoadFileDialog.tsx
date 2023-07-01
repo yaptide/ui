@@ -3,22 +3,20 @@ import Typography from '@mui/material/Typography';
 
 import { useStore } from '../../../services/StoreService';
 import { EditorJson } from '../../js/EditorJson';
-import { CustomDialog, WarnDialogProps } from './CustomDialog';
+import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
 export function LoadFileDialog({
-	open,
 	onClose,
 	validVersion = true,
-	onConfirm = onClose,
 	data
-}: WarnDialogProps<{
+}: ConcreteDialogProps<{
 	validVersion?: boolean;
 	data?: EditorJson;
 }>) {
 	const { editorRef } = useStore();
+
 	return (
 		<CustomDialog
-			open={open}
 			alert={true}
 			onClose={onClose}
 			title='Load File Alert'
@@ -50,7 +48,7 @@ export function LoadFileDialog({
 			<Button
 				disabled={!data}
 				onClick={() => {
-					onConfirm();
+					onClose();
 					if (data && editorRef.current) {
 						editorRef.current.clear();
 						editorRef.current.fromJSON(data);

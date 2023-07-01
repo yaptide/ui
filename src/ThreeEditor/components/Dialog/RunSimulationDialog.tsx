@@ -13,7 +13,7 @@ import {
 	SimulationSourceType
 } from '../../../WrapperApp/components/Simulation/RunSimulationForm';
 import { EditorJson } from '../../js/EditorJson';
-import { WarnDialogProps } from './CustomDialog';
+import { ConcreteDialogProps } from './CustomDialog';
 
 export function RunSimulationDialog({
 	open = true,
@@ -22,7 +22,7 @@ export function RunSimulationDialog({
 	onClose,
 	onConfirm = onClose,
 	onSubmit = () => {}
-}: WarnDialogProps<{
+}: ConcreteDialogProps<{
 	onSubmit?: (jobId: string) => void;
 	inputFiles?: Record<string, string>;
 	simulator?: SimulatorType;
@@ -49,10 +49,12 @@ export function RunSimulationDialog({
 						...batchOptions,
 						arrayOptions: batchOptions.arrayOptions?.reduce((acc, curr) => {
 							acc[curr.optionKey] = curr.optionValue;
+
 							return acc;
 						}, {} as Record<string, string>),
 						collectOptions: batchOptions.collectOptions?.reduce((acc, curr) => {
 							acc[curr.optionKey] = curr.optionValue;
+
 							return acc;
 						}, {} as Record<string, string>)
 				  }
@@ -76,6 +78,7 @@ export function RunSimulationDialog({
 				console.error(e);
 			});
 	};
+
 	return (
 		<Modal
 			keepMounted

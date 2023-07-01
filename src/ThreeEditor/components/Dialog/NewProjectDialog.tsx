@@ -1,13 +1,13 @@
 import { Button } from '@mui/material';
 
 import { useStore } from '../../../services/StoreService';
-import { CustomDialog, WarnDialogProps } from './CustomDialog';
+import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
-export function NewProjectDialog({ open, onClose, onConfirm = onClose }: WarnDialogProps) {
+export function NewProjectDialog({ onClose }: ConcreteDialogProps) {
 	const { editorRef } = useStore();
+
 	return (
 		<CustomDialog
-			open={open}
 			onClose={onClose}
 			alert={true}
 			title='New Project Alert'
@@ -20,7 +20,7 @@ export function NewProjectDialog({ open, onClose, onConfirm = onClose }: WarnDia
 			<Button
 				onClick={() => {
 					if (editorRef.current) editorRef.current.clear();
-					onConfirm();
+					onClose();
 				}}>
 				Clear and proceed
 			</Button>
