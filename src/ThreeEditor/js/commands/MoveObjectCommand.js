@@ -73,6 +73,7 @@ class MoveObjectCommand extends Command {
 
 		this.object = this.editor.objectByUuid(json.objectUuid);
 		this.oldParent = this.editor.objectByUuid(json.oldParentUuid);
+
 		if (this.oldParent === undefined) {
 			this.oldParent = this.editor.figureManager;
 		}

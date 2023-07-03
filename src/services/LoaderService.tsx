@@ -50,15 +50,18 @@ const Loader = ({ children }: GenericContextProviderProps) => {
 	const handleJSON = useCallback(
 		(json: EditorJson) => {
 			const type = json.metadata.type;
+
 			switch (type) {
 				case 'Editor':
 					open({
 						data: json,
 						validVersion: json.metadata.version === JSON_VERSION
 					});
+
 					break;
 				default:
 					console.error('Unknown JSON type', type);
+
 					break;
 			}
 		},
@@ -68,15 +71,18 @@ const Loader = ({ children }: GenericContextProviderProps) => {
 	const loadData = useCallback(
 		(dataArray: unknown[]) => {
 			const loadedResults = dataArray.filter(isFullSimulationData);
+
 			if (loadedResults.length === 0) console.info('No results data found in loaded data');
 			setLocalResultsSimulationData(prev => {
 				const result: FullSimulationData[] = prev.concat(loadedResults);
+
 				return result;
 			});
 			setResultsSimulationData([...loadedResults].pop());
 			const loadedEditor = dataArray
 				.concat(loadedResults.map(e => e.input.inputJson))
 				.find(isEditorJson);
+
 			if (loadedEditor && editorRef.current) {
 				handleJSON(loadedEditor);
 			}
@@ -88,9 +94,11 @@ const Loader = ({ children }: GenericContextProviderProps) => {
 		(files: FileList | undefined) => {
 			if (!files) return;
 			const promises = [];
+
 			for (const file of Array.from(files)) {
 				promises.push(readFile(file));
 			}
+
 			Promise.all(promises).then(results => {
 				const dataArray = results.map(result => JSON.parse(result as string));
 				loadData(dataArray);
@@ -130,6 +138,7 @@ const Loader = ({ children }: GenericContextProviderProps) => {
 	const loadFromJsonString = useCallback(
 		(json_string: string) => {
 			const json = JSON.parse(json_string);
+
 			if (typeof json === 'object') loadFromJson(json);
 		},
 		[loadFromJson]
@@ -141,6 +150,7 @@ const Loader = ({ children }: GenericContextProviderProps) => {
 			setUrlInPath(prev => {
 				if (!path || path === prev) return prev;
 				loadFromUrl(path);
+
 				return path;
 			});
 		}

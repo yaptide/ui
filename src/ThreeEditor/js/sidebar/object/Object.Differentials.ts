@@ -38,9 +38,11 @@ export class ObjectDifferentials extends ObjectAbstract {
 			text: 'Add differential modifier',
 			update: this.addModifier.bind(this)
 		});
+
 		[this.outliner] = createModifiersOutliner(editor, {
 			update: this.selectModifier.bind(this)
 		});
+
 		[
 			this.modifierRow,
 			this.keywordSelect,
@@ -62,11 +64,14 @@ export class ObjectDifferentials extends ObjectAbstract {
 
 	setObject(object: ScoringQuantity): void {
 		super.setObject(object);
+
 		if (!object) return;
 		this.object = object;
 		this.outliner.setOptions(object.modifiers);
+
 		if (object.selectedModifier) {
 			const mod = object.selectedModifier;
+
 			if (mod) {
 				this.outliner.setValue(object.selectedModifier.uuid);
 				this.setModifier(mod);
@@ -77,13 +82,16 @@ export class ObjectDifferentials extends ObjectAbstract {
 		} else {
 			hideUIElement(this.modifierRow);
 		}
+
 		const mods = object.modifiers;
+
 		if (mods.length < 2) this.add.setDisabled(false);
 		else this.add.setDisabled(true);
 	}
 
 	update(): void {
 		const { object, modifier } = this;
+
 		if (!object || !modifier) return;
 		const { uuid } = modifier;
 		const diffType = this.keywordSelect.getValue() as Scoring.DETECTOR_MODIFIERS;
@@ -111,6 +119,7 @@ export class ObjectDifferentials extends ObjectAbstract {
 
 	addModifier(): void {
 		const { editor, object } = this;
+
 		if (!object) return;
 		if (object.modifiers.length >= 2) return;
 		editor.execute(new AddDifferentialModifierCommand(editor, object));
@@ -118,9 +127,11 @@ export class ObjectDifferentials extends ObjectAbstract {
 
 	selectModifier(): void {
 		const { object } = this;
+
 		if (!object) return;
 		const modifier = object.getModifierByUuid(this.outliner.getValue());
 		object.selectedModifier = modifier;
+
 		if (modifier) {
 			this.setModifier(modifier);
 		} else {
@@ -139,6 +150,7 @@ export class ObjectDifferentials extends ObjectAbstract {
 
 	updateSelectedModifier() {
 		const { modifier } = this;
+
 		if (!modifier) return;
 		const { diffType, lowerLimit, upperLimit, binsNumber, isLog } = modifier;
 		this.keywordSelect.setValue(diffType);
@@ -152,6 +164,7 @@ export class ObjectDifferentials extends ObjectAbstract {
 
 	removeModifier() {
 		const { object, editor, modifier } = this;
+
 		if (!object || !modifier) return;
 		editor.execute(new RemoveDifferentialModifierCommand(editor, object, modifier));
 	}

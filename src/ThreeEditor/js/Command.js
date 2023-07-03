@@ -46,6 +46,7 @@ export class Command {
 		output.type = this.type;
 		output.id = this.id;
 		output.name = this.name;
+
 		return output;
 	}
 

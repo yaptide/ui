@@ -98,6 +98,7 @@ export function RunSimulationForm({
 	const handleChangeCluster = (event: SelectChangeEvent) => {
 		setSelectedCluster(parseInt(event.target.value));
 	};
+
 	const handleRunTypeChange = (
 		event: MouseEvent<HTMLElement>,
 		newRunType: SimulationRunType | null
@@ -105,22 +106,27 @@ export function RunSimulationForm({
 		if (newRunType === null) return;
 		setSimulationRunType(newRunType);
 	};
+
 	const handleSourceTypeChange = (
 		event: MouseEvent<HTMLElement>,
 		newSourceType: SimulationSourceType | null
 	) => {
 		if (newSourceType === null) return;
 		setSimulationSourceType(newSourceType);
+
 		if (newSourceType === 'files') {
 			setSelectedFiles(Object.keys(inputFiles));
 		}
 	};
+
 	const handleTabChange = (event: SyntheticEvent, newValue: number) => {
 		setTabValue(newValue);
 	};
+
 	const handleParamsTabChange = (event: SyntheticEvent, newValue: number) => {
 		setSelectedScriptParamsTab(newValue);
 	};
+
 	const handleRunSimulationClick = () => {
 		const filteredInputFiles = Object.entries(inputFiles).reduce((acc, [key, value]) => {
 			if (selectedFiles.includes(key)) {
@@ -129,6 +135,7 @@ export function RunSimulationForm({
 
 			return acc;
 		}, {});
+
 		const batchOptions = {
 			clusterName: availableClusters[selectedCluster ?? 0],
 			arrayHeader,

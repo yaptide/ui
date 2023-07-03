@@ -22,18 +22,22 @@ type MenuPositionProps = {
 	setOpenIdx: (open: number) => void;
 	options: CommandButtonProps[][];
 };
+
 function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPositionProps) {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const handleClick = (_: MouseEvent<HTMLButtonElement>) => {
 		setOpenIdx(idx);
 	};
+
 	const handleEnter = (_: MouseEvent<HTMLButtonElement>) => {
 		if (openIdx !== -1) setOpenIdx(idx);
 	};
+
 	const handleClose = (action?: () => void) => {
 		if (action) action();
 		setOpenIdx(-1);
 	};
+
 	useEffect(() => {
 		if (openIdx === idx) setAnchorEl(document.getElementById('basic-button-' + idx.toString()));
 		else setAnchorEl(null);

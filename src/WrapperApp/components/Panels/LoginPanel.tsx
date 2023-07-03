@@ -15,6 +15,7 @@ export default function LoginPanel() {
 	const handleUsernameChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setUsername(event.target.value);
 	};
+
 	const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setPassword(event.target.value);
 	};
@@ -25,9 +26,11 @@ export default function LoginPanel() {
 		},
 		[login, password, username]
 	);
+
 	// Handle login on 'Enter' keystroke
 	useEffect(() => {
 		document.addEventListener('keydown', handleEnter);
+
 		return () => document.removeEventListener('keydown', handleEnter);
 	}, [handleEnter]);
 

@@ -51,6 +51,7 @@ const ObjectTypeField = (props: {
 	const selectData = useCallback(() => {
 		if (isDetector(watchedObject))
 			return { options: DETECTOR_OPTIONS, value: watchedObject.detectorType };
+
 		return { options: BASIC_GEOMETRY_OPTIONS, value: watchedObject.geometryType };
 	}, [watchedObject])();
 
@@ -96,6 +97,7 @@ const WorldZoneCalculateField = (props: { editor: YaptideEditor; object: WorldZo
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const renderFlag = watchedObject.geometryType === 'BoxGeometry';
+
 	if (!renderFlag) return null;
 
 	return (
@@ -158,9 +160,11 @@ const BoxDimensionsField = (props: {
 		if (isWorldZone(watchedObject)) return watchedObject.size.clone();
 
 		let v;
+
 		if (isDetector(watchedObject)) v = watchedObject.geometryParameters;
 		else if (isBoxFigure(watchedObject)) v = watchedObject.geometry.parameters;
 		else return new Vector3(0, 0, 0);
+
 		return new Vector3(v.width, v.height, v.depth);
 	}, [watchedObject]);
 
@@ -253,9 +257,11 @@ const CylinderDimensionsField = (props: {
 	const getCylinder = useCallback(() => {
 		if (isWorldZone(watchedObject)) {
 			const { size } = watchedObject;
+
 			return { radius: size.x, innerRadius: 0, height: size.z };
 		} else if (isDetector(watchedObject)) {
 			const parameters = watchedObject.geometryParameters as CylData;
+
 			return {
 				radius: parameters.radius,
 				innerRadius: parameters.innerRadius,
@@ -263,12 +269,14 @@ const CylinderDimensionsField = (props: {
 			};
 		} else if (isCylinderFigure(watchedObject)) {
 			const parameters = watchedObject.geometry.parameters;
+
 			return {
 				radius: parameters.outerRadius,
 				innerRadius: 0,
 				height: parameters.height
 			};
 		}
+
 		return { radius: 0, innerRadius: 0, height: 0 };
 	}, [watchedObject]);
 
@@ -280,6 +288,7 @@ const CylinderDimensionsField = (props: {
 					innerRadius: v.innerRadius,
 					depth: v.height
 				};
+
 				return editor.execute(
 					new SetDetectGeometryCommand(editor, watchedObject.object, geometryData)
 				);
@@ -361,15 +370,18 @@ const SphereDimensionsField = (props: {
 
 		if (isWorldZone(watchedObject) && watchedObject.geometryType === 'SphereGeometry')
 			return !watchedObject.autoCalculate;
+
 		return false;
 	}, [watchedObject]);
 
 	const getSphere = useCallback(() => {
 		if (isWorldZone(watchedObject)) {
 			const { size } = watchedObject;
+
 			return { radius: size.x };
 		} else if (isSphereFigure(watchedObject))
 			return { radius: watchedObject.geometry.parameters.radius };
+
 		return { radius: 0 };
 	}, [watchedObject]);
 
@@ -424,6 +436,7 @@ const ZoneDimensionsField = (props: {
 	const getRenderFlag = useCallback(() => {
 		if (isDetector(watchedObject) && watchedObject.detectorType === 'Zone') return true;
 		if (isBeamModulator(watchedObject)) return true;
+
 		return false;
 	}, [watchedObject]);
 

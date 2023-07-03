@@ -19,5 +19,6 @@ export function createRowColor(params) {
 	const color = new UIColor(value).onInput(update);
 	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
 	row.add(label, color);
+
 	return [row, color, label];
 }

@@ -17,6 +17,7 @@ export function SourceFileDefinitionField(props: {
 		if (!e.target.files) {
 			return;
 		}
+
 		const file = e.target.files[0];
 
 		const { name } = file;
@@ -26,7 +27,9 @@ export function SourceFileDefinitionField(props: {
 			if (!evt?.target?.result) {
 				return;
 			}
+
 			const { result } = evt.target;
+
 			if (typeof result === 'string') {
 				props.onChange({ name, value: result });
 			} else {

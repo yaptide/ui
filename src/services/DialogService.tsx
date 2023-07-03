@@ -41,6 +41,7 @@ function useDialog<T extends DialogComponentNames>(
 		},
 		[name, openDialog]
 	);
+
 	const close = useCallback(() => {
 		closeDialog(name);
 	}, [name, closeDialog]);
@@ -48,6 +49,7 @@ function useDialog<T extends DialogComponentNames>(
 
 	return [open, close, isOpen] as const;
 }
+
 const DialogProvider = ({ children }: GenericContextProviderProps) => {
 	const [openDialogArray, setOpenDialogArray] = useState<DialogNameTuple[]>([]);
 

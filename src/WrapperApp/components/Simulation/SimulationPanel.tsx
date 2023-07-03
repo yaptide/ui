@@ -38,6 +38,7 @@ export default function SimulationPanel({
 		setResultsSimulationData,
 		localResultsSimulationData
 	} = useStore();
+
 	const {
 		cancelJobDirect,
 		getJobInputs,
@@ -56,6 +57,7 @@ export default function SimulationPanel({
 	const [orderType, setOrderType] = useState<OrderType>(OrderType.DESCEND);
 	const [orderBy, setOrderBy] = useState<OrderBy>(OrderBy.START_TIME);
 	const [pageSize, setPageSize] = useState(6);
+
 	type PageState = Omit<
 		PageParamProps & PageNavigationProps,
 		'handlePageChange' | 'handleOrderChange'
@@ -116,6 +118,7 @@ export default function SimulationPanel({
 					setBackendAlive(false);
 					setPageCount(0);
 				});
+
 		return () => {
 			controller.abort();
 			setSimulationIDInterval(null);
@@ -162,6 +165,7 @@ export default function SimulationPanel({
 				const currentStatus = simulationsStatusData.find(async s => {
 					if (currentJobStatusData[StatusState.COMPLETED](s)) {
 						const jobInputs = await getJobInputs(s, controller.signal);
+
 						return jobInputs?.input.inputJson?.hash === hash;
 					}
 
@@ -217,6 +221,7 @@ export default function SimulationPanel({
 				orderBy: setOrderBy,
 				pageCount: setPageCount
 			};
+
 			Object.entries(pageState).forEach(([key, value]) =>
 				stateToSetter[key as keyof PageState](value)
 			);

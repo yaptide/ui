@@ -22,9 +22,11 @@ export const convertToBestUnit = (value: number, unit: string) => {
 	if (convert().possibilities().includes(unit)) return convert(value).from(unit).toBest();
 
 	let convertedValue = null;
+
 	try {
 		let preUnit = unit[0];
 		let postUnit = unit.slice(1);
+
 		if (baseUnits.includes(unit)) {
 			preUnit = '';
 			postUnit = unit;
@@ -32,10 +34,12 @@ export const convertToBestUnit = (value: number, unit: string) => {
 
 		if (isBaseUnit(preUnit)) {
 			convertedValue = convert(value).from(preUnit).toBest();
+
 			if (convertedValue) convertedValue.unit = convertedValue?.unit + postUnit;
 		}
 	} catch (e) {
 		console.error(e);
 	}
+
 	return convertedValue;
 };

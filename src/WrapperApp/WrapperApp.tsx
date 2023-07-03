@@ -28,6 +28,7 @@ function WrapperApp() {
 	const [currentSimulator, setCurrentSimulator] = useState<SimulatorType>(
 		SimulatorType.SHIELDHIT
 	);
+
 	useEffect(() => {
 		if (providedInputFiles && tabsValue !== 'simulations') setProvidedInputFiles(undefined);
 	}, [providedInputFiles, tabsValue]);
@@ -126,4 +127,5 @@ function WrapperApp() {
 		</Box>
 	);
 }
+
 export default WrapperApp;

@@ -21,6 +21,7 @@ export function createRowCheckbox(params) {
 	const checkbox = new UICheckbox(value).onChange(update);
 	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
 	row.add(label, checkbox);
+
 	return [row, checkbox, label];
 }
 
@@ -45,6 +46,7 @@ export function createRowConditionalNumber(params) {
 	const checkbox = new UICheckbox(value[0]).onChange(update);
 	const input = createNumberInput({ ...params, value: value[1], update });
 	row.add(label, checkbox, input);
+
 	return [row, checkbox, input, label];
 }
 
@@ -65,5 +67,6 @@ export function createRowConditionalSelect(params) {
 	const checkbox = new UICheckbox(value[0]).onChange(update);
 	const select = new UISelect(options).setValue(value[1]).onChange(update);
 	row.add(label, checkbox, select);
+
 	return [row, checkbox, select, label];
 }

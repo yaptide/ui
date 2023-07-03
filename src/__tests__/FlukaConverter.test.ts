@@ -24,6 +24,7 @@ describe('NavDrawer component', () => {
 
 		//find the "Editor" button on the left menu and assure it is already selected
 		const editorButton = await driver.findElement(By.xpath("//div[@aria-label = 'Editor']"));
+
 		if ((await editorButton.getAttribute('aria-selected')) !== 'true')
 			console.warn(
 				`Editor button is not selected even though it should be it's default state.`

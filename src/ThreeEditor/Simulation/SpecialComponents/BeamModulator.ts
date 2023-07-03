@@ -57,8 +57,10 @@ export class BeamModulator extends SimulationPoints {
 
 	tryUpdateGeometry(): void {
 		this.geometry.dispose();
+
 		if (this._zoneUuid) {
 			const zone = this.editor.zoneManager.getZoneByUuid(this._zoneUuid);
+
 			if (!zone) throw new Error(`No zone with uuid ${this._zoneUuid} found!`);
 			this.geometry =
 				zone?.geometry
@@ -69,6 +71,7 @@ export class BeamModulator extends SimulationPoints {
 			this.material.color =
 				zone?.material.color ?? this.editor.materialManager.defaultMaterial.color.clone();
 		}
+
 		this.geometry.computeBoundingSphere();
 		this.editor.signals.objectSelected.dispatch(this);
 	}
@@ -90,6 +93,7 @@ export class BeamModulator extends SimulationPoints {
 	private _zoneUuid: string = '';
 	get geometryData(): ModulatorGeometryDataType {
 		const { _zoneUuid: zoneUuid, geometryType } = this;
+
 		return {
 			geometryType,
 			parameters: {
@@ -101,6 +105,7 @@ export class BeamModulator extends SimulationPoints {
 	simulationMethod: BeamsimulationMethod = 'modulus';
 	set geometryData(data: ModulatorGeometryDataType) {
 		const { geometryType, parameters } = data;
+
 		if (geometryType !== 'Zone') throw new Error('Invalid geometry type');
 		const { zoneUuid } = parameters;
 		this._zoneUuid = zoneUuid;
@@ -123,6 +128,7 @@ export class BeamModulator extends SimulationPoints {
 
 	toJSON(): BeamModulatorJSON {
 		const { geometryData, simulationMethod, sourceFile } = this;
+
 		return {
 			...super.toJSON(),
 			geometryData,
@@ -137,6 +143,7 @@ export class BeamModulator extends SimulationPoints {
 		this.geometryData = geometryData;
 		this.simulationMethod = simulationMethod;
 		this.sourceFile = sourceFile;
+
 		return this;
 	}
 }

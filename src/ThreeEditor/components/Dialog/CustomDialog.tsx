@@ -68,6 +68,7 @@ export function CustomDialog({
 		</Dialog>
 	);
 }
+
 interface CustomTitleProps extends DialogTitleProps {
 	onClose: () => void;
 }

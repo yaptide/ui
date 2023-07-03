@@ -36,6 +36,7 @@ export class AddQuantityCommand extends Command {
 		const output = super.toJSON(this);
 		output.object = this.object.toJSON();
 		output.output = this.output.toJSON();
+
 		return output;
 	}
 
@@ -44,6 +45,7 @@ export class AddQuantityCommand extends Command {
 		this.output =
 			this.editor.scoringManager.getOutputByUuid(json.object.uuid) ??
 			new ScoringOutput().fromJSON(json.object);
+
 		this.object =
 			this.output.getQuantityByUuid(json.object.uuid) ??
 			new ScoringQuantity().fromJSON(json.object);

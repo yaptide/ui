@@ -91,6 +91,7 @@ function Loader(editor) {
 							data = JSON.parse(contents);
 						} catch (error) {
 							alert(error);
+
 							return;
 						}
 
@@ -164,6 +165,7 @@ function Loader(editor) {
 
 			case 'editor':
 				let versionIsOk = true;
+
 				if (data.metadata.version !== editor.jsonVersion) {
 					versionIsOk = window.confirm(
 						`File has  project standard version ${data.metadata.version} which is different from standard version handled by this web application: ${editor.jsonVersion}\nContinue?`

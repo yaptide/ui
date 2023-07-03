@@ -58,6 +58,7 @@ export class ScoringFilter extends SimulationElement {
 	updateOrCreateRule(json: RuleJSON): void {
 		const { keyword } = json;
 		let rule;
+
 		switch (keyword) {
 			case 'AMASS':
 			case 'AMU':
@@ -65,19 +66,23 @@ export class ScoringFilter extends SimulationElement {
 			case 'ENUC':
 			case 'EAMU':
 				rule = FloatRule.fromJSON(json as FloatRuleJSON);
+
 				break;
 			case 'A':
 			case 'GEN':
 			case 'NPRIM':
 			case 'Z':
 				rule = IntRule.fromJSON(json as IntRuleJSON);
+
 				break;
 			case 'ID':
 				rule = IDRule.fromJSON(json as IDRuleJSON);
+
 				break;
 			default:
 				throw new Error(`Invalid keyword: ${keyword}`);
 		}
+
 		this.addRule(rule);
 		this.selectedRule = rule;
 	}
@@ -88,18 +93,21 @@ export class ScoringFilter extends SimulationElement {
 
 	removeRule(uuid: string): void {
 		delete this._rules[uuid];
+
 		if (this.selectedRule?.uuid === uuid) this.selectedRule = undefined;
 	}
 
 	clear(): this {
 		this._rules = {};
 		this.name = 'Filter';
+
 		return this;
 	}
 
 	createRule(json: Omit<RuleJSON, 'uuid'>): FilterRule {
 		const { keyword } = json;
 		let rule;
+
 		switch (keyword) {
 			case 'AMASS':
 			case 'AMU':
@@ -107,25 +115,31 @@ export class ScoringFilter extends SimulationElement {
 			case 'ENUC':
 			case 'EAMU':
 				rule = new FloatRule(json as FloatRuleJSON);
+
 				break;
 			case 'A':
 			case 'GEN':
 			case 'NPRIM':
 			case 'Z':
 				rule = new IntRule(json as IntRuleJSON);
+
 				break;
 			case 'ID':
 				rule = new IDRule(json as IDRuleJSON);
+
 				break;
 			default:
 				throw new Error(`Invalid keyword: ${keyword}`);
 		}
+
 		this.addRule(rule);
+
 		return rule;
 	}
 
 	toJSON(): FilterJSON {
 		const { uuid, name, _rules: rules, type } = this;
+
 		return { uuid, name, type, rules: Object.values(rules).map(rule => rule.toJSON()) };
 	}
 
@@ -134,6 +148,7 @@ export class ScoringFilter extends SimulationElement {
 		this.uuid = json.uuid;
 		this.name = json.name;
 		json.rules.map(this.updateOrCreateRule.bind(this));
+
 		return this;
 	}
 
@@ -143,6 +158,7 @@ export class ScoringFilter extends SimulationElement {
 
 	toString(): string {
 		const { uuid, name, _rules: rules } = this;
+
 		return `[${uuid}]\n${name}\n${Object.values(rules)
 			.map(rule => `    ${rule.toString()}`)
 			.join('\n')}}`;

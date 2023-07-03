@@ -10,12 +10,14 @@ const getDateFromEstimation = (estimated?: TaskTime) => {
 	const date =
 		Date.now() +
 		(parseInt(hours) * 60 * 60 + parseInt(minutes) * 60 + parseInt(seconds)) * 1000;
+
 	return date;
 };
 
 type SimulationProgressBarProps = {
 	status: TaskStatusData;
 };
+
 const statusToColor = (status: StatusState) => {
 	switch (status) {
 		case StatusState.FAILED:
@@ -30,12 +32,14 @@ const statusToColor = (status: StatusState) => {
 export function SimulationProgressBar({ status }: SimulationProgressBarProps) {
 	const updateProgress = useCallback(() => {
 		const progress = (status?.simulatedPrimaries ?? 0) / (status?.requestedPrimaries ?? 1);
+
 		return progress;
 	}, [status]);
 	const progress = useRef<number>(updateProgress());
 	useEffect(() => {
 		progress.current = updateProgress();
 	}, [updateProgress]);
+
 	return (
 		<Tooltip
 			followCursor={true}

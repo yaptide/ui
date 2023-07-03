@@ -43,11 +43,13 @@ const PythonConverter = (props: PythonConverterProps) => {
 		workerRef.current = Comlink.wrap<PythonWorker>(
 			new Worker(new URL('./PythonWorker.ts', import.meta.url))
 		);
+
 		workerRef.current.initPyodide(
 			Comlink.proxy(() => {
 				document.dispatchEvent(new CustomEvent(PYODIDE_LOADED));
 			})
 		);
+
 		return () => {
 			workerRef.current?.close();
 		};
@@ -65,6 +67,7 @@ const PythonConverter = (props: PythonConverterProps) => {
 		};
 
 		document.addEventListener(PYODIDE_LOADED, handleLoad);
+
 		return () => {
 			document.removeEventListener(PYODIDE_LOADED, handleLoad);
 		};

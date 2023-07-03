@@ -64,6 +64,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 	const backdropHandleClick = useCallback((event: MouseEvent<HTMLElement>) => {
 		// get the element that was clicked
 		const target = event.target as HTMLElement;
+
 		// if the element that was clicked is not the backdrop element return
 		if (target !== backdropRef.current) return;
 		// otherwise close the backdrop
@@ -108,12 +109,14 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 			(_: MouseEvent<HTMLElement>, value?: string | null) => {
 				if (value === null) return;
 				const newOperation = isOperation(value) ? value : null;
+
 				if (algebraDataRef.current[rowIndex].changeOperation(valueIndex, newOperation)) {
 					setAlgebraRow({
 						index: rowIndex,
 						data: algebraDataRef.current[rowIndex]
 					});
 					const last = algebraDataRef.current[rowIndex].value.length - 1;
+
 					if (
 						valueIndex !== last ||
 						algebraDataRef.current[rowIndex].value[last].objectId !== null
@@ -141,6 +144,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 
 	useEffect(() => {
 		editor.signals.zoneChanged.add(loadAlgebraDataFromZone);
+
 		return () => {
 			editor.signals.zoneChanged.remove(loadAlgebraDataFromZone);
 		};
@@ -159,6 +163,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 	const removeAlgebraDataRow = useCallback(
 		(removeId: number) => () => {
 			algebraDataRef.current = algebraDataRef.current.filter((el, id) => id !== removeId);
+
 			if (algebraDataRef.current.length === 0) {
 				algebraDataRef.current.push(new BooleanAlgebraData());
 				setAlgebraRow({ index: 0, data: algebraDataRef.current[0] });
@@ -167,6 +172,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 				setAlgebraRow(prev => {
 					const newIndex =
 						removeId <= prev.index ? Math.max(prev.index - 1, 0) : prev.index;
+
 					return {
 						index: newIndex,
 						data: algebraDataRef.current[newIndex]
@@ -206,6 +212,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 		refreshObjectsList();
 		editor.signals.objectAdded.add(refreshObjectsList);
 		editor.signals.objectRemoved.add(refreshObjectsList);
+
 		return () => {
 			editor.signals.objectAdded.remove(refreshObjectsList);
 			editor.signals.objectRemoved.remove(refreshObjectsList);
@@ -219,6 +226,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 		index: number;
 		value: typeof algebraRow;
 	}
+
 	function AlgebraDataPanel({
 		children = <Fragment />,
 		rowComponent = () => <Fragment />,
@@ -227,6 +235,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 		...restProps
 	}: AlgebraDataPanelProps) {
 		const wrapperRef = useRef<HTMLDivElement | null>(null);
+
 		return (
 			<Box
 				role='tabpanel'
@@ -283,6 +292,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 			'sx': { minWidth: 30, borderRadius: 0 }
 		};
 	}
+
 	/**
 	 * @description Wrapper for the custom content in the tabs bar
 	 */

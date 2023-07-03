@@ -8,6 +8,7 @@ export class ZoneWorker {
 
 	static async parse(json: string) {
 		devLog('CSGWorker.parse', await new THREE.ObjectLoader().parseAsync(JSON.parse(json)));
+
 		return json;
 	}
 }

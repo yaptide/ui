@@ -53,6 +53,7 @@ export class ChangeObjectOrderCommand extends Command {
 			return console.warn('ChangeObjectOrderCommand: oldIndex and newIndex are the same.');
 
 		const element = this.parent.children.splice(oldIndex, 1)[0];
+
 		if (element !== this.object) throw new Error('Object not in expected position.');
 
 		this.parent.children.splice(newIndex, 0, this.object);

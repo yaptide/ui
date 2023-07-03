@@ -37,6 +37,7 @@ export function initEditor(container) {
 
 			if (typeof state !== 'undefined') {
 				let versionIsOk = true;
+
 				if (state.metadata.version !== editor.jsonVersion) {
 					versionIsOk = window.confirm(
 						`Editor in memory has version of JSON: ${state.metadata.version}\nCurrent version of editor JSON: ${editor.jsonVersion}\nLoad it anyway?`

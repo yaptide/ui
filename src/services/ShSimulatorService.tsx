@@ -100,6 +100,7 @@ const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]
 			page.name = quantity?.name;
 		});
 	});
+
 	return estimators;
 };
 
@@ -219,6 +220,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 							searchParams: camelToSnakeCase({ jobId })
 						})
 						.json<ResponseGetJobInputs>();
+
 					const data: JobInputs = {
 						...response,
 						jobId
@@ -248,6 +250,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 							searchParams: camelToSnakeCase({ jobId })
 						})
 						.json<ResponseGetJobLogs>();
+
 					const data: JobLogs = {
 						...response,
 						jobId
@@ -306,19 +309,23 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 	//TODO: fix backend responses and remove this function
 	const validStatusToCache = (data: JobStatusCompleted | JobStatusFailed) => {
 		if (data.jobState === StatusState.FAILED) return true;
+
 		return data.jobTasksStatus.every(task => {
 			if (currentTaskStatusData[StatusState.FAILED](task)) return true;
 			else if (currentTaskStatusData[StatusState.COMPLETED](task)) {
 				if (!task.startTime || !task.endTime)
 					console.warn('There are missing times in COMPLETED task:', task);
+
 				if (typeof task.startTime === 'string') {
 					task.startTime = new Date(task.startTime);
 					console.warn('Converted startTime to Date in COMPLETED task:', task);
 				}
+
 				if (typeof task.endTime === 'string') {
 					task.endTime = new Date(task.endTime);
 					console.warn('Converted endTime to Date in COMPLETED task:', task);
 				}
+
 				if (task.requestedPrimaries !== task.simulatedPrimaries) {
 					console.warn(
 						'Requested primaries and simulated primaries are not equal in COMPLETED task:',
@@ -326,8 +333,10 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 					);
 					task.simulatedPrimaries = task.requestedPrimaries;
 				}
+
 				return true;
 			}
+
 			return false;
 		});
 	};
@@ -365,10 +374,12 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 							if (validStatusToCache(data))
 								statusDataCache.set(data.jobId, data, beforeCacheWrite);
 						} else return undefined;
+
 						return data;
 					})
 					.catch(e => {
 						console.error(e);
+
 						return undefined;
 					});
 			},
@@ -406,9 +417,12 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 				infoList.map(info => {
 					if (info.metadata.platform === undefined) {
 						console.error('info.metadata.platform is undefined');
+
 						return undefined;
 					}
+
 					const endPoint = `jobs/${info.metadata.platform.toLowerCase()}`;
+
 					return getJobStatus(endPoint)(info, cache, beforeCacheWrite, signal);
 				})
 			).then(dataList => {
@@ -425,6 +439,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 				jobStatus.jobState === StatusState.COMPLETED
 					? await getJobResults(jobStatus, signal, cache)
 					: undefined;
+
 			if (!inputs || !results) return undefined;
 			const { message, ...mergedData } = {
 				...inputs,

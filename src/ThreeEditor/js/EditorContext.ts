@@ -82,11 +82,13 @@ export class ContextManager {
 
 	getClickableObjects(): THREE.Object3D[] {
 		let clickable: THREE.Object3D[] = [];
+
 		switch (this._context) {
 			case 'geometry':
 				clickable = clickable.concat(
 					this.editor.figureManager.visible ? this.editor.figureManager.children : []
 				);
+
 				break;
 			case 'scoring':
 				clickable = clickable.concat(
@@ -94,16 +96,19 @@ export class ContextManager {
 						? this.editor.detectorManager.children
 						: []
 				);
+
 				break;
 			default:
 				return [];
 		}
+
 		return clickable;
 	}
 
 	setVisibility(context: Context): void {
 		let visible: THREE.Object3D[] = [this.editor.sceneHelpers, this.editor.beam];
 		let hidden: THREE.Object3D[] = [];
+
 		switch (context) {
 			case 'geometry':
 				visible.push(
@@ -113,6 +118,7 @@ export class ContextManager {
 					this.editor.specialComponentsManager
 				);
 				hidden.push();
+
 				break;
 			case 'scoring':
 				visible.push(this.editor.detectorManager);
@@ -121,6 +127,7 @@ export class ContextManager {
 					this.editor.figureManager,
 					this.editor.specialComponentsManager
 				);
+
 				break;
 			case 'settings':
 				hidden.push(
@@ -129,6 +136,7 @@ export class ContextManager {
 					this.editor.zoneManager,
 					this.editor.specialComponentsManager
 				);
+
 				break;
 			default:
 				visible.push(
@@ -137,11 +145,14 @@ export class ContextManager {
 					this.editor.detectorManager,
 					this.editor.specialComponentsManager
 				);
+
 				break;
 		}
+
 		visible.forEach(scene => {
 			scene.visible = true;
 		});
+
 		hidden.forEach(scene => {
 			scene.visible = false;
 		});
@@ -156,12 +167,14 @@ export class ContextManager {
 			}
 		} else if (isScoringContextObject(selected)) {
 			this._selected[1] = selected;
+
 			if (this._context !== 'scoring') {
 				this._context = 'scoring';
 				this.editor.signals.contextChanged.dispatch(this._context);
 			}
 		} else if (isGeometryContextObject(selected)) {
 			this._selected[0] = selected;
+
 			if (this._context !== 'geometry') {
 				this._context = 'geometry';
 				this.editor.signals.contextChanged.dispatch(this._context);

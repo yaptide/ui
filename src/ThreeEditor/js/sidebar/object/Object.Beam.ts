@@ -118,6 +118,7 @@ export class ObjectBeam extends ObjectAbstract {
 
 	setObject(object: Beam): void {
 		super.setObject(object);
+
 		if (!object) return;
 
 		this.object = object;
@@ -145,6 +146,7 @@ export class ObjectBeam extends ObjectAbstract {
 
 	update(): void {
 		const { object } = this;
+
 		if (!object) return;
 		object.energy = this.energy.getValue();
 		object.energySpread = this.energySpread.getValue();

@@ -77,6 +77,7 @@ export abstract class BasicFigure<
 }
 
 const boxGeometry = new THREE.BoxGeometry();
+
 export class BoxFigure extends BasicFigure<THREE.BoxGeometry> {
 	constructor(
 		editor: YaptideEditor,
@@ -118,6 +119,7 @@ export class CylinderFigure extends BasicFigure<HollowCylinderGeometry> {
 		const {
 			parameters: { depth, radius, innerRadius }
 		} = data;
+
 		this.geometry = new HollowCylinderGeometry(
 			innerRadius as number,
 			radius as number,

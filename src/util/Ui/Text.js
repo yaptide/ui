@@ -21,6 +21,7 @@ export function createRowText(params) {
 
 	row.add(label);
 	row.add(input);
+
 	return [row, input, label];
 }
 
@@ -41,5 +42,6 @@ export function createRowParamInput(params) {
 
 	row.add(label);
 	row.add(input);
+
 	return [row, input, label];
 }

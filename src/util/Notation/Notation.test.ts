@@ -12,6 +12,7 @@ describe('Notation', () => {
 					country: 'USA'
 				}
 			};
+
 			const expected = {
 				first_name: 'John',
 				last_name: 'Doe',
@@ -34,6 +35,7 @@ describe('Notation', () => {
 					country: 'USA'
 				}
 			};
+
 			const expected = {
 				first_name: 'John',
 				last_name: 'Doe',
@@ -64,6 +66,7 @@ describe('Notation', () => {
 					country: 'USA'
 				}
 			};
+
 			const expected = {
 				firstName: 'John',
 				lastName: 'Doe',
@@ -86,6 +89,7 @@ describe('Notation', () => {
 					country: 'USA'
 				}
 			};
+
 			const expected = {
 				firstName: 'John',
 				lastName: 'Doe',

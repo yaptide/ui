@@ -58,6 +58,7 @@ export class UICustomTabbedPanel extends UIDiv {
 		const tab = this.tabs.find(function (item) {
 			return item.dom.id === id;
 		});
+
 		if (tab) tab.setValue(newName);
 
 		return this;
@@ -67,12 +68,14 @@ export class UICustomTabbedPanel extends UIDiv {
 		const tab = this.tabs.find(function (item) {
 			return item.dom.id === id;
 		});
+
 		if (tab) hideUIElement(tab);
 
 		if (this.selected !== id) return;
 		const panel = this.panels.find(function (item) {
 			return item.dom.id === id;
 		});
+
 		if (panel) hideUIElement(panel);
 		this.select(this.tabs[0].dom.id);
 
@@ -83,12 +86,14 @@ export class UICustomTabbedPanel extends UIDiv {
 		const tab = this.tabs.find(function (item) {
 			return item.dom.id === id;
 		});
+
 		if (tab) showUIElement(tab);
 
 		if (this.selected !== id) return;
 		const panel = this.panels.find(function (item) {
 			return item.dom.id === id;
 		});
+
 		if (panel) showUIElement(panel);
 
 		return this;
@@ -108,6 +113,7 @@ export class UICustomTabbedPanel extends UIDiv {
 			tab = this.tabs.find(function (item) {
 				return item.dom.id === scope.selected;
 			});
+
 			panel = this.panels.find(function (item) {
 				return item.dom.id === scope.selected;
 			});
@@ -125,6 +131,7 @@ export class UICustomTabbedPanel extends UIDiv {
 			this.tabs.find(function (item) {
 				return item.dom.id === id;
 			}) ?? this.tabs[0];
+
 		panel =
 			this.panels.find(function (item) {
 				return item.dom.id === id;

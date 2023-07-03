@@ -14,9 +14,11 @@ const isCommonMaterial = ({ icru }: SimulationMaterial) => COMMON_MATERIAL_ICRUS
 
 const commonCompare = (a: SimulationMaterial, b: SimulationMaterial): number => {
 	const [aIcru, bIcru] = [a.icru, b.icru];
+
 	if (isCommonMaterial(a) === isCommonMaterial(b)) {
 		return aIcru - bIcru;
 	} else if (isCommonMaterial(b)) return 1;
+
 	return -1;
 };
 
