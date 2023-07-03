@@ -95,51 +95,6 @@
 		],
 		"rules": {
 			"class-methods-use-this": "warn",
-			"padding-line-between-statements": [
-				"error",
-				{
-					"blankLine": "always",
-					"prev": [
-						"const",
-						"let",
-						"var"
-					],
-					"next": "*"
-				},
-				{
-					"blankLine": "any",
-					"prev": [
-						"const",
-						"let",
-						"var"
-					],
-					"next": [
-						"const",
-						"let",
-						"var"
-					]
-				},
-				{
-					"blankLine": "always",
-					"prev": "directive",
-					"next": "*"
-				},
-				{
-					"blankLine": "any",
-					"prev": "directive",
-					"next": "directive"
-				},
-				{
-					"blankLine": "always",
-					"prev": "*",
-					"next": [
-						"break",
-						"continue",
-						"return",
-						"throw"
-					]
-				}
-			],
 			"lines-between-class-members": [
 				"error",
 				"always",
