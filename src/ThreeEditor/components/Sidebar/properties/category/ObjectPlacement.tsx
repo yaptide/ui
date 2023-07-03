@@ -52,6 +52,7 @@ export function ObjectPlacement(props: { editor: YaptideEditor; object: Simulati
 			rotation.y * MathUtils.DEG2RAD,
 			rotation.z * MathUtils.DEG2RAD
 		);
+
 		if (!newRotation.equals(watchedObject.rotation))
 			editor.execute(new SetRotationCommand(editor, watchedObject.object, newRotation));
 	};

@@ -22,6 +22,7 @@ export class RemoveFilterCommand {
 	toJSON() {
 		const output = super.toJSON(this);
 		output.object = this.object.toJSON();
+
 		return output;
 	}
 

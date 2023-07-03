@@ -68,6 +68,7 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 			}
 		]
 	];
+
 	const zonesTuple: CommandButtonTuple[] = [
 		[
 			'Boolean Zone',
@@ -81,6 +82,7 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 		],
 		['Tree Zone', undefined, true]
 	];
+
 	const detectorsTuple: CommandButtonTuple[] = [
 		[
 			'Detector',
@@ -89,6 +91,7 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 			}
 		]
 	];
+
 	const specialComponentsTuple: CommandButtonTuple[] = [
 		[
 			'CT Cube',
@@ -113,6 +116,7 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 			editor.specialComponentsManager.beamModulatorContainer.children.length > 0
 		]
 	];
+
 	const filtersTuple: CommandButtonTuple[] = [
 		[
 			'Filter',
@@ -121,6 +125,7 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 			}
 		]
 	];
+
 	const outputsTuple: CommandButtonTuple[] = [
 		[
 			'Output',
@@ -140,6 +145,7 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 			!isOutput(editor.selected) && !isQuantity(editor.selected)
 		]
 	];
+
 	return {
 		'Figures': createCommandButtonProps(editor, figuresTuple),
 		'Zones': createCommandButtonProps(editor, zonesTuple),

@@ -72,6 +72,7 @@ export class SpecialComponentManager
 	createCTCube() {
 		const ctCube = new CTCube(this.editor);
 		this.addCTCube(ctCube);
+
 		return ctCube;
 	}
 
@@ -121,6 +122,7 @@ export class SpecialComponentManager
 	createBeamModulator() {
 		const modulator = new BeamModulator(this.editor);
 		this.addBeamModulator(modulator);
+
 		return modulator;
 	}
 
@@ -148,6 +150,7 @@ export class SpecialComponentManager
 			'CTCube',
 			json => new CTCube(editor).fromJSON(json)
 		);
+
 		this.beamModulatorContainer = new OneSlotContainer<BeamModulator>(
 			editor,
 			'Beam Modulator Singleton',
@@ -189,6 +192,7 @@ export class SpecialComponentManager
 
 	copy(source: this, recursive?: boolean | undefined) {
 		super.copy(source, recursive);
+
 		return this.fromJSON(source.toJSON());
 	}
 
@@ -206,6 +210,7 @@ export class SpecialComponentManager
 		const { uuid, name, managerType: type, metadata } = this;
 		const [CTCube] = this.CTCubeContainer.toJSON();
 		const [modulator] = this.beamModulatorContainer.toJSON();
+
 		return {
 			CTCube,
 			modulator,
@@ -221,6 +226,7 @@ export class SpecialComponentManager
 			metadata: { version }
 		} = this;
 		const { uuid, name, metadata, CTCube, modulator } = json;
+
 		if (!metadata || metadata.version !== version)
 			console.warn(
 				`SpecialComponentManager version mismatch: ${metadata?.version} !== ${version}`
@@ -230,6 +236,7 @@ export class SpecialComponentManager
 		this.name = name;
 		this.CTCubeContainer.fromJSON(CTCube ? [CTCube] : []);
 		this.beamModulatorContainer.fromJSON(modulator ? [modulator] : []);
+
 		return this;
 	}
 }

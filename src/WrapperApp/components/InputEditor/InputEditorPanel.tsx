@@ -62,6 +62,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const onClickGenerate = useCallback(() => {
 		setInProgress(true);
 		const editorJSON = editorRef.current?.toJSON();
+
 		if (!editorJSON) return setInProgress(false);
 
 		handleConvert(editorJSON)
@@ -141,6 +142,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 					onChange={(_e, chosenSimulator) => {
 						if (chosenSimulator) {
 							setChosenSimulator(chosenSimulator);
+
 							if (chosenSimulator !== simulator)
 								if (
 									window.confirm(
@@ -148,15 +150,19 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 									)
 								)
 									setSimulator(chosenSimulator);
+
 							switch (chosenSimulator) {
 								case SimulatorType.SHIELDHIT:
 									setInputFiles(_defaultShInputFiles);
+
 									break;
 								case SimulatorType.TOPAS:
 									setInputFiles(_defaultTopasInputFiles);
+
 									break;
 								case SimulatorType.FLUKA:
 									setInputFiles(_defaultFlukaInputFiles);
+
 									break;
 								default:
 									throw new Error('Unknown simulator: ' + chosenSimulator);
@@ -195,6 +201,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 					const promises = Array.from(files).map(async file => {
 						const content = readFile(file) as Promise<string>;
 						submitedFiles[file.name] = await content;
+
 						return content;
 					});
 
@@ -203,6 +210,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 							if (!oldInput) return submitedFiles as SimulationInputFiles;
 
 							const inputFiles = { ...oldInput, ...submitedFiles };
+
 							return inputFiles as SimulationInputFiles;
 						});
 					});

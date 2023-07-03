@@ -14,6 +14,7 @@ export const useSignal = (
 	useEffect(() => {
 		let signalArray = Array.isArray(signal) ? signal : [signal];
 		signalArray.forEach(signal => editor?.signals[signal].add(callback));
+
 		return () => {
 			signalArray.forEach(signal => editor?.signals[signal].remove(callback));
 		};
@@ -74,7 +75,9 @@ function useSmartWatchEditorState<T>(
 					if ('object' === property) return target;
 					// gather all properties that are accessed
 					watchedPropertyArrRef.current.add(property as string);
+
 					if (debug) console.log(watchedPropertyArrRef.current);
+
 					return Reflect.get(target, property);
 				}
 			}),
@@ -93,6 +96,7 @@ function useSmartWatchEditorState<T>(
 		const callback = (object: Record<string, unknown>, property?: string) => {
 			if (object === watchedObject) {
 				if (debug) console.log(watchedPropertyArrRef.current, property);
+
 				if (watchAnyChange) setState({ state: proxyObjectRef.current });
 				else if (property && watchedPropertyArrRef.current.has(property)) {
 					devLog('Updated watched object property.', object, property, object[property]);
@@ -102,6 +106,7 @@ function useSmartWatchEditorState<T>(
 		};
 
 		editor.signals.objectChanged.add(callback);
+
 		return () => {
 			editor.signals.objectChanged.remove(callback);
 		};

@@ -87,6 +87,7 @@ export class ScoringManager
 	createFilter(): ScoringFilter {
 		const filter = new ScoringFilter(this.editor);
 		this.addFilter(filter);
+
 		return filter;
 	}
 
@@ -105,8 +106,10 @@ export class ScoringManager
 			})
 			.reduce((acc, filter) => {
 				acc[filter.uuid] = `${filter.name} [${filter.id}]`;
+
 				return acc;
 			}, {} as Record<string, string>);
+
 		return options;
 	}
 	/***************************************************************/
@@ -133,6 +136,7 @@ export class ScoringManager
 		const output = new ScoringOutput(this.editor);
 		output.createQuantity();
 		this.addOutput(output);
+
 		return output;
 	}
 
@@ -169,6 +173,7 @@ export class ScoringManager
 
 	copy(source: this, recursive?: boolean | undefined) {
 		super.copy(source, recursive);
+
 		return this.fromJSON(source.toJSON());
 	}
 
@@ -176,11 +181,13 @@ export class ScoringManager
 		this.name = this._name;
 		this.outputContainer.reset();
 		this.filterContainer.reset();
+
 		return this;
 	}
 
 	toJSON(): ScoringManagerJSON {
 		const { metadata } = this;
+
 		return {
 			...super.toJSON(),
 			outputs: this.outputContainer.toJSON(),
@@ -194,6 +201,7 @@ export class ScoringManager
 			metadata: { version }
 		} = this;
 		const { uuid, name, outputs, filters, metadata } = json;
+
 		if (!metadata || metadata.version !== version)
 			console.warn(`ScoringManager version mismatch: ${metadata?.version} !== ${version}`);
 
@@ -201,6 +209,7 @@ export class ScoringManager
 		this.name = name;
 		this.filterContainer.fromJSON(filters);
 		this.outputContainer.fromJSON(outputs);
+
 		return this;
 	}
 }

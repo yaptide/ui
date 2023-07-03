@@ -30,6 +30,7 @@ export class ObjectGrid extends ObjectAbstract {
 			max: 1000000,
 			precision: 0
 		});
+
 		[this.yLengthRow, this.yLength] = createRowParamNumber({
 			update: this.update.bind(this),
 			text: `number of bins along Y axis`,
@@ -37,6 +38,7 @@ export class ObjectGrid extends ObjectAbstract {
 			max: 1000000,
 			precision: 0
 		});
+
 		[this.zLengthRow, this.zLength] = createRowParamNumber({
 			update: this.update.bind(this),
 			text: `number of bins along Z axis`,
@@ -44,6 +46,7 @@ export class ObjectGrid extends ObjectAbstract {
 			max: 1000000,
 			precision: 0
 		});
+
 		[this.radiusRow, this.radius] = createRowParamNumber({
 			update: this.update.bind(this),
 			text: `number of bins along the radius`,
@@ -56,6 +59,7 @@ export class ObjectGrid extends ObjectAbstract {
 
 	setObject(object: Detector): void {
 		super.setObject(object);
+
 		if (!object) return;
 
 		this.object = object;
@@ -64,6 +68,7 @@ export class ObjectGrid extends ObjectAbstract {
 		hideUIElement(this.yLengthRow);
 		hideUIElement(this.zLengthRow);
 		hideUIElement(this.radiusRow);
+
 		switch (detectType) {
 			case 'Mesh':
 				showUIElement(this.xLengthRow);
@@ -72,12 +77,14 @@ export class ObjectGrid extends ObjectAbstract {
 				this.xLength.setValue(geometryData.xSegments);
 				this.yLength.setValue(geometryData.ySegments);
 				this.zLength.setValue(geometryData.zSegments);
+
 				break;
 			case 'Cyl':
 				showUIElement(this.zLengthRow);
 				showUIElement(this.radiusRow);
 				this.zLength.setValue(geometryData.zSegments);
 				this.radius.setValue(geometryData.radialSegments);
+
 				break;
 			default:
 				break;
@@ -86,8 +93,10 @@ export class ObjectGrid extends ObjectAbstract {
 
 	update(): void {
 		const { editor, object } = this;
+
 		if (!object) return;
 		const { detectorType: detectType } = object;
+
 		switch (detectType) {
 			case 'Mesh':
 				editor.execute(
@@ -97,6 +106,7 @@ export class ObjectGrid extends ObjectAbstract {
 						zSegments: this.zLength.getValue()
 					})
 				);
+
 				break;
 			case 'Cyl':
 				editor.execute(
@@ -105,6 +115,7 @@ export class ObjectGrid extends ObjectAbstract {
 						zSegments: this.zLength.getValue()
 					})
 				);
+
 				break;
 			default:
 				break;

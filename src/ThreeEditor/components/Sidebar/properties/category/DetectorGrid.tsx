@@ -28,6 +28,7 @@ export function DetectorGrid(props: { editor: YaptideEditor; object: Detector })
 		(v: typeof watchedObject.geometryParameters) => {
 			const { detectorType: detectType } = watchedObject;
 			const { xSegments, ySegments, zSegments, radialSegments } = v;
+
 			switch (detectType) {
 				case 'Mesh':
 					editor.execute(
@@ -37,6 +38,7 @@ export function DetectorGrid(props: { editor: YaptideEditor; object: Detector })
 							zSegments
 						})
 					);
+
 					break;
 				case 'Cyl':
 					editor.execute(
@@ -45,6 +47,7 @@ export function DetectorGrid(props: { editor: YaptideEditor; object: Detector })
 							zSegments
 						})
 					);
+
 					break;
 				default:
 					break;

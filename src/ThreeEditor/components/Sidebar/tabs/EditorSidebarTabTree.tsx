@@ -115,6 +115,7 @@ function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
 
 export function EditorSidebarTabTree(props: EditorSidebarTabTreeProps) {
 	const { elements } = props;
+
 	return (
 		<DndProvider
 			backend={MultiBackend}

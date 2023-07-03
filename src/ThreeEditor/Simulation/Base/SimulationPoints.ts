@@ -39,19 +39,24 @@ export abstract class SimulationPoints
 			const scope = this;
 			const parent: SimulationSceneContainer<SimulationPoints> | undefined = this.parent
 				?.parent as SimulationSceneContainer<SimulationPoints> | undefined;
+
 			switch (p) {
 				case 'copy':
 					return function (v: THREE.Vector3) {
 						target[p].apply(target, [v]);
+
 						return scope.positionProxy;
 					};
+
 				case 'add':
 					if (parent)
 						return function (v: THREE.Vector3) {
 							const nV = target[p].apply(target, [v]);
 							scope.wireframeHelper.position.copy(nV);
+
 							return nV;
 						};
+
 					return Reflect.get(target, p);
 				default:
 					return Reflect.get(target, p);
@@ -62,13 +67,16 @@ export abstract class SimulationPoints
 	protected overrideHandler: ProxyHandler<SimulationPoints> = {
 		get: (target: SimulationPoints, p: keyof SimulationPoints) => {
 			let result: any;
+
 			switch (p) {
 				case 'position':
 					result = this.positionProxy;
+
 					break;
 				default:
 					result = Reflect.get(target, p);
 			}
+
 			return result;
 		},
 		set: (
@@ -78,14 +86,17 @@ export abstract class SimulationPoints
 			receiver: unknown
 		) => {
 			const result = Reflect.set(target, p, value, receiver);
+
 			switch (p) {
 				case 'geometry':
 					this.geometry.computeBoundingSphere();
 					this.updateMatrixWorld(true);
+
 					break;
 				default:
 					break;
 			}
+
 			return result;
 		}
 	};
@@ -107,6 +118,7 @@ export abstract class SimulationPoints
 	toJSON(): SimulationPointsJSON {
 		const { name, type, uuid, visible } = this;
 		const colorHex = this.material.color.getHex();
+
 		return {
 			name,
 			type,
@@ -122,6 +134,7 @@ export abstract class SimulationPoints
 		this.uuid = uuid;
 		this.visible = visible;
 		this.material.color.setHex(colorHex);
+
 		return this;
 	}
 

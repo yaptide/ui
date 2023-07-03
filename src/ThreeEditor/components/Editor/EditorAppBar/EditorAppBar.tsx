@@ -57,6 +57,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 		editor?.signals.titleChanged.add(setTitle);
 		editor?.signals.savingStarted.add(startSave);
 		editor?.signals.savingFinished.add(stopSave);
+
 		return () => {
 			editor?.signals.historyChanged.remove(updateHistoryButtons);
 			editor?.signals.titleChanged.remove(setTitle);
@@ -64,6 +65,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 			editor?.signals.savingFinished.remove(stopSave);
 		};
 	}, [editor, updateHistoryButtons, setTitle, startSave, stopSave]);
+
 	const ToolbarButton = ({ label, icon, onClick, disabled, edge }: AppBarOptions) => (
 		<Tooltip title={label}>
 			<IconButton
@@ -78,6 +80,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 			</IconButton>
 		</Tooltip>
 	);
+
 	const leftSideOptions = useMemo(
 		() =>
 			[
@@ -169,4 +172,5 @@ function EditorAppBar({ editor }: AppBarProps) {
 		</AppBar>
 	);
 }
+
 export default EditorAppBar;

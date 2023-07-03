@@ -117,6 +117,7 @@ export function NumberInput(props: {
 		input.dom.style.width = '100%';
 		const box = boxRef.current;
 		box.appendChild(input.dom);
+
 		return () => {
 			box?.removeChild(input.dom);
 		};
@@ -146,6 +147,7 @@ export function ColorInput(props: { value: string; onChange: (value: number) => 
 		if (!boxRef.current) return;
 		const box = boxRef.current;
 		box.appendChild(input.dom);
+
 		return () => {
 			box?.removeChild(input.dom);
 		};
@@ -209,9 +211,11 @@ export function Vector3PropertyField(props: XYZPropertyFieldProps) {
 	const onChangeX = (value: number) => {
 		onChange({ ...getValue(), x: value });
 	};
+
 	const onChangeY = (value: number) => {
 		onChange({ ...getValue(), y: value });
 	};
+
 	const onChangeZ = (value: number) => {
 		onChange({ ...getValue(), z: value });
 	};
@@ -262,6 +266,7 @@ export function Vector2PropertyField(props: XYPropertyFieldProps) {
 	const onChangeX = (value: number) => {
 		onChange({ ...getValue(), x: value });
 	};
+
 	const onChangeY = (value: number) => {
 		onChange({ ...getValue(), y: value });
 	};
@@ -400,6 +405,7 @@ export function ModifiersOutliner(props: {
 		const input = inputRef.current;
 		const box = boxRef.current;
 		box.appendChild(input.dom);
+
 		return () => {
 			box?.removeChild(input.dom);
 		};
@@ -505,6 +511,7 @@ export function DifferentialConfiguration(props: {
 		const input = inputRef.current.modifierRow;
 		const box = boxRef.current;
 		box.appendChild(input.dom);
+
 		return () => {
 			box?.removeChild(input.dom);
 		};
@@ -586,6 +593,7 @@ export function RulesOutliner(props: {
 		const input = inputRef.current;
 		const box = boxRef.current;
 		box.appendChild(input.dom);
+
 		return () => {
 			box?.removeChild(input.dom);
 		};
@@ -620,22 +628,28 @@ export function RulesConfiguration(props: {
 	const getRuleValue = (rule: FilterRule) => {
 		const { idSelectField, valueInputField } = inputRef.current;
 		let value;
+
 		switch (true) {
 			case isIDRule(rule):
 				value = parseInt(idSelectField.getValue());
+
 				break;
 			case isFloatRule(rule):
 				value = valueInputField.getValue();
+
 				break;
 			case isIntRule(rule):
 				value = Math.floor(valueInputField.getValue());
+
 				break;
 			default:
 				console.warn('Unknown rule type');
 				value = 0;
 		}
+
 		return isNaN(value) ? valueInputField.min : value;
 	};
+
 	// TODO: Update when props change
 	const inputRef = useRef(
 		(() => {
@@ -688,12 +702,14 @@ export function RulesConfiguration(props: {
 			};
 		})()
 	);
+
 	const updateRule = useCallback((rule: FilterRule) => {
 		const { keywordSelectField, operatorSelectField, idSelectField, valueInputField } =
 			inputRef.current;
 		keywordSelectField.setValue(rule.keyword);
 		operatorSelectField.setValue(rule.operator);
 		idSelectField.setValue(rule.value.toString());
+
 		if (isIDRule(rule)) {
 			showUIElement(idSelectField);
 			hideUIElement(valueInputField);
@@ -702,9 +718,11 @@ export function RulesConfiguration(props: {
 			showUIElement(valueInputField);
 			valueInputField.setUnit(RULE_UNITS[rule.keyword]);
 			valueInputField.setRange(...RULE_VALUE_RANGES[rule.keyword]);
+
 			if (isFloatRule(rule)) valueInputField.setPrecision(3);
 			else valueInputField.setPrecision(0);
 		}
+
 		valueInputField.setValue(rule.value);
 	}, []);
 
@@ -713,6 +731,7 @@ export function RulesConfiguration(props: {
 		const input = inputRef.current.modifierRow;
 		const box = boxRef.current;
 		box.appendChild(input.dom);
+
 		return () => {
 			box?.removeChild(input.dom);
 		};

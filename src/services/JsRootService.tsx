@@ -34,11 +34,13 @@ const JsRoot = ({ children, JSROOT }: GenericContextProviderProps<Partial<JsRoot
 		const handler = {
 			set: function (obj: object, prop: PropertyKey, value: any) {
 				Reflect.set(obj, prop, value);
+
 				if (prop === 'Painter') {
 					// detect JSROOT.Painter loaded
 					setValue({ JSROOT: window.JSROOT });
 					painterScript.current = script;
 				}
+
 				return true;
 			}
 		};

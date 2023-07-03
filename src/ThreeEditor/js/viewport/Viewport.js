@@ -115,6 +115,7 @@ export function Viewport(
 	viewHelper.disabled = orthographic;
 
 	let viewClipPlane = null;
+
 	if (clipPlane) {
 		viewClipPlane = new ViewportClippedViewCSG(
 			name,
@@ -278,6 +279,7 @@ export function Viewport(
 			case 'Shift': // Shift
 				transformControls.setTranslationSnap(1);
 				transformControls.setRotationSnap(THREE.MathUtils.degToRad(15));
+
 				break;
 
 			default:
@@ -289,6 +291,7 @@ export function Viewport(
 			case 'Shift': // Shift
 				transformControls.setTranslationSnap(null);
 				transformControls.setRotationSnap(null);
+
 				break;
 
 			default:
@@ -319,6 +322,7 @@ export function Viewport(
 
 	function getMousePosition(dom, x, y) {
 		const rect = dom.getBoundingClientRect();
+
 		return [(x - rect.left) / rect.width, (y - rect.top) / rect.height];
 	}
 
@@ -422,6 +426,7 @@ export function Viewport(
 					return false;
 			}
 		}
+
 		// Check if object can be transformed.
 		// For our usage it would be only geometries included on the scene.
 		// Amount of geometries can differ form project to project thus we check only if it isn't mesh.
@@ -524,6 +529,7 @@ export function Viewport(
 
 	this.setCameraFromUuid = uuid => {
 		const newCam = cameras.find(e => e.uuid === uuid);
+
 		if (newCam) this.camera = newCam;
 		else console.error(`No camera with uuid: [${uuid}] in this viewport`);
 	};
@@ -533,6 +539,7 @@ export function Viewport(
 			cameraMatrix: camera.matrix.toArray(),
 			clipPlane: viewClipPlane?.configurationToJson()
 		};
+
 		return configJson;
 	};
 

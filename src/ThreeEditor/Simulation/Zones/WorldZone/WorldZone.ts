@@ -70,6 +70,7 @@ export class WorldZone extends SimulationElement {
 	private _handleHelperUpdate: ProxyHandler<WorldZoneHelper> = {
 		apply: (target: WorldZoneHelper, thisArg: keyof WorldZoneHelper, args: any[]) => {
 			const result = Reflect.apply(target[thisArg] as Function, target, args);
+
 			switch (thisArg) {
 				case 'reset':
 				case 'updateHelper':
@@ -77,6 +78,7 @@ export class WorldZone extends SimulationElement {
 					this.updatePosition();
 					this.signals.objectChanged.dispatch(this);
 			}
+
 			return result;
 		}
 	};
@@ -114,6 +116,7 @@ export class WorldZone extends SimulationElement {
 		const materialColorHandler = {
 			get: (target: Color, prop: keyof Color) => {
 				const result = Reflect.get(this.simulationMaterial.color, prop);
+
 				return result;
 			}
 		};
@@ -171,6 +174,7 @@ export class WorldZone extends SimulationElement {
 
 	set autoCalculate(value: boolean) {
 		this._autoCalculate = value;
+
 		if (this._autoCalculate) this.calculate();
 		this.signals.autocalculateChanged.dispatch(value);
 	}
@@ -279,6 +283,7 @@ export class WorldZone extends SimulationElement {
 
 	copy(source: this, recursive = true) {
 		super.copy(source, recursive);
+
 		return this;
 	}
 

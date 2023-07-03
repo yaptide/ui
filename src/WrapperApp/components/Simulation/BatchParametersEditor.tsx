@@ -82,6 +82,7 @@ export function BatchScriptParametersEditor({
 			);
 
 			const { inputValue } = state;
+
 			// if inputValue has whitespace, parse it with regex and filter out existing options
 			if (inputValue.includes(' ') || inputValue.includes('=')) {
 				const newOptions = parseOptions(inputValue);
@@ -103,6 +104,7 @@ export function BatchScriptParametersEditor({
 						`-${inputValue}` === o.optionKey ||
 						`--${inputValue}` === o.optionKey
 				);
+
 				if (inputValue !== '' && !isExisting) {
 					filtered.push(
 						{
@@ -123,6 +125,7 @@ export function BatchScriptParametersEditor({
 					);
 				}
 			}
+
 			return filtered;
 		},
 		[filterKeysAndLabels, scriptOptions]
@@ -132,8 +135,10 @@ export function BatchScriptParametersEditor({
 		(newValue: (string | ScriptOption)[]) => {
 			const newOptions: ScriptOption[] = newValue.reduce((acc, option) => {
 				let candidateOptions: ScriptOption[] = [];
+
 				if (typeof option === 'string') {
 					candidateOptions = parseOptions(option);
+
 					if (candidateOptions.length === 0 && option.includes(' '))
 						candidateOptions = parseOptions(`-${option}`);
 				} else candidateOptions = option.optionList ? option.optionList : [option];
@@ -234,13 +239,16 @@ export function BatchScriptParametersEditor({
 							if (typeof option === 'string') {
 								return option;
 							}
+
 							const { optionTitle } = option as {
 								optionTitle?: string;
 							};
+
 							// Add "xxx" option created dynamically
 							if (optionTitle) {
 								return optionTitle;
 							}
+
 							// Regular option
 							return `${option.optionKey}${
 								option.optionLabel ? ' "' + option.optionLabel + '"' : ''

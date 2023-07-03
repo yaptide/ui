@@ -12,6 +12,7 @@ const srcFolder = 'src/libs/converter/';
 
 const saveFileName = (destFolder, fileName) => {
 	const data = JSON.stringify({ fileName: fileName });
+
 	if (!fs.existsSync(destFolder)) fs.mkdirSync(destFolder, { recursive: true });
 
 	fs.writeFileSync(destFolder + 'yaptide_converter.json', data);
@@ -23,8 +24,10 @@ const saveFileName = (destFolder, fileName) => {
 		const pythonCmdArr = ['python3', 'python'];
 		const index = pythonCmdArr.findIndex(pythonCmd => {
 			console.log(`Checking for ${pythonCmd}`);
+
 			try {
 				execSync(`${pythonCmd} --version`);
+
 				return true;
 			} catch (e) {
 				return false;
@@ -33,6 +36,7 @@ const saveFileName = (destFolder, fileName) => {
 
 		if (index === -1) {
 			console.error('Python not found');
+
 			return exit(1);
 		}
 
@@ -54,12 +58,14 @@ const saveFileName = (destFolder, fileName) => {
 		const measureTime = (label, callback) => {
 			console.log('Start: ' + label);
 			console.time(label);
+
 			try {
 				callback();
 			} catch (error) {
 				console.error(error.stdout.toString());
 				exit(1);
 			}
+
 			console.timeEnd(label);
 		};
 
@@ -93,6 +99,7 @@ const saveFileName = (destFolder, fileName) => {
 		});
 
 		console.log('Checking destination folder');
+
 		if (!fs.existsSync(destFolder)) {
 			console.log('Creating folder ' + destFolder);
 			fs.mkdirSync(destFolder, { recursive: true });
@@ -111,6 +118,7 @@ const saveFileName = (destFolder, fileName) => {
 				console.error(err.message);
 				exit(1);
 			}
+
 			console.log('yaptide_converter was copied to destination');
 			console.log(buildFilePath);
 			console.log('=>');

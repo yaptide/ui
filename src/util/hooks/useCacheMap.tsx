@@ -29,6 +29,7 @@ export const useCacheMap = <T extends {}>() => {
 				const cachePromise = new Promise<T>(async (resolve, reject) => fn(resolve)).then(
 					data => {
 						set(key, data, beforeWriteCallback);
+
 						return data;
 					}
 				);

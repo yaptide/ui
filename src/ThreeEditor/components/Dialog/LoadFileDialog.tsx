@@ -49,6 +49,7 @@ export function LoadFileDialog({
 				disabled={!data}
 				onClick={() => {
 					onClose();
+
 					if (data && editorRef.current) {
 						editorRef.current.clear();
 						editorRef.current.fromJSON(data);

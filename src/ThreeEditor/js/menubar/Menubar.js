@@ -18,6 +18,7 @@ function createOption(optionClass, optionText, optionClick) {
 	option.setClass(optionClass);
 	option.setTextContent(optionText);
 	option.onClick(optionClick);
+
 	return option;
 }
 

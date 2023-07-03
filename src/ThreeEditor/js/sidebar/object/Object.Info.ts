@@ -29,6 +29,7 @@ export class ObjectInfo extends ObjectAbstract {
 
 	setObject(object: THREE.Object3D): void {
 		super.setObject(object);
+
 		if (!object) return;
 
 		this.object = object;

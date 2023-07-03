@@ -157,6 +157,7 @@ export function ViewportClippedViewCSG<
 
 	function updateMeshIntersection(object3D: T) {
 		const crossSectionObject = clippedObjects.getObjectByName(object3D.uuid);
+
 		if (crossSectionObject) clippedObjects.remove(crossSectionObject);
 
 		object3D.updateMatrix();
@@ -194,6 +195,7 @@ export function ViewportClippedViewCSG<
 
 	signalGeometryRemoved.add((object3D: T) => {
 		const crossSectionObject = clippedObjects.getObjectByName(object3D.uuid);
+
 		if (crossSectionObject) clippedObjects.remove(crossSectionObject);
 	});
 

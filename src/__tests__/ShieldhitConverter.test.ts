@@ -25,6 +25,7 @@ describe('NavDrawer component', () => {
 
 		//find the "Editor" button on the left menu and assure it is already selected
 		const editorButton = await driver.findElement(By.xpath("//div[@aria-label = 'Editor']"));
+
 		if ((await editorButton.getAttribute('aria-selected')) !== 'true')
 			console.warn(
 				`Editor button is not selected even though it should be it's default state.`
@@ -179,6 +180,7 @@ describe('NavDrawer component', () => {
 				.findElement(By.xpath("//textarea[@aria-label = 'geo.dat text field']"))
 				.getText()
 		).replace(regex, '');
+
 		const expectedGeoText = readFileSync(
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/geo.dat',
 			'utf-8'
@@ -191,6 +193,7 @@ describe('NavDrawer component', () => {
 				.findElement(By.xpath("//textarea[@aria-label = 'mat.dat text field']"))
 				.getText()
 		).replace(regex, '');
+
 		const expectedMatText = readFileSync(
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/mat.dat',
 			'utf-8'
@@ -203,6 +206,7 @@ describe('NavDrawer component', () => {
 				.findElement(By.xpath("//textarea[@aria-label = 'beam.dat text field']"))
 				.getText()
 		).replace(regex, '');
+
 		const expectedBeamText = readFileSync(
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/beam.dat',
 			'utf-8'
@@ -215,6 +219,7 @@ describe('NavDrawer component', () => {
 				.findElement(By.xpath("//textarea[@aria-label = 'detect.dat text field']"))
 				.getText()
 		).replace(regex, '');
+
 		const expectedDetectText = readFileSync(
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/detect.dat',
 			'utf-8'

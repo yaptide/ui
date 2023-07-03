@@ -54,6 +54,7 @@ export class DifferentialModifier {
 			json.isLog
 		);
 		mod.uuid = json.uuid;
+
 		return mod;
 	}
 }

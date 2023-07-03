@@ -9,6 +9,7 @@ type EditableChipProps = {
 
 export function EditableChip({ option, onDelete, onChange }: EditableChipProps) {
 	const textFieldRef = useRef<HTMLInputElement>(null);
+
 	return (
 		<Chip
 			sx={{

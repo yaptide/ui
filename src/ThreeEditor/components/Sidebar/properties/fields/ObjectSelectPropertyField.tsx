@@ -18,6 +18,7 @@ export function ObjectSelectProperty(props: ObjectSelectProps) {
 	const options = Object.entries(props.options).map(([key, value]) => {
 		const option = { uuid: key, label: value };
 		optionMap.set(key, option);
+
 		return option;
 	});
 

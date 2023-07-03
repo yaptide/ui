@@ -28,6 +28,7 @@ export function DragDropFile(props: DragDropProps) {
 
 	useEffect(() => {
 		setHasFiles(currentFiles && currentFiles.length > 0);
+
 		if (inputRef.current) inputRef.current.files = currentFiles ?? null;
 	}, [currentFiles]);
 
@@ -35,6 +36,7 @@ export function DragDropFile(props: DragDropProps) {
 	const handleDragEnter = function (e: DragEvent<HTMLElement>) {
 		e.preventDefault();
 		e.stopPropagation();
+
 		if (disableDrag) clearTimeout(disableDrag);
 		setDragActive(true);
 	};
@@ -43,6 +45,7 @@ export function DragDropFile(props: DragDropProps) {
 	const handleDragLeave = function (e: DragEvent<HTMLElement>) {
 		e.preventDefault();
 		e.stopPropagation();
+
 		if (disableDrag) clearTimeout(disableDrag);
 		disableDrag = setTimeout(() => {
 			setDragActive(false);
@@ -54,10 +57,13 @@ export function DragDropFile(props: DragDropProps) {
 		e.preventDefault();
 		e.stopPropagation();
 		setDragActive(false);
+
 		if (e.dataTransfer.files && e.dataTransfer.files[0]) {
 			let files;
+
 			if (currentFiles) {
 				files = currentFiles;
+
 				for (let i = 0; i < e.dataTransfer.files.length; i++)
 					files[i + currentFiles.length] = e.dataTransfer.files[i];
 			} else files = e.dataTransfer.files;
@@ -68,9 +74,11 @@ export function DragDropFile(props: DragDropProps) {
 	// triggers when file is selected with click
 	const handleChange = function (e: ChangeEvent<HTMLInputElement>) {
 		e.preventDefault();
+
 		if (e.target.files && e.target.files[0]) {
 			onSubmit(e.target.files);
 		}
+
 		setHasFiles((e.target.files?.length ?? 0) > 0);
 	};
 
@@ -82,6 +90,7 @@ export function DragDropFile(props: DragDropProps) {
 			onDrop={handleDrop}
 			onSubmit={e => {
 				e.preventDefault();
+
 				if (inputRef.current && inputRef.current.files) onSubmit(inputRef.current.files);
 			}}>
 			<input

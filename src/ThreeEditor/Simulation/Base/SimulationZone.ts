@@ -102,6 +102,7 @@ export abstract class SimulationZone
 					? customMaterial.originalMaterialUuid
 					: materialUuid
 			) ?? this.editor.materialManager.defaultMaterial;
+
 		if (simulationMaterial === undefined) throw new Error('SimulationMaterial not found');
 		this.simulationMaterial = simulationMaterial;
 	}
@@ -144,9 +145,11 @@ export abstract class SimulationZone
 					originalMaterialUuid: this.simulationMaterial.uuid
 			  }
 			: undefined;
+
 		const { uuid: materialUuid } = this.usingCustomMaterial
 			? customMaterial!
 			: this.simulationMaterial;
+
 		const materialPropertiesOverrides = Object.entries(overrides).reduce<
 			Partial<MaterialOverridable>
 		>((acc, [key, { override, value }]) => {
@@ -171,6 +174,7 @@ export abstract class SimulationZone
 		super.copy(source, recursive);
 		this.simulationMaterial = source.material;
 		this._materialPropertiesOverrides = { ...source.materialPropertiesOverrides };
+
 		return this;
 	}
 
@@ -198,6 +202,7 @@ export abstract class SimulationZone
 				}
 			)
 		};
+
 		return this;
 	}
 }

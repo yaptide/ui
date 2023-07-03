@@ -41,6 +41,7 @@ export function AutoCompleteSelect<
 			/>
 		);
 	};
+
 	return (
 		<Autocomplete
 			{...props}

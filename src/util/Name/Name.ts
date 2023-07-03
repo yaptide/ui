@@ -10,16 +10,20 @@ export const incrementName = (name: string, until: (name: string) => boolean) =>
 
 		if (isNaN(nameNumber)) {
 			nameNumber = 1;
+
 			if (lastInName.length > 0) nameBase = `${nameBase}_${lastInName}`;
 		}
 
 		let newName = nameBase + '_' + nameNumber;
+
 		while (until(newName)) {
 			nameNumber++;
 			newName = nameBase + '_' + nameNumber;
 		}
+
 		return newName;
 	}
+
 	return name;
 };
 
@@ -34,6 +38,7 @@ export const implementsUniqueChildrenNames = (x: unknown): x is UniqueChildrenNa
 export const getNextFreeName = (parent: Object3D, name: string, searchingObject?: Object3D) => {
 	return incrementName(name, name => {
 		const child = parent.getObjectByName(name);
+
 		return child !== searchingObject && !!child;
 	});
 };

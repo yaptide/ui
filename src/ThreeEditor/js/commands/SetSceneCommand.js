@@ -21,9 +21,11 @@ class SetSceneCommand extends Command {
 			this.cmdArray.push(
 				new SetUuidCommand(this.editor, this.editor.figureManager, scene.uuid)
 			);
+
 			this.cmdArray.push(
 				new SetValueCommand(this.editor, this.editor.figureManager, 'name', scene.name)
 			);
+
 			this.cmdArray.push(
 				new SetValueCommand(
 					this.editor,
@@ -66,6 +68,7 @@ class SetSceneCommand extends Command {
 		const output = super.toJSON(this);
 
 		const cmds = [];
+
 		for (let i = 0; i < this.cmdArray.length; i++) {
 			cmds.push(this.cmdArray[i].toJSON());
 		}
@@ -79,6 +82,7 @@ class SetSceneCommand extends Command {
 		super.fromJSON(json);
 
 		const cmds = json.cmds;
+
 		for (let i = 0; i < cmds.length; i++) {
 			const cmd = new window[cmds[i].type](); // creates a new object of type "json.type"
 			cmd.fromJSON(cmds[i]);

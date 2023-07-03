@@ -17,12 +17,15 @@ import { snakeToCamelCase } from '../util/Notation/Notation';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 
 type AuthUser = Pick<ResponseAuthStatus, 'username'>;
+
 const isAuthUser = (obj: unknown): obj is AuthUser => {
 	return hasFields<string>(obj, 'username') && typeof obj.username === 'string';
 };
+
 const isYaptideResponse = (obj: unknown): obj is YaptideResponse => {
 	return hasFields<string>(obj, 'message') && typeof obj.message === 'string';
 };
+
 const parseYaptideResponseMessage = (obj: unknown): string =>
 	isYaptideResponse(obj) ? obj.message : [obj].toString();
 
@@ -31,10 +34,13 @@ const load = <T extends unknown = unknown>(
 	guard: (obj: unknown) => obj is T = (obj): obj is T => true
 ): T | null => {
 	const item = localStorage.getItem(key);
+
 	try {
 		const data = JSON.parse(`[${item}]`);
 		const obj = Array.isArray(data) && data.length === 1 ? data[0] : null;
+
 		if (guard(obj)) return obj;
+
 		return null;
 	} catch {
 		return null;
@@ -43,6 +49,7 @@ const load = <T extends unknown = unknown>(
 
 const save = (key: string, value: unknown) => {
 	if (value === undefined) return;
+
 	return localStorage.setItem(key, JSON.stringify(value));
 };
 
@@ -84,8 +91,10 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				//overwrite default json parser to convert snake_case to camelCase
 				parseJson: (text: string) => {
 					const json = JSON.parse(text);
+
 					if (typeof json === 'object' && json) return snakeToCamelCase(json, true);
 					console.warn('Could not parse JSON: ', text);
+
 					return text;
 				},
 				hooks: {
@@ -95,16 +104,20 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 								case 401:
 									enqueueSnackbar('Please log in.', { variant: 'warning' });
 									setUser(null);
+
 									break;
 								case 403:
 									enqueueSnackbar('Please log in again.', { variant: 'warning' });
 									setUser(null);
+
 									break;
 							}
+
 							if (response?.status > 300) {
 								const message = await response
 									.json()
 									.then(parseYaptideResponseMessage);
+
 								if (message !== 'No token provided')
 									enqueueSnackbar(
 										await response.json().then(parseYaptideResponseMessage),
@@ -138,6 +151,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 
 	const reachServer = useCallback(() => {
 		if (demoMode) return Promise.resolve(setIsServerReachable(false));
+
 		return kyIntervalRef
 			.get(``)
 			.json<YaptideResponse>()
@@ -148,6 +162,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 						status
 							? enqueueSnackbar('Server is reachable.', { variant: 'success' })
 							: enqueueSnackbar('Server is unreachable.', { variant: 'error' });
+
 					return status;
 				})
 			)
@@ -161,6 +176,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 
 	const refresh = useCallback(() => {
 		if (demoMode || !isServerReachable) return Promise.resolve(setRefreshInterval(undefined));
+
 		return kyIntervalRef
 			.get(`auth/refresh`)
 			.json<ResponseAuthRefresh>()

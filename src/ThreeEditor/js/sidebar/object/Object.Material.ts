@@ -111,6 +111,7 @@ export class ObjectMaterial extends ObjectAbstract {
 
 	setObject(object: SimulationMesh | Beam | SimulationPoints): void {
 		super.setObject(object);
+
 		if (!object) return;
 
 		this.object = object;
@@ -120,27 +121,33 @@ export class ObjectMaterial extends ObjectAbstract {
 		hideUIElement(this.opacityRow);
 		hideUIElement(this.exportMaterialsRow);
 		this.color.setHexValue(color.getHexString());
+
 		if (isWorldZone(object) || isBooleanZone(object)) {
 			const { icru } = object.simulationMaterial;
 			showUIElement(this.typeSelectRow);
+
 			if (isBooleanZone(object)) {
 				showUIElement(this.opacityRow);
+
 				if (transparent) showUIElement(this.opacity);
 				else hideUIElement(this.opacity);
 				showUIElement(this.exportMaterialsRow);
 				this.opacity.setValue(opacity);
 				this.transparent.setValue(transparent);
 			}
+
 			this.typeSelect.setValue(icru);
 		} else {
 			showUIElement(this.typeRow);
 			this.type.setValue(type);
 		}
+
 		this.render();
 	}
 
 	update(): void {
 		const { editor, object } = this;
+
 		if (!object) return;
 		if (
 			(isWorldZone(object) || isBooleanZone(object)) &&

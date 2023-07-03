@@ -45,6 +45,7 @@ export class CTCube extends BasicFigure<THREE.BoxGeometry> {
 
 	toJSON(): CTCubeJSON {
 		const { pathOnServer } = this;
+
 		return {
 			...super.toJSON(),
 			pathOnServer

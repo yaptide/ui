@@ -67,16 +67,19 @@ const _operators = {
 
 export const OPERATOR_OPTIONS = Object.entries(_operators).reduce((acc, [key, text]) => {
 	acc[key] = text;
+
 	return acc;
 }, {} as Record<string, string>);
 
 export const KEYWORD_OPTIONS = Object.entries(_rule_descriptions).reduce((acc, [key]) => {
 	acc[key] = key;
+
 	return acc;
 }, {} as Record<string, string>);
 
 export function KEYWORD_SORT_ORDER(a: string, b: string) {
 	const order = ['A', 'AMASS', 'AMU', 'Z', 'GEN', 'E', 'ENUC', 'EAMU', 'ID', 'NPRIM'];
+
 	return order.indexOf(a) - order.indexOf(b);
 }
 
@@ -106,6 +109,7 @@ export const PARTICLE_OPTIONS = Object.entries(_particles).reduce((acc, [id, [na
 		? `<span style="text-decoration: ${textDecoration(+id)}">${symbol}</span>`
 		: symbol;
 	acc[id] = `<span>${name} ${symbolString}</span>`;
+
 	return acc;
 }, {} as Record<string, string>);
 
@@ -118,11 +122,13 @@ export type I_Keyword = (typeof _int_keywords)[number];
 export type ID_Keyword = (typeof _id_keywords)[number];
 
 export type Keyword = F_Keyword | I_Keyword | ID_Keyword;
+
 export function isValidKeyword(
 	keyword: string,
 	type: 'INT' | 'FLOAT' | 'ID' | 'ANY' = 'ANY'
 ): keyword is Keyword {
 	const sets = [_float_keywords, _int_keywords, _id_keywords] as const;
+
 	switch (type) {
 		case 'FLOAT':
 			return sets[0].includes(keyword as F_Keyword);
@@ -134,11 +140,13 @@ export function isValidKeyword(
 			return sets.flat().includes(keyword as Keyword);
 	}
 }
+
 export function getDescription(keyword: string): string {
 	return isValidKeyword(keyword) ? _rule_descriptions[keyword] : 'Invalid rule';
 }
 
 export type Operator = keyof typeof _operators;
+
 export function isValidOperator(operator: string): operator is Operator {
 	return operator in _operators;
 }
@@ -146,11 +154,13 @@ export function isValidOperator(operator: string): operator is Operator {
 export type OperatorSymbol = (typeof _operators)[Operator];
 
 export type ParticleId = keyof typeof _particles;
+
 export function isValidID(id: number): id is ParticleId {
 	return id in Object.keys(_particles);
 }
 
 export type Particle = (typeof _particles)[ParticleId];
+
 export function getParticle(id: number) {
 	return isValidID(id) ? _particles[id] : null;
 }

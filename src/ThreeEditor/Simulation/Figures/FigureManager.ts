@@ -83,6 +83,7 @@ export class FigureManager
 	createFigure() {
 		const figure = new BoxFigure(this.editor);
 		this.addFigure(figure);
+
 		return figure;
 	}
 
@@ -110,6 +111,7 @@ export class FigureManager
 
 	copy(source: this, recursive?: boolean | undefined) {
 		super.copy(source, recursive);
+
 		return this.fromJSON(source.toJSON());
 	}
 
@@ -122,6 +124,7 @@ export class FigureManager
 
 	toJSON(): FigureManagerJSON {
 		const { uuid, name, managerType: type, metadata } = this;
+
 		return {
 			uuid,
 			name,
@@ -136,12 +139,14 @@ export class FigureManager
 			metadata: { version }
 		} = this;
 		const { uuid, name, figures, metadata } = json;
+
 		if (!metadata || metadata.version !== version)
 			console.warn(`FigureManager version mismatch: ${metadata?.version} !== ${version}`);
 
 		this.uuid = uuid;
 		this.name = name;
 		this.figureContainer.fromJSON(figures);
+
 		return this;
 	}
 }

@@ -21,6 +21,7 @@ export const useJsRootCanvas = (redrawParam: string) => {
 	useEffect(() => {
 		// Update isVisible if more than 30% of containerEl is visible
 		setIsVisible(visible > 0.3);
+
 		return () => setIsVisible(false);
 	}, [visible]);
 
@@ -58,8 +59,10 @@ export const useJsRootCanvas = (redrawParam: string) => {
 				if (old) return true;
 
 				const obj = updateObject(JSROOT);
+
 				if (!obj) return old;
 				setObj(obj);
+
 				return false;
 			});
 		},

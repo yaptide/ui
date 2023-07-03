@@ -37,6 +37,7 @@ export function FilterConfiguration(props: { editor: YaptideEditor; object: Obje
 									operator: RULE_DEFAULTS.Z[0],
 									value: RULE_DEFAULTS.Z[1]
 								};
+
 								editor.execute(
 									new SetFilterRuleCommand(editor, watchedObject.object, ruleJson)
 								);
@@ -79,10 +80,12 @@ export function FilterConfiguration(props: { editor: YaptideEditor; object: Obje
 										keyword !== watchedObject.selectedRule.keyword
 											? RULE_DEFAULTS[keyword][0]
 											: newValue.operatorSelect;
+
 									const value =
 										keyword !== watchedObject.selectedRule.keyword
 											? RULE_DEFAULTS[keyword][1]
 											: newValue.valueInput;
+
 									editor.execute(
 										new SetFilterRuleCommand(editor, watchedObject.object, {
 											uuid,

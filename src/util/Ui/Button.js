@@ -17,5 +17,6 @@ export function createFullwidthButton(params) {
 	const button = new UIButton(text).onClick(update);
 	button.setWidth('100%');
 	row.add(button);
+
 	return [row, button];
 }

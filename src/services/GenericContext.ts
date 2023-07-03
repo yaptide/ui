@@ -11,9 +11,11 @@ export const createGenericContext = <T extends unknown>() => {
 	// Check if the value provided to the context is defined or throw an error
 	const useGenericContext = () => {
 		const contextIsDefined = useContext(genericContext);
+
 		if (!contextIsDefined) {
 			throw new Error('useGenericContext must be used within a Provider');
 		}
+
 		return contextIsDefined;
 	};
 

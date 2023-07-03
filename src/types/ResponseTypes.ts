@@ -51,6 +51,7 @@ export const _defaultFlukaInputFiles = {
 export function isKnownInputFile(name: string): name is ShInputFilesNames {
 	return _orderedShInputFilesNames.includes(name as ShInputFilesNames);
 }
+
 export type ShInputFilesNames = (typeof _orderedShInputFilesNames)[number];
 export type TopasInputFilesNames = (typeof _orderedTopasInputFilesNames)[number];
 export type FlukaInputFilesNames = (typeof _orderedFlukaInputFilesNames)[number];

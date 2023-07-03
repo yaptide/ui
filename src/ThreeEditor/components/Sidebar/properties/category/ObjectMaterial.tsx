@@ -67,6 +67,7 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 											value: v
 										}
 									};
+
 									editor.execute(
 										new SetValueCommand(
 											editor,
@@ -85,6 +86,7 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 											override: v
 										}
 									};
+
 									editor.execute(
 										new SetValueCommand(
 											editor,

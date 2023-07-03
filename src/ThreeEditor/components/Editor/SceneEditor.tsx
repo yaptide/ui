@@ -37,6 +37,7 @@ function SceneEditor(props: SceneEditorProps) {
 
 	useEffect(() => {
 		editor?.signals.titleChanged.add(setTitle);
+
 		return () => {
 			editor?.signals.titleChanged.remove(setTitle);
 		};

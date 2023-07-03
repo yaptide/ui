@@ -23,6 +23,7 @@ type ZoneManagerJSON = Omit<
 
 const zoneLoader = (editor: YaptideEditor) => (json: SimulationZoneJSON) => {
 	if (json.type === 'BooleanZone') return BooleanZone.fromJSON(editor, json as BooleanZoneJSON);
+
 	throw new Error(`Unknown zone type ${json.type}`);
 };
 
@@ -34,6 +35,7 @@ export class ZoneContainer extends SimulationSceneContainer<SimulationZone> {
 
 	remove(zone: SimulationZone): this {
 		zone.simulationMaterial.decrement();
+
 		return super.remove(zone);
 	}
 }
@@ -112,6 +114,7 @@ export class ZoneManager
 	createZone() {
 		const zone = new BooleanZone(this.editor);
 		this.addZone(zone);
+
 		return zone;
 	}
 
@@ -140,8 +143,10 @@ export class ZoneManager
 	): Record<string, string> {
 		const zoneOptions = [this.worldZone, ...this.zones].reduce((acc, zone) => {
 			acc[zone.uuid] = `${zone.name} [${zone.id}]`;
+
 			return acc;
 		}, {} as Record<string, string>);
+
 		return zoneOptions;
 	}
 
@@ -187,6 +192,7 @@ export class ZoneManager
 
 	copy(source: this, recursive?: boolean | undefined) {
 		super.copy(source, recursive);
+
 		return this.fromJSON(source.toJSON());
 	}
 
@@ -194,11 +200,13 @@ export class ZoneManager
 		this.name = this._name;
 		this.zoneContainer.reset();
 		this.worldZone.reset();
+
 		return this;
 	}
 
 	toJSON(): ZoneManagerJSON {
 		const { uuid, name, managerType: type, metadata } = this;
+
 		return {
 			uuid,
 			name,
@@ -214,6 +222,7 @@ export class ZoneManager
 			metadata: { version }
 		} = this;
 		const { uuid, name, zones, metadata } = json;
+
 		if (!metadata || metadata.version !== version)
 			console.warn(`ZoneManager version mismatch: ${metadata?.version} !== ${version}`);
 

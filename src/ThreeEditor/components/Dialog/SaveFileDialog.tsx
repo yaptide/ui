@@ -44,6 +44,7 @@ export function SaveFileDialog({
 	const changeName = (event: ChangeEvent<HTMLInputElement>) => {
 		setName(event.target.value);
 	};
+
 	const changeKeepResults = (event: ChangeEvent<HTMLInputElement>) => {
 		setKeepResults(event.target.checked);
 	};

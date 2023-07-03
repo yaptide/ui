@@ -56,6 +56,7 @@ class SetMaterialCommand extends Command {
 			const images = loader.parseImages(materialJson.images);
 			const textures = loader.parseTextures(materialJson.textures, images);
 			const materials = loader.parseMaterials([materialJson], textures);
+
 			return materials[materialJson.uuid];
 		}
 	}

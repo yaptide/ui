@@ -100,9 +100,11 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 						const index1 = isKnownInputFile(name1)
 							? _orderedShInputFilesNames.indexOf(name1)
 							: -1 + 1;
+
 						const index2 = isKnownInputFile(name2)
 							? _orderedShInputFilesNames.indexOf(name2)
 							: -1 + 1;
+
 						return index1 - index2;
 					})
 					.map(([name, value]) => {
@@ -141,6 +143,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 														delete old[
 															name as keyof SimulationInputFiles
 														];
+
 													return { ...old };
 												});
 											}}

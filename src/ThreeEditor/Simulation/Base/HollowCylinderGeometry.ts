@@ -86,12 +86,14 @@ export class HollowCylinderGeometry extends BufferGeometry {
 
 		if (height > 0) {
 			outerTorsoIndexArray = generateTorso(true);
+
 			if (innerRadius > 0 && outerRadius > innerRadius)
 				innerTorsoIndexArray = generateTorso(false);
 		}
 
 		if (outerRadius > 0 && outerRadius > innerRadius) {
 			generateRing(true, 0);
+
 			if (height > 0) generateRing(false, 2);
 		}
 
@@ -190,6 +192,7 @@ export class HollowCylinderGeometry extends BufferGeometry {
 			// calculate new start value for groups
 
 			groupStart += groupCount;
+
 			return indexArray;
 		}
 
@@ -253,9 +256,11 @@ export class HollowCylinderGeometry extends BufferGeometry {
 
 					if (radius === 0) {
 						indexRow.push(...new Array<number>(thetaSegments - 1).fill(indexRow[0]));
+
 						break;
 					}
 				}
+
 				indexRow.push(indexRow[0]);
 
 				// now save vertices of the row in our index array
@@ -301,6 +306,7 @@ export class HollowCylinderGeometry extends BufferGeometry {
 			// calculate new start value for groups
 
 			groupStart += groupCount;
+
 			return indexArray;
 		}
 	}

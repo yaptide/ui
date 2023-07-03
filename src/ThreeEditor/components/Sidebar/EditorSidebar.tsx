@@ -37,9 +37,11 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 		switch (newValue) {
 			case 'Scoring':
 				editor.contextManager.currentContext = 'scoring';
+
 				break;
 			case 'Settings':
 				editor.contextManager.currentContext = 'settings';
+
 				break;
 			default:
 				editor.contextManager.currentContext = 'geometry';
@@ -50,9 +52,11 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 		switch (context) {
 			case 'scoring':
 				setSelectedTab('Scoring');
+
 				break;
 			case 'settings':
 				setSelectedTab('Settings');
+
 				break;
 			default:
 				setSelectedTab('Geometry');
@@ -62,6 +66,7 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 	useEffect(() => {
 		handleContextChange(editor.contextManager.currentContext);
 		editor.signals.contextChanged.add(handleContextChange);
+
 		return () => {
 			editor.signals.contextChanged.remove(handleContextChange);
 		};

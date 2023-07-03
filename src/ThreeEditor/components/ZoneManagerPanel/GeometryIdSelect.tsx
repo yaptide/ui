@@ -17,7 +17,9 @@ export function GeometryIdSelect({
 }: GeometryIdSelectProps) {
 	const { allObjects, canSelectEmpty, ...restProps } = props;
 	const selectRef = useRef<HTMLSelectElement>(null);
+
 	if (selectRef.current) selectRef.current.focus();
+
 	return (
 		<Select
 			ref={selectRef}

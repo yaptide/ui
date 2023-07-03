@@ -19,9 +19,11 @@ import { isBooleanZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
 export const isRemovable = (object: Object3D) => {
 	if (object === null) return false;
 	if (object.parent === null) return false;
+
 	if ('notRemovable' in object) {
 		return !object.notRemovable;
 	}
+
 	return true;
 };
 
@@ -32,9 +34,11 @@ export const canChangeName = (object: Object3D) => {
 export const hasVisibleChildren = (object: Object3D) => {
 	if (object === null) return false;
 	if (object.children.length === 0) return false;
+
 	if ('notVisibleChildren' in object) {
 		return !object.notVisibleChildren;
 	}
+
 	return true;
 };
 
@@ -45,6 +49,7 @@ export const getRemoveCommand = (editor: YaptideEditor, object: Object3D) => {
 		return new RemoveZoneCommand(editor, object);
 	} else if (isFilter(object)) {
 		if (object.selectedRule) return new SetFilterRuleCommand(editor, object);
+
 		return new RemoveFilterCommand(editor, object);
 	} else if (isQuantity(object)) {
 		if (object.selectedModifier)
@@ -79,7 +84,9 @@ export const useKeyboardEditorControls = (
 			switch (event.key.toLowerCase()) {
 				case 'delete':
 					const object = editor.selected;
+
 					if (isRemovable(object)) editor.execute(getRemoveCommand(editor, object));
+
 					break;
 
 				// Disabled features
@@ -122,6 +129,7 @@ export const useKeyboardEditorControls = (
 					if (editor.selected !== null)
 						if (canChangeName(editor.selected))
 							editor.signals.requestRenameAction.dispatch(editor.selected);
+
 					break;
 
 				default:
@@ -130,6 +138,7 @@ export const useKeyboardEditorControls = (
 		};
 
 		container.addEventListener('keydown', onKeyDown);
+
 		return () => {
 			container.removeEventListener('keydown', onKeyDown);
 		};

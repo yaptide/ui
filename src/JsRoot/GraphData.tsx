@@ -170,6 +170,7 @@ export function generateGraphs(
 
 		return groupedPages.map(group => {
 			if (isGroupedPage1d(group) && group.pages.length === 1) return group.pages[0];
+
 			return group;
 		});
 	};

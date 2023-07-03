@@ -18,10 +18,12 @@ type PathToObj<T extends string> = T extends `${infer Head}.${infer Tail}`
 export function hasPaths<T extends string>(obj: unknown, ...paths: T[]): obj is PathToObj<T> {
 	return paths.every(path => {
 		let current = obj;
+
 		for (const field of path.split('.')) {
 			if (!hasFields(current, field)) return false;
 			current = current[field];
 		}
+
 		return true;
 	});
 }

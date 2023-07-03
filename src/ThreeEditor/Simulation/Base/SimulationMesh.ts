@@ -52,6 +52,7 @@ export abstract class SimulationMesh<
 		const { name, type, uuid, visible } = this;
 		const geometryData = getGeometryData(this);
 		const colorHex = (this.material as THREE.MeshBasicMaterial).color.getHex();
+
 		return {
 			name,
 			type,
@@ -68,6 +69,7 @@ export abstract class SimulationMesh<
 		this.visible = json.visible;
 		this.material.color.setHex(json.colorHex);
 		this.reconstructGeometryFromData(json.geometryData);
+
 		return this;
 	}
 

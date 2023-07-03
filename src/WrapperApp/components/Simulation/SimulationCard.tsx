@@ -71,9 +71,11 @@ export default function SimulationCard({
 
 	const rows = useMemo(() => {
 		const rows: JSX.Element[] = [];
+
 		if (currentJobStatusData[StatusState.RUNNING](simulationStatus)) {
 			row(0, 'Message', simulationStatus.message, !!simulationStatus.message);
 		}
+
 		return rows;
 	}, [simulationStatus]);
 
@@ -139,8 +141,10 @@ export default function SimulationCard({
 
 		if (!inputJson) {
 			setDisableLoadJson(true);
+
 			return enqueueSnackbar('Could not load json file', { variant: 'error' });
 		}
+
 		loadFromJson(inputJson);
 	};
 
@@ -338,6 +342,7 @@ export default function SimulationCard({
 									</Button>
 								);
 							}
+
 							return <></>;
 						})()}
 

@@ -75,12 +75,14 @@ export class FloatRule extends FilterRule {
 
 	toJSON(): FloatRuleJSON {
 		const { uuid, keyword, operator, _value: value } = this;
+
 		return { uuid, keyword, operator, value };
 	}
 
 	static fromJSON(json: FloatRuleJSON): FloatRule {
 		const rule = new FloatRule(json);
 		rule.uuid = json.uuid;
+
 		return rule;
 	}
 }
@@ -105,12 +107,14 @@ export class IntRule extends FilterRule {
 
 	toJSON(): IntRuleJSON {
 		const { uuid, keyword, operator, _value: value } = this;
+
 		return { uuid, keyword, operator, value };
 	}
 
 	static fromJSON(json: IntRuleJSON): IntRule {
 		const rule = new IntRule(json);
 		rule.uuid = json.uuid;
+
 		return rule;
 	}
 }
@@ -136,12 +140,14 @@ export class IDRule extends FilterRule {
 
 	toJSON(): IDRuleJSON {
 		const { uuid, keyword, operator, _value: value } = this;
+
 		return { uuid, keyword, operator, value };
 	}
 
 	static fromJSON(json: IDRuleJSON): IDRule {
 		const rule = new IDRule(json);
 		rule.uuid = json.uuid;
+
 		return rule;
 	}
 }

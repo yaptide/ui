@@ -22,6 +22,7 @@ export function camelize<T extends string>(str: T): SnakeToCamelCase<T> {
 			str.match(/[a-z]/)) // Should not contain lowercase letters and vice versa
 	)
 		return str as any;
+
 	return str.toLowerCase().replace(/_([a-z])/g, (_, char) => char.toUpperCase()) as any;
 }
 
@@ -37,6 +38,7 @@ export function snakeize<T extends string>(str: T): CamelToSnakeCase<T> {
 		!str.match(/^.+[A-Z]/) // Should contain at least one uppercase letter (not at the beginning)
 	)
 		return str as any;
+
 	return str.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase() as any;
 }
 
@@ -52,6 +54,7 @@ export function camelToSnakeCase<T extends object>(
 	obj: T,
 	recursive?: boolean
 ): CamelToSnakeCaseObject<T>;
+
 export function camelToSnakeCase<T extends unknown>(
 	obj: T,
 	recursive = false
@@ -61,8 +64,10 @@ export function camelToSnakeCase<T extends unknown>(
 		return obj.map(o => {
 			if (typeof o === 'string') return snakeize(o as string);
 			if (typeof o === 'object' && o) return camelToSnakeCase(o, recursive);
+
 			return o;
 		}) as CamelToSnakeCaseObject<T>;
+
 	if (typeof obj === 'object' && obj) {
 		return Object.fromEntries(
 			Object.entries(obj).map(([key, value]) => [
@@ -71,6 +76,7 @@ export function camelToSnakeCase<T extends unknown>(
 			])
 		) as CamelToSnakeCaseObject<T>;
 	}
+
 	return obj as CamelToSnakeCaseObject<T>;
 }
 
@@ -86,6 +92,7 @@ export function snakeToCamelCase<T extends object>(
 	obj: T,
 	recursive?: boolean
 ): SnakeToCamelCaseObject<T>;
+
 export function snakeToCamelCase<T extends unknown>(
 	obj: T,
 	recursive = false
@@ -95,6 +102,7 @@ export function snakeToCamelCase<T extends unknown>(
 		return obj.map(o => {
 			if (typeof o === 'string') return camelize(o as string);
 			if (typeof o === 'object' && o) return snakeToCamelCase(o, recursive);
+
 			return o;
 		}) as SnakeToCamelCaseObject<T>;
 	if (obj && typeof obj === 'object' && obj)
