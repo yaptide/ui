@@ -1,4 +1,4 @@
-import { ReactNode, useCallback } from 'react';
+import { useCallback } from 'react';
 
 import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
@@ -19,7 +19,10 @@ import {
 } from '../types/RequestTypes';
 import {
 	currentJobStatusData,
+	currentTaskStatusData,
+	JobStatusCompleted,
 	JobStatusData,
+	JobStatusFailed,
 	ResponseGetJobInputs,
 	ResponseGetJobLogs,
 	ResponseGetJobResults,
@@ -30,13 +33,13 @@ import {
 	StatusState,
 	YaptideResponse
 } from '../types/ResponseTypes';
-import { camelToSnakeCase } from '../types/TypeTransformUtil';
 import { useCacheMap } from '../util/hooks/useCacheMap';
+import { camelToSnakeCase } from '../util/Notation/Notation';
 import { orderAccordingToList } from '../util/Sort';
 import { ValidateShape } from '../util/Types';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import { useAuth } from './AuthService';
-import { createGenericContext } from './GenericContext';
+import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 
 export type JobLogs = {
 	jobId: string;
@@ -49,9 +52,6 @@ export type JobInputs = {
 export type JobResults = {
 	jobId: string;
 } & ResponseGetJobResults;
-export interface ShSimulationProps {
-	children: ReactNode;
-}
 
 export type FullSimulationData = Omit<JobInputs & JobStatusData & JobResults, 'message'>;
 
@@ -127,7 +127,7 @@ const updateEstimators = (estimators: Estimator[]) => {
 const [useShSimulation, ShSimulationContextProvider] =
 	createGenericContext<RestSimulationContext>();
 
-const ShSimulation = ({ children }: ShSimulationProps) => {
+const ShSimulation = ({ children }: GenericContextProviderProps) => {
 	const { authKy } = useAuth();
 
 	const statusDataCache = useCacheMap<JobStatusData>();
@@ -303,13 +303,42 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 		[authKy, getJobInputs, resultsCache]
 	);
 
+	//TODO: fix backend responses and remove this function
+	const validStatusToCache = (data: JobStatusCompleted | JobStatusFailed) => {
+		if (data.jobState === StatusState.FAILED) return true;
+		return data.jobTasksStatus.every(task => {
+			if (currentTaskStatusData[StatusState.FAILED](task)) return true;
+			else if (currentTaskStatusData[StatusState.COMPLETED](task)) {
+				if (!task.startTime || !task.endTime)
+					console.warn('There are missing times in COMPLETED task:', task);
+				if (typeof task.startTime === 'string') {
+					task.startTime = new Date(task.startTime);
+					console.warn('Converted startTime to Date in COMPLETED task:', task);
+				}
+				if (typeof task.endTime === 'string') {
+					task.endTime = new Date(task.endTime);
+					console.warn('Converted endTime to Date in COMPLETED task:', task);
+				}
+				if (task.requestedPrimaries !== task.simulatedPrimaries) {
+					console.warn(
+						'Requested primaries and simulated primaries are not equal in COMPLETED task:',
+						task
+					);
+					task.simulatedPrimaries = task.requestedPrimaries;
+				}
+				return true;
+			}
+			return false;
+		});
+	};
+
 	const getJobStatus = useCallback(
 		(endPoint: string) =>
 			(...[info, cache = true, beforeCacheWrite, signal]: RequestGetJobStatus) => {
 				const { jobId } = info;
 
 				if (cache && statusDataCache.has(jobId))
-					return Promise.resolve<ReturnType<typeof statusDataCache.get>>({
+					return Promise.resolve<JobStatusData>({
 						...statusDataCache.get(jobId),
 						...info
 					});
@@ -321,7 +350,7 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 					})
 					.json<ResponseGetJobStatus>()
 					.then(response => {
-						const data: Partial<JobStatusData> = {
+						const data = {
 							...response,
 							...info
 						};
@@ -332,10 +361,10 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 							console.log(data.message);
 
 							statusDataCache.set(data.jobId, data, beforeCacheWrite);
-						} else if (currentJobStatusData[StatusState.COMPLETED](data))
-							statusDataCache.set(data.jobId, data, beforeCacheWrite);
-						else return undefined;
-
+						} else if (currentJobStatusData[StatusState.COMPLETED](data)) {
+							if (validStatusToCache(data))
+								statusDataCache.set(data.jobId, data, beforeCacheWrite);
+						} else return undefined;
 						return data;
 					})
 					.catch(e => {

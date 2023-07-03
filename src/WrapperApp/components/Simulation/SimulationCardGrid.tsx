@@ -12,6 +12,9 @@ import {
 } from '@mui/material';
 import { FC, useState } from 'react';
 
+import { useDialog } from '../../../services/DialogService';
+import { useStore } from '../../../services/StoreService';
+import { SimulatorType } from '../../../types/RequestTypes';
 import { JobStatusData, SimulationInputFiles } from '../../../types/ResponseTypes';
 import SimulationCard from './SimulationCard';
 import {
@@ -70,6 +73,7 @@ export function SimulationCardGrid({
 }: SimulationCardGridProps) {
 	let gridContainerProps: GridProps = { container: true };
 	let gridItemProps: GridProps = { item: true };
+
 	if (layout in stylesByLayout) {
 		gridContainerProps = {
 			...gridContainerProps,
@@ -183,15 +187,16 @@ export function PaginatedSimulationCardGrid({
 
 type SimulationsFromBackendProps = PaginatedCardGridProps & {
 	isBackendAlive: boolean;
-	runSimulation: () => void;
 };
 
 export function PaginatedSimulationsFromBackend({
 	isBackendAlive,
-	runSimulation,
 	children,
 	...other
 }: SimulationsFromBackendProps) {
+	const { setTrackedId } = useStore();
+	const [open] = useDialog('runSimulation');
+
 	return (
 		<PaginatedSimulationCardGrid {...other}>
 			<InputGroup
@@ -203,7 +208,12 @@ export function PaginatedSimulationsFromBackend({
 					color='info'
 					startIcon={<QueuePlayNextIcon />}
 					disabled={!isBackendAlive}
-					onClick={runSimulation}>
+					onClick={() =>
+						open({
+							onSubmit: setTrackedId,
+							simulator: SimulatorType.SHIELDHIT
+						})
+					}>
 					Run new simulation
 				</Button>
 				<BackendStatusIndicator

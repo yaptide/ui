@@ -1,4 +1,8 @@
-import { createContext, useContext } from 'react';
+import { createContext, ReactNode, useContext } from 'react';
+
+export type GenericContextProviderProps<T = {}> = {
+	children?: ReactNode;
+} & T;
 
 export const createGenericContext = <T extends unknown>() => {
 	// Create a context with a generic parameter or undefined

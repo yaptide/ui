@@ -23,6 +23,7 @@ const migrateInputJson = (inputJson) => {
         history, 
     }
     = inputJson;
+
     checkEmpty({ 
         project: oldProject, 
         scene: oldScene, 
@@ -34,17 +35,20 @@ const migrateInputJson = (inputJson) => {
         physic,
         history
     });
+
     const metadata = {
         version: `0.10`,
 		type: "Editor",
 		generator: "YaptideEditor.toJSON"
     };
+
     const project = {
         title: oldProject.title,
         description: oldProject.description,
         viewManager: oldProject.viewManager,
         history
     }
+
     const figureManager = {
         metadata: {
             version: `0.10`,
@@ -62,8 +66,10 @@ const migrateInputJson = (inputJson) => {
                     geometryData: partialGeometryData,
                 }
                 = child;
+
                 checkEmpty({name, uuid, type: meshType, geometryData: partialGeometryData});
                 const type = meshType.replace('Mesh', 'Figure');
+
                 return {
                     name,
                     type,
@@ -77,6 +83,7 @@ const migrateInputJson = (inputJson) => {
                 }
             })
     }
+
     const materialManager = {
         ...oldMaterialManager,
         uuid: '0F0F0F0F-0F0F-0F0F-0F0F-0F0F0FFFFFFF',
@@ -88,6 +95,7 @@ const migrateInputJson = (inputJson) => {
 			generator: "MaterialManager.toJSON"
 		},
     }
+
     const zoneManager = {
         uuid: oldZoneManager.uuid,
         name: oldZoneManager.name,
@@ -113,6 +121,7 @@ const migrateInputJson = (inputJson) => {
                 geometryData: partialGeometryData, 
                 autoCalculate,
             } = zone;
+
             return {
                 uuid,
                 type,
@@ -133,6 +142,7 @@ const migrateInputJson = (inputJson) => {
 			generator: "ZoneManager.toJSON"
 		},
     }
+
     const detectorManager = {
         uuid: oldDetectManager.uuid,
         name: oldDetectManager.name,
@@ -148,6 +158,7 @@ const migrateInputJson = (inputJson) => {
                     data:parameters,
                     colorHex
                 } = detector;
+
                 return {
                     uuid,
                     name,
@@ -169,6 +180,7 @@ const migrateInputJson = (inputJson) => {
 			generator: "DetectorManager.toJSON"
 		},
     }
+
     const specialComponentsManager = {
 		uuid: "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0F0FFF",
 		name: "Special Components",
@@ -179,6 +191,7 @@ const migrateInputJson = (inputJson) => {
 			generator: "SpecialComponentManager.toJSON"
 		}
     }
+
     const scoringManager = {
         name: oldScoringManager.name,
         uuid: oldScoringManager.uuid,
@@ -216,6 +229,7 @@ const migrateInputJson = (inputJson) => {
         name: 'Beam',
         type: 'Beam',
     }
+
     return {
         metadata,
         project,
@@ -235,8 +249,10 @@ const migrateInputJson = (inputJson) => {
 const migrateSimulationJob = (fileJson) => {
     const { input, 
         ...restJson } = fileJson;
+
     checkEmpty({input});
     const { inputJson,...restInput } = input;
+
     return {
         input: {
             inputJson: migrateInputJson(inputJson),
@@ -263,12 +279,15 @@ fs.writeFileSync(`./migrations/temp/${Date.now()}_${fileNameToMigrate}`, JSON.st
 
 const type = checkType(fileJson);
 let newJson;
+
 switch (type) {
     case 'inputJson':
         newJson = migrateInputJson(fileJson);
+
         break;
     case 'simulationJob':
         newJson = migrateSimulationJob(fileJson);
+
         break;
     default:
         throw new Error(`Unknown type ${type}`);

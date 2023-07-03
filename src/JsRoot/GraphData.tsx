@@ -122,7 +122,11 @@ const getGraphFromPage = (page: Page, title?: string) => {
 	}
 };
 
-export function generateGraphs(estimator: EstimatorResults, groupQuantities?: boolean) {
+export function generateGraphs(
+	estimator: EstimatorResults,
+	groupQuantities?: boolean,
+	jobId?: string
+) {
 	const { gridPages, name } = estimator;
 
 	const onClickSaveToFile = (page: Page1D) => {
@@ -177,7 +181,7 @@ export function generateGraphs(estimator: EstimatorResults, groupQuantities?: bo
 		.map(({ page, graph, filter }, idx) => {
 			return (
 				<Grid
-					key={`graph_${name}_${idx}`}
+					key={`graph_${name}${jobId ? '_' + jobId : ''}_${idx}`}
 					item
 					xs={12}>
 					<Card>

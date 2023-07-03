@@ -2,12 +2,13 @@ import { createTheme } from '@mui/material';
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { SnackbarProvider } from 'notistack';
-import { useMemo } from 'react';
+import { cloneElement, ReactElement, useMemo } from 'react';
 
 import { ConfigProvider } from './config/ConfigService';
 import { PythonConverterService } from './PythonConverter/PythonConverterService';
 import { Auth } from './services/AuthService';
-import { Loader } from './services/DataLoaderService';
+import { DialogProvider } from './services/DialogService';
+import { Loader } from './services/LoaderService';
 import { ShSimulation } from './services/ShSimulatorService';
 import { Store } from './services/StoreService';
 import WrapperApp from './WrapperApp/WrapperApp';
@@ -24,6 +25,18 @@ declare module '@mui/material/styles' {
 		};
 	}
 	interface Theme extends ThemeOptions {}
+}
+
+/**
+ * Renders a tree of React elements by reducing the `services` array from right to left and cloning each element with the accumulated children.
+ * @param services An array of React elements to be rendered as a tree.
+ * @param children The root element of the tree.
+ * @returns The root element with all the services rendered as children.
+ */
+function ServiceTree({ services, children }: { services: ReactElement[]; children: JSX.Element }) {
+	return services.reduceRight((acc, service) => {
+		return cloneElement(service, {}, acc);
+	}, children);
 }
 
 function App() {
@@ -53,26 +66,23 @@ function App() {
 			}),
 		[prefersDarkMode]
 	);
+
 	return (
-		<StyledEngineProvider injectFirst>
-			<SnackbarProvider maxSnack={3}>
-				<ThemeProvider theme={theme}>
-					<ConfigProvider>
-						<Auth>
-							<ShSimulation>
-								<PythonConverterService>
-									<Loader>
-										<Store>
-											<WrapperApp />
-										</Store>
-									</Loader>
-								</PythonConverterService>
-							</ShSimulation>
-						</Auth>
-					</ConfigProvider>
-				</ThemeProvider>
-			</SnackbarProvider>
-		</StyledEngineProvider>
+		<ServiceTree
+			services={[
+				<ConfigProvider />,
+				<StyledEngineProvider injectFirst />,
+				<ThemeProvider theme={theme} />,
+				<SnackbarProvider maxSnack={3} />,
+				<Auth />,
+				<ShSimulation />,
+				<PythonConverterService />,
+				<Store />,
+				<DialogProvider />,
+				<Loader />
+			]}>
+			<WrapperApp />
+		</ServiceTree>
 	);
 }
 

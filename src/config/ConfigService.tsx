@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 
 import { createGenericContext } from '../services/GenericContext';
-import { snakeToCamelCase } from '../types/TypeTransformUtil';
+import { snakeToCamelCase } from '../util/Notation/Notation';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:5000';
 const DEMO_MODE = process.env.REACT_APP_TARGET === 'demo';
@@ -22,7 +22,7 @@ function isKeyForConfig(key: string): key is keyof Config {
 	return ['backendUrl', 'deployment', 'demoMode', 'altAuth'].includes(key);
 }
 
-const ConfigProvider = ({ children }: { children: ReactNode }) => {
+const ConfigProvider = ({ children }: { children?: ReactNode }) => {
 	const [config, setConfig] = useState<Config>({
 		backendUrl: BACKEND_URL,
 		deployment: DEPLOYMENT,
