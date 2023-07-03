@@ -1,14 +1,12 @@
-import { Box, Card, CardContent, Fade, Modal } from '@mui/material';
-import { useSnackbar } from 'notistack';
+import { Box, Fade, Modal } from '@mui/material';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import useInterval from 'use-interval';
 
 import { useConfig } from '../../../config/ConfigService';
-import { isFullSimulationData, useLoader } from '../../../services/DataLoaderService';
-import { FullSimulationData, useShSimulation } from '../../../services/ShSimulatorService';
+import { isFullSimulationData } from '../../../services/LoaderService';
+import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import EXAMPLES from '../../../ThreeEditor/examples/examples';
-import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { OrderBy, OrderType, SimulatorType } from '../../../types/RequestTypes';
 import {
 	currentJobStatusData,
@@ -18,12 +16,6 @@ import {
 	StatusState
 } from '../../../types/ResponseTypes';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
-import {
-	BatchOptionsType,
-	RunSimulationForm,
-	SimulationRunType,
-	SimulationSourceType
-} from './RunSimulationForm';
 import { DemoCardGrid, PaginatedSimulationsFromBackend } from './SimulationCardGrid';
 import { PageNavigationProps, PageParamProps } from './SimulationPanelBar';
 
@@ -41,27 +33,23 @@ export default function SimulationPanel({
 	const { demoMode } = useConfig();
 	const {
 		editorRef,
+		/** Queued Simulation Data */
+		trackedId,
 		setResultsSimulationData,
-		localResultsSimulationData,
-		setLocalResultsSimulationData
+		localResultsSimulationData
 	} = useStore();
 	const {
 		cancelJobDirect,
 		getJobInputs,
-		postJobDirect,
-		postJobBatch,
 		getHelloWorld,
 		getPageContents,
 		getPageStatus,
 		getFullSimulationData
 	} = useShSimulation();
-	const { enqueueSnackbar } = useSnackbar();
-	const { resultsProvider, canLoadResultsData, clearLoadedResults } = useLoader();
 
 	/** Visibility Flags */
 	const [isBackendAlive, setBackendAlive] = useState(false);
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
-	const [showRunSimulationsForm, setShowRunSimulationsForm] = useState(!!forwardedInputFiles);
 
 	const [pageIdx, setPageIdx] = useState(1);
 	const [pageCount, setPageCount] = useState(1);
@@ -74,17 +62,11 @@ export default function SimulationPanel({
 	>;
 
 	/** Simulation Run Options */
-	const [availableClusters] = useState<string[]>(['default']);
 	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
 	const [simulator] = useState<SimulatorType>(forwardedSimulator);
 
-	/** Queued Simulation Data */
-	const [trackedId, setTrackedId] = useState<string>();
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
 	const [simulationsStatusData, setSimulationsStatusData] = useState<JobStatusData[]>([]);
-	const [localSimulationData, setLocalSimulationData] = useState<FullSimulationData[]>(
-		localResultsSimulationData ?? []
-	);
 
 	const [simulationIDInterval, setSimulationIDInterval] = useState<number | null>(null);
 	const [controller] = useState(new AbortController());
@@ -134,6 +116,10 @@ export default function SimulationPanel({
 					setBackendAlive(false);
 					setPageCount(0);
 				});
+		return () => {
+			controller.abort();
+			setSimulationIDInterval(null);
+		};
 	}, [
 		controller.signal,
 		getHelloWorld,
@@ -141,7 +127,8 @@ export default function SimulationPanel({
 		setSimulationIDInterval,
 		isBackendAlive,
 		setBackendAlive,
-		demoMode
+		demoMode,
+		controller
 	]);
 
 	useInterval(updateSimulationInfo, simulationIDInterval, true);
@@ -166,54 +153,6 @@ export default function SimulationPanel({
 	const handleShowInputFiles = (inputFiles?: SimulationInputFiles) => {
 		setShowInputFilesEditor(true);
 		setInputFiles(inputFiles);
-	};
-
-	const sendSimulationRequest = (
-		editorJson: EditorJson,
-		inputFiles: Partial<SimulationInputFiles>,
-		runType: SimulationRunType,
-		sourceType: SimulationSourceType,
-		simName: string,
-		nTasks: number,
-		simulator: SimulatorType,
-		batchOptions: BatchOptionsType
-	) => {
-		setShowRunSimulationsForm(false);
-		const simData = sourceType === 'editor' ? editorJson : inputFiles;
-
-		const options =
-			runType === 'batch'
-				? {
-						...batchOptions,
-						arrayOptions: batchOptions.arrayOptions?.reduce((acc, curr) => {
-							acc[curr.optionKey] = curr.optionValue;
-							return acc;
-						}, {} as Record<string, string>),
-						collectOptions: batchOptions.collectOptions?.reduce((acc, curr) => {
-							acc[curr.optionKey] = curr.optionValue;
-							return acc;
-						}, {} as Record<string, string>)
-				  }
-				: undefined;
-
-		(runType === 'direct' ? postJobDirect : postJobBatch)(
-			simData,
-			sourceType,
-			nTasks,
-			simulator,
-			simName,
-			options,
-			controller.signal
-		)
-			.then(res => {
-				updateSimulationInfo();
-				setTrackedId(res.jobId);
-				enqueueSnackbar('Simulation submitted', { variant: 'success' });
-			})
-			.catch(e => {
-				enqueueSnackbar('Error while starting simulation', { variant: 'error' });
-				console.error(e);
-			});
 	};
 
 	useEffect(() => {
@@ -252,29 +191,6 @@ export default function SimulationPanel({
 			controller.abort();
 		};
 	}, [controller]);
-
-	useEffect(() => {
-		if (canLoadResultsData) {
-			clearLoadedResults();
-			const newLocalData = resultsProvider.map(data => {
-				const newData = {
-					...data,
-					localData: true
-				};
-				return newData;
-			});
-			setLocalSimulationData(newLocalData);
-			setLocalResultsSimulationData(newLocalData);
-		} else {
-			setLocalSimulationData(localResultsSimulationData ?? []);
-		}
-	}, [
-		canLoadResultsData,
-		resultsProvider,
-		clearLoadedResults,
-		localResultsSimulationData,
-		setLocalResultsSimulationData
-	]);
 
 	const refreshPage = useCallback(
 		(
@@ -349,49 +265,14 @@ export default function SimulationPanel({
 							simulator={simulator}
 							inputFiles={inputFiles}
 							closeEditor={() => setShowInputFilesEditor(false)}
-							onChange={newInputFiles => setInputFiles(newInputFiles)}
-							runSimulation={(simulator, newInputFiles) => {
-								setShowInputFilesEditor(false);
-								setInputFiles(newInputFiles);
-								setShowRunSimulationsForm(true);
-							}}></InputFilesEditor>
+							onChange={newInputFiles =>
+								setInputFiles(newInputFiles)
+							}></InputFilesEditor>
 					</Box>
 				</Fade>
 			</Modal>
-			{editorRef.current && (
-				<Modal
-					keepMounted
-					open={isBackendAlive && showRunSimulationsForm}
-					onClose={() => setShowRunSimulationsForm(false)}
-					sx={{
-						display: 'flex',
-						alignItems: 'flex-start',
-						mt: '15vh',
-						justifyContent: 'center'
-					}}>
-					<Fade in={showRunSimulationsForm}>
-						<Card sx={{ maxWidth: '660px' }}>
-							<CardContent
-								sx={{
-									display: 'flex',
-									gap: 3
-								}}>
-								<RunSimulationForm
-									availableClusters={availableClusters}
-									editorJson={editorRef.current.toJSON()}
-									inputFiles={{
-										...inputFiles
-									}}
-									forwardedSimulator={simulator}
-									runSimulation={sendSimulationRequest}
-								/>
-							</CardContent>
-						</Card>
-					</Fade>
-				</Modal>
-			)}
 			<DemoCardGrid
-				simulations={localSimulationData}
+				simulations={localResultsSimulationData ?? []}
 				title='Local Simulation Results'
 				handleLoadResults={handleLoadResults}
 				handleShowInputFiles={handleShowInputFiles}
@@ -419,9 +300,6 @@ export default function SimulationPanel({
 					handleLoadResults={handleLoadResults}
 					handleShowInputFiles={handleShowInputFiles}
 					isBackendAlive={isBackendAlive}
-					runSimulation={() => {
-						setShowRunSimulationsForm(true);
-					}}
 				/>
 			)}
 		</Box>

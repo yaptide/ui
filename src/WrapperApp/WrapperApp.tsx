@@ -3,13 +3,12 @@ import { SyntheticEvent, useEffect, useState } from 'react';
 
 import { useConfig } from '../config/ConfigService';
 import { useAuth } from '../services/AuthService';
-import { useLoader } from '../services/DataLoaderService';
 import { JsRootService } from '../services/JsRootService';
 import { useStore } from '../services/StoreService';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
 import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
 import { SimulatorType } from '../types/RequestTypes';
-import { currentJobStatusData, SimulationInputFiles, StatusState } from '../types/ResponseTypes';
+import { SimulationInputFiles } from '../types/ResponseTypes';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
 import NavDrawer from './components/NavDrawer/NavDrawer';
 import { AboutPanel } from './components/Panels/AboutPanel';
@@ -20,8 +19,7 @@ import SimulationPanel from './components/Simulation/SimulationPanel';
 
 function WrapperApp() {
 	const { demoMode } = useConfig();
-	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
-	const { editorProvider, resultsProvider, canLoadEditorData, clearLoadedEditor } = useLoader();
+	const { editorRef, resultsSimulationData } = useStore();
 	const { isAuthorized, logout } = useAuth();
 	const [open, setOpen] = useState(true);
 	const [tabsValue, setTabsValue] = useState('editor');
@@ -34,28 +32,10 @@ function WrapperApp() {
 		if (providedInputFiles && tabsValue !== 'simulations') setProvidedInputFiles(undefined);
 	}, [providedInputFiles, tabsValue]);
 
-	useEffect(() => {
-		if (editorRef.current && canLoadEditorData) {
-			clearLoadedEditor();
-			setTabsValue('editor');
-			for (const data of editorProvider) editorRef.current.loader.loadJSON(data);
-			//TODO: #1089 rewrite to support our versioning and types of data. Default loader is now mostly useless
-		}
-	}, [canLoadEditorData, editorRef, editorProvider, clearLoadedEditor]);
-
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
 		if (newValue === 'login' && isAuthorized) logout();
 		setTabsValue(newValue);
 	};
-
-	useEffect(() => {
-		if (resultsProvider.length > 0) {
-			setResultsSimulationData(
-				resultsProvider.reverse().find(currentJobStatusData[StatusState.COMPLETED])
-			);
-			setTabsValue('editor');
-		}
-	}, [resultsProvider, setResultsSimulationData]);
 
 	useEffect(() => {
 		if (!isAuthorized && !demoMode) setTabsValue('login');

@@ -49,14 +49,14 @@ export type BatchOptionsType = {
 };
 
 type RunSimulationFormProps = {
-	availableClusters: string[];
-	editorJson: EditorJson;
+	availableClusters?: string[];
+	editorJson?: EditorJson;
 	inputFiles?: Partial<SimulationInputFiles>;
 	forwardedSimulator: SimulatorType;
 	runSimulation?: (
+		runType: SimulationRunType,
 		editorJson: EditorJson,
 		inputFiles: Partial<SimulationInputFiles>,
-		runType: SimulationRunType,
 		sourceType: SimulationSourceType,
 		simName: string,
 		nTasks: number,
@@ -66,7 +66,7 @@ type RunSimulationFormProps = {
 };
 
 export function RunSimulationForm({
-	availableClusters,
+	availableClusters = ['default'],
 	editorJson,
 	inputFiles = {},
 	forwardedSimulator,
@@ -74,14 +74,14 @@ export function RunSimulationForm({
 }: RunSimulationFormProps) {
 	const [tabValue, setTabValue] = useState(0);
 	const [simulationRunType, setSimulationRunType] = useState<SimulationRunType>('direct');
-	const [simulationSourceType, setSimulationSourceType] = useState<SimulationSourceType>(
-		Object.keys(inputFiles).length > 0 ? 'files' : 'editor'
-	);
+	const [simulationSourceType, setSimulationSourceType] = useState<
+		SimulationSourceType | undefined
+	>(Object.keys(inputFiles).length > 0 ? 'files' : editorJson ? 'editor' : undefined);
 
 	const [selectedFiles, setSelectedFiles] = useState<string[]>(Object.keys(inputFiles));
 	const [selectedCluster, setSelectedCluster] = useState<number | undefined>(0);
 
-	const [simName, setSimName] = useState(editorJson.project.title ?? '');
+	const [simName, setSimName] = useState(editorJson?.project.title ?? '');
 	const [nTasks, setNTasks] = useState(1);
 	const [simulator] = useState<SimulatorType>(forwardedSimulator);
 	const [arrayHeader, setArrayHeader] = useState<string>('');
@@ -126,6 +126,7 @@ export function RunSimulationForm({
 			if (selectedFiles.includes(key)) {
 				return { ...acc, [key]: value };
 			}
+
 			return acc;
 		}, {});
 		const batchOptions = {
@@ -136,16 +137,17 @@ export function RunSimulationForm({
 			collectOptions
 		};
 
-		runSimulation(
-			editorJson,
-			filteredInputFiles,
-			simulationRunType,
-			simulationSourceType,
-			simName,
-			nTasks,
-			simulator,
-			batchOptions
-		);
+		if (editorJson && simulationSourceType)
+			runSimulation(
+				simulationRunType,
+				editorJson,
+				filteredInputFiles,
+				simulationSourceType,
+				simName,
+				nTasks,
+				simulator,
+				batchOptions
+			);
 	};
 
 	return (

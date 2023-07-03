@@ -1,7 +1,7 @@
 import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
 import { useSnackbar } from 'notistack';
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useConfig } from '../config/ConfigService';
 import { RequestAuthLogin, RequestAuthLogout, RequestAuthRefresh } from '../types/RequestTypes';
@@ -11,21 +11,17 @@ import {
 	ResponseAuthStatus,
 	YaptideResponse
 } from '../types/ResponseTypes';
-import { snakeToCamelCase } from '../types/TypeTransformUtil';
-import { hasField } from '../util/hasField';
+import { hasFields } from '../util/customGuards';
 import useIntervalAsync from '../util/hooks/useIntervalAsync';
-import { createGenericContext } from './GenericContext';
-
-export interface AuthProps {
-	children: ReactNode;
-}
+import { snakeToCamelCase } from '../util/Notation/Notation';
+import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 
 type AuthUser = Pick<ResponseAuthStatus, 'username'>;
 const isAuthUser = (obj: unknown): obj is AuthUser => {
-	return hasField<string>(obj, 'username') && typeof obj.username === 'string';
+	return hasFields<string>(obj, 'username') && typeof obj.username === 'string';
 };
 const isYaptideResponse = (obj: unknown): obj is YaptideResponse => {
-	return hasField<string>(obj, 'message') && typeof obj.message === 'string';
+	return hasFields<string>(obj, 'message') && typeof obj.message === 'string';
 };
 const parseYaptideResponseMessage = (obj: unknown): string =>
 	isYaptideResponse(obj) ? obj.message : [obj].toString();
@@ -68,7 +64,7 @@ export interface AuthContext {
 
 const [useAuth, AuthContextProvider] = createGenericContext<AuthContext>();
 
-const Auth = ({ children }: AuthProps) => {
+const Auth = ({ children }: GenericContextProviderProps) => {
 	const { backendUrl, demoMode } = useConfig();
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER, isAuthUser));
 	const [reachInterval, setReachInterval] = useState<number | undefined>(undefined);
@@ -86,7 +82,12 @@ const Auth = ({ children }: AuthProps) => {
 				credentials: 'include',
 				prefixUrl: backendUrl,
 				//overwrite default json parser to convert snake_case to camelCase
-				parseJson: (text: string) => snakeToCamelCase(JSON.parse(text), true),
+				parseJson: (text: string) => {
+					const json = JSON.parse(text);
+					if (typeof json === 'object' && json) return snakeToCamelCase(json, true);
+					console.warn('Could not parse JSON: ', text);
+					return text;
+				},
 				hooks: {
 					afterResponse: [
 						async (_request, _options, response) => {

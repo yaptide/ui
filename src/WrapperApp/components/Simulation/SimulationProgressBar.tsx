@@ -42,9 +42,18 @@ export function SimulationProgressBar({ status }: SimulationProgressBarProps) {
 			placement='left'
 			title={
 				<>
-					{status.estimatedTime ? 'Estimated time remaining ' : 'Time elapsed '}
+					{status.estimatedTime ? 'Estimated time remaining: ' : 'Time elapsed: '}
 					<Countdown
-						date={getDateFromEstimation(status.estimatedTime ?? status.runTime)}
+						date={
+							status.estimatedTime
+								? getDateFromEstimation(status.estimatedTime)
+								: status.endTime &&
+								  status.startTime &&
+								  status.endTime.getTime &&
+								  status.startTime.getTime
+								? status.endTime.getTime() - status.startTime.getTime()
+								: 0
+						}
 					/>
 				</>
 			}>

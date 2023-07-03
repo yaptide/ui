@@ -4,6 +4,9 @@ import { TGALoader } from 'three/examples/jsm/loaders/TGALoader.js';
 import { AddObjectCommand, SetSceneCommand } from './commands/Commands';
 import { LoaderUtils } from './LoaderUtils.js';
 
+/**
+ * @deprecated Use DataLoaderService and YaptideEditor.handleJSON instead
+ */
 function Loader(editor) {
 	const scope = this;
 

@@ -102,8 +102,8 @@
 					"exceptAfterSingleLine": true
 				}
 			],
-			"simple-import-sort/imports": "error",
-			"simple-import-sort/exports": "error",
+			"simple-import-sort/imports": "warn",
+			"simple-import-sort/exports": "warn",
 			"import/first": "warn",
 			"import/newline-after-import": "warn",
 			"import/no-duplicates": "error"

@@ -6,7 +6,7 @@ import { throttle } from 'throttle-debounce';
 
 import { useConfig } from '../../../config/ConfigService';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
-import { readFile } from '../../../services/DataLoaderService';
+import { readFile } from '../../../services/LoaderService';
 import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
@@ -214,7 +214,6 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 				simulator={simulator}
 				inputFiles={inputFiles}
 				onChange={inputFiles => setInputFiles(inputFiles)}
-				runSimulation={!demoMode ? goToRun : undefined}
 			/>
 		</Box>
 	);

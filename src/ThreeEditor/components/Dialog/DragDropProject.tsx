@@ -25,8 +25,8 @@ const innerElement = (props: DragDropInnerElementProps) => {
 			<Box
 				sx={{
 					p: 6,
-					pb: 10,
-					pt: 8,
+					pb: 13,
+					pt: 11,
 					display: 'flex',
 					flexDirection: 'column',
 					alignItems: 'center',
