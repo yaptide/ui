@@ -95,15 +95,88 @@
 		],
 		"rules": {
 			"class-methods-use-this": "warn",
+			"padding-line-between-statements": [
+				"warn",
+				{
+					"blankLine": "always",
+					"prev": "multiline-block-like",
+					"next": "*"
+				},
+				{
+					"blankLine": "always",
+					"prev": "*",
+					"next": "multiline-block-like"
+				},
+				{
+					"blankLine": "always",
+					"prev": [
+						"const",
+						"let",
+						"var",
+						"expression"
+					],
+					"next": "*"
+				},
+				{
+					"blankLine": "any",
+					"prev": [
+						"const",
+						"let",
+						"var",
+						"expression"
+					],
+					"next": [
+						"const",
+						"let",
+						"var",
+						"expression"
+					]
+				},
+				{
+					"blankLine": "always",
+					"prev": [
+						"multiline-const",
+						"multiline-let",
+						"multiline-var",
+						"multiline-expression"
+					],
+					"next": [
+						"multiline-const",
+						"multiline-let",
+						"multiline-var",
+						"multiline-expression"
+					]
+				},
+				{
+					"blankLine": "always",
+					"prev": "directive",
+					"next": "*"
+				},
+				{
+					"blankLine": "any",
+					"prev": "directive",
+					"next": "directive"
+				},
+				{
+					"blankLine": "always",
+					"prev": "*",
+					"next": [
+						"break",
+						"continue",
+						"return",
+						"throw"
+					]
+				}
+			],
 			"lines-between-class-members": [
-				"error",
+				"warn",
 				"always",
 				{
 					"exceptAfterSingleLine": true
 				}
 			],
-			"simple-import-sort/imports": "error",
-			"simple-import-sort/exports": "error",
+			"simple-import-sort/imports": "warn",
+			"simple-import-sort/exports": "warn",
 			"import/first": "warn",
 			"import/newline-after-import": "warn",
 			"import/no-duplicates": "error"
