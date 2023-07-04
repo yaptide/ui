@@ -93,10 +93,12 @@ export function NavDrawerList({
 		),
 		[isAuthorized, layout, logout, handleChange]
 	);
+
 	const username = useMemo(
 		() => (isAuthorized && user ? user.username : 'Log in'),
 		[isAuthorized, user]
 	);
+
 	return (
 		<Box
 			sx={{
@@ -225,6 +227,7 @@ function NavDrawerElement({
 			/>
 		</>
 	);
+
 	return (
 		<Tooltip
 			title={info ? <Typography>{info}</Typography> : undefined}
@@ -260,6 +263,7 @@ function NavDrawerElement({
 							? { component: 'a', href: buttonProps.href, target: '_blank' }
 							: {})}
 						selected={selected}
+						aria-selected={selected}
 						onClick={event => handleChange(event, value)}>
 						{listItemContent}
 					</ListItemButton>

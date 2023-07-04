@@ -77,6 +77,7 @@ export class BooleanZone extends SimulationZone {
 				const rowResult = operationRow.reduce((result, operation) => {
 					return operation.execute(result);
 				}, new CSG());
+
 				return result.union(rowResult);
 			}, new CSG());
 
@@ -87,6 +88,7 @@ export class BooleanZone extends SimulationZone {
 		this.updateMatrixWorld(true);
 
 		this.signals.zoneGeometryChanged.dispatch(this);
+
 		if (DEPLOYMENT === 'dev') console.timeEnd('CSGZone');
 	}
 
@@ -210,6 +212,7 @@ export class BooleanZone extends SimulationZone {
 
 	static fromJSON(editor: YaptideEditor, json: BooleanZoneJSON) {
 		const zone = new BooleanZone(editor);
+
 		return zone.fromJSON(json);
 	}
 }

@@ -48,6 +48,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 		],
 		[]
 	);
+
 	const setTransformTool = useCallback(
 		(tool: string) => {
 			setTool(Object.values(ToolStrings).indexOf(tool) as Tool);
@@ -59,6 +60,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 		if (editor) {
 			editor.signals.transformModeChanged.add(setTransformTool);
 		}
+
 		return () => editor?.signals.transformModeChanged.remove(setTransformTool);
 	}, [editor, setTransformTool]);
 
@@ -69,6 +71,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 	const SelectedButton = styled(IconButton)({
 		backgroundColor: 'rgba(255, 255, 255, 0.08)'
 	});
+
 	return (
 		<>
 			<Divider

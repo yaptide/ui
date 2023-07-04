@@ -37,6 +37,7 @@ export class SetFilterNameCommand extends Command {
 		output.object = this.object.toJSON();
 		output.newName = this.newName;
 		output.oldName = this.oldName;
+
 		return output;
 	}
 

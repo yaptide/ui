@@ -94,6 +94,7 @@ export class ScoringOutput
 
 	get detector(): Detector | null {
 		if (!this._detector) return null;
+
 		return this.editor.detectorManager.getDetectorByUuid(this._detector);
 	}
 
@@ -129,6 +130,7 @@ export class ScoringOutput
 	createQuantity(): ScoringQuantity {
 		const quantity = new ScoringQuantity(this.editor);
 		this.addQuantity(quantity);
+
 		return quantity;
 	}
 
@@ -166,6 +168,7 @@ export class ScoringOutput
 		this.detector = json.detectorUuid
 			? this.editor.detectorManager.getDetectorByUuid(json.detectorUuid)
 			: null;
+
 		return this;
 	}
 

@@ -3,9 +3,11 @@ import { FullSimulationData, recreateRefsInResults } from '../../services/ShSimu
 let canImport = true;
 let iterator = 1;
 const EXAMPLES: FullSimulationData[] = [];
+
 while (canImport) {
 	try {
 		const example: FullSimulationData = require(`./ex${iterator}.json`);
+
 		if (example.input.inputJson?.project.title.length === 0)
 			example.input.inputJson.project.title = `Untitled example ${iterator}`;
 

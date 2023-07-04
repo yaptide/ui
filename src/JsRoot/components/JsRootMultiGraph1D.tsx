@@ -14,6 +14,7 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 				entry.fObject = obj;
 				entry.fLabel = lbl;
 				entry.fOption = 'l';
+
 				return entry;
 			}
 

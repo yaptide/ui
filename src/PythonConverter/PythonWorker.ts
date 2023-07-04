@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 /* eslint-disable no-restricted-globals */
 import * as Comlink from 'comlink';
 

@@ -46,6 +46,7 @@ export default function BooleanAlgebraRow({
 		};
 
 		displayValueRef.current = [...value];
+
 		// if the last object is defined, add ui to create a new one
 		if (value.length === 0 || value[value.length - 1].objectId !== null)
 			displayValueRef.current[displayValueRef.current.length] = {
@@ -53,6 +54,7 @@ export default function BooleanAlgebraRow({
 				objectId: undefined
 			};
 		const lastRef = displayValueRef.current[displayValueRef.current.length - 1];
+
 		if (
 			lastObj?.objectId !== lastRef?.objectId ||
 			lastObj?.objectId !== lastRef?.objectId ||
@@ -60,6 +62,7 @@ export default function BooleanAlgebraRow({
 		) {
 			scrollToBottom();
 		}
+
 		setLastObj(Object.assign({}, lastRef));
 		setLastLength(displayValueRef.current.length);
 	}, [value, lastObj?.objectId, lastLength, scrollWrapperRef]);
@@ -82,6 +85,7 @@ export default function BooleanAlgebraRow({
 					const referencedObject = allObjects.find(obj => obj.id === objectId);
 					const label = referencedObject?.name;
 					const tooltipId = Number(referencedObject?.id).toString();
+
 					return (
 						<Box
 							key={index}

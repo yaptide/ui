@@ -3,6 +3,8 @@ import useTheme from '@mui/system/useTheme';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 
 import { useConfig } from '../../../config/ConfigService';
+import { useDialog } from '../../../services/DialogService';
+import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
 	_defaultFlukaInputFiles,
@@ -18,15 +20,15 @@ interface InputFilesEditorProps {
 	simulator: SimulatorType;
 	inputFiles: SimulationInputFiles | undefined;
 	onChange?: (inputFiles: SimulationInputFiles) => void;
-	runSimulation?: (simulator: SimulatorType, inputFiles: SimulationInputFiles) => void;
 	saveAndExit?: (inputFiles: SimulationInputFiles) => void;
 	closeEditor?: () => void;
 }
 
 export function InputFilesEditor(props: InputFilesEditorProps) {
+	const [open] = useDialog('runSimulation');
+	const { setTrackedId } = useStore();
 	const { demoMode } = useConfig();
 	const inputFiles = props.inputFiles ?? _defaultShInputFiles;
-	const simulator = props.simulator;
 	const theme = useTheme();
 	const largeFileSize = 100_000;
 	const largeFileLinesLimit = 500;
@@ -55,15 +57,21 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 					justifyContent: 'flex-end',
 					background: theme => (theme.palette.mode === 'dark' ? 'grey.800' : 'grey.300')
 				}}>
-				{props.runSimulation && (
-					<Button
-						color='success'
-						variant='contained'
-						disabled={demoMode}
-						onClick={() => props.runSimulation?.call(null, simulator, inputFiles)}>
-						Run with these input files
-					</Button>
-				)}
+				<Button
+					color='success'
+					variant='contained'
+					disabled={demoMode}
+					onClick={() =>
+						open({
+							inputFiles: Object.fromEntries(
+								Object.entries(inputFiles).filter(([, data]) => data.length > 0)
+							),
+							simulator: props.simulator,
+							onSubmit: setTrackedId
+						})
+					}>
+					Run with these input files
+				</Button>
 				<Button
 					color='info'
 					onClick={() =>
@@ -94,9 +102,11 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 						const index1 = isKnownInputFile(name1)
 							? _orderedShInputFilesNames.indexOf(name1)
 							: -1 + 1;
+
 						const index2 = isKnownInputFile(name2)
 							? _orderedShInputFilesNames.indexOf(name2)
 							: -1 + 1;
+
 						return index1 - index2;
 					})
 					.map(([name, value]) => {
@@ -140,6 +150,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 														delete old[
 															name as keyof SimulationInputFiles
 														];
+
 													return { ...old };
 												});
 											}}

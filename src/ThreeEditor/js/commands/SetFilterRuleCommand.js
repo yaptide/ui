@@ -45,6 +45,7 @@ export class SetFilterRuleCommand extends Command {
 		output.object = this.object.toJSON();
 		output.oldRule = this.oldRule;
 		output.filter = this.filter.toJSON();
+
 		return output;
 	}
 

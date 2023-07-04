@@ -35,6 +35,7 @@ const columns: GridColDef[] = [
 
 const formatValue = (value: number) => {
 	const precision = 6;
+
 	if (value >= 0.0001 && value <= 10000) return value.toPrecision(precision);
 	else return value.toExponential(precision);
 };

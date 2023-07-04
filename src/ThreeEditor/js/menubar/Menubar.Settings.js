@@ -43,6 +43,7 @@ function MenubarSettings(editor) {
 			Equirectangular: 'Equirect'
 		})
 		.setWidth('160px');
+
 	backgroundType.onChange(() => {
 		onBackgroundChanged();
 		refreshBackgroundUI();

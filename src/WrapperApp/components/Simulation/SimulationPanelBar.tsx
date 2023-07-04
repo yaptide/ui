@@ -176,6 +176,7 @@ export function SimulationAppBar({
 	...other
 }: SimulationAppBarProps) {
 	position ??= !!stickTo ? 'sticky' : position;
+
 	return (
 		<Box
 			position={'sticky'}

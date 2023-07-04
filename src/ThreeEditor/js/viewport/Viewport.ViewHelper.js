@@ -211,31 +211,37 @@ class ViewHelper extends THREE.Object3D {
 				case 'posX':
 					targetPosition.set(1, 0, 0);
 					targetQuaternion.setFromEuler(new THREE.Euler(0, Math.PI * 0.5, 0));
+
 					break;
 
 				case 'posY':
 					targetPosition.set(0, 1, 0);
 					targetQuaternion.setFromEuler(new THREE.Euler(-Math.PI * 0.5, 0, 0));
+
 					break;
 
 				case 'posZ':
 					targetPosition.set(0, 0, 1);
 					targetQuaternion.setFromEuler(new THREE.Euler());
+
 					break;
 
 				case 'negX':
 					targetPosition.set(-1, 0, 0);
 					targetQuaternion.setFromEuler(new THREE.Euler(0, -Math.PI * 0.5, 0));
+
 					break;
 
 				case 'negY':
 					targetPosition.set(0, -1, 0);
 					targetQuaternion.setFromEuler(new THREE.Euler(Math.PI * 0.5, 0, 0));
+
 					break;
 
 				case 'negZ':
 					targetPosition.set(0, 0, -1);
 					targetQuaternion.setFromEuler(new THREE.Euler(0, Math.PI, 0));
+
 					break;
 
 				default:

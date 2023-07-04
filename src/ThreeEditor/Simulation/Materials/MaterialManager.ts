@@ -53,6 +53,7 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 			],
 			[{}, {}]
 		);
+
 		return editorMaterials;
 	};
 
@@ -73,9 +74,11 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 	materialOptions: Record<string, string>;
 	get defaultMaterial(): SimulationMaterial {
 		let defaultMaterial = this._customMaterials[DEFAULT_MATERIAL_ICRU];
+
 		if (defaultMaterial) return defaultMaterial;
 		defaultMaterial = this.prefabMaterials[DEFAULT_MATERIAL_ICRU];
 		this._customMaterials[DEFAULT_MATERIAL_ICRU] = defaultMaterial;
+
 		return defaultMaterial;
 	}
 
@@ -90,17 +93,21 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 	protected materialsHandler = {
 		get: (target: Record<string, SimulationMaterial>, prop: string) => {
 			let result = target[prop];
+
 			if (result) return result;
 			result = this.prefabMaterials[prop];
+
 			if (result) target[prop] = result;
 			else {
 				result = this.defaultMaterial;
 				target[DEFAULT_MATERIAL_ICRU] = result;
 			}
+
 			return result;
 		},
 		set: (target: Record<string, SimulationMaterial>, prop: string, value: unknown) => {
 			Reflect.set(this.materialOptions, prop, prop);
+
 			return Reflect.set(target, prop, value);
 		},
 		ownKeys: (target: Record<string, SimulationMaterial>) => {
@@ -145,6 +152,7 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 
 	copy(source: this, recursive?: boolean | undefined) {
 		super.copy(source, recursive);
+
 		return this.fromJSON(source.toJSON());
 	}
 
@@ -162,6 +170,7 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 				({ uuid, name, icru, density, ...rest }) =>
 					this.selectedMaterials.has(uuid) || Object.keys(rest).length !== 0
 			);
+
 		return {
 			uuid,
 			name,
@@ -178,6 +187,7 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 			metadata: { version }
 		} = this;
 		const { uuid, name, materials, metadata } = json;
+
 		if (!metadata || metadata.version !== version)
 			console.warn(`MaterialManager version mismatch: ${metadata?.version} !== ${version}`);
 
@@ -193,6 +203,7 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 				{}
 			)
 		);
+
 		return this;
 	}
 }

@@ -64,36 +64,42 @@ export class ObjectDimensions extends ObjectAbstract {
 			update: this.updateType.bind(this),
 			text: 'Geometry Type'
 		});
+
 		[this.xLengthRow, this.xLength] = createRowParamNumber({
 			update: this.update.bind(this),
 			text: `X side (width)`,
 			unit: `${editor.unit.name}`,
 			min: 0
 		});
+
 		[this.yLengthRow, this.yLength] = createRowParamNumber({
 			update: this.update.bind(this),
 			text: `Y side (height)`,
 			unit: `${editor.unit.name}`,
 			min: 0
 		});
+
 		[this.zLengthRow, this.zLength] = createRowParamNumber({
 			update: this.update.bind(this),
 			text: `Z side (depth)`,
 			unit: `${editor.unit.name}`,
 			min: 0
 		});
+
 		[this.radiusRow, this.radius] = createRowParamNumber({
 			update: this.update.bind(this),
 			text: `Radius`,
 			unit: `${editor.unit.name}`,
 			min: 0
 		});
+
 		[this.radiusRow2, this.radius2] = createRowParamNumber({
 			update: this.update.bind(this),
 			text: `Inner radius`,
 			unit: `${editor.unit.name}`,
 			min: 0
 		});
+
 		[this.zoneUuidRow, this.zoneUuid] = createRowSelect({
 			update: this.update.bind(this),
 			text: 'Zone ID'
@@ -113,6 +119,7 @@ export class ObjectDimensions extends ObjectAbstract {
 
 	private setGeometryType(object: BasicFigure | Detector | WorldZone): string | undefined {
 		let geometryType;
+
 		if (isBasicFigure(object)) {
 			showUIElement(this.typeRow);
 			hideUIElement(this.typeSelectRow);
@@ -121,6 +128,7 @@ export class ObjectDimensions extends ObjectAbstract {
 		} else {
 			hideUIElement(this.typeRow);
 			showUIElement(this.typeSelectRow);
+
 			if (isWorldZone(object)) {
 				this.typeSelect.setOptions(BASIC_GEOMETRY_OPTIONS);
 				this.typeSelect.setValue(object.geometryType);
@@ -131,6 +139,7 @@ export class ObjectDimensions extends ObjectAbstract {
 				geometryType = object.detectorType;
 			}
 		}
+
 		return geometryType;
 	}
 
@@ -138,6 +147,7 @@ export class ObjectDimensions extends ObjectAbstract {
 		showUIElement(this.xLengthRow);
 		showUIElement(this.yLengthRow);
 		showUIElement(this.zLengthRow);
+
 		if (isWorldZone(object)) {
 			if (object.autoCalculate) {
 				hideUIElement(this.xLengthRow);
@@ -151,6 +161,7 @@ export class ObjectDimensions extends ObjectAbstract {
 			}
 		} else {
 			let parameters;
+
 			if (isDetector(object)) parameters = object.geometryParameters;
 			else if (isBoxFigure(object)) parameters = object.geometry.parameters;
 			else return;
@@ -162,11 +173,13 @@ export class ObjectDimensions extends ObjectAbstract {
 
 	private setSphere(object: BasicFigure | Detector | WorldZone): void {
 		showUIElement(this.radiusRow);
+
 		if (isWorldZone(object)) {
 			const { size } = object;
 			this.radius.setValue(size.x);
 		} else {
 			let parameters;
+
 			if (isDetector(object)) parameters = { radius: object.geometryParameters.radius };
 			else if (isSphereFigure(object)) parameters = object.geometry.parameters;
 			else return;
@@ -177,6 +190,7 @@ export class ObjectDimensions extends ObjectAbstract {
 	private setCylinder(object: BasicFigure | Detector | WorldZone): void {
 		showUIElement(this.zLengthRow);
 		showUIElement(this.radiusRow);
+
 		if (isWorldZone(object)) {
 			const { size } = object;
 			this.radius.setValue(size.x);
@@ -198,9 +212,11 @@ export class ObjectDimensions extends ObjectAbstract {
 
 	private setZoneUuid(): void {
 		const { object } = this;
+
 		if (!object) return;
 		showUIElement(this.zoneUuidRow);
 		this.zoneUuid.setOptions(this.editor.zoneManager.getBooleanZoneOptions());
+
 		if (isDetector(object)) {
 			this.zoneUuid.setValue(object.geometryParameters.zoneUuid);
 		}
@@ -208,6 +224,7 @@ export class ObjectDimensions extends ObjectAbstract {
 
 	setObject(object: BasicFigure | Detector | WorldZone): void {
 		super.setObject(object);
+
 		if (!object) return;
 
 		this.object = object;
@@ -220,6 +237,7 @@ export class ObjectDimensions extends ObjectAbstract {
 		hideUIElement(this.radiusRow2);
 		hideUIElement(this.zoneUuidRow);
 		this.editor.signals.zoneAdded.remove(this.setZoneUuid);
+
 		if (geometryType && geometryType !== 'All')
 			if (['Box', 'Mesh'].includes(geometryType)) {
 				this.setBox(object);
@@ -282,25 +300,32 @@ export class ObjectDimensions extends ObjectAbstract {
 
 	update(): void {
 		const { object, editor } = this;
+
 		if (!object) return;
+
 		if (isDetector(object)) {
 			const { detectorType: detectType } = object;
 			let geometryData;
+
 			switch (detectType) {
 				case 'Mesh':
 					geometryData = this.getBoxData();
+
 					break;
 				case 'Cyl':
 					geometryData = this.getCylinderData();
 					this.radius.min = geometryData.innerRadius + 1e-5; // Prevent radius from being lower than innerRadius
 					this.radius2.max = geometryData.outerRadius - 1e-5; // innerRadius cannot be greater than radius
+
 					break;
 				case 'Zone':
 					geometryData = { zoneUuid: this.zoneUuid.getValue() };
+
 					break;
 				default:
 					break;
 			}
+
 			editor.execute(new SetDetectGeometryCommand(editor, object, geometryData));
 		} else if (isWorldZone(object)) {
 			const { geometryType } = object;
@@ -336,6 +361,7 @@ export class ObjectDimensions extends ObjectAbstract {
 
 	updateType(): void {
 		const { object, editor } = this;
+
 		if (!object) return;
 		if (isDetector(object))
 			editor.execute(new SetDetectTypeCommand(editor, object, this.typeSelect.getValue()));

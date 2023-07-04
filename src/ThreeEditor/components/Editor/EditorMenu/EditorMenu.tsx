@@ -2,6 +2,7 @@ import { Box, Button, ButtonGroup, Divider, Menu, MenuItem } from '@mui/material
 import { MouseEvent, useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 
+import { useDialog } from '../../../../services/DialogService';
 import { useSignal } from '../../../../util/hooks/signals';
 import { toggleFullscreen } from '../../../../util/toggleFullscreen';
 import {
@@ -9,7 +10,6 @@ import {
 	getAddElementButtonProps
 } from '../../../../util/Ui/CommandButtonProps';
 import { YaptideEditor } from '../../../js/YaptideEditor';
-import { ClearHistoryDialog } from '../../Dialog/ClearHistoryDialog';
 
 type EditorMenuProps = {
 	editor?: YaptideEditor;
@@ -22,18 +22,22 @@ type MenuPositionProps = {
 	setOpenIdx: (open: number) => void;
 	options: CommandButtonProps[][];
 };
+
 function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPositionProps) {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const handleClick = (_: MouseEvent<HTMLButtonElement>) => {
 		setOpenIdx(idx);
 	};
+
 	const handleEnter = (_: MouseEvent<HTMLButtonElement>) => {
 		if (openIdx !== -1) setOpenIdx(idx);
 	};
+
 	const handleClose = (action?: () => void) => {
 		if (action) action();
 		setOpenIdx(-1);
 	};
+
 	useEffect(() => {
 		if (openIdx === idx) setAnchorEl(document.getElementById('basic-button-' + idx.toString()));
 		else setAnchorEl(null);
@@ -100,8 +104,8 @@ function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPosition
 }
 
 export function EditorMenu({ editor }: EditorMenuProps) {
+	const [open] = useDialog('clearHistory');
 	const [openIdx, setOpenIdx] = useState(-1);
-	const [clearHistoryDialogOpen, setClearHistoryDialogOpen] = useState(false);
 	const [, setSelectedObject] = useState(editor?.selected);
 
 	const handleObjectUpdate = useCallback((o: Object3D) => {
@@ -184,7 +188,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 						[
 							{
 								label: 'Clear history',
-								onClick: () => setClearHistoryDialogOpen(true),
+								onClick: () => open(),
 								disabled:
 									editor?.history.undos.length === 0 &&
 									editor?.history.redos.length === 0
@@ -217,14 +221,6 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 					]}
 				/>
 			</ButtonGroup>
-			<ClearHistoryDialog
-				open={clearHistoryDialogOpen}
-				onCancel={() => setClearHistoryDialogOpen(false)}
-				onConfirm={() => {
-					setClearHistoryDialogOpen(false);
-					editor?.history.clear();
-				}}
-			/>
 		</>
 	);
 }

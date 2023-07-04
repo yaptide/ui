@@ -6,6 +6,7 @@ function Storage() {
 
 	if (indexedDB === undefined) {
 		console.warn('Storage: IndexedDB not available.');
+
 		return {
 			init: function () {},
 			get: function () {},

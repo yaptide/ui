@@ -12,8 +12,9 @@ import {
 import { SyntheticEvent, useEffect, useState } from 'react';
 
 import { Estimator, generateGraphs, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
+import { useDialog } from '../../../services/DialogService';
 import { useStore } from '../../../services/StoreService';
-import { saveString } from '../../../util/File';
+import { titleToKebabCase } from '../../../ThreeEditor/components/Dialog/CustomDialog';
 import { TabPanel } from '../Panels/TabPanel';
 import TablePage0D from './ResultsTable';
 
@@ -23,6 +24,7 @@ export interface EstimatorResults extends Estimator {
 }
 
 function ResultsPanel() {
+	const [open] = useDialog('saveFile');
 	const { resultsSimulationData: simulation } = useStore();
 
 	const [tabsValue, setTabsValue] = useState(0);
@@ -39,7 +41,10 @@ function ResultsPanel() {
 	};
 
 	const onClickSaveToFile = () => {
-		saveString(JSON.stringify(simulation), `${simulation?.title}_result.json`);
+		open({
+			name: `${titleToKebabCase(simulation?.title ?? 'simulation')}-result.json`,
+			results: simulation
+		});
 	};
 
 	const parseEstimators = (estimators: Estimator[]) => {
@@ -47,8 +52,10 @@ function ResultsPanel() {
 			const tablePages = estimator.pages.filter(isPage0d);
 			const gridPages = estimator.pages.filter(p => !isPage0d(p));
 			const estimatorResults: EstimatorResults = { ...estimator, tablePages, gridPages };
+
 			return estimatorResults;
 		});
+
 		return estimatorResults;
 	};
 
@@ -73,8 +80,10 @@ function ResultsPanel() {
 						sx={{
 							margin: '1.5rem 1rem'
 						}}>
-						{simulation.input.inputJson?.project.title ?? simulation.title} [
-						{simulation.startTime.toLocaleString()}]
+						{simulation.title ??
+							simulation.input.inputJson?.project.title ??
+							'Unknown simulation'}{' '}
+						[{simulation.startTime.toLocaleString()}]
 					</Typography>
 					<Box
 						sx={{
@@ -190,7 +199,11 @@ function ResultsPanel() {
 													<TablePage0D
 														estimator={estimator}></TablePage0D>
 												)}
-												{generateGraphs(estimator, groupQuantities)}
+												{generateGraphs(
+													estimator,
+													groupQuantities,
+													simulation?.jobId
+												)}
 											</Box>
 										</TabPanel>
 									);

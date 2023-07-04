@@ -31,6 +31,7 @@ export class AddFilterCommand extends Command {
 	toJSON() {
 		const output = super.toJSON(this);
 		output.object = this.object.toJSON();
+
 		return output;
 	}
 

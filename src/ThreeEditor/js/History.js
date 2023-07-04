@@ -59,6 +59,7 @@ History.prototype = {
 	undo: function () {
 		if (this.historyDisabled) {
 			alert('Undo/Redo disabled while scene is playing.');
+
 			return;
 		}
 
@@ -84,6 +85,7 @@ History.prototype = {
 	redo: function () {
 		if (this.historyDisabled) {
 			alert('Undo/Redo disabled while scene is playing.');
+
 			return;
 		}
 
@@ -172,6 +174,7 @@ History.prototype = {
 	goToState: function (id) {
 		if (this.historyDisabled) {
 			alert('Undo/Redo disabled while scene is playing.');
+
 			return;
 		}
 
@@ -182,6 +185,7 @@ History.prototype = {
 
 		if (cmd === undefined || id > cmd.id) {
 			cmd = this.redo();
+
 			while (cmd !== undefined && id > cmd.id) {
 				cmd = this.redo();
 			}
@@ -216,6 +220,7 @@ History.prototype = {
 		this.editor.signals.historyChanged.active = false;
 
 		var cmd = this.redo();
+
 		while (cmd !== undefined) {
 			if (!Object.prototype.hasOwnProperty.call(cmd, 'json')) {
 				cmd.json = cmd.toJSON();

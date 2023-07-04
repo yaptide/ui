@@ -174,6 +174,7 @@ export class Beam extends SimulationElement {
 			set: (target: THREE.Vector3, prop: keyof THREE.Vector3, value: unknown) => {
 				const result = Reflect.set(target, prop, value);
 				this.helper.setDirection(target.clone().normalize());
+
 				return result;
 			}
 		};
@@ -205,13 +206,16 @@ export class Beam extends SimulationElement {
 			get: (target: THREE.Color, prop: keyof THREE.Color) => {
 				const scope = this;
 				const result = Reflect.get(target, prop);
+
 				if (prop === 'setHex') {
 					return function (hex: number) {
 						target[prop].apply(target, [hex]);
 						scope.helper.setColor(hex);
+
 						return scope._lineMaterial.color;
 					};
 				}
+
 				return result;
 			}
 		});
@@ -245,6 +249,7 @@ export class Beam extends SimulationElement {
 			'position',
 			new THREE.Float32BufferAttribute(new Vector3(0, 0, 0).toArray(), 3)
 		);
+
 		const redDotMaterial = new THREE.PointsMaterial({
 			size: 8,
 			color: 0xff0000,
@@ -267,6 +272,7 @@ export class Beam extends SimulationElement {
 		helper.add(blackDot);
 
 		this.add(helper);
+
 		return helper;
 	}
 
@@ -328,6 +334,7 @@ export class Beam extends SimulationElement {
 		this.sad = loadedData.sad;
 		this.sourceType = loadedData.sourceType;
 		this.sourceFile = loadedData.sourceFile;
+
 		return this;
 	}
 

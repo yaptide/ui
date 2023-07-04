@@ -200,8 +200,10 @@ export function YaptideEditor(container) {
 		multiplier: 1
 	};
 
+	/**
+	 * @property @deprecated Use DataLoaderService and YaptideEditor.handleJSON instead
+	 */
 	this.loader = new Loader(this);
-	//TODO: #1089 rewrite to support our versioning and types of data. Default loader is now mostly useless
 
 	this.camera = _DEFAULT_CAMERA.clone();
 
@@ -415,6 +417,7 @@ YaptideEditor.prototype = {
 		for (var i = 0; i < materials.length; i++) {
 			if (materials[i].id === id) {
 				material = materials[i];
+
 				break;
 			}
 		}
@@ -553,6 +556,7 @@ YaptideEditor.prototype = {
 			this.searchableObjectCollections
 				.map(e => e.getObjectById(id))
 				.find(e => typeof e !== 'undefined') ?? null;
+
 		return object;
 	},
 
@@ -638,6 +642,7 @@ YaptideEditor.prototype = {
 			beam,
 			physic
 		} = json;
+
 		try {
 			if (project) {
 				this.config.setKey('project/title', project.title ?? '');

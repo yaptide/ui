@@ -35,6 +35,7 @@ export abstract class SimulationElement
 
 	toJSON(): SimulationElementJSON {
 		const { name, type, uuid } = this;
+
 		return {
 			name,
 			type,
@@ -45,6 +46,7 @@ export abstract class SimulationElement
 	fromJSON(json: SimulationElementJSON): this {
 		this.name = json.name;
 		this.uuid = json.uuid;
+
 		return this;
 	}
 

@@ -1,11 +1,12 @@
 import { ReactNode, useEffect, useState } from 'react';
 
 import { createGenericContext } from '../services/GenericContext';
-import { snakeToCamelCase } from '../types/TypeTransformUtil';
+import { snakeToCamelCase } from '../util/Notation/Notation';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:5000';
 const DEMO_MODE = process.env.REACT_APP_TARGET === 'demo';
 const ALT_AUTH = process.env.REACT_APP_ALT_AUTH === 'plg';
+
 export const DEPLOYMENT = (process.env.REACT_APP_DEPLOYMENT as ConfigDeployment) ?? 'prod';
 export type ConfigDeployment = 'dev' | 'prod' | undefined;
 
@@ -22,7 +23,7 @@ function isKeyForConfig(key: string): key is keyof Config {
 	return ['backendUrl', 'deployment', 'demoMode', 'altAuth'].includes(key);
 }
 
-const ConfigProvider = ({ children }: { children: ReactNode }) => {
+const ConfigProvider = ({ children }: { children?: ReactNode }) => {
 	const [config, setConfig] = useState<Config>({
 		backendUrl: BACKEND_URL,
 		deployment: DEPLOYMENT,
@@ -58,6 +59,7 @@ const ConfigProvider = ({ children }: { children: ReactNode }) => {
 				console.error(`Failed to define global property ${name}: ${e}`);
 			}
 		};
+
 		if (config.deployment === 'dev') {
 			defineProperty('BACKEND_URL');
 			defineProperty('DEPLOYMENT', true);

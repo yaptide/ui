@@ -122,7 +122,11 @@ const getGraphFromPage = (page: Page, title?: string) => {
 	}
 };
 
-export function generateGraphs(estimator: EstimatorResults, groupQuantities?: boolean) {
+export function generateGraphs(
+	estimator: EstimatorResults,
+	groupQuantities?: boolean,
+	jobId?: string
+) {
 	const { gridPages, name } = estimator;
 
 	const onClickSaveToFile = (page: Page1D) => {
@@ -166,6 +170,7 @@ export function generateGraphs(estimator: EstimatorResults, groupQuantities?: bo
 
 		return groupedPages.map(group => {
 			if (isGroupedPage1d(group) && group.pages.length === 1) return group.pages[0];
+
 			return group;
 		});
 	};
@@ -177,7 +182,7 @@ export function generateGraphs(estimator: EstimatorResults, groupQuantities?: bo
 		.map(({ page, graph, filter }, idx) => {
 			return (
 				<Grid
-					key={`graph_${name}_${idx}`}
+					key={`graph_${name}${jobId ? '_' + jobId : ''}_${idx}`}
 					item
 					xs={12}>
 					<Card>

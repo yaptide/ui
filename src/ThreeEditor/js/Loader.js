@@ -4,6 +4,9 @@ import { TGALoader } from 'three/examples/jsm/loaders/TGALoader.js';
 import { AddObjectCommand, SetSceneCommand } from './commands/Commands';
 import { LoaderUtils } from './LoaderUtils.js';
 
+/**
+ * @deprecated Use DataLoaderService and YaptideEditor.handleJSON instead
+ */
 function Loader(editor) {
 	const scope = this;
 
@@ -88,6 +91,7 @@ function Loader(editor) {
 							data = JSON.parse(contents);
 						} catch (error) {
 							alert(error);
+
 							return;
 						}
 
@@ -161,6 +165,7 @@ function Loader(editor) {
 
 			case 'editor':
 				let versionIsOk = true;
+
 				if (data.metadata.version !== editor.jsonVersion) {
 					versionIsOk = window.confirm(
 						`File has  project standard version ${data.metadata.version} which is different from standard version handled by this web application: ${editor.jsonVersion}\nContinue?`

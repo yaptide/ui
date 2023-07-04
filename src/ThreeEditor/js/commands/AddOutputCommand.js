@@ -34,6 +34,7 @@ export class AddOutputCommand extends Command {
 	toJSON() {
 		const output = super.toJSON(this);
 		output.object = this.object.toJSON();
+
 		return output;
 	}
 

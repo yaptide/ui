@@ -87,12 +87,14 @@ const SI: Record<string, Unit> = {
 
 const createSISystem = (baseUnit: string, anchorFactor: number) => {
 	const newSystem: Record<string, Unit> = {};
+
 	for (const property in SI) {
 		newSystem[property + baseUnit] = {
 			...SI[property],
 			to_anchor: Math.pow(SI[property].to_anchor, anchorFactor)
 		};
 	}
+
 	return newSystem;
 };
 

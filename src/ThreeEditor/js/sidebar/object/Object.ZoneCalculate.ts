@@ -25,6 +25,7 @@ export class ObjectZoneCalculate extends ObjectAbstract {
 			text: 'Autocalculate',
 			update: this.update.bind(this)
 		});
+
 		[this.calculateRow, this.calculate] = createFullwidthButton({
 			text: 'Calculate',
 			update: this.zoneCalculate.bind(this)
@@ -41,9 +42,11 @@ export class ObjectZoneCalculate extends ObjectAbstract {
 
 	setObject(object: WorldZone): void {
 		super.setObject(object);
+
 		if (!object) return;
 
 		this.object = object;
+
 		if (object.geometryType !== 'BoxGeometry') return hideUIElement(this.panel);
 		this.object = object;
 		this.auto.setValue(object.autoCalculate);
@@ -58,6 +61,7 @@ export class ObjectZoneCalculate extends ObjectAbstract {
 
 	zoneCalculate(): void {
 		const { object } = this;
+
 		if (!object) return;
 		object.calculate();
 	}

@@ -42,6 +42,7 @@ export class ActionCommand<
 
 	toJSON(): ActionCommandJSON<Target, Method, UndoMethod, Args> {
 		const data = { method: this.method, undoMethod: this.undoMethod, args: this.args };
+
 		return { ...super.toJSON(), data };
 	}
 

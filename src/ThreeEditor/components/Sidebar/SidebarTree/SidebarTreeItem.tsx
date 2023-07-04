@@ -33,6 +33,7 @@ function isHidable(object: Object3D | SimulationPropertiesType) {
 	if ('notHidable' in object) {
 		return !object.notHidable;
 	}
+
 	return true;
 }
 
@@ -80,6 +81,7 @@ export function SidebarTreeItem(props: {
 					key={'addQuantity'}
 					onClick={() => {
 						editor.execute(new AddQuantityCommand(editor, object));
+
 						if (!isOpen) onToggle();
 						popupState.close();
 					}}>

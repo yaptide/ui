@@ -22,6 +22,7 @@ export class OperationTuple {
 	execute(csg: CSG) {
 		const { object } = this;
 		object.updateMatrix();
+
 		return executeOperation(this.mode)(csg)(CSG.fromMesh(object));
 	}
 
@@ -30,6 +31,7 @@ export class OperationTuple {
 			mode: this.mode,
 			objectUuid: this.object.uuid
 		};
+
 		return jsonObject;
 	}
 

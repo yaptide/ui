@@ -46,6 +46,7 @@ export class ScoringQuantity extends SimulationElement {
 
 	get filter(): ScoringFilter | null {
 		if (!this.hasFilter) return null;
+
 		return this.editor.scoringManager.getFilterByUuid(this._filter);
 	}
 
@@ -55,6 +56,7 @@ export class ScoringQuantity extends SimulationElement {
 
 	get medium(): Scoring.MEDIUM | null {
 		if (['NEqvDose', 'NKERMA'].includes(this.keyword)) return this._medium;
+
 		return null;
 	}
 
@@ -77,6 +79,7 @@ export class ScoringQuantity extends SimulationElement {
 	createModifier(): DifferentialModifier {
 		const modifier = new DifferentialModifier();
 		this.addModifier(modifier);
+
 		return modifier;
 	}
 
@@ -101,6 +104,7 @@ export class ScoringQuantity extends SimulationElement {
 
 	toJSON(): ScoringQuantityJSON {
 		let { filter, name, type, hasFilter, uuid, keyword, modifiers, medium, rescale } = this;
+
 		return {
 			name,
 			uuid,
@@ -119,11 +123,14 @@ export class ScoringQuantity extends SimulationElement {
 		this._modifiers = json.modifiers.reduce((acc, curr) => {
 			const modifier = DifferentialModifier.fromJSON(curr);
 			acc[modifier.uuid] = modifier;
+
 			return acc;
 		}, {} as Record<string, DifferentialModifier>);
 		this.filter = json.filter ? this.editor.scoringManager.getFilterByUuid(json.filter) : null;
+
 		if (this._filter.length) this.hasFilter = true;
 		this.keyword = json.keyword;
+
 		return this;
 	}
 

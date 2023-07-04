@@ -52,6 +52,7 @@ export function SidebarTree(props: {
 				index: number
 			): TreeItem => {
 				const { id, name: text } = object;
+
 				return {
 					id,
 					parent,

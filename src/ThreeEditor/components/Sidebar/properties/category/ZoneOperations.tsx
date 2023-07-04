@@ -21,11 +21,13 @@ const parseAlgebraData = (editor: YaptideEditor, { value }: BooleanAlgebraData) 
 
 	value.forEach(({ operation, objectId }, index) => {
 		let object;
+
 		if (objectId) object = editor.getObjectById(objectId);
 		if (object && isBasicFigure(object))
 			operations.push(new CSG.OperationTuple(object, operation));
 		else return operations;
 	});
+
 	return operations;
 };
 

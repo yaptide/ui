@@ -24,6 +24,7 @@ export class ObjectCSG extends ObjectAbstract {
 
 	setObject(object: BooleanZone): void {
 		super.setObject(object);
+
 		if (!object) return;
 
 		this.object = object;

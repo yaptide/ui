@@ -472,6 +472,7 @@ function ViewManager(editor) {
 
 				default:
 					console.error(backgroundType, "isn't supported");
+
 					break;
 			}
 
@@ -506,6 +507,7 @@ function ViewManager(editor) {
 
 			default:
 				console.error(environmentType, "isn't supported");
+
 				break;
 		}
 
@@ -557,6 +559,7 @@ function ViewManager(editor) {
 				currentLayout = 'fourViews';
 				views = fourViews;
 				viewsGrid.dom.style.display = null;
+
 				break;
 
 			case 'singleView':
@@ -618,6 +621,7 @@ function ViewManager(editor) {
 
 	this.configurationToJson = () => {
 		const configJson = {};
+
 		for (const key in viewportMap) {
 			configJson[key] = viewportMap[key].configurationToJson();
 		}
@@ -629,6 +633,7 @@ function ViewManager(editor) {
 		for (const key in configJson) {
 			viewportMap[key].fromConfigurationJson(configJson[key]);
 		}
+
 		render();
 	};
 

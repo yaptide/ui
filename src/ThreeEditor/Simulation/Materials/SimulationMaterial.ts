@@ -33,6 +33,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 	private overrideHandler = {
 		set: (target: SimulationMaterial, key: keyof RenderProps, value: unknown) => {
 			const result = Reflect.set(target, key, value);
+
 			if (
 				['transparent', 'opacity', 'color', 'wireframe', 'wireframeLinewidth'].includes(key)
 			)
@@ -43,6 +44,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 		},
 		get: (target: SimulationMaterial, key: keyof RenderProps) => {
 			const result = Reflect.get(target, key);
+
 			if (key === 'color') return this.colorProxy;
 
 			return result;
@@ -55,9 +57,12 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 			const setHex = (hex: number) => {
 				if (this.defaultProps.color !== hex) this.renderProps.color = hex;
 				else delete this.renderProps.color;
+
 				return target.setHex(hex);
 			};
+
 			if (prop === 'setHex') return setHex.bind(this);
+
 			return result;
 		}
 	};
@@ -88,11 +93,13 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 			wireframe: false,
 			wireframeLinewidth: 1
 		};
+
 		return this.proxy;
 	}
 
 	toJSON(): SimulationMaterialJSON {
 		const { uuid, name, icru, density, renderProps } = this;
+
 		return {
 			uuid,
 			name,
@@ -110,11 +117,13 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 		material.uuid = uuid;
 		material.renderProps = renderProps;
 		material.applyRenderProps();
+
 		return material.proxy;
 	}
 
 	applyRenderProps() {
 		const { color, opacity, transparent, wireframe, wireframeLinewidth } = this.renderProps;
+
 		if (color) this.colorProxy = new Proxy(new THREE.Color(color), this.materialColorHandler);
 		if (opacity !== undefined) this.opacity = opacity;
 		if (transparent !== undefined) this.transparent = transparent;
@@ -127,11 +136,13 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 		result.renderProps = { ...source.renderProps };
 		result.density = source.density;
 		result.icru = source.icru;
+
 		return new Proxy(result, this.overrideHandler) as this;
 	}
 
 	clone(): this {
 		const result = new SimulationMaterial(this.editor).copy(this) as this;
+
 		return result;
 	}
 

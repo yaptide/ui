@@ -1,7 +1,7 @@
 import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
 import { useSnackbar } from 'notistack';
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useConfig } from '../config/ConfigService';
 import { RequestAuthLogin, RequestAuthLogout, RequestAuthRefresh } from '../types/RequestTypes';
@@ -11,22 +11,21 @@ import {
 	ResponseAuthStatus,
 	YaptideResponse
 } from '../types/ResponseTypes';
-import { snakeToCamelCase } from '../types/TypeTransformUtil';
-import { hasField } from '../util/hasField';
+import { hasFields } from '../util/customGuards';
 import useIntervalAsync from '../util/hooks/useIntervalAsync';
-import { createGenericContext } from './GenericContext';
-
-export interface AuthProps {
-	children: ReactNode;
-}
+import { snakeToCamelCase } from '../util/Notation/Notation';
+import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 
 type AuthUser = Pick<ResponseAuthStatus, 'username'>;
+
 const isAuthUser = (obj: unknown): obj is AuthUser => {
-	return hasField<string>(obj, 'username') && typeof obj.username === 'string';
+	return hasFields<string>(obj, 'username') && typeof obj.username === 'string';
 };
+
 const isYaptideResponse = (obj: unknown): obj is YaptideResponse => {
-	return hasField<string>(obj, 'message') && typeof obj.message === 'string';
+	return hasFields<string>(obj, 'message') && typeof obj.message === 'string';
 };
+
 const parseYaptideResponseMessage = (obj: unknown): string =>
 	isYaptideResponse(obj) ? obj.message : [obj].toString();
 
@@ -35,10 +34,13 @@ const load = <T extends unknown = unknown>(
 	guard: (obj: unknown) => obj is T = (obj): obj is T => true
 ): T | null => {
 	const item = localStorage.getItem(key);
+
 	try {
 		const data = JSON.parse(`[${item}]`);
 		const obj = Array.isArray(data) && data.length === 1 ? data[0] : null;
+
 		if (guard(obj)) return obj;
+
 		return null;
 	} catch {
 		return null;
@@ -47,6 +49,7 @@ const load = <T extends unknown = unknown>(
 
 const save = (key: string, value: unknown) => {
 	if (value === undefined) return;
+
 	return localStorage.setItem(key, JSON.stringify(value));
 };
 
@@ -68,7 +71,7 @@ export interface AuthContext {
 
 const [useAuth, AuthContextProvider] = createGenericContext<AuthContext>();
 
-const Auth = ({ children }: AuthProps) => {
+const Auth = ({ children }: GenericContextProviderProps) => {
 	const { backendUrl, demoMode } = useConfig();
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER, isAuthUser));
 	const [reachInterval, setReachInterval] = useState<number | undefined>(undefined);
@@ -86,7 +89,14 @@ const Auth = ({ children }: AuthProps) => {
 				credentials: 'include',
 				prefixUrl: backendUrl,
 				//overwrite default json parser to convert snake_case to camelCase
-				parseJson: (text: string) => snakeToCamelCase(JSON.parse(text), true),
+				parseJson: (text: string) => {
+					const json = JSON.parse(text);
+
+					if (typeof json === 'object' && json) return snakeToCamelCase(json, true);
+					console.warn('Could not parse JSON: ', text);
+
+					return text;
+				},
 				hooks: {
 					afterResponse: [
 						async (_request, _options, response) => {
@@ -94,16 +104,20 @@ const Auth = ({ children }: AuthProps) => {
 								case 401:
 									enqueueSnackbar('Please log in.', { variant: 'warning' });
 									setUser(null);
+
 									break;
 								case 403:
 									enqueueSnackbar('Please log in again.', { variant: 'warning' });
 									setUser(null);
+
 									break;
 							}
+
 							if (response?.status > 300) {
 								const message = await response
 									.json()
 									.then(parseYaptideResponseMessage);
+
 								if (message !== 'No token provided')
 									enqueueSnackbar(
 										await response.json().then(parseYaptideResponseMessage),
@@ -137,6 +151,7 @@ const Auth = ({ children }: AuthProps) => {
 
 	const reachServer = useCallback(() => {
 		if (demoMode) return Promise.resolve(setIsServerReachable(false));
+
 		return kyIntervalRef
 			.get(``)
 			.json<YaptideResponse>()
@@ -147,6 +162,7 @@ const Auth = ({ children }: AuthProps) => {
 						status
 							? enqueueSnackbar('Server is reachable.', { variant: 'success' })
 							: enqueueSnackbar('Server is unreachable.', { variant: 'error' });
+
 					return status;
 				})
 			)
@@ -160,6 +176,7 @@ const Auth = ({ children }: AuthProps) => {
 
 	const refresh = useCallback(() => {
 		if (demoMode || !isServerReachable) return Promise.resolve(setRefreshInterval(undefined));
+
 		return kyIntervalRef
 			.get(`auth/refresh`)
 			.json<ResponseAuthRefresh>()

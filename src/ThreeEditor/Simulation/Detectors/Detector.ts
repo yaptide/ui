@@ -41,6 +41,7 @@ export class Detector extends SimulationPoints {
 
 	get zone(): SimulationZone | null {
 		const data = this.getData();
+
 		if (data.zoneUuid) return this.editor.zoneManager.getZoneByUuid(data.zoneUuid) ?? null;
 		else return null;
 	}
@@ -68,6 +69,7 @@ export class Detector extends SimulationPoints {
 			parameters: this.getData(),
 			geometryType
 		};
+
 		return geometryData;
 	}
 
@@ -75,10 +77,12 @@ export class Detector extends SimulationPoints {
 		const { geometryType, parameters, position, rotation } = value;
 		this._detectorType = geometryType;
 		this.geometryParameters = { ...DETECT.DEFAULT_ANY, ...parameters };
+
 		if (!(geometryType in ['Zone', 'All'])) {
 			this.position.fromArray(position);
 			this.rotation.fromArray(rotation);
 		}
+
 		this.tryUpdateGeometry();
 	}
 
@@ -118,6 +122,7 @@ export class Detector extends SimulationPoints {
 	private generateGeometry(): THREE.BufferGeometry {
 		let geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
 		const { geometryParameters: data, detectorType: type } = this;
+
 		switch (type) {
 			case 'Mesh':
 				geometry = new THREE.BoxGeometry(
@@ -140,6 +145,7 @@ export class Detector extends SimulationPoints {
 						Math.max(1, Math.floor(data.depth * Detector.maxDisplayDensity))
 					)
 				);
+
 				break;
 			case 'Cyl':
 				geometry = new HollowCylinderGeometry(
@@ -159,6 +165,7 @@ export class Detector extends SimulationPoints {
 						Math.max(1, Math.floor(data.depth * 2 * Detector.maxDisplayDensity))
 					)
 				);
+
 				break;
 			case 'Zone':
 				const zone = this.editor.zoneManager.getZoneByUuid(data.zoneUuid);
@@ -174,6 +181,7 @@ export class Detector extends SimulationPoints {
 			default:
 				throw new Error(`${type} is not a valid Detect Geometry type`);
 		}
+
 		return geometry;
 	}
 
@@ -195,6 +203,7 @@ export class Detector extends SimulationPoints {
 		});
 
 		this.proxy = new Proxy<Detector>(this, this.overrideHandler);
+
 		return this.proxy;
 	}
 
@@ -203,6 +212,7 @@ export class Detector extends SimulationPoints {
 			throw new Error(
 				`Detector of uuid=${this.uuid} is of type '${this.detectorType}' not 'Mesh'`
 			);
+
 		return new DETECT.Mesh(this._geometryData);
 	}
 
@@ -211,6 +221,7 @@ export class Detector extends SimulationPoints {
 			throw new Error(
 				`Detector of uuid=${this.uuid} is of type '${this.detectorType}' not 'Cyl'`
 			);
+
 		return new DETECT.Cyl(this._geometryData);
 	}
 
@@ -219,6 +230,7 @@ export class Detector extends SimulationPoints {
 			throw new Error(
 				`Detector of uuid=${this.uuid} is of type '${this.detectorType}' not 'Zone'`
 			);
+
 		return new DETECT.Zone(this._geometryData);
 	}
 
@@ -227,6 +239,7 @@ export class Detector extends SimulationPoints {
 			throw new Error(
 				`Detector of uuid=${this.uuid} is of type '${this.detectorType}' not 'All'`
 			);
+
 		return new DETECT.All(this._geometryData);
 	}
 
@@ -256,6 +269,7 @@ export class Detector extends SimulationPoints {
 
 	toJSON(): DetectorJSON {
 		const { geometryData } = this;
+
 		return {
 			...super.toJSON(),
 			geometryData
@@ -266,6 +280,7 @@ export class Detector extends SimulationPoints {
 		const { geometryData } = json;
 		super.fromJSON(json);
 		this.geometryData = geometryData;
+
 		return this;
 	}
 }

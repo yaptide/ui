@@ -103,6 +103,7 @@ export class DetectorManager
 	createDetector(): Detector {
 		const geometry = new Detector(this.editor);
 		this.addDetector(geometry);
+
 		return geometry;
 	}
 
@@ -120,13 +121,16 @@ export class DetectorManager
 		const options = this.detectors
 			.filter(({ detectorType: detectType, geometryParameters: geometryData }) => {
 				if (detectType !== 'Zone') return true;
+
 				return this.editor.zoneManager.getZoneByUuid(geometryData.zoneUuid) !== undefined;
 			})
 			.filter(additionalPredicate || (() => true))
 			.reduce((acc, geometry) => {
 				acc[geometry.uuid] = `${geometry.name} [${geometry.id}]`;
+
 				return acc;
 			}, {} as Record<string, string>);
+
 		return options;
 	}
 	/***************************************************************/
@@ -173,6 +177,7 @@ export class DetectorManager
 
 	copy(source: this, recursive?: boolean | undefined) {
 		super.copy(source, recursive);
+
 		return this.fromJSON(source.toJSON());
 	}
 
@@ -187,6 +192,7 @@ export class DetectorManager
 
 	toJSON(): DetectorManagerJSON {
 		const { uuid, name, managerType: type, metadata } = this;
+
 		return {
 			uuid,
 			name,
@@ -201,12 +207,14 @@ export class DetectorManager
 			metadata: { version }
 		} = this;
 		const { uuid, name, detectors, metadata } = json;
+
 		if (!metadata || metadata.version !== version)
 			console.warn(`DetectorManager version mismatch: ${metadata?.version} !== ${version}`);
 
 		this.uuid = uuid;
 		this.name = name;
 		this.detectorContainer.fromJSON(detectors);
+
 		return this;
 	}
 }

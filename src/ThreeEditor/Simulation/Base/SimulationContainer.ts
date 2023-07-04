@@ -43,6 +43,7 @@ export abstract class SimulationSceneContainer<
 
 	add(child: TChild): this {
 		child.name = this.uniqueNameForChild(child);
+
 		return super.add(child);
 	}
 
@@ -70,6 +71,7 @@ export abstract class SimulationSceneContainer<
 
 	fromJSON(json: ReturnType<TChild['toJSON']>[]) {
 		this.reset();
+
 		if (!Array.isArray(json)) throw new Error(`Expected array, got ${typeof json}`);
 		json.forEach(childJson => {
 			const child = this._loader(childJson);
@@ -90,6 +92,7 @@ export class OneSlotContainer<TChild extends SimulationSceneChild>
 		if (this.children.length > 0) {
 			throw new Error('OneSlotContainer can only have one child');
 		}
+
 		return super.add(child);
 	}
 }

@@ -17,6 +17,7 @@ export class AddObjectCommand extends Command {
 		this.type = 'AddObjectCommand';
 
 		this.object = object;
+
 		if (object !== undefined) {
 			this.name = `Add Object: ${object.name}`;
 		}

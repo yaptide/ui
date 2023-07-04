@@ -46,6 +46,7 @@ export class ObjectQuantity extends ObjectAbstract {
 			text: 'Filter',
 			update: this.update.bind(this)
 		});
+
 		[this.rescaleRow, this.rescaleCheckbox, this.rescale] = createRowConditionalNumber({
 			text: 'Rescale',
 			value: [false, 1],
@@ -56,6 +57,7 @@ export class ObjectQuantity extends ObjectAbstract {
 
 	setObject(object: ScoringQuantity): void {
 		super.setObject(object);
+
 		if (!object) return;
 		this.object = object;
 
@@ -67,11 +69,13 @@ export class ObjectQuantity extends ObjectAbstract {
 		this.medium.setValue(medium ?? Scoring.MEDIUM_KEYWORD_OPTIONS.WATER);
 
 		const options = this.editor.scoringManager.getFilterOptions();
+
 		if (Object.keys(options).length > 0) {
 			showUIElement(this.filterRow);
 			this.filterCheckbox.setValue(hasFilter);
 			this.filter.setOptions(options);
 			this.filter.setValue(filter?.uuid);
+
 			if (hasFilter) {
 				showUIElement(this.filter);
 				this.filter.setValue(filter?.uuid);

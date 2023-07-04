@@ -33,6 +33,7 @@ export class RemoveDifferentialModifierCommand {
 		const output = super.toJSON(this);
 		output.object = this.object.toJSON();
 		output.modifier = this.modifier.toJSON();
+
 		return output;
 	}
 

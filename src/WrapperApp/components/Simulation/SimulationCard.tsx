@@ -21,7 +21,7 @@ import { SxProps, Theme } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { Fragment, ReactNode, useMemo, useState } from 'react';
 
-import { useLoader } from '../../../services/DataLoaderService';
+import { useLoader } from '../../../services/LoaderService';
 import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import {
@@ -71,9 +71,11 @@ export default function SimulationCard({
 
 	const rows = useMemo(() => {
 		const rows: JSX.Element[] = [];
+
 		if (currentJobStatusData[StatusState.RUNNING](simulationStatus)) {
 			row(0, 'Message', simulationStatus.message, !!simulationStatus.message);
 		}
+
 		return rows;
 	}, [simulationStatus]);
 
@@ -139,8 +141,10 @@ export default function SimulationCard({
 
 		if (!inputJson) {
 			setDisableLoadJson(true);
+
 			return enqueueSnackbar('Could not load json file', { variant: 'error' });
 		}
+
 		loadFromJson(inputJson);
 	};
 
@@ -338,6 +342,7 @@ export default function SimulationCard({
 									</Button>
 								);
 							}
+
 							return <></>;
 						})()}
 

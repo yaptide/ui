@@ -33,6 +33,7 @@ const getObjectType = object => {
 			return 'Unknown';
 	}
 };
+
 const getAdditionalInfo = object => {
 	switch (object.type) {
 		case 'BoxFigure':
@@ -46,17 +47,21 @@ const getAdditionalInfo = object => {
 			)}</span>`;
 		case 'Beam':
 			let particle = object.particle;
+
 			return ` [${object.id}] <span class="type Particle Beam"></span> ${particle.name} [${particle.id}]`;
 		case 'WorldZone':
 			let { simulationMaterial: worldMaterial } = object;
+
 			return `<span class="type Material"></span> 
 				<span class="type-value">${worldMaterial.name} [${worldMaterial.icru}]</span>`;
 		case 'Zone':
 			let { simulationMaterial: material } = object;
+
 			return ` [${object.id}] <span class="type Material"></span> 
 				<span class="type-value">${material.name} [${material.icru}]</span>`;
 		case 'Points':
 			let { zone, detectType } = object;
+
 			return ` [${object.id}] <span class="type Geometry ${
 				detectType === 'Zone' ? 'Zone' : ''
 			}"></span> <span class="type-value">${
@@ -66,6 +71,7 @@ const getAdditionalInfo = object => {
 			return ` [${object.id}]`;
 		case 'Output':
 			let { geometry } = object;
+
 			return ` [${object.id}] <span class="type-value">${
 				object.geometry
 					? `<span class="type Detect Geometry"></span>${escapeHTML(geometry.name)} [${
@@ -75,6 +81,7 @@ const getAdditionalInfo = object => {
 			}</span>`;
 		case 'Quantity':
 			let filter = object.filter;
+
 			return ` [${object.id}] ${
 				filter
 					? `<span class="type Filter Modifier"></span> <span class="type-value">${escapeHTML(
@@ -117,11 +124,13 @@ const buildOptions = (editor, object, pad) => {
 	}
 
 	let result = [option];
+
 	if (object.type !== 'Beam' && object.children?.length > 0)
 		//TODO: move beam helpers to scene helpers
 		result = result.concat(
 			object.children.flatMap(child => buildOptions(editor, child, pad + 1))
 		);
+
 	return result;
 };
 

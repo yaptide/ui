@@ -13,8 +13,10 @@ export class BooleanAlgebraData {
 				'Cannot change operation of first element of boolean algebra:',
 				`${this.value[index].operation} -> ${operation}}`
 			);
+
 			return false;
 		}
+
 		if (this.value[index - 1].objectId === null) {
 			console.error(
 				'Cannot change operation of element of boolean algebra with null objectId:',
@@ -22,6 +24,7 @@ export class BooleanAlgebraData {
 					index - 1
 				}]: ${operation}}`
 			);
+
 			return false;
 		}
 
@@ -34,6 +37,7 @@ export class BooleanAlgebraData {
 		}
 
 		this.value = [...this.value];
+
 		return true;
 	}
 
@@ -48,10 +52,12 @@ export class BooleanAlgebraData {
 				'Cannot change objectId of element of boolean algebra with null operation:',
 				`(${this.value[index].operation},null -> ${objectId})[${index}]`
 			);
+
 			return false;
 		}
 
 		this.value = [...this.value];
+
 		return true;
 	}
 
