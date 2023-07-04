@@ -3,7 +3,9 @@ import Keycloak from 'keycloak-js';
 const keycloakConfig = {
 	url: 'https://sso.pre.plgrid.pl/auth/',
 	realm: 'PLGrid',
-	clientId: 'yaptide-staging'
+	clientId: 'yaptide-staging',
+  pkceMethod: 'S256',
+  enableLogging: true
 };
 
 const keycloak = new Keycloak(keycloakConfig);
