@@ -4,8 +4,8 @@ const keycloakConfig = {
 	url: 'https://sso.pre.plgrid.pl/auth/',
 	realm: 'PLGrid',
 	clientId: 'yaptide-staging',
-  pkceMethod: 'S256',
-  enableLogging: true
+	pkceMethod: 'S256',
+	enableLogging: true
 };
 
 const keycloak = new Keycloak(keycloakConfig);
