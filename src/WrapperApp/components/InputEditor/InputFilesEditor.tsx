@@ -173,7 +173,6 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 								<CodeEditor
 									aria-label={name + ' text field'}
 									value={content}
-									language='sql'
 									placeholder={`Please enter ${name} content.`}
 									onChange={evn => {
 										if (!isLargeFile) {
