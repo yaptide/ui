@@ -15,7 +15,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDialog } from '../../../../services/DialogService';
 import { useLoader } from '../../../../services/LoaderService';
 import { YaptideEditor } from '../../../js/YaptideEditor';
-import { EditorToolbar } from './EditorToolbar/EditorToolbar';
+import { EditorToolbar } from './components/EditorToolbar';
 
 type AppBarProps = {
 	editor?: YaptideEditor;

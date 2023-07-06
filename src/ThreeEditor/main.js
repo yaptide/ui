@@ -4,6 +4,9 @@ import { SidebarProjectRenderer } from './js/sidebar/Sidebar.Project.Renderer.js
 import { ViewManager } from './js/viewport/ViewportManager.js';
 import { YaptideEditor } from './js/YaptideEditor.js';
 
+/**
+ * @deprecated Use function form StoreService instead
+ */
 export function initEditor(container) {
 	container = container || document.body;
 
