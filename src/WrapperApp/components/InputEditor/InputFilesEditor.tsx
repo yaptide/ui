@@ -50,6 +50,29 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 		props.onChange?.call(null, updateFn(inputFiles));
 	};
 
+	const truncateFile = (file: string) => {
+		var result: string[] = [];
+		var lines = file.split('\n').slice(0, largeFileLinesLimit);
+		var numberOfLines = lines.length
+		var totalLength = 0
+		for (var i = 0; i < numberOfLines; i++) {
+			var line = lines.shift();
+			if (line == null) {
+				break;
+			}
+			if (totalLength + line.length < largeFileSize) {
+				totalLength += line.length;
+				result.push(line);
+			} else {
+				result.push(line.substring(0, largeFileSize - totalLength));
+				break;
+			}
+		}
+
+		result.push("\n\n... Output truncated ...");
+		return result.join('\n');
+	};
+
 	return (
 		<Card sx={{ minHeight: '100%' }}>
 			<CardActions
@@ -113,8 +136,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 						const isLargeFile = value.length > largeFileSize;
 						const content = !isLargeFile
 							? value
-							: value.split('\n').slice(0, largeFileLinesLimit).join('\n') +
-							'\n\n... Output truncated ...';
+							: truncateFile(value);
 						return (
 							<Box key={name}>
 								<h2>
