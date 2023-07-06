@@ -15,6 +15,7 @@ import { ContextManager } from './EditorContext';
 import { History as _History } from './History.js';
 import { Loader } from './Loader.js';
 import { Storage as _Storage } from './Storage.js';
+import { ViewManager } from './viewport/ViewportManager';
 
 const _DEFAULT_CAMERA = new THREE.PerspectiveCamera(50, 1, 0.01, 1000);
 _DEFAULT_CAMERA.name = 'Camera';
@@ -181,8 +182,6 @@ export function YaptideEditor(container) {
 
 	this._results = null;
 
-	this.viewManager = null;
-
 	this.container = container;
 	container.setAttribute('tabindex', '-1');
 	this.container.focus();
@@ -222,6 +221,9 @@ export function YaptideEditor(container) {
 	this.sceneHelpers.add(this.beam);
 
 	this.contextManager = new ContextManager(this); //Context Manager must be loaded after all scenes
+
+	this.viewManager = new ViewManager(this); // Viewport Manager has to be created after Config, SceneHelpers, FigureManager and Camera
+	container.appendChild(this.viewManager.container.dom);
 
 	this.object = {};
 	this.geometries = {};

@@ -19,7 +19,7 @@ import SimulationPanel from './components/Simulation/SimulationPanel';
 
 function WrapperApp() {
 	const { demoMode } = useConfig();
-	const { editorRef, resultsSimulationData } = useStore();
+	const { resultsSimulationData } = useStore();
 	const { isAuthorized, logout } = useAuth();
 	const [open, setOpen] = useState(true);
 	const [tabsValue, setTabsValue] = useState('editor');
@@ -52,10 +52,6 @@ function WrapperApp() {
 		if (isAuthorized && tabsValue === 'login') setTabsValue('editor');
 	}, [isAuthorized, tabsValue]);
 
-	const onEditorInitialized = (editor: YaptideEditor) => {
-		editorRef.current = editor;
-	};
-
 	return (
 		<Box
 			sx={{
@@ -75,7 +71,6 @@ function WrapperApp() {
 				index={'editor'}
 				persistent>
 				<SceneEditor
-					onEditorInitialized={onEditorInitialized}
 					sidebarProps={[open, tabsValue === 'editor']}
 					focus={tabsValue === 'editor'}
 				/>

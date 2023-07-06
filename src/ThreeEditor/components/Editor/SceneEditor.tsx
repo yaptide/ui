@@ -2,10 +2,10 @@ import '../../css/main.css';
 
 import { AppBar, Box } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useTheme } from '@mui/material/styles';
 import { useEffect, useRef, useState } from 'react';
 import THREE from 'three';
 
+import { useStore } from '../../../services/StoreService';
 import useDocumentTitle from '../../../util/hooks/useDocumentTitle';
 import { useKeyboardEditorControls } from '../../../util/hooks/useKeyboardEditorControls';
 import { YaptideEditor } from '../../js/YaptideEditor';
@@ -21,60 +21,42 @@ declare global {
 	}
 }
 interface SceneEditorProps {
-	onEditorInitialized?: (editor: YaptideEditor) => void;
 	focus: boolean;
 	sidebarProps: boolean[];
 }
 
 function SceneEditor(props: SceneEditorProps) {
-	const threeEditorRef = useRef<HTMLDivElement>(null);
-	const [editor, setEditor] = useState<YaptideEditor>();
-	const [title, setTitle] = useState<string>(editor?.config.getKey('project/title'));
+	const wrapperElementRef = useRef<HTMLDivElement>(null);
+	const { editorRef, initializeEditor } = useStore();
 	const containerEl = useRef<HTMLDivElement>(null);
-	const theme = useTheme();
 
-	useKeyboardEditorControls(editor, threeEditorRef);
-
-	useEffect(() => {
-		editor?.signals.titleChanged.add(setTitle);
-
-		return () => {
-			editor?.signals.titleChanged.remove(setTitle);
-		};
-	}, [editor]);
-
-	useDocumentTitle(title);
+	useKeyboardEditorControls(editorRef.current, wrapperElementRef);
 
 	useEffect(() => {
 		if (containerEl.current) {
-			const { editor: newEditor } = initEditor(containerEl.current);
-			setEditor(newEditor);
+			initializeEditor(containerEl.current);
 		}
-	}, [containerEl]);
-
-	useEffect(() => {
-		editor && props.onEditorInitialized?.call(null, editor);
-	}, [editor, props.onEditorInitialized]);
+	}, [containerEl, initializeEditor]);
 
 	useEffect(() => {
 		if (props.focus) {
 			containerEl.current?.focus();
-			editor?.signals.sceneGraphChanged.dispatch();
+			editorRef.current?.signals.sceneGraphChanged.dispatch();
 		} else containerEl.current?.blur();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [props.focus, editor]);
+	}, [props.focus]);
 
 	useEffect(
 		() => {
-			editor?.signals.windowResize.dispatch();
+			editorRef.current?.signals.windowResize.dispatch();
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[editor, props.sidebarProps]
+		[props.sidebarProps]
 	);
 
 	return (
 		<Box
-			ref={threeEditorRef}
+			ref={wrapperElementRef}
 			tabIndex={-1}
 			sx={{
 				width: '100%',
@@ -89,8 +71,8 @@ function SceneEditor(props: SceneEditorProps) {
 					flexDirection: 'column',
 					flexGrow: 1
 				}}>
-				<EditorAppBar editor={editor} />
-				<EditorMenu editor={editor} />
+				<EditorAppBar editor={editorRef.current} />
+				<EditorMenu editor={editorRef.current} />
 				<div
 					className='ThreeEditor'
 					ref={containerEl}
@@ -99,7 +81,7 @@ function SceneEditor(props: SceneEditorProps) {
 						display: 'flex',
 						flexGrow: 1
 					}}>
-					{!editor && (
+					{!editorRef.current && (
 						<CircularProgress
 							sx={{
 								margin: 'auto'
@@ -108,7 +90,7 @@ function SceneEditor(props: SceneEditorProps) {
 					)}
 				</div>
 			</Box>
-			{editor && props.focus && (
+			{editorRef.current && props.focus && (
 				<AppBar
 					className='ThreeEditorSidebar'
 					position='static'
@@ -116,10 +98,10 @@ function SceneEditor(props: SceneEditorProps) {
 					sx={{
 						'width': 370,
 						'&.MuiAppBar-colorSecondary': {
-							backgroundColor: theme.palette.background.secondary
+							backgroundColor: ({ palette }) => palette.background.secondary
 						}
 					}}>
-					<EditorSidebar editor={editor}></EditorSidebar>
+					<EditorSidebar editor={editorRef.current}></EditorSidebar>
 				</AppBar>
 			)}
 		</Box>
