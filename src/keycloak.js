@@ -1,16 +1,16 @@
 import Keycloak from 'keycloak-js';
 
 const keycloakConfig = {
-	url: 'https://sso.pre.plgrid.pl/auth/',
-	realm: 'PLGrid',
-	clientId: 'yaptide-staging',
-	pkceMethod: 'S256',
-	enableLogging: true
+    url: 'https://sso.pre.plgrid.pl/auth/',
+    realm: 'PLGrid',
+    clientId: 'yaptide-staging',
+    enableLogging: true
 };
 
 const keycloak = new Keycloak(keycloakConfig);
 keycloak.init({
   onLoad: 'login-required',
+  pkceMethod: 'S256',
   promiseType: 'native'
 }).then(auth => {
   if(auth) {
