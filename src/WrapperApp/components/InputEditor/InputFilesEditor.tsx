@@ -53,14 +53,10 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 	const truncateFile = (file: string) => {
 		var result: string[] = [];
 		var lines = file.split('\n').slice(0, largeFileLinesLimit);
-		var numberOfLines = lines.length
-		var totalLength = 0
-		for (var i = 0; i < numberOfLines; i++) {
-			var line = lines.shift();
-			if (line == null) {
-				break;
-			}
-			if (totalLength + line.length < largeFileSize) {
+		let totalLength = 0;
+
+		for (const line of lines) {
+			if (totalLength + line.length <= largeFileSize) {
 				totalLength += line.length;
 				result.push(line);
 			} else {
