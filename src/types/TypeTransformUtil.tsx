@@ -85,6 +85,7 @@ export type SnakeToCamelCase<S extends string, First extends string = S> = [
 type TransformerMap<A extends string = never> = {
 	Snake: CamelToSnakeCase<A>;
 	Camel: SnakeToCamelCase<A>;
+	Uppercase: Uppercase<CamelToSnakeCase<A>>;
 };
 
 // Parametrized type for transforming keys of an object
@@ -254,3 +255,28 @@ export type RequiredKeys<T extends object> = keyof {
 		? K
 		: never]: never;
 };
+
+/**
+ * Transforms all keys of an object type to be capitalized.
+ * @template T - The object type to transform.
+ * @example
+ * ```ts
+ * type MyObject = { foo: string; bar: number };
+ * type MyUppercaseObject = UppercaseObjectKeys<MyObject>; // { FOO: string; BAR: number }
+ * ```
+ */
+export type UppercaseObjectKeys<T> = {
+	[K in keyof T as TransformCase<K, 'Uppercase'>]: T[K];
+};
+
+export type ValidateKeysTuple<
+	T extends PropertyKey,
+	U extends readonly PropertyKey[],
+	KeyTuple extends readonly PropertyKey[] = U
+> = U extends [infer H, ...infer R extends PropertyKey[]]
+	? H extends T
+		? ValidateKeysTuple<Exclude<T, H>, R, KeyTuple>
+		: never
+	: [never] extends [T]
+	? KeyTuple
+	: never;
