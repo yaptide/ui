@@ -13,7 +13,7 @@ export function LoadFileDialog({
 	validVersion: boolean;
 	data: EditorJson;
 }>) {
-	const { editorRef } = useStore();
+	const { yaptideEditor } = useStore();
 
 	return (
 		<CustomDialog
@@ -50,9 +50,9 @@ export function LoadFileDialog({
 				onClick={() => {
 					onClose();
 
-					if (data && editorRef.current) {
-						editorRef.current.clear();
-						editorRef.current.fromJSON(data);
+					if (data && yaptideEditor) {
+						yaptideEditor.clear();
+						yaptideEditor.fromJSON(data);
 					}
 				}}>
 				Clear and proceed

@@ -29,7 +29,7 @@ type GeneratorLocation = 'local' | 'remote';
 export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const { demoMode } = useConfig();
 	const { enqueueSnackbar } = useSnackbar();
-	const { editorRef } = useStore();
+	const { yaptideEditor } = useStore();
 	const { convertToInputFiles } = useShSimulation();
 	const { isConverterReady, convertJSON } = usePythonConverter();
 
@@ -61,7 +61,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 
 	const onClickGenerate = useCallback(() => {
 		setInProgress(true);
-		const editorJSON = editorRef.current?.toJSON();
+		const editorJSON = yaptideEditor?.toJSON();
 
 		if (!editorJSON) return setInProgress(false);
 
@@ -77,7 +77,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 			.finally(() => {
 				setInProgress(false);
 			});
-	}, [editorRef, enqueueSnackbar, handleConvert]);
+	}, [yaptideEditor, enqueueSnackbar, handleConvert]);
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const debouncedOnClickGenerate = useCallback(

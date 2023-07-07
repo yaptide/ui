@@ -4,7 +4,7 @@ import { useStore } from '../../../services/StoreService';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
 export function NewProjectDialog({ onClose }: ConcreteDialogProps) {
-	const { editorRef } = useStore();
+	const { yaptideEditor } = useStore();
 
 	return (
 		<CustomDialog
@@ -19,7 +19,7 @@ export function NewProjectDialog({ onClose }: ConcreteDialogProps) {
 			</Button>
 			<Button
 				onClick={() => {
-					if (editorRef.current) editorRef.current.clear();
+					if (yaptideEditor) yaptideEditor.clear();
 					onClose();
 				}}>
 				Clear and proceed

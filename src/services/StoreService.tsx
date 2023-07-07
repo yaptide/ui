@@ -1,4 +1,4 @@
-import { Dispatch, MutableRefObject, SetStateAction, useCallback, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
@@ -7,7 +7,7 @@ import { createGenericContext, GenericContextProviderProps } from './GenericCont
 import { FullSimulationData } from './ShSimulatorService';
 
 export interface StoreContext {
-	editorRef: MutableRefObject<YaptideEditor | undefined>;
+	yaptideEditor?: YaptideEditor;
 	initializeEditor: (container: HTMLDivElement) => void;
 	trackedId?: string;
 	setTrackedId: Dispatch<SetStateAction<string | undefined>>;
@@ -26,8 +26,7 @@ declare global {
 }
 
 const Store = ({ children }: GenericContextProviderProps) => {
-	const editorRef = useRef<YaptideEditor>();
-	const [, setEditor] = useState<YaptideEditor>();
+	const [editor, setEditor] = useState<YaptideEditor>();
 	const [resultsSimulationData, setResultsSimulationData] = useState<FullSimulationData>();
 	const [localResultsSimulationData, setLocalResultsSimulationData] = useState<
 		FullSimulationData[]
@@ -108,13 +107,12 @@ const Store = ({ children }: GenericContextProviderProps) => {
 			stateChangedSignals.forEach(signal => signal.add(saveState));
 		});
 
-		editorRef.current = editor;
 		setEditor(editor);
 		window.YAPTIDE_EDITOR = editor;
 	}, []);
 
 	const value: StoreContext = {
-		editorRef,
+		yaptideEditor: editor,
 		initializeEditor,
 		trackedId,
 		setTrackedId,

@@ -25,7 +25,7 @@ export function RunSimulationDialog({
 	inputFiles?: Record<string, string>;
 	simulator: SimulatorType;
 }>) {
-	const { editorRef } = useStore();
+	const { yaptideEditor } = useStore();
 	const [controller] = useState(new AbortController());
 	const { postJobDirect, postJobBatch } = useShSimulation();
 	const sendSimulationRequest = (
@@ -89,7 +89,7 @@ export function RunSimulationDialog({
 							gap: 3
 						}}>
 						<RunSimulationForm
-							editorJson={editorRef.current?.toJSON()}
+							editorJson={yaptideEditor?.toJSON()}
 							inputFiles={{
 								...inputFiles
 							}}

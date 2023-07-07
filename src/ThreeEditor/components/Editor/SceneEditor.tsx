@@ -27,10 +27,10 @@ interface SceneEditorProps {
 
 function SceneEditor(props: SceneEditorProps) {
 	const wrapperElementRef = useRef<HTMLDivElement>(null);
-	const { editorRef, initializeEditor } = useStore();
+	const { yaptideEditor, initializeEditor } = useStore();
 	const containerEl = useRef<HTMLDivElement>(null);
 
-	useKeyboardEditorControls(editorRef.current, wrapperElementRef);
+	useKeyboardEditorControls(yaptideEditor, wrapperElementRef);
 
 	useEffect(() => {
 		if (containerEl.current) {
@@ -41,14 +41,14 @@ function SceneEditor(props: SceneEditorProps) {
 	useEffect(() => {
 		if (props.focus) {
 			containerEl.current?.focus();
-			editorRef.current?.signals.sceneGraphChanged.dispatch();
+			yaptideEditor?.signals.sceneGraphChanged.dispatch();
 		} else containerEl.current?.blur();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.focus]);
 
 	useEffect(
 		() => {
-			editorRef.current?.signals.windowResize.dispatch();
+			yaptideEditor?.signals.windowResize.dispatch();
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[props.sidebarProps]
@@ -71,8 +71,8 @@ function SceneEditor(props: SceneEditorProps) {
 					flexDirection: 'column',
 					flexGrow: 1
 				}}>
-				<EditorAppBar editor={editorRef.current} />
-				<EditorMenu editor={editorRef.current} />
+				<EditorAppBar editor={yaptideEditor} />
+				<EditorMenu editor={yaptideEditor} />
 				<div
 					className='ThreeEditor'
 					ref={containerEl}
@@ -81,7 +81,7 @@ function SceneEditor(props: SceneEditorProps) {
 						display: 'flex',
 						flexGrow: 1
 					}}>
-					{!editorRef.current && (
+					{!yaptideEditor && (
 						<CircularProgress
 							sx={{
 								margin: 'auto'
@@ -90,7 +90,7 @@ function SceneEditor(props: SceneEditorProps) {
 					)}
 				</div>
 			</Box>
-			{editorRef.current && props.focus && (
+			{yaptideEditor && props.focus && (
 				<AppBar
 					className='ThreeEditorSidebar'
 					position='static'
@@ -101,7 +101,7 @@ function SceneEditor(props: SceneEditorProps) {
 							backgroundColor: ({ palette }) => palette.background.secondary
 						}
 					}}>
-					<EditorSidebar editor={editorRef.current}></EditorSidebar>
+					<EditorSidebar editor={yaptideEditor}></EditorSidebar>
 				</AppBar>
 			)}
 		</Box>

@@ -3,18 +3,17 @@ import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import RedoIcon from '@mui/icons-material/Redo';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 import UndoIcon from '@mui/icons-material/Undo';
-import { CircularProgress } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useDialog } from '../../../../services/DialogService';
 import { useLoader } from '../../../../services/LoaderService';
 import { YaptideEditor } from '../../../js/YaptideEditor';
+import { EditorTitleBar } from './components/EditorTitlebar';
 import { EditorToolbar } from './components/EditorToolbar';
 
 type AppBarProps = {
@@ -34,37 +33,21 @@ function EditorAppBar({ editor }: AppBarProps) {
 	const [openTheOpenFileDialog] = useDialog('openFile');
 	const [openTheSaveFileDialog] = useDialog('saveFile');
 	const [openTheNewProjectDialog] = useDialog('newProject');
-	const [title, setTitle] = useState<string>(editor?.config.getKey('project/title'));
 	const [canUndo, setCanUndo] = useState((editor?.history.undos.length ?? 0) > 0);
 	const [canRedo, setCanRedo] = useState((editor?.history.redos.length ?? 0) > 0);
-	const [saving, setSaving] = useState(false);
 
 	const updateHistoryButtons = useCallback(() => {
 		setCanUndo((editor?.history.undos.length ?? 0) > 0);
 		setCanRedo((editor?.history.redos.length ?? 0) > 0);
 	}, [editor]);
 
-	const startSave = useCallback(() => {
-		setSaving(true);
-	}, []);
-
-	const stopSave = useCallback(() => {
-		setTimeout(() => setSaving(false), 700);
-	}, []);
-
 	useEffect(() => {
 		editor?.signals.historyChanged.add(updateHistoryButtons);
-		editor?.signals.titleChanged.add(setTitle);
-		editor?.signals.savingStarted.add(startSave);
-		editor?.signals.savingFinished.add(stopSave);
 
 		return () => {
 			editor?.signals.historyChanged.remove(updateHistoryButtons);
-			editor?.signals.titleChanged.remove(setTitle);
-			editor?.signals.savingStarted.remove(startSave);
-			editor?.signals.savingFinished.remove(stopSave);
 		};
-	}, [editor, updateHistoryButtons, setTitle, startSave, stopSave]);
+	}, [editor, updateHistoryButtons]);
 
 	const ToolbarButton = ({ label, icon, onClick, disabled, edge }: AppBarOptions) => (
 		<Tooltip title={label}>
@@ -147,26 +130,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 			color='secondary'>
 			<Toolbar>
 				{leftSideOptions}
-				<Typography
-					variant='subtitle1'
-					component='div'
-					align='center'
-					sx={{
-						width: 'auto',
-						flexGrow: 1,
-						flexShrink: 1,
-						textOverflow: 'ellipsis',
-						overflow: 'hidden',
-						whiteSpace: 'nowrap'
-					}}>
-					{title}
-					{saving && (
-						<CircularProgress
-							size={18}
-							sx={{ ml: 1, position: 'absolute', top: '33%', color: 'inherit' }}
-						/>
-					)}
-				</Typography>
+				<EditorTitleBar />
 				<EditorToolbar editor={editor} />
 			</Toolbar>
 		</AppBar>
