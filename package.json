@@ -20,7 +20,7 @@
 		"@types/react-dom": "^17.0.11",
 		"@types/signals": "^1.0.1",
 		"@types/throttle-debounce": "^5.0.0",
-		"@uiw/react-textarea-code-editor": "^2.1.6",
+		"@uiw/react-textarea-code-editor": "^2.1.7",
 		"comlink": "^4.3.1",
 		"command-exists": "^1.2.9",
 		"convert-units": "^3.0.0-beta.5",
