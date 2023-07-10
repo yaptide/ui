@@ -184,7 +184,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 												display: 'inline-flex',
 												fontSize: 'initial'
 											}}>
-											File is to large and was truncated...
+											File is to large, displaying first few lines...
 										</Box>
 									)}
 								</h2>
