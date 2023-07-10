@@ -6,17 +6,16 @@ import SimulationMaterial, { SimulationMaterialJSON } from '../Materials/Simulat
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from './SimulationElement';
 
-export type SimulationZoneJSON = Omit<
-	SimulationElementJSON & {
-		materialUuid: string;
-		materialPropertiesOverrides: Partial<MaterialOverridable>;
-		customMaterial?: SimulationMaterialJSON & {
-			originalMaterialUuid: string;
-		};
-		visible: boolean;
-	},
-	never
->;
+export type SimulationZoneType = 'BooleanZone' | 'TreeZone' | 'Zone';
+export interface SimulationZoneJSON<TName = SimulationZoneType>
+	extends SimulationElementJSON<TName> {
+	materialUuid: string;
+	materialPropertiesOverrides: Partial<MaterialOverridable>;
+	customMaterial?: SimulationMaterialJSON & {
+		originalMaterialUuid: string;
+	};
+	visible: boolean;
+}
 
 interface MaterialOverridable {
 	density: number;
@@ -57,8 +56,9 @@ export abstract class SimulationZone
 	editor: YaptideEditor;
 	parent: SimulationSceneContainer<this> | null = null;
 	_name: string;
+
 	readonly isZone: true = true;
-	readonly type: string;
+	readonly type: SimulationZoneType;
 	private _materialPropertiesOverrides: OverrideMap;
 	private usingCustomMaterial = false;
 
@@ -120,7 +120,7 @@ export abstract class SimulationZone
 
 	readonly isSimulationElement = true;
 
-	constructor(editor: YaptideEditor, name: string, type: string = 'Zone') {
+	constructor(editor: YaptideEditor, name: string, type: SimulationZoneType = 'Zone') {
 		super(new THREE.BufferGeometry(), editor.materialManager.defaultMaterial);
 		this.editor = editor;
 		this.name = this._name = name ?? type;

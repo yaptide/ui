@@ -9,14 +9,12 @@ import { SimulationElementManager } from '../Base/SimulationManager';
 import { BeamModulator, BeamModulatorJSON, isBeamModulator } from './BeamModulator';
 import { CTCube, CTCubeJSON, isCTCube } from './CTCube';
 
-type SpecialComponentManagerJSON = Omit<
-	SimulationElementJSON & {
-		CTCube?: CTCubeJSON;
-		modulator?: BeamModulatorJSON;
-		metadata: Record<string, string | number>;
-	},
-	never
->;
+export interface SpecialComponentManagerJSON
+	extends SimulationElementJSON<'SpecialComponentManager'> {
+	CTCube?: CTCubeJSON;
+	modulator?: BeamModulatorJSON;
+	metadata: Record<string, string | number>;
+}
 
 export class SpecialComponentManager
 	extends THREE.Scene

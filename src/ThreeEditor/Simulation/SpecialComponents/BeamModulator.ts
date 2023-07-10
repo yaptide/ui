@@ -13,18 +13,15 @@ type ModulatorParameters = {
 	zoneUuid: string;
 };
 
-export type BeamModulatorJSON = Omit<
-	SimulationPointsJSON & {
-		geometryData: ModulatorGeometryDataType;
-		simulationMethod: BeamsimulationMethod;
-		sourceFile: ConfigSourceFile;
-	},
-	never
->;
+export interface BeamModulatorJSON extends SimulationPointsJSON {
+	geometryData: ModulatorGeometryDataType;
+	simulationMethod: BeamSimulationMethod;
+	sourceFile: ConfigSourceFile;
+}
 
 export const BEAM_MODULATOR_MODE_OPTIONS = ['modulus', 'sampling'] as const;
 
-export type BeamsimulationMethod = (typeof BEAM_MODULATOR_MODE_OPTIONS)[number];
+export type BeamSimulationMethod = (typeof BEAM_MODULATOR_MODE_OPTIONS)[number];
 
 /**
  * Simulation component for beam modulator
@@ -102,7 +99,7 @@ export class BeamModulator extends SimulationPoints {
 		};
 	}
 
-	simulationMethod: BeamsimulationMethod = 'modulus';
+	simulationMethod: BeamSimulationMethod = 'modulus';
 	set geometryData(data: ModulatorGeometryDataType) {
 		const { geometryType, parameters } = data;
 

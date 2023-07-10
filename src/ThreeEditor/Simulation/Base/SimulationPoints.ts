@@ -4,12 +4,12 @@ import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from './SimulationElement';
-import { SimulationMeshJSON } from './SimulationMesh';
 
-export type SimulationPointsJSON = Omit<
-	SimulationElementJSON & Omit<SimulationMeshJSON, 'geometryData'>,
-	never
->;
+export interface SimulationPointsJSON extends SimulationElementJSON {
+	colorHex: number;
+	visible: boolean;
+}
+
 /**
  * This is the base class for elements that are represented by grid of points.
  *

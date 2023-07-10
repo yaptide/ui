@@ -4,16 +4,12 @@ import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { AdditionalGeometryDataType, getGeometryData } from '../../../util/AdditionalGeometryData';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
-import { SimulationElement, SimulationElementJSON } from './SimulationElement';
+import { SimulationElement } from './SimulationElement';
+import { SimulationPointsJSON } from './SimulationPoints';
 
-export type SimulationMeshJSON = Omit<
-	SimulationElementJSON & {
-		geometryData: AdditionalGeometryDataType;
-		colorHex: number;
-		visible: boolean;
-	},
-	never
->;
+export interface SimulationMeshJSON extends SimulationPointsJSON {
+	geometryData: AdditionalGeometryDataType;
+}
 
 /**
  * This is the base class for all simulation objects

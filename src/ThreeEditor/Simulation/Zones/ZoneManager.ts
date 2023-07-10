@@ -12,14 +12,11 @@ import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
 import { BooleanZone, BooleanZoneJSON, isBooleanZone } from './BooleanZone';
 import { WorldZone, WorldZoneJSON } from './WorldZone/WorldZone';
 
-type ZoneManagerJSON = Omit<
-	SimulationElementJSON & {
-		zones: SimulationZoneJSON[];
-		worldZone: WorldZoneJSON;
-		metadata: Record<string, string | number>;
-	},
-	never
->;
+export interface ZoneManagerJSON extends SimulationElementJSON<'ZoneManager'> {
+	zones: SimulationZoneJSON[];
+	worldZone: WorldZoneJSON;
+	metadata: Record<string, string | number>;
+}
 
 const zoneLoader = (editor: YaptideEditor) => (json: SimulationZoneJSON) => {
 	if (json.type === 'BooleanZone') return BooleanZone.fromJSON(editor, json as BooleanZoneJSON);

@@ -13,7 +13,6 @@ import { ZoneManager } from '../Simulation/Zones/ZoneManager';
 import { Config } from './Config.js';
 import { ContextManager } from './EditorContext';
 import { History as _History } from './History.js';
-import { Loader } from './Loader.js';
 import { Storage as _Storage } from './Storage.js';
 import { ViewManager } from './viewport/ViewportManager';
 
@@ -198,11 +197,6 @@ export function YaptideEditor(container) {
 		name: 'cm',
 		multiplier: 1
 	};
-
-	/**
-	 * @property @deprecated Use DataLoaderService and YaptideEditor.handleJSON instead
-	 */
-	this.loader = new Loader(this);
 
 	this.camera = _DEFAULT_CAMERA.clone();
 

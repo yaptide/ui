@@ -8,7 +8,7 @@ import {
 	getGeometryData
 } from '../../../../util/AdditionalGeometryData';
 import { YaptideEditor } from '../../../js/YaptideEditor';
-import { SimulationElement } from '../../Base/SimulationElement';
+import { SimulationElement, SimulationElementJSON } from '../../Base/SimulationElement';
 import SimulationMaterial from '../../Materials/SimulationMaterial';
 import { WorldZoneHelper } from './WorldZoneHelper';
 
@@ -20,10 +20,7 @@ export const BOUNDING_ZONE_TYPE = [
 
 export type WorldZoneType = (typeof BOUNDING_ZONE_TYPE)[number];
 
-export interface WorldZoneJSON {
-	uuid: string;
-	type: string;
-	name: string;
+export interface WorldZoneJSON extends SimulationElementJSON<'WorldZone'> {
 	marginMultiplier: number;
 	autoCalculate: boolean;
 	materialUuid: string;
@@ -52,6 +49,7 @@ export class WorldZone extends SimulationElement {
 	readonly notDraggable: boolean = true;
 
 	editor: YaptideEditor;
+	declare type: 'WorldZone';
 
 	private _material: MeshBasicMaterial;
 	private _simulationMaterial: SimulationMaterial;

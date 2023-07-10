@@ -16,12 +16,9 @@ const defaultMaterial = new THREE.MeshBasicMaterial({
 const ctGeometry = new THREE.BoxGeometry(2, 0.5, 1, 1, 1, 1);
 const ctMaterial = defaultMaterial.clone();
 
-export type CTCubeJSON = Omit<
-	SimulationMeshJSON & {
-		pathOnServer: string;
-	},
-	never
->;
+export interface CTCubeJSON extends SimulationMeshJSON {
+	pathOnServer: string;
+}
 
 export class CTCube extends BasicFigure<THREE.BoxGeometry> {
 	readonly notScalable = true;

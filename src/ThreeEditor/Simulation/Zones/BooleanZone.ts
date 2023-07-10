@@ -11,7 +11,7 @@ import CSG from '../../js/libs/csg/three-csg';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
 
-export interface BooleanZoneJSON extends SimulationZoneJSON {
+export interface BooleanZoneJSON extends SimulationZoneJSON<'BooleanZone'> {
 	unionOperations: OperationTupleJSON[][];
 	subscribedObjects: Record<string, number>;
 }
@@ -21,6 +21,7 @@ export class BooleanZone extends SimulationZone {
 	readonly notRotatable = true;
 	readonly notScalable = true;
 	private _unionOperations: OperationTuple[][];
+	declare type: 'BooleanZone';
 
 	subscribedObjects: CounterMap<string>;
 	needsUpdate: boolean = true;
@@ -188,6 +189,7 @@ export class BooleanZone extends SimulationZone {
 
 		return {
 			...json,
+			type: this.type,
 			unionOperations,
 			subscribedObjects
 		};

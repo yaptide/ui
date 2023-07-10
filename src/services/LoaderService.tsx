@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { JSON_VERSION } from '../ThreeEditor/js/YaptideEditor';
+import { SimulationElementJSON } from '../ThreeEditor/Simulation/Base/SimulationElement';
 import { hasFields } from '../util/customGuards';
 import { useDialog } from './DialogService';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
@@ -47,26 +48,25 @@ const Loader = ({ children }: GenericContextProviderProps) => {
 	const { yaptideEditor, setResultsSimulationData, setLocalResultsSimulationData } = useStore();
 	const [, setUrlInPath] = useState<string>();
 
-	const handleJSON = useCallback(
+	const handleEditor = useCallback(
 		(json: EditorJson) => {
 			const type = json.metadata.type;
 
-			switch (type) {
-				case 'Editor':
-					open({
-						data: json,
-						validVersion: json.metadata.version === JSON_VERSION
-					});
-
-					break;
-				default:
-					console.error('Unknown JSON type', type);
-
-					break;
-			}
+			if (type !== 'Editor') return console.error('No type found in JSON');
+			open({
+				data: json,
+				validVersion: json.metadata.version === JSON_VERSION
+			});
 		},
 		[open]
 	);
+
+	const handleSerializedElements = useCallback((json: SimulationElementJSON) => {
+		const { type } = json;
+
+		switch (type) {
+		}
+	}, []);
 
 	const loadData = useCallback(
 		(dataArray: unknown[]) => {
@@ -79,15 +79,15 @@ const Loader = ({ children }: GenericContextProviderProps) => {
 				return result;
 			});
 			setResultsSimulationData([...loadedResults].pop());
+
+			if (!yaptideEditor) return;
 			const loadedEditor = dataArray
 				.concat(loadedResults.map(e => e.input.inputJson))
 				.find(isEditorJson);
 
-			if (loadedEditor && yaptideEditor) {
-				handleJSON(loadedEditor);
-			}
+			if (loadedEditor) return handleEditor(loadedEditor);
 		},
-		[yaptideEditor, handleJSON, setLocalResultsSimulationData, setResultsSimulationData]
+		[yaptideEditor, handleEditor, setLocalResultsSimulationData, setResultsSimulationData]
 	);
 
 	const loadFromFiles = useCallback(

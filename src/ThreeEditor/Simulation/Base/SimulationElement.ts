@@ -4,9 +4,11 @@ import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 
-export type SimulationElementJSON = {
+type SimulationElementType = 'ZoneManager' | 'BooleanZone' | 'WorldZone' | SimulationZoneType;
+
+export type SimulationElementJSON<TypeName = SimulationElementType> = {
 	name: string;
-	type: string;
+	type: TypeName;
 	uuid: string;
 };
 
@@ -22,11 +24,11 @@ export abstract class SimulationElement
 {
 	editor: YaptideEditor;
 	parent: SimulationSceneContainer<this> | null = null;
-	readonly type: string;
+	readonly type: SimulationElementType;
 	readonly isSimulationElement = true;
 	_name: string;
 
-	constructor(editor: YaptideEditor, name: string | undefined, type: string) {
+	constructor(editor: YaptideEditor, name: string | undefined, type: SimulationElementType) {
 		super();
 		this.editor = editor;
 		this.name = this._name = name ?? type;
