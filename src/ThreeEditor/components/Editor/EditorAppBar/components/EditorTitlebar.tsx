@@ -9,13 +9,13 @@ import {
 } from '@mui/material';
 import { bindContextMenu, bindMenu, usePopupState } from 'material-ui-popup-state/hooks';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useDocumentTitle, useTimeout } from 'usehooks-ts';
+import { useDocumentTitle } from 'usehooks-ts';
 
 import { useDialog } from '../../../../../services/DialogService';
 import { useStore } from '../../../../../services/StoreService';
 
 export function EditorTitleBar() {
-	const [open, _, isOpen] = useDialog('editProject');
+	const [open, , isOpen] = useDialog('editProject');
 	const { yaptideEditor } = useStore();
 	const [saving, setSaving] = useState(false);
 	const [editMode, setEditMode] = useState(false);

@@ -1,6 +1,6 @@
 import { Card, CardContent, Fade, Modal } from '@mui/material';
 import { enqueueSnackbar } from 'notistack';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';

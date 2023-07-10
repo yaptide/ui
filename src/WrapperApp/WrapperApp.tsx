@@ -6,7 +6,6 @@ import { useAuth } from '../services/AuthService';
 import { JsRootService } from '../services/JsRootService';
 import { useStore } from '../services/StoreService';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
-import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
 import { SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles } from '../types/ResponseTypes';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';

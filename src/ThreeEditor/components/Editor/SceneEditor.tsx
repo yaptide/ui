@@ -2,14 +2,12 @@ import '../../css/main.css';
 
 import { AppBar, Box } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import THREE from 'three';
 
 import { useStore } from '../../../services/StoreService';
-import useDocumentTitle from '../../../util/hooks/useDocumentTitle';
 import { useKeyboardEditorControls } from '../../../util/hooks/useKeyboardEditorControls';
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { initEditor } from '../../main';
 import { EditorSidebar } from '../Sidebar/EditorSidebar';
 import EditorAppBar from './EditorAppBar/EditorAppBar';
 import { EditorMenu } from './EditorMenu/EditorMenu';

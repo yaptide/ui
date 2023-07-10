@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useCallback, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import * as THREE from 'three';
 
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
