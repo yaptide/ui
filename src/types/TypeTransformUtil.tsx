@@ -269,6 +269,18 @@ export type UppercaseObjectKeys<T> = {
 	[K in keyof T as TransformCase<K, 'Uppercase'>]: T[K];
 };
 
+/**
+ * Validates that a tuple of keys is tuple of all keys of a type.
+ * @template T - The set of keys to validate against.
+ * @template U - The tuple of keys to validate.
+ * @template KeyTuple - The original tuple of keys (used for recursion).
+ * @example
+ * ```ts
+ * type Keys = 'a' | 'b' | 'c';
+ * type Tuple = ['a', 'b', 'c'];
+ * type Validated = ValidateKeysTuple<Keys, Tuple>; // ['a', 'b', 'c']
+ * ```
+ */
 export type ValidateKeysTuple<
 	T extends PropertyKey,
 	U extends readonly PropertyKey[],

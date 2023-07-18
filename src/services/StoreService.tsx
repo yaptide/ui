@@ -68,8 +68,6 @@ const Store = ({ children }: GenericContextProviderProps) => {
 				}
 			});
 
-			//
-
 			let timeout: NodeJS.Timeout;
 
 			function saveState() {

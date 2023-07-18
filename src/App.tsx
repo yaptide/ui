@@ -31,7 +31,6 @@ declare module '@mui/material/styles' {
 
 declare global {
 	interface Window {
-		theme: Theme;
 		editor: YaptideEditor;
 		THREE: typeof THREE;
 	}
@@ -76,7 +75,6 @@ function App() {
 			}),
 		[prefersDarkMode]
 	);
-	window.theme ??= theme;
 	window.THREE ??= THREE;
 
 	return (

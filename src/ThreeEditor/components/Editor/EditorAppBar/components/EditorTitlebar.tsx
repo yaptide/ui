@@ -21,7 +21,6 @@ export function EditorTitleBar() {
 	const [editMode, setEditMode] = useState(false);
 	const [title, setTitle] = useState<string>(yaptideEditor?.config.getKey('project/title'));
 	const titleRef = useRef(title);
-	console.log('title', title);
 	useDocumentTitle(titleRef.current);
 
 	const startSave = useCallback(() => {
