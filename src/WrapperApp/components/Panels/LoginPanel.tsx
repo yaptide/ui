@@ -2,15 +2,11 @@ import { Box, Button, Card, CardContent, TextField, Typography, useTheme } from 
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
-import keycloak from '../../../keycloak';
 import { useAuth } from '../../../services/AuthService';
 
 export default function LoginPanel() {
 	const { altAuth } = useConfig();
-	const keylogin = () => {
-		keycloak.login();
-	};
-	const { login } = useAuth();
+	const { login, tokenLogin } = useAuth();
 	const theme = useTheme();
 
 	const [username, setUsername] = useState('');
@@ -99,7 +95,7 @@ export default function LoginPanel() {
 								color='info'
 								fullWidth
 								variant={theme.palette.mode === 'dark' ? 'outlined' : 'contained'}
-								onClick={keylogin}>
+								onClick={tokenLogin}>
 								Connect with PLGrid
 							</Button>
 						</>

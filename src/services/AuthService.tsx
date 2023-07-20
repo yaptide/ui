@@ -1,3 +1,4 @@
+import Keycloak from 'keycloak-js';
 import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
 import { useSnackbar } from 'notistack';
@@ -15,8 +16,9 @@ import { hasFields } from '../util/customGuards';
 import useIntervalAsync from '../util/hooks/useIntervalAsync';
 import { snakeToCamelCase } from '../util/Notation/Notation';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
+import { keycloakConfig } from './keycloakConfig';
 
-type AuthUser = Pick<ResponseAuthStatus, 'username'>;
+type AuthUser = Pick<ResponseAuthStatus, 'username' | 'source'>;
 
 const isAuthUser = (obj: unknown): obj is AuthUser => {
 	return hasFields<string>(obj, 'username') && typeof obj.username === 'string';
@@ -64,12 +66,14 @@ export interface AuthContext {
 	isAuthorized: boolean;
 	isServerReachable: boolean;
 	login: (...args: RequestAuthLogin) => void;
+	tokenLogin: () => void;
 	logout: (...args: RequestAuthLogout) => void;
 	refresh: (...args: RequestAuthRefresh) => void;
 	authKy: KyInstance;
 }
 
 const [useAuth, AuthContextProvider] = createGenericContext<AuthContext>();
+const keycloak = new Keycloak(keycloakConfig);
 
 const Auth = ({ children }: GenericContextProviderProps) => {
 	const { backendUrl, demoMode } = useConfig();
@@ -82,6 +86,21 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	useEffect(() => {
 		setReachInterval(isServerReachable ? 180000 : undefined);
 	}, [isServerReachable]);
+
+	keycloak
+		.init({
+			pkceMethod: 'S256',
+			checkLoginIframe: false
+		})
+		.then(auth => {
+			if (auth) {
+				console.log(keycloak);
+				setUser({
+					username: keycloak.tokenParsed?.preferred_username,
+					source: 'keycloak'
+				});
+			}
+		});
 
 	const kyRef = useMemo(
 		() =>
@@ -175,6 +194,33 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	}, [reachServer]);
 
 	const refresh = useCallback(() => {
+		if (user?.source === 'keycloak' && keycloak)
+			return keycloak
+				.updateToken(300)
+				.then(refreshed => {
+					if (refreshed) {
+						const delay = getRefreshDelay(
+							(keycloak.tokenParsed?.exp! + keycloak.timeSkew!) * 1000
+						);
+						console.log('Token refreshed', delay);
+						setRefreshInterval(getRefreshDelay(delay));
+					} else {
+						console.log(
+							'Token not refreshed, valid for ' +
+								Math.round(
+									keycloak.tokenParsed?.exp! +
+										keycloak.timeSkew! -
+										new Date().getTime() / 1000
+								) +
+								' seconds'
+						);
+					}
+				})
+				.catch(() => {
+					console.log('Failed to refresh token');
+					setUser(null);
+				});
+
 		if (demoMode || !isServerReachable) return Promise.resolve(setRefreshInterval(undefined));
 
 		return kyIntervalRef
@@ -182,13 +228,22 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 			.json<ResponseAuthRefresh>()
 			.then(({ accessExp }) => setRefreshInterval(getRefreshDelay(accessExp)))
 			.catch((_: HTTPError) => {});
-	}, [demoMode, isServerReachable, kyIntervalRef]);
+	}, [demoMode, isServerReachable, kyIntervalRef, user?.source]);
 
 	useEffect(() => {
 		if (user !== null && refreshInterval === undefined && isServerReachable)
 			setRefreshInterval(3000);
 		else if (!isServerReachable || user === null) setRefreshInterval(undefined);
 	}, [isServerReachable, refreshInterval, user]);
+
+	const tokenLogin = useCallback(() => {
+		keycloak.login().then(() => {
+			keycloak.loadUserInfo().then(userInfo => {
+				console.log(userInfo);
+				enqueueSnackbar('Logged in.', { variant: 'success' });
+			});
+		});
+	}, [enqueueSnackbar]);
 
 	const login = useCallback(
 		(...[username, password]: RequestAuthLogin) => {
@@ -208,10 +263,11 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	);
 
 	const logout = useCallback(() => {
+		keycloak.logout();
 		kyRef
 			.delete(`auth/logout`)
 			.json<YaptideResponse>()
-			.then(_response => setUser(null))
+			.then(() => setUser(null))
 			.catch((_: HTTPError) => {});
 	}, [kyRef]);
 
@@ -231,6 +287,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				isAuthorized,
 				isServerReachable: Boolean(isServerReachable),
 				login,
+				tokenLogin,
 				logout,
 				authKy,
 				refresh
