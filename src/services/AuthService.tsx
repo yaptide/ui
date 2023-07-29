@@ -78,9 +78,9 @@ const keycloak = new Keycloak(keycloakConfig);
 const Auth = ({ children }: GenericContextProviderProps) => {
 	const { backendUrl, demoMode } = useConfig();
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER, isAuthUser));
-	const [reachInterval, setReachInterval] = useState<number | undefined>(undefined);
+	const [reachInterval, setReachInterval] = useState<number>();
 	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(180000);
-	const [keyCloakInterval, setKeyCloakInterval] = useState<number | undefined>(undefined);
+	const [keyCloakInterval, setKeyCloakInterval] = useState<number>();
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -195,7 +195,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 		kyRef
 			.post(`auth/keycloak`, {
 				headers: {
-					keycloak_token: `Bearer ${keycloak.token}`
+					Authorization: `Bearer ${keycloak.token}`
 				},
 				json: {
 					username
