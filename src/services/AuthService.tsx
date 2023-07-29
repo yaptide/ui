@@ -79,7 +79,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	const { backendUrl, demoMode } = useConfig();
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER, isAuthUser));
 	const [reachInterval, setReachInterval] = useState<number>();
-	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(180000);
+	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(180000); // 3 minutes in ms default interval for refresh token
 	const [keyCloakInterval, setKeyCloakInterval] = useState<number>();
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
 	const { enqueueSnackbar } = useSnackbar();
@@ -180,15 +180,11 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	}, [reachServer]);
 
 	useEffect(() => {
-		if (
-			user !== null &&
-			user.source !== 'keycloak' &&
-			refreshInterval === undefined &&
-			isServerReachable
-		)
-			setRefreshInterval(3000);
+		if (user !== null && user.source !== 'keycloak' && isServerReachable)
+			setRefreshInterval(prev => (prev === undefined ? 3000 : prev));
+		// 3 seconds in ms default interval for refresh when logged in with username and password
 		else if (!isServerReachable || !user?.source) setRefreshInterval(undefined);
-	}, [isServerReachable, refreshInterval, user]);
+	}, [isServerReachable, user]);
 
 	const tokenLogin = useCallback(() => {
 		const username = keycloak.tokenParsed?.preferred_username;
@@ -264,7 +260,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 		}
 
 		return keycloak
-			.updateToken(300)
+			.updateToken(300) // 5 minutes in seconds minimum remaining lifetime for token before refresh is allowed
 			.then(refreshed => {
 				if (refreshed)
 					console.log(
