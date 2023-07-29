@@ -1,6 +1,5 @@
 import { Box, Fade, Modal } from '@mui/material';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
-import useInterval from 'use-interval';
 
 import { useConfig } from '../../../config/ConfigService';
 import { isFullSimulationData } from '../../../services/LoaderService';
@@ -15,6 +14,7 @@ import {
 	SimulationInputFiles,
 	StatusState
 } from '../../../types/ResponseTypes';
+import useIntervalAsync from '../../../util/hooks/useIntervalAsync';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import { DemoCardGrid, PaginatedSimulationsFromBackend } from './SimulationCardGrid';
 import { PageNavigationProps, PageParamProps } from './SimulationPanelBar';
@@ -70,7 +70,7 @@ export default function SimulationPanel({
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
 	const [simulationsStatusData, setSimulationsStatusData] = useState<JobStatusData[]>([]);
 
-	const [simulationIDInterval, setSimulationIDInterval] = useState<number | null>(null);
+	const [simulationIDInterval, setSimulationIDInterval] = useState<number>();
 	const [controller] = useState(new AbortController());
 
 	const updateSimulationInfo = useCallback(
@@ -95,16 +95,15 @@ export default function SimulationPanel({
 		[controller.signal, getFullSimulationData, setResultsSimulationData, trackedId]
 	);
 
-	const updateSimulationData = useCallback(
-		() =>
-			!demoMode &&
-			getPageStatus(simulationInfo, true, handleBeforeCacheWrite, controller.signal).then(
-				s => {
-					setSimulationsStatusData([...s]);
-				}
-			),
-		[demoMode, getPageStatus, simulationInfo, handleBeforeCacheWrite, controller.signal]
-	);
+	const updateSimulationData = useCallback(() => {
+		if (demoMode) return Promise.resolve();
+
+		return getPageStatus(simulationInfo, true, handleBeforeCacheWrite, controller.signal).then(
+			s => {
+				setSimulationsStatusData([...s]);
+			}
+		);
+	}, [demoMode, getPageStatus, simulationInfo, handleBeforeCacheWrite, controller.signal]);
 
 	useEffect(() => {
 		if (!demoMode)
@@ -112,7 +111,7 @@ export default function SimulationPanel({
 				.then(() => {
 					setBackendAlive(true);
 					updateSimulationInfo();
-					setSimulationIDInterval(10000);
+					setSimulationIDInterval(30000);
 				})
 				.catch(() => {
 					setBackendAlive(false);
@@ -121,7 +120,7 @@ export default function SimulationPanel({
 
 		return () => {
 			controller.abort();
-			setSimulationIDInterval(null);
+			setSimulationIDInterval(undefined);
 		};
 	}, [
 		controller.signal,
@@ -134,13 +133,9 @@ export default function SimulationPanel({
 		controller
 	]);
 
-	useInterval(updateSimulationInfo, simulationIDInterval, true);
+	useIntervalAsync(updateSimulationInfo, simulationIDInterval);
 
-	useInterval(
-		updateSimulationData,
-		simulationIDInterval !== null && simulationInfo.length > 0 ? 1000 : null,
-		true
-	);
+	useIntervalAsync(updateSimulationData, simulationInfo.length > 0 ? 1000 : simulationIDInterval);
 
 	const handleLoadResults = async (taskId: string | null, simulation: unknown) => {
 		if (taskId === null) return goToResults?.call(null);
