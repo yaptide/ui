@@ -6,7 +6,7 @@ import { useAuth } from '../../../services/AuthService';
 
 export default function LoginPanel() {
 	const { altAuth } = useConfig();
-	const { login } = useAuth();
+	const { login, tokenLogin } = useAuth();
 	const theme = useTheme();
 
 	const [username, setUsername] = useState('');
@@ -95,7 +95,7 @@ export default function LoginPanel() {
 								color='info'
 								fullWidth
 								variant={theme.palette.mode === 'dark' ? 'outlined' : 'contained'}
-								onClick={() => login('demo', 'demo')}>
+								onClick={tokenLogin}>
 								Connect with PLGrid
 							</Button>
 						</>

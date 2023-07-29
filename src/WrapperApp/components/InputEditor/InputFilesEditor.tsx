@@ -30,6 +30,8 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 	const { demoMode } = useConfig();
 	const inputFiles = props.inputFiles ?? _defaultShInputFiles;
 	const theme = useTheme();
+	const largeFileSize = 100_000;
+	const largeFileLinesLimit = 500;
 
 	const canBeDeleted = (name: string) => {
 		switch (props.simulator) {
@@ -46,6 +48,25 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 
 	const updateInputFiles = (updateFn: (old: SimulationInputFiles) => SimulationInputFiles) => {
 		props.onChange?.call(null, updateFn(inputFiles));
+	};
+
+	const truncateFile = (file: string) => {
+		var result: string[] = [];
+		var lines = file.split('\n').slice(0, largeFileLinesLimit);
+		let totalLength = 0;
+
+		for (const line of lines) {
+			if (totalLength + line.length <= largeFileSize) {
+				totalLength += line.length;
+				result.push(line);
+			} else {
+				result.push(line.substring(0, largeFileSize - totalLength));
+				break;
+			}
+		}
+
+		result.push("\n\n... Output truncated ...");
+		return result.join('\n');
 	};
 
 	return (
@@ -108,6 +129,10 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 						return index1 - index2;
 					})
 					.map(([name, value]) => {
+						const isLargeFile = value.length > largeFileSize;
+						const content = !isLargeFile
+							? value
+							: truncateFile(value);
 						return (
 							<Box key={name}>
 								<h2>
@@ -151,18 +176,30 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 											Delete
 										</Button>
 									)}
+									{isLargeFile && (
+										<Box
+											color='error.main'
+											sx={{
+												ml: 1,
+												display: 'inline-flex',
+												fontSize: 'initial'
+											}}>
+											File is to large, displaying first few lines...
+										</Box>
+									)}
 								</h2>
-
 								<CodeEditor
 									aria-label={name + ' text field'}
-									value={value}
-									language='sql'
+									value={content}
 									placeholder={`Please enter ${name} content.`}
-									onChange={evn =>
-										updateInputFiles(old => {
-											return { ...old, [name]: evn.target.value };
-										})
-									}
+									onChange={evn => {
+										if (!isLargeFile) {
+											updateInputFiles(old => {
+												return { ...old, [name]: evn.target.value };
+											})
+										}
+									}}
+									disabled={isLargeFile}
 									data-color-mode={theme.palette.mode}
 									padding={15}
 									style={{

@@ -1,3 +1,4 @@
+import Keycloak from 'keycloak-js';
 import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
 import { useSnackbar } from 'notistack';
@@ -15,8 +16,9 @@ import { hasFields } from '../util/customGuards';
 import useIntervalAsync from '../util/hooks/useIntervalAsync';
 import { snakeToCamelCase } from '../util/Notation/Notation';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
+import { keycloakConfig } from './keycloakConfig';
 
-type AuthUser = Pick<ResponseAuthStatus, 'username'>;
+type AuthUser = Pick<ResponseAuthStatus, 'username' | 'source'>;
 
 const isAuthUser = (obj: unknown): obj is AuthUser => {
 	return hasFields<string>(obj, 'username') && typeof obj.username === 'string';
@@ -64,18 +66,21 @@ export interface AuthContext {
 	isAuthorized: boolean;
 	isServerReachable: boolean;
 	login: (...args: RequestAuthLogin) => void;
+	tokenLogin: () => void;
 	logout: (...args: RequestAuthLogout) => void;
 	refresh: (...args: RequestAuthRefresh) => void;
 	authKy: KyInstance;
 }
 
 const [useAuth, AuthContextProvider] = createGenericContext<AuthContext>();
+const keycloak = new Keycloak(keycloakConfig);
 
 const Auth = ({ children }: GenericContextProviderProps) => {
 	const { backendUrl, demoMode } = useConfig();
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER, isAuthUser));
-	const [reachInterval, setReachInterval] = useState<number | undefined>(undefined);
-	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(180000);
+	const [reachInterval, setReachInterval] = useState<number>();
+	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(180000); // 3 minutes in ms default interval for refresh token
+	const [keyCloakInterval, setKeyCloakInterval] = useState<number>();
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
 	const { enqueueSnackbar } = useSnackbar();
 
@@ -174,21 +179,52 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 		reachServer();
 	}, [reachServer]);
 
-	const refresh = useCallback(() => {
-		if (demoMode || !isServerReachable) return Promise.resolve(setRefreshInterval(undefined));
+	useEffect(() => {
+		if (user !== null && user.source !== 'keycloak' && isServerReachable)
+			setRefreshInterval(prev => (prev === undefined ? 3000 : prev));
+		// 3 seconds in ms default interval for refresh when logged in with username and password
+		else if (!isServerReachable || !user?.source) setRefreshInterval(undefined);
+	}, [isServerReachable, user]);
 
-		return kyIntervalRef
-			.get(`auth/refresh`)
-			.json<ResponseAuthRefresh>()
-			.then(({ accessExp }) => setRefreshInterval(getRefreshDelay(accessExp)))
+	const tokenLogin = useCallback(() => {
+		const username = keycloak.tokenParsed?.preferred_username;
+		kyRef
+			.post(`auth/keycloak`, {
+				headers: {
+					Authorization: `Bearer ${keycloak.token}`
+				},
+				json: {
+					username
+				}
+			})
+			.then(() => {
+				setUser({
+					username,
+					source: 'keycloak'
+				});
+			})
 			.catch((_: HTTPError) => {});
-	}, [demoMode, isServerReachable, kyIntervalRef]);
+	}, [kyRef]);
 
 	useEffect(() => {
-		if (user !== null && refreshInterval === undefined && isServerReachable)
-			setRefreshInterval(3000);
-		else if (!isServerReachable || user === null) setRefreshInterval(undefined);
-	}, [isServerReachable, refreshInterval, user]);
+		keycloak
+			.init({
+				pkceMethod: 'S256',
+				checkLoginIframe: false
+			})
+			.then(auth => {
+				console.log('after init', auth);
+
+				if (auth) {
+					setKeyCloakInterval(
+						keycloak.tokenParsed?.exp !== undefined
+							? getRefreshDelay(keycloak.tokenParsed.exp * 1000)
+							: undefined
+					);
+					tokenLogin();
+				}
+			});
+	}, [tokenLogin]);
 
 	const login = useCallback(
 		(...[username, password]: RequestAuthLogin) => {
@@ -208,12 +244,49 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	);
 
 	const logout = useCallback(() => {
+		keycloak.logout();
 		kyRef
 			.delete(`auth/logout`)
 			.json<YaptideResponse>()
-			.then(_response => setUser(null))
-			.catch((_: HTTPError) => {});
+			.catch((_: HTTPError) => {})
+			.finally(() => setUser(null));
 	}, [kyRef]);
+
+	const tokenRefresh = useCallback(() => {
+		if (!keycloak.authenticated) {
+			setKeyCloakInterval(undefined);
+
+			return Promise.resolve();
+		}
+
+		return keycloak
+			.updateToken(300) // 5 minutes in seconds minimum remaining lifetime for token before refresh is allowed
+			.then(refreshed => {
+				if (refreshed)
+					console.log(
+						`Token refreshed ${keycloak.tokenParsed?.exp} -> ${keycloak.tokenParsed?.exp}`
+					);
+			})
+			.catch(() => {
+				console.log('Failed to refresh token');
+				logout();
+			});
+	}, [logout]);
+
+	useIntervalAsync(tokenRefresh, keycloak.authenticated ? keyCloakInterval : undefined);
+
+	const refresh = useCallback(async () => {
+		if (user?.source === 'keycloak') return tokenLogin();
+		if (demoMode || !isServerReachable) return Promise.resolve(setRefreshInterval(undefined));
+
+		try {
+			const { accessExp } = await kyIntervalRef
+				.get(`auth/refresh`)
+				.json<ResponseAuthRefresh>();
+
+			return setRefreshInterval(getRefreshDelay(accessExp));
+		} catch (_) {}
+	}, [demoMode, isServerReachable, kyIntervalRef, tokenLogin, user?.source]);
 
 	const authKy = useMemo(() => kyRef, [kyRef]);
 	const isAuthorized = useMemo(() => user !== null || demoMode, [demoMode, user]);
@@ -231,6 +304,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				isAuthorized,
 				isServerReachable: Boolean(isServerReachable),
 				login,
+				tokenLogin: keycloak.login,
 				logout,
 				authKy,
 				refresh

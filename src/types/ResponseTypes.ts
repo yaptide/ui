@@ -103,6 +103,7 @@ type AuthData = Omit<
 type AuthStatus = Omit<
 	{
 		username: string;
+		source?: string;
 	} & YaptideResponse,
 	never
 >;
