@@ -39,17 +39,17 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 	const figuresTuple: CommandButtonTuple[] = [
 		[
 			'Box',
-			(obj = new BoxFigure(editor)) => {
+			() => {
 				return commandFactory.createAddCommand<'figure', BasicFigure>(
 					'figure',
-					obj,
+					new BoxFigure(editor),
 					editor.figureManager
 				);
 			}
 		],
 		[
 			'Cylinder',
-			(obj = new BoxFigure(editor)) => {
+			() => {
 				return commandFactory.createAddCommand<'figure', BasicFigure>(
 					'figure',
 					new CylinderFigure(editor),
@@ -59,10 +59,10 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 		],
 		[
 			'Sphere',
-			(obj = new SphereFigure(editor)) => {
+			() => {
 				return commandFactory.createAddCommand<'figure', BasicFigure>(
 					'figure',
-					obj,
+					new SphereFigure(editor),
 					editor.figureManager
 				);
 			}
@@ -72,10 +72,10 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 	const zonesTuple: CommandButtonTuple[] = [
 		[
 			'Boolean Zone',
-			(obj = new BooleanZone(editor)) => {
+			() => {
 				return commandFactory.createAddCommand<'zone', SimulationZone>(
 					'zone',
-					obj,
+					new BooleanZone(editor),
 					editor.zoneManager
 				);
 			}
@@ -86,8 +86,12 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 	const detectorsTuple: CommandButtonTuple[] = [
 		[
 			'Detector',
-			(obj = new Detector(editor)) => {
-				return commandFactory.createAddCommand('detector', obj, editor.detectorManager);
+			() => {
+				return commandFactory.createAddCommand(
+					'detector',
+					new Detector(editor),
+					editor.detectorManager
+				);
 			}
 		]
 	];
@@ -95,10 +99,10 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 	const specialComponentsTuple: CommandButtonTuple[] = [
 		[
 			'CT Cube',
-			(obj = new CTCube(editor)) => {
+			() => {
 				return commandFactory.createAddCommand(
 					'CTCube',
-					obj,
+					new CTCube(editor),
 					editor.specialComponentsManager
 				);
 			},
@@ -106,10 +110,10 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 		],
 		[
 			'Beam Modulator',
-			(obj = new BeamModulator(editor)) => {
+			() => {
 				return commandFactory.createAddCommand(
 					'beamModulator',
-					obj,
+					new BeamModulator(editor),
 					editor.specialComponentsManager
 				);
 			},
@@ -120,8 +124,12 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 	const filtersTuple: CommandButtonTuple[] = [
 		[
 			'Filter',
-			(obj = new ScoringFilter(editor)) => {
-				return commandFactory.createAddCommand('filter', obj, editor.scoringManager);
+			() => {
+				return commandFactory.createAddCommand(
+					'filter',
+					new ScoringFilter(editor),
+					editor.scoringManager
+				);
 			}
 		]
 	];
@@ -129,16 +137,20 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 	const outputsTuple: CommandButtonTuple[] = [
 		[
 			'Output',
-			(obj = new ScoringOutput(editor)) => {
-				return commandFactory.createAddCommand('output', obj, editor.scoringManager);
+			() => {
+				return commandFactory.createAddCommand(
+					'output',
+					new ScoringOutput(editor),
+					editor.scoringManager
+				);
 			}
 		],
 		[
 			'Quantity',
-			(obj = new ScoringQuantity(editor)) => {
+			() => {
 				return commandFactory.createAddCommand(
 					'quantity',
-					obj,
+					new ScoringQuantity(editor),
 					isQuantity(editor.selected) ? editor.selected.parent?.parent : editor.selected
 				);
 			},
