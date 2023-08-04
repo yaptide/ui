@@ -1,5 +1,5 @@
 import { Box, Fade, Modal } from '@mui/material';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
 import { isFullSimulationData } from '../../../services/LoaderService';
@@ -70,7 +70,6 @@ export default function SimulationPanel({
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
 	const [simulationsStatusData, setSimulationsStatusData] = useState<JobStatusData[]>([]);
 
-	const [simulationIDInterval, setSimulationIDInterval] = useState<number>();
 	const [controller] = useState(new AbortController());
 
 	const updateSimulationInfo = useCallback(
@@ -111,7 +110,6 @@ export default function SimulationPanel({
 				.then(() => {
 					setBackendAlive(true);
 					updateSimulationInfo();
-					setSimulationIDInterval(30000);
 				})
 				.catch(() => {
 					setBackendAlive(false);
@@ -120,22 +118,24 @@ export default function SimulationPanel({
 
 		return () => {
 			controller.abort();
-			setSimulationIDInterval(undefined);
 		};
 	}, [
 		controller.signal,
 		getHelloWorld,
 		updateSimulationInfo,
-		setSimulationIDInterval,
 		isBackendAlive,
 		setBackendAlive,
 		demoMode,
+		trackedId,
 		controller
 	]);
 
-	useIntervalAsync(updateSimulationInfo, simulationIDInterval);
+	const simulationDataInterval = useMemo(() => {
+		if (simulationInfo.length > 0 && !demoMode && isBackendAlive) return 1000;
+		// interval 1 second if there are simulations to track and there is connection to backend
+	}, [simulationInfo, demoMode, isBackendAlive]);
 
-	useIntervalAsync(updateSimulationData, simulationInfo.length > 0 ? 1000 : simulationIDInterval);
+	useIntervalAsync(updateSimulationData, simulationDataInterval);
 
 	const handleLoadResults = async (taskId: string | null, simulation: unknown) => {
 		if (taskId === null) return goToResults?.call(null);

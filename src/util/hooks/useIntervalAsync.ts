@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { clearIntervalAsync, setIntervalAsync } from 'set-interval-async';
 
 function useIntervalAsync(
@@ -6,22 +6,16 @@ function useIntervalAsync(
 	delay?: number,
 	immediate: boolean = delay === undefined
 ) {
-	const callbackRef = useRef(callback);
-
-	useEffect(() => {
-		callbackRef.current = callback;
-	}, [callback]);
-
 	useEffect(() => {
 		let interval: ReturnType<typeof setIntervalAsync> | null = null;
 
-		if (immediate) callbackRef.current();
-		else interval = setIntervalAsync(callbackRef.current, delay!);
+		if (immediate) callback();
+		if (delay !== undefined) interval = setIntervalAsync(callback, delay);
 
 		return () => {
 			if (interval) clearIntervalAsync(interval);
 		};
-	}, [delay, immediate]);
+	}, [delay, immediate, callback]);
 }
 
 export default useIntervalAsync;

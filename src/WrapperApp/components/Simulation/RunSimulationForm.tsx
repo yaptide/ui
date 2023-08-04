@@ -245,7 +245,7 @@ export function RunSimulationForm({
 						onChange={handleSourceTypeChange}>
 						<ToggleButton
 							size='small'
-							value='project'
+							value='editor'
 							color='primary'>
 							Editor Project Data
 						</ToggleButton>
