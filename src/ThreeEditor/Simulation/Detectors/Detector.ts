@@ -120,7 +120,7 @@ export class Detector extends SimulationPoints {
 	};
 
 	private generateGeometry(): THREE.BufferGeometry {
-		let geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
+		let geometry: THREE.BufferGeometry = new THREE.BoxGeometry(0, 0, 0);
 		const { geometryParameters: data, detectorType: type } = this;
 
 		switch (type) {

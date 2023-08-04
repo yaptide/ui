@@ -32,7 +32,7 @@ export interface UniqueChildrenNames {
 }
 
 export const implementsUniqueChildrenNames = (x: unknown): x is UniqueChildrenNames => {
-	return typeof x === 'object' && x !== null && 'getNextFreeName' in x;
+	return typeof x === 'object' && x !== null && 'uniqueNameForChild' in x;
 };
 
 export const getNextFreeName = (parent: Object3D, name: string, searchingObject?: Object3D) => {

@@ -42,6 +42,7 @@ export class DetectorManager
 	private signals: {
 		objectSelected: Signal<THREE.Object3D>;
 		sceneGraphChanged: Signal;
+		objectChanged: Signal<THREE.Object3D>;
 		detectGeometryAdded: Signal<Detector>;
 		detectGeometryRemoved: Signal<Detector>;
 		detectGeometryChanged: Signal<Detector>;
@@ -51,12 +52,12 @@ export class DetectorManager
 	private managerType: 'DetectorManager' = 'DetectorManager';
 	private hasUsefulGeometry(object: THREE.Object3D): object is Detector | ScoringOutput {
 		return Boolean(
-			isDetector(object) ||
-				(isOutput(object) &&
-					this.editor.selected === object &&
-					object.geometry &&
-					object.geometry.boundingSphere &&
-					object.geometry.boundingSphere.radius > 0)
+			this.editor.selected === object &&
+				(isDetector(object) ||
+					(isOutput(object) &&
+						object.geometry &&
+						object.geometry.boundingSphere &&
+						object.geometry.boundingSphere.radius > 0))
 		);
 	}
 
@@ -150,7 +151,7 @@ export class DetectorManager
 
 		this.signals = editor.signals;
 		this.signals.objectSelected.add(this.onObjectSelected.bind(this));
-		this.signals.detectGeometryChanged.add(this.onObjectSelected.bind(this));
+		this.signals.objectChanged.add(this.onObjectSelected.bind(this));
 		this.signals.materialChanged.add(this.onMaterialChanged.bind(this));
 	}
 

@@ -43,8 +43,17 @@ export abstract class SimulationSceneContainer<
 
 	add(child: TChild): this {
 		child.name = this.uniqueNameForChild(child);
+		const result = super.add(child);
+		this.editor.signals.objectAdded.dispatch(child);
 
-		return super.add(child);
+		return result;
+	}
+
+	remove(child: TChild): this {
+		const result = super.remove(child);
+		this.editor.signals.objectRemoved.dispatch(child);
+
+		return result;
 	}
 
 	constructor(

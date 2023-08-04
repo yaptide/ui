@@ -16,7 +16,7 @@ export class SetDetectTypeCommand extends Command {
 		this.updatable = true;
 
 		this.object = object;
-		this.oldType = object.detectType;
+		this.oldType = object.detectorType;
 		this.newType = newType;
 	}
 
@@ -30,12 +30,8 @@ export class SetDetectTypeCommand extends Command {
 	}
 
 	undo() {
-		let tmp = this.object.detectorType;
 		this.object.detectorType = this.oldType;
-		this.newType = this.oldType;
-		this.oldType = tmp;
 
-		this.editor.select(this.object);
 		this.editor.signals.geometryChanged.dispatch(this.object);
 		this.editor.signals.detectTypeChanged.dispatch(this.object);
 		this.editor.signals.detectGeometryChanged.dispatch(this.object);
@@ -44,7 +40,7 @@ export class SetDetectTypeCommand extends Command {
 	}
 
 	update(cmd) {
-		this.newGeometry = cmd.newGeometry;
+		this.newType = cmd.newType;
 	}
 
 	toJSON() {

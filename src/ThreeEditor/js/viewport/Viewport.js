@@ -233,12 +233,19 @@ export function Viewport(
 			switch (transformControls.getMode()) {
 				case 'translate':
 					if (!objectPositionOnDown.equals(object.position)) {
-						if (object.isWorldZone)
+						const newPosition = object.position.clone();
+
+						if (object.isWorldZone) {
+							object.center = objectPositionOnDown;
+							// we need to set center to old position to preserve it for undo
 							editor.execute(
-								new SetValueCommand(editor, object, 'center', object.position)
+								new SetValueCommand(editor, object, 'center', newPosition)
 							);
-						else
-							editor.execute(new SetPositionCommand(editor, object, object.position));
+						} else {
+							object.position.copy(objectPositionOnDown);
+							// we need to set position to old position to preserve it for undo
+							editor.execute(new SetPositionCommand(editor, object, newPosition));
+						}
 					}
 
 					break;

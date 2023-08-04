@@ -55,8 +55,8 @@ export const getRemoveCommand = (editor: YaptideEditor, object: Object3D) => {
 		if (object.selectedModifier)
 			return new RemoveDifferentialModifierCommand(editor, object, object.selectedModifier);
 
-		if (isOutput(object.parent))
-			return new RemoveQuantityCommand(editor, object, object.parent);
+		if (isOutput(object.parent?.parent))
+			return new RemoveQuantityCommand(editor, object, object.parent!.parent);
 		else throw new Error('Quantity has no parent output');
 	}
 

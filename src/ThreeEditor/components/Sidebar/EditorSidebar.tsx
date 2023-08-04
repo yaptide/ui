@@ -29,7 +29,7 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 		[editor]
 	);
 
-	useSignal(editor, 'objectSelected', handleObjectUpdate);
+	useSignal(editor, ['objectSelected', 'objectAdded', 'objectRemoved'], handleObjectUpdate);
 
 	const [selectedTab, setSelectedTab] = useState<Capitalize<Context>>('Geometry');
 
