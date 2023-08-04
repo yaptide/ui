@@ -7,7 +7,7 @@ import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElem
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { Detector } from '../Detectors/Detector';
 import { ScoringFilter } from './ScoringFilter';
-import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
+import { isQuantity,ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
 
 export type ScoringOutputJSON = Omit<
 	SimulationElementJSON & {
@@ -178,3 +178,6 @@ export class ScoringOutput
 }
 
 export const isOutput = (x: unknown): x is ScoringOutput => x instanceof ScoringOutput;
+
+export const isQuantityContainer = (x: unknown): x is QuantityContainer =>
+	x instanceof QuantityContainer;
