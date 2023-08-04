@@ -16,7 +16,7 @@
 		"@testing-library/react": "^12.1.2",
 		"@testing-library/user-event": "^14.4.3",
 		"@types/jest": "^29.5.2",
-		"@types/node": "^20.2.5",
+		"@types/node": "^20.4.7",
 		"@types/react-dom": "^17.0.11",
 		"@types/signals": "^1.0.1",
 		"@types/throttle-debounce": "^5.0.0",
