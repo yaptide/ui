@@ -1,6 +1,6 @@
 import { ObjectLoader } from 'three';
 
-import { Command } from '../Command.js';
+import { Command } from '../Command';
 /**
  * @typedef {import('../YaptideEditor.js').YaptideEditor} Editor
  */
