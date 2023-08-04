@@ -40,6 +40,8 @@ export function ObjectPlacement(props: { editor: YaptideEditor; object: Simulati
 				);
 			else if (isDetector(watchedObject))
 				editor.execute(
+					// probably useless and SetValueCommand should be used instead,
+					// but has to be tested first because it uses additional signals
 					new SetDetectPositionCommand(editor, watchedObject.object, newPosition)
 				);
 			else editor.execute(new SetPositionCommand(editor, watchedObject.object, newPosition));
