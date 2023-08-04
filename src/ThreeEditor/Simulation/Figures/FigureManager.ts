@@ -1,3 +1,4 @@
+import { Signal } from 'signals';
 import * as THREE from 'three';
 
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
@@ -48,7 +49,10 @@ export class FigureManager
 	} satisfies Record<string, string | number>;
 
 	private editor: YaptideEditor;
-	private signals: {};
+	private signals: {
+		sceneGraphChanged: Signal;
+	};
+
 	private managerType: 'FigureManager' = 'FigureManager';
 
 	private _name: string;
@@ -73,18 +77,13 @@ export class FigureManager
 	addFigure(figure: BasicFigure<THREE.BufferGeometry>) {
 		this.figureContainer.add(figure);
 		this.editor.select(figure);
+		this.signals.sceneGraphChanged.dispatch();
 	}
 
 	removeFigure(figure: BasicFigure<THREE.BufferGeometry>) {
 		this.figureContainer.remove(figure);
 		this.editor.deselect();
-	}
-
-	createFigure() {
-		const figure = new BoxFigure(this.editor);
-		this.addFigure(figure);
-
-		return figure;
+		this.signals.sceneGraphChanged.dispatch();
 	}
 
 	getFigureByUuid(uuid: string) {
