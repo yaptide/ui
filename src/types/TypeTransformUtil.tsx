@@ -85,6 +85,7 @@ export type SnakeToCamelCase<S extends string, First extends string = S> = [
 type TransformerMap<A extends string = never> = {
 	Snake: CamelToSnakeCase<A>;
 	Camel: SnakeToCamelCase<A>;
+	Uppercase: Uppercase<CamelToSnakeCase<A>>;
 };
 
 // Parametrized type for transforming keys of an object
@@ -254,3 +255,40 @@ export type RequiredKeys<T extends object> = keyof {
 		? K
 		: never]: never;
 };
+
+/**
+ * Transforms all keys of an object type to be capitalized.
+ * @template T - The object type to transform.
+ * @example
+ * ```ts
+ * type MyObject = { foo: string; bar: number };
+ * type MyUppercaseObject = UppercaseObjectKeys<MyObject>; // { FOO: string; BAR: number }
+ * ```
+ */
+export type UppercaseObjectKeys<T> = {
+	[K in keyof T as TransformCase<K, 'Uppercase'>]: T[K];
+};
+
+/**
+ * Validates that a tuple of keys is tuple of all keys of a type.
+ * @template T - The set of keys to validate against.
+ * @template U - The tuple of keys to validate.
+ * @template KeyTuple - The original tuple of keys (used for recursion).
+ * @example
+ * ```ts
+ * type Keys = 'a' | 'b' | 'c';
+ * type Tuple = ['a', 'b', 'c'];
+ * type Validated = ValidateKeysTuple<Keys, Tuple>; // ['a', 'b', 'c']
+ * ```
+ */
+export type ValidateKeysTuple<
+	T extends PropertyKey,
+	U extends readonly PropertyKey[],
+	KeyTuple extends readonly PropertyKey[] = U
+> = U extends [infer H, ...infer R extends PropertyKey[]]
+	? H extends T
+		? ValidateKeysTuple<Exclude<T, H>, R, KeyTuple>
+		: never
+	: [never] extends [T]
+	? KeyTuple
+	: never;

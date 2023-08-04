@@ -6,7 +6,6 @@ import { useAuth } from '../services/AuthService';
 import { JsRootService } from '../services/JsRootService';
 import { useStore } from '../services/StoreService';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
-import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
 import { SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles } from '../types/ResponseTypes';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
@@ -19,7 +18,7 @@ import SimulationPanel from './components/Simulation/SimulationPanel';
 
 function WrapperApp() {
 	const { demoMode } = useConfig();
-	const { editorRef, resultsSimulationData } = useStore();
+	const { resultsSimulationData } = useStore();
 	const { isAuthorized, logout } = useAuth();
 	const [open, setOpen] = useState(true);
 	const [tabsValue, setTabsValue] = useState('editor');
@@ -52,10 +51,6 @@ function WrapperApp() {
 		if (isAuthorized && tabsValue === 'login') setTabsValue('editor');
 	}, [isAuthorized, tabsValue]);
 
-	const onEditorInitialized = (editor: YaptideEditor) => {
-		editorRef.current = editor;
-	};
-
 	return (
 		<Box
 			sx={{
@@ -75,7 +70,6 @@ function WrapperApp() {
 				index={'editor'}
 				persistent>
 				<SceneEditor
-					onEditorInitialized={onEditorInitialized}
 					sidebarProps={[open, tabsValue === 'editor']}
 					focus={tabsValue === 'editor'}
 				/>

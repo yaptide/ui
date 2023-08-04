@@ -26,15 +26,14 @@ export function SaveFileDialog({
 	name: defaultName = 'editor',
 	results: providedResults
 }: ConcreteDialogProps<{ name?: string; results?: FullSimulationData }>) {
-	const { editorRef } = useStore();
-	const results: FullSimulationData | undefined =
-		providedResults ?? editorRef.current?.getResults();
+	const { yaptideEditor } = useStore();
+	const results: FullSimulationData | undefined = providedResults ?? yaptideEditor?.getResults();
 
 	const [keepResults, setKeepResults] = useState<boolean>(false);
 
 	const canKeepResults = useCallback(() => {
-		return results?.input.inputJson?.hash === editorRef.current?.toJSON().hash;
-	}, [editorRef, results?.input.inputJson?.hash]);
+		return results?.input.inputJson?.hash === yaptideEditor?.toJSON().hash;
+	}, [yaptideEditor, results?.input.inputJson?.hash]);
 
 	useEffect(() => {
 		setKeepResults(canKeepResults() || !!providedResults);
@@ -91,11 +90,8 @@ export function SaveFileDialog({
 			<Button
 				onClick={() => {
 					onClose();
-					editorRef.current &&
-						saveJson(
-							keepResults && results ? results : editorRef.current?.toJSON(),
-							name
-						);
+					yaptideEditor &&
+						saveJson(keepResults && results ? results : yaptideEditor?.toJSON(), name);
 				}}>
 				Save
 			</Button>

@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 
 import { createGenericContext } from '../services/GenericContext';
+import { UppercaseObjectKeys, ValidateKeysTuple } from '../types/TypeTransformUtil';
 import { snakeToCamelCase } from '../util/Notation/Notation';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:5000';
@@ -19,8 +20,15 @@ interface Config {
 	altAuth: boolean;
 }
 
-function isKeyForConfig(key: string): key is keyof Config {
-	return ['backendUrl', 'deployment', 'demoMode', 'altAuth'].includes(key);
+declare global {
+	interface Window extends UppercaseObjectKeys<Config> {}
+}
+
+function isKeyForConfig<T extends readonly PropertyKey[]>(
+	key: string,
+	configKeys: ValidateKeysTuple<keyof Config, T>
+): key is keyof Config {
+	return configKeys.includes(key);
 }
 
 const ConfigProvider = ({ children }: { children?: ReactNode }) => {
@@ -30,29 +38,31 @@ const ConfigProvider = ({ children }: { children?: ReactNode }) => {
 		demoMode: DEMO_MODE,
 		altAuth: ALT_AUTH
 	});
+	window.BACKEND_URL ??= BACKEND_URL;
 
 	useEffect(() => {
+		const configKeys = Object.keys(config) as (keyof Config)[];
 		const defineProperty = (
-			name: string,
+			name: keyof UppercaseObjectKeys<Config>,
 			readonly = false,
-			configKey = snakeToCamelCase(name)
+			key = snakeToCamelCase(name)
 		) => {
 			try {
-				if (!isKeyForConfig(configKey))
-					throw new Error(`Config key ${configKey} not found`);
+				if (!isKeyForConfig(key, configKeys))
+					throw new Error(`Config key ${key} not found`);
 
 				if (Object.prototype.hasOwnProperty.call(window, name)) return;
 
 				Object.defineProperty(window, name, {
 					get() {
-						return config[configKey];
+						return config[key];
 					},
 					set: readonly
 						? undefined
 						: value =>
 								setConfig(prevConfig => ({
 									...prevConfig,
-									[configKey]: value
+									[key]: value
 								}))
 				});
 			} catch (e) {

@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { ClearHistoryDialog } from '../ThreeEditor/components/Dialog/ClearHistoryDialog';
+import { EditProjectInfoDialog } from '../ThreeEditor/components/Dialog/EditProjectInfoDialog';
 import { LoadFileDialog } from '../ThreeEditor/components/Dialog/LoadFileDialog';
 import { NewProjectDialog } from '../ThreeEditor/components/Dialog/NewProjectDialog';
 import { OpenFileDialog } from '../ThreeEditor/components/Dialog/OpenFileDialog';
@@ -10,14 +11,33 @@ import {
 	DefaultDialogPropsType,
 	DialogComponentNames,
 	DialogComponentTuple,
-	DialogComponentTypeMap,
 	DialogContext,
 	DialogNameTuple,
 	OptionalConfigDialogNames,
 	RequiredConfigDialogNames,
-	RestDialogPropsType
+	RestDialogPropsType,
+	ValidComponentTypes
 } from '../types/DialogServiceTypes';
+import { EntriesToObj } from '../types/TypeTransformUtil';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
+
+/**
+ * Defines a mapping of dialog component names to their respective component types.
+ * The keys of the map are the names of the dialog components, and the values are the component types.
+ * The component types are validated to ensure they are of type `ConcreteDialogComponent`.
+ * If you want to add a new dialog component, add it to the list below and all necessary changes will be automatically highlighted.
+ */
+export type DialogComponentTypeMap = EntriesToObj<
+	[
+		ValidComponentTypes<['clearHistory', typeof ClearHistoryDialog]>,
+		ValidComponentTypes<['loadFile', typeof LoadFileDialog]>,
+		ValidComponentTypes<['newProject', typeof NewProjectDialog]>,
+		ValidComponentTypes<['openFile', typeof OpenFileDialog]>,
+		ValidComponentTypes<['runSimulation', typeof RunSimulationDialog]>,
+		ValidComponentTypes<['saveFile', typeof SaveFileDialog]>,
+		ValidComponentTypes<['editProject', typeof EditProjectInfoDialog]>
+	]
+>;
 
 const [useDialogContext, DialogContextProvider] = createGenericContext<DialogContext>();
 
@@ -83,7 +103,8 @@ const DialogProvider = ({ children }: GenericContextProviderProps) => {
 			newProject: NewProjectDialog,
 			openFile: OpenFileDialog,
 			runSimulation: RunSimulationDialog,
-			saveFile: SaveFileDialog
+			saveFile: SaveFileDialog,
+			editProject: EditProjectInfoDialog
 		}),
 		[]
 	);

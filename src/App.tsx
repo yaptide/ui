@@ -1,8 +1,9 @@
 import { createTheme } from '@mui/material';
-import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
+import { StyledEngineProvider, Theme, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { SnackbarProvider } from 'notistack';
 import { cloneElement, ReactElement, useMemo } from 'react';
+import * as THREE from 'three';
 
 import { ConfigProvider } from './config/ConfigService';
 import { PythonConverterService } from './PythonConverter/PythonConverterService';
@@ -11,6 +12,7 @@ import { DialogProvider } from './services/DialogService';
 import { Loader } from './services/LoaderService';
 import { ShSimulation } from './services/ShSimulatorService';
 import { Store } from './services/StoreService';
+import { YaptideEditor } from './ThreeEditor/js/YaptideEditor';
 import WrapperApp from './WrapperApp/WrapperApp';
 
 declare module '@mui/material/styles' {
@@ -25,6 +27,13 @@ declare module '@mui/material/styles' {
 		};
 	}
 	interface Theme extends ThemeOptions {}
+}
+
+declare global {
+	interface Window {
+		editor: YaptideEditor;
+		THREE: typeof THREE;
+	}
 }
 
 /**
@@ -66,6 +75,7 @@ function App() {
 			}),
 		[prefersDarkMode]
 	);
+	window.THREE ??= THREE;
 
 	return (
 		<ServiceTree

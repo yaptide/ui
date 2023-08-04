@@ -4,7 +4,7 @@ import { useStore } from '../../../services/StoreService';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
 export function ClearHistoryDialog({ onClose }: ConcreteDialogProps) {
-	const { editorRef } = useStore();
+	const { yaptideEditor } = useStore();
 
 	return (
 		<CustomDialog
@@ -19,12 +19,11 @@ export function ClearHistoryDialog({ onClose }: ConcreteDialogProps) {
 			</Button>
 			<Button
 				disabled={
-					!editorRef.current ||
-					(!editorRef.current.history.undos.length &&
-						!editorRef.current.history.redos.length)
+					!yaptideEditor ||
+					(!yaptideEditor.history.undos.length && !yaptideEditor.history.redos.length)
 				}
 				onClick={() => {
-					if (editorRef.current) editorRef.current.history.clear();
+					if (yaptideEditor) yaptideEditor.history.clear();
 					onClose();
 				}}>
 				Clear and proceed

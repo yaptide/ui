@@ -32,7 +32,7 @@ export default function SimulationPanel({
 }: SimulationPanelProps) {
 	const { demoMode } = useConfig();
 	const {
-		editorRef,
+		yaptideEditor,
 		/** Queued Simulation Data */
 		trackedId,
 		setResultsSimulationData,
@@ -155,8 +155,8 @@ export default function SimulationPanel({
 
 	useEffect(() => {
 		const updateCurrentSimulation = async () => {
-			if (!demoMode && editorRef.current) {
-				const hash = editorRef.current.toJSON().hash;
+			if (!demoMode && yaptideEditor) {
+				const hash = yaptideEditor.toJSON().hash;
 				const currentStatus = simulationsStatusData.find(async s => {
 					if (currentJobStatusData[StatusState.COMPLETED](s)) {
 						const jobInputs = await getJobInputs(s, controller.signal);
@@ -171,14 +171,14 @@ export default function SimulationPanel({
 					? await getFullSimulationData(currentStatus, controller.signal)
 					: undefined;
 
-				if (currentSimulation) editorRef.current.setResults(currentSimulation);
-				else editorRef.current.setResults(null);
+				if (currentSimulation) yaptideEditor.setResults(currentSimulation);
+				else yaptideEditor.setResults(null);
 			}
 		};
 		updateCurrentSimulation();
 	}, [
 		simulationsStatusData,
-		editorRef,
+		yaptideEditor,
 		getJobInputs,
 		controller.signal,
 		getFullSimulationData,
