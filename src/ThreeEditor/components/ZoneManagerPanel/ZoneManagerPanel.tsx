@@ -32,7 +32,7 @@ import { GeometryIdSelect } from './GeometryIdSelect';
 
 type BooleanZoneManagerPanelProps = {
 	editor: YaptideEditor;
-	zone?: BooleanZone;
+	zone: BooleanZone;
 	handleChanged: (index: number, data: BooleanAlgebraData) => void;
 	handleAdd: () => void;
 	handleRemove: (index: number) => void;
@@ -187,19 +187,10 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 	/*------------------------------------BooleanZone-------------------------------------*/
 	const zoneRef = useRef<BooleanZone>();
 
-	const initZone = useCallback(() => {
-		const manager = editor.zoneManager;
-		zone
-			? (() => {
-					zoneRef.current = zone;
-			  })()
-			: (zoneRef.current = manager.createZone());
-		loadAlgebraDataFromZone();
-	}, [editor.zoneManager, zone, loadAlgebraDataFromZone]);
-
 	useEffect(() => {
-		initZone();
-	}, [initZone]);
+		zoneRef.current = zone;
+		loadAlgebraDataFromZone();
+	}, [zone, loadAlgebraDataFromZone]);
 
 	/*---------------------------------AllGeometries---------------------------------*/
 	const allObjectsRef = useRef<THREE.Object3D[]>([]);
