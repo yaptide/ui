@@ -6,6 +6,7 @@ import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElem
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { FilterJSON, ScoringFilter } from './ScoringFilter';
 import { ScoringOutput, ScoringOutputJSON as OutputJSON } from './ScoringOutput';
+import { ScoringQuantity } from './ScoringQuantity';
 
 export type ScoringManagerJSON = Omit<
 	SimulationElementJSON & {
@@ -115,6 +116,7 @@ export class ScoringManager
 
 	addOutput(output: ScoringOutput) {
 		this.outputContainer.add(output);
+		output.addQuantity(new ScoringQuantity(this.editor));
 		this.editor.select(output);
 	}
 

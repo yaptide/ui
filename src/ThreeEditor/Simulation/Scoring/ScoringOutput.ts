@@ -7,7 +7,7 @@ import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElem
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { Detector } from '../Detectors/Detector';
 import { ScoringFilter } from './ScoringFilter';
-import { isQuantity,ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
+import { isQuantity, ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
 
 export type ScoringOutputJSON = Omit<
 	SimulationElementJSON & {
@@ -127,6 +127,9 @@ export class ScoringOutput
 		return !this.notVisibleChildren ? this.children.find(qty => qty.id === id) : undefined;
 	}
 
+	/**
+	 * @deprecated Use addQuantity instead
+	 **/
 	createQuantity(): ScoringQuantity {
 		const quantity = new ScoringQuantity(this.editor);
 		this.addQuantity(quantity);

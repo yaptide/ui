@@ -112,7 +112,7 @@ export function SidebarTreeItem(props: {
 
 	const onObjectAdded = useCallback(
 		(newObject: Object3D) => {
-			if (newObject.parent === object) {
+			if (object.getObjectByName(newObject.name) === newObject) {
 				treeRef?.open(node.id);
 			}
 		},
