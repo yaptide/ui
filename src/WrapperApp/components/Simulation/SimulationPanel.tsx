@@ -132,6 +132,7 @@ export default function SimulationPanel({
 
 	const simulationDataInterval = useMemo(() => {
 		if (simulationInfo.length > 0 && !demoMode && isBackendAlive) return 1000;
+		// interval 1 second if there are simulations to track and there is connection to backend
 	}, [simulationInfo, demoMode, isBackendAlive]);
 
 	useIntervalAsync(updateSimulationData, simulationDataInterval);
