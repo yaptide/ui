@@ -109,14 +109,16 @@ export function SidebarTree(props: {
 		refreshTreeData();
 
 		editor.signals.editorCleared.add(refreshTreeData);
-		editor.signals.sceneGraphChanged.add(refreshTreeData);
 		editor.signals.objectChanged.add(refreshTreeData);
+		editor.signals.objectAdded.add(refreshTreeData);
+		editor.signals.objectRemoved.add(refreshTreeData);
 		editor.signals.objectSelected.add(handleSelected);
 
 		return () => {
 			editor.signals.editorCleared.remove(refreshTreeData);
-			editor.signals.sceneGraphChanged.remove(refreshTreeData);
 			editor.signals.objectChanged.remove(refreshTreeData);
+			editor.signals.objectAdded.remove(refreshTreeData);
+			editor.signals.objectRemoved.remove(refreshTreeData);
 			editor.signals.objectSelected.remove(handleSelected);
 		};
 	}, [buildOptionsRecursively, editor, refreshTreeData]);

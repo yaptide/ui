@@ -97,7 +97,6 @@ export class ZoneManager
 		this.zoneContainer.add(zone);
 		this.editor.select(zone);
 
-		this.signals.objectAdded.dispatch(zone);
 		this.signals.zoneAdded.dispatch(zone);
 		this.signals.sceneGraphChanged.dispatch();
 	}
@@ -106,16 +105,8 @@ export class ZoneManager
 		this.zoneContainer.remove(zone);
 		this.editor.deselect();
 
-		this.signals.objectRemoved.dispatch(zone);
 		this.signals.zoneRemoved.dispatch(zone);
 		this.signals.sceneGraphChanged.dispatch();
-	}
-
-	createZone() {
-		const zone = new BooleanZone(this.editor);
-		this.addZone(zone);
-
-		return zone;
 	}
 
 	getZoneByName(value: string) {

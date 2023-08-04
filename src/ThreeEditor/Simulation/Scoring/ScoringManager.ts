@@ -84,13 +84,6 @@ export class ScoringManager
 		this.signals.detectFilterRemoved.dispatch(filter);
 	}
 
-	createFilter(): ScoringFilter {
-		const filter = new ScoringFilter(this.editor);
-		this.addFilter(filter);
-
-		return filter;
-	}
-
 	getFilterByUuid(uuid: string) {
 		return this.filters.find(filter => filter.uuid === uuid) ?? null;
 	}
@@ -126,18 +119,8 @@ export class ScoringManager
 	}
 
 	removeOutput(output: ScoringOutput) {
-		this.remove(output);
-		this.children.splice(this.children.indexOf(output), 1);
-		output.parent = null;
-		this.signals.objectRemoved.dispatch(output);
-	}
-
-	createOutput() {
-		const output = new ScoringOutput(this.editor);
-		output.createQuantity();
-		this.addOutput(output);
-
-		return output;
+		this.outputContainer.remove(output);
+		this.editor.deselect();
 	}
 
 	getOutputByUuid(uuid: string) {
