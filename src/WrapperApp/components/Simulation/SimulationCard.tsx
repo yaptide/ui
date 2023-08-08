@@ -1,3 +1,5 @@
+import ClearIcon from '@mui/icons-material/Clear';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import {
 	Box,
 	Button,
@@ -9,13 +11,15 @@ import {
 	CardProps,
 	Chip,
 	Divider,
+	IconButton,
 	LinearProgress,
 	Paper,
 	Table,
 	TableBody,
 	TableCell,
 	TableContainer,
-	TableRow
+	TableRow,
+	Tooltip
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
@@ -37,6 +41,8 @@ import { SimulationProgressBar } from './SimulationProgressBar';
 type SimulationCardProps = {
 	simulationStatus: JobStatusData;
 	loadResults?: (jobId: string | null) => void;
+	handleDelete?: (jobId: string) => void;
+	handleRefresh?: (jobId: string) => void;
 	showInputFiles?: (inputFiles?: SimulationInputFiles) => void;
 } & CardProps;
 
@@ -59,6 +65,8 @@ const row = (id: number, title: string, value: string | undefined | ReactNode, g
 export default function SimulationCard({
 	simulationStatus,
 	loadResults,
+	handleDelete,
+	handleRefresh,
 	showInputFiles,
 	...other
 }: SimulationCardProps) {
@@ -170,6 +178,33 @@ export default function SimulationCard({
 						? simulationStatus.endTime.toLocaleString('en-US').split(' ')[4] ?? '?'
 						: '?'
 				}`}
+				action={
+					handleDelete ? (
+						<Tooltip
+							title='Delete local data'
+							sx={{
+								zIndex: ({ zIndex }) => zIndex.appBar
+							}}>
+							<IconButton
+								aria-label='delete simulation'
+								onClick={() => handleDelete(simulationStatus.jobId)}>
+								<ClearIcon />
+							</IconButton>
+						</Tooltip>
+					) : handleRefresh ? (
+						<Tooltip
+							title='Refresh status'
+							sx={{
+								zIndex: ({ zIndex }) => zIndex.appBar
+							}}>
+							<IconButton
+								aria-label='refresh simulation'
+								onClick={() => handleRefresh(simulationStatus.jobId)}>
+								<RefreshIcon />
+							</IconButton>
+						</Tooltip>
+					) : undefined
+				}
 			/>
 			<CardContent sx={{ flexGrow: 1 }}>
 				<Box

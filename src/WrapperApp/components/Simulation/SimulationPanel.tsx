@@ -104,6 +104,27 @@ export default function SimulationPanel({
 		);
 	}, [demoMode, getPageStatus, simulationInfo, handleBeforeCacheWrite, controller.signal]);
 
+	const updateSpecificSimulationData = useCallback(
+		(jobId: string) => {
+			if (demoMode) return Promise.resolve();
+			const info = simulationInfo.find(s => s.jobId === jobId);
+
+			if (!info) return Promise.resolve();
+
+			return getPageStatus([info], false, handleBeforeCacheWrite, controller.signal).then(
+				s => {
+					setSimulationsStatusData(prev => {
+						const index = prev.findIndex(s => s.jobId === jobId);
+						prev[index] = s[0];
+
+						return [...prev];
+					});
+				}
+			);
+		},
+		[demoMode, getPageStatus, simulationInfo, handleBeforeCacheWrite, controller.signal]
+	);
+
 	useEffect(() => {
 		if (!demoMode)
 			getHelloWorld(controller.signal)
@@ -131,8 +152,8 @@ export default function SimulationPanel({
 	]);
 
 	const simulationDataInterval = useMemo(() => {
-		if (simulationInfo.length > 0 && !demoMode && isBackendAlive) return 1000;
-		// interval 1 second if there are simulations to track and there is connection to backend
+		if (simulationInfo.length > 0 && !demoMode && isBackendAlive) return 5000;
+		// interval 5 second if there are simulations to track and there is connection to backend
 	}, [simulationInfo, demoMode, isBackendAlive]);
 
 	useIntervalAsync(updateSimulationData, simulationDataInterval);
@@ -298,6 +319,7 @@ export default function SimulationPanel({
 						handlePageChange
 					}}
 					handleLoadResults={handleLoadResults}
+					handleRefresh={updateSpecificSimulationData}
 					handleShowInputFiles={handleShowInputFiles}
 					isBackendAlive={isBackendAlive}
 				/>

@@ -34,6 +34,8 @@ type SimulationCardGridProps = {
 	simulations: JobStatusData[];
 	handleLoadResults?: (taskId: string | null, simulation: unknown) => void;
 	handleShowInputFiles?: (inputFiles?: SimulationInputFiles) => void;
+	handleDelete?: (jobId: string) => void;
+	handleRefresh?: (jobId: string) => void;
 	layout: GridLayout;
 } & GridProps;
 
@@ -68,6 +70,8 @@ export function SimulationCardGrid({
 	layout,
 	sx,
 	handleLoadResults,
+	handleDelete,
+	handleRefresh,
 	handleShowInputFiles,
 	...other
 }: SimulationCardGridProps) {
@@ -104,6 +108,8 @@ export function SimulationCardGrid({
 									handleLoadResults &&
 									(taskId => handleLoadResults(taskId, simulation))
 								}
+								handleDelete={handleDelete}
+								handleRefresh={handleRefresh}
 								showInputFiles={handleShowInputFiles}
 							/>
 						</Grid>
