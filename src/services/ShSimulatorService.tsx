@@ -70,7 +70,7 @@ export interface RestSimulationContext {
 	getJobResults: (...args: RequestGetJobResults) => Promise<JobResults | undefined>;
 	getJobLogs: (...args: RequestGetJobLogs) => Promise<JobLogs | undefined>;
 	getPageContents: (...args: RequestGetPageContents) => Promise<ResponseGetPageContents>;
-	getPageStatus: (...args: RequestGetPageStatus) => Promise<JobStatusData[]>;
+	getPageStatus: (...args: RequestGetPageStatus) => Promise<JobStatusData[] | undefined>;
 	getFullSimulationData: (
 		jobStatus: JobStatusData,
 		signal?: AbortSignal,
@@ -426,7 +426,9 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 					return getJobStatus(endPoint)(info, cache, beforeCacheWrite, signal);
 				})
 			).then(dataList => {
-				return dataList.filter(data => data !== undefined) as JobStatusData[];
+				const data = dataList.filter(data => data !== undefined) as JobStatusData[];
+
+				return data.length === 0 ? undefined : data;
 			});
 		},
 		[getJobStatus]

@@ -68,7 +68,7 @@ export default function SimulationPanel({
 	const [simulator] = useState<SimulatorType>(forwardedSimulator);
 
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
-	const [simulationsStatusData, setSimulationsStatusData] = useState<JobStatusData[]>([]);
+	const [simulationsStatusData, setSimulationsStatusData] = useState<JobStatusData[]>();
 
 	const [controller] = useState(new AbortController());
 
@@ -99,7 +99,7 @@ export default function SimulationPanel({
 
 		return getPageStatus(simulationInfo, true, handleBeforeCacheWrite, controller.signal).then(
 			s => {
-				setSimulationsStatusData([...s]);
+				s && setSimulationsStatusData([...s]);
 			}
 		);
 	}, [demoMode, getPageStatus, simulationInfo, handleBeforeCacheWrite, controller.signal]);
@@ -113,12 +113,14 @@ export default function SimulationPanel({
 
 			return getPageStatus([info], false, handleBeforeCacheWrite, controller.signal).then(
 				s => {
-					setSimulationsStatusData(prev => {
-						const index = prev.findIndex(s => s.jobId === jobId);
-						prev[index] = s[0];
+					s &&
+						setSimulationsStatusData(prev => {
+							if (!prev) return [...s];
+							const index = prev.findIndex(s => s.jobId === jobId);
+							prev[index] = s[0];
 
-						return [...prev];
-					});
+							return [...prev];
+						});
 				}
 			);
 		},
@@ -156,7 +158,7 @@ export default function SimulationPanel({
 		// interval 5 second if there are simulations to track and there is connection to backend
 	}, [simulationInfo, demoMode, isBackendAlive]);
 
-	useIntervalAsync(updateSimulationData, simulationDataInterval);
+	useIntervalAsync(updateSimulationData, simulationDataInterval, true);
 
 	const handleLoadResults = async (taskId: string | null, simulation: unknown) => {
 		if (taskId === null) return goToResults?.call(null);
@@ -178,7 +180,7 @@ export default function SimulationPanel({
 		const updateCurrentSimulation = async () => {
 			if (!demoMode && yaptideEditor) {
 				const hash = yaptideEditor.toJSON().hash;
-				const currentStatus = simulationsStatusData.find(async s => {
+				const currentStatus = simulationsStatusData?.find(async s => {
 					if (currentJobStatusData[StatusState.COMPLETED](s)) {
 						const jobInputs = await getJobInputs(s, controller.signal);
 
@@ -293,7 +295,7 @@ export default function SimulationPanel({
 				</Fade>
 			</Modal>
 			<DemoCardGrid
-				simulations={localResultsSimulationData ?? []}
+				simulations={localResultsSimulationData}
 				title='Local Simulation Results'
 				handleLoadResults={handleLoadResults}
 				handleShowInputFiles={handleShowInputFiles}
