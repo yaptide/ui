@@ -64,8 +64,9 @@ export interface RestSimulationContext {
 	cancelJobBatch: (...args: RequestCancelJob) => Promise<unknown>;
 	convertToInputFiles: (...args: RequestShConvert) => Promise<ResponseShConvert>;
 	getHelloWorld: (...args: RequestParam) => Promise<unknown>;
-	getJobDirectStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
-	getJobBatchStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
+	getJobStatus: (
+		endpoint: string
+	) => (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
 	getJobInputs: (...args: RequestGetJobInputs) => Promise<JobInputs | undefined>;
 	getJobResults: (...args: RequestGetJobResults) => Promise<JobResults | undefined>;
 	getJobLogs: (...args: RequestGetJobLogs) => Promise<JobLogs | undefined>;
@@ -421,9 +422,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 						return undefined;
 					}
 
-					const endPoint = `jobs/${info.metadata.platform.toLowerCase()}`;
-
-					return getJobStatus(endPoint)(info, cache, beforeCacheWrite, signal);
+					return getJobStatus('jobs')(info, cache, beforeCacheWrite, signal);
 				})
 			).then(dataList => {
 				const data = dataList.filter(data => data !== undefined) as JobStatusData[];
@@ -468,8 +467,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 				cancelJobBatch: cancelJob('jobs/batch'),
 				convertToInputFiles,
 				getHelloWorld,
-				getJobDirectStatus: getJobStatus('jobs/direct'),
-				getJobBatchStatus: getJobStatus('jobs/batch'),
+				getJobStatus,
 				getPageContents,
 				getPageStatus,
 				getJobInputs,

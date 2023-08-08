@@ -45,6 +45,7 @@ export default function SimulationPanel({
 		getHelloWorld,
 		getPageContents,
 		getPageStatus,
+		getJobStatus,
 		getFullSimulationData
 	} = useShSimulation();
 
@@ -110,21 +111,25 @@ export default function SimulationPanel({
 			const info = simulationInfo.find(s => s.jobId === jobId);
 
 			if (!info) return Promise.resolve();
+			const endPoint = `jobs/${info.metadata.platform.toLowerCase()}`;
 
-			return getPageStatus([info], false, handleBeforeCacheWrite, controller.signal).then(
-				s => {
-					s &&
-						setSimulationsStatusData(prev => {
-							if (!prev) return [...s];
-							const index = prev.findIndex(s => s.jobId === jobId);
-							prev[index] = s[0];
+			return getJobStatus(endPoint)(
+				info,
+				false,
+				handleBeforeCacheWrite,
+				controller.signal
+			).then(s => {
+				s &&
+					setSimulationsStatusData(prev => {
+						if (!prev) return [s];
+						const index = prev.findIndex(s => s.jobId === jobId);
+						prev[index] = s;
 
-							return [...prev];
-						});
-				}
-			);
+						return [...prev];
+					});
+			});
 		},
-		[demoMode, getPageStatus, simulationInfo, handleBeforeCacheWrite, controller.signal]
+		[demoMode, simulationInfo, getJobStatus, handleBeforeCacheWrite, controller.signal]
 	);
 
 	useEffect(() => {
