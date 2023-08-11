@@ -244,13 +244,13 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	);
 
 	const logout = useCallback(() => {
-		keycloak.logout();
+		if (user?.source === 'keycloak') keycloak.logout();
 		kyRef
 			.delete(`auth/logout`)
 			.json<YaptideResponse>()
 			.catch((_: HTTPError) => {})
 			.finally(() => setUser(null));
-	}, [kyRef]);
+	}, [kyRef, user?.source]);
 
 	const tokenRefresh = useCallback(() => {
 		if (!keycloak.authenticated) {

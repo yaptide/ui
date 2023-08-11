@@ -179,7 +179,9 @@ export default function SimulationCard({
 						: '?'
 				}`}
 				action={
-					handleDelete ? (
+					handleDelete &&
+					(currentJobStatusData[StatusState.COMPLETED](simulationStatus) ||
+						currentJobStatusData[StatusState.FAILED](simulationStatus)) ? (
 						<Tooltip
 							title='Delete local data'
 							sx={{
@@ -354,15 +356,15 @@ export default function SimulationCard({
 									</Button>
 								);
 							} else if (
-								currentJobStatusData[StatusState.RUNNING](simulationStatus) ||
-								currentJobStatusData[StatusState.PENDING](simulationStatus)
+								handleDelete &&
+								(currentJobStatusData[StatusState.RUNNING](simulationStatus) ||
+									currentJobStatusData[StatusState.PENDING](simulationStatus))
 							) {
 								return (
 									<Button
 										sx={{ fontSize: '.8em' }}
 										color='info'
-										size='small'
-										disabled={true}>
+										size='small'>
 										Cancel
 									</Button>
 								);

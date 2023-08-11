@@ -60,12 +60,11 @@ export const fetchItSymbol = Symbol('fetchItSymbol');
 export interface RestSimulationContext {
 	postJobDirect: (...args: RequestPostJob) => Promise<ResponsePostJob>;
 	postJobBatch: (...args: RequestPostJob) => Promise<ResponsePostJob>;
-	cancelJobDirect: (...args: RequestCancelJob) => Promise<unknown>;
-	cancelJobBatch: (...args: RequestCancelJob) => Promise<unknown>;
+	cancelJob: (endPoint: string) => (...args: RequestCancelJob) => Promise<unknown>;
 	convertToInputFiles: (...args: RequestShConvert) => Promise<ResponseShConvert>;
 	getHelloWorld: (...args: RequestParam) => Promise<unknown>;
 	getJobStatus: (
-		endpoint: string
+		endPoint: string
 	) => (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
 	getJobInputs: (...args: RequestGetJobInputs) => Promise<JobInputs | undefined>;
 	getJobResults: (...args: RequestGetJobResults) => Promise<JobResults | undefined>;
@@ -422,7 +421,9 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 						return undefined;
 					}
 
-					return getJobStatus('jobs')(info, cache, beforeCacheWrite, signal);
+					const endPoint = `jobs/${info.metadata.platform.toLowerCase()}`;
+
+					return getJobStatus(endPoint)(info, cache, beforeCacheWrite, signal);
 				})
 			).then(dataList => {
 				const data = dataList.filter(data => data !== undefined) as JobStatusData[];
@@ -463,8 +464,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 			value={{
 				postJobDirect: postJob('jobs/direct'),
 				postJobBatch: postJob('jobs/batch'),
-				cancelJobDirect: cancelJob('jobs/direct'),
-				cancelJobBatch: cancelJob('jobs/batch'),
+				cancelJob,
 				convertToInputFiles,
 				getHelloWorld,
 				getJobStatus,

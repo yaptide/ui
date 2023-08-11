@@ -89,8 +89,6 @@ export function SimulationCardGrid({
 		console.warn(`Unknown layout: ${layout}`);
 	}
 
-	console.log('gridContainerProps', simulations);
-
 	return (
 		<Box
 			overflow={layout === 'block-list' ? 'auto' : undefined}
