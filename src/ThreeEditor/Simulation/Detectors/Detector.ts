@@ -285,7 +285,12 @@ export class Detector extends SimulationPoints {
 	}
 
 	duplicate(): Detector {
-		throw new Error('Not implemented');
+		const duplicated = new Detector(this.editor);
+		const generatedUuid = duplicated.uuid;
+		duplicated.fromJSON(this.toJSON());
+		duplicated.uuid = generatedUuid;
+
+		return duplicated;
 	}
 }
 

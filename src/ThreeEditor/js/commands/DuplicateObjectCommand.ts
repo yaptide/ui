@@ -1,6 +1,7 @@
 import { ObjectManagementFactory } from '../../commands/factories/ObjectManagementFactory';
 import { SimulationSceneChild } from '../../Simulation/Base/SimulationContainer';
 import { SimulationElement } from '../../Simulation/Base/SimulationElement';
+import { Detector, isDetector } from '../../Simulation/Detectors/Detector';
 import { BasicFigure, isBasicFigure } from '../../Simulation/Figures/BasicFigures';
 import { isScoringFilter, ScoringFilter } from '../../Simulation/Scoring/ScoringFilter';
 import { isOutput, ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
@@ -15,7 +16,11 @@ interface DuplicateObjectCommandJSON extends CommandJSON {
 
 export const canBeDuplicated = (object: unknown) => {
 	return (
-		isBasicFigure(object) || isOutput(object) || isQuantity(object) || isScoringFilter(object)
+		isBasicFigure(object) ||
+		isOutput(object) ||
+		isQuantity(object) ||
+		isScoringFilter(object) ||
+		isDetector(object)
 	);
 };
 
@@ -34,6 +39,12 @@ export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationEle
 		// 	return commandFactory.createDuplicateCommand('zone', clone, editor.zoneManager);
 		// } else if (isDetector(clone)) {
 		// 	return commandFactory.createDuplicateCommand('detector', clone, editor.detectorManager);
+	} else if (isDetector(clone)) {
+		return commandFactory.createDuplicateCommand<'detector', Detector, 'detectors'>(
+			'detector',
+			clone,
+			editor.detectorManager
+		);
 	} else if (isOutput(clone)) {
 		return commandFactory.createDuplicateCommand<'output', ScoringOutput, 'outputs'>(
 			'output',
