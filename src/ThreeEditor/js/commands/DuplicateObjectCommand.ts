@@ -1,11 +1,13 @@
 import { ObjectManagementFactory } from '../../commands/factories/ObjectManagementFactory';
 import { SimulationSceneChild } from '../../Simulation/Base/SimulationContainer';
 import { SimulationElement } from '../../Simulation/Base/SimulationElement';
+import { SimulationZone } from '../../Simulation/Base/SimulationZone';
 import { Detector, isDetector } from '../../Simulation/Detectors/Detector';
 import { BasicFigure, isBasicFigure } from '../../Simulation/Figures/BasicFigures';
 import { isScoringFilter, ScoringFilter } from '../../Simulation/Scoring/ScoringFilter';
 import { isOutput, ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
 import { isQuantity, ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
+import { isBooleanZone } from '../../Simulation/Zones/BooleanZone';
 import { Command, CommandJSON } from '../Command';
 import { YaptideEditor } from '../YaptideEditor';
 
@@ -20,7 +22,8 @@ export const canBeDuplicated = (object: unknown) => {
 		isOutput(object) ||
 		isQuantity(object) ||
 		isScoringFilter(object) ||
-		isDetector(object)
+		isDetector(object) ||
+		isBooleanZone(object)
 	);
 };
 
@@ -35,8 +38,12 @@ export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationEle
 			clone,
 			editor.figureManager
 		);
-		// } else if (isSimulationZone(clone)) {
-		// 	return commandFactory.createDuplicateCommand('zone', clone, editor.zoneManager);
+	} else if (isBooleanZone(clone)) {
+		return commandFactory.createDuplicateCommand<'zone', SimulationZone, 'zones'>(
+			'zone',
+			clone,
+			editor.zoneManager
+		);
 	} else if (isDetector(clone)) {
 		return commandFactory.createDuplicateCommand<'detector', Detector, 'detectors'>(
 			'detector',

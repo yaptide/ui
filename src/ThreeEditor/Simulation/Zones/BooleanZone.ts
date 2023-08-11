@@ -215,6 +215,15 @@ export class BooleanZone extends SimulationZone {
 
 		return zone.fromJSON(json);
 	}
+
+	duplicate(): BooleanZone {
+		const duplicated = new BooleanZone(this.editor);
+		const generatedUuid = duplicated.uuid;
+		duplicated.fromJSON(this.toJSON());
+		duplicated.uuid = generatedUuid;
+
+		return duplicated;
+	}
 }
 
 export const isBooleanZone = (x: unknown): x is BooleanZone => x instanceof BooleanZone;

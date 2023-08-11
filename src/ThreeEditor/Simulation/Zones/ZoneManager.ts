@@ -138,13 +138,7 @@ export class ZoneManager
 		);
 	}
 
-	getZoneOptions(
-		additionalPredicate?: (
-			value: SimulationZone,
-			index: number,
-			array: SimulationZone[]
-		) => boolean
-	): Record<string, string> {
+	getZoneOptions(): Record<string, string> {
 		const zoneOptions = [this.worldZone, ...this.zones].reduce((acc, zone) => {
 			acc[zone.uuid] = `${zone.name} [${zone.id}]`;
 
@@ -154,14 +148,8 @@ export class ZoneManager
 		return zoneOptions;
 	}
 
-	getBooleanZoneOptions(
-		additionalPredicate?: (value: BooleanZone, index: number, array: BooleanZone[]) => boolean
-	) {
-		return this.getZoneOptions(
-			(zone, index, array) =>
-				isBooleanZone(zone) &&
-				(!additionalPredicate || additionalPredicate(zone, index, array as BooleanZone[]))
-		);
+	getBooleanZoneOptions() {
+		return this.getZoneOptions();
 	}
 	/***************************************************************/
 
