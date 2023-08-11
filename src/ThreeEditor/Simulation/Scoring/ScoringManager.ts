@@ -27,7 +27,7 @@ export class OutputContainer extends SimulationSceneContainer<ScoringOutput> {
 
 	duplicate(): OutputContainer {
 		const duplicated = new OutputContainer(this.editor);
-		duplicated.children = this.children.map(child => child.duplicate());
+		this.children.forEach(child => duplicated.add(child.duplicate()));
 
 		return duplicated;
 	}

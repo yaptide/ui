@@ -37,8 +37,6 @@ export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationEle
 		);
 		// } else if (isSimulationZone(clone)) {
 		// 	return commandFactory.createDuplicateCommand('zone', clone, editor.zoneManager);
-		// } else if (isDetector(clone)) {
-		// 	return commandFactory.createDuplicateCommand('detector', clone, editor.detectorManager);
 	} else if (isDetector(clone)) {
 		return commandFactory.createDuplicateCommand<'detector', Detector, 'detectors'>(
 			'detector',
@@ -64,6 +62,8 @@ export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationEle
 			editor.scoringManager
 		);
 	}
+
+	throw new Error('Object cannot be duplicated');
 };
 
 /**

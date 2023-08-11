@@ -37,7 +37,7 @@ export class FigureContainer extends SimulationSceneContainer<BasicFigure> {
 
 	duplicate(): FigureContainer {
 		const duplicated = new FigureContainer(this.editor);
-		duplicated.children = this.children.map(child => child.duplicate());
+		this.children.forEach(child => duplicated.add(child.duplicate()));
 
 		return duplicated;
 	}

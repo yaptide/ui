@@ -38,7 +38,7 @@ export class QuantityContainer extends SimulationSceneContainer<ScoringQuantity>
 	duplicate() {
 		const duplicated = new QuantityContainer(this.editor);
 
-		duplicated.children = this.children.map(child => child.duplicate());
+		this.children.forEach(child => duplicated.add(child.duplicate()));
 
 		return duplicated;
 	}

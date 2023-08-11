@@ -28,7 +28,7 @@ export class DetectorContainer extends SimulationSceneContainer<Detector> {
 
 	duplicate(): DetectorContainer {
 		const duplicated = new DetectorContainer(this.editor);
-		duplicated.children = this.children.map(child => child.duplicate());
+		this.children.forEach(child => duplicated.add(child.duplicate()));
 
 		return duplicated;
 	}
