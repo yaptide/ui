@@ -2,6 +2,7 @@ import { ObjectManagementFactory } from '../../commands/factories/ObjectManageme
 import { SimulationSceneChild } from '../../Simulation/Base/SimulationContainer';
 import { SimulationElement } from '../../Simulation/Base/SimulationElement';
 import { BasicFigure, isBasicFigure } from '../../Simulation/Figures/BasicFigures';
+import { isScoringFilter, ScoringFilter } from '../../Simulation/Scoring/ScoringFilter';
 import { isOutput, ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
 import { isQuantity, ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
 import { Command, CommandJSON } from '../Command';
@@ -13,14 +14,15 @@ interface DuplicateObjectCommandJSON extends CommandJSON {
 }
 
 export const canBeDuplicated = (object: unknown) => {
-	return isBasicFigure(object) || isOutput(object) || isQuantity(object);
+	return (
+		isBasicFigure(object) || isOutput(object) || isQuantity(object) || isScoringFilter(object)
+	);
 };
 
 export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationElement) => {
 	const commandFactory = new ObjectManagementFactory(editor);
 
 	const clone = object.duplicate();
-	console.log(clone);
 
 	if (isBasicFigure(clone)) {
 		return commandFactory.createDuplicateCommand<'figure', BasicFigure, 'figures'>(
@@ -43,6 +45,12 @@ export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationEle
 			'quantity',
 			clone,
 			object.parent.parent
+		);
+	} else if (isScoringFilter(clone)) {
+		return commandFactory.createDuplicateCommand<'filter', ScoringFilter, 'filters'>(
+			'filter',
+			clone,
+			editor.scoringManager
 		);
 	}
 };

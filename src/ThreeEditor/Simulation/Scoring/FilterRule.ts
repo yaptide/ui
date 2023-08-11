@@ -52,6 +52,7 @@ export abstract class FilterRule {
 	}
 
 	abstract toJSON(): RuleJSON;
+	abstract duplicate(): FilterRule;
 }
 
 export class FloatRule extends FilterRule {
@@ -85,6 +86,10 @@ export class FloatRule extends FilterRule {
 
 		return rule;
 	}
+
+	duplicate(): FloatRule {
+		return new FloatRule(this.toJSON());
+	}
 }
 
 export class IntRule extends FilterRule {
@@ -116,6 +121,10 @@ export class IntRule extends FilterRule {
 		rule.uuid = json.uuid;
 
 		return rule;
+	}
+
+	duplicate(): IntRule {
+		return new IntRule(this.toJSON());
 	}
 }
 
@@ -149,6 +158,10 @@ export class IDRule extends FilterRule {
 		rule.uuid = json.uuid;
 
 		return rule;
+	}
+
+	duplicate(): IDRule {
+		return new IDRule(this.toJSON());
 	}
 }
 

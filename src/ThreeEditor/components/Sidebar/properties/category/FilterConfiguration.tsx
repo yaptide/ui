@@ -9,7 +9,7 @@ import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetFilterRuleCommand } from '../../../../js/commands/SetFilterRuleCommand';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
-import { isDetectFilter, ScoringFilter } from '../../../../Simulation/Scoring/ScoringFilter';
+import { isScoringFilter, ScoringFilter } from '../../../../Simulation/Scoring/ScoringFilter';
 import { PropertyField, RulesConfiguration, RulesOutliner } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
@@ -18,7 +18,7 @@ export function FilterConfiguration(props: { editor: YaptideEditor; object: Obje
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object as ScoringFilter);
 
-	const visibleFlag = isDetectFilter(watchedObject);
+	const visibleFlag = isScoringFilter(watchedObject);
 
 	return (
 		<PropertiesCategory

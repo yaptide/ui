@@ -10,7 +10,7 @@ import {
 } from '../Simulation/Detectors/DetectorManager';
 import { BasicFigure, isBasicFigure } from '../Simulation/Figures/BasicFigures';
 import { Beam, isBeam } from '../Simulation/Physics/Beam';
-import { isDetectFilter, ScoringFilter } from '../Simulation/Scoring/ScoringFilter';
+import { isScoringFilter, ScoringFilter } from '../Simulation/Scoring/ScoringFilter';
 import {
 	FilterContainer,
 	isFilterContainer,
@@ -206,7 +206,7 @@ export class ContextManager {
 
 export const isScoringContextObject = (x: unknown): x is ScoringContextObject => {
 	return (
-		isDetectFilter(x) ||
+		isScoringFilter(x) ||
 		isFilterContainer(x) ||
 		isOutput(x) ||
 		isQuantity(x) ||
