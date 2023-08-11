@@ -24,6 +24,13 @@ export class OutputContainer extends SimulationSceneContainer<ScoringOutput> {
 	constructor(editor: YaptideEditor) {
 		super(editor, 'Outputs', 'OutputGroup', outputLoader(editor));
 	}
+
+	duplicate(): OutputContainer {
+		const duplicated = new OutputContainer(this.editor);
+		duplicated.children = this.children.map(child => child.duplicate());
+
+		return duplicated;
+	}
 }
 
 const filterLoader = (editor: YaptideEditor) => (json: FilterJSON) =>
@@ -33,6 +40,10 @@ export class FilterContainer extends SimulationSceneContainer<ScoringFilter> {
 	readonly isFilterContainer: true = true;
 	constructor(editor: YaptideEditor) {
 		super(editor, 'Filters', 'FilterGroup', filterLoader(editor));
+	}
+
+	duplicate(): FilterContainer {
+		throw new Error('Not implemnted');
 	}
 }
 

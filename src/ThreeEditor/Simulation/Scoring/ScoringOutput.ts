@@ -34,6 +34,14 @@ export class QuantityContainer extends SimulationSceneContainer<ScoringQuantity>
 		this.name = 'Quantities';
 		this.clear();
 	}
+
+	duplicate() {
+		const duplicated = new QuantityContainer(this.editor);
+
+		duplicated.children = this.children.map(child => child.duplicate());
+
+		return duplicated;
+	}
 }
 
 export class ScoringOutput
@@ -174,6 +182,19 @@ export class ScoringOutput
 
 	static fromJSON(editor: YaptideEditor, json: ScoringOutputJSON): ScoringOutput {
 		return new ScoringOutput(editor).fromJSON(json);
+	}
+
+	duplicate(): ScoringOutput {
+		const duplicated = new ScoringOutput(this.editor);
+
+		duplicated.name = this.name;
+		duplicated._primaries = this._primaries;
+		duplicated._trace = this._trace;
+
+		duplicated.quantityContainer = this.quantityContainer.duplicate();
+		duplicated.add(duplicated.quantityContainer);
+
+		return duplicated;
 	}
 }
 

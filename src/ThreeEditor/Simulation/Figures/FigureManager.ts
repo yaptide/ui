@@ -34,6 +34,13 @@ export class FigureContainer extends SimulationSceneContainer<BasicFigure> {
 	constructor(editor: YaptideEditor) {
 		super(editor, 'Figures', 'Figures', figureLoader(editor));
 	}
+
+	duplicate(): FigureContainer {
+		const duplicated = new FigureContainer(this.editor);
+		duplicated.children = this.children.map(child => child.duplicate());
+
+		return duplicated;
+	}
 }
 
 export class FigureManager

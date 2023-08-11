@@ -21,7 +21,7 @@ import { AddQuantityCommand } from '../../../js/commands/AddQuantityCommand';
 import { canBeDuplicated, getDuplicateCommand } from '../../../js/commands/DuplicateObjectCommand';
 import { SetValueCommand } from '../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../js/YaptideEditor';
-import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
+import { isSimulationElement, SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
 
 export type TreeItem = NodeModel<{
@@ -68,6 +68,7 @@ export function SidebarTreeItem(props: {
 				<MenuItem
 					key={'duplicate'}
 					onClick={() => {
+						if (!isSimulationElement(object)) return;
 						const command = getDuplicateCommand(editor, object);
 						editor.execute(command);
 						popupState.close();

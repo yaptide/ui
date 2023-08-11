@@ -283,6 +283,10 @@ export class Detector extends SimulationPoints {
 
 		return this;
 	}
+
+	duplicate(): Detector {
+		throw new Error('Not implemented');
+	}
 }
 
 export const isDetector = (x: unknown): x is Detector => x instanceof Detector;

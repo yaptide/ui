@@ -205,6 +205,10 @@ export abstract class SimulationZone
 
 		return this;
 	}
+
+	duplicate(): SimulationZone {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export function isSimulationZone(object: unknown): object is SimulationZone {

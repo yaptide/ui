@@ -25,6 +25,13 @@ export class DetectorContainer extends SimulationSceneContainer<Detector> {
 	constructor(editor: YaptideEditor) {
 		super(editor, 'Detectors', 'DetectorGroup', detectorLoader(editor));
 	}
+
+	duplicate(): DetectorContainer {
+		const duplicated = new DetectorContainer(this.editor);
+		duplicated.children = this.children.map(child => child.duplicate());
+
+		return duplicated;
+	}
 }
 
 export class DetectorManager

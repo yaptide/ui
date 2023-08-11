@@ -150,6 +150,10 @@ export abstract class SimulationPoints
 			this.overrideHandler
 		) as this;
 	}
+
+	duplicate(): SimulationPoints {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export function isSimulationPoints(x: unknown): x is SimulationPoints {

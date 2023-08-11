@@ -137,6 +137,25 @@ export class ScoringQuantity extends SimulationElement {
 	static fromJSON(editor: YaptideEditor, json: ScoringQuantityJSON): ScoringQuantity {
 		return new ScoringQuantity(editor).fromJSON(json);
 	}
+
+	duplicate(): ScoringQuantity {
+		const duplicated = new ScoringQuantity(this.editor, this.keyword);
+
+		duplicated.name = this.name;
+
+		duplicated._modifiers = this.modifiers.reduce((acc, curr) => {
+			const modifier = curr.duplicate();
+			acc[modifier.uuid] = modifier;
+
+			return acc;
+		}, {} as Record<string, DifferentialModifier>);
+
+		duplicated.filter = this.filter;
+
+		if (duplicated._filter.length) duplicated.hasFilter = true;
+
+		return duplicated;
+	}
 }
 
 export const isQuantity = (x: unknown): x is ScoringQuantity => x instanceof ScoringQuantity;

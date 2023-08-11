@@ -38,6 +38,10 @@ export class ZoneContainer extends SimulationSceneContainer<SimulationZone> {
 
 		return super.remove(zone);
 	}
+
+	duplicate(): SimulationSceneContainer<SimulationZone> {
+		throw new Error('Not implemented');
+	}
 }
 
 export class ZoneManager
