@@ -98,6 +98,7 @@ export class OneSlotContainer<TChild extends SimulationSceneChild>
 		return super.add(child);
 	}
 
+	// eslint-disable-next-line class-methods-use-this
 	duplicate(): SimulationSceneContainer<TChild> {
 		throw new Error('Method not implemented.');
 	}

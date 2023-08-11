@@ -39,6 +39,7 @@ export class ZoneContainer extends SimulationSceneContainer<SimulationZone> {
 		return super.remove(zone);
 	}
 
+	// eslint-disable-next-line class-methods-use-this
 	duplicate(): SimulationSceneContainer<SimulationZone> {
 		throw new Error('Not implemented');
 	}

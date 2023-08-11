@@ -151,6 +151,7 @@ export abstract class SimulationPoints
 		) as this;
 	}
 
+	// eslint-disable-next-line class-methods-use-this
 	duplicate(): SimulationPoints {
 		throw new Error('Method not implemented.');
 	}
