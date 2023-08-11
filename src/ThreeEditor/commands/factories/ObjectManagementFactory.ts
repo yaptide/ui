@@ -28,11 +28,11 @@ export class ObjectManagementFactory {
 		this.editor = editor;
 	}
 
-	createDuplicateCommand<TName extends string, TChild extends SimulationSceneChild>(
-		name: TName,
-		element: TChild,
-		target: SimulationElementManager<TName, TChild>
-	) {
+	createDuplicateCommand<
+		TName extends string,
+		TChild extends SimulationSceneChild,
+		TPluralName extends string
+	>(name: TName, element: TChild, target: SimulationElementManager<TName, TChild, TPluralName>) {
 		return new ActionCommand(
 			this.editor,
 			target,
@@ -40,7 +40,7 @@ export class ObjectManagementFactory {
 			`add${CapitalizeString(name)}`,
 			`remove${CapitalizeString(name)}`,
 			[element] as MethodArgs<
-				SimulationElementManager<TName, TChild>,
+				SimulationElementManager<TName, TChild, TPluralName>,
 				`add${Capitalize<TName>}`
 			>
 		);

@@ -1,10 +1,9 @@
 import { ObjectManagementFactory } from '../../commands/factories/ObjectManagementFactory';
 import { SimulationSceneChild } from '../../Simulation/Base/SimulationContainer';
 import { SimulationElement } from '../../Simulation/Base/SimulationElement';
-import { isSimulationZone } from '../../Simulation/Base/SimulationZone';
-import { isDetector } from '../../Simulation/Detectors/Detector';
-import { isBasicFigure } from '../../Simulation/Figures/BasicFigures';
-import { isOutput } from '../../Simulation/Scoring/ScoringOutput';
+import { BasicFigure, isBasicFigure } from '../../Simulation/Figures/BasicFigures';
+import { isOutput, ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
+import { isQuantity, ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
 import { Command, CommandJSON } from '../Command';
 import { YaptideEditor } from '../YaptideEditor';
 
@@ -14,7 +13,7 @@ interface DuplicateObjectCommandJSON extends CommandJSON {
 }
 
 export const canBeDuplicated = (object: unknown) => {
-	return isBasicFigure(object) || isOutput(object);
+	return isBasicFigure(object) || isOutput(object) || isQuantity(object);
 };
 
 export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationElement) => {
@@ -24,13 +23,27 @@ export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationEle
 	console.log(clone);
 
 	if (isBasicFigure(clone)) {
-		return commandFactory.createDuplicateCommand('figure', clone, editor.figureManager);
+		return commandFactory.createDuplicateCommand<'figure', BasicFigure, 'figures'>(
+			'figure',
+			clone,
+			editor.figureManager
+		);
 		// } else if (isSimulationZone(clone)) {
 		// 	return commandFactory.createDuplicateCommand('zone', clone, editor.zoneManager);
 		// } else if (isDetector(clone)) {
 		// 	return commandFactory.createDuplicateCommand('detector', clone, editor.detectorManager);
 	} else if (isOutput(clone)) {
-		return commandFactory.createDuplicateCommand('output', clone, editor.scoringManager);
+		return commandFactory.createDuplicateCommand<'output', ScoringOutput, 'outputs'>(
+			'output',
+			clone,
+			editor.scoringManager
+		);
+	} else if (isQuantity(clone) && object.parent && isOutput(object.parent.parent)) {
+		return commandFactory.createDuplicateCommand<'quantity', ScoringQuantity, 'quantities'>(
+			'quantity',
+			clone,
+			object.parent.parent
+		);
 	}
 };
 

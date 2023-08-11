@@ -67,7 +67,7 @@ export class ScoringOutput
 	//TODO: Issue#320
 	private _trace: [boolean, string | null];
 
-	quantityContainer: SimulationSceneContainer<ScoringQuantity>;
+	quantityContainer: QuantityContainer;
 	geometry: THREE.BufferGeometry | null = null;
 
 	get quantities() {

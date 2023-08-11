@@ -26,8 +26,6 @@ export type SimulationElementManager<
 > = {
 	[Method in ChildMethodsManage<TName>]: (...args: [TChild]) => void;
 } & {
-	[Method in ChildMethodsCreate<TName>]: () => TChild;
-} & {
 	[Method in ChildMethodsGet<TName>]: (value: string) => TChild | null;
 } & {
 	[Property in ChildPropertiesContainer<TName>]: SimulationSceneContainer<TChild>;
@@ -43,8 +41,6 @@ type ChildMethods<
 > = `${Prefix}${'' extends Prefix ? ChildName : Capitalize<ChildName>}${Capitalize<Suffix>}`;
 
 type ChildMethodsManage<ChildName extends string> = ChildMethods<ChildName, 'add' | 'remove'>;
-
-type ChildMethodsCreate<ChildName extends string> = ChildMethods<ChildName, 'create'>;
 
 type ChildMethodsGet<ChildName extends string> = ChildMethods<
 	ChildName,
