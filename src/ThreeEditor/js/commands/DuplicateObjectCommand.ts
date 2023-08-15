@@ -1,9 +1,11 @@
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { ObjectManagementFactory } from '../../commands/factories/ObjectManagementFactory';
 import { SimulationSceneChild } from '../../Simulation/Base/SimulationContainer';
 import { SimulationElement } from '../../Simulation/Base/SimulationElement';
-import { SimulationZone } from '../../Simulation/Base/SimulationZone';
+import { isSimulationZone, SimulationZone } from '../../Simulation/Base/SimulationZone';
 import { Detector, isDetector } from '../../Simulation/Detectors/Detector';
 import { BasicFigure, isBasicFigure } from '../../Simulation/Figures/BasicFigures';
+import { FigureManager } from '../../Simulation/Figures/FigureManager';
 import { isScoringFilter, ScoringFilter } from '../../Simulation/Scoring/ScoringFilter';
 import { isOutput, ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
 import { isQuantity, ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
@@ -23,7 +25,7 @@ export const canBeDuplicated = (object: unknown) => {
 		isQuantity(object) ||
 		isScoringFilter(object) ||
 		isDetector(object) ||
-		isBooleanZone(object)
+		isSimulationZone(object)
 	);
 };
 
@@ -33,41 +35,20 @@ export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationEle
 	const clone = object.duplicate();
 
 	if (isBasicFigure(clone)) {
-		return commandFactory.createDuplicateCommand<'figure', BasicFigure, 'figures'>(
-			'figure',
-			clone,
-			editor.figureManager
-		);
-	} else if (isBooleanZone(clone)) {
-		return commandFactory.createDuplicateCommand<'zone', SimulationZone, 'zones'>(
-			'zone',
-			clone,
-			editor.zoneManager
-		);
+		return commandFactory.createDuplicateCommand('figure', clone, editor.figureManager);
+	} else if (isSimulationZone(clone)) {
+		return commandFactory.createDuplicateCommand('zone', clone, editor.zoneManager);
 	} else if (isDetector(clone)) {
-		return commandFactory.createDuplicateCommand<'detector', Detector, 'detectors'>(
-			'detector',
-			clone,
-			editor.detectorManager
-		);
+		return commandFactory.createDuplicateCommand('detector', clone, editor.detectorManager);
 	} else if (isOutput(clone)) {
-		return commandFactory.createDuplicateCommand<'output', ScoringOutput, 'outputs'>(
-			'output',
-			clone,
-			editor.scoringManager
-		);
-	} else if (isQuantity(clone) && object.parent && isOutput(object.parent.parent)) {
-		return commandFactory.createDuplicateCommand<'quantity', ScoringQuantity, 'quantities'>(
-			'quantity',
-			clone,
-			object.parent.parent
-		);
+		return commandFactory.createDuplicateCommand('output', clone, editor.scoringManager);
+	} else if (isQuantity(clone) && object.parent) {
+		const output = object.parent.parent;
+
+		if (isOutput(output))
+			return commandFactory.createDuplicateCommand('quantity', clone, output);
 	} else if (isScoringFilter(clone)) {
-		return commandFactory.createDuplicateCommand<'filter', ScoringFilter, 'filters'>(
-			'filter',
-			clone,
-			editor.scoringManager
-		);
+		return commandFactory.createDuplicateCommand('filter', clone, editor.scoringManager);
 	}
 
 	throw new Error('Object cannot be duplicated');

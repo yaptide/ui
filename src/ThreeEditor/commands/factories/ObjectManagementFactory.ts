@@ -1,7 +1,8 @@
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { CapitalizeString } from '../../../util/Capitalize';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneChild } from '../../Simulation/Base/SimulationContainer';
-import { SimulationElementManager } from '../../Simulation/Base/SimulationManager';
+import { ManagerParams, SimulationElementManager } from '../../Simulation/Base/SimulationManager';
 import { MethodArgs } from '../basic/AbstractCommand';
 import { ActionCommand } from '../basic/ActionCommand';
 
@@ -29,20 +30,17 @@ export class ObjectManagementFactory {
 	}
 
 	createDuplicateCommand<
-		TName extends string,
 		TChild extends SimulationSceneChild,
-		TPluralName extends string
-	>(name: TName, element: TChild, target: SimulationElementManager<TName, TChild, TPluralName>) {
+		TManager extends SimulationElementManager<TNames[0], TChild, TNames[1]>,
+		TNames extends [string, string] = ManagerParams<TChild, TManager>
+	>(name: TNames[0], element: TChild, target: TManager) {
 		return new ActionCommand(
 			this.editor,
 			target,
 			`Duplicate ${name}`,
 			`add${CapitalizeString(name)}`,
 			`remove${CapitalizeString(name)}`,
-			[element] as MethodArgs<
-				SimulationElementManager<TName, TChild, TPluralName>,
-				`add${Capitalize<TName>}`
-			>
+			[element] as MethodArgs<TManager, `add${Capitalize<TNames[0]>}`>
 		);
 	}
 
