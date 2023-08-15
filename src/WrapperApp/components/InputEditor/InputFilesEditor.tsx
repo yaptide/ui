@@ -61,11 +61,13 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 				result.push(line);
 			} else {
 				result.push(line.substring(0, largeFileSize - totalLength));
+
 				break;
 			}
 		}
 
-		result.push("\n\n... Output truncated ...");
+		result.push('\n\n... Output truncated ...');
+
 		return result.join('\n');
 	};
 
@@ -130,9 +132,8 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 					})
 					.map(([name, value]) => {
 						const isLargeFile = value.length > largeFileSize;
-						const content = !isLargeFile
-							? value
-							: truncateFile(value);
+						const content = !isLargeFile ? value : truncateFile(value);
+
 						return (
 							<Box key={name}>
 								<h2>
@@ -196,7 +197,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 										if (!isLargeFile) {
 											updateInputFiles(old => {
 												return { ...old, [name]: evn.target.value };
-											})
+											});
 										}
 									}}
 									disabled={isLargeFile}

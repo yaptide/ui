@@ -1,4 +1,3 @@
-import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { CapitalizeString } from '../../../util/Capitalize';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneChild } from '../../Simulation/Base/SimulationContainer';

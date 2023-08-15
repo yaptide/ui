@@ -1,4 +1,3 @@
-import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 
 /**

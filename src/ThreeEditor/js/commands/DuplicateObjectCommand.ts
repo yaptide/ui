@@ -1,15 +1,12 @@
-import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { ObjectManagementFactory } from '../../commands/factories/ObjectManagementFactory';
 import { SimulationSceneChild } from '../../Simulation/Base/SimulationContainer';
 import { SimulationElement } from '../../Simulation/Base/SimulationElement';
-import { isSimulationZone, SimulationZone } from '../../Simulation/Base/SimulationZone';
-import { Detector, isDetector } from '../../Simulation/Detectors/Detector';
-import { BasicFigure, isBasicFigure } from '../../Simulation/Figures/BasicFigures';
-import { FigureManager } from '../../Simulation/Figures/FigureManager';
-import { isScoringFilter, ScoringFilter } from '../../Simulation/Scoring/ScoringFilter';
-import { isOutput, ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
-import { isQuantity, ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
-import { isBooleanZone } from '../../Simulation/Zones/BooleanZone';
+import { isSimulationZone } from '../../Simulation/Base/SimulationZone';
+import { isDetector } from '../../Simulation/Detectors/Detector';
+import { isBasicFigure } from '../../Simulation/Figures/BasicFigures';
+import { isScoringFilter } from '../../Simulation/Scoring/ScoringFilter';
+import { isOutput } from '../../Simulation/Scoring/ScoringOutput';
+import { isQuantity } from '../../Simulation/Scoring/ScoringQuantity';
 import { Command, CommandJSON } from '../Command';
 import { YaptideEditor } from '../YaptideEditor';
 
