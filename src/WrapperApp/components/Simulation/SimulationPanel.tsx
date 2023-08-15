@@ -36,15 +36,17 @@ export default function SimulationPanel({
 		/** Queued Simulation Data */
 		trackedId,
 		setResultsSimulationData,
-		localResultsSimulationData
+		localResultsSimulationData,
+		setLocalResultsSimulationData
 	} = useStore();
 
 	const {
-		cancelJobDirect,
+		cancelJob,
 		getJobInputs,
 		getHelloWorld,
 		getPageContents,
 		getPageStatus,
+		getJobStatus,
 		getFullSimulationData
 	} = useShSimulation();
 
@@ -68,7 +70,7 @@ export default function SimulationPanel({
 	const [simulator] = useState<SimulatorType>(forwardedSimulator);
 
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
-	const [simulationsStatusData, setSimulationsStatusData] = useState<JobStatusData[]>([]);
+	const [simulationsStatusData, setSimulationsStatusData] = useState<JobStatusData[]>();
 
 	const [controller] = useState(new AbortController());
 
@@ -99,10 +101,37 @@ export default function SimulationPanel({
 
 		return getPageStatus(simulationInfo, true, handleBeforeCacheWrite, controller.signal).then(
 			s => {
-				setSimulationsStatusData([...s]);
+				setSimulationsStatusData([...(s ?? [])]);
 			}
 		);
 	}, [demoMode, getPageStatus, simulationInfo, handleBeforeCacheWrite, controller.signal]);
+
+	const updateSpecificSimulationData = useCallback(
+		(jobId: string) => {
+			if (demoMode) return Promise.resolve();
+			const info = simulationInfo.find(s => s.jobId === jobId);
+
+			if (!info) return Promise.resolve();
+			const endPoint = `jobs/${info.metadata.platform.toLowerCase()}`;
+
+			return getJobStatus(endPoint)(
+				info,
+				false,
+				handleBeforeCacheWrite,
+				controller.signal
+			).then(s => {
+				s &&
+					setSimulationsStatusData(prev => {
+						if (!prev) return [s];
+						const index = prev.findIndex(s => s.jobId === jobId);
+						prev[index] = s;
+
+						return [...prev];
+					});
+			});
+		},
+		[demoMode, simulationInfo, getJobStatus, handleBeforeCacheWrite, controller.signal]
+	);
 
 	useEffect(() => {
 		if (!demoMode)
@@ -131,11 +160,11 @@ export default function SimulationPanel({
 	]);
 
 	const simulationDataInterval = useMemo(() => {
-		if (simulationInfo.length > 0 && !demoMode && isBackendAlive) return 1000;
-		// interval 1 second if there are simulations to track and there is connection to backend
-	}, [simulationInfo, demoMode, isBackendAlive]);
+		if (!demoMode && isBackendAlive) return 1500;
+		// interval 1.5 second if there are simulations to track and there is connection to backend
+	}, [demoMode, isBackendAlive]);
 
-	useIntervalAsync(updateSimulationData, simulationDataInterval);
+	useIntervalAsync(updateSimulationData, simulationDataInterval, simulationInfo.length > 0);
 
 	const handleLoadResults = async (taskId: string | null, simulation: unknown) => {
 		if (taskId === null) return goToResults?.call(null);
@@ -157,7 +186,7 @@ export default function SimulationPanel({
 		const updateCurrentSimulation = async () => {
 			if (!demoMode && yaptideEditor) {
 				const hash = yaptideEditor.toJSON().hash;
-				const currentStatus = simulationsStatusData.find(async s => {
+				const currentStatus = simulationsStatusData?.find(async s => {
 					if (currentJobStatusData[StatusState.COMPLETED](s)) {
 						const jobInputs = await getJobInputs(s, controller.signal);
 
@@ -226,11 +255,33 @@ export default function SimulationPanel({
 		[refreshPage]
 	);
 
-	// will be used later
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const handleJobCancel = (simulationInfo: SimulationInfo) => {
-		cancelJobDirect(simulationInfo, controller.signal).finally(autoRefreshPage);
-	};
+	const cancelSpecificSimulation = useCallback(
+		(jobId: string) => {
+			const info = simulationInfo.find(s => s.jobId === jobId);
+
+			if (!info) {
+				setLocalResultsSimulationData(prev => {
+					if (!prev) return [];
+					const index = prev.findIndex(s => s.jobId === jobId);
+					prev.splice(index, 1);
+
+					return [...prev];
+				});
+			} else {
+				const endPoint = `jobs/${info.metadata.platform.toLowerCase()}`;
+				cancelJob(endPoint)(info, controller.signal).then(() => {
+					autoRefreshPage();
+				});
+			}
+		},
+		[
+			simulationInfo,
+			cancelJob,
+			controller.signal,
+			autoRefreshPage,
+			setLocalResultsSimulationData
+		]
+	);
 
 	const handlePageChange = (event: ChangeEvent<unknown>, pageIdx: number) =>
 		autoRefreshPage({ pageIdx });
@@ -272,7 +323,7 @@ export default function SimulationPanel({
 				</Fade>
 			</Modal>
 			<DemoCardGrid
-				simulations={localResultsSimulationData ?? []}
+				simulations={localResultsSimulationData}
 				title='Local Simulation Results'
 				handleLoadResults={handleLoadResults}
 				handleShowInputFiles={handleShowInputFiles}
@@ -282,6 +333,7 @@ export default function SimulationPanel({
 					simulations={EXAMPLES}
 					title='Demo Simulation Results'
 					handleLoadResults={handleLoadResults}
+					handleDelete={cancelSpecificSimulation}
 					handleShowInputFiles={handleShowInputFiles}
 				/>
 			) : (
@@ -298,6 +350,8 @@ export default function SimulationPanel({
 						handlePageChange
 					}}
 					handleLoadResults={handleLoadResults}
+					handleRefresh={updateSpecificSimulationData}
+					handleDelete={cancelSpecificSimulation}
 					handleShowInputFiles={handleShowInputFiles}
 					isBackendAlive={isBackendAlive}
 				/>

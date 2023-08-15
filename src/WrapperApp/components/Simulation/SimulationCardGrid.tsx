@@ -6,6 +6,7 @@ import {
 	AccordionSummary,
 	Box,
 	Button,
+	CircularProgress,
 	Grid,
 	GridProps,
 	Typography
@@ -31,9 +32,11 @@ import {
 type GridLayout = 'grid' | 'inline-list' | 'block-list';
 
 type SimulationCardGridProps = {
-	simulations: JobStatusData[];
+	simulations?: JobStatusData[];
 	handleLoadResults?: (taskId: string | null, simulation: unknown) => void;
 	handleShowInputFiles?: (inputFiles?: SimulationInputFiles) => void;
+	handleDelete?: (jobId: string) => void;
+	handleRefresh?: (jobId: string) => void;
 	layout: GridLayout;
 } & GridProps;
 
@@ -68,6 +71,8 @@ export function SimulationCardGrid({
 	layout,
 	sx,
 	handleLoadResults,
+	handleDelete,
+	handleRefresh,
 	handleShowInputFiles,
 	...other
 }: SimulationCardGridProps) {
@@ -93,42 +98,52 @@ export function SimulationCardGrid({
 			<Grid
 				{...gridContainerProps}
 				{...other}>
-				{simulations.length ? (
-					simulations.map(simulation => (
-						<Grid
-							key={simulation.jobId}
-							{...gridItemProps}>
-							<SimulationCard
-								simulationStatus={simulation}
-								loadResults={
-									handleLoadResults &&
-									(taskId => handleLoadResults(taskId, simulation))
-								}
-								showInputFiles={handleShowInputFiles}
-							/>
-						</Grid>
-					))
-				) : (
-					<Typography
-						variant='h5'
-						color={({ palette }) => palette.text.disabled}
-						sx={{
-							textAlign: 'center',
-							width: '100%',
-							p: ({ spacing }) => spacing(8, 4),
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center'
-						}}>
-						<FolderOffIcon
+				{simulations ? (
+					simulations.length ? (
+						simulations.map(simulation => (
+							<Grid
+								key={simulation.jobId}
+								{...gridItemProps}>
+								<SimulationCard
+									simulationStatus={simulation}
+									loadResults={
+										handleLoadResults &&
+										(taskId => handleLoadResults(taskId, simulation))
+									}
+									handleDelete={handleDelete}
+									handleRefresh={handleRefresh}
+									showInputFiles={handleShowInputFiles}
+								/>
+							</Grid>
+						))
+					) : (
+						<Typography
+							variant='h5'
+							color={({ palette }) => palette.text.disabled}
 							sx={{
-								m: ({ spacing }) => spacing(0, 2),
-								pb: ({ spacing }) => spacing(0.5),
-								fontSize: ({ spacing }) => spacing(4)
-							}}
-						/>
-						No simulations found
-					</Typography>
+								textAlign: 'center',
+								width: '100%',
+								p: ({ spacing }) => spacing(8, 4),
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center'
+							}}>
+							<FolderOffIcon
+								sx={{
+									m: ({ spacing }) => spacing(0, 2),
+									pb: ({ spacing }) => spacing(0.5),
+									fontSize: ({ spacing }) => spacing(4)
+								}}
+							/>
+							No simulations found
+						</Typography>
+					)
+				) : (
+					<CircularProgress
+						sx={{
+							p: ({ spacing }) => spacing(4)
+						}}
+					/>
 				)}
 			</Grid>
 		</Box>
@@ -243,7 +258,7 @@ export function AccordionCardGrid({
 	sx,
 	...other
 }: AccordionCardGridProps) {
-	const [expanded, setExpanded] = useState(!!simulations.length || !isAccordion);
+	const [expanded, setExpanded] = useState(!!simulations?.length || !isAccordion);
 
 	return (
 		<Accordion

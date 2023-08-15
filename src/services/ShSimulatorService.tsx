@@ -60,17 +60,17 @@ export const fetchItSymbol = Symbol('fetchItSymbol');
 export interface RestSimulationContext {
 	postJobDirect: (...args: RequestPostJob) => Promise<ResponsePostJob>;
 	postJobBatch: (...args: RequestPostJob) => Promise<ResponsePostJob>;
-	cancelJobDirect: (...args: RequestCancelJob) => Promise<unknown>;
-	cancelJobBatch: (...args: RequestCancelJob) => Promise<unknown>;
+	cancelJob: (endPoint: string) => (...args: RequestCancelJob) => Promise<unknown>;
 	convertToInputFiles: (...args: RequestShConvert) => Promise<ResponseShConvert>;
 	getHelloWorld: (...args: RequestParam) => Promise<unknown>;
-	getJobDirectStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
-	getJobBatchStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
+	getJobStatus: (
+		endPoint: string
+	) => (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
 	getJobInputs: (...args: RequestGetJobInputs) => Promise<JobInputs | undefined>;
 	getJobResults: (...args: RequestGetJobResults) => Promise<JobResults | undefined>;
 	getJobLogs: (...args: RequestGetJobLogs) => Promise<JobLogs | undefined>;
 	getPageContents: (...args: RequestGetPageContents) => Promise<ResponseGetPageContents>;
-	getPageStatus: (...args: RequestGetPageStatus) => Promise<JobStatusData[]>;
+	getPageStatus: (...args: RequestGetPageStatus) => Promise<JobStatusData[] | undefined>;
 	getFullSimulationData: (
 		jobStatus: JobStatusData,
 		signal?: AbortSignal,
@@ -426,7 +426,9 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 					return getJobStatus(endPoint)(info, cache, beforeCacheWrite, signal);
 				})
 			).then(dataList => {
-				return dataList.filter(data => data !== undefined) as JobStatusData[];
+				const data = dataList.filter(data => data !== undefined) as JobStatusData[];
+
+				return data.length === 0 ? undefined : data;
 			});
 		},
 		[getJobStatus]
@@ -462,12 +464,10 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 			value={{
 				postJobDirect: postJob('jobs/direct'),
 				postJobBatch: postJob('jobs/batch'),
-				cancelJobDirect: cancelJob('jobs/direct'),
-				cancelJobBatch: cancelJob('jobs/batch'),
+				cancelJob,
 				convertToInputFiles,
 				getHelloWorld,
-				getJobDirectStatus: getJobStatus('jobs/direct'),
-				getJobBatchStatus: getJobStatus('jobs/batch'),
+				getJobStatus,
 				getPageContents,
 				getPageStatus,
 				getJobInputs,
