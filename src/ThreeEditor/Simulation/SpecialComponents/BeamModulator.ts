@@ -36,14 +36,15 @@ export type BeamsimulationMethod = (typeof BEAM_MODULATOR_MODE_OPTIONS)[number];
  * Element defines a method, file with definition and zone to apply to the changes in physics.
  */
 export class BeamModulator extends SimulationPoints {
+	readonly notMovable = true;
+	readonly notRotatable = true;
+	readonly notDuplicatable = true;
+	wireframeHelper: THREE.Mesh;
+
 	sourceFile: ConfigSourceFile = {
 		name: '',
 		value: ''
 	};
-
-	notMovable = true;
-	notRotatable = true;
-	wireframeHelper: THREE.Mesh;
 
 	reset(): void {
 		super.reset();
@@ -145,6 +146,11 @@ export class BeamModulator extends SimulationPoints {
 		this.sourceFile = sourceFile;
 
 		return this;
+	}
+
+	// eslint-disable-next-line class-methods-use-this
+	duplicate(): SimulationPoints {
+		throw new Error('Method not implemented');
 	}
 }
 

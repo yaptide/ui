@@ -48,8 +48,9 @@ export class WorldZone extends SimulationElement {
 
 	readonly notRotatable = true;
 	readonly notScalable = true;
-	readonly notVisibleChildren: boolean = true;
-	readonly notDraggable: boolean = true;
+	readonly notVisibleChildren = true;
+	readonly notDraggable = true;
+	readonly notDuplicatable = true;
 
 	editor: YaptideEditor;
 

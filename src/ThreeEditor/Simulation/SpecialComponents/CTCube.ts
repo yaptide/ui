@@ -25,6 +25,7 @@ export type CTCubeJSON = Omit<
 
 export class CTCube extends BasicFigure<THREE.BoxGeometry> {
 	readonly notScalable = true;
+	readonly notDuplicatable = true;
 
 	pathOnServer: string = '';
 

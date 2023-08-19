@@ -1,5 +1,4 @@
 import { ObjectManagementFactory } from '../../commands/factories/ObjectManagementFactory';
-import { SimulationSceneChild } from '../../Simulation/Base/SimulationContainer';
 import { SimulationElement } from '../../Simulation/Base/SimulationElement';
 import { isSimulationZone } from '../../Simulation/Base/SimulationZone';
 import { isDetector } from '../../Simulation/Detectors/Detector';
@@ -7,23 +6,12 @@ import { isBasicFigure } from '../../Simulation/Figures/BasicFigures';
 import { isScoringFilter } from '../../Simulation/Scoring/ScoringFilter';
 import { isOutput } from '../../Simulation/Scoring/ScoringOutput';
 import { isQuantity } from '../../Simulation/Scoring/ScoringQuantity';
-import { Command, CommandJSON } from '../Command';
 import { YaptideEditor } from '../YaptideEditor';
 
-interface DuplicateObjectCommandJSON extends CommandJSON {
-	objectUuid: string;
-	actionCommands: CommandJSON[];
-}
-
-export const canBeDuplicated = (object: unknown) => {
-	return (
-		isBasicFigure(object) ||
-		isOutput(object) ||
-		isQuantity(object) ||
-		isScoringFilter(object) ||
-		isDetector(object) ||
-		isSimulationZone(object)
-	);
+export const canBeDuplicated = (object: object) => {
+	return 'duplicate' in object && 'notDuplicatable' in object
+		? object.notDuplicatable !== true
+		: true;
 };
 
 export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationElement) => {
@@ -48,59 +36,5 @@ export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationEle
 		return commandFactory.createDuplicateCommand('filter', clone, editor.scoringManager);
 	}
 
-	throw new Error('Object cannot be duplicated');
+	throw new Error('Command for duplication not implemented');
 };
-
-/**
- * @param editor YaptideEditor
- * @param object SimulationSceneChild
- * @constructor
- */
-export class DuplicateObjectCommand extends Command {
-	object: SimulationSceneChild;
-	clonedObject: undefined | SimulationSceneChild;
-	actionCommands: Command[] = [];
-	constructor(editor: YaptideEditor, object: SimulationSceneChild) {
-		super(editor);
-
-		this.type = 'DuplicateObjectCommand';
-
-		this.object = object;
-		this.clonedObject = undefined;
-	}
-
-	execute() {
-		this.clonedObject = this.object.clone();
-
-		this.editor.addObject(this.clonedObject);
-		this.editor.select(this.clonedObject);
-	}
-
-	undo() {
-		if (!this.clonedObject) return;
-
-		this.editor.removeObject(this.clonedObject);
-		this.editor.select(this.object);
-		this.clonedObject = undefined;
-	}
-
-	toJSON() {
-		const output: DuplicateObjectCommandJSON = {
-			...super.toJSON(),
-			objectUuid: this.object.uuid,
-			actionCommands: this.actionCommands.map(c => c.toJSON())
-		};
-
-		return output;
-	}
-
-	fromJSON(json: DuplicateObjectCommandJSON) {
-		super.fromJSON(json);
-
-		const found = this.editor.objectByUuid(json.objectUuid) as SimulationSceneChild;
-
-		if (!found) throw new Error('The object was not found in the scene.');
-
-		this.object = found;
-	}
-}
