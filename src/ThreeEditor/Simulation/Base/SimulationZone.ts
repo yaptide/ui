@@ -205,6 +205,11 @@ export abstract class SimulationZone
 
 		return this;
 	}
+
+	// eslint-disable-next-line class-methods-use-this
+	duplicate(): SimulationZone {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export function isSimulationZone(object: unknown): object is SimulationZone {

@@ -283,6 +283,15 @@ export class Detector extends SimulationPoints {
 
 		return this;
 	}
+
+	duplicate(): Detector {
+		const duplicated = new Detector(this.editor);
+		const generatedUuid = duplicated.uuid;
+		duplicated.fromJSON(this.toJSON());
+		duplicated.uuid = generatedUuid;
+
+		return duplicated;
+	}
 }
 
 export const isDetector = (x: unknown): x is Detector => x instanceof Detector;

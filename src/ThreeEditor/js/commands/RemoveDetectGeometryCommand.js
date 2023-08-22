@@ -1,5 +1,5 @@
 import { Detector } from '../../Simulation/Detectors/Detector';
-import { Command } from '../Command.js';
+import { Command } from '../Command';
 
 /**
  * @param editor Editor

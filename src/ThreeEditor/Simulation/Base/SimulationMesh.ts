@@ -77,6 +77,10 @@ export abstract class SimulationMesh<
 		this.name = this._name;
 	}
 
+	duplicate(): this {
+		return super.clone();
+	}
+
 	abstract reconstructGeometryFromData(data: AdditionalGeometryDataType): void;
 }
 

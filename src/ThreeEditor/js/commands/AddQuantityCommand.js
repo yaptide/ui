@@ -1,6 +1,6 @@
 import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
 import { ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
-import { Command } from '../Command.js';
+import { Command } from '../Command';
 
 export class AddQuantityCommand extends Command {
 	/**

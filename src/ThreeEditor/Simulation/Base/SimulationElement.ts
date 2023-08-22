@@ -53,6 +53,10 @@ export abstract class SimulationElement
 	reset() {
 		this.name = this._name;
 	}
+
+	duplicate() {
+		return super.clone() as SimulationElement;
+	}
 }
 
 export function isSimulationElement(obj: unknown): obj is SimulationElement {

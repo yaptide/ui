@@ -1,3 +1,5 @@
+import type { YaptideEditor } from './YaptideEditor';
+
 /**
  * @typedef {import('../Simulation/Base/SimulationElement').SimulationElement} SimulationElement
  * @typedef  {Object} Command
@@ -6,23 +8,28 @@
  * @property {boolean} updatable
  * @property {string} type
  * @property {string} name
- * @property {Editor} editor
+ * @property {YaptideEditor} editor
  * @property {SimulationElement} [object]
  *
  */
+export interface CommandJSON {
+	type: string;
+	id: number;
+	name: string;
+}
+
 export class Command {
-	id;
-	inMemory;
-	updatable;
-	type;
-	name;
-	editor;
-	object;
+	id: number;
+	inMemory: boolean;
+	updatable: boolean;
+	type: string;
+	name: string;
+	editor: YaptideEditor;
 
 	/**
-	 * @param {Editor} editor
+	 * @param {YaptideEditor} editor
 	 */
-	constructor(editor) {
+	constructor(editor: YaptideEditor) {
 		this.id = -1;
 		this.inMemory = false;
 		this.updatable = false;
@@ -35,22 +42,22 @@ export class Command {
 	 * @returns {{
 	 * 		type: string,
 	 * 		id: number,
-	 * 		name: string,
-	 * 		object?: Object
+	 * 		name: string
 	 * }&{
 	 * 		[key: string]: any
 	 * }}
 	 */
 	toJSON() {
-		const output = {};
-		output.type = this.type;
-		output.id = this.id;
-		output.name = this.name;
+		const output: CommandJSON = {
+			type: this.type,
+			id: this.id,
+			name: this.name
+		};
 
 		return output;
 	}
 
-	fromJSON(json) {
+	fromJSON(json: CommandJSON) {
 		this.inMemory = true;
 		this.type = json.type;
 		this.id = json.id;

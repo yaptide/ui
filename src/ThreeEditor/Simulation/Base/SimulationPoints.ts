@@ -150,6 +150,8 @@ export abstract class SimulationPoints
 			this.overrideHandler
 		) as this;
 	}
+
+	abstract duplicate(): SimulationPoints;
 }
 
 export function isSimulationPoints(x: unknown): x is SimulationPoints {

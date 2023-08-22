@@ -57,4 +57,16 @@ export class DifferentialModifier {
 
 		return mod;
 	}
+
+	duplicate(): DifferentialModifier {
+		const duplicated = new DifferentialModifier(
+			this.diffType,
+			this.lowerLimit,
+			this.binsNumber,
+			this.upperLimit,
+			this.isLog
+		);
+
+		return duplicated;
+	}
 }

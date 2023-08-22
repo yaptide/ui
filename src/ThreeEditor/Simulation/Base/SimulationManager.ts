@@ -49,4 +49,50 @@ type ChildMethodsGet<ChildName extends string> = ChildMethods<
 >;
 
 type ChildPropertiesContainer<ChildName extends string> = ChildMethods<ChildName, '', 'container'>;
+
+/**
+ * The type of the parameters required by the Manager class.
+ * @template TElement - The type of the element to be managed.
+ * @template TManager - The type of the manager.
+ * @example
+ * ```ts
+ * declare const editor: Editor;
+ * declare class Quantity extends SimulationElement;
+ * declare class QuantityManager implements SimulationPropertiesType, SimulationElementManager<'quantity', Quantity, 'quantities'>;
+ *
+ * type QuantityParams = ManagerParams<Quantity, QuantityManager>; // ['quantity', 'quantities']
+ *
+ * declare class Particle extends SimulationElement;
+ * declare class ParticleManager implements SimulationPropertiesType, SimulationElementManager<'particle', Particle>;
+ *
+ * type ParticleParams = ManagerParams<Particle, ParticleManager>; // ['particle', particles]
+ * ```
+ */
+export type ManagerParams<
+	TElement extends SimulationSceneChild,
+	TManager extends Record<string, unknown>
+> = [
+	/**
+	 * The keys of the manager that correspond to the methods that add or remove elements.
+	 * @remarks
+	 * The keys are transformed to lowercase.
+	 */
+	keyof {
+		[K in keyof TManager as TManager[K] extends (...args: infer Params extends any[]) => unknown
+			? Params extends [TElement]
+				? K extends `add${infer _}` | `remove${infer _}`
+					? Lowercase<_>
+					: never
+				: never
+			: never]: TManager[K];
+	} &
+		string,
+	/**
+	 * The keys of the manager that correspond to the properties that store arrays of elements.
+	 */
+	keyof {
+		[K in keyof TManager as TManager[K] extends TElement[] ? K : never]: TManager[K];
+	} &
+		string
+];
 //----------------------------------------------------------------------------------------------//

@@ -163,6 +163,16 @@ export class ScoringFilter extends SimulationElement {
 			.map(rule => `    ${rule.toString()}`)
 			.join('\n')}}`;
 	}
+
+	duplicate(): ScoringFilter {
+		const duplicated = new ScoringFilter(this.editor);
+
+		duplicated.name = this.name;
+
+		this.rules.forEach(rule => duplicated.addRule(rule.duplicate()));
+
+		return duplicated;
+	}
 }
 
-export const isDetectFilter = (x: unknown): x is ScoringFilter => x instanceof ScoringFilter;
+export const isScoringFilter = (x: unknown): x is ScoringFilter => x instanceof ScoringFilter;

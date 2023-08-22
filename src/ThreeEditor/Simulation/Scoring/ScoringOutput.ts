@@ -34,6 +34,14 @@ export class QuantityContainer extends SimulationSceneContainer<ScoringQuantity>
 		this.name = 'Quantities';
 		this.clear();
 	}
+
+	duplicate() {
+		const duplicated = new QuantityContainer(this.editor);
+
+		this.children.forEach(child => duplicated.add(child.duplicate()));
+
+		return duplicated;
+	}
 }
 
 export class ScoringOutput
@@ -59,7 +67,7 @@ export class ScoringOutput
 	//TODO: Issue#320
 	private _trace: [boolean, string | null];
 
-	quantityContainer: SimulationSceneContainer<ScoringQuantity>;
+	quantityContainer: QuantityContainer;
 	geometry: THREE.BufferGeometry | null = null;
 
 	get quantities() {
@@ -177,6 +185,19 @@ export class ScoringOutput
 
 	static fromJSON(editor: YaptideEditor, json: ScoringOutputJSON): ScoringOutput {
 		return new ScoringOutput(editor).fromJSON(json);
+	}
+
+	duplicate(): ScoringOutput {
+		const duplicated = new ScoringOutput(this.editor);
+
+		duplicated.name = this.name;
+		duplicated._primaries = this._primaries;
+		duplicated._trace = this._trace;
+
+		duplicated.quantityContainer = this.quantityContainer.duplicate();
+		duplicated.add(duplicated.quantityContainer);
+
+		return duplicated;
 	}
 }
 

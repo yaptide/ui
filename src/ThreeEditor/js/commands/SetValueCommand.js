@@ -1,5 +1,5 @@
 import { implementsUniqueChildrenNames } from '../../../util/Name/Name';
-import { Command } from '../Command.js';
+import { Command } from '../Command';
 
 /**
  * @param editor Editor
