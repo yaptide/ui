@@ -1,19 +1,21 @@
+// eslint-disable-next-line simple-import-sort/imports
 import { createTheme } from '@mui/material';
-import { StyledEngineProvider, Theme, ThemeProvider } from '@mui/material/styles';
+import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { SnackbarProvider } from 'notistack';
-import { cloneElement, ReactElement, useMemo } from 'react';
+import { ReactElement, cloneElement, useMemo } from 'react';
 import * as THREE from 'three';
 
-import { ConfigProvider } from './config/ConfigService';
 import { PythonConverterService } from './PythonConverter/PythonConverterService';
+import { SimulationBase } from './ThreeEditor/Simulation/Base/SimulationBase';
+import { YaptideEditor } from './ThreeEditor/js/YaptideEditor';
+import WrapperApp from './WrapperApp/WrapperApp';
+import { ConfigProvider } from './config/ConfigService';
 import { Auth } from './services/AuthService';
 import { DialogProvider } from './services/DialogService';
 import { Loader } from './services/LoaderService';
 import { ShSimulation } from './services/ShSimulatorService';
 import { Store } from './services/StoreService';
-import { YaptideEditor } from './ThreeEditor/js/YaptideEditor';
-import WrapperApp from './WrapperApp/WrapperApp';
 
 declare module '@mui/material/styles' {
 	// add new variables to the theme type
@@ -76,6 +78,14 @@ function App() {
 		[prefersDarkMode]
 	);
 	window.THREE ??= THREE;
+	const element = new SimulationBase('test', 'test');
+	console.log(element._proxy);
+
+	if ('position' in element && element.position instanceof THREE.Vector3) {
+		element.position.set(1, 2, 3);
+	}
+
+	console.log(Object.entries(element));
 
 	return (
 		<ServiceTree

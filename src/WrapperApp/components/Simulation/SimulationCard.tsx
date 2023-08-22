@@ -183,7 +183,7 @@ export default function SimulationCard({
 					(currentJobStatusData[StatusState.COMPLETED](simulationStatus) ||
 						currentJobStatusData[StatusState.FAILED](simulationStatus)) ? (
 						<Tooltip
-							title='Delete local data'
+							title='Delete Results'
 							sx={{
 								zIndex: ({ zIndex }) => zIndex.appBar
 							}}>
