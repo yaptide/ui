@@ -29,7 +29,7 @@ export function PhysicConfiguration(props: { editor: YaptideEditor; object: Phys
 				value={watchedObject.energyLoss}
 				onChange={value => setValue('energyLoss', value)}
 			/>
-			<></>
+
 			<BooleanPropertyField
 				label='Enable nuclear reactions (NUCRE)'
 				value={watchedObject.enableNuclearReactions}

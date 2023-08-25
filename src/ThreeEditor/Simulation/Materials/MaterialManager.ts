@@ -20,6 +20,8 @@ export type MaterialManagerJSON = Omit<
 	never
 >;
 
+export type Icru = number;
+
 export class MaterialManager extends THREE.Object3D implements SimulationPropertiesType {
 	/****************************Private****************************/
 	private readonly metadata = {

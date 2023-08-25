@@ -1,4 +1,5 @@
-import { CustomStoppingPowerModels } from '../CustomStoppingPower/CustomStoppingPower';
+import { StoppingPowerFile } from '../CustomStoppingPower/CustomStoppingPower';
+import { Icru } from '../Materials/MaterialManager';
 
 export const ENERGY_MODEL_STRAGGLING = {
 	'no straggling': 'no straggling',
@@ -20,12 +21,15 @@ export const STOPPING_POWER_TABLE = {
 	ICRU91: 'ICRU91'
 } as const;
 export type StoppingPowerTable = keyof typeof STOPPING_POWER_TABLE;
+
 export interface PhysicJSON {
 	energyLoss: number;
 	enableNuclearReactions: boolean;
 	energyModelStraggling: EnergyModelStraggling;
 	multipleScattering: MultipleScattering;
 	stoppingPowerTable: StoppingPowerTable;
+
+	availableStoppingPowerFiles?: Record<Icru, StoppingPowerFile>; // For converter needs
 }
 
 const _default = {
@@ -33,8 +37,7 @@ const _default = {
 	enableNuclearReactions: true,
 	energyModelStraggling: ENERGY_MODEL_STRAGGLING['Vavilov'],
 	multipleScattering: MULTIPLE_SCATTERING['Moliere'],
-	stoppingPowerTable: STOPPING_POWER_TABLE.ICRU91,
-	zonesWithCustomStoppingPower: {}
+	stoppingPowerTable: STOPPING_POWER_TABLE.ICRU91
 };
 
 export class Physics {
@@ -43,10 +46,6 @@ export class Physics {
 	energyModelStraggling: EnergyModelStraggling;
 	multipleScattering: MultipleScattering;
 	stoppingPowerTable: StoppingPowerTable;
-
-	get stoppingPowerTableFiles() {
-		return CustomStoppingPowerModels[this.stoppingPowerTable];
-	}
 
 	constructor() {
 		this.energyLoss = _default.energyLoss;
@@ -72,6 +71,7 @@ export class Physics {
 			multipleScattering,
 			stoppingPowerTable
 		} = this;
+
 		const jsonObject: PhysicJSON = {
 			energyLoss,
 			enableNuclearReactions,

@@ -3,6 +3,7 @@ import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Vector2 } from 'three';
 import { Vector3 } from 'three/src/math/Vector3';
 
+import { InfoTooltip } from '../../../../../shared/components/tooltip/InfoTooltip';
 import {
 	KEYWORD_OPTIONS,
 	KEYWORD_SORT_ORDER,
@@ -28,20 +29,21 @@ import { DETECTOR_MODIFIERS_OPTIONS } from '../../../../Simulation/Scoring/Scori
 import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
 import { ObjectSelectProperty, ObjectSelectProps } from './ObjectSelectPropertyField';
 
-export function PropertyField(props: { label?: string; children: ReactNode }) {
+export function PropertyField(props: { label?: string; disabled?: boolean; children: ReactNode }) {
 	return (
 		<>
 			{props.label !== undefined && (
 				<Grid
 					item
 					xs={4}
-					sx={{ textAlign: 'right' }}>
+					sx={{ textAlign: 'right', opacity: props.disabled ? 0.5 : 'inherit' }}>
 					{props.label}
 				</Grid>
 			)}
 			<Grid
 				item
-				xs={props.label !== undefined ? 8 : 12}>
+				xs={props.label !== undefined ? 8 : 12}
+				sx={{ opacity: props.disabled ? 0.5 : 'inherit' }}>
 				{props.children}
 			</Grid>
 		</>
@@ -308,23 +310,28 @@ export function BooleanPropertyField(props: BooleanPropertyFieldProps) {
 type ConditionalPropertyFieldProps = {
 	label: string;
 	enabled: boolean;
+	propertyDisabled?: boolean;
 	onChangeEnabled: (value: boolean) => void;
 };
 
 export function ConditionalPropertyField(
-	props: ConditionalPropertyFieldProps & { children: ReactNode }
+	props: ConditionalPropertyFieldProps & { children: ReactNode; info?: string }
 ) {
 	return (
-		<PropertyField label={props.label}>
+		<PropertyField
+			label={props.label}
+			disabled={props.propertyDisabled}>
 			<Stack
 				direction='row'
 				spacing={1}>
 				<Checkbox
 					sx={{ padding: 0 }}
+					disabled={props.propertyDisabled}
 					checked={props.enabled}
 					onChange={event => props.onChangeEnabled(event.target.checked)}
 				/>
 				{props.enabled && props.children}
+				{props.info && <InfoTooltip title={props.info} />}
 			</Stack>
 		</PropertyField>
 	);

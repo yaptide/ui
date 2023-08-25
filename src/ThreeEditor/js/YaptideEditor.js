@@ -710,6 +710,7 @@ YaptideEditor.prototype = {
 			this.clear();
 		}
 	},
+
 	toJSON() {
 		// scripts clean up
 

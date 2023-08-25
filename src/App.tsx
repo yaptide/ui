@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material';
-import { StyledEngineProvider, Theme, ThemeProvider } from '@mui/material/styles';
+import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { SnackbarProvider } from 'notistack';
 import { cloneElement, ReactElement, useMemo } from 'react';

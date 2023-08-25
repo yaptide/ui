@@ -2,6 +2,7 @@ import * as THREE from 'three';
 
 import { isCounterMapError } from '../../../util/CounterMap/CounterMap';
 import { YaptideEditor } from '../../js/YaptideEditor.js';
+import { Icru } from './MaterialManager';
 import {
 	DEFAULT_MATERIAL_DENSITY,
 	DEFAULT_MATERIAL_ICRU,
@@ -13,7 +14,7 @@ export type RenderProps = Omit<SimulationMaterialJSON, 'uuid' | 'name' | 'icru' 
 export type SimulationMaterialJSON = {
 	uuid: string;
 	name: string;
-	icru: number;
+	icru: Icru;
 	density: number;
 	customStoppingPower?: boolean;
 	transparent?: boolean;
@@ -26,7 +27,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 	private proxy: SimulationMaterial;
 	private editor: YaptideEditor;
 	private colorProxy: THREE.Color;
-	icru: number;
+	icru: Icru;
 	density: number;
 	customStoppingPower: boolean = false;
 	renderProps: RenderProps;

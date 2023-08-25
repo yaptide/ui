@@ -1,6 +1,6 @@
-import * as React from 'react';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import Tooltip from '@mui/material/Tooltip';
+import * as React from 'react';
 
 interface InfoTooltipProps {
 	title: string;
