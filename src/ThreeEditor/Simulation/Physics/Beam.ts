@@ -1,12 +1,14 @@
 import * as THREE from 'three';
 import { Euler, Vector3 } from 'three';
-// Import of 'lines' from examples subfolder follows the official guidelines of threejs.editor (see https://threejs.org/docs/#manual/en/introduction/Installation)
 import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
-import { Editor } from '../../js/Editor';
+
 import { Particle, PARTICLE_TYPES } from '../../../types/Particle';
-import { SimulationElement } from '../Base/SimulationElement';
+// Import of 'lines' from examples subfolder follows the official guidelines of threejs.editor (see https://threejs.org/docs/#manual/en/introduction/Installation)
+import { ConfigSourceFile } from '../../../types/SimulationTypes/ConfigTypes';
+import { YaptideEditor } from '../../js/YaptideEditor';
+import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 
 export const SIGMA_TYPE = {
 	'Gaussian': 'Gaussian',
@@ -28,45 +30,48 @@ export const BEAM_SOURCE_TYPE = {
 } as const;
 export type BeamSourceType = keyof typeof BEAM_SOURCE_TYPE;
 
-export interface BeamJSON {
-	position: THREE.Vector3Tuple;
-	direction: THREE.Vector3Tuple;
-	energy: number;
-	energySpread: number;
-	energyLowCutoff: number;
-	energyHighCutoff: number;
-	beamSourceType: BeamSourceType;
-	divergence: {
-		x: number;
-		y: number;
-		distanceToFocal: number;
-	};
-	particle: {
-		id: number;
-		z: number;
-		a: number;
-	};
-	sigma: {
-		type: SigmaType;
-		x: number;
-		y: number;
-	};
+export type BeamJSON = Omit<
+	SimulationElementJSON & {
+		position: THREE.Vector3Tuple;
+		direction: THREE.Vector3Tuple;
+		energy: number;
+		energySpread: number;
+		energyLowCutoff: number;
+		energyHighCutoff: number;
+		sourceType: BeamSourceType;
+		divergence: {
+			x: number;
+			y: number;
+			distanceToFocal: number;
+		};
+		particle: {
+			id: number;
+			z: number;
+			a: number;
+		};
+		sigma: {
+			type: SigmaType;
+			x: number;
+			y: number;
+		};
 
-	sad: {
-		type: SadType;
-		x: number;
-		y: number;
-	};
+		sad: {
+			type: SadType;
+			x: number;
+			y: number;
+		};
 
-	colorHex: number;
-	numberOfParticles: number;
-	beamSourceFile: BeamSourceFile;
-}
+		colorHex: number;
+		numberOfParticles: number;
+		sourceFile: ConfigSourceFile;
+	},
+	never
+>;
 
 const _default = {
 	position: new THREE.Vector3(0, 0, 0),
 	direction: new THREE.Vector3(0, 0, 1),
-	beamSourceType: BEAM_SOURCE_TYPE.simple,
+	sourceType: BEAM_SOURCE_TYPE.simple,
 	energy: 150,
 	energySpread: 1.5,
 	energyLowCutoff: 0,
@@ -94,15 +99,10 @@ const _default = {
 
 	numberOfParticles: 10000,
 
-	beamSourceFile: {
+	sourceFile: {
 		value: '',
 		name: ''
 	}
-};
-
-type BeamSourceFile = {
-	value: string;
-	name: string;
 };
 
 export class Beam extends SimulationElement {
@@ -133,7 +133,7 @@ export class Beam extends SimulationElement {
 	energyHighCutoff: number;
 	direction: Vector3;
 
-	beamSourceType: BeamSourceType = _default.beamSourceType;
+	sourceType: BeamSourceType = _default.sourceType;
 
 	divergence: {
 		x: number;
@@ -161,19 +161,20 @@ export class Beam extends SimulationElement {
 		a: number;
 	};
 
-	beamSourceFile: BeamSourceFile;
+	sourceFile: ConfigSourceFile;
 
 	get particle(): Particle {
 		return PARTICLE_TYPES.find(p => p.id === this.particleData.id) as Particle;
 	}
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Beam', 'Beam');
 
 		const overrideHandlerDirection = {
 			set: (target: THREE.Vector3, prop: keyof THREE.Vector3, value: unknown) => {
 				const result = Reflect.set(target, prop, value);
 				this.helper.setDirection(target.clone().normalize());
+
 				return result;
 			}
 		};
@@ -197,7 +198,7 @@ export class Beam extends SimulationElement {
 
 		this.numberOfParticles = _default.numberOfParticles;
 
-		this.beamSourceFile = { ..._default.beamSourceFile };
+		this.sourceFile = { ..._default.sourceFile };
 
 		this.helper = this.initHelper();
 
@@ -205,13 +206,16 @@ export class Beam extends SimulationElement {
 			get: (target: THREE.Color, prop: keyof THREE.Color) => {
 				const scope = this;
 				const result = Reflect.get(target, prop);
+
 				if (prop === 'setHex') {
 					return function (hex: number) {
 						target[prop].apply(target, [hex]);
 						scope.helper.setColor(hex);
+
 						return scope._lineMaterial.color;
 					};
 				}
+
 				return result;
 			}
 		});
@@ -220,7 +224,7 @@ export class Beam extends SimulationElement {
 	initHelper() {
 		const dir = this.direction.clone().normalize();
 		const origin = new THREE.Vector3(0, 0, 0);
-		const length = 1;
+		const length = 4;
 		const hex = 0xffff00; //yellow
 		const helper = new THREE.ArrowHelper(dir, origin, length, hex, length * 0.3, length * 0.2);
 
@@ -245,6 +249,7 @@ export class Beam extends SimulationElement {
 			'position',
 			new THREE.Float32BufferAttribute(new Vector3(0, 0, 0).toArray(), 3)
 		);
+
 		const redDotMaterial = new THREE.PointsMaterial({
 			size: 8,
 			color: 0xff0000,
@@ -267,6 +272,7 @@ export class Beam extends SimulationElement {
 		helper.add(blackDot);
 
 		this.add(helper);
+
 		return helper;
 	}
 
@@ -283,13 +289,14 @@ export class Beam extends SimulationElement {
 		this.divergence = { ..._default.divergence };
 		this.particleData = _default.particle;
 		this.sigma = { ..._default.sigma };
-		this.beamSourceType = _default.beamSourceType;
-		this.beamSourceFile = { ..._default.beamSourceFile };
+		this.sourceType = _default.sourceType;
+		this.sourceFile = { ..._default.sourceFile };
 		this.material.color.setHex(0xffff00); // yellow
 	}
 
 	toJSON() {
 		const jsonObject: BeamJSON = {
+			...super.toJSON(),
 			position: this.position.toArray(),
 			direction: this.direction.toArray(),
 			energy: this.energy,
@@ -302,14 +309,15 @@ export class Beam extends SimulationElement {
 			particle: this.particleData,
 			colorHex: this.material.color.getHex(),
 			numberOfParticles: this.numberOfParticles,
-			beamSourceFile: this.beamSourceFile,
-			beamSourceType: this.beamSourceType
+			sourceFile: this.sourceFile,
+			sourceType: this.sourceType
 		};
 
 		return jsonObject;
 	}
 
 	fromJSON(data: BeamJSON) {
+		super.fromJSON(data);
 		const loadedData = { ..._default, ...data };
 		this.position.fromArray(loadedData.position);
 		this.direction.fromArray(loadedData.direction);
@@ -321,14 +329,16 @@ export class Beam extends SimulationElement {
 		this.particleData = loadedData.particle;
 		this.material.color.setHex(loadedData.colorHex);
 		this.numberOfParticles = loadedData.numberOfParticles;
-		this.beamSourceFile = loadedData.beamSourceFile;
+		this.sourceFile = loadedData.sourceFile;
 		this.sigma = loadedData.sigma;
 		this.sad = loadedData.sad;
-		this.beamSourceType = loadedData.beamSourceType;
+		this.sourceType = loadedData.sourceType;
+		this.sourceFile = loadedData.sourceFile;
+
 		return this;
 	}
 
-	static fromJSON(editor: Editor, data: BeamJSON) {
+	static fromJSON(editor: YaptideEditor, data: BeamJSON) {
 		return new Beam(editor).fromJSON(data);
 	}
 }

@@ -1,5 +1,5 @@
 import { implementsUniqueChildrenNames } from '../../../util/Name/Name';
-import { Command } from '../Command.js';
+import { Command } from '../Command';
 
 /**
  * @param editor Editor
@@ -27,7 +27,7 @@ class SetValueCommand extends Command {
 
 		if (attributeName === 'name') {
 			if (implementsUniqueChildrenNames(object.parent)) {
-				this.newValue = object.parent.getNextFreeName(object, this.newValue);
+				this.newValue = object.parent.uniqueNameForChild(object, this.newValue);
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-import { UICustomTabbedPanel, hideUIElement, showUIElement } from '../../../util/Ui/Uis';
+import { hideUIElement, showUIElement, UICustomTabbedPanel } from '../../../util/Ui/Uis';
 import * as Panel from './object/Objects';
 
 function SidebarProperties(editor, id = 'properties') {
@@ -29,21 +29,25 @@ function SidebarProperties(editor, id = 'properties') {
 		'GENERAL',
 		generalItems.map(item => item.panel)
 	);
+
 	container.addTab(
 		'geometry',
 		'GEOMETRY',
 		geometryItems.map(item => item.panel)
 	);
+
 	container.addTab(
 		'descriptors',
 		'DESCRIPTORS',
 		descriptorItems.map(item => item.panel)
 	);
+
 	container.addTab(
 		'modifiers',
 		'MODIFIERS',
 		modifierItems.map(item => item.panel)
 	);
+
 	container.addTab(
 		'material',
 		'MATERIAL',
@@ -53,6 +57,7 @@ function SidebarProperties(editor, id = 'properties') {
 
 	function setupGeneralPanel(object) {
 		info.setObject(object);
+
 		if (!object.notMovable && !object.isScene)
 			// TODO: Create custom scene for figures
 			placement.setObject(object);
@@ -75,24 +80,30 @@ function SidebarProperties(editor, id = 'properties') {
 		'isOutput',
 		'isQuantity'
 	];
+
 	function setupGeometryPanel(object) {
 		if (WITHOUT_GEOMETRIES.some(key => object[key])) return container.hideTab('geometry');
 		container.showTab('geometry');
+
 		switch (true) {
-			case object.isDetectGeometry:
+			case object.isDetector:
 				[calculate].forEach(item => item.setObject(null));
 				[grid, dimensions].forEach(item => item.setObject(object));
+
 				break;
 			case object.isWorldZone:
 				[grid].forEach(item => item.setObject(null));
 				[dimensions, calculate].forEach(item => item.setObject(object));
+
 				break;
 			case object.isBasicFigure:
 				[grid, calculate].forEach(item => item.setObject(null));
 				[dimensions].forEach(item => item.setObject(object));
+
 				break;
 			default:
 				[dimensions, grid, calculate].forEach(item => item.setObject(null));
+
 				break;
 		}
 	}
@@ -102,7 +113,7 @@ function SidebarProperties(editor, id = 'properties') {
 		'isBasicFigure',
 		'isDetectContainer',
 		'isScoringManager',
-		'isDetectGeometry',
+		'isDetector',
 		'isZoneContainer',
 		'isZone',
 		'isWorldZone',
@@ -112,6 +123,7 @@ function SidebarProperties(editor, id = 'properties') {
 		'isOutput',
 		'isQuantity'
 	];
+
 	function setupDescriptorPanel(object) {
 		if (WITHOUT_DESCRIPTORS.some(key => object[key])) return container.hideTab('descriptors');
 		container.showTab('descriptors');
@@ -123,7 +135,7 @@ function SidebarProperties(editor, id = 'properties') {
 		'isScene',
 		'isBasicFigure',
 		'isDetectContainer',
-		'isDetectGeometry',
+		'isDetector',
 		'isZoneContainer',
 		'isWorldZone',
 		'isBeam',
@@ -131,24 +143,30 @@ function SidebarProperties(editor, id = 'properties') {
 		'isScoringManager',
 		'isOutput'
 	];
+
 	function setupModifierPanel(object) {
 		if (WITHOUT_MODIFIERS.some(key => object[key])) return container.hideTab('modifiers');
 		container.showTab('modifiers');
+
 		switch (true) {
 			case object.isZone:
 				[beam, filter, differential].forEach(item => item.setObject(null));
 				[zoneRules].forEach(item => item.setObject(object));
+
 				break;
 			case object.isFilter:
 				[zoneRules, beam, differential].forEach(item => item.setObject(null));
 				[filter].forEach(item => item.setObject(object));
+
 				break;
 			case object.isQuantity:
 				[zoneRules, beam, filter].forEach(item => item.setObject(null));
 				[differential].forEach(item => item.setObject(object));
+
 				break;
 			default:
 				[zoneRules, beam, filter, differential].forEach(item => item.setObject(null));
+
 				break;
 		}
 	}
@@ -161,6 +179,7 @@ function SidebarProperties(editor, id = 'properties') {
 
 	function setupPanels() {
 		const { selected: object } = editor;
+
 		if (!object) return hideUIElement(container);
 		showUIElement(container);
 

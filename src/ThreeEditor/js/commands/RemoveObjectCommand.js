@@ -1,6 +1,6 @@
-import { Command } from '../Command.js';
-
 import { ObjectLoader } from 'three';
+
+import { Command } from '../Command';
 
 /**
  * @param editor Editor
@@ -16,6 +16,7 @@ class RemoveObjectCommand extends Command {
 
 		this.object = object;
 		this.parent = object !== undefined ? object.parent : undefined;
+
 		if (this.parent !== undefined) {
 			this.index = this.parent.children.indexOf(this.object);
 		}
@@ -45,8 +46,9 @@ class RemoveObjectCommand extends Command {
 		super.fromJSON(json);
 
 		this.parent = this.editor.objectByUuid(json.parentUuid);
+
 		if (this.parent === undefined) {
-			this.parent = this.editor.scene;
+			this.parent = this.editor.figureManager;
 		}
 
 		this.index = json.index;

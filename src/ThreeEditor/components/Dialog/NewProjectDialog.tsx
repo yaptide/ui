@@ -1,25 +1,29 @@
 import { Button } from '@mui/material';
-import { CustomDialog } from './CustomDialog';
 
-export type NewProjectProps = {
-	open: boolean;
-	onCancel: () => void;
-	onConfirm: () => void;
-};
+import { useStore } from '../../../services/StoreService';
+import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
-export function NewProjectDialog(props: NewProjectProps) {
+export function NewProjectDialog({ onClose }: ConcreteDialogProps) {
+	const { yaptideEditor } = useStore();
+
 	return (
 		<CustomDialog
-			open={props.open}
-			onClose={props.onCancel}
-			title='Create a new project'
+			onClose={onClose}
+			alert={true}
+			title='New Project Alert'
 			contentText='Your current project will be lost. Are you sure you want to continue?'>
 			<Button
-				onClick={props.onCancel}
+				onClick={onClose}
 				autoFocus>
 				Cancel
 			</Button>
-			<Button onClick={props.onConfirm}>Clear and Proceed</Button>
+			<Button
+				onClick={() => {
+					if (yaptideEditor) yaptideEditor.clear();
+					onClose();
+				}}>
+				Clear and proceed
+			</Button>
 		</CustomDialog>
 	);
 }

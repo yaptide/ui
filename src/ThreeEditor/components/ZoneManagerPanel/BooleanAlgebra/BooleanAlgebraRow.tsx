@@ -1,18 +1,19 @@
 import { Box, Divider } from '@mui/material';
-import React, { useEffect, useRef, useState } from 'react';
+import { MouseEvent, MutableRefObject, useEffect, useRef, useState } from 'react';
 import { Object3D } from 'three';
+
 import { Operation, OperationData, OperationDataList } from '../../../../types/Operation';
 import { GeometryLabel } from './GeometryLabel';
 import OperationToggle from './OperationToggle';
 
 export type BooleanAlgebraRowProps = {
-	onGeometryClick: (index: number) => (event: React.MouseEvent<HTMLElement>) => void;
+	onGeometryClick: (index: number) => (event: MouseEvent<HTMLElement>) => void;
 	onOperationChange: (
 		valueIndex: number
-	) => (event: React.MouseEvent<HTMLElement>, value?: string | null) => void;
+	) => (event: MouseEvent<HTMLElement>, value?: string | null) => void;
 	value: OperationDataList;
 	allObjects: Object3D[];
-	scrollWrapperRef: React.MutableRefObject<HTMLDivElement | null>;
+	scrollWrapperRef: MutableRefObject<HTMLDivElement | null>;
 };
 
 export type AlgebraRow = {
@@ -45,6 +46,7 @@ export default function BooleanAlgebraRow({
 		};
 
 		displayValueRef.current = [...value];
+
 		// if the last object is defined, add ui to create a new one
 		if (value.length === 0 || value[value.length - 1].objectId !== null)
 			displayValueRef.current[displayValueRef.current.length] = {
@@ -52,6 +54,7 @@ export default function BooleanAlgebraRow({
 				objectId: undefined
 			};
 		const lastRef = displayValueRef.current[displayValueRef.current.length - 1];
+
 		if (
 			lastObj?.objectId !== lastRef?.objectId ||
 			lastObj?.objectId !== lastRef?.objectId ||
@@ -59,11 +62,12 @@ export default function BooleanAlgebraRow({
 		) {
 			scrollToBottom();
 		}
+
 		setLastObj(Object.assign({}, lastRef));
 		setLastLength(displayValueRef.current.length);
 	}, [value, lastObj?.objectId, lastLength, scrollWrapperRef]);
 
-	const endRef = React.useRef<HTMLDivElement>(null);
+	const endRef = useRef<HTMLDivElement>(null);
 
 	return (
 		<Box
@@ -81,6 +85,7 @@ export default function BooleanAlgebraRow({
 					const referencedObject = allObjects.find(obj => obj.id === objectId);
 					const label = referencedObject?.name;
 					const tooltipId = Number(referencedObject?.id).toString();
+
 					return (
 						<Box
 							key={index}

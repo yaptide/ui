@@ -1,5 +1,6 @@
-import { Command } from '../Command.js';
 import { ObjectLoader } from 'three';
+
+import { Command } from '../Command';
 
 /**
  * @param editor Editor
@@ -64,6 +65,7 @@ class SetMaterialMapCommand extends Command {
 
 			const json = map.toJSON(meta);
 			const images = extractFromCache(meta.images);
+
 			if (images.length > 0) json.images = images;
 			json.sourceFile = map.sourceFile;
 
@@ -77,6 +79,7 @@ class SetMaterialMapCommand extends Command {
 		// and return as array
 		function extractFromCache(cache) {
 			const values = [];
+
 			for (const key in cache) {
 				const data = cache[key];
 				delete data.metadata;
@@ -97,6 +100,7 @@ class SetMaterialMapCommand extends Command {
 
 		function parseTexture(json) {
 			let map = null;
+
 			if (json !== null) {
 				const loader = new ObjectLoader();
 				const images = loader.parseImages(json.images);

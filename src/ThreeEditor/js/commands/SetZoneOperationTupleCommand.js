@@ -1,8 +1,8 @@
-import { Command } from '../Command.js';
+import { Command } from '../Command';
 
 /**
  *
- * @typedef {import('../Editor').Editor} Editor
+ * @typedef {import('../YaptideEditor.js').YaptideEditor} Editor
  * @typedef {import('../../Simulation/Zones/BooleanZone').BooleanZone} BooleanZone
  * @typedef {import('../../CSG/CSGOperationTuple.js').OperationTuple} OperationTuple
  */

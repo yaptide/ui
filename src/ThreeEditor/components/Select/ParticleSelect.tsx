@@ -1,4 +1,5 @@
-import React from 'react';
+import { SyntheticEvent } from 'react';
+
 import { AutoCompleteSelect } from '../../../util/genericComponents/AutoCompleteSelect';
 
 export interface ParticleType {
@@ -7,7 +8,7 @@ export interface ParticleType {
 }
 
 export interface ParticleSelectProps {
-	onChange?: (event: React.SyntheticEvent<Element, Event>, newValue: number) => void;
+	onChange?: (event: SyntheticEvent<Element, Event>, newValue: number) => void;
 	particles: readonly ParticleType[];
 	value?: number;
 }

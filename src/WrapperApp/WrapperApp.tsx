@@ -1,26 +1,24 @@
 import Box from '@mui/material/Box';
-import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
-import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
-import { Editor } from '../ThreeEditor/js/Editor';
-import { DEMO_MODE } from '../config/Config';
+import { SyntheticEvent, useEffect, useState } from 'react';
+
+import { useConfig } from '../config/ConfigService';
 import { useAuth } from '../services/AuthService';
-import { useLoader } from '../services/DataLoaderService';
 import { JsRootService } from '../services/JsRootService';
 import { useStore } from '../services/StoreService';
-import { SimulationInputFiles, StatusState, currentJobStatusData } from '../types/ResponseTypes';
+import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
+import { SimulatorType } from '../types/RequestTypes';
+import { SimulationInputFiles } from '../types/ResponseTypes';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
+import NavDrawer from './components/NavDrawer/NavDrawer';
 import { AboutPanel } from './components/Panels/AboutPanel';
 import LoginPanel from './components/Panels/LoginPanel';
 import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
-import NavDrawer from './components/NavDrawer/NavDrawer';
-import { FullSimulationData } from '../services/ShSimulatorService';
-import { SimulatorType } from '../types/RequestTypes';
 
 function WrapperApp() {
-	const { editorRef, resultsSimulationData, setResultsSimulationData } = useStore();
-	const { editorProvider, resultsProvider, canLoadEditorData, clearLoadedEditor } = useLoader();
+	const { demoMode } = useConfig();
+	const { resultsSimulationData } = useStore();
 	const { isAuthorized, logout } = useAuth();
 	const [open, setOpen] = useState(true);
 	const [tabsValue, setTabsValue] = useState('editor');
@@ -29,17 +27,10 @@ function WrapperApp() {
 	const [currentSimulator, setCurrentSimulator] = useState<SimulatorType>(
 		SimulatorType.SHIELDHIT
 	);
+
 	useEffect(() => {
 		if (providedInputFiles && tabsValue !== 'simulations') setProvidedInputFiles(undefined);
 	}, [providedInputFiles, tabsValue]);
-
-	useEffect(() => {
-		if (editorRef.current && canLoadEditorData) {
-			clearLoadedEditor();
-			setTabsValue('editor');
-			for (const data of editorProvider) editorRef.current.loader.loadJSON(data);
-		}
-	}, [canLoadEditorData, editorRef, editorProvider, clearLoadedEditor]);
 
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
 		if (newValue === 'login' && isAuthorized) logout();
@@ -47,18 +38,9 @@ function WrapperApp() {
 	};
 
 	useEffect(() => {
-		if (resultsProvider.length > 0) {
-			setResultsSimulationData(
-				resultsProvider.reverse().find(currentJobStatusData[StatusState.COMPLETED])
-			);
-			setTabsValue('editor');
-		}
-	}, [resultsProvider, setResultsSimulationData]);
-
-	useEffect(() => {
-		if (!isAuthorized && !DEMO_MODE) setTabsValue('login');
+		if (!isAuthorized && !demoMode) setTabsValue('login');
 		else setTabsValue('editor');
-	}, [isAuthorized]);
+	}, [demoMode, isAuthorized]);
 
 	useEffect(() => {
 		if (resultsSimulationData)
@@ -68,28 +50,6 @@ function WrapperApp() {
 	useEffect(() => {
 		if (isAuthorized && tabsValue === 'login') setTabsValue('editor');
 	}, [isAuthorized, tabsValue]);
-
-	const onLoadExample = useCallback(
-		(example: FullSimulationData) => {
-			if (!DEMO_MODE) return;
-			setResultsSimulationData(example);
-			setTabsValue('editor');
-		},
-		[setResultsSimulationData]
-	);
-
-	const onEditorInitialized = (editor: Editor) => {
-		editorRef.current?.signals.exampleLoaded.remove(onLoadExample);
-		editorRef.current = editor;
-		editorRef.current?.signals.exampleLoaded.add(onLoadExample);
-	};
-
-	useEffect(() => {
-		editorRef.current?.signals.exampleLoaded.add(onLoadExample);
-		return () => {
-			editorRef.current?.signals.exampleLoaded.remove(onLoadExample);
-		};
-	}, [editorRef, onLoadExample]);
 
 	return (
 		<Box
@@ -110,7 +70,6 @@ function WrapperApp() {
 				index={'editor'}
 				persistent>
 				<SceneEditor
-					onEditorInitialized={onEditorInitialized}
 					sidebarProps={[open, tabsValue === 'editor']}
 					focus={tabsValue === 'editor'}
 				/>
@@ -162,4 +121,5 @@ function WrapperApp() {
 		</Box>
 	);
 }
+
 export default WrapperApp;

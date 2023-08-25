@@ -1,14 +1,15 @@
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
 	Accordion as MuiAccordion,
-	AccordionSummary as MuiAccordionSummary,
-	Typography,
 	AccordionDetails as MuiAccordionDetails,
-	Grid,
 	AccordionProps,
+	AccordionSummary as MuiAccordionSummary,
 	AccordionSummaryProps,
-	styled
+	Grid,
+	styled,
+	Typography
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { ReactNode } from 'react';
 
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
 	<MuiAccordionSummary {...props} />
@@ -45,7 +46,7 @@ const Accordion = styled((props: AccordionProps) => (
 
 export function PropertiesCategory(props: {
 	category: string;
-	children: React.ReactNode;
+	children: ReactNode;
 	visible?: boolean;
 }) {
 	const { category, children, visible = true } = props;
@@ -62,7 +63,7 @@ export function PropertiesCategory(props: {
 			<AccordionDetails>
 				<Grid
 					container
-					spacing={2}>
+					spacing={1}>
 					{children}
 				</Grid>
 			</AccordionDetails>

@@ -1,10 +1,11 @@
-import React from 'react';
+import { SyntheticEvent } from 'react';
+
 import { AutoCompleteSelect } from '../../../util/genericComponents/AutoCompleteSelect';
-import SimulationMaterial from '../../Simulation/Materials/SimulationMaterial';
 import { COMMON_MATERIAL_ICRUS } from '../../Simulation/Materials/materials';
+import SimulationMaterial from '../../Simulation/Materials/SimulationMaterial';
 
 export interface MaterialSelectProps {
-	onChange?: (event: React.SyntheticEvent<Element, Event>, newValue: number) => void;
+	onChange?: (event: SyntheticEvent<Element, Event>, newValue: number) => void;
 	materials: Record<string, SimulationMaterial>;
 	value?: string;
 }
@@ -13,9 +14,11 @@ const isCommonMaterial = ({ icru }: SimulationMaterial) => COMMON_MATERIAL_ICRUS
 
 const commonCompare = (a: SimulationMaterial, b: SimulationMaterial): number => {
 	const [aIcru, bIcru] = [a.icru, b.icru];
+
 	if (isCommonMaterial(a) === isCommonMaterial(b)) {
 		return aIcru - bIcru;
 	} else if (isCommonMaterial(b)) return 1;
+
 	return -1;
 };
 

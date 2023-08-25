@@ -1,14 +1,14 @@
-import { Command } from '../Command.js';
 import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
 import { ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
-// eslint-disable-next-line  no-unused-vars
-import { Editor } from '../Editor.js';
+import { Command } from '../Command';
+
 export class AddQuantityCommand extends Command {
 	/**
-	 * @param {Editor} editor
+	 * @param {YaptideEditor} editor
 	 * @param {ScoringOutput} output
 	 * @param {ScoringQuantity} [object]
 	 * @constructor
+	 * @deprecated Use ObjectManagementFactory to create adder commands
 	 */
 	constructor(editor, output, object) {
 		super(editor);
@@ -36,6 +36,7 @@ export class AddQuantityCommand extends Command {
 		const output = super.toJSON(this);
 		output.object = this.object.toJSON();
 		output.output = this.output.toJSON();
+
 		return output;
 	}
 
@@ -44,6 +45,7 @@ export class AddQuantityCommand extends Command {
 		this.output =
 			this.editor.scoringManager.getOutputByUuid(json.object.uuid) ??
 			new ScoringOutput().fromJSON(json.object);
+
 		this.object =
 			this.output.getQuantityByUuid(json.object.uuid) ??
 			new ScoringQuantity().fromJSON(json.object);

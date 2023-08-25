@@ -10,25 +10,26 @@ export class RemoveFilterCommand {
 	}
 
 	execute() {
-		this.editor.detectManager.removeFilter(this.object);
+		this.editor.detectorManager.removeFilter(this.object);
 		this.editor.deselect();
 	}
 
 	undo() {
-		this.editor.detectManager.addFilter(this.object);
+		this.editor.detectorManager.addFilter(this.object);
 		this.editor.select(this.object);
 	}
 
 	toJSON() {
 		const output = super.toJSON(this);
 		output.object = this.object.toJSON();
+
 		return output;
 	}
 
 	fromJSON(json) {
 		super.fromJSON(json);
 		this.object =
-			this.editor.detectManager.getFilterByUuid(json.object.uuid) ??
-			this.editor.detectManager.createFilter().fromJSON(json.object);
+			this.editor.detectorManager.getFilterByUuid(json.object.uuid) ??
+			this.editor.detectorManager.createFilter().fromJSON(json.object);
 	}
 }

@@ -1,4 +1,4 @@
-import { Command } from '../Command.js';
+import { Command } from '../Command';
 
 /**
  * @param editor Editor
@@ -41,6 +41,7 @@ class MultiCmdsCommand extends Command {
 		const output = super.toJSON(this);
 
 		const cmds = [];
+
 		for (let i = 0; i < this.cmdArray.length; i++) {
 			cmds.push(this.cmdArray[i].toJSON());
 		}
@@ -54,6 +55,7 @@ class MultiCmdsCommand extends Command {
 		super.fromJSON(json);
 
 		const cmds = json.cmds;
+
 		for (let i = 0; i < cmds.length; i++) {
 			const cmd = new window[cmds[i].type](); // creates a new object of type "json.type"
 			cmd.fromJSON(cmds[i]);

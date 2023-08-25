@@ -1,5 +1,3 @@
-import * as Scoring from '../../../Simulation/Scoring/ScoringOutputTypes';
-import { ScoringQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
 import {
 	createRowConditionalNumber,
 	createRowConditionalSelect,
@@ -7,9 +5,11 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
+import * as Scoring from '../../../Simulation/Scoring/ScoringOutputTypes';
+import { ScoringQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
 import { SetQuantityValueCommand } from '../../commands/Commands';
-import { Editor } from '../../Editor';
 import { UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectQuantity extends ObjectAbstract {
@@ -28,7 +28,7 @@ export class ObjectQuantity extends ObjectAbstract {
 	rescaleRow: UIRow;
 	rescaleCheckbox: UICheckbox;
 	rescale: UINumber;
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Quantity configuration');
 		[this.keywordRow, this.keyword] = createRowSelect({
 			text: 'Quantity type',
@@ -46,6 +46,7 @@ export class ObjectQuantity extends ObjectAbstract {
 			text: 'Filter',
 			update: this.update.bind(this)
 		});
+
 		[this.rescaleRow, this.rescaleCheckbox, this.rescale] = createRowConditionalNumber({
 			text: 'Rescale',
 			value: [false, 1],
@@ -56,6 +57,7 @@ export class ObjectQuantity extends ObjectAbstract {
 
 	setObject(object: ScoringQuantity): void {
 		super.setObject(object);
+
 		if (!object) return;
 		this.object = object;
 
@@ -66,12 +68,14 @@ export class ObjectQuantity extends ObjectAbstract {
 		else hideUIElement(this.mediumRow);
 		this.medium.setValue(medium ?? Scoring.MEDIUM_KEYWORD_OPTIONS.WATER);
 
-		const options = this.editor.detectManager.getFilterOptions();
+		const options = this.editor.scoringManager.getFilterOptions();
+
 		if (Object.keys(options).length > 0) {
 			showUIElement(this.filterRow);
 			this.filterCheckbox.setValue(hasFilter);
 			this.filter.setOptions(options);
 			this.filter.setValue(filter?.uuid);
+
 			if (hasFilter) {
 				showUIElement(this.filter);
 				this.filter.setValue(filter?.uuid);
@@ -90,7 +94,7 @@ export class ObjectQuantity extends ObjectAbstract {
 		const { filter, keyword, hasFilter, medium, rescale, hasRescale } = this.object;
 		const newKeyword = this.keyword.getValue();
 		const newMedium = this.medium.getValue();
-		const newFilter = editor.detectManager.getFilterByUuid(this.filter.getValue());
+		const newFilter = editor.scoringManager.getFilterByUuid(this.filter.getValue());
 		const newHasFilter = this.filterCheckbox.getValue();
 		const newRescale = this.rescale.getValue();
 		const newHasRescale = this.rescaleCheckbox.getValue();

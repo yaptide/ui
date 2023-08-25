@@ -1,4 +1,3 @@
-import { Beam } from '../../../Simulation/Physics/Beam';
 import {
 	createParticleTypeSelect,
 	createRowParamNumber,
@@ -6,8 +5,9 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
-import { Editor } from '../../Editor';
+import { Beam } from '../../../Simulation/Physics/Beam';
 import { UINumber, UIRow, UIText } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectBeam extends ObjectAbstract {
@@ -41,7 +41,7 @@ export class ObjectBeam extends ObjectAbstract {
 	particleARow: UIRow;
 	particleA: UINumber;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Energy');
 
 		// set minimum energy to 1ueV (as lower limit of reasonable cross-section used in neutron transport)
@@ -115,8 +115,10 @@ export class ObjectBeam extends ObjectAbstract {
 			this.particleARow
 		);
 	}
+
 	setObject(object: Beam): void {
 		super.setObject(object);
+
 		if (!object) return;
 
 		this.object = object;
@@ -144,6 +146,7 @@ export class ObjectBeam extends ObjectAbstract {
 
 	update(): void {
 		const { object } = this;
+
 		if (!object) return;
 		object.energy = this.energy.getValue();
 		object.energySpread = this.energySpread.getValue();

@@ -1,89 +1,86 @@
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import {
 	Box,
 	Button,
-	Dialog,
-	DialogContent,
 	Divider,
+	IconButton,
 	List,
 	ListItem,
 	ListItemButton,
 	Tab,
-	TextField
+	TextField,
+	Tooltip
 } from '@mui/material';
-import React, { useState } from 'react';
-import { useLoader } from '../../../services/DataLoaderService';
-import EXAMPLES from '../../examples/examples';
-import { CustomDialogTitle } from './CustomDialog';
+import { ChangeEvent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
+
+import { LoaderContext } from '../../../services/LoaderService';
 import { StatusState } from '../../../types/ResponseTypes';
+import EXAMPLES from '../../examples/examples';
+import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 import { DragDropProject } from './DragDropProject';
 
-export type OpenFileProps = {
-	open: boolean;
-	onClose: () => void;
-	onFileSelected: (files: FileList) => void;
-	onUrlSubmitted: (url: string) => void;
-};
-
-export function OpenFileDialog(props: OpenFileProps) {
-	const { open, onClose } = props;
+export function OpenFileDialog({
+	onClose,
+	loadFromJson,
+	loadFromFiles,
+	loadFromUrl,
+	loadFromJsonString
+}: ConcreteDialogProps<LoaderContext>) {
 	const [currentFileList, setCurrentFileList] = useState<FileList>();
-	const [value, setValue] = React.useState('1');
-	const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+	const [value, setValue] = useState('1');
+	const handleChange = (event: SyntheticEvent, newValue: string) => {
 		setValue(newValue);
 	};
 
-	const { loadFromJson, loadFromFiles, loadFromUrl, loadFromJsonString } = useLoader();
-	const [plainText, setPlainText] = React.useState('');
-	const handlePlainTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const [plainText, setPlainText] = useState('');
+	const handlePlainTextChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setPlainText(event.target.value);
 	};
 
-	const [url, setUrl] = React.useState('');
+	const [url, setUrl] = useState('');
 	const [exampleIndex, setExampleIndex] = useState<number | null>(null);
-	const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setUrl(event.target.value);
 	};
+	const tabList = useMemo(() => ['Examples', 'Upload file', 'From URL', 'Plain text'], []);
+	const tabPanelProps = useCallback(
+		(index: number) => ({
+			value: index.toString(),
+			hidden: value !== index.toString() ? true : undefined
+		}),
+		[value]
+	);
 
 	return (
-		<Dialog
-			aria-label={'Open project dialog'}
-			open={open}
+		<CustomDialog
 			onClose={onClose}
+			title='Open Project'
+			contentText='Select a project to open'
 			sx={{
 				'& .MuiDialog-paper': {
 					minWidth: '600px',
 					minHeight: '500px'
 				}
-			}}>
-			<CustomDialogTitle onClose={onClose}>Open project</CustomDialogTitle>
-			<DialogContent>
+			}}
+			body={
 				<TabContext value={value}>
 					<Box>
 						<TabList
 							centered
 							onChange={handleChange}
 							aria-label='open project tabs example'>
-							<Tab
-								label='Examples'
-								value='0'
-							/>
-							<Tab
-								label='Send'
-								value='1'
-							/>
-							<Tab
-								label='From URL'
-								value='2'
-							/>
-							<Tab
-								label='Plain text'
-								value='3'
-							/>
+							{tabList.map((tab, idx) => (
+								<Tab
+									label={tab}
+									value={idx.toString()}
+									key={tab}
+								/>
+							))}
 						</TabList>
 					</Box>
 					<Divider />
-					<TabPanel value='0'>
+					<TabPanel {...tabPanelProps(0)}>
 						<Box
 							sx={{
 								display: 'flex',
@@ -134,14 +131,15 @@ export function OpenFileDialog(props: OpenFileProps) {
 							</Button>
 						</Box>
 					</TabPanel>
-					<TabPanel value='1'>
+					<TabPanel {...tabPanelProps(1)}>
 						<Box
 							sx={{
 								display: 'flex',
 								flexDirection: 'column',
 								gap: 2,
 								height: 319,
-								boxSizing: 'border-box'
+								boxSizing: 'border-box',
+								position: 'relative'
 							}}>
 							<DragDropProject
 								id={'input-file-upload-open'}
@@ -149,7 +147,26 @@ export function OpenFileDialog(props: OpenFileProps) {
 								currentFiles={currentFileList}
 								acceptedFiles={'.json'}
 							/>
-
+							<Tooltip title='Clear selection'>
+								{/* Tooltip requires a non disabled child to properly handle events */}
+								<span>
+									<IconButton
+										color='error'
+										sx={{
+											position: 'absolute',
+											right: 20,
+											top: 5,
+											opacity: currentFileList === undefined ? 0 : 1
+										}}
+										edge='end'
+										disabled={currentFileList === undefined}
+										onClick={() => {
+											setCurrentFileList(undefined);
+										}}>
+										<RemoveCircleOutlineIcon />
+									</IconButton>
+								</span>
+							</Tooltip>
 							<Button
 								variant='contained'
 								fullWidth
@@ -158,12 +175,13 @@ export function OpenFileDialog(props: OpenFileProps) {
 								onClick={() => {
 									onClose();
 									loadFromFiles(currentFileList);
+									setCurrentFileList(undefined);
 								}}>
 								Load
 							</Button>
 						</Box>
 					</TabPanel>
-					<TabPanel value='2'>
+					<TabPanel {...tabPanelProps(2)}>
 						<Box
 							sx={{
 								display: 'flex',
@@ -193,7 +211,7 @@ export function OpenFileDialog(props: OpenFileProps) {
 							</Button>
 						</Box>
 					</TabPanel>
-					<TabPanel value='3'>
+					<TabPanel {...tabPanelProps(3)}>
 						<Box
 							sx={{
 								display: 'flex',
@@ -226,7 +244,6 @@ export function OpenFileDialog(props: OpenFileProps) {
 						</Box>
 					</TabPanel>
 				</TabContext>
-			</DialogContent>
-		</Dialog>
+			}></CustomDialog>
 	);
 }

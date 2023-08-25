@@ -14,13 +14,13 @@ import {
 	CardProps,
 	IconButton,
 	Pagination,
+	styled,
 	Toolbar,
 	Tooltip,
-	Typography,
-	styled
+	Typography
 } from '@mui/material';
+import { ChangeEvent } from 'react';
 
-import React from 'react';
 import { OrderBy, OrderType } from '../../../types/RequestTypes';
 import {
 	ButtonWithPopperList,
@@ -176,6 +176,7 @@ export function SimulationAppBar({
 	...other
 }: SimulationAppBarProps) {
 	position ??= !!stickTo ? 'sticky' : position;
+
 	return (
 		<Box
 			position={'sticky'}
@@ -341,7 +342,7 @@ export function SimulationBackendHeader({
 export type PageNavigationProps = {
 	pageCount: number;
 	pageIdx: number;
-	handlePageChange: (event: React.ChangeEvent<unknown>, value: number) => void;
+	handlePageChange: (event: ChangeEvent<unknown>, value: number) => void;
 };
 
 type SimulationPaginationFooterProps = SimulationAppBarProps & PageNavigationProps;

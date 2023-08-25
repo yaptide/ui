@@ -3,21 +3,23 @@ import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
 import { throttle } from 'throttle-debounce';
+
+import { useConfig } from '../../../config/ConfigService';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
-import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
-import { DEMO_MODE } from '../../../config/Config';
-import { readFile } from '../../../services/DataLoaderService';
+import { readFile } from '../../../services/LoaderService';
 import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
+import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
-	SimulationInputFiles,
 	_defaultFlukaInputFiles,
 	_defaultShInputFiles,
-	_defaultTopasInputFiles
+	_defaultTopasInputFiles,
+	SimulationInputFiles
 } from '../../../types/ResponseTypes';
 import { DragDropFiles } from './DragDropFiles';
 import { InputFilesEditor } from './InputFilesEditor';
+
 interface InputEditorPanelProps {
 	goToRun?: (simulator: SimulatorType, InputFiles?: SimulationInputFiles) => void;
 }
@@ -25,8 +27,9 @@ interface InputEditorPanelProps {
 type GeneratorLocation = 'local' | 'remote';
 
 export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
+	const { demoMode } = useConfig();
 	const { enqueueSnackbar } = useSnackbar();
-	const { editorRef } = useStore();
+	const { yaptideEditor } = useStore();
 	const { convertToInputFiles } = useShSimulation();
 	const { isConverterReady, convertJSON } = usePythonConverter();
 
@@ -58,7 +61,8 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 
 	const onClickGenerate = useCallback(() => {
 		setInProgress(true);
-		const editorJSON = editorRef.current?.toJSON();
+		const editorJSON = yaptideEditor?.toJSON();
+
 		if (!editorJSON) return setInProgress(false);
 
 		handleConvert(editorJSON)
@@ -73,7 +77,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 			.finally(() => {
 				setInProgress(false);
 			});
-	}, [editorRef, enqueueSnackbar, handleConvert]);
+	}, [yaptideEditor, enqueueSnackbar, handleConvert]);
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const debouncedOnClickGenerate = useCallback(
@@ -120,7 +124,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 						value='local'>
 						Local
 					</ToggleButton>
-					{!DEMO_MODE && (
+					{!demoMode && (
 						<ToggleButton
 							value='remote'
 							color='warning'>
@@ -138,6 +142,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 					onChange={(_e, chosenSimulator) => {
 						if (chosenSimulator) {
 							setChosenSimulator(chosenSimulator);
+
 							if (chosenSimulator !== simulator)
 								if (
 									window.confirm(
@@ -145,15 +150,19 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 									)
 								)
 									setSimulator(chosenSimulator);
+
 							switch (chosenSimulator) {
 								case SimulatorType.SHIELDHIT:
 									setInputFiles(_defaultShInputFiles);
+
 									break;
 								case SimulatorType.TOPAS:
 									setInputFiles(_defaultTopasInputFiles);
+
 									break;
 								case SimulatorType.FLUKA:
 									setInputFiles(_defaultFlukaInputFiles);
+
 									break;
 								default:
 									throw new Error('Unknown simulator: ' + chosenSimulator);
@@ -165,14 +174,14 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 						color='info'>
 						SHIELD-HIT12A
 					</ToggleButton>
-					{!DEMO_MODE && (
+					{!demoMode && (
 						<ToggleButton
 							value={SimulatorType.TOPAS}
 							color='info'>
 							TOPAS
 						</ToggleButton>
 					)}
-					{!DEMO_MODE && (
+					{!demoMode && (
 						<ToggleButton
 							value={SimulatorType.FLUKA}
 							color='info'>
@@ -192,6 +201,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 					const promises = Array.from(files).map(async file => {
 						const content = readFile(file) as Promise<string>;
 						submitedFiles[file.name] = await content;
+
 						return content;
 					});
 
@@ -200,6 +210,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 							if (!oldInput) return submitedFiles as SimulationInputFiles;
 
 							const inputFiles = { ...oldInput, ...submitedFiles };
+
 							return inputFiles as SimulationInputFiles;
 						});
 					});
@@ -211,7 +222,6 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 				simulator={simulator}
 				inputFiles={inputFiles}
 				onChange={inputFiles => setInputFiles(inputFiles)}
-				runSimulation={!DEMO_MODE ? goToRun : undefined}
 			/>
 		</Box>
 	);

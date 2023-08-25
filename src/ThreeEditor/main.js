@@ -1,9 +1,12 @@
 import * as THREE from 'three';
-import { Editor } from './js/Editor.js';
-import { ViewManager } from './js/viewport/ViewportManager.js';
-import { Sidebar } from './js/sidebar/Sidebar.js';
-import { Menubar } from './js/menubar/Menubar.js';
 
+import { SidebarProjectRenderer } from './js/sidebar/Sidebar.Project.Renderer.js';
+import { ViewManager } from './js/viewport/ViewportManager.js';
+import { YaptideEditor } from './js/YaptideEditor.js';
+
+/**
+ * @deprecated Use function form StoreService instead
+ */
 export function initEditor(container) {
 	container = container || document.body;
 
@@ -15,7 +18,7 @@ export function initEditor(container) {
 		return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 	};
 
-	const editor = new Editor(container);
+	const editor = new YaptideEditor(container);
 
 	window.editor = editor; // Expose editor to Console
 	window.THREE = THREE; // Expose THREE to APP Scripts and Console
@@ -25,23 +28,8 @@ export function initEditor(container) {
 
 	editor.viewManager = viewManager;
 
-	const sidebar = new Sidebar(editor);
-	container.appendChild(sidebar.dom);
-
-	Object.defineProperty(editor, 'oldSidebarVisible', {
-		get: function () {
-			return sidebar.getDisplay() !== 'none';
-		},
-		set: function (val) {
-			sidebar.setDisplay(val ? '' : 'none');
-		}
-	});
-
-	editor.oldSidebarVisible = false;
-
-	new Menubar(editor);
-	// menubar has required dependencies for other UI components and will be removed last.
-
+	// SidebarProjectRenderer has createRenderer function that is required for editor to work
+	new SidebarProjectRenderer(editor);
 	//
 
 	editor.storage.init(() => {
@@ -52,6 +40,7 @@ export function initEditor(container) {
 
 			if (typeof state !== 'undefined') {
 				let versionIsOk = true;
+
 				if (state.metadata.version !== editor.jsonVersion) {
 					versionIsOk = window.confirm(
 						`Editor in memory has version of JSON: ${state.metadata.version}\nCurrent version of editor JSON: ${editor.jsonVersion}\nLoad it anyway?`
@@ -102,7 +91,6 @@ export function initEditor(container) {
 			signals.historyChanged,
 			signals.detectFilterChanged,
 			signals.scoringQuantityChanged,
-			signals.CSGManagerStateChanged,
 			signals.projectChanged
 		];
 		stateChangedSignals.forEach(signal => signal.add(saveState));
@@ -111,33 +99,6 @@ export function initEditor(container) {
 	editor.signals.sceneGraphChanged.dispatch();
 
 	//
-
-	document.addEventListener(
-		'dragover',
-		event => {
-			event.preventDefault();
-			event.dataTransfer.dropEffect = 'copy';
-		},
-		false
-	);
-
-	document.addEventListener(
-		'drop',
-		event => {
-			event.preventDefault();
-
-			if (event.dataTransfer.types[0] === 'text/plain') return; // Outliner drop
-
-			if (event.dataTransfer.items) {
-				// DataTransferItemList supports folders
-
-				editor.loader.loadItemList(event.dataTransfer.items);
-			} else {
-				editor.loader.loadFiles(event.dataTransfer.files);
-			}
-		},
-		false
-	);
 
 	function onWindowResize() {
 		editor.signals.windowResize.dispatch();
@@ -167,5 +128,5 @@ export function initEditor(container) {
 		}
 	}
 
-	return { editor, viewport: viewManager, sidebar };
+	return { editor, viewport: viewManager };
 }

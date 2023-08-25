@@ -1,5 +1,6 @@
-import { DETECTOR_MODIFIERS } from './ScoringOutputTypes';
 import * as THREE from 'three';
+
+import { DETECTOR_MODIFIERS } from './ScoringOutputTypes';
 
 export type DifferentialJSON = {
 	diffType: DETECTOR_MODIFIERS;
@@ -32,6 +33,7 @@ export class DifferentialModifier {
 		this.binsNumber = binsNumber;
 		this.isLog = isLog;
 	}
+
 	toJSON(): DifferentialJSON {
 		return {
 			diffType: this.diffType,
@@ -42,6 +44,7 @@ export class DifferentialModifier {
 			uuid: this.uuid
 		};
 	}
+
 	static fromJSON(json: DifferentialJSON): DifferentialModifier {
 		const mod = new DifferentialModifier(
 			json.diffType,
@@ -51,6 +54,19 @@ export class DifferentialModifier {
 			json.isLog
 		);
 		mod.uuid = json.uuid;
+
 		return mod;
+	}
+
+	duplicate(): DifferentialModifier {
+		const duplicated = new DifferentialModifier(
+			this.diffType,
+			this.lowerLimit,
+			this.binsNumber,
+			this.upperLimit,
+			this.isLog
+		);
+
+		return duplicated;
 	}
 }

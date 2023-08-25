@@ -4,23 +4,23 @@
 	"private": false,
 	"homepage": ".",
 	"dependencies": {
-		"@emotion/css": "^11.11.0",
-		"@emotion/react": "^11.10.8",
-		"@emotion/styled": "^11.10.8",
+		"@emotion/css": "^11.11.2",
+		"@emotion/react": "^11.11.1",
+		"@emotion/styled": "^11.11.0",
 		"@minoru/react-dnd-treeview": "^3.4.4",
-		"@mui/icons-material": "^5.11.16",
-		"@mui/lab": "^5.0.0-alpha.133",
+		"@mui/icons-material": "^5.14.3",
+		"@mui/lab": "^5.0.0-alpha.138",
 		"@mui/material": "^5.11.13",
-		"@mui/x-data-grid": "^6.3.0",
+		"@mui/x-data-grid": "^6.11.2",
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "^12.1.2",
 		"@testing-library/user-event": "^14.4.3",
-		"@types/jest": "^29.5.0",
-		"@types/node": "^20.2.5",
+		"@types/jest": "^29.5.4",
+		"@types/node": "^20.5.0",
 		"@types/react-dom": "^17.0.11",
 		"@types/signals": "^1.0.1",
 		"@types/throttle-debounce": "^5.0.0",
-		"@uiw/react-textarea-code-editor": "^2.1.6",
+		"@uiw/react-textarea-code-editor": "^2.1.7",
 		"comlink": "^4.3.1",
 		"command-exists": "^1.2.9",
 		"convert-units": "^3.0.0-beta.5",
@@ -42,34 +42,37 @@
 		"set-interval-async": "^3.0.3",
 		"signals": "^1.0.0",
 		"split-grid": "^1.0.11",
-		"three": "^0.150.1",
+		"three": "^0.154.0",
 		"throttle-debounce": "^5.0.0",
 		"typescript": "^4.9.5",
 		"use-interval": "^1.4.0",
 		"usehooks-ts": "^2.9.1",
-		"web-vitals": "^3.3.1"
+		"web-vitals": "^3.4.0",
+		"keycloak-js": "^22.0.1"
 	},
 	"scripts": {
 		"format": "prettier --ignore-path .gitignore --ignore-path .prettierignore --write --plugin-search-dir=. .",
 		"identify": "node ./src/util/identify/identify.js > ./src/util/identify/deployInfo.json",
 		"build-python": "node buildPython.js",
-		"setup": "npm run identify && npm run build-python",
-		"prestart": "npm run setup skip",
-		"prebuild": "npm run setup",
-		"start": "react-app-rewired start",
-		"build": "react-app-rewired build",
-		"test": "react-app-rewired test",
-		"eject": "react-scripts eject",
-		"start-demo": "cross-env REACT_APP_TARGET=demo npm run start",
-		"test-demo": "cross-env REACT_APP_TARGET=demo npm run test",
-		"build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
-		"start-plg": "cross-env REACT_APP_ALT_AUTH=plg npm run start",
-		"test-plg": "cross-env REACT_APP_ALT_AUTH=plg npm run test",
-		"build-plg": "cross-env REACT_APP_ALT_AUTH=plg npm run build",
 		"fix-web-dev": "node fixDeploy.mjs",
+		"prepare": "husky install",
+		"setup": "npm run identify && npm run build-python",
+		"eject": "react-scripts eject",
+		"predev": "npm run setup",
+		"dev": "cross-env REACT_APP_DEPLOYMENT=dev REACT_APP_TARGET=demo react-app-rewired start",
+		"prestart": "npm run setup skip",
+		"start": "react-app-rewired start",
+		"start-demo": "cross-env REACT_APP_TARGET=demo npm run start",
+		"start-plg": "cross-env REACT_APP_ALT_AUTH=plg npm run start",
+		"test": "react-app-rewired test",
+		"test-demo": "cross-env REACT_APP_TARGET=demo npm run test",
+		"test-plg": "cross-env REACT_APP_ALT_AUTH=plg npm run test",
+		"prebuild": "npm run setup",
+		"build": "react-app-rewired build",
+		"build-plg": "cross-env REACT_APP_ALT_AUTH=plg npm run build",
+		"build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
 		"predeploy": "npm run setup && npm run build-demo && cross-env PUBLIC_PATH=/web_dev/ npm run fix-web-dev",
-		"deploy": "gh-pages -d build",
-		"prepare": "husky install"
+		"deploy": "gh-pages -d build"
 	},
 	"contributors": [
 		{
@@ -87,7 +90,98 @@
 		"extends": [
 			"react-app",
 			"react-app/jest"
-		]
+		],
+		"plugins": [
+			"simple-import-sort"
+		],
+		"rules": {
+			"class-methods-use-this": "warn",
+			"padding-line-between-statements": [
+				"warn",
+				{
+					"blankLine": "always",
+					"prev": "multiline-block-like",
+					"next": "*"
+				},
+				{
+					"blankLine": "always",
+					"prev": "*",
+					"next": "multiline-block-like"
+				},
+				{
+					"blankLine": "always",
+					"prev": [
+						"const",
+						"let",
+						"var",
+						"expression"
+					],
+					"next": "*"
+				},
+				{
+					"blankLine": "any",
+					"prev": [
+						"const",
+						"let",
+						"var",
+						"expression"
+					],
+					"next": [
+						"const",
+						"let",
+						"var",
+						"expression"
+					]
+				},
+				{
+					"blankLine": "always",
+					"prev": [
+						"multiline-const",
+						"multiline-let",
+						"multiline-var",
+						"multiline-expression"
+					],
+					"next": [
+						"multiline-const",
+						"multiline-let",
+						"multiline-var",
+						"multiline-expression"
+					]
+				},
+				{
+					"blankLine": "always",
+					"prev": "directive",
+					"next": "*"
+				},
+				{
+					"blankLine": "any",
+					"prev": "directive",
+					"next": "directive"
+				},
+				{
+					"blankLine": "always",
+					"prev": "*",
+					"next": [
+						"break",
+						"continue",
+						"return",
+						"throw"
+					]
+				}
+			],
+			"lines-between-class-members": [
+				"warn",
+				"always",
+				{
+					"exceptAfterSingleLine": true
+				}
+			],
+			"simple-import-sort/imports": "warn",
+			"simple-import-sort/exports": "warn",
+			"import/first": "warn",
+			"import/newline-after-import": "warn",
+			"import/no-duplicates": "error"
+		}
 	},
 	"browserslist": {
 		"production": [
@@ -102,22 +196,27 @@
 		]
 	},
 	"devDependencies": {
+		"@total-typescript/ts-reset": "^0.4.2",
 		"@types/react": "^18.0.9",
 		"@types/react-async-script": "^1.2.1",
 		"@types/react-copy-to-clipboard": "^5.0.4",
-		"@types/selenium-webdriver": "^4.1.14",
-		"@types/three": "^0.150.1",
+		"@types/selenium-webdriver": "^4.1.15",
+		"@types/three": "^0.152.1",
 		"cross-env": "^7.0.3",
+		"eslint-plugin-simple-import-sort": "^10.0.0",
 		"gh-pages": "^5.0.0",
 		"husky": "^8.0.3",
 		"jest-matcher-deep-close-to": "^3.0.2",
-		"lint-staged": "^13.2.2",
-		"prettier": "2.8.7",
+		"lint-staged": "^14.0.0",
+		"prettier": "2.8.8",
 		"react-app-rewired": "^2.2.1",
-		"selenium-webdriver": "^4.9.0"
+		"selenium-webdriver": "^4.10.0"
 	},
 	"lint-staged": {
-		"*.{ts,tsx,js,jsx}": "prettier --ignore-unknown --ignore-path .gitignore --ignore-path .prettierignore --write",
+		"*.{ts,tsx,js,jsx}": [
+			"prettier --ignore-unknown --ignore-path .gitignore --ignore-path .prettierignore --write",
+			"npx eslint --fix"
+		],
 		"*.{json,less,md,css,html}": "prettier --ignore-unknown --ignore-path .gitignore --ignore-path .prettierignore --write"
 	}
 }

@@ -1,5 +1,6 @@
-import { Command } from '../Command.js';
 import { Vector3 } from 'three';
+
+import { Command } from '../Command';
 
 /**
  * @param editor Editor
@@ -7,6 +8,7 @@ import { Vector3 } from 'three';
  * @param newPosition THREE.Vector3
  * @param optionalOldPosition THREE.Vector3
  * @constructor
+ * @deprecated
  */
 export class SetDetectPositionCommand extends Command {
 	constructor(editor, object, newPosition, optionalOldPosition) {

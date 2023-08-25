@@ -1,4 +1,5 @@
 const link = document.createElement('a');
+
 function save(blob, filename) {
 	if (link.href) {
 		URL.revokeObjectURL(link.href);
@@ -8,6 +9,7 @@ function save(blob, filename) {
 	link.download = filename || 'data.json';
 	link.dispatchEvent(new MouseEvent('click'));
 }
+
 export function saveString(text, filename) {
 	save(new Blob([text], { type: 'text/plain' }), filename);
 }

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+
 import {
 	AddObjectCommand,
 	RemoveDetectGeometryCommand,
@@ -32,6 +33,7 @@ function MenubarEdit(editor) {
 		undo.setClass(history.undos.length === 0 ? 'inactive' : 'option');
 		redo.setClass(history.redos.length === 0 ? 'inactive' : 'option');
 	});
+
 	options.add(
 		undo,
 		redo,
@@ -46,7 +48,7 @@ function MenubarEdit(editor) {
 	// Object
 	const getRemoveCommand = (editor, object) => {
 		switch (true) {
-			case object.isDetectGeometry:
+			case object.isDetector:
 				return new RemoveDetectGeometryCommand(editor, object);
 			case object.isZone:
 				return new RemoveZoneCommand(editor, object);
@@ -60,6 +62,7 @@ function MenubarEdit(editor) {
 	options.add(
 		createOption('option', 'Center', () => {
 			const object = editor.selected;
+
 			if (object === null || object.notMovable) return; // avoid centering the camera or scene
 
 			const center = new THREE.Box3().setFromObject(object).getCenter(new THREE.Vector3());
@@ -73,6 +76,7 @@ function MenubarEdit(editor) {
 		}),
 		createOption('option', 'Clone', () => {
 			let object = editor.selected;
+
 			if (!isRemovableOrCloneable(object)) return; // avoid cloning unique objects
 
 			object = object.clone();
@@ -80,6 +84,7 @@ function MenubarEdit(editor) {
 		}),
 		createOption('option', 'Delete (Del)', () => {
 			let object = editor.selected;
+
 			if (!isRemovableOrCloneable(object)) return; // avoid deleting unique objects
 
 			editor.execute(getRemoveCommand(editor, object));

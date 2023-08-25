@@ -1,4 +1,4 @@
-import { Command } from '../Command.js';
+import { Command } from '../Command';
 
 /**
  * @param editor Editor
@@ -45,14 +45,15 @@ export class SetFilterRuleCommand extends Command {
 		output.object = this.object.toJSON();
 		output.oldRule = this.oldRule;
 		output.filter = this.filter.toJSON();
+
 		return output;
 	}
 
 	fromJSON(json) {
 		super.fromJSON(json);
 		this.filter =
-			this.editor.detectManager.getFilterByUuid(json.filter.uuid) ??
-			this.editor.detectManager.createFilter().fromJSON(json.filter);
+			this.editor.detectorManager.getFilterByUuid(json.filter.uuid) ??
+			this.editor.detectorManager.createFilter().fromJSON(json.filter);
 		this.object = json.object;
 		this.oldRule = json.oldRule;
 	}

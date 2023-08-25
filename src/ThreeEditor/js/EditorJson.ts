@@ -1,3 +1,3 @@
-import { Editor } from './Editor';
+import { YaptideEditor } from './YaptideEditor';
 
-export type EditorJson = ReturnType<typeof Editor.prototype.toJSON>;
+export type EditorJson = ReturnType<typeof YaptideEditor.prototype.toJSON>;

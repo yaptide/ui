@@ -1,9 +1,12 @@
 import * as THREE from 'three';
 
+import { HollowCylinderGeometry } from '../ThreeEditor/Simulation/Base/HollowCylinderGeometry';
+
 export type PossibleGeometryType =
 	| THREE.BoxGeometry
 	| THREE.CylinderGeometry
-	| THREE.SphereGeometry;
+	| THREE.SphereGeometry
+	| HollowCylinderGeometry;
 
 const geometryParameters = {
 	BoxGeometry: ['width', 'height', 'depth'],
@@ -11,26 +14,28 @@ const geometryParameters = {
 		['radius', 'radiusTop'],
 		['depth', 'height']
 	],
-	SphereGeometry: ['radius']
+	SphereGeometry: ['radius'],
+	HollowCylinderGeometry: ['innerRadius', ['radius', 'outerRadius'], ['depth', 'height']]
 };
 
-export interface AdditionalGeometryDataType {
-	id: number;
+export type AdditionalGeometryDataType<
+	ParametersType extends {} = {
+		[key: string]: number | string;
+	}
+> = {
 	geometryType: string;
 	position: THREE.Vector3Tuple;
 	rotation: THREE.Vector3Tuple;
-	parameters: {
-		[key: string]: number;
-	};
+	parameters: ParametersType;
 	userSetRotation?: boolean;
-}
+};
 
 export const getGeometryParameters = (geometry: PossibleGeometryType) => {
 	const parameters: { [key: string]: number } = {};
 
 	const type = geometry.type as keyof typeof geometryParameters;
 
-	geometryParameters[type].forEach(prop => {
+	geometryParameters[type]?.forEach(prop => {
 		parameters[Array.isArray(prop) ? prop[0] : prop] =
 			geometry.parameters[
 				(Array.isArray(prop) ? prop[1] : prop) as keyof typeof geometry.parameters
@@ -40,13 +45,12 @@ export const getGeometryParameters = (geometry: PossibleGeometryType) => {
 	return parameters;
 };
 
-export function generateSimulationInfo(geometryMesh: THREE.Mesh) {
+export function getGeometryData(geometryMesh: THREE.Mesh | THREE.Points) {
 	const geometry = geometryMesh.geometry as PossibleGeometryType;
 
 	const parameters = getGeometryParameters(geometry);
 
 	let geometryData: AdditionalGeometryDataType = {
-		id: geometryMesh.id,
 		geometryType: geometryMesh.geometry.type,
 		position: geometryMesh.position.toArray(),
 		rotation: geometryMesh.userData['rotation'],

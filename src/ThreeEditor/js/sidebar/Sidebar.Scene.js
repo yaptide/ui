@@ -1,9 +1,9 @@
 import { UIBreak, UIPanel } from '../libs/ui.js';
-import { OutlinerManager } from './Sidebar.OutlinerManager';
 import { SceneAddPanel } from './Sidebar.AddPanel';
+import { OutlinerManager } from './Sidebar.OutlinerManager';
 
 function SidebarScene(editor) {
-	const { signals } = editor;
+	const { signals, figureManager: scene, zoneManager, beam } = editor;
 
 	const container = new UIPanel();
 	container.setBorderTop('0');
@@ -13,12 +13,7 @@ function SidebarScene(editor) {
 	outlinerManager.id = 'outliner';
 
 	const refreshOptions = function () {
-		const sources = [
-			editor.scene,
-			editor.zoneManager.zoneContainer,
-			editor.zoneManager.worldZone,
-			editor.beam
-		];
+		const sources = [scene, zoneManager.zoneContainer, zoneManager.worldZone, beam];
 		outlinerManager.setOptionsFromSources(sources);
 	};
 

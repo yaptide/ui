@@ -1,7 +1,8 @@
-import { Box, Button, Stack, Typography } from '@mui/material';
-import { Page3D } from '../../../JsRoot/GraphData';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { Box, Button, Stack, Typography } from '@mui/material';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+
+import { Page3D } from '../../../JsRoot/GraphData';
 
 export function Result3D(props: { page: Page3D; title?: string }) {
 	const { page, title } = props;

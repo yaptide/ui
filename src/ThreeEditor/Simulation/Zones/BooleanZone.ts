@@ -1,13 +1,15 @@
+import * as Comlink from 'comlink';
 import { Signal } from 'signals';
 import * as THREE from 'three';
 import { debounce } from 'throttle-debounce';
-import { ZoneWorker } from '../../CSG/CSGWorker';
-import * as Comlink from 'comlink';
-import { Editor } from '../../js/Editor';
-import CSG from '../../js/libs/csg/three-csg';
-import { OperationTuple, OperationTupleJSON } from '../../CSG/CSGOperationTuple';
+
+import { DEPLOYMENT } from '../../../config/ConfigService';
 import { CounterMap } from '../../../util/CounterMap/CounterMap';
-import { SimulationZone, SimulationZoneJSON } from '../Base/SimZone';
+import { OperationTuple, OperationTupleJSON } from '../../CSG/CSGOperationTuple';
+import { ZoneWorker } from '../../CSG/CSGWorker';
+import CSG from '../../js/libs/csg/three-csg';
+import { YaptideEditor } from '../../js/YaptideEditor';
+import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
 
 export interface BooleanZoneJSON extends SimulationZoneJSON {
 	unionOperations: OperationTupleJSON[][];
@@ -27,12 +29,9 @@ export class BooleanZone extends SimulationZone {
 		objectRemoved: Signal<THREE.Object3D>;
 		geometryChanged: Signal<THREE.Object3D>;
 		sceneGraphChanged: Signal;
-		zoneAdded: Signal<BooleanZone>;
 		zoneGeometryChanged: Signal<BooleanZone>;
-		zoneRemoved: Signal<BooleanZone>;
 		zoneChanged: Signal<BooleanZone>;
 		zoneEmpty: Signal<BooleanZone>;
-		CSGManagerStateChanged: Signal;
 	};
 
 	set unionOperations(operations: OperationTuple[][]) {
@@ -40,6 +39,7 @@ export class BooleanZone extends SimulationZone {
 		// If operations are specified, we have to generate geometry.
 		this.updateGeometry();
 	}
+
 	get unionOperations() {
 		return this._unionOperations;
 	}
@@ -47,8 +47,8 @@ export class BooleanZone extends SimulationZone {
 	worker?: Comlink.Remote<ZoneWorker>;
 	readonly debouncedUpdatePreview = debounce(200, () => this.updatePreview(), { atBegin: false });
 
-	constructor(editor: Editor, name?: string) {
-		super(editor, name ?? 'BooleanZone');
+	constructor(editor: YaptideEditor) {
+		super(editor, 'Boolean Zone', 'BooleanZone');
 		this.signals = editor.signals;
 		this._unionOperations = [];
 		this.subscribedObjects = new CounterMap<string>();
@@ -57,15 +57,6 @@ export class BooleanZone extends SimulationZone {
 		this.signals.objectChanged.add(object => this.handleChange(object));
 		this.signals.objectRemoved.add(object => this.handleRemoved(object));
 		this.addUnion();
-	}
-
-	clone(recursive: boolean) {
-		const clonedZone: this = new BooleanZone(this.editor, this.name).copy(
-			this,
-			recursive
-		) as this;
-
-		return clonedZone;
 	}
 
 	copy(source: this, recursive: boolean): this {
@@ -78,7 +69,7 @@ export class BooleanZone extends SimulationZone {
 	}
 
 	updateGeometry(): void {
-		console.time('CSGZone');
+		if (DEPLOYMENT === 'dev') console.time('CSGZone');
 		this.geometry.dispose();
 
 		if (this.unionOperations && this.unionOperations.length) {
@@ -86,6 +77,7 @@ export class BooleanZone extends SimulationZone {
 				const rowResult = operationRow.reduce((result, operation) => {
 					return operation.execute(result);
 				}, new CSG());
+
 				return result.union(rowResult);
 			}, new CSG());
 
@@ -96,7 +88,8 @@ export class BooleanZone extends SimulationZone {
 		this.updateMatrixWorld(true);
 
 		this.signals.zoneGeometryChanged.dispatch(this);
-		console.timeEnd('CSGZone');
+
+		if (DEPLOYMENT === 'dev') console.timeEnd('CSGZone');
 	}
 
 	addUnion(unionIndex?: number, operations: OperationTuple[] = []): void {
@@ -173,7 +166,6 @@ export class BooleanZone extends SimulationZone {
 		this.debouncedUpdatePreview();
 
 		this.signals.zoneChanged.dispatch(this);
-		this.signals.CSGManagerStateChanged.dispatch();
 	}
 
 	updatePreview(): void {
@@ -218,10 +210,20 @@ export class BooleanZone extends SimulationZone {
 		return this;
 	}
 
-	static fromJSON(editor: Editor, json: BooleanZoneJSON) {
+	static fromJSON(editor: YaptideEditor, json: BooleanZoneJSON) {
 		const zone = new BooleanZone(editor);
+
 		return zone.fromJSON(json);
+	}
+
+	duplicate(): BooleanZone {
+		const duplicated = new BooleanZone(this.editor);
+		const generatedUuid = duplicated.uuid;
+		duplicated.fromJSON(this.toJSON());
+		duplicated.uuid = generatedUuid;
+
+		return duplicated;
 	}
 }
 
-export const isZone = (x: unknown): x is BooleanZone => x instanceof BooleanZone;
+export const isBooleanZone = (x: unknown): x is BooleanZone => x instanceof BooleanZone;

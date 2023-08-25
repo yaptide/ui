@@ -1,44 +1,43 @@
 import { Box, Button, ButtonGroup, Divider, Menu, MenuItem } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import {
-	AddDetectGeometryCommand,
-	AddFilterCommand,
-	AddObjectCommand,
-	AddOutputCommand,
-	AddZoneCommand
-} from '../../../js/commands/Commands';
-import { Editor } from '../../../js/Editor';
-import { BoxFigure, CylinderFigure, SphereFigure } from '../../../Simulation/Figures/BasicFigures';
+import { MouseEvent, useCallback, useEffect, useState } from 'react';
+import { Object3D } from 'three';
+
+import { useDialog } from '../../../../services/DialogService';
+import { useSignal } from '../../../../util/hooks/signals';
 import { toggleFullscreen } from '../../../../util/toggleFullscreen';
-import { ClearHistoryDialog } from '../../Dialog/ClearHistoryDialog';
+import {
+	CommandButtonProps,
+	getAddElementButtonProps
+} from '../../../../util/Ui/CommandButtonProps';
+import { YaptideEditor } from '../../../js/YaptideEditor';
 
 type EditorMenuProps = {
-	editor?: Editor;
+	editor?: YaptideEditor;
 };
-type MenuOption = {
-	label: string;
-	onClick: () => void;
-	disabled?: boolean;
-};
+
 type MenuPositionProps = {
 	label: string;
 	idx: number;
 	openIdx: number;
 	setOpenIdx: (open: number) => void;
-	options: MenuOption[][];
+	options: CommandButtonProps[][];
 };
+
 function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPositionProps) {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	const handleClick = (_: React.MouseEvent<HTMLButtonElement>) => {
+	const handleClick = (_: MouseEvent<HTMLButtonElement>) => {
 		setOpenIdx(idx);
 	};
-	const handleEnter = (_: React.MouseEvent<HTMLButtonElement>) => {
+
+	const handleEnter = (_: MouseEvent<HTMLButtonElement>) => {
 		if (openIdx !== -1) setOpenIdx(idx);
 	};
+
 	const handleClose = (action?: () => void) => {
 		if (action) action();
 		setOpenIdx(-1);
 	};
+
 	useEffect(() => {
 		if (openIdx === idx) setAnchorEl(document.getElementById('basic-button-' + idx.toString()));
 		else setAnchorEl(null);
@@ -105,8 +104,15 @@ function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPosition
 }
 
 export function EditorMenu({ editor }: EditorMenuProps) {
+	const [open] = useDialog('clearHistory');
 	const [openIdx, setOpenIdx] = useState(-1);
-	const [clearHistoryDialogOpen, setClearHistoryDialogOpen] = useState(false);
+	const [, setSelectedObject] = useState(editor?.selected);
+
+	const handleObjectUpdate = useCallback((o: Object3D) => {
+		setSelectedObject(o);
+	}, []);
+
+	useSignal(editor, 'objectSelected', handleObjectUpdate);
 
 	return (
 		<>
@@ -163,60 +169,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 					openIdx={openIdx}
 					setOpenIdx={setOpenIdx}
 					options={[
-						[
-							{
-								label: 'Material Zone',
-								onClick: () => {
-									editor?.execute(new AddZoneCommand(editor));
-								}
-							}
-						],
-						[
-							{
-								label: 'Detect Geometry',
-								onClick: () => {
-									editor?.execute(new AddDetectGeometryCommand(editor));
-								}
-							},
-							{
-								label: 'Scoring Filter',
-								onClick: () => {
-									editor?.execute(new AddFilterCommand(editor));
-								}
-							},
-							{
-								label: 'Simulation Output',
-								onClick: () => {
-									editor?.execute(new AddOutputCommand(editor, undefined));
-								}
-							}
-						],
-						[
-							{
-								label: 'Box Mesh',
-								onClick: () => {
-									editor?.execute(
-										new AddObjectCommand(editor, new BoxFigure(editor))
-									);
-								}
-							},
-							{
-								label: 'Sphere Mesh',
-								onClick: () => {
-									editor?.execute(
-										new AddObjectCommand(editor, new SphereFigure(editor))
-									);
-								}
-							},
-							{
-								label: 'Cylinder Mesh',
-								onClick: () => {
-									editor?.execute(
-										new AddObjectCommand(editor, new CylinderFigure(editor))
-									);
-								}
-							}
-						],
+						...(editor ? Object.values(getAddElementButtonProps(editor)) : []),
 						[
 							{
 								label: 'Paste from Clipboard',
@@ -235,7 +188,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 						[
 							{
 								label: 'Clear history',
-								onClick: () => setClearHistoryDialogOpen(true),
+								onClick: () => open(),
 								disabled:
 									editor?.history.undos.length === 0 &&
 									editor?.history.redos.length === 0
@@ -268,14 +221,6 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 					]}
 				/>
 			</ButtonGroup>
-			<ClearHistoryDialog
-				open={clearHistoryDialogOpen}
-				onCancel={() => setClearHistoryDialogOpen(false)}
-				onConfirm={() => {
-					setClearHistoryDialogOpen(false);
-					editor?.history.clear();
-				}}
-			/>
 		</>
 	);
 }

@@ -1,13 +1,14 @@
 import { MathUtils } from 'three';
+
 import {
 	F_Keyword,
-	ParticleId,
-	ID_Keyword,
 	I_Keyword,
+	ID_Keyword,
+	isValidID,
 	Keyword,
 	Operator,
-	isValidID
-} from '../../../types/DetectRuleTypes';
+	ParticleId
+} from '../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
 
 //https://stackoverflow.com/questions/48757095/typescript-class-composition
 
@@ -51,6 +52,7 @@ export abstract class FilterRule {
 	}
 
 	abstract toJSON(): RuleJSON;
+	abstract duplicate(): FilterRule;
 }
 
 export class FloatRule extends FilterRule {
@@ -61,6 +63,7 @@ export class FloatRule extends FilterRule {
 		const precision = 100;
 		this._value = Math.round((value + Number.EPSILON) * precision) / precision;
 	}
+
 	get value(): number {
 		return this._value;
 	}
@@ -73,13 +76,19 @@ export class FloatRule extends FilterRule {
 
 	toJSON(): FloatRuleJSON {
 		const { uuid, keyword, operator, _value: value } = this;
+
 		return { uuid, keyword, operator, value };
 	}
 
 	static fromJSON(json: FloatRuleJSON): FloatRule {
 		const rule = new FloatRule(json);
 		rule.uuid = json.uuid;
+
 		return rule;
+	}
+
+	duplicate(): FloatRule {
+		return new FloatRule(this.toJSON());
 	}
 }
 
@@ -90,6 +99,7 @@ export class IntRule extends FilterRule {
 	set value(value: number) {
 		this._value = Math.floor(value);
 	}
+
 	get value(): number {
 		return this._value;
 	}
@@ -102,13 +112,19 @@ export class IntRule extends FilterRule {
 
 	toJSON(): IntRuleJSON {
 		const { uuid, keyword, operator, _value: value } = this;
+
 		return { uuid, keyword, operator, value };
 	}
 
 	static fromJSON(json: IntRuleJSON): IntRule {
 		const rule = new IntRule(json);
 		rule.uuid = json.uuid;
+
 		return rule;
+	}
+
+	duplicate(): IntRule {
+		return new IntRule(this.toJSON());
 	}
 }
 
@@ -120,6 +136,7 @@ export class IDRule extends FilterRule {
 		const id = Math.floor(value);
 		this._value = isValidID(id) ? id : 1;
 	}
+
 	get value(): ParticleId {
 		return this._value;
 	}
@@ -132,13 +149,19 @@ export class IDRule extends FilterRule {
 
 	toJSON(): IDRuleJSON {
 		const { uuid, keyword, operator, _value: value } = this;
+
 		return { uuid, keyword, operator, value };
 	}
 
 	static fromJSON(json: IDRuleJSON): IDRule {
 		const rule = new IDRule(json);
 		rule.uuid = json.uuid;
+
 		return rule;
+	}
+
+	duplicate(): IDRule {
+		return new IDRule(this.toJSON());
 	}
 }
 

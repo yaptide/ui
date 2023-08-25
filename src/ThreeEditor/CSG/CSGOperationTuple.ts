@@ -1,7 +1,8 @@
-import { Editor } from '../js/Editor';
-import CSG from '../js/libs/csg/three-csg';
-import { executeOperation, isOperation, Operation } from '../../types/Operation';
 import THREE from 'three';
+
+import { executeOperation, isOperation, Operation } from '../../types/Operation';
+import CSG from '../js/libs/csg/three-csg';
+import { YaptideEditor } from '../js/YaptideEditor';
 
 export interface OperationTupleJSON {
 	objectUuid: string;
@@ -21,6 +22,7 @@ export class OperationTuple {
 	execute(csg: CSG) {
 		const { object } = this;
 		object.updateMatrix();
+
 		return executeOperation(this.mode)(csg)(CSG.fromMesh(object));
 	}
 
@@ -29,12 +31,13 @@ export class OperationTuple {
 			mode: this.mode,
 			objectUuid: this.object.uuid
 		};
+
 		return jsonObject;
 	}
 
-	static fromJSON(editor: Editor, data: OperationTupleJSON) {
+	static fromJSON(editor: YaptideEditor, data: OperationTupleJSON) {
 		const { mode, objectUuid } = data;
-		const object = editor.scene.getObjectByProperty('uuid', objectUuid);
+		const object = editor.figureManager.getObjectByProperty('uuid', objectUuid);
 
 		if (!object) throw new Error('Can not found object on scene: (uuid)' + objectUuid);
 

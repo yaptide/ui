@@ -1,6 +1,6 @@
 import { MathUtils } from 'three';
-import { DetectFilter } from '../../../Simulation/Scoring/DetectFilter';
-import * as Rule from '../../../../types/DetectRuleTypes';
+
+import * as Rule from '../../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
 import {
 	createFullwidthButton,
 	createRuleConfigurationRow,
@@ -8,20 +8,21 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
-import { SetFilterRuleCommand } from '../../commands/SetFilterRuleCommand';
-import { Editor } from '../../Editor';
-import { UIBreak, UIButton, UINumber, UIRow, UISelect } from '../../libs/ui';
-import { UIOutliner } from '../../libs/ui.three';
-import { ObjectAbstract } from './Object.Abstract';
 import {
 	FilterRule,
 	isFloatRule,
 	isIDRule,
 	isIntRule
-} from '../../../Simulation/Scoring/DetectRule';
+} from '../../../Simulation/Scoring/FilterRule';
+import { ScoringFilter } from '../../../Simulation/Scoring/ScoringFilter';
+import { SetFilterRuleCommand } from '../../commands/SetFilterRuleCommand';
+import { UIBreak, UIButton, UINumber, UIRow, UISelect } from '../../libs/ui';
+import { UIOutliner } from '../../libs/ui.three';
+import { YaptideEditor } from '../../YaptideEditor';
+import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectFilter extends ObjectAbstract {
-	object?: DetectFilter;
+	object?: ScoringFilter;
 	rule?: FilterRule;
 
 	add: UIButton;
@@ -36,12 +37,13 @@ export class ObjectFilter extends ObjectAbstract {
 	valueInput: UINumber;
 	removeButton: UIButton;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Scoring rules');
 		[this.addRow, this.add] = createFullwidthButton({
 			text: 'Add rule',
 			update: this.addRule.bind(this)
 		});
+
 		[this.outliner] = createRulesOutliner(editor, {
 			update: this.selectRule.bind(this)
 		});
@@ -69,25 +71,31 @@ export class ObjectFilter extends ObjectAbstract {
 
 	getRuleValue(rule: FilterRule): number {
 		let value;
+
 		switch (true) {
 			case isIDRule(rule):
 				value = parseInt(this.idSelect.getValue());
+
 				break;
 			case isFloatRule(rule):
 				value = this.valueInput.getValue();
+
 				break;
 			case isIntRule(rule):
 				value = Math.floor(this.valueInput.getValue());
+
 				break;
 			default:
 				console.warn('Unknown rule type');
 				value = 0;
 		}
+
 		return isNaN(value) ? this.valueInput.min : value;
 	}
 
 	update(): void {
 		const { object, rule } = this;
+
 		if (!object || !rule) return;
 		const uuid = rule.uuid;
 		const keyword = this.keywordSelect.getValue() as Rule.Keyword;
@@ -95,8 +103,10 @@ export class ObjectFilter extends ObjectAbstract {
 			keyword !== rule.keyword
 				? Rule.RULE_DEFAULTS[keyword][0]
 				: this.operatorSelect.getValue();
+
 		const value =
 			keyword !== rule.keyword ? Rule.RULE_DEFAULTS[keyword][1] : this.getRuleValue(rule);
+
 		this.editor.execute(
 			new SetFilterRuleCommand(this.editor, object, {
 				uuid,
@@ -109,12 +119,14 @@ export class ObjectFilter extends ObjectAbstract {
 
 	deleteRule(): void {
 		const { object, editor, rule } = this;
+
 		if (!object || !rule) return;
 		editor.execute(new SetFilterRuleCommand(editor, object));
 	}
 
 	addRule(): void {
 		const { object, editor } = this;
+
 		if (!object) return;
 		const ruleJson = {
 			uuid: MathUtils.generateUUID(),
@@ -127,9 +139,11 @@ export class ObjectFilter extends ObjectAbstract {
 
 	selectRule(): void {
 		const { object } = this;
+
 		if (!object) return;
 		const rule = object.getRuleByUuid(this.outliner.getValue());
 		object.selectedRule = rule;
+
 		if (rule) {
 			this.setRule(rule);
 		} else {
@@ -141,10 +155,12 @@ export class ObjectFilter extends ObjectAbstract {
 
 	updateSelectedRule(): void {
 		const { rule } = this;
+
 		if (!rule) return;
 		this.keywordSelect.setValue(rule.keyword);
 		this.operatorSelect.setValue(rule.operator);
 		this.idSelect.setValue(rule.value.toString());
+
 		if (isIDRule(rule)) {
 			showUIElement(this.idSelect);
 			hideUIElement(this.valueInput);
@@ -153,25 +169,32 @@ export class ObjectFilter extends ObjectAbstract {
 			showUIElement(this.valueInput);
 			this.valueInput.setUnit(Rule.RULE_UNITS[rule.keyword]);
 			this.valueInput.setRange(...Rule.RULE_VALUE_RANGES[rule.keyword]);
+
 			if (isFloatRule(rule)) this.valueInput.setPrecision(3);
 			else this.valueInput.setPrecision(0);
 		}
+
 		this.valueInput.setValue(rule.value);
 	}
+
 	setRule(rule: FilterRule): void {
 		showUIElement(this.ruleRow, 'grid');
 		this.rule = rule;
 		this.outliner.setValue(rule.uuid);
 		this.updateSelectedRule();
 	}
-	setObject(object: DetectFilter): void {
+
+	setObject(object: ScoringFilter): void {
 		super.setObject(object);
+
 		if (!object) return;
 
 		this.object = object;
 		this.outliner.setOptions(object.rules);
+
 		if (object.selectedRule) {
 			const rule = object.selectedRule;
+
 			if (rule) {
 				this.outliner.setValue(object.selectedRule.uuid);
 				this.setRule(rule);

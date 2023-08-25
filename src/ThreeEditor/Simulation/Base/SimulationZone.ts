@@ -1,17 +1,22 @@
 import * as THREE from 'three';
-import { SimulationMesh } from './SimulationMesh';
-import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { SimulationSceneChild, SimulationSceneContainer } from './SimulationScene';
-import { Editor } from '../../js/Editor';
-import SimulationMaterial, { SimulationMaterialJSON } from '../Materials/SimulationMaterial';
 
-export interface SimulationZoneJSON {
-	uuid: string;
-	name: string;
-	materialUuid: string;
-	materialPropertiesOverrides: Partial<MaterialOverridable>;
-	customMaterial?: SimulationMaterialJSON;
-}
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { YaptideEditor } from '../../js/YaptideEditor';
+import SimulationMaterial, { SimulationMaterialJSON } from '../Materials/SimulationMaterial';
+import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
+import { SimulationElement, SimulationElementJSON } from './SimulationElement';
+
+export type SimulationZoneJSON = Omit<
+	SimulationElementJSON & {
+		materialUuid: string;
+		materialPropertiesOverrides: Partial<MaterialOverridable>;
+		customMaterial?: SimulationMaterialJSON & {
+			originalMaterialUuid: string;
+		};
+		visible: boolean;
+	},
+	never
+>;
 
 interface MaterialOverridable {
 	density: number;
@@ -42,13 +47,23 @@ const _get_default = (material: SimulationMaterial) => {
 	};
 };
 
+/**
+ * This is the base class for all zone objects
+ * Zones are objects that have specified simulation material.
+ *
+ * Geometry is not specified, because their definition can vary depending on the type of zone
+ * @see {@link BooleanZone}
+ * @see {@link TreeZone}
+ */
 export abstract class SimulationZone
-	extends SimulationMesh<THREE.BufferGeometry, SimulationMaterial>
-	implements SimulationPropertiesType, SimulationSceneChild
+	extends THREE.Mesh<THREE.BufferGeometry, SimulationMaterial>
+	implements SimulationElement, SimulationPropertiesType, SimulationSceneChild
 {
-	editor: Editor;
+	editor: YaptideEditor;
 	parent: SimulationSceneContainer<this> | null = null;
+	_name: string;
 	readonly isZone: true = true;
+	readonly type: string;
 	private _materialPropertiesOverrides: OverrideMap;
 	private usingCustomMaterial = false;
 
@@ -83,6 +98,19 @@ export abstract class SimulationZone
 		};
 	}
 
+	private reconstructMaterialFromJSON(json: SimulationZoneJSON) {
+		const { materialUuid, customMaterial } = json;
+		const simulationMaterial =
+			this.editor.materialManager.getMaterialByUuid(
+				customMaterial && materialUuid === customMaterial.uuid
+					? customMaterial.originalMaterialUuid
+					: materialUuid
+			) ?? this.editor.materialManager.defaultMaterial;
+
+		if (simulationMaterial === undefined) throw new Error('SimulationMaterial not found');
+		this.simulationMaterial = simulationMaterial;
+	}
+
 	get simulationMaterial(): SimulationMaterial {
 		return this.material;
 	}
@@ -94,29 +122,38 @@ export abstract class SimulationZone
 		this.material.increment();
 	}
 
-	constructor(editor: Editor, name: string, type: string = 'Zone') {
-		super(
-			editor,
-			name,
-			type,
-			new THREE.BufferGeometry(),
-			editor.materialManager.defaultMaterial
-		);
+	readonly isSimulationElement = true;
+
+	constructor(editor: YaptideEditor, name: string, type: string = 'Zone') {
+		super(new THREE.BufferGeometry(), editor.materialManager.defaultMaterial);
 		this.editor = editor;
+		this.name = this._name = name ?? type;
+		this.type = type;
 		this.material.increment();
 		this._materialPropertiesOverrides = {
 			..._get_default(this.material).materialPropertiesOverrides
 		};
 	}
 
+	reset() {
+		this.name = this._name;
+		this.resetCustomMaterial();
+		this.simulationMaterial = this.editor.materialManager.defaultMaterial;
+	}
+
 	toJSON(): SimulationZoneJSON {
+		const { uuid, name, type, visible, materialPropertiesOverrides: overrides } = this;
 		const customMaterial = this.usingCustomMaterial
-			? this.simulationMaterial.clone().toJSON()
+			? {
+					...this.simulationMaterial.clone().toJSON(),
+					originalMaterialUuid: this.simulationMaterial.uuid
+			  }
 			: undefined;
+
 		const { uuid: materialUuid } = this.usingCustomMaterial
 			? customMaterial!
 			: this.simulationMaterial;
-		const { uuid, name, materialPropertiesOverrides: overrides } = this;
+
 		const materialPropertiesOverrides = Object.entries(overrides).reduce<
 			Partial<MaterialOverridable>
 		>((acc, [key, { override, value }]) => {
@@ -129,6 +166,8 @@ export abstract class SimulationZone
 		return {
 			uuid,
 			name,
+			type,
+			visible,
 			materialUuid,
 			materialPropertiesOverrides,
 			customMaterial
@@ -139,19 +178,20 @@ export abstract class SimulationZone
 		super.copy(source, recursive);
 		this.simulationMaterial = source.material;
 		this._materialPropertiesOverrides = { ...source.materialPropertiesOverrides };
+
 		return this;
 	}
 
-	fromJSON(json: SimulationZoneJSON): this {
-		const { uuid, name, materialUuid, materialPropertiesOverrides: overrides } = json;
+	fromJSON(json: SimulationZoneJSON) {
+		this.reset();
+		const { uuid, name, visible, materialPropertiesOverrides: overrides } = json;
+
 		this.uuid = uuid;
 		this.name = name;
-		this.simulationMaterial =
-			this.editor.materialManager.getMaterialByUuid(materialUuid) ??
-			this.editor.materialManager.defaultMaterial;
-
-		const props = {
-			...Object.entries(overrides).reduce<OverrideMap>(
+		this.visible = visible;
+		this.reconstructMaterialFromJSON(json);
+		this.materialPropertiesOverrides = {
+			...Object.entries(overrides ?? {}).reduce<OverrideMap>(
 				(acc, [key, value]) => {
 					return {
 						...acc,
@@ -167,8 +207,15 @@ export abstract class SimulationZone
 			)
 		};
 
-		this.materialPropertiesOverrides = props;
-
 		return this;
 	}
+
+	// eslint-disable-next-line class-methods-use-this
+	duplicate(): SimulationZone {
+		throw new Error('Method not implemented.');
+	}
+}
+
+export function isSimulationZone(object: unknown): object is SimulationZone {
+	return object instanceof SimulationZone;
 }

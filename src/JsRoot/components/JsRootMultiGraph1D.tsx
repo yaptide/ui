@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+
 import { GroupedPage1D } from '../GraphData';
 import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
 
@@ -13,6 +14,7 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 				entry.fObject = obj;
 				entry.fLabel = lbl;
 				entry.fOption = 'l';
+
 				return entry;
 			}
 

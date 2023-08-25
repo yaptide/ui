@@ -1,4 +1,4 @@
-import { Command } from '../Command.js';
+import { Command } from '../Command';
 
 /**
  * @param editor Editor
@@ -13,7 +13,6 @@ export class SetDetectGeometryCommand extends Command {
 		this.type = 'SetDetectGeometryCommand';
 		this.name = 'Set DetectGeometry';
 		this.updatable = true;
-
 		this.object = object;
 		this.oldData = object.getData();
 		this.newData = newData;
@@ -21,7 +20,6 @@ export class SetDetectGeometryCommand extends Command {
 
 	execute() {
 		this.object.setData(this.newData);
-
 		this.editor.signals.geometryChanged.dispatch(this.object);
 		this.editor.signals.detectGeometryChanged.dispatch(this.object);
 		this.editor.signals.sceneGraphChanged.dispatch();

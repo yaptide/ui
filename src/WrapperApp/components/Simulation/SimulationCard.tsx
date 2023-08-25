@@ -1,3 +1,5 @@
+import ClearIcon from '@mui/icons-material/Clear';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import {
 	Box,
 	Button,
@@ -9,38 +11,44 @@ import {
 	CardProps,
 	Chip,
 	Divider,
+	IconButton,
 	LinearProgress,
 	Paper,
 	Table,
 	TableBody,
 	TableCell,
 	TableContainer,
-	TableRow
+	TableRow,
+	Tooltip
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
-import React, { ReactNode, useMemo, useState } from 'react';
-import { useLoader } from '../../../services/DataLoaderService';
-import {
-	SimulationInputFiles,
-	JobStatusData,
-	StatusState,
-	currentJobStatusData,
-	currentTaskStatusData
-} from '../../../types/ResponseTypes';
+import { useSnackbar } from 'notistack';
+import { Fragment, ReactNode, useMemo, useState } from 'react';
+
+import { useLoader } from '../../../services/LoaderService';
+import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
+import {
+	currentJobStatusData,
+	currentTaskStatusData,
+	JobStatusData,
+	SimulationInputFiles,
+	StatusState
+} from '../../../types/ResponseTypes';
 import { saveString } from '../../../util/File';
 import { SimulationProgressBar } from './SimulationProgressBar';
-import { useShSimulation } from '../../../services/ShSimulatorService';
-import { useSnackbar } from 'notistack';
+
 type SimulationCardProps = {
 	simulationStatus: JobStatusData;
 	loadResults?: (jobId: string | null) => void;
+	handleDelete?: (jobId: string) => void;
+	handleRefresh?: (jobId: string) => void;
 	showInputFiles?: (inputFiles?: SimulationInputFiles) => void;
 } & CardProps;
 
 const tableRowStyle: SxProps<Theme> = { '&:last-child td, &:last-child th': { border: 0 } };
 const row = (id: number, title: string, value: string | undefined | ReactNode, guard = true) => (
-	<React.Fragment key={id}>
+	<Fragment key={id}>
 		{guard && (
 			<TableRow sx={tableRowStyle}>
 				<TableCell
@@ -51,12 +59,14 @@ const row = (id: number, title: string, value: string | undefined | ReactNode, g
 				<TableCell align='right'>{value}</TableCell>
 			</TableRow>
 		)}
-	</React.Fragment>
+	</Fragment>
 );
 
 export default function SimulationCard({
 	simulationStatus,
 	loadResults,
+	handleDelete,
+	handleRefresh,
 	showInputFiles,
 	...other
 }: SimulationCardProps) {
@@ -69,9 +79,11 @@ export default function SimulationCard({
 
 	const rows = useMemo(() => {
 		const rows: JSX.Element[] = [];
+
 		if (currentJobStatusData[StatusState.RUNNING](simulationStatus)) {
 			row(0, 'Message', simulationStatus.message, !!simulationStatus.message);
 		}
+
 		return rows;
 	}, [simulationStatus]);
 
@@ -137,8 +149,10 @@ export default function SimulationCard({
 
 		if (!inputJson) {
 			setDisableLoadJson(true);
+
 			return enqueueSnackbar('Could not load json file', { variant: 'error' });
 		}
+
 		loadFromJson(inputJson);
 	};
 
@@ -164,6 +178,35 @@ export default function SimulationCard({
 						? simulationStatus.endTime.toLocaleString('en-US').split(' ')[4] ?? '?'
 						: '?'
 				}`}
+				action={
+					handleDelete &&
+					(currentJobStatusData[StatusState.COMPLETED](simulationStatus) ||
+						currentJobStatusData[StatusState.FAILED](simulationStatus)) ? (
+						<Tooltip
+							title='Delete local data'
+							sx={{
+								zIndex: ({ zIndex }) => zIndex.appBar
+							}}>
+							<IconButton
+								aria-label='delete simulation'
+								onClick={() => handleDelete(simulationStatus.jobId)}>
+								<ClearIcon />
+							</IconButton>
+						</Tooltip>
+					) : handleRefresh ? (
+						<Tooltip
+							title='Refresh status'
+							sx={{
+								zIndex: ({ zIndex }) => zIndex.appBar
+							}}>
+							<IconButton
+								aria-label='refresh simulation'
+								onClick={() => handleRefresh(simulationStatus.jobId)}>
+								<RefreshIcon />
+							</IconButton>
+						</Tooltip>
+					) : undefined
+				}
 			/>
 			<CardContent sx={{ flexGrow: 1 }}>
 				<Box
@@ -313,15 +356,15 @@ export default function SimulationCard({
 									</Button>
 								);
 							} else if (
-								currentJobStatusData[StatusState.RUNNING](simulationStatus) ||
-								currentJobStatusData[StatusState.PENDING](simulationStatus)
+								handleDelete &&
+								(currentJobStatusData[StatusState.RUNNING](simulationStatus) ||
+									currentJobStatusData[StatusState.PENDING](simulationStatus))
 							) {
 								return (
 									<Button
 										sx={{ fontSize: '.8em' }}
 										color='info'
-										size='small'
-										disabled={true}>
+										size='small'>
 										Cancel
 									</Button>
 								);
@@ -336,6 +379,7 @@ export default function SimulationCard({
 									</Button>
 								);
 							}
+
 							return <></>;
 						})()}
 

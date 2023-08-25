@@ -16,7 +16,8 @@ import {
 	Typography
 } from '@mui/material';
 import { ReactNode, SyntheticEvent, useMemo } from 'react';
-import { DEMO_MODE } from '../../../config/Config';
+
+import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
 import deployInfo from '../../../util/identify/deployInfo.json';
 import { MenuOption } from './NavDrawer';
@@ -53,6 +54,7 @@ export function NavDrawerList({
 	handleChange,
 	tabsValue
 }: NavDrawerListProps) {
+	const { demoMode } = useConfig();
 	const { isAuthorized, user, logout } = useAuth();
 	const userLogout = useMemo(
 		() => (
@@ -91,10 +93,12 @@ export function NavDrawerList({
 		),
 		[isAuthorized, layout, logout, handleChange]
 	);
+
 	const username = useMemo(
 		() => (isAuthorized && user ? user.username : 'Log in'),
 		[isAuthorized, user]
 	);
+
 	return (
 		<Box
 			sx={{
@@ -102,7 +106,7 @@ export function NavDrawerList({
 				gridAutoRows: '1fr auto',
 				height: 'calc(100% - 64px)'
 			}}>
-			{!DEMO_MODE ? (
+			{!demoMode ? (
 				<Box>
 					<NavDrawerElement
 						menuOption={{
@@ -134,7 +138,7 @@ export function NavDrawerList({
 								<PersonIcon
 									fontSize='large'
 									sx={{
-										marginBottom: !DEMO_MODE ? 4.5 : undefined
+										marginBottom: !demoMode ? 4.5 : undefined
 									}}
 								/>
 							)
@@ -145,7 +149,7 @@ export function NavDrawerList({
 							type: 'label'
 						}}
 						sx={{
-							minHeight: !DEMO_MODE ? 96 : 64
+							minHeight: !demoMode ? 96 : 64
 						}}
 					/>
 					<Divider />
@@ -223,6 +227,7 @@ function NavDrawerElement({
 			/>
 		</>
 	);
+
 	return (
 		<Tooltip
 			title={info ? <Typography>{info}</Typography> : undefined}
@@ -232,17 +237,18 @@ function NavDrawerElement({
 				disablePadding
 				sx={{ display: 'block' }}>
 				{buttonProps.type === 'label' ? (
-					<ListItem
+					<Box
 						aria-label={label}
 						sx={{
+							display: 'flex',
 							minHeight: 64,
+							alignItems: 'center',
 							justifyContent: open ? 'initial' : 'center',
 							px: 2.5,
 							...sx
-						}}
-						disabled={disabled}>
+						}}>
 						{listItemContent}
-					</ListItem>
+					</Box>
 				) : (
 					<ListItemButton
 						aria-label={label}
@@ -257,6 +263,7 @@ function NavDrawerElement({
 							? { component: 'a', href: buttonProps.href, target: '_blank' }
 							: {})}
 						selected={selected}
+						aria-selected={selected}
 						onClick={event => handleChange(event, value)}>
 						{listItemContent}
 					</ListItemButton>

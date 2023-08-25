@@ -1,4 +1,4 @@
-import { Builder, By, WebDriver, until } from 'selenium-webdriver';
+import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
 describe('NavDrawer component', () => {
@@ -39,6 +39,7 @@ describe('NavDrawer component', () => {
 		function getDrawerPath(open: boolean) {
 			return `//div[@aria-label = 'Navigation drawer for the YAPTIDE application' and @aria-expanded = '${open}']`;
 		}
+
 		await driver.wait(until.elementLocated(By.xpath(getDrawerPath(false))), 1000);
 
 		const closedDrawer = await driver.findElement(By.xpath(getDrawerPath(false)));

@@ -1,31 +1,37 @@
 import { Box, Button, Card, CardActions, CardContent, Divider } from '@mui/material';
 import useTheme from '@mui/system/useTheme';
 import CodeEditor from '@uiw/react-textarea-code-editor';
+
+import { useConfig } from '../../../config/ConfigService';
+import { useDialog } from '../../../services/DialogService';
+import { useStore } from '../../../services/StoreService';
+import { SimulatorType } from '../../../types/RequestTypes';
 import {
-	SimulationInputFiles,
 	_defaultFlukaInputFiles,
 	_defaultShInputFiles,
 	_defaultTopasInputFiles,
 	_orderedShInputFilesNames,
-	isKnownInputFile
+	isKnownInputFile,
+	SimulationInputFiles
 } from '../../../types/ResponseTypes';
-import { DEMO_MODE } from '../../../config/Config';
 import { saveString } from '../../../util/File';
-import { SimulatorType } from '../../../types/RequestTypes';
 
 interface InputFilesEditorProps {
 	simulator: SimulatorType;
 	inputFiles: SimulationInputFiles | undefined;
 	onChange?: (inputFiles: SimulationInputFiles) => void;
-	runSimulation?: (simulator: SimulatorType, inputFiles: SimulationInputFiles) => void;
 	saveAndExit?: (inputFiles: SimulationInputFiles) => void;
 	closeEditor?: () => void;
 }
 
 export function InputFilesEditor(props: InputFilesEditorProps) {
+	const [open] = useDialog('runSimulation');
+	const { setTrackedId } = useStore();
+	const { demoMode } = useConfig();
 	const inputFiles = props.inputFiles ?? _defaultShInputFiles;
-	const simulator = props.simulator;
 	const theme = useTheme();
+	const largeFileSize = 100_000;
+	const largeFileLinesLimit = 500;
 
 	const canBeDeleted = (name: string) => {
 		switch (props.simulator) {
@@ -44,6 +50,27 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 		props.onChange?.call(null, updateFn(inputFiles));
 	};
 
+	const truncateFile = (file: string) => {
+		var result: string[] = [];
+		var lines = file.split('\n').slice(0, largeFileLinesLimit);
+		let totalLength = 0;
+
+		for (const line of lines) {
+			if (totalLength + line.length <= largeFileSize) {
+				totalLength += line.length;
+				result.push(line);
+			} else {
+				result.push(line.substring(0, largeFileSize - totalLength));
+
+				break;
+			}
+		}
+
+		result.push('\n\n... Output truncated ...');
+
+		return result.join('\n');
+	};
+
 	return (
 		<Card sx={{ minHeight: '100%' }}>
 			<CardActions
@@ -51,15 +78,21 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 					justifyContent: 'flex-end',
 					background: theme => (theme.palette.mode === 'dark' ? 'grey.800' : 'grey.300')
 				}}>
-				{props.runSimulation && (
-					<Button
-						color='success'
-						variant='contained'
-						disabled={DEMO_MODE}
-						onClick={() => props.runSimulation?.call(null, simulator, inputFiles)}>
-						Run with these input files
-					</Button>
-				)}
+				<Button
+					color='success'
+					variant='contained'
+					disabled={demoMode}
+					onClick={() =>
+						open({
+							inputFiles: Object.fromEntries(
+								Object.entries(inputFiles).filter(([, data]) => data.length > 0)
+							),
+							simulator: props.simulator,
+							onSubmit: setTrackedId
+						})
+					}>
+					Run with these input files
+				</Button>
 				<Button
 					color='info'
 					onClick={() =>
@@ -69,7 +102,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 				</Button>
 				{props.saveAndExit && (
 					<Button
-						disabled={DEMO_MODE}
+						disabled={demoMode}
 						color='info'
 						onClick={() => props.saveAndExit?.call(null, inputFiles)}>
 						Save and exit
@@ -90,12 +123,17 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 						const index1 = isKnownInputFile(name1)
 							? _orderedShInputFilesNames.indexOf(name1)
 							: -1 + 1;
+
 						const index2 = isKnownInputFile(name2)
 							? _orderedShInputFilesNames.indexOf(name2)
 							: -1 + 1;
+
 						return index1 - index2;
 					})
 					.map(([name, value]) => {
+						const isLargeFile = value.length > largeFileSize;
+						const content = !isLargeFile ? value : truncateFile(value);
+
 						return (
 							<Box key={name}>
 								<h2>
@@ -131,6 +169,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 														delete old[
 															name as keyof SimulationInputFiles
 														];
+
 													return { ...old };
 												});
 											}}
@@ -138,18 +177,30 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 											Delete
 										</Button>
 									)}
+									{isLargeFile && (
+										<Box
+											color='error.main'
+											sx={{
+												ml: 1,
+												display: 'inline-flex',
+												fontSize: 'initial'
+											}}>
+											File is to large, displaying first few lines...
+										</Box>
+									)}
 								</h2>
-
 								<CodeEditor
 									aria-label={name + ' text field'}
-									value={value}
-									language='sql'
+									value={content}
 									placeholder={`Please enter ${name} content.`}
-									onChange={evn =>
-										updateInputFiles(old => {
-											return { ...old, [name]: evn.target.value };
-										})
-									}
+									onChange={evn => {
+										if (!isLargeFile) {
+											updateInputFiles(old => {
+												return { ...old, [name]: evn.target.value };
+											});
+										}
+									}}
+									disabled={isLargeFile}
 									data-color-mode={theme.palette.mode}
 									padding={15}
 									style={{

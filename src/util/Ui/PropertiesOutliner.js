@@ -1,15 +1,15 @@
 import {
 	UIButton,
+	UICheckbox,
+	UIDiv,
 	UINumber,
 	UIRow,
-	UIText,
-	UICheckbox,
 	UISelect,
-	UIDiv
+	UIText
 } from '../../ThreeEditor/js/libs/ui';
 import { UIOutliner } from '../../ThreeEditor/js/libs/ui.three';
-import * as Rule from '../../types/DetectRuleTypes';
 import * as Scoring from '../../ThreeEditor/Simulation/Scoring/ScoringOutputTypes';
+import * as Rule from '../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
 import { FONT_SIZE } from './Uis';
 
 /**
@@ -46,6 +46,7 @@ export function createModifiersOutliner(editor, params) {
 		);
 	};
 	outliner.onChange(update);
+
 	return [outliner];
 }
 
@@ -77,6 +78,7 @@ export function createRulesOutliner(editor, params) {
 		);
 	};
 	outliner.onChange(update);
+
 	return [outliner];
 }
 
@@ -110,6 +112,7 @@ export function createDifferentialConfigurationRow(params) {
 	logs.add(logsLabel, isLog);
 	const deleteButton = new UIButton('✖').onClick(deleteRule);
 	row.add(keywordSelect, lowerLimit, upperLimit, binsNumber, logs, deleteButton);
+
 	return [row, keywordSelect, lowerLimit, upperLimit, binsNumber, isLog, deleteButton];
 }
 
@@ -137,6 +140,7 @@ export function createRuleConfigurationRow(params) {
 		.setOptions(operators)
 		.setFontSize(FONT_SIZE)
 		.onChange(update);
+
 	const idSelect = new UISelect()
 		.setFontSize(FONT_SIZE)
 		.onChange(update)
@@ -145,11 +149,13 @@ export function createRuleConfigurationRow(params) {
 	const valueInput = new UINumber().setPadding('2px 4px').onChange(update).setWidth('100%');
 	const deleteButton = new UIButton('✖').onClick(deleteRule);
 	row.add(keywordSelect, operatorSelect, idSelect, valueInput, deleteButton);
+
 	return [row, keywordSelect, operatorSelect, idSelect, valueInput, deleteButton];
 }
 
 function setOptionsSorted(options, sortFunc) {
 	const { value } = this.dom;
+
 	while (this.dom.children.length > 0) this.dom.removeChild(this.dom.firstChild);
 
 	Object.keys(options)
@@ -161,5 +167,6 @@ function setOptionsSorted(options, sortFunc) {
 			this.dom.appendChild(option);
 		});
 	this.dom.value = value;
+
 	return this;
 }

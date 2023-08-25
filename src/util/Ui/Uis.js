@@ -11,10 +11,10 @@ export * from './Checkbox';
 export * from './Color';
 export * from './CustomTabbedPanel';
 export * from './Number';
+export * from './PropertiesOutliner';
 export * from './ReactUis';
 export * from './Select';
 export * from './Text';
-export * from './PropertiesOutliner';
 
 /**
  * @typedef {import('../js/libs/ui').UIElement} UIElement

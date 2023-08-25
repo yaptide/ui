@@ -1,11 +1,12 @@
 import * as THREE from 'three';
-import { Editor } from '../../js/Editor.js';
+
+import { isCounterMapError } from '../../../util/CounterMap/CounterMap';
+import { YaptideEditor } from '../../js/YaptideEditor.js';
 import {
 	DEFAULT_MATERIAL_DENSITY,
 	DEFAULT_MATERIAL_ICRU,
 	DEFAULT_MATERIAL_NAME
 } from './materials';
-import { isCounterMapError } from '../../../util/CounterMap/CounterMap';
 
 export type RenderProps = Omit<SimulationMaterialJSON, 'uuid' | 'name' | 'icru' | 'density'>;
 
@@ -23,7 +24,7 @@ export type SimulationMaterialJSON = {
 };
 export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 	private proxy: SimulationMaterial;
-	private editor: Editor;
+	private editor: YaptideEditor;
 	private colorProxy: THREE.Color;
 	icru: number;
 	density: number;
@@ -34,6 +35,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 	private overrideHandler = {
 		set: (target: SimulationMaterial, key: keyof RenderProps, value: unknown) => {
 			const result = Reflect.set(target, key, value);
+
 			if (
 				['transparent', 'opacity', 'color', 'wireframe', 'wireframeLinewidth'].includes(key)
 			)
@@ -44,6 +46,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 		},
 		get: (target: SimulationMaterial, key: keyof RenderProps) => {
 			const result = Reflect.get(target, key);
+
 			if (key === 'color') return this.colorProxy;
 
 			return result;
@@ -56,14 +59,18 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 			const setHex = (hex: number) => {
 				if (this.defaultProps.color !== hex) this.renderProps.color = hex;
 				else delete this.renderProps.color;
+
 				return target.setHex(hex);
 			};
+
 			if (prop === 'setHex') return setHex.bind(this);
+
 			return result;
 		}
 	};
+
 	constructor(
-		editor: Editor,
+		editor: YaptideEditor,
 		name: string = DEFAULT_MATERIAL_NAME,
 		icru: number = DEFAULT_MATERIAL_ICRU,
 		density: number = DEFAULT_MATERIAL_DENSITY
@@ -94,6 +101,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 
 	toJSON(): SimulationMaterialJSON {
 		const { uuid, name, icru, density, renderProps, customStoppingPower } = this;
+
 		return {
 			uuid,
 			name,
@@ -103,8 +111,9 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 			...renderProps
 		};
 	}
+
 	static fromJSON(
-		editor: Editor,
+		editor: YaptideEditor,
 		{ uuid, name, icru, density, customStoppingPower, ...renderProps }: SimulationMaterialJSON
 	): SimulationMaterial {
 		const material = new SimulationMaterial(editor, name, icru, density);
@@ -112,11 +121,13 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 		material.customStoppingPower = customStoppingPower ?? false;
 		material.renderProps = renderProps;
 		material.applyRenderProps();
+
 		return material.proxy;
 	}
 
 	applyRenderProps() {
 		const { color, opacity, transparent, wireframe, wireframeLinewidth } = this.renderProps;
+
 		if (color) this.colorProxy = new Proxy(new THREE.Color(color), this.materialColorHandler);
 		if (opacity !== undefined) this.opacity = opacity;
 		if (transparent !== undefined) this.transparent = transparent;
@@ -130,11 +141,13 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 		result.density = source.density;
 		result.icru = source.icru;
 		result.customStoppingPower = source.customStoppingPower;
+
 		return new Proxy(result, this.overrideHandler) as this;
 	}
 
 	clone(): this {
 		const result = new SimulationMaterial(this.editor).copy(this) as this;
+
 		return result;
 	}
 

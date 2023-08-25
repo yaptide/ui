@@ -1,26 +1,28 @@
-import { Typography, Checkbox, Menu, MenuItem, TextField } from '@mui/material';
-import { Stack } from '@mui/system';
-import { usePopupState, bindContextMenu, bindMenu } from 'material-ui-popup-state/hooks';
-import { Object3D } from 'three';
-import { SetValueCommand } from '../../../js/commands/SetValueCommand';
-import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
+import { NodeModel, TreeMethods } from '@minoru/react-dnd-treeview/dist/types';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { Editor } from '../../../js/Editor';
+import { Checkbox, Menu, MenuItem, TextField, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import { Stack } from '@mui/system';
+import { bindContextMenu, bindMenu, usePopupState } from 'material-ui-popup-state/hooks';
+import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { Object3D } from 'three';
+
 import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
-import { NodeModel, TreeMethods } from '@minoru/react-dnd-treeview/dist/types';
+import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import {
 	canChangeName,
 	getRemoveCommand,
-	isRemovable,
-	hasVisibleChildren
+	hasVisibleChildren,
+	isRemovable
 } from '../../../../util/hooks/useKeyboardEditorControls';
-import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
 import { AddQuantityCommand } from '../../../js/commands/AddQuantityCommand';
-import Box from '@mui/material/Box';
-import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { canBeDuplicated, getDuplicateCommand } from '../../../js/commands/DuplicateObjectCommand';
+import { SetValueCommand } from '../../../js/commands/SetValueCommand';
+import { YaptideEditor } from '../../../js/YaptideEditor';
+import { isSimulationElement, SimulationElement } from '../../../Simulation/Base/SimulationElement';
+import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
 
 export type TreeItem = NodeModel<{
 	object: Object3D<THREE.Event> | SimulationElement;
@@ -32,19 +34,20 @@ function isHidable(object: Object3D | SimulationPropertiesType) {
 	if ('notHidable' in object) {
 		return !object.notHidable;
 	}
+
 	return true;
 }
 
 export function SidebarTreeItem(props: {
 	treeRef: TreeMethods | null;
-	objectRefs: React.MutableRefObject<Map<string, HTMLDivElement>>;
+	objectRefs: MutableRefObject<Map<string, HTMLDivElement>>;
 	node: NodeModel<{
 		object: Object3D | SimulationElement;
 	}>;
 	depth: number;
 	isOpen: boolean;
 	onToggle: () => void;
-	editor: Editor;
+	editor: YaptideEditor;
 }) {
 	const { objectRefs, node, depth, isOpen, onToggle, editor, treeRef } = props;
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -59,6 +62,21 @@ export function SidebarTreeItem(props: {
 
 	const contextOptions = (() => {
 		const options: JSX.Element[] = [];
+
+		if (canBeDuplicated(object)) {
+			options.push(
+				<MenuItem
+					key={'duplicate'}
+					onClick={() => {
+						if (!isSimulationElement(object)) return;
+						const command = getDuplicateCommand(editor, object);
+						editor.execute(command);
+						popupState.close();
+					}}>
+					Duplicate
+				</MenuItem>
+			);
+		}
 
 		if (canChangeName(object)) {
 			options.push(
@@ -79,6 +97,7 @@ export function SidebarTreeItem(props: {
 					key={'addQuantity'}
 					onClick={() => {
 						editor.execute(new AddQuantityCommand(editor, object));
+
 						if (!isOpen) onToggle();
 						popupState.close();
 					}}>
@@ -109,7 +128,7 @@ export function SidebarTreeItem(props: {
 
 	const onObjectAdded = useCallback(
 		(newObject: Object3D) => {
-			if (newObject.parent === object) {
+			if (object.getObjectByName(newObject.name) === newObject) {
 				treeRef?.open(node.id);
 			}
 		},

@@ -1,10 +1,11 @@
+import { Signal } from 'signals';
 import * as THREE from 'three';
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min';
 import { debounce } from 'throttle-debounce';
-import { Viewport } from './Viewport';
+
 import { CSG } from '../../CSG/CSG';
-import { Editor } from '../Editor';
-import { Signal } from 'signals';
+import { YaptideEditor } from '../YaptideEditor';
+import { Viewport } from './Viewport';
 
 type ClippedViewConfigurationJson = {
 	visible: boolean;
@@ -13,7 +14,7 @@ type ClippedViewConfigurationJson = {
 
 export interface ViewportClippedView {
 	name: string;
-	editor: Editor;
+	editor: YaptideEditor;
 	scene: THREE.Scene;
 	gui: GUI;
 	planeHelper: THREE.PlaneHelper;
@@ -27,7 +28,7 @@ export function ViewportClippedViewCSG<
 >(
 	this: ViewportClippedView,
 	name: string,
-	editor: Editor,
+	editor: YaptideEditor,
 	viewport: typeof Viewport,
 	planeHelpers: THREE.Group,
 	initialObjects: T[],
@@ -156,6 +157,7 @@ export function ViewportClippedViewCSG<
 
 	function updateMeshIntersection(object3D: T) {
 		const crossSectionObject = clippedObjects.getObjectByName(object3D.uuid);
+
 		if (crossSectionObject) clippedObjects.remove(crossSectionObject);
 
 		object3D.updateMatrix();
@@ -193,6 +195,7 @@ export function ViewportClippedViewCSG<
 
 	signalGeometryRemoved.add((object3D: T) => {
 		const crossSectionObject = clippedObjects.getObjectByName(object3D.uuid);
+
 		if (crossSectionObject) clippedObjects.remove(crossSectionObject);
 	});
 

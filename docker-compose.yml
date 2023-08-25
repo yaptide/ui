@@ -1,4 +1,4 @@
-version: "3.3"
+version: '3.3'
 
 services:
     yaptide_ui:
@@ -9,3 +9,4 @@ services:
         container_name: yaptide_ui
         ports:
             - 80:80
+            - 443:443

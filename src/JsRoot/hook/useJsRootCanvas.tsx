@@ -1,9 +1,10 @@
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useVisible } from 'react-hooks-visible';
-import { useElementSize } from 'usehooks-ts';
-import { useJSROOT } from '../../services/JsRootService';
-import { throttle } from 'throttle-debounce';
 import { mergeRefs } from 'react-merge-refs';
+import { throttle } from 'throttle-debounce';
+import { useElementSize } from 'usehooks-ts';
+
+import { useJSROOT } from '../../services/JsRootService';
 
 export const useJsRootCanvas = (redrawParam: string) => {
 	const { JSROOT } = useJSROOT();
@@ -20,6 +21,7 @@ export const useJsRootCanvas = (redrawParam: string) => {
 	useEffect(() => {
 		// Update isVisible if more than 30% of containerEl is visible
 		setIsVisible(visible > 0.3);
+
 		return () => setIsVisible(false);
 	}, [visible]);
 
@@ -57,8 +59,10 @@ export const useJsRootCanvas = (redrawParam: string) => {
 				if (old) return true;
 
 				const obj = updateObject(JSROOT);
+
 				if (!obj) return old;
 				setObj(obj);
+
 				return false;
 			});
 		},

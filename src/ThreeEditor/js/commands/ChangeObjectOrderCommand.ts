@@ -1,7 +1,7 @@
-import { Command } from '../Command';
-import { Editor } from '../Editor.js';
+import { Command, CommandJSON } from '../Command';
+import { YaptideEditor } from '../YaptideEditor.js';
 
-interface ChangeObjectOrderCommandJSON {
+interface ChangeObjectOrderCommandJSON extends CommandJSON {
 	oldIndex: number;
 	newIndex: number;
 	objectUuid: string;
@@ -20,7 +20,7 @@ export class ChangeObjectOrderCommand extends Command {
 	newIndex: number;
 	oldIndex: number;
 	oldSelect: THREE.Object3D | null;
-	constructor(editor: Editor, object: THREE.Object3D, newIndex: number) {
+	constructor(editor: YaptideEditor, object: THREE.Object3D, newIndex: number) {
 		super(editor);
 
 		if (!object.parent) throw new Error('The object does not have a parent.');
@@ -53,6 +53,7 @@ export class ChangeObjectOrderCommand extends Command {
 			return console.warn('ChangeObjectOrderCommand: oldIndex and newIndex are the same.');
 
 		const element = this.parent.children.splice(oldIndex, 1)[0];
+
 		if (element !== this.object) throw new Error('Object not in expected position.');
 
 		this.parent.children.splice(newIndex, 0, this.object);
@@ -63,13 +64,14 @@ export class ChangeObjectOrderCommand extends Command {
 
 	toJSON() {
 		const output: ChangeObjectOrderCommandJSON = {
+			...super.toJSON(),
 			objectUuid: this.object.uuid,
 			oldIndex: this.oldIndex,
 			newIndex: this.newIndex,
 			selectedUuid: this.editor.selected ? this.editor.selected.uuid : ''
 		};
 
-		return { ...super.toJSON(), output };
+		return output;
 	}
 
 	fromJSON(json: ChangeObjectOrderCommandJSON) {

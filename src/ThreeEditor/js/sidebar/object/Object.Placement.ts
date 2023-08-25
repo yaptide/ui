@@ -1,9 +1,10 @@
 import * as THREE from 'three';
-import { Beam, isBeam } from '../../../Simulation/Physics/Beam';
-import { isDetectGeometry } from '../../../Simulation/Detectors/DetectGeometry';
-import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
+
 import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
 import { createRowParamNumberXYZ, hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
+import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
+import { isDetector } from '../../../Simulation/Detectors/Detector';
+import { Beam, isBeam } from '../../../Simulation/Physics/Beam';
 import { isWorldZone } from '../../../Simulation/Zones/WorldZone/WorldZone';
 import {
 	SetBeamDirectionCommand,
@@ -12,8 +13,8 @@ import {
 	SetRotationCommand,
 	SetValueCommand
 } from '../../commands/Commands';
-import { Editor } from '../../Editor';
 import { UINumber, UIRow } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectPlacement extends ObjectAbstract {
@@ -35,7 +36,7 @@ export class ObjectPlacement extends ObjectAbstract {
 	directionY: UINumber;
 	directionZ: UINumber;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Placement');
 
 		[this.positionRow, this.positionX, this.positionY, this.positionZ] =
@@ -79,9 +80,11 @@ export class ObjectPlacement extends ObjectAbstract {
 
 	setObject(object: SimulationElement | Beam): void {
 		super.setObject(object);
+
 		if (!object) return;
 
 		this.object = object;
+
 		if (this.hasPosition(object)) {
 			showUIElement(this.positionRow, 'grid');
 			this.positionX.setValue(object.position.x);
@@ -90,6 +93,7 @@ export class ObjectPlacement extends ObjectAbstract {
 		} else {
 			hideUIElement(this.positionRow);
 		}
+
 		if (this.hasRotation(object)) {
 			showUIElement(this.rotationRow, 'grid');
 			this.rotationX.setValue(object.rotation.x * THREE.MathUtils.RAD2DEG);
@@ -98,6 +102,7 @@ export class ObjectPlacement extends ObjectAbstract {
 		} else {
 			hideUIElement(this.rotationRow);
 		}
+
 		if (this.hasDirection(object)) {
 			showUIElement(this.directionRow, 'grid');
 			this.directionX.setValue(object.direction.x);
@@ -110,36 +115,43 @@ export class ObjectPlacement extends ObjectAbstract {
 
 	update(): void {
 		const { object, editor } = this;
+
 		if (!object) return;
+
 		if (this.hasPosition(object)) {
 			const newPosition = new THREE.Vector3(
 				this.positionX.getValue(),
 				this.positionY.getValue(),
 				this.positionZ.getValue()
 			);
+
 			if (object.position.distanceTo(newPosition) >= 0.01) {
 				if (isWorldZone(object))
 					this.editor.execute(new SetValueCommand(editor, object, 'center', newPosition));
-				else if (isDetectGeometry(object))
+				else if (isDetector(object))
 					this.editor.execute(new SetDetectPositionCommand(editor, object, newPosition));
 				else this.editor.execute(new SetPositionCommand(editor, object, newPosition));
 			}
 		}
+
 		if (this.hasRotation(object)) {
 			const newRotation = new THREE.Euler(
 				this.rotationX.getValue() * THREE.MathUtils.DEG2RAD,
 				this.rotationY.getValue() * THREE.MathUtils.DEG2RAD,
 				this.rotationZ.getValue() * THREE.MathUtils.DEG2RAD
 			);
+
 			if (!newRotation.equals(object.rotation))
 				this.editor.execute(new SetRotationCommand(editor, object, newRotation));
 		}
+
 		if (this.hasDirection(object)) {
 			const newDirection = new THREE.Vector3(
 				this.directionX.getValue(),
 				this.directionY.getValue(),
 				this.directionZ.getValue()
 			);
+
 			if (!newDirection.equals(object.direction))
 				this.editor.execute(new SetBeamDirectionCommand(editor, newDirection));
 		}

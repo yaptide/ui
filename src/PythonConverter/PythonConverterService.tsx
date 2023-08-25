@@ -1,10 +1,11 @@
-import React, { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import * as Comlink from 'comlink';
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+
 import { createGenericContext } from '../services/GenericContext';
-import { PythonWorker } from './PythonWorker';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { SimulationInputFiles } from '../types/ResponseTypes';
 import { SimulatorType } from '../types/RequestTypes';
+import { SimulationInputFiles } from '../types/ResponseTypes';
+import { PythonWorker } from './PythonWorker';
 
 declare global {
 	interface Window {
@@ -13,7 +14,7 @@ declare global {
 	}
 }
 export interface PythonConverterProps {
-	children: ReactNode;
+	children?: ReactNode;
 	loadPyodide?: any;
 	onLoad?: (pyodide: any) => void;
 }
@@ -42,12 +43,13 @@ const PythonConverter = (props: PythonConverterProps) => {
 		workerRef.current = Comlink.wrap<PythonWorker>(
 			new Worker(new URL('./PythonWorker.ts', import.meta.url))
 		);
+
 		workerRef.current.initPyodide(
 			Comlink.proxy(() => {
-				console.log('PythonConverter: callback from worker');
 				document.dispatchEvent(new CustomEvent(PYODIDE_LOADED));
 			})
 		);
+
 		return () => {
 			workerRef.current?.close();
 		};
@@ -65,6 +67,7 @@ const PythonConverter = (props: PythonConverterProps) => {
 		};
 
 		document.addEventListener(PYODIDE_LOADED, handleLoad);
+
 		return () => {
 			document.removeEventListener(PYODIDE_LOADED, handleLoad);
 		};
@@ -86,4 +89,4 @@ const PythonConverter = (props: PythonConverterProps) => {
 	);
 };
 
-export { usePythonConverter, PythonConverter as PythonConverterService };
+export { PythonConverter as PythonConverterService, usePythonConverter };

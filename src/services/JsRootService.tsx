@@ -1,6 +1,7 @@
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import makeAsyncScriptLoader from 'react-async-script';
-import { createGenericContext } from './GenericContext';
+
+import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 
 // submodule copy of JSROOT v6.3.4
 // https://github.com/root-project/jsroot/tree/6.3.4
@@ -14,20 +15,16 @@ declare global {
 	}
 }
 
-export interface JsRootProps extends Partial<JsRootWindow> {
-	children: ReactNode;
-}
-
 export type JsRootWindow = Pick<Window, typeof JsRootKey>;
 
 const [useJSROOT, JsRootContextProvider] = createGenericContext<JsRootWindow>();
 
-const JsRoot = (props: JsRootProps) => {
+const JsRoot = ({ children, JSROOT }: GenericContextProviderProps<Partial<JsRootWindow>>) => {
 	const [value, setValue] = useState<JsRootWindow>();
 	const painterScript = useRef<HTMLScriptElement>();
 
 	useEffect(() => {
-		if (!props.JSROOT || painterScript.current) return;
+		if (!JSROOT || painterScript.current) return;
 
 		const script = document.createElement('script');
 
@@ -37,11 +34,13 @@ const JsRoot = (props: JsRootProps) => {
 		const handler = {
 			set: function (obj: object, prop: PropertyKey, value: any) {
 				Reflect.set(obj, prop, value);
+
 				if (prop === 'Painter') {
 					// detect JSROOT.Painter loaded
 					setValue({ JSROOT: window.JSROOT });
 					painterScript.current = script;
 				}
+
 				return true;
 			}
 		};
@@ -49,7 +48,7 @@ const JsRoot = (props: JsRootProps) => {
 		window.JSROOT = proxyJsRoot;
 
 		document.body.appendChild(script);
-	}, [props.JSROOT]);
+	}, [JSROOT]);
 
 	useEffect(() => {
 		return () => {
@@ -60,15 +59,11 @@ const JsRoot = (props: JsRootProps) => {
 		};
 	}, []);
 
-	return (
-		<JsRootContextProvider value={value}>
-			{value?.JSROOT && props.children}
-		</JsRootContextProvider>
-	);
+	return <JsRootContextProvider value={value}>{value?.JSROOT && children}</JsRootContextProvider>;
 };
 
 const AsyncLoaderJsRoot = makeAsyncScriptLoader(JsRootUrl, {
 	globalName: JsRootKey
 })(JsRoot);
 
-export { useJSROOT, AsyncLoaderJsRoot as JsRootService, JsRootUrl, JsRootKey };
+export { JsRootKey, AsyncLoaderJsRoot as JsRootService, JsRootUrl, useJSROOT };

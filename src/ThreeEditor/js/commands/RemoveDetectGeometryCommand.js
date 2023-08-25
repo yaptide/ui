@@ -1,5 +1,5 @@
-import { Command } from '../Command.js';
-import { DetectGeometry } from '../../Simulation/Detectors/DetectGeometry';
+import { Detector } from '../../Simulation/Detectors/Detector';
+import { Command } from '../Command';
 
 /**
  * @param editor Editor
@@ -17,12 +17,12 @@ export class RemoveDetectGeometryCommand extends Command {
 	}
 
 	execute() {
-		this.editor.detectManager.removeGeometry(this.object);
+		this.editor.detectorManager.removeDetector(this.object);
 		this.editor.deselect();
 	}
 
 	undo() {
-		this.editor.detectManager.addGeometry(this.object);
+		this.editor.detectorManager.addDetector(this.object);
 		this.editor.select(this.object);
 	}
 
@@ -39,6 +39,6 @@ export class RemoveDetectGeometryCommand extends Command {
 
 		this.object =
 			this.editor.objectByUuid(json.object.uuid) ??
-			DetectGeometry.fromJSON(this.editor, json.object);
+			Detector.fromJSON(this.editor, json.object);
 	}
 }

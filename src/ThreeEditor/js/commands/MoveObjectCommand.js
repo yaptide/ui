@@ -1,4 +1,4 @@
-import { Command } from '../Command.js';
+import { Command } from '../Command';
 
 /**
  * @param editor Editor
@@ -73,14 +73,15 @@ class MoveObjectCommand extends Command {
 
 		this.object = this.editor.objectByUuid(json.objectUuid);
 		this.oldParent = this.editor.objectByUuid(json.oldParentUuid);
+
 		if (this.oldParent === undefined) {
-			this.oldParent = this.editor.scene;
+			this.oldParent = this.editor.figureManager;
 		}
 
 		this.newParent = this.editor.objectByUuid(json.newParentUuid);
 
 		if (this.newParent === undefined) {
-			this.newParent = this.editor.scene;
+			this.newParent = this.editor.figureManager;
 		}
 
 		this.newIndex = json.newIndex;

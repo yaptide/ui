@@ -1,4 +1,4 @@
-import { Command } from '../Command.js';
+import { Command } from '../Command';
 
 /**
  * @param editor Editor
@@ -16,35 +16,31 @@ export class SetDetectTypeCommand extends Command {
 		this.updatable = true;
 
 		this.object = object;
-		this.oldType = object.detectType;
+		this.oldType = object.detectorType;
 		this.newType = newType;
 	}
 
 	execute() {
-		this.object.detectType = this.newType;
+		this.object.detectorType = this.newType;
 		this.editor.signals.geometryChanged.dispatch(this.object);
 		this.editor.signals.detectTypeChanged.dispatch(this.object);
 		this.editor.signals.detectGeometryChanged.dispatch(this.object);
-		this.editor.signals.objectChanged.dispatch(this.object, 'detectType');
+		this.editor.signals.objectChanged.dispatch(this.object, 'detectorType');
 		this.editor.signals.sceneGraphChanged.dispatch(this.object);
 	}
 
 	undo() {
-		let tmp = this.object.detectType;
-		this.object.detectType = this.oldType;
-		this.newType = this.oldType;
-		this.oldType = tmp;
+		this.object.detectorType = this.oldType;
 
-		this.editor.select(this.object);
 		this.editor.signals.geometryChanged.dispatch(this.object);
 		this.editor.signals.detectTypeChanged.dispatch(this.object);
 		this.editor.signals.detectGeometryChanged.dispatch(this.object);
-		this.editor.signals.objectChanged.dispatch(this.object, 'detectType');
+		this.editor.signals.objectChanged.dispatch(this.object, 'detectorType');
 		this.editor.signals.sceneGraphChanged.dispatch(this.object);
 	}
 
 	update(cmd) {
-		this.newGeometry = cmd.newGeometry;
+		this.newType = cmd.newType;
 	}
 
 	toJSON() {

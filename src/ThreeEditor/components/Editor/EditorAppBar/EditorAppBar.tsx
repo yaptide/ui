@@ -3,24 +3,21 @@ import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import RedoIcon from '@mui/icons-material/Redo';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 import UndoIcon from '@mui/icons-material/Undo';
-import { CircularProgress } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useLoader } from '../../../../services/DataLoaderService';
-import { saveString } from '../../../../util/File';
-import { Editor } from '../../../js/Editor';
-import { NewProjectDialog } from '../../Dialog/NewProjectDialog';
-import { OpenFileDialog } from '../../Dialog/OpenFileDialog';
-import { SaveFileDialog } from '../../Dialog/SaveFileDialog';
-import { EditorToolbar } from './EditorToolbar/EditorToolbar';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { useDialog } from '../../../../services/DialogService';
+import { useLoader } from '../../../../services/LoaderService';
+import { YaptideEditor } from '../../../js/YaptideEditor';
+import { EditorTitleBar } from './components/EditorTitlebar';
+import { EditorToolbar } from './components/EditorToolbar';
 
 type AppBarProps = {
-	editor?: Editor;
+	editor?: YaptideEditor;
 };
 
 type AppBarOptions = {
@@ -32,16 +29,12 @@ type AppBarOptions = {
 };
 
 function EditorAppBar({ editor }: AppBarProps) {
-	const { loadFromUrl } = useLoader();
-
-	const [newProjectDialogOpen, setNewProjectDialogOpen] = useState(false);
-	const [openFileDialogOpen, setOpenFileDialogOpen] = useState(false);
-	const [saveFileDialogOpen, setSaveFileDialogOpen] = useState(false);
-	const [title, setTitle] = useState<string>(editor?.config.getKey('project/title'));
-	const [canUndo, setCanUndo] = React.useState((editor?.history.undos.length ?? 0) > 0);
-	const [canRedo, setCanRedo] = React.useState((editor?.history.redos.length ?? 0) > 0);
-	const [saving, setSaving] = React.useState(false);
-	const [urlInPath, setUrlInPath] = useState<string>();
+	const { loadFromJson, loadFromFiles, loadFromUrl, loadFromJsonString } = useLoader();
+	const [openTheOpenFileDialog] = useDialog('openFile');
+	const [openTheSaveFileDialog] = useDialog('saveFile');
+	const [openTheNewProjectDialog] = useDialog('newProject');
+	const [canUndo, setCanUndo] = useState((editor?.history.undos.length ?? 0) > 0);
+	const [canRedo, setCanRedo] = useState((editor?.history.redos.length ?? 0) > 0);
 
 	const updateHistoryButtons = useCallback(() => {
 		setCanUndo((editor?.history.undos.length ?? 0) > 0);
@@ -49,54 +42,13 @@ function EditorAppBar({ editor }: AppBarProps) {
 	}, [editor]);
 
 	useEffect(() => {
-		let path = '';
-		if (editor) {
-			path = window.location.href.split('?')[1];
-			if (path && path !== urlInPath) {
-				loadFromUrl(path);
-				setUrlInPath(path);
-			}
-		}
-	}, [editor, loadFromUrl, urlInPath]);
-
-	const startSave = useCallback(() => {
-		setSaving(true);
-	}, []);
-
-	const stopSave = useCallback(() => {
-		setTimeout(() => setSaving(false), 700);
-	}, []);
-
-	useEffect(() => {
 		editor?.signals.historyChanged.add(updateHistoryButtons);
-		editor?.signals.titleChanged.add(setTitle);
-		editor?.signals.savingStarted.add(startSave);
-		editor?.signals.savingFinished.add(stopSave);
+
 		return () => {
 			editor?.signals.historyChanged.remove(updateHistoryButtons);
-			editor?.signals.titleChanged.remove(setTitle);
-			editor?.signals.savingStarted.remove(startSave);
-			editor?.signals.savingFinished.remove(stopSave);
 		};
-	}, [editor, updateHistoryButtons, setTitle, startSave, stopSave]);
+	}, [editor, updateHistoryButtons]);
 
-	const openFile = (files: FileList) => {
-		if (editor) editor.loader.loadFiles(files);
-		else console.warn('EditorAppBar.tsx: openFile: editor or fileInput.current.files is null');
-	};
-
-	const saveJson = (data: {}, fileName: string) => {
-		let output = undefined;
-		try {
-			output = JSON.stringify(data, null, '\t');
-			output = output.replace(/[\n\t]+([\d.e\-[\]]+)/g, '$1');
-			saveString(output, `${fileName}.json`);
-		} catch (e) {
-			console.warn('Could not regex output. Saving without regex...', e);
-			output = JSON.stringify(data);
-			saveString(output, `${fileName}.json`);
-		}
-	};
 	const ToolbarButton = ({ label, icon, onClick, disabled, edge }: AppBarOptions) => (
 		<Tooltip title={label}>
 			<IconButton
@@ -111,6 +63,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 			</IconButton>
 		</Tooltip>
 	);
+
 	const leftSideOptions = useMemo(
 		() =>
 			[
@@ -118,13 +71,19 @@ function EditorAppBar({ editor }: AppBarProps) {
 					label: 'New',
 					icon: <FiberNewIcon />,
 					disabled: false,
-					onClick: () => setNewProjectDialogOpen(true)
+					onClick: () => openTheNewProjectDialog()
 				},
 				{
 					label: 'Open',
 					icon: <FolderOpenIcon />,
 					disabled: false,
-					onClick: () => setOpenFileDialogOpen(true)
+					onClick: () =>
+						openTheOpenFileDialog({
+							loadFromFiles,
+							loadFromJson,
+							loadFromUrl,
+							loadFromJsonString
+						})
 				},
 				{
 					label: 'Undo (ctrl+z)',
@@ -136,7 +95,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 					label: 'Save as',
 					icon: <SaveAsIcon />,
 					disabled: false,
-					onClick: () => setSaveFileDialogOpen(true)
+					onClick: () => openTheSaveFileDialog()
 				},
 				{
 					label: 'Redo (ctrl+y)',
@@ -151,7 +110,18 @@ function EditorAppBar({ editor }: AppBarProps) {
 					<ToolbarButton {...option} />
 				</Box>
 			)),
-		[editor, canRedo, canUndo]
+		[
+			canUndo,
+			canRedo,
+			openTheNewProjectDialog,
+			openTheOpenFileDialog,
+			loadFromFiles,
+			loadFromJson,
+			loadFromUrl,
+			loadFromJsonString,
+			editor?.history,
+			openTheSaveFileDialog
+		]
 	);
 
 	return (
@@ -160,51 +130,11 @@ function EditorAppBar({ editor }: AppBarProps) {
 			color='secondary'>
 			<Toolbar>
 				{leftSideOptions}
-				<Typography
-					variant='subtitle1'
-					component='div'
-					align='center'
-					sx={{
-						width: 'auto',
-						flexGrow: 1,
-						flexShrink: 1,
-						textOverflow: 'ellipsis',
-						overflow: 'hidden',
-						whiteSpace: 'nowrap'
-					}}>
-					{title}
-					{saving && (
-						<CircularProgress
-							size={18}
-							sx={{ ml: 1, position: 'absolute', top: '33%', color: 'inherit' }}
-						/>
-					)}
-				</Typography>
+				<EditorTitleBar />
 				<EditorToolbar editor={editor} />
 			</Toolbar>
-			<NewProjectDialog
-				open={newProjectDialogOpen}
-				onCancel={() => setNewProjectDialogOpen(false)}
-				onConfirm={() => {
-					editor?.clear();
-					setNewProjectDialogOpen(false);
-				}}
-			/>
-			<OpenFileDialog
-				open={openFileDialogOpen}
-				onClose={() => setOpenFileDialogOpen(false)}
-				onFileSelected={openFile}
-				onUrlSubmitted={loadFromUrl}
-			/>
-			{editor && (
-				<SaveFileDialog
-					open={saveFileDialogOpen}
-					onClose={() => setSaveFileDialogOpen(false)}
-					onConfirm={saveJson}
-					editor={editor!}
-				/>
-			)}
 		</AppBar>
 	);
 }
+
 export default EditorAppBar;

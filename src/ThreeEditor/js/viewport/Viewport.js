@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
+
 import {
 	SetPositionCommand,
 	SetRotationCommand,
@@ -36,13 +37,21 @@ export function Viewport(
 		clipPlane,
 		planePosLabel,
 		planeHelperColor,
-		showPlaneHelpers = true,
+		showPlaneHelpers = false,
 		gridRotation
 	} = {}
 ) {
 	this.name = name;
 
-	const { scene, zoneManager, detectManager, sceneHelpers, signals, contextManager } = editor;
+	const {
+		figureManager: scene,
+		zoneManager,
+		detectorManager,
+		sceneHelpers,
+		specialComponentsManager,
+		signals,
+		contextManager
+	} = editor;
 
 	const config = {
 		selectFigures: true,
@@ -106,6 +115,7 @@ export function Viewport(
 	viewHelper.disabled = orthographic;
 
 	let viewClipPlane = null;
+
 	if (clipPlane) {
 		viewClipPlane = new ViewportClippedViewCSG(
 			name,
@@ -144,23 +154,25 @@ export function Viewport(
 
 		renderer.clear();
 
-		if (!clipPlane) {
+		if (clipPlane) renderer.render(viewClipPlane.scene, camera);
+		else {
+			renderer.render(detectorManager, camera);
+
 			renderer.render(scene, camera);
 
-			renderer.render(zoneManager, camera);
+			renderer.render(specialComponentsManager, camera);
 
-			renderer.render(detectManager, camera);
+			renderer.render(zoneManager, camera);
 		}
 
-		if (clipPlane) renderer.render(viewClipPlane.scene, camera);
-
-		planeHelpers.visible = showPlaneHelpers ?? false;
+		planeHelpers.visible = showPlaneHelpers;
 
 		callWithHidden(viewClipPlane?.planeHelper, () => {
 			renderer.render(sceneHelpers, camera);
 		});
 
 		renderer.render(sceneViewHelpers, camera);
+
 		viewHelper.render(renderer);
 
 		renderer.autoClear = true;
@@ -199,8 +211,6 @@ export function Viewport(
 			if (helper !== undefined && helper.isSkeconstonHelper !== true) {
 				helper.update();
 			}
-
-			signals.refreshSidebarObject3D.dispatch(object);
 		}
 
 		render();
@@ -223,12 +233,19 @@ export function Viewport(
 			switch (transformControls.getMode()) {
 				case 'translate':
 					if (!objectPositionOnDown.equals(object.position)) {
-						if (object.isWorldZone)
+						const newPosition = object.position.clone();
+
+						if (object.isWorldZone) {
+							object.center = objectPositionOnDown;
+							// we need to set center to old position to preserve it for undo
 							editor.execute(
-								new SetValueCommand(editor, object, 'center', object.position)
+								new SetValueCommand(editor, object, 'center', newPosition)
 							);
-						else
-							editor.execute(new SetPositionCommand(editor, object, object.position));
+						} else {
+							object.position.copy(objectPositionOnDown);
+							// we need to set position to old position to preserve it for undo
+							editor.execute(new SetPositionCommand(editor, object, newPosition));
+						}
 					}
 
 					break;
@@ -269,6 +286,7 @@ export function Viewport(
 			case 'Shift': // Shift
 				transformControls.setTranslationSnap(1);
 				transformControls.setRotationSnap(THREE.MathUtils.degToRad(15));
+
 				break;
 
 			default:
@@ -280,6 +298,7 @@ export function Viewport(
 			case 'Shift': // Shift
 				transformControls.setTranslationSnap(null);
 				transformControls.setRotationSnap(null);
+
 				break;
 
 			default:
@@ -310,6 +329,7 @@ export function Viewport(
 
 	function getMousePosition(dom, x, y) {
 		const rect = dom.getBoundingClientRect();
+
 		return [(x - rect.left) / rect.width, (y - rect.top) / rect.height];
 	}
 
@@ -413,6 +433,7 @@ export function Viewport(
 					return false;
 			}
 		}
+
 		// Check if object can be transformed.
 		// For our usage it would be only geometries included on the scene.
 		// Amount of geometries can differ form project to project thus we check only if it isn't mesh.
@@ -431,7 +452,6 @@ export function Viewport(
 	controls.screenSpacePanning = false;
 	controls.addEventListener('change', () => {
 		signals.cameraChanged.dispatch(camera);
-		signals.refreshSidebarObject3D.dispatch(camera);
 	});
 	viewHelper.controls = controls;
 
@@ -516,6 +536,7 @@ export function Viewport(
 
 	this.setCameraFromUuid = uuid => {
 		const newCam = cameras.find(e => e.uuid === uuid);
+
 		if (newCam) this.camera = newCam;
 		else console.error(`No camera with uuid: [${uuid}] in this viewport`);
 	};
@@ -525,6 +546,7 @@ export function Viewport(
 			cameraMatrix: camera.matrix.toArray(),
 			clipPlane: viewClipPlane?.configurationToJson()
 		};
+
 		return configJson;
 	};
 

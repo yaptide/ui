@@ -26,5 +26,6 @@ export function createRowSelect({ text = 'Label', options = [], value, update })
 
 	row.add(label);
 	row.add(select);
+
 	return [row, select, label];
 }

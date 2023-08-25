@@ -23,6 +23,7 @@ export class CounterMap<K extends string> {
 		const lastCount = this.map.get(key) ?? 0;
 		const newValue = lastCount + 1;
 		this.map.set(key, newValue);
+
 		return newValue;
 	}
 
@@ -35,8 +36,7 @@ export class CounterMap<K extends string> {
 				key: key
 			});
 		const newValue = lastCount - 1;
-		if (newValue === 0) this.map.delete(key);
-		else this.map.set(key, newValue);
+		this.map.set(key, newValue);
 
 		return newValue;
 	}
@@ -58,6 +58,7 @@ export class CounterMap<K extends string> {
 		this.map.forEach((value, key) => {
 			if (value > 0) json[key] = value;
 		});
+
 		return json;
 	}
 
@@ -65,8 +66,10 @@ export class CounterMap<K extends string> {
 		for (const key in json) {
 			this.map.set(key, json[key]);
 		}
+
 		return this;
 	}
+
 	clear() {
 		this.map.clear();
 	}

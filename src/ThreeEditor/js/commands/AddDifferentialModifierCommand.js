@@ -1,6 +1,6 @@
-import { Command } from '../Command.js';
 import { DifferentialModifier } from '../../Simulation/Scoring/ScoringQtyModifiers';
 import { ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
+import { Command } from '../Command';
 
 export class AddDifferentialModifierCommand extends Command {
 	/**
@@ -16,6 +16,7 @@ export class AddDifferentialModifierCommand extends Command {
 
 		this.object = object;
 		this.modifier = modifier;
+
 		if (this.modifier) this.oldModifier = object.getModifierByUuid(modifier.uuid);
 		this.name = modifier ? `Update DifferentialModifier` : `Create DifferentialModifier`;
 	}
@@ -43,6 +44,7 @@ export class AddDifferentialModifierCommand extends Command {
 
 		output.object = this.object.toJSON();
 		output.modifier = this.modifier.toJSON();
+
 		if (this.oldModifier) output.oldModifier = this.oldModifier.toJSON();
 
 		return output;
@@ -51,9 +53,10 @@ export class AddDifferentialModifierCommand extends Command {
 	fromJSON(json) {
 		super.fromJSON(json);
 		this.object =
-			this.editor.detectManager.getGeometryByUuid(json.object.uuid) ??
+			this.editor.detectorManager.getDetectorByUuid(json.object.uuid) ??
 			ScoringQuantity.fromJSON(this.editor, json.object);
 		this.modifier = DifferentialModifier.fromJSON(json.modifier);
+
 		if (json.oldModifier) this.oldModifier = DifferentialModifier.fromJSON(json.oldModifier);
 	}
 }

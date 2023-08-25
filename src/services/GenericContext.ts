@@ -1,15 +1,21 @@
-import React from 'react';
+import { createContext, ReactNode, useContext } from 'react';
+
+export type GenericContextProviderProps<T = {}> = {
+	children?: ReactNode;
+} & T;
 
 export const createGenericContext = <T extends unknown>() => {
 	// Create a context with a generic parameter or undefined
-	const genericContext = React.createContext<T | undefined>(undefined);
+	const genericContext = createContext<T | undefined>(undefined);
 
 	// Check if the value provided to the context is defined or throw an error
 	const useGenericContext = () => {
-		const contextIsDefined = React.useContext(genericContext);
+		const contextIsDefined = useContext(genericContext);
+
 		if (!contextIsDefined) {
 			throw new Error('useGenericContext must be used within a Provider');
 		}
+
 		return contextIsDefined;
 	};
 

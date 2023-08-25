@@ -1,12 +1,11 @@
 import { UIPanel, UIRow } from '../libs/ui.js';
-
 import { MenubarAdd } from './Menubar.Add.js';
 import { MenubarEdit } from './Menubar.Edit.js';
-import { MenubarView } from './Menubar.View.js';
+import { MenubarExamples } from './Menubar.Examples.js';
 import { MenubarFile } from './Menubar.File.js';
 import { MenubarHelp } from './Menubar.Help.js';
 import { MenubarStatus } from './Menubar.Status.js';
-import { MenubarExamples } from './Menubar.Examples.js';
+import { MenubarView } from './Menubar.View.js';
 
 /**
  * @param {string} optionClass
@@ -19,6 +18,7 @@ function createOption(optionClass, optionText, optionClick) {
 	option.setClass(optionClass);
 	option.setTextContent(optionText);
 	option.onClick(optionClick);
+
 	return option;
 }
 
@@ -38,4 +38,4 @@ function Menubar(editor) {
 	return container;
 }
 
-export { Menubar, createOption };
+export { createOption, Menubar };

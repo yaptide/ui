@@ -1,11 +1,12 @@
-import { DetectGeometry } from '../../../Simulation/Detectors/DetectGeometry';
 import { createRowParamNumber, hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
+import { Detector } from '../../../Simulation/Detectors/Detector';
 import { SetDetectGeometryCommand } from '../../commands/Commands';
-import { Editor } from '../../Editor';
 import { UINumber, UIRow } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
 import { ObjectAbstract } from './Object.Abstract';
+
 export class ObjectGrid extends ObjectAbstract {
-	object?: DetectGeometry;
+	object?: Detector;
 
 	xLengthRow: UIRow;
 	xLength: UINumber;
@@ -19,7 +20,7 @@ export class ObjectGrid extends ObjectAbstract {
 	radiusRow: UIRow;
 	radius: UINumber;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Grid');
 
 		[this.xLengthRow, this.xLength] = createRowParamNumber({
@@ -29,6 +30,7 @@ export class ObjectGrid extends ObjectAbstract {
 			max: 1000000,
 			precision: 0
 		});
+
 		[this.yLengthRow, this.yLength] = createRowParamNumber({
 			update: this.update.bind(this),
 			text: `number of bins along Y axis`,
@@ -36,6 +38,7 @@ export class ObjectGrid extends ObjectAbstract {
 			max: 1000000,
 			precision: 0
 		});
+
 		[this.zLengthRow, this.zLength] = createRowParamNumber({
 			update: this.update.bind(this),
 			text: `number of bins along Z axis`,
@@ -43,6 +46,7 @@ export class ObjectGrid extends ObjectAbstract {
 			max: 1000000,
 			precision: 0
 		});
+
 		[this.radiusRow, this.radius] = createRowParamNumber({
 			update: this.update.bind(this),
 			text: `number of bins along the radius`,
@@ -53,16 +57,18 @@ export class ObjectGrid extends ObjectAbstract {
 		this.panel.add(this.xLengthRow, this.yLengthRow, this.zLengthRow, this.radiusRow);
 	}
 
-	setObject(object: DetectGeometry): void {
+	setObject(object: Detector): void {
 		super.setObject(object);
+
 		if (!object) return;
 
 		this.object = object;
-		const { detectType, geometryData } = object;
+		const { detectorType: detectType, geometryParameters: geometryData } = object;
 		hideUIElement(this.xLengthRow);
 		hideUIElement(this.yLengthRow);
 		hideUIElement(this.zLengthRow);
 		hideUIElement(this.radiusRow);
+
 		switch (detectType) {
 			case 'Mesh':
 				showUIElement(this.xLengthRow);
@@ -71,21 +77,26 @@ export class ObjectGrid extends ObjectAbstract {
 				this.xLength.setValue(geometryData.xSegments);
 				this.yLength.setValue(geometryData.ySegments);
 				this.zLength.setValue(geometryData.zSegments);
+
 				break;
 			case 'Cyl':
 				showUIElement(this.zLengthRow);
 				showUIElement(this.radiusRow);
 				this.zLength.setValue(geometryData.zSegments);
 				this.radius.setValue(geometryData.radialSegments);
+
 				break;
 			default:
 				break;
 		}
 	}
+
 	update(): void {
 		const { editor, object } = this;
+
 		if (!object) return;
-		const { detectType } = object;
+		const { detectorType: detectType } = object;
+
 		switch (detectType) {
 			case 'Mesh':
 				editor.execute(
@@ -95,6 +106,7 @@ export class ObjectGrid extends ObjectAbstract {
 						zSegments: this.zLength.getValue()
 					})
 				);
+
 				break;
 			case 'Cyl':
 				editor.execute(
@@ -103,6 +115,7 @@ export class ObjectGrid extends ObjectAbstract {
 						zSegments: this.zLength.getValue()
 					})
 				);
+
 				break;
 			default:
 				break;

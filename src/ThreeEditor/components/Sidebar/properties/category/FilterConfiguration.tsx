@@ -1,20 +1,24 @@
-import { MathUtils, Object3D } from 'three';
-import { Editor } from '../../../../js/Editor';
-import { PropertyField, RulesConfiguration, RulesOutliner } from '../fields/PropertyField';
-import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
-import { PropertiesCategory } from './PropertiesCategory';
 import { Button } from '@mui/material';
-import { DetectFilter, isDetectFilter } from '../../../../Simulation/Scoring/DetectFilter';
-import { Keyword, RULE_DEFAULTS } from '../../../../../types/DetectRuleTypes';
+import { MathUtils, Object3D } from 'three';
+
+import {
+	Keyword,
+	RULE_DEFAULTS
+} from '../../../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetFilterRuleCommand } from '../../../../js/commands/SetFilterRuleCommand';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { isScoringFilter, ScoringFilter } from '../../../../Simulation/Scoring/ScoringFilter';
+import { PropertyField, RulesConfiguration, RulesOutliner } from '../fields/PropertyField';
+import { PropertiesCategory } from './PropertiesCategory';
 
-export function FilterConfiguration(props: { editor: Editor; object: Object3D }) {
+export function FilterConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
-	const { state: watchedObject } = useSmartWatchEditorState(editor, object as DetectFilter);
+	const { state: watchedObject } = useSmartWatchEditorState(editor, object as ScoringFilter);
 
-	const visibleFlag = isDetectFilter(watchedObject);
+	const visibleFlag = isScoringFilter(watchedObject);
 
 	return (
 		<PropertiesCategory
@@ -33,6 +37,7 @@ export function FilterConfiguration(props: { editor: Editor; object: Object3D })
 									operator: RULE_DEFAULTS.Z[0],
 									value: RULE_DEFAULTS.Z[1]
 								};
+
 								editor.execute(
 									new SetFilterRuleCommand(editor, watchedObject.object, ruleJson)
 								);
@@ -75,10 +80,12 @@ export function FilterConfiguration(props: { editor: Editor; object: Object3D })
 										keyword !== watchedObject.selectedRule.keyword
 											? RULE_DEFAULTS[keyword][0]
 											: newValue.operatorSelect;
+
 									const value =
 										keyword !== watchedObject.selectedRule.keyword
 											? RULE_DEFAULTS[keyword][1]
 											: newValue.valueInput;
+
 									editor.execute(
 										new SetFilterRuleCommand(editor, watchedObject.object, {
 											uuid,

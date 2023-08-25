@@ -1,79 +1,42 @@
+import { Signal } from 'signals';
+import * as THREE from 'three';
+
+import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { CounterMap } from '../../../util/CounterMap/CounterMap';
+import { YaptideEditor } from '../../js/YaptideEditor.js';
+import { SimulationElementJSON } from '../Base/SimulationElement';
 import { DEFAULT_MATERIAL_ICRU, MATERIALS } from './materials';
 import SimulationMaterial, {
 	isSimulationMaterial,
 	SimulationMaterialJSON
 } from './SimulationMaterial';
-import * as THREE from 'three';
-import { Editor } from '../../js/Editor.js';
-import { CounterMap } from '../../../util/CounterMap/CounterMap';
 
-export type MaterialManagerJSON = {
-	materials: SimulationMaterialJSON[];
-	selectedMaterials: Record<string, number>;
-};
+export type MaterialManagerJSON = Omit<
+	SimulationElementJSON & {
+		materials: SimulationMaterialJSON[];
+		selectedMaterials: Record<string, number>;
+		metadata: Record<string, string | number>;
+	},
+	never
+>;
 
-export class MaterialManager {
-	private editor: Editor;
-	private prefabMaterials: Record<string, SimulationMaterial>;
-	private customMaterials: Record<string, SimulationMaterial>;
-	materialOptions: Record<string, string>;
-	materials: Record<string, SimulationMaterial>;
-	selectedMaterials: CounterMap<string>;
+export class MaterialManager extends THREE.Object3D implements SimulationPropertiesType {
+	/****************************Private****************************/
+	private readonly metadata = {
+		version: `0.10`, //update this to current YaptideEditor version when format changes
+		type: 'Manager',
+		generator: 'MaterialManager.toJSON'
+	} satisfies Record<string, string | number>;
 
-	constructor(editor: Editor) {
-		this.editor = editor;
-		[this.prefabMaterials, this.materialOptions] = this.createMaterialPrefabs();
-		this.customMaterials = {};
-		this.selectedMaterials = new CounterMap<string>();
+	private editor: YaptideEditor;
+	private signals: {
+		materialChanged: Signal<SimulationMaterial>;
+	};
 
-		const materialsHandler = {
-			get: (target: Record<string, SimulationMaterial>, prop: string) => {
-				let result = target[prop];
-				if (result) return result;
-				result = this.prefabMaterials[prop];
-				if (result) target[prop] = result;
-				else {
-					result = this.defaultMaterial;
-					target[DEFAULT_MATERIAL_ICRU] = result;
-				}
-				return result;
-			},
-			set: (target: Record<string, SimulationMaterial>, prop: string, value: unknown) => {
-				Reflect.set(this.materialOptions, prop, prop);
-				return Reflect.set(target, prop, value);
-			},
-			ownKeys: (target: Record<string, SimulationMaterial>) => {
-				return Array.from(
-					new Set([...Reflect.ownKeys(target), ...Reflect.ownKeys(this.prefabMaterials)])
-				);
-			},
-			has: (target: Record<string, SimulationMaterial>, key: string) => {
-				return key in this.prefabMaterials || key in target;
-			},
-			getOwnPropertyDescriptor(target: Record<string, SimulationMaterial>, key: string) {
-				return {
-					value: this.get(target, key),
-					enumerable: true,
-					configurable: true
-				};
-			}
-		};
+	private managerType: 'MaterialManager' = 'MaterialManager';
 
-		this.materials = new Proxy(this.customMaterials, materialsHandler);
-		this.editor.signals.materialChanged.add(this.onMaterialChanged.bind(this));
-	}
-
-	private onMaterialChanged(material: THREE.Material) {
-		if (isSimulationMaterial(material)) this.customMaterials[material.icru] = material;
-	}
-
-	get defaultMaterial(): SimulationMaterial {
-		let defaultMaterial = this.customMaterials[DEFAULT_MATERIAL_ICRU];
-		if (defaultMaterial) return defaultMaterial;
-		defaultMaterial = this.prefabMaterials[DEFAULT_MATERIAL_ICRU];
-		this.customMaterials[DEFAULT_MATERIAL_ICRU] = defaultMaterial;
-		return defaultMaterial;
-	}
+	private _name: string;
+	private _customMaterials: Record<string, SimulationMaterial> = {};
 
 	private createMaterialPrefabs = () => {
 		const { editor } = this;
@@ -90,22 +53,145 @@ export class MaterialManager {
 			],
 			[{}, {}]
 		);
+
 		return editorMaterials;
 	};
 
+	private prefabMaterials: Record<string, SimulationMaterial>;
+	/***************************************************************/
+
+	/*******************SimulationPropertiesType********************/
+	readonly notRemovable: boolean = true;
+	readonly notMovable = true;
+	readonly notRotatable = true;
+	readonly notScalable = true;
+	readonly flattenOnOutliner = true;
+	readonly isSimulationElement = true;
+	readonly isMaterialsManager: true = true;
+	/***************************************************************/
+
+	/************************MaterialMethods************************/
+	materialOptions: Record<string, string>;
+	get defaultMaterial(): SimulationMaterial {
+		let defaultMaterial = this._customMaterials[DEFAULT_MATERIAL_ICRU];
+
+		if (defaultMaterial) return defaultMaterial;
+		defaultMaterial = this.prefabMaterials[DEFAULT_MATERIAL_ICRU];
+		this._customMaterials[DEFAULT_MATERIAL_ICRU] = defaultMaterial;
+
+		return defaultMaterial;
+	}
+
+	selectedMaterials: CounterMap<string> = new CounterMap<string>();
+
+	getMaterialByUuid(uuid: string): SimulationMaterial | undefined {
+		return Object.values(this._customMaterials).find(material => material.uuid === uuid);
+	}
+	/***************************************************************/
+
+	/*************************ProxyHandling*************************/
+	protected materialsHandler = {
+		get: (target: Record<string, SimulationMaterial>, prop: string) => {
+			let result = target[prop];
+
+			if (result) return result;
+			result = this.prefabMaterials[prop];
+
+			if (result) target[prop] = result;
+			else {
+				result = this.defaultMaterial;
+				target[DEFAULT_MATERIAL_ICRU] = result;
+			}
+
+			return result;
+		},
+		set: (target: Record<string, SimulationMaterial>, prop: string, value: unknown) => {
+			Reflect.set(this.materialOptions, prop, prop);
+
+			return Reflect.set(target, prop, value);
+		},
+		ownKeys: (target: Record<string, SimulationMaterial>) => {
+			return Array.from(
+				new Set([...Reflect.ownKeys(target), ...Reflect.ownKeys(this.prefabMaterials)])
+			);
+		},
+		has: (target: Record<string, SimulationMaterial>, key: string) => {
+			return key in this.prefabMaterials || key in target;
+		},
+		getOwnPropertyDescriptor(target: Record<string, SimulationMaterial>, key: string) {
+			return {
+				value: this.get(target, key),
+				enumerable: true,
+				configurable: true
+			};
+		}
+	};
+
+	protected materialsProxy: Record<string, SimulationMaterial>;
+	get materials(): Record<string, SimulationMaterial> {
+		return this.materialsProxy;
+	}
+	/***************************************************************/
+
+	constructor(editor: YaptideEditor) {
+		super();
+
+		this.editor = editor;
+		this.name = this._name = 'Material Manager';
+
+		[this.prefabMaterials, this.materialOptions] = this.createMaterialPrefabs();
+		this.materialsProxy = new Proxy(this._customMaterials, this.materialsHandler);
+
+		this.signals = editor.signals;
+		this.signals.materialChanged.add(this.onMaterialChanged.bind(this));
+	}
+
+	private onMaterialChanged(material: THREE.Material) {
+		if (isSimulationMaterial(material)) this._customMaterials[material.icru] = material;
+	}
+
+	copy(source: this, recursive?: boolean | undefined) {
+		super.copy(source, recursive);
+
+		return this.fromJSON(source.toJSON());
+	}
+
+	reset(): void {
+		this.selectedMaterials.clear();
+		this._customMaterials = {};
+	}
+
 	toJSON(): MaterialManagerJSON {
+		const { uuid, name, managerType: type, metadata } = this;
 		const selectedMaterials = this.selectedMaterials.toJSON();
-		const materials = Object.entries(this.customMaterials)
+		const materials = Object.entries(this._customMaterials)
 			.map(([_icru, material]) => material.toJSON())
 			.filter(({ uuid }) => this.selectedMaterials.has(uuid));
 
-		return { materials, selectedMaterials };
+		return {
+			uuid,
+			name,
+			type,
+			materials,
+			selectedMaterials,
+			metadata
+		};
 	}
 
-	fromJSON({ materials }: MaterialManagerJSON): void {
-		const { editor } = this;
+	fromJSON(json: MaterialManagerJSON) {
+		const {
+			editor,
+			metadata: { version }
+		} = this;
+		const { uuid, name, materials, metadata } = json;
+
+		if (!metadata || metadata.version !== version)
+			console.warn(`MaterialManager version mismatch: ${metadata?.version} !== ${version}`);
+
+		this.uuid = uuid;
+		this.name = name;
 		Object.assign(
-			this.customMaterials,
+			this._customMaterials,
 			materials.reduce(
 				(prev, json) => ({
 					...prev,
@@ -114,16 +200,9 @@ export class MaterialManager {
 				{}
 			)
 		);
-	}
 
-	getMaterialByUuid(uuid: string): SimulationMaterial | undefined {
-		return Object.values(this.customMaterials).find(material => material.uuid === uuid);
-	}
-
-	reset(): void {
-		console.log('this.selectedMaterials.size(', this.selectedMaterials.size());
-		// console.log('this.customMaterials.size(', this.selectedMaterials.);
-
-		this.customMaterials = {};
+		return this;
 	}
 }
+
+export const isMaterialManager = (x: unknown): x is MaterialManager => x instanceof MaterialManager;

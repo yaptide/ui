@@ -1,5 +1,6 @@
-import { Command } from '../Command.js';
 import { ObjectLoader } from 'three';
+
+import { Command } from '../Command';
 
 /**
  * @param editor Editor
@@ -65,6 +66,7 @@ class SetGeometryCommand extends Command {
 
 		function parseGeometry(data) {
 			const loader = new ObjectLoader();
+
 			return loader.parseGeometries([data])[data.uuid];
 		}
 	}

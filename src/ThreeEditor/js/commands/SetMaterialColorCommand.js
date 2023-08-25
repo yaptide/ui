@@ -1,4 +1,4 @@
-import { Command } from '../Command.js';
+import { Command } from '../Command';
 
 /**
  * @param editor Editor
@@ -32,14 +32,14 @@ class SetMaterialColorCommand extends Command {
 		this.material[this.attributeName].setHex(this.newValue);
 
 		this.editor.signals.materialChanged.dispatch(this.material, this.attributeName);
-		this.editor.signals.materialChanged.dispatch(this.material, this.attributeName);
+		this.editor.signals.objectChanged.dispatch(this.object, 'material');
 	}
 
 	undo() {
 		this.material[this.attributeName].setHex(this.oldValue);
 
 		this.editor.signals.materialChanged.dispatch(this.material, this.attributeName);
-		this.editor.signals.materialChanged.dispatch(this.material, this.attributeName);
+		this.editor.signals.objectChanged.dispatch(this.object, 'material');
 	}
 
 	update(cmd) {

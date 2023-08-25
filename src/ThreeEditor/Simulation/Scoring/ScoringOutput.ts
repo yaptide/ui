@@ -1,30 +1,78 @@
-import { Editor } from '../../js/Editor';
-import { SimulationSceneContainer } from '../Base/SimulationScene';
-import { DetectFilter } from './DetectFilter';
-import { DetectGeometry } from '../Detectors/DetectGeometry';
-import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
+import { Signal } from 'signals';
+import * as THREE from 'three';
 
-export type ScoringOutputJSON = {
-	uuid: string;
-	name: string;
-	quantities: { active: ScoringQuantityJSON[] };
-	detectGeometry?: string;
-	primaries?: number;
-	trace: boolean;
-	traceFilter?: string;
-};
-export class ScoringOutput extends SimulationSceneContainer<ScoringQuantity> {
+import { YaptideEditor } from '../../js/YaptideEditor';
+import { SimulationSceneContainer } from '../Base/SimulationContainer';
+import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
+import { SimulationElementManager } from '../Base/SimulationManager';
+import { Detector } from '../Detectors/Detector';
+import { ScoringFilter } from './ScoringFilter';
+import { isQuantity, ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
+
+export type ScoringOutputJSON = Omit<
+	SimulationElementJSON & {
+		quantities: ScoringQuantityJSON[];
+		detectorUuid?: string;
+		primaries?: number;
+		trace: boolean;
+		traceFilter?: string;
+	},
+	never
+>;
+
+export class QuantityContainer extends SimulationSceneContainer<ScoringQuantity> {
+	children: ScoringQuantity[];
+	readonly isQuantityContainer: true = true;
+	constructor(editor: YaptideEditor) {
+		super(editor, 'Quantities', 'QuantityGroup', json =>
+			new ScoringQuantity(editor).fromJSON(json)
+		);
+		this.children = [];
+	}
+
+	reset() {
+		this.name = 'Quantities';
+		this.clear();
+	}
+
+	duplicate() {
+		const duplicated = new QuantityContainer(this.editor);
+
+		this.children.forEach(child => duplicated.add(child.duplicate()));
+
+		return duplicated;
+	}
+}
+
+export class ScoringOutput
+	extends SimulationElement
+	implements SimulationElementManager<'quantity', ScoringQuantity, 'quantities'>
+{
 	readonly isOutput: true = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
 	readonly notScalable = true;
 	readonly notHidable = true;
-	private _geometry?: string;
+	get notVisibleChildren(): boolean {
+		return this._trace[0];
+	}
+
+	private signals: {
+		objectSelected: Signal<THREE.Object3D>;
+	};
+
+	private _detector?: string;
 	private _primaries: [boolean, number | null];
-	private _disabledChildren: ScoringQuantity[] = [];
 
 	//TODO: Issue#320
 	private _trace: [boolean, string | null];
+
+	quantityContainer: QuantityContainer;
+	geometry: THREE.BufferGeometry | null = null;
+
+	get quantities() {
+		return this.quantityContainer.children;
+	}
 
 	get primaries(): [boolean, number | null] {
 		return [this._primaries[0], this._primaries[0] ? this._primaries[1] : null];
@@ -40,76 +88,82 @@ export class ScoringOutput extends SimulationSceneContainer<ScoringQuantity> {
 
 	set trace(filter: [boolean, string | null]) {
 		this._trace = [filter[0], filter[0] && filter[1] ? filter[1] : this._trace[1]];
-		if (!this._trace[0]) {
-			this._disabledChildren.forEach(qty => this.children.push(qty));
-			this._disabledChildren = [];
-		} else {
-			this.children.forEach(qty => this._disabledChildren.push(qty));
-			this.children = [];
-		}
 	}
 
-	get traceFilter(): DetectFilter | null {
+	get traceFilter(): ScoringFilter | null {
 		return this._trace[0] && this._trace[1]
-			? this.editor.detectManager.getFilterByUuid(this._trace[1])
+			? this.editor.scoringManager.getFilterByUuid(this._trace[1])
 			: null;
 	}
 
-	get geometry(): DetectGeometry | null {
-		if (!this._geometry) return null;
-		return this.editor.detectManager.getGeometryByUuid(this._geometry);
+	getTakenDetector(): string | null {
+		return this._detector ?? null;
 	}
 
-	set geometry(geometry: DetectGeometry | null) {
-		this._geometry = geometry?.uuid;
+	get detector(): Detector | null {
+		if (!this._detector) return null;
+
+		return this.editor.detectorManager.getDetectorByUuid(this._detector);
 	}
 
-	constructor(editor: Editor) {
+	set detector(detector: Detector | null) {
+		this._detector = detector?.uuid;
+		this.geometry =
+			detector?.geometry.clone().translate(...detector.position.toArray()) ?? null;
+		this.signals.objectSelected.dispatch(this);
+	}
+
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Output', 'Output');
 		this.children = [];
 		this.parent = null;
 		this._primaries = [false, 0];
 		this._trace = [false, ''];
+		this.quantityContainer = new QuantityContainer(editor);
+		this.add(this.quantityContainer);
+		this.signals = editor.signals;
 	}
 
+	getQuantityByName(name: string) {
+		return this.quantities.find(qty => qty.name === name) ?? null;
+	}
+
+	/**
+	 * @deprecated Use getQuantityByUuid or getQuantityByName instead
+	 */
+	getObjectById(id: number) {
+		return !this.notVisibleChildren ? this.children.find(qty => qty.id === id) : undefined;
+	}
+
+	/**
+	 * @deprecated Use addQuantity instead
+	 **/
 	createQuantity(): ScoringQuantity {
 		const quantity = new ScoringQuantity(this.editor);
 		this.addQuantity(quantity);
+
 		return quantity;
 	}
 
-	addQuantity(quantity: ScoringQuantity): this {
-		if (this._trace[0]) this._disabledChildren.push(quantity);
-		else this.children.push(quantity);
-		quantity.name = this.getNextFreeName(quantity);
-		quantity.parent = this;
-		this.editor.signals.objectAdded.dispatch(quantity);
-		return this;
+	addQuantity(quantity: ScoringQuantity) {
+		this.quantityContainer.add(quantity);
+		this.editor.select(quantity);
 	}
 
-	removeQuantity(quantity: ScoringQuantity): this {
-		this.children.splice(this.children.indexOf(quantity), 1);
-		this._disabledChildren.splice(this._disabledChildren.indexOf(quantity), 1);
-		quantity.parent = null;
-		this.editor.signals.objectRemoved.dispatch(quantity);
-		return this;
+	removeQuantity(quantity: ScoringQuantity) {
+		this.quantityContainer.remove(quantity);
+		this.editor.select(this);
 	}
 
 	getQuantityByUuid(uuid: string): ScoringQuantity | null {
-		return this.children.find(qty => qty.uuid === uuid) || null;
+		return this.quantities.find(qty => qty.uuid === uuid) ?? null;
 	}
 
 	toJSON(): ScoringOutputJSON {
 		return {
-			name: this.name,
-			uuid: this.uuid,
-			quantities: {
-				active: [
-					...this.children.map(qty => qty.toJSON()),
-					...this._disabledChildren.map(qty => qty.toJSON())
-				]
-			},
-			detectGeometry: this._geometry,
+			...super.toJSON(),
+			quantities: this.quantityContainer.toJSON(),
+			detectorUuid: this._detector,
 			trace: this._trace[0],
 			...(this.primaries[1] && { primaries: this.primaries[1] }),
 			...(this.trace[1] && { traceFilter: this.trace[1] })
@@ -121,18 +175,33 @@ export class ScoringOutput extends SimulationSceneContainer<ScoringQuantity> {
 		this.name = json.name;
 		this._primaries = [json.primaries !== undefined, json.primaries ?? null];
 		this._trace = [json.trace, json.traceFilter ?? null];
-		Object.values(json.quantities)
-			.flat()
-			.forEach(qty => this.addQuantity(ScoringQuantity.fromJSON(this.editor, qty)));
-		this.geometry = json.detectGeometry
-			? this.editor.detectManager.getGeometryByUuid(json.detectGeometry)
+		this.quantityContainer.fromJSON(json.quantities);
+		this.detector = json.detectorUuid
+			? this.editor.detectorManager.getDetectorByUuid(json.detectorUuid)
 			: null;
+
 		return this;
 	}
 
-	static fromJSON(editor: Editor, json: ScoringOutputJSON): ScoringOutput {
+	static fromJSON(editor: YaptideEditor, json: ScoringOutputJSON): ScoringOutput {
 		return new ScoringOutput(editor).fromJSON(json);
+	}
+
+	duplicate(): ScoringOutput {
+		const duplicated = new ScoringOutput(this.editor);
+
+		duplicated.name = this.name;
+		duplicated._primaries = this._primaries;
+		duplicated._trace = this._trace;
+
+		duplicated.quantityContainer = this.quantityContainer.duplicate();
+		duplicated.add(duplicated.quantityContainer);
+
+		return duplicated;
 	}
 }
 
 export const isOutput = (x: unknown): x is ScoringOutput => x instanceof ScoringOutput;
+
+export const isQuantityContainer = (x: unknown): x is QuantityContainer =>
+	x instanceof QuantityContainer;

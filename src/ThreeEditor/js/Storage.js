@@ -1,9 +1,12 @@
+import { devLog } from '../../util/devLog';
+
 function Storage() {
 	const indexedDB =
 		window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
 	if (indexedDB === undefined) {
 		console.warn('Storage: IndexedDB not available.');
+
 		return {
 			init: function () {},
 			get: function () {},
@@ -55,10 +58,7 @@ function Storage() {
 			const objectStore = transaction.objectStore('states');
 			const request = objectStore.put(data, 0);
 			request.onsuccess = function () {
-				console.log(
-					'[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', // eslint-disable-line
-					'Saved state to IndexedDB. ' + (performance.now() - start).toFixed(2) + 'ms'
-				);
+				devLog('Saved state to IndexedDB.', `${(performance.now() - start).toFixed(2)}ms`);
 			};
 		},
 
@@ -69,10 +69,7 @@ function Storage() {
 			const objectStore = transaction.objectStore('states');
 			const request = objectStore.clear();
 			request.onsuccess = function () {
-				console.log(
-					'[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', // eslint-disable-line
-					'Cleared IndexedDB.'
-				);
+				devLog('Cleared IndexedDB.');
 			};
 		}
 	};

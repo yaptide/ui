@@ -1,20 +1,20 @@
-import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
-import { Editor } from '../../../../js/Editor';
-import {
-	BooleanPropertyField,
-	NumberPropertyField,
-	SelectPropertyField
-} from '../fields/PropertyField';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
-import { PropertiesCategory } from './PropertiesCategory';
+import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	ENERGY_MODEL_STRAGGLING,
 	MULTIPLE_SCATTERING,
 	Physics,
 	STOPPING_POWER_TABLE
 } from '../../../../Simulation/Physics/Physics';
+import {
+	BooleanPropertyField,
+	NumberPropertyField,
+	SelectPropertyField
+} from '../fields/PropertyField';
+import { PropertiesCategory } from './PropertiesCategory';
 
-export function PhysicConfiguration(props: { editor: Editor; object: Physics }) {
+export function PhysicConfiguration(props: { editor: YaptideEditor; object: Physics }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);

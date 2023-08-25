@@ -1,7 +1,7 @@
 import { createRowParamInput, createRowText } from '../../../../util/Ui/Uis';
 import { SetValueCommand } from '../../commands/Commands';
-import { Editor } from '../../Editor';
 import { UIInput, UIRow, UIText } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
 import { ObjectAbstract } from './Object.Abstract';
 
 export class ObjectInfo extends ObjectAbstract {
@@ -16,7 +16,7 @@ export class ObjectInfo extends ObjectAbstract {
 	nameRow: UIRow;
 	name: UIInput;
 
-	constructor(editor: Editor) {
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Information');
 		[this.idRow, this.id] = createRowText({ text: 'ID' });
 		[this.typeRow, this.type] = createRowText({ text: 'Type' });
@@ -29,6 +29,7 @@ export class ObjectInfo extends ObjectAbstract {
 
 	setObject(object: THREE.Object3D): void {
 		super.setObject(object);
+
 		if (!object) return;
 
 		this.object = object;

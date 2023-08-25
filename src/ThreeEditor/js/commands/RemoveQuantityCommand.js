@@ -1,9 +1,10 @@
 import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
 import { ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
-import { Command } from '../Command.js';
+import { Command } from '../Command';
+
 export class RemoveQuantityCommand extends Command {
 	/**
-	 * @typedef {import('../Editor.js').Editor} Editor
+	 * @typedef {import('../YaptideEditor.js').YaptideEditor} Editor
 	 * @param {Editor} editor
 	 * @param {ScoringQuantity} object
 	 * @param {ScoringOutput} output
@@ -33,6 +34,7 @@ export class RemoveQuantityCommand extends Command {
 		const output = super.toJSON(this);
 		output.object = this.object.toJSON();
 		output.output = this.output.toJSON();
+
 		return output;
 	}
 
@@ -41,6 +43,7 @@ export class RemoveQuantityCommand extends Command {
 		this.output =
 			this.editor.scoringManager.getOutputByUuid(json.object.uuid) ??
 			new ScoringOutput().fromJSON(json.object);
+
 		this.object =
 			this.output.getQuantityByUuid(json.object.uuid) ??
 			new ScoringQuantity().fromJSON(json.object);

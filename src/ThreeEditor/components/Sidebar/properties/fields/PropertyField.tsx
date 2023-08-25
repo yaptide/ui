@@ -2,7 +2,7 @@ import { Box, Checkbox, Grid, Stack, TextField, Typography } from '@mui/material
 import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Vector2 } from 'three';
 import { Vector3 } from 'three/src/math/Vector3';
-import { Editor } from '../../../../js/Editor';
+
 import {
 	KEYWORD_OPTIONS,
 	KEYWORD_SORT_ORDER,
@@ -10,29 +10,25 @@ import {
 	PARTICLE_OPTIONS,
 	RULE_UNITS,
 	RULE_VALUE_RANGES
-} from '../../../../../types/DetectRuleTypes';
-import { DETECTOR_MODIFIERS_OPTIONS } from '../../../../Simulation/Scoring/ScoringOutputTypes';
-import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
+} from '../../../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
+import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
 import { createRowColor } from '../../../../../util/Ui/Color';
 import { createNumberInput } from '../../../../../util/Ui/Number';
 import {
 	createDifferentialConfigurationRow,
 	createModifiersOutliner,
 	createRuleConfigurationRow,
-	createRulesOutliner
+	createRulesOutliner,
+	FilterRule
 } from '../../../../../util/Ui/PropertiesOutliner';
 import { hideUIElement, showUIElement } from '../../../../../util/Ui/Uis';
-import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { isFloatRule, isIDRule, isIntRule } from '../../../../Simulation/Scoring/FilterRule';
+import { DETECTOR_MODIFIERS_OPTIONS } from '../../../../Simulation/Scoring/ScoringOutputTypes';
+import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
 import { ObjectSelectProperty, ObjectSelectProps } from './ObjectSelectPropertyField';
-import {
-	FilterRule,
-	isFloatRule,
-	isIDRule,
-	isIntRule
-} from '../../../../Simulation/Scoring/DetectRule';
-import { UIColor } from '../../../../js/libs/ui';
 
-export function PropertyField(props: { label?: string; children: React.ReactNode }) {
+export function PropertyField(props: { label?: string; children: ReactNode }) {
 	return (
 		<>
 			{props.label !== undefined && (
@@ -117,6 +113,7 @@ export function NumberInput(props: {
 		input.dom.style.width = '100%';
 		const box = boxRef.current;
 		box.appendChild(input.dom);
+
 		return () => {
 			box?.removeChild(input.dom);
 		};
@@ -146,6 +143,7 @@ export function ColorInput(props: { value: string; onChange: (value: number) => 
 		if (!boxRef.current) return;
 		const box = boxRef.current;
 		box.appendChild(input.dom);
+
 		return () => {
 			box?.removeChild(input.dom);
 		};
@@ -209,9 +207,11 @@ export function Vector3PropertyField(props: XYZPropertyFieldProps) {
 	const onChangeX = (value: number) => {
 		onChange({ ...getValue(), x: value });
 	};
+
 	const onChangeY = (value: number) => {
 		onChange({ ...getValue(), y: value });
 	};
+
 	const onChangeZ = (value: number) => {
 		onChange({ ...getValue(), z: value });
 	};
@@ -262,6 +262,7 @@ export function Vector2PropertyField(props: XYPropertyFieldProps) {
 	const onChangeX = (value: number) => {
 		onChange({ ...getValue(), x: value });
 	};
+
 	const onChangeY = (value: number) => {
 		onChange({ ...getValue(), y: value });
 	};
@@ -354,7 +355,7 @@ export function ConditionalObjectSelectPropertyField(
 interface SelectPropertyFieldProps<T> {
 	label: string;
 	value: T | null;
-	options: T[];
+	options: readonly T[];
 	onChange: (value: T) => void;
 	getOptionLabel?: (option: T) => string;
 	isOptionEqualToValue?: (option: T, value: T) => boolean;
@@ -379,7 +380,7 @@ export function SelectPropertyField<T>(props: SelectPropertyFieldProps<T>) {
 }
 
 export function ModifiersOutliner(props: {
-	editor: Editor;
+	editor: YaptideEditor;
 	value: string | null;
 	options: DifferentialModifier[];
 	onChange: (value: string) => void;
@@ -400,6 +401,7 @@ export function ModifiersOutliner(props: {
 		const input = inputRef.current;
 		const box = boxRef.current;
 		box.appendChild(input.dom);
+
 		return () => {
 			box?.removeChild(input.dom);
 		};
@@ -505,6 +507,7 @@ export function DifferentialConfiguration(props: {
 		const input = inputRef.current.modifierRow;
 		const box = boxRef.current;
 		box.appendChild(input.dom);
+
 		return () => {
 			box?.removeChild(input.dom);
 		};
@@ -565,7 +568,7 @@ export function DifferentialConfigurationField(props: DifferentialConfigurationF
 }
 
 export function RulesOutliner(props: {
-	editor: Editor;
+	editor: YaptideEditor;
 	value: string | null;
 	options: FilterRule[];
 	onChange: (value: string) => void;
@@ -586,6 +589,7 @@ export function RulesOutliner(props: {
 		const input = inputRef.current;
 		const box = boxRef.current;
 		box.appendChild(input.dom);
+
 		return () => {
 			box?.removeChild(input.dom);
 		};
@@ -620,22 +624,28 @@ export function RulesConfiguration(props: {
 	const getRuleValue = (rule: FilterRule) => {
 		const { idSelectField, valueInputField } = inputRef.current;
 		let value;
+
 		switch (true) {
 			case isIDRule(rule):
 				value = parseInt(idSelectField.getValue());
+
 				break;
 			case isFloatRule(rule):
 				value = valueInputField.getValue();
+
 				break;
 			case isIntRule(rule):
 				value = Math.floor(valueInputField.getValue());
+
 				break;
 			default:
 				console.warn('Unknown rule type');
 				value = 0;
 		}
+
 		return isNaN(value) ? valueInputField.min : value;
 	};
+
 	// TODO: Update when props change
 	const inputRef = useRef(
 		(() => {
@@ -688,23 +698,29 @@ export function RulesConfiguration(props: {
 			};
 		})()
 	);
+
 	const updateRule = useCallback((rule: FilterRule) => {
 		const { keywordSelectField, operatorSelectField, idSelectField, valueInputField } =
 			inputRef.current;
 		keywordSelectField.setValue(rule.keyword);
 		operatorSelectField.setValue(rule.operator);
 		idSelectField.setValue(rule.value.toString());
+
 		if (isIDRule(rule)) {
 			showUIElement(idSelectField);
 			hideUIElement(valueInputField);
 		} else {
 			hideUIElement(idSelectField);
 			showUIElement(valueInputField);
-			valueInputField.setUnit(RULE_UNITS[rule.keyword]);
-			valueInputField.setRange(...RULE_VALUE_RANGES[rule.keyword]);
+			valueInputField.setUnit(RULE_UNITS[rule.keyword as keyof typeof RULE_UNITS]);
+			valueInputField.setRange(
+				...RULE_VALUE_RANGES[rule.keyword as keyof typeof RULE_VALUE_RANGES]
+			);
+
 			if (isFloatRule(rule)) valueInputField.setPrecision(3);
 			else valueInputField.setPrecision(0);
 		}
+
 		valueInputField.setValue(rule.value);
 	}, []);
 
@@ -713,6 +729,7 @@ export function RulesConfiguration(props: {
 		const input = inputRef.current.modifierRow;
 		const box = boxRef.current;
 		box.appendChild(input.dom);
+
 		return () => {
 			box?.removeChild(input.dom);
 		};

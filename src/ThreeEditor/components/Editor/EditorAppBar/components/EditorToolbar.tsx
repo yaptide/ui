@@ -3,7 +3,8 @@ import ThreeSixtyIcon from '@mui/icons-material/ThreeSixty';
 import TransformIcon from '@mui/icons-material/Transform';
 import { Box, Divider, IconButton, styled, Tooltip } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Editor } from '../../../../js/Editor';
+
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 
 enum Tool {
 	SELECT,
@@ -20,7 +21,7 @@ const ToolStrings = {
 };
 
 type EditorToolbarProps = {
-	editor?: Editor;
+	editor?: YaptideEditor;
 };
 
 export function EditorToolbar({ editor }: EditorToolbarProps) {
@@ -47,6 +48,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 		],
 		[]
 	);
+
 	const setTransformTool = useCallback(
 		(tool: string) => {
 			setTool(Object.values(ToolStrings).indexOf(tool) as Tool);
@@ -58,6 +60,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 		if (editor) {
 			editor.signals.transformModeChanged.add(setTransformTool);
 		}
+
 		return () => editor?.signals.transformModeChanged.remove(setTransformTool);
 	}, [editor, setTransformTool]);
 
@@ -68,6 +71,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 	const SelectedButton = styled(IconButton)({
 		backgroundColor: 'rgba(255, 255, 255, 0.08)'
 	});
+
 	return (
 		<>
 			<Divider

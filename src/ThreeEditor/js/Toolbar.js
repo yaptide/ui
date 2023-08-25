@@ -1,4 +1,4 @@
-import { UIPanel, UIButton, UICheckbox } from './libs/ui.js';
+import { UIButton, UICheckbox, UIPanel } from './libs/ui.js';
 
 function Toolbar(editor) {
 	const { signals } = editor;
@@ -61,15 +61,19 @@ function Toolbar(editor) {
 		switch (mode) {
 			case 'translate':
 				translate.dom.classList.add('selected');
+
 				break;
 			case 'rotate':
 				rotate.dom.classList.add('selected');
+
 				break;
 			case 'scale':
 				scale.dom.classList.add('selected');
+
 				break;
 			default:
 				console.error(mode, "isn't supported");
+
 				break;
 		}
 	});

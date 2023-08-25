@@ -1,5 +1,7 @@
+import { devLog } from '../../util/devLog';
+
 function Config() {
-	let name = 'threejs-editor';
+	let name = 'yaptide-config';
 
 	let storage = {
 		'language': 'en',
@@ -71,6 +73,7 @@ function Config() {
 				let key = arguments[i];
 				let value = arguments[i + 1];
 				storage[key] = value;
+
 				if (listeners[key] === undefined) listeners[key] = [];
 				listeners[key].forEach(listener => {
 					listener(value);
@@ -78,11 +81,7 @@ function Config() {
 			}
 
 			window.localStorage[name] = JSON.stringify(storage);
-
-			console.log(
-				'[' + /\d\d\:\d\d\:\d\d/.exec(new Date())[0] + ']', // eslint-disable-line
-				'Saved config to LocalStorage.'
-			);
+			devLog('Saved config to LocalStorage.');
 		},
 
 		clear: function () {

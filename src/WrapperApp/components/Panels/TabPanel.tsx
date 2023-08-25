@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
 import { css } from '@emotion/css';
 import { Box, Theme, useTheme } from '@mui/material';
 import { BoxProps } from '@mui/system';
+import { CSSProperties, ReactNode, useEffect, useState } from 'react';
 
 interface TabPanelProps extends BoxProps {
-	children?: React.ReactNode;
+	children?: ReactNode;
 	index: string | number;
 	value?: string | number;
 	persistent?: boolean;
 	persistentIfVisited?: boolean;
-	customCss?: React.CSSProperties;
+	customCss?: CSSProperties;
 }
 
-const tabPanelCss = (theme: Theme, customCss?: React.CSSProperties) =>
+const tabPanelCss = (theme: Theme, customCss?: CSSProperties) =>
 	css({
 		display: 'flex',
 		flexGrow: 1,

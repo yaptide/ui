@@ -1,25 +1,33 @@
 import { Button } from '@mui/material';
-import { CustomDialog } from './CustomDialog';
 
-export type ClearHistoryProps = {
-	open: boolean;
-	onCancel: () => void;
-	onConfirm: () => void;
-};
+import { useStore } from '../../../services/StoreService';
+import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
-export function ClearHistoryDialog(props: ClearHistoryProps) {
+export function ClearHistoryDialog({ onClose }: ConcreteDialogProps) {
+	const { yaptideEditor } = useStore();
+
 	return (
 		<CustomDialog
-			open={props.open}
-			onClose={props.onCancel}
+			onClose={onClose}
+			alert={true}
 			title='Clear History'
 			contentText='The Undo/Redo history will be lost. Are you sure you want to continue?'>
 			<Button
-				onClick={props.onCancel}
+				onClick={onClose}
 				autoFocus>
 				Cancel
 			</Button>
-			<Button onClick={props.onConfirm}>Clear and Proceed</Button>
+			<Button
+				disabled={
+					!yaptideEditor ||
+					(!yaptideEditor.history.undos.length && !yaptideEditor.history.redos.length)
+				}
+				onClick={() => {
+					if (yaptideEditor) yaptideEditor.history.clear();
+					onClose();
+				}}>
+				Clear and proceed
+			</Button>
 		</CustomDialog>
 	);
 }

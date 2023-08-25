@@ -1,3 +1,4 @@
+import FolderOffIcon from '@mui/icons-material/FolderOff';
 import QueuePlayNextIcon from '@mui/icons-material/QueuePlayNext';
 import {
 	Accordion,
@@ -5,10 +6,17 @@ import {
 	AccordionSummary,
 	Box,
 	Button,
+	CircularProgress,
 	Grid,
 	GridProps,
 	Typography
 } from '@mui/material';
+import { FC, useState } from 'react';
+
+import { useDialog } from '../../../services/DialogService';
+import { useStore } from '../../../services/StoreService';
+import { SimulatorType } from '../../../types/RequestTypes';
+import { JobStatusData, SimulationInputFiles } from '../../../types/ResponseTypes';
 import SimulationCard from './SimulationCard';
 import {
 	BackendStatusIndicator,
@@ -21,16 +29,14 @@ import {
 	SimulationPaginationFooter
 } from './SimulationPanelBar';
 
-import FolderOffIcon from '@mui/icons-material/FolderOff';
-import { useState } from 'react';
-import { JobStatusData, SimulationInputFiles } from '../../../types/ResponseTypes';
-
 type GridLayout = 'grid' | 'inline-list' | 'block-list';
 
 type SimulationCardGridProps = {
-	simulations: JobStatusData[];
+	simulations?: JobStatusData[];
 	handleLoadResults?: (taskId: string | null, simulation: unknown) => void;
 	handleShowInputFiles?: (inputFiles?: SimulationInputFiles) => void;
+	handleDelete?: (jobId: string) => void;
+	handleRefresh?: (jobId: string) => void;
 	layout: GridLayout;
 } & GridProps;
 
@@ -65,11 +71,14 @@ export function SimulationCardGrid({
 	layout,
 	sx,
 	handleLoadResults,
+	handleDelete,
+	handleRefresh,
 	handleShowInputFiles,
 	...other
 }: SimulationCardGridProps) {
 	let gridContainerProps: GridProps = { container: true };
 	let gridItemProps: GridProps = { item: true };
+
 	if (layout in stylesByLayout) {
 		gridContainerProps = {
 			...gridContainerProps,
@@ -89,42 +98,52 @@ export function SimulationCardGrid({
 			<Grid
 				{...gridContainerProps}
 				{...other}>
-				{simulations.length ? (
-					simulations.map(simulation => (
-						<Grid
-							key={simulation.jobId}
-							{...gridItemProps}>
-							<SimulationCard
-								simulationStatus={simulation}
-								loadResults={
-									handleLoadResults &&
-									(taskId => handleLoadResults(taskId, simulation))
-								}
-								showInputFiles={handleShowInputFiles}
-							/>
-						</Grid>
-					))
-				) : (
-					<Typography
-						variant='h5'
-						color={({ palette }) => palette.text.disabled}
-						sx={{
-							textAlign: 'center',
-							width: '100%',
-							p: ({ spacing }) => spacing(8, 4),
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center'
-						}}>
-						<FolderOffIcon
+				{simulations ? (
+					simulations.length ? (
+						simulations.map(simulation => (
+							<Grid
+								key={simulation.jobId}
+								{...gridItemProps}>
+								<SimulationCard
+									simulationStatus={simulation}
+									loadResults={
+										handleLoadResults &&
+										(taskId => handleLoadResults(taskId, simulation))
+									}
+									handleDelete={handleDelete}
+									handleRefresh={handleRefresh}
+									showInputFiles={handleShowInputFiles}
+								/>
+							</Grid>
+						))
+					) : (
+						<Typography
+							variant='h5'
+							color={({ palette }) => palette.text.disabled}
 							sx={{
-								m: ({ spacing }) => spacing(0, 2),
-								pb: ({ spacing }) => spacing(0.5),
-								fontSize: ({ spacing }) => spacing(4)
-							}}
-						/>
-						No simulations found
-					</Typography>
+								textAlign: 'center',
+								width: '100%',
+								p: ({ spacing }) => spacing(8, 4),
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center'
+							}}>
+							<FolderOffIcon
+								sx={{
+									m: ({ spacing }) => spacing(0, 2),
+									pb: ({ spacing }) => spacing(0.5),
+									fontSize: ({ spacing }) => spacing(4)
+								}}
+							/>
+							No simulations found
+						</Typography>
+					)
+				) : (
+					<CircularProgress
+						sx={{
+							p: ({ spacing }) => spacing(4)
+						}}
+					/>
 				)}
 			</Grid>
 		</Box>
@@ -183,15 +202,16 @@ export function PaginatedSimulationCardGrid({
 
 type SimulationsFromBackendProps = PaginatedCardGridProps & {
 	isBackendAlive: boolean;
-	runSimulation: () => void;
 };
 
 export function PaginatedSimulationsFromBackend({
 	isBackendAlive,
-	runSimulation,
 	children,
 	...other
 }: SimulationsFromBackendProps) {
+	const { setTrackedId } = useStore();
+	const [open] = useDialog('runSimulation');
+
 	return (
 		<PaginatedSimulationCardGrid {...other}>
 			<InputGroup
@@ -203,7 +223,12 @@ export function PaginatedSimulationsFromBackend({
 					color='info'
 					startIcon={<QueuePlayNextIcon />}
 					disabled={!isBackendAlive}
-					onClick={runSimulation}>
+					onClick={() =>
+						open({
+							onSubmit: setTrackedId,
+							simulator: SimulatorType.SHIELDHIT
+						})
+					}>
 					Run new simulation
 				</Button>
 				<BackendStatusIndicator
@@ -220,8 +245,8 @@ export function PaginatedSimulationsFromBackend({
 
 type AccordionCardGridProps = {
 	isAccordion: boolean;
-	header?: React.FC<SimulationAccordionProps>;
-	footer?: React.FC<{}>;
+	header?: FC<SimulationAccordionProps>;
+	footer?: FC<{}>;
 } & SimulationCardGridProps;
 
 export function AccordionCardGrid({
@@ -233,7 +258,7 @@ export function AccordionCardGrid({
 	sx,
 	...other
 }: AccordionCardGridProps) {
-	const [expanded, setExpanded] = useState(!!simulations.length || !isAccordion);
+	const [expanded, setExpanded] = useState(!!simulations?.length || !isAccordion);
 
 	return (
 		<Accordion

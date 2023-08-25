@@ -4,6 +4,7 @@ import {
 	Autocomplete,
 	Box,
 	Checkbox,
+	createFilterOptions,
 	FilterOptionsState,
 	FormControl,
 	ListItem,
@@ -11,19 +12,18 @@ import {
 	ListItemText,
 	TextField,
 	Typography,
-	createFilterOptions,
 	useTheme
 } from '@mui/material';
 import CodeEditor from '@uiw/react-textarea-code-editor';
-import { useState } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
+
 import { EditableChip } from '../../../util/genericComponents/EditableChip';
 import { ScriptOption } from './RunSimulationForm';
-import { useCallback } from 'react';
 
 type BatchParametersEditorProps = {
 	scriptHeader: string;
 	scriptOptions: ScriptOption[];
-	handleScriptHeaderChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
+	handleScriptHeaderChange: (event: ChangeEvent<HTMLTextAreaElement>) => void;
 	handleScriptOptionsChange: (newValue: ScriptOption[]) => void;
 	scriptName: string;
 };
@@ -48,7 +48,6 @@ function parseOptions(input: string): ScriptOption[] {
 		const optionValue = key1 ? value1 : key2 ? value2 : '';
 		options.push({ optionKey, optionValue });
 	}
-	console.log(options);
 
 	return options;
 }
@@ -83,6 +82,7 @@ export function BatchScriptParametersEditor({
 			);
 
 			const { inputValue } = state;
+
 			// if inputValue has whitespace, parse it with regex and filter out existing options
 			if (inputValue.includes(' ') || inputValue.includes('=')) {
 				const newOptions = parseOptions(inputValue);
@@ -104,6 +104,7 @@ export function BatchScriptParametersEditor({
 						`-${inputValue}` === o.optionKey ||
 						`--${inputValue}` === o.optionKey
 				);
+
 				if (inputValue !== '' && !isExisting) {
 					filtered.push(
 						{
@@ -124,6 +125,7 @@ export function BatchScriptParametersEditor({
 					);
 				}
 			}
+
 			return filtered;
 		},
 		[filterKeysAndLabels, scriptOptions]
@@ -133,8 +135,10 @@ export function BatchScriptParametersEditor({
 		(newValue: (string | ScriptOption)[]) => {
 			const newOptions: ScriptOption[] = newValue.reduce((acc, option) => {
 				let candidateOptions: ScriptOption[] = [];
+
 				if (typeof option === 'string') {
 					candidateOptions = parseOptions(option);
+
 					if (candidateOptions.length === 0 && option.includes(' '))
 						candidateOptions = parseOptions(`-${option}`);
 				} else candidateOptions = option.optionList ? option.optionList : [option];
@@ -235,13 +239,16 @@ export function BatchScriptParametersEditor({
 							if (typeof option === 'string') {
 								return option;
 							}
+
 							const { optionTitle } = option as {
 								optionTitle?: string;
 							};
+
 							// Add "xxx" option created dynamically
 							if (optionTitle) {
 								return optionTitle;
 							}
+
 							// Regular option
 							return `${option.optionKey}${
 								option.optionLabel ? ' "' + option.optionLabel + '"' : ''
@@ -270,7 +277,7 @@ export function BatchScriptParametersEditor({
 							<EditableChip
 								key={option.optionKey}
 								option={option}
-								onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+								onChange={(event: ChangeEvent<HTMLInputElement>) => {
 									const { value } = event.target;
 									const newOptions = [...scriptOptions];
 									newOptions[index].optionValue = value;

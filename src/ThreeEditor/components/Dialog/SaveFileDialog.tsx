@@ -1,51 +1,59 @@
-import {
-	Button,
-	Checkbox,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogContentText,
-	FormControlLabel,
-	TextField
-} from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { Editor } from '../../js/Editor';
-import { CustomDialogTitle } from './CustomDialog';
-import { FullSimulationData } from '../../../services/ShSimulatorService';
+import { Button, Checkbox, FormControlLabel, TextField } from '@mui/material';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
-export type SaveFileProps = {
-	open: boolean;
-	onClose: () => void;
-	onConfirm: (data: {}, fileName: string) => void;
-	editor: Editor;
+import { FullSimulationData } from '../../../services/ShSimulatorService';
+import { useStore } from '../../../services/StoreService';
+import { saveString } from '../../../util/File';
+import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
+
+const saveJson = (data: {}, fileName: string) => {
+	let output = undefined;
+
+	try {
+		output = JSON.stringify(data, null, '\t');
+		// this regex matches new lines and tabs that are followed by a number and replaces them with just the number
+		output = output.replace(/[\n\t]+([\d.e\-[\]]+)/g, '$1');
+		saveString(output, `${fileName}.json`);
+	} catch (e) {
+		console.warn('Could not regex output. Saving without regex...', e);
+		output = JSON.stringify(data);
+		saveString(output, `${fileName}.json`);
+	}
 };
 
-export function SaveFileDialog(props: SaveFileProps) {
-	const { open, onClose, onConfirm, editor } = props;
-	const results: FullSimulationData = editor.getResults();
+export function SaveFileDialog({
+	onClose,
+	name: defaultName = 'editor',
+	results: providedResults
+}: ConcreteDialogProps<{ name?: string; results?: FullSimulationData }>) {
+	const { yaptideEditor } = useStore();
+	const results: FullSimulationData | undefined = providedResults ?? yaptideEditor?.getResults();
 
 	const [keepResults, setKeepResults] = useState<boolean>(false);
 
-	useEffect(() => {
-		setKeepResults(results?.input.inputJson?.hash === editor?.toJSON().hash);
-	}, [props, props.editor, editor, results?.input.inputJson?.hash]);
+	const canKeepResults = useCallback(() => {
+		return results?.input.inputJson?.hash === yaptideEditor?.toJSON().hash;
+	}, [yaptideEditor, results?.input.inputJson?.hash]);
 
-	const [name, setName] = useState<string>('editor');
-	const changeName = (event: React.ChangeEvent<HTMLInputElement>) => {
+	useEffect(() => {
+		setKeepResults(canKeepResults() || !!providedResults);
+	}, [canKeepResults, providedResults]);
+
+	const [name, setName] = useState<string>(defaultName);
+	const changeName = (event: ChangeEvent<HTMLInputElement>) => {
 		setName(event.target.value);
 	};
-	const changeKeepResults = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+	const changeKeepResults = (event: ChangeEvent<HTMLInputElement>) => {
 		setKeepResults(event.target.checked);
 	};
+
 	return (
-		<Dialog
-			open={open}
-			onClose={onClose}>
-			<CustomDialogTitle onClose={onClose}>Save project file</CustomDialogTitle>
-			<DialogContent>
-				<DialogContentText id='save-dialog-description'>
-					This will generate a JSON file that can be loaded later.
-				</DialogContentText>
+		<CustomDialog
+			onClose={onClose}
+			title='Save Project File'
+			contentText={`This will generate a JSON file that can be loaded later.`}
+			body={
 				<form
 					style={{
 						display: 'flex',
@@ -54,39 +62,39 @@ export function SaveFileDialog(props: SaveFileProps) {
 						paddingTop: 20
 					}}>
 					<TextField
-						id='outlined-basic-name'
 						label='File name'
-						value={name}
+						value={defaultName}
 						variant='outlined'
 						onChange={changeName}
 					/>
-					<FormControlLabel
-						label='Include simulation results'
-						sx={{
-							'userSelect': 'none',
-							'&.MuiFormControlLabel-root': {
-								paddingLeft: 1
-							}
-						}}
-						control={
-							<Checkbox
-								value={keepResults}
-								disabled={results?.input.inputJson?.hash !== editor?.toJSON().hash}
-								onChange={changeKeepResults}
+					{!canKeepResults() ||
+						(!!providedResults && (
+							<FormControlLabel
+								label='Include simulation results'
+								sx={{
+									'userSelect': 'none',
+									'&.MuiFormControlLabel-root': {
+										paddingLeft: 1
+									}
+								}}
+								control={
+									<Checkbox
+										value={keepResults}
+										onChange={changeKeepResults}
+									/>
+								}
 							/>
-						}
-					/>
+						))}
 				</form>
-			</DialogContent>
-			<DialogActions>
-				<Button
-					onClick={() => {
-						if (keepResults) onConfirm(results, name);
-						else onConfirm(editor?.toJSON(), name);
-					}}>
-					Save
-				</Button>
-			</DialogActions>
-		</Dialog>
+			}>
+			<Button
+				onClick={() => {
+					onClose();
+					yaptideEditor &&
+						saveJson(keepResults && results ? results : yaptideEditor?.toJSON(), name);
+				}}>
+				Save
+			</Button>
+		</CustomDialog>
 	);
 }

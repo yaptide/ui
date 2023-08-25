@@ -12,6 +12,7 @@ const srcFolder = 'src/libs/converter/';
 
 const saveFileName = (destFolder, fileName) => {
 	const data = JSON.stringify({ fileName: fileName });
+
 	if (!fs.existsSync(destFolder)) fs.mkdirSync(destFolder, { recursive: true });
 
 	fs.writeFileSync(destFolder + 'yaptide_converter.json', data);
@@ -23,8 +24,10 @@ const saveFileName = (destFolder, fileName) => {
 		const pythonCmdArr = ['python3', 'python'];
 		const index = pythonCmdArr.findIndex(pythonCmd => {
 			console.log(`Checking for ${pythonCmd}`);
+
 			try {
 				execSync(`${pythonCmd} --version`);
+
 				return true;
 			} catch (e) {
 				return false;
@@ -33,6 +36,7 @@ const saveFileName = (destFolder, fileName) => {
 
 		if (index === -1) {
 			console.error('Python not found');
+
 			return exit(1);
 		}
 
@@ -54,37 +58,48 @@ const saveFileName = (destFolder, fileName) => {
 		const measureTime = (label, callback) => {
 			console.log('Start: ' + label);
 			console.time(label);
+
 			try {
 				callback();
 			} catch (error) {
 				console.error(error.stdout.toString());
 				exit(1);
 			}
+
 			console.timeEnd(label);
 		};
 
-		measureTime('Create venv environment', () => {
-			execSync(`${PYTHON} -m venv venv`, {
+		const executeCommand = command => {
+			console.log(`Executing: ${command}`);
+			const output = execSync(command, {
+				encoding: 'utf-8',
 				cwd: srcFolder
 			});
+			console.log('Output:', output);
+		};
+
+		const venvCommandPrefix =
+			os.platform() === 'win32'
+				? 'powershell -NoProfile -Command "& { .\\venv\\Scripts\\Activate.ps1 ; '
+				: '. venv/bin/activate &&';
+		const venvCommandSuffix = os.platform() === 'win32' ? ' }"' : '';
+
+		measureTime('Create venv environment', () => {
+			executeCommand(`${PYTHON} -m venv venv`);
 		});
 
-		const activateCmd =
-			os.platform() === 'win32' ? 'venv\\Scripts\\activate.ps1' : '. venv/bin/activate';
-
 		measureTime('Installing build module for python', () => {
-			execSync(`${activateCmd} && ${PYTHON} -m pip install build wheel`, {
-				cwd: srcFolder
-			});
+			executeCommand(`${venvCommandPrefix} pip install build wheel ${venvCommandSuffix}`);
 		});
 
 		measureTime('Building yaptide_converter', () => {
-			execSync(`${activateCmd} && ${PYTHON} -m build --wheel --no-isolation`, {
-				cwd: srcFolder
-			});
+			executeCommand(
+				`${venvCommandPrefix} python -m build --wheel --no-isolation ${venvCommandSuffix}`
+			);
 		});
 
 		console.log('Checking destination folder');
+
 		if (!fs.existsSync(destFolder)) {
 			console.log('Creating folder ' + destFolder);
 			fs.mkdirSync(destFolder, { recursive: true });
@@ -103,6 +118,7 @@ const saveFileName = (destFolder, fileName) => {
 				console.error(err.message);
 				exit(1);
 			}
+
 			console.log('yaptide_converter was copied to destination');
 			console.log(buildFilePath);
 			console.log('=>');

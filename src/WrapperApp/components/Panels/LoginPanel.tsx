@@ -1,19 +1,22 @@
 import { Box, Button, Card, CardContent, TextField, Typography, useTheme } from '@mui/material';
-import React, { useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+
+import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
-import { ALT_AUTH } from '../../../config/Config';
 
 export default function LoginPanel() {
-	const { login } = useAuth();
+	const { altAuth } = useConfig();
+	const { login, tokenLogin } = useAuth();
 	const theme = useTheme();
 
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 
-	const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleUsernameChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setUsername(event.target.value);
 	};
-	const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+	const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setPassword(event.target.value);
 	};
 
@@ -23,9 +26,11 @@ export default function LoginPanel() {
 		},
 		[login, password, username]
 	);
+
 	// Handle login on 'Enter' keystroke
 	useEffect(() => {
 		document.addEventListener('keydown', handleEnter);
+
 		return () => document.removeEventListener('keydown', handleEnter);
 	}, [handleEnter]);
 
@@ -77,7 +82,7 @@ export default function LoginPanel() {
 						onClick={() => login(username, password)}>
 						Login
 					</Button>
-					{ALT_AUTH && (
+					{altAuth && (
 						<>
 							<Typography
 								color='text.secondary'
@@ -90,7 +95,7 @@ export default function LoginPanel() {
 								color='info'
 								fullWidth
 								variant={theme.palette.mode === 'dark' ? 'outlined' : 'contained'}
-								onClick={() => login('demo', 'demo')}>
+								onClick={tokenLogin}>
 								Connect with PLGrid
 							</Button>
 						</>

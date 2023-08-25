@@ -1,20 +1,21 @@
 import { Euler, MathUtils, Vector3 } from 'three';
-import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
-import { Editor } from '../../../../js/Editor';
-import { Vector3PropertyField } from '../fields/PropertyField';
+
 import { SimulationPropertiesType } from '../../../../../types/SimulationProperties';
-import { Beam, isBeam } from '../../../../Simulation/Physics/Beam';
-import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
-import { isDetectGeometry } from '../../../../Simulation/Detectors/DetectGeometry';
+import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import { SetBeamDirectionCommand } from '../../../../js/commands/SetBeamDirectionCommand';
 import { SetDetectPositionCommand } from '../../../../js/commands/SetDetectPositionCommand';
 import { SetPositionCommand } from '../../../../js/commands/SetPositionCommand';
 import { SetRotationCommand } from '../../../../js/commands/SetRotationCommand';
-import { SetBeamDirectionCommand } from '../../../../js/commands/SetBeamDirectionCommand';
-import { PropertiesCategory } from './PropertiesCategory';
-import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { SimulationElement } from '../../../../Simulation/Base/SimulationElement';
+import { isDetector } from '../../../../Simulation/Detectors/Detector';
+import { Beam, isBeam } from '../../../../Simulation/Physics/Beam';
+import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
+import { Vector3PropertyField } from '../fields/PropertyField';
+import { PropertiesCategory } from './PropertiesCategory';
 
-export function ObjectPlacement(props: { editor: Editor; object: SimulationElement }) {
+export function ObjectPlacement(props: { editor: YaptideEditor; object: SimulationElement }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
@@ -37,8 +38,10 @@ export function ObjectPlacement(props: { editor: Editor; object: SimulationEleme
 				editor.execute(
 					new SetValueCommand(editor, watchedObject.object, 'center', newPosition)
 				);
-			else if (isDetectGeometry(watchedObject))
+			else if (isDetector(watchedObject))
 				editor.execute(
+					// probably useless and SetValueCommand should be used instead,
+					// but has to be tested first because it uses additional signals
 					new SetDetectPositionCommand(editor, watchedObject.object, newPosition)
 				);
 			else editor.execute(new SetPositionCommand(editor, watchedObject.object, newPosition));
@@ -51,6 +54,7 @@ export function ObjectPlacement(props: { editor: Editor; object: SimulationEleme
 			rotation.y * MathUtils.DEG2RAD,
 			rotation.z * MathUtils.DEG2RAD
 		);
+
 		if (!newRotation.equals(watchedObject.rotation))
 			editor.execute(new SetRotationCommand(editor, watchedObject.object, newRotation));
 	};

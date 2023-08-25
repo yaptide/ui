@@ -35,6 +35,7 @@ export function createNumberInput(params) {
 		.setPrecision(precision)
 		.setWidth('50px')
 		.onChange(update);
+
 	if (unit !== undefined) input.setUnit(unit);
 
 	if (nudge !== undefined) input.setNudge(nudge);
@@ -71,6 +72,7 @@ export function createRowParamNumber(params) {
 
 	row.add(label);
 	row.add(input);
+
 	return [row, input, label];
 }
 
@@ -101,6 +103,7 @@ export function createRowParamNumberXYZ(params) {
 
 	row.add(label);
 	row.add(inputX, inputY, inputZ);
+
 	return [row, inputX, inputY, inputZ, label];
 }
 
@@ -109,13 +112,17 @@ export class UIScientificNumber extends UINumber {
 		super(value);
 		this.scientificNotation = true;
 	}
+
 	setScientificNotation(flag) {
 		this.scientificNotation = flag;
+
 		return this;
 	}
+
 	getScientificNotation() {
 		return this.scientificNotation;
 	}
+
 	/**
 	 *
 	 * @param {number} value
@@ -123,10 +130,13 @@ export class UIScientificNumber extends UINumber {
 	 */
 	setValue(value) {
 		if (value === undefined) return this;
+
 		if (!this.scientificNotation) {
 			super.setValue(value);
+
 			return this;
 		}
+
 		value = 0 + parseFloat(parseFloat(value).toFixed(this.precision));
 
 		if (value < this.min) value = this.min;
@@ -137,11 +147,15 @@ export class UIScientificNumber extends UINumber {
 		this.dom.value.length > value.toFixed(this.precision).length &&
 			parseFloat(value.toFixed(this.precision)) !== 0 &&
 			(this.dom.value = value.toFixed(this.precision));
+
 		this.dom.value.length > value.toExponential(this.precision).length &&
 			(this.dom.value = value.toExponential(this.precision));
+
 		this.dom.value.length > value.toExponential().length &&
 			(this.dom.value = value.toExponential());
+
 		if (this.unit !== '') this.dom.value += ' ' + this.unit;
+
 		return this;
 	}
 }

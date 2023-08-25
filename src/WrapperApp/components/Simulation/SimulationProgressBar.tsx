@@ -1,7 +1,8 @@
 import { Box, LinearProgress, Tooltip } from '@mui/material';
 import { useCallback, useEffect, useRef } from 'react';
 import Countdown from 'react-countdown';
-import { TaskTime, TaskStatusData, StatusState } from '../../../types/ResponseTypes';
+
+import { StatusState, TaskStatusData, TaskTime } from '../../../types/ResponseTypes';
 
 const getDateFromEstimation = (estimated?: TaskTime) => {
 	if (!estimated) return undefined;
@@ -9,12 +10,14 @@ const getDateFromEstimation = (estimated?: TaskTime) => {
 	const date =
 		Date.now() +
 		(parseInt(hours) * 60 * 60 + parseInt(minutes) * 60 + parseInt(seconds)) * 1000;
+
 	return date;
 };
 
 type SimulationProgressBarProps = {
 	status: TaskStatusData;
 };
+
 const statusToColor = (status: StatusState) => {
 	switch (status) {
 		case StatusState.FAILED:
@@ -29,21 +32,32 @@ const statusToColor = (status: StatusState) => {
 export function SimulationProgressBar({ status }: SimulationProgressBarProps) {
 	const updateProgress = useCallback(() => {
 		const progress = (status?.simulatedPrimaries ?? 0) / (status?.requestedPrimaries ?? 1);
+
 		return progress;
 	}, [status]);
 	const progress = useRef<number>(updateProgress());
 	useEffect(() => {
 		progress.current = updateProgress();
 	}, [updateProgress]);
+
 	return (
 		<Tooltip
 			followCursor={true}
 			placement='left'
 			title={
 				<>
-					{status.estimatedTime ? 'Estimated time remaining ' : 'Time elapsed '}
+					{status.estimatedTime ? 'Estimated time remaining: ' : 'Time elapsed: '}
 					<Countdown
-						date={getDateFromEstimation(status.estimatedTime ?? status.runTime)}
+						date={
+							status.estimatedTime
+								? getDateFromEstimation(status.estimatedTime)
+								: status.endTime &&
+								  status.startTime &&
+								  status.endTime.getTime &&
+								  status.startTime.getTime
+								? status.endTime.getTime() - status.startTime.getTime()
+								: 0
+						}
 					/>
 				</>
 			}>

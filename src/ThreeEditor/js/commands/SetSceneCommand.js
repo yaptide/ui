@@ -1,7 +1,7 @@
-import { Command } from '../Command.js';
+import { Command } from '../Command';
+import { AddObjectCommand } from './AddObjectCommand.js';
 import { SetUuidCommand } from './SetUuidCommand.js';
 import { SetValueCommand } from './SetValueCommand.js';
-import { AddObjectCommand } from './AddObjectCommand.js';
 
 /**
  * @param editor Editor
@@ -18,14 +18,18 @@ class SetSceneCommand extends Command {
 		this.cmdArray = [];
 
 		if (scene !== undefined) {
-			this.cmdArray.push(new SetUuidCommand(this.editor, this.editor.scene, scene.uuid));
 			this.cmdArray.push(
-				new SetValueCommand(this.editor, this.editor.scene, 'name', scene.name)
+				new SetUuidCommand(this.editor, this.editor.figureManager, scene.uuid)
 			);
+
+			this.cmdArray.push(
+				new SetValueCommand(this.editor, this.editor.figureManager, 'name', scene.name)
+			);
+
 			this.cmdArray.push(
 				new SetValueCommand(
 					this.editor,
-					this.editor.scene,
+					this.editor.figureManager,
 					'userData',
 					JSON.parse(JSON.stringify(scene.userData))
 				)
@@ -64,6 +68,7 @@ class SetSceneCommand extends Command {
 		const output = super.toJSON(this);
 
 		const cmds = [];
+
 		for (let i = 0; i < this.cmdArray.length; i++) {
 			cmds.push(this.cmdArray[i].toJSON());
 		}
@@ -77,6 +82,7 @@ class SetSceneCommand extends Command {
 		super.fromJSON(json);
 
 		const cmds = json.cmds;
+
 		for (let i = 0; i < cmds.length; i++) {
 			const cmd = new window[cmds[i].type](); // creates a new object of type "json.type"
 			cmd.fromJSON(cmds[i]);

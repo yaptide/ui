@@ -1,9 +1,11 @@
-import { ReactNode, useCallback } from 'react';
+import { useCallback } from 'react';
+
 import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/DetectFilter';
+import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { ScoringManagerJSON } from '../ThreeEditor/Simulation/Scoring/ScoringManager';
 import {
+	isEditorJson,
 	RequestCancelJob,
 	RequestGetJobInputs,
 	RequestGetJobLogs,
@@ -13,29 +15,31 @@ import {
 	RequestGetPageStatus,
 	RequestParam,
 	RequestPostJob,
-	RequestShConvert,
-	isEditorJson
+	RequestShConvert
 } from '../types/RequestTypes';
 import {
-	YaptideResponse,
+	currentJobStatusData,
+	currentTaskStatusData,
+	JobStatusCompleted,
 	JobStatusData,
+	JobStatusFailed,
+	ResponseGetJobInputs,
+	ResponseGetJobLogs,
+	ResponseGetJobResults,
 	ResponseGetJobStatus,
 	ResponseGetPageContents,
 	ResponsePostJob,
 	ResponseShConvert,
 	StatusState,
-	currentJobStatusData,
-	ResponseGetJobInputs,
-	ResponseGetJobResults,
-	ResponseGetJobLogs
+	YaptideResponse
 } from '../types/ResponseTypes';
-import { camelToSnakeCase } from '../types/TypeTransformUtil';
-import { orderAccordingToList } from '../util/Sort';
-import { useAuth } from './AuthService';
-import { createGenericContext } from './GenericContext';
-import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import { useCacheMap } from '../util/hooks/useCacheMap';
+import { camelToSnakeCase } from '../util/Notation/Notation';
+import { orderAccordingToList } from '../util/Sort';
 import { ValidateShape } from '../util/Types';
+import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
+import { useAuth } from './AuthService';
+import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 
 export type JobLogs = {
 	jobId: string;
@@ -48,9 +52,6 @@ export type JobInputs = {
 export type JobResults = {
 	jobId: string;
 } & ResponseGetJobResults;
-export interface ShSimulationProps {
-	children: ReactNode;
-}
 
 export type FullSimulationData = Omit<JobInputs & JobStatusData & JobResults, 'message'>;
 
@@ -59,17 +60,17 @@ export const fetchItSymbol = Symbol('fetchItSymbol');
 export interface RestSimulationContext {
 	postJobDirect: (...args: RequestPostJob) => Promise<ResponsePostJob>;
 	postJobBatch: (...args: RequestPostJob) => Promise<ResponsePostJob>;
-	cancelJobDirect: (...args: RequestCancelJob) => Promise<unknown>;
-	cancelJobBatch: (...args: RequestCancelJob) => Promise<unknown>;
+	cancelJob: (endPoint: string) => (...args: RequestCancelJob) => Promise<unknown>;
 	convertToInputFiles: (...args: RequestShConvert) => Promise<ResponseShConvert>;
 	getHelloWorld: (...args: RequestParam) => Promise<unknown>;
-	getJobDirectStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
-	getJobBatchStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
+	getJobStatus: (
+		endPoint: string
+	) => (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
 	getJobInputs: (...args: RequestGetJobInputs) => Promise<JobInputs | undefined>;
 	getJobResults: (...args: RequestGetJobResults) => Promise<JobResults | undefined>;
 	getJobLogs: (...args: RequestGetJobLogs) => Promise<JobLogs | undefined>;
 	getPageContents: (...args: RequestGetPageContents) => Promise<ResponseGetPageContents>;
-	getPageStatus: (...args: RequestGetPageStatus) => Promise<JobStatusData[]>;
+	getPageStatus: (...args: RequestGetPageStatus) => Promise<JobStatusData[] | undefined>;
 	getFullSimulationData: (
 		jobStatus: JobStatusData,
 		signal?: AbortSignal,
@@ -83,7 +84,7 @@ const recreateOrderInEstimators = (
 ): Estimator[] => {
 	return orderAccordingToList(
 		estimators,
-		scoringManagerJSON.scoringOutputs,
+		scoringManagerJSON.outputs,
 		'name',
 		(e, o) => (e.scoringOutputJsonRef = o)
 	);
@@ -93,12 +94,13 @@ const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]
 	estimators.forEach(estimator => {
 		const { pages, scoringOutputJsonRef } = estimator;
 		pages.forEach((page, idx) => {
-			const quantity = scoringOutputJsonRef?.quantities.active[idx];
+			const quantity = scoringOutputJsonRef?.quantities[idx];
 			const filter = FiltersJSON.find(o => o.uuid === quantity?.filter);
 			page.filterRef = filter;
 			page.name = quantity?.name;
 		});
 	});
+
 	return estimators;
 };
 
@@ -106,12 +108,12 @@ export const recreateRefsInResults = (inputJson: EditorJson, estimators: Estimat
 	if (!inputJson) throw new Error('No editor data');
 	if (!estimators) throw new Error('No esitamtors data');
 
-	const { scoringManager, detectManager }: EditorJson = inputJson;
+	const { scoringManager }: EditorJson = inputJson;
 
 	const estimatorsOrdered = recreateOrderInEstimators(estimators, scoringManager);
 	const estimatorsWithFixedFilters = recreateRefToFilters(
 		estimatorsOrdered,
-		detectManager?.filters
+		scoringManager.filters
 	);
 
 	return estimatorsWithFixedFilters;
@@ -126,7 +128,7 @@ const updateEstimators = (estimators: Estimator[]) => {
 const [useShSimulation, ShSimulationContextProvider] =
 	createGenericContext<RestSimulationContext>();
 
-const ShSimulation = ({ children }: ShSimulationProps) => {
+const ShSimulation = ({ children }: GenericContextProviderProps) => {
 	const { authKy } = useAuth();
 
 	const statusDataCache = useCacheMap<JobStatusData>();
@@ -218,6 +220,7 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 							searchParams: camelToSnakeCase({ jobId })
 						})
 						.json<ResponseGetJobInputs>();
+
 					const data: JobInputs = {
 						...response,
 						jobId
@@ -247,6 +250,7 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 							searchParams: camelToSnakeCase({ jobId })
 						})
 						.json<ResponseGetJobLogs>();
+
 					const data: JobLogs = {
 						...response,
 						jobId
@@ -283,7 +287,7 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 
 					const refsInResults =
 						jobInputs?.input.inputJson &&
-						recreateRefsInResults(jobInputs?.input.inputJson, response.estimators);
+						recreateRefsInResults(jobInputs.input.inputJson, response.estimators);
 
 					const data: JobResults = {
 						...response,
@@ -302,13 +306,51 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 		[authKy, getJobInputs, resultsCache]
 	);
 
+	//TODO: fix backend responses and remove this function
+	const validStatusToCache = (data: JobStatusCompleted | JobStatusFailed) => {
+		if (data.jobState === StatusState.FAILED) return true;
+
+		return data.jobTasksStatus.every(task => {
+			if (currentTaskStatusData[StatusState.FAILED](task)) return true;
+			else if (currentTaskStatusData[StatusState.COMPLETED](task)) {
+				if (!task.startTime || !task.endTime)
+					console.warn('There are missing times in COMPLETED task:', task);
+
+				if (typeof task.startTime === 'string') {
+					task.startTime = new Date(task.startTime);
+					console.warn('Converted startTime to Date in COMPLETED task:', task);
+				}
+
+				if (typeof task.endTime === 'string') {
+					task.endTime = new Date(task.endTime);
+					console.warn('Converted endTime to Date in COMPLETED task:', task);
+				}
+
+				if (task.requestedPrimaries !== task.simulatedPrimaries) {
+					console.warn(
+						'Requested primaries and simulated primaries are not equal in COMPLETED task:',
+						task
+					);
+					task.simulatedPrimaries = task.requestedPrimaries;
+				}
+
+				return true;
+			}
+
+			return false;
+		});
+	};
+
 	const getJobStatus = useCallback(
 		(endPoint: string) =>
 			(...[info, cache = true, beforeCacheWrite, signal]: RequestGetJobStatus) => {
 				const { jobId } = info;
 
 				if (cache && statusDataCache.has(jobId))
-					return Promise.resolve(statusDataCache.get(jobId));
+					return Promise.resolve<JobStatusData>({
+						...statusDataCache.get(jobId),
+						...info
+					});
 
 				return authKy
 					.get(endPoint, {
@@ -317,7 +359,7 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 					})
 					.json<ResponseGetJobStatus>()
 					.then(response => {
-						const data: Partial<JobStatusData> = {
+						const data = {
 							...response,
 							...info
 						};
@@ -328,14 +370,16 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 							console.log(data.message);
 
 							statusDataCache.set(data.jobId, data, beforeCacheWrite);
-						} else if (currentJobStatusData[StatusState.COMPLETED](data))
-							statusDataCache.set(data.jobId, data, beforeCacheWrite);
-						else return undefined;
+						} else if (currentJobStatusData[StatusState.COMPLETED](data)) {
+							if (validStatusToCache(data))
+								statusDataCache.set(data.jobId, data, beforeCacheWrite);
+						} else return undefined;
 
 						return data;
 					})
 					.catch(e => {
 						console.error(e);
+
 						return undefined;
 					});
 			},
@@ -373,13 +417,18 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 				infoList.map(info => {
 					if (info.metadata.platform === undefined) {
 						console.error('info.metadata.platform is undefined');
+
 						return undefined;
 					}
+
 					const endPoint = `jobs/${info.metadata.platform.toLowerCase()}`;
+
 					return getJobStatus(endPoint)(info, cache, beforeCacheWrite, signal);
 				})
 			).then(dataList => {
-				return dataList.filter(data => data !== undefined) as JobStatusData[];
+				const data = dataList.filter(data => data !== undefined) as JobStatusData[];
+
+				return data.length === 0 ? undefined : data;
 			});
 		},
 		[getJobStatus]
@@ -392,6 +441,7 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 				jobStatus.jobState === StatusState.COMPLETED
 					? await getJobResults(jobStatus, signal, cache)
 					: undefined;
+
 			if (!inputs || !results) return undefined;
 			const { message, ...mergedData } = {
 				...inputs,
@@ -414,12 +464,10 @@ const ShSimulation = ({ children }: ShSimulationProps) => {
 			value={{
 				postJobDirect: postJob('jobs/direct'),
 				postJobBatch: postJob('jobs/batch'),
-				cancelJobDirect: cancelJob('jobs/direct'),
-				cancelJobBatch: cancelJob('jobs/batch'),
+				cancelJob,
 				convertToInputFiles,
 				getHelloWorld,
-				getJobDirectStatus: getJobStatus('jobs/direct'),
-				getJobBatchStatus: getJobStatus('jobs/batch'),
+				getJobStatus,
 				getPageContents,
 				getPageStatus,
 				getJobInputs,

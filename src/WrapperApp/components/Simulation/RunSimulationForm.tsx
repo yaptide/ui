@@ -17,12 +17,13 @@ import {
 	ToggleButtonGroup
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { MouseEvent, SyntheticEvent, useState } from 'react';
+
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
+import { SimulatorType } from '../../../types/RequestTypes';
+import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import { TabPanel } from '../Panels/TabPanel';
 import { BatchScriptParametersEditor } from './BatchParametersEditor';
-import { SimulationInputFiles } from '../../../types/ResponseTypes';
-import { SimulatorType } from '../../../types/RequestTypes';
 
 function a11yProps(index: number, name: string = 'RunSimulation') {
 	return {
@@ -48,14 +49,14 @@ export type BatchOptionsType = {
 };
 
 type RunSimulationFormProps = {
-	availableClusters: string[];
-	editorJson: EditorJson;
+	availableClusters?: string[];
+	editorJson?: EditorJson;
 	inputFiles?: Partial<SimulationInputFiles>;
 	forwardedSimulator: SimulatorType;
 	runSimulation?: (
+		runType: SimulationRunType,
 		editorJson: EditorJson,
 		inputFiles: Partial<SimulationInputFiles>,
-		runType: SimulationRunType,
 		sourceType: SimulationSourceType,
 		simName: string,
 		nTasks: number,
@@ -65,7 +66,7 @@ type RunSimulationFormProps = {
 };
 
 export function RunSimulationForm({
-	availableClusters,
+	availableClusters = ['default'],
 	editorJson,
 	inputFiles = {},
 	forwardedSimulator,
@@ -73,14 +74,14 @@ export function RunSimulationForm({
 }: RunSimulationFormProps) {
 	const [tabValue, setTabValue] = useState(0);
 	const [simulationRunType, setSimulationRunType] = useState<SimulationRunType>('direct');
-	const [simulationSourceType, setSimulationSourceType] = useState<SimulationSourceType>(
-		Object.keys(inputFiles).length > 0 ? 'files' : 'editor'
-	);
+	const [simulationSourceType, setSimulationSourceType] = useState<
+		SimulationSourceType | undefined
+	>(Object.keys(inputFiles).length > 0 ? 'files' : editorJson ? 'editor' : undefined);
 
 	const [selectedFiles, setSelectedFiles] = useState<string[]>(Object.keys(inputFiles));
 	const [selectedCluster, setSelectedCluster] = useState<number | undefined>(0);
 
-	const [simName, setSimName] = useState(editorJson.project.title ?? '');
+	const [simName, setSimName] = useState(editorJson?.project.title ?? '');
 	const [nTasks, setNTasks] = useState(1);
 	const [simulator] = useState<SimulatorType>(forwardedSimulator);
 	const [arrayHeader, setArrayHeader] = useState<string>('');
@@ -97,36 +98,44 @@ export function RunSimulationForm({
 	const handleChangeCluster = (event: SelectChangeEvent) => {
 		setSelectedCluster(parseInt(event.target.value));
 	};
+
 	const handleRunTypeChange = (
-		event: React.MouseEvent<HTMLElement>,
+		event: MouseEvent<HTMLElement>,
 		newRunType: SimulationRunType | null
 	) => {
 		if (newRunType === null) return;
 		setSimulationRunType(newRunType);
 	};
+
 	const handleSourceTypeChange = (
-		event: React.MouseEvent<HTMLElement>,
+		event: MouseEvent<HTMLElement>,
 		newSourceType: SimulationSourceType | null
 	) => {
 		if (newSourceType === null) return;
 		setSimulationSourceType(newSourceType);
+
 		if (newSourceType === 'files') {
 			setSelectedFiles(Object.keys(inputFiles));
 		}
 	};
-	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+
+	const handleTabChange = (event: SyntheticEvent, newValue: number) => {
 		setTabValue(newValue);
 	};
-	const handleParamsTabChange = (event: React.SyntheticEvent, newValue: number) => {
+
+	const handleParamsTabChange = (event: SyntheticEvent, newValue: number) => {
 		setSelectedScriptParamsTab(newValue);
 	};
+
 	const handleRunSimulationClick = () => {
 		const filteredInputFiles = Object.entries(inputFiles).reduce((acc, [key, value]) => {
 			if (selectedFiles.includes(key)) {
 				return { ...acc, [key]: value };
 			}
+
 			return acc;
 		}, {});
+
 		const batchOptions = {
 			clusterName: availableClusters[selectedCluster ?? 0],
 			arrayHeader,
@@ -135,16 +144,17 @@ export function RunSimulationForm({
 			collectOptions
 		};
 
-		runSimulation(
-			editorJson,
-			filteredInputFiles,
-			simulationRunType,
-			simulationSourceType,
-			simName,
-			nTasks,
-			simulator,
-			batchOptions
-		);
+		if (editorJson && simulationSourceType)
+			runSimulation(
+				simulationRunType,
+				editorJson,
+				filteredInputFiles,
+				simulationSourceType,
+				simName,
+				nTasks,
+				simulator,
+				batchOptions
+			);
 	};
 
 	return (
@@ -235,7 +245,7 @@ export function RunSimulationForm({
 						onChange={handleSourceTypeChange}>
 						<ToggleButton
 							size='small'
-							value='project'
+							value='editor'
 							color='primary'>
 							Editor Project Data
 						</ToggleButton>

@@ -1,5 +1,6 @@
-import { Command } from '../Command.js';
 import { Vector3 } from 'three';
+
+import { Command } from '../Command';
 
 /**
  * @param editor Editor

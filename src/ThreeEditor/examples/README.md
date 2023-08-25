@@ -36,3 +36,4 @@ The following table shows which versions can be migrated to which other versions
 | From version | To version |
 | ------------ | ---------- |
 | 0.7          | 0.9        |
+| 0.9          | 0.10        |

@@ -1,13 +1,13 @@
 import { hideUIElement, showUIElement } from '../../../../util/Ui/Uis';
-import { Editor } from '../../Editor';
 import { UIPanel, UIRow, UIText } from '../../libs/ui';
+import { YaptideEditor } from '../../YaptideEditor';
 
 export abstract class ObjectAbstract {
-	editor: Editor;
+	editor: YaptideEditor;
 	title: UIText;
 	titleRow: UIRow;
 	panel: UIPanel;
-	constructor(editor: Editor, title: string) {
+	constructor(editor: YaptideEditor, title: string) {
 		this.editor = editor;
 		this.title = new UIText(title.toUpperCase());
 		this.titleRow = new UIRow();
@@ -15,8 +15,10 @@ export abstract class ObjectAbstract {
 		this.panel = new UIPanel();
 		this.panel.add(this.titleRow);
 	}
+
 	setObject(object: unknown): void {
 		object ? showUIElement(this.panel) : hideUIElement(this.panel);
 	}
+
 	abstract update(): void;
 }

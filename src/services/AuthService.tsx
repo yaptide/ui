@@ -1,36 +1,49 @@
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { createGenericContext } from './GenericContext';
+import Keycloak from 'keycloak-js';
 import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
-import { BACKEND_URL, DEMO_MODE, DEPLOYMENT } from '../config/Config';
-import { snakeToCamelCase } from '../types/TypeTransformUtil';
-import { RequestAuthLogin, RequestAuthLogout, RequestAuthRefresh } from '../types/RequestTypes';
-import useIntervalAsync from '../util/hooks/useIntervalAsync';
 import { useSnackbar } from 'notistack';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { useConfig } from '../config/ConfigService';
+import { RequestAuthLogin, RequestAuthLogout, RequestAuthRefresh } from '../types/RequestTypes';
 import {
-	ResponseAuthStatus,
-	ResponseAuthRefresh,
 	ResponseAuthLogin,
+	ResponseAuthRefresh,
+	ResponseAuthStatus,
 	YaptideResponse
 } from '../types/ResponseTypes';
+import { hasFields } from '../util/customGuards';
+import useIntervalAsync from '../util/hooks/useIntervalAsync';
+import { snakeToCamelCase } from '../util/Notation/Notation';
+import { createGenericContext, GenericContextProviderProps } from './GenericContext';
+import { keycloakConfig } from './keycloakConfig';
 
-declare global {
-	interface Window {
-		BACKEND_URL?: string;
-	}
-}
+type AuthUser = Pick<ResponseAuthStatus, 'username' | 'source'>;
 
-export interface AuthProps {
-	children: ReactNode;
-}
+const isAuthUser = (obj: unknown): obj is AuthUser => {
+	return hasFields<string>(obj, 'username') && typeof obj.username === 'string';
+};
 
-type AuthUser = Pick<ResponseAuthStatus, 'username'>;
+const isYaptideResponse = (obj: unknown): obj is YaptideResponse => {
+	return hasFields<string>(obj, 'message') && typeof obj.message === 'string';
+};
 
-const load = (key: string) => {
+const parseYaptideResponseMessage = (obj: unknown): string =>
+	isYaptideResponse(obj) ? obj.message : [obj].toString();
+
+const load = <T extends unknown = unknown>(
+	key: string,
+	guard: (obj: unknown) => obj is T = (obj): obj is T => true
+): T | null => {
 	const item = localStorage.getItem(key);
+
 	try {
-		const [obj] = JSON.parse(`[${item}]`);
-		return obj;
+		const data = JSON.parse(`[${item}]`);
+		const obj = Array.isArray(data) && data.length === 1 ? data[0] : null;
+
+		if (guard(obj)) return obj;
+
+		return null;
 	} catch {
 		return null;
 	}
@@ -38,6 +51,7 @@ const load = (key: string) => {
 
 const save = (key: string, value: unknown) => {
 	if (value === undefined) return;
+
 	return localStorage.setItem(key, JSON.stringify(value));
 };
 
@@ -52,24 +66,26 @@ export interface AuthContext {
 	isAuthorized: boolean;
 	isServerReachable: boolean;
 	login: (...args: RequestAuthLogin) => void;
+	tokenLogin: () => void;
 	logout: (...args: RequestAuthLogout) => void;
 	refresh: (...args: RequestAuthRefresh) => void;
 	authKy: KyInstance;
 }
 
 const [useAuth, AuthContextProvider] = createGenericContext<AuthContext>();
+const keycloak = new Keycloak(keycloakConfig);
 
-const Auth = ({ children }: AuthProps) => {
-	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER));
-	const [reachInterval, setReachInterval] = useState<number>(30000);
-	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(undefined);
+const Auth = ({ children }: GenericContextProviderProps) => {
+	const { backendUrl, demoMode } = useConfig();
+	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER, isAuthUser));
+	const [reachInterval, setReachInterval] = useState<number>();
+	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(180000); // 3 minutes in ms default interval for refresh token
+	const [keyCloakInterval, setKeyCloakInterval] = useState<number>();
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
 	const { enqueueSnackbar } = useSnackbar();
 
-	const [backendUrl, setBackendUrl] = useState<string>(BACKEND_URL);
-
 	useEffect(() => {
-		setReachInterval(isServerReachable ? 180000 : 30000);
+		setReachInterval(isServerReachable ? 180000 : undefined);
 	}, [isServerReachable]);
 
 	const kyRef = useMemo(
@@ -78,7 +94,14 @@ const Auth = ({ children }: AuthProps) => {
 				credentials: 'include',
 				prefixUrl: backendUrl,
 				//overwrite default json parser to convert snake_case to camelCase
-				parseJson: (text: string) => snakeToCamelCase(JSON.parse(text), true),
+				parseJson: (text: string) => {
+					const json = JSON.parse(text);
+
+					if (typeof json === 'object' && json) return snakeToCamelCase(json, true);
+					console.warn('Could not parse JSON: ', text);
+
+					return text;
+				},
 				hooks: {
 					afterResponse: [
 						async (_request, _options, response) => {
@@ -86,21 +109,30 @@ const Auth = ({ children }: AuthProps) => {
 								case 401:
 									enqueueSnackbar('Please log in.', { variant: 'warning' });
 									setUser(null);
+
 									break;
 								case 403:
 									enqueueSnackbar('Please log in again.', { variant: 'warning' });
 									setUser(null);
+
 									break;
 							}
+
 							if (response?.status > 300) {
-								const message = await response.json().then(r => r.message);
+								const message = await response
+									.json()
+									.then(parseYaptideResponseMessage);
+
 								if (message !== 'No token provided')
-									enqueueSnackbar(await response.json().then(r => r.message), {
-										variant: 'error'
-									});
+									enqueueSnackbar(
+										await response.json().then(parseYaptideResponseMessage),
+										{
+											variant: 'error'
+										}
+									);
 								console.error(
 									response.status,
-									await response.json().then(r => r.message)
+									await response.json().then(parseYaptideResponseMessage)
 								);
 							}
 						}
@@ -118,34 +150,13 @@ const Auth = ({ children }: AuthProps) => {
 		[kyRef]
 	);
 
-	const setBackendUrlCallback = useCallback(
-		(url: string) => {
-			setBackendUrl(url);
-		},
-		[setBackendUrl]
-	);
-
-	// Enable backend url change in dev mode
-	if (DEPLOYMENT === 'dev') {
-		// eslint-disable-next-line react-hooks/rules-of-hooks
-		useEffect(() => {
-			Object.defineProperty(window, 'BACKEND_URL', {
-				set: function (url: string) {
-					setBackendUrlCallback(url);
-				},
-				get: function () {
-					return backendUrl;
-				},
-				configurable: true
-			});
-		}, [backendUrl, setBackendUrlCallback]);
-	}
-
 	useEffect(() => {
-		if (DEMO_MODE) enqueueSnackbar('Demo mode enabled.', { variant: 'info' });
-	}, [enqueueSnackbar]);
+		if (demoMode) enqueueSnackbar('Demo mode enabled.', { variant: 'info' });
+	}, [demoMode, enqueueSnackbar]);
 
 	const reachServer = useCallback(() => {
+		if (demoMode) return Promise.resolve(setIsServerReachable(false));
+
 		return kyIntervalRef
 			.get(``)
 			.json<YaptideResponse>()
@@ -156,31 +167,64 @@ const Auth = ({ children }: AuthProps) => {
 						status
 							? enqueueSnackbar('Server is reachable.', { variant: 'success' })
 							: enqueueSnackbar('Server is unreachable.', { variant: 'error' });
+
 					return status;
 				})
 			)
 			.catch(() => setIsServerReachable(false));
-	}, [enqueueSnackbar, kyIntervalRef]);
+	}, [demoMode, enqueueSnackbar, kyIntervalRef]);
 
 	useIntervalAsync(reachServer, reachInterval);
 	useEffect(() => {
 		reachServer();
 	}, [reachServer]);
 
-	const refresh = useCallback(() => {
-		if (DEMO_MODE || !isServerReachable) return Promise.resolve(setRefreshInterval(undefined));
-		return kyIntervalRef
-			.get(`auth/refresh`)
-			.json<ResponseAuthRefresh>()
-			.then(({ accessExp }) => setRefreshInterval(getRefreshDelay(accessExp)))
+	useEffect(() => {
+		if (user !== null && user.source !== 'keycloak' && isServerReachable)
+			setRefreshInterval(prev => (prev === undefined ? 3000 : prev));
+		// 3 seconds in ms default interval for refresh when logged in with username and password
+		else if (!isServerReachable || !user?.source) setRefreshInterval(undefined);
+	}, [isServerReachable, user]);
+
+	const tokenLogin = useCallback(() => {
+		const username = keycloak.tokenParsed?.preferred_username;
+		kyRef
+			.post(`auth/keycloak`, {
+				headers: {
+					Authorization: `Bearer ${keycloak.token}`
+				},
+				json: {
+					username
+				}
+			})
+			.then(() => {
+				setUser({
+					username,
+					source: 'keycloak'
+				});
+			})
 			.catch((_: HTTPError) => {});
-	}, [isServerReachable, kyIntervalRef]);
+	}, [kyRef]);
 
 	useEffect(() => {
-		if (user !== null && refreshInterval === undefined && isServerReachable)
-			setRefreshInterval(3000);
-		else if (!isServerReachable || user === null) setRefreshInterval(undefined);
-	}, [isServerReachable, refreshInterval, user]);
+		keycloak
+			.init({
+				pkceMethod: 'S256',
+				checkLoginIframe: false
+			})
+			.then(auth => {
+				console.log('after init', auth);
+
+				if (auth) {
+					setKeyCloakInterval(
+						keycloak.tokenParsed?.exp !== undefined
+							? getRefreshDelay(keycloak.tokenParsed.exp * 1000)
+							: undefined
+					);
+					tokenLogin();
+				}
+			});
+	}, [tokenLogin]);
 
 	const login = useCallback(
 		(...[username, password]: RequestAuthLogin) => {
@@ -200,15 +244,52 @@ const Auth = ({ children }: AuthProps) => {
 	);
 
 	const logout = useCallback(() => {
+		if (user?.source === 'keycloak') keycloak.logout();
 		kyRef
 			.delete(`auth/logout`)
 			.json<YaptideResponse>()
-			.then(_response => setUser(null))
-			.catch((_: HTTPError) => {});
-	}, [kyRef]);
+			.catch((_: HTTPError) => {})
+			.finally(() => setUser(null));
+	}, [kyRef, user?.source]);
+
+	const tokenRefresh = useCallback(() => {
+		if (!keycloak.authenticated) {
+			setKeyCloakInterval(undefined);
+
+			return Promise.resolve();
+		}
+
+		return keycloak
+			.updateToken(300) // 5 minutes in seconds minimum remaining lifetime for token before refresh is allowed
+			.then(refreshed => {
+				if (refreshed)
+					console.log(
+						`Token refreshed ${keycloak.tokenParsed?.exp} -> ${keycloak.tokenParsed?.exp}`
+					);
+			})
+			.catch(() => {
+				console.log('Failed to refresh token');
+				logout();
+			});
+	}, [logout]);
+
+	useIntervalAsync(tokenRefresh, keycloak.authenticated ? keyCloakInterval : undefined);
+
+	const refresh = useCallback(async () => {
+		if (user?.source === 'keycloak') return tokenLogin();
+		if (demoMode || !isServerReachable) return Promise.resolve(setRefreshInterval(undefined));
+
+		try {
+			const { accessExp } = await kyIntervalRef
+				.get(`auth/refresh`)
+				.json<ResponseAuthRefresh>();
+
+			return setRefreshInterval(getRefreshDelay(accessExp));
+		} catch (_) {}
+	}, [demoMode, isServerReachable, kyIntervalRef, tokenLogin, user?.source]);
 
 	const authKy = useMemo(() => kyRef, [kyRef]);
-	const isAuthorized = useMemo(() => user !== null || DEMO_MODE, [user]);
+	const isAuthorized = useMemo(() => user !== null || demoMode, [demoMode, user]);
 
 	useEffect(() => {
 		save(StorageKey.USER, user);
@@ -223,6 +304,7 @@ const Auth = ({ children }: AuthProps) => {
 				isAuthorized,
 				isServerReachable: Boolean(isServerReachable),
 				login,
+				tokenLogin: keycloak.login,
 				logout,
 				authKy,
 				refresh
@@ -232,4 +314,4 @@ const Auth = ({ children }: AuthProps) => {
 	);
 };
 
-export { useAuth, Auth };
+export { Auth, useAuth };

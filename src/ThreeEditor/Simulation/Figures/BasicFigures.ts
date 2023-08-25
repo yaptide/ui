@@ -1,5 +1,8 @@
 import * as THREE from 'three';
-import { Editor } from '../../js/Editor';
+
+import { AdditionalGeometryDataType } from '../../../util/AdditionalGeometryData';
+import { YaptideEditor } from '../../js/YaptideEditor';
+import { HollowCylinderGeometry } from '../Base/HollowCylinderGeometry';
 import { SimulationMesh } from '../Base/SimulationMesh';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
@@ -11,21 +14,45 @@ const defaultMaterial = new THREE.MeshBasicMaterial({
 });
 
 export const BASIC_GEOMETRY_OPTIONS = {
-	Box: 'Box',
-	Cylinder: 'Cylinder',
-	Sphere: 'Sphere',
-	CT: 'CT'
+	BoxGeometry: 'BoxGeometry',
+	SphereGeometry: 'SphereGeometry',
+	HollowCylinderGeometry: 'HollowCylinderGeometry'
 } as const;
 
 export type BasicGeometry = (typeof BASIC_GEOMETRY_OPTIONS)[keyof typeof BASIC_GEOMETRY_OPTIONS];
 
+export type BoxParameters = {
+	width: number;
+	height: number;
+	depth: number;
+};
+
+export type CylinderParameters = {
+	depth: number;
+	radius: number;
+	innerRadius: number;
+};
+
+export type SphereParameters = {
+	radius: number;
+};
+
+/**
+ * This is the base class for all objects defined by specific geometry definition located in the point in simulation space.
+ *
+ * Type of geometry can be one of the following:
+ * @template BoxGeometry - defined with THREE.BoxGeometry class
+ * @template SphereGeometry - defined with THREE.SphereGeometry class
+ * @template HollowCylinderGeometry - defined with custom HollowCylinderGeometry class
+ * @see {HollowCylinderGeometry}
+ */
 export abstract class BasicFigure<
 	TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry
 > extends SimulationMesh<TGeometry> {
 	geometryType: BasicGeometry;
 	readonly isBasicFigure: true = true;
 	constructor(
-		editor: Editor,
+		editor: YaptideEditor,
 		name: string | undefined,
 		type: string,
 		geometryType: BasicGeometry,
@@ -36,46 +63,99 @@ export abstract class BasicFigure<
 		this.name = name ?? `Figure`;
 		this.geometryType = geometryType;
 	}
-}
 
-const boxGeometry = new THREE.BoxGeometry(1, 1, 1, 1, 1, 1);
-export class BoxFigure extends BasicFigure<THREE.BoxGeometry> {
-	constructor(editor: Editor, geometry?: THREE.BoxGeometry, material?: THREE.MeshBasicMaterial) {
-		super(editor, 'Box', 'BoxFigure', 'Box', geometry ?? boxGeometry, material);
+	reconstructGeometryFromData(data: AdditionalGeometryDataType): void {
+		if (data.geometryType !== this.geometryType) throw new Error('Geometry type mismatch');
+		const { position, rotation } = data;
+		this.position.fromArray(position);
+		//From deg to rad
+		this.rotation.fromArray([
+			...rotation.slice(0, 3).map(v => (v as number) * THREE.MathUtils.DEG2RAD),
+			undefined
+		] as [number, number, number, undefined]);
 	}
 }
 
-const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 1, 16, 1, false, 0, Math.PI * 2).rotateX(
-	Math.PI / 2
-) as THREE.CylinderGeometry;
+const boxGeometry = new THREE.BoxGeometry();
 
-export class CylinderFigure extends BasicFigure<THREE.CylinderGeometry> {
+export class BoxFigure extends BasicFigure<THREE.BoxGeometry> {
 	constructor(
-		editor: Editor,
-		geometry?: THREE.CylinderGeometry,
+		editor: YaptideEditor,
+		geometry?: THREE.BoxGeometry,
+		material?: THREE.MeshBasicMaterial
+	) {
+		super(editor, 'Box', 'BoxFigure', 'BoxGeometry', geometry ?? boxGeometry, material);
+	}
+
+	reconstructGeometryFromData(data: AdditionalGeometryDataType<BoxParameters>): void {
+		super.reconstructGeometryFromData(data);
+		const {
+			parameters: { width, height, depth }
+		} = data;
+		this.geometry = new THREE.BoxGeometry(width as number, height as number, depth as number);
+	}
+}
+
+const cylinderGeometry = new HollowCylinderGeometry(0, 1, 1, 32, 2, 2);
+
+export class CylinderFigure extends BasicFigure<HollowCylinderGeometry> {
+	constructor(
+		editor: YaptideEditor,
+		geometry?: HollowCylinderGeometry,
 		material?: THREE.MeshBasicMaterial
 	) {
 		super(
 			editor,
 			'Cylinder',
 			'CylinderFigure',
-			'Cylinder',
+			'HollowCylinderGeometry',
 			geometry ?? cylinderGeometry,
 			material
 		);
 	}
+
+	reconstructGeometryFromData(data: AdditionalGeometryDataType<CylinderParameters>): void {
+		super.reconstructGeometryFromData(data);
+		const {
+			parameters: { depth, radius, innerRadius }
+		} = data;
+
+		this.geometry = new HollowCylinderGeometry(
+			innerRadius as number,
+			radius as number,
+			depth as number,
+			32,
+			2,
+			2
+		);
+	}
 }
 
-const sphereGeometry = new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI);
+const sphereGeometry = new THREE.SphereGeometry();
 
 export class SphereFigure extends BasicFigure<THREE.SphereGeometry> {
 	readonly notRotatable = true;
 	constructor(
-		editor: Editor,
+		editor: YaptideEditor,
 		geometry?: THREE.SphereGeometry,
 		material?: THREE.MeshBasicMaterial
 	) {
-		super(editor, 'Sphere', 'SphereFigure', 'Sphere', geometry ?? sphereGeometry, material);
+		super(
+			editor,
+			'Sphere',
+			'SphereFigure',
+			'SphereGeometry',
+			geometry ?? sphereGeometry,
+			material
+		);
+	}
+
+	reconstructGeometryFromData(data: AdditionalGeometryDataType<SphereParameters>): void {
+		super.reconstructGeometryFromData(data);
+		const {
+			parameters: { radius }
+		} = data;
+		this.geometry = new THREE.SphereGeometry(radius as number);
 	}
 }
 

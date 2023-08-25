@@ -1,12 +1,13 @@
-import * as React from 'react';
+import { Button, Stack, Switch, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import { Button, Stack, Switch, Typography } from '@mui/material';
+import { ChangeEvent, useState } from 'react';
+
+import { convertToBestUnit } from '../../../util/convertUnits/Units';
 import { pages0DToCsv } from '../../../util/csv/Csv';
 import { saveString } from '../../../util/File';
 import { EstimatorResults } from './ResultsPanel';
-import { useState } from 'react';
-import { convertToBestUnit } from '../../../util/convertUnits/Units';
+
 export interface TablePage0DItem {
 	id: number;
 	name: string;
@@ -34,6 +35,7 @@ const columns: GridColDef[] = [
 
 const formatValue = (value: number) => {
 	const precision = 6;
+
 	if (value >= 0.0001 && value <= 10000) return value.toPrecision(precision);
 	else return value.toExponential(precision);
 };
@@ -63,7 +65,7 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 		};
 	});
 
-	const handleChangeUnitFixed = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleChangeUnitFixed = (event: ChangeEvent<HTMLInputElement>) => {
 		setUnitFixed(event.target.checked);
 	};
 
