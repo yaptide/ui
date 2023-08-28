@@ -1,6 +1,9 @@
 import { CapitalizeString } from '../../../util/Capitalize';
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationSceneChild } from '../../Simulation/Base/SimulationContainer';
+import {
+	SimulationSceneChild,
+	SimulationSceneContainer
+} from '../../Simulation/Base/SimulationContainer';
 import { ManagerParams, SimulationElementManager } from '../../Simulation/Base/SimulationManager';
 import { MethodArgs } from '../basic/AbstractCommand';
 import { ActionCommand } from '../basic/ActionCommand';
@@ -76,6 +79,23 @@ export class ObjectManagementFactory {
 				SimulationElementManager<TName, TChild>,
 				`remove${Capitalize<TName>}`
 			>
+		);
+	}
+
+	createReorderCommand<TName extends string, TChild extends SimulationSceneChild>(
+		name: TName,
+		element: TChild,
+		target: SimulationSceneContainer<TChild>,
+		newIndex: number
+	) {
+		return new ActionCommand(
+			this.editor,
+			target,
+			`Reorder ${name}`,
+			'reorder',
+			'reorder',
+			[element, newIndex],
+			[element, target.children.indexOf(element)]
 		);
 	}
 }

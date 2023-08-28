@@ -45,7 +45,7 @@ export class FilterContainer extends SimulationSceneContainer<ScoringFilter> {
 
 	// eslint-disable-next-line class-methods-use-this
 	duplicate(): FilterContainer {
-		throw new Error('Not implemnted');
+		throw new Error('Not implemented');
 	}
 }
 

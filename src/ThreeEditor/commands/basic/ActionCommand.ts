@@ -8,7 +8,7 @@ import { BaseCommandJSON, Command, MethodArgs } from './AbstractCommand';
  * Method and undoMethod must perform opposite actions with the same arguments
  */
 export class ActionCommand<
-	Target extends Record<string, unknown> & Record<Method, (...args: any[]) => unknown>,
+	Target extends Record<Method, (...args: any[]) => unknown>,
 	Method extends keyof Target,
 	UndoMethod extends keyof Target,
 	Args extends MethodArgs<Target, Method>
@@ -16,6 +16,7 @@ export class ActionCommand<
 	method: Method;
 	undoMethod: UndoMethod;
 	args: Args;
+	undoArgs: Args;
 	constructor(
 		editor: YaptideEditor,
 		target: Target,
@@ -23,6 +24,7 @@ export class ActionCommand<
 		method: Method,
 		undoMethod: UndoMethod,
 		args: Args,
+		undoArgs: Args = args,
 		id = -1,
 		updatable = false
 	) {
@@ -30,6 +32,7 @@ export class ActionCommand<
 		this.method = method;
 		this.undoMethod = undoMethod;
 		this.args = args;
+		this.undoArgs = undoArgs;
 	}
 
 	execute() {
@@ -37,11 +40,16 @@ export class ActionCommand<
 	}
 
 	undo() {
-		this.target[this.undoMethod](...this.args);
+		this.target[this.undoMethod](...this.undoArgs);
 	}
 
 	toJSON(): ActionCommandJSON<Target, Method, UndoMethod, Args> {
-		const data = { method: this.method, undoMethod: this.undoMethod, args: this.args };
+		const data = {
+			method: this.method,
+			undoMethod: this.undoMethod,
+			args: this.args,
+			undoArgs: this.undoArgs
+		};
 
 		return { ...super.toJSON(), data };
 	}
@@ -52,6 +60,7 @@ export class ActionCommand<
 		this.method = method;
 		this.undoMethod = undoMethod;
 		this.args = args;
+		this.undoArgs = args;
 	}
 }
 
@@ -66,6 +75,7 @@ type ActionCommandJSON<
 		method: Key;
 		undoMethod: UndoMethod;
 		args: Args;
+		undoArgs: Args;
 	};
 };
 //----------------------------------------------------------------------------------------------//

@@ -63,9 +63,7 @@ export abstract class Command<Target extends Record<string, unknown> = Record<st
  * @template T - target type
  * @template K - method name
  */
-export type MethodArgs<T extends Record<string, unknown>, K extends keyof T> = T[K] extends (
-	...args: any[]
-) => unknown
+export type MethodArgs<T, K extends keyof T> = T[K] extends (...args: any[]) => unknown
 	? Parameters<T[K]>
 	: never;
 

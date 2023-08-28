@@ -56,6 +56,22 @@ export abstract class SimulationSceneContainer<
 		return result;
 	}
 
+	reorder(child: TChild, newIndex: number): this {
+		const oldIndex = this.children.indexOf(child);
+
+		if (oldIndex === -1) throw new Error(`Child not found in container: ${child.name}`);
+
+		if (newIndex < 0 || newIndex >= this.children.length)
+			throw new Error(`Invalid index: ${newIndex}`);
+
+		if (oldIndex === newIndex) return this;
+
+		this.children.splice(oldIndex, 1);
+		this.children.splice(newIndex, 0, child);
+
+		return this;
+	}
+
 	constructor(
 		editor: YaptideEditor,
 		name: string | undefined,
