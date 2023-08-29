@@ -7,6 +7,7 @@ import {
 import { ManagerParams, SimulationElementManager } from '../../Simulation/Base/SimulationManager';
 import { MethodArgs } from '../basic/AbstractCommand';
 import { ActionCommand } from '../basic/ActionCommand';
+import { UpdateCommand } from '../basic/UpdateCommand';
 
 /**
  * General factory for creating commands that add or remove objects from a manager.
@@ -31,12 +32,16 @@ export class ObjectManagementFactory {
 		this.editor = editor;
 	}
 
-	createDuplicateCommand<
+	createDuplicateCommand = <
 		TChild extends SimulationSceneChild,
 		TManager extends SimulationElementManager<TNames[0], TChild, TNames[1]>,
 		TNames extends [string, string] = ManagerParams<TChild, TManager>
-	>(name: TNames[0], element: TChild, target: TManager) {
-		return new ActionCommand(
+	>(
+		name: TNames[0],
+		element: TChild,
+		target: TManager
+	) =>
+		new ActionCommand(
 			this.editor,
 			target,
 			`Duplicate ${name}`,
@@ -44,14 +49,13 @@ export class ObjectManagementFactory {
 			`remove${CapitalizeString(name)}`,
 			[element] as MethodArgs<TManager, `add${Capitalize<TNames[0]>}`>
 		);
-	}
 
-	createAddCommand<TName extends string, TChild extends SimulationSceneChild>(
+	createAddCommand = <TName extends string, TChild extends SimulationSceneChild>(
 		name: TName,
 		element: TChild,
 		target: SimulationElementManager<TName, TChild>
-	) {
-		return new ActionCommand(
+	) =>
+		new ActionCommand(
 			this.editor,
 			target,
 			`Add ${name}`,
@@ -62,14 +66,13 @@ export class ObjectManagementFactory {
 				`add${Capitalize<TName>}`
 			>
 		);
-	}
 
-	createRemoveCommand<TName extends string, TChild extends SimulationSceneChild>(
+	createRemoveCommand = <TName extends string, TChild extends SimulationSceneChild>(
 		name: TName,
 		element: TChild,
 		target: SimulationElementManager<TName, TChild>
-	) {
-		return new ActionCommand(
+	) =>
+		new ActionCommand(
 			this.editor,
 			target,
 			`Remove ${name}`,
@@ -80,15 +83,14 @@ export class ObjectManagementFactory {
 				`remove${Capitalize<TName>}`
 			>
 		);
-	}
 
-	createReorderCommand<TName extends string, TChild extends SimulationSceneChild>(
+	createReorderCommand = <TName extends string, TChild extends SimulationSceneChild>(
 		name: TName,
 		element: TChild,
 		target: SimulationSceneContainer<TChild>,
 		newIndex: number
-	) {
-		return new ActionCommand(
+	) =>
+		new ActionCommand(
 			this.editor,
 			target,
 			`Reorder ${name}`,
@@ -97,5 +99,13 @@ export class ObjectManagementFactory {
 			[element, newIndex],
 			[element, target.children.indexOf(element)]
 		);
-	}
+
+	createUpdatePropertyCommand = <
+		TChild extends SimulationSceneChild,
+		TProperty extends keyof TChild & string
+	>(
+		element: TChild,
+		property: TProperty,
+		newValue: TChild[TProperty]
+	) => new UpdateCommand(this.editor, element, `Update ${property}`, property, newValue);
 }

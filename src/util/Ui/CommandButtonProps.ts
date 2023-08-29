@@ -1,4 +1,4 @@
-import { Command } from '../../ThreeEditor/commands/basic/AbstractCommand';
+import { AbstractCommand } from '../../ThreeEditor/commands/basic/AbstractCommand';
 import { ObjectManagementFactory } from '../../ThreeEditor/commands/factories/ObjectManagementFactory';
 import { YaptideEditor } from '../../ThreeEditor/js/YaptideEditor';
 import { SimulationZone } from '../../ThreeEditor/Simulation/Base/SimulationZone';
@@ -175,8 +175,8 @@ export type CommandButtonProps = {
 	disabled?: boolean;
 };
 type CommandButtonTuple =
-	| [string, (() => Command) | undefined]
-	| [string, (() => Command) | undefined, boolean];
+	| [string, (() => AbstractCommand) | undefined]
+	| [string, (() => AbstractCommand) | undefined, boolean];
 
 type ManagerName = 'Figures' | 'Zones' | 'Detectors' | 'Special Components' | 'Filters' | 'Outputs';
 

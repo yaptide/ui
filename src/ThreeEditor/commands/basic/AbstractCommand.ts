@@ -1,5 +1,17 @@
 import { YaptideEditor } from '../../js/YaptideEditor';
 
+export type Command = {
+	readonly updatable: boolean;
+	inMemory: boolean;
+	id: number;
+	editor: YaptideEditor;
+	name: string;
+	type: string;
+	execute: () => void;
+	undo: () => void;
+	toJSON: () => BaseCommandJSON;
+};
+
 /**
  * Class defining the structure of all commands
  * @template execute - method to execute command, should not have any side effects
@@ -7,7 +19,10 @@ import { YaptideEditor } from '../../js/YaptideEditor';
  * @template toJSON - method to serialize command to JSON to be stored in local storage or to be saved to the file
  * @template fromJSON - method to deserialize command from JSON to restore history
  */
-export abstract class Command<Target extends Record<string, unknown> = Record<string, unknown>> {
+export abstract class AbstractCommand<
+	Target extends Record<string, unknown> = Record<string, unknown>
+> implements Command
+{
 	editor;
 	target;
 	private _type: string;
@@ -15,9 +30,13 @@ export abstract class Command<Target extends Record<string, unknown> = Record<st
 		return this._type;
 	}
 
+	private _updatable: boolean;
+	get updatable() {
+		return this._updatable;
+	}
+
 	name;
 	id;
-	readonly updatable;
 	inMemory;
 
 	constructor(
@@ -29,31 +48,25 @@ export abstract class Command<Target extends Record<string, unknown> = Record<st
 		updatable = false
 	) {
 		this.editor = editor;
-		this.target = target;
 		this._type = type;
 		this.name = name;
 		this.id = id;
-		this.updatable = updatable;
+		this._updatable = updatable;
 		this.inMemory = true;
+		this.target = target;
 	}
 
 	abstract execute(): void;
 	abstract undo(): void;
-	toJSON(): BaseCommandJSON<Target> {
+
+	toJSON(): BaseCommandJSON {
 		return {
 			type: this.type,
 			id: this.id,
 			name: this.name,
-			target: this.target,
+			updatable: this._updatable,
 			data: {}
 		};
-	}
-
-	fromJSON(json: BaseCommandJSON<Target>): void {
-		this._type = json.type;
-		this.id = json.id;
-		this.name = json.name;
-		this.target = json.target;
 	}
 }
 
@@ -67,11 +80,11 @@ export type MethodArgs<T, K extends keyof T> = T[K] extends (...args: any[]) => 
 	? Parameters<T[K]>
 	: never;
 
-export type BaseCommandJSON<Target extends Record<string, unknown>> = {
+export type BaseCommandJSON = {
 	type: string;
 	id: number;
 	name: string;
-	target: Target;
-	data: Record<string, unknown>;
+	data?: Record<string, unknown>;
+	updatable: boolean;
 };
 //----------------------------------------------------------------------------------------------//

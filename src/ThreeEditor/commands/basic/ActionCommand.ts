@@ -1,5 +1,5 @@
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { BaseCommandJSON, Command, MethodArgs } from './AbstractCommand';
+import { AbstractCommand, BaseCommandJSON, MethodArgs } from './AbstractCommand';
 
 /**
  * ActionCommand is a command that executes a method on a target
@@ -12,7 +12,7 @@ export class ActionCommand<
 	Method extends keyof Target,
 	UndoMethod extends keyof Target,
 	Args extends MethodArgs<Target, Method>
-> extends Command<Target> {
+> extends AbstractCommand<Target> {
 	method: Method;
 	undoMethod: UndoMethod;
 	args: Args;
@@ -44,23 +44,30 @@ export class ActionCommand<
 	}
 
 	toJSON(): ActionCommandJSON<Target, Method, UndoMethod, Args> {
-		const data = {
-			method: this.method,
-			undoMethod: this.undoMethod,
-			args: this.args,
-			undoArgs: this.undoArgs
-		};
+		const { method, undoMethod, args, undoArgs, target } = this;
 
-		return { ...super.toJSON(), data };
+		return { ...super.toJSON(), target, data: { method, undoMethod, args, undoArgs } };
 	}
 
-	fromJSON(json: ActionCommandJSON<Target, Method, UndoMethod, Args>): void {
-		super.fromJSON(json);
-		const { method, undoMethod, args } = json.data;
-		this.method = method;
-		this.undoMethod = undoMethod;
-		this.args = args;
-		this.undoArgs = args;
+	static fromJSON<
+		Target extends Record<Method, (...args: any[]) => unknown>,
+		Method extends keyof Target,
+		UndoMethod extends keyof Target,
+		Args extends MethodArgs<Target, Method>
+	>(editor: YaptideEditor, json: ActionCommandJSON<Target, Method, UndoMethod, Args>) {
+		const command = new ActionCommand(
+			editor,
+			json.target,
+			json.name,
+			json.data.method,
+			json.data.undoMethod,
+			json.data.args,
+			json.data.undoArgs,
+			json.id,
+			json.updatable
+		);
+
+		return command;
 	}
 }
 
@@ -70,7 +77,8 @@ type ActionCommandJSON<
 	Key extends keyof Target,
 	UndoMethod extends keyof Target,
 	Args extends MethodArgs<Target, Key>
-> = BaseCommandJSON<Target> & {
+> = BaseCommandJSON & {
+	target: Target;
 	data: {
 		method: Key;
 		undoMethod: UndoMethod;
