@@ -259,15 +259,6 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 												object={editor.physic}
 											/>
 										</Box>
-										<Divider light />
-										<Box>
-											<Typography
-												variant='h6'
-												sx={{ margin: '0.5rem 0' }}>
-												Special Components
-											</Typography>
-											<BeamModifiersConfiguration editor={editor} />
-										</Box>
 									</Stack>
 								</TabPanel>
 							</div>

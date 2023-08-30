@@ -128,7 +128,9 @@ export class ScoringManager
 
 	addOutput(output: ScoringOutput) {
 		this.outputContainer.add(output);
-		output.addQuantity(new ScoringQuantity(this.editor));
+
+		if (!output.quantities.length) output.addQuantity(new ScoringQuantity(this.editor));
+
 		this.editor.select(output);
 	}
 
