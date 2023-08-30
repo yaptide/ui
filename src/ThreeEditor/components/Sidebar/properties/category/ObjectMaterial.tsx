@@ -116,8 +116,9 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 								propertyDisabled={!stoppingPowerAvailable(watchedObject)}
 								label='Custom stopping power'
 								info={`Stopping table can be changed in settings. ${
-									!stoppingPowerAvailable(watchedObject) &&
-									'IMPORTANT: This setting is ignored material - has no available stopping power in table.'
+									!stoppingPowerAvailable(watchedObject)
+										? 'IMPORTANT: This setting is ignored. Material has no available custom stopping power in table. Default stopping power is used.'
+										: ''
 								}`}
 								enabled={
 									watchedObject.materialPropertiesOverrides.customStoppingPower
