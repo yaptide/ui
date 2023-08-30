@@ -67,7 +67,7 @@ export type RequestTopasConvert = Flatten<[InputConvertParam, RequestParam]>;
 export type RequestPostJob = Flatten<[InputDataParam, RequestParam]>;
 
 export const isEditorJson = (data: any): data is EditorJson => {
-	return data && data.metadata && data.metadata.title;
+	return !!(data && data.metadata && data.metadata.type === 'Editor');
 };
 
 export type RequestCancelJob = Flatten<[SimInfoParam, RequestParam]>;

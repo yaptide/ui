@@ -2,6 +2,7 @@ import * as THREE from 'three';
 
 import { isCounterMapError } from '../../../util/CounterMap/CounterMap';
 import { YaptideEditor } from '../../js/YaptideEditor.js';
+import { Icru } from './MaterialManager';
 import {
 	DEFAULT_MATERIAL_DENSITY,
 	DEFAULT_MATERIAL_ICRU,
@@ -13,8 +14,9 @@ export type RenderProps = Omit<SimulationMaterialJSON, 'uuid' | 'name' | 'icru' 
 export type SimulationMaterialJSON = {
 	uuid: string;
 	name: string;
-	icru: number;
+	icru: Icru;
 	density: number;
+	customStoppingPower?: boolean;
 	transparent?: boolean;
 	opacity?: number;
 	color?: number;
@@ -25,8 +27,9 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 	private proxy: SimulationMaterial;
 	private editor: YaptideEditor;
 	private colorProxy: THREE.Color;
-	icru: number;
+	icru: Icru;
 	density: number;
+	customStoppingPower: boolean = false;
 	renderProps: RenderProps;
 	defaultProps: RenderProps;
 	readonly isSimulationMaterial: true = true;
@@ -98,23 +101,25 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 	}
 
 	toJSON(): SimulationMaterialJSON {
-		const { uuid, name, icru, density, renderProps } = this;
+		const { uuid, name, icru, density, renderProps, customStoppingPower } = this;
 
 		return {
 			uuid,
 			name,
 			icru,
 			density,
+			...(customStoppingPower && { customStoppingPower }),
 			...renderProps
 		};
 	}
 
 	static fromJSON(
 		editor: YaptideEditor,
-		{ uuid, name, icru, density, ...renderProps }: SimulationMaterialJSON
+		{ uuid, name, icru, density, customStoppingPower, ...renderProps }: SimulationMaterialJSON
 	): SimulationMaterial {
 		const material = new SimulationMaterial(editor, name, icru, density);
 		material.uuid = uuid;
+		material.customStoppingPower = customStoppingPower ?? false;
 		material.renderProps = renderProps;
 		material.applyRenderProps();
 
@@ -136,6 +141,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 		result.renderProps = { ...source.renderProps };
 		result.density = source.density;
 		result.icru = source.icru;
+		result.customStoppingPower = source.customStoppingPower;
 
 		return new Proxy(result, this.overrideHandler) as this;
 	}

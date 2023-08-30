@@ -20,6 +20,7 @@ export type SimulationZoneJSON = Omit<
 
 interface MaterialOverridable {
 	density: number;
+	customStoppingPower: boolean;
 }
 
 type PropertyOverride<T = unknown> = {
@@ -37,6 +38,10 @@ const _get_default = (material: SimulationMaterial) => {
 			density: {
 				override: false,
 				value: material.density
+			},
+			customStoppingPower: {
+				override: false,
+				value: material.customStoppingPower
 			}
 		}
 	};
@@ -88,10 +93,9 @@ export abstract class SimulationZone
 	}
 
 	private resetCustomMaterial(): void {
-		this._materialPropertiesOverrides = {
+		this.materialPropertiesOverrides = {
 			..._get_default(this.material).materialPropertiesOverrides
 		};
-		this.usingCustomMaterial = false;
 	}
 
 	private reconstructMaterialFromJSON(json: SimulationZoneJSON) {
@@ -112,9 +116,9 @@ export abstract class SimulationZone
 	}
 
 	set simulationMaterial(value: SimulationMaterial) {
+		this.resetCustomMaterial();
 		this.material.decrement();
 		this.material = value;
-		this.resetCustomMaterial();
 		this.material.increment();
 	}
 
@@ -155,7 +159,7 @@ export abstract class SimulationZone
 		>((acc, [key, { override, value }]) => {
 			return {
 				...acc,
-				[key]: override ? value : undefined
+				...(override && { [key]: value })
 			};
 		}, {});
 

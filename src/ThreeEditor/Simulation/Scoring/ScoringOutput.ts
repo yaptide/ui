@@ -7,7 +7,7 @@ import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElem
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { Detector } from '../Detectors/Detector';
 import { ScoringFilter } from './ScoringFilter';
-import { isQuantity, ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
+import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
 
 export type ScoringOutputJSON = Omit<
 	SimulationElementJSON & {

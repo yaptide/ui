@@ -4,7 +4,8 @@ import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	ENERGY_MODEL_STRAGGLING,
 	MULTIPLE_SCATTERING,
-	Physics
+	Physics,
+	STOPPING_POWER_TABLE
 } from '../../../../Simulation/Physics/Physics';
 import {
 	BooleanPropertyField,
@@ -28,7 +29,7 @@ export function PhysicConfiguration(props: { editor: YaptideEditor; object: Phys
 				value={watchedObject.energyLoss}
 				onChange={value => setValue('energyLoss', value)}
 			/>
-			<></>
+
 			<BooleanPropertyField
 				label='Enable nuclear reactions (NUCRE)'
 				value={watchedObject.enableNuclearReactions}
@@ -47,6 +48,13 @@ export function PhysicConfiguration(props: { editor: YaptideEditor; object: Phys
 				value={watchedObject.multipleScattering}
 				onChange={value => setValue('multipleScattering', value)}
 				options={Object.keys(MULTIPLE_SCATTERING)}
+			/>
+
+			<SelectPropertyField
+				label='Custom Stopping Power Table'
+				value={watchedObject.stoppingPowerTable}
+				onChange={value => setValue('stoppingPowerTable', value)}
+				options={Object.keys(STOPPING_POWER_TABLE)}
 			/>
 		</PropertiesCategory>
 	);

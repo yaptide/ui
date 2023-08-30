@@ -614,6 +614,7 @@ YaptideEditor.prototype = {
 		this.specialComponentsManager.reset();
 		this.beam.reset();
 		this.physic.reset();
+		this.materialManager.reset();
 
 		this.geometries = {};
 		this.materials = {};
@@ -709,6 +710,7 @@ YaptideEditor.prototype = {
 			this.clear();
 		}
 	},
+
 	toJSON() {
 		// scripts clean up
 

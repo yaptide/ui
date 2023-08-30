@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 
 import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
+import { addCustomStoppingPowerTableToEditorJSON } from '../ThreeEditor/Simulation/CustomStoppingPower/CustomStoppingPower';
 import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { ScoringManagerJSON } from '../ThreeEditor/Simulation/Scoring/ScoringManager';
 import {
@@ -147,7 +148,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 	const postJob = useCallback(
 		(endPoint: string) =>
-			(
+			async (
 				...[
 					simData,
 					inputType,
@@ -163,6 +164,11 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 					editor: 'json',
 					files: 'files'
 				};
+
+				if (inputType === 'editor' && isEditorJson(simData)) {
+					console.log('addCustomStoppingPowerTableToEditorJSON');
+					await addCustomStoppingPowerTableToEditorJSON(simData);
+				}
 
 				const filedName = mapType[inputType];
 

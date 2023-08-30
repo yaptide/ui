@@ -20,6 +20,8 @@ export type MaterialManagerJSON = Omit<
 	never
 >;
 
+export type Icru = number;
+
 export class MaterialManager extends THREE.Object3D implements SimulationPropertiesType {
 	/****************************Private****************************/
 	private readonly metadata = {
@@ -166,10 +168,7 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 		const selectedMaterials = this.selectedMaterials.toJSON();
 		const materials = Object.entries(this._customMaterials)
 			.map(([_icru, material]) => material.toJSON())
-			.filter(
-				({ uuid, name, icru, density, ...rest }) =>
-					this.selectedMaterials.has(uuid) || Object.keys(rest).length !== 0
-			);
+			.filter(({ uuid }) => this.selectedMaterials.has(uuid));
 
 		return {
 			uuid,

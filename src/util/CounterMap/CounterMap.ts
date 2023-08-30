@@ -41,6 +41,7 @@ export class CounterMap<K extends string> {
 		return newValue;
 	}
 
+
 	get(key: K) {
 		return this.map.get(key);
 	}

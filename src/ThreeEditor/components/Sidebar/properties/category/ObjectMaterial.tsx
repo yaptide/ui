@@ -1,3 +1,5 @@
+import { Stack } from '@mui/material';
+import Typography from '@mui/material/Typography/Typography';
 import { Object3D } from 'three';
 
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
@@ -8,11 +10,17 @@ import { SetZoneMaterialCommand } from '../../../../js/commands/SetZoneMaterialC
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { isSimulationMesh } from '../../../../Simulation/Base/SimulationMesh';
 import { isSimulationPoints } from '../../../../Simulation/Base/SimulationPoints';
-import { isSimulationZone } from '../../../../Simulation/Base/SimulationZone';
+import { isSimulationZone, SimulationZone } from '../../../../Simulation/Base/SimulationZone';
+import { CustomStoppingPowerModels } from '../../../../Simulation/CustomStoppingPower/CustomStoppingPower';
 import { isBeam } from '../../../../Simulation/Physics/Beam';
 import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
 import { MaterialSelect } from '../../../Select/MaterialSelect';
-import { ColorInput, ConditionalNumberPropertyField, PropertyField } from '../fields/PropertyField';
+import {
+	ColorInput,
+	ConditionalNumberPropertyField,
+	ConditionalPropertyField,
+	PropertyField
+} from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
 export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D }) {
@@ -31,6 +39,12 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 		editor,
 		visibleFlag ? watchedObject.material : null
 	);
+
+	const { state: editorPhysic } = useSmartWatchEditorState(editor, editor.physic);
+
+	const stoppingPowerAvailable = (object: SimulationZone) => {
+		return object.material.icru in CustomStoppingPowerModels[editorPhysic.stoppingPowerTable];
+	};
 
 	return (
 		<PropertiesCategory
@@ -98,6 +112,45 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 								}}
 							/>
 
+							<ConditionalPropertyField
+								propertyDisabled={!stoppingPowerAvailable(watchedObject)}
+								label='Custom stopping power'
+								info={`Stopping table can be changed in settings. ${
+									!stoppingPowerAvailable(watchedObject)
+										? 'IMPORTANT: This setting is ignored. Material has no available custom stopping power in table. Default stopping power is used.'
+										: ''
+								}`}
+								enabled={
+									watchedObject.materialPropertiesOverrides.customStoppingPower
+										.value
+								}
+								onChangeEnabled={v => {
+									const newValue = {
+										...watchedObject.materialPropertiesOverrides,
+										customStoppingPower: {
+											value: v,
+											override: v
+										}
+									};
+
+									editor.execute(
+										new SetValueCommand(
+											editor,
+											watchedObject.object,
+											'materialPropertiesOverrides',
+											newValue
+										)
+									);
+								}}>
+								<Stack
+									direction='row'
+									spacing={1}
+									justifyContent='center'
+									alignItems='center'>
+									<Typography>{editorPhysic.stoppingPowerTable}</Typography>
+								</Stack>
+							</ConditionalPropertyField>
+
 							<ConditionalNumberPropertyField
 								label='Opacity'
 								value={watchedObjectMaterial?.opacity ?? 0}
@@ -128,11 +181,11 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 							/>
 						</>
 					)}
-
 					<PropertyField label={'Color'}>
 						<ColorInput
 							value={watchedObjectMaterial?.color.getHexString() ?? '#ffffff'}
-							onChange={v =>
+							onChange={v => {
+								console.log(watchedObject.object);
 								editor.execute(
 									new SetMaterialColorCommand(
 										editor,
@@ -140,8 +193,8 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 										'color',
 										v
 									)
-								)
-							}
+								);
+							}}
 						/>
 					</PropertyField>
 				</>
