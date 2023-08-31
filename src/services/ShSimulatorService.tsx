@@ -379,6 +379,8 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 						} else if (currentJobStatusData[StatusState.COMPLETED](data)) {
 							if (validStatusToCache(data))
 								statusDataCache.set(data.jobId, data, beforeCacheWrite);
+						} else if (currentJobStatusData[StatusState.CANCELED](data)) {
+							statusDataCache.set(data.jobId, data, beforeCacheWrite);
 						} else return undefined;
 
 						return data;
