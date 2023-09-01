@@ -166,7 +166,6 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 				};
 
 				if (inputType === 'editor' && isEditorJson(simData)) {
-					console.log('addCustomStoppingPowerTableToEditorJSON');
 					await addCustomStoppingPowerTableToEditorJSON(simData);
 				}
 
