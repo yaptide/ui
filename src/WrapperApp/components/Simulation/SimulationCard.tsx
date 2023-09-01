@@ -25,9 +25,11 @@ import { SxProps, Theme } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { Fragment, ReactNode, useMemo, useState } from 'react';
 
+import { useDialog } from '../../../services/DialogService';
 import { useLoader } from '../../../services/LoaderService';
-import { useShSimulation } from '../../../services/ShSimulatorService';
+import { FullSimulationData, useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
+import { titleToKebabCase } from '../../../ThreeEditor/components/Dialog/CustomDialog';
 import {
 	currentJobStatusData,
 	currentTaskStatusData,
@@ -35,7 +37,6 @@ import {
 	SimulationInputFiles,
 	StatusState
 } from '../../../types/ResponseTypes';
-import { saveString } from '../../../util/File';
 import { SimulationProgressBar } from './SimulationProgressBar';
 
 type SimulationCardProps = {
@@ -72,8 +73,9 @@ export default function SimulationCard({
 }: SimulationCardProps) {
 	const { resultsSimulationData } = useStore();
 	const { loadFromJson } = useLoader();
-	const { getJobLogs, getJobInputs } = useShSimulation();
+	const { getJobLogs, getJobInputs, getFullSimulationData } = useShSimulation();
 	const { enqueueSnackbar } = useSnackbar();
+	const [open] = useDialog('saveFile');
 
 	const [disableLoadJson, setDisableLoadJson] = useState(false);
 
@@ -141,7 +143,16 @@ export default function SimulationCard({
 	};
 
 	const onClickSaveToFile = () => {
-		saveString(JSON.stringify(simulationStatus), `${simulationStatus.title}_result.json`);
+		getFullSimulationData(simulationStatus)
+			.then((simulation: FullSimulationData | undefined) => {
+				open({
+					name: `${titleToKebabCase(simulation?.title ?? 'simulation')}-result.json`,
+					results: simulation
+				});
+			})
+			.catch(() => {
+				enqueueSnackbar('Could not load simulation data', { variant: 'error' });
+			});
 	};
 
 	const onClickLoadToEditor = async (simulation: JobStatusData) => {

@@ -57,11 +57,11 @@ export type TopasInputFilesNames = (typeof _orderedTopasInputFilesNames)[number]
 export type FlukaInputFilesNames = (typeof _orderedFlukaInputFilesNames)[number];
 
 export type InputFilesRecord<FileNames extends string, OptionalNames extends string> = Omit<
-	| {
-			[Key in Exclude<FileNames, OptionalNames>]: string;
-	  } & {
-			[Key in OptionalNames]?: string;
-	  },
+	{
+		[Key in Exclude<FileNames, OptionalNames>]: string;
+	} & {
+		[Key in OptionalNames]?: string;
+	},
 	never
 >;
 type ShInputFilesRecord = InputFilesRecord<ShInputFilesNames, 'info.json' | 'sobp.dat'>;
@@ -132,7 +132,7 @@ type SimulationsPage = Omit<
 >;
 
 /* ------------------------------------ */
-// Types defining all posible types of task status data
+// Types defining all possible types of task status data
 type TaskStatusType<T extends StatusState, U extends {}> = TypeIdentifiedByKey<
 	'taskState',
 	T,
@@ -144,7 +144,7 @@ type TaskStatusType<T extends StatusState, U extends {}> = TypeIdentifiedByKey<
 	}
 >;
 
-export type TaskSatusCompleted = TaskStatusType<
+export type TaskStatusCompleted = TaskStatusType<
 	StatusState.COMPLETED,
 	{ startTime: Date; endTime: Date }
 >;
@@ -156,7 +156,7 @@ export type TaskStatusFailed = TaskStatusType<StatusState.FAILED, {}>;
 export type TaskStatusRunning = TaskStatusType<StatusState.RUNNING, { estimatedTime?: TaskTime }>;
 
 type TaskAllStatuses =
-	| TaskSatusCompleted
+	| TaskStatusCompleted
 	| TaskStatusPending
 	| TaskStatusFailed
 	| TaskStatusRunning;
@@ -165,7 +165,7 @@ type TaskUnknownStatus = Partial<ObjUnionToKeyUnion<TaskAllStatuses>>;
 /* ------------------------------------ */
 
 /* ------------------------------------ */
-// Types defining all posible types of job status data
+// Types defining all possible types of job status data
 type JobStatusType<T extends StatusState, U extends Object> = TypeIdentifiedByKey<
 	'jobState',
 	T,
@@ -275,7 +275,7 @@ type JobStatusMap = {
 };
 
 type TaskStatusMap = {
-	[StatusState.COMPLETED]: TaskSatusCompleted;
+	[StatusState.COMPLETED]: TaskStatusCompleted;
 	[StatusState.RUNNING]: TaskStatusRunning;
 	[StatusState.PENDING]: TaskStatusPending;
 	[StatusState.FAILED]: TaskStatusFailed;
