@@ -157,6 +157,11 @@ type TaskAllStatuses =
 	| TaskStatusFailed
 	| TaskStatusRunning;
 
+/**
+ * This type is used to represent the status of a task of unknown type.
+ * To make it easier to read, it is a shorthand for `Partial<ObjUnionToKeyUnion<TaskAllStatuses>>`
+ * and should equal to it in all cases.
+ */
 type TaskUnknownStatus = {
 	startTime?: Date | undefined;
 	endTime?: Date | undefined;
@@ -170,7 +175,7 @@ type TaskUnknownStatus = {
 	simulatedPrimaries?: number | undefined;
 	taskId?: number | undefined;
 	estimatedTime?: TaskTime | undefined;
-}; //Partial<ObjUnionToKeyUnion<TaskAllStatuses>>;
+};
 /* ------------------------------------ */
 
 /* ------------------------------------ */
@@ -211,6 +216,11 @@ type JobAllStatuses =
 	| JobStatusFailed
 	| JobStatusCanceled;
 
+/**
+ * This type is used to represent the status of a job of unknown type.
+ * To make it easier to read, it is a shorthand for `Partial<ObjUnionToKeyUnion<JobAllStatuses>>`
+ * and should equal to it in all cases.
+ */
 type JobUnknownStatus = {
 	jobState?:
 		| StatusState.PENDING
@@ -220,7 +230,7 @@ type JobUnknownStatus = {
 		| StatusState.CANCELED;
 	message?: string;
 	jobTasksStatus?: Array<TaskUnknownStatus>;
-}; //Partial<ObjUnionToKeyUnion<JobAllStatuses>>;
+};
 
 type ResponseJobRequestFailure = Omit<
 	{
