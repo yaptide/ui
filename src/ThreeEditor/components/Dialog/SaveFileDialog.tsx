@@ -23,7 +23,7 @@ const saveJson = (data: {}, fileName: string) => {
 
 export function SaveFileDialog({
 	onClose,
-	name: defaultName = 'editor',
+	name: defaultName,
 	results: providedResults
 }: ConcreteDialogProps<{ name?: string; results?: FullSimulationData }>) {
 	const { yaptideEditor } = useStore();
@@ -39,7 +39,10 @@ export function SaveFileDialog({
 		setKeepResults(canKeepResults() || !!providedResults);
 	}, [canKeepResults, providedResults]);
 
-	const [name, setName] = useState<string>(defaultName);
+	const [name, setName] = useState<string>(
+		defaultName ?? yaptideEditor?.config.getKey('project/title') ?? 'editor'
+	);
+
 	const changeName = (event: ChangeEvent<HTMLInputElement>) => {
 		setName(event.target.value);
 	};
@@ -63,7 +66,7 @@ export function SaveFileDialog({
 					}}>
 					<TextField
 						label='File name'
-						value={defaultName}
+						value={name}
 						variant='outlined'
 						onChange={changeName}
 					/>
@@ -90,8 +93,11 @@ export function SaveFileDialog({
 			<Button
 				onClick={() => {
 					onClose();
-					yaptideEditor &&
+
+					if (yaptideEditor) {
+						yaptideEditor?.config.setKey('project/title', name);
 						saveJson(keepResults && results ? results : yaptideEditor?.toJSON(), name);
+					}
 				}}>
 				Save
 			</Button>
