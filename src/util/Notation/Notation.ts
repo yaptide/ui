@@ -100,7 +100,7 @@ export function snakeToCamelCase<T extends unknown>(
 	if (typeof obj === 'string') return camelize(obj as string) as SnakeToCamelCaseObject<T>;
 	if (Array.isArray(obj))
 		return obj.map(o => {
-			if (typeof o === 'string') return camelize(o as string);
+			if (typeof o === 'string') return o;
 			if (typeof o === 'object' && o) return snakeToCamelCase(o, recursive);
 
 			return o;
@@ -109,7 +109,7 @@ export function snakeToCamelCase<T extends unknown>(
 		return Object.fromEntries(
 			Object.entries(obj).map(([key, value]) => [
 				camelize(key),
-				recursive ? snakeToCamelCase(value, recursive) : value
+				recursive && typeof value !== 'string' ? snakeToCamelCase(value, recursive) : value
 			])
 		) as SnakeToCamelCaseObject<T>;
 
