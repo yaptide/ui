@@ -105,35 +105,20 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				hooks: {
 					afterResponse: [
 						async (_request, _options, response) => {
-							switch (response?.status) {
-								case 401:
-									enqueueSnackbar('Please log in.', { variant: 'warning' });
-									setUser(null);
-
-									break;
-								case 403:
-									enqueueSnackbar('Please log in again.', { variant: 'warning' });
-									setUser(null);
-
-									break;
-							}
+							if (response?.status in [401, 403]) setUser(null);
+							if (response?.status === 403)
+								enqueueSnackbar('Please log in again.', { variant: 'warning' });
 
 							if (response?.status > 300) {
 								const message = await response
 									.json()
 									.then(parseYaptideResponseMessage);
 
-								if (message !== 'No token provided')
-									enqueueSnackbar(
-										await response.json().then(parseYaptideResponseMessage),
-										{
-											variant: 'error'
-										}
-									);
-								console.error(
-									response.status,
-									await response.json().then(parseYaptideResponseMessage)
-								);
+								enqueueSnackbar(message, {
+									variant: 'error'
+								});
+
+								return Promise.reject(response);
 							}
 						}
 					]
