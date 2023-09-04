@@ -53,11 +53,11 @@ export type TopasInputFilesNames = (typeof _orderedTopasInputFilesNames)[number]
 export type FlukaInputFilesNames = (typeof _orderedFlukaInputFilesNames)[number];
 
 export type InputFilesRecord<FileNames extends string, OptionalNames extends string> = Omit<
-	| {
-			[Key in Exclude<FileNames, OptionalNames>]: string;
-	  } & {
-			[Key in OptionalNames]?: string;
-	  },
+	{
+		[Key in Exclude<FileNames, OptionalNames>]: string;
+	} & {
+		[Key in OptionalNames]?: string;
+	},
 	never
 >;
 type ShInputFilesRecord = InputFilesRecord<ShInputFilesNames, 'info.json' | 'sobp.dat'>;
@@ -128,7 +128,7 @@ type SimulationsPage = Omit<
 >;
 
 /* ------------------------------------ */
-// Types defining all posible types of task status data
+// Types defining all possible types of task status data
 type TaskStatusType<T extends StatusState, U extends {}> = TypeIdentifiedByKey<
 	'taskState',
 	T,
@@ -179,7 +179,7 @@ type TaskUnknownStatus = {
 /* ------------------------------------ */
 
 /* ------------------------------------ */
-// Types defining all posible types of job status data
+// Types defining all possible types of job status data
 type JobStatusType<T extends StatusState, U extends Object> = TypeIdentifiedByKey<
 	'jobState',
 	T,

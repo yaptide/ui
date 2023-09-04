@@ -43,7 +43,8 @@ function ResultsPanel() {
 	const onClickSaveToFile = () => {
 		open({
 			name: `${titleToKebabCase(simulation?.title ?? 'simulation')}-result.json`,
-			results: simulation
+			results: simulation,
+			disableCheckbox: true
 		});
 	};
 
