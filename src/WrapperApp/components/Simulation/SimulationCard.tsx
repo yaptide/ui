@@ -147,7 +147,8 @@ export default function SimulationCard({
 			.then((simulation: FullSimulationData | undefined) => {
 				open({
 					name: `${titleToKebabCase(simulation?.title ?? 'simulation')}-result.json`,
-					results: simulation
+					results: simulation,
+					disableCheckbox: true
 				});
 			})
 			.catch(() => {
