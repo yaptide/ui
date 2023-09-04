@@ -10,6 +10,7 @@ import { readFile } from '../../../services/LoaderService';
 import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
+import { addCustomStoppingPowerTableToEditorJSON } from '../../../ThreeEditor/Simulation/CustomStoppingPower/CustomStoppingPower';
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
 	_defaultFlukaInputFiles,
@@ -43,6 +44,8 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 
 	const handleConvert = useCallback(
 		async (editorJSON: EditorJson): Promise<SimulationInputFiles> => {
+			await addCustomStoppingPowerTableToEditorJSON(editorJSON);
+
 			switch (generator) {
 				case 'remote':
 					return convertToInputFiles(editorJSON, controller.signal).then(res => {

@@ -122,11 +122,11 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 					.sort(([name1, _1], [name2, _2]) => {
 						const index1 = isKnownInputFile(name1)
 							? _orderedShInputFilesNames.indexOf(name1)
-							: -1 + 1;
+							: _orderedShInputFilesNames.length;
 
 						const index2 = isKnownInputFile(name2)
 							? _orderedShInputFilesNames.indexOf(name2)
-							: -1 + 1;
+							: _orderedShInputFilesNames.length;
 
 						return index1 - index2;
 					})
