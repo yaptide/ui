@@ -270,17 +270,11 @@ export default function SimulationPanel({
 			} else {
 				const endPoint = `jobs/${info.metadata.platform.toLowerCase()}`;
 				cancelJob(endPoint)(info, controller.signal).then(() => {
-					autoRefreshPage();
+					refreshPage();
 				});
 			}
 		},
-		[
-			simulationInfo,
-			cancelJob,
-			controller.signal,
-			autoRefreshPage,
-			setLocalResultsSimulationData
-		]
+		[simulationInfo, setLocalResultsSimulationData, cancelJob, controller.signal, refreshPage]
 	);
 
 	const handlePageChange = (event: ChangeEvent<unknown>, pageIdx: number) =>

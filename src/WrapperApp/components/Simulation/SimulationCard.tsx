@@ -99,6 +99,8 @@ export default function SimulationCard({
 				return 'success.main';
 			case StatusState.LOCAL:
 				return 'warning.main';
+			case StatusState.CANCELED:
+				return 'common.black';
 			default:
 				return '';
 		}
@@ -376,6 +378,7 @@ export default function SimulationCard({
 									<Button
 										sx={{ fontSize: '.8em' }}
 										color='info'
+										onClick={() => handleDelete(simulationStatus.jobId)}
 										size='small'>
 										Cancel
 									</Button>

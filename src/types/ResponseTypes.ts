@@ -1,12 +1,7 @@
 import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
-import {
-	DataWithStatus,
-	LookUp,
-	ObjUnionToKeyUnion,
-	TypeIdentifiedByKey
-} from './TypeTransformUtil';
+import { DataWithStatus, LookUp, TypeIdentifiedByKey } from './TypeTransformUtil';
 
 /* ------------Utility types------------ */
 export enum StatusState {
@@ -14,7 +9,8 @@ export enum StatusState {
 	RUNNING = 'RUNNING',
 	FAILED = 'FAILED',
 	COMPLETED = 'COMPLETED',
-	LOCAL = 'LOCAL'
+	LOCAL = 'LOCAL',
+	CANCELED = 'CANCELED'
 }
 
 export type YaptideResponse = {
@@ -161,7 +157,25 @@ type TaskAllStatuses =
 	| TaskStatusFailed
 	| TaskStatusRunning;
 
-type TaskUnknownStatus = Partial<ObjUnionToKeyUnion<TaskAllStatuses>>;
+/**
+ * This type is used to represent the status of a task of unknown type.
+ * To make it easier to read, it is a shorthand for `Partial<ObjUnionToKeyUnion<TaskAllStatuses>>`
+ * and should equal to it in all cases.
+ */
+type TaskUnknownStatus = {
+	startTime?: Date | undefined;
+	endTime?: Date | undefined;
+	taskState?:
+		| StatusState.PENDING
+		| StatusState.RUNNING
+		| StatusState.FAILED
+		| StatusState.COMPLETED
+		| undefined;
+	requestedPrimaries?: number | undefined;
+	simulatedPrimaries?: number | undefined;
+	taskId?: number | undefined;
+	estimatedTime?: TaskTime | undefined;
+};
 /* ------------------------------------ */
 
 /* ------------------------------------ */
@@ -179,6 +193,13 @@ export type JobStatusCompleted = JobStatusType<
 	}
 >;
 
+export type JobStatusCanceled = JobStatusType<
+	StatusState.CANCELED,
+	{
+		jobTasksStatus: Array<TaskUnknownStatus>;
+	}
+>;
+
 export type JobStatusRunning = JobStatusType<
 	StatusState.RUNNING,
 	{ jobTasksStatus: Array<TaskUnknownStatus> }
@@ -188,9 +209,28 @@ export type JobStatusPending = JobStatusType<StatusState.PENDING, {}>;
 
 export type JobStatusFailed = JobStatusType<StatusState.FAILED, {}>;
 
-type JobAllStatuses = JobStatusCompleted | JobStatusRunning | JobStatusPending | JobStatusFailed;
+type JobAllStatuses =
+	| JobStatusCompleted
+	| JobStatusRunning
+	| JobStatusPending
+	| JobStatusFailed
+	| JobStatusCanceled;
 
-type JobUnknownStatus = Partial<ObjUnionToKeyUnion<JobAllStatuses>>;
+/**
+ * This type is used to represent the status of a job of unknown type.
+ * To make it easier to read, it is a shorthand for `Partial<ObjUnionToKeyUnion<JobAllStatuses>>`
+ * and should equal to it in all cases.
+ */
+type JobUnknownStatus = {
+	jobState?:
+		| StatusState.PENDING
+		| StatusState.RUNNING
+		| StatusState.FAILED
+		| StatusState.COMPLETED
+		| StatusState.CANCELED;
+	message?: string;
+	jobTasksStatus?: Array<TaskUnknownStatus>;
+};
 
 type ResponseJobRequestFailure = Omit<
 	{
@@ -240,6 +280,8 @@ export const currentJobStatusData = {
 		jobStatusGuard(data, StatusState.PENDING),
 	[StatusState.FAILED]: (data: unknown): data is JobStatusMap[StatusState.FAILED] =>
 		jobStatusGuard(data, StatusState.FAILED),
+	[StatusState.CANCELED]: (data: unknown): data is JobStatusMap[StatusState.CANCELED] =>
+		jobStatusGuard(data, StatusState.CANCELED),
 	// eslint-disable-next-line no-useless-computed-key
 	['hasSpecificProperty']: <T extends string>(
 		data: unknown,
@@ -272,6 +314,7 @@ type JobStatusMap = {
 	[StatusState.RUNNING]: JobStatusRunning & SimulationInfo;
 	[StatusState.PENDING]: JobStatusPending & SimulationInfo;
 	[StatusState.FAILED]: JobStatusFailed & SimulationInfo;
+	[StatusState.CANCELED]: JobStatusCanceled & SimulationInfo;
 };
 
 type TaskStatusMap = {
