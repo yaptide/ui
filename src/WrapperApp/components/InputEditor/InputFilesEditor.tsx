@@ -3,6 +3,7 @@ import useTheme from '@mui/system/useTheme';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 
 import { useConfig } from '../../../config/ConfigService';
+import { useAuth } from '../../../services/AuthService';
 import { useDialog } from '../../../services/DialogService';
 import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
@@ -28,6 +29,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 	const [open] = useDialog('runSimulation');
 	const { setTrackedId } = useStore();
 	const { demoMode } = useConfig();
+	const { isAuthorized } = useAuth();
 	const inputFiles = props.inputFiles ?? _defaultShInputFiles;
 	const theme = useTheme();
 	const largeFileSize = 100_000;
@@ -81,7 +83,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 				<Button
 					color='success'
 					variant='contained'
-					disabled={demoMode}
+					disabled={demoMode || !isAuthorized}
 					onClick={() =>
 						open({
 							inputFiles: Object.fromEntries(
