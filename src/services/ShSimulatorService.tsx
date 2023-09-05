@@ -24,6 +24,7 @@ import {
 	JobStatusCompleted,
 	JobStatusData,
 	JobStatusFailed,
+	PlatformType,
 	ResponseGetJobInputs,
 	ResponseGetJobLogs,
 	ResponseGetJobResults,
@@ -31,6 +32,7 @@ import {
 	ResponseGetPageContents,
 	ResponsePostJob,
 	ResponseShConvert,
+	SimulationInfo,
 	StatusState,
 	YaptideResponse
 } from '../types/ResponseTypes';
@@ -61,12 +63,10 @@ export const fetchItSymbol = Symbol('fetchItSymbol');
 export interface RestSimulationContext {
 	postJobDirect: (...args: RequestPostJob) => Promise<ResponsePostJob>;
 	postJobBatch: (...args: RequestPostJob) => Promise<ResponsePostJob>;
-	cancelJob: (endPoint: string) => (...args: RequestCancelJob) => Promise<unknown>;
+	cancelJob: (...args: RequestCancelJob) => Promise<unknown>;
 	convertToInputFiles: (...args: RequestShConvert) => Promise<ResponseShConvert>;
 	getHelloWorld: (...args: RequestParam) => Promise<unknown>;
-	getJobStatus: (
-		endPoint: string
-	) => (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
+	getJobStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
 	getJobInputs: (...args: RequestGetJobInputs) => Promise<JobInputs | undefined>;
 	getJobResults: (...args: RequestGetJobResults) => Promise<JobResults | undefined>;
 	getJobLogs: (...args: RequestGetJobLogs) => Promise<JobLogs | undefined>;
@@ -145,6 +145,24 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 				.then(r => !!r.message),
 		[authKy]
 	);
+
+	/**
+	 * Returns the endpoint based on the simulation info.
+	 * If the platform is not known, it will return 'direct'.
+	 * The platform name is stored in metadata of the simulation info and is typed by `PlatformType`.
+	 * Endpoints are named after the platform types.
+	 * @see PlatformType
+	 * @param info - The simulation info object.
+	 * @returns The endpoint string.
+	 */
+	const getEndpointFromSimulationInfo = (info: SimulationInfo) => {
+		const platform = info.metadata.platform.toLowerCase() as Lowercase<PlatformType>;
+
+		if (platform in ['direct', 'batch']) return platform;
+		console.error(`Simulation platform is unknown: ${info.metadata.platform}`);
+
+		return 'direct';
+	};
 
 	const postJob = useCallback(
 		(endPoint: string) =>
@@ -347,63 +365,61 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 	};
 
 	const getJobStatus = useCallback(
-		(endPoint: string) =>
-			(...[info, cache = true, beforeCacheWrite, signal]: RequestGetJobStatus) => {
-				const { jobId } = info;
+		(...[info, cache = true, beforeCacheWrite, signal]: RequestGetJobStatus) => {
+			const { jobId } = info;
 
-				if (cache && statusDataCache.has(jobId))
-					return Promise.resolve<JobStatusData>({
-						...statusDataCache.get(jobId),
+			if (cache && statusDataCache.has(jobId))
+				return Promise.resolve<JobStatusData>({
+					...statusDataCache.get(jobId),
+					...info
+				});
+
+			return authKy
+				.get(getEndpointFromSimulationInfo(info), {
+					signal,
+					searchParams: camelToSnakeCase({ jobId })
+				})
+				.json<ResponseGetJobStatus>()
+				.then(response => {
+					const data = {
+						...response,
 						...info
-					});
+					};
 
-				return authKy
-					.get(endPoint, {
-						signal,
-						searchParams: camelToSnakeCase({ jobId })
-					})
-					.json<ResponseGetJobStatus>()
-					.then(response => {
-						const data = {
-							...response,
-							...info
-						};
+					if (currentJobStatusData[StatusState.PENDING](data)) {
+					} else if (currentJobStatusData[StatusState.RUNNING](data)) {
+					} else if (currentJobStatusData[StatusState.FAILED](data)) {
+						console.log(data.message);
 
-						if (currentJobStatusData[StatusState.PENDING](data)) {
-						} else if (currentJobStatusData[StatusState.RUNNING](data)) {
-						} else if (currentJobStatusData[StatusState.FAILED](data)) {
-							console.log(data.message);
-
+						statusDataCache.set(data.jobId, data, beforeCacheWrite);
+					} else if (currentJobStatusData[StatusState.COMPLETED](data)) {
+						if (validStatusToCache(data))
 							statusDataCache.set(data.jobId, data, beforeCacheWrite);
-						} else if (currentJobStatusData[StatusState.COMPLETED](data)) {
-							if (validStatusToCache(data))
-								statusDataCache.set(data.jobId, data, beforeCacheWrite);
-						} else if (currentJobStatusData[StatusState.CANCELED](data)) {
-							statusDataCache.set(data.jobId, data, beforeCacheWrite);
-						} else return undefined;
+					} else if (currentJobStatusData[StatusState.CANCELED](data)) {
+						statusDataCache.set(data.jobId, data, beforeCacheWrite);
+					} else return undefined;
 
-						return data;
-					})
-					.catch(e => {
-						console.error(e);
+					return data;
+				})
+				.catch(e => {
+					console.error(e);
 
-						return undefined;
-					});
-			},
+					return undefined;
+				});
+		},
 		[authKy, statusDataCache]
 	);
 
 	const cancelJob = useCallback(
-		(endPoint: string) =>
-			(...[{ jobId }, signal]: RequestCancelJob) =>
-				authKy
-					.delete(endPoint, {
-						signal,
-						searchParams: camelToSnakeCase({ jobId })
-					})
-					.then(() => {
-						statusDataCache.delete(jobId);
-					}),
+		(...[info, signal]: RequestCancelJob) =>
+			authKy
+				.delete(getEndpointFromSimulationInfo(info), {
+					signal,
+					searchParams: camelToSnakeCase(info.jobId)
+				})
+				.then(() => {
+					statusDataCache.delete(info.jobId);
+				}),
 		[authKy, statusDataCache]
 	);
 
@@ -430,7 +446,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 					const endPoint = `jobs/${info.metadata.platform.toLowerCase()}`;
 
-					return getJobStatus(endPoint)(info, cache, beforeCacheWrite, signal);
+					return getJobStatus(info, cache, beforeCacheWrite, signal);
 				})
 			).then(dataList => {
 				const data = dataList.filter(data => data !== undefined) as JobStatusData[];
