@@ -12,7 +12,6 @@ import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import { Context } from '../../js/EditorContext';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
-import { BeamModifiersConfiguration } from './properties/category/RangeModulatorConfiguration';
 import { PropertiesPanel } from './properties/PropertiesPanel';
 import { SidebarTree } from './SidebarTree/SidebarTree';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
