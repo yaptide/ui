@@ -33,10 +33,10 @@ export class ZoneContainer extends SimulationSceneContainer<SimulationZone> {
 		super(editor, 'Zones', 'ZoneGroup', zoneLoader(editor));
 	}
 
-	remove(zone: SimulationZone): this {
-		zone.simulationMaterial.decrement();
+	remove(...zones: SimulationZone[]): this {
+		for (const zone of zones) zone.simulationMaterial.decrement();
 
-		return super.remove(zone);
+		return super.remove(...zones);
 	}
 
 	// eslint-disable-next-line class-methods-use-this
