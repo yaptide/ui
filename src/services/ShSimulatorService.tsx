@@ -162,7 +162,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 		if (platform in ['jobs/direct', 'jobs/batch']) return platform;
 		console.error(`Simulation platform is unknown: ${info.metadata.platform}`);
 
-		return 'jobs/direct';
+		return 'jobs';
 	};
 
 	const postJob = useCallback(
@@ -446,7 +446,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 						return undefined;
 					}
 
-					return getJobStatus(info, cache, beforeCacheWrite, signal)('jobs/');
+					return getJobStatus(info, cache, beforeCacheWrite, signal)('jobs');
 				})
 			).then(dataList => {
 				const data = dataList.filter(data => data !== undefined) as JobStatusData[];
