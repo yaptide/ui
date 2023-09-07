@@ -49,9 +49,10 @@ export abstract class SimulationSceneContainer<
 		return result;
 	}
 
-	remove(child: TChild): this {
-		const result = super.remove(child);
-		this.editor.signals.objectRemoved.dispatch(child);
+	remove(...children: TChild[]): this {
+		const result = super.remove(...children);
+
+		for (const child of children) this.editor.signals.objectRemoved.dispatch(child);
 
 		return result;
 	}
