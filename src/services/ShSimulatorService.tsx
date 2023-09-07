@@ -148,7 +148,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 	/**
 	 * Returns the endpoint based on the simulation info.
-	 * If the platform is not known, it will return 'direct'.
+	 * If the platform is not known, it will return 'jobs/direct'.
 	 * The platform name is stored in metadata of the simulation info and is typed by `PlatformType`.
 	 * Endpoints are named after the platform types.
 	 * @see PlatformType
@@ -156,12 +156,13 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 	 * @returns The endpoint string.
 	 */
 	const getEndpointFromSimulationInfo = (info: SimulationInfo) => {
-		const platform = info.metadata.platform.toLowerCase() as Lowercase<PlatformType>;
+		const platform =
+			`jobs/${info.metadata.platform.toLowerCase()}` as `jobs/${Lowercase<PlatformType>}`;
 
-		if (platform in ['direct', 'batch']) return platform;
+		if (platform in ['jobs/direct', 'jobs/batch']) return platform;
 		console.error(`Simulation platform is unknown: ${info.metadata.platform}`);
 
-		return 'direct';
+		return 'jobs/direct';
 	};
 
 	const postJob = useCallback(
