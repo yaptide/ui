@@ -366,48 +366,49 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 	};
 
 	const getJobStatus = useCallback(
-		(...[info, cache = true, beforeCacheWrite, signal]: RequestGetJobStatus) => {
-			const { jobId } = info;
+		(...[info, cache = true, beforeCacheWrite, signal]: RequestGetJobStatus) =>
+			(endpoint: string) => {
+				const { jobId } = info;
 
-			if (cache && statusDataCache.has(jobId))
-				return Promise.resolve<JobStatusData>({
-					...statusDataCache.get(jobId),
-					...info
-				});
-
-			return authKy
-				.get(getEndpointFromSimulationInfo(info), {
-					signal,
-					searchParams: camelToSnakeCase({ jobId })
-				})
-				.json<ResponseGetJobStatus>()
-				.then(response => {
-					const data = {
-						...response,
+				if (cache && statusDataCache.has(jobId))
+					return Promise.resolve<JobStatusData>({
+						...statusDataCache.get(jobId),
 						...info
-					};
+					});
 
-					if (currentJobStatusData[StatusState.PENDING](data)) {
-					} else if (currentJobStatusData[StatusState.RUNNING](data)) {
-					} else if (currentJobStatusData[StatusState.FAILED](data)) {
-						console.log(data.message);
+				return authKy
+					.get(endpoint, {
+						signal,
+						searchParams: camelToSnakeCase({ jobId })
+					})
+					.json<ResponseGetJobStatus>()
+					.then(response => {
+						const data = {
+							...response,
+							...info
+						};
 
-						statusDataCache.set(data.jobId, data, beforeCacheWrite);
-					} else if (currentJobStatusData[StatusState.COMPLETED](data)) {
-						if (validStatusToCache(data))
+						if (currentJobStatusData[StatusState.PENDING](data)) {
+						} else if (currentJobStatusData[StatusState.RUNNING](data)) {
+						} else if (currentJobStatusData[StatusState.FAILED](data)) {
+							console.log(data.message);
+
 							statusDataCache.set(data.jobId, data, beforeCacheWrite);
-					} else if (currentJobStatusData[StatusState.CANCELED](data)) {
-						statusDataCache.set(data.jobId, data, beforeCacheWrite);
-					} else return undefined;
+						} else if (currentJobStatusData[StatusState.COMPLETED](data)) {
+							if (validStatusToCache(data))
+								statusDataCache.set(data.jobId, data, beforeCacheWrite);
+						} else if (currentJobStatusData[StatusState.CANCELED](data)) {
+							statusDataCache.set(data.jobId, data, beforeCacheWrite);
+						} else return undefined;
 
-					return data;
-				})
-				.catch(e => {
-					console.error(e);
+						return data;
+					})
+					.catch(e => {
+						console.error(e);
 
-					return undefined;
-				});
-		},
+						return undefined;
+					});
+			},
 		[authKy, statusDataCache]
 	);
 
@@ -445,9 +446,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 						return undefined;
 					}
 
-					const endPoint = `jobs/${info.metadata.platform.toLowerCase()}`;
-
-					return getJobStatus(info, cache, beforeCacheWrite, signal);
+					return getJobStatus(info, cache, beforeCacheWrite, signal)('jobs/');
 				})
 			).then(dataList => {
 				const data = dataList.filter(data => data !== undefined) as JobStatusData[];
@@ -491,7 +490,9 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 				cancelJob,
 				convertToInputFiles,
 				getHelloWorld,
-				getJobStatus,
+				getJobStatus: (...args: RequestGetJobStatus) => {
+					return getJobStatus(...args)(getEndpointFromSimulationInfo(args[0]));
+				},
 				getPageContents,
 				getPageStatus,
 				getJobInputs,
