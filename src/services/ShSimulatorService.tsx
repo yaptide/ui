@@ -159,7 +159,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 		const platform =
 			`jobs/${info.metadata.platform.toLowerCase()}` as `jobs/${Lowercase<PlatformType>}`;
 
-		if (platform in ['jobs/direct', 'jobs/batch']) return platform;
+		if (['jobs/direct', 'jobs/batch'].includes(platform)) return platform;
 		console.error(`Simulation platform is unknown: ${info.metadata.platform}`);
 
 		return 'jobs';
