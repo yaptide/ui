@@ -210,7 +210,7 @@
 		"gh-pages": "^6.0.0",
 		"husky": "^8.0.3",
 		"jest-matcher-deep-close-to": "^3.0.2",
-		"lint-staged": "^14.0.0",
+		"lint-staged": "^14.0.1",
 		"prettier": "2.8.8",
 		"react-app-rewired": "^2.2.1",
 		"selenium-webdriver": "^4.12.0"
