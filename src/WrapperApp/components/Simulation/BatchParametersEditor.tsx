@@ -132,7 +132,7 @@ export function BatchScriptParametersEditor({
 	);
 
 	const handleAutocompleteChange = useCallback(
-		(newValue: (string | ScriptOption)[]) => {
+		(newValue: readonly (string | ScriptOption)[]) => {
 			const newOptions: ScriptOption[] = newValue.reduce((acc, option) => {
 				let candidateOptions: ScriptOption[] = [];
 
