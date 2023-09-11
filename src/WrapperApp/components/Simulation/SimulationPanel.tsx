@@ -112,14 +112,8 @@ export default function SimulationPanel({
 			const info = simulationInfo.find(s => s.jobId === jobId);
 
 			if (!info) return Promise.resolve();
-			const endPoint = `jobs/${info.metadata.platform.toLowerCase()}`;
 
-			return getJobStatus(endPoint)(
-				info,
-				false,
-				handleBeforeCacheWrite,
-				controller.signal
-			).then(s => {
+			return getJobStatus(info, false, handleBeforeCacheWrite, controller.signal).then(s => {
 				s &&
 					setSimulationsStatusData(prev => {
 						if (!prev) return [s];
@@ -268,8 +262,7 @@ export default function SimulationPanel({
 					return [...prev];
 				});
 			} else {
-				const endPoint = `jobs/${info.metadata.platform.toLowerCase()}`;
-				cancelJob(endPoint)(info, controller.signal).then(() => {
+				cancelJob(info, controller.signal).then(() => {
 					refreshPage();
 				});
 			}

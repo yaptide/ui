@@ -76,7 +76,7 @@ export type TaskTime = {
 
 export type MetaKey = 'server' | 'platform' | 'input' | 'simType';
 
-type PlatformType = 'DIRECT' | 'BATCH';
+export type PlatformType = 'DIRECT' | 'BATCH';
 
 export type SimulationInfo = {
 	jobId: string;
