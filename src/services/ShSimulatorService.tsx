@@ -417,7 +417,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 			authKy
 				.delete(getEndpointFromSimulationInfo(info), {
 					signal,
-					searchParams: camelToSnakeCase(info.jobId)
+					searchParams: camelToSnakeCase({ jobId: info.jobId })
 				})
 				.then(() => {
 					statusDataCache.delete(info.jobId);
