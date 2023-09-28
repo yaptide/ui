@@ -11,7 +11,7 @@ import {
 	DETECTOR_MODIFIERS_OPTIONS
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
-import { isQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
+import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import {
 	DifferentialConfigurationField,
 	ModifiersOutlinerField,
@@ -24,7 +24,7 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object as ScoringQuantity);
 
-	const visibleFlag = isQuantity(watchedObject);
+	const visibleFlag = isScoringQuantity(watchedObject);
 
 	return (
 		<PropertiesCategory

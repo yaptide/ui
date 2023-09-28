@@ -8,8 +8,8 @@ import { SimulationElement, SimulationElementJSON } from './SimulationElement';
 
 export type SimulationZoneJSON = Omit<
 	SimulationElementJSON & {
-		materialUuid: string;
-		materialPropertiesOverrides: Partial<MaterialOverridable>;
+		materialUuid?: string;
+		materialPropertiesOverrides?: Partial<MaterialOverridable>;
 		customMaterial?: SimulationMaterialJSON & {
 			originalMaterialUuid: string;
 		};
@@ -100,12 +100,13 @@ export abstract class SimulationZone
 
 	private reconstructMaterialFromJSON(json: SimulationZoneJSON) {
 		const { materialUuid, customMaterial } = json;
-		const simulationMaterial =
-			this.editor.materialManager.getMaterialByUuid(
-				customMaterial && materialUuid === customMaterial.uuid
-					? customMaterial.originalMaterialUuid
-					: materialUuid
-			) ?? this.editor.materialManager.defaultMaterial;
+		const simulationMaterial = materialUuid
+			? this.editor.materialManager.getMaterialByUuid(
+					customMaterial && materialUuid === customMaterial.uuid
+						? customMaterial.originalMaterialUuid
+						: materialUuid
+			  )
+			: this.editor.materialManager.defaultMaterial;
 
 		if (simulationMaterial === undefined) throw new Error('SimulationMaterial not found');
 		this.simulationMaterial = simulationMaterial;

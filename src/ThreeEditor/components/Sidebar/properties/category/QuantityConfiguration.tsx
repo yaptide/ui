@@ -7,9 +7,10 @@ import {
 	DETECTOR_KEYWORD_OPTIONS,
 	MEDIUM_KEYWORD_OPTIONS
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
-import { isQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
+import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import { ObjectSelectPropertyField } from '../fields/ObjectSelectPropertyField';
 import {
+	BooleanPropertyField,
 	ConditionalNumberPropertyField,
 	ConditionalObjectSelectPropertyField
 } from '../fields/PropertyField';
@@ -20,7 +21,7 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object as ScoringQuantity);
 
-	const visibleFlag = isQuantity(watchedObject);
+	const visibleFlag = isScoringQuantity(watchedObject);
 
 	const setQuantityValue = (key: keyof ScoringQuantity, value: unknown) => {
 		editor.execute(new SetQuantityValueCommand(editor, watchedObject.object, key, value));
@@ -42,6 +43,16 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 						value={watchedObject.medium ?? MEDIUM_KEYWORD_OPTIONS.WATER}
 						options={MEDIUM_KEYWORD_OPTIONS}
 						onChange={v => setQuantityValue('medium', v.uuid)}
+					/>
+				</>
+			)}
+
+			{['Dose', 'dLET', 'tLET'].includes(watchedObject.keyword) && (
+				<>
+					<BooleanPropertyField
+						label='Override material'
+						value={watchedObject.hasMaterial}
+						onChange={v => setQuantityValue('hasMaterial', v)}
 					/>
 				</>
 			)}

@@ -5,7 +5,7 @@ import { isDetector } from '../../Simulation/Detectors/Detector';
 import { isBasicFigure } from '../../Simulation/Figures/BasicFigures';
 import { isScoringFilter } from '../../Simulation/Scoring/ScoringFilter';
 import { isOutput } from '../../Simulation/Scoring/ScoringOutput';
-import { isQuantity } from '../../Simulation/Scoring/ScoringQuantity';
+import { isScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
 import { YaptideEditor } from '../YaptideEditor';
 
 export const canBeDuplicated = (object: object) => {
@@ -27,7 +27,7 @@ export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationEle
 		return commandFactory.createDuplicateCommand('detector', clone, editor.detectorManager);
 	} else if (isOutput(clone)) {
 		return commandFactory.createDuplicateCommand('output', clone, editor.scoringManager);
-	} else if (isQuantity(clone) && object.parent) {
+	} else if (isScoringQuantity(clone) && object.parent) {
 		const output = object.parent.parent;
 
 		if (isOutput(output))
