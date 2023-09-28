@@ -1,5 +1,6 @@
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
+import SimulationMaterial from '../Materials/SimulationMaterial';
 import { ScoringFilter } from './ScoringFilter';
 import * as Scoring from './ScoringOutputTypes';
 import { DifferentialJSON, DifferentialModifier } from './ScoringQtyModifiers';
@@ -8,6 +9,7 @@ export type ScoringQuantityJSON = Omit<
 	SimulationElementJSON & {
 		keyword: Scoring.DETECTOR_KEYWORD;
 		medium?: Scoring.MEDIUM;
+		materialUuid?: string;
 		filter?: string;
 		modifiers: DifferentialJSON[];
 		rescale?: number;
@@ -25,6 +27,7 @@ export class ScoringQuantity extends SimulationElement {
 	private _filter: string;
 	private _rescale: number;
 	private _medium: Scoring.MEDIUM;
+	private _simulationMaterial: SimulationMaterial;
 
 	hasFilter: boolean;
 	hasRescale: boolean;
@@ -120,12 +123,15 @@ export class ScoringQuantity extends SimulationElement {
 	fromJSON(json: ScoringQuantityJSON): this {
 		this.name = json.name ?? this.name;
 		this.uuid = json.uuid;
-		this._modifiers = json.modifiers.reduce((acc, curr) => {
-			const modifier = DifferentialModifier.fromJSON(curr);
-			acc[modifier.uuid] = modifier;
+		this._modifiers = json.modifiers.reduce(
+			(acc, curr) => {
+				const modifier = DifferentialModifier.fromJSON(curr);
+				acc[modifier.uuid] = modifier;
 
-			return acc;
-		}, {} as Record<string, DifferentialModifier>);
+				return acc;
+			},
+			{} as Record<string, DifferentialModifier>
+		);
 		this.filter = json.filter ? this.editor.scoringManager.getFilterByUuid(json.filter) : null;
 
 		if (this._filter.length) this.hasFilter = true;
@@ -143,12 +149,15 @@ export class ScoringQuantity extends SimulationElement {
 
 		duplicated.name = this.name;
 
-		duplicated._modifiers = this.modifiers.reduce((acc, curr) => {
-			const modifier = curr.duplicate();
-			acc[modifier.uuid] = modifier;
+		duplicated._modifiers = this.modifiers.reduce(
+			(acc, curr) => {
+				const modifier = curr.duplicate();
+				acc[modifier.uuid] = modifier;
 
-			return acc;
-		}, {} as Record<string, DifferentialModifier>);
+				return acc;
+			},
+			{} as Record<string, DifferentialModifier>
+		);
 
 		duplicated.filter = this.filter;
 
