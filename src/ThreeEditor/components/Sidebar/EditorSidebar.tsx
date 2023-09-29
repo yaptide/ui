@@ -225,11 +225,26 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 									<EditorSidebarTabTree
 										elements={scoringTabElements}></EditorSidebarTabTree>
 								</TabPanel>
-								<TabPanel
-									customCss={{ background: 'none' }}
-									value={selectedTab}
-									index={'Settings'}
-									persistentIfVisited>
+							</div>
+							<div
+								style={{
+									overflow: 'auto',
+									position: 'relative',
+									height: '100%'
+								}}
+								ref={(node: HTMLDivElement) => connectScrollTarget(node)}>
+								{selectedTab !== 'Settings' ? (
+									<PropertiesPanel
+										editor={editor}
+										boxProps={{
+											sx: {
+												marginTop: '1rem',
+												padding: '0 .5rem',
+												overflowY: 'auto'
+											}
+										}}
+									/>
+								) : (
 									<Stack
 										sx={{ padding: '.5rem' }}
 										spacing={2}>
@@ -259,29 +274,8 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 											/>
 										</Box>
 									</Stack>
-								</TabPanel>
+								)}
 							</div>
-
-							{selectedTab !== 'Settings' && (
-								<div
-									style={{
-										overflow: 'auto',
-										position: 'relative',
-										height: '100%'
-									}}
-									ref={(node: HTMLDivElement) => connectScrollTarget(node)}>
-									<PropertiesPanel
-										editor={editor}
-										boxProps={{
-											sx: {
-												marginTop: '1rem',
-												padding: '0 .5rem',
-												overflowY: 'auto'
-											}
-										}}
-									/>
-								</div>
-							)}
 						</>
 					);
 				}}
