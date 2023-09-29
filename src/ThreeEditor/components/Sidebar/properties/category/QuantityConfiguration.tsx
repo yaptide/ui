@@ -4,6 +4,8 @@ import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
+	canChangeMaterialMedium,
+	canChangeNKMedium,
 	DETECTOR_KEYWORD_OPTIONS,
 	MEDIUM_KEYWORD_OPTIONS
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
@@ -36,7 +38,7 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 				onChange={v => setQuantityValue('keyword', v.uuid)}
 			/>
 
-			{['NEqvDose', 'NKERMA'].includes(watchedObject.keyword) && (
+			{canChangeNKMedium(watchedObject.keyword) && (
 				<>
 					<ObjectSelectPropertyField
 						label='Medium'
@@ -47,7 +49,7 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 				</>
 			)}
 
-			{['Dose', 'dLET', 'tLET'].includes(watchedObject.keyword) && (
+			{canChangeMaterialMedium(watchedObject.keyword) && (
 				<>
 					<BooleanPropertyField
 						label='Override material'

@@ -1,5 +1,4 @@
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
 import { ScoringFilter } from './ScoringFilter';
 import * as Scoring from './ScoringOutputTypes';
@@ -58,7 +57,7 @@ export class ScoringQuantity extends SimulationZone {
 	}
 
 	get medium(): Scoring.MEDIUM | null {
-		if (['NEqvDose', 'NKERMA'].includes(this.keyword)) return this._medium;
+		if (Scoring.canChangeNKMedium(this.keyword)) return this._medium;
 
 		return null;
 	}
@@ -77,7 +76,7 @@ export class ScoringQuantity extends SimulationZone {
 	}
 
 	get hasMaterial(): boolean {
-		if (['Dose', 'dLET', 'tLET'].includes(this.keyword)) return this._hasMaterial;
+		if (Scoring.canChangeMaterialMedium(this.keyword)) return this._hasMaterial;
 
 		return false;
 	}
