@@ -24,7 +24,7 @@
 		"comlink": "^4.3.1",
 		"command-exists": "^1.2.9",
 		"convert-units": "^3.0.0-beta.5",
-		"glob": "^10.3.4",
+		"glob": "^10.3.10",
 		"keycloak-js": "^22.0.3",
 		"ky": "^0.33.2",
 		"material-ui-popup-state": "^5.0.9",
