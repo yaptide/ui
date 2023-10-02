@@ -26,14 +26,24 @@ export class ScoringQuantity extends SimulationZone {
 	private _filter: string;
 	private _rescale: number;
 	private _medium: Scoring.MEDIUM;
-	private _hasMaterial: boolean = false;
+	private _hasMaterial: boolean = true;
 	private _modifiers: Record<string, DifferentialModifier>;
 	private _primaries: number | null = null;
 	private _hasPrimaries: boolean = false;
+	private _keyword!: Scoring.DETECTOR_KEYWORD;
+
+	get keyword(): Scoring.DETECTOR_KEYWORD {
+		return this._keyword;
+	}
+
+	set keyword(keyword: Scoring.DETECTOR_KEYWORD) {
+		this._keyword = keyword;
+
+		if (!Scoring.canChangeMaterialMedium(keyword)) this.hasMaterial = false;
+	}
 
 	hasFilter: boolean;
 	hasRescale: boolean;
-	keyword: Scoring.DETECTOR_KEYWORD;
 
 	get modifiers(): DifferentialModifier[] {
 		return Object.values(this._modifiers);
@@ -52,6 +62,8 @@ export class ScoringQuantity extends SimulationZone {
 	}
 
 	set hasPrimaries(value: boolean) {
+		if (value && !this._hasPrimaries) this.material.increment();
+		else if (!value && this._hasPrimaries) this.material.decrement();
 		this._hasPrimaries = value;
 	}
 
@@ -126,8 +138,15 @@ export class ScoringQuantity extends SimulationZone {
 	constructor(editor: YaptideEditor, keyword: Scoring.DETECTOR_KEYWORD = 'Dose') {
 		super(editor, 'Quantity', 'Quantity');
 		this._modifiers = {};
+
+		/**
+		 * we need to use the setter
+		 * set keyword()
+		 * here to trigger the material increment/decrement
+		 */
 		this.keyword = keyword;
 		this.hasFilter = false;
+		this.hasMaterial = false;
 		this._filter = '';
 		this._medium = Scoring.MEDIUM_KEYWORD_OPTIONS.WATER;
 		this._rescale = 1;
@@ -179,6 +198,7 @@ export class ScoringQuantity extends SimulationZone {
 		);
 		this._primaries = json.primaries ?? null;
 		this._hasPrimaries = !!json.primaries;
+		this._hasMaterial = !!json.materialUuid;
 		super.fromJSON(basicJSON);
 		this.filter = filter ? this.editor.scoringManager.getFilterByUuid(filter) : null;
 		this.keyword = keyword;
