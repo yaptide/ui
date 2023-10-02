@@ -10,6 +10,7 @@ export type ScoringQuantityJSON = Omit<
 		medium?: Scoring.MEDIUM;
 		filter?: string;
 		modifiers: DifferentialJSON[];
+		primaries?: number;
 		rescale?: number;
 	},
 	never
@@ -27,6 +28,8 @@ export class ScoringQuantity extends SimulationZone {
 	private _medium: Scoring.MEDIUM;
 	private _hasMaterial: boolean = false;
 	private _modifiers: Record<string, DifferentialModifier>;
+	private _primaries: number | null = null;
+	private _hasPrimaries: boolean = false;
 
 	hasFilter: boolean;
 	hasRescale: boolean;
@@ -34,6 +37,22 @@ export class ScoringQuantity extends SimulationZone {
 
 	get modifiers(): DifferentialModifier[] {
 		return Object.values(this._modifiers);
+	}
+
+	get primaries(): number {
+		return this._hasPrimaries ? this._primaries ?? 0 : 0;
+	}
+
+	set primaries(value: number) {
+		this._primaries = value;
+	}
+
+	get hasPrimaries(): boolean {
+		return this._hasPrimaries;
+	}
+
+	set hasPrimaries(value: boolean) {
+		this._hasPrimaries = value;
 	}
 
 	private _selectedModifier?: string;
@@ -118,7 +137,18 @@ export class ScoringQuantity extends SimulationZone {
 	toJSON(): ScoringQuantityJSON {
 		const { materialUuid, materialPropertiesOverrides, customMaterial, ...json } =
 			super.toJSON();
-		let { filter, hasFilter, hasMaterial, keyword, modifiers, medium, rescale } = this;
+
+		let {
+			filter,
+			primaries,
+			hasFilter,
+			hasPrimaries,
+			hasMaterial,
+			keyword,
+			modifiers,
+			medium,
+			rescale
+		} = this;
 
 		return {
 			...(hasMaterial && {
@@ -126,6 +156,7 @@ export class ScoringQuantity extends SimulationZone {
 				materialPropertiesOverrides,
 				customMaterial
 			}),
+			...(hasPrimaries && { primaries }),
 			...json,
 			...(hasFilter && { filter: filter?.uuid }),
 			...(medium && { medium }),
@@ -146,6 +177,8 @@ export class ScoringQuantity extends SimulationZone {
 			},
 			{} as Record<string, DifferentialModifier>
 		);
+		this._primaries = json.primaries ?? null;
+		this._hasPrimaries = !!json.primaries;
 		super.fromJSON(basicJSON);
 		this.filter = filter ? this.editor.scoringManager.getFilterByUuid(filter) : null;
 		this.keyword = keyword;
@@ -162,21 +195,9 @@ export class ScoringQuantity extends SimulationZone {
 	duplicate(): ScoringQuantity {
 		const duplicated = new ScoringQuantity(this.editor, this.keyword);
 
-		duplicated.name = this.name;
-
-		duplicated._modifiers = this.modifiers.reduce(
-			(acc, curr) => {
-				const modifier = curr.duplicate();
-				acc[modifier.uuid] = modifier;
-
-				return acc;
-			},
-			{} as Record<string, DifferentialModifier>
-		);
-
-		duplicated.filter = this.filter;
-
-		if (duplicated._filter.length) duplicated.hasFilter = true;
+		const generatedUuid = duplicated.uuid;
+		duplicated.fromJSON(this.toJSON());
+		duplicated.uuid = generatedUuid;
 
 		return duplicated;
 	}

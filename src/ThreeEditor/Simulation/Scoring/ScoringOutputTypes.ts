@@ -31,6 +31,19 @@ export const DETECTOR_KEYWORD_DESCRIPTION = {
 
 export type DETECTOR_KEYWORD = keyof typeof DETECTOR_KEYWORD_DESCRIPTION;
 
+const PER_PRIMARY_KEYWORD = [
+	'1MeVNEq',
+	'Alanine',
+	'Dose',
+	'DoseEqv',
+	'DDD',
+	'DoseGy',
+	'Energy',
+	'EqvDose',
+	'Fluence',
+	'NEqvDose',
+	'NKERMA'
+] as const;
 const N_K_MEDIUM_OVERRIDE_KEYWORD = ['NKERMA', 'NEqvDose'] as const;
 const MATERIAL_MEDIUM_OVERRIDE_KEYWORD = [
 	'dLET',
@@ -41,6 +54,12 @@ const MATERIAL_MEDIUM_OVERRIDE_KEYWORD = [
 	'DoseGy',
 	'DDD'
 ] as const;
+
+export function canChangePrimaryMultiplier(
+	keyword: DETECTOR_KEYWORD
+): keyword is (typeof PER_PRIMARY_KEYWORD)[number] {
+	return PER_PRIMARY_KEYWORD.includes(keyword);
+}
 
 export function canChangeNKMedium(
 	keyword: DETECTOR_KEYWORD

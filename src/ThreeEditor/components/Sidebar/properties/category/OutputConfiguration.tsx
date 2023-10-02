@@ -11,7 +11,6 @@ import {
 	ObjectSelectOptionType,
 	ObjectSelectPropertyField
 } from '../fields/ObjectSelectPropertyField';
-import { ConditionalNumberPropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
 export function OutputConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
@@ -51,36 +50,6 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 							);
 						})}
 						onChange={handleChangedDetector}
-					/>
-
-					<ConditionalNumberPropertyField
-						label='Primaries'
-						precision={0}
-						step={1}
-						min={0}
-						max={1000}
-						value={watchedObject.primaries[1] ?? 0}
-						enabled={watchedObject.primaries[0]}
-						onChange={v => {
-							editor.execute(
-								new SetOutputSettingsCommand(
-									editor,
-									watchedObject.object,
-									'primaries',
-									[true, v]
-								)
-							);
-						}}
-						onChangeEnabled={v => {
-							editor.execute(
-								new SetOutputSettingsCommand(
-									editor,
-									watchedObject.object,
-									'primaries',
-									[v, v ? watchedObject.primaries[1] : null]
-								)
-							);
-						}}
 					/>
 					<Grid
 						item

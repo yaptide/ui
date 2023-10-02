@@ -13,7 +13,6 @@ export type ScoringOutputJSON = Omit<
 	SimulationElementJSON & {
 		quantities: ScoringQuantityJSON[];
 		detectorUuid?: string;
-		primaries?: number;
 		trace: boolean;
 		traceFilter?: string;
 	},
@@ -62,7 +61,6 @@ export class ScoringOutput
 	};
 
 	private _detector?: string;
-	private _primaries: [boolean, number | null];
 
 	//TODO: Issue#320
 	private _trace: [boolean, string | null];
@@ -72,14 +70,6 @@ export class ScoringOutput
 
 	get quantities() {
 		return this.quantityContainer.children;
-	}
-
-	get primaries(): [boolean, number | null] {
-		return [this._primaries[0], this._primaries[0] ? this._primaries[1] : null];
-	}
-
-	set primaries(value: [boolean, number | null]) {
-		this._primaries = [value[0], value[0] && value[1] !== null ? value[1] : this._primaries[1]];
 	}
 
 	get trace(): [boolean, string | null] {
@@ -117,7 +107,6 @@ export class ScoringOutput
 		super(editor, 'Output', 'Output');
 		this.children = [];
 		this.parent = null;
-		this._primaries = [false, 0];
 		this._trace = [false, ''];
 		this.quantityContainer = new QuantityContainer(editor);
 		this.add(this.quantityContainer);
@@ -165,7 +154,6 @@ export class ScoringOutput
 			quantities: this.quantityContainer.toJSON(),
 			detectorUuid: this._detector,
 			trace: this._trace[0],
-			...(this.primaries[1] && { primaries: this.primaries[1] }),
 			...(this.trace[1] && { traceFilter: this.trace[1] })
 		};
 	}
@@ -173,7 +161,6 @@ export class ScoringOutput
 	fromJSON(json: ScoringOutputJSON): this {
 		this.uuid = json.uuid;
 		this.name = json.name;
-		this._primaries = [json.primaries !== undefined, json.primaries ?? null];
 		this._trace = [json.trace, json.traceFilter ?? null];
 		this.quantityContainer.fromJSON(json.quantities);
 		this.detector = json.detectorUuid
@@ -191,7 +178,6 @@ export class ScoringOutput
 		const duplicated = new ScoringOutput(this.editor);
 
 		duplicated.name = this.name;
-		duplicated._primaries = this._primaries;
 		duplicated._trace = this._trace;
 
 		duplicated.quantityContainer = this.quantityContainer.duplicate();

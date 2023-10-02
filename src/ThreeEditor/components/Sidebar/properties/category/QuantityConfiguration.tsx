@@ -6,6 +6,7 @@ import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	canChangeMaterialMedium,
 	canChangeNKMedium,
+	canChangePrimaryMultiplier,
 	DETECTOR_KEYWORD_OPTIONS,
 	MEDIUM_KEYWORD_OPTIONS
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
@@ -57,6 +58,20 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 						onChange={v => setQuantityValue('hasMaterial', v)}
 					/>
 				</>
+			)}
+
+			{canChangePrimaryMultiplier(watchedObject.keyword) && (
+				<ConditionalNumberPropertyField
+					label='Primaries'
+					precision={0}
+					step={1}
+					min={0}
+					max={1000}
+					value={watchedObject.primaries}
+					enabled={watchedObject.hasPrimaries}
+					onChange={v => setQuantityValue('primaries', v)}
+					onChangeEnabled={v => setQuantityValue('hasPrimaries', v)}
+				/>
 			)}
 
 			{Object.keys(editor.scoringManager.getFilterOptions()).length > 0 && (
