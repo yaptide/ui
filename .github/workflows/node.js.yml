@@ -125,13 +125,26 @@ jobs:
           node-version: '18.x'
           cache: 'npm'
 
-      - name: webfactory/ssh-agent 🖥️
+      - name: webfactory/ssh-agent for dev 🖥️
         uses: webfactory/ssh-agent@v0.8.0
         with:
           # Private SSH key to register in the SSH agent
           ssh-private-key: ${{ secrets.WEBDEV }}
 
-      - name: Deploy 🚀
+      - name: Deploy to dev instance 🚀
         run: |
           git remote set-url origin git@github.com:yaptide/web_dev.git
           npm run deploy -- -u "github-actions-bot <support+actions@github.com>" -r "git@github.com:yaptide/web_dev.git"
+
+      - name: webfactory/ssh-agent for production 🖥️
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          # Private SSH key to register in the SSH agent
+          ssh-private-key: ${{ secrets.WEBPROD }}
+
+      - name: Deploy to prod instance 🚀
+        # this action is being triggered on release tags (named v*)
+        if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
+        run: |
+          git remote set-url origin git@github.com:yaptide/yaptide.github.io.git
+          npm run deploy -- -u "github-actions-bot <support+actions@github.com>" -r "git@github.com:yaptide/yaptide.github.io.git"
