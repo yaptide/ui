@@ -340,16 +340,6 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 				if (!task.startTime || !task.endTime)
 					console.warn('There are missing times in COMPLETED task:', task);
 
-				if (typeof task.startTime === 'string') {
-					task.startTime = new Date(task.startTime);
-					console.warn('Converted startTime to Date in COMPLETED task:', task);
-				}
-
-				if (typeof task.endTime === 'string') {
-					task.endTime = new Date(task.endTime);
-					console.warn('Converted endTime to Date in COMPLETED task:', task);
-				}
-
 				if (task.requestedPrimaries !== task.simulatedPrimaries) {
 					console.warn(
 						'Requested primaries and simulated primaries are not equal in COMPLETED task:',

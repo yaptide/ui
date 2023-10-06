@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import Countdown from 'react-countdown';
 
 import { StatusState, TaskStatusData, TaskTime } from '../../../types/ResponseTypes';
+import { millisecondsToTimeString } from '../../../util/time';
 
 const getDateFromEstimation = (estimated?: TaskTime) => {
 	if (!estimated) return undefined;
@@ -40,25 +41,25 @@ export function SimulationProgressBar({ status }: SimulationProgressBarProps) {
 		progress.current = updateProgress();
 	}, [updateProgress]);
 
+	const startDate = status.startTime ? new Date(status.startTime) : undefined;
+	const endDate = status.endTime ? new Date(status.endTime) : undefined;
+
+	const duration = startDate && endDate ? endDate.getTime() - startDate.getTime() : 0;
+
 	return (
 		<Tooltip
 			followCursor={true}
 			placement='left'
 			title={
 				<>
-					{status.estimatedTime ? 'Estimated time remaining: ' : 'Time elapsed: '}
-					<Countdown
-						date={
-							status.estimatedTime
-								? getDateFromEstimation(status.estimatedTime)
-								: status.endTime &&
-								  status.startTime &&
-								  status.endTime.getTime &&
-								  status.startTime.getTime
-								? status.endTime.getTime() - status.startTime.getTime()
-								: 0
-						}
-					/>
+					{status.estimatedTime ? (
+						<>
+							Estimated time remaining:{' '}
+							<Countdown date={getDateFromEstimation(status.estimatedTime)} />
+						</>
+					) : (
+						`Time elapsed: ${millisecondsToTimeString(duration)}`
+					)}
 				</>
 			}>
 			<Box
