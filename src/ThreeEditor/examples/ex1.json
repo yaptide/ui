@@ -261,6 +261,7 @@
           {
             "uuid": "1dd2e8f0-6684-42c2-ad35-7aa55358204e",
             "name": "BLACK HOLE",
+            "sanitizedName": "black_hole",
             "icru": 0,
             "density": 1,
             "color": 196613
@@ -268,6 +269,7 @@
           {
             "uuid": "49ce56b9-ee48-4640-88d4-bcfd660d8c0e",
             "name": "WATER, LIQUID",
+            "sanitizedName": "water_liquid",
             "icru": 276,
             "density": 1,
             "color": 34047,
@@ -277,6 +279,7 @@
           {
             "uuid": "cd7c2eb0-e91f-4144-b4eb-536e4626cc09",
             "name": "VACUUM",
+            "sanitizedName": "vacuum",
             "icru": 1000,
             "density": 1,
             "color": 16119285,
