@@ -22,6 +22,7 @@ import {
 	Tooltip
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
+import format from 'date-fns/format';
 import { useSnackbar } from 'notistack';
 import { Fragment, ReactNode, useMemo, useState } from 'react';
 
@@ -174,8 +175,12 @@ export default function SimulationCard({
 	const { startTime, endTime } = simulationStatus;
 
 	const startDate = new Date(startTime);
-	const endDate = endTime ? new Date(endTime) : undefined;
+	const endDate = endTime ? new Date(endTime) : new Date();
 	const duration = endDate ? endDate.valueOf() - startDate.valueOf() : 0;
+
+	const formatDateTime = (date: Date) => format(date, 'yyyy-MM-dd HH:mm:ss');
+
+	const displayDuration = endTime || currentJobStatusData[StatusState.RUNNING](simulationStatus);
 
 	return (
 		<Card
@@ -193,8 +198,23 @@ export default function SimulationCard({
 				title={`${simulationStatus.title}`}
 				subheader={
 					<>
-						{`${startDate.toLocaleDateString()} ${startDate.toLocaleTimeString()}  `}
-						<br /> {endDate ? `Duration: ${millisecondsToTimeString(duration)}` : ''}
+						Start: {formatDateTime(startDate)}
+						{endTime ? (
+							<>
+								<br />
+								End: {formatDateTime(endDate)}
+							</>
+						) : (
+							''
+						)}
+						{displayDuration ? (
+							<>
+								<br />
+								Duration: {millisecondsToTimeString(duration)}
+							</>
+						) : (
+							''
+						)}
 					</>
 				}
 				action={
