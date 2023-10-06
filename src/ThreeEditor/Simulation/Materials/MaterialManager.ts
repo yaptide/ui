@@ -43,10 +43,13 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 	private createMaterialPrefabs = () => {
 		const { editor } = this;
 		const editorMaterials = MATERIALS.reduce(
-			([prevMaterials, prevOptions], { name, icru, density }) => [
+			(
+				[prevMaterials, prevOptions],
+				{ name, sanitized_name: sanitizedName, icru, density }
+			) => [
 				{
 					...prevMaterials,
-					[icru]: new SimulationMaterial(editor, name, icru, density)
+					[icru]: new SimulationMaterial(editor, name, sanitizedName, icru, density)
 				},
 				{
 					...prevOptions,

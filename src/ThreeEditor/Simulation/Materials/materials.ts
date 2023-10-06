@@ -13,8 +13,8 @@ import re
 
 densities = []
 additional_materials = [
-	{ 'icru': 1000, 'name': 'VACUUM', 'density': 0 },
-	{ 'icru': 0, 'name': 'BLACK HOLE', 'density': 0 }
+	{ 'icru': 1000, 'name': 'VACUUM', 'sanitized_name': 'vacuum', 'density': 0 },
+	{ 'icru': 0, 'name': 'BLACK HOLE', 'sanitized_name': 'black_hole', 'density': 0 }
 ]
 with open('./src/shieldhit/microdhi/icru.f', 'r') as icru_file:
 	for line in icru_file.readlines()[494:565]:
@@ -26,7 +26,7 @@ with open('./src/shieldhit/microdhi/icru.f', 'r') as icru_file:
 			densities.extend(numbers)
 
 for material in additional_materials:
-	print(f"	{{ icru: {material['icru']}, name: '{material['name']}', density: {material['density']} }},")
+	print(f"	{{ icru: {material['icru']}, name: '{material['name']}', sanitized_name: '{material['sanitized_name']}', density: {material['density']} }},")
  
 for i, elem in enumerate(elements):
 	if i > 0 and i < 99:
@@ -52,8 +52,8 @@ with open('./doc/tex/UsersGuide/07_reftab.tex', 'r') as infile:
 */
 
 export const MATERIALS = [
-	{ icru: 1000, name: 'VACUUM', density: 0 },
-	{ icru: 0, name: 'BLACK HOLE', density: 0 },
+	{ icru: 1000, name: 'VACUUM', sanitized_name: 'vacuum', density: 0 },
+	{ icru: 0, name: 'BLACK HOLE', sanitized_name: 'black_hole', density: 0 },
 	{ icru: 1, name: 'HYDROGEN', sanitized_name: 'H', density: 8.3748e-5 },
 	{ icru: 2, name: 'HELIUM', sanitized_name: 'He', density: 0.000166322 },
 	{ icru: 3, name: 'LITHIUM', sanitized_name: 'Li', density: 0.534 },
