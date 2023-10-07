@@ -126,6 +126,7 @@ jobs:
           cache: 'npm'
 
       - name: webfactory/ssh-agent for dev 🖥️
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: webfactory/ssh-agent@v0.8.0
         with:
           # Private SSH key to register in the SSH agent
@@ -138,6 +139,7 @@ jobs:
           npm run deploy -- -u "github-actions-bot <support+actions@github.com>" -r "git@github.com:yaptide/web_dev.git"
 
       - name: webfactory/ssh-agent for production 🖥️
+        if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
         uses: webfactory/ssh-agent@v0.8.0
         with:
           # Private SSH key to register in the SSH agent
