@@ -51,7 +51,7 @@ export class ZoneManager
 {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: `0.10`, //update this to current YaptideEditor version when format changes
+		version: `0.11`, //update this to current YaptideEditor version when format changes
 		type: 'Manager',
 		generator: 'ZoneManager.toJSON'
 	} satisfies Record<string, string | number>;
@@ -131,11 +131,14 @@ export class ZoneManager
 	}
 
 	getZoneOptions(): Record<string, string> {
-		const zoneOptions = [this.worldZone, ...this.zones].reduce((acc, zone) => {
-			acc[zone.uuid] = `${zone.name} [${zone.id}]`;
+		const zoneOptions = [this.worldZone, ...this.zones].reduce(
+			(acc, zone) => {
+				acc[zone.uuid] = `${zone.name} [${zone.id}]`;
 
-			return acc;
-		}, {} as Record<string, string>);
+				return acc;
+			},
+			{} as Record<string, string>
+		);
 
 		return zoneOptions;
 	}

@@ -40,7 +40,7 @@ export class DetectorManager
 {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: `0.10`, //update this to current YaptideEditor version when format changes
+		version: `0.11`, //update this to current YaptideEditor version when format changes
 		type: 'Manager',
 		generator: 'DetectorManager.toJSON'
 	} satisfies Record<string, string | number>;
@@ -133,11 +133,14 @@ export class DetectorManager
 				return this.editor.zoneManager.getZoneByUuid(geometryData.zoneUuid) !== undefined;
 			})
 			.filter(additionalPredicate || (() => true))
-			.reduce((acc, geometry) => {
-				acc[geometry.uuid] = `${geometry.name} [${geometry.id}]`;
+			.reduce(
+				(acc, geometry) => {
+					acc[geometry.uuid] = `${geometry.name} [${geometry.id}]`;
 
-				return acc;
-			}, {} as Record<string, string>);
+					return acc;
+				},
+				{} as Record<string, string>
+			);
 
 		return options;
 	}

@@ -27,7 +27,7 @@ export class SpecialComponentManager
 {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: `0.10`, //update this to current YaptideEditor version when format changes
+		version: `0.11`, //update this to current YaptideEditor version when format changes
 		type: 'Manager',
 		generator: 'SpecialComponentManager.toJSON'
 	} satisfies Record<string, string | number>;
