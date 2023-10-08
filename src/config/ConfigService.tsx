@@ -4,7 +4,7 @@ import { createGenericContext } from '../services/GenericContext';
 import { UppercaseObjectKeys, ValidateKeysTuple } from '../types/TypeTransformUtil';
 import { snakeToCamelCase } from '../util/Notation/Notation';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? 'https://localhost:8443';
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:5000';
 const DEMO_MODE = process.env.REACT_APP_TARGET === 'demo';
 const ALT_AUTH = process.env.REACT_APP_ALT_AUTH === 'plg';
 
