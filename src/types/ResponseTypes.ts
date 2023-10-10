@@ -82,8 +82,8 @@ export type SimulationInfo = {
 	jobId: string;
 	title: string;
 	metadata: Record<MetaKey, string> & { platform: PlatformType };
-	startTime: Date;
-	endTime?: Date;
+	startTime: string;
+	endTime?: string;
 	localData?: boolean;
 };
 /* ------------------------------------ */
@@ -142,7 +142,7 @@ type TaskStatusType<T extends StatusState, U extends {}> = TypeIdentifiedByKey<
 
 export type TaskStatusCompleted = TaskStatusType<
 	StatusState.COMPLETED,
-	{ startTime: Date; endTime: Date }
+	{ startTime: string; endTime: string }
 >;
 
 export type TaskStatusPending = TaskStatusType<StatusState.PENDING, {}>;
@@ -163,8 +163,8 @@ type TaskAllStatuses =
  * and should equal to it in all cases.
  */
 type TaskUnknownStatus = {
-	startTime?: Date | undefined;
-	endTime?: Date | undefined;
+	startTime?: string | undefined;
+	endTime?: string | undefined;
 	taskState?:
 		| StatusState.PENDING
 		| StatusState.RUNNING

@@ -22,6 +22,7 @@ import {
 	Tooltip
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
+import format from 'date-fns/format';
 import { useSnackbar } from 'notistack';
 import { Fragment, ReactNode, useMemo, useState } from 'react';
 
@@ -37,6 +38,7 @@ import {
 	SimulationInputFiles,
 	StatusState
 } from '../../../types/ResponseTypes';
+import { millisecondsToTimeString } from '../../../util/time';
 import { SimulationProgressBar } from './SimulationProgressBar';
 
 type SimulationCardProps = {
@@ -170,6 +172,16 @@ export default function SimulationCard({
 		loadFromJson(inputJson);
 	};
 
+	const { startTime, endTime } = simulationStatus;
+
+	const startDate = new Date(startTime);
+	const endDate = endTime ? new Date(endTime) : new Date();
+	const duration = endDate ? endDate.valueOf() - startDate.valueOf() : 0;
+
+	const formatDateTime = (date: Date) => format(date, 'yyyy-MM-dd HH:mm:ss');
+
+	const displayDuration = endTime || currentJobStatusData[StatusState.RUNNING](simulationStatus);
+
 	return (
 		<Card
 			sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
@@ -184,14 +196,17 @@ export default function SimulationCard({
 			/>
 			<CardHeader
 				title={`${simulationStatus.title}`}
-				subheader={`${simulationStatus.startTime.toLocaleString('en-US').split(' ')[0]} ${
-					simulationStatus.startTime.toLocaleString('en-US').split(' ')[4] ?? '00:00:00'
-				} - ${
-					currentJobStatusData[StatusState.COMPLETED](simulationStatus) &&
-					simulationStatus.endTime
-						? simulationStatus.endTime.toLocaleString('en-US').split(' ')[4] ?? '?'
-						: '?'
-				}`}
+				subheader={
+					<>
+						<Box>Start: {formatDateTime(startDate)}</Box>
+						{endTime ? <Box>End: {formatDateTime(endDate)}</Box> : ''}
+						{displayDuration ? (
+							<Box>Duration: {millisecondsToTimeString(duration)}</Box>
+						) : (
+							''
+						)}
+					</>
+				}
 				action={
 					handleDelete &&
 					(currentJobStatusData[StatusState.COMPLETED](simulationStatus) ||
