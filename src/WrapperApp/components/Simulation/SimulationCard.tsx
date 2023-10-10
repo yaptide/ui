@@ -198,20 +198,10 @@ export default function SimulationCard({
 				title={`${simulationStatus.title}`}
 				subheader={
 					<>
-						Start: {formatDateTime(startDate)}
-						{endTime ? (
-							<>
-								<br />
-								End: {formatDateTime(endDate)}
-							</>
-						) : (
-							''
-						)}
+						<Box>Start: {formatDateTime(startDate)}</Box>
+						{endTime ? <Box>End: {formatDateTime(endDate)}</Box> : ''}
 						{displayDuration ? (
-							<>
-								<br />
-								Duration: {millisecondsToTimeString(duration)}
-							</>
+							<Box>Duration: {millisecondsToTimeString(duration)}</Box>
 						) : (
 							''
 						)}
