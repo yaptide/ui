@@ -1,21 +1,22 @@
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
+import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
 import { ScoringFilter } from './ScoringFilter';
 import * as Scoring from './ScoringOutputTypes';
 import { DifferentialJSON, DifferentialModifier } from './ScoringQtyModifiers';
 
 export type ScoringQuantityJSON = Omit<
-	SimulationElementJSON & {
+	SimulationZoneJSON & {
 		keyword: Scoring.DETECTOR_KEYWORD;
 		medium?: Scoring.MEDIUM;
 		filter?: string;
 		modifiers: DifferentialJSON[];
+		primaries?: number;
 		rescale?: number;
 	},
 	never
 >;
 
-export class ScoringQuantity extends SimulationElement {
+export class ScoringQuantity extends SimulationZone {
 	readonly isQuantity: true = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -25,14 +26,45 @@ export class ScoringQuantity extends SimulationElement {
 	private _filter: string;
 	private _rescale: number;
 	private _medium: Scoring.MEDIUM;
+	private _hasMaterial: boolean = true;
+	private _modifiers: Record<string, DifferentialModifier>;
+	private _primaries: number | null = null;
+	private _hasPrimaries: boolean = false;
+	private _keyword!: Scoring.DETECTOR_KEYWORD;
+
+	get keyword(): Scoring.DETECTOR_KEYWORD {
+		return this._keyword;
+	}
+
+	set keyword(keyword: Scoring.DETECTOR_KEYWORD) {
+		this._keyword = keyword;
+
+		if (!Scoring.canChangeMaterialMedium(keyword)) this.hasMaterial = false;
+	}
 
 	hasFilter: boolean;
 	hasRescale: boolean;
-	keyword: Scoring.DETECTOR_KEYWORD;
 
-	private _modifiers: Record<string, DifferentialModifier>;
 	get modifiers(): DifferentialModifier[] {
 		return Object.values(this._modifiers);
+	}
+
+	get primaries(): number {
+		return this._hasPrimaries ? this._primaries ?? 0 : 0;
+	}
+
+	set primaries(value: number) {
+		this._primaries = value;
+	}
+
+	get hasPrimaries(): boolean {
+		return this._hasPrimaries;
+	}
+
+	set hasPrimaries(value: boolean) {
+		if (value && !this._hasPrimaries) this.material.increment();
+		else if (!value && this._hasPrimaries) this.material.decrement();
+		this._hasPrimaries = value;
 	}
 
 	private _selectedModifier?: string;
@@ -52,10 +84,11 @@ export class ScoringQuantity extends SimulationElement {
 
 	set filter(filter: ScoringFilter | null) {
 		this._filter = filter?.uuid ?? '';
+		this.hasFilter = !!this._filter.length;
 	}
 
 	get medium(): Scoring.MEDIUM | null {
-		if (['NEqvDose', 'NKERMA'].includes(this.keyword)) return this._medium;
+		if (Scoring.canChangeNKMedium(this.keyword)) return this._medium;
 
 		return null;
 	}
@@ -66,10 +99,21 @@ export class ScoringQuantity extends SimulationElement {
 
 	set rescale(rescale: number) {
 		this._rescale = rescale;
+		this.hasRescale ||= rescale !== 1;
 	}
 
 	get rescale(): number {
 		return this.hasRescale ? this._rescale : 1;
+	}
+
+	get hasMaterial(): boolean {
+		if (Scoring.canChangeMaterialMedium(this.keyword)) return this._hasMaterial;
+
+		return false;
+	}
+
+	set hasMaterial(hasMaterial: boolean) {
+		this._hasMaterial = hasMaterial;
 	}
 
 	addModifier(modifier: DifferentialModifier): void {
@@ -94,8 +138,15 @@ export class ScoringQuantity extends SimulationElement {
 	constructor(editor: YaptideEditor, keyword: Scoring.DETECTOR_KEYWORD = 'Dose') {
 		super(editor, 'Quantity', 'Quantity');
 		this._modifiers = {};
+
+		/**
+		 * we need to use the setter
+		 * set keyword()
+		 * here to trigger the material increment/decrement
+		 */
 		this.keyword = keyword;
 		this.hasFilter = false;
+		this.hasMaterial = false;
 		this._filter = '';
 		this._medium = Scoring.MEDIUM_KEYWORD_OPTIONS.WATER;
 		this._rescale = 1;
@@ -103,33 +154,56 @@ export class ScoringQuantity extends SimulationElement {
 	}
 
 	toJSON(): ScoringQuantityJSON {
-		let { filter, name, type, hasFilter, uuid, keyword, modifiers, medium, rescale } = this;
+		const { materialUuid, materialPropertiesOverrides, customMaterial, ...json } =
+			super.toJSON();
+
+		let {
+			filter,
+			primaries,
+			hasFilter,
+			hasPrimaries,
+			hasMaterial,
+			keyword,
+			modifiers,
+			medium,
+			rescale
+		} = this;
 
 		return {
-			name,
-			uuid,
-			type,
-			keyword,
+			...(hasMaterial && {
+				materialUuid,
+				materialPropertiesOverrides,
+				customMaterial
+			}),
+			...(hasPrimaries && { primaries }),
+			...json,
 			...(hasFilter && { filter: filter?.uuid }),
 			...(medium && { medium }),
 			...(rescale !== 1 && { rescale }),
+			keyword,
 			modifiers: modifiers.map(modifier => modifier.toJSON())
 		};
 	}
 
 	fromJSON(json: ScoringQuantityJSON): this {
-		this.name = json.name ?? this.name;
-		this.uuid = json.uuid;
-		this._modifiers = json.modifiers.reduce((acc, curr) => {
-			const modifier = DifferentialModifier.fromJSON(curr);
-			acc[modifier.uuid] = modifier;
+		const { filter, medium, rescale, keyword, modifiers, ...basicJSON } = json;
+		this._modifiers = modifiers.reduce(
+			(acc, curr) => {
+				const modifier = DifferentialModifier.fromJSON(curr);
+				acc[modifier.uuid] = modifier;
 
-			return acc;
-		}, {} as Record<string, DifferentialModifier>);
-		this.filter = json.filter ? this.editor.scoringManager.getFilterByUuid(json.filter) : null;
-
-		if (this._filter.length) this.hasFilter = true;
-		this.keyword = json.keyword;
+				return acc;
+			},
+			{} as Record<string, DifferentialModifier>
+		);
+		this._primaries = json.primaries ?? null;
+		this._hasPrimaries = !!json.primaries;
+		this._hasMaterial = !!json.materialUuid;
+		super.fromJSON(basicJSON);
+		this.filter = filter ? this.editor.scoringManager.getFilterByUuid(filter) : null;
+		this.keyword = keyword;
+		this.medium = medium ?? Scoring.MEDIUM_KEYWORD_OPTIONS.WATER;
+		this.rescale = rescale ?? 1;
 
 		return this;
 	}
@@ -141,21 +215,12 @@ export class ScoringQuantity extends SimulationElement {
 	duplicate(): ScoringQuantity {
 		const duplicated = new ScoringQuantity(this.editor, this.keyword);
 
-		duplicated.name = this.name;
-
-		duplicated._modifiers = this.modifiers.reduce((acc, curr) => {
-			const modifier = curr.duplicate();
-			acc[modifier.uuid] = modifier;
-
-			return acc;
-		}, {} as Record<string, DifferentialModifier>);
-
-		duplicated.filter = this.filter;
-
-		if (duplicated._filter.length) duplicated.hasFilter = true;
+		const generatedUuid = duplicated.uuid;
+		duplicated.fromJSON(this.toJSON());
+		duplicated.uuid = generatedUuid;
 
 		return duplicated;
 	}
 }
 
-export const isQuantity = (x: unknown): x is ScoringQuantity => x instanceof ScoringQuantity;
+export const isScoringQuantity = (x: unknown): x is ScoringQuantity => x instanceof ScoringQuantity;

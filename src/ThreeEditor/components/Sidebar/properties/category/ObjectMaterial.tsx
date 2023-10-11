@@ -13,6 +13,7 @@ import { isSimulationPoints } from '../../../../Simulation/Base/SimulationPoints
 import { isSimulationZone, SimulationZone } from '../../../../Simulation/Base/SimulationZone';
 import { CustomStoppingPowerModels } from '../../../../Simulation/CustomStoppingPower/CustomStoppingPower';
 import { isBeam } from '../../../../Simulation/Physics/Beam';
+import { isScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
 import { MaterialSelect } from '../../../Select/MaterialSelect';
 import {
@@ -29,11 +30,12 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const visibleFlag =
-		isSimulationZone(watchedObject) ||
+		(isSimulationZone(watchedObject) && !isScoringQuantity(watchedObject)) ||
 		isWorldZone(watchedObject) || //TODO: Refactor WorldZone to extend  a Zone
 		isSimulationMesh(watchedObject) ||
 		isBeam(watchedObject) ||
-		isSimulationPoints(watchedObject);
+		isSimulationPoints(watchedObject) ||
+		(isScoringQuantity(watchedObject) && watchedObject.keyword && watchedObject.hasMaterial);
 
 	const { state: watchedObjectMaterial } = useSmartWatchEditorState(
 		editor,
@@ -150,53 +152,56 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 									<Typography>{editorPhysic.stoppingPowerTable}</Typography>
 								</Stack>
 							</ConditionalPropertyField>
-
-							<ConditionalNumberPropertyField
-								label='Opacity'
-								value={watchedObjectMaterial?.opacity ?? 0}
-								enabled={watchedObjectMaterial?.transparent ?? false}
-								min={0}
-								max={1}
-								step={0.05}
-								onChange={v =>
-									editor.execute(
-										new SetMaterialValueCommand(
-											editor,
-											watchedObject.object,
-											'opacity',
-											v
+							{!isScoringQuantity(watchedObject) && (
+								<ConditionalNumberPropertyField
+									label='Opacity'
+									value={watchedObjectMaterial?.opacity ?? 0}
+									enabled={watchedObjectMaterial?.transparent ?? false}
+									min={0}
+									max={1}
+									step={0.05}
+									onChange={v =>
+										editor.execute(
+											new SetMaterialValueCommand(
+												editor,
+												watchedObject.object,
+												'opacity',
+												v
+											)
 										)
-									)
-								}
-								onChangeEnabled={v =>
-									editor.execute(
-										new SetMaterialValueCommand(
-											editor,
-											watchedObject.object,
-											'transparent',
-											v
+									}
+									onChangeEnabled={v =>
+										editor.execute(
+											new SetMaterialValueCommand(
+												editor,
+												watchedObject.object,
+												'transparent',
+												v
+											)
 										)
-									)
-								}
-							/>
+									}
+								/>
+							)}
 						</>
 					)}
-					<PropertyField label={'Color'}>
-						<ColorInput
-							value={watchedObjectMaterial?.color.getHexString() ?? '#ffffff'}
-							onChange={v => {
-								console.log(watchedObject.object);
-								editor.execute(
-									new SetMaterialColorCommand(
-										editor,
-										watchedObject.object,
-										'color',
-										v
-									)
-								);
-							}}
-						/>
-					</PropertyField>
+					{!isScoringQuantity(watchedObject) && (
+						<PropertyField label={'Color'}>
+							<ColorInput
+								value={watchedObjectMaterial?.color.getHexString() ?? '#ffffff'}
+								onChange={v => {
+									console.log(watchedObject.object);
+									editor.execute(
+										new SetMaterialColorCommand(
+											editor,
+											watchedObject.object,
+											'color',
+											v
+										)
+									);
+								}}
+							/>
+						</PropertyField>
+					)}
 				</>
 			)}
 		</PropertiesCategory>

@@ -21,7 +21,7 @@ test('constructor default', () => {
 });
 
 test('constructor params', () => {
-	const material = new SimulationMaterial(editor, 'test', 1, 2);
+	const material = new SimulationMaterial(editor, 'test', 'test', 1, 2);
 	expect(material).toBeInstanceOf(SimulationMaterial);
 	expect(material.icru).toBe(1);
 	expect(material.density).toBe(2);
@@ -29,10 +29,11 @@ test('constructor params', () => {
 });
 
 test('toJSON', () => {
-	const material = new SimulationMaterial(editor, 'test', 1, 2);
+	const material = new SimulationMaterial(editor, 'test', 'test', 1, 2);
 	expect(material.toJSON()).toEqual({
 		uuid: material.uuid,
 		name: 'test',
+		sanitizedName: 'test',
 		icru: 1,
 		density: 2
 	});
@@ -42,6 +43,7 @@ test('fromJSON', () => {
 	const material = SimulationMaterial.fromJSON(editor, {
 		uuid: 'testUuid',
 		name: 'test',
+		sanitizedName: 'test',
 		icru: 1,
 		density: 2
 	});
@@ -55,6 +57,7 @@ test('fromJSON', () => {
 	const material2 = SimulationMaterial.fromJSON(editor, {
 		uuid: 'testUuid',
 		name: 'test',
+		sanitizedName: 'test',
 		icru: 1,
 		density: 2,
 		customStoppingPower: true
@@ -69,7 +72,7 @@ test('fromJSON', () => {
 });
 
 test('clone', () => {
-	const material = new SimulationMaterial(editor, 'test', 1, 2);
+	const material = new SimulationMaterial(editor, 'test', 'test', 1, 2);
 	material.customStoppingPower = true;
 	const clone = material.clone();
 	expect(clone).toBeInstanceOf(SimulationMaterial);
@@ -81,7 +84,7 @@ test('clone', () => {
 });
 
 test('copy', () => {
-	const material = new SimulationMaterial(editor, 'test', 1, 2);
+	const material = new SimulationMaterial(editor, 'test', 'test', 1, 2);
 	material.customStoppingPower = true;
 	const copy = new SimulationMaterial(editor);
 	copy.copy(material);

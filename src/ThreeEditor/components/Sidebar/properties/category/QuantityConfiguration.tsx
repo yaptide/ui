@@ -4,12 +4,16 @@ import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
+	canChangeMaterialMedium,
+	canChangeNKMedium,
+	canChangePrimaryMultiplier,
 	DETECTOR_KEYWORD_OPTIONS,
 	MEDIUM_KEYWORD_OPTIONS
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
-import { isQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
+import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import { ObjectSelectPropertyField } from '../fields/ObjectSelectPropertyField';
 import {
+	BooleanPropertyField,
 	ConditionalNumberPropertyField,
 	ConditionalObjectSelectPropertyField
 } from '../fields/PropertyField';
@@ -20,7 +24,7 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object as ScoringQuantity);
 
-	const visibleFlag = isQuantity(watchedObject);
+	const visibleFlag = isScoringQuantity(watchedObject);
 
 	const setQuantityValue = (key: keyof ScoringQuantity, value: unknown) => {
 		editor.execute(new SetQuantityValueCommand(editor, watchedObject.object, key, value));
@@ -35,7 +39,7 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 				onChange={v => setQuantityValue('keyword', v.uuid)}
 			/>
 
-			{['NEqvDose', 'NKERMA'].includes(watchedObject.keyword) && (
+			{canChangeNKMedium(watchedObject.keyword) && (
 				<>
 					<ObjectSelectPropertyField
 						label='Medium'
@@ -44,6 +48,28 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 						onChange={v => setQuantityValue('medium', v.uuid)}
 					/>
 				</>
+			)}
+
+			{canChangeMaterialMedium(watchedObject.keyword) && (
+				<BooleanPropertyField
+					label='Override material'
+					value={watchedObject.hasMaterial}
+					onChange={v => setQuantityValue('hasMaterial', v)}
+				/>
+			)}
+
+			{canChangePrimaryMultiplier(watchedObject.keyword) && (
+				<ConditionalNumberPropertyField
+					label='Primaries'
+					precision={0}
+					step={1}
+					min={0}
+					max={1000}
+					value={watchedObject.primaries}
+					enabled={watchedObject.hasPrimaries}
+					onChange={v => setQuantityValue('primaries', v)}
+					onChangeEnabled={v => setQuantityValue('hasPrimaries', v)}
+				/>
 			)}
 
 			{Object.keys(editor.scoringManager.getFilterOptions()).length > 0 && (

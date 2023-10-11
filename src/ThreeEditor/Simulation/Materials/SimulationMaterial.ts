@@ -6,14 +6,19 @@ import { Icru } from './MaterialManager';
 import {
 	DEFAULT_MATERIAL_DENSITY,
 	DEFAULT_MATERIAL_ICRU,
-	DEFAULT_MATERIAL_NAME
+	DEFAULT_MATERIAL_NAME,
+	DEFAULT_SANITIZED_MATERIAL_NAME
 } from './materials';
 
-export type RenderProps = Omit<SimulationMaterialJSON, 'uuid' | 'name' | 'icru' | 'density'>;
+export type RenderProps = Omit<
+	SimulationMaterialJSON,
+	'uuid' | 'name' | 'icru' | 'density' | 'sanitizedName'
+>;
 
 export type SimulationMaterialJSON = {
 	uuid: string;
 	name: string;
+	sanitizedName: string;
 	icru: Icru;
 	density: number;
 	customStoppingPower?: boolean;
@@ -28,6 +33,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 	private editor: YaptideEditor;
 	private colorProxy: THREE.Color;
 	icru: Icru;
+	sanitizedName: string;
 	density: number;
 	customStoppingPower: boolean = false;
 	renderProps: RenderProps;
@@ -73,6 +79,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 	constructor(
 		editor: YaptideEditor,
 		name: string = DEFAULT_MATERIAL_NAME,
+		sanitizedName: string = DEFAULT_SANITIZED_MATERIAL_NAME,
 		icru: number = DEFAULT_MATERIAL_ICRU,
 		density: number = DEFAULT_MATERIAL_DENSITY
 	) {
@@ -83,6 +90,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 			transparent: false,
 			color: new THREE.Color(0xff3d3d)
 		});
+		this.sanitizedName = sanitizedName;
 		this.colorProxy = new Proxy(new THREE.Color(0xff3d3d), this.materialColorHandler);
 		this.editor = editor;
 		this.icru = icru;
@@ -101,10 +109,11 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 	}
 
 	toJSON(): SimulationMaterialJSON {
-		const { uuid, name, icru, density, renderProps, customStoppingPower } = this;
+		const { uuid, name, sanitizedName, icru, density, renderProps, customStoppingPower } = this;
 
 		return {
 			uuid,
+			sanitizedName,
 			name,
 			icru,
 			density,
@@ -115,9 +124,17 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 
 	static fromJSON(
 		editor: YaptideEditor,
-		{ uuid, name, icru, density, customStoppingPower, ...renderProps }: SimulationMaterialJSON
+		{
+			uuid,
+			name,
+			sanitizedName,
+			icru,
+			density,
+			customStoppingPower,
+			...renderProps
+		}: SimulationMaterialJSON
 	): SimulationMaterial {
-		const material = new SimulationMaterial(editor, name, icru, density);
+		const material = new SimulationMaterial(editor, name, sanitizedName, icru, density);
 		material.uuid = uuid;
 		material.customStoppingPower = customStoppingPower ?? false;
 		material.renderProps = renderProps;
@@ -138,6 +155,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 
 	copy(source: SimulationMaterial): this {
 		const result = super.copy(source);
+		result.sanitizedName = source.sanitizedName;
 		result.renderProps = { ...source.renderProps };
 		result.density = source.density;
 		result.icru = source.icru;

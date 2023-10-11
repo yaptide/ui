@@ -11,7 +11,10 @@ import {
 } from '../../ThreeEditor/Simulation/Figures/BasicFigures';
 import { ScoringFilter } from '../../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { isOutput, ScoringOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
-import { isQuantity, ScoringQuantity } from '../../ThreeEditor/Simulation/Scoring/ScoringQuantity';
+import {
+	isScoringQuantity,
+	ScoringQuantity
+} from '../../ThreeEditor/Simulation/Scoring/ScoringQuantity';
 import { BeamModulator } from '../../ThreeEditor/Simulation/SpecialComponents/BeamModulator';
 import { CTCube } from '../../ThreeEditor/Simulation/SpecialComponents/CTCube';
 import { BooleanZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
@@ -151,10 +154,12 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 				return commandFactory.createAddCommand(
 					'quantity',
 					new ScoringQuantity(editor),
-					isQuantity(editor.selected) ? editor.selected.parent?.parent : editor.selected
+					isScoringQuantity(editor.selected)
+						? editor.selected.parent?.parent
+						: editor.selected
 				);
 			},
-			!isOutput(editor.selected) && !isQuantity(editor.selected)
+			!isOutput(editor.selected) && !isScoringQuantity(editor.selected)
 		]
 	];
 

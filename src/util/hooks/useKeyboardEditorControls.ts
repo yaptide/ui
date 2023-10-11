@@ -13,7 +13,7 @@ import { isDetector } from '../../ThreeEditor/Simulation/Detectors/Detector';
 import { isBeam } from '../../ThreeEditor/Simulation/Physics/Beam';
 import { isScoringFilter } from '../../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { isOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
-import { isQuantity } from '../../ThreeEditor/Simulation/Scoring/ScoringQuantity';
+import { isScoringQuantity } from '../../ThreeEditor/Simulation/Scoring/ScoringQuantity';
 import { isBooleanZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
 
 export const isRemovable = (object: Object3D) => {
@@ -51,7 +51,7 @@ export const getRemoveCommand = (editor: YaptideEditor, object: Object3D) => {
 		if (object.selectedRule) return new SetFilterRuleCommand(editor, object);
 
 		return new RemoveFilterCommand(editor, object);
-	} else if (isQuantity(object)) {
+	} else if (isScoringQuantity(object)) {
 		if (object.selectedModifier)
 			return new RemoveDifferentialModifierCommand(editor, object, object.selectedModifier);
 

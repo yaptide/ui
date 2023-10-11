@@ -3,7 +3,7 @@ import * as THREE from 'three';
 
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { CounterMap } from '../../../util/CounterMap/CounterMap';
-import { YaptideEditor } from '../../js/YaptideEditor.js';
+import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor.js';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { DEFAULT_MATERIAL_ICRU, MATERIALS } from './materials';
 import SimulationMaterial, {
@@ -25,9 +25,11 @@ export type Icru = number;
 export class MaterialManager extends THREE.Object3D implements SimulationPropertiesType {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: `0.10`, //update this to current YaptideEditor version when format changes
+		version: `0.11`,
 		type: 'Manager',
 		generator: 'MaterialManager.toJSON'
+	} as {
+		version: typeof JSON_VERSION;
 	} satisfies Record<string, string | number>;
 
 	private editor: YaptideEditor;
@@ -43,10 +45,13 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 	private createMaterialPrefabs = () => {
 		const { editor } = this;
 		const editorMaterials = MATERIALS.reduce(
-			([prevMaterials, prevOptions], { name, icru, density }) => [
+			(
+				[prevMaterials, prevOptions],
+				{ name, sanitized_name: sanitizedName, icru, density }
+			) => [
 				{
 					...prevMaterials,
-					[icru]: new SimulationMaterial(editor, name, icru, density)
+					[icru]: new SimulationMaterial(editor, name, sanitizedName, icru, density)
 				},
 				{
 					...prevOptions,

@@ -54,7 +54,7 @@ export const addCustomStoppingPowerTableToEditorJSON = async (editorJson: Editor
 		const zone = editorJson.zoneManager.zones[key];
 		console.log(zone);
 
-		if (zone.materialPropertiesOverrides.customStoppingPower && zone.customMaterial) {
+		if (zone.materialPropertiesOverrides?.customStoppingPower && zone.customMaterial) {
 			usedStoppingPowerTables.add(zone.customMaterial.icru);
 		}
 	}

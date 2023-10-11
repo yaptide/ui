@@ -25,7 +25,12 @@ export function ObjectInfo(props: { editor: YaptideEditor; object: Object3D }) {
 						value={watchedObject.name}
 						onChange={value => {
 							editor.execute(
-								new SetValueCommand(editor, watchedObject.object, 'name', value)
+								new SetValueCommand(
+									editor,
+									watchedObject.object,
+									'name',
+									value.length > 0 ? value : watchedObject.type
+								)
 							);
 						}}
 					/>

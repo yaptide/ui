@@ -18,7 +18,7 @@ import {
 	ScoringManager
 } from '../Simulation/Scoring/ScoringManager';
 import { isOutput, ScoringOutput } from '../Simulation/Scoring/ScoringOutput';
-import { isQuantity, ScoringQuantity } from '../Simulation/Scoring/ScoringQuantity';
+import { isScoringQuantity, ScoringQuantity } from '../Simulation/Scoring/ScoringQuantity';
 import { BeamModulator } from '../Simulation/SpecialComponents/BeamModulator';
 import { CTCube } from '../Simulation/SpecialComponents/CTCube';
 import { isSpecialComponent } from '../Simulation/SpecialComponents/SpecialComponentManager';
@@ -209,7 +209,7 @@ export const isScoringContextObject = (x: unknown): x is ScoringContextObject =>
 		isScoringFilter(x) ||
 		isFilterContainer(x) ||
 		isOutput(x) ||
-		isQuantity(x) ||
+		isScoringQuantity(x) ||
 		isScoringManager(x)
 	);
 };

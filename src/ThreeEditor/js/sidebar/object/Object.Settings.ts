@@ -22,10 +22,6 @@ export class ObjectSettings extends ObjectAbstract {
 	trace: UICheckbox;
 	traceFilter: UISelect;
 
-	primariesRow: UIRow;
-	primaries: UICheckbox;
-	primariesMultiplier: UINumber;
-
 	addQuantity: UIButton;
 	addQuantityRow: UIRow;
 
@@ -42,26 +38,18 @@ export class ObjectSettings extends ObjectAbstract {
 			update: this.update.bind(this)
 		});
 
-		[this.primariesRow, this.primaries, this.primariesMultiplier] = createRowConditionalNumber({
-			text: 'Primaries',
-			precision: 0,
-			step: 1,
-			min: 0,
-			update: this.update.bind(this)
-		});
-
 		[this.addQuantityRow, this.addQuantity] = createFullwidthButton({
 			text: 'Add new quantity',
 			update: this.onClick.bind(this)
 		});
-		this.panel.add(this.geometryRow, this.traceRow, this.primariesRow, this.addQuantityRow);
+		this.panel.add(this.geometryRow, this.traceRow, this.addQuantityRow);
 	}
 
 	setObject(object: ScoringOutput): void {
 		super.setObject(object);
 
 		if (!object) return;
-		const { trace, primaries, children: quantities } = object;
+		const { trace } = object;
 		this.object = object;
 
 		this.geometry.setOptions(this.editor.detectorManager.getDetectorOptions());
@@ -69,7 +57,6 @@ export class ObjectSettings extends ObjectAbstract {
 
 		if (trace[0]) {
 			const options = this.editor.scoringManager.getFilterOptions();
-			hideUIElement(this.primariesRow);
 			hideUIElement(this.addQuantityRow);
 
 			if (Object.keys(options).length > 0) {
@@ -77,19 +64,8 @@ export class ObjectSettings extends ObjectAbstract {
 				this.traceFilter.setOptions(options);
 				this.traceFilter.setValue(trace[1]);
 			} else hideUIElement(this.traceFilter);
-		} else {
-			showUIElement(this.primariesRow);
-			showUIElement(this.addQuantityRow);
-			hideUIElement(this.traceFilter);
-
-			if (quantities.length === 0) hideUIElement(this.primariesRow);
-			else if (!primaries[0]) hideUIElement(this.primariesMultiplier);
-			else if (!this.trace.getValue()) showUIElement(this.primariesMultiplier);
 		}
 
-		this.primaries.setValue(primaries[0]);
-
-		if (primaries[1] !== null) this.primariesMultiplier.setValue(primaries[1]);
 		this.trace.setValue(trace[0]);
 	}
 
@@ -100,14 +76,6 @@ export class ObjectSettings extends ObjectAbstract {
 
 	update(): void {
 		if (!this.object) return;
-		const primaries = new SetOutputSettingsCommand(
-			this.editor,
-			this.object,
-			'primaries',
-			this.trace.getValue()
-				? [false, null]
-				: [this.primaries.getValue(), this.primariesMultiplier.getValue()]
-		);
 
 		const trace = new SetOutputSettingsCommand(this.editor, this.object, 'trace', [
 			this.trace.getValue(),
@@ -120,6 +88,6 @@ export class ObjectSettings extends ObjectAbstract {
 			'geometry',
 			this.editor.detectorManager.getDetectorByUuid(this.geometry.getValue())
 		);
-		[primaries, trace, geometry].forEach(command => this.editor.execute(command));
+		[trace, geometry].forEach(command => this.editor.execute(command));
 	}
 }

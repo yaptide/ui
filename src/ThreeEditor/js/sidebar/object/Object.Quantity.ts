@@ -64,7 +64,7 @@ export class ObjectQuantity extends ObjectAbstract {
 		const { filter, hasFilter, rescale, hasRescale, medium, keyword } = object;
 		this.keyword.setValue(keyword);
 
-		if (['NEqvDose', 'NKERMA'].includes(keyword)) showUIElement(this.mediumRow);
+		if (Scoring.canChangeNKMedium(keyword)) showUIElement(this.mediumRow);
 		else hideUIElement(this.mediumRow);
 		this.medium.setValue(medium ?? Scoring.MEDIUM_KEYWORD_OPTIONS.WATER);
 
@@ -104,7 +104,7 @@ export class ObjectQuantity extends ObjectAbstract {
 		if (keyword !== newKeyword)
 			commands.push(new SetQuantityValueCommand(editor, object, 'keyword', newKeyword));
 
-		if (['NEqvDose', 'NKERMA'].includes(newKeyword)) {
+		if (Scoring.canChangeNKMedium(newKeyword)) {
 			if (medium !== newMedium)
 				commands.push(new SetQuantityValueCommand(editor, object, 'medium', newMedium));
 		} else hideUIElement(this.mediumRow);

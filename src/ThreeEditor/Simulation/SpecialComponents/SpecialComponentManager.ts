@@ -2,7 +2,7 @@ import { Signal } from 'signals';
 import * as THREE from 'three';
 
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { YaptideEditor } from '../../js/YaptideEditor';
+import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor';
 import { OneSlotContainer, SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
@@ -27,9 +27,11 @@ export class SpecialComponentManager
 {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: `0.10`, //update this to current YaptideEditor version when format changes
+		version: `0.11`,
 		type: 'Manager',
 		generator: 'SpecialComponentManager.toJSON'
+	} as {
+		version: typeof JSON_VERSION;
 	} satisfies Record<string, string | number>;
 
 	private editor: YaptideEditor;
