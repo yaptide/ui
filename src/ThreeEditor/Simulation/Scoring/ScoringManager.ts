@@ -1,6 +1,6 @@
 import { Signal } from 'signals';
 
-import { YaptideEditor } from '../../js/YaptideEditor';
+import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
@@ -57,9 +57,11 @@ export class ScoringManager
 {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: `0.11`, //update this to current YaptideEditor version when format changes
+		version: `0.11`,
 		type: 'Manager',
 		generator: 'ScoringManager.toJSON'
+	} as {
+		version: typeof JSON_VERSION;
 	} satisfies Record<string, string | number>;
 
 	private signals: {

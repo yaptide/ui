@@ -51,13 +51,11 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 			)}
 
 			{canChangeMaterialMedium(watchedObject.keyword) && (
-				<>
-					<BooleanPropertyField
-						label='Override material'
-						value={watchedObject.hasMaterial}
-						onChange={v => setQuantityValue('hasMaterial', v)}
-					/>
-				</>
+				<BooleanPropertyField
+					label='Override material'
+					value={watchedObject.hasMaterial}
+					onChange={v => setQuantityValue('hasMaterial', v)}
+				/>
 			)}
 
 			{canChangePrimaryMultiplier(watchedObject.keyword) && (
