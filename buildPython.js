@@ -89,7 +89,7 @@ const saveFileName = (destFolder, fileName) => {
 		});
 
 		measureTime('Installing build module for python', () => {
-			executeCommand(`${venvCommandPrefix} pip install build wheel ${venvCommandSuffix}`);
+			executeCommand(`${venvCommandPrefix} pip install build wheel setuptools ${venvCommandSuffix}`);
 		});
 
 		measureTime('Building yaptide_converter', () => {
