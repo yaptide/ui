@@ -14,6 +14,7 @@ import { SyntheticEvent, useEffect, useState } from 'react';
 import { Estimator, generateGraphs, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
 import { useDialog } from '../../../services/DialogService';
 import { useStore } from '../../../services/StoreService';
+import { InfoTooltip } from '../../../shared/components/tooltip/InfoTooltip';
 import { titleToKebabCase } from '../../../ThreeEditor/components/Dialog/CustomDialog';
 import { TabPanel } from '../Panels/TabPanel';
 import TablePage0D from './ResultsTable';
@@ -60,6 +61,8 @@ function ResultsPanel() {
 		return estimatorResults;
 	};
 
+	const resultsGeneratedFromProjectFile = !!simulation?.input.inputJson;
+
 	return (
 		<Box
 			sx={{
@@ -93,15 +96,32 @@ function ResultsPanel() {
 							alignItems: 'center',
 							gap: '0.5rem'
 						}}>
-						<FormControlLabel
-							control={
-								<Switch
-									checked={groupQuantities}
-									onChange={e => setGroupQuantities(e.target.checked)}
+						<Box
+							sx={{
+								display: 'flex',
+								alignItems: 'center',
+								marginRight: '0.5rem'
+							}}>
+							<FormControlLabel
+								sx={{ marginRight: '0' }}
+								control={
+									<Switch
+										checked={groupQuantities}
+										onChange={e => setGroupQuantities(e.target.checked)}
+										disabled={!resultsGeneratedFromProjectFile}
+									/>
+								}
+								label='Group Quantities'
+							/>
+							{!resultsGeneratedFromProjectFile && (
+								<InfoTooltip
+									sx={{ marginLeft: '0.25rem' }}
+									title={
+										'Grouping quantities is only available when results are generated from a project file.'
+									}
 								/>
-							}
-							label='Group Quantities'
-						/>
+							)}
+						</Box>
 						<Button
 							color='info'
 							size='small'
@@ -202,7 +222,8 @@ function ResultsPanel() {
 												)}
 												{generateGraphs(
 													estimator,
-													groupQuantities,
+													resultsGeneratedFromProjectFile &&
+														groupQuantities,
 													simulation?.jobId
 												)}
 											</Box>

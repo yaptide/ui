@@ -182,7 +182,7 @@ export function generateGraphs(
 		.map(({ page, graph, filter }, idx) => {
 			return (
 				<Grid
-					key={`graph_${name}${jobId ? '_' + jobId : ''}_${page.name}`}
+					key={`graph_${name}${jobId ? '_' + jobId : ''}_${page.name ?? idx}`}
 					item
 					xs={12}>
 					<Card>
