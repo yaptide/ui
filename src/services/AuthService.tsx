@@ -86,6 +86,12 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
 	const { enqueueSnackbar } = useSnackbar();
 
+	const isAuthorized = useMemo(() => user !== null || demoMode, [demoMode, user]);
+
+	const [isWaitingForVerification, setIsWaitingForVerification] = useState<boolean>(
+		Boolean(isServerReachable && keycloak.authenticated && !isAuthorized)
+	);
+
 	useEffect(() => {
 		setReachInterval(isServerReachable ? 180000 : undefined);
 	}, [isServerReachable]);
@@ -195,6 +201,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 			})
 			.catch((_: HTTPError) => {
 				setUser(null);
+				setIsWaitingForVerification(false);
 				setRefreshInterval(undefined);
 			});
 	}, [kyRef]);
@@ -266,8 +273,6 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 
 	useIntervalAsync(tokenRefresh, keycloak.authenticated ? keyCloakInterval : undefined);
 
-	const isAuthorized = useMemo(() => user !== null || demoMode, [demoMode, user]);
-
 	const refresh = useCallback(async () => {
 		if (user?.source === 'keycloak' && isAuthorized) return tokenVerification();
 
@@ -308,7 +313,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				refresh
 			}}>
 			{children}
-			<Backdrop open={Boolean(isServerReachable && keycloak.authenticated && !isAuthorized)}>
+			<Backdrop open={isWaitingForVerification}>
 				<Typography variant='h1'>Waiting for verification...</Typography>
 				<CircularProgress />
 			</Backdrop>
