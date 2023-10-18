@@ -83,7 +83,7 @@ export function RunSimulationForm({
 
 	const [simName, setSimName] = useState(editorJson?.project.title ?? '');
 	const [nTasks, setNTasks] = useState(1);
-	const [simulator] = useState<SimulatorType>(forwardedSimulator);
+	const [simulator, setSelectedSimulator] = useState<SimulatorType>(forwardedSimulator);
 	const [arrayHeader, setArrayHeader] = useState<string>('');
 	const [collectHeader, setCollectHeader] = useState<string>('');
 	const [arrayOptions, setArrayOptions] = useState<ScriptOption[]>([]);
@@ -232,12 +232,17 @@ export function RunSimulationForm({
 						value={nTasks}
 						onChange={e => setNTasks(Math.max(1, parseInt(e.target.value)))}
 					/>
-					<TextField
+
+					<Select
 						size='small'
 						label='Simulation software'
-						value={simulator}
-						disabled
-					/>
+						defaultValue={forwardedSimulator}
+						onChange={evn => setSelectedSimulator(evn.target.value as SimulatorType)}
+					>
+						<MenuItem value={SimulatorType.SHIELDHIT}>shieldhit</MenuItem>
+						<MenuItem value={SimulatorType.FLUKA}>fluka</MenuItem>
+						<MenuItem value={SimulatorType.TOPAS}>topas</MenuItem>
+					</Select>
 					<ToggleButtonGroup
 						exclusive
 						fullWidth
