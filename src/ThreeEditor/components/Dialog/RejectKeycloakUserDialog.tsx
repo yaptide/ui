@@ -22,7 +22,8 @@ export function RejectKeycloakUserDialog({
 			<Button
 				onClick={() => {
 					onClose();
-					keycloak.logout();
+
+					if (initialized && keycloak.authenticated) keycloak.logout();
 				}}
 				autoFocus>
 				I understand

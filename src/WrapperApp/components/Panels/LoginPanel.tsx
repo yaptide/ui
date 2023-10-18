@@ -36,6 +36,10 @@ export default function LoginPanel() {
 		return () => document.removeEventListener('keydown', handleEnter);
 	}, [handleEnter]);
 
+	const keycloakLogin = useCallback(() => {
+		if (initialized && !keycloak.authenticated) keycloak.login();
+	}, [initialized, keycloak]);
+
 	return (
 		<Box
 			sx={{
@@ -98,7 +102,7 @@ export default function LoginPanel() {
 								fullWidth
 								disabled={!initialized}
 								variant={theme.palette.mode === 'dark' ? 'outlined' : 'contained'}
-								onClick={() => keycloak.login()}>
+								onClick={keycloakLogin}>
 								Connect with PLGrid
 							</Button>
 						</>

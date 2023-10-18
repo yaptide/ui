@@ -177,39 +177,39 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	}, [demoMode, isServerReachable, user]);
 
 	const tokenVerification = useCallback(() => {
-		if (!initialized || !keycloak.authenticated) return Promise.reject();
+		if (!initialized || !keycloak.authenticated) return Promise.resolve();
 		const username = keycloak.tokenParsed?.preferred_username;
 
 		if (true)
 			open({
 				reason: 'You are not authorized to use this application.'
 			});
-
-		return kyRef
-			.post(`auth/keycloak`, {
-				headers: {
-					Authorization: `Bearer ${keycloak.token}`
-				},
-				json: {
-					username
-				}
-			})
-			.then(() => {
-				setUser({
-					username,
-					source: 'keycloak'
+		else if (initialized)
+			return kyRef
+				.post(`auth/keycloak`, {
+					headers: {
+						Authorization: `Bearer ${keycloak.token}`
+					},
+					json: {
+						username
+					}
+				})
+				.then(() => {
+					setUser({
+						username,
+						source: 'keycloak'
+					});
+				})
+				.catch((err: HTTPError) => {
+					setUser(null);
+					setRefreshInterval(undefined);
+					open({
+						reason:
+							err.response?.status === 403
+								? 'You are not authorized to use this application.'
+								: err.message
+					});
 				});
-			})
-			.catch((err: HTTPError) => {
-				setUser(null);
-				setRefreshInterval(undefined);
-				open({
-					reason:
-						err.response?.status === 403
-							? 'You are not authorized to use this application.'
-							: err.message
-				});
-			});
 	}, [
 		initialized,
 		keycloak.authenticated,
@@ -234,12 +234,12 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 		setRefreshInterval(undefined);
 		setKeyCloakInterval(undefined);
 
-		if (keycloak.authenticated) keycloak.logout();
+		if (initialized && keycloak.authenticated) keycloak.logout();
 		kyRef
 			.delete(`auth/logout`)
 			.json<YaptideResponse>()
 			.catch((_: HTTPError) => {});
-	}, [keycloak, kyRef]);
+	}, [initialized, keycloak, kyRef]);
 
 	const login = useCallback(
 		(...[username, password]: RequestAuthLogin) => {
@@ -263,6 +263,8 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	);
 
 	const tokenRefresh = useCallback(() => {
+		if (!initialized) return Promise.resolve();
+
 		return keycloak
 			.updateToken(300) // 5 minutes in seconds minimum remaining lifetime for token before refresh is allowed
 			.then(refreshed => {
@@ -273,7 +275,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 					);
 			})
 			.catch(reason => {});
-	}, [enqueueSnackbar, keycloak]);
+	}, [enqueueSnackbar, keycloak, initialized]);
 
 	useIntervalAsync(
 		tokenRefresh,
