@@ -180,7 +180,12 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 		if (!initialized || !keycloak.authenticated) return Promise.resolve();
 		const username = keycloak.tokenParsed?.preferred_username;
 
-		if (true)
+		/**
+		 * TODO: Check if user is authorized to use this application (e.g. by checking if user is in a certain group)
+		 */
+		const validUser = true;
+
+		if (!validUser)
 			open({
 				reason: 'You are not authorized to use this application.'
 			});
