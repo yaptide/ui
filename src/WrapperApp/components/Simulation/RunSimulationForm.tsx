@@ -232,17 +232,25 @@ export function RunSimulationForm({
 						value={nTasks}
 						onChange={e => setNTasks(Math.max(1, parseInt(e.target.value)))}
 					/>
-
-					<Select
-						size='small'
-						label='Simulation software'
-						defaultValue={forwardedSimulator}
-						onChange={evn => setSelectedSimulator(evn.target.value as SimulatorType)}
-					>
-						<MenuItem value={SimulatorType.SHIELDHIT}>shieldhit</MenuItem>
-						<MenuItem value={SimulatorType.FLUKA}>fluka</MenuItem>
-						<MenuItem value={SimulatorType.TOPAS}>topas</MenuItem>
-					</Select>
+					<FormControl
+						fullWidth
+						sx={{
+							maxWidth: ({ spacing }) => `calc(100vw - ${spacing(14)})`,
+							width: '380px'
+						}}>
+						<InputLabel id='simulator-select-label'>Simulation software</InputLabel>
+						<Select
+							labelId='simulator-select-label'
+							size='small'
+							label='Simulation software'
+							defaultValue={forwardedSimulator}
+							onChange={evn => setSelectedSimulator(evn.target.value as SimulatorType)}
+						>
+							<MenuItem value={SimulatorType.SHIELDHIT}>shieldhit</MenuItem>
+							<MenuItem value={SimulatorType.FLUKA}>fluka</MenuItem>
+							<MenuItem value={SimulatorType.TOPAS}>topas</MenuItem>
+						</Select>
+					</FormControl>
 					<ToggleButtonGroup
 						exclusive
 						fullWidth
