@@ -13,7 +13,7 @@ const initOptions = {
 	pkceMethod: 'S256',
 	onLoad: 'check-sso',
 	checkLoginIframe: false,
-	enableLogging: true
+	enableLogging: false
 } as const satisfies KeycloakInitOptions;
 
 export const KeycloakAuth = ({ children }: GenericContextProviderProps) => {
