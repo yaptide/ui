@@ -9,7 +9,7 @@ import {
 	Tabs,
 	Typography
 } from '@mui/material';
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { ChangeEvent, SyntheticEvent, useEffect, useState } from 'react';
 
 import { Estimator, generateGraphs, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
 import { useDialog } from '../../../services/DialogService';
@@ -97,7 +97,9 @@ function ResultsPanel() {
 							control={
 								<Switch
 									checked={groupQuantities}
-									onChange={e => setGroupQuantities(e.target.checked)}
+									onChange={(e: ChangeEvent<HTMLInputElement>) =>
+										setGroupQuantities(e.target.checked)
+									}
 								/>
 							}
 							label='Group Quantities'

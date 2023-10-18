@@ -9,6 +9,7 @@ import { ConfigProvider } from './config/ConfigService';
 import { PythonConverterService } from './PythonConverter/PythonConverterService';
 import { Auth } from './services/AuthService';
 import { DialogProvider } from './services/DialogService';
+import { KeycloakAuth } from './services/KeycloakAuthService';
 import { Loader } from './services/LoaderService';
 import { ShSimulation } from './services/ShSimulatorService';
 import { Store } from './services/StoreService';
@@ -83,12 +84,13 @@ function App() {
 				<ConfigProvider />,
 				<StyledEngineProvider injectFirst />,
 				<ThemeProvider theme={theme} />,
+				<DialogProvider />,
 				<SnackbarProvider maxSnack={3} />,
+				<KeycloakAuth />,
 				<Auth />,
 				<ShSimulation />,
 				<PythonConverterService />,
 				<Store />,
-				<DialogProvider />,
 				<Loader />
 			]}>
 			<WrapperApp />

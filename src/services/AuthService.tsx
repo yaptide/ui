@@ -1,5 +1,5 @@
-import { Backdrop, CircularProgress, Typography } from '@mui/material';
-import Keycloak from 'keycloak-js';
+import { Backdrop, CircularProgress, Theme, Typography } from '@mui/material';
+import { useKeycloak } from 'keycloak-react-web';
 import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
 import { useSnackbar } from 'notistack';
@@ -16,8 +16,8 @@ import {
 import { hasFields } from '../util/customGuards';
 import useIntervalAsync from '../util/hooks/useIntervalAsync';
 import { snakeToCamelCase } from '../util/Notation/Notation';
+import { useDialog } from './DialogService';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
-import { keycloakConfig } from './keycloakConfig';
 
 type AuthUser = Pick<ResponseAuthStatus, 'username' | 'source'>;
 
@@ -67,14 +67,12 @@ export interface AuthContext {
 	isAuthorized: boolean;
 	isServerReachable: boolean;
 	login: (...args: RequestAuthLogin) => void;
-	tokenLogin: () => void;
 	logout: (...args: RequestAuthLogout) => void;
 	refresh: (...args: RequestAuthRefresh) => void;
 	authKy: KyInstance;
 }
 
 const [useAuth, AuthContextProvider] = createGenericContext<AuthContext>();
-const keycloak = new Keycloak(keycloakConfig);
 const ignored_messages = ['No token provided'];
 
 const Auth = ({ children }: GenericContextProviderProps) => {
@@ -82,15 +80,13 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER, isAuthUser));
 	const [reachInterval, setReachInterval] = useState<number>();
 	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(180000); // 3 minutes in ms default interval for refresh token
+	const { keycloak, initialized } = useKeycloak();
 	const [keyCloakInterval, setKeyCloakInterval] = useState<number>();
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
 	const { enqueueSnackbar } = useSnackbar();
+	const [open] = useDialog('rejectKeycloak');
 
 	const isAuthorized = useMemo(() => user !== null || demoMode, [demoMode, user]);
-
-	const [isWaitingForVerification, setIsWaitingForVerification] = useState<boolean>(
-		Boolean(isServerReachable && keycloak.authenticated && !isAuthorized)
-	);
 
 	useEffect(() => {
 		setReachInterval(isServerReachable ? 180000 : undefined);
@@ -174,15 +170,20 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	}, [reachServer]);
 
 	useEffect(() => {
-		if (user !== null && user.source !== 'keycloak' && isServerReachable)
+		if (!demoMode && user?.source !== 'keycloak' && isServerReachable)
 			setRefreshInterval(prev => (prev === undefined ? 3000 : prev));
 		// 3 seconds in ms default interval for refresh when logged in with username and password
 		else if (!isServerReachable || !user?.source) setRefreshInterval(undefined);
-	}, [isServerReachable, user]);
+	}, [demoMode, isServerReachable, user]);
 
 	const tokenVerification = useCallback(() => {
-		if (!keycloak.authenticated) return Promise.reject();
+		if (!initialized || !keycloak.authenticated) return Promise.reject();
 		const username = keycloak.tokenParsed?.preferred_username;
+
+		if (true)
+			open({
+				reason: 'You are not authorized to use this application.'
+			});
 
 		return kyRef
 			.post(`auth/keycloak`, {
@@ -199,43 +200,46 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 					source: 'keycloak'
 				});
 			})
-			.catch((_: HTTPError) => {
+			.catch((err: HTTPError) => {
 				setUser(null);
-				setIsWaitingForVerification(false);
 				setRefreshInterval(undefined);
+				open({
+					reason:
+						err.response?.status === 403
+							? 'You are not authorized to use this application.'
+							: err.message
+				});
 			});
-	}, [kyRef]);
+	}, [
+		initialized,
+		keycloak.authenticated,
+		keycloak.token,
+		keycloak.tokenParsed?.preferred_username,
+		kyRef,
+		open
+	]);
 
 	useEffect(() => {
-		keycloak
-			.init({
-				pkceMethod: 'S256',
-				checkLoginIframe: false
-			})
-			.then(auth => {
-				console.log('after init', auth);
-
-				if (auth) {
-					setKeyCloakInterval(
-						keycloak.tokenParsed?.exp !== undefined
-							? getRefreshDelay(keycloak.tokenParsed.exp * 1000)
-							: undefined
-					);
-					tokenVerification();
-				}
-			});
-	}, [tokenVerification]);
+		if (initialized && keycloak.authenticated)
+			setKeyCloakInterval(
+				keycloak.tokenParsed?.exp !== undefined
+					? getRefreshDelay(keycloak.tokenParsed.exp * 1000)
+					: undefined
+			);
+		tokenVerification();
+	}, [initialized, keycloak, tokenVerification]);
 
 	const logout = useCallback(() => {
 		setUser(null);
 		setRefreshInterval(undefined);
+		setKeyCloakInterval(undefined);
 
-		if (user?.source === 'keycloak') keycloak.logout();
+		if (keycloak.authenticated) keycloak.logout();
 		kyRef
 			.delete(`auth/logout`)
 			.json<YaptideResponse>()
 			.catch((_: HTTPError) => {});
-	}, [kyRef, user?.source]);
+	}, [keycloak, kyRef]);
 
 	const login = useCallback(
 		(...[username, password]: RequestAuthLogin) => {
@@ -269,9 +273,12 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 					);
 			})
 			.catch(reason => {});
-	}, [enqueueSnackbar]);
+	}, [enqueueSnackbar, keycloak]);
 
-	useIntervalAsync(tokenRefresh, keycloak.authenticated ? keyCloakInterval : undefined);
+	useIntervalAsync(
+		tokenRefresh,
+		initialized && keycloak.authenticated ? keyCloakInterval : undefined
+	);
 
 	const refresh = useCallback(async () => {
 		if (user?.source === 'keycloak' && isAuthorized) return tokenVerification();
@@ -307,13 +314,17 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				isAuthorized,
 				isServerReachable: Boolean(isServerReachable),
 				login,
-				tokenLogin: keycloak.login,
 				logout,
 				authKy,
 				refresh
 			}}>
 			{children}
-			<Backdrop open={isWaitingForVerification}>
+			<Backdrop
+				open={initialized && !!keycloak.authenticated && !isAuthorized}
+				sx={{
+					zIndex: ({ zIndex }: Theme) => zIndex.drawer + 1,
+					color: '#fff'
+				}}>
 				<Typography variant='h1'>Waiting for verification...</Typography>
 				<CircularProgress />
 			</Backdrop>
