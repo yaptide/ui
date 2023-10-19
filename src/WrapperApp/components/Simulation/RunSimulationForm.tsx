@@ -246,9 +246,8 @@ export function RunSimulationForm({
 							defaultValue={forwardedSimulator}
 							onChange={evn => setSelectedSimulator(evn.target.value as SimulatorType)}
 						>
-							<MenuItem value={SimulatorType.SHIELDHIT}>shieldhit</MenuItem>
-							<MenuItem value={SimulatorType.FLUKA}>fluka</MenuItem>
-							<MenuItem value={SimulatorType.TOPAS}>topas</MenuItem>
+							<MenuItem value={SimulatorType.SHIELDHIT}>SHIELD-HIT12A</MenuItem>
+							<MenuItem value={SimulatorType.FLUKA}>Fluka</MenuItem>
 						</Select>
 					</FormControl>
 					<ToggleButtonGroup
