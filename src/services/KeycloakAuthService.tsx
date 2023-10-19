@@ -41,7 +41,12 @@ const KeycloakAuth = ({ children }: GenericContextProviderProps) => {
 		<KeycloakProvider
 			client={authInstance}
 			initOptions={initOptions}>
-			{children}
+			<KeycloakAuthContextProvider
+				value={{
+					initialized: false
+				}}>
+				{children}
+			</KeycloakAuthContextProvider>
 		</KeycloakProvider>
 	) : (
 		<KeycloakAuthContextProvider
