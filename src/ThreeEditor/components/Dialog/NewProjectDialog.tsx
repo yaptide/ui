@@ -1,11 +1,12 @@
 import { Button } from '@mui/material';
 
-import { useStore } from '../../../services/StoreService';
+import { StoreContext } from '../../../services/StoreService';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
-export function NewProjectDialog({ onClose }: ConcreteDialogProps) {
-	const { yaptideEditor } = useStore();
-
+export function NewProjectDialog({
+	onClose,
+	yaptideEditor
+}: ConcreteDialogProps<Required<Pick<StoreContext, 'yaptideEditor'>>>) {
 	return (
 		<CustomDialog
 			onClose={onClose}

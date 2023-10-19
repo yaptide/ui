@@ -43,7 +43,7 @@ const readFile = (file: File) => {
 };
 
 const Loader = ({ children }: GenericContextProviderProps) => {
-	const [open] = useDialog('loadFile');
+	const { open: openLoadFileDialog } = useDialog('loadFile');
 	const { yaptideEditor, setResultsSimulationData, setLocalResultsSimulationData } = useStore();
 	const [, setUrlInPath] = useState<string>();
 
@@ -53,10 +53,12 @@ const Loader = ({ children }: GenericContextProviderProps) => {
 
 			switch (type) {
 				case 'Editor':
-					open({
-						data: json,
-						validVersion: json.metadata.version === JSON_VERSION
-					});
+					if (yaptideEditor)
+						openLoadFileDialog({
+							data: json,
+							validVersion: json.metadata.version === JSON_VERSION,
+							yaptideEditor
+						});
 
 					break;
 				default:
@@ -65,7 +67,7 @@ const Loader = ({ children }: GenericContextProviderProps) => {
 					break;
 			}
 		},
-		[open]
+		[openLoadFileDialog, yaptideEditor]
 	);
 
 	const loadData = useCallback(

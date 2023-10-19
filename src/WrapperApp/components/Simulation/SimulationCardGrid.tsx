@@ -14,6 +14,7 @@ import {
 import { FC, useState } from 'react';
 
 import { useDialog } from '../../../services/DialogService';
+import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import { JobStatusData, SimulationInputFiles } from '../../../types/ResponseTypes';
@@ -210,7 +211,9 @@ export function PaginatedSimulationsFromBackend({
 	...other
 }: SimulationsFromBackendProps) {
 	const { setTrackedId } = useStore();
-	const [open] = useDialog('runSimulation');
+	const { open: openRunSimulationDialog } = useDialog('runSimulation');
+	const { yaptideEditor } = useStore();
+	const { postJobDirect, postJobBatch } = useShSimulation();
 
 	return (
 		<PaginatedSimulationCardGrid {...other}>
@@ -222,11 +225,15 @@ export function PaginatedSimulationsFromBackend({
 					variant='contained'
 					color='info'
 					startIcon={<QueuePlayNextIcon />}
-					disabled={!isBackendAlive}
+					disabled={!Boolean(isBackendAlive && yaptideEditor)}
 					onClick={() =>
-						open({
+						yaptideEditor &&
+						openRunSimulationDialog({
 							onSubmit: setTrackedId,
-							simulator: SimulatorType.SHIELDHIT
+							simulator: SimulatorType.SHIELDHIT,
+							yaptideEditor,
+							postJobDirect,
+							postJobBatch
 						})
 					}>
 					Run new simulation

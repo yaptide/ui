@@ -84,7 +84,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	const [keyCloakInterval, setKeyCloakInterval] = useState<number>();
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
 	const { enqueueSnackbar } = useSnackbar();
-	const [open] = useDialog('rejectKeycloak');
+	const { open: openRejectKeycloakDialog } = useDialog('rejectKeycloak');
 
 	const isAuthorized = useMemo(() => user !== null || demoMode, [demoMode, user]);
 
@@ -186,8 +186,9 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 		const validUser = true;
 
 		if (!validUser)
-			open({
-				reason: 'You are not authorized to use this application.'
+			openRejectKeycloakDialog({
+				reason: 'You are not authorized to use this application.',
+				keycloakAuth: { keycloak, initialized }
 			});
 		else if (initialized)
 			return kyRef
@@ -208,14 +209,15 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				.catch((err: HTTPError) => {
 					setUser(null);
 					setRefreshInterval(undefined);
-					open({
+					openRejectKeycloakDialog({
 						reason:
 							err.response?.status === 403
 								? 'You are not authorized to use this application.'
-								: err.message
+								: err.message,
+						keycloakAuth: { keycloak, initialized }
 					});
 				});
-	}, [initialized, keycloak, kyRef, open]);
+	}, [initialized, keycloak, kyRef, openRejectKeycloakDialog]);
 
 	useEffect(() => {
 		if (initialized && keycloak.authenticated)

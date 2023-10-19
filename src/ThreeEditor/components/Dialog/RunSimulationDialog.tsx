@@ -2,8 +2,8 @@ import { Card, CardContent, Fade, Modal } from '@mui/material';
 import { enqueueSnackbar } from 'notistack';
 import { useState } from 'react';
 
-import { useShSimulation } from '../../../services/ShSimulatorService';
-import { useStore } from '../../../services/StoreService';
+import { RestSimulationContext } from '../../../services/ShSimulatorService';
+import { StoreContext } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import {
@@ -19,15 +19,19 @@ export function RunSimulationDialog({
 	inputFiles = {},
 	simulator,
 	onClose,
-	onSubmit = () => {}
-}: ConcreteDialogProps<{
-	onSubmit?: (jobId: string) => void;
-	inputFiles?: Record<string, string>;
-	simulator: SimulatorType;
-}>) {
-	const { yaptideEditor } = useStore();
+	onSubmit = () => {},
+	yaptideEditor,
+	postJobDirect,
+	postJobBatch
+}: ConcreteDialogProps<
+	{
+		onSubmit?: (jobId: string) => void;
+		inputFiles?: Record<string, string>;
+		simulator: SimulatorType;
+	} & Required<Pick<StoreContext, 'yaptideEditor'>> &
+		Pick<RestSimulationContext, 'postJobDirect' | 'postJobBatch'>
+>) {
 	const [controller] = useState(new AbortController());
-	const { postJobDirect, postJobBatch } = useShSimulation();
 	const sendSimulationRequest = (
 		postJobFn: typeof postJobDirect,
 		runType: SimulationRunType,
@@ -46,16 +50,22 @@ export function RunSimulationDialog({
 			runType === 'batch'
 				? {
 						...batchOptions,
-						arrayOptions: batchOptions.arrayOptions?.reduce((acc, curr) => {
-							acc[curr.optionKey] = curr.optionValue;
+						arrayOptions: batchOptions.arrayOptions?.reduce(
+							(acc, curr) => {
+								acc[curr.optionKey] = curr.optionValue;
 
-							return acc;
-						}, {} as Record<string, string>),
-						collectOptions: batchOptions.collectOptions?.reduce((acc, curr) => {
-							acc[curr.optionKey] = curr.optionValue;
+								return acc;
+							},
+							{} as Record<string, string>
+						),
+						collectOptions: batchOptions.collectOptions?.reduce(
+							(acc, curr) => {
+								acc[curr.optionKey] = curr.optionValue;
 
-							return acc;
-						}, {} as Record<string, string>)
+								return acc;
+							},
+							{} as Record<string, string>
+						)
 				  }
 				: undefined;
 

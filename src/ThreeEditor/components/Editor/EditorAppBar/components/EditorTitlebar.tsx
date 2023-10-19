@@ -15,7 +15,7 @@ import { useDialog } from '../../../../../services/DialogService';
 import { useStore } from '../../../../../services/StoreService';
 
 export function EditorTitleBar() {
-	const [open, , isOpen] = useDialog('editProject');
+	const { open: openEditProjectDialog, isOpen } = useDialog('editProject');
 	const { yaptideEditor } = useStore();
 	const [saving, setSaving] = useState(false);
 	const [editMode, setEditMode] = useState(false);
@@ -60,7 +60,11 @@ export function EditorTitleBar() {
 			key='edit project description'
 			onClick={() => {
 				popupState.close();
-				open();
+
+				if (yaptideEditor)
+					openEditProjectDialog({
+						yaptideEditor
+					});
 			}}>
 			Edit Project Description
 		</MenuItem>

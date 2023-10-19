@@ -12,6 +12,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useDialog } from '../../../../services/DialogService';
 import { useLoader } from '../../../../services/LoaderService';
+import { useStore } from '../../../../services/StoreService';
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { EditorTitleBar } from './components/EditorTitlebar';
 import { EditorToolbar } from './components/EditorToolbar';
@@ -30,11 +31,12 @@ type AppBarOptions = {
 
 function EditorAppBar({ editor }: AppBarProps) {
 	const { loadFromJson, loadFromFiles, loadFromUrl, loadFromJsonString } = useLoader();
-	const [openTheOpenFileDialog] = useDialog('openFile');
-	const [openTheSaveFileDialog] = useDialog('saveFile');
-	const [openTheNewProjectDialog] = useDialog('newProject');
+	const { open: openTheOpenFileDialog } = useDialog('openFile');
+	const { open: openTheSaveFileDialog } = useDialog('saveFile');
+	const { open: openTheNewProjectDialog } = useDialog('newProject');
 	const [canUndo, setCanUndo] = useState((editor?.history.undos.length ?? 0) > 0);
 	const [canRedo, setCanRedo] = useState((editor?.history.redos.length ?? 0) > 0);
+	const { yaptideEditor } = useStore();
 
 	const updateHistoryButtons = useCallback(() => {
 		setCanUndo((editor?.history.undos.length ?? 0) > 0);
@@ -71,7 +73,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 					label: 'New',
 					icon: <FiberNewIcon />,
 					disabled: false,
-					onClick: () => openTheNewProjectDialog()
+					onClick: () => yaptideEditor && openTheNewProjectDialog({ yaptideEditor })
 				},
 				{
 					label: 'Open',
@@ -95,7 +97,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 					label: 'Save as',
 					icon: <SaveAsIcon />,
 					disabled: false,
-					onClick: () => openTheSaveFileDialog()
+					onClick: () => yaptideEditor && openTheSaveFileDialog({ yaptideEditor })
 				},
 				{
 					label: 'Redo (ctrl+y)',
@@ -113,6 +115,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 		[
 			canUndo,
 			canRedo,
+			yaptideEditor,
 			openTheNewProjectDialog,
 			openTheOpenFileDialog,
 			loadFromFiles,

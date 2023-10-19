@@ -73,11 +73,11 @@ export default function SimulationCard({
 	showInputFiles,
 	...other
 }: SimulationCardProps) {
-	const { resultsSimulationData } = useStore();
+	const { yaptideEditor, resultsSimulationData } = useStore();
 	const { loadFromJson } = useLoader();
 	const { getJobLogs, getJobInputs, getFullSimulationData } = useShSimulation();
 	const { enqueueSnackbar } = useSnackbar();
-	const [open] = useDialog('saveFile');
+	const { open: openSaveFileDialog } = useDialog('saveFile');
 
 	const [disableLoadJson, setDisableLoadJson] = useState(false);
 
@@ -149,11 +149,13 @@ export default function SimulationCard({
 	const onClickSaveToFile = () => {
 		getFullSimulationData(simulationStatus)
 			.then((simulation: FullSimulationData | undefined) => {
-				open({
-					name: `${titleToKebabCase(simulation?.title ?? 'simulation')}-result.json`,
-					results: simulation,
-					disableCheckbox: true
-				});
+				if (yaptideEditor)
+					openSaveFileDialog({
+						name: `${titleToKebabCase(simulation?.title ?? 'simulation')}-result.json`,
+						results: simulation,
+						disableCheckbox: true,
+						yaptideEditor
+					});
 			})
 			.catch(() => {
 				enqueueSnackbar('Could not load simulation data', { variant: 'error' });
@@ -427,7 +429,11 @@ export default function SimulationCard({
 						color='info'
 						size='small'
 						onClick={onClickSaveToFile}
-						disabled={!Boolean(simulationStatus.jobState === StatusState.COMPLETED)}>
+						disabled={
+							!Boolean(
+								simulationStatus.jobState === StatusState.COMPLETED && yaptideEditor
+							)
+						}>
 						Save to file
 					</Button>
 

@@ -1,11 +1,13 @@
 import { Box, Button, TextField } from '@mui/material';
 import { useState } from 'react';
 
-import { useStore } from '../../../services/StoreService';
+import { StoreContext } from '../../../services/StoreService';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
-export function EditProjectInfoDialog({ onClose }: ConcreteDialogProps) {
-	const { yaptideEditor } = useStore();
+export function EditProjectInfoDialog({
+	onClose,
+	yaptideEditor
+}: ConcreteDialogProps<Required<Pick<StoreContext, 'yaptideEditor'>>>) {
 	const [title, setTitle] = useState<string>(yaptideEditor?.config.getKey('project/title'));
 	const [description, setDescription] = useState<string>(
 		yaptideEditor?.config.getKey('project/description')

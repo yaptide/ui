@@ -5,6 +5,7 @@ import CodeEditor from '@uiw/react-textarea-code-editor';
 import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
 import { useDialog } from '../../../services/DialogService';
+import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
@@ -26,8 +27,9 @@ interface InputFilesEditorProps {
 }
 
 export function InputFilesEditor(props: InputFilesEditorProps) {
-	const [open] = useDialog('runSimulation');
-	const { setTrackedId } = useStore();
+	const { open: openRunSimulationDialog } = useDialog('runSimulation');
+	const { postJobDirect, postJobBatch } = useShSimulation();
+	const { yaptideEditor, setTrackedId } = useStore();
 	const { demoMode } = useConfig();
 	const { isAuthorized } = useAuth();
 	const inputFiles = props.inputFiles ?? _defaultShInputFiles;
@@ -85,12 +87,16 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 					variant='contained'
 					disabled={demoMode || !isAuthorized}
 					onClick={() =>
-						open({
+						yaptideEditor &&
+						openRunSimulationDialog({
 							inputFiles: Object.fromEntries(
 								Object.entries(inputFiles).filter(([, data]) => data.length > 0)
 							),
 							simulator: props.simulator,
-							onSubmit: setTrackedId
+							onSubmit: setTrackedId,
+							postJobDirect,
+							postJobBatch,
+							yaptideEditor
 						})
 					}>
 					Run with these input files

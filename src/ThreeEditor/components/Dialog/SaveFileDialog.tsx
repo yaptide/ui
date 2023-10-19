@@ -2,7 +2,7 @@ import { Button, Checkbox, FormControlLabel, TextField } from '@mui/material';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 import { FullSimulationData } from '../../../services/ShSimulatorService';
-import { useStore } from '../../../services/StoreService';
+import { StoreContext } from '../../../services/StoreService';
 import { saveString } from '../../../util/File';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
@@ -25,13 +25,15 @@ export function SaveFileDialog({
 	onClose,
 	name: defaultName = 'editor',
 	results: providedResults,
-	disableCheckbox = false
-}: ConcreteDialogProps<{
-	name?: string;
-	results?: FullSimulationData;
-	disableCheckbox?: boolean;
-}>) {
-	const { yaptideEditor } = useStore();
+	disableCheckbox = false,
+	yaptideEditor
+}: ConcreteDialogProps<
+	{
+		name?: string;
+		results?: FullSimulationData;
+		disableCheckbox?: boolean;
+	} & Required<Pick<StoreContext, 'yaptideEditor'>>
+>) {
 	const results: FullSimulationData | undefined = providedResults ?? yaptideEditor?.getResults();
 
 	const [keepResults, setKeepResults] = useState<boolean>(false);
