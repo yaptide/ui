@@ -1,14 +1,14 @@
 import { Box, Button, Card, CardContent, TextField, Typography, useTheme } from '@mui/material';
-import { useKeycloak } from 'keycloak-react-web';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
+import { useKeycloakAuth } from '../../../services/KeycloakAuthService';
 
 export default function LoginPanel() {
 	const { altAuth } = useConfig();
 	const { login } = useAuth();
-	const { keycloak, initialized } = useKeycloak();
+	const { keycloak, initialized } = useKeycloakAuth();
 	const theme = useTheme();
 
 	const [username, setUsername] = useState('');

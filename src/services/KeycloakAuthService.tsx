@@ -1,7 +1,8 @@
 import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
-import { KeycloakProvider } from 'keycloak-react-web';
+import { KeycloakProvider, useKeycloak } from 'keycloak-react-web';
 
-import { GenericContextProviderProps } from './GenericContext';
+import { useConfig } from '../config/ConfigService';
+import { createSubstituteContext, GenericContextProviderProps } from './GenericContext';
 
 const authInstance = new Keycloak({
 	url: `${
@@ -20,12 +21,36 @@ const initOptions = {
 	enableLogging: false
 } as const satisfies KeycloakInitOptions;
 
-export const KeycloakAuth = ({ children }: GenericContextProviderProps) => {
-	return (
+export type KeycloakAuthContext =
+	| {
+			initialized: false;
+			keycloak?: Keycloak;
+	  }
+	| {
+			initialized: true;
+			keycloak: Keycloak;
+	  };
+
+const [useKeycloakAuth, KeycloakAuthContextProvider] =
+	createSubstituteContext<KeycloakAuthContext>(useKeycloak);
+
+const KeycloakAuth = ({ children }: GenericContextProviderProps) => {
+	const { altAuth } = useConfig();
+
+	return altAuth ? (
 		<KeycloakProvider
 			client={authInstance}
 			initOptions={initOptions}>
 			{children}
 		</KeycloakProvider>
+	) : (
+		<KeycloakAuthContextProvider
+			value={{
+				initialized: false
+			}}>
+			{children}
+		</KeycloakAuthContextProvider>
 	);
 };
+
+export { KeycloakAuth, useKeycloakAuth };

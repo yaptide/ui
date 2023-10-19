@@ -1,13 +1,13 @@
 import { Button } from '@mui/material';
-import { useKeycloak } from 'keycloak-react-web';
 
+import { useKeycloakAuth } from '../../../services/KeycloakAuthService';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
 export function RejectKeycloakUserDialog({
 	onClose,
 	reason
 }: ConcreteDialogProps & { reason: string }) {
-	const { keycloak, initialized } = useKeycloak();
+	const { keycloak, initialized } = useKeycloakAuth();
 
 	return (
 		<CustomDialog

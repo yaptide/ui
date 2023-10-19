@@ -86,11 +86,11 @@ function App() {
 				<ThemeProvider theme={theme} />,
 				<SnackbarProvider maxSnack={3} />,
 				<KeycloakAuth />,
+				<Store />,
 				<DialogProvider />,
 				<Auth />,
 				<ShSimulation />,
 				<PythonConverterService />,
-				<Store />,
 				<Loader />
 			]}>
 			<WrapperApp />

@@ -1,5 +1,4 @@
 import { Backdrop, CircularProgress, Theme, Typography } from '@mui/material';
-import { useKeycloak } from 'keycloak-react-web';
 import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
 import { useSnackbar } from 'notistack';
@@ -18,6 +17,7 @@ import useIntervalAsync from '../util/hooks/useIntervalAsync';
 import { snakeToCamelCase } from '../util/Notation/Notation';
 import { useDialog } from './DialogService';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
+import { useKeycloakAuth } from './KeycloakAuthService';
 
 type AuthUser = Pick<ResponseAuthStatus, 'username' | 'source'>;
 
@@ -80,7 +80,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER, isAuthUser));
 	const [reachInterval, setReachInterval] = useState<number>();
 	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(180000); // 3 minutes in ms default interval for refresh token
-	const { keycloak, initialized } = useKeycloak();
+	const { keycloak, initialized } = useKeycloakAuth();
 	const [keyCloakInterval, setKeyCloakInterval] = useState<number>();
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
 	const { enqueueSnackbar } = useSnackbar();
@@ -215,14 +215,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 								: err.message
 					});
 				});
-	}, [
-		initialized,
-		keycloak.authenticated,
-		keycloak.token,
-		keycloak.tokenParsed?.preferred_username,
-		kyRef,
-		open
-	]);
+	}, [initialized, keycloak, kyRef, open]);
 
 	useEffect(() => {
 		if (initialized && keycloak.authenticated)
