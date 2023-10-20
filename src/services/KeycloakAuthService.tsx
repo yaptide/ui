@@ -4,15 +4,13 @@ import { KeycloakProvider, useKeycloak } from 'keycloak-react-web';
 import { useConfig } from '../config/ConfigService';
 import { createSubstituteContext, GenericContextProviderProps } from './GenericContext';
 
-const authInstance = new Keycloak({
-	url: `${
-		process.env.KEYCLOAK_BASE_URL
-			? process.env.KEYCLOAK_BASE_URL + '/auth/'
-			: 'https://localhost:8080/auth/'
-	}`,
-	realm: `${process.env.KEYCLOAK_REALM ?? ''}`,
-	clientId: `${process.env.KEYCLOAK_CLIENT_ID ?? ''}`
-}) as any;
+const keycloakParams = {
+	url: `${process.env.REACT_APP_KEYCLOAK_BASE_URL ?? 'https://localhost:8080'}/auth/`,
+	realm: `${process.env.REACT_APP_KEYCLOAK_REALM ?? ''}`,
+	clientId: `${process.env.REACT_APP_KEYCLOAK_CLIENT_ID ?? ''}`
+};
+
+const authInstance = new Keycloak(keycloakParams) as any;
 
 const initOptions = {
 	pkceMethod: 'S256',
