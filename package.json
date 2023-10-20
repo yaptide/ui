@@ -27,7 +27,7 @@
 		"date-fns": "^2.30.0",
 		"glob": "^10.3.10",
 		"keycloak-js": "^22.0.4",
-		"ky": "^0.33.2",
+		"ky": "^1.1.0",
 		"material-ui-popup-state": "^5.0.9",
 		"notistack": "^3.0.1",
 		"object-hash": "^3.0.0",
