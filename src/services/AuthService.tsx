@@ -200,11 +200,17 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 						username
 					}
 				})
-				.then(() => {
-					setUser({
-						username,
-						source: 'keycloak'
-					});
+				.json<ResponseAuthLogin>()
+				.then(({ accessExp }) => {
+					setUser(prev =>
+						prev?.username === username
+							? prev
+							: {
+									username,
+									source: 'keycloak'
+							  }
+					);
+					setRefreshInterval(getRefreshDelay(accessExp));
 				})
 				.catch((err: HTTPError) => {
 					setUser(null);
@@ -299,7 +305,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 
 			return setRefreshInterval(getRefreshDelay(accessExp));
 		} catch (_) {}
-	}, [demoMode, isAuthorized, isServerReachable, kyIntervalRef, tokenVerification, user?.source]);
+	}, [demoMode, isAuthorized, isServerReachable, kyIntervalRef, tokenVerification, user]);
 
 	const authKy = useMemo(() => kyRef, [kyRef]);
 
