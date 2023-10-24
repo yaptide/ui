@@ -1,3 +1,4 @@
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -46,6 +47,7 @@ type NavDrawerElementProps = {
 				type: 'label';
 		  };
 	sx?: SxProps<Theme>;
+	textSx?: SxProps<Theme>;
 };
 
 export function NavDrawerList({
@@ -71,7 +73,7 @@ export function NavDrawerList({
 									transform: 'translateX(-100%)'
 							  }
 					}
-					onClick={event => {
+					onClick={(event: SyntheticEvent<Element, Event>) => {
 						if (isAuthorized) logout();
 						else handleChange(event, 'login');
 					}}>
@@ -176,6 +178,24 @@ export function NavDrawerList({
 				}}>
 				<Divider />
 				<NavDrawerElement
+					textSx={{
+						'& .MuiListItemText-primary': {
+							fontSize: '0.675rem'
+						}
+					}}
+					menuOption={{
+						label: 'Documentation',
+						value: 'documentation',
+						disabled: false,
+						icon: <AutoStoriesIcon fontSize='large' />
+					}}
+					open={layout === 'open'}
+					buttonProps={{
+						href: 'https://yaptide.github.io/docs/',
+						type: 'link'
+					}}
+				/>
+				<NavDrawerElement
 					menuOption={{
 						label: deployInfo.commit,
 						value: 'deployInfo',
@@ -207,6 +227,7 @@ function NavDrawerElement({
 	selected,
 	secondaryAction,
 	sx = {},
+	textSx = {},
 	handleChange = () => {},
 	buttonProps = { type: 'button' }
 }: NavDrawerElementProps) {
@@ -223,7 +244,7 @@ function NavDrawerElement({
 			<ListItemText
 				primary={richLabel ?? label}
 				secondary={description}
-				sx={{ opacity: open ? 1 : 0 }}
+				sx={{ opacity: open ? 1 : 0, ...textSx }}
 			/>
 		</>
 	);
@@ -264,7 +285,9 @@ function NavDrawerElement({
 							: {})}
 						selected={selected}
 						aria-selected={selected}
-						onClick={event => handleChange(event, value)}>
+						onClick={(event: SyntheticEvent<Element, Event>) =>
+							handleChange(event, value)
+						}>
 						{listItemContent}
 					</ListItemButton>
 				)}
