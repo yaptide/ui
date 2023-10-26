@@ -225,7 +225,7 @@ export function PaginatedSimulationsFromBackend({
 					variant='contained'
 					color='info'
 					startIcon={<QueuePlayNextIcon />}
-					disabled={!Boolean(isBackendAlive && yaptideEditor)}
+					disabled={!(isBackendAlive && yaptideEditor)}
 					onClick={() =>
 						yaptideEditor &&
 						openRunSimulationDialog({

@@ -20,6 +20,21 @@ function Storage() {
 
 	let database;
 
+	const deleteDatabase = function () {
+		const req = indexedDB.deleteDatabase(name);
+		req.onsuccess = function () {
+			console.log('Deleted database successfully');
+		};
+
+		req.onerror = function () {
+			console.log('Could not delete database');
+		};
+
+		req.onblocked = function () {
+			console.log('Could not delete database due to the operation being blocked');
+		};
+	};
+
 	return {
 		init: function (callback) {
 			const request = indexedDB.open(name, version);
@@ -40,18 +55,7 @@ function Storage() {
 			request.onerror = function (event) {
 				console.error('IndexedDB', event);
 				// delete database
-				const req = indexedDB.deleteDatabase(name);
-				req.onsuccess = function () {
-					console.log('Deleted database successfully');
-				};
-
-				req.onerror = function () {
-					console.log('Could not delete database');
-				};
-
-				req.onblocked = function () {
-					console.log('Could not delete database due to the operation being blocked');
-				};
+				deleteDatabase();
 			};
 		},
 
@@ -65,7 +69,7 @@ function Storage() {
 				};
 			} catch (error) {
 				console.error(error);
-				callback();
+				deleteDatabase();
 			}
 		},
 
@@ -84,6 +88,7 @@ function Storage() {
 				};
 			} catch (error) {
 				console.error(error);
+				deleteDatabase();
 			}
 		},
 

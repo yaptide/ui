@@ -430,9 +430,7 @@ export default function SimulationCard({
 						size='small'
 						onClick={onClickSaveToFile}
 						disabled={
-							!Boolean(
-								simulationStatus.jobState === StatusState.COMPLETED && yaptideEditor
-							)
+							!(simulationStatus.jobState === StatusState.COMPLETED && yaptideEditor)
 						}>
 						Save to file
 					</Button>

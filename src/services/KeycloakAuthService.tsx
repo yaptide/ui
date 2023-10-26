@@ -1,5 +1,6 @@
 import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
 import { KeycloakProvider, useKeycloak } from 'keycloak-react-web';
+import { ReactNode, useCallback } from 'react';
 
 import { useConfig } from '../config/ConfigService';
 import { createSubstituteContext, GenericContextProviderProps } from './GenericContext';
@@ -34,25 +35,26 @@ const [useKeycloakAuth, KeycloakAuthContextProvider] =
 
 const KeycloakAuth = ({ children }: GenericContextProviderProps) => {
 	const { altAuth } = useConfig();
-
-	return altAuth ? (
-		<KeycloakProvider
-			client={authInstance}
-			initOptions={initOptions}>
+	const proxyContextProvider = useCallback(
+		(children: ReactNode) => (
 			<KeycloakAuthContextProvider
 				value={{
 					initialized: false
 				}}>
 				{children}
 			</KeycloakAuthContextProvider>
+		),
+		[]
+	);
+
+	return altAuth ? (
+		<KeycloakProvider
+			client={authInstance}
+			initOptions={initOptions}>
+			{proxyContextProvider(children)}
 		</KeycloakProvider>
 	) : (
-		<KeycloakAuthContextProvider
-			value={{
-				initialized: false
-			}}>
-			{children}
-		</KeycloakAuthContextProvider>
+		proxyContextProvider(children)
 	);
 };
 

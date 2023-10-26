@@ -173,11 +173,11 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 		if (!demoMode && user?.source !== 'keycloak' && isServerReachable)
 			setRefreshInterval(prev => (prev === undefined ? 3000 : prev));
 		// 3 seconds in ms default interval for refresh when logged in with username and password
-		else if (!isServerReachable || !user?.source) setRefreshInterval(undefined);
+		else setRefreshInterval(undefined);
 	}, [demoMode, isServerReachable, user]);
 
 	const tokenVerification = useCallback(() => {
-		if (!initialized || !keycloak.authenticated) return Promise.resolve();
+		if (!initialized || !keycloak.authenticated) return;
 		const username = keycloak.tokenParsed?.preferred_username;
 
 		/**
@@ -191,7 +191,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				keycloakAuth: { keycloak, initialized }
 			});
 		else if (initialized)
-			return kyRef
+			kyRef
 				.post(`auth/keycloak`, {
 					headers: {
 						Authorization: `Bearer ${keycloak.token}`
@@ -289,7 +289,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	);
 
 	const refresh = useCallback(async () => {
-		if (user?.source === 'keycloak' && isAuthorized) return tokenVerification();
+		if (user?.source === 'keycloak' && isAuthorized) return await tokenVerification();
 
 		if (demoMode || !isServerReachable) {
 			setRefreshInterval(undefined);
