@@ -9,6 +9,7 @@ import {
 	CircularProgress,
 	Grid,
 	GridProps,
+	Theme,
 	Typography
 } from '@mui/material';
 import { FC, useState } from 'react';
@@ -67,6 +68,10 @@ const stylesByLayout: Record<GridLayout, { gridContainerProps: {}; gridItemProps
 	}
 };
 
+const validGriLayout = (layout: any): layout is GridLayout => {
+	return layout in stylesByLayout;
+};
+
 export function SimulationCardGrid({
 	simulations,
 	layout,
@@ -80,7 +85,7 @@ export function SimulationCardGrid({
 	let gridContainerProps: GridProps = { container: true };
 	let gridItemProps: GridProps = { item: true };
 
-	if (layout in stylesByLayout) {
+	if (validGriLayout(layout)) {
 		gridContainerProps = {
 			...gridContainerProps,
 			...stylesByLayout[layout].gridContainerProps
@@ -120,20 +125,20 @@ export function SimulationCardGrid({
 					) : (
 						<Typography
 							variant='h5'
-							color={({ palette }) => palette.text.disabled}
+							color={({ palette }: Theme) => palette.text.disabled}
 							sx={{
 								textAlign: 'center',
 								width: '100%',
-								p: ({ spacing }) => spacing(8, 4),
+								p: ({ spacing }: Theme) => spacing(8, 4),
 								display: 'flex',
 								alignItems: 'center',
 								justifyContent: 'center'
 							}}>
 							<FolderOffIcon
 								sx={{
-									m: ({ spacing }) => spacing(0, 2),
-									pb: ({ spacing }) => spacing(0.5),
-									fontSize: ({ spacing }) => spacing(4)
+									m: ({ spacing }: Theme) => spacing(0, 2),
+									pb: ({ spacing }: Theme) => spacing(0.5),
+									fontSize: ({ spacing }: Theme) => spacing(4)
 								}}
 							/>
 							No simulations found
@@ -142,7 +147,7 @@ export function SimulationCardGrid({
 				) : (
 					<CircularProgress
 						sx={{
-							p: ({ spacing }) => spacing(4)
+							p: ({ spacing }: Theme) => spacing(4)
 						}}
 					/>
 				)}
@@ -174,13 +179,13 @@ export function PaginatedSimulationCardGrid({
 			isAccordion={isAccordion}
 			simulations={simulations}
 			layout={layout}
-			header={accordion =>
+			header={(accordion: SimulationAccordionProps) =>
 				SimulationBackendHeader({
 					title,
 					subtitle,
 					accordion,
 					sx: {
-						mb: ({ spacing }) => spacing(0)
+						mb: ({ spacing }: Theme) => spacing(0)
 					},
 					children,
 					...pageData
@@ -191,8 +196,8 @@ export function PaginatedSimulationCardGrid({
 					...pageData,
 					stickTo: 'bottom',
 					sx: {
-						mt: ({ spacing }) => spacing(0),
-						zIndex: ({ zIndex }) => zIndex.appBar
+						mt: ({ spacing }: Theme) => spacing(0),
+						zIndex: ({ zIndex }: Theme) => zIndex.appBar
 					}
 				})
 			}
@@ -240,7 +245,7 @@ export function PaginatedSimulationsFromBackend({
 				</Button>
 				<BackendStatusIndicator
 					sx={{
-						p: ({ spacing }) => spacing(2)
+						p: ({ spacing }: Theme) => spacing(2)
 					}}
 					isBackendAlive={isBackendAlive}
 				/>
@@ -278,16 +283,16 @@ export function AccordionCardGrid({
 				'&:before': {
 					display: 'none'
 				},
-				'p': ({ spacing }) => spacing(0)
+				'p': ({ spacing }: Theme) => spacing(0)
 			}}>
 			<AccordionSummary
 				sx={{
-					p: ({ spacing }) => spacing(0),
-					m: ({ spacing }) => spacing(0),
+					p: ({ spacing }: Theme) => spacing(0),
+					m: ({ spacing }: Theme) => spacing(0),
 					position: 'sticky',
-					inset: ({ spacing }) => spacing(0, 0, 0, 0),
-					zIndex: ({ zIndex }) => zIndex.appBar + 1,
-					mb: ({ spacing }) => (expanded ? spacing(7) : spacing(0))
+					inset: ({ spacing }: Theme) => spacing(0, 0, 0, 0),
+					zIndex: ({ zIndex }: Theme) => zIndex.appBar + 1,
+					mb: ({ spacing }: Theme) => (expanded ? spacing(7) : spacing(0))
 				}}>
 				{header &&
 					header(
@@ -298,7 +303,7 @@ export function AccordionCardGrid({
 			</AccordionSummary>
 			<AccordionDetails
 				sx={{
-					mt: ({ spacing }) => (expanded ? spacing(-14) : spacing(0)),
+					mt: ({ spacing }: Theme) => (expanded ? spacing(-14) : spacing(0)),
 					p: 0,
 					...sx
 				}}>
@@ -329,12 +334,12 @@ export function DemoCardGrid({
 			isAccordion={isAccordion}
 			simulations={simulations}
 			layout={layout}
-			header={accordion =>
+			header={(accordion: SimulationAccordionProps) =>
 				SimulationLabelBar({
 					title: title,
 					accordion,
 					sx: {
-						mb: ({ spacing }) => spacing(accordion.expanded ? 4 : -2)
+						mb: ({ spacing }: Theme) => spacing(accordion.expanded ? 4 : -2)
 					}
 				})
 			}
