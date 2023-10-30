@@ -9,7 +9,7 @@ import {
 	Tabs,
 	Typography
 } from '@mui/material';
-import { SyntheticEvent, useEffect, useState } from 'react';
+import { ChangeEvent, SyntheticEvent, useEffect, useState } from 'react';
 
 import { Estimator, generateGraphs, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
 import { useDialog } from '../../../services/DialogService';
@@ -25,8 +25,8 @@ export interface EstimatorResults extends Estimator {
 }
 
 function ResultsPanel() {
-	const [open] = useDialog('saveFile');
-	const { resultsSimulationData: simulation } = useStore();
+	const { open: openSaveFileDialog } = useDialog('saveFile');
+	const { yaptideEditor, resultsSimulationData: simulation } = useStore();
 
 	const [tabsValue, setTabsValue] = useState(0);
 	const [estimatorsResults, setEstimatorsResults] = useState<EstimatorResults[]>([]);
@@ -42,11 +42,13 @@ function ResultsPanel() {
 	};
 
 	const onClickSaveToFile = () => {
-		open({
-			name: `${titleToKebabCase(simulation?.title ?? 'simulation')}-result.json`,
-			results: simulation,
-			disableCheckbox: true
-		});
+		if (yaptideEditor)
+			openSaveFileDialog({
+				name: `${titleToKebabCase(simulation?.title ?? 'simulation')}-result.json`,
+				results: simulation,
+				disableCheckbox: true,
+				yaptideEditor
+			});
 	};
 
 	const parseEstimators = (estimators: Estimator[]) => {
@@ -107,7 +109,9 @@ function ResultsPanel() {
 								control={
 									<Switch
 										checked={groupQuantities}
-										onChange={e => setGroupQuantities(e.target.checked)}
+										onChange={(e: ChangeEvent<HTMLInputElement>) =>
+											setGroupQuantities(e.target.checked)
+										}
 										disabled={!resultsGeneratedFromProjectFile}
 									/>
 								}

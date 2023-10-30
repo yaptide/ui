@@ -3,10 +3,12 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
+import { useKeycloakAuth } from '../../../services/KeycloakAuthService';
 
 export default function LoginPanel() {
 	const { altAuth } = useConfig();
-	const { login, tokenLogin } = useAuth();
+	const { login } = useAuth();
+	const { keycloak, initialized } = useKeycloakAuth();
 	const theme = useTheme();
 
 	const [username, setUsername] = useState('');
@@ -33,6 +35,10 @@ export default function LoginPanel() {
 
 		return () => document.removeEventListener('keydown', handleEnter);
 	}, [handleEnter]);
+
+	const keycloakLogin = useCallback(() => {
+		if (initialized && !keycloak.authenticated) keycloak.login();
+	}, [initialized, keycloak]);
 
 	return (
 		<Box
@@ -94,8 +100,9 @@ export default function LoginPanel() {
 							<Button
 								color='info'
 								fullWidth
+								disabled={!initialized}
 								variant={theme.palette.mode === 'dark' ? 'outlined' : 'contained'}
-								onClick={tokenLogin}>
+								onClick={keycloakLogin}>
 								Connect with PLGrid
 							</Button>
 						</>

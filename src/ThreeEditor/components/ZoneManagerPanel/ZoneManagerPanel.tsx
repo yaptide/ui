@@ -8,6 +8,7 @@ import {
 	SelectChangeEvent,
 	Tab,
 	Tabs,
+	Theme,
 	Tooltip
 } from '@mui/material';
 import {
@@ -379,8 +380,8 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 										'width': '24px',
 										'height': '24px',
 										'borderRadius': 0,
-										'color': theme =>
-											theme.palette.mode === 'dark'
+										'color': ({ palette }: Theme) =>
+											palette.mode === 'dark'
 												? 'text.primary'
 												: 'secondary.main',
 										'&:hover': {
@@ -398,7 +399,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 				ref={backdropRef}
 				sx={{
 					color: '#fff',
-					zIndex: theme => theme.zIndex.drawer + 1,
+					zIndex: ({ zIndex }: Theme) => zIndex.drawer + 1,
 					position: 'absolute',
 					left: 0,
 					bottom: 0,

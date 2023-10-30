@@ -7,7 +7,8 @@ import {
 	DialogProps,
 	DialogTitle,
 	DialogTitleProps,
-	IconButton
+	IconButton,
+	Theme
 } from '@mui/material';
 import { ReactNode } from 'react';
 
@@ -87,7 +88,7 @@ export function CustomDialogTitle({ children, onClose, ...other }: CustomTitlePr
 						position: 'absolute',
 						right: 8,
 						top: 8,
-						color: theme => theme.palette.grey[500]
+						color: ({ palette }: Theme) => palette.grey[500]
 					}}>
 					<CloseIcon />
 				</IconButton>

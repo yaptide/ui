@@ -5,6 +5,7 @@ import { EditProjectInfoDialog } from '../ThreeEditor/components/Dialog/EditProj
 import { LoadFileDialog } from '../ThreeEditor/components/Dialog/LoadFileDialog';
 import { NewProjectDialog } from '../ThreeEditor/components/Dialog/NewProjectDialog';
 import { OpenFileDialog } from '../ThreeEditor/components/Dialog/OpenFileDialog';
+import { RejectKeycloakUserDialog } from '../ThreeEditor/components/Dialog/RejectKeycloakUserDialog';
 import { RunSimulationDialog } from '../ThreeEditor/components/Dialog/RunSimulationDialog';
 import { SaveFileDialog } from '../ThreeEditor/components/Dialog/SaveFileDialog';
 import {
@@ -35,7 +36,8 @@ export type DialogComponentTypeMap = EntriesToObj<
 		ValidComponentTypes<['openFile', typeof OpenFileDialog]>,
 		ValidComponentTypes<['runSimulation', typeof RunSimulationDialog]>,
 		ValidComponentTypes<['saveFile', typeof SaveFileDialog]>,
-		ValidComponentTypes<['editProject', typeof EditProjectInfoDialog]>
+		ValidComponentTypes<['editProject', typeof EditProjectInfoDialog]>,
+		ValidComponentTypes<['rejectKeycloak', typeof RejectKeycloakUserDialog]>
 	]
 >;
 
@@ -43,17 +45,21 @@ const [useDialogContext, DialogContextProvider] = createGenericContext<DialogCon
 
 function useDialog<T extends RequiredConfigDialogNames>(
 	name: T
-): readonly [(props: RestDialogPropsType[T]) => void, () => void, boolean];
+): {
+	open: (props: RestDialogPropsType[T]) => void;
+	close: () => void;
+	isOpen: boolean;
+};
 function useDialog<T extends OptionalConfigDialogNames>(
 	name: T
-): readonly [(props?: RestDialogPropsType[T]) => void, () => void, boolean];
+): { open: (props?: RestDialogPropsType[T]) => void; close: () => void; isOpen: boolean };
 function useDialog<T extends DialogComponentNames>(
 	name: T
-): readonly [
-	((props?: RestDialogPropsType[T]) => void) | ((props: RestDialogPropsType[T]) => void),
-	() => void,
-	boolean
-] {
+): {
+	open: ((props?: RestDialogPropsType[T]) => void) | ((props: RestDialogPropsType[T]) => void);
+	close: () => void;
+	isOpen: boolean;
+} {
 	const { openDialog, closeDialog, getIsOpen } = useDialogContext();
 	const open = useCallback(
 		(props: RestDialogPropsType[T] = {} as RestDialogPropsType[T]) => {
@@ -67,7 +73,7 @@ function useDialog<T extends DialogComponentNames>(
 	}, [name, closeDialog]);
 	const isOpen = useMemo(() => getIsOpen(name), [name, getIsOpen]);
 
-	return [open, close, isOpen] as const;
+	return { open, close, isOpen };
 }
 
 const DialogProvider = ({ children }: GenericContextProviderProps) => {
@@ -104,7 +110,8 @@ const DialogProvider = ({ children }: GenericContextProviderProps) => {
 			openFile: OpenFileDialog,
 			runSimulation: RunSimulationDialog,
 			saveFile: SaveFileDialog,
-			editProject: EditProjectInfoDialog
+			editProject: EditProjectInfoDialog,
+			rejectKeycloak: RejectKeycloakUserDialog
 		}),
 		[]
 	);

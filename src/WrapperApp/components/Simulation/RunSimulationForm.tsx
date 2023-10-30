@@ -244,8 +244,9 @@ export function RunSimulationForm({
 							size='small'
 							label='Simulation software'
 							defaultValue={forwardedSimulator}
-							onChange={evn => setSelectedSimulator(evn.target.value as SimulatorType)}
-						>
+							onChange={evn =>
+								setSelectedSimulator(evn.target.value as SimulatorType)
+							}>
 							<MenuItem value={SimulatorType.SHIELDHIT}>SHIELD-HIT12A</MenuItem>
 							<MenuItem value={SimulatorType.FLUKA}>Fluka</MenuItem>
 						</Select>

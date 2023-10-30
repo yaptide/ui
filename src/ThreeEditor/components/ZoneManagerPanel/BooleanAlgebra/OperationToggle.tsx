@@ -6,6 +6,7 @@ import {
 	Chip,
 	IconButton,
 	SvgIconProps,
+	Theme,
 	ToggleButton,
 	ToggleButtonGroup,
 	ToggleButtonGroupProps,
@@ -169,10 +170,8 @@ function OperationInput({
 								'height': 55,
 								'width': 55,
 								'margin': '0 auto',
-								'color': theme =>
-									theme.palette.mode === 'dark'
-										? 'text.primary'
-										: 'secondary.main',
+								'color': ({ palette }: Theme) =>
+									palette.mode === 'dark' ? 'text.primary' : 'secondary.main',
 								'&:hover': {
 									color: 'error.main'
 								}
@@ -217,8 +216,8 @@ function OperationInput({
 								'padding': '4px 0',
 								'minWidth': '56px',
 								'flexDirection': 'column',
-								'&.Mui-selected': theme =>
-									theme.palette.mode === 'dark'
+								'&.Mui-selected': ({ palette }: Theme) =>
+									palette.mode === 'dark'
 										? {}
 										: {
 												backgroundColor: 'primary.main',

@@ -3,6 +3,7 @@ import { MouseEvent, useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 
 import { useDialog } from '../../../../services/DialogService';
+import { useStore } from '../../../../services/StoreService';
 import { useSignal } from '../../../../util/hooks/signals';
 import { toggleFullscreen } from '../../../../util/toggleFullscreen';
 import {
@@ -104,8 +105,9 @@ function MenuPosition({ label, idx, openIdx, setOpenIdx, options }: MenuPosition
 }
 
 export function EditorMenu({ editor }: EditorMenuProps) {
-	const [open] = useDialog('clearHistory');
+	const { open: openClearHistory } = useDialog('clearHistory');
 	const [openIdx, setOpenIdx] = useState(-1);
+	const { yaptideEditor } = useStore();
 	const [, setSelectedObject] = useState(editor?.selected);
 
 	const handleObjectUpdate = useCallback((o: Object3D) => {
@@ -188,7 +190,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 						[
 							{
 								label: 'Clear history',
-								onClick: () => open(),
+								onClick: () => yaptideEditor && openClearHistory({ yaptideEditor }),
 								disabled:
 									editor?.history.undos.length === 0 &&
 									editor?.history.redos.length === 0

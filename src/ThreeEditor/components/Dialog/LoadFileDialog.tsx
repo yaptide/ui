@@ -1,20 +1,21 @@
 import { Button } from '@mui/material';
 import Typography from '@mui/material/Typography';
 
-import { useStore } from '../../../services/StoreService';
+import { StoreContext } from '../../../services/StoreService';
 import { EditorJson } from '../../js/EditorJson';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
 export function LoadFileDialog({
 	onClose,
 	validVersion = true,
-	data
-}: ConcreteDialogProps<{
-	validVersion: boolean;
-	data: EditorJson;
-}>) {
-	const { yaptideEditor } = useStore();
-
+	data,
+	yaptideEditor
+}: ConcreteDialogProps<
+	{
+		validVersion: boolean;
+		data: EditorJson;
+	} & Required<Pick<StoreContext, 'yaptideEditor'>>
+>) {
 	return (
 		<CustomDialog
 			alert={true}

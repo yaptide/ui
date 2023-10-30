@@ -1,11 +1,12 @@
 import { Button } from '@mui/material';
 
-import { useStore } from '../../../services/StoreService';
+import { StoreContext } from '../../../services/StoreService';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
-export function ClearHistoryDialog({ onClose }: ConcreteDialogProps) {
-	const { yaptideEditor } = useStore();
-
+export function ClearHistoryDialog({
+	onClose,
+	yaptideEditor
+}: ConcreteDialogProps<Required<Pick<StoreContext, 'yaptideEditor'>>>) {
 	return (
 		<CustomDialog
 			onClose={onClose}
