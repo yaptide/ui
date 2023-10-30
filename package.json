@@ -204,7 +204,7 @@
 		"@total-typescript/ts-reset": "^0.5.1",
 		"@types/react": "^18.0.9",
 		"@types/react-async-script": "^1.2.4",
-		"@types/react-copy-to-clipboard": "^5.0.5",
+		"@types/react-copy-to-clipboard": "^5.0.6",
 		"@types/selenium-webdriver": "^4.1.19",
 		"@types/three": "^0.152.1",
 		"cross-env": "^7.0.3",
