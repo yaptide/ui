@@ -1,4 +1,5 @@
 import { Backdrop, CircularProgress, Theme, Typography } from '@mui/material';
+import { KeycloakTokenParsed } from 'keycloak-js';
 import ky, { HTTPError } from 'ky';
 import { KyInstance } from 'ky/distribution/types/ky';
 import { useSnackbar } from 'notistack';
@@ -177,52 +178,66 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	}, [demoMode, isServerReachable, user]);
 
 	const tokenVerification = useCallback(() => {
+		const checkPlgridAccessServices: (
+			token: KeycloakTokenParsed | undefined
+		) => Promise<void> = token => {
+			const yaptideServices = ['PLG_YAPTIDE_ACCESS'];
+
+			const validUser = yaptideServices.every(
+				service => token?.plgridAccessServices?.includes(service)
+			);
+
+			if (validUser) return Promise.resolve();
+			else
+				return Promise.reject(
+					`Your account does not have access to appropriate services. Services required: ${yaptideServices}`
+				);
+		};
+
 		if (!initialized || !keycloak.authenticated) return;
-		const username = keycloak.tokenParsed?.preferred_username;
 
-		/**
-		 * TODO: Check if user is authorized to use this application (e.g. by checking if user is in a certain group)
-		 */
-		const validUser = true;
-
-		if (!validUser)
-			openRejectKeycloakDialog({
-				reason: 'You are not authorized to use this application.',
-				keycloakAuth: { keycloak, initialized }
-			});
-		else if (initialized)
-			kyRef
-				.post(`auth/keycloak`, {
-					headers: {
-						Authorization: `Bearer ${keycloak.token}`
-					},
-					json: {
-						username
-					}
-				})
-				.json<ResponseAuthLogin>()
-				.then(({ accessExp }) => {
-					setUser(prev =>
-						prev?.username === username
-							? prev
-							: {
-									username,
-									source: 'keycloak'
-							  }
-					);
-					setRefreshInterval(getRefreshDelay(accessExp));
-				})
-				.catch((err: HTTPError) => {
-					setUser(null);
-					setRefreshInterval(undefined);
-					openRejectKeycloakDialog({
-						reason:
-							err.response?.status === 403
-								? 'You are not authorized to use this application.'
-								: err.message,
-						keycloakAuth: { keycloak, initialized }
+		checkPlgridAccessServices(keycloak.tokenParsed)
+			.then(() => {
+				const username = keycloak.tokenParsed?.preferred_username;
+				kyRef
+					.post(`auth/keycloak`, {
+						headers: {
+							Authorization: `Bearer ${keycloak.token}`
+						},
+						json: {
+							username
+						}
+					})
+					.json<ResponseAuthLogin>()
+					.then(({ accessExp }) => {
+						setUser(prev =>
+							prev?.username === username
+								? prev
+								: {
+										username,
+										source: 'keycloak'
+								  }
+						);
+						setRefreshInterval(getRefreshDelay(accessExp));
+					})
+					.catch((err: HTTPError) => {
+						setUser(null);
+						setRefreshInterval(undefined);
+						openRejectKeycloakDialog({
+							reason:
+								err.response?.status === 403
+									? 'You are not authorized to use this application.'
+									: err.message,
+							keycloakAuth: { keycloak, initialized }
+						});
 					});
+			})
+			.catch(reason => {
+				openRejectKeycloakDialog({
+					reason,
+					keycloakAuth: { keycloak, initialized }
 				});
+			});
 	}, [initialized, keycloak, kyRef, openRejectKeycloakDialog]);
 
 	useEffect(() => {
