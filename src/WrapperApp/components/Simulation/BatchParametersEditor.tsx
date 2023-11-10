@@ -33,6 +33,16 @@ const _PROPOSED_OPTIONS = [
 		optionKey: 'time',
 		optionLabel: 'Time limit on the total run time of the job allocation',
 		optionValue: '0:15:00'
+	},
+	{
+		optionKey: 'account',
+		optionLabel: 'Account on which resources should be charged',
+		optionValue: 'plgrid-GRANTNAMEcpu'
+	},
+	{
+		optionKey: 'partition',
+		optionLabel: 'Partition for resource allocation',
+		optionValue: 'plgrid'
 	}
 ] as readonly ScriptOption[];
 
