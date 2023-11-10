@@ -37,7 +37,7 @@ const _PROPOSED_OPTIONS = [
 	{
 		optionKey: 'account',
 		optionLabel: 'Account on which resources should be charged',
-		optionValue: 'plgrid-GRANTNAMEcpu'
+		optionValue: 'plgGRANTNAME-cpu'
 	},
 	{
 		optionKey: 'partition',
