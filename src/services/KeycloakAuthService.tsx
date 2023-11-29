@@ -17,7 +17,9 @@ const initOptions = {
 	pkceMethod: 'S256',
 	onLoad: 'check-sso',
 	checkLoginIframe: false,
-	enableLogging: false
+	enableLogging: false,
+	silentCheckSsoFallback: false,
+	silentCheckSsoRedirectUri: keycloakParams.url,
 } as const satisfies KeycloakInitOptions;
 
 export type KeycloakAuthContext =
