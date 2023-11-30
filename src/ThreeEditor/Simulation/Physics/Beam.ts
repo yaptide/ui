@@ -46,6 +46,7 @@ export type BeamJSON = Omit<
 		};
 		particle: {
 			id: number;
+			name: string;
 			z: number;
 			a: number;
 		};
@@ -83,6 +84,7 @@ const _default = {
 	},
 	particle: {
 		id: 2,
+		name: 'Proton',
 		a: 1,
 		z: 1
 	},
@@ -157,6 +159,7 @@ export class Beam extends SimulationElement {
 
 	particleData: {
 		id: number;
+		name: string;
 		z: number;
 		a: number;
 	};
