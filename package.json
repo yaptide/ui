@@ -77,7 +77,8 @@
 		"build-plg": "cross-env REACT_APP_ALT_AUTH=plg npm run build",
 		"build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
 		"predeploy": "npm run setup && npm run build-demo && cross-env PUBLIC_PATH=/web_dev/ npm run fix-web-dev",
-		"deploy": "gh-pages -d build"
+		"deploy": "gh-pages -d build",
+		"local-sso": "cross-env REACT_APP_DEPLOYMENT=dev REACT_APP_ALT_AUTH=plg  REACT_APP_KEYCLOAK_BASE_URL=http://localhost:8080 REACT_APP_KEYCLOAK_REALM=local REACT_APP_KEYCLOAK_CLIENT_ID=yaptide react-app-rewired start"
 	},
 	"contributors": [
 		{
