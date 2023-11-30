@@ -19,7 +19,7 @@ const initOptions = {
 	checkLoginIframe: false,
 	enableLogging: false,
 	silentCheckSsoFallback: false,
-	silentCheckSsoRedirectUri: keycloakParams.url,
+	silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`
 } as const satisfies KeycloakInitOptions;
 
 export type KeycloakAuthContext =
