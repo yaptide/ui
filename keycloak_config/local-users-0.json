@@ -1,0 +1,25 @@
+{
+  "realm" : "local",
+  "users" : [ {
+    "id" : "75bc593b-d293-4085-8419-6108ad4bf257",
+    "createdTimestamp" : 1701377275700,
+    "username" : "test",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "email" : "test@test.test",
+    "credentials" : [ {
+      "id" : "561280ef-4301-4739-b822-c0bbb2af9dcb",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1701377284668,
+      "secretData" : "{\"value\":\"wGq70px3Nd90f+QTMIXg04jvQKQIm8oyv7pRBXfRTRk=\",\"salt\":\"jcoQhkgTZSnXsq6L/ExtOQ==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-local" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}
