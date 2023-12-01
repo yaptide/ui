@@ -1,3 +1,4 @@
+import { PARTICLE_TYPES } from '../../../../types/Particle';
 import {
 	createParticleTypeSelect,
 	createRowParamNumber,

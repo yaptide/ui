@@ -241,7 +241,14 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 					particles={PARTICLE_TYPES}
 					value={watchedObject.particleData.id}
 					onChange={(_, v) =>
-						setValueCommand({ ...watchedObject.particleData, id: v }, 'particleData')
+						setValueCommand(
+							{
+								...watchedObject.particleData,
+								id: v,
+								name: PARTICLE_TYPES.find(p => p.id === v)?.name
+							},
+							'particleData'
+						)
 					}
 				/>
 			</PropertyField>
