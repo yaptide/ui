@@ -8,7 +8,7 @@ import { URL } from 'url';
 const PUBLIC_PATH = process.env.PUBLIC_PATH || '/';
 
 (async () => {
-	const repoRootUrl = new URL('./', import.meta.url);
+	const repoRootUrl = new URL('../', import.meta.url);
 	const repoRoot = repoRootUrl.pathname;
 	const repoFolder = repoRoot.split('/').filter(Boolean).pop() ?? '/';
 	const sourceFolder = path.join(repoRoot, 'build/static/js');

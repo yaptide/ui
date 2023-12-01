@@ -59,7 +59,7 @@
 		"format": "prettier --ignore-path .gitignore --ignore-path .prettierignore --write --plugin-search-dir=. .",
 		"identify": "node ./src/util/identify/identify.js > ./src/util/identify/deployInfo.json",
 		"build-python": "node buildPython.js",
-		"fix-web-dev": "node fixDeploy.mjs",
+		"fix-web-dev": "node scripts/fixDeploy.mjs",
 		"prepare": "husky install",
 		"setup": "npm run identify && npm run build-python",
 		"eject": "react-scripts eject",
