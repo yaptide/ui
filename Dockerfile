@@ -17,8 +17,16 @@ RUN openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 \
     -subj "/C=US/ST=State/L=City/O=Organization/CN=localhost" \
     -keyout server.key -out server.crt
 
+# Stage 2: Build the wheel package for the converter part of the UI.
+FROM python:3.11 AS wheel-builder
 
-# Stage 2: Build the application.
+RUN pip install --no-cache-dir build wheel setuptools
+
+COPY src/libs/converter/ .
+
+RUN python -m build --wheel --no-isolation
+
+# Stage 3: Build the application.
 FROM node:18 AS build
 
 # Install python3-pip via apt and clean cache.
@@ -49,8 +57,10 @@ RUN git config --global --add safe.directory /usr/src/app
 
 # Run the setup script to identify the git commit hash and write it to a file.
 # This file is later used to display the commit hash in the UI.
+RUN npm run identify
+
 # We also generate the wheel package for the converter part of the UI.
-RUN npm run setup
+COPY --from=wheel-builder dist/*.whl public/libs/converter/dist/
 
 # Default deployment type can be overwritten by docker build --build-arg DEPLOYMENT=dev ...
 ARG DEPLOYMENT=prod
@@ -66,7 +76,7 @@ RUN npx cross-env REACT_APP_DEPLOYMENT=${DEPLOYMENT} npm run build
 # which results in duplicate static/js entries in the paths of some chunk files.
 RUN npm run fix-web-dev
 
-# Stage 3: Serve the app using Nginx.
+# Stage 4: Serve the app using Nginx.
 FROM nginx:alpine
 
 # Remove the default Nginx configuration
@@ -74,6 +84,8 @@ RUN rm /etc/nginx/conf.d/default.conf
 
 # Copy SSL certificate from the build stage
 COPY --from=cert-gen /certs /etc/nginx/conf.d
+
+RUN ls -lah
 
 # Copy the build folder from the build stage
 COPY --from=build /usr/src/app/build /usr/share/nginx/html

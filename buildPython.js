@@ -50,6 +50,8 @@ const saveFileName = (destFolder, fileName) => {
 	);
 	const installedFileName = path.basename(installedPath ?? '');
 
+
+	// skip installation if file exists
 	if (installedPath && SKIP === true) {
 		//file exists
 		console.log(`${installedFileName} is already installed`);
