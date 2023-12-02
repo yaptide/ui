@@ -54,7 +54,8 @@ RUN git config --global --add safe.directory /usr/src/app
 # This file is later used to display the commit hash in the UI.
 RUN npm run identify
 
-# We also generate the wheel package for the converter part of the UI.
+# Copy the wheel package for the converter library from the previous build stage.
+# This library is used in the UI.
 COPY --from=wheel-builder dist/*.whl public/libs/converter/dist/
 
 # Default deployment type can be overwritten by docker build --build-arg DEPLOYMENT=dev ...
