@@ -17,14 +17,17 @@ RUN openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 \
     -subj "/C=US/ST=State/L=City/O=Organization/CN=localhost" \
     -keyout server.key -out server.crt
 
+# Stage 2: Build the wheel package for the converter part of the UI.
+FROM python:3.11 AS wheel-builder
 
-# Stage 2: Build the application.
+RUN pip install --no-cache-dir build wheel setuptools
+
+COPY src/libs/converter/ .
+
+RUN python -m build --wheel --no-isolation
+
+# Stage 3: Build the application.
 FROM node:18 AS build
-
-# Install python3-pip via apt and clean cache.
-# pip is needed to generate a wheel package for the converter part of the UI,
-# which is later called using pyodide (Python in the browser).
-RUN apt-get update && apt-get install -y --no-install-recommends python3-pip python3-venv && rm -rf /var/lib/apt/lists/*
 
 # Directory where the app is installed and run.
 WORKDIR /usr/src/app
@@ -49,8 +52,11 @@ RUN git config --global --add safe.directory /usr/src/app
 
 # Run the setup script to identify the git commit hash and write it to a file.
 # This file is later used to display the commit hash in the UI.
-# We also generate the wheel package for the converter part of the UI.
-RUN npm run setup
+RUN npm run identify
+
+# Copy the wheel package for the converter library from the previous build stage.
+# This library is used in the UI.
+COPY --from=wheel-builder dist/*.whl public/libs/converter/dist/
 
 # Default deployment type can be overwritten by docker build --build-arg DEPLOYMENT=dev ...
 ARG DEPLOYMENT=prod
@@ -66,7 +72,7 @@ RUN npx cross-env REACT_APP_DEPLOYMENT=${DEPLOYMENT} npm run build
 # which results in duplicate static/js entries in the paths of some chunk files.
 RUN npm run fix-web-dev
 
-# Stage 3: Serve the app using Nginx.
+# Stage 4: Serve the app using Nginx.
 FROM nginx:alpine
 
 # Remove the default Nginx configuration

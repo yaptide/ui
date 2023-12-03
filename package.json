@@ -61,7 +61,7 @@
 		"build-python": "node buildPython.js",
 		"fix-web-dev": "node scripts/fixDeploy.mjs",
 		"prepare": "husky install",
-		"setup": "npm run identify && npm run build-python",
+		"setup": "npm run identify && npm run build-python skip",
 		"eject": "react-scripts eject",
 		"predev": "npm run setup",
 		"dev": "cross-env REACT_APP_DEPLOYMENT=dev REACT_APP_TARGET=demo react-app-rewired start",
