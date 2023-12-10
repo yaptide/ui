@@ -9,6 +9,8 @@ import {
 	CylinderFigure,
 	SphereFigure
 } from '../../ThreeEditor/Simulation/Figures/BasicFigures';
+import { CustomFilter } from '../../ThreeEditor/Simulation/Scoring/CustomFilter';
+import { ParticleFilter } from '../../ThreeEditor/Simulation/Scoring/ParticleFilter';
 import { ScoringFilter } from '../../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { isOutput, ScoringOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
 import {
@@ -126,11 +128,21 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 
 	const filtersTuple: CommandButtonTuple[] = [
 		[
-			'Filter',
+			'Custom filter',
 			() => {
-				return commandFactory.createAddCommand(
+				return commandFactory.createAddCommand<'filter', ScoringFilter>(
 					'filter',
-					new ScoringFilter(editor),
+					new CustomFilter(editor),
+					editor.scoringManager
+				);
+			}
+		],
+		[
+			'Particle filter',
+			() => {
+				return commandFactory.createAddCommand<'filter', ScoringFilter>(
+					'filter',
+					new ParticleFilter(editor),
 					editor.scoringManager
 				);
 			}

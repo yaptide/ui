@@ -10,6 +10,7 @@ import {
 	IntRuleJSON,
 	RuleJSON
 } from './FilterRule';
+import { ScoringFilter } from './ScoringFilter';
 
 export type FilterJSON = Omit<
 	SimulationElementJSON & {
@@ -18,35 +19,7 @@ export type FilterJSON = Omit<
 	never
 >;
 
-export class ScoringFilter extends SimulationElement {
-	protected _rules: Record<string, FilterRule>;
-	protected _selectedRule?: string;
-	readonly isFilter: true = true;
-	readonly notMovable = true;
-	readonly notRotatable = true;
-	readonly notScalable = true;
-	readonly notHidable = true;
-
-	protected onObjectSelected(object: SimulationElement): void {
-		this._selectedRule = undefined;
-	}
-
-	set selectedRule(rule: FilterRule | undefined) {
-		this._selectedRule = rule?.uuid;
-	}
-
-	get selectedRule(): FilterRule | undefined {
-		return this._selectedRule ? this._rules[this._selectedRule] : undefined;
-	}
-
-	constructor(editor: YaptideEditor, rules: FilterRule[] = []) {
-		super(editor, 'Filter', 'Filter');
-		this._rules = {};
-		this.parent = null;
-		rules.forEach(rule => this.addRule(rule));
-		editor.signals.objectSelected.add(this.onObjectSelected.bind(this));
-	}
-
+export class ParticleFilter extends ScoringFilter {
 	addRule(rule: FilterRule): void {
 		this._rules[rule.uuid] = rule;
 	}
@@ -152,8 +125,8 @@ export class ScoringFilter extends SimulationElement {
 		return this;
 	}
 
-	static fromJSON(editor: YaptideEditor, json: FilterJSON): ScoringFilter {
-		return new ScoringFilter(editor).fromJSON(json);
+	static fromJSON(editor: YaptideEditor, json: FilterJSON): ParticleFilter {
+		return new ParticleFilter(editor).fromJSON(json);
 	}
 
 	toString(): string {
@@ -164,8 +137,8 @@ export class ScoringFilter extends SimulationElement {
 			.join('\n')}}`;
 	}
 
-	duplicate(): ScoringFilter {
-		const duplicated = new ScoringFilter(this.editor);
+	duplicate(): ParticleFilter {
+		const duplicated = new ParticleFilter(this.editor);
 
 		duplicated.name = this.name;
 
@@ -175,4 +148,4 @@ export class ScoringFilter extends SimulationElement {
 	}
 }
 
-export const isScoringFilter = (x: unknown): x is ScoringFilter => x instanceof ScoringFilter;
+export const isScoringFilter = (x: unknown): x is ParticleFilter => x instanceof ParticleFilter;
