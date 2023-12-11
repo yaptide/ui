@@ -1,0 +1,9 @@
+<html lang="en">
+  <body>
+    <script type="text/javascript">
+      // Silent SSO redirection
+      // Send the URL of the current page to the parent window
+      parent.postMessage(location.href, location.origin);
+    </script>
+  </body>
+</html>
