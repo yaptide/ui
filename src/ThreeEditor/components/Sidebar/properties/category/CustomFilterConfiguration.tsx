@@ -9,16 +9,18 @@ import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetFilterRuleCommand } from '../../../../js/commands/SetFilterRuleCommand';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
-import { isScoringFilter, ScoringFilter } from '../../../../Simulation/Scoring/ScoringFilter';
+import { CustomFilter, isCustomFilter } from '../../../../Simulation/Scoring/CustomFilter';
+import { isParticleFilter } from '../../../../Simulation/Scoring/ParticleFilter';
+import { ScoringFilter } from '../../../../Simulation/Scoring/ScoringFilter';
 import { PropertyField, RulesConfiguration, RulesOutliner } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
-export function FilterConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
+export function CustomFilterConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
-	const { state: watchedObject } = useSmartWatchEditorState(editor, object as ScoringFilter);
+	const { state: watchedObject } = useSmartWatchEditorState(editor, object as CustomFilter);
 
-	const visibleFlag = isScoringFilter(watchedObject);
+	const visibleFlag = isCustomFilter(watchedObject);
 
 	return (
 		<PropertiesCategory

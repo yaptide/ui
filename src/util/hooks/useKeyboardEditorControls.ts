@@ -11,7 +11,7 @@ import { SetFilterRuleCommand } from '../../ThreeEditor/js/commands/SetFilterRul
 import { YaptideEditor } from '../../ThreeEditor/js/YaptideEditor';
 import { isDetector } from '../../ThreeEditor/Simulation/Detectors/Detector';
 import { isBeam } from '../../ThreeEditor/Simulation/Physics/Beam';
-import { isScoringFilter } from '../../ThreeEditor/Simulation/Scoring/ScoringFilter';
+import { isCustomFilter } from '../../ThreeEditor/Simulation/Scoring/CustomFilter';
 import { isOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
 import { isScoringQuantity } from '../../ThreeEditor/Simulation/Scoring/ScoringQuantity';
 import { isBooleanZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
@@ -47,7 +47,7 @@ export const getRemoveCommand = (editor: YaptideEditor, object: Object3D) => {
 		return new RemoveDetectGeometryCommand(editor, object);
 	} else if (isBooleanZone(object)) {
 		return new RemoveZoneCommand(editor, object);
-	} else if (isScoringFilter(object)) {
+	} else if (isCustomFilter(object)) {
 		if (object.selectedRule) return new SetFilterRuleCommand(editor, object);
 
 		return new RemoveFilterCommand(editor, object);

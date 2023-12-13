@@ -148,4 +148,4 @@ export class ParticleFilter extends ScoringFilter {
 	}
 }
 
-export const isScoringFilter = (x: unknown): x is ParticleFilter => x instanceof ParticleFilter;
+export const isParticleFilter = (x: unknown): x is ParticleFilter => x instanceof ParticleFilter;

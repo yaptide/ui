@@ -21,6 +21,7 @@ export type FilterJSON = Omit<
 export class ScoringFilter extends SimulationElement {
 	protected _rules: Record<string, FilterRule>;
 	protected _selectedRule?: string;
+	public particleType: string; //todo: make private and setters/getters
 	readonly isFilter: true = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -43,6 +44,7 @@ export class ScoringFilter extends SimulationElement {
 		super(editor, 'Filter', 'Filter');
 		this._rules = {};
 		this.parent = null;
+		this.particleType = '';
 		rules.forEach(rule => this.addRule(rule));
 		editor.signals.objectSelected.add(this.onObjectSelected.bind(this));
 	}
@@ -174,5 +176,3 @@ export class ScoringFilter extends SimulationElement {
 		return duplicated;
 	}
 }
-
-export const isScoringFilter = (x: unknown): x is ScoringFilter => x instanceof ScoringFilter;

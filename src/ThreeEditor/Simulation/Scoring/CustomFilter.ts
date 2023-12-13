@@ -148,4 +148,4 @@ export class CustomFilter extends ScoringFilter {
 	}
 }
 
-export const isScoringFilter = (x: unknown): x is CustomFilter => x instanceof CustomFilter;
+export const isCustomFilter = (x: unknown): x is CustomFilter => x instanceof CustomFilter;
