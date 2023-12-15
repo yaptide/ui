@@ -20,6 +20,29 @@ export type FilterJSON = Omit<
 >;
 
 export class CustomFilter extends ScoringFilter {
+	protected _rules: Record<string, FilterRule>;
+	protected _selectedRule?: string;
+
+	protected onObjectSelected(object: SimulationElement): void {
+		this._selectedRule = undefined;
+	}
+
+	set selectedRule(rule: FilterRule | undefined) {
+		this._selectedRule = rule?.uuid;
+	}
+
+	get selectedRule(): FilterRule | undefined {
+		return this._selectedRule ? this._rules[this._selectedRule] : undefined;
+	}
+
+	constructor(editor: YaptideEditor, rules: FilterRule[] = []) {
+		super(editor);
+		this._rules = {};
+		this.parent = null;
+		rules.forEach(rule => this.addRule(rule));
+		editor.signals.objectSelected.add(this.onObjectSelected.bind(this));
+	}
+
 	addRule(rule: FilterRule): void {
 		this._rules[rule.uuid] = rule;
 	}

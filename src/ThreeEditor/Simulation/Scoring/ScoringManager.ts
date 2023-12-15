@@ -4,6 +4,8 @@ import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
+import { CustomFilter } from './CustomFilter';
+import { ParticleFilter } from './ParticleFilter';
 import { FilterJSON, ScoringFilter } from './ScoringFilter';
 import { ScoringOutput, ScoringOutputJSON as OutputJSON } from './ScoringOutput';
 import { ScoringQuantity } from './ScoringQuantity';
@@ -110,7 +112,9 @@ export class ScoringManager
 	getFilterOptions(): Record<string, string> {
 		const options = this.filters
 			.filter(filter => {
-				return filter.rules.length;
+				if (filter instanceof CustomFilter) return filter.rules.length;
+
+				return true;
 			})
 			.reduce(
 				(acc, filter) => {

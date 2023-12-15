@@ -1,15 +1,7 @@
+import { ParticleType } from '../../components/Select/ParticleSelect';
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
-import {
-	FilterRule,
-	FloatRule,
-	FloatRuleJSON,
-	IDRule,
-	IDRuleJSON,
-	IntRule,
-	IntRuleJSON,
-	RuleJSON
-} from './FilterRule';
+import { SimulationElementJSON } from '../Base/SimulationElement';
+import { RuleJSON } from './FilterRule';
 import { ScoringFilter } from './ScoringFilter';
 
 export type FilterJSON = Omit<
@@ -20,131 +12,19 @@ export type FilterJSON = Omit<
 >;
 
 export class ParticleFilter extends ScoringFilter {
-	addRule(rule: FilterRule): void {
-		this._rules[rule.uuid] = rule;
+	private particleType: ParticleType;
+
+	constructor(editor: YaptideEditor) {
+		super(editor);
+		this.particleType = { id: 1, name: 'Proton' };
 	}
 
-	get rules(): FilterRule[] {
-		return Object.values(this._rules);
+	public getParticleType(): ParticleType {
+		return this.particleType;
 	}
 
-	updateOrCreateRule(json: RuleJSON): void {
-		const { keyword } = json;
-		let rule;
-
-		switch (keyword) {
-			case 'AMASS':
-			case 'AMU':
-			case 'E':
-			case 'ENUC':
-			case 'EAMU':
-				rule = FloatRule.fromJSON(json as FloatRuleJSON);
-
-				break;
-			case 'A':
-			case 'GEN':
-			case 'NPRIM':
-			case 'Z':
-				rule = IntRule.fromJSON(json as IntRuleJSON);
-
-				break;
-			case 'ID':
-				rule = IDRule.fromJSON(json as IDRuleJSON);
-
-				break;
-			default:
-				throw new Error(`Invalid keyword: ${keyword}`);
-		}
-
-		this.addRule(rule);
-		this.selectedRule = rule;
-	}
-
-	getRuleByUuid(uuid: string): FilterRule | undefined {
-		return this._rules[uuid];
-	}
-
-	removeRule(uuid: string): void {
-		delete this._rules[uuid];
-
-		if (this.selectedRule?.uuid === uuid) this.selectedRule = undefined;
-	}
-
-	clear(): this {
-		this._rules = {};
-		this.name = 'Filter';
-
-		return this;
-	}
-
-	createRule(json: Omit<RuleJSON, 'uuid'>): FilterRule {
-		const { keyword } = json;
-		let rule;
-
-		switch (keyword) {
-			case 'AMASS':
-			case 'AMU':
-			case 'E':
-			case 'ENUC':
-			case 'EAMU':
-				rule = new FloatRule(json as FloatRuleJSON);
-
-				break;
-			case 'A':
-			case 'GEN':
-			case 'NPRIM':
-			case 'Z':
-				rule = new IntRule(json as IntRuleJSON);
-
-				break;
-			case 'ID':
-				rule = new IDRule(json as IDRuleJSON);
-
-				break;
-			default:
-				throw new Error(`Invalid keyword: ${keyword}`);
-		}
-
-		this.addRule(rule);
-
-		return rule;
-	}
-
-	toJSON(): FilterJSON {
-		const { uuid, name, _rules: rules, type } = this;
-
-		return { uuid, name, type, rules: Object.values(rules).map(rule => rule.toJSON()) };
-	}
-
-	fromJSON(json: FilterJSON) {
-		this.clear();
-		this.uuid = json.uuid;
-		this.name = json.name;
-		json.rules.map(this.updateOrCreateRule.bind(this));
-
-		return this;
-	}
-
-	static fromJSON(editor: YaptideEditor, json: FilterJSON): ParticleFilter {
-		return new ParticleFilter(editor).fromJSON(json);
-	}
-
-	toString(): string {
-		const { uuid, name, _rules: rules } = this;
-
-		return `[${uuid}]\n${name}\n${Object.values(rules)
-			.map(rule => `    ${rule.toString()}`)
-			.join('\n')}}`;
-	}
-
-	duplicate(): ParticleFilter {
-		const duplicated = new ParticleFilter(this.editor);
-
-		duplicated.name = this.name;
-
-		this.rules.forEach(rule => duplicated.addRule(rule.duplicate()));
-
-		return duplicated;
+	public setParticleType(particleType: ParticleType): void {
+		this.particleType = particleType;
 	}
 }
 

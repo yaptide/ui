@@ -3,8 +3,7 @@ import { SimulationElement } from '../../Simulation/Base/SimulationElement';
 import { isSimulationZone } from '../../Simulation/Base/SimulationZone';
 import { isDetector } from '../../Simulation/Detectors/Detector';
 import { isBasicFigure } from '../../Simulation/Figures/BasicFigures';
-import { isCustomFilter } from '../../Simulation/Scoring/CustomFilter';
-import { isParticleFilter } from '../../Simulation/Scoring/ParticleFilter';
+import { isScoringFilter } from '../../Simulation/Scoring/ScoringFilter';
 import { isOutput } from '../../Simulation/Scoring/ScoringOutput';
 import { isScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
 import { YaptideEditor } from '../YaptideEditor';
@@ -33,7 +32,7 @@ export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationEle
 		return commandFactory.createDuplicateCommand('detector', clone, editor.detectorManager);
 	} else if (isOutput(clone)) {
 		return commandFactory.createDuplicateCommand('output', clone, editor.scoringManager);
-	} else if (isCustomFilter(clone) || isParticleFilter(clone)) {
+	} else if (isScoringFilter(clone)) {
 		return commandFactory.createDuplicateCommand('filter', clone, editor.scoringManager);
 	}
 

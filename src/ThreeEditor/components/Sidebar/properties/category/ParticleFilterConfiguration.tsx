@@ -1,9 +1,10 @@
 import { Object3D } from 'three';
 
+import { PARTICLE_TYPES } from '../../../../../types/Particle';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
-import { isParticleFilter,ParticleFilter } from '../../../../Simulation/Scoring/ParticleFilter';
-import { SelectPropertyField } from '../fields/PropertyField';
+import { isParticleFilter, ParticleFilter } from '../../../../Simulation/Scoring/ParticleFilter';
+import { ParticleSelect } from '../../../Select/ParticleSelect';
 import { PropertiesCategory } from './PropertiesCategory';
 
 export function ParticleFilterConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
@@ -15,26 +16,14 @@ export function ParticleFilterConfiguration(props: { editor: YaptideEditor; obje
 
 	return (
 		<PropertiesCategory
-			category='Filter Rules'
+			category='Particle Filter'
 			visible={visibleFlag}>
 			{visibleFlag && (
 				<>
-					<SelectPropertyField
-						label='Particle type'
-						value={watchedObject.particleType}
-						onChange={value => {
-							console.log(value);
-						}}
-						//editor.execute(
-						//new SetFilterRuleCommand(editor, watchedObject.object, {
-						//	uuid,
-						//	keyword,
-						//	operator,
-						//	value
-						//})
-						//);
-						//}}
-						options={['example1', 'example2', 'etc']}
+					<ParticleSelect
+						particles={PARTICLE_TYPES}
+						value={watchedObject.getParticleType().id}
+						onChange={(_, v) => console.log(v)}
 					/>
 				</>
 			)}
