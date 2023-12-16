@@ -1,17 +1,10 @@
 import { Button, Stack, Switch, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import { is } from 'date-fns/locale';
 import { ChangeEvent, useState } from 'react';
 
-import {
-	isCustomFilter,
-	isCustomFilterJSON
-} from '../../../ThreeEditor/Simulation/Scoring/CustomFilter';
-import {
-	isParticleFilter,
-	isParticleFilterJSON
-} from '../../../ThreeEditor/Simulation/Scoring/ParticleFilter';
+import { isCustomFilterJSON } from '../../../ThreeEditor/Simulation/Scoring/CustomFilter';
+import { isParticleFilterJSON } from '../../../ThreeEditor/Simulation/Scoring/ParticleFilter';
 import { convertToBestUnit } from '../../../util/convertUnits/Units';
 import { pages0DToCsv } from '../../../util/csv/Csv';
 import { saveString } from '../../../util/File';

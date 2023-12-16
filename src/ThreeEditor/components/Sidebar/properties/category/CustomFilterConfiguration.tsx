@@ -10,8 +10,6 @@ import { SetFilterRuleCommand } from '../../../../js/commands/SetFilterRuleComma
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { CustomFilter, isCustomFilter } from '../../../../Simulation/Scoring/CustomFilter';
-import { isParticleFilter } from '../../../../Simulation/Scoring/ParticleFilter';
-import { ScoringFilter } from '../../../../Simulation/Scoring/ScoringFilter';
 import { PropertyField, RulesConfiguration, RulesOutliner } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
