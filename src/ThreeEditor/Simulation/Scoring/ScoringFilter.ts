@@ -1,22 +1,10 @@
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
-import {
-	FilterRule,
-	FloatRule,
-	FloatRuleJSON,
-	IDRule,
-	IDRuleJSON,
-	IntRule,
-	IntRuleJSON,
-	RuleJSON
-} from './FilterRule';
+import { SimulationElement } from '../Base/SimulationElement';
+import { CustomFilterJSON } from './CustomFilter';
+import { FilterRule } from './FilterRule';
+import { ParticleFilterJSON } from './ParticleFilter';
 
-export type FilterJSON = Omit<
-	SimulationElementJSON & {
-		rules: RuleJSON[];
-	},
-	never
->;
+export type FilterJSON = CustomFilterJSON | ParticleFilterJSON;
 
 export class ScoringFilter extends SimulationElement {
 	readonly isFilter: true = true;
@@ -30,20 +18,12 @@ export class ScoringFilter extends SimulationElement {
 		this.parent = null;
 	}
 
+	toJSON(): FilterJSON {
+		return null as never;
+	}
+
 	clear(): this {
 		return this;
-	}
-
-	toJSON(): FilterJSON {
-		return { ...super.toJSON(), rules: [] };
-	}
-
-	fromJSON(json: FilterJSON): this {
-		return this;
-	}
-
-	static fromJSON(editor: YaptideEditor, json: FilterJSON): ScoringFilter {
-		return new ScoringFilter(editor).fromJSON(json);
 	}
 
 	toString(): string {

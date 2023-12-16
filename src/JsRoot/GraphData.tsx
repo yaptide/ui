@@ -1,5 +1,12 @@
 import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
 
+import {
+	CustomFilterJSON,
+	isCustomFilterJSON
+} from '../ThreeEditor/Simulation/Scoring/CustomFilter';
+import {
+	isParticleFilterJSON,
+	ParticleFilterJSON} from '../ThreeEditor/Simulation/Scoring/ParticleFilter';
 import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { ScoringOutputJSON } from '../ThreeEditor/Simulation/Scoring/ScoringOutput';
 import { estimatorPage1DToCsv } from '../util/csv/Csv';
@@ -199,7 +206,7 @@ export function generateGraphs(
 									<Box sx={{ marginTop: '1rem' }}>
 										<Typography variant='h5'>Filter:</Typography>
 										<Typography>{filter?.name ?? 'None'}</Typography>
-										{filter && (
+										{isCustomFilterJSON(filter) && (
 											<Box>
 												<Typography variant='h6'>Rules:</Typography>
 												{filter.rules.map((rule, idx) => (
@@ -209,6 +216,12 @@ export function generateGraphs(
 														{rule.value}
 													</Typography>
 												))}
+											</Box>
+										)}
+										{isParticleFilterJSON(filter) && (
+											<Box>
+												<Typography variant='h6'>Particle:</Typography>
+												<Typography>{filter.particle.name}</Typography>
 											</Box>
 										)}
 									</Box>

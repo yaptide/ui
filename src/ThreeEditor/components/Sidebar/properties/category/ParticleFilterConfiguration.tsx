@@ -2,6 +2,7 @@ import { Object3D } from 'three';
 
 import { PARTICLE_TYPES } from '../../../../../types/Particle';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { isParticleFilter, ParticleFilter } from '../../../../Simulation/Scoring/ParticleFilter';
 import { ParticleSelect } from '../../../Select/ParticleSelect';
@@ -14,6 +15,10 @@ export function ParticleFilterConfiguration(props: { editor: YaptideEditor; obje
 
 	const visibleFlag = isParticleFilter(watchedObject);
 
+	const setValueCommand = (value: any, key: string) => {
+		editor.execute(new SetValueCommand(editor, watchedObject.object, key, value));
+	};
+
 	return (
 		<PropertiesCategory
 			category='Particle Filter'
@@ -22,8 +27,17 @@ export function ParticleFilterConfiguration(props: { editor: YaptideEditor; obje
 				<>
 					<ParticleSelect
 						particles={PARTICLE_TYPES}
-						value={watchedObject.getParticleType().id}
-						onChange={(_, v) => console.log(v)}
+						value={watchedObject.particleData.id}
+						onChange={(_, v) =>
+							setValueCommand(
+								{
+									...watchedObject.particleData,
+									id: v,
+									name: PARTICLE_TYPES.find(p => p.id === v)?.name
+								},
+								'particleData'
+							)
+						}
 					/>
 				</>
 			)}

@@ -1,8 +1,17 @@
 import { Button, Stack, Switch, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { is } from 'date-fns/locale';
 import { ChangeEvent, useState } from 'react';
 
+import {
+	isCustomFilter,
+	isCustomFilterJSON
+} from '../../../ThreeEditor/Simulation/Scoring/CustomFilter';
+import {
+	isParticleFilter,
+	isParticleFilterJSON
+} from '../../../ThreeEditor/Simulation/Scoring/ParticleFilter';
 import { convertToBestUnit } from '../../../util/convertUnits/Units';
 import { pages0DToCsv } from '../../../util/csv/Csv';
 import { saveString } from '../../../util/File';
@@ -51,6 +60,17 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 			? null
 			: convertToBestUnit(page.data.values[0], page.data.unit);
 
+		let filterRules = '';
+
+		if (isCustomFilterJSON(page.filterRef)) {
+			filterRules =
+				page.filterRef?.rules
+					.map(rule => `${rule.keyword} ${rule.operator} ${rule.value}`)
+					.join('; ') ?? '';
+		} else if (isParticleFilterJSON(page.filterRef)) {
+			filterRules = `${page.filterRef?.particle.name}`;
+		}
+
 		return {
 			id: idx,
 			name: page.name ?? '',
@@ -58,10 +78,7 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 			value: convertedValue?.val ?? page.data.values[0],
 			unit: convertedValue?.unit ?? page.data.unit,
 			filterName: page.filterRef?.name ?? '',
-			filterRules:
-				page.filterRef?.rules
-					.map(rule => `${rule.keyword} ${rule.operator} ${rule.value}`)
-					.join('; ') ?? ''
+			filterRules: filterRules
 		};
 	});
 

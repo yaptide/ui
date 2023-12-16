@@ -5,7 +5,6 @@ import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { CustomFilter } from './CustomFilter';
-import { ParticleFilter } from './ParticleFilter';
 import { FilterJSON, ScoringFilter } from './ScoringFilter';
 import { ScoringOutput, ScoringOutputJSON as OutputJSON } from './ScoringOutput';
 import { ScoringQuantity } from './ScoringQuantity';

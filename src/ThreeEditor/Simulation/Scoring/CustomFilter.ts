@@ -12,12 +12,16 @@ import {
 } from './FilterRule';
 import { ScoringFilter } from './ScoringFilter';
 
-export type FilterJSON = Omit<
+export type CustomFilterJSON = Omit<
 	SimulationElementJSON & {
 		rules: RuleJSON[];
 	},
 	never
 >;
+
+export function isCustomFilterJSON(filter: any): filter is CustomFilterJSON {
+	return filter && typeof filter.rules === 'object' && filter.rules !== null;
+}
 
 export class CustomFilter extends ScoringFilter {
 	protected _rules: Record<string, FilterRule>;
@@ -133,13 +137,13 @@ export class CustomFilter extends ScoringFilter {
 		return rule;
 	}
 
-	toJSON(): FilterJSON {
+	toJSON(): CustomFilterJSON {
 		const { uuid, name, _rules: rules, type } = this;
 
 		return { uuid, name, type, rules: Object.values(rules).map(rule => rule.toJSON()) };
 	}
 
-	fromJSON(json: FilterJSON) {
+	fromJSON(json: CustomFilterJSON) {
 		this.clear();
 		this.uuid = json.uuid;
 		this.name = json.name;
@@ -148,7 +152,7 @@ export class CustomFilter extends ScoringFilter {
 		return this;
 	}
 
-	static fromJSON(editor: YaptideEditor, json: FilterJSON): CustomFilter {
+	static fromJSON(editor: YaptideEditor, json: CustomFilterJSON): CustomFilter {
 		return new CustomFilter(editor).fromJSON(json);
 	}
 
