@@ -4,7 +4,8 @@ import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
-import { CustomFilter } from './CustomFilter';
+import { CustomFilter, isCustomFilterJSON } from './CustomFilter';
+import { isParticleFilterJSON,ParticleFilter } from './ParticleFilter';
 import { FilterJSON, ScoringFilter } from './ScoringFilter';
 import { ScoringOutput, ScoringOutputJSON as OutputJSON } from './ScoringOutput';
 import { ScoringQuantity } from './ScoringQuantity';
@@ -35,8 +36,13 @@ export class OutputContainer extends SimulationSceneContainer<ScoringOutput> {
 	}
 }
 
-const filterLoader = (editor: YaptideEditor) => (json: FilterJSON) =>
-	new ScoringFilter(editor).fromJSON(json);
+const filterLoader = (editor: YaptideEditor) => (json: FilterJSON) => {
+	if (isCustomFilterJSON(json)) return new CustomFilter(editor).fromJSON(json);
+
+	if (isParticleFilterJSON(json)) return new ParticleFilter(editor).fromJSON(json);
+
+	throw new Error(`Unknown filter type: ${json}`);
+};
 
 export class FilterContainer extends SimulationSceneContainer<ScoringFilter> {
 	readonly isFilterContainer: true = true;
