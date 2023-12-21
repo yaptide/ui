@@ -8,6 +8,7 @@ import {
 	hideUIElement,
 	showUIElement
 } from '../../../../util/Ui/Uis';
+import { CustomFilter } from '../../../Simulation/Scoring/CustomFilter';
 import {
 	FilterRule,
 	isFloatRule,
@@ -141,15 +142,18 @@ export class ObjectFilter extends ObjectAbstract {
 		const { object } = this;
 
 		if (!object) return;
-		const rule = object.getRuleByUuid(this.outliner.getValue());
-		object.selectedRule = rule;
 
-		if (rule) {
-			this.setRule(rule);
-		} else {
-			this.outliner.setValue(null);
-			this.rule = undefined;
-			hideUIElement(this.ruleRow);
+		if (object instanceof CustomFilter) {
+			const rule = object.getRuleByUuid(this.outliner.getValue());
+			object.selectedRule = rule;
+
+			if (rule) {
+				this.setRule(rule);
+			} else {
+				this.outliner.setValue(null);
+				this.rule = undefined;
+				hideUIElement(this.ruleRow);
+			}
 		}
 	}
 
@@ -190,9 +194,12 @@ export class ObjectFilter extends ObjectAbstract {
 		if (!object) return;
 
 		this.object = object;
-		this.outliner.setOptions(object.rules);
 
-		if (object.selectedRule) {
+		if (object instanceof CustomFilter) {
+			this.outliner.setOptions(object.rules);
+		}
+
+		if (object instanceof CustomFilter && object.selectedRule) {
 			const rule = object.selectedRule;
 
 			if (rule) {

@@ -4,6 +4,8 @@ import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
+import { CustomFilter, isCustomFilterJSON } from './CustomFilter';
+import { isParticleFilterJSON, ParticleFilter } from './ParticleFilter';
 import { FilterJSON, ScoringFilter } from './ScoringFilter';
 import { ScoringOutput, ScoringOutputJSON as OutputJSON } from './ScoringOutput';
 import { ScoringQuantity } from './ScoringQuantity';
@@ -34,8 +36,13 @@ export class OutputContainer extends SimulationSceneContainer<ScoringOutput> {
 	}
 }
 
-const filterLoader = (editor: YaptideEditor) => (json: FilterJSON) =>
-	new ScoringFilter(editor).fromJSON(json);
+const filterLoader = (editor: YaptideEditor) => (json: FilterJSON) => {
+	if (isCustomFilterJSON(json)) return new CustomFilter(editor).fromJSON(json);
+
+	if (isParticleFilterJSON(json)) return new ParticleFilter(editor).fromJSON(json);
+
+	throw new Error(`Unknown filter type: ${json}`);
+};
 
 export class FilterContainer extends SimulationSceneContainer<ScoringFilter> {
 	readonly isFilterContainer: true = true;
@@ -57,7 +64,7 @@ export class ScoringManager
 {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: `0.11`,
+		version: `0.12`,
 		type: 'Manager',
 		generator: 'ScoringManager.toJSON'
 	} as {
@@ -109,9 +116,7 @@ export class ScoringManager
 
 	getFilterOptions(): Record<string, string> {
 		const options = this.filters
-			.filter(filter => {
-				return filter.rules.length;
-			})
+			.filter(filter => (filter instanceof CustomFilter ? filter.rules.length : true))
 			.reduce(
 				(acc, filter) => {
 					acc[filter.uuid] = `${filter.name} [${filter.id}]`;

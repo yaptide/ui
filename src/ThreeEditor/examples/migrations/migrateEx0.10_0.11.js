@@ -35,7 +35,7 @@ const migrateInputJson = (inputJson) => {
             sanitizedName: sanitizationFunc(material.name)
         })),
 		metadata: {
-			version: `0.11`,
+			version: `0.12`,
 			type: "Manager",
 			generator: "MaterialManager.toJSON"
 		},
@@ -58,7 +58,7 @@ const migrateInputJson = (inputJson) => {
             }} : {})
         },
 		metadata: {
-			version: `0.11`,
+			version: `0.12`,
 			type: "Manager",
 			generator: "ZoneManager.toJSON"
 		},
@@ -89,7 +89,7 @@ const migrateInputJson = (inputJson) => {
         materialManager,
         scoringManager,
         metadata: {
-            version: `0.11`,
+            version: `0.12`,
             type: "Editor",
             generator: "YaptideEditor.toJSON"
         }

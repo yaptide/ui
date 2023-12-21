@@ -27,7 +27,7 @@ export class SpecialComponentManager
 {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: `0.11`,
+		version: `0.12`,
 		type: 'Manager',
 		generator: 'SpecialComponentManager.toJSON'
 	} as {

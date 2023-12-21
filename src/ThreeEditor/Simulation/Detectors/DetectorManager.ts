@@ -40,7 +40,7 @@ export class DetectorManager
 {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: `0.11`,
+		version: `0.12`,
 		type: 'Manager',
 		generator: 'DetectorManager.toJSON'
 	} as {
