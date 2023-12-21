@@ -68,5 +68,9 @@ export const PARTICLE_TYPES = [
 	{
 		id: 24,
 		name: 'Helium-4'
+	},
+	{
+		id: 25,
+		name: 'Heavy ions'
 	}
 ] as const satisfies readonly ParticleType[];
