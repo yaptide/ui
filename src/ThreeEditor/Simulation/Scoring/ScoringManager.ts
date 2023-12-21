@@ -5,7 +5,7 @@ import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { CustomFilter, isCustomFilterJSON } from './CustomFilter';
-import { isParticleFilterJSON,ParticleFilter } from './ParticleFilter';
+import { isParticleFilterJSON, ParticleFilter } from './ParticleFilter';
 import { FilterJSON, ScoringFilter } from './ScoringFilter';
 import { ScoringOutput, ScoringOutputJSON as OutputJSON } from './ScoringOutput';
 import { ScoringQuantity } from './ScoringQuantity';
@@ -64,7 +64,7 @@ export class ScoringManager
 {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: `0.11`,
+		version: `0.12`,
 		type: 'Manager',
 		generator: 'ScoringManager.toJSON'
 	} as {
@@ -116,11 +116,7 @@ export class ScoringManager
 
 	getFilterOptions(): Record<string, string> {
 		const options = this.filters
-			.filter(filter => {
-				if (filter instanceof CustomFilter) return filter.rules.length;
-
-				return true;
-			})
+			.filter(filter => (filter instanceof CustomFilter ? filter.rules.length : true))
 			.reduce(
 				(acc, filter) => {
 					acc[filter.uuid] = `${filter.name} [${filter.id}]`;

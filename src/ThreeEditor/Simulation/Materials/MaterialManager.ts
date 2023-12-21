@@ -25,7 +25,7 @@ export type Icru = number;
 export class MaterialManager extends THREE.Object3D implements SimulationPropertiesType {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: `0.11`,
+		version: `0.12`,
 		type: 'Manager',
 		generator: 'MaterialManager.toJSON'
 	} as {
