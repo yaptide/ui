@@ -51,6 +51,18 @@ function WrapperApp() {
 		if (isAuthorized && tabsValue === 'login') setTabsValue('editor');
 	}, [isAuthorized, tabsValue]);
 
+	useEffect(() => {
+		const tabTitles = {
+			login: 'Login',
+			editor: 'Editor',
+			inputFiles: 'Input files',
+			simulations: 'Simulations',
+			results: 'Results',
+			about: 'About'
+		};
+		document.title = `${tabTitles[tabsValue as keyof typeof tabTitles] || 'Yaptide'}`;
+	}, [tabsValue]);
+
 	return (
 		<Box
 			sx={{
