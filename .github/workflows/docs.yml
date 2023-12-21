@@ -55,4 +55,4 @@ jobs:
       - name: Deploy to GitHub Pages if on master
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         id: deployment
-        uses: actions/deploy-pages@v3
+        uses: actions/deploy-pages@v4
