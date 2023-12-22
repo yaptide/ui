@@ -24,7 +24,7 @@
 		"comlink": "^4.3.1",
 		"command-exists": "^1.2.9",
 		"convert-units": "^3.0.0-beta.5",
-		"date-fns": "^2.30.0",
+		"date-fns": "^3.0.5",
 		"glob": "^10.3.10",
 		"keycloak-js": "^23.0.3",
 		"keycloak-react-web": "^0.1.19",
