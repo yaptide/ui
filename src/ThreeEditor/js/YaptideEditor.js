@@ -6,6 +6,7 @@ import { DetectorManager } from '../Simulation/Detectors/DetectorManager';
 import { FigureManager } from '../Simulation/Figures/FigureManager';
 import { MaterialManager } from '../Simulation/Materials/MaterialManager';
 import { Beam } from '../Simulation/Physics/Beam';
+import { FlukaDefaults } from '../Simulation/Physics/FlukaDefaults';
 import { Physics } from '../Simulation/Physics/Physics';
 import { ScoringManager } from '../Simulation/Scoring/ScoringManager';
 import { SpecialComponentManager } from '../Simulation/SpecialComponents/SpecialComponentManager';
@@ -218,6 +219,7 @@ export function YaptideEditor(container) {
 
 	this.beam = new Beam(this);
 	this.physic = new Physics();
+	this.flukaDefaults = new FlukaDefaults();
 	this.sceneHelpers.add(this.beam);
 
 	this.contextManager = new ContextManager(this); //Context Manager must be loaded after all scenes

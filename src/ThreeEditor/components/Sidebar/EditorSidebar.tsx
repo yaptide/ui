@@ -11,6 +11,7 @@ import { getAddElementButtonProps } from '../../../util/Ui/CommandButtonProps';
 import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import { Context } from '../../js/EditorContext';
 import { YaptideEditor } from '../../js/YaptideEditor';
+import { FlukaDefaultsConfiguration } from './properties/category/FlukaDefaultsConfiguration';
 import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
 import { PropertiesPanel } from './properties/PropertiesPanel';
 import { SidebarTree } from './SidebarTree/SidebarTree';
@@ -271,6 +272,10 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 											<PhysicConfiguration
 												editor={editor}
 												object={editor.physic}
+											/>
+											<FlukaDefaultsConfiguration
+												editor={editor}
+												object={editor.flukaDefaults}
 											/>
 										</Box>
 									</Stack>
