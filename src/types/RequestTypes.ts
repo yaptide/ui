@@ -18,7 +18,8 @@ export enum OrderBy {
 export enum SimulatorType {
 	SHIELDHIT = 'shieldhit',
 	TOPAS = 'topas',
-	FLUKA = 'fluka'
+	FLUKA = 'fluka',
+	COMMON = 'common'
 }
 
 export type RequestParam = [signal?: AbortSignal];

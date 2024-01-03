@@ -24,9 +24,7 @@ function WrapperApp() {
 	const [tabsValue, setTabsValue] = useState('editor');
 
 	const [providedInputFiles, setProvidedInputFiles] = useState<SimulationInputFiles>();
-	const [currentSimulator, setCurrentSimulator] = useState<SimulatorType>(
-		SimulatorType.SHIELDHIT
-	);
+	const [currentSimulator, setCurrentSimulator] = useState<SimulatorType>(SimulatorType.COMMON);
 
 	useEffect(() => {
 		if (providedInputFiles && tabsValue !== 'simulations') setProvidedInputFiles(undefined);
@@ -72,6 +70,8 @@ function WrapperApp() {
 				<SceneEditor
 					sidebarProps={[open, tabsValue === 'editor']}
 					focus={tabsValue === 'editor'}
+					simulator={currentSimulator}
+					onSimulatorChange={setCurrentSimulator}
 				/>
 			</TabPanel>
 
@@ -85,6 +85,8 @@ function WrapperApp() {
 						setCurrentSimulator(simulator);
 						setTabsValue('simulations');
 					}}
+					simulator={currentSimulator}
+					onSimulatorChange={setCurrentSimulator}
 				/>
 			</TabPanel>
 

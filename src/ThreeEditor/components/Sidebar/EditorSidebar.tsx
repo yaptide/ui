@@ -1,11 +1,13 @@
 import SettingsIcon from '@mui/icons-material/Settings';
 import SpeedIcon from '@mui/icons-material/Speed';
 import TokenIcon from '@mui/icons-material/Token';
-import { AppBar, Box, Divider, Stack, Tab, Tabs, Typography } from '@mui/material';
+import { AppBar, Box, Divider, Menu, Select,Stack, Tab, Tabs, Typography } from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
+import { SimulatorType } from '../../../types/RequestTypes';
 import { useSignal } from '../../../util/hooks/signals';
 import { getAddElementButtonProps } from '../../../util/Ui/CommandButtonProps';
 import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
@@ -16,8 +18,14 @@ import { PropertiesPanel } from './properties/PropertiesPanel';
 import { SidebarTree } from './SidebarTree/SidebarTree';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
 
-export function EditorSidebar(props: { editor: YaptideEditor }) {
-	const { editor } = props;
+interface EditorSidebarProps {
+	editor: YaptideEditor;
+	simulator: SimulatorType;
+	onSimulatorChange: (newSimulator: SimulatorType) => void;
+}
+
+export function EditorSidebar(props: EditorSidebarProps) {
+	const { editor, simulator, onSimulatorChange } = props;
 
 	const [btnProps, setBtnProps] = useState(getAddElementButtonProps(editor));
 
@@ -71,93 +79,12 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 		};
 	}, [editor, handleContextChange]);
 
-	const geometryTabElements = [
-		{
-			title: 'Figures',
-			add: btnProps['Figures'],
-			tree: (
-				<SidebarTree
-					editor={editor}
-					sources={[editor.figureManager.figureContainer]}
-				/>
-			)
-		},
-		{
-			title: 'Zones',
-			add: btnProps['Zones'],
-			tree: (
-				<>
-					<SidebarTree
-						editor={editor}
-						sources={[editor.zoneManager.worldZone]}
-						dragDisabled
-					/>
-					<Divider sx={{ marginBottom: t => t.spacing(1) }} />
-					<SidebarTree
-						editor={editor}
-						sources={[editor.zoneManager.zoneContainer]}
-					/>
-				</>
-			)
-		},
-		{
-			title: 'Detectors',
-			add: btnProps['Detectors'],
-			tree: (
-				<SidebarTree
-					editor={editor}
-					sources={[editor.detectorManager.detectorContainer]}
-				/>
-			)
-		},
-		{
-			title: 'Special Components',
-			add: btnProps['Special Components'],
-			tree: (
-				<>
-					{editor.specialComponentsManager.CTCubeContainer.children.length > 0 ? (
-						<>
-							<SidebarTree
-								editor={editor}
-								sources={[editor.specialComponentsManager.CTCubeContainer]}
-								dragDisabled
-							/>
-
-							<Divider sx={{ marginBottom: t => t.spacing(1) }} />
-						</>
-					) : undefined}
-					<SidebarTree
-						editor={editor}
-						sources={[editor.specialComponentsManager.beamModulatorContainer]}
-						dragDisabled
-					/>
-				</>
-			)
-		}
-	];
-
-	const scoringTabElements = [
-		{
-			title: 'Filters',
-			add: btnProps['Filters'],
-			tree: (
-				<SidebarTree
-					editor={editor}
-					sources={[editor.scoringManager.filterContainer]}
-				/>
-			)
-		},
-		{
-			title: 'Outputs',
-			add: btnProps['Outputs'],
-			tree: (
-				<SidebarTree
-					editor={editor}
-					sources={[editor.scoringManager.outputContainer]}
-				/>
-			)
-		}
-	];
+	const handleSimulatorChange = (newValue: SimulatorType) => {
+		onSimulatorChange(newValue);
+		editor.contextManager.currentSimulator = newValue;
+	};
+	const geometryTabElements = getGeometryTabElements(simulator, btnProps, editor);
+	const scoringTabElements = getScoringTabElements(simulator, btnProps, editor);
 
 	return (
 		<>
@@ -171,6 +98,21 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 					display: 'flex',
 					alignItems: 'stretch'
 				}}>
+				<Select
+					value={simulator}
+					onChange={event => handleSimulatorChange(event.target.value as SimulatorType)}
+					sx={{
+						textAlign: 'center',
+						padding: '0 1rem'
+					}}>
+					{Object.keys(SimulatorType).map(option => (
+						<MenuItem
+							key={option}
+							value={option.toLowerCase()}>
+							{option}
+						</MenuItem>
+					))}
+				</Select>
 				<Tabs
 					value={selectedTab}
 					onChange={handleChange}
@@ -282,4 +224,122 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 			</ScrollPositionManager>
 		</>
 	);
+}
+
+function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor: YaptideEditor) {
+	const commonElements = [
+		{
+			title: 'Figures',
+			add: btnProps['Figures'],
+			tree: (
+				<SidebarTree
+					editor={editor}
+					sources={[editor.figureManager.figureContainer]}
+				/>
+			)
+		},
+		{
+			title: 'Zones',
+			add: btnProps['Zones'],
+			tree: (
+				<>
+					<SidebarTree
+						editor={editor}
+						sources={[editor.zoneManager.worldZone]}
+						dragDisabled
+					/>
+					<Divider sx={{ marginBottom: t => t.spacing(1) }} />
+					<SidebarTree
+						editor={editor}
+						sources={[editor.zoneManager.zoneContainer]}
+					/>
+				</>
+			)
+		},
+		{
+			title: 'Detectors',
+			add: btnProps['Detectors'],
+			tree: (
+				<SidebarTree
+					editor={editor}
+					sources={[editor.detectorManager.detectorContainer]}
+				/>
+			)
+		},
+		{
+			title: 'Special Components',
+			add: btnProps['Special Components'],
+			tree: (
+				<>
+					{editor.specialComponentsManager.CTCubeContainer.children.length > 0 ? (
+						<>
+							<SidebarTree
+								editor={editor}
+								sources={[editor.specialComponentsManager.CTCubeContainer]}
+								dragDisabled
+							/>
+
+							<Divider sx={{ marginBottom: t => t.spacing(1) }} />
+						</>
+					) : undefined}
+					<SidebarTree
+						editor={editor}
+						sources={[editor.specialComponentsManager.beamModulatorContainer]}
+						dragDisabled
+					/>
+				</>
+			)
+		}
+	];
+	const shieldhitElements = [...commonElements];
+	const flukaElements = [...commonElements];
+
+	switch (simulator) {
+		case SimulatorType.SHIELDHIT:
+			return shieldhitElements;
+		case SimulatorType.FLUKA:
+			return flukaElements;
+		case SimulatorType.COMMON:
+			return commonElements;
+		default:
+			return [];
+	}
+}
+
+function getScoringTabElements(simulator: SimulatorType, btnProps: any, editor: YaptideEditor) {
+	const commonElements = [
+		{
+			title: 'Filters',
+			add: btnProps['Filters'],
+			tree: (
+				<SidebarTree
+					editor={editor}
+					sources={[editor.scoringManager.filterContainer]}
+				/>
+			)
+		},
+		{
+			title: 'Outputs',
+			add: btnProps['Outputs'],
+			tree: (
+				<SidebarTree
+					editor={editor}
+					sources={[editor.scoringManager.outputContainer]}
+				/>
+			)
+		}
+	];
+	const shieldhitElements = [...commonElements];
+	const flukaElements = [...commonElements];
+
+	switch (simulator) {
+		case SimulatorType.SHIELDHIT:
+			return shieldhitElements;
+		case SimulatorType.FLUKA:
+			return flukaElements;
+		case SimulatorType.COMMON:
+			return commonElements;
+		default:
+			return [];
+	}
 }
