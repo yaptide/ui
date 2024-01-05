@@ -1,0 +1,23 @@
+name: Cleanup GHCR docker packages on closed pull request
+
+on:
+  pull_request_target:
+    types:
+      - closed
+
+jobs:
+  cleanup-package:
+    name: Cleanup closed PR package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cleanup web package
+        uses: snok/container-retention-policy@v2
+        with:
+          image-names: ${{ github.event.repository.name }}-web
+          cut-off: now UTC
+          timestamp-to-use: created_at
+          account-type: org
+          org-name: ${{ github.repository_owner }}
+          keep-at-least: 0
+          filter-tags: pr-${{github.event.pull_request.number}}
+          token: ${{ secrets.PAT }}
