@@ -119,8 +119,9 @@ export function EditorSidebar(props: EditorSidebarProps) {
 				<FormControl
 					variant='filled'
 					fullWidth>
-					<InputLabel>Simulator</InputLabel>
+					<InputLabel style={{ color: '#dfc19b' }}>Simulator</InputLabel>
 					<Select
+						style={{ color: '#dfc19b' }}
 						value={simulator}
 						label='Simulator'
 						onChange={e => handleSimulatorChange(e.target.value as SimulatorType)}>
