@@ -23,6 +23,16 @@ describe('ShieldhitConverter', () => {
 	test('converter generates correct files', async () => {
 		await driver.get('http://localhost:3000');
 
+		// Wait for the application to load
+		expect(
+			await driver.wait(
+				until.elementLocated(
+					By.xpath("//div[@aria-label = 'Navigation drawer for the YAPTIDE application']")
+				),
+				5_000
+			)
+		).toBeTruthy();
+
 		//find the "Editor" button on the left menu and assure it is already selected
 		const editorButton = await driver.findElement(By.xpath("//div[@aria-label = 'Editor']"));
 
