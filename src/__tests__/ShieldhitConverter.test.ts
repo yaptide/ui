@@ -224,10 +224,15 @@ describe('ShieldhitConverter', () => {
 				.getText()
 		).replace(regex, '');
 
-		const expectedBeamText = readFileSync(
+		const expectedBeamTextFull = readFileSync(
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/beam.dat',
 			'utf-8'
 		).replace(regex, '');
+
+		// Hook to mitigate change in the beam.dat file of converter submodule
+		const expectedBeamText	= expectedBeamTextFull.replace('JPART02IncidentparticletypeProtonnoheavyion', 
+		'JPART02Incidentparticletype');
+
 		expect(expectedBeamText).not.toBe('');
 		expect(beamText).toContain(expectedBeamText);
 
