@@ -163,6 +163,13 @@ describe('ShieldhitConverter', () => {
 			)
 		).toBeTruthy();
 
+		//find the "SHIELD-HIT12A" button and click it
+		const shieldhitButton = await driver.findElement(By.xpath("//button[@value = 'shieldhit']"));
+		await shieldhitButton.click();
+
+		//accept the "current data will be lost" alert
+		await driver.switchTo().alert().accept();
+		
 		//wait until the "generate from editor" button and click it (it takes some time for the button to change from "initializing")
 		//xpath is used as again the id changes every time
 		const generateButton = await driver.findElement(
