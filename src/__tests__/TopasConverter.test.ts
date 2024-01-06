@@ -1,7 +1,7 @@
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
-describe('NavDrawer component', () => {
+describe('TopasConverter', () => {
 	let driver: WebDriver;
 
 	beforeAll(async () => {
