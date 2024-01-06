@@ -1,0 +1,48 @@
+name: Retention policy for web GHCR docker packages
+
+on:
+  schedule:
+    - cron: '30 4 * * *' # Running everyday at 04:30 AM
+  workflow_dispatch:
+
+jobs:
+  cleanup-packages:
+    name: Cleanup old GHCR docker packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cleanup web outdated PR packages
+        uses: snok/container-retention-policy@v2
+        with:
+          image-names: ${{ github.event.repository.name }}-web
+          cut-off: 1 day ago UTC
+          timestamp-to-use: created_at
+          account-type: org
+          org-name: ${{ github.repository_owner }}
+          keep-at-least: 0
+          untagged-only: true
+          token: ${{ secrets.PAT }}
+      - name: Cleanup web latest but old PR packages
+        uses: snok/container-retention-policy@v2
+        with:
+          image-names: ${{ github.event.repository.name }}-web
+          cut-off: 3 days ago UTC
+          timestamp-to-use: created_at
+          account-type: org
+          org-name: ${{ github.repository_owner }}
+          keep-at-least: 0
+          filter-include-untagged: false
+          filter-tags: pr-*
+          token: ${{ secrets.PAT }}
+      - name: Cleanup web outdated master packages
+        uses: snok/container-retention-policy@v2
+        with:
+          image-names: ${{ github.event.repository.name }}-web
+          cut-off: 2 days ago UTC
+          timestamp-to-use: created_at
+          account-type: org
+          org-name: ${{ github.repository_owner }}
+          keep-at-least: 0
+          filter-include-untagged: false
+          filter-tags: master-*
+          skip-tags: master # Don't remove the newest master image
+          token: ${{ secrets.PAT }}

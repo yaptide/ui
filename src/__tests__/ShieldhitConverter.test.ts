@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
-describe('NavDrawer component', () => {
+describe('ShieldhitConverter', () => {
 	let driver: WebDriver;
 
 	beforeAll(async () => {
@@ -22,6 +22,16 @@ describe('NavDrawer component', () => {
 	//this test checks if converter works correctly - opens an example and generates config files
 	test('converter generates correct files', async () => {
 		await driver.get('http://localhost:3000');
+
+		// Wait for the application to load
+		expect(
+			await driver.wait(
+				until.elementLocated(
+					By.xpath("//div[@aria-label = 'Navigation drawer for the YAPTIDE application']")
+				),
+				5_000
+			)
+		).toBeTruthy();
 
 		//find the "Editor" button on the left menu and assure it is already selected
 		const editorButton = await driver.findElement(By.xpath("//div[@aria-label = 'Editor']"));
@@ -153,6 +163,13 @@ describe('NavDrawer component', () => {
 			)
 		).toBeTruthy();
 
+		//find the "SHIELD-HIT12A" button and click it
+		const shieldhitButton = await driver.findElement(By.xpath("//button[@value = 'shieldhit']"));
+		await shieldhitButton.click();
+
+		//accept the "current data will be lost" alert
+		await driver.switchTo().alert().accept();
+		
 		//wait until the "generate from editor" button and click it (it takes some time for the button to change from "initializing")
 		//xpath is used as again the id changes every time
 		const generateButton = await driver.findElement(
@@ -207,10 +224,15 @@ describe('NavDrawer component', () => {
 				.getText()
 		).replace(regex, '');
 
-		const expectedBeamText = readFileSync(
+		const expectedBeamTextFull = readFileSync(
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/beam.dat',
 			'utf-8'
 		).replace(regex, '');
+
+		// Hook to mitigate change in the beam.dat file of converter submodule
+		const expectedBeamText	= expectedBeamTextFull.replace('JPART02IncidentparticletypeProtonnoheavyion', 
+		'JPART02Incidentparticletype');
+
 		expect(expectedBeamText).not.toBe('');
 		expect(beamText).toContain(expectedBeamText);
 

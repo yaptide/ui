@@ -98,6 +98,12 @@ export function EditorSidebar(props: EditorSidebarProps) {
 	};
 	const geometryTabElements = getGeometryTabElements(simulator, btnProps, editor);
 	const scoringTabElements = getScoringTabElements(simulator, btnProps, editor);
+	const simulatorDescriptions = {
+		[SimulatorType.COMMON]: 'Common options for Fluka and Shieldhit',
+		[SimulatorType.FLUKA]: 'Fluka specific options',
+		[SimulatorType.SHIELDHIT]: 'Shieldhit specific options'
+	};
+
 
 	return (
 		<>
@@ -114,6 +120,9 @@ export function EditorSidebar(props: EditorSidebarProps) {
 				<FormControl
 					variant='filled'
 					fullWidth>
+					<InputLabel style={{ color: '#dfc19b' }}>Simulator</InputLabel>
+					<Select
+						style={{ color: '#dfc19b' }}
 					<InputLabel>Simulator</InputLabel>
 					<Select
 						value={simulator}
@@ -123,7 +132,7 @@ export function EditorSidebar(props: EditorSidebarProps) {
 							<MenuItem
 								key={simulator}
 								value={simulator}
-								title='Fluka and Shieldhit common options'>
+								title={simulatorDescriptions[simulator]}>
 								{simulator.charAt(0).toUpperCase() + simulator.slice(1)}
 							</MenuItem>
 						))}
