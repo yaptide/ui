@@ -1,7 +1,19 @@
 import SettingsIcon from '@mui/icons-material/Settings';
 import SpeedIcon from '@mui/icons-material/Speed';
 import TokenIcon from '@mui/icons-material/Token';
-import { AppBar, Box, Divider, Menu, Select,Stack, Tab, Tabs, Typography } from '@mui/material';
+import {
+	AppBar,
+	Box,
+	Divider,
+	FormControl,
+	InputLabel,
+	Menu,
+	Select,
+	Stack,
+	Tab,
+	Tabs,
+	Typography
+} from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
@@ -14,6 +26,7 @@ import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import { Context } from '../../js/EditorContext';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
+import { SelectPropertyField } from './properties/fields/PropertyField';
 import { PropertiesPanel } from './properties/PropertiesPanel';
 import { SidebarTree } from './SidebarTree/SidebarTree';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
@@ -98,21 +111,24 @@ export function EditorSidebar(props: EditorSidebarProps) {
 					display: 'flex',
 					alignItems: 'stretch'
 				}}>
-				<Select
-					value={simulator}
-					onChange={event => handleSimulatorChange(event.target.value as SimulatorType)}
-					sx={{
-						textAlign: 'center',
-						padding: '0 1rem'
-					}}>
-					{Object.keys(SimulatorType).map(option => (
-						<MenuItem
-							key={option}
-							value={option.toLowerCase()}>
-							{option}
-						</MenuItem>
-					))}
-				</Select>
+				<FormControl
+					variant='filled'
+					fullWidth>
+					<InputLabel>Simulator</InputLabel>
+					<Select
+						value={simulator}
+						label='Simulator'
+						onChange={e => handleSimulatorChange(e.target.value as SimulatorType)}>
+						{Object.values(SimulatorType).map(simulator => (
+							<MenuItem
+								key={simulator}
+								value={simulator}
+								title='Fluka and Shieldhit common options'>
+								{simulator.charAt(0).toUpperCase() + simulator.slice(1)}
+							</MenuItem>
+						))}
+					</Select>
+				</FormControl>
 				<Tabs
 					value={selectedTab}
 					onChange={handleChange}
@@ -203,18 +219,23 @@ export function EditorSidebar(props: EditorSidebarProps) {
 												}}
 											/>
 										</Box>
-										<Divider light />
-										<Box>
-											<Typography
-												variant='h6'
-												sx={{ margin: '0.5rem 0' }}>
-												Physics
-											</Typography>
-											<PhysicConfiguration
-												editor={editor}
-												object={editor.physic}
-											/>
-										</Box>
+										{editor.contextManager.currentSimulator ===
+											SimulatorType.SHIELDHIT && (
+											<>
+												<Divider light />
+												<Box>
+													<Typography
+														variant='h6'
+														sx={{ margin: '0.5rem 0' }}>
+														Physics
+													</Typography>
+													<PhysicConfiguration
+														editor={editor}
+														object={editor.physic}
+													/>
+												</Box>
+											</>
+										)}
 									</Stack>
 								)}
 							</div>
@@ -265,7 +286,11 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 					sources={[editor.detectorManager.detectorContainer]}
 				/>
 			)
-		},
+		}
+	];
+
+	const shieldhitElements = [
+		...commonElements,
 		{
 			title: 'Special Components',
 			add: btnProps['Special Components'],
@@ -291,7 +316,6 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 			)
 		}
 	];
-	const shieldhitElements = [...commonElements];
 	const flukaElements = [...commonElements];
 
 	switch (simulator) {
