@@ -17,7 +17,8 @@ export enum OrderBy {
 
 export enum SimulatorType {
 	SHIELDHIT = 'shieldhit',
-	TOPAS = 'topas',
+	// Topas is not supported in current version of yaptide
+	// TOPAS = 'topas',
 	FLUKA = 'fluka',
 	COMMON = 'common'
 }

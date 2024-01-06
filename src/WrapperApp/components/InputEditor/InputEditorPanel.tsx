@@ -102,10 +102,10 @@ export default function InputEditorPanel({
 			acceptedFiles = '.dat';
 
 			break;
-		case SimulatorType.TOPAS:
-			acceptedFiles = '.txt';
-
-			break;
+		// In current version of yaptide, topas is not supported
+		// case SimulatorType.TOPAS:
+		// 	acceptedFiles = '.txt';
+		// 	break;
 		case SimulatorType.FLUKA:
 			acceptedFiles = '.inp';
 
@@ -183,10 +183,10 @@ export default function InputEditorPanel({
 											setInputFiles(_defaultShInputFiles);
 
 											break;
-										case SimulatorType.TOPAS:
-											setInputFiles(_defaultTopasInputFiles);
-
-											break;
+										// Topas is not supported in current version of yaptide
+										// case SimulatorType.TOPAS:
+										// 	setInputFiles(_defaultTopasInputFiles);
+										// 	break;
 										case SimulatorType.FLUKA:
 											setInputFiles(_defaultFlukaInputFiles);
 
@@ -204,13 +204,13 @@ export default function InputEditorPanel({
 						color='info'>
 						SHIELD-HIT12A
 					</ToggleButton>
-					{!demoMode && (
+					{/* {!demoMode && (
 						<ToggleButton
 							value={SimulatorType.TOPAS}
 							color='info'>
 							TOPAS
 						</ToggleButton>
-					)}
+					)} */}
 					{!demoMode && (
 						<ToggleButton
 							value={SimulatorType.FLUKA}

@@ -171,7 +171,14 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 					openIdx={openIdx}
 					setOpenIdx={setOpenIdx}
 					options={[
-						...(editor ? Object.values(getAddElementButtonProps(editor)) : []),
+						...(editor
+							? Object.entries(getAddElementButtonProps(editor))
+									.filter(
+										([key, val]) =>
+											key !== 'Special Components' && key !== 'Filters'
+									)
+									.map(([key, val]) => val)
+							: []),
 						[
 							{
 								label: 'Paste from Clipboard',

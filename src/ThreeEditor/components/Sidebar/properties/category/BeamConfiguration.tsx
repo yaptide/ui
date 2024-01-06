@@ -1,7 +1,9 @@
 import { Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { useEffect } from 'react';
 import { Object3D } from 'three';
 
 import { PARTICLE_TYPES } from '../../../../../types/Particle';
+import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
@@ -153,6 +155,12 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 		editor.execute(new SetValueCommand(editor, watchedObject.object, key, value));
 	};
 
+	useEffect(() => {
+		if (editor.contextManager.currentSimulator !== SimulatorType.SHIELDHIT) {
+			setValueCommand(BEAM_SOURCE_TYPE.simple, 'sourceType');
+		}
+	}, [editor.contextManager.currentSimulator]);
+
 	return (
 		<>
 			<PropertyField label='Definition type'>
@@ -165,7 +173,9 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 						if (v) setValueCommand(v, 'sourceType');
 					}}>
 					<ToggleButton value={BEAM_SOURCE_TYPE.simple}>Simple</ToggleButton>
-					<ToggleButton value={BEAM_SOURCE_TYPE.file}>File</ToggleButton>
+					{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
+						<ToggleButton value={BEAM_SOURCE_TYPE.file}>File</ToggleButton>
+					)}
 				</ToggleButtonGroup>
 			</PropertyField>
 
@@ -184,39 +194,45 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 						value={watchedObject.energySpread}
 						onChange={v => setValueCommand(v, 'energySpread')}
 					/>
-					<NumberPropertyField
-						label='Energy lower cutoff'
-						unit={'MeV/nucl'}
-						value={watchedObject.energyLowCutoff}
-						onChange={v => setValueCommand(v, 'energyLowCutoff')}
-					/>
-					<NumberPropertyField
-						label='Energy upper cutoff'
-						unit={'MeV/nucl'}
-						value={watchedObject.energyHighCutoff}
-						onChange={v => setValueCommand(v, 'energyHighCutoff')}
-					/>
-					<PropertyField children={<Divider />} />
-					<Vector2PropertyField
-						label='Divergence XY'
-						value={watchedObject.divergence}
-						unit={'mrad'}
-						onChange={v =>
-							setValueCommand({ ...watchedObject.divergence, ...v }, 'divergence')
-						}
-					/>
-
-					<NumberPropertyField
-						label='Divergence distance to focal point'
-						unit={editor.unit.name}
-						value={watchedObject.divergence.distanceToFocal}
-						onChange={v =>
-							setValueCommand(
-								{ ...watchedObject.divergence, distanceToFocal: v },
-								'divergence'
-							)
-						}
-					/>
+					{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
+						<>
+							<NumberPropertyField
+								label='Energy lower cutoff'
+								unit={'MeV/nucl'}
+								value={watchedObject.energyLowCutoff}
+								onChange={v => setValueCommand(v, 'energyLowCutoff')}
+							/>
+							<NumberPropertyField
+								label='Energy upper cutoff'
+								unit={'MeV/nucl'}
+								value={watchedObject.energyHighCutoff}
+								onChange={v => setValueCommand(v, 'energyHighCutoff')}
+							/>
+							<PropertyField children={<Divider />} />
+							<Vector2PropertyField
+								label='Divergence XY'
+								value={watchedObject.divergence}
+								unit={'mrad'}
+								onChange={v =>
+									setValueCommand(
+										{ ...watchedObject.divergence, ...v },
+										'divergence'
+									)
+								}
+							/>
+							<NumberPropertyField
+								label='Divergence distance to focal point'
+								unit={editor.unit.name}
+								value={watchedObject.divergence.distanceToFocal}
+								onChange={v =>
+									setValueCommand(
+										{ ...watchedObject.divergence, distanceToFocal: v },
+										'divergence'
+									)
+								}
+							/>
+						</>
+					)}
 					<PropertyField children={<Divider />} />
 
 					<BeamSigmaField
