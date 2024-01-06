@@ -22,6 +22,10 @@ export const PARTICLE_TYPES = [
 		name: 'Pion π+'
 	},
 	{
+		id: 7,
+		name: 'Anti-proton'
+	},
+	{
 		id: 8,
 		name: 'Kaon κ-'
 	},
