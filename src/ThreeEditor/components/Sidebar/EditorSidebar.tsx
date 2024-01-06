@@ -26,6 +26,7 @@ import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import { Context } from '../../js/EditorContext';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
+import { SelectPropertyField } from './properties/fields/PropertyField';
 import { PropertiesPanel } from './properties/PropertiesPanel';
 import { SidebarTree } from './SidebarTree/SidebarTree';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
@@ -97,12 +98,12 @@ export function EditorSidebar(props: EditorSidebarProps) {
 	};
 	const geometryTabElements = getGeometryTabElements(simulator, btnProps, editor);
 	const scoringTabElements = getScoringTabElements(simulator, btnProps, editor);
-
 	const simulatorDescriptions = {
 		[SimulatorType.COMMON]: 'Common options for Fluka and Shieldhit',
 		[SimulatorType.FLUKA]: 'Fluka specific options',
 		[SimulatorType.SHIELDHIT]: 'Shieldhit specific options'
 	};
+
 
 	return (
 		<>
@@ -122,6 +123,8 @@ export function EditorSidebar(props: EditorSidebarProps) {
 					<InputLabel style={{ color: '#dfc19b' }}>Simulator</InputLabel>
 					<Select
 						style={{ color: '#dfc19b' }}
+					<InputLabel>Simulator</InputLabel>
+					<Select
 						value={simulator}
 						label='Simulator'
 						onChange={e => handleSimulatorChange(e.target.value as SimulatorType)}>
