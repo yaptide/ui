@@ -123,8 +123,6 @@ export function EditorSidebar(props: EditorSidebarProps) {
 					<InputLabel style={{ color: '#dfc19b' }}>Simulator</InputLabel>
 					<Select
 						style={{ color: '#dfc19b' }}
-					<InputLabel>Simulator</InputLabel>
-					<Select
 						value={simulator}
 						label='Simulator'
 						onChange={e => handleSimulatorChange(e.target.value as SimulatorType)}>
