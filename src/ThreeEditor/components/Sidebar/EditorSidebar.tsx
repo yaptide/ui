@@ -26,7 +26,6 @@ import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import { Context } from '../../js/EditorContext';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
-import { SelectPropertyField } from './properties/fields/PropertyField';
 import { PropertiesPanel } from './properties/PropertiesPanel';
 import { SidebarTree } from './SidebarTree/SidebarTree';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
@@ -99,6 +98,12 @@ export function EditorSidebar(props: EditorSidebarProps) {
 	const geometryTabElements = getGeometryTabElements(simulator, btnProps, editor);
 	const scoringTabElements = getScoringTabElements(simulator, btnProps, editor);
 
+	const simulatorDescriptions = {
+		[SimulatorType.COMMON]: 'Common options for Fluka and Shieldhit',
+		[SimulatorType.FLUKA]: 'Fluka specific options',
+		[SimulatorType.SHIELDHIT]: 'Shieldhit specific options'
+	};
+
 	return (
 		<>
 			<AppBar
@@ -123,7 +128,7 @@ export function EditorSidebar(props: EditorSidebarProps) {
 							<MenuItem
 								key={simulator}
 								value={simulator}
-								title='Fluka and Shieldhit common options'>
+								title={simulatorDescriptions[simulator]}>
 								{simulator.charAt(0).toUpperCase() + simulator.slice(1)}
 							</MenuItem>
 						))}
