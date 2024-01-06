@@ -19,7 +19,8 @@ describe('TopasConverter', () => {
 	}, 30_000);
 
 	//this test checks if converter works correctly - opens an example and generates config files
-	test('converter generates correct files', async () => {
+	// expected to fail because Topas was temporarily removed from the project
+	xtest('converter generates correct files', async () => {
 		await driver.get('http://localhost:3000');
 
 		//find the "Editor" button on the left menu and assure it is already selected
