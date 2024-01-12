@@ -88,12 +88,12 @@ COPY --from=build /usr/src/app/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/app.conf
 
 # Permission fixes
-RUN chown -R 1000730000:1000730000 /etc/nginx
-RUN chown -R 1000730000:1000730000 /var
-RUN chown -R 1000730000:1000730000 /run
-RUN chmod 700 -R /var
-RUN chmod 700 -R /etc/nginx
-RUN chmod 700 -R /run
+RUN chown -R 1000730000:1000730000 /etc/nginx && \
+    chown -R 1000730000:1000730000 /var && \
+    chown -R 1000730000:1000730000 /run && \
+    chmod 700 -R /var && \
+    chmod 700 -R /etc/nginx && \
+    chmod 700 -R /run
 
 EXPOSE 80
 EXPOSE 443
