@@ -92,6 +92,10 @@ export function EditorSidebar(props: EditorSidebarProps) {
 		};
 	}, [editor, handleContextChange]);
 
+	useEffect(() => {
+		handleSimulatorChange(editor.contextManager.currentSimulator);
+	}, [editor.contextManager.currentSimulator]);
+
 	const handleSimulatorChange = (newValue: SimulatorType) => {
 		onSimulatorChange(newValue);
 		editor.contextManager.currentSimulator = newValue;
