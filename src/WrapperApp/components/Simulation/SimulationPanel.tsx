@@ -91,7 +91,7 @@ export default function SimulationPanel({
 			/>
 			{demoMode ? (
 				<DemoCardGrid
-					simulations={EXAMPLES}
+					simulations={Object.values(EXAMPLES).flat()}
 					title='Demo Simulation Results'
 					handleLoadResults={handleLoadResults}
 					handleDelete={() => {}}

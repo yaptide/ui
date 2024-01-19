@@ -128,7 +128,16 @@ export function EditorSidebar(props: EditorSidebarProps) {
 						style={{ color: '#dfc19b' }}
 						value={simulator}
 						label='Simulator'
-						onChange={e => handleSimulatorChange(e.target.value as SimulatorType)}>
+						onChange={e => {
+							if (
+								simulator === SimulatorType.COMMON ||
+								window.confirm(
+									"Changing to another simulator may result in data loss. It is only recommended to change from the 'Common' simulator to another. Are you sure you want to continue?"
+								)
+							) {
+								handleSimulatorChange(e.target.value as SimulatorType);
+							}
+						}}>
 						{Object.values(SimulatorType).map(simulator => (
 							<MenuItem
 								key={simulator}
