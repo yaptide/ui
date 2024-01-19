@@ -99,11 +99,10 @@ export function EditorSidebar(props: EditorSidebarProps) {
 	const geometryTabElements = getGeometryTabElements(simulator, btnProps, editor);
 	const scoringTabElements = getScoringTabElements(simulator, btnProps, editor);
 	const simulatorDescriptions = {
-		[SimulatorType.COMMON]: 'Common options for Fluka and Shieldhit',
+		[SimulatorType.COMMON]: 'Common options for Fluka and SHIELD-HIT12A',
 		[SimulatorType.FLUKA]: 'Fluka specific options',
-		[SimulatorType.SHIELDHIT]: 'Shieldhit specific options'
+		[SimulatorType.SHIELDHIT]: 'SHIELD-HIT12A specific options'
 	};
-
 
 	return (
 		<>
