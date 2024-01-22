@@ -92,6 +92,9 @@ describe('ShieldhitConverter', () => {
 		//check if the tab is not hidden
 		expect(await examplesPanel.getAttribute('hidden')).toBeFalsy();
 
+		// select SHIELDHIT subsection
+		examplesPanel.findElement(By.xpath("//button[contains(text(),'shieldhit')]")).click();
+
 		//find the list of examples
 		const examplesList = await examplesPanel.findElement(By.id('Examples list'));
 
