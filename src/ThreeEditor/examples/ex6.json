@@ -1,0 +1,556 @@
+{
+	"metadata": {
+		"version": "0.12",
+		"type": "Editor",
+		"generator": "YaptideEditor.toJSON"
+	},
+	"project": {
+		"title": "particle_filters_common",
+		"description": "Proton pencil beam with initial kinetic energy 150 MeV and 1% energy spread.\nThe target is a cylindrical water phantom with a radius of 10 cm and a length of 20 cm.\n\nWe score dose from all particles and fluence according to primary particles (protons), secondary protons, and all protons.",
+		"viewManager": {
+			"ViewPanelXY": {
+				"cameraMatrix": [1,0,0,0,0,0.9999999999994963,9.999999998910849e-7,0,0,-9.999999998910849e-7,0.9999999999994963,0,0,-0.0000999999999891088,99.99999999994995,1],
+				"clipPlane": {
+					"planeConstant": 0,
+					"visible": true
+				}
+			},
+			"ViewPanel3D": {
+				"cameraMatrix": [-0.18975457005305624,2.7755575615628907e-17,-0.981831555382072,0,-0.45207184068043665,0.8876922443376024,0.08737007615122783,0,0.8715642569585902,0.4604372697152884,-0.1684436601637141,0,9.514204596392164,5.026243736936072,-1.8387714192814537,1]
+			},
+			"ViewPanelY": {
+				"cameraMatrix": [2.2204460492502352e-16,-5.551115123125588e-17,0.9999999999999649,0,0.9999999999994633,0.000001000000000028719,-1.6653345369376737e-16,0,-9.999999999732079e-7,0.9999999999994633,1.1102230246251159e-16,0,-0.00009999999999998334,99.99999999994999,6.1232339957357454e-21,1],
+				"clipPlane": {
+					"planeConstant": 0,
+					"visible": true
+				}
+			},
+			"ViewPanelX": {
+				"cameraMatrix": [-2.2204460492503146e-16,1.0000000000000007,1.4210854715202014e-10,0,9.999999999177312e-7,-1.4210854715201973e-10,0.9999999999994977,0,0.9999999999994977,2.7755575615628854e-16,-9.999999999177312e-7,0,99.99999999994995,1.4210854715202004e-14,-0.00009999999999998331,1],
+				"clipPlane": {
+					"planeConstant": 0,
+					"visible": true
+				}
+			},
+			"ViewPanel": {
+				"cameraMatrix": [-0.3377069467309601,0,-0.9412513044504398,0,-0.5046989548717233,0.8440909630002308,0.18107846678369263,0,0.7945017199987942,0.5362000057640272,-0.28505538187800344,0,24.448259818315616,16.49984729488208,-8.771671430457296,1]
+			}
+		},
+		"history": {
+			"undos": [],
+			"redos": []
+		},
+		"simulator": "common"
+	},
+	"figureManager": {
+		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0F0F0F",
+		"name": "Figure Manager",
+		"type": "FigureManager",
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "FigureManager.toJSON"
+		},
+		"figures": [
+			{
+				"name": "DepthProfile",
+				"type": "BoxFigure",
+				"uuid": "0020d452-821c-4302-b98b-27ae6a36a7eb",
+				"visible": true,
+				"geometryData": {
+					"geometryType": "BoxGeometry",
+					"position": [0,0,12],
+					"rotation": [0,0,0],
+					"parameters": {
+						"width": 5,
+						"height": 5,
+						"depth": 22
+					}
+				},
+				"colorHex": 0
+			}]
+	},
+	"zoneManager": {
+		"uuid": "368269D3-6F9B-4241-84A0-5D908D10E196",
+		"name": "Zone Manager",
+		"type": "ZoneManager",
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "ZoneManager.toJSON"
+		},
+		"zones": [
+			{
+				"uuid": "6c3aa0bc-e72b-4aef-9bfd-e201d7c7811c",
+				"name": "DepthZone",
+				"type": "BooleanZone",
+				"visible": true,
+				"materialUuid": "57cce647-b677-4589-b619-1e263c629599",
+				"materialPropertiesOverrides": {},
+				"unionOperations": [[
+						{
+							"mode": "union",
+							"objectUuid": "0020d452-821c-4302-b98b-27ae6a36a7eb"
+						}]],
+				"subscribedObjects": {
+					"0020d452-821c-4302-b98b-27ae6a36a7eb": 1
+				}
+			}],
+		"worldZone": {
+			"uuid": "ede0881d-9832-473e-a691-5b27f1ce382a",
+			"type": "WorldZone",
+			"name": "World Zone",
+			"marginMultiplier": 1.1,
+			"autoCalculate": false,
+			"materialUuid": "d1c06696-aa68-4ba0-95f3-455c33968674",
+			"visible": true,
+			"geometryData": {
+				"geometryType": "BoxGeometry",
+				"position": [0,0,12],
+				"rotation": [0,0,0],
+				"parameters": {
+					"width": 6,
+					"height": 6,
+					"depth": 26
+				}
+			}
+		}
+	},
+	"detectorManager": {
+		"uuid": "9A7D17B8-BAE4-441F-965F-490CAA617EC6",
+		"name": "Detector Manager",
+		"type": "DetectorManager",
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "DetectorManager.toJSON"
+		},
+		"detectors": [
+			{
+				"name": "DepthScore",
+				"type": "Detector",
+				"uuid": "c4b93dac-5f75-44e8-8634-411bd856e902",
+				"visible": true,
+				"colorHex": 65280,
+				"geometryData": {
+					"geometryType": "Mesh",
+					"position": [0,0,12],
+					"rotation": [0,0,0],
+					"parameters": {
+						"width": 5,
+						"height": 5,
+						"depth": 18,
+						"xSegments": 1,
+						"ySegments": 1,
+						"zSegments": 100
+					}
+				}
+			},
+			{
+				"name": "DepthScoreCyl",
+				"type": "Detector",
+				"uuid": "7f65548b-dac1-4e5b-a9db-b9917e8f0e64",
+				"visible": true,
+				"colorHex": 16776960,
+				"geometryData": {
+					"geometryType": "Cyl",
+					"position": [0,0,12],
+					"rotation": [0,0,0],
+					"parameters": {
+						"radius": 2.5,
+						"innerRadius": 0,
+						"depth": 18,
+						"radialSegments": 1,
+						"zSegments": 100
+					}
+				}
+			}]
+	},
+	"specialComponentsManager": {
+		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0F0FFF",
+		"name": "Special Components",
+		"type": "SpecialComponentManager",
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "SpecialComponentManager.toJSON"
+		}
+	},
+	"materialManager": {
+		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0FFFFFFF",
+		"name": "Material Manager",
+		"type": "MaterialManager",
+		"materials": [
+			{
+				"uuid": "57cce647-b677-4589-b619-1e263c629599",
+				"sanitizedName": "water_liquid",
+				"name": "WATER, LIQUID",
+				"icru": 276,
+				"density": 1,
+				"color": 4544504,
+				"transparent": true,
+				"opacity": 0.477
+			},
+			{
+				"uuid": "d1c06696-aa68-4ba0-95f3-455c33968674",
+				"sanitizedName": "vacuum",
+				"name": "VACUUM",
+				"icru": 1000,
+				"density": 0
+			}],
+		"selectedMaterials": {
+			"57cce647-b677-4589-b619-1e263c629599": 17,
+			"d1c06696-aa68-4ba0-95f3-455c33968674": 1
+		},
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "MaterialManager.toJSON"
+		}
+	},
+	"scoringManager": {
+		"name": "Scoring Manager",
+		"type": "ScoringManager",
+		"uuid": "D0F67F59-F311-4F8E-A06F-5A07D618FDE2",
+		"outputs": [
+			{
+				"name": "Dose",
+				"type": "Output",
+				"uuid": "528999ad-c6a9-4d64-b208-276304cd56e6",
+				"quantities": [
+					{
+						"uuid": "3a993943-cfff-4d7e-b733-ed983d152f25",
+						"name": "D_Total",
+						"type": "Quantity",
+						"visible": true,
+						"keyword": "Dose",
+						"modifiers": []
+					},
+					{
+						"uuid": "2401c33f-faed-45e9-9b66-9f477f4fa15f",
+						"name": "Neutron",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "5df137fc-e16e-422c-a51f-de410e523ea4",
+						"keyword": "Dose",
+						"modifiers": []
+					},
+					{
+						"uuid": "947719fb-0706-4006-8b7d-e6456e8e7844",
+						"name": "Proton",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "b00ce09e-6d41-417c-9cdd-1e87e19db63f",
+						"keyword": "Dose",
+						"modifiers": []
+					},
+					{
+						"uuid": "b1267d47-da6d-4b46-bc44-47554e7ef1db",
+						"name": "Pion-",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "84832211-82b6-4518-ae04-fa4015154e62",
+						"keyword": "Dose",
+						"modifiers": []
+					},
+					{
+						"uuid": "0997cb5e-069e-4e8f-9320-cac8f18c8e36",
+						"name": "Pion+",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "74e98e54-f274-489c-b844-b8229c24c511",
+						"keyword": "Dose",
+						"modifiers": []
+					},
+					{
+						"uuid": "a1b2d55d-8cbb-49e3-9a37-47d7a16e36d8",
+						"name": "AntiProton",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "b5f9df57-cfb3-4df7-b2b4-72f2d7695ae6",
+						"keyword": "Dose",
+						"modifiers": []
+					},
+					{
+						"uuid": "cc7b3f40-66ca-45d3-a053-edac724c3a90",
+						"name": "Kaon-",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "7c487d76-8f0a-4b9f-af44-2aea798de313",
+						"keyword": "Dose",
+						"modifiers": []
+					},
+					{
+						"uuid": "df71b8c2-1f35-4101-b531-ec4a0c650cbc",
+						"name": "Kaon+",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "44e34fca-86f3-4043-a5b3-a49ee80f3c17",
+						"keyword": "Dose",
+						"modifiers": []
+					},
+					{
+						"uuid": "c3ea5909-4524-4cfc-a1a0-3391ab7c3b73",
+						"name": "Kaon0",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "63f51337-a3c3-448c-9d05-15cc728f4816",
+						"keyword": "Dose",
+						"modifiers": []
+					},
+					{
+						"uuid": "ffe8f023-0ae6-44b9-b35f-001731bfbe66",
+						"name": "KaonLong",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "691d7b14-42c1-4b4a-bd8b-89fa2bf4d102",
+						"keyword": "Dose",
+						"modifiers": []
+					},
+					{
+						"uuid": "b93681d9-748b-435a-940c-84e4838f0d48",
+						"name": "Muon-",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "93c414c8-5440-4a30-acfc-199db6695082",
+						"keyword": "Dose",
+						"modifiers": []
+					},
+					{
+						"uuid": "b6cfb7bd-21a5-4fb4-9cf8-0ac5fad0d787",
+						"name": "Muon+",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "dcf04285-c799-402c-81cb-3713f358b4ca",
+						"keyword": "Dose",
+						"modifiers": []
+					},
+					{
+						"uuid": "5f87dbf9-b3e2-4a12-a507-aba71fda3ba7",
+						"name": "Deuteron",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "b789f206-6eb8-448b-98b5-87cfb5b731aa",
+						"keyword": "Dose",
+						"modifiers": []
+					},
+					{
+						"uuid": "737806fa-117d-44a7-bf56-8373b8e5cd45",
+						"name": "Triton",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "74862685-186e-4e82-9d28-38c237bbc633",
+						"keyword": "Dose",
+						"modifiers": []
+					},
+					{
+						"uuid": "cda6ee1a-b60a-4c5a-9a84-aae1c82d87ed",
+						"name": "Helium-3",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "ad88df02-d259-4dbc-b747-e8d19e5af809",
+						"keyword": "Dose",
+						"modifiers": []
+					},
+					{
+						"uuid": "895df38e-736f-4426-a710-bcbce7ff8d5f",
+						"name": "Helium-4",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "757b35e0-4357-4a22-b7de-d4049548bf45",
+						"keyword": "Dose",
+						"modifiers": []
+					}],
+				"detectorUuid": "c4b93dac-5f75-44e8-8634-411bd856e902",
+				"trace": false
+			}],
+		"filters": [
+			{
+				"uuid": "5df137fc-e16e-422c-a51f-de410e523ea4",
+				"name": "Neutron",
+				"type": "Filter",
+				"particle": {
+					"id": 1,
+					"name": "Neutron"
+				}
+			},
+			{
+				"uuid": "b00ce09e-6d41-417c-9cdd-1e87e19db63f",
+				"name": "Proton",
+				"type": "Filter",
+				"particle": {
+					"id": 2,
+					"name": "Proton"
+				}
+			},
+			{
+				"uuid": "84832211-82b6-4518-ae04-fa4015154e62",
+				"name": "Pion-",
+				"type": "Filter",
+				"particle": {
+					"id": 3,
+					"name": "Pion π-"
+				}
+			},
+			{
+				"uuid": "74e98e54-f274-489c-b844-b8229c24c511",
+				"name": "Pion+",
+				"type": "Filter",
+				"particle": {
+					"id": 4,
+					"name": "Pion π+"
+				}
+			},
+			{
+				"uuid": "b5f9df57-cfb3-4df7-b2b4-72f2d7695ae6",
+				"name": "AntiProton",
+				"type": "Filter",
+				"particle": {
+					"id": 7,
+					"name": "Anti-proton"
+				}
+			},
+			{
+				"uuid": "7c487d76-8f0a-4b9f-af44-2aea798de313",
+				"name": "Kaon-",
+				"type": "Filter",
+				"particle": {
+					"id": 8,
+					"name": "Kaon κ-"
+				}
+			},
+			{
+				"uuid": "44e34fca-86f3-4043-a5b3-a49ee80f3c17",
+				"name": "Kaon+",
+				"type": "Filter",
+				"particle": {
+					"id": 9,
+					"name": "Kaon κ+"
+				}
+			},
+			{
+				"uuid": "63f51337-a3c3-448c-9d05-15cc728f4816",
+				"name": "Kaon0",
+				"type": "Filter",
+				"particle": {
+					"id": 10,
+					"name": "Kaon κ0"
+				}
+			},
+			{
+				"uuid": "691d7b14-42c1-4b4a-bd8b-89fa2bf4d102",
+				"name": "KaonLong",
+				"type": "Filter",
+				"particle": {
+					"id": 11,
+					"name": "Kaon κ~"
+				}
+			},
+			{
+				"uuid": "93c414c8-5440-4a30-acfc-199db6695082",
+				"name": "Muon-",
+				"type": "Filter",
+				"particle": {
+					"id": 15,
+					"name": "Muon µ-"
+				}
+			},
+			{
+				"uuid": "dcf04285-c799-402c-81cb-3713f358b4ca",
+				"name": "Muon+",
+				"type": "Filter",
+				"particle": {
+					"id": 16,
+					"name": "Muon µ+"
+				}
+			},
+			{
+				"uuid": "b789f206-6eb8-448b-98b5-87cfb5b731aa",
+				"name": "Deuteron",
+				"type": "Filter",
+				"particle": {
+					"id": 21,
+					"name": "Deuteron"
+				}
+			},
+			{
+				"uuid": "74862685-186e-4e82-9d28-38c237bbc633",
+				"name": "Triton",
+				"type": "Filter",
+				"particle": {
+					"id": 22,
+					"name": "Triton"
+				}
+			},
+			{
+				"uuid": "ad88df02-d259-4dbc-b747-e8d19e5af809",
+				"name": "Helium-3",
+				"type": "Filter",
+				"particle": {
+					"id": 23,
+					"name": "Helium-3"
+				}
+			},
+			{
+				"uuid": "757b35e0-4357-4a22-b7de-d4049548bf45",
+				"name": "Helium-4",
+				"type": "Filter",
+				"particle": {
+					"id": 24,
+					"name": "Helium-4"
+				}
+			}],
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "ScoringManager.toJSON"
+		}
+	},
+	"beam": {
+		"name": "Beam",
+		"type": "Beam",
+		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0FFFFF",
+		"position": [0,0,0],
+		"direction": [0,0,1],
+		"energy": 270,
+		"energySpread": 1.5,
+		"energyLowCutoff": 0,
+		"energyHighCutoff": 1000,
+		"sigma": {
+			"type": "Gaussian",
+			"x": 1,
+			"y": 1
+		},
+		"sad": {
+			"type": "none",
+			"x": 0,
+			"y": 0
+		},
+		"divergence": {
+			"x": 0,
+			"y": 0,
+			"distanceToFocal": 0
+		},
+		"particle": {
+			"id": 25,
+			"name": "Heavy ions",
+			"a": 12,
+			"z": 6
+		},
+		"colorHex": 16776960,
+		"numberOfParticles": 10000,
+		"sourceFile": {
+			"value": "",
+			"name": ""
+		},
+		"sourceType": "simple"
+	},
+	"physic": {
+		"energyLoss": 0.03,
+		"enableNuclearReactions": true,
+		"energyModelStraggling": "Vavilov",
+		"multipleScattering": "Moliere",
+		"stoppingPowerTable": "ICRU91"
+	},
+	"hash": "c145ac290be0fb940329ca38c476004339f9dd02"
+}
