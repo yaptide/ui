@@ -2,7 +2,7 @@ import { Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useEffect } from 'react';
 import { Object3D } from 'three';
 
-import { PARTICLE_TYPES } from '../../../../../types/Particle';
+import { PARTICLE_TYPES, FLUKA_PARTICLE_TYPES } from '../../../../../types/Particle';
 import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
@@ -16,7 +16,7 @@ import {
 	SIGMA_TYPE,
 	SigmaType
 } from '../../../../Simulation/Physics/Beam';
-import { ParticleSelect } from '../../../Select/ParticleSelect';
+import { ParticleSelect, ParticleType } from '../../../Select/ParticleSelect';
 import {
 	NumberPropertyField,
 	PropertyField,
@@ -149,6 +149,12 @@ function BeamSadField(props: { beam: Beam; onChange: (value: Beam['sad']) => voi
 function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam }) {
 	const { object, editor } = props;
 
+	let supportedParticles: ParticleType[] = [...PARTICLE_TYPES];
+	if (editor.contextManager.currentSimulator === SimulatorType.FLUKA) {
+		supportedParticles.push(...FLUKA_PARTICLE_TYPES);
+	}
+
+
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object, true);
 
 	const setValueCommand = (value: any, key: string) => {
@@ -254,14 +260,14 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 			/>
 			<PropertyField label='Particle type'>
 				<ParticleSelect
-					particles={PARTICLE_TYPES}
+					particles={supportedParticles}
 					value={watchedObject.particleData.id}
 					onChange={(_, v) =>
 						setValueCommand(
 							{
 								...watchedObject.particleData,
 								id: v,
-								name: PARTICLE_TYPES.find(p => p.id === v)?.name
+								name: supportedParticles.find(p => p.id === v)?.name
 							},
 							'particleData'
 						)
