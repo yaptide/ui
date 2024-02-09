@@ -127,7 +127,7 @@ jobs:
 
       - name: webfactory/ssh-agent for dev 🖥️
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: webfactory/ssh-agent@v0.8.0
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           # Private SSH key to register in the SSH agent
           ssh-private-key: ${{ secrets.WEBDEV }}
@@ -140,7 +140,7 @@ jobs:
 
       - name: webfactory/ssh-agent for production 🖥️
         if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
-        uses: webfactory/ssh-agent@v0.8.0
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           # Private SSH key to register in the SSH agent
           ssh-private-key: ${{ secrets.WEBPROD }}
