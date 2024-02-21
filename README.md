@@ -48,15 +48,17 @@ The page will reload if you make edits.
 
 Currently, app can be configured by setting the following environment variables in .env file in home directory of the project.
 
+#### Setting communication with backend
 
-
- `REACT_APP_BACKEND_URL` - URL of the API server (default: `http://localhost:5000`). Since the backend works on different port it needs to be changed e.g.
+ `REACT_APP_BACKEND_URL` - URL of the API server. e.g.
  ```
  REACT_APP_BACKEND_URL = https://localhost:8443
  ```
- The [backend](https://github.com/yaptide/yaptide) project currently works on port 8443
+The Flask backend is listening on port **6000** on a host called yaptide_flask.
+Additionally, the main proxy server listens on port **5000** for plain HTTP and **8443** for HTTPS. Relevant configuration can be found in this [config file](https://github.com/yaptide/yaptide/blob/master/nginx.conf) of backend 
 
-Other configuration options are:
+
+#### Other configuration options are:
 - `REACT_APP_TARGET` - if set to `demo`, app will not require authentication and will be preloaded with demo results (this version is available at <https://yaptide.github.io/web_dev/>)
 - `REACT_APP_ALT_AUTH` - if set to `plg`, app will use plgrid authentication
 - `REACT_APP_DEPLOYMENT` - if set to `dev`, configuration wil be editable from the browser console. For example, you can change the backend URL by typing `window.BACKEND_URL="http://mynew.url"` in the browser console.
