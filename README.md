@@ -49,6 +49,7 @@ The page will reload if you make edits.
 Currently, app can be configured by setting the following environment variables in .env file in the main project directory (same as `package.json` is located).
 
 #### Setting communication with backend
+UI can be deployed on different machine (with different IP) than a backend. During build phase the UI can be configured to talk to given backend instance via REACT_APP_BACKEND_URL
 
  `REACT_APP_BACKEND_URL` - URL of the API server. e.g.
  ```
