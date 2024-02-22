@@ -54,7 +54,7 @@ Currently, app can be configured by setting the following environment variables 
  ```
  REACT_APP_BACKEND_URL = https://localhost:8443
  ```
-The Flask backend is listening on port **6000** on a host called yaptide_flask.
+If the backend is deployed as a set of docker containers, then Flask is listening on port **6000** for HTTP requests (HTTPS is supported only via NGINX proxy) on a host called `yaptide_flask`. 
 Additionally, the main proxy server listens on port **5000** for plain HTTP and **8443** for HTTPS. Relevant configuration can be found in this [config file](https://github.com/yaptide/yaptide/blob/master/nginx.conf) of backend 
 
 
