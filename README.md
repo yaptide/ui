@@ -46,7 +46,7 @@ The page will reload if you make edits.
 
 ### App configuration
 
-Currently, app can be configured by setting the following environment variables in .env file in home directory of the project.
+Currently, app can be configured by setting the following environment variables in .env file in the main project directory (same as `package.json` is located).
 
 #### Setting communication with backend
 
