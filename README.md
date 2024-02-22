@@ -63,8 +63,6 @@ Additionally, the main NGINX proxy server listens on port **5000** for plain HTT
 - `REACT_APP_ALT_AUTH` - if set to `plg`, app will use plgrid authentication
 - `REACT_APP_DEPLOYMENT` - if set to `dev`, configuration wil be editable from the browser console. For example, you can change the backend URL by typing `window.BACKEND_URL="http://mynew.url"` in the browser console.
 
-
-
 ### Useful commands
 
 In order to easy configure the app, `cross-env` package for setting env is used with custom npm scripts.
