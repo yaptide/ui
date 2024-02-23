@@ -49,12 +49,8 @@ The page will reload if you make edits.
 Currently, app can be configured by setting the following environment variables in .env file in the main project directory (same as `package.json` is located).
 
 #### Setting communication with backend
-UI can be deployed on different machine (with different IP) than a backend. During build phase the UI can be configured to talk to given backend instance via REACT_APP_BACKEND_URL
+UI can be deployed on different machine (with different IP) than a backend. During build phase the UI can be configured to talk to given backend instance via `REACT_APP_BACKEND_URL` environmental variable. To adjust it put following line in the `.env` file:
 
- `REACT_APP_BACKEND_URL` - URL of the API server. e.g.
- ```
- REACT_APP_BACKEND_URL = https://localhost:8443
- ```
 If the backend is deployed as a set of docker containers, then Flask is listening on port **6000** for HTTP requests (HTTPS is supported only via NGINX proxy) on a host called `yaptide_flask`. 
 Additionally, the main NGINX proxy server listens on port **5000** for plain HTTP and **8443** for HTTPS. Relevant configuration can be found in this [config file](https://github.com/yaptide/yaptide/blob/master/nginx.conf) of backend 
 
