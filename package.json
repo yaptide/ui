@@ -9,7 +9,7 @@
 		"@emotion/styled": "^11.11.0",
 		"@minoru/react-dnd-treeview": "^3.4.4",
 		"@mui/icons-material": "^5.15.6",
-		"@mui/lab": "^5.0.0-alpha.165",
+		"@mui/lab": "^5.0.0-alpha.166",
 		"@mui/material": "^5.15.9",
 		"@mui/x-data-grid": "^6.19.3",
 		"@testing-library/jest-dom": "^6.4.2",
