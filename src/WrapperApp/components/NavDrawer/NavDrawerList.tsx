@@ -7,6 +7,7 @@ import {
 	Box,
 	Divider,
 	IconButton,
+	List,
 	ListItem,
 	ListItemButton,
 	ListItemIcon,
@@ -110,6 +111,7 @@ export function NavDrawerList({
 			}}>
 			{!demoMode ? (
 				<Box>
+					<List>
 					<NavDrawerElement
 						menuOption={{
 							label: username,
@@ -154,29 +156,34 @@ export function NavDrawerList({
 							minHeight: !demoMode ? 96 : 64
 						}}
 					/>
+					</List>
 					<Divider />
 				</Box>
 			) : (
 				<Box />
 			)}
+			
 			<Box>
-				{menuOptions.map(menuOption => (
-					<NavDrawerElement
-						key={menuOption.value}
-						menuOption={menuOption}
-						open={layout === 'open'}
-						handleChange={handleChange}
-						selected={menuOption.value === tabsValue}
-					/>
-				))}
+				<List>
+					{menuOptions.map(menuOption => (
+						<NavDrawerElement
+							key={menuOption.value}
+							menuOption={menuOption}
+							open={layout === 'open'}
+							handleChange={handleChange}
+							selected={menuOption.value === tabsValue}
+						/>
+					))}
+				</List>
 			</Box>
-
+			
 			<Box />
 			<Box
 				sx={{
 					marginTop: 'auto'
 				}}>
 				<Divider />
+				<List>
 				<NavDrawerElement
 					textSx={{
 						'& .MuiListItemText-primary': {
@@ -216,6 +223,7 @@ export function NavDrawerList({
 						type: 'link'
 					}}
 				/>
+				</List>
 			</Box>
 		</Box>
 	);
@@ -253,45 +261,45 @@ function NavDrawerElement({
 		<Tooltip
 			title={info ? <Typography>{info}</Typography> : undefined}
 			placement='right'>
-			<ListItem
-				secondaryAction={secondaryAction}
-				disablePadding
-				sx={{ display: 'block' }}>
-				{buttonProps.type === 'label' ? (
-					<Box
-						aria-label={label}
-						sx={{
-							display: 'flex',
-							minHeight: 64,
-							alignItems: 'center',
-							justifyContent: open ? 'initial' : 'center',
-							px: 2.5,
-							...sx
-						}}>
-						{listItemContent}
-					</Box>
-				) : (
-					<ListItemButton
-						aria-label={label}
-						sx={{
-							minHeight: 64,
-							justifyContent: open ? 'initial' : 'center',
-							px: 2.5,
-							...sx
-						}}
-						disabled={disabled}
-						{...(buttonProps.type === 'link'
-							? { component: 'a', href: buttonProps.href, target: '_blank' }
-							: {})}
-						selected={selected}
-						aria-selected={selected}
-						onClick={(event: SyntheticEvent<Element, Event>) =>
-							handleChange(event, value)
-						}>
-						{listItemContent}
-					</ListItemButton>
-				)}
-			</ListItem>
+				<ListItem
+					secondaryAction={secondaryAction}
+					disablePadding
+					sx={{ display: 'block' }}>
+					{buttonProps.type === 'label' ? (
+						<Box
+							aria-label={label}
+							sx={{
+								display: 'flex',
+								minHeight: 64,
+								alignItems: 'center',
+								justifyContent: open ? 'initial' : 'center',
+								px: 2.5,
+								...sx
+							}}>
+							{listItemContent}
+						</Box>
+					) : (
+						<ListItemButton
+							aria-label={label}
+							sx={{
+								minHeight: 64,
+								justifyContent: open ? 'initial' : 'center',
+								px: 2.5,
+								...sx
+							}}
+							disabled={disabled}
+							{...(buttonProps.type === 'link'
+								? { component: 'a', href: buttonProps.href, target: '_blank' }
+								: {})}
+							selected={selected}
+							aria-selected={selected}
+							onClick={(event: SyntheticEvent<Element, Event>) =>
+								handleChange(event, value)
+							}>
+							{listItemContent}
+						</ListItemButton>
+					)}
+				</ListItem>
 		</Tooltip>
 	);
 }
