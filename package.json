@@ -5,7 +5,7 @@
 	"homepage": ".",
 	"dependencies": {
 		"@emotion/css": "^11.11.2",
-		"@emotion/react": "^11.11.3",
+		"@emotion/react": "^11.11.4",
 		"@emotion/styled": "^11.11.0",
 		"@minoru/react-dnd-treeview": "^3.4.4",
 		"@mui/icons-material": "^5.15.6",
