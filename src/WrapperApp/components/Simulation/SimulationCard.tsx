@@ -22,7 +22,7 @@ import {
 	Tooltip
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
-import format from 'date-fns/format';
+import { formatDate } from 'date-fns/format';
 import { useSnackbar } from 'notistack';
 import { Fragment, ReactNode, useMemo, useState } from 'react';
 
@@ -180,7 +180,7 @@ export default function SimulationCard({
 	const endDate = endTime ? new Date(endTime) : new Date();
 	const duration = endDate ? endDate.valueOf() - startDate.valueOf() : 0;
 
-	const formatDateTime = (date: Date) => format(date, 'yyyy-MM-dd HH:mm:ss');
+	const formatDateTime = (date: Date) => formatDate(date, 'yyyy-MM-dd HH:mm:ss');
 
 	const displayDuration = endTime || currentJobStatusData[StatusState.RUNNING](simulationStatus);
 
