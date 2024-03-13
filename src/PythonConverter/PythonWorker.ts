@@ -42,7 +42,7 @@ class PythonWorkerBase implements PythonWorker {
 
 		console.log(pyodide.runPython('import sys\nsys.version'));
 
-		await pyodide.loadPackage(['scipy', 'micropip']);
+		await pyodide.loadPackage(['micropip']);
 
 		const converterFolder = process.env.PUBLIC_URL + '/libs/converter/dist/';
 		const jsonUrl = converterFolder + 'yaptide_converter.json';
