@@ -3,7 +3,7 @@ import { SyntheticEvent, useEffect, useState } from 'react';
 
 import { useConfig } from '../config/ConfigService';
 import { useAuth } from '../services/AuthService';
-import { JsRootService } from '../services/JsRootService';
+// import { JsRootService } from '../services/JsRootService';
 import { useStore } from '../services/StoreService';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
 import { SimulatorType } from '../types/RequestTypes';
@@ -102,9 +102,7 @@ function WrapperApp() {
 				value={tabsValue}
 				index={'results'}
 				persistent>
-				<JsRootService>
-					<ResultsPanel />
-				</JsRootService>
+				<ResultsPanel />
 			</TabPanel>
 
 			<TabPanel

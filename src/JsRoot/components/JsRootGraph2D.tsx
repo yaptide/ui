@@ -1,3 +1,4 @@
+import { BIT,createHistogram } from 'jsroot';
 import { useEffect } from 'react';
 
 import { Page2D } from '../GraphData';
@@ -16,7 +17,7 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 			const nxpoints = x.length;
 			const nypoints = y.length;
 
-			const histogram = JSROOT.createHistogram('TH2F', nxpoints, nypoints);
+			const histogram = createHistogram('TH2F', nxpoints, nypoints);
 
 			histogram.fXaxis.fXmin = x[0];
 			histogram.fXaxis.fXmax = x[nxpoints - 1];
@@ -28,8 +29,8 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 
 			// centering axes labels using method suggested here:
 			// https://github.com/root-project/jsroot/issues/225#issuecomment-998748035
-			histogram.fXaxis.InvertBit(JSROOT.BIT(12));
-			histogram.fYaxis.InvertBit(JSROOT.BIT(12));
+			histogram.fXaxis.InvertBit(BIT(12));
+			histogram.fYaxis.InvertBit(BIT(12));
 
 			// moving axes labels a bit away from axis object, as described here:
 			// https://github.com/root-project/jsroot/issues/239
