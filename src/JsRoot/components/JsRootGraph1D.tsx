@@ -1,4 +1,4 @@
-import { BIT,createHistogram, createTGraph } from 'jsroot';
+import { BIT, createHistogram, createTGraph } from 'jsroot';
 import { useEffect } from 'react';
 
 import { Page1D } from '../GraphData';
@@ -9,7 +9,7 @@ export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 	const { update, ref } = useJsRootCanvas('AL;gridxy;tickxy');
 
 	useEffect(() => {
-		update(JSROOT => {
+		update(() => {
 			const npoints = page.data.values.length;
 			const x = page.axisDim1.values;
 			const y = page.data.values;

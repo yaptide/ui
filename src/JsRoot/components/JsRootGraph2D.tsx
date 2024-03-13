@@ -1,4 +1,4 @@
-import { BIT,createHistogram } from 'jsroot';
+import { BIT, createHistogram } from 'jsroot';
 import { useEffect } from 'react';
 
 import { Page2D } from '../GraphData';
@@ -9,7 +9,7 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 	const { update, ref } = useJsRootCanvas('colz;gridxy;nostat;tickxy');
 
 	useEffect(() => {
-		update(JSROOT => {
+		update(() => {
 			const x = page.axisDim1.values;
 			const y = page.axisDim2.values;
 			const z = page.data.values;

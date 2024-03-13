@@ -50,13 +50,13 @@ export const useJsRootCanvas = (redrawParam: string) => {
 	}, [debouncedResizeHandler, resizeHeight, resizeWidth, visible]);
 
 	const update = useCallback(
-		(updateObject: (root: typeof Object) => Object) => {
+		(updateObject: () => Object) => {
 			if (!isVisible) return;
 
 			setDrawn(old => {
 				if (old) return true;
 
-				const obj = updateObject(Object);
+				const obj = updateObject();
 
 				if (!obj) return old;
 				setObj(obj);

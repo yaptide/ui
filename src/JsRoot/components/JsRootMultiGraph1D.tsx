@@ -9,7 +9,7 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 	const { update, ref } = useJsRootCanvas('AL;gridxy;tickxy');
 
 	useEffect(() => {
-		update(JSROOT => {
+		update(() => {
 			function CreateLegendEntry(obj: any, lbl: any) {
 				let entry = create('TLegendEntry');
 				entry.fObject = obj;
