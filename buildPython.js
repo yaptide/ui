@@ -50,7 +50,6 @@ const saveFileName = (destFolder, fileName) => {
 	);
 	const installedFileName = path.basename(installedPath ?? '');
 
-
 	// skip installation if file exists
 	if (installedPath && SKIP === true) {
 		//file exists
@@ -91,13 +90,13 @@ const saveFileName = (destFolder, fileName) => {
 		});
 
 		measureTime('Installing build module for python', () => {
-			executeCommand(`${venvCommandPrefix} pip install build wheel setuptools ${venvCommandSuffix}`);
+			executeCommand(
+				`${venvCommandPrefix} pip install "poetry ~= 1.8.2" ${venvCommandSuffix}`
+			);
 		});
 
 		measureTime('Building yaptide_converter', () => {
-			executeCommand(
-				`${venvCommandPrefix} python -m build --wheel --no-isolation ${venvCommandSuffix}`
-			);
+			executeCommand(`${venvCommandPrefix} poetry build --no-ansi ${venvCommandSuffix}`);
 		});
 
 		console.log('Checking destination folder');
