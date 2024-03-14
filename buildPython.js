@@ -96,7 +96,9 @@ const saveFileName = (destFolder, fileName) => {
 		});
 
 		measureTime('Building yaptide_converter', () => {
-			executeCommand(`${venvCommandPrefix} poetry build --no-ansi ${venvCommandSuffix}`);
+			executeCommand(
+				`${venvCommandPrefix} poetry build --format wheel --no-ansi ${venvCommandSuffix}`
+			);
 		});
 
 		console.log('Checking destination folder');
