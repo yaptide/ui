@@ -4,8 +4,3 @@
 	branch = master
 	shallow = true
 
-[submodule "public/libs/jsroot"]
-	path = public/libs/jsroot
-	url = https://github.com/root-project/jsroot
-	branch = 6.3
-	shallow = true
