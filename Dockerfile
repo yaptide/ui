@@ -20,11 +20,11 @@ RUN openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 \
 # Stage 2: Build the wheel package for the converter part of the UI.
 FROM python:3.11 AS wheel-builder
 
-RUN pip install --no-cache-dir build wheel setuptools
-
 COPY src/libs/converter/ .
 
-RUN python -m build --wheel --no-isolation
+# Install Poetry and build the wheel package.
+RUN pip install --no-cache-dir pip install "poetry ~= 1.8.2" \
+    && poetry build --format wheel --no-ansi
 
 # Stage 3: Build the application.
 FROM node:18 AS build
