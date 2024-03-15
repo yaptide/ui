@@ -28,11 +28,19 @@ Start by downloading submodules:
 git submodule update --init --recursive
 ```
 
+Create local file .env to be able to communicate with backend and paste there:
+
+```bash
+REACT_APP_BACKEND_URL = https://localhost:8443
+```
+
 Before starting the local version of the web interface, you need to install the necessary dependencies by typing the command:
 
 ```bash
 npm install
 ```
+
+In case of problem "CMD.EXE was started with the above path as the current directory. UNC paths are not supported." I recommand to set up project from begining. Clone it somewhere where Windows has acces (in my case mnt/c/users/Mateusz/yaptide).
 
 To run the app in the development mode, type:
 
