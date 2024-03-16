@@ -22,6 +22,7 @@ import {
 	useRef,
 	useState
 } from 'react';
+import * as THREE from 'three';
 
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
 import { isOperation, OperationDataList } from '../../../types/Operation';
