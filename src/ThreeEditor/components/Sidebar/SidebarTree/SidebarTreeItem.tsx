@@ -26,7 +26,7 @@ import { isSimulationElement, SimulationElement } from '../../../Simulation/Base
 import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
 
 export type TreeItem = NodeModel<{
-	object: Object3D<THREE.Event> | SimulationElement;
+	object: Object3D | SimulationElement;
 	treeId: string;
 	index?: number;
 }>;
