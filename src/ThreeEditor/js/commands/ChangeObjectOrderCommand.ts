@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 import { Command, CommandJSON } from '../Command';
 import { YaptideEditor } from '../YaptideEditor.js';
 
