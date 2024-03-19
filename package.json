@@ -206,7 +206,7 @@
 		"@types/react": "^18.0.9",
 		"@types/react-async-script": "^1.2.5",
 		"@types/react-copy-to-clipboard": "^5.0.7",
-		"@types/selenium-webdriver": "^4.1.21",
+		"@types/selenium-webdriver": "^4.1.22",
 		"@types/three": "^0.162.0",
 		"cross-env": "^7.0.3",
 		"eslint-plugin-simple-import-sort": "^12.0.0",
@@ -216,7 +216,7 @@
 		"lint-staged": "^15.2.2",
 		"prettier": "3.2.5",
 		"react-app-rewired": "^2.2.1",
-		"selenium-webdriver": "^4.16.0"
+		"selenium-webdriver": "^4.18.1"
 	},
 	"lint-staged": {
 		"*.{ts,tsx,js,jsx}": [
