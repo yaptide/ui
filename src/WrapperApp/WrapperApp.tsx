@@ -52,15 +52,8 @@ function WrapperApp() {
 	}, [isAuthorized, tabsValue]);
 
 	useEffect(() => {
-		const tabTitles = {
-			login: 'Login',
-			editor: 'Editor',
-			inputFiles: 'Input files',
-			simulations: 'Simulations',
-			results: 'Results',
-			about: 'About'
-		};
-		document.title = `${tabTitles[tabsValue as keyof typeof tabTitles] || 'Yaptide'}`;
+		const result = tabsValue.replace(/([A-Z])/g, ' $1');
+		document.title = result.charAt(0).toUpperCase() + result.slice(1);
 	}, [tabsValue]);
 
 	return (
