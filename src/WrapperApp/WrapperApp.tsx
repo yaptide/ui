@@ -53,7 +53,7 @@ function WrapperApp() {
 	}, [isAuthorized, tabsValue]);
 
 	useEffect(() => {
-		document.title = camelCaseToNormalText(tabsValue);
+		document.title = camelCaseToNormalText(tabsValue); //e.g. we've got 'inputFiles' as a value of tabsValue and this function converts this value to 'Inputs File'
 	}, [tabsValue]);
 
 	return (
