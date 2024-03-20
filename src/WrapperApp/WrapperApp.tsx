@@ -52,7 +52,7 @@ function WrapperApp() {
 	}, [isAuthorized, tabsValue]);
 
 	useEffect(() => {
-		const result = tabsValue.replace(/([A-Z])/g, ' $1');
+		const result = tabsValue.replace(/([A-Z])/g, ' $1'); //the code below will change string e.g inputFiles to input Files
 		document.title = result.charAt(0).toUpperCase() + result.slice(1);
 	}, [tabsValue]);
 
