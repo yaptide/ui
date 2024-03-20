@@ -15,6 +15,7 @@ import LoginPanel from './components/Panels/LoginPanel';
 import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
+import {camelCaseToNormalText} from '../util/camelCaseToSentenceCase'
 
 function WrapperApp() {
 	const { demoMode } = useConfig();
@@ -52,8 +53,7 @@ function WrapperApp() {
 	}, [isAuthorized, tabsValue]);
 
 	useEffect(() => {
-		const result = tabsValue.replace(/([A-Z])/g, ' $1'); //the code below will change string e.g inputFiles to input Files
-		document.title = result.charAt(0).toUpperCase() + result.slice(1);
+		document.title = camelCaseToNormalText(tabsValue);
 	}, [tabsValue]);
 
 	return (
