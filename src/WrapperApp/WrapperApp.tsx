@@ -14,6 +14,7 @@ import LoginPanel from './components/Panels/LoginPanel';
 import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
+import {camelCaseToNormalText} from '../util/camelCaseToSentenceCase'
 
 function WrapperApp() {
 	const { demoMode } = useConfig();
@@ -49,6 +50,10 @@ function WrapperApp() {
 	useEffect(() => {
 		if (isAuthorized && tabsValue === 'login') setTabsValue('editor');
 	}, [isAuthorized, tabsValue]);
+
+	useEffect(() => {
+		document.title = camelCaseToNormalText(tabsValue); //e.g. we've got 'inputFiles' as a value of tabsValue and this function converts this value to 'Inputs File'
+	}, [tabsValue]);
 
 	return (
 		<Box
