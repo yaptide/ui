@@ -20,7 +20,7 @@ jobs:
           org-name: ${{ github.repository_owner }}
           keep-at-least: 0
           untagged-only: true
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.SNOK_RETENTION_GITHUB_TOKEN }}
       - name: Cleanup web latest but old PR packages
         uses: snok/container-retention-policy@v2
         with:
@@ -32,7 +32,7 @@ jobs:
           keep-at-least: 0
           filter-include-untagged: false
           filter-tags: pr-*
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.SNOK_RETENTION_GITHUB_TOKEN }}
       - name: Cleanup web outdated master packages
         uses: snok/container-retention-policy@v2
         with:
@@ -45,4 +45,4 @@ jobs:
           filter-include-untagged: false
           filter-tags: master-*
           skip-tags: master # Don't remove the newest master image
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.SNOK_RETENTION_GITHUB_TOKEN }}

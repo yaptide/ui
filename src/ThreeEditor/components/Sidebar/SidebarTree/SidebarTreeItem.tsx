@@ -8,6 +8,7 @@ import { Stack } from '@mui/system';
 import { bindContextMenu, bindMenu, usePopupState } from 'material-ui-popup-state/hooks';
 import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { Object3D } from 'three';
+import * as THREE from 'three';
 
 import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
 import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
@@ -25,7 +26,7 @@ import { isSimulationElement, SimulationElement } from '../../../Simulation/Base
 import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
 
 export type TreeItem = NodeModel<{
-	object: Object3D<THREE.Event> | SimulationElement;
+	object: Object3D | SimulationElement;
 	treeId: string;
 	index?: number;
 }>;
