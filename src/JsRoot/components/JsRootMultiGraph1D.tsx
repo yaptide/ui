@@ -1,3 +1,4 @@
+import { BIT, create, createHistogram, createTGraph, createTMultiGraph } from 'jsroot';
 import React, { useEffect } from 'react';
 
 import { GroupedPage1D } from '../GraphData';
@@ -5,12 +6,12 @@ import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
 
 export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string }) {
 	const { page } = props;
-	const { ref, update } = useJsRootCanvas('AL;gridxy;tickxy');
+	const { update, ref } = useJsRootCanvas('AL;gridxy;tickxy');
 
 	useEffect(() => {
-		update(JSROOT => {
+		update(() => {
 			function CreateLegendEntry(obj: any, lbl: any) {
-				let entry = JSROOT.create('TLegendEntry');
+				let entry = create('TLegendEntry');
 				entry.fObject = obj;
 				entry.fLabel = lbl;
 				entry.fOption = 'l';
@@ -30,16 +31,16 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 				yLabels.add(page.data.name);
 				xLabels.add(page.axisDim1.name);
 
-				const graph = JSROOT.createTGraph(npoints, x, y);
+				const graph = createTGraph(npoints, x, y);
 				graph.fName = page.name;
 				graph.fLineColor = index + 2;
 
 				return graph;
 			});
 
-			const multiGraph = JSROOT.createTMultiGraph(...graphs);
+			const multiGraph = createTMultiGraph(...graphs);
 
-			const histogram = JSROOT.createHistogram(
+			const histogram = createHistogram(
 				'TH1F',
 				Math.max(...page.pages.map(p => p.data.values.length))
 			);
@@ -62,8 +63,8 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 
 			// centering axes labels using method suggested here:
 			// https://github.com/root-project/jsroot/issues/225#issuecomment-998748035
-			histogram.fXaxis.InvertBit(JSROOT.BIT(12));
-			histogram.fYaxis.InvertBit(JSROOT.BIT(12));
+			histogram.fXaxis.InvertBit(BIT(12));
+			histogram.fYaxis.InvertBit(BIT(12));
 
 			// moving axes labels a bit away from axis object, as described here:
 			// https://github.com/root-project/jsroot/issues/239
@@ -74,8 +75,8 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 
 			const legHeight = Math.min(graphs.length * 0.05, 0.25);
 
-			const leg = JSROOT.create('TLegend');
-			JSROOT.extend(leg, {
+			const leg = create('TLegend');
+			Object.assign(leg, {
 				fX1NDC: 0.1,
 				fY1NDC: 0.5,
 				fX2NDC: 0.5,

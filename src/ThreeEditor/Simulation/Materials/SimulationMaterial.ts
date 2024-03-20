@@ -39,6 +39,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 	renderProps: RenderProps;
 	defaultProps: RenderProps;
 	readonly isSimulationMaterial: true = true;
+	readonly isMeshBasicMaterial: true = true;
 	private overrideHandler = {
 		set: (target: SimulationMaterial, key: keyof RenderProps, value: unknown) => {
 			const result = Reflect.set(target, key, value);

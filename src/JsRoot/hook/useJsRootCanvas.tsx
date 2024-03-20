@@ -1,13 +1,11 @@
+import { redraw, resize } from 'jsroot';
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useVisible } from 'react-hooks-visible';
 import { mergeRefs } from 'react-merge-refs';
 import { throttle } from 'throttle-debounce';
 import { useElementSize } from 'usehooks-ts';
 
-import { useJSROOT } from '../../services/JsRootService';
-
 export const useJsRootCanvas = (redrawParam: string) => {
-	const { JSROOT } = useJSROOT();
 	const [resizeRef, { width: resizeWidth, height: resizeHeight }] = useElementSize();
 	// Custom react hook, visible contains the percentage of the containterEl
 	// that is currently visible on screen
@@ -32,14 +30,14 @@ export const useJsRootCanvas = (redrawParam: string) => {
 
 	useEffect(() => {
 		if (obj && !drawn) {
-			JSROOT.redraw(containerEl.current, obj, redrawParam);
+			redraw(containerEl.current, obj, redrawParam);
 			setDrawn(true);
 		}
-	}, [JSROOT, containerEl, drawn, obj, redrawParam]);
+	}, [containerEl, drawn, obj, redrawParam]);
 
 	const resizeHandler = useCallback(() => {
-		if (visibleRef.current) JSROOT.resize(containerEl.current);
-	}, [JSROOT, containerEl]);
+		if (visibleRef.current) resize(containerEl.current);
+	}, [containerEl]);
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const debouncedResizeHandler = useCallback(
@@ -52,13 +50,13 @@ export const useJsRootCanvas = (redrawParam: string) => {
 	}, [debouncedResizeHandler, resizeHeight, resizeWidth, visible]);
 
 	const update = useCallback(
-		(updateObject: (root: typeof JSROOT) => Object) => {
+		(updateObject: () => Object) => {
 			if (!isVisible) return;
 
 			setDrawn(old => {
 				if (old) return true;
 
-				const obj = updateObject(JSROOT);
+				const obj = updateObject();
 
 				if (!obj) return old;
 				setObj(obj);
@@ -66,7 +64,7 @@ export const useJsRootCanvas = (redrawParam: string) => {
 				return false;
 			});
 		},
-		[isVisible, JSROOT]
+		[isVisible]
 	);
 
 	const setObjToDraw = useCallback(
@@ -80,7 +78,6 @@ export const useJsRootCanvas = (redrawParam: string) => {
 	const ref = useMemo(() => mergeRefs([resizeRef, containerEl]), [resizeRef, containerEl]);
 
 	return {
-		JSROOT,
 		isVisible,
 		setObjToDraw,
 		drawn,

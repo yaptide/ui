@@ -1,4 +1,5 @@
 import { Signal } from 'signals';
+import * as THREE from 'three';
 
 import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
