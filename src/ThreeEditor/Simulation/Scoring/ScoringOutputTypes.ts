@@ -119,6 +119,17 @@ export const DETECTOR_KEYWORD_OPTIONS = Object.keys(DETECTOR_KEYWORD_DESCRIPTION
 	{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
 );
 
+export const FLUKA_DETECTOR_KEYWORD_OPTIONS = Object.keys(DETECTOR_KEYWORD_DESCRIPTION).reduce(
+	(acc, key) => {
+		if (key === 'Dose' || key === 'Fluence') {
+			return { ...acc, [key]: key };
+		}
+
+		return acc;
+	},
+	{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
+);
+
 export type MEDIUM = keyof typeof MEDIUM_KEYWORDS;
 
 export const MEDIUM_KEYWORD_OPTIONS = Object.keys(MEDIUM_KEYWORDS).reduce(

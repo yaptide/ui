@@ -41,8 +41,9 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 		switch (props.simulator) {
 			case SimulatorType.SHIELDHIT:
 				return !(name in _defaultShInputFiles);
-			case SimulatorType.TOPAS:
-				return !(name in _defaultTopasInputFiles);
+			// Topas is not supported in current version of yaptide
+			// case SimulatorType.TOPAS:
+			// 	return !(name in _defaultTopasInputFiles);
 			case SimulatorType.FLUKA:
 				return !(name in _defaultFlukaInputFiles);
 			default:

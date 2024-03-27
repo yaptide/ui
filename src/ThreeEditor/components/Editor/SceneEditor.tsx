@@ -6,6 +6,7 @@ import { useEffect, useRef } from 'react';
 import THREE from 'three';
 
 import { useStore } from '../../../services/StoreService';
+import { SimulatorType } from '../../../types/RequestTypes';
 import { useKeyboardEditorControls } from '../../../util/hooks/useKeyboardEditorControls';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { EditorSidebar } from '../Sidebar/EditorSidebar';
@@ -21,6 +22,8 @@ declare global {
 interface SceneEditorProps {
 	focus: boolean;
 	sidebarProps: boolean[];
+	simulator: SimulatorType;
+	onSimulatorChange: (newSimulator: SimulatorType) => void;
 }
 
 function SceneEditor(props: SceneEditorProps) {
@@ -99,7 +102,10 @@ function SceneEditor(props: SceneEditorProps) {
 							backgroundColor: ({ palette }) => palette.background.secondary
 						}
 					}}>
-					<EditorSidebar editor={yaptideEditor}></EditorSidebar>
+					<EditorSidebar
+						editor={yaptideEditor}
+						simulator={props.simulator}
+						onSimulatorChange={props.onSimulatorChange}></EditorSidebar>
 				</AppBar>
 			)}
 		</Box>

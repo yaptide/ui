@@ -2,6 +2,7 @@ import { Stack } from '@mui/material';
 import Typography from '@mui/material/Typography/Typography';
 import { Object3D } from 'three';
 
+import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetMaterialColorCommand } from '../../../../js/commands/SetMaterialColorCommand';
 import { SetMaterialValueCommand } from '../../../../js/commands/SetMaterialValueCommand';
@@ -113,45 +114,46 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 									);
 								}}
 							/>
+							{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
+								<ConditionalPropertyField
+									propertyDisabled={!stoppingPowerAvailable(watchedObject)}
+									label='Custom stopping power'
+									info={`Stopping table can be changed in settings. ${
+										!stoppingPowerAvailable(watchedObject)
+											? 'IMPORTANT: This setting is ignored. Material has no available custom stopping power in table. Default stopping power is used.'
+											: ''
+									}`}
+									enabled={
+										watchedObject.materialPropertiesOverrides
+											.customStoppingPower.value
+									}
+									onChangeEnabled={v => {
+										const newValue = {
+											...watchedObject.materialPropertiesOverrides,
+											customStoppingPower: {
+												value: v,
+												override: v
+											}
+										};
 
-							<ConditionalPropertyField
-								propertyDisabled={!stoppingPowerAvailable(watchedObject)}
-								label='Custom stopping power'
-								info={`Stopping table can be changed in settings. ${
-									!stoppingPowerAvailable(watchedObject)
-										? 'IMPORTANT: This setting is ignored. Material has no available custom stopping power in table. Default stopping power is used.'
-										: ''
-								}`}
-								enabled={
-									watchedObject.materialPropertiesOverrides.customStoppingPower
-										.value
-								}
-								onChangeEnabled={v => {
-									const newValue = {
-										...watchedObject.materialPropertiesOverrides,
-										customStoppingPower: {
-											value: v,
-											override: v
-										}
-									};
-
-									editor.execute(
-										new SetValueCommand(
-											editor,
-											watchedObject.object,
-											'materialPropertiesOverrides',
-											newValue
-										)
-									);
-								}}>
-								<Stack
-									direction='row'
-									spacing={1}
-									justifyContent='center'
-									alignItems='center'>
-									<Typography>{editorPhysic.stoppingPowerTable}</Typography>
-								</Stack>
-							</ConditionalPropertyField>
+										editor.execute(
+											new SetValueCommand(
+												editor,
+												watchedObject.object,
+												'materialPropertiesOverrides',
+												newValue
+											)
+										);
+									}}>
+									<Stack
+										direction='row'
+										spacing={1}
+										justifyContent='center'
+										alignItems='center'>
+										<Typography>{editorPhysic.stoppingPowerTable}</Typography>
+									</Stack>
+								</ConditionalPropertyField>
+							)}
 							{!isScoringQuantity(watchedObject) && (
 								<ConditionalNumberPropertyField
 									label='Opacity'

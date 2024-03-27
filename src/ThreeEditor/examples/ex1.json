@@ -41,7 +41,8 @@
         "history": {
           "undos": [],
           "redos": []
-        }
+        },
+        "simulator": "shieldhit"
       },
       "figureManager": {
         "uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0F0F0F",

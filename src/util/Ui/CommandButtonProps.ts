@@ -20,6 +20,7 @@ import {
 import { BeamModulator } from '../../ThreeEditor/Simulation/SpecialComponents/BeamModulator';
 import { CTCube } from '../../ThreeEditor/Simulation/SpecialComponents/CTCube';
 import { BooleanZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
+import { SimulatorType } from '../../types/RequestTypes';
 
 /**
  * A function that returns an array of {@link CommandButtonProps} based on editor instance and condensed data.
@@ -84,8 +85,9 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 					editor.zoneManager
 				);
 			}
-		],
-		['Tree Zone', undefined, true]
+		]
+		// Topas is not supported in current version of yaptide
+		// ['Tree Zone', undefined, true]
 	];
 
 	const detectorsTuple: CommandButtonTuple[] = [
@@ -128,16 +130,6 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 
 	const filtersTuple: CommandButtonTuple[] = [
 		[
-			'Custom filter',
-			() => {
-				return commandFactory.createAddCommand<'filter', ScoringFilter>(
-					'filter',
-					new CustomFilter(editor),
-					editor.scoringManager
-				);
-			}
-		],
-		[
 			'Particle filter',
 			() => {
 				return commandFactory.createAddCommand<'filter', ScoringFilter>(
@@ -148,6 +140,19 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 			}
 		]
 	];
+
+	if (editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT) {
+		filtersTuple.unshift([
+			'Custom filter',
+			() => {
+				return commandFactory.createAddCommand<'filter', ScoringFilter>(
+					'filter',
+					new CustomFilter(editor),
+					editor.scoringManager
+				);
+			}
+		]);
+	}
 
 	const outputsTuple: CommandButtonTuple[] = [
 		[

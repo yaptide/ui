@@ -3,6 +3,7 @@ import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { Object3D } from 'three';
 
+import { SimulatorType } from '../../../../types/RequestTypes';
 import { useSignal } from '../../../../util/hooks/signals';
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { ParticleFilter } from '../../../Simulation/Scoring/ParticleFilter';
@@ -42,7 +43,9 @@ export function PropertiesPanel(props: { boxProps: BoxProps; editor: YaptideEdit
 					<ParticleFilterConfiguration {...panelProps} />
 					<OutputConfiguration {...panelProps} />
 					<QuantityConfiguration {...panelProps} />
-					<QuantityDifferentialScoring {...panelProps} />
+					{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
+						<QuantityDifferentialScoring {...panelProps} />
+					)}
 					<BeamConfiguration {...panelProps} />
 					<ObjectConfiguration {...panelProps} />
 					<ObjectDimensions {...panelProps} />

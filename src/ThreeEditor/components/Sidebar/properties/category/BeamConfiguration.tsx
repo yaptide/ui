@@ -1,7 +1,9 @@
 import { Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { useEffect } from 'react';
 import { Object3D } from 'three';
 
-import { PARTICLE_TYPES } from '../../../../../types/Particle';
+import { PARTICLE_TYPES, FLUKA_PARTICLE_TYPES } from '../../../../../types/Particle';
+import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
@@ -14,7 +16,7 @@ import {
 	SIGMA_TYPE,
 	SigmaType
 } from '../../../../Simulation/Physics/Beam';
-import { ParticleSelect } from '../../../Select/ParticleSelect';
+import { ParticleSelect, ParticleType } from '../../../Select/ParticleSelect';
 import {
 	NumberPropertyField,
 	PropertyField,
@@ -147,11 +149,23 @@ function BeamSadField(props: { beam: Beam; onChange: (value: Beam['sad']) => voi
 function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam }) {
 	const { object, editor } = props;
 
+	let supportedParticles: ParticleType[] = [...PARTICLE_TYPES];
+	if (editor.contextManager.currentSimulator === SimulatorType.FLUKA) {
+		supportedParticles.push(...FLUKA_PARTICLE_TYPES);
+	}
+
+
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object, true);
 
 	const setValueCommand = (value: any, key: string) => {
 		editor.execute(new SetValueCommand(editor, watchedObject.object, key, value));
 	};
+
+	useEffect(() => {
+		if (editor.contextManager.currentSimulator !== SimulatorType.SHIELDHIT) {
+			setValueCommand(BEAM_SOURCE_TYPE.simple, 'sourceType');
+		}
+	}, [editor.contextManager.currentSimulator]);
 
 	return (
 		<>
@@ -165,7 +179,9 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 						if (v) setValueCommand(v, 'sourceType');
 					}}>
 					<ToggleButton value={BEAM_SOURCE_TYPE.simple}>Simple</ToggleButton>
-					<ToggleButton value={BEAM_SOURCE_TYPE.file}>File</ToggleButton>
+					{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
+						<ToggleButton value={BEAM_SOURCE_TYPE.file}>File</ToggleButton>
+					)}
 				</ToggleButtonGroup>
 			</PropertyField>
 
@@ -184,39 +200,45 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 						value={watchedObject.energySpread}
 						onChange={v => setValueCommand(v, 'energySpread')}
 					/>
-					<NumberPropertyField
-						label='Energy lower cutoff'
-						unit={'MeV/nucl'}
-						value={watchedObject.energyLowCutoff}
-						onChange={v => setValueCommand(v, 'energyLowCutoff')}
-					/>
-					<NumberPropertyField
-						label='Energy upper cutoff'
-						unit={'MeV/nucl'}
-						value={watchedObject.energyHighCutoff}
-						onChange={v => setValueCommand(v, 'energyHighCutoff')}
-					/>
-					<PropertyField children={<Divider />} />
-					<Vector2PropertyField
-						label='Divergence XY'
-						value={watchedObject.divergence}
-						unit={'mrad'}
-						onChange={v =>
-							setValueCommand({ ...watchedObject.divergence, ...v }, 'divergence')
-						}
-					/>
-
-					<NumberPropertyField
-						label='Divergence distance to focal point'
-						unit={editor.unit.name}
-						value={watchedObject.divergence.distanceToFocal}
-						onChange={v =>
-							setValueCommand(
-								{ ...watchedObject.divergence, distanceToFocal: v },
-								'divergence'
-							)
-						}
-					/>
+					{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
+						<>
+							<NumberPropertyField
+								label='Energy lower cutoff'
+								unit={'MeV/nucl'}
+								value={watchedObject.energyLowCutoff}
+								onChange={v => setValueCommand(v, 'energyLowCutoff')}
+							/>
+							<NumberPropertyField
+								label='Energy upper cutoff'
+								unit={'MeV/nucl'}
+								value={watchedObject.energyHighCutoff}
+								onChange={v => setValueCommand(v, 'energyHighCutoff')}
+							/>
+							<PropertyField children={<Divider />} />
+							<Vector2PropertyField
+								label='Divergence XY'
+								value={watchedObject.divergence}
+								unit={'mrad'}
+								onChange={v =>
+									setValueCommand(
+										{ ...watchedObject.divergence, ...v },
+										'divergence'
+									)
+								}
+							/>
+							<NumberPropertyField
+								label='Divergence distance to focal point'
+								unit={editor.unit.name}
+								value={watchedObject.divergence.distanceToFocal}
+								onChange={v =>
+									setValueCommand(
+										{ ...watchedObject.divergence, distanceToFocal: v },
+										'divergence'
+									)
+								}
+							/>
+						</>
+					)}
 					<PropertyField children={<Divider />} />
 
 					<BeamSigmaField
@@ -238,14 +260,14 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 			/>
 			<PropertyField label='Particle type'>
 				<ParticleSelect
-					particles={PARTICLE_TYPES}
+					particles={supportedParticles}
 					value={watchedObject.particleData.id}
 					onChange={(_, v) =>
 						setValueCommand(
 							{
 								...watchedObject.particleData,
 								id: v,
-								name: PARTICLE_TYPES.find(p => p.id === v)?.name
+								name: supportedParticles.find(p => p.id === v)?.name
 							},
 							'particleData'
 						)

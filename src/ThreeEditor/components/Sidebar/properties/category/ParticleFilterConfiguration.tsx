@@ -26,7 +26,8 @@ export function ParticleFilterConfiguration(props: { editor: YaptideEditor; obje
 			{visibleFlag && (
 				<>
 					<ParticleSelect
-						particles={PARTICLE_TYPES}
+						// Ignore the Heavy ions type
+						particles={PARTICLE_TYPES.filter(p => p.id !== 25)}
 						value={watchedObject.particleData.id}
 						onChange={(_, v) =>
 							setValueCommand(
