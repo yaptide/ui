@@ -26,6 +26,7 @@
 		"convert-units": "^3.0.0-beta.6",
 		"date-fns": "^3.6.0",
 		"glob": "^10.3.12",
+		"jsroot": "^7.5.5",
 		"keycloak-js": "^24.0.2",
 		"keycloak-react-web": "^0.1.19",
 		"ky": "^1.2.3",
@@ -50,8 +51,7 @@
 		"typescript": "^5.2.2",
 		"use-interval": "^1.4.0",
 		"usehooks-ts": "^2.12.1",
-		"web-vitals": "^3.5.2",
-		"jsroot": "^7.5.5"
+		"web-vitals": "^3.5.2"
 	},
 	"overrides": {
 		"typescript": "^5.2.2"
