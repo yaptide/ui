@@ -71,11 +71,19 @@ export function NavDrawerList({
 			sx={{
 				display: 'grid',
 				gridAutoRows: '1fr auto',
-				height: 'calc(100% - 64px)'
+				height: 'calc(100% - 64px)',
+				width: 'inherit'
 			}}>
 			{!demoMode ? (
-				<Box>
-					<List>
+				<Box
+					sx={{
+						width: 'inherit'
+					}}>
+					<List
+						sx={{
+							paddingBottom: '0px',
+							paddingTop: '0px'
+						}}>
 						<NavDrawerElement
 							menuOption={{
 								label: username,
@@ -87,9 +95,19 @@ export function NavDrawerList({
 											overflow: 'hidden'
 										}}>
 										{isAuthorized && user ? (
-											<div>
-												Log out <b>{user.username}</b>
-											</div>
+											<Box>
+												Log out{' '}
+												<Box
+													sx={{
+														fontWeight: 'bold',
+														overflowWrap: 'break-word',
+														whiteSpace: 'nowrap',
+														overflow: 'hidden',
+														textOverflow: 'ellipsis'
+													}}>
+													{user.username}
+												</Box>
+											</Box>
 										) : (
 											'Log in'
 										)}
