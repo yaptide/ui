@@ -250,8 +250,11 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 										spacing={2}>
 										<Box>
 											<Typography
-												variant='h6'
-												sx={{ margin: '0.5rem 0' }}>
+												sx={{
+													fontSize: '1rem',
+													margin: '0.5rem 0',
+													letterSpacing: '0.0075em'
+												}}>
 												Beam
 											</Typography>
 											<PropertiesPanel
@@ -264,8 +267,11 @@ export function EditorSidebar(props: { editor: YaptideEditor }) {
 										<Divider light />
 										<Box>
 											<Typography
-												variant='h6'
-												sx={{ margin: '0.5rem 0' }}>
+												sx={{
+													fontSize: '1rem',
+													margin: '0.5rem 0',
+													letterSpacing: '0.0075em'
+												}}>
 												Physics
 											</Typography>
 											<PhysicConfiguration

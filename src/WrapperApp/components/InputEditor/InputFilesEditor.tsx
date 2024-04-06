@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardActions, CardContent, Divider } from '@mui/material';
+import { Box, Button, Card, CardActions, CardContent, Divider, Typography } from '@mui/material';
 import useTheme from '@mui/system/useTheme';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 
@@ -144,7 +144,13 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 
 						return (
 							<Box key={name}>
-								<h2>
+								<Typography
+									sx={{
+										fontWeight: 'bold',
+										fontSize: '1.5em',
+										marginBlockStart: '0.83em',
+										marginBlockEnd: '0.83em'
+									}}>
 									{name}
 									<Button
 										color='info'
@@ -196,7 +202,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 											File is to large, displaying first few lines...
 										</Box>
 									)}
-								</h2>
+								</Typography>
 								<CodeEditor
 									aria-label={name + ' text field'}
 									value={content}
