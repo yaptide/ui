@@ -28,7 +28,7 @@ const columns: GridColDef[] = [
 		headerName: 'Value',
 		type: 'number',
 		flex: 1,
-		valueGetter: (params: GridValueGetterParams) => formatValue(params.row.value)
+		valueGetter: (_value, row) => formatValue(row.value)
 	},
 	{ field: 'unit', headerName: 'Unit', width: 100 },
 	{ field: 'filterName', headerName: 'Filter name', flex: 1 },
