@@ -1,6 +1,6 @@
 import { Button, Stack, Switch, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { ChangeEvent, useState } from 'react';
 
 import { isCustomFilterJSON } from '../../../ThreeEditor/Simulation/Scoring/CustomFilter';
