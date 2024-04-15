@@ -53,7 +53,10 @@ function WrapperApp() {
 	}, [isAuthorized, tabsValue]);
 
 	useEffect(() => {
-		document.title = camelCaseToNormalText(tabsValue); //e.g. we've got 'inputFiles' as a value of tabsValue and this function converts this value to 'Inputs File'
+		//The document.title is used by web browser to display a name on the browser tab. 
+		//There we would like to see the name extracted from a tabsValue, which can sugest user in which tab of our application is at the moment.
+		//We want to make the text which be a title as a normal text, not cammel case text, to make it similar to values of tabs user can see on navbar.
+		document.title = camelCaseToNormalText(tabsValue); //e.g. we've got 'inputFiles' as a value of tabsValue and this function converts this value to 'Input Files'
 	}, [tabsValue]);
 
 	return (
