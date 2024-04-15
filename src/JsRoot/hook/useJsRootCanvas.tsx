@@ -10,7 +10,7 @@ export const useJsRootCanvas = (redrawParam: string) => {
 	const [containerEl, visible] = useVisible<HTMLDivElement>();
 	const [obj, setObj] = useState<Object | undefined>(undefined);
 	const [drawn, setDrawn] = useState(false);
-	const [isVisible, setIsVisible] = useState(true);
+	const [isVisible, setIsVisible] = useState(false);
 	const visibleRef = useRef(isVisible);
 	const { width: resizeWidth, height: resizeHeight } = useResizeObserver({
 		ref: containerEl
@@ -53,8 +53,10 @@ export const useJsRootCanvas = (redrawParam: string) => {
 		(updateObject: () => Object) => {
 			if (!isVisible) return;
 
-			setDrawn(() => {
+			setDrawn(old => {
 				const obj = updateObject();
+
+				if (!obj) return old;
 				setObj(obj);
 
 				return false;
@@ -66,6 +68,7 @@ export const useJsRootCanvas = (redrawParam: string) => {
 	const setObjToDraw = useCallback(
 		(obj: any) => {
 			setObj(obj);
+
 			setDrawn(false);
 		},
 		[setObj, setDrawn]
