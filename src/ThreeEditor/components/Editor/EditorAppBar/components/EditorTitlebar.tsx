@@ -9,7 +9,6 @@ import {
 } from '@mui/material';
 import { bindContextMenu, bindMenu, usePopupState } from 'material-ui-popup-state/hooks';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useDocumentTitle } from 'usehooks-ts';
 
 import { useDialog } from '../../../../../services/DialogService';
 import { useStore } from '../../../../../services/StoreService';
@@ -21,7 +20,6 @@ export function EditorTitleBar() {
 	const [editMode, setEditMode] = useState(false);
 	const [title, setTitle] = useState<string>(yaptideEditor?.config.getKey('project/title'));
 	const titleRef = useRef(title);
-	useDocumentTitle(titleRef.current);
 
 	const startSave = useCallback(() => {
 		setSaving(true);
