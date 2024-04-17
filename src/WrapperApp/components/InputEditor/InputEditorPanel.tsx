@@ -23,11 +23,17 @@ import { InputFilesEditor } from './InputFilesEditor';
 
 interface InputEditorPanelProps {
 	goToRun?: (simulator: SimulatorType, InputFiles?: SimulationInputFiles) => void;
+	simulator: SimulatorType;
+	onSimulatorChange: (newSimulator: SimulatorType) => void;
 }
 
 type GeneratorLocation = 'local' | 'remote';
 
-export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
+export default function InputEditorPanel({
+	goToRun,
+	simulator,
+	onSimulatorChange
+}: InputEditorPanelProps) {
 	const { demoMode } = useConfig();
 	const { enqueueSnackbar } = useSnackbar();
 	const { yaptideEditor } = useStore();
@@ -37,9 +43,6 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const [isInProgress, setInProgress] = useState(false);
 	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>(_defaultShInputFiles);
 	const [generator, setGenerator] = useState<GeneratorLocation>('local');
-	const [simulator, setSimulator] = useState<SimulatorType>(SimulatorType.SHIELDHIT);
-	const [chosenSimulator, setChosenSimulator] = useState<SimulatorType>(SimulatorType.SHIELDHIT);
-
 	const [controller] = useState(new AbortController());
 
 	const handleConvert = useCallback(
@@ -63,6 +66,10 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	);
 
 	const onClickGenerate = useCallback(() => {
+		if (simulator === SimulatorType.COMMON) {
+			return enqueueSnackbar('Please select simulator', { variant: 'warning' });
+		}
+
 		setInProgress(true);
 		const editorJSON = yaptideEditor?.toJSON();
 
@@ -87,6 +94,25 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 		throttle(1000, onClickGenerate, { noTrailing: true }),
 		[onClickGenerate]
 	);
+
+	let acceptedFiles = '';
+
+	switch (simulator) {
+		case SimulatorType.SHIELDHIT:
+			acceptedFiles = '.dat';
+
+			break;
+		// In current version of yaptide, topas is not supported
+		// case SimulatorType.TOPAS:
+		// 	acceptedFiles = '.txt';
+		// 	break;
+		case SimulatorType.FLUKA:
+			acceptedFiles = '.inp';
+
+			break;
+		default:
+			acceptedFiles = '';
+	}
 
 	return (
 		<Box
@@ -140,36 +166,37 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 					sx={{
 						marginLeft: '1rem'
 					}}
-					value={chosenSimulator}
+					value={simulator}
 					exclusive
 					onChange={(_e, chosenSimulator) => {
 						if (chosenSimulator) {
-							setChosenSimulator(chosenSimulator);
-
 							if (chosenSimulator !== simulator)
 								if (
 									window.confirm(
 										'Current input files will be lost. Are you sure?'
 									)
-								)
-									setSimulator(chosenSimulator);
+								) {
+									onSimulatorChange(chosenSimulator);
 
-							switch (chosenSimulator) {
-								case SimulatorType.SHIELDHIT:
-									setInputFiles(_defaultShInputFiles);
+									switch (chosenSimulator) {
+										case SimulatorType.SHIELDHIT:
+											setInputFiles(_defaultShInputFiles);
 
-									break;
-								case SimulatorType.TOPAS:
-									setInputFiles(_defaultTopasInputFiles);
+											break;
+										// Topas is not supported in current version of yaptide
+										// case SimulatorType.TOPAS:
+										// 	setInputFiles(_defaultTopasInputFiles);
+										// 	break;
+										case SimulatorType.FLUKA:
+											setInputFiles(_defaultFlukaInputFiles);
 
-									break;
-								case SimulatorType.FLUKA:
-									setInputFiles(_defaultFlukaInputFiles);
-
-									break;
-								default:
-									throw new Error('Unknown simulator: ' + chosenSimulator);
-							}
+											break;
+										default:
+											throw new Error(
+												'Unknown simulator: ' + chosenSimulator
+											);
+									}
+								}
 						}
 					}}>
 					<ToggleButton
@@ -177,13 +204,13 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 						color='info'>
 						SHIELD-HIT12A
 					</ToggleButton>
-					{!demoMode && (
+					{/* {!demoMode && (
 						<ToggleButton
 							value={SimulatorType.TOPAS}
 							color='info'>
 							TOPAS
 						</ToggleButton>
-					)}
+					)} */}
 					{!demoMode && (
 						<ToggleButton
 							value={SimulatorType.FLUKA}
@@ -218,7 +245,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 						});
 					});
 				}}
-				acceptedFiles={'.dat'}
+				acceptedFiles={acceptedFiles}
 			/>
 
 			<InputFilesEditor

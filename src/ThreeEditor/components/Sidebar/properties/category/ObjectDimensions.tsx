@@ -49,8 +49,13 @@ const ObjectTypeField = (props: {
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const selectData = useCallback(() => {
+		const allowedDetectorOptions = {
+			Mesh: DETECTOR_OPTIONS.Mesh,
+			Cyl: DETECTOR_OPTIONS.Cyl
+		};
+
 		if (isDetector(watchedObject))
-			return { options: DETECTOR_OPTIONS, value: watchedObject.detectorType };
+			return { options: allowedDetectorOptions, value: watchedObject.detectorType };
 
 		return { options: BASIC_GEOMETRY_OPTIONS, value: watchedObject.geometryType };
 	}, [watchedObject])();
