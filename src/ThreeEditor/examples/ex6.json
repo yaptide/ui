@@ -236,7 +236,7 @@
 					"redos": [],
 					"undos": []
 				},
-				"simulator": "fluka",
+				"simulator": "common",
 				"title": "Beam of photons with lead collimator",
 				"viewManager": {
 					"ViewPanel": {
