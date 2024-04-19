@@ -1,4 +1,4 @@
-import { BIT, createHistogram, createTGraph } from 'jsroot';
+import { createHistogram, createTGraph, EAxisBits, kNoStats } from 'jsroot';
 import { useEffect } from 'react';
 
 import { Page1D } from '../GraphData';
@@ -29,8 +29,11 @@ export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 
 			// centering axes labels using method suggested here:
 			// https://github.com/root-project/jsroot/issues/225#issuecomment-998748035
-			histogram.fXaxis.InvertBit(BIT(12));
-			histogram.fYaxis.InvertBit(BIT(12));
+			histogram.fXaxis.InvertBit(EAxisBits.kCenterTitle);
+			histogram.fYaxis.InvertBit(EAxisBits.kCenterTitle);
+
+			// removing statistics box from histogram
+			histogram.InvertBit(kNoStats);
 
 			// moving axes labels a bit away from axis object, as described here:
 			// https://github.com/root-project/jsroot/issues/239

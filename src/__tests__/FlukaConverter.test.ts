@@ -8,7 +8,7 @@ describe('NavDrawer component', () => {
 		driver = await new Builder()
 			.forBrowser('chrome')
 			.setChromeOptions(
-				new chrome.Options().headless().addArguments('--window-size=1920,1080')
+				new chrome.Options().addArguments('--window-size=1920,1080', '--headless')
 			)
 			.build();
 	}, 30_000);

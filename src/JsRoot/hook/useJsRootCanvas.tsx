@@ -1,4 +1,4 @@
-import { redraw, resize } from 'jsroot';
+import { redraw, resize, settings } from 'jsroot';
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useVisible } from 'react-hooks-visible';
 import { mergeRefs } from 'react-merge-refs';
@@ -30,6 +30,15 @@ export const useJsRootCanvas = (redrawParam: string) => {
 
 	useEffect(() => {
 		if (obj && !drawn) {
+			// by default, the graph is draggable, so we disable it
+			settings.DragGraphs = false;
+			// enable context menu on right click
+			settings.ContextMenu = true;
+			// enable toolbar in the lower left corner
+			settings.ToolBar = true;
+			// disable statistics box
+			settings.AutoStat = false;
+			// redraw plot
 			redraw(containerEl.current, obj, redrawParam);
 			setDrawn(true);
 		}
