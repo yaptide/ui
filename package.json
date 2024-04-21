@@ -78,7 +78,7 @@
 		"build-plg": "cross-env REACT_APP_ALT_AUTH=plg npm run build",
 		"build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
 		"predeploy": "npm run setup && npm run build-demo && cross-env PUBLIC_PATH=/web_dev/ npm run fix-web-dev",
-		"deploy": "gh-pages -d build"
+		"deploy": "gh-pages --dist build --no-history"
 	},
 	"contributors": [
 		{
