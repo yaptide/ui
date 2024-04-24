@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 
+import { SimulatorType } from '../../types/RequestTypes';
 import { OneSlotContainer } from '../Simulation/Base/SimulationContainer';
 import { SimulationZone } from '../Simulation/Base/SimulationZone';
 import { Detector, isDetector } from '../Simulation/Detectors/Detector';
@@ -56,13 +57,27 @@ export class ContextManager {
 	private editor: YaptideEditor;
 	private _context: Context;
 	private _selected: [GeometryObject | null, ScoringContextObject | null, SettingsContextObject];
+	private simulator: SimulatorType;
 
-	constructor(editor: YaptideEditor, context: Context = 'geometry') {
+	constructor(
+		editor: YaptideEditor,
+		context: Context = 'geometry',
+		simulator: SimulatorType = SimulatorType.COMMON
+	) {
 		this.editor = editor;
 		this._context = context;
 		this._selected = [null, null, editor.beam];
+		this.simulator = simulator;
 		this.editor.signals.contextChanged.add(this.setVisibility.bind(this));
 		this.setVisibility(context);
+	}
+
+	set currentSimulator(simulator: SimulatorType) {
+		this.simulator = simulator;
+	}
+
+	get currentSimulator(): SimulatorType {
+		return this.simulator;
 	}
 
 	reset = () => {

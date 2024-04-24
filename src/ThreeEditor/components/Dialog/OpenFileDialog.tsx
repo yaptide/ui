@@ -9,12 +9,14 @@ import {
 	ListItem,
 	ListItemButton,
 	Tab,
+	Tabs,
 	TextField,
 	Tooltip
 } from '@mui/material';
 import { ChangeEvent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 
 import { LoaderContext } from '../../../services/LoaderService';
+import { SimulatorType } from '../../../types/RequestTypes';
 import { StatusState } from '../../../types/ResponseTypes';
 import EXAMPLES from '../../examples/examples';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
@@ -51,6 +53,7 @@ export function OpenFileDialog({
 		}),
 		[value]
 	);
+	const [selectedSimulator, setSelectedSimulator] = useState<SimulatorType>(SimulatorType.COMMON);
 
 	return (
 		<CustomDialog
@@ -81,55 +84,72 @@ export function OpenFileDialog({
 					</Box>
 					<Divider />
 					<TabPanel {...tabPanelProps(0)}>
-						<Box
-							sx={{
-								display: 'flex',
-								flexDirection: 'column',
-								gap: 2,
-								height: 319,
-								boxSizing: 'border-box'
-							}}>
-							<List id={'Examples list'}>
-								{EXAMPLES.map((example, idx) => (
-									<ListItem
-										disablePadding
-										key={
-											example?.input.inputJson?.project?.title ??
-											'Example_' + idx.toString()
-										}
-										value={idx}
-										aria-labelledby={`example-btn-${idx}`}
-										aria-selected={exampleIndex === idx}
-										onClick={() => setExampleIndex(idx)}>
-										<ListItemButton
-											id={`example-btn-${idx}`}
-											selected={exampleIndex === idx}>
-											{example?.input.inputJson?.project?.title ??
-												'Example_' + idx.toString()}
-										</ListItemButton>
-									</ListItem>
+						<>
+							<Tabs
+								value={selectedSimulator}
+								onChange={(e, newValue) => setSelectedSimulator(newValue)}
+								aria-label='simulator selection tabs'
+								variant='fullWidth'>
+								{Object.values(SimulatorType).map(simulator => (
+									<Tab
+										label={simulator}
+										value={simulator}
+									/>
 								))}
-							</List>
-							<Button
-								aria-label='Load example button'
-								variant='contained'
-								fullWidth
-								sx={{ marginTop: 'auto' }}
-								disabled={exampleIndex === null}
-								onClick={() => {
-									onClose();
-									loadFromJson(
-										[EXAMPLES[exampleIndex ?? 0]].map(e => {
-											return {
-												...e,
-												jobState: StatusState.COMPLETED
-											};
-										})
-									);
+							</Tabs>
+							<Divider />
+							<Box
+								sx={{
+									display: 'flex',
+									flexDirection: 'column',
+									gap: 2,
+									height: 319,
+									boxSizing: 'border-box'
 								}}>
-								Load
-							</Button>
-						</Box>
+								<List id={'Examples list'}>
+									{EXAMPLES[selectedSimulator].map((example, idx) => (
+										<ListItem
+											disablePadding
+											key={
+												example?.input.inputJson?.project?.title ??
+												'Example_' + idx.toString()
+											}
+											value={idx}
+											aria-labelledby={`example-btn-${idx}`}
+											aria-selected={exampleIndex === idx}
+											onClick={() => setExampleIndex(idx)}>
+											<ListItemButton
+												id={`example-btn-${idx}`}
+												selected={exampleIndex === idx}>
+												{example?.input.inputJson?.project?.title ??
+													'Example_' + idx.toString()}
+											</ListItemButton>
+										</ListItem>
+									))}
+								</List>
+								<Button
+									aria-label='Load example button'
+									variant='contained'
+									fullWidth
+									sx={{ marginTop: 'auto' }}
+									disabled={exampleIndex === null}
+									onClick={() => {
+										onClose();
+										loadFromJson(
+											[EXAMPLES[selectedSimulator][exampleIndex ?? 0]].map(
+												e => {
+													return {
+														...e,
+														jobState: StatusState.COMPLETED
+													};
+												}
+											)
+										);
+									}}>
+									Load
+								</Button>
+							</Box>
+						</>
 					</TabPanel>
 					<TabPanel {...tabPanelProps(1)}>
 						<Box

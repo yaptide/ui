@@ -16,7 +16,7 @@
 		"@testing-library/react": "^12.1.2",
 		"@testing-library/user-event": "^14.5.2",
 		"@types/jest": "^29.5.12",
-		"@types/node": "^20.12.4",
+		"@types/node": "^20.12.7",
 		"@types/react-dom": "^17.0.11",
 		"@types/signals": "^1.0.4",
 		"@types/throttle-debounce": "^5.0.2",
@@ -27,9 +27,9 @@
 		"date-fns": "^3.6.0",
 		"glob": "^10.3.12",
 		"jsroot": "^7.5.5",
-		"keycloak-js": "^24.0.2",
+		"keycloak-js": "^24.0.3",
 		"keycloak-react-web": "^0.1.19",
-		"ky": "^1.2.3",
+		"ky": "^1.2.4",
 		"material-ui-popup-state": "^5.1.0",
 		"notistack": "^3.0.1",
 		"object-hash": "^3.0.0",
@@ -78,7 +78,7 @@
 		"build-plg": "cross-env REACT_APP_ALT_AUTH=plg npm run build",
 		"build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
 		"predeploy": "npm run setup && npm run build-demo && cross-env PUBLIC_PATH=/web_dev/ npm run fix-web-dev",
-		"deploy": "gh-pages -d build"
+		"deploy": "gh-pages --dist build --no-history"
 	},
 	"contributors": [
 		{
@@ -209,7 +209,7 @@
 		"@types/selenium-webdriver": "^4.1.22",
 		"@types/three": "^0.163.0",
 		"cross-env": "^7.0.3",
-		"eslint-plugin-simple-import-sort": "^12.0.0",
+		"eslint-plugin-simple-import-sort": "^12.1.0",
 		"gh-pages": "^6.1.1",
 		"husky": "^9.0.11",
 		"jest-matcher-deep-close-to": "^3.0.2",
