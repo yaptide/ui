@@ -82,6 +82,7 @@ export function RunSimulationForm({
 	const [selectedCluster, setSelectedCluster] = useState<number | undefined>(0);
 
 	const [simName, setSimName] = useState(editorJson?.project.title ?? '');
+	forwardedSimulator = editorJson?.project.simulator ?? forwardedSimulator;
 	const [nTasks, setNTasks] = useState(1);
 	const [simulator, setSelectedSimulator] = useState<SimulatorType>(forwardedSimulator);
 	const [arrayHeader, setArrayHeader] = useState<string>('');
