@@ -40,7 +40,7 @@ jobs:
       - run: npm run start &
 
       - name: Wait for the app to start
-        uses: iFaxity/wait-on-action@v1.1.0
+        uses: iFaxity/wait-on-action@v1.2.0
         with:
           resource: http://localhost:3000
 
