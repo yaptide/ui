@@ -107,25 +107,23 @@ export function OpenFileDialog({
 									boxSizing: 'border-box'
 								}}>
 								<List id={'Examples list'}>
-									{EXAMPLES[selectedSimulator].map((example, idx) => (
-										<ListItem
-											disablePadding
-											key={
-												example?.input.inputJson?.project?.title ??
-												'Example_' + idx.toString()
-											}
-											value={idx}
-											aria-labelledby={`example-btn-${idx}`}
-											aria-selected={exampleIndex === idx}
-											onClick={() => setExampleIndex(idx)}>
-											<ListItemButton
-												id={`example-btn-${idx}`}
-												selected={exampleIndex === idx}>
-												{example?.input.inputJson?.project?.title ??
-													'Example_' + idx.toString()}
-											</ListItemButton>
-										</ListItem>
-									))}
+									{Object.entries(EXAMPLES[selectedSimulator]).map(
+										([name, filename]) => (
+											<ListItem
+												disablePadding
+												key={'Example_' + filename.toString()}
+												value={1}
+												aria-labelledby={`example-btn-${1}`}
+												aria-selected={exampleIndex === 1}
+												onClick={() => setExampleIndex(1)}>
+												<ListItemButton
+													id={`example-btn-${1}`}
+													selected={exampleIndex === 1}>
+													{name}
+												</ListItemButton>
+											</ListItem>
+										)
+									)}
 								</List>
 								<Button
 									aria-label='Load example button'
@@ -135,16 +133,17 @@ export function OpenFileDialog({
 									disabled={exampleIndex === null}
 									onClick={() => {
 										onClose();
-										loadFromJson(
-											[EXAMPLES[selectedSimulator][exampleIndex ?? 0]].map(
-												e => {
-													return {
-														...e,
-														jobState: StatusState.COMPLETED
-													};
-												}
-											)
-										);
+										// loadFromJson(
+										// 	[EXAMPLES[selectedSimulator][exampleIndex ?? 0]].map(
+										// 		e => {
+										// 			return {
+										// 				...e,
+										// 				jobState: StatusState.COMPLETED
+										// 			};
+										// 		}
+										// 	)
+										// );
+										console.log('clicked');
 									}}>
 									Load
 								</Button>

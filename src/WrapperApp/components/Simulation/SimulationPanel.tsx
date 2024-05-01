@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useConfig } from '../../../config/ConfigService';
 import { isFullSimulationData } from '../../../services/LoaderService';
 import { useStore } from '../../../services/StoreService';
-import EXAMPLES from '../../../ThreeEditor/examples/examples';
+// import EXAMPLES from '../../../ThreeEditor/examples/examples';
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
 	currentJobStatusData,
@@ -89,7 +89,7 @@ export default function SimulationPanel({
 				handleLoadResults={handleLoadResults}
 				handleShowInputFiles={handleShowInputFiles}
 			/>
-			{demoMode ? (
+			{/* {demoMode ? (
 				<DemoCardGrid
 					simulations={Object.values(EXAMPLES).flat()}
 					title='Demo Simulation Results'
@@ -103,7 +103,7 @@ export default function SimulationPanel({
 					setShowInputFilesEditor={setShowInputFilesEditor}
 					setInputFiles={setInputFiles}
 				/>
-			)}
+			)} */}
 		</Box>
 	);
 }
