@@ -15,6 +15,7 @@ Example mapping shown be as followed:
 - "Proton pencil beam in water" : "ex1"
 
 Key specifies how example will be shown in front-end app and value is the name of corresponding example file.
+Add entry to section of simulator for which examples is created.
 
 In addition to the examples, this directory also contains migration scripts for updating the structure of JSON files used in the simulation projects. The migration scripts are written in JavaScript and use the Node.js runtime environment. They are located in the `/migrations` directory.
 
