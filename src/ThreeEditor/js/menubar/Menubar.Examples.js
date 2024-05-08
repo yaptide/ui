@@ -1,4 +1,4 @@
-import EXAMPLES from '../../examples/examples';
+import EXAMPLES from '../../../examples/examples';
 import { UIHorizontalRule, UIPanel } from '../libs/ui.js';
 import { createOption } from './Menubar.js';
 

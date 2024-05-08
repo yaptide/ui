@@ -15,11 +15,11 @@ import {
 } from '@mui/material';
 import { ChangeEvent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 
+import EXAMPLES from '../../../examples/examples';
 import { LoaderContext } from '../../../services/LoaderService';
 import { FullSimulationData } from '../../../services/ShSimulatorService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import { StatusState } from '../../../types/ResponseTypes';
-import EXAMPLES from '../../examples/examples';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 import { DragDropProject } from './DragDropProject';
 
