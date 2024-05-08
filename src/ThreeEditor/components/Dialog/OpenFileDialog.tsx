@@ -16,7 +16,7 @@ import {
 import { ChangeEvent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 
 import { LoaderContext } from '../../../services/LoaderService';
-import { FullSimulationData, recreateRefsInResults } from '../../../services/ShSimulatorService';
+import { FullSimulationData } from '../../../services/ShSimulatorService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import { StatusState } from '../../../types/ResponseTypes';
 import EXAMPLES from '../../examples/examples';
@@ -56,7 +56,7 @@ export function OpenFileDialog({
 	);
 	const [selectedSimulator, setSelectedSimulator] = useState<SimulatorType>(SimulatorType.COMMON);
 
-	function myFetcher(exampleName: string) {
+	function fetchExampleData(exampleName: string) {
 		fetch('http://127.0.0.1:3000/examples/' + exampleName)
 			.then(function (response) {
 				if (response.status !== 200) {
@@ -66,11 +66,10 @@ export function OpenFileDialog({
 				}
 
 				response.json().then(function (data) {
-					const data2: FullSimulationData = data as FullSimulationData;
-					console.log('---------------');
-					// console.log(data);
+					const simulationData: FullSimulationData = data as FullSimulationData;
+
 					loadFromJson(
-						[data2].map(e => {
+						[simulationData].map(e => {
 							return {
 								...e,
 								jobState: StatusState.COMPLETED
@@ -160,31 +159,7 @@ export function OpenFileDialog({
 								onClick={() => {
 									onClose();
 
-									// Select correct file
-									// EXAMPLES[selectedSimulator][Object.keys(EXAMPLES[selectedSimulator])[exampleIndex ?? 0]]
-
-									// loadFromJson(
-									// 	[EXAMPLES[selectedSimulator][exampleIndex ?? 0]].map(
-									// 		e => {
-									// 			return {
-									// 				...e,
-									// 				jobState: StatusState.COMPLETED
-									// 			};
-									// 		}
-									// 	)
-									// );
-
-									const exmpl = myFetcher(
-										EXAMPLES[selectedSimulator][
-											Object.keys(EXAMPLES[selectedSimulator])[
-												exampleIndex ?? 0
-											]
-										]
-									);
-
-									console.log(exmpl);
-
-									console.log(
+									fetchExampleData(
 										EXAMPLES[selectedSimulator][
 											Object.keys(EXAMPLES[selectedSimulator])[
 												exampleIndex ?? 0
