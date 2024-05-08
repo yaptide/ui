@@ -84,71 +84,78 @@ export function OpenFileDialog({
 					</Box>
 					<Divider />
 					<TabPanel {...tabPanelProps(0)}>
-						<>
-							<Tabs
-								value={selectedSimulator}
-								onChange={(e, newValue) => setSelectedSimulator(newValue)}
-								aria-label='simulator selection tabs'
-								variant='fullWidth'>
-								{Object.values(SimulatorType).map(simulator => (
-									<Tab
-										label={simulator}
-										value={simulator}
-									/>
+						<Tabs
+							value={selectedSimulator}
+							onChange={(e, newValue) => setSelectedSimulator(newValue)}
+							aria-label='simulator selection tabs'
+							variant='fullWidth'>
+							{Object.values(SimulatorType).map(simulator => (
+								<Tab
+									label={simulator}
+									value={simulator}
+								/>
+							))}
+						</Tabs>
+						<Divider />
+						<Box
+							sx={{
+								display: 'flex',
+								flexDirection: 'column',
+								gap: 2,
+								height: 319,
+								boxSizing: 'border-box'
+							}}>
+							<List id={'Examples list'}>
+								{Object.entries(EXAMPLES[selectedSimulator]).map((name, idx) => (
+									<ListItem
+										disablePadding
+										key={'Example_' + idx.toString()}
+										value={idx}
+										aria-labelledby={`example-btn-${idx}`}
+										aria-selected={exampleIndex === idx}
+										onClick={() => setExampleIndex(idx)}>
+										<ListItemButton
+											id={`example-btn-${idx}`}
+											selected={exampleIndex === idx}>
+											{name[0]}
+										</ListItemButton>
+									</ListItem>
 								))}
-							</Tabs>
-							<Divider />
-							<Box
-								sx={{
-									display: 'flex',
-									flexDirection: 'column',
-									gap: 2,
-									height: 319,
-									boxSizing: 'border-box'
+							</List>
+							<Button
+								aria-label='Load example button'
+								variant='contained'
+								fullWidth
+								sx={{ marginTop: 'auto' }}
+								disabled={exampleIndex === null}
+								onClick={() => {
+									onClose();
+
+									// Select correct file
+									// EXAMPLES[selectedSimulator][Object.keys(EXAMPLES[selectedSimulator])[exampleIndex ?? 0]]
+
+									// loadFromJson(
+									// 	[EXAMPLES[selectedSimulator][exampleIndex ?? 0]].map(
+									// 		e => {
+									// 			return {
+									// 				...e,
+									// 				jobState: StatusState.COMPLETED
+									// 			};
+									// 		}
+									// 	)
+									// );
+
+									console.log(
+										EXAMPLES[selectedSimulator][
+											Object.keys(EXAMPLES[selectedSimulator])[
+												exampleIndex ?? 0
+											]
+										]
+									);
 								}}>
-								<List id={'Examples list'}>
-									{Object.entries(EXAMPLES[selectedSimulator]).map(
-										([name, filename]) => (
-											<ListItem
-												disablePadding
-												key={'Example_' + filename.toString()}
-												value={1}
-												aria-labelledby={`example-btn-${1}`}
-												aria-selected={exampleIndex === 1}
-												onClick={() => setExampleIndex(1)}>
-												<ListItemButton
-													id={`example-btn-${1}`}
-													selected={exampleIndex === 1}>
-													{name}
-												</ListItemButton>
-											</ListItem>
-										)
-									)}
-								</List>
-								<Button
-									aria-label='Load example button'
-									variant='contained'
-									fullWidth
-									sx={{ marginTop: 'auto' }}
-									disabled={exampleIndex === null}
-									onClick={() => {
-										onClose();
-										// loadFromJson(
-										// 	[EXAMPLES[selectedSimulator][exampleIndex ?? 0]].map(
-										// 		e => {
-										// 			return {
-										// 				...e,
-										// 				jobState: StatusState.COMPLETED
-										// 			};
-										// 		}
-										// 	)
-										// );
-										console.log('clicked');
-									}}>
-									Load
-								</Button>
-							</Box>
-						</>
+								Load
+							</Button>
+						</Box>
 					</TabPanel>
 					<TabPanel {...tabPanelProps(1)}>
 						<Box
