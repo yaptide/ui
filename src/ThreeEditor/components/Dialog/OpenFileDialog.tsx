@@ -16,6 +16,7 @@ import {
 import { ChangeEvent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 
 import { LoaderContext } from '../../../services/LoaderService';
+import { FullSimulationData, recreateRefsInResults } from '../../../services/ShSimulatorService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import { StatusState } from '../../../types/ResponseTypes';
 import EXAMPLES from '../../examples/examples';
@@ -54,6 +55,34 @@ export function OpenFileDialog({
 		[value]
 	);
 	const [selectedSimulator, setSelectedSimulator] = useState<SimulatorType>(SimulatorType.COMMON);
+
+	function myFetcher(exampleName: string) {
+		fetch('http://127.0.0.1:3000/examples/' + exampleName)
+			.then(function (response) {
+				if (response.status !== 200) {
+					console.log('Looks like there was a problem. Status Code: ' + response.status);
+
+					return;
+				}
+
+				response.json().then(function (data) {
+					const data2: FullSimulationData = data as FullSimulationData;
+					console.log('---------------');
+					// console.log(data);
+					loadFromJson(
+						[data2].map(e => {
+							return {
+								...e,
+								jobState: StatusState.COMPLETED
+							};
+						})
+					);
+				});
+			})
+			.catch(function (err) {
+				console.log('Fetch Error :-S', err);
+			});
+	}
 
 	return (
 		<CustomDialog
@@ -144,6 +173,16 @@ export function OpenFileDialog({
 									// 		}
 									// 	)
 									// );
+
+									const exmpl = myFetcher(
+										EXAMPLES[selectedSimulator][
+											Object.keys(EXAMPLES[selectedSimulator])[
+												exampleIndex ?? 0
+											]
+										]
+									);
+
+									console.log(exmpl);
 
 									console.log(
 										EXAMPLES[selectedSimulator][
