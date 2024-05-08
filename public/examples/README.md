@@ -8,7 +8,7 @@ Please note that the examples must be numbered consecutively.
 
 After creating new example file add it to examplesMap.json file located in 
 ```bash
-src/ThreeEditor/examples/examplesMap.json
+src/examples/examplesMap.json
 ```
 Example mapping shown be as followed:
 

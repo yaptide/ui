@@ -2,9 +2,9 @@ import { Box, Fade, Modal } from '@mui/material';
 import { useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
+import EXAMPLES from '../../../examples/examples';
 import { isFullSimulationData } from '../../../services/LoaderService';
 import { useStore } from '../../../services/StoreService';
-// import EXAMPLES from '../../../ThreeEditor/examples/examples';
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
 	currentJobStatusData,
