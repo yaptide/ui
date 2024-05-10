@@ -1,8 +1,6 @@
 import { Box, Fade, Modal } from '@mui/material';
 import { useState } from 'react';
 
-import { useConfig } from '../../../config/ConfigService';
-import EXAMPLES from '../../../examples/examples';
 import { isFullSimulationData } from '../../../services/LoaderService';
 import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
@@ -26,7 +24,6 @@ export default function SimulationPanel({
 	forwardedInputFiles,
 	forwardedSimulator
 }: SimulationPanelProps) {
-	const { demoMode } = useConfig();
 	const { setResultsSimulationData, localResultsSimulationData } = useStore();
 
 	/** Visibility Flags */
@@ -89,21 +86,11 @@ export default function SimulationPanel({
 				handleLoadResults={handleLoadResults}
 				handleShowInputFiles={handleShowInputFiles}
 			/>
-			{/* {demoMode ? (
-				<DemoCardGrid
-					simulations={Object.values(EXAMPLES).flat()}
-					title='Demo Simulation Results'
-					handleLoadResults={handleLoadResults}
-					handleDelete={() => {}}
-					handleShowInputFiles={handleShowInputFiles}
-				/>
-			) : (
-				<BackendSimulations
-					goToResults={goToResults}
-					setShowInputFilesEditor={setShowInputFilesEditor}
-					setInputFiles={setInputFiles}
-				/>
-			)} */}
+			<BackendSimulations
+				goToResults={goToResults}
+				setShowInputFilesEditor={setShowInputFilesEditor}
+				setInputFiles={setInputFiles}
+			/>
 		</Box>
 	);
 }
