@@ -13,6 +13,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { CSSObject, styled, Theme } from '@mui/material/styles';
 import { ReactElement, ReactNode, SyntheticEvent } from 'react';
 
+import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
 import { NavDrawerList } from './NavDrawerList';
@@ -95,7 +96,9 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 	};
 
 	const Drawer = getDrawer();
+	const { demoMode } = useConfig();
 
+	// Order of elements in this list corresponds to their order in UI
 	const menuOptions: MenuOption[] = [
 		{
 			label: 'Editor',
@@ -106,13 +109,6 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 			label: 'Input files',
 			value: 'inputFiles',
 			icon: <DescriptionIcon fontSize='large' />
-		},
-		{
-			label: 'Simulations',
-			value: 'simulations',
-			disabled: !isAuthorized,
-			info: !isAuthorized ? 'You need to be logged in to use this feature.' : undefined,
-			icon: <OndemandVideoIcon fontSize='large' />
 		},
 		{
 			label: 'Results',
@@ -127,6 +123,18 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 			icon: <InfoIcon fontSize='large' />
 		}
 	];
+
+	// in regular mode (non-demo) insert at third position Simulation item
+	// it has no use in demo mode, therefore was not added there earlier
+	if (!demoMode) {
+		menuOptions.splice(2, 0, {
+			label: 'Simulations',
+			value: 'simulations',
+			disabled: !isAuthorized,
+			info: !isAuthorized ? 'You need to be logged in to use this feature.' : undefined,
+			icon: <OndemandVideoIcon fontSize='large' />
+		});
+	}
 
 	return (
 		<Drawer
