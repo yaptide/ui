@@ -124,6 +124,8 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 		}
 	];
 
+	// in regular mode (non-demo) insert at third position Simulation item
+	// it has no use in demo mode, therefore was not added there earlier
 	if (!demoMode) {
 		menuOptions.splice(2, 0, {
 			label: 'Simulations',

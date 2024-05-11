@@ -11,7 +11,6 @@ import {
 } from '../../../types/ResponseTypes';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import { BackendSimulations } from './BackendSimulations';
-import { DemoCardGrid } from './SimulationCardGrid';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
@@ -80,12 +79,6 @@ export default function SimulationPanel({
 					</Box>
 				</Fade>
 			</Modal>
-			<DemoCardGrid
-				simulations={localResultsSimulationData}
-				title='Local Simulation Results'
-				handleLoadResults={handleLoadResults}
-				handleShowInputFiles={handleShowInputFiles}
-			/>
 			<BackendSimulations
 				goToResults={goToResults}
 				setShowInputFilesEditor={setShowInputFilesEditor}

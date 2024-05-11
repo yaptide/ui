@@ -316,34 +316,3 @@ export function AccordionCardGrid({
 		</Accordion>
 	);
 }
-
-type DemoCardGridProps = {
-	layout?: 'grid' | 'inline-list' | 'block-list';
-	isAccordion?: boolean;
-} & Omit<SimulationCardGridProps, 'layout'>;
-
-export function DemoCardGrid({
-	layout = 'block-list',
-	simulations,
-	isAccordion = true,
-	title = 'Demo results',
-	...other
-}: DemoCardGridProps) {
-	return (
-		<AccordionCardGrid
-			isAccordion={isAccordion}
-			simulations={simulations}
-			layout={layout}
-			header={(accordion: SimulationAccordionProps) =>
-				SimulationLabelBar({
-					title: title,
-					accordion,
-					sx: {
-						mb: ({ spacing }: Theme) => spacing(accordion.expanded ? 4 : -2)
-					}
-				})
-			}
-			{...other}
-		/>
-	);
-}
