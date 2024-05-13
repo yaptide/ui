@@ -25,7 +25,7 @@
 		"command-exists": "^1.2.9",
 		"convert-units": "^3.0.0-beta.6",
 		"date-fns": "^3.6.0",
-		"glob": "^10.3.12",
+		"glob": "^10.3.15",
 		"jsroot": "^7.5.5",
 		"keycloak-js": "^24.0.3",
 		"keycloak-react-web": "^0.1.19",
