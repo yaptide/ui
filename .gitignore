@@ -258,3 +258,6 @@ build/
 
 venv/
 .vscode/settings.json
+
+# mkdocs documentation
+/site
