@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 import { createRowParamInput, createRowText } from '../../../../util/Ui/Uis';
 import { SetValueCommand } from '../../commands/Commands';
 import { UIInput, UIRow, UIText } from '../../libs/ui';

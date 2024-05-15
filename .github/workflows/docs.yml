@@ -38,7 +38,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-            python-version: '3.11'
+            python-version: '3.12'
       - name: Install Poetry
         uses: snok/install-poetry@v1
       - name: Install dependencies for mkdocs
@@ -46,7 +46,7 @@ jobs:
       - name: Build site
         run: poetry --directory docs run mkdocs build
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
       - name: Upload artifact if on master
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/upload-pages-artifact@v3

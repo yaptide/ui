@@ -1,3 +1,4 @@
+import { createHistogram, createTGraph, EAxisBits, kNoStats } from 'jsroot';
 import { useEffect } from 'react';
 
 import { Page1D } from '../GraphData';
@@ -8,16 +9,16 @@ export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 	const { update, ref } = useJsRootCanvas('AL;gridxy;tickxy');
 
 	useEffect(() => {
-		update(JSROOT => {
+		update(() => {
 			const npoints = page.data.values.length;
 			const x = page.axisDim1.values;
 			const y = page.data.values;
 
-			const graph = JSROOT.createTGraph(npoints, x, y);
+			const graph = createTGraph(npoints, x, y);
 
 			// adding name using method suggested here:
 			// https://github.com/root-project/jsroot/issues/225#issuecomment-998260751
-			const histogram = JSROOT.createHistogram('TH1F', npoints);
+			const histogram = createHistogram('TH1F', npoints);
 			histogram.fXaxis.fXmin = x[0];
 			histogram.fXaxis.fXmax = x[npoints - 1];
 			histogram.fXaxis.fTitle = `${page.axisDim1.name} [${page.axisDim1.unit}]`;
@@ -28,8 +29,11 @@ export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 
 			// centering axes labels using method suggested here:
 			// https://github.com/root-project/jsroot/issues/225#issuecomment-998748035
-			histogram.fXaxis.InvertBit(JSROOT.BIT(12));
-			histogram.fYaxis.InvertBit(JSROOT.BIT(12));
+			histogram.fXaxis.InvertBit(EAxisBits.kCenterTitle);
+			histogram.fYaxis.InvertBit(EAxisBits.kCenterTitle);
+
+			// removing statistics box from histogram
+			histogram.InvertBit(kNoStats);
 
 			// moving axes labels a bit away from axis object, as described here:
 			// https://github.com/root-project/jsroot/issues/239

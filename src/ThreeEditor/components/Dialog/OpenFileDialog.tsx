@@ -9,14 +9,17 @@ import {
 	ListItem,
 	ListItemButton,
 	Tab,
+	Tabs,
 	TextField,
 	Tooltip
 } from '@mui/material';
 import { ChangeEvent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 
+import EXAMPLES from '../../../examples/examples';
 import { LoaderContext } from '../../../services/LoaderService';
+import { FullSimulationData } from '../../../services/ShSimulatorService';
+import { SimulatorType } from '../../../types/RequestTypes';
 import { StatusState } from '../../../types/ResponseTypes';
-import EXAMPLES from '../../examples/examples';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 import { DragDropProject } from './DragDropProject';
 
@@ -51,6 +54,34 @@ export function OpenFileDialog({
 		}),
 		[value]
 	);
+	const [selectedSimulator, setSelectedSimulator] = useState<SimulatorType>(SimulatorType.COMMON);
+
+	function fetchExampleData(exampleName: string) {
+		fetch(`${process.env.PUBLIC_URL}/examples/${exampleName}`)
+			.then(function (response) {
+				if (response.status !== 200) {
+					console.log('Looks like there was a problem. Status Code: ' + response.status);
+
+					return;
+				}
+
+				response.json().then(function (data) {
+					const simulationData: FullSimulationData = data as FullSimulationData;
+
+					loadFromJson(
+						[simulationData].map(e => {
+							return {
+								...e,
+								jobState: StatusState.COMPLETED
+							};
+						})
+					);
+				});
+			})
+			.catch(function (err) {
+				console.log('Fetch Error :-S', err);
+			});
+	}
 
 	return (
 		<CustomDialog
@@ -81,6 +112,19 @@ export function OpenFileDialog({
 					</Box>
 					<Divider />
 					<TabPanel {...tabPanelProps(0)}>
+						<Tabs
+							value={selectedSimulator}
+							onChange={(e, newValue) => setSelectedSimulator(newValue)}
+							aria-label='simulator selection tabs'
+							variant='fullWidth'>
+							{Object.values(SimulatorType).map(simulator => (
+								<Tab
+									label={simulator}
+									value={simulator}
+								/>
+							))}
+						</Tabs>
+						<Divider />
 						<Box
 							sx={{
 								display: 'flex',
@@ -90,13 +134,10 @@ export function OpenFileDialog({
 								boxSizing: 'border-box'
 							}}>
 							<List id={'Examples list'}>
-								{EXAMPLES.map((example, idx) => (
+								{Object.entries(EXAMPLES[selectedSimulator]).map((name, idx) => (
 									<ListItem
 										disablePadding
-										key={
-											example?.input.inputJson?.project?.title ??
-											'Example_' + idx.toString()
-										}
+										key={'Example_' + idx.toString()}
 										value={idx}
 										aria-labelledby={`example-btn-${idx}`}
 										aria-selected={exampleIndex === idx}
@@ -104,8 +145,7 @@ export function OpenFileDialog({
 										<ListItemButton
 											id={`example-btn-${idx}`}
 											selected={exampleIndex === idx}>
-											{example?.input.inputJson?.project?.title ??
-												'Example_' + idx.toString()}
+											{name[0]}
 										</ListItemButton>
 									</ListItem>
 								))}
@@ -118,13 +158,13 @@ export function OpenFileDialog({
 								disabled={exampleIndex === null}
 								onClick={() => {
 									onClose();
-									loadFromJson(
-										[EXAMPLES[exampleIndex ?? 0]].map(e => {
-											return {
-												...e,
-												jobState: StatusState.COMPLETED
-											};
-										})
+
+									fetchExampleData(
+										EXAMPLES[selectedSimulator][
+											Object.keys(EXAMPLES[selectedSimulator])[
+												exampleIndex ?? 0
+											]
+										]
 									);
 								}}>
 								Load

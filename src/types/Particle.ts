@@ -22,10 +22,6 @@ export const PARTICLE_TYPES = [
 		name: 'Pion π+'
 	},
 	{
-		id: 6,
-		name: 'Anti-neutron'
-	},
-	{
 		id: 7,
 		name: 'Anti-proton'
 	},
@@ -72,5 +68,13 @@ export const PARTICLE_TYPES = [
 	{
 		id: 25,
 		name: 'Heavy ions'
+	}
+] as const satisfies readonly ParticleType[];
+
+
+export const FLUKA_PARTICLE_TYPES = [
+	{
+		id: 26,
+		name: 'Electron'
 	}
 ] as const satisfies readonly ParticleType[];

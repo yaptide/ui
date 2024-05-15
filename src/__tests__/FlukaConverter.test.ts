@@ -1,14 +1,14 @@
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
-describe('NavDrawer component', () => {
+describe('Fluka Converter', () => {
 	let driver: WebDriver;
 
 	beforeAll(async () => {
 		driver = await new Builder()
 			.forBrowser('chrome')
 			.setChromeOptions(
-				new chrome.Options().headless().addArguments('--window-size=1920,1080')
+				new chrome.Options().addArguments('--window-size=1920,1080', '--headless')
 			)
 			.build();
 	}, 30_000);
@@ -21,6 +21,16 @@ describe('NavDrawer component', () => {
 	//this test checks if converter works correctly - opens an example and generates config files
 	test('converter generates correct files', async () => {
 		await driver.get('http://localhost:3000');
+
+		// Wait for the application to load
+		expect(
+			await driver.wait(
+				until.elementLocated(
+					By.xpath("//div[@aria-label = 'Navigation drawer for the YAPTIDE application']")
+				),
+				5_000
+			)
+		).toBeTruthy();
 
 		//find the "Editor" button on the left menu and assure it is already selected
 		const editorButton = await driver.findElement(By.xpath("//div[@aria-label = 'Editor']"));
@@ -81,6 +91,9 @@ describe('NavDrawer component', () => {
 		//check if the tab is not hidden
 		expect(await examplesPanel.getAttribute('hidden')).toBeFalsy();
 
+		// select SHIELDHIT subsection
+		examplesPanel.findElement(By.xpath("//button[contains(text(),'shieldhit')]")).click();
+		
 		//find the list of examples
 		const examplesList = await examplesPanel.findElement(By.id('Examples list'));
 

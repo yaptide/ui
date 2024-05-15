@@ -8,7 +8,7 @@ import { SimulationInputFiles } from '../types/ResponseTypes';
 
 // as for now there is no reasonable npm package for pyodide
 // CND method is suggested in https://pyodide.org/en/stable/usage/downloading-and-deploying.html
-importScripts('https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js');
+importScripts('https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js');
 
 export interface PythonWorker {
 	initPyodide: (onReady: () => void) => void;
@@ -42,7 +42,7 @@ class PythonWorkerBase implements PythonWorker {
 
 		console.log(pyodide.runPython('import sys\nsys.version'));
 
-		await pyodide.loadPackage(['scipy', 'micropip']);
+		await pyodide.loadPackage(['micropip']);
 
 		const converterFolder = process.env.PUBLIC_URL + '/libs/converter/dist/';
 		const jsonUrl = converterFolder + 'yaptide_converter.json';

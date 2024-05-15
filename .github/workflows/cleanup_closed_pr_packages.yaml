@@ -20,4 +20,4 @@ jobs:
           org-name: ${{ github.repository_owner }}
           keep-at-least: 0
           filter-tags: pr-${{github.event.pull_request.number}}
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.SNOK_RETENTION_GITHUB_TOKEN }}

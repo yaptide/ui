@@ -2,6 +2,7 @@ import hash from 'object-hash';
 import Signal from 'signals';
 import * as THREE from 'three';
 
+import { SimulatorType } from '../../types/RequestTypes';
 import { DetectorManager } from '../Simulation/Detectors/DetectorManager';
 import { FigureManager } from '../Simulation/Figures/FigureManager';
 import { MaterialManager } from '../Simulation/Materials/MaterialManager';
@@ -650,6 +651,7 @@ YaptideEditor.prototype = {
 			if (project) {
 				this.config.setKey('project/title', project.title ?? '');
 				this.config.setKey('project/description', project.description ?? '');
+				this.contextManager.currentSimulator = project.simulator ?? SimulatorType.COMMON;
 			} else
 				console.warn('Project info was not found in JSON data. Skipping part 1 out of 11');
 
@@ -737,7 +739,8 @@ YaptideEditor.prototype = {
 				title: this.config.getKey('project/title'),
 				description: this.config.getKey('project/description'),
 				viewManager: this.viewManager.configurationToJson(), // serialize ViewManager
-				history: this.history.toJSON() // serialize History
+				history: this.history.toJSON(), // serialize History
+				simulator: this.contextManager.currentSimulator
 			},
 			figureManager: this.figureManager.toJSON(),
 			zoneManager: this.zoneManager.toJSON(), // serialize ZoneManager
