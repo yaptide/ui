@@ -1,20 +1,20 @@
 import { redraw, resize, settings } from 'jsroot';
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useVisible } from 'react-hooks-visible';
-import { mergeRefs } from 'react-merge-refs';
 import { throttle } from 'throttle-debounce';
-import { useElementSize } from 'usehooks-ts';
+import { useResizeObserver } from 'usehooks-ts';
 
 export const useJsRootCanvas = (redrawParam: string) => {
-	const [resizeRef, { width: resizeWidth, height: resizeHeight }] = useElementSize();
 	// Custom react hook, visible contains the percentage of the containterEl
 	// that is currently visible on screen
 	const [containerEl, visible] = useVisible<HTMLDivElement>();
-
 	const [obj, setObj] = useState<Object | undefined>(undefined);
 	const [drawn, setDrawn] = useState(false);
 	const [isVisible, setIsVisible] = useState(false);
 	const visibleRef = useRef(isVisible);
+	const { width: resizeWidth, height: resizeHeight } = useResizeObserver({
+		ref: containerEl
+	});
 
 	useEffect(() => {
 		// Update isVisible if more than 30% of containerEl is visible
@@ -63,8 +63,6 @@ export const useJsRootCanvas = (redrawParam: string) => {
 			if (!isVisible) return;
 
 			setDrawn(old => {
-				if (old) return true;
-
 				const obj = updateObject();
 
 				if (!obj) return old;
@@ -79,12 +77,15 @@ export const useJsRootCanvas = (redrawParam: string) => {
 	const setObjToDraw = useCallback(
 		(obj: any) => {
 			setObj(obj);
+
 			setDrawn(false);
 		},
 		[setObj, setDrawn]
 	);
 
-	const ref = useMemo(() => mergeRefs([resizeRef, containerEl]), [resizeRef, containerEl]);
+	const ref = useMemo(() => {
+		return containerEl;
+	}, [containerEl]);
 
 	return {
 		isVisible,
