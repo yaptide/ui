@@ -5,7 +5,7 @@ description = "mkdocs documentation for the project"
 authors = ["Leszek Grzanka <grzanka@agh.edu.pl>"]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.9"
 mkdocs = "~1.5.3"
 mkdocs-material = "~9.4.3"
 

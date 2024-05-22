@@ -2,7 +2,7 @@ site_name: Documentation
 site_url: https://yaptide.github.io/ui/
 repo_url: https://github.com/yaptide/ui
 repo_name: yaptide/ui
-copyright: Copyright &copy; 2023 the Yaptide team
+copyright: Copyright &copy; 2024 the Yaptide team
 
 
 theme:
@@ -10,6 +10,7 @@ theme:
   features:
     - content.code.annotate
     - content.code.copy
+    - content.tabs.link
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.top
@@ -17,6 +18,8 @@ theme:
 nav:
 - Home:
   - Overview: index.md
+  - Build and run as developers: for_developers.md
+  - Building and run using Docker: using_docker.md
 
 plugins:
 - search
