@@ -284,7 +284,8 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	);
 
 	const tokenRefresh = useCallback(() => {
-		if (!initialized || user?.source !== 'keycloak') return Promise.resolve();
+		if (!initialized || !keycloak.authenticated || user?.source !== 'keycloak')
+			return Promise.resolve();
 
 		return keycloak
 			.updateToken(300) // 5 minutes in seconds minimum remaining lifetime for token before refresh is allowed
@@ -295,12 +296,16 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 						{ variant: 'success' }
 					);
 			})
-			.catch(reason => {});
+			.catch(reason => {
+				logout();
+			});
 	}, [initialized, user?.source, keycloak, enqueueSnackbar]);
 
 	useIntervalAsync(
 		tokenRefresh,
-		initialized && keycloak.authenticated ? keyCloakInterval : undefined
+		initialized && keycloak.authenticated && keycloak.isTokenExpired()
+			? keyCloakInterval
+			: undefined
 	);
 
 	const refresh = useCallback(async () => {
