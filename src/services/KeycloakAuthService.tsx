@@ -37,34 +37,6 @@ const [useKeycloakAuth, KeycloakAuthContextProvider] =
 
 const KeycloakAuth = ({ children }: GenericContextProviderProps) => {
 	const { altAuth } = useConfig();
-
-	// Periodically check session status
-	useEffect(() => {
-		const checkSession = () => {
-			if (authInstance.authenticated) {
-				authInstance
-					.updateToken(305) // Attempt to refresh token if needed
-					.then((refreshed: any) => {
-						if (refreshed) {
-							console.log('Token refreshed');
-						} else {
-							console.warn('Token not refreshed, still valid');
-						}
-					})
-					.catch(() => {
-						console.error('Failed to refresh token, logging out');
-						authInstance.logout(); // Logout if token refresh fails
-					});
-			} else {
-				console.warn('User is not authenticated');
-			}
-		};
-
-		const interval = setInterval(checkSession, 300000); // Check every 5 minutes
-
-		return () => clearInterval(interval);
-	}, []);
-
 	const proxyContextProvider = useCallback(
 		(children: ReactNode) => (
 			<KeycloakAuthContextProvider
