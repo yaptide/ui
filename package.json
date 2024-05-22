@@ -30,7 +30,7 @@
 		"keycloak-js": "^24.0.4",
 		"keycloak-react-web": "^0.1.19",
 		"ky": "^1.2.4",
-		"material-ui-popup-state": "^5.1.0",
+		"material-ui-popup-state": "^5.1.2",
 		"notistack": "^3.0.1",
 		"object-hash": "^3.0.0",
 		"pyodide": "^0.25.1",
