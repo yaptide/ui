@@ -51,7 +51,7 @@
 		"typescript": "^5.2.2",
 		"use-interval": "^1.4.0",
 		"usehooks-ts": "^2.12.1",
-		"web-vitals": "^4.0.0"
+		"web-vitals": "^4.0.1"
 	},
 	"overrides": {
 		"typescript": "^5.2.2"
