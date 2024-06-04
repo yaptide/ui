@@ -10,7 +10,7 @@
 		"@minoru/react-dnd-treeview": "^3.4.4",
 		"@mui/icons-material": "^5.15.19",
 		"@mui/lab": "^5.0.0-alpha.170",
-		"@mui/material": "^5.15.18",
+		"@mui/material": "^5.15.19",
 		"@mui/x-data-grid": "^6.19.8",
 		"@testing-library/jest-dom": "^6.4.5",
 		"@testing-library/react": "^12.1.2",
