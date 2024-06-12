@@ -196,6 +196,12 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 
 		if (!initialized || !keycloak.authenticated) return;
 
+		if (keycloak.isTokenExpired()) {
+			logout();
+
+			return;
+		}
+
 		checkPlgridAccessServices(keycloak.tokenParsed)
 			.then(() => {
 				const username = keycloak.tokenParsed?.preferred_username;
@@ -284,8 +290,10 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	);
 
 	const tokenRefresh = useCallback(() => {
-		if (!initialized || !keycloak.authenticated || user?.source !== 'keycloak')
-			return Promise.resolve();
+		const userLoggedWithKeystone =
+			initialized && keycloak.authenticated && user?.source == 'keycloak';
+
+		if (!userLoggedWithKeystone) return Promise.resolve();
 
 		return keycloak
 			.updateToken(300) // 5 minutes in seconds minimum remaining lifetime for token before refresh is allowed
