@@ -290,10 +290,8 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	);
 
 	const tokenRefresh = useCallback(() => {
-		const userLoggedWithKeystone =
-			initialized && keycloak.authenticated && user?.source == 'keycloak';
-
-		if (!userLoggedWithKeystone) return Promise.resolve();
+		if (!initialized || !keycloak.authenticated || user?.source != 'keycloak')
+			return Promise.resolve();
 
 		return keycloak
 			.updateToken(300) // 5 minutes in seconds minimum remaining lifetime for token before refresh is allowed
