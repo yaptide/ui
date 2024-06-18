@@ -17,6 +17,7 @@ theme:
 nav:
 - Home:
   - Overview: index.md
+  - Authentication: authentication.md
 
 plugins:
 - search
