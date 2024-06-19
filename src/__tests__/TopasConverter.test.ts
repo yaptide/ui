@@ -32,7 +32,7 @@ describe('TopasConverter', () => {
 				5_000
 			)
 		).toBeTruthy();
-		
+
 		//find the "Editor" button on the left menu and assure it is already selected
 		const editorButton = await driver.findElement(By.xpath("//div[@aria-label = 'Editor']"));
 

@@ -4,7 +4,7 @@ import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 
-import { Particle, PARTICLE_TYPES, FLUKA_PARTICLE_TYPES } from '../../../types/Particle';
+import { FLUKA_PARTICLE_TYPES,Particle, PARTICLE_TYPES } from '../../../types/Particle';
 // Import of 'lines' from examples subfolder follows the official guidelines of threejs.editor (see https://threejs.org/docs/#manual/en/introduction/Installation)
 import { ConfigSourceFile } from '../../../types/SimulationTypes/ConfigTypes';
 import { YaptideEditor } from '../../js/YaptideEditor';
@@ -167,7 +167,9 @@ export class Beam extends SimulationElement {
 	sourceFile: ConfigSourceFile;
 
 	get particle(): Particle {
-		return [...PARTICLE_TYPES, ...FLUKA_PARTICLE_TYPES].find(p => p.id === this.particleData.id) as Particle;
+		return [...PARTICLE_TYPES, ...FLUKA_PARTICLE_TYPES].find(
+			p => p.id === this.particleData.id
+		) as Particle;
 	}
 
 	constructor(editor: YaptideEditor) {

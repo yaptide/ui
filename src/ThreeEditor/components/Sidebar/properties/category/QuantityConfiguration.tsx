@@ -10,7 +10,8 @@ import {
 	canChangePrimaryMultiplier,
 	DETECTOR_KEYWORD_OPTIONS,
 	FLUKA_DETECTOR_KEYWORD_OPTIONS,
-	MEDIUM_KEYWORD_OPTIONS} from '../../../../Simulation/Scoring/ScoringOutputTypes';
+	MEDIUM_KEYWORD_OPTIONS
+} from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import { ObjectSelectPropertyField } from '../fields/ObjectSelectPropertyField';
 import {

@@ -93,7 +93,7 @@ describe('Fluka Converter', () => {
 
 		// select SHIELDHIT subsection
 		examplesPanel.findElement(By.xpath("//button[contains(text(),'shieldhit')]")).click();
-		
+
 		//find the list of examples
 		const examplesList = await examplesPanel.findElement(By.id('Examples list'));
 
