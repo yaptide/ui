@@ -27,7 +27,7 @@
 		"date-fns": "^3.6.0",
 		"glob": "^10.4.1",
 		"jsroot": "^7.7.0",
-		"keycloak-js": "^25.0.0",
+		"keycloak-js": "^25.0.1",
 		"keycloak-react-web": "^0.1.19",
 		"ky": "^1.3.0",
 		"material-ui-popup-state": "^5.1.2",
