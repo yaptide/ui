@@ -8,7 +8,10 @@ describe('Fluka Converter', () => {
 		driver = await new Builder()
 			.forBrowser('chrome')
 			.setChromeOptions(
-				new chrome.Options().addArguments('--window-size=1920,1080', '--headless')
+				new chrome.Options().addArguments(
+					'--window-size=1920,1080',
+					'--headless'
+				) as chrome.Options
 			)
 			.build();
 	}, 30_000);
@@ -93,7 +96,7 @@ describe('Fluka Converter', () => {
 
 		// select SHIELDHIT subsection
 		examplesPanel.findElement(By.xpath("//button[contains(text(),'shieldhit')]")).click();
-		
+
 		//find the list of examples
 		const examplesList = await examplesPanel.findElement(By.id('Examples list'));
 
