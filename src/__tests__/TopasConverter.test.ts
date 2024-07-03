@@ -8,7 +8,10 @@ describe('TopasConverter', () => {
 		driver = await new Builder()
 			.forBrowser('chrome')
 			.setChromeOptions(
-				new chrome.Options().addArguments('--window-size=1920,1080', '--headless')
+				new chrome.Options().addArguments(
+					'--window-size=1920,1080',
+					'--headless'
+				) as chrome.Options
 			)
 			.build();
 	}, 30_000);
@@ -32,7 +35,7 @@ describe('TopasConverter', () => {
 				5_000
 			)
 		).toBeTruthy();
-		
+
 		//find the "Editor" button on the left menu and assure it is already selected
 		const editorButton = await driver.findElement(By.xpath("//div[@aria-label = 'Editor']"));
 
