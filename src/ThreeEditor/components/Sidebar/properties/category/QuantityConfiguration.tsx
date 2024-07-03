@@ -1,5 +1,6 @@
 import { Object3D } from 'three';
 
+import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
@@ -8,6 +9,7 @@ import {
 	canChangeNKMedium,
 	canChangePrimaryMultiplier,
 	DETECTOR_KEYWORD_OPTIONS,
+	FLUKA_DETECTOR_KEYWORD_OPTIONS,
 	MEDIUM_KEYWORD_OPTIONS
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
@@ -35,42 +37,49 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 			<ObjectSelectPropertyField
 				label='Quantity type'
 				value={watchedObject.keyword}
-				options={DETECTOR_KEYWORD_OPTIONS}
+				options={
+					editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT
+						? DETECTOR_KEYWORD_OPTIONS
+						: FLUKA_DETECTOR_KEYWORD_OPTIONS
+				}
 				onChange={v => setQuantityValue('keyword', v.uuid)}
 			/>
 
-			{canChangeNKMedium(watchedObject.keyword) && (
-				<>
-					<ObjectSelectPropertyField
-						label='Medium'
-						value={watchedObject.medium ?? MEDIUM_KEYWORD_OPTIONS.WATER}
-						options={MEDIUM_KEYWORD_OPTIONS}
-						onChange={v => setQuantityValue('medium', v.uuid)}
+			{canChangeNKMedium(watchedObject.keyword) &&
+				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
+					<>
+						<ObjectSelectPropertyField
+							label='Medium'
+							value={watchedObject.medium ?? MEDIUM_KEYWORD_OPTIONS.WATER}
+							options={MEDIUM_KEYWORD_OPTIONS}
+							onChange={v => setQuantityValue('medium', v.uuid)}
+						/>
+					</>
+				)}
+
+			{canChangeMaterialMedium(watchedObject.keyword) &&
+				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
+					<BooleanPropertyField
+						label='Override material'
+						value={watchedObject.hasMaterial}
+						onChange={v => setQuantityValue('hasMaterial', v)}
 					/>
-				</>
-			)}
+				)}
 
-			{canChangeMaterialMedium(watchedObject.keyword) && (
-				<BooleanPropertyField
-					label='Override material'
-					value={watchedObject.hasMaterial}
-					onChange={v => setQuantityValue('hasMaterial', v)}
-				/>
-			)}
-
-			{canChangePrimaryMultiplier(watchedObject.keyword) && (
-				<ConditionalNumberPropertyField
-					label='Primaries'
-					precision={0}
-					step={1}
-					min={0}
-					max={1000}
-					value={watchedObject.primaries}
-					enabled={watchedObject.hasPrimaries}
-					onChange={v => setQuantityValue('primaries', v)}
-					onChangeEnabled={v => setQuantityValue('hasPrimaries', v)}
-				/>
-			)}
+			{canChangePrimaryMultiplier(watchedObject.keyword) &&
+				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
+					<ConditionalNumberPropertyField
+						label='Primaries'
+						precision={0}
+						step={1}
+						min={0}
+						max={1000}
+						value={watchedObject.primaries}
+						enabled={watchedObject.hasPrimaries}
+						onChange={v => setQuantityValue('primaries', v)}
+						onChangeEnabled={v => setQuantityValue('hasPrimaries', v)}
+					/>
+				)}
 
 			{Object.keys(editor.scoringManager.getFilterOptions()).length > 0 && (
 				<ConditionalObjectSelectPropertyField
@@ -85,13 +94,15 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 				/>
 			)}
 
-			<ConditionalNumberPropertyField
-				label='Rescale'
-				value={watchedObject.rescale}
-				onChange={v => setQuantityValue('rescale', v)}
-				enabled={watchedObject.hasRescale}
-				onChangeEnabled={v => setQuantityValue('hasRescale', v)}
-			/>
+			{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
+				<ConditionalNumberPropertyField
+					label='Rescale'
+					value={watchedObject.rescale}
+					onChange={v => setQuantityValue('rescale', v)}
+					enabled={watchedObject.hasRescale}
+					onChangeEnabled={v => setQuantityValue('hasRescale', v)}
+				/>
+			)}
 		</>
 	);
 

@@ -7,6 +7,7 @@ import { useStore } from '../services/StoreService';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
 import { SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles } from '../types/ResponseTypes';
+import { camelCaseToNormalText } from '../util/camelCaseToSentenceCase';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
 import NavDrawer from './components/NavDrawer/NavDrawer';
 import { AboutPanel } from './components/Panels/AboutPanel';
@@ -23,9 +24,7 @@ function WrapperApp() {
 	const [tabsValue, setTabsValue] = useState('editor');
 
 	const [providedInputFiles, setProvidedInputFiles] = useState<SimulationInputFiles>();
-	const [currentSimulator, setCurrentSimulator] = useState<SimulatorType>(
-		SimulatorType.SHIELDHIT
-	);
+	const [currentSimulator, setCurrentSimulator] = useState<SimulatorType>(SimulatorType.COMMON);
 
 	useEffect(() => {
 		if (providedInputFiles && tabsValue !== 'simulations') setProvidedInputFiles(undefined);
@@ -50,6 +49,13 @@ function WrapperApp() {
 		if (isAuthorized && tabsValue === 'login') setTabsValue('editor');
 	}, [isAuthorized, tabsValue]);
 
+	useEffect(() => {
+		//The document.title is used by web browser to display a name on the browser tab.
+		//There we would like to see the name extracted from a tabsValue, which can sugest user in which tab of our application is at the moment.
+		//We want to make the text which be a title as a normal text, not cammel case text, to make it similar to values of tabs user can see on navbar.
+		document.title = camelCaseToNormalText(tabsValue); //e.g. we've got 'inputFiles' as a value of tabsValue and this function converts this value to 'Input Files'
+	}, [tabsValue]);
+
 	return (
 		<Box
 			sx={{
@@ -71,6 +77,8 @@ function WrapperApp() {
 				<SceneEditor
 					sidebarProps={[open, tabsValue === 'editor']}
 					focus={tabsValue === 'editor'}
+					simulator={currentSimulator}
+					onSimulatorChange={setCurrentSimulator}
 				/>
 			</TabPanel>
 
@@ -84,6 +92,8 @@ function WrapperApp() {
 						setCurrentSimulator(simulator);
 						setTabsValue('simulations');
 					}}
+					simulator={currentSimulator}
+					onSimulatorChange={setCurrentSimulator}
 				/>
 			</TabPanel>
 
