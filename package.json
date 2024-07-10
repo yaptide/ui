@@ -47,7 +47,7 @@
 		"signals": "^1.0.0",
 		"split-grid": "^1.0.11",
 		"three": "^0.166.1",
-		"throttle-debounce": "^5.0.0",
+		"throttle-debounce": "^5.0.2",
 		"typescript": "^5.2.2",
 		"use-interval": "^1.4.0",
 		"usehooks-ts": "^2.12.1",
