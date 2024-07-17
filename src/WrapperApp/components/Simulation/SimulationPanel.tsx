@@ -1,10 +1,8 @@
 import { Box, Fade, Modal } from '@mui/material';
 import { useState } from 'react';
 
-import { useConfig } from '../../../config/ConfigService';
 import { isFullSimulationData } from '../../../services/LoaderService';
 import { useStore } from '../../../services/StoreService';
-import EXAMPLES from '../../../ThreeEditor/examples/examples';
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
 	currentJobStatusData,
@@ -13,7 +11,6 @@ import {
 } from '../../../types/ResponseTypes';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import { BackendSimulations } from './BackendSimulations';
-import { DemoCardGrid } from './SimulationCardGrid';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
@@ -26,7 +23,6 @@ export default function SimulationPanel({
 	forwardedInputFiles,
 	forwardedSimulator
 }: SimulationPanelProps) {
-	const { demoMode } = useConfig();
 	const { setResultsSimulationData, localResultsSimulationData } = useStore();
 
 	/** Visibility Flags */
@@ -83,27 +79,11 @@ export default function SimulationPanel({
 					</Box>
 				</Fade>
 			</Modal>
-			<DemoCardGrid
-				simulations={localResultsSimulationData}
-				title='Local Simulation Results'
-				handleLoadResults={handleLoadResults}
-				handleShowInputFiles={handleShowInputFiles}
+			<BackendSimulations
+				goToResults={goToResults}
+				setShowInputFilesEditor={setShowInputFilesEditor}
+				setInputFiles={setInputFiles}
 			/>
-			{demoMode ? (
-				<DemoCardGrid
-					simulations={EXAMPLES}
-					title='Demo Simulation Results'
-					handleLoadResults={handleLoadResults}
-					handleDelete={() => {}}
-					handleShowInputFiles={handleShowInputFiles}
-				/>
-			) : (
-				<BackendSimulations
-					goToResults={goToResults}
-					setShowInputFilesEditor={setShowInputFilesEditor}
-					setInputFiles={setInputFiles}
-				/>
-			)}
 		</Box>
 	);
 }

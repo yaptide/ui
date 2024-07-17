@@ -16,9 +16,15 @@ export enum OrderBy {
 }
 
 export enum SimulatorType {
+	COMMON = 'common',
 	SHIELDHIT = 'shieldhit',
-	TOPAS = 'topas',
+	// Topas is not supported in current version of yaptide
+	// TOPAS = 'topas',
 	FLUKA = 'fluka'
+}
+
+export interface SimulatorExamples {
+	[key: string]: string;
 }
 
 export type RequestParam = [signal?: AbortSignal];

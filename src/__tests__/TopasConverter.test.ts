@@ -1,14 +1,17 @@
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
-describe('NavDrawer component', () => {
+describe('TopasConverter', () => {
 	let driver: WebDriver;
 
 	beforeAll(async () => {
 		driver = await new Builder()
 			.forBrowser('chrome')
 			.setChromeOptions(
-				new chrome.Options().addArguments('--window-size=1920,1080', '--headless')
+				new chrome.Options().addArguments(
+					'--window-size=1920,1080',
+					'--headless'
+				) as chrome.Options
 			)
 			.build();
 	}, 30_000);
@@ -19,8 +22,19 @@ describe('NavDrawer component', () => {
 	}, 30_000);
 
 	//this test checks if converter works correctly - opens an example and generates config files
-	test('converter generates correct files', async () => {
+	// expected to fail because Topas was temporarily removed from the project
+	xtest('converter generates correct files', async () => {
 		await driver.get('http://localhost:3000');
+
+		// Wait for the application to load
+		expect(
+			await driver.wait(
+				until.elementLocated(
+					By.xpath("//div[@aria-label = 'Navigation drawer for the YAPTIDE application']")
+				),
+				5_000
+			)
+		).toBeTruthy();
 
 		//find the "Editor" button on the left menu and assure it is already selected
 		const editorButton = await driver.findElement(By.xpath("//div[@aria-label = 'Editor']"));

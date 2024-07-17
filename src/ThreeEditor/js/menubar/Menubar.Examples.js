@@ -1,4 +1,4 @@
-import EXAMPLES from '../../examples/examples';
+import EXAMPLES from '../../../examples/examples';
 import { UIHorizontalRule, UIPanel } from '../libs/ui.js';
 import { createOption } from './Menubar.js';
 
@@ -33,12 +33,14 @@ export function MenubarExamples(editor) {
 
 	// YAPTIDE examples
 	options.add(
-		...EXAMPLES.map(example =>
-			createOption('option', example.input.inputJson.project?.title ?? 'Example', () => {
-				window.confirm('Any unsaved data will be lost. Are you sure?') &&
-					loadExample(example);
-			})
-		),
+		...Object.values(EXAMPLES)
+			.flat()
+			.map(example =>
+				createOption('option', example.input.inputJson.project?.title ?? 'Example', () => {
+					window.confirm('Any unsaved data will be lost. Are you sure?') &&
+						loadExample(example);
+				})
+			),
 		new UIHorizontalRule()
 	);
 

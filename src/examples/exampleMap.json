@@ -1,0 +1,15 @@
+{
+	"fluka": {
+		"Beam of electrons with lead collimator": "ex7.json"
+	},
+	"shieldhit": {
+		"Proton pencil beam in water": "ex1.json",
+		"Snowman": "ex2.json",
+		"Proton beam scattering on lead slab": "ex3.json",
+		"Treatment plan": "ex4.json",
+		"Treatment Plan SOBP": "ex5.json"
+	},
+	"common": {
+		"Beam of protons with lead collimator": "ex6.json"
+	}
+}
