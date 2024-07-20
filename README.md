@@ -93,7 +93,7 @@ docker run --rm -d -p 80:80/tcp --name ui ui
 
 ## Requirements
 
-- Node.js 18.x or higher
+- Node.js 20.x or higher
 - Python 3.9+
 - pip and venv
 
