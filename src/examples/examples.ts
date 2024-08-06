@@ -1,7 +1,6 @@
 import { SimulatorExamples, SimulatorType } from '../types/RequestTypes';
+import EXAMPLES from './exampleMap.json';
 
 type SimulationMap = Record<SimulatorType, SimulatorExamples>;
-
-const EXAMPLES: SimulationMap = require(`./exampleMap.json`);
 
 export default EXAMPLES;

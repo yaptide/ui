@@ -44,7 +44,7 @@ class PythonWorkerBase implements PythonWorker {
 
 		await pyodide.loadPackage(['micropip']);
 
-		const converterFolder = process.env.PUBLIC_URL + '/libs/converter/dist/';
+		const converterFolder = import.meta.env.PUBLIC_URL + '/libs/converter/dist/';
 		const jsonUrl = converterFolder + 'yaptide_converter.json';
 
 		const json = await (await fetch(jsonUrl)).json();
@@ -55,7 +55,7 @@ class PythonWorkerBase implements PythonWorker {
 
 		await pyodide.runPythonAsync(`			
 import micropip
-await micropip.install('${process.env.PUBLIC_URL}/libs/converter/dist/${converterFileName}') 
+await micropip.install('${import.meta.env.PUBLIC_URL}/libs/converter/dist/${converterFileName}') 
 print(micropip.list())
 			`);
 		onReady();

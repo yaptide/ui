@@ -5,7 +5,7 @@ import fse from 'fs-extra';
 import path from 'path';
 import { URL } from 'url';
 
-const PUBLIC_PATH = process.env.PUBLIC_PATH || '/';
+const PUBLIC_PATH = import.meta.env.PUBLIC_PATH || '/';
 
 (async () => {
 	const repoRootUrl = new URL('../', import.meta.url);

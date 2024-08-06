@@ -15,7 +15,7 @@ export interface StoppingPowerFile {
 	content: string;
 }
 
-const getAvailableStoppingPowerFiles = (path: StoppingPowerTable) => {
+const getAvailableStoppingPowerFiles = async (path: StoppingPowerTable) => {
 	const files: Record<Icru, StoppingPowerFileMetadata> = {};
 
 	for (let key in MappingIcruToName) {
@@ -23,7 +23,7 @@ const getAvailableStoppingPowerFiles = (path: StoppingPowerTable) => {
 		const icru = parseInt(key);
 
 		try {
-			const pathToFile = require(`./models/${path}/${name}`);
+			const pathToFile = await import(/* @vite-ignore */ `./models/${path}/${name}`);
 
 			files[icru] = { name, icru, pathToFile };
 		} catch (error: any) {

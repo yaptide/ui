@@ -6,9 +6,9 @@ import { useConfig } from '../config/ConfigService';
 import { createSubstituteContext, GenericContextProviderProps } from './GenericContext';
 
 const keycloakParams = {
-	url: `${process.env.REACT_APP_KEYCLOAK_BASE_URL ?? 'https://localhost:8080'}/auth/`,
-	realm: `${process.env.REACT_APP_KEYCLOAK_REALM ?? ''}`,
-	clientId: `${process.env.REACT_APP_KEYCLOAK_CLIENT_ID ?? ''}`
+	url: `${import.meta.env.REACT_APP_KEYCLOAK_BASE_URL ?? 'https://localhost:8080'}/auth/`,
+	realm: `${import.meta.env.REACT_APP_KEYCLOAK_REALM ?? ''}`,
+	clientId: `${import.meta.env.REACT_APP_KEYCLOAK_CLIENT_ID ?? ''}`
 };
 
 const authInstance = new Keycloak(keycloakParams) as any;
