@@ -23,7 +23,7 @@ FROM python:3.11 AS wheel-builder
 COPY src/libs/converter/ .
 
 # Install Poetry and build the wheel package.
-RUN pip install --no-cache-dir pip install "poetry ~= 1.8.2" \
+RUN pip install --no-cache-dir "poetry ~= 1.8.2" \
     && poetry build --format wheel --no-ansi
 
 # Stage 3: Build the application.
