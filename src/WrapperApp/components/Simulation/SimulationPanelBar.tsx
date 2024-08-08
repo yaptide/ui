@@ -9,6 +9,7 @@ import {
 	Button,
 	ButtonBase,
 	ButtonGroup,
+	ButtonGroupProps,
 	ButtonProps,
 	Card,
 	CardProps,
@@ -100,7 +101,11 @@ export function PageSizeSelect(props: PageSizeSelectProps) {
 	);
 }
 
-export const InputGroup: typeof ButtonGroup = styled(ButtonGroup)(
+type InputGroupProps = ButtonGroupProps & {
+	children: React.ReactNode;
+};
+
+export const InputGroup = styled(ButtonGroup)<InputGroupProps>(
 	({
 		theme: {
 			shape: { borderRadius },
@@ -192,7 +197,7 @@ export function SimulationAppBar({
 						? 'transparent'
 						: `linear-gradient(${stickTo === 'top' ? '180' : '0'}deg , ${
 								palette.background.default
-						  } 50%, transparent 100%)`,
+							} 50%, transparent 100%)`,
 				...sx
 			}}>
 			<AppBar
