@@ -168,7 +168,7 @@ export class ZoneManager
 		this.add(light);
 
 		this.worker = Comlink.wrap<ZoneWorker>(
-			new Worker(new URL('../../CSG/CSGWorker.ts', import.meta.url))
+			new Worker(new URL('../../CSG/CSGWorker.ts', import.meta.url), { type: 'module' })
 		);
 
 		this.signals = editor.signals;

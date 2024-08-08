@@ -21,9 +21,12 @@ const getAvailableStoppingPowerFiles = async (path: StoppingPowerTable) => {
 	for (let key in MappingIcruToName) {
 		const name = MappingIcruToName[key];
 		const icru = parseInt(key);
+		let pathToFile = '';
 
 		try {
-			const pathToFile = await import(/* @vite-ignore */ `./models/${path}/${name}`);
+			try {
+				pathToFile = await import(`./models/${path}/${name}.txt`);
+			} catch (error: any) {}
 
 			files[icru] = { name, icru, pathToFile };
 		} catch (error: any) {
@@ -42,8 +45,8 @@ export const CustomStoppingPowerModels: Record<
 	StoppingPowerTable,
 	Record<Icru, StoppingPowerFileMetadata>
 > = {
-	ICRU91: getAvailableStoppingPowerFiles('ICRU91'),
-	ICRU49: getAvailableStoppingPowerFiles('ICRU49')
+	ICRU91: await getAvailableStoppingPowerFiles('ICRU91'),
+	ICRU49: await getAvailableStoppingPowerFiles('ICRU49')
 } as const;
 
 export const addCustomStoppingPowerTableToEditorJSON = async (editorJson: EditorJson) => {

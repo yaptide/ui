@@ -41,7 +41,7 @@ const PythonConverter = (props: PythonConverterProps) => {
 
 	useEffect(() => {
 		workerRef.current = Comlink.wrap<PythonWorker>(
-			new Worker(new URL('./PythonWorker.ts', import.meta.url))
+			new Worker(new URL('./PythonWorker.ts', import.meta.url), { type: 'module' })
 		);
 
 		workerRef.current.initPyodide(

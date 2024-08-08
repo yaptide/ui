@@ -8,7 +8,6 @@ import { SimulationInputFiles } from '../types/ResponseTypes';
 
 // as for now there is no reasonable npm package for pyodide
 // CND method is suggested in https://pyodide.org/en/stable/usage/downloading-and-deploying.html
-importScripts('https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js');
 
 export interface PythonWorker {
 	initPyodide: (onReady: () => void) => void;
@@ -37,7 +36,12 @@ checkIfConverterReady()
 class PythonWorkerBase implements PythonWorker {
 	readonly isPythonWorker: true = true;
 	async initPyodide(onReady: () => void) {
-		const pyodide = await self.loadPyodide();
+		const pyodide = await import(
+			'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js'
+		).then(() =>
+			self.loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/' })
+		);
+
 		self.pyodide = pyodide;
 
 		console.log(pyodide.runPython('import sys\nsys.version'));
