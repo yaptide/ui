@@ -46,7 +46,7 @@ const Accordion = styled((props: AccordionProps) => (
 
 export function PropertiesCategory(props: {
 	category: string;
-	children: ReactNode;
+	children?: ReactNode;
 	visible?: boolean;
 }) {
 	const { category, children, visible = true } = props;
