@@ -23,6 +23,10 @@ export enum SimulatorType {
 	FLUKA = 'fluka'
 }
 
+export interface SimulatorExamples {
+	[key: string]: string;
+}
+
 export type RequestParam = [signal?: AbortSignal];
 
 /* ------------------------------------ */

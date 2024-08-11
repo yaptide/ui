@@ -7,7 +7,7 @@ describe('NavDrawer component', () => {
 	beforeAll(async () => {
 		driver = await new Builder()
 			.forBrowser('chrome')
-			.setChromeOptions(new chrome.Options().addArguments('--headless'))
+			.setChromeOptions(new chrome.Options().addArguments('--headless') as chrome.Options)
 			.build();
 	}, 30000);
 	//test timeouts are set to 30000 ms, as default timeout of 5000 ms is not enough for the test to pass in github actions

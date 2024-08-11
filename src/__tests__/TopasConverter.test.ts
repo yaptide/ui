@@ -8,7 +8,10 @@ describe('TopasConverter', () => {
 		driver = await new Builder()
 			.forBrowser('chrome')
 			.setChromeOptions(
-				new chrome.Options().addArguments('--window-size=1920,1080', '--headless')
+				new chrome.Options().addArguments(
+					'--window-size=1920,1080',
+					'--headless'
+				) as chrome.Options
 			)
 			.build();
 	}, 30_000);
