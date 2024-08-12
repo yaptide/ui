@@ -167,6 +167,7 @@ export function NavDrawerList({
 						}}
 						menuOption={{
 							label: 'Documentation',
+							tooltipLabel: 'Documentation',
 							value: 'documentation',
 							disabled: false,
 							icon: <AutoStoriesIcon fontSize='large' />
@@ -205,7 +206,7 @@ export function NavDrawerList({
 }
 
 function NavDrawerElement({
-	menuOption: { label, richLabel, value, disabled, info, description, icon },
+	menuOption: { label, richLabel, tooltipLabel, value, disabled, info, description, icon },
 	open,
 	selected,
 	secondaryAction,
@@ -235,7 +236,7 @@ function NavDrawerElement({
 
 	return (
 		<Tooltip
-			title={info ? <Typography>{info}</Typography> : undefined}
+			title={info ? <Typography>{info}</Typography> : <Typography>{tooltipLabel}</Typography>}
 			placement='right'>
 			<ListItem
 				secondaryAction={secondaryAction}
