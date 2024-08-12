@@ -21,6 +21,7 @@ import { NavDrawerList } from './NavDrawerList';
 export type MenuOption = {
 	label: string;
 	richLabel?: ReactNode;
+	tooltipLabel?: string;
 	description?: ReactNode;
 	info?: ReactNode;
 	value: string;
@@ -102,16 +103,19 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 	const menuOptions: MenuOption[] = [
 		{
 			label: 'Editor',
+			tooltipLabel: 'Editor',
 			value: 'editor',
 			icon: <ViewInArIcon fontSize='large' />
 		},
 		{
 			label: 'Input files',
+			tooltipLabel: 'Input files',
 			value: 'inputFiles',
 			icon: <DescriptionIcon fontSize='large' />
 		},
 		{
 			label: 'Results',
+			tooltipLabel: 'Results',
 			value: 'results',
 			disabled: !resultsSimulationData,
 			info: !resultsSimulationData ? 'There are no results to display.' : undefined,
@@ -119,6 +123,7 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 		},
 		{
 			label: 'About',
+			tooltipLabel: 'About',
 			value: 'about',
 			icon: <InfoIcon fontSize='large' />
 		}
@@ -129,6 +134,7 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 	if (!demoMode) {
 		menuOptions.splice(2, 0, {
 			label: 'Simulations',
+			tooltipLabel: 'Simulations',
 			value: 'simulations',
 			disabled: !isAuthorized,
 			info: !isAuthorized ? 'You need to be logged in to use this feature.' : undefined,
