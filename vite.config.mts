@@ -12,6 +12,9 @@ export default defineConfig(async () => {
 		worker: {
 			plugins: () => [comlink()]
 		},
+		optimizeDeps: {
+			exclude: ['PythonWorker.ts']
+		},
 		server: {
 			port: 3000,
 			open: true

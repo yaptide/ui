@@ -37,9 +37,9 @@ class PythonWorkerBase implements PythonWorker {
 	readonly isPythonWorker: true = true;
 	async initPyodide(onReady: () => void) {
 		const pyodide = await import(
-			'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js'
+			'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js'
 		).then(() =>
-			self.loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/' })
+			self.loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/' })
 		);
 
 		self.pyodide = pyodide;
@@ -47,8 +47,8 @@ class PythonWorkerBase implements PythonWorker {
 		console.log(pyodide.runPython('import sys\nsys.version'));
 
 		await pyodide.loadPackage(['micropip']);
-
-		const converterFolder = import.meta.env.PUBLIC_URL + '/libs/converter/dist/';
+		const publicURL = import.meta.env.PUBLIC_URL || '';
+		const converterFolder = publicURL + '/libs/converter/dist/';
 		const jsonUrl = converterFolder + 'yaptide_converter.json';
 
 		const json = await (await fetch(jsonUrl)).json();
@@ -59,7 +59,7 @@ class PythonWorkerBase implements PythonWorker {
 
 		await pyodide.runPythonAsync(`			
 import micropip
-await micropip.install('${import.meta.env.PUBLIC_URL}/libs/converter/dist/${converterFileName}') 
+await micropip.install('${publicURL}/libs/converter/dist/${converterFileName}') 
 print(micropip.list())
 			`);
 		onReady();
