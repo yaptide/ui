@@ -71,7 +71,6 @@ export const PARTICLE_TYPES = [
 	}
 ] as const satisfies readonly ParticleType[];
 
-
 export const FLUKA_PARTICLE_TYPES = [
 	{
 		id: 26,

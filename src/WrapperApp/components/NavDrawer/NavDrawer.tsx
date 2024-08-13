@@ -175,8 +175,12 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 								}
 								label={
 									<Typography
-										variant='h5'
-										sx={{ opacity: open ? 1 : 0 }}>
+										sx={{
+											opacity: open ? 1 : 0,
+											fontSize: '1.5em',
+											marginBlockStart: '0.67em',
+											marginBlockEnd: '0.67em'
+										}}>
 										YAPTIDE
 									</Typography>
 								}
