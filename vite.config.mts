@@ -8,9 +8,15 @@ import viteTsconfigPaths from 'vite-tsconfig-paths';
 // https://vitejs.dev/config/
 export default defineConfig(async () => {
 	return {
-		plugins: [comlink(), react(), viteTsconfigPaths(), svgrPlugin(), dynamicImport()],
+		plugins: [comlink(), 
+			react(
+				{include: '*.{jsx,tsx}',}
+			), 
+			viteTsconfigPaths(), svgrPlugin(), 
+			dynamicImport()],
 		worker: {
-			plugins: () => [comlink()]
+			plugins: () => [comlink()],
+			format: 'es'
 		},
 		optimizeDeps: {
 			exclude: ['PythonWorker.ts']

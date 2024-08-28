@@ -73,7 +73,7 @@
 		"predev": "npm run setup",
 		"dev": "cross-env VITE_REACT_APP_DEPLOYMENT=dev VITE_REACT_APP_TARGET=demo vite",
 		"prestart": "npm run setup skip",
-		"start": "vite",
+		"start": "vite serve",
 		"start-demo": "cross-env VITE_REACT_APP_TARGET=demo npm run start",
 		"start-plg": "cross-env VITE_REACT_APP_ALT_AUTH=plg npm run start",
 		"test": "react-app-rewired test",
