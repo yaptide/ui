@@ -207,7 +207,7 @@
 		"@types/react-async-script": "^1.2.5",
 		"@types/react-copy-to-clipboard": "^5.0.7",
 		"@types/selenium-webdriver": "^4.1.26",
-		"@types/three": "^0.164.1",
+		"@types/three": "^0.167.2",
 		"cross-env": "^7.0.3",
 		"eslint-plugin-simple-import-sort": "^12.1.1",
 		"gh-pages": "^6.1.1",
