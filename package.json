@@ -214,7 +214,7 @@
 		"husky": "^9.1.5",
 		"jest-matcher-deep-close-to": "^3.0.2",
 		"lint-staged": "^15.2.9",
-		"prettier": "3.3.2",
+		"prettier": "3.3.3",
 		"react-app-rewired": "^2.2.1",
 		"selenium-webdriver": "^4.23.0"
 	},
