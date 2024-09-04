@@ -100,7 +100,13 @@ export function NumberInput(props: {
 		createNumberInput({
 			...props,
 			update: event => {
-				props.onChange(parseFloat(event.target.value));
+				let value = '0';
+
+				if (event.target) {
+					value = event.traget.value;
+				}
+
+				props.onChange(parseFloat(value));
 			}
 		})
 	);
@@ -156,9 +162,9 @@ export function ColorInput(props: { value: string; onChange: (value: number) => 
 	}, [input, props.value]);
 
 	useEffect(() => {
-		input.onChange(() => {
+		input.onChange = () => {
 			props.onChange(input.getHexValue());
-		});
+		};
 	}, [input, props]);
 
 	return (
