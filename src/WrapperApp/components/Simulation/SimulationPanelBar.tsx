@@ -9,6 +9,7 @@ import {
 	Button,
 	ButtonBase,
 	ButtonGroup,
+	ButtonGroupTypeMap,
 	ButtonProps,
 	Card,
 	CardProps,
@@ -19,6 +20,7 @@ import {
 	Tooltip,
 	Typography
 } from '@mui/material';
+import { OverridableComponent } from '@mui/material/OverridableComponent';
 import { ChangeEvent } from 'react';
 
 import { OrderBy, OrderType } from '../../../types/RequestTypes';
@@ -131,7 +133,7 @@ export const InputGroup: typeof ButtonGroup = styled(ButtonGroup)(
 			}
 		}
 	})
-);
+) as OverridableComponent<ButtonGroupTypeMap<{}, 'div'>>;
 
 export function BackendStatusIndicator({
 	isBackendAlive,
@@ -192,7 +194,7 @@ export function SimulationAppBar({
 						? 'transparent'
 						: `linear-gradient(${stickTo === 'top' ? '180' : '0'}deg , ${
 								palette.background.default
-						  } 50%, transparent 100%)`,
+							} 50%, transparent 100%)`,
 				...sx
 			}}>
 			<AppBar

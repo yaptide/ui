@@ -3,7 +3,9 @@ import { PropertiesCategory } from './PropertiesCategory';
 
 export function BeamModifiersConfiguration(props: { editor: YaptideEditor }) {
 	return (
-		<PropertiesCategory category='Beam Modulator'>
+		<PropertiesCategory
+			category='Beam Modulator'
+			children={undefined}>
 			{/*
 		   TODO: implement configuration for beam modifiers
 		   */}

@@ -161,7 +161,7 @@ export function OpenFileDialog({
 									onClose();
 
 									fetchExampleData(
-										EXAMPLES[selectedSimulator][
+										(EXAMPLES[selectedSimulator] as Record<string, string>)[
 											Object.keys(EXAMPLES[selectedSimulator])[
 												exampleIndex ?? 0
 											]
