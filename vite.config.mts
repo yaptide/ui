@@ -4,7 +4,7 @@ import { comlink } from 'vite-plugin-comlink';
 import dynamicImport from 'vite-plugin-dynamic-import';
 import svgrPlugin from 'vite-plugin-svgr';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
-import nodePolyfills from 'rollup-plugin-polyfill-node';
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import commonjs from 'vite-plugin-commonjs';
 import EnvironmentPlugin from 'vite-plugin-environment';
 // https://vitejs.dev/config/
@@ -29,7 +29,13 @@ export default defineConfig(async () => {
 		},
 		optimizeDeps: {
 			exclude: ['PythonWorker.ts'],
-			include: ['react' ,'react-dom', '@emotion/react']
+			include: ['react', 'react-dom', '@emotion/react', 'fflate']
+		},
+		build: {
+			target: "esnext",
+			rollupOptions: {
+			  external: ['fflate', 'specificity']
+			}
 		},
 		server: {
 			port: 3000,
