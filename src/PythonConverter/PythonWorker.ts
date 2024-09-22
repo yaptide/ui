@@ -6,9 +6,6 @@ import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles } from '../types/ResponseTypes';
 
-// as for now there is no reasonable npm package for pyodide
-// CND method is suggested in https://pyodide.org/en/stable/usage/downloading-and-deploying.html
-
 export interface PythonWorker {
 	initPyodide: (onReady: () => void) => void;
 	close: () => void;
@@ -37,9 +34,9 @@ class PythonWorkerBase implements PythonWorker {
 	readonly isPythonWorker: true = true;
 	async initPyodide(onReady: () => void) {
 		const pyodide = await import(
-			'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js'
+			'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js'
 		).then(() =>
-			self.loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/' })
+			self.loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/' })
 		);
 
 		self.pyodide = pyodide;
