@@ -102,7 +102,11 @@ export function PageSizeSelect(props: PageSizeSelectProps) {
 	);
 }
 
-export const InputGroup: typeof ButtonGroup = styled(ButtonGroup)(
+type InputGroupProps = ButtonGroupProps & {
+	children: React.ReactNode;
+};
+
+export const InputGroup = styled(ButtonGroup)<InputGroupProps>(
 	({
 		theme: {
 			shape: { borderRadius },

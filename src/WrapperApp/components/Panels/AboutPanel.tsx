@@ -1,4 +1,4 @@
-import { Box, Link } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 
 export function AboutPanel() {
 	return (
@@ -9,7 +9,15 @@ export function AboutPanel() {
 				flexDirection: 'column',
 				justifyContent: 'space-between'
 			}}>
-			<h1>About</h1>
+			<Typography
+				sx={{
+					fontWeight: 'bold',
+					fontSize: '2em',
+					marginBlockStart: '0.67em',
+					marginBlockEnd: '0.67em'
+				}}>
+				About
+			</Typography>
 			<p>
 				{'This work was supported by the '}
 				<Link
