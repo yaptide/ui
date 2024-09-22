@@ -9,6 +9,7 @@ import {
 	Button,
 	ButtonBase,
 	ButtonGroup,
+	ButtonGroupProps,
 	ButtonGroupTypeMap,
 	ButtonProps,
 	Card,
