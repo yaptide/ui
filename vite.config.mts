@@ -39,12 +39,12 @@ export default defineConfig(async () => {
 			}
 		},
 		test: {
-			environment: 'jsdom',
+			environment: 'node',
 			globals: true,
 			coverage: {
 			  reporter: ['text', 'json', 'html'],
 			},
-			exclude: [...configDefaults.exclude, 'e2e/*'],  // Wyklucz e2e testy, jeśli są
+			exclude: [...configDefaults.exclude, 'e2e/*'],
 		  },
 		server: {
 			port: 3000,

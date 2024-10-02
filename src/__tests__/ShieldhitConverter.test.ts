@@ -1,7 +1,7 @@
-import { fs } from 'memfs';
+import * as fs from 'fs';
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
-import { describe, expect,it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 describe('ShieldhitConverter', () => {
 	let driver: WebDriver;
@@ -24,7 +24,7 @@ describe('ShieldhitConverter', () => {
 	}, 30_000);
 
 	//this test checks if converter works correctly - opens an example and generates config files
-	it('converter generates correct files', async () => {
+	test('converter generates correct files', async () => {
 		await driver.get('http://localhost:3000');
 
 		// Wait for the application to load
