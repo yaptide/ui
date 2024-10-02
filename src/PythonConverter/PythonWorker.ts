@@ -34,9 +34,9 @@ class PythonWorkerBase implements PythonWorker {
 	readonly isPythonWorker: true = true;
 	async initPyodide(onReady: () => void) {
 		const pyodide = await import(
-			'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js'
+			'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js'
 		).then(() =>
-			self.loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/' })
+			self.loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/' })
 		);
 
 		self.pyodide = pyodide;
