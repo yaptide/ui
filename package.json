@@ -17,7 +17,7 @@
 		"@testing-library/react": "^12.1.2",
 		"@testing-library/user-event": "^14.5.2",
 		"@types/jest": "^29.5.12",
-		"@types/node": "^22.5.4",
+		"@types/node": "^22.7.4",
 		"@types/react-dom": "^17.0.11",
 		"@types/signals": "^1.0.4",
 		"@types/throttle-debounce": "^5.0.2",
@@ -29,10 +29,10 @@
 		"comlink": "^4.3.1",
 		"command-exists": "^1.2.9",
 		"convert-units": "^3.0.0-beta.7",
-		"date-fns": "^3.6.0",
+		"date-fns": "^4.1.0",
 		"glob": "^11.0.0",
 		"jsroot": "^7.7.3",
-		"keycloak-js": "^25.0.4",
+		"keycloak-js": "^25.0.6",
 		"keycloak-react-web": "^0.1.19",
 		"ky": "^1.7.2",
 		"material-ui-popup-state": "^5.3.1",
@@ -228,7 +228,7 @@
 		"lint-staged": "^15.2.10",
 		"prettier": "3.3.3",
 		"react-app-rewired": "^2.2.1",
-		"selenium-webdriver": "^4.24.0"
+		"selenium-webdriver": "^4.25.0"
 	},
 	"lint-staged": {
 		"*.{ts,tsx,js,jsx}": [
