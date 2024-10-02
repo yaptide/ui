@@ -33,11 +33,15 @@ checkIfConverterReady()
 class PythonWorkerBase implements PythonWorker {
 	readonly isPythonWorker: true = true;
 	async initPyodide(onReady: () => void) {
-		const pyodide = await import(
-			'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js'
-		).then(() =>
-			self.loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/' })
-		);
+		const pyodideDownloadLink = 'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/';
+		const pyodideUrl = pyodideDownloadLink + 'pyodide.js';
+
+		const response = await fetch(pyodideUrl);
+		const code = await response.text();
+
+		eval(code);
+
+		const pyodide = await self.loadPyodide({ indexURL: pyodideDownloadLink });
 
 		self.pyodide = pyodide;
 

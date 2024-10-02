@@ -1,6 +1,7 @@
-import { readFileSync } from 'fs';
+import { fs } from 'memfs';
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
+import { describe, expect,it } from 'vitest';
 
 describe('ShieldhitConverter', () => {
 	let driver: WebDriver;
@@ -23,7 +24,7 @@ describe('ShieldhitConverter', () => {
 	}, 30_000);
 
 	//this test checks if converter works correctly - opens an example and generates config files
-	test('converter generates correct files', async () => {
+	it('converter generates correct files', async () => {
 		await driver.get('http://localhost:3000');
 
 		// Wait for the application to load
@@ -210,10 +211,12 @@ describe('ShieldhitConverter', () => {
 				.getText()
 		).replace(regex, '');
 
-		const expectedGeoText = readFileSync(
-			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/geo.dat',
-			'utf-8'
-		).replace(regex, '');
+		const expectedGeoText = fs
+			.readFileSync(
+				'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/geo.dat',
+				{ encoding: 'utf8' }
+			)
+			.replace(regex, '');
 		expect(expectedGeoText).not.toBe('');
 		expect(geoText).toContain(expectedGeoText);
 
@@ -223,10 +226,12 @@ describe('ShieldhitConverter', () => {
 				.getText()
 		).replace(regex, '');
 
-		const expectedMatText = readFileSync(
-			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/mat.dat',
-			'utf-8'
-		).replace(regex, '');
+		const expectedMatText = fs
+			.readFileSync(
+				'../src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/mat.dat',
+				{ encoding: 'utf8' }
+			)
+			.replace(regex, '');
 		expect(expectedMatText).not.toBe('');
 		expect(matText).toContain(expectedMatText);
 
@@ -236,10 +241,12 @@ describe('ShieldhitConverter', () => {
 				.getText()
 		).replace(regex, '');
 
-		const expectedBeamText = readFileSync(
-			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/beam.dat',
-			'utf-8'
-		).replace(regex, '');
+		const expectedBeamText = fs
+			.readFileSync(
+				'../src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/beam.dat',
+				{ encoding: 'utf8' }
+			)
+			.replace(regex, '');
 
 		expect(expectedBeamText).not.toBe('');
 		expect(beamText).toContain(expectedBeamText);
@@ -250,10 +257,12 @@ describe('ShieldhitConverter', () => {
 				.getText()
 		).replace(regex, '');
 
-		const expectedDetectText = readFileSync(
-			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/detect.dat',
-			'utf-8'
-		).replace(regex, '');
+		const expectedDetectText = fs
+			.readFileSync(
+				'../src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/detect.dat',
+				{ encoding: 'utf8' }
+			)
+			.replace(regex, '');
 		expect(expectedDetectText).not.toBe('');
 		expect(detectText).toContain(expectedDetectText);
 	}, 50_000);

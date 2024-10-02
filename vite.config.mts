@@ -7,6 +7,7 @@ import viteTsconfigPaths from 'vite-tsconfig-paths';
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import commonjs from 'vite-plugin-commonjs';
 import EnvironmentPlugin from 'vite-plugin-environment';
+import { configDefaults } from 'vitest/config';
 // https://vitejs.dev/config/
 export default defineConfig(async () => {
 	return {
@@ -37,6 +38,14 @@ export default defineConfig(async () => {
 			  external: ['fflate', 'specificity']
 			}
 		},
+		test: {
+			environment: 'jsdom',
+			globals: true,
+			coverage: {
+			  reporter: ['text', 'json', 'html'],
+			},
+			exclude: [...configDefaults.exclude, 'e2e/*'],  // Wyklucz e2e testy, jeśli są
+		  },
 		server: {
 			port: 3000,
 			open: true
