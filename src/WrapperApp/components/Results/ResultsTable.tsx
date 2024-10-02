@@ -1,6 +1,6 @@
 import { Button, Stack, Switch, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridValueGetter } from '@mui/x-data-grid';
 import { ChangeEvent, useState } from 'react';
 
 import { isCustomFilterJSON } from '../../../ThreeEditor/Simulation/Scoring/CustomFilter';
@@ -28,7 +28,7 @@ const columns: GridColDef[] = [
 		headerName: 'Value',
 		type: 'number',
 		flex: 1,
-		valueGetter: (params: GridValueGetterParams) => formatValue(params.row.value)
+		valueGetter: (value, row) => formatValue(row.value)
 	},
 	{ field: 'unit', headerName: 'Unit', width: 100 },
 	{ field: 'filterName', headerName: 'Filter name', flex: 1 },
