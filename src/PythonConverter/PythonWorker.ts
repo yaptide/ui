@@ -35,11 +35,11 @@ class PythonWorkerBase implements PythonWorker {
 	async initPyodide(onReady: () => void) {
 		const pyodideDownloadLink = 'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/';
 		const pyodideUrl = pyodideDownloadLink + 'pyodide.js';
-
 		const response = await fetch(pyodideUrl);
 		const code = await response.text();
 
-		eval(code);
+		const initPyodide = new Function(code);
+		initPyodide();
 
 		const pyodide = await self.loadPyodide({ indexURL: pyodideDownloadLink });
 
