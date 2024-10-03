@@ -1,7 +1,15 @@
-import * as fs from 'fs';
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
-import { describe, expect, it } from 'vitest';
+import expectedBeamText from 'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/beam.dat?raw';
+import expectedDetectText from 'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/detect.dat?raw';
+import expectedGeoText from 'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/geo.dat?raw';
+import expectedMatText from 'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/mat.dat?raw';
+
+const normalizeText = (text: string) => {
+	return text
+		.replace(/[\r\n\s\-+![\](),;:\/_=<>]/g, '') // Usuwa wszystkie wymienione znaki
+		.trim();
+};
 
 describe('ShieldhitConverter', () => {
 	let driver: WebDriver;
@@ -210,15 +218,9 @@ describe('ShieldhitConverter', () => {
 				.findElement(By.xpath("//textarea[@aria-label = 'geo.dat text field']"))
 				.getText()
 		).replace(regex, '');
+		const normalizedExpectedGeoText = normalizeText(expectedGeoText);
 
-		const expectedGeoText = fs
-			.readFileSync(
-				'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/geo.dat',
-				{ encoding: 'utf8' }
-			)
-			.replace(regex, '');
-		expect(expectedGeoText).not.toBe('');
-		expect(geoText).toContain(expectedGeoText);
+		expect(geoText).toBe(normalizedExpectedGeoText);
 
 		const matText = (
 			await driver
@@ -226,14 +228,9 @@ describe('ShieldhitConverter', () => {
 				.getText()
 		).replace(regex, '');
 
-		const expectedMatText = fs
-			.readFileSync(
-				'../src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/mat.dat',
-				{ encoding: 'utf8' }
-			)
-			.replace(regex, '');
+		const normalizedExpectedMatText = normalizeText(expectedMatText);
 		expect(expectedMatText).not.toBe('');
-		expect(matText).toContain(expectedMatText);
+		expect(matText).toContain(normalizedExpectedMatText);
 
 		const beamText = (
 			await driver
@@ -241,15 +238,10 @@ describe('ShieldhitConverter', () => {
 				.getText()
 		).replace(regex, '');
 
-		const expectedBeamText = fs
-			.readFileSync(
-				'../src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/beam.dat',
-				{ encoding: 'utf8' }
-			)
-			.replace(regex, '');
+		const normalizedExpectedBeamText = normalizeText(expectedBeamText);
 
 		expect(expectedBeamText).not.toBe('');
-		expect(beamText).toContain(expectedBeamText);
+		expect(beamText).toContain(normalizedExpectedBeamText);
 
 		const detectText = (
 			await driver
@@ -257,13 +249,8 @@ describe('ShieldhitConverter', () => {
 				.getText()
 		).replace(regex, '');
 
-		const expectedDetectText = fs
-			.readFileSync(
-				'../src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/detect.dat',
-				{ encoding: 'utf8' }
-			)
-			.replace(regex, '');
+		const normalizedExpectedDetectText = normalizeText(expectedDetectText);
 		expect(expectedDetectText).not.toBe('');
-		expect(detectText).toContain(expectedDetectText);
+		expect(detectText).toContain(normalizedExpectedDetectText);
 	}, 50_000);
 });
