@@ -5,13 +5,13 @@ import fse from 'fs-extra';
 import path from 'path';
 import { URL } from 'url';
 
-const PUBLIC_PATH = import.meta.env.VITE_PUBLIC_PATH || '/';
+const PUBLIC_PATH = process.env.VITE_PUBLIC_PATH || '/';
 
 (async () => {
 	const repoRootUrl = new URL('../', import.meta.url);
 	const repoRoot = repoRootUrl.pathname;
 	const repoFolder = repoRoot.split('/').filter(Boolean).pop() ?? '/';
-	const sourceFolder = path.join(repoRoot, 'build/static/js');
+	const sourceFolder = path.join(repoRoot, 'dist/assets');
 	console.dir({ repoRoot, repoFolder, sourceFolder, PUBLIC_PATH });
 
 	if (!fse.existsSync(sourceFolder)) {

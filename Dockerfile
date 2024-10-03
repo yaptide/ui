@@ -82,7 +82,7 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY --from=cert-gen /certs /etc/nginx/conf.d
 
 # Copy the build folder from the build stage
-COPY --from=build /usr/src/app/build /usr/share/nginx/html
+COPY --from=build /usr/src/app/dist /usr/share/nginx/html
 
 # Copy the custom Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/app.conf
