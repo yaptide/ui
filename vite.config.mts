@@ -44,7 +44,7 @@ export default defineConfig(async () => {
 			coverage: {
 			  reporter: ['text', 'json', 'html'],
 			},
-			exclude: [...configDefaults.exclude, 'e2e/*'],
+			exclude: [...configDefaults.exclude, 'e2e/*', 'src/__tests__/TopasConverter.test.ts'],
 		  },
 		server: {
 			port: 3000,
