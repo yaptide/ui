@@ -253,6 +253,7 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 	const cancelSpecificSimulation = useCallback(
 		(jobId: string) => {
 			const info = simulationInfo.find(s => s.jobId === jobId);
+			const url = `user/simulations`;
 
 			if (!info) {
 				setLocalResultsSimulationData(prev => {
@@ -263,6 +264,7 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 					return [...prev];
 				});
 			} else {
+				info.endpointUrl = url;
 				cancelJob(info, controller.signal).then(() => {
 					refreshPage();
 				});

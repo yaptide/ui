@@ -85,6 +85,7 @@ export type SimulationInfo = {
 	startTime: string;
 	endTime?: string;
 	localData?: boolean;
+	endpointUrl?: string;
 };
 /* ------------------------------------ */
 
