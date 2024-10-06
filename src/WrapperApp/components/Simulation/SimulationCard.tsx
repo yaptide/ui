@@ -45,6 +45,7 @@ type SimulationCardProps = {
 	simulationStatus: JobStatusData;
 	loadResults?: (jobId: string | null) => void;
 	handleDelete?: (jobId: string) => void;
+	handleCancel?: (jobId: string) => void;
 	handleRefresh?: (jobId: string) => void;
 	showInputFiles?: (inputFiles?: SimulationInputFiles) => void;
 } & CardProps;
@@ -69,6 +70,7 @@ export default function SimulationCard({
 	simulationStatus,
 	loadResults,
 	handleDelete,
+	handleCancel,
 	handleRefresh,
 	showInputFiles,
 	...other
@@ -214,7 +216,7 @@ export default function SimulationCard({
 					(currentJobStatusData[StatusState.COMPLETED](simulationStatus) ||
 						currentJobStatusData[StatusState.FAILED](simulationStatus)) ? (
 						<Tooltip
-							title='Delete local data'
+							title='Delete simulation'
 							sx={{
 								zIndex: ({ zIndex }) => zIndex.appBar
 							}}>
@@ -387,7 +389,7 @@ export default function SimulationCard({
 									</Button>
 								);
 							} else if (
-								handleDelete &&
+								handleCancel &&
 								(currentJobStatusData[StatusState.RUNNING](simulationStatus) ||
 									currentJobStatusData[StatusState.PENDING](simulationStatus))
 							) {
@@ -395,7 +397,7 @@ export default function SimulationCard({
 									<Button
 										sx={{ fontSize: '.8em' }}
 										color='info'
-										onClick={() => handleDelete(simulationStatus.jobId)}
+										onClick={() => handleCancel(simulationStatus.jobId)}
 										size='small'>
 										Cancel
 									</Button>

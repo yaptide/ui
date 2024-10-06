@@ -253,6 +253,27 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 	const cancelSpecificSimulation = useCallback(
 		(jobId: string) => {
 			const info = simulationInfo.find(s => s.jobId === jobId);
+
+			if (!info) {
+				setLocalResultsSimulationData(prev => {
+					if (!prev) return [];
+					const index = prev.findIndex(s => s.jobId === jobId);
+					prev.splice(index, 1);
+
+					return [...prev];
+				});
+			} else {
+				cancelJob(info, controller.signal).then(() => {
+					refreshPage();
+				});
+			}
+		},
+		[simulationInfo, setLocalResultsSimulationData, cancelJob, controller.signal, refreshPage]
+	);
+
+	const deleteSpecificSimulation = useCallback(
+		(jobId: string) => {
+			const info = simulationInfo.find(s => s.jobId === jobId);
 			const url = `user/simulations`;
 
 			if (!info) {
@@ -294,7 +315,8 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 			}}
 			handleLoadResults={handleLoadResults}
 			handleRefresh={updateSpecificSimulationData}
-			handleDelete={cancelSpecificSimulation}
+			handleCancel={cancelSpecificSimulation}
+			handleDelete={deleteSpecificSimulation}
 			handleShowInputFiles={handleShowInputFiles}
 			isBackendAlive={isBackendAlive}
 		/>
