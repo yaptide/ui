@@ -31,10 +31,9 @@ export function createNumberInput(params) {
 		step
 	} = params;
 
-	const input = new UIScientificNumber(value)
-		.setPrecision(precision)
-		.setWidth('50px')
-		.onChange(update);
+	const input = new UIScientificNumber(value);
+	input.setPrecision(precision).setWidth('50px');
+	input.onChange = update;
 
 	if (unit !== undefined) input.setUnit(unit);
 

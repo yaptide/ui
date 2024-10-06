@@ -2,7 +2,7 @@ import { Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useEffect } from 'react';
 import { Object3D } from 'three';
 
-import { FLUKA_PARTICLE_TYPES,PARTICLE_TYPES } from '../../../../../types/Particle';
+import { FLUKA_PARTICLE_TYPES, PARTICLE_TYPES } from '../../../../../types/Particle';
 import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';

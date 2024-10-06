@@ -57,7 +57,8 @@ export function OpenFileDialog({
 	const [selectedSimulator, setSelectedSimulator] = useState<SimulatorType>(SimulatorType.COMMON);
 
 	function fetchExampleData(exampleName: string) {
-		fetch(`${process.env.PUBLIC_URL}/examples/${exampleName}`)
+		const publicURL = import.meta.env.PUBLIC_URL || '';
+		fetch(`${publicURL}/examples/${exampleName}`)
 			.then(function (response) {
 				if (response.status !== 200) {
 					console.log('Looks like there was a problem. Status Code: ' + response.status);
@@ -160,7 +161,7 @@ export function OpenFileDialog({
 									onClose();
 
 									fetchExampleData(
-										EXAMPLES[selectedSimulator][
+										(EXAMPLES[selectedSimulator] as Record<string, string>)[
 											Object.keys(EXAMPLES[selectedSimulator])[
 												exampleIndex ?? 0
 											]

@@ -15,20 +15,25 @@ export interface StoppingPowerFile {
 	content: string;
 }
 
-const getAvailableStoppingPowerFiles = (path: StoppingPowerTable) => {
+const getAvailableStoppingPowerFiles = async (path: StoppingPowerTable) => {
 	const files: Record<Icru, StoppingPowerFileMetadata> = {};
 
 	for (let key in MappingIcruToName) {
 		const name = MappingIcruToName[key];
 		const icru = parseInt(key);
+		let pathToFile = '';
 
 		try {
-			const pathToFile = require(`./models/${path}/${name}`);
+			try {
+				pathToFile = await import(`./models/${path}/${name}.txt`);
+				console.log(pathToFile);
+			} catch (error: any) {}
 
 			files[icru] = { name, icru, pathToFile };
 		} catch (error: any) {
 			if (error.code === 'MODULE_NOT_FOUND') {
 				// file not found
+				console.log(1);
 			} else {
 				throw error;
 			}
@@ -42,8 +47,8 @@ export const CustomStoppingPowerModels: Record<
 	StoppingPowerTable,
 	Record<Icru, StoppingPowerFileMetadata>
 > = {
-	ICRU91: getAvailableStoppingPowerFiles('ICRU91'),
-	ICRU49: getAvailableStoppingPowerFiles('ICRU49')
+	ICRU91: await getAvailableStoppingPowerFiles('ICRU91'),
+	ICRU49: await getAvailableStoppingPowerFiles('ICRU49')
 } as const;
 
 export const addCustomStoppingPowerTableToEditorJSON = async (editorJson: EditorJson) => {

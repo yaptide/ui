@@ -7,9 +7,9 @@ function ViewportCamera(viewport, cameras) {
 	cameraSelect.setPosition('absolute');
 	cameraSelect.setRight('10px');
 	cameraSelect.setTop('10px');
-	cameraSelect.onChange(() => {
+	cameraSelect.onChange = function () {
 		viewport.setCameraFromUuid(cameraSelect.getValue());
-	});
+	};
 
 	//
 
