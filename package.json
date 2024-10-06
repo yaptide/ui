@@ -30,6 +30,7 @@
 		"command-exists": "^1.2.9",
 		"convert-units": "^3.0.0-beta.7",
 		"date-fns": "^4.1.0",
+		"fflate": "^0.8.2",
 		"glob": "^11.0.0",
 		"jsroot": "^7.7.3",
 		"keycloak-js": "^25.0.6",
@@ -85,11 +86,12 @@
 		"test-demo": "cross-env VITE_TARGET=demo npm run test",
 		"test-plg": "cross-env VITE_REACT_APP_ALT_AUTH=plg npm run test",
 		"prebuild": "npm run setup",
-		"build": "tsc && vite build",
+		"build": "vite build",
 		"build-plg": "cross-env VITE_REACT_APP_ALT_AUTH=plg npm run build",
 		"build-demo": "cross-env VITE_REACT_APP_TARGET=demo npm run build",
 		"predeploy": "npm run setup && npm run build-demo && cross-env VITE_PUBLIC_PATH=/web_dev/ npm run fix-web-dev",
-		"deploy": "gh-pages --dist build --no-history"
+		"deploy": "gh-pages --dist build --no-history",
+		"preview": "vite preview"
 	},
 	"contributors": [
 		{

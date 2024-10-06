@@ -30,13 +30,19 @@ export default defineConfig(async () => {
 		},
 		optimizeDeps: {
 			exclude: ['PythonWorker.ts'],
-			include: ['react', 'react-dom', '@emotion/react', 'fflate']
+			include: ['react', 'react-dom', '@emotion/react', 'jsroot', 'three']
 		},
 		build: {
 			target: "esnext",
+			chunkSizeWarningLimit: 10000,
+			inlineDynamicImports: true,
 			rollupOptions: {
-			  external: ['fflate', 'specificity']
-			}
+				external: ['fflate', 'specificity'],
+				output: {
+					inlineDynamicImports: true,
+				},
+				
+			},
 		},
 		test: {
 			environment: 'node',
@@ -44,8 +50,11 @@ export default defineConfig(async () => {
 			coverage: {
 			  reporter: ['text', 'json', 'html'],
 			},
-			exclude: [...configDefaults.exclude, 'e2e/*', 'src/__tests__/TopasConverter.test.ts'],
+			exclude: [...configDefaults.exclude, 'src/__tests__/TopasConverter.test.ts'],
 		  },
+		preview:{
+			port: 5000
+		},
 		server: {
 			port: 3000,
 			open: true

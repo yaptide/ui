@@ -23,6 +23,7 @@ import {
 	FilterRule
 } from '../../../../../util/Ui/PropertiesOutliner';
 import { hideUIElement, showUIElement } from '../../../../../util/Ui/Uis';
+import { UIOutliner } from '../../../../js/libs/ui.three';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { isFloatRule, isIDRule, isIntRule } from '../../../../Simulation/Scoring/FilterRule';
 import { DETECTOR_MODIFIERS_OPTIONS } from '../../../../Simulation/Scoring/ScoringOutputTypes';
@@ -99,13 +100,8 @@ export function NumberInput(props: {
 	const inputRef = useRef(
 		createNumberInput({
 			...props,
-			update: event => {
-				let value = '0';
-
-				if (event.target) {
-					value = event.traget.value;
-				}
-
+			onChange: (event: any) => {
+				const value = event.target ? event.target.value : '0';
 				props.onChange(parseFloat(value));
 			}
 		})
@@ -126,12 +122,6 @@ export function NumberInput(props: {
 			box?.removeChild(input.dom);
 		};
 	}, []);
-
-	useEffect(() => {
-		inputRef.current.onChange((event: any) => {
-			props.onChange(parseFloat(event.target.value));
-		});
-	}, [props]);
 
 	return (
 		<Box>
@@ -399,34 +389,39 @@ export function ModifiersOutliner(props: {
 	onChange: (value: string) => void;
 }) {
 	const boxRef = useRef<HTMLDivElement>(null);
-
-	// TODO: Update when props change
-	const inputRef = useRef(
-		createModifiersOutliner(props.editor, {
-			update: () => {
-				props.onChange(inputRef.current.getValue());
-			}
-		})[0]
-	);
+	const inputRef = useRef<UIOutliner | null>(null);
 
 	useEffect(() => {
-		if (!boxRef.current) return;
-		const input = inputRef.current;
-		const box = boxRef.current;
-		box.appendChild(input.dom);
+		inputRef.current = createModifiersOutliner(props.editor, {
+			update: () => {
+				if (inputRef.current) {
+					props.onChange(inputRef.current.getValue());
+				}
+			}
+		})[0];
+
+		if (boxRef.current && inputRef.current) {
+			boxRef.current.appendChild(inputRef.current.dom);
+		}
 
 		return () => {
-			box?.removeChild(input.dom);
+			if (boxRef.current && inputRef.current) {
+				boxRef.current.removeChild(inputRef.current.dom);
+			}
 		};
-	}, []);
+	}, [props.editor]);
 
 	useEffect(() => {
-		inputRef.current.onChange(() => {
-			props.onChange(inputRef.current.getValue());
-		});
-		inputRef.current.setOptions(props.options);
-		inputRef.current.setValue(props.value);
-	}, [props]);
+		if (inputRef.current) {
+			inputRef.current.setOptions(props.options);
+			inputRef.current.setValue(props.value);
+
+			// Ustawiamy onChange
+			inputRef.current.onChange(() => {
+				props.onChange(inputRef.current?.getValue() || '');
+			});
+		}
+	}, [props.options, props.value]);
 
 	return (
 		<Box>

@@ -26,12 +26,14 @@ const getAvailableStoppingPowerFiles = async (path: StoppingPowerTable) => {
 		try {
 			try {
 				pathToFile = await import(`./models/${path}/${name}.txt`);
+				console.log(pathToFile);
 			} catch (error: any) {}
 
 			files[icru] = { name, icru, pathToFile };
 		} catch (error: any) {
 			if (error.code === 'MODULE_NOT_FOUND') {
 				// file not found
+				console.log(1);
 			} else {
 				throw error;
 			}
