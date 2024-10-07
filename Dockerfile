@@ -38,7 +38,7 @@ WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
 
 # Install app dependencies using npm ci as it is preferred for automated builds.
-RUN npm ci
+RUN npm ci  --production --jobs=$(nproc)
 
 # Bundle app source.
 COPY . .
