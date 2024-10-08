@@ -222,7 +222,7 @@ type JobAllStatuses =
  * To make it easier to read, it is a shorthand for `Partial<ObjUnionToKeyUnion<JobAllStatuses>>`
  * and should equal to it in all cases.
  */
-type JobUnknownStatus = {
+export type JobUnknownStatus = {
 	jobState?:
 		| StatusState.PENDING
 		| StatusState.RUNNING

@@ -19,7 +19,7 @@ import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import { JobStatusData, SimulationInputFiles } from '../../../types/ResponseTypes';
-import SimulationCard from './SimulationCard';
+import SimulationCard from './SimulationCard/SimulationCard';
 import {
 	BackendStatusIndicator,
 	InputGroup,
@@ -27,7 +27,6 @@ import {
 	PageParamProps,
 	SimulationAccordionProps,
 	SimulationBackendHeader,
-	SimulationLabelBar,
 	SimulationPaginationFooter
 } from './SimulationPanelBar';
 
