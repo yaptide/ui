@@ -183,8 +183,8 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 		) => Promise<void> = token => {
 			const yaptideServices = ['PLG_YAPTIDE_ACCESS'];
 
-			const validUser = yaptideServices.every(
-				service => token?.plgridAccessServices?.includes(service)
+			const validUser = yaptideServices.every(service =>
+				token?.plgridAccessServices?.includes(service)
 			);
 
 			if (validUser) return Promise.resolve();
@@ -216,7 +216,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 								: {
 										username,
 										source: 'keycloak'
-								  }
+									}
 						);
 						setRefreshInterval(getRefreshDelay(accessExp));
 					})
@@ -232,7 +232,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 						});
 					});
 			})
-			.catch(reason => {
+			.catch((reason: string) => {
 				openRejectKeycloakDialog({
 					reason,
 					keycloakAuth: { keycloak, initialized }
