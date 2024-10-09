@@ -10,7 +10,7 @@ import {
 	StatusState
 } from '../../../types/ResponseTypes';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
-import { BackendSimulations } from './BackendSimulations';
+import { BackendSimulations } from './BackendSimulations/BackendSimulations';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
