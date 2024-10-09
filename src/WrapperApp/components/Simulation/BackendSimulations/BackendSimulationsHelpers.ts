@@ -226,9 +226,9 @@ const BackendSimulationsHelpers = (
 					return [...prev];
 				});
 			} else {
-				setSimulationsStatusData(filterSimulationsByJobId(jobId));
 				info.endpointUrl = url;
 				cancelJob(info, controller.signal).then(() => {
+					setSimulationsStatusData(filterSimulationsByJobId(jobId));
 					refreshPage();
 				});
 			}

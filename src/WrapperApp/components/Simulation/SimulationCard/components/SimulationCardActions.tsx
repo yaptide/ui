@@ -1,8 +1,8 @@
 import { Button, ButtonGroup, CardActions } from '@mui/material';
 import { SnackbarKey } from 'notistack';
 
-import { FullSimulationData } from '../../../../services/ShSimulatorService';
-import { YaptideEditor } from '../../../../ThreeEditor/js/YaptideEditor';
+import { FullSimulationData } from '../../../../../services/ShSimulatorService';
+import { YaptideEditor } from '../../../../../ThreeEditor/js/YaptideEditor';
 import {
 	currentJobStatusData,
 	JobStatusFailed,
@@ -10,7 +10,7 @@ import {
 	SimulationInfo,
 	SimulationInputFiles,
 	StatusState
-} from '../../../../types/ResponseTypes';
+} from '../../../../../types/ResponseTypes';
 
 interface SimulationCardActionsProps {
 	simulationStatus: Omit<JobUnknownStatus & SimulationInfo, never>;

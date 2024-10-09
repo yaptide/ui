@@ -7,8 +7,8 @@ import {
 	JobUnknownStatus,
 	SimulationInfo,
 	StatusState
-} from '../../../../types/ResponseTypes';
-import { millisecondsToTimeString } from '../../../../util/time';
+} from '../../../../../types/ResponseTypes';
+import { millisecondsToTimeString } from '../../../../../util/time';
 
 interface SimulationCardHeaderProps {
 	displayDuration: string | boolean;

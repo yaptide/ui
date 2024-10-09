@@ -16,9 +16,9 @@ import {
 	JobUnknownStatus,
 	SimulationInfo,
 	StatusState
-} from '../../../../types/ResponseTypes';
-import { SimulationProgressBar } from '../SimulationProgressBar';
-import { useRows } from './RowUtils';
+} from '../../../../../types/ResponseTypes';
+import { SimulationProgressBar } from '../../SimulationProgressBar';
+import { useRows } from '../RowUtils';
 
 interface SimulationCardContentProps {
 	simulationStatus: Omit<JobUnknownStatus & SimulationInfo, never>;
