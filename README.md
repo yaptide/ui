@@ -54,7 +54,9 @@ UI can be deployed on different machine (with different IP) than a backend. Duri
 If the backend is deployed as a set of docker containers, then Flask is listening on port **6000** for HTTP requests (HTTPS is supported only via NGINX proxy) on a host called `yaptide_flask`. 
 Additionally, the main NGINX proxy server listens on port **5000** for plain HTTP and **8443** for HTTPS. Relevant configuration can be found in this [config file](https://github.com/yaptide/yaptide/blob/master/nginx.conf) of backend 
 
-**Make sure that both url for backend in `.env` and url typed in browser's address bar contain same domain part: either localhost or 127.0.0.1. When e.g. in browser frontend will be opend from localhost:3000 and REACT_APP_BACKEND_URL will be set to http://127.0.0.1:5000 the difference in domains will cause browser to block setting access_token and refresh_token returned from backend as part of a response to login request. It's because cookie option samesite='Lax' set in backend. Without those cookies each refresh request will fail.**
+**Make sure that both url for backend in `.env` and url typed in browser's address bar contain same domain part: either localhost (recommended) or 127.0.0.1. When e.g. in browser frontend will be opend from localhost:3000 and REACT_APP_BACKEND_URL will be set to http://127.0.0.1:5000 the difference in domains will cause browser to block setting access_token and refresh_token returned from backend as part of a response to login request. It's because cookie option samesite='Lax' set in backend. Without those cookies each refresh request will fail.**
+
+**When opening yaptide that runs from docker in chromium based browsers set ```REACT_APP_BACKEND_URL=https://localhost:8443``` in `.env`. Otherwise problem described above will appear. There are some differences how each browser implements security policies and those constantly change**
 
 
 #### Other configuration options are:
