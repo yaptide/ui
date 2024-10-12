@@ -1,6 +1,6 @@
 import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
 import { KeycloakProvider, useKeycloak } from 'keycloak-react-web';
-import { ReactNode, useCallback, useEffect } from 'react';
+import { ReactNode, useCallback } from 'react';
 
 import { useConfig } from '../config/ConfigService';
 import { createSubstituteContext, GenericContextProviderProps } from './GenericContext';
