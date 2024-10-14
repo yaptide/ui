@@ -5,7 +5,7 @@ import Menu from '@mui/icons-material/Menu';
 import MenuOpen from '@mui/icons-material/MenuOpen';
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
-import { Box, FormControlLabel, Typography } from '@mui/material';
+import { Box, Button, FormControlLabel, Typography } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
@@ -15,6 +15,8 @@ import { ReactElement, ReactNode, SyntheticEvent } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
+import { useDialog } from '../../../services/DialogService';
+import { useLoader } from '../../../services/LoaderService';
 import { useStore } from '../../../services/StoreService';
 import { NavDrawerList } from './NavDrawerList';
 
@@ -91,6 +93,8 @@ const getDrawer = () =>
 function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 	const { resultsSimulationData } = useStore();
 	const { isAuthorized } = useAuth();
+	const { open: openTheOpenFileDialog } = useDialog('openFile');
+	const { loadFromJson, loadFromFiles, loadFromUrl, loadFromJsonString } = useLoader();
 
 	const handleDrawerToggle = () => {
 		setOpen(!open);
@@ -98,6 +102,18 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 
 	const Drawer = getDrawer();
 	const { demoMode } = useConfig();
+
+	const onClickOpenExample = () => {
+		if (isAuthorized) {
+			openTheOpenFileDialog({
+				loadFromFiles,
+				loadFromJson,
+				loadFromUrl,
+				loadFromJsonString,
+				dialogState: '0'
+			});
+		}
+	};
 
 	// Order of elements in this list corresponds to their order in UI
 	const menuOptions: MenuOption[] = [
@@ -190,6 +206,12 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 				</DrawerHeader>
 				<Divider />
 			</Box>
+			<Button
+				color='info'
+				size='small'
+				onClick={onClickOpenExample}>
+				Open Example
+			</Button>
 			<NavDrawerList
 				menuOptions={menuOptions}
 				layout={open ? 'open' : 'closed'}

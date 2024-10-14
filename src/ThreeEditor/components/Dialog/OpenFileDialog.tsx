@@ -28,10 +28,11 @@ export function OpenFileDialog({
 	loadFromJson,
 	loadFromFiles,
 	loadFromUrl,
-	loadFromJsonString
-}: ConcreteDialogProps<LoaderContext>) {
+	loadFromJsonString,
+	dialogState
+}: ConcreteDialogProps<LoaderContext> & { dialogState: string }) {
 	const [currentFileList, setCurrentFileList] = useState<FileList>();
-	const [value, setValue] = useState('1');
+	const [value, setValue] = useState(dialogState);
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
 		setValue(newValue);
 	};

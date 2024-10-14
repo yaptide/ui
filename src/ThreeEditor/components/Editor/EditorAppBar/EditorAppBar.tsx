@@ -84,7 +84,8 @@ function EditorAppBar({ editor }: AppBarProps) {
 							loadFromFiles,
 							loadFromJson,
 							loadFromUrl,
-							loadFromJsonString
+							loadFromJsonString,
+							dialogState: '1'
 						})
 				},
 				{
