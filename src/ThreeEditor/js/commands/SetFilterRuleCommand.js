@@ -18,7 +18,7 @@ export class SetFilterRuleCommand extends Command {
 
 		this.object = object;
 		this.oldRule = filter
-			.getRuleByUuid(object ? object.uuid : filter.selectedRule.uuid)
+			.getRuleByUuid(object ? object?.uuid : filter.selectedRule.uuid)
 			?.toJSON();
 	}
 

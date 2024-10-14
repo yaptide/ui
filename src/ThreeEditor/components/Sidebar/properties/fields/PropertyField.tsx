@@ -416,7 +416,6 @@ export function ModifiersOutliner(props: {
 			inputRef.current.setOptions(props.options);
 			inputRef.current.setValue(props.value);
 
-			// Ustawiamy onChange
 			inputRef.current.onChange(() => {
 				props.onChange(inputRef.current?.getValue() || '');
 			});

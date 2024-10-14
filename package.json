@@ -71,7 +71,6 @@
 		"format": "prettier --ignore-path .gitignore --ignore-path .prettierignore --write --plugin-search-dir=. .",
 		"identify": "node ./src/util/identify/identify.js > ./src/util/identify/deployInfo.json",
 		"build-python": "node buildPython.js",
-		"fix-web-dev": "node scripts/fixDeploy.mjs",
 		"prepare": "husky",
 		"setup": "npm run identify && npm run build-python skip",
 		"eject": "react-scripts eject",
@@ -88,7 +87,7 @@
 		"build": "vite build",
 		"build-plg": "cross-env VITE_REACT_APP_ALT_AUTH=plg npm run build",
 		"build-demo": "cross-env VITE_REACT_APP_TARGET=demo npm run build",
-		"predeploy": "npm run setup && npm run build-demo && cross-env VITE_PUBLIC_PATH=/web_dev/ npm run fix-web-dev",
+		"predeploy": "npm run setup && npm run build-demo && cross-env VITE_PUBLIC_PATH=/web_dev/",
 		"deploy": "gh-pages --dist build --no-history",
 		"preview": "vite preview"
 	},

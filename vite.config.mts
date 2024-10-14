@@ -30,16 +30,15 @@ export default defineConfig(async () => {
 		},
 		optimizeDeps: {
 			exclude: ['PythonWorker.ts'],
-			include: ['react', 'react-dom', '@emotion/react', 'jsroot', 'three']
+			include: ['react', 'react-dom', '@emotion/react']
 		},
 		build: {
 			target: "esnext",
 			chunkSizeWarningLimit: 10000,
-			inlineDynamicImports: true,
 			rollupOptions: {
 				external: ['fflate', 'specificity'],
 				output: {
-					inlineDynamicImports: true,
+					//inlineDynamicImports: true,
 				},
 				
 			},

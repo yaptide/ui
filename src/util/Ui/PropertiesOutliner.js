@@ -149,21 +149,19 @@ export function createRuleConfigurationRow(params) {
 	const row = new UIRow();
 	row.dom.style.gridTemplateColumns = '1fr 35px 3fr 25px';
 	row.dom.style.display = 'grid';
-	const keywordSelect = new UISelect().setFontSize(FONT_SIZE).onChange(update);
+	const keywordSelect = new UISelect().setFontSize(FONT_SIZE);
+	keywordSelect.onChange = update;
 	keywordSelect.setOptions = setOptionsSorted.bind(keywordSelect);
 	keywordSelect.setOptions(options, sortFunc);
-	const operatorSelect = new UISelect()
-		.setOptions(operators)
-		.setFontSize(FONT_SIZE)
-		.onChange(update);
+	const operatorSelect = new UISelect().setOptions(operators).setFontSize(FONT_SIZE);
+	operatorSelect.onChange = update;
 
-	const idSelect = new UISelect()
-		.setFontSize(FONT_SIZE)
-		.onChange(update)
-		.setOptions(particles)
-		.setWidth('100%');
-	const valueInput = new UINumber().setPadding('2px 4px').onChange(update).setWidth('100%');
-	const deleteButton = new UIButton('✖').onClick(deleteRule);
+	const idSelect = new UISelect().setFontSize(FONT_SIZE).setOptions(particles).setWidth('100%');
+	idSelect.onChange = update;
+	const valueInput = new UINumber().setPadding('2px 4px').setWidth('100%');
+	valueInput.onChange = update;
+	const deleteButton = new UIButton('✖');
+	deleteButton.onClick = deleteRule;
 	row.add(keywordSelect, operatorSelect, idSelect, valueInput, deleteButton);
 
 	return [row, keywordSelect, operatorSelect, idSelect, valueInput, deleteButton];
