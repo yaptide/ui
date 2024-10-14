@@ -64,13 +64,7 @@ ARG DEPLOYMENT=prod
 RUN echo "Deploying for ${DEPLOYMENT}"
 
 # Build the app.
-RUN npx cross-env REACT_APP_DEPLOYMENT=${DEPLOYMENT} npm run build
-
-# The step below is a JavaScript module that fixes a bug 
-# related to the paths of static assets in a React application. 
-# The bug is caused by a known issue in the create-react-app package, 
-# which results in duplicate static/js entries in the paths of some chunk files.
-RUN npm run fix-web-dev
+RUN npx cross-env VITE_REACT_APP_DEPLOYMENT=${DEPLOYMENT} npm run build
 
 # Stage 4: Serve the app using Nginx.
 FROM nginx:alpine
@@ -82,7 +76,7 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY --from=cert-gen /certs /etc/nginx/conf.d
 
 # Copy the build folder from the build stage
-COPY --from=build /usr/src/app/build /usr/share/nginx/html
+COPY --from=build /usr/src/app/dist /usr/share/nginx/html
 
 # Copy the custom Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/app.conf
