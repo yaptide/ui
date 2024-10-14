@@ -52,7 +52,7 @@ export default defineConfig(async () => {
 			exclude: [...configDefaults.exclude, 'src/__tests__/TopasConverter.test.ts'],
 		  },
 		preview:{
-			port: 5000
+			port: 3000
 		},
 		server: {
 			port: 3000,

@@ -405,7 +405,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 	const cancelJob = useCallback(
 		(...[info, signal]: RequestCancelJob) =>
 			authKy
-				.delete(getEndpointFromSimulationInfo(info), {
+				.delete(info.endpointUrl ? info.endpointUrl : getEndpointFromSimulationInfo(info), {
 					signal,
 					searchParams: camelToSnakeCase({ jobId: info.jobId })
 				})

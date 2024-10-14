@@ -12,7 +12,7 @@
 		"@mui/lab": "^5.0.0-alpha.173",
 		"@mui/material": "^5.16.7",
 		"@mui/system": "^5.16.7",
-		"@mui/x-data-grid": "^7.18.0",
+		"@mui/x-data-grid": "^7.20.0",
 		"@testing-library/jest-dom": "^6.5.0",
 		"@testing-library/react": "^12.1.2",
 		"@testing-library/user-event": "^14.5.2",
@@ -213,7 +213,7 @@
 		]
 	},
 	"devDependencies": {
-		"@total-typescript/ts-reset": "^0.5.1",
+		"@total-typescript/ts-reset": "^0.6.1",
 		"@types/react": "^18.0.9",
 		"@types/react-async-script": "^1.2.5",
 		"@types/react-copy-to-clipboard": "^5.0.7",
@@ -221,7 +221,7 @@
 		"@types/three": "^0.164.1",
 		"cross-env": "^7.0.3",
 		"eslint-plugin-simple-import-sort": "^12.1.1",
-		"gh-pages": "^6.1.1",
+		"gh-pages": "^6.2.0",
 		"husky": "^9.1.6",
 		"jest-matcher-deep-close-to": "^3.0.2",
 		"lint-staged": "^15.2.10",
