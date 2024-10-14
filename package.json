@@ -78,7 +78,8 @@
 		"build-plg": "cross-env REACT_APP_ALT_AUTH=plg npm run build",
 		"build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
 		"predeploy": "npm run setup && npm run build-demo && cross-env PUBLIC_PATH=/web_dev/ npm run fix-web-dev",
-		"deploy": "gh-pages --dist build --no-history"
+		"deploy": "gh-pages --dist build --no-history",
+		"depcruise:archi": "depcruise --version && depcruise --config depcruise-config.js --output-type archi src | dot -T svg | depcruise-wrap-stream-in-html > high-level-dependencies.html"
 	},
 	"contributors": [
 		{
@@ -209,6 +210,7 @@
 		"@types/selenium-webdriver": "^4.1.26",
 		"@types/three": "^0.164.1",
 		"cross-env": "^7.0.3",
+		"dependency-cruiser": "^16.4.2",
 		"eslint-plugin-simple-import-sort": "^12.1.1",
 		"gh-pages": "^6.1.1",
 		"husky": "^9.1.6",
