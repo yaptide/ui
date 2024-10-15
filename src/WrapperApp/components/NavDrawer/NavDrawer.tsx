@@ -1,5 +1,6 @@
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import DescriptionIcon from '@mui/icons-material/Description';
+import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
 import InfoIcon from '@mui/icons-material/Info';
 import Menu from '@mui/icons-material/Menu';
 import MenuOpen from '@mui/icons-material/MenuOpen';
@@ -208,9 +209,17 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 			</Box>
 			<Button
 				color='info'
-				size='small'
+				size='large'
 				onClick={onClickOpenExample}>
-				Open Example
+				<Box
+					sx={{
+						minWidth: 0,
+						mr: 3,
+						justifyContent: 'center'
+					}}>
+					{<FolderSpecialIcon fontSize='large' />}
+				</Box>
+				<Box>Open Example</Box>
 			</Button>
 			<NavDrawerList
 				menuOptions={menuOptions}
