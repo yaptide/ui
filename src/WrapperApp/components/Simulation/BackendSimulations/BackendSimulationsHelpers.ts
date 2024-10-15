@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
 
 import { isFullSimulationData } from '../../../../services/LoaderService';
 import { OrderBy, OrderType } from '../../../../types/RequestTypes';
@@ -21,6 +21,8 @@ const BackendSimulationsHelpers = (
 	handlers: SimulationHandlers,
 	state: SimulationState
 ) => {
+	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const currentJobId = useRef<string>('');
 	const { demoMode, controller, trackedId, isBackendAlive } = config;
 	const { getPageContents, getPageStatus, getJobStatus, getFullSimulationData, cancelJob } =
 		handlers;
@@ -212,37 +214,43 @@ const BackendSimulationsHelpers = (
 		[simulationsStatusData]
 	);
 
-	const deleteSpecificSimulation = useCallback(
-		(jobId: string) => {
-			const info = simulationInfo.find(s => s.jobId === jobId);
-			const url = `user/simulations`;
+	console.log(currentJobId.current);
 
-			if (!info) {
-				setLocalResultsSimulationData(prev => {
-					if (!prev) return [];
-					const index = prev.findIndex(s => s.jobId === jobId);
-					prev.splice(index, 1);
+	const submitDelete = useCallback(() => {
+		const jobId = currentJobId.current;
+		const info = simulationInfo.find(s => s.jobId === jobId);
+		const url = `user/simulations`;
 
-					return [...prev];
-				});
-			} else {
-				setSimulationsStatusData(filterSimulationsByJobId(jobId));
-				info.endpointUrl = url;
-				cancelJob(info, controller.signal).then(() => {
-					refreshPage();
-				});
-			}
-		},
-		[
-			simulationInfo,
-			setLocalResultsSimulationData,
-			setSimulationsStatusData,
-			filterSimulationsByJobId,
-			cancelJob,
-			controller.signal,
-			refreshPage
-		]
-	);
+		if (!info) {
+			setLocalResultsSimulationData(prev => {
+				if (!prev) return [];
+				const index = prev.findIndex(s => s.jobId === jobId);
+				prev.splice(index, 1);
+
+				return [...prev];
+			});
+		} else {
+			setIsModalOpen(false);
+			info.endpointUrl = url;
+			setSimulationsStatusData(filterSimulationsByJobId(jobId));
+			cancelJob(info, controller.signal).then(() => {
+				refreshPage();
+			});
+		}
+	}, [
+		cancelJob,
+		controller.signal,
+		filterSimulationsByJobId,
+		refreshPage,
+		setLocalResultsSimulationData,
+		setSimulationsStatusData,
+		simulationInfo
+	]);
+
+	const deleteSpecificSimulation = (jobId: string) => {
+		setIsModalOpen(true);
+		currentJobId.current = jobId;
+	};
 
 	const handlePageChange = (event: ChangeEvent<unknown>, pageIdx: number) =>
 		autoRefreshPage({ pageIdx });
@@ -270,7 +278,10 @@ const BackendSimulationsHelpers = (
 		setPageCount,
 		cancelSpecificSimulation,
 		deleteSpecificSimulation,
-		pageData
+		pageData,
+		isModalOpen,
+		setIsModalOpen,
+		submitDelete
 	};
 };
 

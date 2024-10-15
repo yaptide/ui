@@ -9,6 +9,7 @@ import {
 	SimulationInputFiles
 } from '../../../../types/ResponseTypes';
 import useIntervalAsync from '../../../../util/hooks/useIntervalAsync';
+import CustomModal from '../CustomModal/CustomModal';
 import { PaginatedSimulationsFromBackend } from '../SimulationCardGrid';
 import BackendSimulationsHelpers from './BackendSimulationsHelpers';
 import { SimulationConfig, SimulationHandlers, SimulationState } from './BackendSimulationsTypes';
@@ -85,7 +86,10 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 		setPageCount,
 		cancelSpecificSimulation,
 		deleteSpecificSimulation,
-		pageData
+		pageData,
+		isModalOpen,
+		setIsModalOpen,
+		submitDelete
 	} = BackendSimulationsHelpers(config, handlers, state);
 
 	useBackendAliveEffect(config, handlers, updateSimulationInfo, setPageCount);
@@ -100,16 +104,25 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 	}, [controller]);
 
 	return (
-		<PaginatedSimulationsFromBackend
-			simulations={simulationsStatusData}
-			subtitle={'Yaptide backend server'}
-			pageData={pageData}
-			handleLoadResults={handleLoadResults}
-			handleRefresh={updateSpecificSimulationData}
-			handleCancel={cancelSpecificSimulation}
-			handleDelete={deleteSpecificSimulation}
-			handleShowInputFiles={handleShowInputFiles}
-			isBackendAlive={isBackendAlive}
-		/>
+		<>
+			<PaginatedSimulationsFromBackend
+				simulations={simulationsStatusData}
+				subtitle={'Yaptide backend server'}
+				pageData={pageData}
+				handleLoadResults={handleLoadResults}
+				handleRefresh={updateSpecificSimulationData}
+				handleCancel={cancelSpecificSimulation}
+				handleDelete={deleteSpecificSimulation}
+				handleShowInputFiles={handleShowInputFiles}
+				isBackendAlive={isBackendAlive}
+			/>
+			{isModalOpen && (
+				<CustomModal
+					open={isModalOpen}
+					setOpen={setIsModalOpen}
+					onConfirm={submitDelete}
+				/>
+			)}
+		</>
 	);
 };
