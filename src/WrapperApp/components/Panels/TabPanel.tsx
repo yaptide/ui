@@ -1,7 +1,8 @@
 import { css } from '@emotion/css';
-import { Box, Theme, useTheme } from '@mui/material';
+import { Theme, useTheme } from '@mui/material';
+import Box from '@mui/material/Box';
 import { BoxProps } from '@mui/system';
-import { CSSProperties, ReactNode, useEffect, useState } from 'react';
+import React, { CSSProperties, ReactNode, useEffect, useState } from 'react';
 
 interface TabPanelProps extends BoxProps {
 	children?: ReactNode;
