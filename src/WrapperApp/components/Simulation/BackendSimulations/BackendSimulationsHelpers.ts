@@ -214,8 +214,6 @@ const BackendSimulationsHelpers = (
 		[simulationsStatusData]
 	);
 
-	console.log(currentJobId.current);
-
 	const submitDelete = useCallback(() => {
 		const jobId = currentJobId.current;
 		const info = simulationInfo.find(s => s.jobId === jobId);
