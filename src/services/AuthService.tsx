@@ -194,12 +194,20 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				);
 		};
 
-		if (!initialized || !keycloak.authenticated) {
-			if (initialized && !keycloak.authenticated) {
-				logout();
-			}
-
+		if (!initialized) {
+			// keycloak authentication system not initilized (working in demo mode or keycloak not to handle authentication and authorization)
+			// skipping futher checks (for example: to ask backend if the keycloak token is OK
 			return;
+		} else {
+			// keycloak authentication is initilized, so it makes sense to check if user is authenticated in keycloak
+			if (!keycloak.authenticated) {
+				// user not authenticated, forcing logout from yaptide app
+				logout();
+
+				// skipping futher checks (for example: to ask backend if the keycloak token is OK
+				return;
+			}
+			// user authenticated, we proceed with further checks
 		}
 
 		checkPlgridAccessServices(keycloak.tokenParsed)
