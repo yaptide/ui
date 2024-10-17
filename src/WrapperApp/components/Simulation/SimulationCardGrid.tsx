@@ -127,8 +127,8 @@ export function SimulationCardGrid({
 					) : (
 						<Typography
 							variant='h5'
-							color={({ palette }: Theme) => palette.text.disabled}
 							sx={{
+								color: ({ palette }: Theme) => palette.text.disabled,
 								textAlign: 'center',
 								width: '100%',
 								p: ({ spacing }: Theme) => spacing(8, 4),
