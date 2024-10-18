@@ -13,7 +13,7 @@
 		"@mui/material": "^6.1.4",
 		"@mui/system": "^6.1.4",
 		"@mui/x-data-grid": "^7.20.0",
-		"@testing-library/jest-dom": "^6.6.1",
+		"@testing-library/jest-dom": "^6.6.2",
 		"@testing-library/react": "^12.1.2",
 		"@testing-library/user-event": "^14.5.2",
 		"@types/jest": "^29.5.13",
