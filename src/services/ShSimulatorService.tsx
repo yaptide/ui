@@ -1,3 +1,5 @@
+import { isPromise } from 'node:util/types';
+
 import { useCallback } from 'react';
 
 import { Estimator } from '../JsRoot/GraphData';
@@ -10,6 +12,7 @@ import {
 	RequestCancelJob,
 	RequestGetJobInputs,
 	RequestGetJobLogs,
+	RequestGetJobResult,
 	RequestGetJobResults,
 	RequestGetJobStatus,
 	RequestGetPageContents,
@@ -27,6 +30,7 @@ import {
 	PlatformType,
 	ResponseGetJobInputs,
 	ResponseGetJobLogs,
+	ResponseGetJobResult,
 	ResponseGetJobResults,
 	ResponseGetJobStatus,
 	ResponseGetPageContents,
@@ -40,6 +44,7 @@ import { useCacheMap } from '../util/hooks/useCacheMap';
 import { camelToSnakeCase } from '../util/Notation/Notation';
 import { orderAccordingToList } from '../util/Sort';
 import { ValidateShape } from '../util/Types';
+import { EstimatorResults } from '../WrapperApp/components/Results/ResultsPanel';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import { useAuth } from './AuthService';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
@@ -69,13 +74,15 @@ export interface RestSimulationContext {
 	getJobStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
 	getJobInputs: (...args: RequestGetJobInputs) => Promise<JobInputs | undefined>;
 	getJobResults: (...args: RequestGetJobResults) => Promise<JobResults | undefined>;
+	getJobResult: (...args: RequestGetJobResult) => Promise<JobResults | undefined>;
 	getJobLogs: (...args: RequestGetJobLogs) => Promise<JobLogs | undefined>;
 	getPageContents: (...args: RequestGetPageContents) => Promise<ResponseGetPageContents>;
 	getPageStatus: (...args: RequestGetPageStatus) => Promise<JobStatusData[] | undefined>;
 	getFullSimulationData: (
 		jobStatus: JobStatusData,
 		signal?: AbortSignal,
-		cache?: boolean
+		cache?: boolean,
+		givenEstimatorName?: string
 	) => Promise<FullSimulationData | undefined>;
 }
 
@@ -330,6 +337,77 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 		[authKy, getJobInputs, resultsCache]
 	);
 
+	const getJobResult = useCallback(
+		async (...[info, signal, cache = true, beforeCacheWrite]: RequestGetJobResult) => {
+			const { jobId, estimatorName } = info;
+
+			if (cache && resultsCache.has(jobId)) {
+				const data: Promise<JobResults> | JobResults | undefined = resultsCache.get(jobId);
+
+				if (data instanceof Promise) {
+					return data.then(resolvedData => {
+						const estimators = resolvedData.estimators;
+						const estimatorExists = estimators.some(
+							estimator => estimator.name === estimatorName
+						);
+
+						if (estimatorExists) return Promise.resolve(resolvedData);
+					});
+				} else if (data) {
+					const estimators = data.estimators;
+					const estimatorExists = estimators.some(
+						estimator => estimator.name === estimatorName
+					);
+
+					if (estimatorExists) return Promise.resolve(data);
+				}
+			}
+
+			const cachePromise = resultsCache.createPromise(
+				async resolve => {
+					const response = await authKy
+						.get('results', {
+							signal,
+							searchParams: camelToSnakeCase({
+								job_id: jobId,
+								estimator_name: estimatorName
+							})
+						})
+						.json<ResponseGetJobResult>();
+
+					const estimator: Estimator[] = [
+						{
+							name: response.name,
+							metadata: response.metadata,
+							pages: response.pages
+						}
+					];
+
+					updateEstimators(estimator);
+
+					const jobInputs = await getJobInputs(info, signal, cache);
+
+					const refsInResults =
+						jobInputs?.input.inputJson &&
+						recreateRefsInResults(jobInputs.input.inputJson, estimator);
+
+					const data: JobResults = {
+						...response,
+						jobId,
+						estimators: refsInResults ?? estimator
+					};
+
+					resolve(data);
+				},
+				jobId,
+				beforeCacheWrite
+			);
+
+			return await cachePromise;
+		},
+		[authKy, getJobInputs, resultsCache]
+	);
+
 	//TODO: fix backend responses and remove this function
 	const validStatusToCache = (data: JobStatusCompleted | JobStatusFailed) => {
 		if (data.jobState === StatusState.FAILED) return true;
@@ -448,11 +526,25 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 	);
 
 	const getFullSimulationData = useCallback(
-		async (jobStatus: JobStatusData, signal?: AbortSignal, cache = true) => {
+		async (
+			jobStatus: JobStatusData,
+			signal?: AbortSignal,
+			cache = true,
+			givenEstimatorName?: string
+		) => {
 			const inputs: JobInputs | undefined = await getJobInputs(jobStatus, signal, cache);
 			const results: JobResults | undefined =
 				jobStatus.jobState === StatusState.COMPLETED
-					? await getJobResults(jobStatus, signal, cache)
+					? await getJobResult(
+							{
+								jobId: jobStatus.jobId,
+								estimatorName: givenEstimatorName
+									? givenEstimatorName
+									: 'z_profile_'
+							},
+							signal,
+							cache
+						)
 					: undefined;
 
 			if (!inputs || !results) return undefined;
@@ -469,7 +561,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 			return simData;
 		},
-		[getJobInputs, getJobResults]
+		[getJobInputs, getJobResult]
 	);
 
 	return (
@@ -487,6 +579,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 				getPageStatus,
 				getJobInputs,
 				getJobResults,
+				getJobResult,
 				getJobLogs,
 				getFullSimulationData
 			}}>
