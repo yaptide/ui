@@ -26,7 +26,7 @@ export abstract class SimulationPoints
 {
 	editor: YaptideEditor;
 	parent: SimulationSceneContainer<this> | null = null;
-	material!: THREE.PointsMaterial;
+	declare material: THREE.PointsMaterial;
 	abstract wireframeHelper: THREE.Mesh;
 	readonly type: string;
 	readonly isSimulationElement = true;

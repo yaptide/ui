@@ -6,10 +6,6 @@ import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles } from '../types/ResponseTypes';
 
-// as for now there is no reasonable npm package for pyodide
-// CND method is suggested in https://pyodide.org/en/stable/usage/downloading-and-deploying.html
-importScripts('https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js');
-
 export interface PythonWorker {
 	initPyodide: (onReady: () => void) => void;
 	close: () => void;
@@ -37,14 +33,22 @@ checkIfConverterReady()
 class PythonWorkerBase implements PythonWorker {
 	readonly isPythonWorker: true = true;
 	async initPyodide(onReady: () => void) {
-		const pyodide = await self.loadPyodide();
+		const pyodideDownloadLink = 'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/';
+		const pyodideUrl = pyodideDownloadLink + 'pyodide.js';
+		const response = await fetch(pyodideUrl);
+		const code = await response.text();
+
+		const initPyodide = new Function(code);
+		initPyodide();
+
+		const pyodide = await self.loadPyodide({ indexURL: pyodideDownloadLink });
+
 		self.pyodide = pyodide;
 
 		console.log(pyodide.runPython('import sys\nsys.version'));
 
 		await pyodide.loadPackage(['micropip']);
-
-		const converterFolder = process.env.PUBLIC_URL + '/libs/converter/dist/';
+		const converterFolder = '/libs/converter/dist/';
 		const jsonUrl = converterFolder + 'yaptide_converter.json';
 
 		const json = await (await fetch(jsonUrl)).json();
@@ -55,7 +59,7 @@ class PythonWorkerBase implements PythonWorker {
 
 		await pyodide.runPythonAsync(`			
 import micropip
-await micropip.install('${process.env.PUBLIC_URL}/libs/converter/dist/${converterFileName}') 
+await micropip.install('/libs/converter/dist/${converterFileName}') 
 print(micropip.list())
 			`);
 		onReady();
