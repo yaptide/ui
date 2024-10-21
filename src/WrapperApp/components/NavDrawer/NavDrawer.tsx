@@ -105,15 +105,15 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 	const { demoMode } = useConfig();
 
 	const onClickOpenExample = () => {
-		if (isAuthorized) {
-			openTheOpenFileDialog({
-				loadFromFiles,
-				loadFromJson,
-				loadFromUrl,
-				loadFromJsonString,
-				dialogState: '0'
-			});
-		}
+		// if (isAuthorized) {
+		openTheOpenFileDialog({
+			loadFromFiles,
+			loadFromJson,
+			loadFromUrl,
+			loadFromJsonString,
+			dialogState: '0'
+		});
+		// }
 	};
 
 	// Order of elements in this list corresponds to their order in UI
@@ -219,7 +219,7 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 					}}>
 					{<FolderSpecialIcon fontSize='large' />}
 				</Box>
-				<Box>Open Example</Box>
+				<Box>Examples</Box>
 			</Button>
 			<NavDrawerList
 				menuOptions={menuOptions}
