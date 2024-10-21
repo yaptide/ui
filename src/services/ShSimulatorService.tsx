@@ -533,14 +533,17 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 			givenEstimatorName?: string
 		) => {
 			const inputs: JobInputs | undefined = await getJobInputs(jobStatus, signal, cache);
+			const firstEstimatorName =
+				inputs?.input.inputJson?.scoringManager.outputs[0].name + '_';
+
 			const results: JobResults | undefined =
-				jobStatus.jobState === StatusState.COMPLETED
+				jobStatus.jobState === StatusState.COMPLETED && firstEstimatorName
 					? await getJobResult(
 							{
 								jobId: jobStatus.jobId,
 								estimatorName: givenEstimatorName
 									? givenEstimatorName
-									: 'z_profile_'
+									: firstEstimatorName
 							},
 							signal,
 							cache

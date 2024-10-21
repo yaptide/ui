@@ -1,5 +1,5 @@
 import { Card, CardContent, Tab, Tabs } from '@mui/material';
-import { SyntheticEvent, useCallback, useState } from 'react';
+import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 
 import { FullSimulationData, useShSimulation } from '../../../../services/ShSimulatorService';
 
@@ -54,6 +54,10 @@ const EstimatorsSelect = ({
 		},
 		[controller.signal, estimatorsTabData, getJobResult, setResultsSimulationData, simulation]
 	);
+
+	useEffect(() => {
+		handleEstimatorTabChange(0);
+	}, [handleEstimatorTabChange]);
 
 	const handleChange = (_event: SyntheticEvent, newValue: number) => {
 		setTabsValue(newValue);

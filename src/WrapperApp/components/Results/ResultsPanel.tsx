@@ -14,8 +14,6 @@ export interface EstimatorResults extends Estimator {
 	gridPages: Page[];
 }
 
-const estimatorsTabData: string[] = ['z_profile', 'yz_profile', 'entrance', 'peak'];
-
 function ResultsPanel() {
 	const { open: openSaveFileDialog } = useDialog('saveFile');
 	const {
@@ -27,6 +25,11 @@ function ResultsPanel() {
 	const [tabsValue, setTabsValue] = useState(0);
 	const [estimatorsResults, setEstimatorsResults] = useState<EstimatorResults[]>([]);
 	const [groupQuantities, setGroupQuantities] = useState(false);
+
+	const estimatorsTabData: string[] | undefined =
+		simulation?.input.inputJson?.scoringManager.outputs
+			.filter(output => output.name)
+			.map(output => output.name);
 
 	useEffect(() => {
 		setEstimatorsResults(parseEstimators(simulation?.estimators ?? []));
@@ -57,6 +60,10 @@ function ResultsPanel() {
 
 		return estimatorResults;
 	};
+
+	if (!estimatorsTabData) {
+		return null;
+	}
 
 	const resultsGeneratedFromProjectFile = !!simulation?.input.inputJson;
 	const chosenEstimator = estimatorsResults.filter(
