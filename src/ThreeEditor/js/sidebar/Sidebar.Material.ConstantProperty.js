@@ -7,7 +7,8 @@ function SidebarMaterialConstantProperty(editor, property, name, options) {
 	const container = new UIRow();
 	container.add(new UIText(name).setWidth('90px'));
 
-	const constant = new UISelect().setOptions(options).onChange(onChange);
+	const constant = new UISelect().setOptions(options);
+	constant.onChange = onChange;
 	container.add(constant);
 
 	let object = null;

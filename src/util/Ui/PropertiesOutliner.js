@@ -30,27 +30,22 @@ export function createModifiersOutliner(editor, params) {
 	const outliner = new UIOutliner(editor);
 	outliner.setId('modifiers-outliner');
 	outliner.setHeight('120px');
-
 	outliner._setOptions = outliner.setOptions;
+	outliner.setOptions = function (modifier) {
+		outliner._setOptions(
+			modifier.map(modifier => {
+				const option = document.createElement('div');
+				option.style.padding = '6px';
 
-	outliner.setOptions = function (modifiers) {
-		const options = modifiers.map(modifier => {
-			const option = document.createElement('div');
-			option.style.padding = '6px';
+				option.draggable = false;
+				option.innerHTML = Scoring.getModifierDescription(modifier.diffType);
+				option.value = modifier.uuid;
 
-			option.draggable = false;
-			option.innerHTML = Scoring.getModifierDescription(modifier.diffType);
-			option.value = modifier.uuid;
-
-			return option;
-		});
-
-		if (JSON.stringify(options) !== JSON.stringify(outliner._options)) {
-			outliner._options = options;
-			outliner._setOptions(options);
-		}
+				return option;
+			})
+		);
 	};
-	outliner.onChange = update;
+	outliner.onChange(update);
 
 	return [outliner];
 }
@@ -67,28 +62,22 @@ export function createRulesOutliner(editor, params) {
 	const outliner = new UIOutliner(editor);
 	outliner.setId('rules-outliner');
 	outliner.setHeight('120px');
-
 	outliner._setOptions = outliner.setOptions;
-
 	outliner.setOptions = function (rules) {
-		const options = rules.map(rule => {
-			const option = document.createElement('div');
-			option.style.padding = '6px';
+		outliner._setOptions(
+			rules.map(rule => {
+				const option = document.createElement('div');
+				option.style.padding = '6px';
 
-			option.draggable = false;
-			option.innerHTML = Rule.getDescription(rule.keyword);
-			option.value = rule.uuid;
+				option.draggable = false;
+				option.innerHTML = Rule.getDescription(rule.keyword);
+				option.value = rule.uuid;
 
-			return option;
-		});
-
-		if (JSON.stringify(options) !== JSON.stringify(outliner._options)) {
-			outliner._options = options;
-			outliner._setOptions(options);
-		}
+				return option;
+			})
+		);
 	};
-
-	outliner.onChange = update;
+	outliner.onChange(update);
 
 	return [outliner];
 }
@@ -107,26 +96,21 @@ export function createDifferentialConfigurationRow(params) {
 	const row = new UIRow();
 	row.dom.style.gridTemplateColumns = '2fr repeat(4, 3fr) 25px';
 	row.dom.style.display = 'grid';
-	const keywordSelect = new UISelect().setFontSize(FONT_SIZE);
-	keywordSelect.onChange = update;
+	const keywordSelect = new UISelect().setFontSize(FONT_SIZE).onChange(update);
 	keywordSelect.setOptions(options);
-	const lowerLimit = new UINumber().setPadding('2px 4px').setWidth('100%');
-	lowerLimit.onChange = update;
-	const upperLimit = new UINumber().setPadding('2px 4px').setWidth('100%');
-	upperLimit.onChange = update;
+	const lowerLimit = new UINumber().setPadding('2px 4px').onChange(update).setWidth('100%');
+	const upperLimit = new UINumber().setPadding('2px 4px').onChange(update).setWidth('100%');
 	const binsNumber = new UINumber()
 		.setPadding('2px 4px')
+		.onChange(update)
 		.setWidth('100%')
 		.setRange(1, 50000)
 		.setPrecision(0);
-	binsNumber.onChange = update;
 	const logs = new UIDiv().setPadding('2px 4px').setWidth('100%').setFontSize(FONT_SIZE);
 	const logsLabel = new UIText('log');
-	const isLog = new UICheckbox();
-	isLog.onChange = update;
+	const isLog = new UICheckbox().onChange(update);
 	logs.add(logsLabel, isLog);
-	const deleteButton = new UIButton('✖');
-	deleteButton.onClick = deleteRule;
+	const deleteButton = new UIButton('✖').onClick(deleteRule);
 	row.add(keywordSelect, lowerLimit, upperLimit, binsNumber, logs, deleteButton);
 
 	return [row, keywordSelect, lowerLimit, upperLimit, binsNumber, isLog, deleteButton];
@@ -149,19 +133,21 @@ export function createRuleConfigurationRow(params) {
 	const row = new UIRow();
 	row.dom.style.gridTemplateColumns = '1fr 35px 3fr 25px';
 	row.dom.style.display = 'grid';
-	const keywordSelect = new UISelect().setFontSize(FONT_SIZE);
-	keywordSelect.onChange = update;
+	const keywordSelect = new UISelect().setFontSize(FONT_SIZE).onChange(update);
 	keywordSelect.setOptions = setOptionsSorted.bind(keywordSelect);
 	keywordSelect.setOptions(options, sortFunc);
-	const operatorSelect = new UISelect().setOptions(operators).setFontSize(FONT_SIZE);
-	operatorSelect.onChange = update;
+	const operatorSelect = new UISelect()
+		.setOptions(operators)
+		.setFontSize(FONT_SIZE)
+		.onChange(update);
 
-	const idSelect = new UISelect().setFontSize(FONT_SIZE).setOptions(particles).setWidth('100%');
-	idSelect.onChange = update;
-	const valueInput = new UINumber().setPadding('2px 4px').setWidth('100%');
-	valueInput.onChange = update;
-	const deleteButton = new UIButton('✖');
-	deleteButton.onClick = deleteRule;
+	const idSelect = new UISelect()
+		.setFontSize(FONT_SIZE)
+		.onChange(update)
+		.setOptions(particles)
+		.setWidth('100%');
+	const valueInput = new UINumber().setPadding('2px 4px').onChange(update).setWidth('100%');
+	const deleteButton = new UIButton('✖').onClick(deleteRule);
 	row.add(keywordSelect, operatorSelect, idSelect, valueInput, deleteButton);
 
 	return [row, keywordSelect, operatorSelect, idSelect, valueInput, deleteButton];

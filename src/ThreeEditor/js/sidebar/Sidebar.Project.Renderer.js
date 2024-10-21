@@ -63,8 +63,8 @@ function SidebarProjectRenderer(editor) {
 			2: 'PCF Soft'
 			//	3: 'VSM'
 		})
-		.setWidth('125px')
-		.onChange(updateShadows);
+		.setWidth('125px');
+	shadowTypeSelect.onChange = updateShadows;
 	shadowTypeSelect.setValue(config.getKey('project/renderer/shadowType'));
 	shadowsRow.add(shadowTypeSelect);
 
@@ -90,8 +90,8 @@ function SidebarProjectRenderer(editor) {
 			3: 'Cineon',
 			4: 'ACESFilmic'
 		})
-		.setWidth('120px')
-		.onChange(updateToneMapping);
+		.setWidth('120px');
+	toneMappingSelect.onChange = updateToneMapping;
 	toneMappingSelect.setValue(config.getKey('project/renderer/toneMapping'));
 	toneMappingRow.add(toneMappingSelect);
 
