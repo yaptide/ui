@@ -11,7 +11,10 @@ import { PropertiesCategory } from './PropertiesCategory';
 export function ParticleFilterConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
-	const { state: watchedObject } = useSmartWatchEditorState(editor, object as ParticleFilter);
+	const { state: watchedObject } = useSmartWatchEditorState(
+		editor,
+		object as unknown as ParticleFilter
+	);
 
 	const visibleFlag = isParticleFilter(watchedObject);
 
