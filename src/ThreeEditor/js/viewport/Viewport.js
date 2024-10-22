@@ -304,8 +304,7 @@ export function Viewport(
 			default:
 		}
 	});
-
-	sceneViewHelpers.add(transformControls);
+	sceneViewHelpers.add(transformControls.getHelper());
 
 	// object picking
 
