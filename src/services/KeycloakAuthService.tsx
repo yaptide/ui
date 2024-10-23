@@ -7,8 +7,8 @@ import { createSubstituteContext, GenericContextProviderProps } from './GenericC
 
 const keycloakParams = {
 	url: `${process.env.REACT_APP_KEYCLOAK_BASE_URL ?? 'https://localhost:8080'}/auth/`,
-	realm: `${process.env.REACT_APP_KEYCLOAK_REALM ?? ''}`,
-	clientId: `${process.env.REACT_APP_KEYCLOAK_CLIENT_ID ?? ''}`
+	realm: `${process.env.REACT_APP_KEYCLOAK_REALM ?? 'placeholder'}`,
+	clientId: `${process.env.REACT_APP_KEYCLOAK_CLIENT_ID ?? 'placeholder'}`
 };
 
 const authInstance = new Keycloak(keycloakParams) as any;
@@ -25,7 +25,7 @@ const initOptions = {
 export type KeycloakAuthContext =
 	| {
 			initialized: false;
-			keycloak?: Keycloak;
+			keycloak?: undefined;
 	  }
 	| {
 			initialized: true;
@@ -37,16 +37,21 @@ const [useKeycloakAuth, KeycloakAuthContextProvider] =
 
 const KeycloakAuth = ({ children }: GenericContextProviderProps) => {
 	const { altAuth } = useConfig();
+
+	// Check if the realm is "placeholder"
+	const isRealmPlaceholder = keycloakParams.realm === 'placeholder';
+
 	const proxyContextProvider = useCallback(
 		(children: ReactNode) => (
 			<KeycloakAuthContextProvider
 				value={{
-					initialized: false
+					initialized: !isRealmPlaceholder,
+					keycloak: isRealmPlaceholder ? undefined : authInstance
 				}}>
 				{children}
 			</KeycloakAuthContextProvider>
 		),
-		[]
+		[isRealmPlaceholder]
 	);
 
 	return altAuth ? (

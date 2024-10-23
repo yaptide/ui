@@ -4,7 +4,7 @@ import { Tree, TreeMethods } from '@minoru/react-dnd-treeview';
 import { Divider } from '@mui/material';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Object3D } from 'three';
-import { generateUUID } from 'three/src/math/MathUtils';
+import { generateUUID } from 'three/src/math/MathUtils.js';
 
 import { hasVisibleChildren } from '../../../../util/hooks/useKeyboardEditorControls';
 import { ChangeObjectOrderCommand } from '../../../js/commands/ChangeObjectOrderCommand';
