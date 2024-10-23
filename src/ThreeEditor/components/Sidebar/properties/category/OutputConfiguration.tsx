@@ -16,7 +16,10 @@ import { PropertiesCategory } from './PropertiesCategory';
 export function OutputConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
-	const { state: watchedObject } = useSmartWatchEditorState(editor, object as ScoringOutput);
+	const { state: watchedObject } = useSmartWatchEditorState(
+		editor,
+		object as unknown as ScoringOutput
+	);
 
 	const handleChangedDetector = useCallback(
 		(v: ObjectSelectOptionType) => {
