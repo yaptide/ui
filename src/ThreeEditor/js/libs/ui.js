@@ -1,32 +1,37 @@
 class UIElement {
-   /**
-    * @param {*} callback */
-   onKeyUp
-   /**
-    * @param {*} callback */
-   onKeyDown
-   /**
-    * @param {*} callback */
-   onKeyDown
-   /**
-    * @param {*} callback */
-   onMouseOver
-   /**
-    * @param {*} callback */
-   onMouseOut
-   /**
-    * @param {*} callback */
-   onClick
-   /**
-    * @param {*} callback */
-   onDblClick
-   /**
-    * @param {*} callback */
-   onChange
-   /**
-    * @param {*} callback */
-   onInput
 
+   onKeyUp(callback) {
+      this.dom.addEventListener('keyup', callback);
+   }
+
+   onKeyDown(callback) {
+      this.dom.addEventListener('keydown', callback);
+   }
+
+   onMouseOver(callback) {
+      this.dom.addEventListener('mouseover', callback);
+   }
+
+   onMouseOut(callback) {
+      this.dom.addEventListener('mouseout', callback);
+   }
+
+   onClick(callback) {
+      this.dom.addEventListener('click', callback);
+   }
+
+   onDblClick(callback) {
+      this.dom.addEventListener('dblclick', callback);
+   }
+
+   onChange(callback) {
+      this.dom.addEventListener('change', callback);
+   }
+
+   onInput(callback) {
+      this.dom.addEventListener('input', callback);
+   }
+   
    constructor(dom) {
 
       this.dom = dom;

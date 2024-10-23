@@ -44,10 +44,10 @@ function MenubarSettings(editor) {
 		})
 		.setWidth('160px');
 
-	backgroundType.onChange(() => {
+	backgroundType.onChange = () => {
 		onBackgroundChanged();
 		refreshBackgroundUI();
-	});
+	};
 
 	backgroundRow.add(new UIText('Background').setWidth('90px'));
 	backgroundRow.add(backgroundType);
@@ -100,10 +100,10 @@ function MenubarSettings(editor) {
 		})
 		.setWidth('160px');
 	environmentType.setValue('None');
-	environmentType.onChange(() => {
+	environmentType.onChange = () => {
 		onEnvironmentChanged();
 		refreshEnvironmentUI();
-	});
+	};
 
 	environmentRow.add(new UIText('Environment').setWidth('90px'));
 	environmentRow.add(environmentType);
