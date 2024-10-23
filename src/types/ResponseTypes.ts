@@ -1,5 +1,6 @@
-import { Estimator } from '../JsRoot/GraphData';
+import { Estimator, Page } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
+import { ScoringOutputJSON } from '../ThreeEditor/Simulation/Scoring/ScoringOutput';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import { DataWithStatus, LookUp, TypeIdentifiedByKey } from './TypeTransformUtil';
 
@@ -340,6 +341,8 @@ export type ResponseGetJobLogs = {
 export type ResponseGetJobResults = {
 	estimators: Estimator[];
 } & YaptideResponse;
+
+export type ResponseGetJobResult = Estimator & YaptideResponse;
 
 export type ResponseAuthStatus = AuthStatus;
 
