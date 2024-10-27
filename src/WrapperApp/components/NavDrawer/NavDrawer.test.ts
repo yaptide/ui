@@ -19,9 +19,16 @@ describe('NavDrawer component', () => {
 	//this test checks if the menu button (upper left corner, next to the yaptide logo) has rendered
 	test('renders a menu button', async () => {
 		await driver.get('http://localhost:3000');
+
+		//hide react error overlay
+		await driver.executeScript(
+			"document.getElementById('webpack-dev-server-client-overlay').style.display = 'none';"
+		);
+
 		const menuButton = await driver.findElement(
 			By.xpath("//button[@aria-label = 'Toggle drawer button']")
 		);
+
 		expect(await menuButton.isDisplayed()).toBeTruthy();
 	}, 30000);
 
@@ -29,10 +36,16 @@ describe('NavDrawer component', () => {
 	test('closes and opens the drawer on click', async () => {
 		await driver.get('http://localhost:3000');
 
+		//hide react error overlay
+		await driver.executeScript(
+			"document.getElementById('webpack-dev-server-client-overlay').style.display = 'none';"
+		);
+
 		//find the menu button and then click it
 		const menuButton = await driver.findElement(
 			By.xpath("//button[@aria-label = 'Toggle drawer button']")
 		);
+
 		await menuButton.click();
 
 		//check if the drawer has closed (by looking if the "closed drawer" component is rendered)

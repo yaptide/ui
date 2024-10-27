@@ -25,6 +25,11 @@ describe('Fluka Converter', () => {
 	test('converter generates correct files', async () => {
 		await driver.get('http://localhost:3000');
 
+		//hide react error overlay
+		await driver.executeScript(
+			"document.getElementById('webpack-dev-server-client-overlay').style.display = 'none';"
+		);
+
 		// Wait for the application to load
 		expect(
 			await driver.wait(
