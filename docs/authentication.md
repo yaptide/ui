@@ -37,11 +37,11 @@ sequenceDiagram
         AuthService ->> Backend: (GET /)
         Backend ->> AuthService: Response with 'Hello World!'
     end
-    loop Refresh backend token every 1/3 of accessExp
+    loop Refresh backend token every backend access token lifetime
         AuthService ->> Backend: Refresh token (GET auth/keycloak)
         Backend ->> AuthService: Response with new backend access token in cookies and new accessExp
     end
-    loop Refresh keycloak token every 1/3 of access tokens lifetime
+    loop Refresh keycloak token every 1/3 of keycloak access tokens lifetime
         AuthService ->> Keycloak: Refresh token
         Keycloak ->> AuthService: Updated access token and refresh token
     end
@@ -66,7 +66,7 @@ sequenceDiagram
         -   **If verified**:
             Keycloak validates the token signature.
             Backend provides access expiration (`accessExp`) to AuthService.
-            AuthService sets token refresh interval based on `accessExp` (1/3 of backend token valid time).
+            AuthService sets token refresh interval based on `accessExp` (backend token valid time).
             User receives authentication context.
         -   **If verification fails**: Backend sends "Forbidden" error due to invalid/expired token or Keycloak error.
     -   **If user lacks access**: AuthService informs user of access denial.
@@ -74,12 +74,12 @@ sequenceDiagram
 -   **Backend connection check**: Every 3 minutes, AuthService checks backend availability.
 -   **Backend token periodic refresh**:
 
-    -   Every 1/3 of `accessExp`, AuthService requests a token refresh from Backend.
+    -   Every backend token lifetime (`accessExp`), AuthService requests a token refresh from Backend.
     -   Backend responds with a new access token in cookies and an updated `accessExp`.
 
 -   **Keycloak token periodic refresh**:
 
-    -   Every 1/3 of the access token's lifetime, AuthService refreshes the Keycloak token.
+    -   Every 1/3 of the keycloak access token's lifetime, AuthService refreshes the Keycloak token.
     -   Keycloak provides an updated access token and refresh token to AuthService.
 
 -   **Logout process**:
@@ -133,7 +133,7 @@ sequenceDiagram
 
 -   **Backend token refresh**:
 
-    -   Every 1/3 of `accessExp`, AuthService refreshes the token with Backend.
+    -   Every 1/3 of `accessExp` (1/3 of Backend access token), AuthService refreshes the token with Backend.
     -   Backend returns a new access token in cookies and an updated `accessExp`.
 
 -   **Logout process**:
