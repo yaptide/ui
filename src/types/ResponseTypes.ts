@@ -61,7 +61,10 @@ export type InputFilesRecord<FileNames extends string, OptionalNames extends str
 	},
 	never
 >;
-type ShInputFilesRecord = InputFilesRecord<ShInputFilesNames, 'info.json' | 'sobp.dat'>;
+export type ShInputFilesRecord = InputFilesRecord<
+	ShInputFilesNames,
+	'info.json' | 'sobp.dat' | 'detect.dat'
+>;
 type TopasInputFilesRecord = InputFilesRecord<TopasInputFilesNames, 'info.json'>;
 type FlukaInputFilesRecord = InputFilesRecord<FlukaInputFilesNames, 'info.json'>;
 export type SimulationInputFiles =

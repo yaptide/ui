@@ -37,6 +37,20 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 	const largeFileSize = 100_000;
 	const largeFileLinesLimit = 500;
 
+	// const estimatorNames = [];
+	//
+	// if (inputFiles) {
+	// 	const regex = /Filename\s+(\w+)\.bdo/g;
+	// 	let match;
+	//
+	// 	while ((match = regex.exec(inputFiles.)) !== null) {
+	// 		estimatorNames.push(match[1]);
+	// 	}
+	// }
+	//
+	// console.log(estimatorNames);
+	//
+
 	const canBeDeleted = (name: string) => {
 		switch (props.simulator) {
 			case SimulatorType.SHIELDHIT:

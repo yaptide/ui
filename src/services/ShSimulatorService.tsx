@@ -533,8 +533,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 			givenEstimatorName?: string
 		) => {
 			const inputs: JobInputs | undefined = await getJobInputs(jobStatus, signal, cache);
-			const firstEstimatorName =
-				inputs?.input.inputJson?.scoringManager.outputs[0].name + '_';
+			const firstEstimatorName = inputs?.input.inputJson?.scoringManager.outputs[0].name;
 
 			const results: JobResults | undefined =
 				jobStatus.jobState === StatusState.COMPLETED && firstEstimatorName
@@ -543,7 +542,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 								jobId: jobStatus.jobId,
 								estimatorName: givenEstimatorName
 									? givenEstimatorName
-									: firstEstimatorName
+									: firstEstimatorName + '_'
 							},
 							signal,
 							cache
