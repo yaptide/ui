@@ -11,7 +11,7 @@
 		"@mui/icons-material": "^6.1.4",
 		"@mui/lab": "^5.0.0-alpha.173",
 		"@mui/material": "^6.1.4",
-		"@mui/system": "^6.1.4",
+		"@mui/system": "^6.1.6",
 		"@mui/x-data-grid": "^7.22.0",
 		"@testing-library/jest-dom": "^6.6.2",
 		"@testing-library/react": "^12.1.2",
