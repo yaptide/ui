@@ -21,15 +21,26 @@ describe('TopasConverter', () => {
 		await driver.quit();
 	}, 30_000);
 
+	// this function hides the react error overlay, as its presence interferes with the tests when running locally
+	async function hideErrorOverlay() {
+		try {
+			const overlay = await driver.wait(
+				until.elementLocated(By.id('webpack-dev-server-client-overlay')),
+				1000 // short timeout to avoid unnecessary waiting
+			);
+			await driver.executeScript("arguments[0].style.display = 'none';", overlay);
+		} catch (error) {
+			// overlay not found within timeout, proceed without hiding it
+		}
+	}
+
 	//this test checks if converter works correctly - opens an example and generates config files
 	// expected to fail because Topas was temporarily removed from the project
 	xtest('converter generates correct files', async () => {
 		await driver.get('http://localhost:3000');
 
-		//hide react error overlay
-		await driver.executeScript(
-			"document.getElementById('webpack-dev-server-client-overlay').style.display = 'none';"
-		);
+		//hide react error overlay if present
+		await hideErrorOverlay();
 
 		// Wait for the application to load
 		expect(
@@ -181,7 +192,7 @@ describe('TopasConverter', () => {
 		//wait until the "generate from editor" button and click it (it takes some time for the button to change from "initializing")
 		//xpath is used as again the id changes every time
 		const generateButton = await driver.findElement(
-			By.xpath("//button[contains(text(),'Generate from Editor')]")
+			By.xpath("//span[contains(text(),'Generate from Editor')]")
 		);
 		await driver.wait(until.elementIsEnabled(generateButton), 15_000);
 		await generateButton.click();
