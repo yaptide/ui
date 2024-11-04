@@ -46,9 +46,9 @@ sequenceDiagram
         Keycloak ->> AuthService: Updated access token and refresh token
     end
     User ->> AuthService: Logout
+    AuthService ->> Keycloak: Logout (GET /auth/realms/{our-realm}/protocol/openid-connect/logout)
     AuthService ->> Backend: Invalidate session (DELETE /auth/logout)
     Backend ->> AuthService: Response with cookies deleted
-    AuthService ->> Keycloak: Logout
     AuthService ->> User: Clear user data
 ```
 
@@ -84,11 +84,11 @@ sequenceDiagram
 
 -   **Logout process**:
     -   User initiates logout.
+    -   AuthService logs user out of Keycloak and clears user data.
     -   AuthService invalidates Backend session.
     -   Backend deletes session cookies.
-    -   AuthService logs user out of Keycloak and clears user data.
 
-## Non-Keycloak
+## Our own database of users validation
 
 Overview of login and logout process while in demo or dev modes
 
@@ -142,10 +142,14 @@ sequenceDiagram
     -   Backend deletes session cookies, confirming logout.
     -   AuthService clears the user's data.
 
-## Default vaules
+## Default values
+
+Keycloak tokens values are defined by keycloak server running on Ares
 
 -   Keycloak access token - 5 min valid time
 -   Keycloak refresh token - 30 min valid time
+
+Backend tokens values are defined in our backend repository
 
 -   Backend access token - 10 min valid time
 -   Backend refresh token - 120 min valid time
