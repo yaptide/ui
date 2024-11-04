@@ -1,16 +1,10 @@
 import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
-import { ReactNode, useCallback } from 'react';
+import React, { ReactNode, useCallback } from 'react';
+import KeycloakProvider from '../util/keycloak/KeycloakProvider';
+import { useKeycloak } from '../util/keycloak/useKeycloak';
 
 import { useConfig } from '../config/ConfigService';
 import { createSubstituteContext, GenericContextProviderProps } from './GenericContext';
-
-interface KeycloakAuthProviderProps {
-	client: Keycloak;
-	initOptions?: KeycloakInitOptions;
-	children: any;
-}
-
-declare const KeycloakProvider: React.FC<KeycloakAuthProviderProps>;
 
 const keycloakParams = {
 	url: `${process.env.REACT_APP_KEYCLOAK_BASE_URL ?? 'https://localhost:8080'}/auth/`,
@@ -20,14 +14,14 @@ const keycloakParams = {
 
 const authInstance = new Keycloak(keycloakParams) as any;
 
-const initOptions: KeycloakInitOptions = {
+const initOptions = {
 	pkceMethod: 'S256',
 	onLoad: 'check-sso',
 	checkLoginIframe: false,
 	enableLogging: false,
 	silentCheckSsoFallback: false,
 	silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`
-};
+} as const satisfies KeycloakInitOptions;
 
 export type KeycloakAuthContext =
 	| {
@@ -38,10 +32,6 @@ export type KeycloakAuthContext =
 			initialized: true;
 			keycloak: Keycloak;
 	  };
-
-function useKeycloak(): KeycloakAuthContext {
-	return { initialized: false, keycloak: undefined };
-}
 
 const [useKeycloakAuth, KeycloakAuthContextProvider] =
 	createSubstituteContext<KeycloakAuthContext>(useKeycloak);
