@@ -7,6 +7,7 @@ services:
             dockerfile: Dockerfile
         image: yaptide_ui
         container_name: yaptide_ui
+        restart: unless-stopped
         ports:
             - 80:80
             - 443:443
