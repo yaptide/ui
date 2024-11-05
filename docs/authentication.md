@@ -249,7 +249,7 @@ sequenceDiagram
 
 ## **Default Token Values**
 
-**Keycloak token values** (defined by Keycloak server on Ares):
+**Keycloak token values** (defined by Keycloak server in plgrid infrastructure `sso.plgrid.pl`):
 
 -   🔹 **Keycloak access token**: 5 minutes
 -   🔹 **Keycloak refresh token**: 30 minutes
