@@ -119,6 +119,12 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 	// Order of elements in this list corresponds to their order in UI
 	const menuOptions: MenuOption[] = [
 		{
+			label: 'Example',
+			tooltipLabel: 'Example',
+			value: 'example',
+			icon: <ViewInArIcon fontSize='large' />
+		},
+		{
 			label: 'Editor',
 			tooltipLabel: 'Editor',
 			value: 'editor',
