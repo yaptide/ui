@@ -27,7 +27,7 @@
 		"convert-units": "^3.0.0-beta.7",
 		"date-fns": "^4.1.0",
 		"glob": "^11.0.0",
-		"jsroot": "^7.7.4",
+		"jsroot": "^7.7.5",
 		"keycloak-js": "^25.0.6",
 		"keycloak-react-web": "^0.1.19",
 		"ky": "^1.7.2",
