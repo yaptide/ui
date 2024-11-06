@@ -1,14 +1,15 @@
 import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
-import { KeycloakProvider, useKeycloak } from 'keycloak-react-web';
-import { ReactNode, useCallback } from 'react';
+import React, { ReactNode, useCallback } from 'react';
 
 import { useConfig } from '../config/ConfigService';
+import KeycloakProvider from '../util/keycloak/KeycloakProvider';
+import { useKeycloak } from '../util/keycloak/useKeycloak';
 import { createSubstituteContext, GenericContextProviderProps } from './GenericContext';
 
 const keycloakParams = {
 	url: `${import.meta.env.VITE_REACT_APP_KEYCLOAK_BASE_URL ?? 'https://localhost:8080'}/auth/`,
-	realm: `${import.meta.env.VITE_REACT_APP_KEYCLOAK_REALM ?? ''}`,
-	clientId: `${import.meta.env.VITE_REACT_APP_KEYCLOAK_CLIENT_ID ?? ''}`
+	realm: `${import.meta.env.VITE_REACT_APP_KEYCLOAK_REALM ?? 'master'}`,
+	clientId: `${import.meta.env.VITE_REACT_APP_KEYCLOAK_CLIENT_ID ?? 'my-client'}`
 };
 
 const authInstance = new Keycloak(keycloakParams) as any;
