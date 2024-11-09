@@ -16,9 +16,24 @@ describe('NavDrawer component', () => {
 		await driver.quit();
 	}, 30000);
 
+	// this function hides the react error overlay, as its presence interferes with the tests when running locally
+	async function hideErrorOverlay() {
+		try {
+			const overlay = await driver.wait(
+				until.elementLocated(By.id('webpack-dev-server-client-overlay')),
+				1000 // short timeout to avoid unnecessary waiting
+			);
+			await driver.executeScript("arguments[0].style.display = 'none';", overlay);
+		} catch (error) {
+			// overlay not found within timeout, proceed without hiding it
+		}
+	}
+
 	//this test checks if the menu button (upper left corner, next to the yaptide logo) has rendered
 	test('renders a menu button', async () => {
 		await driver.get('http://localhost:3000');
+		//hide react overlay if present
+		await hideErrorOverlay();
 		const menuButton = await driver.findElement(
 			By.xpath("//button[@aria-label = 'Toggle drawer button']")
 		);
@@ -28,6 +43,8 @@ describe('NavDrawer component', () => {
 	//this test check if the menu button works (closes and opens the menu drawer)
 	test('closes and opens the drawer on click', async () => {
 		await driver.get('http://localhost:3000');
+		//hide react overlay if present
+		await hideErrorOverlay();
 
 		//find the menu button and then click it
 		const menuButton = await driver.findElement(
