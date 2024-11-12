@@ -1,50 +1,14 @@
-import { Box,Grid, Paper, Typography } from '@mui/material';
-import { useState } from 'react';
+import { Box, Grid, Paper, Typography } from '@mui/material';
 
-import EXAMPLES from '../../../examples/examples';
-import { useLoader } from '../../../services/LoaderService';
-import { FullSimulationData } from '../../../services/ShSimulatorService';
+import EXAMPLES, { useFetchExampleData } from '../../../examples/examples';
 import { SimulatorType } from '../../../types/RequestTypes';
-import { StatusState } from '../../../types/ResponseTypes';
 
 interface ExamplePanelProps {
 	setTabsValue: (value: string) => void;
 }
 
 export function ExamplePanel({ setTabsValue }: ExamplePanelProps) {
-	// Call useLoader within the component to access its functions.
-	const { loadFromJson } = useLoader();
-
-	// Move fetchExampleData inside ExamplePanel so it can access loadFromJson.
-	function fetchExampleData(exampleName: string) {
-		fetch(`${process.env.PUBLIC_URL}/examples/${exampleName}`)
-			.then(function (response) {
-				if (response.status !== 200) {
-					console.log('Looks like there was a problem. Status Code: ' + response.status);
-
-					return;
-				}
-
-				response.json().then(function (data) {
-					const simulationData: FullSimulationData = data as FullSimulationData;
-
-					loadFromJson(
-						[simulationData].map(e => {
-							return {
-								...e,
-								jobState: StatusState.COMPLETED
-							};
-						})
-					);
-
-					// Change the tab to 'editor' after loading the example
-					setTabsValue('editor');
-				});
-			})
-			.catch(function (err) {
-				console.log('Fetch Error :-S', err);
-			});
-	}
+	const fetchExampleData = useFetchExampleData();
 
 	return (
 		<Box sx={{ padding: 4 }}>
@@ -75,6 +39,8 @@ export function ExamplePanel({ setTabsValue }: ExamplePanelProps) {
 									sx={{ padding: 2, textAlign: 'center', cursor: 'pointer' }}
 									onClick={() => {
 										fetchExampleData(fileName);
+										// Change the tab to 'editor' after loading the example
+										setTabsValue('editor');
 									}}>
 									<Typography variant='body1'>{exampleName}</Typography>
 								</Paper>

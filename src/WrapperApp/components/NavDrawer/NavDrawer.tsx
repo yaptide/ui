@@ -15,6 +15,7 @@ import { CSSObject, styled, Theme } from '@mui/material/styles';
 import { ReactElement, ReactNode, SyntheticEvent } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
+import { useFetchExampleData } from '../../../examples/examples';
 import { useAuth } from '../../../services/AuthService';
 import { useDialog } from '../../../services/DialogService';
 import { useLoader } from '../../../services/LoaderService';
@@ -104,6 +105,8 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 	const Drawer = getDrawer();
 	const { demoMode } = useConfig();
 
+	const fetchExampleData = useFetchExampleData();
+
 	const onClickOpenExample = () => {
 		// if (isAuthorized) {
 		openTheOpenFileDialog({
@@ -111,7 +114,8 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 			loadFromJson,
 			loadFromUrl,
 			loadFromJsonString,
-			dialogState: '0'
+			dialogState: '0',
+			fetchExampleData
 		});
 		// }
 	};
@@ -122,7 +126,7 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 			label: 'Example',
 			tooltipLabel: 'Example',
 			value: 'example',
-			icon: <ViewInArIcon fontSize='large' />
+			icon: <FolderSpecialIcon fontSize='large' />
 		},
 		{
 			label: 'Editor',

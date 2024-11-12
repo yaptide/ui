@@ -17,9 +17,7 @@ import { ChangeEvent, SyntheticEvent, useCallback, useMemo, useState } from 'rea
 
 import EXAMPLES from '../../../examples/examples';
 import { LoaderContext } from '../../../services/LoaderService';
-import { FullSimulationData } from '../../../services/ShSimulatorService';
 import { SimulatorType } from '../../../types/RequestTypes';
-import { StatusState } from '../../../types/ResponseTypes';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 import { DragDropProject } from './DragDropProject';
 
@@ -29,8 +27,12 @@ export function OpenFileDialog({
 	loadFromFiles,
 	loadFromUrl,
 	loadFromJsonString,
-	dialogState
-}: ConcreteDialogProps<LoaderContext> & { dialogState: string }) {
+	dialogState,
+	fetchExampleData
+}: ConcreteDialogProps<LoaderContext> & {
+	dialogState: string;
+	fetchExampleData: (exampleName: string) => void; // I don't like how this is typed here
+}) {
 	const [currentFileList, setCurrentFileList] = useState<FileList>();
 	const [value, setValue] = useState(dialogState);
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
@@ -57,32 +59,7 @@ export function OpenFileDialog({
 	);
 	const [selectedSimulator, setSelectedSimulator] = useState<SimulatorType>(SimulatorType.COMMON);
 
-	function fetchExampleData(exampleName: string) {
-		fetch(`${process.env.PUBLIC_URL}/examples/${exampleName}`)
-			.then(function (response) {
-				if (response.status !== 200) {
-					console.log('Looks like there was a problem. Status Code: ' + response.status);
-
-					return;
-				}
-
-				response.json().then(function (data) {
-					const simulationData: FullSimulationData = data as FullSimulationData;
-
-					loadFromJson(
-						[simulationData].map(e => {
-							return {
-								...e,
-								jobState: StatusState.COMPLETED
-							};
-						})
-					);
-				});
-			})
-			.catch(function (err) {
-				console.log('Fetch Error :-S', err);
-			});
-	}
+	// const fetchExampleData = useFetchExampleData();
 
 	return (
 		<CustomDialog
