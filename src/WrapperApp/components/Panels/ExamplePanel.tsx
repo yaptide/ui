@@ -1,4 +1,4 @@
-import { Box, Grid, Paper, Typography } from '@mui/material';
+import { Box, Grid2, Paper, Typography } from '@mui/material';
 
 import EXAMPLES, { useFetchExampleData } from '../../../examples/examples';
 import { SimulatorType } from '../../../types/RequestTypes';
@@ -23,17 +23,16 @@ export function ExamplePanel({ setTabsValue }: ExamplePanelProps) {
 						{simulator.toUpperCase()}
 					</Typography>
 
-					{/* Grid of Examples */}
-					<Grid
+					{/* Grid2 of Examples */}
+					<Grid2
 						container
 						spacing={2}>
 						{Object.entries(EXAMPLES[simulator]).map(([exampleName, fileName]) => (
-							<Grid
-								item
-								xs={12}
-								sm={6}
-								md={4}
-								key={fileName}>
+							<Grid2
+								key={fileName}
+								sx={{ width: 200 }}>
+								{' '}
+								{/* Set a fixed width here */}
 								<Paper
 									elevation={3}
 									sx={{ padding: 2, textAlign: 'center', cursor: 'pointer' }}
@@ -44,9 +43,9 @@ export function ExamplePanel({ setTabsValue }: ExamplePanelProps) {
 									}}>
 									<Typography variant='body1'>{exampleName}</Typography>
 								</Paper>
-							</Grid>
+							</Grid2>
 						))}
-					</Grid>
+					</Grid2>
 				</Box>
 			))}
 		</Box>
