@@ -17,6 +17,16 @@ theme:
 nav:
 - Home:
   - Overview: index.md
+  - Authentication: authentication.md
 
 plugins:
 - search
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true

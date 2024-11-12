@@ -111,16 +111,3 @@ The command below will run the docker container named `ui` and serve the UI on p
 ```bash
 docker run --rm -d -p 80:80/tcp --name ui ghcr.io/yaptide/ui-web:master
 ```
-
-## Credits
-
-This project adapts source code from the following libraries:
-
-- CSG javascript library <https://github.com/manthrax/THREE-CSGMesh>
-  - parts of its code copied into `src/ThreeEditor/js/libs/csg/`
-  - adapted by adding types in a separate file
-- ThreeJS Editor <https://threejs.org/editor/>
-  - most of its code is copied from [mrdoob's GitHub repo](https://github.com/mrdoob/three.js/tree/r132/editor) into `src/ThreeEditor`, starting from v.132
-  - the copied code is heavily adapted to "yaptide needs"
-
-This work was partially funded by EuroHPC PL Project, Smart Growth Operational Programme 4.2
