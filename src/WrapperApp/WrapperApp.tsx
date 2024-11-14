@@ -73,7 +73,7 @@ function WrapperApp() {
 			/>
 			<TabPanel
 				value={tabsValue}
-				index={'example'}
+				index={'examples'}
 				persistent>
 				<ExamplePanel setTabsValue={setTabsValue} />
 			</TabPanel>

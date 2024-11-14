@@ -104,9 +104,9 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 	// Order of elements in this list corresponds to their order in UI
 	const menuOptions: MenuOption[] = [
 		{
-			label: 'Example',
-			tooltipLabel: 'Example',
-			value: 'example',
+			label: 'Examples',
+			tooltipLabel: 'Examples',
+			value: 'examples',
 			icon: <FolderSpecialIcon fontSize='large' />,
 			separator: true
 		},
