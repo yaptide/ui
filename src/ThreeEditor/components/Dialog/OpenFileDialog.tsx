@@ -1,23 +1,9 @@
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import {
-	Box,
-	Button,
-	Divider,
-	IconButton,
-	List,
-	ListItem,
-	ListItemButton,
-	Tab,
-	Tabs,
-	TextField,
-	Tooltip
-} from '@mui/material';
+import { Box, Button, Divider, IconButton, Tab, TextField, Tooltip } from '@mui/material';
 import { ChangeEvent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 
-import EXAMPLES from '../../../examples/examples';
 import { LoaderContext } from '../../../services/LoaderService';
-import { SimulatorType } from '../../../types/RequestTypes';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 import { DragDropProject } from './DragDropProject';
 
@@ -27,11 +13,9 @@ export function OpenFileDialog({
 	loadFromFiles,
 	loadFromUrl,
 	loadFromJsonString,
-	dialogState,
-	fetchExampleData
+	dialogState
 }: ConcreteDialogProps<LoaderContext> & {
 	dialogState: string;
-	fetchExampleData: (exampleName: string) => void; // I don't like how this is typed here
 }) {
 	const [currentFileList, setCurrentFileList] = useState<FileList>();
 	const [value, setValue] = useState(dialogState);
@@ -45,11 +29,10 @@ export function OpenFileDialog({
 	};
 
 	const [url, setUrl] = useState('');
-	const [exampleIndex, setExampleIndex] = useState<number | null>(null);
 	const handleUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setUrl(event.target.value);
 	};
-	const tabList = useMemo(() => ['Examples', 'Upload file', 'From URL', 'Plain text'], []);
+	const tabList = useMemo(() => ['Upload file', 'From URL', 'Plain text'], []);
 	const tabPanelProps = useCallback(
 		(index: number) => ({
 			value: index.toString(),
@@ -57,9 +40,6 @@ export function OpenFileDialog({
 		}),
 		[value]
 	);
-	const [selectedSimulator, setSelectedSimulator] = useState<SimulatorType>(SimulatorType.COMMON);
-
-	// const fetchExampleData = useFetchExampleData();
 
 	return (
 		<CustomDialog
@@ -90,66 +70,6 @@ export function OpenFileDialog({
 					</Box>
 					<Divider />
 					<TabPanel {...tabPanelProps(0)}>
-						<Tabs
-							value={selectedSimulator}
-							onChange={(e, newValue) => setSelectedSimulator(newValue)}
-							aria-label='simulator selection tabs'
-							variant='fullWidth'>
-							{Object.values(SimulatorType).map(simulator => (
-								<Tab
-									label={simulator}
-									value={simulator}
-								/>
-							))}
-						</Tabs>
-						<Divider />
-						<Box
-							sx={{
-								display: 'flex',
-								flexDirection: 'column',
-								gap: 2,
-								height: 319,
-								boxSizing: 'border-box'
-							}}>
-							<List id={'Examples list'}>
-								{Object.entries(EXAMPLES[selectedSimulator]).map((name, idx) => (
-									<ListItem
-										disablePadding
-										key={'Example_' + idx.toString()}
-										value={idx}
-										aria-labelledby={`example-btn-${idx}`}
-										aria-selected={exampleIndex === idx}
-										onClick={() => setExampleIndex(idx)}>
-										<ListItemButton
-											id={`example-btn-${idx}`}
-											selected={exampleIndex === idx}>
-											{name[0]}
-										</ListItemButton>
-									</ListItem>
-								))}
-							</List>
-							<Button
-								aria-label='Load example button'
-								variant='contained'
-								fullWidth
-								sx={{ marginTop: 'auto' }}
-								disabled={exampleIndex === null}
-								onClick={() => {
-									onClose();
-
-									fetchExampleData(
-										EXAMPLES[selectedSimulator][
-											Object.keys(EXAMPLES[selectedSimulator])[
-												exampleIndex ?? 0
-											]
-										]
-									);
-								}}>
-								Load
-							</Button>
-						</Box>
-					</TabPanel>
-					<TabPanel {...tabPanelProps(1)}>
 						<Box
 							sx={{
 								display: 'flex',
@@ -199,7 +119,7 @@ export function OpenFileDialog({
 							</Button>
 						</Box>
 					</TabPanel>
-					<TabPanel {...tabPanelProps(2)}>
+					<TabPanel {...tabPanelProps(1)}>
 						<Box
 							sx={{
 								display: 'flex',
@@ -229,7 +149,7 @@ export function OpenFileDialog({
 							</Button>
 						</Box>
 					</TabPanel>
-					<TabPanel {...tabPanelProps(3)}>
+					<TabPanel {...tabPanelProps(2)}>
 						<Box
 							sx={{
 								display: 'flex',

@@ -10,7 +10,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useFetchExampleData } from '../../../../examples/examples';
 import { useDialog } from '../../../../services/DialogService';
 import { useLoader } from '../../../../services/LoaderService';
 import { useStore } from '../../../../services/StoreService';
@@ -38,7 +37,6 @@ function EditorAppBar({ editor }: AppBarProps) {
 	const [canUndo, setCanUndo] = useState((editor?.history.undos.length ?? 0) > 0);
 	const [canRedo, setCanRedo] = useState((editor?.history.redos.length ?? 0) > 0);
 	const { yaptideEditor } = useStore();
-	const fetchExampleData = useFetchExampleData();
 
 	const updateHistoryButtons = useCallback(() => {
 		setCanUndo((editor?.history.undos.length ?? 0) > 0);
@@ -87,8 +85,7 @@ function EditorAppBar({ editor }: AppBarProps) {
 							loadFromJson,
 							loadFromUrl,
 							loadFromJsonString,
-							dialogState: '1',
-							fetchExampleData
+							dialogState: '1'
 						})
 				},
 				{
