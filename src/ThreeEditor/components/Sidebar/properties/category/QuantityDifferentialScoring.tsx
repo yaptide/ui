@@ -22,7 +22,10 @@ import { PropertiesCategory } from './PropertiesCategory';
 export function QuantityDifferentialScoring(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
-	const { state: watchedObject } = useSmartWatchEditorState(editor, object as ScoringQuantity);
+	const { state: watchedObject } = useSmartWatchEditorState(
+		editor,
+		object as unknown as ScoringQuantity
+	);
 
 	const visibleFlag = isScoringQuantity(watchedObject);
 

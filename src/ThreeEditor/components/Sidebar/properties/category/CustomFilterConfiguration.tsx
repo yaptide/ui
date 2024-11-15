@@ -16,7 +16,10 @@ import { PropertiesCategory } from './PropertiesCategory';
 export function CustomFilterConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
-	const { state: watchedObject } = useSmartWatchEditorState(editor, object as CustomFilter);
+	const { state: watchedObject } = useSmartWatchEditorState(
+		editor,
+		object as unknown as CustomFilter
+	);
 
 	const visibleFlag = isCustomFilter(watchedObject);
 

@@ -1,7 +1,6 @@
 import { Backdrop, CircularProgress, Theme, Typography } from '@mui/material';
 import { KeycloakTokenParsed } from 'keycloak-js';
-import ky, { HTTPError } from 'ky';
-import { KyInstance } from 'ky/distribution/types/ky';
+import ky, { HTTPError, KyInstance } from 'ky';
 import { useSnackbar } from 'notistack';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
