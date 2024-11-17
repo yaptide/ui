@@ -1,5 +1,3 @@
-import { isPromise } from 'node:util/types';
-
 import { useCallback } from 'react';
 
 import { Estimator } from '../JsRoot/GraphData';
@@ -24,6 +22,7 @@ import {
 import {
 	currentJobStatusData,
 	currentTaskStatusData,
+	EstimatorNamesResponse,
 	JobStatusCompleted,
 	JobStatusData,
 	JobStatusFailed,
@@ -44,7 +43,6 @@ import { useCacheMap } from '../util/hooks/useCacheMap';
 import { camelToSnakeCase } from '../util/Notation/Notation';
 import { orderAccordingToList } from '../util/Sort';
 import { ValidateShape } from '../util/Types';
-import { EstimatorResults } from '../WrapperApp/components/Results/ResultsPanel';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import { useAuth } from './AuthService';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
@@ -408,6 +406,23 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 		[authKy, getJobInputs, resultsCache]
 	);
 
+	const getCurrentEstimators = useCallback(
+		async (job_id: string) => {
+			try {
+				return await authKy
+					.get('estimators', {
+						searchParams: { job_id }
+					})
+					.json<EstimatorNamesResponse>();
+			} catch (error) {
+				console.error('Failed to fetch estimators:', error);
+
+				return undefined;
+			}
+		},
+		[authKy]
+	);
+
 	//TODO: fix backend responses and remove this function
 	const validStatusToCache = (data: JobStatusCompleted | JobStatusFailed) => {
 		if (data.jobState === StatusState.FAILED) return true;
@@ -525,6 +540,43 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 		[getJobStatus]
 	);
 
+	const findFirstEstimatorName = useCallback(
+		async (
+			jobStatus: JobStatusData,
+			inputs: JobInputs | undefined,
+			givenEstimatorName?: string
+		) => {
+			const firstEstimatorName = inputs?.input.inputJson?.scoringManager.outputs[0].name;
+
+			if (
+				!givenEstimatorName &&
+				!firstEstimatorName &&
+				jobStatus.jobState === StatusState.COMPLETED
+			) {
+				const estimators = await getCurrentEstimators(jobStatus.jobId);
+
+				if (inputs) {
+					inputs.input.inputFilesEstimatorNames = estimators?.estimatorNames;
+				}
+			}
+
+			const firstEstimatorInputFileName = inputs?.input.inputFilesEstimatorNames?.[0];
+
+			if (givenEstimatorName) {
+				return givenEstimatorName;
+			}
+
+			if (firstEstimatorInputFileName) {
+				return firstEstimatorInputFileName;
+			}
+
+			if (firstEstimatorName) {
+				return firstEstimatorName + '_';
+			}
+		},
+		[getCurrentEstimators]
+	);
+
 	const getFullSimulationData = useCallback(
 		async (
 			jobStatus: JobStatusData,
@@ -533,16 +585,21 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 			givenEstimatorName?: string
 		) => {
 			const inputs: JobInputs | undefined = await getJobInputs(jobStatus, signal, cache);
-			const firstEstimatorName = inputs?.input.inputJson?.scoringManager.outputs[0].name;
+
+			const firstEstimator = await findFirstEstimatorName(
+				jobStatus,
+				inputs,
+				givenEstimatorName
+			);
 
 			const results: JobResults | undefined =
-				jobStatus.jobState === StatusState.COMPLETED && firstEstimatorName
+				jobStatus.jobState === StatusState.COMPLETED && firstEstimator
 					? await getJobResult(
 							{
 								jobId: jobStatus.jobId,
 								estimatorName: givenEstimatorName
 									? givenEstimatorName
-									: firstEstimatorName + '_'
+									: firstEstimator
 							},
 							signal,
 							cache
@@ -563,7 +620,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 			return simData;
 		},
-		[getJobInputs, getJobResult]
+		[findFirstEstimatorName, getJobInputs, getJobResult]
 	);
 
 	return (

@@ -334,8 +334,14 @@ export type ResponseGetJobInputs = {
 		inputFiles: SimulationInputFiles;
 		inputJson?: EditorJson;
 		inputType: SimulationSourceType;
+		inputFilesEstimatorNames?: string[];
 	};
 } & YaptideResponse;
+
+export type EstimatorNamesResponse = {
+	estimatorNames: string[];
+	message: string;
+};
 
 export type ResponseGetJobLogs = {
 	logfiles: Record<string, string>;

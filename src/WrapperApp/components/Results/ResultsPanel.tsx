@@ -26,10 +26,11 @@ function ResultsPanel() {
 	const [estimatorsResults, setEstimatorsResults] = useState<EstimatorResults[]>([]);
 	const [groupQuantities, setGroupQuantities] = useState(false);
 
-	const estimatorsTabData: string[] | undefined =
-		simulation?.input.inputJson?.scoringManager.outputs
-			.filter(output => output.name)
-			.map(output => output.name);
+	const estimatorsTabData: string[] | undefined = simulation?.input.inputFilesEstimatorNames
+		? simulation.input.inputFilesEstimatorNames.map(output => output.slice(0, -1))
+		: simulation?.input.inputJson?.scoringManager.outputs
+				.filter(output => output.name)
+				.map(output => output.name);
 
 	useEffect(() => {
 		setEstimatorsResults(parseEstimators(simulation?.estimators ?? []));
