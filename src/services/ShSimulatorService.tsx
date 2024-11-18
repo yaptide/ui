@@ -553,9 +553,9 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 				!firstEstimatorName &&
 				jobStatus.jobState === StatusState.COMPLETED
 			) {
-				const estimators = await getCurrentEstimators(jobStatus.jobId);
+				if (inputs && !inputs.input.inputFilesEstimatorNames) {
+					const estimators = await getCurrentEstimators(jobStatus.jobId);
 
-				if (inputs) {
 					inputs.input.inputFilesEstimatorNames = estimators?.estimatorNames;
 				}
 			}
