@@ -14,6 +14,8 @@ export interface EstimatorResults extends Estimator {
 	gridPages: Page[];
 }
 
+const FLUKKA_EXMAPLE_RESULTS_NAMES = ['21', '22'];
+
 function ResultsPanel() {
 	const { open: openSaveFileDialog } = useDialog('saveFile');
 	const {
@@ -67,8 +69,16 @@ function ResultsPanel() {
 	}
 
 	const resultsGeneratedFromProjectFile = !!simulation?.input.inputJson;
+	const isFlukkaExample = estimatorsResults.some(
+		estimator => estimator.name === FLUKKA_EXMAPLE_RESULTS_NAMES[tabsValue]
+	);
+
 	const chosenEstimator = estimatorsResults.filter(
-		estimator => estimator.name === estimatorsTabData[tabsValue]
+		estimator =>
+			estimator.name ===
+			(isFlukkaExample
+				? FLUKKA_EXMAPLE_RESULTS_NAMES[tabsValue]
+				: estimatorsTabData[tabsValue])
 	)[0];
 
 	return (

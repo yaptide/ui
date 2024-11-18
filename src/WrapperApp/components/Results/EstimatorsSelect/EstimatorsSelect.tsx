@@ -11,6 +11,8 @@ interface EstimatorsTabProps {
 	estimatorsTabData: string[];
 }
 
+const FLUKKA_EXMAPLE_ESTIMATOR_NAMES = ['AlongBeamAxis', 'SlabYZ'];
+
 const EstimatorsSelect = ({
 	tabsValue,
 	setTabsValue,
@@ -25,9 +27,9 @@ const EstimatorsSelect = ({
 	const handleEstimatorTabChange = useCallback(
 		async (id: number) => {
 			const currentEstimatorData = simulation.estimators;
-			const estimatorExists = currentEstimatorData.some(
-				estimator => estimator.name === estimatorsTabData[id]
-			);
+			const estimatorExists =
+				currentEstimatorData.some(estimator => estimator.name === estimatorsTabData[id]) ||
+				estimatorsTabData[id] === FLUKKA_EXMAPLE_ESTIMATOR_NAMES[id];
 
 			if (!estimatorExists) {
 				const simulationJobId = simulation.jobId;
