@@ -9,16 +9,16 @@ interface EstimatorsTabProps {
 	simulation: FullSimulationData;
 	setResultsSimulationData: React.Dispatch<React.SetStateAction<FullSimulationData | undefined>>;
 	estimatorsTabData: string[];
+	isFlukaExample: boolean;
 }
-
-const FLUKKA_EXMAPLE_ESTIMATOR_NAMES = ['AlongBeamAxis', 'SlabYZ'];
 
 const EstimatorsSelect = ({
 	tabsValue,
 	setTabsValue,
 	simulation,
 	setResultsSimulationData,
-	estimatorsTabData
+	estimatorsTabData,
+	isFlukaExample
 }: EstimatorsTabProps) => {
 	const [controller] = useState(new AbortController());
 
@@ -29,7 +29,9 @@ const EstimatorsSelect = ({
 			const currentEstimatorData = simulation.estimators;
 			const estimatorExists =
 				currentEstimatorData.some(estimator => estimator.name === estimatorsTabData[id]) ||
-				estimatorsTabData[id] === FLUKKA_EXMAPLE_ESTIMATOR_NAMES[id];
+				isFlukaExample;
+
+			console.log(estimatorsTabData);
 
 			if (!estimatorExists) {
 				const simulationJobId = simulation.jobId;
@@ -54,7 +56,14 @@ const EstimatorsSelect = ({
 				}
 			}
 		},
-		[controller.signal, estimatorsTabData, getJobResult, setResultsSimulationData, simulation]
+		[
+			controller.signal,
+			estimatorsTabData,
+			getJobResult,
+			isFlukaExample,
+			setResultsSimulationData,
+			simulation
+		]
 	);
 
 	useEffect(() => {

@@ -14,8 +14,6 @@ export interface EstimatorResults extends Estimator {
 	gridPages: Page[];
 }
 
-const FLUKKA_EXMAPLE_RESULTS_NAMES = ['21', '22'];
-
 function ResultsPanel() {
 	const { open: openSaveFileDialog } = useDialog('saveFile');
 	const {
@@ -23,6 +21,7 @@ function ResultsPanel() {
 		resultsSimulationData: simulation,
 		setResultsSimulationData
 	} = useStore();
+	const isFlukaExample = simulation?.metadata.simType === 'fluka';
 
 	const [tabsValue, setTabsValue] = useState(0);
 	const [estimatorsResults, setEstimatorsResults] = useState<EstimatorResults[]>([]);
@@ -69,17 +68,10 @@ function ResultsPanel() {
 	}
 
 	const resultsGeneratedFromProjectFile = !!simulation?.input.inputJson;
-	const isFlukkaExample = estimatorsResults.some(
-		estimator => estimator.name === FLUKKA_EXMAPLE_RESULTS_NAMES[tabsValue]
-	);
 
-	const chosenEstimator = estimatorsResults.filter(
-		estimator =>
-			estimator.name ===
-			(isFlukkaExample
-				? FLUKKA_EXMAPLE_RESULTS_NAMES[tabsValue]
-				: estimatorsTabData[tabsValue])
-	)[0];
+	const chosenEstimator = isFlukaExample
+		? estimatorsResults[tabsValue]
+		: estimatorsResults.filter(estimator => estimator.name === estimatorsTabData[tabsValue])[0];
 
 	return (
 		<Box
@@ -167,6 +159,7 @@ function ResultsPanel() {
 							simulation={simulation}
 							setResultsSimulationData={setResultsSimulationData}
 							estimatorsTabData={estimatorsTabData}
+							isFlukaExample={isFlukaExample}
 						/>
 						<EstimatorTab
 							estimator={chosenEstimator}
