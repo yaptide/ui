@@ -27,11 +27,19 @@ function ResultsPanel() {
 	const [estimatorsResults, setEstimatorsResults] = useState<EstimatorResults[]>([]);
 	const [groupQuantities, setGroupQuantities] = useState(false);
 
+	const inputFilesEstimatorNames = simulation?.input.inputFilesEstimatorNames?.map(output =>
+		output.slice(0, -1)
+	);
+	const flukaEditorEstimatorNames = simulation?.estimators.map(estimator => estimator.name);
+	const editorEstimatorNames = simulation?.input.inputJson?.scoringManager.outputs
+		.filter(output => output.name)
+		.map(output => output.name);
+
 	const estimatorsTabData: string[] | undefined = simulation?.input.inputFilesEstimatorNames
-		? simulation.input.inputFilesEstimatorNames.map(output => output.slice(0, -1))
-		: simulation?.input.inputJson?.scoringManager.outputs
-				.filter(output => output.name)
-				.map(output => output.name);
+		? inputFilesEstimatorNames
+		: isFlukaExample
+			? flukaEditorEstimatorNames
+			: editorEstimatorNames;
 
 	useEffect(() => {
 		setEstimatorsResults(parseEstimators(simulation?.estimators ?? []));
@@ -69,9 +77,9 @@ function ResultsPanel() {
 
 	const resultsGeneratedFromProjectFile = !!simulation?.input.inputJson;
 
-	const chosenEstimator = isFlukaExample
-		? estimatorsResults[tabsValue]
-		: estimatorsResults.filter(estimator => estimator.name === estimatorsTabData[tabsValue])[0];
+	const chosenEstimator = estimatorsResults.filter(
+		estimator => estimator.name === estimatorsTabData[tabsValue]
+	)[0];
 
 	return (
 		<Box

@@ -27,11 +27,9 @@ const EstimatorsSelect = ({
 	const handleEstimatorTabChange = useCallback(
 		async (id: number) => {
 			const currentEstimatorData = simulation.estimators;
-			const estimatorExists =
-				currentEstimatorData.some(estimator => estimator.name === estimatorsTabData[id]) ||
-				isFlukaExample;
-
-			console.log(estimatorsTabData);
+			const estimatorExists = currentEstimatorData.some(
+				estimator => estimator.name === estimatorsTabData[id]
+			);
 
 			if (!estimatorExists) {
 				const simulationJobId = simulation.jobId;
