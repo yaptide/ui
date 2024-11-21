@@ -31559,7 +31559,7 @@
 	"endTime": null,
 	"jobId": "714482cc-a972-4897-8521-f9899cf50f37",
 	"metadata": {
-		"inputType": "YAPTIDE_PROJECT",
+		"inputType": "EDITOR",
 		"platform": "DIRECT",
 		"server": "Yaptide",
 		"simType": "SHIELDHIT"
