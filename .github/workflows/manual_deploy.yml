@@ -25,7 +25,7 @@ jobs:
     
     steps:
       - name: Get branch of PR
-        uses: xt0rted/pull-request-comment-branch@v2
+        uses: xt0rted/pull-request-comment-branch@v3
         id: comment-branch
 
       - name: Set latest commit status as pending
@@ -52,7 +52,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v5.5.1
+        uses: docker/metadata-action@v5.6.1
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           # Need to override the tag with pr-{issue_number} to make the retention working properly
