@@ -334,7 +334,7 @@ export type ResponseGetJobInputs = {
 		inputFiles: SimulationInputFiles;
 		inputJson?: EditorJson;
 		inputType: SimulationSourceType;
-		inputFilesEstimatorNames?: string[];
+		userInputFilesEstimatorNames?: string[];
 	};
 } & YaptideResponse;
 

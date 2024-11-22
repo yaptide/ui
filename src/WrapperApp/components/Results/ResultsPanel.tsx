@@ -26,16 +26,17 @@ function ResultsPanel() {
 	const [estimatorsResults, setEstimatorsResults] = useState<EstimatorResults[]>([]);
 	const [groupQuantities, setGroupQuantities] = useState(false);
 
-	const inputFilesEstimatorNames = simulation?.input.inputFilesEstimatorNames?.map(output =>
-		output.slice(0, -1)
+	const userTabInputFilesEstimatorNames = simulation?.input.userInputFilesEstimatorNames?.map(
+		output => output.slice(0, -1)
 	);
+	const uploadedInputFilesEstimatorNames = estimatorsResults?.map(estimator => estimator.name);
 
 	const editorEstimatorNames = simulation?.input.inputJson?.scoringManager.outputs
 		.filter(output => output.name)
 		.map(output => output.name);
 
-	const estimatorsTabData: string[] | undefined = simulation?.input.inputFilesEstimatorNames
-		? inputFilesEstimatorNames
+	const estimatorsTabData: string[] | undefined = simulation?.input.userInputFilesEstimatorNames
+		? userTabInputFilesEstimatorNames
 		: editorEstimatorNames;
 
 	useEffect(() => {
@@ -67,10 +68,6 @@ function ResultsPanel() {
 
 		return estimatorResults;
 	};
-
-	if (!estimatorsTabData) {
-		return null;
-	}
 
 	const resultsGeneratedFromProjectFile = !!simulation?.input.inputJson;
 	const chosenEstimator = estimatorsResults[tabsValue];
@@ -160,7 +157,11 @@ function ResultsPanel() {
 							setTabsValue={setTabsValue}
 							simulation={simulation}
 							setResultsSimulationData={setResultsSimulationData}
-							estimatorsTabData={estimatorsTabData}
+							estimatorsTabData={
+								estimatorsTabData
+									? estimatorsTabData
+									: uploadedInputFilesEstimatorNames
+							}
 						/>
 						<EstimatorTab
 							estimator={chosenEstimator}

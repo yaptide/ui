@@ -540,6 +540,10 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 		[getJobStatus]
 	);
 
+	// This function is used to find the first estimator name in the simulation data to fetch the results for estimators.
+	// If name isn't passed, it will try to find the first estimator name in the simulation data.
+	// If the name isn't found, it will try to get name from the backend.
+	// It wouldn't be handled if we load the example.
 	const findFirstEstimatorName = useCallback(
 		async (
 			jobStatus: JobStatusData,
@@ -553,14 +557,14 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 				!firstEstimatorName &&
 				jobStatus.jobState === StatusState.COMPLETED
 			) {
-				if (inputs && !inputs.input.inputFilesEstimatorNames) {
+				if (inputs && !inputs.input.userInputFilesEstimatorNames) {
 					const estimators = await getCurrentEstimators(jobStatus.jobId);
 
-					inputs.input.inputFilesEstimatorNames = estimators?.estimatorNames;
+					inputs.input.userInputFilesEstimatorNames = estimators?.estimatorNames;
 				}
 			}
 
-			const firstEstimatorInputFileName = inputs?.input.inputFilesEstimatorNames?.[0];
+			const firstEstimatorInputFileName = inputs?.input.userInputFilesEstimatorNames?.[0];
 
 			if (givenEstimatorName) {
 				return givenEstimatorName;
