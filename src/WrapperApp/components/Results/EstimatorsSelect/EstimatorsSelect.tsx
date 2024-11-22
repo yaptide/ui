@@ -9,7 +9,6 @@ interface EstimatorsTabProps {
 	simulation: FullSimulationData;
 	setResultsSimulationData: React.Dispatch<React.SetStateAction<FullSimulationData | undefined>>;
 	estimatorsTabData: string[];
-	isFlukaSimulation: boolean;
 }
 
 const EstimatorsSelect = ({
@@ -17,8 +16,7 @@ const EstimatorsSelect = ({
 	setTabsValue,
 	simulation,
 	setResultsSimulationData,
-	estimatorsTabData,
-	isFlukaSimulation
+	estimatorsTabData
 }: EstimatorsTabProps) => {
 	const [controller] = useState(new AbortController());
 
@@ -28,8 +26,7 @@ const EstimatorsSelect = ({
 		async (id: number) => {
 			const currentEstimatorData = simulation.estimators;
 			const estimatorExists =
-				currentEstimatorData.some(estimator => estimator.name === estimatorsTabData[id]) ||
-				isFlukaSimulation;
+				currentEstimatorData[id] && currentEstimatorData[id].name !== '';
 
 			if (!estimatorExists) {
 				const simulationJobId = simulation.jobId;
@@ -46,22 +43,26 @@ const EstimatorsSelect = ({
 				const newEstimatorData = estimatorData?.estimators;
 
 				if (newEstimatorData) {
+					const newEstimators = [...currentEstimatorData];
+
+					while (newEstimators.length <= id) {
+						newEstimators.push({
+							name: '',
+							pages: []
+						});
+					}
+
+					newEstimators[id] = newEstimatorData[0];
+
 					const newSimulation = {
 						...simulation,
-						estimators: [...currentEstimatorData, ...newEstimatorData]
+						estimators: newEstimators
 					};
 					setResultsSimulationData(newSimulation);
 				}
 			}
 		},
-		[
-			controller.signal,
-			estimatorsTabData,
-			getJobResult,
-			isFlukaSimulation,
-			setResultsSimulationData,
-			simulation
-		]
+		[controller.signal, estimatorsTabData, getJobResult, setResultsSimulationData, simulation]
 	);
 
 	useEffect(() => {

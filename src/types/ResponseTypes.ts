@@ -78,7 +78,7 @@ export type TaskTime = {
 	seconds: string;
 };
 
-export type MetaKey = 'server' | 'platform' | 'input' | 'simType';
+export type MetaKey = 'server' | 'platform' | 'inputType' | 'simType';
 
 export type PlatformType = 'DIRECT' | 'BATCH';
 
