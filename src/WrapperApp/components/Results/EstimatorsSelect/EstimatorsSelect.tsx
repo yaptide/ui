@@ -9,7 +9,7 @@ interface EstimatorsTabProps {
 	simulation: FullSimulationData;
 	setResultsSimulationData: React.Dispatch<React.SetStateAction<FullSimulationData | undefined>>;
 	estimatorsTabData: string[];
-	isFlukaExample: boolean;
+	isFlukaSimulation: boolean;
 }
 
 const EstimatorsSelect = ({
@@ -18,7 +18,7 @@ const EstimatorsSelect = ({
 	simulation,
 	setResultsSimulationData,
 	estimatorsTabData,
-	isFlukaExample
+	isFlukaSimulation
 }: EstimatorsTabProps) => {
 	const [controller] = useState(new AbortController());
 
@@ -27,9 +27,9 @@ const EstimatorsSelect = ({
 	const handleEstimatorTabChange = useCallback(
 		async (id: number) => {
 			const currentEstimatorData = simulation.estimators;
-			const estimatorExists = currentEstimatorData.some(
-				estimator => estimator.name === estimatorsTabData[id]
-			);
+			const estimatorExists =
+				currentEstimatorData.some(estimator => estimator.name === estimatorsTabData[id]) ||
+				isFlukaSimulation;
 
 			if (!estimatorExists) {
 				const simulationJobId = simulation.jobId;
@@ -58,7 +58,7 @@ const EstimatorsSelect = ({
 			controller.signal,
 			estimatorsTabData,
 			getJobResult,
-			isFlukaExample,
+			isFlukaSimulation,
 			setResultsSimulationData,
 			simulation
 		]
