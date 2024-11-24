@@ -35,8 +35,6 @@ describe('Fluka Converter', () => {
 			)
 		).toBeTruthy();
 
-		////////////////////////////////////////////////////////////////
-
 		// Find and click the "Examples" button
 		const examplesButton = await driver.findElement(
 			By.xpath("//div[@aria-label = 'Examples']")
@@ -92,8 +90,6 @@ describe('Fluka Converter', () => {
 		);
 
 		expect(editorTab).toBeTruthy();
-
-		////////////////////////////////////////////////////////////////
 
 		const loadFileTitleId = 'load-file-alert-dialog-title';
 		const loadFileContentId = 'load-file-alert-dialog-content';
