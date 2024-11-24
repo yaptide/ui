@@ -36,92 +36,67 @@ describe('ShieldhitConverter', () => {
 			)
 		).toBeTruthy();
 
-		//find the "Editor" button on the left menu and assure it is already selected
-		const editorButton = await driver.findElement(By.xpath("//div[@aria-label = 'Editor']"));
+		////////////////////////////////////////////////////////////////
 
-		if ((await editorButton.getAttribute('aria-selected')) !== 'true')
-			console.warn(
-				`Editor button is not selected even though it should be it's default state.`
-			);
-		await editorButton.click().then(async () => {
-			//click rerenders the nav drawer, so we need to wait for it to rerender
-			expect(
-				await driver.wait(
-					until.elementLocated(
-						By.xpath("//div[@aria-label = 'Editor' and @aria-selected = 'true']")
-					),
-					10_000
-				)
-			).toBeTruthy();
-		});
-
-		//find the "open" button (second from the left on the upper bar) and then click it
-		const openButton = await driver.findElement(By.xpath("//span[@aria-label = 'Menu Open']"));
-		await openButton.click();
-
-		//wait for the "open project" window to appear
-		const openProjectTitleId = 'open-project-dialog-title';
-
-		const openProjectWidget = await driver.wait(
-			until.elementLocated(
-				By.xpath(`//div[@role = 'dialog' and @aria-labelledby = '${openProjectTitleId}']`)
-			),
-			10_000
+		// Find and click the "Examples" button
+		const examplesButton = await driver.findElement(
+			By.xpath("//div[@aria-label = 'Examples']")
 		);
 
-		const openProjectTitle = await openProjectWidget.findElement(By.id(openProjectTitleId));
-		await driver.wait(until.elementTextIs(openProjectTitle, 'Open Project'), 10_000);
+		// Scroll into view to ensure the element is visible
+		await driver.executeScript('arguments[0].scrollIntoView(true);', examplesButton);
 
-		//find the "examples" button in the window and click it. (we find it by contained text as its id changes every time)
-		const examplesButton = await openProjectWidget.findElement(
-			By.xpath("//button[contains(text(),'Examples')]")
-		);
-		//check if the tab is not already selected
-		expect(await examplesButton.getAttribute('aria-selected')).toBe('false');
+		// Click the button
+		await driver.wait(until.elementIsVisible(examplesButton), 5_000);
+		await driver.wait(until.elementIsEnabled(examplesButton), 5_000);
 		await examplesButton.click();
 
-		//find the "examples" panel we just opened
-		const examplesPanel = await driver.wait(
+		// Wait until the "Examples" button is marked as active
+		await driver.wait(
 			until.elementLocated(
-				By.xpath(
-					`//div[@role = 'tabpanel' and @aria-labelledby = '${await examplesButton.getAttribute(
-						'id'
-					)}' and @id = '${await examplesButton.getAttribute('aria-controls')}']`
-				)
+				By.xpath("//div[@aria-label = 'Examples' and @aria-selected = 'true']")
 			),
 			10_000
 		);
 
-		//check if the tab is not hidden
-		expect(await examplesPanel.getAttribute('hidden')).toBeFalsy();
-
-		// select SHIELDHIT subsection
-		examplesPanel.findElement(By.xpath("//button[contains(text(),'shieldhit')]")).click();
-
-		//find the list of examples
-		const examplesList = await examplesPanel.findElement(By.id('Examples list'));
-
-		//find the first option in the list
-		//it has value=0 and is li element
-		const firstExample = await examplesList.findElement(By.xpath("//li[@value = '0']"));
-
-		//check if the first example is "Proton pencil beam in water"
-		//text is located in element with id corresponding to aria-labelledby of the list element
-		const exampleLabel = await openProjectWidget.findElement(
-			By.id(await firstExample.getAttribute('aria-labelledby'))
+		// Find the "SHIELDHIT" section header
+		const shieldhitSectionHeader = await driver.findElement(
+			By.xpath("//h5[text()='SHIELDHIT']")
 		);
-		expect(await exampleLabel.getText()).toBe('Proton pencil beam in water');
 
-		//click the first example
+		// Scroll into view of the header
+		await driver.executeScript('arguments[0].scrollIntoView(true);', shieldhitSectionHeader);
+
+		// Ensure the section header is visible
+		expect(await shieldhitSectionHeader.isDisplayed()).toBeTruthy();
+
+		// Find the first example in the "SHIELDHIT" section
+		const firstExample = await driver.findElement(
+			By.xpath(
+				"//h5[text()='SHIELDHIT']/following-sibling::div//div[contains(@class, 'MuiPaper-root')][1]"
+			)
+		);
+
+		// Scroll into view of the first example
+		await driver.executeScript('arguments[0].scrollIntoView(true);', firstExample);
+
+		// Ensure the first example is visible
+		expect(await firstExample.isDisplayed()).toBeTruthy();
+
+		// Click the first example
 		await firstExample.click();
-		expect(await firstExample.getAttribute('aria-selected')).toEqual('true');
 
-		//find the "load" button and click it
-		const loadButton = await openProjectWidget.findElement(
-			By.xpath("//button[@aria-label = 'Load example button']")
+		// Check if the tab switched to "Editor"
+		const editorTab = await driver.wait(
+			until.elementLocated(
+				By.xpath("//div[@aria-label = 'Editor' and @aria-selected = 'true']")
+			),
+			10_000
 		);
-		expect(await loadButton.isEnabled()).toEqual(true);
-		await loadButton.click();
+
+		expect(editorTab).toBeTruthy();
+
+		////////////////////////////////////////////////////////////////
 
 		const loadFileTitleId = 'load-file-alert-dialog-title';
 		const loadFileContentId = 'load-file-alert-dialog-content';
