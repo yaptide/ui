@@ -141,13 +141,6 @@ describe('Fluka Converter', () => {
 			)
 		).toBeTruthy();
 
-		//find the "Fluka" button and click it
-		const flukaButton = await driver.findElement(By.xpath("//button[@value = 'fluka']"));
-		await flukaButton.click();
-
-		//accept the "current data will be lost" alert
-		await driver.switchTo().alert().accept();
-
 		//wait until the "generate from editor" button and click it (it takes some time for the button to change from "initializing")
 		//xpath is used as again the id changes every time
 		const generateButton = await driver.findElement(
