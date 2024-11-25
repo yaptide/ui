@@ -3,11 +3,11 @@
 {
 	"name": "Node.js & TypeScript",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/typescript-node:18",
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:20",
 	// features https://containers.dev/features
 	"features": {
 		"ghcr.io/devcontainers/features/python:1": {
-			"version": "3.11"
+			"version": "3.12"
 		},
 		"ghcr.io/devcontainers/features/docker-in-docker:2" : {}
 	},

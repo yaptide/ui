@@ -30163,7 +30163,7 @@
 	"endTime": null,
 	"jobId": "d40c5e9d-02c2-4290-b007-e6ae1ca15e59",
 	"metadata": {
-		"inputType": "YAPTIDE_PROJECT",
+		"inputType": "EDITOR",
 		"platform": "DIRECT",
 		"server": "Yaptide",
 		"simType": "SHIELDHIT"
