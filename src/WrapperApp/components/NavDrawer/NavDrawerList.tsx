@@ -1,12 +1,9 @@
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import LoginIcon from '@mui/icons-material/Login';
-import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
 import {
 	Box,
 	Divider,
-	IconButton,
 	List,
 	ListItem,
 	ListItemButton,
@@ -206,7 +203,17 @@ export function NavDrawerList({
 }
 
 function NavDrawerElement({
-	menuOption: { label, richLabel, tooltipLabel, value, disabled, info, description, icon },
+	menuOption: {
+		label,
+		richLabel,
+		tooltipLabel,
+		value,
+		disabled,
+		info,
+		description,
+		icon,
+		separator
+	},
 	open,
 	selected,
 	secondaryAction,
@@ -279,6 +286,7 @@ function NavDrawerElement({
 						{listItemContent}
 					</ListItemButton>
 				)}
+				{separator && <Divider />}
 			</ListItem>
 		</Tooltip>
 	);

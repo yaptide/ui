@@ -1,5 +1,6 @@
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import DescriptionIcon from '@mui/icons-material/Description';
+import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
 import InfoIcon from '@mui/icons-material/Info';
 import Menu from '@mui/icons-material/Menu';
 import MenuOpen from '@mui/icons-material/MenuOpen';
@@ -27,6 +28,7 @@ export type MenuOption = {
 	value: string;
 	disabled?: boolean;
 	icon: ReactElement;
+	separator?: boolean;
 };
 
 type NavDrawerProps = {
@@ -101,6 +103,13 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen }: NavDrawerProps) {
 
 	// Order of elements in this list corresponds to their order in UI
 	const menuOptions: MenuOption[] = [
+		{
+			label: 'Examples',
+			tooltipLabel: 'Examples',
+			value: 'examples',
+			icon: <FolderSpecialIcon fontSize='large' />,
+			separator: true
+		},
 		{
 			label: 'Editor',
 			tooltipLabel: 'Editor',
