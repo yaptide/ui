@@ -20,8 +20,8 @@ export function createRowSelect({ text = 'Label', options = [], value, update })
 		.setWidth(INPUT_WIDTH)
 		.setFontSize(FONT_SIZE)
 		.setOptions(options)
-		.setValue(value)
-		.onChange(update);
+		.setValue(value);
+	select.onChange = update;
 	const label = new UIText(text).setWidth(LABEL_WIDTH).setMargin(LABEL_MARGIN);
 
 	row.add(label);

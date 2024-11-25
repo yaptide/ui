@@ -10,6 +10,7 @@ import {
 	ButtonBase,
 	ButtonGroup,
 	ButtonGroupProps,
+	ButtonGroupTypeMap,
 	ButtonProps,
 	Card,
 	CardProps,
@@ -20,6 +21,7 @@ import {
 	Tooltip,
 	Typography
 } from '@mui/material';
+import { OverridableComponent } from '@mui/material/OverridableComponent';
 import { ChangeEvent } from 'react';
 
 import { OrderBy, OrderType } from '../../../types/RequestTypes';
@@ -136,7 +138,7 @@ export const InputGroup = styled(ButtonGroup)<InputGroupProps>(
 			}
 		}
 	})
-);
+) as OverridableComponent<ButtonGroupTypeMap<{}, 'div'>>;
 
 export function BackendStatusIndicator({
 	isBackendAlive,

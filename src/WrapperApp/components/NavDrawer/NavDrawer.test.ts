@@ -19,8 +19,9 @@ describe('NavDrawer component', () => {
 	//this test checks if the menu button (upper left corner, next to the yaptide logo) has rendered
 	test('renders a menu button', async () => {
 		await driver.get('http://localhost:3000');
-		const menuButton = await driver.findElement(
-			By.xpath("//button[@aria-label = 'Toggle drawer button']")
+		const menuButton = await driver.wait(
+			until.elementLocated(By.xpath("//button[@aria-label = 'Toggle drawer button']")),
+			10000
 		);
 		expect(await menuButton.isDisplayed()).toBeTruthy();
 	}, 30000);
@@ -30,8 +31,9 @@ describe('NavDrawer component', () => {
 		await driver.get('http://localhost:3000');
 
 		//find the menu button and then click it
-		const menuButton = await driver.findElement(
-			By.xpath("//button[@aria-label = 'Toggle drawer button']")
+		const menuButton = await driver.wait(
+			until.elementLocated(By.xpath("//button[@aria-label = 'Toggle drawer button']")),
+			10000
 		);
 		await menuButton.click();
 
@@ -46,8 +48,9 @@ describe('NavDrawer component', () => {
 		expect(await closedDrawer.isDisplayed()).toBeTruthy();
 
 		//find the menu button again and click it
-		const menuButton2 = await driver.findElement(
-			By.xpath("//button[@aria-label = 'Toggle drawer button']")
+		const menuButton2 = await driver.wait(
+			until.elementLocated(By.xpath("//button[@aria-label = 'Toggle drawer button']")),
+			10000
 		);
 		await menuButton2.click();
 

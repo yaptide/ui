@@ -11,7 +11,7 @@ export function useFetchExampleData() {
 	const { loadFromJson } = useLoader();
 
 	const fetchExampleData = (exampleName: string) => {
-		fetch(`${process.env.PUBLIC_URL}/examples/${exampleName}`)
+		fetch(`/examples/${exampleName}`)
 			.then(response => {
 				if (response.status !== 200) {
 					console.log('Looks like there was a problem. Status Code: ' + response.status);
