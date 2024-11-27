@@ -20,14 +20,14 @@ module.exports = {
 		reporterOptions: {
 			archi: {
 				collapsePattern:
-					'^src/(types|util|WrapperApp|shared|PythonConverter|config|libs|examples|JsRoot)|^src/[^/]+/[^/]+',
+					'^src/(types|util|WrapperApp|shared|PythonConverter|config|libs|examples|JsRoot|ThreeEditor)|^src/[^/]+/[^/]+',
 				// Collapse specific folders and contents beyond the second level
 
 				theme: {
 					modules: [
 						{
-							criteria: { collapsed: true },
-							attributes: { shape: 'box' } // Default shapes for simplicity
+							criteria: { collapsed: true }
+							// attributes: { shape: 'box' } // Default shapes for simplicity
 						}
 					],
 					graph: {
