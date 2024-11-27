@@ -1,7 +1,7 @@
 /** @type {import('dependency-cruiser').IConfiguration} */
 module.exports = {
 	options: {
-		includeOnly: '^src',
+		includeOnly: '^src/(?!config|util|types|shared|libs|examples)(.*)$',
 
 		tsPreCompilationDeps: false,
 
@@ -20,7 +20,7 @@ module.exports = {
 		reporterOptions: {
 			archi: {
 				collapsePattern:
-					'^src/(types|util|WrapperApp|shared|PythonConverter|config|libs|examples|JsRoot|ThreeEditor)|^src/[^/]+/[^/]+',
+					'^src/(PythonConverter|JsRoot|ThreeEditor)|^src/(config|util|types|shared|libs|examples)|^src/[^/]+',
 				// Collapse specific folders and contents beyond the second level
 
 				theme: {
@@ -33,7 +33,7 @@ module.exports = {
 					graph: {
 						splines: 'ortho', // Orthogonal connections for a cleaner appearance
 						rankdir: 'TB', // Default top-to-bottom direction
-						ranksep: '0.7' // Adjusted separation for clarity
+						ranksep: '0.3' // Adjusted separation for clarity
 					}
 				}
 			}
