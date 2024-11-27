@@ -33,7 +33,8 @@ module.exports = {
 					graph: {
 						splines: 'ortho', // Orthogonal connections for a cleaner appearance
 						rankdir: 'TB', // Default top-to-bottom direction
-						ranksep: '0.3' // Adjusted separation for clarity
+						ranksep: '0.3', // Adjusted separation for clarity
+						nodesep: '0.5'
 					}
 				}
 			}
