@@ -1,68 +1,49 @@
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
 
-import { useConfig } from '../../../config/ConfigService';
-import { isFullSimulationData } from '../../../services/LoaderService';
-import { useShSimulation } from '../../../services/ShSimulatorService';
-import { useStore } from '../../../services/StoreService';
-import { OrderBy, OrderType } from '../../../types/RequestTypes';
+import { isFullSimulationData } from '../../../../services/LoaderService';
+import { OrderBy, OrderType } from '../../../../types/RequestTypes';
 import {
 	currentJobStatusData,
 	JobStatusData,
-	SimulationInfo,
 	SimulationInputFiles,
 	StatusState
-} from '../../../types/ResponseTypes';
-import useIntervalAsync from '../../../util/hooks/useIntervalAsync';
-import { PaginatedSimulationsFromBackend } from './SimulationCardGrid';
-import { PageNavigationProps, PageParamProps } from './SimulationPanelBar';
+} from '../../../../types/ResponseTypes';
+import { PageNavigationProps, PageParamProps } from '../SimulationPanelBar';
+import {
+	PageState,
+	SimulationConfig,
+	SimulationHandlers,
+	SimulationState
+} from './BackendSimulationsTypes';
 
-interface BackendSimulationsProps {
-	goToResults?: () => void;
+const BackendSimulationsHelpers = (
+	config: SimulationConfig,
+	handlers: SimulationHandlers,
+	state: SimulationState
+) => {
+	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const currentJobId = useRef<string>('');
+	const { demoMode, controller, trackedId, isBackendAlive } = config;
+	const { getPageContents, getPageStatus, getJobStatus, getFullSimulationData, cancelJob } =
+		handlers;
 
-	setInputFiles: (inputFiles: SimulationInputFiles | undefined) => void;
-	setShowInputFilesEditor: (show: boolean) => void;
-}
-
-export const BackendSimulations = (props: BackendSimulationsProps) => {
-	const { goToResults, setInputFiles, setShowInputFilesEditor } = props;
-
-	const { demoMode } = useConfig();
 	const {
-		yaptideEditor,
-		/** Queued Simulation Data */
-		trackedId,
+		simulationInfo,
+		simulationsStatusData,
+		setSimulationInfo,
+		setSimulationsStatusData,
 		setResultsSimulationData,
-		setLocalResultsSimulationData
-	} = useStore();
-
-	const {
-		cancelJob,
-		getJobInputs,
-		getHelloWorld,
-		getPageContents,
-		getPageStatus,
-		getJobStatus,
-		getFullSimulationData
-	} = useShSimulation();
-
-	/** Visibility Flags */
-	const [isBackendAlive, setBackendAlive] = useState(false);
+		setLocalResultsSimulationData,
+		goToResults,
+		setInputFiles,
+		setShowInputFilesEditor
+	} = state;
 
 	const [pageIdx, setPageIdx] = useState(1);
 	const [pageCount, setPageCount] = useState(1);
 	const [orderType, setOrderType] = useState<OrderType>(OrderType.DESCEND);
 	const [orderBy, setOrderBy] = useState<OrderBy>(OrderBy.START_TIME);
 	const [pageSize, setPageSize] = useState(6);
-
-	type PageState = Omit<
-		PageParamProps & PageNavigationProps,
-		'handlePageChange' | 'handleOrderChange'
-	>;
-
-	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
-	const [simulationsStatusData, setSimulationsStatusData] = useState<JobStatusData[]>();
-
-	const [controller] = useState(new AbortController());
 
 	const updateSimulationInfo = useCallback(
 		() =>
@@ -73,7 +54,7 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 					setPageCount(pageCount);
 				})
 				.catch(),
-		[getPageContents, orderType, orderBy, pageIdx, pageSize]
+		[getPageContents, orderType, orderBy, pageIdx, pageSize, setSimulationInfo, setPageCount]
 	);
 
 	const handleBeforeCacheWrite = useCallback(
@@ -94,7 +75,14 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 				setSimulationsStatusData([...(s ?? [])]);
 			}
 		);
-	}, [demoMode, getPageStatus, simulationInfo, handleBeforeCacheWrite, controller.signal]);
+	}, [
+		demoMode,
+		getPageStatus,
+		simulationInfo,
+		handleBeforeCacheWrite,
+		controller.signal,
+		setSimulationsStatusData
+	]);
 
 	const updateSpecificSimulationData = useCallback(
 		(jobId: string) => {
@@ -114,34 +102,15 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 					});
 			});
 		},
-		[demoMode, simulationInfo, getJobStatus, handleBeforeCacheWrite, controller.signal]
+		[
+			demoMode,
+			simulationInfo,
+			getJobStatus,
+			handleBeforeCacheWrite,
+			controller.signal,
+			setSimulationsStatusData
+		]
 	);
-
-	useEffect(() => {
-		if (!demoMode)
-			getHelloWorld(controller.signal)
-				.then(() => {
-					setBackendAlive(true);
-					updateSimulationInfo();
-				})
-				.catch(() => {
-					setBackendAlive(false);
-					setPageCount(0);
-				});
-
-		return () => {
-			controller.abort();
-		};
-	}, [
-		controller.signal,
-		getHelloWorld,
-		updateSimulationInfo,
-		isBackendAlive,
-		setBackendAlive,
-		demoMode,
-		trackedId,
-		controller
-	]);
 
 	const simulationDataInterval = useMemo(() => {
 		if (demoMode || !isBackendAlive) return undefined;
@@ -155,11 +124,8 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 
 		if (allSettled) return 10000;
 
-		// interval 1.5 second if there are simulations to track and there is connection to backend
 		return 1500;
 	}, [demoMode, isBackendAlive, simulationsStatusData]);
-
-	useIntervalAsync(updateSimulationData, simulationDataInterval, simulationInfo.length > 0);
 
 	const handleLoadResults = async (taskId: string | null, simulation: unknown) => {
 		if (taskId === null) return goToResults?.call(null);
@@ -177,44 +143,6 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 		setInputFiles(inputFiles);
 	};
 
-	useEffect(() => {
-		const updateCurrentSimulation = async () => {
-			if (!demoMode && yaptideEditor) {
-				const hash = yaptideEditor.toJSON().hash;
-				const currentStatus = simulationsStatusData?.find(async s => {
-					if (currentJobStatusData[StatusState.COMPLETED](s)) {
-						const jobInputs = await getJobInputs(s, controller.signal);
-
-						return jobInputs?.input.inputJson?.hash === hash;
-					}
-
-					return false;
-				});
-
-				const currentSimulation = currentStatus
-					? await getFullSimulationData(currentStatus, controller.signal)
-					: undefined;
-
-				if (currentSimulation) yaptideEditor.setResults(currentSimulation);
-				else yaptideEditor.setResults(null);
-			}
-		};
-		updateCurrentSimulation();
-	}, [
-		simulationsStatusData,
-		yaptideEditor,
-		getJobInputs,
-		controller.signal,
-		getFullSimulationData,
-		demoMode
-	]);
-
-	useEffect(() => {
-		return () => {
-			controller.abort();
-		};
-	}, [controller]);
-
 	const refreshPage = useCallback(
 		(
 			newPageIdx: number = pageIdx,
@@ -228,7 +156,15 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 					setPageCount(pageCount);
 				})
 				.catch(e => console.error(e)),
-		[getPageContents, pageIdx, pageSize, orderType, orderBy, controller.signal]
+		[
+			pageIdx,
+			pageSize,
+			orderType,
+			orderBy,
+			getPageContents,
+			controller.signal,
+			setSimulationInfo
+		]
 	);
 
 	const autoRefreshPage = useCallback(
@@ -271,30 +207,80 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 		[simulationInfo, setLocalResultsSimulationData, cancelJob, controller.signal, refreshPage]
 	);
 
+	const filterSimulationsByJobId = useCallback(
+		(jobId: string) => {
+			return simulationsStatusData?.filter(s => s.jobId !== jobId);
+		},
+		[simulationsStatusData]
+	);
+
+	const submitDelete = useCallback(() => {
+		const jobId = currentJobId.current;
+		const info = simulationInfo.find(s => s.jobId === jobId);
+		const url = `user/simulations`;
+
+		if (!info) {
+			setLocalResultsSimulationData(prev => {
+				if (!prev) return [];
+				const index = prev.findIndex(s => s.jobId === jobId);
+				prev.splice(index, 1);
+
+				return [...prev];
+			});
+		} else {
+			setIsModalOpen(false);
+			info.endpointUrl = url;
+			setSimulationsStatusData(filterSimulationsByJobId(jobId));
+			cancelJob(info, controller.signal).then(() => {
+				refreshPage();
+			});
+		}
+	}, [
+		cancelJob,
+		controller.signal,
+		filterSimulationsByJobId,
+		refreshPage,
+		setLocalResultsSimulationData,
+		setSimulationsStatusData,
+		simulationInfo
+	]);
+
+	const deleteSpecificSimulation = (jobId: string) => {
+		setIsModalOpen(true);
+		currentJobId.current = jobId;
+	};
+
 	const handlePageChange = (event: ChangeEvent<unknown>, pageIdx: number) =>
 		autoRefreshPage({ pageIdx });
 
 	const handleOrderChange = (orderType: OrderType, orderBy: OrderBy, pageSize: number) =>
 		autoRefreshPage({ orderType, orderBy, pageSize });
 
-	return (
-		<PaginatedSimulationsFromBackend
-			simulations={simulationsStatusData}
-			subtitle={'Yaptide backend server'}
-			pageData={{
-				orderType,
-				orderBy,
-				pageCount,
-				pageIdx,
-				pageSize,
-				handleOrderChange,
-				handlePageChange
-			}}
-			handleLoadResults={handleLoadResults}
-			handleRefresh={updateSpecificSimulationData}
-			handleDelete={cancelSpecificSimulation}
-			handleShowInputFiles={handleShowInputFiles}
-			isBackendAlive={isBackendAlive}
-		/>
-	);
+	const pageData: PageParamProps & PageNavigationProps = {
+		orderType,
+		orderBy,
+		pageCount,
+		pageIdx,
+		pageSize,
+		handleOrderChange,
+		handlePageChange
+	};
+
+	return {
+		updateSimulationInfo,
+		updateSimulationData,
+		updateSpecificSimulationData,
+		simulationDataInterval,
+		handleLoadResults,
+		handleShowInputFiles,
+		setPageCount,
+		cancelSpecificSimulation,
+		deleteSpecificSimulation,
+		pageData,
+		isModalOpen,
+		setIsModalOpen,
+		submitDelete
+	};
 };
+
+export default BackendSimulationsHelpers;

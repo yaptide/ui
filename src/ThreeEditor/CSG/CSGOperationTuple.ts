@@ -1,4 +1,4 @@
-import THREE from 'three';
+import * as THREE from 'three';
 
 import { executeOperation, isOperation, Operation } from '../../types/Operation';
 import CSG from '../js/libs/csg/three-csg';

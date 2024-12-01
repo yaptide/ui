@@ -1,7 +1,6 @@
 import { Backdrop, CircularProgress, Theme, Typography } from '@mui/material';
 import { KeycloakTokenParsed } from 'keycloak-js';
-import ky, { HTTPError } from 'ky';
-import { KyInstance } from 'ky/distribution/types/ky';
+import ky, { HTTPError, KyInstance } from 'ky';
 import { useSnackbar } from 'notistack';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -183,8 +182,8 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 		) => Promise<void> = token => {
 			const yaptideServices = ['PLG_YAPTIDE_ACCESS'];
 
-			const validUser = yaptideServices.every(
-				service => token?.plgridAccessServices?.includes(service)
+			const validUser = yaptideServices.every(service =>
+				token?.plgridAccessServices?.includes(service)
 			);
 
 			if (validUser) return Promise.resolve();
@@ -194,7 +193,21 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				);
 		};
 
-		if (!initialized || !keycloak.authenticated) return;
+		if (!initialized) {
+			// keycloak authentication system not initilized (working in demo mode or keycloak not to handle authentication and authorization)
+			// skipping futher checks (for example: to ask backend if the keycloak token is OK
+			return;
+		} else {
+			// keycloak authentication is initilized, so it makes sense to check if user is authenticated in keycloak
+			if (!keycloak.authenticated) {
+				// user not authenticated, forcing logout from yaptide app
+				logout();
+
+				// skipping futher checks (for example: to ask backend if the keycloak token is OK
+				return;
+			}
+			// user authenticated, we proceed with further checks
+		}
 
 		checkPlgridAccessServices(keycloak.tokenParsed)
 			.then(() => {
@@ -216,7 +229,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 								: {
 										username,
 										source: 'keycloak'
-								  }
+									}
 						);
 						setRefreshInterval(getRefreshDelay(accessExp));
 					})
@@ -232,7 +245,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 						});
 					});
 			})
-			.catch(reason => {
+			.catch((reason: string) => {
 				openRejectKeycloakDialog({
 					reason,
 					keycloakAuth: { keycloak, initialized }

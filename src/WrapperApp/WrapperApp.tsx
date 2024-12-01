@@ -11,6 +11,7 @@ import { camelCaseToNormalText } from '../util/camelCaseToSentenceCase';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
 import NavDrawer from './components/NavDrawer/NavDrawer';
 import { AboutPanel } from './components/Panels/AboutPanel';
+import { ExamplePanel } from './components/Panels/ExamplePanel';
 import LoginPanel from './components/Panels/LoginPanel';
 import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
@@ -70,6 +71,12 @@ function WrapperApp() {
 				open={open}
 				setOpen={setOpen}
 			/>
+			<TabPanel
+				value={tabsValue}
+				index={'examples'}
+				persistent>
+				<ExamplePanel setTabsValue={setTabsValue} />
+			</TabPanel>
 			<TabPanel
 				value={tabsValue}
 				index={'editor'}

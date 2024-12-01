@@ -3,7 +3,7 @@ import '../../css/main.css';
 import { AppBar, Box } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useEffect, useRef } from 'react';
-import THREE from 'three';
+import * as THREE from 'three';
 
 import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
