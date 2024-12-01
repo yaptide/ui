@@ -17,6 +17,7 @@ import { createRowColor } from '../../../../../util/Ui/Color';
 import { createNumberInput } from '../../../../../util/Ui/Number';
 import {
 	createDifferentialConfigurationRow,
+	createDifferentialConfigurationRowFluka,
 	createModifiersOutliner,
 	createRuleConfigurationRow,
 	createRulesOutliner,
@@ -572,6 +573,158 @@ type DifferentialConfigurationFieldProps = Parameters<typeof DifferentialConfigu
 
 export function DifferentialConfigurationField(props: DifferentialConfigurationFieldProps) {
 	return <PropertyField children={<DifferentialConfiguration {...props} />} />;
+}
+
+type DifferentialConfigurationFieldPropsFluka = Parameters<
+	typeof DifferentialConfigurationFluka
+>[0];
+
+export function DifferentialConfigurationFieldFluka(
+	props: DifferentialConfigurationFieldPropsFluka
+) {
+	return <PropertyField children={<DifferentialConfigurationFluka {...props} />} />;
+}
+
+export function DifferentialConfigurationFluka(props: {
+	keywordSelect: string;
+	lowerLimit: number;
+	upperLimit: number;
+	binsNumber: number;
+	logCheckbox: boolean;
+	options: typeof DETECTOR_MODIFIERS_OPTIONS;
+	volume: number;
+	onChange: (value: {
+		keywordSelect: string;
+		lowerLimit: number;
+		upperLimit: number;
+		binsNumber: number;
+		logCheckbox: boolean;
+		volume: number;
+	}) => void;
+	onDelete: () => void;
+}) {
+	const boxRef = useRef<HTMLDivElement>(null);
+
+	// TODO: Update when props change
+	const inputRef = useRef(
+		(() => {
+			const [
+				modifierRow,
+				keywordSelectField,
+				lowerLimitField,
+				upperLimitField,
+				binsNumberField,
+				volumeField,
+				logCheckboxField,
+				removeButton
+			] = createDifferentialConfigurationRowFluka({
+				update: () => {
+					const keywordSelect = keywordSelectField.getValue();
+					const lowerLimit = lowerLimitField.getValue();
+					const upperLimit = upperLimitField.getValue();
+					lowerLimitField.max = upperLimit;
+					upperLimitField.min = lowerLimit;
+					const binsNumber = binsNumberField.getValue();
+					const logCheckbox = logCheckboxField.getValue();
+					const volume = volumeField.getValue();
+					props.onChange({
+						keywordSelect,
+						lowerLimit,
+						upperLimit,
+						binsNumber,
+						logCheckbox,
+						volume
+					});
+				},
+				delete: () => {
+					props.onDelete();
+				},
+				options: props.options
+			});
+
+			return {
+				modifierRow,
+				keywordSelectField,
+				lowerLimitField,
+				upperLimitField,
+				binsNumberField,
+				volumeField,
+				logCheckboxField,
+				removeButton,
+				group: {
+					updateFields: [
+						lowerLimitField,
+						upperLimitField,
+						binsNumberField,
+						logCheckboxField,
+						keywordSelectField
+					],
+					deleteFields: [removeButton]
+				}
+			};
+		})()
+	);
+
+	useEffect(() => {
+		if (!boxRef.current) return;
+		const input = inputRef.current.modifierRow;
+		const box = boxRef.current;
+		box.appendChild(input.dom);
+
+		return () => {
+			box?.removeChild(input.dom);
+		};
+	}, []);
+
+	useEffect(() => {
+		const {
+			keywordSelectField,
+			lowerLimitField,
+			upperLimitField,
+			binsNumberField,
+			logCheckboxField,
+			volumeField
+		} = inputRef.current;
+
+		inputRef.current.group.updateFields.forEach(field => {
+			field.onChange(() => {
+				const keywordSelect = keywordSelectField.getValue();
+				const lowerLimit = lowerLimitField.getValue();
+				const upperLimit = upperLimitField.getValue();
+				lowerLimitField.max = upperLimit;
+				upperLimitField.min = lowerLimit;
+				const binsNumber = binsNumberField.getValue();
+				const logCheckbox = logCheckboxField.getValue();
+				const volume = volumeField.getValue();
+				props.onChange({
+					keywordSelect,
+					lowerLimit,
+					upperLimit,
+					binsNumber,
+					logCheckbox,
+					volume
+				});
+			});
+		});
+
+		inputRef.current.group.deleteFields.forEach(field => {
+			field.onClick(() => {
+				props.onDelete();
+			});
+		});
+
+		keywordSelectField.setValue(props.keywordSelect);
+		lowerLimitField.setValue(props.lowerLimit);
+		upperLimitField.setValue(props.upperLimit);
+		binsNumberField.setValue(props.binsNumber);
+		logCheckboxField.setValue(props.logCheckbox);
+	}, [props]);
+
+	return (
+		<Box>
+			<Box ref={boxRef}></Box>
+		</Box>
+	);
 }
 
 export function RulesOutliner(props: {

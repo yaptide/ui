@@ -1,171 +1,194 @@
-import {
-	createDifferentialConfigurationRow,
-	createFullwidthButton,
-	createModifiersOutliner,
-	hideUIElement,
-	showUIElement
-} from '../../../../util/Ui/Uis';
-import * as Scoring from '../../../Simulation/Scoring/ScoringOutputTypes';
-import { DifferentialModifier } from '../../../Simulation/Scoring/ScoringQtyModifiers';
-import { ScoringQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
-import {
-	AddDifferentialModifierCommand,
-	RemoveDifferentialModifierCommand
-} from '../../commands/Commands';
-import { UIBreak, UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
-import { UIOutliner } from '../../libs/ui.three';
-import { YaptideEditor } from '../../YaptideEditor';
-import { ObjectAbstract } from './Object.Abstract';
+// import {
+// 	createDifferentialConfigurationRow,
+// 	createFullwidthButton,
+// 	createModifiersOutliner,
+// 	hideUIElement,
+// 	showUIElement
+// } from '../../../../util/Ui/Uis';
+// import * as Scoring from '../../../Simulation/Scoring/ScoringOutputTypes';
+// import { DifferentialModifier, DifferentialModifierFluka, DifferentialModifierSH } from '../../../Simulation/Scoring/ScoringQtyModifiers';
+// import { ScoringQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
+// import {
+// 	AddDifferentialModifierCommand,
+// 	RemoveDifferentialModifierCommand
+// } from '../../commands/Commands';
+// import { UIBreak, UIButton, UICheckbox, UINumber, UIRow, UISelect } from '../../libs/ui';
+// import { UIOutliner } from '../../libs/ui.three';
+// import { YaptideEditor } from '../../YaptideEditor';
+// import { ObjectAbstract } from './Object.Abstract';
 
-export class ObjectDifferentials extends ObjectAbstract {
-	object?: ScoringQuantity;
-	modifier?: DifferentialModifier;
-	addRow: UIRow;
-	add: UIButton;
+// export class ObjectDifferentials extends ObjectAbstract {
+// 	object?: ScoringQuantity;
+// 	modifier?: DifferentialModifier;
+// 	addRow: UIRow;
+// 	add: UIButton;
 
-	outliner: UIOutliner;
+// 	outliner: UIOutliner;
 
-	modifierRow: UIRow;
-	keywordSelect: UISelect;
-	lowerLimit: UINumber;
-	upperLimit: UINumber;
-	binsNumber: UINumber;
-	logCheckbox: UICheckbox;
-	removeButton: UIButton;
-	constructor(editor: YaptideEditor) {
-		super(editor, 'Differential scoring');
-		[this.addRow, this.add] = createFullwidthButton({
-			text: 'Add differential modifier',
-			update: this.addModifier.bind(this)
-		});
+// 	modifierRow: UIRow;
+// 	keywordSelect: UISelect;
+// 	lowerLimit: UINumber;
+// 	upperLimit: UINumber;
+// 	binsNumber: UINumber;
+// 	logCheckbox: UICheckbox;
+// 	removeButton: UIButton;
+// 	volume: UINumber;
+// 	constructor(editor: YaptideEditor) {
+// 		super(editor, 'Differential scoring');
+// 		[this.addRow, this.add] = createFullwidthButton({
+// 			text: 'Add differential modifier',
+// 			update: this.addModifier.bind(this)
+// 		});
 
-		[this.outliner] = createModifiersOutliner(editor, {
-			update: this.selectModifier.bind(this)
-		});
+// 		[this.outliner] = createModifiersOutliner(editor, {
+// 			update: this.selectModifier.bind(this)
+// 		});
 
-		[
-			this.modifierRow,
-			this.keywordSelect,
-			this.lowerLimit,
-			this.upperLimit,
-			this.binsNumber,
-			this.logCheckbox,
-			this.removeButton
-		] = createDifferentialConfigurationRow({
-			update: this.update.bind(this),
-			delete: this.removeModifier.bind(this),
-			options: Scoring.DETECTOR_MODIFIERS_OPTIONS
-		});
-		this.panel.add(this.addRow, this.outliner, new UIBreak(), this.modifierRow);
-		editor.signals.scoringQuantityChanged.add(() =>
-			this.object ? this.setObject(this.object) : null
-		);
-	}
+// 		[
+// 			this.modifierRow,
+// 			this.keywordSelect,
+// 			this.lowerLimit,
+// 			this.upperLimit,
+// 			this.binsNumber,
+// 			this.volume,
+// 			this.logCheckbox,
+// 			this.removeButton
+// 		] = createDifferentialConfigurationRow({
+// 			update: this.update.bind(this),
+// 			delete: this.removeModifier.bind(this),
+// 			options: Scoring.DETECTOR_MODIFIERS_OPTIONS
+// 		});
+// 		this.panel.add(this.addRow, this.outliner, new UIBreak(), this.modifierRow);
+// 		editor.signals.scoringQuantityChanged.add(() =>
+// 			this.object ? this.setObject(this.object) : null
+// 		);
+// 	}
 
-	setObject(object: ScoringQuantity): void {
-		super.setObject(object);
+// 	setObject(object: ScoringQuantity): void {
+// 		super.setObject(object);
 
-		if (!object) return;
-		this.object = object;
-		this.outliner.setOptions(object.modifiers);
+// 		if (!object) return;
+// 		this.object = object;
+// 		this.outliner.setOptions(object.modifiers);
 
-		if (object.selectedModifier) {
-			const mod = object.selectedModifier;
+// 		if (object.selectedModifier) {
+// 			const mod = object.selectedModifier;
 
-			if (mod) {
-				this.outliner.setValue(object.selectedModifier.uuid);
-				this.setModifier(mod);
-			} else {
-				object.selectedModifier = undefined;
-				hideUIElement(this.modifierRow);
-			}
-		} else {
-			hideUIElement(this.modifierRow);
-		}
+// 			if (mod) {
+// 				this.outliner.setValue(object.selectedModifier.uuid);
+// 				this.setModifier(mod);
+// 			} else {
+// 				object.selectedModifier = undefined;
+// 				hideUIElement(this.modifierRow);
+// 			}
+// 		} else {
+// 			hideUIElement(this.modifierRow);
+// 		}
 
-		const mods = object.modifiers;
+// 		const mods = object.modifiers;
 
-		if (mods.length < 2) this.add.setDisabled(false);
-		else this.add.setDisabled(true);
-	}
+// 		if (mods.length < 2) this.add.setDisabled(false);
+// 		else this.add.setDisabled(true);
+// 	}
 
-	update(): void {
-		const { object, modifier } = this;
+// 	update(): void {
+// 		const { object, modifier } = this;
 
-		if (!object || !modifier) return;
-		const { uuid } = modifier;
-		const diffType = this.keywordSelect.getValue() as Scoring.DETECTOR_MODIFIERS;
-		const lowerLimit = this.lowerLimit.getValue();
-		const upperLimit = this.upperLimit.getValue();
-		this.lowerLimit.max = upperLimit;
-		this.upperLimit.min = lowerLimit;
-		const binsNumber = this.binsNumber.getValue();
-		const isLog = this.logCheckbox.getValue();
-		this.editor.execute(
-			new AddDifferentialModifierCommand(
-				this.editor,
-				object,
-				DifferentialModifier.fromJSON({
-					uuid,
-					diffType,
-					lowerLimit,
-					upperLimit,
-					binsNumber,
-					isLog
-				})
-			)
-		);
-	}
+// 		if (!object || !modifier) return;
+// 		const { uuid } = modifier;
+// 		const diffType = this.keywordSelect.getValue() as Scoring.DETECTOR_MODIFIERS;
+// 		const lowerLimit = this.lowerLimit.getValue();
+// 		const upperLimit = this.upperLimit.getValue();
+// 		this.lowerLimit.max = upperLimit;
+// 		this.upperLimit.min = lowerLimit;
+// 		const binsNumber = this.binsNumber.getValue();
+// 		const isLog = this.logCheckbox.getValue();
+// 		this.editor.execute(
+// 			new AddDifferentialModifierCommand(
+// 				this.editor,
+// 				object,
+// 				DifferentialModifier.fromJSON({
+// 					uuid,
+// 					diffType,
+// 					lowerLimit,
+// 					upperLimit,
+// 					binsNumber,
+// 					isLog
+// 				})
+// 			)
+// 		);
+// 	}
 
-	addModifier(): void {
-		const { editor, object } = this;
+// 	addModifier(): void {
+// 		const { editor, object } = this;
 
-		if (!object) return;
-		if (object.modifiers.length >= 2) return;
-		editor.execute(new AddDifferentialModifierCommand(editor, object));
-	}
+// 		if (!object) return;
+// 		if (object.modifiers.length >= 2) return;
+// 		editor.execute(new AddDifferentialModifierCommand(editor, object));
+// 	}
 
-	selectModifier(): void {
-		const { object } = this;
+// 	selectModifier(): void {
+// 		const { object } = this;
 
-		if (!object) return;
-		const modifier = object.getModifierByUuid(this.outliner.getValue());
-		object.selectedModifier = modifier;
+// 		if (!object) return;
+// 		const modifier = object.getModifierByUuid(this.outliner.getValue());
+// 		object.selectedModifier = modifier;
 
-		if (modifier) {
-			this.setModifier(modifier);
-		} else {
-			this.outliner.setValue(null);
-			this.modifier = undefined;
-			hideUIElement(this.modifierRow);
-		}
-	}
+// 		if (modifier) {
+// 			this.setModifier(modifier);
+// 		} else {
+// 			this.outliner.setValue(null);
+// 			this.modifier = undefined;
+// 			hideUIElement(this.modifierRow);
+// 		}
+// 	}
 
-	setModifier(modifier: DifferentialModifier) {
-		showUIElement(this.modifierRow, 'grid');
-		this.modifier = modifier;
-		this.outliner.setValue(modifier.uuid);
-		this.updateSelectedModifier();
-	}
+// 	setModifier(modifier: DifferentialModifier) {
+// 		showUIElement(this.modifierRow, 'grid');
+// 		this.modifier = modifier;
+// 		this.outliner.setValue(modifier.uuid);
+// 		this.updateSelectedModifier();
+// 	}
 
-	updateSelectedModifier() {
-		const { modifier } = this;
+// 	updateSelectedModifier() {
+// 		const { modifier } = this;
 
-		if (!modifier) return;
-		const { diffType, lowerLimit, upperLimit, binsNumber, isLog } = modifier;
-		this.keywordSelect.setValue(diffType);
-		this.lowerLimit.setValue(lowerLimit);
-		this.upperLimit.setValue(upperLimit);
-		this.lowerLimit.max = upperLimit;
-		this.upperLimit.min = lowerLimit;
-		this.binsNumber.setValue(binsNumber);
-		this.logCheckbox.setValue(isLog);
-	}
+// 		if (!modifier) return;
+// 		if(modifier instanceof DifferentialModifierSH){
+// 			const { diffType, lowerLimit, upperLimit, binsNumber, isLog } = modifier;
+// 			this.keywordSelect.setValue(diffType);
+// 			this.lowerLimit.setValue(lowerLimit);
+// 			this.upperLimit.setValue(upperLimit);
+// 			this.lowerLimit.max = upperLimit;
+// 			this.upperLimit.min = lowerLimit;
+// 			this.binsNumber.setValue(binsNumber);
+// 			this.logCheckbox.setValue(isLog);
+// 		}
+// 		else if (modifier instanceof DifferentialModifierFluka){
+// 			const { volume, lowerLimit, upperLimit, binsNumber, isLog } = modifier;
+// 			this.volume.setValue(volume);
+// 			this.lowerLimit.setValue(lowerLimit);
+// 			this.upperLimit.setValue(upperLimit);
+// 			this.lowerLimit.max = upperLimit;
+// 			this.upperLimit.min = lowerLimit;
+// 			this.binsNumber.setValue(binsNumber);
+// 			this.logCheckbox.setValue(isLog);
+// 		}
 
-	removeModifier() {
-		const { object, editor, modifier } = this;
+// 	}
 
-		if (!object || !modifier) return;
-		editor.execute(new RemoveDifferentialModifierCommand(editor, object, modifier));
-	}
-}
+// 	removeModifier() {
+// 		const { object, editor, modifier } = this;
+
+// 		if (!object || !modifier) return;
+// 		editor.execute(new RemoveDifferentialModifierCommand(editor, object, modifier));
+// 	}
+// }
+
+// class ObjectDifferentialsFluka extends ObjectDifferentials{
+
+// }
+
+// class ObjectDifferentialsSH extends ObjectDifferentials{
+
+// }

@@ -121,6 +121,46 @@ export function createDifferentialConfigurationRow(params) {
  * @param {{
  *		update: ()=> void,
  * 		options: Object,
+ * 		delete: ()=> void
+ *		}} params
+ * @return {[UIRow, UISelect, UINumber, UINumber, UINumber, UINumber, UICheckbox, UIButton]}
+ */
+export function createDifferentialConfigurationRowFluka(params) {
+	const { update, delete: deleteRule, options } = params;
+	const row = new UIRow();
+	row.dom.style.gridTemplateColumns = '2fr repeat(4, 3fr) 25px';
+	row.dom.style.display = 'grid';
+	const keywordSelect = new UISelect().setFontSize(FONT_SIZE).onChange(update);
+	keywordSelect.setOptions(options);
+	const lowerLimit = new UINumber().setPadding('2px 4px').onChange(update).setWidth('100%');
+	const upperLimit = new UINumber().setPadding('2px 4px').onChange(update).setWidth('100%');
+	const binsNumber = new UINumber()
+		.setPadding('2px 4px')
+		.onChange(update)
+		.setWidth('100%')
+		.setRange(1, 50000)
+		.setPrecision(0);
+
+	const volume = new UINumber()
+		.setPadding('2px 4px')
+		.onChange(update)
+		.setWidth('100%')
+		.setRange(0, Infinity);
+	const logs = new UIDiv().setPadding('2px 4px').setWidth('100%').setFontSize(FONT_SIZE);
+	const logsLabel = new UIText('log');
+	const isLog = new UICheckbox().onChange(update);
+	logs.add(logsLabel, isLog);
+	const deleteButton = new UIButton('✖').onClick(deleteRule);
+	row.add(keywordSelect, lowerLimit, upperLimit, binsNumber, volume, logs, deleteButton);
+
+	return [row, keywordSelect, lowerLimit, upperLimit, binsNumber, volume, isLog, deleteButton];
+}
+
+/**
+ * @param {Editor} editor
+ * @param {{
+ *		update: ()=> void,
+ * 		options: Object,
  * 		sortFunc: (a: string, b: string)=> number,
  * 		operators: Object,
  * 		particles: Object,

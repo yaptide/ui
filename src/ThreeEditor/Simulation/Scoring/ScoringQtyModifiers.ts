@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import { DETECTOR_MODIFIERS } from './ScoringOutputTypes';
+import { DETECTOR_MODIFIERS, DETECTOR_MODIFIERS_OPTIONS } from './ScoringOutputTypes';
 
 export type DifferentialJSON = DifferentialJSONCommon | DifferentialJSONSH | DifferentialJSONFluka;
 
@@ -109,7 +109,8 @@ export class DifferentialModifier {
 
 export class DifferentialModifierFluka extends DifferentialModifier {
 	volume: number;
-
+	//diffType left for compability with react components
+	diffType: DETECTOR_MODIFIERS = DETECTOR_MODIFIERS_OPTIONS.E;
 	constructor(
 		lowerLimit: number = 0,
 		binsNumber: number = 500,
