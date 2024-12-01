@@ -79,8 +79,8 @@
 		"build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
 		"predeploy": "npm run setup && npm run build-demo && cross-env PUBLIC_PATH=/web_dev/ npm run fix-web-dev",
 		"deploy": "gh-pages --dist build --no-history",
-		"depcruise:high": "depcruise --version && depcruise --config depcruise-config-high-level.js --output-type archi src | dot -T svg -o high-level-dependencies.svg && depcruise --config depcruise-config-high-level.js --output-type archi src | dot -T svg | depcruise-wrap-stream-in-html > high-level-dependencies.html",
-		"depcruise:low": "depcruise --version && depcruise --config depcruise-config-low-level.js --output-type archi src | dot -T svg -o low-level-dependencies.svg && depcruise --config depcruise-config-low-level.js --output-type archi src | dot -T svg | depcruise-wrap-stream-in-html > low-level-dependencies.html"
+		"depcruise:high": "depcruise --version && depcruise --config dependency-cruiser/depcruise-config-high-level.js --output-type archi src | dot -T svg -o dependency-cruiser/high-level-dependencies.svg && depcruise --config dependency-cruiser/depcruise-config-high-level.js --output-type archi src | dot -T svg | depcruise-wrap-stream-in-html > dependency-cruiser/high-level-dependencies.html",
+		"depcruise:low": "depcruise --version && depcruise --config dependency-cruiser/depcruise-config-low-level.js --output-type archi src | dot -T svg -o dependency-cruiser/low-level-dependencies.svg && depcruise --config dependency-cruiser/depcruise-config-low-level.js --output-type archi src | dot -T svg | depcruise-wrap-stream-in-html > dependency-cruiser/low-level-dependencies.html"
 	},
 	"contributors": [
 		{

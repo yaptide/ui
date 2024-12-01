@@ -1,7 +1,8 @@
 /** @type {import('dependency-cruiser').IConfiguration} */
 module.exports = {
 	options: {
-		includeOnly: '^src/(?!config|util|types|shared|libs|examples)(.*)$',
+		includeOnly: '^src',
+		exclude: '^src/(config|util|types|shared|libs|examples)',
 
 		tsPreCompilationDeps: false,
 
