@@ -59,6 +59,12 @@ export type JobResults = {
 	jobId: string;
 } & ResponseGetJobResults;
 
+export type SpecificEstimator = {
+	jobId: string;
+	estimators: Estimator[];
+	message: string;
+};
+
 export type FullSimulationData = Omit<JobInputs & JobStatusData & JobResults, 'message'>;
 
 export const fetchItSymbol = Symbol('fetchItSymbol');
@@ -389,10 +395,10 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 						jobInputs?.input.inputJson &&
 						recreateRefsInResults(jobInputs.input.inputJson, estimator);
 
-					const data: JobResults = {
-						...response,
+					const data: SpecificEstimator = {
 						jobId,
-						estimators: refsInResults ?? estimator
+						estimators: refsInResults ?? estimator,
+						message: response.message
 					};
 
 					resolve(data);
@@ -544,19 +550,13 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 	// If name isn't passed, it will try to find the first estimator name in the simulation data.
 	// If the name isn't found, it will try to get name from the backend.
 	// It wouldn't be handled if we load the example.
-	const findFirstEstimatorName = useCallback(
+	const findFirstEstimatorNameForInputFiles = useCallback(
 		async (
 			jobStatus: JobStatusData,
 			inputs: JobInputs | undefined,
 			givenEstimatorName?: string
 		) => {
-			const firstEstimatorName = inputs?.input.inputJson?.scoringManager.outputs[0].name;
-
-			if (
-				!givenEstimatorName &&
-				!firstEstimatorName &&
-				jobStatus.jobState === StatusState.COMPLETED
-			) {
+			if (!givenEstimatorName && jobStatus.jobState === StatusState.COMPLETED) {
 				if (inputs && !inputs.input.userInputFilesEstimatorNames) {
 					const estimators = await getCurrentEstimators(jobStatus.jobId);
 
@@ -573,12 +573,23 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 			if (firstEstimatorInputFileName) {
 				return firstEstimatorInputFileName;
 			}
+		},
+		[getCurrentEstimators]
+	);
+
+	const findFirstEstimatorNameForEditor = useCallback(
+		(inputs: JobInputs | undefined, givenEstimatorName?: string) => {
+			const firstEstimatorName = inputs?.input.inputJson?.scoringManager.outputs[0].name;
+
+			if (givenEstimatorName) {
+				return givenEstimatorName;
+			}
 
 			if (firstEstimatorName) {
 				return firstEstimatorName + '_';
 			}
 		},
-		[getCurrentEstimators]
+		[]
 	);
 
 	const getFullSimulationData = useCallback(
@@ -590,20 +601,18 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 		) => {
 			const inputs: JobInputs | undefined = await getJobInputs(jobStatus, signal, cache);
 
-			const firstEstimator = await findFirstEstimatorName(
-				jobStatus,
-				inputs,
-				givenEstimatorName
-			);
+			const isSimulationFromEditor = inputs?.input.inputType.toLowerCase() === 'editor';
+
+			const firstEstimator = isSimulationFromEditor
+				? findFirstEstimatorNameForEditor(inputs, givenEstimatorName)
+				: await findFirstEstimatorNameForInputFiles(jobStatus, inputs, givenEstimatorName);
 
 			const results: JobResults | undefined =
 				jobStatus.jobState === StatusState.COMPLETED && firstEstimator
 					? await getJobResult(
 							{
 								jobId: jobStatus.jobId,
-								estimatorName: givenEstimatorName
-									? givenEstimatorName
-									: firstEstimator
+								estimatorName: firstEstimator
 							},
 							signal,
 							cache
@@ -624,7 +633,12 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 			return simData;
 		},
-		[findFirstEstimatorName, getJobInputs, getJobResult]
+		[
+			findFirstEstimatorNameForEditor,
+			findFirstEstimatorNameForInputFiles,
+			getJobInputs,
+			getJobResult
+		]
 	);
 
 	return (

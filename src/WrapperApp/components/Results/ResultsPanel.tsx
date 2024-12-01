@@ -3,6 +3,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 
 import { Estimator, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
 import { useDialog } from '../../../services/DialogService';
+import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { InfoTooltip } from '../../../shared/components/tooltip/InfoTooltip';
 import { titleToKebabCase } from '../../../ThreeEditor/components/Dialog/CustomDialog';
@@ -15,6 +16,7 @@ export interface EstimatorResults extends Estimator {
 }
 
 function ResultsPanel() {
+	const { getJobResults } = useShSimulation();
 	const { open: openSaveFileDialog } = useDialog('saveFile');
 	const {
 		yaptideEditor,
@@ -53,7 +55,8 @@ function ResultsPanel() {
 				name: `${titleToKebabCase(simulation?.title ?? 'simulation')}-result.json`,
 				results: simulation,
 				disableCheckbox: true,
-				yaptideEditor
+				yaptideEditor,
+				getJobResults
 			});
 	};
 

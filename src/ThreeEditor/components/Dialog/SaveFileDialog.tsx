@@ -1,8 +1,11 @@
 import { Button, Checkbox, FormControlLabel, TextField } from '@mui/material';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
-import { FullSimulationData } from '../../../services/ShSimulatorService';
+import { useAuth } from '../../../services/AuthService';
+import { FullSimulationData, JobResults } from '../../../services/ShSimulatorService';
 import { StoreContext } from '../../../services/StoreService';
+import { RequestGetJobResults } from '../../../types/RequestTypes';
+import { StatusState } from '../../../types/ResponseTypes';
 import { saveString } from '../../../util/File';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
@@ -26,21 +29,29 @@ export function SaveFileDialog({
 	name: defaultName = 'editor',
 	results: providedResults,
 	disableCheckbox = false,
-	yaptideEditor
+	yaptideEditor,
+	getJobResults
 }: ConcreteDialogProps<
 	{
 		name?: string;
 		results?: FullSimulationData;
 		disableCheckbox?: boolean;
+		getJobResults: (...args: RequestGetJobResults) => Promise<JobResults | undefined>;
 	} & Required<Pick<StoreContext, 'yaptideEditor'>>
 >) {
 	const results: FullSimulationData | undefined = providedResults ?? yaptideEditor?.getResults();
 
+	const [controller] = useState(new AbortController());
 	const [keepResults, setKeepResults] = useState<boolean>(false);
+	const [fetchedResults, setFetchedResults] = useState<FullSimulationData | undefined>(results);
+	const jobId = fetchedResults?.jobId;
 
 	const canKeepResults = useCallback(() => {
-		return disableCheckbox && results?.input.inputJson?.hash === yaptideEditor?.toJSON().hash;
-	}, [disableCheckbox, results?.input.inputJson?.hash, yaptideEditor]);
+		return (
+			disableCheckbox &&
+			fetchedResults?.input.inputJson?.hash === yaptideEditor?.toJSON().hash
+		);
+	}, [disableCheckbox, fetchedResults?.input.inputJson?.hash, yaptideEditor]);
 
 	useEffect(() => {
 		setKeepResults(canKeepResults() || !!providedResults);
@@ -57,6 +68,27 @@ export function SaveFileDialog({
 	const changeKeepResults = (event: ChangeEvent<HTMLInputElement>) => {
 		setKeepResults(event.target.checked);
 	};
+
+	// Get results from the server if they are not provided
+	useEffect(() => {
+		if (jobId) {
+			getJobResults({ jobId }, controller.signal, false)
+				.then(requestResults => {
+					if (requestResults) {
+						setFetchedResults(
+							prevResults =>
+								({
+									...prevResults,
+									estimators: requestResults.estimators
+								}) as FullSimulationData
+						);
+					}
+				})
+				.catch(error => {
+					console.error('Failed to fetch job results:', error);
+				});
+		}
+	}, [jobId, controller.signal, getJobResults]);
 
 	return (
 		<CustomDialog
@@ -103,7 +135,12 @@ export function SaveFileDialog({
 
 					if (yaptideEditor) {
 						yaptideEditor?.config.setKey('project/title', name);
-						saveJson(keepResults && results ? results : yaptideEditor?.toJSON(), name);
+						saveJson(
+							keepResults && fetchedResults
+								? fetchedResults
+								: yaptideEditor?.toJSON(),
+							name
+						);
 					}
 				}}>
 				Save
