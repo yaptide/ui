@@ -378,20 +378,34 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 							...info
 						};
 
-						if (currentJobStatusData[StatusState.PENDING](data)) {
-						} else if (currentJobStatusData[StatusState.RUNNING](data)) {
-						} else if (currentJobStatusData[StatusState.FAILED](data)) {
+						if (
+							currentJobStatusData[StatusState.PENDING](data) ||
+							currentJobStatusData[StatusState.RUNNING](data) ||
+							currentJobStatusData[StatusState.MERGING_QUEUED](data) ||
+							currentJobStatusData[StatusState.MERGING_RUNNING](data)
+						) {
+							return data;
+						}
+
+						if (
+							currentJobStatusData[StatusState.FAILED](data) ||
+							currentJobStatusData[StatusState.CANCELED](data)
+						) {
 							console.log(data.message);
-
 							statusDataCache.set(data.jobId, data, beforeCacheWrite);
-						} else if (currentJobStatusData[StatusState.COMPLETED](data)) {
-							if (validStatusToCache(data))
+
+							return data;
+						}
+
+						if (currentJobStatusData[StatusState.COMPLETED](data)) {
+							if (validStatusToCache(data)) {
 								statusDataCache.set(data.jobId, data, beforeCacheWrite);
-						} else if (currentJobStatusData[StatusState.CANCELED](data)) {
-							statusDataCache.set(data.jobId, data, beforeCacheWrite);
-						} else return undefined;
+							}
 
-						return data;
+							return data;
+						}
+
+						return undefined;
 					})
 					.catch(e => {
 						console.error(e);

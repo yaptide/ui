@@ -37,6 +37,10 @@ const SimulationCardHelpers = ({
 				return 'success.main';
 			case StatusState.LOCAL:
 				return 'warning.main';
+			case StatusState.MERGING_QUEUED:
+				return 'info.main';
+			case StatusState.MERGING_RUNNING:
+				return 'info.main';
 			case StatusState.CANCELED:
 				return 'common.black';
 			default:
