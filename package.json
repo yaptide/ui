@@ -34,7 +34,7 @@
 		"notistack": "^3.0.1",
 		"object-hash": "^3.0.0",
 		"pyodide": "^0.26.4",
-		"react": "^17.0.2",
+		"react": "^18.3.1",
 		"react-async-script": "^1.2.0",
 		"react-copy-to-clipboard": "^5.1.0",
 		"react-countdown": "^2.3.6",
@@ -202,7 +202,7 @@
 	},
 	"devDependencies": {
 		"@total-typescript/ts-reset": "^0.6.1",
-		"@types/react": "^18.0.9",
+		"@types/react": "^18.3.12",
 		"@types/react-async-script": "^1.2.5",
 		"@types/react-copy-to-clipboard": "^5.0.7",
 		"@types/selenium-webdriver": "^4.1.27",
