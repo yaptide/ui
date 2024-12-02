@@ -50,13 +50,18 @@ function ResultsPanel() {
 	}, [simulation]);
 
 	const onClickSaveToFile = () => {
+		const expectedEstimators = estimatorsTabData
+			? estimatorsTabData
+			: uploadedInputFilesEstimatorNames;
+
 		if (yaptideEditor)
 			openSaveFileDialog({
 				name: `${titleToKebabCase(simulation?.title ?? 'simulation')}-result.json`,
 				results: simulation,
 				disableCheckbox: true,
 				yaptideEditor,
-				getJobResults
+				getJobResults,
+				expectedEstimatorsSize: expectedEstimators.length
 			});
 	};
 

@@ -1,11 +1,9 @@
 import { Button, Checkbox, FormControlLabel, TextField } from '@mui/material';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
-import { useAuth } from '../../../services/AuthService';
 import { FullSimulationData, JobResults } from '../../../services/ShSimulatorService';
 import { StoreContext } from '../../../services/StoreService';
 import { RequestGetJobResults } from '../../../types/RequestTypes';
-import { StatusState } from '../../../types/ResponseTypes';
 import { saveString } from '../../../util/File';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
@@ -30,13 +28,15 @@ export function SaveFileDialog({
 	results: providedResults,
 	disableCheckbox = false,
 	yaptideEditor,
-	getJobResults
+	getJobResults,
+	expectedEstimatorsSize
 }: ConcreteDialogProps<
 	{
 		name?: string;
 		results?: FullSimulationData;
 		disableCheckbox?: boolean;
 		getJobResults: (...args: RequestGetJobResults) => Promise<JobResults | undefined>;
+		expectedEstimatorsSize?: number;
 	} & Required<Pick<StoreContext, 'yaptideEditor'>>
 >) {
 	const results: FullSimulationData | undefined = providedResults ?? yaptideEditor?.getResults();
@@ -45,6 +45,8 @@ export function SaveFileDialog({
 	const [keepResults, setKeepResults] = useState<boolean>(false);
 	const [fetchedResults, setFetchedResults] = useState<FullSimulationData | undefined>(results);
 	const jobId = fetchedResults?.jobId;
+	const shouldFetchEstimators =
+		jobId && fetchedResults?.estimators.length !== expectedEstimatorsSize;
 
 	const canKeepResults = useCallback(() => {
 		return (
@@ -71,7 +73,7 @@ export function SaveFileDialog({
 
 	// Get results from the server if they are not provided
 	useEffect(() => {
-		if (jobId) {
+		if (shouldFetchEstimators) {
 			getJobResults({ jobId }, controller.signal, false)
 				.then(requestResults => {
 					if (requestResults) {
@@ -88,7 +90,7 @@ export function SaveFileDialog({
 					console.error('Failed to fetch job results:', error);
 				});
 		}
-	}, [jobId, controller.signal, getJobResults]);
+	}, [jobId, controller.signal, getJobResults, shouldFetchEstimators]);
 
 	return (
 		<CustomDialog
