@@ -148,17 +148,19 @@ export default function InputEditorPanel({
 					onChange={(_e, generator) => {
 						if (generator) setGenerator(generator);
 					}}>
-					<ToggleButton
-						color='info'
-						value='local'>
-						Local
-					</ToggleButton>
 					{!demoMode && (
-						<ToggleButton
-							value='remote'
-							color='warning'>
-							Remote
-						</ToggleButton>
+						<>
+							<ToggleButton
+								color='info'
+								value='local'>
+								Local
+							</ToggleButton>
+							<ToggleButton
+								value='remote'
+								color='warning'>
+								Remote
+							</ToggleButton>
+						</>
 					)}
 				</ToggleButtonGroup>
 
@@ -211,13 +213,11 @@ export default function InputEditorPanel({
 							TOPAS
 						</ToggleButton>
 					)} */}
-					{!demoMode && (
-						<ToggleButton
-							value={SimulatorType.FLUKA}
-							color='info'>
-							Fluka
-						</ToggleButton>
-					)}
+					<ToggleButton
+						value={SimulatorType.FLUKA}
+						color='info'>
+						Fluka
+					</ToggleButton>
 				</ToggleButtonGroup>
 			</Box>
 
