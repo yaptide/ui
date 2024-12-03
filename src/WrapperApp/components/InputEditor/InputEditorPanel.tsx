@@ -4,10 +4,8 @@ import { useSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
 import { throttle } from 'throttle-debounce';
 
-import { useConfig } from '../../../config/ConfigService';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
 import { readFile } from '../../../services/LoaderService';
-import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { addCustomStoppingPowerTableToEditorJSON } from '../../../ThreeEditor/Simulation/CustomStoppingPower/CustomStoppingPower';
@@ -27,17 +25,15 @@ interface InputEditorPanelProps {
 	onSimulatorChange: (newSimulator: SimulatorType) => void;
 }
 
-type GeneratorLocation = 'local' | 'remote';
+type GeneratorLocation = 'local';
 
 export default function InputEditorPanel({
 	goToRun,
 	simulator,
 	onSimulatorChange
 }: InputEditorPanelProps) {
-	const { demoMode } = useConfig();
 	const { enqueueSnackbar } = useSnackbar();
 	const { yaptideEditor } = useStore();
-	const { convertToInputFiles } = useShSimulation();
 	const { isConverterReady, convertJSON } = usePythonConverter();
 
 	const [isInProgress, setInProgress] = useState(false);
@@ -49,11 +45,8 @@ export default function InputEditorPanel({
 		async (editorJSON: EditorJson): Promise<SimulationInputFiles> => {
 			await addCustomStoppingPowerTableToEditorJSON(editorJSON);
 
+			//Currently there is only one generator
 			switch (generator) {
-				case 'remote':
-					return convertToInputFiles(editorJSON, controller.signal).then(res => {
-						return res.inputFiles;
-					});
 				case 'local':
 					return convertJSON(editorJSON, simulator).then(
 						res => Object.fromEntries(res) as unknown as SimulationInputFiles
@@ -62,7 +55,7 @@ export default function InputEditorPanel({
 					throw new Error('Unknown generator: ' + generator);
 			}
 		},
-		[controller.signal, convertJSON, convertToInputFiles, generator, simulator]
+		[controller.signal, convertJSON, generator, simulator]
 	);
 
 	const onClickGenerate = useCallback(() => {
@@ -141,29 +134,6 @@ export default function InputEditorPanel({
 					loadingIndicator='Initializing...'>
 					Generate from Editor
 				</LoadingButton>
-
-				<ToggleButtonGroup
-					value={generator}
-					exclusive
-					onChange={(_e, generator) => {
-						if (generator) setGenerator(generator);
-					}}>
-					{!demoMode && (
-						<>
-							<ToggleButton
-								color='info'
-								value='local'>
-								Local
-							</ToggleButton>
-							<ToggleButton
-								value='remote'
-								color='warning'>
-								Remote
-							</ToggleButton>
-						</>
-					)}
-				</ToggleButtonGroup>
-
 				<ToggleButtonGroup
 					sx={{
 						marginLeft: '1rem'
