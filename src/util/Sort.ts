@@ -14,8 +14,6 @@ export const orderAccordingToList = <A extends C, B extends C, C extends Common<
 		const index = listCopy.findIndex(orderPredicate(orderElement));
 
 		if (index === -1) {
-			console.warn(`OrderElement ${orderElement[property]} not found`);
-
 			continue;
 		}
 

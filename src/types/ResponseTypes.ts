@@ -1,5 +1,6 @@
-import { Estimator } from '../JsRoot/GraphData';
+import { Estimator, Page } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
+import { ScoringOutputJSON } from '../ThreeEditor/Simulation/Scoring/ScoringOutput';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import { DataWithStatus, LookUp, TypeIdentifiedByKey } from './TypeTransformUtil';
 
@@ -60,7 +61,10 @@ export type InputFilesRecord<FileNames extends string, OptionalNames extends str
 	},
 	never
 >;
-type ShInputFilesRecord = InputFilesRecord<ShInputFilesNames, 'info.json' | 'sobp.dat'>;
+export type ShInputFilesRecord = InputFilesRecord<
+	ShInputFilesNames,
+	'info.json' | 'sobp.dat' | 'detect.dat'
+>;
 type TopasInputFilesRecord = InputFilesRecord<TopasInputFilesNames, 'info.json'>;
 type FlukaInputFilesRecord = InputFilesRecord<FlukaInputFilesNames, 'info.json'>;
 export type SimulationInputFiles =
@@ -74,7 +78,7 @@ export type TaskTime = {
 	seconds: string;
 };
 
-export type MetaKey = 'server' | 'platform' | 'input' | 'simType';
+export type MetaKey = 'server' | 'platform' | 'inputType' | 'simType';
 
 export type PlatformType = 'DIRECT' | 'BATCH';
 
@@ -330,8 +334,14 @@ export type ResponseGetJobInputs = {
 		inputFiles: SimulationInputFiles;
 		inputJson?: EditorJson;
 		inputType: SimulationSourceType;
+		userInputFilesEstimatorNames?: string[];
 	};
 } & YaptideResponse;
+
+export type EstimatorNamesResponse = {
+	estimatorNames: string[];
+	message: string;
+};
 
 export type ResponseGetJobLogs = {
 	logfiles: Record<string, string>;
@@ -340,6 +350,8 @@ export type ResponseGetJobLogs = {
 export type ResponseGetJobResults = {
 	estimators: Estimator[];
 } & YaptideResponse;
+
+export type ResponseGetJobResult = Estimator & YaptideResponse;
 
 export type ResponseAuthStatus = AuthStatus;
 
