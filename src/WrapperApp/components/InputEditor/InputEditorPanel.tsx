@@ -25,8 +25,6 @@ interface InputEditorPanelProps {
 	onSimulatorChange: (newSimulator: SimulatorType) => void;
 }
 
-type GeneratorLocation = 'local';
-
 export default function InputEditorPanel({
 	goToRun,
 	simulator,
@@ -38,24 +36,17 @@ export default function InputEditorPanel({
 
 	const [isInProgress, setInProgress] = useState(false);
 	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>(_defaultShInputFiles);
-	const [generator, setGenerator] = useState<GeneratorLocation>('local');
 	const [controller] = useState(new AbortController());
 
 	const handleConvert = useCallback(
 		async (editorJSON: EditorJson): Promise<SimulationInputFiles> => {
 			await addCustomStoppingPowerTableToEditorJSON(editorJSON);
 
-			//Currently there is only one generator
-			switch (generator) {
-				case 'local':
-					return convertJSON(editorJSON, simulator).then(
-						res => Object.fromEntries(res) as unknown as SimulationInputFiles
-					);
-				default:
-					throw new Error('Unknown generator: ' + generator);
-			}
+			return convertJSON(editorJSON, simulator).then(
+				res => Object.fromEntries(res) as unknown as SimulationInputFiles
+			);
 		},
-		[controller.signal, convertJSON, generator, simulator]
+		[controller.signal, convertJSON, simulator]
 	);
 
 	const onClickGenerate = useCallback(() => {
@@ -127,7 +118,7 @@ export default function InputEditorPanel({
 						marginRight: '1rem'
 					}}
 					color='info'
-					loading={generator === 'local' && !isConverterReady}
+					loading={!isConverterReady}
 					variant='contained'
 					onClick={debouncedOnClickGenerate}
 					disabled={isInProgress}
