@@ -7,7 +7,6 @@ import { throttle } from 'throttle-debounce';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
 import { readFile } from '../../../services/LoaderService';
 import { useStore } from '../../../services/StoreService';
-import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { addCustomStoppingPowerTableToEditorJSON } from '../../../ThreeEditor/Simulation/CustomStoppingPower/CustomStoppingPower';
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
@@ -38,18 +37,7 @@ export default function InputEditorPanel({
 	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>(_defaultShInputFiles);
 	const [controller] = useState(new AbortController());
 
-	const handleConvert = useCallback(
-		async (editorJSON: EditorJson): Promise<SimulationInputFiles> => {
-			await addCustomStoppingPowerTableToEditorJSON(editorJSON);
-
-			return convertJSON(editorJSON, simulator).then(
-				res => Object.fromEntries(res) as unknown as SimulationInputFiles
-			);
-		},
-		[controller.signal, convertJSON, simulator]
-	);
-
-	const onClickGenerate = useCallback(() => {
+	const onClickGenerate = useCallback(async () => {
 		if (simulator === SimulatorType.COMMON) {
 			return enqueueSnackbar('Please select simulator', { variant: 'warning' });
 		}
@@ -59,7 +47,10 @@ export default function InputEditorPanel({
 
 		if (!editorJSON) return setInProgress(false);
 
-		handleConvert(editorJSON)
+		await addCustomStoppingPowerTableToEditorJSON(editorJSON);
+
+		convertJSON(editorJSON, simulator)
+			.then(res => Object.fromEntries(res) as unknown as SimulationInputFiles)
 			.then(inputFiles => {
 				setInputFiles({ ...inputFiles });
 				enqueueSnackbar('Input files generated', { variant: 'info' });
@@ -71,7 +62,7 @@ export default function InputEditorPanel({
 			.finally(() => {
 				setInProgress(false);
 			});
-	}, [yaptideEditor, enqueueSnackbar, handleConvert]);
+	}, [yaptideEditor, enqueueSnackbar, controller.signal, convertJSON, simulator]);
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const debouncedOnClickGenerate = useCallback(
@@ -167,13 +158,11 @@ export default function InputEditorPanel({
 						color='info'>
 						SHIELD-HIT12A
 					</ToggleButton>
-					{/* {!demoMode && (
-						<ToggleButton
-							value={SimulatorType.TOPAS}
-							color='info'>
-							TOPAS
-						</ToggleButton>
-					)} */}
+					{/* <ToggleButton
+						value={SimulatorType.TOPAS}
+						color='info'>
+						TOPAS
+					</ToggleButton> */}
 					<ToggleButton
 						value={SimulatorType.FLUKA}
 						color='info'>
