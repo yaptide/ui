@@ -8,6 +8,8 @@ import { DataWithStatus, LookUp, TypeIdentifiedByKey } from './TypeTransformUtil
 export enum StatusState {
 	PENDING = 'PENDING',
 	RUNNING = 'RUNNING',
+	MERGING_QUEUED = 'MERGING_QUEUED',
+	MERGING_RUNNING = 'MERGING_RUNNING',
 	FAILED = 'FAILED',
 	COMPLETED = 'COMPLETED',
 	LOCAL = 'LOCAL',
@@ -205,6 +207,20 @@ export type JobStatusCanceled = JobStatusType<
 	}
 >;
 
+export type JobStatusMergingQueued = JobStatusType<
+	StatusState.MERGING_QUEUED,
+	{
+		jobTasksStatus: Array<TaskUnknownStatus>;
+	}
+>;
+
+export type JobStatusMergingRunning = JobStatusType<
+	StatusState.MERGING_RUNNING,
+	{
+		jobTasksStatus: Array<TaskUnknownStatus>;
+	}
+>;
+
 export type JobStatusRunning = JobStatusType<
 	StatusState.RUNNING,
 	{ jobTasksStatus: Array<TaskUnknownStatus> }
@@ -218,6 +234,8 @@ type JobAllStatuses =
 	| JobStatusCompleted
 	| JobStatusRunning
 	| JobStatusPending
+	| JobStatusMergingQueued
+	| JobStatusMergingRunning
 	| JobStatusFailed
 	| JobStatusCanceled;
 
@@ -230,6 +248,8 @@ export type JobUnknownStatus = {
 	jobState?:
 		| StatusState.PENDING
 		| StatusState.RUNNING
+		| StatusState.MERGING_QUEUED
+		| StatusState.MERGING_RUNNING
 		| StatusState.FAILED
 		| StatusState.COMPLETED
 		| StatusState.CANCELED;
@@ -281,6 +301,14 @@ export const currentJobStatusData = {
 		jobStatusGuard(data, StatusState.COMPLETED),
 	[StatusState.RUNNING]: (data: unknown): data is JobStatusMap[StatusState.RUNNING] =>
 		jobStatusGuard(data, StatusState.RUNNING),
+	[StatusState.MERGING_QUEUED]: (
+		data: unknown
+	): data is JobStatusMap[StatusState.MERGING_QUEUED] =>
+		jobStatusGuard(data, StatusState.MERGING_QUEUED),
+	[StatusState.MERGING_RUNNING]: (
+		data: unknown
+	): data is JobStatusMap[StatusState.MERGING_RUNNING] =>
+		jobStatusGuard(data, StatusState.MERGING_RUNNING),
 	[StatusState.PENDING]: (data: unknown): data is JobStatusMap[StatusState.PENDING] =>
 		jobStatusGuard(data, StatusState.PENDING),
 	[StatusState.FAILED]: (data: unknown): data is JobStatusMap[StatusState.FAILED] =>
@@ -317,6 +345,8 @@ export type JobStatusData<T = null> = DataWithStatus<
 type JobStatusMap = {
 	[StatusState.COMPLETED]: JobStatusCompleted & SimulationInfo;
 	[StatusState.RUNNING]: JobStatusRunning & SimulationInfo;
+	[StatusState.MERGING_QUEUED]: JobStatusMergingQueued & SimulationInfo;
+	[StatusState.MERGING_RUNNING]: JobStatusMergingRunning & SimulationInfo;
 	[StatusState.PENDING]: JobStatusPending & SimulationInfo;
 	[StatusState.FAILED]: JobStatusFailed & SimulationInfo;
 	[StatusState.CANCELED]: JobStatusCanceled & SimulationInfo;
