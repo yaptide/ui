@@ -4,12 +4,9 @@ import { useSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
 import { throttle } from 'throttle-debounce';
 
-import { useConfig } from '../../../config/ConfigService';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
 import { readFile } from '../../../services/LoaderService';
-import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
-import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { addCustomStoppingPowerTableToEditorJSON } from '../../../ThreeEditor/Simulation/CustomStoppingPower/CustomStoppingPower';
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
@@ -27,45 +24,20 @@ interface InputEditorPanelProps {
 	onSimulatorChange: (newSimulator: SimulatorType) => void;
 }
 
-type GeneratorLocation = 'local' | 'remote';
-
 export default function InputEditorPanel({
 	goToRun,
 	simulator,
 	onSimulatorChange
 }: InputEditorPanelProps) {
-	const { demoMode } = useConfig();
 	const { enqueueSnackbar } = useSnackbar();
 	const { yaptideEditor } = useStore();
-	const { convertToInputFiles } = useShSimulation();
 	const { isConverterReady, convertJSON } = usePythonConverter();
 
 	const [isInProgress, setInProgress] = useState(false);
 	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>(_defaultShInputFiles);
-	const [generator, setGenerator] = useState<GeneratorLocation>('local');
 	const [controller] = useState(new AbortController());
 
-	const handleConvert = useCallback(
-		async (editorJSON: EditorJson): Promise<SimulationInputFiles> => {
-			await addCustomStoppingPowerTableToEditorJSON(editorJSON);
-
-			switch (generator) {
-				case 'remote':
-					return convertToInputFiles(editorJSON, controller.signal).then(res => {
-						return res.inputFiles;
-					});
-				case 'local':
-					return convertJSON(editorJSON, simulator).then(
-						res => Object.fromEntries(res) as unknown as SimulationInputFiles
-					);
-				default:
-					throw new Error('Unknown generator: ' + generator);
-			}
-		},
-		[controller.signal, convertJSON, convertToInputFiles, generator, simulator]
-	);
-
-	const onClickGenerate = useCallback(() => {
+	const onClickGenerate = useCallback(async () => {
 		if (simulator === SimulatorType.COMMON) {
 			return enqueueSnackbar('Please select simulator', { variant: 'warning' });
 		}
@@ -75,7 +47,10 @@ export default function InputEditorPanel({
 
 		if (!editorJSON) return setInProgress(false);
 
-		handleConvert(editorJSON)
+		await addCustomStoppingPowerTableToEditorJSON(editorJSON);
+
+		convertJSON(editorJSON, simulator)
+			.then(res => Object.fromEntries(res) as unknown as SimulationInputFiles)
 			.then(inputFiles => {
 				setInputFiles({ ...inputFiles });
 				enqueueSnackbar('Input files generated', { variant: 'info' });
@@ -87,7 +62,7 @@ export default function InputEditorPanel({
 			.finally(() => {
 				setInProgress(false);
 			});
-	}, [yaptideEditor, enqueueSnackbar, handleConvert]);
+	}, [yaptideEditor, enqueueSnackbar, controller.signal, convertJSON, simulator]);
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const debouncedOnClickGenerate = useCallback(
@@ -134,34 +109,13 @@ export default function InputEditorPanel({
 						marginRight: '1rem'
 					}}
 					color='info'
-					loading={generator === 'local' && !isConverterReady}
+					loading={!isConverterReady}
 					variant='contained'
 					onClick={debouncedOnClickGenerate}
 					disabled={isInProgress}
 					loadingIndicator='Initializing...'>
 					Generate from Editor
 				</LoadingButton>
-
-				<ToggleButtonGroup
-					value={generator}
-					exclusive
-					onChange={(_e, generator) => {
-						if (generator) setGenerator(generator);
-					}}>
-					<ToggleButton
-						color='info'
-						value='local'>
-						Local
-					</ToggleButton>
-					{!demoMode && (
-						<ToggleButton
-							value='remote'
-							color='warning'>
-							Remote
-						</ToggleButton>
-					)}
-				</ToggleButtonGroup>
-
 				<ToggleButtonGroup
 					sx={{
 						marginLeft: '1rem'
@@ -204,20 +158,16 @@ export default function InputEditorPanel({
 						color='info'>
 						SHIELD-HIT12A
 					</ToggleButton>
-					{/* {!demoMode && (
-						<ToggleButton
-							value={SimulatorType.TOPAS}
-							color='info'>
-							TOPAS
-						</ToggleButton>
-					)} */}
-					{!demoMode && (
-						<ToggleButton
-							value={SimulatorType.FLUKA}
-							color='info'>
-							Fluka
-						</ToggleButton>
-					)}
+					{/* <ToggleButton
+						value={SimulatorType.TOPAS}
+						color='info'>
+						TOPAS
+					</ToggleButton> */}
+					<ToggleButton
+						value={SimulatorType.FLUKA}
+						color='info'>
+						Fluka
+					</ToggleButton>
 				</ToggleButtonGroup>
 			</Box>
 

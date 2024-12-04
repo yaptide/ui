@@ -1,5 +1,6 @@
-import { Estimator } from '../JsRoot/GraphData';
+import { Estimator, Page } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
+import { ScoringOutputJSON } from '../ThreeEditor/Simulation/Scoring/ScoringOutput';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import { DataWithStatus, LookUp, TypeIdentifiedByKey } from './TypeTransformUtil';
 
@@ -7,6 +8,8 @@ import { DataWithStatus, LookUp, TypeIdentifiedByKey } from './TypeTransformUtil
 export enum StatusState {
 	PENDING = 'PENDING',
 	RUNNING = 'RUNNING',
+	MERGING_QUEUED = 'MERGING_QUEUED',
+	MERGING_RUNNING = 'MERGING_RUNNING',
 	FAILED = 'FAILED',
 	COMPLETED = 'COMPLETED',
 	LOCAL = 'LOCAL',
@@ -60,7 +63,10 @@ export type InputFilesRecord<FileNames extends string, OptionalNames extends str
 	},
 	never
 >;
-type ShInputFilesRecord = InputFilesRecord<ShInputFilesNames, 'info.json' | 'sobp.dat'>;
+export type ShInputFilesRecord = InputFilesRecord<
+	ShInputFilesNames,
+	'info.json' | 'sobp.dat' | 'detect.dat'
+>;
 type TopasInputFilesRecord = InputFilesRecord<TopasInputFilesNames, 'info.json'>;
 type FlukaInputFilesRecord = InputFilesRecord<FlukaInputFilesNames, 'info.json'>;
 export type SimulationInputFiles =
@@ -74,7 +80,7 @@ export type TaskTime = {
 	seconds: string;
 };
 
-export type MetaKey = 'server' | 'platform' | 'input' | 'simType';
+export type MetaKey = 'server' | 'platform' | 'inputType' | 'simType';
 
 export type PlatformType = 'DIRECT' | 'BATCH';
 
@@ -201,6 +207,20 @@ export type JobStatusCanceled = JobStatusType<
 	}
 >;
 
+export type JobStatusMergingQueued = JobStatusType<
+	StatusState.MERGING_QUEUED,
+	{
+		jobTasksStatus: Array<TaskUnknownStatus>;
+	}
+>;
+
+export type JobStatusMergingRunning = JobStatusType<
+	StatusState.MERGING_RUNNING,
+	{
+		jobTasksStatus: Array<TaskUnknownStatus>;
+	}
+>;
+
 export type JobStatusRunning = JobStatusType<
 	StatusState.RUNNING,
 	{ jobTasksStatus: Array<TaskUnknownStatus> }
@@ -214,6 +234,8 @@ type JobAllStatuses =
 	| JobStatusCompleted
 	| JobStatusRunning
 	| JobStatusPending
+	| JobStatusMergingQueued
+	| JobStatusMergingRunning
 	| JobStatusFailed
 	| JobStatusCanceled;
 
@@ -226,6 +248,8 @@ export type JobUnknownStatus = {
 	jobState?:
 		| StatusState.PENDING
 		| StatusState.RUNNING
+		| StatusState.MERGING_QUEUED
+		| StatusState.MERGING_RUNNING
 		| StatusState.FAILED
 		| StatusState.COMPLETED
 		| StatusState.CANCELED;
@@ -277,6 +301,14 @@ export const currentJobStatusData = {
 		jobStatusGuard(data, StatusState.COMPLETED),
 	[StatusState.RUNNING]: (data: unknown): data is JobStatusMap[StatusState.RUNNING] =>
 		jobStatusGuard(data, StatusState.RUNNING),
+	[StatusState.MERGING_QUEUED]: (
+		data: unknown
+	): data is JobStatusMap[StatusState.MERGING_QUEUED] =>
+		jobStatusGuard(data, StatusState.MERGING_QUEUED),
+	[StatusState.MERGING_RUNNING]: (
+		data: unknown
+	): data is JobStatusMap[StatusState.MERGING_RUNNING] =>
+		jobStatusGuard(data, StatusState.MERGING_RUNNING),
 	[StatusState.PENDING]: (data: unknown): data is JobStatusMap[StatusState.PENDING] =>
 		jobStatusGuard(data, StatusState.PENDING),
 	[StatusState.FAILED]: (data: unknown): data is JobStatusMap[StatusState.FAILED] =>
@@ -313,6 +345,8 @@ export type JobStatusData<T = null> = DataWithStatus<
 type JobStatusMap = {
 	[StatusState.COMPLETED]: JobStatusCompleted & SimulationInfo;
 	[StatusState.RUNNING]: JobStatusRunning & SimulationInfo;
+	[StatusState.MERGING_QUEUED]: JobStatusMergingQueued & SimulationInfo;
+	[StatusState.MERGING_RUNNING]: JobStatusMergingRunning & SimulationInfo;
 	[StatusState.PENDING]: JobStatusPending & SimulationInfo;
 	[StatusState.FAILED]: JobStatusFailed & SimulationInfo;
 	[StatusState.CANCELED]: JobStatusCanceled & SimulationInfo;
@@ -330,8 +364,14 @@ export type ResponseGetJobInputs = {
 		inputFiles: SimulationInputFiles;
 		inputJson?: EditorJson;
 		inputType: SimulationSourceType;
+		userInputFilesEstimatorNames?: string[];
 	};
 } & YaptideResponse;
+
+export type EstimatorNamesResponse = {
+	estimatorNames: string[];
+	message: string;
+};
 
 export type ResponseGetJobLogs = {
 	logfiles: Record<string, string>;
@@ -340,6 +380,8 @@ export type ResponseGetJobLogs = {
 export type ResponseGetJobResults = {
 	estimators: Estimator[];
 } & YaptideResponse;
+
+export type ResponseGetJobResult = Estimator & YaptideResponse;
 
 export type ResponseAuthStatus = AuthStatus;
 

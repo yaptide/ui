@@ -10,28 +10,29 @@ import {
 	RequestCancelJob,
 	RequestGetJobInputs,
 	RequestGetJobLogs,
+	RequestGetJobResult,
 	RequestGetJobResults,
 	RequestGetJobStatus,
 	RequestGetPageContents,
 	RequestGetPageStatus,
 	RequestParam,
-	RequestPostJob,
-	RequestShConvert
+	RequestPostJob
 } from '../types/RequestTypes';
 import {
 	currentJobStatusData,
 	currentTaskStatusData,
+	EstimatorNamesResponse,
 	JobStatusCompleted,
 	JobStatusData,
 	JobStatusFailed,
 	PlatformType,
 	ResponseGetJobInputs,
 	ResponseGetJobLogs,
+	ResponseGetJobResult,
 	ResponseGetJobResults,
 	ResponseGetJobStatus,
 	ResponseGetPageContents,
 	ResponsePostJob,
-	ResponseShConvert,
 	SimulationInfo,
 	StatusState,
 	YaptideResponse
@@ -56,6 +57,12 @@ export type JobResults = {
 	jobId: string;
 } & ResponseGetJobResults;
 
+export type SpecificEstimator = {
+	jobId: string;
+	estimators: Estimator[];
+	message: string;
+};
+
 export type FullSimulationData = Omit<JobInputs & JobStatusData & JobResults, 'message'>;
 
 export const fetchItSymbol = Symbol('fetchItSymbol');
@@ -64,18 +71,19 @@ export interface RestSimulationContext {
 	postJobDirect: (...args: RequestPostJob) => Promise<ResponsePostJob>;
 	postJobBatch: (...args: RequestPostJob) => Promise<ResponsePostJob>;
 	cancelJob: (...args: RequestCancelJob) => Promise<unknown>;
-	convertToInputFiles: (...args: RequestShConvert) => Promise<ResponseShConvert>;
 	getHelloWorld: (...args: RequestParam) => Promise<unknown>;
 	getJobStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
 	getJobInputs: (...args: RequestGetJobInputs) => Promise<JobInputs | undefined>;
 	getJobResults: (...args: RequestGetJobResults) => Promise<JobResults | undefined>;
+	getJobResult: (...args: RequestGetJobResult) => Promise<JobResults | undefined>;
 	getJobLogs: (...args: RequestGetJobLogs) => Promise<JobLogs | undefined>;
 	getPageContents: (...args: RequestGetPageContents) => Promise<ResponseGetPageContents>;
 	getPageStatus: (...args: RequestGetPageStatus) => Promise<JobStatusData[] | undefined>;
 	getFullSimulationData: (
 		jobStatus: JobStatusData,
 		signal?: AbortSignal,
-		cache?: boolean
+		cache?: boolean,
+		givenEstimatorName?: string
 	) => Promise<FullSimulationData | undefined>;
 }
 
@@ -219,17 +227,6 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 		[authKy]
 	);
 
-	const convertToInputFiles = useCallback(
-		(...[simData, signal]: RequestShConvert) =>
-			authKy
-				.post(`sh/convert`, {
-					signal,
-					json: simData
-				})
-				.json<ResponseShConvert>(),
-		[authKy]
-	);
-
 	const getJobInputs = useCallback(
 		async (...[info, signal, cache = true, beforeCacheWrite]: RequestGetJobInputs) => {
 			const { jobId } = info;
@@ -330,6 +327,94 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 		[authKy, getJobInputs, resultsCache]
 	);
 
+	const getJobResult = useCallback(
+		async (...[info, signal, cache = true, beforeCacheWrite]: RequestGetJobResult) => {
+			const { jobId, estimatorName } = info;
+
+			if (cache && resultsCache.has(jobId)) {
+				const data: Promise<JobResults> | JobResults | undefined = resultsCache.get(jobId);
+
+				if (data instanceof Promise) {
+					return data.then(resolvedData => {
+						const estimators = resolvedData.estimators;
+						const estimatorExists = estimators.some(
+							estimator => estimator.name === estimatorName
+						);
+
+						if (estimatorExists) return Promise.resolve(resolvedData);
+					});
+				} else if (data) {
+					const estimators = data.estimators;
+					const estimatorExists = estimators.some(
+						estimator => estimator.name === estimatorName
+					);
+
+					if (estimatorExists) return Promise.resolve(data);
+				}
+			}
+
+			const cachePromise = resultsCache.createPromise(
+				async resolve => {
+					const response = await authKy
+						.get('results', {
+							signal,
+							searchParams: camelToSnakeCase({
+								job_id: jobId,
+								estimator_name: estimatorName
+							})
+						})
+						.json<ResponseGetJobResult>();
+
+					const estimator: Estimator[] = [
+						{
+							name: response.name,
+							metadata: response.metadata,
+							pages: response.pages
+						}
+					];
+
+					updateEstimators(estimator);
+
+					const jobInputs = await getJobInputs(info, signal, cache);
+
+					const refsInResults =
+						jobInputs?.input.inputJson &&
+						recreateRefsInResults(jobInputs.input.inputJson, estimator);
+
+					const data: SpecificEstimator = {
+						jobId,
+						estimators: refsInResults ?? estimator,
+						message: response.message
+					};
+
+					resolve(data);
+				},
+				jobId,
+				beforeCacheWrite
+			);
+
+			return await cachePromise;
+		},
+		[authKy, getJobInputs, resultsCache]
+	);
+
+	const getCurrentEstimators = useCallback(
+		async (job_id: string) => {
+			try {
+				return await authKy
+					.get('estimators', {
+						searchParams: { job_id }
+					})
+					.json<EstimatorNamesResponse>();
+			} catch (error) {
+				console.error('Failed to fetch estimators:', error);
+
+				return undefined;
+			}
+		},
+		[authKy]
+	);
+
 	//TODO: fix backend responses and remove this function
 	const validStatusToCache = (data: JobStatusCompleted | JobStatusFailed) => {
 		if (data.jobState === StatusState.FAILED) return true;
@@ -378,20 +463,34 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 							...info
 						};
 
-						if (currentJobStatusData[StatusState.PENDING](data)) {
-						} else if (currentJobStatusData[StatusState.RUNNING](data)) {
-						} else if (currentJobStatusData[StatusState.FAILED](data)) {
+						if (
+							currentJobStatusData[StatusState.PENDING](data) ||
+							currentJobStatusData[StatusState.RUNNING](data) ||
+							currentJobStatusData[StatusState.MERGING_QUEUED](data) ||
+							currentJobStatusData[StatusState.MERGING_RUNNING](data)
+						) {
+							return data;
+						}
+
+						if (
+							currentJobStatusData[StatusState.FAILED](data) ||
+							currentJobStatusData[StatusState.CANCELED](data)
+						) {
 							console.log(data.message);
-
 							statusDataCache.set(data.jobId, data, beforeCacheWrite);
-						} else if (currentJobStatusData[StatusState.COMPLETED](data)) {
-							if (validStatusToCache(data))
+
+							return data;
+						}
+
+						if (currentJobStatusData[StatusState.COMPLETED](data)) {
+							if (validStatusToCache(data)) {
 								statusDataCache.set(data.jobId, data, beforeCacheWrite);
-						} else if (currentJobStatusData[StatusState.CANCELED](data)) {
-							statusDataCache.set(data.jobId, data, beforeCacheWrite);
-						} else return undefined;
+							}
 
-						return data;
+							return data;
+						}
+
+						return undefined;
 					})
 					.catch(e => {
 						console.error(e);
@@ -447,12 +546,77 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 		[getJobStatus]
 	);
 
+	// This function is used to find the first estimator name in the simulation data to fetch the results for estimators.
+	// If name isn't passed, it will try to find the first estimator name in the simulation data.
+	// If the name isn't found, it will try to get name from the backend.
+	// It wouldn't be handled if we load the example.
+	const findFirstEstimatorNameForInputFiles = useCallback(
+		async (
+			jobStatus: JobStatusData,
+			inputs: JobInputs | undefined,
+			givenEstimatorName?: string
+		) => {
+			if (!givenEstimatorName && jobStatus.jobState === StatusState.COMPLETED) {
+				if (inputs && !inputs.input.userInputFilesEstimatorNames) {
+					const estimators = await getCurrentEstimators(jobStatus.jobId);
+
+					inputs.input.userInputFilesEstimatorNames = estimators?.estimatorNames;
+				}
+			}
+
+			const firstEstimatorInputFileName = inputs?.input.userInputFilesEstimatorNames?.[0];
+
+			if (givenEstimatorName) {
+				return givenEstimatorName;
+			}
+
+			if (firstEstimatorInputFileName) {
+				return firstEstimatorInputFileName;
+			}
+		},
+		[getCurrentEstimators]
+	);
+
+	const findFirstEstimatorNameForEditor = useCallback(
+		(inputs: JobInputs | undefined, givenEstimatorName?: string) => {
+			const firstEstimatorName = inputs?.input.inputJson?.scoringManager.outputs[0].name;
+
+			if (givenEstimatorName) {
+				return givenEstimatorName;
+			}
+
+			if (firstEstimatorName) {
+				return firstEstimatorName + '_';
+			}
+		},
+		[]
+	);
+
 	const getFullSimulationData = useCallback(
-		async (jobStatus: JobStatusData, signal?: AbortSignal, cache = true) => {
+		async (
+			jobStatus: JobStatusData,
+			signal?: AbortSignal,
+			cache = true,
+			givenEstimatorName?: string
+		) => {
 			const inputs: JobInputs | undefined = await getJobInputs(jobStatus, signal, cache);
+
+			const isSimulationFromEditor = inputs?.input.inputType.toLowerCase() === 'editor';
+
+			const firstEstimator = isSimulationFromEditor
+				? findFirstEstimatorNameForEditor(inputs, givenEstimatorName)
+				: await findFirstEstimatorNameForInputFiles(jobStatus, inputs, givenEstimatorName);
+
 			const results: JobResults | undefined =
-				jobStatus.jobState === StatusState.COMPLETED
-					? await getJobResults(jobStatus, signal, cache)
+				jobStatus.jobState === StatusState.COMPLETED && firstEstimator
+					? await getJobResult(
+							{
+								jobId: jobStatus.jobId,
+								estimatorName: firstEstimator
+							},
+							signal,
+							cache
+						)
 					: undefined;
 
 			if (!inputs || !results) return undefined;
@@ -469,7 +633,12 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 			return simData;
 		},
-		[getJobInputs, getJobResults]
+		[
+			findFirstEstimatorNameForEditor,
+			findFirstEstimatorNameForInputFiles,
+			getJobInputs,
+			getJobResult
+		]
 	);
 
 	return (
@@ -478,7 +647,6 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 				postJobDirect: postJob('jobs/direct'),
 				postJobBatch: postJob('jobs/batch'),
 				cancelJob,
-				convertToInputFiles,
 				getHelloWorld,
 				getJobStatus: (...args: RequestGetJobStatus) => {
 					return getJobStatus(...args)(getEndpointFromSimulationInfo(args[0]));
@@ -487,6 +655,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 				getPageStatus,
 				getJobInputs,
 				getJobResults,
+				getJobResult,
 				getJobLogs,
 				getFullSimulationData
 			}}>

@@ -23,7 +23,7 @@ const SimulationCardHelpers = ({
 	yaptideEditor
 }: SimulationCardHelpersProps) => {
 	const { loadFromJson } = useLoader();
-	const { getJobLogs, getJobInputs, getFullSimulationData } = useShSimulation();
+	const { getJobLogs, getJobInputs, getFullSimulationData, getJobResults } = useShSimulation();
 	const { enqueueSnackbar } = useSnackbar();
 	const { open: openSaveFileDialog } = useDialog('saveFile');
 
@@ -37,6 +37,10 @@ const SimulationCardHelpers = ({
 				return 'success.main';
 			case StatusState.LOCAL:
 				return 'warning.main';
+			case StatusState.MERGING_QUEUED:
+				return 'info.main';
+			case StatusState.MERGING_RUNNING:
+				return 'info.main';
 			case StatusState.CANCELED:
 				return 'common.black';
 			default:
@@ -90,7 +94,8 @@ const SimulationCardHelpers = ({
 						name: `${titleToKebabCase(simulation?.title ?? 'simulation')}-result.json`,
 						results: simulation,
 						disableCheckbox: true,
-						yaptideEditor
+						yaptideEditor,
+						getJobResults
 					});
 			})
 			.catch(() => {

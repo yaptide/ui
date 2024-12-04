@@ -1,23 +1,14 @@
-import {
-	Box,
-	Button,
-	Card,
-	CardContent,
-	FormControlLabel,
-	Switch,
-	Tab,
-	Tabs,
-	Typography
-} from '@mui/material';
-import { ChangeEvent, SyntheticEvent, useEffect, useState } from 'react';
+import { Box, Button, Card, FormControlLabel, Switch, Typography } from '@mui/material';
+import { ChangeEvent, useEffect, useState } from 'react';
 
-import { Estimator, generateGraphs, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
+import { Estimator, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
 import { useDialog } from '../../../services/DialogService';
+import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { InfoTooltip } from '../../../shared/components/tooltip/InfoTooltip';
 import { titleToKebabCase } from '../../../ThreeEditor/components/Dialog/CustomDialog';
-import { TabPanel } from '../Panels/TabPanel';
-import TablePage0D from './ResultsTable';
+import EstimatorsSelect from './EstimatorsSelect/EstimatorsSelect';
+import EstimatorTab from './EstimatorTab/EstimatorTab';
 
 export interface EstimatorResults extends Estimator {
 	tablePages: Page0D[];
@@ -25,29 +16,52 @@ export interface EstimatorResults extends Estimator {
 }
 
 function ResultsPanel() {
+	const { getJobResults } = useShSimulation();
 	const { open: openSaveFileDialog } = useDialog('saveFile');
-	const { yaptideEditor, resultsSimulationData: simulation } = useStore();
+	const {
+		yaptideEditor,
+		resultsSimulationData: simulation,
+		setResultsSimulationData
+	} = useStore();
 
 	const [tabsValue, setTabsValue] = useState(0);
 	const [estimatorsResults, setEstimatorsResults] = useState<EstimatorResults[]>([]);
 	const [groupQuantities, setGroupQuantities] = useState(false);
 
+	const userTabInputFilesEstimatorNames = simulation?.input.userInputFilesEstimatorNames?.map(
+		output => output.slice(0, -1)
+	);
+	const uploadedInputFilesEstimatorNames = estimatorsResults?.map(estimator => estimator.name);
+
+	const editorEstimatorNames = simulation?.input.inputJson?.scoringManager.outputs
+		.filter(output => output.name)
+		.map(output => output.name);
+
+	const estimatorsTabData: string[] | undefined = simulation?.input.userInputFilesEstimatorNames
+		? userTabInputFilesEstimatorNames
+		: editorEstimatorNames;
+
 	useEffect(() => {
-		setTabsValue(0);
 		setEstimatorsResults(parseEstimators(simulation?.estimators ?? []));
+
+		if (simulation?.estimators.length === 1) {
+			setTabsValue(0);
+		}
 	}, [simulation]);
 
-	const handleChange = (_event: SyntheticEvent, newValue: number) => {
-		setTabsValue(newValue);
-	};
-
 	const onClickSaveToFile = () => {
+		const expectedEstimators = estimatorsTabData
+			? estimatorsTabData
+			: uploadedInputFilesEstimatorNames;
+
 		if (yaptideEditor)
 			openSaveFileDialog({
 				name: `${titleToKebabCase(simulation?.title ?? 'simulation')}-result.json`,
 				results: simulation,
 				disableCheckbox: true,
-				yaptideEditor
+				yaptideEditor,
+				getJobResults,
+				expectedEstimatorsSize: expectedEstimators.length
 			});
 	};
 
@@ -64,6 +78,7 @@ function ResultsPanel() {
 	};
 
 	const resultsGeneratedFromProjectFile = !!simulation?.input.inputJson;
+	const chosenEstimator = estimatorsResults[tabsValue];
 
 	return (
 		<Box
@@ -143,99 +158,26 @@ function ResultsPanel() {
 					maxWidth: '100vw',
 					width: '100%'
 				}}>
-				{estimatorsResults.length > 0 && (
+				{estimatorsResults.length > 0 && simulation && (
 					<>
-						<Card
-							sx={{
-								margin: '0.5rem',
-								height: 'min-content',
-								overflow: 'unset',
-								position: 'sticky',
-								top: '8px',
-								zIndex: 1
-							}}>
-							<CardContent
-								sx={{
-									color: theme =>
-										theme.palette.mode === 'dark'
-											? 'secondary.contrastText'
-											: 'secondary.dark'
-								}}>
-								<Tabs
-									textColor='inherit'
-									sx={{
-										'flexShrink': 0,
-										'& .MuiTabs-indicator': {
-											backgroundColor: theme =>
-												theme.palette.mode === 'dark'
-													? 'secondary.contrastText'
-													: 'secondary.dark'
-										},
-										'& .MuiButtonBase-root': {
-											fontWeight: 'bold'
-										}
-									}}
-									orientation='vertical'
-									variant='scrollable'
-									value={tabsValue}
-									onChange={handleChange}>
-									{estimatorsResults.map((estimator, idx) => {
-										return (
-											<Tab
-												key={`tab_${estimator.name}`}
-												label={estimator.name}
-												value={idx}
-											/>
-										);
-									})}
-								</Tabs>
-							</CardContent>
-						</Card>
-						<Card
-							variant='outlined'
-							sx={{
-								'flexGrow': 1,
-								'margin': '0.5rem',
-								'bgcolor': theme =>
-									theme.palette.mode === 'dark'
-										? 'text.disabled'
-										: 'background.paper',
-								'& .MuiCardContent-root div': {
-									bgcolor: 'transparent',
-									backgroundImage: 'none',
-									color: 'black'
-								}
-							}}>
-							<CardContent>
-								{estimatorsResults.map((estimator, idx) => {
-									return (
-										<TabPanel
-											key={`tab_panel_${estimator.name}_${idx}`}
-											value={tabsValue}
-											index={idx}
-											persistentIfVisited>
-											<Box
-												style={{
-													width: '100%',
-													display: 'flex',
-													flexDirection: 'column'
-												}}>
-												{estimator.tablePages.length > 0 && (
-													<TablePage0D
-														estimator={estimator}></TablePage0D>
-												)}
-												{generateGraphs(
-													estimator,
-													resultsGeneratedFromProjectFile &&
-														groupQuantities,
-													simulation?.jobId
-												)}
-											</Box>
-										</TabPanel>
-									);
-								})}
-							</CardContent>
-						</Card>
+						<EstimatorsSelect
+							tabsValue={tabsValue}
+							setTabsValue={setTabsValue}
+							simulation={simulation}
+							setResultsSimulationData={setResultsSimulationData}
+							estimatorsTabData={
+								estimatorsTabData
+									? estimatorsTabData
+									: uploadedInputFilesEstimatorNames
+							}
+						/>
+						<EstimatorTab
+							estimator={chosenEstimator}
+							tabsValue={tabsValue}
+							resultsGeneratedFromProjectFile={resultsGeneratedFromProjectFile}
+							groupQuantities={groupQuantities}
+							simulation={simulation}
+						/>
 					</>
 				)}
 			</Box>
