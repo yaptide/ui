@@ -12,6 +12,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useDialog } from '../../../../services/DialogService';
 import { useLoader } from '../../../../services/LoaderService';
+import { useShSimulation } from '../../../../services/ShSimulatorService';
 import { useStore } from '../../../../services/StoreService';
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { EditorTitleBar } from './components/EditorTitlebar';
@@ -31,6 +32,7 @@ type AppBarOptions = {
 
 function EditorAppBar({ editor }: AppBarProps) {
 	const { loadFromJson, loadFromFiles, loadFromUrl, loadFromJsonString } = useLoader();
+	const { getJobResults } = useShSimulation();
 	const { open: openTheOpenFileDialog } = useDialog('openFile');
 	const { open: openTheSaveFileDialog } = useDialog('saveFile');
 	const { open: openTheNewProjectDialog } = useDialog('newProject');
@@ -98,7 +100,8 @@ function EditorAppBar({ editor }: AppBarProps) {
 					label: 'Save as',
 					icon: <SaveAsIcon />,
 					disabled: false,
-					onClick: () => yaptideEditor && openTheSaveFileDialog({ yaptideEditor })
+					onClick: () =>
+						yaptideEditor && openTheSaveFileDialog({ yaptideEditor, getJobResults })
 				},
 				{
 					label: 'Redo (ctrl+y)',

@@ -23,7 +23,7 @@ const SimulationCardHelpers = ({
 	yaptideEditor
 }: SimulationCardHelpersProps) => {
 	const { loadFromJson } = useLoader();
-	const { getJobLogs, getJobInputs, getFullSimulationData } = useShSimulation();
+	const { getJobLogs, getJobInputs, getFullSimulationData, getJobResults } = useShSimulation();
 	const { enqueueSnackbar } = useSnackbar();
 	const { open: openSaveFileDialog } = useDialog('saveFile');
 
@@ -90,7 +90,8 @@ const SimulationCardHelpers = ({
 						name: `${titleToKebabCase(simulation?.title ?? 'simulation')}-result.json`,
 						results: simulation,
 						disableCheckbox: true,
-						yaptideEditor
+						yaptideEditor,
+						getJobResults
 					});
 			})
 			.catch(() => {

@@ -100,4 +100,8 @@ export type RequestGetJobResults = Flatten<
 	[[{ jobId: string }], RequestParam, CachedDataParams<JobResults>]
 >;
 
+export type RequestGetJobResult = Flatten<
+	[[{ jobId: string; estimatorName: string }], RequestParam, CachedDataParams<JobResults>]
+>;
+
 /* ------------------------------------ */
