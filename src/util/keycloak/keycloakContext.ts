@@ -2,17 +2,17 @@ import Keycloak from 'keycloak-js';
 import React, { createContext } from 'react';
 
 export type IAuthContextProps = {
-	client?: Keycloak;
-	initialized: boolean;
+  client?: Keycloak;
+  initialized: boolean;
 };
 
 export function createAuthContext(
-	initialContext?: Partial<IAuthContextProps>
+  initialContext?: Partial<IAuthContextProps>
 ): React.Context<IAuthContextProps> {
-	return createContext({
-		initialized: false,
-		...initialContext
-	});
+  return createContext({
+    initialized: false,
+    ...initialContext
+  });
 }
 
 export default createAuthContext;

@@ -1,9 +1,9 @@
 import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
 
 interface KeycloakAuthProviderProps {
-	client: Keycloak;
-	initOptions?: KeycloakInitOptions;
-	children: any;
+  client: Keycloak;
+  initOptions?: KeycloakInitOptions;
+  children: any
 }
 
-export type { KeycloakAuthProviderProps };
+export type { KeycloakAuthProviderProps }
