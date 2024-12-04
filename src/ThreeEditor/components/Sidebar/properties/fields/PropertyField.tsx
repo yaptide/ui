@@ -593,6 +593,7 @@ export function DifferentialConfigurationFluka(props: {
 	logCheckbox: boolean;
 	options: typeof DETECTOR_MODIFIERS_OPTIONS;
 	volume: number;
+	trackId: string;
 	onChange: (value: {
 		keywordSelect: string;
 		lowerLimit: number;
@@ -600,6 +601,7 @@ export function DifferentialConfigurationFluka(props: {
 		binsNumber: number;
 		logCheckbox: boolean;
 		volume: number;
+		trackId: string;
 	}) => void;
 	onDelete: () => void;
 }) {
@@ -615,6 +617,7 @@ export function DifferentialConfigurationFluka(props: {
 				upperLimitField,
 				binsNumberField,
 				volumeField,
+				trackIdField,
 				logCheckboxField,
 				removeButton
 			] = createDifferentialConfigurationRowFluka({
@@ -626,6 +629,7 @@ export function DifferentialConfigurationFluka(props: {
 					upperLimitField.min = lowerLimit;
 					const binsNumber = binsNumberField.getValue();
 					const logCheckbox = logCheckboxField.getValue();
+					const trackId = trackIdField.getValue();
 					const volume = volumeField.getValue();
 					props.onChange({
 						keywordSelect,
@@ -633,7 +637,8 @@ export function DifferentialConfigurationFluka(props: {
 						upperLimit,
 						binsNumber,
 						logCheckbox,
-						volume
+						volume,
+						trackId
 					});
 				},
 				delete: () => {
@@ -649,6 +654,7 @@ export function DifferentialConfigurationFluka(props: {
 				upperLimitField,
 				binsNumberField,
 				volumeField,
+				trackIdField,
 				logCheckboxField,
 				removeButton,
 				group: {
@@ -657,7 +663,9 @@ export function DifferentialConfigurationFluka(props: {
 						upperLimitField,
 						binsNumberField,
 						logCheckboxField,
-						keywordSelectField
+						keywordSelectField,
+						volumeField,
+						trackIdField
 					],
 					deleteFields: [removeButton]
 				}
@@ -683,7 +691,8 @@ export function DifferentialConfigurationFluka(props: {
 			upperLimitField,
 			binsNumberField,
 			logCheckboxField,
-			volumeField
+			volumeField,
+			trackIdField
 		} = inputRef.current;
 
 		inputRef.current.group.updateFields.forEach(field => {
@@ -696,13 +705,15 @@ export function DifferentialConfigurationFluka(props: {
 				const binsNumber = binsNumberField.getValue();
 				const logCheckbox = logCheckboxField.getValue();
 				const volume = volumeField.getValue();
+				const trackId = trackIdField.getValue();
 				props.onChange({
 					keywordSelect,
 					lowerLimit,
 					upperLimit,
 					binsNumber,
 					logCheckbox,
-					volume
+					volume,
+					trackId
 				});
 			});
 		});
@@ -718,6 +729,8 @@ export function DifferentialConfigurationFluka(props: {
 		upperLimitField.setValue(props.upperLimit);
 		binsNumberField.setValue(props.binsNumber);
 		logCheckboxField.setValue(props.logCheckbox);
+		volumeField.setValue(props.volume);
+		trackIdField.setValue(props.trackId);
 	}, [props]);
 
 	return (

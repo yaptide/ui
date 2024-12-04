@@ -10,8 +10,6 @@ export type DifferentialJSONCommon = {
 	binsNumber: number;
 	isLog: boolean;
 	uuid: string;
-	diffType?: DETECTOR_MODIFIERS;
-	volume?: number;
 };
 
 const isDifferentialJSONSH = (x: any): x is DifferentialJSONSH => {
@@ -28,6 +26,7 @@ const isDifferentialJSONFluka = (x: any): x is DifferentialJSONFluka => {
 
 export type DifferentialJSONFluka = Omit<DifferentialJSONCommon, 'diffType'> & {
 	volume: number;
+	trackId: string;
 };
 
 export class DifferentialModifier {
@@ -69,7 +68,8 @@ export class DifferentialModifier {
 				json.binsNumber,
 				json.upperLimit,
 				json.isLog,
-				json.volume
+				json.volume,
+				json.trackId
 			);
 		} else if (isDifferentialJSONSH(json)) {
 			mod = new DifferentialModifierSH(
@@ -111,15 +111,18 @@ export class DifferentialModifierFluka extends DifferentialModifier {
 	volume: number;
 	//diffType left for compability with react components
 	diffType: DETECTOR_MODIFIERS = DETECTOR_MODIFIERS_OPTIONS.E;
+	trackId: string;
 	constructor(
 		lowerLimit: number = 0,
 		binsNumber: number = 500,
 		upperLimit: number = 10,
 		isLog: boolean = false,
-		volume: number = 1
+		volume: number = 1,
+		trackId: string = ''
 	) {
 		super(lowerLimit, binsNumber, upperLimit, isLog);
 		this.volume = volume;
+		this.trackId = trackId;
 	}
 
 	toJSON(): DifferentialJSONFluka {
@@ -129,7 +132,8 @@ export class DifferentialModifierFluka extends DifferentialModifier {
 			binsNumber: this.binsNumber,
 			isLog: this.isLog,
 			uuid: this.uuid,
-			volume: this.volume
+			volume: this.volume,
+			trackId: this.trackId
 		};
 	}
 
@@ -139,7 +143,8 @@ export class DifferentialModifierFluka extends DifferentialModifier {
 			this.binsNumber,
 			this.upperLimit,
 			this.isLog,
-			this.volume
+			this.volume,
+			this.trackId
 		);
 
 		return duplicated;

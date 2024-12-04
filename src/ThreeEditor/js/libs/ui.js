@@ -332,7 +332,7 @@ class UIInput extends UIElement {
 
 class UITextArea extends UIElement {
 
-   constructor() {
+   constructor(value) {
 
       super(document.createElement('textarea'));
 
@@ -341,6 +341,10 @@ class UITextArea extends UIElement {
       this.dom.spellcheck = false;
 
       this.dom.setAttribute('autocomplete', 'off');
+
+      this.value = '';
+      this.setValue(value);
+      const scope = this;
 
       this.dom.addEventListener('keydown', (event) => {
 
@@ -360,16 +364,37 @@ class UITextArea extends UIElement {
 
       }, false);
 
+      function onChange() {
+         scope.setValue(scope.dom.value);
+      }
+
+      function onFocus() {
+
+         scope.dom.style.backgroundColor = '';
+         scope.dom.style.cursor = '';
+
+      }
+
+      function onBlur() {
+
+         scope.dom.style.backgroundColor = 'transparent';
+         scope.dom.style.cursor = 'ns-resize';
+
+      }
+      this.dom.addEventListener('change', onChange, false);
+      this.dom.addEventListener('focus', onFocus, false);
+      this.dom.addEventListener('blur', onBlur, false);
    }
 
    getValue() {
 
-      return this.dom.value;
+      return this.value;
 
    }
 
    setValue(value) {
 
+      this.value = value;
       this.dom.value = value;
 
       return this;

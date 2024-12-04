@@ -22,7 +22,8 @@ import {
 	DifferentialConfigurationField,
 	DifferentialConfigurationFieldFluka,
 	ModifiersOutlinerField,
-	PropertyField} from '../fields/PropertyField';
+	PropertyField
+} from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
 export function QuantityDifferentialScoring(props: { editor: YaptideEditor; object: Object3D }) {
@@ -129,6 +130,11 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 									binsNumber={watchedObject.selectedModifier.binsNumber}
 									logCheckbox={watchedObject.selectedModifier.isLog}
 									options={DETECTOR_MODIFIERS_OPTIONS_FLUKA}
+									trackId={
+										(
+											watchedObject.selectedModifier as DifferentialModifierFluka
+										).trackId
+									}
 									onChange={v => {
 										editor.execute(
 											new AddDifferentialModifierCommand(
@@ -136,11 +142,12 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 												watchedObject.object,
 												DifferentialModifier.fromJSON({
 													uuid: watchedObject.selectedModifier!.uuid,
-													diffType: v.keywordSelect as DETECTOR_MODIFIERS,
 													lowerLimit: v.lowerLimit,
 													upperLimit: v.upperLimit,
 													binsNumber: v.binsNumber,
-													isLog: v.logCheckbox
+													isLog: v.logCheckbox,
+													volume: v.volume,
+													trackId: v.trackId
 												})
 											)
 										);
