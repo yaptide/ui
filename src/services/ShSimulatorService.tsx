@@ -16,8 +16,7 @@ import {
 	RequestGetPageContents,
 	RequestGetPageStatus,
 	RequestParam,
-	RequestPostJob,
-	RequestShConvert
+	RequestPostJob
 } from '../types/RequestTypes';
 import {
 	currentJobStatusData,
@@ -34,7 +33,6 @@ import {
 	ResponseGetJobStatus,
 	ResponseGetPageContents,
 	ResponsePostJob,
-	ResponseShConvert,
 	SimulationInfo,
 	StatusState,
 	YaptideResponse
@@ -73,7 +71,6 @@ export interface RestSimulationContext {
 	postJobDirect: (...args: RequestPostJob) => Promise<ResponsePostJob>;
 	postJobBatch: (...args: RequestPostJob) => Promise<ResponsePostJob>;
 	cancelJob: (...args: RequestCancelJob) => Promise<unknown>;
-	convertToInputFiles: (...args: RequestShConvert) => Promise<ResponseShConvert>;
 	getHelloWorld: (...args: RequestParam) => Promise<unknown>;
 	getJobStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
 	getJobInputs: (...args: RequestGetJobInputs) => Promise<JobInputs | undefined>;
@@ -227,17 +224,6 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 					})
 					.json<ResponsePostJob>();
 			},
-		[authKy]
-	);
-
-	const convertToInputFiles = useCallback(
-		(...[simData, signal]: RequestShConvert) =>
-			authKy
-				.post(`sh/convert`, {
-					signal,
-					json: simData
-				})
-				.json<ResponseShConvert>(),
 		[authKy]
 	);
 
@@ -661,7 +647,6 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 				postJobDirect: postJob('jobs/direct'),
 				postJobBatch: postJob('jobs/batch'),
 				cancelJob,
-				convertToInputFiles,
 				getHelloWorld,
 				getJobStatus: (...args: RequestGetJobStatus) => {
 					return getJobStatus(...args)(getEndpointFromSimulationInfo(args[0]));
