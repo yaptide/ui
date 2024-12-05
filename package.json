@@ -77,7 +77,9 @@
 		"build-plg": "cross-env REACT_APP_ALT_AUTH=plg npm run build",
 		"build-demo": "cross-env REACT_APP_TARGET=demo npm run build",
 		"predeploy": "npm run setup && npm run build-demo && cross-env PUBLIC_PATH=/web_dev/ npm run fix-web-dev",
-		"deploy": "gh-pages --dist build --no-history"
+		"deploy": "gh-pages --dist build --no-history",
+		"depcruise:high": "depcruise --version && depcruise --config dependency-cruiser/depcruise-config-high-level.js --output-type archi src | dot -T svg -o dependency-cruiser/high-level-dependencies.svg && depcruise --config dependency-cruiser/depcruise-config-high-level.js --output-type archi src | dot -T svg | depcruise-wrap-stream-in-html > dependency-cruiser/high-level-dependencies.html",
+		"depcruise:low": "depcruise --version && depcruise --config dependency-cruiser/depcruise-config-low-level.js --output-type archi src | dot -T svg -o dependency-cruiser/low-level-dependencies.svg && depcruise --config dependency-cruiser/depcruise-config-low-level.js --output-type archi src | dot -T svg | depcruise-wrap-stream-in-html > dependency-cruiser/low-level-dependencies.html"
 	},
 	"contributors": [
 		{
@@ -208,6 +210,7 @@
 		"@types/selenium-webdriver": "^4.1.27",
 		"@types/three": "^0.166.0",
 		"cross-env": "^7.0.3",
+		"dependency-cruiser": "^16.4.2",
 		"eslint-plugin-simple-import-sort": "^12.1.1",
 		"gh-pages": "^6.2.0",
 		"husky": "^9.1.7",
