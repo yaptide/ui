@@ -28,9 +28,7 @@ function ResultsPanel() {
 	const [estimatorsResults, setEstimatorsResults] = useState<EstimatorResults[]>([]);
 	const [groupQuantities, setGroupQuantities] = useState(false);
 
-	const userTabInputFilesEstimatorNames = simulation?.input.userInputFilesEstimatorNames?.map(
-		output => output.slice(0, -1)
-	);
+	const userTabInputFilesEstimatorNames = simulation?.input.userInputFilesEstimatorNames;
 	const uploadedInputFilesEstimatorNames = estimatorsResults?.map(estimator => estimator.name);
 
 	const editorEstimatorNames = simulation?.input.inputJson?.scoringManager.outputs

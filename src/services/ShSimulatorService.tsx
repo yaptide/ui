@@ -586,7 +586,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 			}
 
 			if (firstEstimatorName) {
-				return firstEstimatorName + '_';
+				return firstEstimatorName;
 			}
 		},
 		[]
