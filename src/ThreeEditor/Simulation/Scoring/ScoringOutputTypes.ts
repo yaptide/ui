@@ -112,6 +112,15 @@ export const DETECTOR_MODIFIERS_OPTIONS = Object.keys(DETECTOR_MODIFIERS_DESCRIP
 	{} as Record<DETECTOR_MODIFIERS, DETECTOR_MODIFIERS>
 );
 
+export const DETECTOR_MODIFIERS_OPTIONS_FLUKA = Object.keys(DETECTOR_MODIFIERS_DESCRIPTION)
+	.filter(a => a == 'E')
+	.reduce(
+		(acc, key) => {
+			return { ...acc, [key]: key };
+		},
+		{} as Record<DETECTOR_MODIFIERS, DETECTOR_MODIFIERS>
+	);
+
 export const DETECTOR_KEYWORD_OPTIONS = Object.keys(DETECTOR_KEYWORD_DESCRIPTION).reduce(
 	(acc, key) => {
 		return { ...acc, [key]: key };
