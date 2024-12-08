@@ -87,18 +87,6 @@ export interface RestSimulationContext {
 	) => Promise<FullSimulationData | undefined>;
 }
 
-const recreateOrderInEstimators = (
-	estimators: Estimator[],
-	scoringManagerJSON: ScoringManagerJSON
-): Estimator[] => {
-	return orderAccordingToList(
-		estimators,
-		scoringManagerJSON.outputs,
-		'name',
-		(e, o) => (e.scoringOutputJsonRef = o)
-	);
-};
-
 const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]): Estimator[] => {
 	estimators.forEach(estimator => {
 		const { pages, scoringOutputJsonRef } = estimator;
@@ -119,11 +107,7 @@ export const recreateRefsInResults = (inputJson: EditorJson, estimators: Estimat
 
 	const { scoringManager }: EditorJson = inputJson;
 
-	const estimatorsOrdered = recreateOrderInEstimators(estimators, scoringManager);
-	const estimatorsWithFixedFilters = recreateRefToFilters(
-		estimatorsOrdered,
-		scoringManager.filters
-	);
+	const estimatorsWithFixedFilters = recreateRefToFilters(estimators, scoringManager.filters);
 
 	return estimatorsWithFixedFilters;
 };
@@ -586,7 +570,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 			}
 
 			if (firstEstimatorName) {
-				return firstEstimatorName + '_';
+				return firstEstimatorName;
 			}
 		},
 		[]
