@@ -11,6 +11,29 @@ Additionally, Dependency Cruiser allows you to:
 -   Define custom rules to ensure compliance with established standards
 -   Generate clear, visual diagrams to analyze the project's structure
 
+## Prerequisites: Installing GraphViz
+
+To fully utilize Dependency Cruiser’s commands, ensure you have **GraphViz** installed on your system. GraphViz is essential for generating visual representations (e.g., SVG files) of your project's dependency graph.
+
+### Installing GraphViz
+
+-   **On Linux/macOS**: Use a package manager like `apt` or `dnf`:
+    ```bash
+    sudo apt-get install graphviz    # For Debian/Ubuntu
+    sudo dnf install graphviz        # For RedHat/CentOS
+    ```
+-   **On Windows**: Download the installer from the [GraphViz download page](https://www.graphviz.org/download/) and follow the installation instructions.
+
+### Why GraphViz?
+
+Dependency Cruiser relies on GraphViz’s `dot` command to convert `.dot` files into visual formats such as SVG or HTML. For example, the following command generates an SVG file from Dependency Cruiser’s output:
+
+```bash
+npx depcruise src --include-only "^src" --output-type dot | dot -T svg > dependency-graph.svg
+```
+
+Without GraphViz, this step will fail, and you won’t be able to create graphical representations of your dependencies.
+
 ## Usage Commands
 
 Dependency Cruiser provides the following commands for quick usage:
