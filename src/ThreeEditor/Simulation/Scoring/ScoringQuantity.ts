@@ -1,16 +1,8 @@
-import { SimulatorType } from '../../../types/RequestTypes';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
 import { ScoringFilter } from './ScoringFilter';
 import * as Scoring from './ScoringOutputTypes';
-import {
-	DifferentialJSON,
-	DifferentialJSONCommon,
-	DifferentialJSONFluka,
-	DifferentialJSONSH,
-	DifferentialModifier,
-	DifferentialModifierFluka,
-	DifferentialModifierSH} from './ScoringQtyModifiers';
+import { DifferentialJSON, DifferentialModifier } from './ScoringQtyModifiers';
 
 export type ScoringQuantityJSON = Omit<
 	SimulationZoneJSON & {
@@ -129,24 +121,10 @@ export class ScoringQuantity extends SimulationZone {
 	}
 
 	createModifier(): DifferentialModifier {
-		let modifier;
-		let currentSimulator = this.editor.contextManager.currentSimulator;
+		const modifier = new DifferentialModifier();
+		this.addModifier(modifier);
 
-		if (currentSimulator == SimulatorType.SHIELDHIT) {
-			modifier = new DifferentialModifierSH();
-		} else if (currentSimulator == SimulatorType.FLUKA) {
-			modifier = new DifferentialModifierFluka();
-		} else {
-			modifier = new DifferentialModifier();
-		}
-
-		if (modifier) {
-			this.addModifier(modifier);
-
-			return modifier;
-		}
-
-		throw new Error('Invalid simulatorType');
+		return modifier;
 	}
 
 	removeModifier(modifier: DifferentialModifier): void {

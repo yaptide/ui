@@ -113,7 +113,7 @@ export const DETECTOR_MODIFIERS_OPTIONS = Object.keys(DETECTOR_MODIFIERS_DESCRIP
 );
 
 export const DETECTOR_MODIFIERS_OPTIONS_FLUKA = Object.keys(DETECTOR_MODIFIERS_DESCRIPTION)
-	.filter(a => a == 'E')
+	.filter(a => ['E', 'ENUC'].includes(a))
 	.reduce(
 		(acc, key) => {
 			return { ...acc, [key]: key };

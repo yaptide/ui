@@ -12,15 +12,10 @@ import {
 	DETECTOR_MODIFIERS_OPTIONS,
 	DETECTOR_MODIFIERS_OPTIONS_FLUKA
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
-import {
-	DifferentialModifier,
-	DifferentialModifierFluka,
-	DifferentialModifierSH
-} from '../../../../Simulation/Scoring/ScoringQtyModifiers';
+import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import {
 	DifferentialConfigurationField,
-	DifferentialConfigurationFieldFluka,
 	ModifiersOutlinerField,
 	PropertyField
 } from '../fields/PropertyField';
@@ -78,91 +73,49 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 						value={watchedObject.selectedModifier?.uuid ?? null}
 						options={watchedObject.modifiers}
 					/>
-					{watchedObject.selectedModifier &&
-						((currentSimulator == SimulatorType.SHIELDHIT && (
-							<DifferentialConfigurationField
-								keywordSelect={
-									(watchedObject.selectedModifier as DifferentialModifierSH)
-										.diffType
-								}
-								lowerLimit={watchedObject.selectedModifier.lowerLimit}
-								upperLimit={watchedObject.selectedModifier.upperLimit}
-								binsNumber={watchedObject.selectedModifier.binsNumber}
-								logCheckbox={watchedObject.selectedModifier.isLog}
-								options={DETECTOR_MODIFIERS_OPTIONS}
-								onChange={v => {
-									editor.execute(
-										new AddDifferentialModifierCommand(
-											editor,
-											watchedObject.object,
-											DifferentialModifier.fromJSON({
-												uuid: watchedObject.selectedModifier!.uuid,
-												diffType: v.keywordSelect as DETECTOR_MODIFIERS,
-												lowerLimit: v.lowerLimit,
-												upperLimit: v.upperLimit,
-												binsNumber: v.binsNumber,
-												isLog: v.logCheckbox
-											})
-										)
-									);
-								}}
-								onDelete={() =>
-									editor.execute(
-										new RemoveDifferentialModifierCommand(
-											editor,
-											watchedObject.object,
-											watchedObject.selectedModifier!
-										)
+					{watchedObject.selectedModifier && (
+						<DifferentialConfigurationField
+							keywordSelect={watchedObject.selectedModifier.diffType}
+							lowerLimit={watchedObject.selectedModifier.lowerLimit}
+							upperLimit={watchedObject.selectedModifier.upperLimit}
+							binsNumber={watchedObject.selectedModifier.binsNumber}
+							logCheckbox={watchedObject.selectedModifier.isLog}
+							options={
+								currentSimulator == SimulatorType.SHIELDHIT
+									? DETECTOR_MODIFIERS_OPTIONS
+									: DETECTOR_MODIFIERS_OPTIONS_FLUKA
+							}
+							volume={watchedObject.selectedModifier.volume}
+							trackId={watchedObject.selectedModifier.trackId}
+							onChange={v => {
+								editor.execute(
+									new AddDifferentialModifierCommand(
+										editor,
+										watchedObject.object,
+										DifferentialModifier.fromJSON({
+											uuid: watchedObject.selectedModifier!.uuid,
+											diffType: v.keywordSelect as DETECTOR_MODIFIERS,
+											lowerLimit: v.lowerLimit,
+											upperLimit: v.upperLimit,
+											binsNumber: v.binsNumber,
+											isLog: v.logCheckbox,
+											volume: v.volume,
+											trackId: v.trackId
+										})
 									)
-								}
-							/>
-						)) ||
-							(currentSimulator == SimulatorType.FLUKA && (
-								<DifferentialConfigurationFieldFluka
-									keywordSelect={DETECTOR_MODIFIERS_OPTIONS_FLUKA.E}
-									volume={
-										(
-											watchedObject.selectedModifier as DifferentialModifierFluka
-										).volume
-									}
-									lowerLimit={watchedObject.selectedModifier.lowerLimit}
-									upperLimit={watchedObject.selectedModifier.upperLimit}
-									binsNumber={watchedObject.selectedModifier.binsNumber}
-									logCheckbox={watchedObject.selectedModifier.isLog}
-									options={DETECTOR_MODIFIERS_OPTIONS_FLUKA}
-									trackId={
-										(
-											watchedObject.selectedModifier as DifferentialModifierFluka
-										).trackId
-									}
-									onChange={v => {
-										editor.execute(
-											new AddDifferentialModifierCommand(
-												editor,
-												watchedObject.object,
-												DifferentialModifier.fromJSON({
-													uuid: watchedObject.selectedModifier!.uuid,
-													lowerLimit: v.lowerLimit,
-													upperLimit: v.upperLimit,
-													binsNumber: v.binsNumber,
-													isLog: v.logCheckbox,
-													volume: v.volume,
-													trackId: v.trackId
-												})
-											)
-										);
-									}}
-									onDelete={() =>
-										editor.execute(
-											new RemoveDifferentialModifierCommand(
-												editor,
-												watchedObject.object,
-												watchedObject.selectedModifier!
-											)
-										)
-									}
-								/>
-							)))}
+								);
+							}}
+							onDelete={() =>
+								editor.execute(
+									new RemoveDifferentialModifierCommand(
+										editor,
+										watchedObject.object,
+										watchedObject.selectedModifier!
+									)
+								)
+							}
+						/>
+					)}
 				</>
 			)}
 		</PropertiesCategory>

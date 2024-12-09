@@ -17,7 +17,6 @@ import { createRowColor } from '../../../../../util/Ui/Color';
 import { createNumberInput } from '../../../../../util/Ui/Number';
 import {
 	createDifferentialConfigurationRow,
-	createDifferentialConfigurationRowFluka,
 	createModifiersOutliner,
 	createRuleConfigurationRow,
 	createRulesOutliner,
@@ -443,155 +442,6 @@ export function DifferentialConfiguration(props: {
 	binsNumber: number;
 	logCheckbox: boolean;
 	options: typeof DETECTOR_MODIFIERS_OPTIONS;
-	onChange: (value: {
-		keywordSelect: string;
-		lowerLimit: number;
-		upperLimit: number;
-		binsNumber: number;
-		logCheckbox: boolean;
-	}) => void;
-	onDelete: () => void;
-}) {
-	const boxRef = useRef<HTMLDivElement>(null);
-
-	// TODO: Update when props change
-	const inputRef = useRef(
-		(() => {
-			const [
-				modifierRow,
-				keywordSelectField,
-				lowerLimitField,
-				upperLimitField,
-				binsNumberField,
-				logCheckboxField,
-				removeButton
-			] = createDifferentialConfigurationRow({
-				update: () => {
-					const keywordSelect = keywordSelectField.getValue();
-					const lowerLimit = lowerLimitField.getValue();
-					const upperLimit = upperLimitField.getValue();
-					lowerLimitField.max = upperLimit;
-					upperLimitField.min = lowerLimit;
-					const binsNumber = binsNumberField.getValue();
-					const logCheckbox = logCheckboxField.getValue();
-					props.onChange({
-						keywordSelect,
-						lowerLimit,
-						upperLimit,
-						binsNumber,
-						logCheckbox
-					});
-				},
-				delete: () => {
-					props.onDelete();
-				},
-				options: props.options
-			});
-
-			return {
-				modifierRow,
-				keywordSelectField,
-				lowerLimitField,
-				upperLimitField,
-				binsNumberField,
-				logCheckboxField,
-				removeButton,
-				group: {
-					updateFields: [
-						lowerLimitField,
-						upperLimitField,
-						binsNumberField,
-						logCheckboxField,
-						keywordSelectField
-					],
-					deleteFields: [removeButton]
-				}
-			};
-		})()
-	);
-
-	useEffect(() => {
-		if (!boxRef.current) return;
-		const input = inputRef.current.modifierRow;
-		const box = boxRef.current;
-		box.appendChild(input.dom);
-
-		return () => {
-			box?.removeChild(input.dom);
-		};
-	}, []);
-
-	useEffect(() => {
-		const {
-			keywordSelectField,
-			lowerLimitField,
-			upperLimitField,
-			binsNumberField,
-			logCheckboxField
-		} = inputRef.current;
-
-		inputRef.current.group.updateFields.forEach(field => {
-			field.onChange(() => {
-				const keywordSelect = keywordSelectField.getValue();
-				const lowerLimit = lowerLimitField.getValue();
-				const upperLimit = upperLimitField.getValue();
-				lowerLimitField.max = upperLimit;
-				upperLimitField.min = lowerLimit;
-				const binsNumber = binsNumberField.getValue();
-				const logCheckbox = logCheckboxField.getValue();
-				props.onChange({
-					keywordSelect,
-					lowerLimit,
-					upperLimit,
-					binsNumber,
-					logCheckbox
-				});
-			});
-		});
-
-		inputRef.current.group.deleteFields.forEach(field => {
-			field.onClick(() => {
-				props.onDelete();
-			});
-		});
-
-		keywordSelectField.setValue(props.keywordSelect);
-		lowerLimitField.setValue(props.lowerLimit);
-		upperLimitField.setValue(props.upperLimit);
-		binsNumberField.setValue(props.binsNumber);
-		logCheckboxField.setValue(props.logCheckbox);
-	}, [props]);
-
-	return (
-		<Box>
-			<Box ref={boxRef}></Box>
-		</Box>
-	);
-}
-
-type DifferentialConfigurationFieldProps = Parameters<typeof DifferentialConfiguration>[0];
-
-export function DifferentialConfigurationField(props: DifferentialConfigurationFieldProps) {
-	return <PropertyField children={<DifferentialConfiguration {...props} />} />;
-}
-
-type DifferentialConfigurationFieldPropsFluka = Parameters<
-	typeof DifferentialConfigurationFluka
->[0];
-
-export function DifferentialConfigurationFieldFluka(
-	props: DifferentialConfigurationFieldPropsFluka
-) {
-	return <PropertyField children={<DifferentialConfigurationFluka {...props} />} />;
-}
-
-export function DifferentialConfigurationFluka(props: {
-	keywordSelect: string;
-	lowerLimit: number;
-	upperLimit: number;
-	binsNumber: number;
-	logCheckbox: boolean;
-	options: typeof DETECTOR_MODIFIERS_OPTIONS;
 	volume: number;
 	trackId: string;
 	onChange: (value: {
@@ -620,7 +470,7 @@ export function DifferentialConfigurationFluka(props: {
 				trackIdField,
 				logCheckboxField,
 				removeButton
-			] = createDifferentialConfigurationRowFluka({
+			] = createDifferentialConfigurationRow({
 				update: () => {
 					const keywordSelect = keywordSelectField.getValue();
 					const lowerLimit = lowerLimitField.getValue();
@@ -628,9 +478,9 @@ export function DifferentialConfigurationFluka(props: {
 					lowerLimitField.max = upperLimit;
 					upperLimitField.min = lowerLimit;
 					const binsNumber = binsNumberField.getValue();
-					const logCheckbox = logCheckboxField.getValue();
-					const trackId = trackIdField.getValue();
 					const volume = volumeField.getValue();
+					const trackId = trackIdField.getValue();
+					const logCheckbox = logCheckboxField.getValue();
 					props.onChange({
 						keywordSelect,
 						lowerLimit,
@@ -662,10 +512,10 @@ export function DifferentialConfigurationFluka(props: {
 						lowerLimitField,
 						upperLimitField,
 						binsNumberField,
-						logCheckboxField,
-						keywordSelectField,
 						volumeField,
-						trackIdField
+						trackIdField,
+						logCheckboxField,
+						keywordSelectField
 					],
 					deleteFields: [removeButton]
 				}
@@ -703,9 +553,9 @@ export function DifferentialConfigurationFluka(props: {
 				lowerLimitField.max = upperLimit;
 				upperLimitField.min = lowerLimit;
 				const binsNumber = binsNumberField.getValue();
-				const logCheckbox = logCheckboxField.getValue();
 				const volume = volumeField.getValue();
 				const trackId = trackIdField.getValue();
+				const logCheckbox = logCheckboxField.getValue();
 				props.onChange({
 					keywordSelect,
 					lowerLimit,
@@ -730,7 +580,6 @@ export function DifferentialConfigurationFluka(props: {
 		binsNumberField.setValue(props.binsNumber);
 		logCheckboxField.setValue(props.logCheckbox);
 		volumeField.setValue(props.volume);
-		trackIdField.setValue(props.trackId);
 	}, [props]);
 
 	return (
@@ -738,6 +587,12 @@ export function DifferentialConfigurationFluka(props: {
 			<Box ref={boxRef}></Box>
 		</Box>
 	);
+}
+
+type DifferentialConfigurationFieldProps = Parameters<typeof DifferentialConfiguration>[0];
+
+export function DifferentialConfigurationField(props: DifferentialConfigurationFieldProps) {
+	return <PropertyField children={<DifferentialConfiguration {...props} />} />;
 }
 
 export function RulesOutliner(props: {

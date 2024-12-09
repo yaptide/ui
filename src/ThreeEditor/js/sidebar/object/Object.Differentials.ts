@@ -6,7 +6,7 @@
 // 	showUIElement
 // } from '../../../../util/Ui/Uis';
 // import * as Scoring from '../../../Simulation/Scoring/ScoringOutputTypes';
-// import { DifferentialModifier, DifferentialModifierFluka, DifferentialModifierSH } from '../../../Simulation/Scoring/ScoringQtyModifiers';
+// import { DifferentialModifier } from '../../../Simulation/Scoring/ScoringQtyModifiers';
 // import { ScoringQuantity } from '../../../Simulation/Scoring/ScoringQuantity';
 // import {
 // 	AddDifferentialModifierCommand,
@@ -32,7 +32,6 @@
 // 	binsNumber: UINumber;
 // 	logCheckbox: UICheckbox;
 // 	removeButton: UIButton;
-// 	volume: UINumber;
 // 	constructor(editor: YaptideEditor) {
 // 		super(editor, 'Differential scoring');
 // 		[this.addRow, this.add] = createFullwidthButton({
@@ -50,7 +49,6 @@
 // 			this.lowerLimit,
 // 			this.upperLimit,
 // 			this.binsNumber,
-// 			this.volume,
 // 			this.logCheckbox,
 // 			this.removeButton
 // 		] = createDifferentialConfigurationRow({
@@ -154,7 +152,6 @@
 // 		const { modifier } = this;
 
 // 		if (!modifier) return;
-// 		if(modifier instanceof DifferentialModifierSH){
 // 			const { diffType, lowerLimit, upperLimit, binsNumber, isLog } = modifier;
 // 			this.keywordSelect.setValue(diffType);
 // 			this.lowerLimit.setValue(lowerLimit);
@@ -163,18 +160,6 @@
 // 			this.upperLimit.min = lowerLimit;
 // 			this.binsNumber.setValue(binsNumber);
 // 			this.logCheckbox.setValue(isLog);
-// 		}
-// 		else if (modifier instanceof DifferentialModifierFluka){
-// 			const { volume, lowerLimit, upperLimit, binsNumber, isLog } = modifier;
-// 			this.volume.setValue(volume);
-// 			this.lowerLimit.setValue(lowerLimit);
-// 			this.upperLimit.setValue(upperLimit);
-// 			this.lowerLimit.max = upperLimit;
-// 			this.upperLimit.min = lowerLimit;
-// 			this.binsNumber.setValue(binsNumber);
-// 			this.logCheckbox.setValue(isLog);
-// 		}
-
 // 	}
 
 // 	removeModifier() {
@@ -183,12 +168,4 @@
 // 		if (!object || !modifier) return;
 // 		editor.execute(new RemoveDifferentialModifierCommand(editor, object, modifier));
 // 	}
-// }
-
-// class ObjectDifferentialsFluka extends ObjectDifferentials{
-
-// }
-
-// class ObjectDifferentialsSH extends ObjectDifferentials{
-
 // }
