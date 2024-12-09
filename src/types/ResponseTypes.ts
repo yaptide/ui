@@ -364,13 +364,34 @@ export type ResponseGetJobInputs = {
 		inputFiles: SimulationInputFiles;
 		inputJson?: EditorJson;
 		inputType: SimulationSourceType;
-		userInputFilesEstimatorNames?: string[];
+		estimatorsItems?: EstimatorPagesByDimensions[];
 	};
 } & YaptideResponse;
 
-export type EstimatorNamesResponse = {
-	estimatorNames: string[];
+export type EstimatorsItemResponse = {
+	estimatorsMetadata: EstimatorItem[];
 	message: string;
+};
+
+export type EstimatorItem = {
+	name: string;
+	pagesMetadata: PageItem[];
+};
+
+type PageItem = {
+	pageDimension: number;
+	pageName: string;
+	pageNumber: number;
+};
+
+export type PageDimension = {
+	names: string[];
+	pageNums: number[];
+};
+
+export type EstimatorPagesByDimensions = {
+	name: string;
+	pagesByDimensions: Record<string, PageDimension>;
 };
 
 export type ResponseGetJobLogs = {
@@ -382,6 +403,8 @@ export type ResponseGetJobResults = {
 } & YaptideResponse;
 
 export type ResponseGetJobResult = Estimator & YaptideResponse;
+
+export type ResponseGetEstimatorPageResult = { pages: Page[] } & YaptideResponse;
 
 export type ResponseAuthStatus = AuthStatus;
 
