@@ -5,7 +5,8 @@ import {
 	UINumber,
 	UIRow,
 	UISelect,
-	UIText
+	UIText,
+	UITextArea
 } from '../../ThreeEditor/js/libs/ui';
 import { UIOutliner } from '../../ThreeEditor/js/libs/ui.three';
 import * as Scoring from '../../ThreeEditor/Simulation/Scoring/ScoringOutputTypes';
@@ -89,7 +90,7 @@ export function createRulesOutliner(editor, params) {
  * 		options: Object,
  * 		delete: ()=> void
  *		}} params
- * @return {[UIRow, UISelect, UINumber, UINumber, UINumber, UICheckbox, UIButton]}
+ * @return {[UIRow, UISelect, UINumber, UINumber, UINumber, UINumber, UITextArea UICheckbox, UIButton]}
  */
 export function createDifferentialConfigurationRow(params) {
 	const { update, delete: deleteRule, options } = params;
@@ -106,14 +107,32 @@ export function createDifferentialConfigurationRow(params) {
 		.setWidth('100%')
 		.setRange(1, 50000)
 		.setPrecision(0);
+
+	const volume = new UINumber()
+		.setPadding('2px 4px')
+		.onChange(update)
+		.setWidth('100%')
+		.setPrecision(2);
+	const trackId = new UITextArea('').setPadding('2px 4px').onChange(update).setWidth('100%');
+
 	const logs = new UIDiv().setPadding('2px 4px').setWidth('100%').setFontSize(FONT_SIZE);
 	const logsLabel = new UIText('log');
 	const isLog = new UICheckbox().onChange(update);
 	logs.add(logsLabel, isLog);
 	const deleteButton = new UIButton('✖').onClick(deleteRule);
-	row.add(keywordSelect, lowerLimit, upperLimit, binsNumber, logs, deleteButton);
+	row.add(keywordSelect, lowerLimit, upperLimit, binsNumber, volume, trackId, logs, deleteButton);
 
-	return [row, keywordSelect, lowerLimit, upperLimit, binsNumber, isLog, deleteButton];
+	return [
+		row,
+		keywordSelect,
+		lowerLimit,
+		upperLimit,
+		binsNumber,
+		volume,
+		trackId,
+		isLog,
+		deleteButton
+	];
 }
 
 /**
