@@ -41,6 +41,7 @@ function ResultsPanel() {
 		? userTabInputFilesEstimatorNames
 		: editorEstimatorNames;
 
+	// In estimatorsItems we store information about estimators and estimator's pages by dimensions, names, and number of pages
 	const estimatorsPagesData = simulation?.input.estimatorsItems;
 
 	useEffect(() => {
