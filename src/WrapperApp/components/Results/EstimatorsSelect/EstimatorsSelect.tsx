@@ -48,7 +48,7 @@ const EstimatorsSelect = ({
 						const estimatorData = await getJobResult(
 							{
 								jobId: simulationJobId,
-								estimatorName: estimatorsTabData[id] + '_',
+								estimatorName: estimatorsTabData[id],
 								pageNumbers: pageDimension.pageNums
 							},
 							controller.signal,
