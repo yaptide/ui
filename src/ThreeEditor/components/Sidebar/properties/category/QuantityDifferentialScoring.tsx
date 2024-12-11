@@ -86,7 +86,6 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 									: DETECTOR_MODIFIERS_OPTIONS_FLUKA
 							}
 							volume={watchedObject.selectedModifier.volume}
-							trackId={watchedObject.selectedModifier.trackId}
 							onChange={v => {
 								editor.execute(
 									new AddDifferentialModifierCommand(
@@ -99,8 +98,7 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 											upperLimit: v.upperLimit,
 											binsNumber: v.binsNumber,
 											isLog: v.logCheckbox,
-											volume: v.volume,
-											trackId: v.trackId
+											volume: v.volume
 										})
 									)
 								);

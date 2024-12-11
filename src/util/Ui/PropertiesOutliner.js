@@ -90,7 +90,7 @@ export function createRulesOutliner(editor, params) {
  * 		options: Object,
  * 		delete: ()=> void
  *		}} params
- * @return {[UIRow, UISelect, UINumber, UINumber, UINumber, UINumber, UITextArea UICheckbox, UIButton]}
+ * @return {[UIRow, UISelect, UINumber, UINumber, UINumber, UINumber, UICheckbox, UIButton]}
  */
 export function createDifferentialConfigurationRow(params) {
 	const { update, delete: deleteRule, options } = params;
@@ -113,26 +113,15 @@ export function createDifferentialConfigurationRow(params) {
 		.onChange(update)
 		.setWidth('100%')
 		.setPrecision(2);
-	const trackId = new UITextArea('').setPadding('2px 4px').onChange(update).setWidth('100%');
 
 	const logs = new UIDiv().setPadding('2px 4px').setWidth('100%').setFontSize(FONT_SIZE);
 	const logsLabel = new UIText('log');
 	const isLog = new UICheckbox().onChange(update);
 	logs.add(logsLabel, isLog);
 	const deleteButton = new UIButton('✖').onClick(deleteRule);
-	row.add(keywordSelect, lowerLimit, upperLimit, binsNumber, volume, trackId, logs, deleteButton);
+	row.add(keywordSelect, lowerLimit, upperLimit, binsNumber, volume, logs, deleteButton);
 
-	return [
-		row,
-		keywordSelect,
-		lowerLimit,
-		upperLimit,
-		binsNumber,
-		volume,
-		trackId,
-		isLog,
-		deleteButton
-	];
+	return [row, keywordSelect, lowerLimit, upperLimit, binsNumber, volume, isLog, deleteButton];
 }
 
 /**

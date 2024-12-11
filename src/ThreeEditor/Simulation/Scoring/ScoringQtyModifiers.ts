@@ -10,7 +10,6 @@ export type DifferentialJSON = {
 	uuid: string;
 	volume: number;
 	diffType: DETECTOR_MODIFIERS;
-	trackId: string;
 };
 
 export class DifferentialModifier {
@@ -19,7 +18,6 @@ export class DifferentialModifier {
 	binsNumber: number;
 	isLog: boolean;
 	diffType: DETECTOR_MODIFIERS;
-	trackId: string;
 	volume: number;
 	type: 'differential' = 'differential';
 	uuid: string;
@@ -29,8 +27,7 @@ export class DifferentialModifier {
 		upperLimit: number = 10,
 		isLog: boolean = false,
 		diffType: DETECTOR_MODIFIERS = DETECTOR_MODIFIERS_OPTIONS.E,
-		volume: number = 1,
-		trackId: string = ''
+		volume: number = 1
 	) {
 		this.uuid = THREE.MathUtils.generateUUID();
 		this.lowerLimit = lowerLimit;
@@ -38,7 +35,6 @@ export class DifferentialModifier {
 		this.binsNumber = binsNumber;
 		this.isLog = isLog;
 		this.diffType = diffType;
-		this.trackId = trackId;
 		this.volume = volume;
 	}
 
@@ -50,7 +46,6 @@ export class DifferentialModifier {
 			isLog: this.isLog,
 			uuid: this.uuid,
 			diffType: this.diffType,
-			trackId: this.trackId,
 			volume: this.volume
 		};
 	}
@@ -62,8 +57,7 @@ export class DifferentialModifier {
 			json.upperLimit,
 			json.isLog,
 			json.diffType,
-			json.volume,
-			json.trackId
+			json.volume
 		);
 
 		mod.uuid = json.uuid;
@@ -78,8 +72,7 @@ export class DifferentialModifier {
 			this.upperLimit,
 			this.isLog,
 			this.diffType,
-			this.volume,
-			this.trackId
+			this.volume
 		);
 	}
 }

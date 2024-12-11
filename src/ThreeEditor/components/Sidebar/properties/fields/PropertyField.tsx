@@ -443,7 +443,6 @@ export function DifferentialConfiguration(props: {
 	logCheckbox: boolean;
 	options: typeof DETECTOR_MODIFIERS_OPTIONS;
 	volume: number;
-	trackId: string;
 	onChange: (value: {
 		keywordSelect: string;
 		lowerLimit: number;
@@ -451,7 +450,6 @@ export function DifferentialConfiguration(props: {
 		binsNumber: number;
 		logCheckbox: boolean;
 		volume: number;
-		trackId: string;
 	}) => void;
 	onDelete: () => void;
 }) {
@@ -467,7 +465,6 @@ export function DifferentialConfiguration(props: {
 				upperLimitField,
 				binsNumberField,
 				volumeField,
-				trackIdField,
 				logCheckboxField,
 				removeButton
 			] = createDifferentialConfigurationRow({
@@ -479,7 +476,6 @@ export function DifferentialConfiguration(props: {
 					upperLimitField.min = lowerLimit;
 					const binsNumber = binsNumberField.getValue();
 					const volume = volumeField.getValue();
-					const trackId = trackIdField.getValue();
 					const logCheckbox = logCheckboxField.getValue();
 					props.onChange({
 						keywordSelect,
@@ -487,8 +483,7 @@ export function DifferentialConfiguration(props: {
 						upperLimit,
 						binsNumber,
 						logCheckbox,
-						volume,
-						trackId
+						volume
 					});
 				},
 				delete: () => {
@@ -504,7 +499,6 @@ export function DifferentialConfiguration(props: {
 				upperLimitField,
 				binsNumberField,
 				volumeField,
-				trackIdField,
 				logCheckboxField,
 				removeButton,
 				group: {
@@ -513,7 +507,6 @@ export function DifferentialConfiguration(props: {
 						upperLimitField,
 						binsNumberField,
 						volumeField,
-						trackIdField,
 						logCheckboxField,
 						keywordSelectField
 					],
@@ -541,8 +534,7 @@ export function DifferentialConfiguration(props: {
 			upperLimitField,
 			binsNumberField,
 			logCheckboxField,
-			volumeField,
-			trackIdField
+			volumeField
 		} = inputRef.current;
 
 		inputRef.current.group.updateFields.forEach(field => {
@@ -554,7 +546,6 @@ export function DifferentialConfiguration(props: {
 				upperLimitField.min = lowerLimit;
 				const binsNumber = binsNumberField.getValue();
 				const volume = volumeField.getValue();
-				const trackId = trackIdField.getValue();
 				const logCheckbox = logCheckboxField.getValue();
 				props.onChange({
 					keywordSelect,
@@ -562,8 +553,7 @@ export function DifferentialConfiguration(props: {
 					upperLimit,
 					binsNumber,
 					logCheckbox,
-					volume,
-					trackId
+					volume
 				});
 			});
 		});
