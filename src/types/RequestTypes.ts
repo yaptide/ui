@@ -101,7 +101,11 @@ export type RequestGetJobResults = Flatten<
 >;
 
 export type RequestGetJobResult = Flatten<
-	[[{ jobId: string; estimatorName: string }], RequestParam, CachedDataParams<JobResults>]
+	[
+		[{ jobId: string; estimatorName: string; pageNumbers: number[] }],
+		RequestParam,
+		CachedDataParams<JobResults>
+	]
 >;
 
 /* ------------------------------------ */
