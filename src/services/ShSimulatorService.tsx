@@ -43,7 +43,6 @@ import {
 } from '../types/ResponseTypes';
 import { useCacheMap } from '../util/hooks/useCacheMap';
 import { camelToSnakeCase } from '../util/Notation/Notation';
-import { orderAccordingToList } from '../util/Sort';
 import { ValidateShape } from '../util/Types';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import { useAuth } from './AuthService';
@@ -79,7 +78,7 @@ export interface RestSimulationContext {
 	getJobStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
 	getJobInputs: (...args: RequestGetJobInputs) => Promise<JobInputs | undefined>;
 	getJobResults: (...args: RequestGetJobResults) => Promise<JobResults | undefined>;
-	getJobResult: (...args: RequestGetJobResult) => Promise<JobResults | undefined>;
+	getEstimatorsPages: (...args: RequestGetJobResult) => Promise<JobResults | undefined>;
 	getJobLogs: (...args: RequestGetJobLogs) => Promise<JobLogs | undefined>;
 	getPageContents: (...args: RequestGetPageContents) => Promise<ResponseGetPageContents>;
 	getPageStatus: (...args: RequestGetPageStatus) => Promise<JobStatusData[] | undefined>;
@@ -321,17 +320,18 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 			const searchParams = new URLSearchParams({
 				job_id: jobId,
-				estimator_name: estimatorName
+				estimator_name: estimatorName,
+				page_numbers:
+					pageNumbers.length === 1
+						? `${pageNumbers[0]}`
+						: `${pageNumbers[0]}-${pageNumbers[pageNumbers.length - 1]}`
 			});
 
-			if (Array.isArray(pageNumbers)) {
-				pageNumbers.forEach(num => searchParams.append('page_numbers', num.toString()));
-			} else {
-				searchParams.append('page_numbers', `${pageNumbers}`);
-			}
+			const cacheKey = `${jobId}-${estimatorName}-${pageNumbers.join(',')}`;
 
-			if (cache && resultsCache.has(jobId)) {
-				const data: Promise<JobResults> | JobResults | undefined = resultsCache.get(jobId);
+			if (cache && resultsCache.has(cacheKey)) {
+				const data: Promise<JobResults> | JobResults | undefined =
+					resultsCache.get(cacheKey);
 
 				if (data instanceof Promise) {
 					return data.then(resolvedData => {
@@ -384,7 +384,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 					resolve(data);
 				},
-				jobId,
+				cacheKey,
 				beforeCacheWrite
 			);
 
@@ -645,7 +645,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 				if (!inputs || allResults.length === 0) return undefined;
 
-				const mergedResults = allResults.reduce(
+				const aggregationResults = allResults.reduce(
 					(acc, result) => {
 						result.estimators.forEach(estimator => {
 							const existingEstimator = acc.estimators.find(
@@ -666,7 +666,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 				const { message, ...mergedData } = {
 					...inputs,
-					...mergedResults,
+					...aggregationResults,
 					...jobStatus
 				};
 
@@ -695,7 +695,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 				getPageStatus,
 				getJobInputs,
 				getJobResults,
-				getJobResult: getEstimatorsPages,
+				getEstimatorsPages,
 				getJobLogs,
 				getFullSimulationData
 			}}>

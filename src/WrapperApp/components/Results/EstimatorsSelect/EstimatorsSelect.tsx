@@ -27,7 +27,7 @@ const EstimatorsSelect = ({
 }: EstimatorsTabProps) => {
 	const [controller] = useState(new AbortController());
 
-	const { getJobResult } = useShSimulation();
+	const { getEstimatorsPages } = useShSimulation();
 
 	const handleEstimatorTabChange = useCallback(
 		async (id: number) => {
@@ -45,7 +45,8 @@ const EstimatorsSelect = ({
 					for (const [dimension, pageDimension] of Object.entries(
 						estimatorsPagesByDimensions
 					)) {
-						const estimatorData = await getJobResult(
+						console.log(pageDimension);
+						const estimatorData = await getEstimatorsPages(
 							{
 								jobId: simulationJobId,
 								estimatorName: estimatorsTabData[id],
@@ -104,7 +105,7 @@ const EstimatorsSelect = ({
 			controller.signal,
 			estimatorsPagesData,
 			estimatorsTabData,
-			getJobResult,
+			getEstimatorsPages,
 			setResultsSimulationData,
 			simulation
 		]
