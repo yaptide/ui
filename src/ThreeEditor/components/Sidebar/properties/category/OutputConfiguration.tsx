@@ -28,7 +28,8 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 					editor,
 					watchedObject.object,
 					'detector',
-					editor.detectorManager.getDetectorByUuid(v.uuid)
+					editor.detectorManager.getDetectorByUuid(v.uuid) ??
+						editor.zoneManager.getZoneByUuid(v.uuid)
 				)
 			);
 		},
@@ -46,12 +47,17 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 					<ObjectSelectPropertyField
 						label='Detector'
 						value={watchedObject.detector?.uuid ?? ''}
-						options={editor.detectorManager.getDetectorOptions(value => {
-							return (
-								!editor.scoringManager.getTakenDetectors().includes(value.uuid) ||
-								value.uuid === watchedObject.detector?.uuid
-							);
-						})}
+						options={{
+							...editor.detectorManager.getDetectorOptions(value => {
+								return (
+									!editor.scoringManager
+										.getTakenDetectors()
+										.includes(value.uuid) ||
+									value.uuid === watchedObject.detector?.uuid
+								);
+							}),
+							...editor.zoneManager.getZoneOptions()
+						}}
 						onChange={handleChangedDetector}
 					/>
 					<Grid

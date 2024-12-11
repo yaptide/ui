@@ -5,6 +5,7 @@ import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
+import { SimulationZone } from '../Base/SimulationZone';
 import { Detector } from '../Detectors/Detector';
 import { ScoringFilter } from './ScoringFilter';
 import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
@@ -90,13 +91,16 @@ export class ScoringOutput
 		return this._detector ?? null;
 	}
 
-	get detector(): Detector | null {
+	get detector(): Detector | SimulationZone | null {
 		if (!this._detector) return null;
 
-		return this.editor.detectorManager.getDetectorByUuid(this._detector);
+		return (
+			this.editor.detectorManager.getDetectorByUuid(this._detector) ??
+			this.editor.zoneManager.getZoneByUuid(this._detector)
+		);
 	}
 
-	set detector(detector: Detector | null) {
+	set detector(detector: Detector | SimulationZone | null) {
 		this._detector = detector?.uuid;
 		this.geometry =
 			detector?.geometry.clone().translate(...detector.position.toArray()) ?? null;
@@ -164,7 +168,8 @@ export class ScoringOutput
 		this._trace = [json.trace, json.traceFilter ?? null];
 		this.quantityContainer.fromJSON(json.quantities);
 		this.detector = json.detectorUuid
-			? this.editor.detectorManager.getDetectorByUuid(json.detectorUuid)
+			? (this.editor.detectorManager.getDetectorByUuid(json.detectorUuid) ??
+				this.editor.zoneManager.getZoneByUuid(json.detectorUuid))
 			: null;
 
 		return this;
