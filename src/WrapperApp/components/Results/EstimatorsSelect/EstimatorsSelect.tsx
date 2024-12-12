@@ -45,7 +45,6 @@ const EstimatorsSelect = ({
 					for (const [dimension, pageDimension] of Object.entries(
 						estimatorsPagesByDimensions
 					)) {
-						console.log(pageDimension);
 						const estimatorData = await getEstimatorsPages(
 							{
 								jobId: simulationJobId,
