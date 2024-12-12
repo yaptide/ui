@@ -87,6 +87,17 @@ export interface RestSimulationContext {
 	) => Promise<FullSimulationData | undefined>;
 }
 
+const recreateRefToScoringManagerOutputs = (
+	estimators: Estimator[],
+	scoringManagerJSON: ScoringManagerJSON
+): Estimator[] => {
+	estimators.forEach((estimator, index) => {
+		estimator.scoringOutputJsonRef = scoringManagerJSON.outputs[index];
+	});
+
+	return estimators;
+};
+
 const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]): Estimator[] => {
 	estimators.forEach(estimator => {
 		const { pages, scoringOutputJsonRef } = estimator;
@@ -107,7 +118,15 @@ export const recreateRefsInResults = (inputJson: EditorJson, estimators: Estimat
 
 	const { scoringManager }: EditorJson = inputJson;
 
-	const estimatorsWithFixedFilters = recreateRefToFilters(estimators, scoringManager.filters);
+	const estimatorsWithScoringManagerOutputs = recreateRefToScoringManagerOutputs(
+		estimators,
+		scoringManager
+	);
+
+	const estimatorsWithFixedFilters = recreateRefToFilters(
+		estimatorsWithScoringManagerOutputs,
+		scoringManager.filters
+	);
 
 	return estimatorsWithFixedFilters;
 };
