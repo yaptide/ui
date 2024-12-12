@@ -63,7 +63,7 @@ const EstimatorsSelect = ({
 
 					if (allResults.length === 0) return;
 
-					const mergedResults = allResults.reduce(
+					const aggregationResults = allResults.reduce(
 						(acc, result) => {
 							result.estimators.forEach(estimator => {
 								const existingEstimator = acc.estimators.find(
@@ -91,7 +91,7 @@ const EstimatorsSelect = ({
 						});
 					}
 
-					newEstimators[id] = mergedResults.estimators[0];
+					newEstimators[id] = aggregationResults.estimators[0];
 
 					const newSimulation = {
 						...simulation,

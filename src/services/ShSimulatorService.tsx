@@ -314,6 +314,28 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 		[authKy, getJobInputs, resultsCache]
 	);
 
+	const preparePageNumbers = (pageNumbers: number[]): string => {
+		if (pageNumbers.length === 0) return '';
+
+		const ranges: string[] = [];
+		let start = pageNumbers[0];
+		let end = pageNumbers[0];
+
+		for (let i = 1; i < pageNumbers.length; i++) {
+			if (pageNumbers[i] === end + 1) {
+				end = pageNumbers[i];
+			} else {
+				ranges.push(start === end ? `${start}` : `${start}-${end}`);
+				start = pageNumbers[i];
+				end = pageNumbers[i];
+			}
+		}
+
+		ranges.push(start === end ? `${start}` : `${start}-${end}`);
+
+		return ranges.join(',');
+	};
+
 	const getEstimatorsPages = useCallback(
 		async (...[info, signal, cache = true, beforeCacheWrite]: RequestGetJobResult) => {
 			const { jobId, estimatorName, pageNumbers } = info;
@@ -321,10 +343,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 			const searchParams = new URLSearchParams({
 				job_id: jobId,
 				estimator_name: estimatorName,
-				page_numbers:
-					pageNumbers.length === 1
-						? `${pageNumbers[0]}`
-						: `${pageNumbers[0]}-${pageNumbers[pageNumbers.length - 1]}`
+				page_numbers: preparePageNumbers(pageNumbers)
 			});
 
 			const cacheKey = `${jobId}-${estimatorName}-${pageNumbers.join(',')}`;
