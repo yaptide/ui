@@ -50,7 +50,7 @@ export class ScoringQuantity extends SimulationZone {
 	}
 
 	get primaries(): number {
-		return this._hasPrimaries ? this._primaries ?? 0 : 0;
+		return this._hasPrimaries ? (this._primaries ?? 0) : 0;
 	}
 
 	set primaries(value: number) {
