@@ -16,7 +16,6 @@ import { PropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
 export function OutputConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
-	const [isDetector, setIsDetector] = useState(true);
 	const { object, editor } = props;
 	const simulatorType: SimulatorType = editor.contextManager.currentSimulator;
 
@@ -24,6 +23,9 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 		editor,
 		object as unknown as ScoringOutput
 	);
+	const [scoringType, setScoringType] = useState(watchedObject.scoringType ?? 'detector');
+
+	console.log(scoringType);
 
 	const handleChangedDetector = useCallback(
 		(v: ObjectSelectOptionType) => {
@@ -39,8 +41,31 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 		[editor, watchedObject]
 	);
 
-	const handleChangeOutputType = () => {
-		setIsDetector(!isDetector);
+	const handleChangedZone = useCallback(
+		(v: ObjectSelectOptionType) => {
+			editor.execute(
+				new SetOutputSettingsCommand(
+					editor,
+					watchedObject.object,
+					'zone',
+					editor.zoneManager.getZoneByUuid(v.uuid)
+				)
+			);
+		},
+		[editor, watchedObject]
+	);
+
+	const handleChangeOutputType = (
+		event: React.MouseEvent<HTMLElement>,
+		newAlignment: string | null
+	) => {
+		//TODO ???? Delete quantities related by detector when changed to zone or convert them somehow or leave them ????
+
+		if (newAlignment === 'zone') {
+			setScoringType('zone');
+		} else if (newAlignment === 'detector') {
+			setScoringType('detector');
+		}
 	};
 
 	const visibleFlag = isOutput(watchedObject);
@@ -56,21 +81,21 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 							label='Scoring Type'
 							disabled={false}>
 							<ToggleButtonGroup
-								value={isDetector.toString()}
+								value={scoringType}
 								exclusive
 								onChange={handleChangeOutputType}
 								aria-label='text alignment'
 								size='small'>
 								<ToggleButton
-									value={true.toString()}
-									disabled={isDetector}
+									value='detector'
+									disabled={scoringType === 'detector'}
 									aria-label='left aligned'>
 									Detector
 								</ToggleButton>
 
 								<ToggleButton
-									value={false.toString()}
-									disabled={!isDetector}
+									value='zone'
+									disabled={scoringType === 'zone'}
 									aria-label='left aligned'>
 									Zone
 								</ToggleButton>
@@ -78,7 +103,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 						</PropertyField>
 					)}
 
-					{isDetector && (
+					{scoringType === 'detector' && (
 						<ObjectSelectPropertyField
 							label='Detector'
 							value={watchedObject.detector?.uuid ?? ''}
@@ -94,19 +119,12 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 						/>
 					)}
 
-					{!isDetector && (
+					{scoringType === 'zone' && (
 						<ObjectSelectPropertyField
 							label='Zone'
-							value={watchedObject.detector?.uuid ?? ''}
-							options={editor.detectorManager.getDetectorOptions(value => {
-								return (
-									!editor.scoringManager
-										.getTakenDetectors()
-										.includes(value.uuid) ||
-									value.uuid === watchedObject.detector?.uuid
-								);
-							})}
-							onChange={handleChangedDetector}
+							value={watchedObject.zone?.uuid ?? ''}
+							options={editor.zoneManager.getZoneOptionsForScoring()}
+							onChange={handleChangedZone}
 						/>
 					)}
 					<Grid

@@ -5,6 +5,7 @@ import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
+import { SimulationZone } from '../Base/SimulationZone';
 import { Detector } from '../Detectors/Detector';
 import { ScoringFilter } from './ScoringFilter';
 import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
@@ -13,6 +14,8 @@ export type ScoringOutputJSON = Omit<
 	SimulationElementJSON & {
 		quantities: ScoringQuantityJSON[];
 		detectorUuid?: string;
+		zoneUuid?: string;
+		scoringType?: string;
 		trace: boolean;
 		traceFilter?: string;
 	},
@@ -62,6 +65,10 @@ export class ScoringOutput
 
 	private _detector?: string;
 
+	private _zone?: string;
+
+	private _scoringType?: string;
+
 	//TODO: Issue#320
 	private _trace: [boolean, string | null];
 
@@ -96,11 +103,26 @@ export class ScoringOutput
 		return this.editor.detectorManager.getDetectorByUuid(this._detector);
 	}
 
+	get zone(): SimulationZone | null {
+		if (!this._zone) return null;
+
+		return this.editor.zoneManager.getZoneByUuid(this._zone);
+	}
+
 	set detector(detector: Detector | null) {
 		this._detector = detector?.uuid;
 		this.geometry =
 			detector?.geometry.clone().translate(...detector.position.toArray()) ?? null;
 		this.signals.objectSelected.dispatch(this);
+	}
+
+	set zone(zone: SimulationZone | null) {
+		this._zone = zone?.uuid;
+		this.signals.objectSelected.dispatch(this);
+	}
+
+	get scoringType(): string {
+		return this._scoringType ?? 'detector';
 	}
 
 	constructor(editor: YaptideEditor) {
@@ -153,6 +175,8 @@ export class ScoringOutput
 			...super.toJSON(),
 			quantities: this.quantityContainer.toJSON(),
 			detectorUuid: this._detector,
+			zoneUuid: this._zone,
+			scoringType: this._scoringType,
 			trace: this._trace[0],
 			...(this.trace[1] && { traceFilter: this.trace[1] })
 		};
@@ -163,9 +187,14 @@ export class ScoringOutput
 		this.name = json.name;
 		this._trace = [json.trace, json.traceFilter ?? null];
 		this.quantityContainer.fromJSON(json.quantities);
+
+		this._scoringType = json.scoringType;
 		this.detector = json.detectorUuid
 			? this.editor.detectorManager.getDetectorByUuid(json.detectorUuid)
 			: null;
+		this.zone = json.zoneUuid ? this.editor.zoneManager.getZoneByUuid(json.zoneUuid) : null;
+
+		this._scoringType = json.scoringType ? json.scoringType : 'detector';
 
 		return this;
 	}
@@ -182,6 +211,8 @@ export class ScoringOutput
 
 		duplicated.quantityContainer = this.quantityContainer.duplicate();
 		duplicated.add(duplicated.quantityContainer);
+
+		duplicated._scoringType = this._scoringType ? this._scoringType : 'detector';
 
 		return duplicated;
 	}
