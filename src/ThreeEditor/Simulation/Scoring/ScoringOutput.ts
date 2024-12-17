@@ -170,6 +170,10 @@ export class ScoringOutput
 		return this.quantities.find(qty => qty.uuid === uuid) ?? null;
 	}
 
+	removeAllQuantities() {
+		this.quantityContainer.clear();
+	}
+
 	toJSON(): ScoringOutputJSON {
 		return {
 			...super.toJSON(),

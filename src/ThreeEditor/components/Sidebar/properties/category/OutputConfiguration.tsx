@@ -59,7 +59,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 		event: React.MouseEvent<HTMLElement>,
 		newAlignment: string | null
 	) => {
-		//TODO ???? Delete quantities related by detector when changed to zone or convert them somehow or leave them ????
+		watchedObject.removeAllQuantities();
 
 		if (newAlignment === 'zone') {
 			setScoringType('zone');
