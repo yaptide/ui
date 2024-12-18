@@ -2,6 +2,7 @@ import { Button, Grid, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { Object3D } from 'three';
 
+import { useDialog } from '../../../../../services/DialogService';
 import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { AddQuantityCommand } from '../../../../js/commands/AddQuantityCommand';
@@ -18,14 +19,12 @@ import { PropertiesCategory } from './PropertiesCategory';
 export function OutputConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 	const simulatorType: SimulatorType = editor.contextManager.currentSimulator;
-
+	const { open: changeScoringType } = useDialog('changeScoringType');
 	const { state: watchedObject } = useSmartWatchEditorState(
 		editor,
 		object as unknown as ScoringOutput
 	);
 	const [scoringType, setScoringType] = useState(watchedObject.scoringType ?? 'detector');
-
-	console.log(scoringType);
 
 	const handleChangedDetector = useCallback(
 		(v: ObjectSelectOptionType) => {
@@ -59,13 +58,14 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 		event: React.MouseEvent<HTMLElement>,
 		newAlignment: string | null
 	) => {
-		watchedObject.removeAllQuantities();
+		changeScoringType({
+			yaptideEditor: editor,
+			scoringOutput: watchedObject,
+			newAlignment: newAlignment,
+			setScoringType: setScoringType
+		});
 
-		if (newAlignment === 'zone') {
-			setScoringType('zone');
-		} else if (newAlignment === 'detector') {
-			setScoringType('detector');
-		}
+		setScoringType(scoringType); // required for toggle component to work properly
 	};
 
 	const visibleFlag = isOutput(watchedObject);

@@ -125,6 +125,10 @@ export class ScoringOutput
 		return this._scoringType ?? 'detector';
 	}
 
+	set scoringType(scoringType: string) {
+		this._scoringType = scoringType;
+	}
+
 	constructor(editor: YaptideEditor) {
 		super(editor, 'Output', 'Output');
 		this.children = [];
