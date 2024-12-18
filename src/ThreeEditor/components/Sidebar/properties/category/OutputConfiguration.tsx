@@ -1,7 +1,9 @@
-import { Button, Grid } from '@mui/material';
-import { useCallback } from 'react';
+import { Button, Grid, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { useCallback, useState } from 'react';
 import { Object3D } from 'three';
 
+import { useDialog } from '../../../../../services/DialogService';
+import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { AddQuantityCommand } from '../../../../js/commands/AddQuantityCommand';
 import { SetOutputSettingsCommand } from '../../../../js/commands/SetOutputSettingsCommand';
@@ -11,15 +13,18 @@ import {
 	ObjectSelectOptionType,
 	ObjectSelectPropertyField
 } from '../fields/ObjectSelectPropertyField';
+import { PropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
 export function OutputConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
-
+	const simulatorType: SimulatorType = editor.contextManager.currentSimulator;
+	const { open: changeScoringType } = useDialog('changeScoringType');
 	const { state: watchedObject } = useSmartWatchEditorState(
 		editor,
 		object as unknown as ScoringOutput
 	);
+	const [scoringType, setScoringType] = useState(watchedObject.scoringType ?? 'detector');
 
 	const handleChangedDetector = useCallback(
 		(v: ObjectSelectOptionType) => {
@@ -35,6 +40,34 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 		[editor, watchedObject]
 	);
 
+	const handleChangedZone = useCallback(
+		(v: ObjectSelectOptionType) => {
+			editor.execute(
+				new SetOutputSettingsCommand(
+					editor,
+					watchedObject.object,
+					'zone',
+					editor.zoneManager.getZoneByUuid(v.uuid)
+				)
+			);
+		},
+		[editor, watchedObject]
+	);
+
+	const handleChangeOutputType = (
+		event: React.MouseEvent<HTMLElement>,
+		newAlignment: string | null
+	) => {
+		changeScoringType({
+			yaptideEditor: editor,
+			scoringOutput: watchedObject,
+			newAlignment: newAlignment,
+			setScoringType: setScoringType
+		});
+
+		setScoringType(scoringType); // required for toggle component to work properly
+	};
+
 	const visibleFlag = isOutput(watchedObject);
 
 	return (
@@ -43,17 +76,57 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 			visible={visibleFlag}>
 			{visibleFlag && (
 				<>
-					<ObjectSelectPropertyField
-						label='Detector'
-						value={watchedObject.detector?.uuid ?? ''}
-						options={editor.detectorManager.getDetectorOptions(value => {
-							return (
-								!editor.scoringManager.getTakenDetectors().includes(value.uuid) ||
-								value.uuid === watchedObject.detector?.uuid
-							);
-						})}
-						onChange={handleChangedDetector}
-					/>
+					{simulatorType == SimulatorType.FLUKA && (
+						<PropertyField
+							label='Scoring Type'
+							disabled={false}>
+							<ToggleButtonGroup
+								value={scoringType}
+								exclusive
+								onChange={handleChangeOutputType}
+								aria-label='text alignment'
+								size='small'>
+								<ToggleButton
+									value='detector'
+									disabled={scoringType === 'detector'}
+									aria-label='left aligned'>
+									Detector
+								</ToggleButton>
+
+								<ToggleButton
+									value='zone'
+									disabled={scoringType === 'zone'}
+									aria-label='left aligned'>
+									Zone
+								</ToggleButton>
+							</ToggleButtonGroup>
+						</PropertyField>
+					)}
+
+					{scoringType === 'detector' && (
+						<ObjectSelectPropertyField
+							label='Detector'
+							value={watchedObject.detector?.uuid ?? ''}
+							options={editor.detectorManager.getDetectorOptions(value => {
+								return (
+									!editor.scoringManager
+										.getTakenDetectors()
+										.includes(value.uuid) ||
+									value.uuid === watchedObject.detector?.uuid
+								);
+							})}
+							onChange={handleChangedDetector}
+						/>
+					)}
+
+					{scoringType === 'zone' && (
+						<ObjectSelectPropertyField
+							label='Zone'
+							value={watchedObject.zone?.uuid ?? ''}
+							options={editor.zoneManager.getZoneOptionsForScoring()}
+							onChange={handleChangedZone}
+						/>
+					)}
 					<Grid
 						item
 						xs={12}>
