@@ -1,5 +1,5 @@
 import { Button, Grid, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect,useState } from 'react';
 import { Object3D } from 'three';
 
 import { useDialog } from '../../../../../services/DialogService';
@@ -25,6 +25,11 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 		object as unknown as ScoringOutput
 	);
 	const [scoringType, setScoringType] = useState(watchedObject.scoringType ?? 'detector');
+
+	useEffect(() => {
+		// needed to properly set the scoring type, useState above is not enough
+		setScoringType(watchedObject.scoringType ?? 'detector');
+	}, [watchedObject.scoringType]);
 
 	const handleChangedDetector = useCallback(
 		(v: ObjectSelectOptionType) => {

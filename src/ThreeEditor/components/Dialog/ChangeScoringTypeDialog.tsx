@@ -29,8 +29,6 @@ export function ChangeScoringTypeDialog({
 			<Button
 				onClick={() => {
 					onClose();
-					scoringOutput.zone = null;
-					scoringOutput.detector = null;
 
 					if (scoringOutput && yaptideEditor) {
 						scoringOutput.removeAllQuantities();

@@ -130,6 +130,28 @@ export const FLUKA_DETECTOR_KEYWORD_OPTIONS = Object.keys(DETECTOR_KEYWORD_DESCR
 	{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
 );
 
+export const FLUKA_ZONE_KEYWORD_OPTIONS = Object.keys(DETECTOR_KEYWORD_DESCRIPTION).reduce(
+	(acc, key) => {
+		if (['Dose', 'Fluence'].includes(key)) {
+			return { ...acc, [key]: key };
+		}
+
+		return acc;
+	},
+	{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
+);
+
+export const FLUKA_ZONE_MODIFIERS_OPTIONS = Object.keys(DETECTOR_MODIFIERS_DESCRIPTION).reduce(
+	(acc, key) => {
+		if (['E', 'ENUC'].includes(key)) {
+			return { ...acc, [key]: key };
+		}
+
+		return acc;
+	},
+	{} as Record<DETECTOR_MODIFIERS, DETECTOR_MODIFIERS>
+);
+
 export type MEDIUM = keyof typeof MEDIUM_KEYWORDS;
 
 export const MEDIUM_KEYWORD_OPTIONS = Object.keys(MEDIUM_KEYWORDS).reduce(

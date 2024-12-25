@@ -127,6 +127,9 @@ export class ScoringOutput
 
 	set scoringType(scoringType: string) {
 		this._scoringType = scoringType;
+
+		if (scoringType === 'detector') this._zone = undefined;
+		else if (scoringType === 'zone') this._detector = undefined;
 	}
 
 	constructor(editor: YaptideEditor) {
