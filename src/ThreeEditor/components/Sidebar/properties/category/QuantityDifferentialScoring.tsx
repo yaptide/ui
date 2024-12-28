@@ -1,6 +1,7 @@
 import { Button } from '@mui/material';
 import { Object3D } from 'three';
 
+import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { AddDifferentialModifierCommand } from '../../../../js/commands/AddDifferentialModifierCommand';
 import { RemoveDifferentialModifierCommand } from '../../../../js/commands/RemoveDifferentialModifierCommand';
@@ -19,6 +20,9 @@ import {
 } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
+const NUMBER_OF_MODIFIERS_SHIELDHIT = 2;
+const NUMBER_OF_MODIFIERS_FLUKA = 1;
+
 export function QuantityDifferentialScoring(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
@@ -28,6 +32,18 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 	);
 
 	const visibleFlag = isScoringQuantity(watchedObject);
+	let simulatorType: SimulatorType = editor.contextManager.currentSimulator;
+	const maxNumberOfModifiers = () => {
+		if (simulatorType === SimulatorType.SHIELDHIT) {
+			return NUMBER_OF_MODIFIERS_SHIELDHIT;
+		} else if (simulatorType === SimulatorType.FLUKA) {
+			if (watchedObject.keyword === 'Fluence') return NUMBER_OF_MODIFIERS_FLUKA;
+
+			return 0;
+		}
+
+		return 0;
+	};
 
 	return (
 		<PropertiesCategory
@@ -40,7 +56,8 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 							sx={{ width: '100%' }}
 							variant='contained'
 							onClick={() => {
-								if (watchedObject.modifiers.length >= 2) return;
+								if (watchedObject.modifiers.length >= maxNumberOfModifiers())
+									return;
 								editor.execute(
 									new AddDifferentialModifierCommand(editor, watchedObject.object)
 								);
