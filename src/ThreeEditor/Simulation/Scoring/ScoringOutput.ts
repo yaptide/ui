@@ -118,6 +118,7 @@ export class ScoringOutput
 
 	set zone(zone: SimulationZone | null) {
 		this._zone = zone?.uuid;
+		this.geometry = null;
 		this.signals.objectSelected.dispatch(this);
 	}
 
