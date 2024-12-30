@@ -41,7 +41,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 				new SetOutputSettingsCommand(
 					editor,
 					watchedObject.object,
-					SCORING_TYPE_ENUM.DETECTOR,
+					'detector',
 					editor.detectorManager.getDetectorByUuid(v.uuid)
 				)
 			);
@@ -55,7 +55,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 				new SetOutputSettingsCommand(
 					editor,
 					watchedObject.object,
-					SCORING_TYPE_ENUM.ZONE,
+					'zone',
 					editor.zoneManager.getZoneByUuid(v.uuid)
 				)
 			);
@@ -67,14 +67,23 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 		event: React.MouseEvent<HTMLElement>,
 		newAlignment: SCORING_TYPE
 	) => {
-		changeScoringType({
-			yaptideEditor: editor,
-			scoringOutput: watchedObject,
-			newAlignment: newAlignment,
-			setScoringType: setScoringType
-		});
-
-		setScoringType(scoringType); // required for toggle component to work properly
+		if (watchedObject.quantities.length > 0) {
+			changeScoringType({
+				yaptideEditor: editor,
+				scoringOutput: watchedObject,
+				newAlignment: newAlignment,
+				setScoringType: setScoringType
+			});
+			setScoringType(scoringType); // required for toggle component to work properly
+		} else {
+			if (newAlignment === SCORING_TYPE_ENUM.ZONE) {
+				setScoringType(SCORING_TYPE_ENUM.ZONE);
+				watchedObject.scoringType = SCORING_TYPE_ENUM.ZONE;
+			} else if (newAlignment === SCORING_TYPE_ENUM.DETECTOR) {
+				setScoringType(SCORING_TYPE_ENUM.DETECTOR);
+				watchedObject.scoringType = SCORING_TYPE_ENUM.DETECTOR;
+			}
+		}
 	};
 
 	const visibleFlag = isOutput(watchedObject);
