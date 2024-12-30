@@ -2,6 +2,7 @@ import { Button } from '@mui/material';
 
 import { StoreContext } from '../../../services/StoreService';
 import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
+import { SCORING_TYPE, SCORING_TYPE_ENUM } from '../../Simulation/Scoring/ScoringOutputTypes';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
 export function ChangeScoringTypeDialog({
@@ -12,8 +13,8 @@ export function ChangeScoringTypeDialog({
 	setScoringType
 }: ConcreteDialogProps<
 	Required<Pick<StoreContext, 'yaptideEditor'>> & { scoringOutput: ScoringOutput } & {
-		newAlignment: string | null;
-	} & { setScoringType: (scoringType: string) => void }
+		newAlignment: SCORING_TYPE;
+	} & { setScoringType: (scoringType: SCORING_TYPE) => void }
 >) {
 	return (
 		<CustomDialog
@@ -33,12 +34,12 @@ export function ChangeScoringTypeDialog({
 					if (scoringOutput && yaptideEditor) {
 						scoringOutput.removeAllQuantities();
 
-						if (newAlignment === 'zone') {
-							setScoringType('zone');
-							scoringOutput.scoringType = 'zone';
-						} else if (newAlignment === 'detector') {
-							setScoringType('detector');
-							scoringOutput.scoringType = 'detector';
+						if (newAlignment === SCORING_TYPE_ENUM.ZONE) {
+							setScoringType(SCORING_TYPE_ENUM.ZONE);
+							scoringOutput.scoringType = SCORING_TYPE_ENUM.ZONE;
+						} else if (newAlignment === SCORING_TYPE_ENUM.DETECTOR) {
+							setScoringType(SCORING_TYPE_ENUM.DETECTOR);
+							scoringOutput.scoringType = SCORING_TYPE_ENUM.DETECTOR;
 						}
 					}
 				}}>

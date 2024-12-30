@@ -9,7 +9,8 @@ import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValu
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	DETECTOR_MODIFIERS,
-	DETECTOR_MODIFIERS_OPTIONS
+	DETECTOR_MODIFIERS_OPTIONS,
+	FLUKA_ZONE_MODIFIERS_OPTIONS
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
@@ -88,7 +89,11 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 							upperLimit={watchedObject.selectedModifier.upperLimit}
 							binsNumber={watchedObject.selectedModifier.binsNumber}
 							logCheckbox={watchedObject.selectedModifier.isLog}
-							options={DETECTOR_MODIFIERS_OPTIONS}
+							options={
+								simulatorType === SimulatorType.SHIELDHIT
+									? DETECTOR_MODIFIERS_OPTIONS
+									: FLUKA_ZONE_MODIFIERS_OPTIONS
+							}
 							onChange={v => {
 								editor.execute(
 									new AddDifferentialModifierCommand(

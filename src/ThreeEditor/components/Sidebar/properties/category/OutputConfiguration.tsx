@@ -1,5 +1,5 @@
 import { Button, Grid, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { useCallback, useEffect,useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 
 import { useDialog } from '../../../../../services/DialogService';
@@ -9,6 +9,7 @@ import { AddQuantityCommand } from '../../../../js/commands/AddQuantityCommand';
 import { SetOutputSettingsCommand } from '../../../../js/commands/SetOutputSettingsCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { isOutput, ScoringOutput } from '../../../../Simulation/Scoring/ScoringOutput';
+import { SCORING_TYPE, SCORING_TYPE_ENUM } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import {
 	ObjectSelectOptionType,
 	ObjectSelectPropertyField
@@ -24,11 +25,14 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 		editor,
 		object as unknown as ScoringOutput
 	);
-	const [scoringType, setScoringType] = useState(watchedObject.scoringType ?? 'detector');
+
+	const [scoringType, setScoringType] = useState(
+		watchedObject.scoringType ?? SCORING_TYPE_ENUM.DETECTOR
+	);
 
 	useEffect(() => {
 		// needed to properly set the scoring type, useState above is not enough
-		setScoringType(watchedObject.scoringType ?? 'detector');
+		setScoringType(watchedObject.scoringType ?? SCORING_TYPE_ENUM.DETECTOR);
 	}, [watchedObject.scoringType]);
 
 	const handleChangedDetector = useCallback(
@@ -37,7 +41,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 				new SetOutputSettingsCommand(
 					editor,
 					watchedObject.object,
-					'detector',
+					SCORING_TYPE_ENUM.DETECTOR,
 					editor.detectorManager.getDetectorByUuid(v.uuid)
 				)
 			);
@@ -51,7 +55,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 				new SetOutputSettingsCommand(
 					editor,
 					watchedObject.object,
-					'zone',
+					SCORING_TYPE_ENUM.ZONE,
 					editor.zoneManager.getZoneByUuid(v.uuid)
 				)
 			);
@@ -61,7 +65,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 
 	const handleChangeOutputType = (
 		event: React.MouseEvent<HTMLElement>,
-		newAlignment: string | null
+		newAlignment: SCORING_TYPE
 	) => {
 		changeScoringType({
 			yaptideEditor: editor,
@@ -81,7 +85,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 			visible={visibleFlag}>
 			{visibleFlag && (
 				<>
-					{simulatorType == SimulatorType.FLUKA && (
+					{simulatorType === SimulatorType.FLUKA && (
 						<PropertyField
 							label='Scoring Type'
 							disabled={false}>
@@ -92,15 +96,15 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 								aria-label='text alignment'
 								size='small'>
 								<ToggleButton
-									value='detector'
-									disabled={scoringType === 'detector'}
+									value={SCORING_TYPE_ENUM.DETECTOR}
+									disabled={scoringType === SCORING_TYPE_ENUM.DETECTOR}
 									aria-label='left aligned'>
 									Detector
 								</ToggleButton>
 
 								<ToggleButton
-									value='zone'
-									disabled={scoringType === 'zone'}
+									value={SCORING_TYPE_ENUM.ZONE}
+									disabled={scoringType === SCORING_TYPE_ENUM.ZONE}
 									aria-label='left aligned'>
 									Zone
 								</ToggleButton>
@@ -108,7 +112,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 						</PropertyField>
 					)}
 
-					{scoringType === 'detector' && (
+					{scoringType === SCORING_TYPE_ENUM.DETECTOR && (
 						<ObjectSelectPropertyField
 							label='Detector'
 							value={watchedObject.detector?.uuid ?? ''}
@@ -124,7 +128,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 						/>
 					)}
 
-					{scoringType === 'zone' && (
+					{scoringType === SCORING_TYPE_ENUM.ZONE && (
 						<ObjectSelectPropertyField
 							label='Zone'
 							value={watchedObject.zone?.uuid ?? ''}

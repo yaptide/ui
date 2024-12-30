@@ -12,7 +12,8 @@ import {
 	DETECTOR_KEYWORD_OPTIONS,
 	FLUKA_DETECTOR_KEYWORD_OPTIONS,
 	FLUKA_ZONE_KEYWORD_OPTIONS,
-	MEDIUM_KEYWORD_OPTIONS
+	MEDIUM_KEYWORD_OPTIONS,
+	SCORING_TYPE_ENUM
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import { ObjectSelectPropertyField } from '../fields/ObjectSelectPropertyField';
@@ -50,7 +51,7 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 				options={
 					editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT
 						? DETECTOR_KEYWORD_OPTIONS
-						: scoringType === 'detector'
+						: scoringType === SCORING_TYPE_ENUM.DETECTOR
 							? FLUKA_DETECTOR_KEYWORD_OPTIONS
 							: FLUKA_ZONE_KEYWORD_OPTIONS
 				}

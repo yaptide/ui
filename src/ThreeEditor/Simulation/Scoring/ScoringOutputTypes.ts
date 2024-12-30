@@ -160,3 +160,10 @@ export const MEDIUM_KEYWORD_OPTIONS = Object.keys(MEDIUM_KEYWORDS).reduce(
 	},
 	{} as Record<MEDIUM, MEDIUM>
 );
+
+export type SCORING_TYPE = keyof typeof SCORING_TYPE_ENUM;
+
+export enum SCORING_TYPE_ENUM {
+	DETECTOR = 'DETECTOR',
+	ZONE = 'ZONE'
+}
