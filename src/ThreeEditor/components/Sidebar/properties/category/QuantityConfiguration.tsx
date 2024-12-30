@@ -4,13 +4,16 @@ import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { ScoringOutput } from '../../../../Simulation/Scoring/ScoringOutput';
 import {
 	canChangeMaterialMedium,
 	canChangeNKMedium,
 	canChangePrimaryMultiplier,
 	DETECTOR_KEYWORD_OPTIONS,
 	FLUKA_DETECTOR_KEYWORD_OPTIONS,
-	MEDIUM_KEYWORD_OPTIONS
+	FLUKA_ZONE_KEYWORD_OPTIONS,
+	MEDIUM_KEYWORD_OPTIONS,
+	SCORING_TYPE_ENUM
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import { ObjectSelectPropertyField } from '../fields/ObjectSelectPropertyField';
@@ -29,6 +32,11 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 		object as unknown as ScoringQuantity
 	);
 
+	let scoringOutput: ScoringOutput | null = editor.scoringManager.getOutputByQuantityUuid(
+		watchedObject.uuid
+	);
+	let scoringType = scoringOutput?.scoringType;
+
 	const visibleFlag = isScoringQuantity(watchedObject);
 
 	const setQuantityValue = (key: keyof ScoringQuantity, value: unknown) => {
@@ -43,7 +51,9 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 				options={
 					editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT
 						? DETECTOR_KEYWORD_OPTIONS
-						: FLUKA_DETECTOR_KEYWORD_OPTIONS
+						: scoringType === SCORING_TYPE_ENUM.DETECTOR
+							? FLUKA_DETECTOR_KEYWORD_OPTIONS
+							: FLUKA_ZONE_KEYWORD_OPTIONS
 				}
 				onChange={v => setQuantityValue('keyword', v.uuid)}
 			/>
