@@ -119,9 +119,11 @@ export const DETECTOR_KEYWORD_OPTIONS = Object.keys(DETECTOR_KEYWORD_DESCRIPTION
 	{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
 );
 
+const FLUKA_DETECTOR_KEYWORD = ['Dose', 'Fluence'] as const;
+
 export const FLUKA_DETECTOR_KEYWORD_OPTIONS = Object.keys(DETECTOR_KEYWORD_DESCRIPTION).reduce(
 	(acc, key) => {
-		if (key === 'Dose' || key === 'Fluence') {
+		if (FLUKA_DETECTOR_KEYWORD.includes(key)) {
 			return { ...acc, [key]: key };
 		}
 
@@ -129,10 +131,12 @@ export const FLUKA_DETECTOR_KEYWORD_OPTIONS = Object.keys(DETECTOR_KEYWORD_DESCR
 	},
 	{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
 );
+
+const FLUKA_ZONE_KEYWORDS = ['Dose', 'Fluence'] as const;
 
 export const FLUKA_ZONE_KEYWORD_OPTIONS = Object.keys(DETECTOR_KEYWORD_DESCRIPTION).reduce(
 	(acc, key) => {
-		if (['Dose', 'Fluence'].includes(key)) {
+		if (FLUKA_ZONE_KEYWORDS.includes(key)) {
 			return { ...acc, [key]: key };
 		}
 
@@ -141,9 +145,11 @@ export const FLUKA_ZONE_KEYWORD_OPTIONS = Object.keys(DETECTOR_KEYWORD_DESCRIPTI
 	{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
 );
 
+const FLUKA_ZONE_MODIFIERS = ['E', 'ENUC'] as const;
+
 export const FLUKA_ZONE_MODIFIERS_OPTIONS = Object.keys(DETECTOR_MODIFIERS_DESCRIPTION).reduce(
 	(acc, key) => {
-		if (['E', 'ENUC'].includes(key)) {
+		if (FLUKA_ZONE_MODIFIERS.includes(key)) {
 			return { ...acc, [key]: key };
 		}
 
