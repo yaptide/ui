@@ -102,36 +102,101 @@ const recreateRefToScoringManagerOutputs = (
 	return estimators;
 };
 
+/**
+ * Recreates references between estimators, their pages and filters by linking filter UUIDs with actual filter objects.
+ * This rebuilds the relationships between estimator pages and their associated filters from the Filter JSON.
+ *
+ * @param estimators - Array of estimators containing pages that need filter references rebuilt
+ * @param FiltersJSON - Array of filter objects that contain the actual filter definitions
+ * @returns The estimators array with updated filter references for each page
+ */
 const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]): Estimator[] => {
+	console.log('Starting recreateRefToFilters with:', {
+		estimatorsCount: estimators.length,
+		filtersCount: FiltersJSON.length
+	});
+
 	// Iterate through each estimator and set the filterRef and name for each page
-	estimators.forEach(estimator => {
+	estimators.forEach((estimator, estimatorIndex) => {
+		console.log(`Processing estimator ${estimatorIndex}:`, {
+			name: estimator.name,
+			pageCount: estimator.pages.length
+		});
+
 		const { pages, scoringOutputJsonRef } = estimator;
+
 		pages.forEach((page, idx) => {
+			console.log(`Processing page ${idx} for estimator ${estimator.name}`);
+
 			const quantity = scoringOutputJsonRef?.quantities[idx];
+			console.log('Found quantity:', quantity);
+
 			const filter = FiltersJSON.find(o => o.uuid === quantity?.filter);
+			console.log('Matched filter:', {
+				filterUUID: quantity?.filter,
+				foundFilter: filter?.uuid
+			});
+
 			page.filterRef = filter;
 			page.name = quantity?.name;
+
+			console.log('Updated page:', {
+				pageName: page.name,
+				hasFilter: !!page.filterRef
+			});
 		});
 	});
+
+	console.log('Completed recreateRefToFilters, returning estimators with updated filter refs');
 
 	return estimators;
 };
 
+/**
+ * Recreates references in simulation results by linking estimator data with scoring manager outputs and filters
+ * from the editor JSON.
+ *
+ * @param inputJson - The editor JSON containing simulation configuration and scoring manager data
+ * @param estimators - Array of estimators containing simulation results
+ * @returns Estimators with updated references to scoring manager outputs and filters
+ * @throws Error if inputJson or estimators are undefined
+ */
 export const recreateRefsInResults = (inputJson: EditorJson, estimators: Estimator[]) => {
-	if (!inputJson) throw new Error('No editor data');
-	if (!estimators) throw new Error('No estimators data');
+	console.log('Starting recreateRefsInResults with:', {
+		inputJson,
+		estimators
+	});
+
+	if (!inputJson) {
+		console.error('No editor data provided to recreateRefsInResults');
+
+		throw new Error('No editor data');
+	}
+
+	if (!estimators) {
+		console.error('No estimators data provided to recreateRefsInResults');
+
+		throw new Error('No estimators data');
+	}
 
 	const { scoringManager }: EditorJson = inputJson;
+	console.log('Extracted scoringManager:', scoringManager);
 
 	const estimatorsWithScoringManagerOutputs = recreateRefToScoringManagerOutputs(
 		estimators,
 		scoringManager
 	);
 
+	console.log(
+		'Results after recreateRefToScoringManagerOutputs:',
+		estimatorsWithScoringManagerOutputs
+	);
+
 	const estimatorsWithFixedFilters = recreateRefToFilters(
 		estimatorsWithScoringManagerOutputs,
 		scoringManager.filters
 	);
+	console.log('Results after recreateRefToFilters:', estimatorsWithFixedFilters);
 
 	return estimatorsWithFixedFilters;
 };
@@ -413,12 +478,15 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 					const jobInputs = await getJobInputs(info, signal, cache);
 
 					if (jobInputs?.input.inputJson) {
-						const inputJsonForThisEstimator = { ...jobInputs.input.inputJson };
-						inputJsonForThisEstimator.scoringManager.outputs = [
-							inputJsonForThisEstimator.scoringManager.outputs.find(
-								output => output.name === estimatorName
-							)
-						];
+						const inputJsonForThisEstimator = {
+							...jobInputs.input.inputJson,
+							scoringManager: {
+								...jobInputs.input.inputJson.scoringManager,
+								outputs: jobInputs.input.inputJson.scoringManager.outputs.filter(
+									output => output.name === estimatorName
+								)
+							}
+						};
 						console.log('inputJsonForThisEstimator:', inputJsonForThisEstimator);
 
 						const refsInResults = recreateRefsInResults(
