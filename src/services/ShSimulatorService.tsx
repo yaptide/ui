@@ -410,17 +410,30 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 					const jobInputs = await getJobInputs(info, signal, cache);
 
-					const refsInResults =
-						jobInputs?.input.inputJson &&
-						recreateRefsInResults(jobInputs.input.inputJson, estimator);
+					if (jobInputs?.input.inputJson) {
+						const inputJsonForThisEstimator = { ...jobInputs.input.inputJson };
+						inputJsonForThisEstimator.scoringManager.outputs = inputJsonForThisEstimator.scoringManager.outputs.filter(
+							output => output.name === estimatorName
+						);
 
-					const data: SpecificEstimator = {
-						jobId,
-						estimators: refsInResults ?? estimator,
-						message: response.message
-					};
+						const refsInResults = recreateRefsInResults(inputJsonForThisEstimator, estimator);
 
-					resolve(data);
+						const data: SpecificEstimator = {
+							jobId,
+							estimators: refsInResults ?? estimator,
+							message: response.message
+						};
+
+						resolve(data);
+					} else {
+						const data: SpecificEstimator = {
+							jobId,
+							estimators: estimator,
+							message: response.message
+						};
+
+						resolve(data);
+					}
 				},
 				cacheKey,
 				beforeCacheWrite
