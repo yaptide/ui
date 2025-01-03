@@ -94,6 +94,7 @@ const recreateRefToScoringManagerOutputs = (
 	estimators: Estimator[],
 	scoringManagerJSON: ScoringManagerJSON
 ): Estimator[] => {
+	// Iterate through each estimator and set the scoringOutputJsonRef to the corresponding output in scoringManagerJSON
 	estimators.forEach((estimator, index) => {
 		estimator.scoringOutputJsonRef = scoringManagerJSON.outputs[index];
 	});
@@ -102,6 +103,7 @@ const recreateRefToScoringManagerOutputs = (
 };
 
 const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]): Estimator[] => {
+	// Iterate through each estimator and set the filterRef and name for each page
 	estimators.forEach(estimator => {
 		const { pages, scoringOutputJsonRef } = estimator;
 		pages.forEach((page, idx) => {
@@ -117,7 +119,7 @@ const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]
 
 export const recreateRefsInResults = (inputJson: EditorJson, estimators: Estimator[]) => {
 	if (!inputJson) throw new Error('No editor data');
-	if (!estimators) throw new Error('No esitamtors data');
+	if (!estimators) throw new Error('No estimators data');
 
 	const { scoringManager }: EditorJson = inputJson;
 
@@ -412,11 +414,17 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 					if (jobInputs?.input.inputJson) {
 						const inputJsonForThisEstimator = { ...jobInputs.input.inputJson };
-						inputJsonForThisEstimator.scoringManager.outputs = inputJsonForThisEstimator.scoringManager.outputs.filter(
-							output => output.name === estimatorName
-						);
+						inputJsonForThisEstimator.scoringManager.outputs = [
+							inputJsonForThisEstimator.scoringManager.outputs.find(
+								output => output.name === estimatorName
+							)
+						];
+						console.log('inputJsonForThisEstimator:', inputJsonForThisEstimator);
 
-						const refsInResults = recreateRefsInResults(inputJsonForThisEstimator, estimator);
+						const refsInResults = recreateRefsInResults(
+							inputJsonForThisEstimator,
+							estimator
+						);
 
 						const data: SpecificEstimator = {
 							jobId,
