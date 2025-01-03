@@ -32,7 +32,6 @@ import {
 	ResponseGetEstimatorPageResult,
 	ResponseGetJobInputs,
 	ResponseGetJobLogs,
-	ResponseGetJobResult,
 	ResponseGetJobResults,
 	ResponseGetJobStatus,
 	ResponseGetPageContents,
@@ -90,6 +89,19 @@ export interface RestSimulationContext {
 	) => Promise<FullSimulationData | undefined>;
 }
 
+/**
+ * Rebuilds the references between estimators and their corresponding scoring manager outputs.
+ * Each estimator is linked to an output in the scoring manager JSON by matching array indices.
+ * The scoringManagerJSON.outputs array length should match the number of estimators - if there are
+ * fewer outputs than estimators, the extra estimators will have undefined scoringOutputJsonRef.
+ * If there are more outputs than estimators, the extra outputs will be ignored.
+ *
+ * @param estimators - Array of estimators that need scoring manager output references rebuilt
+ * @param scoringManagerJSON - The scoring manager JSON containing output definitions. The outputs array
+ *                            should ideally have the same length as the estimators array to ensure
+ *                            all estimators get valid output references.
+ * @returns The estimators array with updated scoring output references for each estimator
+ */
 const recreateRefToScoringManagerOutputs = (
 	estimators: Estimator[],
 	scoringManagerJSON: ScoringManagerJSON
@@ -111,50 +123,29 @@ const recreateRefToScoringManagerOutputs = (
  * @returns The estimators array with updated filter references for each page
  */
 const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]): Estimator[] => {
-	console.log('Starting recreateRefToFilters with:', {
-		estimatorsCount: estimators.length,
-		filtersCount: FiltersJSON.length
-	});
-
 	// Iterate through each estimator and set the filterRef and name for each page
 	estimators.forEach((estimator, estimatorIndex) => {
-		console.log(`Processing estimator ${estimatorIndex}:`, {
-			name: estimator.name,
-			pageCount: estimator.pages.length
-		});
-
 		const { pages, scoringOutputJsonRef } = estimator;
-
 		pages.forEach((page, idx) => {
-			console.log(`Processing page ${idx} for estimator ${estimator.name}`);
-
 			const quantity = scoringOutputJsonRef?.quantities[idx];
-			console.log('Found quantity:', quantity);
-
 			const filter = FiltersJSON.find(o => o.uuid === quantity?.filter);
-			console.log('Matched filter:', {
-				filterUUID: quantity?.filter,
-				foundFilter: filter?.uuid
-			});
-
 			page.filterRef = filter;
 			page.name = quantity?.name;
-
-			console.log('Updated page:', {
-				pageName: page.name,
-				hasFilter: !!page.filterRef
-			});
 		});
 	});
-
-	console.log('Completed recreateRefToFilters, returning estimators with updated filter refs');
 
 	return estimators;
 };
 
 /**
  * Recreates references in simulation results by linking estimator data with scoring manager outputs and filters
- * from the editor JSON.
+ * from the editor JSON. This function expects specific array length relationships to work properly:
+ *
+ * 1. The scoringManager.outputs array length should match the number of estimators, otherwise:
+ *    - If fewer outputs than estimators: excess estimators will have undefined scoringOutputJsonRef
+ *    - If more outputs than estimators: extra outputs are ignored
+ * 2. Within each estimator, the number of pages should match the number of quantities in the
+ *    corresponding scoring manager output for proper filter assignment
  *
  * @param inputJson - The editor JSON containing simulation configuration and scoring manager data
  * @param estimators - Array of estimators containing simulation results
@@ -162,11 +153,6 @@ const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]
  * @throws Error if inputJson or estimators are undefined
  */
 export const recreateRefsInResults = (inputJson: EditorJson, estimators: Estimator[]) => {
-	console.log('Starting recreateRefsInResults with:', {
-		inputJson,
-		estimators
-	});
-
 	if (!inputJson) {
 		console.error('No editor data provided to recreateRefsInResults');
 
@@ -180,23 +166,15 @@ export const recreateRefsInResults = (inputJson: EditorJson, estimators: Estimat
 	}
 
 	const { scoringManager }: EditorJson = inputJson;
-	console.log('Extracted scoringManager:', scoringManager);
-
 	const estimatorsWithScoringManagerOutputs = recreateRefToScoringManagerOutputs(
 		estimators,
 		scoringManager
-	);
-
-	console.log(
-		'Results after recreateRefToScoringManagerOutputs:',
-		estimatorsWithScoringManagerOutputs
 	);
 
 	const estimatorsWithFixedFilters = recreateRefToFilters(
 		estimatorsWithScoringManagerOutputs,
 		scoringManager.filters
 	);
-	console.log('Results after recreateRefToFilters:', estimatorsWithFixedFilters);
 
 	return estimatorsWithFixedFilters;
 };
@@ -487,7 +465,6 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 								)
 							}
 						};
-						console.log('inputJsonForThisEstimator:', inputJsonForThisEstimator);
 
 						const refsInResults = recreateRefsInResults(
 							inputJsonForThisEstimator,
@@ -598,7 +575,6 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 							currentJobStatusData[StatusState.FAILED](data) ||
 							currentJobStatusData[StatusState.CANCELED](data)
 						) {
-							console.log(data.message);
 							statusDataCache.set(data.jobId, data, beforeCacheWrite);
 
 							return data;
