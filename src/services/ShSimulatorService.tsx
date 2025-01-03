@@ -90,12 +90,6 @@ export interface RestSimulationContext {
 	) => Promise<FullSimulationData | undefined>;
 }
 
-/**
- * Recreates references to scoring manager outputs in the estimators.
- * @param estimators - The list of estimators.
- * @param scoringManagerJSON - The scoring manager JSON.
- * @returns The estimators with updated scoring output references.
- */
 const recreateRefToScoringManagerOutputs = (
 	estimators: Estimator[],
 	scoringManagerJSON: ScoringManagerJSON
@@ -107,12 +101,6 @@ const recreateRefToScoringManagerOutputs = (
 	return estimators;
 };
 
-/**
- * Recreates references to filters in the estimators.
- * @param estimators - The list of estimators.
- * @param FiltersJSON - The list of filter JSON objects.
- * @returns The estimators with updated filter references.
- */
 const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]): Estimator[] => {
 	estimators.forEach(estimator => {
 		const { pages, scoringOutputJsonRef } = estimator;
@@ -127,16 +115,9 @@ const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]
 	return estimators;
 };
 
-/**
- * Recreates references in the simulation results.
- * @param inputJson - The input JSON containing the editor data.
- * @param estimators - The list of estimators.
- * @returns The estimators with updated references.
- * @throws {Error} If no editor data or estimators data is provided.
- */
 export const recreateRefsInResults = (inputJson: EditorJson, estimators: Estimator[]) => {
 	if (!inputJson) throw new Error('No editor data');
-	if (!estimators) throw new Error('No estimators data');
+	if (!estimators) throw new Error('No esitamtors data');
 
 	const { scoringManager }: EditorJson = inputJson;
 
@@ -431,17 +412,11 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 					if (jobInputs?.input.inputJson) {
 						const inputJsonForThisEstimator = { ...jobInputs.input.inputJson };
-						inputJsonForThisEstimator.outputs = [
-							inputJsonForThisEstimator.outputs.find(
-								output => output.name === estimatorName
-							)
-						];
-						console.log('inputJsonForThisEstimator:', inputJsonForThisEstimator.outputs);
-
-						const refsInResults = recreateRefsInResults(
-							inputJsonForThisEstimator,
-							estimator
+						inputJsonForThisEstimator.scoringManager.outputs = inputJsonForThisEstimator.scoringManager.outputs.filter(
+							output => output.name === estimatorName
 						);
+
+						const refsInResults = recreateRefsInResults(inputJsonForThisEstimator, estimator);
 
 						const data: SpecificEstimator = {
 							jobId,
