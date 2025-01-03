@@ -455,6 +455,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 					const jobInputs = await getJobInputs(info, signal, cache);
 
+					// if editor project data (with filter definions etc) is available, recreate references in results
 					if (jobInputs?.input.inputJson) {
 						const inputJsonForThisEstimator = {
 							...jobInputs.input.inputJson,
@@ -479,6 +480,8 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 						resolve(data);
 					} else {
+						// if editor project data is not available (i.e. running from user uploaded files),
+						// return the results without recreating references
 						const data: SpecificEstimator = {
 							jobId,
 							estimators: estimator,
