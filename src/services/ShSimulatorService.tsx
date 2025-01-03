@@ -416,6 +416,9 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 							output => output.name === estimatorName
 						);
 
+						console.log('inputJsonForThisEstimator:', inputJsonForThisEstimator);
+						console.log('Outputs:', inputJsonForThisEstimator.scoringManager.outputs);
+
 						const refsInResults = recreateRefsInResults(inputJsonForThisEstimator, estimator);
 
 						const data: SpecificEstimator = {
