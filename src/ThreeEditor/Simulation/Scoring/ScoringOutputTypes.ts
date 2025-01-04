@@ -138,3 +138,51 @@ export const MEDIUM_KEYWORD_OPTIONS = Object.keys(MEDIUM_KEYWORDS).reduce(
 	},
 	{} as Record<MEDIUM, MEDIUM>
 );
+
+export const SCORING_OPTIONS = {
+	FLUKA: {
+		DETECTOR: {
+			'1MeVNEq': {
+				configuration: new Set(['MEDIUM', 'PER_PRIMARY']),
+				modifiers: new Set([
+					'ANGLE',
+					'DEDX',
+					'E',
+					'EAMU',
+					'ENUC',
+					'MDEDX',
+					'TL',
+					'Z',
+					'Zeff',
+					'Z2Beta2',
+					'Zeff2Beta2'
+				])
+			},
+			'NKERMA': {
+				configuration: new Set(['PER_PRIMARY', 'N_K_MEDIUM']),
+				modifiers: new Set([
+					'ANGLE',
+					'DEDX',
+					'E',
+					'EAMU',
+					'ENUC',
+					'MDEDX',
+					'TL',
+					'Z',
+					'Zeff',
+					'Z2Beta2',
+					'Zeff2Beta2'
+				])
+			}
+		},
+		ZONE: {}
+	},
+	SHIELDHIT: {
+		DETECTOR: {},
+		ZONE: {
+			Fluence: {
+				modifiers: new Set(['E', 'ENUC'])
+			}
+		}
+	}
+};
