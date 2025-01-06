@@ -116,6 +116,39 @@ function configurationExists(
 	]?.configuration.has(configuration);
 }
 
+export function getQuantityTypeOptions(
+	simulatorType: SimulatorType,
+	scoringType: 'DETECTOR' | 'ZONE'
+) {
+	if (simulatorType === SimulatorType.COMMON) {
+		const shieldhitOptions = new Set(
+			Object.keys(SCORING_OPTIONS[SimulatorType.SHIELDHIT.toUpperCase()][scoringType])
+		);
+
+		const flukaOptions = new Set(
+			Object.keys(SCORING_OPTIONS[SimulatorType.FLUKA.toUpperCase()][scoringType])
+		);
+
+		const commonOptions = Array.from(shieldhitOptions).filter(option =>
+			flukaOptions.has(option)
+		);
+
+		return commonOptions.reduce(
+			(acc, key) => {
+				return { ...acc, [key]: key };
+			},
+			{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
+		);
+	} else {
+		return Object.keys(SCORING_OPTIONS[simulatorType.toUpperCase()][scoringType]).reduce(
+			(acc, key) => {
+				return { ...acc, [key]: key };
+			},
+			{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
+		);
+	}
+}
+
 export enum DETECTOR_MODIFIERS {
 	ANGLE = 'ANGLE',
 	DEDX = 'DEDX',
