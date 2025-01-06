@@ -35,6 +35,8 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 		editor.execute(new SetQuantityValueCommand(editor, watchedObject.object, key, value));
 	};
 
+	let currentSimulator = editor.contextManager.currentSimulator;
+
 	const fields = (
 		<>
 			<ObjectSelectPropertyField
@@ -48,7 +50,7 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 				onChange={v => setQuantityValue('keyword', v.uuid)}
 			/>
 
-			{canChangeNKMedium(watchedObject.keyword) &&
+			{canChangeNKMedium(currentSimulator, 'DETECTOR', watchedObject.keyword) &&
 				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
 					<>
 						<ObjectSelectPropertyField
@@ -60,7 +62,7 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 					</>
 				)}
 
-			{canChangeMaterialMedium(watchedObject.keyword) &&
+			{canChangeMaterialMedium(currentSimulator, 'DETECTOR', watchedObject.keyword) &&
 				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
 					<BooleanPropertyField
 						label='Override material'
@@ -69,7 +71,7 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 					/>
 				)}
 
-			{canChangePrimaryMultiplier(watchedObject.keyword) &&
+			{canChangePrimaryMultiplier(currentSimulator, 'DETECTOR', watchedObject.keyword) &&
 				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
 					<ConditionalNumberPropertyField
 						label='Primaries'

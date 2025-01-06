@@ -63,9 +63,9 @@ export class ObjectQuantity extends ObjectAbstract {
 
 		const { filter, hasFilter, rescale, hasRescale, medium, keyword } = object;
 		this.keyword.setValue(keyword);
-
-		if (Scoring.canChangeNKMedium(keyword)) showUIElement(this.mediumRow);
-		else hideUIElement(this.mediumRow);
+		// File unused #1893
+		// if (Scoring.canChangeNKMedium(keyword)) showUIElement(this.mediumRow);
+		// else hideUIElement(this.mediumRow);
 		this.medium.setValue(medium ?? Scoring.MEDIUM_KEYWORD_OPTIONS.WATER);
 
 		const options = this.editor.scoringManager.getFilterOptions();
@@ -103,11 +103,12 @@ export class ObjectQuantity extends ObjectAbstract {
 
 		if (keyword !== newKeyword)
 			commands.push(new SetQuantityValueCommand(editor, object, 'keyword', newKeyword));
-
-		if (Scoring.canChangeNKMedium(newKeyword)) {
-			if (medium !== newMedium)
-				commands.push(new SetQuantityValueCommand(editor, object, 'medium', newMedium));
-		} else hideUIElement(this.mediumRow);
+		// File unused #1893
+		// if (Scoring.canChangeNKMedium(newKeyword)) {
+		// 	if (medium !== newMedium)
+		// 		commands.push(new SetQuantityValueCommand(editor, object, 'medium', newMedium));
+		// }
+		else hideUIElement(this.mediumRow);
 
 		if (newHasRescale !== hasRescale)
 			commands.push(new SetQuantityValueCommand(editor, object, 'hasRescale', newHasRescale));
