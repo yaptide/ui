@@ -1,4 +1,5 @@
 import { SimulatorType } from '../../../types/RequestTypes';
+// TODO sort this fiel to make sense. change uppercase to enum values
 
 export enum DETECTOR_KEYWORD {
 	'1MeVNEq' = '1MeVNEq',
@@ -60,95 +61,6 @@ export const DETECTOR_KEYWORD_DESCRIPTION = {
 	'tZeff2Beta2': 'Track-averaged Zeff²/beta²'
 } as const;
 
-export function canChangePrimaryMultiplier(
-	simulator: SimulatorType,
-	scoringType: 'DETECTOR' | 'ZONE',
-	keyword: DETECTOR_KEYWORD
-): boolean {
-	return configurationExists(simulator, scoringType, keyword, CONFIGURATION_OPTIONS.PER_PRIMARY);
-}
-
-export function canChangeNKMedium(
-	simulator: SimulatorType,
-	scoringType: 'DETECTOR' | 'ZONE',
-	keyword: DETECTOR_KEYWORD
-): boolean {
-	return configurationExists(
-		simulator,
-		scoringType,
-		keyword,
-		CONFIGURATION_OPTIONS.N_K_MEDIUM_OVERRIDE
-	);
-}
-
-export function canChangeMaterialMedium(
-	simulator: SimulatorType,
-	scoringType: 'DETECTOR' | 'ZONE',
-	keyword: DETECTOR_KEYWORD
-): boolean {
-	return configurationExists(
-		simulator,
-		scoringType,
-		keyword,
-		CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE
-	);
-}
-
-function configurationExists(
-	simulator: SimulatorType,
-	scoringType: 'DETECTOR' | 'ZONE',
-	keyword: DETECTOR_KEYWORD,
-	configuration: CONFIGURATION_OPTIONS
-): boolean {
-	if (!keyword) {
-		return false;
-	}
-
-	if (simulator === SimulatorType.COMMON) {
-		return (
-			configurationExists(SimulatorType.SHIELDHIT, scoringType, keyword, configuration) &&
-			configurationExists(SimulatorType.FLUKA, scoringType, keyword, configuration)
-		);
-	}
-
-	return SCORING_OPTIONS[simulator.toUpperCase()][scoringType.toUpperCase()][
-		keyword
-	]?.configuration.has(configuration);
-}
-
-export function getQuantityTypeOptions(
-	simulatorType: SimulatorType,
-	scoringType: 'DETECTOR' | 'ZONE'
-) {
-	if (simulatorType === SimulatorType.COMMON) {
-		const shieldhitOptions = new Set(
-			Object.keys(SCORING_OPTIONS[SimulatorType.SHIELDHIT.toUpperCase()][scoringType])
-		);
-
-		const flukaOptions = new Set(
-			Object.keys(SCORING_OPTIONS[SimulatorType.FLUKA.toUpperCase()][scoringType])
-		);
-
-		const commonOptions = Array.from(shieldhitOptions).filter(option =>
-			flukaOptions.has(option)
-		);
-
-		return commonOptions.reduce(
-			(acc, key) => {
-				return { ...acc, [key]: key };
-			},
-			{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
-		);
-	} else {
-		return Object.keys(SCORING_OPTIONS[simulatorType.toUpperCase()][scoringType]).reduce(
-			(acc, key) => {
-				return { ...acc, [key]: key };
-			},
-			{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
-		);
-	}
-}
-
 export enum DETECTOR_MODIFIERS {
 	ANGLE = 'ANGLE',
 	DEDX = 'DEDX',
@@ -176,10 +88,6 @@ const DETECTOR_MODIFIERS_DESCRIPTION = {
 	Z2Beta2: 'Differential in [Z²/beta²]',
 	Zeff2Beta2: 'Differential in [Zeff²/beta²]'
 } as const;
-
-export function getModifierDescription(modifier: DETECTOR_MODIFIERS): string {
-	return DETECTOR_MODIFIERS_DESCRIPTION[modifier];
-}
 
 export const MEDIUM_KEYWORDS = {
 	A150: 'Tissue-equivalent A-150 plastic.',
@@ -209,7 +117,7 @@ interface NestedDictionary {
 }
 
 export const SCORING_OPTIONS: NestedDictionary = {
-	SHIELDHIT: {
+	[SimulatorType.SHIELDHIT]: {
 		DETECTOR: {
 			'1MeVNEq': {
 				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
@@ -650,7 +558,7 @@ export const SCORING_OPTIONS: NestedDictionary = {
 			}
 		}
 	},
-	FLUKA: {
+	[SimulatorType.FLUKA]: {
 		DETECTOR: {
 			Fluence: {
 				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
@@ -684,7 +592,7 @@ export const DETECTOR_MODIFIERS_OPTIONS_TYPE = Object.keys(DETECTOR_MODIFIERS_DE
 );
 
 export const SHIELDHIT_DETECTOR_KEYWORD_OPTIONS = Object.keys(
-	SCORING_OPTIONS.SHIELDHIT.DETECTOR
+	SCORING_OPTIONS[SimulatorType.SHIELDHIT]['DETECTOR']
 ).reduce(
 	(acc, key) => {
 		return { ...acc, [key]: key };
@@ -692,7 +600,9 @@ export const SHIELDHIT_DETECTOR_KEYWORD_OPTIONS = Object.keys(
 	{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
 );
 
-export const FLUKA_DETECTOR_KEYWORD_OPTIONS = Object.keys(SCORING_OPTIONS.FLUKA.DETECTOR).reduce(
+export const FLUKA_DETECTOR_KEYWORD_OPTIONS = Object.keys(
+	SCORING_OPTIONS[SimulatorType.FLUKA]['DETECTOR']
+).reduce(
 	(acc, key) => {
 		return { ...acc, [key]: key };
 	},
@@ -708,10 +618,101 @@ export const MEDIUM_KEYWORD_OPTIONS = Object.keys(MEDIUM_KEYWORDS).reduce(
 	{} as Record<MEDIUM, MEDIUM>
 );
 
+export function canChangePrimaryMultiplier(
+	simulator: SimulatorType,
+	scoringType: 'DETECTOR' | 'ZONE',
+	keyword: DETECTOR_KEYWORD
+): boolean {
+	return configurationExists(simulator, scoringType, keyword, CONFIGURATION_OPTIONS.PER_PRIMARY);
+}
+
+export function canChangeNKMedium(
+	simulator: SimulatorType,
+	scoringType: 'DETECTOR' | 'ZONE',
+	keyword: DETECTOR_KEYWORD
+): boolean {
+	return configurationExists(
+		simulator,
+		scoringType,
+		keyword,
+		CONFIGURATION_OPTIONS.N_K_MEDIUM_OVERRIDE
+	);
+}
+
+export function canChangeMaterialMedium(
+	simulator: SimulatorType,
+	scoringType: 'DETECTOR' | 'ZONE',
+	keyword: DETECTOR_KEYWORD
+): boolean {
+	return configurationExists(
+		simulator,
+		scoringType,
+		keyword,
+		CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE
+	);
+}
+
+function configurationExists(
+	simulator: SimulatorType,
+	scoringType: 'DETECTOR' | 'ZONE',
+	keyword: DETECTOR_KEYWORD,
+	configuration: CONFIGURATION_OPTIONS
+): boolean {
+	if (!keyword) {
+		return false;
+	}
+
+	if (simulator === SimulatorType.COMMON) {
+		return (
+			configurationExists(SimulatorType.SHIELDHIT, scoringType, keyword, configuration) &&
+			configurationExists(SimulatorType.FLUKA, scoringType, keyword, configuration)
+		);
+	}
+
+	return SCORING_OPTIONS[simulator][scoringType][keyword]?.configuration.has(configuration);
+}
+
+export function getQuantityTypeOptions(
+	simulatorType: SimulatorType,
+	scoringType: 'DETECTOR' | 'ZONE'
+) {
+	if (simulatorType === SimulatorType.COMMON) {
+		const shieldhitOptions = new Set(
+			Object.keys(SCORING_OPTIONS[SimulatorType.SHIELDHIT][scoringType])
+		);
+
+		const flukaOptions = new Set(
+			Object.keys(SCORING_OPTIONS[SimulatorType.FLUKA][scoringType])
+		);
+
+		const commonOptions = Array.from(shieldhitOptions).filter(option =>
+			flukaOptions.has(option)
+		);
+
+		return commonOptions.reduce(
+			(acc, key) => {
+				return { ...acc, [key]: key };
+			},
+			{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
+		);
+	} else {
+		return Object.keys(SCORING_OPTIONS[simulatorType][scoringType]).reduce(
+			(acc, key) => {
+				return { ...acc, [key]: key };
+			},
+			{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
+		);
+	}
+}
+
+export function getModifierDescription(modifier: DETECTOR_MODIFIERS): string {
+	return DETECTOR_MODIFIERS_DESCRIPTION[modifier];
+}
+
 export function getQuantityModifiersOptions(
 	simulator: SimulatorType,
 	scoringType: string,
 	keyword: DETECTOR_KEYWORD
 ) {
-	return SCORING_OPTIONS[simulator.toUpperCase()][scoringType.toUpperCase()][keyword]?.modifiers;
+	return SCORING_OPTIONS[simulator][scoringType][keyword]?.modifiers;
 }
