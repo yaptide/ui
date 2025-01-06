@@ -92,7 +92,7 @@ export class ScoringQuantity extends SimulationZone {
 	get medium(): Scoring.MEDIUM | null {
 		let currentSimulator = this.editor.contextManager.currentSimulator;
 
-		if (Scoring.canChangeNKMedium(currentSimulator, 'DETECTOR', this.keyword))
+		if (Scoring.canChangeNKMedium(currentSimulator, 'DETECTOR', this.keyword)) // TODO 'DETECTOR'
 			return this._medium;
 
 		return null;
