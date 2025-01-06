@@ -40,7 +40,7 @@ export class ScoringQuantity extends SimulationZone {
 		this._keyword = keyword;
 		let currentSimulator = this.editor.contextManager.currentSimulator;
 
-		if (!Scoring.canChangeMaterialMedium(currentSimulator, 'DETECTOR', keyword))
+		if (!Scoring.canChangeMaterialMedium(currentSimulator, 'DETECTOR', keyword)) //TODO scoringType from enum instead of 'DETECTOR'
 			this.hasMaterial = false;
 	}
 
