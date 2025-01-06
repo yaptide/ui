@@ -1,5 +1,4 @@
 import { SimulatorType } from '../../../types/RequestTypes';
-// TODO sort this fiel to make sense. change uppercase to enum values
 
 export enum DETECTOR_KEYWORD {
 	'1MeVNEq' = '1MeVNEq',
