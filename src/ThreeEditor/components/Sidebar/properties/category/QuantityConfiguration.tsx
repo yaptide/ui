@@ -8,10 +8,9 @@ import {
 	canChangeMaterialMedium,
 	canChangeNKMedium,
 	canChangePrimaryMultiplier,
-	DETECTOR_KEYWORD_OPTIONS,
 	FLUKA_DETECTOR_KEYWORD_OPTIONS,
-	MEDIUM_KEYWORD_OPTIONS
-} from '../../../../Simulation/Scoring/ScoringOutputTypes';
+	MEDIUM_KEYWORD_OPTIONS,
+	SHIELDHIT_DETECTOR_KEYWORD_OPTIONS} from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import { ObjectSelectPropertyField } from '../fields/ObjectSelectPropertyField';
 import {
@@ -44,7 +43,7 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 				value={watchedObject.keyword}
 				options={
 					editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT
-						? DETECTOR_KEYWORD_OPTIONS
+						? SHIELDHIT_DETECTOR_KEYWORD_OPTIONS
 						: FLUKA_DETECTOR_KEYWORD_OPTIONS
 				}
 				onChange={v => setQuantityValue('keyword', v.uuid)}

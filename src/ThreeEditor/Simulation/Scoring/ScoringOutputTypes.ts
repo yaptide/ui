@@ -29,8 +29,6 @@ export enum DETECTOR_KEYWORD {
 	'tZeff2Beta2' = 'tZeff2Beta2'
 }
 
-type Enum<DETECTOR_KEYWORD> = Record<keyof DETECTOR_KEYWORD, string> & { [k: number]: string };
-
 export const DETECTOR_KEYWORD_DESCRIPTION = {
 	'1MeVNEq':
 		'1-MeV neutron equivalent fluence [cm−2]. Only scored for neutrons, protons and pions.Multiply with 2.037e-3 to get DNIEL in [MeV / g]',
@@ -61,17 +59,6 @@ export const DETECTOR_KEYWORD_DESCRIPTION = {
 	'dZeff2Beta2': 'Dose-averaged Zeff²/beta²',
 	'tZeff2Beta2': 'Track-averaged Zeff²/beta²'
 } as const;
-
-const N_K_MEDIUM_OVERRIDE_KEYWORD = ['NKERMA', 'NEqvDose'] as const;
-const MATERIAL_MEDIUM_OVERRIDE_KEYWORD = [
-	'dLET',
-	'tLET',
-	'Dose',
-	'dQ',
-	'dQeff',
-	'DoseGy',
-	'DDD'
-] as const;
 
 export function canChangePrimaryMultiplier(
 	simulator: SimulatorType,
@@ -126,7 +113,7 @@ function configurationExists(
 
 	return SCORING_OPTIONS[simulator.toUpperCase()][scoringType.toUpperCase()][
 		keyword
-	].configuration.has(configuration);
+	]?.configuration.has(configuration);
 }
 
 export enum DETECTOR_MODIFIERS {
@@ -171,49 +158,11 @@ export const MEDIUM_KEYWORDS = {
 	WATER: 'Water, sea-level dry.'
 };
 
-// export type DETECTOR_MODIFIERS = keyof typeof DETECTOR_MODIFIERS_DESCRIPTION;
-
 export enum CONFIGURATION_OPTIONS {
 	PER_PRIMARY = 'PER_PRIMARY',
 	MATERIAL_MEDIUM_OVERRIDE = 'MATERIAL_MEDIUM_OVERRIDE',
 	N_K_MEDIUM_OVERRIDE = 'N_K_MEDIUM_OVERRIDE'
 }
-
-export type DETECTOR_KEYWORDS = keyof typeof DETECTOR_KEYWORD_DESCRIPTION;
-
-export const DETECTOR_MODIFIERS_OPTIONS = Object.keys(DETECTOR_MODIFIERS_DESCRIPTION).reduce(
-	(acc, key) => {
-		return { ...acc, [key]: key };
-	},
-	{} as Record<DETECTOR_MODIFIERS, DETECTOR_MODIFIERS>
-);
-
-export const DETECTOR_KEYWORD_OPTIONS = Object.keys(DETECTOR_KEYWORD_DESCRIPTION).reduce(
-	(acc, key) => {
-		return { ...acc, [key]: key };
-	},
-	{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
-);
-
-export const FLUKA_DETECTOR_KEYWORD_OPTIONS = Object.keys(DETECTOR_KEYWORD_DESCRIPTION).reduce(
-	(acc, key) => {
-		if (key === 'Dose' || key === 'Fluence') {
-			return { ...acc, [key]: key };
-		}
-
-		return acc;
-	},
-	{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
-);
-
-export type MEDIUM = keyof typeof MEDIUM_KEYWORDS;
-
-export const MEDIUM_KEYWORD_OPTIONS = Object.keys(MEDIUM_KEYWORDS).reduce(
-	(acc, key) => {
-		return { ...acc, [key]: key };
-	},
-	{} as Record<MEDIUM, MEDIUM>
-);
 
 interface NestedDictionary {
 	[key: string]: {
@@ -230,10 +179,7 @@ export const SCORING_OPTIONS: NestedDictionary = {
 	SHIELDHIT: {
 		DETECTOR: {
 			'1MeVNEq': {
-				configuration: new Set([
-					CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE,
-					CONFIGURATION_OPTIONS.PER_PRIMARY
-				]),
+				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
 				modifiers: new Set([
 					DETECTOR_MODIFIERS.ANGLE,
 					DETECTOR_MODIFIERS.DEDX,
@@ -584,7 +530,7 @@ export const SCORING_OPTIONS: NestedDictionary = {
 				])
 			},
 			'tLET': {
-				configuration: new Set([]),
+				configuration: new Set([CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE]),
 				modifiers: new Set([
 					DETECTOR_MODIFIERS.ANGLE,
 					DETECTOR_MODIFIERS.DEDX,
@@ -677,7 +623,7 @@ export const SCORING_OPTIONS: NestedDictionary = {
 				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
 				modifiers: new Set([])
 			},
-			Energy: {
+			Dose: {
 				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
 				modifiers: new Set([])
 			}
@@ -694,3 +640,45 @@ export const SCORING_OPTIONS: NestedDictionary = {
 		}
 	}
 };
+
+export type DETECTOR_KEYWORDS = keyof typeof DETECTOR_KEYWORD_DESCRIPTION;
+
+export const DETECTOR_MODIFIERS_OPTIONS_TYPE = Object.keys(DETECTOR_MODIFIERS_DESCRIPTION).reduce(
+	(acc, key) => {
+		return { ...acc, [key]: key };
+	},
+	{} as Record<DETECTOR_MODIFIERS, DETECTOR_MODIFIERS>
+);
+
+export const SHIELDHIT_DETECTOR_KEYWORD_OPTIONS = Object.keys(
+	SCORING_OPTIONS.SHIELDHIT.DETECTOR
+).reduce(
+	(acc, key) => {
+		return { ...acc, [key]: key };
+	},
+	{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
+);
+
+export const FLUKA_DETECTOR_KEYWORD_OPTIONS = Object.keys(SCORING_OPTIONS.FLUKA.DETECTOR).reduce(
+	(acc, key) => {
+		return { ...acc, [key]: key };
+	},
+	{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
+);
+
+export type MEDIUM = keyof typeof MEDIUM_KEYWORDS;
+
+export const MEDIUM_KEYWORD_OPTIONS = Object.keys(MEDIUM_KEYWORDS).reduce(
+	(acc, key) => {
+		return { ...acc, [key]: key };
+	},
+	{} as Record<MEDIUM, MEDIUM>
+);
+
+export function getQuantityModifiersOptions(
+	simulator: SimulatorType,
+	scoringType: string,
+	keyword: DETECTOR_KEYWORD
+) {
+	return SCORING_OPTIONS[simulator.toUpperCase()][scoringType.toUpperCase()][keyword]?.modifiers;
+}
