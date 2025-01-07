@@ -25,7 +25,7 @@ import {
 import { hideUIElement, showUIElement } from '../../../../../util/Ui/Uis';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { isFloatRule, isIDRule, isIntRule } from '../../../../Simulation/Scoring/FilterRule';
-import { DETECTOR_MODIFIERS_OPTIONS } from '../../../../Simulation/Scoring/ScoringOutputTypes';
+import { DETECTOR_MODIFIERS_OPTIONS_TYPE } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
 import { ObjectSelectProperty, ObjectSelectProps } from './ObjectSelectPropertyField';
 
@@ -441,7 +441,7 @@ export function DifferentialConfiguration(props: {
 	upperLimit: number;
 	binsNumber: number;
 	logCheckbox: boolean;
-	options: typeof DETECTOR_MODIFIERS_OPTIONS;
+	options: typeof DETECTOR_MODIFIERS_OPTIONS_TYPE;
 	onChange: (value: {
 		keywordSelect: string;
 		lowerLimit: number;

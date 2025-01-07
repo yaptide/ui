@@ -1,4 +1,5 @@
 import { Button } from '@mui/material';
+import { watch } from 'fs';
 import { Object3D } from 'three';
 
 import { SimulatorType } from '../../../../../types/RequestTypes';
@@ -9,8 +10,10 @@ import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValu
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	DETECTOR_MODIFIERS,
-	DETECTOR_MODIFIERS_OPTIONS,
-	FLUKA_ZONE_MODIFIERS_OPTIONS
+	DETECTOR_MODIFIERS_OPTIONS_TYPE,
+	FLUKA_ZONE_MODIFIERS_OPTIONS,
+	getQuantityModifiersOptions,
+	SCORING_TYPE_ENUM
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
@@ -45,6 +48,12 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 
 		return 0;
 	};
+
+	let keyword = watchedObject.keyword;
+	let currentSimulator = editor.contextManager.currentSimulator;
+	let scoringType =
+		editor.scoringManager.getOutputByQuantityUuid(watchedObject.uuid)?.scoringType ??
+		SCORING_TYPE_ENUM.DETECTOR;
 
 	return (
 		<PropertiesCategory
@@ -89,11 +98,16 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 							upperLimit={watchedObject.selectedModifier.upperLimit}
 							binsNumber={watchedObject.selectedModifier.binsNumber}
 							logCheckbox={watchedObject.selectedModifier.isLog}
-							options={
-								simulatorType === SimulatorType.SHIELDHIT
-									? DETECTOR_MODIFIERS_OPTIONS
-									: FLUKA_ZONE_MODIFIERS_OPTIONS
-							}
+							options={Array.from(
+								getQuantityModifiersOptions(currentSimulator, scoringType, keyword)
+							).reduce(
+								(acc, key) => {
+									acc[key] = key;
+
+									return acc;
+								},
+								{} as Record<DETECTOR_MODIFIERS, DETECTOR_MODIFIERS>
+							)}
 							onChange={v => {
 								editor.execute(
 									new AddDifferentialModifierCommand(
