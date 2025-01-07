@@ -20,7 +20,7 @@ export class DifferentialModifier {
 	type: 'differential' = 'differential';
 	uuid: string;
 	constructor(
-		diffType: DETECTOR_MODIFIERS = 'ANGLE',
+		diffType: DETECTOR_MODIFIERS = DETECTOR_MODIFIERS.ANGLE,
 		lowerLimit: number = 0,
 		binsNumber: number = 500,
 		upperLimit: number = 10,

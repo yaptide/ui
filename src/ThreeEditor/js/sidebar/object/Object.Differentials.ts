@@ -54,7 +54,7 @@ export class ObjectDifferentials extends ObjectAbstract {
 		] = createDifferentialConfigurationRow({
 			update: this.update.bind(this),
 			delete: this.removeModifier.bind(this),
-			options: Scoring.DETECTOR_MODIFIERS_OPTIONS
+			options: Scoring.DETECTOR_MODIFIERS_OPTIONS_TYPE
 		});
 		this.panel.add(this.addRow, this.outliner, new UIBreak(), this.modifierRow);
 		editor.signals.scoringQuantityChanged.add(() =>
