@@ -8,7 +8,7 @@ import { SimulationElementManager } from '../Base/SimulationManager';
 import { SimulationZone } from '../Base/SimulationZone';
 import { Detector } from '../Detectors/Detector';
 import { ScoringFilter } from './ScoringFilter';
-import { SCORING_TYPE, SCORING_TYPE_ENUM } from './ScoringOutputTypes';
+import { SCORING_TYPE_ENUM } from './ScoringOutputTypes';
 import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
 
 export type ScoringOutputJSON = Omit<
@@ -68,7 +68,7 @@ export class ScoringOutput
 
 	private _zone?: string;
 
-	private _scoringType?: SCORING_TYPE;
+	private _scoringType: SCORING_TYPE_ENUM = SCORING_TYPE_ENUM.DETECTOR;
 
 	//TODO: Issue#320
 	private _trace: [boolean, string | null];
@@ -123,7 +123,7 @@ export class ScoringOutput
 		this.signals.objectSelected.dispatch(this);
 	}
 
-	get scoringType(): SCORING_TYPE {
+	get scoringType(): SCORING_TYPE_ENUM {
 		return this._scoringType ?? SCORING_TYPE_ENUM.DETECTOR;
 	}
 
@@ -209,7 +209,7 @@ export class ScoringOutput
 			: null;
 		this.zone = json.zoneUuid ? this.editor.zoneManager.getZoneByUuid(json.zoneUuid) : null;
 
-		this._scoringType = (json.scoringType as SCORING_TYPE) ?? SCORING_TYPE_ENUM.DETECTOR;
+		this._scoringType = (json.scoringType as SCORING_TYPE_ENUM) ?? SCORING_TYPE_ENUM.DETECTOR;
 
 		return this;
 	}

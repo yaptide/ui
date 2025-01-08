@@ -9,7 +9,7 @@ import { AddQuantityCommand } from '../../../../js/commands/AddQuantityCommand';
 import { SetOutputSettingsCommand } from '../../../../js/commands/SetOutputSettingsCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { isOutput, ScoringOutput } from '../../../../Simulation/Scoring/ScoringOutput';
-import { SCORING_TYPE, SCORING_TYPE_ENUM } from '../../../../Simulation/Scoring/ScoringOutputTypes';
+import { SCORING_TYPE_ENUM } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import {
 	ObjectSelectOptionType,
 	ObjectSelectPropertyField
@@ -19,7 +19,6 @@ import { PropertiesCategory } from './PropertiesCategory';
 
 export function OutputConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
-	const simulatorType: SimulatorType = editor.contextManager.currentSimulator;
 	const { open: changeScoringType } = useDialog('changeScoringType');
 	const { state: watchedObject } = useSmartWatchEditorState(
 		editor,
@@ -65,7 +64,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 
 	const handleChangeOutputType = (
 		event: React.MouseEvent<HTMLElement>,
-		newAlignment: SCORING_TYPE
+		newAlignment: SCORING_TYPE_ENUM
 	) => {
 		if (watchedObject.quantities.length > 0) {
 			changeScoringType({
@@ -94,32 +93,30 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 			visible={visibleFlag}>
 			{visibleFlag && (
 				<>
-					{simulatorType === SimulatorType.FLUKA && (
-						<PropertyField
-							label='Scoring Type'
-							disabled={false}>
-							<ToggleButtonGroup
-								value={scoringType}
-								exclusive
-								onChange={handleChangeOutputType}
-								aria-label='text alignment'
-								size='small'>
-								<ToggleButton
-									value={SCORING_TYPE_ENUM.DETECTOR}
-									disabled={scoringType === SCORING_TYPE_ENUM.DETECTOR}
-									aria-label='left aligned'>
-									Detector
-								</ToggleButton>
+					<PropertyField
+						label='Scoring Type'
+						disabled={false}>
+						<ToggleButtonGroup
+							value={scoringType}
+							exclusive
+							onChange={handleChangeOutputType}
+							aria-label='text alignment'
+							size='small'>
+							<ToggleButton
+								value={SCORING_TYPE_ENUM.DETECTOR}
+								disabled={scoringType === SCORING_TYPE_ENUM.DETECTOR}
+								aria-label='left aligned'>
+								Detector
+							</ToggleButton>
 
-								<ToggleButton
-									value={SCORING_TYPE_ENUM.ZONE}
-									disabled={scoringType === SCORING_TYPE_ENUM.ZONE}
-									aria-label='left aligned'>
-									Zone
-								</ToggleButton>
-							</ToggleButtonGroup>
-						</PropertyField>
-					)}
+							<ToggleButton
+								value={SCORING_TYPE_ENUM.ZONE}
+								disabled={scoringType === SCORING_TYPE_ENUM.ZONE}
+								aria-label='left aligned'>
+								Zone
+							</ToggleButton>
+						</ToggleButtonGroup>
+					</PropertyField>
 
 					{scoringType === SCORING_TYPE_ENUM.DETECTOR && (
 						<ObjectSelectPropertyField

@@ -4,16 +4,12 @@ import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
-import { ScoringOutput } from '../../../../Simulation/Scoring/ScoringOutput';
 import {
 	canChangeMaterialMedium,
 	canChangeNKMedium,
 	canChangePrimaryMultiplier,
-	FLUKA_DETECTOR_KEYWORD_OPTIONS,
-	FLUKA_ZONE_KEYWORD_OPTIONS,
 	getQuantityTypeOptions,
 	MEDIUM_KEYWORD_OPTIONS,
-	SCORING_OPTIONS,
 	SCORING_TYPE_ENUM
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
@@ -33,10 +29,11 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 		object as unknown as ScoringQuantity
 	);
 
-	let scoringOutput: ScoringOutput | null = editor.scoringManager.getOutputByQuantityUuid(
-		watchedObject.uuid
-	);
-	let scoringType = scoringOutput?.scoringType ?? SCORING_TYPE_ENUM.DETECTOR;
+	let scoringType: SCORING_TYPE_ENUM = SCORING_TYPE_ENUM.DETECTOR;
+
+	if (isScoringQuantity(watchedObject)) {
+		scoringType = (watchedObject as ScoringQuantity).getScoringType();
+	}
 
 	const visibleFlag = isScoringQuantity(watchedObject);
 
@@ -55,7 +52,7 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 				onChange={v => setQuantityValue('keyword', v.uuid)}
 			/>
 
-			{canChangeNKMedium(currentSimulator, 'DETECTOR', watchedObject.keyword) &&
+			{canChangeNKMedium(currentSimulator, scoringType, watchedObject.keyword) &&
 				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
 					<>
 						<ObjectSelectPropertyField
@@ -67,7 +64,7 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 					</>
 				)}
 
-			{canChangeMaterialMedium(currentSimulator, 'DETECTOR', watchedObject.keyword) &&
+			{canChangeMaterialMedium(currentSimulator, scoringType, watchedObject.keyword) &&
 				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
 					<BooleanPropertyField
 						label='Override material'
@@ -76,7 +73,7 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 					/>
 				)}
 
-			{canChangePrimaryMultiplier(currentSimulator, 'DETECTOR', watchedObject.keyword) &&
+			{canChangePrimaryMultiplier(currentSimulator, scoringType, watchedObject.keyword) &&
 				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
 					<ConditionalNumberPropertyField
 						label='Primaries'

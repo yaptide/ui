@@ -1,5 +1,4 @@
 import { Button } from '@mui/material';
-import { watch } from 'fs';
 import { Object3D } from 'three';
 
 import { SimulatorType } from '../../../../../types/RequestTypes';
@@ -9,10 +8,8 @@ import { RemoveDifferentialModifierCommand } from '../../../../js/commands/Remov
 import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
-	DETECTOR_MODIFIERS,
-	DETECTOR_MODIFIERS_OPTIONS_TYPE,
-	FLUKA_ZONE_MODIFIERS_OPTIONS,
 	getQuantityModifiersOptions,
+	SCORING_MODIFIERS,
 	SCORING_TYPE_ENUM
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
@@ -41,9 +38,7 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 		if (simulatorType === SimulatorType.SHIELDHIT) {
 			return NUMBER_OF_MODIFIERS_SHIELDHIT;
 		} else if (simulatorType === SimulatorType.FLUKA) {
-			if (watchedObject.keyword === 'Fluence') return NUMBER_OF_MODIFIERS_FLUKA;
-
-			return 0;
+			return NUMBER_OF_MODIFIERS_FLUKA;
 		}
 
 		return 0;
@@ -51,9 +46,11 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 
 	let keyword = watchedObject.keyword;
 	let currentSimulator = editor.contextManager.currentSimulator;
-	let scoringType =
-		editor.scoringManager.getOutputByQuantityUuid(watchedObject.uuid)?.scoringType ??
-		SCORING_TYPE_ENUM.DETECTOR;
+	let scoringType: SCORING_TYPE_ENUM = SCORING_TYPE_ENUM.DETECTOR;
+
+	if (isScoringQuantity(watchedObject)) {
+		scoringType = watchedObject.getScoringType();
+	}
 
 	return (
 		<PropertiesCategory
@@ -106,7 +103,7 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 
 									return acc;
 								},
-								{} as Record<DETECTOR_MODIFIERS, DETECTOR_MODIFIERS>
+								{} as Record<SCORING_MODIFIERS, SCORING_MODIFIERS>
 							)}
 							onChange={v => {
 								editor.execute(
@@ -115,7 +112,7 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 										watchedObject.object,
 										DifferentialModifier.fromJSON({
 											uuid: watchedObject.selectedModifier!.uuid,
-											diffType: v.keywordSelect as DETECTOR_MODIFIERS,
+											diffType: v.keywordSelect as SCORING_MODIFIERS,
 											lowerLimit: v.lowerLimit,
 											upperLimit: v.upperLimit,
 											binsNumber: v.binsNumber,

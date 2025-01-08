@@ -6,7 +6,8 @@ import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { isBeam } from '../../../../Simulation/Physics/Beam';
 import { ScoringOutput } from '../../../../Simulation/Scoring/ScoringOutput';
-import { isScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
+import { SCORING_TYPE_ENUM } from '../../../../Simulation/Scoring/ScoringOutputTypes';
+import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import { TextPropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
@@ -19,10 +20,7 @@ export function ObjectInfo(props: { editor: YaptideEditor; object: Object3D }) {
 	let scoringType: string | undefined = 'unknown';
 
 	if (isScoringQuantity(watchedObject)) {
-		let scoringOutput: ScoringOutput | null = editor.scoringManager.getOutputByQuantityUuid(
-			watchedObject.uuid
-		);
-		scoringType = scoringOutput?.scoringType;
+		scoringType = (watchedObject as ScoringQuantity).getScoringType();
 	}
 
 	return (
