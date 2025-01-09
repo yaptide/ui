@@ -36,11 +36,13 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 	let simulatorType: SimulatorType = editor.contextManager.currentSimulator;
 	const numberOfModifiers = () => {
 		if (isScoringQuantity(watchedObject)) {
-			return getQuantityModifiersOptions(
-				editor.contextManager.currentSimulator,
-				watchedObject.getScoringType(),
-				watchedObject.keyword
-			).size;
+			return (
+				getQuantityModifiersOptions(
+					editor.contextManager.currentSimulator,
+					watchedObject.getScoringType(),
+					watchedObject.keyword
+				)?.size ?? 0
+			);
 		}
 
 		return 0;
@@ -74,6 +76,10 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 						<Button
 							sx={{ width: '100%' }}
 							variant='contained'
+							disabled={
+								watchedObject.modifiers.length >= maxNumberOfModifiers() ||
+								numberOfModifiers() === 0
+							}
 							onClick={() => {
 								if (watchedObject.modifiers.length >= maxNumberOfModifiers())
 									return;
