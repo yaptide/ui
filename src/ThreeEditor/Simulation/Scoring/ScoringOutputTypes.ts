@@ -573,7 +573,7 @@ export const SCORING_OPTIONS: IScoringOptions = {
 				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
 				modifiers: new Set([SCORING_MODIFIERS.E, SCORING_MODIFIERS.ENUC])
 			},
-			Energy: {
+			Dose: {
 				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
 				modifiers: new Set([])
 			}
