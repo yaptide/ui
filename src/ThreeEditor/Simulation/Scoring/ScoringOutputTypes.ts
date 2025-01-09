@@ -695,11 +695,11 @@ export function getQuantityModifiersOptions(
 	scoringType: string,
 	keyword: SCORING_KEYWORD
 ): Set<SCORING_MODIFIERS> {
-	if (!keyword) {
+	if (!keyword || !scoringType) {
 		return new Set();
 	}
 
-	if (scoringType === SimulatorType.COMMON) {
+	if (simulatorType === SimulatorType.COMMON) {
 		return getQuantityModifiersOptions(
 			SimulatorType.SHIELDHIT,
 			scoringType,
