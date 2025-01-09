@@ -690,26 +690,6 @@ export function getModifierDescription(modifier: SCORING_MODIFIERS): string {
 	return SCORING_MODIFIERS_DESCRIPTION[modifier];
 }
 
-// export function getQuantityModifiersOptions(
-// 	simulatorType: SimulatorType,
-// 	scoringType: string,
-// 	keyword: SCORING_KEYWORD
-// ): string[] {
-// 	console.log('getQuantityModifiersOptions', simulatorType, scoringType, keyword);
-// 	if(!keyword){
-// 		return [];
-// 	}
-// 	if(scoringType === SimulatorType.COMMON){
-// 		return Array.from(new Set([
-// 			...getQuantityModifiersOptions(SimulatorType.SHIELDHIT,scoringType, keyword),
-// 			...getQuantityModifiersOptions(SimulatorType.FLUKA,scoringType, keyword)
-// 		]))
-
-// 	}
-// 	console.log( Array.from(SCORING_OPTIONS[simulatorType][scoringType][keyword]?.modifiers));
-// 	return Array.from(SCORING_OPTIONS[simulatorType][scoringType][keyword]?.modifiers)
-// }
-
 export function getQuantityModifiersOptions(
 	simulatorType: SimulatorType,
 	scoringType: string,

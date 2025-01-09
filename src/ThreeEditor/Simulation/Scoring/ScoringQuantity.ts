@@ -2,7 +2,7 @@ import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
 import { ScoringFilter } from './ScoringFilter';
 import * as Scoring from './ScoringOutputTypes';
-import { SCORING_TYPE_ENUM } from './ScoringOutputTypes';
+import { getQuantityModifiersOptions, SCORING_TYPE_ENUM } from './ScoringOutputTypes';
 import { DifferentialJSON, DifferentialModifier } from './ScoringQtyModifiers';
 
 export type ScoringQuantityJSON = Omit<
@@ -130,7 +130,15 @@ export class ScoringQuantity extends SimulationZone {
 	}
 
 	createModifier(): DifferentialModifier {
-		const modifier = new DifferentialModifier();
+		const modifier = new DifferentialModifier(
+			getQuantityModifiersOptions(
+				this.editor.contextManager.currentSimulator,
+				this.getScoringType(),
+				this.keyword
+			)
+				.values()
+				.next().value
+		);
 		this.addModifier(modifier);
 
 		return modifier;

@@ -34,10 +34,22 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 
 	const visibleFlag = isScoringQuantity(watchedObject);
 	let simulatorType: SimulatorType = editor.contextManager.currentSimulator;
+	const numberOfModifiers = () => {
+		if (isScoringQuantity(watchedObject)) {
+			return getQuantityModifiersOptions(
+				editor.contextManager.currentSimulator,
+				watchedObject.getScoringType(),
+				watchedObject.keyword
+			).size;
+		}
+
+		return 0;
+	};
+
 	const maxNumberOfModifiers = () => {
-		if (simulatorType === SimulatorType.SHIELDHIT) {
+		if (simulatorType === SimulatorType.SHIELDHIT && numberOfModifiers() !== 0) {
 			return NUMBER_OF_MODIFIERS_SHIELDHIT;
-		} else if (simulatorType === SimulatorType.FLUKA) {
+		} else if (simulatorType === SimulatorType.FLUKA && numberOfModifiers() !== 0) {
 			return NUMBER_OF_MODIFIERS_FLUKA;
 		}
 
