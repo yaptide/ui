@@ -100,7 +100,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 							value={scoringType}
 							exclusive
 							onChange={handleChangeOutputType}
-							aria-label='text alignment'
+							aria-label='scoring type'
 							size='small'>
 							<ToggleButton
 								value={SCORING_TYPE_ENUM.DETECTOR}
