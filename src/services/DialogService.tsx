@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 
+import { ChangeScoringTypeDialog } from '../ThreeEditor/components/Dialog/ChangeScoringTypeDialog';
 import { ClearHistoryDialog } from '../ThreeEditor/components/Dialog/ClearHistoryDialog';
 import { EditProjectInfoDialog } from '../ThreeEditor/components/Dialog/EditProjectInfoDialog';
 import { LoadFileDialog } from '../ThreeEditor/components/Dialog/LoadFileDialog';
@@ -37,7 +38,8 @@ export type DialogComponentTypeMap = EntriesToObj<
 		ValidComponentTypes<['runSimulation', typeof RunSimulationDialog]>,
 		ValidComponentTypes<['saveFile', typeof SaveFileDialog]>,
 		ValidComponentTypes<['editProject', typeof EditProjectInfoDialog]>,
-		ValidComponentTypes<['rejectKeycloak', typeof RejectKeycloakUserDialog]>
+		ValidComponentTypes<['rejectKeycloak', typeof RejectKeycloakUserDialog]>,
+		ValidComponentTypes<['changeScoringType', typeof ChangeScoringTypeDialog]>
 	]
 >;
 
@@ -111,7 +113,8 @@ const DialogProvider = ({ children }: GenericContextProviderProps) => {
 			runSimulation: RunSimulationDialog,
 			saveFile: SaveFileDialog,
 			editProject: EditProjectInfoDialog,
-			rejectKeycloak: RejectKeycloakUserDialog
+			rejectKeycloak: RejectKeycloakUserDialog,
+			changeScoringType: ChangeScoringTypeDialog
 		}),
 		[]
 	);

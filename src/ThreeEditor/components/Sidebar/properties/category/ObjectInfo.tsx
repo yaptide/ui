@@ -1,9 +1,13 @@
+import { Grid } from '@mui/material';
 import { Object3D } from 'three';
 
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { isBeam } from '../../../../Simulation/Physics/Beam';
+import { ScoringOutput } from '../../../../Simulation/Scoring/ScoringOutput';
+import { SCORING_TYPE_ENUM } from '../../../../Simulation/Scoring/ScoringOutputTypes';
+import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import { TextPropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
@@ -13,6 +17,11 @@ export function ObjectInfo(props: { editor: YaptideEditor; object: Object3D }) {
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const visibleFlag = !isBeam(watchedObject);
+	let scoringType: string | undefined = 'unknown';
+
+	if (isScoringQuantity(watchedObject)) {
+		scoringType = (watchedObject as ScoringQuantity).getScoringType();
+	}
 
 	return (
 		<PropertiesCategory
@@ -34,6 +43,21 @@ export function ObjectInfo(props: { editor: YaptideEditor; object: Object3D }) {
 							);
 						}}
 					/>
+					{isScoringQuantity(watchedObject) && (
+						<>
+							<Grid
+								item
+								xs={4}
+								sx={{ textAlign: 'right' }}>
+								{'Scoring Type'}
+							</Grid>
+							<Grid
+								item
+								xs={8}>
+								{scoringType}
+							</Grid>
+						</>
+					)}
 				</>
 			)}
 		</PropertiesCategory>

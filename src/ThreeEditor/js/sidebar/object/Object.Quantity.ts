@@ -33,7 +33,7 @@ export class ObjectQuantity extends ObjectAbstract {
 		[this.keywordRow, this.keyword] = createRowSelect({
 			text: 'Quantity type',
 			update: this.update.bind(this),
-			options: Scoring.SHIELDHIT_DETECTOR_KEYWORD_OPTIONS
+			options: Scoring.SCORING_KEYWORD // File unused #1893
 		});
 
 		[this.mediumRow, this.medium] = createRowSelect({

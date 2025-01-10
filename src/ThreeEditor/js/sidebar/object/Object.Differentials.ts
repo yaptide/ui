@@ -54,7 +54,7 @@ export class ObjectDifferentials extends ObjectAbstract {
 		] = createDifferentialConfigurationRow({
 			update: this.update.bind(this),
 			delete: this.removeModifier.bind(this),
-			options: Scoring.DETECTOR_MODIFIERS_OPTIONS_TYPE
+			options: Scoring.SCORING_OPTIONS
 		});
 		this.panel.add(this.addRow, this.outliner, new UIBreak(), this.modifierRow);
 		editor.signals.scoringQuantityChanged.add(() =>
@@ -94,7 +94,7 @@ export class ObjectDifferentials extends ObjectAbstract {
 
 		if (!object || !modifier) return;
 		const { uuid } = modifier;
-		const diffType = this.keywordSelect.getValue() as Scoring.DETECTOR_MODIFIERS;
+		const diffType = this.keywordSelect.getValue() as Scoring.SCORING_MODIFIERS;
 		const lowerLimit = this.lowerLimit.getValue();
 		const upperLimit = this.upperLimit.getValue();
 		this.lowerLimit.max = upperLimit;

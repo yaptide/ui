@@ -43,9 +43,7 @@ export function PropertiesPanel(props: { boxProps: BoxProps; editor: YaptideEdit
 					<ParticleFilterConfiguration {...panelProps} />
 					<OutputConfiguration {...panelProps} />
 					<QuantityConfiguration {...panelProps} />
-					{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
-						<QuantityDifferentialScoring {...panelProps} />
-					)}
+					<QuantityDifferentialScoring {...panelProps} />
 					<BeamConfiguration {...panelProps} />
 					<ObjectConfiguration {...panelProps} />
 					<ObjectDimensions {...panelProps} />
