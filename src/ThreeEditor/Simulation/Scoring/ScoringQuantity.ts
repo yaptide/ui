@@ -38,8 +38,11 @@ export class ScoringQuantity extends SimulationZone {
 
 	set keyword(keyword: Scoring.DETECTOR_KEYWORD) {
 		this._keyword = keyword;
+		let currentSimulator = this.editor.contextManager.currentSimulator;
 
-		if (!Scoring.canChangeMaterialMedium(keyword)) this.hasMaterial = false;
+		if (!Scoring.canChangeMaterialMedium(currentSimulator, 'DETECTOR', keyword))
+			//TODO scoringType from enum instead of 'DETECTOR'
+			this.hasMaterial = false;
 	}
 
 	hasFilter: boolean;
@@ -88,7 +91,11 @@ export class ScoringQuantity extends SimulationZone {
 	}
 
 	get medium(): Scoring.MEDIUM | null {
-		if (Scoring.canChangeNKMedium(this.keyword)) return this._medium;
+		let currentSimulator = this.editor.contextManager.currentSimulator;
+
+		if (Scoring.canChangeNKMedium(currentSimulator, 'DETECTOR', this.keyword))
+			// TODO 'DETECTOR'
+			return this._medium;
 
 		return null;
 	}
@@ -107,7 +114,10 @@ export class ScoringQuantity extends SimulationZone {
 	}
 
 	get hasMaterial(): boolean {
-		if (Scoring.canChangeMaterialMedium(this.keyword)) return this._hasMaterial;
+		let currentSimulator = this.editor.contextManager.currentSimulator;
+
+		if (Scoring.canChangeMaterialMedium(currentSimulator, 'DETECTOR', this.keyword))
+			return this._hasMaterial; // TODO scoringType from #1906
 
 		return false;
 	}
@@ -135,7 +145,10 @@ export class ScoringQuantity extends SimulationZone {
 		return this._modifiers[uuid];
 	}
 
-	constructor(editor: YaptideEditor, keyword: Scoring.DETECTOR_KEYWORD = 'Dose') {
+	constructor(
+		editor: YaptideEditor,
+		keyword: Scoring.DETECTOR_KEYWORD = Scoring.DETECTOR_KEYWORD.Dose
+	) {
 		super(editor, 'Quantity', 'Quantity');
 		this._modifiers = {};
 

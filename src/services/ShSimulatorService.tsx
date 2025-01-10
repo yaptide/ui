@@ -21,11 +21,15 @@ import {
 import {
 	currentJobStatusData,
 	currentTaskStatusData,
-	EstimatorNamesResponse,
+	EstimatorItem,
+	EstimatorPagesByDimensions,
+	EstimatorsItemResponse,
 	JobStatusCompleted,
 	JobStatusData,
 	JobStatusFailed,
+	PageDimension,
 	PlatformType,
+	ResponseGetEstimatorPageResult,
 	ResponseGetJobInputs,
 	ResponseGetJobLogs,
 	ResponseGetJobResult,
@@ -39,7 +43,6 @@ import {
 } from '../types/ResponseTypes';
 import { useCacheMap } from '../util/hooks/useCacheMap';
 import { camelToSnakeCase } from '../util/Notation/Notation';
-import { orderAccordingToList } from '../util/Sort';
 import { ValidateShape } from '../util/Types';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import { useAuth } from './AuthService';
@@ -75,7 +78,7 @@ export interface RestSimulationContext {
 	getJobStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
 	getJobInputs: (...args: RequestGetJobInputs) => Promise<JobInputs | undefined>;
 	getJobResults: (...args: RequestGetJobResults) => Promise<JobResults | undefined>;
-	getJobResult: (...args: RequestGetJobResult) => Promise<JobResults | undefined>;
+	getEstimatorsPages: (...args: RequestGetJobResult) => Promise<JobResults | undefined>;
 	getJobLogs: (...args: RequestGetJobLogs) => Promise<JobLogs | undefined>;
 	getPageContents: (...args: RequestGetPageContents) => Promise<ResponseGetPageContents>;
 	getPageStatus: (...args: RequestGetPageStatus) => Promise<JobStatusData[] | undefined>;
@@ -87,16 +90,15 @@ export interface RestSimulationContext {
 	) => Promise<FullSimulationData | undefined>;
 }
 
-const recreateOrderInEstimators = (
+const recreateRefToScoringManagerOutputs = (
 	estimators: Estimator[],
 	scoringManagerJSON: ScoringManagerJSON
 ): Estimator[] => {
-	return orderAccordingToList(
-		estimators,
-		scoringManagerJSON.outputs,
-		'name',
-		(e, o) => (e.scoringOutputJsonRef = o)
-	);
+	estimators.forEach((estimator, index) => {
+		estimator.scoringOutputJsonRef = scoringManagerJSON.outputs[index];
+	});
+
+	return estimators;
 };
 
 const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]): Estimator[] => {
@@ -119,9 +121,13 @@ export const recreateRefsInResults = (inputJson: EditorJson, estimators: Estimat
 
 	const { scoringManager }: EditorJson = inputJson;
 
-	const estimatorsOrdered = recreateOrderInEstimators(estimators, scoringManager);
+	const estimatorsWithScoringManagerOutputs = recreateRefToScoringManagerOutputs(
+		estimators,
+		scoringManager
+	);
+
 	const estimatorsWithFixedFilters = recreateRefToFilters(
-		estimatorsOrdered,
+		estimatorsWithScoringManagerOutputs,
 		scoringManager.filters
 	);
 
@@ -327,12 +333,43 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 		[authKy, getJobInputs, resultsCache]
 	);
 
-	const getJobResult = useCallback(
-		async (...[info, signal, cache = true, beforeCacheWrite]: RequestGetJobResult) => {
-			const { jobId, estimatorName } = info;
+	const preparePageNumbers = (pageNumbers: number[]): string => {
+		if (pageNumbers.length === 0) return '';
 
-			if (cache && resultsCache.has(jobId)) {
-				const data: Promise<JobResults> | JobResults | undefined = resultsCache.get(jobId);
+		const ranges: string[] = [];
+		let start = pageNumbers[0];
+		let end = pageNumbers[0];
+
+		for (let i = 1; i < pageNumbers.length; i++) {
+			if (pageNumbers[i] === end + 1) {
+				end = pageNumbers[i];
+			} else {
+				ranges.push(start === end ? `${start}` : `${start}-${end}`);
+				start = pageNumbers[i];
+				end = pageNumbers[i];
+			}
+		}
+
+		ranges.push(start === end ? `${start}` : `${start}-${end}`);
+
+		return ranges.join(',');
+	};
+
+	const getEstimatorsPages = useCallback(
+		async (...[info, signal, cache = true, beforeCacheWrite]: RequestGetJobResult) => {
+			const { jobId, estimatorName, pageNumbers } = info;
+
+			const searchParams = new URLSearchParams({
+				job_id: jobId,
+				estimator_name: estimatorName,
+				page_numbers: preparePageNumbers(pageNumbers)
+			});
+
+			const cacheKey = `${jobId}-${estimatorName}-${pageNumbers.join(',')}`;
+
+			if (cache && resultsCache.has(cacheKey)) {
+				const data: Promise<JobResults> | JobResults | undefined =
+					resultsCache.get(cacheKey);
 
 				if (data instanceof Promise) {
 					return data.then(resolvedData => {
@@ -358,17 +395,13 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 					const response = await authKy
 						.get('results', {
 							signal,
-							searchParams: camelToSnakeCase({
-								job_id: jobId,
-								estimator_name: estimatorName
-							})
+							searchParams
 						})
-						.json<ResponseGetJobResult>();
+						.json<ResponseGetEstimatorPageResult>();
 
 					const estimator: Estimator[] = [
 						{
-							name: response.name,
-							metadata: response.metadata,
+							name: estimatorName,
 							pages: response.pages
 						}
 					];
@@ -389,7 +422,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 					resolve(data);
 				},
-				jobId,
+				cacheKey,
 				beforeCacheWrite
 			);
 
@@ -405,7 +438,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 					.get('estimators', {
 						searchParams: { job_id }
 					})
-					.json<EstimatorNamesResponse>();
+					.json<EstimatorsItemResponse>();
 			} catch (error) {
 				console.error('Failed to fetch estimators:', error);
 
@@ -546,25 +579,54 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 		[getJobStatus]
 	);
 
+	const prepareEstimatorItemByPageDimension = (
+		estimators: EstimatorItem[]
+	): EstimatorPagesByDimensions[] => {
+		return estimators.map(estimator => {
+			const { name, pagesMetadata } = estimator;
+			const pagesByDimensions: Record<string, PageDimension> = {};
+
+			pagesMetadata.forEach(page => {
+				const { pageDimension, pageName, pageNumber } = page;
+
+				if (!pagesByDimensions[pageDimension]) {
+					pagesByDimensions[pageDimension] = { names: [], pageNums: [] };
+				}
+
+				pagesByDimensions[pageDimension].names.push(pageName);
+				pagesByDimensions[pageDimension].pageNums.push(pageNumber);
+			});
+
+			return {
+				name,
+				pagesByDimensions
+			};
+		});
+	};
+
 	// This function is used to find the first estimator name in the simulation data to fetch the results for estimators.
 	// If name isn't passed, it will try to find the first estimator name in the simulation data.
 	// If the name isn't found, it will try to get name from the backend.
 	// It wouldn't be handled if we load the example.
-	const findFirstEstimatorNameForInputFiles = useCallback(
+	const findEstimatorsNamesAndPages = useCallback(
 		async (
 			jobStatus: JobStatusData,
 			inputs: JobInputs | undefined,
 			givenEstimatorName?: string
 		) => {
 			if (!givenEstimatorName && jobStatus.jobState === StatusState.COMPLETED) {
-				if (inputs && !inputs.input.userInputFilesEstimatorNames) {
+				if (inputs && !inputs.input.estimatorsItems) {
 					const estimators = await getCurrentEstimators(jobStatus.jobId);
 
-					inputs.input.userInputFilesEstimatorNames = estimators?.estimatorNames;
+					if (estimators) {
+						inputs.input.estimatorsItems = prepareEstimatorItemByPageDimension(
+							estimators.estimatorsMetadata
+						);
+					}
 				}
 			}
 
-			const firstEstimatorInputFileName = inputs?.input.userInputFilesEstimatorNames?.[0];
+			const firstEstimatorInputFileName = inputs?.input.estimatorsItems?.[0].name;
 
 			if (givenEstimatorName) {
 				return givenEstimatorName;
@@ -577,21 +639,6 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 		[getCurrentEstimators]
 	);
 
-	const findFirstEstimatorNameForEditor = useCallback(
-		(inputs: JobInputs | undefined, givenEstimatorName?: string) => {
-			const firstEstimatorName = inputs?.input.inputJson?.scoringManager.outputs[0].name;
-
-			if (givenEstimatorName) {
-				return givenEstimatorName;
-			}
-
-			if (firstEstimatorName) {
-				return firstEstimatorName + '_';
-			}
-		},
-		[]
-	);
-
 	const getFullSimulationData = useCallback(
 		async (
 			jobStatus: JobStatusData,
@@ -601,44 +648,75 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 		) => {
 			const inputs: JobInputs | undefined = await getJobInputs(jobStatus, signal, cache);
 
-			const isSimulationFromEditor = inputs?.input.inputType.toLowerCase() === 'editor';
+			const firstEstimatorName = await findEstimatorsNamesAndPages(
+				jobStatus,
+				inputs,
+				givenEstimatorName
+			);
 
-			const firstEstimator = isSimulationFromEditor
-				? findFirstEstimatorNameForEditor(inputs, givenEstimatorName)
-				: await findFirstEstimatorNameForInputFiles(jobStatus, inputs, givenEstimatorName);
+			const estimatorsPagesByDimensions = inputs?.input.estimatorsItems?.filter(
+				estimator => estimator.name === firstEstimatorName
+			)?.[0].pagesByDimensions;
 
-			const results: JobResults | undefined =
-				jobStatus.jobState === StatusState.COMPLETED && firstEstimator
-					? await getJobResult(
+			if (estimatorsPagesByDimensions) {
+				const allResults: JobResults[] = [];
+
+				for (const [dimension, pageDimension] of Object.entries(
+					estimatorsPagesByDimensions
+				)) {
+					const results =
+						firstEstimatorName &&
+						(await getEstimatorsPages(
 							{
 								jobId: jobStatus.jobId,
-								estimatorName: firstEstimator
+								estimatorName: firstEstimatorName,
+								pageNumbers: pageDimension.pageNums
 							},
 							signal,
 							cache
-						)
-					: undefined;
+						));
 
-			if (!inputs || !results) return undefined;
-			const { message, ...mergedData } = {
-				...inputs,
-				...results,
-				...jobStatus
-			};
+					if (results) {
+						allResults.push(results);
+					}
+				}
 
-			const simData: FullSimulationData = mergedData satisfies ValidateShape<
-				typeof mergedData,
-				FullSimulationData
-			>;
+				if (!inputs || allResults.length === 0) return undefined;
 
-			return simData;
+				const aggregationResults = allResults.reduce(
+					(acc, result) => {
+						result.estimators.forEach(estimator => {
+							const existingEstimator = acc.estimators.find(
+								e => e.name === estimator.name
+							);
+
+							if (existingEstimator) {
+								existingEstimator.pages.push(...estimator.pages);
+							} else {
+								acc.estimators.push(estimator);
+							}
+						});
+
+						return acc;
+					},
+					{ jobId: jobStatus.jobId, estimators: [], message: '' } as JobResults
+				);
+
+				const { message, ...mergedData } = {
+					...inputs,
+					...aggregationResults,
+					...jobStatus
+				};
+
+				const simData: FullSimulationData = mergedData satisfies ValidateShape<
+					typeof mergedData,
+					FullSimulationData
+				>;
+
+				return simData;
+			}
 		},
-		[
-			findFirstEstimatorNameForEditor,
-			findFirstEstimatorNameForInputFiles,
-			getJobInputs,
-			getJobResult
-		]
+		[findEstimatorsNamesAndPages, getJobInputs, getEstimatorsPages]
 	);
 
 	return (
@@ -655,7 +733,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 				getPageStatus,
 				getJobInputs,
 				getJobResults,
-				getJobResult,
+				getEstimatorsPages,
 				getJobLogs,
 				getFullSimulationData
 			}}>

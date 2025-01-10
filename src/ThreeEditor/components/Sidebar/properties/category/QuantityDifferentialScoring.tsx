@@ -9,8 +9,7 @@ import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValu
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	DETECTOR_MODIFIERS,
-	DETECTOR_MODIFIERS_OPTIONS,
-	DETECTOR_MODIFIERS_OPTIONS_FLUKA
+	getQuantityModifiersOptions
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
@@ -31,6 +30,8 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 	);
 
 	const visibleFlag = isScoringQuantity(watchedObject);
+
+	let keyword = watchedObject.keyword;
 
 	return (
 		<PropertiesCategory
@@ -80,12 +81,17 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 							upperLimit={watchedObject.selectedModifier.upperLimit}
 							binsNumber={watchedObject.selectedModifier.binsNumber}
 							logCheckbox={watchedObject.selectedModifier.isLog}
-							options={
-								currentSimulator == SimulatorType.SHIELDHIT
-									? DETECTOR_MODIFIERS_OPTIONS
-									: DETECTOR_MODIFIERS_OPTIONS_FLUKA
-							}
 							volume={watchedObject.selectedModifier.volume}
+							options={Array.from(
+								getQuantityModifiersOptions(currentSimulator, 'DETECTOR', keyword)
+							).reduce(
+								(acc, key) => {
+									acc[key] = key;
+
+									return acc;
+								},
+								{} as Record<DETECTOR_MODIFIERS, DETECTOR_MODIFIERS>
+							)}
 							onChange={v => {
 								editor.execute(
 									new AddDifferentialModifierCommand(

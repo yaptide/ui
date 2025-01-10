@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import { DETECTOR_MODIFIERS, DETECTOR_MODIFIERS_OPTIONS } from './ScoringOutputTypes';
+import { DETECTOR_MODIFIERS } from './ScoringOutputTypes';
 
 export type DifferentialJSON = {
 	lowerLimit: number;
@@ -22,11 +22,11 @@ export class DifferentialModifier {
 	type: 'differential' = 'differential';
 	uuid: string;
 	constructor(
+		diffType: DETECTOR_MODIFIERS = DETECTOR_MODIFIERS.ANGLE,
 		lowerLimit: number = 0,
 		binsNumber: number = 500,
 		upperLimit: number = 10,
 		isLog: boolean = false,
-		diffType: DETECTOR_MODIFIERS = DETECTOR_MODIFIERS_OPTIONS.E,
 		volume: number = 1
 	) {
 		this.uuid = THREE.MathUtils.generateUUID();
@@ -52,11 +52,11 @@ export class DifferentialModifier {
 
 	static fromJSON(json: DifferentialJSON): DifferentialModifier {
 		let mod = new DifferentialModifier(
+			json.diffType,
 			json.lowerLimit,
 			json.binsNumber,
 			json.upperLimit,
 			json.isLog,
-			json.diffType,
 			json.volume
 		);
 
@@ -67,11 +67,11 @@ export class DifferentialModifier {
 
 	duplicate(): DifferentialModifier {
 		return new DifferentialModifier(
+			this.diffType,
 			this.lowerLimit,
 			this.binsNumber,
 			this.upperLimit,
 			this.isLog,
-			this.diffType,
 			this.volume
 		);
 	}

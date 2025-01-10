@@ -8,8 +8,7 @@ import {
 	canChangeMaterialMedium,
 	canChangeNKMedium,
 	canChangePrimaryMultiplier,
-	DETECTOR_KEYWORD_OPTIONS,
-	FLUKA_DETECTOR_KEYWORD_OPTIONS,
+	getQuantityTypeOptions,
 	MEDIUM_KEYWORD_OPTIONS
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
@@ -35,20 +34,18 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 		editor.execute(new SetQuantityValueCommand(editor, watchedObject.object, key, value));
 	};
 
+	let currentSimulator = editor.contextManager.currentSimulator;
+
 	const fields = (
 		<>
 			<ObjectSelectPropertyField
 				label='Quantity type'
 				value={watchedObject.keyword}
-				options={
-					editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT
-						? DETECTOR_KEYWORD_OPTIONS
-						: FLUKA_DETECTOR_KEYWORD_OPTIONS
-				}
+				options={getQuantityTypeOptions(currentSimulator, 'DETECTOR')}
 				onChange={v => setQuantityValue('keyword', v.uuid)}
 			/>
 
-			{canChangeNKMedium(watchedObject.keyword) &&
+			{canChangeNKMedium(currentSimulator, 'DETECTOR', watchedObject.keyword) &&
 				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
 					<>
 						<ObjectSelectPropertyField
@@ -60,7 +57,7 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 					</>
 				)}
 
-			{canChangeMaterialMedium(watchedObject.keyword) &&
+			{canChangeMaterialMedium(currentSimulator, 'DETECTOR', watchedObject.keyword) &&
 				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
 					<BooleanPropertyField
 						label='Override material'
@@ -69,7 +66,7 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 					/>
 				)}
 
-			{canChangePrimaryMultiplier(watchedObject.keyword) &&
+			{canChangePrimaryMultiplier(currentSimulator, 'DETECTOR', watchedObject.keyword) &&
 				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
 					<ConditionalNumberPropertyField
 						label='Primaries'

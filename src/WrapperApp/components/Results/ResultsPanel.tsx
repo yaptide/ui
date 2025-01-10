@@ -28,8 +28,8 @@ function ResultsPanel() {
 	const [estimatorsResults, setEstimatorsResults] = useState<EstimatorResults[]>([]);
 	const [groupQuantities, setGroupQuantities] = useState(false);
 
-	const userTabInputFilesEstimatorNames = simulation?.input.userInputFilesEstimatorNames?.map(
-		output => output.slice(0, -1)
+	const userTabInputFilesEstimatorNames = simulation?.input.estimatorsItems?.map(
+		estimator => estimator.name
 	);
 	const uploadedInputFilesEstimatorNames = estimatorsResults?.map(estimator => estimator.name);
 
@@ -37,9 +37,12 @@ function ResultsPanel() {
 		.filter(output => output.name)
 		.map(output => output.name);
 
-	const estimatorsTabData: string[] | undefined = simulation?.input.userInputFilesEstimatorNames
+	const estimatorsTabData: string[] | undefined = simulation?.input.estimatorsItems
 		? userTabInputFilesEstimatorNames
 		: editorEstimatorNames;
+
+	// In estimatorsItems we store information about estimators and estimator's pages by dimensions, names, and number of pages
+	const estimatorsPagesData = simulation?.input.estimatorsItems;
 
 	useEffect(() => {
 		setEstimatorsResults(parseEstimators(simulation?.estimators ?? []));
@@ -170,6 +173,7 @@ function ResultsPanel() {
 									? estimatorsTabData
 									: uploadedInputFilesEstimatorNames
 							}
+							estimatorsPagesData={estimatorsPagesData}
 						/>
 						<EstimatorTab
 							estimator={chosenEstimator}

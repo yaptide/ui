@@ -1,7 +1,12 @@
 import { Card, CardContent, Tab, Tabs } from '@mui/material';
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 
-import { FullSimulationData, useShSimulation } from '../../../../services/ShSimulatorService';
+import {
+	FullSimulationData,
+	SpecificEstimator,
+	useShSimulation
+} from '../../../../services/ShSimulatorService';
+import { EstimatorPagesByDimensions } from '../../../../types/ResponseTypes';
 
 interface EstimatorsTabProps {
 	tabsValue: number;
@@ -9,6 +14,7 @@ interface EstimatorsTabProps {
 	simulation: FullSimulationData;
 	setResultsSimulationData: React.Dispatch<React.SetStateAction<FullSimulationData | undefined>>;
 	estimatorsTabData: string[];
+	estimatorsPagesData: EstimatorPagesByDimensions[] | undefined;
 }
 
 const EstimatorsSelect = ({
@@ -16,11 +22,12 @@ const EstimatorsSelect = ({
 	setTabsValue,
 	simulation,
 	setResultsSimulationData,
-	estimatorsTabData
+	estimatorsTabData,
+	estimatorsPagesData
 }: EstimatorsTabProps) => {
 	const [controller] = useState(new AbortController());
 
-	const { getJobResult } = useShSimulation();
+	const { getEstimatorsPages } = useShSimulation();
 
 	const handleEstimatorTabChange = useCallback(
 		async (id: number) => {
@@ -28,21 +35,52 @@ const EstimatorsSelect = ({
 			const estimatorExists =
 				currentEstimatorData[id] && currentEstimatorData[id].name !== '';
 
-			if (!estimatorExists) {
-				const simulationJobId = simulation.jobId;
+			if (estimatorsPagesData) {
+				const estimatorsPagesByDimensions = estimatorsPagesData[id].pagesByDimensions;
 
-				const estimatorData = await getJobResult(
-					{
-						jobId: simulationJobId,
-						estimatorName: estimatorsTabData[id] + '_'
-					},
-					controller.signal,
-					true
-				);
+				if (!estimatorExists) {
+					const simulationJobId = simulation.jobId;
+					const allResults: SpecificEstimator[] = [];
 
-				const newEstimatorData = estimatorData?.estimators;
+					for (const [dimension, pageDimension] of Object.entries(
+						estimatorsPagesByDimensions
+					)) {
+						const estimatorData = await getEstimatorsPages(
+							{
+								jobId: simulationJobId,
+								estimatorName: estimatorsTabData[id],
+								pageNumbers: pageDimension.pageNums
+							},
+							controller.signal,
+							true
+						);
 
-				if (newEstimatorData) {
+						if (estimatorData) {
+							allResults.push(estimatorData);
+						}
+					}
+
+					if (allResults.length === 0) return;
+
+					const aggregationResults = allResults.reduce(
+						(acc, result) => {
+							result.estimators.forEach(estimator => {
+								const existingEstimator = acc.estimators.find(
+									e => e.name === estimator.name
+								);
+
+								if (existingEstimator) {
+									existingEstimator.pages.push(...estimator.pages);
+								} else {
+									acc.estimators.push(estimator);
+								}
+							});
+
+							return acc;
+						},
+						{ jobId: simulationJobId, estimators: [], message: '' } as SpecificEstimator
+					);
+
 					const newEstimators = [...currentEstimatorData];
 
 					while (newEstimators.length <= id) {
@@ -52,7 +90,7 @@ const EstimatorsSelect = ({
 						});
 					}
 
-					newEstimators[id] = newEstimatorData[0];
+					newEstimators[id] = aggregationResults.estimators[0];
 
 					const newSimulation = {
 						...simulation,
@@ -62,7 +100,14 @@ const EstimatorsSelect = ({
 				}
 			}
 		},
-		[controller.signal, estimatorsTabData, getJobResult, setResultsSimulationData, simulation]
+		[
+			controller.signal,
+			estimatorsPagesData,
+			estimatorsTabData,
+			getEstimatorsPages,
+			setResultsSimulationData,
+			simulation
+		]
 	);
 
 	useEffect(() => {
