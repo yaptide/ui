@@ -93,27 +93,40 @@ export function createRulesOutliner(editor, params) {
  */
 export function createDifferentialConfigurationRow(params) {
 	const { update, delete: deleteRule, options } = params;
-	const row = new UIRow();
-	row.dom.style.gridTemplateColumns = '2fr repeat(4, 3fr) 25px';
-	row.dom.style.display = 'grid';
+
+	const grid = new UIDiv();
+	grid.dom.style.display = 'grid';
+
+	function createRow(name, element) {
+		const row = new UIRow();
+		row.dom.style.gridTemplateColumns = '2fr 1fr';
+		row.dom.style.display = 'grid';
+		const label = new UIText(name).setFontSize(FONT_SIZE);
+		row.add(label, element);
+		grid.add(row);
+	}
+
 	const keywordSelect = new UISelect().setFontSize(FONT_SIZE).onChange(update);
 	keywordSelect.setOptions(options);
+	createRow('Keyword', keywordSelect);
 	const lowerLimit = new UINumber().setPadding('2px 4px').onChange(update).setWidth('100%');
+	createRow('Lower limit', lowerLimit);
 	const upperLimit = new UINumber().setPadding('2px 4px').onChange(update).setWidth('100%');
+	createRow('Upper limit', upperLimit);
 	const binsNumber = new UINumber()
 		.setPadding('2px 4px')
 		.onChange(update)
 		.setWidth('100%')
 		.setRange(1, 50000)
 		.setPrecision(0);
-	const logs = new UIDiv().setPadding('2px 4px').setWidth('100%').setFontSize(FONT_SIZE);
-	const logsLabel = new UIText('log');
+	createRow('Bins number', binsNumber);
 	const isLog = new UICheckbox().onChange(update);
-	logs.add(logsLabel, isLog);
-	const deleteButton = new UIButton('✖').onClick(deleteRule);
-	row.add(keywordSelect, lowerLimit, upperLimit, binsNumber, logs, deleteButton);
+	createRow('Logarithmic scale', isLog);
 
-	return [row, keywordSelect, lowerLimit, upperLimit, binsNumber, isLog, deleteButton];
+	const deleteButton = new UIButton('✖').onClick(deleteRule);
+	createRow('', deleteButton);
+
+	return [grid, keywordSelect, lowerLimit, upperLimit, binsNumber, isLog, deleteButton];
 }
 
 /**
