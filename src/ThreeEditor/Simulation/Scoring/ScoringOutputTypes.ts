@@ -1,4 +1,35 @@
-export const DETECTOR_KEYWORD_DESCRIPTION = {
+import { SimulatorType } from '../../../types/RequestTypes';
+
+export enum SCORING_KEYWORD {
+	'1MeVNEq' = '1MeVNEq',
+	'Alanine' = 'Alanine',
+	'AvgBeta' = 'AvgBeta',
+	'AvgEnergy' = 'AvgEnergy',
+	'Dose' = 'Dose',
+	'DoseEqv' = 'DoseEqv',
+	'DDD' = 'DDD',
+	'DoseGy' = 'DoseGy',
+	'dLET' = 'dLET',
+	'dQ' = 'dQ',
+	'dQeff' = 'dQeff',
+	'Energy' = 'Energy',
+	'EqvDose' = 'EqvDose',
+	'Fluence' = 'Fluence',
+	'MATERIAL' = 'MATERIAL',
+	'NEqvDose' = 'NEqvDose',
+	'NKERMA' = 'NKERMA',
+	'ZONE' = 'ZONE',
+	'Rho' = 'Rho',
+	'tQ' = 'tQ',
+	'tQeff' = 'tQeff',
+	'tLET' = 'tLET',
+	'dZ2Beta2' = 'dZ2Beta2',
+	'tZ2Beta2' = 'tZ2Beta2',
+	'dZeff2Beta2' = 'dZeff2Beta2',
+	'tZeff2Beta2' = 'tZeff2Beta2'
+}
+
+export const SCORING_KEYWORD_DESCRIPTION = {
 	'1MeVNEq':
 		'1-MeV neutron equivalent fluence [cm−2]. Only scored for neutrons, protons and pions.Multiply with 2.037e-3 to get DNIEL in [MeV / g]',
 	'Alanine':
@@ -29,51 +60,21 @@ export const DETECTOR_KEYWORD_DESCRIPTION = {
 	'tZeff2Beta2': 'Track-averaged Zeff²/beta²'
 } as const;
 
-export type DETECTOR_KEYWORD = keyof typeof DETECTOR_KEYWORD_DESCRIPTION;
-
-const PER_PRIMARY_KEYWORD = [
-	'1MeVNEq',
-	'Alanine',
-	'Dose',
-	'DoseEqv',
-	'DDD',
-	'DoseGy',
-	'Energy',
-	'EqvDose',
-	'Fluence',
-	'NEqvDose',
-	'NKERMA'
-] as const;
-const N_K_MEDIUM_OVERRIDE_KEYWORD = ['NKERMA', 'NEqvDose'] as const;
-const MATERIAL_MEDIUM_OVERRIDE_KEYWORD = [
-	'dLET',
-	'tLET',
-	'Dose',
-	'dQ',
-	'dQeff',
-	'DoseGy',
-	'DDD'
-] as const;
-
-export function canChangePrimaryMultiplier(
-	keyword: DETECTOR_KEYWORD
-): keyword is (typeof PER_PRIMARY_KEYWORD)[number] {
-	return PER_PRIMARY_KEYWORD.includes(keyword);
+export enum SCORING_MODIFIERS {
+	ANGLE = 'ANGLE',
+	DEDX = 'DEDX',
+	E = 'E',
+	EAMU = 'EAMU',
+	ENUC = 'ENUC',
+	MDEDX = 'MDEDX',
+	TL = 'TL',
+	Z = 'Z',
+	Zeff = 'Zeff',
+	Z2Beta2 = 'Z2Beta2',
+	Zeff2Beta2 = 'Zeff2Beta2'
 }
 
-export function canChangeNKMedium(
-	keyword: DETECTOR_KEYWORD
-): keyword is (typeof N_K_MEDIUM_OVERRIDE_KEYWORD)[number] {
-	return N_K_MEDIUM_OVERRIDE_KEYWORD.includes(keyword);
-}
-
-export function canChangeMaterialMedium(
-	keyword: DETECTOR_KEYWORD
-): keyword is (typeof MATERIAL_MEDIUM_OVERRIDE_KEYWORD)[number] {
-	return MATERIAL_MEDIUM_OVERRIDE_KEYWORD.includes(keyword);
-}
-
-export const DETECTOR_MODIFIERS_DESCRIPTION = {
+const SCORING_MODIFIERS_DESCRIPTION = {
 	ANGLE: 'Differential in angle [deg]',
 	DEDX: 'Differential in unrestricted electronic stopping power [MeV/cm]',
 	E: 'Differential in kinetic energy [MeV]',
@@ -87,10 +88,6 @@ export const DETECTOR_MODIFIERS_DESCRIPTION = {
 	Zeff2Beta2: 'Differential in [Zeff²/beta²]'
 } as const;
 
-export function getModifierDescription(modifier: DETECTOR_MODIFIERS): string {
-	return DETECTOR_MODIFIERS_DESCRIPTION[modifier];
-}
-
 export const MEDIUM_KEYWORDS = {
 	A150: 'Tissue-equivalent A-150 plastic.',
 	AIR: 'Air, sea-level dry.',
@@ -101,34 +98,492 @@ export const MEDIUM_KEYWORDS = {
 	WATER: 'Water, sea-level dry.'
 };
 
-export type DETECTOR_MODIFIERS = keyof typeof DETECTOR_MODIFIERS_DESCRIPTION;
+export enum CONFIGURATION_OPTIONS {
+	PER_PRIMARY = 'PER_PRIMARY',
+	MATERIAL_MEDIUM_OVERRIDE = 'MATERIAL_MEDIUM_OVERRIDE',
+	N_K_MEDIUM_OVERRIDE = 'N_K_MEDIUM_OVERRIDE'
+}
 
-export type DETECTOR_KEYWORDS = keyof typeof DETECTOR_KEYWORD_DESCRIPTION;
+interface IScoringOptions {
+	[key: string]: {
+		[key: string]: {
+			[key: string]: {
+				configuration: Set<CONFIGURATION_OPTIONS>;
+				modifiers: Set<SCORING_MODIFIERS>;
+			};
+		};
+	};
+}
 
-export const DETECTOR_MODIFIERS_OPTIONS = Object.keys(DETECTOR_MODIFIERS_DESCRIPTION).reduce(
-	(acc, key) => {
-		return { ...acc, [key]: key };
-	},
-	{} as Record<DETECTOR_MODIFIERS, DETECTOR_MODIFIERS>
-);
-
-export const DETECTOR_KEYWORD_OPTIONS = Object.keys(DETECTOR_KEYWORD_DESCRIPTION).reduce(
-	(acc, key) => {
-		return { ...acc, [key]: key };
-	},
-	{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
-);
-
-export const FLUKA_DETECTOR_KEYWORD_OPTIONS = Object.keys(DETECTOR_KEYWORD_DESCRIPTION).reduce(
-	(acc, key) => {
-		if (key === 'Dose' || key === 'Fluence') {
-			return { ...acc, [key]: key };
+export const SCORING_OPTIONS: IScoringOptions = {
+	[SimulatorType.SHIELDHIT]: {
+		DETECTOR: {
+			'1MeVNEq': {
+				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'Alanine': {
+				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'AvgBeta': {
+				configuration: new Set([]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'AvgEnergy': {
+				configuration: new Set([]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'Dose': {
+				configuration: new Set([
+					CONFIGURATION_OPTIONS.PER_PRIMARY,
+					CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE
+				]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'DoseEqv': {
+				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'DDD': {
+				configuration: new Set([
+					CONFIGURATION_OPTIONS.PER_PRIMARY,
+					CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE
+				]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'DoseGy': {
+				configuration: new Set([
+					CONFIGURATION_OPTIONS.PER_PRIMARY,
+					CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE
+				]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'dLET': {
+				configuration: new Set([CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'dQ': {
+				configuration: new Set([CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'dQeff': {
+				configuration: new Set([CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'Energy': {
+				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'EqvDose': {
+				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'Fluence': {
+				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'MATERIAL': {
+				configuration: new Set([]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'NEqvDose': {
+				configuration: new Set([
+					CONFIGURATION_OPTIONS.PER_PRIMARY,
+					CONFIGURATION_OPTIONS.N_K_MEDIUM_OVERRIDE
+				]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'NKERMA': {
+				configuration: new Set([
+					CONFIGURATION_OPTIONS.PER_PRIMARY,
+					CONFIGURATION_OPTIONS.N_K_MEDIUM_OVERRIDE
+				]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'ZONE': {
+				configuration: new Set([]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'Rho': {
+				configuration: new Set([]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'tQ': {
+				configuration: new Set([]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'tQeff': {
+				configuration: new Set([]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'tLET': {
+				configuration: new Set([CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'dZ2Beta2': {
+				configuration: new Set([]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'tZ2Beta2': {
+				configuration: new Set([]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'dZeff2Beta2': {
+				configuration: new Set([]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			},
+			'tZeff2Beta2': {
+				configuration: new Set([]),
+				modifiers: new Set([
+					SCORING_MODIFIERS.ANGLE,
+					SCORING_MODIFIERS.DEDX,
+					SCORING_MODIFIERS.E,
+					SCORING_MODIFIERS.EAMU,
+					SCORING_MODIFIERS.ENUC,
+					SCORING_MODIFIERS.MDEDX,
+					SCORING_MODIFIERS.TL,
+					SCORING_MODIFIERS.Z,
+					SCORING_MODIFIERS.Zeff,
+					SCORING_MODIFIERS.Z2Beta2,
+					SCORING_MODIFIERS.Zeff2Beta2
+				])
+			}
+		},
+		ZONE: {
+			Energy: {
+				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				modifiers: new Set([SCORING_MODIFIERS.E])
+			}
 		}
-
-		return acc;
 	},
-	{} as Record<DETECTOR_KEYWORDS, DETECTOR_KEYWORDS>
-);
+	[SimulatorType.FLUKA]: {
+		DETECTOR: {
+			Fluence: {
+				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				modifiers: new Set([])
+			},
+			Dose: {
+				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				modifiers: new Set([])
+			}
+		},
+		ZONE: {
+			Fluence: {
+				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				modifiers: new Set([SCORING_MODIFIERS.E, SCORING_MODIFIERS.ENUC])
+			},
+			Dose: {
+				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				modifiers: new Set([])
+			}
+		}
+	}
+};
+
+export type DETECTOR_KEYWORDS_TYPE = keyof typeof SCORING_KEYWORD_DESCRIPTION;
+
+export type SCORING_MODIFIERS_TYPE = keyof typeof SCORING_MODIFIERS;
 
 export type MEDIUM = keyof typeof MEDIUM_KEYWORDS;
 
@@ -138,3 +593,119 @@ export const MEDIUM_KEYWORD_OPTIONS = Object.keys(MEDIUM_KEYWORDS).reduce(
 	},
 	{} as Record<MEDIUM, MEDIUM>
 );
+
+export enum SCORING_TYPE_ENUM {
+	DETECTOR = 'DETECTOR',
+	ZONE = 'ZONE'
+}
+
+export function canChangePrimaryMultiplier(
+	simulator: SimulatorType,
+	scoringType: SCORING_TYPE_ENUM,
+	keyword: SCORING_KEYWORD
+): boolean {
+	return configurationExists(simulator, scoringType, keyword, CONFIGURATION_OPTIONS.PER_PRIMARY);
+}
+
+export function canChangeNKMedium(
+	simulator: SimulatorType,
+	scoringType: SCORING_TYPE_ENUM,
+	keyword: SCORING_KEYWORD
+): boolean {
+	return configurationExists(
+		simulator,
+		scoringType,
+		keyword,
+		CONFIGURATION_OPTIONS.N_K_MEDIUM_OVERRIDE
+	);
+}
+
+export function canChangeMaterialMedium(
+	simulator: SimulatorType,
+	scoringType: SCORING_TYPE_ENUM,
+	keyword: SCORING_KEYWORD
+): boolean {
+	return configurationExists(
+		simulator,
+		scoringType,
+		keyword,
+		CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE
+	);
+}
+
+function configurationExists(
+	simulator: SimulatorType,
+	scoringType: SCORING_TYPE_ENUM,
+	keyword: SCORING_KEYWORD,
+	configuration: CONFIGURATION_OPTIONS
+): boolean {
+	if (!keyword) {
+		return false;
+	}
+
+	if (simulator === SimulatorType.COMMON) {
+		return (
+			configurationExists(SimulatorType.SHIELDHIT, scoringType, keyword, configuration) &&
+			configurationExists(SimulatorType.FLUKA, scoringType, keyword, configuration)
+		);
+	}
+
+	return SCORING_OPTIONS[simulator][scoringType][keyword]?.configuration.has(configuration);
+}
+
+export function getQuantityTypeOptions(
+	simulatorType: SimulatorType,
+	scoringType: SCORING_TYPE_ENUM
+) {
+	if (simulatorType === SimulatorType.COMMON) {
+		const shieldhitOptions = new Set(
+			Object.keys(SCORING_OPTIONS[SimulatorType.SHIELDHIT][scoringType])
+		);
+
+		const flukaOptions = new Set(
+			Object.keys(SCORING_OPTIONS[SimulatorType.FLUKA][scoringType])
+		);
+
+		const commonOptions = Array.from(shieldhitOptions).filter(option =>
+			flukaOptions.has(option)
+		);
+
+		return commonOptions.reduce(
+			(acc, key) => {
+				return { ...acc, [key]: key };
+			},
+			{} as Record<DETECTOR_KEYWORDS_TYPE, DETECTOR_KEYWORDS_TYPE>
+		);
+	} else {
+		return Object.keys(SCORING_OPTIONS[simulatorType][scoringType]).reduce(
+			(acc, key) => {
+				return { ...acc, [key]: key };
+			},
+			{} as Record<DETECTOR_KEYWORDS_TYPE, DETECTOR_KEYWORDS_TYPE>
+		);
+	}
+}
+
+export function getModifierDescription(modifier: SCORING_MODIFIERS): string {
+	return SCORING_MODIFIERS_DESCRIPTION[modifier];
+}
+
+export function getQuantityModifiersOptions(
+	simulatorType: SimulatorType,
+	scoringType: string,
+	keyword: SCORING_KEYWORD
+): Set<SCORING_MODIFIERS> {
+	if (!keyword || !scoringType) {
+		return new Set();
+	}
+
+	if (simulatorType === SimulatorType.COMMON) {
+		return getQuantityModifiersOptions(
+			SimulatorType.SHIELDHIT,
+			scoringType,
+			keyword
+		).intersection(getQuantityModifiersOptions(SimulatorType.FLUKA, scoringType, keyword));
+	}
+
+	return SCORING_OPTIONS[simulatorType][scoringType][keyword]?.modifiers;
+}

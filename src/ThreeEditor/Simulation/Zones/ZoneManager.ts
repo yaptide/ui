@@ -145,6 +145,19 @@ export class ZoneManager
 		return zoneOptions;
 	}
 
+	getZoneOptionsForScoring(): Record<string, string> {
+		const zoneOptions = [...this.zones].reduce(
+			(acc, zone) => {
+				acc[zone.uuid] = `${zone.name} [${zone.id}]`;
+
+				return acc;
+			},
+			{} as Record<string, string>
+		);
+
+		return zoneOptions;
+	}
+
 	getBooleanZoneOptions() {
 		return this.getZoneOptions();
 	}

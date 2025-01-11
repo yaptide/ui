@@ -370,19 +370,19 @@
 				"type": "ZoneManager",
 				"uuid": "368269D3-6F9B-4241-84A0-5D908D10E196",
 				"worldZone": {
-					"autoCalculate": false,
+					"autoCalculate": true,
 					"geometryData": {
 						"geometryType": "BoxGeometry",
 						"parameters": {
-							"depth": 0,
-							"height": 0,
-							"width": 0
+							"depth": 13.200000000000001,
+							"height": 11,
+							"width": 11
 						},
 						"position": [0, 0, 0],
 						"rotation": [0, 0, 0]
 					},
 					"marginMultiplier": 1.1,
-					"materialUuid": "4458544c-b173-49d3-ac4e-62e735cd86eb",
+					"materialUuid": "46780184-dd64-47cb-bcca-ec7acb18c940",
 					"name": "World Zone",
 					"type": "WorldZone",
 					"uuid": "470b1fa8-42ac-497f-ac2e-d9a12273f24f",

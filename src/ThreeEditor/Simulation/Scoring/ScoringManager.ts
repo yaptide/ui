@@ -165,6 +165,10 @@ export class ScoringManager
 			}, [])
 			.filter(Boolean);
 	}
+
+	getOutputByQuantityUuid(uuid: string) {
+		return this.outputs.find(output => output.quantities.some(q => q.uuid === uuid)) ?? null;
+	}
 	/***************************************************************/
 
 	constructor(editor: YaptideEditor) {

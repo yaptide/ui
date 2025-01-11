@@ -2,14 +2,14 @@
 
 Dependency Cruiser is a powerful tool for analyzing and visualizing dependencies in source code. It is designed primarily for JavaScript and TypeScript projects. This tool helps identify and understand the structure of dependencies between modules in your project, making it easier to:
 
--   Detect issues such as cyclic dependencies
--   Identify violations of architectural rules
--   Anticipate potential difficulties in code maintenance
+- Detect issues such as cyclic dependencies
+- Identify violations of architectural rules
+- Anticipate potential difficulties in code maintenance
 
 Additionally, Dependency Cruiser allows you to:
 
--   Define custom rules to ensure compliance with established standards
--   Generate clear, visual diagrams to analyze the project's structure
+- Define custom rules to ensure compliance with established standards
+- Generate clear, visual diagrams to analyze the project's structure
 
 ## Prerequisites: Installing GraphViz
 
@@ -17,12 +17,12 @@ To fully utilize Dependency Cruiser’s commands, ensure you have **GraphViz** i
 
 ### Installing GraphViz
 
--   **On Linux/macOS**: Use a package manager like `apt` or `dnf`:
+- **On Linux/macOS**: Use a package manager like `apt` or `dnf`:
     ```bash
     sudo apt-get install graphviz    # For Debian/Ubuntu
     sudo dnf install graphviz        # For RedHat/CentOS
     ```
--   **On Windows**: Download the installer from the [GraphViz download page](https://www.graphviz.org/download/) and follow the installation instructions.
+- **On Windows**: Download the installer from the [GraphViz download page](https://www.graphviz.org/download/) and follow the installation instructions.
 
 ### Why GraphViz?
 
@@ -38,8 +38,8 @@ Without GraphViz, this step will fail, and you won’t be able to create graphic
 
 Dependency Cruiser provides the following commands for quick usage:
 
--   **`npm run depcruise:high`**: Generates a high-level dependency diagram.
--   **`npm run depcruise:low`**: Generates a low-level dependency diagram.
+- **`npm run depcruise:high`**: Generates a high-level dependency diagram.
+- **`npm run depcruise:low`**: Generates a low-level dependency diagram.
 
 ### Outputs
 
@@ -52,8 +52,8 @@ Both commands generate the following outputs:
 
 If you are using VSCode, consider installing the [SVG Preview](https://marketplace.visualstudio.com/items?itemName=jock.svg) plugin. This plugin allows you to:
 
--   Preview the generated SVG files directly in VSCode.
--   Export the graph as a PNG file for easy sharing or documentation.
+- Preview the generated SVG files directly in VSCode.
+- Export the graph as a PNG file for easy sharing or documentation.
 
 ## Configuration
 
@@ -69,26 +69,24 @@ Here are some of the most important configuration variables you can use:
 
 ### Inclusion and Exclusion
 
--   **`includeOnly`**: Specify which modules to include. This is an array of regular expressions (in string format). Dependency Cruiser will skip everything not matching this pattern.
--   **`exclude`**: Specify which modules to exclude. This is an array of regular expressions (in string format) to match against paths.
--   **`doNotFollow`**: Define modules to ignore during further analysis. This is an array of regular expressions (in string format) to match against paths.
+- **`includeOnly`**: Specify which modules to include. This is an array of regular expressions (in string format). Dependency Cruiser will skip everything not matching this pattern.
+- **`exclude`**: Specify which modules to exclude. This is an array of regular expressions (in string format) to match against paths.
+- **`doNotFollow`**: Define modules to ignore during further analysis. This is an array of regular expressions (in string format) to match against paths.
 
 ### Graphical Representation
 
--   **`collapsePattern`**: Pattern of modules to consolidate in high-level dependency graphs. If you use the high-level graphical dependency graph reporter (`archi`), tweaking this pattern can optimize the visualization.
+- **`collapsePattern`**: Pattern of modules to consolidate in high-level dependency graphs. If you use the high-level graphical dependency graph reporter (`archi`), tweaking this pattern can optimize the visualization.
 
 ### Graph Layout
 
--   **`splines`**: Controls the style of graph edges. For example:
-    -   **`"ortho"`**: Produces straight lines but can be slow for large graphs.
--   **`rankdir`**: Sets the graph's direction. Common values:
-    -   **`"TB"`**: Top-to-bottom (default).
-    -   **`"LR"`**: Left-to-right.
--   **`ranksep`**: Adjusts the separation between graph ranks for better clarity.
--   **`nodesep`**: Adjusts the separation between nodes for better clarity.
+- **`splines`**: Controls the style of graph edges. For example:
+    - **`"ortho"`**: Produces straight lines but can be slow for large graphs.
+- **`rankdir`**: Sets the graph's direction. Common values:
+    - **`"TB"`**: Top-to-bottom (default).
+    - **`"LR"`**: Left-to-right.
+- **`ranksep`**: Adjusts the separation between graph ranks for better clarity.
+- **`nodesep`**: Adjusts the separation between nodes for better clarity.
 
 ## Further Development
 
 The current configuration files used by the commands are very simplified. In the future, they should be replaced with an edited default configuration that is generated by Dependency Cruiser. This enhanced configuration will provide a more comprehensive setup, enabling better analysis and compliance with architectural standards.
-
-Keep up with the latest best practices and advanced configurations by regularly consulting Dependency Cruiser’s documentation and engaging with its user community.

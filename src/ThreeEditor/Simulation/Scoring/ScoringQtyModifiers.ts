@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 
-import { DETECTOR_MODIFIERS } from './ScoringOutputTypes';
+import { SCORING_MODIFIERS } from './ScoringOutputTypes';
 
 export type DifferentialJSON = {
-	diffType: DETECTOR_MODIFIERS;
+	diffType: SCORING_MODIFIERS;
 	lowerLimit: number;
 	upperLimit: number;
 	binsNumber: number;
@@ -16,11 +16,11 @@ export class DifferentialModifier {
 	upperLimit: number;
 	binsNumber: number;
 	isLog: boolean;
-	diffType: DETECTOR_MODIFIERS;
+	diffType: SCORING_MODIFIERS;
 	type: 'differential' = 'differential';
 	uuid: string;
 	constructor(
-		diffType: DETECTOR_MODIFIERS = 'ANGLE',
+		diffType: SCORING_MODIFIERS = SCORING_MODIFIERS.ANGLE,
 		lowerLimit: number = 0,
 		binsNumber: number = 500,
 		upperLimit: number = 10,
