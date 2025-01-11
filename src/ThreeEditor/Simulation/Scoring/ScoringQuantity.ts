@@ -2,11 +2,12 @@ import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
 import { ScoringFilter } from './ScoringFilter';
 import * as Scoring from './ScoringOutputTypes';
+import { getQuantityModifiersOptions, SCORING_TYPE_ENUM } from './ScoringOutputTypes';
 import { DifferentialJSON, DifferentialModifier } from './ScoringQtyModifiers';
 
 export type ScoringQuantityJSON = Omit<
 	SimulationZoneJSON & {
-		keyword: Scoring.DETECTOR_KEYWORD;
+		keyword: Scoring.SCORING_KEYWORD;
 		medium?: Scoring.MEDIUM;
 		filter?: string;
 		modifiers: DifferentialJSON[];
@@ -30,18 +31,17 @@ export class ScoringQuantity extends SimulationZone {
 	private _modifiers: Record<string, DifferentialModifier>;
 	private _primaries: number | null = null;
 	private _hasPrimaries: boolean = false;
-	private _keyword!: Scoring.DETECTOR_KEYWORD;
+	private _keyword!: Scoring.SCORING_KEYWORD;
 
-	get keyword(): Scoring.DETECTOR_KEYWORD {
+	get keyword(): Scoring.SCORING_KEYWORD {
 		return this._keyword;
 	}
 
-	set keyword(keyword: Scoring.DETECTOR_KEYWORD) {
+	set keyword(keyword: Scoring.SCORING_KEYWORD) {
 		this._keyword = keyword;
 		let currentSimulator = this.editor.contextManager.currentSimulator;
 
-		if (!Scoring.canChangeMaterialMedium(currentSimulator, 'DETECTOR', keyword))
-			//TODO scoringType from enum instead of 'DETECTOR'
+		if (!Scoring.canChangeMaterialMedium(currentSimulator, this.getScoringType(), keyword))
 			this.hasMaterial = false;
 	}
 
@@ -93,8 +93,7 @@ export class ScoringQuantity extends SimulationZone {
 	get medium(): Scoring.MEDIUM | null {
 		let currentSimulator = this.editor.contextManager.currentSimulator;
 
-		if (Scoring.canChangeNKMedium(currentSimulator, 'DETECTOR', this.keyword))
-			// TODO 'DETECTOR'
+		if (Scoring.canChangeNKMedium(currentSimulator, this.getScoringType(), this.keyword))
 			return this._medium;
 
 		return null;
@@ -116,8 +115,8 @@ export class ScoringQuantity extends SimulationZone {
 	get hasMaterial(): boolean {
 		let currentSimulator = this.editor.contextManager.currentSimulator;
 
-		if (Scoring.canChangeMaterialMedium(currentSimulator, 'DETECTOR', this.keyword))
-			return this._hasMaterial; // TODO scoringType from #1906
+		if (Scoring.canChangeMaterialMedium(currentSimulator, this.getScoringType(), this.keyword))
+			return this._hasMaterial;
 
 		return false;
 	}
@@ -131,7 +130,15 @@ export class ScoringQuantity extends SimulationZone {
 	}
 
 	createModifier(): DifferentialModifier {
-		const modifier = new DifferentialModifier();
+		const modifier = new DifferentialModifier(
+			getQuantityModifiersOptions(
+				this.editor.contextManager.currentSimulator,
+				this.getScoringType(),
+				this.keyword
+			)
+				.values()
+				.next().value
+		);
 		this.addModifier(modifier);
 
 		return modifier;
@@ -145,9 +152,16 @@ export class ScoringQuantity extends SimulationZone {
 		return this._modifiers[uuid];
 	}
 
+	getScoringType(): SCORING_TYPE_ENUM {
+		return (
+			this.editor.scoringManager.getOutputByQuantityUuid(this.uuid)?.scoringType ??
+			Scoring.SCORING_TYPE_ENUM.DETECTOR
+		);
+	}
+
 	constructor(
 		editor: YaptideEditor,
-		keyword: Scoring.DETECTOR_KEYWORD = Scoring.DETECTOR_KEYWORD.Dose
+		keyword: Scoring.SCORING_KEYWORD = Scoring.SCORING_KEYWORD.Dose
 	) {
 		super(editor, 'Quantity', 'Quantity');
 		this._modifiers = {};

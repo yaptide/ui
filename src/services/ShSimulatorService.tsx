@@ -32,7 +32,6 @@ import {
 	ResponseGetEstimatorPageResult,
 	ResponseGetJobInputs,
 	ResponseGetJobLogs,
-	ResponseGetJobResult,
 	ResponseGetJobResults,
 	ResponseGetJobStatus,
 	ResponseGetPageContents,
@@ -90,10 +89,24 @@ export interface RestSimulationContext {
 	) => Promise<FullSimulationData | undefined>;
 }
 
+/**
+ * Rebuilds the references between estimators and their corresponding scoring manager outputs.
+ * Each estimator is linked to an output in the scoring manager JSON by matching array indices.
+ * The scoringManagerJSON.outputs array length should match the number of estimators - if there are
+ * fewer outputs than estimators, the extra estimators will have undefined scoringOutputJsonRef.
+ * If there are more outputs than estimators, the extra outputs will be ignored.
+ *
+ * @param estimators - Array of estimators that need scoring manager output references rebuilt
+ * @param scoringManagerJSON - The scoring manager JSON containing output definitions. The outputs array
+ *                            should ideally have the same length as the estimators array to ensure
+ *                            all estimators get valid output references.
+ * @returns The estimators array with updated scoring output references for each estimator
+ */
 const recreateRefToScoringManagerOutputs = (
 	estimators: Estimator[],
 	scoringManagerJSON: ScoringManagerJSON
 ): Estimator[] => {
+	// Iterate through each estimator and set the scoringOutputJsonRef to the corresponding output in scoringManagerJSON
 	estimators.forEach((estimator, index) => {
 		estimator.scoringOutputJsonRef = scoringManagerJSON.outputs[index];
 	});
@@ -101,8 +114,17 @@ const recreateRefToScoringManagerOutputs = (
 	return estimators;
 };
 
+/**
+ * Recreates references between estimators, their pages and filters by linking filter UUIDs with actual filter objects.
+ * This rebuilds the relationships between estimator pages and their associated filters from the Filter JSON.
+ *
+ * @param estimators - Array of estimators containing pages that need filter references rebuilt
+ * @param FiltersJSON - Array of filter objects that contain the actual filter definitions
+ * @returns The estimators array with updated filter references for each page
+ */
 const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]): Estimator[] => {
-	estimators.forEach(estimator => {
+	// Iterate through each estimator and set the filterRef and name for each page
+	estimators.forEach((estimator, estimatorIndex) => {
 		const { pages, scoringOutputJsonRef } = estimator;
 		pages.forEach((page, idx) => {
 			const quantity = scoringOutputJsonRef?.quantities[idx];
@@ -115,12 +137,35 @@ const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]
 	return estimators;
 };
 
+/**
+ * Recreates references in simulation results by linking estimator data with scoring manager outputs and filters
+ * from the editor JSON. This function expects specific array length relationships to work properly:
+ *
+ * 1. The scoringManager.outputs array length should match the number of estimators, otherwise:
+ *    - If fewer outputs than estimators: excess estimators will have undefined scoringOutputJsonRef
+ *    - If more outputs than estimators: extra outputs are ignored
+ * 2. Within each estimator, the number of pages should match the number of quantities in the
+ *    corresponding scoring manager output for proper filter assignment
+ *
+ * @param inputJson - The editor JSON containing simulation configuration and scoring manager data
+ * @param estimators - Array of estimators containing simulation results
+ * @returns Estimators with updated references to scoring manager outputs and filters
+ * @throws Error if inputJson or estimators are undefined
+ */
 export const recreateRefsInResults = (inputJson: EditorJson, estimators: Estimator[]) => {
-	if (!inputJson) throw new Error('No editor data');
-	if (!estimators) throw new Error('No esitamtors data');
+	if (!inputJson) {
+		console.error('No editor data provided to recreateRefsInResults');
+
+		throw new Error('No editor data');
+	}
+
+	if (!estimators) {
+		console.error('No estimators data provided to recreateRefsInResults');
+
+		throw new Error('No estimators data');
+	}
 
 	const { scoringManager }: EditorJson = inputJson;
-
 	const estimatorsWithScoringManagerOutputs = recreateRefToScoringManagerOutputs(
 		estimators,
 		scoringManager
@@ -410,17 +455,41 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 					const jobInputs = await getJobInputs(info, signal, cache);
 
-					const refsInResults =
-						jobInputs?.input.inputJson &&
-						recreateRefsInResults(jobInputs.input.inputJson, estimator);
+					// if editor project data (with filter definitons etc.) is available, recreate references in results
+					if (jobInputs?.input.inputJson) {
+						const inputJsonForThisEstimator = {
+							...jobInputs.input.inputJson,
+							scoringManager: {
+								...jobInputs.input.inputJson.scoringManager,
+								outputs: jobInputs.input.inputJson.scoringManager.outputs.filter(
+									output => output.name === estimatorName
+								)
+							}
+						};
 
-					const data: SpecificEstimator = {
-						jobId,
-						estimators: refsInResults ?? estimator,
-						message: response.message
-					};
+						const refsInResults = recreateRefsInResults(
+							inputJsonForThisEstimator,
+							estimator
+						);
 
-					resolve(data);
+						const data: SpecificEstimator = {
+							jobId,
+							estimators: refsInResults ?? estimator,
+							message: response.message
+						};
+
+						resolve(data);
+					} else {
+						// if editor project data is not available (i.e. running from user uploaded files),
+						// return the results without recreating references
+						const data: SpecificEstimator = {
+							jobId,
+							estimators: estimator,
+							message: response.message
+						};
+
+						resolve(data);
+					}
 				},
 				cacheKey,
 				beforeCacheWrite
@@ -509,7 +578,6 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 							currentJobStatusData[StatusState.FAILED](data) ||
 							currentJobStatusData[StatusState.CANCELED](data)
 						) {
-							console.log(data.message);
 							statusDataCache.set(data.jobId, data, beforeCacheWrite);
 
 							return data;

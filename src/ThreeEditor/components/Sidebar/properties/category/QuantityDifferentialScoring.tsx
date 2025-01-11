@@ -8,8 +8,9 @@ import { RemoveDifferentialModifierCommand } from '../../../../js/commands/Remov
 import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
-	DETECTOR_MODIFIERS,
-	getQuantityModifiersOptions
+	getQuantityModifiersOptions,
+	SCORING_MODIFIERS,
+	SCORING_TYPE_ENUM
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
@@ -19,6 +20,9 @@ import {
 	PropertyField
 } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
+
+const NUMBER_OF_MODIFIERS_SHIELDHIT = 2;
+const NUMBER_OF_MODIFIERS_FLUKA = 1;
 
 export function QuantityDifferentialScoring(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
@@ -30,8 +34,37 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 	);
 
 	const visibleFlag = isScoringQuantity(watchedObject);
+	let simulatorType: SimulatorType = editor.contextManager.currentSimulator;
+	const numberOfModifiers = () => {
+		if (isScoringQuantity(watchedObject)) {
+			return (
+				getQuantityModifiersOptions(
+					editor.contextManager.currentSimulator,
+					watchedObject.getScoringType(),
+					watchedObject.keyword
+				)?.size ?? 0
+			);
+		}
+
+		return 0;
+	};
+
+	const maxNumberOfModifiers = () => {
+		if (simulatorType === SimulatorType.SHIELDHIT && numberOfModifiers() !== 0) {
+			return NUMBER_OF_MODIFIERS_SHIELDHIT;
+		} else if (simulatorType === SimulatorType.FLUKA && numberOfModifiers() !== 0) {
+			return NUMBER_OF_MODIFIERS_FLUKA;
+		}
+
+		return 0;
+	};
 
 	let keyword = watchedObject.keyword;
+	let scoringType: SCORING_TYPE_ENUM = SCORING_TYPE_ENUM.DETECTOR;
+
+	if (isScoringQuantity(watchedObject)) {
+		scoringType = watchedObject.getScoringType();
+	}
 
 	return (
 		<PropertiesCategory
@@ -43,13 +76,12 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 						<Button
 							sx={{ width: '100%' }}
 							variant='contained'
+							disabled={
+								watchedObject.modifiers.length >= maxNumberOfModifiers() ||
+								numberOfModifiers() === 0
+							}
 							onClick={() => {
-								if (
-									(watchedObject.modifiers.length >= 2 &&
-										currentSimulator == SimulatorType.SHIELDHIT) ||
-									(watchedObject.modifiers.length >= 1 &&
-										currentSimulator == SimulatorType.FLUKA)
-								)
+								if (watchedObject.modifiers.length >= maxNumberOfModifiers())
 									return;
 								editor.execute(
 									new AddDifferentialModifierCommand(editor, watchedObject.object)
@@ -83,14 +115,14 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 							logCheckbox={watchedObject.selectedModifier.isLog}
 							volume={watchedObject.selectedModifier.volume}
 							options={Array.from(
-								getQuantityModifiersOptions(currentSimulator, 'DETECTOR', keyword)
+								getQuantityModifiersOptions(currentSimulator, scoringType, keyword)
 							).reduce(
 								(acc, key) => {
 									acc[key] = key;
 
 									return acc;
 								},
-								{} as Record<DETECTOR_MODIFIERS, DETECTOR_MODIFIERS>
+								{} as Record<SCORING_MODIFIERS, SCORING_MODIFIERS>
 							)}
 							onChange={v => {
 								editor.execute(
@@ -99,7 +131,7 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 										watchedObject.object,
 										DifferentialModifier.fromJSON({
 											uuid: watchedObject.selectedModifier!.uuid,
-											diffType: v.keywordSelect as DETECTOR_MODIFIERS,
+											diffType: v.keywordSelect as SCORING_MODIFIERS,
 											lowerLimit: v.lowerLimit,
 											upperLimit: v.upperLimit,
 											binsNumber: v.binsNumber,
