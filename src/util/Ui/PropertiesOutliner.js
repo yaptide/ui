@@ -108,7 +108,7 @@ export function createDifferentialConfigurationRow(params) {
 
 	const keywordSelect = new UISelect().setFontSize(FONT_SIZE).onChange(update);
 	keywordSelect.setOptions(options);
-	createRow('Keyword', keywordSelect);
+	createRow('Diff. quantity', keywordSelect);
 	const lowerLimit = new UINumber().setPadding('2px 4px').onChange(update).setWidth('100%');
 	createRow('Lower limit', lowerLimit);
 	const upperLimit = new UINumber().setPadding('2px 4px').onChange(update).setWidth('100%');
