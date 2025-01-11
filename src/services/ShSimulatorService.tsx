@@ -455,7 +455,7 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 
 					const jobInputs = await getJobInputs(info, signal, cache);
 
-					// if editor project data (with filter definions etc) is available, recreate references in results
+					// if editor project data (with filter definitons etc.) is available, recreate references in results
 					if (jobInputs?.input.inputJson) {
 						const inputJsonForThisEstimator = {
 							...jobInputs.input.inputJson,
