@@ -5,8 +5,7 @@ import {
 	UINumber,
 	UIRow,
 	UISelect,
-	UIText,
-	UITextArea
+	UIText
 } from '../../ThreeEditor/js/libs/ui';
 import { UIOutliner } from '../../ThreeEditor/js/libs/ui.three';
 import * as Scoring from '../../ThreeEditor/Simulation/Scoring/ScoringOutputTypes';
