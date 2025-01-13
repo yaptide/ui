@@ -207,7 +207,7 @@
 		"@types/react": "^18.3.13",
 		"@types/react-async-script": "^1.2.5",
 		"@types/react-copy-to-clipboard": "^5.0.7",
-		"@types/selenium-webdriver": "^4.1.27",
+		"@types/selenium-webdriver": "^4.1.28",
 		"@types/three": "^0.166.0",
 		"cross-env": "^7.0.3",
 		"dependency-cruiser": "^16.9.0",
