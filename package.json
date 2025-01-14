@@ -212,7 +212,7 @@
 		"cross-env": "^7.0.3",
 		"dependency-cruiser": "^16.9.0",
 		"eslint-plugin-simple-import-sort": "^12.1.1",
-		"gh-pages": "^6.2.0",
+		"gh-pages": "^6.3.0",
 		"husky": "^9.1.7",
 		"jest-matcher-deep-close-to": "^3.0.2",
 		"lint-staged": "^15.3.0",
