@@ -157,6 +157,19 @@ export function RunSimulationForm({
 			);
 	};
 
+	let simulatorMenuItems = [];
+	let defaultSimulator = forwardedSimulator;
+
+	if (forwardedSimulator === SimulatorType.SHIELDHIT) {
+		simulatorMenuItems.push(<MenuItem value={SimulatorType.SHIELDHIT}>SHIELD-HIT12A</MenuItem>);
+	} else if (forwardedSimulator === SimulatorType.FLUKA) {
+		simulatorMenuItems.push(<MenuItem value={SimulatorType.FLUKA}>Fluka</MenuItem>);
+	} else {
+		defaultSimulator = SimulatorType.SHIELDHIT;
+		simulatorMenuItems.push(<MenuItem value={SimulatorType.SHIELDHIT}>SHIELD-HIT12A</MenuItem>);
+		simulatorMenuItems.push(<MenuItem value={SimulatorType.FLUKA}>Fluka</MenuItem>);
+	}
+
 	return (
 		<Box>
 			<Tabs
@@ -243,12 +256,11 @@ export function RunSimulationForm({
 							labelId='simulator-select-label'
 							size='small'
 							label='Simulation software'
-							defaultValue={forwardedSimulator}
+							defaultValue={defaultSimulator}
 							onChange={evn =>
 								setSelectedSimulator(evn.target.value as SimulatorType)
 							}>
-							<MenuItem value={SimulatorType.SHIELDHIT}>SHIELD-HIT12A</MenuItem>
-							<MenuItem value={SimulatorType.FLUKA}>Fluka</MenuItem>
+							{simulatorMenuItems}
 						</Select>
 					</FormControl>
 					<ToggleButtonGroup

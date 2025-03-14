@@ -210,10 +210,12 @@ export function PaginatedSimulationCardGrid({
 
 type SimulationsFromBackendProps = PaginatedCardGridProps & {
 	isBackendAlive: boolean;
+	simulator: SimulatorType;
 };
 
 export function PaginatedSimulationsFromBackend({
 	isBackendAlive,
+	simulator,
 	children,
 	...other
 }: SimulationsFromBackendProps) {
@@ -222,6 +224,7 @@ export function PaginatedSimulationsFromBackend({
 	const { yaptideEditor } = useStore();
 	const { postJobDirect, postJobBatch } = useShSimulation();
 
+	// TODO: receive simulator from props and pass it to openRunSimulationDialog
 	return (
 		<PaginatedSimulationCardGrid {...other}>
 			<InputGroup
@@ -237,7 +240,7 @@ export function PaginatedSimulationsFromBackend({
 						yaptideEditor &&
 						openRunSimulationDialog({
 							onSubmit: setTrackedId,
-							simulator: SimulatorType.SHIELDHIT,
+							simulator: simulator,
 							yaptideEditor,
 							postJobDirect,
 							postJobBatch

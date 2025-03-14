@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useConfig } from '../../../../config/ConfigService';
 import { useShSimulation } from '../../../../services/ShSimulatorService';
 import { useStore } from '../../../../services/StoreService';
+import { SimulatorType } from '../../../../types/RequestTypes';
 import {
 	JobStatusData,
 	SimulationInfo,
@@ -20,8 +21,10 @@ interface BackendSimulationsProps {
 	goToResults?: () => void;
 	setInputFiles: (inputFiles: SimulationInputFiles | undefined) => void;
 	setShowInputFilesEditor: (show: boolean) => void;
+	simulator: SimulatorType;
 }
 
+// TODO: receive simulator
 export const BackendSimulations = (props: BackendSimulationsProps) => {
 	const { goToResults, setInputFiles, setShowInputFilesEditor } = props;
 
@@ -115,6 +118,7 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 				handleDelete={deleteSpecificSimulation}
 				handleShowInputFiles={handleShowInputFiles}
 				isBackendAlive={isBackendAlive}
+				simulator={props.simulator}
 			/>
 			{isModalOpen && (
 				<CustomModal
