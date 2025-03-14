@@ -157,17 +157,15 @@ export function RunSimulationForm({
 			);
 	};
 
-	let simulatorMenuItems = [];
-	let defaultSimulator = forwardedSimulator;
+	let isShieldHitAval = true;
+	let isFlukaAval = true;
+	let defaultSimulator = SimulatorType.SHIELDHIT;
 
 	if (forwardedSimulator === SimulatorType.SHIELDHIT) {
-		simulatorMenuItems.push(<MenuItem value={SimulatorType.SHIELDHIT}>SHIELD-HIT12A</MenuItem>);
+		isFlukaAval = false;
 	} else if (forwardedSimulator === SimulatorType.FLUKA) {
-		simulatorMenuItems.push(<MenuItem value={SimulatorType.FLUKA}>Fluka</MenuItem>);
-	} else {
-		defaultSimulator = SimulatorType.SHIELDHIT;
-		simulatorMenuItems.push(<MenuItem value={SimulatorType.SHIELDHIT}>SHIELD-HIT12A</MenuItem>);
-		simulatorMenuItems.push(<MenuItem value={SimulatorType.FLUKA}>Fluka</MenuItem>);
+		defaultSimulator = SimulatorType.FLUKA;
+		isShieldHitAval = false;
 	}
 
 	return (
@@ -260,7 +258,16 @@ export function RunSimulationForm({
 							onChange={evn =>
 								setSelectedSimulator(evn.target.value as SimulatorType)
 							}>
-							{simulatorMenuItems}
+							<MenuItem
+								disabled={!isShieldHitAval}
+								value={SimulatorType.SHIELDHIT}>
+								SHIELD-HIT12A
+							</MenuItem>
+							<MenuItem
+								disabled={!isFlukaAval}
+								value={SimulatorType.FLUKA}>
+								Fluka
+							</MenuItem>
 						</Select>
 					</FormControl>
 					<ToggleButtonGroup
