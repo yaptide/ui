@@ -29,7 +29,7 @@
 		"glob": "^11.0.0",
 		"keycloak-js": "^26.0.8",
 		"jsroot": "^7.8.0",
-		"ky": "^1.7.3",
+		"ky": "^1.7.5",
 		"material-ui-popup-state": "^5.3.3",
 		"notistack": "^3.0.1",
 		"object-hash": "^3.0.0",
