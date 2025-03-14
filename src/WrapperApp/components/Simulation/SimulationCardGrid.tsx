@@ -224,7 +224,6 @@ export function PaginatedSimulationsFromBackend({
 	const { yaptideEditor } = useStore();
 	const { postJobDirect, postJobBatch } = useShSimulation();
 
-	// TODO: receive simulator from props and pass it to openRunSimulationDialog
 	return (
 		<PaginatedSimulationCardGrid {...other}>
 			<InputGroup
