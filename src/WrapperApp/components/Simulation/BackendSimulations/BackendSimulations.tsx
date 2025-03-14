@@ -24,7 +24,6 @@ interface BackendSimulationsProps {
 	simulator: SimulatorType;
 }
 
-// TODO: receive simulator
 export const BackendSimulations = (props: BackendSimulationsProps) => {
 	const { goToResults, setInputFiles, setShowInputFilesEditor } = props;
 

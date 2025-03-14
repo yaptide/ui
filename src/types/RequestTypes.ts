@@ -23,6 +23,11 @@ export enum SimulatorType {
 	FLUKA = 'fluka'
 }
 
+export const SimulatorNames = new Map<SimulatorType, string>([
+	[SimulatorType.SHIELDHIT, 'SHIELD-HIT12A'],
+	[SimulatorType.FLUKA, 'Fluka']
+]);
+
 export interface SimulatorExamples {
 	[key: string]: string;
 }
