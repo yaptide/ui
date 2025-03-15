@@ -83,6 +83,7 @@ export default function SimulationPanel({
 				goToResults={goToResults}
 				setShowInputFilesEditor={setShowInputFilesEditor}
 				setInputFiles={setInputFiles}
+				simulator={simulator}
 			/>
 		</Box>
 	);

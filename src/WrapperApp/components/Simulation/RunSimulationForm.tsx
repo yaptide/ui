@@ -20,7 +20,7 @@ import Typography from '@mui/material/Typography';
 import { MouseEvent, SyntheticEvent, useState } from 'react';
 
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
-import { SimulatorType } from '../../../types/RequestTypes';
+import { SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import { TabPanel } from '../Panels/TabPanel';
 import { BatchScriptParametersEditor } from './BatchParametersEditor';
@@ -157,6 +157,21 @@ export function RunSimulationForm({
 			);
 	};
 
+	const simulatorMenuItems = Array.from(SimulatorNames.entries()).map(
+		([simulatorType, simulatorName]) => (
+			<MenuItem
+				key={simulatorType}
+				value={simulatorType}>
+				{simulatorName}
+			</MenuItem>
+		)
+	);
+
+	const isSimulatorChoiceDisabled = forwardedSimulator !== SimulatorType.COMMON;
+	const defaultSimulator = isSimulatorChoiceDisabled
+		? forwardedSimulator
+		: simulatorMenuItems[0].props.value;
+
 	return (
 		<Box>
 			<Tabs
@@ -234,6 +249,7 @@ export function RunSimulationForm({
 					/>
 					<FormControl
 						fullWidth
+						disabled={isSimulatorChoiceDisabled}
 						sx={{
 							maxWidth: ({ spacing }) => `calc(100vw - ${spacing(14)})`,
 							width: '380px'
@@ -243,12 +259,11 @@ export function RunSimulationForm({
 							labelId='simulator-select-label'
 							size='small'
 							label='Simulation software'
-							defaultValue={forwardedSimulator}
+							defaultValue={defaultSimulator}
 							onChange={evn =>
 								setSelectedSimulator(evn.target.value as SimulatorType)
 							}>
-							<MenuItem value={SimulatorType.SHIELDHIT}>SHIELD-HIT12A</MenuItem>
-							<MenuItem value={SimulatorType.FLUKA}>Fluka</MenuItem>
+							{simulatorMenuItems}
 						</Select>
 					</FormControl>
 					<ToggleButtonGroup
