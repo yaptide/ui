@@ -219,8 +219,6 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 		};
 
 		const prepareKeycloakRejectionMessage = (err: HTTPError) => {
-			console.log(err);
-
 			if (err.response?.status === 403) {
 				return 'You are not authorized to use this application.';
 			}
