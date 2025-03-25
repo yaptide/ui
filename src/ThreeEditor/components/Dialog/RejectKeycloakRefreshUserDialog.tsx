@@ -1,9 +1,10 @@
 import { Button } from '@mui/material';
 
+import { useConfig } from '../../../config/ConfigService';
 import { KeycloakAuthContext } from '../../../services/KeycloakAuthService';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
-export function RejectKeycloakUserDialog({
+export function RejectKeycloakRefreshUserDialog({
 	onClose,
 	reason,
 	keycloakAuth: { keycloak, initialized }
@@ -11,17 +12,17 @@ export function RejectKeycloakUserDialog({
 	reason: string;
 	keycloakAuth: KeycloakAuthContext;
 }>) {
+	const { backendUrl } = useConfig();
+
 	return (
 		<CustomDialog
 			onClose={onClose}
 			alert={true}
-			title='User Login Rejected'
+			title={`${backendUrl}: Authentication Failed`}
 			contentText={
-				initialized
-					? `Hello ${
-							keycloak!.tokenParsed?.preferred_username
-						}. We could not accept your authorisation because of the following:\n${reason}\nPlease contact with an administrator to resolve this issue.`
-					: 'Connection could not be established with the authentication server. Please try again later.'
+				`Hello ${keycloak!.tokenParsed?.preferred_username}.` +
+				`We could not authenticate you because of the following:\n${reason}\n` +
+				'Please contact with an administrator to resolve this issue.'
 			}>
 			<Button
 				onClick={() => {

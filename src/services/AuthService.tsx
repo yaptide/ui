@@ -84,7 +84,8 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	const [keyCloakInterval, setKeyCloakInterval] = useState<number>();
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
 	const { enqueueSnackbar } = useSnackbar();
-	const { open: openRejectKeycloakDialog } = useDialog('rejectKeycloak');
+	const { open: openRejectKeycloakUserDialog } = useDialog('rejectKeycloak');
+	const { open: openRejectKeycloakRefreshUserDialog } = useDialog('rejectKeycloakRefresh');
 
 	const isAuthorized = useMemo(() => user !== null || demoMode, [demoMode, user]);
 
@@ -199,7 +200,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 			return;
 		} else {
 			// keycloak authentication is initilized, so it makes sense to check if user is authenticated in keycloak
-			if (!keycloak.authenticated) {
+			if (!keycloak?.authenticated) {
 				// user not authenticated, forcing logout from yaptide app
 				logout();
 
@@ -209,52 +210,66 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 			// user authenticated, we proceed with further checks
 		}
 
+		const setNewUserFromKeycloak = (username: string, accessExp: number) => {
+			setUser(prev => {
+				const sameUser = prev?.username === username;
+
+				return sameUser ? prev : { username, source: 'keycloak' };
+			});
+			setRefreshInterval(getRefreshDelay(accessExp));
+		};
+
+		const prepareKeycloakRefreshRejectionMessage = (err: HTTPError) => {
+			if (err.response?.status === 403) {
+				return 'You are not authorized to use this application.';
+			}
+
+			if (err.response?.status === undefined) {
+				return "we couldn't connect to YAPTIDE backend.";
+			}
+
+			if (err.message == undefined) {
+				return 'unknown error.';
+			}
+
+			return err.message;
+		};
+
 		checkPlgridAccessServices(keycloak.tokenParsed)
 			.then(() => {
 				const username = keycloak.tokenParsed?.preferred_username;
 				kyRef
 					.post(`auth/keycloak`, {
-						headers: {
-							Authorization: `Bearer ${keycloak.token}`
-						},
-						json: {
-							username
-						}
+						headers: { Authorization: `Bearer ${keycloak.token}` },
+						json: { username }
 					})
 					.json<ResponseAuthLogin>()
-					.then(({ accessExp }) => {
-						setUser(prev =>
-							prev?.username === username
-								? prev
-								: {
-										username,
-										source: 'keycloak'
-									}
-						);
-						setRefreshInterval(getRefreshDelay(accessExp));
-					})
+					.then(({ accessExp }) => setNewUserFromKeycloak(username, accessExp))
 					.catch((err: HTTPError) => {
 						setUser(null);
 						setRefreshInterval(undefined);
-						openRejectKeycloakDialog({
-							reason:
-								err.response?.status === 403
-									? 'You are not authorized to use this application.'
-									: err.message,
+						openRejectKeycloakRefreshUserDialog({
+							reason: prepareKeycloakRefreshRejectionMessage(err),
 							keycloakAuth: { keycloak, initialized }
 						});
 					});
 			})
 			.catch((reason: string) => {
-				openRejectKeycloakDialog({
+				openRejectKeycloakUserDialog({
 					reason,
 					keycloakAuth: { keycloak, initialized }
 				});
 			});
-	}, [initialized, keycloak, kyRef, openRejectKeycloakDialog]);
+	}, [
+		initialized,
+		keycloak,
+		kyRef,
+		openRejectKeycloakUserDialog,
+		openRejectKeycloakRefreshUserDialog
+	]);
 
 	useEffect(() => {
-		if (initialized && keycloak.authenticated)
+		if (initialized && keycloak?.authenticated)
 			setKeyCloakInterval(
 				keycloak.tokenParsed?.exp !== undefined
 					? getRefreshDelay(keycloak.tokenParsed.exp * 1000)
@@ -268,7 +283,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 		setRefreshInterval(undefined);
 		setKeyCloakInterval(undefined);
 
-		if (initialized && keycloak.authenticated) keycloak.logout();
+		if (initialized && keycloak?.authenticated) keycloak.logout();
 		kyRef
 			.delete(`auth/logout`)
 			.json<YaptideResponse>()
@@ -300,20 +315,16 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 		if (!initialized || user?.source !== 'keycloak') return Promise.resolve();
 
 		return keycloak
-			.updateToken(300) // 5 minutes in seconds minimum remaining lifetime for token before refresh is allowed
+			?.updateToken(300) // 5 minutes in seconds minimum remaining lifetime for token before refresh is allowed
 			.then(refreshed => {
-				if (refreshed)
-					enqueueSnackbar(
-						`Token refreshed ${keycloak.tokenParsed?.exp} -> ${keycloak.tokenParsed?.exp}`,
-						{ variant: 'success' }
-					);
+				if (refreshed) enqueueSnackbar('User token refreshed', { variant: 'success' });
 			})
 			.catch(reason => {});
 	}, [initialized, user?.source, keycloak, enqueueSnackbar]);
 
 	useIntervalAsync(
 		tokenRefresh,
-		initialized && keycloak.authenticated ? keyCloakInterval : undefined
+		initialized && keycloak?.authenticated ? keyCloakInterval : undefined
 	);
 
 	const refresh = useCallback(async () => {
@@ -356,7 +367,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 			}}>
 			{children}
 			<Backdrop
-				open={initialized && !!keycloak.authenticated && !isAuthorized}
+				open={initialized && !!keycloak?.authenticated && !isAuthorized}
 				sx={{
 					zIndex: ({ zIndex }: Theme) => zIndex.drawer + 1,
 					color: '#fff'
