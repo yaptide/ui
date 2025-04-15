@@ -3,6 +3,9 @@
 	"version": "0.1.0",
 	"private": false,
 	"homepage": ".",
+	"engines": {
+		"node": ">=14.0.0"
+	},
 	"dependencies": {
 		"@emotion/css": "^11.13.5",
 		"@emotion/react": "^11.14.0",
