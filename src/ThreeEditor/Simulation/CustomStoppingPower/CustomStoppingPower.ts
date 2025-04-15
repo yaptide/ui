@@ -30,7 +30,7 @@ const getAvailableStoppingPowerFiles = (path: StoppingPowerTable) => {
 			if (error.code === 'MODULE_NOT_FOUND') {
 				// file not found
 			} else {
-				throw error;
+				console.log(`Error while loading stopping power files: ${error.message}`);
 			}
 		}
 	}
