@@ -328,13 +328,13 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	);
 
 	const refresh = useCallback(async () => {
-		if (user?.source === 'keycloak' && isAuthorized) return await tokenVerification();
+		if (user?.source === 'keycloak' && isAuthorized) return tokenVerification();
 
 		if (demoMode || !isServerReachable) {
 			setRefreshInterval(undefined);
 			setUser(null);
 
-			return Promise.reject();
+			return Promise.resolve();
 		}
 
 		try {
