@@ -1,7 +1,12 @@
+import { SerializableState } from '../../ThreeEditor/js/EditorJson';
+
 export class CounterMapError<K extends string> extends Error {
 	type = 'CounterMapError';
 
-	constructor(message: string, public readonly origin: { origin: string; key: K }) {
+	constructor(
+		message: string,
+		public readonly origin: { origin: string; key: K }
+	) {
 		super(message);
 	}
 }
@@ -12,7 +17,7 @@ export const isCounterMapError = <T extends string>(
 	return error instanceof CounterMapError;
 };
 
-export class CounterMap<K extends string> {
+export class CounterMap<K extends string> implements SerializableState<Record<string, number>> {
 	private map: Map<K, number> = new Map();
 
 	constructor(array?: Array<K>) {
@@ -41,7 +46,6 @@ export class CounterMap<K extends string> {
 		return newValue;
 	}
 
-
 	get(key: K) {
 		return this.map.get(key);
 	}
@@ -50,7 +54,7 @@ export class CounterMap<K extends string> {
 		return (this.map.get(key) ?? 0) > 0;
 	}
 
-	toJSON(): Record<string, number> {
+	toSerialized(): Record<string, number> {
 		const json: Record<string, number> = {};
 		this.map.forEach((value, key) => {
 			if (value > 0) json[key] = value;
@@ -59,7 +63,7 @@ export class CounterMap<K extends string> {
 		return json;
 	}
 
-	fromJSON(json: { [k in K]: number }) {
+	fromSerialized(json: { [k in K]: number }) {
 		for (const key in json) {
 			this.map.set(key, json[key]);
 		}

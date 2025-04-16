@@ -2,6 +2,7 @@ import { Signal } from 'signals';
 import * as THREE from 'three';
 
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { SerializableState } from '../../js/EditorJson';
 import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor';
 import { OneSlotContainer, SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElementJSON } from '../Base/SimulationElement';
@@ -23,7 +24,8 @@ export class SpecialComponentManager
 	implements
 		SimulationElementManager<'CTCube', CTCube>,
 		SimulationElementManager<'beamModulator', BeamModulator>,
-		SimulationPropertiesType
+		SimulationPropertiesType,
+		SerializableState<SpecialComponentManagerJSON>
 {
 	/****************************Private****************************/
 	private readonly metadata = {
@@ -150,14 +152,14 @@ export class SpecialComponentManager
 			editor,
 			'CT Cube Singleton',
 			'CTCube',
-			json => new CTCube(editor).fromJSON(json)
+			json => new CTCube(editor).fromSerialized(json)
 		);
 
 		this.beamModulatorContainer = new OneSlotContainer<BeamModulator>(
 			editor,
 			'Beam Modulator Singleton',
 			'BeamModulator',
-			json => new BeamModulator(editor).fromJSON(json)
+			json => new BeamModulator(editor).fromSerialized(json)
 		);
 		this.beamModulatorHelper = new THREE.Mesh(undefined, this._detectWireMaterial);
 		this.beamModulatorHelper.visible = false;
@@ -195,7 +197,7 @@ export class SpecialComponentManager
 	copy(source: this, recursive?: boolean | undefined) {
 		super.copy(source, recursive);
 
-		return this.fromJSON(source.toJSON());
+		return this.fromSerialized(source.toSerialized());
 	}
 
 	reset(): this {
@@ -208,10 +210,10 @@ export class SpecialComponentManager
 		return this;
 	}
 
-	toJSON(): SpecialComponentManagerJSON {
+	toSerialized(): SpecialComponentManagerJSON {
 		const { uuid, name, managerType: type, metadata } = this;
-		const [CTCube] = this.CTCubeContainer.toJSON();
-		const [modulator] = this.beamModulatorContainer.toJSON();
+		const [CTCube] = this.CTCubeContainer.toSerialized();
+		const [modulator] = this.beamModulatorContainer.toSerialized();
 
 		return {
 			CTCube,
@@ -223,7 +225,7 @@ export class SpecialComponentManager
 		};
 	}
 
-	fromJSON(json: SpecialComponentManagerJSON) {
+	fromSerialized(json: SpecialComponentManagerJSON) {
 		const {
 			metadata: { version }
 		} = this;
@@ -236,8 +238,8 @@ export class SpecialComponentManager
 
 		this.uuid = uuid;
 		this.name = name;
-		this.CTCubeContainer.fromJSON(CTCube ? [CTCube] : []);
-		this.beamModulatorContainer.fromJSON(modulator ? [modulator] : []);
+		this.CTCubeContainer.fromSerialized(CTCube ? [CTCube] : []);
+		this.beamModulatorContainer.fromSerialized(modulator ? [modulator] : []);
 
 		return this;
 	}

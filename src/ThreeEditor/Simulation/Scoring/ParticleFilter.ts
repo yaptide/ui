@@ -32,13 +32,13 @@ export class ParticleFilter extends ScoringFilter {
 		return this;
 	}
 
-	toJSON(): ParticleFilterJSON {
+	toSerialized(): ParticleFilterJSON {
 		const { uuid, name, particleData: rules, type } = this;
 
 		return { uuid, name, type, particle: this.particleData };
 	}
 
-	fromJSON(json: ParticleFilterJSON) {
+	fromSerialized(json: ParticleFilterJSON) {
 		this.clear();
 		this.uuid = json.uuid;
 		this.name = json.name;
@@ -47,8 +47,8 @@ export class ParticleFilter extends ScoringFilter {
 		return this;
 	}
 
-	static fromJSON(editor: YaptideEditor, json: ParticleFilterJSON): ParticleFilter {
-		return new ParticleFilter(editor).fromJSON(json);
+	static fromSerialized(editor: YaptideEditor, json: ParticleFilterJSON): ParticleFilter {
+		return new ParticleFilter(editor).fromSerialized(json);
 	}
 
 	toString(): string {

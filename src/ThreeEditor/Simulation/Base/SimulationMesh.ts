@@ -2,6 +2,7 @@ import * as THREE from 'three';
 
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { AdditionalGeometryDataType, getGeometryData } from '../../../util/AdditionalGeometryData';
+import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from './SimulationElement';
@@ -27,7 +28,11 @@ export abstract class SimulationMesh<
 		TMaterial extends THREE.MeshBasicMaterial = THREE.MeshBasicMaterial
 	>
 	extends THREE.Mesh<TGeometry, TMaterial>
-	implements SimulationPropertiesType, SimulationSceneChild, SimulationElement
+	implements
+		SimulationPropertiesType,
+		SimulationSceneChild,
+		SimulationElement,
+		SerializableState<SimulationMeshJSON>
 {
 	editor: YaptideEditor;
 	parent: SimulationSceneContainer<this> | null = null;
@@ -48,7 +53,7 @@ export abstract class SimulationMesh<
 		this.type = type;
 	}
 
-	toJSON(): SimulationMeshJSON {
+	toSerialized(): SimulationMeshJSON {
 		const { name, type, uuid, visible } = this;
 		const geometryData = getGeometryData(this);
 		const colorHex = (this.material as THREE.MeshBasicMaterial).color.getHex();
@@ -63,7 +68,7 @@ export abstract class SimulationMesh<
 		};
 	}
 
-	fromJSON(json: SimulationMeshJSON) {
+	fromSerialized(json: SimulationMeshJSON) {
 		this.name = json.name;
 		this.uuid = json.uuid;
 		this.visible = json.visible;

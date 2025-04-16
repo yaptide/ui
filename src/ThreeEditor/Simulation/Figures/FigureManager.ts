@@ -20,11 +20,11 @@ type FigureManagerJSON = Omit<
 const figureLoader = (editor: YaptideEditor) => (json: SimulationMeshJSON) => {
 	switch (json.type) {
 		case 'BoxFigure':
-			return new BoxFigure(editor).fromJSON(json);
+			return new BoxFigure(editor).fromSerialized(json);
 		case 'CylinderFigure':
-			return new CylinderFigure(editor).fromJSON(json);
+			return new CylinderFigure(editor).fromSerialized(json);
 		case 'SphereFigure':
-			return new SphereFigure(editor).fromJSON(json);
+			return new SphereFigure(editor).fromSerialized(json);
 		default:
 			throw new Error(`Unknown figure type: ${json.type}`);
 	}
@@ -118,7 +118,7 @@ export class FigureManager
 	copy(source: this, recursive?: boolean | undefined) {
 		super.copy(source, recursive);
 
-		return this.fromJSON(source.toJSON());
+		return this.fromSerialized(source.toSerialized());
 	}
 
 	reset() {
@@ -128,7 +128,7 @@ export class FigureManager
 		return this;
 	}
 
-	toJSON(): FigureManagerJSON {
+	toSerialized(): FigureManagerJSON {
 		const { uuid, name, managerType: type, metadata } = this;
 
 		return {
@@ -136,11 +136,11 @@ export class FigureManager
 			name,
 			type,
 			metadata,
-			figures: this.figureContainer.toJSON()
+			figures: this.figureContainer.toSerialized()
 		};
 	}
 
-	fromJSON(json: FigureManagerJSON) {
+	fromSerialized(json: FigureManagerJSON) {
 		const {
 			metadata: { version }
 		} = this;
@@ -151,7 +151,7 @@ export class FigureManager
 
 		this.uuid = uuid;
 		this.name = name;
-		this.figureContainer.fromJSON(figures);
+		this.figureContainer.fromSerialized(figures);
 
 		return this;
 	}

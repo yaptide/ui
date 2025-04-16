@@ -634,7 +634,7 @@ YaptideEditor.prototype = {
 
 	//
 
-	async fromJSON(json) {
+	async fromSerialized(json) {
 		const {
 			project,
 			materialManager,
@@ -659,49 +659,49 @@ YaptideEditor.prototype = {
 				this.viewManager.fromConfigurationJson(project.viewManager);
 			else console.warn('View Manager was not found in JSON data. Skipping part 2 out of 11');
 
-			if (project && project.history) this.history.fromJSON(project.history);
+			if (project && project.history) this.history.fromSerialized(project.history);
 			else console.warn('History was not found in JSON data. Skipping part 3 out of 11');
 
-			if (materialManager) this.materialManager.fromJSON(materialManager);
+			if (materialManager) this.materialManager.fromSerialized(materialManager);
 			else
 				throw new Error(
 					'Material Manager was not found in JSON data. Aborting load on part 4 out of 11'
 				);
-			if (figureManager) this.figureManager.fromJSON(figureManager);
+			if (figureManager) this.figureManager.fromSerialized(figureManager);
 			else
 				throw new Error(
 					'Figure Manager was not found in JSON data. Aborting load on part 5 out of 11'
 				);
 
 			// CSGManager must be loaded after scene and simulation materials
-			if (zoneManager) this.zoneManager.fromJSON(zoneManager);
+			if (zoneManager) this.zoneManager.fromSerialized(zoneManager);
 			else
 				throw new Error(
 					'Zone Manager was not found in JSON data. Aborting load on part 6 out of 11'
 				);
 
-			if (detectorManager) this.detectorManager.fromJSON(detectorManager);
+			if (detectorManager) this.detectorManager.fromSerialized(detectorManager);
 			else
 				throw new Error(
 					'Detector Manager was not found in JSON data. Aborting load on part 7 out of 11'
 				);
 			if (specialComponentsManager)
-				this.specialComponentsManager.fromJSON(specialComponentsManager);
+				this.specialComponentsManager.fromSerialized(specialComponentsManager);
 			else
 				console.warn(
 					'Special Components Manager was not found in JSON data. Skipping part 8 out of 11'
 				);
 
-			if (scoringManager) this.scoringManager.fromJSON(scoringManager);
+			if (scoringManager) this.scoringManager.fromSerialized(scoringManager);
 			else
 				console.warn(
 					'Scoring Manager was not found in JSON data. Skipping part 9 out of 11'
 				);
 
-			if (beam) this.beam.fromJSON(beam);
+			if (beam) this.beam.fromSerialized(beam);
 			else console.warn('Beam was not found in JSON data. Skipping part 10 out of 11');
 
-			if (physic) this.physic.fromJSON(physic);
+			if (physic) this.physic.fromSerialized(physic);
 			else console.warn('Physic was not found in JSON data. Skipping part 11 out of 11');
 
 			this.signals.cameraResetted.dispatch();
@@ -713,7 +713,7 @@ YaptideEditor.prototype = {
 		}
 	},
 
-	toJSON() {
+	toSerialized() {
 		// scripts clean up
 
 		var scene = this.figureManager;
@@ -733,24 +733,24 @@ YaptideEditor.prototype = {
 			metadata: {
 				version: this.jsonVersion,
 				type: 'Editor',
-				generator: 'YaptideEditor.toJSON'
+				generator: 'YaptideEditor.toSerialized'
 			},
 			project: {
 				title: this.config.getKey('project/title'),
 				description: this.config.getKey('project/description'),
 				viewManager: this.viewManager.configurationToJson(), // serialize ViewManager
-				history: this.history.toJSON(), // serialize History
+				history: this.history.toSerialized(), // serialize History
 				simulator: this.contextManager.currentSimulator
 			},
-			figureManager: this.figureManager.toJSON(),
-			zoneManager: this.zoneManager.toJSON(), // serialize ZoneManager
-			detectorManager: this.detectorManager.toJSON(), // serialize DetectorManager;
-			specialComponentsManager: this.specialComponentsManager.toJSON(), // serialize SpecialComponentsManager
-			materialManager: this.materialManager.toJSON(), // serialize MaterialManager
-			scoringManager: this.scoringManager.toJSON(), // serialize ScoringManager
+			figureManager: this.figureManager.toSerialized(),
+			zoneManager: this.zoneManager.toSerialized(), // serialize ZoneManager
+			detectorManager: this.detectorManager.toSerialized(), // serialize DetectorManager;
+			specialComponentsManager: this.specialComponentsManager.toSerialized(), // serialize SpecialComponentsManager
+			materialManager: this.materialManager.toSerialized(), // serialize MaterialManager
+			scoringManager: this.scoringManager.toSerialized(), // serialize ScoringManager
 
-			beam: this.beam.toJSON(),
-			physic: this.physic.toJSON()
+			beam: this.beam.toSerialized(),
+			physic: this.physic.toSerialized()
 		};
 
 		const hashJsonEditor = hash(jsonEditor);

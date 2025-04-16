@@ -4,8 +4,8 @@ import { YaptideEditor } from '../../js/YaptideEditor';
  * Class defining the structure of all commands
  * @template execute - method to execute command, should not have any side effects
  * @template undo - method to undo command, should not have any side effects
- * @template toJSON - method to serialize command to JSON to be stored in local storage or to be saved to the file
- * @template fromJSON - method to deserialize command from JSON to restore history
+ * @template toSerialized - method to serialize command to JSON to be stored in local storage or to be saved to the file
+ * @template fromSerialized - method to deserialize command from JSON to restore history
  */
 export abstract class Command<Target extends Record<string, unknown> = Record<string, unknown>> {
 	editor;
@@ -39,7 +39,7 @@ export abstract class Command<Target extends Record<string, unknown> = Record<st
 
 	abstract execute(): void;
 	abstract undo(): void;
-	toJSON(): BaseCommandJSON<Target> {
+	toSerialized(): BaseCommandJSON<Target> {
 		return {
 			type: this.type,
 			id: this.id,
@@ -49,7 +49,7 @@ export abstract class Command<Target extends Record<string, unknown> = Record<st
 		};
 	}
 
-	fromJSON(json: BaseCommandJSON<Target>): void {
+	fromSerialized(json: BaseCommandJSON<Target>): void {
 		this._type = json.type;
 		this.id = json.id;
 		this.name = json.name;

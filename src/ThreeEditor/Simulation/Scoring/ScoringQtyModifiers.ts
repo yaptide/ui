@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 
+import { SerializableState } from '../../js/EditorJson';
 import { SCORING_MODIFIERS } from './ScoringOutputTypes';
 
 export type DifferentialJSON = {
@@ -11,7 +12,7 @@ export type DifferentialJSON = {
 	uuid: string;
 };
 
-export class DifferentialModifier {
+export class DifferentialModifier implements SerializableState<DifferentialJSON> {
 	lowerLimit: number;
 	upperLimit: number;
 	binsNumber: number;
@@ -34,7 +35,7 @@ export class DifferentialModifier {
 		this.isLog = isLog;
 	}
 
-	toJSON(): DifferentialJSON {
+	toSerialized(): DifferentialJSON {
 		return {
 			diffType: this.diffType,
 			lowerLimit: this.lowerLimit,
@@ -45,7 +46,11 @@ export class DifferentialModifier {
 		};
 	}
 
-	static fromJSON(json: DifferentialJSON): DifferentialModifier {
+	fromSerialized(state: DifferentialJSON) {
+		return this;
+	}
+
+	static fromSerialized(json: DifferentialJSON): DifferentialModifier {
 		const mod = new DifferentialModifier(
 			json.diffType,
 			json.lowerLimit,

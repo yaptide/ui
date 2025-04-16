@@ -58,7 +58,7 @@ const Store = ({ children }: GenericContextProviderProps) => {
 						);
 					}
 
-					if (versionIsOk) editor.fromJSON(state);
+					if (versionIsOk) editor.fromSerialized(state);
 				}
 
 				const selected = editor.config.getKey('selected');
@@ -81,7 +81,7 @@ const Store = ({ children }: GenericContextProviderProps) => {
 					editor.signals.savingStarted.dispatch();
 
 					timeout = setTimeout(() => {
-						editor.storage.set(editor.toJSON());
+						editor.storage.set(editor.toSerialized());
 
 						editor.signals.savingFinished.dispatch();
 					}, 100);

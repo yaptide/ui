@@ -127,20 +127,20 @@ export class BeamModulator extends SimulationPoints {
 		this.wireframeHelper = editor.specialComponentsManager.beamModulatorHelper;
 	}
 
-	toJSON(): BeamModulatorJSON {
+	toSerialized(): BeamModulatorJSON {
 		const { geometryData, simulationMethod, sourceFile } = this;
 
 		return {
-			...super.toJSON(),
+			...super.toSerialized(),
 			geometryData,
 			simulationMethod,
 			sourceFile
 		};
 	}
 
-	fromJSON(json: BeamModulatorJSON): this {
+	fromSerialized(json: BeamModulatorJSON): this {
 		const { geometryData, simulationMethod, sourceFile, ...rest } = json;
-		super.fromJSON(rest);
+		super.fromSerialized(rest);
 		this.geometryData = geometryData;
 		this.simulationMethod = simulationMethod;
 		this.sourceFile = sourceFile;

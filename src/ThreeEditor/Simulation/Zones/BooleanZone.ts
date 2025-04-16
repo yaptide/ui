@@ -179,12 +179,12 @@ export class BooleanZone extends SimulationZone {
 		this.signals.sceneGraphChanged.dispatch();
 	}
 
-	toJSON(): BooleanZoneJSON {
-		const json = super.toJSON();
+	toSerialized(): BooleanZoneJSON {
+		const json = super.toSerialized();
 		const unionOperations = this.unionOperations.map(union =>
-			union.map(operation => operation.toJSON())
+			union.map(operation => operation.toSerialized())
 		);
-		const subscribedObjects = this.subscribedObjects.toJSON();
+		const subscribedObjects = this.subscribedObjects.toSerialized();
 
 		return {
 			...json,
@@ -193,33 +193,33 @@ export class BooleanZone extends SimulationZone {
 		};
 	}
 
-	fromJSON(json: BooleanZoneJSON): this {
+	fromSerialized(json: BooleanZoneJSON): this {
 		const { editor } = this;
 		const {
 			unionOperations: operationsJSON,
 			subscribedObjects: objectsJSON,
 			...basicJSON
 		} = json;
-		super.fromJSON(basicJSON);
+		super.fromSerialized(basicJSON);
 		this.unionOperations = operationsJSON.map(union =>
-			union.map(operation => OperationTuple.fromJSON(editor, operation))
+			union.map(operation => OperationTuple.fromSerialized(editor, operation))
 		);
 
-		this.subscribedObjects = new CounterMap().fromJSON(objectsJSON);
+		this.subscribedObjects = new CounterMap().fromSerialized(objectsJSON);
 
 		return this;
 	}
 
-	static fromJSON(editor: YaptideEditor, json: BooleanZoneJSON) {
+	static fromSerialized(editor: YaptideEditor, json: BooleanZoneJSON) {
 		const zone = new BooleanZone(editor);
 
-		return zone.fromJSON(json);
+		return zone.fromSerialized(json);
 	}
 
 	duplicate(): BooleanZone {
 		const duplicated = new BooleanZone(this.editor);
 		const generatedUuid = duplicated.uuid;
-		duplicated.fromJSON(this.toJSON());
+		duplicated.fromSerialized(this.toSerialized());
 		duplicated.uuid = generatedUuid;
 
 		return duplicated;

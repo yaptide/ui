@@ -128,7 +128,7 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 									new AddDifferentialModifierCommand(
 										editor,
 										watchedObject.object,
-										DifferentialModifier.fromJSON({
+										DifferentialModifier.fromSerialized({
 											uuid: watchedObject.selectedModifier!.uuid,
 											diffType: v.keywordSelect as SCORING_MODIFIERS,
 											lowerLimit: v.lowerLimit,

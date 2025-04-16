@@ -55,7 +55,7 @@ export function LoadFileDialog({
 
 					if (data && yaptideEditor) {
 						yaptideEditor.clear();
-						yaptideEditor.fromJSON(data);
+						yaptideEditor.fromSerialized(data);
 					}
 				}}>
 				Clear and proceed

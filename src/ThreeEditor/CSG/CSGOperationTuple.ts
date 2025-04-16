@@ -1,6 +1,9 @@
+import { Serializable } from 'node:child_process';
+
 import * as THREE from 'three';
 
 import { executeOperation, isOperation, Operation } from '../../types/Operation';
+import { SerializableState } from '../js/EditorJson';
 import CSG from '../js/libs/csg/three-csg';
 import { YaptideEditor } from '../js/YaptideEditor';
 
@@ -9,7 +12,7 @@ export interface OperationTupleJSON {
 	mode: Operation;
 }
 
-export class OperationTuple {
+export class OperationTuple implements SerializableState<OperationTupleJSON> {
 	object: THREE.Mesh;
 	mode: Operation;
 	readonly isOperationTuple: true = true;
@@ -26,7 +29,7 @@ export class OperationTuple {
 		return executeOperation(this.mode)(csg)(CSG.fromMesh(object));
 	}
 
-	toJSON() {
+	toSerialized() {
 		const jsonObject: OperationTupleJSON = {
 			mode: this.mode,
 			objectUuid: this.object.uuid
@@ -35,7 +38,11 @@ export class OperationTuple {
 		return jsonObject;
 	}
 
-	static fromJSON(editor: YaptideEditor, data: OperationTupleJSON) {
+	fromSerialized(state: OperationTupleJSON) {
+		return this;
+	}
+
+	static fromSerialized(editor: YaptideEditor, data: OperationTupleJSON) {
 		const { mode, objectUuid } = data;
 		const object = editor.figureManager.getObjectByProperty('uuid', objectUuid);
 

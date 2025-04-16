@@ -2,6 +2,7 @@ import { Signal } from 'signals';
 import * as THREE from 'three';
 
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { SerializableState } from '../../js/EditorJson';
 import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElementJSON } from '../Base/SimulationElement';
@@ -18,7 +19,7 @@ type DetectorManagerJSON = Omit<
 >;
 
 const detectorLoader = (editor: YaptideEditor) => (json: DetectorJSON) =>
-	new Detector(editor).fromJSON(json);
+	new Detector(editor).fromSerialized(json);
 
 export class DetectorContainer extends SimulationSceneContainer<Detector> {
 	readonly isDetectContainer: true = true;
@@ -191,7 +192,7 @@ export class DetectorManager
 	copy(source: this, recursive?: boolean | undefined) {
 		super.copy(source, recursive);
 
-		return this.fromJSON(source.toJSON());
+		return this.fromSerialized(source.toSerialized());
 	}
 
 	reset() {
@@ -203,7 +204,7 @@ export class DetectorManager
 		return this;
 	}
 
-	toJSON(): DetectorManagerJSON {
+	toSerialized(): DetectorManagerJSON {
 		const { uuid, name, managerType: type, metadata } = this;
 
 		return {
@@ -211,11 +212,11 @@ export class DetectorManager
 			name,
 			type,
 			metadata,
-			detectors: this.detectorContainer.toJSON()
+			detectors: this.detectorContainer.toSerialized()
 		};
 	}
 
-	fromJSON(json: DetectorManagerJSON) {
+	fromSerialized(json: DetectorManagerJSON) {
 		const {
 			metadata: { version }
 		} = this;
@@ -226,7 +227,7 @@ export class DetectorManager
 
 		this.uuid = uuid;
 		this.name = name;
-		this.detectorContainer.fromJSON(detectors);
+		this.detectorContainer.fromSerialized(detectors);
 
 		return this;
 	}

@@ -40,7 +40,7 @@ test('toJSON', () => {
 });
 
 test('fromJSON', () => {
-	const material = SimulationMaterial.fromJSON(editor, {
+	const material = SimulationMaterial.fromSerialized(editor, {
 		uuid: 'testUuid',
 		name: 'test',
 		sanitizedName: 'test',
@@ -54,7 +54,7 @@ test('fromJSON', () => {
 	expect(material.uuid).toBe('testUuid');
 	expect(material.customStoppingPower).toBe(false);
 
-	const material2 = SimulationMaterial.fromJSON(editor, {
+	const material2 = SimulationMaterial.fromSerialized(editor, {
 		uuid: 'testUuid',
 		name: 'test',
 		sanitizedName: 'test',

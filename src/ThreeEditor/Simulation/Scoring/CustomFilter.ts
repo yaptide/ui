@@ -1,3 +1,4 @@
+import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import {
@@ -137,13 +138,13 @@ export class CustomFilter extends ScoringFilter {
 		return rule;
 	}
 
-	toJSON(): CustomFilterJSON {
+	toSerialized(): CustomFilterJSON {
 		const { uuid, name, _rules: rules, type } = this;
 
 		return { uuid, name, type, rules: Object.values(rules).map(rule => rule.toJSON()) };
 	}
 
-	fromJSON(json: CustomFilterJSON) {
+	fromSerialized(json: CustomFilterJSON) {
 		this.clear();
 		this.uuid = json.uuid;
 		this.name = json.name;
@@ -152,8 +153,8 @@ export class CustomFilter extends ScoringFilter {
 		return this;
 	}
 
-	static fromJSON(editor: YaptideEditor, json: CustomFilterJSON): CustomFilter {
-		return new CustomFilter(editor).fromJSON(json);
+	static fromSerialized(editor: YaptideEditor, json: CustomFilterJSON): CustomFilter {
+		return new CustomFilter(editor).fromSerialized(json);
 	}
 
 	toString(): string {

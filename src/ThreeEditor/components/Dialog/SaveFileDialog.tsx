@@ -51,7 +51,7 @@ export function SaveFileDialog({
 	const canKeepResults = useCallback(() => {
 		return (
 			disableCheckbox &&
-			fetchedResults?.input.inputJson?.hash === yaptideEditor?.toJSON().hash
+			fetchedResults?.input.inputJson?.hash === yaptideEditor?.toSerialized().hash
 		);
 	}, [disableCheckbox, fetchedResults?.input.inputJson?.hash, yaptideEditor]);
 
@@ -140,7 +140,7 @@ export function SaveFileDialog({
 						saveJson(
 							keepResults && fetchedResults
 								? fetchedResults
-								: yaptideEditor?.toJSON(),
+								: yaptideEditor?.toSerialized(),
 							name
 						);
 					}

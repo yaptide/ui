@@ -7,6 +7,7 @@ import {
 	AdditionalGeometryDataType,
 	getGeometryData
 } from '../../../../util/AdditionalGeometryData';
+import { SerializableState } from '../../../js/EditorJson';
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { SimulationElement } from '../../Base/SimulationElement';
 import SimulationMaterial from '../../Materials/SimulationMaterial';
@@ -39,7 +40,7 @@ const _materialDefault = new THREE.MeshBasicMaterial({
 
 const _defaultColor = 0xff0000;
 
-export class WorldZone extends SimulationElement {
+export class WorldZone extends SimulationElement implements SerializableState<WorldZoneJSON> {
 	readonly notRemovable: boolean = true;
 	get notMovable() {
 		// custom get function to conditionally return notMoveable property;
@@ -231,7 +232,7 @@ export class WorldZone extends SimulationElement {
 		this.editor.sceneHelpers.remove(this._helper);
 	}
 
-	toJSON() {
+	toSerialized() {
 		const { uuid: materialUuid } = this.simulationMaterial;
 		const geometryData = getGeometryData(this.helper.getMeshByType(this.geometryType));
 		geometryData.position = this.position.toArray();
@@ -249,7 +250,7 @@ export class WorldZone extends SimulationElement {
 		return jsonObject;
 	}
 
-	fromJSON(data: WorldZoneJSON) {
+	fromSerialized(data: WorldZoneJSON) {
 		const {
 			geometryData: { position, parameters, geometryType },
 			name,
@@ -278,8 +279,8 @@ export class WorldZone extends SimulationElement {
 		return this;
 	}
 
-	static fromJSON(editor: YaptideEditor, data: WorldZoneJSON) {
-		return new WorldZone(editor).fromJSON(data);
+	static fromSerialized(editor: YaptideEditor, data: WorldZoneJSON) {
+		return new WorldZone(editor).fromSerialized(data);
 	}
 
 	copy(source: this, recursive = true) {

@@ -15,7 +15,7 @@ export const useUpdateCurrentSimulationEffect = (
 	useEffect(() => {
 		const updateCurrentSimulation = async () => {
 			if (!demoMode && yaptideEditor) {
-				const hash = yaptideEditor.toJSON().hash;
+				const hash = yaptideEditor.toSerialized().hash;
 				const currentStatus = simulationsStatusData?.find(async s => {
 					if (currentJobStatusData[StatusState.COMPLETED](s)) {
 						const jobInputs = await getJobInputs(s, controller.signal);

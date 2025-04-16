@@ -3,6 +3,7 @@ import * as THREE from 'three';
 
 import * as DETECT from '../../../types/SimulationTypes/DetectTypes/DetectTypes';
 import { AdditionalGeometryDataType, getGeometryData } from '../../../util/AdditionalGeometryData';
+import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { HollowCylinderGeometry } from '../Base/HollowCylinderGeometry';
 import { SimulationPoints, SimulationPointsJSON } from '../Base/SimulationPoints';
@@ -26,7 +27,7 @@ const detectPointsMaterial: THREE.PointsMaterial = new THREE.PointsMaterial({
 	size: 0.1
 });
 
-export class Detector extends SimulationPoints {
+export class Detector extends SimulationPoints implements SerializableState<DetectorJSON> {
 	readonly notRemovable: boolean = false;
 	map: null = null;
 	alphaMap: null = null;
@@ -267,18 +268,22 @@ export class Detector extends SimulationPoints {
 		this.setData(DETECT.DEFAULT_ANY);
 	}
 
-	toJSON(): DetectorJSON {
-		const { geometryData } = this;
+	toSerialized(): DetectorJSON {
+		const { name, uuid, type, visible, geometryData } = this;
 
 		return {
-			...super.toJSON(),
-			geometryData
+			name,
+			uuid,
+			type,
+			visible,
+			geometryData,
+			colorHex: this._colorHex
 		};
 	}
 
-	fromJSON(json: DetectorJSON) {
+	fromSerialized(json: DetectorJSON) {
 		const { geometryData } = json;
-		super.fromJSON(json);
+		super.fromSerialized(json);
 		this.geometryData = geometryData;
 
 		return this;
@@ -287,7 +292,7 @@ export class Detector extends SimulationPoints {
 	duplicate(): Detector {
 		const duplicated = new Detector(this.editor);
 		const generatedUuid = duplicated.uuid;
-		duplicated.fromJSON(this.toJSON());
+		duplicated.fromSerialized(this.toSerialized());
 		duplicated.uuid = generatedUuid;
 
 		return duplicated;

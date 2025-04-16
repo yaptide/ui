@@ -19,7 +19,7 @@ class SetValueCommand extends Command {
 		this.object = object;
 		this.attributeName = attributeName;
 
-		this.oldState = object.toJSON();
+		this.oldState = object.toSerialized();
 		this.sideEffect = sideEffect;
 
 		this.oldValue = object !== undefined ? object[attributeName] : undefined;

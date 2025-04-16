@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 
@@ -18,7 +19,10 @@ export type SimulationElementJSON = {
  */
 export abstract class SimulationElement
 	extends THREE.Object3D
-	implements SimulationPropertiesType, SimulationSceneChild
+	implements
+		SimulationPropertiesType,
+		SimulationSceneChild,
+		SerializableState<SimulationElementJSON>
 {
 	editor: YaptideEditor;
 	parent: SimulationSceneContainer<this> | null = null;
@@ -33,7 +37,7 @@ export abstract class SimulationElement
 		this.type = type;
 	}
 
-	toJSON(): SimulationElementJSON {
+	toSerialized(): SimulationElementJSON {
 		const { name, type, uuid } = this;
 
 		return {
@@ -43,7 +47,7 @@ export abstract class SimulationElement
 		};
 	}
 
-	fromJSON(json: SimulationElementJSON): this {
+	fromSerialized(json: SimulationElementJSON): this {
 		this.name = json.name;
 		this.uuid = json.uuid;
 
