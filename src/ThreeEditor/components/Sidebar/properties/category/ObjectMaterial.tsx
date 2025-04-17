@@ -191,7 +191,6 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 							<ColorInput
 								value={watchedObjectMaterial?.color.getHexString() ?? '#ffffff'}
 								onChange={v => {
-									console.log(watchedObject.object);
 									editor.execute(
 										new SetMaterialColorCommand(
 											editor,
