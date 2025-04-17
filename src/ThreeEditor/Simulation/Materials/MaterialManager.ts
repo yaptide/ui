@@ -31,7 +31,7 @@ export class MaterialManager
 	private readonly metadata = {
 		version: `0.12`,
 		type: 'Manager',
-		generator: 'MaterialManager.toJSON'
+		generator: 'MaterialManager.toSerialized'
 	} as {
 		version: typeof JSON_VERSION;
 	} satisfies Record<string, string | number>;

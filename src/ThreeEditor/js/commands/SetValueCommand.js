@@ -40,7 +40,7 @@ class SetValueCommand extends Command {
 	undo() {
 		this.object[this.attributeName] = this.oldValue;
 
-		if (this.sideEffect) this.object.fromJSON(this.oldState);
+		if (this.sideEffect) this.object.fromSerialized(this.oldState);
 
 		this.editor.signals.objectChanged.dispatch(this.object, this.attributeName);
 	}
@@ -49,8 +49,8 @@ class SetValueCommand extends Command {
 		this.newValue = cmd.newValue;
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
 		output.oldState = this.oldState;
 		output.sideEffect = this.sideEffect;
@@ -62,8 +62,8 @@ class SetValueCommand extends Command {
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.attributeName = json.attributeName;
 		this.oldValue = json.oldValue;

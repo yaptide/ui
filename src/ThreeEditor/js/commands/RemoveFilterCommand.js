@@ -19,17 +19,17 @@ export class RemoveFilterCommand {
 		this.editor.select(this.object);
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
-		output.object = this.object.toJSON();
+	toSerialized() {
+		const output = super.toSerialized(this);
+		output.object = this.object.toSerialized();
 
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 		this.object =
 			this.editor.detectorManager.getFilterByUuid(json.object.uuid) ??
-			this.editor.detectorManager.createFilter().fromJSON(json.object);
+			this.editor.detectorManager.createFilter().fromSerialized(json.object);
 	}
 }

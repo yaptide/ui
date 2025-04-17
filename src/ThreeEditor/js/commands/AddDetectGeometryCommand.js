@@ -29,19 +29,19 @@ class AddDetectGeometryCommand extends Command {
 		this.editor.deselect();
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
-		output.object = this.object.toJSON();
+		output.object = this.object.toSerialized();
 
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 		this.object =
 			this.editor.detectorManager.getDetectorByUuid(json.object.uuid) ??
-			Detector.fromJSON(this.editor, json.object);
+			Detector.fromSerialized(this.editor, json.object);
 	}
 }
 

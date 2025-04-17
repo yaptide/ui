@@ -4,7 +4,7 @@ export abstract class Data<T> {
 		this.info = info;
 	}
 
-	abstract toJSON(): T;
+	abstract toSerialized(): T;
 }
 export interface MeshData {
 	width: number;
@@ -46,7 +46,7 @@ export class Mesh extends Data<MeshData> implements MeshData {
 		this.zSegments = zSegments;
 	}
 
-	toJSON(): MeshData {
+	toSerialized(): MeshData {
 		return {
 			width: this.width,
 			height: this.height,
@@ -83,7 +83,7 @@ export class Cyl extends Data<CylData> {
 		this.zSegments = zSegments;
 	}
 
-	toJSON(): CylData {
+	toSerialized(): CylData {
 		return {
 			radius: this.radius,
 			innerRadius: this.innerRadius,
@@ -101,7 +101,7 @@ export class Zone extends Data<ZoneData> implements ZoneData {
 		this.zoneUuid = zoneUuid;
 	}
 
-	toJSON(): ZoneData {
+	toSerialized(): ZoneData {
 		return {
 			zoneUuid: this.zoneUuid
 		};
@@ -117,7 +117,7 @@ export class All extends Data<AllData> implements AllData {
 		super('Scoring within the entire universe, only useful with certain detectors');
 	}
 
-	toJSON(): AllData {
+	toSerialized(): AllData {
 		return {
 			info: this.info
 		};

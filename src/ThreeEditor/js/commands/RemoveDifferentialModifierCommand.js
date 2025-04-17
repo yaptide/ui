@@ -29,19 +29,19 @@ export class RemoveDifferentialModifierCommand {
 		this.editor.signals.objectChanged.dispatch(this.object, 'modifiers');
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
-		output.object = this.object.toJSON();
-		output.modifier = this.modifier.toJSON();
+	toSerialized() {
+		const output = super.toSerialized(this);
+		output.object = this.object.toSerialized();
+		output.modifier = this.modifier.toSerialized();
 
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 		this.object =
 			this.editor.detectorManager.getGeometryByUuid(json.object.uuid) ??
-			ScoringQuantity.fromJSON(this.editor, json.object);
-		this.modifier = DifferentialModifier.fromJSON(json.modifier);
+			ScoringQuantity.fromSerialized(this.editor, json.object);
+		this.modifier = DifferentialModifier.fromSerialized(json.modifier);
 	}
 }

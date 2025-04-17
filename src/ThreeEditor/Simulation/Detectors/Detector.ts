@@ -247,14 +247,14 @@ export class Detector extends SimulationPoints implements SerializableState<Dete
 	getData(type: DETECT.DETECTOR_TYPE = this.detectorType): Partial<DETECT.Any> {
 		switch (type) {
 			case 'Mesh':
-				return this.getMesh().toJSON();
+				return this.getMesh().toSerialized();
 			case 'Cyl':
-				return this.getCyl().toJSON();
+				return this.getCyl().toSerialized();
 			case 'Zone':
-				return this.getZone().toJSON();
+				return this.getZone().toSerialized();
 			case 'All':
 			default:
-				return this.getAll().toJSON();
+				return this.getAll().toSerialized();
 		}
 	}
 
@@ -287,6 +287,10 @@ export class Detector extends SimulationPoints implements SerializableState<Dete
 		this.geometryData = geometryData;
 
 		return this;
+	}
+
+	static fromSerialized(editor: YaptideEditor, json: DetectorJSON): Detector {
+		return new Detector(editor, json.name, json.type, json.geometryData.geometryType);
 	}
 
 	duplicate(): Detector {

@@ -58,7 +58,7 @@ export class ZoneManager
 	private readonly metadata = {
 		version: `0.12`,
 		type: 'Manager',
-		generator: 'ZoneManager.toJSON'
+		generator: 'ZoneManager.toSerialized'
 	} as {
 		version: typeof JSON_VERSION;
 	} satisfies Record<string, string | number>;

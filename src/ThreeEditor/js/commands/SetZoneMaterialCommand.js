@@ -33,8 +33,8 @@ class SetZoneMaterialCommand extends Command {
 		this.editor.signals.objectChanged.dispatch(this.object, 'simulationMaterial');
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
 		output.objectUuid = this.object.uuid;
 		output.oldIcru = this.oldIcru;
@@ -43,8 +43,8 @@ class SetZoneMaterialCommand extends Command {
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.object = this.editor.objectByUuid(json.objectUuid);
 		this.oldIcru = json.oldIcru;

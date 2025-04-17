@@ -32,22 +32,22 @@ export class AddQuantityCommand extends Command {
 		this.editor.deselect();
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
-		output.object = this.object.toJSON();
-		output.output = this.output.toJSON();
+	toSerialized() {
+		const output = super.toSerialized(this);
+		output.object = this.object.toSerialized();
+		output.output = this.output.toSerialized();
 
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 		this.output =
 			this.editor.scoringManager.getOutputByUuid(json.object.uuid) ??
-			new ScoringOutput().fromJSON(json.object);
+			new ScoringOutput().fromSerialized(json.object);
 
 		this.object =
 			this.output.getQuantityByUuid(json.object.uuid) ??
-			new ScoringQuantity().fromJSON(json.object);
+			new ScoringQuantity().fromSerialized(json.object);
 	}
 }

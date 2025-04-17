@@ -15,7 +15,7 @@ export class SetFilterNameCommand extends Command {
 		this.updatable = true;
 
 		this.object = object;
-		this.oldData = object.toJSON();
+		this.oldData = object.toSerialized();
 		this.newName = newName;
 		this.oldName = object.name;
 	}
@@ -32,20 +32,20 @@ export class SetFilterNameCommand extends Command {
 		this.newName = command.newName;
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
-		output.object = this.object.toJSON();
+	toSerialized() {
+		const output = super.toSerialized(this);
+		output.object = this.object.toSerialized();
 		output.newName = this.newName;
 		output.oldName = this.oldName;
 
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 		this.object =
 			this.editor.detectorManager.getFilterByUuid(json.object.uuid) ??
-			this.editor.detectorManager.createFilter().fromJSON(json.object);
+			this.editor.detectorManager.createFilter().fromSerialized(json.object);
 		this.newName = json.newName;
 		this.oldName = json.oldName;
 	}

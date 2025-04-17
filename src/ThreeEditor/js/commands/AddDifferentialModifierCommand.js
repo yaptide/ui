@@ -39,24 +39,25 @@ export class AddDifferentialModifierCommand extends Command {
 		this.editor.signals.objectChanged.dispatch(this.object, 'selectedModifier');
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
-		output.object = this.object.toJSON();
-		output.modifier = this.modifier.toJSON();
+		output.object = this.object.toSerialized();
+		output.modifier = this.modifier.toSerialized();
 
-		if (this.oldModifier) output.oldModifier = this.oldModifier.toJSON();
+		if (this.oldModifier) output.oldModifier = this.oldModifier.toSerialized();
 
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 		this.object =
 			this.editor.detectorManager.getDetectorByUuid(json.object.uuid) ??
-			ScoringQuantity.fromJSON(this.editor, json.object);
-		this.modifier = DifferentialModifier.fromJSON(json.modifier);
+			ScoringQuantity.fromSerialized(this.editor, json.object);
+		this.modifier = DifferentialModifier.fromSerialized(json.modifier);
 
-		if (json.oldModifier) this.oldModifier = DifferentialModifier.fromJSON(json.oldModifier);
+		if (json.oldModifier)
+			this.oldModifier = DifferentialModifier.fromSerialized(json.oldModifier);
 	}
 }

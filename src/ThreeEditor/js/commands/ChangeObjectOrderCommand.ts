@@ -64,9 +64,9 @@ export class ChangeObjectOrderCommand extends Command {
 		this.editor.signals.sceneGraphChanged.dispatch();
 	}
 
-	toJSON() {
+	toSerialized() {
 		const output: ChangeObjectOrderCommandJSON = {
-			...super.toJSON(),
+			...super.toSerialized(),
 			objectUuid: this.object.uuid,
 			oldIndex: this.oldIndex,
 			newIndex: this.newIndex,
@@ -76,8 +76,8 @@ export class ChangeObjectOrderCommand extends Command {
 		return output;
 	}
 
-	fromJSON(json: ChangeObjectOrderCommandJSON) {
-		super.fromJSON(json);
+	fromSerialized(json: ChangeObjectOrderCommandJSON) {
+		super.fromSerialized(json);
 
 		const found = this.editor.objectByUuid(json.objectUuid);
 

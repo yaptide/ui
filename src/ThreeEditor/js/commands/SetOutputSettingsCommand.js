@@ -36,9 +36,9 @@ export class SetOutputSettingsCommand extends Command {
 		this.newValue = cmd.newValue;
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
-		output.object = this.object.toJSON();
+	toSerialized() {
+		const output = super.toSerialized(this);
+		output.object = this.object.toSerialized();
 		output.attributeName = this.attributeName;
 		output.oldValue = this.oldValue;
 		output.newValue = this.newValue;
@@ -46,14 +46,14 @@ export class SetOutputSettingsCommand extends Command {
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.attributeName = json.attributeName;
 		this.oldValue = json.oldValue;
 		this.newValue = json.newValue;
 		this.object =
 			this.editor.scoringManager.getObjectByUuid(json.object.uuid) ??
-			ScoringOutput.fromJSON(json.object);
+			ScoringOutput.fromSerialized(json.object);
 	}
 }

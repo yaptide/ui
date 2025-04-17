@@ -49,8 +49,8 @@ class SetRotationCommand extends Command {
 		this.newRotation.copy(command.newRotation);
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
 		output.objectUuid = this.object.uuid;
 		output.oldRotation = this.oldRotation.toArray();
@@ -59,8 +59,8 @@ class SetRotationCommand extends Command {
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.object = this.editor.objectByUuid(json.objectUuid);
 		this.oldRotation = new Euler().fromArray(json.oldRotation);

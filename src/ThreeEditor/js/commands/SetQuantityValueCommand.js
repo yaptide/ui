@@ -36,9 +36,9 @@ export class SetQuantityValueCommand extends Command {
 		this.newValue = cmd.newValue;
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
-		output.object = this.object.toJSON();
+	toSerialized() {
+		const output = super.toSerialized(this);
+		output.object = this.object.toSerialized();
 		output.parentUuid = this.object?.parent.uuid;
 		output.attributeName = this.attributeName;
 		output.oldValue = this.oldValue;
@@ -47,8 +47,8 @@ export class SetQuantityValueCommand extends Command {
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.attributeName = json.attributeName;
 		this.oldValue = json.oldValue;
@@ -56,6 +56,6 @@ export class SetQuantityValueCommand extends Command {
 		this.object =
 			this.editor.scoringManager
 				.getOutputByUuid(json.parentUuid)
-				.getQuantityByUuid(json.object.uuid) ?? ScoringQuantity.fromJSON(json.object);
+				.getQuantityByUuid(json.object.uuid) ?? ScoringQuantity.fromSerialized(json.object);
 	}
 }

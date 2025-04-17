@@ -33,16 +33,16 @@ export class AddObjectCommand extends Command {
 		this.editor.deselect();
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
-		output.object = this.object.toJSON();
+		output.object = this.object.toSerialized();
 
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.object = this.editor.objectByUuid(json.object.object.uuid);
 

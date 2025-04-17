@@ -31,8 +31,8 @@ class SetUuidCommand extends Command {
 		this.editor.signals.sceneGraphChanged.dispatch();
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
 		output.oldUuid = this.oldUuid;
 		output.newUuid = this.newUuid;
@@ -40,8 +40,8 @@ class SetUuidCommand extends Command {
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.oldUuid = json.oldUuid;
 		this.newUuid = json.newUuid;

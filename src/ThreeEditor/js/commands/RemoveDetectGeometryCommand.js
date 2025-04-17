@@ -26,19 +26,19 @@ export class RemoveDetectGeometryCommand extends Command {
 		this.editor.select(this.object);
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
-		output.object = this.object.toJSON();
+		output.object = this.object.toSerialized();
 
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.object =
 			this.editor.objectByUuid(json.object.uuid) ??
-			Detector.fromJSON(this.editor, json.object);
+			Detector.fromSerialized(this.editor, json.object);
 	}
 }

@@ -48,8 +48,8 @@ export class SetDetectPositionCommand extends Command {
 		this.newPosition.copy(command.newPosition);
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
 		output.objectUuid = this.object.uuid;
 		output.oldPosition = this.oldPosition.toArray();
@@ -58,8 +58,8 @@ export class SetDetectPositionCommand extends Command {
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.object = this.editor.objectByUuid(json.objectUuid);
 		this.oldPosition = new Vector3().fromArray(json.oldPosition);
