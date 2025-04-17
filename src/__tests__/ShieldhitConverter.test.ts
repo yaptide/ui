@@ -1,3 +1,5 @@
+import * as fs from 'node:fs';
+
 import { readFileSync } from 'fs';
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
@@ -171,9 +173,7 @@ describe('ShieldhitConverter', () => {
 		const expectedGeoText = readFileSync(
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/geo.dat',
 			'utf-8'
-		)
-			.replace(/^\*.*$/g, '') // remove comments from file
-			.replace(regex, '');
+		).replace(regex, '');
 		expect(expectedGeoText).not.toBe('');
 		expect(geoText).toContain(expectedGeoText);
 

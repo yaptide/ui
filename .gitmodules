@@ -1,6 +1,6 @@
 [submodule "public/libs/converter"]
 	path = src/libs/converter
 	url = https://github.com/yaptide/converter
-	branch = master
+	branch = 876-threejs-versions
 	shallow = true
 
