@@ -171,7 +171,9 @@ describe('ShieldhitConverter', () => {
 		const expectedGeoText = readFileSync(
 			'src/libs/converter/tests/shieldhit/resources/expected_shieldhit_output/geo.dat',
 			'utf-8'
-		).replace(regex, '');
+		)
+			.replace(/^\*.*$/g, '') // remove comments from file
+			.replace(regex, '');
 		expect(expectedGeoText).not.toBe('');
 		expect(geoText).toContain(expectedGeoText);
 
