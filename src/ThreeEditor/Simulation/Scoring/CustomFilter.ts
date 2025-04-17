@@ -1,4 +1,3 @@
-import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import {
