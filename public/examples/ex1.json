@@ -128,7 +128,7 @@
 					}
 				],
 				"metadata": {
-					"generator": "DetectorManager.toJSON",
+					"generator": "DetectorManager.toSerialized",
 					"type": "Manager",
 					"version": "0.12"
 				},
@@ -174,7 +174,7 @@
 					}
 				],
 				"metadata": {
-					"generator": "FigureManager.toJSON",
+					"generator": "FigureManager.toSerialized",
 					"type": "Manager",
 					"version": "0.12"
 				},
@@ -215,7 +215,7 @@
 					}
 				],
 				"metadata": {
-					"generator": "MaterialManager.toJSON",
+					"generator": "MaterialManager.toSerialized",
 					"type": "Manager",
 					"version": "0.12"
 				},
@@ -229,7 +229,7 @@
 				"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0FFFFFFF"
 			},
 			"metadata": {
-				"generator": "YaptideEditor.toJSON",
+				"generator": "YaptideEditor.toSerialized",
 				"type": "Editor",
 				"version": "0.12"
 			},
@@ -376,7 +376,7 @@
 					}
 				],
 				"metadata": {
-					"generator": "ScoringManager.toJSON",
+					"generator": "ScoringManager.toSerialized",
 					"type": "Manager",
 					"version": "0.12"
 				},
@@ -606,7 +606,7 @@
 			},
 			"specialComponentsManager": {
 				"metadata": {
-					"generator": "SpecialComponentManager.toJSON",
+					"generator": "SpecialComponentManager.toSerialized",
 					"type": "Manager",
 					"version": "0.12"
 				},
@@ -616,7 +616,7 @@
 			},
 			"zoneManager": {
 				"metadata": {
-					"generator": "ZoneManager.toJSON",
+					"generator": "ZoneManager.toSerialized",
 					"type": "Manager",
 					"version": "0.12"
 				},
