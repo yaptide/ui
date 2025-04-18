@@ -105,7 +105,8 @@ export function EditorSidebar(props: EditorSidebarProps) {
 	const simulatorDescriptions = {
 		[SimulatorType.COMMON]: 'Common options for Fluka and SHIELD-HIT12A',
 		[SimulatorType.FLUKA]: 'Fluka specific options',
-		[SimulatorType.SHIELDHIT]: 'SHIELD-HIT12A specific options'
+		[SimulatorType.SHIELDHIT]: 'SHIELD-HIT12A specific options',
+		[SimulatorType.GEANT4]: 'Geant4 specific options'
 	};
 
 	return (
