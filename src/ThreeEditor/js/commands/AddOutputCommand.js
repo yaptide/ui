@@ -31,17 +31,17 @@ export class AddOutputCommand extends Command {
 		this.editor.deselect();
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
-		output.object = this.object.toJSON();
+	toSerialized() {
+		const output = super.toSerialized(this);
+		output.object = this.object.toSerialized();
 
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 		this.object =
 			this.editor.scoringManager.getOutputByUuid(json.object.uuid) ??
-			new ScoringOutput().fromJSON(json.object);
+			new ScoringOutput().fromSerialized(json.object);
 	}
 }

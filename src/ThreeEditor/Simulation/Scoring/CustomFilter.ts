@@ -65,18 +65,18 @@ export class CustomFilter extends ScoringFilter {
 			case 'E':
 			case 'ENUC':
 			case 'EAMU':
-				rule = FloatRule.fromJSON(json as FloatRuleJSON);
+				rule = FloatRule.fromSerialized(json as FloatRuleJSON);
 
 				break;
 			case 'A':
 			case 'GEN':
 			case 'NPRIM':
 			case 'Z':
-				rule = IntRule.fromJSON(json as IntRuleJSON);
+				rule = IntRule.fromSerialized(json as IntRuleJSON);
 
 				break;
 			case 'ID':
-				rule = IDRule.fromJSON(json as IDRuleJSON);
+				rule = IDRule.fromSerialized(json as IDRuleJSON);
 
 				break;
 			default:
@@ -137,13 +137,13 @@ export class CustomFilter extends ScoringFilter {
 		return rule;
 	}
 
-	toJSON(): CustomFilterJSON {
+	toSerialized(): CustomFilterJSON {
 		const { uuid, name, _rules: rules, type } = this;
 
-		return { uuid, name, type, rules: Object.values(rules).map(rule => rule.toJSON()) };
+		return { uuid, name, type, rules: Object.values(rules).map(rule => rule.toSerialized()) };
 	}
 
-	fromJSON(json: CustomFilterJSON) {
+	fromSerialized(json: CustomFilterJSON) {
 		this.clear();
 		this.uuid = json.uuid;
 		this.name = json.name;
@@ -152,8 +152,8 @@ export class CustomFilter extends ScoringFilter {
 		return this;
 	}
 
-	static fromJSON(editor: YaptideEditor, json: CustomFilterJSON): CustomFilter {
-		return new CustomFilter(editor).fromJSON(json);
+	static fromSerialized(editor: YaptideEditor, json: CustomFilterJSON): CustomFilter {
+		return new CustomFilter(editor).fromSerialized(json);
 	}
 
 	toString(): string {

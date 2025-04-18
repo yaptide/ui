@@ -34,18 +34,18 @@ class SetMaterialCommand extends Command {
 		this.editor.signals.objectChanged.dispatch(this.object);
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
 		output.objectUuid = this.object.uuid;
-		output.oldMaterial = this.oldMaterial.toJSON();
-		output.newMaterial = this.newMaterial.toJSON();
+		output.oldMaterial = this.oldMaterial.toSerialized();
+		output.newMaterial = this.newMaterial.toSerialized();
 
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.object = this.editor.objectByUuid(json.objectUuid);
 		this.oldMaterial = parseMaterial(json.oldMaterial);

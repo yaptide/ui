@@ -28,19 +28,19 @@ export class AddZoneCommand extends Command {
 		this.editor.deselect();
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
-		output.object = this.object.toJSON();
+		output.object = this.object.toSerialized();
 
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.object =
 			this.editor.objectByUuid(json.object.uuid) ??
-			this.editor.zoneManager.createZone().fromJSON(this.editor, json.object);
+			this.editor.zoneManager.createZone().fromSerialized(this.editor, json.object);
 	}
 }

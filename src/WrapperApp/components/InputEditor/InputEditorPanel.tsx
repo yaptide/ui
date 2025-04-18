@@ -43,7 +43,7 @@ export default function InputEditorPanel({
 		}
 
 		setInProgress(true);
-		const editorJSON = yaptideEditor?.toJSON();
+		const editorJSON = yaptideEditor?.toSerialized();
 
 		if (!editorJSON) return setInProgress(false);
 

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from './SimulationElement';
@@ -22,7 +23,11 @@ export type SimulationPointsJSON = Omit<
  */
 export abstract class SimulationPoints
 	extends THREE.Points
-	implements SimulationPropertiesType, SimulationSceneChild, SimulationElement
+	implements
+		SimulationPropertiesType,
+		SimulationSceneChild,
+		SimulationElement,
+		SerializableState<SimulationPointsJSON>
 {
 	editor: YaptideEditor;
 	parent: SimulationSceneContainer<this> | null = null;
@@ -115,7 +120,7 @@ export abstract class SimulationPoints
 		this.type = type;
 	}
 
-	toJSON(): SimulationPointsJSON {
+	toSerialized(): SimulationPointsJSON {
 		const { name, type, uuid, visible } = this;
 		const colorHex = this.material.color.getHex();
 
@@ -128,7 +133,7 @@ export abstract class SimulationPoints
 		};
 	}
 
-	fromJSON(json: SimulationPointsJSON) {
+	fromSerialized(json: SimulationPointsJSON) {
 		const { name, uuid, visible, colorHex } = json;
 		this.name = name;
 		this.uuid = uuid;

@@ -40,14 +40,14 @@ export class ActionCommand<
 		this.target[this.undoMethod](...this.args);
 	}
 
-	toJSON(): ActionCommandJSON<Target, Method, UndoMethod, Args> {
+	toSerialized(): ActionCommandJSON<Target, Method, UndoMethod, Args> {
 		const data = { method: this.method, undoMethod: this.undoMethod, args: this.args };
 
-		return { ...super.toJSON(), data };
+		return { ...super.toSerialized(), data };
 	}
 
-	fromJSON(json: ActionCommandJSON<Target, Method, UndoMethod, Args>): void {
-		super.fromJSON(json);
+	fromSerialized(json: ActionCommandJSON<Target, Method, UndoMethod, Args>): void {
+		super.fromSerialized(json);
 		const { method, undoMethod, args } = json.data;
 		this.method = method;
 		this.undoMethod = undoMethod;

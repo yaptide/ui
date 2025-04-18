@@ -1,3 +1,5 @@
+import * as fs from 'node:fs';
+
 import { readFileSync } from 'fs';
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';

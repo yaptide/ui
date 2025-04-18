@@ -2,13 +2,14 @@ import * as THREE from 'three';
 
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { getNextFreeName, UniqueChildrenNames } from '../../../util/Name/Name';
+import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
 
 /**
  * Interface that narrows down the type for the parent of Object3D
  * to container for objects of the same type.
  */
-export interface SimulationSceneChild extends THREE.Object3D {
+export interface SimulationSceneChild extends THREE.Object3D, SerializableState<any> {
 	parent: SimulationSceneContainer<this> | null;
 }
 
@@ -21,7 +22,11 @@ export abstract class SimulationSceneContainer<
 		TChild extends SimulationSceneChild = SimulationSceneChild
 	>
 	extends THREE.Group
-	implements SimulationSceneChild, SimulationPropertiesType, UniqueChildrenNames
+	implements
+		SimulationSceneChild,
+		SimulationPropertiesType,
+		UniqueChildrenNames,
+		SerializableState<ReturnType<TChild['toSerialized']>[]>
 {
 	editor: YaptideEditor;
 	parent: SimulationSceneContainer<this> | null = null;
@@ -35,7 +40,7 @@ export abstract class SimulationSceneContainer<
 	readonly notScalable = true;
 	readonly flattenOnOutliner: boolean = true;
 	_name: string;
-	private _loader: (json: ReturnType<TChild['toJSON']>) => TChild;
+	private _loader: (json: ReturnType<TChild['toSerialized']>) => TChild;
 
 	uniqueNameForChild(child: TChild, newName?: string): string {
 		return getNextFreeName(this, newName ?? child.name, child);
@@ -61,7 +66,7 @@ export abstract class SimulationSceneContainer<
 		editor: YaptideEditor,
 		name: string | undefined,
 		type: string,
-		loader: (json: ReturnType<TChild['toJSON']>) => TChild
+		loader: (json: ReturnType<TChild['toSerialized']>) => TChild
 	) {
 		super();
 		this.editor = editor;
@@ -75,18 +80,20 @@ export abstract class SimulationSceneContainer<
 		this.clear();
 	}
 
-	toJSON(): ReturnType<TChild['toJSON']>[] {
-		return this.children.map(child => child.toJSON());
+	toSerialized(): ReturnType<TChild['toSerialized']>[] {
+		return this.children.map(child => child.toSerialized());
 	}
 
-	fromJSON(json: ReturnType<TChild['toJSON']>[]) {
+	fromSerialized(state: ReturnType<TChild['toSerialized']>[]) {
 		this.reset();
 
-		if (!Array.isArray(json)) throw new Error(`Expected array, got ${typeof json}`);
-		json.forEach(childJson => {
-			const child = this._loader(childJson);
+		if (!Array.isArray(state)) throw new Error(`Expected array, got ${typeof state}`);
+		state.forEach(childState => {
+			const child = this._loader(childState);
 			this.add(child);
 		});
+
+		return this;
 	}
 
 	abstract duplicate(): SimulationSceneContainer<TChild>;

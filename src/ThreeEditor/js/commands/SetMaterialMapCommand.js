@@ -41,8 +41,8 @@ class SetMaterialMapCommand extends Command {
 		this.editor.signals.materialChanged.dispatch(this.material);
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
 		output.objectUuid = this.object.uuid;
 		output.mapName = this.mapName;
@@ -63,7 +63,7 @@ class SetMaterialMapCommand extends Command {
 				images: {}
 			};
 
-			const json = map.toJSON(meta);
+			const json = map.toSerialized(meta);
 			const images = extractFromCache(meta.images);
 
 			if (images.length > 0) json.images = images;
@@ -90,8 +90,8 @@ class SetMaterialMapCommand extends Command {
 		}
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.object = this.editor.objectByUuid(json.objectUuid);
 		this.mapName = json.mapName;

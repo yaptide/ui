@@ -30,16 +30,16 @@ class AddZoneOperationTupleCommand extends Command {
 		this.object.updateGeometry();
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
 		output.objectUuid = this.object.uuid;
 
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.object = this.editor.objectByUuid(json.objectUuid);
 	}

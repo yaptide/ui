@@ -1,12 +1,15 @@
+import { json } from 'node:stream/consumers';
+
+import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationElement } from '../Base/SimulationElement';
+import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import { CustomFilterJSON } from './CustomFilter';
 import { FilterRule } from './FilterRule';
 import { ParticleFilterJSON } from './ParticleFilter';
 
 export type FilterJSON = CustomFilterJSON | ParticleFilterJSON;
 
-export class ScoringFilter extends SimulationElement {
+export class ScoringFilter extends SimulationElement implements SerializableState<FilterJSON> {
 	readonly isFilter: true = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -18,8 +21,12 @@ export class ScoringFilter extends SimulationElement {
 		this.parent = null;
 	}
 
-	toJSON(): FilterJSON {
+	toSerialized(): FilterJSON {
 		return null as never;
+	}
+
+	fromSerialized(json: FilterJSON): this {
+		return this;
 	}
 
 	clear(): this {

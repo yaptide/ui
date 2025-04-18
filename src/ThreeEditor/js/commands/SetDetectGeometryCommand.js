@@ -42,8 +42,8 @@ export class SetDetectGeometryCommand extends Command {
 		this.newData = command.newData;
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
 		output.objectUuid = this.object.uuid;
 		output.oldData = this.oldData;
@@ -52,8 +52,8 @@ export class SetDetectGeometryCommand extends Command {
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.object = this.editor.objectByUuid(json.objectUuid);
 

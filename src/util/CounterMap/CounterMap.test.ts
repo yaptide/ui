@@ -40,14 +40,14 @@ test('serialization', () => {
 	const arr = ['a', 'a', 'c', 'b', 'a', 'b'];
 	const map = new CounterMap(arr);
 
-	const obj = map.toJSON();
+	const obj = map.toSerialized();
 	expect(obj).toEqual({ a: 3, b: 2, c: 1 });
 
 	map.decrement('c');
-	const obj2 = map.toJSON();
+	const obj2 = map.toSerialized();
 	expect(obj2).toEqual({ a: 3, b: 2 });
 
-	const map2 = new CounterMap().fromJSON(obj);
+	const map2 = new CounterMap().fromSerialized(obj);
 	expect(map2.get('a')).toBe(3);
 	expect(map2.get('b')).toBe(2);
 	expect(map2.get('c')).toBe(1);

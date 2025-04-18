@@ -56,8 +56,8 @@ class MoveObjectCommand extends Command {
 		this.editor.signals.sceneGraphChanged.dispatch();
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
 		output.objectUuid = this.object.uuid;
 		output.newParentUuid = this.newParent.uuid;
@@ -68,8 +68,8 @@ class MoveObjectCommand extends Command {
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.object = this.editor.objectByUuid(json.objectUuid);
 		this.oldParent = this.editor.objectByUuid(json.oldParentUuid);

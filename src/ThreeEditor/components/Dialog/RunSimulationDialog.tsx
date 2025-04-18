@@ -66,7 +66,7 @@ export function RunSimulationDialog({
 							},
 							{} as Record<string, string>
 						)
-				  }
+					}
 				: undefined;
 
 		postJobFn(simData, sourceType, nTasks, simulator, simName, options, controller.signal)
@@ -99,7 +99,7 @@ export function RunSimulationDialog({
 							gap: 3
 						}}>
 						<RunSimulationForm
-							editorJson={yaptideEditor?.toJSON()}
+							editorJson={yaptideEditor?.toSerialized()}
 							inputFiles={{
 								...inputFiles
 							}}

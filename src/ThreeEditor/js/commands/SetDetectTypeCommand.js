@@ -43,8 +43,8 @@ export class SetDetectTypeCommand extends Command {
 		this.newType = cmd.newType;
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
 		output.objectUuid = this.object.uuid;
 		output.oldType = this.oldType;
@@ -53,8 +53,8 @@ export class SetDetectTypeCommand extends Command {
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.object = this.editor.objectByUuid(json.objectUuid);
 

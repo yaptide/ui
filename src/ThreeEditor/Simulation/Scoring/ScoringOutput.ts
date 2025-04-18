@@ -1,6 +1,7 @@
 import { Signal } from 'signals';
 import * as THREE from 'three';
 
+import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
@@ -28,7 +29,7 @@ export class QuantityContainer extends SimulationSceneContainer<ScoringQuantity>
 	readonly isQuantityContainer: true = true;
 	constructor(editor: YaptideEditor) {
 		super(editor, 'Quantities', 'QuantityGroup', json =>
-			new ScoringQuantity(editor).fromJSON(json)
+			new ScoringQuantity(editor).fromSerialized(json)
 		);
 		this.children = [];
 	}
@@ -49,7 +50,9 @@ export class QuantityContainer extends SimulationSceneContainer<ScoringQuantity>
 
 export class ScoringOutput
 	extends SimulationElement
-	implements SimulationElementManager<'quantity', ScoringQuantity, 'quantities'>
+	implements
+		SimulationElementManager<'quantity', ScoringQuantity, 'quantities'>,
+		SerializableState<ScoringOutputJSON>
 {
 	readonly isOutput: true = true;
 	readonly notMovable = true;
@@ -186,10 +189,10 @@ export class ScoringOutput
 		this.quantityContainer.clear();
 	}
 
-	toJSON(): ScoringOutputJSON {
+	toSerialized(): ScoringOutputJSON {
 		return {
-			...super.toJSON(),
-			quantities: this.quantityContainer.toJSON(),
+			...super.toSerialized(),
+			quantities: this.quantityContainer.toSerialized(),
 			detectorUuid: this._detector,
 			zoneUuid: this._zone,
 			scoringType: this._scoringType,
@@ -198,11 +201,11 @@ export class ScoringOutput
 		};
 	}
 
-	fromJSON(json: ScoringOutputJSON): this {
+	fromSerialized(json: ScoringOutputJSON): this {
 		this.uuid = json.uuid;
 		this.name = json.name;
 		this._trace = [json.trace, json.traceFilter ?? null];
-		this.quantityContainer.fromJSON(json.quantities);
+		this.quantityContainer.fromSerialized(json.quantities);
 
 		this.detector = json.detectorUuid
 			? this.editor.detectorManager.getDetectorByUuid(json.detectorUuid)
@@ -214,8 +217,8 @@ export class ScoringOutput
 		return this;
 	}
 
-	static fromJSON(editor: YaptideEditor, json: ScoringOutputJSON): ScoringOutput {
-		return new ScoringOutput(editor).fromJSON(json);
+	static fromSerialized(editor: YaptideEditor, json: ScoringOutputJSON): ScoringOutput {
+		return new ScoringOutput(editor).fromSerialized(json);
 	}
 
 	duplicate(): ScoringOutput {

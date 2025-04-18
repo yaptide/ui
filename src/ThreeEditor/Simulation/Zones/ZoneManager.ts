@@ -4,6 +4,7 @@ import * as THREE from 'three';
 
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { ZoneWorker } from '../../CSG/CSGWorker';
+import { SerializableState } from '../../js/EditorJson';
 import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElementJSON } from '../Base/SimulationElement';
@@ -22,7 +23,8 @@ type ZoneManagerJSON = Omit<
 >;
 
 const zoneLoader = (editor: YaptideEditor) => (json: SimulationZoneJSON) => {
-	if (json.type === 'BooleanZone') return BooleanZone.fromJSON(editor, json as BooleanZoneJSON);
+	if (json.type === 'BooleanZone')
+		return BooleanZone.fromSerialized(editor, json as BooleanZoneJSON);
 
 	throw new Error(`Unknown zone type ${json.type}`);
 };
@@ -47,13 +49,16 @@ export class ZoneContainer extends SimulationSceneContainer<SimulationZone> {
 
 export class ZoneManager
 	extends THREE.Scene
-	implements SimulationPropertiesType, SimulationElementManager<'zone', SimulationZone>
+	implements
+		SimulationPropertiesType,
+		SimulationElementManager<'zone', SimulationZone>,
+		SerializableState<ZoneManagerJSON>
 {
 	/****************************Private****************************/
 	private readonly metadata = {
 		version: `0.12`,
 		type: 'Manager',
-		generator: 'ZoneManager.toJSON'
+		generator: 'ZoneManager.toSerialized'
 	} as {
 		version: typeof JSON_VERSION;
 	} satisfies Record<string, string | number>;
@@ -195,7 +200,7 @@ export class ZoneManager
 	copy(source: this, recursive?: boolean | undefined) {
 		super.copy(source, recursive);
 
-		return this.fromJSON(source.toJSON());
+		return this.fromSerialized(source.toSerialized());
 	}
 
 	reset() {
@@ -206,7 +211,7 @@ export class ZoneManager
 		return this;
 	}
 
-	toJSON(): ZoneManagerJSON {
+	toSerialized(): ZoneManagerJSON {
 		const { uuid, name, managerType: type, metadata } = this;
 
 		return {
@@ -214,12 +219,12 @@ export class ZoneManager
 			name,
 			type,
 			metadata,
-			zones: this.zoneContainer.toJSON(),
-			worldZone: this.worldZone.toJSON()
+			zones: this.zoneContainer.toSerialized(),
+			worldZone: this.worldZone.toSerialized()
 		};
 	}
 
-	fromJSON(json: ZoneManagerJSON) {
+	fromSerialized(json: ZoneManagerJSON) {
 		const {
 			metadata: { version }
 		} = this;
@@ -230,11 +235,11 @@ export class ZoneManager
 
 		this.uuid = uuid;
 		this.name = name;
-		this.zoneContainer.fromJSON(zones);
+		this.zoneContainer.fromSerialized(zones);
 
 		this.worldZone.removeHelpersFromSceneHelpers();
 		this.remove(this.worldZone);
-		this.worldZone.fromJSON(json.worldZone);
+		this.worldZone.fromSerialized(json.worldZone);
 		this.add(this.worldZone);
 		this.worldZone.addHelpersToSceneHelpers();
 

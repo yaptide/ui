@@ -1,3 +1,6 @@
+import { Serializable } from 'node:child_process';
+
+import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
 import { ScoringFilter } from './ScoringFilter';
@@ -17,7 +20,10 @@ export type ScoringQuantityJSON = Omit<
 	never
 >;
 
-export class ScoringQuantity extends SimulationZone {
+export class ScoringQuantity
+	extends SimulationZone
+	implements SerializableState<ScoringQuantityJSON>
+{
 	readonly isQuantity: true = true;
 	readonly notMovable = true;
 	readonly notRotatable = true;
@@ -180,9 +186,9 @@ export class ScoringQuantity extends SimulationZone {
 		this.hasRescale = false;
 	}
 
-	toJSON(): ScoringQuantityJSON {
+	toSerialized(): ScoringQuantityJSON {
 		const { materialUuid, materialPropertiesOverrides, customMaterial, ...json } =
-			super.toJSON();
+			super.toSerialized();
 
 		let {
 			filter,
@@ -208,15 +214,15 @@ export class ScoringQuantity extends SimulationZone {
 			...(medium && { medium }),
 			...(rescale !== 1 && { rescale }),
 			keyword,
-			modifiers: modifiers.map(modifier => modifier.toJSON())
+			modifiers: modifiers.map(modifier => modifier.toSerialized())
 		};
 	}
 
-	fromJSON(json: ScoringQuantityJSON): this {
+	fromSerialized(json: ScoringQuantityJSON): this {
 		const { filter, medium, rescale, keyword, modifiers, ...basicJSON } = json;
 		this._modifiers = modifiers.reduce(
 			(acc, curr) => {
-				const modifier = DifferentialModifier.fromJSON(curr);
+				const modifier = DifferentialModifier.fromSerialized(curr);
 				acc[modifier.uuid] = modifier;
 
 				return acc;
@@ -226,7 +232,7 @@ export class ScoringQuantity extends SimulationZone {
 		this._primaries = json.primaries ?? null;
 		this._hasPrimaries = !!json.primaries;
 		this._hasMaterial = !!json.materialUuid;
-		super.fromJSON(basicJSON);
+		super.fromSerialized(basicJSON);
 		this.filter = filter ? this.editor.scoringManager.getFilterByUuid(filter) : null;
 		this.keyword = keyword;
 		this.medium = medium ?? Scoring.MEDIUM_KEYWORD_OPTIONS.WATER;
@@ -235,15 +241,15 @@ export class ScoringQuantity extends SimulationZone {
 		return this;
 	}
 
-	static fromJSON(editor: YaptideEditor, json: ScoringQuantityJSON): ScoringQuantity {
-		return new ScoringQuantity(editor).fromJSON(json);
+	static fromSerialized(editor: YaptideEditor, json: ScoringQuantityJSON): ScoringQuantity {
+		return new ScoringQuantity(editor).fromSerialized(json);
 	}
 
 	duplicate(): ScoringQuantity {
 		const duplicated = new ScoringQuantity(this.editor, this.keyword);
 
 		const generatedUuid = duplicated.uuid;
-		duplicated.fromJSON(this.toJSON());
+		duplicated.fromSerialized(this.toSerialized());
 		duplicated.uuid = generatedUuid;
 
 		return duplicated;

@@ -44,11 +44,11 @@ export class CTCube extends BasicFigure<THREE.BoxGeometry> {
 		);
 	}
 
-	toJSON(): CTCubeJSON {
+	toSerialized(): CTCubeJSON {
 		const { pathOnServer } = this;
 
 		return {
-			...super.toJSON(),
+			...super.toSerialized(),
 			pathOnServer
 		};
 	}

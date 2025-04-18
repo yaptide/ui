@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 import { isCounterMapError } from '../../../util/CounterMap/CounterMap';
+import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor.js';
 import { Icru } from './MaterialManager';
 import {
@@ -28,7 +29,11 @@ export type SimulationMaterialJSON = {
 	wireframe?: boolean;
 	wireframeLinewidth?: number;
 };
-export default class SimulationMaterial extends THREE.MeshPhongMaterial {
+
+export default class SimulationMaterial
+	extends THREE.MeshPhongMaterial
+	implements SerializableState<SimulationMaterialJSON>
+{
 	private proxy: SimulationMaterial;
 	private editor: YaptideEditor;
 	private colorProxy: THREE.Color;
@@ -109,7 +114,7 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 		return this.proxy;
 	}
 
-	toJSON(): SimulationMaterialJSON {
+	toSerialized(): SimulationMaterialJSON {
 		const { uuid, name, sanitizedName, icru, density, renderProps, customStoppingPower } = this;
 
 		return {
@@ -123,7 +128,13 @@ export default class SimulationMaterial extends THREE.MeshPhongMaterial {
 		};
 	}
 
-	static fromJSON(
+	fromSerialized(state: SimulationMaterialJSON) {
+		console.error('SimulationMaterial: deserialization unsupported');
+
+		return this;
+	}
+
+	static fromSerialized(
 		editor: YaptideEditor,
 		{
 			uuid,

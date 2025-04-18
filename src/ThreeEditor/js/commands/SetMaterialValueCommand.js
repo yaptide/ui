@@ -45,8 +45,8 @@ class SetMaterialValueCommand extends Command {
 		this.newValue = cmd.newValue;
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
 		output.objectUuid = this.object.uuid;
 		output.attributeName = this.attributeName;
@@ -56,8 +56,8 @@ class SetMaterialValueCommand extends Command {
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.attributeName = json.attributeName;
 		this.oldValue = json.oldValue;

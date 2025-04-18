@@ -32,18 +32,18 @@ class RemoveObjectCommand extends Command {
 		this.editor.select(this.object);
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
-		output.object = this.object.toJSON();
+		output.object = this.object.toSerialized();
 		output.index = this.index;
 		output.parentUuid = this.parent.uuid;
 
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.parent = this.editor.objectByUuid(json.parentUuid);
 

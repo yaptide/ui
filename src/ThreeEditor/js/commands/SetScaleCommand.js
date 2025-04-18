@@ -45,8 +45,8 @@ class SetScaleCommand extends Command {
 		this.newScale.copy(command.newScale);
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
 		output.objectUuid = this.object.uuid;
 		output.oldScale = this.oldScale.toArray();
@@ -55,8 +55,8 @@ class SetScaleCommand extends Command {
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.object = this.editor.objectByUuid(json.objectUuid);
 		this.oldScale = new Vector3().fromArray(json.oldScale);

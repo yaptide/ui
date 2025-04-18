@@ -64,13 +64,13 @@ class SetSceneCommand extends Command {
 		this.editor.signals.sceneGraphChanged.dispatch();
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
 		const cmds = [];
 
 		for (let i = 0; i < this.cmdArray.length; i++) {
-			cmds.push(this.cmdArray[i].toJSON());
+			cmds.push(this.cmdArray[i].toSerialized());
 		}
 
 		output.cmds = cmds;
@@ -78,14 +78,14 @@ class SetSceneCommand extends Command {
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		const cmds = json.cmds;
 
 		for (let i = 0; i < cmds.length; i++) {
 			const cmd = new window[cmds[i].type](); // creates a new object of type "json.type"
-			cmd.fromJSON(cmds[i]);
+			cmd.fromSerialized(cmds[i]);
 			this.cmdArray.push(cmd);
 		}
 	}

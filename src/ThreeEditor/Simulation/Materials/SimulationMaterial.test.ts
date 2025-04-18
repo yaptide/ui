@@ -28,9 +28,9 @@ test('constructor params', () => {
 	expect(material.name).toBe('test');
 });
 
-test('toJSON', () => {
+test('toSerialized', () => {
 	const material = new SimulationMaterial(editor, 'test', 'test', 1, 2);
-	expect(material.toJSON()).toEqual({
+	expect(material.toSerialized()).toEqual({
 		uuid: material.uuid,
 		name: 'test',
 		sanitizedName: 'test',
@@ -39,8 +39,8 @@ test('toJSON', () => {
 	});
 });
 
-test('fromJSON', () => {
-	const material = SimulationMaterial.fromJSON(editor, {
+test('fromSerialized', () => {
+	const material = SimulationMaterial.fromSerialized(editor, {
 		uuid: 'testUuid',
 		name: 'test',
 		sanitizedName: 'test',
@@ -54,7 +54,7 @@ test('fromJSON', () => {
 	expect(material.uuid).toBe('testUuid');
 	expect(material.customStoppingPower).toBe(false);
 
-	const material2 = SimulationMaterial.fromJSON(editor, {
+	const material2 = SimulationMaterial.fromSerialized(editor, {
 		uuid: 'testUuid',
 		name: 'test',
 		sanitizedName: 'test',

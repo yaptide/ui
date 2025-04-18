@@ -1,3 +1,4 @@
+import { SerializableState } from '../../js/EditorJson';
 import { StoppingPowerFile } from '../CustomStoppingPower/CustomStoppingPower';
 import { Icru } from '../Materials/MaterialManager';
 
@@ -40,7 +41,7 @@ const _default = {
 	stoppingPowerTable: STOPPING_POWER_TABLE.ICRU91
 };
 
-export class Physics {
+export class Physics implements SerializableState<PhysicJSON> {
 	energyLoss: number;
 	enableNuclearReactions: boolean;
 	energyModelStraggling: EnergyModelStraggling;
@@ -63,7 +64,7 @@ export class Physics {
 		this.stoppingPowerTable = _default.stoppingPowerTable;
 	}
 
-	toJSON() {
+	toSerialized() {
 		const {
 			energyLoss,
 			enableNuclearReactions,
@@ -83,7 +84,7 @@ export class Physics {
 		return jsonObject;
 	}
 
-	fromJSON(data: PhysicJSON) {
+	fromSerialized(data: PhysicJSON) {
 		const loadedData = { ..._default, ...data };
 		this.energyLoss = loadedData.energyLoss;
 		this.enableNuclearReactions = loadedData.enableNuclearReactions;
@@ -94,8 +95,8 @@ export class Physics {
 		return this;
 	}
 
-	static fromJSON(data: PhysicJSON) {
-		return new Physics().fromJSON(data);
+	static fromSerialized(data: PhysicJSON) {
+		return new Physics().fromSerialized(data);
 	}
 }
 

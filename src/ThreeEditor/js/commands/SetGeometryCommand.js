@@ -46,18 +46,18 @@ class SetGeometryCommand extends Command {
 		this.newGeometry = cmd.newGeometry;
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
 		output.objectUuid = this.object.uuid;
-		output.oldGeometry = this.object.geometry.toJSON();
-		output.newGeometry = this.newGeometry.toJSON();
+		output.oldGeometry = this.object.geometry.toSerialized();
+		output.newGeometry = this.newGeometry.toSerialized();
 
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.object = this.editor.objectByUuid(json.objectUuid);
 

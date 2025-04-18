@@ -4,9 +4,10 @@ import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 
-import { FLUKA_PARTICLE_TYPES,Particle, PARTICLE_TYPES } from '../../../types/Particle';
+import { FLUKA_PARTICLE_TYPES, Particle, PARTICLE_TYPES } from '../../../types/Particle';
 // Import of 'lines' from examples subfolder follows the official guidelines of threejs.editor (see https://threejs.org/docs/#manual/en/introduction/Installation)
 import { ConfigSourceFile } from '../../../types/SimulationTypes/ConfigTypes';
+import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 
@@ -107,7 +108,7 @@ const _default = {
 	}
 };
 
-export class Beam extends SimulationElement {
+export class Beam extends SimulationElement implements SerializableState<BeamJSON> {
 	readonly notRemovable: boolean = true;
 	readonly notMovable = false;
 	readonly notRotatable = true; //TODO: https://github.com/yaptide/ui/issues/242
@@ -299,9 +300,9 @@ export class Beam extends SimulationElement {
 		this.material.color.setHex(0xffff00); // yellow
 	}
 
-	toJSON() {
+	toSerialized() {
 		const jsonObject: BeamJSON = {
-			...super.toJSON(),
+			...super.toSerialized(),
 			position: this.position.toArray(),
 			direction: this.direction.toArray(),
 			energy: this.energy,
@@ -321,8 +322,8 @@ export class Beam extends SimulationElement {
 		return jsonObject;
 	}
 
-	fromJSON(data: BeamJSON) {
-		super.fromJSON(data);
+	fromSerialized(data: BeamJSON) {
+		super.fromSerialized(data);
 		const loadedData = { ..._default, ...data };
 		this.position.fromArray(loadedData.position);
 		this.direction.fromArray(loadedData.direction);
@@ -343,8 +344,8 @@ export class Beam extends SimulationElement {
 		return this;
 	}
 
-	static fromJSON(editor: YaptideEditor, data: BeamJSON) {
-		return new Beam(editor).fromJSON(data);
+	static fromSerialized(editor: YaptideEditor, data: BeamJSON) {
+		return new Beam(editor).fromSerialized(data);
 	}
 }
 

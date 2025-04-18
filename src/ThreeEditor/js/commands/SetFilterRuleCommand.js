@@ -19,7 +19,7 @@ export class SetFilterRuleCommand extends Command {
 		this.object = object;
 		this.oldRule = filter
 			.getRuleByUuid(object ? object.uuid : filter.selectedRule.uuid)
-			?.toJSON();
+			?.toSerialized();
 	}
 
 	execute() {
@@ -40,20 +40,20 @@ export class SetFilterRuleCommand extends Command {
 		this.object = command.object;
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
-		output.object = this.object.toJSON();
+	toSerialized() {
+		const output = super.toSerialized(this);
+		output.object = this.object.toSerialized();
 		output.oldRule = this.oldRule;
-		output.filter = this.filter.toJSON();
+		output.filter = this.filter.toSerialized();
 
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 		this.filter =
 			this.editor.detectorManager.getFilterByUuid(json.filter.uuid) ??
-			this.editor.detectorManager.createFilter().fromJSON(json.filter);
+			this.editor.detectorManager.createFilter().fromSerialized(json.filter);
 		this.object = json.object;
 		this.oldRule = json.oldRule;
 	}

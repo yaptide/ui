@@ -45,7 +45,7 @@ History.prototype = {
 		cmd.inMemory = true;
 
 		if (this.config.getKey('settings/history')) {
-			cmd.json = cmd.toJSON(); // serialize the cmd immediately after execution and append the json to the cmd
+			cmd.json = cmd.toSerialized(); // serialize the cmd immediately after execution and append the json to the cmd
 		}
 
 		this.lastCmdTime = new Date();
@@ -69,7 +69,7 @@ History.prototype = {
 			cmd = this.undos.pop();
 
 			if (cmd.inMemory === false) {
-				cmd.fromJSON(cmd.json);
+				cmd.fromSerialized(cmd.json);
 			}
 		}
 
@@ -95,7 +95,7 @@ History.prototype = {
 			cmd = this.redos.pop();
 
 			if (cmd.inMemory === false) {
-				cmd.fromJSON(cmd.json);
+				cmd.fromSerialized(cmd.json);
 			}
 		}
 
@@ -108,7 +108,7 @@ History.prototype = {
 		return cmd;
 	},
 
-	toJSON: function () {
+	toSerialized: function () {
 		var history = {};
 		history.undos = [];
 		history.redos = [];
@@ -136,7 +136,7 @@ History.prototype = {
 		return history;
 	},
 
-	fromJSON: function (json) {
+	fromSerialized: function (json) {
 		if (json === undefined) return;
 
 		for (let i = 0; i < json.undos.length; i++) {
@@ -209,9 +209,9 @@ History.prototype = {
 	enableSerialization: function (id) {
 		/**
 		 * because there might be commands in this.undos and this.redos
-		 * which have not been serialized with .toJSON() we go back
+		 * which have not been serialized with .toSerialized() we go back
 		 * to the oldest command and redo one command after the other
-		 * while also calling .toJSON() on them.
+		 * while also calling .toSerialized() on them.
 		 */
 
 		this.goToState(-1);
@@ -223,7 +223,7 @@ History.prototype = {
 
 		while (cmd !== undefined) {
 			if (!Object.prototype.hasOwnProperty.call(cmd, 'json')) {
-				cmd.json = cmd.toJSON();
+				cmd.json = cmd.toSerialized();
 			}
 
 			cmd = this.redo();

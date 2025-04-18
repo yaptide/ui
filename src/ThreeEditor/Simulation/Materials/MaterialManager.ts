@@ -3,6 +3,7 @@ import * as THREE from 'three';
 
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { CounterMap } from '../../../util/CounterMap/CounterMap';
+import { SerializableState } from '../../js/EditorJson';
 import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor.js';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { DEFAULT_MATERIAL_ICRU, MATERIALS } from './materials';
@@ -22,12 +23,15 @@ export type MaterialManagerJSON = Omit<
 
 export type Icru = number;
 
-export class MaterialManager extends THREE.Object3D implements SimulationPropertiesType {
+export class MaterialManager
+	extends THREE.Object3D
+	implements SimulationPropertiesType, SerializableState<MaterialManagerJSON>
+{
 	/****************************Private****************************/
 	private readonly metadata = {
 		version: `0.12`,
 		type: 'Manager',
-		generator: 'MaterialManager.toJSON'
+		generator: 'MaterialManager.toSerialized'
 	} as {
 		version: typeof JSON_VERSION;
 	} satisfies Record<string, string | number>;
@@ -160,7 +164,7 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 	copy(source: this, recursive?: boolean | undefined) {
 		super.copy(source, recursive);
 
-		return this.fromJSON(source.toJSON());
+		return this.fromSerialized(source.toSerialized());
 	}
 
 	reset(): void {
@@ -168,11 +172,11 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 		this._customMaterials = {};
 	}
 
-	toJSON(): MaterialManagerJSON {
+	toSerialized(): MaterialManagerJSON {
 		const { uuid, name, managerType: type, metadata } = this;
-		const selectedMaterials = this.selectedMaterials.toJSON();
+		const selectedMaterials = this.selectedMaterials.toSerialized();
 		const materials = Object.entries(this._customMaterials)
-			.map(([_icru, material]) => material.toJSON())
+			.map(([_icru, material]) => material.toSerialized())
 			.filter(({ uuid }) => this.selectedMaterials.has(uuid));
 
 		return {
@@ -185,7 +189,7 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 		};
 	}
 
-	fromJSON(json: MaterialManagerJSON) {
+	fromSerialized(json: MaterialManagerJSON) {
 		const {
 			editor,
 			metadata: { version }
@@ -202,7 +206,7 @@ export class MaterialManager extends THREE.Object3D implements SimulationPropert
 			materials.reduce(
 				(prev, json) => ({
 					...prev,
-					[json.icru]: SimulationMaterial.fromJSON(editor, json)
+					[json.icru]: SimulationMaterial.fromSerialized(editor, json)
 				}),
 				{}
 			)

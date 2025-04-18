@@ -51,7 +51,7 @@ export abstract class FilterRule {
 		this.operator = operator;
 	}
 
-	abstract toJSON(): RuleJSON;
+	abstract toSerialized(): RuleJSON;
 	abstract duplicate(): FilterRule;
 }
 
@@ -74,13 +74,13 @@ export class FloatRule extends FilterRule {
 		this._value = value;
 	}
 
-	toJSON(): FloatRuleJSON {
+	toSerialized(): FloatRuleJSON {
 		const { uuid, keyword, operator, _value: value } = this;
 
 		return { uuid, keyword, operator, value };
 	}
 
-	static fromJSON(json: FloatRuleJSON): FloatRule {
+	static fromSerialized(json: FloatRuleJSON): FloatRule {
 		const rule = new FloatRule(json);
 		rule.uuid = json.uuid;
 
@@ -88,7 +88,7 @@ export class FloatRule extends FilterRule {
 	}
 
 	duplicate(): FloatRule {
-		return new FloatRule(this.toJSON());
+		return new FloatRule(this.toSerialized());
 	}
 }
 
@@ -110,13 +110,13 @@ export class IntRule extends FilterRule {
 		this._value = value;
 	}
 
-	toJSON(): IntRuleJSON {
+	toSerialized(): IntRuleJSON {
 		const { uuid, keyword, operator, _value: value } = this;
 
 		return { uuid, keyword, operator, value };
 	}
 
-	static fromJSON(json: IntRuleJSON): IntRule {
+	static fromSerialized(json: IntRuleJSON): IntRule {
 		const rule = new IntRule(json);
 		rule.uuid = json.uuid;
 
@@ -124,7 +124,7 @@ export class IntRule extends FilterRule {
 	}
 
 	duplicate(): IntRule {
-		return new IntRule(this.toJSON());
+		return new IntRule(this.toSerialized());
 	}
 }
 
@@ -147,13 +147,13 @@ export class IDRule extends FilterRule {
 		this._value = value;
 	}
 
-	toJSON(): IDRuleJSON {
+	toSerialized(): IDRuleJSON {
 		const { uuid, keyword, operator, _value: value } = this;
 
 		return { uuid, keyword, operator, value };
 	}
 
-	static fromJSON(json: IDRuleJSON): IDRule {
+	static fromSerialized(json: IDRuleJSON): IDRule {
 		const rule = new IDRule(json);
 		rule.uuid = json.uuid;
 
@@ -161,7 +161,7 @@ export class IDRule extends FilterRule {
 	}
 
 	duplicate(): IDRule {
-		return new IDRule(this.toJSON());
+		return new IDRule(this.toSerialized());
 	}
 }
 

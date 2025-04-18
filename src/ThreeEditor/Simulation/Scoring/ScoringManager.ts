@@ -1,6 +1,7 @@
 import { Signal } from 'signals';
 import * as THREE from 'three';
 
+import { SerializableState } from '../../js/EditorJson';
 import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
@@ -21,7 +22,7 @@ export type ScoringManagerJSON = Omit<
 >;
 
 const outputLoader = (editor: YaptideEditor) => (json: OutputJSON) =>
-	new ScoringOutput(editor).fromJSON(json);
+	new ScoringOutput(editor).fromSerialized(json);
 
 export class OutputContainer extends SimulationSceneContainer<ScoringOutput> {
 	readonly isOutputContainer: true = true;
@@ -38,9 +39,9 @@ export class OutputContainer extends SimulationSceneContainer<ScoringOutput> {
 }
 
 const filterLoader = (editor: YaptideEditor) => (json: FilterJSON) => {
-	if (isCustomFilterJSON(json)) return new CustomFilter(editor).fromJSON(json);
+	if (isCustomFilterJSON(json)) return new CustomFilter(editor).fromSerialized(json);
 
-	if (isParticleFilterJSON(json)) return new ParticleFilter(editor).fromJSON(json);
+	if (isParticleFilterJSON(json)) return new ParticleFilter(editor).fromSerialized(json);
 
 	throw new Error(`Unknown filter type: ${json}`);
 };
@@ -61,13 +62,14 @@ export class ScoringManager
 	extends SimulationElement
 	implements
 		SimulationElementManager<'output', ScoringOutput>,
-		SimulationElementManager<'filter', ScoringFilter>
+		SimulationElementManager<'filter', ScoringFilter>,
+		SerializableState<ScoringManagerJSON>
 {
 	/****************************Private****************************/
 	private readonly metadata = {
 		version: `0.12`,
 		type: 'Manager',
-		generator: 'ScoringManager.toJSON'
+		generator: 'ScoringManager.toSerialized'
 	} as {
 		version: typeof JSON_VERSION;
 	} satisfies Record<string, string | number>;
@@ -188,7 +190,7 @@ export class ScoringManager
 	copy(source: this, recursive?: boolean | undefined) {
 		super.copy(source, recursive);
 
-		return this.fromJSON(source.toJSON());
+		return this.fromSerialized(source.toSerialized());
 	}
 
 	reset() {
@@ -199,18 +201,18 @@ export class ScoringManager
 		return this;
 	}
 
-	toJSON(): ScoringManagerJSON {
+	toSerialized(): ScoringManagerJSON {
 		const { metadata } = this;
 
 		return {
-			...super.toJSON(),
-			outputs: this.outputContainer.toJSON(),
-			filters: this.filterContainer.toJSON(),
+			...super.toSerialized(),
+			outputs: this.outputContainer.toSerialized(),
+			filters: this.filterContainer.toSerialized(),
 			metadata
 		};
 	}
 
-	fromJSON(json: ScoringManagerJSON) {
+	fromSerialized(json: ScoringManagerJSON) {
 		const {
 			metadata: { version }
 		} = this;
@@ -221,8 +223,8 @@ export class ScoringManager
 
 		this.uuid = uuid;
 		this.name = name;
-		this.filterContainer.fromJSON(filters);
-		this.outputContainer.fromJSON(outputs);
+		this.filterContainer.fromSerialized(filters);
+		this.outputContainer.fromSerialized(outputs);
 
 		return this;
 	}

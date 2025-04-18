@@ -48,8 +48,8 @@ export class SetBeamDirectionCommand extends Command {
 		this.newDirection.copy(command.newDirection);
 	}
 
-	toJSON() {
-		const output = super.toJSON(this);
+	toSerialized() {
+		const output = super.toSerialized(this);
 
 		output.objectUuid = this.object.uuid;
 		output.oldDirection = this.oldDirection.toArray();
@@ -58,8 +58,8 @@ export class SetBeamDirectionCommand extends Command {
 		return output;
 	}
 
-	fromJSON(json) {
-		super.fromJSON(json);
+	fromSerialized(json) {
+		super.fromSerialized(json);
 
 		this.object = this.editor.objectByUuid(json.objectUuid);
 		this.oldDirection = new Vector3().fromArray(json.oldDirection);

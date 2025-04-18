@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
+import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import SimulationMaterial, { SimulationMaterialJSON } from '../Materials/SimulationMaterial';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
@@ -57,7 +58,11 @@ const _get_default = (material: SimulationMaterial) => {
  */
 export abstract class SimulationZone
 	extends THREE.Mesh<THREE.BufferGeometry, SimulationMaterial>
-	implements SimulationElement, SimulationPropertiesType, SimulationSceneChild
+	implements
+		SimulationElement,
+		SimulationPropertiesType,
+		SimulationSceneChild,
+		SerializableState<SimulationZoneJSON>
 {
 	editor: YaptideEditor;
 	parent: SimulationSceneContainer<this> | null = null;
@@ -105,7 +110,7 @@ export abstract class SimulationZone
 					customMaterial && materialUuid === customMaterial.uuid
 						? customMaterial.originalMaterialUuid
 						: materialUuid
-			  )
+				)
 			: this.editor.materialManager.defaultMaterial;
 
 		if (simulationMaterial === undefined) throw new Error('SimulationMaterial not found');
@@ -142,13 +147,13 @@ export abstract class SimulationZone
 		this.simulationMaterial = this.editor.materialManager.defaultMaterial;
 	}
 
-	toJSON(): SimulationZoneJSON {
+	toSerialized(): SimulationZoneJSON {
 		const { uuid, name, type, visible, materialPropertiesOverrides: overrides } = this;
 		const customMaterial = this.usingCustomMaterial
 			? {
-					...this.simulationMaterial.clone().toJSON(),
+					...this.simulationMaterial.clone().toSerialized(),
 					originalMaterialUuid: this.simulationMaterial.uuid
-			  }
+				}
 			: undefined;
 
 		const { uuid: materialUuid } = this.usingCustomMaterial
@@ -183,7 +188,7 @@ export abstract class SimulationZone
 		return this;
 	}
 
-	fromJSON(json: SimulationZoneJSON) {
+	fromSerialized(json: SimulationZoneJSON) {
 		this.reset();
 		const { uuid, name, visible, materialPropertiesOverrides: overrides } = json;
 
