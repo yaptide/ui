@@ -578,6 +578,10 @@ export const SCORING_OPTIONS: IScoringOptions = {
 				modifiers: new Set([])
 			}
 		}
+	},
+	[SimulatorType.GEANT4]: {
+		DETECTOR: {},
+		ZONE: {}
 	}
 };
 
