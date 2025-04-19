@@ -187,7 +187,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 	);
 
 	/*------------------------------------BooleanZone-------------------------------------*/
-	const zoneRef = useRef<BooleanZone>();
+	const zoneRef = useRef<BooleanZone | null>(null);
 
 	useEffect(() => {
 		zoneRef.current = zone;
