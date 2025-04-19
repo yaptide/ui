@@ -7,8 +7,8 @@ import {
 	Box,
 	Button,
 	CircularProgress,
-	Grid,
-	GridProps,
+	GridLegacy as Grid,
+	GridLegacyProps as GridProps,
 	Theme,
 	Typography
 } from '@mui/material';

@@ -1,4 +1,4 @@
-import { Button, Divider, Grid } from '@mui/material';
+import { Button, Divider, GridLegacy as Grid } from '@mui/material';
 import { useCallback } from 'react';
 import { BoxGeometry, SphereGeometry, Vector3 } from 'three';
 

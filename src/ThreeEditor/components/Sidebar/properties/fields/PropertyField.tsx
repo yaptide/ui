@@ -1,4 +1,4 @@
-import { Box, Checkbox, Grid, Stack, TextField, Typography } from '@mui/material';
+import { Box, Checkbox, GridLegacy as Grid, Stack, TextField, Typography } from '@mui/material';
 import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Vector2 } from 'three';
 import { Vector3 } from 'three/src/math/Vector3.js';
