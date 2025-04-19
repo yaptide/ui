@@ -37,7 +37,7 @@ const PYODIDE_LOADED = 'PYODIDE_LOADED';
  *	There can be only one instance of PythonConverter in the whole application.
  */
 const PythonConverter = (props: PythonConverterProps) => {
-	const workerRef = useRef<Comlink.Remote<PythonWorker>>();
+	const workerRef = useRef<Comlink.Remote<PythonWorker> | null>(null);
 
 	useEffect(() => {
 		workerRef.current = Comlink.wrap<PythonWorker>(

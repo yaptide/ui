@@ -13,7 +13,7 @@ export const useJsRootCanvas = (redrawParam: string) => {
 	const [isVisible, setIsVisible] = useState(false);
 	const visibleRef = useRef(isVisible);
 	const { width: resizeWidth, height: resizeHeight } = useResizeObserver({
-		ref: containerEl
+		ref: containerEl as React.RefObject<HTMLDivElement>
 	});
 
 	useEffect(() => {

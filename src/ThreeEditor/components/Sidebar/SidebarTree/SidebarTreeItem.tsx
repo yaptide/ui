@@ -152,7 +152,13 @@ export function SidebarTreeItem(props: {
 	return (
 		<>
 			<Box
-				ref={ref => objectRefs.current.set(object.uuid, ref! as HTMLDivElement)}
+				ref={(ref: HTMLDivElement | null) => {
+					if (ref) {
+						objectRefs.current.set(object.uuid, ref);
+					} else {
+						objectRefs.current.delete(object.uuid);
+					}
+				}}
 				sx={{
 					'marginLeft': ({ spacing }) => spacing(depth * 2.5),
 

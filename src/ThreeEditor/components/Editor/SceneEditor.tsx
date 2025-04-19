@@ -2,7 +2,7 @@ import '../../css/main.css';
 
 import { AppBar, Box } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useEffect, useRef } from 'react';
+import { RefObject,useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 import { useStore } from '../../../services/StoreService';
@@ -27,11 +27,11 @@ interface SceneEditorProps {
 }
 
 function SceneEditor(props: SceneEditorProps) {
-	const wrapperElementRef = useRef<HTMLDivElement>(null);
+	const wrapperElementRef = useRef<HTMLElement>(null);
 	const { yaptideEditor, initializeEditor } = useStore();
 	const containerEl = useRef<HTMLDivElement>(null);
 
-	useKeyboardEditorControls(yaptideEditor, wrapperElementRef);
+	useKeyboardEditorControls(yaptideEditor, wrapperElementRef as RefObject<HTMLElement>);
 
 	useEffect(() => {
 		if (containerEl.current) {
