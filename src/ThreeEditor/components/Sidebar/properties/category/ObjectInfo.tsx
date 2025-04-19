@@ -1,4 +1,4 @@
-import { Grid } from '@mui/material';
+import { GridLegacy as Grid } from '@mui/material';
 import { Object3D } from 'three';
 
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';

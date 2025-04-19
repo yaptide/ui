@@ -1,5 +1,5 @@
 import { MenuItem, Select } from '@mui/material';
-import { SelectProps } from '@mui/material/Select/Select';
+import { SelectProps } from '@mui/material/Select';
 import { useRef } from 'react';
 import { Object3D } from 'three';
 

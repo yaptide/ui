@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, GridLegacy as Grid, Typography } from '@mui/material';
 
 import { isCustomFilterJSON } from '../ThreeEditor/Simulation/Scoring/CustomFilter';
 import { isParticleFilterJSON } from '../ThreeEditor/Simulation/Scoring/ParticleFilter';
