@@ -139,9 +139,9 @@ describe('Fluka Converter', () => {
 
 		//wait until the "generate from editor" button and click it (it takes some time for the button to change from "initializing")
 		//xpath is used as again the id changes every time
-		const generateButton = await driver.findElement(
-			By.xpath("//span[contains(text(),'Generate from Editor')]")
-		);
+
+		const generateButton = await driver.findElement(By.id('generate-from-editor'));
+
 		await driver.wait(until.elementIsEnabled(generateButton), 15_000);
 		await generateButton.click();
 
