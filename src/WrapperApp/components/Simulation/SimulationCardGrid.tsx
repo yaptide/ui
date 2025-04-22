@@ -84,7 +84,7 @@ export function SimulationCardGrid({
 	...other
 }: SimulationCardGridProps) {
 	let gridContainerProps: GridProps = { container: true };
-	let gridItemProps: GridProps;
+	let gridItemProps: GridProps = {}; // default grid item props
 
 	if (validGriLayout(layout)) {
 		gridContainerProps = {
