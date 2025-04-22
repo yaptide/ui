@@ -1,4 +1,4 @@
-import { Button, GridLegacy as Grid, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Button, Grid, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 
@@ -142,9 +142,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 							onChange={handleChangedZone}
 						/>
 					)}
-					<Grid
-						item
-						xs={12}>
+					<Grid size={12}>
 						<Button
 							sx={{ width: '100%' }}
 							variant='contained'

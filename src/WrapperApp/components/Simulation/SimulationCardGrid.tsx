@@ -7,8 +7,8 @@ import {
 	Box,
 	Button,
 	CircularProgress,
-	GridLegacy as Grid,
-	GridLegacyProps as GridProps,
+	Grid,
+	GridProps,
 	Theme,
 	Typography
 } from '@mui/material';
@@ -50,13 +50,13 @@ const stylesByLayout: Record<GridLayout, { gridContainerProps: {}; gridItemProps
 			columns: { sm: 1, md: 2, lg: 3, xl: 4 },
 			justifyContent: 'space-evenly'
 		},
-		gridItemProps: { xs: 1 }
+		gridItemProps: { size: 1 }
 	},
 	'inline-list': {
 		gridContainerProps: {
 			spacing: 2
 		},
-		gridItemProps: { xs: 12 }
+		gridItemProps: { size: 12 }
 	},
 	'block-list': {
 		gridContainerProps: {
@@ -84,14 +84,14 @@ export function SimulationCardGrid({
 	...other
 }: SimulationCardGridProps) {
 	let gridContainerProps: GridProps = { container: true };
-	let gridItemProps: GridProps = { item: true };
+	let gridItemProps: GridProps;
 
 	if (validGriLayout(layout)) {
 		gridContainerProps = {
 			...gridContainerProps,
 			...stylesByLayout[layout].gridContainerProps
 		};
-		gridItemProps = { ...gridItemProps, ...stylesByLayout[layout].gridItemProps };
+		gridItemProps = { ...stylesByLayout[layout].gridItemProps };
 	} else {
 		console.warn(`Unknown layout: ${layout}`);
 	}
@@ -103,6 +103,7 @@ export function SimulationCardGrid({
 				...sx
 			}}>
 			<Grid
+				id='simulation-card-grid'
 				{...gridContainerProps}
 				{...other}>
 				{simulations ? (

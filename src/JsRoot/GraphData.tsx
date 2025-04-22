@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardContent, GridLegacy as Grid, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
 
 import { isCustomFilterJSON } from '../ThreeEditor/Simulation/Scoring/CustomFilter';
 import { isParticleFilterJSON } from '../ThreeEditor/Simulation/Scoring/ParticleFilter';
@@ -185,19 +185,12 @@ export function generateGraphs(
 			return (
 				<Grid
 					key={`graph_${name}${jobId ? '_' + jobId : ''}_${page.name ?? idx}`}
-					item
-					xs={12}>
+					size={12}>
 					<Card>
 						<CardContent>
 							<Grid container>
-								<Grid
-									item
-									xs={8}>
-									{graph}
-								</Grid>
-								<Grid
-									item
-									xs={4}>
+								<Grid size={8}>{graph}</Grid>
+								<Grid size={4}>
 									<Box sx={{ marginTop: '1rem' }}>
 										<Typography variant='h5'>Filter:</Typography>
 										<Typography>{filter?.name ?? 'None'}</Typography>

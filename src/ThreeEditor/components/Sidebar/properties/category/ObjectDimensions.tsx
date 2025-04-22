@@ -1,4 +1,4 @@
-import { Button, Divider, GridLegacy as Grid } from '@mui/material';
+import { Button, Divider, Grid } from '@mui/material';
 import { useCallback } from 'react';
 import { BoxGeometry, SphereGeometry, Vector3 } from 'three';
 
@@ -107,9 +107,7 @@ const WorldZoneCalculateField = (props: { editor: YaptideEditor; object: WorldZo
 
 	return (
 		<>
-			<Grid
-				item
-				xs={12}>
+			<Grid size={12}>
 				<Divider />
 			</Grid>
 			<BooleanPropertyField
@@ -127,9 +125,7 @@ const WorldZoneCalculateField = (props: { editor: YaptideEditor; object: WorldZo
 					);
 				}}
 			/>
-			<Grid
-				item
-				xs={12}>
+			<Grid size={12}>
 				<Button
 					sx={{ width: '100%' }}
 					variant='contained'

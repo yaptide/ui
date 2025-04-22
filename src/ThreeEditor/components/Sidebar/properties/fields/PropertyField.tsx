@@ -1,4 +1,4 @@
-import { Box, Checkbox, GridLegacy as Grid, Stack, TextField, Typography } from '@mui/material';
+import { Box, Checkbox, Grid, Stack, TextField, Typography } from '@mui/material';
 import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Vector2 } from 'three';
 import { Vector3 } from 'three/src/math/Vector3.js';
@@ -34,15 +34,13 @@ export function PropertyField(props: { label?: string; disabled?: boolean; child
 		<>
 			{props.label !== undefined && (
 				<Grid
-					item
-					xs={4}
+					size={4}
 					sx={{ textAlign: 'right', opacity: props.disabled ? 0.5 : 'inherit' }}>
 					{props.label}
 				</Grid>
 			)}
 			<Grid
-				item
-				xs={props.label !== undefined ? 8 : 12}
+				size={props.label !== undefined ? 8 : 12}
 				sx={{ opacity: props.disabled ? 0.5 : 'inherit' }}>
 				{props.children}
 			</Grid>
