@@ -143,7 +143,7 @@ describe('ShieldhitConverter', () => {
 		).toBeTruthy();
 
 		//wait until the "generate from editor" button and click it (it takes some time for the button to change from "initializing")
-		//xpath is used as again the id changes every time
+		//the ID is now defined in component and is used for element selection
 		const generateButton = await driver.findElement(By.id('generate-from-editor'));
 
 		await driver.wait(until.elementIsEnabled(generateButton), 15_000);
