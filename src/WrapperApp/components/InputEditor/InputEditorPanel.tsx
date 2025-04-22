@@ -105,6 +105,7 @@ export default function InputEditorPanel({
 					marginBottom: '2rem'
 				}}>
 				<LoadingButton
+					id='generate-from-editor'
 					sx={{
 						marginRight: '1rem'
 					}}

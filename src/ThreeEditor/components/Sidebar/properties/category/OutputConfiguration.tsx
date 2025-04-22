@@ -142,9 +142,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 							onChange={handleChangedZone}
 						/>
 					)}
-					<Grid
-						item
-						xs={12}>
+					<Grid size={12}>
 						<Button
 							sx={{ width: '100%' }}
 							variant='contained'

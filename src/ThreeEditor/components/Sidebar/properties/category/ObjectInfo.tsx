@@ -46,16 +46,11 @@ export function ObjectInfo(props: { editor: YaptideEditor; object: Object3D }) {
 					{isScoringQuantity(watchedObject) && (
 						<>
 							<Grid
-								item
-								xs={4}
+								size={4}
 								sx={{ textAlign: 'right' }}>
 								{'Scoring Type'}
 							</Grid>
-							<Grid
-								item
-								xs={8}>
-								{scoringType}
-							</Grid>
+							<Grid size={8}>{scoringType}</Grid>
 						</>
 					)}
 				</>
