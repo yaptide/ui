@@ -91,7 +91,11 @@ export function SimulationCardGrid({
 			...gridContainerProps,
 			...stylesByLayout[layout].gridContainerProps
 		};
-		gridItemProps = { ...stylesByLayout[layout].gridItemProps };
+
+		gridItemProps = {
+			...gridItemProps,
+			...stylesByLayout[layout].gridItemProps
+		};
 	} else {
 		console.warn(`Unknown layout: ${layout}`);
 	}
@@ -103,7 +107,6 @@ export function SimulationCardGrid({
 				...sx
 			}}>
 			<Grid
-				id='simulation-card-grid'
 				{...gridContainerProps}
 				{...other}>
 				{simulations ? (
