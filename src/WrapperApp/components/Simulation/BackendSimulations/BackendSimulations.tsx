@@ -99,11 +99,12 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 
 	useIntervalAsync(updateSimulationData, simulationDataInterval, simulationInfo.length > 0);
 
-	useEffect(() => {
-		return () => {
-			controller.abort();
-		};
-	}, [controller]);
+	// Fix for ky 1.7.4 signal abort update
+	// useEffect(() => {
+	// 	return () => {
+	// 		controller.abort();
+	// 	};
+	// }, [controller]);
 
 	return (
 		<>

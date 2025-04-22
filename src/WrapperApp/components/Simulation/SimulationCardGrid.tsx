@@ -294,7 +294,7 @@ export function AccordionCardGrid({
 				},
 				'p': ({ spacing }: Theme) => spacing(0)
 			}}>
-			<AccordionSummary
+			<AccordionSummary /* TODO: consider fix, this throws button in button console error */
 				sx={{
 					p: ({ spacing }: Theme) => spacing(0),
 					m: ({ spacing }: Theme) => spacing(0),

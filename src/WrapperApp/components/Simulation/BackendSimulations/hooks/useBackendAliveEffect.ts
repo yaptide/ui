@@ -24,7 +24,8 @@ export const useBackendAliveEffect = (
 				});
 
 		return () => {
-			controller.abort();
+			// Fix for ky 1.7.4 signal abort update
+			//controller.abort();
 		};
 	}, [
 		controller.signal,
