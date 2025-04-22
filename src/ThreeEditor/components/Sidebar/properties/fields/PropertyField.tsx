@@ -34,15 +34,13 @@ export function PropertyField(props: { label?: string; disabled?: boolean; child
 		<>
 			{props.label !== undefined && (
 				<Grid
-					item
-					xs={4}
+					size={4}
 					sx={{ textAlign: 'right', opacity: props.disabled ? 0.5 : 'inherit' }}>
 					{props.label}
 				</Grid>
 			)}
 			<Grid
-				item
-				xs={props.label !== undefined ? 8 : 12}
+				size={props.label !== undefined ? 8 : 12}
 				sx={{ opacity: props.disabled ? 0.5 : 'inherit' }}>
 				{props.children}
 			</Grid>

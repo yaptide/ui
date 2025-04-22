@@ -45,18 +45,19 @@ type SimulationCardGridProps = {
 const stylesByLayout: Record<GridLayout, { gridContainerProps: {}; gridItemProps: {} }> = {
 	'grid': {
 		gridContainerProps: {
+			pt: 4,
 			rowSpacing: { sm: 2, md: 4 },
 			columnSpacing: 2,
 			columns: { sm: 1, md: 2, lg: 3, xl: 4 },
 			justifyContent: 'space-evenly'
 		},
-		gridItemProps: { xs: 1 }
+		gridItemProps: { size: 1 }
 	},
 	'inline-list': {
 		gridContainerProps: {
 			spacing: 2
 		},
-		gridItemProps: { xs: 12 }
+		gridItemProps: { size: 12 }
 	},
 	'block-list': {
 		gridContainerProps: {
@@ -83,15 +84,19 @@ export function SimulationCardGrid({
 	handleShowInputFiles,
 	...other
 }: SimulationCardGridProps) {
-	let gridContainerProps: GridProps = { container: true };
-	let gridItemProps: GridProps = { item: true };
+	let gridContainerProps: GridProps = { container: true, width: '100%' };
+	let gridItemProps: GridProps = {}; // default grid item props
 
 	if (validGriLayout(layout)) {
 		gridContainerProps = {
 			...gridContainerProps,
 			...stylesByLayout[layout].gridContainerProps
 		};
-		gridItemProps = { ...gridItemProps, ...stylesByLayout[layout].gridItemProps };
+
+		gridItemProps = {
+			...gridItemProps,
+			...stylesByLayout[layout].gridItemProps
+		};
 	} else {
 		console.warn(`Unknown layout: ${layout}`);
 	}

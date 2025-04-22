@@ -76,9 +76,7 @@ export function ZoneOperations(props: { editor: YaptideEditor; object: Object3D 
 			category='Zone Operations'
 			visible={visibleFlag}>
 			{watchedObject && (
-				<Grid
-					item
-					xs={12}>
+				<Grid size={12}>
 					<ZoneManagerPanel
 						editor={editor}
 						zone={watchedObject.object}

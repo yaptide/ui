@@ -1,5 +1,5 @@
 import { Stack } from '@mui/material';
-import Typography from '@mui/material/Typography/Typography';
+import Typography from '@mui/material/Typography';
 import { Object3D } from 'three';
 
 import { SimulatorType } from '../../../../../types/RequestTypes';
