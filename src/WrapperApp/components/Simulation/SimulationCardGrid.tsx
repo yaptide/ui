@@ -45,6 +45,7 @@ type SimulationCardGridProps = {
 const stylesByLayout: Record<GridLayout, { gridContainerProps: {}; gridItemProps: {} }> = {
 	'grid': {
 		gridContainerProps: {
+			pt: 4,
 			rowSpacing: { sm: 2, md: 4 },
 			columnSpacing: 2,
 			columns: { sm: 1, md: 2, lg: 3, xl: 4 },
@@ -83,7 +84,7 @@ export function SimulationCardGrid({
 	handleShowInputFiles,
 	...other
 }: SimulationCardGridProps) {
-	let gridContainerProps: GridProps = { container: true };
+	let gridContainerProps: GridProps = { container: true, width: '100%' };
 	let gridItemProps: GridProps = {}; // default grid item props
 
 	if (validGriLayout(layout)) {
@@ -99,6 +100,8 @@ export function SimulationCardGrid({
 	} else {
 		console.warn(`Unknown layout: ${layout}`);
 	}
+
+	console.log(sx);
 
 	return (
 		<Box
