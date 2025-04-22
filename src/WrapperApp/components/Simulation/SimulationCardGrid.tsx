@@ -186,28 +186,28 @@ export function PaginatedSimulationCardGrid({
 			isAccordion={isAccordion}
 			simulations={simulations}
 			layout={layout}
-			header={(accordion: SimulationAccordionProps) =>
-				SimulationBackendHeader({
-					title,
-					subtitle,
-					accordion,
-					sx: {
+			header={(accordion: SimulationAccordionProps) => (
+				<SimulationBackendHeader
+					title={title}
+					subtitle={subtitle}
+					accordion={accordion}
+					sx={{
 						mb: ({ spacing }: Theme) => spacing(0)
-					},
-					children,
-					...pageData
-				})
-			}
-			footer={() =>
-				SimulationPaginationFooter({
-					...pageData,
-					stickTo: 'bottom',
-					sx: {
+					}}
+					{...pageData}>
+					{children}
+				</SimulationBackendHeader>
+			)}
+			footer={() => (
+				<SimulationPaginationFooter
+					{...pageData}
+					stickTo='bottom'
+					sx={{
 						mt: ({ spacing }: Theme) => spacing(0),
 						zIndex: ({ zIndex }: Theme) => zIndex.appBar
-					}
-				})
-			}
+					}}
+				/>
+			)}
 			{...other}
 		/>
 	);
@@ -266,8 +266,8 @@ export function PaginatedSimulationsFromBackend({
 
 type AccordionCardGridProps = {
 	isAccordion: boolean;
-	header?: FC<SimulationAccordionProps>;
-	footer?: FC<{}>;
+	header?: (props: SimulationAccordionProps) => React.ReactNode;
+	footer?: () => React.ReactNode;
 } & SimulationCardGridProps;
 
 export function AccordionCardGrid({
@@ -320,7 +320,7 @@ export function AccordionCardGrid({
 					simulations={simulations}
 					{...other}
 				/>
-				{footer && footer({})}
+				{footer && footer()}
 			</AccordionDetails>
 		</Accordion>
 	);
