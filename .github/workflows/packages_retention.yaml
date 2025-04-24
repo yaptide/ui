@@ -9,6 +9,9 @@ jobs:
   cleanup-packages:
     name: Cleanup old GHCR docker packages
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # Needed to checkout the repository if the action requires it (though this specific action might not)
+      packages: write # This is the crucial permission for deleting packages from GHCR
     steps:
       - name: Cleanup web outdated PR packages
         uses: snok/container-retention-policy@v2
