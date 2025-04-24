@@ -9,6 +9,9 @@ jobs:
   cleanup-package:
     name: Cleanup closed PR package
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # Needed to checkout the repository if the action requires it (though this specific action might not)
+      packages: write # This is the crucial permission for deleting packages from GHCR
     steps:
       - name: Cleanup web package
         uses: snok/container-retention-policy@v2
