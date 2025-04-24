@@ -30,15 +30,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          # Checkout the branch selected by the user when triggering the workflow
-          ref: ${{ github.ref_name }}
-
-      # Add a step to set up the GitHub CLI
-      - name: Setup GitHub CLI
-        uses: github/gh-cli@v2
-        with:
-          # The GITHUB_TOKEN is needed by the gh CLI to authenticate with the GitHub API
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get PR Number for Branch
         id: get_pr
