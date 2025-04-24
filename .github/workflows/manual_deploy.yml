@@ -2,8 +2,7 @@ name: On-demand deploy
 
 # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
 on:
-  issue_comment:
-    types: [created]
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -12,10 +11,7 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
-    # Only run if it is a PR and the comment contains /deploy
-    if: github.event.issue.pull_request && contains(github.event.comment.body, '/deploy')
-       
+           
     # when we run this action as depenabot, we need to give it write permissions to the package registry and to the statuses
     permissions:
       contents: read
@@ -24,21 +20,14 @@ jobs:
       pull-requests: write
     
     steps:
-      - name: Get branch of PR
-        uses: xt0rted/pull-request-comment-branch@v3
-        id: comment-branch
+      # - name: Get branch of PR
+      #   uses: xt0rted/pull-request-comment-branch@v3
+      #   id: comment-branch
 
-      - name: Set latest commit status as pending
-        uses: myrotvorets/set-commit-status-action@v2.0.1
-        with:
-          sha: ${{ steps.comment-branch.outputs.head_sha }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          status: pending
-
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          ref: ${{ steps.comment-branch.outputs.head_ref }}
+      # - uses: actions/checkout@v4
+      #   with:
+      #     submodules: recursive
+      #     ref: ${{ steps.comment-branch.outputs.head_ref }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -75,26 +64,3 @@ jobs:
             BUILDKIT_CONTEXT_KEEP_GIT_DIR=true
             DEPLOYMENT=dev
 
-      - name: Add workflow result as comment on PR
-        uses: actions/github-script@v7
-        if: always()
-        with:
-          script: |
-            const workflow_name = '${{ github.workflow	}}';
-            const url = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
-            const success = '${{ job.status }}' === 'success';
-            const body = `${workflow_name}: ${success ? 'succeeded ✅' : 'failed ❌'}\n${url}`;
-            await github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: body
-            })
-
-      - name: Set latest commit status as ${{ job.status }}
-        uses: myrotvorets/set-commit-status-action@v2.0.1
-        if: always()
-        with:
-          sha: ${{ steps.comment-branch.outputs.head_sha }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          status: ${{ job.status  }}
