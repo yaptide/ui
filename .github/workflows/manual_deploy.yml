@@ -10,14 +10,11 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-           
-    # when we run this action as depenabot, we need to give it write permissions to the package registry and to the statuses
+
     permissions:
-      contents: read
-      packages: write
-      statuses: write
-      pull-requests: write
-    
+      contents: read # Required for actions/checkout and reading repo content
+      packages: write # Required for pushing to GitHub Packages
+
     steps:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -25,6 +22,35 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Get PR Number for Branch
+        id: get_pr
+        run: |
+          # Use gh pr list to find open PRs for the branch that triggered the workflow
+          # --state open filters for open PRs
+          # --head filters by the head branch name (using github.ref_name)
+          # --json number outputs the PR number in JSON format
+          PR_NUMBER=$(gh pr list --state open --head ${{ github.ref_name }} --json number | jq '.[0].number')
+
+          # Check if a PR number was successfully retrieved
+          if [ "$PR_NUMBER" == "null" ] || [ -z "$PR_NUMBER" ]; then
+            echo "::error::No open Pull Request found for branch '${{ github.ref_name }}'."
+            echo "Please ensure an open PR exists for this branch before triggering."
+            exit 1 # Fail the job if no PR is found
+          else
+            echo "Found open PR #${PR_NUMBER} for branch '${{ github.ref_name }}'."
+            # Set the found PR number as a step output
+            echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          # The GITHUB_TOKEN is also needed here for the gh CLI
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -34,9 +60,9 @@ jobs:
         uses: docker/metadata-action@v5.7.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          # Need to override the tag with pr-{issue_number} to make the retention working properly
+          # Use the PR number obtained from the 'Get PR Number' step output
           tags: |
-            type=raw,value=pr-${{ github.event.issue.number }}
+            type=raw,value=pr-${{ steps.get_pr.outputs.pr_number }}
 
       # see https://github.com/docker/build-push-action/issues/513#issuecomment-987951050
       - name: Build and push Docker image
@@ -53,4 +79,3 @@ jobs:
           build-args: |
             BUILDKIT_CONTEXT_KEEP_GIT_DIR=true
             DEPLOYMENT=dev
-
