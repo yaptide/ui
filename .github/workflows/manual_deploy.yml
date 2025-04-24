@@ -1,6 +1,5 @@
 name: On-demand deploy
 
-# https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
 on:
   workflow_dispatch:
 
@@ -20,15 +19,6 @@ jobs:
       pull-requests: write
     
     steps:
-      # - name: Get branch of PR
-      #   uses: xt0rted/pull-request-comment-branch@v3
-      #   id: comment-branch
-
-      # - uses: actions/checkout@v4
-      #   with:
-      #     submodules: recursive
-      #     ref: ${{ steps.comment-branch.outputs.head_ref }}
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
