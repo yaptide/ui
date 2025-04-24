@@ -1,8 +1,7 @@
-name: On-demand deploy (Manual with PR Lookup)
+name: On-demand deploy
 
 on:
   workflow_dispatch:
-    # Removed the branch_name input as GitHub provides a branch selection option
 
 env:
   REGISTRY: ghcr.io
@@ -15,8 +14,6 @@ jobs:
     permissions:
       contents: read # Required for actions/checkout and reading repo content
       packages: write # Required for pushing to GitHub Packages
-      # statuses: write # Keep if needed for external status checks
-      # pull-requests: write # Keep if needed for interacting with PRs (not used in current steps)
 
     steps:
       - name: Login to GitHub Container Registry

@@ -21,14 +21,9 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
 
     steps:
-      - name: Get branch of PR
-        uses: xt0rted/pull-request-comment-branch@v3
-        id: comment-branch
-
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-          ref: ${{ steps.comment-branch.outputs.head_ref }}
 
       - uses: actions/setup-python@v5
         with:
