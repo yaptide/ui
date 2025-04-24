@@ -1,6 +1,5 @@
 name: On-demand tests
 
-# https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
 on:
   issue_comment:
     types: [created]
