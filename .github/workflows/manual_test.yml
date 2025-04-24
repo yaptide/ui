@@ -1,4 +1,6 @@
 name: On-demand tests
+permissions:
+  contents: read # Required for actions/checkout and reading repo content
 
 on:
   workflow_dispatch:
@@ -10,11 +12,10 @@ env:
 jobs:
   build_and_test:
 
-
     strategy:
       matrix:
         node-version: [20.x, 22.x]
-        operating-system: [windows-latest] # ubuntu-latest, 
+        operating-system: [ubuntu-latest, windows-latest]
         python-version: ['3.11', '3.12']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
