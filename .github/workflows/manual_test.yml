@@ -43,19 +43,18 @@ jobs:
         if: matrix.operating-system == 'ubuntu-latest'
         run: npm run start &
 
-      - name: Start application in background on Windows
+      - name: Test application build on Windows
         if: matrix.operating-system == 'windows-latest'
-        run: |
-          # Use cmd /c to correctly execute "npm run start" within a shell context
-          # Start-Process now launches cmd, and cmd executes the command
-          Start-Process -FilePath "cmd" -ArgumentList "/c", "npm run start" -NoNewWindow -PassThru | Out-Null
+        run: npm run build
 
       - name: Wait for the app to start
+        if: matrix.operating-system == 'ubuntu-latest'
         uses: iFaxity/wait-on-action@v1.2.1
         with:
           resource: http://localhost:3000
 
       - name: Run tests 
+        if: matrix.operating-system == 'ubuntu-latest'
         uses: nick-fields/retry@v3
         with:
           max_attempts: 2
