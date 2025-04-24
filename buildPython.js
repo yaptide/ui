@@ -91,7 +91,7 @@ const saveFileName = (destFolder, fileName) => {
 
 		measureTime('Installing build module for python', () => {
 			executeCommand(
-				`${venvCommandPrefix} pip install "poetry ~= 1.8.2" ${venvCommandSuffix}`
+				`${venvCommandPrefix} pip install "poetry == 1.8.5" ${venvCommandSuffix}`
 			);
 		});
 
