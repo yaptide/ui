@@ -2,6 +2,11 @@ name: On-demand deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull Request number to deploy'
+        required: true
+        type: number
 
 env:
   REGISTRY: ghcr.io
@@ -15,8 +20,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-      statuses: write
-      pull-requests: write
     
     steps:
       - name: Login to GitHub Container Registry
@@ -39,8 +42,9 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           # Need to override the tag with pr-{issue_number} to make the retention working properly
+          # Using the workflow_dispatch input for the PR number
           tags: |
-            type=raw,value=pr-${{ github.event.issue.number }}
+            type=raw,value=pr-${{ github.event.inputs.pr_number }}
 
       # see https://github.com/docker/build-push-action/issues/513#issuecomment-987951050
       - name: Build and push Docker image

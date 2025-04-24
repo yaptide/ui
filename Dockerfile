@@ -18,7 +18,7 @@ RUN openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 \
     -keyout server.key -out server.crt
 
 # Stage 2: Build the wheel package for the converter part of the UI.
-FROM python:3.11 AS wheel-builder
+FROM python:3.12 AS wheel-builder
 
 COPY src/libs/converter/ .
 
@@ -47,7 +47,7 @@ COPY . .
 # This is needed to make sure that the git config is stored in the correct directory.
 # Otherwise, the git config is stored in the root directory, which is not allowed.
 # Also, pip installs some packages using the --user option, which requires HOME to be set.
-ENV HOME /usr/src/app
+ENV HOME=/usr/src/app
 RUN git config --global --add safe.directory /usr/src/app
 
 # Run the setup script to identify the git commit hash and write it to a file.
