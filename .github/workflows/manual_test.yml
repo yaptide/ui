@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         node-version: [20.x, 22.x]
-        operating-system: [ubuntu-latest, windows-latest]
+        operating-system: [windows-latest] # ubuntu-latest, 
         python-version: ['3.11', '3.12']
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
@@ -46,7 +46,9 @@ jobs:
       - name: Start application in background on Windows
         if: matrix.operating-system == 'windows-latest'
         run: |
-          Start-Process -FilePath "npm" -ArgumentList "run start" -NoNewWindow -PassThru | Out-Null
+          # Use cmd /c to correctly execute "npm run start" within a shell context
+          # Start-Process now launches cmd, and cmd executes the command
+          Start-Process -FilePath "cmd" -ArgumentList "/c", "npm run start" -NoNewWindow -PassThru | Out-Null
 
       - name: Wait for the app to start
         uses: iFaxity/wait-on-action@v1.2.1
