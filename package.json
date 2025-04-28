@@ -29,7 +29,7 @@
 		"convert-units": "^3.0.0-beta.7",
 		"copy-to-clipboard": "^3.3.3",
 		"date-fns": "^4.1.0",
-		"glob": "^11.0.0",
+		"glob": "^11.0.2",
 		"jsroot": "^7.8.2",
 		"keycloak-js": "^26.1.5",
 		"ky": "^1.7.3",
