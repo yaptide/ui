@@ -7,7 +7,6 @@ import {
 	Divider,
 	FormControl,
 	InputLabel,
-	Menu,
 	Select,
 	Stack,
 	Tab,
@@ -26,9 +25,9 @@ import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import { Context } from '../../js/EditorContext';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
-import { SelectPropertyField } from './properties/fields/PropertyField';
 import { PropertiesPanel } from './properties/PropertiesPanel';
 import { SidebarTree } from './SidebarTree/SidebarTree';
+import { SidebarTreeList } from './SidebarTreeList/SidebarTreeList';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
 
 interface EditorSidebarProps {
@@ -124,9 +123,11 @@ export function EditorSidebar(props: EditorSidebarProps) {
 				<FormControl
 					variant='filled'
 					fullWidth>
-					<InputLabel style={{ color: '#dfc19b' }}>Simulator</InputLabel>
+					<InputLabel sx={{ color: ({ palette }) => palette.primary.main }}>
+						Simulator
+					</InputLabel>
 					<Select
-						style={{ color: '#dfc19b' }}
+						sx={{ color: ({ palette }) => palette.primary.main }}
 						value={simulator}
 						label='Simulator'
 						onChange={e => {
@@ -274,7 +275,7 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 	const commonElements = [
 		{
 			title: 'Figures',
-			add: btnProps['Figures'],
+			add: btnProps['CFGFigures'],
 			tree: (
 				<SidebarTree
 					editor={editor}
@@ -341,6 +342,20 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 	];
 	const flukaElements = [...commonElements];
 
+	const geant4Elements = [
+		{
+			title: 'Hierarchy',
+			add: btnProps['NestedFigures'],
+			tree: (
+				<SidebarTreeList
+					editor={editor}
+					sources={[editor.figureManager.figureContainer]}
+					nestingAllowed={true}
+				/>
+			)
+		}
+	];
+
 	switch (simulator) {
 		case SimulatorType.SHIELDHIT:
 			return shieldhitElements;
@@ -348,6 +363,8 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 			return flukaElements;
 		case SimulatorType.COMMON:
 			return commonElements;
+		case SimulatorType.GEANT4:
+			return geant4Elements;
 		default:
 			return [];
 	}

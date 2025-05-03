@@ -72,7 +72,8 @@ function App() {
 				},
 				dimensions: {
 					navDrawerWidth: 160
-				}
+				},
+				cssVariables: true
 			}),
 		[prefersDarkMode]
 	);

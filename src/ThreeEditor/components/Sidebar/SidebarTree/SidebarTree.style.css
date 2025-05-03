@@ -8,3 +8,12 @@
 .editor-sidebar-tree {
 	padding-bottom: 10px;
 }
+
+.editor-sidebar-drop-target {
+	background-color: var(--mui-palette-grey-800);
+}
+
+.editor-sidebar-drop-target-divider {
+	border-bottom: 2px solid var(--mui-palette-primary-main);
+	margin: 0.2rem;
+}
