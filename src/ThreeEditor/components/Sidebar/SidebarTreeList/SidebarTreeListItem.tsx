@@ -2,9 +2,10 @@ import { NodeModel } from '@minoru/react-dnd-treeview/dist/types';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { Box, Checkbox, Menu, Stack, TextField, Typography } from '@mui/material';
+import { Box, Checkbox, Icon, Menu, Stack, TextField, Typography } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
 import { bindContextMenu, bindMenu, usePopupState } from 'material-ui-popup-state/hooks';
-import { useCallback,useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Object3D } from 'three';
 
 import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
@@ -100,16 +101,15 @@ export function SidebarTreeListItem(props: {
 			<Box
 				id={object.uuid}
 				sx={{
-					'marginLeft': ({ spacing }) => spacing(depth * 2.5),
+					'marginLeft': ({ spacing }) => spacing(depth * 1.5),
 					'display': 'flex',
 					'flexDirection': 'row',
 					'alignItems': 'center',
-					'paddingLeft': ({ spacing }) => spacing(0.5),
 					':hover': {
 						backgroundColor: ({ palette }) => palette.action.hover
 					}
 				}}>
-				{hasChild && (
+				{hasChild ? (
 					<ChevronRightIcon
 						onClick={onToggle}
 						sx={{
@@ -117,6 +117,8 @@ export function SidebarTreeListItem(props: {
 							transition: 'transform 0.2s'
 						}}
 					/>
+				) : (
+					<Icon />
 				)}
 				<Stack
 					direction='row'
