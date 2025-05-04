@@ -4,6 +4,7 @@ import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { AdditionalGeometryDataType, getGeometryData } from '../../../util/AdditionalGeometryData';
 import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
+import { figureLoader } from '../Figures/FigureManager';
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from './SimulationElement';
 
@@ -12,6 +13,7 @@ export type SimulationMeshJSON = Omit<
 		geometryData: AdditionalGeometryDataType;
 		colorHex: number;
 		visible: boolean;
+		children?: SimulationMeshJSON[];
 	},
 	never
 >;
@@ -64,11 +66,18 @@ export abstract class SimulationMesh<
 			uuid,
 			visible,
 			geometryData,
-			colorHex
+			colorHex,
+			children: this.children.map(c => (c as SimulationMesh).toSerialized())
 		};
 	}
 
 	fromSerialized(json: SimulationMeshJSON) {
+		const loader = figureLoader(this.editor);
+
+		if (json.children && json.children.length > 0) {
+			this.children = json.children.map(childJson => loader(childJson));
+		}
+
 		this.name = json.name;
 		this.uuid = json.uuid;
 		this.visible = json.visible;

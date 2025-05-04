@@ -17,7 +17,7 @@ type FigureManagerJSON = Omit<
 	never
 >;
 
-const figureLoader = (editor: YaptideEditor) => (json: SimulationMeshJSON) => {
+export const figureLoader = (editor: YaptideEditor) => (json: SimulationMeshJSON) => {
 	switch (json.type) {
 		case 'BoxFigure':
 			return new BoxFigure(editor).fromSerialized(json);
