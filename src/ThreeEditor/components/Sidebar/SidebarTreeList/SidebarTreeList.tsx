@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { Object3D } from 'three';
 import { generateUUID } from 'three/src/math/MathUtils.js';
 
-import { ChangeObjectOrderCommand } from '../../../js/commands/ChangeObjectOrderCommand';
+import { MoveObjectInTreeCommand } from '../../../js/commands/MoveObjectInTreeCommand';
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { SimulationSceneChild } from '../../../Simulation/Base/SimulationContainer';
 import { TreeItem } from '../SidebarTree/SidebarTreeItem';
@@ -62,37 +62,42 @@ export function SidebarTreeList(props: {
 				);
 			}
 
-			if (!dragSource?.data) {
+			if (!dragSource || !dragSource.data) {
 				return;
 			}
 
-			let parentChanged = false;
-
-			for (const node of tree) {
-				if (node.id === dragSource.id) {
-					parentChanged = node.parent !== dragSource.parent;
-
-					break;
+			const findObjectById = (id: string | number) => {
+				for (const node of tree) {
+					if (node.id === id) {
+						return node;
+					}
 				}
+
+				return null;
+			};
+
+			const dragObject = findObjectById(dragSource.id)!;
+			const newParentUuid =
+				dragObject.parent === 0 ? '' : findObjectById(dragObject.parent)?.data?.object.uuid;
+			const newParent = newParentUuid === '' ? null : editor.objectByUuid(newParentUuid)!;
+
+			if (newParent === dragSource.data.object) {
+				return;
 			}
 
-			if (parentChanged) {
-				//@todo change parent command
-			} else {
-				if (
-					relativeIndex === dragSource.data.index ||
-					relativeIndex - 1 === dragSource.data.index
-				) {
-					return;
-				}
-
+			if (
+				dragObject.parent != dragSource.parent ||
+				(relativeIndex !== dragSource.data.index &&
+					relativeIndex - 1 !== dragSource.data.index)
+			) {
 				editor.execute(
-					new ChangeObjectOrderCommand(
+					new MoveObjectInTreeCommand(
 						editor,
 						dragSource.data.object,
 						relativeIndex > (dragSource.data.index ?? 0)
 							? relativeIndex - 1
-							: relativeIndex
+							: relativeIndex,
+						newParent
 					)
 				);
 			}
