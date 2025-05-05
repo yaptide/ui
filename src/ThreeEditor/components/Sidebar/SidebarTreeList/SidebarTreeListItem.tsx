@@ -3,7 +3,6 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Box, Checkbox, Icon, Menu, Stack, TextField, Typography } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
 import { bindContextMenu, bindMenu, usePopupState } from 'material-ui-popup-state/hooks';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Object3D } from 'three';
@@ -122,10 +121,22 @@ export function SidebarTreeListItem(props: {
 				)}
 				<Stack
 					direction='row'
+					onClick={() => editor.selectById(object.id)}
 					width='100%'
 					sx={{ cursor: 'pointer' }}
 					{...bindContextMenu(popupState)}>
-					<Typography component={Box}>
+					<Typography
+						component={Box}
+						sx={{
+							color: ({ palette }) =>
+								editor.selected === object
+									? palette.primary.main
+									: palette.text.primary,
+							fontWeight: ({ typography }) =>
+								editor.selected === object
+									? typography.fontWeightBold
+									: typography.fontWeightRegular
+						}}>
 						<TextField
 							inputRef={inputRef}
 							sx={{ display: mode === 'view' ? 'none' : '' }}
