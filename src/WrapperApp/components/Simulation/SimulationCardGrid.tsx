@@ -45,7 +45,6 @@ type SimulationCardGridProps = {
 const stylesByLayout: Record<GridLayout, { gridContainerProps: {}; gridItemProps: {} }> = {
 	'grid': {
 		gridContainerProps: {
-			pt: 4,
 			rowSpacing: { sm: 2, md: 4 },
 			columnSpacing: 2,
 			columns: { sm: 1, md: 2, lg: 3, xl: 4 },
@@ -294,14 +293,15 @@ export function AccordionCardGrid({
 				},
 				'p': ({ spacing }: Theme) => spacing(0)
 			}}>
-			<AccordionSummary /* TODO: consider fix, this throws button in button console error */
+			<Box
 				sx={{
 					p: ({ spacing }: Theme) => spacing(0),
 					m: ({ spacing }: Theme) => spacing(0),
 					position: 'sticky',
 					inset: ({ spacing }: Theme) => spacing(0, 0, 0, 0),
 					zIndex: ({ zIndex }: Theme) => zIndex.appBar + 1,
-					mb: ({ spacing }: Theme) => (expanded ? spacing(7) : spacing(0))
+					mb: ({ spacing }: Theme) => (expanded ? spacing(15) : spacing(8)),
+					textTransform: 'uppercase'
 				}}>
 				{header &&
 					header(
@@ -309,7 +309,7 @@ export function AccordionCardGrid({
 							? { expanded, toggleExpanded: () => setExpanded(!expanded) }
 							: {}
 					)}
-			</AccordionSummary>
+			</Box>
 			<AccordionDetails
 				sx={{
 					mt: ({ spacing }: Theme) => (expanded ? spacing(-14) : spacing(0)),

@@ -85,7 +85,8 @@ export function NavDrawerList({
 							menuOption={{
 								label: username,
 								richLabel: (
-									<Typography /* TODO: consider fix, this throws <div> in <p> console error */
+									<Typography
+										component='div'
 										sx={{
 											marginRight: 1,
 											textOverflow: 'ellipsis',
