@@ -1,6 +1,6 @@
 import { TableCell, TableRow } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
-import React, { Fragment, ReactNode, useMemo } from 'react';
+import React, { Fragment, JSX, ReactNode, useMemo } from 'react';
 
 import { currentJobStatusData, StatusState } from '../../../../types/ResponseTypes';
 
