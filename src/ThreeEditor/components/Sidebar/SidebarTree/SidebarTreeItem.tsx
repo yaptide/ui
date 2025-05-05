@@ -6,7 +6,7 @@ import { Checkbox, Menu, MenuItem, TextField, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import { Stack } from '@mui/system';
 import { bindContextMenu, bindMenu, usePopupState } from 'material-ui-popup-state/hooks';
-import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { JSX, MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { Object3D } from 'three';
 import * as THREE from 'three';
 
