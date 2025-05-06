@@ -52,21 +52,16 @@ export class MoveObjectInTreeCommand extends Command {
 	}
 
 	execute() {
-		this.doExecute(this.newIndex, this.oldIndex, this.newParent, this.oldParent);
+		this.doExecute(this.newIndex, this.newParent, this.oldParent);
 		this.editor.select(this.object);
 	}
 
 	undo() {
-		this.doExecute(this.oldIndex, this.newIndex, this.oldParent, this.newParent);
+		this.doExecute(this.oldIndex, this.oldParent, this.newParent);
 		this.editor.select(this.oldSelect);
 	}
 
-	private doExecute(
-		newIndex: number,
-		oldIndex: number,
-		newParent: THREE.Object3D,
-		oldParent: THREE.Object3D
-	) {
+	private doExecute(newIndex: number, newParent: THREE.Object3D, oldParent: THREE.Object3D) {
 		if (
 			!this.editor.objectByUuid(newParent.uuid) ||
 			!this.editor.objectByUuid(oldParent.uuid)
@@ -78,20 +73,23 @@ export class MoveObjectInTreeCommand extends Command {
 			newParent.attach(this.object);
 		}
 
-		// for (const i in newParent.children) {
-		// 	if (newParent.children[i].uuid === this.object.uuid) {
-		// 		oldIndex = i;
-		// 		break;
-		// 	}
-		// }
-		//
-		// const element = oldParent.children.splice(oldIndex, 1)[0];
-		//
-		// if (element !== this.object) {
-		// 	throw new Error('Object not in expected position.');
-		// }
-		//
-		// newParent.children.splice(newIndex, 0, this.object);
+		let currentIndex = 0;
+
+		for (let i = 0; i < newParent.children.length; i++) {
+			if (newParent.children[i].uuid === this.object.uuid) {
+				currentIndex = i;
+
+				break;
+			}
+		}
+
+		const element = newParent.children.splice(currentIndex, 1)[0];
+
+		if (element !== this.object) {
+			throw new Error('Object not in expected position.');
+		}
+
+		newParent.children.splice(newIndex, 0, this.object);
 
 		this.editor.signals.objectChanged.dispatch(oldParent, 'children');
 
