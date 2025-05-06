@@ -18,7 +18,6 @@ import { AddQuantityAction, DeleteAction, DuplicateAction, RenameAction } from '
 
 export function SidebarTreeListItem(props: {
 	depth: number;
-	isDragging: boolean;
 	hasChild: boolean;
 	isOpen: boolean;
 	onToggle: () => void;
@@ -27,7 +26,7 @@ export function SidebarTreeListItem(props: {
 		object: Object3D | SimulationElement;
 	}>;
 }) {
-	const { depth, isDragging, hasChild, isOpen, onToggle, editor, node } = props;
+	const { depth, hasChild, isOpen, onToggle, editor, node } = props;
 
 	const inputRef = useRef<HTMLInputElement>(null);
 	const object = node.data!.object;

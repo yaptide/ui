@@ -25,11 +25,13 @@ import { YaptideEditor } from '../../../js/YaptideEditor';
 import { isSimulationElement, SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
 
-export type TreeItem = NodeModel<{
+export type TreeItemData = {
 	object: Object3D | SimulationElement;
 	treeId: string;
 	index?: number;
-}>;
+};
+
+export type TreeItem = NodeModel<TreeItemData>;
 
 function isHidable(object: Object3D | SimulationPropertiesType) {
 	if ('notHidable' in object) {
