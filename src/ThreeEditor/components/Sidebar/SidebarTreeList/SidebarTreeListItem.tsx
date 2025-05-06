@@ -7,6 +7,7 @@ import { bindContextMenu, bindMenu, usePopupState } from 'material-ui-popup-stat
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Object3D } from 'three';
 
+import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
 import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { canChangeName, isRemovable } from '../../../../util/hooks/useKeyboardEditorControls';
 import { canBeDuplicated } from '../../../js/commands/DuplicateObjectCommand';
@@ -15,6 +16,14 @@ import { YaptideEditor } from '../../../js/YaptideEditor';
 import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
 import { AddQuantityAction, DeleteAction, DuplicateAction, RenameAction } from './contextActions';
+
+function isHidable(object: Object3D | SimulationPropertiesType) {
+	if ('notHidable' in object) {
+		return !object.notHidable;
+	}
+
+	return true;
+}
 
 export function SidebarTreeListItem(props: {
 	depth: number;
@@ -163,13 +172,20 @@ export function SidebarTreeListItem(props: {
 						<span style={{ display: mode === 'view' ? '' : 'none' }}>{node.text}</span>
 					</Typography>
 
-					<Checkbox
-						sx={{ padding: 0, marginLeft: 'auto' }}
-						checked={true}
-						onClick={e => e.stopPropagation()}
-						icon={<VisibilityOffIcon />}
-						checkedIcon={<VisibilityIcon />}
-					/>
+					{isHidable(object) && (
+						<Checkbox
+							sx={{ padding: 0, marginLeft: 'auto' }}
+							checked={object.visible}
+							onClick={e => e.stopPropagation()}
+							onChange={(_, value) => {
+								editor.execute(
+									new SetValueCommand(editor, object, 'visible', value)
+								);
+							}}
+							icon={<VisibilityOffIcon />}
+							checkedIcon={<VisibilityIcon />}
+						/>
+					)}
 				</Stack>
 			</Box>
 
