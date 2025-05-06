@@ -1,4 +1,4 @@
-import { Tree } from '@minoru/react-dnd-treeview';
+import { DropOptions, Tree } from '@minoru/react-dnd-treeview';
 import { Divider } from '@mui/material';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Object3D } from 'three';
@@ -7,11 +7,19 @@ import { generateUUID } from 'three/src/math/MathUtils.js';
 import { MoveObjectInTreeCommand } from '../../../js/commands/MoveObjectInTreeCommand';
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { SimulationSceneChild } from '../../../Simulation/Base/SimulationContainer';
-import { TreeItem } from '../SidebarTree/SidebarTreeItem';
+import { TreeItem, TreeItemData } from '../SidebarTree/SidebarTreeItem';
 import { SidebarTreeListItem } from './SidebarTreeListItem';
 import { useGenerateTreeData } from './useGenerateTreeData';
 
 type TreeSource = SimulationSceneChild[];
+
+function handleSelected(object: Object3D | null) {
+	if (!object) {
+		return;
+	}
+
+	document.getElementById(object.uuid)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
 
 export function SidebarTreeList(props: {
 	editor: YaptideEditor;
@@ -23,16 +31,6 @@ export function SidebarTreeList(props: {
 
 	const treeId = useMemo(() => generateUUID(), []);
 	const [treeData, refreshTreeData] = useGenerateTreeData(treeId, sources);
-
-	const handleSelected = (object: Object3D | null) => {
-		if (!object) {
-			return;
-		}
-
-		document
-			.getElementById(object.uuid)
-			?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-	};
 
 	useEffect(() => {
 		refreshTreeData();
@@ -105,6 +103,29 @@ export function SidebarTreeList(props: {
 		[editor]
 	);
 
+	const canDrop = useCallback(
+		(_: any, options: DropOptions<TreeItemData>): boolean | void => {
+			const { dragSource, dropTargetId } = options;
+
+			if (dragSource?.parent === dropTargetId) {
+				// allow for reordering within current parent
+				return true;
+			}
+
+			if (
+				!dragSource ||
+				dragSource.data?.treeId !== treeId ||
+				(dragSource?.parent !== dropTargetId && !nestingAllowed)
+			) {
+				// sanity checks and obvious violations
+				return false;
+			}
+
+			return; // let the default library logic handle the rest, i.e. moving subtree into itself
+		},
+		[treeId, nestingAllowed]
+	);
+
 	return (
 		<Tree
 			classes={{
@@ -115,23 +136,13 @@ export function SidebarTreeList(props: {
 			rootId={0}
 			sort={false}
 			onDrop={handleDrop}
-			canDrop={(_, { dragSource, dropTargetId }): boolean | void => {
-				switch (true) {
-					case !dragSource || dragSource.data?.treeId !== treeId:
-						return false;
-					case dragSource?.parent === dropTargetId || nestingAllowed:
-						return true;
-					default:
-						return false;
-				}
-			}}
+			canDrop={canDrop}
 			dropTargetOffset={5}
 			placeholderRender={() => <Divider className={'editor-sidebar-drop-target-divider'} />}
-			render={(node, { depth, isDragging, isOpen, onToggle, hasChild }) => (
+			render={(node, { depth, isOpen, onToggle, hasChild }) => (
 				<SidebarTreeListItem
 					node={node}
 					depth={depth}
-					isDragging={isDragging}
 					hasChild={hasChild}
 					isOpen={isOpen}
 					onToggle={onToggle}
