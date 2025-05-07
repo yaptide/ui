@@ -1,5 +1,13 @@
 import * as THREE from 'three';
 
+import { OneSlotContainer } from '../../Simulation/Base/SimulationContainer';
+import { SimulationElement } from '../../Simulation/Base/SimulationElement';
+import { SimulationMesh } from '../../Simulation/Base/SimulationMesh';
+import { SimulationZone } from '../../Simulation/Base/SimulationZone';
+import { Detector } from '../../Simulation/Detectors/Detector';
+import { ScoringFilter } from '../../Simulation/Scoring/ScoringFilter';
+import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
+import { ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
 import { Command, CommandJSON } from '../Command';
 import { YaptideEditor } from '../YaptideEditor.js';
 
@@ -34,7 +42,7 @@ export class MoveObjectInTreeCommand extends Command {
 		this.type = 'MoveObjectInTreeCommand';
 		this.object = object;
 		this.oldParent = object.parent;
-		this.newParent = newParent ?? editor.figureManager.figureContainer;
+		this.newParent = newParent ?? this.resolveBaseParent();
 
 		this.newIndex = newIndex;
 
@@ -62,13 +70,6 @@ export class MoveObjectInTreeCommand extends Command {
 	}
 
 	private doExecute(newIndex: number, newParent: THREE.Object3D, oldParent: THREE.Object3D) {
-		if (
-			!this.editor.objectByUuid(newParent.uuid) ||
-			!this.editor.objectByUuid(oldParent.uuid)
-		) {
-			throw new Error('Object parents reference invalid.');
-		}
-
 		if (oldParent !== newParent) {
 			newParent.attach(this.object);
 		}
@@ -98,6 +99,25 @@ export class MoveObjectInTreeCommand extends Command {
 		}
 
 		this.editor.signals.sceneGraphChanged.dispatch();
+	}
+
+	private resolveBaseParent(): THREE.Object3D {
+		console.log(this.object);
+
+		switch (true) {
+			case this.object instanceof SimulationZone:
+				return this.editor.zoneManager.zoneContainer;
+			case this.object instanceof Detector:
+				return this.editor.detectorManager.detectorContainer;
+			case this.object instanceof ScoringFilter:
+				return this.editor.scoringManager.filterContainer;
+			case this.object instanceof ScoringOutput:
+				return this.editor.scoringManager.outputContainer;
+			case this.object instanceof SimulationMesh:
+				return this.editor.figureManager.figureContainer;
+			default:
+				throw new Error('Invalid object');
+		}
 	}
 
 	toSerialized() {

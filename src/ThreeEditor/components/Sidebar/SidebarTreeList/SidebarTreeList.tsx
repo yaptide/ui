@@ -1,3 +1,5 @@
+import './SidebarTreeList.style.css';
+
 import { DropOptions, Tree } from '@minoru/react-dnd-treeview';
 import { Divider } from '@mui/material';
 import { useCallback, useEffect, useMemo } from 'react';
@@ -7,8 +9,7 @@ import { generateUUID } from 'three/src/math/MathUtils.js';
 import { MoveObjectInTreeCommand } from '../../../js/commands/MoveObjectInTreeCommand';
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { SimulationSceneChild } from '../../../Simulation/Base/SimulationContainer';
-import { TreeItem, TreeItemData } from '../SidebarTree/SidebarTreeItem';
-import { SidebarTreeListItem } from './SidebarTreeListItem';
+import { SidebarTreeListItem,TreeItem, TreeItemData } from './SidebarTreeListItem';
 import { useGenerateTreeData } from './useGenerateTreeData';
 
 type TreeSource = SimulationSceneChild[];
@@ -26,8 +27,9 @@ export function SidebarTreeList(props: {
 	sources: TreeSource;
 	dragDisabled?: boolean;
 	nestingAllowed?: boolean;
+	sortingDisabled?: boolean;
 }) {
-	const { editor, sources, nestingAllowed } = props;
+	const { editor, sources, nestingAllowed, sortingDisabled } = props;
 
 	const treeId = useMemo(() => generateUUID(), []);
 	const [treeData, refreshTreeData] = useGenerateTreeData(treeId, sources);
@@ -75,9 +77,7 @@ export function SidebarTreeList(props: {
 			};
 
 			const dragObject = findObjectById(dragSource.id)!;
-			const newParentUuid =
-				dragObject.parent === 0 ? '' : findObjectById(dragObject.parent)?.data?.object.uuid;
-			const newParent = newParentUuid === '' ? null : editor.objectByUuid(newParentUuid)!;
+			const newParent = findObjectById(dragObject.parent)?.data?.object ?? null;
 
 			if (newParent === dragSource.data.object) {
 				return;
@@ -107,6 +107,10 @@ export function SidebarTreeList(props: {
 		(_: any, options: DropOptions<TreeItemData>): boolean | void => {
 			const { dragSource, dropTargetId } = options;
 
+			if (sortingDisabled) {
+				return false;
+			}
+
 			if (dragSource?.parent === dropTargetId) {
 				// allow for reordering within current parent
 				return true;
@@ -123,7 +127,7 @@ export function SidebarTreeList(props: {
 
 			return; // let the default library logic handle the rest, i.e. moving subtree into itself
 		},
-		[treeId, nestingAllowed]
+		[treeId, nestingAllowed, sortingDisabled]
 	);
 
 	return (
@@ -134,7 +138,7 @@ export function SidebarTreeList(props: {
 			}}
 			tree={treeData}
 			rootId={0}
-			sort={false}
+			sort={!!sortingDisabled}
 			onDrop={handleDrop}
 			canDrop={canDrop}
 			dropTargetOffset={5}

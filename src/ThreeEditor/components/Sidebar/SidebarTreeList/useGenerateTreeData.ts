@@ -7,7 +7,7 @@ import {
 	SimulationSceneChild
 } from '../../../Simulation/Base/SimulationContainer';
 import { isSimulationElement } from '../../../Simulation/Base/SimulationElement';
-import { TreeItem } from '../SidebarTree/SidebarTreeItem';
+import { TreeItem } from './SidebarTreeListItem';
 
 function elementToTreeItem(
 	object: SimulationSceneChild,
