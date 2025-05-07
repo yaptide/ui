@@ -26,7 +26,6 @@ import { Context } from '../../js/EditorContext';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
 import { PropertiesPanel } from './properties/PropertiesPanel';
-import { SidebarTree } from './SidebarTree/SidebarTree';
 import { SidebarTreeList } from './SidebarTreeList/SidebarTreeList';
 import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
 
@@ -277,7 +276,7 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 			title: 'Figures',
 			add: btnProps['CFGFigures'],
 			tree: (
-				<SidebarTree
+				<SidebarTreeList
 					editor={editor}
 					sources={[editor.figureManager.figureContainer]}
 				/>
@@ -288,13 +287,13 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 			add: btnProps['Zones'],
 			tree: (
 				<>
-					<SidebarTree
+					<SidebarTreeList
 						editor={editor}
 						sources={[editor.zoneManager.worldZone]}
 						dragDisabled
 					/>
 					<Divider sx={{ marginBottom: t => t.spacing(1) }} />
-					<SidebarTree
+					<SidebarTreeList
 						editor={editor}
 						sources={[editor.zoneManager.zoneContainer]}
 					/>
@@ -305,7 +304,7 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 			title: 'Detectors',
 			add: btnProps['Detectors'],
 			tree: (
-				<SidebarTree
+				<SidebarTreeList
 					editor={editor}
 					sources={[editor.detectorManager.detectorContainer]}
 				/>
@@ -322,19 +321,21 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 				<>
 					{editor.specialComponentsManager.CTCubeContainer.children.length > 0 ? (
 						<>
-							<SidebarTree
+							<SidebarTreeList
 								editor={editor}
 								sources={[editor.specialComponentsManager.CTCubeContainer]}
 								dragDisabled
+								sortingDisabled
 							/>
 
 							<Divider sx={{ marginBottom: t => t.spacing(1) }} />
 						</>
 					) : undefined}
-					<SidebarTree
+					<SidebarTreeList
 						editor={editor}
 						sources={[editor.specialComponentsManager.beamModulatorContainer]}
 						dragDisabled
+						sortingDisabled
 					/>
 				</>
 			)
@@ -376,7 +377,7 @@ function getScoringTabElements(simulator: SimulatorType, btnProps: any, editor: 
 			title: 'Filters',
 			add: btnProps['Filters'],
 			tree: (
-				<SidebarTree
+				<SidebarTreeList
 					editor={editor}
 					sources={[editor.scoringManager.filterContainer]}
 				/>
@@ -386,9 +387,10 @@ function getScoringTabElements(simulator: SimulatorType, btnProps: any, editor: 
 			title: 'Outputs',
 			add: btnProps['Outputs'],
 			tree: (
-				<SidebarTree
+				<SidebarTreeList
 					editor={editor}
 					sources={[editor.scoringManager.outputContainer]}
+					sortingDisabled
 				/>
 			)
 		}

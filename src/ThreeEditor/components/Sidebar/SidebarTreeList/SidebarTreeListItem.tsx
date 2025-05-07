@@ -17,6 +17,14 @@ import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
 import { AddQuantityAction, DeleteAction, DuplicateAction, RenameAction } from './contextActions';
 
+export type TreeItemData = {
+	object: Object3D | SimulationElement;
+	treeId: string;
+	index?: number;
+};
+
+export type TreeItem = NodeModel<TreeItemData>;
+
 function isHidable(object: Object3D | SimulationPropertiesType) {
 	if ('notHidable' in object) {
 		return !object.notHidable;
