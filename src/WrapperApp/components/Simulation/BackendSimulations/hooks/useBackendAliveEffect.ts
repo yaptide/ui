@@ -22,10 +22,6 @@ export const useBackendAliveEffect = (
 					setBackendAlive(false);
 					setPageCount(0);
 				});
-
-		return () => {
-			controller.abort();
-		};
 	}, [
 		controller.signal,
 		getHelloWorld,
