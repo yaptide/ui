@@ -22,11 +22,6 @@ export const useBackendAliveEffect = (
 					setBackendAlive(false);
 					setPageCount(0);
 				});
-
-		return () => {
-			// Fix for ky 1.7.4 signal abort update
-			//controller.abort();
-		};
 	}, [
 		controller.signal,
 		getHelloWorld,
