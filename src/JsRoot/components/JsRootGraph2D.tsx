@@ -23,8 +23,8 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 			histogram.fXaxis.fXmax = x[nxpoints - 1];
 			histogram.fXaxis.fTitle = `${page.axisDim1.name} [${page.axisDim1.unit}]`;
 
-			histogram.fMinimum = y[0];
-			histogram.fMaximum = y[nypoints - 1];
+			histogram.fMinimum = Math.min(...y);
+			histogram.fMaximum = Math.max(...y) * 1.05;
 			histogram.fYaxis.fTitle = `${page.axisDim2.name} [${page.axisDim2.unit}]`;
 
 			// centering axes labels using method suggested here:
