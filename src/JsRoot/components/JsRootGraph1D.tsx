@@ -23,9 +23,11 @@ export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 			histogram.fXaxis.fXmax = x[npoints - 1];
 			histogram.fXaxis.fTitle = `${page.axisDim1.name} [${page.axisDim1.unit}]`;
 
-			histogram.fYaxis.fXmin = y[0];
-			histogram.fYaxis.fXmax = y[npoints - 1];
+			histogram.fMinimum = y[0];
+			histogram.fMaximum = y[npoints - 1];
 			histogram.fYaxis.fTitle = `${page.data.name} [${page.data.unit}]`;
+
+			console.log('histogram', histogram);
 
 			// centering axes labels using method suggested here:
 			// https://github.com/root-project/jsroot/issues/225#issuecomment-998748035

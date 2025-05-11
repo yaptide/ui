@@ -50,8 +50,8 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 				...page.pages.map(p => p.axisDim1.values[p.axisDim1.values.length - 1])
 			);
 
-			histogram.fYaxis.fXmin = Math.min(...page.pages.flatMap(p => p.data.values));
-			histogram.fYaxis.fXmax = Math.max(...page.pages.flatMap(p => p.data.values)) * 1.05;
+			histogram.fMinimum = Math.min(...page.pages.flatMap(p => p.data.values));
+			histogram.fMaximum = Math.max(...page.pages.flatMap(p => p.data.values)) * 1.05;
 
 			const joinLabels = (labels: Set<string>) => {
 				return Array.from(labels.values()).join(' | ');
