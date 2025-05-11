@@ -1,7 +1,7 @@
 import { BIT, create, createHistogram, createTGraph, createTMultiGraph } from 'jsroot';
 import React, { useEffect } from 'react';
 
-import { GroupedPage1D } from '../GraphData';
+import { GroupedPage1D, MAX_SCALING_FACTOR } from '../GraphData';
 import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
 
 export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string }) {
@@ -51,7 +51,8 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 			);
 
 			histogram.fMinimum = Math.min(...page.pages.flatMap(p => p.data.values));
-			histogram.fMaximum = Math.max(...page.pages.flatMap(p => p.data.values)) * 1.05;
+			histogram.fMaximum =
+				Math.max(...page.pages.flatMap(p => p.data.values)) * MAX_SCALING_FACTOR;
 
 			const joinLabels = (labels: Set<string>) => {
 				return Array.from(labels.values()).join(' | ');

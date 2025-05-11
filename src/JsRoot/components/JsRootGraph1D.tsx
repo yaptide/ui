@@ -1,7 +1,7 @@
 import { createHistogram, createTGraph, EAxisBits, kNoStats } from 'jsroot';
 import { useEffect } from 'react';
 
-import { Page1D } from '../GraphData';
+import { MAX_SCALING_FACTOR,Page1D } from '../GraphData';
 import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
 
 export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
@@ -24,7 +24,7 @@ export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 			histogram.fXaxis.fTitle = `${page.axisDim1.name} [${page.axisDim1.unit}]`;
 
 			histogram.fMinimum = Math.min(...y);
-			histogram.fMaximum = Math.max(...y) * 1.05;
+			histogram.fMaximum = Math.max(...y) * MAX_SCALING_FACTOR;
 			histogram.fYaxis.fTitle = `${page.data.name} [${page.data.unit}]`;
 
 			// centering axes labels using method suggested here:

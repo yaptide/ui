@@ -83,6 +83,8 @@ export const isPage3D = (page: Page): page is Page3D => {
 	return (page as Page3D).dimensions === 3;
 };
 
+export const MAX_SCALING_FACTOR = 1.05;
+
 const getGraphFromPage = (page: Page, title?: string) => {
 	if (isPage2d(page)) {
 		return (
