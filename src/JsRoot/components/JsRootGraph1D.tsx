@@ -27,8 +27,6 @@ export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 			histogram.fMaximum = Math.max(...y) * 1.05;
 			histogram.fYaxis.fTitle = `${page.data.name} [${page.data.unit}]`;
 
-			console.log('histogram', histogram);
-
 			// centering axes labels using method suggested here:
 			// https://github.com/root-project/jsroot/issues/225#issuecomment-998748035
 			histogram.fXaxis.InvertBit(EAxisBits.kCenterTitle);
