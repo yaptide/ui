@@ -51,6 +51,8 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 			);
 
 			histogram.fMinimum = Math.min(...page.pages.flatMap(p => p.data.values));
+			// Apply a scaling factor to the maximum value of the Y-axis to ensure proper visualization
+			// and avoid clipping of data points near the upper boundary.
 			histogram.fMaximum =
 				Math.max(...page.pages.flatMap(p => p.data.values)) * MAX_SCALING_FACTOR;
 
