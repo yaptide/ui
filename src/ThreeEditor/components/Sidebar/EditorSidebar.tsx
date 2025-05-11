@@ -390,7 +390,6 @@ function getScoringTabElements(simulator: SimulatorType, btnProps: any, editor: 
 				<SidebarTreeList
 					editor={editor}
 					sources={[editor.scoringManager.outputContainer]}
-					sortingDisabled
 				/>
 			)
 		}

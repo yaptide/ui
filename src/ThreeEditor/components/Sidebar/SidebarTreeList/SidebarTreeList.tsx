@@ -8,8 +8,12 @@ import { generateUUID } from 'three/src/math/MathUtils.js';
 
 import { MoveObjectInTreeCommand } from '../../../js/commands/MoveObjectInTreeCommand';
 import { YaptideEditor } from '../../../js/YaptideEditor';
-import { SimulationSceneChild } from '../../../Simulation/Base/SimulationContainer';
-import { SidebarTreeListItem,TreeItem, TreeItemData } from './SidebarTreeListItem';
+import {
+	SimulationSceneChild,
+	SimulationSceneContainer
+} from '../../../Simulation/Base/SimulationContainer';
+import { QuantityContainer, ScoringOutput } from '../../../Simulation/Scoring/ScoringOutput';
+import { SidebarTreeListItem, TreeItem, TreeItemData } from './SidebarTreeListItem';
 import { useGenerateTreeData } from './useGenerateTreeData';
 
 type TreeSource = SimulationSceneChild[];
@@ -77,10 +81,16 @@ export function SidebarTreeList(props: {
 			};
 
 			const dragObject = findObjectById(dragSource.id)!;
-			const newParent = findObjectById(dragObject.parent)?.data?.object ?? null;
+			let newParent = findObjectById(dragObject.parent)?.data?.object ?? null;
 
 			if (newParent === dragSource.data.object) {
 				return;
+			}
+
+			if (newParent instanceof ScoringOutput) {
+				// handle special case for Output > QuantityContainer > Quantity
+				// being rendered as Output > Quantity
+				newParent = newParent.quantityContainer;
 			}
 
 			if (
