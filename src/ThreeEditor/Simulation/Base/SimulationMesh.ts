@@ -75,7 +75,7 @@ export abstract class SimulationMesh<
 		const loader = figureLoader(this.editor);
 
 		if (json.children && json.children.length > 0) {
-			json.children.map(childJson => this.add(loader(childJson)));
+			json.children.forEach(childJson => this.add(loader(childJson)));
 		}
 
 		this.name = json.name;
