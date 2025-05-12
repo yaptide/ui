@@ -2,7 +2,7 @@ import { createTheme } from '@mui/material';
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { SnackbarProvider } from 'notistack';
-import { cloneElement, ReactElement, useMemo } from 'react';
+import { cloneElement, JSX, ReactElement, useMemo } from 'react';
 import * as THREE from 'three';
 
 import { ConfigProvider } from './config/ConfigService';
