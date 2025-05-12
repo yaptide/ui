@@ -1,7 +1,7 @@
 import { BIT, createHistogram } from 'jsroot';
 import { useEffect } from 'react';
 
-import { MAX_SCALING_FACTOR, Page2D } from '../GraphData';
+import { Page2D } from '../GraphData';
 import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
 
 export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
