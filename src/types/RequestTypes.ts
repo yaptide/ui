@@ -18,14 +18,16 @@ export enum OrderBy {
 export enum SimulatorType {
 	COMMON = 'common',
 	SHIELDHIT = 'shieldhit',
+	FLUKA = 'fluka',
+	GEANT4 = 'geant4'
 	// Topas is not supported in current version of yaptide
 	// TOPAS = 'topas',
-	FLUKA = 'fluka'
 }
 
 export const SimulatorNames = new Map<SimulatorType, string>([
 	[SimulatorType.SHIELDHIT, 'SHIELD-HIT12A'],
-	[SimulatorType.FLUKA, 'Fluka']
+	[SimulatorType.FLUKA, 'Fluka'],
+	[SimulatorType.GEANT4, 'Geant4']
 ]);
 
 export interface SimulatorExamples {

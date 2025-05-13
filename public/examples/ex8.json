@@ -1,0 +1,196 @@
+{
+	"metadata": {
+		"version": "0.12",
+		"type": "Editor",
+		"generator": "YaptideEditor.toJSON"
+	},
+	"project": {
+		"title": "Empty Geant4 project",
+		"description": "Blank project for Geant4",
+		"viewManager": {
+			"ViewPanelXY": {
+				"cameraMatrix": [
+					1, 0, 0, 0, 0, 0.9999999999994962, 9.999999998910846e-7, 0, 0,
+					-9.999999998910846e-7, 0.9999999999994962, 0, 0, -0.0000999999999891088,
+					99.99999999994995, 1
+				],
+				"clipPlane": {
+					"planeConstant": 0,
+					"visible": true
+				}
+			},
+			"ViewPanel3D": {
+				"cameraMatrix": [
+					0.7071067811865476, 2.775557561562891e-17, -0.7071067811865472, 0,
+					-0.4082482904638628, 0.8164965809277258, -0.40824829046386285, 0,
+					0.5773502691896251, 0.5773502691896251, 0.5773502691896254, 0,
+					10.000000000000002, 10, 10.000000000000002, 1
+				]
+			},
+			"ViewPanelY": {
+				"cameraMatrix": [
+					2.2204460492502352e-16, -5.551115123125588e-17, 0.9999999999999649, 0,
+					0.9999999999994632, 0.0000010000000000287188, -1.6653345369376737e-16, 0,
+					-9.999999999732077e-7, 0.9999999999994632, 1.1102230246251157e-16, 0,
+					-0.00009999999999998334, 99.99999999994999, 6.1232339957357454e-21, 1
+				],
+				"clipPlane": {
+					"planeConstant": 0,
+					"visible": true
+				}
+			},
+			"ViewPanelX": {
+				"cameraMatrix": [
+					-2.2204460492503146e-16, 1.0000000000000007, 1.4210854715202014e-10, 0,
+					9.99999999917731e-7, -1.421085471520197e-10, 0.9999999999994976, 0,
+					0.9999999999994976, 2.775557561562885e-16, -9.99999999917731e-7, 0,
+					99.99999999994995, 1.4210854715202004e-14, -0.00009999999999998331, 1
+				],
+				"clipPlane": {
+					"planeConstant": 0,
+					"visible": true
+				}
+			},
+			"ViewPanel": {
+				"cameraMatrix": [
+					0.07426714888874009, 0, 0.9972383820310657, 0, 0.1890359579236641,
+					0.9818692455756362, -0.014078039800121761, 0, -0.9791576978239105,
+					0.18955944870338465, 0.07292062945044075, 0, -27.694761919291807,
+					5.361550864645869, 2.0625068629119263, 1
+				]
+			}
+		},
+		"history": {
+			"undos": [],
+			"redos": []
+		},
+		"simulator": "geant4"
+	},
+	"figureManager": {
+		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0F0F0F",
+		"name": "Figure Manager",
+		"type": "FigureManager",
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "FigureManager.toJSON"
+		},
+		"figures": []
+	},
+	"zoneManager": {
+		"uuid": "368269D3-6F9B-4241-84A0-5D908D10E196",
+		"name": "Zone Manager",
+		"type": "ZoneManager",
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "ZoneManager.toJSON"
+		},
+		"zones": [],
+		"worldZone": {
+			"uuid": "94339b4f-7588-4bc5-b1ce-03beecd5f9c2",
+			"type": "WorldZone",
+			"name": "World Zone",
+			"marginMultiplier": 1.1,
+			"autoCalculate": false,
+			"materialUuid": "ef2115b8-1502-4f62-a033-21b06b066862",
+			"visible": false,
+			"geometryData": {
+				"geometryType": "BoxGeometry",
+				"position": [0, 0, 10.5],
+				"rotation": [0, 0, 0],
+				"parameters": {
+					"width": 0,
+					"height": 0,
+					"depth": 0
+				}
+			}
+		}
+	},
+	"detectorManager": {
+		"uuid": "9A7D17B8-BAE4-441F-965F-490CAA617EC6",
+		"name": "Detector Manager",
+		"type": "DetectorManager",
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "DetectorManager.toJSON"
+		},
+		"detectors": []
+	},
+	"specialComponentsManager": {
+		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0F0FFF",
+		"name": "Special Components",
+		"type": "SpecialComponentManager",
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "SpecialComponentManager.toJSON"
+		}
+	},
+	"materialManager": {
+		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0FFFFFFF",
+		"name": "Material Manager",
+		"type": "MaterialManager",
+		"materials": [],
+		"selectedMaterials": {},
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "MaterialManager.toJSON"
+		}
+	},
+	"scoringManager": {
+		"name": "Scoring Manager",
+		"type": "ScoringManager",
+		"uuid": "D0F67F59-F311-4F8E-A06F-5A07D618FDE2",
+		"outputs": [],
+		"filters": [],
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "ScoringManager.toJSON"
+		}
+	},
+	"beam": {
+		"name": "Beam",
+		"type": "Beam",
+		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0FFFFF",
+		"position": [0, 0, 0],
+		"direction": [0, 0, 1],
+		"energy": 150,
+		"energySpread": 1.5,
+		"energyLowCutoff": 0,
+		"energyHighCutoff": 1000,
+		"sigma": {
+			"type": "Gaussian",
+			"x": 0,
+			"y": 0
+		},
+		"sad": {
+			"type": "none",
+			"x": 0,
+			"y": 0
+		},
+		"divergence": {
+			"x": 0,
+			"y": 0,
+			"distanceToFocal": 0
+		},
+		"particle": {
+			"id": 2,
+			"name": "Proton",
+			"a": 1,
+			"z": 1
+		},
+		"colorHex": 16776960,
+		"numberOfParticles": 10000,
+		"sourceFile": {
+			"value": "",
+			"name": ""
+		},
+		"sourceType": "simple"
+	},
+	"physic": {},
+	"hash": "81712c541925e171dbc37106d513d25eb2988bc2"
+}
