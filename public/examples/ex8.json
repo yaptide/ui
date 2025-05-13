@@ -5,7 +5,7 @@
 		"generator": "YaptideEditor.toJSON"
 	},
 	"project": {
-		"title": "Empty Geant 4 project",
+		"title": "Empty Geant4 project",
 		"description": "Blank project for Geant4",
 		"viewManager": {
 			"ViewPanelXY": {
@@ -191,12 +191,6 @@
 		},
 		"sourceType": "simple"
 	},
-	"physic": {
-		"energyLoss": 0.03,
-		"enableNuclearReactions": true,
-		"energyModelStraggling": "Vavilov",
-		"multipleScattering": "Moliere",
-		"stoppingPowerTable": "ICRU91"
-	},
+	"physic": {},
 	"hash": "81712c541925e171dbc37106d513d25eb2988bc2"
 }

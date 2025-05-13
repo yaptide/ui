@@ -341,6 +341,19 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 	];
 	const flukaElements = [...commonElements];
 
+	const geant4Elements = [
+		{
+			title: 'Geant 4 Placeholder',
+			add: btnProps['Filters'], // just for mockup
+			tree: (
+				<SidebarTree
+					editor={editor}
+					sources={[editor.figureManager.figureContainer]}
+				/>
+			)
+		}
+	];
+
 	switch (simulator) {
 		case SimulatorType.SHIELDHIT:
 			return shieldhitElements;
@@ -348,6 +361,8 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 			return flukaElements;
 		case SimulatorType.COMMON:
 			return commonElements;
+		case SimulatorType.GEANT4:
+			return geant4Elements;
 		default:
 			return [];
 	}
@@ -379,6 +394,19 @@ function getScoringTabElements(simulator: SimulatorType, btnProps: any, editor: 
 	const shieldhitElements = [...commonElements];
 	const flukaElements = [...commonElements];
 
+	const geant4Elements = [
+		{
+			title: 'Geant 4 Placeholder',
+			add: btnProps['Filters'], // just for mockup
+			tree: (
+				<SidebarTree
+					editor={editor}
+					sources={[editor.figureManager.figureContainer]}
+				/>
+			)
+		}
+	];
+
 	switch (simulator) {
 		case SimulatorType.SHIELDHIT:
 			return shieldhitElements;
@@ -386,6 +414,8 @@ function getScoringTabElements(simulator: SimulatorType, btnProps: any, editor: 
 			return flukaElements;
 		case SimulatorType.COMMON:
 			return commonElements;
+		case SimulatorType.GEANT4:
+			return geant4Elements;
 		default:
 			return [];
 	}
