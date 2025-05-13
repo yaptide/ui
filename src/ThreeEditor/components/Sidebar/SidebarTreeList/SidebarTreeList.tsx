@@ -8,11 +8,7 @@ import { generateUUID } from 'three/src/math/MathUtils.js';
 
 import { MoveObjectInTreeCommand } from '../../../js/commands/MoveObjectInTreeCommand';
 import { YaptideEditor } from '../../../js/YaptideEditor';
-import {
-	SimulationSceneChild,
-	SimulationSceneContainer
-} from '../../../Simulation/Base/SimulationContainer';
-import { QuantityContainer, ScoringOutput } from '../../../Simulation/Scoring/ScoringOutput';
+import { SimulationSceneChild } from '../../../Simulation/Base/SimulationContainer';
 import { SidebarTreeListItem, TreeItem, TreeItemData } from './SidebarTreeListItem';
 import { useGenerateTreeData } from './useGenerateTreeData';
 
@@ -57,8 +53,15 @@ export function SidebarTreeList(props: {
 	}, [editor, refreshTreeData]);
 
 	const handleDrop = useCallback(
-		(tree: TreeItem[], dragDestination: { dragSource?: TreeItem; relativeIndex?: number }) => {
-			const { dragSource, relativeIndex } = dragDestination;
+		(
+			tree: TreeItem[],
+			dragDestination: {
+				dragSource?: TreeItem;
+				dropTarget?: TreeItem;
+				relativeIndex?: number;
+			}
+		) => {
+			const { dragSource, dropTarget, relativeIndex } = dragDestination;
 
 			if (relativeIndex === undefined) {
 				return console.warn(
@@ -66,7 +69,7 @@ export function SidebarTreeList(props: {
 				);
 			}
 
-			if (!dragSource || !dragSource.data) {
+			if (!dragSource?.data) {
 				return;
 			}
 
@@ -81,20 +84,10 @@ export function SidebarTreeList(props: {
 			};
 
 			const dragObject = findObjectById(dragSource.id)!;
-			let newParent = findObjectById(dragObject.parent)?.data?.object ?? null;
-
-			if (newParent === dragSource.data.object) {
-				return;
-			}
-
-			if (newParent instanceof ScoringOutput) {
-				// handle special case for Output > QuantityContainer > Quantity
-				// being rendered as Output > Quantity
-				newParent = newParent.quantityContainer;
-			}
+			let newParent = dropTarget ? findObjectById(dropTarget.id)!.data!.object : null;
 
 			if (
-				dragObject.parent != dragSource.parent ||
+				dragObject.parent !== dragSource.parent ||
 				(relativeIndex !== dragSource.data.index &&
 					relativeIndex - 1 !== dragSource.data.index)
 			) {
