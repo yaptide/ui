@@ -402,7 +402,7 @@ function getScoringTabElements(simulator: SimulatorType, btnProps: any, editor: 
 			title: 'Geant 4 Placeholder',
 			add: btnProps['Filters'], // just for mockup
 			tree: (
-				<SidebarTree
+				<SidebarTreeList
 					editor={editor}
 					sources={[editor.figureManager.figureContainer]}
 				/>
