@@ -102,8 +102,6 @@ export class MoveObjectInTreeCommand extends Command {
 	}
 
 	private resolveBaseParent(): THREE.Object3D {
-		console.log(this.object);
-
 		switch (true) {
 			case this.object instanceof SimulationZone:
 				return this.editor.zoneManager.zoneContainer;
