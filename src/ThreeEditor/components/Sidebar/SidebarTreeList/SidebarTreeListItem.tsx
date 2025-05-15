@@ -1,35 +1,29 @@
-import { NodeModel, TreeMethods } from '@minoru/react-dnd-treeview/dist/types';
+import { NodeModel } from '@minoru/react-dnd-treeview/dist/types';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { Checkbox, Menu, MenuItem, TextField, Typography } from '@mui/material';
-import Box from '@mui/material/Box';
-import { Stack } from '@mui/system';
+import { Box, Checkbox, Icon, Menu, Stack, TextField, Typography } from '@mui/material';
 import { bindContextMenu, bindMenu, usePopupState } from 'material-ui-popup-state/hooks';
-import { JSX, MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Object3D } from 'three';
-import * as THREE from 'three';
 
 import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
 import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
-import {
-	canChangeName,
-	getRemoveCommand,
-	hasVisibleChildren,
-	isRemovable
-} from '../../../../util/hooks/useKeyboardEditorControls';
-import { AddQuantityCommand } from '../../../js/commands/AddQuantityCommand';
-import { canBeDuplicated, getDuplicateCommand } from '../../../js/commands/DuplicateObjectCommand';
+import { canChangeName, isRemovable } from '../../../../util/hooks/useKeyboardEditorControls';
+import { canBeDuplicated } from '../../../js/commands/DuplicateObjectCommand';
 import { SetValueCommand } from '../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../js/YaptideEditor';
-import { isSimulationElement, SimulationElement } from '../../../Simulation/Base/SimulationElement';
+import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
+import { AddQuantityAction, DeleteAction, DuplicateAction, RenameAction } from './contextActions';
 
-export type TreeItem = NodeModel<{
+export type TreeItemData = {
 	object: Object3D | SimulationElement;
 	treeId: string;
 	index?: number;
-}>;
+};
+
+export type TreeItem = NodeModel<TreeItemData>;
 
 function isHidable(object: Object3D | SimulationPropertiesType) {
 	if ('notHidable' in object) {
@@ -39,87 +33,63 @@ function isHidable(object: Object3D | SimulationPropertiesType) {
 	return true;
 }
 
-export function SidebarTreeItem(props: {
-	treeRef: TreeMethods | null;
-	objectRefs: MutableRefObject<Map<string, HTMLDivElement>>;
-	node: NodeModel<{
-		object: Object3D | SimulationElement;
-	}>;
+export function SidebarTreeListItem(props: {
 	depth: number;
+	hasChild: boolean;
 	isOpen: boolean;
 	onToggle: () => void;
 	editor: YaptideEditor;
+	node: NodeModel<{
+		object: Object3D | SimulationElement;
+	}>;
 }) {
-	const { objectRefs, node, depth, isOpen, onToggle, editor, treeRef } = props;
-	const inputRef = useRef<HTMLInputElement>(null);
+	const { depth, hasChild, isOpen, onToggle, editor, node } = props;
 
+	const inputRef = useRef<HTMLInputElement>(null);
 	const object = node.data!.object;
+
+	const [mode, setMode] = useState<'view' | 'edit'>('view');
+	const popupState = usePopupState({ variant: 'popover', popupId: 'sidebarTreeItemMenu' });
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
-	const [mode, setMode] = useState<'view' | 'edit'>('view');
-
-	const popupState = usePopupState({ variant: 'popover', popupId: 'sidebarTreeItemMenu' });
-
-	const contextOptions = (() => {
-		const options: JSX.Element[] = [];
-
-		if (canBeDuplicated(object)) {
-			options.push(
-				<MenuItem
-					key={'duplicate'}
-					onClick={() => {
-						if (!isSimulationElement(object)) return;
-						const command = getDuplicateCommand(editor, object);
-						editor.execute(command);
-						popupState.close();
-					}}>
-					Duplicate
-				</MenuItem>
-			);
-		}
-
-		if (canChangeName(object)) {
-			options.push(
-				<MenuItem
-					key={'rename'}
-					onClick={() => {
-						popupState.close();
-						setMode('edit');
-					}}>
-					Rename
-				</MenuItem>
-			);
-		}
-
-		if (isOutput(object))
-			options.push(
-				<MenuItem
-					key={'addQuantity'}
-					onClick={() => {
-						editor.execute(new AddQuantityCommand(editor, object));
-
-						if (!isOpen) onToggle();
-						popupState.close();
-					}}>
-					Add Quantity
-				</MenuItem>
-			);
-
-		if (isRemovable(object))
-			options.push(
-				<MenuItem
-					key={'delete'}
-					onClick={() => {
-						editor.execute(getRemoveCommand(editor, object));
-						popupState.close();
-					}}>
-					Delete
-				</MenuItem>
-			);
-
-		return options;
-	})();
+	const actions = [
+		canBeDuplicated(object) && (
+			<DuplicateAction
+				key={'duplicate'}
+				object={object}
+				editor={editor}
+				popupState={popupState}
+			/>
+		),
+		canChangeName(object) && (
+			<RenameAction
+				key={'rename'}
+				object={object}
+				editor={editor}
+				popupState={popupState}
+				setMode={setMode}
+			/>
+		),
+		isOutput(object) && (
+			<AddQuantityAction
+				key={'addQuantity'}
+				object={object}
+				editor={editor}
+				popupState={popupState}
+				isOpen={isOpen}
+				onToggle={onToggle}
+			/>
+		),
+		isRemovable(object) && (
+			<DeleteAction
+				key={'delete'}
+				object={object}
+				editor={editor}
+				popupState={popupState}
+			/>
+		)
+	];
 
 	useEffect(() => {
 		if (mode === 'edit') {
@@ -127,50 +97,34 @@ export function SidebarTreeItem(props: {
 		}
 	}, [mode]);
 
-	const onObjectAdded = useCallback(
-		(newObject: Object3D) => {
-			if (object.getObjectByName(newObject.name) === newObject) {
-				treeRef?.open(node.id);
-			}
-		},
-		[node.id, object, treeRef]
+	// handle rename signal dispatch when F2 is clicked
+	useSignal(
+		editor,
+		'requestRenameAction',
+		useCallback(
+			(objectToRename: Object3D) => {
+				if (objectToRename === object) {
+					setMode('edit');
+				}
+			},
+			[object]
+		)
 	);
-
-	useSignal(editor, 'objectAdded', onObjectAdded);
-
-	const onRequestRenameAction = useCallback(
-		(objectToRename: Object3D) => {
-			if (objectToRename === object) {
-				setMode('edit');
-			}
-		},
-		[object]
-	);
-
-	useSignal(editor, 'requestRenameAction', onRequestRenameAction);
 
 	return (
 		<>
 			<Box
-				ref={(ref: HTMLDivElement | null) => {
-					if (ref) {
-						objectRefs.current.set(object.uuid, ref);
-					} else {
-						objectRefs.current.delete(object.uuid);
-					}
-				}}
+				id={object.uuid}
 				sx={{
-					'marginLeft': ({ spacing }) => spacing(depth * 2.5),
-
+					'marginLeft': ({ spacing }) => spacing(depth * 1.5),
 					'display': 'flex',
 					'flexDirection': 'row',
 					'alignItems': 'center',
-					'paddingLeft': ({ spacing }) => spacing(0.5),
 					':hover': {
 						backgroundColor: ({ palette }) => palette.action.hover
 					}
 				}}>
-				{hasVisibleChildren(object) && (
+				{hasChild ? (
 					<ChevronRightIcon
 						onClick={onToggle}
 						sx={{
@@ -178,6 +132,8 @@ export function SidebarTreeItem(props: {
 							transition: 'transform 0.2s'
 						}}
 					/>
+				) : (
+					<Icon />
 				)}
 				<Stack
 					direction='row'
@@ -234,7 +190,6 @@ export function SidebarTreeItem(props: {
 									new SetValueCommand(editor, object, 'visible', value)
 								);
 							}}
-							disabled={object.parent?.visible === false}
 							icon={<VisibilityOffIcon />}
 							checkedIcon={<VisibilityIcon />}
 						/>
@@ -242,12 +197,12 @@ export function SidebarTreeItem(props: {
 				</Stack>
 			</Box>
 
-			{contextOptions.length > 0 && (
+			{actions.length > 0 && (
 				<Menu
 					{...bindMenu(popupState)}
 					anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
 					transformOrigin={{ vertical: 'top', horizontal: 'left' }}>
-					{contextOptions}
+					{actions}
 				</Menu>
 			)}
 		</>
