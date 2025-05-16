@@ -131,12 +131,15 @@ export function EditorSidebar(props: EditorSidebarProps) {
 						label='Simulator'
 						onChange={e => {
 							if (
-								e.target.value === SimulatorType.GEANT4 ||
-								simulator === SimulatorType.GEANT4
-							)
+								(e.target.value === SimulatorType.GEANT4 ||
+									simulator === SimulatorType.GEANT4) &&
+								window.confirm(
+									'Changing the simulator will clear the project. Are you sure you want to continue?'
+								)
+							) {
 								editor.clear();
-
-							if (
+								handleSimulatorChange(e.target.value as SimulatorType);
+							} else if (
 								simulator === SimulatorType.COMMON ||
 								window.confirm(
 									"Changing to another simulator may result in data loss. It is only recommended to change from the 'Common' simulator to another. Are you sure you want to continue?"
