@@ -142,7 +142,7 @@ export function EditorSidebar(props: EditorSidebarProps) {
 							} else if (
 								simulator === SimulatorType.COMMON ||
 								window.confirm(
-									"Changing to another simulator may result in data loss. It is only recommended to change from the 'Common' simulator to another. Are you sure you want to continue?"
+									"Changing to another simulator may result in data loss. It is only recommended to change from the 'Common' simulator to either 'Fluka' or 'Shieldhit'. Are you sure you want to continue?"
 								)
 							) {
 								handleSimulatorChange(e.target.value as SimulatorType);
