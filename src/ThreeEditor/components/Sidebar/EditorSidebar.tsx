@@ -18,6 +18,7 @@ import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
+import { useDialog } from '../../../services/DialogService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import { useSignal } from '../../../util/hooks/signals';
 import { getAddElementButtonProps } from '../../../util/Ui/CommandButtonProps';
@@ -33,6 +34,12 @@ interface EditorSidebarProps {
 	editor: YaptideEditor;
 	simulator: SimulatorType;
 	onSimulatorChange: (newSimulator: SimulatorType) => void;
+}
+
+interface SimulatorSelectorProps {
+	simulator: SimulatorType;
+	editor: YaptideEditor;
+	handleSimulatorChange: (newSimulator: SimulatorType) => void;
 }
 
 export function EditorSidebar(props: EditorSidebarProps) {
@@ -97,15 +104,13 @@ export function EditorSidebar(props: EditorSidebarProps) {
 	const handleSimulatorChange = (newValue: SimulatorType) => {
 		onSimulatorChange(newValue);
 		editor.contextManager.currentSimulator = newValue;
+
+		if (newValue === SimulatorType.GEANT4 || simulator === SimulatorType.GEANT4) {
+			editor.clear();
+		}
 	};
 	const geometryTabElements = getGeometryTabElements(simulator, btnProps, editor);
 	const scoringTabElements = getScoringTabElements(simulator, btnProps, editor);
-	const simulatorDescriptions = {
-		[SimulatorType.COMMON]: 'Common options for Fluka and SHIELD-HIT12A',
-		[SimulatorType.FLUKA]: 'Fluka specific options',
-		[SimulatorType.SHIELDHIT]: 'SHIELD-HIT12A specific options',
-		[SimulatorType.GEANT4]: 'Geant4 specific options'
-	};
 
 	return (
 		<>
@@ -125,29 +130,11 @@ export function EditorSidebar(props: EditorSidebarProps) {
 					<InputLabel sx={{ color: ({ palette }) => palette.primary.main }}>
 						Simulator
 					</InputLabel>
-					<Select
-						sx={{ color: ({ palette }) => palette.primary.main }}
-						value={simulator}
-						label='Simulator'
-						onChange={e => {
-							if (
-								simulator === SimulatorType.COMMON ||
-								window.confirm(
-									"Changing to another simulator may result in data loss. It is only recommended to change from the 'Common' simulator to another. Are you sure you want to continue?"
-								)
-							) {
-								handleSimulatorChange(e.target.value as SimulatorType);
-							}
-						}}>
-						{Object.values(SimulatorType).map(simulator => (
-							<MenuItem
-								key={simulator}
-								value={simulator}
-								title={simulatorDescriptions[simulator]}>
-								{simulator.charAt(0).toUpperCase() + simulator.slice(1)}
-							</MenuItem>
-						))}
-					</Select>
+					<SimulatorSelector
+						simulator={simulator}
+						editor={editor}
+						handleSimulatorChange={handleSimulatorChange}
+					/>
 				</FormControl>
 				<Tabs
 					value={selectedTab}
@@ -267,6 +254,53 @@ export function EditorSidebar(props: EditorSidebarProps) {
 				}}
 			</ScrollPositionManager>
 		</>
+	);
+}
+
+function SimulatorSelector({ simulator, editor, handleSimulatorChange }: SimulatorSelectorProps) {
+	const simulatorDescriptions = {
+		[SimulatorType.COMMON]: 'Common options for Fluka and SHIELD-HIT12A',
+		[SimulatorType.FLUKA]: 'Fluka specific options',
+		[SimulatorType.SHIELDHIT]: 'SHIELD-HIT12A specific options',
+		[SimulatorType.GEANT4]: 'Geant4 specific options'
+	};
+
+	const { open: openSimulatorChangeDialog } = useDialog('simulatorChange');
+
+	return (
+		<Select
+			sx={{ color: ({ palette }) => palette.primary.main }}
+			value={simulator}
+			label='Simulator'
+			onChange={e => {
+				const modal_text =
+					simulator === SimulatorType.GEANT4 || e.target.value === SimulatorType.GEANT4
+						? 'Changing the simulator will clear the project. Are you sure you want to continue?'
+						: "Changing to another simulator may result in data loss. It is only recommended to change from the 'Common' simulator to either 'Fluka' or 'Shieldhit'. Are you sure you want to continue?";
+
+				if (simulator === SimulatorType.COMMON && e.target.value !== SimulatorType.GEANT4) {
+					handleSimulatorChange(e.target.value as SimulatorType);
+				} else {
+					openSimulatorChangeDialog({
+						text: modal_text,
+						closeAction() {
+							e.preventDefault();
+						},
+						confirmAction() {
+							handleSimulatorChange(e.target.value as SimulatorType);
+						}
+					});
+				}
+			}}>
+			{Object.values(SimulatorType).map(simulator => (
+				<MenuItem
+					key={simulator}
+					value={simulator}
+					title={simulatorDescriptions[simulator]}>
+					{simulator.charAt(0).toUpperCase() + simulator.slice(1)}
+				</MenuItem>
+			))}
+		</Select>
 	);
 }
 
