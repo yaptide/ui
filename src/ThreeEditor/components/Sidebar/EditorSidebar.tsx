@@ -14,11 +14,11 @@ import {
 	Typography
 } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
-import { DialogsProvider, useDialogs } from '@toolpad/core/useDialogs';
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 
 import ScrollPositionManager from '../../../libs/ScrollPositionManager';
+import { useDialog } from '../../../services/DialogService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import { useSignal } from '../../../util/hooks/signals';
 import { getAddElementButtonProps } from '../../../util/Ui/CommandButtonProps';
@@ -105,6 +105,10 @@ export function EditorSidebar(props: EditorSidebarProps) {
 	const handleSimulatorChange = (newValue: SimulatorType) => {
 		onSimulatorChange(newValue);
 		editor.contextManager.currentSimulator = newValue;
+
+		if (newValue === SimulatorType.GEANT4 || simulator === SimulatorType.GEANT4) {
+			editor.clear();
+		}
 	};
 	const geometryTabElements = getGeometryTabElements(simulator, btnProps, editor);
 	const scoringTabElements = getScoringTabElements(simulator, btnProps, editor);
@@ -127,13 +131,11 @@ export function EditorSidebar(props: EditorSidebarProps) {
 					<InputLabel sx={{ color: ({ palette }) => palette.primary.main }}>
 						Simulator
 					</InputLabel>
-					<DialogsProvider>
-						<SimulatorSelector
-							simulator={simulator}
-							editor={editor}
-							handleSimulatorChange={handleSimulatorChange}
-						/>
-					</DialogsProvider>
+					<SimulatorSelector
+						simulator={simulator}
+						editor={editor}
+						handleSimulatorChange={handleSimulatorChange}
+					/>
 				</FormControl>
 				<Tabs
 					value={selectedTab}
@@ -257,14 +259,14 @@ export function EditorSidebar(props: EditorSidebarProps) {
 }
 
 function SimulatorSelector({ simulator, editor, handleSimulatorChange }: SimulatorSelectorProps) {
-	const dialogs = useDialogs();
-
 	const simulatorDescriptions = {
 		[SimulatorType.COMMON]: 'Common options for Fluka and SHIELD-HIT12A',
 		[SimulatorType.FLUKA]: 'Fluka specific options',
 		[SimulatorType.SHIELDHIT]: 'SHIELD-HIT12A specific options',
 		[SimulatorType.GEANT4]: 'Geant4 specific options'
 	};
+
+	const { open: openSimulatorChangeDialog } = useDialog('simulatorChange');
 
 	return (
 		<Select
@@ -276,19 +278,23 @@ function SimulatorSelector({ simulator, editor, handleSimulatorChange }: Simulat
 					"Changing to another simulator may result in data loss. It is only recommended to change from the 'Common' simulator to either 'Fluka' or 'Shieldhit'. Are you sure you want to continue?";
 
 				if (simulator === SimulatorType.GEANT4 || e.target.value == SimulatorType.GEANT4) {
-					editor.clear();
 					modal_text =
 						'Changing the simulator will clear the project. Are you sure you want to continue?';
 				}
 
-				if (
-					(simulator === SimulatorType.COMMON &&
-						e.target.value != SimulatorType.GEANT4) ||
-					(await dialogs.open(SimulatorChangeDialog, modal_text))
-				) {
+				if (simulator === SimulatorType.COMMON && e.target.value !== SimulatorType.GEANT4) {
 					handleSimulatorChange(e.target.value as SimulatorType);
 				} else {
-					e.preventDefault();
+					openSimulatorChangeDialog({
+						text: modal_text,
+						closeAction() {
+							e.preventDefault();
+						},
+						confirmAction() {
+							handleSimulatorChange(e.target.value as SimulatorType);
+							console.log('confirm action');
+						}
+					});
 				}
 			}}>
 			{Object.values(SimulatorType).map(simulator => (

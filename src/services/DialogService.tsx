@@ -10,6 +10,7 @@ import { RejectKeycloakRefreshUserDialog } from '../ThreeEditor/components/Dialo
 import { RejectKeycloakUserDialog } from '../ThreeEditor/components/Dialog/RejectKeycloakUserDialog';
 import { RunSimulationDialog } from '../ThreeEditor/components/Dialog/RunSimulationDialog';
 import { SaveFileDialog } from '../ThreeEditor/components/Dialog/SaveFileDialog';
+import { SimulatorChangeDialog } from '../ThreeEditor/components/Dialog/SimulatorChangeDialog';
 import {
 	DefaultDialogPropsType,
 	DialogComponentNames,
@@ -41,7 +42,8 @@ export type DialogComponentTypeMap = EntriesToObj<
 		ValidComponentTypes<['editProject', typeof EditProjectInfoDialog]>,
 		ValidComponentTypes<['rejectKeycloak', typeof RejectKeycloakUserDialog]>,
 		ValidComponentTypes<['rejectKeycloakRefresh', typeof RejectKeycloakRefreshUserDialog]>,
-		ValidComponentTypes<['changeScoringType', typeof ChangeScoringTypeDialog]>
+		ValidComponentTypes<['changeScoringType', typeof ChangeScoringTypeDialog]>,
+		ValidComponentTypes<['simulatorChange', typeof SimulatorChangeDialog]>
 	]
 >;
 
@@ -117,7 +119,8 @@ const DialogProvider = ({ children }: GenericContextProviderProps) => {
 			editProject: EditProjectInfoDialog,
 			rejectKeycloak: RejectKeycloakUserDialog,
 			rejectKeycloakRefresh: RejectKeycloakRefreshUserDialog,
-			changeScoringType: ChangeScoringTypeDialog
+			changeScoringType: ChangeScoringTypeDialog,
+			simulatorChange: SimulatorChangeDialog
 		}),
 		[]
 	);

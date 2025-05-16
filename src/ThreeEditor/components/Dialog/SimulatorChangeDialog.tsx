@@ -1,26 +1,35 @@
 import { Button } from '@mui/material';
-import { DialogProps } from '@toolpad/core/useDialogs';
 
-import { CustomDialog } from './CustomDialog';
+import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
-export function SimulatorChangeDialog({ payload, open, onClose }: DialogProps<string, boolean>) {
+export function SimulatorChangeDialog({
+	onClose,
+	text,
+	closeAction,
+	confirmAction
+}: ConcreteDialogProps<{
+	text: string;
+	closeAction: () => void;
+	confirmAction: () => void;
+}>) {
 	return (
 		<CustomDialog
-			open={open}
-			onClose={() => onClose(false)}
+			onClose={onClose}
 			alert={true}
 			title='Simulator Change Alert'
-			contentText={payload}>
+			contentText={text}>
 			<Button
 				onClick={() => {
-					onClose(false);
+					closeAction();
+					onClose();
 				}}
 				autoFocus>
 				Cancel
 			</Button>
 			<Button
 				onClick={() => {
-					onClose(true);
+					confirmAction();
+					onClose();
 				}}>
 				I'm aware
 			</Button>
