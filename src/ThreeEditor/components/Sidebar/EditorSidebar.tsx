@@ -289,7 +289,6 @@ function SimulatorSelector({ simulator, editor, handleSimulatorChange }: Simulat
 						},
 						confirmAction() {
 							handleSimulatorChange(e.target.value as SimulatorType);
-							console.log('confirm action');
 						}
 					});
 				}
