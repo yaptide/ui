@@ -25,7 +25,6 @@ import { getAddElementButtonProps } from '../../../util/Ui/CommandButtonProps';
 import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import { Context } from '../../js/EditorContext';
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulatorChangeDialog } from '../Dialog/SimulatorChangeDialog';
 import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
 import { PropertiesPanel } from './properties/PropertiesPanel';
 import { SidebarTreeList } from './SidebarTreeList/SidebarTreeList';
@@ -273,8 +272,8 @@ function SimulatorSelector({ simulator, editor, handleSimulatorChange }: Simulat
 			sx={{ color: ({ palette }) => palette.primary.main }}
 			value={simulator}
 			label='Simulator'
-			onChange={async e => {
-				let modal_text =
+			onChange={e => {
+				const modal_text =
 					simulator === SimulatorType.GEANT4 || e.target.value === SimulatorType.GEANT4
 						? 'Changing the simulator will clear the project. Are you sure you want to continue?'
 						: "Changing to another simulator may result in data loss. It is only recommended to change from the 'Common' simulator to either 'Fluka' or 'Shieldhit'. Are you sure you want to continue?";
