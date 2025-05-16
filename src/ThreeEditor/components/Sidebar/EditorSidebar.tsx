@@ -43,53 +43,6 @@ interface SimulatorSelectorProps {
 	handleSimulatorChange: (newSimulator: SimulatorType) => void;
 }
 
-function SimulatorSelector({ simulator, editor, handleSimulatorChange }: SimulatorSelectorProps) {
-	const dialogs = useDialogs();
-
-	const simulatorDescriptions = {
-		[SimulatorType.COMMON]: 'Common options for Fluka and SHIELD-HIT12A',
-		[SimulatorType.FLUKA]: 'Fluka specific options',
-		[SimulatorType.SHIELDHIT]: 'SHIELD-HIT12A specific options',
-		[SimulatorType.GEANT4]: 'Geant4 specific options'
-	};
-
-	return (
-		<Select
-			sx={{ color: ({ palette }) => palette.primary.main }}
-			value={simulator}
-			label='Simulator'
-			onChange={async e => {
-				let modal_text =
-					"Changing to another simulator may result in data loss. It is only recommended to change from the 'Common' simulator to either 'Fluka' or 'Shieldhit'. Are you sure you want to continue?";
-
-				if (simulator === SimulatorType.GEANT4 || e.target.value == SimulatorType.GEANT4) {
-					editor.clear();
-					modal_text =
-						'Changing the simulator will clear the project. Are you sure you want to continue?';
-				}
-
-				if (
-					(simulator === SimulatorType.COMMON &&
-						e.target.value != SimulatorType.GEANT4) ||
-					(await dialogs.open(SimulatorChangeDialog, modal_text))
-				) {
-					handleSimulatorChange(e.target.value as SimulatorType);
-				} else {
-					e.preventDefault();
-				}
-			}}>
-			{Object.values(SimulatorType).map(simulator => (
-				<MenuItem
-					key={simulator}
-					value={simulator}
-					title={simulatorDescriptions[simulator]}>
-					{simulator.charAt(0).toUpperCase() + simulator.slice(1)}
-				</MenuItem>
-			))}
-		</Select>
-	);
-}
-
 export function EditorSidebar(props: EditorSidebarProps) {
 	const { editor, simulator, onSimulatorChange } = props;
 
@@ -300,6 +253,53 @@ export function EditorSidebar(props: EditorSidebarProps) {
 				}}
 			</ScrollPositionManager>
 		</>
+	);
+}
+
+function SimulatorSelector({ simulator, editor, handleSimulatorChange }: SimulatorSelectorProps) {
+	const dialogs = useDialogs();
+
+	const simulatorDescriptions = {
+		[SimulatorType.COMMON]: 'Common options for Fluka and SHIELD-HIT12A',
+		[SimulatorType.FLUKA]: 'Fluka specific options',
+		[SimulatorType.SHIELDHIT]: 'SHIELD-HIT12A specific options',
+		[SimulatorType.GEANT4]: 'Geant4 specific options'
+	};
+
+	return (
+		<Select
+			sx={{ color: ({ palette }) => palette.primary.main }}
+			value={simulator}
+			label='Simulator'
+			onChange={async e => {
+				let modal_text =
+					"Changing to another simulator may result in data loss. It is only recommended to change from the 'Common' simulator to either 'Fluka' or 'Shieldhit'. Are you sure you want to continue?";
+
+				if (simulator === SimulatorType.GEANT4 || e.target.value == SimulatorType.GEANT4) {
+					editor.clear();
+					modal_text =
+						'Changing the simulator will clear the project. Are you sure you want to continue?';
+				}
+
+				if (
+					(simulator === SimulatorType.COMMON &&
+						e.target.value != SimulatorType.GEANT4) ||
+					(await dialogs.open(SimulatorChangeDialog, modal_text))
+				) {
+					handleSimulatorChange(e.target.value as SimulatorType);
+				} else {
+					e.preventDefault();
+				}
+			}}>
+			{Object.values(SimulatorType).map(simulator => (
+				<MenuItem
+					key={simulator}
+					value={simulator}
+					title={simulatorDescriptions[simulator]}>
+					{simulator.charAt(0).toUpperCase() + simulator.slice(1)}
+				</MenuItem>
+			))}
+		</Select>
 	);
 }
 
