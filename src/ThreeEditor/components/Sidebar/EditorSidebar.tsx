@@ -354,6 +354,16 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 					nestingAllowed={true}
 				/>
 			)
+		},
+		{
+			title: 'Detectors',
+			add: btnProps['Detectors'],
+			tree: (
+				<SidebarTreeList
+					editor={editor}
+					sources={[editor.detectorManager.detectorContainer]}
+				/>
+			)
 		}
 	];
 
