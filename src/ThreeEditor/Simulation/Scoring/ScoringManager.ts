@@ -7,6 +7,11 @@ import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { CustomFilter, isCustomFilterJSON } from './CustomFilter';
+import {
+	GeantScoringFilter,
+	isGeantScoringFilter,
+	isGeantScoringFilterJSON
+} from './GeantScoringFilter';
 import { isParticleFilterJSON, ParticleFilter } from './ParticleFilter';
 import { FilterJSON, ScoringFilter } from './ScoringFilter';
 import { ScoringOutput, ScoringOutputJSON as OutputJSON } from './ScoringOutput';
@@ -42,6 +47,8 @@ const filterLoader = (editor: YaptideEditor) => (json: FilterJSON) => {
 	if (isCustomFilterJSON(json)) return new CustomFilter(editor).fromSerialized(json);
 
 	if (isParticleFilterJSON(json)) return new ParticleFilter(editor).fromSerialized(json);
+
+	if (isGeantScoringFilterJSON(json)) return new GeantScoringFilter(editor).fromSerialized(json);
 
 	throw new Error(`Unknown filter type: ${json}`);
 };

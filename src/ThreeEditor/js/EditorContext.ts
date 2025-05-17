@@ -12,6 +12,7 @@ import {
 import { BasicFigure, isBasicFigure } from '../Simulation/Figures/BasicFigures';
 import { Beam, isBeam } from '../Simulation/Physics/Beam';
 import { isCustomFilter } from '../Simulation/Scoring/CustomFilter';
+import { isGeantScoringFilter } from '../Simulation/Scoring/GeantScoringFilter';
 import { isParticleFilter } from '../Simulation/Scoring/ParticleFilter';
 import { ScoringFilter } from '../Simulation/Scoring/ScoringFilter';
 import {
@@ -225,6 +226,7 @@ export const isScoringContextObject = (x: unknown): x is ScoringContextObject =>
 	return (
 		isCustomFilter(x) ||
 		isParticleFilter(x) ||
+		isGeantScoringFilter(x) ||
 		isFilterContainer(x) ||
 		isOutput(x) ||
 		isScoringQuantity(x) ||

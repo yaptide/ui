@@ -8,6 +8,7 @@ import { YaptideEditor } from '../../../js/YaptideEditor';
 import { BeamConfiguration } from './category/BeamConfiguration';
 import { CustomFilterConfiguration } from './category/CustomFilterConfiguration';
 import { DetectorGrid } from './category/DetectorGrid';
+import { GeantScoringFilterConfiguration } from './category/GeantScoringFilterConfiguration';
 import { ObjectConfiguration } from './category/ObjectConfiguration';
 import { ObjectDimensions } from './category/ObjectDimensions';
 import { ObjectInfo } from './category/ObjectInfo';
@@ -40,6 +41,7 @@ export function PropertiesPanel(props: { boxProps: BoxProps; editor: YaptideEdit
 					<ObjectPlacement {...panelProps} />
 					<CustomFilterConfiguration {...panelProps} />
 					<ParticleFilterConfiguration {...panelProps} />
+					<GeantScoringFilterConfiguration {...panelProps} />
 					<OutputConfiguration {...panelProps} />
 					<QuantityConfiguration {...panelProps} />
 					<QuantityDifferentialScoring {...panelProps} />

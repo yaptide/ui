@@ -104,8 +104,12 @@ export function NumberInput(props: {
 	);
 
 	useEffect(() => {
+		inputRef.current.setUnit(props.unit);
+	}, [props.unit]);
+
+	useEffect(() => {
 		inputRef.current.setValue(props.value);
-	}, [props.value]);
+	}, [props.value, props.unit]);
 
 	useEffect(() => {
 		if (!boxRef.current) return;
