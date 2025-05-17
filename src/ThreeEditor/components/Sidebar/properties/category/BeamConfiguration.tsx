@@ -2,7 +2,7 @@ import { Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useEffect } from 'react';
 import { Object3D } from 'three';
 
-import { FLUKA_PARTICLE_TYPES,PARTICLE_TYPES } from '../../../../../types/Particle';
+import { COMMON_PARTICLE_TYPES,FLUKA_PARTICLE_TYPES } from '../../../../../types/Particle';
 import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
@@ -149,7 +149,7 @@ function BeamSadField(props: { beam: Beam; onChange: (value: Beam['sad']) => voi
 function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam }) {
 	const { object, editor } = props;
 
-	let supportedParticles: ParticleType[] = [...PARTICLE_TYPES];
+	let supportedParticles: ParticleType[] = [...COMMON_PARTICLE_TYPES];
 
 	if (editor.contextManager.currentSimulator === SimulatorType.FLUKA) {
 		supportedParticles.push(...FLUKA_PARTICLE_TYPES);

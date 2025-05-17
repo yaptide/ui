@@ -433,12 +433,12 @@ function getScoringTabElements(simulator: SimulatorType, btnProps: any, editor: 
 
 	const geant4Elements = [
 		{
-			title: 'Geant 4 Placeholder',
-			add: btnProps['Filters'], // just for mockup
+			title: 'Filters',
+			add: btnProps['Filters'],
 			tree: (
 				<SidebarTreeList
 					editor={editor}
-					sources={[editor.figureManager.figureContainer]}
+					sources={[editor.scoringManager.filterContainer]}
 				/>
 			)
 		}

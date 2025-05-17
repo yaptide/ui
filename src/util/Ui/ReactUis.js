@@ -4,7 +4,7 @@ import { MaterialSelect } from '../../ThreeEditor/components/Select/MaterialSele
 import { ParticleSelect } from '../../ThreeEditor/components/Select/ParticleSelect';
 import ZoneManagerPanel from '../../ThreeEditor/components/ZoneManagerPanel/ZoneManagerPanel';
 import { UIDiv, UINumber, UIRow, UISelect, UIText } from '../../ThreeEditor/js/libs/ui.js';
-import { PARTICLE_TYPES } from '../../types/Particle';
+import { COMMON_PARTICLE_TYPES } from '../../types/Particle';
 import { INPUT_WIDTH, LABEL_MARGIN, LABEL_WIDTH } from './Uis';
 
 /**
@@ -35,7 +35,7 @@ export function createParticleTypeSelect(update) {
 			input.setValue(value);
 			ReactDOM.render(
 				<ParticleSelect
-					particles={PARTICLE_TYPES}
+					particles={COMMON_PARTICLE_TYPES}
 					value={value}
 					onChange={onChange}
 				/>,
