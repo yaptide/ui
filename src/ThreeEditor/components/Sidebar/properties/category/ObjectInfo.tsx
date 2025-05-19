@@ -5,8 +5,6 @@ import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { isBeam } from '../../../../Simulation/Physics/Beam';
-import { ScoringOutput } from '../../../../Simulation/Scoring/ScoringOutput';
-import { SCORING_TYPE_ENUM } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import { TextPropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';

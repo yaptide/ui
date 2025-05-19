@@ -1,4 +1,5 @@
 import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
+import createScoringOutput from '../../Simulation/Scoring/ScoringOutputFactory';
 import { ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
 import { Command } from '../Command';
 
@@ -42,7 +43,7 @@ export class RemoveQuantityCommand extends Command {
 		super.fromSerialized(json);
 		this.output =
 			this.editor.scoringManager.getOutputByUuid(json.object.uuid) ??
-			new ScoringOutput().fromSerialized(json.object);
+			createScoringOutput(this.editor).fromSerialized(json.object);
 
 		this.object =
 			this.output.getQuantityByUuid(json.object.uuid) ??

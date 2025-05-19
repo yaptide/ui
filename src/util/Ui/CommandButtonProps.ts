@@ -14,6 +14,7 @@ import { GeantScoringFilter } from '../../ThreeEditor/Simulation/Scoring/GeantSc
 import { ParticleFilter } from '../../ThreeEditor/Simulation/Scoring/ParticleFilter';
 import { ScoringFilter } from '../../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { isOutput, ScoringOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
+import createScoringOutput from '../../ThreeEditor/Simulation/Scoring/ScoringOutputFactory';
 import {
 	isScoringQuantity,
 	ScoringQuantity
@@ -213,7 +214,7 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 			() => {
 				return commandFactory.createAddCommand(
 					'output',
-					new ScoringOutput(editor),
+					createScoringOutput(editor) as ScoringOutput,
 					editor.scoringManager
 				);
 			}

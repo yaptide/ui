@@ -104,7 +104,9 @@ export function NumberInput(props: {
 	);
 
 	useEffect(() => {
-		inputRef.current.setUnit(props.unit);
+		if (props.unit) {
+			inputRef.current.setUnit(props.unit);
+		}
 	}, [props.unit]);
 
 	useEffect(() => {
