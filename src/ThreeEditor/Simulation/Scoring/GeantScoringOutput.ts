@@ -34,3 +34,5 @@ export class GeantScoringOutput
 		return duplicated;
 	}
 }
+export const isGeantOutput = (x: unknown): x is GeantScoringOutput =>
+	x instanceof GeantScoringOutput;

@@ -430,19 +430,7 @@ function getScoringTabElements(simulator: SimulatorType, btnProps: any, editor: 
 	];
 	const shieldhitElements = [...commonElements];
 	const flukaElements = [...commonElements];
-
-	const geant4Elements = [
-		{
-			title: 'Filters',
-			add: btnProps['Filters'],
-			tree: (
-				<SidebarTreeList
-					editor={editor}
-					sources={[editor.scoringManager.filterContainer]}
-				/>
-			)
-		}
-	];
+	const geant4Elements = [...commonElements];
 
 	switch (simulator) {
 		case SimulatorType.SHIELDHIT:
