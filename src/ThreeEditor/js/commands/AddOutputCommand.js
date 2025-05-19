@@ -1,4 +1,5 @@
 import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
+import createScoringOutput from '../../Simulation/Scoring/ScoringOutputFactory';
 import { Command } from '../Command';
 
 export class AddOutputCommand extends Command {
@@ -42,6 +43,6 @@ export class AddOutputCommand extends Command {
 		super.fromSerialized(json);
 		this.object =
 			this.editor.scoringManager.getOutputByUuid(json.object.uuid) ??
-			new ScoringOutput().fromSerialized(json.object);
+			createScoringOutput(this.editor).fromSerialized(json.object);
 	}
 }

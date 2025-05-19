@@ -1,7 +1,7 @@
 import { Button } from '@mui/material';
 
 import { StoreContext } from '../../../services/StoreService';
-import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
+import { CommonScoringOutput } from '../../Simulation/Scoring/CommonScoringOutput';
 import { SCORING_TYPE_ENUM } from '../../Simulation/Scoring/ScoringOutputTypes';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
@@ -12,7 +12,7 @@ export function ChangeScoringTypeDialog({
 	newAlignment,
 	setScoringType
 }: ConcreteDialogProps<
-	Required<Pick<StoreContext, 'yaptideEditor'>> & { scoringOutput: ScoringOutput } & {
+	Required<Pick<StoreContext, 'yaptideEditor'>> & { scoringOutput: CommonScoringOutput } & {
 		newAlignment: SCORING_TYPE_ENUM;
 	} & { setScoringType: (scoringType: SCORING_TYPE_ENUM) => void }
 >) {
