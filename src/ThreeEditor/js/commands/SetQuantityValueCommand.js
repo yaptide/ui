@@ -1,11 +1,12 @@
+import { GeantScoringQuantity } from '../../Simulation/Scoring/GeantScoringQuantity';
 import { ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
 import { Command } from '../Command';
 
 export class SetQuantityValueCommand extends Command {
 	/**
 	 * @param {Editor} editor
-	 * @param {ScoringQuantity} object
-	 * @param {keyof ScoringQuantity} attributeName
+	 * @param {IWannaBeQuantity} object
+	 * @param {keyof ScoringQuantity|keyof GeantScoringQuantity} attributeName
 	 * @param {unknown} newValue
 	 * @constructor
 	 */

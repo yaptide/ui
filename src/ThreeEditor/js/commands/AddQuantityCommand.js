@@ -1,6 +1,7 @@
 import { ScoringOutput } from '../../Simulation/Scoring/ScoringOutput';
 import createScoringOutput from '../../Simulation/Scoring/ScoringOutputFactory';
 import { ScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
+import createScoringQuantity from '../../Simulation/Scoring/ScoringQuantityFactory';
 import { Command } from '../Command';
 
 export class AddQuantityCommand extends Command {
@@ -49,6 +50,6 @@ export class AddQuantityCommand extends Command {
 
 		this.object =
 			this.output.getQuantityByUuid(json.object.uuid) ??
-			new ScoringQuantity().fromSerialized(json.object);
+			createScoringQuantity(this.editor, json.object);
 	}
 }

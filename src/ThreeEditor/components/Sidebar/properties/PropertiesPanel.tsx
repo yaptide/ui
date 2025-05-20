@@ -10,6 +10,7 @@ import { CommonOutputConfiguration } from './category/CommonOutputConfiguration'
 import { CustomFilterConfiguration } from './category/CustomFilterConfiguration';
 import { DetectorGrid } from './category/DetectorGrid';
 import { GeantOutputConfiguration } from './category/GeantOutputConfiguration';
+import { GeantQuantityConfiguration } from './category/GeantQuantityConfiguration';
 import { GeantScoringFilterConfiguration } from './category/GeantScoringFilterConfiguration';
 import { ObjectConfiguration } from './category/ObjectConfiguration';
 import { ObjectDimensions } from './category/ObjectDimensions';
@@ -44,6 +45,7 @@ export function PropertiesPanel(props: { boxProps: BoxProps; editor: YaptideEdit
 					<GeantScoringFilterConfiguration {...panelProps} />
 					<CommonOutputConfiguration {...panelProps} />
 					<GeantOutputConfiguration {...panelProps} />
+					<GeantQuantityConfiguration {...panelProps} />
 					<QuantityConfiguration {...panelProps} />
 					<QuantityDifferentialScoring {...panelProps} />
 					<BeamConfiguration {...panelProps} />

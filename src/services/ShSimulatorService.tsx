@@ -5,6 +5,7 @@ import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { addCustomStoppingPowerTableToEditorJSON } from '../ThreeEditor/Simulation/CustomStoppingPower/CustomStoppingPower';
 import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { ScoringManagerJSON } from '../ThreeEditor/Simulation/Scoring/ScoringManager';
+import { ScoringQuantityJSON } from '../ThreeEditor/Simulation/Scoring/ScoringQuantity';
 import {
 	isEditorJson,
 	RequestCancelJob,
@@ -127,7 +128,7 @@ const recreateRefToFilters = (estimators: Estimator[], FiltersJSON: FilterJSON[]
 	estimators.forEach((estimator, estimatorIndex) => {
 		const { pages, scoringOutputJsonRef } = estimator;
 		pages.forEach((page, idx) => {
-			const quantity = scoringOutputJsonRef?.quantities[idx];
+			const quantity = scoringOutputJsonRef?.quantities[idx] as ScoringQuantityJSON;
 			const filter = FiltersJSON.find(o => o.uuid === quantity?.filter);
 			page.filterRef = filter;
 			page.name = quantity?.name;

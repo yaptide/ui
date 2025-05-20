@@ -4,11 +4,11 @@ import { SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationZone } from '../Base/SimulationZone';
 import { ScoringOutput } from './ScoringOutput';
 import { SCORING_TYPE_ENUM } from './ScoringOutputTypes';
-import { ScoringQuantityJSON } from './ScoringQuantity';
+import { IWannaBeQuantityJSON } from './ScoringQuantityFactory';
 
 export type CommonScoringOutputJSON = Omit<
 	SimulationElementJSON & {
-		quantities: ScoringQuantityJSON[];
+		quantities: IWannaBeQuantityJSON[];
 		detectorUuid?: string;
 		zoneUuid?: string;
 		scoringType?: string;

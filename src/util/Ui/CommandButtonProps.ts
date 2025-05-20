@@ -11,6 +11,10 @@ import {
 } from '../../ThreeEditor/Simulation/Figures/BasicFigures';
 import { CustomFilter } from '../../ThreeEditor/Simulation/Scoring/CustomFilter';
 import { GeantScoringFilter } from '../../ThreeEditor/Simulation/Scoring/GeantScoringFilter';
+import {
+	GeantScoringQuantity,
+	isGeantScoringQuantity
+} from '../../ThreeEditor/Simulation/Scoring/GeantScoringQuantity';
 import { ParticleFilter } from '../../ThreeEditor/Simulation/Scoring/ParticleFilter';
 import { ScoringFilter } from '../../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { isOutput, ScoringOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
@@ -218,8 +222,25 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 					editor.scoringManager
 				);
 			}
-		],
-		[
+		]
+	];
+
+	if (editor.contextManager.currentSimulator === SimulatorType.GEANT4) {
+		outputsTuple.push([
+			'Quantity',
+			() => {
+				return commandFactory.createAddCommand(
+					'quantity',
+					new GeantScoringQuantity(editor),
+					isGeantScoringQuantity(editor.selected)
+						? editor.selected.parent?.parent
+						: editor.selected
+				);
+			},
+			!isOutput(editor.selected) && !isScoringQuantity(editor.selected)
+		]);
+	} else {
+		outputsTuple.push([
 			'Quantity',
 			() => {
 				return commandFactory.createAddCommand(
@@ -231,8 +252,8 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 				);
 			},
 			!isOutput(editor.selected) && !isScoringQuantity(editor.selected)
-		]
-	];
+		]);
+	}
 
 	return {
 		'NestedFigures': createCommandButtonProps(editor, nestedFiguresTuple),

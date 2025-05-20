@@ -9,11 +9,14 @@ import { Detector } from '../Detectors/Detector';
 import { QuantityContainer } from './QuantityContainer';
 import { ScoringFilter } from './ScoringFilter';
 import { SCORING_TYPE_ENUM } from './ScoringOutputTypes';
-import { ScoringQuantity, ScoringQuantityJSON } from './ScoringQuantity';
+import createScoringQuantity, {
+	IWannaBeQuantity,
+	IWannaBeQuantityJSON
+} from './ScoringQuantityFactory';
 
 export type ScoringOutputJSON = Omit<
 	SimulationElementJSON & {
-		quantities: ScoringQuantityJSON[];
+		quantities: IWannaBeQuantityJSON[];
 		detectorUuid?: string;
 		trace: boolean;
 		traceFilter?: string;
@@ -24,7 +27,7 @@ export type ScoringOutputJSON = Omit<
 export abstract class ScoringOutput
 	extends SimulationElement
 	implements
-		SimulationElementManager<'quantity', ScoringQuantity, 'quantities'>,
+		SimulationElementManager<'quantity', IWannaBeQuantity, 'quantities'>,
 		SerializableState<ScoringOutputJSON>
 {
 	readonly isOutput: true = true;
@@ -111,24 +114,24 @@ export abstract class ScoringOutput
 	/**
 	 * @deprecated Use addQuantity instead
 	 **/
-	createQuantity(): ScoringQuantity {
-		const quantity = new ScoringQuantity(this.editor);
+	createQuantity(): IWannaBeQuantity {
+		const quantity = createScoringQuantity(this.editor);
 		this.addQuantity(quantity);
 
 		return quantity;
 	}
 
-	addQuantity(quantity: ScoringQuantity) {
+	addQuantity(quantity: IWannaBeQuantity) {
 		this.quantityContainer.add(quantity);
 		this.editor.select(quantity);
 	}
 
-	removeQuantity(quantity: ScoringQuantity) {
+	removeQuantity(quantity: IWannaBeQuantity) {
 		this.quantityContainer.remove(quantity);
 		this.editor.select(this);
 	}
 
-	getQuantityByUuid(uuid: string): ScoringQuantity | null {
+	getQuantityByUuid(uuid: string): IWannaBeQuantity | null {
 		return this.quantities.find(qty => qty.uuid === uuid) ?? null;
 	}
 

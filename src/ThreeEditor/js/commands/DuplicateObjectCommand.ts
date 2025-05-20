@@ -3,9 +3,11 @@ import { SimulationElement } from '../../Simulation/Base/SimulationElement';
 import { isSimulationZone } from '../../Simulation/Base/SimulationZone';
 import { isDetector } from '../../Simulation/Detectors/Detector';
 import { isBasicFigure } from '../../Simulation/Figures/BasicFigures';
+import { isGeantScoringQuantity } from '../../Simulation/Scoring/GeantScoringQuantity';
 import { isScoringFilter } from '../../Simulation/Scoring/ScoringFilter';
 import { isOutput } from '../../Simulation/Scoring/ScoringOutput';
 import { isScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
+import { IWannaBeQuantity } from '../../Simulation/Scoring/ScoringQuantityFactory';
 import { YaptideEditor } from '../YaptideEditor';
 
 export const canBeDuplicated = (object: object) => {
@@ -25,7 +27,11 @@ export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationEle
 		const output = object.parent.parent;
 
 		if (isOutput(output))
-			return commandFactory.createDuplicateCommand('quantity', clone, output);
+			return commandFactory.createDuplicateCommand(
+				'quantity',
+				clone as IWannaBeQuantity,
+				output
+			);
 	} else if (isSimulationZone(clone)) {
 		return commandFactory.createDuplicateCommand('zone', clone, editor.zoneManager);
 	} else if (isDetector(clone)) {

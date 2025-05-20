@@ -13,6 +13,10 @@ import { BasicFigure, isBasicFigure } from '../Simulation/Figures/BasicFigures';
 import { Beam, isBeam } from '../Simulation/Physics/Beam';
 import { isCustomFilter } from '../Simulation/Scoring/CustomFilter';
 import { isGeantScoringFilter } from '../Simulation/Scoring/GeantScoringFilter';
+import {
+	GeantScoringQuantity,
+	isGeantScoringQuantity
+} from '../Simulation/Scoring/GeantScoringQuantity';
 import { isParticleFilter } from '../Simulation/Scoring/ParticleFilter';
 import { ScoringFilter } from '../Simulation/Scoring/ScoringFilter';
 import {
@@ -50,6 +54,7 @@ export type ScoringContextObject =
 	| ScoringOutput
 	| ScoringManager
 	| ScoringQuantity
+	| GeantScoringQuantity
 	| FilterContainer;
 
 export type SettingsContextObject = Beam;
@@ -230,6 +235,7 @@ export const isScoringContextObject = (x: unknown): x is ScoringContextObject =>
 		isFilterContainer(x) ||
 		isOutput(x) ||
 		isScoringQuantity(x) ||
+		isGeantScoringQuantity(x) ||
 		isScoringManager(x)
 	);
 };

@@ -14,6 +14,7 @@ import { isSimulationPoints } from '../../../../Simulation/Base/SimulationPoints
 import { isSimulationZone, SimulationZone } from '../../../../Simulation/Base/SimulationZone';
 import { CustomStoppingPowerModels } from '../../../../Simulation/CustomStoppingPower/CustomStoppingPower';
 import { isBeam } from '../../../../Simulation/Physics/Beam';
+import { isGeantScoringQuantity } from '../../../../Simulation/Scoring/GeantScoringQuantity';
 import { isScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
 import { MaterialSelect } from '../../../Select/MaterialSelect';
@@ -31,7 +32,9 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const visibleFlag =
-		(isSimulationZone(watchedObject) && !isScoringQuantity(watchedObject)) ||
+		(isSimulationZone(watchedObject) &&
+			!isScoringQuantity(watchedObject) &&
+			!isGeantScoringQuantity(watchedObject)) ||
 		isWorldZone(watchedObject) || //TODO: Refactor WorldZone to extend  a Zone
 		isSimulationMesh(watchedObject) ||
 		isBeam(watchedObject) ||

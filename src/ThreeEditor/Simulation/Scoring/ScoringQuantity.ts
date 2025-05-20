@@ -1,5 +1,3 @@
-import { Serializable } from 'node:child_process';
-
 import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';

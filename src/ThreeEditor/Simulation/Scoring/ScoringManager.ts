@@ -13,7 +13,7 @@ import { isParticleFilterJSON, ParticleFilter } from './ParticleFilter';
 import { FilterJSON, ScoringFilter } from './ScoringFilter';
 import { ScoringOutput, ScoringOutputJSON as OutputJSON } from './ScoringOutput';
 import createScoringOutput from './ScoringOutputFactory';
-import { ScoringQuantity } from './ScoringQuantity';
+import createScoringQuantity from './ScoringQuantityFactory';
 
 export type ScoringManagerJSON = Omit<
 	SimulationElementJSON & {
@@ -147,7 +147,7 @@ export class ScoringManager
 	addOutput(output: ScoringOutput) {
 		this.outputContainer.add(output);
 
-		if (!output.quantities.length) output.addQuantity(new ScoringQuantity(this.editor));
+		if (!output.quantities.length) output.addQuantity(createScoringQuantity(this.editor));
 
 		this.editor.select(output);
 	}

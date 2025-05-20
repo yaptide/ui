@@ -2,11 +2,11 @@ import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { ScoringOutput } from './ScoringOutput';
-import { ScoringQuantityJSON } from './ScoringQuantity';
+import { IWannaBeQuantityJSON } from './ScoringQuantityFactory';
 
 export type GeantScoringOutputJSON = Omit<
 	SimulationElementJSON & {
-		quantities: ScoringQuantityJSON[];
+		quantities: IWannaBeQuantityJSON[];
 		detectorUuid?: string;
 		trace: boolean;
 		traceFilter?: string;
