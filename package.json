@@ -30,7 +30,7 @@
 		"copy-to-clipboard": "^3.3.3",
 		"date-fns": "^4.1.0",
 		"glob": "^11.0.2",
-		"jsroot": "^7.9.0",
+		"jsroot": "^7.9.1",
 		"keycloak-js": "^26.1.5",
 		"ky": "^1.8.1",
 		"material-ui-popup-state": "^5.3.6",
