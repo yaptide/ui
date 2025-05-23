@@ -9,6 +9,7 @@ import {
 	TableContainer
 } from '@mui/material';
 import { Theme } from '@mui/material/styles';
+import { useEffect, useState } from 'react';
 
 import {
 	currentJobStatusData,
@@ -30,6 +31,38 @@ export const SimulationCardContent = ({
 	statusColor
 }: SimulationCardContentProps) => {
 	const rows = useRows(simulationStatus);
+	const [simulationValue, setSimulationValue] = useState(0);
+
+	useEffect(() => {
+		console.log(simulationStatus);
+	}, [simulationStatus]);
+
+	const isJobDataMissing = (jobStatus: any): boolean => {
+		return !jobStatus?.simulatedPrimaries || !jobStatus?.requestedPrimaries;
+	};
+
+	const calculateJobCompletion = (jobStatus: any): number => {
+		if (isJobDataMissing(jobStatus)) {
+			return 0;
+		}
+
+		return jobStatus.simulatedPrimaries / jobStatus.requestedPrimaries;
+	};
+
+	const calculateSimulationCompletition = (simulationStatus: any): number => {
+		const jobs_num = simulationStatus.jobTasksStatus.length ?? 1;
+		const jobs_completion_sum = simulationStatus.jobTasksStatus
+			.map((status: any) => calculateJobCompletion(status))
+			.reduce((acc: number, job_completion: number) => acc + job_completion, 0);
+
+		return (jobs_completion_sum / jobs_num) * 100;
+	};
+
+	useEffect(() => {
+		if (simulationStatus.jobTasksStatus) {
+			setSimulationValue(calculateSimulationCompletition(simulationStatus));
+		}
+	}, [simulationStatus, setSimulationValue]);
 
 	return (
 		<CardContent sx={{ flexGrow: 1 }}>
@@ -115,26 +148,8 @@ export const SimulationCardContent = ({
 								animationDuration: '4s'
 							}
 						}}
-						valueBuffer={
-							Math.max(
-								...simulationStatus.jobTasksStatus.map(
-									status =>
-										(status?.simulatedPrimaries ?? 0) /
-										(status?.requestedPrimaries ?? 1)
-								)
-							) * 100
-						}
-						value={
-							(simulationStatus.jobTasksStatus.reduce(
-								(acc, status) =>
-									acc +
-									(status?.simulatedPrimaries ?? 0) /
-										(status?.requestedPrimaries ?? 1),
-								0 as number
-							) /
-								(simulationStatus.jobTasksStatus.length ?? 1)) *
-							100
-						}
+						valueBuffer={0}
+						value={simulationValue}
 					/>
 					<Box
 						sx={{
