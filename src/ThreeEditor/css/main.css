@@ -198,6 +198,7 @@ div:is(#outliner, #filter-outliner) .Particle:after {
 div:is(#outliner, #filter-outliner) .Medium:after {
 	content: '✪';
 }
+
 div:is(#outliner, #filter-outliner) .Modifier:after {
 	content: '▧';
 }
@@ -272,6 +273,7 @@ button {
 	cursor: pointer;
 	outline: none;
 }
+
 button[disabled] {
 	color: #aaa;
 	background-color: #ddd;
@@ -760,4 +762,14 @@ select:hover {
 
 .display-none {
 	display: none !important;
+}
+
+@keyframes moveDots {
+	from {
+		background-position: 0 0;
+	}
+
+	to {
+		background-position: 40px 0;
+	}
 }
