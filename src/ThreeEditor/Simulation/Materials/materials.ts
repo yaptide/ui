@@ -572,4 +572,4 @@ export const MATERIALS = [
 	{ icru: 276, name: 'WATER, LIQUID', sanitized_name: 'water_liquid', density: 1.0 },
 	{ icru: 277, name: 'WATER VAPOR', sanitized_name: 'water_vapor', density: 0.000756182 },
 	{ icru: 278, name: 'XYLENE', sanitized_name: 'xylene', density: 0.87 }
-] as const;
+];

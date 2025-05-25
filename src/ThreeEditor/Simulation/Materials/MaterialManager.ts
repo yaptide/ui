@@ -1,12 +1,14 @@
 import { Signal } from 'signals';
 import * as THREE from 'three';
 
+import { SimulatorType } from '../../../types/RequestTypes';
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { CounterMap } from '../../../util/CounterMap/CounterMap';
 import { SerializableState } from '../../js/EditorJson';
 import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor.js';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { DEFAULT_MATERIAL_ICRU, MATERIALS } from './materials';
+import { MATERIALS_GEANT } from './materialsGeant';
 import SimulationMaterial, {
 	isSimulationMaterial,
 	SimulationMaterialJSON
@@ -46,9 +48,16 @@ export class MaterialManager
 	private _name: string;
 	private _customMaterials: Record<string, SimulationMaterial> = {};
 
-	private createMaterialPrefabs = () => {
+	public createMaterialPrefabs = (simulator: SimulatorType) => {
 		const { editor } = this;
-		const editorMaterials = MATERIALS.reduce(
+
+		let materials = MATERIALS;
+
+		if (simulator === SimulatorType.GEANT4) {
+			materials = MATERIALS_GEANT;
+		}
+
+		const editorMaterials = materials.reduce(
 			(
 				[prevMaterials, prevOptions],
 				{ name, sanitized_name: sanitizedName, icru, density }
@@ -103,6 +112,8 @@ export class MaterialManager
 	/*************************ProxyHandling*************************/
 	protected materialsHandler = {
 		get: (target: Record<string, SimulationMaterial>, prop: string) => {
+			// this.editor.contextManager.currentSimulator
+
 			let result = target[prop];
 
 			if (result) return result;
@@ -150,11 +161,18 @@ export class MaterialManager
 		this.editor = editor;
 		this.name = this._name = 'Material Manager';
 
-		[this.prefabMaterials, this.materialOptions] = this.createMaterialPrefabs();
+		[this.prefabMaterials, this.materialOptions] = this.createMaterialPrefabs(
+			SimulatorType.COMMON
+		);
 		this.materialsProxy = new Proxy(this._customMaterials, this.materialsHandler);
 
 		this.signals = editor.signals;
 		this.signals.materialChanged.add(this.onMaterialChanged.bind(this));
+	}
+
+	public updateMaterialsOnSimulatorChanges(simulator: SimulatorType) {
+		let xd = this.createMaterialPrefabs(simulator);
+		[this.prefabMaterials, this.materialOptions] = xd;
 	}
 
 	private onMaterialChanged(material: THREE.Material) {

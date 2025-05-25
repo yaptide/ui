@@ -9,7 +9,7 @@ import {
 	DetectorManager,
 	isDetectContainer
 } from '../Simulation/Detectors/DetectorManager';
-import { BasicFigure, isBasicFigure } from '../Simulation/Figures/BasicFigures';
+import { BasicFigure, isBasicFigure, isGeantFigure } from '../Simulation/Figures/BasicFigures';
 import { Beam, isBeam } from '../Simulation/Physics/Beam';
 import { isCustomFilter } from '../Simulation/Scoring/CustomFilter';
 import { isParticleFilter } from '../Simulation/Scoring/ParticleFilter';
@@ -73,6 +73,7 @@ export class ContextManager {
 	}
 
 	set currentSimulator(simulator: SimulatorType) {
+		console.log('set current simulator');
 		this.simulator = simulator;
 	}
 
@@ -241,6 +242,7 @@ export const isGeometryContextObject = (x: unknown): x is GeometryObject => {
 		isBasicFigure(x) ||
 		isZoneContainer(x) ||
 		isSpecialComponent(x) ||
+		isGeantFigure(x) ||
 		x instanceof THREE.Scene
 	);
 };

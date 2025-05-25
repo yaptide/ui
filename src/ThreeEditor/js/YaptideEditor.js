@@ -667,6 +667,7 @@ YaptideEditor.prototype = {
 				throw new Error(
 					'Material Manager was not found in JSON data. Aborting load on part 4 out of 11'
 				);
+			// this.materialManager.createMaterialPrefabs(this.contextManager.currentSimulator)
 			if (figureManager) this.figureManager.fromSerialized(figureManager);
 			else
 				throw new Error(
