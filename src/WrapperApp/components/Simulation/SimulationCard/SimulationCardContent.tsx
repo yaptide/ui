@@ -33,10 +33,6 @@ export const SimulationCardContent = ({
 	const rows = useRows(simulationStatus);
 	const [simulationValue, setSimulationValue] = useState(0);
 
-	useEffect(() => {
-		console.log(simulationStatus);
-	}, [simulationStatus]);
-
 	const isJobDataMissing = (jobStatus: any): boolean => {
 		return !jobStatus?.simulatedPrimaries || !jobStatus?.requestedPrimaries;
 	};
@@ -49,7 +45,7 @@ export const SimulationCardContent = ({
 		return jobStatus.simulatedPrimaries / jobStatus.requestedPrimaries;
 	};
 
-	const calculateSimulationCompletition = (simulationStatus: any): number => {
+	const calculateSimulationCompletion = (simulationStatus: any): number => {
 		const jobs_num = simulationStatus.jobTasksStatus.length ?? 1;
 		const jobs_completion_sum = simulationStatus.jobTasksStatus
 			.map((status: any) => calculateJobCompletion(status))
@@ -60,7 +56,7 @@ export const SimulationCardContent = ({
 
 	useEffect(() => {
 		if (simulationStatus.jobTasksStatus) {
-			setSimulationValue(calculateSimulationCompletition(simulationStatus));
+			setSimulationValue(calculateSimulationCompletion(simulationStatus));
 		}
 	}, [simulationStatus, setSimulationValue]);
 
