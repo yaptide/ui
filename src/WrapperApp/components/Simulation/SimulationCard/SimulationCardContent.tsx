@@ -156,12 +156,15 @@ export const SimulationCardContent = ({
 							display: 'grid',
 							gridTemplateColumns: 'repeat(auto-fill, minmax(55px, 1fr))'
 						}}>
-						{simulationStatus.jobTasksStatus.map((taskStatus, index) => (
-							<SimulationProgressBar
-								key={index}
-								status={taskStatus}
-							/>
-						))}
+						{simulationStatus.jobTasksStatus
+							.slice()
+							.sort((a, b) => (a.taskId ?? 0) - (b.taskId ?? 0))
+							.map((taskStatus, index) => (
+								<SimulationProgressBar
+									key={index}
+									status={taskStatus}
+								/>
+							))}
 					</Box>
 				</>
 			)}
