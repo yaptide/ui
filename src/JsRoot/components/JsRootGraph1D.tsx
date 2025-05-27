@@ -1,7 +1,7 @@
 import { createHistogram, createTGraph, EAxisBits, kNoStats } from 'jsroot';
 import { useEffect } from 'react';
 
-import { Page1D } from '../GraphData';
+import { MAX_SCALING_FACTOR, Page1D } from '../GraphData';
 import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
 
 export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
@@ -23,8 +23,10 @@ export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 			histogram.fXaxis.fXmax = x[npoints - 1];
 			histogram.fXaxis.fTitle = `${page.axisDim1.name} [${page.axisDim1.unit}]`;
 
-			histogram.fYaxis.fXmin = y[0];
-			histogram.fYaxis.fXmax = y[npoints - 1];
+			histogram.fMinimum = Math.min(...y);
+			// Apply a scaling factor to the maximum value of the Y-axis to ensure proper visualization
+			// and avoid clipping of data points near the upper boundary.
+			histogram.fMaximum = Math.max(...y) * MAX_SCALING_FACTOR;
 			histogram.fYaxis.fTitle = `${page.data.name} [${page.data.unit}]`;
 
 			// centering axes labels using method suggested here:

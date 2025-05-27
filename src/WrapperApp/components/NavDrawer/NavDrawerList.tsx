@@ -86,6 +86,7 @@ export function NavDrawerList({
 								label: username,
 								richLabel: (
 									<Typography
+										component='div'
 										sx={{
 											marginRight: 1,
 											textOverflow: 'ellipsis',

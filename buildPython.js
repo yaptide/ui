@@ -90,7 +90,7 @@ const saveFileName = (destFolder, fileName) => {
 		});
 
 		measureTime('Installing build module for python', () => {
-			executeCommand(`${venvCommandPrefix} pip install "poetry==1.8.5" ${venvCommandSuffix}`);
+			executeCommand(`${venvCommandPrefix} pip install "poetry==2.1.3" ${venvCommandSuffix}`);
 		});
 
 		measureTime('Building yaptide_converter', () => {

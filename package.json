@@ -15,12 +15,12 @@
 		"@mui/lab": "^7.0.0-beta.11",
 		"@mui/material": "^7.0.2",
 		"@mui/system": "^7.0.2",
-		"@mui/x-data-grid": "^8.2.0",
+		"@mui/x-data-grid": "^8.3.1",
 		"@testing-library/jest-dom": "^6.6.3",
 		"@testing-library/react": "^16.3.0",
 		"@testing-library/user-event": "^14.6.1",
 		"@types/jest": "^29.5.14",
-		"@types/react-dom": "^18.3.1",
+		"@types/react-dom": "^19.1.5",
 		"@types/signals": "^1.0.4",
 		"@types/throttle-debounce": "^5.0.2",
 		"@uiw/react-textarea-code-editor": "^3.1.1",
@@ -30,13 +30,13 @@
 		"copy-to-clipboard": "^3.3.3",
 		"date-fns": "^4.1.0",
 		"glob": "^11.0.2",
-		"jsroot": "^7.8.2",
+		"jsroot": "^7.9.1",
 		"keycloak-js": "^26.1.5",
-		"ky": "^1.7.3",
-		"material-ui-popup-state": "^5.3.5",
+		"ky": "^1.8.1",
+		"material-ui-popup-state": "^5.3.6",
 		"notistack": "^3.0.2",
 		"object-hash": "^3.0.0",
-		"pyodide": "^0.27.5",
+		"pyodide": "^0.27.6",
 		"react": "^19.1.0",
 		"react-async-script": "^1.2.0",
 		"react-countdown": "^2.3.6",
@@ -52,7 +52,7 @@
 		"typescript": "^5.2.2",
 		"use-interval": "^1.4.0",
 		"usehooks-ts": "^3.1.1",
-		"web-vitals": "^4.2.4"
+		"web-vitals": "^5.0.1"
 	},
 	"overrides": {
 		"typescript": "^5.2.2"
@@ -206,8 +206,8 @@
 	},
 	"devDependencies": {
 		"@total-typescript/ts-reset": "^0.6.1",
-		"@types/react": "^19.1.2",
-		"@types/node": "^22.15.3",
+		"@types/node": "^22.15.21",
+		"@types/react": "^19.1.5",
 		"@types/react-async-script": "^1.2.5",
 		"@types/selenium-webdriver": "^4.1.28",
 		"@types/three": "^0.176.0",
@@ -217,10 +217,10 @@
 		"gh-pages": "^6.3.0",
 		"husky": "^9.1.7",
 		"jest-matcher-deep-close-to": "^3.0.2",
-		"lint-staged": "^15.5.1",
+		"lint-staged": "^16.0.0",
 		"prettier": "3.5.3",
 		"react-app-rewired": "^2.2.1",
-		"selenium-webdriver": "^4.31.0"
+		"selenium-webdriver": "^4.33.0"
 	},
 	"lint-staged": {
 		"*.{ts,tsx,js,jsx}": [
