@@ -31,12 +31,15 @@ const statusToColor = (status: StatusState) => {
 };
 
 export function SimulationProgressBar({ status }: Readonly<SimulationProgressBarProps>) {
-	const isJobDataMissing = (jobStatus: any): boolean => {
-		return !jobStatus?.simulatedPrimaries || !jobStatus?.requestedPrimaries;
+	const isJobDataInvalid = (jobStatus: any): boolean => {
+		return (
+			(!jobStatus?.simulatedPrimaries && jobStatus.simulatedPrimaries !== 0) ||
+			!jobStatus?.requestedPrimaries
+		);
 	};
 
 	const progressValue = useMemo(() => {
-		if (isJobDataMissing(status)) {
+		if (isJobDataInvalid(status)) {
 			return 0;
 		}
 

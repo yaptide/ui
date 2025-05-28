@@ -33,12 +33,15 @@ export const SimulationCardContent = ({
 	const rows = useRows(simulationStatus);
 	const [simulationValue, setSimulationValue] = useState(0);
 
-	const isJobDataMissing = (jobStatus: any): boolean => {
-		return !jobStatus?.simulatedPrimaries || !jobStatus?.requestedPrimaries;
+	const isJobDataInvalid = (jobStatus: any): boolean => {
+		return (
+			(!jobStatus?.simulatedPrimaries && jobStatus.simulatedPrimaries !== 0) ||
+			!jobStatus?.requestedPrimaries
+		);
 	};
 
 	const calculateJobCompletion = (jobStatus: any): number => {
-		if (isJobDataMissing(jobStatus)) {
+		if (isJobDataInvalid(jobStatus)) {
 			return 0;
 		}
 
