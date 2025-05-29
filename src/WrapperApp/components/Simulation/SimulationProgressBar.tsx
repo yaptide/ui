@@ -31,15 +31,24 @@ const statusToColor = (status: StatusState) => {
 };
 
 export function SimulationProgressBar({ status }: Readonly<SimulationProgressBarProps>) {
-	const isJobDataInvalid = (jobStatus: any): boolean => {
+	/**
+	 * Validates job data for progress calculation:
+	 * - simulatedPrimaries: must be a non-negative number (>= 0)
+	 * - requestedPrimaries: must be a positive number (> 0)
+	 */
+	const isJobDataValid = (status: TaskStatusData): boolean => {
+		const { simulatedPrimaries, requestedPrimaries } = status;
+
 		return (
-			(!jobStatus?.simulatedPrimaries && jobStatus.simulatedPrimaries !== 0) ||
-			!jobStatus?.requestedPrimaries
+			simulatedPrimaries !== undefined &&
+			requestedPrimaries !== undefined &&
+			simulatedPrimaries >= 0 &&
+			requestedPrimaries > 0
 		);
 	};
 
 	const progressValue = useMemo(() => {
-		if (isJobDataInvalid(status)) {
+		if (!isJobDataValid(status)) {
 			return 0;
 		}
 

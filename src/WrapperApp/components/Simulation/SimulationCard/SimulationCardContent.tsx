@@ -16,7 +16,8 @@ import {
 	currentTaskStatusData,
 	JobUnknownStatus,
 	SimulationInfo,
-	StatusState
+	StatusState,
+	TaskStatusData
 } from '../../../../types/ResponseTypes';
 import { SimulationProgressBar } from '../SimulationProgressBar';
 import { useRows } from './RowUtils';
@@ -31,27 +32,36 @@ export const SimulationCardContent = ({
 	statusColor
 }: SimulationCardContentProps) => {
 	const rows = useRows(simulationStatus);
-	const [simulationValue, setSimulationValue] = useState(0);
+	const [simulationProgressPercent, setSimulationProgressPercent] = useState(0);
 
-	const isJobDataInvalid = (jobStatus: any): boolean => {
+	/**
+	 * Validates job data for progress calculation:
+	 * - simulatedPrimaries: must be a non-negative number (>= 0)
+	 * - requestedPrimaries: must be a positive number (> 0)
+	 */
+	const isJobDataValid = (status: TaskStatusData): boolean => {
+		const { simulatedPrimaries, requestedPrimaries } = status;
+
 		return (
-			(!jobStatus?.simulatedPrimaries && jobStatus.simulatedPrimaries !== 0) ||
-			!jobStatus?.requestedPrimaries
+			simulatedPrimaries !== undefined &&
+			requestedPrimaries !== undefined &&
+			simulatedPrimaries >= 0 &&
+			requestedPrimaries > 0
 		);
 	};
 
-	const calculateJobCompletion = (jobStatus: any): number => {
-		if (isJobDataInvalid(jobStatus)) {
+	const fractionOfSimulatedPrimaries = (jobStatus: TaskStatusData): number => {
+		if (!isJobDataValid(jobStatus)) {
 			return 0;
 		}
 
-		return jobStatus.simulatedPrimaries / jobStatus.requestedPrimaries;
+		return jobStatus.simulatedPrimaries! / jobStatus.requestedPrimaries!;
 	};
 
-	const calculateSimulationCompletion = (simulationStatus: any): number => {
+	const calculateSimulationProgress = (simulationStatus: any): number => {
 		const jobs_num = simulationStatus.jobTasksStatus.length ?? 1;
 		const jobs_completion_sum = simulationStatus.jobTasksStatus
-			.map((status: any) => calculateJobCompletion(status))
+			.map((status: any) => fractionOfSimulatedPrimaries(status))
 			.reduce((acc: number, job_completion: number) => acc + job_completion, 0);
 
 		return (jobs_completion_sum / jobs_num) * 100;
@@ -59,9 +69,9 @@ export const SimulationCardContent = ({
 
 	useEffect(() => {
 		if (simulationStatus.jobTasksStatus) {
-			setSimulationValue(calculateSimulationCompletion(simulationStatus));
+			setSimulationProgressPercent(calculateSimulationProgress(simulationStatus));
 		}
-	}, [simulationStatus, setSimulationValue]);
+	}, [simulationStatus, setSimulationProgressPercent]);
 
 	return (
 		<CardContent sx={{ flexGrow: 1 }}>
@@ -148,7 +158,7 @@ export const SimulationCardContent = ({
 							}
 						}}
 						valueBuffer={0}
-						value={simulationValue}
+						value={simulationProgressPercent}
 					/>
 					<Box
 						sx={{
