@@ -148,7 +148,6 @@ export const SimulationCardContent = ({
 								animationDuration: '4s'
 							}
 						}}
-						valueBuffer={0}
 						value={simulationProgressPercent}
 					/>
 					<Box
