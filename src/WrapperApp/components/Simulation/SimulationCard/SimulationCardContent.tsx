@@ -20,6 +20,7 @@ import {
 	TaskStatusData,
 	TaskUnknownStatus
 } from '../../../../types/ResponseTypes';
+import { isJobDataValid } from '../../../../util/jobDataValidation';
 import { SimulationProgressBar } from '../SimulationProgressBar';
 import { useRows } from './RowUtils';
 
@@ -35,22 +36,6 @@ export const SimulationCardContent = ({
 	const rows = useRows(simulationStatus);
 	const [simulationProgressPercent, setSimulationProgressPercent] = useState(0);
 
-	/**
-	 * Validates job data for progress calculation:
-	 * - simulatedPrimaries: must be a non-negative number (>= 0)
-	 * - requestedPrimaries: must be a positive number (> 0)
-	 */
-	const isJobDataValid = (status: TaskStatusData): boolean => {
-		const { simulatedPrimaries, requestedPrimaries } = status;
-
-		return (
-			simulatedPrimaries !== undefined &&
-			requestedPrimaries !== undefined &&
-			simulatedPrimaries >= 0 &&
-			requestedPrimaries > 0
-		);
-	};
-
 	const fractionOfSimulatedPrimaries = (jobStatus: TaskStatusData): number => {
 		if (!isJobDataValid(jobStatus)) {
 			return 0;
@@ -60,12 +45,16 @@ export const SimulationCardContent = ({
 	};
 
 	const calculateSimulationProgress = (jobTasksStatus: TaskUnknownStatus[]): number => {
-		const jobs_num = jobTasksStatus.length ?? 1;
-		const jobs_completion_sum = jobTasksStatus
-			.map(status => fractionOfSimulatedPrimaries(status))
-			.reduce((acc: number, job_completion: number) => acc + job_completion, 0);
+		if (jobTasksStatus.length === 0) {
+			return 0;
+		}
 
-		return (jobs_completion_sum / jobs_num) * 100;
+		const jobsNum = jobTasksStatus.length;
+		const jobsCompletionSum = jobTasksStatus
+			.map(status => fractionOfSimulatedPrimaries(status))
+			.reduce((acc: number, jobCompletion: number) => acc + jobCompletion, 0);
+
+		return (jobsCompletionSum / jobsNum) * 100;
 	};
 
 	useEffect(() => {

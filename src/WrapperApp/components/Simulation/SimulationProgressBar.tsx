@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import Countdown from 'react-countdown';
 
 import { StatusState, TaskStatusData, TaskTime } from '../../../types/ResponseTypes';
+import { isJobDataValid } from '../../../util/jobDataValidation';
 import { millisecondsToTimeString } from '../../../util/time';
 
 const getDateFromEstimation = (estimated?: TaskTime) => {
@@ -31,22 +32,6 @@ const statusToColor = (status: StatusState) => {
 };
 
 export function SimulationProgressBar({ status }: Readonly<SimulationProgressBarProps>) {
-	/**
-	 * Validates job data for progress calculation:
-	 * - simulatedPrimaries: must be a non-negative number (>= 0)
-	 * - requestedPrimaries: must be a positive number (> 0)
-	 */
-	const isJobDataValid = (status: TaskStatusData): boolean => {
-		const { simulatedPrimaries, requestedPrimaries } = status;
-
-		return (
-			simulatedPrimaries !== undefined &&
-			requestedPrimaries !== undefined &&
-			simulatedPrimaries >= 0 &&
-			requestedPrimaries > 0
-		);
-	};
-
 	const progressValue = useMemo(() => {
 		if (!isJobDataValid(status)) {
 			return 0;
