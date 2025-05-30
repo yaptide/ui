@@ -97,7 +97,10 @@ export function SimulationProgressBar({ status }: Readonly<SimulationProgressBar
 						backgroundSize:
 							status.taskState === StatusState.RUNNING ? '20px 20px' : undefined,
 						backgroundRepeat: 'repeat',
-						animation: 'moveDots 1s linear infinite'
+						animation:
+							status.taskState === StatusState.RUNNING
+								? 'moveDots 1s linear infinite'
+								: undefined
 					}}
 					color={statusToColor(status.taskState ?? StatusState.PENDING)}
 					variant='determinate'

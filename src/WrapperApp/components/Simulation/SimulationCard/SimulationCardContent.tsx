@@ -17,7 +17,8 @@ import {
 	JobUnknownStatus,
 	SimulationInfo,
 	StatusState,
-	TaskStatusData
+	TaskStatusData,
+	TaskUnknownStatus
 } from '../../../../types/ResponseTypes';
 import { SimulationProgressBar } from '../SimulationProgressBar';
 import { useRows } from './RowUtils';
@@ -58,10 +59,10 @@ export const SimulationCardContent = ({
 		return jobStatus.simulatedPrimaries! / jobStatus.requestedPrimaries!;
 	};
 
-	const calculateSimulationProgress = (simulationStatus: any): number => {
-		const jobs_num = simulationStatus.jobTasksStatus.length ?? 1;
-		const jobs_completion_sum = simulationStatus.jobTasksStatus
-			.map((status: any) => fractionOfSimulatedPrimaries(status))
+	const calculateSimulationProgress = (jobTasksStatus: TaskUnknownStatus[]): number => {
+		const jobs_num = jobTasksStatus.length ?? 1;
+		const jobs_completion_sum = jobTasksStatus
+			.map(status => fractionOfSimulatedPrimaries(status))
 			.reduce((acc: number, job_completion: number) => acc + job_completion, 0);
 
 		return (jobs_completion_sum / jobs_num) * 100;
@@ -69,7 +70,8 @@ export const SimulationCardContent = ({
 
 	useEffect(() => {
 		if (simulationStatus.jobTasksStatus) {
-			setSimulationProgressPercent(calculateSimulationProgress(simulationStatus));
+			const jobTasksStatus = simulationStatus.jobTasksStatus;
+			setSimulationProgressPercent(calculateSimulationProgress(jobTasksStatus));
 		}
 	}, [simulationStatus, setSimulationProgressPercent]);
 
