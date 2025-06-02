@@ -9,14 +9,18 @@ import {
 	TableContainer
 } from '@mui/material';
 import { Theme } from '@mui/material/styles';
+import { useEffect, useState } from 'react';
 
 import {
 	currentJobStatusData,
 	currentTaskStatusData,
 	JobUnknownStatus,
 	SimulationInfo,
-	StatusState
+	StatusState,
+	TaskStatusData,
+	TaskUnknownStatus
 } from '../../../../types/ResponseTypes';
+import { isJobDataValid } from '../../../../util/jobDataValidation';
 import { SimulationProgressBar } from '../SimulationProgressBar';
 import { useRows } from './RowUtils';
 
@@ -30,6 +34,35 @@ export const SimulationCardContent = ({
 	statusColor
 }: SimulationCardContentProps) => {
 	const rows = useRows(simulationStatus);
+	const [simulationProgressPercent, setSimulationProgressPercent] = useState(0);
+
+	const fractionOfSimulatedPrimaries = (jobStatus: TaskStatusData): number => {
+		if (!isJobDataValid(jobStatus)) {
+			return 0;
+		}
+
+		return jobStatus.simulatedPrimaries! / jobStatus.requestedPrimaries!;
+	};
+
+	const calculateSimulationProgress = (jobTasksStatus: TaskUnknownStatus[]): number => {
+		if (jobTasksStatus.length === 0) {
+			return 0;
+		}
+
+		const jobsNum = jobTasksStatus.length;
+		const jobsCompletionSum = jobTasksStatus
+			.map(status => fractionOfSimulatedPrimaries(status))
+			.reduce((acc: number, jobCompletion: number) => acc + jobCompletion, 0);
+
+		return (jobsCompletionSum / jobsNum) * 100;
+	};
+
+	useEffect(() => {
+		if (simulationStatus.jobTasksStatus) {
+			const jobTasksStatus = simulationStatus.jobTasksStatus;
+			setSimulationProgressPercent(calculateSimulationProgress(jobTasksStatus));
+		}
+	}, [simulationStatus, setSimulationProgressPercent]);
 
 	return (
 		<CardContent sx={{ flexGrow: 1 }}>
@@ -115,26 +148,7 @@ export const SimulationCardContent = ({
 								animationDuration: '4s'
 							}
 						}}
-						valueBuffer={
-							Math.max(
-								...simulationStatus.jobTasksStatus.map(
-									status =>
-										(status?.simulatedPrimaries ?? 0) /
-										(status?.requestedPrimaries ?? 1)
-								)
-							) * 100
-						}
-						value={
-							(simulationStatus.jobTasksStatus.reduce(
-								(acc, status) =>
-									acc +
-									(status?.simulatedPrimaries ?? 0) /
-										(status?.requestedPrimaries ?? 1),
-								0 as number
-							) /
-								(simulationStatus.jobTasksStatus.length ?? 1)) *
-							100
-						}
+						value={simulationProgressPercent}
 					/>
 					<Box
 						sx={{

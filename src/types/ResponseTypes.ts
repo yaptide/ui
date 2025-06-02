@@ -169,7 +169,7 @@ type TaskAllStatuses =
  * To make it easier to read, it is a shorthand for `Partial<ObjUnionToKeyUnion<TaskAllStatuses>>`
  * and should equal to it in all cases.
  */
-type TaskUnknownStatus = {
+export type TaskUnknownStatus = {
 	startTime?: string | undefined;
 	endTime?: string | undefined;
 	taskState?:
