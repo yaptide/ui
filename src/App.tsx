@@ -1,3 +1,5 @@
+import './util/logging/loggingWrapper';
+
 import { createTheme } from '@mui/material';
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -78,6 +80,8 @@ function App() {
 		[prefersDarkMode]
 	);
 	window.THREE ??= THREE;
+
+	console.log('YAPTIDE application started with theme:', theme);
 
 	return (
 		<ServiceTree
