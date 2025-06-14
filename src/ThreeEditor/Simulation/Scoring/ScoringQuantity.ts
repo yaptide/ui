@@ -35,97 +35,20 @@ export class ScoringQuantity
 	readonly notHidable = true;
 	private _configurator: ScoringQuantityConfigurator;
 
-	get keyword(): Scoring.SCORING_KEYWORD {
-		return this._configurator.get('keyword') as Scoring.SCORING_KEYWORD;
-	}
-
-	set keyword(keyword: Scoring.SCORING_KEYWORD) {
-		this._configurator.set('keyword', keyword);
-	}
-
-	get modifiers(): DifferentialModifier[] {
-		return this._configurator.get('modifiers') as DifferentialModifier[];
-	}
-
-	get primaries(): number {
-		return this._configurator.get('primaries') as number;
-	}
-
-	set primaries(value: number) {
-		this._configurator.set('primaries', value);
-	}
-
-	get hasPrimaries(): boolean {
-		return this._configurator.isEnabled('primaries');
-	}
-
-	set hasPrimaries(value: boolean) {
-		this._configurator.setEnabled('primaries', value);
-	}
-
-	set selectedModifier(mod: DifferentialModifier | undefined) {
-		this._configurator.set('selectedModifier', mod);
-	}
-
-	get selectedModifier(): DifferentialModifier | undefined {
-		return this._configurator.get('selectedModifier') as DifferentialModifier | undefined;
-	}
-
-	set hasFilter(value: boolean) {
-		this._configurator.setEnabled('filter', value);
-	}
-
-	get hasFilter(): boolean {
-		return this._configurator.isEnabled('filter');
-	}
-
-	get filter(): ScoringFilter | null {
-		return this._configurator.get('filter') as ScoringFilter | null;
-	}
-
-	set filter(filter: ScoringFilter | null) {
-		this._configurator.set('filter', filter);
-	}
-
-	get medium(): Scoring.MEDIUM | null {
-		return this._configurator.get('medium') as Scoring.MEDIUM | null;
-	}
-
-	set medium(medium: Scoring.MEDIUM | null) {
-		this._configurator.set('medium', medium);
-	}
-
-	get hasRescale(): boolean {
-		return this._configurator.isEnabled('rescale');
-	}
-
-	set hasRescale(value: boolean) {
-		this._configurator.setEnabled('rescale', value);
-	}
-
-	set rescale(rescale: number) {
-		this._configurator.set('rescale', rescale);
-	}
-
-	get rescale(): number {
-		return this._configurator.get('rescale') as number;
-	}
-
-	get hasMaterial(): boolean {
-		return this._configurator.isEnabled('simulationMaterial');
-	}
-
-	set hasMaterial(value: boolean) {
-		this._configurator.setEnabled('simulationMaterial', value);
-	}
-
-	get material(): SimulationMaterial {
-		return this._configurator.get('simulationMaterial') as SimulationMaterial;
-	}
-
-	get materialPropertiesOverrides(): OverrideMap {
-		return this._configurator.get('materialPropertiesOverrides') as OverrideMap;
-	}
+	// @see ConfigurationPresets.applyShieldHitPreset
+	keyword?: Scoring.SCORING_KEYWORD;
+	hasFilter?: boolean;
+	filter?: ScoringFilter;
+	hasPrimaries?: boolean;
+	primaries?: number;
+	hasRescale?: boolean;
+	rescale?: number;
+	selectedModifier?: DifferentialModifier | undefined;
+	medium?: Scoring.MEDIUM | null;
+	modifiers?: DifferentialModifier[];
+	hasMaterial?: boolean;
+	material?: SimulationMaterial | undefined;
+	materialPropertiesOverrides?: OverrideMap;
 
 	addModifier(modifier: DifferentialModifier): void {
 		const modifiers = this._configurator.get('modifiers') as ModifiersConfigurationElement;
@@ -156,13 +79,26 @@ export class ScoringQuantity
 		);
 	}
 
-	constructor(
-		editor: YaptideEditor,
-		keyword: Scoring.SCORING_KEYWORD = Scoring.SCORING_KEYWORD.Dose
-	) {
+	private upCaseFirst(s: string) {
+		return s.substring(0, 1).toUpperCase() + s.substring(1);
+	}
+
+	constructor(editor: YaptideEditor) {
 		super(editor, 'Quantity', 'Quantity');
 		this._configurator = new ScoringQuantityConfigurator();
 		applyShieldHitPreset(editor, this, this._configurator);
+
+		for (const key of this._configurator.keys()) {
+			Object.defineProperty(this, key, {
+				get: () => this._configurator.get(key),
+				set: (value: any) => this._configurator.set(key, value)
+			});
+
+			Object.defineProperty(this, `has${this.upCaseFirst(key)}`, {
+				get: () => this._configurator.isEnabled(key),
+				set: (value: boolean) => this._configurator.setEnabled(key, value)
+			});
+		}
 	}
 
 	toSerialized(): ScoringQuantityJSON {
@@ -184,7 +120,7 @@ export class ScoringQuantity
 	}
 
 	duplicate(): ScoringQuantity {
-		const duplicated = new ScoringQuantity(this.editor, this.keyword);
+		const duplicated = new ScoringQuantity(this.editor);
 
 		const generatedUuid = duplicated.uuid;
 		duplicated.fromSerialized(this.toSerialized());

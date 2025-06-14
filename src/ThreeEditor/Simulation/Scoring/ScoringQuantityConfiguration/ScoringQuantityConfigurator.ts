@@ -8,6 +8,10 @@ export class ScoringQuantityConfigurator implements SerializableState<object> {
 		this.configuration = {};
 	}
 
+	keys(): string[] {
+		return Object.keys(this.configuration);
+	}
+
 	add(name: string, configuration: ConfigurationElement) {
 		this.configuration[name] = configuration;
 	}

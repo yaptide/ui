@@ -34,12 +34,12 @@ export function ScoringQuantityMaterialOverrides(props: {
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const visibleFlag =
-		isScoringQuantity(watchedObject) && watchedObject.keyword && watchedObject.hasMaterial;
+		isScoringQuantity(watchedObject) && watchedObject.keyword! && watchedObject.hasMaterial!;
 
 	const { state: editorPhysic } = useSmartWatchEditorState(editor, editor.physic);
 
 	const stoppingPowerAvailable = (object: ScoringQuantity) =>
-		object.material.icru in CustomStoppingPowerModels[editorPhysic.stoppingPowerTable];
+		object.material!.icru in CustomStoppingPowerModels[editorPhysic.stoppingPowerTable];
 
 	return (
 		<PropertiesCategory
@@ -51,12 +51,12 @@ export function ScoringQuantityMaterialOverrides(props: {
 						min={0.0}
 						unit='g/cm^3'
 						label='Custom density'
-						value={watchedObject.materialPropertiesOverrides.density.value}
+						value={watchedObject.materialPropertiesOverrides!.density.value}
 						onChange={v => {
 							const newValue = {
 								...watchedObject.materialPropertiesOverrides,
 								density: {
-									...watchedObject.materialPropertiesOverrides.density,
+									...watchedObject.materialPropertiesOverrides!.density,
 									value: v
 								}
 							};
@@ -70,12 +70,12 @@ export function ScoringQuantityMaterialOverrides(props: {
 								)
 							);
 						}}
-						enabled={watchedObject.materialPropertiesOverrides.density.override}
+						enabled={watchedObject.materialPropertiesOverrides!.density.override}
 						onChangeEnabled={v => {
 							const newValue = {
 								...watchedObject.materialPropertiesOverrides,
 								density: {
-									...watchedObject.materialPropertiesOverrides.density,
+									...watchedObject.materialPropertiesOverrides!.density,
 									override: v
 								}
 							};
@@ -100,7 +100,7 @@ export function ScoringQuantityMaterialOverrides(props: {
 									: ''
 							}`}
 							enabled={
-								watchedObject.materialPropertiesOverrides.customStoppingPower.value
+								watchedObject.materialPropertiesOverrides!.customStoppingPower.value
 							}
 							onChangeEnabled={v => {
 								const newValue = {

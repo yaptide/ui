@@ -27,7 +27,7 @@ export function applyShieldHitPreset(
 	);
 	configurator.add('keyword', keywordElement);
 	const materialElement = new MaterialConfigurationElement(editor, scoringOutput, keywordElement);
-	configurator.add('simulationMaterial', materialElement);
+	configurator.add('material', materialElement);
 	configurator.add(
 		'materialPropertiesOverrides',
 		new MaterialPropertiesOverridesConfigurationElement(materialElement)
