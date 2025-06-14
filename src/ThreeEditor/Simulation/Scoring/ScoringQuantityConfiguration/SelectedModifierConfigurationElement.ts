@@ -11,6 +11,14 @@ export default class SelectedModifierConfigurationElement implements Configurati
 		this.modifiersConfig = modifiersConfig;
 	}
 
+	setEnabled(enabled: boolean) {
+		throw new Error('Element cannot be disabled');
+	}
+
+	isEnabled(): boolean {
+		return true;
+	}
+
 	get() {
 		return this.value ? this.modifiersConfig.getByUuid(this.value) : undefined;
 	}

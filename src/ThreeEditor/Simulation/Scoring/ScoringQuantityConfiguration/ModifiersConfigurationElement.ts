@@ -23,6 +23,14 @@ export default class ModifiersConfigurationElement implements ConfigurationEleme
 		this.scoringOutput = scoringOutput;
 	}
 
+	setEnabled(enabled: boolean) {
+		throw new Error('Element cannot be disabled');
+	}
+
+	isEnabled(): boolean {
+		return true;
+	}
+
 	get() {
 		return Object.values(this.modifiers);
 	}

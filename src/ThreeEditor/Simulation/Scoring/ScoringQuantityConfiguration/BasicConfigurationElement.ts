@@ -12,6 +12,14 @@ export default class BasicConfigurationElement<T extends string | number | boole
 		this.value = value;
 	}
 
+	setEnabled(value: boolean): void {
+		throw new Error('Element cannot be disabled');
+	}
+
+	isEnabled(): boolean {
+		return true;
+	}
+
 	get() {
 		return this.value;
 	}

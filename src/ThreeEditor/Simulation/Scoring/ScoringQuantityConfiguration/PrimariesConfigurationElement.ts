@@ -1,17 +1,32 @@
+import SimulationMaterial from '../../Materials/SimulationMaterial';
 import ConfigurationElement from './ConfigurationElement';
 import { ScoringQuantityConfigurator } from './ScoringQuantityConfigurator';
 
 export default class PrimariesConfigurationElement implements ConfigurationElement {
 	private value: number | null;
-	private readonly hasPrimariesConfig: ConfigurationElement;
+	private hasPrimaries: boolean;
+	private readonly simulationMaterialConfig: ConfigurationElement;
 
-	constructor(hasPrimariesConfig: ConfigurationElement) {
+	constructor(simulationMaterialConfig: ConfigurationElement) {
 		this.value = null;
-		this.hasPrimariesConfig = hasPrimariesConfig;
+		this.hasPrimaries = false;
+		this.simulationMaterialConfig = simulationMaterialConfig;
+	}
+
+	setEnabled(enabled: boolean) {
+		const material = this.simulationMaterialConfig.get() as SimulationMaterial;
+
+		if (enabled && !this.hasPrimaries) material.increment();
+		else if (!enabled && this.hasPrimaries) material.decrement();
+		this.hasPrimaries = enabled;
+	}
+
+	isEnabled(): boolean {
+		return this.hasPrimaries;
 	}
 
 	get() {
-		return this.hasPrimariesConfig.get() ? (this.value ?? 0) : 0;
+		return this.hasPrimaries ? (this.value ?? 0) : 0;
 	}
 
 	set(value: unknown) {
@@ -19,13 +34,14 @@ export default class PrimariesConfigurationElement implements ConfigurationEleme
 	}
 
 	applySerialize(configurator: ScoringQuantityConfigurator) {
-		return this.hasPrimariesConfig.get() ? { primaries: this.value } : {};
+		return this.hasPrimaries ? { primaries: this.value } : {};
 	}
 
 	applyDeserialize(
 		configurator: ScoringQuantityConfigurator,
 		json: { [key: string]: any }
 	): void {
+		this.hasPrimaries = !!json.primaries;
 		this.value = json.primaries ?? null;
 	}
 }

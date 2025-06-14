@@ -12,6 +12,18 @@ export class ScoringQuantityConfigurator implements SerializableState<object> {
 		this.configuration[name] = configuration;
 	}
 
+	isEnabled(name: string) {
+		return this.configuration.hasOwnProperty(name) && this.configuration[name].isEnabled();
+	}
+
+	setEnabled(name: string, enabled: boolean) {
+		if (!this.configuration.hasOwnProperty(name)) {
+			throw new Error(`Unknown configuration option "${name}"`);
+		}
+
+		this.configuration[name].setEnabled(enabled);
+	}
+
 	set(name: string, value: unknown) {
 		if (!this.configuration.hasOwnProperty(name)) {
 			throw new Error(`Unknown configuration option "${name}"`);

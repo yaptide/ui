@@ -56,11 +56,11 @@ export class ScoringQuantity
 	}
 
 	get hasPrimaries(): boolean {
-		return this._configurator.get('hasPrimaries') as boolean;
+		return this._configurator.isEnabled('primaries');
 	}
 
 	set hasPrimaries(value: boolean) {
-		this._configurator.set('hasPrimaries', value);
+		this._configurator.setEnabled('primaries', value);
 	}
 
 	set selectedModifier(mod: DifferentialModifier | undefined) {
@@ -72,11 +72,11 @@ export class ScoringQuantity
 	}
 
 	set hasFilter(value: boolean) {
-		this._configurator.set('hasFilter', value);
+		this._configurator.setEnabled('filter', value);
 	}
 
 	get hasFilter(): boolean {
-		return this._configurator.get('hasFilter') as boolean;
+		return this._configurator.isEnabled('filter');
 	}
 
 	get filter(): ScoringFilter | null {
@@ -96,11 +96,11 @@ export class ScoringQuantity
 	}
 
 	get hasRescale(): boolean {
-		return this._configurator.get('hasRescale') as boolean;
+		return this._configurator.isEnabled('rescale');
 	}
 
 	set hasRescale(value: boolean) {
-		this._configurator.set('hasRescale', value);
+		this._configurator.setEnabled('rescale', value);
 	}
 
 	set rescale(rescale: number) {
@@ -112,11 +112,11 @@ export class ScoringQuantity
 	}
 
 	get hasMaterial(): boolean {
-		return this._configurator.get('hasMaterial') as boolean;
+		return this._configurator.isEnabled('simulationMaterial');
 	}
 
-	set hasMaterial(hasMaterial: boolean) {
-		this._configurator.set('hasMaterial', hasMaterial);
+	set hasMaterial(value: boolean) {
+		this._configurator.setEnabled('simulationMaterial', value);
 	}
 
 	get material(): SimulationMaterial {

@@ -7,17 +7,29 @@ import {
 	SimulationZoneJSON
 } from '../../Base/SimulationZone';
 import SimulationMaterial from '../../Materials/SimulationMaterial';
+import { ScoringOutput } from '../ScoringOutput';
+import * as Scoring from '../ScoringOutputTypes';
 import ConfigurationElement from './ConfigurationElement';
 import { ScoringQuantityConfigurator } from './ScoringQuantityConfigurator';
 
-export default class SimulationMaterialConfigurationElement implements ConfigurationElement {
+export default class MaterialConfigurationElement implements ConfigurationElement {
 	private editor: YaptideEditor;
+	private hasMaterial: boolean;
+	private scoringOutput: ScoringOutput | undefined;
+	private keywordConfig: ConfigurationElement;
 	private material: SimulationMaterial;
 	private _materialPropertiesOverrides: OverrideMap;
 	private usingCustomMaterial: boolean;
 
-	constructor(editor: YaptideEditor) {
+	constructor(
+		editor: YaptideEditor,
+		scoringOutput: ScoringOutput | undefined,
+		keywordConfig: ConfigurationElement
+	) {
 		this.editor = editor;
+		this.scoringOutput = scoringOutput;
+		this.keywordConfig = keywordConfig;
+		this.hasMaterial = false;
 		this.material = editor.materialManager.defaultMaterial;
 		this.usingCustomMaterial = false;
 		this._materialPropertiesOverrides = {
@@ -29,6 +41,26 @@ export default class SimulationMaterialConfigurationElement implements Configura
 		return Object.values<PropertyOverride>(this._materialPropertiesOverrides).some(
 			({ override }) => override
 		);
+	}
+
+	setEnabled(enabled: boolean): void {
+		this.hasMaterial = enabled;
+	}
+
+	isEnabled(): boolean {
+		const currentSimulator = this.editor.contextManager.currentSimulator;
+		const scoringType = this.scoringOutput?.scoringType ?? Scoring.SCORING_TYPE_ENUM.DETECTOR;
+
+		if (
+			Scoring.canChangeMaterialMedium(
+				currentSimulator,
+				scoringType,
+				this.keywordConfig.get() as Scoring.SCORING_KEYWORD
+			)
+		)
+			return this.hasMaterial;
+
+		return false;
 	}
 
 	set materialPropertiesOverrides(overrides: OverrideMap) {
@@ -86,7 +118,7 @@ export default class SimulationMaterialConfigurationElement implements Configura
 			};
 		}, {});
 
-		return configurator.get('hasMaterial')
+		return this.hasMaterial
 			? { materialUuid, materialPropertiesOverrides, customMaterial }
 			: {};
 	}

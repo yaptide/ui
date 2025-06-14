@@ -1,33 +1,38 @@
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { ScoringFilter } from '../ScoringFilter';
 import ConfigurationElement from './ConfigurationElement';
-import HasFilterConfigurationElement from './HasFilterConfigurationElement';
 import { ScoringQuantityConfigurator } from './ScoringQuantityConfigurator';
 
 export default class BasicConfigurationElement implements ConfigurationElement {
 	private editor: YaptideEditor;
-	private hasFilterConfig: HasFilterConfigurationElement;
+	private hasFilter: boolean;
 	private value: string | null;
 
-	constructor(editor: YaptideEditor, hasFilterConfig: HasFilterConfigurationElement) {
+	constructor(editor: YaptideEditor) {
 		this.editor = editor;
-		this.hasFilterConfig = hasFilterConfig;
+		this.hasFilter = false;
 		this.value = null;
 	}
 
+	setEnabled(enabled: boolean) {
+		this.hasFilter = enabled;
+	}
+
+	isEnabled() {
+		return this.hasFilter;
+	}
+
 	get() {
-		return this.hasFilterConfig.get()
-			? this.editor.scoringManager.getFilterByUuid(this.value ?? '')
-			: null;
+		return this.hasFilter ? this.editor.scoringManager.getFilterByUuid(this.value ?? '') : null;
 	}
 
 	set(value: unknown) {
 		this.value = (value as ScoringFilter | null)?.uuid ?? '';
-		this.hasFilterConfig.set(!!this.value.length);
+		this.hasFilter = !!this.value.length;
 	}
 
 	applySerialize(configurator: ScoringQuantityConfigurator) {
-		return this.hasFilterConfig.get() ? { filter: this.value } : {};
+		return this.hasFilter ? { filter: this.value } : {};
 	}
 
 	applyDeserialize(

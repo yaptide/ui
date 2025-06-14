@@ -3,24 +3,35 @@ import { ScoringQuantityConfigurator } from './ScoringQuantityConfigurator';
 
 export default class RescaleConfigurationElement implements ConfigurationElement {
 	private value: number;
-	private readonly hasRescaleConfig: ConfigurationElement;
+	private hasRescale: boolean;
 
-	constructor(hasRescaleConfig: ConfigurationElement) {
+	constructor() {
 		this.value = 1;
-		this.hasRescaleConfig = hasRescaleConfig;
+		this.hasRescale = false;
+	}
+
+	setEnabled(enabled: boolean) {
+		this.hasRescale = enabled;
+	}
+
+	isEnabled() {
+		return this.hasRescale;
 	}
 
 	get() {
-		return this.hasRescaleConfig.get() ? this.value : 1;
+		return this.hasRescale ? this.value : 1;
 	}
 
 	set(value: unknown) {
 		this.value = value as number;
-		this.hasRescaleConfig.set(this.hasRescaleConfig.get() || this.value !== 1);
+		this.hasRescale ||= this.value !== 1;
 	}
 
 	applySerialize(configurator: ScoringQuantityConfigurator) {
-		return { rescale: this.value };
+		return {
+			rescale: this.value,
+			hasRescale: this.hasRescale
+		};
 	}
 
 	applyDeserialize(
@@ -28,5 +39,6 @@ export default class RescaleConfigurationElement implements ConfigurationElement
 		json: { [key: string]: any }
 	): void {
 		this.value = json.rescale;
+		this.hasRescale = json.hasRescale;
 	}
 }

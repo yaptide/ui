@@ -1,14 +1,22 @@
 import ConfigurationElement from './ConfigurationElement';
+import MaterialConfigurationElement from './MaterialConfigurationElement';
 import { ScoringQuantityConfigurator } from './ScoringQuantityConfigurator';
-import SimulationMaterialConfigurationElement from './SimulationMaterialConfigurationElement';
 
 export default class MaterialPropertiesOverridesConfigurationElement
 	implements ConfigurationElement
 {
 	private readonly materialConfig;
 
-	constructor(materialConfig: SimulationMaterialConfigurationElement) {
+	constructor(materialConfig: MaterialConfigurationElement) {
 		this.materialConfig = materialConfig;
+	}
+
+	setEnabled(enabled: boolean) {
+		throw new Error('Element cannot be disabled');
+	}
+
+	isEnabled(): boolean {
+		return true;
 	}
 
 	get() {

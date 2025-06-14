@@ -21,6 +21,14 @@ export default class MediumConfigurationElement implements ConfigurationElement 
 		this.scoringOutput = scoringOutput;
 	}
 
+	setEnabled(enabled: boolean): void {
+		throw new Error('Element cannot be disabled');
+	}
+
+	isEnabled(): boolean {
+		return true;
+	}
+
 	get() {
 		const currentSimulator = this.editor.contextManager.currentSimulator;
 		const scoringType = this.scoringOutput?.scoringType ?? Scoring.SCORING_TYPE_ENUM.DETECTOR;
