@@ -1,5 +1,3 @@
-import './util/logging/loggingWrapper';
-
 import { createTheme } from '@mui/material';
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
