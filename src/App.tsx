@@ -79,6 +79,8 @@ function App() {
 	);
 	window.THREE ??= THREE;
 
+	console.log('YAPTIDE application started with theme:', theme);
+
 	return (
 		<ServiceTree
 			services={[

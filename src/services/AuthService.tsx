@@ -14,6 +14,7 @@ import {
 } from '../types/ResponseTypes';
 import { hasFields } from '../util/customGuards';
 import useIntervalAsync from '../util/hooks/useIntervalAsync';
+import { initializeLogging } from '../util/logging/loggingWrapper';
 import { snakeToCamelCase } from '../util/Notation/Notation';
 import { useDialog } from './DialogService';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
@@ -301,6 +302,8 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 					setUser({ username });
 					setRefreshInterval(getRefreshDelay(accessExp));
 					enqueueSnackbar('Logged in.', { variant: 'success' });
+
+					initializeLogging(backendUrl);
 				})
 				.catch((_: HTTPError) => {
 					enqueueSnackbar('Login failed.', { variant: 'error' });
