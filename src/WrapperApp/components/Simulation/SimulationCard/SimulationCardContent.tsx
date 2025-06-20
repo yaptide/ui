@@ -36,12 +36,17 @@ export const SimulationCardContent = ({
 	const rows = useRows(simulationStatus);
 	const [simulationProgressPercent, setSimulationProgressPercent] = useState(0);
 
-	const fractionOfSimulatedPrimaries = (jobStatus: TaskStatusData): number => {
-		if (!isJobDataValid(jobStatus)) {
-			return 0;
-		}
+	const percentOfSimulatedPrimaries = (
+		requestedPrimariesSum: number,
+		simulatedPrimariesSum: number
+	): number => {
+		return requestedPrimariesSum > 0
+			? (simulatedPrimariesSum / requestedPrimariesSum) * 100
+			: 0;
+	};
 
-		return jobStatus.simulatedPrimaries! / jobStatus.requestedPrimaries!;
+	const getValidatedPrimaries = (primariesNumber: number | undefined): number => {
+		return primariesNumber ?? 0;
 	};
 
 	const calculateSimulationProgress = (jobTasksStatus: TaskUnknownStatus[]): number => {
@@ -49,12 +54,19 @@ export const SimulationCardContent = ({
 			return 0;
 		}
 
-		const jobsNum = jobTasksStatus.length;
-		const jobsCompletionSum = jobTasksStatus
-			.map(status => fractionOfSimulatedPrimaries(status))
-			.reduce((acc: number, jobCompletion: number) => acc + jobCompletion, 0);
+		const requestedPrimariesSum = jobTasksStatus.reduce(
+			(acc: number, taskStatus: TaskUnknownStatus) =>
+				acc + getValidatedPrimaries(taskStatus.requestedPrimaries),
+			0
+		);
 
-		return (jobsCompletionSum / jobsNum) * 100;
+		const simulatedPrimariesSum = jobTasksStatus.reduce(
+			(acc: number, taskStatus: TaskUnknownStatus) =>
+				acc + getValidatedPrimaries(taskStatus.simulatedPrimaries),
+			0
+		);
+
+		return percentOfSimulatedPrimaries(requestedPrimariesSum, simulatedPrimariesSum);
 	};
 
 	useEffect(() => {
