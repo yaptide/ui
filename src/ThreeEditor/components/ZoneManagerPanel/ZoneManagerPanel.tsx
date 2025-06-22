@@ -280,7 +280,6 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 		return {
 			'id': `vertical-tab-${index}`,
 			'aria-controls': `vertical-tabpanel-${index}`,
-			'key': index,
 			'label': `#${index + 1}`,
 			'sx': { minWidth: 30, borderRadius: 0 }
 		};
@@ -324,7 +323,12 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 						theme.palette.mode === 'dark' ? 'background.paper' : 'secondary.light'
 				}}>
 				{algebraDataRef.current.map((row, id) => {
-					return <Tab {...a11yProps(id)} />;
+					return (
+						<Tab
+							key={id}
+							{...a11yProps(id)}
+						/>
+					);
 				})}
 				<ActionTab>
 					<Tooltip
