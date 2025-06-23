@@ -10,6 +10,7 @@ import {
 import { SerializableState } from '../../../js/EditorJson';
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { SimulationElement } from '../../Base/SimulationElement';
+import { WORLD_ZONE_DEFAULT_MATERIAL_ICRU } from '../../Materials/materials';
 import SimulationMaterial from '../../Materials/SimulationMaterial';
 import { WorldZoneHelper } from './WorldZoneHelper';
 
@@ -111,7 +112,7 @@ export class WorldZone extends SimulationElement implements SerializableState<Wo
 		this.editor = editor;
 		this.signals = editor.signals;
 
-		this._simulationMaterial = editor.materialManager.defaultMaterial;
+		this._simulationMaterial = editor.materialManager.worldZoneDefaultMaterial; // Use VACUUM as default
 		this._simulationMaterial.increment();
 
 		// watch for changes on material color
@@ -219,7 +220,8 @@ export class WorldZone extends SimulationElement implements SerializableState<Wo
 
 		this._material.color.set(_defaultColor);
 		this.name = 'World Zone';
-		this._simulationMaterial = this.editor.materialManager.defaultMaterial;
+		this._simulationMaterial =
+			this.editor.materialManager.materials[String(WORLD_ZONE_DEFAULT_MATERIAL_ICRU)]; // Reset to VACUUM
 		this.geometryType = 'BoxGeometry';
 		this.helper.reset();
 	}

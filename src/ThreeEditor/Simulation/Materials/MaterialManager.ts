@@ -6,7 +6,7 @@ import { CounterMap } from '../../../util/CounterMap/CounterMap';
 import { SerializableState } from '../../js/EditorJson';
 import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor.js';
 import { SimulationElementJSON } from '../Base/SimulationElement';
-import { DEFAULT_MATERIAL_ICRU, MATERIALS } from './materials';
+import { DEFAULT_MATERIAL_ICRU, MATERIALS,WORLD_ZONE_DEFAULT_MATERIAL_ICRU } from './materials';
 import SimulationMaterial, {
 	isSimulationMaterial,
 	SimulationMaterialJSON
@@ -89,6 +89,16 @@ export class MaterialManager
 		if (defaultMaterial) return defaultMaterial;
 		defaultMaterial = this.prefabMaterials[DEFAULT_MATERIAL_ICRU];
 		this._customMaterials[DEFAULT_MATERIAL_ICRU] = defaultMaterial;
+
+		return defaultMaterial;
+	}
+
+	get worldZoneDefaultMaterial(): SimulationMaterial {
+		let defaultMaterial = this._customMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU];
+
+		if (defaultMaterial) return defaultMaterial;
+		defaultMaterial = this.prefabMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU];
+		this._customMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU] = defaultMaterial;
 
 		return defaultMaterial;
 	}
