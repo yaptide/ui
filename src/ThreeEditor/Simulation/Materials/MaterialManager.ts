@@ -6,7 +6,7 @@ import { CounterMap } from '../../../util/CounterMap/CounterMap';
 import { SerializableState } from '../../js/EditorJson';
 import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor.js';
 import { SimulationElementJSON } from '../Base/SimulationElement';
-import { DEFAULT_MATERIAL_ICRU, MATERIALS,WORLD_ZONE_DEFAULT_MATERIAL_ICRU } from './materials';
+import { DEFAULT_MATERIAL_ICRU, MATERIALS, WORLD_ZONE_DEFAULT_MATERIAL_ICRU } from './materials';
 import SimulationMaterial, {
 	isSimulationMaterial,
 	SimulationMaterialJSON
@@ -185,9 +185,22 @@ export class MaterialManager
 	toSerialized(): MaterialManagerJSON {
 		const { uuid, name, managerType: type, metadata } = this;
 		const selectedMaterials = this.selectedMaterials.toSerialized();
+
+		const worldZoneMaterial = this._customMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU];
+		const worldZoneMaterialUuid = worldZoneMaterial?.uuid;
+
 		const materials = Object.entries(this._customMaterials)
-			.map(([_icru, material]) => material.toSerialized())
-			.filter(({ uuid }) => this.selectedMaterials.has(uuid));
+			.map(([_icru, material]) => {
+				const serialized = material.toSerialized();
+
+				return serialized;
+			})
+			.filter(({ uuid: matUuid }) => {
+				const isWorldZoneMaterial = worldZoneMaterialUuid === matUuid;
+				const isSelected = this.selectedMaterials.has(matUuid);
+
+				return isSelected || isWorldZoneMaterial;
+			});
 
 		return {
 			uuid,
