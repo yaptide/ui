@@ -1,13 +1,14 @@
 import ky from 'ky';
-// import { useConfig } from '../../config/ConfigService';
 
+import { DEDUP_WINDOW_MS, FLUSH_INTERVAL,MAX_LOGS } from '../../config/ConfigService';
+ // Assuming these constants are defined in a separate file
 let backendUrl = '';
 const logBuffer = [];
-const MAX_LOGS = 20;
-const FLUSH_INTERVAL = 5000;
+// const MAX_LOGS = 20;
+// const FLUSH_INTERVAL = 5000;
 
 const logDedupMap = new Map();
-const DEDUP_WINDOW_MS = 10000; // 10 seconds
+// const DEDUP_WINDOW_MS = 10000; // 10 seconds
 
 const originalConsole = {
 	log: console.log,
@@ -50,10 +51,22 @@ const flushLogs = async () => {
 		});
 };
 
+export function stopLogSending() {
+	flushLogs(); // Ensure any remaining logs are sent before stopping
+
+	if (intervalId) {
+		clearInterval(intervalId);
+		intervalId = null;
+	}
+
+	window.removeEventListener('beforeunload', flushLogs);
+	originalConsole.log('Stopped log sending');
+}
+
 let intervalId;
 
 export const initializeLogging = url => {
-	originalConsole.log('Initializing logging', url);
+	originalConsole.log('Initializing logging');
 
 	backendUrl = url;
 
