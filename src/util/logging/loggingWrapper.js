@@ -37,7 +37,7 @@ const flushLogs = async () => {
 	const logsToSend = [...logBuffer];
 	logBuffer.length = 0;
 
-	ky.post(backendUrl, {
+	ky.post(backendUrl + '/logs', {
 		json: { logs: logsToSend },
 		credentials: 'include'
 	})
@@ -74,7 +74,7 @@ export const initializeLogging = url => {
 					level: level,
 					message: message,
 					browser: navigator.userAgent, // this may require some sanitization
-					user_ip: '' // not sure hot to fetch the IP
+					user_ip: '' // not sure how to fetch the IP
 				});
 
 				if (logBuffer.length >= MAX_LOGS) flushLogs();
