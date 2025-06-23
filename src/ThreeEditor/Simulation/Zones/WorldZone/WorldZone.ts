@@ -220,8 +220,8 @@ export class WorldZone extends SimulationElement implements SerializableState<Wo
 
 		this._material.color.set(_defaultColor);
 		this.name = 'World Zone';
-		this._simulationMaterial =
-			this.editor.materialManager.materials[String(WORLD_ZONE_DEFAULT_MATERIAL_ICRU)]; // Reset to VACUUM
+		this._simulationMaterial = this.editor.materialManager.worldZoneDefaultMaterial; // Reset to VACUUM
+		this._simulationMaterial.increment();
 		this.geometryType = 'BoxGeometry';
 		this.helper.reset();
 	}
