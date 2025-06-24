@@ -35,6 +35,11 @@ export class ScoringQuantity
 	readonly notHidable = true;
 	private _configurator: ScoringQuantityConfigurator;
 
+	// Fields exposed to UI in Scoring Quantity
+	// They are declared here for typescript to see them
+	// but actually configured dynamically with getter/setter in class constructor
+	// These need to exist as fields for `SetValueCommand` and `useSmartWatchEditorState` to work.
+	// Also, some are configured only when certain simulator is selected.
 	// @see ConfigurationPresets.applyShieldHitPreset
 	keyword?: Scoring.SCORING_KEYWORD;
 	hasFilter?: boolean;
