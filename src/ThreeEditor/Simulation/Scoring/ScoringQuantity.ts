@@ -51,7 +51,7 @@ export class ScoringQuantity
 	materialPropertiesOverrides?: OverrideMap;
 
 	addModifier(modifier: DifferentialModifier): void {
-		const modifiers = this._configurator.get('modifiers') as ModifiersConfigurationElement;
+		const modifiers = this._configurator.raw('modifiers') as ModifiersConfigurationElement;
 		modifiers.add(modifier);
 	}
 
@@ -89,11 +89,13 @@ export class ScoringQuantity
 		applyShieldHitPreset(editor, this, this._configurator);
 
 		for (const key of this._configurator.keys()) {
+			// add getters and setters for properties i.e `foo`
 			Object.defineProperty(this, key, {
 				get: () => this._configurator.get(key),
 				set: (value: any) => this._configurator.set(key, value)
 			});
 
+			// add getters and setters for property toggles i.e `hasFoo`
 			Object.defineProperty(this, `has${this.upCaseFirst(key)}`, {
 				get: () => this._configurator.isEnabled(key),
 				set: (value: boolean) => this._configurator.setEnabled(key, value)

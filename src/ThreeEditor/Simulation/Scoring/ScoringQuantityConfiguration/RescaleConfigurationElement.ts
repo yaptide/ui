@@ -29,8 +29,8 @@ export default class RescaleConfigurationElement implements ConfigurationElement
 
 	applySerialize(configurator: ScoringQuantityConfigurator) {
 		return {
-			rescale: this.value,
-			hasRescale: this.hasRescale
+			hasRescale: this.hasRescale,
+			...(this.hasRescale ? { rescale: this.value } : {})
 		};
 	}
 
@@ -38,7 +38,7 @@ export default class RescaleConfigurationElement implements ConfigurationElement
 		configurator: ScoringQuantityConfigurator,
 		json: { [key: string]: any }
 	): void {
-		this.value = json.rescale;
 		this.hasRescale = json.hasRescale;
+		this.value = this.hasRescale && !!json.rescale ? json.rescale : 1;
 	}
 }

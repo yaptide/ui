@@ -6,6 +6,7 @@ import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetMaterialColorCommand } from '../../../../js/commands/SetMaterialColorCommand';
 import { SetMaterialValueCommand } from '../../../../js/commands/SetMaterialValueCommand';
+import { SetQuantityOverriddenMaterialCommand } from '../../../../js/commands/SetQuantityOverriddenMaterialCommand';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { SetZoneMaterialCommand } from '../../../../js/commands/SetZoneMaterialCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
@@ -47,6 +48,21 @@ export function ScoringQuantityMaterialOverrides(props: {
 			visible={visibleFlag}>
 			{visibleFlag && (
 				<>
+					<PropertyField label='Simulation'>
+						<MaterialSelect
+							materials={editor.materialManager.materials}
+							value={watchedObject.material!.icru + ''}
+							onChange={(_, v) => {
+								editor.execute(
+									new SetQuantityOverriddenMaterialCommand(
+										editor,
+										watchedObject.object,
+										v
+									)
+								);
+							}}
+						/>
+					</PropertyField>
 					<ConditionalNumberPropertyField
 						min={0.0}
 						unit='g/cm^3'
