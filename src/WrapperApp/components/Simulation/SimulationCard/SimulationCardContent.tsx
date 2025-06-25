@@ -17,10 +17,8 @@ import {
 	JobUnknownStatus,
 	SimulationInfo,
 	StatusState,
-	TaskStatusData,
 	TaskUnknownStatus
 } from '../../../../types/ResponseTypes';
-import { isJobDataValid } from '../../../../util/jobDataValidation';
 import { SimulationProgressBar } from '../SimulationProgressBar';
 import { useRows } from './RowUtils';
 
@@ -36,12 +34,17 @@ export const SimulationCardContent = ({
 	const rows = useRows(simulationStatus);
 	const [simulationProgressPercent, setSimulationProgressPercent] = useState(0);
 
-	const fractionOfSimulatedPrimaries = (jobStatus: TaskStatusData): number => {
-		if (!isJobDataValid(jobStatus)) {
-			return 0;
-		}
+	const percentOfSimulatedPrimaries = (
+		requestedPrimariesSum: number,
+		simulatedPrimariesSum: number
+	): number => {
+		return requestedPrimariesSum > 0
+			? Math.min(100, (simulatedPrimariesSum / requestedPrimariesSum) * 100)
+			: 0;
+	};
 
-		return jobStatus.simulatedPrimaries! / jobStatus.requestedPrimaries!;
+	const getValidatedPrimaries = (primariesNumber: number | undefined): number => {
+		return primariesNumber ?? 0;
 	};
 
 	const calculateSimulationProgress = (jobTasksStatus: TaskUnknownStatus[]): number => {
@@ -49,12 +52,20 @@ export const SimulationCardContent = ({
 			return 0;
 		}
 
-		const jobsNum = jobTasksStatus.length;
-		const jobsCompletionSum = jobTasksStatus
-			.map(status => fractionOfSimulatedPrimaries(status))
-			.reduce((acc: number, jobCompletion: number) => acc + jobCompletion, 0);
+		const { requestedPrimariesSum, simulatedPrimariesSum } = jobTasksStatus.reduce(
+			(
+				acc: { requestedPrimariesSum: number; simulatedPrimariesSum: number },
+				taskStatus: TaskUnknownStatus
+			) => {
+				acc.requestedPrimariesSum += getValidatedPrimaries(taskStatus.requestedPrimaries);
+				acc.simulatedPrimariesSum += getValidatedPrimaries(taskStatus.simulatedPrimaries);
 
-		return (jobsCompletionSum / jobsNum) * 100;
+				return acc;
+			},
+			{ requestedPrimariesSum: 0, simulatedPrimariesSum: 0 }
+		);
+
+		return percentOfSimulatedPrimaries(requestedPrimariesSum, simulatedPrimariesSum);
 	};
 
 	useEffect(() => {
@@ -145,7 +156,7 @@ export const SimulationCardContent = ({
 							'& .MuiLinearProgress-dashed': {
 								overflow: 'hidden',
 								backgroundSize: '5.75px 5.75px',
-								animationDuration: '4s'
+								animationDuration: '2s'
 							}
 						}}
 						value={simulationProgressPercent}
