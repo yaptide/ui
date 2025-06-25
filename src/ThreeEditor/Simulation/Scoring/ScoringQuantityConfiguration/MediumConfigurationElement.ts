@@ -50,7 +50,9 @@ export default class MediumConfigurationElement implements ConfigurationElement 
 	}
 
 	applySerialize(configurator: ScoringQuantityConfigurator) {
-		return { medium: this.value };
+		const medium = this.get();
+
+		return medium ? { medium } : {};
 	}
 
 	applyDeserialize(
