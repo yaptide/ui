@@ -17,10 +17,8 @@ import {
 	JobUnknownStatus,
 	SimulationInfo,
 	StatusState,
-	TaskStatusData,
 	TaskUnknownStatus
 } from '../../../../types/ResponseTypes';
-import { isJobDataValid } from '../../../../util/jobDataValidation';
 import { SimulationProgressBar } from '../SimulationProgressBar';
 import { useRows } from './RowUtils';
 
@@ -41,7 +39,7 @@ export const SimulationCardContent = ({
 		simulatedPrimariesSum: number
 	): number => {
 		return requestedPrimariesSum > 0
-			? (simulatedPrimariesSum / requestedPrimariesSum) * 100
+			? Math.min(100, (simulatedPrimariesSum / requestedPrimariesSum) * 100)
 			: 0;
 	};
 
@@ -54,16 +52,17 @@ export const SimulationCardContent = ({
 			return 0;
 		}
 
-		const requestedPrimariesSum = jobTasksStatus.reduce(
-			(acc: number, taskStatus: TaskUnknownStatus) =>
-				acc + getValidatedPrimaries(taskStatus.requestedPrimaries),
-			0
-		);
+		const { requestedPrimariesSum, simulatedPrimariesSum } = jobTasksStatus.reduce(
+			(
+				acc: { requestedPrimariesSum: number; simulatedPrimariesSum: number },
+				taskStatus: TaskUnknownStatus
+			) => {
+				acc.requestedPrimariesSum += getValidatedPrimaries(taskStatus.requestedPrimaries);
+				acc.simulatedPrimariesSum += getValidatedPrimaries(taskStatus.simulatedPrimaries);
 
-		const simulatedPrimariesSum = jobTasksStatus.reduce(
-			(acc: number, taskStatus: TaskUnknownStatus) =>
-				acc + getValidatedPrimaries(taskStatus.simulatedPrimaries),
-			0
+				return acc;
+			},
+			{ requestedPrimariesSum: 0, simulatedPrimariesSum: 0 }
 		);
 
 		return percentOfSimulatedPrimaries(requestedPrimariesSum, simulatedPrimariesSum);
@@ -157,7 +156,7 @@ export const SimulationCardContent = ({
 							'& .MuiLinearProgress-dashed': {
 								overflow: 'hidden',
 								backgroundSize: '5.75px 5.75px',
-								animationDuration: '4s'
+								animationDuration: '2s'
 							}
 						}}
 						value={simulationProgressPercent}
