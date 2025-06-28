@@ -6,7 +6,7 @@ import { CounterMap } from '../../../util/CounterMap/CounterMap';
 import { SerializableState } from '../../js/EditorJson';
 import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor.js';
 import { SimulationElementJSON } from '../Base/SimulationElement';
-import { DEFAULT_MATERIAL_ICRU, MATERIALS } from './materials';
+import { DEFAULT_MATERIAL_ICRU, MATERIALS, WORLD_ZONE_DEFAULT_MATERIAL_ICRU } from './materials';
 import SimulationMaterial, {
 	isSimulationMaterial,
 	SimulationMaterialJSON
@@ -93,6 +93,16 @@ export class MaterialManager
 		return defaultMaterial;
 	}
 
+	get worldZoneDefaultMaterial(): SimulationMaterial {
+		let defaultMaterial = this._customMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU];
+
+		if (defaultMaterial) return defaultMaterial;
+		defaultMaterial = this.prefabMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU];
+		this._customMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU] = defaultMaterial;
+
+		return defaultMaterial;
+	}
+
 	selectedMaterials: CounterMap<string> = new CounterMap<string>();
 
 	getMaterialByUuid(uuid: string): SimulationMaterial | undefined {
@@ -151,10 +161,20 @@ export class MaterialManager
 		this.name = this._name = 'Material Manager';
 
 		[this.prefabMaterials, this.materialOptions] = this.createMaterialPrefabs();
+
+		// Initialize _customMaterials with essential materials that should always be available
+		this._customMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU] =
+			this.prefabMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU];
+		this._customMaterials[DEFAULT_MATERIAL_ICRU] = this.prefabMaterials[DEFAULT_MATERIAL_ICRU];
+
 		this.materialsProxy = new Proxy(this._customMaterials, this.materialsHandler);
 
 		this.signals = editor.signals;
 		this.signals.materialChanged.add(this.onMaterialChanged.bind(this));
+
+		console.log(
+			`[MaterialManager.constructor] Initialized with default materials, count: ${Object.keys(this._customMaterials).length}`
+		);
 	}
 
 	private onMaterialChanged(material: THREE.Material) {
@@ -170,14 +190,47 @@ export class MaterialManager
 	reset(): void {
 		this.selectedMaterials.clear();
 		this._customMaterials = {};
+
+		// Ensure default material and world zone material are added to _customMaterials
+		// This ensures that when a new empty project is created, these materials are available
+		this._customMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU] =
+			this.prefabMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU];
+		this._customMaterials[DEFAULT_MATERIAL_ICRU] = this.prefabMaterials[DEFAULT_MATERIAL_ICRU];
+
+		console.log(
+			`[MaterialManager.reset] Reset custom materials and added default and world zone materials, count: ${Object.keys(this._customMaterials).length}`
+		);
 	}
 
 	toSerialized(): MaterialManagerJSON {
 		const { uuid, name, managerType: type, metadata } = this;
 		const selectedMaterials = this.selectedMaterials.toSerialized();
+
+		const worldZoneMaterial = this._customMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU];
+		const worldZoneMaterialUuid = worldZoneMaterial?.uuid;
+		console.log(`[MaterialManager.toSerialized] worldZoneMaterial: ${worldZoneMaterialUuid}`);
+
 		const materials = Object.entries(this._customMaterials)
-			.map(([_icru, material]) => material.toSerialized())
-			.filter(({ uuid }) => this.selectedMaterials.has(uuid));
+			.map(([_icru, material]) => {
+				const serialized = material.toSerialized();
+				console.log(
+					`[MaterialManager.toSerialized] material: icru=${serialized.icru}, uuid=${serialized.uuid}`
+				);
+
+				return serialized;
+			})
+			.filter(({ uuid: matUuid }) => {
+				const isWorldZoneMaterial = worldZoneMaterialUuid === matUuid;
+				const isSelected = this.selectedMaterials.has(matUuid);
+				console.log(
+					`[MaterialManager.toSerialized] filter: uuid=${matUuid}, selectedMaterials.has=${isSelected}, isWorldZoneMaterial=${isWorldZoneMaterial}`
+				);
+				console.log(`Result: ${isSelected || isWorldZoneMaterial}`);
+
+				return isSelected || isWorldZoneMaterial;
+			});
+
+		console.log(`[MaterialManager.toSerialized] materials: ${materials.length} items`);
 
 		return {
 			uuid,
@@ -201,6 +254,10 @@ export class MaterialManager
 
 		this.uuid = uuid;
 		this.name = name;
+
+		// Clear existing materials and assign the deserialized ones
+		this._customMaterials = {};
+
 		Object.assign(
 			this._customMaterials,
 			materials.reduce(
@@ -210,6 +267,27 @@ export class MaterialManager
 				}),
 				{}
 			)
+		);
+
+		// Ensure that default and world zone materials are available regardless
+		// of whether they were included in the serialized data
+		const hasWorldZoneMaterial = WORLD_ZONE_DEFAULT_MATERIAL_ICRU in this._customMaterials;
+		const hasDefaultMaterial = DEFAULT_MATERIAL_ICRU in this._customMaterials;
+
+		if (!hasWorldZoneMaterial) {
+			this._customMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU] =
+				this.prefabMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU];
+			console.log(`[MaterialManager.fromSerialized] Added missing world zone material`);
+		}
+
+		if (!hasDefaultMaterial) {
+			this._customMaterials[DEFAULT_MATERIAL_ICRU] =
+				this.prefabMaterials[DEFAULT_MATERIAL_ICRU];
+			console.log(`[MaterialManager.fromSerialized] Added missing default material`);
+		}
+
+		console.log(
+			`[MaterialManager.fromSerialized] Loaded materials: ${Object.keys(this._customMaterials).length} items`
 		);
 
 		return this;
