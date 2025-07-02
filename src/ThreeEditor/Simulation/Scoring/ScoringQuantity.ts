@@ -1,3 +1,4 @@
+import { SimulatorType } from '../../../types/RequestTypes';
 import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
@@ -7,7 +8,10 @@ import { ScoringFilter } from './ScoringFilter';
 import * as Scoring from './ScoringOutputTypes';
 import { SCORING_TYPE_ENUM } from './ScoringOutputTypes';
 import { DifferentialJSON, DifferentialModifier } from './ScoringQtyModifiers';
-import { applyShieldHitPreset } from './ScoringQuantityConfiguration/ConfigurationPresets';
+import {
+	applyGeant4Preset,
+	applyShieldHitPreset
+} from './ScoringQuantityConfiguration/ConfigurationPresets';
 import ModifiersConfigurationElement from './ScoringQuantityConfiguration/ModifiersConfigurationElement';
 import { ScoringQuantityConfigurator } from './ScoringQuantityConfiguration/ScoringQuantityConfigurator';
 
@@ -91,7 +95,12 @@ export class ScoringQuantity
 	constructor(editor: YaptideEditor) {
 		super(editor, 'Quantity', 'Quantity');
 		this._configurator = new ScoringQuantityConfigurator();
-		applyShieldHitPreset(editor, this, this._configurator);
+
+		if (editor.contextManager.currentSimulator !== SimulatorType.GEANT4) {
+			applyShieldHitPreset(editor, this, this._configurator);
+		} else {
+			applyGeant4Preset(editor, this, this._configurator);
+		}
 
 		for (const key of this._configurator.keys()) {
 			// add getters and setters for properties i.e `foo`

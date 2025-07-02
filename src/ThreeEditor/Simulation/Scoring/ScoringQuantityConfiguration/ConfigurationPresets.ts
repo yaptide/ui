@@ -50,3 +50,15 @@ export function applyShieldHitPreset(
 	);
 	configurator.add('primaries', new PrimariesConfigurationElement(materialElement));
 }
+
+export function applyGeant4Preset(
+	editor: YaptideEditor,
+	scoringQuantity: ScoringQuantity,
+	configurator: ScoringQuantityConfigurator
+) {
+	configurator.add('filter', new FilterConfigurationElement(editor));
+	configurator.add(
+		'keyword',
+		new BasicConfigurationElement<string>('keyword', Scoring.SCORING_KEYWORD.DoseGy)
+	);
+}

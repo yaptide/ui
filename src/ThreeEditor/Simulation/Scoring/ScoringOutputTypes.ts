@@ -1,6 +1,7 @@
 import { SimulatorType } from '../../../types/RequestTypes';
 
 export enum SCORING_KEYWORD {
+	// common
 	'1MeVNEq' = '1MeVNEq',
 	'Alanine' = 'Alanine',
 	'AvgBeta' = 'AvgBeta',
@@ -8,11 +9,9 @@ export enum SCORING_KEYWORD {
 	'Dose' = 'Dose',
 	'DoseEqv' = 'DoseEqv',
 	'DDD' = 'DDD',
-	'DoseGy' = 'DoseGy',
 	'dLET' = 'dLET',
 	'dQ' = 'dQ',
 	'dQeff' = 'dQeff',
-	'Energy' = 'Energy',
 	'EqvDose' = 'EqvDose',
 	'Fluence' = 'Fluence',
 	'MATERIAL' = 'MATERIAL',
@@ -26,10 +25,19 @@ export enum SCORING_KEYWORD {
 	'dZ2Beta2' = 'dZ2Beta2',
 	'tZ2Beta2' = 'tZ2Beta2',
 	'dZeff2Beta2' = 'dZeff2Beta2',
-	'tZeff2Beta2' = 'tZeff2Beta2'
+	'tZeff2Beta2' = 'tZeff2Beta2',
+	// Geant4 + common
+	'DoseGy' = 'DoseGy',
+	'Energy' = 'Energy',
+	// Geant4 specific
+	'CellCharge' = 'cellCharge',
+	'CellFlux' = 'CellFlux',
+	'FlatSurfaceCurrent' = 'FlatSurfaceCurrent',
+	'FlatSurfaceFlux' = 'FlatSurfaceFlux'
 }
 
 export const SCORING_KEYWORD_DESCRIPTION = {
+	// common
 	'1MeVNEq':
 		'1-MeV neutron equivalent fluence [cm−2]. Only scored for neutrons, protons and pions.Multiply with 2.037e-3 to get DNIEL in [MeV / g]',
 	'Alanine':
@@ -39,11 +47,9 @@ export const SCORING_KEYWORD_DESCRIPTION = {
 	'Dose': 'Dose [MeV/g]',
 	'DoseEqv': 'Dose-Equivalent (see notes below) [Sv]',
 	'DDD': 'as Dose, but specially for TRiP98 depth-dose kernel file generation',
-	'DoseGy': 'Dose [Gy]',
 	'dLET': 'Dose-averaged LET [MeV/cm]',
 	'dQ': 'Dose-averaged Q',
 	'dQeff': 'Dose-averaged Qeff',
-	'Energy': 'Total amount of energy deposited [MeV]',
 	'EqvDose': 'Equivalent dose (see notes below) [Sv]',
 	'Fluence': 'Fluence [/cm2]',
 	'MATERIAL': 'Maps material ID as assigned in geo.dat. Useful for debugging geometries.',
@@ -57,7 +63,15 @@ export const SCORING_KEYWORD_DESCRIPTION = {
 	'dZ2Beta2': 'Dose-averaged Z²/beta²',
 	'tZ2Beta2': 'Track-averaged Z²/beta²',
 	'dZeff2Beta2': 'Dose-averaged Zeff²/beta²',
-	'tZeff2Beta2': 'Track-averaged Zeff²/beta²'
+	'tZeff2Beta2': 'Track-averaged Zeff²/beta²',
+	// Geant4 + common
+	'DoseGy': 'Dose [Gy]',
+	'Energy': 'Total amount of energy deposited [MeV]',
+	// Geant4 specific
+	'CellCharge': 'Deposited charge in the volume',
+	'CellFlux': 'Sum of track length divided by the volume[MeV]',
+	'FlatSurfaceCurrent': 'Surface current on -z surface to be used only for Box [MeV]',
+	'FlatSurfaceFlux': 'Surface flux (1/cos(theta)) on -z surface to be used only for Box [MeV]'
 } as const;
 
 export enum SCORING_MODIFIERS {
@@ -580,8 +594,14 @@ export const SCORING_OPTIONS: IScoringOptions = {
 		}
 	},
 	[SimulatorType.GEANT4]: {
-		DETECTOR: {},
-		ZONE: {}
+		DETECTOR: {
+			DoseGy: { configuration: new Set([]), modifiers: new Set([]) },
+			Energy: { configuration: new Set([]), modifiers: new Set([]) },
+			CellCharge: { configuration: new Set([]), modifiers: new Set([]) },
+			CellFlux: { configuration: new Set([]), modifiers: new Set([]) },
+			FlatSurfaceCurrent: { configuration: new Set([]), modifiers: new Set([]) },
+			FlatSurfaceFlux: { configuration: new Set([]), modifiers: new Set([]) }
+		}
 	}
 };
 
