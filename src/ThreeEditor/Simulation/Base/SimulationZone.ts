@@ -7,33 +7,32 @@ import SimulationMaterial, { SimulationMaterialJSON } from '../Materials/Simulat
 import { SimulationSceneChild, SimulationSceneContainer } from './SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from './SimulationElement';
 
-export type SimulationZoneJSON = Omit<
-	SimulationElementJSON & {
-		materialUuid?: string;
-		materialPropertiesOverrides?: Partial<MaterialOverridable>;
-		customMaterial?: SimulationMaterialJSON & {
-			originalMaterialUuid: string;
-		};
-		visible: boolean;
-	},
-	never
->;
+export type SimulationZoneMaterialJSON = {
+	materialUuid?: string;
+	materialPropertiesOverrides?: Partial<MaterialOverridable>;
+	customMaterial?: SimulationMaterialJSON & {
+		originalMaterialUuid: string;
+	};
+	visible: boolean;
+};
 
-interface MaterialOverridable {
+export type SimulationZoneJSON = Omit<SimulationElementJSON & SimulationZoneMaterialJSON, never>;
+
+export interface MaterialOverridable {
 	density: number;
 	customStoppingPower: boolean;
 }
 
-type PropertyOverride<T = unknown> = {
+export type PropertyOverride<T = unknown> = {
 	override: boolean;
 	value: T;
 };
 
-type OverrideMap = {
+export type OverrideMap = {
 	[Key in keyof MaterialOverridable]: PropertyOverride<MaterialOverridable[Key]>;
 };
 
-const _get_default = (material: SimulationMaterial) => {
+export const getDefaultMaterialPropertiesOverrides = (material: SimulationMaterial) => {
 	return {
 		materialPropertiesOverrides: {
 			density: {
@@ -99,7 +98,7 @@ export abstract class SimulationZone
 
 	private resetCustomMaterial(): void {
 		this.materialPropertiesOverrides = {
-			..._get_default(this.material).materialPropertiesOverrides
+			...getDefaultMaterialPropertiesOverrides(this.material).materialPropertiesOverrides
 		};
 	}
 
@@ -137,7 +136,7 @@ export abstract class SimulationZone
 		this.type = type;
 		this.material.increment();
 		this._materialPropertiesOverrides = {
-			..._get_default(this.material).materialPropertiesOverrides
+			...getDefaultMaterialPropertiesOverrides(this.material).materialPropertiesOverrides
 		};
 	}
 
@@ -208,7 +207,8 @@ export abstract class SimulationZone
 					};
 				},
 				{
-					..._get_default(this.material).materialPropertiesOverrides
+					...getDefaultMaterialPropertiesOverrides(this.material)
+						.materialPropertiesOverrides
 				}
 			)
 		};

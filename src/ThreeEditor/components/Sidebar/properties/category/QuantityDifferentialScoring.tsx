@@ -40,7 +40,7 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 				getQuantityModifiersOptions(
 					editor.contextManager.currentSimulator,
 					watchedObject.getScoringType(),
-					watchedObject.keyword
+					watchedObject.keyword!
 				)?.size ?? 0
 			);
 		}
@@ -58,7 +58,6 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 		return 0;
 	};
 
-	let keyword = watchedObject.keyword;
 	let currentSimulator = editor.contextManager.currentSimulator;
 	let scoringType: SCORING_TYPE_ENUM = SCORING_TYPE_ENUM.DETECTOR;
 
@@ -77,11 +76,11 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 							sx={{ width: '100%' }}
 							variant='contained'
 							disabled={
-								watchedObject.modifiers.length >= maxNumberOfModifiers() ||
+								watchedObject.modifiers!.length >= maxNumberOfModifiers() ||
 								numberOfModifiers() === 0
 							}
 							onClick={() => {
-								if (watchedObject.modifiers.length >= maxNumberOfModifiers())
+								if (watchedObject.modifiers!.length >= maxNumberOfModifiers())
 									return;
 								editor.execute(
 									new AddDifferentialModifierCommand(editor, watchedObject.object)
@@ -104,7 +103,7 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 							);
 						}}
 						value={watchedObject.selectedModifier?.uuid ?? null}
-						options={watchedObject.modifiers}
+						options={watchedObject.modifiers!}
 					/>
 					{watchedObject.selectedModifier && (
 						<DifferentialConfigurationField
@@ -114,7 +113,11 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 							binsNumber={watchedObject.selectedModifier.binsNumber}
 							logCheckbox={watchedObject.selectedModifier.isLog}
 							options={Array.from(
-								getQuantityModifiersOptions(currentSimulator, scoringType, keyword)
+								getQuantityModifiersOptions(
+									currentSimulator,
+									scoringType,
+									watchedObject.keyword!
+								)
 							).reduce(
 								(acc, key) => {
 									acc[key] = key;
