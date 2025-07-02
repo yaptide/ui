@@ -23,7 +23,7 @@ export function applyShieldHitPreset(
 	configurator.add('rescale', new RescaleConfigurationElement());
 	const keywordElement = new BasicConfigurationElement<string>(
 		'keyword',
-		scoringOutput?.scoringType ?? Scoring.SCORING_TYPE_ENUM.DETECTOR
+		Scoring.SCORING_KEYWORD.Dose
 	);
 	configurator.add('keyword', keywordElement);
 	const materialElement = new MaterialConfigurationElement(editor, scoringOutput, keywordElement);
