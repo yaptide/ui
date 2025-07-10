@@ -13,7 +13,6 @@ export enum SCORING_KEYWORD {
 	'dQ' = 'dQ',
 	'dQeff' = 'dQeff',
 	'EqvDose' = 'EqvDose',
-	'Fluence' = 'Fluence',
 	'MATERIAL' = 'MATERIAL',
 	'NEqvDose' = 'NEqvDose',
 	'NKERMA' = 'NKERMA',
@@ -29,11 +28,9 @@ export enum SCORING_KEYWORD {
 	// Geant4 + common
 	'DoseGy' = 'DoseGy',
 	'Energy' = 'Energy',
-	// Geant4 specific
-	'CellCharge' = 'cellCharge',
-	'CellFlux' = 'CellFlux',
-	'FlatSurfaceCurrent' = 'FlatSurfaceCurrent',
-	'FlatSurfaceFlux' = 'FlatSurfaceFlux'
+	'Fluence' = 'Fluence',
+	// Geant4 only
+	'KineticEnergySpectrum' = 'Fluence [/cm2] wrt. kinetic energy [MeV]'
 }
 
 export const SCORING_KEYWORD_DESCRIPTION = {
@@ -51,7 +48,6 @@ export const SCORING_KEYWORD_DESCRIPTION = {
 	'dQ': 'Dose-averaged Q',
 	'dQeff': 'Dose-averaged Qeff',
 	'EqvDose': 'Equivalent dose (see notes below) [Sv]',
-	'Fluence': 'Fluence [/cm2]',
 	'MATERIAL': 'Maps material ID as assigned in geo.dat. Useful for debugging geometries.',
 	'NEqvDose': 'Equivalent dose from neutron kerma (see notes below) [Sv]',
 	'NKERMA': 'Neutron Kerma in [Gy]',
@@ -67,11 +63,9 @@ export const SCORING_KEYWORD_DESCRIPTION = {
 	// Geant4 + common
 	'DoseGy': 'Dose [Gy]',
 	'Energy': 'Total amount of energy deposited [MeV]',
-	// Geant4 specific
-	'CellCharge': 'Deposited charge in the volume',
-	'CellFlux': 'Sum of track length divided by the volume[MeV]',
-	'FlatSurfaceCurrent': 'Surface current on -z surface to be used only for Box [MeV]',
-	'FlatSurfaceFlux': 'Surface flux (1/cos(theta)) on -z surface to be used only for Box [MeV]'
+	'Fluence': 'Fluence [/cm2]',
+	// Geant4 only
+	'KineticEnergySpectrum': 'Fluence [/cm2] wrt. kinetic energy [MeV]'
 } as const;
 
 export enum SCORING_MODIFIERS {
@@ -597,10 +591,8 @@ export const SCORING_OPTIONS: IScoringOptions = {
 		DETECTOR: {
 			DoseGy: { configuration: new Set([]), modifiers: new Set([]) },
 			Energy: { configuration: new Set([]), modifiers: new Set([]) },
-			CellCharge: { configuration: new Set([]), modifiers: new Set([]) },
-			CellFlux: { configuration: new Set([]), modifiers: new Set([]) },
-			FlatSurfaceCurrent: { configuration: new Set([]), modifiers: new Set([]) },
-			FlatSurfaceFlux: { configuration: new Set([]), modifiers: new Set([]) }
+			Fluence: { configuration: new Set([]), modifiers: new Set([]) },
+			KineticEnergySpectrum: { configuration: new Set([]), modifiers: new Set([]) }
 		}
 	}
 };

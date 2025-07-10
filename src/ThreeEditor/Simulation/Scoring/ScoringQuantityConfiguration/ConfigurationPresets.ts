@@ -61,4 +61,25 @@ export function applyGeant4Preset(
 		'keyword',
 		new BasicConfigurationElement<string>('keyword', Scoring.SCORING_KEYWORD.DoseGy)
 	);
+
+	configurator.add(
+		'histogramNBins',
+		new BasicConfigurationElement<number>('histogramNBins', 100)
+	);
+	configurator.add('histogramMin', new BasicConfigurationElement<number>('histogramMin', 0));
+	configurator.add('histogramMax', new BasicConfigurationElement<number>('histogramMax', 1000));
+	configurator.add(
+		'histogramUnit',
+		new BasicConfigurationElement<string>('histogramUnit', 'MeV')
+	);
+
+	configurator.add(
+		'histogramXScale',
+		new BasicConfigurationElement<string>('histogramXScale', 'none')
+	);
+
+	configurator.add(
+		'histogramXBinScheme',
+		new BasicConfigurationElement<string>('histogramXBinScheme', 'linear')
+	);
 }

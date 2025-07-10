@@ -9,6 +9,7 @@ import { BeamConfiguration } from './category/BeamConfiguration';
 import { CommonOutputConfiguration } from './category/CommonOutputConfiguration';
 import { CustomFilterConfiguration } from './category/CustomFilterConfiguration';
 import { DetectorGrid } from './category/DetectorGrid';
+import { GeantHistogramConfiguration } from './category/GeantHistogramConfiguration';
 import { GeantOutputConfiguration } from './category/GeantOutputConfiguration';
 import { GeantScoringFilterConfiguration } from './category/GeantScoringFilterConfiguration';
 import { ObjectConfiguration } from './category/ObjectConfiguration';
@@ -54,6 +55,7 @@ export function PropertiesPanel(props: { boxProps: BoxProps; editor: YaptideEdit
 					<ZoneOperations {...panelProps} />
 					<ObjectMaterial {...panelProps} />
 					<ScoringQuantityMaterialOverrides {...panelProps} />
+					<GeantHistogramConfiguration {...panelProps} />
 				</>
 			)}
 		</Box>

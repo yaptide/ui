@@ -58,6 +58,13 @@ export class ScoringQuantity
 	hasMaterial?: boolean;
 	material?: SimulationMaterial | undefined;
 	materialPropertiesOverrides?: OverrideMap;
+	// @see ConfigurationPresets.applyGeant4Preset
+	histogramNBins?: number;
+	histogramMin?: number;
+	histogramMax?: number;
+	histogramUnit?: string;
+	histogramXScale?: string;
+	histogramXBinScheme?: string;
 
 	addModifier(modifier: DifferentialModifier): void {
 		const modifiers = this._configurator.raw('modifiers') as ModifiersConfigurationElement;
