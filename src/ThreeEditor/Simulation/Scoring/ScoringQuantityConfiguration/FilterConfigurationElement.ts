@@ -3,7 +3,7 @@ import { ScoringFilter } from '../ScoringFilter';
 import ConfigurationElement from './ConfigurationElement';
 import { ScoringQuantityConfigurator } from './ScoringQuantityConfigurator';
 
-export default class BasicConfigurationElement implements ConfigurationElement {
+export default class FilterConfigurationElement implements ConfigurationElement {
 	private editor: YaptideEditor;
 	private hasFilter: boolean;
 	private value: string | null;

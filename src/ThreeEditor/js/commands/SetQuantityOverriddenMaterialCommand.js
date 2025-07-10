@@ -3,7 +3,7 @@ import { Command } from '../Command';
 /**
  * @param editor Editor
  * @param object ScoringQuantity
- * @param newMaterialName String
+ * @param newIcru String
  * @constructor
  */
 class SetQuantityOverriddenMaterialCommand extends Command {
