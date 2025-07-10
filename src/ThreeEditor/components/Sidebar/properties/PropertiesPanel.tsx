@@ -3,10 +3,8 @@ import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { Object3D } from 'three';
 
-import { SimulatorType } from '../../../../types/RequestTypes';
 import { useSignal } from '../../../../util/hooks/signals';
 import { YaptideEditor } from '../../../js/YaptideEditor';
-import { ParticleFilter } from '../../../Simulation/Scoring/ParticleFilter';
 import { BeamConfiguration } from './category/BeamConfiguration';
 import { CustomFilterConfiguration } from './category/CustomFilterConfiguration';
 import { DetectorGrid } from './category/DetectorGrid';
@@ -19,6 +17,7 @@ import { OutputConfiguration } from './category/OutputConfiguration';
 import { ParticleFilterConfiguration } from './category/ParticleFilterConfiguration';
 import { QuantityConfiguration } from './category/QuantityConfiguration';
 import { QuantityDifferentialScoring } from './category/QuantityDifferentialScoring';
+import { ScoringQuantityMaterialOverrides } from './category/ScoringQuantityMaterialOverrides';
 import { ZoneOperations } from './category/ZoneOperations';
 
 export function PropertiesPanel(props: { boxProps: BoxProps; editor: YaptideEditor }) {
@@ -50,6 +49,7 @@ export function PropertiesPanel(props: { boxProps: BoxProps; editor: YaptideEdit
 					<DetectorGrid {...panelProps} />
 					<ZoneOperations {...panelProps} />
 					<ObjectMaterial {...panelProps} />
+					<ScoringQuantityMaterialOverrides {...panelProps} />
 				</>
 			)}
 		</Box>

@@ -47,12 +47,12 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 		<>
 			<ObjectSelectPropertyField
 				label='Quantity type'
-				value={watchedObject.keyword}
+				value={watchedObject.keyword!}
 				options={getQuantityTypeOptions(currentSimulator, scoringType)}
 				onChange={v => setQuantityValue('keyword', v.uuid)}
 			/>
 
-			{canChangeNKMedium(currentSimulator, scoringType, watchedObject.keyword) &&
+			{canChangeNKMedium(currentSimulator, scoringType, watchedObject.keyword!) &&
 				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
 					<>
 						<ObjectSelectPropertyField
@@ -64,16 +64,16 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 					</>
 				)}
 
-			{canChangeMaterialMedium(currentSimulator, scoringType, watchedObject.keyword) &&
+			{canChangeMaterialMedium(currentSimulator, scoringType, watchedObject.keyword!) &&
 				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
 					<BooleanPropertyField
 						label='Override material'
-						value={watchedObject.hasMaterial}
+						value={watchedObject.hasMaterial!}
 						onChange={v => setQuantityValue('hasMaterial', v)}
 					/>
 				)}
 
-			{canChangePrimaryMultiplier(currentSimulator, scoringType, watchedObject.keyword) &&
+			{canChangePrimaryMultiplier(currentSimulator, scoringType, watchedObject.keyword!) &&
 				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
 					<ConditionalNumberPropertyField
 						label='Primaries'
@@ -81,8 +81,8 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 						step={1}
 						min={0}
 						max={1000}
-						value={watchedObject.primaries}
-						enabled={watchedObject.hasPrimaries}
+						value={watchedObject.primaries!}
+						enabled={watchedObject.hasPrimaries!}
 						onChange={v => setQuantityValue('primaries', v)}
 						onChangeEnabled={v => setQuantityValue('hasPrimaries', v)}
 					/>
@@ -96,7 +96,7 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 					onChange={v =>
 						setQuantityValue('filter', editor.scoringManager.getFilterByUuid(v.uuid))
 					}
-					enabled={watchedObject.hasFilter}
+					enabled={watchedObject.hasFilter!}
 					onChangeEnabled={v => setQuantityValue('hasFilter', v)}
 				/>
 			)}
@@ -104,9 +104,9 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 			{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
 				<ConditionalNumberPropertyField
 					label='Rescale'
-					value={watchedObject.rescale}
+					value={watchedObject.rescale!}
 					onChange={v => setQuantityValue('rescale', v)}
-					enabled={watchedObject.hasRescale}
+					enabled={watchedObject.hasRescale!}
 					onChangeEnabled={v => setQuantityValue('hasRescale', v)}
 				/>
 			)}
