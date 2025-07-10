@@ -36,7 +36,7 @@
 		"material-ui-popup-state": "^5.3.6",
 		"notistack": "^3.0.2",
 		"object-hash": "^3.0.0",
-		"pyodide": "^0.27.7",
+		"pyodide": "^0.28.0",
 		"react": "^19.1.0",
 		"react-async-script": "^1.2.0",
 		"react-countdown": "^2.3.6",
