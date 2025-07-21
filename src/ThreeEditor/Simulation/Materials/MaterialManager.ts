@@ -171,10 +171,6 @@ export class MaterialManager
 
 		this.signals = editor.signals;
 		this.signals.materialChanged.add(this.onMaterialChanged.bind(this));
-
-		console.log(
-			`[MaterialManager.constructor] Initialized with default materials, count: ${Object.keys(this._customMaterials).length}`
-		);
 	}
 
 	private onMaterialChanged(material: THREE.Material) {
@@ -196,10 +192,6 @@ export class MaterialManager
 		this._customMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU] =
 			this.prefabMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU];
 		this._customMaterials[DEFAULT_MATERIAL_ICRU] = this.prefabMaterials[DEFAULT_MATERIAL_ICRU];
-
-		console.log(
-			`[MaterialManager.reset] Reset custom materials and added default and world zone materials, count: ${Object.keys(this._customMaterials).length}`
-		);
 	}
 
 	toSerialized(): MaterialManagerJSON {
@@ -208,24 +200,16 @@ export class MaterialManager
 
 		const worldZoneMaterial = this._customMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU];
 		const worldZoneMaterialUuid = worldZoneMaterial?.uuid;
-		console.log(`[MaterialManager.toSerialized] worldZoneMaterial: ${worldZoneMaterialUuid}`);
 
 		const materials = Object.entries(this._customMaterials)
 			.map(([_icru, material]) => {
 				const serialized = material.toSerialized();
-				console.log(
-					`[MaterialManager.toSerialized] material: icru=${serialized.icru}, uuid=${serialized.uuid}`
-				);
 
 				return serialized;
 			})
 			.filter(({ uuid: matUuid }) => {
 				const isWorldZoneMaterial = worldZoneMaterialUuid === matUuid;
 				const isSelected = this.selectedMaterials.has(matUuid);
-				console.log(
-					`[MaterialManager.toSerialized] filter: uuid=${matUuid}, selectedMaterials.has=${isSelected}, isWorldZoneMaterial=${isWorldZoneMaterial}`
-				);
-				console.log(`Result: ${isSelected || isWorldZoneMaterial}`);
 
 				return isSelected || isWorldZoneMaterial;
 			});
@@ -277,18 +261,12 @@ export class MaterialManager
 		if (!hasWorldZoneMaterial) {
 			this._customMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU] =
 				this.prefabMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU];
-			console.log(`[MaterialManager.fromSerialized] Added missing world zone material`);
 		}
 
 		if (!hasDefaultMaterial) {
 			this._customMaterials[DEFAULT_MATERIAL_ICRU] =
 				this.prefabMaterials[DEFAULT_MATERIAL_ICRU];
-			console.log(`[MaterialManager.fromSerialized] Added missing default material`);
 		}
-
-		console.log(
-			`[MaterialManager.fromSerialized] Loaded materials: ${Object.keys(this._customMaterials).length} items`
-		);
 
 		return this;
 	}
