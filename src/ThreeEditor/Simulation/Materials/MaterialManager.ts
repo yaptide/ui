@@ -214,8 +214,6 @@ export class MaterialManager
 				return isSelected || isWorldZoneMaterial;
 			});
 
-		console.log(`[MaterialManager.toSerialized] materials: ${materials.length} items`);
-
 		return {
 			uuid,
 			name,
