@@ -1,6 +1,6 @@
 import { Object3D } from 'three';
 
-import { PARTICLE_TYPES } from '../../../../../types/Particle';
+import { COMMON_PARTICLE_TYPES } from '../../../../../types/Particle';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
@@ -30,14 +30,14 @@ export function ParticleFilterConfiguration(props: { editor: YaptideEditor; obje
 				<>
 					<ParticleSelect
 						// Ignore the Heavy ions type
-						particles={PARTICLE_TYPES.filter(p => p.id !== 25)}
+						particles={COMMON_PARTICLE_TYPES.filter(p => p.id !== 25)}
 						value={watchedObject.particleData.id}
 						onChange={(_, v) =>
 							setValueCommand(
 								{
 									...watchedObject.particleData,
 									id: v,
-									name: PARTICLE_TYPES.find(p => p.id === v)?.name
+									name: COMMON_PARTICLE_TYPES.find(p => p.id === v)?.name
 								},
 								'particleData'
 							)

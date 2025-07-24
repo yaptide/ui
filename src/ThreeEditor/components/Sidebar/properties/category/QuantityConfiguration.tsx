@@ -43,75 +43,87 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 
 	let currentSimulator = editor.contextManager.currentSimulator;
 
-	const fields = (
-		<>
+	let fields = [
+		<ObjectSelectPropertyField
+			label='Quantity type'
+			value={watchedObject.keyword!}
+			options={getQuantityTypeOptions(currentSimulator, scoringType)}
+			onChange={v => setQuantityValue('keyword', v.uuid)}
+		/>
+	];
+
+	if (
+		canChangeNKMedium(currentSimulator, scoringType, watchedObject.keyword!) &&
+		editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT
+	) {
+		fields.push(
 			<ObjectSelectPropertyField
-				label='Quantity type'
-				value={watchedObject.keyword!}
-				options={getQuantityTypeOptions(currentSimulator, scoringType)}
-				onChange={v => setQuantityValue('keyword', v.uuid)}
+				label='Medium'
+				value={watchedObject.medium ?? MEDIUM_KEYWORD_OPTIONS.WATER}
+				options={MEDIUM_KEYWORD_OPTIONS}
+				onChange={v => setQuantityValue('medium', v.uuid)}
 			/>
+		);
+	}
 
-			{canChangeNKMedium(currentSimulator, scoringType, watchedObject.keyword!) &&
-				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
-					<>
-						<ObjectSelectPropertyField
-							label='Medium'
-							value={watchedObject.medium ?? MEDIUM_KEYWORD_OPTIONS.WATER}
-							options={MEDIUM_KEYWORD_OPTIONS}
-							onChange={v => setQuantityValue('medium', v.uuid)}
-						/>
-					</>
-				)}
+	if (
+		canChangeMaterialMedium(currentSimulator, scoringType, watchedObject.keyword!) &&
+		editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT
+	) {
+		fields.push(
+			<BooleanPropertyField
+				label='Override material'
+				value={watchedObject.hasMaterial!}
+				onChange={v => setQuantityValue('hasMaterial', v)}
+			/>
+		);
+	}
 
-			{canChangeMaterialMedium(currentSimulator, scoringType, watchedObject.keyword!) &&
-				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
-					<BooleanPropertyField
-						label='Override material'
-						value={watchedObject.hasMaterial!}
-						onChange={v => setQuantityValue('hasMaterial', v)}
-					/>
-				)}
+	if (
+		canChangePrimaryMultiplier(currentSimulator, scoringType, watchedObject.keyword!) &&
+		editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT
+	) {
+		fields.push(
+			<ConditionalNumberPropertyField
+				label='Primaries'
+				precision={0}
+				step={1}
+				min={0}
+				max={1000}
+				value={watchedObject.primaries!}
+				enabled={watchedObject.hasPrimaries!}
+				onChange={v => setQuantityValue('primaries', v)}
+				onChangeEnabled={v => setQuantityValue('hasPrimaries', v)}
+			/>
+		);
+	}
 
-			{canChangePrimaryMultiplier(currentSimulator, scoringType, watchedObject.keyword!) &&
-				editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
-					<ConditionalNumberPropertyField
-						label='Primaries'
-						precision={0}
-						step={1}
-						min={0}
-						max={1000}
-						value={watchedObject.primaries!}
-						enabled={watchedObject.hasPrimaries!}
-						onChange={v => setQuantityValue('primaries', v)}
-						onChangeEnabled={v => setQuantityValue('hasPrimaries', v)}
-					/>
-				)}
+	if (Object.keys(editor.scoringManager.getFilterOptions()).length > 0) {
+		fields.push(
+			<ConditionalObjectSelectPropertyField
+				label='Filter'
+				value={watchedObject.filter?.uuid ?? ''}
+				options={editor.scoringManager.getFilterOptions()}
+				onChange={v =>
+					setQuantityValue('filter', editor.scoringManager.getFilterByUuid(v.uuid))
+				}
+				enabled={watchedObject.hasFilter!}
+				onChangeEnabled={v => setQuantityValue('hasFilter', v)}
+			/>
+		);
+	}
 
-			{Object.keys(editor.scoringManager.getFilterOptions()).length > 0 && (
-				<ConditionalObjectSelectPropertyField
-					label='Filter'
-					value={watchedObject.filter?.uuid ?? ''}
-					options={editor.scoringManager.getFilterOptions()}
-					onChange={v =>
-						setQuantityValue('filter', editor.scoringManager.getFilterByUuid(v.uuid))
-					}
-					enabled={watchedObject.hasFilter!}
-					onChangeEnabled={v => setQuantityValue('hasFilter', v)}
-				/>
-			)}
-
-			{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
-				<ConditionalNumberPropertyField
-					label='Rescale'
-					value={watchedObject.rescale!}
-					onChange={v => setQuantityValue('rescale', v)}
-					enabled={watchedObject.hasRescale!}
-					onChangeEnabled={v => setQuantityValue('hasRescale', v)}
-				/>
-			)}
-		</>
-	);
+	if (editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT) {
+		fields.push(
+			<ConditionalNumberPropertyField
+				label='Rescale'
+				value={watchedObject.rescale!}
+				onChange={v => setQuantityValue('rescale', v)}
+				enabled={watchedObject.hasRescale!}
+				onChangeEnabled={v => setQuantityValue('hasRescale', v)}
+			/>
+		);
+	}
 
 	return (
 		<PropertiesCategory

@@ -1,13 +1,12 @@
-import { json } from 'node:stream/consumers';
-
 import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
-import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
+import { SimulationElement } from '../Base/SimulationElement';
 import { CustomFilterJSON } from './CustomFilter';
 import { FilterRule } from './FilterRule';
+import { GeantScoringFilterJSON } from './GeantScoringFilter';
 import { ParticleFilterJSON } from './ParticleFilter';
 
-export type FilterJSON = CustomFilterJSON | ParticleFilterJSON;
+export type FilterJSON = CustomFilterJSON | ParticleFilterJSON | GeantScoringFilterJSON;
 
 export class ScoringFilter extends SimulationElement implements SerializableState<FilterJSON> {
 	readonly isFilter: true = true;

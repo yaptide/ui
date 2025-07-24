@@ -6,14 +6,17 @@ import { Object3D } from 'three';
 import { useSignal } from '../../../../util/hooks/signals';
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { BeamConfiguration } from './category/BeamConfiguration';
+import { CommonOutputConfiguration } from './category/CommonOutputConfiguration';
 import { CustomFilterConfiguration } from './category/CustomFilterConfiguration';
 import { DetectorGrid } from './category/DetectorGrid';
+import { GeantHistogramConfiguration } from './category/GeantHistogramConfiguration';
+import { GeantOutputConfiguration } from './category/GeantOutputConfiguration';
+import { GeantScoringFilterConfiguration } from './category/GeantScoringFilterConfiguration';
 import { ObjectConfiguration } from './category/ObjectConfiguration';
 import { ObjectDimensions } from './category/ObjectDimensions';
 import { ObjectInfo } from './category/ObjectInfo';
 import { ObjectMaterial } from './category/ObjectMaterial';
 import { ObjectPlacement } from './category/ObjectPlacement';
-import { OutputConfiguration } from './category/OutputConfiguration';
 import { ParticleFilterConfiguration } from './category/ParticleFilterConfiguration';
 import { QuantityConfiguration } from './category/QuantityConfiguration';
 import { QuantityDifferentialScoring } from './category/QuantityDifferentialScoring';
@@ -40,7 +43,9 @@ export function PropertiesPanel(props: { boxProps: BoxProps; editor: YaptideEdit
 					<ObjectPlacement {...panelProps} />
 					<CustomFilterConfiguration {...panelProps} />
 					<ParticleFilterConfiguration {...panelProps} />
-					<OutputConfiguration {...panelProps} />
+					<GeantScoringFilterConfiguration {...panelProps} />
+					<CommonOutputConfiguration {...panelProps} />
+					<GeantOutputConfiguration {...panelProps} />
 					<QuantityConfiguration {...panelProps} />
 					<QuantityDifferentialScoring {...panelProps} />
 					<BeamConfiguration {...panelProps} />
@@ -50,6 +55,7 @@ export function PropertiesPanel(props: { boxProps: BoxProps; editor: YaptideEdit
 					<ZoneOperations {...panelProps} />
 					<ObjectMaterial {...panelProps} />
 					<ScoringQuantityMaterialOverrides {...panelProps} />
+					<GeantHistogramConfiguration {...panelProps} />
 				</>
 			)}
 		</Box>

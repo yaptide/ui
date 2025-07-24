@@ -3,12 +3,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 
 import { useDialog } from '../../../../../services/DialogService';
-import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { AddQuantityCommand } from '../../../../js/commands/AddQuantityCommand';
 import { SetOutputSettingsCommand } from '../../../../js/commands/SetOutputSettingsCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
-import { isOutput, ScoringOutput } from '../../../../Simulation/Scoring/ScoringOutput';
+import {
+	CommonScoringOutput,
+	isCommonOutput
+} from '../../../../Simulation/Scoring/CommonScoringOutput';
 import { SCORING_TYPE_ENUM } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import {
 	ObjectSelectOptionType,
@@ -17,12 +19,12 @@ import {
 import { PropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
-export function OutputConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
+export function CommonOutputConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 	const { open: changeScoringType } = useDialog('changeScoringType');
 	const { state: watchedObject } = useSmartWatchEditorState(
 		editor,
-		object as unknown as ScoringOutput
+		object as unknown as CommonScoringOutput
 	);
 
 	const [scoringType, setScoringType] = useState(
@@ -85,7 +87,7 @@ export function OutputConfiguration(props: { editor: YaptideEditor; object: Obje
 		}
 	};
 
-	const visibleFlag = isOutput(watchedObject);
+	const visibleFlag = isCommonOutput(watchedObject);
 
 	return (
 		<PropertiesCategory

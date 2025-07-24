@@ -10,9 +10,11 @@ import {
 	SphereFigure
 } from '../../ThreeEditor/Simulation/Figures/BasicFigures';
 import { CustomFilter } from '../../ThreeEditor/Simulation/Scoring/CustomFilter';
+import { GeantScoringFilter } from '../../ThreeEditor/Simulation/Scoring/GeantScoringFilter';
 import { ParticleFilter } from '../../ThreeEditor/Simulation/Scoring/ParticleFilter';
 import { ScoringFilter } from '../../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { isOutput, ScoringOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
+import createScoringOutput from '../../ThreeEditor/Simulation/Scoring/ScoringOutputFactory';
 import {
 	isScoringQuantity,
 	ScoringQuantity
@@ -161,30 +163,49 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 		]
 	];
 
-	const filtersTuple: CommandButtonTuple[] = [
-		[
-			'Particle filter',
-			() => {
-				return commandFactory.createAddCommand<'filter', ScoringFilter>(
-					'filter',
-					new ParticleFilter(editor),
-					editor.scoringManager
-				);
-			}
-		]
-	];
+	const filtersTuple: CommandButtonTuple[] = [];
 
-	if (editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT) {
-		filtersTuple.unshift([
-			'Custom filter',
-			() => {
-				return commandFactory.createAddCommand<'filter', ScoringFilter>(
-					'filter',
-					new CustomFilter(editor),
-					editor.scoringManager
-				);
-			}
-		]);
+	switch (editor.contextManager.currentSimulator) {
+		// @ts-ignore
+		case SimulatorType.SHIELDHIT:
+			filtersTuple.push([
+				'Custom filter',
+				() => {
+					return commandFactory.createAddCommand<'filter', ScoringFilter>(
+						'filter',
+						new CustomFilter(editor),
+						editor.scoringManager
+					);
+				}
+			]);
+		// fallthrough
+		case SimulatorType.FLUKA:
+		case SimulatorType.COMMON:
+			filtersTuple.push([
+				'Particle filter',
+				() => {
+					return commandFactory.createAddCommand<'filter', ScoringFilter>(
+						'filter',
+						new ParticleFilter(editor),
+						editor.scoringManager
+					);
+				}
+			]);
+
+			break;
+		case SimulatorType.GEANT4:
+			filtersTuple.push([
+				'New filter',
+				() => {
+					return commandFactory.createAddCommand<'filter', ScoringFilter>(
+						'filter',
+						new GeantScoringFilter(editor),
+						editor.scoringManager
+					);
+				}
+			]);
+
+			break;
 	}
 
 	const outputsTuple: CommandButtonTuple[] = [
@@ -193,7 +214,7 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 			() => {
 				return commandFactory.createAddCommand(
 					'output',
-					new ScoringOutput(editor),
+					createScoringOutput(editor) as ScoringOutput,
 					editor.scoringManager
 				);
 			}

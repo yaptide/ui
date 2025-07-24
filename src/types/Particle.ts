@@ -4,7 +4,7 @@ export type Particle = {
 	id: number;
 	name: string;
 };
-export const PARTICLE_TYPES = [
+export const COMMON_PARTICLE_TYPES = [
 	{
 		id: 1,
 		name: 'Neutron'
@@ -75,5 +75,52 @@ export const FLUKA_PARTICLE_TYPES = [
 	{
 		id: 26,
 		name: 'Electron'
+	}
+] as const satisfies readonly ParticleType[];
+
+export const GEANT4_PARTICLE_TYPES = [
+	{
+		id: 1,
+		name: 'Neutron'
+	},
+	{
+		id: 2,
+		name: 'Proton'
+	},
+	{
+		id: 3,
+		name: 'Photon'
+	},
+	{
+		id: 4,
+		name: 'Electron'
+	},
+	{
+		id: 5,
+		name: 'Positron'
+	},
+	{
+		id: 6,
+		name: 'Alpha'
+	},
+	{
+		id: 7,
+		name: 'Muon µ-'
+	},
+	{
+		id: 8,
+		name: 'Muon µ+'
+	},
+	{
+		id: 9,
+		name: 'Pion π-'
+	},
+	{
+		id: 10,
+		name: 'Pion π+'
+	},
+	{
+		id: 11,
+		name: '12C'
 	}
 ] as const satisfies readonly ParticleType[];

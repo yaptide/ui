@@ -1,6 +1,5 @@
 import { Estimator, Page } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
-import { ScoringOutputJSON } from '../ThreeEditor/Simulation/Scoring/ScoringOutput';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import { DataWithStatus, LookUp, TypeIdentifiedByKey } from './TypeTransformUtil';
 

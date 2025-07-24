@@ -4,22 +4,13 @@ import { Object3D } from 'three';
 
 import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
-import { SetMaterialColorCommand } from '../../../../js/commands/SetMaterialColorCommand';
-import { SetMaterialValueCommand } from '../../../../js/commands/SetMaterialValueCommand';
 import { SetQuantityOverriddenMaterialCommand } from '../../../../js/commands/SetQuantityOverriddenMaterialCommand';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
-import { SetZoneMaterialCommand } from '../../../../js/commands/SetZoneMaterialCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
-import { isSimulationMesh } from '../../../../Simulation/Base/SimulationMesh';
-import { isSimulationPoints } from '../../../../Simulation/Base/SimulationPoints';
-import { isSimulationZone, SimulationZone } from '../../../../Simulation/Base/SimulationZone';
 import { CustomStoppingPowerModels } from '../../../../Simulation/CustomStoppingPower/CustomStoppingPower';
-import { isBeam } from '../../../../Simulation/Physics/Beam';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
-import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
 import { MaterialSelect } from '../../../Select/MaterialSelect';
 import {
-	ColorInput,
 	ConditionalNumberPropertyField,
 	ConditionalPropertyField,
 	PropertyField
@@ -35,7 +26,10 @@ export function ScoringQuantityMaterialOverrides(props: {
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
 
 	const visibleFlag =
-		isScoringQuantity(watchedObject) && watchedObject.keyword! && watchedObject.hasMaterial!;
+		isScoringQuantity(watchedObject) &&
+		editor.contextManager.currentSimulator !== SimulatorType.GEANT4 &&
+		watchedObject.keyword! &&
+		watchedObject.hasMaterial!;
 
 	const { state: editorPhysic } = useSmartWatchEditorState(editor, editor.physic);
 
