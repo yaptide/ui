@@ -30,7 +30,7 @@ export enum SCORING_KEYWORD {
 	'Energy' = 'Energy',
 	'Fluence' = 'Fluence',
 	// Geant4 only
-	'KineticEnergySpectrum' = 'Fluence [/cm2] wrt. kinetic energy [MeV]'
+	'KineticEnergySpectrum' = 'KineticEnergySpectrum'
 }
 
 export const SCORING_KEYWORD_DESCRIPTION = {
