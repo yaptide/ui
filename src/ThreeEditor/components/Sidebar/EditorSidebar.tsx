@@ -104,14 +104,10 @@ export function EditorSidebar(props: EditorSidebarProps) {
 	const handleSimulatorChange = (newValue: SimulatorType) => {
 		onSimulatorChange(newValue);
 		editor.contextManager.currentSimulator = newValue;
-		// editor.materialManager.createMaterialPrefabs(newValue)
-		// editor.materialManager.updateMaterialsOnSimulatorChanges(newValue)
 
 		if (newValue === SimulatorType.GEANT4 || simulator === SimulatorType.GEANT4) {
 			editor.clear();
 		}
-
-		// editor.materialManager.updateMaterialsOnSimulatorChanges(newValue)
 	};
 	const geometryTabElements = getGeometryTabElements(simulator, btnProps, editor);
 	const scoringTabElements = getScoringTabElements(simulator, btnProps, editor);

@@ -4,7 +4,7 @@ import { AdditionalGeometryDataType } from '../../../util/AdditionalGeometryData
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { HollowCylinderGeometry } from '../Base/HollowCylinderGeometry';
 import { SimulationMesh, SimulationMeshJSON } from '../Base/SimulationMesh';
-import { DEFAULT_SIMULATION_MATERIAL, MATERIALS_GEANT } from '../Materials/materialsGeant';
+import { DEFAULT_SIMULATION_MATERIAL, MATERIALS } from '../Materials/materials';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
 	color: 0x000000,
@@ -166,22 +166,24 @@ function serializeSimulationMaterial(material: SimulationMaterialType) {
 			icru: -1,
 			name: 'UNKNOWN',
 			sanitized_name: 'unknown',
-			density: 0
+			density: 0,
+			geant_name: 'unknown'
 		};
 	}
 
 	const { icru, name, density } = material;
 	const sanitized_name = (material as any).sanitized_name ?? (material as any).sanitizedName;
+	const geant_name = (material as any).geant_name ?? 'G4_' + sanitized_name;
 
-	console.log(icru, name, sanitized_name, density);
+	// console.log(icru, name, sanitized_name, density, geant_name);
 
-	return { icru, name, sanitized_name, density };
+	return { icru, name, sanitized_name, density, geant_name };
 }
 
 function deserializeSimulationMaterial(
 	serialized: SerializedSimulationMaterial
 ): SimulationMaterialType {
-	const match = MATERIALS_GEANT.find(mat => mat.icru === serialized.icru);
+	const match = MATERIALS.find(mat => mat.icru === serialized.icru);
 
 	if (!match) {
 		throw new Error(`Unknown material icru: ${serialized.icru}`);
@@ -190,13 +192,14 @@ function deserializeSimulationMaterial(
 	return match;
 }
 
-export type SimulationMaterialType = (typeof MATERIALS_GEANT)[number];
+export type SimulationMaterialType = (typeof MATERIALS)[number];
 
 export type SerializedSimulationMaterial = {
 	icru: number;
 	name: string;
 	sanitized_name: string;
 	density: number;
+	geant_name: string;
 };
 
 export interface GeantFigureJSON extends SimulationMeshJSON {
@@ -217,15 +220,11 @@ export class BoxGeant extends BoxFigure {
 	}
 
 	override toSerialized(): GeantFigureJSON {
-		// const { uuid: materialUuid } = simulationMaterial
-
 		console.log(this.simulationMaterial);
 
 		const json: GeantFigureJSON = {
 			...super.toSerialized(),
-			// simulationMaterial: this.simulationMaterial
 			simulationMaterial: serializeSimulationMaterial(this.simulationMaterial)
-			// simulationMaterial: mateialUUID
 		};
 
 		return json;
