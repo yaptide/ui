@@ -1,10 +1,11 @@
 import OpenWithIcon from '@mui/icons-material/OpenWith';
 import ThreeSixtyIcon from '@mui/icons-material/ThreeSixty';
 import TransformIcon from '@mui/icons-material/Transform';
-import { Box, Divider, IconButton, styled, Tooltip } from '@mui/material';
+import { Box, IconButton, Paper, styled, Tooltip, useTheme } from '@mui/material';
+import { SxProps } from '@mui/material/styles';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { YaptideEditor } from '../../../js/YaptideEditor';
+import { YaptideEditor } from '../../js/YaptideEditor';
 
 enum Tool {
 	SELECT,
@@ -22,10 +23,12 @@ const ToolStrings = {
 
 type EditorToolbarProps = {
 	editor?: YaptideEditor;
+	sx?: SxProps;
 };
 
-export function EditorToolbar({ editor }: EditorToolbarProps) {
+export function EditorToolbar({ editor, sx }: EditorToolbarProps) {
 	const [tool, setTool] = useState<Tool>(Tool.MOVE);
+	const theme = useTheme();
 
 	const toolButtons = useMemo(
 		() => [
@@ -73,20 +76,18 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 	});
 
 	return (
-		<Box
+		<Paper
+			elevation={3}
 			sx={{
-				justifySelf: 'flex-end',
+				...sx,
 				display: 'flex',
 				flexDirection: 'row',
-				alignItems: 'center'
+				alignItems: 'center',
+				borderStyle: 'solid',
+				borderWidth: 1,
+				borderColor: theme.palette.divider,
+				padding: 0.2
 			}}>
-			<Divider
-				orientation='vertical'
-				flexItem
-				sx={{
-					margin: '0 15px'
-				}}
-			/>
 			{toolButtons.map(({ label, icon, value, disabled }, idx) => (
 				<Box
 					key={idx}
@@ -118,6 +119,6 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
 					</Tooltip>
 				</Box>
 			))}
-		</Box>
+		</Paper>
 	);
 }

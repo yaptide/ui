@@ -5,6 +5,7 @@ import { SyntheticEvent, useEffect, useState } from 'react';
 import { useConfig } from '../config/ConfigService';
 import { useAuth } from '../services/AuthService';
 import { useStore } from '../services/StoreService';
+import { EditorToolbar } from '../ThreeEditor/componentsNew/Editor/EditorToolbar';
 import SceneEditor from '../ThreeEditor/componentsNew/Editor/SceneEditor';
 import { EditorSidebar } from '../ThreeEditor/componentsNew/Sidebar/EditorSidebar';
 import { SimulatorType } from '../types/RequestTypes';
@@ -25,7 +26,7 @@ const StyledAppGrid = styled(Box)(({ theme }) => ({
 	height: '100vh',
 	gridTemplateColumns:
 		'[drawer-start] auto [drawer-end content-start] 1fr [content-end sidebar-start] 370px [sidebar-end]',
-	gridTemplateRows: '[header-start] 48px [header-end content-start] auto [content-end]',
+	gridTemplateRows: '[header-start] 52px [header-end content-start] auto [content-end]',
 	gap: 8,
 	padding: 8,
 	boxSizing: 'border-box'
@@ -123,7 +124,8 @@ function WrapperApp() {
 				<TabPanel
 					sx={{
 						gridColumn: 'content-start / content-end',
-						gridRow: 'content-start / content-end'
+						gridRow: 'content-start / content-end',
+						position: 'relative'
 					}}
 					forTabs={['editor']}
 					persistent>
@@ -132,6 +134,10 @@ function WrapperApp() {
 						simulator={currentSimulator}
 						sidebarProps={[open, tabsValue === 'editor']}
 						onSimulatorChange={setCurrentSimulator}
+					/>
+					<EditorToolbar
+						editor={yaptideEditor}
+						sx={{ position: 'absolute', top: 40, right: 10 }}
 					/>
 				</TabPanel>
 

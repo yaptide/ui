@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material';
+import { alpha, createTheme } from '@mui/material';
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { SnackbarProvider } from 'notistack';
@@ -20,6 +20,14 @@ declare module '@mui/material/styles' {
 	// add new variables to the theme type
 	interface TypeBackground {
 		secondary: string;
+	}
+
+	interface Palette {
+		accentGreen: Palette['primary'];
+	}
+
+	interface PaletteOptions {
+		accentGreen?: PaletteOptions['primary'];
 	}
 
 	interface ThemeOptions {
@@ -61,6 +69,10 @@ function App() {
 					mode: prefersDarkMode ? 'dark' : 'light',
 					background: {
 						default: prefersDarkMode ? '#101010' : 'white'
+					},
+					accentGreen: {
+						main: '#2f7f32',
+						contrastText: 'white'
 					}
 				},
 				typography: {

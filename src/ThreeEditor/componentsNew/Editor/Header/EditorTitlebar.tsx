@@ -56,13 +56,13 @@ export function EditorTitleBar() {
 				align='center'
 				textTransform='none'>
 				{title}
-				{saving && (
-					<CircularProgress
-						size={18}
-						sx={{ ml: 1, position: 'absolute', top: '33%', color: 'inherit' }}
-					/>
-				)}
 			</Typography>
+			{saving && (
+				<CircularProgress
+					size={18}
+					sx={{ ml: 1, color: 'white' }}
+				/>
+			)}
 		</Button>
 	);
 }
