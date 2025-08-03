@@ -5,9 +5,12 @@ import { SyntheticEvent, useEffect, useState } from 'react';
 import { useConfig } from '../config/ConfigService';
 import { useAuth } from '../services/AuthService';
 import { useStore } from '../services/StoreService';
+import SceneEditor from '../ThreeEditor/componentsNew/Editor/SceneEditor';
+import { EditorSidebar } from '../ThreeEditor/componentsNew/Sidebar/EditorSidebar';
 import { SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles } from '../types/ResponseTypes';
 import { camelCaseToNormalText } from '../util/camelCaseToSentenceCase';
+import HeaderPanel from './components/Header/HeaderPanel';
 import NavDrawer from './components/NavDrawer/NavDrawer';
 import { NavDrawerContext } from './components/NavDrawer/NavDrawerContext';
 import { AboutPanel } from './components/Panels/AboutPanel';
@@ -22,7 +25,7 @@ const StyledAppGrid = styled(Box)(({ theme }) => ({
 	height: '100vh',
 	gridTemplateColumns:
 		'[drawer-start] auto [drawer-end content-start] 1fr [content-end sidebar-start] 370px [sidebar-end]',
-	gridTemplateRows: '[header-start] 60px [header-end content-start] auto [content-end]',
+	gridTemplateRows: '[header-start] 48px [header-end content-start] auto [content-end]',
 	gap: 8,
 	padding: 8,
 	boxSizing: 'border-box'
@@ -30,7 +33,7 @@ const StyledAppGrid = styled(Box)(({ theme }) => ({
 
 function WrapperApp() {
 	const { demoMode } = useConfig();
-	const { resultsSimulationData } = useStore();
+	const { yaptideEditor, resultsSimulationData } = useStore();
 	const { isAuthorized, logout } = useAuth();
 	const [open, setOpen] = useState(true);
 	const [tabsValue, setTabsValue] = useState('editor');
@@ -112,8 +115,8 @@ function WrapperApp() {
 						gridColumn: 'content-start / content-end',
 						gridRow: 'header-start / header-end'
 					}}
-					forTabs={['editor', 'simulations', 'inputFiles', 'results']}>
-					Header
+					forTabs={['editor', 'simulations', 'results']}>
+					<HeaderPanel />
 				</TabPanel>
 
 				{/* Editor content */}
@@ -124,13 +127,12 @@ function WrapperApp() {
 					}}
 					forTabs={['editor']}
 					persistent>
-					SceneEditor
-					{/*<SceneEditor*/}
-					{/*	sidebarProps={[open, tabsValue === 'editor']}*/}
-					{/*	focus={tabsValue === 'editor'}*/}
-					{/*	simulator={currentSimulator}*/}
-					{/*	onSimulatorChange={setCurrentSimulator}*/}
-					{/*/>*/}
+					<SceneEditor
+						focus={tabsValue === 'editor'}
+						simulator={currentSimulator}
+						sidebarProps={[open, tabsValue === 'editor']}
+						onSimulatorChange={setCurrentSimulator}
+					/>
 				</TabPanel>
 
 				{/* Editor sidebar */}
@@ -140,7 +142,13 @@ function WrapperApp() {
 						gridRow: 'header-start / content-end'
 					}}
 					forTabs={['editor']}>
-					Sidebar
+					{yaptideEditor && (
+						<EditorSidebar
+							editor={yaptideEditor}
+							simulator={currentSimulator}
+							onSimulatorChange={setCurrentSimulator}
+						/>
+					)}
 				</TabPanel>
 				{/* end Editor screen */}
 

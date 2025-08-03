@@ -1,4 +1,4 @@
-import { Paper } from '@mui/material';
+import { Paper, useTheme } from '@mui/material';
 import { BoxProps } from '@mui/system';
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
 
@@ -15,6 +15,7 @@ export function TabPanel(props: TabPanelProps) {
 	const { children, sx, forTabs, persistent, persistentIfVisited } = props;
 	const currentTab = useContext(NavDrawerContext);
 	const [visited, setVisited] = useState(false);
+	const theme = useTheme();
 
 	const visible = forTabs.indexOf(currentTab) > -1;
 
@@ -27,8 +28,10 @@ export function TabPanel(props: TabPanelProps) {
 			sx={{
 				...sx,
 				display: 'flex',
-				flexGrow: 1,
-				overflow: 'auto'
+				overflow: 'auto',
+				borderStyle: 'solid',
+				borderWidth: 1,
+				borderColor: theme.palette.divider
 			}}
 			elevation={1}
 			role='tabpanel'

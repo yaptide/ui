@@ -14,7 +14,7 @@ import { Loader } from './services/LoaderService';
 import { ShSimulation } from './services/ShSimulatorService';
 import { Store } from './services/StoreService';
 import { YaptideEditor } from './ThreeEditor/js/YaptideEditor';
-import WrapperApp from './WrapperApp/WrapperApp';
+import WrapperApp from './WrapperAppNew/WrapperApp';
 
 declare module '@mui/material/styles' {
 	// add new variables to the theme type
@@ -54,17 +54,13 @@ function App() {
 	const theme = useMemo(
 		() =>
 			createTheme({
+				shape: {
+					borderRadius: 8
+				},
 				palette: {
 					mode: prefersDarkMode ? 'dark' : 'light',
-					primary: {
-						main: '#dfc19b'
-					},
-					secondary: {
-						main: '#37505C'
-					},
 					background: {
-						default: prefersDarkMode ? '#121212' : '#f5f5f5',
-						secondary: prefersDarkMode ? '#121212' : '#5f737c'
+						default: prefersDarkMode ? '#101010' : 'white'
 					}
 				},
 				typography: {

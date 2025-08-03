@@ -112,6 +112,9 @@ export function EditorSidebar(props: EditorSidebarProps) {
 	const geometryTabElements = getGeometryTabElements(simulator, btnProps, editor);
 	const scoringTabElements = getScoringTabElements(simulator, btnProps, editor);
 
+	console.log(geometryTabElements);
+	console.log(scoringTabElements);
+
 	return (
 		<>
 			<AppBar
@@ -430,7 +433,19 @@ function getScoringTabElements(simulator: SimulatorType, btnProps: any, editor: 
 	];
 	const shieldhitElements = [...commonElements];
 	const flukaElements = [...commonElements];
-	const geant4Elements = [...commonElements];
+
+	const geant4Elements = [
+		{
+			title: 'Geant 4 Placeholder',
+			add: btnProps['Filters'], // just for mockup
+			tree: (
+				<SidebarTreeList
+					editor={editor}
+					sources={[editor.figureManager.figureContainer]}
+				/>
+			)
+		}
+	];
 
 	switch (simulator) {
 		case SimulatorType.SHIELDHIT:
