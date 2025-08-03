@@ -71,7 +71,8 @@ export default function MenuPosition({
 								sx={{
 									fontSize: '.75rem',
 									lineHeight: '1rem',
-									padding: '.2rem .5rem'
+									padding: '.2rem .5rem',
+									minWidth: '120px'
 								}}
 								key={idx}
 								onClick={() => {

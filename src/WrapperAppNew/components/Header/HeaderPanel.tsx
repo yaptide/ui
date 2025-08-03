@@ -16,6 +16,7 @@ export default function HeaderPanel() {
 				overflow: 'hidden',
 				display: 'flex',
 				flexDirection: 'row',
+				alignItems: 'center',
 				flexGrow: 1,
 				padding: 1
 			}}>
