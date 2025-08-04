@@ -6,12 +6,11 @@ import { Detector } from '../../ThreeEditor/Simulation/Detectors/Detector';
 import {
 	BasicFigure,
 	BoxFigure,
-	BoxGeant,
 	CylinderFigure,
-	CylinderGeant,
-	SphereFigure,
-	SphereGeant
-} from '../../ThreeEditor/Simulation/Figures/BasicFigures';
+	GeantBox,
+	GeantCylinder,
+	GeantSphere,
+	SphereFigure} from '../../ThreeEditor/Simulation/Figures/BasicFigures';
 import { CustomFilter } from '../../ThreeEditor/Simulation/Scoring/CustomFilter';
 import { ParticleFilter } from '../../ThreeEditor/Simulation/Scoring/ParticleFilter';
 import { ScoringFilter } from '../../ThreeEditor/Simulation/Scoring/ScoringFilter';
@@ -84,7 +83,7 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 			() => {
 				return commandFactory.createAddCommand<'figure', BasicFigure>(
 					'figure',
-					new BoxGeant(editor),
+					new GeantBox(editor),
 					editor.figureManager
 				);
 			}
@@ -94,7 +93,7 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 			() => {
 				return commandFactory.createAddCommand<'figure', BasicFigure>(
 					'figure',
-					new CylinderGeant(editor),
+					new GeantCylinder(editor),
 					editor.figureManager
 				);
 			}
@@ -104,7 +103,7 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 			() => {
 				return commandFactory.createAddCommand<'figure', BasicFigure>(
 					'figure',
-					new SphereGeant(editor),
+					new GeantSphere(editor),
 					editor.figureManager
 				);
 			}

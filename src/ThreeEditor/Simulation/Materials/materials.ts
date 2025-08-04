@@ -58,7 +58,7 @@ export const MATERIALS = [
 		name: 'BLACK HOLE',
 		sanitized_name: 'black_hole',
 		density: 0,
-		geant_name: 'unknown'
+		geant_name: 'G4_Galactic'
 	},
 	{ icru: 1, name: 'HYDROGEN', sanitized_name: 'H', density: 8.3748e-5, geant_name: 'G4_H' },
 	{ icru: 2, name: 'HELIUM', sanitized_name: 'He', density: 0.000166322, geant_name: 'G4_He' },

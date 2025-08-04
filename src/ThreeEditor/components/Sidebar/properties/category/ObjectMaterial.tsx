@@ -52,41 +52,34 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 		return object.material.icru in CustomStoppingPowerModels[editorPhysic.stoppingPowerTable];
 	};
 
+	const simulationMaterialVisible =
+		(isGeantFigure(watchedObject) &&
+			editor.contextManager.currentSimulator === SimulatorType.GEANT4) ||
+		isSimulationZone(watchedObject) ||
+		isWorldZone(watchedObject);
+
+	const setMaterialCommand = (_: any, icru: number) => {
+		const icruStr = icru.toString();
+
+		const command = isGeantFigure(watchedObject)
+			? new SetNestedFigureMaterialCommand(editor, watchedObject.object, icruStr)
+			: new SetZoneMaterialCommand(editor, watchedObject.object, icruStr);
+
+		editor.execute(command);
+	};
+
 	return (
 		<PropertiesCategory
 			category={isBeam(watchedObject) ? 'Visual properties' : 'Material'}
 			visible={visibleFlag}>
 			{visibleFlag && (
 				<>
-					{isGeantFigure(watchedObject) &&
-						editor.contextManager.currentSimulator === SimulatorType.GEANT4 && (
-							<PropertyField label='Simulation'>
-								<MaterialSelect
-									materials={editor.materialManager.materials}
-									value={watchedObject.simulationMaterial.icru + ''}
-									onChange={(_, v) => {
-										editor.execute(
-											new SetNestedFigureMaterialCommand(
-												editor,
-												watchedObject.object,
-												v
-											)
-										);
-									}}
-								/>
-							</PropertyField>
-						)}
-
-					{(isSimulationZone(watchedObject) || isWorldZone(watchedObject)) && (
+					{simulationMaterialVisible && (
 						<PropertyField label='Simulation'>
 							<MaterialSelect
 								materials={editor.materialManager.materials}
 								value={watchedObject.simulationMaterial.icru + ''}
-								onChange={(_, v) => {
-									editor.execute(
-										new SetZoneMaterialCommand(editor, watchedObject.object, v)
-									);
-								}}
+								onChange={setMaterialCommand}
 							/>
 						</PropertyField>
 					)}

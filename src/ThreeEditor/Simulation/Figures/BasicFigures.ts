@@ -173,9 +173,20 @@ function serializeSimulationMaterial(material: SimulationMaterialType) {
 
 	const { icru, name, density } = material;
 	const sanitized_name = (material as any).sanitized_name ?? (material as any).sanitizedName;
-	const geant_name = (material as any).geant_name ?? 'G4_' + sanitized_name;
+	let geant_name = (material as any).geant_name;
 
-	// console.log(icru, name, sanitized_name, density, geant_name);
+	if (!geant_name) {
+		const foundMaterial = MATERIALS.find(mat => mat.icru === icru);
+
+		if (foundMaterial && foundMaterial.geant_name) {
+			geant_name = foundMaterial.geant_name;
+		} else {
+			console.warn(
+				`Missing 'geant_name' for material '${sanitized_name}' (ICRU: ${icru}). Defaulting to 'G4_${sanitized_name}'.`
+			);
+			geant_name = 'G4_' + sanitized_name;
+		}
+	}
 
 	return { icru, name, sanitized_name, density, geant_name };
 }
@@ -206,7 +217,7 @@ export interface GeantFigureJSON extends SimulationMeshJSON {
 	simulationMaterial: SerializedSimulationMaterial;
 }
 
-export class BoxGeant extends BoxFigure {
+export class GeantBox extends BoxFigure {
 	simulationMaterial: SimulationMaterialType;
 
 	constructor(
@@ -220,8 +231,6 @@ export class BoxGeant extends BoxFigure {
 	}
 
 	override toSerialized(): GeantFigureJSON {
-		console.log(this.simulationMaterial);
-
 		const json: GeantFigureJSON = {
 			...super.toSerialized(),
 			simulationMaterial: serializeSimulationMaterial(this.simulationMaterial)
@@ -238,7 +247,7 @@ export class BoxGeant extends BoxFigure {
 	}
 }
 
-export class CylinderGeant extends CylinderFigure {
+export class GeantCylinder extends CylinderFigure {
 	simulationMaterial: SimulationMaterialType;
 
 	constructor(
@@ -268,7 +277,7 @@ export class CylinderGeant extends CylinderFigure {
 	}
 }
 
-export class SphereGeant extends SphereFigure {
+export class GeantSphere extends SphereFigure {
 	simulationMaterial: SimulationMaterialType;
 
 	constructor(
@@ -298,8 +307,8 @@ export class SphereGeant extends SphereFigure {
 	}
 }
 
-export const isGeantFigure = (x: unknown): x is BoxGeant | CylinderGeant | SphereGeant =>
-	x instanceof BoxGeant || x instanceof CylinderGeant || x instanceof SphereGeant;
+export const isGeantFigure = (x: unknown): x is GeantBox | GeantCylinder | GeantSphere =>
+	x instanceof GeantBox || x instanceof GeantCylinder || x instanceof GeantSphere;
 
 export const isBasicFigure = (x: unknown): x is BasicFigure => x instanceof BasicFigure;
 
