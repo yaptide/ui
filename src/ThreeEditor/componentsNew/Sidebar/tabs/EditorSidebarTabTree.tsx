@@ -1,23 +1,20 @@
 import { getBackendOptions, MultiBackend } from '@minoru/react-dnd-treeview';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
-	Accordion as MuiAccordion,
-	AccordionDetails as MuiAccordionDetails,
-	AccordionProps,
-	AccordionSummary as MuiAccordionSummary,
-	AccordionSummaryProps,
+	AccordionDetails,
+	AccordionSummary,
 	Box,
 	Button,
 	ButtonGroup,
 	Divider,
 	Stack,
-	styled,
 	Typography
 } from '@mui/material';
 import { ReactElement } from 'react';
 import { DndProvider } from 'react-dnd';
 import { Object3D } from 'three';
 
+import StyledAccordion from '../../../../shared/components/StyledAccordion';
 import { CommandButtonProps } from '../../../../util/Ui/CommandButtonProps';
 import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 
@@ -31,39 +28,6 @@ export interface TreeItem {
 	};
 }
 
-const AccordionSummary = styled((props: AccordionSummaryProps) => (
-	<MuiAccordionSummary {...props} />
-))(({ theme }) => ({
-	'backgroundColor':
-		theme.palette.mode === 'dark' ? theme.palette.grey['800'] : theme.palette.grey['300'],
-
-	'& .MuiAccordionSummary-content:is(.MuiAccordionSummary-content,.Mui-expanded)': {
-		margin: theme.spacing(1),
-		marginLeft: theme.spacing(0)
-	},
-
-	'minHeight': 'unset',
-	'&.Mui-expanded': {
-		minHeight: 'unset'
-	}
-}));
-
-const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-	padding: theme.spacing(1),
-	paddingTop: theme.spacing(1)
-}));
-
-const Accordion = styled((props: AccordionProps) => (
-	<MuiAccordion
-		square
-		{...props}
-	/>
-))({
-	'&.Mui-expanded': {
-		margin: '0'
-	}
-});
-
 export type TreeElement = {
 	title: string;
 	add: CommandButtonProps[];
@@ -71,18 +35,12 @@ export type TreeElement = {
 };
 
 export interface EditorSidebarTabTreeProps {
-	elements: TreeElement[];
+	children: TreeElement[];
 }
 
 function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
 	return (
-		<Accordion
-			key={props.title}
-			sx={{
-				'&.MuiAccordion-root.Mui-expanded:before': {
-					opacity: 1
-				}
-			}}>
+		<StyledAccordion key={props.title}>
 			<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 				<Typography>{props.title}</Typography>
 			</AccordionSummary>
@@ -109,29 +67,25 @@ function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
 
 				{props.tree}
 			</AccordionDetails>
-		</Accordion>
+		</StyledAccordion>
 	);
 }
 
 export function EditorSidebarTabTree(props: EditorSidebarTabTreeProps) {
-	const { elements } = props;
-
 	return (
 		<DndProvider
 			backend={MultiBackend}
 			options={getBackendOptions()}>
 			<Box
 				sx={{
-					width: '100%',
 					resize: 'vertical',
-					overflowY: 'scroll',
-					height: '300px',
-					padding: '.5rem'
+					minHeight: '300px',
+					overflowY: 'auto'
 				}}>
-				{elements.map(element => (
+				{props.children.map(child => (
 					<EditorSidebarTabTreeElement
-						key={element.title}
-						{...element}
+						key={child.title}
+						{...child}
 					/>
 				))}
 			</Box>
