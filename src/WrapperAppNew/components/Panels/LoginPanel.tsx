@@ -47,8 +47,8 @@ export default function LoginPanel() {
 				display: 'flex',
 				alignItems: 'center',
 				justifyContent: 'center',
-				width: '100%',
-				padding: '5rem'
+				padding: '5rem',
+				height: '80%'
 			}}>
 			<Card variant='outlined'>
 				<CardContent>

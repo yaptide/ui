@@ -28,6 +28,7 @@ export function TabPanel(props: TabPanelProps) {
 			sx={{
 				...sx,
 				display: 'flex',
+				flexDirection: 'column',
 				overflow: 'auto',
 				borderStyle: 'solid',
 				borderWidth: 1,

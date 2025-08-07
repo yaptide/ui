@@ -18,6 +18,9 @@ import { AboutPanel } from './components/Panels/AboutPanel';
 import { ExamplePanel } from './components/Panels/ExamplePanel';
 import LoginPanel from './components/Panels/LoginPanel';
 import { TabPanel } from './components/Panels/TabPanel';
+import { RunSimulationForm } from './components/Simulation/RunSimulationForm';
+import SimulationPanel from './components/Simulation/SimulationPanel';
+import { useRunSimulation } from './UseRunSimulation';
 
 const StyledAppGrid = styled(Box)(({ theme }) => ({
 	background: theme.palette.background.default,
@@ -71,6 +74,8 @@ function WrapperApp() {
 		//We want to make the text which be a title as a normal text, not camel case text, to make it similar to values of tabs user can see on navbar.
 		document.title = camelCaseToNormalText(tabsValue); //e.g. we've got 'inputFiles' as a value of tabsValue and this function converts this value to 'Input Files'
 	}, [tabsValue]);
+
+	const runSimulation = useRunSimulation();
 
 	return (
 		<NavDrawerContext value={tabsValue}>
@@ -168,12 +173,7 @@ function WrapperApp() {
 						gridRow: 'content-start / content-end'
 					}}
 					forTabs={['simulations']}>
-					SimulationPanel
-					{/*<SimulationPanel*/}
-					{/*	goToResults={() => setTabsValue('results')}*/}
-					{/*	forwardedInputFiles={providedInputFiles}*/}
-					{/*	forwardedSimulator={currentSimulator}*/}
-					{/*/>*/}
+					<SimulationPanel forwardedSimulator={currentSimulator} />
 				</TabPanel>
 
 				{/* Simulations sidebar hosts a form to run the simulation and a list of running simulations */}
@@ -184,7 +184,12 @@ function WrapperApp() {
 						gridRow: 'header-start / content-end'
 					}}
 					forTabs={['simulations', 'results']}>
-					Simulations sidebar
+					<RunSimulationForm
+						editorJson={yaptideEditor?.toSerialized()}
+						// inputFiles={} TODO: running from input files
+						forwardedSimulator={currentSimulator}
+						runSimulation={runSimulation}
+					/>
 				</TabPanel>
 				{/* end Simulations screen */}
 

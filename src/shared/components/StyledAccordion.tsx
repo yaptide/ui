@@ -29,6 +29,9 @@ const StyledAccordion = styled((props: AccordionProps) => (
 	},
 	'& .MuiAccordionSummary-root': {
 		minHeight: 0
+	},
+	'& .MuiOutlinedInput-root, & .MuiToggleButtonGroup-root': {
+		backgroundColor: theme.palette.grey['900']
 	}
 }));
 

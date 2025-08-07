@@ -1,10 +1,11 @@
-import { Button, CircularProgress, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Typography } from '@mui/material';
+import { SxProps } from '@mui/material/styles';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useDialog } from '../../../../services/DialogService';
 import { useStore } from '../../../../services/StoreService';
 
-export function EditorTitleBar() {
+export function EditorTitleBar({ sx }: { sx: SxProps }) {
 	const { open: openEditProjectDialog, isOpen } = useDialog('editProject');
 	const { yaptideEditor } = useStore();
 	const [saving, setSaving] = useState(false);
@@ -41,28 +42,29 @@ export function EditorTitleBar() {
 	}, [yaptideEditor, startSave, stopSave]);
 
 	return (
-		<Button
-			sx={{ justifySelf: 'center' }}
-			onClick={() => {
-				if (yaptideEditor) {
-					openEditProjectDialog({ yaptideEditor });
-				}
-			}}
-			disableRipple>
-			<Typography
-				sx={{ color: 'white' }}
-				variant='subtitle1'
-				component='div'
-				align='center'
-				textTransform='none'>
-				{title}
-			</Typography>
-			{saving && (
-				<CircularProgress
-					size={18}
-					sx={{ ml: 1, color: 'white' }}
-				/>
-			)}
-		</Button>
+		<Box sx={{ ...sx, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+			<Button
+				onClick={() => {
+					if (yaptideEditor) {
+						openEditProjectDialog({ yaptideEditor });
+					}
+				}}
+				disableRipple>
+				<Typography
+					sx={{ color: 'white' }}
+					variant='subtitle1'
+					component='div'
+					align='center'
+					textTransform='none'>
+					{title}
+				</Typography>
+				{saving && (
+					<CircularProgress
+						size={18}
+						sx={{ ml: 1, color: 'white' }}
+					/>
+				)}
+			</Button>
+		</Box>
 	);
 }

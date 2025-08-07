@@ -11,9 +11,17 @@ import {
 import Typography from '@mui/material/Typography';
 import { useCallback, useState } from 'react';
 
+import { useConfig } from '../../../config/ConfigService';
 import { useDialog } from '../../../services/DialogService';
+import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
+import { JobStatusData, SimulationInfo } from '../../../types/ResponseTypes';
+import { SimulationConfig } from '../Simulation/BackendSimulations/BackendSimulationsTypes';
+import {
+	useBackendAliveEffect,
+	useIsBackendAlive
+} from '../Simulation/BackendSimulations/hooks/useBackendAliveEffect';
 
 const SimulatorsDescriptions: Record<SimulatorType, { name: string; description: string }> = {
 	common: {
@@ -60,6 +68,9 @@ function SimulatorSelectItem({ simulator, onClick }: SimulationSelectItemProps) 
 
 export default function SimulatorSelect() {
 	const { yaptideEditor } = useStore();
+
+	const isBackendAlive = useIsBackendAlive();
+
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const { open: openSimulatorChangeDialog } = useDialog('simulatorChange');
 	const theme = useTheme();
@@ -107,13 +118,14 @@ export default function SimulatorSelect() {
 		[yaptideEditor, currentSimulator]
 	);
 
+	const simulatorReady = currentSimulator === SimulatorType.GEANT4 || isBackendAlive;
+
 	return (
 		<>
-			{/* TODO: Check if currently selected simulator is ready */}
 			<Typography
-				color={theme.palette.accentGreen.main}
+				color={simulatorReady ? theme.palette.accentGreen.main : theme.palette.grey['600']}
 				sx={{ userSelect: 'none' }}>
-				Connected
+				{simulatorReady ? 'Connected' : 'Unreachable'}
 			</Typography>
 			<Button
 				sx={{
