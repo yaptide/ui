@@ -12,6 +12,7 @@ import { SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles } from '../types/ResponseTypes';
 import { camelCaseToNormalText } from '../util/camelCaseToSentenceCase';
 import HeaderPanel from './components/Header/HeaderPanel';
+import InputEditorPanel from './components/InputEditor/InputEditorPanel';
 import NavDrawer from './components/NavDrawer/NavDrawer';
 import { NavDrawerContext } from './components/NavDrawer/NavDrawerContext';
 import { AboutPanel } from './components/Panels/AboutPanel';
@@ -44,10 +45,6 @@ function WrapperApp() {
 
 	const [providedInputFiles, setProvidedInputFiles] = useState<SimulationInputFiles>();
 	const [currentSimulator, setCurrentSimulator] = useState<SimulatorType>(SimulatorType.COMMON);
-
-	useEffect(() => {
-		if (providedInputFiles && tabsValue !== 'simulations') setProvidedInputFiles(undefined);
-	}, [providedInputFiles, tabsValue]);
 
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
 		if (newValue === 'login' && isAuthorized) logout();
@@ -121,7 +118,7 @@ function WrapperApp() {
 						gridColumn: 'content-start / content-end',
 						gridRow: 'header-start / header-end'
 					}}
-					forTabs={['editor', 'simulations', 'results']}>
+					forTabs={['editor', 'simulations', 'inputFiles', 'results']}>
 					<HeaderPanel />
 				</TabPanel>
 
@@ -183,10 +180,10 @@ function WrapperApp() {
 						gridColumn: 'sidebar-start / sidebar-end',
 						gridRow: 'header-start / content-end'
 					}}
-					forTabs={['simulations', 'results']}>
+					forTabs={['simulations', 'inputFiles', 'results']}>
 					<RunSimulationForm
 						editorJson={yaptideEditor?.toSerialized()}
-						// inputFiles={} TODO: running from input files
+						inputFiles={providedInputFiles}
 						forwardedSimulator={currentSimulator}
 						runSimulation={runSimulation}
 					/>
@@ -196,21 +193,19 @@ function WrapperApp() {
 				{/* Input files screen */}
 				<TabPanel
 					sx={{
-						gridColumn: 'content-start / sidebar-end',
-						gridRow: 'header-start / content-end'
+						gridColumn: 'content-start / content-end',
+						gridRow: 'content-start / content-end'
 					}}
 					forTabs={['inputFiles']}
 					persistentIfVisited>
-					InputEditorPanel
-					{/*<InputEditorPanel*/}
-					{/*	goToRun={(simulator: SimulatorType, inputFiles?: SimulationInputFiles) => {*/}
-					{/*		setProvidedInputFiles(inputFiles);*/}
-					{/*		setCurrentSimulator(simulator);*/}
-					{/*		setTabsValue('simulations');*/}
-					{/*	}}*/}
-					{/*	simulator={currentSimulator}*/}
-					{/*	onSimulatorChange={setCurrentSimulator}*/}
-					{/*/>*/}
+					<InputEditorPanel
+						goToRun={(simulator: SimulatorType, inputFiles?: SimulationInputFiles) => {
+							setProvidedInputFiles(inputFiles);
+							setCurrentSimulator(simulator);
+						}}
+						simulator={currentSimulator}
+						onSimulatorChange={setCurrentSimulator}
+					/>
 				</TabPanel>
 				{/* end Input files screen */}
 

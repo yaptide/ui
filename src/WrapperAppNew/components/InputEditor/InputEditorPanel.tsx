@@ -19,7 +19,7 @@ import { DragDropFiles } from './DragDropFiles';
 import { InputFilesEditor } from './InputFilesEditor';
 
 interface InputEditorPanelProps {
-	goToRun?: (simulator: SimulatorType, InputFiles?: SimulationInputFiles) => void;
+	goToRun: (simulator: SimulatorType, InputFiles?: SimulationInputFiles) => void;
 	simulator: SimulatorType;
 	onSimulatorChange: (newSimulator: SimulatorType) => void;
 }
@@ -202,6 +202,9 @@ export default function InputEditorPanel({
 			<InputFilesEditor
 				simulator={simulator}
 				inputFiles={inputFiles}
+				goToRun={(inputFiles?: SimulationInputFiles) => {
+					goToRun(simulator, inputFiles);
+				}}
 				onChange={inputFiles => setInputFiles(inputFiles)}
 			/>
 		</Box>

@@ -29,7 +29,8 @@ export function TabPanel(props: TabPanelProps) {
 				...sx,
 				display: 'flex',
 				flexDirection: 'column',
-				overflow: 'auto',
+				overflowY: 'auto',
+				overflowX: 'hidden',
 				borderStyle: 'solid',
 				borderWidth: 1,
 				borderColor: theme.palette.divider

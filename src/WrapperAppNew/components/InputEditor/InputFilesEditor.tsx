@@ -21,15 +21,13 @@ import { saveString } from '../../../util/File';
 interface InputFilesEditorProps {
 	simulator: SimulatorType;
 	inputFiles: SimulationInputFiles | undefined;
+	goToRun: (inputFiles?: SimulationInputFiles) => void;
 	onChange?: (inputFiles: SimulationInputFiles) => void;
 	saveAndExit?: (inputFiles: SimulationInputFiles) => void;
 	closeEditor?: () => void;
 }
 
 export function InputFilesEditor(props: InputFilesEditorProps) {
-	const { open: openRunSimulationDialog } = useDialog('runSimulation');
-	const { postJobDirect, postJobBatch } = useShSimulation();
-	const { yaptideEditor, setTrackedId } = useStore();
 	const { demoMode } = useConfig();
 	const { isAuthorized } = useAuth();
 	const inputFiles = props.inputFiles ?? _defaultShInputFiles;
@@ -85,19 +83,11 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 					color='success'
 					variant='contained'
 					disabled={demoMode || !isAuthorized}
-					onClick={() =>
-						yaptideEditor &&
-						openRunSimulationDialog({
-							inputFiles: Object.fromEntries(
-								Object.entries(inputFiles).filter(([, data]) => data.length > 0)
-							),
-							simulator: props.simulator,
-							onSubmit: setTrackedId,
-							postJobDirect,
-							postJobBatch,
-							yaptideEditor
-						})
-					}>
+					onClick={() => {
+						if (props.goToRun) {
+							props.goToRun(inputFiles);
+						}
+					}}>
 					Run with these input files
 				</Button>
 				<Button

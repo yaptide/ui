@@ -20,7 +20,7 @@ import {
 	useTheme
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { MouseEvent, SyntheticEvent, useState } from 'react';
+import { MouseEvent, SyntheticEvent, useEffect, useState } from 'react';
 
 import StyledAccordion from '../../../shared/components/StyledAccordion';
 import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTabs';
@@ -84,6 +84,17 @@ export function RunSimulationForm({
 	const [simulationSourceType, setSimulationSourceType] = useState<SimulationSourceType>(
 		Object.keys(inputFiles).length > 0 ? 'files' : 'editor'
 	);
+	const [highlight, setHighlight] = useState(false);
+
+	useEffect(() => {
+		if (Object.keys(inputFiles).length > 0) {
+			console.log('new input files');
+			setSimulationSourceType('files');
+			setSelectedFiles(Object.keys(inputFiles));
+			setHighlight(true);
+			setTimeout(() => setHighlight(false), 2500);
+		}
+	}, [inputFiles]);
 
 	const [selectedFiles, setSelectedFiles] = useState<string[]>(Object.keys(inputFiles));
 	const [selectedCluster, setSelectedCluster] = useState<number | undefined>(0);
@@ -178,7 +189,26 @@ export function RunSimulationForm({
 	return (
 		<StyledAccordion
 			expanded={true}
-			sx={{ margin: theme.spacing(1), width: `calc(100% - ${theme.spacing(2)})` }}>
+			sx={{
+				// the following styles attempt to create a border that
+				// will pulse green when highlight == true, and be invisible otherwise
+				// We cannot just set border to 'none' as it would make content shift
+				// so the border needs to be present all the time, matching the background color
+				'marginLeft': `calc(${theme.spacing(1)} - 2px)`,
+				'marginTop': `calc(${theme.spacing(1)} - 2px)`,
+				'marginRight': theme.spacing(1),
+				'marginBottom': theme.spacing(1),
+				'width': `calc(100% - ${theme.spacing(2)})`,
+				'borderWidth': '2px',
+				'borderStyle': 'solid',
+				'borderColor': '#1e1e1e',
+				'@keyframes highlight': {
+					'0%': {},
+					'50%': { borderColor: theme.palette.success.main },
+					'100%': {}
+				},
+				'animation': highlight ? 'highlight 1s linear 0s 2' : 'none'
+			}}>
 			<AccordionSummary>
 				<Typography
 					textTransform='none'
@@ -277,7 +307,8 @@ export function RunSimulationForm({
 								display: 'flex',
 								gap: 1,
 								flexWrap: 'wrap',
-								justifyContent: 'center'
+								justifyContent: 'center',
+								marginBottom: theme.spacing(2)
 							}}>
 							{Object.keys(inputFiles).map((fileName, index) => (
 								<Chip

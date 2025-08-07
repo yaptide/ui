@@ -25,8 +25,6 @@ export function ProjectMenu({ editor }: EditorMenuProps) {
 		setSelectedObject(o);
 	}, []);
 
-	console.log(editor);
-
 	useSignal(editor, 'objectSelected', handleObjectUpdate);
 
 	return (
