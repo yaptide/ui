@@ -1,4 +1,4 @@
-import { Tab,Tabs } from '@mui/material';
+import { Tab, Tabs } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 const StyledTabs = styled(Tabs)(({ theme }) => ({
@@ -15,14 +15,14 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
 const StyledTab = styled(Tab)(({ theme }) => ({
 	'minHeight': '48px',
 	'&:hover': {
-		backgroundColor: 'rgba(255, 255, 255, 0.08)',
+		backgroundColor: theme.palette.action.hover,
 		borderRadius: theme.shape.borderRadius
 	},
 	'&.Mui-selected': {
-		backgroundColor: 'rgba(255, 255, 255, 0.16)',
+		backgroundColor: theme.palette.action.selected,
 		borderRadius: theme.shape.borderRadius,
-		color: 'white'
+		color: theme.palette.text.primary
 	}
 }));
 
-export { StyledTab,StyledTabs };
+export { StyledTab, StyledTabs };

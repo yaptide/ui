@@ -201,7 +201,7 @@ export function RunSimulationForm({
 				'width': `calc(100% - ${theme.spacing(2)})`,
 				'borderWidth': '2px',
 				'borderStyle': 'solid',
-				'borderColor': '#1e1e1e',
+				'borderColor': theme.palette.mode === 'dark' ? '#1e1e1e' : '#fff',
 				'@keyframes highlight': {
 					'0%': {},
 					'50%': { borderColor: theme.palette.success.main },

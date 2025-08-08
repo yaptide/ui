@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Menu, MenuItem } from '@mui/material';
+import { Box, Button, Divider, Menu, MenuItem, useTheme } from '@mui/material';
 import { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { MouseEvent, useEffect, useState } from 'react';
@@ -20,6 +20,7 @@ export default function MenuPosition({
 	setOpenIdx,
 	options
 }: MenuPositionProps) {
+	const theme = useTheme();
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const handleClick = (_: MouseEvent<HTMLButtonElement>) => {
 		setOpenIdx(idx);
@@ -43,7 +44,7 @@ export default function MenuPosition({
 		<>
 			<Button
 				variant='text'
-				sx={{ color: 'white' }}
+				sx={{ color: theme.palette.text.primary }}
 				id={'basic-button-' + idx.toString()}
 				aria-controls={Boolean(anchorEl) ? 'basic-menu' : undefined}
 				aria-haspopup='true'

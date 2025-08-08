@@ -24,10 +24,12 @@ declare module '@mui/material/styles' {
 
 	interface Palette {
 		accentGreen: Palette['primary'];
+		accordion: Palette['primary'];
 	}
 
 	interface PaletteOptions {
 		accentGreen?: PaletteOptions['primary'];
+		accordion?: PaletteOptions['primary'];
 	}
 
 	interface ThemeOptions {
@@ -68,11 +70,14 @@ function App() {
 				palette: {
 					mode: prefersDarkMode ? 'dark' : 'light',
 					background: {
-						default: prefersDarkMode ? '#101010' : 'white'
+						default: prefersDarkMode ? '#101010' : '#ddd'
 					},
 					accentGreen: {
-						main: '#2f7f32',
+						main: prefersDarkMode ? '#2f7f32' : '#3f8f43',
 						contrastText: 'white'
+					},
+					accordion: {
+						main: prefersDarkMode ? '#343434' : '#dadada'
 					}
 				},
 				typography: {
@@ -86,6 +91,8 @@ function App() {
 		[prefersDarkMode]
 	);
 	window.THREE ??= THREE;
+
+	console.log(theme);
 
 	return (
 		<ServiceTree

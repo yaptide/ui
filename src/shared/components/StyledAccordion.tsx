@@ -20,7 +20,7 @@ const StyledAccordion = styled((props: AccordionProps) => (
 	'&.MuiBox-root': {
 		borderRadius: theme.spacing(1),
 		marginBottom: theme.spacing(1),
-		backgroundColor: '#343434'
+		backgroundColor: theme.palette.accordion.main
 	},
 	'&.Mui-expanded .MuiAccordion-heading': {
 		borderBottomStyle: 'solid',
@@ -31,7 +31,8 @@ const StyledAccordion = styled((props: AccordionProps) => (
 		minHeight: 0
 	},
 	'& .MuiOutlinedInput-root, & .MuiToggleButtonGroup-root': {
-		backgroundColor: theme.palette.grey['900']
+		backgroundColor:
+			theme.palette.mode === 'dark' ? theme.palette.grey['900'] : theme.palette.grey['100']
 	}
 }));
 

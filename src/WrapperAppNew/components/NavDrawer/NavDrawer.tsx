@@ -6,7 +6,7 @@ import Menu from '@mui/icons-material/Menu';
 import MenuOpen from '@mui/icons-material/MenuOpen';
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
-import { Box, FormControlLabel, Typography } from '@mui/material';
+import { Box, FormControlLabel, Typography, useTheme } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
@@ -92,6 +92,7 @@ const getDrawer = () =>
 	}));
 
 function NavDrawer({ handleChange, tabsValue, open, setOpen, sx }: NavDrawerProps) {
+	const theme = useTheme();
 	const { resultsSimulationData } = useStore();
 	const { isAuthorized } = useAuth();
 
@@ -161,7 +162,8 @@ function NavDrawer({ handleChange, tabsValue, open, setOpen, sx }: NavDrawerProp
 			open={open}>
 			<Box
 				sx={{
-					background: ({ palette }) => palette.background.default,
+					background:
+						theme.palette.mode === 'dark' ? theme.palette.background.default : 'white',
 					zIndex: ({ zIndex }) => zIndex.drawer
 				}}>
 				<DrawerHeader>
