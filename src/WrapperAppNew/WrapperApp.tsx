@@ -19,6 +19,7 @@ import { AboutPanel } from './components/Panels/AboutPanel';
 import { ExamplePanel } from './components/Panels/ExamplePanel';
 import LoginPanel from './components/Panels/LoginPanel';
 import { TabPanel } from './components/Panels/TabPanel';
+import ResultsPanel from './components/Results/ResultsPanel';
 import RunningQueue from './components/Simulation/RunningQueue';
 import { RunSimulationForm } from './components/Simulation/RunSimulationForm';
 import SimulationPanel from './components/Simulation/SimulationPanel';
@@ -222,8 +223,7 @@ function WrapperApp() {
 					}}
 					forTabs={['results']}
 					persistent>
-					ResultsPanel
-					{/*<ResultsPanel />*/}
+					<ResultsPanel />
 				</TabPanel>
 
 				{/* Includes simulations sidebar to view running simulations, switch between partial results, or stop and rerun */}
