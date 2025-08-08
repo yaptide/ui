@@ -19,6 +19,7 @@ import { AboutPanel } from './components/Panels/AboutPanel';
 import { ExamplePanel } from './components/Panels/ExamplePanel';
 import LoginPanel from './components/Panels/LoginPanel';
 import { TabPanel } from './components/Panels/TabPanel';
+import RunningQueue from './components/Simulation/RunningQueue';
 import { RunSimulationForm } from './components/Simulation/RunSimulationForm';
 import SimulationPanel from './components/Simulation/SimulationPanel';
 import { useRunSimulation } from './UseRunSimulation';
@@ -187,6 +188,7 @@ function WrapperApp() {
 						forwardedSimulator={currentSimulator}
 						runSimulation={runSimulation}
 					/>
+					<RunningQueue />
 				</TabPanel>
 				{/* end Simulations screen */}
 

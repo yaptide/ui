@@ -192,7 +192,7 @@ export function RunSimulationForm({
 			sx={{
 				// the following styles attempt to create a border that
 				// will pulse green when highlight == true, and be invisible otherwise
-				// We cannot just set border to 'none' as it would make content shift
+				// We cannot just have border='none' as it would make content shift
 				// so the border needs to be present all the time, matching the background color
 				'marginLeft': `calc(${theme.spacing(1)} - 2px)`,
 				'marginTop': `calc(${theme.spacing(1)} - 2px)`,
