@@ -1,9 +1,19 @@
 import { ParticleType } from '../ThreeEditor/components/Select/ParticleSelect';
 
+/**
+ * List of particles supported by each simulator.
+ * SHIELD-HIT and FLUKA share most of the types,
+ * while Geant4 has separate list due to how the simulator is integrated.
+ */
+
 export type Particle = {
 	id: number;
 	name: string;
 };
+
+/**
+ * Particle types supported by SHIELD-HIT12A and FLUKA
+ */
 export const COMMON_PARTICLE_TYPES = [
 	{
 		id: 1,
@@ -71,6 +81,9 @@ export const COMMON_PARTICLE_TYPES = [
 	}
 ] as const satisfies readonly ParticleType[];
 
+/**
+ * Additional particle types supported by FLUKA, but not by SHIELD-HIT12A
+ */
 export const FLUKA_PARTICLE_TYPES = [
 	{
 		id: 26,
@@ -78,6 +91,9 @@ export const FLUKA_PARTICLE_TYPES = [
 	}
 ] as const satisfies readonly ParticleType[];
 
+/**
+ * Particle types supported by Geant4
+ */
 export const GEANT4_PARTICLE_TYPES = [
 	{
 		id: 1,
