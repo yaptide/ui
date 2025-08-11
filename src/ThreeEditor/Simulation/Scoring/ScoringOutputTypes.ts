@@ -1,6 +1,7 @@
 import { SimulatorType } from '../../../types/RequestTypes';
 
 export enum SCORING_KEYWORD {
+	// common
 	'1MeVNEq' = '1MeVNEq',
 	'Alanine' = 'Alanine',
 	'AvgBeta' = 'AvgBeta',
@@ -8,13 +9,10 @@ export enum SCORING_KEYWORD {
 	'Dose' = 'Dose',
 	'DoseEqv' = 'DoseEqv',
 	'DDD' = 'DDD',
-	'DoseGy' = 'DoseGy',
 	'dLET' = 'dLET',
 	'dQ' = 'dQ',
 	'dQeff' = 'dQeff',
-	'Energy' = 'Energy',
 	'EqvDose' = 'EqvDose',
-	'Fluence' = 'Fluence',
 	'MATERIAL' = 'MATERIAL',
 	'NEqvDose' = 'NEqvDose',
 	'NKERMA' = 'NKERMA',
@@ -26,10 +24,17 @@ export enum SCORING_KEYWORD {
 	'dZ2Beta2' = 'dZ2Beta2',
 	'tZ2Beta2' = 'tZ2Beta2',
 	'dZeff2Beta2' = 'dZeff2Beta2',
-	'tZeff2Beta2' = 'tZeff2Beta2'
+	'tZeff2Beta2' = 'tZeff2Beta2',
+	// Geant4 + common
+	'DoseGy' = 'DoseGy',
+	'Energy' = 'Energy',
+	'Fluence' = 'Fluence',
+	// Geant4 only
+	'KineticEnergySpectrum' = 'KineticEnergySpectrum'
 }
 
 export const SCORING_KEYWORD_DESCRIPTION = {
+	// common
 	'1MeVNEq':
 		'1-MeV neutron equivalent fluence [cm−2]. Only scored for neutrons, protons and pions.Multiply with 2.037e-3 to get DNIEL in [MeV / g]',
 	'Alanine':
@@ -39,13 +44,10 @@ export const SCORING_KEYWORD_DESCRIPTION = {
 	'Dose': 'Dose [MeV/g]',
 	'DoseEqv': 'Dose-Equivalent (see notes below) [Sv]',
 	'DDD': 'as Dose, but specially for TRiP98 depth-dose kernel file generation',
-	'DoseGy': 'Dose [Gy]',
 	'dLET': 'Dose-averaged LET [MeV/cm]',
 	'dQ': 'Dose-averaged Q',
 	'dQeff': 'Dose-averaged Qeff',
-	'Energy': 'Total amount of energy deposited [MeV]',
 	'EqvDose': 'Equivalent dose (see notes below) [Sv]',
-	'Fluence': 'Fluence [/cm2]',
 	'MATERIAL': 'Maps material ID as assigned in geo.dat. Useful for debugging geometries.',
 	'NEqvDose': 'Equivalent dose from neutron kerma (see notes below) [Sv]',
 	'NKERMA': 'Neutron Kerma in [Gy]',
@@ -57,7 +59,13 @@ export const SCORING_KEYWORD_DESCRIPTION = {
 	'dZ2Beta2': 'Dose-averaged Z²/beta²',
 	'tZ2Beta2': 'Track-averaged Z²/beta²',
 	'dZeff2Beta2': 'Dose-averaged Zeff²/beta²',
-	'tZeff2Beta2': 'Track-averaged Zeff²/beta²'
+	'tZeff2Beta2': 'Track-averaged Zeff²/beta²',
+	// Geant4 + common
+	'DoseGy': 'Dose [Gy]',
+	'Energy': 'Total amount of energy deposited [MeV]',
+	'Fluence': 'Fluence [/cm2]',
+	// Geant4 only
+	'KineticEnergySpectrum': 'Fluence [/cm2] wrt. kinetic energy [MeV]'
 } as const;
 
 export enum SCORING_MODIFIERS {
@@ -580,8 +588,12 @@ export const SCORING_OPTIONS: IScoringOptions = {
 		}
 	},
 	[SimulatorType.GEANT4]: {
-		DETECTOR: {},
-		ZONE: {}
+		DETECTOR: {
+			DoseGy: { configuration: new Set([]), modifiers: new Set([]) },
+			Energy: { configuration: new Set([]), modifiers: new Set([]) },
+			Fluence: { configuration: new Set([]), modifiers: new Set([]) },
+			KineticEnergySpectrum: { configuration: new Set([]), modifiers: new Set([]) }
+		}
 	}
 };
 
@@ -635,6 +647,10 @@ export function canChangeMaterialMedium(
 		keyword,
 		CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE
 	);
+}
+
+export function isDifferentiable(keyword: SCORING_KEYWORD): boolean {
+	return keyword === SCORING_KEYWORD.KineticEnergySpectrum;
 }
 
 function configurationExists(

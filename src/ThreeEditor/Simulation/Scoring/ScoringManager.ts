@@ -6,10 +6,13 @@ import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
+import { CommonScoringOutput } from './CommonScoringOutput';
 import { CustomFilter, isCustomFilterJSON } from './CustomFilter';
+import { GeantScoringFilter, isGeantScoringFilterJSON } from './GeantScoringFilter';
 import { isParticleFilterJSON, ParticleFilter } from './ParticleFilter';
 import { FilterJSON, ScoringFilter } from './ScoringFilter';
 import { ScoringOutput, ScoringOutputJSON as OutputJSON } from './ScoringOutput';
+import createScoringOutput from './ScoringOutputFactory';
 import { ScoringQuantity } from './ScoringQuantity';
 
 export type ScoringManagerJSON = Omit<
@@ -22,7 +25,7 @@ export type ScoringManagerJSON = Omit<
 >;
 
 const outputLoader = (editor: YaptideEditor) => (json: OutputJSON) =>
-	new ScoringOutput(editor).fromSerialized(json);
+	createScoringOutput(editor).fromSerialized(json);
 
 export class OutputContainer extends SimulationSceneContainer<ScoringOutput> {
 	readonly isOutputContainer: true = true;
@@ -42,6 +45,8 @@ const filterLoader = (editor: YaptideEditor) => (json: FilterJSON) => {
 	if (isCustomFilterJSON(json)) return new CustomFilter(editor).fromSerialized(json);
 
 	if (isParticleFilterJSON(json)) return new ParticleFilter(editor).fromSerialized(json);
+
+	if (isGeantScoringFilterJSON(json)) return new GeantScoringFilter(editor).fromSerialized(json);
 
 	throw new Error(`Unknown filter type: ${json}`);
 };
@@ -162,6 +167,7 @@ export class ScoringManager
 
 	getTakenDetectors(): string[] {
 		return this.outputs
+			.filter(obj => obj instanceof CommonScoringOutput)
 			.reduce<(string | null)[]>((acc, output) => {
 				return acc.concat(output.getTakenDetector());
 			}, [])
