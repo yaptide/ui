@@ -153,7 +153,7 @@ function BeamSadField(props: { beam: Beam; onChange: (value: Beam['sad']) => voi
 function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam }) {
 	const { object, editor } = props;
 
-	let supportedParticles = [];
+	let supportedParticles: ParticleType[] = [];
 
 	switch (editor.contextManager.currentSimulator) {
 		case SimulatorType.GEANT4:
