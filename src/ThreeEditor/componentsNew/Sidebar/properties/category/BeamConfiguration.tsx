@@ -2,7 +2,11 @@ import { Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useEffect } from 'react';
 import { Object3D } from 'three';
 
-import { FLUKA_PARTICLE_TYPES, PARTICLE_TYPES } from '../../../../../types/Particle';
+import {
+	COMMON_PARTICLE_TYPES,
+	FLUKA_PARTICLE_TYPES,
+	GEANT4_PARTICLE_TYPES
+} from '../../../../../types/Particle';
 import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
@@ -149,10 +153,19 @@ function BeamSadField(props: { beam: Beam; onChange: (value: Beam['sad']) => voi
 function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam }) {
 	const { object, editor } = props;
 
-	let supportedParticles: ParticleType[] = [...PARTICLE_TYPES];
+	let supportedParticles: ParticleType[] = [];
 
-	if (editor.contextManager.currentSimulator === SimulatorType.FLUKA) {
-		supportedParticles.push(...FLUKA_PARTICLE_TYPES);
+	switch (editor.contextManager.currentSimulator) {
+		case SimulatorType.GEANT4:
+			supportedParticles.push(...GEANT4_PARTICLE_TYPES);
+
+			break;
+		case SimulatorType.FLUKA:
+			supportedParticles.push(...COMMON_PARTICLE_TYPES, ...FLUKA_PARTICLE_TYPES);
+
+			break;
+		default:
+			supportedParticles.push(...COMMON_PARTICLE_TYPES);
 	}
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object, true);
@@ -169,21 +182,23 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 
 	return (
 		<>
-			<PropertyField label='Definition type'>
-				<ToggleButtonGroup
-					color='primary'
-					size='small'
-					value={watchedObject.sourceType}
-					exclusive
-					onChange={(_, v) => {
-						if (v) setValueCommand(v, 'sourceType');
-					}}>
-					<ToggleButton value={BEAM_SOURCE_TYPE.simple}>Simple</ToggleButton>
-					{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
-						<ToggleButton value={BEAM_SOURCE_TYPE.file}>File</ToggleButton>
-					)}
-				</ToggleButtonGroup>
-			</PropertyField>
+			{editor.contextManager.currentSimulator !== SimulatorType.GEANT4 && (
+				<PropertyField label='Definition type'>
+					<ToggleButtonGroup
+						color='primary'
+						size='small'
+						value={watchedObject.sourceType}
+						exclusive
+						onChange={(_, v) => {
+							if (v) setValueCommand(v, 'sourceType');
+						}}>
+						<ToggleButton value={BEAM_SOURCE_TYPE.simple}>Simple</ToggleButton>
+						{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
+							<ToggleButton value={BEAM_SOURCE_TYPE.file}>File</ToggleButton>
+						)}
+					</ToggleButtonGroup>
+				</PropertyField>
+			)}
 
 			{watchedObject.sourceType === BEAM_SOURCE_TYPE.simple && (
 				<>
@@ -200,7 +215,8 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 						value={watchedObject.energySpread}
 						onChange={v => setValueCommand(v, 'energySpread')}
 					/>
-					{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
+					{(editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT ||
+						editor.contextManager.currentSimulator === SimulatorType.GEANT4) && (
 						<>
 							<NumberPropertyField
 								label='Energy lower cutoff'
@@ -214,6 +230,10 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 								value={watchedObject.energyHighCutoff}
 								onChange={v => setValueCommand(v, 'energyHighCutoff')}
 							/>
+						</>
+					)}
+					{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
+						<>
 							<PropertyField children={<Divider />} />
 							<Vector2PropertyField
 								label='Divergence XY'

@@ -32,7 +32,9 @@ export function QuantityDifferentialScoring(props: { editor: YaptideEditor; obje
 		object as unknown as ScoringQuantity
 	);
 
-	const visibleFlag = isScoringQuantity(watchedObject);
+	const visibleFlag =
+		isScoringQuantity(watchedObject) &&
+		editor.contextManager.currentSimulator !== SimulatorType.GEANT4;
 	let simulatorType: SimulatorType = editor.contextManager.currentSimulator;
 	const numberOfModifiers = () => {
 		if (isScoringQuantity(watchedObject)) {
