@@ -11,7 +11,6 @@ import SimulatorSelect from './SimulatorSelect';
 
 export default function HeaderPanel() {
 	const { yaptideEditor } = useStore();
-	const currentTab = useContext(NavDrawerContext);
 
 	return (
 		<Box
@@ -25,7 +24,7 @@ export default function HeaderPanel() {
 			}}>
 			<Box sx={{ flexGrow: 1, flexBasis: 0 }}>
 				<ProjectMenu editor={yaptideEditor} />
-				{currentTab === 'editor' && <EditorMenu editor={yaptideEditor} />}
+				<EditorMenu editor={yaptideEditor} />
 			</Box>
 			<EditorTitleBar sx={{ flexGrow: 1, flexBasis: 0 }} />
 			<Box

@@ -114,13 +114,13 @@ function WrapperApp() {
 				{/* end Examples screen*/}
 
 				{/* Editor screen */}
-				{/* Editor header is visible when editing, running simulations, and viewing results, though it may behave differently */}
+				{/* Editor header */}
 				<TabPanel
 					sx={{
 						gridColumn: 'content-start / content-end',
 						gridRow: 'header-start / header-end'
 					}}
-					forTabs={['editor', 'simulations', 'inputFiles', 'results']}>
+					forTabs={['editor']}>
 					<HeaderPanel />
 				</TabPanel>
 
@@ -163,13 +163,11 @@ function WrapperApp() {
 				{/* end Editor screen */}
 
 				{/* Simulations screen */}
-				{/* Includes header from editor screen */}
-
 				{/* Content panel lists recent simulations */}
 				<TabPanel
 					sx={{
 						gridColumn: 'content-start / content-end',
-						gridRow: 'content-start / content-end'
+						gridRow: 'header-start / content-end'
 					}}
 					forTabs={['simulations']}>
 					<SimulationPanel forwardedSimulator={currentSimulator} />
@@ -197,7 +195,7 @@ function WrapperApp() {
 				<TabPanel
 					sx={{
 						gridColumn: 'content-start / content-end',
-						gridRow: 'content-start / content-end'
+						gridRow: 'header-start / content-end'
 					}}
 					forTabs={['inputFiles']}
 					persistentIfVisited>
@@ -219,7 +217,7 @@ function WrapperApp() {
 				<TabPanel
 					sx={{
 						gridColumn: 'content-start / content-end',
-						gridRow: 'content-start / content-end'
+						gridRow: 'header-start / content-end'
 					}}
 					forTabs={['results']}
 					persistent>
