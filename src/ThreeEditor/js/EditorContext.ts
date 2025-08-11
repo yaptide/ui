@@ -73,7 +73,6 @@ export class ContextManager {
 	}
 
 	set currentSimulator(simulator: SimulatorType) {
-		console.log('set current simulator');
 		this.simulator = simulator;
 	}
 
