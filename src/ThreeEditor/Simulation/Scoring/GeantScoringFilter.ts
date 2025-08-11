@@ -35,7 +35,7 @@ function getInitialFilterData() {
 	};
 }
 
-export function isGeantScoringFilterJSON(filter: any): filter is ParticleFilterJSON {
+export function isGeantScoringFilterJSON(filter: any): filter is GeantScoringFilterJSON {
 	return filter && typeof filter.filterType === 'string' && typeof filter.data === 'object';
 }
 
