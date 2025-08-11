@@ -5,6 +5,7 @@ import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetQuantityValueCommand } from '../../../../js/commands/SetQuantityValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
+import { isDifferentiable } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import { NumberPropertyField, PropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
@@ -24,7 +25,9 @@ export function GeantHistogramConfiguration(props: { editor: YaptideEditor; obje
 
 	const visibleFlag =
 		isScoringQuantity(watchedObject) &&
-		editor.contextManager.currentSimulator == SimulatorType.GEANT4;
+		editor.contextManager.currentSimulator == SimulatorType.GEANT4 &&
+		watchedObject.keyword &&
+		isDifferentiable(watchedObject.keyword);
 
 	const setQuantityValue = (key: keyof ScoringQuantity, value: unknown) => {
 		editor.execute(new SetQuantityValueCommand(editor, watchedObject.object, key, value));

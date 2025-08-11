@@ -649,6 +649,10 @@ export function canChangeMaterialMedium(
 	);
 }
 
+export function isDifferentiable(keyword: SCORING_KEYWORD): boolean {
+	return keyword === SCORING_KEYWORD.KineticEnergySpectrum;
+}
+
 function configurationExists(
 	simulator: SimulatorType,
 	scoringType: SCORING_TYPE_ENUM,
