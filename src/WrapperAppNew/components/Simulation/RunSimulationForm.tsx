@@ -23,6 +23,7 @@ import Typography from '@mui/material/Typography';
 import { MouseEvent, SyntheticEvent, useEffect, useState } from 'react';
 
 import StyledAccordion from '../../../shared/components/StyledAccordion';
+import { StyledExclusiveToggleButtonGroup } from '../../../shared/components/StyledExclusiveToggleButtonGroup';
 import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTabs';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
@@ -222,23 +223,13 @@ export function RunSimulationForm({
 						marginBottom: theme.spacing(2)
 					}
 				}}>
-				<ToggleButtonGroup
-					exclusive
+				<StyledExclusiveToggleButtonGroup
 					fullWidth
 					value={simulationRunType}
 					onChange={handleRunTypeChange}>
-					<ToggleButton
-						size='small'
-						value='direct'>
-						Direct Run
-					</ToggleButton>
-					<ToggleButton
-						size='small'
-						color='info'
-						value='batch'>
-						Batch Run
-					</ToggleButton>
-				</ToggleButtonGroup>
+					<ToggleButton value='direct'>Direct Run</ToggleButton>
+					<ToggleButton value='batch'>Batch Run</ToggleButton>
+				</StyledExclusiveToggleButtonGroup>
 				{simulationRunType === 'batch' && (
 					<FormGroup>
 						<FormControlLabel
@@ -283,25 +274,17 @@ export function RunSimulationForm({
 								{simulatorMenuItems}
 							</Select>
 						</FormControl>
-						<ToggleButtonGroup
-							exclusive
+						<StyledExclusiveToggleButtonGroup
 							fullWidth
 							value={simulationSourceType}
 							onChange={handleSourceTypeChange}>
+							<ToggleButton value='editor'>Editor Project Data</ToggleButton>
 							<ToggleButton
-								size='small'
-								value='editor'
-								color='primary'>
-								Editor Project Data
-							</ToggleButton>
-							<ToggleButton
-								size='small'
 								value='files'
-								color='success'
 								disabled={Object.keys(inputFiles).length === 0}>
 								Input Files Data
 							</ToggleButton>
-						</ToggleButtonGroup>
+						</StyledExclusiveToggleButtonGroup>
 						<Box
 							sx={{
 								display: 'flex',
@@ -405,6 +388,7 @@ export function RunSimulationForm({
 							height: '36px',
 							width: '180px'
 						}}
+						variant='contained'
 						size='large'
 						onClick={handleRunSimulationClick}>
 						Start simulation
