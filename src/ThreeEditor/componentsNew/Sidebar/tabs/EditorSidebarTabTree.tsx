@@ -1,14 +1,14 @@
 import { getBackendOptions, MultiBackend } from '@minoru/react-dnd-treeview';
+import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
 	AccordionDetails,
 	AccordionSummary,
 	Box,
 	Button,
-	ButtonGroup,
-	Divider,
 	Stack,
-	Typography
+	Typography,
+	useTheme
 } from '@mui/material';
 import { ReactElement } from 'react';
 import { DndProvider } from 'react-dnd';
@@ -39,6 +39,8 @@ export interface EditorSidebarTabTreeProps {
 }
 
 function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
+	const theme = useTheme();
+
 	return (
 		<StyledAccordion key={props.title}>
 			<AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -47,24 +49,22 @@ function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
 			<AccordionDetails>
 				<Stack
 					direction='row'
-					spacing={2}
-					alignItems='center'>
-					<Box>Add:</Box>
-					<ButtonGroup
-						size='small'
-						fullWidth>
-						{props.add.map(add => (
-							<Button
-								key={add.label}
-								onClick={add.onClick}
-								disabled={add.disabled}>
-								{add.label}
-							</Button>
-						))}
-					</ButtonGroup>
+					spacing={1}
+					alignItems='center'
+					sx={{ marginBottom: theme.spacing(1) }}>
+					{props.add.map(add => (
+						<Button
+							key={add.label}
+							onClick={add.onClick}
+							disabled={add.disabled}
+							variant='contained'
+							size='small'
+							startIcon={<AddIcon />}
+							disableElevation>
+							{add.label}
+						</Button>
+					))}
 				</Stack>
-				<Divider sx={{ margin: '.5rem 0' }}></Divider>
-
 				{props.tree}
 			</AccordionDetails>
 		</StyledAccordion>

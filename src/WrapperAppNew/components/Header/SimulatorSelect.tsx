@@ -123,20 +123,19 @@ export default function SimulatorSelect() {
 	return (
 		<>
 			<Typography
-				color={simulatorReady ? theme.palette.accentGreen.main : theme.palette.grey['600']}
+				color={simulatorReady ? 'primary' : theme.palette.grey['600']}
 				sx={{ userSelect: 'none' }}>
 				{simulatorReady ? 'Connected' : 'Unreachable'}
 			</Typography>
 			<Button
 				sx={{
-					backgroundColor: theme.palette.accentGreen.main,
-					color: theme.palette.accentGreen.contrastText,
 					height: '36px',
 					width: '180px',
 					marginLeft: 2
 				}}
 				size='large'
 				onClick={event => setAnchorEl(event.currentTarget)}
+				variant='contained'
 				disableRipple>
 				<ExpandMoreIcon />
 				{yaptideEditor ? (
@@ -159,8 +158,8 @@ export default function SimulatorSelect() {
 				onClose={() => setAnchorEl(null)}>
 				<Box
 					sx={{
-						backgroundColor: theme.palette.accentGreen.main,
-						color: theme.palette.accentGreen.contrastText,
+						color: theme.palette.primary.contrastText,
+						backgroundColor: theme.palette.primary.main,
 						width: '240px',
 						boxSizing: 'border-box',
 						padding: 2

@@ -53,7 +53,7 @@ export default function LoginPanel() {
 			<Card variant='outlined'>
 				<CardContent>
 					<TextField
-						color='secondary'
+						color='primary'
 						id='loginField'
 						label='Username address'
 						variant='outlined'
@@ -64,7 +64,7 @@ export default function LoginPanel() {
 				</CardContent>
 				<CardContent>
 					<TextField
-						color='secondary'
+						color='primary'
 						id='passwordField'
 						label='Password'
 						variant='outlined'
@@ -84,7 +84,7 @@ export default function LoginPanel() {
 					<Button
 						color='primary'
 						fullWidth
-						variant={theme.palette.mode === 'dark' ? 'outlined' : 'contained'}
+						variant='contained'
 						onClick={() => login(username, password)}>
 						Login
 					</Button>
@@ -101,7 +101,7 @@ export default function LoginPanel() {
 								color='info'
 								fullWidth
 								disabled={!initialized}
-								variant={theme.palette.mode === 'dark' ? 'outlined' : 'contained'}
+								variant='contained'
 								onClick={keycloakLogin}>
 								Connect with PLGrid
 							</Button>

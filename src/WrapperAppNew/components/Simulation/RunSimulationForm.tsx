@@ -401,10 +401,7 @@ export function RunSimulationForm({
 				)}
 				<Box sx={{ display: 'flex', justifyContent: 'center' }}>
 					<Button
-						color='info'
 						sx={{
-							backgroundColor: theme.palette.accentGreen.main,
-							color: theme.palette.accentGreen.contrastText,
 							height: '36px',
 							width: '180px'
 						}}

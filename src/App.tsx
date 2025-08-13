@@ -1,4 +1,4 @@
-import { alpha, createTheme } from '@mui/material';
+import { createTheme } from '@mui/material';
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { SnackbarProvider } from 'notistack';
@@ -23,12 +23,10 @@ declare module '@mui/material/styles' {
 	}
 
 	interface Palette {
-		accentGreen: Palette['primary'];
 		accordion: Palette['primary'];
 	}
 
 	interface PaletteOptions {
-		accentGreen?: PaletteOptions['primary'];
 		accordion?: PaletteOptions['primary'];
 	}
 
@@ -72,9 +70,11 @@ function App() {
 					background: {
 						default: prefersDarkMode ? '#101010' : '#ddd'
 					},
-					accentGreen: {
-						main: prefersDarkMode ? '#2f7f32' : '#3f8f43',
-						contrastText: 'white'
+					primary: {
+						main: '#248c5e'
+					},
+					secondary: {
+						main: '#ae4a4a'
 					},
 					accordion: {
 						main: prefersDarkMode ? '#343434' : '#dadada'
