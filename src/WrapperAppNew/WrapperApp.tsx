@@ -13,8 +13,8 @@ import { SimulationInputFiles } from '../types/ResponseTypes';
 import { camelCaseToNormalText } from '../util/camelCaseToSentenceCase';
 import HeaderPanel from './components/Header/HeaderPanel';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
-import NavDrawer from './components/NavDrawer/NavDrawer';
-import { NavDrawerContext } from './components/NavDrawer/NavDrawerContext';
+import { NavDrawerContext } from './components/NavPanel/NavDrawerContext';
+import NavPanel from './components/NavPanel/NavPanel';
 import { AboutPanel } from './components/Panels/AboutPanel';
 import { ExamplePanel } from './components/Panels/ExamplePanel';
 import LoginPanel from './components/Panels/LoginPanel';
@@ -31,7 +31,7 @@ const StyledAppGrid = styled(Box)(({ theme }) => ({
 	width: '100%',
 	height: '100vh',
 	gridTemplateColumns:
-		'[drawer-start] auto [drawer-end content-start] 1fr [content-end sidebar-start] 370px [sidebar-end]',
+		'[drawer-start] 200px [drawer-end content-start] 1fr [content-end sidebar-start] 370px [sidebar-end]',
 	gridTemplateRows: '[header-start] 52px [header-end content-start] auto [content-end]',
 	gap: 8,
 	padding: 8,
@@ -79,16 +79,18 @@ function WrapperApp() {
 	return (
 		<NavDrawerContext value={tabsValue}>
 			<StyledAppGrid>
-				<NavDrawer
+				<TabPanel
 					sx={{
 						gridColumn: 'drawer-start / drawer-end',
 						gridRow: 'header-start / content-end'
-					}}
-					handleChange={handleChange}
-					tabsValue={tabsValue}
-					open={open}
-					setOpen={setOpen}
-				/>
+					}}>
+					<NavPanel
+						handleChange={handleChange}
+						tabsValue={tabsValue}
+						open={open}
+						setOpen={setOpen}
+					/>
+				</TabPanel>
 
 				{/* Login screen */}
 				<TabPanel

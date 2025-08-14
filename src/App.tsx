@@ -84,15 +84,13 @@ function App() {
 					fontSize: 11
 				},
 				dimensions: {
-					navDrawerWidth: 160
+					navDrawerWidth: 200
 				},
 				cssVariables: true
 			}),
 		[prefersDarkMode]
 	);
 	window.THREE ??= THREE;
-
-	console.log(theme);
 
 	return (
 		<ServiceTree

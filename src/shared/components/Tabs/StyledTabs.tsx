@@ -16,11 +16,11 @@ const StyledTab = styled(Tab)(({ theme }) => ({
 	'minHeight': '48px',
 	'&:hover': {
 		backgroundColor: theme.palette.action.hover,
-		borderRadius: theme.shape.borderRadius
+		borderRadius: theme.spacing(1)
 	},
 	'&.Mui-selected': {
 		backgroundColor: theme.palette.action.selected,
-		borderRadius: theme.shape.borderRadius,
+		borderRadius: theme.spacing(1),
 		color: theme.palette.text.primary
 	}
 }));

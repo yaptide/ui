@@ -2,11 +2,11 @@ import { Paper, useTheme } from '@mui/material';
 import { BoxProps } from '@mui/system';
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
 
-import { NavDrawerContext } from '../NavDrawer/NavDrawerContext';
+import { NavDrawerContext } from '../NavPanel/NavDrawerContext';
 
 interface TabPanelProps extends BoxProps {
 	children?: ReactNode;
-	forTabs: string[];
+	forTabs?: string[];
 	persistent?: boolean;
 	persistentIfVisited?: boolean;
 }
@@ -17,7 +17,7 @@ export function TabPanel(props: TabPanelProps) {
 	const [visited, setVisited] = useState(false);
 	const theme = useTheme();
 
-	const visible = forTabs.indexOf(currentTab) > -1;
+	const visible = forTabs === undefined || forTabs.indexOf(currentTab) > -1;
 
 	useEffect(() => {
 		setVisited(visited || visible); // when set to `true`, it always stays `true`

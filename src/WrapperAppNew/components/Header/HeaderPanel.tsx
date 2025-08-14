@@ -1,11 +1,8 @@
 import { Box } from '@mui/material';
-import { useContext } from 'react';
 
 import { useStore } from '../../../services/StoreService';
-import { EditorToolbar } from '../../../ThreeEditor/componentsNew/Editor/EditorToolbar';
 import { EditorMenu } from '../../../ThreeEditor/componentsNew/Editor/Header/EditorMenu';
 import { EditorTitleBar } from '../../../ThreeEditor/componentsNew/Editor/Header/EditorTitlebar';
-import { NavDrawerContext } from '../NavDrawer/NavDrawerContext';
 import { ProjectMenu } from './ProjectMenu';
 import SimulatorSelect from './SimulatorSelect';
 
