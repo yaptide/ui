@@ -37,7 +37,7 @@ export function AutoCompleteSelect<
 					style: { fontSize: '12px' }
 				}}
 				size='small'
-				variant='standard'
+				variant='outlined'
 			/>
 		);
 	};
