@@ -76,7 +76,7 @@ export default function NavPanelElement(props: NavPanelElementProps) {
 						backgroundColor: theme.palette.action.hover,
 						borderRadius: theme.spacing(1)
 					},
-					'& .Mui-selected': {
+					'& .MuiListItemButton-root.Mui-selected': {
 						backgroundColor: theme.palette.action.selected,
 						borderRadius: theme.spacing(1),
 						color: theme.palette.text.primary

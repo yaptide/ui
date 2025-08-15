@@ -38,7 +38,7 @@ export function StyledExclusiveToggleButtonGroup(props: StyledRadioButtonGroupPr
 					backgroundColor: theme.palette.primary.main,
 					borderRadius: theme.spacing(1)
 				},
-				'& .Mui-selected:hover': {
+				'& .MuiToggleButton-root.Mui-selected:hover': {
 					backgroundColor: theme.palette.primary.dark
 				}
 			}}>
