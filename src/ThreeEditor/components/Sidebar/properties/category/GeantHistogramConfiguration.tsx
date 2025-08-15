@@ -25,7 +25,7 @@ export function GeantHistogramConfiguration(props: { editor: YaptideEditor; obje
 
 	const visibleFlag =
 		isScoringQuantity(watchedObject) &&
-		editor.contextManager.currentSimulator == SimulatorType.GEANT4 &&
+		editor.contextManager.currentSimulator === SimulatorType.GEANT4 &&
 		watchedObject.keyword &&
 		isDifferentiable(watchedObject.keyword);
 

@@ -1,5 +1,5 @@
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Box, ToggleButton, ToggleButtonGroup, useTheme } from '@mui/material';
+import { Box, ToggleButton, useTheme } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
 import { throttle } from 'throttle-debounce';
@@ -13,7 +13,6 @@ import { SimulatorType } from '../../../types/RequestTypes';
 import {
 	_defaultFlukaInputFiles,
 	_defaultShInputFiles,
-	_defaultTopasInputFiles,
 	SimulationInputFiles
 } from '../../../types/ResponseTypes';
 import { DragDropFiles } from './DragDropFiles';
@@ -37,7 +36,6 @@ export default function InputEditorPanel({
 
 	const [isInProgress, setInProgress] = useState(false);
 	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>(_defaultShInputFiles);
-	const [controller] = useState(new AbortController());
 
 	const onClickGenerate = useCallback(async () => {
 		if (simulator === SimulatorType.COMMON) {
@@ -64,7 +62,7 @@ export default function InputEditorPanel({
 			.finally(() => {
 				setInProgress(false);
 			});
-	}, [yaptideEditor, enqueueSnackbar, controller.signal, convertJSON, simulator]);
+	}, [yaptideEditor, enqueueSnackbar, convertJSON, simulator]);
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const debouncedOnClickGenerate = useCallback(

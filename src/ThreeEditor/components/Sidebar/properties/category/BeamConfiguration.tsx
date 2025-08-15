@@ -1,5 +1,5 @@
-import { Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { useEffect } from 'react';
+import { Divider, ToggleButton } from '@mui/material';
+import { useCallback, useEffect } from 'react';
 import { Object3D } from 'three';
 
 import { StyledExclusiveToggleButtonGroup } from '../../../../../shared/components/StyledExclusiveToggleButtonGroup';
@@ -171,15 +171,18 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object, true);
 
-	const setValueCommand = (value: any, key: string) => {
-		editor.execute(new SetValueCommand(editor, watchedObject.object, key, value));
-	};
+	const setValueCommand = useCallback(
+		(value: any, key: string) => {
+			editor.execute(new SetValueCommand(editor, watchedObject.object, key, value));
+		},
+		[editor, watchedObject.object]
+	);
 
 	useEffect(() => {
 		if (editor.contextManager.currentSimulator !== SimulatorType.SHIELDHIT) {
 			setValueCommand(BEAM_SOURCE_TYPE.simple, 'sourceType');
 		}
-	}, [editor.contextManager.currentSimulator]);
+	}, [editor.contextManager.currentSimulator, setValueCommand]);
 
 	return (
 		<>

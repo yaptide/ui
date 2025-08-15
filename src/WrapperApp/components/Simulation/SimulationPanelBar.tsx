@@ -1,20 +1,14 @@
-import CableIcon from '@mui/icons-material/Cable';
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import {
 	AppBarProps,
 	Box,
 	Button,
-	ButtonBase,
 	ButtonGroup,
 	ButtonGroupProps,
 	ButtonProps,
-	Card,
-	CardProps,
 	Pagination,
 	styled,
-	Tooltip,
-	Typography,
 	useTheme
 } from '@mui/material';
 import { ChangeEvent } from 'react';

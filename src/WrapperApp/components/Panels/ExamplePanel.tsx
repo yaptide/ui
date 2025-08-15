@@ -1,4 +1,4 @@
-import { Box, Chip, Divider, Grid, Paper, Typography } from '@mui/material';
+import { Box, Chip, Divider, Typography } from '@mui/material';
 
 import EXAMPLES, { useFetchExampleData } from '../../../examples/examples';
 import { SimulatorType } from '../../../types/RequestTypes';
