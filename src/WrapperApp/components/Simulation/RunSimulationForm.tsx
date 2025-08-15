@@ -64,7 +64,7 @@ export type RunSimulationFunctionType = (
 	batchOptions: BatchOptionsType
 ) => void;
 
-type RunSimulationFormProps = {
+export type RunSimulationFormProps = {
 	availableClusters?: string[];
 	editorJson?: EditorJson;
 	inputFiles?: Partial<SimulationInputFiles>;

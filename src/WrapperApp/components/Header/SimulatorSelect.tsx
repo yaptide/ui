@@ -13,15 +13,9 @@ import { useCallback, useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
 import { useDialog } from '../../../services/DialogService';
-import { useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
-import { JobStatusData, SimulationInfo } from '../../../types/ResponseTypes';
-import { SimulationConfig } from '../Simulation/BackendSimulations/BackendSimulationsTypes';
-import {
-	useBackendAliveEffect,
-	useIsBackendAlive
-} from '../Simulation/BackendSimulations/hooks/useBackendAliveEffect';
+import { useIsBackendAlive } from '../Simulation/BackendSimulations/hooks/useBackendAliveEffect';
 
 const SimulatorsDescriptions: Record<SimulatorType, { name: string; description: string }> = {
 	common: {
@@ -68,6 +62,7 @@ function SimulatorSelectItem({ simulator, onClick }: SimulationSelectItemProps) 
 
 export default function SimulatorSelect() {
 	const { yaptideEditor } = useStore();
+	const { demoMode } = useConfig();
 
 	const isBackendAlive = useIsBackendAlive();
 
@@ -125,7 +120,11 @@ export default function SimulatorSelect() {
 			<Typography
 				color={simulatorReady ? 'primary' : theme.palette.grey['600']}
 				sx={{ userSelect: 'none' }}>
-				{simulatorReady ? 'Connected' : 'Unreachable'}
+				{simulatorReady
+					? 'Connected'
+					: demoMode
+						? 'Unavailable in Demo Mode'
+						: 'Unreachable'}
 			</Typography>
 			<Button
 				sx={{

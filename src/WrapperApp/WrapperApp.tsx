@@ -20,8 +20,7 @@ import { ExamplePanel } from './components/Panels/ExamplePanel';
 import LoginPanel from './components/Panels/LoginPanel';
 import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
-import RunningQueue from './components/Simulation/RunningQueue';
-import { RunSimulationForm } from './components/Simulation/RunSimulationForm';
+import RunSimulationPanel from './components/Simulation/RunSimulationPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
 import { useRunSimulation } from './UseRunSimulation';
 
@@ -183,14 +182,13 @@ function WrapperApp() {
 						gridRow: 'header-start / content-end'
 					}}
 					forTabs={['simulations', 'inputFiles', 'results']}>
-					<RunSimulationForm
+					<RunSimulationPanel
 						editorJson={yaptideEditor?.toSerialized()}
 						inputFiles={providedInputFiles}
 						clearInputFiles={() => setProvidedInputFiles(undefined)}
 						forwardedSimulator={currentSimulator}
 						runSimulation={runSimulation}
 					/>
-					<RunningQueue />
 				</TabPanel>
 				{/* end Simulations screen */}
 
