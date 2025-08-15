@@ -43,7 +43,7 @@ export default function NavPanelElement(props: NavPanelElementProps) {
 		handleChange = () => {}
 	} = props;
 
-	const { disabled, description, label, richLabel, tooltipLabel, icon, info, separator, value } =
+	const { disabled, description, label, richLabel, tooltipLabel, icon, info, value } =
 		props.menuOption;
 
 	const listItemContent = (

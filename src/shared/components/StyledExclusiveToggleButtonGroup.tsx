@@ -33,7 +33,10 @@ export function StyledExclusiveToggleButtonGroup(props: StyledRadioButtonGroupPr
 						borderRadius: theme.spacing(1),
 						fontSize: 10
 					},
-				'& .Mui-selected': {
+				'& .MuiToggleButton-root.Mui-disabled': {
+					border: 'none'
+				},
+				'& .MuiToggleButton-root.Mui-selected': {
 					color: theme.palette.primary.contrastText,
 					backgroundColor: theme.palette.primary.main,
 					borderRadius: theme.spacing(1)
