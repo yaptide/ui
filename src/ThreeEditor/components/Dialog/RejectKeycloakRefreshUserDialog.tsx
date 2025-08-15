@@ -30,6 +30,8 @@ export function RejectKeycloakRefreshUserDialog({
 
 					if (initialized && keycloak!.authenticated) keycloak!.logout();
 				}}
+				color='secondary'
+				variant='contained'
 				autoFocus>
 				I understand
 			</Button>

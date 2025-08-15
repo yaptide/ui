@@ -15,10 +15,13 @@ export function NewProjectDialog({
 			contentText='Your current project will be lost. Are you sure you want to continue?'>
 			<Button
 				onClick={onClose}
+				color='secondary'
 				autoFocus>
 				Cancel
 			</Button>
 			<Button
+				color='secondary'
+				variant='contained'
 				onClick={() => {
 					if (yaptideEditor) yaptideEditor.clear();
 					onClose();

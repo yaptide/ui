@@ -24,6 +24,8 @@ export function RejectKeycloakUserDialog({
 					: 'Connection could not be established with the authentication server. Please try again later.'
 			}>
 			<Button
+				color='secondary'
+				variant='contained'
 				onClick={() => {
 					onClose();
 

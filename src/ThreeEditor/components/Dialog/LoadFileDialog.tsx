@@ -44,6 +44,7 @@ export function LoadFileDialog({
 			<Button
 				aria-label='cancel'
 				onClick={onClose}
+				color='secondary'
 				autoFocus>
 				Cancel
 			</Button>
@@ -51,7 +52,7 @@ export function LoadFileDialog({
 				disabled={!data}
 				aria-label='clear and proceed'
 				variant='contained'
-				color='primary'
+				color='secondary'
 				onClick={() => {
 					onClose();
 
