@@ -1,8 +1,8 @@
 import { Box } from '@mui/material';
 
 import { useStore } from '../../../services/StoreService';
-import { EditorMenu } from '../../../ThreeEditor/componentsNew/Editor/Header/EditorMenu';
-import { EditorTitleBar } from '../../../ThreeEditor/componentsNew/Editor/Header/EditorTitlebar';
+import { EditorMenu } from '../../../ThreeEditor/components/Editor/Header/EditorMenu';
+import { EditorTitleBar } from '../../../ThreeEditor/components/Editor/Header/EditorTitlebar';
 import { ProjectMenu } from './ProjectMenu';
 import SimulatorSelect from './SimulatorSelect';
 

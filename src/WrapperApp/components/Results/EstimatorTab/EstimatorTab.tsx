@@ -1,8 +1,7 @@
-import { Box, Card, CardContent, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, useTheme } from '@mui/material';
 
-import { generateGraphs } from '../../../../JsRoot/GraphData';
+import { generateGraphs } from '../../../../JsRoot/NewGraphData';
 import { FullSimulationData } from '../../../../services/ShSimulatorService';
-import { TabPanel } from '../../Panels/TabPanel';
 import { EstimatorResults } from '../ResultsPanel';
 import TablePage0D from '../ResultsTable';
 
@@ -16,61 +15,44 @@ interface EstimatorTabProps {
 
 const EstimatorTab = ({
 	estimator,
-	tabsValue,
 	resultsGeneratedFromProjectFile,
 	groupQuantities,
 	simulation
 }: EstimatorTabProps) => {
+	const theme = useTheme();
+
 	return (
-		<Card
-			variant='outlined'
+		<Box
 			sx={{
-				'flexGrow': 1,
-				'margin': '0.5rem',
-				'bgcolor': theme =>
-					theme.palette.mode === 'dark' ? 'text.disabled' : 'background.paper',
-				'& .MuiCardContent-root div': {
-					bgcolor: 'transparent',
-					backgroundImage: 'none',
-					color: 'black'
-				}
+				margin: theme.spacing(1),
+				display: 'flex',
+				justifyContent: 'center',
+				alignItems: 'center',
+				flexGrow: 1,
+				overflow: 'hidden'
 			}}>
 			{!estimator ? (
-				<Box
-					sx={{
-						display: 'flex',
-						justifyContent: 'center',
-						alignItems: 'center',
-						height: '100vh'
-					}}>
-					<CircularProgress />
-				</Box>
+				<CircularProgress />
 			) : (
-				<CardContent>
-					<TabPanel
-						key={`tab_panel_${estimator.name}_${tabsValue}`}
-						value={tabsValue}
-						index={tabsValue}
-						persistentIfVisited>
-						<Box
-							style={{
-								width: '100%',
-								display: 'flex',
-								flexDirection: 'column'
-							}}>
-							{estimator.tablePages.length > 0 && (
-								<TablePage0D estimator={estimator}></TablePage0D>
-							)}
-							{generateGraphs(
-								estimator,
-								resultsGeneratedFromProjectFile && groupQuantities,
-								simulation?.jobId
-							)}
-						</Box>
-					</TabPanel>
-				</CardContent>
+				<Box
+					style={{
+						display: 'flex',
+						flexDirection: 'column',
+						width: '100%',
+						height: '100%',
+						overflowY: 'auto'
+					}}>
+					{estimator.tablePages.length > 0 && (
+						<TablePage0D estimator={estimator}></TablePage0D>
+					)}
+					{generateGraphs(
+						estimator,
+						resultsGeneratedFromProjectFile && groupQuantities,
+						simulation?.jobId
+					)}
+				</Box>
 			)}
-		</Card>
+		</Box>
 	);
 };
 

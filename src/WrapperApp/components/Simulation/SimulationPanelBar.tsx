@@ -1,9 +1,7 @@
 import CableIcon from '@mui/icons-material/Cable';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import {
-	AppBar,
 	AppBarProps,
 	Box,
 	Button,
@@ -13,12 +11,11 @@ import {
 	ButtonProps,
 	Card,
 	CardProps,
-	IconButton,
 	Pagination,
 	styled,
-	Toolbar,
 	Tooltip,
-	Typography
+	Typography,
+	useTheme
 } from '@mui/material';
 import { ChangeEvent } from 'react';
 
@@ -138,165 +135,10 @@ export const InputGroup = styled(ButtonGroup)<InputGroupProps>(
 	})
 );
 
-export function BackendStatusIndicator({
-	isBackendAlive,
-	...other
-}: { isBackendAlive: boolean } & CardProps) {
-	return (
-		<Tooltip
-			title={
-				<Typography>{`Server connection: ${
-					isBackendAlive ? 'connected' : 'unreachable'
-				}`}</Typography>
-			}
-			arrow>
-			<Card
-				component={ButtonBase}
-				{...other}
-				sx={{
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'center',
-					p: ({ spacing }) => spacing(1),
-					...other.sx
-				}}
-				variant='outlined'>
-				<CableIcon
-					color={isBackendAlive ? 'success' : 'error'}
-					sx={{ marginLeft: 'auto' }}
-					fontSize='large'></CableIcon>
-			</Card>
-		</Tooltip>
-	);
-}
-
-export function SimulationAppBar({
-	stickTo = 'top',
-	position,
-	color = 'inherit',
-	elevation = 1,
-	children,
-	accordion = {},
-	sx,
-	...other
-}: SimulationAppBarProps) {
-	position ??= !!stickTo ? 'sticky' : position;
-
-	return (
-		<Box
-			position={'sticky'}
-			p={({ spacing }) => spacing(3, 0)}
-			mt={({ spacing }) => spacing(-3)}
-			mb={({ spacing }) => spacing(-3)}
-			sx={{
-				width: '100%',
-				inset: ({ spacing }) => spacing(-2, 0),
-				zIndex: ({ zIndex }) => zIndex.appBar,
-				background: ({ palette }) =>
-					!stickTo
-						? 'transparent'
-						: `linear-gradient(${stickTo === 'top' ? '180' : '0'}deg , ${
-								palette.background.default
-							} 50%, transparent 100%)`,
-				...sx
-			}}>
-			<AppBar
-				position='relative'
-				color={color}
-				elevation={elevation}
-				sx={{
-					borderRadius: 1
-				}}>
-				<Toolbar
-					sx={{
-						gap: ({ spacing }) => spacing(2),
-						p: ({ spacing }) => spacing(1, 3)
-					}}>
-					{children}
-					{isAccordionHeader(accordion) && (
-						<IconButton
-							aria-label='expand'
-							onClick={accordion.toggleExpanded}
-							sx={{
-								transform: accordion.expanded ? 'rotate(180deg)' : undefined,
-								// animate rotation
-								transition: ({ transitions }) =>
-									transitions.create('transform', {
-										duration: transitions.duration.standard
-									})
-							}}>
-							<ExpandMoreIcon />
-						</IconButton>
-					)}
-				</Toolbar>
-			</AppBar>
-		</Box>
-	);
-}
-
 export type SimulationAccordionProps = {
 	expanded?: boolean;
 	toggleExpanded?: () => void;
 };
-
-type SimulationLabelBarProps = SimulationAppBarProps & {
-	title: string;
-	subtitle?: string;
-	accordion?: SimulationAccordionProps | { [key: string]: never };
-};
-
-function isAccordionHeader(x: Partial<SimulationAccordionProps>): x is SimulationAccordionProps {
-	return x.toggleExpanded !== undefined && x.expanded !== undefined;
-}
-
-export function SimulationLabelBar({
-	title,
-	subtitle,
-	accordion = {},
-	children,
-	...other
-}: SimulationLabelBarProps) {
-	return (
-		<SimulationAppBar {...other}>
-			<Typography
-				variant='h5'
-				component='div'
-				sx={{
-					flexGrow: 1,
-					display: 'flex',
-					flexDirection: 'column'
-				}}>
-				<Box>{title}</Box>
-				{subtitle && (
-					<Typography
-						variant='subtitle1'
-						component='div'
-						sx={{
-							color: ({ palette }) => palette.text.secondary
-						}}>
-						{subtitle}
-					</Typography>
-				)}
-			</Typography>
-			{children}
-			{isAccordionHeader(accordion) && (
-				<IconButton
-					aria-label='expand'
-					onClick={accordion.toggleExpanded}
-					sx={{
-						transform: accordion.expanded ? 'rotate(180deg)' : undefined,
-						// animate rotation
-						transition: ({ transitions }) =>
-							transitions.create('transform', {
-								duration: transitions.duration.standard
-							})
-					}}>
-					<ExpandMoreIcon />
-				</IconButton>
-			)}
-		</SimulationAppBar>
-	);
-}
 
 export type PageParamProps = {
 	orderType: OrderType;
@@ -305,19 +147,23 @@ export type PageParamProps = {
 	handleOrderChange: (orderType: OrderType, orderBy: OrderBy, pageSize: number) => void;
 };
 
-type SimulationBackendHeaderBar = PageParamProps & SimulationLabelBarProps;
-
-export function SimulationBackendHeader({
+export function SimulationPaginationControls({
 	orderType,
 	orderBy,
 	pageSize,
-	handleOrderChange,
-	children,
-	...other
-}: SimulationBackendHeaderBar) {
+	handleOrderChange
+}: PageParamProps) {
+	const theme = useTheme();
+
 	return (
-		<SimulationLabelBar {...other}>
-			<InputGroup>
+		<Box
+			sx={{
+				display: 'flex',
+				alignItems: 'center',
+				justifyContent: 'end',
+				margin: theme.spacing(1)
+			}}>
+			<InputGroup sx={{ marginRight: theme.spacing(1) }}>
 				<OrderButton
 					orderType={orderType}
 					onChange={orderType => handleOrderChange(orderType, orderBy, pageSize)}
@@ -339,8 +185,7 @@ export function SimulationBackendHeader({
 					onChange={pageSize => handleOrderChange(orderType, orderBy, pageSize)}
 				/>
 			</InputGroup>
-			{children}
-		</SimulationLabelBar>
+		</Box>
 	);
 }
 
@@ -355,21 +200,18 @@ type SimulationPaginationFooterProps = SimulationAppBarProps & PageNavigationPro
 export function SimulationPaginationFooter({
 	pageCount,
 	pageIdx,
-	handlePageChange,
-	...other
+	handlePageChange
 }: SimulationPaginationFooterProps) {
 	return (
-		<SimulationAppBar {...other}>
-			<Pagination
-				sx={{
-					display: 'flex',
-					justifyContent: 'end',
-					p: ({ spacing }) => spacing(2)
-				}}
-				count={pageCount}
-				page={pageIdx}
-				onChange={handlePageChange}
-			/>
-		</SimulationAppBar>
+		<Pagination
+			sx={{
+				display: 'flex',
+				justifyContent: 'center',
+				p: ({ spacing }) => spacing(2)
+			}}
+			count={pageCount}
+			page={pageIdx}
+			onChange={handlePageChange}
+		/>
 	);
 }

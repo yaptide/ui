@@ -50,6 +50,8 @@ export function LoadFileDialog({
 			<Button
 				disabled={!data}
 				aria-label='clear and proceed'
+				variant='contained'
+				color='primary'
 				onClick={() => {
 					onClose();
 

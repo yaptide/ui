@@ -35,13 +35,24 @@ export function PropertyField(props: { label?: string; disabled?: boolean; child
 			{props.label !== undefined && (
 				<Grid
 					size={4}
-					sx={{ textAlign: 'right', opacity: props.disabled ? 0.5 : 'inherit' }}>
+					sx={{
+						opacity: props.disabled ? 0.5 : 'inherit',
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'end',
+						textAlign: 'right'
+					}}>
 					{props.label}
 				</Grid>
 			)}
 			<Grid
 				size={props.label !== undefined ? 8 : 12}
-				sx={{ opacity: props.disabled ? 0.5 : 'inherit' }}>
+				sx={theme => ({
+					'opacity': props.disabled ? 0.5 : 'inherit',
+					'& .MuiOutlinedInput-input': {
+						py: theme.spacing(0.5)
+					}
+				})}>
 				{props.children}
 			</Grid>
 		</>
@@ -73,7 +84,7 @@ export function TextPropertyField(props: TextPropertyFieldProps) {
 		<PropertyField label={props.label}>
 			<TextField
 				size='small'
-				variant='standard'
+				variant='outlined'
 				value={props.value}
 				onChange={event => props.onChange(event.target.value)}
 			/>
@@ -132,9 +143,23 @@ export function NumberInput(props: {
 	}, [props]);
 
 	return (
-		<Box>
-			<Box ref={boxRef}></Box>
-		</Box>
+		<Box
+			sx={theme => ({
+				backgroundColor:
+					theme.palette.grey[theme.palette.mode === 'light' ? 'A100' : '900'],
+				py: theme.spacing(0.25),
+				px: theme.spacing(0.5),
+				borderRadius: theme.spacing(1),
+				borderStyle: 'solid',
+				borderWidth: 1,
+				// https://github.com/mui/material-ui/blob/46e6588cf53a7abef986a6111e0ed49dace0bc98/packages/mui-material/src/OutlinedInput/OutlinedInput.js#L123
+				borderColor:
+					theme.palette.mode === 'light'
+						? 'rgba(0, 0, 0, 0.23)'
+						: 'rgba(255, 255, 255, 0.23)'
+			})}
+			ref={boxRef}
+		/>
 	);
 }
 

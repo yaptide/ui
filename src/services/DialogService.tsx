@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { ChangeScoringTypeDialog } from '../ThreeEditor/components/Dialog/ChangeScoringTypeDialog';
 import { ClearHistoryDialog } from '../ThreeEditor/components/Dialog/ClearHistoryDialog';
 import { EditProjectInfoDialog } from '../ThreeEditor/components/Dialog/EditProjectInfoDialog';
+import { LoadFileDialog } from '../ThreeEditor/components/Dialog/LoadFileDialog';
 import { NewProjectDialog } from '../ThreeEditor/components/Dialog/NewProjectDialog';
 import { OpenFileDialog } from '../ThreeEditor/components/Dialog/OpenFileDialog';
 import { RejectKeycloakRefreshUserDialog } from '../ThreeEditor/components/Dialog/RejectKeycloakRefreshUserDialog';
@@ -10,7 +11,6 @@ import { RejectKeycloakUserDialog } from '../ThreeEditor/components/Dialog/Rejec
 import { RunSimulationDialog } from '../ThreeEditor/components/Dialog/RunSimulationDialog';
 import { SaveFileDialog } from '../ThreeEditor/components/Dialog/SaveFileDialog';
 import { SimulatorChangeDialog } from '../ThreeEditor/components/Dialog/SimulatorChangeDialog';
-import { LoadFileDialog } from '../ThreeEditor/componentsNew/Dialog/LoadFileDialog';
 import {
 	DefaultDialogPropsType,
 	DialogComponentNames,

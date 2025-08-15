@@ -1,5 +1,5 @@
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Box, ToggleButton, ToggleButtonGroup, useTheme } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useCallback, useState } from 'react';
 import { throttle } from 'throttle-debounce';
@@ -7,6 +7,7 @@ import { throttle } from 'throttle-debounce';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
 import { readFile } from '../../../services/LoaderService';
 import { useStore } from '../../../services/StoreService';
+import { StyledExclusiveToggleButtonGroup } from '../../../shared/components/StyledExclusiveToggleButtonGroup';
 import { addCustomStoppingPowerTableToEditorJSON } from '../../../ThreeEditor/Simulation/CustomStoppingPower/CustomStoppingPower';
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
@@ -19,7 +20,7 @@ import { DragDropFiles } from './DragDropFiles';
 import { InputFilesEditor } from './InputFilesEditor';
 
 interface InputEditorPanelProps {
-	goToRun?: (simulator: SimulatorType, InputFiles?: SimulationInputFiles) => void;
+	goToRun: (simulator: SimulatorType, InputFiles?: SimulationInputFiles) => void;
 	simulator: SimulatorType;
 	onSimulatorChange: (newSimulator: SimulatorType) => void;
 }
@@ -32,6 +33,7 @@ export default function InputEditorPanel({
 	const { enqueueSnackbar } = useSnackbar();
 	const { yaptideEditor } = useStore();
 	const { isConverterReady, convertJSON } = usePythonConverter();
+	const theme = useTheme();
 
 	const [isInProgress, setInProgress] = useState(false);
 	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>(_defaultShInputFiles);
@@ -92,116 +94,100 @@ export default function InputEditorPanel({
 	return (
 		<Box
 			sx={{
-				margin: '0 auto',
-				width: '100%',
-				padding: '3rem',
-				gap: '1.5rem',
-				minHeight: '100vh',
+				padding: theme.spacing(1),
+				gap: theme.spacing(1),
 				height: 'min-content',
 				boxSizing: 'border-box'
 			}}>
 			<Box
 				sx={{
-					marginBottom: '2rem'
+					borderRadius: theme.spacing(1),
+					marginBottom: theme.spacing(1),
+					backgroundColor: theme.palette.accordion.main,
+					padding: theme.spacing(2),
+					boxSizing: 'border-box'
 				}}>
-				<LoadingButton
-					id='generate-from-editor'
-					sx={{
-						marginRight: '1rem'
-					}}
-					color='info'
-					loading={!isConverterReady}
-					variant='contained'
-					onClick={debouncedOnClickGenerate}
-					disabled={isInProgress}
-					loadingIndicator='Initializing...'>
-					Generate from Editor
-				</LoadingButton>
-				<ToggleButtonGroup
-					sx={{
-						marginLeft: '1rem'
-					}}
-					value={simulator}
-					exclusive
-					onChange={(_e, chosenSimulator) => {
-						if (chosenSimulator) {
-							if (chosenSimulator !== simulator)
-								if (
-									window.confirm(
-										'Current input files will be lost. Are you sure?'
-									)
-								) {
-									onSimulatorChange(chosenSimulator);
+				<Box sx={{ marginBottom: theme.spacing(2) }}>
+					<LoadingButton
+						id='generate-from-editor'
+						sx={{
+							marginRight: '1rem'
+						}}
+						color='primary'
+						loading={!isConverterReady}
+						variant='contained'
+						onClick={debouncedOnClickGenerate}
+						disabled={isInProgress}
+						loadingIndicator='Initializing...'>
+						Generate from Editor
+					</LoadingButton>
+					<StyledExclusiveToggleButtonGroup
+						value={simulator}
+						onChange={(_e, chosenSimulator) => {
+							if (!chosenSimulator || chosenSimulator === simulator) {
+								return;
+							}
 
-									switch (chosenSimulator) {
-										case SimulatorType.SHIELDHIT:
-											setInputFiles(_defaultShInputFiles);
+							if (
+								!window.confirm('Current input files will be lost. Are you sure?')
+							) {
+								return;
+							}
 
-											break;
-										// Topas is not supported in current version of yaptide
-										// case SimulatorType.TOPAS:
-										// 	setInputFiles(_defaultTopasInputFiles);
-										// 	break;
-										case SimulatorType.FLUKA:
-											setInputFiles(_defaultFlukaInputFiles);
+							onSimulatorChange(chosenSimulator);
 
-											break;
-										default:
-											throw new Error(
-												'Unknown simulator: ' + chosenSimulator
-											);
-									}
-								}
-						}
-					}}>
-					<ToggleButton
-						value={SimulatorType.SHIELDHIT}
-						color='info'>
-						SHIELD-HIT12A
-					</ToggleButton>
-					{/* <ToggleButton
-						value={SimulatorType.TOPAS}
-						color='info'>
-						TOPAS
-					</ToggleButton> */}
-					<ToggleButton
-						value={SimulatorType.FLUKA}
-						color='info'>
-						Fluka
-					</ToggleButton>
-				</ToggleButtonGroup>
-			</Box>
+							switch (chosenSimulator) {
+								case SimulatorType.SHIELDHIT:
+									setInputFiles(_defaultShInputFiles);
 
-			<DragDropFiles
-				id={'input-file-upload-editor'}
-				onSubmit={files => {
-					if (!files) return;
+									break;
+								case SimulatorType.FLUKA:
+									setInputFiles(_defaultFlukaInputFiles);
 
-					const submitedFiles: Record<string, string> = {};
+									break;
+								default:
+									throw new Error('Unknown simulator: ' + chosenSimulator);
+							}
+						}}>
+						<ToggleButton value={SimulatorType.SHIELDHIT}>SHIELD-HIT12A</ToggleButton>
+						<ToggleButton value={SimulatorType.FLUKA}>Fluka</ToggleButton>
+					</StyledExclusiveToggleButtonGroup>
+				</Box>
 
-					const promises = Array.from(files).map(async file => {
-						const content = readFile(file) as Promise<string>;
-						submitedFiles[file.name] = await content;
+				<DragDropFiles
+					id={'input-file-upload-editor'}
+					onSubmit={files => {
+						if (!files) return;
 
-						return content;
-					});
+						const submitedFiles: Record<string, string> = {};
 
-					Promise.all(promises).then(_ => {
-						setInputFiles(oldInput => {
-							if (!oldInput) return submitedFiles as SimulationInputFiles;
+						const promises = Array.from(files).map(async file => {
+							const content = readFile(file) as Promise<string>;
+							submitedFiles[file.name] = await content;
 
-							const inputFiles = { ...oldInput, ...submitedFiles };
-
-							return inputFiles as SimulationInputFiles;
+							return content;
 						});
-					});
-				}}
-				acceptedFiles={acceptedFiles}
-			/>
+
+						Promise.all(promises).then(_ => {
+							setInputFiles(oldInput => {
+								if (!oldInput) return submitedFiles as SimulationInputFiles;
+
+								const inputFiles = { ...oldInput, ...submitedFiles };
+
+								return inputFiles as SimulationInputFiles;
+							});
+						});
+					}}
+					acceptedFiles={acceptedFiles}
+				/>
+			</Box>
 
 			<InputFilesEditor
 				simulator={simulator}
 				inputFiles={inputFiles}
+				goToRun={(inputFiles?: SimulationInputFiles) => {
+					goToRun(simulator, inputFiles);
+				}}
 				onChange={inputFiles => setInputFiles(inputFiles)}
 			/>
 		</Box>

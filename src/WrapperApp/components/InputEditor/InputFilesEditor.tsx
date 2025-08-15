@@ -21,15 +21,13 @@ import { saveString } from '../../../util/File';
 interface InputFilesEditorProps {
 	simulator: SimulatorType;
 	inputFiles: SimulationInputFiles | undefined;
+	goToRun: (inputFiles?: SimulationInputFiles) => void;
 	onChange?: (inputFiles: SimulationInputFiles) => void;
 	saveAndExit?: (inputFiles: SimulationInputFiles) => void;
 	closeEditor?: () => void;
 }
 
 export function InputFilesEditor(props: InputFilesEditorProps) {
-	const { open: openRunSimulationDialog } = useDialog('runSimulation');
-	const { postJobDirect, postJobBatch } = useShSimulation();
-	const { yaptideEditor, setTrackedId } = useStore();
 	const { demoMode } = useConfig();
 	const { isAuthorized } = useAuth();
 	const inputFiles = props.inputFiles ?? _defaultShInputFiles;
@@ -75,29 +73,17 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 	};
 
 	return (
-		<Card sx={{ minHeight: '100%' }}>
-			<CardActions
-				sx={{
-					justifyContent: 'flex-end',
-					background: theme => (theme.palette.mode === 'dark' ? 'grey.800' : 'grey.300')
-				}}>
+		<Box sx={{ display: 'flex', flexDirection: 'column', gap: theme.spacing(1) }}>
+			<Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
 				<Button
-					color='success'
+					color='primary'
 					variant='contained'
 					disabled={demoMode || !isAuthorized}
-					onClick={() =>
-						yaptideEditor &&
-						openRunSimulationDialog({
-							inputFiles: Object.fromEntries(
-								Object.entries(inputFiles).filter(([, data]) => data.length > 0)
-							),
-							simulator: props.simulator,
-							onSubmit: setTrackedId,
-							postJobDirect,
-							postJobBatch,
-							yaptideEditor
-						})
-					}>
+					onClick={() => {
+						if (props.goToRun) {
+							props.goToRun(inputFiles);
+						}
+					}}>
 					Run with these input files
 				</Button>
 				<Button
@@ -122,9 +108,9 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 						Close
 					</Button>
 				)}
-			</CardActions>
+			</Box>
 			<Divider />
-			<CardContent>
+			<Box>
 				{Object.entries(inputFiles)
 					.sort(([name1, _1], [name2, _2]) => {
 						const index1 = isKnownInputFile(name1)
@@ -223,13 +209,14 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 										fontFamily:
 											'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
 										maxHeight: name === 'sobp.dat' ? '15rem' : 'unset',
-										overflowY: name === 'sobp.dat' ? 'auto' : 'unset'
+										overflowY: name === 'sobp.dat' ? 'auto' : 'unset',
+										borderRadius: theme.spacing(1)
 									}}
 								/>
 							</Box>
 						);
 					})}
-			</CardContent>
-		</Card>
+			</Box>
+		</Box>
 	);
 }

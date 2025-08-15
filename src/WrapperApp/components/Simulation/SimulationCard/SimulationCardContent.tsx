@@ -160,6 +160,7 @@ export const SimulationCardContent = ({
 							}
 						}}
 						value={simulationProgressPercent}
+						valueBuffer={1}
 					/>
 					<Box
 						sx={{

@@ -18,7 +18,6 @@ const innerElement = (props: DragDropInnerElementProps) => {
 				boxSizing: 'border-box',
 				position: 'relative',
 				padding: 0,
-				mb: 2,
 				borderColor: _ => (dragActive ? 'primary.main' : 'grey.500')
 			}}>
 			<Box

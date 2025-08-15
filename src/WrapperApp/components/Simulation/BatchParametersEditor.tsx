@@ -196,7 +196,7 @@ export function BatchScriptParametersEditor({
 						marginTop: theme.spacing(1),
 						borderRadius: theme.shape.borderRadius,
 						fontSize: 12,
-						backgroundColor: theme.palette.action.disabledBackground,
+						backgroundColor: theme.palette.grey['900'],
 						fontFamily:
 							'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
 						maxHeight: '15rem',

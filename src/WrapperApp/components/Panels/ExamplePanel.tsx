@@ -1,4 +1,4 @@
-import { Box, Grid, Paper, Typography } from '@mui/material';
+import { Box, Chip, Divider, Grid, Paper, Typography } from '@mui/material';
 
 import EXAMPLES, { useFetchExampleData } from '../../../examples/examples';
 import { SimulatorType } from '../../../types/RequestTypes';
@@ -15,37 +15,23 @@ export function ExamplePanel({ setTabsValue }: ExamplePanelProps) {
 			{Object.values(SimulatorType).map(simulator => (
 				<Box
 					key={simulator}
-					sx={{ marginBottom: 4 }}>
-					{/* Simulator Name */}
-					<Typography
-						variant='h5'
-						sx={{ marginBottom: 2 }}>
-						{simulator.toUpperCase()}
-					</Typography>
-
-					{/* Grid2 of Examples */}
-					<Grid
-						container
-						spacing={2}>
+					sx={{ marginBottom: 4, width: '500px' }}>
+					<Typography variant='h5'>{simulator.toUpperCase()}</Typography>
+					<Divider sx={{ marginTop: 1, marginBottom: 1 }} />
+					<Box>
 						{Object.entries(EXAMPLES[simulator]).map(([exampleName, fileName]) => (
-							<Grid
+							<Chip
 								key={fileName}
-								sx={{ width: 200 }}>
-								{' '}
-								{/* Set a fixed width here */}
-								<Paper
-									elevation={3}
-									sx={{ padding: 2, textAlign: 'center', cursor: 'pointer' }}
-									onClick={() => {
-										fetchExampleData(fileName);
-										// Change the tab to 'editor' after loading the example
-										setTabsValue('editor');
-									}}>
-									<Typography variant='body1'>{exampleName}</Typography>
-								</Paper>
-							</Grid>
+								sx={{ fontSize: 12, margin: 0.5 }}
+								label={exampleName}
+								onClick={() => {
+									fetchExampleData(fileName);
+									// Change the tab to 'editor' after loading the example
+									setTabsValue('editor');
+								}}
+							/>
 						))}
-					</Grid>
+					</Box>
 				</Box>
 			))}
 		</Box>

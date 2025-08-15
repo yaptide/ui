@@ -222,7 +222,7 @@ function OperationInput({
 										: {
 												backgroundColor: 'primary.main',
 												color: 'primary.contrastText'
-										  }
+											}
 							}}>
 							{OperationToIcon(
 								operation,

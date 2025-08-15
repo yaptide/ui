@@ -14,7 +14,7 @@ import { Loader } from './services/LoaderService';
 import { ShSimulation } from './services/ShSimulatorService';
 import { Store } from './services/StoreService';
 import { YaptideEditor } from './ThreeEditor/js/YaptideEditor';
-import WrapperApp from './WrapperAppNew/WrapperApp';
+import WrapperApp from './WrapperApp/WrapperApp';
 
 declare module '@mui/material/styles' {
 	// add new variables to the theme type

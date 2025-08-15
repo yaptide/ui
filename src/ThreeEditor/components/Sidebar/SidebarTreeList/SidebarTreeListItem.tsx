@@ -111,6 +111,22 @@ export function SidebarTreeListItem(props: {
 		)
 	);
 
+	let icon = undefined;
+
+	if (hasChild) {
+		icon = (
+			<ChevronRightIcon
+				onClick={onToggle}
+				sx={{
+					transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+					transition: 'transform 0.2s'
+				}}
+			/>
+		);
+	} else if (node.parent) {
+		icon = <Icon />;
+	}
+
 	return (
 		<>
 			<Box
@@ -124,17 +140,7 @@ export function SidebarTreeListItem(props: {
 						backgroundColor: ({ palette }) => palette.action.hover
 					}
 				}}>
-				{hasChild ? (
-					<ChevronRightIcon
-						onClick={onToggle}
-						sx={{
-							transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-							transition: 'transform 0.2s'
-						}}
-					/>
-				) : (
-					<Icon />
-				)}
+				{icon}
 				<Stack
 					direction='row'
 					onClick={() => editor.selectById(object.id)}

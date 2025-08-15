@@ -1,4 +1,4 @@
-import { Card, CardContent, Tab, Tabs } from '@mui/material';
+import { useTheme } from '@mui/material';
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 
 import {
@@ -6,6 +6,7 @@ import {
 	SpecificEstimator,
 	useShSimulation
 } from '../../../../services/ShSimulatorService';
+import { StyledTab, StyledTabs } from '../../../../shared/components/Tabs/StyledTabs';
 import { EstimatorPagesByDimensions } from '../../../../types/ResponseTypes';
 
 interface EstimatorsTabProps {
@@ -25,6 +26,7 @@ const EstimatorsSelect = ({
 	estimatorsTabData,
 	estimatorsPagesData
 }: EstimatorsTabProps) => {
+	const theme = useTheme();
 	const [controller] = useState(new AbortController());
 
 	const { getEstimatorsPages } = useShSimulation();
@@ -119,51 +121,22 @@ const EstimatorsSelect = ({
 	};
 
 	return (
-		<Card
-			sx={{
-				margin: '0.5rem',
-				height: 'min-content',
-				overflow: 'unset',
-				position: 'sticky',
-				top: '8px',
-				zIndex: 1
-			}}>
-			<CardContent
-				sx={{
-					color: theme =>
-						theme.palette.mode === 'dark' ? 'secondary.contrastText' : 'secondary.dark'
-				}}>
-				<Tabs
-					textColor='inherit'
-					sx={{
-						'flexShrink': 0,
-						'& .MuiTabs-indicator': {
-							backgroundColor: theme =>
-								theme.palette.mode === 'dark'
-									? 'secondary.contrastText'
-									: 'secondary.dark'
-						},
-						'& .MuiButtonBase-root': {
-							fontWeight: 'bold'
-						}
-					}}
-					orientation='vertical'
-					variant='scrollable'
-					value={tabsValue}
-					onChange={handleChange}>
-					{estimatorsTabData.map((estimatorName, id) => {
-						return (
-							<Tab
-								key={`tab_${estimatorName}`}
-								label={estimatorName}
-								value={id}
-								onClick={() => handleEstimatorTabChange(id)}
-							/>
-						);
-					})}
-				</Tabs>
-			</CardContent>
-		</Card>
+		<StyledTabs
+			sx={{ mx: theme.spacing(1), my: 0 }}
+			value={tabsValue}
+			onChange={handleChange}>
+			{estimatorsTabData.map((estimatorName, id) => {
+				return (
+					<StyledTab
+						sx={{ minHeight: 20 }}
+						key={`tab_${estimatorName}`}
+						label={estimatorName}
+						value={id}
+						onClick={() => handleEstimatorTabChange(id)}
+					/>
+				);
+			})}
+		</StyledTabs>
 	);
 };
 
