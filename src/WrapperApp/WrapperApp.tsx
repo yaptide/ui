@@ -186,6 +186,7 @@ function WrapperApp() {
 					<RunSimulationForm
 						editorJson={yaptideEditor?.toSerialized()}
 						inputFiles={providedInputFiles}
+						clearInputFiles={() => setProvidedInputFiles(undefined)}
 						forwardedSimulator={currentSimulator}
 						runSimulation={runSimulation}
 					/>

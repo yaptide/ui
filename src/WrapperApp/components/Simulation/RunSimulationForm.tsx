@@ -68,6 +68,7 @@ type RunSimulationFormProps = {
 	availableClusters?: string[];
 	editorJson?: EditorJson;
 	inputFiles?: Partial<SimulationInputFiles>;
+	clearInputFiles?: () => void;
 	forwardedSimulator: SimulatorType;
 	runSimulation?: RunSimulationFunctionType;
 };
@@ -76,6 +77,7 @@ export function RunSimulationForm({
 	availableClusters = ['default'],
 	editorJson,
 	inputFiles = {},
+	clearInputFiles = () => {},
 	forwardedSimulator,
 	runSimulation = () => {}
 }: RunSimulationFormProps) {
@@ -89,11 +91,12 @@ export function RunSimulationForm({
 
 	useEffect(() => {
 		if (Object.keys(inputFiles).length > 0) {
-			console.log('new input files');
 			setSimulationSourceType('files');
 			setSelectedFiles(Object.keys(inputFiles));
 			setHighlight(true);
 			setTimeout(() => setHighlight(false), 2500);
+		} else {
+			setSimulationSourceType('editor');
 		}
 	}, [inputFiles]);
 
@@ -219,6 +222,8 @@ export function RunSimulationForm({
 			</AccordionSummary>
 			<AccordionDetails
 				sx={{
+					'display': 'flex',
+					'flexDirection': 'column',
 					'& .MuiToggleButtonGroup-root, & .MuiFormControl-root': {
 						marginBottom: theme.spacing(2)
 					}
@@ -258,6 +263,7 @@ export function RunSimulationForm({
 							label='Number of tasks'
 							value={nTasks}
 							onChange={e => setNTasks(Math.max(1, parseInt(e.target.value)))}
+							sx={{ width: '160px' }}
 						/>
 						<FormControl
 							fullWidth
@@ -285,6 +291,18 @@ export function RunSimulationForm({
 								Input Files Data
 							</ToggleButton>
 						</StyledExclusiveToggleButtonGroup>
+						{Object.keys(inputFiles).length > 0 && (
+							<Button
+								size='small'
+								onClick={clearInputFiles}
+								sx={{
+									alignSelf: 'end',
+									marginTop: theme.spacing(-1),
+									marginBottom: theme.spacing(1)
+								}}>
+								Clear
+							</Button>
+						)}
 						<Box
 							sx={{
 								display: 'flex',
