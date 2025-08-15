@@ -72,7 +72,6 @@ export default function NavPanelElement(props: NavPanelElementProps) {
 				secondaryAction={secondaryAction}
 				disablePadding
 				sx={{
-					'backgroundColor': 'none',
 					'& .MuiListItemButton-root:hover': {
 						backgroundColor: theme.palette.action.hover,
 						borderRadius: theme.spacing(1)

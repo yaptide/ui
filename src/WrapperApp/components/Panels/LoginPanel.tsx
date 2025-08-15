@@ -9,7 +9,6 @@ export default function LoginPanel() {
 	const { altAuth } = useConfig();
 	const { login } = useAuth();
 	const { keycloak, initialized } = useKeycloakAuth();
-	const theme = useTheme();
 
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
@@ -53,7 +52,7 @@ export default function LoginPanel() {
 			<Card variant='outlined'>
 				<CardContent>
 					<TextField
-						color='primary'
+						color='secondary'
 						id='loginField'
 						label='Username address'
 						variant='outlined'
@@ -64,7 +63,7 @@ export default function LoginPanel() {
 				</CardContent>
 				<CardContent>
 					<TextField
-						color='primary'
+						color='secondary'
 						id='passwordField'
 						label='Password'
 						variant='outlined'

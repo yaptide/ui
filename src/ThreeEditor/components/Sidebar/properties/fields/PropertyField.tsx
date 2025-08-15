@@ -1,4 +1,4 @@
-import { Box, Checkbox, Grid, Stack, TextField, Typography } from '@mui/material';
+import { Box, Checkbox, Grid, Stack, TextField, Typography, useTheme } from '@mui/material';
 import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Vector2 } from 'three';
 import { Vector3 } from 'three/src/math/Vector3.js';
@@ -102,6 +102,7 @@ export function NumberInput(props: {
 	step?: number;
 	onChange: (value: number) => void;
 }) {
+	const theme = useTheme();
 	const boxRef = useRef<HTMLDivElement>(null);
 
 	// TODO: Update when props change
@@ -144,20 +145,21 @@ export function NumberInput(props: {
 
 	return (
 		<Box
-			sx={theme => ({
+			sx={{
 				backgroundColor:
 					theme.palette.grey[theme.palette.mode === 'light' ? 'A100' : '900'],
 				py: theme.spacing(0.25),
 				px: theme.spacing(0.5),
 				borderRadius: theme.spacing(1),
 				borderStyle: 'solid',
+				overflow: 'hidden',
 				borderWidth: 1,
 				// https://github.com/mui/material-ui/blob/46e6588cf53a7abef986a6111e0ed49dace0bc98/packages/mui-material/src/OutlinedInput/OutlinedInput.js#L123
 				borderColor:
 					theme.palette.mode === 'light'
 						? 'rgba(0, 0, 0, 0.23)'
 						: 'rgba(255, 255, 255, 0.23)'
-			})}
+			}}
 			ref={boxRef}
 		/>
 	);
@@ -330,6 +332,7 @@ export function BooleanPropertyField(props: BooleanPropertyFieldProps) {
 			<Checkbox
 				sx={{ padding: 0 }}
 				checked={props.value}
+				color='secondary'
 				onChange={event => props.onChange(event.target.checked)}
 			/>
 		</PropertyField>
@@ -357,6 +360,7 @@ export function ConditionalPropertyField(
 					sx={{ padding: 0 }}
 					disabled={props.propertyDisabled}
 					checked={props.enabled}
+					color='secondary'
 					onChange={event => props.onChangeEnabled(event.target.checked)}
 				/>
 				{props.enabled && props.children}

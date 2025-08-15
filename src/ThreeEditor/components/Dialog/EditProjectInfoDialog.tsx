@@ -51,10 +51,13 @@ export function EditProjectInfoDialog({
 			}>
 			<Button
 				onClick={onClose}
-				autoFocus>
+				autoFocus
+				color='secondary'>
 				Cancel
 			</Button>
 			<Button
+				variant='contained'
+				color='secondary'
 				onClick={() => {
 					if (yaptideEditor) {
 						yaptideEditor.config.setKey('project/title', title);

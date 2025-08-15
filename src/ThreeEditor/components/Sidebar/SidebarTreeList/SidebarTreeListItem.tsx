@@ -145,14 +145,16 @@ export function SidebarTreeListItem(props: {
 					direction='row'
 					onClick={() => editor.selectById(object.id)}
 					width='100%'
-					sx={{ cursor: 'pointer' }}
+					sx={{
+						cursor: 'pointer'
+					}}
 					{...bindContextMenu(popupState)}>
 					<Typography
 						component={Box}
 						sx={{
 							color: ({ palette }) =>
 								editor.selected === object
-									? palette.primary.main
+									? palette.secondary.main
 									: palette.text.primary,
 							fontWeight: ({ typography }) =>
 								editor.selected === object
@@ -190,6 +192,7 @@ export function SidebarTreeListItem(props: {
 						<Checkbox
 							sx={{ padding: 0, marginLeft: 'auto' }}
 							checked={object.visible}
+							color='secondary'
 							onClick={e => e.stopPropagation()}
 							onChange={(_, value) => {
 								editor.execute(

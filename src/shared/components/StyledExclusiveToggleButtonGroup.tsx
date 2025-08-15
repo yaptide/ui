@@ -23,8 +23,6 @@ export function StyledExclusiveToggleButtonGroup(props: StyledRadioButtonGroupPr
 					theme.palette.mode === 'light'
 						? 'rgba(0, 0, 0, 0.23)'
 						: 'rgba(255, 255, 255, 0.23)',
-				'backgroundColor':
-					theme.palette.grey[theme.palette.mode === 'light' ? 'A100' : '900'],
 				'gap': theme.spacing(0.5),
 				'& .MuiToggleButtonGroup-lastButton, & .MuiToggleButtonGroup-firstButton, & .MuiToggleButtonGroup-centerButton':
 					{
