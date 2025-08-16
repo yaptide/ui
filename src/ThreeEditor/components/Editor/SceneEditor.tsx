@@ -19,8 +19,6 @@ declare global {
 interface SceneEditorProps {
 	focus: boolean;
 	sidebarProps: boolean[];
-	simulator: SimulatorType;
-	onSimulatorChange: (newSimulator: SimulatorType) => void;
 }
 
 function SceneEditor(props: SceneEditorProps) {

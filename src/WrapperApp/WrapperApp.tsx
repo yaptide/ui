@@ -39,13 +39,12 @@ const StyledAppGrid = styled(Box)(({ theme }) => ({
 
 function WrapperApp() {
 	const { demoMode } = useConfig();
-	const { yaptideEditor, resultsSimulationData } = useStore();
+	const { yaptideEditor, setSimulatorType, resultsSimulationData } = useStore();
 	const { isAuthorized, logout } = useAuth();
 	const [open, setOpen] = useState(true);
 	const [tabsValue, setTabsValue] = useState('editor');
 
 	const [providedInputFiles, setProvidedInputFiles] = useState<SimulationInputFiles>();
-	const [currentSimulator, setCurrentSimulator] = useState<SimulatorType>(SimulatorType.COMMON);
 
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
 		if (newValue === 'login' && isAuthorized) logout();
@@ -136,9 +135,7 @@ function WrapperApp() {
 					persistent>
 					<SceneEditor
 						focus={tabsValue === 'editor'}
-						simulator={currentSimulator}
 						sidebarProps={[open, tabsValue === 'editor']}
-						onSimulatorChange={setCurrentSimulator}
 					/>
 					<EditorToolbar
 						editor={yaptideEditor}
@@ -153,13 +150,7 @@ function WrapperApp() {
 						gridRow: 'header-start / content-end'
 					}}
 					forTabs={['editor']}>
-					{yaptideEditor && (
-						<EditorSidebar
-							editor={yaptideEditor}
-							simulator={currentSimulator}
-							onSimulatorChange={setCurrentSimulator}
-						/>
-					)}
+					{yaptideEditor && <EditorSidebar editor={yaptideEditor} />}
 				</TabPanel>
 				{/* end Editor screen */}
 
@@ -171,7 +162,7 @@ function WrapperApp() {
 						gridRow: 'header-start / content-end'
 					}}
 					forTabs={['simulations']}>
-					<SimulationPanel forwardedSimulator={currentSimulator} />
+					<SimulationPanel />
 				</TabPanel>
 
 				{/* Simulations sidebar hosts a form to run the simulation and a list of running simulations */}
@@ -186,7 +177,6 @@ function WrapperApp() {
 						editorJson={yaptideEditor?.toSerialized()}
 						inputFiles={providedInputFiles}
 						clearInputFiles={() => setProvidedInputFiles(undefined)}
-						forwardedSimulator={currentSimulator}
 						runSimulation={runSimulation}
 					/>
 				</TabPanel>
@@ -203,10 +193,8 @@ function WrapperApp() {
 					<InputEditorPanel
 						goToRun={(simulator: SimulatorType, inputFiles?: SimulationInputFiles) => {
 							setProvidedInputFiles(inputFiles);
-							setCurrentSimulator(simulator);
+							setSimulatorType(simulator, false);
 						}}
-						simulator={currentSimulator}
-						onSimulatorChange={setCurrentSimulator}
 					/>
 				</TabPanel>
 				{/* end Input files screen */}

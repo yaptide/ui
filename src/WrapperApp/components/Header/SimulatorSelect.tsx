@@ -61,7 +61,7 @@ function SimulatorSelectItem({ simulator, onClick }: SimulationSelectItemProps) 
 }
 
 export default function SimulatorSelect() {
-	const { yaptideEditor } = useStore();
+	const { yaptideEditor, setSimulatorType } = useStore();
 	const { demoMode } = useConfig();
 
 	const isBackendAlive = useIsBackendAlive();
@@ -72,39 +72,24 @@ export default function SimulatorSelect() {
 
 	const currentSimulator = yaptideEditor?.contextManager.currentSimulator;
 
-	const doChangeSimulator = useCallback(
-		(simulator: SimulatorType, changingToOrFromGeant4: boolean) => {
-			if (!yaptideEditor) {
-				return;
-			}
-
-			yaptideEditor.contextManager.currentSimulator = simulator;
-
-			if (changingToOrFromGeant4) {
-				yaptideEditor.clear();
-			}
-		},
-		[]
-	);
-
 	const changeSimulator = useCallback(
 		(simulator: SimulatorType) => {
 			const changinToOrFromGeant4 =
 				yaptideEditor?.contextManager.currentSimulator === SimulatorType.GEANT4 ||
 				simulator === SimulatorType.GEANT4;
 
-			const modal_text = changinToOrFromGeant4
+			const modalText = changinToOrFromGeant4
 				? 'Changing the simulator will clear the project. Are you sure you want to continue?'
 				: "Changing to another simulator may result in data loss. It is only recommended to change from the 'Common' simulator to either 'Fluka' or 'Shieldhit'. Are you sure you want to continue?";
 
 			if (currentSimulator === SimulatorType.COMMON && simulator !== SimulatorType.GEANT4) {
-				doChangeSimulator(simulator, changinToOrFromGeant4);
+				setSimulatorType(simulator, changinToOrFromGeant4);
 			} else {
 				openSimulatorChangeDialog({
-					text: modal_text,
+					text: modalText,
 					closeAction() {},
 					confirmAction() {
-						doChangeSimulator(simulator, changinToOrFromGeant4);
+						setSimulatorType(simulator, changinToOrFromGeant4);
 						setAnchorEl(null);
 					}
 				});

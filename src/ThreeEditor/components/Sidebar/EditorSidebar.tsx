@@ -18,12 +18,11 @@ import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
 
 interface EditorSidebarProps {
 	editor: YaptideEditor;
-	simulator: SimulatorType;
-	onSimulatorChange: (newSimulator: SimulatorType) => void;
 }
 
 export function EditorSidebar(props: EditorSidebarProps) {
-	const { editor, simulator } = props;
+	const { editor } = props;
+	const simulator = editor.contextManager.currentSimulator;
 
 	const [btnProps, setBtnProps] = useState(getAddElementButtonProps(editor));
 

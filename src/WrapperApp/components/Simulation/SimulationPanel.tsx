@@ -1,6 +1,7 @@
 import { Box, Fade, Modal } from '@mui/material';
 import { useState } from 'react';
 
+import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
@@ -9,20 +10,15 @@ import { BackendSimulations } from './BackendSimulations/BackendSimulations';
 interface SimulationPanelProps {
 	goToResults?: () => void;
 	forwardedInputFiles?: SimulationInputFiles;
-	forwardedSimulator: SimulatorType;
 }
 
 export default function SimulationPanel({
 	goToResults,
-	forwardedInputFiles,
-	forwardedSimulator
+	forwardedInputFiles
 }: SimulationPanelProps) {
-	/** Visibility Flags */
+	const { yaptideEditor } = useStore();
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
-
-	/** Simulation Run Options */
 	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
-	const [simulator] = useState<SimulatorType>(forwardedSimulator);
 
 	return (
 		<Box
@@ -42,13 +38,15 @@ export default function SimulationPanel({
 				<Fade in={showInputFilesEditor}>
 					<Box sx={{ height: '100vh', width: '100vw', overflow: 'auto' }}>
 						<InputFilesEditor
-							simulator={simulator}
+							simulator={
+								yaptideEditor?.contextManager.currentSimulator ||
+								SimulatorType.COMMON
+							}
 							inputFiles={inputFiles}
 							closeEditor={() => setShowInputFilesEditor(false)}
 							goToRun={() => {}}
-							onChange={newInputFiles =>
-								setInputFiles(newInputFiles)
-							}></InputFilesEditor>
+							onChange={newInputFiles => setInputFiles(newInputFiles)}
+						/>
 					</Box>
 				</Fade>
 			</Modal>
@@ -56,7 +54,7 @@ export default function SimulationPanel({
 				goToResults={goToResults}
 				setShowInputFilesEditor={setShowInputFilesEditor}
 				setInputFiles={setInputFiles}
-				simulator={simulator}
+				simulator={yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON}
 			/>
 		</Box>
 	);

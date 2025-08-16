@@ -16,12 +16,12 @@ import {
 	SelectChangeEvent,
 	TextField,
 	ToggleButton,
-	ToggleButtonGroup,
 	useTheme
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { MouseEvent, SyntheticEvent, useEffect, useState } from 'react';
 
+import { useStore } from '../../../services/StoreService';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
 import { StyledExclusiveToggleButtonGroup } from '../../../shared/components/StyledExclusiveToggleButtonGroup';
 import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTabs';
@@ -69,7 +69,6 @@ export type RunSimulationFormProps = {
 	editorJson?: EditorJson;
 	inputFiles?: Partial<SimulationInputFiles>;
 	clearInputFiles?: () => void;
-	forwardedSimulator: SimulatorType;
 	runSimulation?: RunSimulationFunctionType;
 };
 
@@ -78,7 +77,6 @@ export function RunSimulationForm({
 	editorJson,
 	inputFiles = {},
 	clearInputFiles = () => {},
-	forwardedSimulator,
 	runSimulation = () => {}
 }: RunSimulationFormProps) {
 	const theme = useTheme();
@@ -88,6 +86,9 @@ export function RunSimulationForm({
 		Object.keys(inputFiles).length > 0 ? 'files' : 'editor'
 	);
 	const [highlight, setHighlight] = useState(false);
+
+	const { yaptideEditor, setSimulatorType } = useStore();
+	const simulator = yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON;
 
 	useEffect(() => {
 		if (Object.keys(inputFiles).length > 0) {
@@ -105,7 +106,6 @@ export function RunSimulationForm({
 
 	const [simName, setSimName] = useState(editorJson?.project.title ?? '');
 	const [nTasks, setNTasks] = useState(1);
-	const [simulator, setSelectedSimulator] = useState<SimulatorType>(forwardedSimulator);
 	const [arrayHeader, setArrayHeader] = useState<string>('');
 	const [collectHeader, setCollectHeader] = useState<string>('');
 	const [arrayOptions, setArrayOptions] = useState<ScriptOption[]>([]);
@@ -185,9 +185,9 @@ export function RunSimulationForm({
 		)
 	);
 
-	const isSimulatorChoiceDisabled = forwardedSimulator !== SimulatorType.COMMON;
+	const isSimulatorChoiceDisabled = simulator !== SimulatorType.COMMON;
 	const defaultSimulator = isSimulatorChoiceDisabled
-		? forwardedSimulator
+		? simulator
 		: simulatorMenuItems[0].props.value;
 
 	return (
@@ -275,7 +275,7 @@ export function RunSimulationForm({
 								label='Simulation software'
 								defaultValue={defaultSimulator}
 								onChange={evn =>
-									setSelectedSimulator(evn.target.value as SimulatorType)
+									setSimulatorType(evn.target.value as SimulatorType, false)
 								}>
 								{simulatorMenuItems}
 							</Select>

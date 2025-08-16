@@ -20,19 +20,15 @@ import { InputFilesEditor } from './InputFilesEditor';
 
 interface InputEditorPanelProps {
 	goToRun: (simulator: SimulatorType, InputFiles?: SimulationInputFiles) => void;
-	simulator: SimulatorType;
-	onSimulatorChange: (newSimulator: SimulatorType) => void;
 }
 
-export default function InputEditorPanel({
-	goToRun,
-	simulator,
-	onSimulatorChange
-}: InputEditorPanelProps) {
+export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const { enqueueSnackbar } = useSnackbar();
-	const { yaptideEditor } = useStore();
+	const { yaptideEditor, setSimulatorType } = useStore();
 	const { isConverterReady, convertJSON } = usePythonConverter();
 	const theme = useTheme();
+
+	const simulator = yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON;
 
 	const [isInProgress, setInProgress] = useState(false);
 	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>(_defaultShInputFiles);
@@ -132,7 +128,7 @@ export default function InputEditorPanel({
 								return;
 							}
 
-							onSimulatorChange(chosenSimulator);
+							setSimulatorType(chosenSimulator, false);
 
 							switch (chosenSimulator) {
 								case SimulatorType.SHIELDHIT:
