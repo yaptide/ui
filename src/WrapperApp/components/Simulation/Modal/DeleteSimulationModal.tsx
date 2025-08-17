@@ -26,24 +26,22 @@ const DeleteSimulationModal = ({ open, setOpen, onConfirm }: CustomModalProps) =
 					sx={{
 						position: 'absolute',
 						right: 8,
-						top: 8,
-						color: 'red'
+						top: 8
 					}}>
 					<CloseIcon />
 				</IconButton>
 			</DialogTitle>
 			<DialogActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
 				<Button
-					variant='contained'
-					color='primary'
-					onClick={onConfirm}>
-					Yes
+					color='secondary'
+					onClick={handleClose}>
+					Cancel
 				</Button>
 				<Button
 					variant='contained'
 					color='secondary'
-					onClick={handleClose}>
-					No
+					onClick={onConfirm}>
+					Delete
 				</Button>
 			</DialogActions>
 		</CustomDialog>

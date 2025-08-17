@@ -90,11 +90,14 @@ type PaginatedCardGridProps = {
 	pageData: PageParamProps & PageNavigationProps;
 } & Omit<SimulationCardGridProps, 'layout'>;
 
-export function PaginatedSimulationCardGrid({ pageData, simulations }: PaginatedCardGridProps) {
+export function PaginatedSimulationCardGrid({
+	pageData,
+	...simulationCardGridProps
+}: PaginatedCardGridProps) {
 	return (
 		<Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
 			<SimulationPaginationControls {...pageData} />
-			<SimulationCardGrid simulations={simulations} />
+			<SimulationCardGrid {...simulationCardGridProps} />
 			<SimulationPaginationFooter {...pageData} />
 		</Box>
 	);
