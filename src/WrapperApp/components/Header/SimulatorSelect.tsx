@@ -23,7 +23,7 @@ const SimulatorsDescriptions: Record<SimulatorType, { name: string; description:
 		description: 'Subset of options supported by ShieldHit and FLUKA'
 	},
 	shieldhit: {
-		name: 'ShieldHit',
+		name: 'SHIELD-HIT12A',
 		description: 'SHIELD-HIT12A instance running on PLGrid'
 	},
 	fluka: {
