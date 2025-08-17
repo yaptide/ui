@@ -1,7 +1,7 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Box, ToggleButton, useTheme } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { throttle } from 'throttle-debounce';
 
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
@@ -19,22 +19,53 @@ import { DragDropFiles } from './DragDropFiles';
 import { InputFilesEditor } from './InputFilesEditor';
 
 interface InputEditorPanelProps {
-	goToRun: (simulator: SimulatorType, InputFiles?: SimulationInputFiles) => void;
+	goToRun: (InputFiles?: SimulationInputFiles) => void;
 }
 
 export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	const { enqueueSnackbar } = useSnackbar();
-	const { yaptideEditor, setSimulatorType } = useStore();
+	const { yaptideEditor } = useStore();
 	const { isConverterReady, convertJSON } = usePythonConverter();
 	const theme = useTheme();
 
-	const simulator = yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON;
+	const setFilesForSimulator = useCallback((simulator: SimulatorType) => {
+		switch (simulator) {
+			case SimulatorType.SHIELDHIT:
+				setInputFiles(_defaultShInputFiles);
+
+				break;
+			case SimulatorType.FLUKA:
+				setInputFiles(_defaultFlukaInputFiles);
+
+				break;
+			default:
+				setInputFiles(_defaultShInputFiles);
+
+				break;
+		}
+	}, []);
+
+	// When simulator is set to COMMON, user can select which actual simulator to generate files for
+	// Otherwise, this value is equal to simulator selected in editor
+	const [generateForSimulator, setGenerateForSimulator] = useState(
+		yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON
+	);
+
+	const showSimulatorToGenerateForToggle =
+		yaptideEditor?.contextManager.currentSimulator === SimulatorType.COMMON;
+
+	useEffect(() => {
+		const currentSimulator =
+			yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON;
+		setGenerateForSimulator(currentSimulator);
+		setFilesForSimulator(currentSimulator);
+	}, [yaptideEditor]);
 
 	const [isInProgress, setInProgress] = useState(false);
 	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>(_defaultShInputFiles);
 
 	const onClickGenerate = useCallback(async () => {
-		if (simulator === SimulatorType.COMMON) {
+		if (generateForSimulator === SimulatorType.COMMON) {
 			return enqueueSnackbar('Please select simulator', { variant: 'warning' });
 		}
 
@@ -45,7 +76,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 
 		await addCustomStoppingPowerTableToEditorJSON(editorJSON);
 
-		convertJSON(editorJSON, simulator)
+		convertJSON(editorJSON, generateForSimulator)
 			.then(res => Object.fromEntries(res) as unknown as SimulationInputFiles)
 			.then(inputFiles => {
 				setInputFiles({ ...inputFiles });
@@ -58,7 +89,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 			.finally(() => {
 				setInProgress(false);
 			});
-	}, [yaptideEditor, enqueueSnackbar, convertJSON, simulator]);
+	}, [yaptideEditor, enqueueSnackbar, convertJSON, generateForSimulator]);
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const debouncedOnClickGenerate = useCallback(
@@ -68,7 +99,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 
 	let acceptedFiles = '';
 
-	switch (simulator) {
+	switch (generateForSimulator) {
 		case SimulatorType.SHIELDHIT:
 			acceptedFiles = '.dat';
 
@@ -115,37 +146,31 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 						loadingIndicator='Initializing...'>
 						Generate from Editor
 					</LoadingButton>
-					<StyledExclusiveToggleButtonGroup
-						value={simulator}
-						onChange={(_e, chosenSimulator) => {
-							if (!chosenSimulator || chosenSimulator === simulator) {
-								return;
-							}
+					{showSimulatorToGenerateForToggle && (
+						<StyledExclusiveToggleButtonGroup
+							value={generateForSimulator}
+							onChange={(_e, chosenSimulator) => {
+								if (!chosenSimulator || chosenSimulator === generateForSimulator) {
+									return;
+								}
 
-							if (
-								!window.confirm('Current input files will be lost. Are you sure?')
-							) {
-								return;
-							}
+								if (
+									!window.confirm(
+										'Current input files will be lost. Are you sure?'
+									)
+								) {
+									return;
+								}
 
-							setSimulatorType(chosenSimulator, false);
-
-							switch (chosenSimulator) {
-								case SimulatorType.SHIELDHIT:
-									setInputFiles(_defaultShInputFiles);
-
-									break;
-								case SimulatorType.FLUKA:
-									setInputFiles(_defaultFlukaInputFiles);
-
-									break;
-								default:
-									throw new Error('Unknown simulator: ' + chosenSimulator);
-							}
-						}}>
-						<ToggleButton value={SimulatorType.SHIELDHIT}>SHIELD-HIT12A</ToggleButton>
-						<ToggleButton value={SimulatorType.FLUKA}>Fluka</ToggleButton>
-					</StyledExclusiveToggleButtonGroup>
+								setGenerateForSimulator(chosenSimulator);
+								setFilesForSimulator(chosenSimulator);
+							}}>
+							<ToggleButton value={SimulatorType.SHIELDHIT}>
+								SHIELD-HIT12A
+							</ToggleButton>
+							<ToggleButton value={SimulatorType.FLUKA}>Fluka</ToggleButton>
+						</StyledExclusiveToggleButtonGroup>
+					)}
 				</Box>
 
 				<DragDropFiles
@@ -177,10 +202,10 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 			</Box>
 
 			<InputFilesEditor
-				simulator={simulator}
+				simulator={generateForSimulator}
 				inputFiles={inputFiles}
 				goToRun={(inputFiles?: SimulationInputFiles) => {
-					goToRun(simulator, inputFiles);
+					goToRun(inputFiles);
 				}}
 				onChange={inputFiles => setInputFiles(inputFiles)}
 			/>

@@ -86,9 +86,63 @@ export function RunSimulationForm({
 		Object.keys(inputFiles).length > 0 ? 'files' : 'editor'
 	);
 	const [highlight, setHighlight] = useState(false);
+	const { yaptideEditor } = useStore();
+	const currentSimulator = yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON;
 
-	const { yaptideEditor, setSimulatorType } = useStore();
-	const simulator = yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON;
+	// When simulator is set to COMMON, user needs to select which actual simulator to run
+	// This should not change the simulator in editor, only in this form.
+	// When using input files to run, the simulator in info.json should also take precedence
+	const [runSimulator, setRunSimulator] = useState<SimulatorType>(
+		currentSimulator !== SimulatorType.COMMON ? currentSimulator : SimulatorType.SHIELDHIT
+	);
+
+	const [runSimulatorOptions, setRunSimulatorOptions] = useState(
+		currentSimulator !== SimulatorType.COMMON
+			? [currentSimulator]
+			: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA]
+	);
+
+	useEffect(() => {
+		// When either currentSimulator or sourceType changes,
+		// reset the selected simulator according to the rules defined for runSimulator above
+		if (simulationSourceType === 'files') {
+			let simulator: SimulatorType;
+
+			switch (true) {
+				case inputFiles?.hasOwnProperty('geo.dat'):
+					simulator = SimulatorType.SHIELDHIT;
+
+					break;
+				case inputFiles?.hasOwnProperty('fl_sim.inp'):
+					simulator = SimulatorType.FLUKA;
+
+					break;
+				case inputFiles?.hasOwnProperty('run.mac'): // not implemented, placeholder value
+					simulator = SimulatorType.GEANT4;
+
+					break;
+				default:
+					simulator = SimulatorType.COMMON;
+
+					break;
+			}
+
+			setRunSimulator(simulator);
+			setRunSimulatorOptions([simulator]);
+		} else {
+			setRunSimulator(
+				currentSimulator !== SimulatorType.COMMON
+					? currentSimulator
+					: SimulatorType.SHIELDHIT
+			);
+
+			setRunSimulatorOptions(
+				currentSimulator !== SimulatorType.COMMON
+					? [currentSimulator]
+					: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA]
+			);
+		}
+	}, [yaptideEditor, simulationSourceType, inputFiles]);
 
 	useEffect(() => {
 		if (Object.keys(inputFiles).length > 0) {
@@ -170,25 +224,18 @@ export function RunSimulationForm({
 				simulationSourceType,
 				simName,
 				nTasks,
-				simulator,
+				runSimulator,
 				batchOptions
 			);
 	};
 
-	const simulatorMenuItems = Array.from(SimulatorNames.entries()).map(
-		([simulatorType, simulatorName]) => (
-			<MenuItem
-				key={simulatorType}
-				value={simulatorType}>
-				{simulatorName}
-			</MenuItem>
-		)
-	);
-
-	const isSimulatorChoiceDisabled = simulator !== SimulatorType.COMMON;
-	const defaultSimulator = isSimulatorChoiceDisabled
-		? simulator
-		: simulatorMenuItems[0].props.value;
+	const simulatorMenuItems = Array.from(runSimulatorOptions).map(simulator => (
+		<MenuItem
+			key={simulator}
+			value={simulator}>
+			{SimulatorNames.get(simulator)}
+		</MenuItem>
+	));
 
 	return (
 		<StyledAccordion
@@ -267,15 +314,15 @@ export function RunSimulationForm({
 						/>
 						<FormControl
 							fullWidth
-							disabled={isSimulatorChoiceDisabled}>
+							disabled={runSimulatorOptions.length < 2}>
 							<InputLabel id='simulator-select-label'>Simulation software</InputLabel>
 							<Select
 								labelId='simulator-select-label'
 								size='small'
 								label='Simulation software'
-								defaultValue={defaultSimulator}
+								value={runSimulator}
 								onChange={evn =>
-									setSimulatorType(evn.target.value as SimulatorType, false)
+									setRunSimulator(evn.target.value as SimulatorType)
 								}>
 								{simulatorMenuItems}
 							</Select>

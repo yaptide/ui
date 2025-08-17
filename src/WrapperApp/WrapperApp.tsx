@@ -191,9 +191,8 @@ function WrapperApp() {
 					forTabs={['inputFiles']}
 					persistentIfVisited>
 					<InputEditorPanel
-						goToRun={(simulator: SimulatorType, inputFiles?: SimulationInputFiles) => {
+						goToRun={(inputFiles?: SimulationInputFiles) => {
 							setProvidedInputFiles(inputFiles);
-							setSimulatorType(simulator, false);
 						}}
 					/>
 				</TabPanel>
