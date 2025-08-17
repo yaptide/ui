@@ -161,7 +161,11 @@ function WrapperApp() {
 						gridRow: 'header-start / content-end'
 					}}
 					forTabs={['simulations']}>
-					<SimulationPanel />
+					<SimulationPanel
+						goToRun={(inputFiles?: SimulationInputFiles) => {
+							setProvidedInputFiles(inputFiles);
+						}}
+					/>
 				</TabPanel>
 
 				{/* Simulations sidebar hosts a form to run the simulation and a list of running simulations */}

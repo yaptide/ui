@@ -9,11 +9,13 @@ import { BackendSimulations } from './BackendSimulations/BackendSimulations';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
+	goToRun: (inputFiles?: SimulationInputFiles) => void;
 	forwardedInputFiles?: SimulationInputFiles;
 }
 
 export default function SimulationPanel({
 	goToResults,
+	goToRun,
 	forwardedInputFiles
 }: SimulationPanelProps) {
 	const theme = useTheme();
@@ -66,7 +68,7 @@ export default function SimulationPanel({
 								}
 								inputFiles={inputFiles}
 								closeEditor={() => setShowInputFilesEditor(false)}
-								goToRun={() => {}}
+								goToRun={goToRun}
 								onChange={newInputFiles => setInputFiles(newInputFiles)}
 							/>
 						</Box>
