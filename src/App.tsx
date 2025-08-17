@@ -74,10 +74,10 @@ function App() {
 						main: '#248c5e'
 					},
 					secondary: {
-						main: '#bb9bf6'
+						main: prefersDarkMode ? '#bb9bf6' : '#9e7be1'
 					},
 					accordion: {
-						main: prefersDarkMode ? '#343434' : '#dadada'
+						main: prefersDarkMode ? '#343434' : '#e9e9e9'
 					}
 				},
 				typography: {

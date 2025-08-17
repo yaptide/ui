@@ -8,16 +8,15 @@ import { useStore } from '../services/StoreService';
 import { EditorToolbar } from '../ThreeEditor/components/Editor/EditorToolbar';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
 import { EditorSidebar } from '../ThreeEditor/components/Sidebar/EditorSidebar';
-import { SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles } from '../types/ResponseTypes';
 import { camelCaseToNormalText } from '../util/camelCaseToSentenceCase';
 import HeaderPanel from './components/Header/HeaderPanel';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
+import LoginPanel from './components/Login/LoginPanel';
 import { NavDrawerContext } from './components/NavPanel/NavDrawerContext';
 import NavPanel from './components/NavPanel/NavPanel';
 import { AboutPanel } from './components/Panels/AboutPanel';
 import { ExamplePanel } from './components/Panels/ExamplePanel';
-import LoginPanel from './components/Panels/LoginPanel';
 import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import RunSimulationPanel from './components/Simulation/RunSimulationPanel';
@@ -39,7 +38,7 @@ const StyledAppGrid = styled(Box)(({ theme }) => ({
 
 function WrapperApp() {
 	const { demoMode } = useConfig();
-	const { yaptideEditor, setSimulatorType, resultsSimulationData } = useStore();
+	const { yaptideEditor, resultsSimulationData } = useStore();
 	const { isAuthorized, logout } = useAuth();
 	const [open, setOpen] = useState(true);
 	const [tabsValue, setTabsValue] = useState('editor');
