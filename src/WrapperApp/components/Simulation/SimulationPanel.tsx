@@ -68,7 +68,10 @@ export default function SimulationPanel({
 								}
 								inputFiles={inputFiles}
 								closeEditor={() => setShowInputFilesEditor(false)}
-								goToRun={goToRun}
+								goToRun={(inputFiles?: SimulationInputFiles) => {
+									setShowInputFilesEditor(false);
+									goToRun(inputFiles);
+								}}
 								onChange={newInputFiles => setInputFiles(newInputFiles)}
 							/>
 						</Box>
