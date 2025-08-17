@@ -126,9 +126,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 			}}>
 			<Box
 				sx={{
-					borderRadius: theme.spacing(1),
 					marginBottom: theme.spacing(1),
-					backgroundColor: theme.palette.accordion.main,
 					padding: theme.spacing(2),
 					boxSizing: 'border-box'
 				}}>

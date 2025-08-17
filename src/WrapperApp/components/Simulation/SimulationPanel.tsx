@@ -1,4 +1,4 @@
-import { Box, Fade, Modal } from '@mui/material';
+import { Box, Fade, Modal, useTheme } from '@mui/material';
 import { useState } from 'react';
 
 import { useStore } from '../../../services/StoreService';
@@ -16,6 +16,7 @@ export default function SimulationPanel({
 	goToResults,
 	forwardedInputFiles
 }: SimulationPanelProps) {
+	const theme = useTheme();
 	const { yaptideEditor } = useStore();
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
 	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
@@ -36,17 +37,39 @@ export default function SimulationPanel({
 				onClose={() => setShowInputFilesEditor(false)}
 				closeAfterTransition>
 				<Fade in={showInputFilesEditor}>
-					<Box sx={{ height: '100vh', width: '100vw', overflow: 'auto' }}>
-						<InputFilesEditor
-							simulator={
-								yaptideEditor?.contextManager.currentSimulator ||
-								SimulatorType.COMMON
-							}
-							inputFiles={inputFiles}
-							closeEditor={() => setShowInputFilesEditor(false)}
-							goToRun={() => {}}
-							onChange={newInputFiles => setInputFiles(newInputFiles)}
-						/>
+					<Box
+						sx={{
+							height: '90vh',
+							width: '80vw',
+							overflow: 'hidden',
+							backgroundColor: theme.palette.background.paper,
+							borderStyle: 'solid',
+							borderColor: theme.palette.divider,
+							borderWidth: 1,
+							borderRadius: theme.spacing(1),
+							my: '5vh',
+							mx: '10vw',
+							boxShadow: theme.shadows[10]
+						}}>
+						<Box
+							sx={{
+								height: '100%',
+								width: '100%',
+								padding: theme.spacing(1),
+								overflowY: 'scroll',
+								boxSizing: 'border-box'
+							}}>
+							<InputFilesEditor
+								simulator={
+									yaptideEditor?.contextManager.currentSimulator ||
+									SimulatorType.COMMON
+								}
+								inputFiles={inputFiles}
+								closeEditor={() => setShowInputFilesEditor(false)}
+								goToRun={() => {}}
+								onChange={newInputFiles => setInputFiles(newInputFiles)}
+							/>
+						</Box>
 					</Box>
 				</Fade>
 			</Modal>
