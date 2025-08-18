@@ -1,3 +1,4 @@
+import { useTreeContext } from '@minoru/react-dnd-treeview';
 import { NodeModel } from '@minoru/react-dnd-treeview/dist/types';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -39,11 +40,15 @@ export function SidebarTreeListItem(props: {
 	isOpen: boolean;
 	onToggle: () => void;
 	editor: YaptideEditor;
-	node: NodeModel<{
-		object: Object3D | SimulationElement;
-	}>;
+	node: NodeModel<TreeItemData>;
 }) {
 	const { depth, hasChild, isOpen, onToggle, editor, node } = props;
+	const treeContext = useTreeContext();
+
+	const visibleIds = treeContext.tree
+		.filter(t => t.parent === 0 || treeContext.openIds.findIndex(s => t.parent === s) > -1)
+		.map(t => t.id);
+	const isOdd = visibleIds.findIndex(s => s === node.id) % 2 === 0;
 
 	const inputRef = useRef<HTMLInputElement>(null);
 	const object = node.data!.object;
@@ -132,7 +137,14 @@ export function SidebarTreeListItem(props: {
 			<Box
 				id={object.uuid}
 				sx={{
-					'marginLeft': ({ spacing }) => spacing(depth * 1.5),
+					'paddingLeft': ({ spacing }) => spacing(depth * 1.5),
+					'backgroundColor': ({ palette }) => {
+						return isOdd
+							? palette.mode === 'dark'
+								? 'rgba(255,255,255,0.04)'
+								: 'rgba(0,0,0,0.08)'
+							: 'none';
+					},
 					'display': 'flex',
 					'flexDirection': 'row',
 					'alignItems': 'center',

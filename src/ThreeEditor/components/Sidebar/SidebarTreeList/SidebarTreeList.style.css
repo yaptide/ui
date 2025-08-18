@@ -10,7 +10,7 @@
 }
 
 .editor-sidebar-drop-target {
-	background-color: var(--mui-palette-grey-800);
+	background-color: var(--mui-palette-divider);
 }
 
 .editor-sidebar-drop-target-divider {
