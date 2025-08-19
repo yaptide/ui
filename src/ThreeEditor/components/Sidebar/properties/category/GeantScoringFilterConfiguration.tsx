@@ -1,7 +1,8 @@
-import { MenuItem, Select } from '@mui/material';
+import { MenuItem, Select, Typography } from '@mui/material';
 import { Object3D } from 'three';
 
 import { GEANT4_PARTICLE_TYPES } from '../../../../../types/Particle';
+import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
@@ -43,52 +44,35 @@ export function GeantScoringFilterConfiguration(props: {
 			{visibleFlag && (
 				<>
 					<PropertyField label='Type'>
-						<Select
-							sx={{ width: '100%' }}
-							size='small'
-							onChange={event => {
-								setValueCommand(event.target.value, 'filterType');
+						<AutoCompleteSelect
+							onChange={(_, value) => {
+								setValueCommand(value, 'filterType');
 							}}
-							variant='standard'
-							value={watchedObject.filterType}>
-							{filterTypeNames.map(name => (
-								<MenuItem
-									key={name}
-									value={name}>
-									{name}
-								</MenuItem>
-							))}
-						</Select>
+							value={watchedObject.filterType}
+							options={filterTypeNames}
+						/>
 					</PropertyField>
 					{(watchedObject.filterType === 'particle' ||
 						watchedObject.filterType === 'particleWithKineticEnergy') && (
 						<PropertyField label='Particles'>
-							<Select
-								variant={'standard'}
-								sx={{ width: '100%' }}
-								size='small'
-								onChange={event => {
-									const {
-										target: { value }
-									} = event;
-
-									const particleTypes =
-										typeof value === 'string' ? value.split(',') : value;
-
-									const newData = { ...watchedObject.data, particleTypes };
-
-									setValueCommand(newData, 'data');
+							<AutoCompleteSelect
+								multiple={true}
+								onChange={(_, value) => {
+									setValueCommand(
+										{ ...watchedObject.data, particleTypes: value },
+										'data'
+									);
 								}}
-								multiple
-								value={watchedObject.data.particleTypes ?? []}>
-								{GEANT4_PARTICLE_TYPES.map(({ id, name }) => (
-									<MenuItem
-										key={id}
-										value={id}>
-										{`[${id}] ${name}`}
-									</MenuItem>
-								))}
-							</Select>
+								value={watchedObject.data?.particleTypes ?? []}
+								renderValue={(particleTypes, _) =>
+									particleTypes.map(t => (
+										<Typography
+											sx={{ px: '2px' }}>{`[${t.id}] ${t.name}`}</Typography>
+									))
+								}
+								getOptionLabel={t => `[${t.id}] ${t.name}`}
+								options={GEANT4_PARTICLE_TYPES}
+							/>
 						</PropertyField>
 					)}
 					{(watchedObject.filterType === 'kineticEnergy' ||
@@ -117,28 +101,16 @@ export function GeantScoringFilterConfiguration(props: {
 								}
 							/>
 							<PropertyField label='Unit'>
-								<Select
-									variant={'standard'}
-									sx={{ width: '100%' }}
-									size='small'
+								<AutoCompleteSelect
 									value={watchedObject.data.kineticEnergyUnit}
-									onChange={event =>
+									onChange={(_, value) =>
 										setValueCommand(
-											{
-												...watchedObject.data,
-												kineticEnergyUnit: event.target.value
-											},
+											{ ...watchedObject.data, kineticEnergyUnit: value },
 											'data'
 										)
-									}>
-									{kineticEnergyUnits.map(unit => (
-										<MenuItem
-											key={unit}
-											value={unit}>
-											{unit}
-										</MenuItem>
-									))}
-								</Select>
+									}
+									options={kineticEnergyUnits}
+								/>
 							</PropertyField>
 						</>
 					)}
