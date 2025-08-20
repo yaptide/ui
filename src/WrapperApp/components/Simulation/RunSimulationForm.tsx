@@ -102,6 +102,10 @@ export function RunSimulationForm({
 			: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA]
 	);
 
+	const [overridePrimariesCount, setOverridePrimariesCount] = useState(
+		yaptideEditor?.beam.numberOfParticles ?? 0
+	);
+
 	useEffect(() => {
 		// When either currentSimulator or sourceType changes,
 		// reset the selected simulator according to the rules defined for runSimulator above
@@ -217,16 +221,18 @@ export function RunSimulationForm({
 		};
 
 		if (editorJson && simulationSourceType)
-			runSimulation(
-				simulationRunType,
-				editorJson,
-				filteredInputFiles,
-				simulationSourceType,
-				simName,
-				nTasks,
-				runSimulator,
-				batchOptions
-			);
+			editorJson.beam.numberOfParticles = overridePrimariesCount;
+
+		runSimulation(
+			simulationRunType,
+			editorJson!,
+			filteredInputFiles,
+			simulationSourceType,
+			simName,
+			nTasks,
+			runSimulator,
+			batchOptions
+		);
 	};
 
 	const simulatorMenuItems = Array.from(runSimulatorOptions).map(simulator => (
@@ -310,7 +316,15 @@ export function RunSimulationForm({
 							label='Number of tasks'
 							value={nTasks}
 							onChange={e => setNTasks(Math.max(1, parseInt(e.target.value)))}
-							sx={{ width: '160px' }}
+						/>
+						<TextField
+							size='small'
+							type='number'
+							label='Number of primary particles'
+							value={overridePrimariesCount}
+							onChange={e =>
+								setOverridePrimariesCount(Math.max(1, parseInt(e.target.value)))
+							}
 						/>
 						<FormControl
 							fullWidth

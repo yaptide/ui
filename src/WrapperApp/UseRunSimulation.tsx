@@ -30,28 +30,29 @@ export function useRunSimulation(): RunSimulationFunctionType {
 	) => {
 		const simData = sourceType === 'editor' ? editorJson : inputFiles;
 
-		const options =
-			runType === 'batch'
-				? {
-						...batchOptions,
-						arrayOptions: batchOptions.arrayOptions?.reduce(
-							(acc, curr) => {
-								acc[curr.optionKey] = curr.optionValue;
+		let options = undefined;
 
-								return acc;
-							},
-							{} as Record<string, string>
-						),
-						collectOptions: batchOptions.collectOptions?.reduce(
-							(acc, curr) => {
-								acc[curr.optionKey] = curr.optionValue;
+		if (runType === 'batch') {
+			options = {
+				...batchOptions,
+				arrayOptions: batchOptions.arrayOptions?.reduce(
+					(acc, curr) => {
+						acc[curr.optionKey] = curr.optionValue;
 
-								return acc;
-							},
-							{} as Record<string, string>
-						)
-					}
-				: undefined;
+						return acc;
+					},
+					{} as Record<string, string>
+				),
+				collectOptions: batchOptions.collectOptions?.reduce(
+					(acc, curr) => {
+						acc[curr.optionKey] = curr.optionValue;
+
+						return acc;
+					},
+					{} as Record<string, string>
+				)
+			};
+		}
 
 		postJobFn(simData, sourceType, nTasks, simulator, simName, options, controller.signal)
 			.then(res => {
