@@ -1,6 +1,7 @@
 import { useTreeContext } from '@minoru/react-dnd-treeview';
 import { NodeModel } from '@minoru/react-dnd-treeview/dist/types';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Box, Checkbox, Icon, Menu, Stack, TextField, Typography } from '@mui/material';
@@ -119,15 +120,8 @@ export function SidebarTreeListItem(props: {
 	let icon = undefined;
 
 	if (hasChild) {
-		icon = (
-			<ChevronRightIcon
-				onClick={onToggle}
-				sx={{
-					transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-					transition: 'transform 0.2s'
-				}}
-			/>
-		);
+		const IconComponent = isOpen ? RemoveIcon : AddIcon;
+		icon = <IconComponent onClick={onToggle} />;
 	} else if (node.parent) {
 		icon = <Icon />;
 	}
