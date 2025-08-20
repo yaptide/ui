@@ -75,7 +75,7 @@ export type RunSimulationFormProps = {
 export function RunSimulationForm({
 	availableClusters = ['default'],
 	editorJson,
-	inputFiles = {},
+	inputFiles,
 	clearInputFiles = () => {},
 	runSimulation = () => {}
 }: RunSimulationFormProps) {
@@ -83,7 +83,7 @@ export function RunSimulationForm({
 	const [usingBatchConfig, setUsingBatchConfig] = useState(false);
 	const [simulationRunType, setSimulationRunType] = useState<SimulationRunType>('direct');
 	const [simulationSourceType, setSimulationSourceType] = useState<SimulationSourceType>(
-		Object.keys(inputFiles).length > 0 ? 'files' : 'editor'
+		inputFiles && Object.keys(inputFiles).length > 0 ? 'files' : 'editor'
 	);
 	const [highlight, setHighlight] = useState(false);
 	const { yaptideEditor } = useStore();
@@ -149,7 +149,7 @@ export function RunSimulationForm({
 	}, [yaptideEditor, simulationSourceType, inputFiles]);
 
 	useEffect(() => {
-		if (Object.keys(inputFiles).length > 0) {
+		if (inputFiles && Object.keys(inputFiles).length > 0) {
 			setSimulationSourceType('files');
 			setSelectedFiles(Object.keys(inputFiles));
 			setHighlight(true);
@@ -159,7 +159,7 @@ export function RunSimulationForm({
 		}
 	}, [inputFiles]);
 
-	const [selectedFiles, setSelectedFiles] = useState<string[]>(Object.keys(inputFiles));
+	const [selectedFiles, setSelectedFiles] = useState<string[]>(Object.keys(inputFiles ?? {}));
 	const [selectedCluster, setSelectedCluster] = useState<number | undefined>(0);
 
 	const [simName, setSimName] = useState(editorJson?.project.title ?? '');
@@ -195,7 +195,7 @@ export function RunSimulationForm({
 		setSimulationSourceType(newSourceType);
 
 		if (newSourceType === 'files') {
-			setSelectedFiles(Object.keys(inputFiles));
+			setSelectedFiles(Object.keys(inputFiles ?? {}));
 		}
 	};
 
@@ -204,7 +204,7 @@ export function RunSimulationForm({
 	};
 
 	const handleRunSimulationClick = () => {
-		const filteredInputFiles = Object.entries(inputFiles).reduce((acc, [key, value]) => {
+		const filteredInputFiles = Object.entries(inputFiles ?? {}).reduce((acc, [key, value]) => {
 			if (selectedFiles.includes(key)) {
 				return { ...acc, [key]: value };
 			}
@@ -348,11 +348,11 @@ export function RunSimulationForm({
 							<ToggleButton value='editor'>Editor Project Data</ToggleButton>
 							<ToggleButton
 								value='files'
-								disabled={Object.keys(inputFiles).length === 0}>
+								disabled={!inputFiles}>
 								Input Files Data
 							</ToggleButton>
 						</StyledExclusiveToggleButtonGroup>
-						{Object.keys(inputFiles).length > 0 && (
+						{inputFiles && (
 							<Button
 								size='small'
 								onClick={clearInputFiles}
@@ -372,7 +372,7 @@ export function RunSimulationForm({
 								justifyContent: 'center',
 								marginBottom: theme.spacing(2)
 							}}>
-							{Object.keys(inputFiles).map((fileName, index) => (
+							{Object.keys(inputFiles ?? {}).map((fileName, index) => (
 								<Chip
 									key={index}
 									color={selectedFiles.includes(fileName) ? 'success' : 'default'}
