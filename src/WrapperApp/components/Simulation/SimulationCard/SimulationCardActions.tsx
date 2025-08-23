@@ -55,62 +55,62 @@ export const SimulationCardActions = ({
 	} = handlers;
 	const { resultsSimulationData, yaptideEditor, disableLoadJson } = context;
 
+	let statusAction = undefined;
+
+	if (simulationStatus.jobState) {
+		if (currentJobStatusData[StatusState.COMPLETED](simulationStatus)) {
+			statusAction = (
+				<Button
+					sx={{ fontSize: '.8em' }}
+					size='small'
+					color='secondary'
+					disabled={!Boolean(loadResults)}
+					onClick={
+						resultsSimulationData?.jobId !== simulationStatus.jobId
+							? onClickLoadResults
+							: onClickGoToResults
+					}>
+					{resultsSimulationData?.jobId !== simulationStatus.jobId
+						? 'Load Results'
+						: 'Go to Results'}
+				</Button>
+			);
+		} else if (
+			handleCancel &&
+			(currentJobStatusData[StatusState.RUNNING](simulationStatus) ||
+				currentJobStatusData[StatusState.PENDING](simulationStatus))
+		) {
+			statusAction = (
+				<Button
+					sx={{ fontSize: '.8em' }}
+					color='secondary'
+					onClick={() => handleCancel(simulationStatus.jobId)}
+					size='small'>
+					Cancel
+				</Button>
+			);
+		} else if (currentJobStatusData[StatusState.FAILED](simulationStatus)) {
+			statusAction = (
+				<Button
+					sx={{ fontSize: '.8em' }}
+					color='secondary'
+					size='small'
+					onClick={() => onClickShowError(simulationStatus)}>
+					Error Log
+				</Button>
+			);
+		}
+	}
+
 	return (
 		<CardActions>
 			<ButtonGroup
 				fullWidth
 				aria-label='full width outlined button group'>
-				{simulationStatus.jobState &&
-					(() => {
-						if (currentJobStatusData[StatusState.COMPLETED](simulationStatus)) {
-							return (
-								<Button
-									sx={{ fontSize: '.8em' }}
-									size='small'
-									color='info'
-									disabled={!Boolean(loadResults)}
-									onClick={
-										resultsSimulationData?.jobId !== simulationStatus.jobId
-											? onClickLoadResults
-											: onClickGoToResults
-									}>
-									{resultsSimulationData?.jobId !== simulationStatus.jobId
-										? 'Load Results'
-										: 'Go to Results'}
-								</Button>
-							);
-						} else if (
-							handleCancel &&
-							(currentJobStatusData[StatusState.RUNNING](simulationStatus) ||
-								currentJobStatusData[StatusState.PENDING](simulationStatus))
-						) {
-							return (
-								<Button
-									sx={{ fontSize: '.8em' }}
-									color='info'
-									onClick={() => handleCancel(simulationStatus.jobId)}
-									size='small'>
-									Cancel
-								</Button>
-							);
-						} else if (currentJobStatusData[StatusState.FAILED](simulationStatus)) {
-							return (
-								<Button
-									sx={{ fontSize: '.8em' }}
-									color='info'
-									size='small'
-									onClick={() => onClickShowError(simulationStatus)}>
-									Error Log
-								</Button>
-							);
-						}
-
-						return <></>;
-					})()}
-
+				{statusAction}
 				<Button
 					sx={{ fontSize: '.8em' }}
-					color='info'
+					color='secondary'
 					size='small'
 					onClick={onClickInputFiles}
 					disabled={!Boolean(showInputFiles)}>
@@ -119,7 +119,7 @@ export const SimulationCardActions = ({
 
 				<Button
 					sx={{ fontSize: '.8em' }}
-					color='info'
+					color='secondary'
 					size='small'
 					onClick={onClickSaveToFile}
 					disabled={
@@ -130,7 +130,7 @@ export const SimulationCardActions = ({
 
 				<Button
 					sx={{ fontSize: '.8em' }}
-					color='info'
+					color='secondary'
 					size='small'
 					disabled={disableLoadJson}
 					onClick={() => simulationStatus && onClickLoadToEditor(simulationStatus)}>

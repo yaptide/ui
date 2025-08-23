@@ -74,7 +74,7 @@ function App() {
 						main: '#248c5e'
 					},
 					secondary: {
-						main: prefersDarkMode ? '#bb9bf6' : '#9e7be1'
+						main: prefersDarkMode ? '#b098da' : '#8261c3'
 					},
 					accordion: {
 						main: prefersDarkMode ? '#343434' : '#e9e9e9'

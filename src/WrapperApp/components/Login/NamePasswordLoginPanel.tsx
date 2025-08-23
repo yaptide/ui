@@ -36,7 +36,7 @@ export default function NamePasswordLoginPanel() {
 			<TextField
 				color='secondary'
 				id='loginField'
-				label='Username address'
+				label='Username'
 				variant='outlined'
 				fullWidth
 				value={username}

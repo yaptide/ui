@@ -81,7 +81,6 @@ export default function SimulationCard({
 			sx={{
 				display: 'flex',
 				flexDirection: 'column',
-				maxWidth: '320px',
 				borderStyle: 'solid',
 				borderWidth: 1,
 				borderColor: theme.palette.divider

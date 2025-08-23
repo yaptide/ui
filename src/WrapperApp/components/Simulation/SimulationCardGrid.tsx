@@ -7,7 +7,6 @@ import SimulationCard from './SimulationCard/SimulationCard';
 import {
 	PageNavigationProps,
 	PageParamProps,
-	SimulationPaginationControls,
 	SimulationPaginationFooter
 } from './SimulationPanelBar';
 
@@ -33,10 +32,13 @@ export function SimulationCardGrid({
 	return (
 		<Box
 			sx={{
-				display: 'flex',
-				flexWrap: 'wrap',
-				gap: theme.spacing(1),
-				padding: theme.spacing(1)
+				display: 'grid',
+				gridTemplateColumns: 'repeat(auto-fit, 320px)',
+				gridColumnGap: theme.spacing(1),
+				gridRowGap: theme.spacing(1),
+				justifyContent: 'center',
+				px: theme.spacing(2),
+				py: theme.spacing(4)
 			}}>
 			{simulations ? (
 				simulations.length ? (
@@ -95,8 +97,7 @@ export function PaginatedSimulationCardGrid({
 	...simulationCardGridProps
 }: PaginatedCardGridProps) {
 	return (
-		<Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-			<SimulationPaginationControls {...pageData} />
+		<Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
 			<SimulationCardGrid {...simulationCardGridProps} />
 			<SimulationPaginationFooter {...pageData} />
 		</Box>

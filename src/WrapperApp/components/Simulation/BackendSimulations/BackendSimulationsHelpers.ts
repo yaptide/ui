@@ -43,7 +43,7 @@ const BackendSimulationsHelpers = (
 	const [pageCount, setPageCount] = useState(1);
 	const [orderType, setOrderType] = useState<OrderType>(OrderType.DESCEND);
 	const [orderBy, setOrderBy] = useState<OrderBy>(OrderBy.START_TIME);
-	const [pageSize, setPageSize] = useState(6);
+	const [pageSize, setPageSize] = useState(10);
 
 	const updateSimulationInfo = useCallback(
 		() =>
