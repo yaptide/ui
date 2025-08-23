@@ -167,28 +167,28 @@ function serializeSimulationMaterial(material: SimulationMaterialType) {
 			name: 'UNKNOWN',
 			sanitized_name: 'unknown',
 			density: 0,
-			geant_name: 'unknown'
+			geant4_name: 'unknown'
 		};
 	}
 
 	const { icru, name, density } = material;
 	const sanitized_name = (material as any).sanitized_name ?? (material as any).sanitizedName;
-	let geant_name = (material as any).geant_name;
+	let geant4_name = (material as any).geant4_name;
 
-	if (!geant_name) {
+	if (!geant4_name) {
 		const foundMaterial = MATERIALS.find(mat => mat.icru === icru);
 
-		if (foundMaterial && foundMaterial.geant_name) {
-			geant_name = foundMaterial.geant_name;
+		if (foundMaterial && foundMaterial.geant4_name) {
+			geant4_name = foundMaterial.geant4_name;
 		} else {
 			console.warn(
-				`Missing 'geant_name' for material '${sanitized_name}' (ICRU: ${icru}). Defaulting to 'G4_${sanitized_name}'.`
+				`Missing 'geant4_name' for material '${sanitized_name}' (ICRU: ${icru}). Defaulting to 'G4_${sanitized_name}'.`
 			);
-			geant_name = 'G4_' + sanitized_name;
+			geant4_name = 'G4_' + sanitized_name;
 		}
 	}
 
-	return { icru, name, sanitized_name, density, geant_name };
+	return { icru, name, sanitized_name, density, geant4_name };
 }
 
 function deserializeSimulationMaterial(
@@ -210,14 +210,14 @@ export type SerializedSimulationMaterial = {
 	name: string;
 	sanitized_name: string;
 	density: number;
-	geant_name: string;
+	geant4_name: string;
 };
 
-export interface GeantFigureJSON extends SimulationMeshJSON {
+export interface Geant4FigureJSON extends SimulationMeshJSON {
 	simulationMaterial: SerializedSimulationMaterial;
 }
 
-export class GeantBox extends BoxFigure {
+export class Geant4Box extends BoxFigure {
 	simulationMaterial: SimulationMaterialType;
 
 	constructor(
@@ -230,8 +230,8 @@ export class GeantBox extends BoxFigure {
 		this.simulationMaterial = simulationMaterial;
 	}
 
-	override toSerialized(): GeantFigureJSON {
-		const json: GeantFigureJSON = {
+	override toSerialized(): Geant4FigureJSON {
+		const json: Geant4FigureJSON = {
 			...super.toSerialized(),
 			simulationMaterial: serializeSimulationMaterial(this.simulationMaterial)
 		};
@@ -239,7 +239,7 @@ export class GeantBox extends BoxFigure {
 		return json;
 	}
 
-	override fromSerialized(json: GeantFigureJSON): this {
+	override fromSerialized(json: Geant4FigureJSON): this {
 		super.fromSerialized(json);
 		this.simulationMaterial = deserializeSimulationMaterial(json.simulationMaterial);
 
@@ -247,7 +247,7 @@ export class GeantBox extends BoxFigure {
 	}
 }
 
-export class GeantCylinder extends CylinderFigure {
+export class Geant4Cylinder extends CylinderFigure {
 	simulationMaterial: SimulationMaterialType;
 
 	constructor(
@@ -260,8 +260,8 @@ export class GeantCylinder extends CylinderFigure {
 		this.simulationMaterial = simulationMaterial;
 	}
 
-	override toSerialized(): GeantFigureJSON {
-		const json: GeantFigureJSON = {
+	override toSerialized(): Geant4FigureJSON {
+		const json: Geant4FigureJSON = {
 			...super.toSerialized(),
 			simulationMaterial: serializeSimulationMaterial(this.simulationMaterial)
 		};
@@ -269,7 +269,7 @@ export class GeantCylinder extends CylinderFigure {
 		return json;
 	}
 
-	override fromSerialized(json: GeantFigureJSON): this {
+	override fromSerialized(json: Geant4FigureJSON): this {
 		super.fromSerialized(json);
 		this.simulationMaterial = deserializeSimulationMaterial(json.simulationMaterial);
 
@@ -277,7 +277,7 @@ export class GeantCylinder extends CylinderFigure {
 	}
 }
 
-export class GeantSphere extends SphereFigure {
+export class Geant4Sphere extends SphereFigure {
 	simulationMaterial: SimulationMaterialType;
 
 	constructor(
@@ -290,8 +290,8 @@ export class GeantSphere extends SphereFigure {
 		this.simulationMaterial = simulationMaterial;
 	}
 
-	override toSerialized(): GeantFigureJSON {
-		const json: GeantFigureJSON = {
+	override toSerialized(): Geant4FigureJSON {
+		const json: Geant4FigureJSON = {
 			...super.toSerialized(),
 			simulationMaterial: serializeSimulationMaterial(this.simulationMaterial)
 		};
@@ -299,7 +299,7 @@ export class GeantSphere extends SphereFigure {
 		return json;
 	}
 
-	override fromSerialized(json: GeantFigureJSON): this {
+	override fromSerialized(json: Geant4FigureJSON): this {
 		super.fromSerialized(json);
 		this.simulationMaterial = deserializeSimulationMaterial(json.simulationMaterial);
 
@@ -307,8 +307,8 @@ export class GeantSphere extends SphereFigure {
 	}
 }
 
-export const isGeantFigure = (x: unknown): x is GeantBox | GeantCylinder | GeantSphere =>
-	x instanceof GeantBox || x instanceof GeantCylinder || x instanceof GeantSphere;
+export const isGeant4Figure = (x: unknown): x is Geant4Box | Geant4Cylinder | Geant4Sphere =>
+	x instanceof Geant4Box || x instanceof Geant4Cylinder || x instanceof Geant4Sphere;
 
 export const isBasicFigure = (x: unknown): x is BasicFigure => x instanceof BasicFigure;
 

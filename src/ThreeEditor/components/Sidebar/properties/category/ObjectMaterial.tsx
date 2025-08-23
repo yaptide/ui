@@ -15,7 +15,7 @@ import { isSimulationMesh } from '../../../../Simulation/Base/SimulationMesh';
 import { isSimulationPoints } from '../../../../Simulation/Base/SimulationPoints';
 import { isSimulationZone, SimulationZone } from '../../../../Simulation/Base/SimulationZone';
 import { CustomStoppingPowerModels } from '../../../../Simulation/CustomStoppingPower/CustomStoppingPower';
-import { isBasicFigure, isGeantFigure } from '../../../../Simulation/Figures/BasicFigures';
+import { isBasicFigure, isGeant4Figure } from '../../../../Simulation/Figures/BasicFigures';
 import { isBeam } from '../../../../Simulation/Physics/Beam';
 import { isScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
 import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
@@ -53,7 +53,7 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 	};
 
 	const simulationMaterialVisible =
-		(isGeantFigure(watchedObject) &&
+		(isGeant4Figure(watchedObject) &&
 			editor.contextManager.currentSimulator === SimulatorType.GEANT4) ||
 		isSimulationZone(watchedObject) ||
 		isWorldZone(watchedObject);
@@ -61,7 +61,7 @@ export function ObjectMaterial(props: { editor: YaptideEditor; object: Object3D 
 	const setMaterialCommand = (_: any, icru: number) => {
 		const icruStr = icru.toString();
 
-		const command = isGeantFigure(watchedObject)
+		const command = isGeant4Figure(watchedObject)
 			? new SetNestedFigureMaterialCommand(editor, watchedObject.object, icruStr)
 			: new SetZoneMaterialCommand(editor, watchedObject.object, icruStr);
 
