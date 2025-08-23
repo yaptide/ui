@@ -3,7 +3,8 @@ import * as THREE from 'three';
 import { AdditionalGeometryDataType } from '../../../util/AdditionalGeometryData';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { HollowCylinderGeometry } from '../Base/HollowCylinderGeometry';
-import { SimulationMesh } from '../Base/SimulationMesh';
+import { SimulationMesh, SimulationMeshJSON } from '../Base/SimulationMesh';
+import { DEFAULT_SIMULATION_MATERIAL, MATERIALS } from '../Materials/materials';
 
 const defaultMaterial = new THREE.MeshBasicMaterial({
 	color: 0x000000,
@@ -158,6 +159,156 @@ export class SphereFigure extends BasicFigure<THREE.SphereGeometry> {
 		this.geometry = new THREE.SphereGeometry(radius as number);
 	}
 }
+
+function serializeSimulationMaterial(material: SimulationMaterialType) {
+	if (!material) {
+		return {
+			icru: -1,
+			name: 'UNKNOWN',
+			sanitized_name: 'unknown',
+			density: 0,
+			geant4_name: 'unknown'
+		};
+	}
+
+	const { icru, name, density } = material;
+	const sanitized_name = (material as any).sanitized_name ?? (material as any).sanitizedName;
+	let geant4_name = (material as any).geant4_name;
+
+	if (!geant4_name) {
+		const foundMaterial = MATERIALS.find(mat => mat.icru === icru);
+
+		if (foundMaterial && foundMaterial.geant4_name) {
+			geant4_name = foundMaterial.geant4_name;
+		} else {
+			console.warn(
+				`Missing 'geant4_name' for material '${sanitized_name}' (ICRU: ${icru}). Defaulting to 'G4_${sanitized_name}'.`
+			);
+			geant4_name = 'G4_' + sanitized_name;
+		}
+	}
+
+	return { icru, name, sanitized_name, density, geant4_name };
+}
+
+function deserializeSimulationMaterial(
+	serialized: SerializedSimulationMaterial
+): SimulationMaterialType {
+	const match = MATERIALS.find(mat => mat.icru === serialized.icru);
+
+	if (!match) {
+		throw new Error(`Unknown material icru: ${serialized.icru}`);
+	}
+
+	return match;
+}
+
+export type SimulationMaterialType = (typeof MATERIALS)[number];
+
+export type SerializedSimulationMaterial = {
+	icru: number;
+	name: string;
+	sanitized_name: string;
+	density: number;
+	geant4_name: string;
+};
+
+export interface Geant4FigureJSON extends SimulationMeshJSON {
+	simulationMaterial: SerializedSimulationMaterial;
+}
+
+export class Geant4Box extends BoxFigure {
+	simulationMaterial: SimulationMaterialType;
+
+	constructor(
+		editor: YaptideEditor,
+		geometry?: THREE.BoxGeometry,
+		material?: THREE.MeshBasicMaterial,
+		simulationMaterial: SimulationMaterialType = DEFAULT_SIMULATION_MATERIAL
+	) {
+		super(editor, geometry, material);
+		this.simulationMaterial = simulationMaterial;
+	}
+
+	override toSerialized(): Geant4FigureJSON {
+		const json: Geant4FigureJSON = {
+			...super.toSerialized(),
+			simulationMaterial: serializeSimulationMaterial(this.simulationMaterial)
+		};
+
+		return json;
+	}
+
+	override fromSerialized(json: Geant4FigureJSON): this {
+		super.fromSerialized(json);
+		this.simulationMaterial = deserializeSimulationMaterial(json.simulationMaterial);
+
+		return this;
+	}
+}
+
+export class Geant4Cylinder extends CylinderFigure {
+	simulationMaterial: SimulationMaterialType;
+
+	constructor(
+		editor: YaptideEditor,
+		geometry?: HollowCylinderGeometry,
+		material?: THREE.MeshBasicMaterial,
+		simulationMaterial: SimulationMaterialType = DEFAULT_SIMULATION_MATERIAL
+	) {
+		super(editor, geometry, material);
+		this.simulationMaterial = simulationMaterial;
+	}
+
+	override toSerialized(): Geant4FigureJSON {
+		const json: Geant4FigureJSON = {
+			...super.toSerialized(),
+			simulationMaterial: serializeSimulationMaterial(this.simulationMaterial)
+		};
+
+		return json;
+	}
+
+	override fromSerialized(json: Geant4FigureJSON): this {
+		super.fromSerialized(json);
+		this.simulationMaterial = deserializeSimulationMaterial(json.simulationMaterial);
+
+		return this;
+	}
+}
+
+export class Geant4Sphere extends SphereFigure {
+	simulationMaterial: SimulationMaterialType;
+
+	constructor(
+		editor: YaptideEditor,
+		geometry?: THREE.SphereGeometry,
+		material?: THREE.MeshBasicMaterial,
+		simulationMaterial: SimulationMaterialType = DEFAULT_SIMULATION_MATERIAL
+	) {
+		super(editor, geometry, material);
+		this.simulationMaterial = simulationMaterial;
+	}
+
+	override toSerialized(): Geant4FigureJSON {
+		const json: Geant4FigureJSON = {
+			...super.toSerialized(),
+			simulationMaterial: serializeSimulationMaterial(this.simulationMaterial)
+		};
+
+		return json;
+	}
+
+	override fromSerialized(json: Geant4FigureJSON): this {
+		super.fromSerialized(json);
+		this.simulationMaterial = deserializeSimulationMaterial(json.simulationMaterial);
+
+		return this;
+	}
+}
+
+export const isGeant4Figure = (x: unknown): x is Geant4Box | Geant4Cylinder | Geant4Sphere =>
+	x instanceof Geant4Box || x instanceof Geant4Cylinder || x instanceof Geant4Sphere;
 
 export const isBasicFigure = (x: unknown): x is BasicFigure => x instanceof BasicFigure;
 
