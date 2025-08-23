@@ -68,6 +68,7 @@ export type RunSimulationFormProps = {
 	availableClusters?: string[];
 	editorJson?: EditorJson;
 	inputFiles?: Partial<SimulationInputFiles>;
+	highlight?: boolean;
 	clearInputFiles?: () => void;
 	runSimulation?: RunSimulationFunctionType;
 };
@@ -76,6 +77,7 @@ export function RunSimulationForm({
 	availableClusters = ['default'],
 	editorJson,
 	inputFiles,
+	highlight = false,
 	clearInputFiles = () => {},
 	runSimulation = () => {}
 }: RunSimulationFormProps) {
@@ -85,7 +87,6 @@ export function RunSimulationForm({
 	const [simulationSourceType, setSimulationSourceType] = useState<SimulationSourceType>(
 		inputFiles && Object.keys(inputFiles).length > 0 ? 'files' : 'editor'
 	);
-	const [highlight, setHighlight] = useState(false);
 	const { yaptideEditor } = useStore();
 	const currentSimulator = yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON;
 
@@ -152,12 +153,21 @@ export function RunSimulationForm({
 		if (inputFiles && Object.keys(inputFiles).length > 0) {
 			setSimulationSourceType('files');
 			setSelectedFiles(Object.keys(inputFiles));
-			setHighlight(true);
-			setTimeout(() => setHighlight(false), 2500);
 		} else {
 			setSimulationSourceType('editor');
 		}
 	}, [inputFiles]);
+
+	// Show a pulsating animation to bring attention to form changes
+	// trigger by setting highlight prop to true, reset by setting to false, then true
+	const [animation, setAnimation] = useState('none');
+	useEffect(() => {
+		if (highlight) {
+			setAnimation('highlight 1s linear 0s 2');
+
+			return () => setAnimation('none');
+		}
+	}, [highlight]);
 
 	const [selectedFiles, setSelectedFiles] = useState<string[]>(Object.keys(inputFiles ?? {}));
 	const [selectedCluster, setSelectedCluster] = useState<number | undefined>(0);
@@ -264,7 +274,7 @@ export function RunSimulationForm({
 					'50%': { borderColor: theme.palette.success.main },
 					'100%': {}
 				},
-				'animation': highlight ? 'highlight 1s linear 0s 2' : 'none'
+				'animation': animation
 			}}>
 			<AccordionSummary>
 				<Typography

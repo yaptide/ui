@@ -44,6 +44,19 @@ function WrapperApp() {
 	const [tabsValue, setTabsValue] = useState('editor');
 
 	const [providedInputFiles, setProvidedInputFiles] = useState<SimulationInputFiles>();
+	const [highlightRunForm, setHighLightRunForm] = useState(false);
+
+	useEffect(() => {
+		if (Object.keys(providedInputFiles ?? {}).length > 0) {
+			setHighLightRunForm(true);
+			const timeout = setTimeout(() => setHighLightRunForm(false), 2500);
+
+			return () => {
+				clearTimeout(timeout);
+				setHighLightRunForm(false);
+			};
+		}
+	}, [providedInputFiles]);
 
 	const handleChange = (event: SyntheticEvent, newValue: string) => {
 		if (newValue === 'login' && isAuthorized) logout();
@@ -179,6 +192,7 @@ function WrapperApp() {
 					<RunSimulationPanel
 						editorJson={yaptideEditor?.toSerialized()}
 						inputFiles={providedInputFiles}
+						highlight={highlightRunForm}
 						clearInputFiles={() => setProvidedInputFiles(undefined)}
 						runSimulation={runSimulation}
 					/>
