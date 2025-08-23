@@ -14,7 +14,7 @@ import re
 densities = []
 additional_materials = [
 	{ 'icru': 1000, 'name': 'VACUUM', 'sanitized_name': 'vacuum', 'density': 0, geant4_name: 'G4_Galactic' },
-	{ 'icru': 0, 'name': 'BLACK HOLE', 'sanitized_name': 'black_hole', 'density': 0, geant4_name: 'G4_Galactic' }
+	{ 'icru': 0, 'name': 'BLACK HOLE', 'sanitized_name': 'black_hole', 'density': 0, geant4_name: 'BlackHole' }
 ]
 with open('./src/shieldhit/microdhi/icru.f', 'r') as icru_file:
 	for line in icru_file.readlines()[494:565]:
@@ -64,7 +64,7 @@ export const MATERIALS = [
 		name: 'BLACK HOLE',
 		sanitized_name: 'black_hole',
 		density: 0,
-		geant4_name: 'G4_Galactic'
+		geant4_name: 'BlackHole'
 	},
 	{ icru: 1, name: 'HYDROGEN', sanitized_name: 'H', density: 8.3748e-5, geant4_name: 'G4_H' },
 	{ icru: 2, name: 'HELIUM', sanitized_name: 'He', density: 0.000166322, geant4_name: 'G4_He' },
