@@ -1,5 +1,6 @@
 import { Button } from '@mui/material';
 
+import { useDialog } from '../../../services/DialogService';
 import { StoreContext } from '../../../services/StoreService';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
@@ -7,6 +8,8 @@ export function NewProjectDialog({
 	onClose,
 	yaptideEditor
 }: ConcreteDialogProps<Required<Pick<StoreContext, 'yaptideEditor'>>>) {
+	const { open: openEditProject } = useDialog('editProject');
+
 	return (
 		<CustomDialog
 			onClose={onClose}
@@ -23,7 +26,13 @@ export function NewProjectDialog({
 				color='secondary'
 				variant='contained'
 				onClick={() => {
-					if (yaptideEditor) yaptideEditor.clear();
+					if (yaptideEditor) {
+						yaptideEditor.clear();
+						yaptideEditor.config.setKey('project/title', 'New Project');
+						yaptideEditor.config.setKey('project/description', '');
+						openEditProject({ yaptideEditor });
+					}
+
 					onClose();
 				}}>
 				Clear and proceed
