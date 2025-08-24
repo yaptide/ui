@@ -18,7 +18,6 @@ declare global {
 
 interface SceneEditorProps {
 	focus: boolean;
-	sidebarProps: boolean[];
 }
 
 function SceneEditor(props: SceneEditorProps) {
@@ -41,13 +40,19 @@ function SceneEditor(props: SceneEditorProps) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.focus]);
 
-	useEffect(
-		() => {
+	// handle resizing of 3D view canvas
+	useEffect(() => {
+		if (!threeContainer.current) {
+			return;
+		}
+
+		const resizeObserver = new ResizeObserver(() => {
 			yaptideEditor?.signals.windowResize.dispatch();
-		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[props.sidebarProps]
-	);
+		});
+		resizeObserver.observe(threeContainer.current!);
+
+		return () => resizeObserver.disconnect();
+	}, [threeContainer, yaptideEditor]);
 
 	return (
 		<div

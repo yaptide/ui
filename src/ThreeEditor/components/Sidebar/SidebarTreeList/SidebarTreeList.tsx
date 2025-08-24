@@ -25,6 +25,9 @@ function handleSelected(object: Object3D | null) {
 function Placeholder() {
 	return (
 		<Box
+			// to make the box visible using margins, it would increase the height to > 0
+			// boxShadow doesn't change the height and prevent rows from moving to make space
+			// and can be made to look them same
 			sx={theme => ({ height: 0, boxShadow: `0 0 0 1px ${theme.palette.secondary.main}` })}
 		/>
 	);

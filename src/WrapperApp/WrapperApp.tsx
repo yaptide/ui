@@ -145,10 +145,7 @@ function WrapperApp() {
 					}}
 					forTabs={['editor']}
 					persistent>
-					<SceneEditor
-						focus={tabsValue === 'editor'}
-						sidebarProps={[open, tabsValue === 'editor']}
-					/>
+					<SceneEditor focus={tabsValue === 'editor'} />
 					<EditorToolbar
 						editor={yaptideEditor}
 						sx={{ position: 'absolute', top: 40, right: 10 }}
@@ -216,7 +213,6 @@ function WrapperApp() {
 				{/* end Input files screen */}
 
 				{/* Results screen */}
-				{/* Includes header from Editor screen */}
 
 				{/* Content panel show the results of selected simulation */}
 				<TabPanel

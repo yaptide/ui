@@ -1,4 +1,4 @@
-import { MenuItem, Select, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { Object3D } from 'three';
 
 import { GEANT4_PARTICLE_TYPES } from '../../../../../types/Particle';

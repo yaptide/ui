@@ -1,5 +1,4 @@
 import { Box, Button, Divider, Menu, MenuItem, useTheme } from '@mui/material';
-import { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { MouseEvent, useEffect, useState } from 'react';
 

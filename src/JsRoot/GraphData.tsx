@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
+import { Box, Button, Divider, Typography, useTheme } from '@mui/material';
 
 import { isCustomFilterJSON } from '../ThreeEditor/Simulation/Scoring/CustomFilter';
 import { isParticleFilterJSON } from '../ThreeEditor/Simulation/Scoring/ParticleFilter';
@@ -127,6 +127,23 @@ const getGraphFromPage = (page: Page, title?: string) => {
 	}
 };
 
+type SectionProps = {
+	title: string;
+	children: React.ReactNode;
+};
+
+function Section({ title, children }: SectionProps) {
+	const theme = useTheme();
+
+	return (
+		<>
+			<Typography variant='h6'>{title}</Typography>
+			<Divider sx={{ width: 100 }} />
+			<Box sx={{ margin: theme.spacing(1) }}>{children}</Box>
+		</>
+	);
+}
+
 export function generateGraphs(
 	estimator: EstimatorResults,
 	groupQuantities?: boolean,
@@ -185,51 +202,48 @@ export function generateGraphs(
 			return { page, graph: getGraphFromPage(page, page.name), filter: page.filterRef };
 		})
 		.map(({ page, graph, filter }, idx) => {
-			return (
-				<Grid
-					key={`graph_${name}${jobId ? '_' + jobId : ''}_${page.name ?? idx}`}
-					size={12}>
-					<Card>
-						<CardContent>
-							<Grid container>
-								<Grid size={8}>{graph}</Grid>
-								<Grid size={4}>
-									<Box sx={{ marginTop: '1rem' }}>
-										<Typography variant='h5'>Filter:</Typography>
-										<Typography>{filter?.name ?? 'None'}</Typography>
-										{isCustomFilterJSON(filter) && (
-											<Box>
-												<Typography variant='h6'>Rules:</Typography>
-												{filter.rules.map((rule, idx) => (
-													<Typography key={rule.uuid}>
-														{rule.keyword}
-														{rule.operator}
-														{rule.value}
-													</Typography>
-												))}
-											</Box>
-										)}
-										{isParticleFilterJSON(filter) && (
-											<Box>
-												<Typography variant='h6'>Particle:</Typography>
-												<Typography>{filter.particle.name}</Typography>
-											</Box>
-										)}
-									</Box>
+			const theme = useTheme();
 
-									{isPage1d(page) && (
-										<Button
-											color='secondary'
-											sx={{ marginTop: '1rem' }}
-											onClick={() => onClickSaveToFile(page as Page1D)}>
-											EXPORT GRAPH TO CSV
-										</Button>
-									)}
-								</Grid>
-							</Grid>
-						</CardContent>
-					</Card>
-				</Grid>
+			return (
+				<Box
+					key={`graph_${name}${jobId ? '_' + jobId : ''}_${page.name ?? idx}`}
+					sx={{ display: 'flex', margin: theme.spacing(1), gap: theme.spacing(2) }}>
+					<Box sx={{ flexGrow: 1 }}>{graph}</Box>
+					<Box sx={{ width: '20%', minWidth: '300px', padding: theme.spacing(2) }}>
+						<Section title='Filter'>
+							<Typography>{filter?.name ?? 'None'}</Typography>
+						</Section>
+						{isCustomFilterJSON(filter) && (
+							<Section title='Rules'>
+								{filter.rules.map((rule, idx) => (
+									<Typography key={rule.uuid}>
+										{rule.keyword}
+										{rule.operator}
+										{rule.value}
+									</Typography>
+								))}
+							</Section>
+						)}
+						{isParticleFilterJSON(filter) && (
+							<Section title='Particle'>
+								<Typography>{filter.particle.name}</Typography>
+							</Section>
+						)}
+					</Box>
+					<Box
+						sx={{
+							marginTop: theme.spacing(2),
+							width: '160px',
+							alignSelf: 'flex-start',
+							justifySelf: 'flex-end'
+						}}>
+						{isPage1d(page) && (
+							<Button onClick={() => onClickSaveToFile(page as Page1D)}>
+								EXPORT GRAPH TO CSV
+							</Button>
+						)}
+					</Box>
+				</Box>
 			);
 		});
 }

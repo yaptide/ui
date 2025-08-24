@@ -35,6 +35,7 @@ const Store = ({ children }: GenericContextProviderProps) => {
 	>([]);
 	const [trackedId, setTrackedId] = useState<string>();
 
+	// helper function to set simulator type so the whole app sees it
 	const setSimulatorType = useCallback(
 		(simulator: SimulatorType, changingToOrFromGeant4: boolean) => {
 			if (!editor) {
@@ -47,15 +48,13 @@ const Store = ({ children }: GenericContextProviderProps) => {
 				editor.clear();
 			}
 
-			// currentSimulator is deeply nested within YaptideEditor
+			// currentSimulator field is deeply nested within YaptideEditor
 			//
 			// to update all components which use the property via const { yaptideEditor } = useStore()
 			// we need to change the reference of the whole object for react to see that we changed the property
 			//
 			// since important methods are defined by setting YaptideEditor.prototype = { ... }
 			// we can't simply do setEditor({ ...editor }) because it doesn't copy any methods and the app breaks
-			//
-			// 🤡
 			let newEditor = Object.create(Object.getPrototypeOf(editor));
 			Object.defineProperties(newEditor, Object.getOwnPropertyDescriptors(editor));
 			setEditor(newEditor);

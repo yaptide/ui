@@ -20,7 +20,9 @@ export default function RunningQueue() {
 					Queue
 				</Typography>
 			</AccordionSummary>
-			<AccordionDetails></AccordionDetails>
+			<AccordionDetails>
+				<Typography color='textDisabled'>Work In Progress</Typography>
+			</AccordionDetails>
 		</StyledAccordion>
 	);
 }

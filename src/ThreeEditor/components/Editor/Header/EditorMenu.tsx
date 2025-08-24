@@ -44,7 +44,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 		<>
 			<MenuPosition
 				label='View'
-				idx={20}
+				idx={20} // arbitrary, larger than id for 'Project' menu
 				openIdx={openIdx}
 				setOpenIdx={setOpenIdx}
 				options={[

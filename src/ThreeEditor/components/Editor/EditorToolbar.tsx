@@ -99,7 +99,6 @@ export function EditorToolbar({ editor, sx }: EditorToolbarProps) {
 								edge='end'
 								color='inherit'
 								disabled={disabled}
-								// component='span'
 								aria-label={'menu-' + label}
 								onClick={() => onClick(value)}>
 								{icon}
