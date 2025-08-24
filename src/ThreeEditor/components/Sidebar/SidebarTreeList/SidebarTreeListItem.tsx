@@ -215,6 +215,7 @@ export function SidebarTreeListItem(props: {
 							sx={{ display: mode === 'view' ? 'none' : '' }}
 							size='small'
 							variant='standard'
+							color='secondary'
 							value={watchedObject.name}
 							onChange={event =>
 								editor.execute(
