@@ -14,7 +14,7 @@ import { SimulationCardContent } from './SimulationCardContent';
 import { SimulationCardHeader } from './SimulationCardHeader';
 import SimulationCardHelpers from './SimulationCardHelpers';
 
-type SimulationCardProps = {
+export type SimulationCardProps = {
 	simulationStatus: JobStatusData;
 	loadResults?: (jobId: string | null) => void;
 	handleDelete?: (jobId: string) => void;
@@ -70,8 +70,6 @@ export default function SimulationCard({
 
 	const formatDateTime = (date: Date) => formatDate(date, 'yyyy-MM-dd HH:mm:ss');
 
-	const displayDuration = endTime || currentJobStatusData[StatusState.RUNNING](simulationStatus);
-
 	const highlightColor = statusColor(
 		simulationStatus.localData ? StatusState.LOCAL : simulationStatus.jobState
 	);
@@ -93,18 +91,17 @@ export default function SimulationCard({
 				}}
 			/>
 			<SimulationCardHeader
-				displayDuration={displayDuration}
-				duration={duration}
-				endTime={endTime}
-				formatedEndDate={formatDateTime(endDate)}
-				formatedStartDate={formatDateTime(startDate)}
 				handleDelete={handleDelete}
 				handleRefresh={handleRefresh}
 				simulationStatus={simulationStatus}
 			/>
 			<SimulationCardContent
+				duration={duration}
+				endTime={endTime}
+				formatedEndDate={formatDateTime(endDate)}
+				formatedStartDate={formatDateTime(startDate)}
 				simulationStatus={simulationStatus}
-				statusColor={statusColor}
+				highlightColor={highlightColor}
 			/>
 			<SimulationCardActions
 				simulationStatus={simulationStatus}

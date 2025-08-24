@@ -12,8 +12,13 @@ export enum StatusState {
 	FAILED = 'FAILED',
 	COMPLETED = 'COMPLETED',
 	LOCAL = 'LOCAL',
-	CANCELED = 'CANCELED'
+	CANCELED = 'CANCELED',
+	UNKNOWN = 'UNKNOWN'
 }
+
+export const ValidStatusStates = Object.values(StatusState).filter(
+	v => v !== StatusState.UNKNOWN && v !== StatusState.LOCAL
+);
 
 export type YaptideResponse = {
 	message: string;

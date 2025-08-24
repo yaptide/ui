@@ -1,7 +1,7 @@
 import { JobInputs, JobLogs, JobResults } from '../services/ShSimulatorService';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
-import { JobStatusData, SimulationInfo, SimulationInputFiles } from './ResponseTypes';
+import { JobStatusData, SimulationInfo, SimulationInputFiles, StatusState } from './ResponseTypes';
 import { Flatten } from './TypeTransformUtil';
 
 /* ------------Utility types------------ */
@@ -56,7 +56,13 @@ type LoginParams = [username: string, password: string];
 
 type CachedDataParams<T> = [cache?: boolean, beforeCacheWrite?: (id: string, response: T) => void];
 
-type PageParams = [pageIdx: number, pageSize: number, orderType: OrderType, orderBy: OrderBy];
+type PageParams = [
+	pageIdx: number,
+	pageSize: number,
+	orderType: OrderType,
+	orderBy: OrderBy,
+	jobState: StatusState[]
+];
 
 type SimInfoParam = [info: SimulationInfo];
 type SimInfoArrayParam = [infoList: Array<SimulationInfo>];

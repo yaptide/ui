@@ -42,7 +42,9 @@ const SimulationCardHelpers = ({
 			case StatusState.MERGING_RUNNING:
 				return 'info.main';
 			case StatusState.CANCELED:
-				return 'common.black';
+				return 'gray';
+			case StatusState.PENDING:
+				return 'secondary.main';
 			default:
 				return '';
 		}

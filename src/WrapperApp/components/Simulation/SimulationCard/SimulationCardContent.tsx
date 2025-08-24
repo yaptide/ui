@@ -1,14 +1,4 @@
-import {
-	Box,
-	CardContent,
-	Chip,
-	LinearProgress,
-	Paper,
-	Table,
-	TableBody,
-	TableContainer
-} from '@mui/material';
-import { Theme } from '@mui/material/styles';
+import { Box, CardContent, Chip, LinearProgress, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import {
@@ -19,12 +9,15 @@ import {
 	StatusState,
 	TaskUnknownStatus
 } from '../../../../types/ResponseTypes';
-import { SimulationProgressBar } from '../SimulationProgressBar';
-import { useRows } from './RowUtils';
+import { millisecondsToTimeString } from '../../../../util/time';
 
 interface SimulationCardContentProps {
+	duration: number;
+	endTime?: string | undefined;
+	formatedEndDate: string;
+	formatedStartDate: string;
 	simulationStatus: Omit<JobUnknownStatus & SimulationInfo, never>;
-	statusColor: (status?: StatusState | undefined) => string;
+	highlightColor: string;
 }
 
 function getValidatedPrimaries(primariesNumber: number | undefined): number {
@@ -61,11 +54,21 @@ function calculateSimulationProgress(jobTasksStatus: TaskUnknownStatus[]): numbe
 	return percentOfSimulatedPrimaries(requestedPrimariesSum, simulatedPrimariesSum);
 }
 
-export const SimulationCardContent = ({
-	simulationStatus,
-	statusColor
-}: SimulationCardContentProps) => {
-	const rows = useRows(simulationStatus);
+function needsProgressBar(state: StatusState | undefined) {
+	return (
+		state === StatusState.RUNNING ||
+		state === StatusState.MERGING_QUEUED ||
+		state === StatusState.MERGING_RUNNING
+	);
+}
+
+export function SimulationProgress(props: {
+	formatedStartDate: string;
+	duration: number;
+	simulationStatus: Omit<JobUnknownStatus & SimulationInfo, never>;
+}) {
+	const { formatedStartDate, duration, simulationStatus } = props;
+
 	const [simulationProgressPercent, setSimulationProgressPercent] = useState(0);
 
 	useEffect(() => {
@@ -76,26 +79,53 @@ export const SimulationCardContent = ({
 	}, [simulationStatus, setSimulationProgressPercent]);
 
 	return (
-		<CardContent sx={{ flexGrow: 1 }}>
+		<>
+			<Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+				<Typography color='textDisabled'>Start: {formatedStartDate}</Typography>
+				<Typography color='textDisabled'>{millisecondsToTimeString(duration)}</Typography>
+			</Box>
+			<LinearProgress
+				variant='buffer'
+				sx={{
+					'height': 18,
+					'mb': 1,
+					'& .MuiLinearProgress-dashed': {
+						overflow: 'hidden',
+						backgroundSize: '5.75px 5.75px',
+						animationDuration: '2s'
+					}
+				}}
+				value={simulationProgressPercent}
+				valueBuffer={1}
+			/>
+		</>
+	);
+}
+
+export const SimulationCardContent = ({
+	duration,
+	endTime,
+	formatedEndDate,
+	formatedStartDate,
+	simulationStatus,
+	highlightColor
+}: SimulationCardContentProps) => {
+	return (
+		<CardContent sx={{ flexGrow: 1, p: 0, px: 1 }}>
 			<Box
 				sx={{
 					display: 'flex',
 					flexWrap: 'wrap',
 					gap: 1,
-					mb: 2
+					mb: 1
 				}}>
 				<Chip
-					variant='outlined'
+					variant='filled'
+					size='small'
 					label={
 						simulationStatus.localData ? StatusState.LOCAL : simulationStatus.jobState
 					}
-					sx={{
-						borderColor: statusColor(
-							simulationStatus.localData
-								? StatusState.LOCAL
-								: simulationStatus.jobState
-						)
-					}}
+					sx={{ backgroundColor: highlightColor, color: 'white' }}
 				/>
 				{currentJobStatusData['hasSpecificProperty'](
 					simulationStatus,
@@ -104,7 +134,8 @@ export const SimulationCardContent = ({
 					<>
 						<Chip
 							variant='outlined'
-							label={`requestedPrimaries: ${simulationStatus.jobTasksStatus.reduce(
+							size='small'
+							label={`primaries: ${simulationStatus.jobTasksStatus.reduce(
 								(acc, taskStatus) =>
 									currentTaskStatusData['hasSpecificProperty'](
 										taskStatus,
@@ -117,6 +148,7 @@ export const SimulationCardContent = ({
 						/>
 						<Chip
 							variant='outlined'
+							size='small'
 							label={`ntask: ${simulationStatus.jobTasksStatus.length}`}
 						/>
 					</>
@@ -128,54 +160,39 @@ export const SimulationCardContent = ({
 							<Chip
 								key={key}
 								variant='outlined'
+								size='small'
 								label={`${key}: ${value}`}
 							/>
 						))}
 			</Box>
-			<TableContainer
-				component={Paper}
-				sx={{
-					'& .MuiTableRow-root': {
-						backgroundColor: ({ palette }: Theme) =>
-							palette.mode === 'dark'
-								? 'rgba(255, 255, 255, 0.05)'
-								: 'rgba(0, 0, 0, 0.05)'
-					}
-				}}>
-				<Table aria-label='simple table'>
-					<TableBody>{rows}</TableBody>
-				</Table>
-			</TableContainer>
-			{currentJobStatusData['hasSpecificProperty'](simulationStatus, 'jobTasksStatus') && (
-				<>
-					<LinearProgress
-						variant='buffer'
-						sx={{
-							'height': 18,
-							'mb': 1,
-							'& .MuiLinearProgress-dashed': {
-								overflow: 'hidden',
-								backgroundSize: '5.75px 5.75px',
-								animationDuration: '2s'
-							}
-						}}
-						value={simulationProgressPercent}
-						valueBuffer={1}
-					/>
-					<Box
-						sx={{
-							display: 'grid',
-							gridTemplateColumns: 'repeat(auto-fill, minmax(55px, 1fr))'
-						}}>
-						{simulationStatus.jobTasksStatus.map((taskStatus, index) => (
-							<SimulationProgressBar
-								key={index}
-								status={taskStatus}
+			<Box sx={{ minHeight: '40px' }}>
+				{needsProgressBar(simulationStatus.jobState)
+					? currentJobStatusData['hasSpecificProperty'](
+							simulationStatus,
+							'jobTasksStatus'
+						) && (
+							<SimulationProgress
+								formatedStartDate={formatedStartDate}
+								duration={duration}
+								simulationStatus={simulationStatus}
 							/>
-						))}
-					</Box>
-				</>
-			)}
+						)
+					: simulationStatus.jobState === StatusState.COMPLETED && (
+							<>
+								<Typography color='textDisabled'>
+									Start: {formatedStartDate}
+								</Typography>
+								{endTime && (
+									<Typography color='textDisabled'>
+										End: {formatedEndDate}
+									</Typography>
+								)}
+								<Typography color='textDisabled'>
+									Duration: {millisecondsToTimeString(duration)}
+								</Typography>
+							</>
+						)}
+			</Box>
 		</CardContent>
 	);
 };

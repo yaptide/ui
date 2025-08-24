@@ -10,7 +10,8 @@ import {
 	JobUnknownStatus,
 	ResponseGetPageContents,
 	SimulationInfo,
-	SimulationInputFiles
+	SimulationInputFiles,
+	StatusState
 } from '../../../../types/ResponseTypes';
 import { PageNavigationProps, PageParamProps } from '../SimulationPanelBar';
 
@@ -20,6 +21,7 @@ export interface SimulationConfig {
 	trackedId: string | undefined;
 	isBackendAlive: boolean;
 	setBackendAlive: React.Dispatch<React.SetStateAction<boolean>>;
+	statusStates: StatusState[];
 }
 
 export interface SimulationHandlers {

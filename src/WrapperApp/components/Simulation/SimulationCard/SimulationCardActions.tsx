@@ -103,7 +103,7 @@ export const SimulationCardActions = ({
 	}
 
 	return (
-		<CardActions>
+		<CardActions sx={{ p: 1 }}>
 			<ButtonGroup
 				fullWidth
 				aria-label='full width outlined button group'>
