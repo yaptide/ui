@@ -20,8 +20,6 @@ export default function RunSimulationPanel(props: RunSimulationFormProps) {
 		(!demoMode && isAuthorized) ||
 		yaptideEditor?.contextManager.currentSimulator === SimulatorType.GEANT4;
 
-	console.log(showRunForm, isAuthorized);
-
 	return showRunForm ? (
 		<>
 			<RunSimulationForm {...props} />
