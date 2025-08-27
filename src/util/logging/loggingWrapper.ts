@@ -1,13 +1,22 @@
 import ky from 'ky';
 
-import { DEDUP_WINDOW_MS, FLUSH_INTERVAL,MAX_LOGS } from '../../config/ConfigService';
- // Assuming these constants are defined in a separate file
+import { DEDUP_WINDOW_MS, FLUSH_INTERVAL, MAX_LOGS } from '../../config/ConfigService';
+// Assuming these constants are defined in a separate file
 let backendUrl = '';
-const logBuffer = [];
+
+type LogEntry = {
+	timestamp: string;
+	level: string;
+	message: string;
+	browser: string;
+	user_ip: string;
+};
+
+const logBuffer: LogEntry[] = [];
 // const MAX_LOGS = 20;
 // const FLUSH_INTERVAL = 5000;
 
-const logDedupMap = new Map();
+const logDedupMap: Map<string, number> = new Map();
 // const DEDUP_WINDOW_MS = 10000; // 10 seconds
 
 const originalConsole = {
@@ -17,13 +26,13 @@ const originalConsole = {
 	info: console.info
 };
 
-const shouldLog = message => {
+const shouldLog = (message: string): boolean => {
 	const now = Date.now();
 
 	if (logDedupMap.has(message)) {
 		const lastLogged = logDedupMap.get(message);
 
-		if (now - lastLogged < DEDUP_WINDOW_MS) {
+		if (lastLogged !== undefined && now - lastLogged < DEDUP_WINDOW_MS) {
 			return false;
 		}
 	}
@@ -63,9 +72,9 @@ export function stopLogSending() {
 	originalConsole.log('Stopped log sending');
 }
 
-let intervalId;
+let intervalId: ReturnType<typeof setInterval> | null;
 
-export const initializeLogging = url => {
+export const initializeLogging = (url: string) => {
 	originalConsole.log('Initializing logging');
 
 	backendUrl = url;
@@ -75,8 +84,12 @@ export const initializeLogging = url => {
 	intervalId = setInterval(flushLogs, FLUSH_INTERVAL);
 	window.addEventListener('beforeunload', flushLogs);
 
-	['log', 'error', 'warn', 'info'].forEach(level => {
-		console[level] = function (...args) {
+	const levels = ['log', 'error', 'warn', 'info'] as const;
+
+	type LogLevel = (typeof levels)[number];
+
+	levels.forEach(level => {
+		console[level] = function (...args: unknown[]) {
 			const message = args
 				.map(arg => (typeof arg === 'object' ? JSON.stringify(arg) : String(arg)))
 				.join(' ');

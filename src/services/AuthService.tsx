@@ -217,6 +217,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 
 				return sameUser ? prev : { username, source: 'keycloak' };
 			});
+			initializeLogging(backendUrl);
 			setRefreshInterval(getRefreshDelay(accessExp));
 		};
 
