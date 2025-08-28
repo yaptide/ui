@@ -4,9 +4,11 @@ import { useStore } from '../../../services/StoreService';
 import { EditorMenu } from '../../../ThreeEditor/components/Editor/Header/EditorMenu';
 import { EditorTitleBar } from '../../../ThreeEditor/components/Editor/Header/EditorTitlebar';
 import { ProjectMenu } from './ProjectMenu';
-import SimulatorSelect from './SimulatorSelect';
+import SimulatorControls, { SimulationControlsProps } from './SimulatorControls';
 
-export default function HeaderPanel() {
+export type HeaderPanelProps = SimulationControlsProps;
+
+export default function HeaderPanel(props: SimulationControlsProps) {
 	const { yaptideEditor } = useStore();
 
 	return (
@@ -33,7 +35,7 @@ export default function HeaderPanel() {
 					alignItems: 'center',
 					justifyContent: 'flex-end'
 				}}>
-				<SimulatorSelect />
+				<SimulatorControls handleTabChange={props.handleTabChange} />
 			</Box>
 		</Box>
 	);

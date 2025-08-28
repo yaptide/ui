@@ -133,7 +133,7 @@ function WrapperApp() {
 						gridRow: 'header-start / header-end'
 					}}
 					forTabs={['editor']}>
-					<HeaderPanel />
+					<HeaderPanel handleTabChange={setTabsValue} />
 				</TabPanel>
 
 				{/* Editor content */}

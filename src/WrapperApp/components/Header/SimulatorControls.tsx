@@ -36,6 +36,10 @@ const SimulatorsDescriptions: Record<SimulatorType, { name: string; description:
 	}
 };
 
+export interface SimulationControlsProps {
+	handleTabChange: (tab: string) => void;
+}
+
 interface SimulationSelectItemProps {
 	simulator: SimulatorType;
 	onClick: () => void;
@@ -60,7 +64,7 @@ function SimulatorSelectItem({ simulator, onClick }: SimulationSelectItemProps) 
 	);
 }
 
-export default function SimulatorSelect() {
+export default function SimulatorControls(props: SimulationControlsProps) {
 	const { yaptideEditor, setSimulatorType } = useStore();
 	const { demoMode } = useConfig();
 
@@ -135,6 +139,14 @@ export default function SimulatorSelect() {
 						sx={{ color: 'white', width: '100%' }}
 					/>
 				)}
+			</Button>
+			<Button
+				variant='contained'
+				disabled={!simulatorReady}
+				onClick={() => props.handleTabChange('simulations')}
+				disableRipple
+				sx={{ ml: 1, height: '36px', width: '72px' }}>
+				<Typography>Run</Typography>
 			</Button>
 			<Popover
 				open={!!anchorEl}

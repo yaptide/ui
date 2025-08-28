@@ -213,7 +213,15 @@ export function RunSimulationForm({
 		setSelectedScriptParamsTab(newValue);
 	};
 
+	const runSimulationValidate = () => {
+		return !isNaN(nTasks) && !isNaN(overridePrimariesCount);
+	};
+
 	const handleRunSimulationClick = () => {
+		if (!runSimulationValidate()) {
+			return;
+		}
+
 		const filteredInputFiles = Object.entries(inputFiles ?? {}).reduce((acc, [key, value]) => {
 			if (selectedFiles.includes(key)) {
 				return { ...acc, [key]: value };
@@ -324,6 +332,7 @@ export function RunSimulationForm({
 							size='small'
 							type='number'
 							label='Number of tasks'
+							error={isNaN(nTasks)}
 							value={nTasks}
 							onChange={e => setNTasks(Math.max(1, parseInt(e.target.value)))}
 						/>
@@ -331,6 +340,7 @@ export function RunSimulationForm({
 							size='small'
 							type='number'
 							label='Number of primary particles'
+							error={isNaN(overridePrimariesCount)}
 							value={overridePrimariesCount}
 							onChange={e =>
 								setOverridePrimariesCount(Math.max(1, parseInt(e.target.value)))
@@ -479,6 +489,7 @@ export function RunSimulationForm({
 						}}
 						variant='contained'
 						size='large'
+						disabled={!usingBatchConfig && !runSimulationValidate()}
 						onClick={handleRunSimulationClick}>
 						Start simulation
 					</Button>
