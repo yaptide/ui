@@ -73,7 +73,7 @@ describe('ShieldhitConverter', () => {
 		// Find the first example in the "SHIELDHIT" section
 		const firstExample = await driver.findElement(
 			By.xpath(
-				"//h5[text()='SHIELDHIT']/following-sibling::div//div[contains(@class, 'MuiPaper-root')][1]"
+				"//h5[text()='SHIELDHIT']/following-sibling::div//div[contains(@class, 'MuiChip-root')][1]"
 			)
 		);
 
@@ -109,6 +109,8 @@ describe('ShieldhitConverter', () => {
 			),
 			10_000
 		);
+
+		await driver.sleep(1000); // wait for modal to fade in
 
 		expect(await loadFileDialog.findElement(By.id(loadFileTitleId)).getText()).toBe(
 			'Load File Alert'

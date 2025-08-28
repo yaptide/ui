@@ -115,6 +115,7 @@ export default function NavPanel(props: NavPanelProps) {
 
 	return (
 		<Box
+			aria-label='Navigation drawer for the YAPTIDE application'
 			sx={{
 				display: 'flex',
 				flexDirection: 'column',
