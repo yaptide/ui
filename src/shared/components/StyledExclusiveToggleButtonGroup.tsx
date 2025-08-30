@@ -26,7 +26,7 @@ export function StyledExclusiveToggleButtonGroup(props: StyledRadioButtonGroupPr
 				'gap': theme.spacing(0.5),
 				'& .MuiToggleButtonGroup-lastButton, & .MuiToggleButtonGroup-firstButton, & .MuiToggleButtonGroup-centerButton':
 					{
-						backgroundColor: 'none',
+						backgroundColor: 'transparent',
 						border: 'none',
 						py: theme.spacing(0.75),
 						px: theme.spacing(2),
