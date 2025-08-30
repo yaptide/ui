@@ -1,65 +1,36 @@
-import { Box, Fade, Modal } from '@mui/material';
+import { Box, Fade, Modal, useTheme } from '@mui/material';
 import { useState } from 'react';
 
-import { isFullSimulationData } from '../../../services/LoaderService';
 import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
-import {
-	currentJobStatusData,
-	SimulationInputFiles,
-	StatusState
-} from '../../../types/ResponseTypes';
+import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import { BackendSimulations } from './BackendSimulations/BackendSimulations';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
+	goToRun: (inputFiles?: SimulationInputFiles) => void;
 	forwardedInputFiles?: SimulationInputFiles;
-	forwardedSimulator: SimulatorType;
 }
 
 export default function SimulationPanel({
 	goToResults,
-	forwardedInputFiles,
-	forwardedSimulator
+	goToRun,
+	forwardedInputFiles
 }: SimulationPanelProps) {
-	const { setResultsSimulationData, localResultsSimulationData } = useStore();
-
-	/** Visibility Flags */
+	const theme = useTheme();
+	const { yaptideEditor } = useStore();
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
-
-	/** Simulation Run Options */
 	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
-	const [simulator] = useState<SimulatorType>(forwardedSimulator);
-
-	const handleLoadResults = async (taskId: string | null, simulation: unknown) => {
-		if (taskId === null) return goToResults?.call(null);
-
-		if (currentJobStatusData[StatusState.COMPLETED](simulation)) {
-			if (isFullSimulationData(simulation)) setResultsSimulationData(simulation);
-			else throw new Error('Simulation data is not complete');
-		}
-	};
-
-	const handleShowInputFiles = (inputFiles?: SimulationInputFiles) => {
-		setShowInputFilesEditor(true);
-		setInputFiles(inputFiles);
-	};
 
 	return (
 		<Box
 			sx={{
-				margin: '0 auto',
-				width: 'min(1600px, 100%)',
-				maxWidth: 'max(75%, 966px)',
+				width: '100%',
 				height: '100%',
 				boxSizing: 'border-box',
-				padding: ({ spacing }) => spacing(2, 5),
-				position: 'relative',
 				display: 'flex',
-				flexDirection: 'column',
-				gap: '1.5rem',
-				scrollPadding: ({ spacing }) => spacing(2)
+				flexDirection: 'column'
 			}}>
 			<Modal
 				aria-labelledby='transition-modal-title'
@@ -68,14 +39,42 @@ export default function SimulationPanel({
 				onClose={() => setShowInputFilesEditor(false)}
 				closeAfterTransition>
 				<Fade in={showInputFilesEditor}>
-					<Box sx={{ height: '100vh', width: '100vw', overflow: 'auto' }}>
-						<InputFilesEditor
-							simulator={simulator}
-							inputFiles={inputFiles}
-							closeEditor={() => setShowInputFilesEditor(false)}
-							onChange={newInputFiles =>
-								setInputFiles(newInputFiles)
-							}></InputFilesEditor>
+					<Box
+						sx={{
+							height: '90vh',
+							width: '80vw',
+							overflow: 'hidden',
+							backgroundColor: theme.palette.background.paper,
+							borderStyle: 'solid',
+							borderColor: theme.palette.divider,
+							borderWidth: 1,
+							borderRadius: theme.spacing(1),
+							my: '5vh',
+							mx: '10vw',
+							boxShadow: theme.shadows[10]
+						}}>
+						<Box
+							sx={{
+								height: '100%',
+								width: '100%',
+								padding: theme.spacing(1),
+								overflowY: 'scroll',
+								boxSizing: 'border-box'
+							}}>
+							<InputFilesEditor
+								simulator={
+									yaptideEditor?.contextManager.currentSimulator ||
+									SimulatorType.COMMON
+								}
+								inputFiles={inputFiles}
+								closeEditor={() => setShowInputFilesEditor(false)}
+								goToRun={(inputFiles?: SimulationInputFiles) => {
+									setShowInputFilesEditor(false);
+									goToRun(inputFiles);
+								}}
+								onChange={newInputFiles => setInputFiles(newInputFiles)}
+							/>
+						</Box>
 					</Box>
 				</Fade>
 			</Modal>
@@ -83,7 +82,7 @@ export default function SimulationPanel({
 				goToResults={goToResults}
 				setShowInputFilesEditor={setShowInputFilesEditor}
 				setInputFiles={setInputFiles}
-				simulator={simulator}
+				simulator={yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON}
 			/>
 		</Box>
 	);

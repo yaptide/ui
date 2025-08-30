@@ -1,4 +1,4 @@
-import { Card, CardProps, Divider } from '@mui/material';
+import { Card, CardProps, Divider, useTheme } from '@mui/material';
 import { formatDate } from 'date-fns/format';
 import { useState } from 'react';
 
@@ -32,6 +32,7 @@ export default function SimulationCard({
 	showInputFiles,
 	...other
 }: SimulationCardProps) {
+	const theme = useTheme();
 	const { yaptideEditor, resultsSimulationData } = useStore();
 	const [disableLoadJson, setDisableLoadJson] = useState(false);
 	const {
@@ -71,16 +72,24 @@ export default function SimulationCard({
 
 	const displayDuration = endTime || currentJobStatusData[StatusState.RUNNING](simulationStatus);
 
+	const highlightColor = statusColor(
+		simulationStatus.localData ? StatusState.LOCAL : simulationStatus.jobState
+	);
+
 	return (
 		<Card
-			sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+			sx={{
+				display: 'flex',
+				flexDirection: 'column',
+				borderStyle: 'solid',
+				borderWidth: 1,
+				borderColor: theme.palette.divider
+			}}
 			{...other}>
 			<Divider
 				sx={{
 					borderTopWidth: 5,
-					borderColor: statusColor(
-						simulationStatus.localData ? StatusState.LOCAL : simulationStatus.jobState
-					)
+					borderColor: highlightColor
 				}}
 			/>
 			<SimulationCardHeader

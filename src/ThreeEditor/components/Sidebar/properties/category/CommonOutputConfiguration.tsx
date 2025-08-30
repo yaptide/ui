@@ -1,8 +1,9 @@
-import { Button, Grid, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Button, Grid, ToggleButton } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 
 import { useDialog } from '../../../../../services/DialogService';
+import { StyledExclusiveToggleButtonGroup } from '../../../../../shared/components/StyledExclusiveToggleButtonGroup';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { AddQuantityCommand } from '../../../../js/commands/AddQuantityCommand';
 import { SetOutputSettingsCommand } from '../../../../js/commands/SetOutputSettingsCommand';
@@ -98,9 +99,8 @@ export function CommonOutputConfiguration(props: { editor: YaptideEditor; object
 					<PropertyField
 						label='Scoring Type'
 						disabled={false}>
-						<ToggleButtonGroup
+						<StyledExclusiveToggleButtonGroup
 							value={scoringType}
-							exclusive
 							onChange={handleChangeOutputType}
 							aria-label='scoring type'
 							size='small'>
@@ -117,7 +117,7 @@ export function CommonOutputConfiguration(props: { editor: YaptideEditor; object
 								aria-label='left aligned'>
 								Zone
 							</ToggleButton>
-						</ToggleButtonGroup>
+						</StyledExclusiveToggleButtonGroup>
 					</PropertyField>
 
 					{scoringType === SCORING_TYPE_ENUM.DETECTOR && (

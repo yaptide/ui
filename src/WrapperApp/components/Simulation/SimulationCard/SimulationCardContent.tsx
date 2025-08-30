@@ -27,46 +27,46 @@ interface SimulationCardContentProps {
 	statusColor: (status?: StatusState | undefined) => string;
 }
 
+function getValidatedPrimaries(primariesNumber: number | undefined): number {
+	return primariesNumber ?? 0;
+}
+
+function percentOfSimulatedPrimaries(
+	requestedPrimariesSum: number,
+	simulatedPrimariesSum: number
+): number {
+	return requestedPrimariesSum > 0
+		? Math.min(100, (simulatedPrimariesSum / requestedPrimariesSum) * 100)
+		: 0;
+}
+
+function calculateSimulationProgress(jobTasksStatus: TaskUnknownStatus[]): number {
+	if (jobTasksStatus.length === 0) {
+		return 0;
+	}
+
+	const { requestedPrimariesSum, simulatedPrimariesSum } = jobTasksStatus.reduce(
+		(
+			acc: { requestedPrimariesSum: number; simulatedPrimariesSum: number },
+			taskStatus: TaskUnknownStatus
+		) => {
+			acc.requestedPrimariesSum += getValidatedPrimaries(taskStatus.requestedPrimaries);
+			acc.simulatedPrimariesSum += getValidatedPrimaries(taskStatus.simulatedPrimaries);
+
+			return acc;
+		},
+		{ requestedPrimariesSum: 0, simulatedPrimariesSum: 0 }
+	);
+
+	return percentOfSimulatedPrimaries(requestedPrimariesSum, simulatedPrimariesSum);
+}
+
 export const SimulationCardContent = ({
 	simulationStatus,
 	statusColor
 }: SimulationCardContentProps) => {
 	const rows = useRows(simulationStatus);
 	const [simulationProgressPercent, setSimulationProgressPercent] = useState(0);
-
-	const percentOfSimulatedPrimaries = (
-		requestedPrimariesSum: number,
-		simulatedPrimariesSum: number
-	): number => {
-		return requestedPrimariesSum > 0
-			? Math.min(100, (simulatedPrimariesSum / requestedPrimariesSum) * 100)
-			: 0;
-	};
-
-	const getValidatedPrimaries = (primariesNumber: number | undefined): number => {
-		return primariesNumber ?? 0;
-	};
-
-	const calculateSimulationProgress = (jobTasksStatus: TaskUnknownStatus[]): number => {
-		if (jobTasksStatus.length === 0) {
-			return 0;
-		}
-
-		const { requestedPrimariesSum, simulatedPrimariesSum } = jobTasksStatus.reduce(
-			(
-				acc: { requestedPrimariesSum: number; simulatedPrimariesSum: number },
-				taskStatus: TaskUnknownStatus
-			) => {
-				acc.requestedPrimariesSum += getValidatedPrimaries(taskStatus.requestedPrimaries);
-				acc.simulatedPrimariesSum += getValidatedPrimaries(taskStatus.simulatedPrimaries);
-
-				return acc;
-			},
-			{ requestedPrimariesSum: 0, simulatedPrimariesSum: 0 }
-		);
-
-		return percentOfSimulatedPrimaries(requestedPrimariesSum, simulatedPrimariesSum);
-	};
 
 	useEffect(() => {
 		if (simulationStatus.jobTasksStatus) {
@@ -160,6 +160,7 @@ export const SimulationCardContent = ({
 							}
 						}}
 						value={simulationProgressPercent}
+						valueBuffer={1}
 					/>
 					<Box
 						sx={{

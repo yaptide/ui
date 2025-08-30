@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { useConfig } from '../../../../config/ConfigService';
 import { useShSimulation } from '../../../../services/ShSimulatorService';
@@ -10,7 +10,7 @@ import {
 	SimulationInputFiles
 } from '../../../../types/ResponseTypes';
 import useIntervalAsync from '../../../../util/hooks/useIntervalAsync';
-import CustomModal from '../CustomModal/CustomModal';
+import DeleteSimulationModal from '../Modal/DeleteSimulationModal';
 import { PaginatedSimulationsFromBackend } from '../SimulationCardGrid';
 import BackendSimulationsHelpers from './BackendSimulationsHelpers';
 import { SimulationConfig, SimulationHandlers, SimulationState } from './BackendSimulationsTypes';
@@ -103,7 +103,6 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 		<>
 			<PaginatedSimulationsFromBackend
 				simulations={simulationsStatusData}
-				subtitle={'Yaptide backend server'}
 				pageData={pageData}
 				handleLoadResults={handleLoadResults}
 				handleRefresh={updateSpecificSimulationData}
@@ -114,7 +113,7 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 				simulator={props.simulator}
 			/>
 			{isModalOpen && (
-				<CustomModal
+				<DeleteSimulationModal
 					open={isModalOpen}
 					setOpen={setIsModalOpen}
 					onConfirm={submitDelete}

@@ -1,6 +1,6 @@
-import { Button, Stack, Switch, Typography } from '@mui/material';
+import { Button, Stack, Switch, Typography, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
-import { DataGrid, GridColDef, GridValueGetter } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { ChangeEvent, useState } from 'react';
 
 import { isCustomFilterJSON } from '../../../ThreeEditor/Simulation/Scoring/CustomFilter';
@@ -43,6 +43,7 @@ const formatValue = (value: number) => {
 };
 
 export default function TablePage0D(props: { estimator: EstimatorResults }) {
+	const theme = useTheme();
 	const { estimator } = props;
 	const { tablePages: pages } = estimator;
 
@@ -75,6 +76,8 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 		};
 	});
 
+	console.log(tablePages);
+
 	const handleChangeUnitFixed = (event: ChangeEvent<HTMLInputElement>) => {
 		setUnitFixed(event.target.checked);
 	};
@@ -84,14 +87,8 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 	};
 
 	return (
-		<Box style={{ width: '100%', minHeight: '100px' }}>
-			<Button
-				color='secondary'
-				sx={{ mt: '1rem', ml: '.5rem' }}
-				onClick={() => onClickSaveToFile(tablePages)}>
-				EXPORT TABLE TO CSV
-			</Button>
-
+		<Box style={{ margin: theme.spacing(1) }}>
+			<Button onClick={() => onClickSaveToFile(tablePages)}>Export table to CSV</Button>
 			<Stack
 				direction='row'
 				spacing={1}
@@ -105,21 +102,21 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 				/>
 				<Typography>Fixed</Typography>
 			</Stack>
-			<DataGrid
-				initialState={{ columns: { columnVisibilityModel: { id: false } } }}
-				rows={tablePages}
-				columns={columns}
-				autoHeight
-				getRowHeight={() => 'auto'}
-				getEstimatedRowHeight={() => 200}
-				sx={{
-					'width': '100%',
-					'& .MuiDataGrid-cell': {
-						whiteSpace: 'normal !important',
-						wordWrap: 'break-word !important'
-					}
-				}}
-			/>
+			<Box>
+				<DataGrid
+					initialState={{ columns: { columnVisibilityModel: { id: false } } }}
+					rows={tablePages}
+					columns={columns}
+					getRowHeight={() => 40}
+					sx={{
+						'fontSize': 12,
+						'backgroundColor': 'transparent',
+						'& .MuiDataGrid-columnHeaders, & .MuiDataGrid-columnHeader': {
+							backgroundColor: 'transparent'
+						}
+					}}
+				/>
+			</Box>
 		</Box>
 	);
 }

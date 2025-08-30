@@ -15,10 +15,13 @@ export function ClearHistoryDialog({
 			contentText='The Undo/Redo history will be lost. Are you sure you want to continue?'>
 			<Button
 				onClick={onClose}
+				color='secondary'
 				autoFocus>
 				Cancel
 			</Button>
 			<Button
+				color='secondary'
+				variant='contained'
 				disabled={
 					!yaptideEditor ||
 					(!yaptideEditor.history.undos.length && !yaptideEditor.history.redos.length)

@@ -1,7 +1,8 @@
-import { Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { useEffect } from 'react';
+import { Divider, ToggleButton } from '@mui/material';
+import { useCallback, useEffect } from 'react';
 import { Object3D } from 'three';
 
+import { StyledExclusiveToggleButtonGroup } from '../../../../../shared/components/StyledExclusiveToggleButtonGroup';
 import {
 	COMMON_PARTICLE_TYPES,
 	FLUKA_PARTICLE_TYPES,
@@ -170,25 +171,26 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object, true);
 
-	const setValueCommand = (value: any, key: string) => {
-		editor.execute(new SetValueCommand(editor, watchedObject.object, key, value));
-	};
+	const setValueCommand = useCallback(
+		(value: any, key: string) => {
+			editor.execute(new SetValueCommand(editor, watchedObject.object, key, value));
+		},
+		[editor, watchedObject.object]
+	);
 
 	useEffect(() => {
 		if (editor.contextManager.currentSimulator !== SimulatorType.SHIELDHIT) {
 			setValueCommand(BEAM_SOURCE_TYPE.simple, 'sourceType');
 		}
-	}, [editor.contextManager.currentSimulator]);
+	}, [editor.contextManager.currentSimulator, setValueCommand]);
 
 	return (
 		<>
 			{editor.contextManager.currentSimulator !== SimulatorType.GEANT4 && (
 				<PropertyField label='Definition type'>
-					<ToggleButtonGroup
-						color='primary'
+					<StyledExclusiveToggleButtonGroup
 						size='small'
 						value={watchedObject.sourceType}
-						exclusive
 						onChange={(_, v) => {
 							if (v) setValueCommand(v, 'sourceType');
 						}}>
@@ -196,7 +198,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 						{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
 							<ToggleButton value={BEAM_SOURCE_TYPE.file}>File</ToggleButton>
 						)}
-					</ToggleButtonGroup>
+					</StyledExclusiveToggleButtonGroup>
 				</PropertyField>
 			)}
 

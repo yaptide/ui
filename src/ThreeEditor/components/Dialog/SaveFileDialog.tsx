@@ -132,6 +132,13 @@ export function SaveFileDialog({
 				</form>
 			}>
 			<Button
+				color='secondary'
+				onClick={onClose}>
+				Cancel
+			</Button>
+			<Button
+				color='secondary'
+				variant='contained'
 				onClick={() => {
 					onClose();
 

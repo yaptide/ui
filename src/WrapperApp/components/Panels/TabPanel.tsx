@@ -1,45 +1,44 @@
-import { css } from '@emotion/css';
-import { Theme, useTheme } from '@mui/material';
-import Box from '@mui/material/Box';
+import { Paper, useTheme } from '@mui/material';
 import { BoxProps } from '@mui/system';
-import React, { CSSProperties, ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useContext, useEffect, useState } from 'react';
+
+import { NavDrawerContext } from '../NavPanel/NavDrawerContext';
 
 interface TabPanelProps extends BoxProps {
 	children?: ReactNode;
-	index: string | number;
-	value?: string | number;
+	forTabs?: string[];
 	persistent?: boolean;
 	persistentIfVisited?: boolean;
-	customCss?: CSSProperties;
 }
 
-const tabPanelCss = (theme: Theme, customCss?: CSSProperties) =>
-	css({
-		display: 'flex',
-		flexGrow: 1,
-		overflow: 'auto',
-		background: theme.palette.background.default,
-		...customCss
-	});
-
 export function TabPanel(props: TabPanelProps) {
-	const { children, value, index, persistent, persistentIfVisited, customCss, ...other } = props;
-	const theme = useTheme();
+	const { children, sx, forTabs, persistent, persistentIfVisited } = props;
+	const currentTab = useContext(NavDrawerContext);
 	const [visited, setVisited] = useState(false);
+	const theme = useTheme();
+
+	const visible = forTabs === undefined || forTabs.indexOf(currentTab) > -1;
 
 	useEffect(() => {
-		if (value === index) setVisited(true);
-	}, [index, value]);
+		setVisited(visited || visible); // when set to `true`, it always stays `true`
+	}, [forTabs, currentTab]);
 
 	return (
-		<Box
+		<Paper
+			sx={{
+				...sx,
+				display: 'flex',
+				flexDirection: 'column',
+				overflowY: 'auto',
+				overflowX: 'hidden',
+				borderStyle: 'solid',
+				borderWidth: 1,
+				borderColor: theme.palette.divider
+			}}
+			elevation={1}
 			role='tabpanel'
-			className={tabPanelCss(theme, customCss)}
-			style={{ display: value !== index ? 'none' : '' }}
-			{...other}>
-			{(value === index || persistent || (visited && persistentIfVisited)) && (
-				<Box className={tabPanelCss(theme, customCss)}>{children}</Box>
-			)}
-		</Box>
+			style={{ display: visible ? '' : 'none' }}>
+			{(visible || persistent || (visited && persistentIfVisited)) && children}
+		</Paper>
 	);
 }

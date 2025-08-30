@@ -1,4 +1,12 @@
-import { Box, Button, Card, FormControlLabel, Switch, Typography } from '@mui/material';
+import {
+	Box,
+	Button,
+	Divider,
+	FormControlLabel,
+	Switch,
+	Typography,
+	useTheme
+} from '@mui/material';
 import { ChangeEvent, useEffect, useState } from 'react';
 
 import { Estimator, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
@@ -16,6 +24,7 @@ export interface EstimatorResults extends Estimator {
 }
 
 function ResultsPanel() {
+	const theme = useTheme();
 	const { getJobResults } = useShSimulation();
 	const { open: openSaveFileDialog } = useDialog('saveFile');
 	const {
@@ -41,7 +50,7 @@ function ResultsPanel() {
 		? userTabInputFilesEstimatorNames
 		: editorEstimatorNames;
 
-	// In estimatorsItems we store information about estimators and estimator's pages by dimensions, names, and number of pages
+	// In estimatorsItems we store information about estimators and estimators' pages by dimensions, names, and number of pages
 	const estimatorsPagesData = simulation?.input.estimatorsItems;
 
 	useEffect(() => {
@@ -83,32 +92,33 @@ function ResultsPanel() {
 	const resultsGeneratedFromProjectFile = !!simulation?.input.inputJson;
 	const chosenEstimator = estimatorsResults[tabsValue];
 
+	let title = 'Unknown simulation';
+
+	if (simulation) {
+		title = `${simulation.title} [${simulation.startTime.toLocaleString()}]`;
+	}
+
 	return (
-		<Box
-			sx={{
-				width: '100%'
-			}}>
+		<>
 			{simulation && (
-				<Card
+				<Box
 					sx={{
-						margin: '0.5rem',
-						padding: '0.5rem',
+						margin: theme.spacing(1),
 						display: 'flex',
 						justifyContent: 'space-between',
-						alignItems: 'center'
+						alignItems: 'center',
+						marginBottom: theme.spacing(2)
 					}}>
-					<Typography
-						gutterBottom
-						variant='h5'
-						component='div'
-						sx={{
-							margin: '1.5rem 1rem'
-						}}>
-						{simulation.title ??
-							simulation.input.inputJson?.project.title ??
-							'Unknown simulation'}{' '}
-						[{simulation.startTime.toLocaleString()}]
-					</Typography>
+					<Box>
+						<Typography
+							gutterBottom
+							variant='h5'
+							component='div'
+							lineHeight={2}>
+							{title}
+						</Typography>
+						<Divider />
+					</Box>
 					<Box
 						sx={{
 							display: 'flex',
@@ -151,41 +161,31 @@ function ResultsPanel() {
 							Save to file
 						</Button>
 					</Box>
-				</Card>
+				</Box>
 			)}
 
-			<Box
-				sx={{
-					display: 'flex',
-					flexDirection: 'row',
-					maxWidth: '100vw',
-					width: '100%'
-				}}>
-				{estimatorsResults.length > 0 && simulation && (
-					<>
-						<EstimatorsSelect
-							tabsValue={tabsValue}
-							setTabsValue={setTabsValue}
-							simulation={simulation}
-							setResultsSimulationData={setResultsSimulationData}
-							estimatorsTabData={
-								estimatorsTabData
-									? estimatorsTabData
-									: uploadedInputFilesEstimatorNames
-							}
-							estimatorsPagesData={estimatorsPagesData}
-						/>
-						<EstimatorTab
-							estimator={chosenEstimator}
-							tabsValue={tabsValue}
-							resultsGeneratedFromProjectFile={resultsGeneratedFromProjectFile}
-							groupQuantities={groupQuantities}
-							simulation={simulation}
-						/>
-					</>
-				)}
-			</Box>
-		</Box>
+			{estimatorsResults.length > 0 && simulation && (
+				<>
+					<EstimatorsSelect
+						tabsValue={tabsValue}
+						setTabsValue={setTabsValue}
+						simulation={simulation}
+						setResultsSimulationData={setResultsSimulationData}
+						estimatorsTabData={
+							estimatorsTabData ? estimatorsTabData : uploadedInputFilesEstimatorNames
+						}
+						estimatorsPagesData={estimatorsPagesData}
+					/>
+					<EstimatorTab
+						estimator={chosenEstimator}
+						tabsValue={tabsValue}
+						resultsGeneratedFromProjectFile={resultsGeneratedFromProjectFile}
+						groupQuantities={groupQuantities}
+						simulation={simulation}
+					/>
+				</>
+			)}
+		</>
 	);
 }
 

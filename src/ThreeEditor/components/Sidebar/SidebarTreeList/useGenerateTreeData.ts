@@ -75,7 +75,7 @@ export function useGenerateTreeData(
 			buildOptionsRecursively(source, idx, treeId)
 		);
 		setTreeData(options);
-	}, [buildOptionsRecursively, sources]);
+	}, [sources, treeId]);
 
 	return [treeData, refreshTreeData];
 }

@@ -1,28 +1,33 @@
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import {
+	AccordionDetails,
+	AccordionSummary,
 	Box,
 	Button,
-	CardActions,
+	Checkbox,
 	Chip,
 	FormControl,
+	FormControlLabel,
+	FormGroup,
 	InputLabel,
 	MenuItem,
 	Select,
 	SelectChangeEvent,
-	Tab,
-	Tabs,
 	TextField,
 	ToggleButton,
-	ToggleButtonGroup
+	useTheme
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { MouseEvent, SyntheticEvent, useState } from 'react';
+import { MouseEvent, SyntheticEvent, useEffect, useState } from 'react';
 
+import { useStore } from '../../../services/StoreService';
+import StyledAccordion from '../../../shared/components/StyledAccordion';
+import { StyledExclusiveToggleButtonGroup } from '../../../shared/components/StyledExclusiveToggleButtonGroup';
+import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTabs';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
-import { TabPanel } from '../Panels/TabPanel';
 import { BatchScriptParametersEditor } from './BatchParametersEditor';
 
 function a11yProps(index: number, name: string = 'RunSimulation') {
@@ -48,42 +53,127 @@ export type BatchOptionsType = {
 	collectHeader?: string;
 };
 
-type RunSimulationFormProps = {
+export type RunSimulationFunctionType = (
+	runType: SimulationRunType,
+	editorJson: EditorJson,
+	inputFiles: Partial<SimulationInputFiles>,
+	sourceType: SimulationSourceType,
+	simName: string,
+	nTasks: number,
+	forwardedSimulator: SimulatorType,
+	batchOptions: BatchOptionsType
+) => void;
+
+export type RunSimulationFormProps = {
 	availableClusters?: string[];
 	editorJson?: EditorJson;
 	inputFiles?: Partial<SimulationInputFiles>;
-	forwardedSimulator: SimulatorType;
-	runSimulation?: (
-		runType: SimulationRunType,
-		editorJson: EditorJson,
-		inputFiles: Partial<SimulationInputFiles>,
-		sourceType: SimulationSourceType,
-		simName: string,
-		nTasks: number,
-		forwardedSimulator: SimulatorType,
-		batchOptions: BatchOptionsType
-	) => void;
+	highlight?: boolean;
+	clearInputFiles?: () => void;
+	runSimulation?: RunSimulationFunctionType;
 };
 
 export function RunSimulationForm({
 	availableClusters = ['default'],
 	editorJson,
-	inputFiles = {},
-	forwardedSimulator,
+	inputFiles,
+	highlight = false,
+	clearInputFiles = () => {},
 	runSimulation = () => {}
 }: RunSimulationFormProps) {
-	const [tabValue, setTabValue] = useState(0);
+	const theme = useTheme();
+	const [usingBatchConfig, setUsingBatchConfig] = useState(false);
 	const [simulationRunType, setSimulationRunType] = useState<SimulationRunType>('direct');
-	const [simulationSourceType, setSimulationSourceType] = useState<
-		SimulationSourceType | undefined
-	>(Object.keys(inputFiles).length > 0 ? 'files' : editorJson ? 'editor' : undefined);
+	const [simulationSourceType, setSimulationSourceType] = useState<SimulationSourceType>(
+		inputFiles && Object.keys(inputFiles).length > 0 ? 'files' : 'editor'
+	);
+	const { yaptideEditor } = useStore();
+	const currentSimulator = yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON;
 
-	const [selectedFiles, setSelectedFiles] = useState<string[]>(Object.keys(inputFiles));
+	// When simulator is set to COMMON, user needs to select which actual simulator to run
+	// This should not change the simulator in editor, only in this form.
+	// When using input files to run, the simulator in info.json should also take precedence
+	const [runSimulator, setRunSimulator] = useState<SimulatorType>(
+		currentSimulator !== SimulatorType.COMMON ? currentSimulator : SimulatorType.SHIELDHIT
+	);
+
+	const [runSimulatorOptions, setRunSimulatorOptions] = useState(
+		currentSimulator !== SimulatorType.COMMON
+			? [currentSimulator]
+			: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA]
+	);
+
+	const [overridePrimariesCount, setOverridePrimariesCount] = useState(
+		yaptideEditor?.beam.numberOfParticles ?? 0
+	);
+
+	useEffect(() => {
+		// When either currentSimulator or sourceType changes,
+		// reset the selected simulator according to the rules defined for runSimulator above
+		if (simulationSourceType === 'files') {
+			let simulator: SimulatorType;
+
+			switch (true) {
+				case inputFiles?.hasOwnProperty('geo.dat'):
+					simulator = SimulatorType.SHIELDHIT;
+
+					break;
+				case inputFiles?.hasOwnProperty('fl_sim.inp'):
+					simulator = SimulatorType.FLUKA;
+
+					break;
+				case inputFiles?.hasOwnProperty('run.mac'): // not implemented, placeholder value
+					simulator = SimulatorType.GEANT4;
+
+					break;
+				default:
+					simulator = SimulatorType.COMMON;
+
+					break;
+			}
+
+			setRunSimulator(simulator);
+			setRunSimulatorOptions([simulator]);
+		} else {
+			setRunSimulator(
+				currentSimulator !== SimulatorType.COMMON
+					? currentSimulator
+					: SimulatorType.SHIELDHIT
+			);
+
+			setRunSimulatorOptions(
+				currentSimulator !== SimulatorType.COMMON
+					? [currentSimulator]
+					: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA]
+			);
+		}
+	}, [yaptideEditor, simulationSourceType, inputFiles]);
+
+	useEffect(() => {
+		if (inputFiles && Object.keys(inputFiles).length > 0) {
+			setSimulationSourceType('files');
+			setSelectedFiles(Object.keys(inputFiles));
+		} else {
+			setSimulationSourceType('editor');
+		}
+	}, [inputFiles]);
+
+	// Show a pulsating animation to bring attention to form changes
+	// trigger by setting highlight prop to true, reset by setting to false, then true
+	const [animation, setAnimation] = useState('none');
+	useEffect(() => {
+		if (highlight) {
+			setAnimation('highlight 1s linear 0s 2');
+
+			return () => setAnimation('none');
+		}
+	}, [highlight]);
+
+	const [selectedFiles, setSelectedFiles] = useState<string[]>(Object.keys(inputFiles ?? {}));
 	const [selectedCluster, setSelectedCluster] = useState<number | undefined>(0);
 
 	const [simName, setSimName] = useState(editorJson?.project.title ?? '');
 	const [nTasks, setNTasks] = useState(1);
-	const [simulator, setSelectedSimulator] = useState<SimulatorType>(forwardedSimulator);
 	const [arrayHeader, setArrayHeader] = useState<string>('');
 	const [collectHeader, setCollectHeader] = useState<string>('');
 	const [arrayOptions, setArrayOptions] = useState<ScriptOption[]>([]);
@@ -115,20 +205,24 @@ export function RunSimulationForm({
 		setSimulationSourceType(newSourceType);
 
 		if (newSourceType === 'files') {
-			setSelectedFiles(Object.keys(inputFiles));
+			setSelectedFiles(Object.keys(inputFiles ?? {}));
 		}
-	};
-
-	const handleTabChange = (event: SyntheticEvent, newValue: number) => {
-		setTabValue(newValue);
 	};
 
 	const handleParamsTabChange = (event: SyntheticEvent, newValue: number) => {
 		setSelectedScriptParamsTab(newValue);
 	};
 
+	const runSimulationValidate = () => {
+		return !isNaN(nTasks) && !isNaN(overridePrimariesCount);
+	};
+
 	const handleRunSimulationClick = () => {
-		const filteredInputFiles = Object.entries(inputFiles).reduce((acc, [key, value]) => {
+		if (!runSimulationValidate()) {
+			return;
+		}
+
+		const filteredInputFiles = Object.entries(inputFiles ?? {}).reduce((acc, [key, value]) => {
 			if (selectedFiles.includes(key)) {
 				return { ...acc, [key]: value };
 			}
@@ -145,267 +239,262 @@ export function RunSimulationForm({
 		};
 
 		if (editorJson && simulationSourceType)
-			runSimulation(
-				simulationRunType,
-				editorJson,
-				filteredInputFiles,
-				simulationSourceType,
-				simName,
-				nTasks,
-				simulator,
-				batchOptions
-			);
+			editorJson.beam.numberOfParticles = overridePrimariesCount;
+
+		runSimulation(
+			simulationRunType,
+			editorJson!,
+			filteredInputFiles,
+			simulationSourceType,
+			simName,
+			nTasks,
+			runSimulator,
+			batchOptions
+		);
 	};
 
-	const simulatorMenuItems = Array.from(SimulatorNames.entries()).map(
-		([simulatorType, simulatorName]) => (
-			<MenuItem
-				key={simulatorType}
-				value={simulatorType}>
-				{simulatorName}
-			</MenuItem>
-		)
-	);
-
-	const isSimulatorChoiceDisabled = forwardedSimulator !== SimulatorType.COMMON;
-	const defaultSimulator = isSimulatorChoiceDisabled
-		? forwardedSimulator
-		: simulatorMenuItems[0].props.value;
+	const simulatorMenuItems = Array.from(runSimulatorOptions).map(simulator => (
+		<MenuItem
+			key={simulator}
+			value={simulator}>
+			{SimulatorNames.get(simulator)}
+		</MenuItem>
+	));
 
 	return (
-		<Box>
-			<Tabs
-				value={tabValue}
-				onChange={handleTabChange}
-				variant='fullWidth'
+		<StyledAccordion
+			expanded={true}
+			sx={{
+				// the following styles attempt to create a border that
+				// will pulse green when highlight == true, and be invisible otherwise
+				// We cannot just have border='none' as it would make content shift
+				// so the border needs to be present all the time, matching the background color
+				'marginLeft': `calc(${theme.spacing(1)} - 2px)`,
+				'marginTop': `calc(${theme.spacing(1)} - 2px)`,
+				'marginRight': theme.spacing(1),
+				'marginBottom': theme.spacing(1),
+				'width': `calc(100% - ${theme.spacing(2)})`,
+				'borderWidth': '2px',
+				'borderStyle': 'solid',
+				'borderColor': theme.palette.mode === 'dark' ? '#1e1e1e' : '#fff',
+				'@keyframes highlight': {
+					'0%': {},
+					'50%': { borderColor: theme.palette.success.main },
+					'100%': {}
+				},
+				'animation': animation
+			}}>
+			<AccordionSummary>
+				<Typography
+					textTransform='none'
+					fontSize={16}>
+					Run new simulation
+				</Typography>
+			</AccordionSummary>
+			<AccordionDetails
 				sx={{
-					'& .MuiTabs-indicator': {
-						backgroundColor: ({ palette }) =>
-							tabValue === 1 ? palette.info.main : palette.primary.main
+					'display': 'flex',
+					'flexDirection': 'column',
+					'& .MuiToggleButtonGroup-root, & .MuiFormControl-root': {
+						marginBottom: theme.spacing(2)
 					}
 				}}>
-				<Tab
-					label='General Config'
-					{...a11yProps(0)}
-				/>
-				<Tab
-					sx={{
-						'&,&.Mui-selected': {
-							color: ({ palette }) =>
-								simulationRunType === 'direct'
-									? palette.grey[500]
-									: palette.info.main
-						}
-					}}
-					disabled={simulationRunType === 'direct'}
-					label='Batch Config'
-					{...a11yProps(1)}
-				/>
-			</Tabs>
-			<TabPanel
-				value={tabValue}
-				index={0}>
-				<Box
-					sx={{
-						display: 'grid',
-						gap: 3,
-						width: 'fit-content',
-						p: ({ spacing }) => spacing(3, 2, 2, 2)
-					}}>
-					<ToggleButtonGroup
-						sx={{
-							maxWidth: ({ spacing }) => `calc(100vw - ${spacing(14)})`,
-							width: '380px'
-						}}
-						exclusive
-						fullWidth
-						value={simulationRunType}
-						onChange={handleRunTypeChange}>
-						<ToggleButton
+				<StyledExclusiveToggleButtonGroup
+					fullWidth
+					value={simulationRunType}
+					onChange={handleRunTypeChange}>
+					<ToggleButton value='direct'>Direct Run</ToggleButton>
+					<ToggleButton value='batch'>Batch Run</ToggleButton>
+				</StyledExclusiveToggleButtonGroup>
+				{simulationRunType === 'batch' && (
+					<FormGroup>
+						<FormControlLabel
+							control={
+								<Checkbox
+									checked={usingBatchConfig}
+									onChange={(_, checked) => setUsingBatchConfig(checked)}
+								/>
+							}
+							label='Use batch config'
+						/>
+					</FormGroup>
+				)}
+				{(!usingBatchConfig || simulationRunType === 'direct') && (
+					<>
+						<TextField
 							size='small'
-							value='direct'>
-							Direct Run
-						</ToggleButton>
-						<ToggleButton
+							label='Simulation Name'
+							value={simName}
+							fullWidth
+							onChange={e => setSimName(e.target.value)}
+						/>
+						<TextField
 							size='small'
-							color='info'
-							value='batch'>
-							Batch Run
-						</ToggleButton>
-					</ToggleButtonGroup>
-					<TextField
-						size='small'
-						label='Simulation Name'
-						value={simName}
-						fullWidth
-						onChange={e => setSimName(e.target.value)}
-					/>
-					<TextField
-						size='small'
-						type='number'
-						label='Number of tasks'
-						value={nTasks}
-						onChange={e => setNTasks(Math.max(1, parseInt(e.target.value)))}
-					/>
-					<FormControl
-						fullWidth
-						disabled={isSimulatorChoiceDisabled}
-						sx={{
-							maxWidth: ({ spacing }) => `calc(100vw - ${spacing(14)})`,
-							width: '380px'
-						}}>
-						<InputLabel id='simulator-select-label'>Simulation software</InputLabel>
-						<Select
-							labelId='simulator-select-label'
+							type='number'
+							label='Number of tasks'
+							error={isNaN(nTasks)}
+							value={nTasks}
+							onChange={e => setNTasks(Math.max(1, parseInt(e.target.value)))}
+						/>
+						<TextField
 							size='small'
-							label='Simulation software'
-							defaultValue={defaultSimulator}
-							onChange={evn =>
-								setSelectedSimulator(evn.target.value as SimulatorType)
-							}>
-							{simulatorMenuItems}
-						</Select>
-					</FormControl>
-					<ToggleButtonGroup
-						exclusive
-						fullWidth
-						value={simulationSourceType}
-						onChange={handleSourceTypeChange}>
-						<ToggleButton
-							size='small'
-							value='editor'
-							color='primary'>
-							Editor Project Data
-						</ToggleButton>
-						<ToggleButton
-							size='small'
-							value='files'
-							color='success'
-							disabled={Object.keys(inputFiles).length === 0}>
-							Input Files Data
-						</ToggleButton>
-					</ToggleButtonGroup>
-					<Box
-						sx={{
-							minHeight: ({ spacing }) => spacing(5)
-						}}>
-						{simulationSourceType === 'editor' ? (
-							<Typography
+							type='number'
+							label='Number of primary particles'
+							error={isNaN(overridePrimariesCount)}
+							value={overridePrimariesCount}
+							onChange={e =>
+								setOverridePrimariesCount(Math.max(1, parseInt(e.target.value)))
+							}
+						/>
+						<FormControl
+							fullWidth
+							disabled={runSimulatorOptions.length < 2}>
+							<InputLabel id='simulator-select-label'>Simulation software</InputLabel>
+							<Select
+								labelId='simulator-select-label'
+								size='small'
+								label='Simulation software'
+								value={runSimulator}
+								onChange={evn =>
+									setRunSimulator(evn.target.value as SimulatorType)
+								}>
+								{simulatorMenuItems}
+							</Select>
+						</FormControl>
+						<StyledExclusiveToggleButtonGroup
+							fullWidth
+							value={simulationSourceType}
+							onChange={handleSourceTypeChange}>
+							<ToggleButton value='editor'>Editor Project Data</ToggleButton>
+							<ToggleButton
+								value='files'
+								disabled={!inputFiles}>
+								Input Files Data
+							</ToggleButton>
+						</StyledExclusiveToggleButtonGroup>
+						{inputFiles && (
+							<Button
+								size='small'
+								onClick={clearInputFiles}
 								sx={{
-									p: ({ spacing }) => spacing(0, 2)
+									alignSelf: 'end',
+									marginTop: theme.spacing(-1),
+									marginBottom: theme.spacing(1)
 								}}>
-								Project data will be used for simulation run
-							</Typography>
-						) : (
-							<Box
-								sx={{
-									display: 'flex',
-									gap: 1,
-									flexWrap: 'wrap',
-									justifyContent: 'center'
-								}}>
-								{Object.keys(inputFiles).map((fileName, index) => (
-									<Chip
-										key={index}
-										color={
-											selectedFiles.includes(fileName) ? 'success' : 'default'
-										}
-										variant='outlined'
-										label={<Typography>{fileName}</Typography>}
-										deleteIcon={
-											selectedFiles.includes(fileName) ? (
-												<RemoveCircleIcon />
-											) : (
-												<ControlPointIcon />
-											)
-										}
-										onDelete={() => toggleFileSelection(fileName)}
-									/>
-								))}
-							</Box>
+								Clear
+							</Button>
 						)}
-					</Box>
-				</Box>
-			</TabPanel>
-			<TabPanel
-				value={tabValue}
-				index={1}>
-				<Box
-					sx={{
-						display: 'grid',
-						gap: 3,
-						width: '100%',
-						p: ({ spacing }) => spacing(3, 2, 2, 2)
-					}}>
-					<FormControl
-						fullWidth
-						sx={{
-							maxWidth: ({ spacing }) => `calc(100vw - ${spacing(14)})`,
-							width: '380px'
-						}}>
-						<InputLabel id='cluster-select-label'>Cluster</InputLabel>
-						<Select
-							labelId='cluster-select-label'
-							label='Cluster'
-							value={`${selectedCluster}`}
-							onChange={handleChangeCluster}>
-							{availableClusters.map((cluster, index) => (
-								<MenuItem
+						<Box
+							sx={{
+								display: 'flex',
+								gap: 1,
+								flexWrap: 'wrap',
+								justifyContent: 'center',
+								marginBottom: theme.spacing(2)
+							}}>
+							{Object.keys(inputFiles ?? {}).map((fileName, index) => (
+								<Chip
 									key={index}
-									value={index}>
-									{cluster}
-								</MenuItem>
+									color={selectedFiles.includes(fileName) ? 'success' : 'default'}
+									variant='outlined'
+									label={<Typography>{fileName}</Typography>}
+									deleteIcon={
+										selectedFiles.includes(fileName) ? (
+											<RemoveCircleIcon />
+										) : (
+											<ControlPointIcon />
+										)
+									}
+									onDelete={() => toggleFileSelection(fileName)}
+								/>
 							))}
-						</Select>
-					</FormControl>
-					<Tabs
-						value={selectedScriptParamsTab}
-						onChange={handleParamsTabChange}>
-						<Tab
-							label='Array Script'
-							{...a11yProps(0, 'BatchScriptParams')}
-						/>
-						<Tab
-							label='Collect Script'
-							{...a11yProps(1, 'BatchScriptParams')}
-						/>
-					</Tabs>
-					<TabPanel
-						component={Box}
-						value={selectedScriptParamsTab}
-						index={0}>
-						<BatchScriptParametersEditor
-							scriptHeader={arrayHeader}
-							scriptOptions={arrayOptions}
-							handleScriptHeaderChange={evn => setArrayHeader(evn.target.value)}
-							handleScriptOptionsChange={setArrayOptions}
-							scriptName={'array'}
-						/>
-					</TabPanel>
-					<TabPanel
-						value={selectedScriptParamsTab}
-						index={1}>
-						<BatchScriptParametersEditor
-							scriptHeader={collectHeader}
-							scriptOptions={collectOptions}
-							handleScriptHeaderChange={evn => setCollectHeader(evn.target.value)}
-							handleScriptOptionsChange={setCollectOptions}
-							scriptName={'collect'}
-						/>
-					</TabPanel>
+						</Box>
+					</>
+				)}
+				{usingBatchConfig && simulationRunType === 'batch' && (
+					<>
+						<FormControl fullWidth>
+							<InputLabel id='cluster-select-label'>Cluster</InputLabel>
+							<Select
+								labelId='cluster-select-label'
+								label='Cluster'
+								value={`${selectedCluster}`}
+								size='small'
+								onChange={handleChangeCluster}>
+								{availableClusters.map((cluster, index) => (
+									<MenuItem
+										key={index}
+										value={index}>
+										{cluster}
+									</MenuItem>
+								))}
+							</Select>
+						</FormControl>
+						<Box
+							sx={{
+								borderStyle: 'solid',
+								borderWidth: 1,
+								borderColor:
+									theme.palette.mode === 'light'
+										? 'rgba(0, 0, 0, 0.23)'
+										: 'rgba(255, 255, 255, 0.23)',
+								borderRadius: theme.spacing(1),
+								padding: theme.spacing(1),
+								marginBottom: theme.spacing(2)
+							}}>
+							<StyledTabs
+								value={selectedScriptParamsTab}
+								onChange={handleParamsTabChange}>
+								<StyledTab
+									sx={{ flexGrow: 1 }}
+									label='Array Script'
+									{...a11yProps(0, 'BatchScriptParams')}
+								/>
+								<StyledTab
+									sx={{ flexGrow: 1 }}
+									label='Collect Script'
+									{...a11yProps(1, 'BatchScriptParams')}
+								/>
+							</StyledTabs>
+							{selectedScriptParamsTab === 0 && (
+								<BatchScriptParametersEditor
+									scriptHeader={arrayHeader}
+									scriptOptions={arrayOptions}
+									handleScriptHeaderChange={evn =>
+										setArrayHeader(evn.target.value)
+									}
+									handleScriptOptionsChange={setArrayOptions}
+									scriptName={'array'}
+								/>
+							)}
+							{selectedScriptParamsTab === 1 && (
+								<BatchScriptParametersEditor
+									scriptHeader={collectHeader}
+									scriptOptions={collectOptions}
+									handleScriptHeaderChange={evn =>
+										setCollectHeader(evn.target.value)
+									}
+									handleScriptOptionsChange={setCollectOptions}
+									scriptName={'collect'}
+								/>
+							)}
+						</Box>
+					</>
+				)}
+				<Box sx={{ display: 'flex', justifyContent: 'center' }}>
+					<Button
+						sx={{
+							height: '36px',
+							width: '180px'
+						}}
+						variant='contained'
+						size='large'
+						disabled={!usingBatchConfig && !runSimulationValidate()}
+						onClick={handleRunSimulationClick}>
+						Start simulation
+					</Button>
 				</Box>
-			</TabPanel>
-			<CardActions>
-				<Button
-					color='info'
-					sx={{
-						width: 'min(300px, 100%)',
-						margin: '0 auto'
-					}}
-					onClick={handleRunSimulationClick}>
-					Start
-				</Button>
-			</CardActions>
-		</Box>
+			</AccordionDetails>
+		</StyledAccordion>
 	);
 }

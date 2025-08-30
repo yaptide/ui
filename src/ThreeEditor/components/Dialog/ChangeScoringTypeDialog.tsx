@@ -23,11 +23,14 @@ export function ChangeScoringTypeDialog({
 			title='Warning: Change Scoring Type'
 			contentText='Changing scoring type will remove quantities and their configurations. Are you sure you want to continue?'>
 			<Button
+				color='secondary'
 				onClick={onClose}
 				autoFocus>
 				Cancel
 			</Button>
 			<Button
+				color='secondary'
+				variant='contained'
 				onClick={() => {
 					onClose();
 

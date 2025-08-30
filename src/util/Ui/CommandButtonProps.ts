@@ -237,9 +237,12 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 		]
 	];
 
+	const isNested = editor.contextManager.currentSimulator === SimulatorType.GEANT4;
+
 	return {
-		'NestedFigures': createCommandButtonProps(editor, nestedFiguresTuple),
-		'CFGFigures': createCommandButtonProps(editor, cfgFiguresTuple),
+		'Figures': isNested
+			? createCommandButtonProps(editor, nestedFiguresTuple)
+			: createCommandButtonProps(editor, cfgFiguresTuple),
 		'Zones': createCommandButtonProps(editor, zonesTuple),
 		'Detectors': createCommandButtonProps(editor, detectorsTuple),
 		'Special Components': createCommandButtonProps(editor, specialComponentsTuple),
@@ -258,14 +261,7 @@ type CommandButtonTuple =
 	| [string, (() => Command) | undefined]
 	| [string, (() => Command) | undefined, boolean];
 
-type ManagerName =
-	| 'NestedFigures'
-	| 'CFGFigures'
-	| 'Zones'
-	| 'Detectors'
-	| 'Special Components'
-	| 'Filters'
-	| 'Outputs';
+type ManagerName = 'Figures' | 'Zones' | 'Detectors' | 'Special Components' | 'Filters' | 'Outputs';
 
 type GroupedCommandButtonProps = Record<ManagerName, CommandButtonProps[]>;
 //----------------------------------------------------------------------------------------------//

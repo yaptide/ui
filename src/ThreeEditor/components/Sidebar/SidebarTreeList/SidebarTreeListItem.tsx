@@ -1,8 +1,10 @@
+import { useTreeContext } from '@minoru/react-dnd-treeview';
 import { NodeModel } from '@minoru/react-dnd-treeview/dist/types';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { Box, Checkbox, Icon, Menu, Stack, TextField, Typography } from '@mui/material';
+import { Box, Checkbox, Icon, Menu, Stack, TextField, Typography, useTheme } from '@mui/material';
 import { bindContextMenu, bindMenu, usePopupState } from 'material-ui-popup-state/hooks';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Object3D } from 'three';
@@ -14,8 +16,12 @@ import { canBeDuplicated } from '../../../js/commands/DuplicateObjectCommand';
 import { SetValueCommand } from '../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
+import { BoxFigure, CylinderFigure, SphereFigure } from '../../../Simulation/Figures/BasicFigures';
 import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
 import { AddQuantityAction, DeleteAction, DuplicateAction, RenameAction } from './contextActions';
+import BoxIcon from './svg/Box';
+import CylinderIcon from './svg/Cylinder';
+import SphereIcon from './svg/Sphere';
 
 export type TreeItemData = {
 	object: Object3D | SimulationElement;
@@ -33,17 +39,56 @@ function isHidable(object: Object3D | SimulationPropertiesType) {
 	return true;
 }
 
+function getObjectIcon(object: Object3D | SimulationElement, color: string) {
+	const style = { stroke: color, paddingRight: 2, paddingBottom: 1 };
+
+	switch (true) {
+		case object instanceof BoxFigure:
+			return (
+				<BoxIcon
+					width={14}
+					height={14}
+					stroke={color}
+					style={style}
+				/>
+			);
+		case object instanceof CylinderFigure:
+			return (
+				<CylinderIcon
+					width={14}
+					height={14}
+					style={style}
+				/>
+			);
+		case object instanceof SphereFigure:
+			return (
+				<SphereIcon
+					width={14}
+					height={14}
+					style={style}
+				/>
+			);
+		default:
+			return undefined;
+	}
+}
+
 export function SidebarTreeListItem(props: {
 	depth: number;
 	hasChild: boolean;
 	isOpen: boolean;
 	onToggle: () => void;
 	editor: YaptideEditor;
-	node: NodeModel<{
-		object: Object3D | SimulationElement;
-	}>;
+	node: NodeModel<TreeItemData>;
 }) {
 	const { depth, hasChild, isOpen, onToggle, editor, node } = props;
+	const treeContext = useTreeContext();
+	const theme = useTheme();
+
+	const visibleIds = treeContext.tree
+		.filter(t => t.parent === 0 || treeContext.openIds.findIndex(s => t.parent === s) > -1)
+		.map(t => t.id);
+	const isOdd = visibleIds.findIndex(s => s === node.id) % 2 === 0;
 
 	const inputRef = useRef<HTMLInputElement>(null);
 	const object = node.data!.object;
@@ -111,12 +156,26 @@ export function SidebarTreeListItem(props: {
 		)
 	);
 
+	let collapseOrExpandIcon = undefined;
+
+	if (hasChild) {
+		const IconComponent = isOpen ? RemoveIcon : AddIcon;
+		collapseOrExpandIcon = <IconComponent onClick={onToggle} />;
+	} else if (node.parent) {
+		collapseOrExpandIcon = <Icon />;
+	}
+
 	return (
 		<>
 			<Box
 				id={object.uuid}
 				sx={{
-					'marginLeft': ({ spacing }) => spacing(depth * 1.5),
+					'paddingLeft': theme.spacing(depth * 1.5),
+					'backgroundColor': isOdd
+						? theme.palette.mode === 'dark'
+							? 'rgba(255,255,255,0.04)'
+							: 'rgba(0,0,0,0.08)'
+						: 'none',
 					'display': 'flex',
 					'flexDirection': 'row',
 					'alignItems': 'center',
@@ -124,40 +183,39 @@ export function SidebarTreeListItem(props: {
 						backgroundColor: ({ palette }) => palette.action.hover
 					}
 				}}>
-				{hasChild ? (
-					<ChevronRightIcon
-						onClick={onToggle}
-						sx={{
-							transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-							transition: 'transform 0.2s'
-						}}
-					/>
-				) : (
-					<Icon />
+				{collapseOrExpandIcon}
+				{getObjectIcon(
+					node.data!.object,
+					editor.selected === object
+						? theme.palette.secondary.main
+						: theme.palette.text.primary
 				)}
 				<Stack
 					direction='row'
 					onClick={() => editor.selectById(object.id)}
 					width='100%'
-					sx={{ cursor: 'pointer' }}
+					sx={{
+						cursor: 'pointer'
+					}}
 					{...bindContextMenu(popupState)}>
 					<Typography
 						component={Box}
 						sx={{
-							color: ({ palette }) =>
+							color:
 								editor.selected === object
-									? palette.primary.main
-									: palette.text.primary,
-							fontWeight: ({ typography }) =>
+									? theme.palette.secondary.main
+									: theme.palette.text.primary,
+							fontWeight:
 								editor.selected === object
-									? typography.fontWeightBold
-									: typography.fontWeightRegular
+									? theme.typography.fontWeightBold
+									: theme.typography.fontWeightRegular
 						}}>
 						<TextField
 							inputRef={inputRef}
 							sx={{ display: mode === 'view' ? 'none' : '' }}
 							size='small'
 							variant='standard'
+							color='secondary'
 							value={watchedObject.name}
 							onChange={event =>
 								editor.execute(
@@ -184,6 +242,7 @@ export function SidebarTreeListItem(props: {
 						<Checkbox
 							sx={{ padding: 0, marginLeft: 'auto' }}
 							checked={object.visible}
+							color='secondary'
 							onClick={e => e.stopPropagation()}
 							onChange={(_, value) => {
 								editor.execute(

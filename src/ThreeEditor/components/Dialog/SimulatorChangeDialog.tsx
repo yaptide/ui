@@ -23,10 +23,13 @@ export function SimulatorChangeDialog({
 					closeAction();
 					onClose();
 				}}
+				color='secondary'
 				autoFocus>
 				Cancel
 			</Button>
 			<Button
+				variant='contained'
+				color='secondary'
 				onClick={() => {
 					confirmAction();
 					onClose();

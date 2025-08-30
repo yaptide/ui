@@ -1,346 +1,110 @@
-import CableIcon from '@mui/icons-material/Cable';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
-import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import {
-	AppBar,
-	AppBarProps,
 	Box,
-	Button,
-	ButtonBase,
-	ButtonGroup,
-	ButtonGroupProps,
-	ButtonProps,
-	Card,
-	CardProps,
-	IconButton,
+	FormControlLabel,
+	MenuItem,
 	Pagination,
-	styled,
-	Toolbar,
-	Tooltip,
-	Typography
+	Select,
+	Typography,
+	useTheme
 } from '@mui/material';
 import { ChangeEvent } from 'react';
 
 import { OrderBy, OrderType } from '../../../types/RequestTypes';
-import {
-	ButtonWithPopperList,
-	ButtonWithPopperListProps
-} from '../../../util/genericComponents/ButtonWithPopperList';
 
-export type SimulationAppBarProps = AppBarProps & {
-	stickTo?: 'top' | 'bottom';
-	accordion?: SimulationAccordionProps | { [key: string]: never };
-};
-
-type OrderButtonProps = Omit<ButtonProps, 'onChange'> & {
-	orderType: OrderType;
-	onChange?: (orderType: OrderType) => void;
-};
-
-export function OrderButton({ orderType, color, onChange, ...other }: OrderButtonProps) {
-	return (
-		<Button
-			color={color}
-			sx={{
-				'&.MuiButton-root': {
-					p: '.5rem'
-				},
-				'& .MuiSvgIcon-root': {
-					fontSize: '1rem'
-				}
-			}}
-			onClick={() =>
-				onChange?.(orderType === OrderType.ASCEND ? OrderType.DESCEND : OrderType.ASCEND)
-			}
-			{...other}>
-			{orderType === OrderType.ASCEND ? (
-				<KeyboardDoubleArrowDownIcon />
-			) : (
-				<KeyboardDoubleArrowUpIcon />
-			)}
-		</Button>
-	);
-}
-
-type OrderBySelectProps = Omit<ButtonWithPopperListProps<OrderBy>, 'options'>;
-
-const OrderByOptions = [
-	{
-		value: OrderBy.START_TIME,
-		label: 'Start Time'
+// ordering was originally split into orderType and orderBy
+// To simplify the UI, they were joined together, without touching internal logic
+// so some mean of translating between 1 and 2 variables is necessary
+const OrderLabeller = {
+	makeKey: (orderType: OrderType, orderBy: OrderBy) => {
+		return `${orderType}#${orderBy}`;
 	},
-	{
-		value: OrderBy.END_TIME,
-		label: 'End Time'
+	makeLabel: (orderType: OrderType, orderBy: OrderBy) => {
+		return (
+			(orderBy === OrderBy.START_TIME ? 'Start Time' : 'End Time') +
+			', ' +
+			(orderType === OrderType.ASCEND ? 'ascending' : 'descending')
+		);
+	},
+	fromKey: (key: string): [OrderType, OrderBy] => {
+		let orderType = OrderType.ASCEND,
+			orderBy = OrderBy.START_TIME; // default (fallback) values
+
+		try {
+			const [typeStr, byStr] = key.split('#');
+
+			if (typeStr === OrderType.DESCEND) {
+				orderType = OrderType.DESCEND;
+			}
+
+			if (byStr === OrderBy.END_TIME) {
+				orderBy = OrderBy.END_TIME;
+			}
+		} catch {}
+
+		return [orderType, orderBy];
 	}
-];
-
-const PageSelectOptions = new Array(6).fill(NaN).map((_, index) => ({
-	value: 4 * index + 2,
-	label: `${4 * index + 2}`
-}));
-
-export function OrderBySelect(props: OrderBySelectProps) {
-	return (
-		<ButtonWithPopperList
-			options={OrderByOptions}
-			{...props}
-		/>
-	);
-}
-
-type PageSizeSelectProps = Omit<ButtonWithPopperListProps<number>, 'options'>;
-
-export function PageSizeSelect(props: PageSizeSelectProps) {
-	return (
-		<ButtonWithPopperList
-			options={PageSelectOptions}
-			{...props}
-		/>
-	);
-}
-
-type InputGroupProps = ButtonGroupProps & {
-	children: React.ReactNode;
 };
 
-export const InputGroup = styled(ButtonGroup)<InputGroupProps>(
-	({
-		theme: {
-			shape: { borderRadius },
-			spacing
-		}
-	}) => ({
-		'height': spacing(5),
-		'&:not(.MuiButtonGroup-vertical) > *': {
-			'borderRadius': '0',
-			'&:first-of-type': {
-				borderEndStartRadius: borderRadius,
-				borderStartStartRadius: borderRadius
-			},
-			'&:last-child': {
-				borderStartEndRadius: borderRadius,
-				borderEndEndRadius: borderRadius
-			}
-		},
-		'&.MuiButtonGroup-vertical > *': {
-			'borderRadius': '0',
-			'&:first-of-type': {
-				borderStartEndRadius: borderRadius,
-				borderStartStartRadius: borderRadius
-			},
-			'&:last-child': {
-				borderEndStartRadius: borderRadius,
-				borderEndEndRadius: borderRadius
-			}
-		}
-	})
-);
-
-export function BackendStatusIndicator({
-	isBackendAlive,
-	...other
-}: { isBackendAlive: boolean } & CardProps) {
-	return (
-		<Tooltip
-			title={
-				<Typography>{`Server connection: ${
-					isBackendAlive ? 'connected' : 'unreachable'
-				}`}</Typography>
-			}
-			arrow>
-			<Card
-				component={ButtonBase}
-				{...other}
-				sx={{
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'center',
-					p: ({ spacing }) => spacing(1),
-					...other.sx
-				}}
-				variant='outlined'>
-				<CableIcon
-					color={isBackendAlive ? 'success' : 'error'}
-					sx={{ marginLeft: 'auto' }}
-					fontSize='large'></CableIcon>
-			</Card>
-		</Tooltip>
-	);
-}
-
-export function SimulationAppBar({
-	stickTo = 'top',
-	position,
-	color = 'inherit',
-	elevation = 1,
-	children,
-	accordion = {},
-	sx,
-	...other
-}: SimulationAppBarProps) {
-	position ??= !!stickTo ? 'sticky' : position;
-
-	return (
-		<Box
-			position={'sticky'}
-			p={({ spacing }) => spacing(3, 0)}
-			mt={({ spacing }) => spacing(-3)}
-			mb={({ spacing }) => spacing(-3)}
-			sx={{
-				width: '100%',
-				inset: ({ spacing }) => spacing(-2, 0),
-				zIndex: ({ zIndex }) => zIndex.appBar,
-				background: ({ palette }) =>
-					!stickTo
-						? 'transparent'
-						: `linear-gradient(${stickTo === 'top' ? '180' : '0'}deg , ${
-								palette.background.default
-							} 50%, transparent 100%)`,
-				...sx
-			}}>
-			<AppBar
-				position='relative'
-				color={color}
-				elevation={elevation}
-				sx={{
-					borderRadius: 1
-				}}>
-				<Toolbar
-					sx={{
-						gap: ({ spacing }) => spacing(2),
-						p: ({ spacing }) => spacing(1, 3)
-					}}>
-					{children}
-					{isAccordionHeader(accordion) && (
-						<IconButton
-							aria-label='expand'
-							onClick={accordion.toggleExpanded}
-							sx={{
-								transform: accordion.expanded ? 'rotate(180deg)' : undefined,
-								// animate rotation
-								transition: ({ transitions }) =>
-									transitions.create('transform', {
-										duration: transitions.duration.standard
-									})
-							}}>
-							<ExpandMoreIcon />
-						</IconButton>
-					)}
-				</Toolbar>
-			</AppBar>
-		</Box>
-	);
-}
-
-export type SimulationAccordionProps = {
-	expanded?: boolean;
-	toggleExpanded?: () => void;
-};
-
-type SimulationLabelBarProps = SimulationAppBarProps & {
-	title: string;
-	subtitle?: string;
-	accordion?: SimulationAccordionProps | { [key: string]: never };
-};
-
-function isAccordionHeader(x: Partial<SimulationAccordionProps>): x is SimulationAccordionProps {
-	return x.toggleExpanded !== undefined && x.expanded !== undefined;
-}
-
-export function SimulationLabelBar({
-	title,
-	subtitle,
-	accordion = {},
-	children,
-	...other
-}: SimulationLabelBarProps) {
-	return (
-		<SimulationAppBar {...other}>
-			<Typography
-				variant='h5'
-				component='div'
-				sx={{
-					flexGrow: 1,
-					display: 'flex',
-					flexDirection: 'column'
-				}}>
-				<Box>{title}</Box>
-				{subtitle && (
-					<Typography
-						variant='subtitle1'
-						component='div'
-						sx={{
-							color: ({ palette }) => palette.text.secondary
-						}}>
-						{subtitle}
-					</Typography>
-				)}
-			</Typography>
-			{children}
-			{isAccordionHeader(accordion) && (
-				<IconButton
-					aria-label='expand'
-					onClick={accordion.toggleExpanded}
-					sx={{
-						transform: accordion.expanded ? 'rotate(180deg)' : undefined,
-						// animate rotation
-						transition: ({ transitions }) =>
-							transitions.create('transform', {
-								duration: transitions.duration.standard
-							})
-					}}>
-					<ExpandMoreIcon />
-				</IconButton>
-			)}
-		</SimulationAppBar>
-	);
-}
-
-export type PageParamProps = {
-	orderType: OrderType;
-	orderBy: OrderBy;
-	pageSize: number;
-	handleOrderChange: (orderType: OrderType, orderBy: OrderBy, pageSize: number) => void;
-};
-
-type SimulationBackendHeaderBar = PageParamProps & SimulationLabelBarProps;
-
-export function SimulationBackendHeader({
+export function SimulationPaginationControls({
 	orderType,
 	orderBy,
 	pageSize,
-	handleOrderChange,
-	children,
-	...other
-}: SimulationBackendHeaderBar) {
+	handleOrderChange
+}: PageParamProps) {
+	const theme = useTheme();
+
 	return (
-		<SimulationLabelBar {...other}>
-			<InputGroup>
-				<OrderButton
-					orderType={orderType}
-					onChange={orderType => handleOrderChange(orderType, orderBy, pageSize)}
-				/>
-				<OrderBySelect
-					sx={{
-						width: ({ spacing }) => spacing(15)
-					}}
-					value={orderBy}
-					onChange={orderBy => handleOrderChange(orderType, orderBy, pageSize)}
-				/>
-			</InputGroup>
-			<InputGroup>
-				<PageSizeSelect
-					sx={{
-						width: ({ spacing }) => spacing(8)
-					}}
-					value={pageSize}
-					onChange={pageSize => handleOrderChange(orderType, orderBy, pageSize)}
-				/>
-			</InputGroup>
-			{children}
-		</SimulationLabelBar>
+		<Box
+			sx={{
+				display: 'flex',
+				alignItems: 'center',
+				margin: theme.spacing(1)
+			}}>
+			<FormControlLabel
+				label={<Typography sx={{ mx: theme.spacing(1) }}>Order by:</Typography>}
+				labelPlacement='start'
+				control={
+					<Select
+						value={OrderLabeller.makeKey(orderType, orderBy)}
+						variant='outlined'
+						size='small'
+						onChange={e =>
+							handleOrderChange(...OrderLabeller.fromKey(e.target.value), pageSize)
+						}>
+						<MenuItem
+							value={OrderLabeller.makeKey(OrderType.ASCEND, OrderBy.START_TIME)}>
+							{OrderLabeller.makeLabel(OrderType.ASCEND, OrderBy.START_TIME)}
+						</MenuItem>
+						<MenuItem
+							value={OrderLabeller.makeKey(OrderType.DESCEND, OrderBy.START_TIME)}>
+							{OrderLabeller.makeLabel(OrderType.DESCEND, OrderBy.START_TIME)}
+						</MenuItem>
+						<MenuItem value={OrderLabeller.makeKey(OrderType.ASCEND, OrderBy.END_TIME)}>
+							{OrderLabeller.makeLabel(OrderType.ASCEND, OrderBy.END_TIME)}
+						</MenuItem>
+						<MenuItem
+							value={OrderLabeller.makeKey(OrderType.DESCEND, OrderBy.END_TIME)}>
+							{OrderLabeller.makeLabel(OrderType.DESCEND, OrderBy.END_TIME)}
+						</MenuItem>
+					</Select>
+				}
+			/>
+			<FormControlLabel
+				label={<Typography sx={{ mx: theme.spacing(1) }}>On page:</Typography>}
+				labelPlacement='start'
+				control={
+					<Select
+						value={pageSize}
+						variant='outlined'
+						size='small'
+						onChange={e => handleOrderChange(orderType, orderBy, e.target.value)}>
+						{[6, 10, 14, 18, 22].map(v => (
+							<MenuItem value={v}>{v}</MenuItem>
+						))}
+					</Select>
+				}
+			/>
+		</Box>
 	);
 }
 
@@ -350,26 +114,38 @@ export type PageNavigationProps = {
 	handlePageChange: (event: ChangeEvent<unknown>, value: number) => void;
 };
 
-type SimulationPaginationFooterProps = SimulationAppBarProps & PageNavigationProps;
+export type PageParamProps = {
+	orderType: OrderType;
+	orderBy: OrderBy;
+	pageSize: number;
+	handleOrderChange: (orderType: OrderType, orderBy: OrderBy, pageSize: number) => void;
+};
 
-export function SimulationPaginationFooter({
-	pageCount,
-	pageIdx,
-	handlePageChange,
-	...other
-}: SimulationPaginationFooterProps) {
+type SimulationPaginationFooterProps = PageNavigationProps & PageParamProps;
+
+export function SimulationPaginationFooter(props: SimulationPaginationFooterProps) {
+	const theme = useTheme();
+	const { pageCount, pageIdx, handlePageChange, ...rest } = props;
+
 	return (
-		<SimulationAppBar {...other}>
+		<Box
+			sx={{
+				display: 'flex',
+				justifyContent: 'center',
+				p: theme.spacing(2),
+				marginTop: 'auto',
+				marginBottom: theme.spacing(3)
+			}}>
 			<Pagination
 				sx={{
 					display: 'flex',
-					justifyContent: 'end',
-					p: ({ spacing }) => spacing(2)
+					justifyContent: 'center'
 				}}
 				count={pageCount}
 				page={pageIdx}
 				onChange={handlePageChange}
 			/>
-		</SimulationAppBar>
+			<SimulationPaginationControls {...rest} />
+		</Box>
 	);
 }

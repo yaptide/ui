@@ -22,6 +22,14 @@ declare module '@mui/material/styles' {
 		secondary: string;
 	}
 
+	interface Palette {
+		accordion: Palette['primary'];
+	}
+
+	interface PaletteOptions {
+		accordion?: PaletteOptions['primary'];
+	}
+
 	interface ThemeOptions {
 		dimensions: {
 			navDrawerWidth: number;
@@ -54,24 +62,29 @@ function App() {
 	const theme = useMemo(
 		() =>
 			createTheme({
+				shape: {
+					borderRadius: 8
+				},
 				palette: {
 					mode: prefersDarkMode ? 'dark' : 'light',
+					background: {
+						default: prefersDarkMode ? '#101010' : '#ddd'
+					},
 					primary: {
-						main: '#dfc19b'
+						main: '#248c5e'
 					},
 					secondary: {
-						main: '#37505C'
+						main: prefersDarkMode ? '#b098da' : '#8261c3'
 					},
-					background: {
-						default: prefersDarkMode ? '#121212' : '#f5f5f5',
-						secondary: prefersDarkMode ? '#121212' : '#5f737c'
+					accordion: {
+						main: prefersDarkMode ? '#343434' : '#e9e9e9'
 					}
 				},
 				typography: {
 					fontSize: 11
 				},
 				dimensions: {
-					navDrawerWidth: 160
+					navDrawerWidth: 200
 				},
 				cssVariables: true
 			}),

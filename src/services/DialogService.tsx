@@ -8,7 +8,6 @@ import { NewProjectDialog } from '../ThreeEditor/components/Dialog/NewProjectDia
 import { OpenFileDialog } from '../ThreeEditor/components/Dialog/OpenFileDialog';
 import { RejectKeycloakRefreshUserDialog } from '../ThreeEditor/components/Dialog/RejectKeycloakRefreshUserDialog';
 import { RejectKeycloakUserDialog } from '../ThreeEditor/components/Dialog/RejectKeycloakUserDialog';
-import { RunSimulationDialog } from '../ThreeEditor/components/Dialog/RunSimulationDialog';
 import { SaveFileDialog } from '../ThreeEditor/components/Dialog/SaveFileDialog';
 import { SimulatorChangeDialog } from '../ThreeEditor/components/Dialog/SimulatorChangeDialog';
 import {
@@ -37,7 +36,6 @@ export type DialogComponentTypeMap = EntriesToObj<
 		ValidComponentTypes<['loadFile', typeof LoadFileDialog]>,
 		ValidComponentTypes<['newProject', typeof NewProjectDialog]>,
 		ValidComponentTypes<['openFile', typeof OpenFileDialog]>,
-		ValidComponentTypes<['runSimulation', typeof RunSimulationDialog]>,
 		ValidComponentTypes<['saveFile', typeof SaveFileDialog]>,
 		ValidComponentTypes<['editProject', typeof EditProjectInfoDialog]>,
 		ValidComponentTypes<['rejectKeycloak', typeof RejectKeycloakUserDialog]>,
@@ -114,7 +112,6 @@ const DialogProvider = ({ children }: GenericContextProviderProps) => {
 			loadFile: LoadFileDialog,
 			newProject: NewProjectDialog,
 			openFile: OpenFileDialog,
-			runSimulation: RunSimulationDialog,
 			saveFile: SaveFileDialog,
 			editProject: EditProjectInfoDialog,
 			rejectKeycloak: RejectKeycloakUserDialog,

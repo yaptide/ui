@@ -10,7 +10,7 @@ import {
 	IconButton,
 	Theme
 } from '@mui/material';
-import { JSX,ReactNode } from 'react';
+import { JSX, ReactNode } from 'react';
 
 type CustomDialogProps = {
 	title: string;

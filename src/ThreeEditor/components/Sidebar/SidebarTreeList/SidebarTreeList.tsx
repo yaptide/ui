@@ -1,7 +1,7 @@
 import './SidebarTreeList.style.css';
 
 import { DropOptions, Tree } from '@minoru/react-dnd-treeview';
-import { Divider } from '@mui/material';
+import { Box } from '@mui/material';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Object3D } from 'three';
 import { generateUUID } from 'three/src/math/MathUtils.js';
@@ -20,6 +20,17 @@ function handleSelected(object: Object3D | null) {
 	}
 
 	document.getElementById(object.uuid)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function Placeholder() {
+	return (
+		<Box
+			// to make the box visible using margins, it would increase the height to > 0
+			// boxShadow doesn't change the height and prevent rows from moving to make space
+			// and can be made to look them same
+			sx={theme => ({ height: 0, boxShadow: `0 0 0 1px ${theme.palette.secondary.main}` })}
+		/>
+	);
 }
 
 export function SidebarTreeList(props: {
@@ -145,7 +156,7 @@ export function SidebarTreeList(props: {
 			onDrop={handleDrop}
 			canDrop={canDrop}
 			dropTargetOffset={5}
-			placeholderRender={() => <Divider className={'editor-sidebar-drop-target-divider'} />}
+			placeholderRender={Placeholder}
 			render={(node, { depth, isOpen, onToggle, hasChild }) => (
 				<SidebarTreeListItem
 					node={node}

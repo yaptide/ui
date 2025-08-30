@@ -1,28 +1,14 @@
 import SettingsIcon from '@mui/icons-material/Settings';
 import SpeedIcon from '@mui/icons-material/Speed';
 import TokenIcon from '@mui/icons-material/Token';
-import {
-	AppBar,
-	Box,
-	Divider,
-	FormControl,
-	InputLabel,
-	Select,
-	Stack,
-	Tab,
-	Tabs,
-	Typography
-} from '@mui/material';
-import MenuItem from '@mui/material/MenuItem';
+import { Box, Divider, Stack, Typography } from '@mui/material';
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 
-import ScrollPositionManager from '../../../libs/ScrollPositionManager';
-import { useDialog } from '../../../services/DialogService';
+import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTabs';
 import { SimulatorType } from '../../../types/RequestTypes';
 import { useSignal } from '../../../util/hooks/signals';
 import { getAddElementButtonProps } from '../../../util/Ui/CommandButtonProps';
-import { TabPanel } from '../../../WrapperApp/components/Panels/TabPanel';
 import { Context } from '../../js/EditorContext';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { PhysicConfiguration } from './properties/category/PhysicConfiguration';
@@ -32,18 +18,11 @@ import { EditorSidebarTabTree } from './tabs/EditorSidebarTabTree';
 
 interface EditorSidebarProps {
 	editor: YaptideEditor;
-	simulator: SimulatorType;
-	onSimulatorChange: (newSimulator: SimulatorType) => void;
-}
-
-interface SimulatorSelectorProps {
-	simulator: SimulatorType;
-	editor: YaptideEditor;
-	handleSimulatorChange: (newSimulator: SimulatorType) => void;
 }
 
 export function EditorSidebar(props: EditorSidebarProps) {
-	const { editor, simulator, onSimulatorChange } = props;
+	const { editor } = props;
+	const simulator = editor.contextManager.currentSimulator;
 
 	const [btnProps, setBtnProps] = useState(getAddElementButtonProps(editor));
 
@@ -56,36 +35,10 @@ export function EditorSidebar(props: EditorSidebarProps) {
 
 	useSignal(editor, ['objectSelected', 'objectAdded', 'objectRemoved'], handleObjectUpdate);
 
-	const [selectedTab, setSelectedTab] = useState<Capitalize<Context>>('Geometry');
-
-	const handleChange = (_event: SyntheticEvent, newValue: string) => {
-		switch (newValue) {
-			case 'Scoring':
-				editor.contextManager.currentContext = 'scoring';
-
-				break;
-			case 'Settings':
-				editor.contextManager.currentContext = 'settings';
-
-				break;
-			default:
-				editor.contextManager.currentContext = 'geometry';
-		}
-	};
+	const [selectedTab, setSelectedTab] = useState<Context>('geometry');
 
 	const handleContextChange = useCallback((context: Context) => {
-		switch (context) {
-			case 'scoring':
-				setSelectedTab('Scoring');
-
-				break;
-			case 'settings':
-				setSelectedTab('Settings');
-
-				break;
-			default:
-				setSelectedTab('Geometry');
-		}
+		setSelectedTab(context);
 	}, []);
 
 	useEffect(() => {
@@ -97,210 +50,96 @@ export function EditorSidebar(props: EditorSidebarProps) {
 		};
 	}, [editor, handleContextChange]);
 
-	useEffect(() => {
-		handleSimulatorChange(editor.contextManager.currentSimulator);
-	}, [editor.contextManager.currentSimulator]);
-
-	const handleSimulatorChange = (newValue: SimulatorType) => {
-		onSimulatorChange(newValue);
-		editor.contextManager.currentSimulator = newValue;
-
-		if (newValue === SimulatorType.GEANT4 || simulator === SimulatorType.GEANT4) {
-			editor.clear();
-		}
-	};
 	const geometryTabElements = getGeometryTabElements(simulator, btnProps, editor);
 	const scoringTabElements = getScoringTabElements(simulator, btnProps, editor);
 
 	return (
-		<>
-			<AppBar
-				position='relative'
-				color='secondary'
-				elevation={2}
-				style={{
-					borderBottom: 1,
-					borderColor: 'divider',
-					display: 'flex',
-					alignItems: 'stretch'
-				}}>
-				<FormControl
-					variant='filled'
-					fullWidth>
-					<InputLabel sx={{ color: ({ palette }) => palette.primary.main }}>
-						Simulator
-					</InputLabel>
-					<SimulatorSelector
-						simulator={simulator}
-						editor={editor}
-						handleSimulatorChange={handleSimulatorChange}
-					/>
-				</FormControl>
-				<Tabs
-					value={selectedTab}
-					onChange={handleChange}
-					aria-label='basic tabs example'
-					variant='fullWidth'>
-					<Tab
-						icon={<TokenIcon />}
-						label='Geometry'
-						value={'Geometry'}
-						sx={{
-							minHeight: 64
-						}}
-					/>
-					<Tab
-						icon={<SpeedIcon />}
-						label='Scoring'
-						value={'Scoring'}
-						sx={{
-							minHeight: 64
-						}}
-					/>
-					<Tab
-						icon={<SettingsIcon />}
-						label='Settings'
-						value={'Settings'}
-						sx={{
-							minHeight: 64
-						}}
-					/>
-				</Tabs>
-			</AppBar>
-			<ScrollPositionManager scrollKey={`vertical-editor-sidebar`}>
-				{({ connectScrollTarget }: { connectScrollTarget: (node: unknown) => void }) => {
-					return (
-						<>
-							<div
-								style={{
-									position: 'relative',
-									height: 'fit-content'
-								}}>
-								<TabPanel
-									value={selectedTab}
-									index={'Geometry'}
-									persistentIfVisited>
-									<EditorSidebarTabTree
-										elements={geometryTabElements}></EditorSidebarTabTree>
-								</TabPanel>
-								<TabPanel
-									value={selectedTab}
-									index={'Scoring'}
-									persistentIfVisited>
-									<EditorSidebarTabTree
-										elements={scoringTabElements}></EditorSidebarTabTree>
-								</TabPanel>
-							</div>
-							<div
-								style={{
-									overflow: 'auto',
-									position: 'relative',
-									height: '100%'
-								}}
-								ref={(node: HTMLDivElement) => connectScrollTarget(node)}>
-								{selectedTab !== 'Settings' ? (
-									<PropertiesPanel
-										editor={editor}
-										boxProps={{
-											sx: {
-												marginTop: '1rem',
-												padding: '0 .5rem',
-												overflowY: 'auto'
-											}
-										}}
-									/>
-								) : (
-									<Stack
-										sx={{ padding: '.5rem' }}
-										spacing={2}>
-										<Box>
-											<Typography
-												sx={{
-													fontSize: '1rem',
-													margin: '0.5rem 0',
-													letterSpacing: '0.0075em'
-												}}>
-												Beam
-											</Typography>
-											<PropertiesPanel
-												editor={editor}
-												boxProps={{
-													sx: { marginTop: '.5rem', overflowY: 'auto' }
-												}}
-											/>
-										</Box>
-										{editor.contextManager.currentSimulator ===
-											SimulatorType.SHIELDHIT && (
-											<>
-												<Divider light />
-												<Box>
-													<Typography
-														variant='h6'
-														sx={{ margin: '0.5rem 0' }}>
-														Physics
-													</Typography>
-													<PhysicConfiguration
-														editor={editor}
-														object={editor.physic}
-													/>
-												</Box>
-											</>
-										)}
-									</Stack>
-								)}
-							</div>
-						</>
-					);
-				}}
-			</ScrollPositionManager>
-		</>
-	);
-}
-
-function SimulatorSelector({ simulator, editor, handleSimulatorChange }: SimulatorSelectorProps) {
-	const simulatorDescriptions = {
-		[SimulatorType.COMMON]: 'Common options for Fluka and SHIELD-HIT12A',
-		[SimulatorType.FLUKA]: 'Fluka specific options',
-		[SimulatorType.SHIELDHIT]: 'SHIELD-HIT12A specific options',
-		[SimulatorType.GEANT4]: 'Geant4 specific options'
-	};
-
-	const { open: openSimulatorChangeDialog } = useDialog('simulatorChange');
-
-	return (
-		<Select
-			sx={{ color: ({ palette }) => palette.primary.main }}
-			value={simulator}
-			label='Simulator'
-			onChange={e => {
-				const modal_text =
-					simulator === SimulatorType.GEANT4 || e.target.value === SimulatorType.GEANT4
-						? 'Changing the simulator will clear the project. Are you sure you want to continue?'
-						: "Changing to another simulator may result in data loss. It is only recommended to change from the 'Common' simulator to either 'Fluka' or 'Shieldhit'. Are you sure you want to continue?";
-
-				if (simulator === SimulatorType.COMMON && e.target.value !== SimulatorType.GEANT4) {
-					handleSimulatorChange(e.target.value as SimulatorType);
-				} else {
-					openSimulatorChangeDialog({
-						text: modal_text,
-						closeAction() {
-							e.preventDefault();
-						},
-						confirmAction() {
-							handleSimulatorChange(e.target.value as SimulatorType);
-						}
-					});
-				}
+		<Box
+			sx={{
+				width: '100%',
+				boxSizing: 'border-box',
+				padding: 1,
+				display: 'flex',
+				flexDirection: 'column'
 			}}>
-			{Object.values(SimulatorType).map(simulator => (
-				<MenuItem
-					key={simulator}
-					value={simulator}
-					title={simulatorDescriptions[simulator]}>
-					{simulator.charAt(0).toUpperCase() + simulator.slice(1)}
-				</MenuItem>
-			))}
-		</Select>
+			<StyledTabs
+				value={selectedTab}
+				onChange={(_event: SyntheticEvent, newValue: Context) =>
+					(editor.contextManager.currentContext = newValue)
+				}
+				variant='fullWidth'
+				sx={theme => ({ marginBottom: theme.spacing(2) })}>
+				<StyledTab
+					icon={<TokenIcon />}
+					label='Geometry'
+					value={'geometry'}
+				/>
+				<StyledTab
+					icon={<SpeedIcon />}
+					label='Scoring'
+					value={'scoring'}
+				/>
+				<StyledTab
+					icon={<SettingsIcon />}
+					label='Settings'
+					value={'settings'}
+				/>
+			</StyledTabs>
+			<div>
+				{selectedTab === 'geometry' && (
+					<EditorSidebarTabTree>{geometryTabElements}</EditorSidebarTabTree>
+				)}
+				{selectedTab === 'scoring' && (
+					<EditorSidebarTabTree>{scoringTabElements}</EditorSidebarTabTree>
+				)}
+			</div>
+			<div>
+				{selectedTab !== 'settings' ? (
+					<>
+						{editor.selected && (
+							<Typography
+								fontSize='1rem'
+								sx={{ marginTop: '1rem', marginBottom: '.5rem' }}>
+								Details
+							</Typography>
+						)}
+						<PropertiesPanel
+							editor={editor}
+							boxProps={{ sx: { overflowY: 'auto' } }}
+						/>
+					</>
+				) : (
+					<Stack spacing={2}>
+						<Box>
+							<Typography
+								fontSize='1rem'
+								sx={{ marginBottom: '.5rem' }}>
+								Beam
+							</Typography>
+							<PropertiesPanel
+								editor={editor}
+								boxProps={{
+									sx: { overflowY: 'auto' }
+								}}
+							/>
+						</Box>
+						{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
+							<Box>
+								<Typography
+									fontSize='1rem'
+									sx={{ marginBottom: '.5rem' }}>
+									Physics
+								</Typography>
+								<PhysicConfiguration
+									editor={editor}
+									object={editor.physic}
+								/>
+							</Box>
+						)}
+					</Stack>
+				)}
+			</div>
+		</Box>
 	);
 }
 
@@ -308,7 +147,7 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 	const commonElements = [
 		{
 			title: 'Figures',
-			add: btnProps['CFGFigures'],
+			add: btnProps['Figures'],
 			tree: (
 				<SidebarTreeList
 					editor={editor}
@@ -380,7 +219,7 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 	const geant4Elements = [
 		{
 			title: 'Hierarchy',
-			add: btnProps['NestedFigures'],
+			add: btnProps['Figures'],
 			tree: (
 				<SidebarTreeList
 					editor={editor}

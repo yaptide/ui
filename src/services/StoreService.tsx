@@ -3,11 +3,13 @@ import * as THREE from 'three';
 
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
+import { SimulatorType } from '../types/RequestTypes';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 import { FullSimulationData } from './ShSimulatorService';
 
 export interface StoreContext {
 	yaptideEditor?: YaptideEditor;
+	setSimulatorType: (simulator: SimulatorType, changingToOrFromGeant4: boolean) => void;
 	initializeEditor: (container: HTMLDivElement) => void;
 	trackedId?: string;
 	setTrackedId: Dispatch<SetStateAction<string | undefined>>;
@@ -32,6 +34,33 @@ const Store = ({ children }: GenericContextProviderProps) => {
 		FullSimulationData[]
 	>([]);
 	const [trackedId, setTrackedId] = useState<string>();
+
+	// helper function to set simulator type so the whole app sees it
+	const setSimulatorType = useCallback(
+		(simulator: SimulatorType, changingToOrFromGeant4: boolean) => {
+			if (!editor) {
+				return;
+			}
+
+			editor.contextManager.currentSimulator = simulator;
+
+			if (changingToOrFromGeant4) {
+				editor.clear();
+			}
+
+			// currentSimulator field is deeply nested within YaptideEditor
+			//
+			// to update all components which use the property via const { yaptideEditor } = useStore()
+			// we need to change the reference of the whole object for react to see that we changed the property
+			//
+			// since important methods are defined by setting YaptideEditor.prototype = { ... }
+			// we can't simply do setEditor({ ...editor }) because it doesn't copy any methods and the app breaks
+			let newEditor = Object.create(Object.getPrototypeOf(editor));
+			Object.defineProperties(newEditor, Object.getOwnPropertyDescriptors(editor));
+			setEditor(newEditor);
+		},
+		[editor]
+	);
 
 	const initializeEditor: (container: HTMLDivElement) => void = useCallback(container => {
 		const editor = new YaptideEditor(container);
@@ -111,6 +140,7 @@ const Store = ({ children }: GenericContextProviderProps) => {
 
 	const value: StoreContext = {
 		yaptideEditor: editor,
+		setSimulatorType,
 		initializeEditor,
 		trackedId,
 		setTrackedId,

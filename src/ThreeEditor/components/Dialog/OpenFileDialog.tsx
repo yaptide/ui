@@ -1,15 +1,15 @@
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
-import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Box, Button, Divider, IconButton, Tab, TextField, Tooltip } from '@mui/material';
+import { TabContext, TabPanel } from '@mui/lab';
+import { Box, Button, IconButton, TextField, Tooltip } from '@mui/material';
 import { ChangeEvent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 
 import { LoaderContext } from '../../../services/LoaderService';
+import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTabs';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 import { DragDropProject } from './DragDropProject';
 
 export function OpenFileDialog({
 	onClose,
-	loadFromJson,
 	loadFromFiles,
 	loadFromUrl,
 	loadFromJsonString,
@@ -54,21 +54,21 @@ export function OpenFileDialog({
 			}}
 			body={
 				<TabContext value={value}>
-					<Box>
-						<TabList
+					<Box sx={{ marginTop: 2 }}>
+						<StyledTabs
 							centered
+							value={value}
 							onChange={handleChange}
 							aria-label='open project tabs example'>
 							{tabList.map((tab, idx) => (
-								<Tab
+								<StyledTab
 									label={tab}
 									value={idx.toString()}
 									key={tab}
 								/>
 							))}
-						</TabList>
+						</StyledTabs>
 					</Box>
-					<Divider />
 					<TabPanel {...tabPanelProps(0)}>
 						<Box
 							sx={{
@@ -108,6 +108,7 @@ export function OpenFileDialog({
 							<Button
 								variant='contained'
 								fullWidth
+								color='secondary'
 								sx={{ marginTop: 'auto' }}
 								disabled={currentFileList === undefined}
 								onClick={() => {
@@ -139,6 +140,7 @@ export function OpenFileDialog({
 							<Button
 								variant='contained'
 								fullWidth
+								color='secondary'
 								sx={{ marginTop: 'auto' }}
 								disabled={url === ''}
 								onClick={() => {
@@ -171,6 +173,7 @@ export function OpenFileDialog({
 							<Button
 								variant='contained'
 								fullWidth
+								color='secondary'
 								sx={{ marginTop: 'auto' }}
 								disabled={plainText === ''}
 								onClick={() => {
