@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
 import { SimulatorType } from '../types/RequestTypes';
+import { SimulationInfo } from '../types/ResponseTypes';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 import { FullSimulationData } from './ShSimulatorService';
 
@@ -17,6 +18,8 @@ export interface StoreContext {
 	setResultsSimulationData: Dispatch<SetStateAction<FullSimulationData | undefined>>;
 	localResultsSimulationData?: FullSimulationData[];
 	setLocalResultsSimulationData: Dispatch<SetStateAction<FullSimulationData[]>>;
+	simulationsCompletedInSession: SimulationInfo[];
+	setSimulationsCompletedInSession: Dispatch<SetStateAction<SimulationInfo[]>>;
 }
 
 const [useStore, StoreContextProvider] = createGenericContext<StoreContext>();
@@ -32,6 +35,10 @@ const Store = ({ children }: GenericContextProviderProps) => {
 	const [resultsSimulationData, setResultsSimulationData] = useState<FullSimulationData>();
 	const [localResultsSimulationData, setLocalResultsSimulationData] = useState<
 		FullSimulationData[]
+	>([]);
+
+	const [simulationsCompletedInSession, setSimulationsCompletedInSession] = useState<
+		SimulationInfo[]
 	>([]);
 	const [trackedId, setTrackedId] = useState<string>();
 
@@ -147,7 +154,9 @@ const Store = ({ children }: GenericContextProviderProps) => {
 		resultsSimulationData,
 		setResultsSimulationData,
 		localResultsSimulationData,
-		setLocalResultsSimulationData
+		setLocalResultsSimulationData,
+		simulationsCompletedInSession,
+		setSimulationsCompletedInSession
 	};
 
 	return <StoreContextProvider value={value}>{children}</StoreContextProvider>;
