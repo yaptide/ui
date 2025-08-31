@@ -30,7 +30,7 @@ export default function SimulationCardSmall({
 	...other
 }: SimulationCardProps) {
 	const theme = useTheme();
-	const { yaptideEditor } = useStore();
+	const { yaptideEditor, setSimulationJobIdsSubmittedInSession } = useStore();
 	const { statusColor, onClickLoadToEditor } = SimulationCardHelpers({
 		loadResults,
 		setDisableLoadJson: () => {},
@@ -98,7 +98,9 @@ export default function SimulationCardSmall({
 										aria-label='hide'
 										onClick={e => {
 											e.stopPropagation();
-											console.log('visibility off');
+											setSimulationJobIdsSubmittedInSession(jobIds =>
+												jobIds.filter(id => id !== simulationStatus.jobId)
+											);
 										}}>
 										<VisibilityOffIcon />
 									</IconButton>

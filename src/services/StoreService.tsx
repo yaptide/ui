@@ -18,8 +18,8 @@ export interface StoreContext {
 	setResultsSimulationData: Dispatch<SetStateAction<FullSimulationData | undefined>>;
 	localResultsSimulationData?: FullSimulationData[];
 	setLocalResultsSimulationData: Dispatch<SetStateAction<FullSimulationData[]>>;
-	simulationsCompletedInSession: SimulationInfo[];
-	setSimulationsCompletedInSession: Dispatch<SetStateAction<SimulationInfo[]>>;
+	simulationJobIdsSubmittedInSession: string[];
+	setSimulationJobIdsSubmittedInSession: Dispatch<SetStateAction<string[]>>;
 }
 
 const [useStore, StoreContextProvider] = createGenericContext<StoreContext>();
@@ -37,8 +37,8 @@ const Store = ({ children }: GenericContextProviderProps) => {
 		FullSimulationData[]
 	>([]);
 
-	const [simulationsCompletedInSession, setSimulationsCompletedInSession] = useState<
-		SimulationInfo[]
+	const [simulationJobIdsSubmittedInSession, setSimulationJobIdsSubmittedInSession] = useState<
+		string[]
 	>([]);
 	const [trackedId, setTrackedId] = useState<string>();
 
@@ -155,8 +155,8 @@ const Store = ({ children }: GenericContextProviderProps) => {
 		setResultsSimulationData,
 		localResultsSimulationData,
 		setLocalResultsSimulationData,
-		simulationsCompletedInSession,
-		setSimulationsCompletedInSession
+		simulationJobIdsSubmittedInSession: simulationJobIdsSubmittedInSession,
+		setSimulationJobIdsSubmittedInSession: setSimulationJobIdsSubmittedInSession
 	};
 
 	return <StoreContextProvider value={value}>{children}</StoreContextProvider>;

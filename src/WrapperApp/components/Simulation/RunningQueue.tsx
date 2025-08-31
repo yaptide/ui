@@ -1,6 +1,6 @@
 import { AccordionDetails, AccordionSummary, useTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
 import { useShSimulation } from '../../../services/ShSimulatorService';
@@ -27,8 +27,7 @@ export default function RunningQueue() {
 		trackedId,
 		setResultsSimulationData,
 		setLocalResultsSimulationData,
-		simulationsCompletedInSession,
-		setSimulationsCompletedInSession
+		simulationJobIdsSubmittedInSession
 	} = useStore();
 
 	const {
@@ -57,7 +56,8 @@ export default function RunningQueue() {
 			StatusState.RUNNING,
 			StatusState.PENDING,
 			StatusState.MERGING_QUEUED,
-			StatusState.MERGING_RUNNING
+			StatusState.MERGING_RUNNING,
+			StatusState.COMPLETED
 		]
 	};
 
@@ -98,32 +98,14 @@ export default function RunningQueue() {
 
 	useIntervalAsync(updateSimulationData, simulationDataInterval, simulationInfo.length > 0);
 
-	// We need to display running simulations and recently completed simulations (at least until page reload)
-	// In order to do that and not add more one-off logic to our convoluted backend connection implementation,
-	// we fetch only PENDING, RUNNING, MERGING simulations, save the ones that complete, and render them above the rest.
-	//
-	// The backend refresh works in such a way, that once the simulation list is populated,
-	// it only refreshes the simulations that were fetched initially, so PENDING, RUNNING, MERGING
-	// really means P, R, M + all that could come afterwards.
-	// That is, until the component reloads, i.e goes out of, and back to view
-	//
-	// We somewhat rely on this behavior, so we can filter out completed simulations and save them to state
-	useEffect(() => {
-		const completed =
-			simulationsStatusData?.filter(sd => sd.jobState === StatusState.COMPLETED) ?? [];
-
-		if (completed.length > 0) {
-			setSimulationsCompletedInSession(prev => ({
-				...prev,
-				...Object.fromEntries(completed.map(v => [v.jobId, v]))
-			}));
-
-			setSimulationInfo(prev =>
-				prev.filter(info => completed.findIndex(v => v.jobId === info.jobId) < 0)
-			);
-			updateSimulationData();
-		}
-	}, [simulationsStatusData]);
+	const simulationsToDisplay = simulationsStatusData
+		? simulationsStatusData.filter(
+				statusData =>
+					simulationJobIdsSubmittedInSession.findIndex(
+						jobId => jobId === statusData.jobId
+					) >= 0
+			)
+		: [];
 
 	return (
 		<StyledAccordion
@@ -151,35 +133,19 @@ export default function RunningQueue() {
 					flexDirection: 'column',
 					gap: theme.spacing(1)
 				}}>
-				{/* Completed simulations that don't need updates */}
-				{Object.values(simulationsCompletedInSession).map(cs => (
+				{simulationsToDisplay.map(simulation => (
 					<SimulationCardSmall
-						key={cs.jobId}
-						simulationStatus={cs}
-						loadResults={handleLoadResults && (taskId => handleLoadResults(taskId, cs))}
+						key={simulation.jobId}
+						simulationStatus={simulation}
+						loadResults={
+							handleLoadResults && (taskId => handleLoadResults(taskId, simulation))
+						}
 						handleDelete={() => {}}
 						handleCancel={() => {}}
 						handleRefresh={() => {}}
 						showInputFiles={handleShowInputFiles}
 					/>
 				))}
-				{/* Simulations in progress that need updates */}
-				{simulationsStatusData &&
-					simulationsStatusData.length > 0 &&
-					simulationsStatusData?.map(simulation => (
-						<SimulationCardSmall
-							key={simulation.jobId}
-							simulationStatus={simulation}
-							loadResults={
-								handleLoadResults &&
-								(taskId => handleLoadResults(taskId, simulation))
-							}
-							handleDelete={() => {}}
-							handleCancel={() => {}}
-							handleRefresh={() => {}}
-							showInputFiles={handleShowInputFiles}
-						/>
-					))}
 			</AccordionDetails>
 		</StyledAccordion>
 	);
