@@ -45,7 +45,10 @@ export default function SimulationCardSmall({
 					borderStyle: 'solid',
 					borderWidth: 1,
 					borderColor: theme.palette.divider,
-					backgroundColor: theme.palette.grey['900'],
+					backgroundColor:
+						theme.palette.mode === 'dark'
+							? theme.palette.grey['900']
+							: theme.palette.grey['100'],
 					backgroundImage: 'none' // otherwise "paper overlay" is added, which changes backgroundColor
 				}}
 				ref={cardRef}
