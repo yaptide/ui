@@ -73,11 +73,7 @@ function WrapperApp() {
 	}, [demoMode, isAuthorized]);
 
 	useEffect(() => {
-		if (
-			displayedSimulationData === undefined ||
-			tabsValue === 'simulations' ||
-			resultsSimulationData?.source === 'onSelect'
-		) {
+		if (tabsValue === 'simulations' || resultsSimulationData?.source === 'onSelect') {
 			setDisplayedSimulationData(resultsSimulationData?.data);
 			setTabsValue('results');
 		}
