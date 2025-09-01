@@ -61,7 +61,9 @@ const BackendSimulationsHelpers = (
 		async (id: string, response: JobStatusData) => {
 			if (id === trackedId && currentJobStatusData[StatusState.COMPLETED](response)) {
 				const fullData = await getFullSimulationData(response, controller.signal);
-				setResultsSimulationData(fullData);
+				setResultsSimulationData(
+					fullData ? { source: 'onRunFinish', data: fullData } : undefined
+				);
 			}
 		},
 		[controller.signal, getFullSimulationData, setResultsSimulationData, trackedId]
@@ -134,7 +136,7 @@ const BackendSimulationsHelpers = (
 			const fullData = isFullSimulationData(simulation)
 				? simulation
 				: await getFullSimulationData(simulation, controller.signal);
-			setResultsSimulationData(fullData);
+			setResultsSimulationData(fullData ? { source: 'onSelect', data: fullData } : undefined);
 		}
 	};
 

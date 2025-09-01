@@ -1,21 +1,9 @@
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import {
-	Box,
-	Button,
-	Card,
-	CardHeader,
-	Chip,
-	Divider,
-	IconButton,
-	Popover,
-	useTheme
-} from '@mui/material';
-import Tooltip from '@mui/material/Tooltip';
+import { Box, Button, ButtonGroup, Card, CardHeader, Chip, Divider, useTheme } from '@mui/material';
 import { formatDate } from 'date-fns/format';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
 import { useStore } from '../../../../services/StoreService';
-import { currentJobStatusData, StatusState } from '../../../../types/ResponseTypes';
+import { StatusState } from '../../../../types/ResponseTypes';
 import { SimulationCardProps } from './SimulationCard';
 import { SimulationProgress } from './SimulationCardContent';
 import SimulationCardHelpers from './SimulationCardHelpers';
@@ -23,18 +11,14 @@ import SimulationCardHelpers from './SimulationCardHelpers';
 export default function SimulationCardSmall({
 	simulationStatus,
 	loadResults,
-	handleDelete,
-	handleCancel,
-	handleRefresh,
-	showInputFiles,
 	...other
 }: SimulationCardProps) {
 	const theme = useTheme();
-	const { yaptideEditor, setSimulationJobIdsSubmittedInSession } = useStore();
+	const { yaptideEditor } = useStore();
 	const { statusColor, onClickLoadToEditor } = SimulationCardHelpers({
 		loadResults,
 		setDisableLoadJson: () => {},
-		showInputFiles,
+		showInputFiles: () => {},
 		simulationStatus,
 		yaptideEditor
 	});
@@ -52,7 +36,6 @@ export default function SimulationCardSmall({
 	);
 
 	const cardRef = useRef(null);
-	const [showControls, setShowControls] = useState(false);
 
 	return (
 		<>
@@ -66,10 +49,7 @@ export default function SimulationCardSmall({
 					backgroundImage: 'none' // otherwise "paper overlay" is added, which changes backgroundColor
 				}}
 				ref={cardRef}
-				{...other}
-				onClick={() => {
-					setShowControls(true);
-				}}>
+				{...other}>
 				<Divider
 					orientation='vertical'
 					sx={{
@@ -82,85 +62,52 @@ export default function SimulationCardSmall({
 					sx={{
 						display: 'flex',
 						flexDirection: 'column',
-						flexGrow: 1
+						flexGrow: 1,
+						p: theme.spacing(1),
+						gap: theme.spacing(1)
 					}}>
 					<CardHeader
 						title={`${simulationStatus.title}`}
-						sx={{ p: 1 }}
-						action={
-							currentJobStatusData[StatusState.COMPLETED](simulationStatus) && (
-								<Tooltip
-									title='Hide'
-									sx={{
-										zIndex: ({ zIndex }) => zIndex.appBar
-									}}>
-									<IconButton
-										aria-label='hide'
-										onClick={e => {
-											e.stopPropagation();
-											setSimulationJobIdsSubmittedInSession(jobIds =>
-												jobIds.filter(id => id !== simulationStatus.jobId)
-											);
-										}}>
-										<VisibilityOffIcon />
-									</IconButton>
-								</Tooltip>
-							)
-						}
+						sx={{ p: 0 }}
 					/>
-					<Box sx={{ px: theme.spacing(1) }}>
-						<Chip
-							variant='filled'
-							size='small'
-							label={
-								simulationStatus.localData
-									? StatusState.LOCAL
-									: simulationStatus.jobState
-							}
-							sx={{
-								backgroundColor: highlightColor,
-								color: 'white',
-								width: 'fit-content',
-								mb: theme.spacing(1)
-							}}
+					<Chip
+						variant='filled'
+						size='small'
+						label={
+							simulationStatus.localData
+								? StatusState.LOCAL
+								: simulationStatus.jobState
+						}
+						sx={{
+							backgroundColor: highlightColor,
+							color: 'white',
+							width: 'fit-content'
+						}}
+					/>
+					{simulationStatus.jobState === StatusState.RUNNING && (
+						<SimulationProgress
+							formatedStartDate={formatDateTime(startDate)}
+							duration={duration}
+							simulationStatus={simulationStatus}
 						/>
-						{simulationStatus.jobState === StatusState.RUNNING && (
-							<SimulationProgress
-								formatedStartDate={formatDateTime(startDate)}
-								duration={duration}
-								simulationStatus={simulationStatus}
-							/>
-						)}
-					</Box>
+					)}
+					<ButtonGroup fullWidth>
+						<Button
+							variant='outlined'
+							color='secondary'
+							disabled={simulationStatus.jobState !== StatusState.COMPLETED}
+							onClick={loadResults && (() => loadResults(simulationStatus.jobId))}>
+							Load Results
+						</Button>
+						<Button
+							variant='outlined'
+							color='secondary'
+							onClick={() => onClickLoadToEditor(simulationStatus)}>
+							Load to Editor
+						</Button>
+					</ButtonGroup>
 				</Box>
 			</Card>
-			<Popover
-				anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-				open={showControls}
-				anchorEl={cardRef.current}
-				onClose={() => setShowControls(false)}>
-				<Box
-					sx={{
-						display: 'flex',
-						flexDirection: 'column',
-						margin: theme.spacing(1),
-						gap: theme.spacing(1)
-					}}>
-					<Button
-						variant='outlined'
-						color='secondary'
-						disabled={simulationStatus.jobState !== StatusState.COMPLETED}
-						onClick={loadResults && (() => loadResults(simulationStatus.jobId))}>
-						Load Results
-					</Button>
-					<Button
-						variant='outlined'
-						color='secondary'
-						onClick={() => onClickLoadToEditor(simulationStatus)}>
-						Load to Editor
-					</Button>
-				</Box>
-			</Popover>
 		</>
 	);
 }

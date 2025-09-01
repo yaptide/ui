@@ -38,7 +38,6 @@ export default function SimulationCard({
 	const {
 		statusColor,
 		onClickLoadResults,
-		onClickGoToResults,
 		onClickInputFiles,
 		onClickShowError,
 		onClickSaveToFile,
@@ -54,7 +53,6 @@ export default function SimulationCard({
 	const actions = { loadResults, handleCancel, showInputFiles };
 	const handlers = {
 		onClickLoadResults,
-		onClickGoToResults,
 		onClickShowError,
 		onClickInputFiles,
 		onClickSaveToFile,

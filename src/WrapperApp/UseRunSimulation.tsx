@@ -10,7 +10,8 @@ import {
 	BatchOptionsType,
 	RunSimulationFunctionType,
 	SimulationRunType,
-	SimulationSourceType} from './components/Simulation/RunSimulationForm';
+	SimulationSourceType
+} from './components/Simulation/RunSimulationForm';
 
 export function useRunSimulation(): RunSimulationFunctionType {
 	const { setTrackedId, setSimulationJobIdsSubmittedInSession } = useStore();
@@ -56,7 +57,7 @@ export function useRunSimulation(): RunSimulationFunctionType {
 		postJobFn(simData, sourceType, nTasks, simulator, simName, options, controller.signal)
 			.then(res => {
 				setTrackedId(res.jobId);
-				setSimulationJobIdsSubmittedInSession(jobIds => [...jobIds, res.jobId]);
+				setSimulationJobIdsSubmittedInSession(jobIds => [res.jobId, ...jobIds]);
 				enqueueSnackbar('Simulation submitted', { variant: 'success' });
 			})
 			.catch(e => {

@@ -2,6 +2,7 @@ import { Button, ButtonGroup, CardActions } from '@mui/material';
 import { SnackbarKey } from 'notistack';
 
 import { FullSimulationData } from '../../../../services/ShSimulatorService';
+import { ResultsSimulationDataWithSource } from '../../../../services/StoreService';
 import { YaptideEditor } from '../../../../ThreeEditor/js/YaptideEditor';
 import {
 	currentJobStatusData,
@@ -21,7 +22,6 @@ interface SimulationCardActionsProps {
 	};
 	handlers: {
 		onClickLoadResults: () => void;
-		onClickGoToResults: () => void;
 		onClickShowError: (
 			simulation: Omit<JobStatusFailed & SimulationInfo, never>
 		) => Promise<void>;
@@ -32,7 +32,7 @@ interface SimulationCardActionsProps {
 		) => Promise<SnackbarKey | undefined>;
 	};
 	context: {
-		resultsSimulationData?: FullSimulationData | undefined;
+		resultsSimulationData?: ResultsSimulationDataWithSource | undefined;
 		yaptideEditor: YaptideEditor | undefined;
 		disableLoadJson: boolean;
 	};
@@ -47,7 +47,6 @@ export const SimulationCardActions = ({
 	const { loadResults, handleCancel, showInputFiles } = actions;
 	const {
 		onClickLoadResults,
-		onClickGoToResults,
 		onClickShowError,
 		onClickInputFiles,
 		onClickSaveToFile,
@@ -65,12 +64,8 @@ export const SimulationCardActions = ({
 					size='small'
 					color='secondary'
 					disabled={!Boolean(loadResults)}
-					onClick={
-						resultsSimulationData?.jobId !== simulationStatus.jobId
-							? onClickLoadResults
-							: onClickGoToResults
-					}>
-					{resultsSimulationData?.jobId !== simulationStatus.jobId
+					onClick={onClickLoadResults}>
+					{resultsSimulationData?.data.jobId !== simulationStatus.jobId
 						? 'Load Results'
 						: 'Go to Results'}
 				</Button>

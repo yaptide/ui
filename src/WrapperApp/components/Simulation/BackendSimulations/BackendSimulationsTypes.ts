@@ -1,4 +1,5 @@
 import { FullSimulationData, JobInputs } from '../../../../services/ShSimulatorService';
+import { ResultsSimulationDataWithSource } from '../../../../services/StoreService';
 import { YaptideEditor } from '../../../../ThreeEditor/js/YaptideEditor';
 import {
 	RequestGetJobInputs,
@@ -53,7 +54,7 @@ export interface SimulationState {
 	simulationsStatusData: Omit<JobUnknownStatus & SimulationInfo, never>[] | undefined;
 	setSimulationInfo: React.Dispatch<React.SetStateAction<JobStatusData[]>>;
 	setSimulationsStatusData: React.Dispatch<React.SetStateAction<JobStatusData[] | undefined>>;
-	setResultsSimulationData: React.Dispatch<React.SetStateAction<FullSimulationData | undefined>>;
+	setResultsSimulationData: React.Dispatch<ResultsSimulationDataWithSource | undefined>;
 	setLocalResultsSimulationData: React.Dispatch<React.SetStateAction<FullSimulationData[]>>;
 	goToResults?: () => void;
 	setInputFiles: (inputFiles: SimulationInputFiles | undefined) => void;

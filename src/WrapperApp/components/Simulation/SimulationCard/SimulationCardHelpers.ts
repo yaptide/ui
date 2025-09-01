@@ -54,10 +54,6 @@ const SimulationCardHelpers = ({
 		loadResults?.call(null, simulationStatus.jobId);
 	};
 
-	const onClickGoToResults = () => {
-		loadResults?.call(null, null);
-	};
-
 	const onClickInputFiles = async () => {
 		const inputFiles = await getJobInputs(simulationStatus);
 
@@ -120,7 +116,6 @@ const SimulationCardHelpers = ({
 	return {
 		statusColor,
 		onClickLoadResults,
-		onClickGoToResults,
 		onClickInputFiles,
 		onClickShowError,
 		onClickSaveToFile,

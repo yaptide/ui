@@ -8,14 +8,27 @@ import { SimulationInfo } from '../types/ResponseTypes';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 import { FullSimulationData } from './ShSimulatorService';
 
+export interface DataWithSource<S extends string, T> {
+	source: S;
+	data: T;
+}
+
+// This helps us to decide whether to jump to Results page abruptly
+// when user manually select simulations (= onSelect),
+// or not, when simulation was loaded / finished in the background (= onRunFinish / onLoad)
+export type ResultsSimulationDataWithSource = DataWithSource<
+	'onSelect' | 'onRunFinish' | 'onLoad',
+	FullSimulationData
+>;
+
 export interface StoreContext {
 	yaptideEditor?: YaptideEditor;
 	setSimulatorType: (simulator: SimulatorType, changingToOrFromGeant4: boolean) => void;
 	initializeEditor: (container: HTMLDivElement) => void;
 	trackedId?: string;
 	setTrackedId: Dispatch<SetStateAction<string | undefined>>;
-	resultsSimulationData?: FullSimulationData;
-	setResultsSimulationData: Dispatch<SetStateAction<FullSimulationData | undefined>>;
+	resultsSimulationData?: ResultsSimulationDataWithSource;
+	setResultsSimulationData: Dispatch<SetStateAction<ResultsSimulationDataWithSource | undefined>>;
 	localResultsSimulationData?: FullSimulationData[];
 	setLocalResultsSimulationData: Dispatch<SetStateAction<FullSimulationData[]>>;
 	simulationJobIdsSubmittedInSession: string[];
@@ -32,7 +45,9 @@ declare global {
 
 const Store = ({ children }: GenericContextProviderProps) => {
 	const [editor, setEditor] = useState<YaptideEditor>();
-	const [resultsSimulationData, setResultsSimulationData] = useState<FullSimulationData>();
+	const [resultsSimulationData, setResultsSimulationData] =
+		useState<ResultsSimulationDataWithSource>();
+
 	const [localResultsSimulationData, setLocalResultsSimulationData] = useState<
 		FullSimulationData[]
 	>([]);
@@ -155,8 +170,8 @@ const Store = ({ children }: GenericContextProviderProps) => {
 		setResultsSimulationData,
 		localResultsSimulationData,
 		setLocalResultsSimulationData,
-		simulationJobIdsSubmittedInSession: simulationJobIdsSubmittedInSession,
-		setSimulationJobIdsSubmittedInSession: setSimulationJobIdsSubmittedInSession
+		simulationJobIdsSubmittedInSession,
+		setSimulationJobIdsSubmittedInSession
 	};
 
 	return <StoreContextProvider value={value}>{children}</StoreContextProvider>;

@@ -18,7 +18,7 @@ import { useBackendAliveEffect } from './BackendSimulations/hooks/useBackendAliv
 import { useUpdateCurrentSimulationEffect } from './BackendSimulations/hooks/useUpdateCurrentSimulationEffect';
 import SimulationCardSmall from './SimulationCard/SimulationCardSmall';
 
-export default function RunningQueue() {
+export default function RecentSimulations() {
 	const theme = useTheme();
 
 	const { demoMode } = useConfig();
@@ -78,7 +78,7 @@ export default function RunningQueue() {
 		setSimulationsStatusData,
 		setResultsSimulationData,
 		setLocalResultsSimulationData,
-		goToResults: () => console.log('go to results'),
+		goToResults: () => {},
 		setInputFiles: () => {},
 		setShowInputFilesEditor: () => {},
 		yaptideEditor
@@ -89,7 +89,6 @@ export default function RunningQueue() {
 		updateSimulationData,
 		simulationDataInterval,
 		handleLoadResults,
-		handleShowInputFiles,
 		setPageCount
 	} = BackendSimulationsHelpers(config, handlers, state);
 
@@ -99,12 +98,14 @@ export default function RunningQueue() {
 	useIntervalAsync(updateSimulationData, simulationDataInterval, simulationInfo.length > 0);
 
 	const simulationsToDisplay = simulationsStatusData
-		? simulationsStatusData.filter(
-				statusData =>
-					simulationJobIdsSubmittedInSession.findIndex(
-						jobId => jobId === statusData.jobId
-					) >= 0
-			)
+		? simulationsStatusData
+				.filter(
+					statusData =>
+						simulationJobIdsSubmittedInSession.findIndex(
+							jobId => jobId === statusData.jobId
+						) >= 0
+				)
+				.slice(0, 5)
 		: [];
 
 	return (
@@ -124,7 +125,7 @@ export default function RunningQueue() {
 				<Typography
 					textTransform='none'
 					fontSize={16}>
-					Queue
+					Last 5 simulations
 				</Typography>
 			</AccordionSummary>
 			<AccordionDetails
@@ -140,10 +141,6 @@ export default function RunningQueue() {
 						loadResults={
 							handleLoadResults && (taskId => handleLoadResults(taskId, simulation))
 						}
-						handleDelete={() => {}}
-						handleCancel={() => {}}
-						handleRefresh={() => {}}
-						showInputFiles={handleShowInputFiles}
 					/>
 				))}
 			</AccordionDetails>

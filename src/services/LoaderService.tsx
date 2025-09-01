@@ -80,7 +80,8 @@ const Loader = ({ children }: GenericContextProviderProps) => {
 
 				return result;
 			});
-			setResultsSimulationData([...loadedResults].pop());
+			const fullData = [...loadedResults].pop();
+			setResultsSimulationData(fullData ? { source: 'onLoad', data: fullData } : undefined);
 			const loadedEditor = dataArray
 				.concat(loadedResults.map(e => e.input.inputJson))
 				.find(isEditorJson);
