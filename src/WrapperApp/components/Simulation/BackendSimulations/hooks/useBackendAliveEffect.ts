@@ -3,7 +3,11 @@ import { useEffect, useState } from 'react';
 import { useConfig } from '../../../../../config/ConfigService';
 import { useShSimulation } from '../../../../../services/ShSimulatorService';
 import { useStore } from '../../../../../services/StoreService';
-import { JobStatusData, SimulationInfo } from '../../../../../types/ResponseTypes';
+import {
+	JobStatusData,
+	SimulationInfo,
+	ValidStatusStates
+} from '../../../../../types/ResponseTypes';
 import BackendSimulationsHelpers from '../BackendSimulationsHelpers';
 import { SimulationConfig, SimulationHandlers, SimulationState } from '../BackendSimulationsTypes';
 
@@ -54,7 +58,8 @@ export const useIsBackendAlive = () => {
 		controller,
 		trackedId,
 		isBackendAlive,
-		setBackendAlive
+		setBackendAlive,
+		statusStates: ValidStatusStates
 	};
 
 	const handlers = useShSimulation();

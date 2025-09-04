@@ -42,7 +42,9 @@ const SimulationCardHelpers = ({
 			case StatusState.MERGING_RUNNING:
 				return 'info.main';
 			case StatusState.CANCELED:
-				return 'common.black';
+				return 'grey.600';
+			case StatusState.PENDING:
+				return 'secondary.main';
 			default:
 				return '';
 		}
@@ -50,10 +52,6 @@ const SimulationCardHelpers = ({
 
 	const onClickLoadResults = () => {
 		loadResults?.call(null, simulationStatus.jobId);
-	};
-
-	const onClickGoToResults = () => {
-		loadResults?.call(null, null);
 	};
 
 	const onClickInputFiles = async () => {
@@ -118,7 +116,6 @@ const SimulationCardHelpers = ({
 	return {
 		statusColor,
 		onClickLoadResults,
-		onClickGoToResults,
 		onClickInputFiles,
 		onClickShowError,
 		onClickSaveToFile,

@@ -38,6 +38,7 @@ import {
 	ResponsePostJob,
 	SimulationInfo,
 	StatusState,
+	ValidStatusStates,
 	YaptideResponse
 } from '../types/ResponseTypes';
 import { useCacheMap } from '../util/hooks/useCacheMap';
@@ -66,8 +67,6 @@ export type SpecificEstimator = {
 };
 
 export type FullSimulationData = Omit<JobInputs & JobStatusData & JobResults, 'message'>;
-
-export const fetchItSymbol = Symbol('fetchItSymbol');
 
 export interface RestSimulationContext {
 	postJobDirect: (...args: RequestPostJob) => Promise<ResponsePostJob>;
@@ -616,11 +615,17 @@ const ShSimulation = ({ children }: GenericContextProviderProps) => {
 	);
 
 	const getPageContents = useCallback(
-		(...[pageIdx, pageSize, orderType, orderBy, signal]: RequestGetPageContents) =>
+		(...[pageIdx, pageSize, orderType, orderBy, jobState, signal]: RequestGetPageContents) =>
 			authKy
 				.get(`user/simulations`, {
 					signal,
-					searchParams: camelToSnakeCase({ pageIdx, pageSize, orderType, orderBy })
+					searchParams: camelToSnakeCase({
+						pageIdx,
+						pageSize,
+						orderType,
+						orderBy,
+						jobState: jobState.join(',')
+					})
 				})
 				.json<ResponseGetPageContents>(),
 		[authKy]

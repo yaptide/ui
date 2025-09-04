@@ -23,7 +23,7 @@ const BackendSimulationsHelpers = (
 ) => {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const currentJobId = useRef<string>('');
-	const { demoMode, controller, trackedId, isBackendAlive } = config;
+	const { demoMode, controller, trackedId, isBackendAlive, statusStates } = config;
 	const { getPageContents, getPageStatus, getJobStatus, getFullSimulationData, cancelJob } =
 		handlers;
 
@@ -47,7 +47,7 @@ const BackendSimulationsHelpers = (
 
 	const updateSimulationInfo = useCallback(
 		() =>
-			getPageContents(pageIdx, pageSize, orderType, orderBy)
+			getPageContents(pageIdx, pageSize, orderType, orderBy, statusStates)
 				.then(results => {
 					const { simulations, pageCount } = results;
 					setSimulationInfo([...simulations]);
@@ -61,7 +61,9 @@ const BackendSimulationsHelpers = (
 		async (id: string, response: JobStatusData) => {
 			if (id === trackedId && currentJobStatusData[StatusState.COMPLETED](response)) {
 				const fullData = await getFullSimulationData(response, controller.signal);
-				setResultsSimulationData(fullData);
+				setResultsSimulationData(
+					fullData ? { source: 'onRunFinish', data: fullData } : undefined
+				);
 			}
 		},
 		[controller.signal, getFullSimulationData, setResultsSimulationData, trackedId]
@@ -134,7 +136,7 @@ const BackendSimulationsHelpers = (
 			const fullData = isFullSimulationData(simulation)
 				? simulation
 				: await getFullSimulationData(simulation, controller.signal);
-			setResultsSimulationData(fullData);
+			setResultsSimulationData(fullData ? { source: 'onSelect', data: fullData } : undefined);
 		}
 	};
 
@@ -150,7 +152,14 @@ const BackendSimulationsHelpers = (
 			newOrderType: OrderType = orderType,
 			newOrderBy: OrderBy = orderBy
 		) =>
-			getPageContents(newPageIdx, newPageSize, newOrderType, newOrderBy, controller.signal)
+			getPageContents(
+				newPageIdx,
+				newPageSize,
+				newOrderType,
+				newOrderBy,
+				statusStates,
+				controller.signal
+			)
 				.then(({ simulations, pageCount }) => {
 					setSimulationInfo([...simulations]);
 					setPageCount(pageCount);

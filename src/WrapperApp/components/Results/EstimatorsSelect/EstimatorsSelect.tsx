@@ -6,6 +6,7 @@ import {
 	SpecificEstimator,
 	useShSimulation
 } from '../../../../services/ShSimulatorService';
+import { ResultsSimulationDataWithSource } from '../../../../services/StoreService';
 import { StyledTab, StyledTabs } from '../../../../shared/components/Tabs/StyledTabs';
 import { EstimatorPagesByDimensions } from '../../../../types/ResponseTypes';
 
@@ -13,7 +14,9 @@ interface EstimatorsTabProps {
 	tabsValue: number;
 	setTabsValue: (value: number) => void;
 	simulation: FullSimulationData;
-	setResultsSimulationData: React.Dispatch<React.SetStateAction<FullSimulationData | undefined>>;
+	setResultsSimulationData: React.Dispatch<
+		React.SetStateAction<ResultsSimulationDataWithSource | undefined>
+	>;
 	estimatorsTabData: string[];
 	estimatorsPagesData: EstimatorPagesByDimensions[] | undefined;
 }
@@ -96,7 +99,7 @@ const EstimatorsSelect = ({
 						...simulation,
 						estimators: newEstimators
 					};
-					setResultsSimulationData(newSimulation);
+					setResultsSimulationData({ source: 'onSelect', data: newSimulation });
 				}
 			}
 		},

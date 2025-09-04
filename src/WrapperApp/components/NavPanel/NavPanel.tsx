@@ -109,7 +109,7 @@ export default function NavPanel(props: NavPanelProps) {
 	const { resultsSimulationData } = useStore();
 	const auth = useAuth();
 	const { demoMode } = useConfig();
-	const menuOptions = useMenuOptions(auth.isAuthorized, resultsSimulationData, demoMode);
+	const menuOptions = useMenuOptions(auth.isAuthorized, resultsSimulationData?.data, demoMode);
 
 	const { handleChange, tabsValue } = props;
 

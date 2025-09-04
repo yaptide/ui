@@ -208,7 +208,8 @@ export function generateGraphs(
 				<Box
 					key={`graph_${name}${jobId ? '_' + jobId : ''}_${page.name ?? idx}`}
 					sx={{ display: 'flex', margin: theme.spacing(1), gap: theme.spacing(2) }}>
-					<Box sx={{ flexGrow: 1 }}>{graph}</Box>
+					{/* backgroundColor so it doesn't flicker with dark theme on reload */}
+					<Box sx={{ flexGrow: 1, backgroundColor: 'white' }}>{graph}</Box>
 					<Box sx={{ width: '20%', minWidth: '300px', padding: theme.spacing(2) }}>
 						<Section title='Filter'>
 							<Typography>{filter?.name ?? 'None'}</Typography>

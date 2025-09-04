@@ -8,13 +8,13 @@ import { SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles } from '../types/ResponseTypes';
 import {
 	BatchOptionsType,
+	RunSimulationFunctionType,
 	SimulationRunType,
 	SimulationSourceType
-} from '../WrapperApp/components/Simulation/RunSimulationForm';
-import { RunSimulationFunctionType } from './components/Simulation/RunSimulationForm';
+} from './components/Simulation/RunSimulationForm';
 
 export function useRunSimulation(): RunSimulationFunctionType {
-	const { setTrackedId } = useStore();
+	const { setTrackedId, setSimulationJobIdsSubmittedInSession } = useStore();
 	const [controller] = useState(new AbortController());
 	const { postJobDirect, postJobBatch } = useShSimulation();
 	const sendSimulationRequest = (
@@ -57,6 +57,7 @@ export function useRunSimulation(): RunSimulationFunctionType {
 		postJobFn(simData, sourceType, nTasks, simulator, simName, options, controller.signal)
 			.then(res => {
 				setTrackedId(res.jobId);
+				setSimulationJobIdsSubmittedInSession(jobIds => [res.jobId, ...jobIds]);
 				enqueueSnackbar('Simulation submitted', { variant: 'success' });
 			})
 			.catch(e => {

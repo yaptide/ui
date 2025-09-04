@@ -7,7 +7,7 @@ import { useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
 import { SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
-import RunningQueue from './RunningQueue';
+import RecentSimulations from './RecentSimulations';
 import { RunSimulationForm, RunSimulationFormProps } from './RunSimulationForm';
 
 export default function RunSimulationPanel(props: RunSimulationFormProps) {
@@ -23,7 +23,7 @@ export default function RunSimulationPanel(props: RunSimulationFormProps) {
 	return showRunForm ? (
 		<>
 			<RunSimulationForm {...props} />
-			<RunningQueue />
+			<RecentSimulations />
 		</>
 	) : (
 		<StyledAccordion

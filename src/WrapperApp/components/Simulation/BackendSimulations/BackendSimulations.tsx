@@ -7,7 +7,8 @@ import { SimulatorType } from '../../../../types/RequestTypes';
 import {
 	JobStatusData,
 	SimulationInfo,
-	SimulationInputFiles
+	SimulationInputFiles,
+	ValidStatusStates
 } from '../../../../types/ResponseTypes';
 import useIntervalAsync from '../../../../util/hooks/useIntervalAsync';
 import DeleteSimulationModal from '../Modal/DeleteSimulationModal';
@@ -52,7 +53,8 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 		controller,
 		trackedId,
 		isBackendAlive,
-		setBackendAlive
+		setBackendAlive,
+		statusStates: ValidStatusStates
 	};
 
 	const handlers: SimulationHandlers = {

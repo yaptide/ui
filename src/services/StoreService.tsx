@@ -4,8 +4,22 @@ import * as THREE from 'three';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
 import { SimulatorType } from '../types/RequestTypes';
+import { SimulationInfo } from '../types/ResponseTypes';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 import { FullSimulationData } from './ShSimulatorService';
+
+export interface DataWithSource<S extends string, T> {
+	source: S;
+	data: T;
+}
+
+// This helps us to decide whether to jump to Results page abruptly
+// when user manually select simulations (= onSelect),
+// or not, when simulation was loaded / finished in the background (= onRunFinish / onLoad)
+export type ResultsSimulationDataWithSource = DataWithSource<
+	'onSelect' | 'onRunFinish' | 'onLoad',
+	FullSimulationData
+>;
 
 export interface StoreContext {
 	yaptideEditor?: YaptideEditor;
@@ -13,10 +27,12 @@ export interface StoreContext {
 	initializeEditor: (container: HTMLDivElement) => void;
 	trackedId?: string;
 	setTrackedId: Dispatch<SetStateAction<string | undefined>>;
-	resultsSimulationData?: FullSimulationData;
-	setResultsSimulationData: Dispatch<SetStateAction<FullSimulationData | undefined>>;
+	resultsSimulationData?: ResultsSimulationDataWithSource;
+	setResultsSimulationData: Dispatch<SetStateAction<ResultsSimulationDataWithSource | undefined>>;
 	localResultsSimulationData?: FullSimulationData[];
 	setLocalResultsSimulationData: Dispatch<SetStateAction<FullSimulationData[]>>;
+	simulationJobIdsSubmittedInSession: string[];
+	setSimulationJobIdsSubmittedInSession: Dispatch<SetStateAction<string[]>>;
 }
 
 const [useStore, StoreContextProvider] = createGenericContext<StoreContext>();
@@ -29,9 +45,15 @@ declare global {
 
 const Store = ({ children }: GenericContextProviderProps) => {
 	const [editor, setEditor] = useState<YaptideEditor>();
-	const [resultsSimulationData, setResultsSimulationData] = useState<FullSimulationData>();
+	const [resultsSimulationData, setResultsSimulationData] =
+		useState<ResultsSimulationDataWithSource>();
+
 	const [localResultsSimulationData, setLocalResultsSimulationData] = useState<
 		FullSimulationData[]
+	>([]);
+
+	const [simulationJobIdsSubmittedInSession, setSimulationJobIdsSubmittedInSession] = useState<
+		string[]
 	>([]);
 	const [trackedId, setTrackedId] = useState<string>();
 
@@ -147,7 +169,9 @@ const Store = ({ children }: GenericContextProviderProps) => {
 		resultsSimulationData,
 		setResultsSimulationData,
 		localResultsSimulationData,
-		setLocalResultsSimulationData
+		setLocalResultsSimulationData,
+		simulationJobIdsSubmittedInSession,
+		setSimulationJobIdsSubmittedInSession
 	};
 
 	return <StoreContextProvider value={value}>{children}</StoreContextProvider>;

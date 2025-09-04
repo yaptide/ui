@@ -11,7 +11,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 
 import { Estimator, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
 import { useDialog } from '../../../services/DialogService';
-import { useShSimulation } from '../../../services/ShSimulatorService';
+import { FullSimulationData, useShSimulation } from '../../../services/ShSimulatorService';
 import { useStore } from '../../../services/StoreService';
 import { InfoTooltip } from '../../../shared/components/tooltip/InfoTooltip';
 import { titleToKebabCase } from '../../../ThreeEditor/components/Dialog/CustomDialog';
@@ -23,15 +23,12 @@ export interface EstimatorResults extends Estimator {
 	gridPages: Page[];
 }
 
-function ResultsPanel() {
+function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 	const theme = useTheme();
 	const { getJobResults } = useShSimulation();
 	const { open: openSaveFileDialog } = useDialog('saveFile');
-	const {
-		yaptideEditor,
-		resultsSimulationData: simulation,
-		setResultsSimulationData
-	} = useStore();
+	const { yaptideEditor, setResultsSimulationData } = useStore();
+	const { simulation } = props;
 
 	const [tabsValue, setTabsValue] = useState(0);
 	const [estimatorsResults, setEstimatorsResults] = useState<EstimatorResults[]>([]);

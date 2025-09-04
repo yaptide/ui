@@ -11,22 +11,12 @@ import {
 import { millisecondsToTimeString } from '../../../../util/time';
 
 interface SimulationCardHeaderProps {
-	displayDuration: string | boolean;
-	duration: number;
-	endTime?: string | undefined;
-	formatedEndDate: string;
-	formatedStartDate: string;
 	handleDelete?: (jobId: string) => void;
 	handleRefresh?: (jobId: string) => void;
 	simulationStatus: Omit<JobUnknownStatus & SimulationInfo, never>;
 }
 
 export const SimulationCardHeader = ({
-	displayDuration,
-	duration,
-	endTime,
-	formatedEndDate,
-	formatedStartDate,
 	handleDelete,
 	handleRefresh,
 	simulationStatus
@@ -34,17 +24,7 @@ export const SimulationCardHeader = ({
 	return (
 		<CardHeader
 			title={`${simulationStatus.title}`}
-			subheader={
-				<>
-					<Box>Start: {formatedStartDate}</Box>
-					{endTime ? <Box>End: {formatedEndDate}</Box> : ''}
-					{displayDuration ? (
-						<Box>Duration: {millisecondsToTimeString(duration)}</Box>
-					) : (
-						''
-					)}
-				</>
-			}
+			sx={{ p: 1 }}
 			action={
 				handleDelete &&
 				(currentJobStatusData[StatusState.COMPLETED](simulationStatus) ||

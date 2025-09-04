@@ -4,6 +4,7 @@ import { SyntheticEvent, useEffect, useState } from 'react';
 
 import { useConfig } from '../config/ConfigService';
 import { useAuth } from '../services/AuthService';
+import { FullSimulationData } from '../services/ShSimulatorService';
 import { useStore } from '../services/StoreService';
 import { EditorToolbar } from '../ThreeEditor/components/Editor/EditorToolbar';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
@@ -39,6 +40,9 @@ const StyledAppGrid = styled(Box)(({ theme }) => ({
 function WrapperApp() {
 	const { demoMode } = useConfig();
 	const { yaptideEditor, resultsSimulationData } = useStore();
+	const [displayedSimulationData, setDisplayedSimulationData] = useState<
+		FullSimulationData | undefined
+	>();
 	const { isAuthorized, logout } = useAuth();
 	const [open, setOpen] = useState(true);
 	const [tabsValue, setTabsValue] = useState('editor');
@@ -69,8 +73,18 @@ function WrapperApp() {
 	}, [demoMode, isAuthorized]);
 
 	useEffect(() => {
-		if (resultsSimulationData)
-			setTabsValue(prev => (prev === 'simulations' ? 'results' : prev)); // switch tab to 'results' if user is on 'simulations' tab
+		if (
+			tabsValue === 'simulations' || // simulations finishes when user has Simulations tab open
+			resultsSimulationData?.source === 'onSelect' || // manually selected the results to display
+			resultsSimulationData?.source === 'onLoad' // user loads different project
+		) {
+			setDisplayedSimulationData(resultsSimulationData?.data);
+
+			if (resultsSimulationData?.source !== 'onLoad') {
+				// when loading new project, we don't want to jump to results
+				setTabsValue('results');
+			}
+		}
 	}, [resultsSimulationData]);
 
 	useEffect(() => {
@@ -222,7 +236,7 @@ function WrapperApp() {
 					}}
 					forTabs={['results']}
 					persistent>
-					<ResultsPanel />
+					<ResultsPanel simulation={displayedSimulationData} />
 				</TabPanel>
 
 				{/* Includes simulations sidebar to view running simulations, switch between partial results, or stop and rerun */}
