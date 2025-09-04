@@ -73,9 +73,17 @@ function WrapperApp() {
 	}, [demoMode, isAuthorized]);
 
 	useEffect(() => {
-		if (tabsValue === 'simulations' || resultsSimulationData?.source === 'onSelect') {
+		if (
+			tabsValue === 'simulations' || // simulations finishes when user has Simulations tab open
+			resultsSimulationData?.source === 'onSelect' || // manually selected the results to display
+			resultsSimulationData?.source === 'onLoad' // user loads different project
+		) {
 			setDisplayedSimulationData(resultsSimulationData?.data);
-			setTabsValue('results');
+
+			if (resultsSimulationData?.source !== 'onLoad') {
+				// when loading new project, we don't want to jump to results
+				setTabsValue('results');
+			}
 		}
 	}, [resultsSimulationData]);
 

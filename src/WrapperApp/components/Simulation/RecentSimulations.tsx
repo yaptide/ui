@@ -97,14 +97,10 @@ export default function RecentSimulations() {
 
 	useIntervalAsync(updateSimulationData, simulationDataInterval, simulationInfo.length > 0);
 
+	const jobIdsInSession = new Set(simulationJobIdsSubmittedInSession);
 	const simulationsToDisplay = simulationsStatusData
 		? simulationsStatusData
-				.filter(
-					statusData =>
-						simulationJobIdsSubmittedInSession.findIndex(
-							jobId => jobId === statusData.jobId
-						) >= 0
-				)
+				.filter(statusData => jobIdsInSession.has(statusData.jobId))
 				.slice(0, 5)
 		: [];
 

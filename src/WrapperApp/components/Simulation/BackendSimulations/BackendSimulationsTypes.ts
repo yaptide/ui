@@ -54,7 +54,9 @@ export interface SimulationState {
 	simulationsStatusData: Omit<JobUnknownStatus & SimulationInfo, never>[] | undefined;
 	setSimulationInfo: React.Dispatch<React.SetStateAction<JobStatusData[]>>;
 	setSimulationsStatusData: React.Dispatch<React.SetStateAction<JobStatusData[] | undefined>>;
-	setResultsSimulationData: React.Dispatch<ResultsSimulationDataWithSource | undefined>;
+	setResultsSimulationData: React.Dispatch<
+		React.SetStateAction<ResultsSimulationDataWithSource | undefined>
+	>;
 	setLocalResultsSimulationData: React.Dispatch<React.SetStateAction<FullSimulationData[]>>;
 	goToResults?: () => void;
 	setInputFiles: (inputFiles: SimulationInputFiles | undefined) => void;
