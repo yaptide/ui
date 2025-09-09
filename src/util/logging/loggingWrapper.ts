@@ -13,11 +13,7 @@ type LogEntry = {
 };
 
 const logBuffer: LogEntry[] = [];
-// const MAX_LOGS = 20;
-// const FLUSH_INTERVAL = 5000;
-
 const logDedupMap: Map<string, number> = new Map();
-// const DEDUP_WINDOW_MS = 10000; // 10 seconds
 
 const originalConsole = {
 	log: console.log,
@@ -84,9 +80,7 @@ export const initializeLogging = (url: string) => {
 	intervalId = setInterval(flushLogs, FLUSH_INTERVAL);
 	window.addEventListener('beforeunload', flushLogs);
 
-	const levels = ['log', 'error', 'warn', 'info'] as const;
-
-	type LogLevel = (typeof levels)[number];
+	const levels = Object.keys(originalConsole) as Array<keyof typeof originalConsole>;
 
 	levels.forEach(level => {
 		console[level] = function (...args: unknown[]) {
