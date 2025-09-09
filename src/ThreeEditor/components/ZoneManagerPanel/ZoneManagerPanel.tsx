@@ -307,7 +307,8 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 				maxHeight: PANEL_HEIGHT,
 				gridTemplateRows: '100%',
 				gridTemplateColumns: '40px 1fr',
-				margin: '-8px -16px -16px -16px'
+				margin: '-8px -16px -16px -16px',
+				position: 'relative'
 			}}>
 			<Tabs
 				orientation='vertical'
@@ -420,7 +421,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 					sx={{
 						padding: '36px 24px',
 						boxSizing: 'border-box',
-						width: '60%'
+						width: '80%'
 					}}>
 					{backdropOpen && (
 						<GeometryIdSelect
