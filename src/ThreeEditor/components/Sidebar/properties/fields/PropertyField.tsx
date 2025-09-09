@@ -77,6 +77,7 @@ interface TextPropertyFieldProps {
 	label: string;
 	value: string;
 	onChange: (value: string) => void;
+	onBlur?: () => void;
 }
 
 export function TextPropertyField(props: TextPropertyFieldProps) {
@@ -87,6 +88,7 @@ export function TextPropertyField(props: TextPropertyFieldProps) {
 				variant='outlined'
 				value={props.value}
 				onChange={event => props.onChange(event.target.value)}
+				onBlur={props.onBlur}
 			/>
 		</PropertyField>
 	);
