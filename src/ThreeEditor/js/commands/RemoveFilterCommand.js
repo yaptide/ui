@@ -10,12 +10,12 @@ export class RemoveFilterCommand {
 	}
 
 	execute() {
-		this.editor.detectorManager.removeFilter(this.object);
+		this.editor.scoringManager.removeFilter(this.object);
 		this.editor.deselect();
 	}
 
 	undo() {
-		this.editor.detectorManager.addFilter(this.object);
+		this.editor.scoringManager.addFilter(this.object);
 		this.editor.select(this.object);
 	}
 
@@ -29,7 +29,7 @@ export class RemoveFilterCommand {
 	fromSerialized(json) {
 		super.fromSerialized(json);
 		this.object =
-			this.editor.detectorManager.getFilterByUuid(json.object.uuid) ??
-			this.editor.detectorManager.createFilter().fromSerialized(json.object);
+			this.editor.scoringManager.getFilterByUuid(json.object.uuid) ??
+			this.editor.scoringManager.createFilter().fromSerialized(json.object);
 	}
 }

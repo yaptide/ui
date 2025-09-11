@@ -35,13 +35,20 @@ export function ObjectInfo(props: { editor: YaptideEditor; object: Object3D }) {
 						value={watchedObject.name}
 						onChange={value => {
 							editor.execute(
-								new SetValueCommand(
-									editor,
-									watchedObject.object,
-									'name',
-									value.length > 0 ? value : watchedObject.type
-								)
+								new SetValueCommand(editor, watchedObject.object, 'name', value)
 							);
+						}}
+						onBlur={() => {
+							if (watchedObject.name.length == 0) {
+								editor.execute(
+									new SetValueCommand(
+										editor,
+										watchedObject.object,
+										'name',
+										watchedObject.type
+									)
+								);
+							}
 						}}
 					/>
 					{showScoringType && (

@@ -84,36 +84,18 @@ function OperationToIcon(operation: Operation, showLabel: boolean) {
 	}
 }
 
-function OperationToTooltip(operation: Operation, objectName: string = 'object') {
+function OperationToTooltip(operation: Operation, objectName?: string) {
 	switch (operation) {
 		case 'intersection':
 			return (
 				<Typography>
-					{'Intersect'}
-					<Chip
-						label={objectName}
-						size='small'
-						color='primary'
-						sx={{
-							margin: '0 6px'
-						}}
-					/>
-					{'with a zone area'}
+					Intersect {objectName ? `"${objectName}"` : 'object'} with a zone area
 				</Typography>
 			);
 		case 'subtraction':
 			return (
 				<Typography>
-					{'Subtract'}
-					<Chip
-						label={objectName}
-						size='small'
-						color='primary'
-						sx={{
-							margin: '0 6px'
-						}}
-					/>
-					{'from a zone area'}
+					Subtract {objectName ? `"${objectName}"` : 'object'} from a zone area
 				</Typography>
 			);
 		default:

@@ -73,7 +73,7 @@ export interface AuthContext {
 }
 
 const [useAuth, AuthContextProvider] = createGenericContext<AuthContext>();
-const ignored_messages = ['No token provided'];
+const ignored_messages = ['No token provided', 'Job with provided ID does not exist'];
 
 const Auth = ({ children }: GenericContextProviderProps) => {
 	const { backendUrl, demoMode } = useConfig();
