@@ -1,4 +1,4 @@
-import ky from 'ky';
+import ky, { KyInstance } from 'ky';
 
 import { DEDUP_WINDOW_MS, FLUSH_INTERVAL, MAX_LOGS } from '../../config/ConfigService';
 // Assuming these constants are defined in a separate file
@@ -9,7 +9,6 @@ type LogEntry = {
 	level: string;
 	message: string;
 	browser: string;
-	user_ip: string;
 };
 
 const logBuffer: LogEntry[] = [];
@@ -38,47 +37,57 @@ const shouldLog = (message: string): boolean => {
 	return true;
 };
 
-const flushLogs = async () => {
+const flushLogs = async (kyRef: KyInstance) => {
 	if (!logBuffer.length) return;
 	const logsToSend = [...logBuffer];
 	logBuffer.length = 0;
 
-	ky.post(backendUrl + '/logs', {
-		json: { logs: logsToSend },
-		credentials: 'include'
-	})
+	kyRef
+		.post('logs', {
+			json: { logs: logsToSend }
+		})
 		.then(() => {
 			originalConsole.log('Logs sent successfully:', logsToSend);
 		})
 		.catch(error => {
 			originalConsole.warn('Failed to send logs:', error);
-			logBuffer.unshift(...logsToSend);
+
+			if (logBuffer.length + logsToSend.length <= MAX_LOGS * 5) {
+				logBuffer.unshift(...logsToSend);
+			} else {
+				const excess = logBuffer.length + logsToSend.length - MAX_LOGS * 5;
+				originalConsole.warn(`Dropping ${excess} oldest logs to prevent overflow`);
+
+				//remove oldest logs
+				logsToSend.splice(0, excess);
+				logBuffer.unshift(...logsToSend);
+			}
 		});
 };
 
-export function stopLogSending() {
-	flushLogs(); // Ensure any remaining logs are sent before stopping
+let intervalId: ReturnType<typeof setInterval> | null;
+
+export function stopLogSending(kyRef: KyInstance) {
+	flushLogs(kyRef); // Ensure any remaining logs are sent before stopping
 
 	if (intervalId) {
 		clearInterval(intervalId);
 		intervalId = null;
 	}
 
-	window.removeEventListener('beforeunload', flushLogs);
+	window.removeEventListener('beforeunload', () => flushLogs(kyRef));
 	originalConsole.log('Stopped log sending');
 }
 
-let intervalId: ReturnType<typeof setInterval> | null;
-
-export const initializeLogging = (url: string) => {
+export const initializeLogging = (url: string, kyRef: KyInstance) => {
 	originalConsole.log('Initializing logging');
 
 	backendUrl = url;
 
 	if (intervalId) return; // Prevent multiple initializations
 
-	intervalId = setInterval(flushLogs, FLUSH_INTERVAL);
-	window.addEventListener('beforeunload', flushLogs);
+	intervalId = setInterval(() => flushLogs(kyRef), FLUSH_INTERVAL);
+	window.addEventListener('beforeunload', () => flushLogs(kyRef));
 
 	const levels = Object.keys(originalConsole) as Array<keyof typeof originalConsole>;
 
@@ -93,11 +102,10 @@ export const initializeLogging = (url: string) => {
 					timestamp: new Date().toISOString(),
 					level: level,
 					message: message,
-					browser: navigator.userAgent, // this may require some sanitization
-					user_ip: '' // not sure how to fetch the IP
+					browser: navigator.userAgent // this may require some sanitization
 				});
 
-				if (logBuffer.length >= MAX_LOGS) flushLogs();
+				if (logBuffer.length >= MAX_LOGS) flushLogs(kyRef);
 			}
 
 			originalConsole[level].apply(console, args);

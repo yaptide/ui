@@ -217,7 +217,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 
 				return sameUser ? prev : { username, source: 'keycloak' };
 			});
-			initializeLogging(backendUrl);
+			initializeLogging(backendUrl, kyRef);
 			setRefreshInterval(getRefreshDelay(accessExp));
 		};
 
@@ -284,7 +284,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 		setUser(null);
 		setRefreshInterval(undefined);
 		setKeyCloakInterval(undefined);
-		stopLogSending();
+		stopLogSending(kyRef);
 
 		if (initialized && keycloak?.authenticated) keycloak.logout();
 		kyRef
@@ -304,7 +304,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 					setUser({ username });
 					setRefreshInterval(getRefreshDelay(accessExp));
 					enqueueSnackbar('Logged in.', { variant: 'success' });
-					initializeLogging(backendUrl);
+					initializeLogging(backendUrl, kyRef);
 				})
 				.catch((_: HTTPError) => {
 					enqueueSnackbar('Login failed.', { variant: 'error' });
