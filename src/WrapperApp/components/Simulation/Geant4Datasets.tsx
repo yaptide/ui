@@ -5,7 +5,6 @@ import {
 	AccordionSummary,
 	Box,
 	Button,
-	CircularProgress,
 	LinearProgress,
 	Typography,
 	useTheme
@@ -30,11 +29,27 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 
 	return (
 		<Box sx={{ pb: 1 }}>
-			<Typography>{status.name}</Typography>
-			{status.status === DatasetDownloadStatus.DONE && <CheckIcon />}
+			<Box sx={{ display: 'flex', alignItems: 'center' }}>
+				<Typography>{status.name}</Typography>
+				{status.status === DatasetDownloadStatus.DONE && (
+					<CheckIcon
+						color='primary'
+						sx={{ marginLeft: 1 }}
+					/>
+				)}
+			</Box>
 			{(status.status === DatasetDownloadStatus.DOWNLOADING ||
 				status.status === DatasetDownloadStatus.PROCESSING) && (
-				<LinearProgress value={status.done! / status.total!} />
+				<Box sx={{ display: 'flex', alignItems: 'center' }}>
+					<LinearProgress
+						variant='determinate'
+						value={(status.done! / status.total!) * 100}
+						sx={{ flexGrow: 1, marginRight: 1 }}
+					/>
+					<Typography sx={{ width: 48 }}>
+						{Math.round((status.done! / status.total!) * 10000) / 100}%
+					</Typography>
+				</Box>
 			)}
 			{status.status === DatasetDownloadStatus.IDLE && <LinearProgress />}
 		</Box>

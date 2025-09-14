@@ -22,7 +22,7 @@ export interface DatasetStatus {
 }
 
 const downloadRegex = /Downloading data... \((\d+)\/(\d+)\)/g;
-const processingRegex = /Processing... \((\d+)\/(\d+)\)/g;
+const processingRegex = /Preparing... \((\d+)\/(\d+)\)/g;
 
 export function useDatasetDownloadManager() {
 	const [managerState, setManagerState] = useState<DownloadManagerStatus>(DownloadManagerStatus.IDLE);
@@ -43,9 +43,12 @@ export function useDatasetDownloadManager() {
 	);
 
 	useEffect(() => {
-		const worker = new Worker(new URL('./geantWorker.worker.ts', import.meta.url));
+		setWorker(new Worker(new URL('./geantWorker.worker.ts', import.meta.url)));
+	}, []);
+
+	useEffect(() => {
 		let done = '', total = '';
-		worker.onmessage = (event) => {
+		const handler = (event: MessageEvent) => {
 			switch (event.data.type) {
 				case 'status':
 					switch (true) {
@@ -63,7 +66,7 @@ export function useDatasetDownloadManager() {
 								[name]: { name, status: DatasetDownloadStatus.IDLE }
 							}));
 							break;
-						case event.data.data?.startsWith('Downloading data'):
+						case event.data.data?.startsWith('Downloading data... ('):
 							[, done, total] = Array.from(event.data.data.matchAll(downloadRegex))[0] as string[];
 							setDatasetStates(states => ({
 								...states,
@@ -75,7 +78,7 @@ export function useDatasetDownloadManager() {
 								}
 							}));
 							break;
-						case event.data.data?.startsWith('Processing'):
+						case event.data.data?.startsWith('Preparing... ('):
 							[, done, total] = Array.from(event.data.data.matchAll(processingRegex))[0] as string[];
 							setDatasetStates(states => ({
 								...states,
@@ -106,8 +109,9 @@ export function useDatasetDownloadManager() {
 					break;
 			}
 		};
-		setWorker(worker);
-	}, []);
+		worker?.addEventListener('message', handler);
+		return () => worker?.removeEventListener('message', handler);
+	}, [worker, dataset]);
 
 	return { managerState, datasetStates: Object.values(datasetStates), startDownload };
 }
