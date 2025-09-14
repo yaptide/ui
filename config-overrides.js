@@ -1,3 +1,5 @@
+const webpack = require('webpack');
+
 module.exports = function override(webpackConfig) {
 	// react-dnd
 	webpackConfig.module.rules.unshift({
@@ -6,6 +8,12 @@ module.exports = function override(webpackConfig) {
 			fullySpecified: false // disable the behaviour
 		}
 	});
+
+	webpackConfig.plugins.push(
+		new webpack.IgnorePlugin({
+			resourceRegExp: /geant4_wasm\.wasm$/
+		})
+	);
 
 	// react-dnd
 	webpackConfig.resolve.alias = {

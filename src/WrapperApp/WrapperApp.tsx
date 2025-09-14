@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import { SyntheticEvent, useEffect, useState } from 'react';
 
 import { useConfig } from '../config/ConfigService';
+import { useDatasetDownloadManager } from '../libs/geant4_web/DatasetDownloadManager';
 import { useAuth } from '../services/AuthService';
 import { FullSimulationData } from '../services/ShSimulatorService';
 import { useStore } from '../services/StoreService';
@@ -49,6 +50,12 @@ function WrapperApp() {
 
 	const [providedInputFiles, setProvidedInputFiles] = useState<SimulationInputFiles>();
 	const [highlightRunForm, setHighLightRunForm] = useState(false);
+
+	const {
+		managerState: geant4DownloadManagerState,
+		datasetStates: geant4DatasetStates,
+		startDownload: geant4DatasetDownload
+	} = useDatasetDownloadManager();
 
 	useEffect(() => {
 		if (Object.keys(providedInputFiles ?? {}).length > 0) {
@@ -206,6 +213,9 @@ function WrapperApp() {
 						highlight={highlightRunForm}
 						clearInputFiles={() => setProvidedInputFiles(undefined)}
 						runSimulation={runSimulation}
+						geant4DownloadManagerState={geant4DownloadManagerState}
+						geant4DatasetDownloadStart={geant4DatasetDownload}
+						geant4DatasetStates={geant4DatasetStates}
 					/>
 				</TabPanel>
 				{/* end Simulations screen */}
