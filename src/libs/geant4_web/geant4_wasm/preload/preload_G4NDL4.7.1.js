@@ -56,8 +56,9 @@ return new Promise((loadDataResolve, loadDataReject) => {
             totalSize += download.total;
           }
 
-          Module['setStatus']?.(`Downloading data... (${totalLoaded}/${totalSize})`);
+          Module['setStatus']?.(`DL (G4NDL) (${totalLoaded}/${totalSize})`);
         }
+        Module['setStatus']?.(`END DL (G4NDL)`);
 
         const packageData = new Uint8Array(chunks.map((c) => c.length).reduce((a, b) => a + b, 0));
         let offset = 0;
@@ -360,6 +361,7 @@ loadDataResolve();
           Module['preloadResults'][PACKAGE_NAME] = {fromCache: useCached};
           if (useCached) {
             processPackageData(await fetchCachedPackage(db, PACKAGE_PATH + PACKAGE_NAME, pkgMetadata));
+            Module['setStatus']?.(`END DL (G4NDL)`);
           } else {
             var packageData = await fetchRemotePackage(REMOTE_PACKAGE_NAME, REMOTE_PACKAGE_SIZE);
             try {

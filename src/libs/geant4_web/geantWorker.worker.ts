@@ -60,7 +60,7 @@ var preModule = {
     totalDependencies: 0,
     monitorRunDependencies: function (left: any) {
         this.totalDependencies = Math.max(this.totalDependencies, left);
-        preModule.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        preModule.setStatus(left ? 'PROCESS (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
     },
     locateFile: function (path: any, prefix: any) {
         // if it's a mem init file, use a custom dir
@@ -93,24 +93,17 @@ ctx.onmessage = async (event: MessageEvent) => {
             const res = await mod.then(async (module) => {
                 
                 console.log("Initializing lazy files...");
-                postMessage({ type: 'init', data: "afsdafgdfghadsffadf" });
                 try {
-                    postMessage({ type: 'status', data: 'Name: G4ENSDFSTATE' });
                     await initG4ENSDFSTATE(module);
-                    postMessage({ type: 'status', data: 'Name: G4EMLOW' });
                     await initG4EMLOW(module);
-                    postMessage({ type: 'status', data: 'Name: G4NDL' });
                     await initG4NDL(module);
-                    postMessage({ type: 'status', data: 'Name: G4PARTICLEXS' });
                     await initG4PARTICLEXS(module);
-                    postMessage({ type: 'status', data: 'Name: G4SAIDDATA' });
                     await initG4SAIDDATA(module);
-                    postMessage({ type: 'status', data: 'Name: PhotonEvaporation' });
                     await initPhotoEvaporation(module);
                 } catch (error: unknown) {
                     console.error("Error initializing lazy files:", (error as Error).message);
                 }
-                postMessage({ type: 'status', message: 'Datasets initialized' });
+                postMessage({ type: 'status', data: 'INIT END' });
             });
         break;
         }

@@ -21,13 +21,15 @@ export interface DatasetStatus {
 	total?: number,
 }
 
-const downloadRegex = /Downloading data... \((\d+)\/(\d+)\)/g;
-const processingRegex = /Preparing... \((\d+)\/(\d+)\)/g;
+const idleRegex = /IDLE \((\w+)\)/g;
+const downloadEndRegex = /END DL \((\w+)\)/g;
+const downloadRegex = /DL \((\w+)\) \((\d+)\/(\d+)\)/g;
+const processingRegex = /PROCESS \((\d+)\/(\d+)\)/g;
 
 export function useDatasetDownloadManager() {
 	const [managerState, setManagerState] = useState<DownloadManagerStatus>(DownloadManagerStatus.IDLE);
 	const [datasetStates, setDatasetStates] = useState<Record<string, DatasetStatus>>({});
-	const [dataset, setDataset] = useState<string | undefined>();
+	const [processingState, setProcessingState] = useState<DatasetStatus | undefined>(undefined);
 	const [idle, setIdle] = useState<boolean>(true);
 	const [worker, setWorker] = useState<Worker>();
 
@@ -35,6 +37,7 @@ export function useDatasetDownloadManager() {
 		idle
 			? () => {
 				worker?.postMessage({ type: 'loadDepsData' });
+				setProcessingState({ name: 'Processing downloaded files', status: DatasetDownloadStatus.PROCESSING, done: 0, total: 1 });
 				setManagerState(DownloadManagerStatus.WORKING);
 				setIdle(false);
 			}
@@ -47,60 +50,59 @@ export function useDatasetDownloadManager() {
 	}, []);
 
 	useEffect(() => {
-		let done = '', total = '';
+		let done = '', total = '', dataset = '';
 		const handler = (event: MessageEvent) => {
 			switch (event.data.type) {
 				case 'status':
 					switch (true) {
-						case event.data.data?.startsWith('Name'):
-							if (dataset) {
-								setDatasetStates(states => ({
-									...states,
-									[dataset]: { name: dataset, status: DatasetDownloadStatus.DONE }
-								}));
-							}
-							const name = event.data.data.slice(6, -1);
-							setDataset(name);
+						case event.data.data?.startsWith('IDLE'):
+							[, dataset] = Array.from(event.data.data.matchAll(idleRegex))[0] as string[];
 							setDatasetStates(states => ({
 								...states,
-								[name]: { name, status: DatasetDownloadStatus.IDLE }
+								[dataset]: {
+									name: dataset,
+									status: states[dataset] ? states[dataset].status : DatasetDownloadStatus.IDLE,
+								}
 							}));
 							break;
-						case event.data.data?.startsWith('Downloading data... ('):
-							[, done, total] = Array.from(event.data.data.matchAll(downloadRegex))[0] as string[];
+						case event.data.data?.startsWith('DL'):
+							[, dataset, done, total] = Array.from(event.data.data.matchAll(downloadRegex))[0] as string[];
 							setDatasetStates(states => ({
 								...states,
-								[dataset!]: {
-									name: dataset!,
+								[dataset]: {
+									name: dataset,
 									status: DatasetDownloadStatus.DOWNLOADING,
 									done: parseInt(done),
 									total: parseInt(total)
 								}
 							}));
 							break;
-						case event.data.data?.startsWith('Preparing... ('):
-							[, done, total] = Array.from(event.data.data.matchAll(processingRegex))[0] as string[];
+						case event.data.data?.startsWith('END DL'):
+							[, dataset] = Array.from(event.data.data.matchAll(downloadEndRegex))[0] as string[];
+							console.log('end dl', dataset);
 							setDatasetStates(states => ({
 								...states,
-								[dataset!]: {
-									name: dataset!,
-									status: DatasetDownloadStatus.PROCESSING,
+								[dataset]: {
+									name: dataset,
+									status: DatasetDownloadStatus.DONE,
 									done: parseInt(done),
 									total: parseInt(total)
 								}
 							}));
 							break;
-						case event.data.data?.startsWith('Datasets initialized'):
-							setManagerState(DownloadManagerStatus.FINISHED);
+						case event.data.data?.startsWith('PROCESS'):
+							[, done, total] = Array.from(event.data.data.matchAll(processingRegex))[0] as string[];
+							setProcessingState({
+								name: 'Processing downloaded files',
+								status: DatasetDownloadStatus.PROCESSING,
+								done: parseInt(done),
+								total: parseInt(total)
+							})
 							break;
-						default:
-							console.log('Status: ', event.data.data);
-							if (dataset) {
-								setDatasetStates(states => ({
-									...states,
-									[dataset!]: { name: dataset!, status: DatasetDownloadStatus.IDLE }
-								}));
-							}
+						case event.data.data?.startsWith('INIT END'):
+							setManagerState(DownloadManagerStatus.FINISHED);
+							setDatasetStates(states => Object.fromEntries(Object.entries(states).map(([k, v], _) => [k, { ...v, status: DatasetDownloadStatus.DONE }])));
+							setProcessingState({ name: 'Processing downloaded files', status: DatasetDownloadStatus.DONE });
 							break;
 					}
 					break;
@@ -111,7 +113,12 @@ export function useDatasetDownloadManager() {
 		};
 		worker?.addEventListener('message', handler);
 		return () => worker?.removeEventListener('message', handler);
-	}, [worker, dataset]);
+	}, [worker]);
 
-	return { managerState, datasetStates: Object.values(datasetStates), startDownload };
+	let allStates = Object.values(datasetStates);
+	if (processingState) {
+		allStates.push(processingState);
+	}
+
+	return { managerState, datasetStates: allStates, startDownload };
 }
