@@ -1,8 +1,6 @@
 import ky, { KyInstance } from 'ky';
 
 import { DEDUP_WINDOW_MS, FLUSH_INTERVAL, MAX_LOGS } from '../../config/ConfigService';
-// Assuming these constants are defined in a separate file
-let backendUrl = '';
 
 type LogEntry = {
 	timestamp: string;
@@ -79,10 +77,8 @@ export function stopLogSending(kyRef: KyInstance) {
 	originalConsole.log('Stopped log sending');
 }
 
-export const initializeLogging = (url: string, kyRef: KyInstance) => {
+export const initializeLogging = (kyRef: KyInstance) => {
 	originalConsole.log('Initializing logging');
-
-	backendUrl = url;
 
 	if (intervalId) return; // Prevent multiple initializations
 
