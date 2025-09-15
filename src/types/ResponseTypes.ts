@@ -51,6 +51,13 @@ export const _defaultFlukaInputFiles = {
 	'fl_sim.inp': ''
 } as const;
 
+export const _defaultGeant4Files = {
+	'geometry.xml': '',
+	'run.mac': ''
+} as const;
+
+export const _orderedGeant4InputFilesNames = ['info.json', 'geometry.xml', 'run.mac'] as const;
+
 export function isKnownInputFile(name: string): name is ShInputFilesNames {
 	return _orderedShInputFilesNames.includes(name as ShInputFilesNames);
 }
@@ -58,6 +65,7 @@ export function isKnownInputFile(name: string): name is ShInputFilesNames {
 export type ShInputFilesNames = (typeof _orderedShInputFilesNames)[number];
 export type TopasInputFilesNames = (typeof _orderedTopasInputFilesNames)[number];
 export type FlukaInputFilesNames = (typeof _orderedFlukaInputFilesNames)[number];
+export type Geant4InputFilesNames = (typeof _orderedGeant4InputFilesNames)[number];
 
 export type InputFilesRecord<FileNames extends string, OptionalNames extends string> = Omit<
 	{
@@ -73,10 +81,12 @@ export type ShInputFilesRecord = InputFilesRecord<
 >;
 type TopasInputFilesRecord = InputFilesRecord<TopasInputFilesNames, 'info.json'>;
 type FlukaInputFilesRecord = InputFilesRecord<FlukaInputFilesNames, 'info.json'>;
+type Geant4InputFilesRecord = InputFilesRecord<Geant4InputFilesNames, 'info.json'>;
 export type SimulationInputFiles =
 	| ShInputFilesRecord
 	| TopasInputFilesRecord
-	| FlukaInputFilesRecord;
+	| FlukaInputFilesRecord
+	| Geant4InputFilesRecord;
 
 export type TaskTime = {
 	hours: string;

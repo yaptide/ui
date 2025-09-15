@@ -12,6 +12,7 @@ import { addCustomStoppingPowerTableToEditorJSON } from '../../../ThreeEditor/Si
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
 	_defaultFlukaInputFiles,
+	_defaultGeant4Files,
 	_defaultShInputFiles,
 	SimulationInputFiles
 } from '../../../types/ResponseTypes';
@@ -36,6 +37,10 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 				break;
 			case SimulatorType.FLUKA:
 				setInputFiles(_defaultFlukaInputFiles);
+
+				break;
+			case SimulatorType.GEANT4:
+				setInputFiles(_defaultGeant4Files);
 
 				break;
 			default:
@@ -97,19 +102,19 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 		[onClickGenerate]
 	);
 
-	let acceptedFiles = '';
+	let acceptedFiles;
 
 	switch (generateForSimulator) {
 		case SimulatorType.SHIELDHIT:
 			acceptedFiles = '.dat';
 
 			break;
-		// In current version of yaptide, topas is not supported
-		// case SimulatorType.TOPAS:
-		// 	acceptedFiles = '.txt';
-		// 	break;
 		case SimulatorType.FLUKA:
 			acceptedFiles = '.inp';
+
+			break;
+		case SimulatorType.GEANT4:
+			acceptedFiles = '.xml,.mac';
 
 			break;
 		default:
