@@ -2,53 +2,52 @@
 	"metadata": {
 		"version": "0.12",
 		"type": "Editor",
-		"generator": "YaptideEditor.toJSON"
+		"generator": "YaptideEditor.toSerialized"
 	},
 	"project": {
-		"title": "Empty Geant4 project",
-		"description": "Blank project for Geant4",
+		"title": "Proton pencil beam in water",
+		"description": "Proton pencil beam with initial kinetic energy 150 MeV and 1% energy spread.\nThe target is a cylindrical water phantom with a radius of 10 cm and a length of 20 cm.\n\nWe score dose from all particles and fluence according to primary particles (protons), secondary protons, and all protons.",
 		"viewManager": {
 			"ViewPanelXY": {
 				"cameraMatrix": [
-					1, 0, 0, 0, 0, 0.9999999999994962, 9.999999998910846e-7, 0, 0,
-					-9.999999998910846e-7, 0.9999999999994962, 0, 0, -0.0000999999999891088,
+					1, 0, 0, 0, 0, 0.9999999999994958, 9.999999998910846e-7, 0, 0,
+					-9.999999998910846e-7, 0.9999999999994958, 0, 0, -0.0000999999999891088,
 					99.99999999994995, 1
 				],
 				"clipPlane": {
 					"planeConstant": 0,
-					"visible": true
+					"visible": false
 				}
 			},
 			"ViewPanel3D": {
 				"cameraMatrix": [
-					0.7071067811865476, 2.775557561562891e-17, -0.7071067811865472, 0,
-					-0.4082482904638628, 0.8164965809277258, -0.40824829046386285, 0,
-					0.5773502691896251, 0.5773502691896251, 0.5773502691896254, 0,
-					10.000000000000002, 10, 10.000000000000002, 1
+					2.220446049250313e-16, 0, -1, 0, -6.123233995736766e-17, 1,
+					-1.232595164407831e-32, 0, 1, 6.123233995736766e-17, 2.220446049250313e-16, 0,
+					26.778813936469035, 8.426440429762985e-16, 10.873682966462976, 1
 				]
 			},
 			"ViewPanelY": {
 				"cameraMatrix": [
-					2.2204460492502352e-16, -5.551115123125588e-17, 0.9999999999999649, 0,
-					0.9999999999994632, 0.0000010000000000287188, -1.6653345369376737e-16, 0,
-					-9.999999999732077e-7, 0.9999999999994632, 1.1102230246251157e-16, 0,
+					4.4408920985004773e-16, -3.330669073875358e-16, 0.9999999999999664, 0,
+					0.9999999999994645, 0.0000010000000001397426, -3.3306690738753523e-16, 0,
+					-0.0000010000000000287203, 0.9999999999994645, 4.4408920985004694e-16, 0,
 					-0.00009999999999998334, 99.99999999994999, 6.1232339957357454e-21, 1
 				],
 				"clipPlane": {
 					"planeConstant": 0,
-					"visible": true
+					"visible": false
 				}
 			},
 			"ViewPanelX": {
 				"cameraMatrix": [
-					-2.2204460492503146e-16, 1.0000000000000007, 1.4210854715202014e-10, 0,
-					9.99999999917731e-7, -1.421085471520197e-10, 0.9999999999994976, 0,
-					0.9999999999994976, 2.775557561562885e-16, -9.99999999917731e-7, 0,
-					99.99999999994995, 1.4210854715202004e-14, -0.00009999999999998331, 1
+					-4.440892098500629e-16, 1.0000000000000009, 1.4210860266317137e-10, 0,
+					9.999999997511978e-7, -1.4210876919662465e-10, 0.999999999999498, 0,
+					0.9999999999994978, 3.3306690738754617e-16, -9.99999999917731e-7, 0,
+					99.99999999994895, 1.4210854715202004e-14, -0.0000999999999999823, 1
 				],
 				"clipPlane": {
 					"planeConstant": 0,
-					"visible": true
+					"visible": false
 				}
 			},
 			"ViewPanel": {
@@ -73,9 +72,66 @@
 		"metadata": {
 			"version": "0.12",
 			"type": "Manager",
-			"generator": "FigureManager.toJSON"
+			"generator": "FigureManager.toSerialized"
 		},
-		"figures": []
+		"figures": [
+			{
+				"name": "World",
+				"type": "CylinderFigure",
+				"uuid": "bd9533dc-2611-4645-801b-883953916fd6",
+				"visible": true,
+				"geometryData": {
+					"geometryType": "HollowCylinderGeometry",
+					"position": [0, 0, 10.5],
+					"rotation": [0, 0, 0],
+					"parameters": {
+						"innerRadius": 0,
+						"radius": 6,
+						"depth": 24
+					}
+				},
+				"colorHex": 0,
+				"children": [
+					{
+						"name": "Vacuum_cylinder",
+						"type": "CylinderFigure",
+						"uuid": "f94994c6-a14e-4a40-97cc-84caa873075e",
+						"visible": true,
+						"geometryData": {
+							"geometryType": "HollowCylinderGeometry",
+							"position": [0, 0, 0],
+							"rotation": [0, 0, 0],
+							"parameters": {
+								"innerRadius": 0,
+								"radius": 5.5,
+								"depth": 22
+							}
+						},
+						"colorHex": 0,
+						"children": [
+							{
+								"name": "Water_phantom_cylinder",
+								"type": "CylinderFigure",
+								"uuid": "31e3ac1c-ea6c-43a0-9533-8316748f6f0c",
+								"visible": true,
+								"geometryData": {
+									"geometryType": "HollowCylinderGeometry",
+									"position": [0, 0, -0.5],
+									"rotation": [0, 0, 0],
+									"parameters": {
+										"innerRadius": 0,
+										"radius": 5,
+										"depth": 20
+									}
+								},
+								"colorHex": 0,
+								"children": []
+							}
+						]
+					}
+				]
+			}
+		]
 	},
 	"zoneManager": {
 		"uuid": "368269D3-6F9B-4241-84A0-5D908D10E196",
@@ -84,16 +140,16 @@
 		"metadata": {
 			"version": "0.12",
 			"type": "Manager",
-			"generator": "ZoneManager.toJSON"
+			"generator": "ZoneManager.toSerialized"
 		},
 		"zones": [],
 		"worldZone": {
-			"uuid": "94339b4f-7588-4bc5-b1ce-03beecd5f9c2",
+			"uuid": "691f43c0-bb92-4fb3-82c0-2e529c2e49af",
 			"type": "WorldZone",
 			"name": "World Zone",
 			"marginMultiplier": 1.1,
 			"autoCalculate": false,
-			"materialUuid": "ef2115b8-1502-4f62-a033-21b06b066862",
+			"materialUuid": "a2f08097-a999-4a4f-8371-e919e2f999a7",
 			"visible": false,
 			"geometryData": {
 				"geometryType": "BoxGeometry",
@@ -114,9 +170,87 @@
 		"metadata": {
 			"version": "0.12",
 			"type": "Manager",
-			"generator": "DetectorManager.toJSON"
+			"generator": "DetectorManager.toSerialized"
 		},
-		"detectors": []
+		"detectors": [
+			{
+				"name": "CylZ_Mesh",
+				"uuid": "67e59e3d-0d36-4fcc-9a28-29bc044a6d72",
+				"type": "Detector",
+				"visible": true,
+				"geometryData": {
+					"geometryType": "Cyl",
+					"position": [0, 0, 10],
+					"rotation": [0, 0, 0],
+					"parameters": {
+						"radius": 5,
+						"innerRadius": 0,
+						"depth": 20,
+						"radialSegments": 1,
+						"zSegments": 400
+					}
+				},
+				"colorHex": 65535
+			},
+			{
+				"name": "YZ_Mesh",
+				"uuid": "116f105e-c987-4602-9913-8dd0ef2affaa",
+				"type": "Detector",
+				"visible": true,
+				"geometryData": {
+					"geometryType": "Mesh",
+					"position": [0, 0, 10],
+					"rotation": [0, 0, 0],
+					"parameters": {
+						"width": 0.5,
+						"height": 4,
+						"depth": 20,
+						"xSegments": 1,
+						"ySegments": 80,
+						"zSegments": 100
+					}
+				},
+				"colorHex": 65535
+			},
+			{
+				"name": "EntrySlab",
+				"uuid": "590c80b4-bb94-4c44-8a06-2eb58dcb1f37",
+				"type": "Detector",
+				"visible": true,
+				"geometryData": {
+					"geometryType": "Cyl",
+					"position": [0, 0, 0.05],
+					"rotation": [0, 0, 0],
+					"parameters": {
+						"radius": 5,
+						"innerRadius": 0,
+						"depth": 0.1,
+						"radialSegments": 1,
+						"zSegments": 1
+					}
+				},
+				"colorHex": 65535
+			},
+			{
+				"name": "PeakSlab",
+				"uuid": "310462e1-62ab-47aa-9aa9-c1e641b7d4ed",
+				"type": "Detector",
+				"visible": true,
+				"geometryData": {
+					"geometryType": "Cyl",
+					"position": [0, 0, 15.35],
+					"rotation": [0, 0, 0],
+					"parameters": {
+						"radius": 5,
+						"innerRadius": 0,
+						"depth": 0.1,
+						"radialSegments": 1,
+						"zSegments": 1
+					}
+				},
+				"colorHex": 65535
+			}
+		]
 	},
 	"specialComponentsManager": {
 		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0F0FFF",
@@ -125,38 +259,160 @@
 		"metadata": {
 			"version": "0.12",
 			"type": "Manager",
-			"generator": "SpecialComponentManager.toJSON"
+			"generator": "SpecialComponentManager.toSerialized"
 		}
 	},
 	"materialManager": {
 		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0FFFFFFF",
 		"name": "Material Manager",
 		"type": "MaterialManager",
-		"materials": [],
-		"selectedMaterials": {},
+		"materials": [
+			{
+				"uuid": "a2f08097-a999-4a4f-8371-e919e2f999a7",
+				"sanitizedName": "vacuum",
+				"name": "VACUUM",
+				"icru": 1000,
+				"density": 0,
+				"color": 196613
+			}
+		],
+		"selectedMaterials": {
+			"a2f08097-a999-4a4f-8371-e919e2f999a7": 1
+		},
 		"metadata": {
 			"version": "0.12",
 			"type": "Manager",
-			"generator": "MaterialManager.toJSON"
+			"generator": "MaterialManager.toSerialized"
 		}
 	},
 	"scoringManager": {
 		"name": "Scoring Manager",
 		"type": "ScoringManager",
 		"uuid": "D0F67F59-F311-4F8E-A06F-5A07D618FDE2",
-		"outputs": [],
-		"filters": [],
+		"outputs": [
+			{
+				"name": "CylZ_Mesh",
+				"type": "Output",
+				"uuid": "0057c046-622b-460d-ab0d-019dd3b6bafa",
+				"quantities": [
+					{
+						"name": "eDep",
+						"type": "Quantity",
+						"uuid": "c5e2bf4e-d5ea-416c-bba8-097cc525b1f3",
+						"filter": "f96f7542-143f-4c2c-b7ca-8a121ea2f631",
+						"keyword": "Energy",
+						"histogramNBins": 100,
+						"histogramMin": 0,
+						"histogramMax": 1000,
+						"histogramUnit": "MeV",
+						"histogramXScale": "none",
+						"histogramXBinScheme": "linear"
+					},
+					{
+						"name": "fluence",
+						"type": "Quantity",
+						"uuid": "e76b0d07-add5-4cfb-a5b0-fdefe6038ae7",
+						"filter": "f96f7542-143f-4c2c-b7ca-8a121ea2f631",
+						"keyword": "Fluence",
+						"histogramNBins": 100,
+						"histogramMin": 0,
+						"histogramMax": 1000,
+						"histogramUnit": "MeV",
+						"histogramXScale": "none",
+						"histogramXBinScheme": "linear"
+					}
+				],
+				"detectorUuid": "67e59e3d-0d36-4fcc-9a28-29bc044a6d72",
+				"trace": false
+			},
+			{
+				"name": "YZ_Mesh",
+				"type": "Output",
+				"uuid": "75a0b299-6f6e-42d9-80a5-dbe0f1077fc0",
+				"quantities": [
+					{
+						"name": "eDep",
+						"type": "Quantity",
+						"uuid": "81083546-6661-4067-a804-21756a940d27",
+						"filter": "f96f7542-143f-4c2c-b7ca-8a121ea2f631",
+						"keyword": "Energy",
+						"histogramNBins": 100,
+						"histogramMin": 0,
+						"histogramMax": 1000,
+						"histogramUnit": "MeV",
+						"histogramXScale": "none",
+						"histogramXBinScheme": "linear"
+					},
+					{
+						"name": "fluence",
+						"type": "Quantity",
+						"uuid": "7e44cf79-4ee1-4ea1-9ac0-7095c96ffdd1",
+						"filter": "f96f7542-143f-4c2c-b7ca-8a121ea2f631",
+						"keyword": "Fluence",
+						"histogramNBins": 100,
+						"histogramMin": 0,
+						"histogramMax": 1000,
+						"histogramUnit": "MeV",
+						"histogramXScale": "none",
+						"histogramXBinScheme": "linear"
+					}
+				],
+				"detectorUuid": "116f105e-c987-4602-9913-8dd0ef2affaa",
+				"trace": false
+			},
+			{
+				"name": "Pr",
+				"type": "Output",
+				"uuid": "224449ff-fe6e-4fc9-822d-d0d7d45126f4",
+				"quantities": [
+					{
+						"name": "fluxdiff",
+						"type": "Quantity",
+						"uuid": "5709cc76-2610-4cb6-b1cf-bd58d2f2c587",
+						"filter": "f96f7542-143f-4c2c-b7ca-8a121ea2f631",
+						"keyword": "KineticEnergySpectrum",
+						"histogramNBins": 100,
+						"histogramMin": 0,
+						"histogramMax": 200,
+						"histogramUnit": "MeV",
+						"histogramXScale": "none",
+						"histogramXBinScheme": "linear"
+					}
+				],
+				"detectorUuid": "590c80b4-bb94-4c44-8a06-2eb58dcb1f37",
+				"trace": false
+			}
+		],
+		"filters": [
+			{
+				"uuid": "f96f7542-143f-4c2c-b7ca-8a121ea2f631",
+				"name": "protonFilter",
+				"type": "Filter",
+				"data": {
+					"particleTypes": [
+						{
+							"id": 2,
+							"name": "Proton"
+						}
+					],
+					"kineticEnergyLow": 1,
+					"kineticEnergyHigh": 10,
+					"kineticEnergyUnit": "MeV"
+				},
+				"filterType": "particle"
+			}
+		],
 		"metadata": {
 			"version": "0.12",
 			"type": "Manager",
-			"generator": "ScoringManager.toJSON"
+			"generator": "ScoringManager.toSerialized"
 		}
 	},
 	"beam": {
 		"name": "Beam",
 		"type": "Beam",
 		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0FFFFF",
-		"position": [0, 0, 0],
+		"position": [0, 0, 1],
 		"direction": [0, 0, 1],
 		"energy": 150,
 		"energySpread": 1.5,
@@ -191,6 +447,12 @@
 		},
 		"sourceType": "simple"
 	},
-	"physic": {},
-	"hash": "81712c541925e171dbc37106d513d25eb2988bc2"
+	"physic": {
+		"energyLoss": 0.03,
+		"enableNuclearReactions": true,
+		"energyModelStraggling": "Vavilov",
+		"multipleScattering": "Moliere",
+		"stoppingPowerTable": "ICRU91"
+	},
+	"hash": "729e02e7f3681e225b5ee7baacb0f50e758b5a7f"
 }
