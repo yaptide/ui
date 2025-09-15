@@ -52,11 +52,11 @@ export const _defaultFlukaInputFiles = {
 } as const;
 
 export const _defaultGeant4Files = {
-	'geometry.xml': '',
+	'geometry.gdml': '',
 	'run.mac': ''
 } as const;
 
-export const _orderedGeant4InputFilesNames = ['info.json', 'geometry.xml', 'run.mac'] as const;
+export const _orderedGeant4InputFilesNames = ['info.json', 'geometry.gdml', 'run.mac'] as const;
 
 export function isKnownInputFile(name: string): name is ShInputFilesNames {
 	return _orderedShInputFilesNames.includes(name as ShInputFilesNames);

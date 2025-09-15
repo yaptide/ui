@@ -114,7 +114,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 
 			break;
 		case SimulatorType.GEANT4:
-			acceptedFiles = '.xml,.mac';
+			acceptedFiles = '.gdml,.mac';
 
 			break;
 		default:

@@ -149,14 +149,16 @@ describe('Geant4 Converter', () => {
 		//wait until the text has appeared in the first text field
 		await driver.wait(
 			until.elementTextMatches(
-				driver.findElement(By.xpath("//textarea[@aria-label = 'geometry.xml text field']")),
+				driver.findElement(
+					By.xpath("//textarea[@aria-label = 'geometry.gdml text field']")
+				),
 				/\S/
 			)
 		);
 
 		//find the text field with config file and check if it is not empty
 		const configText = await driver
-			.findElement(By.xpath("//textarea[@aria-label = 'geometry.xml text field']"))
+			.findElement(By.xpath("//textarea[@aria-label = 'geometry.gdml text field']"))
 			.getText();
 		expect(configText).not.toBe('');
 	}, 50_000);
