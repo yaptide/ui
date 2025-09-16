@@ -4,3 +4,6 @@
 	branch = master
 	shallow = true
 
+[submodule "src/libs/geant-web-stubs"]
+	path = src/libs/geant-web-stubs
+	url = https://github.com/yaptide/geant-web-stubs.git
