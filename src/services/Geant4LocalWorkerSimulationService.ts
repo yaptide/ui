@@ -74,7 +74,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 	}
 
 	async postJob(...args: RequestPostJob): Promise<ResponsePostJob> {
-		let [simData, inputType, ntasks, simType, title, batchOptions, signal] = args;
+		let [simData, inputType, runType, ntasks, simType, title, batchOptions, signal] = args;
 
 		if (title === undefined && isEditorJson(simData)) {
 			title = simData.project.title;
