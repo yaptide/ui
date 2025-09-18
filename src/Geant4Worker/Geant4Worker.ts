@@ -5,6 +5,7 @@
  * - https://github.com/ostatni5
  * - https://github.com/lkwinta
  */
+import { Geant4WorkerMessageType } from './Geant4WorkerTypes';
 
 export default class Geant4Worker {
 	worker: Worker | undefined;
@@ -87,7 +88,7 @@ export default class Geant4Worker {
 			return;
 		}
 
-		this.worker.postMessage({ type: 'loadDepsData' });
+		this.worker.postMessage({ type: Geant4WorkerMessageType.INIT_DATA_FILES });
 	}
 
 	async loadDepsLazy() {
@@ -97,7 +98,7 @@ export default class Geant4Worker {
 			return;
 		}
 
-		this.worker.postMessage({ type: 'loadDepsLazy' });
+		this.worker.postMessage({ type: Geant4WorkerMessageType.INIT_LAZY_FILES });
 	}
 
 	setOnDepsLoaded(callback: () => void) {
@@ -108,14 +109,17 @@ export default class Geant4Worker {
 		}
 	}
 
-	includeFile(fileName: string, content: string) {
+	includeFile(name: string, data: string) {
 		if (!this.worker || !this.isInitialized) {
 			console.error('Worker is not initialized. Call init() first.');
 
 			return;
 		}
 
-		this.worker.postMessage({ type: 'includeFile', fileName, content });
+		this.worker.postMessage({
+			type: Geant4WorkerMessageType.CREATE_FILE,
+			data: { name, data }
+		});
 	}
 
 	async start() {
@@ -127,6 +131,6 @@ export default class Geant4Worker {
 
 		// Worker will acknowledge the message and wait for the deps to load
 		// no need for additional logic here
-		this.worker.postMessage({ type: 'runSimulation' });
+		this.worker.postMessage({ type: Geant4WorkerMessageType.RUN_SIMULATION });
 	}
 }

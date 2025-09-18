@@ -13,6 +13,11 @@ import { default as initG4NDL } from '../libs/geant-web-stubs/preload/preload_G4
 import { default as initG4PARTICLEXS } from '../libs/geant-web-stubs/preload/preload_G4PARTICLEXS4.1';
 import { default as initG4SAIDDATA } from '../libs/geant-web-stubs/preload/preload_G4SAIDDATA2.0';
 import { default as initPhotoEvaporation } from '../libs/geant-web-stubs/preload/preload_PhotonEvaporation6.1';
+import {
+	Geant4WorkerMessage,
+	Geant4WorkerMessageFile,
+	Geant4WorkerMessageType
+} from './Geant4WorkerTypes';
 
 const S3_PREFIX_MAP: Record<string, string> = {
 	'.wasm': 'https://s3p.cloud.cyfronet.pl/geant4-wasm/',
@@ -37,7 +42,7 @@ function debugErr(...args: any[]) {
 
 // Files passed in from UI
 // A .gdml file and a .mac file is required to run the simulation
-let filesToInclude: { [k: string]: string } = {};
+let includedFiles: string[] = [];
 
 const preModule = {
 	preRun: [],
@@ -98,23 +103,10 @@ const preModule = {
 };
 
 const mod = createMainModule(preModule);
-mod.then(module => {
-	debugLog('Performing sanity checks...');
 
-	const tClass = new module.TestClass(1, 2);
-
-	debugLog(tClass.testMethod());
-	const vec = new module.vector_int();
-	vec.push_back(1);
-	vec.push_back(2);
-	vec.push_back(3);
-
-	debugLog(tClass.complicatedFunction(vec));
-});
-
-ctx.onmessage = async (event: MessageEvent) => {
+ctx.onmessage = async (event: MessageEvent<Geant4WorkerMessage>) => {
 	switch (event.data.type) {
-		case 'loadDepsData': {
+		case Geant4WorkerMessageType.INIT_DATA_FILES: {
 			// Download the whole dataset at once (roughly 2GB of data).
 			// After each of 6 datasets is processed, it should be cached
 			// and other workers should be able to access the data without downloading again.
@@ -144,7 +136,7 @@ ctx.onmessage = async (event: MessageEvent) => {
 			break;
 		}
 
-		case 'loadDepsLazy': {
+		case Geant4WorkerMessageType.INIT_LAZY_FILES: {
 			// Initialize lazy download. Files needed for specific simulation are downloaded on-demand.
 			// Best-case scenario - the download size is reduced to a couple of kb.
 			await mod.then(async module => {
@@ -203,17 +195,36 @@ ctx.onmessage = async (event: MessageEvent) => {
 			break;
 		}
 
-		case 'includeFile':
-			if (!event.data.hasOwnProperty('fileName') || !event.data.hasOwnProperty('content')) {
-				throw new Error('Properties "fileName" and "content" are required');
-			}
+		case Geant4WorkerMessageType.CREATE_FILE:
+			await mod.then(module => {
+				const data = event.data.data as Geant4WorkerMessageFile;
 
-			filesToInclude[event.data.fileName] = event.data.content;
+				module.FS.createFile('/', data.name, null, true, true);
+				module.FS.writeFile(data.name, data.data);
+				includedFiles.push(data.name);
+			});
 
 			break;
-		case 'runSimulation':
-			const geometryDefinition = Object.keys(filesToInclude).find(k => k.endsWith('.gdml'));
-			const macroFile = Object.keys(filesToInclude).find(k => k.endsWith('.mac'));
+		case Geant4WorkerMessageType.READ_FILE:
+			await mod.then(module => {
+				const fileName = event.data.data as string;
+
+				const fileContent = module.FS.readFile(fileName, { encoding: 'utf8' });
+
+				ctx.postMessage({
+					type: Geant4WorkerMessageType.FILE_RESPONSE,
+					data: {
+						name: fileName,
+						data: new TextDecoder().decode(fileContent)
+					} as Geant4WorkerMessageFile
+				} as Geant4WorkerMessage);
+			});
+
+			break;
+		case Geant4WorkerMessageType.RUN_SIMULATION:
+			debugLog(includedFiles);
+			const geometryDefinition = includedFiles.find(k => k.endsWith('.gdml'));
+			const macroFile = includedFiles.find(k => k.endsWith('.mac'));
 
 			if (!geometryDefinition || !macroFile) {
 				throw new Error('.gdml and .mac file are required');
@@ -222,13 +233,7 @@ ctx.onmessage = async (event: MessageEvent) => {
 			try {
 				debugLog('Starting Geant4 simulation...');
 				const runResults = await mod.then(module => {
-					module.FS.createFile('/', 'geom.gdml', null, true, true);
-					module.FS.createFile('/', 'init.mac', null, true, true);
-
-					module.FS.writeFile('geom.gdml', filesToInclude[geometryDefinition]);
-					module.FS.writeFile('init.mac', filesToInclude[macroFile]);
-
-					return module.Geant4_GDML();
+					return module.Geant4GDMRun(geometryDefinition, macroFile);
 				});
 
 				debugLog('Run results:', runResults);
