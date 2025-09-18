@@ -1,11 +1,19 @@
-import createMainModule from './geant4_wasm/geant4_wasm'
+import createMainModule from './geant-web-stubs/geant4_wasm'
 
-import  { default as initG4EMLOW }  from './geant4_wasm/preload/preload_G4EMLOW8.6.1';
-import  { default as initG4ENSDFSTATE }  from './geant4_wasm/preload/preload_G4ENSDFSTATE3.0';
-import  { default as initG4NDL }  from './geant4_wasm/preload/preload_G4NDL4.7.1';
-import  { default as initG4PARTICLEXS }  from './geant4_wasm/preload/preload_G4PARTICLEXS4.1';
-import  { default as initG4SAIDDATA }  from './geant4_wasm/preload/preload_G4SAIDDATA2.0';
-import  { default as initPhotoEvaporation }  from './geant4_wasm/preload/preload_PhotonEvaporation6.1';
+import  { default as initG4EMLOW }  from './geant-web-stubs/preload/preload_G4EMLOW8.6.1';
+import  { default as initG4ENSDFSTATE }  from './geant-web-stubs/preload/preload_G4ENSDFSTATE3.0';
+import  { default as initG4NDL }  from './geant-web-stubs/preload/preload_G4NDL4.7.1';
+import  { default as initG4PARTICLEXS }  from './geant-web-stubs/preload/preload_G4PARTICLEXS4.1';
+import  { default as initG4SAIDDATA }  from './geant-web-stubs/preload/preload_G4SAIDDATA2.0';
+import  { default as initPhotoEvaporation }  from './geant-web-stubs/preload/preload_PhotonEvaporation6.1';
+
+import {
+    GeantWorkerMessage,
+    GeantWorkerMessageType,
+    GeantWorkerMessageFile
+} from './GeantWorkerInterface';
+
+import { TextDecoder } from 'util';
 
 const s3_prefix_map: Record<string, string> = {
     ".wasm": "https://s3p.cloud.cyfronet.pl/geant4-wasm/",
@@ -75,21 +83,10 @@ var preModule = {
 };
 
 var mod = createMainModule(preModule);
-mod.then((module) => {
-    const tClass = new module.TestClass(1, 2);
 
-    console.log(tClass.testMethod());
-    const vec = new module.vector_int();
-    vec.push_back(1);
-    vec.push_back(2);
-    vec.push_back(3);
-    
-    console.log(tClass.complicatedFunction(vec));
-});
-
-ctx.onmessage = async (event: MessageEvent) => {
+ctx.onmessage = async (event: MessageEvent<GeantWorkerMessage>) => {
      switch (event.data.type) {
-        case "loadDepsData": {
+        case GeantWorkerMessageType.INIT_DATA_FILES: {
             const res = await mod.then(async (module) => {
                 
                 console.log("Initializing lazy files...");
@@ -107,7 +104,7 @@ ctx.onmessage = async (event: MessageEvent) => {
             });
         break;
         }
-        case "loadDepsLazy": {
+        case GeantWorkerMessageType.INIT_LAZY_FILES: {
             const res = await mod.then(async (module) => {
                 module.FS_createPath('/', 'data', true, true);
                 module.FS_createPath('/data', 'G4EMLOW8.6.1', true, true);
@@ -149,27 +146,31 @@ ctx.onmessage = async (event: MessageEvent) => {
             });
         break;
         }
-        case "runSimulation":
-            try {
-                console.log("Running simulation...");
-                const initResult = await mod.then((module) => {
-                    module.Geant4_init()
-                });
-                console.log("Initialization result:", initResult);
 
-                const result = await mod.then((module) => module.Geant4_run());
-                ctx.postMessage({
-                    type: "result",
-                    result: result
-                });
-            } catch (error: unknown) {
-                ctx.postMessage({
-                    type: "error",
-                    message: (error as Error).message
-                });
-            }
+        case GeantWorkerMessageType.CREATE_FILE:
+            await mod.then((module) => {
+                const data = event.data.data as GeantWorkerMessageFile;
+
+                module.FS.createFile("/", data.name, null, true, true);
+                module.FS.writeFile(data.name, data.data);
+            });
             break;
-        case "runGDML":
+        case GeantWorkerMessageType.READ_FILE:
+            await mod.then((module) => {
+                const fileName = event.data.data as string;
+
+                const fileConent = module.FS.readFile(fileName, { encoding: "utf8" });
+
+                ctx.postMessage({
+                    type: GeantWorkerMessageType.FILE_RESPONSE,
+                    data: {
+                        name: fileName,
+                        data: new TextDecoder().decode(fileConent)
+                    } as GeantWorkerMessageFile
+                } as GeantWorkerMessage)
+            });
+            break;
+        case GeantWorkerMessageType.RUN_SIMULATION:
             try {
                 console.log("Running GDML simulation...");
                 const gdmlResult = await mod.then((module) => {
@@ -296,7 +297,7 @@ ctx.onmessage = async (event: MessageEvent) => {
 /score/dumpQuantityToFile Pr fluxdiff diff.txt
 `
                     );
-                    return module.Geant4_GDML();
+                    return module.Geant4GDMRun("geom.gdml", "init.mac");
                 });
 
                 console.log("GDML run result:", gdmlResult);
@@ -318,6 +319,6 @@ ctx.onmessage = async (event: MessageEvent) => {
             }
             break;
         default:
-            console.warn("Unknown message type:", event.data.type);
+            console.warn("Unknown message type:", event.data);
     }
 }
