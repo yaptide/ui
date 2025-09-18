@@ -25,7 +25,7 @@ const SimulationsGridHelpers = (
 ) => {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const currentJobId = useRef<string>('');
-	const { demoMode, controller, trackedId, isBackendAlive, statusStates } = config;
+	const { controller, trackedId, isBackendAlive, statusStates } = config;
 	const { getPageContents, getPageStatus, getJobStatus, getFullSimulationData, cancelJob } =
 		handlers;
 
@@ -71,26 +71,24 @@ const SimulationsGridHelpers = (
 		[controller.signal, getFullSimulationData, setResultsSimulationData, trackedId]
 	);
 
-	const updateSimulationData = useCallback(() => {
-		if (demoMode) return Promise.resolve();
-
-		return getPageStatus(simulationInfo, true, handleBeforeCacheWrite, controller.signal).then(
-			s => {
-				setSimulationsStatusData([...(s ?? [])]);
-			}
-		);
-	}, [
-		demoMode,
-		getPageStatus,
-		simulationInfo,
-		handleBeforeCacheWrite,
-		controller.signal,
-		setSimulationsStatusData
-	]);
+	const updateSimulationData = useCallback(
+		() =>
+			getPageStatus(simulationInfo, true, handleBeforeCacheWrite, controller.signal).then(
+				s => {
+					setSimulationsStatusData([...(s ?? [])]);
+				}
+			),
+		[
+			getPageStatus,
+			simulationInfo,
+			handleBeforeCacheWrite,
+			controller.signal,
+			setSimulationsStatusData
+		]
+	);
 
 	const updateSpecificSimulationData = useCallback(
-		(jobId: string) => {
-			if (demoMode) return Promise.resolve();
+		async (jobId: string) => {
 			const info = simulationInfo.find(s => s.jobId === jobId);
 
 			if (!info) return Promise.resolve();
@@ -107,7 +105,6 @@ const SimulationsGridHelpers = (
 			});
 		},
 		[
-			demoMode,
 			simulationInfo,
 			getJobStatus,
 			handleBeforeCacheWrite,
@@ -117,7 +114,7 @@ const SimulationsGridHelpers = (
 	);
 
 	const simulationDataInterval = useMemo(() => {
-		if (demoMode || !isBackendAlive) return undefined;
+		if (!isBackendAlive) return undefined;
 
 		const allSettled = simulationsStatusData?.every(
 			s =>
@@ -129,7 +126,7 @@ const SimulationsGridHelpers = (
 		if (allSettled) return 10000;
 
 		return 1500;
-	}, [demoMode, isBackendAlive, simulationsStatusData]);
+	}, [isBackendAlive, simulationsStatusData]);
 
 	const handleLoadResults = async (
 		taskId: string | null,

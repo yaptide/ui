@@ -1,10 +1,15 @@
 import { Box, Fade, Modal, useTheme } from '@mui/material';
 import { useState } from 'react';
 
+import { useConfig } from '../../../config/ConfigService';
+import { useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
+import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTabs';
 import { SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
+import { Geant4LocalWorkerSimulationsGrid } from './SimulationsGrid/Geant4LocalWorkerSimulationsGrid';
+import { useIsBackendAlive } from './SimulationsGrid/hooks/useBackendAliveEffect';
 import { RemoteWorkerSimulationsGrid } from './SimulationsGrid/RemoteWorkerSimulationsGrid';
 
 interface SimulationPanelProps {
@@ -20,8 +25,14 @@ export default function SimulationPanel({
 }: SimulationPanelProps) {
 	const theme = useTheme();
 	const { yaptideEditor } = useStore();
+	const { demoMode } = useConfig();
+	const auth = useAuth();
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
 	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
+	const isBackendAlive = useIsBackendAlive();
+	const [source, setSource] = useState<'remote' | 'local'>(
+		!isBackendAlive || !auth.isAuthorized || demoMode ? 'local' : 'remote'
+	);
 
 	return (
 		<Box
@@ -78,12 +89,42 @@ export default function SimulationPanel({
 					</Box>
 				</Fade>
 			</Modal>
-			<RemoteWorkerSimulationsGrid
-				goToResults={goToResults}
-				setShowInputFilesEditor={setShowInputFilesEditor}
-				setInputFiles={setInputFiles}
-				simulator={yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON}
-			/>
+
+			{isBackendAlive && auth.isAuthorized && (
+				<StyledTabs
+					value={source}
+					onChange={(_, v) => setSource(v)}
+					sx={{ m: 1 }}>
+					<StyledTab
+						label='Simulations from server'
+						value='remote'
+						key='remote'
+					/>
+					<StyledTab
+						label='Local simulations'
+						value='local'
+						key='local'
+					/>
+				</StyledTabs>
+			)}
+
+			{source === 'remote' ? (
+				<RemoteWorkerSimulationsGrid
+					goToResults={goToResults}
+					setShowInputFilesEditor={setShowInputFilesEditor}
+					setInputFiles={setInputFiles}
+					simulator={
+						yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON
+					}
+				/>
+			) : (
+				<Geant4LocalWorkerSimulationsGrid
+					goToResults={goToResults}
+					setInputFiles={setInputFiles}
+					setShowInputFilesEditor={setShowInputFilesEditor}
+					simulator={SimulatorType.GEANT4}
+				/>
+			)}
 		</Box>
 	);
 }

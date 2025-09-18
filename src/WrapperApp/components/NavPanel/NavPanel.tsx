@@ -5,7 +5,6 @@ import { Box, List, useTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { SyntheticEvent, useMemo } from 'react';
 
-import { useConfig } from '../../../config/ConfigService';
 import { AuthContext, useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
 import deployInfo from '../../../util/identify/deployInfo.json';
@@ -108,8 +107,7 @@ export default function NavPanel(props: NavPanelProps) {
 	const theme = useTheme();
 	const { resultsSimulationData } = useStore();
 	const auth = useAuth();
-	const { demoMode } = useConfig();
-	const menuOptions = useMenuOptions(auth.isAuthorized, resultsSimulationData?.data, demoMode);
+	const menuOptions = useMenuOptions(resultsSimulationData?.data);
 
 	const { handleChange, tabsValue } = props;
 
