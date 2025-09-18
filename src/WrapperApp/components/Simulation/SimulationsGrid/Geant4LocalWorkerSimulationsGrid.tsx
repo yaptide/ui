@@ -28,7 +28,7 @@ export const Geant4LocalWorkerSimulationsGrid = (props: SimulationsGridProps) =>
 	const [controller] = useState(new AbortController());
 
 	const config: SimulationConfig = {
-		shouldConnect: true,
+		demoMode,
 		controller,
 		trackedId,
 		isBackendAlive,

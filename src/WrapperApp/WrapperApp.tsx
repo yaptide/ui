@@ -8,7 +8,7 @@ import { useStore } from '../services/StoreService';
 import { EditorToolbar } from '../ThreeEditor/components/Editor/EditorToolbar';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
 import { EditorSidebar } from '../ThreeEditor/components/Sidebar/EditorSidebar';
-import { SimulationFetchSource, SimulatorType } from '../types/RequestTypes';
+import { SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles } from '../types/ResponseTypes';
 import { FullSimulationData } from '../types/SimulationService';
 import { camelCaseToNormalText } from '../util/camelCaseToSentenceCase';

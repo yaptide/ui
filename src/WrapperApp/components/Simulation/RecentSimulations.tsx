@@ -148,12 +148,6 @@ export default function RecentSimulations() {
 			.map(job => job.jobId)
 	);
 
-	const sortFn = useCallback(
-		(s1: SimulationInfo, s2: SimulationInfo) =>
-			new Date(s2.startTime).getTime() - new Date(s1.startTime).getTime(),
-		[]
-	);
-
 	const remoteWorkerSimulationsToDisplay = remoteWorkerSimulationsStatusData
 		? remoteWorkerSimulationsStatusData
 				.filter(statusData => remoteWorkerJobIdsInSession.has(statusData.jobId))
@@ -170,7 +164,6 @@ export default function RecentSimulations() {
 	const geant4LocalWorkerSimulationsToDisplay = geant4LocalWorkerSimulationsStatusData
 		? geant4LocalWorkerSimulationsStatusData
 				.filter(statusData => geant4LocalWorkerJobIdsInSession.has(statusData.jobId))
-				.sort(sortFn)
 				.slice(0, 5)
 		: [];
 
@@ -178,7 +171,7 @@ export default function RecentSimulations() {
 		...remoteWorkerSimulationsToDisplay,
 		...geant4LocalWorkerSimulationsToDisplay
 	]
-		.sort(sortFn)
+		.sort((s1, s2) => new Date(s1.startTime).getTime() - new Date(s2.startTime).getTime())
 		.slice(0, 5);
 
 	const loadResultsFn = useCallback(
