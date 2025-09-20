@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { useConfig } from '../../../../config/ConfigService';
-import { useShSimulation } from '../../../../services/ShSimulatorService';
+import { useRestSimulation } from '../../../../services/RestSimulationContextProvider';
 import { useStore } from '../../../../services/StoreService';
 import { SimulatorType } from '../../../../types/RequestTypes';
 import {
@@ -40,7 +40,7 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 		getPageStatus,
 		getJobStatus,
 		getFullSimulationData
-	} = useShSimulation();
+	} = useRestSimulation();
 
 	const [isBackendAlive, setBackendAlive] = useState(false);
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);

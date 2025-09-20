@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
-import { useShSimulation } from '../../../services/ShSimulatorService';
+import { useRestSimulation } from '../../../services/RestSimulationContextProvider';
 import { useStore } from '../../../services/StoreService';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
 import { JobStatusData, SimulationInfo, StatusState } from '../../../types/ResponseTypes';
@@ -38,7 +38,7 @@ export default function RecentSimulations() {
 		getPageStatus,
 		getJobStatus,
 		getFullSimulationData
-	} = useShSimulation();
+	} = useRestSimulation();
 
 	const [isBackendAlive, setBackendAlive] = useState(false);
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);

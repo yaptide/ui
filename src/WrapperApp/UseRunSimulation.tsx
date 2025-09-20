@@ -1,7 +1,7 @@
 import { enqueueSnackbar } from 'notistack';
 import { useState } from 'react';
 
-import { useShSimulation } from '../services/ShSimulatorService';
+import { useRestSimulation } from '../services/RestSimulationContextProvider';
 import { useStore } from '../services/StoreService';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulatorType } from '../types/RequestTypes';
@@ -16,7 +16,7 @@ import {
 export function useRunSimulation(): RunSimulationFunctionType {
 	const { setTrackedId, setSimulationJobIdsSubmittedInSession } = useStore();
 	const [controller] = useState(new AbortController());
-	const { postJobDirect, postJobBatch } = useShSimulation();
+	const { postJobDirect, postJobBatch } = useRestSimulation();
 	const sendSimulationRequest = (
 		postJobFn: typeof postJobDirect,
 		runType: SimulationRunType,

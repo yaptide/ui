@@ -6,7 +6,7 @@ import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
 import { ReactElement, ReactNode } from 'react';
 
-import { FullSimulationData } from '../../../services/ShSimulatorService';
+import { FullSimulationData } from '../../../types/SimulationService';
 
 export type MenuOption = {
 	label: string;

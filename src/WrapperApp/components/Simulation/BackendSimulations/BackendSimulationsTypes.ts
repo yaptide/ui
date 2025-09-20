@@ -1,11 +1,10 @@
-import { FullSimulationData, JobInputs } from '../../../../services/ShSimulatorService';
 import { ResultsSimulationDataWithSource } from '../../../../services/StoreService';
 import { YaptideEditor } from '../../../../ThreeEditor/js/YaptideEditor';
 import {
+	JobInputs,
 	RequestGetJobInputs,
 	RequestGetPageContents,
-	RequestParam
-} from '../../../../types/RequestTypes';
+	RequestParam} from '../../../../types/RequestTypes';
 import {
 	JobStatusData,
 	JobUnknownStatus,
@@ -14,6 +13,7 @@ import {
 	SimulationInputFiles,
 	StatusState
 } from '../../../../types/ResponseTypes';
+import { FullSimulationData } from '../../../../types/SimulationService';
 import { PageNavigationProps, PageParamProps } from '../SimulationPanelBar';
 
 export interface SimulationConfig {

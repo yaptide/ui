@@ -4,9 +4,8 @@ import * as THREE from 'three';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
 import { SimulatorType } from '../types/RequestTypes';
-import { SimulationInfo } from '../types/ResponseTypes';
+import { FullSimulationData } from '../types/SimulationService';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
-import { FullSimulationData } from './ShSimulatorService';
 
 export interface DataWithSource<S extends string, T> {
 	source: S;

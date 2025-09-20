@@ -4,12 +4,12 @@ import { SyntheticEvent, useEffect, useState } from 'react';
 
 import { useConfig } from '../config/ConfigService';
 import { useAuth } from '../services/AuthService';
-import { FullSimulationData } from '../services/ShSimulatorService';
 import { useStore } from '../services/StoreService';
 import { EditorToolbar } from '../ThreeEditor/components/Editor/EditorToolbar';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
 import { EditorSidebar } from '../ThreeEditor/components/Sidebar/EditorSidebar';
 import { SimulationInputFiles } from '../types/ResponseTypes';
+import { FullSimulationData } from '../types/SimulationService';
 import { camelCaseToNormalText } from '../util/camelCaseToSentenceCase';
 import HeaderPanel from './components/Header/HeaderPanel';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';

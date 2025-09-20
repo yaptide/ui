@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { useConfig } from '../../../../../config/ConfigService';
-import { useShSimulation } from '../../../../../services/ShSimulatorService';
+import { useRestSimulation } from '../../../../../services/RestSimulationContextProvider';
 import { useStore } from '../../../../../services/StoreService';
 import {
 	JobStatusData,
@@ -62,7 +62,7 @@ export const useIsBackendAlive = () => {
 		statusStates: ValidStatusStates
 	};
 
-	const handlers = useShSimulation();
+	const handlers = useRestSimulation();
 
 	const state: SimulationState = {
 		simulationInfo,
