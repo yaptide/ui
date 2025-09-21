@@ -28,7 +28,7 @@ import {
 	SimulationInputFiles,
 	StatusState
 } from '../types/ResponseTypes';
-import { SimulationService } from '../types/SimulationService';
+import { FullSimulationData, SimulationService } from '../types/SimulationService';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 
 type JobId = string;
@@ -191,7 +191,7 @@ export default class Geant4WorkersSimulationService implements SimulationService
 		signal: AbortSignal,
 		cache: boolean,
 		givenEstimatorName: string
-	): Promise<SimulationInfo | undefined> {
+	): Promise<FullSimulationData | undefined> {
 		const { jobId } = jobStatus;
 
 		if (!this.workers.hasOwnProperty(jobId)) {
@@ -207,7 +207,13 @@ export default class Geant4WorkersSimulationService implements SimulationService
 				simType: this.jobsMetadata[jobId].inputType,
 				server: '',
 				platform: 'DIRECT'
-			}
+			},
+			input: {
+				inputType: this.jobsMetadata[jobId].inputType,
+				inputFiles: this.inputFiles[jobId] as InputFilesRecord<Geant4InputFilesNames, ''>,
+				...{ inputJson: this.jobsEditorJson[jobId] } // add iff exists
+			},
+			estimators: []
 		};
 	}
 

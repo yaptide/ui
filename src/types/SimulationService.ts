@@ -25,7 +25,6 @@ export type FullSimulationData = Omit<JobInputs & JobStatusData & JobResults, 'm
 export interface SimulationContext {
 	postJobDirect: (...args: RequestPostJob) => Promise<ResponsePostJob>;
 	postJobBatch: (...args: RequestPostJob) => Promise<ResponsePostJob>;
-	postJobToGeant4Worker: (...args: RequestPostJob) => Promise<ResponsePostJob>;
 	cancelJob: (...args: RequestCancelJob) => Promise<unknown>;
 	getHelloWorld: (...args: RequestParam) => Promise<unknown>;
 	getJobStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
@@ -56,7 +55,7 @@ export interface SimulationService {
 		signal: AbortSignal,
 		cache: boolean,
 		givenEstimatorName: string
-	): Promise<SimulationInfo | undefined>;
+	): Promise<FullSimulationData | undefined>;
 	getPageContents(...args: RequestGetPageContents): Promise<ResponseGetPageContents>;
 	getPageStatus(...args: RequestGetPageStatus): Promise<JobStatusData[] | undefined>;
 	cancelJob(...args: RequestCancelJob): Promise<void>;

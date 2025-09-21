@@ -19,7 +19,8 @@ import {
 	RequestGetPageContents,
 	RequestGetPageStatus,
 	RequestPostJob,
-	SpecificEstimator} from '../types/RequestTypes';
+	SpecificEstimator
+} from '../types/RequestTypes';
 import {
 	EstimatorItem,
 	EstimatorPagesByDimensions,
@@ -608,7 +609,7 @@ export default class RestSimulationService implements SimulationService {
 		signal?: AbortSignal,
 		cache: boolean = true,
 		givenEstimatorName?: string
-	): Promise<SimulationInfo | undefined> {
+	): Promise<FullSimulationData | undefined> {
 		const inputs: JobInputs | undefined = await this.getJobInputs(jobStatus, signal, cache);
 
 		const firstEstimatorName = await this.findEstimatorsNamesAndPages(
