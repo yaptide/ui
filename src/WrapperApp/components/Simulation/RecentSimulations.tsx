@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
+import { useAuth } from '../../../services/AuthService';
 import { useRestSimulation } from '../../../services/RestSimulationContextProvider';
 import { useStore } from '../../../services/StoreService';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
@@ -21,6 +22,7 @@ import {
 export default function RecentSimulations() {
 	const theme = useTheme();
 
+	const auth = useAuth();
 	const { demoMode } = useConfig();
 	const {
 		yaptideEditor,
@@ -92,7 +94,16 @@ export default function RecentSimulations() {
 		setPageCount
 	} = SimulationsGridHelpers(config, handlers, state);
 
-	useBackendAliveEffect(config, handlers, updateSimulationInfo, setPageCount);
+	useBackendAliveEffect(
+		config,
+		handlers,
+		() => {
+			if (auth.isAuthorized) {
+				updateSimulationInfo();
+			}
+		},
+		setPageCount
+	);
 	useUpdateCurrentSimulationEffect(config, handlers, state);
 
 	useIntervalAsync(updateSimulationData, simulationDataInterval, simulationInfo.length > 0);

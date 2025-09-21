@@ -2,6 +2,7 @@ import { Box, Fade, Modal, useTheme } from '@mui/material';
 import { useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
+import { useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
 import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTabs';
 import { SimulatorType } from '../../../types/RequestTypes';
@@ -25,11 +26,12 @@ export default function SimulationPanel({
 	const theme = useTheme();
 	const { yaptideEditor } = useStore();
 	const { demoMode } = useConfig();
+	const auth = useAuth();
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
 	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
 	const isBackendAlive = useIsBackendAlive();
 	const [source, setSource] = useState<'server' | 'worker'>(
-		!isBackendAlive || demoMode ? 'worker' : 'server'
+		!isBackendAlive || !auth.isAuthorized || demoMode ? 'worker' : 'server'
 	);
 
 	return (
@@ -88,7 +90,7 @@ export default function SimulationPanel({
 				</Fade>
 			</Modal>
 
-			{isBackendAlive && (
+			{isBackendAlive && auth.isAuthorized && (
 				<StyledTabs
 					value={source}
 					onChange={(_, v) => setSource(v)}
