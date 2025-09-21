@@ -241,11 +241,14 @@ ctx.onmessage = async (event: MessageEvent<Geant4WorkerMessage>) => {
 
 			try {
 				debugLog('Starting Geant4 simulation...');
-				const runResults = await mod.then(module => {
+				const result = await mod.then(module => {
 					return module.Geant4GDMRun(geometryDefinition, macroFile);
 				});
 
-				debugLog('Run results:', runResults);
+				ctx.postMessage({
+					type: 'result',
+					result
+				});
 
 				// TODO: Fetch the files (we need actual filenames on the FS for that)
 				// const result_data = await mod.then((module) => {

@@ -4,7 +4,8 @@ import {
 	JobInputs,
 	RequestGetJobInputs,
 	RequestGetPageContents,
-	RequestParam
+	RequestParam,
+	SimulatorType
 } from '../../../../types/RequestTypes';
 import {
 	JobStatusData,
@@ -24,6 +25,13 @@ export interface SimulationConfig {
 	isBackendAlive: boolean;
 	setBackendAlive: React.Dispatch<React.SetStateAction<boolean>>;
 	statusStates: StatusState[];
+}
+
+export interface SimulationsGridProps {
+	goToResults?: () => void;
+	setInputFiles: (inputFiles: SimulationInputFiles | undefined) => void;
+	setShowInputFilesEditor: (show: boolean) => void;
+	simulator: SimulatorType;
 }
 
 export interface SimulationHandlers {

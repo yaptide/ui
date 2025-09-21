@@ -21,6 +21,7 @@ import {
 	Geant4InputFilesNames,
 	InputFilesRecord,
 	JobStatusData,
+	JobUnknownStatus,
 	ResponseGetPageContents,
 	ResponsePostJob,
 	SimulationInfo,
@@ -73,16 +74,8 @@ export default class Geant4WorkersSimulationService implements SimulationService
 		}
 
 		const worker = new Geant4Worker();
-		await worker.init();
 		this.workers[jobId] = worker;
 		this.jobsMetadata[jobId] = { title: title ?? '', inputType };
-
-		await worker.loadDepsLazy();
-
-		// @ts-ignore
-		await worker.includeFile('geometry.gdml', simData['geometry.gdml']);
-		// @ts-ignore
-		await worker.includeFile('run.mac', simData['run.mac']);
 
 		this.inputFiles[jobId] = {
 			// @ts-ignore
@@ -91,7 +84,16 @@ export default class Geant4WorkersSimulationService implements SimulationService
 			'run.mac': simData['run.mac']
 		};
 
-		await worker.start();
+		worker.init().then(async () => {
+			await worker.loadDepsLazy();
+
+			// @ts-ignore
+			await worker.includeFile('geometry.gdml', simData['geometry.gdml']);
+			// @ts-ignore
+			await worker.includeFile('run.mac', simData['run.mac']);
+
+			worker.start();
+		});
 
 		return { jobId, message: '' };
 	}
@@ -128,13 +130,14 @@ export default class Geant4WorkersSimulationService implements SimulationService
 		return {
 			jobId,
 			title: this.jobsMetadata[jobId]?.title,
-			startTime: this.workers[jobId].getStartTime()?.toString() ?? '',
+			startTime: this.workers[jobId].getStartTime().toString(),
 			metadata: {
 				inputType: this.jobsMetadata[jobId].inputType,
 				simType: this.jobsMetadata[jobId].inputType,
 				server: '',
 				platform: 'DIRECT'
-			}
+			},
+			jobState: this.workers[jobId].getState()
 		};
 	}
 
@@ -198,7 +201,7 @@ export default class Geant4WorkersSimulationService implements SimulationService
 		return {
 			jobId,
 			title: this.jobsMetadata[jobId]?.title,
-			startTime: this.workers[jobId].getStartTime()?.toString() ?? '',
+			startTime: this.workers[jobId].getStartTime().toString(),
 			metadata: {
 				inputType: this.jobsMetadata[jobId].inputType,
 				simType: this.jobsMetadata[jobId].inputType,
@@ -216,17 +219,6 @@ export default class Geant4WorkersSimulationService implements SimulationService
 		return s1 >= s2 ? (s1 === s2 ? 0 : -1) : 1;
 	}
 
-	private compareNumber(
-		n1: number | undefined,
-		n2: number | undefined,
-		descending = true
-	): number {
-		n1 = n1 ?? 0;
-		n2 = n2 ?? 0;
-
-		return descending ? n1 - n2 : n2 - n1;
-	}
-
 	private getSortedWorkersEntries(
 		orderType: OrderType,
 		orderBy: OrderBy
@@ -238,9 +230,9 @@ export default class Geant4WorkersSimulationService implements SimulationService
 				return this.compareString(w1[0], w2[0], orderType === 'descend');
 			}
 
-			return this.compareNumber(
-				w1[1][getOrderByFn]?.(),
-				w2[1][getOrderByFn]?.(),
+			return this.compareString(
+				w1[1][getOrderByFn]?.() ?? '',
+				w2[1][getOrderByFn]?.() ?? '',
 				orderType === 'descend'
 			);
 		});
@@ -257,12 +249,12 @@ export default class Geant4WorkersSimulationService implements SimulationService
 		const workersEntries = this.getSortedWorkersEntries(orderType, orderBy);
 		const allowedStates = new Set(jobState);
 		const filteredWorkersEntries = workersEntries.filter(([, w]) => {
-			return allowedStates.has(w.getState());
+			return allowedStates.has(w.getState() as StatusState);
 		});
 
 		const paginatedWorkersEntries = filteredWorkersEntries.slice(
-			pageSize * pageIdx,
-			pageSize * (pageIdx + 1)
+			pageSize * (pageIdx - 1),
+			pageSize * pageIdx
 		);
 
 		return {
@@ -271,13 +263,14 @@ export default class Geant4WorkersSimulationService implements SimulationService
 			simulations: paginatedWorkersEntries.map(([jobId, worker]) => ({
 				jobId,
 				title: this.jobsMetadata[jobId]?.title,
-				startTime: this.workers[jobId].getStartTime()?.toString() ?? '',
+				startTime: worker.getStartTime().toString(),
 				metadata: {
 					inputType: this.jobsMetadata[jobId].inputType,
 					simType: this.jobsMetadata[jobId].inputType,
 					server: '',
 					platform: 'DIRECT'
-				}
+				},
+				jobState: worker.getState()
 			})),
 			message: ''
 		};
@@ -291,13 +284,14 @@ export default class Geant4WorkersSimulationService implements SimulationService
 		return workersEntries.map(([jobId, worker]) => ({
 			jobId,
 			title: this.jobsMetadata[jobId]?.title,
-			startTime: worker.getStartTime()?.toString() ?? '',
+			startTime: worker.getStartTime()?.toString(),
 			metadata: {
 				inputType: this.jobsMetadata[jobId].inputType,
 				simType: this.jobsMetadata[jobId].inputType,
 				server: '',
 				platform: 'DIRECT'
-			}
+			},
+			jobState: worker.getState()
 		}));
 	}
 

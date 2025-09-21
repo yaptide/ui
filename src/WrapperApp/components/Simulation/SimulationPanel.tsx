@@ -1,12 +1,15 @@
-import { Box, Fade, Modal, Typography, useTheme } from '@mui/material';
+import { Box, Fade, Modal, useTheme } from '@mui/material';
 import { useState } from 'react';
 
-import { useAuth } from '../../../services/AuthService';
+import { useConfig } from '../../../config/ConfigService';
 import { useStore } from '../../../services/StoreService';
+import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTabs';
 import { SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
-import { SimulationsGrid } from './SimulationsGrid/SimulationsGrid';
+import { Geant4WorkersSimulationsGrid } from './SimulationsGrid/Geant4WorkersSimulationsGrid';
+import { useIsBackendAlive } from './SimulationsGrid/hooks/useBackendAliveEffect';
+import { RestSimulationsGrid } from './SimulationsGrid/RestSimulationsGrid';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
@@ -20,10 +23,14 @@ export default function SimulationPanel({
 	forwardedInputFiles
 }: SimulationPanelProps) {
 	const theme = useTheme();
-	const auth = useAuth();
 	const { yaptideEditor } = useStore();
+	const { demoMode } = useConfig();
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
 	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
+	const isBackendAlive = useIsBackendAlive();
+	const [source, setSource] = useState<'server' | 'worker'>(
+		!isBackendAlive || demoMode ? 'worker' : 'server'
+	);
 
 	return (
 		<Box
@@ -80,8 +87,27 @@ export default function SimulationPanel({
 					</Box>
 				</Fade>
 			</Modal>
-			{auth.isAuthorized ? (
-				<SimulationsGrid
+
+			{isBackendAlive && (
+				<StyledTabs
+					value={source}
+					onChange={(_, v) => setSource(v)}
+					sx={{ m: 1 }}>
+					<StyledTab
+						label='Simulations from server'
+						value='server'
+						key='server'
+					/>
+					<StyledTab
+						label='Local simulations'
+						value='worker'
+						key='worker'
+					/>
+				</StyledTabs>
+			)}
+
+			{source === 'server' ? (
+				<RestSimulationsGrid
 					goToResults={goToResults}
 					setShowInputFilesEditor={setShowInputFilesEditor}
 					setInputFiles={setInputFiles}
@@ -90,7 +116,12 @@ export default function SimulationPanel({
 					}
 				/>
 			) : (
-				<Box></Box>
+				<Geant4WorkersSimulationsGrid
+					goToResults={goToResults}
+					setInputFiles={setInputFiles}
+					setShowInputFilesEditor={setShowInputFilesEditor}
+					simulator={SimulatorType.GEANT4}
+				/>
 			)}
 		</Box>
 	);

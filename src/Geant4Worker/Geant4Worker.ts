@@ -6,16 +6,16 @@
  * - https://github.com/lkwinta
  */
 
-import { StatusState } from '../types/ResponseTypes';
+import { JobUnknownStatus, StatusState } from '../types/ResponseTypes';
 import { Geant4WorkerMessageType } from './Geant4WorkerTypes';
 
 export default class Geant4Worker {
 	private worker: Worker | undefined;
-	private state = StatusState.PENDING;
+	private state: JobUnknownStatus['jobState'] = StatusState.PENDING;
 	private isInitialized = false;
 	private depsLoaded = false;
-	private startTime: number | undefined;
-	private endTime: number | undefined;
+	private startTime: number = Date.now();
+	private endTime: number | null = null;
 
 	// To make possible to await calls to this class until
 	// worker returns the message, we add a unique index to each worker call,
@@ -44,23 +44,11 @@ export default class Geant4Worker {
 	}
 
 	getStartTime() {
-		return this.startTime;
+		return new Date(this.startTime).toISOString();
 	}
 
 	getEndTime() {
-		return this.endTime;
-	}
-
-	getRunningTime() {
-		if (this.startTime === undefined) {
-			return 0;
-		}
-
-		if (this.endTime === undefined) {
-			return Date.now() - this.startTime;
-		}
-
-		return this.endTime - this.startTime;
+		return this.endTime ? new Date(this.endTime).toISOString() : null;
 	}
 
 	private handleStatus(data: any) {

@@ -3,44 +3,28 @@ import { useState } from 'react';
 import { useConfig } from '../../../../config/ConfigService';
 import { useRestSimulation } from '../../../../services/RestSimulationContextProvider';
 import { useStore } from '../../../../services/StoreService';
-import { SimulatorType } from '../../../../types/RequestTypes';
-import {
-	JobStatusData,
-	SimulationInfo,
-	SimulationInputFiles,
-	ValidStatusStates
-} from '../../../../types/ResponseTypes';
+import { JobStatusData, SimulationInfo, ValidStatusStates } from '../../../../types/ResponseTypes';
 import useIntervalAsync from '../../../../util/hooks/useIntervalAsync';
 import DeleteSimulationModal from '../Modal/DeleteSimulationModal';
 import { PaginatedSimulationsGrid } from '../SimulationCardGrid';
 import { useBackendAliveEffect } from './hooks/useBackendAliveEffect';
 import { useUpdateCurrentSimulationEffect } from './hooks/useUpdateCurrentSimulationEffect';
 import SimulationsGridHelpers from './SimulationsGridHelpers';
-import { SimulationConfig, SimulationHandlers, SimulationState } from './SimulationsGridTypes';
+import {
+	SimulationConfig,
+	SimulationHandlers,
+	SimulationsGridProps,
+	SimulationState
+} from './SimulationsGridTypes';
 
-interface SimulationsGridProps {
-	goToResults?: () => void;
-	setInputFiles: (inputFiles: SimulationInputFiles | undefined) => void;
-	setShowInputFilesEditor: (show: boolean) => void;
-	simulator: SimulatorType;
-}
-
-export const SimulationsGrid = (props: SimulationsGridProps) => {
+export const RestSimulationsGrid = (props: SimulationsGridProps) => {
 	const { goToResults, setInputFiles, setShowInputFilesEditor } = props;
 
 	const { demoMode } = useConfig();
 	const { yaptideEditor, trackedId, setResultsSimulationData, setLocalResultsSimulationData } =
 		useStore();
 
-	const {
-		cancelJob,
-		getJobInputs,
-		getHelloWorld,
-		getPageContents,
-		getPageStatus,
-		getJobStatus,
-		getFullSimulationData
-	} = useRestSimulation();
+	const handlers = useRestSimulation();
 
 	const [isBackendAlive, setBackendAlive] = useState(false);
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
@@ -55,16 +39,6 @@ export const SimulationsGrid = (props: SimulationsGridProps) => {
 		isBackendAlive,
 		setBackendAlive,
 		statusStates: ValidStatusStates
-	};
-
-	const handlers: SimulationHandlers = {
-		getPageContents,
-		getPageStatus,
-		getJobStatus,
-		getFullSimulationData,
-		cancelJob,
-		getHelloWorld,
-		getJobInputs
 	};
 
 	const state: SimulationState = {
