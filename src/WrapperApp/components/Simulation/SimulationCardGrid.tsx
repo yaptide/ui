@@ -109,7 +109,7 @@ type SimulationsFromBackendProps = PaginatedCardGridProps & {
 	simulator: SimulatorType;
 };
 
-export function PaginatedSimulationsFromBackend({
+export function PaginatedSimulationsGrid({
 	isBackendAlive,
 	simulator,
 	children,

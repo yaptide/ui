@@ -8,8 +8,8 @@ import {
 	SimulationInfo,
 	ValidStatusStates
 } from '../../../../../types/ResponseTypes';
-import BackendSimulationsHelpers from '../BackendSimulationsHelpers';
-import { SimulationConfig, SimulationHandlers, SimulationState } from '../BackendSimulationsTypes';
+import SimulationsGridHelpers from '../SimulationsGridHelpers';
+import { SimulationConfig, SimulationHandlers, SimulationState } from '../SimulationsGridTypes';
 
 export const useBackendAliveEffect = (
 	config: SimulationConfig,
@@ -75,11 +75,7 @@ export const useIsBackendAlive = () => {
 		setShowInputFilesEditor: () => {}
 	};
 
-	const { updateSimulationInfo, setPageCount } = BackendSimulationsHelpers(
-		config,
-		handlers,
-		state
-	);
+	const { updateSimulationInfo, setPageCount } = SimulationsGridHelpers(config, handlers, state);
 
 	useBackendAliveEffect(config, handlers, updateSimulationInfo, setPageCount);
 

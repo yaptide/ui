@@ -6,7 +6,7 @@ import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
-import { BackendSimulations } from './BackendSimulations/BackendSimulations';
+import { SimulationsGrid } from './SimulationsGrid/SimulationsGrid';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
@@ -81,7 +81,7 @@ export default function SimulationPanel({
 				</Fade>
 			</Modal>
 			{auth.isAuthorized ? (
-				<BackendSimulations
+				<SimulationsGrid
 					goToResults={goToResults}
 					setShowInputFilesEditor={setShowInputFilesEditor}
 					setInputFiles={setInputFiles}

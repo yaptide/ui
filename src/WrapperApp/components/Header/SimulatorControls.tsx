@@ -15,7 +15,7 @@ import { useConfig } from '../../../config/ConfigService';
 import { useDialog } from '../../../services/DialogService';
 import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
-import { useIsBackendAlive } from '../Simulation/BackendSimulations/hooks/useBackendAliveEffect';
+import { useIsBackendAlive } from '../Simulation/SimulationsGrid/hooks/useBackendAliveEffect';
 
 const SimulatorsDescriptions: Record<SimulatorType, { name: string; description: string }> = {
 	common: {

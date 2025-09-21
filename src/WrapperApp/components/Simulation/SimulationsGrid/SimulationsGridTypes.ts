@@ -4,7 +4,8 @@ import {
 	JobInputs,
 	RequestGetJobInputs,
 	RequestGetPageContents,
-	RequestParam} from '../../../../types/RequestTypes';
+	RequestParam
+} from '../../../../types/RequestTypes';
 import {
 	JobStatusData,
 	JobUnknownStatus,

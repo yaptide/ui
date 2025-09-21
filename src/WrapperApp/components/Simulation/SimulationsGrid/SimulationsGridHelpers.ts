@@ -14,9 +14,9 @@ import {
 	SimulationConfig,
 	SimulationHandlers,
 	SimulationState
-} from './BackendSimulationsTypes';
+} from './SimulationsGridTypes';
 
-const BackendSimulationsHelpers = (
+const SimulationsGridHelpers = (
 	config: SimulationConfig,
 	handlers: SimulationHandlers,
 	state: SimulationState
@@ -292,4 +292,4 @@ const BackendSimulationsHelpers = (
 	};
 };
 
-export default BackendSimulationsHelpers;
+export default SimulationsGridHelpers;

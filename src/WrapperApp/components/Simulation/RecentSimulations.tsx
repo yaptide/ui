@@ -8,15 +8,15 @@ import { useStore } from '../../../services/StoreService';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
 import { JobStatusData, SimulationInfo, StatusState } from '../../../types/ResponseTypes';
 import useIntervalAsync from '../../../util/hooks/useIntervalAsync';
-import BackendSimulationsHelpers from './BackendSimulations/BackendSimulationsHelpers';
+import SimulationCardSmall from './SimulationCard/SimulationCardSmall';
+import { useBackendAliveEffect } from './SimulationsGrid/hooks/useBackendAliveEffect';
+import { useUpdateCurrentSimulationEffect } from './SimulationsGrid/hooks/useUpdateCurrentSimulationEffect';
+import SimulationsGridHelpers from './SimulationsGrid/SimulationsGridHelpers';
 import {
 	SimulationConfig,
 	SimulationHandlers,
 	SimulationState
-} from './BackendSimulations/BackendSimulationsTypes';
-import { useBackendAliveEffect } from './BackendSimulations/hooks/useBackendAliveEffect';
-import { useUpdateCurrentSimulationEffect } from './BackendSimulations/hooks/useUpdateCurrentSimulationEffect';
-import SimulationCardSmall from './SimulationCard/SimulationCardSmall';
+} from './SimulationsGrid/SimulationsGridTypes';
 
 export default function RecentSimulations() {
 	const theme = useTheme();
@@ -90,7 +90,7 @@ export default function RecentSimulations() {
 		simulationDataInterval,
 		handleLoadResults,
 		setPageCount
-	} = BackendSimulationsHelpers(config, handlers, state);
+	} = SimulationsGridHelpers(config, handlers, state);
 
 	useBackendAliveEffect(config, handlers, updateSimulationInfo, setPageCount);
 	useUpdateCurrentSimulationEffect(config, handlers, state);

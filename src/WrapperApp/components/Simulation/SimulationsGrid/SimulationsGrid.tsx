@@ -12,20 +12,20 @@ import {
 } from '../../../../types/ResponseTypes';
 import useIntervalAsync from '../../../../util/hooks/useIntervalAsync';
 import DeleteSimulationModal from '../Modal/DeleteSimulationModal';
-import { PaginatedSimulationsFromBackend } from '../SimulationCardGrid';
-import BackendSimulationsHelpers from './BackendSimulationsHelpers';
-import { SimulationConfig, SimulationHandlers, SimulationState } from './BackendSimulationsTypes';
+import { PaginatedSimulationsGrid } from '../SimulationCardGrid';
 import { useBackendAliveEffect } from './hooks/useBackendAliveEffect';
 import { useUpdateCurrentSimulationEffect } from './hooks/useUpdateCurrentSimulationEffect';
+import SimulationsGridHelpers from './SimulationsGridHelpers';
+import { SimulationConfig, SimulationHandlers, SimulationState } from './SimulationsGridTypes';
 
-interface BackendSimulationsProps {
+interface SimulationsGridProps {
 	goToResults?: () => void;
 	setInputFiles: (inputFiles: SimulationInputFiles | undefined) => void;
 	setShowInputFilesEditor: (show: boolean) => void;
 	simulator: SimulatorType;
 }
 
-export const BackendSimulations = (props: BackendSimulationsProps) => {
+export const SimulationsGrid = (props: SimulationsGridProps) => {
 	const { goToResults, setInputFiles, setShowInputFilesEditor } = props;
 
 	const { demoMode } = useConfig();
@@ -94,7 +94,7 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 		isModalOpen,
 		setIsModalOpen,
 		submitDelete
-	} = BackendSimulationsHelpers(config, handlers, state);
+	} = SimulationsGridHelpers(config, handlers, state);
 
 	useBackendAliveEffect(config, handlers, updateSimulationInfo, setPageCount);
 	useUpdateCurrentSimulationEffect(config, handlers, state);
@@ -103,7 +103,7 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 
 	return (
 		<>
-			<PaginatedSimulationsFromBackend
+			<PaginatedSimulationsGrid
 				simulations={simulationsStatusData}
 				pageData={pageData}
 				handleLoadResults={handleLoadResults}
