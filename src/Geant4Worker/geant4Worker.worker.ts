@@ -186,12 +186,12 @@ ctx.onmessage = async (event: MessageEvent<Geant4WorkerMessage>) => {
 						});
 					debugLog(`Loaded lazy files from ${jsonFile}`);
 				}
+			});
 
-				ctx.postMessage({
-					type: 'status',
-					data: 'DEPS OK',
-					idx: event.data.idx
-				});
+			ctx.postMessage({
+				type: 'status',
+				data: 'DEPS OK',
+				idx: event.data.idx
 			});
 
 			break;

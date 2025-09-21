@@ -74,10 +74,6 @@ export default class Geant4Worker {
 
 				break;
 		}
-
-		if (data.idx) {
-			this.resolvePromiseIfExists(data.idx);
-		}
 	}
 
 	init() {
@@ -111,6 +107,10 @@ export default class Geant4Worker {
 					break;
 				case 'status':
 					this.handleStatus(event.data.data);
+
+					if (event.data.idx) {
+						this.resolvePromiseIfExists(event.data.idx);
+					}
 
 					break;
 				case 'error':

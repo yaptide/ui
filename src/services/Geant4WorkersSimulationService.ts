@@ -1,5 +1,6 @@
 import Geant4Worker from '../Geant4Worker/Geant4Worker';
 import { PythonConverterContext } from '../PythonConverter/PythonConverterService';
+import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import {
 	isEditorJson,
 	JobInputs,
@@ -13,7 +14,8 @@ import {
 	RequestGetJobResults,
 	RequestGetJobStatus,
 	RequestGetPageStatus,
-	RequestPostJob
+	RequestPostJob,
+	SimulatorType
 } from '../types/RequestTypes';
 import {
 	Geant4InputFilesNames,
@@ -22,26 +24,31 @@ import {
 	ResponseGetPageContents,
 	ResponsePostJob,
 	SimulationInfo,
+	SimulationInputFiles,
 	StatusState
 } from '../types/ResponseTypes';
 import { SimulationService } from '../types/SimulationService';
+import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 
 type JobId = string;
 
 interface JobMetadata {
 	title: string;
+	inputType: SimulationSourceType;
 }
 
 export default class Geant4WorkersSimulationService implements SimulationService {
 	convertJSON: PythonConverterContext['convertJSON'];
 	workers: Record<JobId, Geant4Worker>;
 	inputFiles: Record<JobId, Record<string, string>>;
+	jobsEditorJson: Record<JobId, EditorJson>;
 	jobsMetadata: Record<JobId, JobMetadata>;
 
 	constructor(convertJSON: PythonConverterContext['convertJSON']) {
 		this.convertJSON = convertJSON;
 		this.workers = {};
 		this.inputFiles = {};
+		this.jobsEditorJson = {};
 		this.jobsMetadata = {};
 	}
 
@@ -56,17 +63,19 @@ export default class Geant4WorkersSimulationService implements SimulationService
 			title = simData.project.title;
 		}
 
-		// TODO: handle editor here & return editor json in getJobInputs
-		if (inputType === 'editor') {
-			throw new Error('Geant4 Worker accepts only inputType == "files"');
-		}
-
 		const jobId = crypto.randomUUID();
+
+		if (inputType === 'editor') {
+			this.jobsEditorJson[jobId] = simData as EditorJson;
+			simData = Object.fromEntries(
+				(await this.convertJSON(simData as EditorJson, SimulatorType.GEANT4)).entries()
+			);
+		}
 
 		const worker = new Geant4Worker();
 		await worker.init();
 		this.workers[jobId] = worker;
-		this.jobsMetadata[jobId] = { title: title ?? '' };
+		this.jobsMetadata[jobId] = { title: title ?? '', inputType };
 
 		await worker.loadDepsLazy();
 
@@ -97,11 +106,12 @@ export default class Geant4WorkersSimulationService implements SimulationService
 		return {
 			jobId: info.jobId,
 			input: {
-				inputType: 'files',
+				inputType: this.jobsMetadata[info.jobId].inputType,
 				inputFiles: this.inputFiles[info.jobId] as InputFilesRecord<
 					Geant4InputFilesNames,
 					''
-				>
+				>,
+				...{ inputJson: this.jobsEditorJson[info.jobId] } // add iff exists
 			},
 			message: ''
 		};
@@ -120,8 +130,8 @@ export default class Geant4WorkersSimulationService implements SimulationService
 			title: this.jobsMetadata[jobId]?.title,
 			startTime: this.workers[jobId].getStartTime()?.toString() ?? '',
 			metadata: {
-				inputType: 'files', // TODO: Handle editor
-				simType: 'files',
+				inputType: this.jobsMetadata[jobId].inputType,
+				simType: this.jobsMetadata[jobId].inputType,
 				server: '',
 				platform: 'DIRECT'
 			}
@@ -190,8 +200,8 @@ export default class Geant4WorkersSimulationService implements SimulationService
 			title: this.jobsMetadata[jobId]?.title,
 			startTime: this.workers[jobId].getStartTime()?.toString() ?? '',
 			metadata: {
-				inputType: 'files', // TODO: Handle editor
-				simType: 'files',
+				inputType: this.jobsMetadata[jobId].inputType,
+				simType: this.jobsMetadata[jobId].inputType,
 				server: '',
 				platform: 'DIRECT'
 			}
@@ -261,10 +271,10 @@ export default class Geant4WorkersSimulationService implements SimulationService
 			simulations: paginatedWorkersEntries.map(([jobId, worker]) => ({
 				jobId,
 				title: this.jobsMetadata[jobId]?.title,
-				startTime: worker.getStartTime()?.toString() ?? '',
+				startTime: this.workers[jobId].getStartTime()?.toString() ?? '',
 				metadata: {
-					inputType: 'files', // TODO: Handle editor
-					simType: 'files',
+					inputType: this.jobsMetadata[jobId].inputType,
+					simType: this.jobsMetadata[jobId].inputType,
 					server: '',
 					platform: 'DIRECT'
 				}
@@ -283,8 +293,8 @@ export default class Geant4WorkersSimulationService implements SimulationService
 			title: this.jobsMetadata[jobId]?.title,
 			startTime: worker.getStartTime()?.toString() ?? '',
 			metadata: {
-				inputType: 'files', // TODO: Handle editor
-				simType: 'files',
+				inputType: this.jobsMetadata[jobId].inputType,
+				simType: this.jobsMetadata[jobId].inputType,
 				server: '',
 				platform: 'DIRECT'
 			}

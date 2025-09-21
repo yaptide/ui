@@ -13,7 +13,7 @@ import {
 	SimulationSourceType
 } from './components/Simulation/RunSimulationForm';
 
-export function useRunSimulation(): RunSimulationFunctionType {
+export function useRunRestSimulation(): RunSimulationFunctionType {
 	const { setTrackedId, setSimulationJobIdsSubmittedInSession } = useStore();
 	const [controller] = useState(new AbortController());
 	const { postJobDirect, postJobBatch } = useRestSimulation();

@@ -9,6 +9,7 @@ import { ConfigProvider } from './config/ConfigService';
 import { PythonConverterService } from './PythonConverter/PythonConverterService';
 import { Auth } from './services/AuthService';
 import { DialogProvider } from './services/DialogService';
+import { Geant4WorkersSimulationContextProvider } from './services/Geant4WorkersSimulationContextProvider';
 import { KeycloakAuth } from './services/KeycloakAuthService';
 import { Loader } from './services/LoaderService';
 import { RestSimulationContextProvider } from './services/RestSimulationContextProvider';
@@ -105,6 +106,7 @@ function App() {
 				<Auth />,
 				<RestSimulationContextProvider />,
 				<PythonConverterService />,
+				<Geant4WorkersSimulationContextProvider />,
 				<Loader />
 			]}>
 			<WrapperApp />
