@@ -1,6 +1,7 @@
-import { Box, Fade, Modal, useTheme } from '@mui/material';
+import { Box, Fade, Modal, Typography, useTheme } from '@mui/material';
 import { useState } from 'react';
 
+import { useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
@@ -19,6 +20,7 @@ export default function SimulationPanel({
 	forwardedInputFiles
 }: SimulationPanelProps) {
 	const theme = useTheme();
+	const auth = useAuth();
 	const { yaptideEditor } = useStore();
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
 	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
@@ -78,12 +80,18 @@ export default function SimulationPanel({
 					</Box>
 				</Fade>
 			</Modal>
-			<BackendSimulations
-				goToResults={goToResults}
-				setShowInputFilesEditor={setShowInputFilesEditor}
-				setInputFiles={setInputFiles}
-				simulator={yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON}
-			/>
+			{auth.isAuthorized ? (
+				<BackendSimulations
+					goToResults={goToResults}
+					setShowInputFilesEditor={setShowInputFilesEditor}
+					setInputFiles={setInputFiles}
+					simulator={
+						yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON
+					}
+				/>
+			) : (
+				<Box></Box>
+			)}
 		</Box>
 	);
 }
