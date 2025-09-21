@@ -1,0 +1,297 @@
+import Geant4Worker from '../Geant4Worker/Geant4Worker';
+import { PythonConverterContext } from '../PythonConverter/PythonConverterService';
+import {
+	isEditorJson,
+	JobInputs,
+	JobLogs,
+	JobResults,
+	OrderBy,
+	OrderType,
+	RequestGetJobInputs,
+	RequestGetJobLogs,
+	RequestGetJobResult,
+	RequestGetJobResults,
+	RequestGetJobStatus,
+	RequestGetPageStatus,
+	RequestPostJob
+} from '../types/RequestTypes';
+import {
+	Geant4InputFilesNames,
+	InputFilesRecord,
+	JobStatusData,
+	ResponseGetPageContents,
+	ResponsePostJob,
+	SimulationInfo,
+	StatusState
+} from '../types/ResponseTypes';
+import { SimulationService } from '../types/SimulationService';
+
+type JobId = string;
+
+interface JobMetadata {
+	title: string;
+}
+
+export default class Geant4WorkersSimulationService implements SimulationService {
+	convertJSON: PythonConverterContext['convertJSON'];
+	workers: Record<JobId, Geant4Worker>;
+	inputFiles: Record<JobId, Record<string, string>>;
+	jobsMetadata: Record<JobId, JobMetadata>;
+
+	constructor(convertJSON: PythonConverterContext['convertJSON']) {
+		this.convertJSON = convertJSON;
+		this.workers = {};
+		this.inputFiles = {};
+		this.jobsMetadata = {};
+	}
+
+	async helloWorld(signal?: AbortSignal): Promise<boolean> {
+		return Promise.resolve(true);
+	}
+
+	async postJob(...args: RequestPostJob): Promise<ResponsePostJob> {
+		let [simData, inputType, ntasks, simType, title, batchOptions, signal] = args;
+
+		if (title === undefined && isEditorJson(simData)) {
+			title = simData.project.title;
+		}
+
+		// TODO: handle editor here & return editor json in getJobInputs
+		if (inputType === 'editor') {
+			throw new Error('Geant4 Worker accepts only inputType == "files"');
+		}
+
+		const jobId = crypto.randomUUID();
+
+		const worker = new Geant4Worker();
+		await worker.init();
+		this.workers[jobId] = worker;
+		this.jobsMetadata[jobId] = { title: title ?? '' };
+
+		await worker.loadDepsLazy();
+
+		// @ts-ignore
+		await worker.includeFile('geometry.gdml', simData['geometry.gdml']);
+		// @ts-ignore
+		await worker.includeFile('run.mac', simData['run.mac']);
+
+		this.inputFiles[jobId] = {
+			// @ts-ignore
+			'geometry.gdml': simData['geometry.gdml'],
+			// @ts-ignore
+			'run.mac': simData['run.mac']
+		};
+
+		await worker.start();
+
+		return { jobId, message: '' };
+	}
+
+	async getJobInputs(...args: RequestGetJobInputs): Promise<JobInputs | undefined> {
+		const [info, signal, cache = true, beforeCacheWrite] = args;
+
+		if (!this.inputFiles.hasOwnProperty(info.jobId)) {
+			return undefined;
+		}
+
+		return {
+			jobId: info.jobId,
+			input: {
+				inputType: 'files',
+				inputFiles: this.inputFiles[info.jobId] as InputFilesRecord<
+					Geant4InputFilesNames,
+					''
+				>
+			},
+			message: ''
+		};
+	}
+
+	async getJobStatus(...args: RequestGetJobStatus): Promise<JobStatusData | undefined> {
+		const [info, cache = true, beforeCacheWrite, signal] = args;
+		const { jobId } = info;
+
+		if (!this.workers.hasOwnProperty(info.jobId)) {
+			return undefined;
+		}
+
+		return {
+			jobId,
+			title: this.jobsMetadata[jobId]?.title,
+			startTime: this.workers[jobId].getStartTime()?.toString() ?? '',
+			metadata: {
+				inputType: 'files', // TODO: Handle editor
+				simType: 'files',
+				server: '',
+				platform: 'DIRECT'
+			}
+		};
+	}
+
+	async getJobLogs(...args: RequestGetJobLogs): Promise<JobLogs | undefined> {
+		const [info, signal, cache, beforeCacheWrite] = args;
+		const { jobId } = info;
+
+		if (!this.workers.hasOwnProperty(info.jobId)) {
+			return undefined;
+		}
+
+		return {
+			jobId,
+			logfiles: {},
+			message: ''
+		};
+	}
+
+	async getJobResults(...args: RequestGetJobResults): Promise<JobResults | undefined> {
+		const [info, signal, cache = true, beforeCacheWrite] = args;
+		const { jobId } = info;
+
+		if (!this.workers.hasOwnProperty(info.jobId)) {
+			return undefined;
+		}
+
+		return {
+			jobId,
+			estimators: [],
+			message: ''
+		};
+	}
+
+	async getEstimatorsPages(...args: RequestGetJobResult): Promise<JobResults | undefined> {
+		const [info, signal, cache = true, beforeCacheWrite] = args;
+		const { jobId, estimatorName, pageNumbers } = info;
+
+		if (!this.workers.hasOwnProperty(info.jobId)) {
+			return undefined;
+		}
+
+		return {
+			jobId,
+			estimators: [],
+			message: ''
+		};
+	}
+
+	async getFullSimulationData(
+		jobStatus: JobStatusData,
+		signal: AbortSignal,
+		cache: boolean,
+		givenEstimatorName: string
+	): Promise<SimulationInfo | undefined> {
+		const { jobId } = jobStatus;
+
+		if (!this.workers.hasOwnProperty(jobId)) {
+			return undefined;
+		}
+
+		return {
+			jobId,
+			title: this.jobsMetadata[jobId]?.title,
+			startTime: this.workers[jobId].getStartTime()?.toString() ?? '',
+			metadata: {
+				inputType: 'files', // TODO: Handle editor
+				simType: 'files',
+				server: '',
+				platform: 'DIRECT'
+			}
+		};
+	}
+
+	private compareString(s1: string, s2: string, descending = true): number {
+		if (descending) {
+			return s1 <= s2 ? (s1 === s2 ? 0 : -1) : 1;
+		}
+
+		return s1 >= s2 ? (s1 === s2 ? 0 : -1) : 1;
+	}
+
+	private compareNumber(
+		n1: number | undefined,
+		n2: number | undefined,
+		descending = true
+	): number {
+		n1 = n1 ?? 0;
+		n2 = n2 ?? 0;
+
+		return descending ? n1 - n2 : n2 - n1;
+	}
+
+	private getSortedWorkersEntries(
+		orderType: OrderType,
+		orderBy: OrderBy
+	): [string, Geant4Worker][] {
+		const getOrderByFn = orderBy === 'start_time' ? 'getStartTime' : 'getEndTime';
+
+		return Object.entries(this.workers).sort((w1, w2) => {
+			if (w1[1] === undefined && w2[1] === undefined) {
+				return this.compareString(w1[0], w2[0], orderType === 'descend');
+			}
+
+			return this.compareNumber(
+				w1[1][getOrderByFn]?.(),
+				w2[1][getOrderByFn]?.(),
+				orderType === 'descend'
+			);
+		});
+	}
+
+	async getPageContents(
+		pageIdx: number,
+		pageSize: number,
+		orderType: OrderType,
+		orderBy: OrderBy,
+		jobState: StatusState[],
+		signal?: AbortSignal | undefined
+	): Promise<ResponseGetPageContents> {
+		const workersEntries = this.getSortedWorkersEntries(orderType, orderBy);
+		const allowedStates = new Set(jobState);
+		const filteredWorkersEntries = workersEntries.filter(([, w]) => {
+			return allowedStates.has(w.getState());
+		});
+
+		const paginatedWorkersEntries = filteredWorkersEntries.slice(
+			pageSize * pageIdx,
+			pageSize * (pageIdx + 1)
+		);
+
+		return {
+			pageCount: Math.ceil(filteredWorkersEntries.length / pageSize),
+			simulationsCount: filteredWorkersEntries.length,
+			simulations: paginatedWorkersEntries.map(([jobId, worker]) => ({
+				jobId,
+				title: this.jobsMetadata[jobId]?.title,
+				startTime: worker.getStartTime()?.toString() ?? '',
+				metadata: {
+					inputType: 'files', // TODO: Handle editor
+					simType: 'files',
+					server: '',
+					platform: 'DIRECT'
+				}
+			})),
+			message: ''
+		};
+	}
+
+	async getPageStatus(...args: RequestGetPageStatus): Promise<JobStatusData[] | undefined> {
+		const [infoList, cache = true, beforeCacheWrite, signal] = args;
+		const jobIds = new Set(infoList.map(il => il.jobId));
+		const workersEntries = Object.entries(this.workers).filter(([jobId]) => jobIds.has(jobId));
+
+		return workersEntries.map(([jobId, worker]) => ({
+			jobId,
+			title: this.jobsMetadata[jobId]?.title,
+			startTime: worker.getStartTime()?.toString() ?? '',
+			metadata: {
+				inputType: 'files', // TODO: Handle editor
+				simType: 'files',
+				server: '',
+				platform: 'DIRECT'
+			}
+		}));
+	}
+
+	cancelJob(info: SimulationInfo, signal?: AbortSignal | undefined): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+}

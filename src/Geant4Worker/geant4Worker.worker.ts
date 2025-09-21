@@ -130,7 +130,8 @@ ctx.onmessage = async (event: MessageEvent<Geant4WorkerMessage>) => {
 
 			ctx.postMessage({
 				type: 'status',
-				data: 'DEPS OK'
+				data: 'DEPS OK',
+				idx: event.data.idx
 			});
 
 			break;
@@ -188,7 +189,8 @@ ctx.onmessage = async (event: MessageEvent<Geant4WorkerMessage>) => {
 
 				ctx.postMessage({
 					type: 'status',
-					data: 'DEPS OK'
+					data: 'DEPS OK',
+					idx: event.data.idx
 				});
 			});
 
@@ -204,6 +206,12 @@ ctx.onmessage = async (event: MessageEvent<Geant4WorkerMessage>) => {
 				includedFiles.push(data.name);
 			});
 
+			ctx.postMessage({
+				type: 'status',
+				data: 'FILE OK',
+				idx: event.data.idx
+			});
+
 			break;
 		case Geant4WorkerMessageType.READ_FILE:
 			await mod.then(module => {
@@ -216,7 +224,8 @@ ctx.onmessage = async (event: MessageEvent<Geant4WorkerMessage>) => {
 					data: {
 						name: fileName,
 						data: new TextDecoder().decode(fileContent)
-					} as Geant4WorkerMessageFile
+					} as Geant4WorkerMessageFile,
+					idx: event.data.idx
 				} as Geant4WorkerMessage);
 			});
 
@@ -246,7 +255,8 @@ ctx.onmessage = async (event: MessageEvent<Geant4WorkerMessage>) => {
 				ctx.postMessage({
 					type: 'error',
 					message: (error as Error).message,
-					error: error
+					error: error,
+					idx: event.data.idx
 				});
 			}
 

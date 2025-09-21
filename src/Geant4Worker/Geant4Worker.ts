@@ -5,29 +5,78 @@
  * - https://github.com/ostatni5
  * - https://github.com/lkwinta
  */
+
+import { StatusState } from '../types/ResponseTypes';
 import { Geant4WorkerMessageType } from './Geant4WorkerTypes';
 
 export default class Geant4Worker {
-	worker: Worker | undefined;
-	isInitialized = false;
-	done = false;
-	depsLoaded = false;
-	onDepsLoaded: (() => void) | undefined;
+	private worker: Worker | undefined;
+	private state = StatusState.PENDING;
+	private isInitialized = false;
+	private depsLoaded = false;
+	private startTime: number | undefined;
+	private endTime: number | undefined;
+
+	// To make possible to await calls to this class until
+	// worker returns the message, we add a unique index to each worker call,
+	// return a promise, storing its resolve() function in resolvers under call id.
+	// When there is a status update with known id, we call the associated resolve()
+	idx: number = 1;
+	resolvers: { [k: number]: (value: any) => void } = {};
+
+	private makePromise(idx: number) {
+		return new Promise(resolve => {
+			this.resolvers[idx] = resolve;
+		});
+	}
+
+	private resolvePromiseIfExists(idx: number) {
+		if (!this.resolvers.hasOwnProperty(idx)) {
+			return;
+		}
+
+		this.resolvers[idx](null);
+		delete this.resolvers[idx];
+	}
+
+	getState() {
+		return this.state;
+	}
+
+	getStartTime() {
+		return this.startTime;
+	}
+
+	getEndTime() {
+		return this.endTime;
+	}
+
+	getRunningTime() {
+		if (this.startTime === undefined) {
+			return 0;
+		}
+
+		if (this.endTime === undefined) {
+			return Date.now() - this.startTime;
+		}
+
+		return this.endTime - this.startTime;
+	}
 
 	private handleStatus(data: any) {
 		switch (data) {
 			case 'DEPS OK':
 				this.depsLoaded = true;
 
-				if (this.onDepsLoaded) {
-					this.onDepsLoaded();
-				}
-
 				break;
 			default:
 				console.log('Status:', data);
 
 				break;
+		}
+
+		if (data.idx) {
+			this.resolvePromiseIfExists(data.idx);
 		}
 	}
 
@@ -38,20 +87,22 @@ export default class Geant4Worker {
 
 		this.worker = new Worker(new URL('./geant4Worker.worker.ts', import.meta.url));
 
-		let initResolver: (value: unknown) => void;
+		let promiseIdx = this.idx++;
 
 		this.worker.onmessage = event => {
 			switch (event.data.type) {
 				case 'init':
 					this.isInitialized = true;
-					initResolver?.(true);
+
+					this.resolvePromiseIfExists(promiseIdx);
 
 					break;
 				case 'result':
 					console.log('Result:', event.data.result);
 					this.worker?.terminate();
 					this.worker = undefined;
-					this.done = true;
+					this.endTime = Date.now();
+					this.state = StatusState.COMPLETED;
 
 					break;
 				case 'print':
@@ -75,10 +126,7 @@ export default class Geant4Worker {
 			}
 		};
 
-		// wait until "init" message comes back from worker with this simple trick
-		return new Promise(resolve => {
-			initResolver = resolve;
-		});
+		return this.makePromise(promiseIdx);
 	}
 
 	async loadDeps() {
@@ -88,7 +136,14 @@ export default class Geant4Worker {
 			return;
 		}
 
-		this.worker.postMessage({ type: Geant4WorkerMessageType.INIT_DATA_FILES });
+		if (this.depsLoaded) {
+			console.error('Deps already loaded');
+		}
+
+		const idx = this.idx++;
+		this.worker.postMessage({ type: Geant4WorkerMessageType.INIT_DATA_FILES, idx });
+
+		return this.makePromise(idx);
 	}
 
 	async loadDepsLazy() {
@@ -98,15 +153,14 @@ export default class Geant4Worker {
 			return;
 		}
 
-		this.worker.postMessage({ type: Geant4WorkerMessageType.INIT_LAZY_FILES });
-	}
-
-	setOnDepsLoaded(callback: () => void) {
 		if (this.depsLoaded) {
-			callback();
-		} else {
-			this.onDepsLoaded = callback;
+			console.error('Deps already loaded');
 		}
+
+		const idx = this.idx++;
+		this.worker.postMessage({ type: Geant4WorkerMessageType.INIT_LAZY_FILES, idx });
+
+		return this.makePromise(idx);
 	}
 
 	includeFile(name: string, data: string) {
@@ -116,10 +170,14 @@ export default class Geant4Worker {
 			return;
 		}
 
+		const idx = this.idx++;
 		this.worker.postMessage({
 			type: Geant4WorkerMessageType.CREATE_FILE,
-			data: { name, data }
+			data: { name, data },
+			idx
 		});
+
+		return this.makePromise(idx);
 	}
 
 	async start() {
@@ -132,5 +190,7 @@ export default class Geant4Worker {
 		// Worker will acknowledge the message and wait for the deps to load
 		// no need for additional logic here
 		this.worker.postMessage({ type: Geant4WorkerMessageType.RUN_SIMULATION });
+		this.state = StatusState.RUNNING;
+		this.startTime = Date.now();
 	}
 }

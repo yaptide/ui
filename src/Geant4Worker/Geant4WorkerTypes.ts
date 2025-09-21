@@ -13,6 +13,7 @@ export type Geant4WorkerMessageFile = {
 };
 
 export type Geant4WorkerMessage = {
+	idx?: number;
 	type: Geant4WorkerMessageType;
 	data: Geant4WorkerMessageFile | string;
 };
