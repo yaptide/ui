@@ -131,6 +131,7 @@ export default class Geant4WorkersSimulationService implements SimulationService
 			jobId,
 			title: this.jobsMetadata[jobId]?.title,
 			startTime: this.workers[jobId].getStartTime().toString(),
+			endTime: this.workers[jobId].getEndTime()?.toString(),
 			metadata: {
 				inputType: this.jobsMetadata[jobId].inputType,
 				simType: 'Geant4',
@@ -202,6 +203,7 @@ export default class Geant4WorkersSimulationService implements SimulationService
 			jobId,
 			title: this.jobsMetadata[jobId]?.title,
 			startTime: this.workers[jobId].getStartTime().toString(),
+			endTime: this.workers[jobId].getEndTime()?.toString(),
 			metadata: {
 				inputType: this.jobsMetadata[jobId].inputType,
 				simType: 'Geant4',
@@ -270,6 +272,7 @@ export default class Geant4WorkersSimulationService implements SimulationService
 				jobId,
 				title: this.jobsMetadata[jobId]?.title,
 				startTime: worker.getStartTime().toString(),
+				endTime: worker.getEndTime()?.toString(),
 				metadata: {
 					inputType: this.jobsMetadata[jobId].inputType,
 					simType: 'Geant4',
@@ -290,7 +293,8 @@ export default class Geant4WorkersSimulationService implements SimulationService
 		return workersEntries.map(([jobId, worker]) => ({
 			jobId,
 			title: this.jobsMetadata[jobId]?.title,
-			startTime: worker.getStartTime()?.toString(),
+			startTime: worker.getStartTime().toString(),
+			endTime: worker.getEndTime()?.toString(),
 			metadata: {
 				inputType: this.jobsMetadata[jobId].inputType,
 				simType: 'Geant4',
