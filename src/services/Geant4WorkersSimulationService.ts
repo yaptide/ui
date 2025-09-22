@@ -133,7 +133,7 @@ export default class Geant4WorkersSimulationService implements SimulationService
 			startTime: this.workers[jobId].getStartTime().toString(),
 			metadata: {
 				inputType: this.jobsMetadata[jobId].inputType,
-				simType: this.jobsMetadata[jobId].inputType,
+				simType: 'Geant4',
 				server: '',
 				platform: 'DIRECT'
 			},
@@ -204,7 +204,7 @@ export default class Geant4WorkersSimulationService implements SimulationService
 			startTime: this.workers[jobId].getStartTime().toString(),
 			metadata: {
 				inputType: this.jobsMetadata[jobId].inputType,
-				simType: this.jobsMetadata[jobId].inputType,
+				simType: 'Geant4',
 				server: '',
 				platform: 'DIRECT'
 			},
@@ -272,7 +272,7 @@ export default class Geant4WorkersSimulationService implements SimulationService
 				startTime: worker.getStartTime().toString(),
 				metadata: {
 					inputType: this.jobsMetadata[jobId].inputType,
-					simType: this.jobsMetadata[jobId].inputType,
+					simType: 'Geant4',
 					server: '',
 					platform: 'DIRECT'
 				},
@@ -293,7 +293,7 @@ export default class Geant4WorkersSimulationService implements SimulationService
 			startTime: worker.getStartTime()?.toString(),
 			metadata: {
 				inputType: this.jobsMetadata[jobId].inputType,
-				simType: this.jobsMetadata[jobId].inputType,
+				simType: 'Geant4',
 				server: '',
 				platform: 'DIRECT'
 			},

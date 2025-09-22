@@ -1,6 +1,7 @@
 import { useSnackbar } from 'notistack';
 
 import { useDialog } from '../../../../services/DialogService';
+import { useGeant4WorkersSimulation } from '../../../../services/Geant4WorkersSimulationContextProvider';
 import { useLoader } from '../../../../services/LoaderService';
 import { useRestSimulation } from '../../../../services/RestSimulationContextProvider';
 import { titleToKebabCase } from '../../../../ThreeEditor/components/Dialog/CustomDialog';
@@ -24,7 +25,10 @@ const SimulationCardHelpers = ({
 	yaptideEditor
 }: SimulationCardHelpersProps) => {
 	const { loadFromJson } = useLoader();
-	const { getJobLogs, getJobInputs, getFullSimulationData, getJobResults } = useRestSimulation();
+	const restHandlers = useRestSimulation();
+	const geant4WorkerHandlers = useGeant4WorkersSimulation();
+	const { getJobLogs, getJobInputs, getFullSimulationData, getJobResults } =
+		simulationStatus.metadata.simType === 'Geant4' ? geant4WorkerHandlers : restHandlers;
 	const { enqueueSnackbar } = useSnackbar();
 	const { open: openSaveFileDialog } = useDialog('saveFile');
 
