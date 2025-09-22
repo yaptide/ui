@@ -16,6 +16,7 @@ export default class Geant4Worker {
 	private depsLoaded = false;
 	private startTime: number = Date.now();
 	private endTime: number | null = null;
+	private simulatedPrimaries: number = 0;
 
 	// To make possible to await calls to this class until
 	// worker returns the message, we add a unique index to each worker call,
@@ -49,6 +50,10 @@ export default class Geant4Worker {
 
 	getEndTime() {
 		return this.endTime ? new Date(this.endTime).toISOString() : null;
+	}
+
+	getSimulatedPrimaries() {
+		return this.simulatedPrimaries;
 	}
 
 	private handleStatus(data: any) {
@@ -99,6 +104,10 @@ export default class Geant4Worker {
 					if (event.data.idx) {
 						this.resolvePromiseIfExists(event.data.idx);
 					}
+
+					break;
+				case 'progress':
+					this.simulatedPrimaries = event.data.data;
 
 					break;
 				case 'error':

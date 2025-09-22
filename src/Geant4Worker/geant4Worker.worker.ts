@@ -242,6 +242,13 @@ ctx.onmessage = async (event: MessageEvent<Geant4WorkerMessage>) => {
 			try {
 				debugLog('Starting Geant4 simulation...');
 				const result = await mod.then(module => {
+					const progressCallback = (progress: number) => {
+						postMessage({ type: 'progress', data: progress });
+					};
+
+					const progressCallbackPtr = module.addFunction(progressCallback, 'vi');
+					module.Geant4SetProgressFunction(progressCallbackPtr);
+
 					return module.Geant4GDMRun(geometryDefinition, macroFile);
 				});
 

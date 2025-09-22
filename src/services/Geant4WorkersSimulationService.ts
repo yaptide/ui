@@ -119,6 +119,19 @@ export default class Geant4WorkersSimulationService implements SimulationService
 		};
 	}
 
+	private getJobTasksStatus(jobId: string) {
+		if (!this.jobsEditorJson.hasOwnProperty(jobId)) {
+			return [];
+		}
+
+		return [
+			{
+				requestedPrimaries: this.jobsEditorJson[jobId].beam.numberOfParticles,
+				simulatedPrimaries: this.workers[jobId].getSimulatedPrimaries()
+			}
+		];
+	}
+
 	async getJobStatus(...args: RequestGetJobStatus): Promise<JobStatusData | undefined> {
 		const [info, cache = true, beforeCacheWrite, signal] = args;
 		const { jobId } = info;
@@ -138,7 +151,8 @@ export default class Geant4WorkersSimulationService implements SimulationService
 				server: '',
 				platform: 'DIRECT'
 			},
-			jobState: this.workers[jobId].getState()
+			jobState: this.workers[jobId].getState(),
+			jobTasksStatus: this.getJobTasksStatus(jobId)
 		};
 	}
 
@@ -210,6 +224,7 @@ export default class Geant4WorkersSimulationService implements SimulationService
 				server: '',
 				platform: 'DIRECT'
 			},
+			jobTasksStatus: this.getJobTasksStatus(jobId),
 			input: {
 				inputType: this.jobsMetadata[jobId].inputType,
 				inputFiles: this.inputFiles[jobId] as InputFilesRecord<Geant4InputFilesNames, ''>,
@@ -279,7 +294,8 @@ export default class Geant4WorkersSimulationService implements SimulationService
 					server: '',
 					platform: 'DIRECT'
 				},
-				jobState: worker.getState()
+				jobState: worker.getState(),
+				jobTasksStatus: this.getJobTasksStatus(jobId)
 			})),
 			message: ''
 		};
@@ -301,7 +317,8 @@ export default class Geant4WorkersSimulationService implements SimulationService
 				server: '',
 				platform: 'DIRECT'
 			},
-			jobState: worker.getState()
+			jobState: worker.getState(),
+			jobTasksStatus: this.getJobTasksStatus(jobId)
 		}));
 	}
 
