@@ -299,13 +299,17 @@ export function RunSimulationForm({
 						marginBottom: theme.spacing(2)
 					}
 				}}>
-				<StyledExclusiveToggleButtonGroup
-					fullWidth
-					value={simulationRunType}
-					onChange={handleRunTypeChange}>
-					<ToggleButton value='direct'>Direct Run</ToggleButton>
-					<ToggleButton value='batch'>Batch Run</ToggleButton>
-				</StyledExclusiveToggleButtonGroup>
+				{currentSimulator !== SimulatorType.GEANT4 ? (
+					<StyledExclusiveToggleButtonGroup
+						fullWidth
+						value={simulationRunType}
+						onChange={handleRunTypeChange}>
+						<ToggleButton value='direct'>Direct Run</ToggleButton>
+						<ToggleButton value='batch'>Batch Run</ToggleButton>
+					</StyledExclusiveToggleButtonGroup>
+				) : (
+					<Box sx={{ pt: theme.spacing(1) }} />
+				)}
 				{simulationRunType === 'batch' && (
 					<FormGroup>
 						<FormControlLabel
@@ -332,8 +336,9 @@ export function RunSimulationForm({
 							size='small'
 							type='number'
 							label='Number of tasks'
+							disabled={currentSimulator === SimulatorType.GEANT4}
 							error={isNaN(nTasks)}
-							value={nTasks}
+							value={currentSimulator === SimulatorType.GEANT4 ? 1 : nTasks}
 							onChange={e => setNTasks(Math.max(1, parseInt(e.target.value)))}
 						/>
 						<TextField
