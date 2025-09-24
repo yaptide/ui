@@ -20,6 +20,11 @@ export type ResultsSimulationDataWithSource = DataWithSource<
 	FullSimulationData
 >;
 
+interface JobIdWithSource {
+	jobId: string;
+	source: 'rest' | 'worker';
+}
+
 export interface StoreContext {
 	yaptideEditor?: YaptideEditor;
 	setSimulatorType: (simulator: SimulatorType, changingToOrFromGeant4: boolean) => void;
@@ -30,8 +35,8 @@ export interface StoreContext {
 	setResultsSimulationData: Dispatch<SetStateAction<ResultsSimulationDataWithSource | undefined>>;
 	localResultsSimulationData?: FullSimulationData[];
 	setLocalResultsSimulationData: Dispatch<SetStateAction<FullSimulationData[]>>;
-	simulationJobIdsSubmittedInSession: string[];
-	setSimulationJobIdsSubmittedInSession: Dispatch<SetStateAction<string[]>>;
+	simulationJobIdsSubmittedInSession: JobIdWithSource[];
+	setSimulationJobIdsSubmittedInSession: Dispatch<SetStateAction<JobIdWithSource[]>>;
 }
 
 const [useStore, StoreContextProvider] = createGenericContext<StoreContext>();
@@ -52,7 +57,7 @@ const Store = ({ children }: GenericContextProviderProps) => {
 	>([]);
 
 	const [simulationJobIdsSubmittedInSession, setSimulationJobIdsSubmittedInSession] = useState<
-		string[]
+		JobIdWithSource[]
 	>([]);
 	const [trackedId, setTrackedId] = useState<string>();
 

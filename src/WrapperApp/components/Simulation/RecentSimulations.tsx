@@ -1,9 +1,10 @@
 import { AccordionDetails, AccordionSummary, useTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
+import { useGeant4WorkersSimulation } from '../../../services/Geant4WorkersSimulationContextProvider';
 import { useRestSimulation } from '../../../services/RestSimulationContextProvider';
 import { useStore } from '../../../services/StoreService';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
@@ -13,11 +14,7 @@ import SimulationCardSmall from './SimulationCard/SimulationCardSmall';
 import { useBackendAliveEffect } from './SimulationsGrid/hooks/useBackendAliveEffect';
 import { useUpdateCurrentSimulationEffect } from './SimulationsGrid/hooks/useUpdateCurrentSimulationEffect';
 import SimulationsGridHelpers from './SimulationsGrid/SimulationsGridHelpers';
-import {
-	SimulationConfig,
-	SimulationHandlers,
-	SimulationState
-} from './SimulationsGrid/SimulationsGridTypes';
+import { SimulationConfig, SimulationState } from './SimulationsGrid/SimulationsGridTypes';
 
 export default function RecentSimulations() {
 	const theme = useTheme();
@@ -32,19 +29,17 @@ export default function RecentSimulations() {
 		simulationJobIdsSubmittedInSession
 	} = useStore();
 
-	const {
-		cancelJob,
-		getJobInputs,
-		getHelloWorld,
-		getPageContents,
-		getPageStatus,
-		getJobStatus,
-		getFullSimulationData
-	} = useRestSimulation();
+	const restHandlers = useRestSimulation();
+	const geant4WorkerHandlers = useGeant4WorkersSimulation();
 
 	const [isBackendAlive, setBackendAlive] = useState(false);
-	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
-	const [simulationsStatusData, setSimulationsStatusData] = useState<JobStatusData[]>();
+	const [restSimulationInfo, setRestSimulationInfo] = useState<SimulationInfo[]>([]);
+	const [geant4WorkerSimulationInfo, setGeant4WorkerSimulationInfo] = useState<SimulationInfo[]>(
+		[]
+	);
+	const [restSimulationsStatusData, setRestSimulationsStatusData] = useState<JobStatusData[]>();
+	const [geant4WorkerSimulationsStatusData, setGeant4WorkerSimulationsStatusData] =
+		useState<JobStatusData[]>();
 
 	const [controller] = useState(new AbortController());
 
@@ -63,21 +58,24 @@ export default function RecentSimulations() {
 		]
 	};
 
-	const handlers: SimulationHandlers = {
-		getPageContents,
-		getPageStatus,
-		getJobStatus,
-		getFullSimulationData,
-		cancelJob,
-		getHelloWorld,
-		getJobInputs
+	const restState: SimulationState = {
+		simulationInfo: restSimulationInfo,
+		simulationsStatusData: restSimulationsStatusData,
+		setSimulationInfo: setRestSimulationInfo,
+		setSimulationsStatusData: setRestSimulationsStatusData,
+		setResultsSimulationData,
+		setLocalResultsSimulationData,
+		goToResults: () => {},
+		setInputFiles: () => {},
+		setShowInputFilesEditor: () => {},
+		yaptideEditor
 	};
 
-	const state: SimulationState = {
-		simulationInfo,
-		simulationsStatusData,
-		setSimulationInfo,
-		setSimulationsStatusData,
+	const geant4WorkerState: SimulationState = {
+		simulationInfo: geant4WorkerSimulationInfo,
+		simulationsStatusData: geant4WorkerSimulationsStatusData,
+		setSimulationInfo: setGeant4WorkerSimulationInfo,
+		setSimulationsStatusData: setGeant4WorkerSimulationsStatusData,
 		setResultsSimulationData,
 		setLocalResultsSimulationData,
 		goToResults: () => {},
@@ -87,33 +85,100 @@ export default function RecentSimulations() {
 	};
 
 	const {
-		updateSimulationInfo,
-		updateSimulationData,
-		simulationDataInterval,
-		handleLoadResults,
-		setPageCount
-	} = SimulationsGridHelpers(config, handlers, state);
+		updateSimulationInfo: restUpdateSimulationInfo,
+		updateSimulationData: restUpdateSimulationData,
+		simulationDataInterval: restSimulationDataInterval,
+		handleLoadResults: restHandleLoadResults,
+		setPageCount: setRestPageCount
+	} = SimulationsGridHelpers(config, restHandlers, restState);
+
+	const {
+		updateSimulationInfo: geant4WorkerUpdateSimulationInfo,
+		updateSimulationData: geant4WorkerUpdateSimulationData,
+		simulationDataInterval: geant4WorkerSimulationDataInterval,
+		handleLoadResults: geant4WorkerHandleLoadResults
+	} = SimulationsGridHelpers(config, geant4WorkerHandlers, geant4WorkerState);
 
 	useBackendAliveEffect(
 		config,
-		handlers,
+		restHandlers,
 		() => {
 			if (auth.isAuthorized) {
-				updateSimulationInfo();
+				restUpdateSimulationInfo();
 			}
 		},
-		setPageCount
+		setRestPageCount
 	);
-	useUpdateCurrentSimulationEffect(config, handlers, state);
 
-	useIntervalAsync(updateSimulationData, simulationDataInterval, simulationInfo.length > 0);
+	useEffect(() => {
+		geant4WorkerUpdateSimulationInfo();
+	}, [trackedId]);
 
-	const jobIdsInSession = new Set(simulationJobIdsSubmittedInSession);
-	const simulationsToDisplay = simulationsStatusData
-		? simulationsStatusData
-				.filter(statusData => jobIdsInSession.has(statusData.jobId))
+	useUpdateCurrentSimulationEffect(config, restHandlers, restState);
+	useUpdateCurrentSimulationEffect(config, geant4WorkerHandlers, geant4WorkerState);
+
+	useIntervalAsync(
+		restUpdateSimulationData,
+		restSimulationDataInterval,
+		restSimulationInfo.length > 0
+	);
+
+	useIntervalAsync(
+		geant4WorkerUpdateSimulationData,
+		geant4WorkerSimulationDataInterval,
+		geant4WorkerSimulationInfo.length > 0
+	);
+
+	const restJobIdsInSession = new Set(
+		simulationJobIdsSubmittedInSession
+			.filter(job => job.source === 'rest')
+			.map(job => job.jobId)
+	);
+
+	const restSimulationsToDisplay = restSimulationsStatusData
+		? restSimulationsStatusData
+				.filter(statusData => restJobIdsInSession.has(statusData.jobId))
 				.slice(0, 5)
 		: [];
+
+	const geant4WorkerJobIdsInSession = new Set(
+		simulationJobIdsSubmittedInSession
+			.filter(job => job.source === 'worker')
+			.map(job => job.jobId)
+	);
+
+	const geant4WorkerSimulationsToDisplay = geant4WorkerSimulationsStatusData
+		? geant4WorkerSimulationsStatusData
+				.filter(statusData => geant4WorkerJobIdsInSession.has(statusData.jobId))
+				.slice(0, 5)
+		: [];
+
+	const simulationsToDisplay = [...restSimulationsToDisplay, ...geant4WorkerSimulationsToDisplay]
+		.sort((s1, s2) => new Date(s1.startTime).getTime() - new Date(s2.startTime).getTime())
+		.slice(0, 5);
+
+	const loadResultsFn = useCallback(
+		(simulation: SimulationInfo) => {
+			if (
+				geant4WorkerJobIdsInSession.has(simulation.jobId) &&
+				geant4WorkerHandleLoadResults
+			) {
+				return (taskId: string | null) => geant4WorkerHandleLoadResults(taskId, simulation);
+			}
+
+			if (restJobIdsInSession.has(simulation.jobId) && restHandleLoadResults) {
+				return (taskId: string | null) => restHandleLoadResults(taskId, simulation);
+			}
+
+			return (taskId: string | null) => {};
+		},
+		[
+			geant4WorkerJobIdsInSession,
+			geant4WorkerHandleLoadResults,
+			restJobIdsInSession,
+			restHandleLoadResults
+		]
+	);
 
 	return (
 		<StyledAccordion
@@ -145,9 +210,7 @@ export default function RecentSimulations() {
 					<SimulationCardSmall
 						key={simulation.jobId}
 						simulationStatus={simulation}
-						loadResults={
-							handleLoadResults && (taskId => handleLoadResults(taskId, simulation))
-						}
+						loadResults={loadResultsFn(simulation)}
 					/>
 				))}
 			</AccordionDetails>

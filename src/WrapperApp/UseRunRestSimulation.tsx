@@ -57,7 +57,10 @@ export function useRunRestSimulation(): RunSimulationFunctionType {
 		postJobFn(simData, sourceType, nTasks, simulator, simName, options, controller.signal)
 			.then(res => {
 				setTrackedId(res.jobId);
-				setSimulationJobIdsSubmittedInSession(jobIds => [res.jobId, ...jobIds]);
+				setSimulationJobIdsSubmittedInSession(jobs => [
+					{ jobId: res.jobId, source: 'rest' },
+					...jobs
+				]);
 				enqueueSnackbar('Simulation submitted', { variant: 'success' });
 			})
 			.catch(e => {

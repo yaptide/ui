@@ -46,7 +46,10 @@ export function useRunGeant4WorkerSimulation(): RunSimulationFunctionType {
 		)
 			.then(res => {
 				setTrackedId(res.jobId);
-				setSimulationJobIdsSubmittedInSession(jobIds => [res.jobId, ...jobIds]);
+				setSimulationJobIdsSubmittedInSession(jobs => [
+					{ jobId: res.jobId, source: 'worker' },
+					...jobs
+				]);
 				enqueueSnackbar('Simulation submitted', { variant: 'success' });
 			})
 			.catch(e => {
