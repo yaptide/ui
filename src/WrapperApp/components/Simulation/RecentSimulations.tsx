@@ -110,9 +110,12 @@ export default function RecentSimulations() {
 		setRestPageCount
 	);
 
-	useEffect(() => {
-		geant4WorkerUpdateSimulationInfo();
-	}, [trackedId]);
+	useBackendAliveEffect(
+		config,
+		geant4WorkerHandlers,
+		geant4WorkerUpdateSimulationInfo,
+		setRestPageCount
+	);
 
 	useUpdateCurrentSimulationEffect(config, restHandlers, restState);
 	useUpdateCurrentSimulationEffect(config, geant4WorkerHandlers, geant4WorkerState);

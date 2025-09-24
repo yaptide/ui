@@ -29,9 +29,7 @@ export const useBackendAliveEffect = (
 	}, [
 		controller.signal,
 		getHelloWorld,
-		updateSimulationInfo,
 		isBackendAlive,
-		setBackendAlive,
 		demoMode,
 		trackedId,
 		controller,
