@@ -102,7 +102,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 		[onClickGenerate]
 	);
 
-	let acceptedFiles;
+	let acceptedFiles: string;
 
 	switch (generateForSimulator) {
 		case SimulatorType.SHIELDHIT:
