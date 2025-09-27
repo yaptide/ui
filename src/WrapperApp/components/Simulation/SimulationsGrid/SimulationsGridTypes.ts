@@ -1,10 +1,11 @@
-import { FullSimulationData, JobInputs } from '../../../../services/ShSimulatorService';
 import { ResultsSimulationDataWithSource } from '../../../../services/StoreService';
 import { YaptideEditor } from '../../../../ThreeEditor/js/YaptideEditor';
 import {
+	JobInputs,
 	RequestGetJobInputs,
 	RequestGetPageContents,
-	RequestParam
+	RequestParam,
+	SimulatorType
 } from '../../../../types/RequestTypes';
 import {
 	JobStatusData,
@@ -14,6 +15,7 @@ import {
 	SimulationInputFiles,
 	StatusState
 } from '../../../../types/ResponseTypes';
+import { FullSimulationData } from '../../../../types/SimulationService';
 import { PageNavigationProps, PageParamProps } from '../SimulationPanelBar';
 
 export interface SimulationConfig {
@@ -23,6 +25,13 @@ export interface SimulationConfig {
 	isBackendAlive: boolean;
 	setBackendAlive: React.Dispatch<React.SetStateAction<boolean>>;
 	statusStates: StatusState[];
+}
+
+export interface SimulationsGridProps {
+	goToResults?: () => void;
+	setInputFiles: (inputFiles: SimulationInputFiles | undefined) => void;
+	setShowInputFilesEditor: (show: boolean) => void;
+	simulator: SimulatorType;
 }
 
 export interface SimulationHandlers {

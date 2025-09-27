@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 
 import { useConfig } from '../../../../../config/ConfigService';
-import { useShSimulation } from '../../../../../services/ShSimulatorService';
+import { useRestSimulation } from '../../../../../services/RestSimulationContextProvider';
 import { useStore } from '../../../../../services/StoreService';
 import {
 	JobStatusData,
 	SimulationInfo,
 	ValidStatusStates
 } from '../../../../../types/ResponseTypes';
-import BackendSimulationsHelpers from '../BackendSimulationsHelpers';
-import { SimulationConfig, SimulationHandlers, SimulationState } from '../BackendSimulationsTypes';
+import SimulationGridHelpers from '../SimulationsGridHelpers';
+import { SimulationConfig, SimulationHandlers, SimulationState } from '../SimulationsGridTypes';
 
 export const useBackendAliveEffect = (
 	config: SimulationConfig,
@@ -62,7 +62,7 @@ export const useIsBackendAlive = () => {
 		statusStates: ValidStatusStates
 	};
 
-	const handlers = useShSimulation();
+	const handlers = useRestSimulation();
 
 	const state: SimulationState = {
 		simulationInfo,
@@ -75,11 +75,7 @@ export const useIsBackendAlive = () => {
 		setShowInputFilesEditor: () => {}
 	};
 
-	const { updateSimulationInfo, setPageCount } = BackendSimulationsHelpers(
-		config,
-		handlers,
-		state
-	);
+	const { updateSimulationInfo, setPageCount } = SimulationGridHelpers(config, handlers, state);
 
 	useBackendAliveEffect(config, handlers, updateSimulationInfo, setPageCount);
 

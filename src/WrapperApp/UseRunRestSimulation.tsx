@@ -1,7 +1,7 @@
 import { enqueueSnackbar } from 'notistack';
 import { useState } from 'react';
 
-import { useShSimulation } from '../services/ShSimulatorService';
+import { useRestSimulation } from '../services/RestSimulationContextProvider';
 import { useStore } from '../services/StoreService';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulatorType } from '../types/RequestTypes';
@@ -13,12 +13,12 @@ import {
 	SimulationSourceType
 } from './components/Simulation/RunSimulationForm';
 
-export function useRunSimulation(): RunSimulationFunctionType {
+export function useRunRestSimulation(): RunSimulationFunctionType {
 	const { setTrackedId, setSimulationJobIdsSubmittedInSession } = useStore();
 	const [controller] = useState(new AbortController());
-	const { postJobDirect, postJobBatch } = useShSimulation();
+	const { postJob } = useRestSimulation();
 	const sendSimulationRequest = (
-		postJobFn: typeof postJobDirect,
+		postJobFn: typeof postJob,
 		runType: SimulationRunType,
 		editorJson: EditorJson,
 		inputFiles: Partial<SimulationInputFiles>,
@@ -54,10 +54,22 @@ export function useRunSimulation(): RunSimulationFunctionType {
 			};
 		}
 
-		postJobFn(simData, sourceType, nTasks, simulator, simName, options, controller.signal)
+		postJobFn(
+			simData,
+			sourceType,
+			runType,
+			nTasks,
+			simulator,
+			simName,
+			options,
+			controller.signal
+		)
 			.then(res => {
 				setTrackedId(res.jobId);
-				setSimulationJobIdsSubmittedInSession(jobIds => [res.jobId, ...jobIds]);
+				setSimulationJobIdsSubmittedInSession(jobs => [
+					{ jobId: res.jobId, source: 'rest' },
+					...jobs
+				]);
 				enqueueSnackbar('Simulation submitted', { variant: 'success' });
 			})
 			.catch(e => {
@@ -66,10 +78,5 @@ export function useRunSimulation(): RunSimulationFunctionType {
 			});
 	};
 
-	return (runType, ...rest) =>
-		sendSimulationRequest(
-			runType === 'direct' ? postJobDirect : postJobBatch,
-			runType,
-			...rest
-		);
+	return (runType, ...rest) => sendSimulationRequest(postJob, runType, ...rest);
 }

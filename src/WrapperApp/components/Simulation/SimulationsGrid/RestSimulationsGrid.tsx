@@ -1,46 +1,25 @@
 import { useState } from 'react';
 
 import { useConfig } from '../../../../config/ConfigService';
-import { useShSimulation } from '../../../../services/ShSimulatorService';
+import { useRestSimulation } from '../../../../services/RestSimulationContextProvider';
 import { useStore } from '../../../../services/StoreService';
-import { SimulatorType } from '../../../../types/RequestTypes';
-import {
-	JobStatusData,
-	SimulationInfo,
-	SimulationInputFiles,
-	ValidStatusStates
-} from '../../../../types/ResponseTypes';
+import { JobStatusData, SimulationInfo, ValidStatusStates } from '../../../../types/ResponseTypes';
 import useIntervalAsync from '../../../../util/hooks/useIntervalAsync';
 import DeleteSimulationModal from '../Modal/DeleteSimulationModal';
-import { PaginatedSimulationsFromBackend } from '../SimulationCardGrid';
-import BackendSimulationsHelpers from './BackendSimulationsHelpers';
-import { SimulationConfig, SimulationHandlers, SimulationState } from './BackendSimulationsTypes';
+import { PaginatedSimulationsGrid } from '../SimulationCardGrid';
 import { useBackendAliveEffect } from './hooks/useBackendAliveEffect';
 import { useUpdateCurrentSimulationEffect } from './hooks/useUpdateCurrentSimulationEffect';
+import SimulationsGridHelpers from './SimulationsGridHelpers';
+import { SimulationConfig, SimulationsGridProps, SimulationState } from './SimulationsGridTypes';
 
-interface BackendSimulationsProps {
-	goToResults?: () => void;
-	setInputFiles: (inputFiles: SimulationInputFiles | undefined) => void;
-	setShowInputFilesEditor: (show: boolean) => void;
-	simulator: SimulatorType;
-}
-
-export const BackendSimulations = (props: BackendSimulationsProps) => {
+export const RestSimulationsGrid = (props: SimulationsGridProps) => {
 	const { goToResults, setInputFiles, setShowInputFilesEditor } = props;
 
 	const { demoMode } = useConfig();
 	const { yaptideEditor, trackedId, setResultsSimulationData, setLocalResultsSimulationData } =
 		useStore();
 
-	const {
-		cancelJob,
-		getJobInputs,
-		getHelloWorld,
-		getPageContents,
-		getPageStatus,
-		getJobStatus,
-		getFullSimulationData
-	} = useShSimulation();
+	const handlers = useRestSimulation();
 
 	const [isBackendAlive, setBackendAlive] = useState(false);
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
@@ -55,16 +34,6 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 		isBackendAlive,
 		setBackendAlive,
 		statusStates: ValidStatusStates
-	};
-
-	const handlers: SimulationHandlers = {
-		getPageContents,
-		getPageStatus,
-		getJobStatus,
-		getFullSimulationData,
-		cancelJob,
-		getHelloWorld,
-		getJobInputs
 	};
 
 	const state: SimulationState = {
@@ -94,7 +63,7 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 		isModalOpen,
 		setIsModalOpen,
 		submitDelete
-	} = BackendSimulationsHelpers(config, handlers, state);
+	} = SimulationsGridHelpers(config, handlers, state);
 
 	useBackendAliveEffect(config, handlers, updateSimulationInfo, setPageCount);
 	useUpdateCurrentSimulationEffect(config, handlers, state);
@@ -103,7 +72,7 @@ export const BackendSimulations = (props: BackendSimulationsProps) => {
 
 	return (
 		<>
-			<PaginatedSimulationsFromBackend
+			<PaginatedSimulationsGrid
 				simulations={simulationsStatusData}
 				pageData={pageData}
 				handleLoadResults={handleLoadResults}

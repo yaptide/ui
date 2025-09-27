@@ -2,7 +2,7 @@ import FolderOffIcon from '@mui/icons-material/FolderOff';
 import { Box, CircularProgress, GridProps, Theme, Typography, useTheme } from '@mui/material';
 
 import { SimulatorType } from '../../../types/RequestTypes';
-import { JobStatusData, SimulationInputFiles } from '../../../types/ResponseTypes';
+import { JobStatusData, SimulationInfo, SimulationInputFiles } from '../../../types/ResponseTypes';
 import SimulationCard from './SimulationCard/SimulationCard';
 import {
 	PageNavigationProps,
@@ -12,7 +12,7 @@ import {
 
 type SimulationCardGridProps = {
 	simulations?: JobStatusData[];
-	handleLoadResults?: (taskId: string | null, simulation: unknown) => void;
+	handleLoadResults?: (taskId: string | null, simulation: SimulationInfo) => void;
 	handleShowInputFiles?: (inputFiles?: SimulationInputFiles) => void;
 	handleDelete?: (jobId: string) => void;
 	handleCancel?: (jobId: string) => void;
@@ -109,7 +109,7 @@ type SimulationsFromBackendProps = PaginatedCardGridProps & {
 	simulator: SimulatorType;
 };
 
-export function PaginatedSimulationsFromBackend({
+export function PaginatedSimulationsGrid({
 	isBackendAlive,
 	simulator,
 	children,
