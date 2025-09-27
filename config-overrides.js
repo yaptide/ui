@@ -1,3 +1,5 @@
+const webpack = require('webpack');
+
 module.exports = function override(webpackConfig) {
 	// react-dnd
 	webpackConfig.module.rules.unshift({
@@ -20,6 +22,12 @@ module.exports = function override(webpackConfig) {
 		include: /node_modules/,
 		type: 'javascript/auto'
 	});
+
+	webpackConfig.plugins.push(
+		new webpack.IgnorePlugin({
+			resourceRegExp: /geant4_wasm\.wasm$/
+		})
+	);
 
 	return webpackConfig;
 };
