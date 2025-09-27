@@ -217,13 +217,16 @@ ctx.onmessage = async (event: MessageEvent<Geant4WorkerMessage>) => {
 			await mod.then(module => {
 				const fileName = event.data.data as string;
 
-				const fileContent = module.FS.readFile(fileName, { encoding: 'utf8' });
+				// 'as unknown as string' because TS doesn't know that when encoding is utf8, a string is returned
+				const fileContent = module.FS.readFile(fileName, {
+					encoding: 'utf8'
+				}) as unknown as string;
 
 				ctx.postMessage({
 					type: Geant4WorkerMessageType.FILE_RESPONSE,
 					data: {
 						name: fileName,
-						data: new TextDecoder().decode(fileContent)
+						data: fileContent
 					} as Geant4WorkerMessageFile,
 					idx: event.data.idx
 				} as Geant4WorkerMessage);
@@ -256,11 +259,6 @@ ctx.onmessage = async (event: MessageEvent<Geant4WorkerMessage>) => {
 					type: 'result',
 					result
 				});
-
-				// TODO: Fetch the files (we need actual filenames on the FS for that)
-				// const result_data = await mod.then((module) => {
-				// 	return module.FS.readFile("cylz_fluence.txt", { encoding: "utf8" });
-				// });
 			} catch (error: unknown) {
 				ctx.postMessage({
 					type: 'error',

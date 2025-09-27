@@ -1,4 +1,5 @@
 import Geant4Worker from '../Geant4Worker/Geant4Worker';
+import { Estimator, Page1D } from '../JsRoot/GraphData';
 import { PythonConverterContext } from '../PythonConverter/PythonConverterService';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import {
@@ -18,14 +19,13 @@ import {
 	SimulatorType
 } from '../types/RequestTypes';
 import {
+	EstimatorItem,
 	Geant4InputFilesNames,
 	InputFilesRecord,
 	JobStatusData,
-	JobUnknownStatus,
 	ResponseGetPageContents,
 	ResponsePostJob,
 	SimulationInfo,
-	SimulationInputFiles,
 	StatusState
 } from '../types/ResponseTypes';
 import { FullSimulationData, SimulationService } from '../types/SimulationService';
@@ -42,15 +42,31 @@ export default class Geant4WorkersSimulationService implements SimulationService
 	convertJSON: PythonConverterContext['convertJSON'];
 	workers: Record<JobId, Geant4Worker>;
 	inputFiles: Record<JobId, Record<string, string>>;
+	estimators: Record<JobId, EstimatorItem[]>;
+	resultsForEstimators: Record<JobId, Record<string, Estimator>>;
 	jobsEditorJson: Record<JobId, EditorJson>;
 	jobsMetadata: Record<JobId, JobMetadata>;
+
+	responseCache: Record<
+		'jobInputs' | 'jobStatusData' | 'jobResults' | 'estimatorsPages' | 'pageStatus',
+		Record<JobId, any>
+	>;
 
 	constructor(convertJSON: PythonConverterContext['convertJSON']) {
 		this.convertJSON = convertJSON;
 		this.workers = {};
 		this.inputFiles = {};
+		this.estimators = {};
+		this.resultsForEstimators = {};
 		this.jobsEditorJson = {};
 		this.jobsMetadata = {};
+		this.responseCache = {
+			jobInputs: {},
+			jobStatusData: {},
+			jobResults: {},
+			estimatorsPages: {},
+			pageStatus: {}
+		};
 	}
 
 	async helloWorld(signal?: AbortSignal): Promise<boolean> {
@@ -101,11 +117,15 @@ export default class Geant4WorkersSimulationService implements SimulationService
 	async getJobInputs(...args: RequestGetJobInputs): Promise<JobInputs | undefined> {
 		const [info, signal, cache = true, beforeCacheWrite] = args;
 
+		if (this.responseCache.jobInputs.hasOwnProperty(info.jobId)) {
+			return this.responseCache.jobInputs[info.jobId];
+		}
+
 		if (!this.inputFiles.hasOwnProperty(info.jobId)) {
 			return undefined;
 		}
 
-		return {
+		this.responseCache.jobInputs[info.jobId] = {
 			jobId: info.jobId,
 			input: {
 				inputType: this.jobsMetadata[info.jobId].inputType,
@@ -116,7 +136,11 @@ export default class Geant4WorkersSimulationService implements SimulationService
 				...{ inputJson: this.jobsEditorJson[info.jobId] } // add iff exists
 			},
 			message: ''
-		};
+		} as JobInputs;
+
+		if (cache) beforeCacheWrite?.(info.jobId, this.responseCache.jobInputs[info.jobId]);
+
+		return this.responseCache.jobInputs[info.jobId];
 	}
 
 	private getJobTasksStatus(jobId: string) {
@@ -136,11 +160,15 @@ export default class Geant4WorkersSimulationService implements SimulationService
 		const [info, cache = true, beforeCacheWrite, signal] = args;
 		const { jobId } = info;
 
+		if (this.responseCache.jobStatusData.hasOwnProperty(info.jobId)) {
+			return this.responseCache.jobStatusData[info.jobId];
+		}
+
 		if (!this.workers.hasOwnProperty(info.jobId)) {
 			return undefined;
 		}
 
-		return {
+		this.responseCache.jobStatusData[info.jobId] = {
 			jobId,
 			title: this.jobsMetadata[jobId]?.title,
 			startTime: this.workers[jobId].getStartTime().toString(),
@@ -153,7 +181,11 @@ export default class Geant4WorkersSimulationService implements SimulationService
 			},
 			jobState: this.workers[jobId].getState(),
 			jobTasksStatus: this.getJobTasksStatus(jobId)
-		};
+		} as JobStatusData;
+
+		if (cache) beforeCacheWrite?.(jobId, this.responseCache.jobStatusData[info.jobId]);
+
+		return this.responseCache.jobStatusData[info.jobId];
 	}
 
 	async getJobLogs(...args: RequestGetJobLogs): Promise<JobLogs | undefined> {
@@ -171,34 +203,186 @@ export default class Geant4WorkersSimulationService implements SimulationService
 		};
 	}
 
+	async hydrateResults(jobId: string) {
+		if (
+			!this.workers.hasOwnProperty(jobId) ||
+			this.workers[jobId].getState() !== StatusState.COMPLETED
+		) {
+			return;
+		}
+
+		let fileNames: string[] = [];
+		this.inputFiles[jobId]['run.mac'].split('\n').forEach(line => {
+			if (line.startsWith('/score/dumpQuantityToFile')) {
+				fileNames.push(line.split(' ').at(-1)!);
+			}
+		});
+
+		const fileContents = await Promise.all(
+			fileNames.map(fileName => this.workers[jobId].fetchResultsFile(fileName))
+		);
+
+		// TODO: find a way to terminate & destroy the worker after fetching the files to free up memory
+		// TODO: keeping in mind, that this method can be called multiple times, simultaneously
+
+		const parsedContents = fileContents
+			.map(file => (file ? this.parseResultFile(file) : undefined))
+			.filter(v => !!v);
+
+		const estimatorsNames = new Set(parsedContents.map(c => c?.metadata.meshName))
+			.values()
+			.toArray();
+
+		const estimatorsMetadata: { [k: string]: EstimatorItem } = Object.fromEntries(
+			estimatorsNames.map(name => [name, { name, pagesMetadata: [] }])
+		);
+
+		const resultsPerEstimator: { [k: string]: Estimator } = Object.fromEntries(
+			estimatorsNames.map(name => [name, { name, pages: [] }])
+		);
+
+		for (const content of parsedContents) {
+			estimatorsMetadata[content.metadata.meshName].pagesMetadata.push({
+				pageDimension: content.metadata.dimensions,
+				pageName: content.metadata.scorerName,
+				pageNumber: estimatorsMetadata[content?.metadata.meshName].pagesMetadata.length
+			});
+
+			resultsPerEstimator[content.metadata.meshName].pages.push({
+				dimensions: content.metadata.dimensions,
+				axisDim1: {
+					name: 'x',
+					values: content.results.x.map(v => parseFloat(v)),
+					unit: ''
+				},
+				data: { name: 'y', values: content.results.y.map(v => parseFloat(v)), unit: '' },
+				metadata: {}
+			} as Page1D);
+		}
+
+		this.estimators[jobId] = Object.values(estimatorsMetadata);
+		this.resultsForEstimators[jobId] = resultsPerEstimator;
+	}
+
+	private parseResultFile(content: string) {
+		if (content == '') {
+			return undefined;
+		}
+
+		// file header should look like this (3rd line may be different):
+		//
+		// # mesh name: <meshName>
+		// # primitive scorer name: <scorerName>
+		// # iX, iY, iZ, total(value) [percm2], total(val^2), entry
+		//
+		// then, csv data follows
+
+		const lines = content.split('\n');
+		const meshName = lines[0].split(' ').at(-1)!;
+		const scorerName = lines[1].split(' ').at(-1)!;
+		const numColumns = lines[2].split(',').length;
+
+		const columns: string[][] = Array.from({ length: numColumns }).map(_ => []);
+
+		for (const line of lines.slice(3)) {
+			line.split(',').forEach((val, i) => columns[i].push(val));
+		}
+
+		const numUniqueValues = columns.slice(0, 3).map(col => new Set(col).size);
+		const dimensions = (numUniqueValues.map(n => (n > 1 ? 1 : 0)) as number[]).reduce(
+			(acc, v) => acc + v
+		);
+
+		if (dimensions != 1) {
+			console.warn('Results with dim != 1 are currently unsupported');
+
+			return undefined;
+		}
+
+		return {
+			metadata: { dimensions, meshName, scorerName },
+			results: { x: columns[numUniqueValues.findIndex(n => n > 1)], y: columns[3] }
+		};
+	}
+
 	async getJobResults(...args: RequestGetJobResults): Promise<JobResults | undefined> {
 		const [info, signal, cache = true, beforeCacheWrite] = args;
 		const { jobId } = info;
+
+		if (this.responseCache.jobResults.hasOwnProperty(jobId)) {
+			return this.responseCache.jobResults[jobId];
+		}
 
 		if (!this.workers.hasOwnProperty(info.jobId)) {
 			return undefined;
 		}
 
-		return {
+		let estimators: Estimator[] = [];
+
+		if (
+			this.workers.hasOwnProperty(jobId) &&
+			this.workers[jobId].getState() === StatusState.COMPLETED
+		) {
+			if (!this.estimators.hasOwnProperty(jobId)) {
+				await this.hydrateResults(jobId);
+			}
+
+			estimators = [...Object.values(this.resultsForEstimators[jobId])];
+		}
+
+		const results = {
 			jobId,
-			estimators: [],
+			estimators,
 			message: ''
 		};
+
+		if (estimators.length > 0) {
+			this.responseCache.jobResults[jobId] = results;
+
+			if (cache) beforeCacheWrite?.(jobId, results);
+		}
+
+		return results;
 	}
 
 	async getEstimatorsPages(...args: RequestGetJobResult): Promise<JobResults | undefined> {
 		const [info, signal, cache = true, beforeCacheWrite] = args;
 		const { jobId, estimatorName, pageNumbers } = info;
 
+		if (this.responseCache.estimatorsPages.hasOwnProperty(jobId)) {
+			return this.responseCache.estimatorsPages[jobId];
+		}
+
 		if (!this.workers.hasOwnProperty(info.jobId)) {
 			return undefined;
 		}
 
-		return {
+		let estimators: Estimator[] = [];
+
+		if (
+			this.workers.hasOwnProperty(jobId) &&
+			this.workers[jobId].getState() === StatusState.COMPLETED
+		) {
+			if (!this.estimators.hasOwnProperty(jobId)) {
+				await this.hydrateResults(jobId);
+			}
+
+			estimators = [...Object.values(this.resultsForEstimators[jobId])];
+		}
+
+		const results = {
 			jobId,
-			estimators: [],
+			estimators,
 			message: ''
 		};
+
+		if (estimators.length > 0) {
+			this.responseCache.estimatorsPages[jobId] = results;
+
+			if (cache) beforeCacheWrite?.(jobId, results);
+		}
+
+		return results;
 	}
 
 	async getFullSimulationData(
@@ -211,6 +395,19 @@ export default class Geant4WorkersSimulationService implements SimulationService
 
 		if (!this.workers.hasOwnProperty(jobId)) {
 			return undefined;
+		}
+
+		let estimators: Estimator[] = [];
+
+		if (
+			this.workers.hasOwnProperty(jobId) &&
+			this.workers[jobId].getState() === StatusState.COMPLETED
+		) {
+			if (!this.estimators.hasOwnProperty(jobId)) {
+				await this.hydrateResults(jobId);
+			}
+
+			estimators = [...Object.values(this.resultsForEstimators[jobId])];
 		}
 
 		return {
@@ -230,7 +427,7 @@ export default class Geant4WorkersSimulationService implements SimulationService
 				inputFiles: this.inputFiles[jobId] as InputFilesRecord<Geant4InputFilesNames, ''>,
 				...{ inputJson: this.jobsEditorJson[jobId] } // add iff exists
 			},
-			estimators: []
+			estimators
 		};
 	}
 
@@ -304,22 +501,37 @@ export default class Geant4WorkersSimulationService implements SimulationService
 	async getPageStatus(...args: RequestGetPageStatus): Promise<JobStatusData[] | undefined> {
 		const [infoList, cache = true, beforeCacheWrite, signal] = args;
 		const jobIds = new Set(infoList.map(il => il.jobId));
+
 		const workersEntries = Object.entries(this.workers).filter(([jobId]) => jobIds.has(jobId));
 
-		return workersEntries.map(([jobId, worker]) => ({
-			jobId,
-			title: this.jobsMetadata[jobId]?.title,
-			startTime: worker.getStartTime().toString(),
-			endTime: worker.getEndTime()?.toString(),
-			metadata: {
-				inputType: this.jobsMetadata[jobId].inputType,
-				simType: 'Geant4',
-				server: '',
-				platform: 'DIRECT'
-			},
-			jobState: worker.getState(),
-			jobTasksStatus: this.getJobTasksStatus(jobId)
-		}));
+		return workersEntries.map(([jobId, worker]) => {
+			if (this.responseCache.pageStatus.hasOwnProperty(jobId)) {
+				return this.responseCache.pageStatus[jobId];
+			}
+
+			const response = {
+				jobId,
+				title: this.jobsMetadata[jobId]?.title,
+				startTime: worker.getStartTime().toString(),
+				endTime: worker.getEndTime()?.toString(),
+				metadata: {
+					inputType: this.jobsMetadata[jobId].inputType,
+					simType: 'Geant4',
+					server: '',
+					platform: 'DIRECT'
+				},
+				jobState: worker.getState(),
+				jobTasksStatus: this.getJobTasksStatus(jobId)
+			} as JobStatusData;
+
+			if (worker.getState() === StatusState.COMPLETED) {
+				this.responseCache.pageStatus[jobId] = response;
+
+				if (cache) beforeCacheWrite?.(jobId, response);
+			}
+
+			return response;
+		});
 	}
 
 	cancelJob(info: SimulationInfo, signal?: AbortSignal | undefined): Promise<void> {

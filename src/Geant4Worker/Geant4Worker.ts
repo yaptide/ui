@@ -25,18 +25,18 @@ export default class Geant4Worker {
 	idx: number = 1;
 	resolvers: { [k: number]: (value: any) => void } = {};
 
-	private makePromise(idx: number) {
-		return new Promise(resolve => {
+	private makePromise<T>(idx: number) {
+		return new Promise<T>(resolve => {
 			this.resolvers[idx] = resolve;
 		});
 	}
 
-	private resolvePromiseIfExists(idx: number) {
+	private resolvePromiseIfExists(idx: number, value: any) {
 		if (!this.resolvers.hasOwnProperty(idx)) {
 			return;
 		}
 
-		this.resolvers[idx](null);
+		this.resolvers[idx](value);
 		delete this.resolvers[idx];
 	}
 
@@ -83,13 +83,11 @@ export default class Geant4Worker {
 				case 'init':
 					this.isInitialized = true;
 
-					this.resolvePromiseIfExists(promiseIdx);
+					this.resolvePromiseIfExists(promiseIdx, null);
 
 					break;
 				case 'result':
 					console.log('Result:', event.data.result);
-					this.worker?.terminate();
-					this.worker = undefined;
 					this.endTime = Date.now();
 					this.state = StatusState.COMPLETED;
 
@@ -102,7 +100,7 @@ export default class Geant4Worker {
 					this.handleStatus(event.data.data);
 
 					if (event.data.idx) {
-						this.resolvePromiseIfExists(event.data.idx);
+						this.resolvePromiseIfExists(event.data.idx, null);
 					}
 
 					break;
@@ -118,12 +116,23 @@ export default class Geant4Worker {
 					}
 
 					break;
+				case Geant4WorkerMessageType.FILE_RESPONSE:
+					if (event.data.idx) {
+						this.resolvePromiseIfExists(event.data.idx, event.data.data.data);
+					}
+
+					break;
 				default:
 					console.error('Unknown message type:', event.data.type, event.data);
 			}
 		};
 
 		return this.makePromise(promiseIdx);
+	}
+
+	destroy() {
+		this.worker?.terminate();
+		this.worker = undefined;
 	}
 
 	async loadDeps() {
@@ -189,5 +198,18 @@ export default class Geant4Worker {
 		this.worker.postMessage({ type: Geant4WorkerMessageType.RUN_SIMULATION });
 		this.state = StatusState.RUNNING;
 		this.startTime = Date.now();
+	}
+
+	async fetchResultsFile(name: string) {
+		if (!this.worker || this.state !== StatusState.COMPLETED) {
+			console.error('Worker state is invalid.');
+
+			return;
+		}
+
+		const idx = this.idx++;
+		this.worker.postMessage({ type: Geant4WorkerMessageType.READ_FILE, data: name, idx });
+
+		return this.makePromise<string>(idx);
 	}
 }
