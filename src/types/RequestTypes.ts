@@ -1,7 +1,15 @@
-import { JobInputs, JobLogs, JobResults } from '../services/ShSimulatorService';
+import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
-import { JobStatusData, SimulationInfo, SimulationInputFiles, StatusState } from './ResponseTypes';
+import {
+	JobStatusData,
+	ResponseGetJobInputs,
+	ResponseGetJobLogs,
+	ResponseGetJobResults,
+	SimulationInfo,
+	SimulationInputFiles,
+	StatusState
+} from './ResponseTypes';
 import { Flatten } from './TypeTransformUtil';
 
 /* ------------Utility types------------ */
@@ -68,6 +76,24 @@ type SimInfoParam = [info: SimulationInfo];
 type SimInfoArrayParam = [infoList: Array<SimulationInfo>];
 
 type InputConvertParam = [simData: EditorJson];
+
+export type JobLogs = {
+	jobId: string;
+} & ResponseGetJobLogs;
+
+export type JobInputs = {
+	jobId: string;
+} & ResponseGetJobInputs;
+
+export type JobResults = {
+	jobId: string;
+} & ResponseGetJobResults;
+
+export type SpecificEstimator = {
+	jobId: string;
+	estimators: Estimator[];
+	message: string;
+};
 
 /* ------------------------------------ */
 // Types for request functions

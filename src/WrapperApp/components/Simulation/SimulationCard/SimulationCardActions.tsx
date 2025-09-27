@@ -1,7 +1,6 @@
 import { Button, ButtonGroup, CardActions } from '@mui/material';
 import { SnackbarKey } from 'notistack';
 
-import { FullSimulationData } from '../../../../services/ShSimulatorService';
 import { ResultsSimulationDataWithSource } from '../../../../services/StoreService';
 import { YaptideEditor } from '../../../../ThreeEditor/js/YaptideEditor';
 import {

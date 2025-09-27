@@ -1,7 +1,7 @@
 import { Box, CircularProgress, useTheme } from '@mui/material';
 
 import { generateGraphs } from '../../../../JsRoot/GraphData';
-import { FullSimulationData } from '../../../../services/ShSimulatorService';
+import { FullSimulationData } from '../../../../types/SimulationService';
 import { EstimatorResults } from '../ResultsPanel';
 import TablePage0D from '../ResultsTable';
 

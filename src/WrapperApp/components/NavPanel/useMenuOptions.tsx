@@ -6,7 +6,7 @@ import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
 import { ReactElement, ReactNode } from 'react';
 
-import { FullSimulationData } from '../../../services/ShSimulatorService';
+import { FullSimulationData } from '../../../types/SimulationService';
 
 export type MenuOption = {
 	label: string;
@@ -20,11 +20,7 @@ export type MenuOption = {
 	separator?: boolean;
 };
 
-export function useMenuOptions(
-	isAuthorized: boolean,
-	resultsSimulationData: FullSimulationData | undefined,
-	demoMode: boolean
-) {
+export function useMenuOptions(resultsSimulationData: FullSimulationData | undefined) {
 	// Order of elements in this list corresponds to their order in UI
 	const menuOptions: MenuOption[] = [
 		{
@@ -39,6 +35,12 @@ export function useMenuOptions(
 			tooltipLabel: 'Editor',
 			value: 'editor',
 			icon: <ViewInArIcon fontSize='large' />
+		},
+		{
+			label: 'Simulations',
+			tooltipLabel: 'Simulations',
+			value: 'simulations',
+			icon: <OndemandVideoIcon fontSize='large' />
 		},
 		{
 			label: 'Input files',
@@ -61,19 +63,6 @@ export function useMenuOptions(
 			icon: <InfoIcon fontSize='large' />
 		}
 	];
-
-	// in regular mode (non-demo) insert at third position Simulation item
-	// it has no use in demo mode, therefore was not added there earlier
-	if (!demoMode) {
-		menuOptions.splice(2, 0, {
-			label: 'Simulations',
-			tooltipLabel: 'Simulations',
-			value: 'simulations',
-			disabled: !isAuthorized,
-			info: !isAuthorized ? 'You need to be logged in to use this feature.' : undefined,
-			icon: <OndemandVideoIcon fontSize='large' />
-		});
-	}
 
 	return menuOptions;
 }

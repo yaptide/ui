@@ -1,7 +1,7 @@
 import { enqueueSnackbar } from 'notistack';
 import { useState } from 'react';
 
-import { useShSimulation } from '../services/ShSimulatorService';
+import { useGeant4WorkersSimulation } from '../services/Geant4WorkersSimulationContextProvider';
 import { useStore } from '../services/StoreService';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulatorType } from '../types/RequestTypes';
@@ -13,12 +13,11 @@ import {
 	SimulationSourceType
 } from './components/Simulation/RunSimulationForm';
 
-export function useRunSimulation(): RunSimulationFunctionType {
+export function useRunGeant4WorkerSimulation(): RunSimulationFunctionType {
 	const { setTrackedId, setSimulationJobIdsSubmittedInSession } = useStore();
 	const [controller] = useState(new AbortController());
-	const { postJobDirect, postJobBatch } = useShSimulation();
+	const { postJobDirect: postJobToGeant4Worker } = useGeant4WorkersSimulation();
 	const sendSimulationRequest = (
-		postJobFn: typeof postJobDirect,
 		runType: SimulationRunType,
 		editorJson: EditorJson,
 		inputFiles: Partial<SimulationInputFiles>,
@@ -33,31 +32,24 @@ export function useRunSimulation(): RunSimulationFunctionType {
 		let options = undefined;
 
 		if (runType === 'batch') {
-			options = {
-				...batchOptions,
-				arrayOptions: batchOptions.arrayOptions?.reduce(
-					(acc, curr) => {
-						acc[curr.optionKey] = curr.optionValue;
-
-						return acc;
-					},
-					{} as Record<string, string>
-				),
-				collectOptions: batchOptions.collectOptions?.reduce(
-					(acc, curr) => {
-						acc[curr.optionKey] = curr.optionValue;
-
-						return acc;
-					},
-					{} as Record<string, string>
-				)
-			};
+			throw new Error('Geant4 does not support running in batch');
 		}
 
-		postJobFn(simData, sourceType, nTasks, simulator, simName, options, controller.signal)
+		postJobToGeant4Worker(
+			simData,
+			sourceType,
+			nTasks,
+			simulator,
+			simName,
+			options,
+			controller.signal
+		)
 			.then(res => {
 				setTrackedId(res.jobId);
-				setSimulationJobIdsSubmittedInSession(jobIds => [res.jobId, ...jobIds]);
+				setSimulationJobIdsSubmittedInSession(jobs => [
+					{ jobId: res.jobId, source: 'worker' },
+					...jobs
+				]);
 				enqueueSnackbar('Simulation submitted', { variant: 'success' });
 			})
 			.catch(e => {
@@ -66,10 +58,5 @@ export function useRunSimulation(): RunSimulationFunctionType {
 			});
 	};
 
-	return (runType, ...rest) =>
-		sendSimulationRequest(
-			runType === 'direct' ? postJobDirect : postJobBatch,
-			runType,
-			...rest
-		);
+	return (runType, ...rest) => sendSimulationRequest(runType, ...rest);
 }

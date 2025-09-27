@@ -4,12 +4,13 @@ import { SyntheticEvent, useEffect, useState } from 'react';
 
 import { useConfig } from '../config/ConfigService';
 import { useAuth } from '../services/AuthService';
-import { FullSimulationData } from '../services/ShSimulatorService';
 import { useStore } from '../services/StoreService';
 import { EditorToolbar } from '../ThreeEditor/components/Editor/EditorToolbar';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
 import { EditorSidebar } from '../ThreeEditor/components/Sidebar/EditorSidebar';
+import { SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles } from '../types/ResponseTypes';
+import { FullSimulationData } from '../types/SimulationService';
 import { camelCaseToNormalText } from '../util/camelCaseToSentenceCase';
 import HeaderPanel from './components/Header/HeaderPanel';
 import InputEditorPanel from './components/InputEditor/InputEditorPanel';
@@ -22,7 +23,8 @@ import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import RunSimulationPanel from './components/Simulation/RunSimulationPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
-import { useRunSimulation } from './UseRunSimulation';
+import { useRunGeant4WorkerSimulation } from './UseRunGeant4WorkerSimulation';
+import { useRunRestSimulation } from './UseRunRestSimulation';
 
 const StyledAppGrid = styled(Box)(({ theme }) => ({
 	background: theme.palette.background.default,
@@ -98,7 +100,12 @@ function WrapperApp() {
 		document.title = camelCaseToNormalText(tabsValue); //e.g. we've got 'inputFiles' as a value of tabsValue and this function converts this value to 'Input Files'
 	}, [tabsValue]);
 
-	const runSimulation = useRunSimulation();
+	const runRestSimulation = useRunRestSimulation();
+	const runGeant4WorkerSimulation = useRunGeant4WorkerSimulation();
+	const runSimulation =
+		yaptideEditor?.contextManager.currentSimulator === SimulatorType.GEANT4
+			? runGeant4WorkerSimulation
+			: runRestSimulation;
 
 	return (
 		<NavDrawerContext value={tabsValue}>

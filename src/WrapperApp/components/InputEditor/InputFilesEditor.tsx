@@ -1,17 +1,13 @@
-import { Box, Button, Card, CardActions, CardContent, Divider, Typography } from '@mui/material';
+import { Box, Button, Divider, Typography } from '@mui/material';
 import useTheme from '@mui/system/useTheme';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 
 import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
-import { useDialog } from '../../../services/DialogService';
-import { useShSimulation } from '../../../services/ShSimulatorService';
-import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
 	_defaultFlukaInputFiles,
 	_defaultShInputFiles,
-	_defaultTopasInputFiles,
 	_orderedShInputFilesNames,
 	isKnownInputFile,
 	SimulationInputFiles

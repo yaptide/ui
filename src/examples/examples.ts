@@ -1,7 +1,7 @@
 import { useLoader } from '../services/LoaderService';
-import { FullSimulationData } from '../services/ShSimulatorService';
 import { SimulatorExamples, SimulatorType } from '../types/RequestTypes';
 import { StatusState } from '../types/ResponseTypes';
+import { FullSimulationData } from '../types/SimulationService';
 
 type SimulationMap = Record<SimulatorType, SimulatorExamples>;
 

@@ -13,6 +13,6 @@
 		"Beam of protons with lead collimator": "ex6.json"
 	},
 	"geant4": {
-		"Empty Geant4 project": "ex8.json"
+		"Proton pencil beam in water": "ex8.json"
 	}
 }
