@@ -93,7 +93,7 @@ export default function RecentSimulations() {
 
 	const remoteWorkerJobIdsInSession = new Set(
 		simulationJobIdsSubmittedInSession
-			.filter(job => job.source === 'rest')
+			.filter(job => job.source === 'remote')
 			.map(job => job.jobId)
 	);
 

@@ -22,7 +22,9 @@ export type ResultsSimulationDataWithSource = DataWithSource<
 
 interface JobIdWithSource {
 	jobId: string;
-	source: 'rest' | 'worker';
+	// `source` indicates whether the jobId was created for remote ShieldHit/Fluka or local Geant4 worker
+	// and is used to choose the right service to fetch job details from
+	source: 'remote' | 'local';
 }
 
 export interface StoreContext {

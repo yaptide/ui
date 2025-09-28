@@ -67,7 +67,7 @@ export function useRunRemoteWorkerSimulation(): RunSimulationFunctionType {
 			.then(res => {
 				setTrackedId(res.jobId);
 				setSimulationJobIdsSubmittedInSession(jobs => [
-					{ jobId: res.jobId, source: 'rest' },
+					{ jobId: res.jobId, source: 'remote' },
 					...jobs
 				]);
 				enqueueSnackbar('Simulation submitted', { variant: 'success' });
