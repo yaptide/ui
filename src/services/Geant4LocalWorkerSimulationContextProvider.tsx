@@ -2,21 +2,21 @@ import { useRef } from 'react';
 
 import { usePythonConverter } from '../PythonConverter/PythonConverterService';
 import { SimulationContext } from '../types/SimulationService';
-import Geant4WorkersSimulationService from './Geant4WorkersSimulationService';
+import Geant4LocalWorkerSimulationService from './Geant4LocalWorkerSimulationService';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 
-const [useGeant4WorkersSimulation, InternalGeant4WorkersSimulationContextProvider] =
+const [useGeant4LocalWorkerSimulation, InnerGeant4LocalWorkerSimulationContextProvider] =
 	createGenericContext<SimulationContext>();
 
-function Geant4WorkersSimulationContextProvider({ children }: GenericContextProviderProps) {
+function Geant4LocalWorkerSimulationContextProvider({ children }: GenericContextProviderProps) {
 	const { convertJSON } = usePythonConverter();
 
-	const simulationServiceRef = useRef<Geant4WorkersSimulationService>(
-		new Geant4WorkersSimulationService(convertJSON)
+	const simulationServiceRef = useRef<Geant4LocalWorkerSimulationService>(
+		new Geant4LocalWorkerSimulationService(convertJSON)
 	);
 
 	return (
-		<InternalGeant4WorkersSimulationContextProvider
+		<InnerGeant4LocalWorkerSimulationContextProvider
 			value={{
 				// `bind()` is required, otherwise `this` is undefined when calling the function
 				postJob: simulationServiceRef.current.postJob.bind(simulationServiceRef.current),
@@ -53,8 +53,8 @@ function Geant4WorkersSimulationContextProvider({ children }: GenericContextProv
 				)
 			}}>
 			{children}
-		</InternalGeant4WorkersSimulationContextProvider>
+		</InnerGeant4LocalWorkerSimulationContextProvider>
 	);
 }
 
-export { Geant4WorkersSimulationContextProvider, useGeant4WorkersSimulation };
+export { Geant4LocalWorkerSimulationContextProvider, useGeant4LocalWorkerSimulation };

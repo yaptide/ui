@@ -38,7 +38,7 @@ interface JobMetadata {
 	inputType: SimulationSourceType;
 }
 
-export default class Geant4WorkersSimulationService implements SimulationService {
+export default class Geant4LocalWorkerSimulationService implements SimulationService {
 	convertJSON: PythonConverterContext['convertJSON'];
 	workers: Record<JobId, Geant4Worker>;
 	inputFiles: Record<JobId, Record<string, string>>;
