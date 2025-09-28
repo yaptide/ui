@@ -46,9 +46,9 @@ export interface SimulationService {
 	getEstimatorsPages(...args: RequestGetJobResult): Promise<JobResults | undefined>;
 	getFullSimulationData(
 		jobStatus: JobStatusData,
-		signal: AbortSignal,
-		cache: boolean,
-		givenEstimatorName: string
+		signal?: AbortSignal,
+		cache?: boolean,
+		givenEstimatorName?: string
 	): Promise<FullSimulationData | undefined>;
 	getPageContents(...args: RequestGetPageContents): Promise<ResponseGetPageContents>;
 	getPageStatus(...args: RequestGetPageStatus): Promise<JobStatusData[] | undefined>;

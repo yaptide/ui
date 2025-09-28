@@ -50,7 +50,6 @@ function RemoteWorkerSimulationContextProvider({ children }: GenericContextProvi
 				getJobLogs: simulationServiceRef.current.getJobLogs.bind(
 					simulationServiceRef.current
 				),
-				// @ts-ignore
 				getFullSimulationData: simulationServiceRef.current.getFullSimulationData.bind(
 					simulationServiceRef.current
 				)

@@ -245,14 +245,14 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 			await addCustomStoppingPowerTableToEditorJSON(simData);
 		}
 
-		const filedName = mapType[inputType];
+		const fieldName = mapType[inputType];
 
-		if (filedName === undefined) throw new Error('Invalid input type ' + inputType);
+		if (fieldName === undefined) throw new Error('Invalid input type ' + inputType);
 
 		return this.authKy
 			.post(`jobs/${runType}`, {
 				json: {
-					[`input_${filedName}`]: simData,
+					[`input_${fieldName}`]: simData,
 					...camelToSnakeCase(
 						{
 							inputType,
@@ -610,7 +610,7 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 	async getFullSimulationData(
 		jobStatus: JobStatusData,
 		signal?: AbortSignal,
-		cache: boolean = true,
+		cache?: boolean,
 		givenEstimatorName?: string
 	): Promise<FullSimulationData | undefined> {
 		const inputs: JobInputs | undefined = await this.getJobInputs(jobStatus, signal, cache);
