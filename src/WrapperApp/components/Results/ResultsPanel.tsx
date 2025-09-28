@@ -11,7 +11,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 
 import { Estimator, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
 import { useDialog } from '../../../services/DialogService';
-import { useRestSimulation } from '../../../services/RestSimulationContextProvider';
+import { useRemoteWorkerSimulation } from '../../../services/RemoteWorkerSimulationContextProvider';
 import { useStore } from '../../../services/StoreService';
 import { InfoTooltip } from '../../../shared/components/tooltip/InfoTooltip';
 import { titleToKebabCase } from '../../../ThreeEditor/components/Dialog/CustomDialog';
@@ -26,7 +26,7 @@ export interface EstimatorResults extends Estimator {
 
 function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 	const theme = useTheme();
-	const { getJobResults } = useRestSimulation();
+	const { getJobResults } = useRemoteWorkerSimulation();
 	const { open: openSaveFileDialog } = useDialog('saveFile');
 	const { yaptideEditor, setResultsSimulationData } = useStore();
 	const { simulation } = props;

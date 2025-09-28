@@ -1,7 +1,7 @@
 import { enqueueSnackbar } from 'notistack';
 import { useState } from 'react';
 
-import { useRestSimulation } from '../services/RestSimulationContextProvider';
+import { useRemoteWorkerSimulation } from '../services/RemoteWorkerSimulationContextProvider';
 import { useStore } from '../services/StoreService';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulatorType } from '../types/RequestTypes';
@@ -13,10 +13,10 @@ import {
 	SimulationSourceType
 } from './components/Simulation/RunSimulationForm';
 
-export function useRunRestSimulation(): RunSimulationFunctionType {
+export function useRunRemoteWorkerSimulation(): RunSimulationFunctionType {
 	const { setTrackedId, setSimulationJobIdsSubmittedInSession } = useStore();
 	const [controller] = useState(new AbortController());
-	const { postJob } = useRestSimulation();
+	const { postJob } = useRemoteWorkerSimulation();
 	const sendSimulationRequest = (
 		postJobFn: typeof postJob,
 		runType: SimulationRunType,

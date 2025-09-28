@@ -3,7 +3,7 @@ import { Object3D } from 'three';
 
 import { useDialog } from '../../../services/DialogService';
 import { useLoader } from '../../../services/LoaderService';
-import { useRestSimulation } from '../../../services/RestSimulationContextProvider';
+import { useRemoteWorkerSimulation } from '../../../services/RemoteWorkerSimulationContextProvider';
 import MenuPosition from '../../../shared/components/Menu/MenuPosition';
 import { YaptideEditor } from '../../../ThreeEditor/js/YaptideEditor';
 import { useSignal } from '../../../util/hooks/signals';
@@ -15,7 +15,7 @@ type EditorMenuProps = {
 export function ProjectMenu({ editor }: EditorMenuProps) {
 	const [openIdx, setOpenIdx] = useState(-1);
 	const [, setSelectedObject] = useState(editor?.selected);
-	const { getJobResults } = useRestSimulation();
+	const { getJobResults } = useRemoteWorkerSimulation();
 	const { loadFromJson, loadFromFiles, loadFromUrl, loadFromJsonString } = useLoader();
 	const { open: openTheOpenFileDialog } = useDialog('openFile');
 	const { open: openTheSaveFileDialog } = useDialog('saveFile');

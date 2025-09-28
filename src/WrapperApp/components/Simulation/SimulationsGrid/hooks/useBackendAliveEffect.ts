@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { useConfig } from '../../../../../config/ConfigService';
-import { useRestSimulation } from '../../../../../services/RestSimulationContextProvider';
+import { useRemoteWorkerSimulation } from '../../../../../services/RemoteWorkerSimulationContextProvider';
 import { useStore } from '../../../../../services/StoreService';
 import {
 	JobStatusData,
@@ -62,7 +62,7 @@ export const useIsBackendAlive = () => {
 		statusStates: ValidStatusStates
 	};
 
-	const handlers = useRestSimulation();
+	const handlers = useRemoteWorkerSimulation();
 
 	const state: SimulationState = {
 		simulationInfo,

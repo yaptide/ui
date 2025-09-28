@@ -2,7 +2,7 @@ import { useSnackbar } from 'notistack';
 
 import { useDialog } from '../../../../services/DialogService';
 import { useLoader } from '../../../../services/LoaderService';
-import { useRestSimulation } from '../../../../services/RestSimulationContextProvider';
+import { useRemoteWorkerSimulation } from '../../../../services/RemoteWorkerSimulationContextProvider';
 import { titleToKebabCase } from '../../../../ThreeEditor/components/Dialog/CustomDialog';
 import { YaptideEditor } from '../../../../ThreeEditor/js/YaptideEditor';
 import { JobStatusData, SimulationInputFiles, StatusState } from '../../../../types/ResponseTypes';
@@ -24,7 +24,8 @@ const SimulationCardHelpers = ({
 	yaptideEditor
 }: SimulationCardHelpersProps) => {
 	const { loadFromJson } = useLoader();
-	const { getJobLogs, getJobInputs, getFullSimulationData, getJobResults } = useRestSimulation();
+	const { getJobLogs, getJobInputs, getFullSimulationData, getJobResults } =
+		useRemoteWorkerSimulation();
 	const { enqueueSnackbar } = useSnackbar();
 	const { open: openSaveFileDialog } = useDialog('saveFile');
 

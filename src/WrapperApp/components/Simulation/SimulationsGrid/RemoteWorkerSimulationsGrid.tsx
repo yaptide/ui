@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { useConfig } from '../../../../config/ConfigService';
-import { useRestSimulation } from '../../../../services/RestSimulationContextProvider';
+import { useRemoteWorkerSimulation } from '../../../../services/RemoteWorkerSimulationContextProvider';
 import { useStore } from '../../../../services/StoreService';
 import { JobStatusData, SimulationInfo, ValidStatusStates } from '../../../../types/ResponseTypes';
 import useIntervalAsync from '../../../../util/hooks/useIntervalAsync';
@@ -12,14 +12,14 @@ import { useUpdateCurrentSimulationEffect } from './hooks/useUpdateCurrentSimula
 import SimulationsGridHelpers from './SimulationsGridHelpers';
 import { SimulationConfig, SimulationsGridProps, SimulationState } from './SimulationsGridTypes';
 
-export const RestSimulationsGrid = (props: SimulationsGridProps) => {
+export const RemoteWorkerSimulationsGrid = (props: SimulationsGridProps) => {
 	const { goToResults, setInputFiles, setShowInputFilesEditor } = props;
 
 	const { demoMode } = useConfig();
 	const { yaptideEditor, trackedId, setResultsSimulationData, setLocalResultsSimulationData } =
 		useStore();
 
-	const handlers = useRestSimulation();
+	const handlers = useRemoteWorkerSimulation();
 
 	const [isBackendAlive, setBackendAlive] = useState(false);
 	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);

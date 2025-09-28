@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
-import { useRestSimulation } from '../../../services/RestSimulationContextProvider';
+import { useRemoteWorkerSimulation } from '../../../services/RemoteWorkerSimulationContextProvider';
 import { useStore } from '../../../services/StoreService';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
 import { JobStatusData, SimulationInfo, StatusState } from '../../../types/ResponseTypes';
@@ -28,7 +28,7 @@ export default function RecentSimulations() {
 		simulationJobIdsSubmittedInSession
 	} = useStore();
 
-	const restHandlers = useRestSimulation();
+	const restHandlers = useRemoteWorkerSimulation();
 
 	const [isBackendAlive, setBackendAlive] = useState(false);
 	const [restSimulationInfo, setRestSimulationInfo] = useState<SimulationInfo[]>([]);

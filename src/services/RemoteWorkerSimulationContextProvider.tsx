@@ -3,20 +3,23 @@ import { useEffect, useRef } from 'react';
 import { SimulationContext } from '../types/SimulationService';
 import { useAuth } from './AuthService';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
-import RestSimulationService from './RestSimulationService';
+import RemoteWorkerSimulationService from './RemoteWorkerSimulationService';
 
-const [useRestSimulation, ShSimulationContextProvider] = createGenericContext<SimulationContext>();
+const [useRemoteWorkerSimulation, InnerRemoteWorkerSimulationContextProvider] =
+	createGenericContext<SimulationContext>();
 
-function RestSimulationContextProvider({ children }: GenericContextProviderProps) {
+function RemoteWorkerSimulationContextProvider({ children }: GenericContextProviderProps) {
 	const { authKy } = useAuth();
-	const simulationServiceRef = useRef<RestSimulationService>(new RestSimulationService(authKy));
+	const simulationServiceRef = useRef<RemoteWorkerSimulationService>(
+		new RemoteWorkerSimulationService(authKy)
+	);
 
 	useEffect(() => {
 		simulationServiceRef.current.authKy = authKy;
 	}, [authKy]);
 
 	return (
-		<ShSimulationContextProvider
+		<InnerRemoteWorkerSimulationContextProvider
 			value={{
 				// `bind()` is required, otherwise `this` is undefined when calling the function
 				postJob: simulationServiceRef.current.postJob.bind(simulationServiceRef.current),
@@ -53,8 +56,8 @@ function RestSimulationContextProvider({ children }: GenericContextProviderProps
 				)
 			}}>
 			{children}
-		</ShSimulationContextProvider>
+		</InnerRemoteWorkerSimulationContextProvider>
 	);
 }
 
-export { RestSimulationContextProvider, useRestSimulation };
+export { RemoteWorkerSimulationContextProvider, useRemoteWorkerSimulation };

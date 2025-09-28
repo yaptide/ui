@@ -1,3 +1,9 @@
+/**
+ * Moved from ShSimulatorService (#2183)
+ *
+ * See & compare previous revisions for changes history
+ */
+
 import { KyInstance } from 'ky';
 
 import { Estimator } from '../JsRoot/GraphData';
@@ -202,7 +208,7 @@ function updateEstimators(estimators: Estimator[]) {
 	}
 }
 
-export default class RestSimulationService implements SimulationService {
+export default class RemoteWorkerSimulationService implements SimulationService {
 	authKy: KyInstance;
 	inputsCache: CacheMap<JobInputs>;
 	logsCache: CacheMap<JobLogs>;

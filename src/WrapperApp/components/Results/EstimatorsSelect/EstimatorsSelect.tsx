@@ -1,7 +1,7 @@
 import { useTheme } from '@mui/material';
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 
-import { useRestSimulation } from '../../../../services/RestSimulationContextProvider';
+import { useRemoteWorkerSimulation } from '../../../../services/RemoteWorkerSimulationContextProvider';
 import { ResultsSimulationDataWithSource } from '../../../../services/StoreService';
 import { StyledTab, StyledTabs } from '../../../../shared/components/Tabs/StyledTabs';
 import { SpecificEstimator } from '../../../../types/RequestTypes';
@@ -30,7 +30,7 @@ const EstimatorsSelect = ({
 	const theme = useTheme();
 	const [controller] = useState(new AbortController());
 
-	const { getEstimatorsPages } = useRestSimulation();
+	const { getEstimatorsPages } = useRemoteWorkerSimulation();
 
 	const handleEstimatorTabChange = useCallback(
 		async (id: number) => {

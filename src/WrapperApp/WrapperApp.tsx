@@ -22,7 +22,7 @@ import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import RunSimulationPanel from './components/Simulation/RunSimulationPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
-import { useRunRestSimulation } from './UseRunRestSimulation';
+import { useRunRemoteWorkerSimulation } from './UseRunRemoteWorkerSimulation';
 
 const StyledAppGrid = styled(Box)(({ theme }) => ({
 	background: theme.palette.background.default,
@@ -98,7 +98,7 @@ function WrapperApp() {
 		document.title = camelCaseToNormalText(tabsValue); //e.g. we've got 'inputFiles' as a value of tabsValue and this function converts this value to 'Input Files'
 	}, [tabsValue]);
 
-	const runSimulation = useRunRestSimulation();
+	const runSimulation = useRunRemoteWorkerSimulation();
 
 	return (
 		<NavDrawerContext value={tabsValue}>
