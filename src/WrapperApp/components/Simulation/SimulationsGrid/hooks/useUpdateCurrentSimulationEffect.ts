@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 import { currentJobStatusData, StatusState } from '../../../../../types/ResponseTypes';
-import { SimulationConfig, SimulationHandlers, SimulationState } from '../BackendSimulationsTypes';
+import { SimulationConfig, SimulationHandlers, SimulationState } from '../SimulationsGridTypes';
 
 export const useUpdateCurrentSimulationEffect = (
 	config: SimulationConfig,

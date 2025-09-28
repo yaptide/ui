@@ -3,24 +3,22 @@ import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
-import { useShSimulation } from '../../../services/ShSimulatorService';
+import { useAuth } from '../../../services/AuthService';
+import { useRemoteWorkerSimulation } from '../../../services/RemoteWorkerSimulationContextProvider';
 import { useStore } from '../../../services/StoreService';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
 import { JobStatusData, SimulationInfo, StatusState } from '../../../types/ResponseTypes';
 import useIntervalAsync from '../../../util/hooks/useIntervalAsync';
-import BackendSimulationsHelpers from './BackendSimulations/BackendSimulationsHelpers';
-import {
-	SimulationConfig,
-	SimulationHandlers,
-	SimulationState
-} from './BackendSimulations/BackendSimulationsTypes';
-import { useBackendAliveEffect } from './BackendSimulations/hooks/useBackendAliveEffect';
-import { useUpdateCurrentSimulationEffect } from './BackendSimulations/hooks/useUpdateCurrentSimulationEffect';
 import SimulationCardSmall from './SimulationCard/SimulationCardSmall';
+import { useBackendAliveEffect } from './SimulationsGrid/hooks/useBackendAliveEffect';
+import { useUpdateCurrentSimulationEffect } from './SimulationsGrid/hooks/useUpdateCurrentSimulationEffect';
+import SimulationsGridHelpers from './SimulationsGrid/SimulationsGridHelpers';
+import { SimulationConfig, SimulationState } from './SimulationsGrid/SimulationsGridTypes';
 
 export default function RecentSimulations() {
 	const theme = useTheme();
 
+	const auth = useAuth();
 	const { demoMode } = useConfig();
 	const {
 		yaptideEditor,
@@ -30,19 +28,11 @@ export default function RecentSimulations() {
 		simulationJobIdsSubmittedInSession
 	} = useStore();
 
-	const {
-		cancelJob,
-		getJobInputs,
-		getHelloWorld,
-		getPageContents,
-		getPageStatus,
-		getJobStatus,
-		getFullSimulationData
-	} = useShSimulation();
+	const remoteWorkerHandlers = useRemoteWorkerSimulation();
 
 	const [isBackendAlive, setBackendAlive] = useState(false);
-	const [simulationInfo, setSimulationInfo] = useState<SimulationInfo[]>([]);
-	const [simulationsStatusData, setSimulationsStatusData] = useState<JobStatusData[]>();
+	const [restSimulationInfo, setRestSimulationInfo] = useState<SimulationInfo[]>([]);
+	const [restSimulationsStatusData, setRestSimulationsStatusData] = useState<JobStatusData[]>();
 
 	const [controller] = useState(new AbortController());
 
@@ -61,21 +51,11 @@ export default function RecentSimulations() {
 		]
 	};
 
-	const handlers: SimulationHandlers = {
-		getPageContents,
-		getPageStatus,
-		getJobStatus,
-		getFullSimulationData,
-		cancelJob,
-		getHelloWorld,
-		getJobInputs
-	};
-
-	const state: SimulationState = {
-		simulationInfo,
-		simulationsStatusData,
-		setSimulationInfo,
-		setSimulationsStatusData,
+	const restState: SimulationState = {
+		simulationInfo: restSimulationInfo,
+		simulationsStatusData: restSimulationsStatusData,
+		setSimulationInfo: setRestSimulationInfo,
+		setSimulationsStatusData: setRestSimulationsStatusData,
 		setResultsSimulationData,
 		setLocalResultsSimulationData,
 		goToResults: () => {},
@@ -85,24 +65,50 @@ export default function RecentSimulations() {
 	};
 
 	const {
-		updateSimulationInfo,
-		updateSimulationData,
-		simulationDataInterval,
-		handleLoadResults,
-		setPageCount
-	} = BackendSimulationsHelpers(config, handlers, state);
+		updateSimulationInfo: remoteWorkerUpdateSimulationInfo,
+		updateSimulationData: remoteWorkerUpdateSimulationData,
+		simulationDataInterval: remoteWorkerSimulationDataInterval,
+		handleLoadResults: remoteWorkerHandleLoadResults,
+		setPageCount: setRemoteWorkerPageCount
+	} = SimulationsGridHelpers(config, remoteWorkerHandlers, restState);
 
-	useBackendAliveEffect(config, handlers, updateSimulationInfo, setPageCount);
-	useUpdateCurrentSimulationEffect(config, handlers, state);
+	useBackendAliveEffect(
+		config,
+		remoteWorkerHandlers,
+		() => {
+			if (auth.isAuthorized) {
+				remoteWorkerUpdateSimulationInfo();
+			}
+		},
+		setRemoteWorkerPageCount
+	);
 
-	useIntervalAsync(updateSimulationData, simulationDataInterval, simulationInfo.length > 0);
+	useUpdateCurrentSimulationEffect(config, remoteWorkerHandlers, restState);
 
-	const jobIdsInSession = new Set(simulationJobIdsSubmittedInSession);
-	const simulationsToDisplay = simulationsStatusData
-		? simulationsStatusData
-				.filter(statusData => jobIdsInSession.has(statusData.jobId))
+	useIntervalAsync(
+		remoteWorkerUpdateSimulationData,
+		remoteWorkerSimulationDataInterval,
+		restSimulationInfo.length > 0
+	);
+
+	const remoteWorkerJobIdsInSession = new Set(
+		simulationJobIdsSubmittedInSession
+			.filter(job => job.source === 'remote')
+			.map(job => job.jobId)
+	);
+
+	const remoteWorkerSimulationsToDisplay = restSimulationsStatusData
+		? restSimulationsStatusData
+				.filter(statusData => remoteWorkerJobIdsInSession.has(statusData.jobId))
 				.slice(0, 5)
 		: [];
+
+	const simulationsToDisplay = remoteWorkerSimulationsToDisplay
+		.sort((s1, s2) => new Date(s1.startTime).getTime() - new Date(s2.startTime).getTime())
+		.slice(0, 5);
+
+	const loadResultsFn = (simulation: SimulationInfo) => (taskId: string | null) =>
+		remoteWorkerHandleLoadResults(taskId, simulation);
 
 	return (
 		<StyledAccordion
@@ -134,9 +140,7 @@ export default function RecentSimulations() {
 					<SimulationCardSmall
 						key={simulation.jobId}
 						simulationStatus={simulation}
-						loadResults={
-							handleLoadResults && (taskId => handleLoadResults(taskId, simulation))
-						}
+						loadResults={loadResultsFn(simulation)}
 					/>
 				))}
 			</AccordionDetails>

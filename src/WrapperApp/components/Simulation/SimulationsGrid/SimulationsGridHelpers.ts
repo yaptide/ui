@@ -5,18 +5,20 @@ import { OrderBy, OrderType } from '../../../../types/RequestTypes';
 import {
 	currentJobStatusData,
 	JobStatusData,
+	SimulationInfo,
 	SimulationInputFiles,
 	StatusState
 } from '../../../../types/ResponseTypes';
+import { FullSimulationData } from '../../../../types/SimulationService';
 import { PageNavigationProps, PageParamProps } from '../SimulationPanelBar';
 import {
 	PageState,
 	SimulationConfig,
 	SimulationHandlers,
 	SimulationState
-} from './BackendSimulationsTypes';
+} from './SimulationsGridTypes';
 
-const BackendSimulationsHelpers = (
+const SimulationsGridHelpers = (
 	config: SimulationConfig,
 	handlers: SimulationHandlers,
 	state: SimulationState
@@ -129,12 +131,15 @@ const BackendSimulationsHelpers = (
 		return 1500;
 	}, [demoMode, isBackendAlive, simulationsStatusData]);
 
-	const handleLoadResults = async (taskId: string | null, simulation: unknown) => {
+	const handleLoadResults = async (
+		taskId: string | null,
+		simulation: FullSimulationData | SimulationInfo
+	) => {
 		if (taskId === null) return goToResults?.call(null);
 
 		if (currentJobStatusData[StatusState.COMPLETED](simulation)) {
 			const fullData = isFullSimulationData(simulation)
-				? simulation
+				? (simulation as unknown as FullSimulationData)
 				: await getFullSimulationData(simulation, controller.signal);
 			setResultsSimulationData(fullData ? { source: 'onSelect', data: fullData } : undefined);
 		}
@@ -292,4 +297,4 @@ const BackendSimulationsHelpers = (
 	};
 };
 
-export default BackendSimulationsHelpers;
+export default SimulationsGridHelpers;

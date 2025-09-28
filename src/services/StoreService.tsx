@@ -4,9 +4,8 @@ import * as THREE from 'three';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { YaptideEditor } from '../ThreeEditor/js/YaptideEditor';
 import { SimulatorType } from '../types/RequestTypes';
-import { SimulationInfo } from '../types/ResponseTypes';
+import { FullSimulationData } from '../types/SimulationService';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
-import { FullSimulationData } from './ShSimulatorService';
 
 export interface DataWithSource<S extends string, T> {
 	source: S;
@@ -21,6 +20,13 @@ export type ResultsSimulationDataWithSource = DataWithSource<
 	FullSimulationData
 >;
 
+interface JobIdWithSource {
+	jobId: string;
+	// `source` indicates whether the jobId was created for remote ShieldHit/Fluka or local Geant4 worker
+	// and is used to choose the right service to fetch job details from
+	source: 'remote' | 'local';
+}
+
 export interface StoreContext {
 	yaptideEditor?: YaptideEditor;
 	setSimulatorType: (simulator: SimulatorType, changingToOrFromGeant4: boolean) => void;
@@ -31,8 +37,8 @@ export interface StoreContext {
 	setResultsSimulationData: Dispatch<SetStateAction<ResultsSimulationDataWithSource | undefined>>;
 	localResultsSimulationData?: FullSimulationData[];
 	setLocalResultsSimulationData: Dispatch<SetStateAction<FullSimulationData[]>>;
-	simulationJobIdsSubmittedInSession: string[];
-	setSimulationJobIdsSubmittedInSession: Dispatch<SetStateAction<string[]>>;
+	simulationJobIdsSubmittedInSession: JobIdWithSource[];
+	setSimulationJobIdsSubmittedInSession: Dispatch<SetStateAction<JobIdWithSource[]>>;
 }
 
 const [useStore, StoreContextProvider] = createGenericContext<StoreContext>();
@@ -53,7 +59,7 @@ const Store = ({ children }: GenericContextProviderProps) => {
 	>([]);
 
 	const [simulationJobIdsSubmittedInSession, setSimulationJobIdsSubmittedInSession] = useState<
-		string[]
+		JobIdWithSource[]
 	>([]);
 	const [trackedId, setTrackedId] = useState<string>();
 

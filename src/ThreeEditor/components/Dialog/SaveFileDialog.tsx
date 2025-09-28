@@ -1,9 +1,9 @@
 import { Button, Checkbox, FormControlLabel, TextField } from '@mui/material';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
-import { FullSimulationData, JobResults } from '../../../services/ShSimulatorService';
 import { StoreContext } from '../../../services/StoreService';
-import { RequestGetJobResults } from '../../../types/RequestTypes';
+import { JobResults, RequestGetJobResults } from '../../../types/RequestTypes';
+import { FullSimulationData } from '../../../types/SimulationService';
 import { saveString } from '../../../util/File';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 

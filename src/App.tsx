@@ -11,7 +11,7 @@ import { Auth } from './services/AuthService';
 import { DialogProvider } from './services/DialogService';
 import { KeycloakAuth } from './services/KeycloakAuthService';
 import { Loader } from './services/LoaderService';
-import { ShSimulation } from './services/ShSimulatorService';
+import { RemoteWorkerSimulationContextProvider } from './services/RemoteWorkerSimulationContextProvider';
 import { Store } from './services/StoreService';
 import { YaptideEditor } from './ThreeEditor/js/YaptideEditor';
 import WrapperApp from './WrapperApp/WrapperApp';
@@ -103,7 +103,7 @@ function App() {
 				<KeycloakAuth />,
 				<Store />,
 				<Auth />,
-				<ShSimulation />,
+				<RemoteWorkerSimulationContextProvider />,
 				<PythonConverterService />,
 				<Loader />
 			]}>

@@ -2,10 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { JSON_VERSION } from '../ThreeEditor/js/YaptideEditor';
+import { FullSimulationData } from '../types/SimulationService';
 import { hasFields } from '../util/customGuards';
 import { useDialog } from './DialogService';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
-import { FullSimulationData } from './ShSimulatorService';
 import { useStore } from './StoreService';
 
 export interface LoaderContext {
