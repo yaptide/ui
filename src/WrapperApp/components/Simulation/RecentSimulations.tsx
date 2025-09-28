@@ -28,7 +28,7 @@ export default function RecentSimulations() {
 		simulationJobIdsSubmittedInSession
 	} = useStore();
 
-	const restHandlers = useRemoteWorkerSimulation();
+	const remoteWorkerHandlers = useRemoteWorkerSimulation();
 
 	const [isBackendAlive, setBackendAlive] = useState(false);
 	const [restSimulationInfo, setRestSimulationInfo] = useState<SimulationInfo[]>([]);
@@ -65,50 +65,50 @@ export default function RecentSimulations() {
 	};
 
 	const {
-		updateSimulationInfo: restUpdateSimulationInfo,
-		updateSimulationData: restUpdateSimulationData,
-		simulationDataInterval: restSimulationDataInterval,
-		handleLoadResults: restHandleLoadResults,
-		setPageCount: setRestPageCount
-	} = SimulationsGridHelpers(config, restHandlers, restState);
+		updateSimulationInfo: remoteWorkerUpdateSimulationInfo,
+		updateSimulationData: remoteWorkerUpdateSimulationData,
+		simulationDataInterval: remoteWorkerSimulationDataInterval,
+		handleLoadResults: remoteWorkerHandleLoadResults,
+		setPageCount: setRemoteWorkerPageCount
+	} = SimulationsGridHelpers(config, remoteWorkerHandlers, restState);
 
 	useBackendAliveEffect(
 		config,
-		restHandlers,
+		remoteWorkerHandlers,
 		() => {
 			if (auth.isAuthorized) {
-				restUpdateSimulationInfo();
+				remoteWorkerUpdateSimulationInfo();
 			}
 		},
-		setRestPageCount
+		setRemoteWorkerPageCount
 	);
 
-	useUpdateCurrentSimulationEffect(config, restHandlers, restState);
+	useUpdateCurrentSimulationEffect(config, remoteWorkerHandlers, restState);
 
 	useIntervalAsync(
-		restUpdateSimulationData,
-		restSimulationDataInterval,
+		remoteWorkerUpdateSimulationData,
+		remoteWorkerSimulationDataInterval,
 		restSimulationInfo.length > 0
 	);
 
-	const restJobIdsInSession = new Set(
+	const remoteWorkerJobIdsInSession = new Set(
 		simulationJobIdsSubmittedInSession
 			.filter(job => job.source === 'rest')
 			.map(job => job.jobId)
 	);
 
-	const restSimulationsToDisplay = restSimulationsStatusData
+	const remoteWorkerSimulationsToDisplay = restSimulationsStatusData
 		? restSimulationsStatusData
-				.filter(statusData => restJobIdsInSession.has(statusData.jobId))
+				.filter(statusData => remoteWorkerJobIdsInSession.has(statusData.jobId))
 				.slice(0, 5)
 		: [];
 
-	const simulationsToDisplay = restSimulationsToDisplay
+	const simulationsToDisplay = remoteWorkerSimulationsToDisplay
 		.sort((s1, s2) => new Date(s1.startTime).getTime() - new Date(s2.startTime).getTime())
 		.slice(0, 5);
 
 	const loadResultsFn = (simulation: SimulationInfo) => (taskId: string | null) =>
-		restHandleLoadResults(taskId, simulation);
+		remoteWorkerHandleLoadResults(taskId, simulation);
 
 	return (
 		<StyledAccordion
