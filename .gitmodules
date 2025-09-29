@@ -1,6 +1,9 @@
 [submodule "public/libs/converter"]
 	path = src/libs/converter
-	url = https://github.com/yaptide/converter
+	url = ../converter
 	branch = master
 	shallow = true
 
+[submodule "src/libs/geant-web-stubs"]
+	path = src/libs/geant-web-stubs
+	url = ../geant-web-stubs
