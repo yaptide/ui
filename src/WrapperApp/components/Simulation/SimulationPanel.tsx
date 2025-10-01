@@ -1,5 +1,5 @@
 import { Box, Fade, Modal, useTheme } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
@@ -31,7 +31,7 @@ export default function SimulationPanel({
 	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
 	const isBackendAlive = useIsBackendAlive();
 	const [source, setSource] = useState<'remote' | 'local'>(
-		!isBackendAlive || !auth.isAuthorized || demoMode ? 'local' : 'remote'
+		auth.isAuthorized && !demoMode ? 'remote' : 'local'
 	);
 
 	return (
