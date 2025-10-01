@@ -35,7 +35,7 @@ export default function SimulationPanel({
 	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
 	const isBackendAlive = useIsBackendAlive();
 	const [source, setSource] = useState<'remote' | 'local'>(
-		!isBackendAlive || !auth.isAuthorized || demoMode ? 'local' : 'remote'
+		auth.isAuthorized && !demoMode ? 'remote' : 'local'
 	);
 
 	return (
