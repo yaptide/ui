@@ -1,9 +1,5 @@
 /**
  * Geant4 Worker
- *
- * Additional credits:
- * - https://github.com/ostatni5
- * - https://github.com/lkwinta
  */
 
 import createMainModule from '../libs/geant-web-stubs/geant4_wasm';
@@ -13,10 +9,15 @@ import { default as initG4NDL } from '../libs/geant-web-stubs/preload/preload_G4
 import { default as initG4PARTICLEXS } from '../libs/geant-web-stubs/preload/preload_G4PARTICLEXS4.1';
 import { default as initG4SAIDDATA } from '../libs/geant-web-stubs/preload/preload_G4SAIDDATA2.0';
 import { default as initPhotoEvaporation } from '../libs/geant-web-stubs/preload/preload_PhotonEvaporation6.1';
+import { workerPostMessage, workerSetOnMessage } from './Geant4WorkerHelpers';
+import {
+	Geant4WorkerDownloadProgressMonitor,
+	Geant4WorkerPreModule} from './Geant4WorkerPreModule';
 import {
 	Geant4WorkerMessage,
 	Geant4WorkerMessageFile,
-	Geant4WorkerMessageType
+	Geant4WorkerReceiveMessageType,
+	Geant4WorkerSendMessageType
 } from './Geant4WorkerTypes';
 
 const S3_PREFIX_MAP: Record<string, string> = {
@@ -26,107 +27,45 @@ const S3_PREFIX_MAP: Record<string, string> = {
 	'.json': 'https://s3p.cloud.cyfronet.pl/geant4-wasm/lazy_files_metadata/'
 };
 
-// TypeScript type assertion to treat self as a Worker
-const ctx = self as unknown as Worker; // eslint-disable-line no-restricted-globals
-
 // Files passed in from UI
 // A .gdml file and a .mac file is required to run the simulation
 let includedFiles: string[] = [];
 
-const preModule = {
-	preRun: [],
-	postRun: [],
-	onRuntimeInitialized: function () {
-		postMessage({ type: 'init', data: 'onRuntimeInitialized' });
-	},
-	printErr: (function () {
-		return function (text: string) {
-			console.error(...Array.prototype.slice.call(arguments));
-		};
-	})(),
-	print: (function () {
-		return function (text: any) {
-			const data = [...Array.prototype.slice.call(arguments)].join('');
-			postMessage({ type: 'print', data });
-		};
-	})(),
-	last: {
-		time: Date.now(),
-		text: ''
-	},
-	setStatus: function (text: string) {
-		if (!preModule.last) preModule.last = { time: Date.now(), text: '' };
-		if (text === preModule.last.text) return;
-		var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
-		var now = Date.now();
+const downloadTracker = new Geant4WorkerDownloadProgressMonitor();
 
-		if (m && now - preModule.last.time < 30) return; // if this is a progress update, skip it if too soon
-		preModule.last.time = now;
-		preModule.last.text = text;
-		postMessage({ type: 'status', data: text });
-	},
-	totalDependencies: 0,
-	monitorRunDependencies: function (left: any) {
-		this.totalDependencies = Math.max(this.totalDependencies, left);
-		preModule.setStatus(
-			left
-				? 'Preparing... (' +
-						(this.totalDependencies - left) +
-						'/' +
-						this.totalDependencies +
-						')'
-				: 'All downloads complete.'
-		);
-	},
-	locateFile: function (path: any, prefix: any) {
-		// if it's a mem init file, use a custom dir
-		const ext = path.slice(path.lastIndexOf('.'));
+const mod = createMainModule(new Geant4WorkerPreModule(downloadTracker, S3_PREFIX_MAP));
 
-		if (ext in S3_PREFIX_MAP) {
-			return S3_PREFIX_MAP[ext] + path;
-		}
-
-		// otherwise, use the default, the prefix (JS file's dir) + the path
-		return prefix + path;
-	}
-};
-
-const mod = createMainModule(preModule);
-
-ctx.onmessage = async (event: MessageEvent<Geant4WorkerMessage>) => {
+const onMessageFunction = async (
+	event: MessageEvent<Geant4WorkerMessage<Geant4WorkerReceiveMessageType>>
+) => {
 	switch (event.data.type) {
-		case Geant4WorkerMessageType.INIT_DATA_FILES: {
+		case Geant4WorkerReceiveMessageType.INIT_DATA_FILES: {
 			// Download the whole dataset at once (roughly 2GB of data).
 			// After each of 6 datasets is processed, it should be cached
 			// and other workers should be able to access the data without downloading again.
 			// This, in theory, could enable the app to run offline.
 			await mod.then(async module => {
-				console.log('Initializing lazy files...');
-
 				try {
+					downloadTracker.setCurrentDataset('G4EMLOW8.6.1');
 					await initG4ENSDFSTATE(module);
 					await initG4EMLOW(module);
 					await initG4NDL(module);
 					await initG4PARTICLEXS(module);
 					await initG4SAIDDATA(module);
 					await initPhotoEvaporation(module);
+
+					workerPostMessage({
+						type: Geant4WorkerSendMessageType.DEPS_LOADED
+					});
 				} catch (error: unknown) {
 					console.error('Error initializing lazy files:', (error as Error).message);
 				}
-
-				console.log('Lazy files initialized.');
-			});
-
-			ctx.postMessage({
-				type: 'status',
-				data: 'DEPS OK',
-				idx: event.data.idx
 			});
 
 			break;
 		}
 
-		case Geant4WorkerMessageType.INIT_LAZY_FILES: {
+		case Geant4WorkerReceiveMessageType.INIT_LAZY_FILES: {
 			// Initialize lazy download. Files needed for specific simulation are downloaded on-demand.
 			// Best-case scenario - the download size is reduced to a couple of kb.
 			await mod.then(async module => {
@@ -172,21 +111,18 @@ ctx.onmessage = async (event: MessageEvent<Geant4WorkerMessage>) => {
 									module.FS_createPath(file.parent, file.name, true, true);
 								}
 							}
-						});
-					console.log(`Loaded lazy files from ${jsonFile}`);
-				}
-			});
 
-			ctx.postMessage({
-				type: 'status',
-				data: 'DEPS OK',
-				idx: event.data.idx
+							workerPostMessage({
+								type: Geant4WorkerSendMessageType.DEPS_LOADED
+							});
+						});
+				}
 			});
 
 			break;
 		}
 
-		case Geant4WorkerMessageType.CREATE_FILE:
+		case Geant4WorkerReceiveMessageType.CREATE_FILE:
 			await mod.then(module => {
 				const data = event.data.data as Geant4WorkerMessageFile;
 
@@ -195,14 +131,13 @@ ctx.onmessage = async (event: MessageEvent<Geant4WorkerMessage>) => {
 				includedFiles.push(data.name);
 			});
 
-			ctx.postMessage({
-				type: 'status',
-				data: 'FILE OK',
+			workerPostMessage({
+				type: Geant4WorkerSendMessageType.CREATE_FILE_ACK,
 				idx: event.data.idx
 			});
 
 			break;
-		case Geant4WorkerMessageType.READ_FILE:
+		case Geant4WorkerReceiveMessageType.READ_FILE:
 			await mod.then(module => {
 				const fileName = event.data.data as string;
 
@@ -211,18 +146,18 @@ ctx.onmessage = async (event: MessageEvent<Geant4WorkerMessage>) => {
 					encoding: 'utf8'
 				}) as unknown as string;
 
-				ctx.postMessage({
-					type: Geant4WorkerMessageType.FILE_RESPONSE,
+				workerPostMessage({
+					type: Geant4WorkerSendMessageType.FILE_CONTENT,
 					data: {
 						name: fileName,
 						data: fileContent
 					} as Geant4WorkerMessageFile,
 					idx: event.data.idx
-				} as Geant4WorkerMessage);
+				});
 			});
 
 			break;
-		case Geant4WorkerMessageType.RUN_SIMULATION:
+		case Geant4WorkerReceiveMessageType.RUN_SIMULATION:
 			const geometryDefinition = includedFiles.find(k => k.endsWith('.gdml'));
 			const macroFile = includedFiles.find(k => k.endsWith('.mac'));
 
@@ -234,7 +169,10 @@ ctx.onmessage = async (event: MessageEvent<Geant4WorkerMessage>) => {
 				console.log('Starting Geant4 simulation...');
 				const result = await mod.then(module => {
 					const progressCallback = (progress: number) => {
-						postMessage({ type: 'progress', data: progress });
+						workerPostMessage({
+							type: Geant4WorkerSendMessageType.PROGRESS,
+							data: progress
+						});
 					};
 
 					const progressCallbackPtr = module.addFunction(progressCallback, 'vi');
@@ -243,21 +181,35 @@ ctx.onmessage = async (event: MessageEvent<Geant4WorkerMessage>) => {
 					return module.Geant4GDMRun(geometryDefinition, macroFile);
 				});
 
-				ctx.postMessage({
-					type: 'result',
-					result
+				workerPostMessage({
+					type: Geant4WorkerSendMessageType.RESULT,
+					data: result
 				});
 			} catch (error: unknown) {
-				ctx.postMessage({
-					type: 'error',
-					message: (error as Error).message,
-					error: error,
-					idx: event.data.idx
+				workerPostMessage({
+					idx: event.data.idx,
+					type: Geant4WorkerSendMessageType.ERROR,
+					data: error as Error
 				});
 			}
 
 			break;
+
+		case Geant4WorkerReceiveMessageType.POLL_DATASET_PROGRESS: {
+			// const progress = downloadTracker.getOverallProgress();
+
+			// workerPostMessage({
+			// 	type: Geant4WorkerSendMessageType.POLL_DATASET_PROGRESS,
+			// 	data: progress,
+			// 	idx: event.data.idx
+			// });
+
+			break;
+		}
+
 		default:
 			console.error('Unknown message type:', event.data.type);
 	}
 };
+
+workerSetOnMessage(onMessageFunction);
