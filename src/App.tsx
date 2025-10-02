@@ -9,6 +9,7 @@ import { ConfigProvider } from './config/ConfigService';
 import { PythonConverterService } from './PythonConverter/PythonConverterService';
 import { Auth } from './services/AuthService';
 import { DialogProvider } from './services/DialogService';
+import { Geant4LocalWorkerSimulationContextProvider } from './services/Geant4LocalWorkerSimulationContextProvider';
 import { KeycloakAuth } from './services/KeycloakAuthService';
 import { Loader } from './services/LoaderService';
 import { RemoteWorkerSimulationContextProvider } from './services/RemoteWorkerSimulationContextProvider';
@@ -105,6 +106,7 @@ function App() {
 				<Auth />,
 				<RemoteWorkerSimulationContextProvider />,
 				<PythonConverterService />,
+				<Geant4LocalWorkerSimulationContextProvider />,
 				<Loader />
 			]}>
 			<WrapperApp />
