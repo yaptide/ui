@@ -7,7 +7,16 @@ import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { SimulationMeshJSON } from '../Base/SimulationMesh';
-import { BasicFigure, BoxFigure, CylinderFigure, SphereFigure } from './BasicFigures';
+import {
+	BasicFigure,
+	BoxFigure,
+	CylinderFigure,
+	Geant4Box,
+	Geant4Cylinder,
+	Geant4FigureJSON,
+	Geant4Sphere,
+	SphereFigure
+} from './BasicFigures';
 
 type FigureManagerJSON = Omit<
 	SimulationElementJSON & {
@@ -25,6 +34,12 @@ export const figureLoader = (editor: YaptideEditor) => (json: SimulationMeshJSON
 			return new CylinderFigure(editor).fromSerialized(json);
 		case 'SphereFigure':
 			return new SphereFigure(editor).fromSerialized(json);
+		case 'Geant4Box':
+			return new Geant4Box(editor).fromSerialized(json as Geant4FigureJSON);
+		case 'Geant4Cylinder':
+			return new Geant4Cylinder(editor).fromSerialized(json as Geant4FigureJSON);
+		case 'Geant4Sphere':
+			return new Geant4Sphere(editor).fromSerialized(json as Geant4FigureJSON);
 		default:
 			throw new Error(`Unknown figure type: ${json.type}`);
 	}

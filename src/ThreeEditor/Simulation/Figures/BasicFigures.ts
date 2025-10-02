@@ -83,9 +83,10 @@ export class BoxFigure extends BasicFigure<THREE.BoxGeometry> {
 	constructor(
 		editor: YaptideEditor,
 		geometry?: THREE.BoxGeometry,
-		material?: THREE.MeshBasicMaterial
+		material?: THREE.MeshBasicMaterial,
+		type: string = 'BoxFigure'
 	) {
-		super(editor, 'Box', 'BoxFigure', 'BoxGeometry', geometry ?? boxGeometry, material);
+		super(editor, 'Box', type, 'BoxGeometry', geometry ?? boxGeometry, material);
 	}
 
 	reconstructGeometryFromData(data: AdditionalGeometryDataType<BoxParameters>): void {
@@ -103,12 +104,13 @@ export class CylinderFigure extends BasicFigure<HollowCylinderGeometry> {
 	constructor(
 		editor: YaptideEditor,
 		geometry?: HollowCylinderGeometry,
-		material?: THREE.MeshBasicMaterial
+		material?: THREE.MeshBasicMaterial,
+		type: string = 'CylinderFigure'
 	) {
 		super(
 			editor,
 			'Cylinder',
-			'CylinderFigure',
+			type,
 			'HollowCylinderGeometry',
 			geometry ?? cylinderGeometry,
 			material
@@ -139,16 +141,10 @@ export class SphereFigure extends BasicFigure<THREE.SphereGeometry> {
 	constructor(
 		editor: YaptideEditor,
 		geometry?: THREE.SphereGeometry,
-		material?: THREE.MeshBasicMaterial
+		material?: THREE.MeshBasicMaterial,
+		type: string = 'SphereFigure'
 	) {
-		super(
-			editor,
-			'Sphere',
-			'SphereFigure',
-			'SphereGeometry',
-			geometry ?? sphereGeometry,
-			material
-		);
+		super(editor, 'Sphere', type, 'SphereGeometry', geometry ?? sphereGeometry, material);
 	}
 
 	reconstructGeometryFromData(data: AdditionalGeometryDataType<SphereParameters>): void {
@@ -226,7 +222,7 @@ export class Geant4Box extends BoxFigure {
 		material?: THREE.MeshBasicMaterial,
 		simulationMaterial: SimulationMaterialType = DEFAULT_SIMULATION_MATERIAL
 	) {
-		super(editor, geometry, material);
+		super(editor, geometry, material, 'Geant4Box');
 		this.simulationMaterial = simulationMaterial;
 	}
 
@@ -256,7 +252,7 @@ export class Geant4Cylinder extends CylinderFigure {
 		material?: THREE.MeshBasicMaterial,
 		simulationMaterial: SimulationMaterialType = DEFAULT_SIMULATION_MATERIAL
 	) {
-		super(editor, geometry, material);
+		super(editor, geometry, material, 'Geant4Cylinder');
 		this.simulationMaterial = simulationMaterial;
 	}
 
@@ -286,7 +282,7 @@ export class Geant4Sphere extends SphereFigure {
 		material?: THREE.MeshBasicMaterial,
 		simulationMaterial: SimulationMaterialType = DEFAULT_SIMULATION_MATERIAL
 	) {
-		super(editor, geometry, material);
+		super(editor, geometry, material, 'Geant4Sphere');
 		this.simulationMaterial = simulationMaterial;
 	}
 

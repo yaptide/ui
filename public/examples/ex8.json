@@ -77,7 +77,7 @@
 		"figures": [
 			{
 				"name": "World",
-				"type": "CylinderFigure",
+				"type": "Geant4Cylinder",
 				"uuid": "bd9533dc-2611-4645-801b-883953916fd6",
 				"visible": true,
 				"geometryData": {
@@ -94,7 +94,7 @@
 				"children": [
 					{
 						"name": "Vacuum_cylinder",
-						"type": "CylinderFigure",
+						"type": "Geant4Cylinder",
 						"uuid": "f94994c6-a14e-4a40-97cc-84caa873075e",
 						"visible": true,
 						"geometryData": {
@@ -111,7 +111,7 @@
 						"children": [
 							{
 								"name": "Water_phantom_cylinder",
-								"type": "CylinderFigure",
+								"type": "Geant4Cylinder",
 								"uuid": "31e3ac1c-ea6c-43a0-9533-8316748f6f0c",
 								"visible": true,
 								"geometryData": {
@@ -125,11 +125,32 @@
 									}
 								},
 								"colorHex": 0,
-								"children": []
+								"children": [],
+								"simulationMaterial": {
+									"icru": 276,
+									"name": "WATER, LIQUID",
+									"sanitized_name": "water_liquid",
+									"density": 1,
+									"geant4_name": "G4_WATER"
+								}
 							}
-						]
+						],
+						"simulationMaterial": {
+							"icru": 1000,
+							"name": "VACUUM",
+							"sanitized_name": "vacuum",
+							"density": 0,
+							"geant4_name": "G4_Galactic"
+						}
 					}
-				]
+				],
+				"simulationMaterial": {
+					"icru": 0,
+					"name": "BLACK HOLE",
+					"sanitized_name": "black_hole",
+					"density": 0,
+					"geant4_name": "BlackHole"
+				}
 			}
 		]
 	},
