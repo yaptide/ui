@@ -11,6 +11,14 @@ const ALT_AUTH = process.env.REACT_APP_ALT_AUTH === 'plg';
 export const DEPLOYMENT = (process.env.REACT_APP_DEPLOYMENT as ConfigDeployment) ?? 'prod';
 export type ConfigDeployment = 'dev' | 'prod' | undefined;
 
+export const MAX_LOGS = process.env.MAX_LOGS ? Number(process.env.REACT_APP_MAX_LOGS) : 20;
+export const FLUSH_INTERVAL = process.env.REACT_APP_FLUSH_INTERVAL
+	? Number(process.env.REACT_APP_FLUSH_INTERVAL)
+	: 5000;
+export const DEDUP_WINDOW_MS = process.env.REACT_APP_DEDUP_WINDOW_MS
+	? Number(process.env.REACT_APP_DEDUP_WINDOW_MS)
+	: 10000; // 10 seconds
+
 const [useConfig, ConfigContextProvider] = createGenericContext<Config>();
 
 interface Config {
