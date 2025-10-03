@@ -99,6 +99,14 @@ export default class Geant4Worker {
 					console.error('From worker: ', event.data.data);
 
 					break;
+				case Geant4WorkerSendMessageType.DEPS_LOADED:
+					this.depsLoaded = true;
+
+					if (event.data.idx) {
+						this.resolvePromiseIfExists(event.data.idx, null);
+					}
+
+					break;
 
 				case Geant4WorkerSendMessageType.DOWNLOAD_STATUS:
 					// TODO: download status message handling
