@@ -1,73 +1,6 @@
+import { Geant4WorkerDownloadProgressMonitor } from './Geant4WorkerDownloadProgressMonitor';
 import { workerPostMessage } from './Geant4WorkerHelpers';
-import { Geant4WorkerDatasetProgress, Geant4WorkerSendMessageType } from './Geant4WorkerTypes';
-
-type DatasetProgress = Geant4WorkerDatasetProgress & { totalDependencies: number };
-
-export class Geant4WorkerDownloadProgressMonitor {
-	private datasetsProgressTracker: { [key: string]: DatasetProgress } = {};
-	private currentDataset?: string;
-
-	setCurrentDataset(dataset: string) {
-		this.datasetsProgressTracker[dataset] = {
-			stage: 'downloading',
-			progress: 0,
-			totalDependencies: 0
-		};
-
-		this.currentDataset = dataset;
-	}
-
-	setDownloadProgress(progress: number) {
-		if (this.currentDataset === undefined) {
-			return;
-		}
-
-		const datasetProgress = this.datasetsProgressTracker[this.currentDataset!];
-
-		if (datasetProgress) {
-			if (datasetProgress.stage === 'done') {
-				return;
-			}
-
-			datasetProgress.progress = progress;
-		}
-	}
-
-	setPreparationProgress(left: number) {
-		if (this.currentDataset === undefined) {
-			return;
-		}
-
-		const datasetProgress = this.datasetsProgressTracker[this.currentDataset!];
-
-		if (datasetProgress) {
-			if (datasetProgress.stage === 'done') {
-				return;
-			}
-
-			datasetProgress.stage = 'preparing';
-			datasetProgress.totalDependencies = Math.max(datasetProgress.totalDependencies, left);
-			datasetProgress.progress =
-				(datasetProgress.totalDependencies - left) / datasetProgress.totalDependencies;
-
-			if (left === 0) {
-				datasetProgress.progress = 1;
-				datasetProgress.stage = 'done';
-			}
-		}
-	}
-
-	getOverallProgress(dataset: string): Geant4WorkerDatasetProgress | undefined {
-		const progress = this.datasetsProgressTracker[dataset];
-
-		if (progress) {
-			return {
-				stage: progress.stage,
-				progress: progress.progress
-			};
-		}
-	}
-}
+import { Geant4WorkerSendMessageType } from './Geant4WorkerTypes';
 
 export class Geant4WorkerPreModule {
 	private progressMonitor: Geant4WorkerDownloadProgressMonitor;
@@ -91,22 +24,18 @@ export class Geant4WorkerPreModule {
 	}
 
 	printErr() {
-		return function (text: any) {
-			const data = [...Array.prototype.slice.call(arguments)].join('');
-			workerPostMessage({ type: Geant4WorkerSendMessageType.PRINT_ERROR, data });
-		};
+		const data = [...Array.prototype.slice.call(arguments)].join('');
+		workerPostMessage({ type: Geant4WorkerSendMessageType.PRINT_ERROR, data });
 	}
 
 	print() {
-		return function (text: any) {
-			const data = [...Array.prototype.slice.call(arguments)].join('');
-			workerPostMessage({ type: Geant4WorkerSendMessageType.PRINT, data });
-		};
+		const data = [...Array.prototype.slice.call(arguments)].join('');
+		workerPostMessage({ type: Geant4WorkerSendMessageType.PRINT, data });
 	}
 
 	setStatus(text: string) {
 		// Try parsing "text" to find "(x/y)" pattern
-
+		console.log('Status:', text);
 		const match = text.match(/\((\d+)\/(\d+)\)/);
 
 		if (match) {

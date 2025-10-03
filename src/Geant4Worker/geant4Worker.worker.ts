@@ -9,10 +9,9 @@ import { default as initG4NDL } from '../libs/geant-web-stubs/preload/preload_G4
 import { default as initG4PARTICLEXS } from '../libs/geant-web-stubs/preload/preload_G4PARTICLEXS4.1';
 import { default as initG4SAIDDATA } from '../libs/geant-web-stubs/preload/preload_G4SAIDDATA2.0';
 import { default as initPhotoEvaporation } from '../libs/geant-web-stubs/preload/preload_PhotonEvaporation6.1';
+import { Geant4WorkerDownloadProgressMonitor } from './Geant4WorkerDownloadProgressMonitor';
 import { workerPostMessage, workerSetOnMessage } from './Geant4WorkerHelpers';
-import {
-	Geant4WorkerDownloadProgressMonitor,
-	Geant4WorkerPreModule} from './Geant4WorkerPreModule';
+import { Geant4WorkerPreModule } from './Geant4WorkerPreModule';
 import {
 	Geant4WorkerMessage,
 	Geant4WorkerMessageFile,
@@ -32,8 +31,9 @@ const S3_PREFIX_MAP: Record<string, string> = {
 let includedFiles: string[] = [];
 
 const downloadTracker = new Geant4WorkerDownloadProgressMonitor();
+const preMod = new Geant4WorkerPreModule(downloadTracker, S3_PREFIX_MAP);
 
-const mod = createMainModule(new Geant4WorkerPreModule(downloadTracker, S3_PREFIX_MAP));
+const mod = createMainModule(preMod);
 
 const onMessageFunction = async (
 	event: MessageEvent<Geant4WorkerMessage<Geant4WorkerReceiveMessageType>>
@@ -46,12 +46,17 @@ const onMessageFunction = async (
 			// This, in theory, could enable the app to run offline.
 			await mod.then(async module => {
 				try {
-					downloadTracker.setCurrentDataset('G4EMLOW8.6.1');
+					downloadTracker.setCurrentDataset('G4ENSDFSTATE');
 					await initG4ENSDFSTATE(module);
+					downloadTracker.setCurrentDataset('G4EMLOW');
 					await initG4EMLOW(module);
+					downloadTracker.setCurrentDataset('G4NDL');
 					await initG4NDL(module);
+					downloadTracker.setCurrentDataset('G4PARTICLEXS');
 					await initG4PARTICLEXS(module);
+					downloadTracker.setCurrentDataset('G4SAIDDATA');
 					await initG4SAIDDATA(module);
+					downloadTracker.setCurrentDataset('PhotonEvaporation');
 					await initPhotoEvaporation(module);
 
 					workerPostMessage({
@@ -111,12 +116,13 @@ const onMessageFunction = async (
 									module.FS_createPath(file.parent, file.name, true, true);
 								}
 							}
-
-							workerPostMessage({
-								type: Geant4WorkerSendMessageType.DEPS_LOADED
-							});
 						});
 				}
+
+				workerPostMessage({
+					type: Geant4WorkerSendMessageType.DEPS_LOADED,
+					idx: event.data.idx
+				});
 			});
 
 			break;
