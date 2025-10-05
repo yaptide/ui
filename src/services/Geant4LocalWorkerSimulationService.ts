@@ -1,5 +1,5 @@
 import Geant4Worker from '../Geant4Worker/Geant4Worker';
-import { Estimator, Page1D } from '../JsRoot/GraphData';
+import { Estimator, Page1D, Page2D } from '../JsRoot/GraphData';
 import { PythonConverterContext } from '../PythonConverter/PythonConverterService';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import {
@@ -265,7 +265,9 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 		this.resultsForEstimators[jobId] = resultsPerEstimator;
 	}
 
-	private parseResultFile(content: string): { metadata: any; results: Page1D } | undefined {
+	private parseResultFile(
+		content: string
+	): { metadata: any; results: Page1D | Page2D } | undefined {
 		if (content == '') {
 			return undefined;
 		}
@@ -284,8 +286,6 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 			lines.pop();
 		}
 
-		const meshName = lines[0].split(' ').at(-1)!;
-		const scorerName = lines[1].split(' ').at(-1)!;
 		const numColumns = lines[2].split(',').length;
 
 		const columns: string[][] = Array.from({ length: numColumns }).map(_ => []);
@@ -295,22 +295,36 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 		}
 
 		const numUniqueValues = columns.slice(0, 3).map(col => new Set(col).size);
-		const dimensions = (numUniqueValues.map(n => (n > 1 ? 1 : 0)) as number[]).reduce(
-			(acc, v) => acc + v
-		);
+		const dimensionMask = numUniqueValues.map(n => n > 1);
 
-		if (dimensions != 1) {
-			console.warn('Results with dim != 1 are currently unsupported');
+		const numDimensions = dimensionMask.reduce((acc, v) => acc + (v ? 1 : 0), 0);
 
-			return undefined;
+		switch (numDimensions) {
+			case 1:
+				return this.parse1DResultFile(dimensionMask, lines.slice(0, 3), columns);
+			case 2:
+				return this.parse2DResultFile(dimensionMask, lines.slice(0, 3), columns);
+			default:
+				console.warn(`Results with dim == ${numDimensions} are unsupported`);
+
+				return undefined;
 		}
+	}
 
-		const xDataColumn = numUniqueValues.findIndex(n => n > 1);
-		const xDataName = lines[2].split(',')[xDataColumn];
+	private parse1DResultFile(
+		dimensionMask: boolean[],
+		header: string[],
+		columns: string[][]
+	): { metadata: any; results: Page1D } {
+		const meshName = header[0].split(' ').at(-1)!;
+		const scorerName = header[1].split(' ').at(-1)!;
+
+		const xDataColumn = dimensionMask.findIndex(n => n);
+		const xDataName = header[2].split(',')[xDataColumn];
 
 		return {
 			metadata: {
-				dimensions,
+				dimensions: 1,
 				meshName,
 				scorerName
 			},
@@ -324,7 +338,76 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 				},
 				data: {
 					name: scorerName,
-					unit: this.getUnit(lines[2], true),
+					unit: this.getUnit(header[2], true),
+					values: columns[3].map(v => parseFloat(v) / this.numPrimaries)
+				}
+			}
+		};
+	}
+
+	private parse2DResultFile(
+		dimensionMask: boolean[],
+		header: string[],
+		columns: string[][]
+	): { metadata: any; results: Page2D } {
+		const meshName = header[0].split(' ').at(-1)!;
+		const scorerName = header[1].split(' ').at(-1)!;
+
+		// there are 2 columns, and they store all combinations of bin numbers
+		// 1 1
+		// 1 2
+		// 1 3
+		// 2 1
+		// 2 2
+		// 2 3
+		// we want only unique, ascending values: (y) 1 2 / (x) 1 2 3
+
+		// x column comes after y so it matches what JsRootGraph2D expects when accessing data as consecutive 1d array
+		// because of that, x = findLastIndex, y = findIndex
+		const xDataColumn = dimensionMask.findLastIndex(n => n);
+		const xDataName = header[2].split(',')[xDataColumn];
+
+		// store only unique, ascending values
+		const xDataValues = [parseFloat(columns[xDataColumn][0])];
+		columns[xDataColumn]
+			.map(v => parseFloat(v))
+			.forEach(v => {
+				if (v > xDataValues.at(-1)!) xDataValues.push(v);
+			});
+
+		const yDataColumn = dimensionMask.findIndex(n => n);
+		const yDataName = header[2].split(',')[yDataColumn];
+
+		// store only unique, ascending values
+		const yDataValues = [parseFloat(columns[yDataColumn][0])];
+		columns[yDataColumn]
+			.map(v => parseFloat(v))
+			.forEach(v => {
+				if (v > yDataValues.at(-1)!) yDataValues.push(v);
+			});
+
+		return {
+			metadata: {
+				dimensions: 2,
+				meshName,
+				scorerName
+			},
+			results: {
+				name: scorerName,
+				dimensions: 2,
+				axisDim1: {
+					name: xDataName,
+					unit: '',
+					values: xDataValues
+				},
+				axisDim2: {
+					name: yDataName,
+					unit: '',
+					values: yDataValues
+				},
+				data: {
+					name: scorerName,
+					unit: this.getUnit(header[2], true),
 					values: columns[3].map(v => parseFloat(v) / this.numPrimaries)
 				}
 			}
