@@ -38,6 +38,8 @@ interface JobMetadata {
 	inputType: SimulationSourceType;
 }
 
+const VALUE_HEADER_UNIT_REGEX = /\[(\w+)]/g;
+
 export default class Geant4LocalWorkerSimulationService implements SimulationService {
 	convertJSON: PythonConverterContext['convertJSON'];
 	workers: Record<JobId, Geant4Worker>;
@@ -46,6 +48,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 	resultsForEstimators: Record<JobId, Record<string, Estimator>>;
 	jobsEditorJson: Record<JobId, EditorJson>;
 	jobsMetadata: Record<JobId, JobMetadata>;
+	numPrimaries: number;
 
 	responseCache: Record<
 		'jobInputs' | 'jobStatusData' | 'jobResults' | 'estimatorsPages' | 'pageStatus',
@@ -67,6 +70,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 			estimatorsPages: {},
 			pageStatus: {}
 		};
+		this.numPrimaries = 1; // default value that supports division
 	}
 
 	async helloWorld(signal?: AbortSignal): Promise<boolean> {
@@ -99,6 +103,12 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 			// @ts-ignore
 			'run.mac': simData['run.mac']
 		};
+
+		const rawNumPrimaries = this.inputFiles[jobId]['run.mac']
+			.split('\n')
+			.find(l => l.startsWith('/run/beamOn'))
+			?.split(' ')[1];
+		this.numPrimaries = rawNumPrimaries ? parseInt(rawNumPrimaries) : 0;
 
 		worker.init().then(async () => {
 			await worker.loadDepsLazy();
@@ -150,7 +160,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 
 		return [
 			{
-				requestedPrimaries: this.jobsEditorJson[jobId].beam.numberOfParticles,
+				requestedPrimaries: this.numPrimaries,
 				simulatedPrimaries: this.workers[jobId].getSimulatedPrimaries()
 			}
 		];
@@ -248,23 +258,14 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 				pageNumber: estimatorsMetadata[content?.metadata.meshName].pagesMetadata.length
 			});
 
-			resultsPerEstimator[content.metadata.meshName].pages.push({
-				dimensions: content.metadata.dimensions,
-				axisDim1: {
-					name: 'x',
-					values: content.results.x.map(v => parseFloat(v)),
-					unit: ''
-				},
-				data: { name: 'y', values: content.results.y.map(v => parseFloat(v)), unit: '' },
-				metadata: {}
-			} as Page1D);
+			resultsPerEstimator[content.metadata.meshName].pages.push(content.results);
 		}
 
 		this.estimators[jobId] = Object.values(estimatorsMetadata);
 		this.resultsForEstimators[jobId] = resultsPerEstimator;
 	}
 
-	private parseResultFile(content: string) {
+	private parseResultFile(content: string): { metadata: any; results: Page1D } | undefined {
 		if (content == '') {
 			return undefined;
 		}
@@ -304,10 +305,38 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 			return undefined;
 		}
 
+		const xDataColumn = numUniqueValues.findIndex(n => n > 1);
+		const xDataName = lines[2].split(',')[xDataColumn];
+
 		return {
-			metadata: { dimensions, meshName, scorerName },
-			results: { x: columns[numUniqueValues.findIndex(n => n > 1)], y: columns[3] }
+			metadata: {
+				dimensions,
+				meshName,
+				scorerName
+			},
+			results: {
+				name: scorerName,
+				dimensions: 1,
+				axisDim1: {
+					name: xDataName,
+					unit: '',
+					values: columns[xDataColumn].map(v => parseFloat(v))
+				},
+				data: {
+					name: scorerName,
+					unit: this.getUnit(lines[2], true),
+					values: columns[3].map(v => parseFloat(v) / this.numPrimaries)
+				}
+			}
 		};
+	}
+
+	private getUnit(header: string, perPrimary: boolean) {
+		const valueColumnHeader = header.split(',').at(3) ?? '';
+		const unit =
+			Array.from(valueColumnHeader.matchAll(VALUE_HEADER_UNIT_REGEX)).at(0)?.at(1) ?? '?';
+
+		return perPrimary ? `${unit}/prim` : unit;
 	}
 
 	async getJobResults(...args: RequestGetJobResults): Promise<JobResults | undefined> {
