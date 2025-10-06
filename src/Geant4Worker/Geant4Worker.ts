@@ -115,6 +115,10 @@ export default class Geant4Worker {
 						console.error('Error details:', event.data.error);
 					}
 
+					this.endTime = Date.now();
+					this.state = StatusState.FAILED;
+					this.destroy();
+
 					break;
 				case Geant4WorkerMessageType.FILE_RESPONSE:
 					if (event.data.idx) {
