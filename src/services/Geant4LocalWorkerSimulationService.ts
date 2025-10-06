@@ -457,9 +457,14 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 
 	async getPageStatus(...args: RequestGetPageStatus): Promise<JobStatusData[] | undefined> {
 		const [infoList, cache = true, beforeCacheWrite, signal] = args;
-		const jobIds = new Set(infoList.map(il => il.jobId));
 
-		const workersEntries = Object.entries(this.workers).filter(([jobId]) => jobIds.has(jobId));
+		const workersEntries: [string, Geant4Worker][] = infoList
+			.map(info =>
+				this.workers.hasOwnProperty(info.jobId)
+					? [info.jobId, this.workers[info.jobId]]
+					: undefined
+			)
+			.filter(Boolean);
 
 		return workersEntries.map(([jobId, worker]) => {
 			if (this.responseCache.pageStatus.hasOwnProperty(jobId)) {
