@@ -153,10 +153,6 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 	}
 
 	private getJobTasksStatus(jobId: string) {
-		if (!this.jobsEditorJson.hasOwnProperty(jobId)) {
-			return [];
-		}
-
 		return [
 			{
 				requestedPrimaries: this.numPrimaries,
