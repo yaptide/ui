@@ -11,6 +11,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 
 import { Estimator, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
 import { useDialog } from '../../../services/DialogService';
+import { useGeant4LocalWorkerSimulation } from '../../../services/Geant4LocalWorkerSimulationContextProvider';
 import { useRemoteWorkerSimulation } from '../../../services/RemoteWorkerSimulationContextProvider';
 import { useStore } from '../../../services/StoreService';
 import { InfoTooltip } from '../../../shared/components/tooltip/InfoTooltip';
@@ -26,7 +27,12 @@ export interface EstimatorResults extends Estimator {
 
 function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 	const theme = useTheme();
-	const { getJobResults } = useRemoteWorkerSimulation();
+	const remoteWorkerSimulationHandlers = useRemoteWorkerSimulation();
+	const geant4LocalWorkerSimulationHandlers = useGeant4LocalWorkerSimulation();
+	const { getJobResults } =
+		props.simulation?.metadata.simType === 'Geant4'
+			? geant4LocalWorkerSimulationHandlers
+			: remoteWorkerSimulationHandlers;
 	const { open: openSaveFileDialog } = useDialog('saveFile');
 	const { yaptideEditor, setResultsSimulationData } = useStore();
 	const { simulation } = props;
