@@ -56,14 +56,15 @@ export class Geant4WorkerDownloadProgressMonitor {
 		}
 	}
 
-	getOverallProgress(dataset: string): Geant4WorkerDatasetProgress | undefined {
-		const progress = this.datasetsProgressTracker[dataset];
-
-		if (progress) {
-			return {
-				stage: progress.stage,
-				progress: progress.progress
-			};
-		}
+	getOverallProgress(): Record<string, Geant4WorkerDatasetProgress> {
+		return Object.fromEntries(
+			Object.entries(this.datasetsProgressTracker).map(([dataset, progress]) => [
+				dataset,
+				{
+					stage: progress.stage,
+					progress: progress.progress
+				}
+			])
+		);
 	}
 }
