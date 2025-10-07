@@ -106,7 +106,7 @@ export class Geant4ResultsFileParser {
 		// 2 3
 		// we want only unique, ascending values: (y) 1 2 / (x) 1 2 3
 
-		// x column comes after y so it matches what JsRootGraph2D expects when accessing data as consecutive 1d array
+		// x column comes after y to match what JsRootGraph2D expects when accessing data as consecutive 1d array
 		// because of that, x = findLastIndex, y = findIndex
 		const xDataColumn = dimensionMask.findLastIndex(n => n);
 		const xDataName = header[2].split(',')[xDataColumn];

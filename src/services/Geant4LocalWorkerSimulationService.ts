@@ -69,7 +69,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 			estimatorsPages: {},
 			pageStatus: {}
 		};
-		this.numPrimaries = 1; // default value that supports division
+		this.numPrimaries = 1; // default value that works as divisor
 	}
 
 	async helloWorld(signal?: AbortSignal): Promise<boolean> {
@@ -103,6 +103,9 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 			'run.mac': simData['run.mac']
 		};
 
+		// To find out number of primaries for both editor JSON and input files
+		// we search the /run/beamOn command in macro file, which is either passed directly,
+		// or generated from the editor JSON
 		const rawNumPrimaries = this.inputFiles[jobId]['run.mac']
 			.split('\n')
 			.find(l => l.startsWith('/run/beamOn'))
@@ -458,6 +461,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 	async getPageStatus(...args: RequestGetPageStatus): Promise<JobStatusData[] | undefined> {
 		const [infoList, cache = true, beforeCacheWrite, signal] = args;
 
+		// IMPORTANT: infoList comes with some order of items that should be kept unchanged
 		const workersEntries: [string, Geant4Worker][] = infoList
 			.map(info =>
 				this.workers.hasOwnProperty(info.jobId)
