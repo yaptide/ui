@@ -2,6 +2,12 @@ import { Page1D, Page2D } from '../JsRoot/GraphData';
 
 const VALUE_HEADER_UNIT_REGEX = /\[(\w+)]/g;
 
+interface ResultFileMetadata {
+	dimensions: number;
+	meshName: string;
+	scorerName: string;
+}
+
 export class Geant4ResultsFileParser {
 	numPrimaries: number;
 
@@ -11,7 +17,7 @@ export class Geant4ResultsFileParser {
 
 	public parseResultFile(
 		content: string
-	): { metadata: any; results: Page1D | Page2D } | undefined {
+	): { metadata: ResultFileMetadata; results: Page1D | Page2D } | undefined {
 		if (content == '') {
 			return undefined;
 		}
@@ -59,7 +65,7 @@ export class Geant4ResultsFileParser {
 		dimensionMask: boolean[],
 		header: string[],
 		columns: string[][]
-	): { metadata: any; results: Page1D } {
+	): { metadata: ResultFileMetadata; results: Page1D } {
 		const meshName = header[0].split(' ').at(-1)!;
 		const scorerName = header[1].split(' ').at(-1)!;
 
@@ -93,7 +99,7 @@ export class Geant4ResultsFileParser {
 		dimensionMask: boolean[],
 		header: string[],
 		columns: string[][]
-	): { metadata: any; results: Page2D } {
+	): { metadata: ResultFileMetadata; results: Page2D } {
 		const meshName = header[0].split(' ').at(-1)!;
 		const scorerName = header[1].split(' ').at(-1)!;
 
