@@ -4,6 +4,7 @@ import CodeEditor from '@uiw/react-textarea-code-editor';
 
 import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
+import { useStore } from '../../../services/StoreService';
 import { SimulatorType } from '../../../types/RequestTypes';
 import {
 	_defaultFlukaInputFiles,
@@ -26,6 +27,7 @@ interface InputFilesEditorProps {
 export function InputFilesEditor(props: InputFilesEditorProps) {
 	const { demoMode } = useConfig();
 	const { isAuthorized } = useAuth();
+	const { yaptideEditor } = useStore();
 	const inputFiles = props.inputFiles ?? _defaultShInputFiles;
 	const theme = useTheme();
 	const largeFileSize = 100_000;
@@ -68,13 +70,18 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 		return result.join('\n');
 	};
 
+	const remoteWorkersAvailableForRunning = !demoMode && isAuthorized;
+	const canRunWithInputFiles =
+		remoteWorkersAvailableForRunning ||
+		yaptideEditor?.contextManager.currentSimulator === SimulatorType.GEANT4;
+
 	return (
 		<Box sx={{ display: 'flex', flexDirection: 'column', gap: theme.spacing(1) }}>
 			<Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
 				<Button
 					color='primary'
 					variant='contained'
-					disabled={demoMode || !isAuthorized}
+					disabled={!canRunWithInputFiles}
 					onClick={() => {
 						if (props.goToRun) {
 							props.goToRun(inputFiles);

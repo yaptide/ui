@@ -1,9 +1,10 @@
 import { AccordionDetails, AccordionSummary, useTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
+import { useGeant4LocalWorkerSimulation } from '../../../services/Geant4LocalWorkerSimulationContextProvider';
 import { useRemoteWorkerSimulation } from '../../../services/RemoteWorkerSimulationContextProvider';
 import { useStore } from '../../../services/StoreService';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
@@ -28,16 +29,28 @@ export default function RecentSimulations() {
 		simulationJobIdsSubmittedInSession
 	} = useStore();
 
-	const remoteWorkerHandlers = useRemoteWorkerSimulation();
+	const remoteWorkerSimulationHandlers = useRemoteWorkerSimulation();
+	const geant4LocalWorkerSimulationHandlers = useGeant4LocalWorkerSimulation();
 
 	const [isBackendAlive, setBackendAlive] = useState(false);
-	const [restSimulationInfo, setRestSimulationInfo] = useState<SimulationInfo[]>([]);
-	const [restSimulationsStatusData, setRestSimulationsStatusData] = useState<JobStatusData[]>();
+	const [remoteWorkerSimulationInfo, setRemoteWorkerSimulationInfo] = useState<SimulationInfo[]>(
+		[]
+	);
+
+	const [geant4LocalWorkerSimulationInfo, setGeant4LocalWorkerSimulationInfo] = useState<
+		SimulationInfo[]
+	>([]);
+
+	const [remoteWorkerSimulationsStatusData, setRemoteWorkerSimulationsStatusData] =
+		useState<JobStatusData[]>();
+
+	const [geant4LocalWorkerSimulationsStatusData, setGeant4LocalWorkerSimulationsStatusData] =
+		useState<JobStatusData[]>();
 
 	const [controller] = useState(new AbortController());
 
 	const config: SimulationConfig = {
-		demoMode,
+		shouldConnect: !demoMode,
 		controller,
 		trackedId,
 		isBackendAlive,
@@ -51,11 +64,24 @@ export default function RecentSimulations() {
 		]
 	};
 
-	const restState: SimulationState = {
-		simulationInfo: restSimulationInfo,
-		simulationsStatusData: restSimulationsStatusData,
-		setSimulationInfo: setRestSimulationInfo,
-		setSimulationsStatusData: setRestSimulationsStatusData,
+	const remoteWorkerState: SimulationState = {
+		simulationInfo: remoteWorkerSimulationInfo,
+		simulationsStatusData: remoteWorkerSimulationsStatusData,
+		setSimulationInfo: setRemoteWorkerSimulationInfo,
+		setSimulationsStatusData: setRemoteWorkerSimulationsStatusData,
+		setResultsSimulationData,
+		setLocalResultsSimulationData,
+		goToResults: () => {},
+		setInputFiles: () => {},
+		setShowInputFilesEditor: () => {},
+		yaptideEditor
+	};
+
+	const geant4LocalWorkerState: SimulationState = {
+		simulationInfo: geant4LocalWorkerSimulationInfo,
+		simulationsStatusData: geant4LocalWorkerSimulationsStatusData,
+		setSimulationInfo: setGeant4LocalWorkerSimulationInfo,
+		setSimulationsStatusData: setGeant4LocalWorkerSimulationsStatusData,
 		setResultsSimulationData,
 		setLocalResultsSimulationData,
 		goToResults: () => {},
@@ -70,11 +96,18 @@ export default function RecentSimulations() {
 		simulationDataInterval: remoteWorkerSimulationDataInterval,
 		handleLoadResults: remoteWorkerHandleLoadResults,
 		setPageCount: setRemoteWorkerPageCount
-	} = SimulationsGridHelpers(config, remoteWorkerHandlers, restState);
+	} = SimulationsGridHelpers(config, remoteWorkerSimulationHandlers, remoteWorkerState);
+
+	const {
+		updateSimulationInfo: geant4LocalWorkerUpdateSimulationInfo,
+		updateSimulationData: geant4LocalWorkerUpdateSimulationData,
+		simulationDataInterval: geant4LocalWorkerSimulationDataInterval,
+		handleLoadResults: geant4LocalWorkerHandleLoadResults
+	} = SimulationsGridHelpers(config, geant4LocalWorkerSimulationHandlers, geant4LocalWorkerState);
 
 	useBackendAliveEffect(
 		config,
-		remoteWorkerHandlers,
+		remoteWorkerSimulationHandlers,
 		() => {
 			if (auth.isAuthorized) {
 				remoteWorkerUpdateSimulationInfo();
@@ -83,12 +116,30 @@ export default function RecentSimulations() {
 		setRemoteWorkerPageCount
 	);
 
-	useUpdateCurrentSimulationEffect(config, remoteWorkerHandlers, restState);
+	useBackendAliveEffect(
+		config,
+		geant4LocalWorkerSimulationHandlers,
+		geant4LocalWorkerUpdateSimulationInfo,
+		setRemoteWorkerPageCount
+	);
+
+	useUpdateCurrentSimulationEffect(config, remoteWorkerSimulationHandlers, remoteWorkerState);
+	useUpdateCurrentSimulationEffect(
+		config,
+		geant4LocalWorkerSimulationHandlers,
+		geant4LocalWorkerState
+	);
 
 	useIntervalAsync(
 		remoteWorkerUpdateSimulationData,
 		remoteWorkerSimulationDataInterval,
-		restSimulationInfo.length > 0
+		remoteWorkerSimulationInfo.length > 0
+	);
+
+	useIntervalAsync(
+		geant4LocalWorkerUpdateSimulationData,
+		geant4LocalWorkerSimulationDataInterval,
+		geant4LocalWorkerSimulationInfo.length > 0
 	);
 
 	const remoteWorkerJobIdsInSession = new Set(
@@ -97,18 +148,65 @@ export default function RecentSimulations() {
 			.map(job => job.jobId)
 	);
 
-	const remoteWorkerSimulationsToDisplay = restSimulationsStatusData
-		? restSimulationsStatusData
+	const sortFn = useCallback(
+		(s1: SimulationInfo, s2: SimulationInfo) =>
+			new Date(s2.startTime).getTime() - new Date(s1.startTime).getTime(),
+		[]
+	);
+
+	const remoteWorkerSimulationsToDisplay = remoteWorkerSimulationsStatusData
+		? remoteWorkerSimulationsStatusData
 				.filter(statusData => remoteWorkerJobIdsInSession.has(statusData.jobId))
+				.sort(sortFn)
 				.slice(0, 5)
 		: [];
 
-	const simulationsToDisplay = remoteWorkerSimulationsToDisplay
-		.sort((s1, s2) => new Date(s1.startTime).getTime() - new Date(s2.startTime).getTime())
+	const geant4LocalWorkerJobIdsInSession = new Set(
+		simulationJobIdsSubmittedInSession
+			.filter(job => job.source === 'local')
+			.map(job => job.jobId)
+	);
+
+	const geant4LocalWorkerSimulationsToDisplay = geant4LocalWorkerSimulationsStatusData
+		? geant4LocalWorkerSimulationsStatusData
+				.filter(statusData => geant4LocalWorkerJobIdsInSession.has(statusData.jobId))
+				.sort(sortFn)
+				.slice(0, 5)
+		: [];
+
+	const simulationsToDisplay = [
+		...remoteWorkerSimulationsToDisplay,
+		...geant4LocalWorkerSimulationsToDisplay
+	]
+		.sort(sortFn)
 		.slice(0, 5);
 
-	const loadResultsFn = (simulation: SimulationInfo) => (taskId: string | null) =>
-		remoteWorkerHandleLoadResults(taskId, simulation);
+	const loadResultsFn = useCallback(
+		(simulation: SimulationInfo) => {
+			if (
+				geant4LocalWorkerJobIdsInSession.has(simulation.jobId) &&
+				geant4LocalWorkerHandleLoadResults
+			) {
+				return (taskId: string | null) =>
+					geant4LocalWorkerHandleLoadResults(taskId, simulation);
+			}
+
+			if (
+				remoteWorkerJobIdsInSession.has(simulation.jobId) &&
+				remoteWorkerHandleLoadResults
+			) {
+				return (taskId: string | null) => remoteWorkerHandleLoadResults(taskId, simulation);
+			}
+
+			return (taskId: string | null) => {};
+		},
+		[
+			geant4LocalWorkerJobIdsInSession,
+			geant4LocalWorkerHandleLoadResults,
+			remoteWorkerJobIdsInSession,
+			remoteWorkerHandleLoadResults
+		]
+	);
 
 	return (
 		<StyledAccordion

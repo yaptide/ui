@@ -1,5 +1,5 @@
 import Geant4Worker from '../Geant4Worker/Geant4Worker';
-import { Estimator, Page1D } from '../JsRoot/GraphData';
+import { Estimator, Page1D, Page2D } from '../JsRoot/GraphData';
 import { PythonConverterContext } from '../PythonConverter/PythonConverterService';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import {
@@ -30,6 +30,7 @@ import {
 } from '../types/ResponseTypes';
 import { FullSimulationData, SimulationService } from '../types/SimulationService';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
+import { Geant4ResultsFileParser } from './Geant4ResultsFileParser';
 
 type JobId = string;
 
@@ -46,6 +47,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 	resultsForEstimators: Record<JobId, Record<string, Estimator>>;
 	jobsEditorJson: Record<JobId, EditorJson>;
 	jobsMetadata: Record<JobId, JobMetadata>;
+	numPrimaries: number;
 
 	responseCache: Record<
 		'jobInputs' | 'jobStatusData' | 'jobResults' | 'estimatorsPages' | 'pageStatus',
@@ -67,6 +69,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 			estimatorsPages: {},
 			pageStatus: {}
 		};
+		this.numPrimaries = 1; // default value that works as divisor
 	}
 
 	async helloWorld(signal?: AbortSignal): Promise<boolean> {
@@ -74,7 +77,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 	}
 
 	async postJob(...args: RequestPostJob): Promise<ResponsePostJob> {
-		let [simData, inputType, ntasks, simType, title, batchOptions, signal] = args;
+		let [simData, inputType, runType, ntasks, simType, title, batchOptions, signal] = args;
 
 		if (title === undefined && isEditorJson(simData)) {
 			title = simData.project.title;
@@ -99,6 +102,15 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 			// @ts-ignore
 			'run.mac': simData['run.mac']
 		};
+
+		// To find out number of primaries for both editor JSON and input files
+		// we search the /run/beamOn command in macro file, which is either passed directly,
+		// or generated from the editor JSON
+		const rawNumPrimaries = this.inputFiles[jobId]['run.mac']
+			.split('\n')
+			.find(l => l.startsWith('/run/beamOn'))
+			?.split(' ')[1];
+		this.numPrimaries = rawNumPrimaries ? parseInt(rawNumPrimaries) : 0;
 
 		worker.init().then(async () => {
 			await worker.loadDepsLazy();
@@ -144,13 +156,9 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 	}
 
 	private getJobTasksStatus(jobId: string) {
-		if (!this.jobsEditorJson.hasOwnProperty(jobId)) {
-			return [];
-		}
-
 		return [
 			{
-				requestedPrimaries: this.jobsEditorJson[jobId].beam.numberOfParticles,
+				requestedPrimaries: this.numPrimaries,
 				simulatedPrimaries: this.workers[jobId].getSimulatedPrimaries()
 			}
 		];
@@ -225,8 +233,10 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 		// TODO: find a way to terminate & destroy the worker after fetching the files to free up memory
 		// TODO: keeping in mind, that this method can be called multiple times, simultaneously
 
+		const parser = new Geant4ResultsFileParser(this.numPrimaries);
+
 		const parsedContents = fileContents
-			.map(file => (file ? this.parseResultFile(file) : undefined))
+			.map(file => (file ? parser.parseResultFile(file) : undefined))
 			.filter(v => !!v);
 
 		const estimatorsNames = new Set(parsedContents.map(c => c?.metadata.meshName))
@@ -248,61 +258,11 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 				pageNumber: estimatorsMetadata[content?.metadata.meshName].pagesMetadata.length
 			});
 
-			resultsPerEstimator[content.metadata.meshName].pages.push({
-				dimensions: content.metadata.dimensions,
-				axisDim1: {
-					name: 'x',
-					values: content.results.x.map(v => parseFloat(v)),
-					unit: ''
-				},
-				data: { name: 'y', values: content.results.y.map(v => parseFloat(v)), unit: '' },
-				metadata: {}
-			} as Page1D);
+			resultsPerEstimator[content.metadata.meshName].pages.push(content.results);
 		}
 
 		this.estimators[jobId] = Object.values(estimatorsMetadata);
 		this.resultsForEstimators[jobId] = resultsPerEstimator;
-	}
-
-	private parseResultFile(content: string) {
-		if (content == '') {
-			return undefined;
-		}
-
-		// file header should look like this (3rd line may be different):
-		//
-		// # mesh name: <meshName>
-		// # primitive scorer name: <scorerName>
-		// # iX, iY, iZ, total(value) [percm2], total(val^2), entry
-		//
-		// then, csv data follows
-
-		const lines = content.split('\n');
-		const meshName = lines[0].split(' ').at(-1)!;
-		const scorerName = lines[1].split(' ').at(-1)!;
-		const numColumns = lines[2].split(',').length;
-
-		const columns: string[][] = Array.from({ length: numColumns }).map(_ => []);
-
-		for (const line of lines.slice(3)) {
-			line.split(',').forEach((val, i) => columns[i].push(val));
-		}
-
-		const numUniqueValues = columns.slice(0, 3).map(col => new Set(col).size);
-		const dimensions = (numUniqueValues.map(n => (n > 1 ? 1 : 0)) as number[]).reduce(
-			(acc, v) => acc + v
-		);
-
-		if (dimensions != 1) {
-			console.warn('Results with dim != 1 are currently unsupported');
-
-			return undefined;
-		}
-
-		return {
-			metadata: { dimensions, meshName, scorerName },
-			results: { x: columns[numUniqueValues.findIndex(n => n > 1)], y: columns[3] }
-		};
 	}
 
 	async getJobResults(...args: RequestGetJobResults): Promise<JobResults | undefined> {
@@ -500,9 +460,15 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 
 	async getPageStatus(...args: RequestGetPageStatus): Promise<JobStatusData[] | undefined> {
 		const [infoList, cache = true, beforeCacheWrite, signal] = args;
-		const jobIds = new Set(infoList.map(il => il.jobId));
 
-		const workersEntries = Object.entries(this.workers).filter(([jobId]) => jobIds.has(jobId));
+		// IMPORTANT: infoList comes with some order of items that should be kept unchanged
+		const workersEntries: [string, Geant4Worker][] = infoList
+			.map(info =>
+				this.workers.hasOwnProperty(info.jobId)
+					? [info.jobId, this.workers[info.jobId]]
+					: undefined
+			)
+			.filter(Boolean);
 
 		return workersEntries.map(([jobId, worker]) => {
 			if (this.responseCache.pageStatus.hasOwnProperty(jobId)) {

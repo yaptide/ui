@@ -80,7 +80,8 @@ export function SimulationCardGrid({
 			) : (
 				<CircularProgress
 					sx={{
-						p: ({ spacing }: Theme) => spacing(4)
+						marginTop: theme.spacing(4),
+						mx: 'auto'
 					}}
 				/>
 			)}

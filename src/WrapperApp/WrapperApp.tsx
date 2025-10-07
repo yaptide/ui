@@ -8,6 +8,7 @@ import { useStore } from '../services/StoreService';
 import { EditorToolbar } from '../ThreeEditor/components/Editor/EditorToolbar';
 import SceneEditor from '../ThreeEditor/components/Editor/SceneEditor';
 import { EditorSidebar } from '../ThreeEditor/components/Sidebar/EditorSidebar';
+import { SimulationFetchSource, SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles } from '../types/ResponseTypes';
 import { FullSimulationData } from '../types/SimulationService';
 import { camelCaseToNormalText } from '../util/camelCaseToSentenceCase';
@@ -22,6 +23,7 @@ import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
 import RunSimulationPanel from './components/Simulation/RunSimulationPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
+import { useRunGeant4LocalWorkerSimulation } from './UseRunGeant4LocalWorkerSimulation';
 import { useRunRemoteWorkerSimulation } from './UseRunRemoteWorkerSimulation';
 
 const StyledAppGrid = styled(Box)(({ theme }) => ({
@@ -39,6 +41,7 @@ const StyledAppGrid = styled(Box)(({ theme }) => ({
 
 function WrapperApp() {
 	const { demoMode } = useConfig();
+	const auth = useAuth();
 	const { yaptideEditor, resultsSimulationData } = useStore();
 	const [displayedSimulationData, setDisplayedSimulationData] = useState<
 		FullSimulationData | undefined
@@ -46,6 +49,17 @@ function WrapperApp() {
 	const { isAuthorized, logout } = useAuth();
 	const [open, setOpen] = useState(true);
 	const [tabsValue, setTabsValue] = useState('editor');
+
+	const [
+		simulationPanelPresentedSimulationsSource,
+		setSimulationPanelPresentedSimulationsSource
+	] = useState<SimulationFetchSource>('local');
+
+	useEffect(() => {
+		setSimulationPanelPresentedSimulationsSource(
+			auth.isAuthorized && !demoMode ? 'remote' : 'local'
+		);
+	}, [auth, demoMode]);
 
 	const [providedInputFiles, setProvidedInputFiles] = useState<SimulationInputFiles>();
 	const [highlightRunForm, setHighLightRunForm] = useState(false);
@@ -98,7 +112,12 @@ function WrapperApp() {
 		document.title = camelCaseToNormalText(tabsValue); //e.g. we've got 'inputFiles' as a value of tabsValue and this function converts this value to 'Input Files'
 	}, [tabsValue]);
 
-	const runSimulation = useRunRemoteWorkerSimulation();
+	const runRemoteWorkerSimulation = useRunRemoteWorkerSimulation();
+	const runGeant4LocalWorkerSimulation = useRunGeant4LocalWorkerSimulation();
+	const runSimulation =
+		yaptideEditor?.contextManager.currentSimulator === SimulatorType.GEANT4
+			? runGeant4LocalWorkerSimulation
+			: runRemoteWorkerSimulation;
 
 	return (
 		<NavDrawerContext value={tabsValue}>
@@ -189,6 +208,8 @@ function WrapperApp() {
 						goToRun={(inputFiles?: SimulationInputFiles) => {
 							setProvidedInputFiles(inputFiles);
 						}}
+						source={simulationPanelPresentedSimulationsSource}
+						setSource={setSimulationPanelPresentedSimulationsSource}
 					/>
 				</TabPanel>
 
@@ -206,6 +227,7 @@ function WrapperApp() {
 						highlight={highlightRunForm}
 						clearInputFiles={() => setProvidedInputFiles(undefined)}
 						runSimulation={runSimulation}
+						setSource={setSimulationPanelPresentedSimulationsSource}
 					/>
 				</TabPanel>
 				{/* end Simulations screen */}

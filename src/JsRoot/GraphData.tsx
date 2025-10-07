@@ -201,50 +201,50 @@ export function generateGraphs(
 		.map(page => {
 			return { page, graph: getGraphFromPage(page, page.name), filter: page.filterRef };
 		})
-		.map(({ page, graph, filter }, idx) => {
-			const theme = useTheme();
-
-			return (
-				<Box
-					key={`graph_${name}${jobId ? '_' + jobId : ''}_${page.name ?? idx}`}
-					sx={{ display: 'flex', margin: theme.spacing(1), gap: theme.spacing(2) }}>
-					{/* backgroundColor so it doesn't flicker with dark theme on reload */}
-					<Box sx={{ flexGrow: 1, backgroundColor: 'white' }}>{graph}</Box>
-					<Box sx={{ width: '20%', minWidth: '300px', padding: theme.spacing(2) }}>
-						<Section title='Filter'>
-							<Typography>{filter?.name ?? 'None'}</Typography>
+		.map(({ page, graph, filter }, idx) => (
+			<Box
+				key={`graph_${name}${jobId ? '_' + jobId : ''}_${page.name ?? idx}`}
+				sx={theme => ({
+					display: 'flex',
+					margin: theme.spacing(1),
+					gap: theme.spacing(2)
+				})}>
+				{/* backgroundColor so it doesn't flicker with dark theme on reload */}
+				<Box sx={{ flexGrow: 1, backgroundColor: 'white' }}>{graph}</Box>
+				<Box sx={theme => ({ width: '20%', minWidth: '300px', padding: theme.spacing(2) })}>
+					<Section title='Filter'>
+						<Typography>{filter?.name ?? 'None'}</Typography>
+					</Section>
+					{isCustomFilterJSON(filter) && (
+						<Section title='Rules'>
+							{filter.rules.map((rule, idx) => (
+								<Typography key={rule.uuid}>
+									{rule.keyword}
+									{rule.operator}
+									{rule.value}
+								</Typography>
+							))}
 						</Section>
-						{isCustomFilterJSON(filter) && (
-							<Section title='Rules'>
-								{filter.rules.map((rule, idx) => (
-									<Typography key={rule.uuid}>
-										{rule.keyword}
-										{rule.operator}
-										{rule.value}
-									</Typography>
-								))}
-							</Section>
-						)}
-						{isParticleFilterJSON(filter) && (
-							<Section title='Particle'>
-								<Typography>{filter.particle.name}</Typography>
-							</Section>
-						)}
-					</Box>
-					<Box
-						sx={{
-							marginTop: theme.spacing(2),
-							width: '160px',
-							alignSelf: 'flex-start',
-							justifySelf: 'flex-end'
-						}}>
-						{isPage1d(page) && (
-							<Button onClick={() => onClickSaveToFile(page as Page1D)}>
-								EXPORT GRAPH TO CSV
-							</Button>
-						)}
-					</Box>
+					)}
+					{isParticleFilterJSON(filter) && (
+						<Section title='Particle'>
+							<Typography>{filter.particle.name}</Typography>
+						</Section>
+					)}
 				</Box>
-			);
-		});
+				<Box
+					sx={theme => ({
+						marginTop: theme.spacing(2),
+						width: '160px',
+						alignSelf: 'flex-start',
+						justifySelf: 'flex-end'
+					})}>
+					{isPage1d(page) && (
+						<Button onClick={() => onClickSaveToFile(page as Page1D)}>
+							EXPORT GRAPH TO CSV
+						</Button>
+					)}
+				</Box>
+			</Box>
+		));
 }
