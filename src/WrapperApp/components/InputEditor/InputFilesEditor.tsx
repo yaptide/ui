@@ -70,16 +70,18 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 		return result.join('\n');
 	};
 
+	const remoteWorkersAvailableForRunning = !demoMode && isAuthorized;
+	const canRunWithInputFiles =
+		remoteWorkersAvailableForRunning ||
+		yaptideEditor?.contextManager.currentSimulator === SimulatorType.GEANT4;
+
 	return (
 		<Box sx={{ display: 'flex', flexDirection: 'column', gap: theme.spacing(1) }}>
 			<Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
 				<Button
 					color='primary'
 					variant='contained'
-					disabled={
-						yaptideEditor?.contextManager.currentSimulator !== SimulatorType.GEANT4 &&
-						(demoMode || !isAuthorized)
-					}
+					disabled={!canRunWithInputFiles}
 					onClick={() => {
 						if (props.goToRun) {
 							props.goToRun(inputFiles);
