@@ -19,7 +19,7 @@ import { FullSimulationData } from '../../../../types/SimulationService';
 import { PageNavigationProps, PageParamProps } from '../SimulationPanelBar';
 
 export interface SimulationConfig {
-	demoMode: boolean;
+	shouldConnect: boolean;
 	controller: AbortController;
 	trackedId: string | undefined;
 	isBackendAlive: boolean;

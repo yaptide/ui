@@ -28,7 +28,7 @@ export const RemoteWorkerSimulationsGrid = (props: SimulationsGridProps) => {
 	const [controller] = useState(new AbortController());
 
 	const config: SimulationConfig = {
-		demoMode,
+		shouldConnect: !demoMode,
 		controller,
 		trackedId,
 		isBackendAlive,

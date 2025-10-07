@@ -12,11 +12,11 @@ export const useBackendAliveEffect = (
 	updateSimulationInfo: () => void = () => {},
 	setPageCount: (count: number) => void = () => {}
 ) => {
-	const { demoMode, controller, trackedId, isBackendAlive, setBackendAlive } = config;
+	const { shouldConnect, controller, trackedId, isBackendAlive, setBackendAlive } = config;
 	const { getHelloWorld } = handlers;
 
 	useEffect(() => {
-		if (!demoMode)
+		if (shouldConnect)
 			getHelloWorld(controller.signal)
 				.then(() => {
 					setBackendAlive(true);
@@ -30,7 +30,7 @@ export const useBackendAliveEffect = (
 		controller.signal,
 		getHelloWorld,
 		isBackendAlive,
-		demoMode,
+		shouldConnect,
 		trackedId,
 		controller,
 		setPageCount
@@ -45,7 +45,7 @@ export const useIsBackendAlive = () => {
 	const [controller] = useState(new AbortController());
 
 	const config: SimulationConfig = {
-		demoMode,
+		shouldConnect: !demoMode,
 		controller,
 		trackedId,
 		isBackendAlive,

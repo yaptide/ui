@@ -50,7 +50,7 @@ export default function RecentSimulations() {
 	const [controller] = useState(new AbortController());
 
 	const config: SimulationConfig = {
-		demoMode,
+		shouldConnect: !demoMode,
 		controller,
 		trackedId,
 		isBackendAlive,

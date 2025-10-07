@@ -8,13 +8,13 @@ export const useUpdateCurrentSimulationEffect = (
 	handlers: SimulationHandlers,
 	state: SimulationState
 ) => {
-	const { demoMode, controller } = config;
+	const { shouldConnect, controller } = config;
 	const { getJobInputs, getFullSimulationData } = handlers;
 	const { simulationsStatusData, yaptideEditor } = state;
 
 	useEffect(() => {
 		const updateCurrentSimulation = async () => {
-			if (!demoMode && yaptideEditor) {
+			if (shouldConnect && yaptideEditor) {
 				const hash = yaptideEditor.toSerialized().hash;
 				const currentStatus = simulationsStatusData?.find(async s => {
 					if (currentJobStatusData[StatusState.COMPLETED](s)) {
@@ -41,6 +41,6 @@ export const useUpdateCurrentSimulationEffect = (
 		getJobInputs,
 		controller.signal,
 		getFullSimulationData,
-		demoMode
+		shouldConnect
 	]);
 };
