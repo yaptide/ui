@@ -5,7 +5,7 @@ import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
 import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTabs';
-import { SimulatorType } from '../../../types/RequestTypes';
+import { SimulationFetchSource, SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
 import { Geant4LocalWorkerSimulationsGrid } from './SimulationsGrid/Geant4LocalWorkerSimulationsGrid';
@@ -16,23 +16,23 @@ interface SimulationPanelProps {
 	goToResults?: () => void;
 	goToRun: (inputFiles?: SimulationInputFiles) => void;
 	forwardedInputFiles?: SimulationInputFiles;
+	source: SimulationFetchSource;
+	setSource: (source: SimulationFetchSource) => void;
 }
 
 export default function SimulationPanel({
 	goToResults,
 	goToRun,
-	forwardedInputFiles
+	forwardedInputFiles,
+	source,
+	setSource
 }: SimulationPanelProps) {
 	const theme = useTheme();
 	const { yaptideEditor } = useStore();
-	const { demoMode } = useConfig();
 	const auth = useAuth();
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
 	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
 	const isBackendAlive = useIsBackendAlive();
-	const [source, setSource] = useState<'remote' | 'local'>(
-		auth.isAuthorized && !demoMode ? 'remote' : 'local'
-	);
 
 	return (
 		<Box

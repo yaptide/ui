@@ -26,7 +26,7 @@ import StyledAccordion from '../../../shared/components/StyledAccordion';
 import { StyledExclusiveToggleButtonGroup } from '../../../shared/components/StyledExclusiveToggleButtonGroup';
 import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTabs';
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
-import { SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
+import { SimulationFetchSource, SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import { BatchScriptParametersEditor } from './BatchParametersEditor';
 
@@ -71,6 +71,7 @@ export type RunSimulationFormProps = {
 	highlight?: boolean;
 	clearInputFiles?: () => void;
 	runSimulation?: RunSimulationFunctionType;
+	setSource?: (source: SimulationFetchSource) => void;
 };
 
 export function RunSimulationForm({
@@ -79,7 +80,8 @@ export function RunSimulationForm({
 	inputFiles,
 	highlight = false,
 	clearInputFiles = () => {},
-	runSimulation = () => {}
+	runSimulation = () => {},
+	setSource = () => {}
 }: RunSimulationFormProps) {
 	const theme = useTheme();
 	const [usingBatchConfig, setUsingBatchConfig] = useState(false);
@@ -240,6 +242,8 @@ export function RunSimulationForm({
 
 		if (editorJson && simulationSourceType)
 			editorJson.beam.numberOfParticles = overridePrimariesCount;
+
+		setSource(currentSimulator === SimulatorType.GEANT4 ? 'local' : 'remote');
 
 		runSimulation(
 			simulationRunType,

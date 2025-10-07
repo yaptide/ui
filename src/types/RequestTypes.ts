@@ -35,6 +35,8 @@ export enum SimulatorType {
 	// TOPAS = 'topas',
 }
 
+export type SimulationFetchSource = 'remote' | 'local';
+
 export const SimulatorNames = new Map<SimulatorType, string>([
 	[SimulatorType.SHIELDHIT, 'SHIELD-HIT12A'],
 	[SimulatorType.FLUKA, 'Fluka'],
