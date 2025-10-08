@@ -17,11 +17,11 @@ export class Geant4WorkerDownloadProgressMonitor {
 	}
 
 	setDownloadProgress(progress: number) {
-		if (this.currentDataset === undefined) {
+		if (!this.currentDataset) {
 			return;
 		}
 
-		const datasetProgress = this.datasetsProgressTracker[this.currentDataset!];
+		const datasetProgress = this.datasetsProgressTracker[this.currentDataset];
 
 		if (datasetProgress) {
 			if (datasetProgress.stage === 'done') {
@@ -33,11 +33,11 @@ export class Geant4WorkerDownloadProgressMonitor {
 	}
 
 	setPreparationProgress(left: number) {
-		if (this.currentDataset === undefined) {
+		if (!this.currentDataset) {
 			return;
 		}
 
-		const datasetProgress = this.datasetsProgressTracker[this.currentDataset!];
+		const datasetProgress = this.datasetsProgressTracker[this.currentDataset];
 
 		if (datasetProgress) {
 			if (datasetProgress.stage === 'done') {

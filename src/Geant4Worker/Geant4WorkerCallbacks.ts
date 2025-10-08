@@ -65,6 +65,10 @@ const initDatasets: Geant4WorkerCallbacksType = async args => {
 	}
 };
 
+type Geant4DatasetMetadata =
+	| { type: 'file'; parent: string; name: string; url: string }
+	| { type: 'path'; parent: string; name: string };
+
 const initLazyFiles: Geant4WorkerCallbacksType = async args => {
 	// Initialize lazy download. Files needed for specific simulation are downloaded on-demand.
 	// Best-case scenario - the download size is reduced to a couple of kb.
@@ -90,8 +94,9 @@ const initLazyFiles: Geant4WorkerCallbacksType = async args => {
 				return response.json();
 			})
 			.then(data => {
-				// @ts-ignore
-				for (const file of data) {
+				const files = data as Geant4DatasetMetadata[];
+
+				for (const file of files) {
 					if (file.type === 'file') {
 						wasmModule.FS_createLazyFile(file.parent, file.name, file.url, true, true);
 					} else if (file.type === 'path') {
@@ -178,10 +183,10 @@ const callbacks: Map<Geant4WorkerMessageType, Geant4WorkerCallbacksType> = new M
 export default async function Geant4WorkerProcessCallbacks(payload: Geant4WorkerMessage) {
 	const callback = callbacks.get(payload.type);
 
-	if (callback) {
+	if (callback && wasmModule) {
 		return await callback({
 			payload,
-			wasmModule: wasmModule!,
+			wasmModule: wasmModule,
 			downloadTracker
 		});
 	}
