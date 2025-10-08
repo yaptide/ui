@@ -34,7 +34,7 @@ const downloadTracker = new Geant4WorkerDownloadProgressMonitor();
 const modulePrefabricate = new Geant4WorkerPreModule(downloadTracker);
 let wasmModule: MainModule | undefined;
 
-const initWasmModule = async () => {
+const initWasmModule: Geant4WorkerCallbacksType = async args => {
 	wasmModule = await createMainModule(modulePrefabricate);
 };
 
