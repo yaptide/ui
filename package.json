@@ -209,7 +209,7 @@
 		"@types/node": "^24.0.13",
 		"@types/react": "^19.1.8",
 		"@types/react-async-script": "^1.2.5",
-		"@types/selenium-webdriver": "^4.1.28",
+		"@types/selenium-webdriver": "^4.35.1",
 		"@types/three": "^0.177.0",
 		"cross-env": "^7.0.3",
 		"dependency-cruiser": "^16.10.3",
@@ -220,7 +220,7 @@
 		"lint-staged": "^16.1.2",
 		"prettier": "3.6.2",
 		"react-app-rewired": "^2.2.1",
-		"selenium-webdriver": "^4.34.0"
+		"selenium-webdriver": "^4.36.0"
 	},
 	"lint-staged": {
 		"*.{ts,tsx,js,jsx}": [
