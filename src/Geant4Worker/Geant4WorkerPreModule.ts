@@ -12,13 +12,13 @@ export class Geant4WorkerPreModule {
 		this.progressMonitor = progressMonitor;
 	}
 
-	printErr() {
-		const data = [...Array.prototype.slice.call(arguments)].join('');
+	printErr(...args: any[]) {
+		const data = args.join('');
 		workerPostMessage({ type: Geant4WorkerMessageType.PRINT_ERROR, data });
 	}
 
-	print() {
-		const data = [...Array.prototype.slice.call(arguments)].join('');
+	print(...args: any[]) {
+		const data = args.join('');
 		workerPostMessage({ type: Geant4WorkerMessageType.PRINT, data });
 	}
 
