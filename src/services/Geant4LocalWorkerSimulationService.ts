@@ -230,6 +230,8 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 			fileNames.map(fileName => this.workers[jobId].fetchResultsFile(fileName))
 		);
 
+		console.log(fileContents);
+
 		// TODO: find a way to terminate & destroy the worker after fetching the files to free up memory
 		// TODO: keeping in mind, that this method can be called multiple times, simultaneously
 

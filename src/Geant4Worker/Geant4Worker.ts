@@ -10,9 +10,8 @@ import { JobUnknownStatus, StatusState } from '../types/ResponseTypes';
 import {
 	Geant4WorkerMessage,
 	Geant4WorkerMessageFile,
-	Geant4WorkerReceiveMessageType,
-	Geant4WorkerSendMessageType
-} from './Geant4WorkerTypes';
+	Geant4WorkerMessageType,
+	Geant4WorkerPromise} from './Geant4WorkerTypes';
 
 export default class Geant4Worker {
 	private worker: Worker | undefined;
@@ -30,19 +29,42 @@ export default class Geant4Worker {
 	private idx: number = 1;
 	private resolvers: { [k: number]: (value: any) => void } = {};
 
-	private makePromise<T>(idx: number) {
+	private makePromise<T>(message: Geant4WorkerMessage) {
+		const idx = this.idx++;
+
+		this.workerPostPromise({
+			idx,
+			message
+		});
+
 		return new Promise<T>(resolve => {
 			this.resolvers[idx] = resolve;
 		});
 	}
 
-	private resolvePromiseIfExists(idx: number, value: any) {
-		if (!this.resolvers.hasOwnProperty(idx)) {
+	private resolvePromiseIfExists(promise: Geant4WorkerPromise) {
+		if (!promise.idx) {
 			return;
 		}
 
-		this.resolvers[idx](value);
-		delete this.resolvers[idx];
+		if (!this.resolvers.hasOwnProperty(promise.idx)) {
+			return;
+		}
+
+		this.resolvers[promise.idx](promise.message.data);
+		delete this.resolvers[promise.idx];
+	}
+
+	// Helper function for the sake of type safety
+	private workerPostMessage(msg: Geant4WorkerMessage) {
+		this.workerPostPromise({
+			idx: undefined,
+			message: msg
+		});
+	}
+
+	private workerPostPromise(promise: Geant4WorkerPromise) {
+		this.worker?.postMessage(promise);
 	}
 
 	getState() {
@@ -61,11 +83,6 @@ export default class Geant4Worker {
 		return this.simulatedPrimaries;
 	}
 
-	// Helper function for the sake of type safety
-	workerPostMessage(msg: Geant4WorkerMessage<Geant4WorkerReceiveMessageType>) {
-		this.worker?.postMessage(msg);
-	}
-
 	init() {
 		if (this.worker) {
 			throw new Error('init() already called on this object');
@@ -73,56 +90,28 @@ export default class Geant4Worker {
 
 		this.worker = new Worker(new URL('./geant4Worker.worker.ts', import.meta.url));
 
-		let promiseIdx = this.idx++;
+		this.worker.onmessage = (event: MessageEvent<Geant4WorkerPromise>) => {
+			const { message } = event.data;
 
-		this.worker.onmessage = (
-			event: MessageEvent<Geant4WorkerMessage<Geant4WorkerSendMessageType>>
-		) => {
-			switch (event.data.type) {
-				case Geant4WorkerSendMessageType.WASM_INITIALIZED:
-					this.isInitialized = true;
-
-					this.resolvePromiseIfExists(promiseIdx, null);
+			switch (message.type) {
+				case Geant4WorkerMessageType.PRINT:
+					console.log('From worker: ', message.data);
 
 					break;
-				case Geant4WorkerSendMessageType.RESULT:
-					console.log('Result:', event.data.data);
-					this.endTime = Date.now();
-					this.state = StatusState.COMPLETED;
-
-					break;
-				case Geant4WorkerSendMessageType.PRINT:
-					console.log('From worker: ', event.data.data);
-
-					break;
-				case Geant4WorkerSendMessageType.PRINT_ERROR:
-					console.error('From worker: ', event.data.data);
-
-					break;
-				case Geant4WorkerSendMessageType.DEPS_LOADED:
-					this.depsLoaded = true;
-
-					if (event.data.idx) {
-						this.resolvePromiseIfExists(event.data.idx, null);
-					}
+				case Geant4WorkerMessageType.PRINT_ERROR:
+					console.error('From worker: ', message.data);
 
 					break;
 
-				case Geant4WorkerSendMessageType.DOWNLOAD_STATUS:
-					// TODO: download status message handling
-
-					if (event.data.idx) {
-						this.resolvePromiseIfExists(event.data.idx, null);
-					}
+				case Geant4WorkerMessageType.DOWNLOAD_STATUS:
+					break;
+				case Geant4WorkerMessageType.PROGRESS:
+					this.simulatedPrimaries = message.data as number;
 
 					break;
-				case Geant4WorkerSendMessageType.PROGRESS:
-					this.simulatedPrimaries = event.data.data as number;
-
-					break;
-				case Geant4WorkerSendMessageType.ERROR:
-					if (event.data) {
-						const error = event.data.data as Error;
+				case Geant4WorkerMessageType.ERROR:
+					if (message.data) {
+						const error = message.data as Error;
 
 						console.error('Error:', error.message);
 						console.error('Error details:', error);
@@ -133,27 +122,16 @@ export default class Geant4Worker {
 					this.destroy();
 
 					break;
-				case Geant4WorkerSendMessageType.FILE_CONTENT:
-					if (event.data.idx) {
-						this.resolvePromiseIfExists(
-							event.data.idx,
-							(event.data.data as Geant4WorkerMessageFile).data
-						);
-					}
-
-					break;
-				case Geant4WorkerSendMessageType.CREATE_FILE_ACK:
-					if (event.data.idx) {
-						this.resolvePromiseIfExists(event.data.idx, null);
-					}
-
-					break;
-				default:
-					console.error('Unknown message type:', event.data.type, event.data);
 			}
+
+			this.resolvePromiseIfExists(event.data);
 		};
 
-		return this.makePromise(promiseIdx);
+		return this.makePromise<void>({ type: Geant4WorkerMessageType.INIT_WASM_MODULE }).then(
+			() => {
+				this.isInitialized = true;
+			}
+		);
 	}
 
 	destroy() {
@@ -172,10 +150,11 @@ export default class Geant4Worker {
 			console.error('Deps already loaded');
 		}
 
-		const idx = this.idx++;
-		this.workerPostMessage({ type: Geant4WorkerReceiveMessageType.INIT_DATA_FILES, idx });
-
-		return this.makePromise(idx);
+		return this.makePromise<void>({ type: Geant4WorkerMessageType.INIT_DATA_FILES }).then(
+			() => {
+				this.depsLoaded = true;
+			}
+		);
 	}
 
 	async loadDepsLazy() {
@@ -189,27 +168,24 @@ export default class Geant4Worker {
 			console.error('Deps already loaded');
 		}
 
-		const idx = this.idx++;
-		this.workerPostMessage({ type: Geant4WorkerReceiveMessageType.INIT_LAZY_FILES, idx });
-
-		return this.makePromise(idx);
+		return this.makePromise<void>({ type: Geant4WorkerMessageType.INIT_LAZY_FILES }).then(
+			() => {
+				this.depsLoaded = true;
+			}
+		);
 	}
 
-	includeFile(name: string, data: string) {
+	async includeFile(name: string, data: string) {
 		if (!this.worker || !this.isInitialized) {
 			console.error('Worker is not initialized. Call init() first.');
 
 			return;
 		}
 
-		const idx = this.idx++;
-		this.workerPostMessage({
-			type: Geant4WorkerReceiveMessageType.CREATE_FILE,
-			data: { name, data },
-			idx
+		return await this.makePromise({
+			type: Geant4WorkerMessageType.CREATE_FILE,
+			data: { name, data }
 		});
-
-		return this.makePromise(idx);
 	}
 
 	async start() {
@@ -221,9 +197,14 @@ export default class Geant4Worker {
 
 		// Worker will acknowledge the message and wait for the deps to load
 		// no need for additional logic here
-		this.workerPostMessage({ type: Geant4WorkerReceiveMessageType.RUN_SIMULATION });
 		this.state = StatusState.RUNNING;
 		this.startTime = Date.now();
+
+		this.makePromise<number>({ type: Geant4WorkerMessageType.SIMULATION }).then(result => {
+			this.state = StatusState.COMPLETED;
+			this.endTime = Date.now();
+			console.log('Simulation completed', result);
+		});
 	}
 
 	async fetchResultsFile(name: string) {
@@ -233,9 +214,15 @@ export default class Geant4Worker {
 			return;
 		}
 
-		const idx = this.idx++;
-		this.workerPostMessage({ type: Geant4WorkerReceiveMessageType.READ_FILE, data: name, idx });
+		const result = await this.makePromise<Geant4WorkerMessageFile>({
+			type: Geant4WorkerMessageType.READ_FILE,
+			data: name
+		}).then(result => {
+			console.log(result);
 
-		return this.makePromise<string>(idx);
+			return result.data;
+		});
+
+		return result;
 	}
 }
