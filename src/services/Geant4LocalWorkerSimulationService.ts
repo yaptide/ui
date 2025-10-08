@@ -230,8 +230,6 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 			fileNames.map(fileName => this.workers[jobId].fetchResultsFile(fileName))
 		);
 
-		console.log(fileContents);
-
 		// TODO: find a way to terminate & destroy the worker after fetching the files to free up memory
 		// TODO: keeping in mind, that this method can be called multiple times, simultaneously
 
@@ -265,52 +263,6 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 
 		this.estimators[jobId] = Object.values(estimatorsMetadata);
 		this.resultsForEstimators[jobId] = resultsPerEstimator;
-	}
-
-	private parseResultFile(content: string) {
-		if (content == '') {
-			return undefined;
-		}
-
-		// file header should look like this (3rd line may be different):
-		//
-		// # mesh name: <meshName>
-		// # primitive scorer name: <scorerName>
-		// # iX, iY, iZ, total(value) [percm2], total(val^2), entry
-		//
-		// then, csv data follows
-
-		const lines = content.split('\n');
-
-		if (lines.at(-1) === '') {
-			lines.pop();
-		}
-
-		const meshName = lines[0].split(' ').at(-1)!;
-		const scorerName = lines[1].split(' ').at(-1)!;
-		const numColumns = lines[2].split(',').length;
-
-		const columns: string[][] = Array.from({ length: numColumns }).map(_ => []);
-
-		for (const line of lines.slice(3)) {
-			line.split(',').forEach((val, i) => columns[i].push(val));
-		}
-
-		const numUniqueValues = columns.slice(0, 3).map(col => new Set(col).size);
-		const dimensions = (numUniqueValues.map(n => (n > 1 ? 1 : 0)) as number[]).reduce(
-			(acc, v) => acc + v
-		);
-
-		if (dimensions != 1) {
-			console.warn('Results with dim != 1 are currently unsupported');
-
-			return undefined;
-		}
-
-		return {
-			metadata: { dimensions, meshName, scorerName },
-			results: { x: columns[numUniqueValues.findIndex(n => n > 1)], y: columns[3] }
-		};
 	}
 
 	async getJobResults(...args: RequestGetJobResults): Promise<JobResults | undefined> {
