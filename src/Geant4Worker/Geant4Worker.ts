@@ -11,7 +11,8 @@ import {
 	Geant4WorkerMessage,
 	Geant4WorkerMessageFile,
 	Geant4WorkerMessageType,
-	Geant4WorkerPromise} from './Geant4WorkerTypes';
+	Geant4WorkerPromise
+} from './Geant4WorkerTypes';
 
 export default class Geant4Worker {
 	private worker: Worker | undefined;
@@ -27,7 +28,9 @@ export default class Geant4Worker {
 	// return a promise, storing its resolve() function in resolvers under call id.
 	// When there is a status update with known id, we call the associated resolve()
 	private idx: number = 1;
-	private resolvers: { [k: number]: (value: any) => void } = {};
+	private resolvers: {
+		[k: number]: { resolve: (value: any) => void; reject: (reason?: any) => void };
+	} = {};
 
 	private makePromise<T>(message: Geant4WorkerMessage) {
 		const idx = this.idx++;
@@ -37,8 +40,8 @@ export default class Geant4Worker {
 			message
 		});
 
-		return new Promise<T>(resolve => {
-			this.resolvers[idx] = resolve;
+		return new Promise<T>((resolve, reject) => {
+			this.resolvers[idx] = { resolve, reject };
 		});
 	}
 
@@ -51,7 +54,20 @@ export default class Geant4Worker {
 			return;
 		}
 
-		this.resolvers[promise.idx](promise.message.data);
+		this.resolvers[promise.idx].resolve(promise.message.data);
+		delete this.resolvers[promise.idx];
+	}
+
+	private rejectPromiseIfExists(promise: Geant4WorkerPromise) {
+		if (!promise.idx) {
+			return;
+		}
+
+		if (!this.resolvers.hasOwnProperty(promise.idx)) {
+			return;
+		}
+
+		this.resolvers[promise.idx].reject(promise.message.data);
 		delete this.resolvers[promise.idx];
 	}
 
@@ -119,9 +135,11 @@ export default class Geant4Worker {
 
 					this.endTime = Date.now();
 					this.state = StatusState.FAILED;
+
+					this.rejectPromiseIfExists(event.data);
 					this.destroy();
 
-					break;
+					return;
 			}
 
 			this.resolvePromiseIfExists(event.data);

@@ -11,7 +11,7 @@ export function workerPostMessage(message: Geant4WorkerMessage) {
 	} as Geant4WorkerPromise);
 }
 
-export function workerResolvePromise(promise: Geant4WorkerPromise) {
+export function workerReturnPromise(promise: Geant4WorkerPromise) {
 	ctx.postMessage(promise);
 }
 

@@ -19,7 +19,7 @@ import {
 
 type Geant4WorkerCallbackArgs = {
 	payload: Geant4WorkerMessage;
-	wasmModule: MainModule;
+	wasmModule?: MainModule;
 	downloadTracker: Geant4WorkerDownloadProgressMonitor;
 };
 type Geant4WorkerCallbacksType = (
@@ -75,6 +75,10 @@ const initLazyFiles: Geant4WorkerCallbacksType = async args => {
 
 	const { wasmModule } = args;
 
+	if (!wasmModule) {
+		return Promise.reject(new Error('WASM Module not initialized'));
+	}
+
 	wasmModule.FS_createPath('/', 'data', true, true);
 	wasmModule.FS_createPath('/data', 'G4EMLOW8.6.1', true, true);
 	wasmModule.FS_createPath('/data', 'G4ENSDFSTATE3.0', true, true);
@@ -110,6 +114,10 @@ const initLazyFiles: Geant4WorkerCallbacksType = async args => {
 const createFile: Geant4WorkerCallbacksType = async args => {
 	const { payload, wasmModule } = args;
 
+	if (!wasmModule) {
+		return Promise.reject(new Error('WASM Module not initialized'));
+	}
+
 	const data = payload.data as Geant4WorkerMessageFile;
 
 	wasmModule.FS.createFile('/', data.name, null, true, true);
@@ -119,6 +127,10 @@ const createFile: Geant4WorkerCallbacksType = async args => {
 
 const readFile: Geant4WorkerCallbacksType = async args => {
 	const { payload, wasmModule } = args;
+
+	if (!wasmModule) {
+		return Promise.reject(new Error('WASM Module not initialized'));
+	}
 
 	const fileName = payload.data as string;
 
@@ -137,6 +149,10 @@ const readFile: Geant4WorkerCallbacksType = async args => {
 
 const runSimulation: Geant4WorkerCallbacksType = async args => {
 	const { wasmModule } = args;
+
+	if (!wasmModule) {
+		return Promise.reject(new Error('WASM Module not initialized'));
+	}
 
 	const geometryDefinition = includedFiles.find(k => k.endsWith('.gdml'));
 	const macroFile = includedFiles.find(k => k.endsWith('.mac'));
@@ -183,13 +199,17 @@ const callbacks: Map<Geant4WorkerMessageType, Geant4WorkerCallbacksType> = new M
 export default async function Geant4WorkerProcessCallbacks(payload: Geant4WorkerMessage) {
 	const callback = callbacks.get(payload.type);
 
-	if (callback && wasmModule) {
-		return await callback({
-			payload,
-			wasmModule: wasmModule,
-			downloadTracker
-		});
+	if (callback) {
+		try {
+			return await callback({
+				payload,
+				wasmModule: wasmModule,
+				downloadTracker
+			});
+		} catch (error: unknown) {
+			return Promise.reject(error);
+		}
 	}
 
-	return Promise.reject(new Error('Worker Callback not found'));
+	return Promise.reject(new Error('Worker Callback not found: ' + payload.type));
 }
