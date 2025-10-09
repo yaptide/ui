@@ -44,7 +44,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 
 				break;
 			default:
-				setInputFiles(_defaultShInputFiles);
+				setInputFiles({});
 
 				break;
 		}
@@ -67,7 +67,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 	}, [yaptideEditor]);
 
 	const [isInProgress, setInProgress] = useState(false);
-	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>(_defaultShInputFiles);
+	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>({});
 
 	const onClickGenerate = useCallback(async () => {
 		if (generateForSimulator === SimulatorType.COMMON) {
@@ -153,20 +153,26 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 						<StyledExclusiveToggleButtonGroup
 							value={generateForSimulator}
 							onChange={(_e, chosenSimulator) => {
-								if (!chosenSimulator || chosenSimulator === generateForSimulator) {
+								if (chosenSimulator === generateForSimulator) {
 									return;
 								}
 
-								if (
-									!window.confirm(
+								const willOverwritePreviousFiles = Object.entries(inputFiles).some(
+									([_name, _content]) => _content.length > 0
+								);
+
+								if (willOverwritePreviousFiles) {
+									const shouldProceed = window.confirm(
 										'Current input files will be lost. Are you sure?'
-									)
-								) {
-									return;
+									);
+
+									if (!shouldProceed) {
+										return;
+									}
 								}
 
 								setGenerateForSimulator(chosenSimulator);
-								setFilesForSimulator(chosenSimulator);
+								setFilesForSimulator(chosenSimulator); // clears previous files
 							}}>
 							<ToggleButton value={SimulatorType.SHIELDHIT}>
 								SHIELD-HIT12A
