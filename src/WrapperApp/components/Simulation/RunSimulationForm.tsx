@@ -21,6 +21,7 @@ import {
 import Typography from '@mui/material/Typography';
 import { MouseEvent, SyntheticEvent, useEffect, useState } from 'react';
 
+import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
 import { useStore } from '../../../services/StoreService';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
 import { StyledExclusiveToggleButtonGroup } from '../../../shared/components/StyledExclusiveToggleButtonGroup';
@@ -181,6 +182,16 @@ export function RunSimulationForm({
 	const [arrayOptions, setArrayOptions] = useState<ScriptOption[]>([]);
 	const [collectOptions, setCollectOptions] = useState<ScriptOption[]>([]);
 	const [selectedScriptParamsTab, setSelectedScriptParamsTab] = useState(0);
+	const { isConverterReady } = usePythonConverter();
+	const [runPreconditionsMet, setRunPreconditionsMet] = useState(false);
+
+	useEffect(() => {
+		setRunPreconditionsMet(
+			!isNaN(nTasks) &&
+				!isNaN(overridePrimariesCount) &&
+				(currentSimulator !== SimulatorType.GEANT4 || isConverterReady)
+		);
+	}, [nTasks, overridePrimariesCount, currentSimulator, isConverterReady]);
 
 	const toggleFileSelection = (fileName: string) =>
 		setSelectedFiles((prev: string[]) => {
@@ -215,12 +226,8 @@ export function RunSimulationForm({
 		setSelectedScriptParamsTab(newValue);
 	};
 
-	const runSimulationValidate = () => {
-		return !isNaN(nTasks) && !isNaN(overridePrimariesCount);
-	};
-
 	const handleRunSimulationClick = () => {
-		if (!runSimulationValidate()) {
+		if (runPreconditionsMet) {
 			return;
 		}
 
@@ -498,7 +505,7 @@ export function RunSimulationForm({
 						}}
 						variant='contained'
 						size='large'
-						disabled={!usingBatchConfig && !runSimulationValidate()}
+						disabled={!usingBatchConfig && !runPreconditionsMet}
 						onClick={handleRunSimulationClick}>
 						Start simulation
 					</Button>
