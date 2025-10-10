@@ -1,21 +1,22 @@
 import { Button } from '@mui/material';
 import Typography from '@mui/material/Typography';
 
-import { StoreContext } from '../../../services/StoreService';
+import { StoreContext, useStore } from '../../../services/StoreService';
 import { EditorJson } from '../../js/EditorJson';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
 export function LoadFileDialog({
 	onClose,
 	validVersion = true,
-	data,
-	yaptideEditor
+	data
 }: ConcreteDialogProps<
 	{
 		validVersion: boolean;
 		data: EditorJson;
 	} & Required<Pick<StoreContext, 'yaptideEditor'>>
 >) {
+	const { setYaptideEditorFromJSON } = useStore();
+
 	return (
 		<CustomDialog
 			alert={true}
@@ -56,9 +57,8 @@ export function LoadFileDialog({
 				onClick={() => {
 					onClose();
 
-					if (data && yaptideEditor) {
-						yaptideEditor.clear();
-						yaptideEditor.fromSerialized(data);
+					if (data) {
+						setYaptideEditorFromJSON(data);
 					}
 				}}>
 				Clear and proceed

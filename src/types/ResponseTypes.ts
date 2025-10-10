@@ -86,7 +86,8 @@ export type SimulationInputFiles =
 	| ShInputFilesRecord
 	| TopasInputFilesRecord
 	| FlukaInputFilesRecord
-	| Geant4InputFilesRecord;
+	| Geant4InputFilesRecord
+	| {}; // no files, e.g. when COMMON is set
 
 export type TaskTime = {
 	hours: string;
