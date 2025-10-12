@@ -186,11 +186,10 @@ export function RunSimulationForm({
 	const [runPreconditionsMet, setRunPreconditionsMet] = useState(false);
 
 	useEffect(() => {
-		setRunPreconditionsMet(
-			!isNaN(nTasks) &&
-				!isNaN(overridePrimariesCount) &&
-				(currentSimulator !== SimulatorType.GEANT4 || isConverterReady)
-		);
+		const runFormIsValid = !isNaN(nTasks) && !isNaN(overridePrimariesCount);
+		const converterReadyIfGeant4Selected =
+			currentSimulator !== SimulatorType.GEANT4 || isConverterReady;
+		setRunPreconditionsMet(runFormIsValid && converterReadyIfGeant4Selected);
 	}, [nTasks, overridePrimariesCount, currentSimulator, isConverterReady]);
 
 	const toggleFileSelection = (fileName: string) =>
@@ -227,7 +226,7 @@ export function RunSimulationForm({
 	};
 
 	const handleRunSimulationClick = () => {
-		if (runPreconditionsMet) {
+		if (!runPreconditionsMet) {
 			return;
 		}
 
