@@ -49,8 +49,7 @@ export default function RecentSimulations() {
 
 	const [controller] = useState(new AbortController());
 
-	const config: SimulationConfig = {
-		shouldConnect: !demoMode,
+	const config: Omit<SimulationConfig, 'shouldConnect'> = {
 		controller,
 		trackedId,
 		isBackendAlive,
@@ -63,6 +62,8 @@ export default function RecentSimulations() {
 			StatusState.COMPLETED
 		]
 	};
+	const remoteWorkerSimulationConfig = { ...config, shouldConnect: !demoMode };
+	const geant4LocalWorkerSimulationConfig = { ...config, shouldConnect: true };
 
 	const remoteWorkerState: SimulationState = {
 		simulationInfo: remoteWorkerSimulationInfo,
@@ -96,17 +97,25 @@ export default function RecentSimulations() {
 		simulationDataInterval: remoteWorkerSimulationDataInterval,
 		handleLoadResults: remoteWorkerHandleLoadResults,
 		setPageCount: setRemoteWorkerPageCount
-	} = SimulationsGridHelpers(config, remoteWorkerSimulationHandlers, remoteWorkerState);
+	} = SimulationsGridHelpers(
+		remoteWorkerSimulationConfig,
+		remoteWorkerSimulationHandlers,
+		remoteWorkerState
+	);
 
 	const {
 		updateSimulationInfo: geant4LocalWorkerUpdateSimulationInfo,
 		updateSimulationData: geant4LocalWorkerUpdateSimulationData,
 		simulationDataInterval: geant4LocalWorkerSimulationDataInterval,
 		handleLoadResults: geant4LocalWorkerHandleLoadResults
-	} = SimulationsGridHelpers(config, geant4LocalWorkerSimulationHandlers, geant4LocalWorkerState);
+	} = SimulationsGridHelpers(
+		geant4LocalWorkerSimulationConfig,
+		geant4LocalWorkerSimulationHandlers,
+		geant4LocalWorkerState
+	);
 
 	useBackendAliveEffect(
-		config,
+		remoteWorkerSimulationConfig,
 		remoteWorkerSimulationHandlers,
 		() => {
 			if (auth.isAuthorized) {
@@ -117,15 +126,20 @@ export default function RecentSimulations() {
 	);
 
 	useBackendAliveEffect(
-		config,
+		geant4LocalWorkerSimulationConfig,
 		geant4LocalWorkerSimulationHandlers,
 		geant4LocalWorkerUpdateSimulationInfo,
 		setRemoteWorkerPageCount
 	);
 
-	useUpdateCurrentSimulationEffect(config, remoteWorkerSimulationHandlers, remoteWorkerState);
 	useUpdateCurrentSimulationEffect(
-		config,
+		remoteWorkerSimulationConfig,
+		remoteWorkerSimulationHandlers,
+		remoteWorkerState
+	);
+
+	useUpdateCurrentSimulationEffect(
+		geant4LocalWorkerSimulationConfig,
 		geant4LocalWorkerSimulationHandlers,
 		geant4LocalWorkerState
 	);
