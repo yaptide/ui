@@ -211,7 +211,7 @@
 		"@types/react-async-script": "^1.2.5",
 		"@types/selenium-webdriver": "^4.35.1",
 		"@types/three": "^0.177.0",
-		"cross-env": "^7.0.3",
+		"cross-env": "^10.1.0",
 		"dependency-cruiser": "^17.1.0",
 		"eslint-plugin-simple-import-sort": "^12.1.1",
 		"gh-pages": "^6.3.0",
