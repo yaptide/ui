@@ -10,8 +10,7 @@ export enum Geant4WorkerMessageType {
 	ERROR,
 	PRINT,
 	PRINT_ERROR,
-	PROGRESS,
-	DOWNLOAD_STATUS
+	PROGRESS
 }
 
 export type Geant4WorkerMessageFile = {
