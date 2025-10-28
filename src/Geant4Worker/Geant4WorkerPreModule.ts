@@ -14,6 +14,9 @@ export class Geant4WorkerPreModule {
 
 	printErr(...args: any[]) {
 		const data = args.join('');
+
+		if (data.includes('dependency')) return;
+
 		workerPostMessage({ type: Geant4WorkerMessageType.PRINT_ERROR, data });
 	}
 
@@ -24,7 +27,6 @@ export class Geant4WorkerPreModule {
 
 	setStatus(text: string) {
 		// Try parsing "text" to find "(x/y)" pattern
-		console.log('Status:', text);
 		const match = text.match(/\((\d+)\/(\d+)\)/);
 
 		if (match) {
