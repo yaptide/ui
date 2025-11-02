@@ -1,4 +1,3 @@
-import * as Comlink from 'comlink';
 import { Signal } from 'signals';
 import * as THREE from 'three';
 import { debounce } from 'throttle-debounce';
@@ -6,7 +5,6 @@ import { debounce } from 'throttle-debounce';
 import { DEPLOYMENT } from '../../../config/ConfigService';
 import { CounterMap } from '../../../util/CounterMap/CounterMap';
 import { OperationTuple, OperationTupleJSON } from '../../CSG/CSGOperationTuple';
-import { ZoneWorker } from '../../CSG/CSGWorker';
 import CSG from '../../js/libs/csg/three-csg';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
@@ -44,7 +42,6 @@ export class BooleanZone extends SimulationZone {
 		return this._unionOperations;
 	}
 
-	worker?: Comlink.Remote<ZoneWorker>;
 	readonly debouncedUpdatePreview = debounce(200, () => this.updatePreview(), { atBegin: false });
 
 	constructor(editor: YaptideEditor) {

@@ -1,16 +1,14 @@
-import * as Comlink from 'comlink';
 import { Signal } from 'signals';
 import * as THREE from 'three';
 
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
-import { ZoneWorker } from '../../CSG/CSGWorker';
 import { SerializableState } from '../../js/EditorJson';
 import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationSceneContainer } from '../Base/SimulationContainer';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { SimulationElementManager } from '../Base/SimulationManager';
 import { SimulationZone, SimulationZoneJSON } from '../Base/SimulationZone';
-import { BooleanZone, BooleanZoneJSON, isBooleanZone } from './BooleanZone';
+import { BooleanZone, BooleanZoneJSON } from './BooleanZone';
 import { WorldZone, WorldZoneJSON } from './WorldZone/WorldZone';
 
 type ZoneManagerJSON = Omit<
@@ -88,8 +86,6 @@ export class ZoneManager
 	readonly isZoneManager: true = true;
 	/***************************************************************/
 
-	protected worker: Comlink.Remote<ZoneWorker>;
-
 	/**
 	 * @deprecated
 	 */
@@ -105,7 +101,6 @@ export class ZoneManager
 	}
 
 	addZone(zone: SimulationZone): void {
-		if (isBooleanZone(zone)) zone.worker = this.worker;
 		this.zoneContainer.add(zone);
 		this.editor.select(zone);
 
@@ -184,10 +179,6 @@ export class ZoneManager
 		const light = new THREE.HemisphereLight(0xffffff, 0x222222, 1);
 		light.position.set(15, 15, 15);
 		this.add(light);
-
-		this.worker = Comlink.wrap<ZoneWorker>(
-			new Worker(new URL('../../CSG/CSGWorker.ts', import.meta.url))
-		);
 
 		this.signals = editor.signals;
 		this.signals.zoneEmpty.add(this.handleZoneEmpty.bind(this));
