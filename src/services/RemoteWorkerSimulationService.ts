@@ -230,7 +230,17 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 	}
 
 	async postJob(...args: RequestPostJob): Promise<ResponsePostJob> {
-		let [simData, inputType, runType, ntasks, simType, title, batchOptions, signal] = args;
+		let [
+			simData,
+			inputType,
+			runType,
+			ntasks,
+			simType,
+			title,
+			batchOptions,
+			geant4DatasetType,
+			signal
+		] = args;
 
 		if (title === undefined && isEditorJson(simData)) {
 			title = simData.project.title;

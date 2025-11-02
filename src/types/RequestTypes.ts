@@ -1,5 +1,6 @@
 import { Estimator } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
+import { Geant4DatasetsType } from '../WrapperApp/components/Simulation/Geant4DatasetDownload';
 import {
 	SimulationRunType,
 	SimulationSourceType
@@ -63,7 +64,8 @@ type InputDataParam = [
 		arrayHeader?: string;
 		collectOptions?: Record<string, string>;
 		collectHeader?: string;
-	}
+	},
+	geant4DatasetType?: Geant4DatasetsType
 ];
 
 type LoginParams = [username: string, password: string];

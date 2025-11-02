@@ -21,10 +21,17 @@ import {
 } from '../../../Geant4Worker/Geant4DatasetDownloadManager';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
 
+export enum Geant4DatasetsType {
+	LAZY,
+	DOWNLOADED
+}
+
 export interface Geant4DatasetsProps {
 	geant4DownloadManagerState: DownloadManagerStatus;
 	geant4DatasetStates: DatasetStatus[];
 	geant4DatasetDownloadStart: () => void;
+	geant4DatasetType: Geant4DatasetsType;
+	setGeant4DatasetType: (type: Geant4DatasetsType) => void;
 }
 
 function DatasetCurrentStatus(props: { status: DatasetStatus }) {

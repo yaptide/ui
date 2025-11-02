@@ -1,7 +1,7 @@
 // Additional credits:
 // - @kmichalik
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import Geant4Worker from './Geant4Worker';
 
@@ -13,11 +13,17 @@ export enum DownloadManagerStatus {
 }
 
 export enum DatasetDownloadStatus {
-	IDLE,
-	DOWNLOADING,
-	PROCESSING,
-	DONE
+	IDLE = 'idle',
+	DOWNLOADING = 'downloading',
+	PROCESSING = 'processing',
+	DONE = 'done'
 }
+
+const statusTypeMap: Record<string, DatasetDownloadStatus> = {
+	downloading: DatasetDownloadStatus.DOWNLOADING,
+	preparing: DatasetDownloadStatus.PROCESSING,
+	done: DatasetDownloadStatus.DONE
+};
 
 export interface DatasetStatus {
 	name: string;
@@ -31,68 +37,61 @@ export function useDatasetDownloadManager() {
 		DownloadManagerStatus.IDLE
 	);
 	const [datasetStates, setDatasetStates] = useState<Record<string, DatasetStatus>>({});
-	const [dataset, setDataset] = useState<string | undefined>();
 	const [idle, setIdle] = useState<boolean>(false);
-	const [worker, setWorker] = useState<Geant4Worker>(new Geant4Worker());
-	let initCalled = false;
+	const [worker] = useState<Geant4Worker>(new Geant4Worker());
+	const initCalledRef = useRef(false);
+
+	const fetchProgress = async () => {
+		const progress = await worker.pollDatasetProgress();
+
+		if (progress) {
+			const newDatasetStates: Record<string, DatasetStatus> = {};
+
+			for (const [datasetName, datasetProgress] of Object.entries(progress)) {
+				let status = statusTypeMap[datasetProgress.stage];
+
+				newDatasetStates[datasetName] = {
+					name: datasetName,
+					status,
+					done: Math.floor(datasetProgress.progress * 100),
+					total: 100
+				};
+			}
+
+			setDatasetStates(prev => ({ ...prev, ...newDatasetStates }));
+		}
+	};
 
 	const startDownload = useCallback(
 		idle
 			? () => {
-					worker.loadDeps().then(() => {
+					const loadDepsPromise = worker.loadDeps();
+
+					const interval = setInterval(async () => {
+						await fetchProgress();
+					}, 1000);
+
+					loadDepsPromise.then(async () => {
+						clearInterval(interval);
+
+						await fetchProgress();
+
 						setManagerState(DownloadManagerStatus.FINISHED);
 						setIdle(true);
+						worker.destroy();
 					});
 					setManagerState(DownloadManagerStatus.WORKING);
 					setIdle(false);
-
-					const interval = setInterval(async () => {
-						const progress = await worker.pollDatasetProgress();
-
-						if (progress) {
-							const newDatasetStates: Record<string, DatasetStatus> = {};
-
-							for (const [datasetName, datasetProgress] of Object.entries(progress)) {
-								let status: DatasetDownloadStatus;
-
-								switch (datasetProgress.stage) {
-									case 'downloading':
-										status = DatasetDownloadStatus.DOWNLOADING;
-
-										break;
-									case 'preparing':
-										status = DatasetDownloadStatus.PROCESSING;
-
-										break;
-									case 'done':
-										status = DatasetDownloadStatus.DONE;
-
-										break;
-									default:
-										status = DatasetDownloadStatus.IDLE;
-								}
-
-								newDatasetStates[datasetName] = {
-									name: datasetName,
-									status,
-									done: Math.floor(datasetProgress.progress * 100),
-									total: 100
-								};
-							}
-
-							setDatasetStates(prev => ({ ...prev, ...newDatasetStates }));
-						}
-					}, 1000);
 				}
 			: () => {},
 		[worker, idle]
 	);
 
 	useEffect(() => {
-		if (initCalled) return;
+		if (initCalledRef.current) return;
 		worker.init().then(() => setIdle(true));
-		initCalled = true;
-	}, []);
+		initCalledRef.current = true;
+	}, [worker]);
 
 	return { managerState, datasetStates: Object.values(datasetStates), startDownload };
 }

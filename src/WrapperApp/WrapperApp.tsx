@@ -22,6 +22,7 @@ import { AboutPanel } from './components/Panels/AboutPanel';
 import { ExamplePanel } from './components/Panels/ExamplePanel';
 import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
+import { Geant4DatasetsType } from './components/Simulation/Geant4DatasetDownload';
 import RunSimulationPanel from './components/Simulation/RunSimulationPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
 import { useRunGeant4LocalWorkerSimulation } from './UseRunGeant4LocalWorkerSimulation';
@@ -125,6 +126,10 @@ function WrapperApp() {
 		yaptideEditor?.contextManager.currentSimulator === SimulatorType.GEANT4
 			? runGeant4LocalWorkerSimulation
 			: runRemoteWorkerSimulation;
+
+	const [geant4DatasetType, setGeant4DatasetType] = useState<Geant4DatasetsType>(
+		Geant4DatasetsType.LAZY
+	);
 
 	return (
 		<NavDrawerContext value={tabsValue}>
@@ -238,6 +243,8 @@ function WrapperApp() {
 						geant4DownloadManagerState={geant4DownloadManagerState}
 						geant4DatasetDownloadStart={geant4DatasetDownload}
 						geant4DatasetStates={geant4DatasetStates}
+						geant4DatasetType={geant4DatasetType}
+						setGeant4DatasetType={setGeant4DatasetType}
 					/>
 				</TabPanel>
 				{/* end Simulations screen */}

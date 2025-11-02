@@ -29,6 +29,7 @@ import {
 	StatusState
 } from '../types/ResponseTypes';
 import { FullSimulationData, SimulationService } from '../types/SimulationService';
+import { Geant4DatasetsType } from '../WrapperApp/components/Simulation/Geant4DatasetDownload';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import { Geant4ResultsFileParser } from './Geant4ResultsFileParser';
 
@@ -77,7 +78,18 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 	}
 
 	async postJob(...args: RequestPostJob): Promise<ResponsePostJob> {
-		let [simData, inputType, runType, ntasks, simType, title, batchOptions, signal] = args;
+		let [
+			simData,
+			inputType,
+			runType,
+			ntasks,
+			simType,
+			title,
+			batchOptions,
+			geant4DatasetType,
+			signal
+		] = args;
+		console.log(geant4DatasetType);
 
 		if (title === undefined && isEditorJson(simData)) {
 			title = simData.project.title;
@@ -113,7 +125,11 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 		this.numPrimaries = rawNumPrimaries ? parseInt(rawNumPrimaries) : 0;
 
 		worker.init().then(async () => {
-			await worker.loadDepsLazy();
+			if (geant4DatasetType && geant4DatasetType === Geant4DatasetsType.DOWNLOADED) {
+				await worker.loadDeps();
+			} else {
+				await worker.loadDepsLazy();
+			}
 
 			// @ts-ignore
 			await worker.includeFile('geometry.gdml', simData['geometry.gdml']);
