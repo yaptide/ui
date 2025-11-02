@@ -1,4 +1,4 @@
-import { ParticleType } from '../../components/Select/ParticleSelect';
+import { Particle } from '../../../types/Particle';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { ScoringFilter } from './ScoringFilter';
@@ -18,7 +18,7 @@ export function isParticleFilterJSON(filter: any): filter is ParticleFilterJSON 
 }
 
 export class ParticleFilter extends ScoringFilter {
-	particleData: ParticleType;
+	particleData: Omit<Particle, 'massNumber'>;
 
 	constructor(editor: YaptideEditor) {
 		super(editor);

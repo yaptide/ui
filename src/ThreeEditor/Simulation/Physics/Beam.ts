@@ -4,7 +4,7 @@ import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 
-import { COMMON_PARTICLE_TYPES,FLUKA_PARTICLE_TYPES, Particle } from '../../../types/Particle';
+import { COMMON_PARTICLE_TYPES, FLUKA_PARTICLE_TYPES, Particle } from '../../../types/Particle';
 // Import of 'lines' from examples subfolder follows the official guidelines of threejs.editor (see https://threejs.org/docs/#manual/en/introduction/Installation)
 import { ConfigSourceFile } from '../../../types/SimulationTypes/ConfigTypes';
 import { SerializableState } from '../../js/EditorJson';
@@ -45,12 +45,7 @@ export type BeamJSON = Omit<
 			y: number;
 			distanceToFocal: number;
 		};
-		particle: {
-			id: number;
-			name: string;
-			z: number;
-			a: number;
-		};
+		particle: Particle;
 		sigma: {
 			type: SigmaType;
 			x: number;
@@ -158,12 +153,7 @@ export class Beam extends SimulationElement implements SerializableState<BeamJSO
 
 	numberOfParticles: number;
 
-	particleData: {
-		id: number;
-		name: string;
-		z: number;
-		a: number;
-	};
+	particleData: Particle;
 
 	sourceFile: ConfigSourceFile;
 
