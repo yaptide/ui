@@ -39,13 +39,27 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 
 	return (
 		<Box sx={{ pb: 1 }}>
-			<Typography>{status.name}</Typography>
-			{status.status === DatasetDownloadStatus.DONE && <CheckIcon />}
-			{(status.status === DatasetDownloadStatus.DOWNLOADING ||
-				status.status === DatasetDownloadStatus.PROCESSING) && (
-				<LinearProgress value={status.done! / status.total!} />
-			)}
-			{status.status === DatasetDownloadStatus.IDLE && <LinearProgress />}
+			<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+				<Typography sx={{ flex: 1 }}>{status.name}</Typography>
+				{status.status === DatasetDownloadStatus.DONE && <CheckIcon color='success' />}
+			</Box>
+
+			<Box sx={{ mt: 1 }}>
+				{status.status === DatasetDownloadStatus.DOWNLOADING && (
+					<LinearProgress
+						variant='determinate'
+						value={status.total ? ((status.done ?? 0) / status.total) * 100 : 0}
+						color='primary'
+					/>
+				)}
+				{status.status === DatasetDownloadStatus.PROCESSING && (
+					<LinearProgress
+						variant='indeterminate'
+						color='warning'
+					/>
+				)}
+				{status.status === DatasetDownloadStatus.IDLE && <LinearProgress color='warning' />}
+			</Box>
 		</Box>
 	);
 }

@@ -28,6 +28,7 @@ export class Geant4WorkerDownloadProgressMonitor {
 				return;
 			}
 
+			datasetProgress.stage = 'downloading';
 			datasetProgress.progress = progress;
 		}
 	}

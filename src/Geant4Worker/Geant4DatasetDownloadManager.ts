@@ -13,10 +13,10 @@ export enum DownloadManagerStatus {
 }
 
 export enum DatasetDownloadStatus {
-	IDLE = 'idle',
-	DOWNLOADING = 'downloading',
-	PROCESSING = 'processing',
-	DONE = 'done'
+	IDLE,
+	DOWNLOADING,
+	PROCESSING,
+	DONE
 }
 
 const statusTypeMap: Record<string, DatasetDownloadStatus> = {

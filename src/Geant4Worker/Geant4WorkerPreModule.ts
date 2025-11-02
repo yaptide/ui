@@ -16,6 +16,8 @@ export class Geant4WorkerPreModule {
 		const data = args.join('');
 
 		if (data.includes('dependency')) return;
+		if (data.includes('still waiting on run dependencies:')) return;
+		if (data.includes('(end of list)')) return;
 
 		workerPostMessage({ type: Geant4WorkerMessageType.PRINT_ERROR, data });
 	}
