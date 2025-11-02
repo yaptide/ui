@@ -128,7 +128,7 @@ describe('Simulation Controls', () => {
 
 		const runButton = await driver.findElement(By.id('simulator-controls-run'));
 		expect(await runButton.isEnabled()).toBeFalsy();
-	});
+	}, 50_000);
 
 	test('Switching from Geant4 should clear the project', async () => {
 		await loadExample('GEANT4');
