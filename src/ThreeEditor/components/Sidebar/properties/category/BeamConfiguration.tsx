@@ -16,6 +16,7 @@ import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	Beam,
 	BEAM_SOURCE_TYPE,
+	EnergyUnit,
 	isBeam,
 	SAD_TYPE,
 	SadType,
@@ -152,13 +153,13 @@ function BeamSadField(props: { beam: Beam; onChange: (value: Beam['sad']) => voi
 	);
 }
 
-const EnergyUnits = ['MeV', 'MeV/nucl'];
-
-type EnergyUnit = (typeof EnergyUnits)[number];
-
 function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam }) {
 	const { object, editor } = props;
-	const [energyUnit, setEnergyUnit] = useState<EnergyUnit>('MeV/nucl');
+	const { state: watchedObject } = useSmartWatchEditorState(editor, object, true);
+
+	// energyUnit should be held in react state so the change re-renders the component
+	// watchedObject.energyUnit is kept in sync in updateEnergyInputs()
+	const [energyUnit, setEnergyUnit] = useState<EnergyUnit>(watchedObject.energyUnit);
 
 	let supportedParticles: Particle[] = [];
 
@@ -175,8 +176,6 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 			supportedParticles.push(...COMMON_PARTICLE_TYPES);
 	}
 
-	const { state: watchedObject } = useSmartWatchEditorState(editor, object, true);
-
 	const setValueCommand = useCallback(
 		(value: any, key: string) => {
 			editor.execute(new SetValueCommand(editor, watchedObject.object, key, value));
@@ -190,11 +189,24 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 		}
 	}, [editor.contextManager.currentSimulator, setValueCommand]);
 
+	const shouldShowEnergyUnit = useCallback(
+		(particle: Particle) => {
+			return (
+				particle.a &&
+				(particle.a > 1 || // every particle with a > 1
+					particle.id === 25) // heavy ions, even if a == 1
+			);
+		},
+		[watchedObject]
+	);
+
 	const updateEnergyInputs = useCallback(
-		(oldUnit: EnergyUnit, newUnit: EnergyUnit) => {
-			const massNumber = watchedObject.particleData.a ?? 1;
+		(oldUnit: EnergyUnit, newUnit: EnergyUnit, newParticle?: Particle) => {
+			let massNumber = watchedObject.particleData.a ?? 1;
 
 			if (oldUnit === 'MeV' && newUnit === 'MeV/nucl') {
+				const massNumberScale = newParticle ? (newParticle.a ?? 1) / massNumber : 1;
+				massNumber *= massNumberScale;
 				watchedObject.energy /= massNumber;
 				watchedObject.energySpread /= massNumber;
 				watchedObject.energyLowCutoff /= massNumber;
@@ -207,8 +219,9 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 			}
 
 			setEnergyUnit(newUnit);
+			watchedObject.energyUnit = newUnit;
 		},
-		[energyUnit]
+		[watchedObject, setEnergyUnit]
 	);
 
 	return (
@@ -246,7 +259,8 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 						// update energy unit before setValueCommand, so the function can access current mass number & recalculate
 						updateEnergyInputs(
 							energyUnit,
-							(newParticleData?.a ?? 1) > 1 ? 'MeV/nucl' : 'MeV'
+							shouldShowEnergyUnit(newParticleData) ? 'MeV/nucl' : 'MeV',
+							newParticleData
 						);
 						setValueCommand(newParticleData, 'particleData');
 					}}
@@ -288,7 +302,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 
 			{watchedObject.sourceType === BEAM_SOURCE_TYPE.simple && (
 				<>
-					{watchedObject.particleData.a && (
+					{shouldShowEnergyUnit(watchedObject.particleData) && (
 						<PropertyField label='Energy unit'>
 							<StyledExclusiveToggleButtonGroup
 								value={energyUnit}
@@ -311,7 +325,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 					/>
 					<NumberPropertyField
 						label='Energy spread'
-						unit={watchedObject.energySpread < 0 ? 'Mev/c' : energyUnit} // TODO: Mev/c ???
+						unit={energyUnit}
 						value={watchedObject.energySpread}
 						onChange={v => setValueCommand(v, 'energySpread')}
 					/>

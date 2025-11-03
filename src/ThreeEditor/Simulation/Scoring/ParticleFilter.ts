@@ -18,7 +18,7 @@ export function isParticleFilterJSON(filter: any): filter is ParticleFilterJSON 
 }
 
 export class ParticleFilter extends ScoringFilter {
-	particleData: Omit<Particle, 'massNumber'>;
+	particleData: { id: number; name: string };
 
 	constructor(editor: YaptideEditor) {
 		super(editor);

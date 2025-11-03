@@ -91,7 +91,9 @@ export const COMMON_PARTICLE_TYPES = [
 	},
 	{
 		id: 25,
-		name: 'Heavy ions'
+		name: 'Heavy ions',
+		a: 12,
+		z: 6
 	}
 ] as const satisfies readonly Particle[];
 
@@ -164,7 +166,7 @@ export const GEANT4_PARTICLE_TYPES = [
 	{
 		id: 25,
 		name: 'Heavy ions',
-		a: 1,
-		z: 1
+		a: 12,
+		z: 6
 	}
 ] as const satisfies readonly Particle[];

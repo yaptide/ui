@@ -31,10 +31,14 @@ export const BEAM_SOURCE_TYPE = {
 } as const;
 export type BeamSourceType = keyof typeof BEAM_SOURCE_TYPE;
 
+export const EnergyUnits = ['MeV', 'MeV/nucl'];
+export type EnergyUnit = (typeof EnergyUnits)[number];
+
 export type BeamJSON = Omit<
 	SimulationElementJSON & {
 		position: THREE.Vector3Tuple;
 		direction: THREE.Vector3Tuple;
+		energyUnit: EnergyUnit;
 		energy: number;
 		energySpread: number;
 		energyLowCutoff: number;
@@ -69,6 +73,7 @@ const _default = {
 	position: new THREE.Vector3(0, 0, 0),
 	direction: new THREE.Vector3(0, 0, 1),
 	sourceType: BEAM_SOURCE_TYPE.simple,
+	energyUnit: 'MeV',
 	energy: 150,
 	energySpread: 1.5,
 	energyLowCutoff: 0,
@@ -125,6 +130,7 @@ export class Beam extends SimulationElement implements SerializableState<BeamJSO
 
 	helper: THREE.ArrowHelper;
 
+	energyUnit: EnergyUnit;
 	energy: number;
 	energySpread: number;
 	energyLowCutoff: number;
@@ -179,6 +185,7 @@ export class Beam extends SimulationElement implements SerializableState<BeamJSO
 		this.direction = proxyDirection;
 
 		this.position.copy(_default.position);
+		this.energyUnit = _default.energyUnit;
 		this.energy = _default.energy;
 		this.energySpread = _default.energySpread;
 		this.energyLowCutoff = _default.energyLowCutoff;
@@ -295,6 +302,7 @@ export class Beam extends SimulationElement implements SerializableState<BeamJSO
 			...super.toSerialized(),
 			position: this.position.toArray(),
 			direction: this.direction.toArray(),
+			energyUnit: this.energyUnit,
 			energy: this.energy,
 			energySpread: this.energySpread,
 			energyLowCutoff: this.energyLowCutoff,
@@ -317,6 +325,7 @@ export class Beam extends SimulationElement implements SerializableState<BeamJSO
 		const loadedData = { ..._default, ...data };
 		this.position.fromArray(loadedData.position);
 		this.direction.fromArray(loadedData.direction);
+		this.energyUnit = loadedData.energyUnit;
 		this.energy = loadedData.energy;
 		this.energySpread = loadedData.energySpread;
 		this.energyLowCutoff = loadedData.energyLowCutoff;
