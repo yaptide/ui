@@ -189,23 +189,22 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 		}
 	}, [editor.contextManager.currentSimulator, setValueCommand]);
 
-	const shouldShowEnergyUnit = useCallback(
-		(particle: Particle) => {
-			return (
-				particle.a &&
-				(particle.a > 1 || // every particle with a > 1
-					particle.id === 25) // heavy ions, even if a == 1
-			);
-		},
-		[watchedObject]
-	);
+	const shouldShowEnergyUnit = useCallback((particle: Particle) => {
+		return (
+			particle.a &&
+			(particle.a > 1 || // every particle with a > 1
+				particle.id === 25) // heavy ions, even if a == 1
+		);
+	}, []);
 
 	const updateEnergyInputs = useCallback(
 		(oldUnit: EnergyUnit, newUnit: EnergyUnit, newParticle?: Particle) => {
-			let massNumber = watchedObject.particleData.a ?? 1;
+			let massNumber = watchedObject.particleData.a ?? 1; // current (newParticle == undefined) or old massNumber
 
 			if (oldUnit === 'MeV' && newUnit === 'MeV/nucl') {
-				const massNumberScale = newParticle ? (newParticle.a ?? 1) / massNumber : 1;
+				// use scaling factor to break the cycle such as: proton (100MeV) -> alpha (100MeV/nucl) -> proton(400MeV/nucl) -> ...
+				// this works well under assumption that particles that default to MeV have A undefined or =1
+				const massNumberScale = newParticle ? 1 / massNumber : 1;
 				massNumber *= massNumberScale;
 				watchedObject.energy /= massNumber;
 				watchedObject.energySpread /= massNumber;
@@ -259,7 +258,9 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 						// update energy unit before setValueCommand, so the function can access current mass number & recalculate
 						updateEnergyInputs(
 							energyUnit,
-							shouldShowEnergyUnit(newParticleData) ? 'MeV/nucl' : 'MeV',
+							(shouldShowEnergyUnit(newParticleData)
+								? 'MeV/nucl'
+								: 'MeV') as EnergyUnit,
 							newParticleData
 						);
 						setValueCommand(newParticleData, 'particleData');

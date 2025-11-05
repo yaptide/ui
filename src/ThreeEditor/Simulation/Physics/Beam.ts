@@ -73,7 +73,7 @@ const _default = {
 	position: new THREE.Vector3(0, 0, 0),
 	direction: new THREE.Vector3(0, 0, 1),
 	sourceType: BEAM_SOURCE_TYPE.simple,
-	energyUnit: 'MeV',
+	energyUnit: 'MeV' as EnergyUnit,
 	energy: 150,
 	energySpread: 1.5,
 	energyLowCutoff: 0,

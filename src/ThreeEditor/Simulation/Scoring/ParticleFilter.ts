@@ -1,4 +1,3 @@
-import { Particle } from '../../../types/Particle';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { ScoringFilter } from './ScoringFilter';
