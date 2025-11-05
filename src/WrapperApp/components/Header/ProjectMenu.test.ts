@@ -37,12 +37,12 @@ describe('Project Menu', () => {
 
 		// Wait for Project menu to be visible
 		await driver.wait(
-			until.elementLocated(By.xpath("//button[@aria-labelledby = 'menu-10-label']")),
+			until.elementLocated(By.xpath("//button[@id = 'menu-button-10']")),
 			5_000
 		);
 
 		const projectMenuButton = await driver.findElement(
-			By.xpath("//button[@aria-labelledby = 'menu-10-label']")
+			By.xpath("//button[@id = 'menu-button-10']")
 		);
 		await projectMenuButton.click();
 

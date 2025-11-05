@@ -45,10 +45,9 @@ export default function MenuPosition({
 				variant='text'
 				sx={{ color: theme.palette.text.primary }}
 				id={'menu-button-' + idx.toString()}
-				aria-controls={Boolean(anchorEl) ? 'basic-menu' : undefined}
+				aria-controls={Boolean(anchorEl) ? 'menu-content-' + idx.toString() : undefined}
 				aria-haspopup='true'
 				aria-expanded={Boolean(anchorEl) ? 'true' : undefined}
-				aria-labelledby={`menu-${idx.toString()}-label`}
 				onClick={handleClick}
 				onMouseOver={handleEnter}
 				disableRipple>
