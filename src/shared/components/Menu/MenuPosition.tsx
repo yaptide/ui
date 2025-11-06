@@ -62,12 +62,7 @@ export default function MenuPosition({
 				anchorEl={anchorEl}
 				open={Boolean(anchorEl)}
 				onClose={() => handleClose()}
-				slotProps={{
-					list: {
-						'aria-labelledby': 'basic-button',
-						'dense': true
-					}
-				}}>
+				slotProps={{ list: { dense: true } }}>
 				{options.map((section, row) => (
 					<Box key={row}>
 						{section.map((option, idx) => (
