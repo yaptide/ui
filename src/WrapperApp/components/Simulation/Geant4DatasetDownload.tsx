@@ -2,15 +2,18 @@
 
 import CheckIcon from '@mui/icons-material/Check';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import {
 	AccordionDetails,
 	AccordionSummary,
+	Alert,
 	Box,
 	Button,
 	LinearProgress,
 	Typography,
 	useTheme
 } from '@mui/material';
+import { palette } from '@mui/system';
 import { useState } from 'react';
 
 import {
@@ -18,6 +21,7 @@ import {
 	DatasetStatus,
 	DownloadManagerStatus
 } from '../../../Geant4Worker/Geant4DatasetDownloadManager';
+import { useDialog } from '../../../services/DialogService';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
 
 export enum Geant4DatasetsType {
@@ -63,10 +67,13 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 	);
 }
 
+function showDetailsModal() {}
+
 export function Geant4Datasets(props: Geant4DatasetsProps) {
 	const theme = useTheme();
 	const { geant4DownloadManagerState, geant4DatasetStates, geant4DatasetDownloadStart } = props;
 	const [open, setOpen] = useState(true);
+	const { open: openTheDatasetsInfoDialog } = useDialog('datasetsDetailsInfo');
 
 	return (
 		<StyledAccordion
@@ -89,11 +96,39 @@ export function Geant4Datasets(props: Geant4DatasetsProps) {
 					flexDirection: 'column'
 				}}>
 				{geant4DownloadManagerState === DownloadManagerStatus.IDLE && (
-					<Button
-						onClick={geant4DatasetDownloadStart}
-						variant='contained'>
-						Start download
-					</Button>
+					<>
+						<Box
+							sx={{
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'space-between',
+								backgroundColor:
+									theme.palette.grey[
+										theme.palette.mode === 'light' ? 'A100' : '900'
+									],
+								px: 2,
+								py: 1,
+								borderRadius: theme.spacing(1),
+								mb: 2
+							}}>
+							<Typography
+								textTransform='none'
+								fontSize={14}
+								sx={{ flex: 1, mr: 1 }}>
+								Speed up the simulation by downloading Geant4 datasets.
+							</Typography>
+							<Button
+								variant='contained'
+								onClick={openTheDatasetsInfoDialog}>
+								Details
+							</Button>
+						</Box>
+						<Button
+							onClick={geant4DatasetDownloadStart}
+							variant='contained'>
+							Start download
+						</Button>
+					</>
 				)}
 				{geant4DatasetStates.map(status => (
 					<DatasetCurrentStatus

@@ -22,6 +22,7 @@ import {
 	ValidComponentTypes
 } from '../types/DialogServiceTypes';
 import { EntriesToObj } from '../types/TypeTransformUtil';
+import { DatasetsInfoDialog } from '../WrapperApp/components/Simulation/Modal/DatasetsInfoModal';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 
 /**
@@ -41,7 +42,8 @@ export type DialogComponentTypeMap = EntriesToObj<
 		ValidComponentTypes<['rejectKeycloak', typeof RejectKeycloakUserDialog]>,
 		ValidComponentTypes<['rejectKeycloakRefresh', typeof RejectKeycloakRefreshUserDialog]>,
 		ValidComponentTypes<['changeScoringType', typeof ChangeScoringTypeDialog]>,
-		ValidComponentTypes<['simulatorChange', typeof SimulatorChangeDialog]>
+		ValidComponentTypes<['simulatorChange', typeof SimulatorChangeDialog]>,
+		ValidComponentTypes<['datasetsDetailsInfo', typeof DatasetsInfoDialog]>
 	]
 >;
 
@@ -117,7 +119,8 @@ const DialogProvider = ({ children }: GenericContextProviderProps) => {
 			rejectKeycloak: RejectKeycloakUserDialog,
 			rejectKeycloakRefresh: RejectKeycloakRefreshUserDialog,
 			changeScoringType: ChangeScoringTypeDialog,
-			simulatorChange: SimulatorChangeDialog
+			simulatorChange: SimulatorChangeDialog,
+			datasetsDetailsInfo: DatasetsInfoDialog
 		}),
 		[]
 	);
