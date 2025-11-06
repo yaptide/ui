@@ -238,7 +238,7 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 			simType,
 			title,
 			batchOptions,
-			geant4DatasetType,
+			_geant4DatasetType,
 			signal
 		] = args;
 

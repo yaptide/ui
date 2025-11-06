@@ -7,7 +7,6 @@ import {
 	AccordionSummary,
 	Box,
 	Button,
-	CircularProgress,
 	LinearProgress,
 	Typography,
 	useTheme

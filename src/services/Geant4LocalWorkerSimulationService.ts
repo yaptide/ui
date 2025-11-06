@@ -81,15 +81,14 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 		let [
 			simData,
 			inputType,
-			runType,
-			ntasks,
-			simType,
+			_runType,
+			_ntasks,
+			_simType,
 			title,
-			batchOptions,
+			_batchOptions,
 			geant4DatasetType,
-			signal
+			_signal
 		] = args;
-		console.log(geant4DatasetType);
 
 		if (title === undefined && isEditorJson(simData)) {
 			title = simData.project.title;

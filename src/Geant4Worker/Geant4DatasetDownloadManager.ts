@@ -48,7 +48,7 @@ export function useDatasetDownloadManager() {
 			const newDatasetStates: Record<string, DatasetStatus> = {};
 
 			for (const [datasetName, datasetProgress] of Object.entries(progress)) {
-				let status = statusTypeMap[datasetProgress.stage];
+				let status = statusTypeMap[datasetProgress.stage] ?? DatasetDownloadStatus.IDLE;
 
 				newDatasetStates[datasetName] = {
 					name: datasetName,
@@ -71,20 +71,25 @@ export function useDatasetDownloadManager() {
 						await fetchProgress();
 					}, 1000);
 
-					loadDepsPromise.then(async () => {
-						clearInterval(interval);
+					loadDepsPromise
+						.then(async () => {
+							clearInterval(interval);
 
-						await fetchProgress();
+							await fetchProgress();
 
-						setManagerState(DownloadManagerStatus.FINISHED);
-						setIdle(true);
-						worker.destroy();
-					});
+							setManagerState(DownloadManagerStatus.FINISHED);
+							worker.destroy();
+						})
+						.catch(error => {
+							console.error('Dataset download error:', error);
+							setManagerState(DownloadManagerStatus.ERROR);
+							clearInterval(interval);
+						});
 					setManagerState(DownloadManagerStatus.WORKING);
 					setIdle(false);
 				}
 			: () => {},
-		[worker, idle]
+		[worker, idle, fetchProgress]
 	);
 
 	useEffect(() => {
