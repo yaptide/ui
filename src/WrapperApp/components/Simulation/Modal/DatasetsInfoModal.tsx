@@ -14,13 +14,6 @@ import {
 	CustomDialog
 } from '../../../../ThreeEditor/components/Dialog/CustomDialog';
 
-interface DatasetSummary {
-	name: string;
-	version: string;
-	envVar: string;
-	description: string;
-}
-
 const datasetSummaries = [
 	{
 		name: 'G4EMLOW8.6.1',
@@ -60,9 +53,10 @@ export function DatasetsInfoDialog({ onClose }: ConcreteDialogProps) {
 			onClose={onClose}
 			alert={true}
 			title='Predownload Geant4 Datasets Info'
-			contentText="Downloading Geant4 datasets can significantly speed up simulations by providing local access to essential data files. 
-            Data files will be stored in your browser's IndexedDB storage. Total size of downloaded datasets is about 2GB.
-            Below is a summary of the datasets available for download:"
+			contentText={`
+                Downloading Geant4 datasets can significantly speed up simulations by providing local access to essential data files. 
+                Data files will be stored in your browser's IndexedDB storage. Total size of downloaded datasets is about 2GB.
+                Below is a summary of the datasets available for download:`}
 			body={
 				<>
 					<TableContainer

@@ -2,18 +2,15 @@
 
 import CheckIcon from '@mui/icons-material/Check';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import {
 	AccordionDetails,
 	AccordionSummary,
-	Alert,
 	Box,
 	Button,
 	LinearProgress,
 	Typography,
 	useTheme
 } from '@mui/material';
-import { palette } from '@mui/system';
 import { useState } from 'react';
 
 import {
@@ -66,8 +63,6 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 		</Box>
 	);
 }
-
-function showDetailsModal() {}
 
 export function Geant4Datasets(props: Geant4DatasetsProps) {
 	const theme = useTheme();
