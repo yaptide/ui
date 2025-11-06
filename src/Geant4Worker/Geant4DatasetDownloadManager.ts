@@ -41,7 +41,7 @@ export function useDatasetDownloadManager() {
 	const [worker] = useState<Geant4Worker>(new Geant4Worker());
 	const initCalledRef = useRef(false);
 
-	const fetchProgress = async () => {
+	const fetchProgress = useCallback(async () => {
 		const progress = await worker.pollDatasetProgress();
 
 		if (progress) {
@@ -60,7 +60,7 @@ export function useDatasetDownloadManager() {
 
 			setDatasetStates(prev => ({ ...prev, ...newDatasetStates }));
 		}
-	};
+	}, [worker]);
 
 	const startDownload = useCallback(
 		idle
