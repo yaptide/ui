@@ -26,7 +26,7 @@
 		"@uiw/react-textarea-code-editor": "^3.1.1",
 		"comlink": "^4.4.2",
 		"command-exists": "^1.2.9",
-		"convert-units": "^3.0.0-beta.7",
+		"convert-units": "^3.0.0-beta.8",
 		"copy-to-clipboard": "^3.3.3",
 		"date-fns": "^4.1.0",
 		"glob": "^11.0.3",
