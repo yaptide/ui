@@ -56,6 +56,7 @@ export function EditorTitleBar({ sx }: { sx: SxProps }) {
 					variant='subtitle1'
 					component='div'
 					align='center'
+					role='heading'
 					textTransform='none'>
 					{title}
 				</Typography>

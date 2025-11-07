@@ -35,7 +35,7 @@ export default function MenuPosition({
 	};
 
 	useEffect(() => {
-		if (openIdx === idx) setAnchorEl(document.getElementById('basic-button-' + idx.toString()));
+		if (openIdx === idx) setAnchorEl(document.getElementById('menu-button-' + idx.toString()));
 		else setAnchorEl(null);
 	}, [openIdx, idx]);
 
@@ -44,26 +44,25 @@ export default function MenuPosition({
 			<Button
 				variant='text'
 				sx={{ color: theme.palette.text.primary }}
-				id={'basic-button-' + idx.toString()}
-				aria-controls={Boolean(anchorEl) ? 'basic-menu' : undefined}
+				id={'menu-button-' + idx.toString()}
+				aria-controls={Boolean(anchorEl) ? 'menu-content-' + idx.toString() : undefined}
 				aria-haspopup='true'
 				aria-expanded={Boolean(anchorEl) ? 'true' : undefined}
 				onClick={handleClick}
 				onMouseOver={handleEnter}
 				disableRipple>
-				<Typography textTransform='initial'>{label}</Typography>
+				<Typography
+					id={`menu-${idx.toString()}-label`}
+					textTransform='initial'>
+					{label}
+				</Typography>
 			</Button>
 			<Menu
-				id='basic-menu'
+				id={'menu-content-' + idx.toString()}
 				anchorEl={anchorEl}
 				open={Boolean(anchorEl)}
 				onClose={() => handleClose()}
-				slotProps={{
-					list: {
-						'aria-labelledby': 'basic-button',
-						'dense': true
-					}
-				}}>
+				slotProps={{ list: { dense: true } }}>
 				{options.map((section, row) => (
 					<Box key={row}>
 						{section.map((option, idx) => (

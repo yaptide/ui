@@ -13,6 +13,7 @@ export default function HeaderPanel(props: SimulationControlsProps) {
 
 	return (
 		<Box
+			role='banner'
 			sx={{
 				overflow: 'hidden',
 				display: 'flex',

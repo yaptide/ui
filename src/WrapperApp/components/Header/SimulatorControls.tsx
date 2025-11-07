@@ -107,6 +107,7 @@ export default function SimulatorControls(props: SimulationControlsProps) {
 	return (
 		<>
 			<Typography
+				id='simulator-controls-status'
 				color={simulatorReady ? 'primary' : theme.palette.grey['600']}
 				sx={{ userSelect: 'none' }}>
 				{simulatorReady
@@ -116,6 +117,7 @@ export default function SimulatorControls(props: SimulationControlsProps) {
 						: 'Unreachable'}
 			</Typography>
 			<Button
+				id='simulator-controls-select'
 				sx={{
 					height: '36px',
 					width: '180px',
@@ -141,6 +143,7 @@ export default function SimulatorControls(props: SimulationControlsProps) {
 				)}
 			</Button>
 			<Button
+				id='simulator-controls-run'
 				variant='contained'
 				disabled={!simulatorReady}
 				onClick={() => props.handleTabChange('simulations')}
@@ -149,6 +152,7 @@ export default function SimulatorControls(props: SimulationControlsProps) {
 				<Typography>Run</Typography>
 			</Button>
 			<Popover
+				id='simulator-controls-popover-select'
 				open={!!anchorEl}
 				anchorEl={anchorEl}
 				onClose={() => setAnchorEl(null)}>
