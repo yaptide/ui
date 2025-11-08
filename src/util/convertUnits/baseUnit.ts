@@ -91,7 +91,7 @@ const createSISystem = (baseUnit: string, anchorFactor: number) => {
 	for (const property in SI) {
 		newSystem[property + baseUnit] = {
 			...SI[property],
-			to_anchor: Math.pow(SI[property].to_anchor, anchorFactor)
+			to_anchor: Math.pow(SI[property].to_anchor as number, anchorFactor)
 		};
 	}
 
