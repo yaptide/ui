@@ -1,7 +1,6 @@
-import { ParticleType } from '../../components/Select/ParticleSelect';
+import { Particle } from '../../../types/Particle';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationElementJSON } from '../Base/SimulationElement';
-import { ParticleFilterJSON } from './ParticleFilter';
 import { ScoringFilter } from './ScoringFilter';
 
 type FilterType =
@@ -12,7 +11,7 @@ type FilterType =
 	| 'particleWithKineticEnergy';
 
 type FilterData = {
-	particleTypes: ParticleType[];
+	particleTypes: Particle[];
 	kineticEnergyLow: number;
 	kineticEnergyHigh: number;
 	kineticEnergyUnit: string;

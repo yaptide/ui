@@ -4,7 +4,7 @@ import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 
-import { COMMON_PARTICLE_TYPES,FLUKA_PARTICLE_TYPES, Particle } from '../../../types/Particle';
+import { COMMON_PARTICLE_TYPES, FLUKA_PARTICLE_TYPES, Particle } from '../../../types/Particle';
 // Import of 'lines' from examples subfolder follows the official guidelines of threejs.editor (see https://threejs.org/docs/#manual/en/introduction/Installation)
 import { ConfigSourceFile } from '../../../types/SimulationTypes/ConfigTypes';
 import { SerializableState } from '../../js/EditorJson';
@@ -31,10 +31,14 @@ export const BEAM_SOURCE_TYPE = {
 } as const;
 export type BeamSourceType = keyof typeof BEAM_SOURCE_TYPE;
 
+export const EnergyUnits = ['MeV', 'MeV/nucl'];
+export type EnergyUnit = (typeof EnergyUnits)[number];
+
 export type BeamJSON = Omit<
 	SimulationElementJSON & {
 		position: THREE.Vector3Tuple;
 		direction: THREE.Vector3Tuple;
+		energyUnit: EnergyUnit;
 		energy: number;
 		energySpread: number;
 		energyLowCutoff: number;
@@ -45,12 +49,7 @@ export type BeamJSON = Omit<
 			y: number;
 			distanceToFocal: number;
 		};
-		particle: {
-			id: number;
-			name: string;
-			z: number;
-			a: number;
-		};
+		particle: Particle;
 		sigma: {
 			type: SigmaType;
 			x: number;
@@ -74,6 +73,7 @@ const _default = {
 	position: new THREE.Vector3(0, 0, 0),
 	direction: new THREE.Vector3(0, 0, 1),
 	sourceType: BEAM_SOURCE_TYPE.simple,
+	energyUnit: 'MeV' as EnergyUnit,
 	energy: 150,
 	energySpread: 1.5,
 	energyLowCutoff: 0,
@@ -130,6 +130,7 @@ export class Beam extends SimulationElement implements SerializableState<BeamJSO
 
 	helper: THREE.ArrowHelper;
 
+	energyUnit: EnergyUnit;
 	energy: number;
 	energySpread: number;
 	energyLowCutoff: number;
@@ -158,12 +159,7 @@ export class Beam extends SimulationElement implements SerializableState<BeamJSO
 
 	numberOfParticles: number;
 
-	particleData: {
-		id: number;
-		name: string;
-		z: number;
-		a: number;
-	};
+	particleData: Particle;
 
 	sourceFile: ConfigSourceFile;
 
@@ -189,6 +185,7 @@ export class Beam extends SimulationElement implements SerializableState<BeamJSO
 		this.direction = proxyDirection;
 
 		this.position.copy(_default.position);
+		this.energyUnit = _default.energyUnit;
 		this.energy = _default.energy;
 		this.energySpread = _default.energySpread;
 		this.energyLowCutoff = _default.energyLowCutoff;
@@ -305,6 +302,7 @@ export class Beam extends SimulationElement implements SerializableState<BeamJSO
 			...super.toSerialized(),
 			position: this.position.toArray(),
 			direction: this.direction.toArray(),
+			energyUnit: this.energyUnit,
 			energy: this.energy,
 			energySpread: this.energySpread,
 			energyLowCutoff: this.energyLowCutoff,
@@ -327,6 +325,7 @@ export class Beam extends SimulationElement implements SerializableState<BeamJSO
 		const loadedData = { ..._default, ...data };
 		this.position.fromArray(loadedData.position);
 		this.direction.fromArray(loadedData.direction);
+		this.energyUnit = loadedData.energyUnit;
 		this.energy = loadedData.energy;
 		this.energySpread = loadedData.energySpread;
 		this.energyLowCutoff = loadedData.energyLowCutoff;

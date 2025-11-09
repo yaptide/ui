@@ -1,12 +1,13 @@
 import { Divider, ToggleButton } from '@mui/material';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 
 import { StyledExclusiveToggleButtonGroup } from '../../../../../shared/components/StyledExclusiveToggleButtonGroup';
 import {
 	COMMON_PARTICLE_TYPES,
 	FLUKA_PARTICLE_TYPES,
-	GEANT4_PARTICLE_TYPES
+	GEANT4_PARTICLE_TYPES,
+	Particle
 } from '../../../../../types/Particle';
 import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
@@ -15,13 +16,14 @@ import { YaptideEditor } from '../../../../js/YaptideEditor';
 import {
 	Beam,
 	BEAM_SOURCE_TYPE,
+	EnergyUnit,
 	isBeam,
 	SAD_TYPE,
 	SadType,
 	SIGMA_TYPE,
 	SigmaType
 } from '../../../../Simulation/Physics/Beam';
-import { ParticleSelect, ParticleType } from '../../../Select/ParticleSelect';
+import { ParticleSelect } from '../../../Select/ParticleSelect';
 import {
 	NumberPropertyField,
 	PropertyField,
@@ -153,8 +155,13 @@ function BeamSadField(props: { beam: Beam; onChange: (value: Beam['sad']) => voi
 
 function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam }) {
 	const { object, editor } = props;
+	const { state: watchedObject } = useSmartWatchEditorState(editor, object, true);
 
-	let supportedParticles: ParticleType[] = [];
+	// energyUnit should be held in react state so the change re-renders the component
+	// watchedObject.energyUnit is kept in sync in updateEnergyInputs()
+	const [energyUnit, setEnergyUnit] = useState<EnergyUnit>(watchedObject.energyUnit);
+
+	let supportedParticles: Particle[] = [];
 
 	switch (editor.contextManager.currentSimulator) {
 		case SimulatorType.GEANT4:
@@ -169,8 +176,6 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 			supportedParticles.push(...COMMON_PARTICLE_TYPES);
 	}
 
-	const { state: watchedObject } = useSmartWatchEditorState(editor, object, true);
-
 	const setValueCommand = useCallback(
 		(value: any, key: string) => {
 			editor.execute(new SetValueCommand(editor, watchedObject.object, key, value));
@@ -184,36 +189,147 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 		}
 	}, [editor.contextManager.currentSimulator, setValueCommand]);
 
+	const shouldShowEnergyUnit = useCallback((particle: Particle) => {
+		return (
+			particle.a &&
+			(particle.a > 1 || // every particle with a > 1
+				particle.id === 25) // heavy ions, even if a == 1
+		);
+	}, []);
+
+	const updateEnergyInputs = useCallback(
+		(oldUnit: EnergyUnit, newUnit: EnergyUnit, newParticle?: Particle) => {
+			let massNumber = watchedObject.particleData.a ?? 1;
+
+			if (oldUnit === 'MeV' && newUnit === 'MeV/nucl') {
+				if (newParticle == undefined) {
+					// Convert from MeV to MeV/nucl by dividing energies by A
+					watchedObject.energy /= massNumber;
+					watchedObject.energySpread /= massNumber;
+					watchedObject.energyLowCutoff /= massNumber;
+					watchedObject.energyHighCutoff /= massNumber;
+				} else {
+					// If particle is changed alongside changing to MeV/nucl, do nothing.
+					// We want to break the cycle such as: proton (100MeV) -> alpha (100MeV/nucl) -> proton(400MeV/nucl) -> ...
+					// this works well under the assumption that particles that default to MeV have A undefined or =1
+				}
+			} else if (oldUnit === 'MeV/nucl' && newUnit === 'MeV') {
+				watchedObject.energy *= massNumber;
+				watchedObject.energySpread *= massNumber;
+				watchedObject.energyLowCutoff *= massNumber;
+				watchedObject.energyHighCutoff *= massNumber;
+			}
+
+			setEnergyUnit(newUnit);
+			watchedObject.energyUnit = newUnit;
+		},
+		[watchedObject, setEnergyUnit]
+	);
+
 	return (
 		<>
 			{editor.contextManager.currentSimulator !== SimulatorType.GEANT4 && (
-				<PropertyField label='Definition type'>
-					<StyledExclusiveToggleButtonGroup
-						size='small'
-						value={watchedObject.sourceType}
-						onChange={(_, v) => {
-							if (v) setValueCommand(v, 'sourceType');
-						}}>
-						<ToggleButton value={BEAM_SOURCE_TYPE.simple}>Simple</ToggleButton>
-						{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
-							<ToggleButton value={BEAM_SOURCE_TYPE.file}>File</ToggleButton>
-						)}
-					</StyledExclusiveToggleButtonGroup>
-				</PropertyField>
+				<>
+					<PropertyField label='Definition type'>
+						<StyledExclusiveToggleButtonGroup
+							size='small'
+							value={watchedObject.sourceType}
+							onChange={(_, v) => {
+								if (v) setValueCommand(v, 'sourceType');
+							}}>
+							<ToggleButton value={BEAM_SOURCE_TYPE.simple}>Simple</ToggleButton>
+							{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
+								<ToggleButton value={BEAM_SOURCE_TYPE.file}>File</ToggleButton>
+							)}
+						</StyledExclusiveToggleButtonGroup>
+					</PropertyField>
+					<PropertyField children={<Divider />} />
+				</>
 			)}
+
+			<PropertyField label='Particle type'>
+				<ParticleSelect
+					particles={supportedParticles}
+					value={watchedObject.particleData.id}
+					onChange={(_, v) => {
+						const newParticleData = supportedParticles.find(p => p.id === v);
+
+						if (!newParticleData) {
+							return;
+						}
+
+						// update energy unit before setValueCommand, so the function can access current mass number & recalculate
+						updateEnergyInputs(
+							energyUnit,
+							(shouldShowEnergyUnit(newParticleData)
+								? 'MeV/nucl'
+								: 'MeV') as EnergyUnit,
+							newParticleData
+						);
+						setValueCommand(newParticleData, 'particleData');
+					}}
+				/>
+			</PropertyField>
+
+			{watchedObject.particleData.id === 25 && (
+				<>
+					<NumberPropertyField
+						label='charge (Z)'
+						precision={0}
+						step={1}
+						value={watchedObject.particleData.z ?? 6}
+						onChange={v =>
+							setValueCommand({ ...watchedObject.particleData, z: v }, 'particleData')
+						}
+					/>
+					<NumberPropertyField
+						label='nucleons (A)'
+						precision={0}
+						step={1}
+						value={watchedObject.particleData.a ?? 12}
+						onChange={v =>
+							setValueCommand({ ...watchedObject.particleData, a: v }, 'particleData')
+						}
+					/>
+				</>
+			)}
+
+			<NumberPropertyField
+				label='Number of primary particles'
+				precision={0}
+				step={1}
+				value={watchedObject.numberOfParticles}
+				onChange={v => setValueCommand(v, 'numberOfParticles')}
+			/>
+
+			<PropertyField children={<Divider />} />
 
 			{watchedObject.sourceType === BEAM_SOURCE_TYPE.simple && (
 				<>
+					{shouldShowEnergyUnit(watchedObject.particleData) && (
+						<PropertyField label='Energy unit'>
+							<StyledExclusiveToggleButtonGroup
+								value={energyUnit}
+								onChange={(_, value: EnergyUnit) =>
+									updateEnergyInputs(energyUnit, value)
+								}
+								aria-label='energy unit'
+								size='small'>
+								<ToggleButton value={'MeV'}>MeV</ToggleButton>
+								<ToggleButton value={'MeV/nucl'}>MeV / nucl</ToggleButton>
+							</StyledExclusiveToggleButtonGroup>
+						</PropertyField>
+					)}
 					<NumberPropertyField
 						label='Energy mean'
 						min={1e-12}
-						unit={'MeV/nucl'}
+						unit={energyUnit}
 						value={watchedObject.energy}
 						onChange={v => setValueCommand(v, 'energy')}
 					/>
 					<NumberPropertyField
 						label='Energy spread'
-						unit={watchedObject.energySpread < 0 ? 'Mev/c' : 'MeV/nucl'}
+						unit={energyUnit}
 						value={watchedObject.energySpread}
 						onChange={v => setValueCommand(v, 'energySpread')}
 					/>
@@ -222,13 +338,13 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 						<>
 							<NumberPropertyField
 								label='Energy lower cutoff'
-								unit={'MeV/nucl'}
+								unit={energyUnit}
 								value={watchedObject.energyLowCutoff}
 								onChange={v => setValueCommand(v, 'energyLowCutoff')}
 							/>
 							<NumberPropertyField
 								label='Energy upper cutoff'
-								unit={'MeV/nucl'}
+								unit={energyUnit}
 								value={watchedObject.energyHighCutoff}
 								onChange={v => setValueCommand(v, 'energyHighCutoff')}
 							/>
@@ -272,56 +388,10 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 				</>
 			)}
 
-			<PropertyField children={<Divider />} />
-			<NumberPropertyField
-				label='Number of primary particles'
-				precision={0}
-				step={1}
-				value={watchedObject.numberOfParticles}
-				onChange={v => setValueCommand(v, 'numberOfParticles')}
-			/>
-			<PropertyField label='Particle type'>
-				<ParticleSelect
-					particles={supportedParticles}
-					value={watchedObject.particleData.id}
-					onChange={(_, v) =>
-						setValueCommand(
-							{
-								...watchedObject.particleData,
-								id: v,
-								name: supportedParticles.find(p => p.id === v)?.name
-							},
-							'particleData'
-						)
-					}
-				/>
-			</PropertyField>
-
-			{watchedObject.particleData.id === 25 && (
-				<>
-					<NumberPropertyField
-						label='charge (Z)'
-						precision={0}
-						step={1}
-						value={watchedObject.particleData.z}
-						onChange={v =>
-							setValueCommand({ ...watchedObject.particleData, z: v }, 'particleData')
-						}
-					/>
-					<NumberPropertyField
-						label='nucleons (A)'
-						precision={0}
-						step={1}
-						value={watchedObject.particleData.a}
-						onChange={v =>
-							setValueCommand({ ...watchedObject.particleData, a: v }, 'particleData')
-						}
-					/>
-				</>
-			)}
-
 			{watchedObject.sourceType === BEAM_SOURCE_TYPE.file && (
 				<>
+					<PropertyField children={<Divider />} />
+
 					<BeamSadField
 						beam={watchedObject}
 						onChange={v => {
