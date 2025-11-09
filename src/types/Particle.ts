@@ -12,7 +12,8 @@ export interface Particle {
 }
 
 /**
- * Particle types supported by SHIELD-HIT12A and FLUKA
+ * Particle types supported by SHIELD-HIT12A and FLUKA. A and Z are defined for composite particles
+ * like deuteron, triton, helium, and heavy ions.
  */
 export const COMMON_PARTICLE_TYPES = [
 	{
@@ -108,7 +109,8 @@ export const FLUKA_PARTICLE_TYPES = [
 ] as const satisfies readonly Particle[];
 
 /**
- * Particle types supported by Geant4
+ * Particle types supported by Geant4. A and Z are defined for composite particles
+ *  * like deuteron, triton, helium, and heavy ions.
  */
 export const GEANT4_PARTICLE_TYPES = [
 	{
