@@ -199,17 +199,20 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 
 	const updateEnergyInputs = useCallback(
 		(oldUnit: EnergyUnit, newUnit: EnergyUnit, newParticle?: Particle) => {
-			let massNumber = watchedObject.particleData.a ?? 1; // current (newParticle == undefined) or old massNumber
+			let massNumber = watchedObject.particleData.a ?? 1;
 
 			if (oldUnit === 'MeV' && newUnit === 'MeV/nucl') {
-				// use scaling factor to break the cycle such as: proton (100MeV) -> alpha (100MeV/nucl) -> proton(400MeV/nucl) -> ...
-				// this works well under assumption that particles that default to MeV have A undefined or =1
-				const massNumberScale = newParticle ? 1 / massNumber : 1;
-				massNumber *= massNumberScale;
-				watchedObject.energy /= massNumber;
-				watchedObject.energySpread /= massNumber;
-				watchedObject.energyLowCutoff /= massNumber;
-				watchedObject.energyHighCutoff /= massNumber;
+				if (newParticle == undefined) {
+					// Convert from MeV to MeV/nucl by dividing energies by A
+					watchedObject.energy /= massNumber;
+					watchedObject.energySpread /= massNumber;
+					watchedObject.energyLowCutoff /= massNumber;
+					watchedObject.energyHighCutoff /= massNumber;
+				} else {
+					// If particle is changed alongside changing to MeV/nucl, do nothing.
+					// We want to break the cycle such as: proton (100MeV) -> alpha (100MeV/nucl) -> proton(400MeV/nucl) -> ...
+					// this works well under the assumption that particles that default to MeV have A undefined or =1
+				}
 			} else if (oldUnit === 'MeV/nucl' && newUnit === 'MeV') {
 				watchedObject.energy *= massNumber;
 				watchedObject.energySpread *= massNumber;
@@ -274,7 +277,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 						label='charge (Z)'
 						precision={0}
 						step={1}
-						value={watchedObject.particleData.z ?? 1}
+						value={watchedObject.particleData.z ?? 6}
 						onChange={v =>
 							setValueCommand({ ...watchedObject.particleData, z: v }, 'particleData')
 						}
@@ -283,7 +286,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 						label='nucleons (A)'
 						precision={0}
 						step={1}
-						value={watchedObject.particleData.a ?? 1}
+						value={watchedObject.particleData.a ?? 12}
 						onChange={v =>
 							setValueCommand({ ...watchedObject.particleData, a: v }, 'particleData')
 						}
