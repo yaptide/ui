@@ -209,7 +209,7 @@
 		"@types/node": "^24.9.1",
 		"@types/react": "^19.2.2",
 		"@types/react-async-script": "^1.2.5",
-		"@types/selenium-webdriver": "^4.35.2",
+		"@types/selenium-webdriver": "^4.35.3",
 		"@types/three": "^0.177.0",
 		"cross-env": "^10.1.0",
 		"dependency-cruiser": "^17.1.0",
