@@ -207,7 +207,7 @@
 	"devDependencies": {
 		"@total-typescript/ts-reset": "^0.6.1",
 		"@types/node": "^24.10.0",
-		"@types/react": "^19.2.2",
+		"@types/react": "^19.2.3",
 		"@types/react-async-script": "^1.2.5",
 		"@types/selenium-webdriver": "^4.35.3",
 		"@types/three": "^0.177.0",
