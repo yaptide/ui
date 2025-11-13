@@ -26,6 +26,9 @@ module.exports = function override(webpackConfig) {
 	webpackConfig.plugins.push(
 		new webpack.IgnorePlugin({
 			resourceRegExp: /geant4_wasm\.wasm$/
+		}),
+		new webpack.IgnorePlugin({
+			resourceRegExp: /node:worker_threads$/
 		})
 	);
 
