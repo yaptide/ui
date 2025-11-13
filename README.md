@@ -14,3 +14,5 @@ The stable demo version is available at <https://yaptide.github.io/>
 ## For developers
 
 [Developer documentation](https://yaptide.github.io/for_developers/frontend/)
+
+.
