@@ -1,7 +1,7 @@
 // Additional credits:
 // - @kmichalik
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 
 import Geant4Worker from './Geant4Worker';
 
@@ -32,6 +32,62 @@ export interface DatasetStatus {
 	total?: number;
 }
 
+async function fetchProgress(
+	worker: Geant4Worker,
+	setDatasetStates: Dispatch<SetStateAction<Record<string, DatasetStatus>>>
+) {
+	const progress = await worker.pollDatasetProgress();
+
+	if (progress) {
+		const newDatasetStates: Record<string, DatasetStatus> = {};
+
+		for (const [datasetName, datasetProgress] of Object.entries(progress)) {
+			let status = statusTypeMap[datasetProgress.stage] ?? DatasetDownloadStatus.IDLE;
+
+			newDatasetStates[datasetName] = {
+				name: datasetName,
+				status,
+				done: Math.floor(datasetProgress.progress * 100),
+				total: 100
+			};
+		}
+
+		setDatasetStates(prev => ({ ...prev, ...newDatasetStates }));
+	}
+}
+
+type StartDownloadArgs = {
+	worker: Geant4Worker;
+	setManagerState: Dispatch<SetStateAction<DownloadManagerStatus>>;
+	setDatasetStates: Dispatch<SetStateAction<Record<string, DatasetStatus>>>;
+	setIdle: Dispatch<SetStateAction<boolean>>;
+};
+
+function startDownload({ worker, setManagerState, setDatasetStates, setIdle }: StartDownloadArgs) {
+	const loadDepsPromise = worker.loadDeps();
+
+	const interval = setInterval(async () => {
+		await fetchProgress(worker, setDatasetStates);
+	}, 500);
+
+	loadDepsPromise
+		.then(async () => {
+			clearInterval(interval);
+
+			await fetchProgress(worker, setDatasetStates);
+
+			setManagerState(DownloadManagerStatus.FINISHED);
+			worker.destroy();
+		})
+		.catch(error => {
+			console.error('Dataset download error:', error);
+			setManagerState(DownloadManagerStatus.ERROR);
+			clearInterval(interval);
+		});
+	setManagerState(DownloadManagerStatus.WORKING);
+	setIdle(false);
+}
+
 export function useDatasetDownloadManager() {
 	const [managerState, setManagerState] = useState<DownloadManagerStatus>(
 		DownloadManagerStatus.IDLE
@@ -41,62 +97,21 @@ export function useDatasetDownloadManager() {
 	const [worker] = useState<Geant4Worker>(new Geant4Worker());
 	const initCalledRef = useRef(false);
 
-	const fetchProgress = useCallback(async () => {
-		const progress = await worker.pollDatasetProgress();
-
-		if (progress) {
-			const newDatasetStates: Record<string, DatasetStatus> = {};
-
-			for (const [datasetName, datasetProgress] of Object.entries(progress)) {
-				let status = statusTypeMap[datasetProgress.stage] ?? DatasetDownloadStatus.IDLE;
-
-				newDatasetStates[datasetName] = {
-					name: datasetName,
-					status,
-					done: Math.floor(datasetProgress.progress * 100),
-					total: 100
-				};
-			}
-
-			setDatasetStates(prev => ({ ...prev, ...newDatasetStates }));
-		}
-	}, [worker]);
-
-	const startDownload = useCallback(
-		idle
-			? () => {
-					const loadDepsPromise = worker.loadDeps();
-
-					const interval = setInterval(async () => {
-						await fetchProgress();
-					}, 1000);
-
-					loadDepsPromise
-						.then(async () => {
-							clearInterval(interval);
-
-							await fetchProgress();
-
-							setManagerState(DownloadManagerStatus.FINISHED);
-							worker.destroy();
-						})
-						.catch(error => {
-							console.error('Dataset download error:', error);
-							setManagerState(DownloadManagerStatus.ERROR);
-							clearInterval(interval);
-						});
-					setManagerState(DownloadManagerStatus.WORKING);
-					setIdle(false);
-				}
-			: () => {},
-		[worker, idle, fetchProgress]
-	);
-
 	useEffect(() => {
 		if (initCalledRef.current) return;
 		worker.init().then(() => setIdle(true));
 		initCalledRef.current = true;
 	}, [worker]);
 
-	return { managerState, datasetStates: Object.values(datasetStates), startDownload };
+	const startDownloadSimple = useCallback(() => {
+		if (!idle) return;
+
+		startDownload({ worker, setManagerState, setDatasetStates, setIdle });
+	}, [worker, idle]);
+
+	return {
+		managerState,
+		datasetStates: Object.values(datasetStates),
+		startDownload: startDownloadSimple
+	};
 }
