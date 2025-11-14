@@ -99,7 +99,13 @@ export function useDatasetDownloadManager() {
 
 	useEffect(() => {
 		if (initCalledRef.current) return;
-		worker.init().then(() => setIdle(true));
+		worker
+			.init()
+			.then(() => setIdle(true))
+			.catch(error => {
+				setManagerState(DownloadManagerStatus.ERROR);
+				console.error('Failed to initialize Geant4 worker for dataset download:', error);
+			});
 		initCalledRef.current = true;
 	}, [worker]);
 

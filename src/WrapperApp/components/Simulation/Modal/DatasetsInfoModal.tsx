@@ -52,10 +52,12 @@ export function DatasetsInfoDialog({ onClose }: ConcreteDialogProps) {
 		<CustomDialog
 			onClose={onClose}
 			alert={true}
-			title='Predownload Geant4 Datasets Info'
+			title='Pre-download Geant4 Datasets Info'
 			contentText={`
                 Downloading Geant4 datasets can significantly speed up simulations by providing local access to essential data files. 
-                Data files will be stored in your browser's IndexedDB storage. Total size of downloaded datasets is about 2GB.
+                Data files will be stored in your browser's IndexedDB storage. Total size of downloaded datasets is about 2GB. Each time
+				you run a simulation with Geant4 datasets pre-downloaded, you will still have to click 'Start download' button to initialize 
+				the datasets from the local storage.
                 Below is a summary of the datasets available for download:`}
 			body={
 				<>

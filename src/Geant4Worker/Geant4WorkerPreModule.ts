@@ -35,9 +35,7 @@ export class Geant4WorkerPreModule {
 			const current = parseInt(match[1], 10);
 			const total = parseInt(match[2], 10);
 
-			const progress = current / total;
-
-			this.progressMonitor.setDownloadProgress(progress);
+			this.progressMonitor.setDownloadProgress(current, total);
 		}
 	}
 

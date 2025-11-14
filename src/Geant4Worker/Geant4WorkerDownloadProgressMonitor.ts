@@ -5,6 +5,15 @@ type DatasetProgress = Geant4WorkerDatasetProgress & { totalDependencies: number
 export class Geant4WorkerDownloadProgressMonitor {
 	private datasetsProgressTracker: { [key: string]: DatasetProgress } = {};
 	private currentDataset?: string;
+	private downloadOffset: number = 0;
+	private downloadCurrentTotal: number = 0;
+
+	reset() {
+		this.datasetsProgressTracker = {};
+		this.currentDataset = undefined;
+		this.downloadOffset = 0;
+		this.downloadCurrentTotal = 0;
+	}
 
 	setCurrentDataset(dataset: string) {
 		this.datasetsProgressTracker[dataset] = {
@@ -13,10 +22,11 @@ export class Geant4WorkerDownloadProgressMonitor {
 			totalDependencies: 0
 		};
 
+		this.downloadOffset = this.downloadCurrentTotal;
 		this.currentDataset = dataset;
 	}
 
-	setDownloadProgress(progress: number) {
+	setDownloadProgress(loaded: number, total: number) {
 		if (!this.currentDataset) {
 			return;
 		}
@@ -29,7 +39,9 @@ export class Geant4WorkerDownloadProgressMonitor {
 			}
 
 			datasetProgress.stage = 'downloading';
-			datasetProgress.progress = progress;
+			datasetProgress.progress =
+				(loaded - this.downloadOffset) / (total - this.downloadOffset);
+			this.downloadCurrentTotal = Math.max(this.downloadCurrentTotal, total);
 		}
 	}
 

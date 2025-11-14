@@ -8,6 +8,7 @@ import {
 	Box,
 	Button,
 	LinearProgress,
+	ToggleButton,
 	Typography,
 	useTheme
 } from '@mui/material';
@@ -20,6 +21,7 @@ import {
 } from '../../../Geant4Worker/Geant4DatasetDownloadManager';
 import { useDialog } from '../../../services/DialogService';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
+import { StyledExclusiveToggleButtonGroup } from '../../../shared/components/StyledExclusiveToggleButtonGroup';
 
 export enum Geant4DatasetsType {
 	LAZY,
@@ -58,9 +60,75 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 						color='warning'
 					/>
 				)}
-				{status.status === DatasetDownloadStatus.IDLE && <LinearProgress color='warning' />}
+				{status.status === DatasetDownloadStatus.IDLE && (
+					<LinearProgress
+						color='info'
+						variant='indeterminate'
+					/>
+				)}
 			</Box>
 		</Box>
+	);
+}
+
+export function Geant4DatasetDownloadSelector(props: {
+	geant4DatasetType: Geant4DatasetsType;
+	setGeant4DatasetType: (type: Geant4DatasetsType) => void;
+}) {
+	const theme = useTheme();
+	const { geant4DatasetType, setGeant4DatasetType } = props;
+
+	const { open: openTheDatasetsInfoDialog } = useDialog('datasetsDetailsInfo');
+
+	return (
+		<>
+			<StyledExclusiveToggleButtonGroup
+				fullWidth
+				value={geant4DatasetType}
+				onChange={(_, newRunType) =>
+					setGeant4DatasetType(newRunType || Geant4DatasetsType.LAZY)
+				}>
+				<ToggleButton value={Geant4DatasetsType.LAZY}>Lazy files</ToggleButton>
+				<ToggleButton value={Geant4DatasetsType.DOWNLOADED}>Downloadable</ToggleButton>
+			</StyledExclusiveToggleButtonGroup>
+
+			<Box
+				sx={{
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'space-between',
+					backgroundColor:
+						theme.palette.grey[theme.palette.mode === 'light' ? 'A100' : '900'],
+					px: 2,
+					py: 1,
+					borderRadius: theme.spacing(1),
+					mb: 2
+				}}>
+				{geant4DatasetType === Geant4DatasetsType.DOWNLOADED ? (
+					<>
+						<Typography
+							textTransform='none'
+							fontSize={14}
+							sx={{ flex: 1, mr: 1 }}>
+							DOWNLOADABLE: Speed up the simulation by downloading Geant4 datasets.
+						</Typography>
+						<Button
+							variant='contained'
+							onClick={openTheDatasetsInfoDialog}>
+							Details
+						</Button>
+					</>
+				) : (
+					<Typography
+						textTransform='none'
+						fontSize={14}
+						sx={{ flex: 1, mr: 1 }}>
+						LAZY FILES: Longer simulation time because of downloading tousands of files
+						on-the-fly. Smaller total download size.
+					</Typography>
+				)}
+			</Box>
+		</>
 	);
 }
 
@@ -68,7 +136,6 @@ export function Geant4Datasets(props: Geant4DatasetsProps) {
 	const theme = useTheme();
 	const { geant4DownloadManagerState, geant4DatasetStates, geant4DatasetDownloadStart } = props;
 	const [open, setOpen] = useState(true);
-	const { open: openTheDatasetsInfoDialog } = useDialog('datasetsDetailsInfo');
 
 	return (
 		<StyledAccordion
@@ -82,7 +149,8 @@ export function Geant4Datasets(props: Geant4DatasetsProps) {
 				<Typography
 					textTransform='none'
 					fontSize={16}>
-					Datasets download
+					Dataset Download{' '}
+					{geant4DownloadManagerState === DownloadManagerStatus.FINISHED ? '(done)' : ''}
 				</Typography>
 			</AccordionSummary>
 			<AccordionDetails
@@ -92,32 +160,6 @@ export function Geant4Datasets(props: Geant4DatasetsProps) {
 				}}>
 				{geant4DownloadManagerState === DownloadManagerStatus.IDLE && (
 					<>
-						<Box
-							sx={{
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'space-between',
-								backgroundColor:
-									theme.palette.grey[
-										theme.palette.mode === 'light' ? 'A100' : '900'
-									],
-								px: 2,
-								py: 1,
-								borderRadius: theme.spacing(1),
-								mb: 2
-							}}>
-							<Typography
-								textTransform='none'
-								fontSize={14}
-								sx={{ flex: 1, mr: 1 }}>
-								Speed up the simulation by downloading Geant4 datasets.
-							</Typography>
-							<Button
-								variant='contained'
-								onClick={openTheDatasetsInfoDialog}>
-								Details
-							</Button>
-						</Box>
 						<Button
 							onClick={geant4DatasetDownloadStart}
 							variant='contained'>
@@ -132,7 +174,9 @@ export function Geant4Datasets(props: Geant4DatasetsProps) {
 					/>
 				))}
 				{geant4DownloadManagerState === DownloadManagerStatus.ERROR && (
-					<Typography>Something went wrong</Typography>
+					<Typography>
+						Failed to download datasets. Please check your connection and try again.
+					</Typography>
 				)}
 			</AccordionDetails>
 		</StyledAccordion>

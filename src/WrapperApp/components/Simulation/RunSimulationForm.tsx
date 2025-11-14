@@ -31,7 +31,7 @@ import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { SimulationFetchSource, SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import { BatchScriptParametersEditor } from './BatchParametersEditor';
-import { Geant4DatasetsType } from './Geant4DatasetDownload';
+import { Geant4DatasetDownloadSelector, Geant4DatasetsType } from './Geant4DatasetDownload';
 
 function a11yProps(index: number, name: string = 'RunSimulation') {
 	return {
@@ -524,17 +524,10 @@ export function RunSimulationForm({
 					</>
 				)}
 				{currentSimulator === SimulatorType.GEANT4 && (
-					<StyledExclusiveToggleButtonGroup
-						fullWidth
-						value={geant4DatasetType}
-						onChange={(_, newRunType) =>
-							setGeant4DatasetType(newRunType || Geant4DatasetsType.LAZY)
-						}>
-						<ToggleButton value={Geant4DatasetsType.LAZY}>Lazy files</ToggleButton>
-						<ToggleButton value={Geant4DatasetsType.DOWNLOADED}>
-							Downloadable
-						</ToggleButton>
-					</StyledExclusiveToggleButtonGroup>
+					<Geant4DatasetDownloadSelector
+						geant4DatasetType={geant4DatasetType}
+						setGeant4DatasetType={setGeant4DatasetType}
+					/>
 				)}
 				<Box sx={{ display: 'flex', justifyContent: 'center' }}>
 					<Button

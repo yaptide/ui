@@ -128,7 +128,7 @@ function WrapperApp() {
 			: runRemoteWorkerSimulation;
 
 	const [geant4DatasetType, setGeant4DatasetType] = useState<Geant4DatasetsType>(
-		Geant4DatasetsType.LAZY
+		Geant4DatasetsType.DOWNLOADED
 	);
 
 	return (
