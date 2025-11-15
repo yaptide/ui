@@ -36,6 +36,8 @@ async function fetchProgress(
 	worker: Geant4Worker,
 	setDatasetStates: Dispatch<SetStateAction<Record<string, DatasetStatus>>>
 ) {
+	if (!worker.getIsInitialized()) return;
+
 	const progress = await worker.pollDatasetProgress();
 
 	if (progress) {
@@ -58,12 +60,23 @@ async function fetchProgress(
 
 type StartDownloadArgs = {
 	worker: Geant4Worker;
+	managerState: DownloadManagerStatus;
 	setManagerState: Dispatch<SetStateAction<DownloadManagerStatus>>;
 	setDatasetStates: Dispatch<SetStateAction<Record<string, DatasetStatus>>>;
 	setIdle: Dispatch<SetStateAction<boolean>>;
 };
 
-function startDownload({ worker, setManagerState, setDatasetStates, setIdle }: StartDownloadArgs) {
+function startDownload({
+	worker,
+	managerState,
+	setManagerState,
+	setDatasetStates,
+	setIdle
+}: StartDownloadArgs) {
+	if (managerState !== DownloadManagerStatus.IDLE || !worker.getIsInitialized()) {
+		return;
+	}
+
 	const loadDepsPromise = worker.loadDeps();
 
 	const interval = setInterval(async () => {
@@ -112,8 +125,8 @@ export function useDatasetDownloadManager() {
 	const startDownloadSimple = useCallback(() => {
 		if (!idle) return;
 
-		startDownload({ worker, setManagerState, setDatasetStates, setIdle });
-	}, [worker, idle]);
+		startDownload({ worker, managerState, setManagerState, setDatasetStates, setIdle });
+	}, [worker, idle, managerState]);
 
 	return {
 		managerState,

@@ -55,7 +55,7 @@ export function DatasetsFullInfoDialog({ onClose }: ConcreteDialogProps) {
 			alert={true}
 			title='FULL Geant4 Datasets Info'
 			contentText={`
-                Downloading  FULLGeant4 datasets can significantly speed up simulations by providing local access to essential data files. 
+                Downloading the FULL Geant4 datasets can significantly speed up simulations by providing local access to essential data files. 
                 Data files will be stored in your browser's IndexedDB storage.
                 Below is a summary of the datasets available for download:`}
 			body={

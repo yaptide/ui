@@ -87,9 +87,10 @@ export function Geant4DatasetDownloadSelector(props: {
 				value={geant4DatasetType}
 				onChange={(_, newRunType) =>
 					setGeant4DatasetType(newRunType || Geant4DatasetsType.PARTIAL)
-				}>
-				<ToggleButton value={Geant4DatasetsType.PARTIAL}>Partial</ToggleButton>
-				<ToggleButton value={Geant4DatasetsType.FULL}>Full</ToggleButton>
+				}
+				aria-label='Datasets'>
+				<ToggleButton value={Geant4DatasetsType.PARTIAL}>Partial Datasets</ToggleButton>
+				<ToggleButton value={Geant4DatasetsType.FULL}>Full Datasets</ToggleButton>
 			</StyledExclusiveToggleButtonGroup>
 
 			<Box

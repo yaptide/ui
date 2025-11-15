@@ -221,7 +221,9 @@ export default class Geant4Worker {
 
 	async fetchResultsFile(name: string) {
 		if (!this.worker || this.state !== StatusState.COMPLETED) {
-			throw new Error('Worker is not initialized. Call init() first.');
+			throw new Error(
+				'Worker state is invalid. Results can only be fetched after simulation is completed.'
+			);
 		}
 
 		const result = await this.makePromise<Geant4WorkerMessageFile>({

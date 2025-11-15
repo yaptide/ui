@@ -431,7 +431,7 @@ export function RunSimulationForm({
 									justifyContent: 'center',
 									marginBottom: theme.spacing(2)
 								}}>
-								{Object.keys(inputFiles ?? {}).map((fileName, index) => (
+								{Object.keys(inputFiles).map((fileName, index) => (
 									<Chip
 										key={index}
 										color={
