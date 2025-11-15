@@ -27,7 +27,7 @@ export default function RunSimulationPanel(props: RunSimulationPanelProps) {
 		<>
 			<RunSimulationForm {...props} />
 			{yaptideEditor?.contextManager.currentSimulator === SimulatorType.GEANT4 &&
-				props.geant4DatasetType === Geant4DatasetsType.DOWNLOADED && (
+				props.geant4DatasetType === Geant4DatasetsType.FULL && (
 					<Geant4Datasets {...props} />
 				)}
 			<RecentSimulations />

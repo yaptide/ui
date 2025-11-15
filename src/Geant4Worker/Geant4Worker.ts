@@ -161,9 +161,7 @@ export default class Geant4Worker {
 
 	async loadDeps() {
 		if (!this.worker || !this.isInitialized) {
-			console.error('Worker is not initialized. Call init() first.');
-
-			return;
+			throw new Error('Worker is not initialized. Call init() first.');
 		}
 
 		if (this.depsLoaded) {
@@ -179,9 +177,7 @@ export default class Geant4Worker {
 
 	async loadDepsLazy() {
 		if (!this.worker || !this.isInitialized) {
-			console.error('Worker is not initialized. Call init() first.');
-
-			return;
+			throw new Error('Worker is not initialized. Call init() first.');
 		}
 
 		if (this.depsLoaded) {
@@ -197,9 +193,7 @@ export default class Geant4Worker {
 
 	async includeFile(name: string, data: string) {
 		if (!this.worker || !this.isInitialized) {
-			console.error('Worker is not initialized. Call init() first.');
-
-			return;
+			throw new Error('Worker is not initialized. Call init() first.');
 		}
 
 		return await this.makePromise({
@@ -210,9 +204,7 @@ export default class Geant4Worker {
 
 	async start() {
 		if (!this.worker || !this.isInitialized) {
-			console.error('Worker is not initialized. Call init() first.');
-
-			return;
+			throw new Error('Worker is not initialized. Call init() first.');
 		}
 
 		// Worker will acknowledge the message and wait for the deps to load
@@ -229,9 +221,7 @@ export default class Geant4Worker {
 
 	async fetchResultsFile(name: string) {
 		if (!this.worker || this.state !== StatusState.COMPLETED) {
-			console.error('Worker state is invalid.');
-
-			return;
+			throw new Error('Worker is not initialized. Call init() first.');
 		}
 
 		const result = await this.makePromise<Geant4WorkerMessageFile>({
@@ -248,9 +238,7 @@ export default class Geant4Worker {
 
 	async pollDatasetProgress() {
 		if (!this.worker || !this.isInitialized) {
-			console.error('Worker is not initialized. Call init() first.');
-
-			return;
+			throw new Error('Worker is not initialized. Call init() first.');
 		}
 
 		return await this.makePromise<Geant4WorkerMessageDatasetProgress>({

@@ -22,7 +22,8 @@ import {
 	ValidComponentTypes
 } from '../types/DialogServiceTypes';
 import { EntriesToObj } from '../types/TypeTransformUtil';
-import { DatasetsInfoDialog } from '../WrapperApp/components/Simulation/Modal/DatasetsInfoModal';
+import { DatasetsFullInfoDialog } from '../WrapperApp/components/Simulation/Modal/DatasetsFullInfoModal';
+import { DatasetsPartialInfoDialog } from '../WrapperApp/components/Simulation/Modal/DatasetsPartialInfoModal';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 
 /**
@@ -43,7 +44,8 @@ export type DialogComponentTypeMap = EntriesToObj<
 		ValidComponentTypes<['rejectKeycloakRefresh', typeof RejectKeycloakRefreshUserDialog]>,
 		ValidComponentTypes<['changeScoringType', typeof ChangeScoringTypeDialog]>,
 		ValidComponentTypes<['simulatorChange', typeof SimulatorChangeDialog]>,
-		ValidComponentTypes<['datasetsDetailsInfo', typeof DatasetsInfoDialog]>
+		ValidComponentTypes<['datasetsFullDetailsInfo', typeof DatasetsFullInfoDialog]>,
+		ValidComponentTypes<['datasetsPartialDetailsInfo', typeof DatasetsPartialInfoDialog]>
 	]
 >;
 
@@ -120,7 +122,8 @@ const DialogProvider = ({ children }: GenericContextProviderProps) => {
 			rejectKeycloakRefresh: RejectKeycloakRefreshUserDialog,
 			changeScoringType: ChangeScoringTypeDialog,
 			simulatorChange: SimulatorChangeDialog,
-			datasetsDetailsInfo: DatasetsInfoDialog
+			datasetsFullDetailsInfo: DatasetsFullInfoDialog,
+			datasetsPartialDetailsInfo: DatasetsPartialInfoDialog
 		}),
 		[]
 	);

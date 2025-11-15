@@ -124,7 +124,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 		this.numPrimaries = rawNumPrimaries ? parseInt(rawNumPrimaries) : 0;
 
 		worker.init().then(async () => {
-			if (geant4DatasetType && geant4DatasetType === Geant4DatasetsType.DOWNLOADED) {
+			if (geant4DatasetType && geant4DatasetType === Geant4DatasetsType.FULL) {
 				await worker.loadDeps();
 			} else {
 				await worker.loadDepsLazy();

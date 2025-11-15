@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Button,
 	Paper,
 	Table,
@@ -47,20 +48,33 @@ const datasetSummaries = [
 	}
 ];
 
-export function DatasetsInfoDialog({ onClose }: ConcreteDialogProps) {
+export function DatasetsFullInfoDialog({ onClose }: ConcreteDialogProps) {
 	return (
 		<CustomDialog
 			onClose={onClose}
 			alert={true}
-			title='Pre-download Geant4 Datasets Info'
+			title='FULL Geant4 Datasets Info'
 			contentText={`
-                Downloading Geant4 datasets can significantly speed up simulations by providing local access to essential data files. 
-                Data files will be stored in your browser's IndexedDB storage. Total size of downloaded datasets is about 2GB. Each time
-				you run a simulation with Geant4 datasets pre-downloaded, you will still have to click 'Start download' button to initialize 
-				the datasets from the local storage.
+                Downloading  FULLGeant4 datasets can significantly speed up simulations by providing local access to essential data files. 
+                Data files will be stored in your browser's IndexedDB storage.
                 Below is a summary of the datasets available for download:`}
 			body={
 				<>
+					<Alert
+						severity='info'
+						sx={{ mt: 2 }}>
+						Currently there is no indicator showing if you have already downloaded the
+						datasets. Each time you start a new simulation with FULL datasets option,
+						you have to press 'Start Download' button. If the datasets are already in
+						your browser storage, the datasets will be loaded from cache.
+					</Alert>
+					<Alert
+						severity='warning'
+						sx={{ mt: 2 }}>
+						Total size of downloaded datasets is about 2GB. Each time you clear your
+						browser data, you will need to re-download these datasets for optimal
+						simulation performance.
+					</Alert>
 					<TableContainer
 						component={Paper}
 						sx={{ mt: 2 }}>

@@ -201,7 +201,7 @@ export function RunSimulationForm({
 
 		const datasetsReady =
 			currentSimulator !== SimulatorType.GEANT4 ||
-			geant4DatasetType === Geant4DatasetsType.LAZY ||
+			geant4DatasetType === Geant4DatasetsType.PARTIAL ||
 			geant4DownloadManagerState === DownloadManagerStatus.FINISHED;
 
 		setRunPreconditionsMet(runFormIsValid && converterReadyIfGeant4Selected && datasetsReady);

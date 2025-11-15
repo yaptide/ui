@@ -40,7 +40,9 @@ export class Geant4WorkerDownloadProgressMonitor {
 
 			datasetProgress.stage = 'downloading';
 			datasetProgress.progress =
-				(loaded - this.downloadOffset) / (total - this.downloadOffset);
+				total - this.downloadOffset === 0
+					? 1
+					: (loaded - this.downloadOffset) / (total - this.downloadOffset);
 			this.downloadCurrentTotal = Math.max(this.downloadCurrentTotal, total);
 		}
 	}

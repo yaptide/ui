@@ -24,8 +24,8 @@ import StyledAccordion from '../../../shared/components/StyledAccordion';
 import { StyledExclusiveToggleButtonGroup } from '../../../shared/components/StyledExclusiveToggleButtonGroup';
 
 export enum Geant4DatasetsType {
-	LAZY,
-	DOWNLOADED
+	PARTIAL,
+	FULL
 }
 
 export interface Geant4DatasetsProps {
@@ -75,10 +75,10 @@ export function Geant4DatasetDownloadSelector(props: {
 	geant4DatasetType: Geant4DatasetsType;
 	setGeant4DatasetType: (type: Geant4DatasetsType) => void;
 }) {
-	const theme = useTheme();
 	const { geant4DatasetType, setGeant4DatasetType } = props;
 
-	const { open: openTheDatasetsInfoDialog } = useDialog('datasetsDetailsInfo');
+	const { open: openTheFullDatasetsInfoDialog } = useDialog('datasetsFullDetailsInfo');
+	const { open: openThePartialDatasetsInfoDialog } = useDialog('datasetsPartialDetailsInfo');
 
 	return (
 		<>
@@ -86,10 +86,10 @@ export function Geant4DatasetDownloadSelector(props: {
 				fullWidth
 				value={geant4DatasetType}
 				onChange={(_, newRunType) =>
-					setGeant4DatasetType(newRunType || Geant4DatasetsType.LAZY)
+					setGeant4DatasetType(newRunType || Geant4DatasetsType.PARTIAL)
 				}>
-				<ToggleButton value={Geant4DatasetsType.LAZY}>Lazy files</ToggleButton>
-				<ToggleButton value={Geant4DatasetsType.DOWNLOADED}>Downloadable</ToggleButton>
+				<ToggleButton value={Geant4DatasetsType.PARTIAL}>Partial</ToggleButton>
+				<ToggleButton value={Geant4DatasetsType.FULL}>Full</ToggleButton>
 			</StyledExclusiveToggleButtonGroup>
 
 			<Box
@@ -97,35 +97,37 @@ export function Geant4DatasetDownloadSelector(props: {
 					display: 'flex',
 					alignItems: 'center',
 					justifyContent: 'space-between',
-					backgroundColor:
-						theme.palette.grey[theme.palette.mode === 'light' ? 'A100' : '900'],
-					px: 2,
-					py: 1,
-					borderRadius: theme.spacing(1),
 					mb: 2
 				}}>
-				{geant4DatasetType === Geant4DatasetsType.DOWNLOADED ? (
+				{geant4DatasetType === Geant4DatasetsType.FULL ? (
 					<>
 						<Typography
 							textTransform='none'
-							fontSize={14}
+							fontSize={11}
 							sx={{ flex: 1, mr: 1 }}>
-							DOWNLOADABLE: Speed up the simulation by downloading Geant4 datasets.
+							<b>FULL</b>: Speed up the simulation by downloading Geant4 datasets.
 						</Typography>
 						<Button
 							variant='contained'
-							onClick={openTheDatasetsInfoDialog}>
+							onClick={openTheFullDatasetsInfoDialog}>
 							Details
 						</Button>
 					</>
 				) : (
-					<Typography
-						textTransform='none'
-						fontSize={14}
-						sx={{ flex: 1, mr: 1 }}>
-						LAZY FILES: Longer simulation time because of downloading tousands of files
-						on-the-fly. Smaller total download size.
-					</Typography>
+					<>
+						<Typography
+							textTransform='none'
+							fontSize={11}
+							sx={{ flex: 1, mr: 1 }}>
+							<b>PARTIAL</b>: Longer simulation time because of downloading thousands
+							of files on-the-fly. Smaller total download size.
+						</Typography>
+						<Button
+							variant='contained'
+							onClick={openThePartialDatasetsInfoDialog}>
+							Details
+						</Button>
+					</>
 				)}
 			</Box>
 		</>
