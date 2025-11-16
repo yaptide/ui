@@ -39,7 +39,7 @@ const datasetSummaries = [
 	{
 		name: 'G4SAIDDATA2.0',
 		description:
-			'SAID-based cross-section data for pion-nucleon and nucleon-nucleon scattering, derived from the Scattering Analysis Interactive Dial-in (SAID) database.'
+			'Data evaluated from the SAID database for proton, neutron, pion inelastic, elastic, and charge exchange cross sections of nucleons below 3 GeV'
 	},
 	{
 		name: 'G4PhotonEvaporation6.1',
