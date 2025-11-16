@@ -162,13 +162,11 @@ export function Geant4Datasets(props: Geant4DatasetsProps) {
 					flexDirection: 'column'
 				}}>
 				{geant4DownloadManagerState === DownloadManagerStatus.IDLE && (
-					<>
-						<Button
-							onClick={geant4DatasetDownloadStart}
-							variant='contained'>
-							Start download
-						</Button>
-					</>
+					<Button
+						onClick={geant4DatasetDownloadStart}
+						variant='contained'>
+						Start download
+					</Button>
 				)}
 				{geant4DatasetStates.map(status => (
 					<DatasetCurrentStatus
