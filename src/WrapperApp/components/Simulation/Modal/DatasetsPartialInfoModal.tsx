@@ -16,15 +16,13 @@ export function DatasetsPartialInfoDialog({ onClose }: ConcreteDialogProps) {
 					will be downloaded on-the-fly as needed. It keeps the total download size smaller.
                 `}
 			body={
-				<>
-					<Alert
-						severity='warning'
-						sx={{ mt: 2 }}>
-						Time of running simulations with PARTIAL datasets option can be
-						significantly longer due to frequent downloads of small data files during
-						the simulation.
-					</Alert>
-				</>
+				<Alert
+					severity='warning'
+					sx={{ mt: 2 }}>
+					Time of running simulations with PARTIAL datasets option can be
+					significantly longer due to frequent downloads of small data files during
+					the simulation.
+				</Alert>
 			}>
 			<Button
 				onClick={() => {
