@@ -6,6 +6,7 @@ import { useStore } from '../services/StoreService';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles } from '../types/ResponseTypes';
+import { Geant4DatasetsType } from './components/Simulation/Geant4DatasetDownload';
 import {
 	BatchOptionsType,
 	RunSimulationFunctionType,
@@ -26,7 +27,8 @@ export function useRunRemoteWorkerSimulation(): RunSimulationFunctionType {
 		simName: string,
 		nTasks: number,
 		simulator: SimulatorType,
-		batchOptions: BatchOptionsType
+		batchOptions: BatchOptionsType,
+		geant4DatasetType: Geant4DatasetsType
 	) => {
 		const simData = sourceType === 'editor' ? editorJson : inputFiles;
 
@@ -62,6 +64,7 @@ export function useRunRemoteWorkerSimulation(): RunSimulationFunctionType {
 			simulator,
 			simName,
 			options,
+			geant4DatasetType,
 			controller.signal
 		)
 			.then(res => {

@@ -9,6 +9,7 @@
 import { JobUnknownStatus, StatusState } from '../types/ResponseTypes';
 import {
 	Geant4WorkerMessage,
+	Geant4WorkerMessageDatasetProgress,
 	Geant4WorkerMessageFile,
 	Geant4WorkerMessageType,
 	Geant4WorkerPromise
@@ -99,6 +100,10 @@ export default class Geant4Worker {
 		return this.simulatedPrimaries;
 	}
 
+	getIsInitialized() {
+		return this.isInitialized;
+	}
+
 	init() {
 		if (this.worker) {
 			throw new Error('init() already called on this object');
@@ -117,9 +122,6 @@ export default class Geant4Worker {
 				case Geant4WorkerMessageType.PRINT_ERROR:
 					console.error('From worker: ', message.data);
 
-					break;
-
-				case Geant4WorkerMessageType.DOWNLOAD_STATUS:
 					break;
 				case Geant4WorkerMessageType.PROGRESS:
 					this.simulatedPrimaries = message.data as number;
@@ -159,9 +161,7 @@ export default class Geant4Worker {
 
 	async loadDeps() {
 		if (!this.worker || !this.isInitialized) {
-			console.error('Worker is not initialized. Call init() first.');
-
-			return;
+			throw new Error('Worker is not initialized. Call init() first.');
 		}
 
 		if (this.depsLoaded) {
@@ -177,9 +177,7 @@ export default class Geant4Worker {
 
 	async loadDepsLazy() {
 		if (!this.worker || !this.isInitialized) {
-			console.error('Worker is not initialized. Call init() first.');
-
-			return;
+			throw new Error('Worker is not initialized. Call init() first.');
 		}
 
 		if (this.depsLoaded) {
@@ -195,9 +193,7 @@ export default class Geant4Worker {
 
 	async includeFile(name: string, data: string) {
 		if (!this.worker || !this.isInitialized) {
-			console.error('Worker is not initialized. Call init() first.');
-
-			return;
+			throw new Error('Worker is not initialized. Call init() first.');
 		}
 
 		return await this.makePromise({
@@ -208,9 +204,7 @@ export default class Geant4Worker {
 
 	async start() {
 		if (!this.worker || !this.isInitialized) {
-			console.error('Worker is not initialized. Call init() first.');
-
-			return;
+			throw new Error('Worker is not initialized. Call init() first.');
 		}
 
 		// Worker will acknowledge the message and wait for the deps to load
@@ -227,9 +221,9 @@ export default class Geant4Worker {
 
 	async fetchResultsFile(name: string) {
 		if (!this.worker || this.state !== StatusState.COMPLETED) {
-			console.error('Worker state is invalid.');
-
-			return;
+			throw new Error(
+				'Worker state is invalid. Results can only be fetched after simulation is completed.'
+			);
 		}
 
 		const result = await this.makePromise<Geant4WorkerMessageFile>({
@@ -242,5 +236,15 @@ export default class Geant4Worker {
 		});
 
 		return result;
+	}
+
+	async pollDatasetProgress() {
+		if (!this.worker || !this.isInitialized) {
+			throw new Error('Worker is not initialized. Call init() first.');
+		}
+
+		return await this.makePromise<Geant4WorkerMessageDatasetProgress>({
+			type: Geant4WorkerMessageType.POLL_DATASET_PROGRESS
+		});
 	}
 }

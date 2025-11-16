@@ -46,6 +46,7 @@ const initDatasets: Geant4WorkerCallbacksType = async args => {
 	// and other workers should be able to access the data without downloading again.
 	// This, in theory, could enable the app to run offline.
 	try {
+		downloadTracker.reset();
 		downloadTracker.setCurrentDataset('G4ENSDFSTATE');
 		await initG4ENSDFSTATE(wasmModule);
 		downloadTracker.setCurrentDataset('G4EMLOW');

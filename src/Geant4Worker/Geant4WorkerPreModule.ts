@@ -14,6 +14,11 @@ export class Geant4WorkerPreModule {
 
 	printErr(...args: any[]) {
 		const data = args.join('');
+
+		if (data.includes('dependency')) return;
+		if (data.includes('still waiting on run dependencies:')) return;
+		if (data.includes('(end of list)')) return;
+
 		workerPostMessage({ type: Geant4WorkerMessageType.PRINT_ERROR, data });
 	}
 
@@ -24,16 +29,13 @@ export class Geant4WorkerPreModule {
 
 	setStatus(text: string) {
 		// Try parsing "text" to find "(x/y)" pattern
-		console.log('Status:', text);
 		const match = text.match(/\((\d+)\/(\d+)\)/);
 
 		if (match) {
 			const current = parseInt(match[1], 10);
 			const total = parseInt(match[2], 10);
 
-			const progress = current / total;
-
-			this.progressMonitor.setDownloadProgress(progress);
+			this.progressMonitor.setDownloadProgress(current, total);
 		}
 	}
 

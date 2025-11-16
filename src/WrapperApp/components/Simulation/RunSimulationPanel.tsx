@@ -7,10 +7,13 @@ import { useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
 import { SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
+import { Geant4Datasets, Geant4DatasetsProps, Geant4DatasetsType } from './Geant4DatasetDownload';
 import RecentSimulations from './RecentSimulations';
 import { RunSimulationForm, RunSimulationFormProps } from './RunSimulationForm';
 
-export default function RunSimulationPanel(props: RunSimulationFormProps) {
+export type RunSimulationPanelProps = RunSimulationFormProps & Geant4DatasetsProps;
+
+export default function RunSimulationPanel(props: RunSimulationPanelProps) {
 	const theme = useTheme();
 	const { demoMode } = useConfig();
 	const { yaptideEditor } = useStore();
@@ -23,6 +26,10 @@ export default function RunSimulationPanel(props: RunSimulationFormProps) {
 	return showRunForm ? (
 		<>
 			<RunSimulationForm {...props} />
+			{yaptideEditor?.contextManager.currentSimulator === SimulatorType.GEANT4 &&
+				props.geant4DatasetType === Geant4DatasetsType.FULL && (
+					<Geant4Datasets {...props} />
+				)}
 			<RecentSimulations />
 		</>
 	) : (

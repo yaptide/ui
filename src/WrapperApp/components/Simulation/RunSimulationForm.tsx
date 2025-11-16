@@ -21,6 +21,7 @@ import {
 import Typography from '@mui/material/Typography';
 import { MouseEvent, SyntheticEvent, useEffect, useState } from 'react';
 
+import { DownloadManagerStatus } from '../../../Geant4Worker/Geant4DatasetDownloadManager';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
 import { useStore } from '../../../services/StoreService';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
@@ -30,6 +31,7 @@ import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { SimulationFetchSource, SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import { BatchScriptParametersEditor } from './BatchParametersEditor';
+import { Geant4DatasetDownloadSelector, Geant4DatasetsType } from './Geant4DatasetDownload';
 
 function a11yProps(index: number, name: string = 'RunSimulation') {
 	return {
@@ -62,7 +64,8 @@ export type RunSimulationFunctionType = (
 	simName: string,
 	nTasks: number,
 	forwardedSimulator: SimulatorType,
-	batchOptions: BatchOptionsType
+	batchOptions: BatchOptionsType,
+	geant4DatasetType: Geant4DatasetsType
 ) => void;
 
 export type RunSimulationFormProps = {
@@ -73,6 +76,9 @@ export type RunSimulationFormProps = {
 	clearInputFiles?: () => void;
 	runSimulation?: RunSimulationFunctionType;
 	setSource?: (source: SimulationFetchSource) => void;
+	geant4DownloadManagerState: DownloadManagerStatus;
+	geant4DatasetType: Geant4DatasetsType;
+	setGeant4DatasetType: (type: Geant4DatasetsType) => void;
 };
 
 export function RunSimulationForm({
@@ -82,7 +88,10 @@ export function RunSimulationForm({
 	highlight = false,
 	clearInputFiles = () => {},
 	runSimulation = () => {},
-	setSource = () => {}
+	setSource = () => {},
+	geant4DownloadManagerState,
+	geant4DatasetType,
+	setGeant4DatasetType
 }: RunSimulationFormProps) {
 	const theme = useTheme();
 	const [usingBatchConfig, setUsingBatchConfig] = useState(false);
@@ -189,8 +198,21 @@ export function RunSimulationForm({
 		const runFormIsValid = !isNaN(nTasks) && !isNaN(overridePrimariesCount);
 		const converterReadyIfGeant4Selected =
 			currentSimulator !== SimulatorType.GEANT4 || isConverterReady;
-		setRunPreconditionsMet(runFormIsValid && converterReadyIfGeant4Selected);
-	}, [nTasks, overridePrimariesCount, currentSimulator, isConverterReady]);
+
+		const datasetsReady =
+			currentSimulator !== SimulatorType.GEANT4 ||
+			geant4DatasetType === Geant4DatasetsType.PARTIAL ||
+			geant4DownloadManagerState === DownloadManagerStatus.FINISHED;
+
+		setRunPreconditionsMet(runFormIsValid && converterReadyIfGeant4Selected && datasetsReady);
+	}, [
+		nTasks,
+		overridePrimariesCount,
+		currentSimulator,
+		isConverterReady,
+		geant4DatasetType,
+		geant4DownloadManagerState
+	]);
 
 	const toggleFileSelection = (fileName: string) =>
 		setSelectedFiles((prev: string[]) => {
@@ -259,7 +281,8 @@ export function RunSimulationForm({
 			simName,
 			nTasks,
 			runSimulator,
-			batchOptions
+			batchOptions,
+			geant4DatasetType
 		);
 	};
 
@@ -399,31 +422,35 @@ export function RunSimulationForm({
 								Clear
 							</Button>
 						)}
-						<Box
-							sx={{
-								display: 'flex',
-								gap: 1,
-								flexWrap: 'wrap',
-								justifyContent: 'center',
-								marginBottom: theme.spacing(2)
-							}}>
-							{Object.keys(inputFiles ?? {}).map((fileName, index) => (
-								<Chip
-									key={index}
-									color={selectedFiles.includes(fileName) ? 'success' : 'default'}
-									variant='outlined'
-									label={<Typography>{fileName}</Typography>}
-									deleteIcon={
-										selectedFiles.includes(fileName) ? (
-											<RemoveCircleIcon />
-										) : (
-											<ControlPointIcon />
-										)
-									}
-									onDelete={() => toggleFileSelection(fileName)}
-								/>
-							))}
-						</Box>
+						{inputFiles && (
+							<Box
+								sx={{
+									display: 'flex',
+									gap: 1,
+									flexWrap: 'wrap',
+									justifyContent: 'center',
+									marginBottom: theme.spacing(2)
+								}}>
+								{Object.keys(inputFiles).map((fileName, index) => (
+									<Chip
+										key={index}
+										color={
+											selectedFiles.includes(fileName) ? 'success' : 'default'
+										}
+										variant='outlined'
+										label={<Typography>{fileName}</Typography>}
+										deleteIcon={
+											selectedFiles.includes(fileName) ? (
+												<RemoveCircleIcon />
+											) : (
+												<ControlPointIcon />
+											)
+										}
+										onDelete={() => toggleFileSelection(fileName)}
+									/>
+								))}
+							</Box>
+						)}
 					</>
 				)}
 				{usingBatchConfig && simulationRunType === 'batch' && (
@@ -495,6 +522,12 @@ export function RunSimulationForm({
 							)}
 						</Box>
 					</>
+				)}
+				{currentSimulator === SimulatorType.GEANT4 && (
+					<Geant4DatasetDownloadSelector
+						geant4DatasetType={geant4DatasetType}
+						setGeant4DatasetType={setGeant4DatasetType}
+					/>
 				)}
 				<Box sx={{ display: 'flex', justifyContent: 'center' }}>
 					<Button

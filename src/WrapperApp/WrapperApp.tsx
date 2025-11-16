@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import { SyntheticEvent, useEffect, useState } from 'react';
 
 import { useConfig } from '../config/ConfigService';
+import { useDatasetDownloadManager } from '../Geant4Worker/Geant4DatasetDownloadManager';
 import { useAuth } from '../services/AuthService';
 import { useStore } from '../services/StoreService';
 import { EditorToolbar } from '../ThreeEditor/components/Editor/EditorToolbar';
@@ -21,6 +22,7 @@ import { AboutPanel } from './components/Panels/AboutPanel';
 import { ExamplePanel } from './components/Panels/ExamplePanel';
 import { TabPanel } from './components/Panels/TabPanel';
 import ResultsPanel from './components/Results/ResultsPanel';
+import { Geant4DatasetsType } from './components/Simulation/Geant4DatasetDownload';
 import RunSimulationPanel from './components/Simulation/RunSimulationPanel';
 import SimulationPanel from './components/Simulation/SimulationPanel';
 import { useRunGeant4LocalWorkerSimulation } from './UseRunGeant4LocalWorkerSimulation';
@@ -63,6 +65,12 @@ function WrapperApp() {
 
 	const [providedInputFiles, setProvidedInputFiles] = useState<SimulationInputFiles>();
 	const [highlightRunForm, setHighLightRunForm] = useState(false);
+
+	const {
+		managerState: geant4DownloadManagerState,
+		datasetStates: geant4DatasetStates,
+		startDownload: geant4DatasetDownload
+	} = useDatasetDownloadManager();
 
 	useEffect(() => {
 		if (Object.keys(providedInputFiles ?? {}).length > 0) {
@@ -118,6 +126,10 @@ function WrapperApp() {
 		yaptideEditor?.contextManager.currentSimulator === SimulatorType.GEANT4
 			? runGeant4LocalWorkerSimulation
 			: runRemoteWorkerSimulation;
+
+	const [geant4DatasetType, setGeant4DatasetType] = useState<Geant4DatasetsType>(
+		Geant4DatasetsType.FULL
+	);
 
 	return (
 		<NavDrawerContext value={tabsValue}>
@@ -228,6 +240,11 @@ function WrapperApp() {
 						clearInputFiles={() => setProvidedInputFiles(undefined)}
 						runSimulation={runSimulation}
 						setSource={setSimulationPanelPresentedSimulationsSource}
+						geant4DownloadManagerState={geant4DownloadManagerState}
+						geant4DatasetDownloadStart={geant4DatasetDownload}
+						geant4DatasetStates={geant4DatasetStates}
+						geant4DatasetType={geant4DatasetType}
+						setGeant4DatasetType={setGeant4DatasetType}
 					/>
 				</TabPanel>
 				{/* end Simulations screen */}
