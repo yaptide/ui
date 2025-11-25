@@ -248,7 +248,10 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 		// TODO: find a way to terminate & destroy the worker after fetching the files to free up memory
 		// TODO: keeping in mind, that this method can be called multiple times, simultaneously
 
-		const parser = new Geant4ResultsFileParser(this.numPrimaries);
+		const parser = new Geant4ResultsFileParser(
+			this.numPrimaries,
+			this.inputFiles[jobId]['run.mac']
+		);
 
 		const parsedContents = fileContents
 			.map(file => (file ? parser.parseResultFile(file) : undefined))
