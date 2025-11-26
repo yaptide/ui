@@ -1,5 +1,3 @@
-import { meta } from 'eslint-plugin-simple-import-sort';
-
 import { Page1D, Page2D } from '../JsRoot/GraphData';
 
 const VALUE_HEADER_UNIT_REGEX = /\[(\w+)]/g;
@@ -16,7 +14,7 @@ interface XYZ {
 	z: number;
 }
 
-interface RAD {
+interface CYL {
 	z: number;
 	r: number;
 }
@@ -24,10 +22,10 @@ interface RAD {
 interface ScorerMetadata<T extends 'box' | 'cylinder'> {
 	type: T;
 	translation: XYZ;
-	binsAlongAxis: T extends 'box' ? XYZ : RAD;
-	size: T extends 'box' ? XYZ : RAD;
-	start: T extends 'box' ? XYZ : RAD;
-	end: T extends 'box' ? XYZ : RAD;
+	binsAlongAxis: T extends 'box' ? XYZ : CYL;
+	size: T extends 'box' ? XYZ : CYL;
+	start: T extends 'box' ? XYZ : CYL;
+	end: T extends 'box' ? XYZ : CYL;
 }
 
 /**
@@ -96,17 +94,17 @@ export class Geant4ResultsFileParser {
 			if (line.startsWith('/score/create')) {
 				[createCmd, meshName] = line.split(' ');
 				const meshType = createCmd.split('/').at(-1)!.slice(0, -4) as 'box' | 'cylinder';
-				this.scorersMetadata[meshName] = meshType == 'box' ? emptyBox() : emptyCylinder();
+				this.scorersMetadata[meshName] = meshType === 'box' ? emptyBox() : emptyCylinder();
 			}
 
 			// Command:
 			// /score/mesh/translate/xyz <x> <y> <z> cm
 			// defaults to 0, 0, 0
 			if (line.startsWith('/score/mesh/translate/xyz') && meshName) {
-				const [_, x, y, z] = line.split(' ');
+				const [, x, y, z] = line.split(' ');
 				this.scorersMetadata[meshName].translation = {
 					x: parseFloat(x),
-					y: parseInt(y),
+					y: parseFloat(y),
 					z: parseFloat(z)
 				};
 			}
@@ -116,10 +114,10 @@ export class Geant4ResultsFileParser {
 			// uses half-widths!
 			// defaults to 1, 1, 1
 			if (line.startsWith('/score/mesh/boxSize') && meshName) {
-				const [_, x, y, z] = line.split(' ');
+				const [, x, y, z] = line.split(' ');
 				this.scorersMetadata[meshName].size = {
 					x: parseFloat(x),
-					y: parseInt(y),
+					y: parseFloat(y),
 					z: parseFloat(z)
 				};
 			}
@@ -129,7 +127,7 @@ export class Geant4ResultsFileParser {
 			// uses half-widths for depth!
 			// defaults to 1, 1
 			if (line.startsWith('/score/mesh/cylinderSize') && meshName) {
-				const [_, r, z] = line.split(' ');
+				const [, r, z] = line.split(' ');
 				this.scorersMetadata[meshName].size = { z: parseFloat(z), r: parseFloat(r) };
 			}
 
@@ -141,11 +139,11 @@ export class Geant4ResultsFileParser {
 				meshName &&
 				this.scorersMetadata[meshName].type === 'box'
 			) {
-				const [_, x, y, z] = line.split(' ');
+				const [, x, y, z] = line.split(' ');
 				this.scorersMetadata[meshName].binsAlongAxis = {
-					x: parseFloat(x),
+					x: parseInt(x),
 					y: parseInt(y),
-					z: parseFloat(z)
+					z: parseInt(z)
 				};
 			}
 
@@ -157,10 +155,10 @@ export class Geant4ResultsFileParser {
 				meshName &&
 				this.scorersMetadata[meshName].type === 'cylinder'
 			) {
-				const [_, r, z] = line.split(' ');
+				const [, r, z] = line.split(' ');
 				this.scorersMetadata[meshName].binsAlongAxis = {
-					r: parseFloat(r),
-					z: parseFloat(z)
+					r: parseInt(r),
+					z: parseInt(z)
 				};
 			}
 		}
@@ -171,15 +169,15 @@ export class Geant4ResultsFileParser {
 				metadata.end = { z: metadata.translation.z + metadata.size.z, r: metadata.size.r };
 			} else if (metadata.type === 'box') {
 				metadata.start = {
-					x: metadata.translation.z - metadata.size.z,
-					y: metadata.translation.z - metadata.size.z,
+					x: metadata.translation.x - metadata.size.x,
+					y: metadata.translation.y - metadata.size.y,
 					z: metadata.translation.z - metadata.size.z
 				};
 
 				metadata.end = {
-					x: metadata.translation.z + metadata.size?.z,
-					y: metadata.translation.z + metadata.size?.z,
-					z: metadata.translation.z + metadata.size?.z
+					x: metadata.translation.x + metadata.size.x,
+					y: metadata.translation.y + metadata.size.y,
+					z: metadata.translation.z + metadata.size.z
 				};
 			}
 		}
@@ -188,7 +186,7 @@ export class Geant4ResultsFileParser {
 	public parseResultFile(
 		content: string
 	): { metadata: ResultFileMetadata; results: Page1D | Page2D } | undefined {
-		if (content == '') {
+		if (content === '') {
 			return undefined;
 		}
 
