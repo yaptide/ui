@@ -404,28 +404,6 @@
 						],
 						"detectorUuid": "116f105e-c987-4602-9913-8dd0ef2affaa",
 						"trace": false
-					},
-					{
-						"name": "Pr",
-						"type": "Output",
-						"uuid": "224449ff-fe6e-4fc9-822d-d0d7d45126f4",
-						"quantities": [
-							{
-								"name": "fluxdiff",
-								"type": "Quantity",
-								"uuid": "5709cc76-2610-4cb6-b1cf-bd58d2f2c587",
-								"filter": "f96f7542-143f-4c2c-b7ca-8a121ea2f631",
-								"keyword": "KineticEnergySpectrum",
-								"histogramNBins": 100,
-								"histogramMin": 0,
-								"histogramMax": 200,
-								"histogramUnit": "MeV",
-								"histogramXScale": "none",
-								"histogramXBinScheme": "linear"
-							}
-						],
-						"detectorUuid": "590c80b4-bb94-4c44-8a06-2eb58dcb1f37",
-						"trace": false
 					}
 				],
 				"filters": [
