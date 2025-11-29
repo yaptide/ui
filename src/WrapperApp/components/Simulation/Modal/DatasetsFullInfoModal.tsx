@@ -1,15 +1,24 @@
+import CachedIcon from '@mui/icons-material/Cached';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import StorageIcon from '@mui/icons-material/Storage';
 import {
 	Alert,
+	Box,
 	Button,
+	Chip,
+	CircularProgress,
 	Paper,
 	Table,
 	TableBody,
 	TableCell,
 	TableContainer,
 	TableHead,
-	TableRow
+	TableRow,
+	Tooltip,
+	Typography
 } from '@mui/material';
 
+import { useDatasetCacheStatus } from '../../../../Geant4Worker/useDatasetCacheStatus';
 import {
 	ConcreteDialogProps,
 	CustomDialog
@@ -48,6 +57,101 @@ const datasetSummaries = [
 	}
 ];
 
+/**
+ * Component to display current cache status in the dialog
+ */
+function CacheStatusSection() {
+	const {
+		isLoading,
+		allCached,
+		cachedCount,
+		totalCount,
+		downloadSizeNeededMB,
+		storageEstimate,
+		cacheStatus
+	} = useDatasetCacheStatus();
+
+	if (isLoading) {
+		return (
+			<Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2 }}>
+				<CircularProgress size={20} />
+				<Typography color='text.secondary'>Checking cache status...</Typography>
+			</Box>
+		);
+	}
+
+	return (
+		<Box sx={{ mt: 2 }}>
+			<Typography
+				variant='subtitle2'
+				sx={{ mb: 1 }}>
+				Current Cache Status:
+			</Typography>
+			<Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', mb: 1 }}>
+				{allCached ? (
+					<Chip
+						icon={<CachedIcon />}
+						label='All datasets cached'
+						color='success'
+						size='small'
+					/>
+				) : cachedCount > 0 ? (
+					<Chip
+						icon={<CloudDownloadIcon />}
+						label={`${cachedCount}/${totalCount} datasets cached`}
+						color='warning'
+						size='small'
+					/>
+				) : (
+					<Chip
+						icon={<CloudDownloadIcon />}
+						label='No datasets cached'
+						color='error'
+						size='small'
+					/>
+				)}
+
+				{storageEstimate && (
+					<Tooltip
+						title={`${storageEstimate.percentUsed.toFixed(1)}% of browser storage quota used`}>
+						<Chip
+							icon={<StorageIcon />}
+							label={`${storageEstimate.usedMB.toFixed(0)} MB / ${(storageEstimate.quotaMB / 1024).toFixed(1)} GB`}
+							size='small'
+							variant='outlined'
+						/>
+					</Tooltip>
+				)}
+			</Box>
+
+			{!allCached && (
+				<Typography
+					variant='body2'
+					color='text.secondary'>
+					{cachedCount > 0
+						? `~${downloadSizeNeededMB.toFixed(0)} MB remaining to download`
+						: `~${downloadSizeNeededMB.toFixed(0)} MB total download required`}
+				</Typography>
+			)}
+
+			{cacheStatus && cacheStatus.datasets.length > 0 && (
+				<Box sx={{ mt: 1 }}>
+					{cacheStatus.datasets.map(ds => (
+						<Chip
+							key={ds.name}
+							label={ds.name}
+							size='small'
+							color={ds.isCached ? 'success' : 'default'}
+							variant={ds.isCached ? 'filled' : 'outlined'}
+							sx={{ mr: 0.5, mb: 0.5, fontSize: '0.7rem' }}
+						/>
+					))}
+				</Box>
+			)}
+		</Box>
+	);
+}
+
 export function DatasetsFullInfoDialog({ onClose }: ConcreteDialogProps) {
 	return (
 		<CustomDialog
@@ -60,13 +164,13 @@ export function DatasetsFullInfoDialog({ onClose }: ConcreteDialogProps) {
                 Below is a summary of the datasets available for download:`}
 			body={
 				<>
+					<CacheStatusSection />
 					<Alert
 						severity='info'
 						sx={{ mt: 2 }}>
-						Currently there is no indicator showing if you have already downloaded the
-						datasets. Each time you start a new simulation with FULL datasets option,
-						you have to press 'Start Download' button. If the datasets are already in
-						your browser storage, the datasets will be loaded from cache.
+						The cache status indicator shows which datasets are stored in your browser.
+						When all datasets are cached, loading will be nearly instant. Otherwise,
+						datasets will be downloaded from S3 storage.
 					</Alert>
 					<Alert
 						severity='warning'
