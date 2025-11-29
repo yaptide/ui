@@ -4,44 +4,32 @@
  * - Database name: EM_PRELOAD_CACHE
  * - Store: METADATA (contains package UUIDs and chunk counts)
  * - Store: PACKAGES (contains the actual data chunks)
+ *
+ * Cache keys are constructed as: metadata/<PACKAGE_PATH><PACKAGE_NAME>
+ * where PACKAGE_PATH is URL-encoded window.location.pathname + '/'
+ * and PACKAGE_NAME comes from the preload script (e.g., '/memfs/.../G4EMLOW8.6.1.data')
+ *
+ * We detect cached datasets by matching the .data file suffix in IndexedDB keys.
  */
 
-// Dataset information matching what's in the preload scripts
-// Note: The actual key in IndexedDB is: metadata/<PACKAGE_PATH><PACKAGE_NAME>
-// where PACKAGE_PATH is URL-encoded current page path
-export const GEANT4_DATASETS = [
-	{
-		name: 'G4EMLOW8.6.1',
-		// The suffix that appears in the metadata key (after any path prefix)
-		keySuffix: '/memfs/18333901/geant-web-application/build/data/G4EMLOW8.6.1.data',
-		approximateSizeMB: 580
-	},
-	{
-		name: 'G4ENSDFSTATE3.0',
-		keySuffix: '/memfs/18333901/geant-web-application/build/data/G4ENSDFSTATE3.0.data',
-		approximateSizeMB: 0.1
-	},
-	{
-		name: 'G4NDL4.7.1',
-		keySuffix: '/memfs/18333901/geant-web-application/build/data/G4NDL4.7.1.data',
-		approximateSizeMB: 583
-	},
-	{
-		name: 'G4PARTICLEXS4.1',
-		keySuffix: '/memfs/18333901/geant-web-application/build/data/G4PARTICLEXS4.1.data',
-		approximateSizeMB: 103
-	},
-	{
-		name: 'G4SAIDDATA2.0',
-		keySuffix: '/memfs/18333901/geant-web-application/build/data/G4SAIDDATA2.0.data',
-		approximateSizeMB: 0.8
-	},
-	{
-		name: 'PhotonEvaporation6.1',
-		keySuffix: '/memfs/18333901/geant-web-application/build/data/PhotonEvaporation6.1.data',
-		approximateSizeMB: 47
-	}
+// Dataset configurations with file identifiers (the .data filename used in cache keys)
+// These match the actual dataset files from the Geant4 data packages
+const DATASET_CONFIGS = [
+	{ name: 'G4EMLOW8.6.1', dataFile: 'G4EMLOW8.6.1.data', approximateSizeMB: 580 },
+	{ name: 'G4ENSDFSTATE3.0', dataFile: 'G4ENSDFSTATE3.0.data', approximateSizeMB: 0.1 },
+	{ name: 'G4NDL4.7.1', dataFile: 'G4NDL4.7.1.data', approximateSizeMB: 583 },
+	{ name: 'G4PARTICLEXS4.1', dataFile: 'G4PARTICLEXS4.1.data', approximateSizeMB: 103 },
+	{ name: 'G4SAIDDATA2.0', dataFile: 'G4SAIDDATA2.0.data', approximateSizeMB: 0.8 },
+	{ name: 'PhotonEvaporation6.1', dataFile: 'PhotonEvaporation6.1.data', approximateSizeMB: 47 }
 ] as const;
+
+export const GEANT4_DATASETS = DATASET_CONFIGS.map(config => ({
+	name: config.name,
+	dataFile: config.dataFile,
+	approximateSizeMB: config.approximateSizeMB
+}));
+
+console.log('[CacheService] Initialized GEANT4_DATASETS:', GEANT4_DATASETS);
 
 export const TOTAL_DATASET_SIZE_MB = GEANT4_DATASETS.reduce(
 	(sum, ds) => sum + ds.approximateSizeMB,
@@ -117,23 +105,24 @@ async function openDatabase(): Promise<IDBDatabase | null> {
 }
 
 /**
- * Checks if a specific dataset is cached in IndexedDB by looking for any key ending with the suffix
+ * Checks if a specific dataset is cached in IndexedDB by looking for any key ending with the dataFile
+ * The cache keys end with the .data filename (e.g., 'G4EMLOW8.6.1.data')
  */
-async function checkDatasetCachedByKeySuffix(
+async function checkDatasetCachedByDataFile(
 	db: IDBDatabase,
-	keySuffix: string,
+	dataFile: string,
 	datasetName: string,
 	allMetadataKeys: string[]
 ): Promise<boolean> {
-	// Find any key that ends with our suffix (after removing 'metadata/' prefix)
+	// Find any key that ends with our dataFile (after removing 'metadata/' prefix)
 	const matchingKey = allMetadataKeys.find(key => {
 		// Keys are stored as 'metadata/<PACKAGE_PATH><PACKAGE_NAME>'
-		// We need to check if the key ends with our keySuffix
+		// where PACKAGE_NAME ends with the dataFile (e.g., '/memfs/.../G4EMLOW8.6.1.data')
 		const keyWithoutPrefix = key.replace(/^metadata\//, '');
 		// The keyWithoutPrefix might be URL-encoded, so try both
 		const decoded = decodeURIComponent(keyWithoutPrefix);
 
-		return keyWithoutPrefix.endsWith(keySuffix) || decoded.endsWith(keySuffix);
+		return keyWithoutPrefix.endsWith(dataFile) || decoded.endsWith(dataFile);
 	});
 
 	if (matchingKey) {
@@ -151,7 +140,7 @@ async function checkDatasetCachedByKeySuffix(
 	}
 
 	console.log(
-		`[CacheService] Dataset ${datasetName}: NOT CACHED (no matching key for suffix "${keySuffix}")`
+		`[CacheService] Dataset ${datasetName}: NOT CACHED (no matching key for dataFile "${dataFile}")`
 	);
 
 	return false;
@@ -241,9 +230,9 @@ export async function checkAllDatasetsCacheStatus(): Promise<CacheStatusResult> 
 
 		const datasetStatuses: DatasetCacheStatus[] = await Promise.all(
 			GEANT4_DATASETS.map(async ds => {
-				const isCached = await checkDatasetCachedByKeySuffix(
+				const isCached = await checkDatasetCachedByDataFile(
 					db,
-					ds.keySuffix,
+					ds.dataFile,
 					ds.name,
 					allKeys
 				);
