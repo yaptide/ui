@@ -239,8 +239,10 @@ export class Geant4ResultsFileParser {
 
 		columns = this.getAxisValuesFromBins(meshName, dimensionMask, columns);
 
-		const xDataColumn = dimensionMask.findIndex(n => n);
-		const xDataName = header[2].substring(2).split(',')[xDataColumn]; // substring to remove "# " comment character
+		const columnNames = Geant4ResultsFileParser.getColumnNames(header);
+
+		const dataColumn = dimensionMask.findIndex(n => n);
+		const dataName = columnNames[dataColumn];
 
 		return {
 			metadata: {
@@ -252,13 +254,13 @@ export class Geant4ResultsFileParser {
 				name: scorerName,
 				dimensions: 1,
 				axisDim1: {
-					name: xDataName,
+					name: dataName,
 					unit: 'cm',
-					values: columns[xDataColumn].map(v => parseFloat(v))
+					values: columns[dataColumn].map(v => parseFloat(v))
 				},
 				data: {
 					name: scorerName,
-					unit: this.getUnit(header[2], true),
+					unit: Geant4ResultsFileParser.getUnit(header[2], true),
 					values: columns[3].map(v => parseFloat(v) / this.numPrimaries)
 				}
 			}
@@ -273,40 +275,54 @@ export class Geant4ResultsFileParser {
 		const meshName = header[0].split(' ').at(-1)!;
 		const scorerName = header[1].split(' ').at(-1)!;
 
-		// there are 2 columns, and they store all combinations of bin numbers
-		// 1 1
-		// 1 2
-		// 1 3
-		// 2 1
-		// 2 2
-		// 2 3
-		// we want only unique, ascending values: (y) 1 2 / (x) 1 2 3
+		let columnNames = Geant4ResultsFileParser.getColumnNames(header);
 
-		columns = this.getAxisValuesFromBins(meshName, dimensionMask, columns);
+		// column a comes after b to match what JsRootGraph2D expects when accessing data as consecutive 1d array
+		// because of that, a = findLastIndex, b = findIndex
+		let aDataColumn = dimensionMask.findLastIndex(n => n);
+		let bDataColumn = dimensionMask.findIndex(n => n);
+		let aDataName = columnNames[aDataColumn];
+		let bDataName = columnNames[bDataColumn];
 
-		// x column comes after y to match what JsRootGraph2D expects when accessing data as consecutive 1d array
-		// because of that, x = findLastIndex, y = findIndex
-		const xDataColumn = dimensionMask.findLastIndex(n => n);
-		const xDataName = header[2].substring(2).split(',')[xDataColumn]; // substring(2) to remove "# " comment character
+		let columnsWithAxisValues = this.getAxisValuesFromBins(meshName, dimensionMask, columns);
 
-		// store only unique, ascending values
-		const xDataValues = [parseFloat(columns[xDataColumn][0])];
-		columns[xDataColumn]
+		// For the plots to look similar to other simulators, we need to swap the axes and the values associated
+		// changing
+		// 0 0 0 1 1 1
+		// 0 1 2 0 1 2
+		// into
+		// 0 0 1 1 2 2
+		// 0 1 0 1 0 1
+		const aBins = parseInt(columns[aDataColumn].at(-1)!) + 1;
+		const bBins = parseInt(columns[bDataColumn].at(-1)!) + 1;
+		columnsWithAxisValues = Geant4ResultsFileParser.swapColumns(
+			columnsWithAxisValues,
+			bDataColumn,
+			aDataColumn,
+			bBins,
+			aBins
+		);
+		[aDataName, bDataName] = [bDataName, aDataName];
+
+		let aDataValuesAll = columnsWithAxisValues[aDataColumn]
 			.map(v => parseFloat(v))
-			.forEach(v => {
-				if (v > xDataValues.at(-1)!) xDataValues.push(v);
-			});
+			.toSorted((a, b) => a - b);
+		let aDataValues = [aDataValuesAll[0]];
+		aDataValuesAll.forEach(v => {
+			if (v > aDataValues.at(-1)!) {
+				aDataValues.push(v);
+			}
+		});
 
-		const yDataColumn = dimensionMask.findIndex(n => n);
-		const yDataName = header[2].substring(2).split(',')[yDataColumn]; // substring(2) to remove "# " comment character
-
-		// store only unique, ascending values
-		const yDataValues = [parseFloat(columns[yDataColumn][0])];
-		columns[yDataColumn]
+		let bDataValuesAll = columnsWithAxisValues[bDataColumn]
 			.map(v => parseFloat(v))
-			.forEach(v => {
-				if (v > yDataValues.at(-1)!) yDataValues.push(v);
-			});
+			.toSorted((a, b) => a - b);
+		let bDataValues = [bDataValuesAll[0]];
+		bDataValuesAll.forEach(v => {
+			if (v > bDataValues.at(-1)!) {
+				bDataValues.push(v);
+			}
+		});
 
 		return {
 			metadata: {
@@ -318,19 +334,19 @@ export class Geant4ResultsFileParser {
 				name: scorerName,
 				dimensions: 2,
 				axisDim1: {
-					name: xDataName,
+					name: aDataName,
 					unit: 'cm',
-					values: xDataValues
+					values: aDataValues
 				},
 				axisDim2: {
-					name: yDataName,
+					name: bDataName,
 					unit: 'cm',
-					values: yDataValues
+					values: bDataValues
 				},
 				data: {
 					name: scorerName,
-					unit: this.getUnit(header[2], true),
-					values: columns[3].map(v => parseFloat(v) / this.numPrimaries)
+					unit: Geant4ResultsFileParser.getUnit(header[2], true),
+					values: columnsWithAxisValues[3].map(v => parseFloat(v) / this.numPrimaries)
 				}
 			}
 		};
@@ -345,8 +361,10 @@ export class Geant4ResultsFileParser {
 		dimensionsMask: boolean[],
 		binsColumns: string[][]
 	): string[][] {
+		binsColumns = Array.from(binsColumns, row => Array.from(row)); // deepcopy
+
 		if (!this.scorersMetadata.hasOwnProperty(meshName)) {
-			return binsColumns;
+			return Array.from(binsColumns, row => Array.from(row));
 		}
 
 		let numBins = [1, 1, 1];
@@ -420,7 +438,64 @@ export class Geant4ResultsFileParser {
 		return binsColumns;
 	}
 
-	private getUnit(header: string, perPrimary: boolean) {
+	private static getColumnNames(header: string[]): string[] {
+		let names = header[2].substring(2).split(', ');
+
+		for (const i in names) {
+			if (names[i].startsWith('i')) {
+				names[i] = `Position (${names[i].substring(1)})`;
+			}
+		}
+
+		return names;
+	}
+
+	static swapColumns(
+		array2d: string[][],
+		a: number,
+		b: number,
+		aBins: number,
+		bBins: number
+	): string[][] {
+		if (aBins === 1 || bBins === 1) {
+			return this.swapIndices(
+				Array.from(array2d, row => Array.from(row)),
+				a,
+				b
+			);
+		}
+
+		let src: number, dst: number, row: string[];
+		let newArray2d = Array.from({ length: array2d.length }, (): string[] =>
+			Array.from({ length: array2d[0].length })
+		);
+
+		for (let ib = 0; ib < bBins; ib++) {
+			for (let ia = 0; ia < aBins; ia++) {
+				src = ia * bBins + ib;
+				dst = ib * aBins + ia;
+
+				row = array2d.map(row => row[src]);
+				row = Geant4ResultsFileParser.swapIndices(row, a, b);
+
+				for (let i in row) {
+					newArray2d[i][dst] = row[i];
+				}
+			}
+		}
+
+		return newArray2d;
+	}
+
+	static swapIndices<T>(array: T[], a: number, b: number): T[] {
+		const tmp: T = array[a];
+		array[a] = array[b];
+		array[b] = tmp;
+
+		return array;
+	}
+
+	private static getUnit(header: string, perPrimary: boolean) {
 		const valueColumnHeader = header.split(',').at(3) ?? '';
 		const unit =
 			Array.from(valueColumnHeader.matchAll(VALUE_HEADER_UNIT_REGEX)).at(0)?.at(1) ?? '?';

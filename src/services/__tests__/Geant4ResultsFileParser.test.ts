@@ -53,4 +53,29 @@ describe('Geant4ResultsFileParser', () => {
 		expect(parser.scorersMetadata['TestBox'].start).toMatchObject({ x: -4.5, y: -9, z: -13.5 });
 		expect(parser.scorersMetadata['TestBox'].end).toMatchObject({ x: 5.5, y: 11, z: 16.5 });
 	});
+
+	test('should invert columns', async () => {
+		let array = [
+			['0', '0', '0', '0', '1', '1', '1', '1', '2', '2', '2', '2'], // bins
+			['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+			['0', '1', '2', '3', '0', '1', '2', '3', '0', '1', '2', '3'], // bins
+			['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'] // values
+		];
+
+		array = Geant4ResultsFileParser.swapColumns(array, 0, 2, 3, 4);
+		expect(array[3]).toEqual(['0', '4', '8', '1', '5', '9', '2', '6', '10', '3', '7', '11']);
+	});
+
+	test('should invert columns when one does not change', async () => {
+		let array = [
+			['0', '0', '0', '0', '1', '1', '1', '1', '2', '2', '2', '2'], // bins (not swapped)
+			['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
+			['0', '1', '2', '3', '0', '1', '2', '3', '0', '1', '2', '3'], // bins
+			['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'] // values
+		];
+
+		array = Geant4ResultsFileParser.swapColumns(array, 1, 2, 1, 4);
+		expect(array[1]).toEqual(['0', '1', '2', '3', '0', '1', '2', '3', '0', '1', '2', '3']);
+		expect(array[3]).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11']);
+	});
 });
