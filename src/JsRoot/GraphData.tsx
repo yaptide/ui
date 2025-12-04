@@ -1,4 +1,5 @@
 import { Box, Button, Divider, Typography, useTheme } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { isCustomFilterJSON } from '../ThreeEditor/Simulation/Scoring/CustomFilter';
 import { isParticleFilterJSON } from '../ThreeEditor/Simulation/Scoring/ParticleFilter';
@@ -201,50 +202,58 @@ export function generateGraphs(
 		.map(page => {
 			return { page, graph: getGraphFromPage(page, page.name), filter: page.filterRef };
 		})
-		.map(({ page, graph, filter }, idx) => (
-			<Box
-				key={`graph_${name}${jobId ? '_' + jobId : ''}_${page.name ?? idx}`}
-				sx={theme => ({
-					display: 'flex',
-					margin: theme.spacing(1),
-					gap: theme.spacing(2)
-				})}>
-				{/* backgroundColor so it doesn't flicker with dark theme on reload */}
-				<Box sx={{ flexGrow: 1, backgroundColor: 'white' }}>{graph}</Box>
-				<Box sx={theme => ({ width: '20%', minWidth: '300px', padding: theme.spacing(2) })}>
-					<Section title='Filter'>
-						<Typography>{filter?.name ?? 'None'}</Typography>
-					</Section>
-					{isCustomFilterJSON(filter) && (
-						<Section title='Rules'>
-							{filter.rules.map((rule, idx) => (
-								<Typography key={rule.uuid}>
-									{rule.keyword}
-									{rule.operator}
-									{rule.value}
-								</Typography>
-							))}
-						</Section>
-					)}
-					{isParticleFilterJSON(filter) && (
-						<Section title='Particle'>
-							<Typography>{filter.particle.name}</Typography>
-						</Section>
-					)}
-				</Box>
+		.map(({ page, graph, filter }, idx) => {
+			const hasSufficientSpace = useMediaQuery('(min-width: 1400px)');
+
+			return (
 				<Box
+					key={`graph_${name}${jobId ? '_' + jobId : ''}_${page.name ?? idx}`}
 					sx={theme => ({
-						marginTop: theme.spacing(2),
-						width: '160px',
-						alignSelf: 'flex-start',
-						justifySelf: 'flex-end'
+						display: 'flex',
+						margin: theme.spacing(1),
+						gap: theme.spacing(2)
 					})}>
-					{isPage1d(page) && (
-						<Button onClick={() => onClickSaveToFile(page as Page1D)}>
-							EXPORT GRAPH TO CSV
-						</Button>
-					)}
+					{/* backgroundColor so it doesn't flicker with dark theme on reload */}
+					<Box sx={{ flexGrow: 99, maxWidth: '1080px', backgroundColor: 'white' }}>
+						{graph}
+					</Box>
+					<Box
+						sx={{
+							display: 'flex',
+							flexGrow: 1,
+							flexDirection: hasSufficientSpace ? 'row' : 'column-reverse',
+							justifyContent: hasSufficientSpace ? 'space-between' : 'flex-end'
+						}}>
+						<Box sx={theme => ({ padding: theme.spacing(2) })}>
+							<Section title='Filter'>
+								<Typography>{filter?.name ?? 'None'}</Typography>
+							</Section>
+							{isCustomFilterJSON(filter) && (
+								<Section title='Rules'>
+									{filter.rules.map((rule, idx) => (
+										<Typography key={rule.uuid}>
+											{rule.keyword}
+											{rule.operator}
+											{rule.value}
+										</Typography>
+									))}
+								</Section>
+							)}
+							{isParticleFilterJSON(filter) && (
+								<Section title='Particle'>
+									<Typography>{filter.particle.name}</Typography>
+								</Section>
+							)}
+						</Box>
+						<Box sx={theme => ({ marginTop: theme.spacing(2) })}>
+							{isPage1d(page) && (
+								<Button onClick={() => onClickSaveToFile(page as Page1D)}>
+									EXPORT GRAPH TO CSV
+								</Button>
+							)}
+						</Box>
+					</Box>
 				</Box>
-			</Box>
-		));
+			);
+		});
 }
