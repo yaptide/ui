@@ -250,7 +250,8 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 
 		const parser = new Geant4ResultsFileParser(
 			this.numPrimaries,
-			this.inputFiles[jobId]['run.mac']
+			this.inputFiles[jobId]['run.mac'],
+			this.jobsEditorJson[jobId]
 		);
 
 		const parsedContents = fileContents
@@ -403,7 +404,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 			input: {
 				inputType: this.jobsMetadata[jobId].inputType,
 				inputFiles: this.inputFiles[jobId] as InputFilesRecord<Geant4InputFilesNames, ''>,
-				...{ inputJson: this.jobsEditorJson[jobId] } // add iff exists
+				...(this.jobsEditorJson[jobId] && { inputJson: this.jobsEditorJson[jobId] }) // add iff exists
 			},
 			estimators
 		};
