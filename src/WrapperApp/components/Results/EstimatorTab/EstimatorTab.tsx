@@ -1,5 +1,4 @@
 import { Box, CircularProgress, useTheme } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { generateGraphs } from '../../../../JsRoot/GraphData';
 import { FullSimulationData } from '../../../../types/SimulationService';
