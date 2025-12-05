@@ -21,7 +21,6 @@ const EstimatorTab = ({
 	simulation
 }: EstimatorTabProps) => {
 	const theme = useTheme();
-	const hasSufficientSpace = useMediaQuery('(max-width: 1400px)');
 
 	return (
 		<Box
@@ -50,8 +49,7 @@ const EstimatorTab = ({
 					{generateGraphs(
 						estimator,
 						resultsGeneratedFromProjectFile && groupQuantities,
-						simulation?.jobId,
-						hasSufficientSpace
+						simulation?.jobId
 					)}
 				</Box>
 			)}

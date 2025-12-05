@@ -147,8 +147,7 @@ function Section({ title, children }: SectionProps) {
 export function generateGraphs(
 	estimator: EstimatorResults,
 	groupQuantities?: boolean,
-	jobId?: string,
-	compactLayout?: boolean
+	jobId?: string
 ) {
 	const { gridPages, name } = estimator;
 
@@ -207,19 +206,17 @@ export function generateGraphs(
 				key={`graph_${name}${jobId ? '_' + jobId : ''}_${page.name ?? idx}`}
 				sx={theme => ({
 					display: 'flex',
+					justifyContent: 'center',
 					margin: theme.spacing(1),
 					gap: theme.spacing(2)
 				})}>
 				{/* backgroundColor so it doesn't flicker with dark theme on reload */}
-				<Box sx={{ flexGrow: 99, maxWidth: '1080px', backgroundColor: 'white' }}>
-					{graph}
-				</Box>
+				<Box sx={{ width: '1080px', backgroundColor: 'white' }}>{graph}</Box>
 				<Box
 					sx={{
 						display: 'flex',
-						flexGrow: 1,
-						flexDirection: compactLayout ? 'column-reverse' : 'row',
-						justifyContent: compactLayout ? 'flex-end' : 'space-between'
+						flexDirection: 'column-reverse',
+						justifyContent: 'flex-end'
 					}}>
 					<Box sx={theme => ({ padding: theme.spacing(2) })}>
 						<Section title='Filter'>
@@ -245,7 +242,7 @@ export function generateGraphs(
 					<Box sx={theme => ({ marginTop: theme.spacing(2) })}>
 						{isPage1d(page) && (
 							<Button onClick={() => onClickSaveToFile(page as Page1D)}>
-								EXPORT GRAPH TO CSV
+								CSV EXPORT
 							</Button>
 						)}
 					</Box>
