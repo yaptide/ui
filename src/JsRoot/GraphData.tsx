@@ -1,5 +1,4 @@
 import { Box, Button, Divider, Typography, useTheme } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { isCustomFilterJSON } from '../ThreeEditor/Simulation/Scoring/CustomFilter';
 import { isParticleFilterJSON } from '../ThreeEditor/Simulation/Scoring/ParticleFilter';
@@ -148,7 +147,8 @@ function Section({ title, children }: SectionProps) {
 export function generateGraphs(
 	estimator: EstimatorResults,
 	groupQuantities?: boolean,
-	jobId?: string
+	jobId?: string,
+	compactLayout?: boolean
 ) {
 	const { gridPages, name } = estimator;
 
@@ -202,58 +202,54 @@ export function generateGraphs(
 		.map(page => {
 			return { page, graph: getGraphFromPage(page, page.name), filter: page.filterRef };
 		})
-		.map(({ page, graph, filter }, idx) => {
-			const hasSufficientSpace = useMediaQuery('(min-width: 1400px)');
-
-			return (
+		.map(({ page, graph, filter }, idx) => (
+			<Box
+				key={`graph_${name}${jobId ? '_' + jobId : ''}_${page.name ?? idx}`}
+				sx={theme => ({
+					display: 'flex',
+					margin: theme.spacing(1),
+					gap: theme.spacing(2)
+				})}>
+				{/* backgroundColor so it doesn't flicker with dark theme on reload */}
+				<Box sx={{ flexGrow: 99, maxWidth: '1080px', backgroundColor: 'white' }}>
+					{graph}
+				</Box>
 				<Box
-					key={`graph_${name}${jobId ? '_' + jobId : ''}_${page.name ?? idx}`}
-					sx={theme => ({
+					sx={{
 						display: 'flex',
-						margin: theme.spacing(1),
-						gap: theme.spacing(2)
-					})}>
-					{/* backgroundColor so it doesn't flicker with dark theme on reload */}
-					<Box sx={{ flexGrow: 99, maxWidth: '1080px', backgroundColor: 'white' }}>
-						{graph}
-					</Box>
-					<Box
-						sx={{
-							display: 'flex',
-							flexGrow: 1,
-							flexDirection: hasSufficientSpace ? 'row' : 'column-reverse',
-							justifyContent: hasSufficientSpace ? 'space-between' : 'flex-end'
-						}}>
-						<Box sx={theme => ({ padding: theme.spacing(2) })}>
-							<Section title='Filter'>
-								<Typography>{filter?.name ?? 'None'}</Typography>
+						flexGrow: 1,
+						flexDirection: compactLayout ? 'column-reverse' : 'row',
+						justifyContent: compactLayout ? 'flex-end' : 'space-between'
+					}}>
+					<Box sx={theme => ({ padding: theme.spacing(2) })}>
+						<Section title='Filter'>
+							<Typography>{filter?.name ?? 'None'}</Typography>
+						</Section>
+						{isCustomFilterJSON(filter) && (
+							<Section title='Rules'>
+								{filter.rules.map((rule, idx) => (
+									<Typography key={rule.uuid}>
+										{rule.keyword}
+										{rule.operator}
+										{rule.value}
+									</Typography>
+								))}
 							</Section>
-							{isCustomFilterJSON(filter) && (
-								<Section title='Rules'>
-									{filter.rules.map((rule, idx) => (
-										<Typography key={rule.uuid}>
-											{rule.keyword}
-											{rule.operator}
-											{rule.value}
-										</Typography>
-									))}
-								</Section>
-							)}
-							{isParticleFilterJSON(filter) && (
-								<Section title='Particle'>
-									<Typography>{filter.particle.name}</Typography>
-								</Section>
-							)}
-						</Box>
-						<Box sx={theme => ({ marginTop: theme.spacing(2) })}>
-							{isPage1d(page) && (
-								<Button onClick={() => onClickSaveToFile(page as Page1D)}>
-									EXPORT GRAPH TO CSV
-								</Button>
-							)}
-						</Box>
+						)}
+						{isParticleFilterJSON(filter) && (
+							<Section title='Particle'>
+								<Typography>{filter.particle.name}</Typography>
+							</Section>
+						)}
+					</Box>
+					<Box sx={theme => ({ marginTop: theme.spacing(2) })}>
+						{isPage1d(page) && (
+							<Button onClick={() => onClickSaveToFile(page as Page1D)}>
+								EXPORT GRAPH TO CSV
+							</Button>
+						)}
 					</Box>
 				</Box>
-			);
-		});
+			</Box>
+		));
 }

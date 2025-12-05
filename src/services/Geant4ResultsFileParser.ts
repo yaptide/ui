@@ -539,13 +539,13 @@ export class Geant4ResultsFileParser {
 			const quantity = output?.quantities.find(q => q.name === scorerName);
 
 			if (quantity === undefined) {
-				console.warn(`Quantity ${scorerName} not found in the project JSON.`);
+				console.warn(`Quantity ${scorerName} not found in Output ${output}.`);
 			}
 
 			filterRef = this.editorJson.scoringManager.filters.find(
 				f => f.uuid === quantity?.filter
 			);
-		} else if (this.quantityFilterNames[meshName][scorerName]) {
+		} else if (this.quantityFilterNames[meshName]?.[scorerName]) {
 			filterRef = {
 				type: 'Filter',
 				uuid: '00000000-0000-0000-0000-000000000000',

@@ -1,4 +1,5 @@
 import { Box, CircularProgress, useTheme } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { generateGraphs } from '../../../../JsRoot/GraphData';
 import { FullSimulationData } from '../../../../types/SimulationService';
@@ -20,6 +21,7 @@ const EstimatorTab = ({
 	simulation
 }: EstimatorTabProps) => {
 	const theme = useTheme();
+	const hasSufficientSpace = useMediaQuery('(max-width: 1400px)');
 
 	return (
 		<Box
@@ -48,7 +50,8 @@ const EstimatorTab = ({
 					{generateGraphs(
 						estimator,
 						resultsGeneratedFromProjectFile && groupQuantities,
-						simulation?.jobId
+						simulation?.jobId,
+						hasSufficientSpace
 					)}
 				</Box>
 			)}
