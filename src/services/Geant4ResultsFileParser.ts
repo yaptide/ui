@@ -539,7 +539,7 @@ export class Geant4ResultsFileParser {
 			const quantity = output?.quantities.find(q => q.name === scorerName);
 
 			if (quantity === undefined) {
-				console.warn(`Quantity ${scorerName} not found in Output ${output}.`);
+				console.warn(`Quantity ${scorerName} not found in Output ${output?.name}.`);
 			}
 
 			filterRef = this.editorJson.scoringManager.filters.find(

@@ -185,9 +185,7 @@ function GraphInfo(props: { filter: FilterJSON | undefined }) {
 					<Section title='Rules'>
 						{filter.rules.map((rule, idx) => (
 							<Typography key={rule.uuid}>
-								{rule.keyword}
-								{rule.operator}
-								{rule.value}
+								{rule.keyword} {rule.operator} {rule.value}
 							</Typography>
 						))}
 					</Section>
