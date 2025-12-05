@@ -1,4 +1,7 @@
-import { Box, Button, Divider, Typography, useTheme } from '@mui/material';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import InfoIcon from '@mui/icons-material/Info';
+import { Box, IconButton, Popover, Typography, useTheme } from '@mui/material';
+import { useRef, useState } from 'react';
 
 import { isCustomFilterJSON } from '../ThreeEditor/Simulation/Scoring/CustomFilter';
 import { isParticleFilterJSON } from '../ThreeEditor/Simulation/Scoring/ParticleFilter';
@@ -137,9 +140,62 @@ function Section({ title, children }: SectionProps) {
 
 	return (
 		<>
-			<Typography variant='h6'>{title}</Typography>
-			<Divider sx={{ width: 100 }} />
+			<Typography
+				variant='h6'
+				fontWeight='bold'>
+				{title}:
+			</Typography>
 			<Box sx={{ margin: theme.spacing(1) }}>{children}</Box>
+		</>
+	);
+}
+
+function GraphInfo(props: { filter: FilterJSON | undefined }) {
+	const [open, setOpen] = useState(false);
+	const anchorRef = useRef(null);
+
+	const { filter } = props;
+
+	return (
+		<>
+			<IconButton
+				color='primary'
+				onClick={() => setOpen(true)}
+				ref={anchorRef}>
+				<InfoIcon fontSize='large' />
+			</IconButton>
+			<Popover
+				open={open}
+				anchorEl={anchorRef.current}
+				onClose={() => setOpen(false)}
+				anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+				transformOrigin={{ horizontal: 'center', vertical: 'top' }}
+				slotProps={{
+					paper: {
+						sx: theme => ({
+							minWidth: '160px',
+							p: theme.spacing(1)
+						})
+					}
+				}}>
+				<Section title='Filter'>
+					<Typography>{filter?.name ?? 'None'}</Typography>
+				</Section>
+				{isCustomFilterJSON(filter) && (
+					<Section title='Rules'>
+						{filter.rules.map((rule, idx) => (
+							<Typography key={rule.uuid}>
+								{rule.keyword} {rule.operator} {rule.value}
+							</Typography>
+						))}
+					</Section>
+				)}
+				{isParticleFilterJSON(filter) && (
+					<Section title='Particle'>
+						<Typography>{filter.particle.name}</Typography>
+					</Section>
+				)}
+			</Popover>
 		</>
 	);
 }
@@ -206,44 +262,26 @@ export function generateGraphs(
 				key={`graph_${name}${jobId ? '_' + jobId : ''}_${page.name ?? idx}`}
 				sx={theme => ({
 					display: 'flex',
+					justifyContent: 'center',
 					margin: theme.spacing(1),
 					gap: theme.spacing(2)
 				})}>
 				{/* backgroundColor so it doesn't flicker with dark theme on reload */}
-				<Box sx={{ flexGrow: 1, backgroundColor: 'white' }}>{graph}</Box>
-				<Box sx={theme => ({ width: '20%', minWidth: '300px', padding: theme.spacing(2) })}>
-					<Section title='Filter'>
-						<Typography>{filter?.name ?? 'None'}</Typography>
-					</Section>
-					{isCustomFilterJSON(filter) && (
-						<Section title='Rules'>
-							{filter.rules.map((rule, idx) => (
-								<Typography key={rule.uuid}>
-									{rule.keyword}
-									{rule.operator}
-									{rule.value}
-								</Typography>
-							))}
-						</Section>
-					)}
-					{isParticleFilterJSON(filter) && (
-						<Section title='Particle'>
-							<Typography>{filter.particle.name}</Typography>
-						</Section>
-					)}
-				</Box>
+				<Box sx={{ width: '1080px', backgroundColor: 'white' }}>{graph}</Box>
 				<Box
 					sx={theme => ({
 						marginTop: theme.spacing(2),
-						width: '160px',
-						alignSelf: 'flex-start',
-						justifySelf: 'flex-end'
+						display: 'flex',
+						flexDirection: 'column'
 					})}>
 					{isPage1d(page) && (
-						<Button onClick={() => onClickSaveToFile(page as Page1D)}>
-							EXPORT GRAPH TO CSV
-						</Button>
+						<IconButton
+							onClick={() => onClickSaveToFile(page as Page1D)}
+							color='primary'>
+							<FileDownloadIcon fontSize='large' />
+						</IconButton>
 					)}
+					<GraphInfo filter={filter} />
 				</Box>
 			</Box>
 		));

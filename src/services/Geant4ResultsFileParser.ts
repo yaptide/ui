@@ -1,4 +1,7 @@
 import { Page1D, Page2D } from '../JsRoot/GraphData';
+import { EditorJson } from '../ThreeEditor/js/EditorJson';
+import { FilterType } from '../ThreeEditor/Simulation/Scoring/GeantScoringFilter';
+import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/ScoringFilter';
 
 const VALUE_HEADER_UNIT_REGEX = /\[(\w+)]/g;
 
@@ -59,11 +62,15 @@ function emptyCylinder(): ScorerMetadata<'cylinder'> {
 export class Geant4ResultsFileParser {
 	numPrimaries: number;
 	scorersMetadata: { [key: string]: ScorerMetadata<'box'> | ScorerMetadata<'cylinder'> };
+	quantityFilterNames: { [key: string]: { [key: string]: { type: FilterType; name: string } } };
+	editorJson?: EditorJson;
 
-	constructor(numPrimaries: number, macroFile: string) {
+	constructor(numPrimaries: number, macroFile: string, editorJson?: EditorJson) {
 		this.numPrimaries = numPrimaries;
 		this.scorersMetadata = {};
+		this.quantityFilterNames = {};
 		this.parseMacroFile(macroFile);
+		this.editorJson = editorJson;
 	}
 
 	/**
@@ -75,6 +82,7 @@ export class Geant4ResultsFileParser {
 	private parseMacroFile(macroFile: string) {
 		const lines = macroFile.split('\n');
 		let meshName: string | undefined = undefined;
+		let lastQuantity: string | undefined = undefined;
 		let createCmd: string;
 
 		// iterate over macro commands top to bottom and store values for each scorer
@@ -95,6 +103,24 @@ export class Geant4ResultsFileParser {
 				[createCmd, meshName] = line.split(' ');
 				const meshType = createCmd.split('/').at(-1)!.slice(0, -4) as 'box' | 'cylinder';
 				this.scorersMetadata[meshName] = meshType === 'box' ? emptyBox() : emptyCylinder();
+				this.quantityFilterNames[meshName] = {};
+			}
+
+			// Command:
+			// /score/quantity/{type} {name}
+			if (line.startsWith('/score/quantity')) {
+				[, lastQuantity] = line.split(' ');
+			}
+
+			// Command:
+			// /score/filter/{type} {name} {opts}
+			// Should immediately follow a /score/quantity command
+			if (line.startsWith('/score/filter') && lastQuantity) {
+				const [cmd, filterName] = line.split(' ');
+				this.quantityFilterNames[meshName!][lastQuantity] = {
+					type: cmd.split('/').at(-1)! as FilterType,
+					name: filterName
+				};
 			}
 
 			// Command:
@@ -262,7 +288,8 @@ export class Geant4ResultsFileParser {
 					name: scorerName,
 					unit: Geant4ResultsFileParser.getUnit(header[2], true),
 					values: columns[3].map(v => parseFloat(v) / this.numPrimaries)
-				}
+				},
+				filterRef: this.createFilterRef(meshName, scorerName)
 			}
 		};
 	}
@@ -347,7 +374,8 @@ export class Geant4ResultsFileParser {
 					name: scorerName,
 					unit: Geant4ResultsFileParser.getUnit(header[2], true),
 					values: columnsWithAxisValues[3].map(v => parseFloat(v) / this.numPrimaries)
-				}
+				},
+				filterRef: this.createFilterRef(meshName, scorerName)
 			}
 		};
 	}
@@ -501,5 +529,37 @@ export class Geant4ResultsFileParser {
 			Array.from(valueColumnHeader.matchAll(VALUE_HEADER_UNIT_REGEX)).at(0)?.at(1) ?? '?';
 
 		return perPrimary ? `${unit}/prim` : unit;
+	}
+
+	private createFilterRef(meshName: string, scorerName: string) {
+		let filterRef: FilterJSON | undefined;
+
+		if (this.editorJson) {
+			const output = this.editorJson.scoringManager.outputs.find(o => o.name === meshName);
+			const quantity = output?.quantities.find(q => q.name === scorerName);
+
+			if (quantity === undefined) {
+				console.warn(`Quantity ${scorerName} not found in Output ${output?.name}.`);
+			}
+
+			filterRef = this.editorJson.scoringManager.filters.find(
+				f => f.uuid === quantity?.filter
+			);
+		} else if (this.quantityFilterNames[meshName]?.[scorerName]) {
+			filterRef = {
+				type: 'Filter',
+				uuid: '00000000-0000-0000-0000-000000000000',
+				name: this.quantityFilterNames[meshName][scorerName].name,
+				filterType: this.quantityFilterNames[meshName][scorerName].type,
+				data: {
+					particleTypes: [],
+					kineticEnergyLow: 0,
+					kineticEnergyHigh: 0,
+					kineticEnergyUnit: ''
+				}
+			};
+		}
+
+		return filterRef;
 	}
 }

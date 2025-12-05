@@ -3,7 +3,7 @@ import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { ScoringFilter } from './ScoringFilter';
 
-type FilterType =
+export type FilterType =
 	| 'charged'
 	| 'neutral'
 	| 'particle'
