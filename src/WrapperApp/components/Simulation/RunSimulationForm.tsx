@@ -375,6 +375,7 @@ export function RunSimulationForm({
 							onChange={e => setNTasks(Math.max(1, parseInt(e.target.value)))}
 						/>
 						<TextField
+							id='primary-particles-override'
 							size='small'
 							type='number'
 							label='Number of primary particles'
@@ -531,6 +532,7 @@ export function RunSimulationForm({
 				)}
 				<Box sx={{ display: 'flex', justifyContent: 'center' }}>
 					<Button
+						id='start-simulation-button'
 						sx={{
 							height: '36px',
 							width: '180px'

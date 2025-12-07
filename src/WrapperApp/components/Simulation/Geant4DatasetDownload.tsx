@@ -349,6 +349,7 @@ export function Geant4Datasets() {
 
 				<Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', width: '100%' }}>
 					<Button
+						id='start-geant4-dataset-download-button'
 						onClick={geant4DatasetDownloadStart}
 						disabled={!enableDownloadButton}
 						variant='contained'

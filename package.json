@@ -52,7 +52,8 @@
 		"typescript": "^5.2.2",
 		"use-interval": "^1.4.0",
 		"usehooks-ts": "^3.1.1",
-		"web-vitals": "^5.1.0"
+		"web-vitals": "^5.1.0",
+		"ts-node": "^10.9.2"
 	},
 	"overrides": {
 		"typescript": "^5.2.2"
@@ -81,7 +82,8 @@
 		"predeploy": "npm run setup && npm run build-demo && cross-env PUBLIC_PATH=/web_dev/ npm run fix-web-dev",
 		"deploy": "gh-pages --dist build --no-history",
 		"depcruise:high": "depcruise --version && depcruise --config dependency-cruiser/depcruise-config-high-level.js --output-type archi src | dot -T svg -o dependency-cruiser/high-level-dependencies.svg && depcruise --config dependency-cruiser/depcruise-config-high-level.js --output-type archi src | dot -T svg | depcruise-wrap-stream-in-html > dependency-cruiser/high-level-dependencies.html",
-		"depcruise:low": "depcruise --version && depcruise --config dependency-cruiser/depcruise-config-low-level.js --output-type archi src | dot -T svg -o dependency-cruiser/low-level-dependencies.svg && depcruise --config dependency-cruiser/depcruise-config-low-level.js --output-type archi src | dot -T svg | depcruise-wrap-stream-in-html > dependency-cruiser/low-level-dependencies.html"
+		"depcruise:low": "depcruise --version && depcruise --config dependency-cruiser/depcruise-config-low-level.js --output-type archi src | dot -T svg -o dependency-cruiser/low-level-dependencies.svg && depcruise --config dependency-cruiser/depcruise-config-low-level.js --output-type archi src | dot -T svg | depcruise-wrap-stream-in-html > dependency-cruiser/low-level-dependencies.html",
+		"benchmark": "npx ts-node --compiler-options '{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}'  src/__benchmark__/Benchmark.ts"
 	},
 	"contributors": [
 		{
@@ -220,7 +222,8 @@
 		"lint-staged": "^16.2.7",
 		"prettier": "3.6.2",
 		"react-app-rewired": "^2.2.1",
-		"selenium-webdriver": "^4.38.0"
+		"selenium-webdriver": "^4.38.0",
+		"ts-node": "^10.9.2"
 	},
 	"lint-staged": {
 		"*.{ts,tsx,js,jsx}": [
