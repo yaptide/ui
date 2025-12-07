@@ -23,10 +23,11 @@ import { useEffect, useState } from 'react';
 import {
 	DatasetDownloadStatus,
 	DatasetStatus,
-	DownloadManagerStatus
-} from '../../../Geant4Worker/Geant4DatasetDownloadManager';
-import { useDatasetCacheStatus } from '../../../Geant4Worker/useDatasetCacheStatus';
+	DownloadManagerStatus,
+	useDatasetManager
+} from '../../../Geant4Worker/Geant4DatasetManager';
 import { useDialog } from '../../../services/DialogService';
+import { useSharedDatasetManager } from '../../../services/Geant4DatasetContextProvider';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
 import { StyledExclusiveToggleButtonGroup } from '../../../shared/components/StyledExclusiveToggleButtonGroup';
 
@@ -35,22 +36,24 @@ export enum Geant4DatasetsType {
 	FULL
 }
 
-export interface Geant4DatasetsProps {
-	geant4DownloadManagerState: DownloadManagerStatus;
-	geant4DatasetStates: DatasetStatus[];
-	geant4DatasetDownloadStart: () => void;
-	geant4DatasetType: Geant4DatasetsType;
-	setGeant4DatasetType: (type: Geant4DatasetsType) => void;
-}
-
 function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 	const { status } = props;
+
+	let icon = null;
+
+	if (status.status === DatasetDownloadStatus.DONE) {
+		icon = <CheckIcon color='success' />;
+	} else if (status.isCached) {
+		icon = <StorageIcon color='warning' />;
+	} else {
+		icon = <CloudDownloadIcon color='error' />;
+	}
 
 	return (
 		<Box sx={{ pb: 1 }}>
 			<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
 				<Typography sx={{ flex: 1 }}>{status.name}</Typography>
-				{status.status === DatasetDownloadStatus.DONE && <CheckIcon color='success' />}
+				{icon}
 			</Box>
 
 			<Box sx={{ mt: 1 }}>
@@ -67,43 +70,16 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 						color='warning'
 					/>
 				)}
-				{status.status === DatasetDownloadStatus.IDLE && (
-					<LinearProgress
-						color='info'
-						variant='indeterminate'
-					/>
-				)}
 			</Box>
 		</Box>
 	);
 }
 
-/**
- * Component to display cache status with visual indicators
- */
 function CacheStatusIndicator({ showDebugInfo = false }: { showDebugInfo?: boolean }) {
-	const {
-		isLoading,
-		allCached,
-		cachedCount,
-		totalCount,
-		downloadSizeNeededMB,
-		storageEstimate,
-		refresh,
-		cacheStatus
-	} = useDatasetCacheStatus();
+	const { isLoading, cachedCount, totalCount, downloadSizeNeededMB, storageEstimate, refresh } =
+		useDatasetManager();
 
-	// Log cache status for debugging
-	useEffect(() => {
-		console.log('[CacheStatusIndicator] Cache status updated:', {
-			isLoading,
-			allCached,
-			cachedCount,
-			totalCount,
-			downloadSizeNeededMB,
-			datasets: cacheStatus?.datasets
-		});
-	}, [isLoading, allCached, cachedCount, totalCount, downloadSizeNeededMB, cacheStatus]);
+	const allCached = cachedCount === totalCount;
 
 	if (isLoading) {
 		return (
@@ -179,22 +155,6 @@ function CacheStatusIndicator({ showDebugInfo = false }: { showDebugInfo?: boole
 				</Tooltip>
 			</Box>
 
-			{/* Show individual dataset status */}
-			{cacheStatus && cacheStatus.datasets.length > 0 && (
-				<Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1 }}>
-					{cacheStatus.datasets.map(ds => (
-						<Chip
-							key={ds.name}
-							label={ds.name}
-							size='small'
-							color={ds.isCached ? 'success' : 'default'}
-							variant={ds.isCached ? 'filled' : 'outlined'}
-							sx={{ fontSize: '0.65rem', height: 20 }}
-						/>
-					))}
-				</Box>
-			)}
-
 			{!allCached && (
 				<Typography
 					variant='caption'
@@ -202,15 +162,6 @@ function CacheStatusIndicator({ showDebugInfo = false }: { showDebugInfo?: boole
 					{cachedCount > 0
 						? `~${downloadSizeNeededMB.toFixed(0)} MB remaining to download`
 						: `~${downloadSizeNeededMB.toFixed(0)} MB download required (may take several minutes)`}
-				</Typography>
-			)}
-
-			{showDebugInfo && cacheStatus && (
-				<Typography
-					variant='caption'
-					color='text.secondary'
-					sx={{ display: 'block', mt: 1, fontFamily: 'monospace', fontSize: '0.6rem' }}>
-					Debug: {cachedCount}/{totalCount} cached, allCached={String(allCached)}
 				</Typography>
 			)}
 		</Box>
@@ -281,11 +232,21 @@ export function Geant4DatasetDownloadSelector(props: {
 	);
 }
 
-export function Geant4Datasets(props: Geant4DatasetsProps) {
+export function Geant4Datasets() {
 	const theme = useTheme();
-	const { geant4DownloadManagerState, geant4DatasetStates, geant4DatasetDownloadStart } = props;
 	const [open, setOpen] = useState(true);
-	const { allCached, refresh } = useDatasetCacheStatus();
+	const {
+		managerState: geant4DownloadManagerState,
+		datasetStatus,
+		startDownload: geant4DatasetDownloadStart,
+		cachedCount,
+		totalCount,
+		refresh
+	} = useSharedDatasetManager();
+
+	const allCached = cachedCount === totalCount;
+
+	console.log(datasetStatus);
 
 	// Refresh cache status when download finishes
 	useEffect(() => {
@@ -293,16 +254,22 @@ export function Geant4Datasets(props: Geant4DatasetsProps) {
 			console.log('[Geant4Datasets] Download finished, refreshing cache status...');
 			// Add a small delay to ensure IndexedDB is updated
 			setTimeout(() => refresh(), 1000);
+			setOpen(false);
 		}
 	}, [geant4DownloadManagerState, refresh]);
 
 	const buttonText = allCached ? 'Load from cache' : 'Start download';
-	const buttonIcon = allCached ? <CachedIcon sx={{ mr: 1 }} /> : <CloudDownloadIcon sx={{ mr: 1 }} />;
+	const buttonIcon = allCached ? (
+		<CachedIcon sx={{ mr: 1 }} />
+	) : (
+		<CloudDownloadIcon sx={{ mr: 1 }} />
+	);
 
 	const showDownloadButton = geant4DownloadManagerState === DownloadManagerStatus.IDLE;
 	const showDownloadProgress =
 		geant4DownloadManagerState === DownloadManagerStatus.WORKING ||
-		geant4DownloadManagerState === DownloadManagerStatus.FINISHED;
+		geant4DownloadManagerState === DownloadManagerStatus.FINISHED ||
+		cachedCount > 0;
 
 	return (
 		<StyledAccordion
@@ -325,8 +292,15 @@ export function Geant4Datasets(props: Geant4DatasetsProps) {
 					display: 'flex',
 					flexDirection: 'column'
 				}}>
-				{/* Always show cache status indicator */}
-				<CacheStatusIndicator showDebugInfo={true} />
+				<CacheStatusIndicator showDebugInfo={false} />
+
+				{showDownloadProgress &&
+					Object.values(datasetStatus).map(status => (
+						<DatasetCurrentStatus
+							status={status}
+							key={status.name}
+						/>
+					))}
 
 				{showDownloadButton && (
 					<Button
@@ -337,14 +311,6 @@ export function Geant4Datasets(props: Geant4DatasetsProps) {
 						{buttonText}
 					</Button>
 				)}
-
-				{showDownloadProgress &&
-					geant4DatasetStates.map(status => (
-						<DatasetCurrentStatus
-							status={status}
-							key={status.name}
-						/>
-					))}
 
 				{geant4DownloadManagerState === DownloadManagerStatus.ERROR && (
 					<Typography>

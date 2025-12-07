@@ -12,9 +12,7 @@
  * We detect cached datasets by matching the .data file suffix in IndexedDB keys.
  */
 
-// Dataset configurations with file identifiers (the .data filename used in cache keys)
-// These match the actual dataset files from the Geant4 data packages
-const DATASET_CONFIGS = [
+export const GEANT4_DATASETS = [
 	{ name: 'G4EMLOW8.6.1', dataFile: 'G4EMLOW8.6.1.data', approximateSizeMB: 580 },
 	{ name: 'G4ENSDFSTATE3.0', dataFile: 'G4ENSDFSTATE3.0.data', approximateSizeMB: 0.1 },
 	{ name: 'G4NDL4.7.1', dataFile: 'G4NDL4.7.1.data', approximateSizeMB: 583 },
@@ -22,14 +20,6 @@ const DATASET_CONFIGS = [
 	{ name: 'G4SAIDDATA2.0', dataFile: 'G4SAIDDATA2.0.data', approximateSizeMB: 0.8 },
 	{ name: 'PhotonEvaporation6.1', dataFile: 'PhotonEvaporation6.1.data', approximateSizeMB: 47 }
 ] as const;
-
-export const GEANT4_DATASETS = DATASET_CONFIGS.map(config => ({
-	name: config.name,
-	dataFile: config.dataFile,
-	approximateSizeMB: config.approximateSizeMB
-}));
-
-console.log('[CacheService] Initialized GEANT4_DATASETS:', GEANT4_DATASETS);
 
 export const TOTAL_DATASET_SIZE_MB = GEANT4_DATASETS.reduce(
 	(sum, ds) => sum + ds.approximateSizeMB,
@@ -49,7 +39,6 @@ export interface DatasetCacheStatus {
 
 export interface CacheStatusResult {
 	datasets: DatasetCacheStatus[];
-	allCached: boolean;
 	cachedCount: number;
 	totalCount: number;
 	estimatedCachedSizeMB: number;
@@ -65,20 +54,15 @@ export interface StorageEstimate {
 /**
  * Opens the IndexedDB database used by Emscripten for caching
  */
-async function openDatabase(): Promise<IDBDatabase | null> {
-	if (typeof indexedDB === 'undefined') {
-		console.warn('[CacheService] IndexedDB is not available');
-
-		return null;
-	}
-
+async function openDatabase(): Promise<IDBDatabase> {
 	return new Promise((resolve, reject) => {
-		console.log(`[CacheService] Opening IndexedDB database: ${DB_NAME}`);
+		if (typeof indexedDB === 'undefined') {
+			reject('IndexedDB is not supported in this environment');
+		}
+
 		const openRequest = indexedDB.open(DB_NAME, DB_VERSION);
 
 		openRequest.onupgradeneeded = event => {
-			// Database doesn't exist yet or needs upgrade - this means no cache
-			console.log('[CacheService] Database upgrade needed - creating stores');
 			const db = (event.target as IDBOpenDBRequest).result;
 			// Create stores if they don't exist (they won't have data anyway)
 
@@ -93,13 +77,11 @@ async function openDatabase(): Promise<IDBDatabase | null> {
 
 		openRequest.onsuccess = event => {
 			const db = (event.target as IDBOpenDBRequest).result;
-			console.log(`[CacheService] Database opened successfully. Object stores: ${Array.from(db.objectStoreNames).join(', ')}`);
 			resolve(db);
 		};
 
 		openRequest.onerror = () => {
-			console.warn('[CacheService] Failed to open IndexedDB:', openRequest.error);
-			resolve(null);
+			reject('Failed to open IndexedDB database');
 		};
 	});
 }
@@ -111,7 +93,6 @@ async function openDatabase(): Promise<IDBDatabase | null> {
 async function checkDatasetCachedByDataFile(
 	db: IDBDatabase,
 	dataFile: string,
-	datasetName: string,
 	allMetadataKeys: string[]
 ): Promise<boolean> {
 	// Find any key that ends with our dataFile (after removing 'metadata/' prefix)
@@ -126,22 +107,12 @@ async function checkDatasetCachedByDataFile(
 	});
 
 	if (matchingKey) {
-		console.log(`[CacheService] Dataset ${datasetName}: Found matching key "${matchingKey}"`);
-		// Verify it has valid metadata
 		const result = await getMetadataValue(db, matchingKey);
 
 		if (result && result.uuid) {
-			console.log(
-				`[CacheService] Dataset ${datasetName}: CACHED (uuid: ${result.uuid}, chunkCount: ${result.chunkCount})`
-			);
-
 			return true;
 		}
 	}
-
-	console.log(
-		`[CacheService] Dataset ${datasetName}: NOT CACHED (no matching key for dataFile "${dataFile}")`
-	);
 
 	return false;
 }
@@ -184,16 +155,13 @@ async function listAllMetadataKeys(db: IDBDatabase): Promise<string[]> {
 
 			getAllKeysRequest.onsuccess = () => {
 				const keys = getAllKeysRequest.result as string[];
-				console.log(`[CacheService] All METADATA keys (${keys.length}):`, keys);
 				resolve(keys);
 			};
 
 			getAllKeysRequest.onerror = () => {
-				console.warn('[CacheService] Error listing metadata keys:', getAllKeysRequest.error);
 				resolve([]);
 			};
 		} catch (error) {
-			console.warn('[CacheService] Exception listing metadata keys:', error);
 			resolve([]);
 		}
 	});
@@ -203,19 +171,15 @@ async function listAllMetadataKeys(db: IDBDatabase): Promise<string[]> {
  * Checks the cache status of all Geant4 datasets
  */
 export async function checkAllDatasetsCacheStatus(): Promise<CacheStatusResult> {
-	console.log('[CacheService] Starting cache status check...');
 	const db = await openDatabase();
 
 	if (!db) {
-		console.warn('[CacheService] Database not available, returning all uncached');
-
 		return {
 			datasets: GEANT4_DATASETS.map(ds => ({
 				name: ds.name,
 				isCached: false,
 				approximateSizeMB: ds.approximateSizeMB
 			})),
-			allCached: false,
 			cachedCount: 0,
 			totalCount: GEANT4_DATASETS.length,
 			estimatedCachedSizeMB: 0,
@@ -226,16 +190,10 @@ export async function checkAllDatasetsCacheStatus(): Promise<CacheStatusResult> 
 	try {
 		// First, list all metadata keys for debugging
 		const allKeys = await listAllMetadataKeys(db);
-		console.log('[CacheService] Found metadata keys:', allKeys);
 
 		const datasetStatuses: DatasetCacheStatus[] = await Promise.all(
 			GEANT4_DATASETS.map(async ds => {
-				const isCached = await checkDatasetCachedByDataFile(
-					db,
-					ds.dataFile,
-					ds.name,
-					allKeys
-				);
+				const isCached = await checkDatasetCachedByDataFile(db, ds.dataFile, allKeys);
 
 				return {
 					name: ds.name,
@@ -249,14 +207,14 @@ export async function checkAllDatasetsCacheStatus(): Promise<CacheStatusResult> 
 
 		const result: CacheStatusResult = {
 			datasets: datasetStatuses,
-			allCached: cachedDatasets.length === GEANT4_DATASETS.length,
 			cachedCount: cachedDatasets.length,
 			totalCount: GEANT4_DATASETS.length,
-			estimatedCachedSizeMB: cachedDatasets.reduce((sum, ds) => sum + ds.approximateSizeMB, 0),
+			estimatedCachedSizeMB: cachedDatasets.reduce(
+				(sum, ds) => sum + ds.approximateSizeMB,
+				0
+			),
 			estimatedTotalSizeMB: TOTAL_DATASET_SIZE_MB
 		};
-
-		console.log('[CacheService] Cache status result:', result);
 
 		return result;
 	} finally {
@@ -293,9 +251,7 @@ export async function getStorageEstimate(): Promise<StorageEstimate | null> {
 export async function clearDatasetCache(): Promise<boolean> {
 	return new Promise(resolve => {
 		if (typeof indexedDB === 'undefined') {
-			resolve(false);
-
-			return;
+			return resolve(false);
 		}
 
 		const deleteRequest = indexedDB.deleteDatabase(DB_NAME);

@@ -47,17 +47,17 @@ const initDatasets: Geant4WorkerCallbacksType = async args => {
 	// This, in theory, could enable the app to run offline.
 	try {
 		downloadTracker.reset();
-		downloadTracker.setCurrentDataset('G4ENSDFSTATE');
+		downloadTracker.setCurrentDataset('G4ENSDFSTATE3.0');
 		await initG4ENSDFSTATE(wasmModule);
-		downloadTracker.setCurrentDataset('G4EMLOW');
+		downloadTracker.setCurrentDataset('G4EMLOW8.6.1');
 		await initG4EMLOW(wasmModule);
-		downloadTracker.setCurrentDataset('G4NDL');
+		downloadTracker.setCurrentDataset('G4NDL4.7.1');
 		await initG4NDL(wasmModule);
-		downloadTracker.setCurrentDataset('G4PARTICLEXS');
+		downloadTracker.setCurrentDataset('G4PARTICLEXS4.1');
 		await initG4PARTICLEXS(wasmModule);
-		downloadTracker.setCurrentDataset('G4SAIDDATA');
+		downloadTracker.setCurrentDataset('G4SAIDDATA2.0');
 		await initG4SAIDDATA(wasmModule);
-		downloadTracker.setCurrentDataset('PhotonEvaporation');
+		downloadTracker.setCurrentDataset('PhotonEvaporation6.1');
 		await initPhotoEvaporation(wasmModule);
 	} catch (error: unknown) {
 		console.error('Error initializing lazy files:', (error as Error).message);

@@ -18,7 +18,8 @@ import {
 	Typography
 } from '@mui/material';
 
-import { useDatasetCacheStatus } from '../../../../Geant4Worker/useDatasetCacheStatus';
+import { useSharedDatasetManager } from '../../../../services/Geant4DatasetContextProvider';
+// import { useDatasetCacheStatus } from '../../../../Geant4Worker/useDatasetCacheStatus';
 import {
 	ConcreteDialogProps,
 	CustomDialog
@@ -63,13 +64,12 @@ const datasetSummaries = [
 function CacheStatusSection() {
 	const {
 		isLoading,
-		allCached,
 		cachedCount,
 		totalCount,
 		downloadSizeNeededMB,
 		storageEstimate,
-		cacheStatus
-	} = useDatasetCacheStatus();
+		datasetStatus
+	} = useSharedDatasetManager();
 
 	if (isLoading) {
 		return (
@@ -79,6 +79,8 @@ function CacheStatusSection() {
 			</Box>
 		);
 	}
+
+	const allCached = cachedCount === totalCount;
 
 	return (
 		<Box sx={{ mt: 2 }}>
@@ -134,7 +136,7 @@ function CacheStatusSection() {
 				</Typography>
 			)}
 
-			{cacheStatus && cacheStatus.datasets.length > 0 && (
+			{/* {cacheStatus && cacheStatus.datasets.length > 0 && (
 				<Box sx={{ mt: 1 }}>
 					{cacheStatus.datasets.map(ds => (
 						<Chip
@@ -147,7 +149,7 @@ function CacheStatusSection() {
 						/>
 					))}
 				</Box>
-			)}
+			)} */}
 		</Box>
 	);
 }
