@@ -5,6 +5,7 @@ import { Box, List, useTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { SyntheticEvent, useMemo } from 'react';
 
+import { useConfig } from '../../../config/ConfigService';
 import { AuthContext, useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
 import deployInfo from '../../../util/identify/deployInfo.json';
@@ -45,6 +46,7 @@ function LogInOut(props: {
 	authContext: AuthContext;
 	handleChange: (event: SyntheticEvent, value: string) => void;
 }) {
+	const { demoMode } = useConfig();
 	const { isAuthorized, user, logout } = props.authContext;
 
 	const username = useMemo(
@@ -54,51 +56,53 @@ function LogInOut(props: {
 
 	return (
 		<List>
-			<NavPanelElement
-				menuOption={{
-					label: username,
-					richLabel: (
-						<Typography
-							component='div'
-							sx={{
-								marginRight: 1,
-								textOverflow: 'ellipsis',
-								overflow: 'hidden'
-							}}>
-							{isAuthorized && user ? (
-								<Box>
-									Log out{' '}
-									<Box
-										sx={{
-											fontWeight: 'bold',
-											overflowWrap: 'break-word',
-											whiteSpace: 'nowrap',
-											overflow: 'hidden',
-											textOverflow: 'ellipsis'
-										}}>
-										{user.username}
+			{!demoMode && (
+				<NavPanelElement
+					menuOption={{
+						label: username,
+						richLabel: (
+							<Typography
+								component='div'
+								sx={{
+									marginRight: 1,
+									textOverflow: 'ellipsis',
+									overflow: 'hidden'
+								}}>
+								{isAuthorized && user ? (
+									<Box>
+										Log out{' '}
+										<Box
+											sx={{
+												fontWeight: 'bold',
+												overflowWrap: 'break-word',
+												whiteSpace: 'nowrap',
+												overflow: 'hidden',
+												textOverflow: 'ellipsis'
+											}}>
+											{user.username}
+										</Box>
 									</Box>
-								</Box>
-							) : (
-								'Log in'
-							)}
-						</Typography>
-					),
-					description: <Typography />,
-					value: 'deployInfo',
-					disabled: false,
-					info: isAuthorized ? username : 'Log in',
-					icon: <PersonIcon fontSize='large' />
-				}}
-				open={true}
-				onClick={(event: SyntheticEvent<Element, Event>) => {
-					if (isAuthorized) logout();
-					else props.handleChange(event, 'login');
-				}}
-				buttonProps={{
-					type: 'button'
-				}}
-			/>
+								) : (
+									'Log in'
+								)}
+							</Typography>
+						),
+						description: <Typography />,
+						value: 'deployInfo',
+						disabled: false,
+						info: isAuthorized ? username : 'Log in',
+						icon: <PersonIcon fontSize='large' />
+					}}
+					open={true}
+					onClick={(event: SyntheticEvent<Element, Event>) => {
+						if (isAuthorized) logout();
+						else props.handleChange(event, 'login');
+					}}
+					buttonProps={{
+						type: 'button'
+					}}
+				/>
+			)}
 		</List>
 	);
 }
