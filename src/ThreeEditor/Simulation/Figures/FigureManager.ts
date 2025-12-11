@@ -72,6 +72,8 @@ export class FigureManager
 
 	private editor: YaptideEditor;
 	private signals: {
+		figureAdded: Signal;
+		figureRemoved: Signal;
 		sceneGraphChanged: Signal;
 	};
 
@@ -99,13 +101,15 @@ export class FigureManager
 	addFigure(figure: BasicFigure<THREE.BufferGeometry>) {
 		this.figureContainer.add(figure);
 		this.editor.select(figure);
-		this.signals.sceneGraphChanged.dispatch();
+		this.editor.signals.figureAdded.dispatch(figure);
+		this.editor.signals.sceneGraphChanged.dispatch(figure);
 	}
 
 	removeFigure(figure: BasicFigure<THREE.BufferGeometry>) {
 		this.figureContainer.remove(figure);
 		this.editor.deselect();
-		this.signals.sceneGraphChanged.dispatch();
+		this.signals.figureRemoved.dispatch(figure);
+		this.signals.sceneGraphChanged.dispatch(figure);
 	}
 
 	getFigureByUuid(uuid: string) {
@@ -167,6 +171,11 @@ export class FigureManager
 		this.uuid = uuid;
 		this.name = name;
 		this.figureContainer.fromSerialized(figures);
+
+		for (const figure of this.figures) {
+			// Let the clipped view viewports know that the figure exists
+			this.signals.figureAdded.dispatch(figure);
+		}
 
 		return this;
 	}

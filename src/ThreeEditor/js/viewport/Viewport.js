@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls';
 
+import { SimulatorType } from '../../../types/RequestTypes';
 import {
 	SetPositionCommand,
 	SetRotationCommand,
@@ -116,24 +117,53 @@ export function Viewport(
 
 	let viewClipPlane = null;
 
-	if (clipPlane) {
-		viewClipPlane = new ViewportClippedViewCSG(
-			name,
-			editor,
-			this,
-			planeHelpers,
-			zoneManager.zoneContainer.children,
-			signals.zoneGeometryChanged,
-			signals.zoneAdded,
-			signals.zoneRemoved,
-			wrapperDiv.dom,
-			{
-				clipPlane,
-				planeHelperColor,
-				planePosLabel
+	const setupViewClipPlane = () => {
+		if (viewClipPlane) {
+			viewClipPlane.detachSignals();
+			viewClipPlane = null;
+		}
+
+		if (clipPlane) {
+			if (editor.contextManager.currentSimulator !== SimulatorType.GEANT4) {
+				viewClipPlane = new ViewportClippedViewCSG(
+					name,
+					editor,
+					this,
+					planeHelpers,
+					zoneManager.zoneContainer.children,
+					signals.zoneGeometryChanged,
+					signals.zoneAdded,
+					signals.zoneRemoved,
+					wrapperDiv.dom,
+					{
+						clipPlane,
+						planeHelperColor,
+						planePosLabel
+					}
+				);
+			} else {
+				viewClipPlane = new ViewportClippedViewCSG(
+					name,
+					editor,
+					this,
+					planeHelpers,
+					zoneManager.zoneContainer.children,
+					signals.objectChanged,
+					signals.figureAdded,
+					signals.figureRemoved,
+					wrapperDiv.dom,
+					{
+						clipPlane,
+						planeHelperColor,
+						planePosLabel
+					}
+				);
 			}
-		);
-	}
+		}
+	};
+
+	setupViewClipPlane();
+	editor.signals.simulatorChanged.add(setupViewClipPlane);
 
 	let cachedRenderer = null;
 
@@ -154,7 +184,7 @@ export function Viewport(
 
 		renderer.clear();
 
-		if (clipPlane) renderer.render(viewClipPlane.scene, camera);
+		if (clipPlane && viewClipPlane) renderer.render(viewClipPlane.scene, camera);
 		else {
 			renderer.render(detectorManager, camera);
 
