@@ -38,7 +38,7 @@ export interface DatasetCacheStatus {
 }
 
 export interface CacheStatusResult {
-	datasets: DatasetCacheStatus[];
+	datasets: Record<string, DatasetCacheStatus>;
 	cachedCount: number;
 	totalCount: number;
 	estimatedCachedSizeMB: number;
@@ -175,11 +175,16 @@ export async function checkAllDatasetsCacheStatus(): Promise<CacheStatusResult> 
 
 	if (!db) {
 		return {
-			datasets: GEANT4_DATASETS.map(ds => ({
-				name: ds.name,
-				isCached: false,
-				approximateSizeMB: ds.approximateSizeMB
-			})),
+			datasets: Object.fromEntries(
+				GEANT4_DATASETS.map(ds => [
+					ds.name,
+					{
+						name: ds.name,
+						isCached: false,
+						approximateSizeMB: ds.approximateSizeMB
+					}
+				])
+			),
 			cachedCount: 0,
 			totalCount: GEANT4_DATASETS.length,
 			estimatedCachedSizeMB: 0,
@@ -191,19 +196,22 @@ export async function checkAllDatasetsCacheStatus(): Promise<CacheStatusResult> 
 		// First, list all metadata keys for debugging
 		const allKeys = await listAllMetadataKeys(db);
 
-		const datasetStatuses: DatasetCacheStatus[] = await Promise.all(
+		const datasetStatuses: Record<string, DatasetCacheStatus> = await Promise.all(
 			GEANT4_DATASETS.map(async ds => {
 				const isCached = await checkDatasetCachedByDataFile(db, ds.dataFile, allKeys);
 
-				return {
-					name: ds.name,
-					isCached,
-					approximateSizeMB: ds.approximateSizeMB
-				};
+				return [
+					ds.name,
+					{
+						name: ds.name,
+						isCached,
+						approximateSizeMB: ds.approximateSizeMB
+					}
+				] as const;
 			})
-		);
+		).then(entries => Object.fromEntries(entries));
 
-		const cachedDatasets = datasetStatuses.filter(ds => ds.isCached);
+		const cachedDatasets = Object.values(datasetStatuses).filter(ds => ds.isCached);
 
 		const result: CacheStatusResult = {
 			datasets: datasetStatuses,

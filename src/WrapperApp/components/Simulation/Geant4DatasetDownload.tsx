@@ -4,6 +4,7 @@ import CachedIcon from '@mui/icons-material/Cached';
 import CheckIcon from '@mui/icons-material/Check';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import PlaylistRemove from '@mui/icons-material/PlaylistRemove';
 import StorageIcon from '@mui/icons-material/Storage';
 import {
 	AccordionDetails,
@@ -18,7 +19,7 @@ import {
 	Typography,
 	useTheme
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { JSX, use, useEffect, useState } from 'react';
 
 import {
 	DatasetDownloadStatus,
@@ -39,47 +40,124 @@ export enum Geant4DatasetsType {
 function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 	const { status } = props;
 
-	let icon = null;
+	const datasetStatusIcon: Map<DatasetDownloadStatus, JSX.Element> = new Map([
+		[DatasetDownloadStatus.IDLE, <CachedIcon color='disabled' />],
+		[DatasetDownloadStatus.DOWNLOADING, <CloudDownloadIcon color='primary' />],
+		[DatasetDownloadStatus.PROCESSING, <CachedIcon color='warning' />],
+		[DatasetDownloadStatus.CACHED, <StorageIcon color='success' />],
+		[DatasetDownloadStatus.DONE, <CheckIcon color='primary' />]
+	]);
 
-	if (status.status === DatasetDownloadStatus.DONE) {
-		icon = <CheckIcon color='success' />;
-	} else if (status.isCached) {
-		icon = <StorageIcon color='warning' />;
-	} else {
-		icon = <CloudDownloadIcon color='error' />;
-	}
+	const datasetProgressBar: Map<DatasetDownloadStatus, JSX.Element> = new Map([
+		[
+			DatasetDownloadStatus.DOWNLOADING,
+			<LinearProgress
+				variant='determinate'
+				value={status.total ? ((status.done ?? 0) / status.total) * 100 : 0}
+				color='primary'
+			/>
+		],
+		[
+			DatasetDownloadStatus.PROCESSING,
+			<LinearProgress
+				variant='indeterminate'
+				color='warning'
+			/>
+		]
+	]);
 
 	return (
 		<Box sx={{ pb: 1 }}>
 			<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
 				<Typography sx={{ flex: 1 }}>{status.name}</Typography>
-				{icon}
+				{datasetStatusIcon.get(status.status)}
 			</Box>
 
-			<Box sx={{ mt: 1 }}>
-				{status.status === DatasetDownloadStatus.DOWNLOADING && (
-					<LinearProgress
-						variant='determinate'
-						value={status.total ? ((status.done ?? 0) / status.total) * 100 : 0}
-						color='primary'
-					/>
-				)}
-				{status.status === DatasetDownloadStatus.PROCESSING && (
-					<LinearProgress
-						variant='indeterminate'
-						color='warning'
-					/>
-				)}
-			</Box>
+			<Box sx={{ mt: 1 }}>{datasetProgressBar.get(status.status)}</Box>
 		</Box>
 	);
 }
 
-function CacheStatusIndicator({ showDebugInfo = false }: { showDebugInfo?: boolean }) {
-	const { isLoading, cachedCount, totalCount, downloadSizeNeededMB, storageEstimate, refresh } =
-		useDatasetManager();
+enum DatasetChipType {
+	CACHED,
+	PARTIALLY_CACHED,
+	NOT_CACHED
+}
 
-	const allCached = cachedCount === totalCount;
+type DatasetCachedChipInfo = {
+	title: string;
+	chip: {
+		icon: JSX.Element;
+		label: string;
+		color: 'success' | 'warning' | 'error';
+	};
+};
+
+type DatasetCachedChipProps = {
+	cachedCount: number;
+	totalCount: number;
+	downloadSizeNeededMB: number;
+	type: DatasetChipType;
+};
+
+function DatasetCachedChip(props: DatasetCachedChipProps) {
+	const { cachedCount, totalCount, downloadSizeNeededMB, type } = props;
+
+	const chipPropsPerStatus: Record<DatasetChipType, DatasetCachedChipInfo> = {
+		[DatasetChipType.CACHED]: {
+			title: 'All datasets are cached in your browser. Loading will be quick!',
+			chip: {
+				icon: <CachedIcon />,
+				label: 'Cached',
+				color: 'success'
+			}
+		},
+		[DatasetChipType.PARTIALLY_CACHED]: {
+			title: `${cachedCount} of ${totalCount} datasets cached. ~${downloadSizeNeededMB.toFixed(0)} MB needs to be downloaded.`,
+			chip: {
+				icon: <CloudDownloadIcon />,
+				label: `Partially cached (${cachedCount}/${totalCount})`,
+				color: 'warning'
+			}
+		},
+		[DatasetChipType.NOT_CACHED]: {
+			title: `No datasets cached. ~${downloadSizeNeededMB.toFixed(0)} MB will be downloaded from S3.`,
+			chip: {
+				icon: <CloudDownloadIcon />,
+				label: 'Not cached',
+				color: 'error'
+			}
+		}
+	};
+
+	return (
+		<Tooltip title={chipPropsPerStatus[type].title}>
+			<Chip
+				icon={chipPropsPerStatus[type].chip.icon}
+				label={chipPropsPerStatus[type].chip.label}
+				size='small'
+				color={chipPropsPerStatus[type].chip.color}
+				sx={{ px: 1 }}
+			/>
+		</Tooltip>
+	);
+}
+
+function CacheStatusIndicator() {
+	const {
+		isLoading,
+		cachedCount,
+		totalCount,
+		downloadSizeNeededMB,
+		storageEstimate,
+		refresh,
+		clearCache
+	} = useDatasetManager();
+	const [allCached, setAllCached] = useState(false);
+
+	useEffect(() => {
+		setAllCached(cachedCount === totalCount);
+	}, [cachedCount, totalCount]);
 
 	if (isLoading) {
 		return (
@@ -97,39 +175,18 @@ function CacheStatusIndicator({ showDebugInfo = false }: { showDebugInfo?: boole
 	return (
 		<Box sx={{ mb: 2 }}>
 			<Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', mb: 1 }}>
-				{allCached ? (
-					<Tooltip title='All datasets are cached in your browser. Loading will be quick!'>
-						<Chip
-							icon={<CachedIcon />}
-							label='Cached'
-							color='success'
-							size='small'
-							variant='filled'
-						/>
-					</Tooltip>
-				) : cachedCount > 0 ? (
-					<Tooltip
-						title={`${cachedCount} of ${totalCount} datasets cached. ~${downloadSizeNeededMB.toFixed(0)} MB needs to be downloaded.`}>
-						<Chip
-							icon={<CloudDownloadIcon />}
-							label={`Partially cached (${cachedCount}/${totalCount})`}
-							color='warning'
-							size='small'
-							variant='filled'
-						/>
-					</Tooltip>
-				) : (
-					<Tooltip
-						title={`No datasets cached. ~${downloadSizeNeededMB.toFixed(0)} MB will be downloaded from S3.`}>
-						<Chip
-							icon={<CloudDownloadIcon />}
-							label='Not cached'
-							color='error'
-							size='small'
-							variant='filled'
-						/>
-					</Tooltip>
-				)}
+				<DatasetCachedChip
+					cachedCount={cachedCount}
+					totalCount={totalCount}
+					downloadSizeNeededMB={downloadSizeNeededMB}
+					type={
+						allCached
+							? DatasetChipType.CACHED
+							: cachedCount > 0
+								? DatasetChipType.PARTIALLY_CACHED
+								: DatasetChipType.NOT_CACHED
+					}
+				/>
 
 				{storageEstimate && (
 					<Tooltip
@@ -139,6 +196,20 @@ function CacheStatusIndicator({ showDebugInfo = false }: { showDebugInfo?: boole
 							label={`${storageEstimate.usedMB.toFixed(0)} MB used`}
 							size='small'
 							variant='outlined'
+							sx={{ px: 1 }}
+						/>
+					</Tooltip>
+				)}
+
+				{cachedCount > 0 && (
+					<Tooltip title='Clear cached datasets'>
+						<Chip
+							icon={<PlaylistRemove />}
+							label='Clear'
+							size='small'
+							variant='outlined'
+							onClick={clearCache}
+							sx={{ cursor: 'pointer', px: 1 }}
 						/>
 					</Tooltip>
 				)}
@@ -150,7 +221,7 @@ function CacheStatusIndicator({ showDebugInfo = false }: { showDebugInfo?: boole
 						size='small'
 						variant='outlined'
 						onClick={refresh}
-						sx={{ cursor: 'pointer' }}
+						sx={{ cursor: 'pointer', px: 1 }}
 					/>
 				</Tooltip>
 			</Box>
@@ -244,17 +315,20 @@ export function Geant4Datasets() {
 		refresh
 	} = useSharedDatasetManager();
 
-	const allCached = cachedCount === totalCount;
+	const [allCached, setAllCached] = useState(false);
 
-	console.log(datasetStatus);
+	useEffect(() => {
+		setAllCached(cachedCount === totalCount);
+	}, [cachedCount, totalCount]);
 
 	// Refresh cache status when download finishes
 	useEffect(() => {
 		if (geant4DownloadManagerState === DownloadManagerStatus.FINISHED) {
-			console.log('[Geant4Datasets] Download finished, refreshing cache status...');
 			// Add a small delay to ensure IndexedDB is updated
-			setTimeout(() => refresh(), 1000);
-			setOpen(false);
+			setTimeout(() => {
+				refresh();
+				setOpen(false);
+			}, 1000);
 		}
 	}, [geant4DownloadManagerState, refresh]);
 
@@ -292,7 +366,7 @@ export function Geant4Datasets() {
 					display: 'flex',
 					flexDirection: 'column'
 				}}>
-				<CacheStatusIndicator showDebugInfo={false} />
+				<CacheStatusIndicator />
 
 				{showDownloadProgress &&
 					Object.values(datasetStatus).map(status => (

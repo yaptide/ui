@@ -33,6 +33,7 @@ export enum DownloadManagerStatus {
 
 export enum DatasetDownloadStatus {
 	IDLE,
+	CACHED,
 	DOWNLOADING,
 	PROCESSING,
 	DONE
@@ -49,7 +50,6 @@ export interface DatasetStatus {
 	status: DatasetDownloadStatus;
 	done?: number;
 	total?: number;
-	isCached: boolean;
 	totalSizeMB?: number;
 }
 
@@ -177,10 +177,17 @@ export function useDatasetManager(): UseDatasetManagerResult {
 				const newStates: Record<string, DatasetStatus> = { ...prev };
 
 				for (const ds of GEANT4_DATASETS) {
+					const newStatus = status.datasets[ds.name]?.isCached
+						? DatasetDownloadStatus.CACHED
+						: DatasetDownloadStatus.IDLE;
+
 					newStates[ds.name] = {
 						name: ds.name,
-						status: prev[ds.name]?.status ?? DatasetDownloadStatus.IDLE,
-						isCached: status.datasets.find(s => s.name === ds.name)?.isCached ?? false,
+						status:
+							prev[ds.name]?.status !== DatasetDownloadStatus.DOWNLOADING &&
+							prev[ds.name]?.status !== DatasetDownloadStatus.PROCESSING
+								? newStatus
+								: prev[ds.name]?.status,
 						totalSizeMB: ds.approximateSizeMB
 					};
 				}
@@ -201,8 +208,10 @@ export function useDatasetManager(): UseDatasetManagerResult {
 			await refresh();
 		}
 
+		setManagerState(DownloadManagerStatus.IDLE);
+
 		return success;
-	}, [refresh]);
+	}, [refresh, setManagerState]);
 
 	useEffect(() => {
 		refresh();
