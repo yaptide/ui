@@ -213,6 +213,8 @@ export function ViewportClippedViewCSG<
 				updateMeshIntersection(child as T);
 			}
 		}
+
+		editor.signals.sceneGraphChanged.dispatch();
 	}
 
 	function updateMeshIntersectionIfExists(object3D: T) {
@@ -233,6 +235,8 @@ export function ViewportClippedViewCSG<
 		const crossSectionObject = clippedObjects.getObjectByName(object3D.uuid);
 
 		if (crossSectionObject) clippedObjects.remove(crossSectionObject);
+
+		editor.signals.sceneGraphChanged.dispatch();
 	};
 
 	signalGeometryRemoved.add(removeObjectFromMeshIntersection);
@@ -245,6 +249,8 @@ export function ViewportClippedViewCSG<
 			crossSectionMesh.material.needsUpdate = true;
 			crossSectionMesh.visible = object3D.visible;
 		}
+
+		editor.signals.sceneGraphChanged.dispatch();
 	};
 
 	editor.signals.objectChanged.add(updateObjectInMeshIntersection);
@@ -258,6 +264,7 @@ export function ViewportClippedViewCSG<
 
 	this.reset = () => {
 		clippedObjects.clear();
+		editor.signals.sceneGraphChanged.dispatch();
 	};
 
 	this.configurationToJson = (): ClippedViewConfigurationJson => {
