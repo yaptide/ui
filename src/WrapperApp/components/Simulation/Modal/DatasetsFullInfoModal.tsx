@@ -19,7 +19,6 @@ import {
 } from '@mui/material';
 
 import { useSharedDatasetManager } from '../../../../services/Geant4DatasetContextProvider';
-// import { useDatasetCacheStatus } from '../../../../Geant4Worker/useDatasetCacheStatus';
 import {
 	ConcreteDialogProps,
 	CustomDialog
@@ -62,14 +61,8 @@ const datasetSummaries = [
  * Component to display current cache status in the dialog
  */
 function CacheStatusSection() {
-	const {
-		isLoading,
-		cachedCount,
-		totalCount,
-		downloadSizeNeededMB,
-		storageEstimate,
-		datasetStatus
-	} = useSharedDatasetManager();
+	const { isLoading, cachedCount, totalCount, downloadSizeNeededMB, storageEstimate } =
+		useSharedDatasetManager();
 
 	if (isLoading) {
 		return (
@@ -135,21 +128,6 @@ function CacheStatusSection() {
 						: `~${downloadSizeNeededMB.toFixed(0)} MB total download required`}
 				</Typography>
 			)}
-
-			{/* {cacheStatus && cacheStatus.datasets.length > 0 && (
-				<Box sx={{ mt: 1 }}>
-					{cacheStatus.datasets.map(ds => (
-						<Chip
-							key={ds.name}
-							label={ds.name}
-							size='small'
-							color={ds.isCached ? 'success' : 'default'}
-							variant={ds.isCached ? 'filled' : 'outlined'}
-							sx={{ mr: 0.5, mb: 0.5, fontSize: '0.7rem' }}
-						/>
-					))}
-				</Box>
-			)} */}
 		</Box>
 	);
 }

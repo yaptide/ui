@@ -1,18 +1,7 @@
 // Additional credits:
 // - @kmichalik
 
-import {
-	createContext,
-	Dispatch,
-	FC,
-	ReactNode,
-	SetStateAction,
-	useCallback,
-	useContext,
-	useEffect,
-	useRef,
-	useState
-} from 'react';
+import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 
 import {
 	checkAllDatasetsCacheStatus,
@@ -165,7 +154,7 @@ export function useDatasetManager(): UseDatasetManagerResult {
 			const cachedCount = status?.cachedCount ?? 0;
 			const totalCount = status?.totalCount ?? 0;
 			const downloadSizeNeededMB =
-				cachedCount == totalCount
+				cachedCount === totalCount
 					? 0
 					: TOTAL_DATASET_SIZE_MB - (status?.estimatedCachedSizeMB ?? 0);
 
@@ -211,22 +200,31 @@ export function useDatasetManager(): UseDatasetManagerResult {
 		setManagerState(DownloadManagerStatus.IDLE);
 
 		return success;
-	}, [refresh, setManagerState]);
+	}, [refresh]);
 
 	useEffect(() => {
 		refresh();
 	}, [refresh]);
 
 	useEffect(() => {
+		let isMounted = true;
+
 		if (initCalledRef.current) return;
 		worker
 			.init()
-			.then(() => setIdle(true))
+			.then(() => {
+				if (isMounted) setIdle(true);
+			})
 			.catch(error => {
-				setManagerState(DownloadManagerStatus.ERROR);
+				if (isMounted) setManagerState(DownloadManagerStatus.ERROR);
 				console.error('Failed to initialize Geant4 worker for dataset download:', error);
 			});
 		initCalledRef.current = true;
+
+		return () => {
+			isMounted = false;
+			worker.destroy();
+		};
 	}, [worker]);
 
 	const startDownloadSimple = useCallback(() => {

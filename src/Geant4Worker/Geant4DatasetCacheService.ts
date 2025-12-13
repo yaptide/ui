@@ -13,12 +13,16 @@
  */
 
 export const GEANT4_DATASETS = [
-	{ name: 'G4EMLOW8.6.1', dataFile: 'G4EMLOW8.6.1.data', approximateSizeMB: 580 },
-	{ name: 'G4ENSDFSTATE3.0', dataFile: 'G4ENSDFSTATE3.0.data', approximateSizeMB: 0.1 },
-	{ name: 'G4NDL4.7.1', dataFile: 'G4NDL4.7.1.data', approximateSizeMB: 583 },
-	{ name: 'G4PARTICLEXS4.1', dataFile: 'G4PARTICLEXS4.1.data', approximateSizeMB: 103 },
-	{ name: 'G4SAIDDATA2.0', dataFile: 'G4SAIDDATA2.0.data', approximateSizeMB: 0.8 },
-	{ name: 'PhotonEvaporation6.1', dataFile: 'PhotonEvaporation6.1.data', approximateSizeMB: 47 }
+	{ name: 'G4EMLOW8.6.1', dataFile: 'G4EMLOW8.6.1.data', approximateSizeMB: 649.079 },
+	{ name: 'G4ENSDFSTATE3.0', dataFile: 'G4ENSDFSTATE3.0.data', approximateSizeMB: 1.874 },
+	{ name: 'G4NDL4.7.1', dataFile: 'G4NDL4.7.1.data', approximateSizeMB: 1082.079 },
+	{ name: 'G4PARTICLEXS4.1', dataFile: 'G4PARTICLEXS4.1.data', approximateSizeMB: 23.533 },
+	{ name: 'G4SAIDDATA2.0', dataFile: 'G4SAIDDATA2.0.data', approximateSizeMB: 0.106 },
+	{
+		name: 'PhotonEvaporation6.1',
+		dataFile: 'PhotonEvaporation6.1.data',
+		approximateSizeMB: 39.609
+	}
 ] as const;
 
 export const TOTAL_DATASET_SIZE_MB = GEANT4_DATASETS.reduce(

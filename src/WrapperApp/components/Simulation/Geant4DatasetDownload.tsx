@@ -19,7 +19,7 @@ import {
 	Typography,
 	useTheme
 } from '@mui/material';
-import { JSX, use, useEffect, useState } from 'react';
+import { JSX, useEffect, useState } from 'react';
 
 import {
 	DatasetDownloadStatus,
@@ -153,11 +153,7 @@ function CacheStatusIndicator() {
 		refresh,
 		clearCache
 	} = useDatasetManager();
-	const [allCached, setAllCached] = useState(false);
-
-	useEffect(() => {
-		setAllCached(cachedCount === totalCount);
-	}, [cachedCount, totalCount]);
+	const allCached = cachedCount === totalCount;
 
 	if (isLoading) {
 		return (
@@ -315,21 +311,25 @@ export function Geant4Datasets() {
 		refresh
 	} = useSharedDatasetManager();
 
-	const [allCached, setAllCached] = useState(false);
-
-	useEffect(() => {
-		setAllCached(cachedCount === totalCount);
-	}, [cachedCount, totalCount]);
+	const allCached = cachedCount === totalCount;
 
 	// Refresh cache status when download finishes
 	useEffect(() => {
+		let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
 		if (geant4DownloadManagerState === DownloadManagerStatus.FINISHED) {
 			// Add a small delay to ensure IndexedDB is updated
-			setTimeout(() => {
+			setOpen(false);
+			timeoutId = setTimeout(() => {
 				refresh();
-				setOpen(false);
-			}, 1000);
+			}, 2000);
 		}
+
+		return () => {
+			if (timeoutId) {
+				clearTimeout(timeoutId);
+			}
+		};
 	}, [geant4DownloadManagerState, refresh]);
 
 	const buttonText = allCached ? 'Load from cache' : 'Start download';
