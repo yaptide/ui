@@ -228,7 +228,6 @@ export default function RecentSimulations() {
 			sx={{
 				'margin': `0 ${theme.spacing(1)} ${theme.spacing(1)} ${theme.spacing(1)}`,
 				'flexGrow': 1,
-				'minHeight': 0,
 				'display': 'flex',
 				'flexDirection': 'column',
 				'& .MuiCollapse-root': {
