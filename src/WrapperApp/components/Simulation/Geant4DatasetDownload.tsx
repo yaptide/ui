@@ -184,32 +184,6 @@ function CacheStatusIndicator() {
 					}
 				/>
 
-				{storageEstimate && (
-					<Tooltip
-						title={`Browser storage: ${storageEstimate.usedMB.toFixed(0)} MB used of ${storageEstimate.quotaMB.toFixed(0)} MB (${storageEstimate.percentUsed.toFixed(1)}%)`}>
-						<Chip
-							icon={<StorageIcon />}
-							label={`${storageEstimate.usedMB.toFixed(0)} MB used`}
-							size='small'
-							variant='outlined'
-							sx={{ px: 1 }}
-						/>
-					</Tooltip>
-				)}
-
-				{cachedCount > 0 && (
-					<Tooltip title='Clear cached datasets'>
-						<Chip
-							icon={<PlaylistRemove />}
-							label='Clear'
-							size='small'
-							variant='outlined'
-							onClick={clearCache}
-							sx={{ cursor: 'pointer', px: 1 }}
-						/>
-					</Tooltip>
-				)}
-
 				<Tooltip title='Refresh cache status'>
 					<Chip
 						icon={<CachedIcon />}
@@ -222,15 +196,28 @@ function CacheStatusIndicator() {
 				</Tooltip>
 			</Box>
 
-			{!allCached && (
-				<Typography
-					variant='caption'
-					color='text.secondary'>
-					{cachedCount > 0
-						? `~${downloadSizeNeededMB.toFixed(0)} MB remaining to download`
-						: `~${downloadSizeNeededMB.toFixed(0)} MB download required (may take several minutes)`}
-				</Typography>
-			)}
+			<Box sx={{ display: 'flex', justifyContent: 'right', width: '100%', gap: 1 }}>
+				{cachedCount > 0 && storageEstimate && (
+					<Tooltip
+						title={`Browser storage: ${storageEstimate.usedMB.toFixed(0)} MB used of ${storageEstimate.quotaMB.toFixed(0)} MB (${storageEstimate.percentUsed.toFixed(1)}%)`}>
+						<Typography
+							variant='caption'
+							color='text.secondary'
+							sx={{ flexGrow: 1 }}>
+							{`${storageEstimate.usedMB.toFixed(0)} MB used`}
+						</Typography>
+					</Tooltip>
+				)}
+				{!allCached && (
+					<Typography
+						variant='caption'
+						color='text.secondary'>
+						{cachedCount > 0
+							? `~${downloadSizeNeededMB.toFixed(0)} MB remaining to download`
+							: `~${downloadSizeNeededMB.toFixed(0)} MB download required (may take several minutes)`}
+					</Typography>
+				)}
+			</Box>
 		</Box>
 	);
 }
@@ -308,28 +295,21 @@ export function Geant4Datasets() {
 		startDownload: geant4DatasetDownloadStart,
 		cachedCount,
 		totalCount,
-		refresh
+		refresh,
+		clearCache
 	} = useSharedDatasetManager();
 
 	const allCached = cachedCount === totalCount;
 
 	// Refresh cache status when download finishes
 	useEffect(() => {
-		let timeoutId: ReturnType<typeof setTimeout> | undefined;
-
 		if (geant4DownloadManagerState === DownloadManagerStatus.FINISHED) {
 			// Add a small delay to ensure IndexedDB is updated
 			setOpen(false);
-			timeoutId = setTimeout(() => {
+			setTimeout(() => {
 				refresh();
-			}, 2000);
+			}, 5000);
 		}
-
-		return () => {
-			if (timeoutId) {
-				clearTimeout(timeoutId);
-			}
-		};
 	}, [geant4DownloadManagerState, refresh]);
 
 	const buttonText = allCached ? 'Load from cache' : 'Start download';
@@ -376,15 +356,27 @@ export function Geant4Datasets() {
 						/>
 					))}
 
-				{showDownloadButton && (
-					<Button
-						onClick={geant4DatasetDownloadStart}
-						variant='contained'
-						startIcon={buttonIcon}
-						color={allCached ? 'success' : 'primary'}>
-						{buttonText}
-					</Button>
-				)}
+				<Box sx={{ display: 'flex', gap: 1, justifyContent: 'right', width: '100%' }}>
+					{showDownloadButton && (
+						<Button
+							onClick={geant4DatasetDownloadStart}
+							variant='contained'
+							startIcon={buttonIcon}
+							color='primary'
+							sx={{ flexGrow: 1 }}>
+							{buttonText}
+						</Button>
+					)}
+					{cachedCount > 0 && (
+						<Button
+							onClick={clearCache}
+							variant='contained'
+							startIcon={buttonIcon}
+							color='primary'>
+							Clear
+						</Button>
+					)}
+				</Box>
 
 				{geant4DownloadManagerState === DownloadManagerStatus.ERROR && (
 					<Typography>

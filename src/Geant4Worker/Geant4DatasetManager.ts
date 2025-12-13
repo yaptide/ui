@@ -207,24 +207,17 @@ export function useDatasetManager(): UseDatasetManagerResult {
 	}, [refresh]);
 
 	useEffect(() => {
-		let isMounted = true;
-
 		if (initCalledRef.current) return;
 		worker
 			.init()
 			.then(() => {
-				if (isMounted) setIdle(true);
+				setIdle(true);
 			})
 			.catch(error => {
-				if (isMounted) setManagerState(DownloadManagerStatus.ERROR);
+				setManagerState(DownloadManagerStatus.ERROR);
 				console.error('Failed to initialize Geant4 worker for dataset download:', error);
 			});
 		initCalledRef.current = true;
-
-		return () => {
-			isMounted = false;
-			worker.destroy();
-		};
 	}, [worker]);
 
 	const startDownloadSimple = useCallback(() => {
