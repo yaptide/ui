@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
 import { debounce } from 'throttle-debounce';
 
+import { SimulatorType } from '../../../types/RequestTypes';
 import { CSG } from '../../CSG/CSG';
 import { YaptideEditor } from '../YaptideEditor';
 import { Viewport } from './Viewport';
@@ -18,6 +19,7 @@ export interface ViewportClippedView {
 	scene: THREE.Scene;
 	gui: GUI;
 	planeHelper: THREE.PlaneHelper;
+	detachSignals: () => void;
 	reset: () => void;
 	configurationToJson: () => ClippedViewConfigurationJson;
 	fromConfigurationJson: (config: ClippedViewConfigurationJson) => void;
@@ -155,6 +157,22 @@ export function ViewportClippedViewCSG<
 		editor.signals.sceneGraphChanged.dispatch();
 	}
 
+	function estimateRenderOrder(object3D: T) {
+		// estimate render order for rendering of slices of Geant4 geometry that overlap
+		// figures are nested within each other and the innermost slice should be rendered on top
+		// by having the highest renderOrder value
+		// it is sufficient to have the value equal to the depth in the hierarchy
+		let parent = object3D.parent;
+		let renderOrder = 1;
+
+		while (parent) {
+			parent = parent.parent;
+			renderOrder++;
+		}
+
+		return renderOrder;
+	}
+
 	function updateMeshIntersection(object3D: T) {
 		const crossSectionObject = clippedObjects.getObjectByName(object3D.uuid);
 
@@ -174,6 +192,12 @@ export function ViewportClippedViewCSG<
 			});
 
 			crossSectionMesh = CSG.toMesh(objectMesh, object3D.matrix, crossSectionMaterial) as T;
+			object3D.getWorldPosition(crossSectionMesh.position);
+
+			if (editor.contextManager.currentSimulator === SimulatorType.GEANT4) {
+				crossSectionMaterial.depthTest = false;
+				crossSectionMesh.renderOrder = estimateRenderOrder(object3D);
+			}
 		} else {
 			crossSectionMesh = new THREE.Mesh() as T;
 		}
@@ -183,23 +207,35 @@ export function ViewportClippedViewCSG<
 		crossSectionMesh.visible = object3D.visible;
 
 		clippedObjects.add(crossSectionMesh);
+
+		editor.signals.sceneGraphChanged.dispatch();
 	}
 
-	signalGeometryChanged.add((object3D: T) => {
-		updateMeshIntersection(object3D);
-	});
+	function updateMeshIntersectionIfExists(object3D: T) {
+		if (clippedObjects.getObjectByName(object3D.uuid) === undefined) {
+			// Don't update objects that do not exist
+			// This is needed for Geant4 which uses objectChanged signal here that also dispatches detector geometry,
+			// which we don't want here
+			return;
+		}
 
-	signalGeometryAdded.add((object3D: T) => {
 		updateMeshIntersection(object3D);
-	});
+	}
 
-	signalGeometryRemoved.add((object3D: T) => {
+	signalGeometryChanged.add(updateMeshIntersectionIfExists);
+	signalGeometryAdded.add(updateMeshIntersection);
+
+	const removeObjectFromMeshIntersection = (object3D: T) => {
 		const crossSectionObject = clippedObjects.getObjectByName(object3D.uuid);
 
 		if (crossSectionObject) clippedObjects.remove(crossSectionObject);
-	});
 
-	editor.signals.objectChanged.add((object3D: T) => {
+		editor.signals.sceneGraphChanged.dispatch();
+	};
+
+	signalGeometryRemoved.add(removeObjectFromMeshIntersection);
+
+	const updateObjectInMeshIntersection = (object3D: T) => {
 		const crossSectionMesh = clippedObjects.getObjectByName(object3D.uuid) as T;
 
 		if (crossSectionMesh) {
@@ -207,10 +243,22 @@ export function ViewportClippedViewCSG<
 			crossSectionMesh.material.needsUpdate = true;
 			crossSectionMesh.visible = object3D.visible;
 		}
-	});
+
+		editor.signals.sceneGraphChanged.dispatch();
+	};
+
+	editor.signals.objectChanged.add(updateObjectInMeshIntersection);
+
+	this.detachSignals = () => {
+		signalGeometryChanged.remove(updateMeshIntersectionIfExists);
+		signalGeometryAdded.remove(updateMeshIntersection);
+		signalGeometryRemoved.remove(removeObjectFromMeshIntersection);
+		editor.signals.objectChanged.remove(updateObjectInMeshIntersection);
+	};
 
 	this.reset = () => {
 		clippedObjects.clear();
+		editor.signals.sceneGraphChanged.dispatch();
 	};
 
 	this.configurationToJson = (): ClippedViewConfigurationJson => {

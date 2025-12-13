@@ -1,5 +1,6 @@
 import { Signal } from 'signals';
 import * as THREE from 'three';
+import { Object3D } from 'three';
 
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { YaptideEditor } from '../../js/YaptideEditor';
@@ -72,6 +73,8 @@ export class FigureManager
 
 	private editor: YaptideEditor;
 	private signals: {
+		figureAdded: Signal;
+		figureRemoved: Signal;
 		sceneGraphChanged: Signal;
 	};
 
@@ -99,13 +102,15 @@ export class FigureManager
 	addFigure(figure: BasicFigure<THREE.BufferGeometry>) {
 		this.figureContainer.add(figure);
 		this.editor.select(figure);
-		this.signals.sceneGraphChanged.dispatch();
+		this.editor.signals.figureAdded.dispatch(figure);
+		this.editor.signals.sceneGraphChanged.dispatch(figure);
 	}
 
 	removeFigure(figure: BasicFigure<THREE.BufferGeometry>) {
 		this.figureContainer.remove(figure);
 		this.editor.deselect();
-		this.signals.sceneGraphChanged.dispatch();
+		this.signals.figureRemoved.dispatch(figure);
+		this.signals.sceneGraphChanged.dispatch(figure);
 	}
 
 	getFigureByUuid(uuid: string) {
@@ -167,6 +172,18 @@ export class FigureManager
 		this.uuid = uuid;
 		this.name = name;
 		this.figureContainer.fromSerialized(figures);
+
+		const dispatchFigureAdded = (object: Object3D) => {
+			this.signals.figureAdded.dispatch(object);
+
+			for (const child of object.children) {
+				dispatchFigureAdded(child);
+			}
+		};
+
+		for (const figure of this.figures) {
+			dispatchFigureAdded(figure);
+		}
 
 		return this;
 	}
