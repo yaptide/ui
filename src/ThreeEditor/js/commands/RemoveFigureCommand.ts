@@ -21,8 +21,7 @@ class RemoveFigureCommand extends RemoveObjectCommand {
 	}
 
 	undo() {
-		super.execute();
-		this.editor.signals.figureAdded.dispatch(this.object);
+		super.undo();
 
 		// Dispatch re-adding from top to bottom, so children are called after parent has been called
 		const dispatchReAdd = (o: Object3D) => {

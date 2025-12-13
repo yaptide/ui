@@ -1,5 +1,6 @@
 import { Signal } from 'signals';
 import * as THREE from 'three';
+import { Object3D } from 'three';
 
 import { SimulationPropertiesType } from '../../../types/SimulationProperties';
 import { YaptideEditor } from '../../js/YaptideEditor';
@@ -172,9 +173,16 @@ export class FigureManager
 		this.name = name;
 		this.figureContainer.fromSerialized(figures);
 
+		const dispatchFigureAdded = (object: Object3D) => {
+			this.signals.figureAdded.dispatch(object);
+
+			for (const child of object.children) {
+				dispatchFigureAdded(child);
+			}
+		};
+
 		for (const figure of this.figures) {
-			// Let the clipped view viewports know that the figure exists
-			this.signals.figureAdded.dispatch(figure);
+			dispatchFigureAdded(figure);
 		}
 
 		return this;

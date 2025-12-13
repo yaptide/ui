@@ -207,13 +207,6 @@ export function ViewportClippedViewCSG<
 
 		clippedObjects.add(crossSectionMesh);
 
-		// Handle Geant4 nested geometry
-		if (object3D.children.length > 0) {
-			for (const child of object3D.children) {
-				updateMeshIntersection(child as T);
-			}
-		}
-
 		editor.signals.sceneGraphChanged.dispatch();
 	}
 
@@ -256,7 +249,7 @@ export function ViewportClippedViewCSG<
 	editor.signals.objectChanged.add(updateObjectInMeshIntersection);
 
 	this.detachSignals = () => {
-		signalGeometryChanged.remove(updateMeshIntersection);
+		signalGeometryChanged.remove(updateMeshIntersectionIfExists);
 		signalGeometryAdded.remove(updateMeshIntersection);
 		signalGeometryRemoved.remove(removeObjectFromMeshIntersection);
 		editor.signals.objectChanged.remove(updateObjectInMeshIntersection);
