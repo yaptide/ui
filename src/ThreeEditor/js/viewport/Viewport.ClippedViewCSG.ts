@@ -192,6 +192,7 @@ export function ViewportClippedViewCSG<
 			});
 
 			crossSectionMesh = CSG.toMesh(objectMesh, object3D.matrix, crossSectionMaterial) as T;
+			object3D.getWorldPosition(crossSectionMesh.position);
 
 			if (editor.contextManager.currentSimulator === SimulatorType.GEANT4) {
 				crossSectionMaterial.depthTest = false;
