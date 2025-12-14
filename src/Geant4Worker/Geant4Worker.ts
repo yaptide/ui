@@ -154,7 +154,12 @@ export default class Geant4Worker {
 		);
 	}
 
-	destroy() {
+	markSafeForTermination() {
+		// we can delay the call should it be needed in the future
+		this.destroy();
+	}
+
+	private destroy() {
 		this.worker?.terminate();
 		this.worker = undefined;
 		this.isInitialized = false;

@@ -103,7 +103,7 @@ function startDownload({
 			await fetchProgress(worker, setDatasetStates);
 
 			setManagerState(DownloadManagerStatus.FINISHED);
-			worker.destroy();
+			worker.markSafeForTermination();
 		})
 		.catch(error => {
 			console.error('Dataset download error:', error);
