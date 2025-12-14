@@ -307,6 +307,10 @@ export function Geant4Datasets() {
 	const buttonIcon = allCached ? <StorageIcon /> : <CloudDownloadIcon />;
 
 	const enableDownloadButton = geant4DownloadManagerState === DownloadManagerStatus.IDLE;
+	const enableClearButton =
+		geant4DownloadManagerState === DownloadManagerStatus.IDLE ||
+		geant4DownloadManagerState === DownloadManagerStatus.FINISHED;
+
 	const showDownloadProgress =
 		geant4DownloadManagerState === DownloadManagerStatus.WORKING ||
 		geant4DownloadManagerState === DownloadManagerStatus.FINISHED ||
@@ -357,6 +361,7 @@ export function Geant4Datasets() {
 						<Button
 							onClick={clearCache}
 							variant='contained'
+							disabled={!enableClearButton}
 							startIcon={<PlaylistRemoveIcon />}
 							color='error'>
 							Clear

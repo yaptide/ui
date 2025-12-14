@@ -62,6 +62,8 @@ async function openDatabase(): Promise<IDBDatabase> {
 	return new Promise((resolve, reject) => {
 		if (typeof indexedDB === 'undefined') {
 			reject('IndexedDB is not supported in this environment');
+
+			return;
 		}
 
 		const openRequest = indexedDB.open(DB_NAME, DB_VERSION);
