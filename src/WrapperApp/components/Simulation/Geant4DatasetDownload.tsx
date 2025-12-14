@@ -4,7 +4,6 @@ import CachedIcon from '@mui/icons-material/Cached';
 import CheckIcon from '@mui/icons-material/Check';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import PlaylistRemove from '@mui/icons-material/PlaylistRemove';
 import StorageIcon from '@mui/icons-material/Storage';
 import {
 	AccordionDetails,
@@ -24,8 +23,7 @@ import { JSX, useEffect, useState } from 'react';
 import {
 	DatasetDownloadStatus,
 	DatasetStatus,
-	DownloadManagerStatus,
-	useDatasetManager
+	DownloadManagerStatus
 } from '../../../Geant4Worker/Geant4DatasetManager';
 import { useDialog } from '../../../services/DialogService';
 import { useSharedDatasetManager } from '../../../services/Geant4DatasetContextProvider';
@@ -40,11 +38,16 @@ export enum Geant4DatasetsType {
 function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 	const { status } = props;
 
+	const idleIcon = status.cached ? (
+		<StorageIcon color='primary' />
+	) : (
+		<CachedIcon color='disabled' />
+	);
+
 	const datasetStatusIcon: Map<DatasetDownloadStatus, JSX.Element> = new Map([
-		[DatasetDownloadStatus.IDLE, <CachedIcon color='disabled' />],
+		[DatasetDownloadStatus.IDLE, idleIcon],
 		[DatasetDownloadStatus.DOWNLOADING, <CloudDownloadIcon color='primary' />],
 		[DatasetDownloadStatus.PROCESSING, <CachedIcon color='warning' />],
-		[DatasetDownloadStatus.CACHED, <StorageIcon color='success' />],
 		[DatasetDownloadStatus.DONE, <CheckIcon color='primary' />]
 	]);
 
@@ -89,7 +92,7 @@ type DatasetCachedChipInfo = {
 	chip: {
 		icon: JSX.Element;
 		label: string;
-		color: 'success' | 'warning' | 'error';
+		color: 'primary' | 'warning' | 'error';
 	};
 };
 
@@ -109,7 +112,7 @@ function DatasetCachedChip(props: DatasetCachedChipProps) {
 			chip: {
 				icon: <CachedIcon />,
 				label: 'Cached',
-				color: 'success'
+				color: 'primary'
 			}
 		},
 		[DatasetChipType.PARTIALLY_CACHED]: {
@@ -137,6 +140,7 @@ function DatasetCachedChip(props: DatasetCachedChipProps) {
 				label={chipPropsPerStatus[type].chip.label}
 				size='small'
 				color={chipPropsPerStatus[type].chip.color}
+				variant='filled'
 				sx={{ px: 1 }}
 			/>
 		</Tooltip>
@@ -144,15 +148,8 @@ function DatasetCachedChip(props: DatasetCachedChipProps) {
 }
 
 function CacheStatusIndicator() {
-	const {
-		isLoading,
-		cachedCount,
-		totalCount,
-		downloadSizeNeededMB,
-		storageEstimate,
-		refresh,
-		clearCache
-	} = useDatasetManager();
+	const { isLoading, cachedCount, totalCount, downloadSizeNeededMB, storageEstimate, refresh } =
+		useSharedDatasetManager();
 	const allCached = cachedCount === totalCount;
 
 	if (isLoading) {
@@ -297,9 +294,10 @@ export function Geant4Datasets() {
 	useEffect(() => {
 		if (geant4DownloadManagerState === DownloadManagerStatus.FINISHED) {
 			// Add a small delay to ensure IndexedDB is updated
+			setOpen(false);
 			setTimeout(() => {
 				refresh();
-			}, 5000);
+			}, 1000);
 		}
 	}, [geant4DownloadManagerState, refresh]);
 
@@ -362,7 +360,7 @@ export function Geant4Datasets() {
 							onClick={clearCache}
 							variant='contained'
 							startIcon={buttonIcon}
-							color='primary'>
+							color='error'>
 							Clear
 						</Button>
 					)}

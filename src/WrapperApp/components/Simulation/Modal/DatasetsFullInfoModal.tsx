@@ -17,6 +17,7 @@ import {
 	Tooltip,
 	Typography
 } from '@mui/material';
+import { useEffect } from 'react';
 
 import { useSharedDatasetManager } from '../../../../services/Geant4DatasetContextProvider';
 import {
@@ -51,7 +52,7 @@ const datasetSummaries = [
 			'Data evaluated from the SAID database for proton, neutron, pion inelastic, elastic, and charge exchange cross sections of nucleons below 3 GeV'
 	},
 	{
-		name: 'G4PhotonEvaporation6.1',
+		name: 'PhotonEvaporation6.1',
 		description:
 			'Data for photon emission and internal conversion following nuclear de-excitation, used by the photon evaporation model in radioactive decay and photo-nuclear processes.'
 	}
@@ -133,6 +134,12 @@ function CacheStatusSection() {
 }
 
 export function DatasetsFullInfoDialog({ onClose }: ConcreteDialogProps) {
+	const { datasetStatus, refresh } = useSharedDatasetManager();
+
+	useEffect(() => {
+		refresh();
+	}, [refresh]);
+
 	return (
 		<CustomDialog
 			onClose={onClose}
@@ -166,6 +173,7 @@ export function DatasetsFullInfoDialog({ onClose }: ConcreteDialogProps) {
 							<TableHead>
 								<TableRow>
 									<TableCell>Name</TableCell>
+									<TableCell>Cached</TableCell>
 									<TableCell>Description</TableCell>
 								</TableRow>
 							</TableHead>
@@ -181,6 +189,9 @@ export function DatasetsFullInfoDialog({ onClose }: ConcreteDialogProps) {
 											'verticalAlign': 'top'
 										}}>
 										<TableCell>{ds.name}</TableCell>
+										<TableCell>
+											{datasetStatus[ds.name]?.cached ? 'Yes' : 'No'}
+										</TableCell>
 										<TableCell>{ds.description}</TableCell>
 									</TableRow>
 								))}

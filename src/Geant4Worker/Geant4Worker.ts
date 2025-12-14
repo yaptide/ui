@@ -157,6 +157,8 @@ export default class Geant4Worker {
 	destroy() {
 		this.worker?.terminate();
 		this.worker = undefined;
+		this.isInitialized = false;
+		this.depsLoaded = false;
 	}
 
 	async loadDeps() {

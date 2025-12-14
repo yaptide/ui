@@ -1,6 +1,7 @@
 // Additional credits:
 // - @kmichalik
 
+import { ref } from 'process';
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 
 import {
@@ -22,7 +23,6 @@ export enum DownloadManagerStatus {
 
 export enum DatasetDownloadStatus {
 	IDLE,
-	CACHED,
 	DOWNLOADING,
 	PROCESSING,
 	DONE
@@ -40,6 +40,7 @@ export interface DatasetStatus {
 	done?: number;
 	total?: number;
 	totalSizeMB?: number;
+	cached?: boolean;
 }
 
 async function fetchProgress(
@@ -166,18 +167,13 @@ export function useDatasetManager(): UseDatasetManagerResult {
 				const newStates: Record<string, DatasetStatus> = { ...prev };
 
 				for (const ds of GEANT4_DATASETS) {
-					const newStatus = status.datasets[ds.name]?.isCached
-						? DatasetDownloadStatus.CACHED
-						: DatasetDownloadStatus.IDLE;
-
 					newStates[ds.name] = {
+						...newStates[ds.name],
+
 						name: ds.name,
-						status:
-							prev[ds.name]?.status !== DatasetDownloadStatus.DOWNLOADING &&
-							prev[ds.name]?.status !== DatasetDownloadStatus.PROCESSING
-								? newStatus
-								: prev[ds.name]?.status,
-						totalSizeMB: ds.approximateSizeMB
+						status: newStates[ds.name]?.status ?? DatasetDownloadStatus.IDLE,
+						totalSizeMB: ds.approximateSizeMB,
+						cached: status.datasets[ds.name]?.isCached ?? false
 					};
 				}
 
@@ -194,10 +190,16 @@ export function useDatasetManager(): UseDatasetManagerResult {
 		const success = await clearDatasetCache();
 
 		if (success) {
+			if (!worker.getIsInitialized()) {
+				await worker.init();
+			}
+
+			setIdle(true);
+			setManagerState(DownloadManagerStatus.IDLE);
+			setDatasetStates({});
+
 			await refresh();
 		}
-
-		setManagerState(DownloadManagerStatus.IDLE);
 
 		return success;
 	}, [refresh]);
@@ -222,6 +224,7 @@ export function useDatasetManager(): UseDatasetManagerResult {
 
 	const startDownloadSimple = useCallback(() => {
 		if (!idle) return;
+		if (!worker.getIsInitialized()) return;
 
 		startDownload({ worker, managerState, setManagerState, setDatasetStates, setIdle });
 	}, [worker, idle, managerState]);
