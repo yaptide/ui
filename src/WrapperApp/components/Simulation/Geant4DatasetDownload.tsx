@@ -195,29 +195,21 @@ function CacheStatusIndicator() {
 					/>
 				</Tooltip>
 			</Box>
-
-			<Box sx={{ display: 'flex', justifyContent: 'right', width: '100%', gap: 1 }}>
-				{cachedCount > 0 && storageEstimate && (
-					<Tooltip
-						title={`Browser storage: ${storageEstimate.usedMB.toFixed(0)} MB used of ${storageEstimate.quotaMB.toFixed(0)} MB (${storageEstimate.percentUsed.toFixed(1)}%)`}>
-						<Typography
-							variant='caption'
-							color='text.secondary'
-							sx={{ flexGrow: 1 }}>
-							{`${storageEstimate.usedMB.toFixed(0)} MB used`}
-						</Typography>
-					</Tooltip>
-				)}
-				{!allCached && (
+			{storageEstimate && (
+				<Tooltip
+					title={`Browser storage: ${storageEstimate.usedMB.toFixed(0)} MB used of ${storageEstimate.quotaMB.toFixed(0)} MB (${storageEstimate.percentUsed.toFixed(1)}%)`}>
 					<Typography
 						variant='caption'
-						color='text.secondary'>
-						{cachedCount > 0
-							? `~${downloadSizeNeededMB.toFixed(0)} MB remaining to download`
-							: `~${downloadSizeNeededMB.toFixed(0)} MB download required (may take several minutes)`}
+						color='text.secondary'
+						sx={{ flexGrow: 1 }}>
+						{cachedCount > 0 && `${storageEstimate.usedMB.toFixed(0)} MB used`}
+						{!allCached &&
+							(cachedCount > 0
+								? `, ~${downloadSizeNeededMB.toFixed(0)} MB remaining to download`
+								: `~${downloadSizeNeededMB.toFixed(0)} MB download required (may take several minutes)`)}
 					</Typography>
-				)}
-			</Box>
+				</Tooltip>
+			)}
 		</Box>
 	);
 }
@@ -288,7 +280,6 @@ export function Geant4DatasetDownloadSelector(props: {
 
 export function Geant4Datasets() {
 	const theme = useTheme();
-	const [open, setOpen] = useState(true);
 	const {
 		managerState: geant4DownloadManagerState,
 		datasetStatus,
@@ -298,6 +289,7 @@ export function Geant4Datasets() {
 		refresh,
 		clearCache
 	} = useSharedDatasetManager();
+	const [open, setOpen] = useState(geant4DownloadManagerState !== DownloadManagerStatus.FINISHED);
 
 	const allCached = cachedCount === totalCount;
 
@@ -305,7 +297,6 @@ export function Geant4Datasets() {
 	useEffect(() => {
 		if (geant4DownloadManagerState === DownloadManagerStatus.FINISHED) {
 			// Add a small delay to ensure IndexedDB is updated
-			setOpen(false);
 			setTimeout(() => {
 				refresh();
 			}, 5000);
@@ -319,7 +310,7 @@ export function Geant4Datasets() {
 		<CloudDownloadIcon sx={{ mr: 1 }} />
 	);
 
-	const showDownloadButton = geant4DownloadManagerState === DownloadManagerStatus.IDLE;
+	const enableDownloadButton = geant4DownloadManagerState === DownloadManagerStatus.IDLE;
 	const showDownloadProgress =
 		geant4DownloadManagerState === DownloadManagerStatus.WORKING ||
 		geant4DownloadManagerState === DownloadManagerStatus.FINISHED ||
@@ -357,16 +348,15 @@ export function Geant4Datasets() {
 					))}
 
 				<Box sx={{ display: 'flex', gap: 1, justifyContent: 'right', width: '100%' }}>
-					{showDownloadButton && (
-						<Button
-							onClick={geant4DatasetDownloadStart}
-							variant='contained'
-							startIcon={buttonIcon}
-							color='primary'
-							sx={{ flexGrow: 1 }}>
-							{buttonText}
-						</Button>
-					)}
+					<Button
+						onClick={geant4DatasetDownloadStart}
+						disabled={!enableDownloadButton}
+						variant='contained'
+						startIcon={buttonIcon}
+						color='primary'
+						sx={{ flexGrow: 1 }}>
+						{buttonText}
+					</Button>
 					{cachedCount > 0 && (
 						<Button
 							onClick={clearCache}
