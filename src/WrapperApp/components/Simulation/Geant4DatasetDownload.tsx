@@ -4,6 +4,8 @@ import CachedIcon from '@mui/icons-material/Cached';
 import CheckIcon from '@mui/icons-material/Check';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import StorageIcon from '@mui/icons-material/Storage';
 import {
 	AccordionDetails,
@@ -41,7 +43,7 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 	const idleIcon = status.cached ? (
 		<StorageIcon color='primary' />
 	) : (
-		<CachedIcon color='disabled' />
+		<CloudDownloadIcon color='disabled' />
 	);
 
 	const datasetStatusIcon: Map<DatasetDownloadStatus, JSX.Element> = new Map([
@@ -110,7 +112,7 @@ function DatasetCachedChip(props: DatasetCachedChipProps) {
 		[DatasetChipType.CACHED]: {
 			title: 'All datasets are cached in your browser. Loading will be quick!',
 			chip: {
-				icon: <CachedIcon />,
+				icon: <StorageIcon />,
 				label: 'Cached',
 				color: 'primary'
 			}
@@ -183,7 +185,7 @@ function CacheStatusIndicator() {
 
 				<Tooltip title='Refresh cache status'>
 					<Chip
-						icon={<CachedIcon />}
+						icon={<RefreshIcon />}
 						label='Refresh'
 						size='small'
 						variant='outlined'
@@ -303,7 +305,7 @@ export function Geant4Datasets() {
 
 	const buttonText = allCached ? 'Load from cache' : 'Start download';
 	const buttonIcon = allCached ? (
-		<CachedIcon sx={{ mr: 1 }} />
+		<StorageIcon sx={{ mr: 1 }} />
 	) : (
 		<CloudDownloadIcon sx={{ mr: 1 }} />
 	);
@@ -359,7 +361,7 @@ export function Geant4Datasets() {
 						<Button
 							onClick={clearCache}
 							variant='contained'
-							startIcon={buttonIcon}
+							startIcon={<PlaylistRemoveIcon sx={{ mr: 1 }} />}
 							color='error'>
 							Clear
 						</Button>
