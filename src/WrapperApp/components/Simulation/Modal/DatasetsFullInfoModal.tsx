@@ -1,21 +1,13 @@
-import CachedIcon from '@mui/icons-material/Cached';
-import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
-import StorageIcon from '@mui/icons-material/Storage';
 import {
 	Alert,
-	Box,
 	Button,
-	Chip,
-	CircularProgress,
 	Paper,
 	Table,
 	TableBody,
 	TableCell,
 	TableContainer,
 	TableHead,
-	TableRow,
-	Tooltip,
-	Typography
+	TableRow
 } from '@mui/material';
 import { useEffect } from 'react';
 
@@ -58,81 +50,6 @@ const datasetSummaries = [
 	}
 ];
 
-/**
- * Component to display current cache status in the dialog
- */
-function CacheStatusSection() {
-	const { isLoading, cachedCount, totalCount, downloadSizeNeededMB, storageEstimate } =
-		useSharedDatasetManager();
-
-	if (isLoading) {
-		return (
-			<Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2 }}>
-				<CircularProgress size={20} />
-				<Typography color='text.secondary'>Checking cache status...</Typography>
-			</Box>
-		);
-	}
-
-	const allCached = cachedCount === totalCount;
-
-	return (
-		<Box sx={{ mt: 2 }}>
-			<Typography
-				variant='subtitle2'
-				sx={{ mb: 1 }}>
-				Current Cache Status:
-			</Typography>
-			<Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', mb: 1 }}>
-				{allCached ? (
-					<Chip
-						icon={<CachedIcon />}
-						label='All datasets cached'
-						color='success'
-						size='small'
-					/>
-				) : cachedCount > 0 ? (
-					<Chip
-						icon={<CloudDownloadIcon />}
-						label={`${cachedCount}/${totalCount} datasets cached`}
-						color='warning'
-						size='small'
-					/>
-				) : (
-					<Chip
-						icon={<CloudDownloadIcon />}
-						label='No datasets cached'
-						color='error'
-						size='small'
-					/>
-				)}
-
-				{storageEstimate && (
-					<Tooltip
-						title={`${storageEstimate.percentUsed.toFixed(1)}% of browser storage quota used`}>
-						<Chip
-							icon={<StorageIcon />}
-							label={`${storageEstimate.usedMB.toFixed(0)} MB / ${(storageEstimate.quotaMB / 1024).toFixed(1)} GB`}
-							size='small'
-							variant='outlined'
-						/>
-					</Tooltip>
-				)}
-			</Box>
-
-			{!allCached && (
-				<Typography
-					variant='body2'
-					color='text.secondary'>
-					{cachedCount > 0
-						? `~${downloadSizeNeededMB.toFixed(0)} MB remaining to download`
-						: `~${downloadSizeNeededMB.toFixed(0)} MB total download required`}
-				</Typography>
-			)}
-		</Box>
-	);
-}
-
 export function DatasetsFullInfoDialog({ onClose }: ConcreteDialogProps) {
 	const { datasetStatus, refresh } = useSharedDatasetManager();
 
@@ -147,28 +64,27 @@ export function DatasetsFullInfoDialog({ onClose }: ConcreteDialogProps) {
 			title='FULL Geant4 Datasets Info'
 			contentText={`
                 Downloading the FULL Geant4 datasets can significantly speed up simulations by providing local access to essential data files. 
-                Data files will be stored in your browser's IndexedDB storage.
-                Below is a summary of the datasets available for download:`}
+                Data files will be stored in your browser's IndexedDB storage.`}
 			body={
 				<>
-					<CacheStatusSection />
 					<Alert
 						severity='info'
-						sx={{ mt: 2 }}>
-						The cache status indicator shows which datasets are stored in your browser.
-						When all datasets are cached, loading will be nearly instant. Otherwise,
-						datasets will be downloaded from S3 storage.
+						sx={{ mt: 1 }}>
+						Simulation input data and results may be removed if you close the browser
+						tab or restart your computer. In contrast, Geant4 datasets stored in your
+						browser's cache (IndexedDB) are saved on your drive and persist across
+						sessions.
 					</Alert>
 					<Alert
 						severity='warning'
-						sx={{ mt: 2 }}>
-						Total size of downloaded datasets is about 2GB. Each time you clear your
-						browser data, you will need to re-download these datasets for optimal
-						simulation performance.
+						sx={{ mt: 1 }}>
+						If you clear your browser data (for example, using antivirus software or PC
+						cleanup tools), you'll need to download these datasets again to ensure
+						optimal simulation performance.
 					</Alert>
 					<TableContainer
 						component={Paper}
-						sx={{ mt: 2 }}>
+						sx={{ mt: 1 }}>
 						<Table>
 							<TableHead>
 								<TableRow>

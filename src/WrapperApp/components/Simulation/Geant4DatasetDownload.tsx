@@ -304,11 +304,7 @@ export function Geant4Datasets() {
 	}, [geant4DownloadManagerState, refresh]);
 
 	const buttonText = allCached ? 'Load from cache' : 'Start download';
-	const buttonIcon = allCached ? (
-		<StorageIcon sx={{ mr: 1 }} />
-	) : (
-		<CloudDownloadIcon sx={{ mr: 1 }} />
-	);
+	const buttonIcon = allCached ? <StorageIcon /> : <CloudDownloadIcon />;
 
 	const enableDownloadButton = geant4DownloadManagerState === DownloadManagerStatus.IDLE;
 	const showDownloadProgress =
@@ -361,7 +357,7 @@ export function Geant4Datasets() {
 						<Button
 							onClick={clearCache}
 							variant='contained'
-							startIcon={<PlaylistRemoveIcon sx={{ mr: 1 }} />}
+							startIcon={<PlaylistRemoveIcon />}
 							color='error'>
 							Clear
 						</Button>

@@ -1,7 +1,6 @@
 // Additional credits:
 // - @kmichalik
 
-import { ref } from 'process';
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 
 import {
@@ -202,7 +201,7 @@ export function useDatasetManager(): UseDatasetManagerResult {
 		}
 
 		return success;
-	}, [refresh]);
+	}, [refresh, worker]);
 
 	useEffect(() => {
 		refresh();
