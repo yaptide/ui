@@ -343,7 +343,7 @@ export function Geant4Datasets() {
 						/>
 					))}
 
-				<Box sx={{ display: 'flex', gap: 1, justifyContent: 'right', width: '100%' }}>
+				<Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', width: '100%' }}>
 					<Button
 						onClick={geant4DatasetDownloadStart}
 						disabled={!enableDownloadButton}
