@@ -21,8 +21,9 @@ import {
 import Typography from '@mui/material/Typography';
 import { MouseEvent, SyntheticEvent, useEffect, useState } from 'react';
 
-import { DownloadManagerStatus } from '../../../Geant4Worker/Geant4DatasetDownloadManager';
+import { DownloadManagerStatus } from '../../../Geant4Worker/Geant4DatasetManager';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
+import { useSharedDatasetManager } from '../../../services/Geant4DatasetContextProvider';
 import { useStore } from '../../../services/StoreService';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
 import { StyledExclusiveToggleButtonGroup } from '../../../shared/components/StyledExclusiveToggleButtonGroup';
@@ -76,7 +77,6 @@ export type RunSimulationFormProps = {
 	clearInputFiles?: () => void;
 	runSimulation?: RunSimulationFunctionType;
 	setSource?: (source: SimulationFetchSource) => void;
-	geant4DownloadManagerState: DownloadManagerStatus;
 	geant4DatasetType: Geant4DatasetsType;
 	setGeant4DatasetType: (type: Geant4DatasetsType) => void;
 };
@@ -89,7 +89,6 @@ export function RunSimulationForm({
 	clearInputFiles = () => {},
 	runSimulation = () => {},
 	setSource = () => {},
-	geant4DownloadManagerState,
 	geant4DatasetType,
 	setGeant4DatasetType
 }: RunSimulationFormProps) {
@@ -193,6 +192,7 @@ export function RunSimulationForm({
 	const [selectedScriptParamsTab, setSelectedScriptParamsTab] = useState(0);
 	const { isConverterReady } = usePythonConverter();
 	const [runPreconditionsMet, setRunPreconditionsMet] = useState(false);
+	const { managerState: geant4DownloadManagerState } = useSharedDatasetManager();
 
 	useEffect(() => {
 		const runFormIsValid = !isNaN(nTasks) && !isNaN(overridePrimariesCount);
