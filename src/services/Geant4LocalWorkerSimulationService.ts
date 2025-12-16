@@ -227,9 +227,12 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 	}
 
 	async hydrateResults(jobId: string) {
+		// This method may experience race conditions with accessing and terminating the worker
+		// See below for the try catch block that handles it
 		if (
 			!this.workers.hasOwnProperty(jobId) ||
-			this.workers[jobId].getState() !== StatusState.COMPLETED
+			this.workers[jobId].getState() !== StatusState.COMPLETED ||
+			this.resultsForEstimators.hasOwnProperty(jobId)
 		) {
 			return;
 		}
@@ -241,12 +244,23 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 			}
 		});
 
-		const fileContents = await Promise.all(
-			fileNames.map(fileName => this.workers[jobId].fetchResultsFile(fileName))
-		);
+		let fileContents: string[];
 
-		// TODO: find a way to terminate & destroy the worker after fetching the files to free up memory
-		// TODO: keeping in mind, that this method can be called multiple times, simultaneously
+		try {
+			fileContents = await Promise.all(
+				fileNames.map(fileName => this.workers[jobId].fetchResultsFile(fileName))
+			);
+		} catch {
+			// Worker failed
+			// could be because other hydration call finished, and it got destroyed
+			// - then the hydration has already completed, and we can gracefully exit
+			// or, it could have failed unexpectedly - then we log the fact to the console
+			if (!this.resultsForEstimators.hasOwnProperty(jobId)) {
+				console.warn(`Results hydration failed for ${jobId}`);
+			}
+
+			return;
+		}
 
 		const parser = new Geant4ResultsFileParser(
 			this.numPrimaries,
@@ -282,6 +296,8 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 
 		this.estimators[jobId] = Object.values(estimatorsMetadata);
 		this.resultsForEstimators[jobId] = resultsPerEstimator;
+
+		this.workers[jobId].markSafeForTermination();
 	}
 
 	async getJobResults(...args: RequestGetJobResults): Promise<JobResults | undefined> {
