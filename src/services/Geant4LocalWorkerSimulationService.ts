@@ -540,7 +540,6 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 
 		if (this.workers.hasOwnProperty(jobId)) {
 			this.workers[jobId].markSafeForTermination();
-			delete this.workers[jobId];
 		}
 
 		return Promise.resolve();

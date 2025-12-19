@@ -164,6 +164,7 @@ export default class Geant4Worker {
 		this.worker = undefined;
 		this.isInitialized = false;
 		this.depsLoaded = false;
+		this.state = StatusState.CANCELED;
 	}
 
 	async loadDeps() {
