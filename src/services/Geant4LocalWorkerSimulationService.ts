@@ -536,6 +536,13 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 	}
 
 	cancelJob(info: SimulationInfo, signal?: AbortSignal | undefined): Promise<void> {
-		throw new Error('Method not implemented.');
+		const { jobId } = info;
+
+		if (this.workers.hasOwnProperty(jobId)) {
+			this.workers[jobId].markSafeForTermination();
+			delete this.workers[jobId];
+		}
+
+		return Promise.resolve();
 	}
 }
