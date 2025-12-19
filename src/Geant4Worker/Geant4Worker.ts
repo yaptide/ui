@@ -154,6 +154,11 @@ export default class Geant4Worker {
 		);
 	}
 
+	cancel() {
+		this.markSafeForTermination();
+		this.state = StatusState.CANCELED;
+	}
+
 	markSafeForTermination() {
 		// we can delay the call should it be needed in the future
 		this.destroy();
@@ -164,7 +169,6 @@ export default class Geant4Worker {
 		this.worker = undefined;
 		this.isInitialized = false;
 		this.depsLoaded = false;
-		this.state = StatusState.CANCELED;
 	}
 
 	async loadDeps() {
