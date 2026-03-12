@@ -1,4 +1,9 @@
-# ignore ThreeEditor libs files
+# Ignore libraries
 src/ThreeEditor/js/libs/*
 src/libs/*
 public/*
+
+# Node modules and build
+node_modules/*
+build/*
+dist/*
