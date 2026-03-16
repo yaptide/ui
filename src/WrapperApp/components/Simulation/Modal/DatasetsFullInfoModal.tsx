@@ -9,7 +9,9 @@ import {
 	TableHead,
 	TableRow
 } from '@mui/material';
+import { useEffect } from 'react';
 
+import { useSharedDatasetManager } from '../../../../services/Geant4DatasetContextProvider';
 import {
 	ConcreteDialogProps,
 	CustomDialog
@@ -42,13 +44,19 @@ const datasetSummaries = [
 			'Data evaluated from the SAID database for proton, neutron, pion inelastic, elastic, and charge exchange cross sections of nucleons below 3 GeV'
 	},
 	{
-		name: 'G4PhotonEvaporation6.1',
+		name: 'PhotonEvaporation6.1',
 		description:
 			'Data for photon emission and internal conversion following nuclear de-excitation, used by the photon evaporation model in radioactive decay and photo-nuclear processes.'
 	}
 ];
 
 export function DatasetsFullInfoDialog({ onClose }: ConcreteDialogProps) {
+	const { datasetStatus, refresh } = useSharedDatasetManager();
+
+	useEffect(() => {
+		refresh();
+	}, [refresh]);
+
 	return (
 		<CustomDialog
 			onClose={onClose}
@@ -56,32 +64,32 @@ export function DatasetsFullInfoDialog({ onClose }: ConcreteDialogProps) {
 			title='FULL Geant4 Datasets Info'
 			contentText={`
                 Downloading the FULL Geant4 datasets can significantly speed up simulations by providing local access to essential data files. 
-                Data files will be stored in your browser's IndexedDB storage.
-                Below is a summary of the datasets available for download:`}
+                Data files will be stored in your browser's IndexedDB storage.`}
 			body={
 				<>
 					<Alert
 						severity='info'
-						sx={{ mt: 2 }}>
-						Currently there is no indicator showing if you have already downloaded the
-						datasets. Each time you start a new simulation with FULL datasets option,
-						you have to press 'Start Download' button. If the datasets are already in
-						your browser storage, the datasets will be loaded from cache.
+						sx={{ mt: 1 }}>
+						Simulation input data and results may be removed if you close the browser
+						tab or restart your computer. In contrast, Geant4 datasets stored in your
+						browser's cache (IndexedDB) are saved on your drive and persist across
+						sessions.
 					</Alert>
 					<Alert
 						severity='warning'
-						sx={{ mt: 2 }}>
-						Total size of downloaded datasets is about 2GB. Each time you clear your
-						browser data, you will need to re-download these datasets for optimal
-						simulation performance.
+						sx={{ mt: 1 }}>
+						If you clear your browser data (for example, using antivirus software or PC
+						cleanup tools), you'll need to download these datasets again to ensure
+						optimal simulation performance.
 					</Alert>
 					<TableContainer
 						component={Paper}
-						sx={{ mt: 2 }}>
+						sx={{ mt: 1 }}>
 						<Table>
 							<TableHead>
 								<TableRow>
 									<TableCell>Name</TableCell>
+									<TableCell>Cached</TableCell>
 									<TableCell>Description</TableCell>
 								</TableRow>
 							</TableHead>
@@ -97,6 +105,9 @@ export function DatasetsFullInfoDialog({ onClose }: ConcreteDialogProps) {
 											'verticalAlign': 'top'
 										}}>
 										<TableCell>{ds.name}</TableCell>
+										<TableCell>
+											{datasetStatus[ds.name]?.cached ? 'Yes' : 'No'}
+										</TableCell>
 										<TableCell>{ds.description}</TableCell>
 									</TableRow>
 								))}

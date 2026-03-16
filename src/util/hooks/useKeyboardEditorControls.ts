@@ -3,6 +3,7 @@ import { Object3D } from 'three';
 
 import { RemoveDetectGeometryCommand } from '../../ThreeEditor/js/commands/RemoveDetectGeometryCommand';
 import { RemoveDifferentialModifierCommand } from '../../ThreeEditor/js/commands/RemoveDifferentialModifierCommand';
+import { RemoveFigureCommand } from '../../ThreeEditor/js/commands/RemoveFigureCommand';
 import { RemoveFilterCommand } from '../../ThreeEditor/js/commands/RemoveFilterCommand';
 import { RemoveObjectCommand } from '../../ThreeEditor/js/commands/RemoveObjectCommand';
 import { RemoveQuantityCommand } from '../../ThreeEditor/js/commands/RemoveQuantityCommand';
@@ -10,6 +11,7 @@ import { RemoveZoneCommand } from '../../ThreeEditor/js/commands/RemoveZoneComma
 import { SetFilterRuleCommand } from '../../ThreeEditor/js/commands/SetFilterRuleCommand';
 import { YaptideEditor } from '../../ThreeEditor/js/YaptideEditor';
 import { isDetector } from '../../ThreeEditor/Simulation/Detectors/Detector';
+import { isBasicFigure } from '../../ThreeEditor/Simulation/Figures/BasicFigures';
 import { isBeam } from '../../ThreeEditor/Simulation/Physics/Beam';
 import { isCustomFilter } from '../../ThreeEditor/Simulation/Scoring/CustomFilter';
 import { isOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
@@ -43,7 +45,9 @@ export const hasVisibleChildren = (object: Object3D) => {
 };
 
 export const getRemoveCommand = (editor: YaptideEditor, object: Object3D) => {
-	if (isDetector(object)) {
+	if (isBasicFigure(object)) {
+		return new RemoveFigureCommand(editor, object);
+	} else if (isDetector(object)) {
 		return new RemoveDetectGeometryCommand(editor, object);
 	} else if (isBooleanZone(object)) {
 		return new RemoveZoneCommand(editor, object);

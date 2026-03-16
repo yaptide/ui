@@ -28,6 +28,7 @@ export const JSON_VERSION = `0.12`;
 export function YaptideEditor(container) {
 	this.signals = {
 		editorCleared: new Signal(),
+		simulatorChanged: new Signal(),
 
 		savingStarted: new Signal(),
 		savingFinished: new Signal(),
@@ -652,6 +653,7 @@ YaptideEditor.prototype = {
 				this.config.setKey('project/title', project.title ?? '');
 				this.config.setKey('project/description', project.description ?? '');
 				this.contextManager.currentSimulator = project.simulator ?? SimulatorType.COMMON;
+				this.signals.simulatorChanged.dispatch();
 			} else
 				console.warn('Project info was not found in JSON data. Skipping part 1 out of 11');
 

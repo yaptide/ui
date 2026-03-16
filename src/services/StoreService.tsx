@@ -72,6 +72,7 @@ const Store = ({ children }: GenericContextProviderProps) => {
 			}
 
 			editor.contextManager.currentSimulator = simulator;
+			editor.signals.simulatorChanged.dispatch();
 
 			if (changingToOrFromGeant4) {
 				editor.clear();

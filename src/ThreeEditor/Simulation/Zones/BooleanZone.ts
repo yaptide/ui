@@ -28,6 +28,7 @@ export class BooleanZone extends SimulationZone {
 		geometryChanged: Signal<THREE.Object3D>;
 		sceneGraphChanged: Signal;
 		zoneGeometryChanged: Signal<BooleanZone>;
+		zoneAdded: Signal<BooleanZone>;
 		zoneChanged: Signal<BooleanZone>;
 		zoneEmpty: Signal<BooleanZone>;
 	};
@@ -203,6 +204,9 @@ export class BooleanZone extends SimulationZone {
 		);
 
 		this.subscribedObjects = new CounterMap().fromSerialized(objectsJSON);
+
+		// Let the clipped view viewports know that the zone exists
+		this.signals.zoneAdded.dispatch(this);
 
 		return this;
 	}
