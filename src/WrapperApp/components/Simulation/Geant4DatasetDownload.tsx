@@ -42,12 +42,14 @@ function formatTime(seconds: number): string {
 		return '<1s';
 	}
 
-	if (seconds < 60) {
-		return `${Math.ceil(seconds)}s`;
+	const totalSeconds = Math.ceil(seconds);
+
+	if (totalSeconds < 60) {
+		return `${totalSeconds}s`;
 	}
 
-	const minutes = Math.floor(seconds / 60);
-	const remainingSeconds = Math.ceil(seconds % 60);
+	const minutes = Math.floor(totalSeconds / 60);
+	const remainingSeconds = totalSeconds % 60;
 
 	return `${minutes}m ${remainingSeconds}s`;
 }
