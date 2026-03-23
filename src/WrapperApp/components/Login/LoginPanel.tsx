@@ -9,8 +9,7 @@ import NamePasswordLoginPanel from './NamePasswordLoginPanel';
 
 export default function LoginPanel() {
 	const theme = useTheme();
-	const { altAuth } = useConfig();
-	const { localUsersEnabled } = useAuth();
+	const { altAuth, demoMode } = useConfig();
 	const { keycloak, initialized } = useKeycloakAuth();
 	const [namePasswordLoginSelected, setNamePasswordLoginSelected] = useState(!altAuth);
 	// on Keycloak-only deployments the backend rejects local users, so do not offer password login
@@ -19,6 +18,8 @@ export default function LoginPanel() {
 	const keycloakLogin = useCallback(() => {
 		if (initialized && !keycloak.authenticated) keycloak.login();
 	}, [initialized, keycloak]);
+
+	const showPasswordLogin = !altAuth && !demoMode;
 
 	return (
 		<Box
@@ -55,10 +56,10 @@ export default function LoginPanel() {
 							}}>
 							Connect with PLGrid
 						</Button>
-						{localUsersEnabled && (
+						{showPasswordLogin && (
 							<Link
 								color='textDisabled'
-								onClick={() => setNamePasswordLoginSelected(true)}
+								onClick={() => setNamePasswordLogin(true)}
 								sx={{ cursor: 'pointer' }}>
 								use password login
 							</Link>
