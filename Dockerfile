@@ -27,7 +27,7 @@ RUN pip install --no-cache-dir "poetry ~= 2.1.3" \
     && poetry build --format wheel --no-ansi
 
 # Stage 3: Build the application.
-FROM node:22 AS build
+FROM node:24 AS build
 
 # Directory where the app is installed and run.
 WORKDIR /usr/src/app
