@@ -24,34 +24,33 @@ function getValidatedPrimaries(primariesNumber: number | undefined): number {
 	return primariesNumber ?? 0;
 }
 
-function percentOfSimulatedPrimaries(
-	requestedPrimariesSum: number,
-	simulatedPrimariesSum: number
-): number {
-	return requestedPrimariesSum > 0
-		? Math.min(100, (simulatedPrimariesSum / requestedPrimariesSum) * 100)
-		: 0;
-}
-
-function calculateSimulationProgress(jobTasksStatus: TaskUnknownStatus[]): number {
+function calculateSimulationMetrics(jobTasksStatus: TaskUnknownStatus[], duration: number) {
 	if (jobTasksStatus.length === 0) {
-		return 0;
+		return { progress: 0, eta: null, remaining: 0 };
 	}
 
-	const { requestedPrimariesSum, simulatedPrimariesSum } = jobTasksStatus.reduce(
-		(
-			acc: { requestedPrimariesSum: number; simulatedPrimariesSum: number },
-			taskStatus: TaskUnknownStatus
-		) => {
-			acc.requestedPrimariesSum += getValidatedPrimaries(taskStatus.requestedPrimaries);
-			acc.simulatedPrimariesSum += getValidatedPrimaries(taskStatus.simulatedPrimaries);
+	const { requestedSum, simulatedSum } = jobTasksStatus.reduce(
+		(acc, task) => {
+			acc.requestedSum += getValidatedPrimaries(task.requestedPrimaries);
+			acc.simulatedSum += getValidatedPrimaries(task.simulatedPrimaries);
 
 			return acc;
 		},
-		{ requestedPrimariesSum: 0, simulatedPrimariesSum: 0 }
+		{ requestedSum: 0, simulatedSum: 0 }
 	);
 
-	return percentOfSimulatedPrimaries(requestedPrimariesSum, simulatedPrimariesSum);
+	const progress = requestedSum > 0 ? Math.min(100, (simulatedSum / requestedSum) * 100) : 0;
+	const remaining = Math.max(0, requestedSum - simulatedSum);
+
+	// ETA calculation: (Remaining Work) * (Time Spent / Work Done)
+	let eta = null;
+
+	if (simulatedSum > 0 && remaining > 0 && duration > 0) {
+		const msPerPrimary = duration / simulatedSum;
+		eta = remaining * msPerPrimary;
+	}
+
+	return { progress, eta, remaining };
 }
 
 function needsProgressBar(state: StatusState | undefined) {
@@ -69,20 +68,60 @@ export function SimulationProgress(props: {
 }) {
 	const { formatedStartDate, duration, simulationStatus } = props;
 
-	const [simulationProgressPercent, setSimulationProgressPercent] = useState(0);
+	const [metrics, setMetrics] = useState({
+		progress: 0,
+		eta: null as number | null,
+		remaining: 0
+	});
 
 	useEffect(() => {
 		if (simulationStatus.jobTasksStatus) {
-			const jobTasksStatus = simulationStatus.jobTasksStatus;
-			setSimulationProgressPercent(calculateSimulationProgress(jobTasksStatus));
+			const results = calculateSimulationMetrics(simulationStatus.jobTasksStatus, duration);
+			setMetrics(results);
 		}
-	}, [simulationStatus, setSimulationProgressPercent]);
+	}, [simulationStatus, duration]);
 
 	return (
 		<>
-			<Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-				<Typography color='textDisabled'>Start: {formatedStartDate}</Typography>
-				<Typography color='textDisabled'>{millisecondsToTimeString(duration)}</Typography>
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'space-between',
+					alignItems: 'flex-end',
+					mb: 0.5
+				}}>
+				<Box>
+					<Typography
+						variant='caption'
+						display='block'
+						color='textDisabled'>
+						Start: {formatedStartDate}
+					</Typography>
+					{metrics.remaining > 0 && (
+						<Typography
+							variant='caption'
+							sx={{ fontWeight: 'bold' }}
+							color='primary'>
+							{metrics.remaining.toLocaleString()} left
+						</Typography>
+					)}
+				</Box>
+				<Box sx={{ textAlign: 'right' }}>
+					{metrics.eta !== null && metrics.eta > 0 && (
+						<Typography
+							variant='caption'
+							display='block'
+							color='info.main'
+							sx={{ fontWeight: 'bold' }}>
+							ETA: ~{millisecondsToTimeString(metrics.eta)}
+						</Typography>
+					)}
+					<Typography
+						variant='caption'
+						color='textDisabled'>
+						Elapsed: {millisecondsToTimeString(duration)}
+					</Typography>
+				</Box>
 			</Box>
 			<LinearProgress
 				variant='buffer'
@@ -95,7 +134,7 @@ export function SimulationProgress(props: {
 						animationDuration: '2s'
 					}
 				}}
-				value={simulationProgressPercent}
+				value={metrics.progress}
 				valueBuffer={1}
 			/>
 		</>
