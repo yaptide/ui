@@ -8,13 +8,15 @@ import NamePasswordLoginPanel from './NamePasswordLoginPanel';
 
 export default function LoginPanel() {
 	const theme = useTheme();
-	const { altAuth } = useConfig();
+	const { altAuth, demoMode } = useConfig();
 	const { keycloak, initialized } = useKeycloakAuth();
 	const [namePasswordLogin, setNamePasswordLogin] = useState(!altAuth);
 
 	const keycloakLogin = useCallback(() => {
 		if (initialized && !keycloak.authenticated) keycloak.login();
 	}, [initialized, keycloak]);
+
+	const showPasswordLogin = !altAuth && !demoMode;
 
 	return (
 		<Box
@@ -51,12 +53,14 @@ export default function LoginPanel() {
 							}}>
 							Connect with PLGrid
 						</Button>
-						<Link
-							color='textDisabled'
-							onClick={() => setNamePasswordLogin(true)}
-							sx={{ cursor: 'pointer' }}>
-							use password login
-						</Link>
+						{showPasswordLogin && (
+							<Link
+								color='textDisabled'
+								onClick={() => setNamePasswordLogin(true)}
+								sx={{ cursor: 'pointer' }}>
+								use password login
+							</Link>
+						)}
 					</>
 				) : (
 					<>
