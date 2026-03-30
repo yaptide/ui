@@ -37,8 +37,102 @@ export enum Geant4DatasetsType {
 	FULL
 }
 
+function formatTime(seconds: number): string {
+	if (seconds < 1) {
+		return '<1s';
+	}
+
+	const totalSeconds = Math.ceil(seconds);
+
+	if (totalSeconds < 60) {
+		return `${totalSeconds}s`;
+	}
+
+	const minutes = Math.floor(totalSeconds / 60);
+	const remainingSeconds = totalSeconds % 60;
+
+	return `${minutes}m ${remainingSeconds}s`;
+}
+
+export interface Geant4DatasetsProps {
+	geant4DownloadManagerState: DownloadManagerStatus;
+	geant4DatasetStates: DatasetStatus[];
+	geant4DatasetDownloadStart: () => void;
+	geant4DatasetType: Geant4DatasetsType;
+	setGeant4DatasetType: (type: Geant4DatasetsType) => void;
+}
+
+interface SpeedHistory {
+	lastDone: number;
+	lastTime: number;
+	currentSpeed: number;
+}
+
+const SMOOTHING = 0.1;
+
 function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 	const { status } = props;
+
+	const [speedHistory, setSpeedHistory] = useState<SpeedHistory>({
+		lastDone: status.done ?? 0,
+		lastTime: Date.now(),
+		currentSpeed: 0
+	});
+
+	useEffect(() => {
+		const currentDone = status.done ?? 0;
+		const currentTime = Date.now();
+
+		if (status.status === DatasetDownloadStatus.DOWNLOADING) {
+			setSpeedHistory(prev => {
+				const timeDelta = (currentTime - prev.lastTime) / 1000;
+				const bytesDelta = currentDone - prev.lastDone;
+
+				if (bytesDelta > 0 && timeDelta > 0) {
+					const instSpeed = bytesDelta / timeDelta;
+
+					const newSpeed =
+						prev.currentSpeed === 0
+							? instSpeed
+							: prev.currentSpeed * (1 - SMOOTHING) + instSpeed * SMOOTHING;
+
+					return {
+						lastDone: currentDone,
+						lastTime: currentTime,
+						currentSpeed: newSpeed
+					};
+				}
+
+				return {
+					...prev,
+					lastTime: currentTime
+				};
+			});
+		}
+
+		if (
+			status.status === DatasetDownloadStatus.DONE ||
+			status.status === DatasetDownloadStatus.IDLE
+		) {
+			setSpeedHistory({
+				lastDone: status.done ?? 0,
+				lastTime: Date.now(),
+				currentSpeed: 0
+			});
+		}
+	}, [status.done, status.status]);
+
+	const remainingBytes = (status.total ?? 0) - (status.done ?? 0);
+	let estimatedTimeRemaining = '';
+
+	if (
+		status.status === DatasetDownloadStatus.DOWNLOADING &&
+		speedHistory.currentSpeed > 0 &&
+		remainingBytes > 0
+	) {
+		const remainingSeconds = remainingBytes / speedHistory.currentSpeed;
+		estimatedTimeRemaining = ` (${formatTime(remainingSeconds)})`;
+	}
 
 	const idleIcon = status.cached ? (
 		<StorageIcon color='primary' />
@@ -68,6 +162,13 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 				variant='indeterminate'
 				color='warning'
 			/>
+		],
+		[
+			DatasetDownloadStatus.IDLE,
+			<LinearProgress
+				color='info'
+				variant='indeterminate'
+			/>
 		]
 	]);
 
@@ -75,6 +176,14 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 		<Box sx={{ pb: 1 }}>
 			<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
 				<Typography sx={{ flex: 1 }}>{status.name}</Typography>
+
+				{status.status === DatasetDownloadStatus.DOWNLOADING && (
+					<Typography
+						fontSize={12}
+						color='text.secondary'>
+						{estimatedTimeRemaining}
+					</Typography>
+				)}
 				{datasetStatusIcon.get(status.status)}
 			</Box>
 
@@ -324,7 +433,10 @@ export function Geant4Datasets() {
 			}}>
 			<AccordionSummary
 				expandIcon={<ExpandMoreIcon />}
-				onClick={() => setOpen(!open)}>
+				onClick={e => {
+					e.stopPropagation();
+					setOpen(!open);
+				}}>
 				<Typography
 					textTransform='none'
 					fontSize={16}>
