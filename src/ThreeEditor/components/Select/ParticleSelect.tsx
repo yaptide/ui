@@ -11,7 +11,7 @@ export interface ParticleSelectProps {
 
 export function ParticleSelect(props: ParticleSelectProps) {
 	const getOptionLabel = ({ id, name }: Particle) => {
-		return `[${id}] ${name}`;
+		return `${name}`;
 	};
 
 	return (

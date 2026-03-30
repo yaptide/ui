@@ -66,8 +66,7 @@ export function GeantScoringFilterConfiguration(props: {
 								value={watchedObject.data?.particleTypes ?? []}
 								renderValue={(particleTypes, _) =>
 									particleTypes.map(t => (
-										<Typography
-											sx={{ px: '2px' }}>{`[${t.id}] ${t.name}`}</Typography>
+										<Typography sx={{ px: '2px' }}>{`${t.name}`}</Typography>
 									))
 								}
 								getOptionLabel={t => `[${t.id}] ${t.name}`}

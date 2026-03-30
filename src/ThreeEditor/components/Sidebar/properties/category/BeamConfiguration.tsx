@@ -7,8 +7,9 @@ import {
 	COMMON_PARTICLE_TYPES,
 	FLUKA_PARTICLE_TYPES,
 	GEANT4_PARTICLE_TYPES,
-	Particle
-} from '../../../../../types/Particle';
+	HEAVY_ION_LIST,
+	ISOTOPES,
+	Particle} from '../../../../../types/Particle';
 import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
@@ -157,6 +158,8 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 	const { object, editor } = props;
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object, true);
 
+	const elementOptions = HEAVY_ION_LIST.map(ion => ion.name);
+
 	// energyUnit should be held in react state so the change re-renders the component
 	// watchedObject.energyUnit is kept in sync in updateEnergyInputs()
 	const [energyUnit, setEnergyUnit] = useState<EnergyUnit>(watchedObject.energyUnit);
@@ -271,7 +274,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 				/>
 			</PropertyField>
 
-			{watchedObject.particleData.id === 25 && (
+			{/* {watchedObject.particleData.id >= 25 && (
 				<>
 					<NumberPropertyField
 						label='charge (Z)'
@@ -283,7 +286,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 						}
 					/>
 					<NumberPropertyField
-						label='nucleons (A)'
+						label='nucleons (A)' 
 						precision={0}
 						step={1}
 						value={watchedObject.particleData.a ?? 12}
@@ -291,6 +294,93 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 							setValueCommand({ ...watchedObject.particleData, a: v }, 'particleData')
 						}
 					/>
+				</>
+			)} */}
+			{watchedObject.particleData.id === 25 && ( // select-lists should be moved to select directory
+				<>
+					{/* <PropertyField label="Element">
+					<ParticleSelect
+						particles={HEAVY_ION_LIST}
+						value={watchedObject.particleData.z ?? 6} 
+						onChange={(_, newZ) => {
+							const ion = HEAVY_ION_LIST.find(i => i.z === newZ);
+							if (ion) {
+								setValueCommand({ 
+									...watchedObject.particleData, 
+									a: ion.a, 
+									z: ion.z 
+								}, 'particleData');
+							}
+						}}
+					/>
+				</PropertyField> */}
+
+					<SelectPropertyField
+						label='Element'
+						value={watchedObject.particleData.name}
+						options={elementOptions}
+						onChange={newName => {
+							const ion = HEAVY_ION_LIST.find(i => i.name === newName);
+
+							if (ion) {
+								setValueCommand(
+									{
+										...watchedObject.particleData,
+										id: 25,
+										name: ion.name,
+										a: ion.a,
+										z: ion.z
+									},
+									'particleData'
+								);
+							}
+						}}
+					/>
+
+					<SelectPropertyField
+						label='Isotope'
+						value={watchedObject.particleData.name + '-' + watchedObject.particleData.a}
+						options={
+							ISOTOPES[watchedObject.particleData.name]?.map(
+								iso => watchedObject.particleData.name + '-' + iso.a.toString()
+							) || []
+						}
+						onChange={newA => {
+							const ion = ISOTOPES[watchedObject.particleData.name];
+
+							if (ion) {
+								setValueCommand(
+									{
+										...watchedObject.particleData,
+										a: newA
+									},
+									'particleData'
+								);
+							}
+						}}
+					/>
+
+					<PropertyField label='charge (Z)'>
+						<div
+							style={{
+								padding: '8px',
+								color: 'gray',
+								borderBottom: '1px solid #444'
+							}}>
+							{watchedObject.particleData.z}
+						</div>
+					</PropertyField>
+
+					<PropertyField label='Nucleons (A)'>
+						<div
+							style={{
+								padding: '8px',
+								color: 'gray',
+								borderBottom: '1px solid #444'
+							}}>
+							{watchedObject.particleData.a}
+						</div>
+					</PropertyField>
 				</>
 			)}
 
