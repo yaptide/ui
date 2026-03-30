@@ -54,14 +54,6 @@ function formatTime(seconds: number): string {
 	return `${minutes}m ${remainingSeconds}s`;
 }
 
-export interface Geant4DatasetsProps {
-	geant4DownloadManagerState: DownloadManagerStatus;
-	geant4DatasetStates: DatasetStatus[];
-	geant4DatasetDownloadStart: () => void;
-	geant4DatasetType: Geant4DatasetsType;
-	setGeant4DatasetType: (type: Geant4DatasetsType) => void;
-}
-
 interface SpeedHistory {
 	lastDone: number;
 	lastTime: number;
