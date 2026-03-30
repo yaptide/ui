@@ -123,7 +123,7 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 		remainingBytes > 0
 	) {
 		const remainingSeconds = remainingBytes / speedHistory.currentSpeed;
-		estimatedTimeRemaining = ` (${formatTime(remainingSeconds)})`;
+		estimatedTimeRemaining = ` (est. ${formatTime(remainingSeconds)} remaining)`;
 	}
 
 	const idleIcon = status.cached ? (
