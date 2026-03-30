@@ -4,7 +4,7 @@
 	"private": false,
 	"homepage": ".",
 	"engines": {
-		"node": ">=14.0.0"
+		"node": ">=24.0.0"
 	},
 	"dependencies": {
 		"@emotion/css": "^11.13.5",
