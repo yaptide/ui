@@ -7,6 +7,7 @@ import { snakeToCamelCase } from '../util/Notation/Notation';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:5000';
 const DEMO_MODE = process.env.REACT_APP_TARGET === 'demo';
 const ALT_AUTH = process.env.REACT_APP_ALT_AUTH === 'plg';
+const USE_BASIC_AUTH = process.env.REACT_APP_USE_BASIC_AUTH === 'true';
 
 export const DEPLOYMENT = (process.env.REACT_APP_DEPLOYMENT as ConfigDeployment) ?? 'prod';
 export type ConfigDeployment = 'dev' | 'prod' | undefined;
@@ -18,6 +19,7 @@ interface Config {
 	deployment: ConfigDeployment;
 	demoMode: boolean;
 	altAuth: boolean;
+	useBasicAuth: boolean;
 }
 
 declare global {
@@ -36,7 +38,8 @@ const ConfigProvider = ({ children }: { children?: ReactNode }) => {
 		backendUrl: BACKEND_URL,
 		deployment: DEPLOYMENT,
 		demoMode: DEMO_MODE,
-		altAuth: ALT_AUTH
+		altAuth: ALT_AUTH,
+		useBasicAuth: USE_BASIC_AUTH
 	});
 	window.BACKEND_URL ??= BACKEND_URL;
 
@@ -75,6 +78,7 @@ const ConfigProvider = ({ children }: { children?: ReactNode }) => {
 			defineProperty('DEPLOYMENT', true);
 			defineProperty('DEMO_MODE');
 			defineProperty('ALT_AUTH');
+			defineProperty('USE_BASIC_AUTH');
 		}
 	}, [config]);
 

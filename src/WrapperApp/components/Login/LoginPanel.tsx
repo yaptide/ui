@@ -9,7 +9,7 @@ import NamePasswordLoginPanel from './NamePasswordLoginPanel';
 
 export default function LoginPanel() {
 	const theme = useTheme();
-	const { altAuth, demoMode } = useConfig();
+	const { altAuth, useBasicAuth } = useConfig();
 	const { keycloak, initialized } = useKeycloakAuth();
 	const [namePasswordLoginSelected, setNamePasswordLoginSelected] = useState(!altAuth);
 	// on Keycloak-only deployments the backend rejects local users, so do not offer password login
@@ -19,7 +19,7 @@ export default function LoginPanel() {
 		if (initialized && !keycloak.authenticated) keycloak.login();
 	}, [initialized, keycloak]);
 
-	const showPasswordLogin = !altAuth && !demoMode;
+	const showPasswordLogin = useBasicAuth;
 
 	return (
 		<Box
