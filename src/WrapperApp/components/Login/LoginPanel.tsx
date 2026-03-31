@@ -8,7 +8,7 @@ import NamePasswordLoginPanel from './NamePasswordLoginPanel';
 
 export default function LoginPanel() {
 	const theme = useTheme();
-	const { altAuth, demoMode } = useConfig();
+	const { altAuth, useBasicAuth } = useConfig();
 	const { keycloak, initialized } = useKeycloakAuth();
 	const [namePasswordLogin, setNamePasswordLogin] = useState(!altAuth);
 
@@ -16,7 +16,7 @@ export default function LoginPanel() {
 		if (initialized && !keycloak.authenticated) keycloak.login();
 	}, [initialized, keycloak]);
 
-	const showPasswordLogin = !altAuth && !demoMode;
+	const showPasswordLogin = useBasicAuth;
 
 	return (
 		<Box
