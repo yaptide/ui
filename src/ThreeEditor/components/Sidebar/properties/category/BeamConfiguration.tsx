@@ -7,9 +7,8 @@ import {
 	COMMON_PARTICLE_TYPES,
 	FLUKA_PARTICLE_TYPES,
 	GEANT4_PARTICLE_TYPES,
-	HEAVY_ION_LIST,
-	ISOTOPES,
-	Particle} from '../../../../../types/Particle';
+	Particle
+} from '../../../../../types/Particle';
 import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
@@ -158,7 +157,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 	const { object, editor } = props;
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object, true);
 
-	const elementOptions = HEAVY_ION_LIST.map(ion => ion.name);
+	// const elementOptions = HEAVY_ION_LIST.map(ion => ion.name);
 
 	// energyUnit should be held in react state so the change re-renders the component
 	// watchedObject.energyUnit is kept in sync in updateEnergyInputs()
@@ -296,7 +295,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 					/>
 				</>
 			)} */}
-			{watchedObject.particleData.id === 25 && ( // select-lists should be moved to select directory
+			{watchedObject.particleData.id >= 25 && ( // select-lists should be moved to select directory
 				<>
 					{/* <PropertyField label="Element">
 					<ParticleSelect
@@ -315,7 +314,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 					/>
 				</PropertyField> */}
 
-					<SelectPropertyField
+					{/* <SelectPropertyField
 						label='Element'
 						value={watchedObject.particleData.name}
 						options={elementOptions}
@@ -358,20 +357,19 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 								);
 							}
 						}}
-					/>
-
-					<PropertyField label='charge (Z)'>
-						<div
-							style={{
-								padding: '8px',
-								color: 'gray',
-								borderBottom: '1px solid #444'
-							}}>
-							{watchedObject.particleData.z}
-						</div>
+					/> */}
+					<PropertyField>
+						<label>
+							<span style={{ marginLeft: '128px' }}>
+								Z = {watchedObject.particleData.z}
+							</span>
+							<span style={{ marginLeft: '32px' }}>
+								A = {watchedObject.particleData.a}
+							</span>
+						</label>
 					</PropertyField>
 
-					<PropertyField label='Nucleons (A)'>
+					{/* <PropertyField label='Nucleons (A)'>
 						<div
 							style={{
 								padding: '8px',
@@ -380,7 +378,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 							}}>
 							{watchedObject.particleData.a}
 						</div>
-					</PropertyField>
+					</PropertyField> */}
 				</>
 			)}
 

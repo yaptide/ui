@@ -9,6 +9,7 @@ export interface Particle {
 	name: string;
 	a?: number;
 	z?: number;
+	isMostAbundant?: boolean;
 }
 
 /**
@@ -108,513 +109,297 @@ export const FLUKA_PARTICLE_TYPES = [
 	}
 ] as const satisfies readonly Particle[];
 
-// the most abundant isotopes
+// all isotopes with the most abundant one marked for each element.
 export const HEAVY_ION_LIST = [
-	{ name: 'Li', a: 7, z: 3 },
-	{ name: 'Be', a: 9, z: 4 },
-	{ name: 'B', a: 11, z: 5 },
-	{ name: 'C', a: 12, z: 6 },
-	{ name: 'N', a: 14, z: 7 },
-	{ name: 'O', a: 16, z: 8 },
-	{ name: 'F', a: 19, z: 9 },
-	{ name: 'Ne', a: 20, z: 10 },
-	{ name: 'Na', a: 23, z: 11 },
-	{ name: 'Mg', a: 24, z: 12 },
-	{ name: 'Al', a: 27, z: 13 },
-	{ name: 'Si', a: 28, z: 14 },
-	{ name: 'P', a: 31, z: 15 },
-	{ name: 'S', a: 32, z: 16 },
-	{ name: 'Cl', a: 35, z: 17 },
-	{ name: 'Ar', a: 40, z: 18 },
-	{ name: 'K', a: 39, z: 19 },
-	{ name: 'Ca', a: 40, z: 20 },
-	{ name: 'Sc', a: 45, z: 21 },
-	{ name: 'Ti', a: 48, z: 22 },
-	{ name: 'V', a: 51, z: 23 },
-	{ name: 'Cr', a: 52, z: 24 },
-	{ name: 'Mn', a: 55, z: 25 },
-	{ name: 'Fe', a: 56, z: 26 },
-	{ name: 'Co', a: 59, z: 27 },
-	{ name: 'Ni', a: 58, z: 28 },
-	{ name: 'Cu', a: 63, z: 29 },
-	{ name: 'Zn', a: 64, z: 30 },
-	{ name: 'Ga', a: 69, z: 31 },
-	{ name: 'Ge', a: 74, z: 32 },
-	{ name: 'As', a: 75, z: 33 },
-	{ name: 'Se', a: 80, z: 34 },
-	{ name: 'Br', a: 79, z: 35 },
-	{ name: 'Kr', a: 84, z: 36 },
-	{ name: 'Rb', a: 85, z: 37 },
-	{ name: 'Sr', a: 88, z: 38 },
-	{ name: 'Y', a: 89, z: 39 },
-	{ name: 'Zr', a: 90, z: 40 },
-	{ name: 'Nb', a: 93, z: 41 },
-	{ name: 'Mo', a: 98, z: 42 },
-	{ name: 'Ru', a: 102, z: 44 },
-	{ name: 'Rh', a: 103, z: 45 },
-	{ name: 'Pd', a: 106, z: 46 },
-	{ name: 'Ag', a: 107, z: 47 },
-	{ name: 'Cd', a: 114, z: 48 },
-	{ name: 'In', a: 115, z: 49 },
-	{ name: 'Sn', a: 120, z: 50 },
-	{ name: 'Sb', a: 121, z: 51 },
-	{ name: 'Te', a: 130, z: 52 },
-	{ name: 'I', a: 127, z: 53 },
-	{ name: 'Xe', a: 132, z: 54 },
-	{ name: 'Cs', a: 133, z: 55 },
-	{ name: 'Ba', a: 138, z: 56 },
-	{ name: 'La', a: 139, z: 57 },
-	{ name: 'Ce', a: 140, z: 58 },
-	{ name: 'Pr', a: 141, z: 59 },
-	{ name: 'Nd', a: 142, z: 60 },
-	{ name: 'Sm', a: 152, z: 62 },
-	{ name: 'Eu', a: 153, z: 63 },
-	{ name: 'Gd', a: 158, z: 64 },
-	{ name: 'Tb', a: 159, z: 65 },
-	{ name: 'Dy', a: 164, z: 66 },
-	{ name: 'Ho', a: 165, z: 67 },
-	{ name: 'Er', a: 166, z: 68 },
-	{ name: 'Tm', a: 169, z: 69 },
-	{ name: 'Yb', a: 174, z: 70 },
-	{ name: 'Lu', a: 175, z: 71 },
-	{ name: 'Hf', a: 180, z: 72 },
-	{ name: 'Ta', a: 181, z: 73 },
-	{ name: 'W', a: 184, z: 74 },
-	{ name: 'Re', a: 187, z: 75 },
-	{ name: 'Os', a: 192, z: 76 },
-	{ name: 'Ir', a: 193, z: 77 },
-	{ name: 'Pt', a: 195, z: 78 },
-	{ name: 'Au', a: 197, z: 79 },
-	{ name: 'Hg', a: 202, z: 80 },
-	{ name: 'Tl', a: 205, z: 81 },
-	{ name: 'Pb', a: 208, z: 82 },
-	{ name: 'Bi', a: 209, z: 83 },
-	{ name: 'Th', a: 232, z: 90 },
-	{ name: 'Pa', a: 231, z: 91 },
-	{ name: 'U', a: 238, z: 92 }
-] as const;
-
-// it probably shouldn't be a particle type, id should be 25 and the heavy ion list may have a different type
-
-interface Isotope {
-	readonly a: number;
-	readonly abundance: number;
-}
-
-export const ISOTOPES: Record<string, Isotope[]> = {
-	H: [
-		{ a: 1, abundance: 99.99 },
-		{ a: 2, abundance: 0.01 }
-	],
-	He: [
-		{ a: 4, abundance: 100.0 },
-		{ a: 3, abundance: 0.0 }
-	],
-	Li: [
-		{ a: 7, abundance: 95.15 },
-		{ a: 6, abundance: 4.85 }
-	],
-	Be: [{ a: 9, abundance: 100.0 }],
-	B: [
-		{ a: 11, abundance: 80.35 },
-		{ a: 10, abundance: 19.65 }
-	],
-	C: [
-		{ a: 12, abundance: 98.94 },
-		{ a: 13, abundance: 1.06 }
-	],
-	N: [
-		{ a: 14, abundance: 99.62 },
-		{ a: 15, abundance: 0.38 }
-	],
-	O: [
-		{ a: 16, abundance: 99.76 },
-		{ a: 18, abundance: 0.2 },
-		{ a: 17, abundance: 0.04 }
-	],
-	F: [{ a: 19, abundance: 100.0 }],
-	Ne: [
-		{ a: 20, abundance: 90.48 },
-		{ a: 22, abundance: 9.25 },
-		{ a: 21, abundance: 0.27 }
-	],
-	Na: [{ a: 23, abundance: 100.0 }],
-	Mg: [
-		{ a: 24, abundance: 78.97 },
-		{ a: 26, abundance: 11.03 },
-		{ a: 25, abundance: 10.01 }
-	],
-	Al: [{ a: 27, abundance: 100.0 }],
-	Si: [
-		{ a: 28, abundance: 92.25 },
-		{ a: 29, abundance: 4.67 },
-		{ a: 30, abundance: 3.07 }
-	],
-	P: [{ a: 31, abundance: 100.0 }],
-	S: [
-		{ a: 32, abundance: 94.85 },
-		{ a: 34, abundance: 4.37 },
-		{ a: 33, abundance: 0.76 },
-		{ a: 36, abundance: 0.02 }
-	],
-	Cl: [
-		{ a: 35, abundance: 75.8 },
-		{ a: 37, abundance: 24.2 }
-	],
-	Ar: [
-		{ a: 40, abundance: 99.6 },
-		{ a: 36, abundance: 0.33 },
-		{ a: 38, abundance: 0.06 }
-	],
-	K: [
-		{ a: 39, abundance: 93.26 },
-		{ a: 41, abundance: 6.73 },
-		{ a: 40, abundance: 0.01 }
-	],
-	Ca: [
-		{ a: 40, abundance: 96.94 },
-		{ a: 44, abundance: 2.09 },
-		{ a: 42, abundance: 0.65 },
-		{ a: 48, abundance: 0.19 },
-		{ a: 43, abundance: 0.14 },
-		{ a: 46, abundance: 0.0 }
-	],
-	Sc: [{ a: 45, abundance: 100.0 }],
-	Ti: [
-		{ a: 48, abundance: 73.72 },
-		{ a: 46, abundance: 8.25 },
-		{ a: 47, abundance: 7.44 },
-		{ a: 49, abundance: 5.41 },
-		{ a: 50, abundance: 5.18 }
-	],
-	V: [
-		{ a: 51, abundance: 99.75 },
-		{ a: 50, abundance: 0.25 }
-	],
-	Cr: [
-		{ a: 52, abundance: 83.79 },
-		{ a: 53, abundance: 9.5 },
-		{ a: 50, abundance: 4.34 },
-		{ a: 54, abundance: 2.37 }
-	],
-	Mn: [{ a: 55, abundance: 100.0 }],
-	Fe: [
-		{ a: 56, abundance: 91.75 },
-		{ a: 54, abundance: 5.84 },
-		{ a: 57, abundance: 2.12 },
-		{ a: 58, abundance: 0.28 }
-	],
-	Co: [{ a: 59, abundance: 100.0 }],
-	Ni: [
-		{ a: 58, abundance: 68.08 },
-		{ a: 60, abundance: 26.22 },
-		{ a: 62, abundance: 3.63 },
-		{ a: 61, abundance: 1.14 },
-		{ a: 64, abundance: 0.93 }
-	],
-	Cu: [
-		{ a: 63, abundance: 69.15 },
-		{ a: 65, abundance: 30.85 }
-	],
-	Zn: [
-		{ a: 64, abundance: 49.17 },
-		{ a: 66, abundance: 27.73 },
-		{ a: 68, abundance: 18.45 },
-		{ a: 67, abundance: 4.04 },
-		{ a: 70, abundance: 0.61 }
-	],
-	Ga: [
-		{ a: 69, abundance: 60.11 },
-		{ a: 71, abundance: 39.89 }
-	],
-	Ge: [
-		{ a: 74, abundance: 36.52 },
-		{ a: 72, abundance: 27.45 },
-		{ a: 70, abundance: 20.52 },
-		{ a: 73, abundance: 7.76 },
-		{ a: 76, abundance: 7.75 }
-	],
-	As: [{ a: 75, abundance: 100.0 }],
-	Se: [
-		{ a: 80, abundance: 49.8 },
-		{ a: 78, abundance: 23.69 },
-		{ a: 76, abundance: 9.23 },
-		{ a: 82, abundance: 8.82 },
-		{ a: 77, abundance: 7.6 },
-		{ a: 74, abundance: 0.86 }
-	],
-	Br: [
-		{ a: 79, abundance: 50.65 },
-		{ a: 81, abundance: 49.35 }
-	],
-	Kr: [
-		{ a: 84, abundance: 56.99 },
-		{ a: 86, abundance: 17.28 },
-		{ a: 82, abundance: 11.59 },
-		{ a: 83, abundance: 11.5 },
-		{ a: 80, abundance: 2.29 },
-		{ a: 78, abundance: 0.35 }
-	],
-	Rb: [
-		{ a: 85, abundance: 72.17 },
-		{ a: 87, abundance: 27.83 }
-	],
-	Sr: [
-		{ a: 88, abundance: 82.58 },
-		{ a: 86, abundance: 9.86 },
-		{ a: 87, abundance: 7.0 },
-		{ a: 84, abundance: 0.56 }
-	],
-	Y: [{ a: 89, abundance: 100.0 }],
-	Zr: [
-		{ a: 90, abundance: 51.45 },
-		{ a: 94, abundance: 17.38 },
-		{ a: 92, abundance: 17.15 },
-		{ a: 91, abundance: 11.22 },
-		{ a: 96, abundance: 2.8 }
-	],
-	Nb: [{ a: 93, abundance: 100.0 }],
-	Mo: [
-		{ a: 98, abundance: 24.29 },
-		{ a: 96, abundance: 16.67 },
-		{ a: 95, abundance: 15.87 },
-		{ a: 92, abundance: 14.65 },
-		{ a: 100, abundance: 9.74 },
-		{ a: 97, abundance: 9.58 },
-		{ a: 94, abundance: 9.19 }
-	],
-	Ru: [
-		{ a: 102, abundance: 31.55 },
-		{ a: 104, abundance: 18.62 },
-		{ a: 101, abundance: 17.06 },
-		{ a: 99, abundance: 12.76 },
-		{ a: 100, abundance: 12.6 },
-		{ a: 96, abundance: 5.54 },
-		{ a: 98, abundance: 1.87 }
-	],
-	Rh: [{ a: 103, abundance: 100.0 }],
-	Pd: [
-		{ a: 106, abundance: 27.33 },
-		{ a: 108, abundance: 26.46 },
-		{ a: 105, abundance: 22.33 },
-		{ a: 110, abundance: 11.72 },
-		{ a: 104, abundance: 11.14 },
-		{ a: 102, abundance: 1.02 }
-	],
-	Ag: [
-		{ a: 107, abundance: 51.84 },
-		{ a: 109, abundance: 48.16 }
-	],
-	Cd: [
-		{ a: 114, abundance: 28.75 },
-		{ a: 112, abundance: 24.11 },
-		{ a: 111, abundance: 12.79 },
-		{ a: 110, abundance: 12.47 },
-		{ a: 113, abundance: 12.23 },
-		{ a: 116, abundance: 7.51 },
-		{ a: 106, abundance: 1.25 },
-		{ a: 108, abundance: 0.89 }
-	],
-	In: [
-		{ a: 115, abundance: 95.72 },
-		{ a: 113, abundance: 4.28 }
-	],
-	Sn: [
-		{ a: 120, abundance: 32.58 },
-		{ a: 118, abundance: 24.22 },
-		{ a: 116, abundance: 14.54 },
-		{ a: 119, abundance: 8.59 },
-		{ a: 117, abundance: 7.68 },
-		{ a: 124, abundance: 5.79 },
-		{ a: 122, abundance: 4.63 },
-		{ a: 112, abundance: 0.97 },
-		{ a: 114, abundance: 0.66 },
-		{ a: 115, abundance: 0.34 }
-	],
-	Sb: [
-		{ a: 121, abundance: 57.21 },
-		{ a: 123, abundance: 42.79 }
-	],
-	Te: [
-		{ a: 130, abundance: 34.08 },
-		{ a: 128, abundance: 31.74 },
-		{ a: 126, abundance: 18.84 },
-		{ a: 125, abundance: 7.07 },
-		{ a: 124, abundance: 4.74 },
-		{ a: 122, abundance: 2.55 },
-		{ a: 123, abundance: 0.89 },
-		{ a: 120, abundance: 0.09 }
-	],
-	I: [{ a: 127, abundance: 100.0 }],
-	Xe: [
-		{ a: 132, abundance: 26.91 },
-		{ a: 129, abundance: 26.4 },
-		{ a: 131, abundance: 21.23 },
-		{ a: 134, abundance: 10.44 },
-		{ a: 136, abundance: 8.86 },
-		{ a: 130, abundance: 4.07 },
-		{ a: 128, abundance: 1.91 },
-		{ a: 124, abundance: 0.1 },
-		{ a: 126, abundance: 0.09 }
-	],
-	Cs: [{ a: 133, abundance: 100.0 }],
-	Ba: [
-		{ a: 138, abundance: 71.7 },
-		{ a: 137, abundance: 11.23 },
-		{ a: 136, abundance: 7.85 },
-		{ a: 135, abundance: 6.59 },
-		{ a: 134, abundance: 2.42 },
-		{ a: 130, abundance: 0.11 },
-		{ a: 132, abundance: 0.1 }
-	],
-	La: [
-		{ a: 139, abundance: 99.91 },
-		{ a: 138, abundance: 0.09 }
-	],
-	Ce: [
-		{ a: 140, abundance: 88.45 },
-		{ a: 142, abundance: 11.11 },
-		{ a: 138, abundance: 0.25 },
-		{ a: 136, abundance: 0.19 }
-	],
-	Pr: [{ a: 141, abundance: 100.0 }],
-	Nd: [
-		{ a: 142, abundance: 27.15 },
-		{ a: 144, abundance: 23.8 },
-		{ a: 146, abundance: 17.19 },
-		{ a: 143, abundance: 12.17 },
-		{ a: 145, abundance: 8.29 },
-		{ a: 148, abundance: 5.76 },
-		{ a: 150, abundance: 5.64 }
-	],
-	Sm: [
-		{ a: 152, abundance: 26.74 },
-		{ a: 154, abundance: 22.74 },
-		{ a: 147, abundance: 15.0 },
-		{ a: 149, abundance: 13.82 },
-		{ a: 148, abundance: 11.25 },
-		{ a: 150, abundance: 7.37 },
-		{ a: 144, abundance: 3.08 }
-	],
-	Eu: [
-		{ a: 153, abundance: 52.19 },
-		{ a: 151, abundance: 47.81 }
-	],
-	Gd: [
-		{ a: 158, abundance: 24.84 },
-		{ a: 160, abundance: 21.86 },
-		{ a: 156, abundance: 20.47 },
-		{ a: 157, abundance: 15.65 },
-		{ a: 155, abundance: 14.8 },
-		{ a: 154, abundance: 2.18 },
-		{ a: 152, abundance: 0.2 }
-	],
-	Tb: [{ a: 159, abundance: 100.0 }],
-	Dy: [
-		{ a: 164, abundance: 28.26 },
-		{ a: 162, abundance: 25.48 },
-		{ a: 163, abundance: 24.9 },
-		{ a: 161, abundance: 18.89 },
-		{ a: 160, abundance: 2.33 },
-		{ a: 158, abundance: 0.1 },
-		{ a: 156, abundance: 0.06 }
-	],
-	Ho: [{ a: 165, abundance: 100.0 }],
-	Er: [
-		{ a: 166, abundance: 33.5 },
-		{ a: 168, abundance: 26.98 },
-		{ a: 167, abundance: 22.87 },
-		{ a: 170, abundance: 14.91 },
-		{ a: 164, abundance: 1.6 },
-		{ a: 162, abundance: 0.14 }
-	],
-	Tm: [{ a: 169, abundance: 100.0 }],
-	Yb: [
-		{ a: 174, abundance: 32.02 },
-		{ a: 172, abundance: 21.69 },
-		{ a: 173, abundance: 16.1 },
-		{ a: 171, abundance: 14.09 },
-		{ a: 176, abundance: 12.99 },
-		{ a: 170, abundance: 2.98 },
-		{ a: 168, abundance: 0.12 }
-	],
-	Lu: [
-		{ a: 175, abundance: 97.4 },
-		{ a: 176, abundance: 2.6 }
-	],
-	Hf: [
-		{ a: 180, abundance: 35.08 },
-		{ a: 178, abundance: 27.28 },
-		{ a: 177, abundance: 18.6 },
-		{ a: 179, abundance: 13.62 },
-		{ a: 176, abundance: 5.26 },
-		{ a: 174, abundance: 0.16 }
-	],
-	Ta: [{ a: 181, abundance: 99.99 }],
-	W: [
-		{ a: 184, abundance: 30.64 },
-		{ a: 186, abundance: 28.43 },
-		{ a: 182, abundance: 26.5 },
-		{ a: 183, abundance: 14.31 },
-		{ a: 180, abundance: 0.12 }
-	],
-	Re: [
-		{ a: 187, abundance: 62.6 },
-		{ a: 185, abundance: 37.4 }
-	],
-	Os: [
-		{ a: 192, abundance: 40.78 },
-		{ a: 190, abundance: 26.26 },
-		{ a: 189, abundance: 16.15 },
-		{ a: 188, abundance: 13.24 },
-		{ a: 187, abundance: 1.96 },
-		{ a: 186, abundance: 1.59 },
-		{ a: 184, abundance: 0.02 }
-	],
-	Ir: [
-		{ a: 193, abundance: 62.7 },
-		{ a: 191, abundance: 37.3 }
-	],
-	Pt: [
-		{ a: 195, abundance: 33.77 },
-		{ a: 194, abundance: 32.86 },
-		{ a: 196, abundance: 25.21 },
-		{ a: 198, abundance: 7.36 },
-		{ a: 192, abundance: 0.78 },
-		{ a: 190, abundance: 0.01 }
-	],
-	Au: [{ a: 197, abundance: 100.0 }],
-	Hg: [
-		{ a: 202, abundance: 29.74 },
-		{ a: 200, abundance: 23.14 },
-		{ a: 199, abundance: 16.94 },
-		{ a: 201, abundance: 13.17 },
-		{ a: 198, abundance: 10.04 },
-		{ a: 204, abundance: 6.82 },
-		{ a: 196, abundance: 0.15 }
-	],
-	Tl: [
-		{ a: 205, abundance: 70.48 },
-		{ a: 203, abundance: 29.52 }
-	],
-	Pb: [
-		{ a: 208, abundance: 52.4 },
-		{ a: 206, abundance: 24.1 },
-		{ a: 207, abundance: 22.1 },
-		{ a: 204, abundance: 1.4 }
-	],
-	Bi: [{ a: 209, abundance: 100.0 }],
-	Th: [
-		{ a: 232, abundance: 99.98 },
-		{ a: 230, abundance: 0.02 }
-	],
-	Pa: [{ a: 231, abundance: 100.0 }],
-	U: [
-		{ a: 238, abundance: 99.27 },
-		{ a: 235, abundance: 0.72 },
-		{ a: 234, abundance: 0.01 }
-	]
-};
+	{ id: 25, name: 'H-1', a: 1, z: 1, isMostAbundant: true },
+	{ id: 26, name: 'H-2', a: 2, z: 1 },
+	{ id: 27, name: 'He-3', a: 3, z: 2 },
+	{ id: 28, name: 'He-4', a: 4, z: 2, isMostAbundant: true },
+	{ id: 29, name: 'Li-6', a: 6, z: 3 },
+	{ id: 30, name: 'Li-7', a: 7, z: 3, isMostAbundant: true },
+	{ id: 31, name: 'Be-9', a: 9, z: 4, isMostAbundant: true },
+	{ id: 32, name: 'B-10', a: 10, z: 5 },
+	{ id: 33, name: 'B-11', a: 11, z: 5, isMostAbundant: true },
+	{ id: 34, name: 'C-12', a: 12, z: 6, isMostAbundant: true },
+	{ id: 35, name: 'C-13', a: 13, z: 6 },
+	{ id: 36, name: 'N-14', a: 14, z: 7, isMostAbundant: true },
+	{ id: 37, name: 'N-15', a: 15, z: 7 },
+	{ id: 38, name: 'O-16', a: 16, z: 8, isMostAbundant: true },
+	{ id: 39, name: 'O-17', a: 17, z: 8 },
+	{ id: 40, name: 'O-18', a: 18, z: 8 },
+	{ id: 41, name: 'F-19', a: 19, z: 9, isMostAbundant: true },
+	{ id: 42, name: 'Ne-20', a: 20, z: 10, isMostAbundant: true },
+	{ id: 43, name: 'Ne-21', a: 21, z: 10 },
+	{ id: 44, name: 'Ne-22', a: 22, z: 10 },
+	{ id: 45, name: 'Na-23', a: 23, z: 11, isMostAbundant: true },
+	{ id: 46, name: 'Mg-24', a: 24, z: 12, isMostAbundant: true },
+	{ id: 47, name: 'Mg-25', a: 25, z: 12 },
+	{ id: 48, name: 'Mg-26', a: 26, z: 12 },
+	{ id: 49, name: 'Al-27', a: 27, z: 13, isMostAbundant: true },
+	{ id: 50, name: 'Si-28', a: 28, z: 14, isMostAbundant: true },
+	{ id: 51, name: 'Si-29', a: 29, z: 14 },
+	{ id: 52, name: 'Si-30', a: 30, z: 14 },
+	{ id: 53, name: 'P-31', a: 31, z: 15, isMostAbundant: true },
+	{ id: 54, name: 'S-32', a: 32, z: 16, isMostAbundant: true },
+	{ id: 55, name: 'S-33', a: 33, z: 16 },
+	{ id: 56, name: 'S-34', a: 34, z: 16 },
+	{ id: 57, name: 'S-36', a: 36, z: 16 },
+	{ id: 58, name: 'Cl-35', a: 35, z: 17, isMostAbundant: true },
+	{ id: 59, name: 'Cl-37', a: 37, z: 17 },
+	{ id: 60, name: 'Ar-36', a: 36, z: 18 },
+	{ id: 61, name: 'Ar-38', a: 38, z: 18 },
+	{ id: 62, name: 'Ar-40', a: 40, z: 18, isMostAbundant: true },
+	{ id: 63, name: 'K-39', a: 39, z: 19, isMostAbundant: true },
+	{ id: 64, name: 'K-40', a: 40, z: 19 },
+	{ id: 65, name: 'K-41', a: 41, z: 19 },
+	{ id: 66, name: 'Ca-40', a: 40, z: 20, isMostAbundant: true },
+	{ id: 67, name: 'Ca-42', a: 42, z: 20 },
+	{ id: 68, name: 'Ca-43', a: 43, z: 20 },
+	{ id: 69, name: 'Ca-44', a: 44, z: 20 },
+	{ id: 70, name: 'Ca-46', a: 46, z: 20 },
+	{ id: 71, name: 'Ca-48', a: 48, z: 20 },
+	{ id: 72, name: 'Sc-45', a: 45, z: 21, isMostAbundant: true },
+	{ id: 73, name: 'Ti-46', a: 46, z: 22 },
+	{ id: 74, name: 'Ti-47', a: 47, z: 22 },
+	{ id: 75, name: 'Ti-48', a: 48, z: 22, isMostAbundant: true },
+	{ id: 76, name: 'Ti-49', a: 49, z: 22 },
+	{ id: 77, name: 'Ti-50', a: 50, z: 22 },
+	{ id: 78, name: 'V-50', a: 50, z: 23 },
+	{ id: 79, name: 'V-51', a: 51, z: 23, isMostAbundant: true },
+	{ id: 80, name: 'Cr-50', a: 50, z: 24 },
+	{ id: 81, name: 'Cr-52', a: 52, z: 24, isMostAbundant: true },
+	{ id: 82, name: 'Cr-53', a: 53, z: 24 },
+	{ id: 83, name: 'Cr-54', a: 54, z: 24 },
+	{ id: 84, name: 'Mn-55', a: 55, z: 25, isMostAbundant: true },
+	{ id: 85, name: 'Fe-54', a: 54, z: 26 },
+	{ id: 86, name: 'Fe-56', a: 56, z: 26, isMostAbundant: true },
+	{ id: 87, name: 'Fe-57', a: 57, z: 26 },
+	{ id: 88, name: 'Fe-58', a: 58, z: 26 },
+	{ id: 89, name: 'Co-59', a: 59, z: 27, isMostAbundant: true },
+	{ id: 90, name: 'Ni-58', a: 58, z: 28, isMostAbundant: true },
+	{ id: 91, name: 'Ni-60', a: 60, z: 28 },
+	{ id: 92, name: 'Ni-61', a: 61, z: 28 },
+	{ id: 93, name: 'Ni-62', a: 62, z: 28 },
+	{ id: 94, name: 'Ni-64', a: 64, z: 28 },
+	{ id: 95, name: 'Cu-63', a: 63, z: 29, isMostAbundant: true },
+	{ id: 96, name: 'Cu-65', a: 65, z: 29 },
+	{ id: 97, name: 'Zn-64', a: 64, z: 30, isMostAbundant: true },
+	{ id: 98, name: 'Zn-66', a: 66, z: 30 },
+	{ id: 99, name: 'Zn-67', a: 67, z: 30 },
+	{ id: 100, name: 'Zn-68', a: 68, z: 30 },
+	{ id: 101, name: 'Zn-70', a: 70, z: 30 },
+	{ id: 102, name: 'Ga-69', a: 69, z: 31, isMostAbundant: true },
+	{ id: 103, name: 'Ga-71', a: 71, z: 31 },
+	{ id: 104, name: 'Ge-70', a: 70, z: 32 },
+	{ id: 105, name: 'Ge-72', a: 72, z: 32 },
+	{ id: 106, name: 'Ge-73', a: 73, z: 32 },
+	{ id: 107, name: 'Ge-74', a: 74, z: 32, isMostAbundant: true },
+	{ id: 108, name: 'Ge-76', a: 76, z: 32 },
+	{ id: 109, name: 'As-75', a: 75, z: 33, isMostAbundant: true },
+	{ id: 110, name: 'Se-74', a: 74, z: 34 },
+	{ id: 111, name: 'Se-76', a: 76, z: 34 },
+	{ id: 112, name: 'Se-77', a: 77, z: 34 },
+	{ id: 113, name: 'Se-78', a: 78, z: 34 },
+	{ id: 114, name: 'Se-80', a: 80, z: 34, isMostAbundant: true },
+	{ id: 115, name: 'Se-82', a: 82, z: 34 },
+	{ id: 116, name: 'Br-79', a: 79, z: 35, isMostAbundant: true },
+	{ id: 117, name: 'Br-81', a: 81, z: 35 },
+	{ id: 118, name: 'Kr-78', a: 78, z: 36 },
+	{ id: 119, name: 'Kr-80', a: 80, z: 36 },
+	{ id: 120, name: 'Kr-82', a: 82, z: 36 },
+	{ id: 121, name: 'Kr-83', a: 83, z: 36 },
+	{ id: 122, name: 'Kr-84', a: 84, z: 36, isMostAbundant: true },
+	{ id: 123, name: 'Kr-86', a: 86, z: 36 },
+	{ id: 124, name: 'Rb-85', a: 85, z: 37, isMostAbundant: true },
+	{ id: 125, name: 'Rb-87', a: 87, z: 37 },
+	{ id: 126, name: 'Sr-84', a: 84, z: 38 },
+	{ id: 127, name: 'Sr-86', a: 86, z: 38 },
+	{ id: 128, name: 'Sr-87', a: 87, z: 38 },
+	{ id: 129, name: 'Sr-88', a: 88, z: 38, isMostAbundant: true },
+	{ id: 130, name: 'Y-89', a: 89, z: 39, isMostAbundant: true },
+	{ id: 131, name: 'Zr-90', a: 90, z: 40, isMostAbundant: true },
+	{ id: 132, name: 'Zr-91', a: 91, z: 40 },
+	{ id: 133, name: 'Zr-92', a: 92, z: 40 },
+	{ id: 134, name: 'Zr-94', a: 94, z: 40 },
+	{ id: 135, name: 'Zr-96', a: 96, z: 40 },
+	{ id: 136, name: 'Nb-93', a: 93, z: 41, isMostAbundant: true },
+	{ id: 137, name: 'Mo-92', a: 92, z: 42 },
+	{ id: 138, name: 'Mo-94', a: 94, z: 42 },
+	{ id: 139, name: 'Mo-95', a: 95, z: 42 },
+	{ id: 140, name: 'Mo-96', a: 96, z: 42 },
+	{ id: 141, name: 'Mo-97', a: 97, z: 42 },
+	{ id: 142, name: 'Mo-98', a: 98, z: 42, isMostAbundant: true },
+	{ id: 143, name: 'Mo-100', a: 100, z: 42 },
+	{ id: 144, name: 'Ru-96', a: 96, z: 44 },
+	{ id: 145, name: 'Ru-98', a: 98, z: 44 },
+	{ id: 146, name: 'Ru-99', a: 99, z: 44 },
+	{ id: 147, name: 'Ru-100', a: 100, z: 44 },
+	{ id: 148, name: 'Ru-101', a: 101, z: 44 },
+	{ id: 149, name: 'Ru-102', a: 102, z: 44, isMostAbundant: true },
+	{ id: 150, name: 'Ru-104', a: 104, z: 44 },
+	{ id: 151, name: 'Rh-103', a: 103, z: 45, isMostAbundant: true },
+	{ id: 152, name: 'Pd-102', a: 102, z: 46 },
+	{ id: 153, name: 'Pd-104', a: 104, z: 46 },
+	{ id: 154, name: 'Pd-105', a: 105, z: 46 },
+	{ id: 155, name: 'Pd-106', a: 106, z: 46, isMostAbundant: true },
+	{ id: 156, name: 'Pd-108', a: 108, z: 46 },
+	{ id: 157, name: 'Pd-110', a: 110, z: 46 },
+	{ id: 158, name: 'Ag-107', a: 107, z: 47, isMostAbundant: true },
+	{ id: 159, name: 'Ag-109', a: 109, z: 47 },
+	{ id: 160, name: 'Cd-106', a: 106, z: 48 },
+	{ id: 161, name: 'Cd-108', a: 108, z: 48 },
+	{ id: 162, name: 'Cd-110', a: 110, z: 48 },
+	{ id: 163, name: 'Cd-111', a: 111, z: 48 },
+	{ id: 164, name: 'Cd-112', a: 112, z: 48 },
+	{ id: 165, name: 'Cd-113', a: 113, z: 48 },
+	{ id: 166, name: 'Cd-114', a: 114, z: 48, isMostAbundant: true },
+	{ id: 167, name: 'Cd-116', a: 116, z: 48 },
+	{ id: 168, name: 'In-113', a: 113, z: 49 },
+	{ id: 169, name: 'In-115', a: 115, z: 49, isMostAbundant: true },
+	{ id: 170, name: 'Sn-112', a: 112, z: 50 },
+	{ id: 171, name: 'Sn-114', a: 114, z: 50 },
+	{ id: 172, name: 'Sn-115', a: 115, z: 50 },
+	{ id: 173, name: 'Sn-116', a: 116, z: 50 },
+	{ id: 174, name: 'Sn-117', a: 117, z: 50 },
+	{ id: 175, name: 'Sn-118', a: 118, z: 50 },
+	{ id: 176, name: 'Sn-119', a: 119, z: 50 },
+	{ id: 177, name: 'Sn-120', a: 120, z: 50, isMostAbundant: true },
+	{ id: 178, name: 'Sn-122', a: 122, z: 50 },
+	{ id: 179, name: 'Sn-124', a: 124, z: 50 },
+	{ id: 180, name: 'Sb-121', a: 121, z: 51, isMostAbundant: true },
+	{ id: 181, name: 'Sb-123', a: 123, z: 51 },
+	{ id: 182, name: 'Te-120', a: 120, z: 52 },
+	{ id: 183, name: 'Te-122', a: 122, z: 52 },
+	{ id: 184, name: 'Te-123', a: 123, z: 52 },
+	{ id: 185, name: 'Te-124', a: 124, z: 52 },
+	{ id: 186, name: 'Te-125', a: 125, z: 52 },
+	{ id: 187, name: 'Te-126', a: 126, z: 52 },
+	{ id: 188, name: 'Te-128', a: 128, z: 52 },
+	{ id: 189, name: 'Te-130', a: 130, z: 52, isMostAbundant: true },
+	{ id: 190, name: 'I-127', a: 127, z: 53, isMostAbundant: true },
+	{ id: 191, name: 'Xe-124', a: 124, z: 54 },
+	{ id: 192, name: 'Xe-126', a: 126, z: 54 },
+	{ id: 193, name: 'Xe-128', a: 128, z: 54 },
+	{ id: 194, name: 'Xe-129', a: 129, z: 54 },
+	{ id: 195, name: 'Xe-130', a: 130, z: 54 },
+	{ id: 196, name: 'Xe-131', a: 131, z: 54 },
+	{ id: 197, name: 'Xe-132', a: 132, z: 54, isMostAbundant: true },
+	{ id: 198, name: 'Xe-134', a: 134, z: 54 },
+	{ id: 199, name: 'Xe-136', a: 136, z: 54 },
+	{ id: 200, name: 'Cs-133', a: 133, z: 55, isMostAbundant: true },
+	{ id: 201, name: 'Ba-130', a: 130, z: 56 },
+	{ id: 202, name: 'Ba-132', a: 132, z: 56 },
+	{ id: 203, name: 'Ba-134', a: 134, z: 56 },
+	{ id: 204, name: 'Ba-135', a: 135, z: 56 },
+	{ id: 205, name: 'Ba-136', a: 136, z: 56 },
+	{ id: 206, name: 'Ba-137', a: 137, z: 56 },
+	{ id: 207, name: 'Ba-138', a: 138, z: 56, isMostAbundant: true },
+	{ id: 208, name: 'La-138', a: 138, z: 57 },
+	{ id: 209, name: 'La-139', a: 139, z: 57, isMostAbundant: true },
+	{ id: 210, name: 'Ce-136', a: 136, z: 58 },
+	{ id: 211, name: 'Ce-138', a: 138, z: 58 },
+	{ id: 212, name: 'Ce-140', a: 140, z: 58, isMostAbundant: true },
+	{ id: 213, name: 'Ce-142', a: 142, z: 58 },
+	{ id: 214, name: 'Pr-141', a: 141, z: 59, isMostAbundant: true },
+	{ id: 215, name: 'Nd-142', a: 142, z: 60, isMostAbundant: true },
+	{ id: 216, name: 'Nd-143', a: 143, z: 60 },
+	{ id: 217, name: 'Nd-144', a: 144, z: 60 },
+	{ id: 218, name: 'Nd-145', a: 145, z: 60 },
+	{ id: 219, name: 'Nd-146', a: 146, z: 60 },
+	{ id: 220, name: 'Nd-148', a: 148, z: 60 },
+	{ id: 221, name: 'Nd-150', a: 150, z: 60 },
+	{ id: 222, name: 'Sm-144', a: 144, z: 62 },
+	{ id: 223, name: 'Sm-147', a: 147, z: 62 },
+	{ id: 224, name: 'Sm-148', a: 148, z: 62 },
+	{ id: 225, name: 'Sm-149', a: 149, z: 62 },
+	{ id: 226, name: 'Sm-150', a: 150, z: 62 },
+	{ id: 227, name: 'Sm-152', a: 152, z: 62, isMostAbundant: true },
+	{ id: 228, name: 'Sm-154', a: 154, z: 62 },
+	{ id: 229, name: 'Eu-151', a: 151, z: 63 },
+	{ id: 230, name: 'Eu-153', a: 153, z: 63, isMostAbundant: true },
+	{ id: 231, name: 'Gd-152', a: 152, z: 64 },
+	{ id: 232, name: 'Gd-154', a: 154, z: 64 },
+	{ id: 233, name: 'Gd-155', a: 155, z: 64 },
+	{ id: 234, name: 'Gd-156', a: 156, z: 64 },
+	{ id: 235, name: 'Gd-157', a: 157, z: 64 },
+	{ id: 236, name: 'Gd-158', a: 158, z: 64, isMostAbundant: true },
+	{ id: 237, name: 'Gd-160', a: 160, z: 64 },
+	{ id: 238, name: 'Tb-159', a: 159, z: 65, isMostAbundant: true },
+	{ id: 239, name: 'Dy-156', a: 156, z: 66 },
+	{ id: 240, name: 'Dy-158', a: 158, z: 66 },
+	{ id: 241, name: 'Dy-160', a: 160, z: 66 },
+	{ id: 242, name: 'Dy-161', a: 161, z: 66 },
+	{ id: 243, name: 'Dy-162', a: 162, z: 66 },
+	{ id: 244, name: 'Dy-163', a: 163, z: 66 },
+	{ id: 245, name: 'Dy-164', a: 164, z: 66, isMostAbundant: true },
+	{ id: 246, name: 'Ho-165', a: 165, z: 67, isMostAbundant: true },
+	{ id: 247, name: 'Er-162', a: 162, z: 68 },
+	{ id: 248, name: 'Er-164', a: 164, z: 68 },
+	{ id: 249, name: 'Er-166', a: 166, z: 68, isMostAbundant: true },
+	{ id: 250, name: 'Er-167', a: 167, z: 68 },
+	{ id: 251, name: 'Er-168', a: 168, z: 68 },
+	{ id: 252, name: 'Er-170', a: 170, z: 68 },
+	{ id: 253, name: 'Tm-169', a: 169, z: 69, isMostAbundant: true },
+	{ id: 254, name: 'Yb-168', a: 168, z: 70 },
+	{ id: 255, name: 'Yb-170', a: 170, z: 70 },
+	{ id: 256, name: 'Yb-171', a: 171, z: 70 },
+	{ id: 257, name: 'Yb-172', a: 172, z: 70 },
+	{ id: 258, name: 'Yb-173', a: 173, z: 70 },
+	{ id: 259, name: 'Yb-174', a: 174, z: 70, isMostAbundant: true },
+	{ id: 260, name: 'Yb-176', a: 176, z: 70 },
+	{ id: 261, name: 'Lu-175', a: 175, z: 71, isMostAbundant: true },
+	{ id: 262, name: 'Lu-176', a: 176, z: 71 },
+	{ id: 263, name: 'Hf-174', a: 174, z: 72 },
+	{ id: 264, name: 'Hf-176', a: 176, z: 72 },
+	{ id: 265, name: 'Hf-177', a: 177, z: 72 },
+	{ id: 266, name: 'Hf-178', a: 178, z: 72 },
+	{ id: 267, name: 'Hf-179', a: 179, z: 72 },
+	{ id: 268, name: 'Hf-180', a: 180, z: 72, isMostAbundant: true },
+	{ id: 269, name: 'Ta-181', a: 181, z: 73, isMostAbundant: true },
+	{ id: 270, name: 'W-180', a: 180, z: 74 },
+	{ id: 271, name: 'W-182', a: 182, z: 74 },
+	{ id: 272, name: 'W-183', a: 183, z: 74 },
+	{ id: 273, name: 'W-184', a: 184, z: 74, isMostAbundant: true },
+	{ id: 274, name: 'W-186', a: 186, z: 74 },
+	{ id: 275, name: 'Re-185', a: 185, z: 75 },
+	{ id: 276, name: 'Re-187', a: 187, z: 75, isMostAbundant: true },
+	{ id: 277, name: 'Os-184', a: 184, z: 76 },
+	{ id: 278, name: 'Os-186', a: 186, z: 76 },
+	{ id: 279, name: 'Os-187', a: 187, z: 76 },
+	{ id: 280, name: 'Os-188', a: 188, z: 76 },
+	{ id: 281, name: 'Os-189', a: 189, z: 76 },
+	{ id: 282, name: 'Os-190', a: 190, z: 76 },
+	{ id: 283, name: 'Os-192', a: 192, z: 76, isMostAbundant: true },
+	{ id: 284, name: 'Ir-191', a: 191, z: 77 },
+	{ id: 285, name: 'Ir-193', a: 193, z: 77, isMostAbundant: true },
+	{ id: 286, name: 'Pt-190', a: 190, z: 78 },
+	{ id: 287, name: 'Pt-192', a: 192, z: 78 },
+	{ id: 288, name: 'Pt-194', a: 194, z: 78 },
+	{ id: 289, name: 'Pt-195', a: 195, z: 78, isMostAbundant: true },
+	{ id: 290, name: 'Pt-196', a: 196, z: 78 },
+	{ id: 291, name: 'Pt-198', a: 198, z: 78 },
+	{ id: 292, name: 'Au-197', a: 197, z: 79, isMostAbundant: true },
+	{ id: 293, name: 'Hg-196', a: 196, z: 80 },
+	{ id: 294, name: 'Hg-198', a: 198, z: 80 },
+	{ id: 295, name: 'Hg-199', a: 199, z: 80 },
+	{ id: 296, name: 'Hg-200', a: 200, z: 80 },
+	{ id: 297, name: 'Hg-201', a: 201, z: 80 },
+	{ id: 298, name: 'Hg-202', a: 202, z: 80, isMostAbundant: true },
+	{ id: 299, name: 'Hg-204', a: 204, z: 80 },
+	{ id: 300, name: 'Tl-203', a: 203, z: 81 },
+	{ id: 301, name: 'Tl-205', a: 205, z: 81, isMostAbundant: true },
+	{ id: 302, name: 'Pb-204', a: 204, z: 82 },
+	{ id: 303, name: 'Pb-206', a: 206, z: 82 },
+	{ id: 304, name: 'Pb-207', a: 207, z: 82 },
+	{ id: 305, name: 'Pb-208', a: 208, z: 82, isMostAbundant: true },
+	{ id: 306, name: 'Bi-209', a: 209, z: 83, isMostAbundant: true },
+	{ id: 307, name: 'Th-230', a: 230, z: 90 },
+	{ id: 308, name: 'Th-232', a: 232, z: 90, isMostAbundant: true },
+	{ id: 309, name: 'Pa-231', a: 231, z: 91, isMostAbundant: true },
+	{ id: 310, name: 'U-234', a: 234, z: 92 },
+	{ id: 311, name: 'U-235', a: 235, z: 92 },
+	{ id: 312, name: 'U-238', a: 238, z: 92, isMostAbundant: true }
+] as const satisfies readonly Particle[];
 /**
  * Particle types supported by Geant4. A and Z are defined for composite particles
  *  * like deuteron, triton, helium, and heavy ions.
@@ -666,17 +451,17 @@ export const GEANT4_PARTICLE_TYPES = [
 		id: 10,
 		name: 'Pion π+'
 	},
-	{
-		id: 11,
-		name: '12C',
-		a: 12,
-		z: 6
-	},
-	// ...HEAVY_ION_LIST,
-	{
-		id: 25,
-		name: 'Heavy ions',
-		a: 12,
-		z: 6
-	}
+	// {
+	// 	id: 11,
+	// 	name: '12C',
+	// 	a: 12,
+	// 	z: 6
+	// },
+	...HEAVY_ION_LIST
+	// {
+	// 	id: 25,
+	// 	name: 'Heavy ions',
+	// 	a: 12,
+	// 	z: 6
+	// }
 ] as const satisfies readonly Particle[];
