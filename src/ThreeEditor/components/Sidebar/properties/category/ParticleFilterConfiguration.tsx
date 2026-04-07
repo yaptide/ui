@@ -31,13 +31,13 @@ export function ParticleFilterConfiguration(props: { editor: YaptideEditor; obje
 					<ParticleSelect
 						// Ignore the Heavy ions type
 						particles={COMMON_PARTICLE_TYPES.filter(p => p.id !== 25)}
-						value={watchedObject.particleData.id}
+						value={watchedObject.particleData.name}
 						onChange={(_, v) =>
 							setValueCommand(
 								{
 									...watchedObject.particleData,
 									id: v,
-									name: COMMON_PARTICLE_TYPES.find(p => p.id === v)?.name
+									name: COMMON_PARTICLE_TYPES.find(p => p.name === v)?.name
 								},
 								'particleData'
 							)

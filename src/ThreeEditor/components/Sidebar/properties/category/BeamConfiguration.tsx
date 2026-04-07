@@ -252,9 +252,9 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 			<PropertyField label='Particle type'>
 				<ParticleSelect
 					particles={supportedParticles}
-					value={watchedObject.particleData.id}
+					value={watchedObject.particleData.name}
 					onChange={(_, v) => {
-						const newParticleData = supportedParticles.find(p => p.id === v);
+						const newParticleData = supportedParticles.find(p => p.name === v);
 
 						if (!newParticleData) {
 							return;
@@ -358,7 +358,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 							}
 						}}
 					/> */}
-					<PropertyField>
+					{/* <PropertyField>
 						<label>
 							<span style={{ marginLeft: '128px' }}>
 								Z = {watchedObject.particleData.z}
@@ -367,9 +367,9 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 								A = {watchedObject.particleData.a}
 							</span>
 						</label>
-					</PropertyField>
+					</PropertyField> */}
 
-					{/* <PropertyField label='Nucleons (A)'>
+					<PropertyField label='A'>
 						<div
 							style={{
 								padding: '8px',
@@ -378,7 +378,17 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 							}}>
 							{watchedObject.particleData.a}
 						</div>
-					</PropertyField> */}
+					</PropertyField>
+					<PropertyField label='Z'>
+						<div
+							style={{
+								padding: '8px',
+								color: 'gray',
+								borderBottom: '1px solid #444'
+							}}>
+							{watchedObject.particleData.z}
+						</div>
+					</PropertyField>
 				</>
 			)}
 

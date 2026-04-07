@@ -5,9 +5,9 @@ import { Particle } from '../../../types/Particle';
 import { AutoCompleteSelect } from '../../../util/genericComponents/AutoCompleteSelect';
 
 export interface ParticleSelectProps {
-	onChange?: (event: SyntheticEvent<Element, Event>, newValue: number) => void;
+	onChange?: (event: SyntheticEvent<Element, Event>, newValue: string) => void;
 	particles: readonly Particle[];
-	value?: number;
+	value?: string;
 }
 
 export function ParticleSelect(props: ParticleSelectProps) {
@@ -41,9 +41,9 @@ export function ParticleSelect(props: ParticleSelectProps) {
 	return (
 		<AutoCompleteSelect
 			onChange={(event, newValue) => {
-				if (newValue !== null) props.onChange?.call(null, event, newValue.id);
+				if (newValue !== null) props.onChange?.call(null, event, newValue.name);
 			}}
-			value={props.particles.find(p => p.id === props.value)}
+			value={props.particles.find(p => p.name === props.value)}
 			options={props.particles}
 			getOptionLabel={option => getOptionLabel(option)}
 			renderOption={renderOption}
