@@ -4,11 +4,9 @@ import { Object3D } from 'three';
 
 import { StyledExclusiveToggleButtonGroup } from '../../../../../shared/components/StyledExclusiveToggleButtonGroup';
 import {
-	COMMON_PARTICLE_TYPES,
-	FLUKA_PARTICLE_TYPES,
-	GEANT4_PARTICLE_TYPES,
-	Particle
-} from '../../../../../types/Particle';
+	getParticlesForSimulator,
+	isIon,
+	ParticleEntry} from '../../../../../types/ParticleCatalogue';
 import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
@@ -163,19 +161,19 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 	// watchedObject.energyUnit is kept in sync in updateEnergyInputs()
 	const [energyUnit, setEnergyUnit] = useState<EnergyUnit>(watchedObject.energyUnit);
 
-	let supportedParticles: Particle[] = [];
+	let supportedParticles: ParticleEntry[] = [];
 
 	switch (editor.contextManager.currentSimulator) {
 		case SimulatorType.GEANT4:
-			supportedParticles.push(...GEANT4_PARTICLE_TYPES);
+			supportedParticles.push(...getParticlesForSimulator(SimulatorType.GEANT4));
 
 			break;
 		case SimulatorType.FLUKA:
-			supportedParticles.push(...COMMON_PARTICLE_TYPES, ...FLUKA_PARTICLE_TYPES);
+			supportedParticles.push(...getParticlesForSimulator(SimulatorType.FLUKA));
 
 			break;
 		default:
-			supportedParticles.push(...COMMON_PARTICLE_TYPES);
+			supportedParticles.push(...getParticlesForSimulator(SimulatorType.SHIELDHIT));
 	}
 
 	const setValueCommand = useCallback(
@@ -191,16 +189,16 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 		}
 	}, [editor.contextManager.currentSimulator, setValueCommand]);
 
-	const shouldShowEnergyUnit = useCallback((particle: Particle) => {
+	const shouldShowEnergyUnit = useCallback((particle: ParticleEntry) => {
 		return (
 			particle.a &&
 			(particle.a > 1 || // every particle with a > 1
-				particle.id === 25) // heavy ions, even if a == 1
+				isIon(particle)) // heavy ions, even if a == 1
 		);
 	}, []);
 
 	const updateEnergyInputs = useCallback(
-		(oldUnit: EnergyUnit, newUnit: EnergyUnit, newParticle?: Particle) => {
+		(oldUnit: EnergyUnit, newUnit: EnergyUnit, newParticle?: ParticleEntry) => {
 			let massNumber = watchedObject.particleData.a ?? 1;
 
 			if (oldUnit === 'MeV' && newUnit === 'MeV/nucl') {
@@ -252,9 +250,9 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 			<PropertyField label='Particle type'>
 				<ParticleSelect
 					particles={supportedParticles}
-					value={watchedObject.particleData.name}
+					value={watchedObject.particleData.pdg}
 					onChange={(_, v) => {
-						const newParticleData = supportedParticles.find(p => p.name === v);
+						const newParticleData = supportedParticles.find(p => p.pdg === v);
 
 						if (!newParticleData) {
 							return;
@@ -295,7 +293,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 					/>
 				</>
 			)} */}
-			{watchedObject.particleData.id >= 25 && ( // select-lists should be moved to select directory
+			{isIon(watchedObject.particleData) && ( // select-lists should be moved to select directory
 				<>
 					{/* <PropertyField label="Element">
 					<ParticleSelect

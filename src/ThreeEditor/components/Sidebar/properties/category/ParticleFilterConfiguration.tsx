@@ -1,6 +1,6 @@
 import { Object3D } from 'three';
 
-import { COMMON_PARTICLE_TYPES } from '../../../../../types/Particle';
+import { getParticlesForSimulator } from '../../../../../types/ParticleCatalogue';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
@@ -22,6 +22,10 @@ export function ParticleFilterConfiguration(props: { editor: YaptideEditor; obje
 		editor.execute(new SetValueCommand(editor, watchedObject.object, key, value));
 	};
 
+	const particlesForCurrentSimulator = getParticlesForSimulator(
+		editor.contextManager.currentSimulator
+	);
+
 	return (
 		<PropertiesCategory
 			category='Particle Filter'
@@ -29,15 +33,15 @@ export function ParticleFilterConfiguration(props: { editor: YaptideEditor; obje
 			{visibleFlag && (
 				<>
 					<ParticleSelect
-						// Ignore the Heavy ions type
-						particles={COMMON_PARTICLE_TYPES.filter(p => p.id !== 25)}
-						value={watchedObject.particleData.name}
+						particles={particlesForCurrentSimulator}
+						value={watchedObject.particleData.pdg}
 						onChange={(_, v) =>
 							setValueCommand(
 								{
 									...watchedObject.particleData,
-									id: v,
-									name: COMMON_PARTICLE_TYPES.find(p => p.name === v)?.name
+									pdg: v,
+									name: particlesForCurrentSimulator.find(p => p.pdg === v)
+										?.displayName
 								},
 								'particleData'
 							)

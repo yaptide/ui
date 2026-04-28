@@ -1,7 +1,11 @@
 import { Typography } from '@mui/material';
 import { Object3D } from 'three';
 
-import { GEANT4_PARTICLE_TYPES } from '../../../../../types/Particle';
+import {
+	getParticlesForSimulator,
+	PARTICLE_CATALOGUE,
+	ParticleEntry} from '../../../../../types/ParticleCatalogue';
+import { SimulatorType } from '../../../../../types/RequestTypes';
 import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
@@ -66,11 +70,12 @@ export function GeantScoringFilterConfiguration(props: {
 								value={watchedObject.data?.particleTypes ?? []}
 								renderValue={(particleTypes, _) =>
 									particleTypes.map(t => (
-										<Typography sx={{ px: '2px' }}>{`${t.name}`}</Typography>
+										<Typography
+											sx={{ px: '2px' }}>{`${t.displayName}`}</Typography>
 									))
 								}
-								getOptionLabel={t => `[${t.id}] ${t.name}`}
-								options={GEANT4_PARTICLE_TYPES}
+								getOptionLabel={t => t.displayName}
+								options={getParticlesForSimulator(SimulatorType.GEANT4)}
 							/>
 						</PropertyField>
 					)}

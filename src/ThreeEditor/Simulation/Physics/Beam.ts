@@ -4,8 +4,9 @@ import { Line2 } from 'three/examples/jsm/lines/Line2.js';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 
-import { COMMON_PARTICLE_TYPES, FLUKA_PARTICLE_TYPES, Particle } from '../../../types/Particle';
 // Import of 'lines' from examples subfolder follows the official guidelines of threejs.editor (see https://threejs.org/docs/#manual/en/introduction/Installation)
+import { PARTICLE_CATALOGUE, ParticleEntry } from '../../../types/ParticleCatalogue';
+import { SimulatorType } from '../../../types/RequestTypes';
 import { ConfigSourceFile } from '../../../types/SimulationTypes/ConfigTypes';
 import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
@@ -33,6 +34,10 @@ export type BeamSourceType = keyof typeof BEAM_SOURCE_TYPE;
 
 export const EnergyUnits = ['MeV', 'MeV/nucl'];
 export type EnergyUnit = (typeof EnergyUnits)[number];
+
+interface Particle {
+	pdg: number;
+}
 
 export type BeamJSON = Omit<
 	SimulationElementJSON & {
@@ -84,10 +89,13 @@ const _default = {
 		distanceToFocal: 0
 	},
 	particle: {
-		id: 2,
-		name: 'Proton',
+		pdg: 2212,
+		displayName: 'Proton',
+		aliases: ['p', 'proton'],
 		a: 1,
-		z: 1
+		z: 1,
+		sortPriority: 0,
+		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	sigma: {
 		type: SIGMA_TYPE.Gaussian,
@@ -159,14 +167,12 @@ export class Beam extends SimulationElement implements SerializableState<BeamJSO
 
 	numberOfParticles: number;
 
-	particleData: Particle;
+	particleData: ParticleEntry;
 
 	sourceFile: ConfigSourceFile;
 
-	get particle(): Particle {
-		return [...COMMON_PARTICLE_TYPES, ...FLUKA_PARTICLE_TYPES].find(
-			p => p.id === this.particleData.id
-		) as Particle;
+	get particle(): ParticleEntry {
+		return PARTICLE_CATALOGUE.find(p => p.pdg === this.particleData.pdg) as ParticleEntry;
 	}
 
 	constructor(editor: YaptideEditor) {
@@ -298,6 +304,10 @@ export class Beam extends SimulationElement implements SerializableState<BeamJSO
 	}
 
 	toSerialized() {
+		const particle: Particle = {
+			pdg: this.particleData.pdg ?? 2212
+		};
+
 		const jsonObject: BeamJSON = {
 			...super.toSerialized(),
 			position: this.position.toArray(),
@@ -310,7 +320,7 @@ export class Beam extends SimulationElement implements SerializableState<BeamJSO
 			sigma: this.sigma,
 			sad: this.sad,
 			divergence: this.divergence,
-			particle: this.particleData,
+			particle: particle,
 			colorHex: this.material.color.getHex(),
 			numberOfParticles: this.numberOfParticles,
 			sourceFile: this.sourceFile,
@@ -331,7 +341,8 @@ export class Beam extends SimulationElement implements SerializableState<BeamJSO
 		this.energyLowCutoff = loadedData.energyLowCutoff;
 		this.energyHighCutoff = loadedData.energyHighCutoff;
 		this.divergence = loadedData.divergence;
-		this.particleData = loadedData.particle;
+		this.particleData =
+			PARTICLE_CATALOGUE.find(p => p.pdg === loadedData.particle.pdg) ?? _default.particle;
 		this.material.color.setHex(loadedData.colorHex);
 		this.numberOfParticles = loadedData.numberOfParticles;
 		this.sourceFile = loadedData.sourceFile;
