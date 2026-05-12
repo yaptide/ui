@@ -15,10 +15,12 @@ import {
 	isEditorJson,
 	JobInputs,
 	JobLogs,
+	JobPartialResults,
 	JobResults,
 	RequestCancelJob,
 	RequestGetJobInputs,
 	RequestGetJobLogs,
+	RequestGetJobPartialResults,
 	RequestGetJobResult,
 	RequestGetJobResults,
 	RequestGetJobStatus,
@@ -39,6 +41,7 @@ import {
 	ResponseGetEstimatorPageResult,
 	ResponseGetJobInputs,
 	ResponseGetJobLogs,
+	ResponseGetJobPartialResults,
 	ResponseGetJobResults,
 	ResponseGetJobStatus,
 	ResponseGetPageContents,
@@ -52,6 +55,7 @@ import { FullSimulationData, SimulationService } from '../types/SimulationServic
 import { camelToSnakeCase } from '../util/Notation/Notation';
 import { ValidateShape } from '../util/Types';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
+import { parsePartialResults } from './ArrowParser';
 import CacheMap from './CacheMap';
 
 const CACHEABLE_STATUSES = new Set([
@@ -413,6 +417,53 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 					...response,
 					jobId,
 					estimators: refsInResults ?? response.estimators
+				};
+
+				resolve(data);
+			},
+			jobId,
+			beforeCacheWrite
+		);
+
+		return await cachePromise;
+	}
+
+	async getJobPartialResults(
+		...args: RequestGetJobPartialResults
+	): Promise<JobPartialResults | undefined> {
+		const [info, signal, cache = true, beforeCacheWrite] = args;
+		const { jobId } = info;
+
+		if (cache && this.resultsCache.has(jobId)) {
+			return Promise.resolve(this.resultsCache.get(jobId));
+		}
+
+		const cachePromise = this.resultsCache.createPromise(
+			async resolve => {
+				const arrowBuffer = await this.authKy
+					.get('partial-results', {
+						signal,
+						searchParams: camelToSnakeCase({ jobId }),
+						headers: {
+							Accept: 'application/vnd.apache.arrow.stream'
+						}
+					})
+					.arrayBuffer();
+
+				const results = parsePartialResults(arrowBuffer);
+
+				updateEstimators(results.estimators);
+
+				const jobInputs = await this.getJobInputs(info, signal, cache);
+
+				const refsInResults =
+					jobInputs?.input.inputJson &&
+					recreateRefsInResults(jobInputs.input.inputJson, results.estimators);
+
+				const data: JobPartialResults = {
+					...results,
+					jobId,
+					estimators: refsInResults ?? results.estimators
 				};
 
 				resolve(data);
