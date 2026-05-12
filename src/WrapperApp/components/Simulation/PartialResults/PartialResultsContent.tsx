@@ -2,9 +2,8 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useEffect, useState } from 'react';
 
-import { Estimator, generateGraphs, isPage0d } from '../../../../JsRoot/GraphData';
+import { JsRootGraph2DArrow } from '../../../../JsRoot/components/JsRootGraph2DArrow';
 import { JobPartialResults, RequestGetJobPartialResults } from '../../../../types/RequestTypes';
-import { EstimatorResults } from '../../Results/ResultsPanel';
 
 interface PartialResultsContentProps {
 	jobId?: string;
@@ -32,7 +31,7 @@ export default function PartialResultsContent({
 					abortController.signal
 				);
 				setPartialResults(partialResults);
-				// TODO: remove after displaying the resutls in the UI
+				// TODO: remove after displaying the results in the UI
 				console.log(partialResults);
 			} catch (error) {
 				if ((error as Error).name === 'AbortError') return;
@@ -49,27 +48,18 @@ export default function PartialResultsContent({
 		};
 	}, [getJobPartialResults]);
 
-	const parseEstimators = (estimators: Estimator[]) => {
-		const estimatorResults = estimators.map(estimator => {
-			const tablePages = estimator.pages.filter(isPage0d);
-			const gridPages = estimator.pages.filter(p => !isPage0d(p));
-			const estimatorResults: EstimatorResults = { ...estimator, tablePages, gridPages };
-
-			return estimatorResults;
-		});
-
-		return estimatorResults;
-	};
-
-	// TODO: handle multiple estimators
-	const parsedEstimators = parseEstimators(partialResults?.estimators ?? [])?.[0];
-
 	return (
 		<Box>
-			{!parsedEstimators ? (
+			{!partialResults ? (
 				<CircularProgress />
 			) : (
-				generateGraphs(parsedEstimators, false, jobId)
+				<Box sx={{ width: '1080px', backgroundColor: 'white' }}>
+					{/* TODO: Implement Arrow graphs for other estimators and use them here */}
+					<JsRootGraph2DArrow
+						title='TODO'
+						table={partialResults.estimatorsTable}
+					/>
+				</Box>
 			)}
 		</Box>
 	);
