@@ -24,6 +24,10 @@ const SimulationsGridHelpers = (
 	state: SimulationState
 ) => {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const [partialResultsModalState, setPartialResultsModalState] = useState<{
+		open: boolean;
+		jobId?: string;
+	}>({ open: false });
 	const currentJobId = useRef<string>('');
 	const { controller, trackedId, isBackendAlive, statusStates } = config;
 	const { getPageContents, getPageStatus, getJobStatus, getFullSimulationData, cancelJob } =
@@ -290,6 +294,8 @@ const SimulationsGridHelpers = (
 		pageData,
 		isModalOpen,
 		setIsModalOpen,
+		partialResultsModalState,
+		setPartialResultsModalState,
 		submitDelete
 	};
 };

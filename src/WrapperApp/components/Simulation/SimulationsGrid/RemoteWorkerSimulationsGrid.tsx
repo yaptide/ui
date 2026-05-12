@@ -6,6 +6,7 @@ import { useStore } from '../../../../services/StoreService';
 import { JobStatusData, SimulationInfo, ValidStatusStates } from '../../../../types/ResponseTypes';
 import useIntervalAsync from '../../../../util/hooks/useIntervalAsync';
 import DeleteSimulationModal from '../Modal/DeleteSimulationModal';
+import PartialResultsModal from '../PartialResults/PartialResultsModal';
 import { PaginatedSimulationsGrid } from '../SimulationCardGrid';
 import { useBackendAliveEffect } from './hooks/useBackendAliveEffect';
 import { useUpdateCurrentSimulationEffect } from './hooks/useUpdateCurrentSimulationEffect';
@@ -62,6 +63,8 @@ export const RemoteWorkerSimulationsGrid = (props: SimulationsGridProps) => {
 		pageData,
 		isModalOpen,
 		setIsModalOpen,
+		partialResultsModalState,
+		setPartialResultsModalState,
 		submitDelete
 	} = SimulationsGridHelpers(config, handlers, state);
 
@@ -88,6 +91,14 @@ export const RemoteWorkerSimulationsGrid = (props: SimulationsGridProps) => {
 					open={isModalOpen}
 					setOpen={setIsModalOpen}
 					onConfirm={submitDelete}
+				/>
+			)}
+			{partialResultsModalState.open && (
+				<PartialResultsModal
+					jobId={partialResultsModalState.jobId ?? ''}
+					open={partialResultsModalState.open}
+					onClose={() => setPartialResultsModalState({ open: false })}
+					getJobPartialResults={handlers.getJobPartialResults}
 				/>
 			)}
 		</>
