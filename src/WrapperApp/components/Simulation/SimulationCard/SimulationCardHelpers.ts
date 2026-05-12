@@ -13,7 +13,7 @@ interface SimulationCardHelpersProps {
 	loadResults: ((jobId: string | null) => void) | undefined;
 	setDisableLoadJson: React.Dispatch<React.SetStateAction<boolean>>;
 	showInputFiles: ((inputFiles?: SimulationInputFiles | undefined) => void) | undefined;
-	showPartialResults: ((jobId: string) => void) | undefined;
+	showPartialResults?: (jobId: string) => void;
 	simulationStatus: JobStatusData;
 	yaptideEditor: YaptideEditor | undefined;
 }
