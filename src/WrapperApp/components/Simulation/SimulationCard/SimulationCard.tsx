@@ -37,8 +37,6 @@ export default function SimulationCard({
 	const theme = useTheme();
 	const { yaptideEditor, resultsSimulationData } = useStore();
 	const [disableLoadJson, setDisableLoadJson] = useState(false);
-	// TODO: get this information from the backend when fetching the simulation status
-	const partialResultsAvailable = false;
 	const {
 		statusColor,
 		onClickLoadResults,
@@ -70,7 +68,7 @@ export default function SimulationCard({
 		resultsSimulationData,
 		yaptideEditor,
 		disableLoadJson,
-		partialResultsAvailable
+		partialResultsAvailable: simulationStatus.partialResultsAvailable ?? false
 	};
 
 	const { startTime, endTime } = simulationStatus;
