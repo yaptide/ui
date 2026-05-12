@@ -1,3 +1,5 @@
+import { Table } from 'apache-arrow';
+
 import { Estimator, Page } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
@@ -419,7 +421,7 @@ export type ResponseGetJobResults = {
 } & YaptideResponse;
 
 export type ResponseGetJobPartialResults = {
-	estimators: Estimator[];
+	estimatorsTable: Table;
 } & YaptideResponse;
 
 export type ResponseGetJobResult = Estimator & YaptideResponse;
