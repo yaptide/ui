@@ -107,6 +107,7 @@ export type SimulationInfo = {
 	endTime?: string;
 	localData?: boolean;
 	endpointUrl?: string;
+	partialResultsAvailable?: boolean;
 };
 /* ------------------------------------ */
 
@@ -414,6 +415,10 @@ export type ResponseGetJobLogs = {
 } & YaptideResponse;
 
 export type ResponseGetJobResults = {
+	estimators: Estimator[];
+} & YaptideResponse;
+
+export type ResponseGetJobPartialResults = {
 	estimators: Estimator[];
 } & YaptideResponse;
 
