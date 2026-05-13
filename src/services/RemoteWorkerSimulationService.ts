@@ -435,7 +435,7 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 		const { jobId } = info;
 
 		const arrowBuffer = await this.authKy
-			.get('partial-results', {
+			.get('jobs/partial-results', {
 				signal,
 				searchParams: camelToSnakeCase({ jobId }),
 				headers: {
