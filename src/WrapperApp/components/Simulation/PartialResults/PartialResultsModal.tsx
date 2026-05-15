@@ -1,24 +1,26 @@
-import { useTheme } from '@mui/material';
+import { Box, DialogContent, Fade,Typography, useTheme } from '@mui/material';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Modal from '@mui/material/Modal';
 
-import Box from '../../../../ThreeEditor/components/Sidebar/SidebarTreeList/svg/Box';
 import { JobPartialResults, RequestGetJobPartialResults } from '../../../../types/RequestTypes';
+import { JobUnknownStatus, SimulationInfo } from '../../../../types/ResponseTypes';
 import PartialResultsContent from './PartialResultsContent';
 
 interface PartialResultsModalProps {
+	open: boolean;
 	jobId?: string;
+	jobStatus?: Omit<JobUnknownStatus & SimulationInfo, never>;
 	getJobPartialResults?: (
 		...args: RequestGetJobPartialResults
 	) => Promise<JobPartialResults | undefined>;
-	open: boolean;
 	onClose: () => void;
 }
 
 export default function PartialResultsModal({
 	jobId,
 	getJobPartialResults,
+	jobStatus,
 	open,
 	onClose
 }: PartialResultsModalProps) {
@@ -26,28 +28,53 @@ export default function PartialResultsModal({
 
 	return (
 		<Modal
-			aria-labelledby='transition-modal-title'
-			aria-describedby='transition-modal-description'
 			open={open}
-			onClose={onClose}
-			closeAfterTransition>
-			<Box sx={{ display: 'flex', flexDirection: 'column', gap: theme.spacing(1) }}>
-				<Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-					{onClose && (
-						<Button
-							color='info'
-							onClick={() => onClose()}>
-							Close
-						</Button>
-					)}
-				</Box>
-				<Divider />
+			onClose={onClose}>
+			<Fade in={open}>
+				<Box
+					sx={{
+						height: '80vh',
+						width: '60vw',
+						overflow: 'hidden',
+						backgroundColor: theme.palette.background.paper,
+						borderStyle: 'solid',
+						borderColor: theme.palette.divider,
+						borderWidth: 1,
+						borderRadius: theme.spacing(1),
+						my: '10vh',
+						mx: '20vw',
+						boxShadow: theme.shadows[10]
+					}}>
+					<Box
+						sx={{
+							height: '100%',
+							width: '100%',
+							padding: theme.spacing(1),
+							overflowY: 'auto',
+							boxSizing: 'border-box',
+							display: 'flex',
+							flexDirection: 'column',
+							gap: theme.spacing(1)
+						}}>
+						<Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+							{onClose && (
+								<Button
+									color='info'
+									onClick={() => onClose()}>
+									Close
+								</Button>
+							)}
+						</Box>
+						<Divider />
 
-				<PartialResultsContent
-					getJobPartialResults={getJobPartialResults}
-					jobId={jobId}
-				/>
-			</Box>
+						<PartialResultsContent
+							getJobPartialResults={getJobPartialResults}
+							jobId={jobId}
+							jobStatus={jobStatus}
+						/>
+					</Box>
+				</Box>
+			</Fade>
 		</Modal>
 	);
 }
