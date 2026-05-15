@@ -153,7 +153,7 @@ export type RequestGetJobResults = Flatten<
 >;
 
 export type RequestGetJobPartialResults = Flatten<
-	[[{ jobId: string }], RequestParam, CachedDataParams<JobResults>]
+	[[{ jobId: string; estimatorName: string }], RequestParam, CachedDataParams<JobResults>]
 >;
 
 export type RequestGetJobResult = Flatten<

@@ -432,19 +432,19 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 	): Promise<JobPartialResults | undefined> {
 		// TODO: Maybe add cache later
 		const [info, signal] = args;
-		const { jobId } = info;
+		const { jobId, estimatorName } = info;
 
 		const arrowBuffer = await this.authKy
-			.get('jobs/partial-results', {
+			.get('results/partial', {
 				signal,
-				searchParams: camelToSnakeCase({ jobId }),
+				searchParams: camelToSnakeCase({ jobId, estimatorName }),
 				headers: {
 					Accept: 'application/vnd.apache.arrow.stream'
 				}
 			})
 			.arrayBuffer();
 
-		const table = tableFromIPC(new Uint8Array(arrowBuffer));
+		const table = tableFromIPC(arrowBuffer);
 
 		const data: JobPartialResults = {
 			estimatorsTable: table,
