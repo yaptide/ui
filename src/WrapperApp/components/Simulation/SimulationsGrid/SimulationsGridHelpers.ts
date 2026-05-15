@@ -33,6 +33,10 @@ const SimulationsGridHelpers = (
 	const { getPageContents, getPageStatus, getJobStatus, getFullSimulationData, cancelJob } =
 		handlers;
 
+	const handleShowPartialResults = (jobId: string) => {
+		setPartialResultsModalState({ open: true, jobId });
+	};
+
 	const {
 		simulationInfo,
 		simulationsStatusData,
@@ -296,6 +300,7 @@ const SimulationsGridHelpers = (
 		setIsModalOpen,
 		partialResultsModalState,
 		setPartialResultsModalState,
+		handleShowPartialResults,
 		submitDelete
 	};
 };

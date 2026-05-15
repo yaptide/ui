@@ -57,6 +57,7 @@ export const RemoteWorkerSimulationsGrid = (props: SimulationsGridProps) => {
 		simulationDataInterval,
 		handleLoadResults,
 		handleShowInputFiles,
+		handleShowPartialResults,
 		setPageCount,
 		cancelSpecificSimulation,
 		deleteSpecificSimulation,
@@ -83,6 +84,7 @@ export const RemoteWorkerSimulationsGrid = (props: SimulationsGridProps) => {
 				handleCancel={cancelSpecificSimulation}
 				handleDelete={deleteSpecificSimulation}
 				handleShowInputFiles={handleShowInputFiles}
+				handleShowPartialResults={handleShowPartialResults}
 				isBackendAlive={isBackendAlive}
 				simulator={props.simulator}
 			/>
@@ -96,6 +98,9 @@ export const RemoteWorkerSimulationsGrid = (props: SimulationsGridProps) => {
 			{partialResultsModalState.open && (
 				<PartialResultsModal
 					jobId={partialResultsModalState.jobId ?? ''}
+					jobStatus={simulationsStatusData?.find(
+						sim => sim.jobId === partialResultsModalState.jobId
+					)}
 					open={partialResultsModalState.open}
 					onClose={() => setPartialResultsModalState({ open: false })}
 					getJobPartialResults={handlers.getJobPartialResults}

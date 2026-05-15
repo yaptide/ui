@@ -14,6 +14,7 @@ type SimulationCardGridProps = {
 	simulations?: JobStatusData[];
 	handleLoadResults?: (taskId: string | null, simulation: SimulationInfo) => void;
 	handleShowInputFiles?: (inputFiles?: SimulationInputFiles) => void;
+	handleShowPartialResults?: (jobId: string) => void;
 	handleDelete?: (jobId: string) => void;
 	handleCancel?: (jobId: string) => void;
 	handleRefresh?: (jobId: string) => void;
@@ -25,7 +26,8 @@ export function SimulationCardGrid({
 	handleDelete,
 	handleCancel,
 	handleRefresh,
-	handleShowInputFiles
+	handleShowInputFiles,
+	handleShowPartialResults
 }: SimulationCardGridProps) {
 	const theme = useTheme();
 
@@ -53,6 +55,7 @@ export function SimulationCardGrid({
 							handleCancel={handleCancel}
 							handleRefresh={handleRefresh}
 							showInputFiles={handleShowInputFiles}
+							showPartialResults={handleShowPartialResults}
 						/>
 					))
 				) : (
