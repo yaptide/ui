@@ -68,7 +68,7 @@ export default function SimulationCard({
 		resultsSimulationData,
 		yaptideEditor,
 		disableLoadJson,
-		partialResultsAvailable: simulationStatus.partialResultsAvailable ?? false
+		partialResultsAvailable: true // TODO simulationStatus.partialResultsAvailable ?? false
 	};
 
 	const { startTime, endTime } = simulationStatus;
