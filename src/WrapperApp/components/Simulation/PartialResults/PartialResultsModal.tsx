@@ -1,4 +1,4 @@
-import { Box, DialogContent, Fade,Typography, useTheme } from '@mui/material';
+import { Box, DialogContent, Fade, Typography, useTheme } from '@mui/material';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Modal from '@mui/material/Modal';
@@ -56,7 +56,17 @@ export default function PartialResultsModal({
 							flexDirection: 'column',
 							gap: theme.spacing(1)
 						}}>
-						<Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+						<Box
+							sx={{
+								display: 'flex',
+								justifyContent: 'space-between',
+								alignItems: 'center'
+							}}>
+							<Typography
+								variant='h5'
+								sx={{ margin: 0, ml: theme.spacing(1) }}>
+								Partial Results for {jobStatus?.title}
+							</Typography>
 							{onClose && (
 								<Button
 									color='info'
