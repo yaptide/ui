@@ -4,7 +4,8 @@ import { MaterialSelect } from '../../ThreeEditor/components/Select/MaterialSele
 import { ParticleSelect } from '../../ThreeEditor/components/Select/ParticleSelect';
 import ZoneManagerPanel from '../../ThreeEditor/components/ZoneManagerPanel/ZoneManagerPanel';
 import { UIDiv, UINumber, UIRow, UISelect, UIText } from '../../ThreeEditor/js/libs/ui.js';
-import { COMMON_PARTICLE_TYPES } from '../../types/Particle';
+import { getParticlesForSimulator } from '../../types/ParticleCatalogue';
+import { SimulatorType } from '../../types/RequestTypes';
 import { INPUT_WIDTH, LABEL_MARGIN, LABEL_WIDTH } from './Uis';
 
 /**
@@ -35,7 +36,7 @@ export function createParticleTypeSelect(update) {
 			input.setValue(value);
 			ReactDOM.render(
 				<ParticleSelect
-					particles={COMMON_PARTICLE_TYPES}
+					particles={getParticlesForSimulator(SimulatorType.SHIELDHIT)}
 					value={value}
 					onChange={onChange}
 				/>,

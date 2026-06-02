@@ -5,7 +5,7 @@ import { ScoringFilter } from './ScoringFilter';
 export type ParticleFilterJSON = Omit<
 	SimulationElementJSON & {
 		particle: {
-			id: number;
+			pdg: number;
 			name: string;
 		};
 	},
@@ -17,15 +17,15 @@ export function isParticleFilterJSON(filter: any): filter is ParticleFilterJSON 
 }
 
 export class ParticleFilter extends ScoringFilter {
-	particleData: { id: number; name: string };
+	particleData: { pdg: number; name: string };
 
 	constructor(editor: YaptideEditor) {
 		super(editor);
-		this.particleData = { id: 2, name: 'Proton' };
+		this.particleData = { pdg: 2212, name: 'Proton' };
 	}
 
 	clear(): this {
-		this.particleData = { id: 2, name: 'Proton' };
+		this.particleData = { pdg: 2212, name: 'Proton' };
 		this.name = 'Filter';
 
 		return this;

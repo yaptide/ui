@@ -4,11 +4,9 @@ import { Object3D } from 'three';
 
 import { StyledExclusiveToggleButtonGroup } from '../../../../../shared/components/StyledExclusiveToggleButtonGroup';
 import {
-	COMMON_PARTICLE_TYPES,
-	FLUKA_PARTICLE_TYPES,
-	GEANT4_PARTICLE_TYPES,
-	Particle
-} from '../../../../../types/Particle';
+	getParticlesForSimulator,
+	isIon,
+	ParticleEntry} from '../../../../../types/ParticleCatalogue';
 import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
@@ -157,23 +155,25 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 	const { object, editor } = props;
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object, true);
 
+	// const elementOptions = HEAVY_ION_LIST.map(ion => ion.name);
+
 	// energyUnit should be held in react state so the change re-renders the component
 	// watchedObject.energyUnit is kept in sync in updateEnergyInputs()
 	const [energyUnit, setEnergyUnit] = useState<EnergyUnit>(watchedObject.energyUnit);
 
-	let supportedParticles: Particle[] = [];
+	let supportedParticles: ParticleEntry[] = [];
 
 	switch (editor.contextManager.currentSimulator) {
 		case SimulatorType.GEANT4:
-			supportedParticles.push(...GEANT4_PARTICLE_TYPES);
+			supportedParticles.push(...getParticlesForSimulator(SimulatorType.GEANT4));
 
 			break;
 		case SimulatorType.FLUKA:
-			supportedParticles.push(...COMMON_PARTICLE_TYPES, ...FLUKA_PARTICLE_TYPES);
+			supportedParticles.push(...getParticlesForSimulator(SimulatorType.FLUKA));
 
 			break;
 		default:
-			supportedParticles.push(...COMMON_PARTICLE_TYPES);
+			supportedParticles.push(...getParticlesForSimulator(SimulatorType.SHIELDHIT));
 	}
 
 	const setValueCommand = useCallback(
@@ -189,16 +189,16 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 		}
 	}, [editor.contextManager.currentSimulator, setValueCommand]);
 
-	const shouldShowEnergyUnit = useCallback((particle: Particle) => {
+	const shouldShowEnergyUnit = useCallback((particle: ParticleEntry) => {
 		return (
 			particle.a &&
 			(particle.a > 1 || // every particle with a > 1
-				particle.id === 25) // heavy ions, even if a == 1
+				isIon(particle)) // heavy ions, even if a == 1
 		);
 	}, []);
 
 	const updateEnergyInputs = useCallback(
-		(oldUnit: EnergyUnit, newUnit: EnergyUnit, newParticle?: Particle) => {
+		(oldUnit: EnergyUnit, newUnit: EnergyUnit, newParticle?: ParticleEntry) => {
 			let massNumber = watchedObject.particleData.a ?? 1;
 
 			if (oldUnit === 'MeV' && newUnit === 'MeV/nucl') {
@@ -250,9 +250,9 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 			<PropertyField label='Particle type'>
 				<ParticleSelect
 					particles={supportedParticles}
-					value={watchedObject.particleData.id}
+					value={watchedObject.particleData.pdg}
 					onChange={(_, v) => {
-						const newParticleData = supportedParticles.find(p => p.id === v);
+						const newParticleData = supportedParticles.find(p => p.pdg === v);
 
 						if (!newParticleData) {
 							return;
@@ -271,7 +271,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 				/>
 			</PropertyField>
 
-			{watchedObject.particleData.id === 25 && (
+			{/* {watchedObject.particleData.id >= 25 && (
 				<>
 					<NumberPropertyField
 						label='charge (Z)'
@@ -283,7 +283,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 						}
 					/>
 					<NumberPropertyField
-						label='nucleons (A)'
+						label='nucleons (A)' 
 						precision={0}
 						step={1}
 						value={watchedObject.particleData.a ?? 12}
@@ -291,6 +291,102 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 							setValueCommand({ ...watchedObject.particleData, a: v }, 'particleData')
 						}
 					/>
+				</>
+			)} */}
+			{isIon(watchedObject.particleData) && ( // select-lists should be moved to select directory
+				<>
+					{/* <PropertyField label="Element">
+					<ParticleSelect
+						particles={HEAVY_ION_LIST}
+						value={watchedObject.particleData.z ?? 6} 
+						onChange={(_, newZ) => {
+							const ion = HEAVY_ION_LIST.find(i => i.z === newZ);
+							if (ion) {
+								setValueCommand({ 
+									...watchedObject.particleData, 
+									a: ion.a, 
+									z: ion.z 
+								}, 'particleData');
+							}
+						}}
+					/>
+				</PropertyField> */}
+
+					{/* <SelectPropertyField
+						label='Element'
+						value={watchedObject.particleData.name}
+						options={elementOptions}
+						onChange={newName => {
+							const ion = HEAVY_ION_LIST.find(i => i.name === newName);
+
+							if (ion) {
+								setValueCommand(
+									{
+										...watchedObject.particleData,
+										id: 25,
+										name: ion.name,
+										a: ion.a,
+										z: ion.z
+									},
+									'particleData'
+								);
+							}
+						}}
+					/>
+
+					<SelectPropertyField
+						label='Isotope'
+						value={watchedObject.particleData.name + '-' + watchedObject.particleData.a}
+						options={
+							ISOTOPES[watchedObject.particleData.name]?.map(
+								iso => watchedObject.particleData.name + '-' + iso.a.toString()
+							) || []
+						}
+						onChange={newA => {
+							const ion = ISOTOPES[watchedObject.particleData.name];
+
+							if (ion) {
+								setValueCommand(
+									{
+										...watchedObject.particleData,
+										a: newA
+									},
+									'particleData'
+								);
+							}
+						}}
+					/> */}
+					{/* <PropertyField>
+						<label>
+							<span style={{ marginLeft: '128px' }}>
+								Z = {watchedObject.particleData.z}
+							</span>
+							<span style={{ marginLeft: '32px' }}>
+								A = {watchedObject.particleData.a}
+							</span>
+						</label>
+					</PropertyField> */}
+
+					<PropertyField label='A'>
+						<div
+							style={{
+								padding: '8px',
+								color: 'gray',
+								borderBottom: '1px solid #444'
+							}}>
+							{watchedObject.particleData.a}
+						</div>
+					</PropertyField>
+					<PropertyField label='Z'>
+						<div
+							style={{
+								padding: '8px',
+								color: 'gray',
+								borderBottom: '1px solid #444'
+							}}>
+							{watchedObject.particleData.z}
+						</div>
+					</PropertyField>
 				</>
 			)}
 
