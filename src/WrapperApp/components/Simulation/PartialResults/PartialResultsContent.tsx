@@ -5,12 +5,10 @@ import { Table } from 'apache-arrow';
 import { formatDate } from 'date-fns/format';
 import { useEffect, useState } from 'react';
 
-import { JsRootGraph2D } from '../../../../JsRoot/components/JsRootGraph2D';
 import { JsRootGraph2DArrow } from '../../../../JsRoot/components/JsRootGraph2DArrow';
-import { Estimator, generateGraphs, isPage0d, Page, Page2D } from '../../../../JsRoot/GraphData';
+import { Page2D } from '../../../../JsRoot/GraphData';
 import { JobPartialResults, RequestGetJobPartialResults } from '../../../../types/RequestTypes';
 import { JobUnknownStatus, SimulationInfo } from '../../../../types/ResponseTypes';
-import { EstimatorResults } from '../../Results/ResultsPanel';
 import { SimulationProgress } from '../SimulationCard/SimulationCardContent';
 
 interface PartialResultsContentProps {
@@ -114,15 +112,7 @@ export default function PartialResultsContent({
 	const duration = endDate ? endDate.valueOf() - startDate.valueOf() : 0;
 	const formatDateTime = (date: Date) => formatDate(date, 'yyyy-MM-dd HH:mm:ss');
 
-	const pages = arrowTableToPages(partialResults?.estimatorsTable ?? new Table());
-
-	const parseEstimator = (name: string, pages: Page[]) => {
-		const tablePages = pages.filter(isPage0d);
-		const gridPages = pages.filter(p => !isPage0d(p));
-		const estimatorResults: EstimatorResults = { name, tablePages, gridPages, pages };
-
-		return estimatorResults;
-	};
+	const displayTable = partialResults?.estimatorsTable ?? new Table();
 
 	return (
 		<Box>
@@ -138,11 +128,6 @@ export default function PartialResultsContent({
 				</Box>
 			) : (
 				<Stack sx={{}}>
-					{/* TODO: Implement Arrow graphs for other estimators and use them here */}
-					{/* <JsRootGraph2DArrow
-						title='TODO'
-						table={partialResults.estimatorsTable}
-					/> */}
 					{jobStatus && (
 						<SimulationProgress
 							formatedStartDate={formatDateTime(startDate)}
@@ -153,21 +138,10 @@ export default function PartialResultsContent({
 						/>
 					)}
 
-					{/* <JsRootGraph2D
+					<JsRootGraph2DArrow
 						title='XY Profile'
-						page={page[0] as Page2D}
-					/> */}
-					{generateGraphs(
-						parseEstimator(
-							String(
-								partialResults.estimatorsTable?.schema.metadata.get('data_name') ||
-									''
-							),
-							pages
-						),
-						false,
-						jobId
-					)}
+						table={displayTable}
+					/>
 				</Stack>
 			)}
 		</Box>
