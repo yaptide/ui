@@ -2954,7 +2954,7 @@ export const PARTICLE_CATALOGUE = [
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
-		pdg: 111,
+		pdg: -211,
 		displayName: 'Pion π-',
 		aliases: ['π-', 'pion-'],
 		sortPriority: 10,
@@ -2968,7 +2968,7 @@ export const PARTICLE_CATALOGUE = [
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
-		pdg: 2224,
+		pdg: -2212,
 		displayName: 'Anti-proton',
 		aliases: ['pbar', 'antiproton'],
 		a: 1,
@@ -2977,28 +2977,28 @@ export const PARTICLE_CATALOGUE = [
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA]
 	},
 	{
-		pdg: 321,
+		pdg: -321,
 		displayName: 'Kaon κ-',
 		aliases: ['K-', 'kaon-'],
 		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA]
 	},
 	{
-		pdg: 322,
+		pdg: 321,
 		displayName: 'Kaon κ+',
 		aliases: ['K+', 'kaon+'],
 		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA]
 	},
 	{
-		pdg: 310,
+		pdg: 311,
 		displayName: 'Kaon κ0',
 		aliases: ['K0', 'kaon0'],
 		sortPriority: 1,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA]
 	},
 	{
-		pdg: 311,
+		pdg: 130, // what is K~ (pdg code)?   using kaon long code for now
 		displayName: 'Kaon κ~',
 		aliases: ['K~', 'kaon~'],
 		sortPriority: 10,
@@ -3012,7 +3012,7 @@ export const PARTICLE_CATALOGUE = [
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
-		pdg: 14,
+		pdg: -13,
 		displayName: 'Muon µ+',
 		aliases: ['µ+', 'muon+'],
 		sortPriority: 10,
