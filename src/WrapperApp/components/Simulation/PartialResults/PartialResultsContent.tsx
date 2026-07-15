@@ -6,7 +6,6 @@ import { formatDate } from 'date-fns/format';
 import { useEffect, useState } from 'react';
 
 import { JsRootGraph2DArrow } from '../../../../JsRoot/components/JsRootGraph2DArrow';
-import { Page2D } from '../../../../JsRoot/GraphData';
 import { JobPartialResults, RequestGetJobPartialResults } from '../../../../types/RequestTypes';
 import { JobUnknownStatus, SimulationInfo } from '../../../../types/ResponseTypes';
 import { SimulationProgress } from '../SimulationCard/SimulationCardContent';
@@ -17,57 +16,6 @@ interface PartialResultsContentProps {
 	getJobPartialResults?: (
 		...args: RequestGetJobPartialResults
 	) => Promise<JobPartialResults | undefined>;
-}
-
-export function arrowTableToPages(table: Table): (Page2D | any)[] {
-	const pages: any[] = [];
-
-	// In Arrow, metadata is usually per-batch or per-schema.
-	// If you wrote multiple batches to one stream, we iterate through them.
-	for (const batch of table.batches) {
-		const metadata = batch.schema.metadata;
-
-		// 1. Extract and Parse the core metadata strings
-		const estimatorName = metadata.get('estimator_name') || '';
-		const dataName = metadata.get('data_name') || '';
-		const dataUnit = metadata.get('data_unit') || '';
-		const dimensions = parseInt(metadata.get('page_dimensions') || '0');
-
-		// Parse JSON strings back into objects
-		const axis1: any = JSON.parse(metadata.get('axis_dim1') || '{}');
-		const axis2: any = JSON.parse(metadata.get('axis_dim2') || '{}');
-		const pageMeta = JSON.parse(metadata.get('page_metadata') || '{}') as any;
-
-		// 2. Extract the 'values' column data for this batch
-		// .toArray() on a column within a batch gives you the TypedArray (Float64Array)
-		const valuesArray = batch.getChildAt(0)?.toArray();
-		const values: number[] = valuesArray ? Array.from(valuesArray) : [];
-
-		// 3. Construct the Page2D object
-		const page: Page2D = {
-			name: dataName,
-			dimensions: 2, // Explicitly casting for your interface
-			data: {
-				name: dataName,
-				unit: dataUnit,
-				values: values
-			},
-			axisDim1: {
-				name: axis1.name || '',
-				unit: axis1.unit || '',
-				values: axis1.values || []
-			},
-			axisDim2: {
-				name: axis2.name || '',
-				unit: axis2.unit || '',
-				values: axis2.values || []
-			}
-		};
-
-		pages.push(page);
-	}
-
-	return pages;
 }
 
 export default function PartialResultsContent({
