@@ -21,6 +21,7 @@ export type SimulationCardProps = {
 	handleCancel?: (jobId: string) => void;
 	handleRefresh?: (jobId: string) => void;
 	showInputFiles?: (inputFiles?: SimulationInputFiles) => void;
+	showPartialResults?: (jobId: string) => void;
 } & CardProps;
 
 export default function SimulationCard({
@@ -30,6 +31,7 @@ export default function SimulationCard({
 	handleCancel,
 	handleRefresh,
 	showInputFiles,
+	showPartialResults,
 	...other
 }: SimulationCardProps) {
 	const theme = useTheme();
@@ -41,24 +43,33 @@ export default function SimulationCard({
 		onClickInputFiles,
 		onClickShowError,
 		onClickSaveToFile,
-		onClickLoadToEditor
+		onClickLoadToEditor,
+		onClickShowPartialResults
 	} = SimulationCardHelpers({
 		loadResults,
 		setDisableLoadJson,
 		showInputFiles,
+		showPartialResults,
 		simulationStatus,
 		yaptideEditor
 	});
 
-	const actions = { loadResults, handleCancel, showInputFiles };
+	const actions = { loadResults, handleCancel, showInputFiles, showPartialResults };
 	const handlers = {
 		onClickLoadResults,
 		onClickShowError,
 		onClickInputFiles,
 		onClickSaveToFile,
-		onClickLoadToEditor
+		onClickLoadToEditor,
+		onClickShowPartialResults
 	};
-	const context = { resultsSimulationData, yaptideEditor, disableLoadJson };
+
+	const context = {
+		resultsSimulationData,
+		yaptideEditor,
+		disableLoadJson,
+		partialResultsAvailable: true // TODO simulationStatus.partialResultsAvailable ?? false
+	};
 
 	const { startTime, endTime } = simulationStatus;
 

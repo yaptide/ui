@@ -1,10 +1,12 @@
 import {
 	JobInputs,
 	JobLogs,
+	JobPartialResults,
 	JobResults,
 	RequestCancelJob,
 	RequestGetJobInputs,
 	RequestGetJobLogs,
+	RequestGetJobPartialResults,
 	RequestGetJobResult,
 	RequestGetJobResults,
 	RequestGetJobStatus,
@@ -24,6 +26,9 @@ export interface SimulationContext {
 	getJobStatus: (...args: RequestGetJobStatus) => Promise<JobStatusData | undefined>;
 	getJobInputs: (...args: RequestGetJobInputs) => Promise<JobInputs | undefined>;
 	getJobResults: (...args: RequestGetJobResults) => Promise<JobResults | undefined>;
+	getJobPartialResults?: (
+		...args: RequestGetJobPartialResults
+	) => Promise<JobPartialResults | undefined>;
 	getEstimatorsPages: (...args: RequestGetJobResult) => Promise<JobResults | undefined>;
 	getJobLogs: (...args: RequestGetJobLogs) => Promise<JobLogs | undefined>;
 	getPageContents: (...args: RequestGetPageContents) => Promise<ResponseGetPageContents>;
@@ -43,6 +48,9 @@ export interface SimulationService {
 	getJobStatus(...args: RequestGetJobStatus): Promise<JobStatusData | undefined>;
 	getJobLogs(...args: RequestGetJobLogs): Promise<JobLogs | undefined>;
 	getJobResults(...args: RequestGetJobResults): Promise<JobResults | undefined>;
+	getJobPartialResults?: (
+		...args: RequestGetJobPartialResults
+	) => Promise<JobPartialResults | undefined>;
 	getEstimatorsPages(...args: RequestGetJobResult): Promise<JobResults | undefined>;
 	getFullSimulationData(
 		jobStatus: JobStatusData,

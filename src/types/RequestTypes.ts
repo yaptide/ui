@@ -9,6 +9,7 @@ import {
 	JobStatusData,
 	ResponseGetJobInputs,
 	ResponseGetJobLogs,
+	ResponseGetJobPartialResults,
 	ResponseGetJobResults,
 	SimulationInfo,
 	SimulationInputFiles,
@@ -97,6 +98,10 @@ export type JobResults = {
 	jobId: string;
 } & ResponseGetJobResults;
 
+export type JobPartialResults = {
+	jobId: string;
+} & ResponseGetJobPartialResults;
+
 export type SpecificEstimator = {
 	jobId: string;
 	estimators: Estimator[];
@@ -145,6 +150,10 @@ export type RequestGetJobInputs = Flatten<
 
 export type RequestGetJobResults = Flatten<
 	[[{ jobId: string }], RequestParam, CachedDataParams<JobResults>]
+>;
+
+export type RequestGetJobPartialResults = Flatten<
+	[[{ jobId: string; estimatorName: string }], RequestParam, CachedDataParams<JobResults>]
 >;
 
 export type RequestGetJobResult = Flatten<
