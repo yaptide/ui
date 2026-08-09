@@ -42,10 +42,20 @@ const StyledAppGrid = styled(Box)(({ theme }) => ({
 	gap: 8,
 	padding: 8,
 	boxSizing: 'border-box',
-	/// On mobile, the drawer column collapses since NavPanel becomes an overlay Drawer instead.
+	// On mobile: drawer collapses (NavPanel is an overlay),
+	// sidebar merges into the content column and drops to a new row below it,
+	// so the container height must grow with content.
+	[theme.breakpoints.down('md')]: {
+		height: 'auto',
+		minHeight: '100vh',
+		gridTemplateColumns:
+			'[drawer-start] 200px [drawer-end content-start sidebar-start] 1fr [content-end sidebar-end]',
+		gridTemplateRows:
+			'[header-start] 52px [header-end content-start] auto [content-end sidebar-row-start] auto [sidebar-row-end]'
+	},
 	[theme.breakpoints.down('sm')]: {
 		gridTemplateColumns:
-			'[drawer-start drawer-end content-start] 1fr [content-end sidebar-start] 370px [sidebar-end]'
+			'[drawer-start drawer-end content-start sidebar-start] 1fr [content-end sidebar-end]'
 	}
 }));
 
@@ -158,7 +168,7 @@ function WrapperApp() {
 						size='large'
 						sx={{
 							'position': 'fixed',
-							'top': 10,
+							'bottom': 10,
 							'left': 10,
 							'zIndex': theme.zIndex.drawer + 1,
 							'backgroundColor': 'background.paper',
@@ -263,11 +273,14 @@ function WrapperApp() {
 					/>
 				</TabPanel>
 
-				{/* Editor sidebar */}
+				{/* Editor sidebar - drops below the content on mobile instead of a full-height column */}
 				<TabPanel
 					sx={{
 						gridColumn: 'sidebar-start / sidebar-end',
-						gridRow: 'header-start / content-end'
+						gridRow: {
+							xs: 'sidebar-row-start / sidebar-row-end',
+							md: 'header-start / content-end'
+						}
 					}}
 					forTabs={['editor']}>
 					{yaptideEditor && <EditorSidebar editor={yaptideEditor} />}
@@ -293,10 +306,14 @@ function WrapperApp() {
 
 				{/* Simulations sidebar hosts a form to run the simulation and a list of running simulations */}
 				{/* It's also visible in Results screen for quick access to interrupt and rerun the simulation */}
+				{/* Drops below the content on mobile instead of a fixed 370px column */}
 				<TabPanel
 					sx={{
 						gridColumn: 'sidebar-start / sidebar-end',
-						gridRow: 'header-start / content-end'
+						gridRow: {
+							xs: 'sidebar-row-start / sidebar-row-end',
+							md: 'header-start / content-end'
+						}
 					}}
 					forTabs={['simulations', 'inputFiles', 'results']}>
 					<RunSimulationPanel
