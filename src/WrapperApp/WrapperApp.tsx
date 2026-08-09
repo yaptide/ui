@@ -1,5 +1,9 @@
+import MenuIcon from '@mui/icons-material/Menu';
 import Box from '@mui/material/Box';
-import { styled } from '@mui/material/styles';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import { styled, useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { SyntheticEvent, useEffect, useState } from 'react';
 
 import { useConfig } from '../config/ConfigService';
@@ -37,8 +41,19 @@ const StyledAppGrid = styled(Box)(({ theme }) => ({
 	gridTemplateRows: '[header-start] 52px [header-end content-start] auto [content-end]',
 	gap: 8,
 	padding: 8,
-	boxSizing: 'border-box'
+	boxSizing: 'border-box',
+	// Na małych ekranach (telefony) kolumna szuflady nawigacji (drawer) znika z siatki,
+	// ponieważ NavPanel jest tam renderowany jako overlay (MUI Drawer) zamiast zajmować
+	// stałe miejsce w layoucie. Dzięki temu treść (content) zaczyna się od lewej krawędzi.
+	[theme.breakpoints.down('sm')]: {
+		gridTemplateColumns:
+			'[drawer-start drawer-end content-start] 1fr [content-end sidebar-start] 370px [sidebar-end]'
+	}
 }));
+
+// Szerokość panelu nawigacji wyświetlanego jako overlay na urządzeniach mobilnych.
+// Taka sama jak szerokość kolumny "drawer" używanej na desktopie (200px).
+const MOBILE_NAV_DRAWER_WIDTH = 200;
 
 function WrapperApp() {
 	const { demoMode } = useConfig();
@@ -50,6 +65,14 @@ function WrapperApp() {
 	const { isAuthorized, logout } = useAuth();
 	const [open, setOpen] = useState(true);
 	const [tabsValue, setTabsValue] = useState('editor');
+
+	// Wykrywanie urządzeń mobilnych (poniżej breakpointu 'sm') na podstawie motywu MUI.
+	const theme = useTheme();
+	const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+	// Stan kontrolujący widoczność overlayu NavPanel na urządzeniach mobilnych,
+	// otwieranego przyciskiem hamburgera.
+	const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
 	const [
 		simulationPanelPresentedSimulationsSource,
@@ -124,21 +147,91 @@ function WrapperApp() {
 		Geant4DatasetsType.FULL
 	);
 
+	// Wrapper na handleChange używany wewnątrz mobilnego overlayu nawigacji - po wybraniu
+	// zakładki dodatkowo zamyka overlay, żeby nie zasłaniał zawartości.
+	const handleMobileNavChange = (event: SyntheticEvent, newValue: string) => {
+		handleChange(event, newValue);
+		setMobileNavOpen(false);
+	};
+
 	return (
 		<NavDrawerContext value={tabsValue}>
 			<StyledAppGrid>
-				<TabPanel
-					sx={{
-						gridColumn: 'drawer-start / drawer-end',
-						gridRow: 'header-start / content-end'
-					}}>
-					<NavPanel
-						handleChange={handleChange}
-						tabsValue={tabsValue}
-						open={open}
-						setOpen={setOpen}
-					/>
-				</TabPanel>
+				{/* Przycisk hamburger widoczny tylko na urządzeniach mobilnych. NavPanel nie jest
+				przypisany do żadnej konkretnej zakładki (widoczny zawsze), dlatego przycisk
+				otwierający jego mobilny odpowiednik również musi być dostępny niezależnie od
+				aktywnej zakładki - stąd pozycjonowanie "fixed" ponad całą siatką. */}
+				{/* Przycisk chowa się całkowicie po otwarciu Drawer (zamiast np. tylko przygasać),
+				żeby nie duplikować się wizualnie z zawartością wysuniętego panelu nawigacji. */}
+				{isMobile && !mobileNavOpen && (
+					<IconButton
+						onClick={() => setMobileNavOpen(true)}
+						aria-label='open navigation menu'
+						size='large'
+						sx={{
+							'position': 'fixed',
+							'top': 10,
+							'left': 10,
+							'zIndex': theme.zIndex.drawer + 1,
+							'backgroundColor': 'background.paper',
+							'boxShadow': 1,
+							// Kwadratowy kształt z zaokrąglonymi rogami, taki sam promień
+							// zaokrąglenia jak w NavPanelElement (theme.spacing(1)), zamiast
+							// domyślnego okrągłego IconButton z MUI.
+							'borderRadius': theme.spacing(1),
+							'&:hover': {
+								backgroundColor: theme.palette.action.hover
+							}
+						}}>
+						<MenuIcon fontSize='large' />
+					</IconButton>
+				)}
+
+				{/* NavPanel na desktopie - bez zmian, renderowany na stałe w kolumnie "drawer" siatki */}
+				{!isMobile && (
+					<TabPanel
+						sx={{
+							gridColumn: 'drawer-start / drawer-end',
+							gridRow: 'header-start / content-end'
+						}}>
+						<NavPanel
+							handleChange={handleChange}
+							tabsValue={tabsValue}
+							open={open}
+							setOpen={setOpen}
+						/>
+					</TabPanel>
+				)}
+
+				{/* NavPanel na urządzeniach mobilnych - renderowany jako overlay (MUI Drawer)
+				wysuwany od lewej strony ekranu, otwierany przyciskiem hamburgera powyżej.
+				Zamyka się po kliknięciu poza jego obszarem (backdrop) lub po wybraniu zakładki. */}
+				{isMobile && (
+					<Drawer
+						anchor='left'
+						open={mobileNavOpen}
+						onClose={() => setMobileNavOpen(false)}
+						ModalProps={{ keepMounted: true }}
+						// Stylizacja papieru Drawer dopasowana do wyglądu TabPanel (ten sam
+						// border i elevation), żeby overlay wyglądał spójnie z resztą aplikacji.
+						PaperProps={{
+							elevation: 1,
+							sx: {
+								borderStyle: 'solid',
+								borderWidth: 1,
+								borderColor: 'divider'
+							}
+						}}>
+						<Box sx={{ width: MOBILE_NAV_DRAWER_WIDTH, height: '100%' }}>
+							<NavPanel
+								handleChange={handleMobileNavChange}
+								tabsValue={tabsValue}
+								open={open}
+								setOpen={setOpen}
+							/>
+						</Box>
+					</Drawer>
+				)}
 
 				{/* Login screen */}
 				<TabPanel
