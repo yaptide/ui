@@ -61,7 +61,7 @@ function WrapperApp() {
 	>();
 	const { isAuthorized, logout } = useAuth();
 	const [open, setOpen] = useState(true);
-
+	const [tabsValue, setTabsValue] = useState('editor');
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
