@@ -42,17 +42,14 @@ const StyledAppGrid = styled(Box)(({ theme }) => ({
 	gap: 8,
 	padding: 8,
 	boxSizing: 'border-box',
-	// Na małych ekranach (telefony) kolumna szuflady nawigacji (drawer) znika z siatki,
-	// ponieważ NavPanel jest tam renderowany jako overlay (MUI Drawer) zamiast zajmować
-	// stałe miejsce w layoucie. Dzięki temu treść (content) zaczyna się od lewej krawędzi.
+	/// On mobile, the drawer column collapses since NavPanel becomes an overlay Drawer instead.
 	[theme.breakpoints.down('sm')]: {
 		gridTemplateColumns:
 			'[drawer-start drawer-end content-start] 1fr [content-end sidebar-start] 370px [sidebar-end]'
 	}
 }));
 
-// Szerokość panelu nawigacji wyświetlanego jako overlay na urządzeniach mobilnych.
-// Taka sama jak szerokość kolumny "drawer" używanej na desktopie (200px).
+// Width of the mobile nav overlay, matching the desktop drawer column (200px).
 const MOBILE_NAV_DRAWER_WIDTH = 200;
 
 function WrapperApp() {
@@ -64,14 +61,11 @@ function WrapperApp() {
 	>();
 	const { isAuthorized, logout } = useAuth();
 	const [open, setOpen] = useState(true);
-	const [tabsValue, setTabsValue] = useState('editor');
 
-	// Wykrywanie urządzeń mobilnych (poniżej breakpointu 'sm') na podstawie motywu MUI.
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-	// Stan kontrolujący widoczność overlayu NavPanel na urządzeniach mobilnych,
-	// otwieranego przyciskiem hamburgera.
+	// Controls visibility of the mobile NavPanel overlay.
 	const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
 	const [
@@ -147,8 +141,7 @@ function WrapperApp() {
 		Geant4DatasetsType.FULL
 	);
 
-	// Wrapper na handleChange używany wewnątrz mobilnego overlayu nawigacji - po wybraniu
-	// zakładki dodatkowo zamyka overlay, żeby nie zasłaniał zawartości.
+	// Closes the mobile overlay after a tab is selected.
 	const handleMobileNavChange = (event: SyntheticEvent, newValue: string) => {
 		handleChange(event, newValue);
 		setMobileNavOpen(false);
@@ -157,12 +150,7 @@ function WrapperApp() {
 	return (
 		<NavDrawerContext value={tabsValue}>
 			<StyledAppGrid>
-				{/* Przycisk hamburger widoczny tylko na urządzeniach mobilnych. NavPanel nie jest
-				przypisany do żadnej konkretnej zakładki (widoczny zawsze), dlatego przycisk
-				otwierający jego mobilny odpowiednik również musi być dostępny niezależnie od
-				aktywnej zakładki - stąd pozycjonowanie "fixed" ponad całą siatką. */}
-				{/* Przycisk chowa się całkowicie po otwarciu Drawer (zamiast np. tylko przygasać),
-				żeby nie duplikować się wizualnie z zawartością wysuniętego panelu nawigacji. */}
+				{/* Hamburger button: mobile-only, not tied to a specific tab, hidden while the drawer is open. */}
 				{isMobile && !mobileNavOpen && (
 					<IconButton
 						onClick={() => setMobileNavOpen(true)}
@@ -175,9 +163,6 @@ function WrapperApp() {
 							'zIndex': theme.zIndex.drawer + 1,
 							'backgroundColor': 'background.paper',
 							'boxShadow': 1,
-							// Kwadratowy kształt z zaokrąglonymi rogami, taki sam promień
-							// zaokrąglenia jak w NavPanelElement (theme.spacing(1)), zamiast
-							// domyślnego okrągłego IconButton z MUI.
 							'borderRadius': theme.spacing(1),
 							'&:hover': {
 								backgroundColor: theme.palette.action.hover
@@ -187,7 +172,6 @@ function WrapperApp() {
 					</IconButton>
 				)}
 
-				{/* NavPanel na desktopie - bez zmian, renderowany na stałe w kolumnie "drawer" siatki */}
 				{!isMobile && (
 					<TabPanel
 						sx={{
@@ -203,17 +187,13 @@ function WrapperApp() {
 					</TabPanel>
 				)}
 
-				{/* NavPanel na urządzeniach mobilnych - renderowany jako overlay (MUI Drawer)
-				wysuwany od lewej strony ekranu, otwierany przyciskiem hamburgera powyżej.
-				Zamyka się po kliknięciu poza jego obszarem (backdrop) lub po wybraniu zakładki. */}
+				{/* Mobile NavPanel overlay, closes on backdrop click or tab selection */}
 				{isMobile && (
 					<Drawer
 						anchor='left'
 						open={mobileNavOpen}
 						onClose={() => setMobileNavOpen(false)}
 						ModalProps={{ keepMounted: true }}
-						// Stylizacja papieru Drawer dopasowana do wyglądu TabPanel (ten sam
-						// border i elevation), żeby overlay wyglądał spójnie z resztą aplikacji.
 						PaperProps={{
 							elevation: 1,
 							sx: {
