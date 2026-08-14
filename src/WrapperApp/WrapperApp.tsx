@@ -51,7 +51,7 @@ const StyledAppGrid = styled(Box)(({ theme }) => ({
 		gridTemplateColumns:
 			'[drawer-start drawer-end content-start sidebar-start] 1fr [content-end sidebar-end]',
 		gridTemplateRows:
-			'[header-start] 52px [header-end content-start] auto [content-end sidebar-row-start] auto [sidebar-row-end]'
+			'[header-start] 52px [header-end content-start] 1fr [content-end sidebar-row-start] auto [sidebar-row-end]'
 	}
 }));
 
@@ -164,7 +164,7 @@ function WrapperApp() {
 						size='large'
 						sx={{
 							'position': 'fixed',
-							'bottom': 10,
+							'bottom': 20,
 							'left': 10,
 							'zIndex': theme.zIndex.drawer + 1,
 							'backgroundColor': 'background.paper',
