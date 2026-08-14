@@ -49,13 +49,9 @@ const StyledAppGrid = styled(Box)(({ theme }) => ({
 		height: 'auto',
 		minHeight: '100vh',
 		gridTemplateColumns:
-			'[drawer-start] 200px [drawer-end content-start sidebar-start] 1fr [content-end sidebar-end]',
+			'[drawer-start drawer-end content-start sidebar-start] 1fr [content-end sidebar-end]',
 		gridTemplateRows:
 			'[header-start] 52px [header-end content-start] auto [content-end sidebar-row-start] auto [sidebar-row-end]'
-	},
-	[theme.breakpoints.down('sm')]: {
-		gridTemplateColumns:
-			'[drawer-start drawer-end content-start sidebar-start] 1fr [content-end sidebar-end]'
 	}
 }));
 
@@ -73,7 +69,7 @@ function WrapperApp() {
 	const [open, setOpen] = useState(true);
 	const [tabsValue, setTabsValue] = useState('editor');
 	const theme = useTheme();
-	const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+	const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
 	// Controls visibility of the mobile NavPanel overlay.
 	const [mobileNavOpen, setMobileNavOpen] = useState(false);
