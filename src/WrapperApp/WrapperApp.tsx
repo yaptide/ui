@@ -45,13 +45,17 @@ const StyledAppGrid = styled(Box)(({ theme }) => ({
 	// On mobile: drawer collapses (NavPanel is an overlay),
 	// sidebar merges into the content column and drops to a new row below it,
 	// so the container height must grow with content.
+	[theme.breakpoints.down('lg')]: {
+		gridTemplateRows:
+			'[header-start] minmax(52px, auto) [header-end content-start] 1fr [content-end]'
+	},
 	[theme.breakpoints.down('md')]: {
 		height: 'auto',
 		minHeight: '100vh',
 		gridTemplateColumns:
 			'[drawer-start drawer-end content-start sidebar-start] 1fr [content-end sidebar-end]',
 		gridTemplateRows:
-			'[header-start] 52px [header-end content-start] 1fr [content-end sidebar-row-start] auto [sidebar-row-end]'
+			'[header-start] minmax(52px, auto) [header-end content-start] minmax(calc(100vh - 180px), 1fr) [content-end sidebar-row-start] auto [sidebar-row-end]'
 	}
 }));
 
