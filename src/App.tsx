@@ -92,7 +92,7 @@ function App() {
 						light: prefersDarkMode ? 'rgb(225, 217, 197)' : '#946200'
 					},
 					success: {
-						main: prefersDarkMode ? '#2E7D32' : '#1E6B43',
+						main: prefersDarkMode ? '#308033' : '#1E6B43',
 						light: prefersDarkMode ? '#3EA642' : '#1E6B43'
 					},
 					info: {
