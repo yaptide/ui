@@ -73,8 +73,8 @@ function App() {
 						default: prefersDarkMode ? '#101010' : '#ddd'
 					},
 					primary: {
-						main: '#298053',
-						light: '#339864'
+						main: '#218055',
+						light: prefersDarkMode ? '#2EB376' : '#298053'
 					},
 					secondary: {
 						main: prefersDarkMode ? '#8A60B3' : '#8261c3',

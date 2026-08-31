@@ -33,7 +33,8 @@ const innerElement = (props: DragDropInnerElementProps) => {
 				<Button
 					component={'label'}
 					htmlFor={id}
-					startIcon={<FileUploadIcon />}>
+					startIcon={<FileUploadIcon />}
+					sx={{ color: 'primary.light' }}>
 					Upload files
 				</Button>
 				or drag and drop it here.
