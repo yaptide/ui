@@ -96,7 +96,7 @@ function App() {
 						light: prefersDarkMode ? '#3EA642' : '#1E6B43'
 					},
 					info: {
-						main: prefersDarkMode ? '#0288D1' : '#0B5FA5',
+						main: prefersDarkMode ? '#0174B3' : '#0B5FA5',
 						light: prefersDarkMode ? '#0288D1' : '#0B5FA5'
 					}
 				},

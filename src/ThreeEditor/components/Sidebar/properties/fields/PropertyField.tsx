@@ -148,19 +148,22 @@ export function NumberInput(props: {
 	return (
 		<Box
 			sx={{
-				backgroundColor:
+				'backgroundColor':
 					theme.palette.grey[theme.palette.mode === 'light' ? 'A100' : '900'],
-				py: theme.spacing(0.25),
-				px: theme.spacing(0.5),
-				borderRadius: theme.spacing(1),
-				borderStyle: 'solid',
-				overflow: 'hidden',
-				borderWidth: 1,
+				'py': theme.spacing(0.25),
+				'px': theme.spacing(0.5),
+				'borderRadius': theme.spacing(1),
+				'borderStyle': 'solid',
+				'overflow': 'hidden',
+				'borderWidth': 1,
 				// https://github.com/mui/material-ui/blob/46e6588cf53a7abef986a6111e0ed49dace0bc98/packages/mui-material/src/OutlinedInput/OutlinedInput.js#L123
-				borderColor:
+				'borderColor':
 					theme.palette.mode === 'light'
 						? 'rgba(0, 0, 0, 0.23)'
-						: 'rgba(255, 255, 255, 0.23)'
+						: 'rgba(255, 255, 255, 0.23)',
+				'& input.Number': {
+					color: theme.palette.info.light + ' !important'
+				}
 			}}
 			ref={boxRef}
 		/>

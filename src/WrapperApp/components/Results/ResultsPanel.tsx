@@ -160,6 +160,7 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 						</Box>
 						<Button
 							color='info'
+							sx={{ color: theme.palette.info.light }}
 							size='small'
 							onClick={onClickSaveToFile}>
 							Save to file
