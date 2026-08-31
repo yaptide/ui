@@ -332,7 +332,10 @@ export function BooleanPropertyField(props: BooleanPropertyFieldProps) {
 	return (
 		<PropertyField label={props.label}>
 			<Checkbox
-				sx={{ padding: 0 }}
+				sx={{
+					'padding': 0,
+					'--mui-palette-secondary-main': 'var(--mui-palette-secondary-light)'
+				}}
 				checked={props.value}
 				color='secondary'
 				onChange={event => props.onChange(event.target.checked)}

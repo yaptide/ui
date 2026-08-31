@@ -24,6 +24,7 @@ export function ChangeScoringTypeDialog({
 			contentText='Changing scoring type will remove quantities and their configurations. Are you sure you want to continue?'>
 			<Button
 				color='secondary'
+				sx={{ color: 'secondary.light' }}
 				onClick={onClose}
 				autoFocus>
 				Cancel

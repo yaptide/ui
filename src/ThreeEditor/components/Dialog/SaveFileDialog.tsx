@@ -133,6 +133,7 @@ export function SaveFileDialog({
 			}>
 			<Button
 				color='secondary'
+				sx={{ color: 'secondary.light' }}
 				onClick={onClose}>
 				Cancel
 			</Button>

@@ -108,7 +108,7 @@ export default function SimulatorControls(props: SimulationControlsProps) {
 		<>
 			<Typography
 				id='simulator-controls-status'
-				color={simulatorReady ? 'primary' : theme.palette.grey['600']}
+				color={simulatorReady ? 'primary.light' : theme.palette.grey['600']}
 				sx={{ userSelect: 'none' }}>
 				{simulatorReady
 					? 'Connected'

@@ -25,7 +25,7 @@ export function AboutPanel() {
 					target='_blank'
 					variant='body1'
 					color='secondary'
-					sx={{ fontWeight: 'bold' }}
+					sx={{ fontWeight: 'bold', color: 'secondary.light' }}
 					underline='hover'>
 					{'EuroHPC PL'}
 				</Link>

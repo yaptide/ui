@@ -187,7 +187,7 @@ export function SidebarTreeListItem(props: {
 				{getObjectIcon(
 					node.data!.object,
 					editor.selected === object
-						? theme.palette.secondary.main
+						? theme.palette.secondary.light
 						: theme.palette.text.primary
 				)}
 				<Stack
@@ -203,7 +203,7 @@ export function SidebarTreeListItem(props: {
 						sx={{
 							color:
 								editor.selected === object
-									? theme.palette.secondary.main
+									? theme.palette.secondary.light
 									: theme.palette.text.primary,
 							fontWeight:
 								editor.selected === object
@@ -240,7 +240,11 @@ export function SidebarTreeListItem(props: {
 
 					{isHidable(object) && (
 						<Checkbox
-							sx={{ padding: 0, marginLeft: 'auto' }}
+							sx={{
+								'padding': 0,
+								'marginLeft': 'auto',
+								'--mui-palette-secondary-main': 'var(--mui-palette-secondary-light)'
+							}}
 							checked={object.visible}
 							color='secondary'
 							onClick={e => e.stopPropagation()}
