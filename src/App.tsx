@@ -74,26 +74,26 @@ function App() {
 					},
 					primary: {
 						main: '#218055',
-						light: prefersDarkMode ? '#2EB376' : '#298053'
+						light: prefersDarkMode ? '#2EB376' : '#1E734C'
 					},
 					secondary: {
 						main: prefersDarkMode ? '#8A60B3' : '#8261c3',
-						light: prefersDarkMode ? '#C4A9F2' : '#8261c3'
+						light: prefersDarkMode ? '#C4A9F2' : '#674D99'
 					},
 					accordion: {
 						main: prefersDarkMode ? '#343434' : '#e9e9e9'
 					},
 					error: {
-						main: prefersDarkMode ? '#D32F2F' : '#B3261E',
-						light: prefersDarkMode ? '#F23636' : '#B3261E'
+						main: prefersDarkMode ? '#D32F2F' : '#D32F2F',
+						light: prefersDarkMode ? '#F23636' : '#B32828'
 					},
 					success: {
-						main: prefersDarkMode ? '#308033' : '#1E6B43',
-						light: prefersDarkMode ? '#3EA642' : '#1E6B43'
+						main: prefersDarkMode ? '#308033' : '#1E824E',
+						light: prefersDarkMode ? '#3EA642' : '#1B7345'
 					},
 					info: {
 						main: prefersDarkMode ? '#0174B3' : '#0B5FA5',
-						light: prefersDarkMode ? '#0288D1' : '#0B5FA5'
+						light: prefersDarkMode ? '#0288D1' : '#0A5899'
 					}
 				},
 				typography: {
