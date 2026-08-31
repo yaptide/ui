@@ -91,6 +91,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 				</Button>
 				<Button
 					color='info'
+					sx={{ color: theme.palette.info.light }}
 					onClick={() =>
 						Object.entries(inputFiles).map(([name, value]) => saveString(value, name))
 					}>

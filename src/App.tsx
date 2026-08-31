@@ -87,10 +87,6 @@ function App() {
 						main: prefersDarkMode ? '#D32F2F' : '#B3261E',
 						light: prefersDarkMode ? '#F23636' : '#B3261E'
 					},
-					warning: {
-						main: prefersDarkMode ? 'rgb(225, 217, 197)' : '#946200',
-						light: prefersDarkMode ? 'rgb(225, 217, 197)' : '#946200'
-					},
 					success: {
 						main: prefersDarkMode ? '#308033' : '#1E6B43',
 						light: prefersDarkMode ? '#3EA642' : '#1E6B43'
