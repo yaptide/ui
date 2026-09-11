@@ -32,6 +32,8 @@ export const useJsRootCanvas = (redrawParam: string) => {
 		if (obj && !drawn) {
 			// by default, the graph is draggable, so we disable it
 			settings.DragGraphs = false;
+			// prevent accidental plot zooming while scrolling the results panel
+			settings.ZoomWheel = false;
 			// enable context menu on right click
 			settings.ContextMenu = true;
 			// enable toolbar in the lower left corner
@@ -102,6 +104,9 @@ export const GraphCanvas = forwardRef<HTMLDivElement>((_props: {}, ref) => {
 			style={{
 				width: '100%',
 				height: 500
+			}}
+			onClick={() => {
+				settings.ZoomWheel = true;
 			}}
 			ref={ref}></div>
 	);
