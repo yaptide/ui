@@ -105,9 +105,6 @@ export const GraphCanvas = forwardRef<HTMLDivElement>((_props: {}, ref) => {
 				width: '100%',
 				height: 500
 			}}
-			onClick={() => {
-				settings.ZoomWheel = true;
-			}}
 			ref={ref}></div>
 	);
 });
