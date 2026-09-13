@@ -54,7 +54,7 @@ export class ZoneManager
 {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: `0.12`,
+		version: `0.13`,
 		type: 'Manager',
 		generator: 'ZoneManager.toSerialized'
 	} as {

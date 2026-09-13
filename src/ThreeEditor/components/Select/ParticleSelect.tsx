@@ -1,10 +1,7 @@
-import { Box, Typography } from '@mui/material';
-import { SyntheticEvent } from 'react';
+import { Box, Checkbox, Divider, FormControlLabel, Paper, Typography } from '@mui/material';
+import { SyntheticEvent, useState } from 'react';
 
-import {
-	filterParticles,
-	isMostAbundantIsotope,
-	ParticleEntry} from '../../../types/ParticleCatalogue';
+import { filterParticles, isMostAbundant, ParticleEntry } from '../../../types/ParticleCatalogue';
 import { AutoCompleteSelect } from '../../../util/genericComponents/AutoCompleteSelect';
 
 export interface ParticleSelectProps {
@@ -14,15 +11,39 @@ export interface ParticleSelectProps {
 }
 
 export function ParticleSelect(props: ParticleSelectProps) {
-	const getOptionLabel = ({ pdg, displayName }: ParticleEntry) => {
-		return `${displayName}`;
+	const [showAllIsotopes, setShowAllIsotopes] = useState(false);
+
+	const getOptionLabel = ({ displayName, z }: ParticleEntry) => {
+		return z !== undefined ? `${displayName} Z:${z}` : displayName;
 	};
 
-	// Custom render for dropdown options
-	const renderOption = (liProps: any, particle: ParticleEntry) => {
-		const isMostAbundant = isMostAbundantIsotope(particle, props.particles) || false;
-		// const abundanceText = particle.abundance ? ` (${particle.abundance.toFixed(2)}%)` : '';
+	const renderPaper = (paperProps: { children?: React.ReactNode }) => (
+		<Paper>
+			<Box
+				sx={{ px: 1, py: 0.25 }}
+				onMouseDown={event => event.preventDefault()}
+				onClick={event => event.stopPropagation()}>
+				<FormControlLabel
+					control={
+						<Checkbox
+							checked={showAllIsotopes}
+							onChange={event => setShowAllIsotopes(event.target.checked)}
+							size='small'
+						/>
+					}
+					label='Show all isotopes'
+					sx={{
+						'margin': 0,
+						'& .MuiFormControlLabel-label': { fontSize: '12px' }
+					}}
+				/>
+			</Box>
+			<Divider />
+			{paperProps.children}
+		</Paper>
+	);
 
+	const renderOption = (liProps: any, particle: ParticleEntry) => {
 		return (
 			<Box
 				component='li'
@@ -30,12 +51,23 @@ export function ParticleSelect(props: ParticleSelectProps) {
 				<Typography
 					variant='body2'
 					sx={{
-						fontWeight: isMostAbundant ? 'bold' : 'normal',
+						display: 'flex',
 						width: '100%'
 					}}>
 					{particle.displayName}
-					{/* {abundanceText} */}
-					{isMostAbundant && ' ★'}
+					{particle.z !== undefined && (
+						<Typography
+							component='span'
+							color='text.disabled'
+							sx={{
+								fontSize: 'inherit',
+								lineHeight: 'inherit',
+								marginLeft: 'auto',
+								paddingLeft: '8px'
+							}}>
+							Z:{particle.z}
+						</Typography>
+					)}
 				</Typography>
 			</Box>
 		);
@@ -43,6 +75,9 @@ export function ParticleSelect(props: ParticleSelectProps) {
 
 	return (
 		<AutoCompleteSelect
+			slots={{
+				paper: renderPaper
+			}}
 			onChange={(event, newValue) => {
 				if (newValue !== null) props.onChange?.call(null, event, newValue.pdg);
 			}}
@@ -50,7 +85,14 @@ export function ParticleSelect(props: ParticleSelectProps) {
 			options={props.particles}
 			getOptionLabel={option => getOptionLabel(option)}
 			renderOption={renderOption}
-			filterOptions={(options, state) => filterParticles(state.inputValue, options)}
+			filterOptions={(options, state) =>
+				filterParticles(
+					state.inputValue,
+					showAllIsotopes
+						? options
+						: options.filter(particle => isMostAbundant(particle, props.particles))
+				)
+			}
 		/>
 	);
 }

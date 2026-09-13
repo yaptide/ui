@@ -6,7 +6,8 @@ import { StyledExclusiveToggleButtonGroup } from '../../../../../shared/componen
 import {
 	getParticlesForSimulator,
 	isIon,
-	ParticleEntry} from '../../../../../types/ParticleCatalogue';
+	ParticleEntry
+} from '../../../../../types/ParticleCatalogue';
 import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
@@ -366,27 +367,6 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 							</span>
 						</label>
 					</PropertyField> */}
-
-					<PropertyField label='A'>
-						<div
-							style={{
-								padding: '8px',
-								color: 'gray',
-								borderBottom: '1px solid #444'
-							}}>
-							{watchedObject.particleData.a}
-						</div>
-					</PropertyField>
-					<PropertyField label='Z'>
-						<div
-							style={{
-								padding: '8px',
-								color: 'gray',
-								borderBottom: '1px solid #444'
-							}}>
-							{watchedObject.particleData.z}
-						</div>
-					</PropertyField>
 				</>
 			)}
 

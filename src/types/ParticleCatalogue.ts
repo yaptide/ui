@@ -3044,13 +3044,13 @@ export const PARTICLE_CATALOGUE = [
 /**
  * Returns true if this particle has the highest natural abundance
  * among all catalogue entries sharing the same Z value.
- * Returns false for non-isotope particles (abundance === undefined).
+ * Returns true for non-isotope particles (abundance === undefined).
  */
-export function isMostAbundantIsotope(
+export function isMostAbundant(
 	particle: ParticleEntry,
 	catalogue: readonly ParticleEntry[]
 ): boolean {
-	if (particle.abundance === undefined || particle.z === undefined) return false;
+	if (particle.abundance === undefined || particle.z === undefined) return true;
 	const maxAbundance = Math.max(
 		...catalogue
 			.filter(p => p.z === particle.z && p.abundance !== undefined)
@@ -3086,7 +3086,7 @@ export function filterParticles(
 	const lowerQuery = query.toLowerCase();
 
 	return particles
-		.filter(p => p.aliases.some(alias => alias.toLowerCase().startsWith(lowerQuery)))
+		.filter(p => p.aliases.some(alias => alias.toLowerCase().includes(lowerQuery)))
 		.sort(compareParticles);
 }
 

@@ -29,7 +29,7 @@ export class SpecialComponentManager
 {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: `0.12`,
+		version: `0.13`,
 		type: 'Manager',
 		generator: 'SpecialComponentManager.toSerialized'
 	} as {
