@@ -78,10 +78,10 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 		if (status.status === DatasetDownloadStatus.DOWNLOADING) {
 			setSpeedHistory(prev => {
 				const timeDelta = (currentTime - prev.lastTime) / 1000;
-				const bytesDelta = currentDone - prev.lastDone;
+				const progressDelta = currentDone - prev.lastDone;
 
-				if (bytesDelta > 0 && timeDelta > 0) {
-					const instSpeed = bytesDelta / timeDelta;
+				if (progressDelta > 0 && timeDelta > 0) {
+					const instSpeed = progressDelta / timeDelta;
 
 					const newSpeed =
 						prev.currentSpeed === 0
@@ -114,15 +114,15 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 		}
 	}, [status.done, status.status]);
 
-	const remainingBytes = (status.total ?? 0) - (status.done ?? 0);
+	const remainingProgress = (status.total ?? 0) - (status.done ?? 0);
 	let estimatedTimeRemaining = '';
 
 	if (
 		status.status === DatasetDownloadStatus.DOWNLOADING &&
 		speedHistory.currentSpeed > 0 &&
-		remainingBytes > 0
+		remainingProgress > 0
 	) {
-		const remainingSeconds = remainingBytes / speedHistory.currentSpeed;
+		const remainingSeconds = remainingProgress / speedHistory.currentSpeed;
 		estimatedTimeRemaining = ` (est. ${formatTime(remainingSeconds)} remaining)`;
 	}
 
@@ -154,13 +154,6 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 				variant='indeterminate'
 				color='warning'
 			/>
-		],
-		[
-			DatasetDownloadStatus.IDLE,
-			<LinearProgress
-				color='info'
-				variant='indeterminate'
-			/>
 		]
 	]);
 
@@ -169,7 +162,7 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 			<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
 				<Typography sx={{ flex: 1 }}>{status.name}</Typography>
 
-				{status.status === DatasetDownloadStatus.DOWNLOADING && (
+				{status.status === DatasetDownloadStatus.DOWNLOADING && estimatedTimeRemaining && (
 					<Typography
 						fontSize={12}
 						color='text.secondary'>
@@ -427,7 +420,7 @@ export function Geant4Datasets() {
 				expandIcon={<ExpandMoreIcon />}
 				onClick={e => {
 					e.stopPropagation();
-					setOpen(!open);
+					setOpen(prevOpen => !prevOpen);
 				}}>
 				<Typography
 					textTransform='none'
