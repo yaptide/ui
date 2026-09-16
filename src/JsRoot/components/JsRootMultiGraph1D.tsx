@@ -6,7 +6,7 @@ import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
 
 export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string }) {
 	const { page } = props;
-	const { update, ref } = useJsRootCanvas('AL;gridxy;tickxy');
+	const { update, ref, resetZoom } = useJsRootCanvas('AL;gridxy;tickxy');
 
 	useEffect(() => {
 		update(() => {
@@ -95,7 +95,12 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 		});
 	}, [page, update]);
 
-	return <GraphCanvas ref={ref} />;
+	return (
+		<div>
+			<button onClick={resetZoom}>Reset Zoom</button>
+			<GraphCanvas ref={ref} />
+		</div>
+	);
 }
 
 export default JsRootMultiGraph1D;

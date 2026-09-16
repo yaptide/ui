@@ -6,7 +6,7 @@ import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
 
 export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 	const { page, title } = props;
-	const { update, ref } = useJsRootCanvas('colz;gridxy;nostat;tickxy');
+	const { update, ref, resetZoom } = useJsRootCanvas('colz;gridxy;nostat;tickxy');
 
 	useEffect(() => {
 		update(() => {
@@ -49,7 +49,12 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 		});
 	}, [page, title, update]);
 
-	return <GraphCanvas ref={ref} />;
+	return (
+		<div>
+			<button onClick={resetZoom}>Reset Zoom</button>
+			<GraphCanvas ref={ref} />
+		</div>
+	);
 }
 
 export default JsRootGraph2D;
