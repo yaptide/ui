@@ -1,3 +1,4 @@
+import { Box, Chip } from '@mui/material';
 import { BIT, create, createHistogram, createTGraph, createTMultiGraph } from 'jsroot';
 import React, { useEffect } from 'react';
 
@@ -97,7 +98,13 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 
 	return (
 		<div>
-			<button onClick={resetZoom}>Reset Zoom</button>
+			<Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 1 }}>
+				<Chip
+					sx={{ fontSize: 12, margin: 0.5 }}
+					label='Reset Zoom'
+					onClick={resetZoom}
+				/>
+			</Box>
 			<GraphCanvas ref={ref} />
 		</div>
 	);
