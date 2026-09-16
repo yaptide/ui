@@ -54,6 +54,7 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 		<div>
 			<Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 1 }}>
 				<Chip
+					color='primary'
 					sx={{ fontSize: 12, margin: 0.5 }}
 					label='Reset Zoom'
 					onClick={resetZoom}
