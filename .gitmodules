@@ -1,7 +1,7 @@
 [submodule "public/libs/converter"]
 	path = src/libs/converter
 	url = ../converter
-	branch = master
+	branch = handle-heavy-ions
 	shallow = true
 
 [submodule "src/libs/geant-web-stubs"]
