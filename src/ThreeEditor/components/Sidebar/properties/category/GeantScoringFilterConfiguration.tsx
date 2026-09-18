@@ -1,10 +1,7 @@
 import { Typography } from '@mui/material';
 import { Object3D } from 'three';
 
-import {
-	getParticlesForSimulator,
-	PARTICLE_CATALOGUE,
-	ParticleEntry} from '../../../../../types/ParticleCatalogue';
+import { getParticlesForSimulator } from '../../../../../types/ParticleCatalogue';
 import { SimulatorType } from '../../../../../types/RequestTypes';
 import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
@@ -14,6 +11,7 @@ import {
 	GeantScoringFilter,
 	isGeantScoringFilter
 } from '../../../../Simulation/Scoring/GeantScoringFilter';
+import { ParticleSelect } from '../../../Select/ParticleSelect';
 import { NumberPropertyField, PropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
@@ -59,23 +57,25 @@ export function GeantScoringFilterConfiguration(props: {
 					{(watchedObject.filterType === 'particle' ||
 						watchedObject.filterType === 'particleWithKineticEnergy') && (
 						<PropertyField label='Particles'>
-							<AutoCompleteSelect
-								multiple={true}
-								onChange={(_, value) => {
+							<ParticleSelect
+								multiple
+								particles={getParticlesForSimulator(SimulatorType.GEANT4)}
+								value={(watchedObject.data?.particleTypes ?? []).map(p => p.pdg)}
+								onChange={(_, pdgs) => {
+									const particleTypes = pdgs.map(pdg => ({ pdg }));
+
 									setValueCommand(
-										{ ...watchedObject.data, particleTypes: value },
+										{ ...watchedObject.data, particleTypes },
 										'data'
 									);
 								}}
-								value={watchedObject.data?.particleTypes ?? []}
-								renderValue={(particleTypes, _) =>
+								renderValue={particleTypes =>
 									particleTypes.map(t => (
 										<Typography
+											key={t.pdg}
 											sx={{ px: '2px' }}>{`${t.displayName}`}</Typography>
 									))
 								}
-								getOptionLabel={t => t.displayName}
-								options={getParticlesForSimulator(SimulatorType.GEANT4)}
 							/>
 						</PropertyField>
 					)}

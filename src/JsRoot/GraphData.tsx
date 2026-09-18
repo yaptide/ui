@@ -7,6 +7,7 @@ import { isCustomFilterJSON } from '../ThreeEditor/Simulation/Scoring/CustomFilt
 import { isParticleFilterJSON } from '../ThreeEditor/Simulation/Scoring/ParticleFilter';
 import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { ScoringOutputJSON } from '../ThreeEditor/Simulation/Scoring/ScoringOutput';
+import { PARTICLE_CATALOGUE } from '../types/ParticleCatalogue';
 import { estimatorPage1DToCsv } from '../util/csv/Csv';
 import { saveString } from '../util/File';
 import Result3D from '../WrapperApp/components/Results/Results3D';
@@ -192,7 +193,10 @@ function GraphInfo(props: { filter: FilterJSON | undefined }) {
 				)}
 				{isParticleFilterJSON(filter) && (
 					<Section title='Particle'>
-						<Typography>{filter.particle.name}</Typography>
+						<Typography>
+							{PARTICLE_CATALOGUE.find(p => p.pdg === filter.particle.pdg)
+								?.displayName ?? 'Unknown'}
+						</Typography>
 					</Section>
 				)}
 			</Popover>

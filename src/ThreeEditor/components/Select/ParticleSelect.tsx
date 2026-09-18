@@ -1,20 +1,35 @@
 import { Box, Checkbox, Divider, FormControlLabel, Paper, Typography } from '@mui/material';
-import { SyntheticEvent, useState } from 'react';
+import { AutocompleteRenderValueGetItemProps } from '@mui/material/Autocomplete';
+import { ReactNode, SyntheticEvent, useState } from 'react';
 
 import { filterParticles, isMostAbundant, ParticleEntry } from '../../../types/ParticleCatalogue';
 import { AutoCompleteSelect } from '../../../util/genericComponents/AutoCompleteSelect';
 
-export interface ParticleSelectProps {
-	onChange?: (event: SyntheticEvent<Element, Event>, newValue: number) => void;
-	particles: readonly ParticleEntry[];
+interface ParticleSelectSingleProps {
+	multiple?: false;
 	value?: number;
+	onChange?: (event: SyntheticEvent<Element, Event>, newValue: number) => void;
 }
+
+interface ParticleSelectMultipleProps {
+	multiple: true;
+	value?: readonly number[];
+	onChange?: (event: SyntheticEvent<Element, Event>, newValue: number[]) => void;
+	renderValue?: (
+		value: ParticleEntry[],
+		getItemProps: AutocompleteRenderValueGetItemProps<true>
+	) => ReactNode;
+}
+
+export type ParticleSelectProps = (ParticleSelectSingleProps | ParticleSelectMultipleProps) & {
+	particles: readonly ParticleEntry[];
+};
 
 export function ParticleSelect(props: ParticleSelectProps) {
 	const [showAllIsotopes, setShowAllIsotopes] = useState(false);
 
 	const getOptionLabel = ({ displayName, z }: ParticleEntry) => {
-		return z !== undefined ? `${displayName} Z:${z}` : displayName;
+		return z !== undefined ? `${displayName} (Z:${z})` : displayName;
 	};
 
 	const renderPaper = (paperProps: { children?: React.ReactNode }) => (
@@ -72,6 +87,39 @@ export function ParticleSelect(props: ParticleSelectProps) {
 			</Box>
 		);
 	};
+
+	if (props.multiple) {
+		const selected = props.particles.filter(p => (props.value ?? []).includes(p.pdg));
+
+		return (
+			<AutoCompleteSelect
+				multiple
+				slots={{
+					paper: renderPaper
+				}}
+				onChange={(event, newValue) => {
+					props.onChange?.call(
+						null,
+						event,
+						newValue.map(p => p.pdg)
+					);
+				}}
+				renderValue={props.renderValue}
+				value={selected}
+				options={props.particles}
+				getOptionLabel={option => getOptionLabel(option)}
+				renderOption={renderOption}
+				filterOptions={(options, state) =>
+					filterParticles(
+						state.inputValue,
+						showAllIsotopes
+							? options
+							: options.filter(particle => isMostAbundant(particle, props.particles))
+					)
+				}
+			/>
+		);
+	}
 
 	return (
 		<AutoCompleteSelect

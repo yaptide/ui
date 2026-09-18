@@ -2947,10 +2947,11 @@ export const PARTICLE_CATALOGUE = [
 	{
 		pdg: 2212,
 		displayName: 'Proton',
-		aliases: ['p', 'proton'],
+		aliases: ['p', 'proton', 'hydrogen-1', 'H-1', '1H'],
 		a: 1,
 		z: 1,
 		sortPriority: 0,
+		abundance: 99.9855,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2998,7 +2999,7 @@ export const PARTICLE_CATALOGUE = [
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA]
 	},
 	{
-		pdg: 130, // what is K~ (pdg code)?   using kaon long code for now
+		pdg: 130, // using kaon long code
 		displayName: 'Kaon κ~',
 		aliases: ['K~', 'kaon~'],
 		sortPriority: 10,

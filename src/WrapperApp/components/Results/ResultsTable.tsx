@@ -5,6 +5,7 @@ import { ChangeEvent, useState } from 'react';
 
 import { isCustomFilterJSON } from '../../../ThreeEditor/Simulation/Scoring/CustomFilter';
 import { isParticleFilterJSON } from '../../../ThreeEditor/Simulation/Scoring/ParticleFilter';
+import { PARTICLE_CATALOGUE } from '../../../types/ParticleCatalogue';
 import { convertToBestUnit } from '../../../util/convertUnits/Units';
 import { pages0DToCsv } from '../../../util/csv/Csv';
 import { saveString } from '../../../util/File';
@@ -62,7 +63,8 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 					.map(rule => `${rule.keyword} ${rule.operator} ${rule.value}`)
 					.join('; ') ?? '';
 		} else if (isParticleFilterJSON(page.filterRef)) {
-			filterRules = `${page.filterRef?.particle.name}`;
+			const pdg = page.filterRef.particle.pdg;
+			filterRules = PARTICLE_CATALOGUE.find(p => p.pdg === pdg)?.displayName ?? 'Unknown';
 		}
 
 		return {

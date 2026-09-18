@@ -1,3 +1,4 @@
+import { PARTICLE_CATALOGUE } from '../../../types/ParticleCatalogue';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { ScoringFilter } from './ScoringFilter';
@@ -6,7 +7,6 @@ export type ParticleFilterJSON = Omit<
 	SimulationElementJSON & {
 		particle: {
 			pdg: number;
-			name: string;
 		};
 	},
 	never
@@ -17,15 +17,15 @@ export function isParticleFilterJSON(filter: any): filter is ParticleFilterJSON 
 }
 
 export class ParticleFilter extends ScoringFilter {
-	particleData: { pdg: number; name: string };
+	particleData: { pdg: number };
 
 	constructor(editor: YaptideEditor) {
 		super(editor);
-		this.particleData = { pdg: 2212, name: 'Proton' };
+		this.particleData = { pdg: 2212 };
 	}
 
 	clear(): this {
-		this.particleData = { pdg: 2212, name: 'Proton' };
+		this.particleData = { pdg: 2212 };
 		this.name = 'Filter';
 
 		return this;
@@ -52,8 +52,10 @@ export class ParticleFilter extends ScoringFilter {
 
 	toString(): string {
 		const { uuid, name, particleData } = this;
+		const particleName =
+			PARTICLE_CATALOGUE.find(p => p.pdg === particleData.pdg)?.displayName ?? 'Unknown';
 
-		return `[${uuid}]\n${name}\n${particleData.name}`;
+		return `[${uuid}]\n${name}\n${particleName}`;
 	}
 
 	duplicate(): ParticleFilter {

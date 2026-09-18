@@ -35,17 +35,7 @@ export function ParticleFilterConfiguration(props: { editor: YaptideEditor; obje
 					<ParticleSelect
 						particles={particlesForCurrentSimulator}
 						value={watchedObject.particleData.pdg}
-						onChange={(_, v) =>
-							setValueCommand(
-								{
-									...watchedObject.particleData,
-									pdg: v,
-									name: particlesForCurrentSimulator.find(p => p.pdg === v)
-										?.displayName
-								},
-								'particleData'
-							)
-						}
+						onChange={(_, v) => setValueCommand({ pdg: v }, 'particleData')}
 					/>
 				</>
 			)}

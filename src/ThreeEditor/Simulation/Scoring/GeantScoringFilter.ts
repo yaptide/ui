@@ -1,4 +1,3 @@
-import { ParticleEntry } from '../../../types/ParticleCatalogue';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationElementJSON } from '../Base/SimulationElement';
 import { ScoringFilter } from './ScoringFilter';
@@ -11,7 +10,7 @@ export type FilterType =
 	| 'particleWithKineticEnergy';
 
 type FilterData = {
-	particleTypes: ParticleEntry[];
+	particleTypes: { pdg: number }[];
 	kineticEnergyLow: number;
 	kineticEnergyHigh: number;
 	kineticEnergyUnit: string;
