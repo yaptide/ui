@@ -46,13 +46,11 @@ export function AutoCompleteSelect<
 			renderInput={renderInput}
 			slotProps={{
 				popper: {
-					style: { width: 'fit-content' },
 					placement: 'bottom-start'
 				},
 				listbox: {
 					sx: {
 						'fontSize': '12px',
-						'width': 'fit-content',
 						'& .MuiAutocomplete-option[aria-selected="true"], & .MuiAutocomplete-option[aria-selected="true"].Mui-focused':
 							{
 								backgroundColor: alpha(theme.palette.secondary.main, 0.23)
