@@ -23,7 +23,7 @@
 		},
 		"inputJson": {
 			"metadata": {
-				"version": "0.12",
+				"version": "0.13",
 				"type": "Editor",
 				"generator": "YaptideEditor.toSerialized"
 			},
@@ -94,7 +94,7 @@
 				"name": "Figure Manager",
 				"type": "FigureManager",
 				"metadata": {
-					"version": "0.12",
+					"version": "0.13",
 					"type": "Manager",
 					"generator": "FigureManager.toSerialized"
 				},
@@ -183,7 +183,7 @@
 				"name": "Zone Manager",
 				"type": "ZoneManager",
 				"metadata": {
-					"version": "0.12",
+					"version": "0.13",
 					"type": "Manager",
 					"generator": "ZoneManager.toSerialized"
 				},
@@ -213,7 +213,7 @@
 				"name": "Detector Manager",
 				"type": "DetectorManager",
 				"metadata": {
-					"version": "0.12",
+					"version": "0.13",
 					"type": "Manager",
 					"generator": "DetectorManager.toSerialized"
 				},
@@ -322,7 +322,7 @@
 				"name": "Special Components",
 				"type": "SpecialComponentManager",
 				"metadata": {
-					"version": "0.12",
+					"version": "0.13",
 					"type": "Manager",
 					"generator": "SpecialComponentManager.toSerialized"
 				}
@@ -345,7 +345,7 @@
 					"a2f08097-a999-4a4f-8371-e919e2f999a7": 1
 				},
 				"metadata": {
-					"version": "0.12",
+					"version": "0.13",
 					"type": "Manager",
 					"generator": "MaterialManager.toSerialized"
 				}
@@ -493,8 +493,7 @@
 						"data": {
 							"particleTypes": [
 								{
-									"id": 2,
-									"name": "Proton"
+									"pdg": 2212
 								}
 							],
 							"kineticEnergyLow": 1,
@@ -510,8 +509,7 @@
 						"data": {
 							"particleTypes": [
 								{
-									"id": 4,
-									"name": "Electron"
+									"pdg": 11
 								}
 							],
 							"kineticEnergyLow": 1,
@@ -527,10 +525,7 @@
 						"data": {
 							"particleTypes": [
 								{
-									"id": 1,
-									"name": "Neutron",
-									"a": 1,
-									"z": 0
+									"pdg": 2112
 								}
 							],
 							"kineticEnergyLow": 1,
@@ -541,7 +536,7 @@
 					}
 				],
 				"metadata": {
-					"version": "0.12",
+					"version": "0.13",
 					"type": "Manager",
 					"generator": "ScoringManager.toSerialized"
 				}
@@ -573,10 +568,7 @@
 					"distanceToFocal": 0
 				},
 				"particle": {
-					"id": 2,
-					"name": "Proton",
-					"a": 1,
-					"z": 1
+					"pdg": 2212
 				},
 				"colorHex": 16776960,
 				"numberOfParticles": 20000,
@@ -1088,8 +1080,7 @@
 						"data": {
 							"particleTypes": [
 								{
-									"id": 2,
-									"name": "Proton"
+									"pdg": 2212
 								}
 							],
 							"kineticEnergyLow": 1,
@@ -1341,10 +1332,7 @@
 						"data": {
 							"particleTypes": [
 								{
-									"id": 1,
-									"name": "Neutron",
-									"a": 1,
-									"z": 0
+									"pdg": 2112
 								}
 							],
 							"kineticEnergyLow": 1,
@@ -12023,8 +12011,7 @@
 						"data": {
 							"particleTypes": [
 								{
-									"id": 2,
-									"name": "Proton"
+									"pdg": 2212
 								}
 							],
 							"kineticEnergyLow": 1,
@@ -18287,10 +18274,7 @@
 						"data": {
 							"particleTypes": [
 								{
-									"id": 1,
-									"name": "Neutron",
-									"a": 1,
-									"z": 0
+									"pdg": 2112
 								}
 							],
 							"kineticEnergyLow": 1,
@@ -24443,8 +24427,7 @@
 						"data": {
 							"particleTypes": [
 								{
-									"id": 2,
-									"name": "Proton"
+									"pdg": 2212
 								}
 							],
 							"kineticEnergyLow": 1,
@@ -29095,10 +29078,7 @@
 						"data": {
 							"particleTypes": [
 								{
-									"id": 1,
-									"name": "Neutron",
-									"a": 1,
-									"z": 0
+									"pdg": 2112
 								}
 							],
 							"kineticEnergyLow": 1,

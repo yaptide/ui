@@ -20,10 +20,7 @@
 				"name": "Beam",
 				"numberOfParticles": 100000,
 				"particle": {
-					"a": 1,
-					"id": 2,
-					"name": "Proton",
-					"z": 1
+					"pdg": 2212
 				},
 				"position": [0, 0, -5.5],
 				"sad": {
@@ -89,7 +86,7 @@
 				"metadata": {
 					"generator": "DetectorManager.toSerialized",
 					"type": "Manager",
-					"version": "0.12"
+					"version": "0.13"
 				},
 				"name": "Detector Manager",
 				"type": "DetectorManager",
@@ -169,7 +166,7 @@
 				"metadata": {
 					"generator": "FigureManager.toSerialized",
 					"type": "Manager",
-					"version": "0.12"
+					"version": "0.13"
 				},
 				"name": "Figure Manager",
 				"type": "FigureManager",
@@ -209,7 +206,7 @@
 				"metadata": {
 					"generator": "MaterialManager.toSerialized",
 					"type": "Manager",
-					"version": "0.12"
+					"version": "0.13"
 				},
 				"name": "Material Manager",
 				"selectedMaterials": {
@@ -223,7 +220,7 @@
 			"metadata": {
 				"generator": "YaptideEditor.toSerialized",
 				"type": "Editor",
-				"version": "0.12"
+				"version": "0.13"
 			},
 			"physic": {
 				"availableStoppingPowerFiles": {},
@@ -297,8 +294,7 @@
 					{
 						"name": "Protons",
 						"particle": {
-							"id": 2,
-							"name": "Proton"
+							"pdg": 2212
 						},
 						"type": "Filter",
 						"uuid": "16ed4f0f-c6fe-442e-9d9f-51933ca749c9"
@@ -307,7 +303,7 @@
 				"metadata": {
 					"generator": "ScoringManager.toSerialized",
 					"type": "Manager",
-					"version": "0.12"
+					"version": "0.13"
 				},
 				"name": "Scoring Manager",
 				"outputs": [
@@ -354,7 +350,7 @@
 				"metadata": {
 					"generator": "SpecialComponentManager.toSerialized",
 					"type": "Manager",
-					"version": "0.12"
+					"version": "0.13"
 				},
 				"name": "Special Components",
 				"type": "SpecialComponentManager",
@@ -364,7 +360,7 @@
 				"metadata": {
 					"generator": "ZoneManager.toSerialized",
 					"type": "Manager",
-					"version": "0.12"
+					"version": "0.13"
 				},
 				"name": "Zone Manager",
 				"type": "ZoneManager",

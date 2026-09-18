@@ -20,10 +20,7 @@
 				"name": "Beam",
 				"numberOfParticles": 1000000,
 				"particle": {
-					"a": 1,
-					"id": 26,
-					"name": "Electron",
-					"z": 1
+					"pdg": 11
 				},
 				"position": [0, 0, -5.5],
 				"sad": {
@@ -89,7 +86,7 @@
 				"metadata": {
 					"generator": "DetectorManager.toSerialized",
 					"type": "Manager",
-					"version": "0.12"
+					"version": "0.13"
 				},
 				"name": "Detector Manager",
 				"type": "DetectorManager",
@@ -169,7 +166,7 @@
 				"metadata": {
 					"generator": "FigureManager.toSerialized",
 					"type": "Manager",
-					"version": "0.12"
+					"version": "0.13"
 				},
 				"name": "Figure Manager",
 				"type": "FigureManager",
@@ -209,7 +206,7 @@
 				"metadata": {
 					"generator": "MaterialManager.toSerialized",
 					"type": "Manager",
-					"version": "0.12"
+					"version": "0.13"
 				},
 				"name": "Material Manager",
 				"selectedMaterials": {
@@ -223,7 +220,7 @@
 			"metadata": {
 				"generator": "YaptideEditor.toSerialized",
 				"type": "Editor",
-				"version": "0.12"
+				"version": "0.13"
 			},
 			"physic": {
 				"availableStoppingPowerFiles": {},
@@ -297,7 +294,7 @@
 				"metadata": {
 					"generator": "ScoringManager.toSerialized",
 					"type": "Manager",
-					"version": "0.12"
+					"version": "0.13"
 				},
 				"name": "Scoring Manager",
 				"outputs": [
@@ -343,7 +340,7 @@
 				"metadata": {
 					"generator": "SpecialComponentManager.toSerialized",
 					"type": "Manager",
-					"version": "0.12"
+					"version": "0.13"
 				},
 				"name": "Special Components",
 				"type": "SpecialComponentManager",
@@ -353,7 +350,7 @@
 				"metadata": {
 					"generator": "ZoneManager.toSerialized",
 					"type": "Manager",
-					"version": "0.12"
+					"version": "0.13"
 				},
 				"name": "Zone Manager",
 				"type": "ZoneManager",

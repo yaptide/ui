@@ -2,7 +2,7 @@
 	"input": {
 		"inputJson": {
 			"metadata": {
-				"version": "0.12",
+				"version": "0.13",
 				"type": "Editor",
 				"generator": "YaptideEditor.toSerialized"
 			},
@@ -70,7 +70,7 @@
 				"name": "Figure Manager",
 				"type": "FigureManager",
 				"metadata": {
-					"version": "0.12",
+					"version": "0.13",
 					"type": "Manager",
 					"generator": "FigureManager.toSerialized"
 				},
@@ -150,7 +150,7 @@
 				"name": "Zones",
 				"type": "ZoneManager",
 				"metadata": {
-					"version": "0.12",
+					"version": "0.13",
 					"type": "Manager",
 					"generator": "ZoneManager.toSerialized"
 				},
@@ -316,7 +316,7 @@
 				"name": "DetectManager",
 				"type": "DetectorManager",
 				"metadata": {
-					"version": "0.12",
+					"version": "0.13",
 					"type": "Manager",
 					"generator": "DetectorManager.toSerialized"
 				},
@@ -388,7 +388,7 @@
 				"name": "Special Components",
 				"type": "SpecialComponentManager",
 				"metadata": {
-					"version": "0.12",
+					"version": "0.13",
 					"type": "Manager",
 					"generator": "SpecialComponentManager.toSerialized"
 				}
@@ -438,7 +438,7 @@
 					"b588ae88-8aca-41c8-abb1-a0d9833d107e": 1
 				},
 				"metadata": {
-					"version": "0.12",
+					"version": "0.13",
 					"type": "Manager",
 					"generator": "MaterialManager.toSerialized"
 				}
@@ -614,7 +614,7 @@
 					}
 				],
 				"metadata": {
-					"version": "0.12",
+					"version": "0.13",
 					"type": "Manager",
 					"generator": "ScoringManager.toSerialized"
 				}
@@ -645,10 +645,7 @@
 					"y": 0
 				},
 				"particle": {
-					"a": 1,
-					"id": 2,
-					"z": 1,
-					"name": "Proton"
+					"pdg": 2212
 				},
 				"colorHex": 16776960,
 				"numberOfParticles": 100000,
