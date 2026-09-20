@@ -31,27 +31,11 @@ import { useDialog } from '../../../services/DialogService';
 import { useSharedDatasetManager } from '../../../services/Geant4DatasetContextProvider';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
 import { StyledExclusiveToggleButtonGroup } from '../../../shared/components/StyledExclusiveToggleButtonGroup';
+import { secondsToShortDurationString } from '../../../util/time';
 
 export enum Geant4DatasetsType {
 	PARTIAL,
 	FULL
-}
-
-function formatTime(seconds: number): string {
-	if (seconds < 1) {
-		return '<1s';
-	}
-
-	const totalSeconds = Math.ceil(seconds);
-
-	if (totalSeconds < 60) {
-		return `${totalSeconds}s`;
-	}
-
-	const minutes = Math.floor(totalSeconds / 60);
-	const remainingSeconds = totalSeconds % 60;
-
-	return `${minutes}m ${remainingSeconds}s`;
 }
 
 interface SpeedHistory {
@@ -115,16 +99,12 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 	}, [status.done, status.status]);
 
 	const remainingProgress = (status.total ?? 0) - (status.done ?? 0);
-	let estimatedTimeRemaining = '';
-
-	if (
+	const estimatedTimeRemaining =
 		status.status === DatasetDownloadStatus.DOWNLOADING &&
 		speedHistory.currentSpeed > 0 &&
 		remainingProgress > 0
-	) {
-		const remainingSeconds = remainingProgress / speedHistory.currentSpeed;
-		estimatedTimeRemaining = ` (est. ${formatTime(remainingSeconds)} remaining)`;
-	}
+			? ` (est. ${secondsToShortDurationString(remainingProgress / speedHistory.currentSpeed)} remaining)`
+			: '';
 
 	const idleIcon = status.cached ? (
 		<StorageIcon color='primary' />
@@ -162,7 +142,7 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 			<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
 				<Typography sx={{ flex: 1 }}>{status.name}</Typography>
 
-				{status.status === DatasetDownloadStatus.DOWNLOADING && estimatedTimeRemaining && (
+				{estimatedTimeRemaining && (
 					<Typography
 						fontSize={12}
 						color='text.secondary'>
