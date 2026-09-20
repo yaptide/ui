@@ -38,72 +38,12 @@ export enum Geant4DatasetsType {
 	FULL
 }
 
-interface SpeedHistory {
-	lastDone: number;
-	lastTime: number;
-	currentSpeed: number;
-}
-
-const SMOOTHING = 0.1;
-
 function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 	const { status } = props;
 
-	const [speedHistory, setSpeedHistory] = useState<SpeedHistory>({
-		lastDone: status.done ?? 0,
-		lastTime: Date.now(),
-		currentSpeed: 0
-	});
-
-	useEffect(() => {
-		const currentDone = status.done ?? 0;
-		const currentTime = Date.now();
-
-		if (status.status === DatasetDownloadStatus.DOWNLOADING) {
-			setSpeedHistory(prev => {
-				const timeDelta = (currentTime - prev.lastTime) / 1000;
-				const progressDelta = currentDone - prev.lastDone;
-
-				if (progressDelta > 0 && timeDelta > 0) {
-					const instSpeed = progressDelta / timeDelta;
-
-					const newSpeed =
-						prev.currentSpeed === 0
-							? instSpeed
-							: prev.currentSpeed * (1 - SMOOTHING) + instSpeed * SMOOTHING;
-
-					return {
-						lastDone: currentDone,
-						lastTime: currentTime,
-						currentSpeed: newSpeed
-					};
-				}
-
-				return {
-					...prev,
-					lastTime: currentTime
-				};
-			});
-		}
-
-		if (
-			status.status === DatasetDownloadStatus.DONE ||
-			status.status === DatasetDownloadStatus.IDLE
-		) {
-			setSpeedHistory({
-				lastDone: status.done ?? 0,
-				lastTime: Date.now(),
-				currentSpeed: 0
-			});
-		}
-	}, [status.done, status.status]);
-
-	const remainingProgress = (status.total ?? 0) - (status.done ?? 0);
 	const estimatedTimeRemaining =
-		status.status === DatasetDownloadStatus.DOWNLOADING &&
-		speedHistory.currentSpeed > 0 &&
-		remainingProgress > 0
-			? ` (est. ${secondsToShortDurationString(remainingProgress / speedHistory.currentSpeed)} remaining)`
+		status.status === DatasetDownloadStatus.DOWNLOADING && status.estimatedSecondsRemaining
+			? ` (est. ${secondsToShortDurationString(status.estimatedSecondsRemaining)} remaining)`
 			: '';
 
 	const idleIcon = status.cached ? (
