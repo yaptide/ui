@@ -17,8 +17,15 @@ export const secondsToShortDurationString = (seconds: number): string => {
 		return `${totalSeconds}s`;
 	}
 
-	const minutes = Math.floor(totalSeconds / 60);
+	const totalMinutes = Math.floor(totalSeconds / 60);
 	const remainingSeconds = totalSeconds % 60;
 
-	return `${minutes}m ${remainingSeconds}s`;
+	if (totalMinutes < 60) {
+		return `${totalMinutes}m ${remainingSeconds}s`;
+	}
+
+	const hours = Math.floor(totalMinutes / 60);
+	const remainingMinutes = totalMinutes % 60;
+
+	return `${hours}h ${remainingMinutes}m`;
 };

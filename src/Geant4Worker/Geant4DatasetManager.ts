@@ -11,7 +11,11 @@ import {
 	useState
 } from 'react';
 
-import { nextSpeedHistoryEntry, SpeedHistory } from './DatasetDownloadSpeed';
+import {
+	estimateSecondsRemaining,
+	nextSpeedHistoryEntry,
+	SpeedHistory
+} from './DatasetDownloadSpeed';
 import {
 	checkAllDatasetsCacheStatus,
 	clearDatasetCache,
@@ -62,14 +66,15 @@ async function fetchProgress(
 	const progress = await worker.pollDatasetProgress();
 
 	if (progress) {
-		const currentTime = Date.now();
+		const currentTimeMs = Date.now();
 
 		setDatasetStates(prev => {
 			const newStates: Record<string, DatasetStatus> = { ...prev };
 
 			for (const [datasetName, datasetProgress] of Object.entries(progress)) {
 				const status = statusTypeMap[datasetProgress.stage] ?? DatasetDownloadStatus.IDLE;
-				const done = Math.floor(datasetProgress.progress * 100);
+				const progressFraction = datasetProgress.progress;
+				const done = Math.floor(progressFraction * 100);
 				const total = 100;
 
 				let estimatedSecondsRemaining: number | undefined;
@@ -77,17 +82,17 @@ async function fetchProgress(
 				if (status === DatasetDownloadStatus.DOWNLOADING) {
 					const speedEntry = nextSpeedHistoryEntry(
 						speedHistoryRef.current[datasetName],
-						done,
-						currentTime
+						progressFraction,
+						currentTimeMs
 					);
 
 					speedHistoryRef.current[datasetName] = speedEntry;
 
-					const remaining = total - done;
-
-					if (speedEntry.currentSpeed > 0 && remaining > 0) {
-						estimatedSecondsRemaining = remaining / speedEntry.currentSpeed;
-					}
+					estimatedSecondsRemaining = estimateSecondsRemaining(
+						speedEntry,
+						progressFraction,
+						currentTimeMs
+					);
 				} else {
 					delete speedHistoryRef.current[datasetName];
 				}
