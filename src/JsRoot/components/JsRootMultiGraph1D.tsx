@@ -1,3 +1,4 @@
+import { Box, Chip } from '@mui/material';
 import { BIT, create, createHistogram, createTGraph, createTMultiGraph } from 'jsroot';
 import React, { useEffect } from 'react';
 
@@ -6,7 +7,7 @@ import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
 
 export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string }) {
 	const { page } = props;
-	const { update, ref } = useJsRootCanvas('AL;gridxy;tickxy');
+	const { update, ref, resetZoom } = useJsRootCanvas('AL;gridxy;tickxy');
 
 	useEffect(() => {
 		update(() => {
@@ -95,7 +96,19 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 		});
 	}, [page, update]);
 
-	return <GraphCanvas ref={ref} />;
+	return (
+		<div>
+			<Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 1 }}>
+				<Chip
+					color='primary'
+					sx={{ fontSize: 12, margin: 0.5 }}
+					label='Reset Zoom'
+					onClick={resetZoom}
+				/>
+			</Box>
+			<GraphCanvas ref={ref} />
+		</div>
+	);
 }
 
 export default JsRootMultiGraph1D;

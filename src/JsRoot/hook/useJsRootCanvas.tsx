@@ -4,6 +4,8 @@ import { useVisible } from 'react-hooks-visible';
 import { throttle } from 'throttle-debounce';
 import { useResizeObserver } from 'usehooks-ts';
 
+type AxisRange = { xmin: number; xmax: number; ymin: number; ymax: number };
+
 export const useJsRootCanvas = (redrawParam: string) => {
 	// Custom react hook, visible contains the percentage of the containterEl
 	// that is currently visible on screen
@@ -12,6 +14,8 @@ export const useJsRootCanvas = (redrawParam: string) => {
 	const [drawn, setDrawn] = useState(false);
 	const [isVisible, setIsVisible] = useState(false);
 	const visibleRef = useRef(isVisible);
+	const painterRef = useRef<any>(null);
+	const initialRangeRef = useRef<AxisRange | null>(null);
 	const { width: resizeWidth, height: resizeHeight } = useResizeObserver({
 		ref: containerEl as React.RefObject<HTMLDivElement>
 	});
@@ -32,6 +36,8 @@ export const useJsRootCanvas = (redrawParam: string) => {
 		if (obj && !drawn) {
 			// by default, the graph is draggable, so we disable it
 			settings.DragGraphs = false;
+			// prevent accidental plot zooming while scrolling the results panel
+			settings.ZoomWheel = false;
 			// enable context menu on right click
 			settings.ContextMenu = true;
 			// enable toolbar in the lower left corner
@@ -39,7 +45,23 @@ export const useJsRootCanvas = (redrawParam: string) => {
 			// disable statistics box
 			settings.AutoStat = false;
 			// redraw plot
-			redraw(containerEl.current, obj, redrawParam);
+
+			initialRangeRef.current = null;
+
+			redraw(containerEl.current, obj, redrawParam).then((painter: any) => {
+				painterRef.current = painter;
+
+				const fp = painter?.getFramePainter?.();
+
+				if (fp && !initialRangeRef.current) {
+					initialRangeRef.current = {
+						xmin: fp.scale_xmin,
+						xmax: fp.scale_xmax,
+						ymin: fp.scale_ymin,
+						ymax: fp.scale_ymax
+					};
+				}
+			});
 			setDrawn(true);
 		}
 	}, [containerEl, drawn, obj, redrawParam]);
@@ -83,6 +105,17 @@ export const useJsRootCanvas = (redrawParam: string) => {
 		[setObj, setDrawn]
 	);
 
+	const resetZoom = useCallback(() => {
+		const fp = painterRef.current?.getFramePainter?.();
+		const range = initialRangeRef.current;
+
+		if (fp && range) {
+			void fp.zoom(range.xmin, range.xmax, range.ymin, range.ymax);
+		} else {
+			void fp?.unzoom('xyz');
+		}
+	}, []);
+
 	const ref = useMemo(() => {
 		return containerEl;
 	}, [containerEl]);
@@ -92,6 +125,7 @@ export const useJsRootCanvas = (redrawParam: string) => {
 		setObjToDraw,
 		drawn,
 		update,
+		resetZoom,
 		ref
 	};
 };
