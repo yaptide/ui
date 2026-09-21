@@ -31,6 +31,7 @@ import { useDialog } from '../../../services/DialogService';
 import { useSharedDatasetManager } from '../../../services/Geant4DatasetContextProvider';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
 import { StyledExclusiveToggleButtonGroup } from '../../../shared/components/StyledExclusiveToggleButtonGroup';
+import { secondsToShortDurationString } from '../../../util/time';
 
 export enum Geant4DatasetsType {
 	PARTIAL,
@@ -39,6 +40,11 @@ export enum Geant4DatasetsType {
 
 function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 	const { status } = props;
+
+	const estimatedTimeRemaining =
+		status.status === DatasetDownloadStatus.DOWNLOADING && status.estimatedSecondsRemaining
+			? ` (est. ${secondsToShortDurationString(status.estimatedSecondsRemaining)} remaining)`
+			: '';
 
 	const idleIcon = status.cached ? (
 		<StorageIcon color='primary' />
@@ -75,6 +81,14 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 		<Box sx={{ pb: 1 }}>
 			<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
 				<Typography sx={{ flex: 1 }}>{status.name}</Typography>
+
+				{estimatedTimeRemaining && (
+					<Typography
+						fontSize={12}
+						color='text.secondary'>
+						{estimatedTimeRemaining}
+					</Typography>
+				)}
 				{datasetStatusIcon.get(status.status)}
 			</Box>
 
@@ -324,7 +338,10 @@ export function Geant4Datasets() {
 			}}>
 			<AccordionSummary
 				expandIcon={<ExpandMoreIcon />}
-				onClick={() => setOpen(!open)}>
+				onClick={e => {
+					e.stopPropagation();
+					setOpen(prevOpen => !prevOpen);
+				}}>
 				<Typography
 					textTransform='none'
 					fontSize={16}>
