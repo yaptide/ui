@@ -109,8 +109,10 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 					sx={{
 						margin: theme.spacing(1),
 						display: 'flex',
+						flexDirection: { xs: 'column', sm: 'row' },
 						justifyContent: 'space-between',
-						alignItems: 'center',
+						alignItems: { xs: 'flex-start', sm: 'center' },
+						gap: { xs: theme.spacing(1), sm: 0 },
 						marginBottom: theme.spacing(2)
 					}}>
 					<Box>
