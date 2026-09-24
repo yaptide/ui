@@ -22,9 +22,7 @@
 				"energySpread": 1.5,
 				"name": "Beam",
 				"numberOfParticles": 10000,
-				"particle": {
-					"pdg": 2212
-				},
+				"particle_PDG": 2212,
 				"position": [0, 0, 0],
 				"sad": {
 					"type": "none",

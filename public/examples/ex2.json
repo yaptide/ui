@@ -509,9 +509,7 @@
 					"x": 0,
 					"y": 0
 				},
-				"particle": {
-					"pdg": 2212
-				},
+				"particle_PDG": 2212,
 				"colorHex": 16776960,
 				"numberOfParticles": 10000,
 				"sourceFile": {

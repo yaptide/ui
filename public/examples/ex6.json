@@ -19,9 +19,7 @@
 				"energySpread": 0.7,
 				"name": "Beam",
 				"numberOfParticles": 100000,
-				"particle": {
-					"pdg": 2212
-				},
+				"particle_PDG": 2212,
 				"position": [0, 0, -5.5],
 				"sad": {
 					"type": "double",
@@ -293,9 +291,7 @@
 				"filters": [
 					{
 						"name": "Protons",
-						"particle": {
-							"pdg": 2212
-						},
+						"particle_PDG": 2212,
 						"type": "Filter",
 						"uuid": "16ed4f0f-c6fe-442e-9d9f-51933ca749c9"
 					}
