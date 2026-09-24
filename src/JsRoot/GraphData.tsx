@@ -194,7 +194,7 @@ function GraphInfo(props: { filter: FilterJSON | undefined }) {
 				{isParticleFilterJSON(filter) && (
 					<Section title='Particle'>
 						<Typography>
-							{PARTICLE_CATALOGUE.find(p => p.pdg === filter.particle.pdg)
+							{PARTICLE_CATALOGUE.find(p => p.pdg === filter.particle_PDG)
 								?.displayName ?? 'Unknown'}
 						</Typography>
 					</Section>

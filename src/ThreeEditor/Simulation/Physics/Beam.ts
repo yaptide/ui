@@ -35,10 +35,6 @@ export type BeamSourceType = keyof typeof BEAM_SOURCE_TYPE;
 export const EnergyUnits = ['MeV', 'MeV/nucl'];
 export type EnergyUnit = (typeof EnergyUnits)[number];
 
-interface Particle {
-	pdg: number;
-}
-
 export type BeamJSON = Omit<
 	SimulationElementJSON & {
 		position: THREE.Vector3Tuple;
@@ -54,7 +50,7 @@ export type BeamJSON = Omit<
 			y: number;
 			distanceToFocal: number;
 		};
-		particle: Particle;
+		particle_PDG: number;
 		sigma: {
 			type: SigmaType;
 			x: number;
@@ -304,10 +300,6 @@ export class Beam extends SimulationElement implements SerializableState<BeamJSO
 	}
 
 	toSerialized() {
-		const particle: Particle = {
-			pdg: this.particleData.pdg ?? 2212
-		};
-
 		const jsonObject: BeamJSON = {
 			...super.toSerialized(),
 			position: this.position.toArray(),
@@ -320,7 +312,7 @@ export class Beam extends SimulationElement implements SerializableState<BeamJSO
 			sigma: this.sigma,
 			sad: this.sad,
 			divergence: this.divergence,
-			particle: particle,
+			particle_PDG: this.particleData.pdg ?? 2212,
 			colorHex: this.material.color.getHex(),
 			numberOfParticles: this.numberOfParticles,
 			sourceFile: this.sourceFile,
@@ -342,7 +334,7 @@ export class Beam extends SimulationElement implements SerializableState<BeamJSO
 		this.energyHighCutoff = loadedData.energyHighCutoff;
 		this.divergence = loadedData.divergence;
 		this.particleData =
-			PARTICLE_CATALOGUE.find(p => p.pdg === loadedData.particle.pdg) ?? _default.particle;
+			PARTICLE_CATALOGUE.find(p => p.pdg === loadedData.particle_PDG) ?? _default.particle;
 		this.material.color.setHex(loadedData.colorHex);
 		this.numberOfParticles = loadedData.numberOfParticles;
 		this.sourceFile = loadedData.sourceFile;

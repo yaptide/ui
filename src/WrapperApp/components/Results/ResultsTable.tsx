@@ -63,7 +63,7 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 					.map(rule => `${rule.keyword} ${rule.operator} ${rule.value}`)
 					.join('; ') ?? '';
 		} else if (isParticleFilterJSON(page.filterRef)) {
-			const pdg = page.filterRef.particle.pdg;
+			const pdg = page.filterRef.particle_PDG;
 			filterRules = PARTICLE_CATALOGUE.find(p => p.pdg === pdg)?.displayName ?? 'Unknown';
 		}
 
