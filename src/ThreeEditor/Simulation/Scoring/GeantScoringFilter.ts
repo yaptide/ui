@@ -10,7 +10,7 @@ export type FilterType =
 	| 'particleWithKineticEnergy';
 
 type FilterData = {
-	particleTypes: { pdg: number }[];
+	particle_PDGs: number[];
 	kineticEnergyLow: number;
 	kineticEnergyHigh: number;
 	kineticEnergyUnit: string;
@@ -26,7 +26,7 @@ export type GeantScoringFilterJSON = Omit<
 
 function getInitialFilterData() {
 	return {
-		particleTypes: [],
+		particle_PDGs: [],
 		kineticEnergyLow: 1,
 		kineticEnergyHigh: 10,
 		kineticEnergyUnit: 'MeV'

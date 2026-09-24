@@ -491,11 +491,7 @@
 						"name": "protonFilter",
 						"type": "Filter",
 						"data": {
-							"particleTypes": [
-								{
-									"pdg": 2212
-								}
-							],
+							"particle_PDGs": [2212],
 							"kineticEnergyLow": 1,
 							"kineticEnergyHigh": 10,
 							"kineticEnergyUnit": "MeV"
@@ -507,11 +503,7 @@
 						"name": "electronFilter",
 						"type": "Filter",
 						"data": {
-							"particleTypes": [
-								{
-									"pdg": 11
-								}
-							],
+							"particle_PDGs": [11],
 							"kineticEnergyLow": 1,
 							"kineticEnergyHigh": 10,
 							"kineticEnergyUnit": "MeV"
@@ -523,11 +515,7 @@
 						"name": "neutronsFilter",
 						"type": "Filter",
 						"data": {
-							"particleTypes": [
-								{
-									"pdg": 2112
-								}
-							],
+							"particle_PDGs": [2112],
 							"kineticEnergyLow": 1,
 							"kineticEnergyHigh": 10,
 							"kineticEnergyUnit": "MeV"
@@ -567,9 +555,7 @@
 					"y": 0,
 					"distanceToFocal": 0
 				},
-				"particle": {
-					"pdg": 2212
-				},
+				"particle_PDG": 2212,
 				"colorHex": 16776960,
 				"numberOfParticles": 20000,
 				"sourceFile": {
@@ -1078,11 +1064,7 @@
 						"name": "protonFilter",
 						"type": "Filter",
 						"data": {
-							"particleTypes": [
-								{
-									"pdg": 2212
-								}
-							],
+							"particle_PDGs": [2212],
 							"kineticEnergyLow": 1,
 							"kineticEnergyHigh": 10,
 							"kineticEnergyUnit": "MeV"
@@ -1330,11 +1312,7 @@
 						"name": "neutronsFilter",
 						"type": "Filter",
 						"data": {
-							"particleTypes": [
-								{
-									"pdg": 2112
-								}
-							],
+							"particle_PDGs": [2112],
 							"kineticEnergyLow": 1,
 							"kineticEnergyHigh": 10,
 							"kineticEnergyUnit": "MeV"
@@ -12009,11 +11987,7 @@
 						"name": "protonFilter",
 						"type": "Filter",
 						"data": {
-							"particleTypes": [
-								{
-									"pdg": 2212
-								}
-							],
+							"particle_PDGs": [2212],
 							"kineticEnergyLow": 1,
 							"kineticEnergyHigh": 10,
 							"kineticEnergyUnit": "MeV"
@@ -18272,11 +18246,7 @@
 						"name": "neutronsFilter",
 						"type": "Filter",
 						"data": {
-							"particleTypes": [
-								{
-									"pdg": 2112
-								}
-							],
+							"particle_PDGs": [2112],
 							"kineticEnergyLow": 1,
 							"kineticEnergyHigh": 10,
 							"kineticEnergyUnit": "MeV"
@@ -24425,11 +24395,7 @@
 						"name": "protonFilter",
 						"type": "Filter",
 						"data": {
-							"particleTypes": [
-								{
-									"pdg": 2212
-								}
-							],
+							"particle_PDGs": [2212],
 							"kineticEnergyLow": 1,
 							"kineticEnergyHigh": 10,
 							"kineticEnergyUnit": "MeV"
@@ -29076,11 +29042,7 @@
 						"name": "neutronsFilter",
 						"type": "Filter",
 						"data": {
-							"particleTypes": [
-								{
-									"pdg": 2112
-								}
-							],
+							"particle_PDGs": [2112],
 							"kineticEnergyLow": 1,
 							"kineticEnergyHigh": 10,
 							"kineticEnergyUnit": "MeV"

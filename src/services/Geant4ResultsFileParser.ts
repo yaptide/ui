@@ -552,7 +552,7 @@ export class Geant4ResultsFileParser {
 				name: this.quantityFilterNames[meshName][scorerName].name,
 				filterType: this.quantityFilterNames[meshName][scorerName].type,
 				data: {
-					particleTypes: [],
+					particle_PDGs: [],
 					kineticEnergyLow: 0,
 					kineticEnergyHigh: 0,
 					kineticEnergyUnit: ''

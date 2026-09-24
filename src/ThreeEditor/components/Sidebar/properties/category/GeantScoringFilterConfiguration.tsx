@@ -60,20 +60,18 @@ export function GeantScoringFilterConfiguration(props: {
 							<ParticleSelect
 								multiple
 								particles={getParticlesForSimulator(SimulatorType.GEANT4)}
-								value={(watchedObject.data?.particleTypes ?? []).map(p => p.pdg)}
-								onChange={(_, pdgs) => {
-									const particleTypes = pdgs.map(pdg => ({ pdg }));
-
+								value={watchedObject.data?.particle_PDGs ?? []}
+								onChange={(_, particle_PDGs) => {
 									setValueCommand(
-										{ ...watchedObject.data, particleTypes },
+										{ ...watchedObject.data, particle_PDGs },
 										'data'
 									);
 								}}
-								renderValue={particleTypes =>
-									particleTypes.map(t => (
+								renderValue={particles =>
+									particles.map(p => (
 										<Typography
-											key={t.pdg}
-											sx={{ px: '2px' }}>{`${t.displayName}`}</Typography>
+											key={p.pdg}
+											sx={{ px: '2px' }}>{`${p.displayName}`}</Typography>
 									))
 								}
 							/>
