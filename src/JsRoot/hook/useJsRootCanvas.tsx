@@ -6,6 +6,25 @@ import { useResizeObserver } from 'usehooks-ts';
 
 type AxisRange = { xmin: number; xmax: number; ymin: number; ymax: number };
 
+const ZOOM_STEP_IN = 0.8;
+const ZOOM_STEP_OUT = 1.25;
+
+function zoomRange(min: number, max: number, isLog: boolean, factor: number) {
+	if (isLog && min > 0 && max > 0) {
+		const logMin = Math.log10(min);
+		const logMax = Math.log10(max);
+		const center = (logMin + logMax) / 2;
+		const halfWidth = ((logMax - logMin) / 2) * factor;
+
+		return { min: 10 ** (center - halfWidth), max: 10 ** (center + halfWidth) };
+	}
+
+	const center = (min + max) / 2;
+	const halfWidth = ((max - min) / 2) * factor;
+
+	return { min: center - halfWidth, max: center + halfWidth };
+}
+
 export const useJsRootCanvas = (redrawParam: string) => {
 	// Custom react hook, visible contains the percentage of the containterEl
 	// that is currently visible on screen
@@ -116,6 +135,25 @@ export const useJsRootCanvas = (redrawParam: string) => {
 		}
 	}, []);
 
+	const applyZoomStep = useCallback((factor: number) => {
+		const fp = painterRef.current?.getFramePainter?.();
+
+		if (!fp) return;
+
+		const x = zoomRange(fp.scale_xmin, fp.scale_xmax, fp.logx !== 0, factor);
+		const y = zoomRange(fp.scale_ymin, fp.scale_ymax, fp.logy !== 0, factor);
+
+		void fp.zoom(
+			Math.max(x.min, fp.xmin),
+			Math.min(x.max, fp.xmax),
+			Math.max(y.min, fp.ymin),
+			Math.min(y.max, fp.ymax)
+		);
+	}, []);
+
+	const zoomIn = useCallback(() => applyZoomStep(ZOOM_STEP_IN), [applyZoomStep]);
+	const zoomOut = useCallback(() => applyZoomStep(ZOOM_STEP_OUT), [applyZoomStep]);
+
 	const ref = useMemo(() => {
 		return containerEl;
 	}, [containerEl]);
@@ -126,6 +164,8 @@ export const useJsRootCanvas = (redrawParam: string) => {
 		drawn,
 		update,
 		resetZoom,
+		zoomIn,
+		zoomOut,
 		ref
 	};
 };

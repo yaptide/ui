@@ -1,13 +1,15 @@
-import { Box, Chip } from '@mui/material';
 import { BIT, createHistogram } from 'jsroot';
 import { useEffect } from 'react';
 
 import { Page2D } from '../GraphData';
 import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
+import { JsRootGraphToolbar } from './JsRootGraphToolbar';
 
 export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 	const { page, title } = props;
-	const { update, ref, resetZoom } = useJsRootCanvas('colz;gridxy;nostat;tickxy');
+	const { update, ref, zoomIn, zoomOut, resetZoom } = useJsRootCanvas(
+		'colz;gridxy;nostat;tickxy'
+	);
 
 	useEffect(() => {
 		update(() => {
@@ -52,14 +54,11 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 
 	return (
 		<div>
-			<Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 1 }}>
-				<Chip
-					color='primary'
-					sx={{ fontSize: 12, margin: 0.5 }}
-					label='Reset Zoom'
-					onClick={resetZoom}
-				/>
-			</Box>
+			<JsRootGraphToolbar
+				zoomIn={zoomIn}
+				zoomOut={zoomOut}
+				resetZoom={resetZoom}
+			/>
 			<GraphCanvas ref={ref} />
 		</div>
 	);
