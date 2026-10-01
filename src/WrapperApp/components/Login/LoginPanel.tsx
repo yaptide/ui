@@ -4,20 +4,18 @@ import { useCallback, useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
+import { useAuth } from '../../../services/AuthService';
 import { useKeycloakAuth } from '../../../services/KeycloakAuthService';
 import NamePasswordLoginPanel from './NamePasswordLoginPanel';
 
 export default function LoginPanel() {
 	const theme = useTheme();
-	const { basicAuthEnabled, ssoAuthEnabled } = useConfig();
+	const { altAuth } = useConfig();
+	const { localUsersEnabled } = useAuth();
 	const { keycloak, initialized } = useKeycloakAuth();
-<<<<<<< HEAD
 	const [namePasswordLoginSelected, setNamePasswordLoginSelected] = useState(!altAuth);
 	// on Keycloak-only deployments the backend rejects local users, so do not offer password login
 	const namePasswordLogin = namePasswordLoginSelected && (localUsersEnabled || !altAuth);
-=======
-	const [namePasswordLogin, setNamePasswordLogin] = useState(ssoAuthEnabled);
->>>>>>> e5536b08 (refactor: update authentication handling to remove password login and streamline config usage)
 
 	const keycloakLogin = useCallback(() => {
 		if (initialized && !keycloak.authenticated) keycloak.login();
@@ -46,26 +44,24 @@ export default function LoginPanel() {
 				}}>
 				{!namePasswordLogin ? (
 					<>
-						{ssoAuthEnabled && (
-							<Button
-								fullWidth
-								disabled={!initialized}
-								variant='contained'
-								color='primary'
-								onClick={keycloakLogin}
-								sx={{
-									fontSize: 16,
-									textTransform: 'none',
-									py: theme.spacing(1.5),
-									px: theme.spacing(10)
-								}}>
-								Connect with PLGrid
-							</Button>
-						)}
-						{showPasswordLogin && (
+						<Button
+							fullWidth
+							disabled={!initialized}
+							variant='contained'
+							color='primary'
+							onClick={keycloakLogin}
+							sx={{
+								fontSize: 16,
+								textTransform: 'none',
+								py: theme.spacing(1.5),
+								px: theme.spacing(10)
+							}}>
+							Connect with PLGrid
+						</Button>
+						{localUsersEnabled && (
 							<Link
 								color='textDisabled'
-								onClick={() => setNamePasswordLogin(true)}
+								onClick={() => setNamePasswordLoginSelected(true)}
 								sx={{ cursor: 'pointer' }}>
 								use password login
 							</Link>
@@ -77,6 +73,7 @@ export default function LoginPanel() {
 							<Box sx={{ width: '100%' }}>
 								<IconButton
 									size='small'
+									onClick={() => setNamePasswordLoginSelected(false)}>
 									onClick={() => setNamePasswordLoginSelected(false)}>
 									<ArrowBack />
 								</IconButton>

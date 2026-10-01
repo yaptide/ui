@@ -66,8 +66,8 @@ function SimulatorSelectItem({ simulator, onClick }: SimulationSelectItemProps) 
 
 export default function SimulatorControls(props: SimulationControlsProps) {
 	const { yaptideEditor, setSimulatorType } = useStore();
-	const { demoMode } = useConfig();
-
+	const { basicAuthEnabled, ssoAuthEnabled } = useConfig();
+	const demoMode = !basicAuthEnabled && !ssoAuthEnabled;
 	const isBackendAlive = useIsBackendAlive();
 
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
