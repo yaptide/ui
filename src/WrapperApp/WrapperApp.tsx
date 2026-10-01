@@ -41,7 +41,7 @@ const StyledAppGrid = styled(Box)(({ theme }) => ({
 }));
 
 function WrapperApp() {
-	const { demoMode } = useConfig();
+	const { basicAuthEnabled } = useConfig();
 	const auth = useAuth();
 	const { yaptideEditor, resultsSimulationData } = useStore();
 	const [displayedSimulationData, setDisplayedSimulationData] = useState<
@@ -58,9 +58,9 @@ function WrapperApp() {
 
 	useEffect(() => {
 		setSimulationPanelPresentedSimulationsSource(
-			auth.isAuthorized && !demoMode ? 'remote' : 'local'
+			auth.isAuthorized && !basicAuthEnabled ? 'remote' : 'local'
 		);
-	}, [auth, demoMode]);
+	}, [auth, basicAuthEnabled]);
 
 	const [providedInputFiles, setProvidedInputFiles] = useState<SimulationInputFiles>();
 	const [highlightRunForm, setHighLightRunForm] = useState(false);
@@ -83,9 +83,9 @@ function WrapperApp() {
 	};
 
 	useEffect(() => {
-		if (!isAuthorized && !demoMode) setTabsValue('login');
+		if (!isAuthorized && !basicAuthEnabled) setTabsValue('login');
 		else setTabsValue('editor');
-	}, [demoMode, isAuthorized]);
+	}, [basicAuthEnabled, isAuthorized]);
 
 	useEffect(() => {
 		if (
