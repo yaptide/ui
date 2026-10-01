@@ -3,14 +3,18 @@ import { Box, Button, IconButton, Link, useTheme } from '@mui/material';
 import { useCallback, useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
+import { useAuth } from '../../../services/AuthService';
 import { useKeycloakAuth } from '../../../services/KeycloakAuthService';
 import NamePasswordLoginPanel from './NamePasswordLoginPanel';
 
 export default function LoginPanel() {
 	const theme = useTheme();
 	const { altAuth } = useConfig();
+	const { localUsersEnabled } = useAuth();
 	const { keycloak, initialized } = useKeycloakAuth();
-	const [namePasswordLogin, setNamePasswordLogin] = useState(!altAuth);
+	const [namePasswordLoginSelected, setNamePasswordLogin] = useState(!altAuth);
+	// on Keycloak-only deployments the backend rejects local users, so do not offer password login
+	const namePasswordLogin = namePasswordLoginSelected && (localUsersEnabled || !altAuth);
 
 	const keycloakLogin = useCallback(() => {
 		if (initialized && !keycloak.authenticated) keycloak.login();
@@ -51,12 +55,14 @@ export default function LoginPanel() {
 							}}>
 							Connect with PLGrid
 						</Button>
-						<Link
-							color='textDisabled'
-							onClick={() => setNamePasswordLogin(true)}
-							sx={{ cursor: 'pointer' }}>
-							use password login
-						</Link>
+						{localUsersEnabled && (
+							<Link
+								color='textDisabled'
+								onClick={() => setNamePasswordLogin(true)}
+								sx={{ cursor: 'pointer' }}>
+								use password login
+							</Link>
+						)}
 					</>
 				) : (
 					<>
