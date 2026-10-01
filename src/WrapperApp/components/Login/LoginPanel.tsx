@@ -12,7 +12,7 @@ export default function LoginPanel() {
 	const { altAuth } = useConfig();
 	const { localUsersEnabled } = useAuth();
 	const { keycloak, initialized } = useKeycloakAuth();
-	const [namePasswordLoginSelected, setNamePasswordLogin] = useState(!altAuth);
+	const [namePasswordLoginSelected, setNamePasswordLoginSelected] = useState(!altAuth);
 	// on Keycloak-only deployments the backend rejects local users, so do not offer password login
 	const namePasswordLogin = namePasswordLoginSelected && (localUsersEnabled || !altAuth);
 
@@ -58,7 +58,7 @@ export default function LoginPanel() {
 						{localUsersEnabled && (
 							<Link
 								color='textDisabled'
-								onClick={() => setNamePasswordLogin(true)}
+								onClick={() => setNamePasswordLoginSelected(true)}
 								sx={{ cursor: 'pointer' }}>
 								use password login
 							</Link>
@@ -70,7 +70,7 @@ export default function LoginPanel() {
 							<Box sx={{ width: '100%' }}>
 								<IconButton
 									size='small'
-									onClick={() => setNamePasswordLogin(false)}>
+									onClick={() => setNamePasswordLoginSelected(false)}>
 									<ArrowBack />
 								</IconButton>
 							</Box>
