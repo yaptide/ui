@@ -3,10 +3,13 @@ import { useEffect } from 'react';
 
 import { Page2D } from '../GraphData';
 import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
+import { JsRootGraphToolbar } from './JsRootGraphToolbar';
 
 export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 	const { page, title } = props;
-	const { update, ref } = useJsRootCanvas('colz;gridxy;nostat;tickxy');
+	const { update, ref, zoomIn, zoomOut, resetZoom } = useJsRootCanvas(
+		'colz;gridxy;nostat;tickxy'
+	);
 
 	useEffect(() => {
 		update(() => {
@@ -49,7 +52,16 @@ export function JsRootGraph2D(props: { page: Page2D; title?: string }) {
 		});
 	}, [page, title, update]);
 
-	return <GraphCanvas ref={ref} />;
+	return (
+		<div>
+			<JsRootGraphToolbar
+				zoomIn={zoomIn}
+				zoomOut={zoomOut}
+				resetZoom={resetZoom}
+			/>
+			<GraphCanvas ref={ref} />
+		</div>
+	);
 }
 
 export default JsRootGraph2D;
