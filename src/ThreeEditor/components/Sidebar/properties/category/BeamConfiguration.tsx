@@ -156,8 +156,6 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 	const { object, editor } = props;
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object, true);
 
-	// const elementOptions = HEAVY_ION_LIST.map(ion => ion.name);
-
 	// energyUnit should be held in react state so the change re-renders the component
 	// watchedObject.energyUnit is kept in sync in updateEnergyInputs()
 	const [energyUnit, setEnergyUnit] = useState<EnergyUnit>(watchedObject.energyUnit);
@@ -271,104 +269,6 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 					}}
 				/>
 			</PropertyField>
-
-			{/* {watchedObject.particleData.id >= 25 && (
-				<>
-					<NumberPropertyField
-						label='charge (Z)'
-						precision={0}
-						step={1}
-						value={watchedObject.particleData.z ?? 6}
-						onChange={v =>
-							setValueCommand({ ...watchedObject.particleData, z: v }, 'particleData')
-						}
-					/>
-					<NumberPropertyField
-						label='nucleons (A)' 
-						precision={0}
-						step={1}
-						value={watchedObject.particleData.a ?? 12}
-						onChange={v =>
-							setValueCommand({ ...watchedObject.particleData, a: v }, 'particleData')
-						}
-					/>
-				</>
-			)} */}
-			{isIon(watchedObject.particleData) && ( // select-lists should be moved to select directory
-				<>
-					{/* <PropertyField label="Element">
-					<ParticleSelect
-						particles={HEAVY_ION_LIST}
-						value={watchedObject.particleData.z ?? 6} 
-						onChange={(_, newZ) => {
-							const ion = HEAVY_ION_LIST.find(i => i.z === newZ);
-							if (ion) {
-								setValueCommand({ 
-									...watchedObject.particleData, 
-									a: ion.a, 
-									z: ion.z 
-								}, 'particleData');
-							}
-						}}
-					/>
-				</PropertyField> */}
-
-					{/* <SelectPropertyField
-						label='Element'
-						value={watchedObject.particleData.name}
-						options={elementOptions}
-						onChange={newName => {
-							const ion = HEAVY_ION_LIST.find(i => i.name === newName);
-
-							if (ion) {
-								setValueCommand(
-									{
-										...watchedObject.particleData,
-										id: 25,
-										name: ion.name,
-										a: ion.a,
-										z: ion.z
-									},
-									'particleData'
-								);
-							}
-						}}
-					/>
-
-					<SelectPropertyField
-						label='Isotope'
-						value={watchedObject.particleData.name + '-' + watchedObject.particleData.a}
-						options={
-							ISOTOPES[watchedObject.particleData.name]?.map(
-								iso => watchedObject.particleData.name + '-' + iso.a.toString()
-							) || []
-						}
-						onChange={newA => {
-							const ion = ISOTOPES[watchedObject.particleData.name];
-
-							if (ion) {
-								setValueCommand(
-									{
-										...watchedObject.particleData,
-										a: newA
-									},
-									'particleData'
-								);
-							}
-						}}
-					/> */}
-					{/* <PropertyField>
-						<label>
-							<span style={{ marginLeft: '128px' }}>
-								Z = {watchedObject.particleData.z}
-							</span>
-							<span style={{ marginLeft: '32px' }}>
-								A = {watchedObject.particleData.a}
-							</span>
-						</label>
-					</PropertyField> */}
-				</>
-			)}
 
 			<NumberPropertyField
 				label='Number of primary particles'

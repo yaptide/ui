@@ -66,7 +66,7 @@ export class FigureManager
 {
 	/****************************Private****************************/
 	private readonly metadata = {
-		version: `0.12`, //update this to current YaptideEditor version when format changes
+		version: `0.13`, //update this to current YaptideEditor version when format changes
 		type: 'Manager',
 		generator: 'FigureManager.toSerialized'
 	} satisfies Record<string, string | number>;

@@ -62,7 +62,7 @@ export const PARTICLE_CATALOGUE = [
 		a: 2,
 		z: 1,
 		abundance: 0.0145,
-		sortPriority: 10,
+		sortPriority: 2,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -72,7 +72,7 @@ export const PARTICLE_CATALOGUE = [
 		a: 3,
 		z: 1,
 		abundance: 0.0,
-		sortPriority: 10,
+		sortPriority: 2,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -82,7 +82,7 @@ export const PARTICLE_CATALOGUE = [
 		a: 3,
 		z: 2,
 		abundance: 0.0002,
-		sortPriority: 10,
+		sortPriority: 2,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -92,7 +92,7 @@ export const PARTICLE_CATALOGUE = [
 		a: 4,
 		z: 2,
 		abundance: 99.9998,
-		sortPriority: 10,
+		sortPriority: 1,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2995,7 +2995,7 @@ export const PARTICLE_CATALOGUE = [
 		pdg: 311,
 		displayName: 'Kaon κ0',
 		aliases: ['K0', 'kaon0'],
-		sortPriority: 1,
+		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA]
 	},
 	{
