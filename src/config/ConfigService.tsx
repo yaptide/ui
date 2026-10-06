@@ -14,14 +14,6 @@ const BASIC_AUTH_ENABLED =
 
 const SSO_AUTH_ENABLED = ALT_AUTH || process.env.REACT_APP_AUTH_SSO_ENABLED === 'true';
 
-// const BASIC_AUTH_ENABLED = process.env.REACT_APP_AUTH_BASIC_ENABLED === 'true';
-// const SSO_AUTH_ENABLED = process.env.REACT_APP_AUTH_SSO_ENABLED === 'true';
-// const BACKEND_ENABLED = process.env.REACT_APP_BACKEND_ENABLED === 'true';
-
-const BASIC_AUTH_ENABLED = true;
-const SSO_AUTH_ENABLED = true;
-const BACKEND_ENABLED = process.env.REACT_APP_BACKEND_ENABLED === 'true';
-
 export const DEPLOYMENT = (process.env.REACT_APP_DEPLOYMENT as ConfigDeployment) ?? 'prod';
 export type ConfigDeployment = 'dev' | 'prod' | undefined;
 

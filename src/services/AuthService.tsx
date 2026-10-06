@@ -10,7 +10,6 @@ import {
 	ResponseAuthLogin,
 	ResponseAuthRefresh,
 	ResponseAuthStatus,
-	ResponseRoot,
 	YaptideResponse
 } from '../types/ResponseTypes';
 import { hasFields } from '../util/customGuards';
@@ -67,7 +66,6 @@ export interface AuthContext {
 	user: AuthUser | null;
 	isAuthorized: boolean;
 	isServerReachable: boolean;
-	localUsersEnabled: boolean;
 	login: (...args: RequestAuthLogin) => void;
 	logout: (...args: RequestAuthLogout) => void;
 	refresh: (...args: RequestAuthRefresh) => void;
@@ -86,7 +84,6 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	const { keycloak, initialized } = useKeycloakAuth();
 	const [keyCloakInterval, setKeyCloakInterval] = useState<number>();
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
-	const [localUsersEnabled, setLocalUsersEnabled] = useState(true);
 	const { enqueueSnackbar } = useSnackbar();
 	const { open: openRejectKeycloakUserDialog } = useDialog('rejectKeycloak');
 	const { open: openRejectKeycloakRefreshUserDialog } = useDialog('rejectKeycloakRefresh');
@@ -157,12 +154,8 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 
 		return kyIntervalRef
 			.get(``)
-			.json<ResponseRoot>()
-			.then(r => {
-				setLocalUsersEnabled(r.localUsersEnabled ?? true);
-
-				return !!r.message;
-			})
+			.json<YaptideResponse>()
+			.then(r => !!r.message)
 			.then(status =>
 				setIsServerReachable(prev => {
 					if (prev !== null && status !== prev)
@@ -383,7 +376,6 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				user,
 				isAuthorized,
 				isServerReachable: Boolean(isServerReachable),
-				localUsersEnabled,
 				login,
 				logout,
 				authKy,
