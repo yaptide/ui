@@ -103,6 +103,8 @@ jobs:
           build-args: |
             BUILDKIT_CONTEXT_KEEP_GIT_DIR=true
             DEPLOYMENT=dev
+            REACT_APP_AUTH_BASIC_ENABLED=false
+            REACT_APP_AUTH_SSO_ENABLED=true
 
   deploy_gh_pages:
     runs-on: ubuntu-latest
@@ -135,6 +137,9 @@ jobs:
 
       - name: Deploy to dev instance 🚀
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        env:
+          REACT_APP_AUTH_BASIC_ENABLED: 'false'
+          REACT_APP_AUTH_SSO_ENABLED: 'false'
         run: |
           git remote set-url origin git@github.com:yaptide/web_dev.git
           npm run deploy -- -u "github-actions-bot <support+actions@github.com>" -r "git@github.com:yaptide/web_dev.git"
@@ -149,6 +154,9 @@ jobs:
       - name: Deploy to prod instance 🚀
         # this action is being triggered on release tags (named v*)
         if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
+        env:
+          REACT_APP_AUTH_BASIC_ENABLED: 'false'
+          REACT_APP_AUTH_SSO_ENABLED: 'false'
         run: |
           git remote set-url origin git@github.com:yaptide/yaptide.github.io.git
           npm run deploy -- -u "github-actions-bot <support+actions@github.com>" -r "git@github.com:yaptide/yaptide.github.io.git"

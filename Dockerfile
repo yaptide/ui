@@ -60,6 +60,10 @@ COPY --from=wheel-builder dist/*.whl public/libs/converter/dist/
 
 # Default deployment type can be overwritten by docker build --build-arg DEPLOYMENT=dev ...
 ARG DEPLOYMENT=prod
+ARG REACT_APP_TARGET
+ARG REACT_APP_ALT_AUTH
+ARG REACT_APP_AUTH_BASIC_ENABLED
+ARG REACT_APP_AUTH_SSO_ENABLED
 
 RUN echo "Deploying for ${DEPLOYMENT}"
 
@@ -91,4 +95,3 @@ EXPOSE 80
 EXPOSE 443
 
 CMD ["nginx", "-g", "daemon off;"]
-

@@ -12,16 +12,14 @@ export default function LoginPanel() {
 	const { basicAuthEnabled, ssoAuthEnabled } = useConfig();
 	const { localUsersEnabled } = useAuth();
 	const { keycloak, initialized } = useKeycloakAuth();
-	const [namePasswordLoginSelected, setNamePasswordLoginSelected] =
-		useState(!ssoAuthEnabled);
-	const namePasswordLogin =
-		basicAuthEnabled && localUsersEnabled && namePasswordLoginSelected;
+	const [namePasswordLoginSelected, setNamePasswordLoginSelected] = useState(!ssoAuthEnabled);
+
+	const showPasswordLogin = basicAuthEnabled && localUsersEnabled;
+	const namePasswordLogin = showPasswordLogin && namePasswordLoginSelected;
 
 	const keycloakLogin = useCallback(() => {
 		if (initialized && !keycloak.authenticated) keycloak.login();
 	}, [initialized, keycloak]);
-
-	const showPasswordLogin = basicAuthEnabled && localUsersEnabled;
 
 	return (
 		<Box
