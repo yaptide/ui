@@ -3,18 +3,16 @@ import { Box, Button, IconButton, Link, useTheme } from '@mui/material';
 import { useCallback, useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
-import { useAuth } from '../../../services/AuthService';
 import { useKeycloakAuth } from '../../../services/KeycloakAuthService';
 import NamePasswordLoginPanel from './NamePasswordLoginPanel';
 
 export default function LoginPanel() {
 	const theme = useTheme();
 	const { basicAuthEnabled, ssoAuthEnabled } = useConfig();
-	const { localUsersEnabled } = useAuth();
 	const { keycloak, initialized } = useKeycloakAuth();
 	const [namePasswordLoginSelected, setNamePasswordLoginSelected] = useState(!ssoAuthEnabled);
 
-	const showPasswordLogin = basicAuthEnabled && localUsersEnabled;
+	const showPasswordLogin = basicAuthEnabled;
 	const namePasswordLogin = showPasswordLogin && namePasswordLoginSelected;
 
 	const keycloakLogin = useCallback(() => {
@@ -77,7 +75,7 @@ export default function LoginPanel() {
 									<ArrowBack />
 								</IconButton>
 							</Box>
-						}
+						)}
 						<NamePasswordLoginPanel />
 					</>
 				)}
