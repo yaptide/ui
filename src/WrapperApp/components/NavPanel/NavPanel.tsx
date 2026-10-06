@@ -46,8 +46,9 @@ function LogInOut(props: {
 	authContext: AuthContext;
 	handleChange: (event: SyntheticEvent, value: string) => void;
 }) {
-	const { demoMode } = useConfig();
+	const { basicAuthEnabled, demoMode, ssoAuthEnabled } = useConfig();
 	const { isAuthorized, user, logout } = props.authContext;
+	const showLogin = !demoMode || basicAuthEnabled || ssoAuthEnabled;
 
 	const username = useMemo(
 		() => (isAuthorized && user ? `Log out ${user.username}` : 'Log in'),
@@ -56,7 +57,7 @@ function LogInOut(props: {
 
 	return (
 		<List>
-			{!demoMode && (
+			{showLogin && (
 				<NavPanelElement
 					menuOption={{
 						label: username,

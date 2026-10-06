@@ -41,7 +41,8 @@ const StyledAppGrid = styled(Box)(({ theme }) => ({
 }));
 
 function WrapperApp() {
-	const { basicAuthEnabled } = useConfig();
+	const { basicAuthEnabled, demoMode, ssoAuthEnabled } = useConfig();
+	const authenticationEnabled = basicAuthEnabled || ssoAuthEnabled;
 	const auth = useAuth();
 	const { yaptideEditor, resultsSimulationData } = useStore();
 	const [displayedSimulationData, setDisplayedSimulationData] = useState<
@@ -83,9 +84,9 @@ function WrapperApp() {
 	};
 
 	useEffect(() => {
-		if (!isAuthorized && !basicAuthEnabled) setTabsValue('login');
+		if (!isAuthorized && (!demoMode || authenticationEnabled)) setTabsValue('login');
 		else setTabsValue('editor');
-	}, [basicAuthEnabled, isAuthorized]);
+	}, [authenticationEnabled, demoMode, isAuthorized]);
 
 	useEffect(() => {
 		if (
