@@ -9,18 +9,19 @@ import NamePasswordLoginPanel from './NamePasswordLoginPanel';
 
 export default function LoginPanel() {
 	const theme = useTheme();
-	const { altAuth, useBasicAuth } = useConfig();
+	const { basicAuthEnabled, ssoAuthEnabled } = useConfig();
 	const { localUsersEnabled } = useAuth();
 	const { keycloak, initialized } = useKeycloakAuth();
-	const [namePasswordLoginSelected, setNamePasswordLoginSelected] = useState(!altAuth);
-	// on Keycloak-only deployments the backend rejects local users, so do not offer password login
-	const namePasswordLogin = namePasswordLoginSelected && (localUsersEnabled || !altAuth);
+	const [namePasswordLoginSelected, setNamePasswordLoginSelected] =
+		useState(!ssoAuthEnabled);
+	const namePasswordLogin =
+		basicAuthEnabled && localUsersEnabled && namePasswordLoginSelected;
 
 	const keycloakLogin = useCallback(() => {
 		if (initialized && !keycloak.authenticated) keycloak.login();
 	}, [initialized, keycloak]);
 
-	const showPasswordLogin = useBasicAuth && localUsersEnabled;
+	const showPasswordLogin = basicAuthEnabled && localUsersEnabled;
 
 	return (
 		<Box
@@ -43,20 +44,22 @@ export default function LoginPanel() {
 				}}>
 				{!namePasswordLogin ? (
 					<>
-						<Button
-							fullWidth
-							disabled={!initialized}
-							variant='contained'
-							color='primary'
-							onClick={keycloakLogin}
-							sx={{
-								fontSize: 16,
-								textTransform: 'none',
-								py: theme.spacing(1.5),
-								px: theme.spacing(10)
-							}}>
-							Connect with PLGrid
-						</Button>
+						{ssoAuthEnabled && (
+							<Button
+								fullWidth
+								disabled={!initialized}
+								variant='contained'
+								color='primary'
+								onClick={keycloakLogin}
+								sx={{
+									fontSize: 16,
+									textTransform: 'none',
+									py: theme.spacing(1.5),
+									px: theme.spacing(10)
+								}}>
+								Connect with PLGrid
+							</Button>
+						)}
 						{showPasswordLogin && (
 							<Link
 								color='textDisabled'
@@ -68,7 +71,7 @@ export default function LoginPanel() {
 					</>
 				) : (
 					<>
-						{
+						{ssoAuthEnabled && (
 							<Box sx={{ width: '100%' }}>
 								<IconButton
 									size='small'
