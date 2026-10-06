@@ -7,7 +7,15 @@ import { snakeToCamelCase } from '../util/Notation/Notation';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:5000';
 const DEMO_MODE = process.env.REACT_APP_TARGET === 'demo';
 const ALT_AUTH = process.env.REACT_APP_ALT_AUTH === 'plg';
-const USE_BASIC_AUTH = process.env.REACT_APP_USE_BASIC_AUTH === 'true';
+// const USE_BASIC_AUTH = process.env.REACT_APP_USE_BASIC_AUTH === 'true';
+
+// const BASIC_AUTH_ENABLED = process.env.REACT_APP_AUTH_BASIC_ENABLED === 'true';
+// const SSO_AUTH_ENABLED = process.env.REACT_APP_AUTH_SSO_ENABLED === 'true';
+// const BACKEND_ENABLED = process.env.REACT_APP_BACKEND_ENABLED === 'true';
+
+const BASIC_AUTH_ENABLED = true;
+const SSO_AUTH_ENABLED = true;
+const BACKEND_ENABLED = process.env.REACT_APP_BACKEND_ENABLED === 'true';
 
 export const DEPLOYMENT = (process.env.REACT_APP_DEPLOYMENT as ConfigDeployment) ?? 'prod';
 export type ConfigDeployment = 'dev' | 'prod' | undefined;
@@ -19,7 +27,10 @@ interface Config {
 	deployment: ConfigDeployment;
 	demoMode: boolean;
 	altAuth: boolean;
-	useBasicAuth: boolean;
+	// useBasicAuth: boolean;
+	basicAuthEnabled: boolean;
+	ssoAuthEnabled: boolean;
+	backendEnabled: boolean;
 }
 
 declare global {
@@ -39,7 +50,10 @@ const ConfigProvider = ({ children }: { children?: ReactNode }) => {
 		deployment: DEPLOYMENT,
 		demoMode: DEMO_MODE,
 		altAuth: ALT_AUTH,
-		useBasicAuth: USE_BASIC_AUTH
+		// useBasicAuth: USE_BASIC_AUTH,
+		basicAuthEnabled: BASIC_AUTH_ENABLED,
+		ssoAuthEnabled: SSO_AUTH_ENABLED,
+		backendEnabled: BACKEND_ENABLED
 	});
 	window.BACKEND_URL ??= BACKEND_URL;
 
@@ -78,7 +92,10 @@ const ConfigProvider = ({ children }: { children?: ReactNode }) => {
 			defineProperty('DEPLOYMENT', true);
 			defineProperty('DEMO_MODE');
 			defineProperty('ALT_AUTH');
-			defineProperty('USE_BASIC_AUTH');
+			// defineProperty('USE_BASIC_AUTH');
+			defineProperty('BASIC_AUTH_ENABLED');
+			defineProperty('SSO_AUTH_ENABLED');
+			defineProperty('BACKEND_ENABLED');
 		}
 	}, [config]);
 

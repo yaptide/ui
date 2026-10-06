@@ -8,15 +8,15 @@ import NamePasswordLoginPanel from './NamePasswordLoginPanel';
 
 export default function LoginPanel() {
 	const theme = useTheme();
-	const { altAuth, useBasicAuth } = useConfig();
+	const { basicAuthEnabled, ssoAuthEnabled } = useConfig();
 	const { keycloak, initialized } = useKeycloakAuth();
-	const [namePasswordLogin, setNamePasswordLogin] = useState(!altAuth);
+	const [namePasswordLogin, setNamePasswordLogin] = useState(ssoAuthEnabled);
 
 	const keycloakLogin = useCallback(() => {
 		if (initialized && !keycloak.authenticated) keycloak.login();
 	}, [initialized, keycloak]);
 
-	const showPasswordLogin = useBasicAuth;
+	const showPasswordLogin = basicAuthEnabled;
 
 	return (
 		<Box
@@ -37,22 +37,24 @@ export default function LoginPanel() {
 					backgroundColor: theme.palette.accordion.main,
 					gap: theme.spacing(1)
 				}}>
-				{altAuth && !namePasswordLogin ? (
+				{!namePasswordLogin ? (
 					<>
-						<Button
-							fullWidth
-							disabled={!initialized}
-							variant='contained'
-							color='primary'
-							onClick={keycloakLogin}
-							sx={{
-								fontSize: 16,
-								textTransform: 'none',
-								py: theme.spacing(1.5),
-								px: theme.spacing(10)
-							}}>
-							Connect with PLGrid
-						</Button>
+						{ssoAuthEnabled && (
+							<Button
+								fullWidth
+								disabled={!initialized}
+								variant='contained'
+								color='primary'
+								onClick={keycloakLogin}
+								sx={{
+									fontSize: 16,
+									textTransform: 'none',
+									py: theme.spacing(1.5),
+									px: theme.spacing(10)
+								}}>
+								Connect with PLGrid
+							</Button>
+						)}
 						{showPasswordLogin && (
 							<Link
 								color='textDisabled'
@@ -64,7 +66,7 @@ export default function LoginPanel() {
 					</>
 				) : (
 					<>
-						{altAuth && (
+						{
 							<Box sx={{ width: '100%' }}>
 								<IconButton
 									size='small'
@@ -72,7 +74,7 @@ export default function LoginPanel() {
 									<ArrowBack />
 								</IconButton>
 							</Box>
-						)}
+						}
 						<NamePasswordLoginPanel />
 					</>
 				)}
