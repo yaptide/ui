@@ -72,7 +72,6 @@ export default function LoginPanel() {
 								<IconButton
 									size='small'
 									onClick={() => setNamePasswordLoginSelected(false)}>
-									onClick={() => setNamePasswordLoginSelected(false)}>
 									<ArrowBack />
 								</IconButton>
 							</Box>
