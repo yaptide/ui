@@ -587,11 +587,12 @@ function ViewManager(editor) {
 
 	// animations
 
-	const clock = new THREE.Clock(); // only used for animations
+	const timer = new THREE.Timer(); // only used for animations
 
-	function animate() {
+	function animate(timestamp) {
 		const { mixer } = editor;
-		const delta = clock.getDelta();
+		timer.update(timestamp);
+		const delta = timer.getDelta();
 
 		let needsUpdate = false;
 

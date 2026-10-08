@@ -34,3 +34,32 @@ module.exports = function override(webpackConfig) {
 
 	return webpackConfig;
 };
+
+// three is ESM-only since r186 (`three.cjs` is a deprecated shim re-exporting `three.module.js`),
+// so Jest has to convert it to CommonJS and should resolve `three` straight to its ES module build
+module.exports.jest = function overrideJest(jestConfig) {
+	jestConfig.transformIgnorePatterns = [
+		'[/\\\\]node_modules[/\\\\](?!three[/\\\\]).+\\.(js|jsx|mjs|cjs|ts|tsx)$',
+		'^.+\\.module\\.(css|sass|scss)$'
+	];
+
+	// only the module syntax needs converting, Node runs the rest of three natively
+	jestConfig.transform = {
+		'[/\\\\]node_modules[/\\\\]three[/\\\\].+\\.js$': [
+			require.resolve('babel-jest'),
+			{
+				babelrc: false,
+				configFile: false,
+				plugins: [require.resolve('@babel/plugin-transform-modules-commonjs')]
+			}
+		],
+		...jestConfig.transform
+	};
+
+	jestConfig.moduleNameMapper = {
+		...jestConfig.moduleNameMapper,
+		'^three$': '<rootDir>/node_modules/three/build/three.module.js'
+	};
+
+	return jestConfig;
+};
