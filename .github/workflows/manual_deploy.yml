@@ -79,3 +79,5 @@ jobs:
           build-args: |
             BUILDKIT_CONTEXT_KEEP_GIT_DIR=true
             DEPLOYMENT=dev
+            REACT_APP_AUTH_BASIC_ENABLED=false
+            REACT_APP_AUTH_SSO_ENABLED=true

@@ -10,7 +10,6 @@ import {
 	ResponseAuthLogin,
 	ResponseAuthRefresh,
 	ResponseAuthStatus,
-	ResponseRoot,
 	YaptideResponse
 } from '../types/ResponseTypes';
 import { hasFields } from '../util/customGuards';
@@ -67,7 +66,6 @@ export interface AuthContext {
 	user: AuthUser | null;
 	isAuthorized: boolean;
 	isServerReachable: boolean;
-	localUsersEnabled: boolean;
 	login: (...args: RequestAuthLogin) => void;
 	logout: (...args: RequestAuthLogout) => void;
 	refresh: (...args: RequestAuthRefresh) => void;
@@ -78,19 +76,22 @@ const [useAuth, AuthContextProvider] = createGenericContext<AuthContext>();
 const ignored_messages = ['No token provided', 'Job with provided ID does not exist'];
 
 const Auth = ({ children }: GenericContextProviderProps) => {
-	const { backendUrl, demoMode } = useConfig();
+	const { backendUrl, basicAuthEnabled, demoMode, ssoAuthEnabled } = useConfig();
+	const authenticationEnabled = basicAuthEnabled || ssoAuthEnabled;
 	const [user, setUser] = useState<AuthUser | null>(load(StorageKey.USER, isAuthUser));
 	const [reachInterval, setReachInterval] = useState<number>();
 	const [refreshInterval, setRefreshInterval] = useState<number | undefined>(180000); // 3 minutes in ms default interval for refresh token
 	const { keycloak, initialized } = useKeycloakAuth();
 	const [keyCloakInterval, setKeyCloakInterval] = useState<number>();
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
-	const [localUsersEnabled, setLocalUsersEnabled] = useState(true);
 	const { enqueueSnackbar } = useSnackbar();
 	const { open: openRejectKeycloakUserDialog } = useDialog('rejectKeycloak');
 	const { open: openRejectKeycloakRefreshUserDialog } = useDialog('rejectKeycloakRefresh');
 
-	const isAuthorized = useMemo(() => user !== null || demoMode, [demoMode, user]);
+	const isAuthorized = useMemo(
+		() => user !== null || (demoMode && !authenticationEnabled),
+		[authenticationEnabled, demoMode, user]
+	);
 
 	useEffect(() => {
 		setReachInterval(isServerReachable ? 180000 : undefined);
@@ -149,16 +150,12 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	}, [demoMode, enqueueSnackbar]);
 
 	const reachServer = useCallback(() => {
-		if (demoMode) return Promise.resolve(setIsServerReachable(false));
+		if (demoMode && !authenticationEnabled) return Promise.resolve(setIsServerReachable(false));
 
 		return kyIntervalRef
 			.get(``)
-			.json<ResponseRoot>()
-			.then(r => {
-				setLocalUsersEnabled(r.localUsersEnabled ?? true);
-
-				return !!r.message;
-			})
+			.json<YaptideResponse>()
+			.then(r => !!r.message)
 			.then(status =>
 				setIsServerReachable(prev => {
 					if (prev !== null && status !== prev)
@@ -170,7 +167,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				})
 			)
 			.catch(() => setIsServerReachable(false));
-	}, [demoMode, enqueueSnackbar, kyIntervalRef]);
+	}, [authenticationEnabled, demoMode, enqueueSnackbar, kyIntervalRef]);
 
 	useIntervalAsync(reachServer, reachInterval);
 	useEffect(() => {
@@ -178,11 +175,15 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	}, [reachServer]);
 
 	useEffect(() => {
-		if (!demoMode && user?.source !== 'keycloak' && isServerReachable)
+		if (
+			(!demoMode || authenticationEnabled) &&
+			user?.source !== 'keycloak' &&
+			isServerReachable
+		)
 			setRefreshInterval(prev => (prev === undefined ? 3000 : prev));
 		// 3 seconds in ms default interval for refresh when logged in with username and password
 		else setRefreshInterval(undefined);
-	}, [demoMode, isServerReachable, user]);
+	}, [authenticationEnabled, demoMode, isServerReachable, user]);
 
 	const tokenVerification = useCallback(() => {
 		const checkPlgridAccessServices: (
@@ -337,7 +338,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	const refresh = useCallback(async () => {
 		if (user?.source === 'keycloak' && isAuthorized) return tokenVerification();
 
-		if (demoMode || !isServerReachable) {
+		if ((demoMode && !authenticationEnabled) || !isServerReachable) {
 			setRefreshInterval(undefined);
 			setUser(null);
 
@@ -351,7 +352,15 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 
 			return setRefreshInterval(getRefreshDelay(accessExp));
 		} catch (_) {}
-	}, [demoMode, isAuthorized, isServerReachable, kyIntervalRef, tokenVerification, user]);
+	}, [
+		authenticationEnabled,
+		demoMode,
+		isAuthorized,
+		isServerReachable,
+		kyIntervalRef,
+		tokenVerification,
+		user
+	]);
 
 	const authKy = useMemo(() => kyRef, [kyRef]);
 
@@ -367,7 +376,6 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				user,
 				isAuthorized,
 				isServerReachable: Boolean(isServerReachable),
-				localUsersEnabled,
 				login,
 				logout,
 				authKy,
