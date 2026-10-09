@@ -1,6 +1,6 @@
 import { Button, Stack, Switch, Typography, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridLocaleText } from '@mui/x-data-grid';
 import { ChangeEvent, useState } from 'react';
 
 import { isCustomFilterJSON } from '../../../ThreeEditor/Simulation/Scoring/CustomFilter';
@@ -9,6 +9,7 @@ import { convertToBestUnit } from '../../../util/convertUnits/Units';
 import { pages0DToCsv } from '../../../util/csv/Csv';
 import { saveString } from '../../../util/File';
 import { EstimatorResults } from './ResultsPanel';
+import ResultsTableSortIcon from './ResultsTableSortIcon';
 
 export interface TablePage0DItem {
 	id: number;
@@ -34,6 +35,20 @@ const columns: GridColDef[] = [
 	{ field: 'filterName', headerName: 'Filter name', flex: 1 },
 	{ field: 'filterRules', headerName: 'Filter rules', flex: 1 }
 ];
+
+const localeText: Partial<GridLocaleText> = {
+	filterPanelColumn: 'Columns',
+	paginationDisplayedRows: ({ from, to, count, estimated }) => {
+		if (!estimated) {
+			return `${from}–${to} of ${count !== -1 ? count : `more than ${to}`}`;
+		}
+
+		const estimatedLabel =
+			estimated && estimated > to ? `around ${estimated}` : `more than ${to}`;
+
+		return `${from}–${to} of ${count !== -1 ? count : estimatedLabel}`;
+	}
+};
 
 const formatValue = (value: number) => {
 	const precision = 6;
@@ -108,11 +123,32 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 					rows={tablePages}
 					columns={columns}
 					getRowHeight={() => 40}
+					localeText={localeText}
+					slots={{ columnHeaderSortIcon: ResultsTableSortIcon }}
 					sx={{
 						'fontSize': 12,
 						'backgroundColor': 'transparent',
 						'& .MuiDataGrid-columnHeaders, & .MuiDataGrid-columnHeader': {
 							backgroundColor: 'transparent'
+						},
+						'& .MuiDataGrid-columnHeader .MuiDataGrid-sortButton': {
+							'backgroundColor': 'transparent',
+							'&:hover': {
+								'backgroundColor': 'var(--IconButton-hoverBg)',
+								'@media (hover: none)': {
+									backgroundColor: 'transparent'
+								}
+							}
+						},
+						'@media (hover: hover)': {
+							'& .MuiDataGrid-columnHeader:not(.MuiDataGrid-columnHeader--sorted):hover .MuiDataGrid-sortButton':
+								{
+									opacity: 0.5
+								},
+							'& .MuiDataGrid-columnHeader:not(.MuiDataGrid-columnHeader--sorted):hover .MuiDataGrid-sortButton > *':
+								{
+									opacity: 1
+								}
 						}
 					}}
 				/>
