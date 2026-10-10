@@ -1,3 +1,5 @@
+import { Table } from 'apache-arrow';
+
 import { Estimator, Page } from '../JsRoot/GraphData';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
@@ -107,6 +109,7 @@ export type SimulationInfo = {
 	endTime?: string;
 	localData?: boolean;
 	endpointUrl?: string;
+	partialResultsAvailable?: boolean;
 };
 /* ------------------------------------ */
 
@@ -415,6 +418,10 @@ export type ResponseGetJobLogs = {
 
 export type ResponseGetJobResults = {
 	estimators: Estimator[];
+} & YaptideResponse;
+
+export type ResponseGetJobPartialResults = {
+	estimatorsTable: Table;
 } & YaptideResponse;
 
 export type ResponseGetJobResult = Estimator & YaptideResponse;

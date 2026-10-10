@@ -44,6 +44,9 @@ function RemoteWorkerSimulationContextProvider({ children }: GenericContextProvi
 				getJobResults: simulationServiceRef.current.getJobResults.bind(
 					simulationServiceRef.current
 				),
+				getJobPartialResults: simulationServiceRef.current.getJobPartialResults.bind(
+					simulationServiceRef.current
+				),
 				getEstimatorsPages: simulationServiceRef.current.getEstimatorsPages.bind(
 					simulationServiceRef.current
 				),

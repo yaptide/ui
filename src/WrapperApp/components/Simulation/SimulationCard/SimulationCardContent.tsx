@@ -1,4 +1,4 @@
-import { Box, CardContent, Chip, LinearProgress, Typography } from '@mui/material';
+import { Box, CardContent, Chip, LinearProgress, SxProps, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import {
@@ -62,12 +62,16 @@ function needsProgressBar(state: StatusState | undefined) {
 	);
 }
 
-export function SimulationProgress(props: {
+export interface SimulationProgressProps {
 	formatedStartDate: string;
 	duration: number;
 	simulationStatus: Omit<JobUnknownStatus & SimulationInfo, never>;
-}) {
-	const { formatedStartDate, duration, simulationStatus } = props;
+	textSx?: SxProps;
+	barHeight?: number;
+}
+
+export function SimulationProgress(props: SimulationProgressProps) {
+	const { formatedStartDate, duration, simulationStatus, textSx, barHeight } = props;
 
 	const [simulationProgressPercent, setSimulationProgressPercent] = useState(0);
 
@@ -81,13 +85,21 @@ export function SimulationProgress(props: {
 	return (
 		<>
 			<Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-				<Typography color='textDisabled'>Start: {formatedStartDate}</Typography>
-				<Typography color='textDisabled'>{millisecondsToTimeString(duration)}</Typography>
+				<Typography
+					color='textDisabled'
+					sx={textSx}>
+					Start: {formatedStartDate}
+				</Typography>
+				<Typography
+					color='textDisabled'
+					sx={textSx}>
+					{millisecondsToTimeString(duration)}
+				</Typography>
 			</Box>
 			<LinearProgress
 				variant='buffer'
 				sx={{
-					'height': 18,
+					'height': barHeight ?? 18,
 					'mb': 1,
 					'& .MuiLinearProgress-dashed': {
 						overflow: 'hidden',

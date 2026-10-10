@@ -4,6 +4,7 @@
  * See & compare previous revisions for changes history
  */
 
+import { tableFromIPC } from 'apache-arrow';
 import { KyInstance } from 'ky';
 
 import { Estimator } from '../JsRoot/GraphData';
@@ -15,10 +16,12 @@ import {
 	isEditorJson,
 	JobInputs,
 	JobLogs,
+	JobPartialResults,
 	JobResults,
 	RequestCancelJob,
 	RequestGetJobInputs,
 	RequestGetJobLogs,
+	RequestGetJobPartialResults,
 	RequestGetJobResult,
 	RequestGetJobResults,
 	RequestGetJobStatus,
@@ -422,6 +425,34 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 		);
 
 		return await cachePromise;
+	}
+
+	async getJobPartialResults(
+		...args: RequestGetJobPartialResults
+	): Promise<JobPartialResults | undefined> {
+		// TODO: Maybe add cache later
+		const [info, signal] = args;
+		const { jobId, estimatorName } = info;
+
+		const arrowBuffer = await this.authKy
+			.get('results/partial', {
+				signal,
+				searchParams: camelToSnakeCase({ jobId, estimatorName }),
+				headers: {
+					Accept: 'application/vnd.apache.arrow.stream'
+				}
+			})
+			.arrayBuffer();
+
+		const table = tableFromIPC(arrowBuffer);
+
+		const data: JobPartialResults = {
+			estimatorsTable: table,
+			jobId,
+			message: table.schema.metadata.get('message') ?? ''
+		};
+
+		return data;
 	}
 
 	private preparePageNumbers(pageNumbers: number[]): string {

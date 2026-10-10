@@ -18,6 +18,7 @@ interface SimulationCardActionsProps {
 		loadResults: ((jobId: string | null) => void) | undefined;
 		handleCancel: ((jobId: string) => void) | undefined;
 		showInputFiles: ((inputFiles?: SimulationInputFiles | undefined) => void) | undefined;
+		showPartialResults: ((jobId: string) => void) | undefined;
 	};
 	handlers: {
 		onClickLoadResults: () => void;
@@ -29,11 +30,13 @@ interface SimulationCardActionsProps {
 		onClickLoadToEditor: (
 			simulation: Omit<JobUnknownStatus & SimulationInfo, never>
 		) => Promise<SnackbarKey | undefined>;
+		onClickShowPartialResults: () => void;
 	};
 	context: {
 		resultsSimulationData?: ResultsSimulationDataWithSource | undefined;
 		yaptideEditor: YaptideEditor | undefined;
 		disableLoadJson: boolean;
+		partialResultsAvailable: boolean;
 	};
 }
 
@@ -43,15 +46,18 @@ export const SimulationCardActions = ({
 	handlers,
 	context
 }: SimulationCardActionsProps) => {
-	const { loadResults, handleCancel, showInputFiles } = actions;
+	const { loadResults, handleCancel, showInputFiles, showPartialResults } = actions;
 	const {
 		onClickLoadResults,
 		onClickShowError,
 		onClickInputFiles,
 		onClickSaveToFile,
-		onClickLoadToEditor
+		onClickLoadToEditor,
+		onClickShowPartialResults
 	} = handlers;
-	const { resultsSimulationData, yaptideEditor, disableLoadJson } = context;
+
+	const { resultsSimulationData, yaptideEditor, disableLoadJson, partialResultsAvailable } =
+		context;
 
 	let statusAction = undefined;
 
@@ -96,6 +102,35 @@ export const SimulationCardActions = ({
 		}
 	}
 
+	let saveOrPartialResultsAction = (
+		<Button
+			sx={{ fontSize: '.8em' }}
+			color='secondary'
+			size='small'
+			onClick={onClickSaveToFile}
+			disabled={!(simulationStatus.jobState === StatusState.COMPLETED && yaptideEditor)}>
+			Save to file
+		</Button>
+	);
+
+	if (
+		simulationStatus.jobState &&
+		(currentJobStatusData[StatusState.RUNNING](simulationStatus) ||
+			currentJobStatusData[StatusState.MERGING_QUEUED](simulationStatus) ||
+			currentJobStatusData[StatusState.MERGING_RUNNING](simulationStatus))
+	) {
+		saveOrPartialResultsAction = (
+			<Button
+				sx={{ fontSize: '.8em' }}
+				color='secondary'
+				size='small'
+				onClick={() => onClickShowPartialResults()}
+				disabled={!partialResultsAvailable || !Boolean(showPartialResults)}>
+				Live results
+			</Button>
+		);
+	}
+
 	return (
 		<CardActions sx={{ p: 1 }}>
 			<ButtonGroup
@@ -111,16 +146,7 @@ export const SimulationCardActions = ({
 					Input Files
 				</Button>
 
-				<Button
-					sx={{ fontSize: '.8em' }}
-					color='secondary'
-					size='small'
-					onClick={onClickSaveToFile}
-					disabled={
-						!(simulationStatus.jobState === StatusState.COMPLETED && yaptideEditor)
-					}>
-					Save to file
-				</Button>
+				{saveOrPartialResultsAction}
 
 				<Button
 					sx={{ fontSize: '.8em' }}
