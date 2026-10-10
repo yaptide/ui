@@ -90,7 +90,6 @@ const _default = {
 		aliases: ['p', 'proton'],
 		a: 1,
 		z: 1,
-		sortPriority: 0,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	sigma: {

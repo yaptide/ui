@@ -34,20 +34,6 @@ export interface ParticleEntry {
 	abundance?: number;
 
 	/**
-	 * Sort priority for the unfiltered dropdown list.
-	 * Lower number = appears earlier. Default assumed 10 if omitted.
-	 *
-	 * Tier definitions:
-	 *   0  = Everyday workhorse beams (Proton, Carbon-12)
-	 *   1  = Very common (Neutron, Electron, Positron, Photon, Helium-4/Alpha)
-	 *   2  = Frequently used ions & composites (Deuteron, Triton, He-3,
-	 *         Nitrogen-14, Oxygen-16, Neon-20, Argon-40, Iron-56)
-	 *   3  = Notable special-purpose (U-235, U-238, C-14, Pb-208, Si-28)
-	 *  10  = All other isotopes and rarely used particles (default)
-	 */
-	sortPriority: number;
-
-	/**
 	 * Which simulators support this particle.
 	 * Used by getParticlesForSimulator() to filter the catalogue.
 	 */
@@ -62,7 +48,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 2,
 		z: 1,
 		abundance: 0.0145,
-		sortPriority: 2,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -72,7 +57,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 3,
 		z: 1,
 		abundance: 0.0,
-		sortPriority: 2,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -82,7 +66,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 3,
 		z: 2,
 		abundance: 0.0002,
-		sortPriority: 2,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -92,7 +75,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 4,
 		z: 2,
 		abundance: 99.9998,
-		sortPriority: 1,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -102,7 +84,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 6,
 		z: 3,
 		abundance: 4.85,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -112,7 +93,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 7,
 		z: 3,
 		abundance: 95.15,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -122,7 +102,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 9,
 		z: 4,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -132,7 +111,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 10,
 		z: 5,
 		abundance: 19.65,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -142,7 +120,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 11,
 		z: 5,
 		abundance: 80.35,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -152,7 +129,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 12,
 		z: 6,
 		abundance: 98.94,
-		sortPriority: 0,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -162,7 +138,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 13,
 		z: 6,
 		abundance: 1.06,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -172,7 +147,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 14,
 		z: 7,
 		abundance: 99.6205,
-		sortPriority: 2,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -182,7 +156,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 15,
 		z: 7,
 		abundance: 0.3795,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -192,7 +165,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 16,
 		z: 8,
 		abundance: 99.757,
-		sortPriority: 2,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -202,7 +174,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 17,
 		z: 8,
 		abundance: 0.03835,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -212,7 +183,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 18,
 		z: 8,
 		abundance: 0.2045,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -222,7 +192,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 19,
 		z: 9,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -232,7 +201,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 20,
 		z: 10,
 		abundance: 90.48,
-		sortPriority: 2,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -242,7 +210,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 21,
 		z: 10,
 		abundance: 0.27,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -252,7 +219,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 22,
 		z: 10,
 		abundance: 9.25,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -262,7 +228,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 23,
 		z: 11,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -272,7 +237,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 24,
 		z: 12,
 		abundance: 78.965,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -282,7 +246,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 25,
 		z: 12,
 		abundance: 10.011,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -292,7 +255,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 26,
 		z: 12,
 		abundance: 11.025,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -302,7 +264,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 27,
 		z: 13,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -312,7 +273,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 28,
 		z: 14,
 		abundance: 92.2545,
-		sortPriority: 3,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -322,7 +282,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 29,
 		z: 14,
 		abundance: 4.672,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -332,7 +291,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 30,
 		z: 14,
 		abundance: 3.0735,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -342,7 +300,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 31,
 		z: 15,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -352,7 +309,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 32,
 		z: 16,
 		abundance: 94.85,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -362,7 +318,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 33,
 		z: 16,
 		abundance: 0.763,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -372,7 +327,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 34,
 		z: 16,
 		abundance: 4.365,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -382,7 +336,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 36,
 		z: 16,
 		abundance: 0.0158,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -392,7 +345,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 35,
 		z: 17,
 		abundance: 75.8,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -402,7 +354,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 37,
 		z: 17,
 		abundance: 24.2,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -412,7 +363,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 36,
 		z: 18,
 		abundance: 0.3336,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -422,7 +372,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 38,
 		z: 18,
 		abundance: 0.0629,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -432,7 +381,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 40,
 		z: 18,
 		abundance: 99.6035,
-		sortPriority: 2,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -442,7 +390,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 39,
 		z: 19,
 		abundance: 93.2581,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -452,7 +399,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 40,
 		z: 19,
 		abundance: 0.0117,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -462,7 +408,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 41,
 		z: 19,
 		abundance: 6.7302,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -472,7 +417,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 40,
 		z: 20,
 		abundance: 96.941,
-		sortPriority: 3,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -482,7 +426,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 42,
 		z: 20,
 		abundance: 0.647,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -492,7 +435,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 43,
 		z: 20,
 		abundance: 0.135,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -502,7 +444,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 44,
 		z: 20,
 		abundance: 2.086,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -512,7 +453,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 46,
 		z: 20,
 		abundance: 0.004,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -522,7 +462,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 48,
 		z: 20,
 		abundance: 0.187,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -532,7 +471,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 45,
 		z: 21,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -542,7 +480,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 46,
 		z: 22,
 		abundance: 8.25,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -552,7 +489,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 47,
 		z: 22,
 		abundance: 7.44,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -562,7 +498,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 48,
 		z: 22,
 		abundance: 73.72,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -572,7 +507,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 49,
 		z: 22,
 		abundance: 5.41,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -582,7 +516,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 50,
 		z: 22,
 		abundance: 5.18,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -592,7 +525,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 50,
 		z: 23,
 		abundance: 0.25,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -602,7 +534,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 51,
 		z: 23,
 		abundance: 99.75,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -612,7 +543,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 50,
 		z: 24,
 		abundance: 4.345,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -622,7 +552,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 52,
 		z: 24,
 		abundance: 83.789,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -632,7 +561,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 53,
 		z: 24,
 		abundance: 9.501,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -642,7 +570,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 54,
 		z: 24,
 		abundance: 2.365,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -652,7 +579,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 55,
 		z: 25,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -662,7 +588,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 54,
 		z: 26,
 		abundance: 5.845,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -672,7 +597,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 56,
 		z: 26,
 		abundance: 91.754,
-		sortPriority: 2,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -682,7 +606,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 57,
 		z: 26,
 		abundance: 2.119,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -692,7 +615,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 58,
 		z: 26,
 		abundance: 0.282,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -702,7 +624,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 59,
 		z: 27,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -712,7 +633,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 58,
 		z: 28,
 		abundance: 68.0769,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -722,7 +642,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 60,
 		z: 28,
 		abundance: 26.2231,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -732,7 +651,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 61,
 		z: 28,
 		abundance: 1.1399,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -742,7 +660,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 62,
 		z: 28,
 		abundance: 3.6345,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -752,7 +669,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 64,
 		z: 28,
 		abundance: 0.9256,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -762,7 +678,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 63,
 		z: 29,
 		abundance: 69.15,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -772,7 +687,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 65,
 		z: 29,
 		abundance: 30.85,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -782,7 +696,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 64,
 		z: 30,
 		abundance: 49.17,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -792,7 +705,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 66,
 		z: 30,
 		abundance: 27.73,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -802,7 +714,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 67,
 		z: 30,
 		abundance: 4.04,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -812,7 +723,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 68,
 		z: 30,
 		abundance: 18.45,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -822,7 +732,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 70,
 		z: 30,
 		abundance: 0.61,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -832,7 +741,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 69,
 		z: 31,
 		abundance: 60.108,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -842,7 +750,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 71,
 		z: 31,
 		abundance: 39.892,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -852,7 +759,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 70,
 		z: 32,
 		abundance: 20.52,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -862,7 +768,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 72,
 		z: 32,
 		abundance: 27.45,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -872,7 +777,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 73,
 		z: 32,
 		abundance: 7.76,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -882,7 +786,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 74,
 		z: 32,
 		abundance: 36.52,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -892,7 +795,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 76,
 		z: 32,
 		abundance: 7.75,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -902,7 +804,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 75,
 		z: 33,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -912,7 +813,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 74,
 		z: 34,
 		abundance: 0.86,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -922,7 +822,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 76,
 		z: 34,
 		abundance: 9.23,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -932,7 +831,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 77,
 		z: 34,
 		abundance: 7.6,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -942,7 +840,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 78,
 		z: 34,
 		abundance: 23.69,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -952,7 +849,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 80,
 		z: 34,
 		abundance: 49.8,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -962,7 +858,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 82,
 		z: 34,
 		abundance: 8.82,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -972,7 +867,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 79,
 		z: 35,
 		abundance: 50.65,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -982,7 +876,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 81,
 		z: 35,
 		abundance: 49.35,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -992,7 +885,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 78,
 		z: 36,
 		abundance: 0.355,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1002,7 +894,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 80,
 		z: 36,
 		abundance: 2.286,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1012,7 +903,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 82,
 		z: 36,
 		abundance: 11.593,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1022,7 +912,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 83,
 		z: 36,
 		abundance: 11.5,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1032,7 +921,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 84,
 		z: 36,
 		abundance: 56.987,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1042,7 +930,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 86,
 		z: 36,
 		abundance: 17.279,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1052,7 +939,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 85,
 		z: 37,
 		abundance: 72.17,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1062,7 +948,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 87,
 		z: 37,
 		abundance: 27.83,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1072,7 +957,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 84,
 		z: 38,
 		abundance: 0.56,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1082,7 +966,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 86,
 		z: 38,
 		abundance: 9.86,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1092,7 +975,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 87,
 		z: 38,
 		abundance: 7.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1102,7 +984,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 88,
 		z: 38,
 		abundance: 82.58,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1112,7 +993,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 89,
 		z: 39,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1122,7 +1002,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 90,
 		z: 40,
 		abundance: 51.45,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1132,7 +1011,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 91,
 		z: 40,
 		abundance: 11.22,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1142,7 +1020,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 92,
 		z: 40,
 		abundance: 17.15,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1152,7 +1029,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 94,
 		z: 40,
 		abundance: 17.38,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1162,7 +1038,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 96,
 		z: 40,
 		abundance: 2.8,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1172,7 +1047,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 93,
 		z: 41,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1182,7 +1056,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 92,
 		z: 42,
 		abundance: 14.649,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1192,7 +1065,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 94,
 		z: 42,
 		abundance: 9.187,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1202,7 +1074,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 95,
 		z: 42,
 		abundance: 15.873,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1212,7 +1083,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 96,
 		z: 42,
 		abundance: 16.673,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1222,7 +1092,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 97,
 		z: 42,
 		abundance: 9.582,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1232,7 +1101,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 98,
 		z: 42,
 		abundance: 24.292,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1242,7 +1110,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 100,
 		z: 42,
 		abundance: 9.744,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1252,7 +1119,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 96,
 		z: 44,
 		abundance: 5.54,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1262,7 +1128,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 98,
 		z: 44,
 		abundance: 1.87,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1272,7 +1137,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 99,
 		z: 44,
 		abundance: 12.76,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1282,7 +1146,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 100,
 		z: 44,
 		abundance: 12.6,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1292,7 +1155,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 101,
 		z: 44,
 		abundance: 17.06,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1302,7 +1164,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 102,
 		z: 44,
 		abundance: 31.55,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1312,7 +1173,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 104,
 		z: 44,
 		abundance: 18.62,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1322,7 +1182,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 103,
 		z: 45,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1332,7 +1191,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 102,
 		z: 46,
 		abundance: 1.02,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1342,7 +1200,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 104,
 		z: 46,
 		abundance: 11.14,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1352,7 +1209,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 105,
 		z: 46,
 		abundance: 22.33,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1362,7 +1218,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 106,
 		z: 46,
 		abundance: 27.33,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1372,7 +1227,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 108,
 		z: 46,
 		abundance: 26.46,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1382,7 +1236,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 110,
 		z: 46,
 		abundance: 11.72,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1392,7 +1245,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 107,
 		z: 47,
 		abundance: 51.839,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1402,7 +1254,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 109,
 		z: 47,
 		abundance: 48.161,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1412,7 +1263,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 106,
 		z: 48,
 		abundance: 1.245,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1422,7 +1272,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 108,
 		z: 48,
 		abundance: 0.888,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1432,7 +1281,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 110,
 		z: 48,
 		abundance: 12.47,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1442,7 +1290,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 111,
 		z: 48,
 		abundance: 12.795,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1452,7 +1299,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 112,
 		z: 48,
 		abundance: 24.109,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1462,7 +1308,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 113,
 		z: 48,
 		abundance: 12.227,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1472,7 +1317,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 114,
 		z: 48,
 		abundance: 28.754,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1482,7 +1326,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 116,
 		z: 48,
 		abundance: 7.512,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1492,7 +1335,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 113,
 		z: 49,
 		abundance: 4.281,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1502,7 +1344,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 115,
 		z: 49,
 		abundance: 95.719,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1512,7 +1353,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 112,
 		z: 50,
 		abundance: 0.97,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1522,7 +1362,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 114,
 		z: 50,
 		abundance: 0.66,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1532,7 +1371,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 115,
 		z: 50,
 		abundance: 0.34,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1542,7 +1380,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 116,
 		z: 50,
 		abundance: 14.54,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1552,7 +1389,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 117,
 		z: 50,
 		abundance: 7.68,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1562,7 +1398,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 118,
 		z: 50,
 		abundance: 24.22,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1572,7 +1407,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 119,
 		z: 50,
 		abundance: 8.59,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1582,7 +1416,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 120,
 		z: 50,
 		abundance: 32.58,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1592,7 +1425,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 122,
 		z: 50,
 		abundance: 4.63,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1602,7 +1434,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 124,
 		z: 50,
 		abundance: 5.79,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1612,7 +1443,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 121,
 		z: 51,
 		abundance: 57.21,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1622,7 +1452,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 123,
 		z: 51,
 		abundance: 42.79,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1632,7 +1461,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 120,
 		z: 52,
 		abundance: 0.09,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1642,7 +1470,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 122,
 		z: 52,
 		abundance: 2.55,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1652,7 +1479,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 123,
 		z: 52,
 		abundance: 0.89,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1662,7 +1488,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 124,
 		z: 52,
 		abundance: 4.74,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1672,7 +1497,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 125,
 		z: 52,
 		abundance: 7.07,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1682,7 +1506,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 126,
 		z: 52,
 		abundance: 18.84,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1692,7 +1515,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 128,
 		z: 52,
 		abundance: 31.74,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1702,7 +1524,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 130,
 		z: 52,
 		abundance: 34.08,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1712,7 +1533,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 127,
 		z: 53,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1722,7 +1542,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 124,
 		z: 54,
 		abundance: 0.095,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1732,7 +1551,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 126,
 		z: 54,
 		abundance: 0.089,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1742,7 +1560,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 128,
 		z: 54,
 		abundance: 1.91,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1752,7 +1569,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 129,
 		z: 54,
 		abundance: 26.401,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1762,7 +1578,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 130,
 		z: 54,
 		abundance: 4.071,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1772,7 +1587,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 131,
 		z: 54,
 		abundance: 21.232,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1782,7 +1596,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 132,
 		z: 54,
 		abundance: 26.909,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1792,7 +1605,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 134,
 		z: 54,
 		abundance: 10.436,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1802,7 +1614,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 136,
 		z: 54,
 		abundance: 8.857,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1812,7 +1623,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 133,
 		z: 55,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1822,7 +1632,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 130,
 		z: 56,
 		abundance: 0.11,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1832,7 +1641,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 132,
 		z: 56,
 		abundance: 0.1,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1842,7 +1650,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 134,
 		z: 56,
 		abundance: 2.42,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1852,7 +1659,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 135,
 		z: 56,
 		abundance: 6.59,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1862,7 +1668,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 136,
 		z: 56,
 		abundance: 7.85,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1872,7 +1677,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 137,
 		z: 56,
 		abundance: 11.23,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1882,7 +1686,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 138,
 		z: 56,
 		abundance: 71.7,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1892,7 +1695,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 138,
 		z: 57,
 		abundance: 0.08881,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1902,7 +1704,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 139,
 		z: 57,
 		abundance: 99.91119,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1912,7 +1713,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 136,
 		z: 58,
 		abundance: 0.186,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1922,7 +1722,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 138,
 		z: 58,
 		abundance: 0.251,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1932,7 +1731,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 140,
 		z: 58,
 		abundance: 88.449,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1942,7 +1740,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 142,
 		z: 58,
 		abundance: 11.114,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1952,7 +1749,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 141,
 		z: 59,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1962,7 +1758,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 142,
 		z: 60,
 		abundance: 27.153,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1972,7 +1767,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 143,
 		z: 60,
 		abundance: 12.173,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1982,7 +1776,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 144,
 		z: 60,
 		abundance: 23.798,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -1992,7 +1785,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 145,
 		z: 60,
 		abundance: 8.293,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2002,7 +1794,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 146,
 		z: 60,
 		abundance: 17.189,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2012,7 +1803,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 148,
 		z: 60,
 		abundance: 5.756,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2022,7 +1812,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 150,
 		z: 60,
 		abundance: 5.638,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2032,7 +1821,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 144,
 		z: 62,
 		abundance: 3.08,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2042,7 +1830,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 147,
 		z: 62,
 		abundance: 15.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2052,7 +1839,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 148,
 		z: 62,
 		abundance: 11.25,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2062,7 +1848,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 149,
 		z: 62,
 		abundance: 13.82,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2072,7 +1857,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 150,
 		z: 62,
 		abundance: 7.37,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2082,7 +1866,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 152,
 		z: 62,
 		abundance: 26.74,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2092,7 +1875,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 154,
 		z: 62,
 		abundance: 22.74,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2102,7 +1884,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 151,
 		z: 63,
 		abundance: 47.81,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2112,7 +1893,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 153,
 		z: 63,
 		abundance: 52.19,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2122,7 +1902,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 152,
 		z: 64,
 		abundance: 0.2,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2132,7 +1911,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 154,
 		z: 64,
 		abundance: 2.18,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2142,7 +1920,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 155,
 		z: 64,
 		abundance: 14.8,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2152,7 +1929,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 156,
 		z: 64,
 		abundance: 20.47,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2162,7 +1938,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 157,
 		z: 64,
 		abundance: 15.65,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2172,7 +1947,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 158,
 		z: 64,
 		abundance: 24.84,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2182,7 +1956,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 160,
 		z: 64,
 		abundance: 21.86,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2192,7 +1965,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 159,
 		z: 65,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2202,7 +1974,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 156,
 		z: 66,
 		abundance: 0.056,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2212,7 +1983,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 158,
 		z: 66,
 		abundance: 0.095,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2222,7 +1992,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 160,
 		z: 66,
 		abundance: 2.329,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2232,7 +2001,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 161,
 		z: 66,
 		abundance: 18.889,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2242,7 +2010,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 162,
 		z: 66,
 		abundance: 25.475,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2252,7 +2019,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 163,
 		z: 66,
 		abundance: 24.896,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2262,7 +2028,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 164,
 		z: 66,
 		abundance: 28.26,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2272,7 +2037,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 165,
 		z: 67,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2282,7 +2046,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 162,
 		z: 68,
 		abundance: 0.139,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2292,7 +2055,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 164,
 		z: 68,
 		abundance: 1.601,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2302,7 +2064,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 166,
 		z: 68,
 		abundance: 33.503,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2312,7 +2073,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 167,
 		z: 68,
 		abundance: 22.869,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2322,7 +2082,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 168,
 		z: 68,
 		abundance: 26.978,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2332,7 +2091,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 170,
 		z: 68,
 		abundance: 14.91,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2342,7 +2100,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 169,
 		z: 69,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2352,7 +2109,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 168,
 		z: 70,
 		abundance: 0.123,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2362,7 +2118,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 170,
 		z: 70,
 		abundance: 2.982,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2372,7 +2127,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 171,
 		z: 70,
 		abundance: 14.086,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2382,7 +2136,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 172,
 		z: 70,
 		abundance: 21.686,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2392,7 +2145,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 173,
 		z: 70,
 		abundance: 16.103,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2402,7 +2154,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 174,
 		z: 70,
 		abundance: 32.025,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2412,7 +2163,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 176,
 		z: 70,
 		abundance: 12.995,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2422,7 +2172,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 175,
 		z: 71,
 		abundance: 97.401,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2432,7 +2181,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 176,
 		z: 71,
 		abundance: 2.599,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2442,7 +2190,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 174,
 		z: 72,
 		abundance: 0.16,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2452,7 +2199,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 176,
 		z: 72,
 		abundance: 5.26,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2462,7 +2208,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 177,
 		z: 72,
 		abundance: 18.6,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2472,7 +2217,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 178,
 		z: 72,
 		abundance: 27.28,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2482,7 +2226,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 179,
 		z: 72,
 		abundance: 13.62,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2492,7 +2235,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 180,
 		z: 72,
 		abundance: 35.08,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2502,7 +2244,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 181,
 		z: 73,
 		abundance: 99.98799,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2512,7 +2253,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 180,
 		z: 74,
 		abundance: 0.12,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2522,7 +2262,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 182,
 		z: 74,
 		abundance: 26.5,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2532,7 +2271,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 183,
 		z: 74,
 		abundance: 14.31,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2542,7 +2280,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 184,
 		z: 74,
 		abundance: 30.64,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2552,7 +2289,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 186,
 		z: 74,
 		abundance: 28.43,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2562,7 +2298,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 185,
 		z: 75,
 		abundance: 37.4,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2572,7 +2307,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 187,
 		z: 75,
 		abundance: 62.6,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2582,7 +2316,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 184,
 		z: 76,
 		abundance: 0.02,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2592,7 +2325,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 186,
 		z: 76,
 		abundance: 1.59,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2602,7 +2334,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 187,
 		z: 76,
 		abundance: 1.96,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2612,7 +2343,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 188,
 		z: 76,
 		abundance: 13.24,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2622,7 +2352,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 189,
 		z: 76,
 		abundance: 16.15,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2632,7 +2361,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 190,
 		z: 76,
 		abundance: 26.26,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2642,7 +2370,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 192,
 		z: 76,
 		abundance: 40.78,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2652,7 +2379,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 191,
 		z: 77,
 		abundance: 37.3,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2662,7 +2388,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 193,
 		z: 77,
 		abundance: 62.7,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2672,7 +2397,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 190,
 		z: 78,
 		abundance: 0.012,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2682,7 +2406,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 192,
 		z: 78,
 		abundance: 0.782,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2692,7 +2415,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 194,
 		z: 78,
 		abundance: 32.864,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2702,7 +2424,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 195,
 		z: 78,
 		abundance: 33.775,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2712,7 +2433,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 196,
 		z: 78,
 		abundance: 25.211,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2722,7 +2442,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 198,
 		z: 78,
 		abundance: 7.356,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2732,7 +2451,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 197,
 		z: 79,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2742,7 +2460,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 196,
 		z: 80,
 		abundance: 0.15,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2752,7 +2469,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 198,
 		z: 80,
 		abundance: 10.04,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2762,7 +2478,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 199,
 		z: 80,
 		abundance: 16.94,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2772,7 +2487,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 200,
 		z: 80,
 		abundance: 23.14,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2782,7 +2496,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 201,
 		z: 80,
 		abundance: 13.17,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2792,7 +2505,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 202,
 		z: 80,
 		abundance: 29.74,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2802,7 +2514,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 204,
 		z: 80,
 		abundance: 6.82,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2812,7 +2523,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 203,
 		z: 81,
 		abundance: 29.515,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2822,7 +2532,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 205,
 		z: 81,
 		abundance: 70.485,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2832,7 +2541,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 204,
 		z: 82,
 		abundance: 1.4,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2842,7 +2550,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 206,
 		z: 82,
 		abundance: 24.1,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2852,7 +2559,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 207,
 		z: 82,
 		abundance: 22.1,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2862,7 +2568,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 208,
 		z: 82,
 		abundance: 52.4,
-		sortPriority: 3,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2872,7 +2577,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 209,
 		z: 83,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2882,7 +2586,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 230,
 		z: 90,
 		abundance: 0.02,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2892,7 +2595,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 232,
 		z: 90,
 		abundance: 99.98,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2902,7 +2604,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 231,
 		z: 91,
 		abundance: 100.0,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2912,7 +2613,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 234,
 		z: 92,
 		abundance: 0.0054,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2922,7 +2622,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 235,
 		z: 92,
 		abundance: 0.7204,
-		sortPriority: 3,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2932,7 +2631,6 @@ export const PARTICLE_CATALOGUE = [
 		a: 238,
 		z: 92,
 		abundance: 99.2742,
-		sortPriority: 3,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2941,7 +2639,6 @@ export const PARTICLE_CATALOGUE = [
 		aliases: ['n', 'neutron'],
 		a: 1,
 		z: 0,
-		sortPriority: 1,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2950,7 +2647,6 @@ export const PARTICLE_CATALOGUE = [
 		aliases: ['p', 'proton', 'hydrogen-1', 'H-1', '1H'],
 		a: 1,
 		z: 1,
-		sortPriority: 0,
 		abundance: 99.9855,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
@@ -2958,14 +2654,12 @@ export const PARTICLE_CATALOGUE = [
 		pdg: -211,
 		displayName: 'Pion π-',
 		aliases: ['π-', 'pion-'],
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
 		pdg: 211,
 		displayName: 'Pion π+',
 		aliases: ['π+', 'pion+'],
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
@@ -2974,70 +2668,60 @@ export const PARTICLE_CATALOGUE = [
 		aliases: ['pbar', 'antiproton'],
 		a: 1,
 		z: 1,
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA]
 	},
 	{
 		pdg: -321,
 		displayName: 'Kaon κ-',
 		aliases: ['K-', 'kaon-'],
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA]
 	},
 	{
 		pdg: 321,
 		displayName: 'Kaon κ+',
 		aliases: ['K+', 'kaon+'],
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA]
 	},
 	{
 		pdg: 311,
 		displayName: 'Kaon κ0',
 		aliases: ['K0', 'kaon0'],
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA]
 	},
 	{
 		pdg: 130, // using kaon long code
 		displayName: 'Kaon κ~',
 		aliases: ['K~', 'kaon~'],
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA]
 	},
 	{
 		pdg: 13,
 		displayName: 'Muon µ-',
 		aliases: ['µ-', 'muon-'],
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
 		pdg: -13,
 		displayName: 'Muon µ+',
 		aliases: ['µ+', 'muon+'],
-		sortPriority: 10,
 		simulators: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
 		pdg: 11,
 		displayName: 'Electron',
 		aliases: ['e-', 'electron'],
-		sortPriority: 1,
 		simulators: [SimulatorType.FLUKA, SimulatorType.GEANT4]
 	},
 	{
 		pdg: -11,
 		displayName: 'Positron',
 		aliases: ['e+', 'positron'],
-		sortPriority: 1,
 		simulators: [SimulatorType.GEANT4]
 	},
 	{
 		pdg: 22,
 		displayName: 'Photon',
 		aliases: ['γ', 'photon', 'gamma'],
-		sortPriority: 1,
 		simulators: [SimulatorType.GEANT4]
 	}
 ] as const satisfies readonly ParticleEntry[];
@@ -3061,7 +2745,7 @@ export function isMostAbundant(
 	return particle.abundance === maxAbundance;
 }
 
-/** Return particles available for a given simulator, pre-sorted by sortPriority */
+/** Return particles available for a given simulator, pre-sorted by Z and abundance */
 export function getParticlesForSimulator(sim: SimulatorType): readonly ParticleEntry[] {
 	return PARTICLE_CATALOGUE.filter(p => p.simulators.includes(sim)).sort(compareParticles);
 }
@@ -3078,7 +2762,7 @@ export function isIon(p: ParticleEntry): boolean {
 
 /**
  * Filter particles by query string against aliases (case-insensitive substring).
- * Returns results sorted by: sortPriority ASC, then Z ASC, then abundance DESC.
+ * Returns results sorted by: Z ASC, then abundance DESC.
  */
 export function filterParticles(
 	query: string,
@@ -3093,15 +2777,10 @@ export function filterParticles(
 
 /**
  * Sort comparator for particle list.
- * Primary:  sortPriority ASC (lower = first)
- * Secondary: Z ASC (lighter elements first)
- * Tertiary:  abundance DESC (most abundant isotope first)
+ * Primary:   Z ASC (lighter elements first)
+ * Secondary: abundance DESC (most abundant isotope first)
  */
 export function compareParticles(a: ParticleEntry, b: ParticleEntry): number {
-	if (a.sortPriority !== b.sortPriority) {
-		return a.sortPriority - b.sortPriority;
-	}
-
 	if (a.z !== b.z) {
 		return (a.z ?? 0) - (b.z ?? 0);
 	}
