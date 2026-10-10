@@ -1,3 +1,4 @@
+import { GEANT4_DATASETS, TOTAL_DATASET_SIZE_MB } from '../Geant4Worker/Geant4DatasetCacheService';
 import Geant4Worker from '../Geant4Worker/Geant4Worker';
 import { Estimator, Page1D, Page2D } from '../JsRoot/GraphData';
 import { PythonConverterContext } from '../PythonConverter/PythonConverterService';
@@ -19,6 +20,7 @@ import {
 	SimulatorType
 } from '../types/RequestTypes';
 import {
+	DatasetPreparationInfo,
 	EstimatorItem,
 	Geant4InputFilesNames,
 	InputFilesRecord,
@@ -38,6 +40,8 @@ type JobId = string;
 interface JobMetadata {
 	title: string;
 	inputType: SimulationSourceType;
+	phase: 'initializing' | 'loading' | 'preparing';
+	datasetType?: Geant4DatasetsType;
 }
 
 export default class Geant4LocalWorkerSimulationService implements SimulationService {
@@ -105,7 +109,12 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 
 		const worker = new Geant4Worker();
 		this.workers[jobId] = worker;
-		this.jobsMetadata[jobId] = { title: title ?? '', inputType };
+		this.jobsMetadata[jobId] = {
+			title: title ?? '',
+			inputType,
+			phase: 'initializing',
+			datasetType: geant4DatasetType
+		};
 
 		this.inputFiles[jobId] = {
 			// @ts-ignore
@@ -124,11 +133,15 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 		this.numPrimaries = rawNumPrimaries ? parseInt(rawNumPrimaries) : 0;
 
 		worker.init().then(async () => {
-			if (geant4DatasetType && geant4DatasetType === Geant4DatasetsType.FULL) {
+			this.jobsMetadata[jobId].phase = 'loading';
+
+			if (geant4DatasetType === Geant4DatasetsType.FULL) {
 				await worker.loadDeps();
 			} else {
 				await worker.loadDepsLazy();
 			}
+
+			this.jobsMetadata[jobId].phase = 'preparing';
 
 			// @ts-ignore
 			await worker.includeFile('geometry.gdml', simData['geometry.gdml']);
@@ -179,12 +192,97 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 		];
 	}
 
+	private async getDatasetPreparation(
+		jobId: string
+	): Promise<DatasetPreparationInfo | undefined> {
+		const worker = this.workers[jobId];
+		const metadata = this.jobsMetadata[jobId];
+
+		if (!worker || !metadata || worker.getState() !== StatusState.PENDING) {
+			return undefined;
+		}
+
+		const fromCache = metadata.datasetType === Geant4DatasetsType.FULL;
+		const isFullDataset = metadata.datasetType === Geant4DatasetsType.FULL;
+		const totalCount = isFullDataset ? GEANT4_DATASETS.length : 0;
+
+		if (metadata.phase === 'initializing') {
+			return {
+				stage: 'initializing',
+				fromCache,
+				completedCount: 0,
+				totalCount: 0
+			};
+		}
+
+		if (metadata.phase === 'preparing') {
+			return {
+				stage: 'preparing',
+				fromCache,
+				completedCount: 0,
+				totalCount
+			};
+		}
+
+		const base: DatasetPreparationInfo = {
+			stage: 'loading',
+			fromCache,
+			completedCount: 0,
+			totalCount
+		};
+
+		if (!isFullDataset || !worker.getIsInitialized()) {
+			return base;
+		}
+
+		try {
+			const progress = await worker.pollDatasetProgress();
+
+			if (!progress) {
+				return base;
+			}
+
+			let completedCount = 0;
+			let activeDataset: string | undefined;
+			let weightedProgress = 0;
+
+			for (const dataset of GEANT4_DATASETS) {
+				const entry = progress[dataset.name];
+
+				if (!entry) {
+					continue;
+				}
+
+				if (entry.stage === 'done') {
+					completedCount += 1;
+				} else if (!activeDataset) {
+					activeDataset = dataset.name;
+				}
+
+				weightedProgress += entry.progress * dataset.approximateSizeMB;
+			}
+
+			return {
+				...base,
+				completedCount,
+				activeDataset,
+				overallProgress:
+					TOTAL_DATASET_SIZE_MB > 0 ? weightedProgress / TOTAL_DATASET_SIZE_MB : undefined
+			};
+		} catch {
+			return base;
+		}
+	}
+
 	async getJobStatus(...args: RequestGetJobStatus): Promise<JobStatusData | undefined> {
 		const [info, cache = true, beforeCacheWrite, signal] = args;
 		const { jobId } = info;
 
 		if (this.responseCache.jobStatusData.hasOwnProperty(info.jobId)) {
-			return this.responseCache.jobStatusData[info.jobId];
+			const cached = this.responseCache.jobStatusData[info.jobId];
+			cached.datasetPreparation = await this.getDatasetPreparation(jobId);
+
+			return cached;
 		}
 
 		if (!this.workers.hasOwnProperty(info.jobId)) {
@@ -203,7 +301,8 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 				platform: 'DIRECT'
 			},
 			jobState: this.workers[jobId].getState(),
-			jobTasksStatus: this.getJobTasksStatus(jobId)
+			jobTasksStatus: this.getJobTasksStatus(jobId),
+			datasetPreparation: await this.getDatasetPreparation(jobId)
 		} as JobStatusData;
 
 		if (cache) beforeCacheWrite?.(jobId, this.responseCache.jobStatusData[info.jobId]);
@@ -417,6 +516,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 				platform: 'DIRECT'
 			},
 			jobTasksStatus: this.getJobTasksStatus(jobId),
+			datasetPreparation: await this.getDatasetPreparation(jobId),
 			input: {
 				inputType: this.jobsMetadata[jobId].inputType,
 				inputFiles: this.inputFiles[jobId] as InputFilesRecord<Geant4InputFilesNames, ''>,
@@ -472,23 +572,30 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 			pageSize * pageIdx
 		);
 
+		const simulations = await Promise.all(
+			paginatedWorkersEntries.map(
+				async ([jobId, worker]): Promise<JobStatusData> => ({
+					jobId,
+					title: this.jobsMetadata[jobId]?.title,
+					startTime: worker.getStartTime().toString(),
+					endTime: worker.getEndTime()?.toString(),
+					metadata: {
+						inputType: this.jobsMetadata[jobId].inputType,
+						simType: 'Geant4',
+						server: '',
+						platform: 'DIRECT'
+					},
+					jobState: worker.getState(),
+					jobTasksStatus: this.getJobTasksStatus(jobId),
+					datasetPreparation: await this.getDatasetPreparation(jobId)
+				})
+			)
+		);
+
 		return {
 			pageCount: Math.ceil(filteredWorkersEntries.length / pageSize),
 			simulationsCount: filteredWorkersEntries.length,
-			simulations: paginatedWorkersEntries.map(([jobId, worker]) => ({
-				jobId,
-				title: this.jobsMetadata[jobId]?.title,
-				startTime: worker.getStartTime().toString(),
-				endTime: worker.getEndTime()?.toString(),
-				metadata: {
-					inputType: this.jobsMetadata[jobId].inputType,
-					simType: 'Geant4',
-					server: '',
-					platform: 'DIRECT'
-				},
-				jobState: worker.getState(),
-				jobTasksStatus: this.getJobTasksStatus(jobId)
-			})),
+			simulations,
 			message: ''
 		};
 	}
@@ -505,34 +612,37 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 			)
 			.filter(Boolean);
 
-		return workersEntries.map(([jobId, worker]) => {
-			if (this.responseCache.pageStatus.hasOwnProperty(jobId)) {
-				return this.responseCache.pageStatus[jobId];
-			}
+		return Promise.all(
+			workersEntries.map(async ([jobId, worker]) => {
+				if (this.responseCache.pageStatus.hasOwnProperty(jobId)) {
+					return this.responseCache.pageStatus[jobId];
+				}
 
-			const response = {
-				jobId,
-				title: this.jobsMetadata[jobId]?.title,
-				startTime: worker.getStartTime().toString(),
-				endTime: worker.getEndTime()?.toString(),
-				metadata: {
-					inputType: this.jobsMetadata[jobId].inputType,
-					simType: 'Geant4',
-					server: '',
-					platform: 'DIRECT'
-				},
-				jobState: worker.getState(),
-				jobTasksStatus: this.getJobTasksStatus(jobId)
-			} as JobStatusData;
+				const response = {
+					jobId,
+					title: this.jobsMetadata[jobId]?.title,
+					startTime: worker.getStartTime().toString(),
+					endTime: worker.getEndTime()?.toString(),
+					metadata: {
+						inputType: this.jobsMetadata[jobId].inputType,
+						simType: 'Geant4',
+						server: '',
+						platform: 'DIRECT'
+					},
+					jobState: worker.getState(),
+					jobTasksStatus: this.getJobTasksStatus(jobId),
+					datasetPreparation: await this.getDatasetPreparation(jobId)
+				} as JobStatusData;
 
-			if (worker.getState() === StatusState.COMPLETED) {
-				this.responseCache.pageStatus[jobId] = response;
+				if (worker.getState() === StatusState.COMPLETED) {
+					this.responseCache.pageStatus[jobId] = response;
 
-				if (cache) beforeCacheWrite?.(jobId, response);
-			}
+					if (cache) beforeCacheWrite?.(jobId, response);
+				}
 
-			return response;
-		});
+				return response;
+			})
+		);
 	}
 
 	cancelJob(info: SimulationInfo, signal?: AbortSignal | undefined): Promise<void> {
