@@ -15,7 +15,7 @@ export function ExamplePanel({ setTabsValue }: ExamplePanelProps) {
 			{Object.values(SimulatorType).map(simulator => (
 				<Box
 					key={simulator}
-					sx={{ marginBottom: 4, width: '500px' }}>
+					sx={{ marginBottom: 4, width: '100%', maxWidth: '500px' }}>
 					<Typography variant='h5'>{simulator.toUpperCase()}</Typography>
 					<Divider sx={{ marginTop: 1, marginBottom: 1 }} />
 					<Box>
