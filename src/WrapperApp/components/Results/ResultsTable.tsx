@@ -9,7 +9,6 @@ import { convertToBestUnit } from '../../../util/convertUnits/Units';
 import { pages0DToCsv } from '../../../util/csv/Csv';
 import { saveString } from '../../../util/File';
 import { EstimatorResults } from './ResultsPanel';
-import ResultsTableSortIcon from './ResultsTableSortIcon';
 
 export interface TablePage0DItem {
 	id: number;
@@ -124,7 +123,6 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 					columns={columns}
 					getRowHeight={() => 40}
 					localeText={localeText}
-					slots={{ columnHeaderSortIcon: ResultsTableSortIcon }}
 					sx={{
 						'fontSize': 12,
 						'backgroundColor': 'transparent',
