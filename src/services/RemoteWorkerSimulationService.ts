@@ -54,6 +54,7 @@ import { taskTotals } from '../util/taskTotals';
 import { ValidateShape } from '../util/Types';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import CacheMap from './CacheMap';
+import { resolveStoredPages } from './storedPages';
 
 const CACHEABLE_STATUSES = new Set([
 	StatusState.FAILED,
@@ -383,6 +384,11 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 					})
 					.json<ResponseGetJobResults>();
 
+				await Promise.all(
+					response.estimators.map(async estimator => {
+						estimator.pages = await resolveStoredPages(estimator.pages, signal);
+					})
+				);
 				updateEstimators(response.estimators);
 
 				const jobInputs = await this.getJobInputs(info, signal, cache);
@@ -475,7 +481,7 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 				const estimator: Estimator[] = [
 					{
 						name: estimatorName,
-						pages: response.pages
+						pages: await resolveStoredPages(response.pages, signal)
 					}
 				];
 
