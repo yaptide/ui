@@ -423,6 +423,11 @@ export type ResponseGetEstimatorPageResult = { pages: Page[] } & YaptideResponse
 
 export type ResponseAuthStatus = AuthStatus;
 
+// older backends do not report this flag and always allow local users, treat a missing value as enabled
+export type ResponseRoot = {
+	localUsersEnabled?: boolean;
+} & YaptideResponse;
+
 export type ResponseAuthRefresh = AuthData;
 
 export type ResponseAuthLogin = Required<AuthData>;

@@ -147,7 +147,8 @@ export default class SimulationMaterial
 		}: SimulationMaterialJSON
 	): SimulationMaterial {
 		const material = new SimulationMaterial(editor, name, sanitizedName, icru, density);
-		material.uuid = uuid;
+		// @types/three marks Material.uuid as readonly, but three keeps it writable and we restore it on load
+		(material as { uuid: string }).uuid = uuid;
 		material.customStoppingPower = customStoppingPower ?? false;
 		material.renderProps = renderProps;
 		material.applyRenderProps();
