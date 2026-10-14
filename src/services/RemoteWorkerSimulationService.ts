@@ -50,6 +50,7 @@ import {
 } from '../types/ResponseTypes';
 import { FullSimulationData, SimulationService } from '../types/SimulationService';
 import { camelToSnakeCase } from '../util/Notation/Notation';
+import { taskTotals } from '../util/taskTotals';
 import { ValidateShape } from '../util/Types';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import CacheMap from './CacheMap';
@@ -62,35 +63,15 @@ const CACHEABLE_STATUSES = new Set([
 
 const VALID_STATUSES = new Set(ValidStatusStates);
 
-//TODO: fix backend responses and remove this function
-//TODO: (2025) Find out what does the above mean & fix
+// a completed simulation is cached once every task has ended
 function validStatusToCache(data: JobStatusCompleted | JobStatusFailed) {
 	if (data.jobState === StatusState.FAILED) {
 		return true;
 	}
 
-	return data.jobTasksStatus.every(task => {
-		if (task.taskState && task.taskState === StatusState.FAILED) {
-			return true;
-		}
+	const totals = taskTotals(data);
 
-		if (task.taskState && task.taskState === StatusState.COMPLETED) {
-			if (!task.startTime || !task.endTime)
-				console.warn('There are missing times in COMPLETED task:', task);
-
-			if (task.requestedPrimaries !== task.simulatedPrimaries) {
-				console.warn(
-					'Requested primaries and simulated primaries are not equal in COMPLETED task:',
-					task
-				);
-				task.simulatedPrimaries = task.requestedPrimaries;
-			}
-
-			return true;
-		}
-
-		return false;
-	});
+	return totals !== undefined && totals.finishedTasks === totals.ntasks;
 }
 
 /**
@@ -325,7 +306,8 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 		return this.authKy
 			.get(`jobs/${runType}`, {
 				signal,
-				searchParams: camelToSnakeCase({ jobId })
+				// totals are enough for the simulations list, the task list would be ~70 kB for 500 tasks
+				searchParams: camelToSnakeCase({ jobId, tasks: false })
 			})
 			.json<ResponseGetJobStatus>()
 			.then(response => {
