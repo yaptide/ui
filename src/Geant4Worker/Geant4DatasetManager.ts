@@ -1,8 +1,21 @@
 // Additional credits:
 // - @kmichalik
 
-import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
+import {
+	Dispatch,
+	MutableRefObject,
+	SetStateAction,
+	useCallback,
+	useEffect,
+	useRef,
+	useState
+} from 'react';
 
+import {
+	estimateSecondsRemaining,
+	nextSpeedHistoryEntry,
+	SpeedHistory
+} from './DatasetDownloadSpeed';
 import {
 	checkAllDatasetsCacheStatus,
 	clearDatasetCache,
@@ -40,29 +53,57 @@ export interface DatasetStatus {
 	total?: number;
 	totalSizeMB?: number;
 	cached?: boolean;
+	estimatedSecondsRemaining?: number;
 }
 
 async function fetchProgress(
 	worker: Geant4Worker,
-	setDatasetStates: Dispatch<SetStateAction<Record<string, DatasetStatus>>>
+	setDatasetStates: Dispatch<SetStateAction<Record<string, DatasetStatus>>>,
+	speedHistoryRef: MutableRefObject<SpeedHistory>
 ) {
 	if (!worker.getIsInitialized()) return;
 
 	const progress = await worker.pollDatasetProgress();
 
 	if (progress) {
+		const currentTimeMs = Date.now();
+
 		setDatasetStates(prev => {
 			const newStates: Record<string, DatasetStatus> = { ...prev };
 
 			for (const [datasetName, datasetProgress] of Object.entries(progress)) {
-				let status = statusTypeMap[datasetProgress.stage] ?? DatasetDownloadStatus.IDLE;
+				const status = statusTypeMap[datasetProgress.stage] ?? DatasetDownloadStatus.IDLE;
+				const progressFraction = datasetProgress.progress;
+				const done = Math.floor(progressFraction * 100);
+				const total = 100;
+
+				let estimatedSecondsRemaining: number | undefined;
+
+				if (status === DatasetDownloadStatus.DOWNLOADING) {
+					const speedEntry = nextSpeedHistoryEntry(
+						speedHistoryRef.current[datasetName],
+						progressFraction,
+						currentTimeMs
+					);
+
+					speedHistoryRef.current[datasetName] = speedEntry;
+
+					estimatedSecondsRemaining = estimateSecondsRemaining(
+						speedEntry,
+						progressFraction,
+						currentTimeMs
+					);
+				} else {
+					delete speedHistoryRef.current[datasetName];
+				}
 
 				newStates[datasetName] = {
 					...newStates[datasetName],
 					name: datasetName,
 					status,
-					done: Math.floor(datasetProgress.progress * 100),
-					total: 100
+					done,
+					total,
+					estimatedSecondsRemaining
 				};
 			}
 
@@ -77,6 +118,7 @@ type StartDownloadArgs = {
 	setManagerState: Dispatch<SetStateAction<DownloadManagerStatus>>;
 	setDatasetStates: Dispatch<SetStateAction<Record<string, DatasetStatus>>>;
 	setIdle: Dispatch<SetStateAction<boolean>>;
+	speedHistoryRef: MutableRefObject<SpeedHistory>;
 };
 
 function startDownload({
@@ -84,23 +126,26 @@ function startDownload({
 	managerState,
 	setManagerState,
 	setDatasetStates,
-	setIdle
+	setIdle,
+	speedHistoryRef
 }: StartDownloadArgs) {
 	if (managerState !== DownloadManagerStatus.IDLE || !worker.getIsInitialized()) {
 		return;
 	}
 
+	speedHistoryRef.current = {};
+
 	const loadDepsPromise = worker.loadDeps();
 
 	const interval = setInterval(async () => {
-		await fetchProgress(worker, setDatasetStates);
+		await fetchProgress(worker, setDatasetStates, speedHistoryRef);
 	}, 500);
 
 	loadDepsPromise
 		.then(async () => {
 			clearInterval(interval);
 
-			await fetchProgress(worker, setDatasetStates);
+			await fetchProgress(worker, setDatasetStates, speedHistoryRef);
 
 			setManagerState(DownloadManagerStatus.FINISHED);
 			worker.markSafeForTermination();
@@ -109,6 +154,22 @@ function startDownload({
 			console.error('Dataset download error:', error);
 			setManagerState(DownloadManagerStatus.ERROR);
 			clearInterval(interval);
+
+			speedHistoryRef.current = {};
+			setDatasetStates(prev => {
+				const newStates: Record<string, DatasetStatus> = { ...prev };
+
+				for (const [datasetName, datasetState] of Object.entries(newStates)) {
+					if (datasetState.estimatedSecondsRemaining !== undefined) {
+						newStates[datasetName] = {
+							...datasetState,
+							estimatedSecondsRemaining: undefined
+						};
+					}
+				}
+
+				return newStates;
+			});
 		});
 	setManagerState(DownloadManagerStatus.WORKING);
 	setIdle(false);
@@ -135,6 +196,7 @@ export function useDatasetManager(): UseDatasetManagerResult {
 	const [idle, setIdle] = useState<boolean>(false);
 	const [worker] = useState<Geant4Worker>(new Geant4Worker());
 	const initCalledRef = useRef(false);
+	const speedHistoryRef = useRef<SpeedHistory>({});
 
 	const [storageEstimate, setStorageEstimate] = useState<StorageEstimate | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
@@ -196,6 +258,7 @@ export function useDatasetManager(): UseDatasetManagerResult {
 			setIdle(true);
 			setManagerState(DownloadManagerStatus.IDLE);
 			setDatasetStates({});
+			speedHistoryRef.current = {};
 
 			await refresh();
 		}
@@ -225,7 +288,14 @@ export function useDatasetManager(): UseDatasetManagerResult {
 		if (!idle) return;
 		if (!worker.getIsInitialized()) return;
 
-		startDownload({ worker, managerState, setManagerState, setDatasetStates, setIdle });
+		startDownload({
+			worker,
+			managerState,
+			setManagerState,
+			setDatasetStates,
+			setIdle,
+			speedHistoryRef
+		});
 	}, [worker, idle, managerState]);
 
 	return {
