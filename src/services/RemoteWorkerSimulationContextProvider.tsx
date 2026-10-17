@@ -13,7 +13,11 @@ const [useRemoteWorkerSimulation, InnerRemoteWorkerSimulationContextProvider] =
 function RemoteWorkerSimulationContextProvider({ children }: GenericContextProviderProps) {
 	const { authKy, user } = useAuth();
 	const { demoMode } = useConfig();
-	const statusStream = useSimulationStatusStream(!demoMode && user !== null);
+	const statusStream = useSimulationStatusStream(
+		// another user logging in gets a stream of their own
+		demoMode ? undefined : user?.username
+	);
+
 	const simulationServiceRef = useRef<RemoteWorkerSimulationService>(
 		new RemoteWorkerSimulationService(authKy)
 	);

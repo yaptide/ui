@@ -30,14 +30,16 @@ export function withStatus<T extends JobUnknownStatus>(
 	return { ...data, partialResults: undefined, ...status };
 }
 
-// waits before opening a refused stream again (e.g. an expired token, refreshed meanwhile); then polling takes over
+// waits before opening a refused stream again (e.g. an expired token, refreshed meanwhile); then polling takes over,
+// and the stream is still tried now and then, so a restarted server ends the polling
 const REOPEN_MS = [1000, 5000, 15000];
+const RETRY_MS = 60000;
 
 /**
  * One stream per logged in session with the status of all the user's unfinished simulations (server-sent events),
  * sent when one is submitted, its state or partial results change, or its tasks report progress.
  */
-export function useSimulationStatusStream(enabled: boolean): SimulationStatusStream {
+export function useSimulationStatusStream(username: string | undefined): SimulationStatusStream {
 	const { backendUrl } = useConfig();
 	const [statuses, setStatuses] = useState<Record<string, StreamedStatus>>({});
 	const [live, setLive] = useState(true);
@@ -47,7 +49,7 @@ export function useSimulationStatusStream(enabled: boolean): SimulationStatusStr
 		setStatuses({});
 		setLive(true);
 
-		if (!enabled) return;
+		if (username === undefined) return;
 		let source: EventSource | undefined;
 		let reopen: ReturnType<typeof setTimeout> | undefined;
 		let refusals = 0;
@@ -59,6 +61,7 @@ export function useSimulationStatusStream(enabled: boolean): SimulationStatusStr
 
 			source.onopen = () => {
 				refusals = 0;
+				setLive(true);
 				setOpened(count => count + 1);
 			};
 
@@ -74,8 +77,13 @@ export function useSimulationStatusStream(enabled: boolean): SimulationStatusStr
 				// the browser reconnects a dropped stream itself, a refused one stays closed
 				if (source?.readyState !== EventSource.CLOSED) return;
 
-				if (refusals === REOPEN_MS.length) setLive(false);
-				else reopen = setTimeout(open, REOPEN_MS[refusals++]);
+				if (refusals === REOPEN_MS.length) {
+					setLive(false);
+					// polled from now on: statuses pushed before would hide the polled ones
+					setStatuses({});
+				}
+
+				reopen = setTimeout(open, REOPEN_MS[refusals++] ?? RETRY_MS);
 			};
 		};
 		open();
@@ -84,7 +92,12 @@ export function useSimulationStatusStream(enabled: boolean): SimulationStatusStr
 			clearTimeout(reopen);
 			source?.close();
 		};
-	}, [enabled, backendUrl]);
+	}, [username, backendUrl]);
 
-	return useMemo(() => ({ statuses, live, opened }), [statuses, live, opened]);
+	const enabled = username !== undefined;
+
+	return useMemo(
+		() => ({ statuses, live: enabled && live, opened }),
+		[statuses, enabled, live, opened]
+	);
 }
