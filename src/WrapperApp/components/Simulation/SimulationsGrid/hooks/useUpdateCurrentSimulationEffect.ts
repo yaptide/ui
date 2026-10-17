@@ -13,28 +13,45 @@ export const useUpdateCurrentSimulationEffect = (
 	const { simulationsStatusData, yaptideEditor } = state;
 
 	useEffect(() => {
+		// every poll starts a new run; a slower older run must not overwrite what a newer one set
+		let stale = false;
 		const updateCurrentSimulation = async () => {
 			if (shouldConnect && yaptideEditor) {
 				const hash = yaptideEditor.toSerialized().hash;
-				const currentStatus = simulationsStatusData?.find(async s => {
-					if (currentJobStatusData[StatusState.COMPLETED](s)) {
-						const jobInputs = await getJobInputs(s, controller.signal);
+				// find() with an async callback always took the first simulation, a promise is truthy
+				let currentStatus;
 
-						return jobInputs?.input.inputJson?.hash === hash;
+				for (const s of simulationsStatusData ?? []) {
+					if (!currentJobStatusData[StatusState.COMPLETED](s)) continue;
+					// one failed request must not stop the search
+					const jobInputs = await getJobInputs(s, controller.signal).catch(
+						() => undefined
+					);
+
+					if (jobInputs?.input.inputJson?.hash === hash) {
+						currentStatus = s;
+
+						break;
 					}
-
-					return false;
-				});
+				}
 
 				const currentSimulation = currentStatus
-					? await getFullSimulationData(currentStatus, controller.signal)
+					? await getFullSimulationData(currentStatus, controller.signal).catch(
+							() => undefined
+						)
 					: undefined;
+
+				if (stale) return;
 
 				if (currentSimulation) yaptideEditor.setResults(currentSimulation);
 				else yaptideEditor.setResults(null);
 			}
 		};
 		updateCurrentSimulation();
+
+		return () => {
+			stale = true;
+		};
 	}, [
 		simulationsStatusData,
 		yaptideEditor,

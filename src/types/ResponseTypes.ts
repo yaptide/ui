@@ -202,43 +202,63 @@ export type TaskUnknownStatus = {
 
 /* ------------------------------------ */
 // Types defining all possible types of job status data
+/**
+ * Totals over the tasks of a simulation, sent by the server instead of the full task list.
+ */
+export type JobTasksSummary = {
+	ntasks: number;
+	// keys go through the snake_case to camelCase conversion; single-word task states are unchanged
+	taskStates: Record<string, number>;
+	requestedPrimaries: number;
+	simulatedPrimaries: number;
+};
+
+/**
+ * Results stored while the simulation runs, covering only the primaries simulated so far.
+ */
+export type PartialResults = {
+	simulatedPrimaries: number;
+	// ISO time with offset
+	time: string;
+};
+
 type JobStatusType<T extends StatusState, U extends Object> = TypeIdentifiedByKey<
 	'jobState',
 	T,
-	U & YaptideResponse
+	U & YaptideResponse & { jobTasksSummary?: JobTasksSummary; partialResults?: PartialResults }
 >;
 
 export type JobStatusCompleted = JobStatusType<
 	StatusState.COMPLETED,
 	{
-		jobTasksStatus: Array<TaskUnknownStatus>;
+		jobTasksStatus?: Array<TaskUnknownStatus>;
 	}
 >;
 
 export type JobStatusCanceled = JobStatusType<
 	StatusState.CANCELED,
 	{
-		jobTasksStatus: Array<TaskUnknownStatus>;
+		jobTasksStatus?: Array<TaskUnknownStatus>;
 	}
 >;
 
 export type JobStatusMergingQueued = JobStatusType<
 	StatusState.MERGING_QUEUED,
 	{
-		jobTasksStatus: Array<TaskUnknownStatus>;
+		jobTasksStatus?: Array<TaskUnknownStatus>;
 	}
 >;
 
 export type JobStatusMergingRunning = JobStatusType<
 	StatusState.MERGING_RUNNING,
 	{
-		jobTasksStatus: Array<TaskUnknownStatus>;
+		jobTasksStatus?: Array<TaskUnknownStatus>;
 	}
 >;
 
 export type JobStatusRunning = JobStatusType<
 	StatusState.RUNNING,
-	{ jobTasksStatus: Array<TaskUnknownStatus> }
+	{ jobTasksStatus?: Array<TaskUnknownStatus> }
 >;
 
 export type JobStatusPending = JobStatusType<StatusState.PENDING, {}>;
@@ -270,6 +290,8 @@ export type JobUnknownStatus = {
 		| StatusState.CANCELED;
 	message?: string;
 	jobTasksStatus?: Array<TaskUnknownStatus>;
+	jobTasksSummary?: JobTasksSummary;
+	partialResults?: PartialResults;
 };
 
 type ResponseJobRequestFailure = Omit<

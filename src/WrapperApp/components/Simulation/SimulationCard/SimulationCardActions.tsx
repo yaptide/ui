@@ -11,6 +11,7 @@ import {
 	SimulationInputFiles,
 	StatusState
 } from '../../../../types/ResponseTypes';
+import { partialRevision } from '../../../../util/partialResults';
 
 interface SimulationCardActionsProps {
 	simulationStatus: Omit<JobUnknownStatus & SimulationInfo, never>;
@@ -96,11 +97,24 @@ export const SimulationCardActions = ({
 		}
 	}
 
+	// results stored while the simulation ran, kept when it was cancelled or failed
+	const partialAction = partialRevision(simulationStatus) !== undefined && (
+		<Button
+			sx={{ fontSize: '.8em' }}
+			size='small'
+			color='secondary'
+			disabled={!Boolean(loadResults)}
+			onClick={onClickLoadResults}>
+			Partial Results
+		</Button>
+	);
+
 	return (
 		<CardActions sx={{ p: 1 }}>
 			<ButtonGroup
 				fullWidth
 				aria-label='full width outlined button group'>
+				{partialAction}
 				{statusAction}
 				<Button
 					sx={{ fontSize: '.8em' }}

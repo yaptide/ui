@@ -1,15 +1,23 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
+import { useConfig } from '../config/ConfigService';
 import { SimulationContext } from '../types/SimulationService';
 import { useAuth } from './AuthService';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 import RemoteWorkerSimulationService from './RemoteWorkerSimulationService';
+import { useSimulationStatusStream } from './useSimulationStatusStream';
 
 const [useRemoteWorkerSimulation, InnerRemoteWorkerSimulationContextProvider] =
 	createGenericContext<SimulationContext>();
 
 function RemoteWorkerSimulationContextProvider({ children }: GenericContextProviderProps) {
-	const { authKy } = useAuth();
+	const { authKy, user } = useAuth();
+	const { demoMode } = useConfig();
+	const statusStream = useSimulationStatusStream(
+		// another user logging in gets a stream of their own
+		demoMode ? undefined : user?.username
+	);
+
 	const simulationServiceRef = useRef<RemoteWorkerSimulationService>(
 		new RemoteWorkerSimulationService(authKy)
 	);
@@ -18,42 +26,29 @@ function RemoteWorkerSimulationContextProvider({ children }: GenericContextProvi
 		simulationServiceRef.current.authKy = authKy;
 	}, [authKy]);
 
+	// bound once: the stream re-renders this provider on every pushed status, and new functions would make every
+	// consumer fetch again
+	const handlers = useMemo(() => {
+		const service = simulationServiceRef.current;
+
+		return {
+			postJob: service.postJob.bind(service),
+			cancelJob: service.cancelJob.bind(service),
+			getHelloWorld: service.helloWorld.bind(service),
+			getJobStatus: service.getJobStatus.bind(service),
+			getPageContents: service.getPageContents.bind(service),
+			getPageStatus: service.getPageStatus.bind(service),
+			getJobInputs: service.getJobInputs.bind(service),
+			getJobResults: service.getJobResults.bind(service),
+			getEstimatorsPages: service.getEstimatorsPages.bind(service),
+			getJobLogs: service.getJobLogs.bind(service),
+			getFullSimulationData: service.getFullSimulationData.bind(service)
+		};
+	}, []);
+	const value = useMemo(() => ({ ...handlers, statusStream }), [handlers, statusStream]);
+
 	return (
-		<InnerRemoteWorkerSimulationContextProvider
-			value={{
-				// `bind()` is required, otherwise `this` is undefined when calling the function
-				postJob: simulationServiceRef.current.postJob.bind(simulationServiceRef.current),
-				cancelJob: simulationServiceRef.current.cancelJob.bind(
-					simulationServiceRef.current
-				),
-				getHelloWorld: simulationServiceRef.current.helloWorld.bind(
-					simulationServiceRef.current
-				),
-				getJobStatus: simulationServiceRef.current.getJobStatus.bind(
-					simulationServiceRef.current
-				),
-				getPageContents: simulationServiceRef.current.getPageContents.bind(
-					simulationServiceRef.current
-				),
-				getPageStatus: simulationServiceRef.current.getPageStatus.bind(
-					simulationServiceRef.current
-				),
-				getJobInputs: simulationServiceRef.current.getJobInputs.bind(
-					simulationServiceRef.current
-				),
-				getJobResults: simulationServiceRef.current.getJobResults.bind(
-					simulationServiceRef.current
-				),
-				getEstimatorsPages: simulationServiceRef.current.getEstimatorsPages.bind(
-					simulationServiceRef.current
-				),
-				getJobLogs: simulationServiceRef.current.getJobLogs.bind(
-					simulationServiceRef.current
-				),
-				getFullSimulationData: simulationServiceRef.current.getFullSimulationData.bind(
-					simulationServiceRef.current
-				)
-			}}>
+		<InnerRemoteWorkerSimulationContextProvider value={value}>
 			{children}
 		</InnerRemoteWorkerSimulationContextProvider>
 	);

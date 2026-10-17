@@ -1,6 +1,7 @@
-import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { isFullSimulationData } from '../../../../services/LoaderService';
+import { withStatus } from '../../../../services/useSimulationStatusStream';
 import { OrderBy, OrderType } from '../../../../types/RequestTypes';
 import {
 	currentJobStatusData,
@@ -10,6 +11,7 @@ import {
 	StatusState
 } from '../../../../types/ResponseTypes';
 import { FullSimulationData } from '../../../../types/SimulationService';
+import { partialRevision } from '../../../../util/partialResults';
 import { PageNavigationProps, PageParamProps } from '../SimulationPanelBar';
 import {
 	PageState,
@@ -17,6 +19,8 @@ import {
 	SimulationHandlers,
 	SimulationState
 } from './SimulationsGridTypes';
+
+const FINAL_STATES = new Set([StatusState.COMPLETED, StatusState.FAILED, StatusState.CANCELED]);
 
 const SimulationsGridHelpers = (
 	config: SimulationConfig,
@@ -26,8 +30,17 @@ const SimulationsGridHelpers = (
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const currentJobId = useRef<string>('');
 	const { controller, trackedId, isBackendAlive, statusStates } = config;
-	const { getPageContents, getPageStatus, getJobStatus, getFullSimulationData, cancelJob } =
-		handlers;
+	const {
+		getPageContents,
+		getPageStatus,
+		getJobStatus,
+		getFullSimulationData,
+		cancelJob,
+		statusStream
+	} = handlers;
+	// read when a fetched status comes, so a status pushed meanwhile is not overwritten by an older one
+	const streamed = useRef(statusStream?.statuses);
+	streamed.current = statusStream?.statuses;
 
 	const {
 		simulationInfo,
@@ -71,19 +84,32 @@ const SimulationsGridHelpers = (
 		[controller.signal, getFullSimulationData, setResultsSimulationData, trackedId]
 	);
 
+	const streamOpened = statusStream?.opened;
 	const updateSimulationData = useCallback(
 		() =>
-			getPageStatus(simulationInfo, true, handleBeforeCacheWrite, controller.signal).then(
-				s => {
-					setSimulationsStatusData([...(s ?? [])]);
-				}
-			),
+			// a tab nobody looks at does not poll; the next tick after it is shown again catches up
+			document.hidden && !statusStream?.live
+				? Promise.resolve()
+				: getPageStatus(
+						simulationInfo,
+						true,
+						handleBeforeCacheWrite,
+						controller.signal
+					).then(s => {
+						setSimulationsStatusData(
+							(s ?? []).map(data => withStatus(data, streamed.current?.[data.jobId]))
+						);
+					}),
+		// fetched again whenever the stream (re)opens: it sends only the simulations not finished by then
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[
 			getPageStatus,
 			simulationInfo,
 			handleBeforeCacheWrite,
 			controller.signal,
-			setSimulationsStatusData
+			setSimulationsStatusData,
+			statusStream?.live,
+			streamOpened
 		]
 	);
 
@@ -113,8 +139,30 @@ const SimulationsGridHelpers = (
 		]
 	);
 
+	// pushed statuses in place of the held ones; a final one is fetched once, also to load the results of the
+	// tracked simulation
+	const fetchedFinal = useRef(new Set<string>());
+	useEffect(() => {
+		if (!statusStream) return;
+		const { statuses } = statusStream;
+		setSimulationsStatusData(prev => prev?.map(data => withStatus(data, statuses[data.jobId])));
+		Object.values(statuses)
+			.filter(
+				status =>
+					status.jobState &&
+					FINAL_STATES.has(status.jobState) &&
+					!fetchedFinal.current.has(status.jobId) &&
+					simulationInfo.some(info => info.jobId === status.jobId)
+			)
+			.forEach(status => {
+				fetchedFinal.current.add(status.jobId);
+				updateSpecificSimulationData(status.jobId);
+			});
+	}, [statusStream, simulationInfo, setSimulationsStatusData, updateSpecificSimulationData]);
+
 	const simulationDataInterval = useMemo(() => {
-		if (!isBackendAlive) return undefined;
+		// pushed by the server; polled only when the stream cannot be opened
+		if (!isBackendAlive || statusStream?.live) return undefined;
 
 		const allSettled = simulationsStatusData?.every(
 			s =>
@@ -126,7 +174,7 @@ const SimulationsGridHelpers = (
 		if (allSettled) return 10000;
 
 		return 1500;
-	}, [isBackendAlive, simulationsStatusData]);
+	}, [isBackendAlive, simulationsStatusData, statusStream?.live]);
 
 	const handleLoadResults = async (
 		taskId: string | null,
@@ -134,7 +182,10 @@ const SimulationsGridHelpers = (
 	) => {
 		if (taskId === null) return goToResults?.call(null);
 
-		if (currentJobStatusData[StatusState.COMPLETED](simulation)) {
+		if (
+			currentJobStatusData[StatusState.COMPLETED](simulation) ||
+			partialRevision(simulation as JobStatusData) !== undefined
+		) {
 			const fullData = isFullSimulationData(simulation)
 				? (simulation as unknown as FullSimulationData)
 				: await getFullSimulationData(simulation, controller.signal);

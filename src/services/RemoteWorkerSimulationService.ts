@@ -50,9 +50,12 @@ import {
 } from '../types/ResponseTypes';
 import { FullSimulationData, SimulationService } from '../types/SimulationService';
 import { camelToSnakeCase } from '../util/Notation/Notation';
+import { partialRevision } from '../util/partialResults';
+import { taskTotals } from '../util/taskTotals';
 import { ValidateShape } from '../util/Types';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import CacheMap from './CacheMap';
+import { resolveStoredPages } from './storedPages';
 
 const CACHEABLE_STATUSES = new Set([
 	StatusState.FAILED,
@@ -62,35 +65,15 @@ const CACHEABLE_STATUSES = new Set([
 
 const VALID_STATUSES = new Set(ValidStatusStates);
 
-//TODO: fix backend responses and remove this function
-//TODO: (2025) Find out what does the above mean & fix
+// a completed simulation is cached once every task has ended
 function validStatusToCache(data: JobStatusCompleted | JobStatusFailed) {
 	if (data.jobState === StatusState.FAILED) {
 		return true;
 	}
 
-	return data.jobTasksStatus.every(task => {
-		if (task.taskState && task.taskState === StatusState.FAILED) {
-			return true;
-		}
+	const totals = taskTotals(data);
 
-		if (task.taskState && task.taskState === StatusState.COMPLETED) {
-			if (!task.startTime || !task.endTime)
-				console.warn('There are missing times in COMPLETED task:', task);
-
-			if (task.requestedPrimaries !== task.simulatedPrimaries) {
-				console.warn(
-					'Requested primaries and simulated primaries are not equal in COMPLETED task:',
-					task
-				);
-				task.simulatedPrimaries = task.requestedPrimaries;
-			}
-
-			return true;
-		}
-
-		return false;
-	});
+	return totals !== undefined && totals.finishedTasks === totals.ntasks;
 }
 
 /**
@@ -113,25 +96,27 @@ export function getEndpointFromSimulationInfo(info: SimulationInfo) {
 }
 
 /**
- * Rebuilds the references between estimators and their corresponding scoring manager outputs.
- * Each estimator is linked to an output in the scoring manager JSON by matching array indices.
- * The scoringManagerJSON.outputs array length should match the number of estimators - if there are
- * fewer outputs than estimators, the extra estimators will have undefined scoringOutputJsonRef.
- * If there are more outputs than estimators, the extra outputs will be ignored.
+ * Links each estimator to the scoring manager output it was scored by: by the output uuid the backend sends
+ * with the results, or by the output name (which the backend gives the estimator) for results without it.
+ * An estimator no output matches keeps no reference, and the mismatch is reported.
  *
  * @param estimators - Array of estimators that need scoring manager output references rebuilt
- * @param scoringManagerJSON - The scoring manager JSON containing output definitions. The outputs array
- *                            should ideally have the same length as the estimators array to ensure
- *                            all estimators get valid output references.
+ * @param scoringManagerJSON - The scoring manager JSON containing output definitions
  * @returns The estimators array with updated scoring output references for each estimator
  */
 function recreateRefToScoringManagerOutputs(
 	estimators: Estimator[],
 	scoringManagerJSON: ScoringManagerJSON
 ): Estimator[] {
-	// Iterate through each estimator and set the scoringOutputJsonRef to the corresponding output in scoringManagerJSON
-	estimators.forEach((estimator, index) => {
-		estimator.scoringOutputJsonRef = scoringManagerJSON.outputs[index];
+	estimators.forEach(estimator => {
+		estimator.scoringOutputJsonRef = scoringManagerJSON.outputs.find(output =>
+			estimator.outputUuid
+				? output.uuid === estimator.outputUuid
+				: output.name === estimator.name
+		);
+
+		if (!estimator.scoringOutputJsonRef)
+			console.error(`Estimator ${estimator.name} matches no output of the simulation`);
 	});
 
 	return estimators;
@@ -162,11 +147,9 @@ function recreateRefToFilters(estimators: Estimator[], FiltersJSON: FilterJSON[]
 
 /**
  * Recreates references in simulation results by linking estimator data with scoring manager outputs and filters
- * from the editor JSON. This function expects specific array length relationships to work properly:
+ * from the editor JSON:
  *
- * 1. The scoringManager.outputs array length should match the number of estimators, otherwise:
- *    - If fewer outputs than estimators: excess estimators will have undefined scoringOutputJsonRef
- *    - If more outputs than estimators: extra outputs are ignored
+ * 1. Each estimator is linked to its scoring manager output by the output uuid (or name)
  * 2. Within each estimator, the number of pages should match the number of quantities in the
  *    corresponding scoring manager output for proper filter assignment
  *
@@ -325,7 +308,8 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 		return this.authKy
 			.get(`jobs/${runType}`, {
 				signal,
-				searchParams: camelToSnakeCase({ jobId })
+				// totals are enough for the simulations list, the task list would be ~70 kB for 500 tasks
+				searchParams: camelToSnakeCase({ jobId, tasks: false })
 			})
 			.json<ResponseGetJobStatus>()
 			.then(response => {
@@ -401,6 +385,11 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 					})
 					.json<ResponseGetJobResults>();
 
+				await Promise.all(
+					response.estimators.map(async estimator => {
+						estimator.pages = await resolveStoredPages(estimator.pages, signal);
+					})
+				);
 				updateEstimators(response.estimators);
 
 				const jobInputs = await this.getJobInputs(info, signal, cache);
@@ -448,7 +437,7 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 
 	async getEstimatorsPages(...args: RequestGetJobResult): Promise<JobResults | undefined> {
 		const [info, signal, cache = true, beforeCacheWrite] = args;
-		const { jobId, estimatorName, pageNumbers } = info;
+		const { jobId, estimatorName, pageNumbers, revision } = info;
 
 		const searchParams = new URLSearchParams({
 			job_id: jobId,
@@ -456,7 +445,7 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 			page_numbers: this.preparePageNumbers(pageNumbers)
 		});
 
-		const cacheKey = `${jobId}-${estimatorName}-${pageNumbers.join(',')}`;
+		const cacheKey = `${jobId}-${estimatorName}-${pageNumbers.join(',')}${revision === undefined ? '' : `@${revision}`}`;
 
 		if (cache && this.resultsCache.has(cacheKey)) {
 			const data: Promise<JobResults> | JobResults | undefined =
@@ -481,6 +470,14 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 			}
 		}
 
+		// pages of older partial results of the simulation are never read again
+		for (const key of Array.from(this.resultsCache.data.keys())) {
+			const partial = key.match(/@(\d+)$/);
+
+			if (partial && key.startsWith(`${jobId}-`) && Number(partial[1]) !== revision)
+				this.resultsCache.delete(key);
+		}
+
 		const cachePromise = this.resultsCache.createPromise(
 			async resolve => {
 				const response = await this.authKy
@@ -493,7 +490,7 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 				const estimator: Estimator[] = [
 					{
 						name: estimatorName,
-						pages: response.pages
+						pages: await resolveStoredPages(response.pages, signal)
 					}
 				];
 
@@ -594,7 +591,11 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 		inputs: JobInputs | undefined,
 		givenEstimatorName?: string
 	) {
-		if (!givenEstimatorName && jobStatus.jobState === StatusState.COMPLETED) {
+		if (
+			!givenEstimatorName &&
+			(jobStatus.jobState === StatusState.COMPLETED ||
+				partialRevision(jobStatus) !== undefined)
+		) {
 			if (inputs && !inputs.input.estimatorsItems) {
 				const estimators = await this.getCurrentEstimators(jobStatus.jobId);
 
@@ -645,7 +646,8 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 						{
 							jobId: jobStatus.jobId,
 							estimatorName: firstEstimatorName,
-							pageNumbers: pageDimension.pageNums
+							pageNumbers: pageDimension.pageNums,
+							revision: partialRevision(jobStatus)
 						},
 						signal,
 						cache
