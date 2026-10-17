@@ -213,10 +213,19 @@ export type JobTasksSummary = {
 	simulatedPrimaries: number;
 };
 
+/**
+ * Results stored while the simulation runs, covering only the primaries simulated so far.
+ */
+export type PartialResults = {
+	simulatedPrimaries: number;
+	// ISO time with offset
+	time: string;
+};
+
 type JobStatusType<T extends StatusState, U extends Object> = TypeIdentifiedByKey<
 	'jobState',
 	T,
-	U & YaptideResponse & { jobTasksSummary?: JobTasksSummary }
+	U & YaptideResponse & { jobTasksSummary?: JobTasksSummary; partialResults?: PartialResults }
 >;
 
 export type JobStatusCompleted = JobStatusType<
@@ -282,6 +291,7 @@ export type JobUnknownStatus = {
 	message?: string;
 	jobTasksStatus?: Array<TaskUnknownStatus>;
 	jobTasksSummary?: JobTasksSummary;
+	partialResults?: PartialResults;
 };
 
 type ResponseJobRequestFailure = Omit<

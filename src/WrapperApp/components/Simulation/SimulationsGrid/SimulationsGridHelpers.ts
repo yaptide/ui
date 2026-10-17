@@ -10,6 +10,7 @@ import {
 	StatusState
 } from '../../../../types/ResponseTypes';
 import { FullSimulationData } from '../../../../types/SimulationService';
+import { partialRevision } from '../../../../util/partialResults';
 import { PageNavigationProps, PageParamProps } from '../SimulationPanelBar';
 import {
 	PageState,
@@ -140,7 +141,10 @@ const SimulationsGridHelpers = (
 	) => {
 		if (taskId === null) return goToResults?.call(null);
 
-		if (currentJobStatusData[StatusState.COMPLETED](simulation)) {
+		if (
+			currentJobStatusData[StatusState.COMPLETED](simulation) ||
+			partialRevision(simulation as JobStatusData) !== undefined
+		) {
 			const fullData = isFullSimulationData(simulation)
 				? (simulation as unknown as FullSimulationData)
 				: await getFullSimulationData(simulation, controller.signal);
