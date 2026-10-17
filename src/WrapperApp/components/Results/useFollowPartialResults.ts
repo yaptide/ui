@@ -1,68 +1,36 @@
 import { useEffect, useRef } from 'react';
 
-import { useConfig } from '../../../config/ConfigService';
+import { useRemoteWorkerSimulation } from '../../../services/RemoteWorkerSimulationContextProvider';
 import { useStore } from '../../../services/StoreService';
-import { JobUnknownStatus, StatusState } from '../../../types/ResponseTypes';
+import { withStatus } from '../../../services/useSimulationStatusStream';
 import { FullSimulationData } from '../../../types/SimulationService';
-import { snakeToCamelCase } from '../../../util/Notation/Notation';
 import { partialRevision } from '../../../util/partialResults';
 
-// a stream refused (e.g. an expired token) is opened again after this long
-const REOPEN_MS = 5000;
-const FINAL_STATES = new Set([StatusState.COMPLETED, StatusState.FAILED, StatusState.CANCELED]);
-
 /**
- * Keeps partial results on screen up to date. The server pushes the simulation's status whenever its state or
- * partial results change (server-sent events); a new partial, or the final results, replaces the shown status and
- * EstimatorsSelect loads the estimator on screen again.
+ * Keeps the results on screen up to date with the status the server pushes (useSimulationStatusStream): a new
+ * partial, the final results, or a failed or canceled run replaces the shown status, and EstimatorsSelect loads the
+ * estimator on screen again when the partial results changed.
  */
 export function useFollowPartialResults(simulation: FullSimulationData | undefined) {
-	const { backendUrl } = useConfig();
+	const { statusStream } = useRemoteWorkerSimulation();
 	const { setResultsSimulationData } = useStore();
-	// read when an event comes, so updating the results does not reopen the stream
+	// read when a status comes, so updating the results does not apply the same status again
 	const latest = useRef(simulation);
 	latest.current = simulation;
 
 	const jobId = simulation?.jobId;
-	const following = simulation !== undefined && partialRevision(simulation) !== undefined;
+	const status = jobId === undefined ? undefined : statusStream?.statuses[jobId];
 
 	useEffect(() => {
-		if (!following || !jobId) return;
-		let source: EventSource | undefined;
-		let reopen: ReturnType<typeof setTimeout> | undefined;
+		const shown = latest.current;
 
-		const open = () => {
-			source = new EventSource(
-				`${backendUrl}/events/simulation?job_id=${encodeURIComponent(jobId)}`,
-				{ withCredentials: true }
-			);
+		if (!status || shown?.jobId !== status.jobId) return;
+		const updated = withStatus(shown, status);
 
-			source.onmessage = event => {
-				const status = snakeToCamelCase(
-					JSON.parse(event.data) as object,
-					true
-				) as JobUnknownStatus;
-
-				// the server ends the stream after a final state, the browser would open it again
-				if (status.jobState && FINAL_STATES.has(status.jobState)) source?.close();
-				const shown = latest.current;
-
-				if (!shown || shown.jobId !== jobId) return;
-				const updated = { ...shown, ...status } as FullSimulationData;
-
-				if (partialRevision(updated) !== partialRevision(shown))
-					setResultsSimulationData({ source: 'onLoad', data: updated });
-			};
-
-			source.onerror = () => {
-				if (source?.readyState === EventSource.CLOSED) reopen = setTimeout(open, REOPEN_MS);
-			};
-		};
-		open();
-
-		return () => {
-			clearTimeout(reopen);
-			source?.close();
-		};
-	}, [following, jobId, backendUrl, setResultsSimulationData]);
+		if (
+			updated.jobState !== shown.jobState ||
+			partialRevision(updated) !== partialRevision(shown)
+		)
+			setResultsSimulationData({ source: 'onLoad', data: updated });
+	}, [status, setResultsSimulationData]);
 }

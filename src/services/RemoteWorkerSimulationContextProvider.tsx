@@ -1,15 +1,23 @@
 import { useEffect, useRef } from 'react';
 
+import { useConfig } from '../config/ConfigService';
 import { SimulationContext } from '../types/SimulationService';
 import { useAuth } from './AuthService';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 import RemoteWorkerSimulationService from './RemoteWorkerSimulationService';
+import { useSimulationStatusStream } from './useSimulationStatusStream';
 
 const [useRemoteWorkerSimulation, InnerRemoteWorkerSimulationContextProvider] =
 	createGenericContext<SimulationContext>();
 
 function RemoteWorkerSimulationContextProvider({ children }: GenericContextProviderProps) {
-	const { authKy } = useAuth();
+	const { authKy, user } = useAuth();
+	const { demoMode } = useConfig();
+	const statusStream = useSimulationStatusStream(
+		// another user logging in gets a stream of their own
+		demoMode ? undefined : user?.username
+	);
+
 	const simulationServiceRef = useRef<RemoteWorkerSimulationService>(
 		new RemoteWorkerSimulationService(authKy)
 	);
@@ -52,7 +60,8 @@ function RemoteWorkerSimulationContextProvider({ children }: GenericContextProvi
 				),
 				getFullSimulationData: simulationServiceRef.current.getFullSimulationData.bind(
 					simulationServiceRef.current
-				)
+				),
+				statusStream
 			}}>
 			{children}
 		</InnerRemoteWorkerSimulationContextProvider>

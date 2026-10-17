@@ -1,4 +1,5 @@
 import { ResultsSimulationDataWithSource } from '../../../../services/StoreService';
+import { SimulationStatusStream } from '../../../../services/useSimulationStatusStream';
 import { YaptideEditor } from '../../../../ThreeEditor/js/YaptideEditor';
 import {
 	JobInputs,
@@ -56,6 +57,7 @@ export interface SimulationHandlers {
 	) => Promise<FullSimulationData | undefined>;
 	getHelloWorld: (...args: RequestParam) => Promise<unknown>;
 	cancelJob: (info: SimulationInfo, signal?: AbortSignal) => Promise<unknown>;
+	statusStream?: SimulationStatusStream;
 }
 
 export interface SimulationState {
