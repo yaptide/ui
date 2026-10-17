@@ -2745,9 +2745,18 @@ export function isMostAbundant(
 	return particle.abundance === maxAbundance;
 }
 
-/** Return particles available for a given simulator, pre-sorted by Z and abundance */
+/**
+ * Return particles available for a given simulator, pre-sorted by Z and abundance.
+ * For COMMON, returns particles supported by both SHIELD-HIT12A and FLUKA.
+ */
 export function getParticlesForSimulator(sim: SimulatorType): readonly ParticleEntry[] {
-	return PARTICLE_CATALOGUE.filter(p => p.simulators.includes(sim)).sort(compareParticles);
+	const isSupported = (p: ParticleEntry) =>
+		sim === SimulatorType.COMMON
+			? p.simulators.includes(SimulatorType.SHIELDHIT) &&
+				p.simulators.includes(SimulatorType.FLUKA)
+			: p.simulators.includes(sim);
+
+	return PARTICLE_CATALOGUE.filter(isSupported).sort(compareParticles);
 }
 
 /** Lookup by (id, a, z) — used for deserialisation */

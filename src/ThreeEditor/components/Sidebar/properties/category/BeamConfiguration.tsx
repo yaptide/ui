@@ -160,20 +160,7 @@ function BeamConfigurationFields(props: { editor: YaptideEditor; object: Beam })
 	// watchedObject.energyUnit is kept in sync in updateEnergyInputs()
 	const [energyUnit, setEnergyUnit] = useState<EnergyUnit>(watchedObject.energyUnit);
 
-	let supportedParticles: ParticleEntry[] = [];
-
-	switch (editor.contextManager.currentSimulator) {
-		case SimulatorType.GEANT4:
-			supportedParticles.push(...getParticlesForSimulator(SimulatorType.GEANT4));
-
-			break;
-		case SimulatorType.FLUKA:
-			supportedParticles.push(...getParticlesForSimulator(SimulatorType.FLUKA));
-
-			break;
-		default:
-			supportedParticles.push(...getParticlesForSimulator(SimulatorType.SHIELDHIT));
-	}
+	const supportedParticles = getParticlesForSimulator(editor.contextManager.currentSimulator);
 
 	const setValueCommand = useCallback(
 		(value: any, key: string) => {
