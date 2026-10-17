@@ -40,6 +40,14 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 	const { simulation } = props;
 
 	const [tabsValue, setTabsValue] = useState(0);
+	// another simulation starts at its first estimator; reset while rendering, before EstimatorsSelect loads a tab
+	const [shownJobId, setShownJobId] = useState(simulation?.jobId);
+
+	if (simulation?.jobId !== shownJobId) {
+		setShownJobId(simulation?.jobId);
+		setTabsValue(0);
+	}
+
 	const [estimatorsResults, setEstimatorsResults] = useState<EstimatorResults[]>([]);
 	const [groupQuantities, setGroupQuantities] = useState(false);
 	// re-rendered now and then, so the age of partial results stays right between updates

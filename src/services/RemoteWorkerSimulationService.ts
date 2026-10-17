@@ -470,6 +470,14 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 			}
 		}
 
+		// pages of older partial results of the simulation are never read again
+		for (const key of Array.from(this.resultsCache.data.keys())) {
+			const partial = key.match(/@(\d+)$/);
+
+			if (partial && key.startsWith(`${jobId}-`) && Number(partial[1]) !== revision)
+				this.resultsCache.delete(key);
+		}
+
 		const cachePromise = this.resultsCache.createPromise(
 			async resolve => {
 				const response = await this.authKy
