@@ -50,6 +50,7 @@ import {
 } from '../types/ResponseTypes';
 import { FullSimulationData, SimulationService } from '../types/SimulationService';
 import { camelToSnakeCase } from '../util/Notation/Notation';
+import { partialRevision } from '../util/partialResults';
 import { taskTotals } from '../util/taskTotals';
 import { ValidateShape } from '../util/Types';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
@@ -436,7 +437,7 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 
 	async getEstimatorsPages(...args: RequestGetJobResult): Promise<JobResults | undefined> {
 		const [info, signal, cache = true, beforeCacheWrite] = args;
-		const { jobId, estimatorName, pageNumbers } = info;
+		const { jobId, estimatorName, pageNumbers, revision } = info;
 
 		const searchParams = new URLSearchParams({
 			job_id: jobId,
@@ -444,7 +445,7 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 			page_numbers: this.preparePageNumbers(pageNumbers)
 		});
 
-		const cacheKey = `${jobId}-${estimatorName}-${pageNumbers.join(',')}`;
+		const cacheKey = `${jobId}-${estimatorName}-${pageNumbers.join(',')}${revision === undefined ? '' : `@${revision}`}`;
 
 		if (cache && this.resultsCache.has(cacheKey)) {
 			const data: Promise<JobResults> | JobResults | undefined =
@@ -582,7 +583,11 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 		inputs: JobInputs | undefined,
 		givenEstimatorName?: string
 	) {
-		if (!givenEstimatorName && jobStatus.jobState === StatusState.COMPLETED) {
+		if (
+			!givenEstimatorName &&
+			(jobStatus.jobState === StatusState.COMPLETED ||
+				partialRevision(jobStatus) !== undefined)
+		) {
 			if (inputs && !inputs.input.estimatorsItems) {
 				const estimators = await this.getCurrentEstimators(jobStatus.jobId);
 
@@ -633,7 +638,8 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 						{
 							jobId: jobStatus.jobId,
 							estimatorName: firstEstimatorName,
-							pageNumbers: pageDimension.pageNums
+							pageNumbers: pageDimension.pageNums,
+							revision: partialRevision(jobStatus)
 						},
 						signal,
 						cache
