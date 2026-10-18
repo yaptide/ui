@@ -74,7 +74,12 @@ const SimulationsGridHelpers = (
 
 	const handleBeforeCacheWrite = useCallback(
 		async (id: string, response: JobStatusData) => {
-			if (id === trackedId && currentJobStatusData[StatusState.COMPLETED](response)) {
+			if (
+				id === trackedId &&
+				currentJobStatusData[StatusState.COMPLETED](response) &&
+				!runFinishShown.has(id)
+			) {
+				runFinishShown.add(id);
 				const fullData = await getFullSimulationData(response, controller.signal);
 				setResultsSimulationData(
 					fullData ? { source: 'onRunFinish', data: fullData } : undefined
@@ -344,5 +349,8 @@ const SimulationsGridHelpers = (
 		submitDelete
 	};
 };
+
+// a finished run opens its results once: the grids see its final status again on every remount and stream reconnect
+const runFinishShown = new Set<string>();
 
 export default SimulationsGridHelpers;
