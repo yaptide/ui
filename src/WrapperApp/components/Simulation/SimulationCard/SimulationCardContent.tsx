@@ -150,6 +150,14 @@ export const SimulationCardContent = ({
 					<Typography color='textDisabled'>Partial results: {partialLabel}</Typography>
 				)}
 				{busyLabel && <Typography color='warning.main'>{busyLabel}</Typography>}
+				{busyLabel && simulationStatus.clusterNotice && (
+					<Typography
+						variant='caption'
+						color='textSecondary'
+						sx={{ whiteSpace: 'pre-line' }}>
+						{simulationStatus.clusterNotice}
+					</Typography>
+				)}
 			</Box>
 		</CardContent>
 	);

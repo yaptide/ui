@@ -26,6 +26,19 @@ describe('withStatus', () => {
 		});
 	});
 
+	test('a submitted simulation no longer shows the busy cluster it waited for, nor its notice', () => {
+		const waiting: StreamedStatus = {
+			jobId: 'job',
+			jobState: StatusState.PENDING,
+			clusterBusyUntil: '2026-10-18T12:00:00+00:00',
+			clusterNotice: 'Access to the login nodes has been temporarily restricted'
+		};
+		const submitted = withStatus(waiting, { jobId: 'job', jobState: StatusState.RUNNING });
+
+		expect(submitted.clusterBusyUntil).toBeUndefined();
+		expect(submitted.clusterNotice).toBeUndefined();
+	});
+
 	test('a final state is kept: a status pushed before it is older', () => {
 		const canceled: typeof running = { ...running, jobState: StatusState.CANCELED };
 

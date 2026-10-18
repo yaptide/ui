@@ -28,7 +28,13 @@ export function withStatus<T extends JobUnknownStatus>(
 ): T {
 	if (!status || (data.jobState && FINAL_STATES.has(data.jobState))) return data;
 
-	return { ...data, partialResults: undefined, clusterBusyUntil: undefined, ...status };
+	return {
+		...data,
+		partialResults: undefined,
+		clusterBusyUntil: undefined,
+		clusterNotice: undefined,
+		...status
+	};
 }
 
 // waits before opening a refused stream again (e.g. an expired token, refreshed meanwhile); then polling takes over,
