@@ -231,6 +231,8 @@ type JobStatusType<T extends StatusState, U extends Object> = TypeIdentifiedByKe
 			partialResults?: PartialResults;
 			// ISO time with offset: the HPC cluster did not answer, the server tries to submit again then
 			clusterBusyUntil?: string;
+			// what the busy cluster's admins said when its login node closed the connection
+			clusterNotice?: string;
 		}
 >;
 
@@ -299,6 +301,7 @@ export type JobUnknownStatus = {
 	jobTasksSummary?: JobTasksSummary;
 	partialResults?: PartialResults;
 	clusterBusyUntil?: string;
+	clusterNotice?: string;
 };
 
 type ResponseJobRequestFailure = Omit<
