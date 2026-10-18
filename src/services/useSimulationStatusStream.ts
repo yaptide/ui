@@ -18,7 +18,8 @@ export interface SimulationStatusStream {
 const FINAL_STATES = new Set([StatusState.COMPLETED, StatusState.FAILED, StatusState.CANCELED]);
 
 /**
- * The pushed status in place of the held one; final results come without partial results. A final state never
+ * The pushed status in place of the held one; final results come without partial results, a submitted simulation
+ * without the busy cluster it waited for. A final state never
  * changes, so a status pushed before it is older and is not applied.
  */
 export function withStatus<T extends JobUnknownStatus>(
@@ -27,7 +28,7 @@ export function withStatus<T extends JobUnknownStatus>(
 ): T {
 	if (!status || (data.jobState && FINAL_STATES.has(data.jobState))) return data;
 
-	return { ...data, partialResults: undefined, ...status };
+	return { ...data, partialResults: undefined, clusterBusyUntil: undefined, ...status };
 }
 
 // waits before opening a refused stream again (e.g. an expired token, refreshed meanwhile); then polling takes over,

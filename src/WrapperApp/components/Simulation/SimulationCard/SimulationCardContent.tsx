@@ -2,6 +2,7 @@ import { Box, CardContent, Chip, LinearProgress, Typography } from '@mui/materia
 import { useEffect, useState } from 'react';
 
 import { JobUnknownStatus, SimulationInfo, StatusState } from '../../../../types/ResponseTypes';
+import { clusterBusyLabel } from '../../../../util/clusterBusy';
 import { partialResultsLabel } from '../../../../util/partialResults';
 import { TaskTotals, taskTotals } from '../../../../util/taskTotals';
 import { millisecondsToTimeString } from '../../../../util/time';
@@ -76,6 +77,7 @@ export const SimulationCardContent = ({
 }: SimulationCardContentProps) => {
 	const totals = taskTotals(simulationStatus);
 	const partialLabel = partialResultsLabel(simulationStatus);
+	const busyLabel = clusterBusyLabel(simulationStatus);
 
 	return (
 		<CardContent sx={{ flexGrow: 1, p: 0, px: 1 }}>
@@ -147,6 +149,7 @@ export const SimulationCardContent = ({
 				{partialLabel && (
 					<Typography color='textDisabled'>Partial results: {partialLabel}</Typography>
 				)}
+				{busyLabel && <Typography color='warning.main'>{busyLabel}</Typography>}
 			</Box>
 		</CardContent>
 	);

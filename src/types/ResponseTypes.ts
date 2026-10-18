@@ -225,7 +225,13 @@ export type PartialResults = {
 type JobStatusType<T extends StatusState, U extends Object> = TypeIdentifiedByKey<
 	'jobState',
 	T,
-	U & YaptideResponse & { jobTasksSummary?: JobTasksSummary; partialResults?: PartialResults }
+	U &
+		YaptideResponse & {
+			jobTasksSummary?: JobTasksSummary;
+			partialResults?: PartialResults;
+			// ISO time with offset: the HPC cluster did not answer, the server tries to submit again then
+			clusterBusyUntil?: string;
+		}
 >;
 
 export type JobStatusCompleted = JobStatusType<
@@ -292,6 +298,7 @@ export type JobUnknownStatus = {
 	jobTasksStatus?: Array<TaskUnknownStatus>;
 	jobTasksSummary?: JobTasksSummary;
 	partialResults?: PartialResults;
+	clusterBusyUntil?: string;
 };
 
 type ResponseJobRequestFailure = Omit<
