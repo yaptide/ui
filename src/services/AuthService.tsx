@@ -100,9 +100,9 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 		() =>
 			ky.create({
 				credentials: 'include',
-				prefixUrl: backendUrl,
-				//overwrite default json parser to convert snake_case to camelCase
-				parseJson: (text: string) => {
+				prefix: backendUrl,
+				parseJson: (text: string, { response }) => {
+					if (text === '' && response.ok) return text;
 					const json = JSON.parse(text);
 
 					if (typeof json === 'object' && json) return snakeToCamelCase(json, true);
@@ -112,22 +112,34 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				},
 				hooks: {
 					afterResponse: [
-						async (_request, _options, response) => {
-							if (response?.status in [401, 403]) setUser(null);
-							if (response?.status === 403)
-								enqueueSnackbar('Please log in again.', { variant: 'warning' });
+						async ({ request, options, response, retryCount }) => {
+							try {
+								if (response?.status in [401, 403]) setUser(null);
+								if (response?.status === 403)
+									enqueueSnackbar('Please log in again.', { variant: 'warning' });
 
-							if (response?.status > 300) {
-								const message = await response
-									.json()
-									.then(parseYaptideResponseMessage);
+								if (response?.status > 300) {
+									const message = await response
+										.json()
+										.then(parseYaptideResponseMessage);
 
-								if (!ignored_messages.includes(message))
-									enqueueSnackbar(message, {
-										variant: 'error'
-									});
+									if (!ignored_messages.includes(message))
+										enqueueSnackbar(message, {
+											variant: 'error'
+										});
 
-								return Promise.reject(response);
+									return await Promise.reject(response);
+								}
+							} catch (error) {
+								const { limit, methods } = options.retry;
+
+								if (
+									retryCount < limit &&
+									methods.some(method => method.toUpperCase() === request.method)
+								)
+									return ky.retry();
+
+								throw error;
 							}
 						}
 					]
