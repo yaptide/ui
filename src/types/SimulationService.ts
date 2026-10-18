@@ -1,3 +1,4 @@
+import { SimulationStatusStream } from '../services/useSimulationStatusStream';
 import {
 	JobInputs,
 	JobLogs,
@@ -34,6 +35,8 @@ export interface SimulationContext {
 		cache?: boolean,
 		givenEstimatorName?: string
 	) => Promise<FullSimulationData | undefined>;
+	// only the remote worker pushes the status of simulations
+	statusStream?: SimulationStatusStream;
 }
 
 export interface SimulationService {

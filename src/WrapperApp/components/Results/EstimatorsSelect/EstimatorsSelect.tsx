@@ -1,5 +1,5 @@
 import { useTheme } from '@mui/material';
-import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import { SyntheticEvent, useCallback, useEffect, useRef, useState } from 'react';
 
 import { useRemoteWorkerSimulation } from '../../../../services/RemoteWorkerSimulationContextProvider';
 import { ResultsSimulationDataWithSource } from '../../../../services/StoreService';
@@ -7,6 +7,7 @@ import { StyledTab, StyledTabs } from '../../../../shared/components/Tabs/Styled
 import { SpecificEstimator } from '../../../../types/RequestTypes';
 import { EstimatorPagesByDimensions } from '../../../../types/ResponseTypes';
 import { FullSimulationData } from '../../../../types/SimulationService';
+import { partialRevision } from '../../../../util/partialResults';
 
 interface EstimatorsTabProps {
 	tabsValue: number;
@@ -31,12 +32,23 @@ const EstimatorsSelect = ({
 	const [controller] = useState(new AbortController());
 
 	const { getEstimatorsPages } = useRemoteWorkerSimulation();
+	const revision = partialRevision(simulation);
+	// the partial results revision each tab was loaded at, so a newer partial or the final results load it again;
+	// the estimators there at mount were loaded at the revision then (the component is keyed by simulation)
+	const loadedRevisions = useRef(new Map<number, number | undefined>());
+	const mountRevision = useRef(revision);
 
 	const handleEstimatorTabChange = useCallback(
-		async (id: number) => {
+		async (id: number, isStale: () => boolean) => {
 			const currentEstimatorData = simulation.estimators;
+			const loadedRevision = loadedRevisions.current.has(id)
+				? loadedRevisions.current.get(id)
+				: mountRevision.current;
+
 			const estimatorExists =
-				currentEstimatorData[id] && currentEstimatorData[id].name !== '';
+				currentEstimatorData[id] &&
+				currentEstimatorData[id].name !== '' &&
+				loadedRevision === revision;
 
 			if (estimatorsPagesData) {
 				const estimatorsPagesByDimensions = estimatorsPagesData[id].pagesByDimensions;
@@ -50,7 +62,8 @@ const EstimatorsSelect = ({
 							{
 								jobId: simulationJobId,
 								estimatorName: estimatorsTabData[id],
-								pageNumbers: pageDimension.pageNums
+								pageNumbers: pageDimension.pageNums,
+								revision
 							},
 							controller.signal,
 							true
@@ -61,7 +74,8 @@ const EstimatorsSelect = ({
 						}
 					}
 
-					if (allResults.length === 0) return;
+					// a newer simulation or tab is being loaded meanwhile
+					if (allResults.length === 0 || isStale()) return;
 
 					const aggregationResults = allResults.reduce(
 						(acc, result) => {
@@ -97,7 +111,9 @@ const EstimatorsSelect = ({
 						...simulation,
 						estimators: newEstimators
 					};
-					setResultsSimulationData({ source: 'onSelect', data: newSimulation });
+					loadedRevisions.current.set(id, revision);
+					// not onSelect: a new partial loaded while another screen is open must not switch to Results
+					setResultsSimulationData({ source: 'onLoad', data: newSimulation });
 				}
 			}
 		},
@@ -106,14 +122,21 @@ const EstimatorsSelect = ({
 			estimatorsPagesData,
 			estimatorsTabData,
 			getEstimatorsPages,
+			revision,
 			setResultsSimulationData,
 			simulation
 		]
 	);
 
+	// the tab on screen, whenever it or the simulation changes
 	useEffect(() => {
-		handleEstimatorTabChange(0);
-	}, [handleEstimatorTabChange]);
+		let stale = false;
+		handleEstimatorTabChange(tabsValue, () => stale);
+
+		return () => {
+			stale = true;
+		};
+	}, [handleEstimatorTabChange, tabsValue]);
 
 	const handleChange = (_event: SyntheticEvent, newValue: number) => {
 		setTabsValue(newValue);
@@ -131,7 +154,6 @@ const EstimatorsSelect = ({
 						key={`tab_${estimatorName}`}
 						label={estimatorName}
 						value={id}
-						onClick={() => handleEstimatorTabChange(id)}
 					/>
 				);
 			})}

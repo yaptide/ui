@@ -17,8 +17,10 @@ import { useStore } from '../../../services/StoreService';
 import { InfoTooltip } from '../../../shared/components/tooltip/InfoTooltip';
 import { titleToKebabCase } from '../../../ThreeEditor/components/Dialog/CustomDialog';
 import { FullSimulationData } from '../../../types/SimulationService';
+import { partialResultsLabel } from '../../../util/partialResults';
 import EstimatorsSelect from './EstimatorsSelect/EstimatorsSelect';
 import EstimatorTab from './EstimatorTab/EstimatorTab';
+import { useFollowPartialResults } from './useFollowPartialResults';
 
 export interface EstimatorResults extends Estimator {
 	tablePages: Page0D[];
@@ -38,8 +40,29 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 	const { simulation } = props;
 
 	const [tabsValue, setTabsValue] = useState(0);
+	// another simulation starts at its first estimator; reset while rendering, before EstimatorsSelect loads a tab
+	const [shownJobId, setShownJobId] = useState(simulation?.jobId);
+
+	if (simulation?.jobId !== shownJobId) {
+		setShownJobId(simulation?.jobId);
+		setTabsValue(0);
+	}
+
 	const [estimatorsResults, setEstimatorsResults] = useState<EstimatorResults[]>([]);
 	const [groupQuantities, setGroupQuantities] = useState(false);
+	// re-rendered now and then, so the age of partial results stays right between updates
+	const [, setNow] = useState(Date.now());
+	const partialLabel = simulation && partialResultsLabel(simulation);
+	const isPartial = partialLabel !== undefined;
+
+	useFollowPartialResults(simulation);
+
+	useEffect(() => {
+		if (!isPartial) return;
+		const timer = setInterval(() => setNow(Date.now()), 30000);
+
+		return () => clearInterval(timer);
+	}, [isPartial]);
 
 	const userTabInputFilesEstimatorNames = simulation?.input.estimatorsItems?.map(
 		estimator => estimator.name
@@ -121,6 +144,13 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 							lineHeight={2}>
 							{title}
 						</Typography>
+						{partialLabel && (
+							<Typography
+								variant='body2'
+								color='warning.main'>
+								Partial results: {partialLabel}
+							</Typography>
+						)}
 						<Divider />
 					</Box>
 					<Box
@@ -171,6 +201,7 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 			{estimatorsResults.length > 0 && simulation && (
 				<>
 					<EstimatorsSelect
+						key={simulation.jobId}
 						tabsValue={tabsValue}
 						setTabsValue={setTabsValue}
 						simulation={simulation}

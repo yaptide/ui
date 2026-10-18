@@ -35,11 +35,21 @@ export default class CacheMap<T extends {}> {
 		key: string,
 		beforeWriteCallback?: (key: string, value: T) => void
 	) {
-		const cachePromise = new Promise<T>(async resolve => fn(resolve)).then(data => {
-			this.set(key, data, beforeWriteCallback);
+		const cachePromise: Promise<T> = new Promise<T>((resolve, reject) => {
+			// a failed fetch must reject, not leave every caller waiting on this cache entry forever
+			Promise.resolve(fn(resolve)).catch(reject);
+		}).then(
+			data => {
+				this.set(key, data, beforeWriteCallback);
 
-			return data;
-		});
+				return data;
+			},
+			error => {
+				if (this.data.get(key) === cachePromise) this.delete(key);
+
+				throw error;
+			}
+		);
 
 		this.set(key, cachePromise);
 
