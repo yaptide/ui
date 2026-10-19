@@ -5,10 +5,15 @@ const mesh = (uuid: string, xSegments: number, ySegments: number, zSegments: num
 	geometryData: { geometryType: 'Mesh', parameters: { xSegments, ySegments, zSegments } }
 });
 
-const output = (name: string, detectorUuid: string, quantities: number) => ({
+const output = (
+	name: string,
+	detectorUuid: string,
+	quantities: number,
+	diffBins: number[] = []
+) => ({
 	name,
 	detectorUuid,
-	quantities: Array(quantities).fill({})
+	quantities: Array(quantities).fill({ modifiers: diffBins.map(binsNumber => ({ binsNumber })) })
 });
 
 // the outputs of simulation 2089
@@ -38,6 +43,27 @@ describe('outputsTooLarge', () => {
 		expect(outputsTooLarge(project, 50)).toBeUndefined();
 	});
 
+	it('multiplies the bins of a quantity by its first two differential scorings', () => {
+		const spectrum = {
+			detectorManager: { detectors: [mesh('xy', 1000, 1000, 1)] },
+			scoringManager: { outputs: [output('Spectrum', 'xy', 1, [100])] }
+		};
+
+		// 1000 × 1000 bins × 100 Diff1 bins × 8 bytes = 0.8 GB a task
+		expect(outputsTooLarge(spectrum, 62)).toBeUndefined();
+		expect(outputsTooLarge(spectrum, 100)).toBe(
+			'The outputs would take 80 GB (Spectrum: 1000 × 1000 × 1 bins × 100 tasks); ' +
+				'the limit is 50 GB. Use fewer bins or tasks.'
+		);
+
+		// a third modifier is not written to detect.dat
+		spectrum.scoringManager.outputs = [output('Spectrum', 'xy', 1, [10, 10, 1000])];
+		expect(outputsTooLarge(spectrum, 100)).toBe(
+			'The outputs would take 80 GB (Spectrum: 1000 × 1000 × 1 bins × 100 tasks); ' +
+				'the limit is 50 GB. Use fewer bins or tasks.'
+		);
+	});
+
 	it('counts the quantities and the bins of a cylinder', () => {
 		const cylinder = {
 			detectorManager: {
@@ -58,7 +84,7 @@ describe('outputsTooLarge', () => {
 		expect(outputsTooLarge(cylinder, 312)).toBeUndefined();
 		expect(outputsTooLarge(cylinder, 313)).toBeDefined();
 		expect(outputsTooLarge(cylinder, 400)).toBe(
-			'The outputs would take 64 GB (Cyl: 1000 × 10000 bins × 2 quantities × 400 tasks); ' +
+			'The outputs would take 64 GB (Cyl: 1000 × 10000 bins × 400 tasks); ' +
 				'the limit is 50 GB. Use fewer bins or tasks.'
 		);
 	});

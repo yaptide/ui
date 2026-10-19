@@ -215,9 +215,9 @@ export function RunSimulationForm({
 		geant4DownloadManagerState
 	]);
 
-	// the server refuses outputs this large; files run as given, Geant4 runs in the browser
+	// the server refuses SHIELD-HIT12A outputs this large; files run as given
 	const outputsRefused =
-		simulationSourceType === 'editor' && editorJson && currentSimulator !== SimulatorType.GEANT4
+		simulationSourceType === 'editor' && editorJson && runSimulator === SimulatorType.SHIELDHIT
 			? outputsTooLarge(editorJson, nTasks)
 			: undefined;
 

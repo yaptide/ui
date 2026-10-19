@@ -18,7 +18,11 @@ type Project = {
 		}[];
 	};
 	scoringManager: {
-		outputs: { name: string; detectorUuid?: string; quantities: unknown[] }[];
+		outputs: {
+			name: string;
+			detectorUuid?: string;
+			quantities: { modifiers?: { binsNumber: number }[] }[];
+		}[];
 	};
 };
 
@@ -39,8 +43,18 @@ function detectorBins({
 }
 
 /**
- * Mirrors the server's estimate of the size of a simulation's outputs: for each output the bins of its detector
- * times its quantities, 8 bytes each, for every task. Says why the server would refuse it, or undefined when it fits.
+ * Values a quantity scores in each bin: the bins of its differential scoring, of which SHIELD-HIT12A takes
+ * the first two (Diff1, Diff2), 1 without it.
+ */
+const quantityValues = (quantity: Project['scoringManager']['outputs'][0]['quantities'][0]) =>
+	(quantity.modifiers ?? [])
+		.slice(0, 2)
+		.reduce((values, modifier) => values * Math.max(Math.abs(modifier.binsNumber), 1), 1);
+
+/**
+ * Mirrors the server's estimate of the size of a SHIELD-HIT12A simulation's outputs: for each output the bins of its
+ * detector times the values of each of its quantities, 8 bytes each, for every task. Says why the server would refuse
+ * it, naming the output with the most values, or undefined when it fits.
  */
 export function outputsTooLarge(project: Project, ntasks: number): string | undefined {
 	const outputs = project.scoringManager.outputs.map(output => {
@@ -52,8 +66,9 @@ export function outputsTooLarge(project: Project, ntasks: number): string | unde
 		return {
 			name: output.name,
 			bins,
-			quantities: output.quantities.length,
-			values: bins.reduce((a, b) => a * b, 1) * output.quantities.length
+			values:
+				bins.reduce((a, b) => a * b, 1) *
+				output.quantities.reduce((sum, quantity) => sum + quantityValues(quantity), 0)
 		};
 	});
 	const bytes = outputs.reduce((sum, output) => sum + output.values, 0) * 8 * ntasks;
@@ -61,11 +76,10 @@ export function outputsTooLarge(project: Project, ntasks: number): string | unde
 	if (!(bytes > OUTPUTS_LIMIT_BYTES)) return undefined;
 
 	const largest = outputs.reduce((a, b) => (b.values > a.values ? b : a));
-	const quantities = largest.quantities > 1 ? ` × ${largest.quantities} quantities` : '';
 
 	return (
 		`The outputs would take ${Math.round(bytes / 1e9)} GB ` +
-		`(${largest.name}: ${largest.bins.join(' × ')} bins${quantities} × ${ntasks} tasks); ` +
+		`(${largest.name}: ${largest.bins.join(' × ')} bins × ${ntasks} tasks); ` +
 		`the limit is ${OUTPUTS_LIMIT_BYTES / 1e9} GB. Use fewer bins or tasks.`
 	);
 }
