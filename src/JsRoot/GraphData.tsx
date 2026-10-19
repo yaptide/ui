@@ -64,8 +64,8 @@ export type Estimator = {
 	pages: Page[];
 	outputUuid?: string;
 	scoringOutputJsonRef?: ScoringOutputJSON;
-	// signed link to the full resolution results of an estimator with a page too large to show
-	fullResolutionUrl?: string;
+	// the backend's name of an estimator with a page too large to show, whose full resolution results can be downloaded
+	fullResolutionName?: string;
 };
 
 export type Page = Page3D | Page2D | Page1D | Page0D | GroupedPage1D;
@@ -89,6 +89,12 @@ export const isPage0d = (page: Page): page is Page0D => {
 export const isPage3D = (page: Page): page is Page3D => {
 	return (page as Page3D).dimensions === 3;
 };
+
+// the quantities grouped in one graph share their mesh, and so how it is downsampled
+const downsampledOf = (page: Page) =>
+	isGroupedPage1d(page)
+		? page.pages.find(grouped => grouped.metadata?.downsampled)?.metadata?.downsampled
+		: page.metadata?.downsampled;
 
 // The scaling factor is used to ensure that the maximum value of the Y-axis is slightly larger than the actual maximum value of the data.
 export const MAX_SCALING_FACTOR = 1.05;
@@ -288,12 +294,12 @@ export function generateGraphs(
 						<GraphInfo filter={filter} />
 					</Box>
 				</Box>
-				{page.metadata?.downsampled && (
+				{downsampledOf(page) && (
 					<Typography
 						align='center'
 						variant='body2'
 						color='text.secondary'>
-						{downsampledLabel(page.metadata.downsampled)}
+						{downsampledLabel(downsampledOf(page))}
 					</Typography>
 				)}
 			</Fragment>

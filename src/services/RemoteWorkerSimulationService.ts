@@ -185,9 +185,19 @@ export const recreateRefsInResults = (inputJson: EditorJson, estimators: Estimat
 	return estimatorsWithFixedFilters;
 };
 
-function updateEstimators(estimators: Estimator[]) {
+type EstimatorResponse = Estimator & { fullResolution?: boolean; fullResolutionUrl?: string };
+
+// a signed link to the full resolution results expires, so only the backend's name of an estimator with them is kept
+// (and saved with the results): the download asks the backend for a fresh link by that name
+function updateEstimators(estimators: EstimatorResponse[]) {
 	for (const estimator of estimators) {
-		estimator.name = estimator.name.replace(/_$/, '');
+		const backendName = estimator.name;
+		estimator.name = backendName.replace(/_$/, '');
+
+		if (estimator.fullResolution || estimator.fullResolutionUrl)
+			estimator.fullResolutionName = backendName;
+		delete estimator.fullResolution;
+		delete estimator.fullResolutionUrl;
 	}
 }
 
@@ -487,10 +497,11 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 					})
 					.json<ResponseGetEstimatorPageResult>();
 
-				const estimator: Estimator[] = [
+				const estimator: EstimatorResponse[] = [
 					{
 						name: estimatorName,
 						pages: await resolveStoredPages(response.pages, signal),
+						fullResolution: response.fullResolution,
 						fullResolutionUrl: response.fullResolutionUrl
 					}
 				];

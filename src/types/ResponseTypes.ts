@@ -454,6 +454,7 @@ export type ResponseGetJobResult = Estimator & YaptideResponse;
 
 export type ResponseGetEstimatorPageResult = {
 	pages: Page[];
+	fullResolution?: boolean;
 	fullResolutionUrl?: string;
 } & YaptideResponse;
 

@@ -1,5 +1,6 @@
 import { Box, Button, CircularProgress, useTheme } from '@mui/material';
 
+import { useConfig } from '../../../../config/ConfigService';
 import { generateGraphs } from '../../../../JsRoot/GraphData';
 import { FullSimulationData } from '../../../../types/SimulationService';
 import { EstimatorResults } from '../ResultsPanel';
@@ -20,6 +21,7 @@ const EstimatorTab = ({
 	simulation
 }: EstimatorTabProps) => {
 	const theme = useTheme();
+	const { backendUrl } = useConfig();
 
 	return (
 		<Box
@@ -42,9 +44,13 @@ const EstimatorTab = ({
 						height: '100%',
 						overflowY: 'auto'
 					}}>
-					{estimator.fullResolutionUrl && (
+					{estimator.fullResolutionName && (
 						<Button
-							href={estimator.fullResolutionUrl}
+							// answers with a redirect to a fresh signed link to the file in storage
+							href={`${backendUrl}/results/full_resolution?${new URLSearchParams({
+								job_id: simulation.jobId,
+								estimator_name: estimator.fullResolutionName
+							})}`}
 							sx={{ alignSelf: 'center' }}>
 							Download full resolution
 						</Button>

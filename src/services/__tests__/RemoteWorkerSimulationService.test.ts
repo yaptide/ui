@@ -41,6 +41,39 @@ describe('pages of partial results', () => {
 	});
 });
 
+describe('full resolution results', () => {
+	const load = (page: object) => {
+		const ky = {
+			get: (url: string) => ({
+				json: async () =>
+					url === 'inputs' ? { input: {} } : { pages: [], message: '', ...page }
+			})
+		} as unknown as KyInstance;
+
+		return new RemoteWorkerSimulationService(ky).getEstimatorsPages({
+			jobId: 'job',
+			estimatorName: 'XZ_map_',
+			pageNumbers: [0]
+		});
+	};
+
+	test.each([
+		{ fullResolution: true },
+		{ fullResolutionUrl: 'https://storage/XZ_map.bdo?sig=1' }
+	])('keep the name to ask the backend for them by, not a signed link (%p)', async page => {
+		const [estimator] = (await load(page))!.estimators;
+
+		expect(estimator).toMatchObject({ name: 'XZ_map', fullResolutionName: 'XZ_map_' });
+		expect(JSON.stringify(estimator)).not.toContain('storage');
+	});
+
+	test('are not offered when the backend has none', async () => {
+		const [estimator] = (await load({}))!.estimators;
+
+		expect(estimator.fullResolutionName).toBeUndefined();
+	});
+});
+
 describe('results of the editor outputs', () => {
 	const output = (uuid: string, name: string) => ({ uuid, name, quantities: [] });
 	const inputJson = {
