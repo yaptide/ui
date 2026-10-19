@@ -215,11 +215,18 @@ export function RunSimulationForm({
 		geant4DownloadManagerState
 	]);
 
-	// the server refuses SHIELD-HIT12A outputs this large; files run as given
-	const outputsRefused =
+	// the server refuses SHIELD-HIT12A outputs this large; for input files only the server checks, its message shows
+	// when the simulation is submitted
+	const outputsTooLargeMessage =
 		simulationSourceType === 'editor' && editorJson && runSimulator === SimulatorType.SHIELDHIT
-			? outputsTooLarge(editorJson, nTasks)
+			? outputsTooLarge(editorJson, nTasks, overridePrimariesCount)
 			: undefined;
+
+	// the batch config hides the number of tasks, which is still submitted
+	const outputsRefused =
+		outputsTooLargeMessage && usingBatchConfig && simulationRunType === 'batch'
+			? `${outputsTooLargeMessage} The number of tasks is set with "Use batch config" unticked.`
+			: outputsTooLargeMessage;
 
 	const toggleFileSelection = (fileName: string) =>
 		setSelectedFiles((prev: string[]) => {

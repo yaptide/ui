@@ -33,14 +33,14 @@ const project = {
 
 describe('outputsTooLarge', () => {
 	it('refuses outputs over the limit and names the largest one', () => {
-		expect(outputsTooLarge(project, 100)).toBe(
+		expect(outputsTooLarge(project, 100, 1e9)).toBe(
 			'The outputs would take 80 GB (XZ_map: 10000 × 1 × 10000 bins × 100 tasks); ' +
 				'the limit is 50 GB. Use fewer bins or tasks.'
 		);
 	});
 
 	it('lets outputs under the limit through', () => {
-		expect(outputsTooLarge(project, 50)).toBeUndefined();
+		expect(outputsTooLarge(project, 50, 1e9)).toBeUndefined();
 	});
 
 	it('multiplies the bins of a quantity by its first two differential scorings', () => {
@@ -50,15 +50,15 @@ describe('outputsTooLarge', () => {
 		};
 
 		// 1000 × 1000 bins × 100 Diff1 bins × 8 bytes = 0.8 GB a task
-		expect(outputsTooLarge(spectrum, 62)).toBeUndefined();
-		expect(outputsTooLarge(spectrum, 100)).toBe(
+		expect(outputsTooLarge(spectrum, 62, 1e9)).toBeUndefined();
+		expect(outputsTooLarge(spectrum, 100, 1e9)).toBe(
 			'The outputs would take 80 GB (Spectrum: 1000 × 1000 × 1 bins × 100 tasks); ' +
 				'the limit is 50 GB. Use fewer bins or tasks.'
 		);
 
 		// a third modifier is not written to detect.dat
 		spectrum.scoringManager.outputs = [output('Spectrum', 'xy', 1, [10, 10, 1000])];
-		expect(outputsTooLarge(spectrum, 100)).toBe(
+		expect(outputsTooLarge(spectrum, 100, 1e9)).toBe(
 			'The outputs would take 80 GB (Spectrum: 1000 × 1000 × 1 bins × 100 tasks); ' +
 				'the limit is 50 GB. Use fewer bins or tasks.'
 		);
@@ -81,9 +81,9 @@ describe('outputsTooLarge', () => {
 		};
 
 		// 1000 × 10000 bins × 2 quantities × 8 bytes = 0.16 GB a task
-		expect(outputsTooLarge(cylinder, 312)).toBeUndefined();
-		expect(outputsTooLarge(cylinder, 313)).toBeDefined();
-		expect(outputsTooLarge(cylinder, 400)).toBe(
+		expect(outputsTooLarge(cylinder, 312, 1e9)).toBeUndefined();
+		expect(outputsTooLarge(cylinder, 313, 1e9)).toBeDefined();
+		expect(outputsTooLarge(cylinder, 400, 1e9)).toBe(
 			'The outputs would take 64 GB (Cyl: 1000 × 10000 bins × 400 tasks); ' +
 				'the limit is 50 GB. Use fewer bins or tasks.'
 		);
@@ -96,8 +96,20 @@ describe('outputsTooLarge', () => {
 					detectorManager: { detectors: [] },
 					scoringManager: { outputs: [output('Zone', 'none', 1)] }
 				},
-				1000
+				1000,
+				1e9
 			)
 		).toBeUndefined();
+	});
+
+	it('runs no more tasks than primaries, as the server does', () => {
+		// 100 tasks for 50 primaries run as 50 tasks: 40 GB
+		expect(outputsTooLarge(project, 100, 50)).toBeUndefined();
+		expect(outputsTooLarge(project, 100, 70)).toBe(
+			'The outputs would take 56 GB (XZ_map: 10000 × 1 × 10000 bins × 70 tasks); ' +
+				'the limit is 50 GB. Use fewer bins or tasks.'
+		);
+		// an unknown number of primaries keeps the tasks asked for
+		expect(outputsTooLarge(project, 100, NaN)).toBeDefined();
 	});
 });

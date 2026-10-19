@@ -52,11 +52,27 @@ const quantityValues = (quantity: Project['scoringManager']['outputs'][0]['quant
 		.reduce((values, modifier) => values * Math.max(Math.abs(modifier.binsNumber), 1), 1);
 
 /**
- * Mirrors the server's estimate of the size of a SHIELD-HIT12A simulation's outputs: for each output the bins of its
- * detector times the values of each of its quantities, 8 bytes each, for every task. Says why the server would refuse
- * it, naming the output with the most values, or undefined when it fits.
+ * The tasks the server runs: at least one, at most one per primary (as its get_clamped_ntasks_value).
  */
-export function outputsTooLarge(project: Project, ntasks: number): string | undefined {
+function clampedTasks(ntasks: number, primaries: number) {
+	if (ntasks < 1) return 1;
+
+	if (Number.isNaN(primaries)) return ntasks;
+
+	return primaries < 1 ? 1 : Math.min(ntasks, primaries);
+}
+
+/**
+ * Mirrors the server's estimate of the size of a SHIELD-HIT12A simulation's outputs: for each output the bins of its
+ * detector times the values of each of its quantities, 8 bytes each, for every task it runs. Says why the server would
+ * refuse it, naming the output with the most values, or undefined when it fits.
+ */
+export function outputsTooLarge(
+	project: Project,
+	requestedTasks: number,
+	primaries: number
+): string | undefined {
+	const ntasks = clampedTasks(requestedTasks, primaries);
 	const outputs = project.scoringManager.outputs.map(output => {
 		const detector = project.detectorManager.detectors.find(
 			d => d.uuid === output.detectorUuid
