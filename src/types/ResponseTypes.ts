@@ -451,7 +451,10 @@ export type ResponseGetJobResults = {
 
 export type ResponseGetJobResult = Estimator & YaptideResponse;
 
-export type ResponseGetEstimatorPageResult = { pages: Page[] } & YaptideResponse;
+export type ResponseGetEstimatorPageResult = {
+	pages: Page[];
+	fullResolutionUrl?: string;
+} & YaptideResponse;
 
 export type ResponseAuthStatus = AuthStatus;
 

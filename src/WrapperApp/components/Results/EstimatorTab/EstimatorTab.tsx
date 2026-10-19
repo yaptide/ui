@@ -1,4 +1,4 @@
-import { Box, CircularProgress, useTheme } from '@mui/material';
+import { Box, Button, CircularProgress, useTheme } from '@mui/material';
 
 import { generateGraphs } from '../../../../JsRoot/GraphData';
 import { FullSimulationData } from '../../../../types/SimulationService';
@@ -42,6 +42,13 @@ const EstimatorTab = ({
 						height: '100%',
 						overflowY: 'auto'
 					}}>
+					{estimator.fullResolutionUrl && (
+						<Button
+							href={estimator.fullResolutionUrl}
+							sx={{ alignSelf: 'center' }}>
+							Download full resolution
+						</Button>
+					)}
 					{estimator.tablePages.length > 0 && (
 						<TablePage0D estimator={estimator}></TablePage0D>
 					)}

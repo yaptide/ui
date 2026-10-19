@@ -1,13 +1,14 @@
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import InfoIcon from '@mui/icons-material/Info';
 import { Box, IconButton, Popover, Typography, useTheme } from '@mui/material';
-import { useRef, useState } from 'react';
+import { Fragment, useRef, useState } from 'react';
 
 import { isCustomFilterJSON } from '../ThreeEditor/Simulation/Scoring/CustomFilter';
 import { isParticleFilterJSON } from '../ThreeEditor/Simulation/Scoring/ParticleFilter';
 import { FilterJSON } from '../ThreeEditor/Simulation/Scoring/ScoringFilter';
 import { ScoringOutputJSON } from '../ThreeEditor/Simulation/Scoring/ScoringOutput';
 import { estimatorPage1DToCsv } from '../util/csv/Csv';
+import { Downsampled, downsampledLabel } from '../util/downsampled';
 import { saveString } from '../util/File';
 import Result3D from '../WrapperApp/components/Results/Results3D';
 import { EstimatorResults } from '../WrapperApp/components/Results/ResultsPanel';
@@ -25,6 +26,7 @@ interface IPage {
 	filterRef?: FilterJSON;
 	name?: string;
 	dimensions: number;
+	metadata?: { downsampled?: Downsampled; [key: string]: unknown };
 }
 export interface Page2D extends IPage {
 	data: pageData;
@@ -35,7 +37,6 @@ export interface Page2D extends IPage {
 
 export interface Page1D extends IPage {
 	data: pageData;
-	metadata?: unknown;
 	dimensions: 1;
 	axisDim1: pageData;
 }
@@ -63,6 +64,8 @@ export type Estimator = {
 	pages: Page[];
 	outputUuid?: string;
 	scoringOutputJsonRef?: ScoringOutputJSON;
+	// signed link to the full resolution results of an estimator with a page too large to show
+	fullResolutionUrl?: string;
 };
 
 export type Page = Page3D | Page2D | Page1D | Page0D | GroupedPage1D;
@@ -259,31 +262,40 @@ export function generateGraphs(
 			return { page, graph: getGraphFromPage(page, page.name), filter: page.filterRef };
 		})
 		.map(({ page, graph, filter }, idx) => (
-			<Box
-				key={`graph_${name}${jobId ? '_' + jobId : ''}_${page.name ?? idx}`}
-				sx={theme => ({
-					display: 'flex',
-					justifyContent: 'center',
-					margin: theme.spacing(1),
-					gap: theme.spacing(2)
-				})}>
-				{/* backgroundColor so it doesn't flicker with dark theme on reload */}
-				<Box sx={{ width: '1080px', backgroundColor: 'white' }}>{graph}</Box>
+			<Fragment key={`graph_${name}${jobId ? '_' + jobId : ''}_${page.name ?? idx}`}>
 				<Box
 					sx={theme => ({
-						marginTop: theme.spacing(2),
 						display: 'flex',
-						flexDirection: 'column'
+						justifyContent: 'center',
+						margin: theme.spacing(1),
+						gap: theme.spacing(2)
 					})}>
-					{isPage1d(page) && (
-						<IconButton
-							onClick={() => onClickSaveToFile(page as Page1D)}
-							color='primary'>
-							<FileDownloadIcon fontSize='large' />
-						</IconButton>
-					)}
-					<GraphInfo filter={filter} />
+					{/* backgroundColor so it doesn't flicker with dark theme on reload */}
+					<Box sx={{ width: '1080px', backgroundColor: 'white' }}>{graph}</Box>
+					<Box
+						sx={theme => ({
+							marginTop: theme.spacing(2),
+							display: 'flex',
+							flexDirection: 'column'
+						})}>
+						{isPage1d(page) && (
+							<IconButton
+								onClick={() => onClickSaveToFile(page as Page1D)}
+								color='primary'>
+								<FileDownloadIcon fontSize='large' />
+							</IconButton>
+						)}
+						<GraphInfo filter={filter} />
+					</Box>
 				</Box>
-			</Box>
+				{page.metadata?.downsampled && (
+					<Typography
+						align='center'
+						variant='body2'
+						color='text.secondary'>
+						{downsampledLabel(page.metadata.downsampled)}
+					</Typography>
+				)}
+			</Fragment>
 		));
 }

@@ -490,7 +490,8 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 				const estimator: Estimator[] = [
 					{
 						name: estimatorName,
-						pages: await resolveStoredPages(response.pages, signal)
+						pages: await resolveStoredPages(response.pages, signal),
+						fullResolutionUrl: response.fullResolutionUrl
 					}
 				];
 
