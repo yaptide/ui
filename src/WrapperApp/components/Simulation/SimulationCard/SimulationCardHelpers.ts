@@ -8,6 +8,7 @@ import { titleToKebabCase } from '../../../../ThreeEditor/components/Dialog/Cust
 import { YaptideEditor } from '../../../../ThreeEditor/js/YaptideEditor';
 import { JobStatusData, SimulationInputFiles, StatusState } from '../../../../types/ResponseTypes';
 import { FullSimulationData } from '../../../../types/SimulationService';
+import { logfilesHtml } from '../../../../util/logfilesHtml';
 
 interface SimulationCardHelpersProps {
 	loadResults: ((jobId: string | null) => void) | undefined;
@@ -71,9 +72,7 @@ const SimulationCardHelpers = ({
 		const errorWindow = window.open();
 
 		const logfile = await getJobLogs(simulation);
-		const logfiles = Object.entries(logfile?.logfiles ?? {}).map(([key, value]) => {
-			return `<details><summary><h2 style="display: inline;">${key}</h2></summary><pre>${value}</pre></details>`;
-		});
+		const logfiles = logfilesHtml(logfile?.logfiles ?? {});
 
 		if (!errorWindow) return console.error('Could not open new window');
 		errorWindow.document.open();
