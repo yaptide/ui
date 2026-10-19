@@ -31,6 +31,7 @@ import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTab
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { SimulationFetchSource, SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
+import { outputsTooLarge } from '../../../util/outputsSize';
 import { BatchScriptParametersEditor } from './BatchParametersEditor';
 import { Geant4DatasetDownloadSelector, Geant4DatasetsType } from './Geant4DatasetDownload';
 
@@ -214,6 +215,12 @@ export function RunSimulationForm({
 		geant4DownloadManagerState
 	]);
 
+	// the server refuses outputs this large; files run as given, Geant4 runs in the browser
+	const outputsRefused =
+		simulationSourceType === 'editor' && editorJson && currentSimulator !== SimulatorType.GEANT4
+			? outputsTooLarge(editorJson, nTasks)
+			: undefined;
+
 	const toggleFileSelection = (fileName: string) =>
 		setSelectedFiles((prev: string[]) => {
 			return prev.includes(fileName) ? prev.filter(f => f !== fileName) : [...prev, fileName];
@@ -248,7 +255,7 @@ export function RunSimulationForm({
 	};
 
 	const handleRunSimulationClick = () => {
-		if (!runPreconditionsMet) {
+		if (!runPreconditionsMet || outputsRefused) {
 			return;
 		}
 
@@ -529,6 +536,14 @@ export function RunSimulationForm({
 						setGeant4DatasetType={setGeant4DatasetType}
 					/>
 				)}
+				{outputsRefused && (
+					<Typography
+						color='error'
+						variant='body2'
+						sx={{ marginBottom: theme.spacing(2) }}>
+						{outputsRefused}
+					</Typography>
+				)}
 				<Box sx={{ display: 'flex', justifyContent: 'center' }}>
 					<Button
 						sx={{
@@ -537,7 +552,7 @@ export function RunSimulationForm({
 						}}
 						variant='contained'
 						size='large'
-						disabled={!usingBatchConfig && !runPreconditionsMet}
+						disabled={(!usingBatchConfig && !runPreconditionsMet) || !!outputsRefused}
 						onClick={handleRunSimulationClick}>
 						Start simulation
 					</Button>
