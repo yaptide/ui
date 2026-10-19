@@ -22,6 +22,23 @@ describe('logfilesHtml', () => {
 		);
 	});
 
+	it('shows a failure reason stored as an error first', () => {
+		expect(
+			logfilesHtml({ log: 'merging', error: 'Merging the results ran out of memory' })
+		).toBe(
+			'<p><strong>Merging the results ran out of memory</strong></p>' +
+				'<details><summary><h2 style="display: inline;">log</h2></summary><pre>merging</pre></details>'
+		);
+	});
+
+	it('nests no heading deeper than h6', () => {
+		const html = logfilesHtml({ a: { b: { c: { d: { e: { f: 'deep' } } } } } });
+
+		expect(html).toContain('<h6 style="display: inline;">e</h6>');
+		expect(html).toContain('<h6 style="display: inline;">f</h6>');
+		expect(html).not.toContain('<h7');
+	});
+
 	it('shows the log files of a simulation run without an HPC cluster', () => {
 		expect(logfilesHtml({ 'run_1.log': 'done' })).toBe(
 			'<details><summary><h2 style="display: inline;">run_1.log</h2></summary><pre>done</pre></details>'

@@ -4,11 +4,15 @@ const escapeHtml = (text: string) =>
 		char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[char] as string
 	);
 
-function section(name: string, value: unknown, level: number): string {
+// keys under which the backend says why a simulation failed
+const reasonKeys = ['message', 'error'];
+
+function section(name: string, value: unknown, depth: number): string {
+	const level = Math.min(depth, 6);
 	const body =
 		value !== null && typeof value === 'object'
 			? Object.entries(value)
-					.map(([key, inner]) => section(key, inner, level + 1))
+					.map(([key, inner]) => section(key, inner, depth + 1))
 					.join('')
 			: `<pre>${escapeHtml(String(value))}</pre>`;
 
@@ -20,14 +24,17 @@ function section(name: string, value: unknown, level: number): string {
  * then each log as a collapsible block, a log made of several files (e.g. the scripts of an HPC job) one block each.
  */
 export function logfilesHtml(logfiles: Record<string, unknown>): string {
-	const { message, ...rest } = logfiles;
-	const reason =
-		typeof message === 'string' ? `<p><strong>${escapeHtml(message)}</strong></p>` : '';
-	const files = typeof message === 'string' ? rest : logfiles;
+	const isReason = ([name, value]: [string, unknown]) =>
+		reasonKeys.includes(name) && typeof value === 'string';
+	const entries = Object.entries(logfiles);
 
 	return (
-		reason +
-		Object.entries(files)
+		entries
+			.filter(isReason)
+			.map(([, reason]) => `<p><strong>${escapeHtml(reason as string)}</strong></p>`)
+			.join('') +
+		entries
+			.filter(entry => !isReason(entry))
 			.map(([name, value]) => section(name, value, 2))
 			.join('')
 	);
