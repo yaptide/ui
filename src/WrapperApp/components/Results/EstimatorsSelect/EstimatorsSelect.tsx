@@ -86,6 +86,8 @@ const EstimatorsSelect = ({
 
 								if (existingEstimator) {
 									existingEstimator.pages.push(...estimator.pages);
+									existingEstimator.fullResolutionName ??=
+										estimator.fullResolutionName;
 								} else {
 									acc.estimators.push(estimator);
 								}

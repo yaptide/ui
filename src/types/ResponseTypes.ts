@@ -442,7 +442,8 @@ export type EstimatorPagesByDimensions = {
 };
 
 export type ResponseGetJobLogs = {
-	logfiles: Record<string, string>;
+	// log file contents, the scripts of an HPC job nested under one key, why the simulation failed under `message` or `error`
+	logfiles: Record<string, unknown>;
 } & YaptideResponse;
 
 export type ResponseGetJobResults = {
@@ -451,7 +452,11 @@ export type ResponseGetJobResults = {
 
 export type ResponseGetJobResult = Estimator & YaptideResponse;
 
-export type ResponseGetEstimatorPageResult = { pages: Page[] } & YaptideResponse;
+export type ResponseGetEstimatorPageResult = {
+	pages: Page[];
+	fullResolution?: boolean;
+	fullResolutionUrl?: string;
+} & YaptideResponse;
 
 export type ResponseAuthStatus = AuthStatus;
 

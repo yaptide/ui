@@ -31,6 +31,7 @@ import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTab
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { SimulationFetchSource, SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
+import { outputsTooLarge } from '../../../util/outputsSize';
 import { BatchScriptParametersEditor } from './BatchParametersEditor';
 import { Geant4DatasetDownloadSelector, Geant4DatasetsType } from './Geant4DatasetDownload';
 
@@ -214,6 +215,19 @@ export function RunSimulationForm({
 		geant4DownloadManagerState
 	]);
 
+	// the server refuses SHIELD-HIT12A outputs this large; for input files only the server checks, its message shows
+	// when the simulation is submitted
+	const outputsTooLargeMessage =
+		simulationSourceType === 'editor' && editorJson && runSimulator === SimulatorType.SHIELDHIT
+			? outputsTooLarge(editorJson, nTasks, overridePrimariesCount)
+			: undefined;
+
+	// the batch config hides the number of tasks, which is still submitted
+	const outputsRefused =
+		outputsTooLargeMessage && usingBatchConfig && simulationRunType === 'batch'
+			? `${outputsTooLargeMessage} The number of tasks is set with "Use batch config" unticked.`
+			: outputsTooLargeMessage;
+
 	const toggleFileSelection = (fileName: string) =>
 		setSelectedFiles((prev: string[]) => {
 			return prev.includes(fileName) ? prev.filter(f => f !== fileName) : [...prev, fileName];
@@ -248,7 +262,7 @@ export function RunSimulationForm({
 	};
 
 	const handleRunSimulationClick = () => {
-		if (!runPreconditionsMet) {
+		if (!runPreconditionsMet || outputsRefused) {
 			return;
 		}
 
@@ -529,6 +543,14 @@ export function RunSimulationForm({
 						setGeant4DatasetType={setGeant4DatasetType}
 					/>
 				)}
+				{outputsRefused && (
+					<Typography
+						color='error'
+						variant='body2'
+						sx={{ marginBottom: theme.spacing(2) }}>
+						{outputsRefused}
+					</Typography>
+				)}
 				<Box sx={{ display: 'flex', justifyContent: 'center' }}>
 					<Button
 						sx={{
@@ -537,7 +559,7 @@ export function RunSimulationForm({
 						}}
 						variant='contained'
 						size='large'
-						disabled={!usingBatchConfig && !runPreconditionsMet}
+						disabled={(!usingBatchConfig && !runPreconditionsMet) || !!outputsRefused}
 						onClick={handleRunSimulationClick}>
 						Start simulation
 					</Button>
