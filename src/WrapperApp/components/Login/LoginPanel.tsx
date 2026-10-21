@@ -12,7 +12,7 @@ export default function LoginPanel() {
 	const { altAuth } = useConfig();
 	const { localUsersEnabled } = useAuth();
 	const { keycloak, initialized } = useKeycloakAuth();
-	const [isPasswordLoginSelected, setisPasswordLoginSelected] = useState(!altAuth);
+	const [isPasswordLoginSelected, setIsPasswordLoginSelected] = useState(!altAuth);
 	// on Keycloak-only deployments the backend rejects local users, so do not offer password login
 	const isPasswordLoginAvailable = !altAuth || localUsersEnabled === true;
 
@@ -57,10 +57,10 @@ export default function LoginPanel() {
 							}}>
 							Connect with PLGrid
 						</Button>
-						{localUsersEnabled && (
+						{isPasswordLoginAvailable && (
 							<Link
 								color='textDisabled'
-								onClick={() => setisPasswordLoginSelected(true)}
+								onClick={() => setIsPasswordLoginSelected(true)}
 								sx={{ cursor: 'pointer' }}>
 								use password login
 							</Link>
@@ -72,7 +72,7 @@ export default function LoginPanel() {
 							<Box sx={{ width: '100%' }}>
 								<IconButton
 									size='small'
-									onClick={() => setisPasswordLoginSelected(false)}>
+									onClick={() => setIsPasswordLoginSelected(false)}>
 									<ArrowBack />
 								</IconButton>
 							</Box>
