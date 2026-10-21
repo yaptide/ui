@@ -67,7 +67,7 @@ export interface AuthContext {
 	user: AuthUser | null;
 	isAuthorized: boolean;
 	isServerReachable: boolean;
-	localUsersEnabled: boolean;
+	localUsersEnabled: boolean | undefined;
 	login: (...args: RequestAuthLogin) => void;
 	logout: (...args: RequestAuthLogout) => void;
 	refresh: (...args: RequestAuthRefresh) => void;
@@ -85,7 +85,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	const { keycloak, initialized } = useKeycloakAuth();
 	const [keyCloakInterval, setKeyCloakInterval] = useState<number>();
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
-	const [localUsersEnabled, setLocalUsersEnabled] = useState(true);
+	const [localUsersEnabled, setLocalUsersEnabled] = useState<boolean>();
 	const { enqueueSnackbar } = useSnackbar();
 	const { open: openRejectKeycloakUserDialog } = useDialog('rejectKeycloak');
 	const { open: openRejectKeycloakRefreshUserDialog } = useDialog('rejectKeycloakRefresh');
