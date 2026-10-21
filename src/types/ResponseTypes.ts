@@ -254,6 +254,17 @@ type JobAllStatuses =
 	| JobStatusFailed
 	| JobStatusCanceled;
 
+export type DatasetPreparationStage = 'initializing' | 'loading' | 'preparing';
+
+export type DatasetPreparationInfo = {
+	stage: DatasetPreparationStage;
+	fromCache: boolean;
+	completedCount: number;
+	totalCount: number;
+	activeDataset?: string;
+	overallProgress?: number;
+};
+
 /**
  * This type is used to represent the status of a job of unknown type.
  * To make it easier to read, it is a shorthand for `Partial<ObjUnionToKeyUnion<JobAllStatuses>>`
@@ -270,6 +281,7 @@ export type JobUnknownStatus = {
 		| StatusState.CANCELED;
 	message?: string;
 	jobTasksStatus?: Array<TaskUnknownStatus>;
+	datasetPreparation?: DatasetPreparationInfo;
 };
 
 type ResponseJobRequestFailure = Omit<
