@@ -122,17 +122,25 @@ export function SimulationPreparation(props: { preparation: DatasetPreparationIn
 
 	const determinate = stage === 'loading' && overallProgress !== undefined;
 
+	const progressValue = determinate ? overallProgress! * 100 : 0;
+
 	return (
 		<>
-			<Typography
-				color='textDisabled'
-				variant='caption'>
-				{label}
-			</Typography>
+			<Typography color='textDisabled'>{label}</Typography>
 			<LinearProgress
-				variant={determinate ? 'determinate' : 'indeterminate'}
-				value={determinate ? overallProgress! * 100 : undefined}
-				sx={{ height: 4, mb: 1, mt: 0.5 }}
+				color='secondary'
+				variant='buffer'
+				value={progressValue}
+				valueBuffer={1}
+				sx={{
+					'height': 18,
+					'mb': 1,
+					'& .MuiLinearProgress-dashed': {
+						overflow: 'hidden',
+						backgroundSize: '5.75px 5.75px',
+						animationDuration: '2s'
+					}
+				}}
 			/>
 		</>
 	);
