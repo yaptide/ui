@@ -149,7 +149,8 @@ export type RequestGetJobResults = Flatten<
 
 export type RequestGetJobResult = Flatten<
 	[
-		[{ jobId: string; estimatorName: string; pageNumbers: number[] }],
+		// revision: the primaries partial results cover, so each new partial is fetched again
+		[{ jobId: string; estimatorName: string; pageNumbers: number[]; revision?: number }],
 		RequestParam,
 		CachedDataParams<JobResults>
 	]

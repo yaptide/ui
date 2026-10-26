@@ -1,14 +1,10 @@
 import { Box, CardContent, Chip, LinearProgress, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 
-import {
-	currentJobStatusData,
-	currentTaskStatusData,
-	JobUnknownStatus,
-	SimulationInfo,
-	StatusState,
-	TaskUnknownStatus
-} from '../../../../types/ResponseTypes';
+import { JobUnknownStatus, SimulationInfo, StatusState } from '../../../../types/ResponseTypes';
+import { clusterBusyLabel } from '../../../../util/clusterBusy';
+import { partialResultsLabel } from '../../../../util/partialResults';
+import { TaskTotals, taskTotals } from '../../../../util/taskTotals';
 import { millisecondsToTimeString } from '../../../../util/time';
 
 interface SimulationCardContentProps {
@@ -20,38 +16,10 @@ interface SimulationCardContentProps {
 	highlightColor: string;
 }
 
-function getValidatedPrimaries(primariesNumber: number | undefined): number {
-	return primariesNumber ?? 0;
-}
+function simulationProgress(totals: TaskTotals | undefined): number {
+	if (!totals || totals.requestedPrimaries <= 0) return 0;
 
-function percentOfSimulatedPrimaries(
-	requestedPrimariesSum: number,
-	simulatedPrimariesSum: number
-): number {
-	return requestedPrimariesSum > 0
-		? Math.min(100, (simulatedPrimariesSum / requestedPrimariesSum) * 100)
-		: 0;
-}
-
-function calculateSimulationProgress(jobTasksStatus: TaskUnknownStatus[]): number {
-	if (jobTasksStatus.length === 0) {
-		return 0;
-	}
-
-	const { requestedPrimariesSum, simulatedPrimariesSum } = jobTasksStatus.reduce(
-		(
-			acc: { requestedPrimariesSum: number; simulatedPrimariesSum: number },
-			taskStatus: TaskUnknownStatus
-		) => {
-			acc.requestedPrimariesSum += getValidatedPrimaries(taskStatus.requestedPrimaries);
-			acc.simulatedPrimariesSum += getValidatedPrimaries(taskStatus.simulatedPrimaries);
-
-			return acc;
-		},
-		{ requestedPrimariesSum: 0, simulatedPrimariesSum: 0 }
-	);
-
-	return percentOfSimulatedPrimaries(requestedPrimariesSum, simulatedPrimariesSum);
+	return Math.min(100, (totals.simulatedPrimaries / totals.requestedPrimaries) * 100);
 }
 
 function needsProgressBar(state: StatusState | undefined) {
@@ -72,10 +40,7 @@ export function SimulationProgress(props: {
 	const [simulationProgressPercent, setSimulationProgressPercent] = useState(0);
 
 	useEffect(() => {
-		if (simulationStatus.jobTasksStatus) {
-			const jobTasksStatus = simulationStatus.jobTasksStatus;
-			setSimulationProgressPercent(calculateSimulationProgress(jobTasksStatus));
-		}
+		setSimulationProgressPercent(simulationProgress(taskTotals(simulationStatus)));
 	}, [simulationStatus, setSimulationProgressPercent]);
 
 	return (
@@ -110,6 +75,10 @@ export const SimulationCardContent = ({
 	simulationStatus,
 	highlightColor
 }: SimulationCardContentProps) => {
+	const totals = taskTotals(simulationStatus);
+	const partialLabel = partialResultsLabel(simulationStatus);
+	const busyLabel = clusterBusyLabel(simulationStatus);
+
 	return (
 		<CardContent sx={{ flexGrow: 1, p: 0, px: 1 }}>
 			<Box
@@ -127,29 +96,17 @@ export const SimulationCardContent = ({
 					}
 					sx={{ backgroundColor: highlightColor, color: 'white' }}
 				/>
-				{currentJobStatusData['hasSpecificProperty'](
-					simulationStatus,
-					'jobTasksStatus'
-				) && (
+				{totals && (
 					<>
 						<Chip
 							variant='outlined'
 							size='small'
-							label={`primaries: ${simulationStatus.jobTasksStatus.reduce(
-								(acc, taskStatus) =>
-									currentTaskStatusData['hasSpecificProperty'](
-										taskStatus,
-										'requestedPrimaries'
-									)
-										? acc + taskStatus.requestedPrimaries
-										: acc,
-								0 as number
-							)}`}
+							label={`primaries: ${totals.requestedPrimaries}`}
 						/>
 						<Chip
 							variant='outlined'
 							size='small'
-							label={`ntask: ${simulationStatus.jobTasksStatus.length}`}
+							label={`ntask: ${totals.ntasks}`}
 						/>
 					</>
 				)}
@@ -167,10 +124,7 @@ export const SimulationCardContent = ({
 			</Box>
 			<Box sx={{ minHeight: '40px' }}>
 				{needsProgressBar(simulationStatus.jobState)
-					? currentJobStatusData['hasSpecificProperty'](
-							simulationStatus,
-							'jobTasksStatus'
-						) && (
+					? totals && (
 							<SimulationProgress
 								formatedStartDate={formatedStartDate}
 								duration={duration}
@@ -192,6 +146,18 @@ export const SimulationCardContent = ({
 								</Typography>
 							</>
 						)}
+				{partialLabel && (
+					<Typography color='textDisabled'>Partial results: {partialLabel}</Typography>
+				)}
+				{busyLabel && <Typography color='warning.main'>{busyLabel}</Typography>}
+				{busyLabel && simulationStatus.clusterNotice && (
+					<Typography
+						variant='caption'
+						color='textSecondary'
+						sx={{ whiteSpace: 'pre-line' }}>
+						{simulationStatus.clusterNotice}
+					</Typography>
+				)}
 			</Box>
 		</CardContent>
 	);
