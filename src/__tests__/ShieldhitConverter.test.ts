@@ -104,7 +104,7 @@ describe('ShieldhitConverter', () => {
 		const loadFileDialog = await driver.wait(
 			until.elementLocated(
 				By.xpath(
-					`//div[@role = 'dialog' and @aria-labelledby = '${loadFileTitleId}' and @aria-describedby = '${loadFileContentId}']`
+					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${loadFileTitleId}' and @aria-describedby = '${loadFileContentId}']`
 				)
 			),
 			10_000

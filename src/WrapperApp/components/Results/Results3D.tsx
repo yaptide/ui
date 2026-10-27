@@ -18,12 +18,16 @@ export function Result3D(props: { page: Page3D; title?: string }) {
 				}}>
 				<Stack
 					direction={'row'}
-					gap='1rem'
-					alignItems={'center'}>
+					sx={{
+						gap: '1rem',
+						alignItems: 'center'
+					}}>
 					<Typography variant='h6'>Url on server: </Typography>
 					<Typography
 						variant='h6'
-						fontWeight={'bold'}>
+						sx={{
+							fontWeight: 'bold'
+						}}>
 						{page.resultsUrl}
 					</Typography>
 					<CopyToClipboard text={page.resultsUrl}>

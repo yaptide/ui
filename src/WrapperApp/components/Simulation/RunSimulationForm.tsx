@@ -319,8 +319,10 @@ export function RunSimulationForm({
 			}}>
 			<AccordionSummary>
 				<Typography
-					textTransform='none'
-					fontSize={16}>
+					sx={{
+						textTransform: 'none',
+						fontSize: 16
+					}}>
 					Run new simulation
 				</Typography>
 			</AccordionSummary>

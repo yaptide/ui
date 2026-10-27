@@ -160,7 +160,9 @@ function CacheStatusIndicator() {
 				<CircularProgress size={16} />
 				<Typography
 					variant='body2'
-					color='text.secondary'>
+					sx={{
+						color: 'text.secondary'
+					}}>
 					Checking cache status...
 				</Typography>
 			</Box>
@@ -199,8 +201,10 @@ function CacheStatusIndicator() {
 					title={`Browser storage: ${storageEstimate.usedMB.toFixed(0)} MB used of ${storageEstimate.quotaMB.toFixed(0)} MB (${storageEstimate.percentUsed.toFixed(1)}%)`}>
 					<Typography
 						variant='caption'
-						color='text.secondary'
-						sx={{ flexGrow: 1 }}>
+						sx={{
+							color: 'text.secondary',
+							flexGrow: 1
+						}}>
 						{cachedCount > 0 && `${storageEstimate.usedMB.toFixed(0)} MB used`}
 						{!allCached &&
 							(cachedCount > 0
@@ -245,9 +249,12 @@ export function Geant4DatasetDownloadSelector(props: {
 				{geant4DatasetType === Geant4DatasetsType.FULL ? (
 					<>
 						<Typography
-							textTransform='none'
-							fontSize={11}
-							sx={{ flex: 1, mr: 1 }}>
+							sx={{
+								textTransform: 'none',
+								fontSize: 11,
+								flex: 1,
+								mr: 1
+							}}>
 							<b>FULL</b>: Speed up the simulation by downloading Geant4 datasets.
 						</Typography>
 						<Button
@@ -259,9 +266,12 @@ export function Geant4DatasetDownloadSelector(props: {
 				) : (
 					<>
 						<Typography
-							textTransform='none'
-							fontSize={11}
-							sx={{ flex: 1, mr: 1 }}>
+							sx={{
+								textTransform: 'none',
+								fontSize: 11,
+								flex: 1,
+								mr: 1
+							}}>
 							<b>PARTIAL</b>: Longer simulation time because of downloading thousands
 							of files on-the-fly. Smaller total download size.
 						</Typography>
@@ -326,8 +336,10 @@ export function Geant4Datasets() {
 				expandIcon={<ExpandMoreIcon />}
 				onClick={() => setOpen(!open)}>
 				<Typography
-					textTransform='none'
-					fontSize={16}>
+					sx={{
+						textTransform: 'none',
+						fontSize: 16
+					}}>
 					Dataset Download{' '}
 					{geant4DownloadManagerState === DownloadManagerStatus.FINISHED ? '(done)' : ''}
 				</Typography>
