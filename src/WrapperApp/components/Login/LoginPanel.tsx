@@ -10,11 +10,11 @@ import NamePasswordLoginPanel from './NamePasswordLoginPanel';
 export default function LoginPanel() {
 	const theme = useTheme();
 	const { plgridAuthEnabled } = useConfig();
-	const { localUsersEnabled } = useAuth();
+	const { localUsersAvailability } = useAuth();
 	const { keycloak, initialized } = useKeycloakAuth();
 	const [isPasswordLoginSelected, setIsPasswordLoginSelected] = useState(!plgridAuthEnabled);
 	// on Keycloak-only deployments the backend rejects local users, so do not offer password login
-	const isPasswordLoginAvailable = !plgridAuthEnabled || localUsersEnabled === true;
+	const isPasswordLoginAvailable = !plgridAuthEnabled || localUsersAvailability === 'enabled';
 
 	const showPasswordLoginForm = isPasswordLoginSelected && isPasswordLoginAvailable;
 
