@@ -3,10 +3,11 @@ import { useEffect } from 'react';
 
 import { MAX_SCALING_FACTOR, Page1D } from '../GraphData';
 import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
+import { JsRootGraphToolbar } from './JsRootGraphToolbar';
 
 export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 	const { page, title } = props;
-	const { update, ref } = useJsRootCanvas('AL;gridxy;tickxy');
+	const { update, ref, zoomIn, zoomOut, resetZoom } = useJsRootCanvas('AL;gridxy;tickxy');
 
 	useEffect(() => {
 		update(() => {
@@ -50,7 +51,16 @@ export function JsRootGraph1D(props: { page: Page1D; title?: string }) {
 		});
 	}, [page, title, update]);
 
-	return <GraphCanvas ref={ref} />;
+	return (
+		<div>
+			<JsRootGraphToolbar
+				zoomIn={zoomIn}
+				zoomOut={zoomOut}
+				resetZoom={resetZoom}
+			/>
+			<GraphCanvas ref={ref} />
+		</div>
+	);
 }
 
 export default JsRootGraph1D;

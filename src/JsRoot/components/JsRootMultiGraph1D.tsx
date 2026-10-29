@@ -3,10 +3,11 @@ import React, { useEffect } from 'react';
 
 import { GroupedPage1D, MAX_SCALING_FACTOR } from '../GraphData';
 import { GraphCanvas, useJsRootCanvas } from '../hook/useJsRootCanvas';
+import { JsRootGraphToolbar } from './JsRootGraphToolbar';
 
 export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string }) {
 	const { page } = props;
-	const { update, ref } = useJsRootCanvas('AL;gridxy;tickxy');
+	const { update, ref, zoomIn, zoomOut, resetZoom } = useJsRootCanvas('AL;gridxy;tickxy');
 
 	useEffect(() => {
 		update(() => {
@@ -95,7 +96,16 @@ export function JsRootMultiGraph1D(props: { page: GroupedPage1D; title?: string 
 		});
 	}, [page, update]);
 
-	return <GraphCanvas ref={ref} />;
+	return (
+		<div>
+			<JsRootGraphToolbar
+				zoomIn={zoomIn}
+				zoomOut={zoomOut}
+				resetZoom={resetZoom}
+			/>
+			<GraphCanvas ref={ref} />
+		</div>
+	);
 }
 
 export default JsRootMultiGraph1D;
