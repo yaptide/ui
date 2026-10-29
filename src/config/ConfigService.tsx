@@ -6,7 +6,7 @@ import { snakeToCamelCase } from '../util/Notation/Notation';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:5000';
 const DEMO_MODE = process.env.REACT_APP_TARGET === 'demo';
-const ALT_AUTH = process.env.REACT_APP_ALT_AUTH === 'plg';
+const PLGRID_AUTH_ENABLED = process.env.REACT_APP_ALT_AUTH === 'plg';
 
 export const DEPLOYMENT = (process.env.REACT_APP_DEPLOYMENT as ConfigDeployment) ?? 'prod';
 export type ConfigDeployment = 'dev' | 'prod' | undefined;
@@ -17,7 +17,7 @@ interface Config {
 	backendUrl: string;
 	deployment: ConfigDeployment;
 	demoMode: boolean;
-	altAuth: boolean;
+	plgridAuthEnabled: boolean;
 }
 
 declare global {
@@ -36,7 +36,7 @@ const ConfigProvider = ({ children }: { children?: ReactNode }) => {
 		backendUrl: BACKEND_URL,
 		deployment: DEPLOYMENT,
 		demoMode: DEMO_MODE,
-		altAuth: ALT_AUTH
+		plgridAuthEnabled: PLGRID_AUTH_ENABLED
 	});
 	window.BACKEND_URL ??= BACKEND_URL;
 
@@ -74,7 +74,7 @@ const ConfigProvider = ({ children }: { children?: ReactNode }) => {
 			defineProperty('BACKEND_URL');
 			defineProperty('DEPLOYMENT', true);
 			defineProperty('DEMO_MODE');
-			defineProperty('ALT_AUTH');
+			defineProperty('PLGRID_AUTH_ENABLED');
 		}
 	}, [config]);
 

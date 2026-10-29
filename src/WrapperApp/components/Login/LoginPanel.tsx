@@ -9,12 +9,14 @@ import NamePasswordLoginPanel from './NamePasswordLoginPanel';
 
 export default function LoginPanel() {
 	const theme = useTheme();
-	const { altAuth } = useConfig();
-	const { localUsersEnabled } = useAuth();
+	const { plgridAuthEnabled } = useConfig();
+	const { localUsersAvailability } = useAuth();
 	const { keycloak, initialized } = useKeycloakAuth();
-	const [namePasswordLoginSelected, setNamePasswordLoginSelected] = useState(!altAuth);
+	const [isPasswordLoginSelected, setIsPasswordLoginSelected] = useState(!plgridAuthEnabled);
 	// on Keycloak-only deployments the backend rejects local users, so do not offer password login
-	const namePasswordLogin = namePasswordLoginSelected && (localUsersEnabled || !altAuth);
+	const isPasswordLoginAvailable = !plgridAuthEnabled || localUsersAvailability === 'enabled';
+
+	const showPasswordLoginForm = isPasswordLoginSelected && isPasswordLoginAvailable;
 
 	const keycloakLogin = useCallback(() => {
 		if (initialized && !keycloak.authenticated) keycloak.login();
@@ -39,7 +41,7 @@ export default function LoginPanel() {
 					backgroundColor: theme.palette.accordion.main,
 					gap: theme.spacing(1)
 				}}>
-				{altAuth && !namePasswordLogin ? (
+				{plgridAuthEnabled && !showPasswordLoginForm ? (
 					<>
 						<Button
 							fullWidth
@@ -55,10 +57,10 @@ export default function LoginPanel() {
 							}}>
 							Connect with PLGrid
 						</Button>
-						{localUsersEnabled && (
+						{isPasswordLoginAvailable && (
 							<Link
 								color='textDisabled'
-								onClick={() => setNamePasswordLoginSelected(true)}
+								onClick={() => setIsPasswordLoginSelected(true)}
 								sx={{ cursor: 'pointer' }}>
 								use password login
 							</Link>
@@ -66,11 +68,11 @@ export default function LoginPanel() {
 					</>
 				) : (
 					<>
-						{altAuth && (
+						{plgridAuthEnabled && (
 							<Box sx={{ width: '100%' }}>
 								<IconButton
 									size='small'
-									onClick={() => setNamePasswordLoginSelected(false)}>
+									onClick={() => setIsPasswordLoginSelected(false)}>
 									<ArrowBack />
 								</IconButton>
 							</Box>
