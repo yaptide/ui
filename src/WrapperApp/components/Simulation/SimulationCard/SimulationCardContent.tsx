@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import {
 	currentJobStatusData,
 	currentTaskStatusData,
+	DatasetPreparationInfo,
 	JobUnknownStatus,
 	SimulationInfo,
 	StatusState,
@@ -102,6 +103,49 @@ export function SimulationProgress(props: {
 	);
 }
 
+export function SimulationPreparation(props: { preparation: DatasetPreparationInfo }) {
+	const { stage, fromCache, completedCount, totalCount, activeDataset, overallProgress } =
+		props.preparation;
+
+	const showCounter = totalCount > 0 && completedCount > 0;
+	const counter = showCounter ? ` (${completedCount}/${totalCount})` : '';
+	const suffix = activeDataset ? ` — ${activeDataset}` : '';
+
+	const label =
+		stage === 'initializing'
+			? 'Initializing simulation engine'
+			: stage === 'preparing'
+				? 'Preparing simulation'
+				: fromCache
+					? `Loading datasets from cache${counter}${suffix}`
+					: `Preparing datasets${counter}${suffix}`;
+
+	const determinate = stage === 'loading' && overallProgress !== undefined;
+
+	const progressValue = determinate ? overallProgress! * 100 : 0;
+
+	return (
+		<>
+			<Typography color='textDisabled'>{label}</Typography>
+			<LinearProgress
+				color='secondary'
+				variant='buffer'
+				value={progressValue}
+				valueBuffer={1}
+				sx={{
+					'height': 18,
+					'mb': 1,
+					'& .MuiLinearProgress-dashed': {
+						overflow: 'hidden',
+						backgroundSize: '5.75px 5.75px',
+						animationDuration: '2s'
+					}
+				}}
+			/>
+		</>
+	);
+}
+
 export const SimulationCardContent = ({
 	duration,
 	endTime,
@@ -166,32 +210,33 @@ export const SimulationCardContent = ({
 						))}
 			</Box>
 			<Box sx={{ minHeight: '40px' }}>
-				{needsProgressBar(simulationStatus.jobState)
-					? currentJobStatusData['hasSpecificProperty'](
-							simulationStatus,
-							'jobTasksStatus'
-						) && (
-							<SimulationProgress
-								formatedStartDate={formatedStartDate}
-								duration={duration}
-								simulationStatus={simulationStatus}
-							/>
-						)
-					: simulationStatus.jobState === StatusState.COMPLETED && (
-							<>
-								<Typography color='textDisabled'>
-									Start: {formatedStartDate}
-								</Typography>
-								{endTime && (
-									<Typography color='textDisabled'>
-										End: {formatedEndDate}
-									</Typography>
-								)}
-								<Typography color='textDisabled'>
-									Duration: {millisecondsToTimeString(duration)}
-								</Typography>
-							</>
-						)}
+				{simulationStatus.jobState === StatusState.PENDING &&
+				simulationStatus.datasetPreparation ? (
+					<SimulationPreparation preparation={simulationStatus.datasetPreparation} />
+				) : needsProgressBar(simulationStatus.jobState) ? (
+					currentJobStatusData['hasSpecificProperty'](
+						simulationStatus,
+						'jobTasksStatus'
+					) && (
+						<SimulationProgress
+							formatedStartDate={formatedStartDate}
+							duration={duration}
+							simulationStatus={simulationStatus}
+						/>
+					)
+				) : (
+					simulationStatus.jobState === StatusState.COMPLETED && (
+						<>
+							<Typography color='textDisabled'>Start: {formatedStartDate}</Typography>
+							{endTime && (
+								<Typography color='textDisabled'>End: {formatedEndDate}</Typography>
+							)}
+							<Typography color='textDisabled'>
+								Duration: {millisecondsToTimeString(duration)}
+							</Typography>
+						</>
+					)
+				)}
 			</Box>
 		</CardContent>
 	);
