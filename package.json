@@ -33,7 +33,7 @@
 		"jsroot": "^7.10.3",
 		"keycloak-js": "^26.2.1",
 		"ky": "^2.2.0",
-		"material-ui-popup-state": "^5.3.6",
+		"material-ui-popup-state": "^5.3.7",
 		"notistack": "^3.0.2",
 		"object-hash": "^3.0.0",
 		"pyodide": "^0.29.0",
