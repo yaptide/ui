@@ -50,8 +50,10 @@ function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
 				<Stack
 					direction='row'
 					spacing={1}
-					alignItems='center'
-					sx={{ marginBottom: theme.spacing(1) }}>
+					sx={{
+						alignItems: 'center',
+						marginBottom: theme.spacing(1)
+					}}>
 					{props.add.map(add => (
 						<Button
 							key={add.label}

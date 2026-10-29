@@ -236,8 +236,10 @@ export default function RecentSimulations() {
 			}}>
 			<AccordionSummary>
 				<Typography
-					textTransform='none'
-					fontSize={16}>
+					sx={{
+						textTransform: 'none',
+						fontSize: 16
+					}}>
 					Last 5 simulations
 				</Typography>
 			</AccordionSummary>
