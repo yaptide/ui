@@ -2,16 +2,12 @@ import { Euler, MathUtils, Vector3 } from 'three';
 
 import { SimulationPropertiesType } from '../../../../../types/SimulationProperties';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
+import { getSetPositionCommand } from '../../../../../util/hooks/useKeyboardEditorControls';
 import { SetBeamDirectionCommand } from '../../../../js/commands/SetBeamDirectionCommand';
-import { SetDetectPositionCommand } from '../../../../js/commands/SetDetectPositionCommand';
-import { SetPositionCommand } from '../../../../js/commands/SetPositionCommand';
 import { SetRotationCommand } from '../../../../js/commands/SetRotationCommand';
-import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { SimulationElement } from '../../../../Simulation/Base/SimulationElement';
-import { isDetector } from '../../../../Simulation/Detectors/Detector';
 import { Beam, isBeam } from '../../../../Simulation/Physics/Beam';
-import { isWorldZone } from '../../../../Simulation/Zones/WorldZone/WorldZone';
 import { Vector3PropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
@@ -33,19 +29,8 @@ export function ObjectPlacement(props: { editor: YaptideEditor; object: Simulati
 	};
 
 	const updatePosition = (newPosition: Vector3) => {
-		if (watchedObject && watchedObject.position.distanceTo(newPosition) >= 0.01) {
-			if (isWorldZone(watchedObject))
-				editor.execute(
-					new SetValueCommand(editor, watchedObject.object, 'center', newPosition)
-				);
-			else if (isDetector(watchedObject))
-				editor.execute(
-					// probably useless and SetValueCommand should be used instead,
-					// but has to be tested first because it uses additional signals
-					new SetDetectPositionCommand(editor, watchedObject.object, newPosition)
-				);
-			else editor.execute(new SetPositionCommand(editor, watchedObject.object, newPosition));
-		}
+		if (watchedObject && watchedObject.position.distanceTo(newPosition) >= 0.01)
+			editor.execute(getSetPositionCommand(editor, watchedObject.object, newPosition));
 	};
 
 	const updateRotation = (rotation: Vector3) => {
