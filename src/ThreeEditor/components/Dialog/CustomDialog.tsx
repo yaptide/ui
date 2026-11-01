@@ -12,10 +12,13 @@ import {
 } from '@mui/material';
 import { JSX, ReactNode } from 'react';
 
+import { testIds } from '../../../util/testIds';
+
 type CustomDialogProps = {
 	title: string;
 	titleId?: string;
 	contentId?: string;
+	testId?: string;
 	alert?: boolean;
 	contentText: string;
 	body?: ReactNode;
@@ -46,6 +49,7 @@ export function CustomDialog({
 	title,
 	titleId = `${titleToKebabCase(title)}-dialog-title`,
 	contentId = `${titleToKebabCase(title)}-dialog-content`,
+	testId,
 	contentText,
 	sx,
 	body,
@@ -58,11 +62,26 @@ export function CustomDialog({
 			aria-modal='true'
 			aria-labelledby={titleId}
 			aria-describedby={contentId}
+			slotProps={
+				testId
+					? ({
+							paper: { 'data-testid': testIds.dialog(testId) }
+						} as DialogProps['slotProps'])
+					: undefined
+			}
 			open={open}
 			onClose={onClose}>
-			<DialogTitle id={titleId}>{title}</DialogTitle>
+			<DialogTitle
+				id={titleId}
+				data-testid={testId ? testIds.dialogTitle(testId) : undefined}>
+				{title}
+			</DialogTitle>
 			<DialogContent>
-				<DialogContentText id={contentId}>{contentText}</DialogContentText>
+				<DialogContentText
+					id={contentId}
+					data-testid={testId ? testIds.dialogContent(testId) : undefined}>
+					{contentText}
+				</DialogContentText>
 				{body}
 			</DialogContent>
 			<DialogActions>{children}</DialogActions>
