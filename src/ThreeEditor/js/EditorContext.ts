@@ -46,11 +46,7 @@ export type GeometryObject =
 	| CTCube
 	| BeamModulator;
 export type ScoringContextObject =
-	| ScoringFilter
-	| ScoringOutput
-	| ScoringManager
-	| ScoringQuantity
-	| FilterContainer;
+	ScoringFilter | ScoringOutput | ScoringManager | ScoringQuantity | FilterContainer;
 
 export type SettingsContextObject = Beam;
 
