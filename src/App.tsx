@@ -11,6 +11,7 @@ import { Auth } from './services/AuthService';
 import { DialogProvider } from './services/DialogService';
 import { Geant4DatasetContextProvider } from './services/Geant4DatasetContextProvider';
 import { Geant4LocalWorkerSimulationContextProvider } from './services/Geant4LocalWorkerSimulationContextProvider';
+import { InputFilesProvider } from './services/InputFilesContextProvider';
 import { KeycloakAuth } from './services/KeycloakAuthService';
 import { Loader } from './services/LoaderService';
 import { RemoteWorkerSimulationContextProvider } from './services/RemoteWorkerSimulationContextProvider';
@@ -133,6 +134,7 @@ function App() {
 				<Store />,
 				<Geant4DatasetContextProvider />,
 				<DialogProvider />,
+				<InputFilesProvider />,
 				<Auth />,
 				<RemoteWorkerSimulationContextProvider />,
 				<PythonConverterService />,
