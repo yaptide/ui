@@ -37,7 +37,7 @@ const [useKeycloakAuth, KeycloakAuthContextProvider] =
 	createSubstituteContext<KeycloakAuthContext>(useKeycloak);
 
 const KeycloakAuth = ({ children }: GenericContextProviderProps) => {
-	const { plgridAuthEnabled } = useConfig();
+	const { ssoAuthEnabled } = useConfig();
 	const proxyContextProvider = useCallback(
 		(children: ReactNode) => (
 			<KeycloakAuthContextProvider
@@ -50,7 +50,7 @@ const KeycloakAuth = ({ children }: GenericContextProviderProps) => {
 		[]
 	);
 
-	return plgridAuthEnabled ? (
+	return ssoAuthEnabled ? (
 		<KeycloakProvider
 			client={authInstance}
 			initOptions={initOptions}>
