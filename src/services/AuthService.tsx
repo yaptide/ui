@@ -62,13 +62,13 @@ const getRefreshDelay = (exp: number) => Math.max((exp - new Date().getTime()) /
 enum StorageKey {
 	USER = 'editor.user'
 }
-export type LocalUsersAvailability = 'unknown' | 'enabled' | 'disabled';
+export type PasswordAuthAvailability = 'unknown' | 'enabled' | 'disabled';
 
 export interface AuthContext {
 	user: AuthUser | null;
 	isAuthorized: boolean;
 	isServerReachable: boolean;
-	localUsersAvailability: LocalUsersAvailability;
+	passwordAuthAvailability: PasswordAuthAvailability;
 	login: (...args: RequestAuthLogin) => void;
 	logout: (...args: RequestAuthLogout) => void;
 	refresh: (...args: RequestAuthRefresh) => void;
@@ -86,8 +86,8 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	const { keycloak, initialized } = useKeycloakAuth();
 	const [keyCloakInterval, setKeyCloakInterval] = useState<number>();
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
-	const [localUsersAvailability, setLocalUsersAvailability] =
-		useState<LocalUsersAvailability>('unknown');
+	const [passwordAuthAvailability, setPasswordAuthAvailability] =
+		useState<PasswordAuthAvailability>('unknown');
 	const { enqueueSnackbar } = useSnackbar();
 	const { open: openRejectKeycloakUserDialog } = useDialog('rejectKeycloak');
 	const { open: openRejectKeycloakRefreshUserDialog } = useDialog('rejectKeycloakRefresh');
@@ -157,13 +157,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 			.get(``)
 			.json<ResponseRoot>()
 			.then(r => {
-				setLocalUsersAvailability(
-					r.localUsersEnabled === undefined
-						? 'enabled'
-						: r.localUsersEnabled
-							? 'enabled'
-							: 'disabled'
-				);
+				setPasswordAuthAvailability(r.localUsersEnabled === false ? 'disabled' : 'enabled');
 
 				return !!r.message;
 			})
@@ -375,7 +369,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				user,
 				isAuthorized,
 				isServerReachable: Boolean(isServerReachable),
-				localUsersAvailability,
+				passwordAuthAvailability,
 				login,
 				logout,
 				authKy,

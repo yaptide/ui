@@ -9,12 +9,12 @@ import NamePasswordLoginPanel from './NamePasswordLoginPanel';
 
 export default function LoginPanel() {
 	const theme = useTheme();
-	const { plgridAuthEnabled } = useConfig();
-	const { localUsersAvailability } = useAuth();
+	const { ssoAuthEnabled } = useConfig();
+	const { passwordAuthAvailability } = useAuth();
 	const { keycloak, initialized } = useKeycloakAuth();
-	const [isPasswordLoginSelected, setIsPasswordLoginSelected] = useState(!plgridAuthEnabled);
+	const [isPasswordLoginSelected, setIsPasswordLoginSelected] = useState(!ssoAuthEnabled);
 	// on Keycloak-only deployments the backend rejects local users, so do not offer password login
-	const isPasswordLoginAvailable = !plgridAuthEnabled || localUsersAvailability === 'enabled';
+	const isPasswordLoginAvailable = !ssoAuthEnabled || passwordAuthAvailability === 'enabled';
 
 	const showPasswordLoginForm = isPasswordLoginSelected && isPasswordLoginAvailable;
 
@@ -41,7 +41,7 @@ export default function LoginPanel() {
 					backgroundColor: theme.palette.accordion.main,
 					gap: theme.spacing(1)
 				}}>
-				{plgridAuthEnabled && !showPasswordLoginForm ? (
+				{ssoAuthEnabled && !showPasswordLoginForm ? (
 					<>
 						<Button
 							fullWidth
@@ -68,7 +68,7 @@ export default function LoginPanel() {
 					</>
 				) : (
 					<>
-						{plgridAuthEnabled && (
+						{ssoAuthEnabled && (
 							<Box sx={{ width: '100%' }}>
 								<IconButton
 									size='small'
