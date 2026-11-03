@@ -133,8 +133,10 @@ export function ScoringQuantityMaterialOverrides(props: {
 							<Stack
 								direction='row'
 								spacing={1}
-								justifyContent='center'
-								alignItems='center'>
+								sx={{
+									justifyContent: 'center',
+									alignItems: 'center'
+								}}>
 								<Typography>{editorPhysic.stoppingPowerTable}</Typography>
 							</Stack>
 						</ConditionalPropertyField>

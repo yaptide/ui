@@ -25,8 +25,9 @@ export function AutoCompleteSelect<
 			<TextField
 				{...params}
 				slotProps={{
+					...params.slotProps,
 					input: {
-						...params?.InputProps,
+						...params.slotProps.input,
 						style: { fontSize: '12px' }
 					}
 				}}

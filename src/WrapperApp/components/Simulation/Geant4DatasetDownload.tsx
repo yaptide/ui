@@ -31,6 +31,7 @@ import { useDialog } from '../../../services/DialogService';
 import { useSharedDatasetManager } from '../../../services/Geant4DatasetContextProvider';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
 import { StyledExclusiveToggleButtonGroup } from '../../../shared/components/StyledExclusiveToggleButtonGroup';
+import { secondsToShortDurationString } from '../../../util/time';
 
 export enum Geant4DatasetsType {
 	PARTIAL,
@@ -39,6 +40,11 @@ export enum Geant4DatasetsType {
 
 function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 	const { status } = props;
+
+	const estimatedTimeRemaining =
+		status.status === DatasetDownloadStatus.DOWNLOADING && status.estimatedSecondsRemaining
+			? ` (est. ${secondsToShortDurationString(status.estimatedSecondsRemaining)} remaining)`
+			: '';
 
 	const idleIcon = status.cached ? (
 		<StorageIcon color='primary' />
@@ -75,6 +81,14 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 		<Box sx={{ pb: 1 }}>
 			<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
 				<Typography sx={{ flex: 1 }}>{status.name}</Typography>
+
+				{estimatedTimeRemaining && (
+					<Typography
+						fontSize={12}
+						color='text.secondary'>
+						{estimatedTimeRemaining}
+					</Typography>
+				)}
 				{datasetStatusIcon.get(status.status)}
 			</Box>
 
@@ -160,7 +174,9 @@ function CacheStatusIndicator() {
 				<CircularProgress size={16} />
 				<Typography
 					variant='body2'
-					color='text.secondary'>
+					sx={{
+						color: 'text.secondary'
+					}}>
 					Checking cache status...
 				</Typography>
 			</Box>
@@ -199,8 +215,10 @@ function CacheStatusIndicator() {
 					title={`Browser storage: ${storageEstimate.usedMB.toFixed(0)} MB used of ${storageEstimate.quotaMB.toFixed(0)} MB (${storageEstimate.percentUsed.toFixed(1)}%)`}>
 					<Typography
 						variant='caption'
-						color='text.secondary'
-						sx={{ flexGrow: 1 }}>
+						sx={{
+							color: 'text.secondary',
+							flexGrow: 1
+						}}>
 						{cachedCount > 0 && `${storageEstimate.usedMB.toFixed(0)} MB used`}
 						{!allCached &&
 							(cachedCount > 0
@@ -245,9 +263,12 @@ export function Geant4DatasetDownloadSelector(props: {
 				{geant4DatasetType === Geant4DatasetsType.FULL ? (
 					<>
 						<Typography
-							textTransform='none'
-							fontSize={11}
-							sx={{ flex: 1, mr: 1 }}>
+							sx={{
+								textTransform: 'none',
+								fontSize: 11,
+								flex: 1,
+								mr: 1
+							}}>
 							<b>FULL</b>: Speed up the simulation by downloading Geant4 datasets.
 						</Typography>
 						<Button
@@ -259,9 +280,12 @@ export function Geant4DatasetDownloadSelector(props: {
 				) : (
 					<>
 						<Typography
-							textTransform='none'
-							fontSize={11}
-							sx={{ flex: 1, mr: 1 }}>
+							sx={{
+								textTransform: 'none',
+								fontSize: 11,
+								flex: 1,
+								mr: 1
+							}}>
 							<b>PARTIAL</b>: Longer simulation time because of downloading thousands
 							of files on-the-fly. Smaller total download size.
 						</Typography>
@@ -324,10 +348,15 @@ export function Geant4Datasets() {
 			}}>
 			<AccordionSummary
 				expandIcon={<ExpandMoreIcon />}
-				onClick={() => setOpen(!open)}>
+				onClick={e => {
+					e.stopPropagation();
+					setOpen(prevOpen => !prevOpen);
+				}}>
 				<Typography
-					textTransform='none'
-					fontSize={16}>
+					sx={{
+						textTransform: 'none',
+						fontSize: 16
+					}}>
 					Dataset Download{' '}
 					{geant4DownloadManagerState === DownloadManagerStatus.FINISHED ? '(done)' : ''}
 				</Typography>

@@ -142,7 +142,9 @@ function Section({ title, children }: SectionProps) {
 		<>
 			<Typography
 				variant='h6'
-				fontWeight='bold'>
+				sx={{
+					fontWeight: 'bold'
+				}}>
 				{title}:
 			</Typography>
 			<Box sx={{ margin: theme.spacing(1) }}>{children}</Box>

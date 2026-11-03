@@ -181,8 +181,8 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 									)}
 									{isLargeFile && (
 										<Box
-											color='error.main'
 											sx={{
+												color: 'error.main',
 												ml: 1,
 												display: 'inline-flex',
 												fontSize: 'initial'

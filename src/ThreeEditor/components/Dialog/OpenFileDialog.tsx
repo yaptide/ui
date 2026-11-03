@@ -1,4 +1,4 @@
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
 import { TabContext, TabPanel } from '@mui/lab';
 import { Box, Button, IconButton, TextField, Tooltip } from '@mui/material';
 import { ChangeEvent, SyntheticEvent, useCallback, useMemo, useState } from 'react';

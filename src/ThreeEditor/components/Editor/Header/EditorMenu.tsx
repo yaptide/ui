@@ -1,13 +1,21 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Object3D } from 'three';
+import { useCallback, useEffect, useReducer, useState } from 'react';
+import { Object3D, Vector3 } from 'three';
 
 import { useDialog } from '../../../../services/DialogService';
 import { useStore } from '../../../../services/StoreService';
 import MenuPosition from '../../../../shared/components/Menu/MenuPosition';
 import { useSignal } from '../../../../util/hooks/signals';
+import {
+	getRemoveCommand,
+	getSetPositionCommand,
+	isMovable,
+	isRemovable
+} from '../../../../util/hooks/useKeyboardEditorControls';
 import { toggleFullscreen } from '../../../../util/toggleFullscreen';
 import { getAddElementButtonProps } from '../../../../util/Ui/CommandButtonProps';
+import { canBeDuplicated, getDuplicateCommand } from '../../../js/commands/DuplicateObjectCommand';
 import { YaptideEditor } from '../../../js/YaptideEditor';
+import { isSimulationElement } from '../../../Simulation/Base/SimulationElement';
 
 type EditorMenuProps = {
 	editor?: YaptideEditor;
@@ -17,7 +25,8 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 	const { open: openClearHistory } = useDialog('clearHistory');
 	const [openIdx, setOpenIdx] = useState(-1);
 	const { yaptideEditor } = useStore();
-	const [, setSelectedObject] = useState(editor?.selected);
+	const [selected, setSelectedObject] = useState<Object3D | null>(editor?.selected ?? null);
+	const [, refresh] = useReducer((x: number) => x + 1, 0);
 	const [canUndo, setCanUndo] = useState((yaptideEditor?.history.undos.length ?? 0) > 0);
 	const [canRedo, setCanRedo] = useState((yaptideEditor?.history.redos.length ?? 0) > 0);
 
@@ -39,6 +48,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 	}, []);
 
 	useSignal(editor, 'objectSelected', handleObjectUpdate);
+	useSignal(editor, 'objectChanged', refresh);
 
 	return (
 		<>
@@ -93,14 +103,7 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 										key !== 'Special Components' && key !== 'Filters'
 								)
 								.map(([key, val]) => val)
-						: []),
-					[
-						{
-							label: 'Paste from Clipboard',
-							onClick: () => {},
-							disabled: true
-						}
-					]
+						: [])
 				]}
 			/>
 			<MenuPosition
@@ -133,25 +136,35 @@ export function EditorMenu({ editor }: EditorMenuProps) {
 					[
 						{
 							label: 'Duplicate Object',
-							onClick: () => {},
-							disabled: true
+							onClick: () => {
+								if (editor && selected && isSimulationElement(selected))
+									editor.execute(getDuplicateCommand(editor, selected));
+							},
+							disabled:
+								!selected ||
+								!isSimulationElement(selected) ||
+								!canBeDuplicated(selected)
 						},
 						{
 							label: 'Delete Object',
-							onClick: () => {},
-							disabled: true
+							onClick: () => {
+								if (editor && selected && isRemovable(selected))
+									editor.execute(getRemoveCommand(editor, selected));
+							},
+							disabled: !selected || !isRemovable(selected)
 						},
 						{
 							label: 'Move to Center',
-							onClick: () => {},
-							disabled: true
-						}
-					],
-					[
-						{
-							label: 'Copy to Clipboard',
-							onClick: () => {},
-							disabled: true
+							onClick: () => {
+								if (editor && selected && isMovable(selected))
+									editor.execute(
+										getSetPositionCommand(editor, selected, new Vector3())
+									);
+							},
+							disabled:
+								!selected ||
+								!isMovable(selected) ||
+								selected.position.lengthSq() === 0
 						}
 					]
 				]}

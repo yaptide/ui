@@ -53,7 +53,9 @@ export default function MenuPosition({
 				disableRipple>
 				<Typography
 					id={`menu-${idx.toString()}-label`}
-					textTransform='initial'>
+					sx={{
+						textTransform: 'initial'
+					}}>
 					{label}
 				</Typography>
 			</Button>

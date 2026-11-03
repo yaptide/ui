@@ -36,8 +36,10 @@ export default function RunSimulationPanel(props: RunSimulationPanelProps) {
 			sx={{ margin: theme.spacing(1), height: '100%' }}>
 			<AccordionSummary>
 				<Typography
-					textTransform='none'
-					fontSize={16}>
+					sx={{
+						textTransform: 'none',
+						fontSize: 16
+					}}>
 					Run new simulation
 				</Typography>
 			</AccordionSummary>
@@ -60,7 +62,9 @@ export default function RunSimulationPanel(props: RunSimulationPanelProps) {
 						<Typography color='textDisabled'>Demo Mode</Typography>
 						<Typography
 							color='textDisabled'
-							textAlign='center'>
+							sx={{
+								textAlign: 'center'
+							}}>
 							Running{' '}
 							{yaptideEditor &&
 								SimulatorNames.get(
@@ -84,7 +88,9 @@ export default function RunSimulationPanel(props: RunSimulationPanelProps) {
 						</Typography>
 						<Typography
 							color='textDisabled'
-							textAlign='center'>
+							sx={{
+								textAlign: 'center'
+							}}>
 							Note that you can still use Geant4.
 						</Typography>
 					</>
@@ -98,7 +104,9 @@ export default function RunSimulationPanel(props: RunSimulationPanelProps) {
 						<Typography color='textDisabled'>Login required</Typography>
 						<Typography
 							color='textDisabled'
-							textAlign='center'>
+							sx={{
+								textAlign: 'center'
+							}}>
 							Running{' '}
 							{yaptideEditor &&
 								SimulatorNames.get(

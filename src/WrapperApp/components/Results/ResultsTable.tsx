@@ -106,8 +106,10 @@ export default function TablePage0D(props: { estimator: EstimatorResults }) {
 			<Stack
 				direction='row'
 				spacing={1}
-				alignItems='center'
-				sx={{ marginLeft: '.5rem' }}>
+				sx={{
+					alignItems: 'center',
+					marginLeft: '.5rem'
+				}}>
 				<Typography>Unit: Auto</Typography>
 				<Switch
 					checked={isUnitFixed}

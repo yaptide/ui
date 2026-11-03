@@ -64,7 +64,9 @@ describe('TopasConverter', () => {
 
 		const openProjectWidget = await driver.wait(
 			until.elementLocated(
-				By.xpath(`//div[@role = 'dialog' and @aria-labelledby = '${openProjectTitleId}']`)
+				By.xpath(
+					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${openProjectTitleId}']`
+				)
 			),
 			10_000
 		);
@@ -128,7 +130,7 @@ describe('TopasConverter', () => {
 		const loadFileDialog = await driver.wait(
 			until.elementLocated(
 				By.xpath(
-					`//div[@role = 'dialog' and @aria-labelledby = '${loadFileTitleId}' and @aria-describedby = '${loadFileContentId}']`
+					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${loadFileTitleId}' and @aria-describedby = '${loadFileContentId}']`
 				)
 			),
 			10_000

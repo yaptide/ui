@@ -59,6 +59,8 @@ function ServiceTree({ services, children }: { services: ReactElement[]; childre
 	}, children);
 }
 
+const ROVING_KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+
 function App() {
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 	const theme = useMemo(
@@ -87,6 +89,32 @@ function App() {
 				},
 				dimensions: {
 					navDrawerWidth: 200
+				},
+				components: {
+					MuiToggleButton: {
+						defaultProps: {
+							tabIndex: 0,
+							onKeyDown: event => {
+								if (ROVING_KEYS.includes(event.key)) event.stopPropagation();
+							}
+						}
+					},
+					MuiAutocomplete: {
+						defaultProps: {
+							onMouseDownCapture: event => {
+								const target = event.target;
+
+								if (
+									event.button !== 0 &&
+									target instanceof HTMLInputElement &&
+									target.classList.contains('MuiAutocomplete-input')
+								)
+									target.dispatchEvent(
+										new MouseEvent('mousedown', { bubbles: true, button: 0 })
+									);
+							}
+						}
+					}
 				},
 				cssVariables: true
 			}),

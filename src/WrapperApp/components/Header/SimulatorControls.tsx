@@ -52,10 +52,18 @@ function SimulatorSelectItem({ simulator, onClick }: SimulationSelectItemProps) 
 			sx={{ '&:hover': { borderRadius: 1 } }}>
 			<ListItemText
 				primary={
-					<Typography fontSize={14}>{SimulatorsDescriptions[simulator].name}</Typography>
+					<Typography
+						sx={{
+							fontSize: 14
+						}}>
+						{SimulatorsDescriptions[simulator].name}
+					</Typography>
 				}
 				secondary={
-					<Typography fontSize={10}>
+					<Typography
+						sx={{
+							fontSize: 10
+						}}>
 						{SimulatorsDescriptions[simulator].description}
 					</Typography>
 				}
@@ -108,8 +116,10 @@ export default function SimulatorControls(props: SimulationControlsProps) {
 		<>
 			<Typography
 				id='simulator-controls-status'
-				color={simulatorReady ? 'primary' : theme.palette.grey['600']}
-				sx={{ userSelect: 'none' }}>
+				sx={{
+					userSelect: 'none',
+					color: simulatorReady ? 'primary.main' : theme.palette.grey['600']
+				}}>
 				{simulatorReady
 					? 'Connected'
 					: demoMode
@@ -130,9 +140,11 @@ export default function SimulatorControls(props: SimulationControlsProps) {
 				<ExpandMoreIcon />
 				{yaptideEditor ? (
 					<Typography
-						textTransform='none'
-						fontSize={14}
-						sx={{ width: '100%' }}>
+						sx={{
+							textTransform: 'none',
+							fontSize: 14,
+							width: '100%'
+						}}>
 						{SimulatorsDescriptions[yaptideEditor.contextManager.currentSimulator].name}
 					</Typography>
 				) : (

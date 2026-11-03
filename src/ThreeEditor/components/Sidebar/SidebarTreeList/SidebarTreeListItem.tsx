@@ -193,11 +193,11 @@ export function SidebarTreeListItem(props: {
 				<Stack
 					direction='row'
 					onClick={() => editor.selectById(object.id)}
-					width='100%'
+					{...bindContextMenu(popupState)}
 					sx={{
+						width: '100%',
 						cursor: 'pointer'
-					}}
-					{...bindContextMenu(popupState)}>
+					}}>
 					<Typography
 						component={Box}
 						sx={{

@@ -63,7 +63,7 @@ describe('Project Menu', () => {
 		const newProjectDialog = await driver.wait(
 			until.elementLocated(
 				By.xpath(
-					`//div[@role = 'dialog' and @aria-labelledby = '${newProjectTitleId}' and @aria-describedby = '${newProjectContentId}']`
+					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${newProjectTitleId}' and @aria-describedby = '${newProjectContentId}']`
 				)
 			),
 			10_000
@@ -91,7 +91,7 @@ describe('Project Menu', () => {
 		const projectDescriptionDialog = await driver.wait(
 			until.elementLocated(
 				By.xpath(
-					`//div[@role = 'dialog' and @aria-labelledby = '${projectDescriptionTitleId}' and @aria-describedby = '${projectDescriptionContentId}']`
+					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${projectDescriptionTitleId}' and @aria-describedby = '${projectDescriptionContentId}']`
 				)
 			),
 			10_000
@@ -140,7 +140,7 @@ describe('Project Menu', () => {
 		const descriptionText = await driver
 			.findElement(
 				By.xpath(
-					`//div[@role = 'dialog' and @aria-labelledby = '${projectDescriptionTitleId}' and @aria-describedby = '${projectDescriptionContentId}']`
+					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${projectDescriptionTitleId}' and @aria-describedby = '${projectDescriptionContentId}']`
 				)
 			)
 			.findElement(

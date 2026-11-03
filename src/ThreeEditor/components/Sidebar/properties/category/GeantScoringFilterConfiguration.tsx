@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
 import { Object3D } from 'three';
 
-import { GEANT4_PARTICLE_TYPES } from '../../../../../types/Particle';
+import { GEANT4_PARTICLE_TYPES, Particle } from '../../../../../types/Particle';
 import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
@@ -55,7 +55,7 @@ export function GeantScoringFilterConfiguration(props: {
 					{(watchedObject.filterType === 'particle' ||
 						watchedObject.filterType === 'particleWithKineticEnergy') && (
 						<PropertyField label='Particles'>
-							<AutoCompleteSelect
+							<AutoCompleteSelect<Particle, true>
 								multiple={true}
 								onChange={(_, value) => {
 									setValueCommand(
