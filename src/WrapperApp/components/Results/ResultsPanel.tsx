@@ -21,6 +21,7 @@ import { partialResultsLabel } from '../../../util/partialResults';
 import EstimatorsSelect from './EstimatorsSelect/EstimatorsSelect';
 import EstimatorTab from './EstimatorTab/EstimatorTab';
 import { useFollowPartialResults } from './useFollowPartialResults';
+import { useOnDemandPages } from './useOnDemandPages';
 
 export interface EstimatorResults extends Estimator {
 	tablePages: Page0D[];
@@ -56,6 +57,7 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 	const isPartial = partialLabel !== undefined;
 
 	useFollowPartialResults(simulation);
+	const onDemand = useOnDemandPages(simulation);
 
 	useEffect(() => {
 		if (!isPartial) return;
@@ -150,6 +152,32 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 								color='warning.main'>
 								Partial results: {partialLabel}
 							</Typography>
+						)}
+						{onDemand.available && (
+							<Box
+								sx={{
+									display: 'flex',
+									alignItems: 'center',
+									gap: theme.spacing(1),
+									marginBottom: theme.spacing(1)
+								}}>
+								<Button
+									size='small'
+									variant='outlined'
+									disabled={onDemand.requested || onDemand.sending}
+									onClick={onDemand.request}>
+									{onDemand.requested
+										? '2D results requested'
+										: 'Get 2D results now'}
+								</Button>
+								<InfoTooltip
+									title={
+										'Partial results always include 0D and 1D results. 2D results come only when you ask, ' +
+										'in the next partial results, and stay as they were until you ask again. ' +
+										'3D results come only with the final results.'
+									}
+								/>
+							</Box>
 						)}
 						<Divider />
 					</Box>
