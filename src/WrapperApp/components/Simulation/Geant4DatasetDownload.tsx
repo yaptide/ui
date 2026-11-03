@@ -83,9 +83,7 @@ function DatasetCurrentStatus(props: { status: DatasetStatus }) {
 				<Typography sx={{ flex: 1 }}>{status.name}</Typography>
 
 				{estimatedTimeRemaining && (
-					<Typography
-						fontSize={12}
-						color='text.secondary'>
+					<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
 						{estimatedTimeRemaining}
 					</Typography>
 				)}
