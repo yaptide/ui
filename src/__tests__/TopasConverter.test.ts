@@ -1,6 +1,25 @@
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
+/*
+ * DISABLED TEST.
+ *
+ * `TopasConverter` is skipped (`xtest` below) because TOPAS is not supported in the
+ * current version of the application — see `src/types/RequestTypes.ts` where the
+ * `TOPAS` simulator is commented out. There is therefore no TOPAS flow in the UI to
+ * drive end-to-end.
+ *
+ * The selectors in this file describe the UI that existed BEFORE commit 89e5439d
+ * ("move examples to left side drawer", #1782), i.e. examples were loaded from the
+ * "Open Project" dialog (`Menu Open` -> "Examples" tab -> `#Examples list` ->
+ * "Load example button"). Since #1782 examples live in the left drawer
+ * (`ExamplePanel`) and the anchors used below no longer exist.
+ *
+ * Keep this file skipped. When TOPAS support returns, rewrite the flow to the
+ * current UI and migrate every selector to `byTestId()` / `src/util/testIds.ts`
+ * (KROK A convention), instead of relying on ARIA or DOM structure.
+ */
+
 describe('TopasConverter', () => {
 	let driver: WebDriver;
 

@@ -1,5 +1,8 @@
-import { Builder, By, until, WebDriver } from 'selenium-webdriver';
+import { Builder, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
+
+import { byTestId } from '../../../test/seleniumUtils';
+import { testIds } from '../../../util/testIds';
 
 describe('Project Menu', () => {
 	let driver: WebDriver;
@@ -27,102 +30,87 @@ describe('Project Menu', () => {
 		// Open Editor screen
 
 		// Wait for "Editor" button being enabled and click it
-		await driver.wait(until.elementLocated(By.xpath("//div[@aria-label = 'Editor']")), 5_000);
+		await driver.wait(until.elementLocated(byTestId(testIds.navItem('editor'))), 5_000);
 
-		const examplesButton = await driver.findElement(By.xpath("//div[@aria-label = 'Editor']"));
-		await driver.wait(until.elementIsEnabled(examplesButton), 5_000);
-		await examplesButton.click();
+		const editorButton = await driver.findElement(byTestId(testIds.navItem('editor')));
+		await driver.wait(until.elementIsEnabled(editorButton), 5_000);
+		await editorButton.click();
 
 		// Click Project > New
 
 		// Wait for Project menu to be visible
-		await driver.wait(
-			until.elementLocated(By.xpath("//button[@id = 'menu-button-10']")),
-			5_000
-		);
+		await driver.wait(until.elementLocated(byTestId(testIds.menuButton('project'))), 5_000);
 
-		const projectMenuButton = await driver.findElement(
-			By.xpath("//button[@id = 'menu-button-10']")
-		);
+		const projectMenuButton = await driver.findElement(byTestId(testIds.menuButton('project')));
 		await projectMenuButton.click();
 
 		// Wait for menu popup to fade in;
 		await driver.sleep(1000);
 
 		const newOption = await driver
-			.findElement(By.xpath("//div[@id = 'menu-content-10']"))
-			.findElement(By.xpath(".//*[contains(text(), 'New')]"));
+			.findElement(byTestId(testIds.menuPopup('project')))
+			.findElement(byTestId(testIds.menuItem('project', 0)));
 		await newOption.click();
 
 		// Creating new project clears previous state, acknowledge the alert
 
-		const newProjectTitleId = 'new-project-alert-dialog-title';
-		const newProjectContentId = 'new-project-alert-dialog-content';
+		const newProjectTitle = testIds.dialogTitle('new-project');
+		const newProjectContent = testIds.dialogContent('new-project');
 
 		// wait for the New Project Alert
 		const newProjectDialog = await driver.wait(
-			until.elementLocated(
-				By.xpath(
-					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${newProjectTitleId}' and @aria-describedby = '${newProjectContentId}']`
-				)
-			),
+			until.elementLocated(byTestId(testIds.dialog('new-project'))),
 			10_000
 		);
 
-		expect(await newProjectDialog.findElement(By.id(newProjectTitleId)).getText()).toBe(
+		expect(await newProjectDialog.findElement(byTestId(newProjectTitle)).getText()).toBe(
 			'New Project Alert'
 		);
 
-		expect(await newProjectDialog.findElement(By.id(newProjectContentId)).getText()).toBe(
+		expect(await newProjectDialog.findElement(byTestId(newProjectContent)).getText()).toBe(
 			'Your current project will be lost. Are you sure you want to continue?'
 		);
 
 		const confirmButton = await newProjectDialog.findElement(
-			By.xpath(".//button[contains(text(),'Clear and proceed')]")
+			byTestId(`${testIds.dialog('new-project')}-confirm`)
 		);
 		await confirmButton.click();
 
 		// The application asks for title and description in a separate dialog
 
-		const projectDescriptionTitleId = 'edit-project-info-dialog-title';
-		const projectDescriptionContentId = 'edit-project-info-dialog-content';
+		const projectDescriptionTitle = testIds.dialogTitle('edit-project');
+		const projectDescriptionContent = testIds.dialogContent('edit-project');
 
 		//wait for the Edit Project Info dialog
 		const projectDescriptionDialog = await driver.wait(
-			until.elementLocated(
-				By.xpath(
-					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${projectDescriptionTitleId}' and @aria-describedby = '${projectDescriptionContentId}']`
-				)
-			),
+			until.elementLocated(byTestId(testIds.dialog('edit-project'))),
 			10_000
 		);
 
 		expect(
-			await projectDescriptionDialog.findElement(By.id(projectDescriptionTitleId)).getText()
+			await projectDescriptionDialog.findElement(byTestId(projectDescriptionTitle)).getText()
 		).toBe('Edit Project Info');
 
 		expect(
-			await projectDescriptionDialog.findElement(By.id(projectDescriptionContentId)).getText()
+			await projectDescriptionDialog
+				.findElement(byTestId(projectDescriptionContent))
+				.getText()
 		).toBe('Change title or description for current project.');
 
 		// Input new title and description
 
 		const titleInput = await projectDescriptionDialog.findElement(
-			By.xpath(
-				".//fieldset[.//*[contains(text(), 'Project Title')]]/preceding-sibling::input"
-			)
+			byTestId('edit-project-title-input')
 		);
 		await titleInput.sendKeys('\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bMy Title'); // \b backspace to remove default title
 
 		const descriptionInput = await projectDescriptionDialog.findElement(
-			By.xpath(
-				".//fieldset[.//*[contains(text(), 'Project Description')]]/preceding-sibling::textarea"
-			)
+			byTestId('edit-project-description-input')
 		);
 		await descriptionInput.sendKeys('My Description');
 
 		await projectDescriptionDialog
-			.findElement(By.xpath(".//button[contains(text(),'Save')]"))
+			.findElement(byTestId(`${testIds.dialog('edit-project')}-save`))
 			.click();
 
 		// Give it time to reload
@@ -130,7 +118,7 @@ describe('Project Menu', () => {
 
 		// Verify the title and description
 
-		const header = await driver.findElement(By.xpath("//div[@role = 'heading']"));
+		const header = await driver.findElement(byTestId(testIds.projectTitleButton));
 		expect(await header.getText()).toEqual('My Title');
 
 		await header.click();
@@ -138,16 +126,8 @@ describe('Project Menu', () => {
 		await driver.sleep(1000);
 
 		const descriptionText = await driver
-			.findElement(
-				By.xpath(
-					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${projectDescriptionTitleId}' and @aria-describedby = '${projectDescriptionContentId}']`
-				)
-			)
-			.findElement(
-				By.xpath(
-					".//fieldset[.//*[contains(text(), 'Project Description')]]/preceding-sibling::textarea"
-				)
-			)
+			.findElement(byTestId(testIds.dialog('edit-project')))
+			.findElement(byTestId('edit-project-description-input'))
 			.getText();
 		expect(descriptionText).toEqual('My Description');
 	}, 50_000);

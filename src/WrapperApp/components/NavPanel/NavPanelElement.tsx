@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { ReactNode, SyntheticEvent } from 'react';
 
+import { testIds } from '../../../util/testIds';
 import { MenuOption } from './useMenuOptions';
 
 type NavPanelElementProps = {
@@ -97,6 +98,7 @@ export default function NavPanelElement(props: NavPanelElementProps) {
 				) : (
 					<ListItemButton
 						aria-label={label}
+						data-testid={testIds.navItem(value)}
 						sx={{
 							minHeight: 64,
 							justifyContent: open ? 'initial' : 'center'
