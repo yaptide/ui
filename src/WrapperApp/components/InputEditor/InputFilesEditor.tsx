@@ -93,7 +93,7 @@ export function InputFilesEditor({
 								size='small'
 								variant='outlined'
 								color={simulator ? 'primary' : 'default'}
-								label={simulator ? simulatorName(simulator) : 'Unknown'}
+								label={simulator ? simulatorName(simulator) : 'Additional file'}
 							/>
 							<Button
 								color='info'
@@ -147,19 +147,13 @@ export function InputFilesEditor({
 								}}>
 								<Typography
 									variant='body2'
-									color={
-										issue.code === 'empty_file'
-											? 'textSecondary'
-											: issue.severity === 'error'
-												? 'error'
-												: 'warning'
-									}>
+									color='warning'>
 									{issue.message}
 								</Typography>
-								{issue.suggestedName && onRename && (
+								{onRename && (
 									<Button
 										size='small'
-										onClick={() => onRename(name, issue.suggestedName!)}>
+										onClick={() => onRename(name, issue.suggestedName)}>
 										Rename to {issue.suggestedName}
 									</Button>
 								)}

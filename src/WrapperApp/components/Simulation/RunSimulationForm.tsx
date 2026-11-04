@@ -1,9 +1,6 @@
-import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlined';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
-import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 import {
 	AccordionDetails,
 	AccordionSummary,
@@ -16,7 +13,6 @@ import {
 	FormGroup,
 	InputLabel,
 	Link,
-	Menu,
 	MenuItem,
 	Select,
 	SelectChangeEvent,
@@ -44,7 +40,8 @@ import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import {
 	checkSelection,
 	FileHint,
-	matchingSelections,
+	presentRequiredFiles,
+	REQUIRED_INPUT_FILES,
 	RUNNABLE_SIMULATORS,
 	RunnableSimulator,
 	simulatorName,
@@ -169,17 +166,15 @@ export function RunSimulationForm({
 		[filesRunSimulator, selectedFiles, inputFiles, inspection]
 	);
 
-	const matchingSets = matchingSelections(filesRunSimulator, inputFiles, inspection);
-	const isSelected = (set: string[]) =>
-		set.length === selectedFiles.length && set.every(name => selectedFiles.includes(name));
-
-	const matchingDisabledReason =
-		matchingSets.length === 0
-			? `There are no ${simulatorName(filesRunSimulator)} files yet`
-			: matchingSets.length === 1 && isSelected(matchingSets[0])
-				? 'The matching files are already selected'
+	const requiredFiles = REQUIRED_INPUT_FILES[filesRunSimulator];
+	const presentRequired = presentRequiredFiles(filesRunSimulator, inputFiles);
+	const unselectedRequired = presentRequired.filter(name => !selectedFiles.includes(name));
+	const selectRequiredDisabledReason =
+		presentRequired.length === 0
+			? `None of the files ${simulatorName(filesRunSimulator)} requires are here yet (${requiredFiles.join(', ')})`
+			: unselectedRequired.length === 0
+				? 'All required files are already selected'
 				: undefined;
-	const [matchingSetsAnchor, setMatchingSetsAnchor] = useState<HTMLElement | null>(null);
 
 	const [overridePrimariesCount, setOverridePrimariesCount] = useState(
 		yaptideEditor?.beam.numberOfParticles ?? 0
@@ -297,21 +292,8 @@ export function RunSimulationForm({
 		);
 	};
 
-	const hintIcon = (hint: FileHint | undefined) => {
-		switch (hint?.kind) {
-			case 'ok':
-				return <CheckCircleOutlineIcon />;
-			case 'warning':
-				return <ReportProblemOutlinedIcon />;
-			case 'exclude':
-				return <BlockIcon />;
-			case 'invalid':
-			case 'tooMany':
-				return <ErrorOutlineIcon />;
-			default:
-				return undefined;
-		}
-	};
+	const hintIcon = (hint: FileHint | undefined) =>
+		hint?.kind === 'ok' ? <CheckCircleOutlineIcon /> : undefined;
 
 	return (
 		<>
@@ -529,12 +511,7 @@ export function RunSimulationForm({
 														onDelete={() => toggleSelected(name)}
 														sx={{
 															'& .MuiChip-icon': {
-																color:
-																	hint?.kind === 'ok'
-																		? 'success.main'
-																		: hint?.kind === 'warning'
-																			? 'warning.main'
-																			: 'error.main'
+																color: 'success.main'
 															},
 															...(suggested && {
 																'borderStyle': 'dashed',
@@ -553,7 +530,7 @@ export function RunSimulationForm({
 							)}
 							{simulationSourceType === 'files' && (
 								<>
-									<Tooltip title={matchingDisabledReason ?? ''}>
+									<Tooltip title={selectRequiredDisabledReason ?? ''}>
 										<Box
 											component='span'
 											sx={{
@@ -562,31 +539,19 @@ export function RunSimulationForm({
 											}}>
 											<Button
 												size='small'
-												disabled={matchingDisabledReason !== undefined}
-												onClick={event =>
-													matchingSets.length === 1
-														? setSelectedFiles(matchingSets[0])
-														: setMatchingSetsAnchor(event.currentTarget)
+												disabled={
+													selectRequiredDisabledReason !== undefined
+												}
+												onClick={() =>
+													setSelectedFiles([
+														...selectedFiles,
+														...unselectedRequired
+													])
 												}>
-												Select matching files
+												Select required files
 											</Button>
 										</Box>
 									</Tooltip>
-									<Menu
-										anchorEl={matchingSetsAnchor}
-										open={matchingSetsAnchor !== null}
-										onClose={() => setMatchingSetsAnchor(null)}>
-										{matchingSets.map(set => (
-											<MenuItem
-												key={set[0]}
-												onClick={() => {
-													setSelectedFiles(set);
-													setMatchingSetsAnchor(null);
-												}}>
-												With {set[0]}
-											</MenuItem>
-										))}
-									</Menu>
 								</>
 							)}
 						</>
@@ -680,17 +645,6 @@ export function RunSimulationForm({
 							Start simulation
 						</Button>
 					</Box>
-					{!blockReason &&
-						simulationSourceType === 'files' &&
-						selection.warnings.map(warning => (
-							<Typography
-								key={warning}
-								variant='caption'
-								color='warning'
-								sx={{ textAlign: 'center', marginTop: theme.spacing(1) }}>
-								{warning}
-							</Typography>
-						))}
 					{blockReason && (
 						<Typography
 							variant='caption'

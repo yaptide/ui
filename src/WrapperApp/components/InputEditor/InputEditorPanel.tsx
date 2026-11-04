@@ -14,8 +14,9 @@ import { SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
 import { DragDropFiles } from './DragDropFiles';
 import { InputFilesEditor } from './InputFilesEditor';
 import {
-	INPUT_FILE_SPECS,
+	emptyTemplate,
 	InputFiles,
+	REQUIRED_INPUT_FILES,
 	RUNNABLE_SIMULATORS,
 	simulatorName
 } from './inspectInputFiles';
@@ -159,16 +160,14 @@ export default function InputEditorPanel() {
 								onClick={() => {
 									setEmptyMenuAnchor(null);
 									addFiles(
-										INPUT_FILE_SPECS[simulator].template,
+										emptyTemplate(simulator),
 										'replace',
 										`Creating empty ${simulatorName(simulator)} files`
 									);
 								}}>
 								<ListItemText
 									primary={simulatorName(simulator)}
-									secondary={Object.keys(
-										INPUT_FILE_SPECS[simulator].template
-									).join(', ')}
+									secondary={REQUIRED_INPUT_FILES[simulator].join(', ')}
 								/>
 							</MenuItem>
 						))}

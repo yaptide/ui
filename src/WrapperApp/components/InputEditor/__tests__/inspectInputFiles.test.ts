@@ -1,27 +1,22 @@
 import { SimulatorType } from '../../../../types/RequestTypes';
 import {
 	checkSelection,
-	fileStatus,
-	INPUT_FILE_SPECS,
+	emptyTemplate,
 	InputFiles,
 	inspectInputFiles,
-	matchingSelections,
+	presentRequiredFiles,
+	REQUIRED_INPUT_FILES,
 	RUNNABLE_SIMULATORS,
 	RunnableSimulator
 } from '../inspectInputFiles';
 
-const BEAM_DAT = 'JPART0 2\nNSTAT 1000 0\n';
-const GEO_DAT =
-	'    0    0    geometry\n  RCC    1 0.0 0.0 0.0 0.0 0.0 20.0 5.0\n  END\n001 +1\n  END\n  1\n  1\n';
-const MAT_DAT = 'MEDIUM 1\nICRU 276\nEND\n';
 const SHIELDHIT_FILES: InputFiles = {
 	'info.json': "{'version': '', 'label': '', 'simulator': 'shieldhit'}",
-	'beam.dat': BEAM_DAT,
-	'geo.dat': GEO_DAT,
-	'mat.dat': MAT_DAT,
+	'beam.dat': 'NSTAT 1000 0',
+	'geo.dat': '0 0 geometry',
+	'mat.dat': 'MEDIUM 1',
 	'detect.dat': 'Geometry Cyl'
 };
-const FLUKA_INPUT = 'TITLE\nBEAM -0.15\nSTART 1000.0\nSTOP\n';
 
 const check = (simulator: RunnableSimulator, files: InputFiles, selected: string[]) =>
 	checkSelection(simulator, selected, files, inspectInputFiles(files));
@@ -30,14 +25,32 @@ const kinds = (result: ReturnType<typeof check>) =>
 	Object.fromEntries(Object.entries(result.hints).map(([name, hint]) => [name, hint?.kind]));
 
 describe('inspectInputFiles', () => {
+	test('required files belong to their simulator, other files to none', () => {
+		const result = inspectInputFiles({ ...SHIELDHIT_FILES, 'sobp.dat': 'x', 'notes.txt': 'x' });
+
+		expect(
+			Object.fromEntries(
+				Object.entries(result.files).map(([name, file]) => [name, file.simulator])
+			)
+		).toEqual({
+			'info.json': null,
+			'beam.dat': 'shieldhit',
+			'geo.dat': 'shieldhit',
+			'mat.dat': 'shieldhit',
+			'detect.dat': 'shieldhit',
+			'sobp.dat': null,
+			'notes.txt': null
+		});
+	});
+
 	test('mixed files with a downloaded copy', () => {
 		expect(
 			inspectInputFiles({
-				'beam.dat': BEAM_DAT,
-				'geo.dat': GEO_DAT,
+				'beam.dat': 'NSTAT 1000 0',
+				'geo.dat': '0 0 geometry',
 				'detect.dat': 'Geometry Cyl',
-				'fl_sim.inp': FLUKA_INPUT,
-				'fl_sim (1).inp': FLUKA_INPUT
+				'fl_sim.inp': 'TITLE',
+				'fl_sim (1).inp': 'TITLE'
 			})
 		).toEqual({
 			files: {
@@ -46,7 +59,7 @@ describe('inspectInputFiles', () => {
 				'detect.dat': { simulator: 'shieldhit', issues: [] },
 				'fl_sim.inp': { simulator: 'fluka', issues: [] },
 				'fl_sim (1).inp': {
-					simulator: 'fluka',
+					simulator: null,
 					issues: [
 						{
 							severity: 'warning',
@@ -58,204 +71,140 @@ describe('inspectInputFiles', () => {
 				}
 			},
 			simulators: {
-				shieldhit: { possible: false, reason: 'mat.dat is missing', sets: [] },
-				fluka: { possible: true, sets: [['fl_sim.inp'], ['fl_sim (1).inp']] },
-				geant4: { possible: false, reason: 'geometry.gdml is missing', sets: [] }
+				shieldhit: { possible: false, reason: 'Missing mat.dat', missing: ['mat.dat'] },
+				fluka: { possible: true, missing: [] },
+				geant4: {
+					possible: false,
+					reason: 'Missing geometry.gdml, run.mac',
+					missing: ['geometry.gdml', 'run.mac']
+				}
 			}
 		});
+	});
+
+	test.each([
+		['fl_sim (1).inp', 'fl_sim.inp'],
+		['fl_sim(1).inp', 'fl_sim.inp'],
+		['fl_sim-2.inp', 'fl_sim.inp'],
+		['fl_sim 2.inp', 'fl_sim.inp'],
+		['fl_sim.inp2', 'fl_sim.inp'],
+		['beam (3).dat', 'beam.dat'],
+		['run.mac2', 'run.mac']
+	])('%s is a copy of %s', (name, originalName) => {
+		expect(inspectInputFiles({ [name]: 'x' }).files[name].issues[0].suggestedName).toBe(
+			originalName
+		);
+	});
+
+	test.each(['fl_sim.inp', 'beam.dat', 'sim_2.inp', 'my-beam.dat', 'geometry.gdml'])(
+		'%s is not a copy',
+		name => {
+			expect(inspectInputFiles({ [name]: 'x' }).files[name].issues).toEqual([]);
+		}
+	);
+
+	test('file content is never checked', () => {
+		const files = { 'beam.dat': '', 'geo.dat': 'anything', 'mat.dat': ' \n', 'detect.dat': '' };
+		const result = inspectInputFiles(files);
+
+		expect(result.simulators.shieldhit).toEqual({ possible: true, missing: [] });
+		expect(Object.values(result.files).flatMap(file => file.issues)).toEqual([]);
+	});
+
+	test('empty templates contain the required files', () => {
+		expect(emptyTemplate(SimulatorType.SHIELDHIT)).toEqual({
+			'beam.dat': '',
+			'geo.dat': '',
+			'mat.dat': '',
+			'detect.dat': ''
+		});
+		expect(emptyTemplate(SimulatorType.FLUKA)).toEqual({ 'fl_sim.inp': '' });
+		expect(emptyTemplate(SimulatorType.GEANT4)).toEqual({ 'geometry.gdml': '', 'run.mac': '' });
 	});
 });
 
 describe('checkSelection', () => {
-	test('a generated set is valid', () => {
-		const result = check(
-			SimulatorType.SHIELDHIT,
-			SHIELDHIT_FILES,
-			Object.keys(SHIELDHIT_FILES)
+	test('all required files selected, other files allowed', () => {
+		const files = { ...SHIELDHIT_FILES, 'sobp.dat': 'x', 'fl_sim.inp': 'x', 'notes.txt': 'x' };
+		const result = check(SimulatorType.SHIELDHIT, files, Object.keys(files));
+
+		expect(result).toEqual({
+			valid: true,
+			reason: undefined,
+			hints: {
+				'info.json': undefined,
+				'beam.dat': {
+					kind: 'ok',
+					message: 'Required for SHIELD-HIT12A, included in the run'
+				},
+				'geo.dat': {
+					kind: 'ok',
+					message: 'Required for SHIELD-HIT12A, included in the run'
+				},
+				'mat.dat': {
+					kind: 'ok',
+					message: 'Required for SHIELD-HIT12A, included in the run'
+				},
+				'detect.dat': {
+					kind: 'ok',
+					message: 'Required for SHIELD-HIT12A, included in the run'
+				},
+				'sobp.dat': undefined,
+				'fl_sim.inp': undefined,
+				'notes.txt': undefined
+			}
+		});
+	});
+
+	test('missing required files are listed', () => {
+		const { 'mat.dat': _, 'detect.dat': __, ...files } = SHIELDHIT_FILES;
+
+		expect(check(SimulatorType.SHIELDHIT, files, Object.keys(files)).reason).toBe(
+			'Missing mat.dat, detect.dat'
 		);
-
-		expect(result.valid).toBe(true);
-		expect(Object.values(kinds(result))).toEqual(['ok', 'ok', 'ok', 'ok', 'ok']);
 	});
 
-	test('empty files of the chosen simulator are invalid, not excluded', () => {
-		const files = INPUT_FILE_SPECS[SimulatorType.SHIELDHIT].template;
-		const result = check(SimulatorType.SHIELDHIT, files, Object.keys(files));
-
-		expect(result.reason).toBe('beam.dat is empty');
-		expect(kinds(result)).toEqual({
-			'beam.dat': 'invalid',
-			'geo.dat': 'invalid',
-			'mat.dat': 'invalid',
-			'detect.dat': 'invalid'
-		});
-
-		expect(result.hints['beam.dat']?.message).toBe(
-			'beam.dat is empty, fill it in or exclude it'
-		);
-	});
-
-	test('a file of another simulator is excluded', () => {
-		const files = { ...SHIELDHIT_FILES, 'fl_sim.inp': FLUKA_INPUT };
-		const result = check(SimulatorType.SHIELDHIT, files, Object.keys(files));
-
-		expect(result.reason).toBe("Exclude fl_sim.inp, it isn't a SHIELD-HIT12A file");
-		expect(result.hints['fl_sim.inp']).toEqual({
-			kind: 'exclude',
-			message: 'fl_sim.inp is a Fluka file, exclude it to run SHIELD-HIT12A'
-		});
-		expect(result.hints['beam.dat']?.kind).toBe('ok');
-	});
-
-	test('an unknown file is excluded', () => {
-		const files = { ...SHIELDHIT_FILES, 'notes.txt': 'hello' };
-		const result = check(SimulatorType.SHIELDHIT, files, Object.keys(files));
-
-		expect(result.hints['notes.txt']).toEqual({
-			kind: 'exclude',
-			message: "notes.txt isn't an input file of SHIELD-HIT12A, exclude it"
-		});
-	});
-
-	test('an empty optional file and a copy that needs renaming are invalid', () => {
-		const files = { ...SHIELDHIT_FILES, 'detect.dat': '', 'beam (1).dat': 'NSTAT 10 0' };
-		const result = check(SimulatorType.SHIELDHIT, files, Object.keys(files));
-
-		expect(result.hints['detect.dat']?.kind).toBe('invalid');
-		expect(result.hints['beam (1).dat']).toEqual({
-			kind: 'invalid',
-			message: 'Rename beam (1).dat to beam.dat or exclude it'
-		});
-		expect(result.reason).toBe('detect.dat is empty, fill it in or exclude it');
-	});
-
-	test('a required file that is not selected is suggested', () => {
+	test('required files that are not selected are suggested', () => {
 		const result = check(SimulatorType.SHIELDHIT, SHIELDHIT_FILES, ['beam.dat', 'mat.dat']);
 
-		expect(result.reason).toBe('Include geo.dat');
-		expect(result.hints['geo.dat']).toEqual({
-			kind: 'suggest',
-			message: 'Required for SHIELD-HIT12A, include it'
-		});
-		expect(result.hints['detect.dat']).toBeUndefined();
-	});
-
-	test('a required empty file that is not selected is invalid', () => {
-		const files = { ...SHIELDHIT_FILES, 'geo.dat': '' };
-		const result = check(SimulatorType.SHIELDHIT, files, ['beam.dat']);
-
-		expect(result.hints['geo.dat']).toEqual({
-			kind: 'invalid',
-			message: 'geo.dat is empty, fill it in'
+		expect(result.reason).toBe('Include geo.dat, detect.dat');
+		expect(kinds(result)).toEqual({
+			'info.json': undefined,
+			'beam.dat': 'ok',
+			'geo.dat': 'suggest',
+			'mat.dat': 'ok',
+			'detect.dat': 'suggest'
 		});
 	});
 
-	test('a missing required file is only reported in the reason', () => {
-		const { 'mat.dat': _, ...files } = SHIELDHIT_FILES;
-		const result = check(SimulatorType.SHIELDHIT, files, Object.keys(files));
+	test('FLUKA needs fl_sim.inp and accepts other .inp files', () => {
+		expect(check(SimulatorType.FLUKA, { 'my_sim.inp': 'x' }, ['my_sim.inp']).reason).toBe(
+			'Missing fl_sim.inp'
+		);
 
-		expect(result.reason).toBe('mat.dat is missing');
-		expect(Object.keys(result.hints)).toEqual(Object.keys(files));
-	});
-
-	test('FLUKA needs exactly one .inp file', () => {
-		const files = { 'a.inp': FLUKA_INPUT, 'b.inp': FLUKA_INPUT };
-
-		const none = check(SimulatorType.FLUKA, files, []);
-		expect(none.reason).toBe('Select one .inp file');
-		expect(none.hints['a.inp']).toEqual({ kind: 'suggest', message: 'Choose one .inp file' });
-
-		const both = check(SimulatorType.FLUKA, files, ['a.inp', 'b.inp']);
-		expect(both.reason).toBe('Select only one .inp file');
-		expect(kinds(both)).toEqual({ 'a.inp': 'tooMany', 'b.inp': 'tooMany' });
-
-		const one = check(SimulatorType.FLUKA, files, ['a.inp']);
-		expect(one.valid).toBe(true);
-		expect(kinds(one)).toEqual({ 'a.inp': 'ok', 'b.inp': undefined });
-	});
-
-	test('a single FLUKA input that is not selected is suggested', () => {
-		const result = check(SimulatorType.FLUKA, { 'fl_sim.inp': FLUKA_INPUT }, []);
-
-		expect(result.reason).toBe('Include fl_sim.inp');
-		expect(result.hints['fl_sim.inp']?.kind).toBe('suggest');
-	});
-});
-
-describe('content checks', () => {
-	test.each([
-		['beam.dat', BEAM_DAT, []],
-		['beam.dat', 'JPART0 2\n', ['missing_nstat']],
-		['geo.dat', GEO_DAT, []],
-		['geo.dat', '    0    0    geometry\n  END\n', ['missing_end']],
-		['mat.dat', MAT_DAT, []],
-		['mat.dat', 'ICRU 276\n', ['missing_medium']],
-		['fl_sim.inp', FLUKA_INPUT, []],
-		['fl_sim.inp', 'TITLE\nSTOP\n', ['missing_start']],
-		['fl_sim.inp', 'TITLE\nSTART 10.0\n', ['missing_stop']],
-		['my_sim (1).inp', 'TITLE\n', ['copy_suffix', 'missing_start', 'missing_stop']],
-		['geometry.gdml', '<?xml version="1.0"?>\n<gdml xmlns:xsi="x"><setup/></gdml>', []],
-		['geometry.gdml', '<gdml><setup></gdml>', ['invalid_xml']],
-		['geometry.gdml', '<world/>', ['not_gdml']],
-		['run.mac', '/run/initialize\n/run/beamOn 1000\n', []],
-		['run.mac', '/run/initialize\n', ['missing_beam_on']],
-		['detect.dat', 'anything', []],
-		['notes.txt', 'anything', ['unknown_file']]
-	])('%s: %j', (name, content, codes) => {
 		expect(
-			inspectInputFiles({ [name]: content }).files[name].issues.map(issue => issue.code)
-		).toEqual(codes);
+			check(SimulatorType.FLUKA, { 'fl_sim.inp': 'x', 'b.inp': 'x' }, ['fl_sim.inp', 'b.inp'])
+				.valid
+		).toBe(true);
 	});
 
-	test('a content error blocks the run and is shown on the file', () => {
-		const files = { ...SHIELDHIT_FILES, 'geo.dat': '    0    0    geometry\n' };
-		const result = check(SimulatorType.SHIELDHIT, files, Object.keys(files));
+	test('Geant4 needs geometry.gdml and run.mac', () => {
+		const files = { 'geometry.gdml': '', 'run.mac': '', 'extra.mac': '' };
 
-		expect(result.reason).toBe(
-			'geo.dat needs an END line after the bodies and another after the zones'
+		expect(check(SimulatorType.GEANT4, files, ['geometry.gdml']).reason).toBe(
+			'Include run.mac'
 		);
-
-		expect(result.hints['geo.dat']).toEqual({
-			kind: 'invalid',
-			message: 'geo.dat needs an END line after the bodies and another after the zones'
-		});
+		expect(check(SimulatorType.GEANT4, files, Object.keys(files)).valid).toBe(true);
 	});
 
-	test('a content warning does not block the run', () => {
-		const files = { ...SHIELDHIT_FILES, 'beam.dat': 'JPART0 2\n' };
-		const result = check(SimulatorType.SHIELDHIT, files, Object.keys(files));
-
-		expect(result.valid).toBe(true);
-		expect(result.hints['beam.dat']?.kind).toBe('warning');
-		expect(result.warnings).toEqual([
-			"beam.dat has no NSTAT line, so the number of primary particles can't be changed"
+	test('present required files', () => {
+		expect(presentRequiredFiles(SimulatorType.SHIELDHIT, SHIELDHIT_FILES)).toEqual([
+			'beam.dat',
+			'geo.dat',
+			'mat.dat',
+			'detect.dat'
 		]);
-	});
-});
-
-describe('matchingSelections', () => {
-	const select = (simulator: RunnableSimulator, files: InputFiles) =>
-		matchingSelections(simulator, files, inspectInputFiles(files));
-
-	test('runnable sets when the simulator can run', () => {
-		expect(select(SimulatorType.SHIELDHIT, SHIELDHIT_FILES)).toEqual([
-			Object.keys(SHIELDHIT_FILES)
-		]);
-
-		expect(select(SimulatorType.FLUKA, { 'a.inp': FLUKA_INPUT, 'b.inp': FLUKA_INPUT })).toEqual(
-			[['a.inp'], ['b.inp']]
-		);
-	});
-
-	test('all files of the simulator when it cannot run yet', () => {
-		const files = { ...INPUT_FILE_SPECS[SimulatorType.GEANT4].template, 'beam.dat': 'b' };
-
-		expect(select(SimulatorType.GEANT4, files)).toEqual([['geometry.gdml', 'run.mac']]);
-		expect(select(SimulatorType.FLUKA, { 'fl_sim.inp': '' })).toEqual([['fl_sim.inp']]);
-	});
-
-	test('nothing when there are no files of the simulator', () => {
-		expect(select(SimulatorType.GEANT4, SHIELDHIT_FILES)).toEqual([]);
+		expect(presentRequiredFiles(SimulatorType.GEANT4, SHIELDHIT_FILES)).toEqual([]);
 	});
 });
 
@@ -271,123 +220,53 @@ function random(seed: number) {
 
 describe('checkSelection invariants on random files', () => {
 	const pool = [
-		'beam.dat',
-		'geo.dat',
-		'mat.dat',
-		'detect.dat',
-		'sobp.dat',
+		...RUNNABLE_SIMULATORS.flatMap(simulator => REQUIRED_INPUT_FILES[simulator]),
 		'beam (1).dat',
-		'detect-2.dat',
-		'fl_sim.inp',
 		'fl_sim (1).inp',
 		'a.inp',
-		'fl_sim.inp2',
-		'geometry.gdml',
-		'run.mac',
-		'run 2.mac',
+		'sobp.dat',
+		'other.gdml',
 		'info.json',
 		'notes.txt'
 	];
-
-	const infos = [
-		"{'simulator': 'shieldhit'}",
-		'{"simulator": "fluka"}',
-		'{"simulator": "geant4"}',
-		'{"simulator": "topas"}',
-		''
-	];
-
-	const validContent = (name: string) => {
-		if (name.endsWith('.inp') || name.endsWith('.inp2')) return FLUKA_INPUT;
-
-		if (name.startsWith('beam')) return BEAM_DAT;
-
-		if (name.startsWith('geo.')) return GEO_DAT;
-
-		if (name.startsWith('mat')) return MAT_DAT;
-
-		if (name.endsWith('.gdml')) return '<gdml><setup/></gdml>';
-
-		if (name.includes('.mac')) return '/run/beamOn 10';
-
-		return 'x';
-	};
-	const contents = ['', 'x', '  \n', 'NSTAT 10', 'TITLE\nSTOP', 'START 1.0', '<gdml>'];
 	const next = random(2479);
-	const pick = <T>(items: T[]) => items[Math.floor(next() * items.length)];
 
 	const cases = Array.from({ length: 1500 }, () => {
 		const files: InputFiles = Object.fromEntries(
-			pool
-				.filter(() => next() < 0.5)
-				.map(name => [
-					name,
-					name === 'info.json'
-						? pick(infos)
-						: next() < 0.5
-							? validContent(name)
-							: pick(contents)
-				])
+			pool.filter(() => next() < 0.6).map(name => [name, next() < 0.5 ? '' : 'x'])
 		);
-		const selected = Object.keys(files).filter(() => next() < 0.6);
+		const selected = Object.keys(files).filter(() => next() < 0.7);
 
 		return { files, selected };
 	});
 
 	test.each(RUNNABLE_SIMULATORS)('%s', simulator => {
-		const spec = INPUT_FILE_SPECS[simulator];
+		const required = REQUIRED_INPUT_FILES[simulator];
 
 		for (const { files, selected } of cases) {
 			const inspection = inspectInputFiles(files);
-			const { possible, sets } = inspection.simulators[simulator];
-			const status = (name: string) => fileStatus(name, simulator, files, inspection);
-			const candidates = Object.keys(files).filter(
-				name => spec.singleOfExtension && status(name) === 'usable' && name !== 'info.json'
+			const result = checkSelection(simulator, selected, files, inspection);
+			const extras = Object.keys(files).filter(name => !required.includes(name));
+			const withAllExtras = checkSelection(
+				simulator,
+				[...selected, ...extras.filter(name => !selected.includes(name))],
+				files,
+				inspection
 			);
 
-			expect(possible).toBe(sets.length > 0);
-
-			for (const set of sets)
-				expect(checkSelection(simulator, set, files, inspection).valid).toBe(true);
-
-			const result = checkSelection(simulator, selected, files, inspection);
-			const expectedValid =
-				selected.length > 0 &&
-				selected.every(name => status(name) === 'usable') &&
-				spec.required.every(name => selected.includes(name)) &&
-				(!spec.singleOfExtension ||
-					candidates.filter(name => selected.includes(name)).length === 1);
-
-			expect(result.valid).toBe(expectedValid);
+			expect(result.valid).toBe(
+				required.every(name => name in files && selected.includes(name))
+			);
 			expect(result.valid).toBe(result.reason === undefined);
-
-			const selectedHints = selected.map(name => ({
-				name,
-				status: status(name),
-				kind: result.hints[name]?.kind
-			}));
-
+			expect(inspection.simulators[simulator].possible).toBe(
+				required.every(name => name in files)
+			);
+			expect(withAllExtras.valid).toBe(result.valid);
 			expect(
-				selectedHints.filter(
-					({ status, kind }) => (status === 'foreign') !== (kind === 'exclude')
-				)
-			).toEqual([]);
-
-			expect(
-				selectedHints.filter(
-					({ status, kind }) =>
-						(status === 'empty' ||
-							status === 'invalidContent' ||
-							status === 'renameNeeded') &&
-						kind !== 'invalid'
-				)
-			).toEqual([]);
-
-			expect(
-				selectedHints.filter(
-					({ kind }) => result.valid && kind !== 'ok' && kind !== 'warning'
-				)
-			).toEqual([]);
+				Object.entries(result.hints)
+					.filter(([, hint]) => hint !== undefined)
+					.map(([name]) => name)
+			).toEqual(Object.keys(files).filter(name => required.includes(name)));
 		}
 	});
 });
