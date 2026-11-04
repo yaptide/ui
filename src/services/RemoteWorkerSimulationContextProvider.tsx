@@ -41,6 +41,7 @@ function RemoteWorkerSimulationContextProvider({ children }: GenericContextProvi
 			getJobInputs: service.getJobInputs.bind(service),
 			getJobResults: service.getJobResults.bind(service),
 			getEstimatorsPages: service.getEstimatorsPages.bind(service),
+			getEstimatorsItems: service.getEstimatorsItems.bind(service),
 			getJobLogs: service.getJobLogs.bind(service),
 			getFullSimulationData: service.getFullSimulationData.bind(service)
 		};

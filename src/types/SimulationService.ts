@@ -14,7 +14,12 @@ import {
 	RequestParam,
 	RequestPostJob
 } from './RequestTypes';
-import { JobStatusData, ResponseGetPageContents, ResponsePostJob } from './ResponseTypes';
+import {
+	EstimatorPagesByDimensions,
+	JobStatusData,
+	ResponseGetPageContents,
+	ResponsePostJob
+} from './ResponseTypes';
 
 export type FullSimulationData = Omit<JobInputs & JobStatusData & JobResults, 'message'>;
 
@@ -26,6 +31,8 @@ export interface SimulationContext {
 	getJobInputs: (...args: RequestGetJobInputs) => Promise<JobInputs | undefined>;
 	getJobResults: (...args: RequestGetJobResults) => Promise<JobResults | undefined>;
 	getEstimatorsPages: (...args: RequestGetJobResult) => Promise<JobResults | undefined>;
+	// the pages the server holds now, by estimator and dimensions (the remote worker only)
+	getEstimatorsItems?: (jobId: string) => Promise<EstimatorPagesByDimensions[] | undefined>;
 	getJobLogs: (...args: RequestGetJobLogs) => Promise<JobLogs | undefined>;
 	getPageContents: (...args: RequestGetPageContents) => Promise<ResponseGetPageContents>;
 	getPageStatus: (...args: RequestGetPageStatus) => Promise<JobStatusData[] | undefined>;

@@ -22,7 +22,7 @@ describe('partial results', () => {
 	it('treats the results of a completed simulation as final', () => {
 		const completed = { ...running, jobState: StatusState.COMPLETED };
 
-		expect(partialRevision(running)).toBe(3000);
+		expect(partialRevision(running)).toBe(Date.parse('2026-10-17T12:00:00+00:00'));
 		expect(partialRevision(completed)).toBeUndefined();
 		expect(partialResultsLabel(completed)).toBeUndefined();
 	});

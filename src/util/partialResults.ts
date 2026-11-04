@@ -9,12 +9,15 @@ type WithPartialResults = {
 };
 
 /**
- * Primaries the stored results cover while the simulation has not completed; undefined for final results.
+ * Which partial results are stored while the simulation has not completed: when they were stored (in ms), so the
+ * on-demand 2D results, merged apart from the live ones and often from the same primaries, count as new results too;
+ * the primaries when the time is missing. Undefined for final results.
  */
 export function partialRevision(status: WithPartialResults): number | undefined {
-	return status.jobState === StatusState.COMPLETED
-		? undefined
-		: status.partialResults?.simulatedPrimaries;
+	if (status.jobState === StatusState.COMPLETED || !status.partialResults) return undefined;
+	const stored = Date.parse(status.partialResults.time);
+
+	return Number.isNaN(stored) ? status.partialResults.simulatedPrimaries : stored;
 }
 
 /**

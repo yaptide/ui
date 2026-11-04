@@ -20,7 +20,11 @@ function simulation(
 	return {
 		jobId: 'job',
 		jobState,
-		partialResults: { simulatedPrimaries, time: new Date().toISOString() },
+		// the time names the partial results (partialRevision): newer primaries, a later time
+		partialResults: {
+			simulatedPrimaries,
+			time: new Date(Date.UTC(2026, 10, 4) + simulatedPrimaries * 1000).toISOString()
+		},
 		metadata: { simType }
 	} as unknown as FullSimulationData;
 }

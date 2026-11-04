@@ -7,6 +7,7 @@ import { StyledTab, StyledTabs } from '../../../../shared/components/Tabs/Styled
 import { SpecificEstimator } from '../../../../types/RequestTypes';
 import { EstimatorPagesByDimensions } from '../../../../types/ResponseTypes';
 import { FullSimulationData } from '../../../../types/SimulationService';
+import { eagerGroups, pageGroups } from '../../../../util/lazyPages';
 import { partialRevision } from '../../../../util/partialResults';
 
 interface EstimatorsTabProps {
@@ -31,7 +32,7 @@ const EstimatorsSelect = ({
 	const theme = useTheme();
 	const [controller] = useState(new AbortController());
 
-	const { getEstimatorsPages } = useRemoteWorkerSimulation();
+	const { getEstimatorsPages, getEstimatorsItems } = useRemoteWorkerSimulation();
 	const revision = partialRevision(simulation);
 	// the partial results revision each tab was loaded at, so a newer partial or the final results load it again;
 	// the estimators there at mount were loaded at the revision then (the component is keyed by simulation)
@@ -50,77 +51,96 @@ const EstimatorsSelect = ({
 				currentEstimatorData[id].name !== '' &&
 				loadedRevision === revision;
 
-			if (estimatorsPagesData) {
-				const estimatorsPagesByDimensions = estimatorsPagesData[id].pagesByDimensions;
+			if (!estimatorsPagesData || estimatorExists) return;
 
-				if (!estimatorExists) {
-					const simulationJobId = simulation.jobId;
-					const allResults: SpecificEstimator[] = [];
+			// partial results gain pages as they come (the 2D results the user asked for): the pages the server holds
+			// now, for this tab and for the lazy pages of EstimatorTab
+			let pagesData = estimatorsPagesData;
 
-					for (const [, pageDimension] of Object.entries(estimatorsPagesByDimensions)) {
-						const estimatorData = await getEstimatorsPages(
-							{
-								jobId: simulationJobId,
-								estimatorName: estimatorsTabData[id],
-								pageNumbers: pageDimension.pageNums,
-								revision
-							},
-							controller.signal,
-							true
-						);
+			if (revision !== undefined && getEstimatorsItems) {
+				const fresh = await getEstimatorsItems(simulation.jobId).catch(() => undefined);
 
-						if (estimatorData) {
-							allResults.push(estimatorData);
-						}
-					}
+				if (isStale()) return;
 
-					// a newer simulation or tab is being loaded meanwhile
-					if (allResults.length === 0 || isStale()) return;
+				if (fresh?.length) pagesData = fresh;
+			}
 
-					const aggregationResults = allResults.reduce(
-						(acc, result) => {
-							result.estimators.forEach(estimator => {
-								const existingEstimator = acc.estimators.find(
-									e => e.name === estimator.name
-								);
+			const simulationJobId = simulation.jobId;
+			const estimatorName = estimatorsTabData[id];
+			const estimatorPages = pagesData.find(estimator => estimator.name === estimatorName);
+			const allResults: SpecificEstimator[] = [];
 
-								if (existingEstimator) {
-									existingEstimator.pages.push(...estimator.pages);
-								} else {
-									acc.estimators.push(estimator);
-								}
-							});
+			// only the values and lines: maps and volumes load when they come into view (EstimatorTab)
+			for (const pageDimension of eagerGroups(
+				pageGroups((estimatorPages ?? pagesData[id])?.pagesByDimensions)
+			)) {
+				const estimatorData = await getEstimatorsPages(
+					{
+						jobId: simulationJobId,
+						estimatorName,
+						pageNumbers: pageDimension.pageNums,
+						revision
+					},
+					controller.signal,
+					true
+				);
 
-							return acc;
-						},
-						{ jobId: simulationJobId, estimators: [], message: '' } as SpecificEstimator
-					);
-
-					const newEstimators = [...currentEstimatorData];
-
-					while (newEstimators.length <= id) {
-						newEstimators.push({
-							name: '',
-							pages: []
-						});
-					}
-
-					newEstimators[id] = aggregationResults.estimators[0];
-
-					const newSimulation = {
-						...simulation,
-						estimators: newEstimators
-					};
-					loadedRevisions.current.set(id, revision);
-					// not onSelect: a new partial loaded while another screen is open must not switch to Results
-					setResultsSimulationData({ source: 'onLoad', data: newSimulation });
+				if (estimatorData) {
+					allResults.push(estimatorData);
 				}
 			}
+
+			// a newer simulation or tab is being loaded meanwhile
+			if (isStale()) return;
+
+			const aggregationResults = allResults.reduce(
+				(acc, result) => {
+					result.estimators.forEach(estimator => {
+						const existingEstimator = acc.estimators.find(
+							e => e.name === estimator.name
+						);
+
+						if (existingEstimator) {
+							existingEstimator.pages.push(...estimator.pages);
+						} else {
+							acc.estimators.push({ ...estimator, pages: [...estimator.pages] });
+						}
+					});
+
+					return acc;
+				},
+				{ jobId: simulationJobId, estimators: [], message: '' } as SpecificEstimator
+			);
+
+			const newEstimators = [...currentEstimatorData];
+
+			while (newEstimators.length <= id) {
+				newEstimators.push({
+					name: '',
+					pages: []
+				});
+			}
+
+			// an estimator of maps only has none of its pages yet: they come when shown
+			newEstimators[id] = aggregationResults.estimators[0] ?? {
+				name: estimatorName,
+				pages: []
+			};
+
+			const newSimulation = {
+				...simulation,
+				input: { ...simulation.input, estimatorsItems: pagesData },
+				estimators: newEstimators
+			};
+			loadedRevisions.current.set(id, revision);
+			// not onSelect: a new partial loaded while another screen is open must not switch to Results
+			setResultsSimulationData({ source: 'onLoad', data: newSimulation });
 		},
 		[
 			controller.signal,
 			estimatorsPagesData,
 			estimatorsTabData,
+			getEstimatorsItems,
 			getEstimatorsPages,
 			revision,
 			setResultsSimulationData,

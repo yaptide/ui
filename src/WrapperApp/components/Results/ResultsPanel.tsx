@@ -7,7 +7,7 @@ import {
 	Typography,
 	useTheme
 } from '@mui/material';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 
 import { Estimator, isPage0d, Page, Page0D } from '../../../JsRoot/GraphData';
 import { useDialog } from '../../../services/DialogService';
@@ -17,7 +17,8 @@ import { useStore } from '../../../services/StoreService';
 import { InfoTooltip } from '../../../shared/components/tooltip/InfoTooltip';
 import { titleToKebabCase } from '../../../ThreeEditor/components/Dialog/CustomDialog';
 import { FullSimulationData } from '../../../types/SimulationService';
-import { partialResultsLabel } from '../../../util/partialResults';
+import { lazyGroups, PageGroup, pageGroups } from '../../../util/lazyPages';
+import { partialResultsLabel, partialRevision } from '../../../util/partialResults';
 import EstimatorsSelect from './EstimatorsSelect/EstimatorsSelect';
 import EstimatorTab from './EstimatorTab/EstimatorTab';
 import { useFollowPartialResults } from './useFollowPartialResults';
@@ -36,6 +37,7 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 		props.simulation?.metadata.simType === 'Geant4'
 			? geant4LocalWorkerSimulationHandlers
 			: remoteWorkerSimulationHandlers;
+	const { getEstimatorsPages } = remoteWorkerSimulationHandlers;
 	const { open: openSaveFileDialog } = useDialog('saveFile');
 	const { yaptideEditor, setResultsSimulationData } = useStore();
 	const { simulation } = props;
@@ -120,6 +122,95 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 
 	const resultsGeneratedFromProjectFile = !!simulation?.input.inputJson;
 	const chosenEstimator = estimatorsResults[tabsValue];
+
+	// the 2D and 3D pages of the estimator on screen load once they come into view (LazyPageGroup), each group once
+	// for each partial result: key -> loaded or loading
+	const revision = simulation && partialRevision(simulation);
+	const [loadedGroups, setLoadedGroups] = useState<Record<string, 'loading' | 'loaded'>>({});
+	const latestSimulation = useRef(simulation);
+	latestSimulation.current = simulation;
+	const tabEstimatorName = (estimatorsTabData ?? uploadedInputFilesEstimatorNames)?.[tabsValue];
+	const tabPages =
+		estimatorsPagesData?.find(estimator => estimator.name === tabEstimatorName) ??
+		estimatorsPagesData?.[tabsValue];
+
+	const groupKey = (dimension: number) =>
+		`${simulation?.jobId}|${tabEstimatorName}|${dimension}|${revision ?? 'final'}`;
+
+	// an estimator reloaded for newer results holds only its 0D and 1D pages again
+	const loadedHere = (group: PageGroup) =>
+		loadedGroups[groupKey(group.dimension)] === 'loaded' &&
+		chosenEstimator?.pages.some(page => page.dimensions === group.dimension);
+
+	const pendingGroups =
+		simulation?.metadata.simType === 'Geant4' || !chosenEstimator
+			? []
+			: lazyGroups(pageGroups(tabPages?.pagesByDimensions)).filter(
+					group => !loadedHere(group)
+				);
+
+	const loadingDimensions = pendingGroups
+		.filter(group => loadedGroups[groupKey(group.dimension)] === 'loading')
+		.map(group => group.dimension);
+
+	const loadGroup = useCallback(
+		async (group: PageGroup) => {
+			const shown = latestSimulation.current;
+
+			if (!shown || !tabEstimatorName) return;
+			const key = `${shown.jobId}|${tabEstimatorName}|${group.dimension}|${partialRevision(shown) ?? 'final'}`;
+			setLoadedGroups(groups => ({ ...groups, [key]: 'loading' }));
+			const results = await getEstimatorsPages(
+				{
+					jobId: shown.jobId,
+					estimatorName: tabEstimatorName,
+					pageNumbers: group.pageNums,
+					revision: partialRevision(shown)
+				},
+				undefined,
+				true
+			).catch(error => {
+				console.error('Failed to load the pages:', error);
+
+				return undefined;
+			});
+			const current = latestSimulation.current;
+			const pages = results?.estimators.find(e => e.name === tabEstimatorName)?.pages;
+
+			// another simulation or newer results are shown meanwhile: they load their own pages
+			if (
+				!current ||
+				!pages ||
+				current.jobId !== shown.jobId ||
+				partialRevision(current) !== partialRevision(shown)
+			) {
+				setLoadedGroups(groups => {
+					const { [key]: _, ...others } = groups;
+
+					return others;
+				});
+
+				return;
+			}
+
+			const estimators = current.estimators.map(estimator =>
+				estimator.name === tabEstimatorName
+					? {
+							...estimator,
+							pages: [
+								...estimator.pages.filter(
+									page => page.dimensions !== group.dimension
+								),
+								...pages
+							]
+						}
+					: estimator
+			);
+			setLoadedGroups(groups => ({ ...groups, [key]: 'loaded' }));
+			setResultsSimulationData({ source: 'onLoad', data: { ...current, estimators } });
+		},
+		[getEstimatorsPages, setResultsSimulationData, tabEstimatorName]
+	);
 
 	let title = 'Unknown simulation';
 
@@ -245,6 +336,9 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 						resultsGeneratedFromProjectFile={resultsGeneratedFromProjectFile}
 						groupQuantities={groupQuantities}
 						simulation={simulation}
+						pendingGroups={pendingGroups}
+						loadingDimensions={loadingDimensions}
+						onLoadGroup={loadGroup}
 					/>
 				</>
 			)}

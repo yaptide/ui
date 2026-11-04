@@ -50,6 +50,7 @@ import {
 } from '../types/ResponseTypes';
 import { FullSimulationData, SimulationService } from '../types/SimulationService';
 import { camelToSnakeCase } from '../util/Notation/Notation';
+import { eagerGroups, pageGroups } from '../util/lazyPages';
 import { partialRevision } from '../util/partialResults';
 import { taskTotals } from '../util/taskTotals';
 import { ValidateShape } from '../util/Types';
@@ -555,6 +556,18 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 		}
 	}
 
+	/**
+	 * The pages the server holds for every estimator of a simulation, by their dimensions. Partial results gain pages
+	 * as they come (the 2D results the user asked for), so this is looked up again for every new partial result.
+	 */
+	async getEstimatorsItems(jobId: string): Promise<EstimatorPagesByDimensions[] | undefined> {
+		const estimators = await this.getCurrentEstimators(jobId);
+
+		return (
+			estimators && this.prepareEstimatorItemByPageDimension(estimators.estimatorsMetadata)
+		);
+	}
+
 	private prepareEstimatorItemByPageDimension(
 		estimators: EstimatorItem[]
 	): EstimatorPagesByDimensions[] {
@@ -596,7 +609,11 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 			(jobStatus.jobState === StatusState.COMPLETED ||
 				partialRevision(jobStatus) !== undefined)
 		) {
-			if (inputs && !inputs.input.estimatorsItems) {
+			// partial results gain pages as they come: looked up again for each of them
+			if (
+				inputs &&
+				(!inputs.input.estimatorsItems || partialRevision(jobStatus) !== undefined)
+			) {
 				const estimators = await this.getCurrentEstimators(jobStatus.jobId);
 
 				if (estimators) {
@@ -639,7 +656,8 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 		if (estimatorsPagesByDimensions) {
 			const allResults: JobResults[] = [];
 
-			for (const [dimension, pageDimension] of Object.entries(estimatorsPagesByDimensions)) {
+			// 2D and 3D pages load once they come into view (EstimatorTab)
+			for (const pageDimension of eagerGroups(pageGroups(estimatorsPagesByDimensions))) {
 				const results =
 					firstEstimatorName &&
 					(await this.getEstimatorsPages(
@@ -658,7 +676,17 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 				}
 			}
 
-			if (!inputs || allResults.length === 0) return undefined;
+			if (!inputs) return undefined;
+
+			// an estimator of maps only: its pages come when shown
+			if (allResults.length === 0 && firstEstimatorName)
+				allResults.push({
+					jobId: jobStatus.jobId,
+					estimators: [{ name: firstEstimatorName, pages: [] }],
+					message: ''
+				} as JobResults);
+
+			if (allResults.length === 0) return undefined;
 
 			const aggregationResults = allResults.reduce(
 				(acc, result) => {
