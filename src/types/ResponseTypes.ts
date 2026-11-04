@@ -32,35 +32,11 @@ export const _orderedShInputFilesNames = [
 	'sobp.dat'
 ] as const;
 
-export const _defaultShInputFiles = {
-	'geo.dat': '',
-	'beam.dat': '',
-	'detect.dat': '',
-	'mat.dat': ''
-} as const;
-
 export const _orderedTopasInputFilesNames = ['info.json', 'topas_config.txt'] as const;
-
-export const _defaultTopasInputFiles = {
-	'topas_config.txt': ''
-} as const;
 
 export const _orderedFlukaInputFilesNames = ['info.json', 'fl_sim.inp'] as const;
 
-export const _defaultFlukaInputFiles = {
-	'fl_sim.inp': ''
-} as const;
-
-export const _defaultGeant4Files = {
-	'geometry.gdml': '',
-	'run.mac': ''
-} as const;
-
 export const _orderedGeant4InputFilesNames = ['info.json', 'geometry.gdml', 'run.mac'] as const;
-
-export function isKnownInputFile(name: string): name is ShInputFilesNames {
-	return _orderedShInputFilesNames.includes(name as ShInputFilesNames);
-}
 
 export type ShInputFilesNames = (typeof _orderedShInputFilesNames)[number];
 export type TopasInputFilesNames = (typeof _orderedTopasInputFilesNames)[number];
