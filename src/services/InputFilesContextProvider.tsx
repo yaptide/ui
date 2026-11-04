@@ -1,16 +1,17 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import {
-	InputFiles,
-	InputFilesInspection,
-	inspectInputFiles,
-	RUNNABLE_SIMULATORS,
-	RunnableSimulator
-} from '../WrapperApp/components/InputEditor/inspectInputFiles';
+import { usePythonConverter } from '../PythonConverter/PythonConverterService';
 import {
 	inputFilesZipName,
 	saveInputFilesAsZip
 } from '../WrapperApp/components/InputEditor/saveInputFiles';
+import {
+	InputFiles,
+	RequiredInputFiles,
+	RUNNABLE_SIMULATORS,
+	RunnableSimulator,
+	SimulatorDetection
+} from '../WrapperApp/components/InputEditor/simulatorDetection';
 import { useDialog } from './DialogService';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 import { useStore } from './StoreService';
@@ -20,7 +21,8 @@ export type SelectionUpdate = 'replace' | 'add';
 export interface InputFilesContext {
 	inputFiles: InputFiles;
 	selectedFiles: string[];
-	inspection: InputFilesInspection;
+	detection?: SimulatorDetection;
+	requiredFiles?: RequiredInputFiles;
 	runSimulator: RunnableSimulator;
 	additionCount: number;
 	addFiles: (files: InputFiles, selection: SelectionUpdate, action: string) => Promise<boolean>;
@@ -40,7 +42,34 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 	const [inputFiles, setInputFiles] = useState<InputFiles>({});
 	const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
 	const [additionCount, setAdditionCount] = useState(0);
-	const inspection = useMemo(() => inspectInputFiles(inputFiles), [inputFiles]);
+	const { isConverterReady, detectSimulators, requiredInputFiles } = usePythonConverter();
+	const [requiredFiles, setRequiredFiles] = useState<RequiredInputFiles>();
+	const [detected, setDetected] = useState<{ names: string; detection: SimulatorDetection }>();
+	const names = Object.keys(inputFiles).join('\n');
+	const detection = detected?.names === names ? detected.detection : undefined;
+
+	useEffect(() => {
+		if (isConverterReady) requiredInputFiles().then(setRequiredFiles);
+	}, [isConverterReady, requiredInputFiles]);
+
+	useEffect(() => {
+		if (!isConverterReady) return;
+		let current = true;
+		const files = Object.fromEntries(
+			names
+				.split('\n')
+				.filter(Boolean)
+				.map(name => [name, ''])
+		);
+
+		detectSimulators(files).then(result => {
+			if (current) setDetected({ names, detection: result });
+		});
+
+		return () => {
+			current = false;
+		};
+	}, [isConverterReady, detectSimulators, names]);
 
 	const [runSimulator, setRunSimulator] = useState<RunnableSimulator>(RUNNABLE_SIMULATORS[0]);
 
@@ -71,7 +100,7 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 								inputFilesZipName(
 									yaptideEditor?.config.getKey('project/title'),
 									current,
-									inspection
+									detection
 								)
 							);
 						}
@@ -81,7 +110,7 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 				})
 			);
 		},
-		[inputFiles, inspection, openOverwriteDialog, yaptideEditor]
+		[inputFiles, detection, openOverwriteDialog, yaptideEditor]
 	);
 
 	const addFiles = useCallback(
@@ -96,21 +125,26 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 							...selectedFiles,
 							...Object.keys(files).filter(name => !selectedFiles.includes(name))
 						];
-			const nextInspection = inspectInputFiles(nextFiles);
-			const selectedSimulators = nextSelection
-				.map(name => nextInspection.files[name].simulator)
-				.filter((simulator, index, all) => simulator && all.indexOf(simulator) === index);
 
 			setInputFiles(nextFiles);
 			setSelectedFiles(nextSelection);
 			setAdditionCount(count => count + 1);
 
-			if (selectedSimulators.length === 1 && selectedSimulators[0])
-				setRunSimulator(selectedSimulators[0]);
+			if (isConverterReady) {
+				const nextDetection = await detectSimulators(nextFiles);
+				const selectedSimulators = nextSelection
+					.map(name => nextDetection.files[name]?.simulator)
+					.filter(
+						(simulator, index, all) => simulator && all.indexOf(simulator) === index
+					);
+
+				if (selectedSimulators.length === 1 && selectedSimulators[0])
+					setRunSimulator(selectedSimulators[0]);
+			}
 
 			return true;
 		},
-		[confirmOverwrite, inputFiles, selectedFiles]
+		[confirmOverwrite, detectSimulators, inputFiles, isConverterReady, selectedFiles]
 	);
 
 	const updateFile = useCallback((name: string, content: string) => {
@@ -148,7 +182,8 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 	const value: InputFilesContext = {
 		inputFiles,
 		selectedFiles,
-		inspection,
+		detection,
+		requiredFiles,
 		runSimulator,
 		additionCount,
 		addFiles,

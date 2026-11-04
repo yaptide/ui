@@ -40,13 +40,11 @@ import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import {
 	checkSelection,
 	FileHint,
-	presentRequiredFiles,
-	REQUIRED_INPUT_FILES,
 	RUNNABLE_SIMULATORS,
 	RunnableSimulator,
 	simulatorName,
 	sortInputFileNames
-} from '../InputEditor/inspectInputFiles';
+} from '../InputEditor/simulatorDetection';
 import { BatchScriptParametersEditor } from './BatchParametersEditor';
 import {
 	Geant4DatasetDownloadSelector,
@@ -115,7 +113,8 @@ export function RunSimulationForm({
 	const {
 		inputFiles,
 		selectedFiles,
-		inspection,
+		detection,
+		requiredFiles: requiredInputFiles,
 		runSimulator: filesRunSimulator,
 		additionCount,
 		toggleSelected,
@@ -153,24 +152,44 @@ export function RunSimulationForm({
 			: `Running ${SimulatorNames.get(simulator)} requires login`;
 	};
 
-	const unavailableReason = (simulator: RunnableSimulator) =>
-		availabilityReason(simulator) ??
-		(inspection.simulators[simulator].possible
+	const unavailableReason = (simulator: RunnableSimulator) => {
+		const availability = availabilityReason(simulator);
+
+		if (availability) return availability;
+
+		if (!detection) return 'Checking files…';
+
+		return detection.simulators[simulator].possible
 			? undefined
-			: inspection.simulators[simulator].reason);
+			: detection.simulators[simulator].reason;
+	};
 
 	const runSimulator = simulationSourceType === 'files' ? filesRunSimulator : editorRunSimulator;
 
-	const selection = useMemo(
-		() => checkSelection(filesRunSimulator, selectedFiles, inputFiles, inspection),
-		[filesRunSimulator, selectedFiles, inputFiles, inspection]
+	const requiredFiles = useMemo(
+		() => requiredInputFiles?.[filesRunSimulator] ?? [],
+		[requiredInputFiles, filesRunSimulator]
 	);
 
-	const requiredFiles = REQUIRED_INPUT_FILES[filesRunSimulator];
-	const presentRequired = presentRequiredFiles(filesRunSimulator, inputFiles);
+	const selection = useMemo(
+		() =>
+			detection && requiredInputFiles
+				? checkSelection(
+						filesRunSimulator,
+						requiredFiles,
+						selectedFiles,
+						inputFiles,
+						detection
+					)
+				: undefined,
+		[filesRunSimulator, requiredFiles, requiredInputFiles, selectedFiles, inputFiles, detection]
+	);
+
+	const presentRequired = requiredFiles.filter(name => name in inputFiles);
 	const unselectedRequired = presentRequired.filter(name => !selectedFiles.includes(name));
-	const selectRequiredDisabledReason =
-		presentRequired.length === 0
+	const selectRequiredDisabledReason = !selection
+		? 'Checking files…'
+		: presentRequired.length === 0
 			? `None of the files ${simulatorName(filesRunSimulator)} requires are here yet (${requiredFiles.join(', ')})`
 			: unselectedRequired.length === 0
 				? 'All required files are already selected'
@@ -214,7 +233,11 @@ export function RunSimulationForm({
 
 		if (availability) return availability;
 
-		if (simulationSourceType === 'files' && selection.reason) return selection.reason;
+		if (simulationSourceType === 'files') {
+			if (!selection) return 'Checking files…';
+
+			if (selection.reason) return selection.reason;
+		}
 
 		if (isNaN(nTasks) || isNaN(overridePrimariesCount))
 			return 'Fill in the number of tasks and primary particles';
@@ -480,52 +503,54 @@ export function RunSimulationForm({
 										justifyContent: 'center',
 										marginBottom: theme.spacing(1)
 									}}>
-									{sortInputFileNames(Object.keys(inputFiles), inspection).map(
-										name => {
-											const selected = selectedFiles.includes(name);
-											const hint = selection.hints[name];
-											const suggested = hint?.kind === 'suggest';
+									{sortInputFileNames(
+										Object.keys(inputFiles),
+										detection,
+										requiredInputFiles
+									).map(name => {
+										const selected = selectedFiles.includes(name);
+										const hint = selection?.hints[name];
+										const suggested = hint?.kind === 'suggest';
 
-											return (
-												<Tooltip
-													key={name}
-													title={
-														hint?.message ??
-														(selected
-															? 'Included in the run'
-															: 'Not included in the run')
-													}>
-													<Chip
-														color={selected ? 'success' : 'default'}
-														variant='outlined'
-														icon={hintIcon(hint)}
-														label={<Typography>{name}</Typography>}
-														deleteIcon={
-															selected ? (
-																<RemoveCircleIcon />
-															) : (
-																<ControlPointIcon />
-															)
-														}
-														onClick={() => toggleSelected(name)}
-														onDelete={() => toggleSelected(name)}
-														sx={{
-															'& .MuiChip-icon': {
+										return (
+											<Tooltip
+												key={name}
+												title={
+													hint?.message ??
+													(selected
+														? 'Included in the run'
+														: 'Not included in the run')
+												}>
+												<Chip
+													color={selected ? 'success' : 'default'}
+													variant='outlined'
+													icon={hintIcon(hint)}
+													label={<Typography>{name}</Typography>}
+													deleteIcon={
+														selected ? (
+															<RemoveCircleIcon />
+														) : (
+															<ControlPointIcon />
+														)
+													}
+													onClick={() => toggleSelected(name)}
+													onDelete={() => toggleSelected(name)}
+													sx={{
+														'& .MuiChip-icon': {
+															color: 'success.main'
+														},
+														...(suggested && {
+															'borderStyle': 'dashed',
+															'borderColor': 'success.main',
+															'& .MuiChip-deleteIcon': {
 																color: 'success.main'
-															},
-															...(suggested && {
-																'borderStyle': 'dashed',
-																'borderColor': 'success.main',
-																'& .MuiChip-deleteIcon': {
-																	color: 'success.main'
-																}
-															})
-														}}
-													/>
-												</Tooltip>
-											);
-										}
-									)}
+															}
+														})
+													}}
+												/>
+											</Tooltip>
+										);
+									})}
 								</Box>
 							)}
 							{simulationSourceType === 'files' && (

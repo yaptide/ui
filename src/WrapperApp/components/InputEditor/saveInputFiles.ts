@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { strToU8, zipSync } from 'fflate';
 
 import { save, saveString } from '../../../util/File';
-import { InputFiles, InputFilesInspection } from './inspectInputFiles';
+import { InputFiles, SimulatorDetection } from './simulatorDetection';
 
 type SaveFilePickerWindow = Window & {
 	showSaveFilePicker?: (options: { suggestedName: string }) => Promise<FileSystemFileHandle>;
@@ -28,10 +28,10 @@ export async function saveInputFile(name: string, content: string) {
 export function inputFilesZipName(
 	projectTitle: string | undefined,
 	inputFiles: InputFiles,
-	inspection: InputFilesInspection
+	detection: SimulatorDetection | undefined
 ) {
 	const simulators = Object.keys(inputFiles)
-		.map(name => inspection.files[name]?.simulator)
+		.map(name => detection?.files[name]?.simulator)
 		.filter((simulator, index, all) => simulator && all.indexOf(simulator) === index);
 	const simulatorPart = simulators.length === 1 ? simulators[0] : 'input_files';
 	const projectPart = (projectTitle || 'project').trim().replace(/[^\w-]+/g, '_');

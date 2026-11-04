@@ -1,21 +1,21 @@
 import { Box, Button, Checkbox, Chip, FormControlLabel, Typography } from '@mui/material';
 import useTheme from '@mui/system/useTheme';
 import CodeEditor from '@uiw/react-textarea-code-editor';
-import { useMemo } from 'react';
 
+import { saveInputFile } from './saveInputFiles';
 import {
 	InputFiles,
-	InputFilesInspection,
-	inspectInputFiles,
+	RequiredInputFiles,
+	SimulatorDetection,
 	simulatorName,
 	sortInputFileNames
-} from './inspectInputFiles';
-import { saveInputFile } from './saveInputFiles';
+} from './simulatorDetection';
 
 interface InputFilesEditorProps {
 	inputFiles: InputFiles;
 	onChange: (name: string, content: string) => void;
-	inspection?: InputFilesInspection;
+	detection?: SimulatorDetection;
+	requiredFiles?: RequiredInputFiles;
 	selectedFiles?: string[];
 	onToggleSelected?: (name: string) => void;
 	onRemove?: (name: string) => void;
@@ -25,7 +25,8 @@ interface InputFilesEditorProps {
 export function InputFilesEditor({
 	inputFiles,
 	onChange,
-	inspection: providedInspection,
+	detection,
+	requiredFiles,
 	selectedFiles,
 	onToggleSelected,
 	onRemove,
@@ -34,11 +35,6 @@ export function InputFilesEditor({
 	const theme = useTheme();
 	const largeFileSize = 100_000;
 	const largeFileLinesLimit = 500;
-
-	const inspection = useMemo(
-		() => providedInspection ?? inspectInputFiles(inputFiles),
-		[providedInspection, inputFiles]
-	);
 
 	const truncateFile = (file: string) => {
 		var result: string[] = [];
@@ -63,13 +59,13 @@ export function InputFilesEditor({
 
 	return (
 		<Box>
-			{sortInputFileNames(Object.keys(inputFiles), inspection).map(name => {
+			{sortInputFileNames(Object.keys(inputFiles), detection, requiredFiles).map(name => {
 				const value = inputFiles[name];
 				const isLargeFile = value.length > largeFileSize;
 				const content = !isLargeFile ? value : truncateFile(value);
-				const fileInspection = inspection.files[name];
-				const simulator = fileInspection?.simulator ?? null;
-				const shownIssues = fileInspection?.issues ?? [];
+				const fileDetection = detection?.files[name];
+				const simulator = fileDetection?.simulator ?? null;
+				const shownIssues = fileDetection?.issues ?? [];
 
 				return (
 					<Box key={name}>
@@ -89,12 +85,14 @@ export function InputFilesEditor({
 								}}>
 								{name}
 							</Typography>
-							<Chip
-								size='small'
-								variant='outlined'
-								color={simulator ? 'primary' : 'default'}
-								label={simulator ? simulatorName(simulator) : 'Additional file'}
-							/>
+							{fileDetection && (
+								<Chip
+									size='small'
+									variant='outlined'
+									color={simulator ? 'primary' : 'default'}
+									label={simulator ? simulatorName(simulator) : 'Additional file'}
+								/>
+							)}
 							<Button
 								color='info'
 								disabled={value.trim() === ''}

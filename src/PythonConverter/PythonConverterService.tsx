@@ -5,6 +5,11 @@ import { createGenericContext } from '../services/GenericContext';
 import { EditorJson } from '../ThreeEditor/js/EditorJson';
 import { SimulatorType } from '../types/RequestTypes';
 import { SimulationInputFiles } from '../types/ResponseTypes';
+import {
+	fromConverterDetection,
+	RequiredInputFiles,
+	SimulatorDetection
+} from '../WrapperApp/components/InputEditor/simulatorDetection';
 import { PythonWorker } from './PythonWorker';
 
 declare global {
@@ -24,6 +29,8 @@ export interface PythonConverterContext {
 		editorJson: EditorJson,
 		simulator: SimulatorType
 	) => Promise<Map<keyof RemoveIndex<SimulationInputFiles>, string>>;
+	detectSimulators: (files: Record<string, string>) => Promise<SimulatorDetection>;
+	requiredInputFiles: () => Promise<RequiredInputFiles>;
 	isConverterReady: boolean;
 }
 
@@ -77,8 +84,21 @@ const PythonConverter = (props: PythonConverterProps) => {
 		return await workerRef.current!.convertJSON(editorJSON, simulator);
 	};
 
+	const detectSimulators = useCallback(
+		async (files: Record<string, string>) =>
+			fromConverterDetection(await workerRef.current!.detectSimulators(files)),
+		[]
+	);
+
+	const requiredInputFiles = useCallback(
+		async () => (await workerRef.current!.requiredInputFiles()) as RequiredInputFiles,
+		[]
+	);
+
 	const value: PythonConverterContext = {
 		convertJSON,
+		detectSimulators,
+		requiredInputFiles,
 		isConverterReady
 	};
 

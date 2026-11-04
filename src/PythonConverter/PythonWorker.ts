@@ -20,6 +20,8 @@ export interface PythonWorker {
 		editorJson: EditorJson,
 		simulator: SimulatorType
 	) => Promise<Map<keyof RemoveIndex<SimulationInputFiles>, string>>;
+	detectSimulators: (files: Record<string, string>) => unknown;
+	requiredInputFiles: () => unknown;
 }
 
 const pythonCheckConverterCode = `
@@ -84,6 +86,24 @@ print(micropip.list())
 		convertJson`;
 
 		return self.pyodide.runPython(pythonConverterCode)(editorJson).toJs();
+	}
+
+	detectSimulators(files: Record<string, string>) {
+		const pythonCode = `
+		from converter.api import detect_simulators
+		def detectSimulators(files):
+			return detect_simulators(files.to_py())
+		detectSimulators`;
+
+		return self.pyodide
+			.runPython(pythonCode)(files)
+			.toJs({ dict_converter: Object.fromEntries });
+	}
+
+	requiredInputFiles() {
+		return self.pyodide
+			.runPython('from converter.api import REQUIRED_INPUT_FILES\nREQUIRED_INPUT_FILES')
+			.toJs({ dict_converter: Object.fromEntries });
 	}
 }
 

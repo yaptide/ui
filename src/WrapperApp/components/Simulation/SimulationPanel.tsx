@@ -9,8 +9,8 @@ import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTab
 import { SimulationFetchSource, SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
-import { InputFiles, inspectInputFiles } from '../InputEditor/inspectInputFiles';
 import { inputFilesZipName, saveInputFilesAsZip } from '../InputEditor/saveInputFiles';
+import { InputFiles } from '../InputEditor/simulatorDetection';
 import { Geant4LocalWorkerSimulationsGrid } from './SimulationsGrid/Geant4LocalWorkerSimulationsGrid';
 import { useIsBackendAlive } from './SimulationsGrid/hooks/useBackendAliveEffect';
 import { RemoteWorkerSimulationsGrid } from './SimulationsGrid/RemoteWorkerSimulationsGrid';
@@ -105,7 +105,7 @@ export default function SimulationPanel({
 											inputFilesZipName(
 												'simulation',
 												modalInputFiles,
-												inspectInputFiles(modalInputFiles)
+												undefined
 											)
 										)
 									}>

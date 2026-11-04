@@ -13,14 +13,8 @@ import { addCustomStoppingPowerTableToEditorJSON } from '../../../ThreeEditor/Si
 import { SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
 import { DragDropFiles } from './DragDropFiles';
 import { InputFilesEditor } from './InputFilesEditor';
-import {
-	emptyTemplate,
-	InputFiles,
-	REQUIRED_INPUT_FILES,
-	RUNNABLE_SIMULATORS,
-	simulatorName
-} from './inspectInputFiles';
 import { inputFilesZipName, saveInputFilesAsZip } from './saveInputFiles';
+import { emptyFiles, InputFiles, RUNNABLE_SIMULATORS, simulatorName } from './simulatorDetection';
 
 export default function InputEditorPanel() {
 	const { enqueueSnackbar } = useSnackbar();
@@ -29,7 +23,8 @@ export default function InputEditorPanel() {
 	const {
 		inputFiles,
 		selectedFiles,
-		inspection,
+		detection,
+		requiredFiles,
 		addFiles,
 		updateFile,
 		removeFile,
@@ -147,6 +142,7 @@ export default function InputEditorPanel() {
 					<Button
 						variant='outlined'
 						endIcon={<ArrowDropDownIcon />}
+						disabled={!requiredFiles}
 						onClick={event => setEmptyMenuAnchor(event.currentTarget)}>
 						Create empty files
 					</Button>
@@ -160,14 +156,14 @@ export default function InputEditorPanel() {
 								onClick={() => {
 									setEmptyMenuAnchor(null);
 									addFiles(
-										emptyTemplate(simulator),
+										emptyFiles(requiredFiles?.[simulator] ?? []),
 										'replace',
 										`Creating empty ${simulatorName(simulator)} files`
 									);
 								}}>
 								<ListItemText
 									primary={simulatorName(simulator)}
-									secondary={REQUIRED_INPUT_FILES[simulator].join(', ')}
+									secondary={requiredFiles?.[simulator].join(', ')}
 								/>
 							</MenuItem>
 						))}
@@ -182,7 +178,7 @@ export default function InputEditorPanel() {
 								inputFilesZipName(
 									yaptideEditor?.config.getKey('project/title'),
 									inputFiles,
-									inspection
+									detection
 								)
 							)
 						}>
@@ -200,7 +196,8 @@ export default function InputEditorPanel() {
 			{hasInputFiles ? (
 				<InputFilesEditor
 					inputFiles={inputFiles}
-					inspection={inspection}
+					detection={detection}
+					requiredFiles={requiredFiles}
 					selectedFiles={selectedFiles}
 					onToggleSelected={toggleSelected}
 					onChange={updateFile}

@@ -134,10 +134,10 @@ function App() {
 				<Store />,
 				<Geant4DatasetContextProvider />,
 				<DialogProvider />,
-				<InputFilesProvider />,
 				<Auth />,
 				<RemoteWorkerSimulationContextProvider />,
 				<PythonConverterService />,
+				<InputFilesProvider />,
 				<Geant4LocalWorkerSimulationContextProvider />,
 				<Loader />
 			]}>
