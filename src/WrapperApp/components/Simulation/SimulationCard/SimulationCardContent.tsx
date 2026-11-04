@@ -1,4 +1,5 @@
 import { Box, CardContent, Chip, LinearProgress, Typography } from '@mui/material';
+import { formatDate } from 'date-fns/format';
 
 import {
 	currentJobStatusData,
@@ -36,6 +37,9 @@ export function SimulationProgress(props: {
 
 	const metrics = calculateSimulationProgress(simulationStatus.jobTasksStatus ?? [], duration);
 
+	const expectedEndTime =
+		metrics.etaMilliseconds !== null ? new Date(Date.now() + metrics.etaMilliseconds) : null;
+
 	return (
 		<>
 			<Box
@@ -48,35 +52,27 @@ export function SimulationProgress(props: {
 				<Box>
 					<Typography
 						variant='caption'
-						display='block'
-						color='textDisabled'>
-						Start: {formatedStartDate}
+						sx={{
+							display: 'block',
+							fontWeight: 'bold'
+						}}
+						color='primary'>
+						{metrics.progress.toFixed(0)} % Complete
 					</Typography>
-					{metrics.remainingPrimaries > 0 && (
-						<Typography
-							variant='caption'
-							sx={{ fontWeight: 'bold' }}
-							color='primary'>
-							{metrics.remainingPrimaries.toLocaleString()} left
-						</Typography>
-					)}
 				</Box>
 
 				<Box sx={{ textAlign: 'right' }}>
 					{metrics.etaMilliseconds !== null && (
 						<Typography
 							variant='caption'
-							display='block'
-							color='info.main'
-							sx={{ fontWeight: 'bold' }}>
+							sx={{
+								display: 'block',
+								color: 'info.main',
+								fontWeight: 'bold'
+							}}>
 							ETA: ~{millisecondsToTimeString(metrics.etaMilliseconds)}
 						</Typography>
 					)}
-					<Typography
-						variant='caption'
-						color='textDisabled'>
-						Elapsed: {millisecondsToTimeString(duration)}
-					</Typography>
 				</Box>
 			</Box>
 
@@ -94,6 +90,27 @@ export function SimulationProgress(props: {
 				value={metrics.progress}
 				valueBuffer={1}
 			/>
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'space-between',
+					alignItems: 'flex-end',
+					mb: 0.5
+				}}>
+				<Typography
+					variant='caption'
+					sx={{ color: 'textDisabled' }}>
+					Start: {formatedStartDate}
+				</Typography>
+
+				{expectedEndTime && (
+					<Typography
+						variant='caption'
+						sx={{ color: 'textDisabled' }}>
+						Expected end: {formatDate(expectedEndTime, 'yyyy-MM-dd HH:mm:ss')}
+					</Typography>
+				)}
+			</Box>
 		</>
 	);
 }
