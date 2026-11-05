@@ -1,14 +1,14 @@
 import { Box, CardContent, Chip, LinearProgress, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { formatDate } from 'date-fns/format';
 
 import {
 	currentJobStatusData,
 	currentTaskStatusData,
 	JobUnknownStatus,
 	SimulationInfo,
-	StatusState,
-	TaskUnknownStatus
+	StatusState
 } from '../../../../types/ResponseTypes';
+import { calculateSimulationProgress } from '../../../../util/simulationProgress';
 import { millisecondsToTimeString } from '../../../../util/time';
 
 interface SimulationCardContentProps {
@@ -18,40 +18,6 @@ interface SimulationCardContentProps {
 	formatedStartDate: string;
 	simulationStatus: Omit<JobUnknownStatus & SimulationInfo, never>;
 	highlightColor: string;
-}
-
-function getValidatedPrimaries(primariesNumber: number | undefined): number {
-	return primariesNumber ?? 0;
-}
-
-function percentOfSimulatedPrimaries(
-	requestedPrimariesSum: number,
-	simulatedPrimariesSum: number
-): number {
-	return requestedPrimariesSum > 0
-		? Math.min(100, (simulatedPrimariesSum / requestedPrimariesSum) * 100)
-		: 0;
-}
-
-function calculateSimulationProgress(jobTasksStatus: TaskUnknownStatus[]): number {
-	if (jobTasksStatus.length === 0) {
-		return 0;
-	}
-
-	const { requestedPrimariesSum, simulatedPrimariesSum } = jobTasksStatus.reduce(
-		(
-			acc: { requestedPrimariesSum: number; simulatedPrimariesSum: number },
-			taskStatus: TaskUnknownStatus
-		) => {
-			acc.requestedPrimariesSum += getValidatedPrimaries(taskStatus.requestedPrimaries);
-			acc.simulatedPrimariesSum += getValidatedPrimaries(taskStatus.simulatedPrimaries);
-
-			return acc;
-		},
-		{ requestedPrimariesSum: 0, simulatedPrimariesSum: 0 }
-	);
-
-	return percentOfSimulatedPrimaries(requestedPrimariesSum, simulatedPrimariesSum);
 }
 
 function needsProgressBar(state: StatusState | undefined) {
@@ -69,21 +35,47 @@ export function SimulationProgress(props: {
 }) {
 	const { formatedStartDate, duration, simulationStatus } = props;
 
-	const [simulationProgressPercent, setSimulationProgressPercent] = useState(0);
+	const metrics = calculateSimulationProgress(simulationStatus.jobTasksStatus ?? [], duration);
 
-	useEffect(() => {
-		if (simulationStatus.jobTasksStatus) {
-			const jobTasksStatus = simulationStatus.jobTasksStatus;
-			setSimulationProgressPercent(calculateSimulationProgress(jobTasksStatus));
-		}
-	}, [simulationStatus, setSimulationProgressPercent]);
+	const expectedEndTime =
+		metrics.etaMilliseconds !== null ? new Date(Date.now() + metrics.etaMilliseconds) : null;
 
 	return (
 		<>
-			<Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-				<Typography color='textDisabled'>Start: {formatedStartDate}</Typography>
-				<Typography color='textDisabled'>{millisecondsToTimeString(duration)}</Typography>
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'space-between',
+					alignItems: 'flex-end',
+					mb: 0.5
+				}}>
+				<Box>
+					<Typography
+						variant='caption'
+						sx={{
+							display: 'block',
+							fontWeight: 'bold'
+						}}
+						color='primary'>
+						{metrics.progress.toFixed(0)} % Complete
+					</Typography>
+				</Box>
+
+				<Box sx={{ textAlign: 'right' }}>
+					{metrics.etaMilliseconds !== null && (
+						<Typography
+							variant='caption'
+							sx={{
+								display: 'block',
+								color: 'info.main',
+								fontWeight: 'bold'
+							}}>
+							ETA: ~{millisecondsToTimeString(metrics.etaMilliseconds)}
+						</Typography>
+					)}
+				</Box>
 			</Box>
+
 			<LinearProgress
 				variant='buffer'
 				sx={{
@@ -95,9 +87,30 @@ export function SimulationProgress(props: {
 						animationDuration: '2s'
 					}
 				}}
-				value={simulationProgressPercent}
+				value={metrics.progress}
 				valueBuffer={1}
 			/>
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'space-between',
+					alignItems: 'flex-end',
+					mb: 0.5
+				}}>
+				<Typography
+					variant='caption'
+					sx={{ color: 'textDisabled' }}>
+					Start: {formatedStartDate}
+				</Typography>
+
+				{expectedEndTime && (
+					<Typography
+						variant='caption'
+						sx={{ color: 'textDisabled' }}>
+						Expected end: {formatDate(expectedEndTime, 'yyyy-MM-dd HH:mm:ss')}
+					</Typography>
+				)}
+			</Box>
 		</>
 	);
 }
