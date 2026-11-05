@@ -16,13 +16,14 @@ import { useRemoteWorkerSimulation } from '../../../services/RemoteWorkerSimulat
 import { useStore } from '../../../services/StoreService';
 import { InfoTooltip } from '../../../shared/components/tooltip/InfoTooltip';
 import { titleToKebabCase } from '../../../ThreeEditor/components/Dialog/CustomDialog';
+import { StatusState } from '../../../types/ResponseTypes';
 import { FullSimulationData } from '../../../types/SimulationService';
 import { lazyGroups, PageGroup, pageGroups } from '../../../util/lazyPages';
 import { partialResultsLabel, partialRevision } from '../../../util/partialResults';
 import EstimatorsSelect from './EstimatorsSelect/EstimatorsSelect';
 import EstimatorTab from './EstimatorTab/EstimatorTab';
+import { OnDemandPages } from './OnDemandPages';
 import { useFollowPartialResults } from './useFollowPartialResults';
-import { useOnDemandPages } from './useOnDemandPages';
 
 export interface EstimatorResults extends Estimator {
 	tablePages: Page0D[];
@@ -37,7 +38,12 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 		props.simulation?.metadata.simType === 'Geant4'
 			? geant4LocalWorkerSimulationHandlers
 			: remoteWorkerSimulationHandlers;
-	const { getEstimatorsPages } = remoteWorkerSimulationHandlers;
+
+	const {
+		getEstimatorsPages,
+		partialWatch,
+		setShownJobId: setWatchedJobId
+	} = remoteWorkerSimulationHandlers;
 	const { open: openSaveFileDialog } = useDialog('saveFile');
 	const { yaptideEditor, setResultsSimulationData } = useStore();
 	const { simulation } = props;
@@ -59,7 +65,20 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 	const isPartial = partialLabel !== undefined;
 
 	useFollowPartialResults(simulation);
-	const onDemand = useOnDemandPages(simulation);
+	// partial results of the simulation on screen are merged while it is shown, even when the status is polled
+	const onServer = !!simulation && simulation.metadata.simType !== 'Geant4';
+	const unfinished =
+		onServer &&
+		simulation.jobState !== StatusState.COMPLETED &&
+		simulation.jobState !== StatusState.FAILED &&
+		simulation.jobState !== StatusState.CANCELED;
+	const watchedJobId = unfinished ? simulation.jobId : undefined;
+
+	useEffect(() => {
+		setWatchedJobId?.(watchedJobId);
+
+		return () => setWatchedJobId?.(undefined);
+	}, [setWatchedJobId, watchedJobId]);
 
 	useEffect(() => {
 		if (!isPartial) return;
@@ -244,31 +263,14 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 								Partial results: {partialLabel}
 							</Typography>
 						)}
-						{onDemand.available && (
-							<Box
-								sx={{
-									display: 'flex',
-									alignItems: 'center',
-									gap: theme.spacing(1),
-									marginBottom: theme.spacing(1)
-								}}>
-								<Button
-									size='small'
-									variant='outlined'
-									disabled={onDemand.requested || onDemand.sending}
-									onClick={onDemand.request}>
-									{onDemand.requested
-										? '2D results requested'
-										: 'Get 2D results now'}
-								</Button>
-								<InfoTooltip
-									title={
-										'Partial results always include 0D and 1D results. 2D results come only when you ask, ' +
-										'in the next partial results, and stay as they were until you ask again. ' +
-										'3D results come only with the final results.'
-									}
-								/>
-							</Box>
+						{watchedJobId && partialWatch && (
+							<OnDemandPages
+								jobId={watchedJobId}
+								estimatorName={tabEstimatorName}
+								state={partialWatch.states[watchedJobId]}
+								summary={simulation.jobTasksSummary}
+								requestPage={partialWatch.requestPage}
+							/>
 						)}
 						<Divider />
 					</Box>

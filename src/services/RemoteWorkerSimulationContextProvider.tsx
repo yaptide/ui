@@ -1,22 +1,37 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useConfig } from '../config/ConfigService';
+import { StatusState } from '../types/ResponseTypes';
 import { SimulationContext } from '../types/SimulationService';
 import { useAuth } from './AuthService';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
 import RemoteWorkerSimulationService from './RemoteWorkerSimulationService';
-import { useSimulationStatusStream } from './useSimulationStatusStream';
+import { usePartialResultsWatch } from './usePartialResultsWatch';
+import { StreamedStatus, useSimulationStatusStream } from './useSimulationStatusStream';
+
+const FINAL_STATES = new Set([StatusState.COMPLETED, StatusState.FAILED, StatusState.CANCELED]);
 
 const [useRemoteWorkerSimulation, InnerRemoteWorkerSimulationContextProvider] =
 	createGenericContext<SimulationContext>();
 
 function RemoteWorkerSimulationContextProvider({ children }: GenericContextProviderProps) {
 	const { authKy, user } = useAuth();
-	const { demoMode } = useConfig();
+	const { demoMode, backendUrl } = useConfig();
 	const statusStream = useSimulationStatusStream(
 		// another user logging in gets a stream of their own
 		demoMode ? undefined : user?.username
 	);
+	// the user's unfinished simulations, and the one on screen: their partial results are merged while the app is open
+	const [shownJobId, setShownJobId] = useState<string | undefined>();
+	const watchedJobIds = useMemo(() => {
+		if (demoMode || !user) return [];
+		const unfinished = Object.values(statusStream.statuses)
+			.filter((status: StreamedStatus) => !FINAL_STATES.has(status.jobState as StatusState))
+			.map(status => status.jobId);
+
+		return shownJobId ? [...unfinished, shownJobId] : unfinished;
+	}, [demoMode, user, statusStream.statuses, shownJobId]);
+	const partialWatch = usePartialResultsWatch(authKy, backendUrl, watchedJobIds);
 
 	const simulationServiceRef = useRef<RemoteWorkerSimulationService>(
 		new RemoteWorkerSimulationService(authKy)
@@ -46,7 +61,11 @@ function RemoteWorkerSimulationContextProvider({ children }: GenericContextProvi
 			getFullSimulationData: service.getFullSimulationData.bind(service)
 		};
 	}, []);
-	const value = useMemo(() => ({ ...handlers, statusStream }), [handlers, statusStream]);
+
+	const value = useMemo(
+		() => ({ ...handlers, statusStream, partialWatch, setShownJobId }),
+		[handlers, statusStream, partialWatch]
+	);
 
 	return (
 		<InnerRemoteWorkerSimulationContextProvider value={value}>

@@ -1,3 +1,4 @@
+import { PartialResultsWatch } from '../services/usePartialResultsWatch';
 import { SimulationStatusStream } from '../services/useSimulationStatusStream';
 import {
 	JobInputs,
@@ -44,6 +45,10 @@ export interface SimulationContext {
 	) => Promise<FullSimulationData | undefined>;
 	// only the remote worker pushes the status of simulations
 	statusStream?: SimulationStatusStream;
+	// and merges partial results while someone looks (the remote worker only)
+	partialWatch?: PartialResultsWatch;
+	// a simulation on screen, beaten for even when the status stream does not list it (statuses polled)
+	setShownJobId?: (jobId: string | undefined) => void;
 }
 
 export interface SimulationService {
