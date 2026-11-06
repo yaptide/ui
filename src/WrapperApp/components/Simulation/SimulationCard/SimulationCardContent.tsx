@@ -6,6 +6,7 @@ import { clusterBusyLabel } from '../../../../util/clusterBusy';
 import { partialResultsLabel } from '../../../../util/partialResults';
 import { TaskTotals, taskTotals } from '../../../../util/taskTotals';
 import { millisecondsToTimeString } from '../../../../util/time';
+import { TaskProgressBar } from './TaskProgressBar';
 
 interface SimulationCardContentProps {
 	duration: number;
@@ -49,20 +50,24 @@ export function SimulationProgress(props: {
 				<Typography color='textDisabled'>Start: {formatedStartDate}</Typography>
 				<Typography color='textDisabled'>{millisecondsToTimeString(duration)}</Typography>
 			</Box>
-			<LinearProgress
-				variant='buffer'
-				sx={{
-					'height': 18,
-					'mb': 1,
-					'& .MuiLinearProgress-dashed': {
-						overflow: 'hidden',
-						backgroundSize: '5.75px 5.75px',
-						animationDuration: '2s'
-					}
-				}}
-				value={simulationProgressPercent}
-				valueBuffer={1}
-			/>
+			{simulationStatus.taskProgress && simulationStatus.taskProgress.permille.length > 1 ? (
+				<TaskProgressBar progress={simulationStatus.taskProgress} />
+			) : (
+				<LinearProgress
+					variant='buffer'
+					sx={{
+						'height': 18,
+						'mb': 1,
+						'& .MuiLinearProgress-dashed': {
+							overflow: 'hidden',
+							backgroundSize: '5.75px 5.75px',
+							animationDuration: '2s'
+						}
+					}}
+					value={simulationProgressPercent}
+					valueBuffer={1}
+				/>
+			)}
 		</>
 	);
 }

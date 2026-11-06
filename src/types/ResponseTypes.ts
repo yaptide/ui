@@ -214,6 +214,15 @@ export type JobTasksSummary = {
 };
 
 /**
+ * The progress of every task of an unfinished simulation, by task number: permille of its primaries simulated, and
+ * its state as one letter (P pending, R running, C completed, F failed, X canceled, U another).
+ */
+export type TaskProgress = {
+	permille: number[];
+	states: string;
+};
+
+/**
  * Results stored while the simulation runs, covering only the primaries simulated so far.
  */
 export type PartialResults = {
@@ -228,6 +237,7 @@ type JobStatusType<T extends StatusState, U extends Object> = TypeIdentifiedByKe
 	U &
 		YaptideResponse & {
 			jobTasksSummary?: JobTasksSummary;
+			taskProgress?: TaskProgress;
 			partialResults?: PartialResults;
 			// ISO time with offset: the HPC cluster did not answer, the server tries to submit again then
 			clusterBusyUntil?: string;
@@ -299,6 +309,7 @@ export type JobUnknownStatus = {
 	message?: string;
 	jobTasksStatus?: Array<TaskUnknownStatus>;
 	jobTasksSummary?: JobTasksSummary;
+	taskProgress?: TaskProgress;
 	partialResults?: PartialResults;
 	clusterBusyUntil?: string;
 	clusterNotice?: string;
