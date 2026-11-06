@@ -10,10 +10,10 @@ export function hasFields<T extends string>(
 type PathToObj<T extends string> = T extends `${infer Head}.${infer Tail}`
 	? {
 			[key in Head]: PathToObj<Tail>;
-	  }
+		}
 	: T extends string
-	? { [key in T]: unknown }
-	: never;
+		? { [key in T]: unknown }
+		: never;
 
 export function hasPaths<T extends string>(obj: unknown, ...paths: T[]): obj is PathToObj<T> {
 	return paths.every(path => {
