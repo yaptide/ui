@@ -1,6 +1,8 @@
 import { Button, ButtonGroup, CardActions } from '@mui/material';
 import { SnackbarKey } from 'notistack';
+import { ReactNode, useState } from 'react';
 
+import { useAuth } from '../../../../services/AuthService';
 import { ResultsSimulationDataWithSource } from '../../../../services/StoreService';
 import { YaptideEditor } from '../../../../ThreeEditor/js/YaptideEditor';
 import {
@@ -12,6 +14,7 @@ import {
 	StatusState
 } from '../../../../types/ResponseTypes';
 import { partialRevision } from '../../../../util/partialResults';
+import { FinishTasksDialog } from '../FinishTasksDialog';
 
 interface SimulationCardActionsProps {
 	simulationStatus: Omit<JobUnknownStatus & SimulationInfo, never>;
@@ -54,7 +57,10 @@ export const SimulationCardActions = ({
 	} = handlers;
 	const { resultsSimulationData, yaptideEditor, disableLoadJson } = context;
 
+	const { authKy } = useAuth();
+	const [tasksOpen, setTasksOpen] = useState(false);
 	let statusAction = undefined;
+	let tasksAction: ReactNode = undefined;
 
 	if (simulationStatus.jobState) {
 		if (currentJobStatusData[StatusState.COMPLETED](simulationStatus)) {
@@ -82,6 +88,17 @@ export const SimulationCardActions = ({
 					onClick={() => handleCancel(simulationStatus.jobId)}
 					size='small'>
 					Cancel
+				</Button>
+			);
+
+			// a remote simulation's tasks may be finished early, e.g. one on a slow node
+			tasksAction = !simulationStatus.localData && (
+				<Button
+					sx={{ fontSize: '.8em' }}
+					color='secondary'
+					onClick={() => setTasksOpen(true)}
+					size='small'>
+					Tasks
 				</Button>
 			);
 		} else if (currentJobStatusData[StatusState.FAILED](simulationStatus)) {
@@ -116,6 +133,7 @@ export const SimulationCardActions = ({
 				aria-label='full width outlined button group'>
 				{partialAction}
 				{statusAction}
+				{tasksAction}
 				<Button
 					sx={{ fontSize: '.8em' }}
 					color='secondary'
@@ -145,6 +163,14 @@ export const SimulationCardActions = ({
 					Load to editor
 				</Button>
 			</ButtonGroup>
+			{tasksOpen && (
+				<FinishTasksDialog
+					open={tasksOpen}
+					onClose={() => setTasksOpen(false)}
+					authKy={authKy}
+					jobId={simulationStatus.jobId}
+				/>
+			)}
 		</CardActions>
 	);
 };
