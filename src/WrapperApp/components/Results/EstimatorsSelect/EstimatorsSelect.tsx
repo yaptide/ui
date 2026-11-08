@@ -46,9 +46,11 @@ const EstimatorsSelect = ({
 				? loadedRevisions.current.get(id)
 				: mountRevision.current;
 
+			// the tabs can gain estimators and change order (maps announced, then merged): the one held at this
+			// place must be this tab's
 			const estimatorExists =
 				currentEstimatorData[id] &&
-				currentEstimatorData[id].name !== '' &&
+				currentEstimatorData[id].name === estimatorsTabData[id] &&
 				loadedRevision === revision;
 
 			if (!estimatorsPagesData || estimatorExists) return;
@@ -68,11 +70,14 @@ const EstimatorsSelect = ({
 			const simulationJobId = simulation.jobId;
 			const estimatorName = estimatorsTabData[id];
 			const estimatorPages = pagesData.find(estimator => estimator.name === estimatorName);
+			// an estimator announced by its maps only is not in the list yet: nothing to load, the maps come on request
+			const fallback =
+				estimatorsTabData.length === pagesData.length ? pagesData[id] : undefined;
 			const allResults: SpecificEstimator[] = [];
 
 			// only the values and lines: maps and volumes load when they come into view (EstimatorTab)
 			for (const pageDimension of eagerGroups(
-				pageGroups((estimatorPages ?? pagesData[id])?.pagesByDimensions)
+				pageGroups((estimatorPages ?? fallback)?.pagesByDimensions)
 			)) {
 				const estimatorData = await getEstimatorsPages(
 					{

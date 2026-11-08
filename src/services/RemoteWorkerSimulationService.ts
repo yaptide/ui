@@ -198,6 +198,9 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 	logsCache: CacheMap<JobLogs>;
 	statusDataCache: CacheMap<JobStatusData>;
 	resultsCache: CacheMap<JobResults>;
+	// simulations whose list of estimators was read once they completed: the list read while they ran (partial
+	// results) lacks the maps no one asked for, and the cached inputs keep it
+	finalEstimatorsItems = new Set<string>();
 
 	constructor(authKy: KyInstance) {
 		this.authKy = authKy;
@@ -609,14 +612,20 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 			(jobStatus.jobState === StatusState.COMPLETED ||
 				partialRevision(jobStatus) !== undefined)
 		) {
-			// partial results gain pages as they come: looked up again for each of them
+			// partial results gain pages as they come: looked up again for each of them, and once more for the
+			// final results, which hold every page
+			const partial = partialRevision(jobStatus) !== undefined;
+
 			if (
 				inputs &&
-				(!inputs.input.estimatorsItems || partialRevision(jobStatus) !== undefined)
+				(!inputs.input.estimatorsItems ||
+					partial ||
+					!this.finalEstimatorsItems.has(jobStatus.jobId))
 			) {
 				const estimators = await this.getCurrentEstimators(jobStatus.jobId);
 
 				if (estimators) {
+					if (!partial) this.finalEstimatorsItems.add(jobStatus.jobId);
 					inputs.input.estimatorsItems = this.prepareEstimatorItemByPageDimension(
 						estimators.estimatorsMetadata
 					);

@@ -18,6 +18,7 @@ import { InfoTooltip } from '../../../shared/components/tooltip/InfoTooltip';
 import { titleToKebabCase } from '../../../ThreeEditor/components/Dialog/CustomDialog';
 import { StatusState } from '../../../types/ResponseTypes';
 import { FullSimulationData } from '../../../types/SimulationService';
+import { inEditorOrder, withAnnouncedMaps } from '../../../util/estimatorTabs';
 import { lazyGroups, PageGroup, pageGroups } from '../../../util/lazyPages';
 import { partialResultsLabel, partialRevision } from '../../../util/partialResults';
 import EstimatorsSelect from './EstimatorsSelect/EstimatorsSelect';
@@ -96,9 +97,17 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 		.filter(output => output.name)
 		.map(output => output.name);
 
-	const estimatorsTabData: string[] | undefined = simulation?.input.estimatorsItems
-		? userTabInputFilesEstimatorNames
-		: editorEstimatorNames;
+	// while the simulation runs, an estimator of maps only has no results until a map is asked for: its tab comes
+	// from the maps the server announces, so the user can ask for them
+	const announcedEstimatorNames = withAnnouncedMaps(
+		simulation?.input.estimatorsItems ? userTabInputFilesEstimatorNames : editorEstimatorNames,
+		watchedJobId ? partialWatch?.states[watchedJobId]?.pages : undefined
+	);
+	// in the order of the editor's outputs where there are some, so a tab keeps its place as the list changes
+	const estimatorsTabData: string[] | undefined = inEditorOrder(
+		announcedEstimatorNames,
+		editorEstimatorNames
+	);
 
 	// In estimatorsItems we store information about estimators and estimators' pages by dimensions, names, and number of pages
 	const estimatorsPagesData = simulation?.input.estimatorsItems;
@@ -140,7 +149,6 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 	};
 
 	const resultsGeneratedFromProjectFile = !!simulation?.input.inputJson;
-	const chosenEstimator = estimatorsResults[tabsValue];
 
 	// the 2D and 3D pages of the estimator on screen load once they come into view (LazyPageGroup), each group once
 	// for each partial result: key -> loaded or loading
@@ -149,9 +157,15 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 	const latestSimulation = useRef(simulation);
 	latestSimulation.current = simulation;
 	const tabEstimatorName = (estimatorsTabData ?? uploadedInputFilesEstimatorNames)?.[tabsValue];
+	// by name: the tabs can gain estimators (maps announced, then merged) and the results keep the server's order
+	const chosenEstimator =
+		estimatorsResults.find(estimator => estimator.name === tabEstimatorName) ??
+		(tabEstimatorName === undefined ? estimatorsResults[tabsValue] : undefined);
 	const tabPages =
 		estimatorsPagesData?.find(estimator => estimator.name === tabEstimatorName) ??
-		estimatorsPagesData?.[tabsValue];
+		(estimatorsPagesData?.length === estimatorsTabData?.length
+			? estimatorsPagesData?.[tabsValue]
+			: undefined);
 
 	const groupKey = (dimension: number) =>
 		`${simulation?.jobId}|${tabEstimatorName}|${dimension}|${revision ?? 'final'}`;

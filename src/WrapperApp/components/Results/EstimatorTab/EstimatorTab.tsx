@@ -8,7 +8,7 @@ import TablePage0D from '../ResultsTable';
 import LazyPageGroup from './LazyPageGroup';
 
 interface EstimatorTabProps {
-	estimator: EstimatorResults;
+	estimator: EstimatorResults | undefined;
 	tabsValue: number;
 	resultsGeneratedFromProjectFile: boolean;
 	groupQuantities: boolean;
