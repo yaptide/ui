@@ -7,8 +7,9 @@ const get = jest.fn();
 const post = jest.fn();
 const authKy = { get, post } as unknown as KyInstance;
 
+// as the client's JSON parser gives it: keys in camelCase
 function tasks(...list: object[]) {
-	get.mockReturnValue({ json: () => Promise.resolve({ job_tasks_status: list }) });
+	get.mockReturnValue({ json: () => Promise.resolve({ jobTasksStatus: list }) });
 }
 
 beforeEach(() => {

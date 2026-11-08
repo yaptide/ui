@@ -57,9 +57,10 @@ export function FinishTasksDialog(props: {
 		try {
 			const response = await authKy
 				.get('jobs', { searchParams: { job_id: jobId, tasks: 'true' } })
-				.json<{ job_tasks_status?: unknown[] }>();
+				.json<{ jobTasksStatus?: unknown[] }>();
 
-			const list = (response.job_tasks_status ?? []).map(
+			// the client's JSON parser already turns the keys to camelCase
+			const list = (response.jobTasksStatus ?? []).map(
 				task => snakeToCamelCase(task as object, true) as unknown as FinishableTask
 			);
 			setTasks(list.sort((a, b) => a.taskNumber - b.taskNumber));
@@ -111,6 +112,9 @@ export function FinishTasksDialog(props: {
 				</Typography>
 				{!tasks && !error && <LinearProgress />}
 				{error && <Typography color='error'>{error}</Typography>}
+				{tasks?.length === 0 && !error && (
+					<Typography variant='body2'>The server listed no tasks.</Typography>
+				)}
 				{tasks?.map(task => (
 					<Box
 						key={task.taskNumber}
