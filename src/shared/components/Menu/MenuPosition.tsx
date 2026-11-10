@@ -2,11 +2,13 @@ import { Box, Button, Divider, Menu, MenuItem, useTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { MouseEvent, useEffect, useState } from 'react';
 
+import { testIds } from '../../../util/testIds';
 import { CommandButtonProps } from '../../../util/Ui/CommandButtonProps';
 
 type MenuPositionProps = {
 	label: string;
 	idx: number;
+	name?: string;
 	openIdx: number;
 	setOpenIdx: (open: number) => void;
 	options: CommandButtonProps[][];
@@ -15,6 +17,7 @@ type MenuPositionProps = {
 export default function MenuPosition({
 	label,
 	idx,
+	name,
 	openIdx,
 	setOpenIdx,
 	options
@@ -39,12 +42,15 @@ export default function MenuPosition({
 		else setAnchorEl(null);
 	}, [openIdx, idx]);
 
+	let menuItemIndex = -1;
+
 	return (
 		<>
 			<Button
 				variant='text'
 				sx={{ color: theme.palette.text.primary }}
 				id={'menu-button-' + idx.toString()}
+				data-testid={name ? testIds.menuButton(name) : undefined}
 				aria-controls={Boolean(anchorEl) ? 'menu-content-' + idx.toString() : undefined}
 				aria-haspopup='true'
 				aria-expanded={Boolean(anchorEl) ? 'true' : undefined}
@@ -52,7 +58,6 @@ export default function MenuPosition({
 				onMouseOver={handleEnter}
 				disableRipple>
 				<Typography
-					id={`menu-${idx.toString()}-label`}
 					sx={{
 						textTransform: 'initial'
 					}}>
@@ -61,28 +66,36 @@ export default function MenuPosition({
 			</Button>
 			<Menu
 				id={'menu-content-' + idx.toString()}
+				data-testid={name ? testIds.menuPopup(name) : undefined}
 				anchorEl={anchorEl}
 				open={Boolean(anchorEl)}
 				onClose={() => handleClose()}
 				slotProps={{ list: { dense: true } }}>
 				{options.map((section, row) => (
 					<Box key={row}>
-						{section.map((option, idx) => (
-							<MenuItem
-								sx={{
-									fontSize: '.75rem',
-									lineHeight: '1rem',
-									padding: '.2rem .5rem',
-									minWidth: '120px'
-								}}
-								key={idx}
-								onClick={() => {
-									handleClose(option.onClick);
-								}}
-								disabled={option.disabled}>
-								{option.label}
-							</MenuItem>
-						))}
+						{section.map((option, optionIdx) => {
+							menuItemIndex += 1;
+
+							return (
+								<MenuItem
+									sx={{
+										fontSize: '.75rem',
+										lineHeight: '1rem',
+										padding: '.2rem .5rem',
+										minWidth: '120px'
+									}}
+									data-testid={
+										name ? testIds.menuItem(name, menuItemIndex) : undefined
+									}
+									key={optionIdx}
+									onClick={() => {
+										handleClose(option.onClick);
+									}}
+									disabled={option.disabled}>
+									{option.label}
+								</MenuItem>
+							);
+						})}
 						{row < options.length - 1 && <Divider />}
 					</Box>
 				))}

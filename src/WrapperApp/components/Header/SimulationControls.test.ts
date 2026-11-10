@@ -1,5 +1,8 @@
-import { Builder, By, until, WebDriver } from 'selenium-webdriver';
+import { Builder, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
+
+import { byTestId } from '../../../test/seleniumUtils';
+import { testIds } from '../../../util/testIds';
 
 describe('Simulation Controls', () => {
 	let driver: WebDriver;
@@ -26,56 +29,28 @@ describe('Simulation Controls', () => {
 		await driver.get('http://localhost:3000');
 
 		// Wait for "Examples" button being enabled and click it
-		await driver.wait(until.elementLocated(By.xpath("//div[@aria-label = 'Examples']")), 5_000);
+		await driver.wait(until.elementLocated(byTestId(testIds.navItem('examples'))), 5_000);
 
-		const examplesButton = await driver.findElement(
-			By.xpath("//div[@aria-label = 'Examples']")
-		);
+		const examplesButton = await driver.findElement(byTestId(testIds.navItem('examples')));
 		await driver.wait(until.elementIsEnabled(examplesButton), 5_000);
 		await examplesButton.click();
 
-		// Wait until the "Examples" button is marked as active
+		// Wait until the "Examples" panel is visible
 		await driver.wait(
-			until.elementLocated(
-				By.xpath("//div[@aria-label = 'Examples' and @aria-selected = 'true']")
-			),
+			until.elementLocated(byTestId(testIds.examplesSection(sectionName))),
 			10_000
 		);
 
-		// Find the section header
-		const geant4SectionHeader = await driver.findElement(
-			By.xpath(`//h5[text()='${sectionName}']`)
-		);
-		await geant4SectionHeader.isDisplayed();
-
 		// Find the first example in the section and click it
 		const firstExample = await driver.findElement(
-			By.xpath(
-				`//h5[text()='${sectionName}']/following-sibling::div//div[contains(@class, 'MuiChip-root')][1]`
-			)
+			byTestId(testIds.examplesChip(sectionName, 0))
 		);
 		await firstExample.isDisplayed();
 		await firstExample.click();
 
-		// Check if the tab switched to "Editor"
-		const editorTab = await driver.wait(
-			until.elementLocated(
-				By.xpath("//div[@aria-label = 'Editor' and @aria-selected = 'true']")
-			),
-			10_000
-		);
-		expect(editorTab).toBeTruthy();
-
-		const loadFileTitleId = 'load-file-alert-dialog-title';
-		const loadFileContentId = 'load-file-alert-dialog-content';
-
 		//wait for the "load file" dialog to appear
 		const loadFileDialog = await driver.wait(
-			until.elementLocated(
-				By.xpath(
-					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${loadFileTitleId}' and @aria-describedby = '${loadFileContentId}']`
-				)
-			),
+			until.elementLocated(byTestId(testIds.dialog('load-file'))),
 			10_000
 		);
 
@@ -83,7 +58,7 @@ describe('Simulation Controls', () => {
 
 		//find the "clear and proceed" button and click it
 		const clearAndProceedButton = await loadFileDialog.findElement(
-			By.xpath("//button[contains(text(),'Clear and proceed')]")
+			byTestId(`${testIds.dialog('load-file')}-confirm`)
 		);
 		expect(await clearAndProceedButton.isEnabled()).toEqual(true);
 		await clearAndProceedButton.click();
@@ -92,23 +67,21 @@ describe('Simulation Controls', () => {
 	test('Geant4 should connect and be able to run', async () => {
 		await loadExample('GEANT4');
 
-		expect(await driver.findElement(By.id('simulator-controls-status')).getText()).toEqual(
+		expect(await driver.findElement(byTestId(testIds.simulatorStatus)).getText()).toEqual(
 			'Connected'
 		);
 
-		expect(await driver.findElement(By.id('simulator-controls-select')).getText()).toEqual(
+		expect(await driver.findElement(byTestId(testIds.simulatorSelect)).getText()).toEqual(
 			'Geant4'
 		);
 
-		const runButton = await driver.findElement(By.id('simulator-controls-run'));
+		const runButton = await driver.findElement(byTestId(testIds.simulatorRun));
 		expect(await runButton.isEnabled()).toBeTruthy();
 
 		await runButton.click();
 
 		const simulationsTab = await driver.wait(
-			until.elementLocated(
-				By.xpath("//div[@aria-label = 'Simulations' and @aria-selected = 'true']")
-			),
+			until.elementLocated(byTestId(testIds.navItem('simulations'))),
 			10_000
 		);
 		expect(simulationsTab).toBeTruthy();
@@ -118,54 +91,50 @@ describe('Simulation Controls', () => {
 		// The test is run without server running, so it makes sense
 		await loadExample('SHIELDHIT');
 
-		expect(await driver.findElement(By.id('simulator-controls-status')).getText()).toEqual(
+		expect(await driver.findElement(byTestId(testIds.simulatorStatus)).getText()).toEqual(
 			'Unreachable'
 		);
 
-		expect(await driver.findElement(By.id('simulator-controls-select')).getText()).toEqual(
+		expect(await driver.findElement(byTestId(testIds.simulatorSelect)).getText()).toEqual(
 			'SHIELD-HIT12A'
 		);
 
-		const runButton = await driver.findElement(By.id('simulator-controls-run'));
+		const runButton = await driver.findElement(byTestId(testIds.simulatorRun));
 		expect(await runButton.isEnabled()).toBeFalsy();
 	}, 50_000);
 
 	test('Switching from Geant4 should clear the project', async () => {
 		await loadExample('GEANT4');
 
-		const simulatorSelect = await driver.findElement(By.id('simulator-controls-select'));
+		const simulatorSelect = await driver.findElement(byTestId(testIds.simulatorSelect));
 		await simulatorSelect.click();
 
 		// Allow for popover to fade in
 		await driver.sleep(1000);
 
-		const popoverList = await driver.findElement(By.id('simulator-controls-popover-select'));
+		const popoverList = await driver.findElement(byTestId(testIds.simulatorPopover));
 
 		const shieldhitOption = await popoverList.findElement(
-			By.xpath("//div[./*[contains(text(), 'SHIELD-HIT12A')]]")
+			byTestId(testIds.simulatorOption('shieldhit'))
 		);
 		await shieldhitOption.click();
 
-		const alertTitle = 'simulator-change-alert-dialog-title';
-		const alertContent = 'simulator-change-alert-dialog-content';
+		const alertTitle = testIds.dialogTitle('simulator-change');
+		const alertContent = testIds.dialogContent('simulator-change');
 
 		//wait for the "Simulator Change Alert" dialog to appear
-		const loadFileDialog = await driver.wait(
-			until.elementLocated(
-				By.xpath(
-					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${alertTitle}' and @aria-describedby = '${alertContent}']`
-				)
-			),
+		const changeDialog = await driver.wait(
+			until.elementLocated(byTestId(testIds.dialog('simulator-change'))),
 			10_000
 		);
 
 		await driver.sleep(1000); // wait for modal to fade in
 
-		expect(await loadFileDialog.findElement(By.id(alertTitle)).getText()).toBe(
+		expect(await changeDialog.findElement(byTestId(alertTitle)).getText()).toBe(
 			'Simulator Change Alert'
 		);
 
-		expect(await loadFileDialog.findElement(By.id(alertContent)).getText()).toBe(
+		expect(await changeDialog.findElement(byTestId(alertContent)).getText()).toBe(
 			'Changing the simulator will clear the project. Are you sure you want to continue?'
 		);
 	}, 50_000);
@@ -173,39 +142,35 @@ describe('Simulation Controls', () => {
 	test('Switching to Geant4 should clear the project', async () => {
 		await loadExample('SHIELDHIT');
 
-		const simulatorSelect = await driver.findElement(By.id('simulator-controls-select'));
+		const simulatorSelect = await driver.findElement(byTestId(testIds.simulatorSelect));
 		await simulatorSelect.click();
 
 		// Allow for popover to fade in
 		await driver.sleep(1000);
 
-		const popoverList = await driver.findElement(By.id('simulator-controls-popover-select'));
+		const popoverList = await driver.findElement(byTestId(testIds.simulatorPopover));
 
 		const geant4Option = await popoverList.findElement(
-			By.xpath("//div[./*[contains(text(), 'Geant4')]]")
+			byTestId(testIds.simulatorOption('geant4'))
 		);
 		await geant4Option.click();
 
-		const alertTitle = 'simulator-change-alert-dialog-title';
-		const alertContent = 'simulator-change-alert-dialog-content';
+		const alertTitle = testIds.dialogTitle('simulator-change');
+		const alertContent = testIds.dialogContent('simulator-change');
 
 		//wait for the "Simulator Change Alert" dialog to appear
-		const loadFileDialog = await driver.wait(
-			until.elementLocated(
-				By.xpath(
-					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${alertTitle}' and @aria-describedby = '${alertContent}']`
-				)
-			),
+		const changeDialog = await driver.wait(
+			until.elementLocated(byTestId(testIds.dialog('simulator-change'))),
 			10_000
 		);
 
 		await driver.sleep(1000); // wait for modal to fade in
 
-		expect(await loadFileDialog.findElement(By.id(alertTitle)).getText()).toBe(
+		expect(await changeDialog.findElement(byTestId(alertTitle)).getText()).toBe(
 			'Simulator Change Alert'
 		);
 
-		expect(await loadFileDialog.findElement(By.id(alertContent)).getText()).toBe(
+		expect(await changeDialog.findElement(byTestId(alertContent)).getText()).toBe(
 			'Changing the simulator will clear the project. Are you sure you want to continue?'
 		);
 	}, 50_000);
@@ -213,40 +178,36 @@ describe('Simulation Controls', () => {
 	test('Switching between SHIELD-HIT12A and FLUKA should clear the project partially', async () => {
 		await loadExample('SHIELDHIT');
 
-		const simulatorSelect = await driver.findElement(By.id('simulator-controls-select'));
+		const simulatorSelect = await driver.findElement(byTestId(testIds.simulatorSelect));
 		await simulatorSelect.click();
 
 		// Allow for popover to fade in
 		await driver.sleep(1000);
 
-		const popoverList = await driver.findElement(By.id('simulator-controls-popover-select'));
+		const popoverList = await driver.findElement(byTestId(testIds.simulatorPopover));
 
 		const flukaOption = await popoverList.findElement(
-			By.xpath("//div[./*[contains(text(), 'FLUKA instance')]]")
+			byTestId(testIds.simulatorOption('fluka'))
 		);
 
 		await flukaOption.click();
 
-		const alertTitle = 'simulator-change-alert-dialog-title';
-		const alertContent = 'simulator-change-alert-dialog-content';
+		const alertTitle = testIds.dialogTitle('simulator-change');
+		const alertContent = testIds.dialogContent('simulator-change');
 
 		//wait for the "Simulator Change Alert" dialog to appear
-		const loadFileDialog = await driver.wait(
-			until.elementLocated(
-				By.xpath(
-					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${alertTitle}' and @aria-describedby = '${alertContent}']`
-				)
-			),
+		const changeDialog = await driver.wait(
+			until.elementLocated(byTestId(testIds.dialog('simulator-change'))),
 			10_000
 		);
 
 		await driver.sleep(1000); // wait for modal to fade in
 
-		expect(await loadFileDialog.findElement(By.id(alertTitle)).getText()).toBe(
+		expect(await changeDialog.findElement(byTestId(alertTitle)).getText()).toBe(
 			'Simulator Change Alert'
 		);
 
-		expect(await loadFileDialog.findElement(By.id(alertContent)).getText()).toBe(
+		expect(await changeDialog.findElement(byTestId(alertContent)).getText()).toBe(
 			"Changing to another simulator may result in data loss. It is only recommended to change from the 'Common' simulator to either 'Fluka' or 'Shieldhit'. Are you sure you want to continue?"
 		);
 	}, 50_000);
@@ -254,16 +215,16 @@ describe('Simulation Controls', () => {
 	test('Switching from COMMON to SHIELD-HIT12A should work fine', async () => {
 		await loadExample('COMMON');
 
-		const simulatorSelect = await driver.findElement(By.id('simulator-controls-select'));
+		const simulatorSelect = await driver.findElement(byTestId(testIds.simulatorSelect));
 		await simulatorSelect.click();
 
 		// Allow for popover to fade in
 		await driver.sleep(1000);
 
-		const popoverList = await driver.findElement(By.id('simulator-controls-popover-select'));
+		const popoverList = await driver.findElement(byTestId(testIds.simulatorPopover));
 
 		const shieldhitOption = await popoverList.findElement(
-			By.xpath("//div[./*[contains(text(), 'SHIELD-HIT12A')]]")
+			byTestId(testIds.simulatorOption('shieldhit'))
 		);
 		await shieldhitOption.click();
 

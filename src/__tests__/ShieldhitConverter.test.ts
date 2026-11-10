@@ -1,8 +1,11 @@
 import * as fs from 'node:fs';
 
 import { readFileSync } from 'fs';
-import { Builder, By, until, WebDriver } from 'selenium-webdriver';
+import { Builder, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
+
+import { byTestId } from '../test/seleniumUtils';
+import { testIds } from '../util/testIds';
 
 describe('ShieldhitConverter', () => {
 	let driver: WebDriver;
@@ -30,18 +33,11 @@ describe('ShieldhitConverter', () => {
 
 		// Wait for the application to load
 		expect(
-			await driver.wait(
-				until.elementLocated(
-					By.xpath("//div[@aria-label = 'Navigation drawer for the YAPTIDE application']")
-				),
-				5_000
-			)
+			await driver.wait(until.elementLocated(byTestId(testIds.navDrawer)), 5_000)
 		).toBeTruthy();
 
 		// Find and click the "Examples" button
-		const examplesButton = await driver.findElement(
-			By.xpath("//div[@aria-label = 'Examples']")
-		);
+		const examplesButton = await driver.findElement(byTestId(testIds.navItem('examples')));
 
 		// Scroll into view to ensure the element is visible
 		await driver.executeScript('arguments[0].scrollIntoView(true);', examplesButton);
@@ -51,30 +47,21 @@ describe('ShieldhitConverter', () => {
 		await driver.wait(until.elementIsEnabled(examplesButton), 5_000);
 		await examplesButton.click();
 
-		// Wait until the "Examples" button is marked as active
-		await driver.wait(
-			until.elementLocated(
-				By.xpath("//div[@aria-label = 'Examples' and @aria-selected = 'true']")
-			),
+		// Wait until the "Examples" panel is visible
+		const shieldhitSection = await driver.wait(
+			until.elementLocated(byTestId(testIds.examplesSection('SHIELDHIT'))),
 			10_000
 		);
 
-		// Find the "SHIELDHIT" section header
-		const shieldhitSectionHeader = await driver.findElement(
-			By.xpath("//h5[text()='SHIELDHIT']")
-		);
+		// Scroll into view of the section
+		await driver.executeScript('arguments[0].scrollIntoView(true);', shieldhitSection);
 
-		// Scroll into view of the header
-		await driver.executeScript('arguments[0].scrollIntoView(true);', shieldhitSectionHeader);
-
-		// Ensure the section header is visible
-		expect(await shieldhitSectionHeader.isDisplayed()).toBeTruthy();
+		// Ensure the section is visible
+		expect(await shieldhitSection.isDisplayed()).toBeTruthy();
 
 		// Find the first example in the "SHIELDHIT" section
 		const firstExample = await driver.findElement(
-			By.xpath(
-				"//h5[text()='SHIELDHIT']/following-sibling::div//div[contains(@class, 'MuiChip-root')][1]"
-			)
+			byTestId(testIds.examplesChip('SHIELDHIT', 0))
 		);
 
 		// Scroll into view of the first example
@@ -86,67 +73,45 @@ describe('ShieldhitConverter', () => {
 		// Click the first example
 		await firstExample.click();
 
-		// Check if the tab switched to "Editor"
-		const editorTab = await driver.wait(
-			until.elementLocated(
-				By.xpath("//div[@aria-label = 'Editor' and @aria-selected = 'true']")
-			),
-			10_000
-		);
-
-		expect(editorTab).toBeTruthy();
-
-		const loadFileTitleId = 'load-file-alert-dialog-title';
-		const loadFileContentId = 'load-file-alert-dialog-content';
-		const versionWarningId = 'load-file-dialog-version-warning';
-
 		//wait for the "load file" dialog to appear
 		const loadFileDialog = await driver.wait(
-			until.elementLocated(
-				By.xpath(
-					`//div[(@role = 'dialog' or @role = 'alertdialog') and @aria-labelledby = '${loadFileTitleId}' and @aria-describedby = '${loadFileContentId}']`
-				)
-			),
+			until.elementLocated(byTestId(testIds.dialog('load-file'))),
 			10_000
 		);
 
 		await driver.sleep(1000); // wait for modal to fade in
 
-		expect(await loadFileDialog.findElement(By.id(loadFileTitleId)).getText()).toBe(
-			'Load File Alert'
-		);
+		expect(
+			await loadFileDialog.findElement(byTestId(testIds.dialogTitle('load-file'))).getText()
+		).toBe('Load File Alert');
 
-		expect(await loadFileDialog.findElement(By.id(loadFileContentId)).getText()).toBe(
-			'Loaded data will replace current project data. Are you sure you want to continue?'
-		);
+		expect(
+			await loadFileDialog.findElement(byTestId(testIds.dialogContent('load-file'))).getText()
+		).toBe('Loaded data will replace current project data. Are you sure you want to continue?');
 
 		//check if the version warning is not present
-		expect(await loadFileDialog.findElements(By.id(versionWarningId))).toHaveLength(0);
+		expect(
+			await loadFileDialog.findElements(
+				byTestId(`${testIds.dialog('load-file')}-version-warning`)
+			)
+		).toHaveLength(0);
 
 		//find the "clear and proceed" button and click it
 		const clearAndProceedButton = await loadFileDialog.findElement(
-			By.xpath("//button[contains(text(),'Clear and proceed')]")
+			byTestId(`${testIds.dialog('load-file')}-confirm`)
 		);
 		expect(await clearAndProceedButton.isEnabled()).toEqual(true);
 		await clearAndProceedButton.click();
 
 		//find the "Input Files" button on the left menu and click it to open the editor
-		const filesButton = await driver.findElement(
-			By.xpath("//div[@aria-label = 'Input files']")
-		);
+		const filesButton = await driver.findElement(byTestId(testIds.navItem('inputFiles')));
 		await filesButton.click();
-		expect(
-			await driver.wait(
-				until.elementLocated(
-					By.xpath("//div[@aria-label = 'Input files' and @aria-selected = 'true']")
-				),
-				10_000
-			)
-		).toBeTruthy();
 
 		//wait until the "generate from editor" button and click it (it takes some time for the button to change from "initializing")
-		//the ID is now defined in component and is used for element selection
-		const generateButton = await driver.findElement(By.id('generate-from-editor'));
+		const generateButton = await driver.wait(
+			until.elementLocated(byTestId(testIds.inputEditorGenerate)),
+			10_000
+		);
 
 		await driver.wait(until.elementIsEnabled(generateButton), 15_000);
 		await generateButton.click();
@@ -154,7 +119,7 @@ describe('ShieldhitConverter', () => {
 		//wait until the text has appeared in the first text field
 		await driver.wait(
 			until.elementTextMatches(
-				driver.findElement(By.xpath("//textarea[@aria-label = 'geo.dat text field']")),
+				driver.findElement(byTestId(testIds.inputFileEditor('geo.dat', 0))),
 				/\S/
 			),
 			10_000
@@ -166,9 +131,7 @@ describe('ShieldhitConverter', () => {
 		const regex = /[^a-zA-Z0-9.]/g;
 
 		const geoText = (
-			await driver
-				.findElement(By.xpath("//textarea[@aria-label = 'geo.dat text field']"))
-				.getText()
+			await driver.findElement(byTestId(testIds.inputFileEditor('geo.dat', 0))).getText()
 		).replace(regex, '');
 
 		const expectedGeoText = readFileSync(
@@ -179,9 +142,7 @@ describe('ShieldhitConverter', () => {
 		expect(geoText).toContain(expectedGeoText);
 
 		const matText = (
-			await driver
-				.findElement(By.xpath("//textarea[@aria-label = 'mat.dat text field']"))
-				.getText()
+			await driver.findElement(byTestId(testIds.inputFileEditor('mat.dat', 0))).getText()
 		).replace(regex, '');
 
 		const expectedMatText = readFileSync(
@@ -192,9 +153,7 @@ describe('ShieldhitConverter', () => {
 		expect(matText).toContain(expectedMatText);
 
 		const beamText = (
-			await driver
-				.findElement(By.xpath("//textarea[@aria-label = 'beam.dat text field']"))
-				.getText()
+			await driver.findElement(byTestId(testIds.inputFileEditor('beam.dat', 0))).getText()
 		).replace(regex, '');
 
 		const expectedBeamText = readFileSync(
@@ -206,9 +165,7 @@ describe('ShieldhitConverter', () => {
 		expect(beamText).toContain(expectedBeamText);
 
 		const detectText = (
-			await driver
-				.findElement(By.xpath("//textarea[@aria-label = 'detect.dat text field']"))
-				.getText()
+			await driver.findElement(byTestId(testIds.inputFileEditor('detect.dat', 0))).getText()
 		).replace(regex, '');
 
 		const expectedDetectText = readFileSync(

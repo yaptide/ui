@@ -1,5 +1,6 @@
 import { Button } from '@mui/material';
 
+import { testIds } from '../../../util/testIds';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
 export function SimulatorChangeDialog({
@@ -16,9 +17,11 @@ export function SimulatorChangeDialog({
 		<CustomDialog
 			onClose={onClose}
 			alert={true}
+			testId='simulator-change'
 			title='Simulator Change Alert'
 			contentText={text}>
 			<Button
+				data-testid={`${testIds.dialog('simulator-change')}-cancel`}
 				onClick={() => {
 					closeAction();
 					onClose();
@@ -28,6 +31,7 @@ export function SimulatorChangeDialog({
 				Cancel
 			</Button>
 			<Button
+				data-testid={`${testIds.dialog('simulator-change')}-confirm`}
 				variant='contained'
 				color='secondary'
 				onClick={() => {

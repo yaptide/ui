@@ -2,6 +2,7 @@ import { Button } from '@mui/material';
 import Typography from '@mui/material/Typography';
 
 import { StoreContext, useStore } from '../../../services/StoreService';
+import { testIds } from '../../../util/testIds';
 import { EditorJson } from '../../js/EditorJson';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
@@ -21,6 +22,7 @@ export function LoadFileDialog({
 		<CustomDialog
 			alert={true}
 			onClose={onClose}
+			testId='load-file'
 			title='Load File Alert'
 			contentText={`Loaded data will replace current project data. Are you sure you want to continue?`}
 			body={
@@ -29,7 +31,7 @@ export function LoadFileDialog({
 						variant='body1'
 						color='error'
 						component={'div'}
-						id={`load-file-dialog-version-warning`}
+						data-testid={`${testIds.dialog('load-file')}-version-warning`}
 						sx={{
 							marginTop: '1rem',
 							fontWeight: 'bold'
@@ -44,6 +46,7 @@ export function LoadFileDialog({
 			}>
 			<Button
 				aria-label='cancel'
+				data-testid={`${testIds.dialog('load-file')}-cancel`}
 				onClick={onClose}
 				color='secondary'
 				autoFocus>
@@ -52,6 +55,7 @@ export function LoadFileDialog({
 			<Button
 				disabled={!data}
 				aria-label='clear and proceed'
+				data-testid={`${testIds.dialog('load-file')}-confirm`}
 				variant='contained'
 				color='secondary'
 				onClick={() => {

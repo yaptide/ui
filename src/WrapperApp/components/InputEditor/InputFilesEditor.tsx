@@ -14,6 +14,7 @@ import {
 	SimulationInputFiles
 } from '../../../types/ResponseTypes';
 import { saveString } from '../../../util/File';
+import { testIds } from '../../../util/testIds';
 
 interface InputFilesEditorProps {
 	simulator: SimulatorType;
@@ -126,7 +127,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 
 						return index1 - index2;
 					})
-					.map(([name, value]) => {
+					.map(([name, value], index) => {
 						const isLargeFile = value.length > largeFileSize;
 						const content = !isLargeFile ? value : truncateFile(value);
 
@@ -193,6 +194,7 @@ export function InputFilesEditor(props: InputFilesEditorProps) {
 								</Typography>
 								<CodeEditor
 									aria-label={name + ' text field'}
+									data-testid={testIds.inputFileEditor(name, index)}
 									value={content}
 									placeholder={`Please enter ${name} content.`}
 									onChange={evn => {
