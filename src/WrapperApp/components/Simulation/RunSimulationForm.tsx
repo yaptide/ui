@@ -227,6 +227,7 @@ export function RunSimulationForm({
 	const { isConverterReady } = usePythonConverter();
 	const { managerState: geant4DownloadManagerState } = useSharedDatasetManager();
 	const runsGeant4 = runSimulator === SimulatorType.GEANT4;
+	const runType: SimulationRunType = runsGeant4 ? 'direct' : simulationRunType;
 
 	const findBlockReason = () => {
 		const availability = availabilityReason(runSimulator);
@@ -303,7 +304,7 @@ export function RunSimulationForm({
 		setSource(runSimulator === SimulatorType.GEANT4 ? 'local' : 'remote');
 
 		runSimulation(
-			simulationRunType,
+			runType,
 			editorJson!,
 			filteredInputFiles,
 			simulationSourceType,
@@ -370,7 +371,7 @@ export function RunSimulationForm({
 					) : (
 						<Box sx={{ pt: theme.spacing(1) }} />
 					)}
-					{simulationRunType === 'batch' && (
+					{runType === 'batch' && (
 						<FormGroup>
 							<FormControlLabel
 								control={
@@ -383,7 +384,7 @@ export function RunSimulationForm({
 							/>
 						</FormGroup>
 					)}
-					{(!usingBatchConfig || simulationRunType === 'direct') && (
+					{(!usingBatchConfig || runType === 'direct') && (
 						<>
 							<TextField
 								size='small'
@@ -581,7 +582,7 @@ export function RunSimulationForm({
 							)}
 						</>
 					)}
-					{usingBatchConfig && simulationRunType === 'batch' && (
+					{usingBatchConfig && runType === 'batch' && (
 						<>
 							<FormControl fullWidth>
 								<InputLabel id='cluster-select-label'>Cluster</InputLabel>
@@ -665,7 +666,7 @@ export function RunSimulationForm({
 							}}
 							variant='contained'
 							size='large'
-							disabled={!usingBatchConfig && blockReason !== undefined}
+							disabled={blockReason !== undefined}
 							onClick={handleRunSimulationClick}>
 							Start simulation
 						</Button>

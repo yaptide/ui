@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { usePythonConverter } from '../PythonConverter/PythonConverterService';
+import { InputFilesLoss } from '../WrapperApp/components/InputEditor/OverwriteInputFilesDialog';
 import {
 	inputFilesZipName,
 	saveInputFilesAsZip
@@ -27,7 +28,8 @@ export interface InputFilesContext {
 	additionCount: number;
 	addFiles: (files: InputFiles, selection: SelectionUpdate, action: string) => Promise<boolean>;
 	updateFile: (name: string, content: string) => void;
-	removeFile: (name: string) => void;
+	clearFile: (name: string) => Promise<boolean>;
+	removeFile: (name: string) => Promise<boolean>;
 	renameFile: (from: string, to: string) => Promise<boolean>;
 	toggleSelected: (name: string) => void;
 	setSelectedFiles: (names: string[]) => void;
@@ -73,33 +75,45 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 
 	const [runSimulator, setRunSimulator] = useState<RunnableSimulator>(RUNNABLE_SIMULATORS[0]);
 
-	const confirmOverwrite = useCallback(
-		(action: string, incoming: InputFiles) => {
-			const overwritten = Object.keys(incoming).filter(
+	const latestFiles = useRef(inputFiles);
+	const latestSelection = useRef(selectedFiles);
+	const converterReady = useRef(isConverterReady);
+
+	useEffect(() => {
+		latestFiles.current = inputFiles;
+		latestSelection.current = selectedFiles;
+		converterReady.current = isConverterReady;
+	}, [inputFiles, selectedFiles, isConverterReady]);
+
+	const confirmLoss = useCallback(
+		(kind: InputFilesLoss, action: string, incoming: InputFiles) => {
+			const current = latestFiles.current;
+			const lost = Object.keys(incoming).filter(
 				name =>
-					name in inputFiles &&
-					inputFiles[name].trim() !== '' &&
-					inputFiles[name] !== incoming[name]
+					name in current &&
+					current[name].trim() !== '' &&
+					current[name] !== incoming[name]
 			);
 
-			if (overwritten.length === 0) return Promise.resolve(true);
+			if (lost.length === 0) return Promise.resolve(true);
 
 			return new Promise<boolean>(resolve =>
 				openOverwriteDialog({
+					kind,
 					action,
-					fileNames: overwritten,
+					fileNames: lost,
 					onCancel: () => resolve(false),
 					onOverwrite: downloadCurrent => {
 						if (downloadCurrent) {
-							const current = Object.fromEntries(
-								overwritten.map(name => [name, inputFiles[name]])
+							const lostFiles = Object.fromEntries(
+								lost.map(name => [name, current[name]])
 							);
 
 							saveInputFilesAsZip(
-								current,
+								lostFiles,
 								inputFilesZipName(
 									yaptideEditor?.config.getKey('project/title'),
-									current,
+									lostFiles,
 									detection
 								)
 							);
@@ -110,67 +124,97 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 				})
 			);
 		},
-		[inputFiles, detection, openOverwriteDialog, yaptideEditor]
+		[detection, openOverwriteDialog, yaptideEditor]
+	);
+
+	const switchToOnlySimulator = useCallback(
+		async (names: string[], selection: string[]) => {
+			if (!converterReady.current) return;
+
+			const nextDetection = await detectSimulators(
+				Object.fromEntries(names.map(name => [name, '']))
+			);
+
+			const simulators = new Set(
+				selection.flatMap(name => nextDetection.files[name]?.simulator ?? [])
+			);
+
+			if (simulators.size === 1) setRunSimulator(Array.from(simulators)[0]);
+		},
+		[detectSimulators]
 	);
 
 	const addFiles = useCallback(
 		async (files: InputFiles, selection: SelectionUpdate, action: string) => {
-			if (!(await confirmOverwrite(action, files))) return false;
+			if (!(await confirmLoss('overwrite', action, files))) return false;
 
-			const nextFiles = { ...inputFiles, ...files };
-			const nextSelection =
+			const added = Object.keys(files);
+			const addSelection = (old: string[]) =>
 				selection === 'replace'
-					? Object.keys(files)
-					: [
-							...selectedFiles,
-							...Object.keys(files).filter(name => !selectedFiles.includes(name))
-						];
+					? added
+					: [...old, ...added.filter(name => !old.includes(name))];
+			const names = Object.keys({ ...latestFiles.current, ...files });
+			const nextSelection = addSelection(latestSelection.current);
 
-			setInputFiles(nextFiles);
-			setSelectedFiles(nextSelection);
+			setInputFiles(old => ({ ...old, ...files }));
+			setSelectedFiles(addSelection);
 			setAdditionCount(count => count + 1);
-
-			if (isConverterReady) {
-				const nextDetection = await detectSimulators(nextFiles);
-				const selectedSimulators = nextSelection
-					.map(name => nextDetection.files[name]?.simulator)
-					.filter(
-						(simulator, index, all) => simulator && all.indexOf(simulator) === index
-					);
-
-				if (selectedSimulators.length === 1 && selectedSimulators[0])
-					setRunSimulator(selectedSimulators[0]);
-			}
+			await switchToOnlySimulator(names, nextSelection);
 
 			return true;
 		},
-		[confirmOverwrite, detectSimulators, inputFiles, isConverterReady, selectedFiles]
+		[confirmLoss, switchToOnlySimulator]
 	);
 
 	const updateFile = useCallback((name: string, content: string) => {
 		setInputFiles(old => ({ ...old, [name]: content }));
 	}, []);
 
-	const removeFile = useCallback((name: string) => {
-		setInputFiles(({ [name]: _, ...rest }) => rest);
-		setSelectedFiles(old => old.filter(file => file !== name));
-	}, []);
+	const clearFile = useCallback(
+		async (name: string) => {
+			if (!(await confirmLoss('discard', `Clearing ${name}`, { [name]: '' }))) return false;
 
-	const renameFile = useCallback(
-		async (from: string, to: string) => {
-			if (!(await confirmOverwrite(`Renaming ${from} to ${to}`, { [to]: inputFiles[from] })))
-				return false;
-
-			setInputFiles(({ [from]: content, ...rest }) => ({ ...rest, [to]: content }));
-			setSelectedFiles(old => {
-				const renamed = old.filter(file => file !== from && file !== to);
-
-				return old.includes(from) ? [...renamed, to] : renamed;
-			});
+			updateFile(name, '');
 
 			return true;
 		},
-		[confirmOverwrite, inputFiles]
+		[confirmLoss, updateFile]
+	);
+
+	const removeFile = useCallback(
+		async (name: string) => {
+			if (!(await confirmLoss('discard', `Deleting ${name}`, { [name]: '' }))) return false;
+
+			setInputFiles(({ [name]: _, ...rest }) => rest);
+			setSelectedFiles(old => old.filter(file => file !== name));
+
+			return true;
+		},
+		[confirmLoss]
+	);
+
+	const renameFile = useCallback(
+		async (from: string, to: string) => {
+			const content = latestFiles.current[from];
+
+			if (!(await confirmLoss('overwrite', `Renaming ${from} to ${to}`, { [to]: content })))
+				return false;
+
+			const rename = (old: string[]) => {
+				const renamed = old.filter(file => file !== from && file !== to);
+
+				return old.includes(from) ? [...renamed, to] : renamed;
+			};
+			const names = rename(Object.keys(latestFiles.current));
+			const nextSelection = rename(latestSelection.current);
+
+			setInputFiles(({ [from]: _, ...rest }) => ({ ...rest, [to]: content }));
+			setSelectedFiles(rename);
+			await switchToOnlySimulator(names, nextSelection);
+
+			return true;
+		},
+		[confirmLoss, switchToOnlySimulator]
 	);
 
 	const toggleSelected = useCallback((name: string) => {
@@ -188,6 +232,7 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 		additionCount,
 		addFiles,
 		updateFile,
+		clearFile,
 		removeFile,
 		renameFile,
 		toggleSelected,

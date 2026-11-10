@@ -5,13 +5,17 @@ import {
 	CustomDialog
 } from '../../../ThreeEditor/components/Dialog/CustomDialog';
 
+export type InputFilesLoss = 'overwrite' | 'discard';
+
 export function OverwriteInputFilesDialog({
 	onClose,
+	kind,
 	action,
 	fileNames,
 	onCancel,
 	onOverwrite
 }: ConcreteDialogProps<{
+	kind: InputFilesLoss;
 	action: string;
 	fileNames: string[];
 	onCancel: () => void;
@@ -31,10 +35,10 @@ export function OverwriteInputFilesDialog({
 		<CustomDialog
 			onClose={cancel}
 			alert={true}
-			title='Overwrite input files'
-			contentText={`${action} will replace ${
+			title={kind === 'overwrite' ? 'Overwrite input files' : 'Discard file content'}
+			contentText={`${action} will ${kind === 'overwrite' ? 'replace' : 'discard the content of'} ${
 				fileNames.length === 1 ? 'this file' : `these ${fileNames.length} files`
-			}. Their current content will be lost. Do you want to proceed?`}
+			}. The current content will be lost. Do you want to proceed?`}
 			body={
 				<Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, marginTop: 2 }}>
 					{fileNames.map(name => (
@@ -56,13 +60,13 @@ export function OverwriteInputFilesDialog({
 			<Button
 				color='secondary'
 				onClick={() => overwrite(true)}>
-				Download current and overwrite
+				Download current and {kind === 'overwrite' ? 'overwrite' : 'discard'}
 			</Button>
 			<Button
 				variant='contained'
 				color='secondary'
 				onClick={() => overwrite(false)}>
-				Overwrite
+				{kind === 'overwrite' ? 'Overwrite' : 'Discard'}
 			</Button>
 		</CustomDialog>
 	);

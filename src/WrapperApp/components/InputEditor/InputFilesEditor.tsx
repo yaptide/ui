@@ -18,6 +18,7 @@ interface InputFilesEditorProps {
 	requiredFiles?: RequiredInputFiles;
 	selectedFiles?: string[];
 	onToggleSelected?: (name: string) => void;
+	onClear?: (name: string) => void;
 	onRemove?: (name: string) => void;
 	onRename?: (from: string, to: string) => void;
 }
@@ -29,6 +30,7 @@ export function InputFilesEditor({
 	requiredFiles,
 	selectedFiles,
 	onToggleSelected,
+	onClear = name => onChange(name, ''),
 	onRemove,
 	onRename
 }: InputFilesEditorProps) {
@@ -102,7 +104,7 @@ export function InputFilesEditor({
 							<Button
 								color='warning'
 								disabled={value.trim() === ''}
-								onClick={() => onChange(name, '')}>
+								onClick={() => onClear(name)}>
 								Clear
 							</Button>
 							{onRemove && (

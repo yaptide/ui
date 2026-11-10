@@ -21,7 +21,7 @@ export async function saveInputFile(name: string, content: string) {
 	} catch (error) {
 		if (error instanceof DOMException && error.name === 'AbortError') return;
 
-		throw error;
+		saveString(content, name);
 	}
 }
 

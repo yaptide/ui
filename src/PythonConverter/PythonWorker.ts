@@ -36,6 +36,19 @@ def checkIfConverterReady():
 checkIfConverterReady()
 `;
 
+type PyProxy = {
+	toJs: (options: { dict_converter: typeof Object.fromEntries }) => unknown;
+	destroy: () => void;
+};
+
+const toJsAndDestroy = (proxy: PyProxy) => {
+	try {
+		return proxy.toJs({ dict_converter: Object.fromEntries });
+	} finally {
+		proxy.destroy();
+	}
+};
+
 class PythonWorkerBase implements PythonWorker {
 	readonly isPythonWorker: true = true;
 	async initPyodide(onReady: () => void) {
@@ -88,22 +101,22 @@ print(micropip.list())
 		return self.pyodide.runPython(pythonConverterCode)(editorJson).toJs();
 	}
 
-	detectSimulators(files: Record<string, string>) {
-		const pythonCode = `
-		from converter.api import detect_simulators
-		def detectSimulators(files):
-			return detect_simulators(files.to_py())
-		detectSimulators`;
+	private detectSimulatorsInPython?: (files: Record<string, string>) => PyProxy;
 
-		return self.pyodide
-			.runPython(pythonCode)(files)
-			.toJs({ dict_converter: Object.fromEntries });
+	detectSimulators(files: Record<string, string>) {
+		this.detectSimulatorsInPython ??= self.pyodide.runPython(
+			'from converter.api import detect_simulators\nlambda files: detect_simulators(files.to_py())'
+		);
+
+		return toJsAndDestroy(this.detectSimulatorsInPython!(files));
 	}
 
 	requiredInputFiles() {
-		return self.pyodide
-			.runPython('from converter.api import REQUIRED_INPUT_FILES\nREQUIRED_INPUT_FILES')
-			.toJs({ dict_converter: Object.fromEntries });
+		return toJsAndDestroy(
+			self.pyodide.runPython(
+				'from converter.api import REQUIRED_INPUT_FILES\nREQUIRED_INPUT_FILES'
+			)
+		);
 	}
 }
 

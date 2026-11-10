@@ -27,6 +27,7 @@ export default function InputEditorPanel() {
 		requiredFiles,
 		addFiles,
 		updateFile,
+		clearFile,
 		removeFile,
 		renameFile,
 		toggleSelected
@@ -201,6 +202,7 @@ export default function InputEditorPanel() {
 					selectedFiles={selectedFiles}
 					onToggleSelected={toggleSelected}
 					onChange={updateFile}
+					onClear={clearFile}
 					onRemove={removeFile}
 					onRename={renameFile}
 				/>

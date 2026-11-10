@@ -100,30 +100,15 @@ function WrapperApp() {
 
 	const runRemoteWorkerSimulation = useRunRemoteWorkerSimulation();
 	const runGeant4LocalWorkerSimulation = useRunGeant4LocalWorkerSimulation();
-	const runSimulation: RunSimulationFunctionType = (
-		runType,
-		editorJson,
-		inputFiles,
-		sourceType,
-		simName,
-		nTasks,
-		simulator,
-		batchOptions,
-		geant4DatasetType
-	) =>
-		(simulator === SimulatorType.GEANT4
-			? runGeant4LocalWorkerSimulation
-			: runRemoteWorkerSimulation)(
-			runType,
-			editorJson,
-			inputFiles,
-			sourceType,
-			simName,
-			nTasks,
-			simulator,
-			batchOptions,
-			geant4DatasetType
-		);
+	const runSimulation: RunSimulationFunctionType = (...args) => {
+		const [, , , , , , simulator] = args;
+
+		return (
+			simulator === SimulatorType.GEANT4
+				? runGeant4LocalWorkerSimulation
+				: runRemoteWorkerSimulation
+		)(...args);
+	};
 
 	const [geant4DatasetType, setGeant4DatasetType] = useState<Geant4DatasetsType>(
 		Geant4DatasetsType.FULL
