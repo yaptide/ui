@@ -210,7 +210,7 @@
 		"@types/selenium-webdriver": "^4.35.7",
 		"@types/three": "^0.187.0",
 		"cross-env": "^10.1.0",
-		"dependency-cruiser": "^18.7.0",
+		"dependency-cruiser": "^18.7.2",
 		"eslint-plugin-simple-import-sort": "^14.0.0",
 		"gh-pages": "^6.3.0",
 		"husky": "^9.1.7",
