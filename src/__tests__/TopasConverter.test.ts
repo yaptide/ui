@@ -107,7 +107,7 @@ describe('TopasConverter', () => {
 		//check if the first example is "Proton pencil beam in water"
 		//text is located in element with id corresponding to aria-labelledby of the list element
 		const exampleLabel = await openProjectWidget.findElement(
-			By.id(await firstExample.getAttribute('aria-labelledby'))
+			By.id((await firstExample.getAttribute('aria-labelledby')) ?? '')
 		);
 		expect(await exampleLabel.getText()).toBe('Proton pencil beam in water');
 
