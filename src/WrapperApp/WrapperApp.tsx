@@ -212,7 +212,8 @@ function WrapperApp() {
 						gridColumn: 'sidebar-start / sidebar-end',
 						gridRow: 'header-start / content-end'
 					}}
-					forTabs={['simulations', 'inputFiles', 'results']}>
+					forTabs={['simulations', 'inputFiles', 'results']}
+					persistentIfVisited>
 					<RunSimulationPanel
 						editorJson={yaptideEditor?.toSerialized()}
 						runSimulation={runSimulation}
