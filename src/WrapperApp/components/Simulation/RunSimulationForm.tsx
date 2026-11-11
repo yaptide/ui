@@ -34,6 +34,12 @@ import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import { BatchScriptParametersEditor } from './BatchParametersEditor';
 import { Geant4DatasetDownloadSelector, Geant4DatasetsType } from './Geant4DatasetDownload';
 
+function parsePositiveInteger(text: string): number {
+	const value = Number(text);
+
+	return text.trim() !== '' && Number.isSafeInteger(value) && value >= 1 ? value : NaN;
+}
+
 function a11yProps(index: number, name: string = 'RunSimulation') {
 	return {
 		'id': `${name}Tab${index}`,
@@ -114,9 +120,10 @@ export function RunSimulationForm({
 			: [SimulatorType.SHIELDHIT, SimulatorType.FLUKA]
 	);
 
-	const [overridePrimariesCount, setOverridePrimariesCount] = useState(
-		yaptideEditor?.beam.numberOfParticles ?? 0
+	const [primariesCountInput, setPrimariesCountInput] = useState(
+		String(yaptideEditor?.beam.numberOfParticles ?? 0)
 	);
+	const overridePrimariesCount = parsePositiveInteger(primariesCountInput);
 
 	useEffect(() => {
 		// When either currentSimulator or sourceType changes,
@@ -387,10 +394,9 @@ export function RunSimulationForm({
 							type='number'
 							label='Number of primary particles'
 							error={isNaN(overridePrimariesCount)}
-							value={isNaN(overridePrimariesCount) ? '' : overridePrimariesCount}
-							onChange={e =>
-								setOverridePrimariesCount(Math.max(1, parseInt(e.target.value)))
-							}
+							value={primariesCountInput}
+							onChange={e => setPrimariesCountInput(e.target.value)}
+							slotProps={{ htmlInput: { min: 1 } }}
 						/>
 						<FormControl
 							fullWidth
