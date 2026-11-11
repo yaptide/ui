@@ -52,6 +52,8 @@ const mockEditor = {
 };
 
 const mockOpenDialog = jest.fn();
+const mockSaveInputFile = jest.fn();
+const mockSaveInputFilesAsZip = jest.fn();
 
 jest.mock('../../PythonConverter/PythonConverterService', () => ({
 	usePythonConverter: () => mockConverter
@@ -63,6 +65,12 @@ jest.mock('../StoreService', () => ({
 
 jest.mock('../DialogService', () => ({
 	useDialog: () => ({ open: mockOpenDialog })
+}));
+
+jest.mock('../../WrapperApp/components/InputEditor/saveInputFiles', () => ({
+	inputFilesZipName: () => 'files.zip',
+	saveInputFile: (...args: unknown[]) => mockSaveInputFile(...args),
+	saveInputFilesAsZip: (...args: unknown[]) => mockSaveInputFilesAsZip(...args)
 }));
 
 const wrapper = ({ children }: { children: ReactNode }) => (
@@ -84,6 +92,8 @@ beforeEach(() => {
 	mockConverter.detectSimulators.mockImplementation(async files => detect(files));
 	mockConverter.requiredInputFiles.mockImplementation(async () => REQUIRED);
 	mockOpenDialog.mockReset();
+	mockSaveInputFile.mockReset();
+	mockSaveInputFilesAsZip.mockReset();
 });
 
 describe('switching the run simulator', () => {
@@ -156,5 +166,77 @@ describe('detection errors', () => {
 		await waitFor(() => expect(result.current.detectionError).toBe(DETECTION_ERROR));
 		expect(result.current.detection).toBeUndefined();
 		error.mockRestore();
+	});
+});
+
+describe('confirming lost content', () => {
+	test('asks one question at a time', async () => {
+		const { result } = await renderInputFiles();
+
+		await act(() => result.current.addFiles(SH_FILES, 'replace', 'Generating files'));
+
+		let removedBeam: Promise<boolean> | undefined;
+		let removedGeo: Promise<boolean> | undefined;
+
+		await act(async () => {
+			removedBeam = result.current.removeFile('beam.dat');
+			removedGeo = result.current.removeFile('geo.dat');
+		});
+
+		expect(mockOpenDialog).toHaveBeenCalledTimes(1);
+		expect(mockOpenDialog.mock.calls[0][0].fileNames).toEqual(['beam.dat']);
+
+		await act(async () => mockOpenDialog.mock.calls[0][0].onCancel());
+		await expect(removedBeam).resolves.toBe(false);
+
+		await waitFor(() => expect(mockOpenDialog).toHaveBeenCalledTimes(2));
+		expect(mockOpenDialog.mock.calls[1][0].fileNames).toEqual(['geo.dat']);
+
+		await act(async () => mockOpenDialog.mock.calls[1][0].onOverwrite(true));
+		await expect(removedGeo).resolves.toBe(true);
+
+		expect(mockSaveInputFile).toHaveBeenCalledWith('geo.dat', 'g');
+		expect(mockSaveInputFilesAsZip).not.toHaveBeenCalled();
+		expect(Object.keys(result.current.inputFiles)).toEqual([
+			'beam.dat',
+			'mat.dat',
+			'detect.dat'
+		]);
+	});
+
+	test('downloads several lost files as one zip', async () => {
+		const { result } = await renderInputFiles();
+
+		await act(() => result.current.addFiles(SH_FILES, 'replace', 'Generating files'));
+
+		let added: Promise<boolean> | undefined;
+
+		await act(async () => {
+			added = result.current.addFiles(
+				{ 'beam.dat': 'new', 'geo.dat': 'new' },
+				'replace',
+				'Generating files'
+			);
+		});
+		await act(async () => mockOpenDialog.mock.calls[0][0].onOverwrite(true));
+		await expect(added).resolves.toBe(true);
+
+		expect(mockSaveInputFilesAsZip).toHaveBeenCalledWith(
+			{ 'beam.dat': 'b', 'geo.dat': 'g' },
+			'files.zip'
+		);
+		expect(result.current.selectedFiles).toEqual(['beam.dat', 'geo.dat']);
+	});
+
+	test('empty files are replaced without asking', async () => {
+		const { result } = await renderInputFiles();
+
+		await act(() =>
+			result.current.addFiles({ 'fl_sim.inp': '  ' }, 'replace', 'Creating empty files')
+		);
+		await act(() => result.current.addFiles({ 'fl_sim.inp': 'x' }, 'add', 'Uploading files'));
+
+		expect(mockOpenDialog).not.toHaveBeenCalled();
+		expect(result.current.inputFiles).toEqual({ 'fl_sim.inp': 'x' });
 	});
 });

@@ -4,6 +4,7 @@ import { usePythonConverter } from '../PythonConverter/PythonConverterService';
 import { InputFilesLoss } from '../WrapperApp/components/InputEditor/OverwriteInputFilesDialog';
 import {
 	inputFilesZipName,
+	saveInputFile,
 	saveInputFilesAsZip
 } from '../WrapperApp/components/InputEditor/saveInputFiles';
 import {
@@ -103,13 +104,16 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 
 	const latestFiles = useRef(inputFiles);
 	const latestSelection = useRef(selectedFiles);
+	const latestDetection = useRef(lastDetection);
+	const pendingDialog = useRef<Promise<unknown>>(Promise.resolve());
 
 	useEffect(() => {
 		latestFiles.current = inputFiles;
 		latestSelection.current = selectedFiles;
-	}, [inputFiles, selectedFiles]);
+		latestDetection.current = lastDetection;
+	}, [inputFiles, selectedFiles, lastDetection]);
 
-	const confirmLoss = useCallback(
+	const askAboutLoss = useCallback(
 		(kind: InputFilesLoss, action: string, incoming: InputFiles) => {
 			const current = latestFiles.current;
 			const lost = Object.keys(incoming).filter(
@@ -133,14 +137,16 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 								lost.map(name => [name, current[name]])
 							);
 
-							saveInputFilesAsZip(
-								lostFiles,
-								inputFilesZipName(
-									yaptideEditor?.config.getKey('project/title'),
+							if (lost.length === 1) saveInputFile(lost[0], current[lost[0]]);
+							else
+								saveInputFilesAsZip(
 									lostFiles,
-									detection
-								)
-							);
+									inputFilesZipName(
+										yaptideEditor?.config.getKey('project/title'),
+										lostFiles,
+										latestDetection.current
+									)
+								);
 						}
 
 						resolve(true);
@@ -148,7 +154,18 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 				})
 			);
 		},
-		[detection, openOverwriteDialog, yaptideEditor]
+		[openOverwriteDialog, yaptideEditor]
+	);
+
+	const confirmLoss = useCallback(
+		(kind: InputFilesLoss, action: string, incoming: InputFiles) => {
+			const answer = pendingDialog.current.then(() => askAboutLoss(kind, action, incoming));
+
+			pendingDialog.current = answer.catch(() => undefined);
+
+			return answer;
+		},
+		[askAboutLoss]
 	);
 
 	const addFiles = useCallback(
