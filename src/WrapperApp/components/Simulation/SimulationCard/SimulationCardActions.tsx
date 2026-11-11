@@ -17,7 +17,7 @@ interface SimulationCardActionsProps {
 	actions: {
 		loadResults: ((jobId: string | null) => void) | undefined;
 		handleCancel: ((jobId: string) => void) | undefined;
-		showInputFiles: ((inputFiles?: SimulationInputFiles | undefined) => void) | undefined;
+		showInputFiles: ((inputFiles?: SimulationInputFiles, title?: string) => void) | undefined;
 	};
 	handlers: {
 		onClickLoadResults: () => void;

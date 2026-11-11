@@ -26,9 +26,15 @@ export default function SimulationPanel({ goToResults, source, setSource }: Simu
 	const auth = useAuth();
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
 	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>();
+	const [inputFilesTitle, setInputFilesTitle] = useState<string>();
 	const isBackendAlive = useIsBackendAlive();
 	const { addFiles } = useInputFiles();
 	const modalInputFiles = (inputFiles ?? {}) as InputFiles;
+
+	const showSimulationInputFiles = (files: SimulationInputFiles | undefined, title?: string) => {
+		setInputFiles(files);
+		setInputFilesTitle(title || undefined);
+	};
 
 	return (
 		<Box
@@ -83,7 +89,8 @@ export default function SimulationPanel({ goToResults, source, setSource }: Simu
 											await addFiles(
 												modalInputFiles,
 												'replace',
-												'Using the input files of this simulation'
+												'Using the input files of this simulation',
+												inputFilesTitle
 											)
 										)
 											setShowInputFilesEditor(false);
@@ -96,7 +103,7 @@ export default function SimulationPanel({ goToResults, source, setSource }: Simu
 										saveInputFilesAsZip(
 											modalInputFiles,
 											inputFilesZipName(
-												'simulation',
+												inputFilesTitle ?? 'simulation',
 												modalInputFiles,
 												undefined
 											)
@@ -146,7 +153,7 @@ export default function SimulationPanel({ goToResults, source, setSource }: Simu
 				<RemoteWorkerSimulationsGrid
 					goToResults={goToResults}
 					setShowInputFilesEditor={setShowInputFilesEditor}
-					setInputFiles={setInputFiles}
+					setInputFiles={showSimulationInputFiles}
 					simulator={
 						yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON
 					}
@@ -154,7 +161,7 @@ export default function SimulationPanel({ goToResults, source, setSource }: Simu
 			) : (
 				<Geant4LocalWorkerSimulationsGrid
 					goToResults={goToResults}
-					setInputFiles={setInputFiles}
+					setInputFiles={showSimulationInputFiles}
 					setShowInputFilesEditor={setShowInputFilesEditor}
 					simulator={SimulatorType.GEANT4}
 				/>
