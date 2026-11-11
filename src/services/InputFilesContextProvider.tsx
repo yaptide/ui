@@ -52,6 +52,8 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 	const [requiredFiles, setRequiredFiles] = useState<RequiredInputFiles>();
 	const [detected, setDetected] = useState<{ names: string; detection: SimulatorDetection }>();
 	const [detectionError, setDetectionError] = useState<string>();
+	const [runSimulator, setRunSimulator] = useState<RunnableSimulator>(RUNNABLE_SIMULATORS[0]);
+	const [pendingSwitch, setPendingSwitch] = useState<string[]>();
 	const names = Object.keys(inputFiles).join('\n');
 	const detection = detected?.names === names ? detected.detection : undefined;
 
@@ -86,17 +88,24 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 		};
 	}, [isConverterReady, detectSimulators, names, reportDetectionError]);
 
-	const [runSimulator, setRunSimulator] = useState<RunnableSimulator>(RUNNABLE_SIMULATORS[0]);
+	useEffect(() => {
+		if (!pendingSwitch || !detection) return;
+
+		const simulators = new Set(
+			pendingSwitch.flatMap(name => detection.files[name]?.simulator ?? [])
+		);
+
+		if (simulators.size === 1) setRunSimulator(Array.from(simulators)[0]);
+		setPendingSwitch(undefined);
+	}, [pendingSwitch, detection]);
 
 	const latestFiles = useRef(inputFiles);
 	const latestSelection = useRef(selectedFiles);
-	const converterReady = useRef(isConverterReady);
 
 	useEffect(() => {
 		latestFiles.current = inputFiles;
 		latestSelection.current = selectedFiles;
-		converterReady.current = isConverterReady;
-	}, [inputFiles, selectedFiles, isConverterReady]);
+	}, [inputFiles, selectedFiles]);
 
 	const confirmLoss = useCallback(
 		(kind: InputFilesLoss, action: string, incoming: InputFiles) => {
@@ -140,23 +149,6 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 		[detection, openOverwriteDialog, yaptideEditor]
 	);
 
-	const switchToOnlySimulator = useCallback(
-		async (names: string[], selection: string[]) => {
-			if (!converterReady.current) return;
-
-			const nextDetection = await detectSimulators(
-				Object.fromEntries(names.map(name => [name, '']))
-			);
-
-			const simulators = new Set(
-				selection.flatMap(name => nextDetection.files[name]?.simulator ?? [])
-			);
-
-			if (simulators.size === 1) setRunSimulator(Array.from(simulators)[0]);
-		},
-		[detectSimulators]
-	);
-
 	const addFiles = useCallback(
 		async (files: InputFiles, selection: SelectionUpdate, action: string) => {
 			if (!(await confirmLoss('overwrite', action, files))) return false;
@@ -166,17 +158,19 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 				selection === 'replace'
 					? added
 					: [...old, ...added.filter(name => !old.includes(name))];
-			const names = Object.keys({ ...latestFiles.current, ...files });
-			const nextSelection = addSelection(latestSelection.current);
 
 			setInputFiles(old => ({ ...old, ...files }));
 			setSelectedFiles(addSelection);
 			setAdditionCount(count => count + 1);
-			await switchToOnlySimulator(names, nextSelection);
+			setPendingSwitch(old =>
+				selection === 'replace' || !old
+					? added
+					: [...old, ...added.filter(name => !old.includes(name))]
+			);
 
 			return true;
 		},
-		[confirmLoss, switchToOnlySimulator]
+		[confirmLoss]
 	);
 
 	const updateFile = useCallback((name: string, content: string) => {
@@ -213,21 +207,20 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 			if (!(await confirmLoss('overwrite', `Renaming ${from} to ${to}`, { [to]: content })))
 				return false;
 
-			const rename = (old: string[]) => {
+			const wasSelected = latestSelection.current.includes(from);
+
+			setInputFiles(({ [from]: _, ...rest }) => ({ ...rest, [to]: content }));
+			setSelectedFiles(old => {
 				const renamed = old.filter(file => file !== from && file !== to);
 
 				return old.includes(from) ? [...renamed, to] : renamed;
-			};
-			const names = rename(Object.keys(latestFiles.current));
-			const nextSelection = rename(latestSelection.current);
+			});
 
-			setInputFiles(({ [from]: _, ...rest }) => ({ ...rest, [to]: content }));
-			setSelectedFiles(rename);
-			await switchToOnlySimulator(names, nextSelection);
+			if (wasSelected) setPendingSwitch([to]);
 
 			return true;
 		},
-		[confirmLoss, switchToOnlySimulator]
+		[confirmLoss]
 	);
 
 	const toggleSelected = useCallback((name: string) => {

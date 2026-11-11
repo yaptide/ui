@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
 
 import { SimulatorType } from '../../types/RequestTypes';
@@ -69,11 +69,81 @@ const wrapper = ({ children }: { children: ReactNode }) => (
 	<InputFilesProvider>{children}</InputFilesProvider>
 );
 
+const renderInputFiles = async () => {
+	const view = renderHook(() => useInputFiles(), { wrapper });
+
+	await waitFor(() => expect(view.result.current.requiredFiles).toBeDefined());
+
+	return view;
+};
+
+const SH_FILES = { 'beam.dat': 'b', 'geo.dat': 'g', 'mat.dat': 'm', 'detect.dat': 'd' };
+
 beforeEach(() => {
 	mockConverter.isConverterReady = true;
 	mockConverter.detectSimulators.mockImplementation(async files => detect(files));
 	mockConverter.requiredInputFiles.mockImplementation(async () => REQUIRED);
 	mockOpenDialog.mockReset();
+});
+
+describe('switching the run simulator', () => {
+	test('switches when the added files fit one simulator', async () => {
+		const { result } = await renderInputFiles();
+
+		await act(() => result.current.addFiles({ 'fl_sim.inp': 'x' }, 'add', 'Uploading files'));
+
+		await waitFor(() => expect(result.current.runSimulator).toBe(SimulatorType.FLUKA));
+	});
+
+	test('switches once the converter is ready when files were added before', async () => {
+		mockConverter.isConverterReady = false;
+		const { result, rerender } = renderHook(() => useInputFiles(), { wrapper });
+
+		await act(() => result.current.addFiles({ 'fl_sim.inp': 'x' }, 'add', 'Uploading files'));
+		expect(result.current.runSimulator).toBe(SimulatorType.SHIELDHIT);
+
+		mockConverter.isConverterReady = true;
+		rerender();
+
+		await waitFor(() => expect(result.current.runSimulator).toBe(SimulatorType.FLUKA));
+	});
+
+	test('an added file that no simulator requires keeps the chosen simulator', async () => {
+		const { result } = await renderInputFiles();
+
+		await act(() => result.current.addFiles({ 'fl_sim.inp': 'x' }, 'add', 'Uploading files'));
+		await waitFor(() => expect(result.current.runSimulator).toBe(SimulatorType.FLUKA));
+
+		act(() => result.current.setRunSimulator(SimulatorType.SHIELDHIT));
+		await act(() => result.current.addFiles({ 'notes.txt': 'x' }, 'add', 'Uploading files'));
+		await waitFor(() => expect(result.current.detection?.files['notes.txt']).toBeDefined());
+
+		expect(result.current.runSimulator).toBe(SimulatorType.SHIELDHIT);
+	});
+
+	test('added files of two simulators keep the chosen simulator', async () => {
+		const { result } = await renderInputFiles();
+
+		act(() => result.current.setRunSimulator(SimulatorType.GEANT4));
+		await act(() =>
+			result.current.addFiles({ ...SH_FILES, 'fl_sim.inp': 'x' }, 'add', 'Uploading files')
+		);
+		await waitFor(() => expect(result.current.detection).toBeDefined());
+
+		expect(result.current.runSimulator).toBe(SimulatorType.GEANT4);
+	});
+
+	test('renaming a selected copy to a required name switches', async () => {
+		const { result } = await renderInputFiles();
+
+		await act(() =>
+			result.current.addFiles({ 'fl_sim (1).inp': 'x' }, 'add', 'Uploading files')
+		);
+		await act(() => result.current.renameFile('fl_sim (1).inp', 'fl_sim.inp'));
+
+		await waitFor(() => expect(result.current.runSimulator).toBe(SimulatorType.FLUKA));
+		expect(result.current.selectedFiles).toEqual(['fl_sim.inp']);
+	});
 });
 
 describe('detection errors', () => {
