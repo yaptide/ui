@@ -191,7 +191,8 @@ export function RunSimulationForm({
 	const [selectedCluster, setSelectedCluster] = useState<number | undefined>(0);
 
 	const [simName, setSimName] = useState(editorJson?.project.title ?? '');
-	const [nTasks, setNTasks] = useState(1);
+	const [nTasksInput, setNTasksInput] = useState('1');
+	const nTasks = parsePositiveInteger(nTasksInput);
 	const [arrayHeader, setArrayHeader] = useState<string>('');
 	const [collectHeader, setCollectHeader] = useState<string>('');
 	const [arrayOptions, setArrayOptions] = useState<ScriptOption[]>([]);
@@ -380,14 +381,9 @@ export function RunSimulationForm({
 							label='Number of tasks'
 							disabled={currentSimulator === SimulatorType.GEANT4}
 							error={isNaN(nTasks)}
-							value={
-								currentSimulator === SimulatorType.GEANT4
-									? 1
-									: isNaN(nTasks)
-										? ''
-										: nTasks
-							}
-							onChange={e => setNTasks(Math.max(1, parseInt(e.target.value)))}
+							value={currentSimulator === SimulatorType.GEANT4 ? 1 : nTasksInput}
+							onChange={e => setNTasksInput(e.target.value)}
+							slotProps={{ htmlInput: { min: 1 } }}
 						/>
 						<TextField
 							size='small'
