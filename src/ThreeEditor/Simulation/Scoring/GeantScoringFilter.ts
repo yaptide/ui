@@ -4,7 +4,11 @@ import { SimulationElementJSON } from '../Base/SimulationElement';
 import { ScoringFilter } from './ScoringFilter';
 
 export type FilterType =
-	'charged' | 'neutral' | 'particle' | 'kineticEnergy' | 'particleWithKineticEnergy';
+	| 'charged'
+	| 'neutral'
+	| 'particle'
+	| 'kineticEnergy'
+	| 'particleWithKineticEnergy';
 
 type FilterData = {
 	particleTypes: Particle[];

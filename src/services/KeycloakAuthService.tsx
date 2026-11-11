@@ -1,9 +1,9 @@
 import Keycloak, { KeycloakInitOptions } from 'keycloak-js';
 import React, { ReactNode, useCallback } from 'react';
-
-import { useConfig } from '../config/ConfigService';
 import KeycloakProvider from '../util/keycloak/KeycloakProvider';
 import { useKeycloak } from '../util/keycloak/useKeycloak';
+
+import { useConfig } from '../config/ConfigService';
 import { createSubstituteContext, GenericContextProviderProps } from './GenericContext';
 
 const keycloakParams = {

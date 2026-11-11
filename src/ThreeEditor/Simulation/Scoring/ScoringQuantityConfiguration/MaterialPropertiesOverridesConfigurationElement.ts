@@ -2,7 +2,9 @@ import ConfigurationElement from './ConfigurationElement';
 import MaterialConfigurationElement from './MaterialConfigurationElement';
 import { ScoringQuantityConfigurator } from './ScoringQuantityConfigurator';
 
-export default class MaterialPropertiesOverridesConfigurationElement implements ConfigurationElement {
+export default class MaterialPropertiesOverridesConfigurationElement
+	implements ConfigurationElement
+{
 	private readonly materialConfig;
 
 	constructor(materialConfig: MaterialConfigurationElement) {

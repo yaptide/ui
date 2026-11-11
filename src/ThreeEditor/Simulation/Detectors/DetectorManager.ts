@@ -62,11 +62,11 @@ export class DetectorManager
 	private hasUsefulGeometry(object: THREE.Object3D): object is Detector | ScoringOutput {
 		return Boolean(
 			this.editor.selected === object &&
-			(isDetector(object) ||
-				(isOutput(object) &&
-					object.geometry &&
-					object.geometry.boundingSphere &&
-					object.geometry.boundingSphere.radius > 0))
+				(isDetector(object) ||
+					(isOutput(object) &&
+						object.geometry &&
+						object.geometry.boundingSphere &&
+						object.geometry.boundingSphere.radius > 0))
 		);
 	}
 

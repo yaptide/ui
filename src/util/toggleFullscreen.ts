@@ -15,6 +15,6 @@ export function toggleFullscreen() {
 			? document.documentElement.requestFullscreen()
 			: document.exitFullscreen()
 		: document.webkitFullscreenElement === null //Safari
-			? document.documentElement.webkitRequestFullscreen()
-			: document.webkitExitFullscreen();
+		? document.documentElement.webkitRequestFullscreen()
+		: document.webkitExitFullscreen();
 }

@@ -1,9 +1,9 @@
 import ConfigurationElement from './ConfigurationElement';
 import { ScoringQuantityConfigurator } from './ScoringQuantityConfigurator';
 
-export default class BasicConfigurationElement<
-	T extends string | number | boolean
-> implements ConfigurationElement {
+export default class BasicConfigurationElement<T extends string | number | boolean>
+	implements ConfigurationElement
+{
 	private readonly name: string;
 	private value: T;
 

@@ -3,7 +3,7 @@ import { Object3D } from 'three';
 export const incrementName = (name: string, until: (name: string) => boolean) => {
 	if (until(name)) {
 		const nameSplit = name.split('_');
-		const lastInName = nameSplit.length > 1 ? (nameSplit.pop() ?? '') : '';
+		const lastInName = nameSplit.length > 1 ? nameSplit.pop() ?? '' : '';
 		let nameBase = nameSplit.join('_');
 
 		let nameNumber = parseInt(lastInName);

@@ -19,8 +19,9 @@ export function DatasetsPartialInfoDialog({ onClose }: ConcreteDialogProps) {
 				<Alert
 					severity='warning'
 					sx={{ mt: 2 }}>
-					Time of running simulations with PARTIAL datasets option can be significantly
-					longer due to frequent downloads of small data files during the simulation.
+					Time of running simulations with PARTIAL datasets option can be
+					significantly longer due to frequent downloads of small data files during
+					the simulation.
 				</Alert>
 			}>
 			<Button
