@@ -26,6 +26,7 @@ export interface InputFilesContext {
 	inputFiles: InputFiles;
 	selectedFiles: string[];
 	detection?: SimulatorDetection;
+	lastDetection?: SimulatorDetection;
 	detectionError?: string;
 	requiredFiles?: RequiredInputFiles;
 	runSimulator: RunnableSimulator;
@@ -56,6 +57,7 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 	const [pendingSwitch, setPendingSwitch] = useState<string[]>();
 	const names = Object.keys(inputFiles).join('\n');
 	const detection = detected?.names === names ? detected.detection : undefined;
+	const lastDetection = detected?.detection;
 
 	const reportDetectionError = useCallback((error: unknown) => {
 		console.error(error);
@@ -233,6 +235,7 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 		inputFiles,
 		selectedFiles,
 		detection,
+		lastDetection,
 		detectionError,
 		requiredFiles,
 		runSimulator,

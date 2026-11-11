@@ -23,7 +23,7 @@ export default function InputEditorPanel() {
 	const {
 		inputFiles,
 		selectedFiles,
-		detection,
+		lastDetection,
 		detectionError,
 		requiredFiles,
 		addFiles,
@@ -180,7 +180,7 @@ export default function InputEditorPanel() {
 								inputFilesZipName(
 									yaptideEditor?.config.getKey('project/title'),
 									inputFiles,
-									detection
+									lastDetection
 								)
 							)
 						}>
@@ -206,7 +206,7 @@ export default function InputEditorPanel() {
 			{hasInputFiles ? (
 				<InputFilesEditor
 					inputFiles={inputFiles}
-					detection={detection}
+					detection={lastDetection}
 					requiredFiles={requiredFiles}
 					selectedFiles={selectedFiles}
 					onToggleSelected={toggleSelected}

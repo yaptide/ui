@@ -114,6 +114,7 @@ export function RunSimulationForm({
 		inputFiles,
 		selectedFiles,
 		detection,
+		lastDetection,
 		detectionError,
 		requiredFiles: requiredInputFiles,
 		runSimulator: filesRunSimulator,
@@ -507,7 +508,7 @@ export function RunSimulationForm({
 									}}>
 									{sortInputFileNames(
 										Object.keys(inputFiles),
-										detection,
+										lastDetection,
 										requiredInputFiles
 									).map(name => {
 										const selected = selectedFiles.includes(name);
