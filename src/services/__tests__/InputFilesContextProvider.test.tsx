@@ -41,6 +41,22 @@ const detect = (files: Record<string, string>): SimulatorDetection => ({
 	) as SimulatorDetection['simulators']
 });
 
+class FakeSignal {
+	private listeners: (() => void)[] = [];
+
+	add(listener: () => void) {
+		this.listeners.push(listener);
+	}
+
+	remove(listener: () => void) {
+		this.listeners = this.listeners.filter(l => l !== listener);
+	}
+
+	dispatch() {
+		this.listeners.forEach(listener => listener());
+	}
+}
+
 const mockConverter = {
 	isConverterReady: true,
 	detectSimulators: jest.fn(async (files: Record<string, string>) => detect(files)),
@@ -48,6 +64,7 @@ const mockConverter = {
 };
 
 const mockEditor = {
+	signals: { projectChanged: new FakeSignal(), editorCleared: new FakeSignal() },
 	config: { getKey: () => 'Project' }
 };
 
@@ -166,6 +183,49 @@ describe('detection errors', () => {
 		await waitFor(() => expect(result.current.detectionError).toBe(DETECTION_ERROR));
 		expect(result.current.detection).toBeUndefined();
 		error.mockRestore();
+	});
+});
+
+describe('files from another project', () => {
+	test('loading or clearing a project marks the files until new files are added', async () => {
+		const { result } = await renderInputFiles();
+
+		act(() => mockEditor.signals.projectChanged.dispatch());
+		expect(result.current.filesFromAnotherProject).toBe(false);
+
+		await act(() => result.current.addFiles(SH_FILES, 'replace', 'Generating files'));
+		expect(result.current.filesFromAnotherProject).toBe(false);
+
+		act(() => mockEditor.signals.projectChanged.dispatch());
+		expect(result.current.filesFromAnotherProject).toBe(true);
+
+		await act(() => result.current.addFiles(SH_FILES, 'replace', 'Generating files'));
+		expect(result.current.filesFromAnotherProject).toBe(false);
+
+		act(() => mockEditor.signals.editorCleared.dispatch());
+		expect(result.current.filesFromAnotherProject).toBe(true);
+	});
+});
+
+describe('title of the input files', () => {
+	test('only generated files keep the title of their project', async () => {
+		const { result } = await renderInputFiles();
+
+		await act(() => result.current.addFiles({ 'notes.txt': 'x' }, 'add', 'Uploading files'));
+		expect(result.current.filesTitle).toBeUndefined();
+
+		await act(() =>
+			result.current.addFiles(SH_FILES, 'replace', 'Generating files', 'Proton beam')
+		);
+		expect(result.current.filesTitle).toBe('Proton beam');
+
+		await act(() => result.current.addFiles({ 'sobp.dat': 'x' }, 'add', 'Uploading files'));
+		expect(result.current.filesTitle).toBe('Proton beam');
+
+		await act(() =>
+			result.current.addFiles({ 'fl_sim.inp': '' }, 'replace', 'Creating empty files')
+		);
+		expect(result.current.filesTitle).toBeUndefined();
 	});
 });
 

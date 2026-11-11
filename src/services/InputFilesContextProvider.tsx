@@ -32,7 +32,14 @@ export interface InputFilesContext {
 	requiredFiles?: RequiredInputFiles;
 	runSimulator: RunnableSimulator;
 	additionCount: number;
-	addFiles: (files: InputFiles, selection: SelectionUpdate, action: string) => Promise<boolean>;
+	filesFromAnotherProject: boolean;
+	filesTitle?: string;
+	addFiles: (
+		files: InputFiles,
+		selection: SelectionUpdate,
+		action: string,
+		title?: string
+	) => Promise<boolean>;
 	updateFile: (name: string, content: string) => void;
 	clearFile: (name: string) => Promise<boolean>;
 	removeFile: (name: string) => Promise<boolean>;
@@ -56,9 +63,12 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 	const [detectionError, setDetectionError] = useState<string>();
 	const [runSimulator, setRunSimulator] = useState<RunnableSimulator>(RUNNABLE_SIMULATORS[0]);
 	const [pendingSwitch, setPendingSwitch] = useState<string[]>();
+	const [projectChanged, setProjectChanged] = useState(false);
+	const [filesTitle, setFilesTitle] = useState<string>();
 	const names = Object.keys(inputFiles).join('\n');
 	const detection = detected?.names === names ? detected.detection : undefined;
 	const lastDetection = detected?.detection;
+	const hasInputFiles = names !== '';
 
 	const reportDetectionError = useCallback((error: unknown) => {
 		console.error(error);
@@ -101,6 +111,20 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 		if (simulators.size === 1) setRunSimulator(Array.from(simulators)[0]);
 		setPendingSwitch(undefined);
 	}, [pendingSwitch, detection]);
+
+	useEffect(() => {
+		if (!yaptideEditor) return;
+		const { projectChanged: loaded, editorCleared: cleared } = yaptideEditor.signals;
+		const markChanged = () => setProjectChanged(true);
+
+		loaded.add(markChanged);
+		cleared.add(markChanged);
+
+		return () => {
+			loaded.remove(markChanged);
+			cleared.remove(markChanged);
+		};
+	}, [yaptideEditor]);
 
 	const latestFiles = useRef(inputFiles);
 	const latestSelection = useRef(selectedFiles);
@@ -169,9 +193,10 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 	);
 
 	const addFiles = useCallback(
-		async (files: InputFiles, selection: SelectionUpdate, action: string) => {
+		async (files: InputFiles, selection: SelectionUpdate, action: string, title?: string) => {
 			if (!(await confirmLoss('overwrite', action, files))) return false;
 
+			const hadFiles = Object.keys(latestFiles.current).length > 0;
 			const added = Object.keys(files);
 			const addSelection = (old: string[]) =>
 				selection === 'replace'
@@ -181,6 +206,9 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 			setInputFiles(old => ({ ...old, ...files }));
 			setSelectedFiles(addSelection);
 			setAdditionCount(count => count + 1);
+			setProjectChanged(false);
+
+			if (selection === 'replace' || !hadFiles) setFilesTitle(title);
 			setPendingSwitch(old =>
 				selection === 'replace' || !old
 					? added
@@ -257,6 +285,8 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 		requiredFiles,
 		runSimulator,
 		additionCount,
+		filesFromAnotherProject: hasInputFiles && projectChanged,
+		filesTitle,
 		addFiles,
 		updateFile,
 		clearFile,

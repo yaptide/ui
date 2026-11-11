@@ -116,6 +116,8 @@ export function RunSimulationForm({
 		detection,
 		lastDetection,
 		detectionError,
+		filesFromAnotherProject,
+		filesTitle,
 		requiredFiles: requiredInputFiles,
 		runSimulator: filesRunSimulator,
 		additionCount,
@@ -125,7 +127,7 @@ export function RunSimulationForm({
 	} = useInputFiles();
 	const hasInputFiles = Object.keys(inputFiles).length > 0;
 	const [simulationSourceType, setSimulationSourceType] = useState<SimulationSourceType>(
-		hasInputFiles ? 'files' : 'editor'
+		hasInputFiles && !filesFromAnotherProject ? 'files' : 'editor'
 	);
 	const currentSimulator = yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON;
 	const remoteWorkersAvailable = !demoMode && isAuthorized;
@@ -214,12 +216,17 @@ export function RunSimulationForm({
 	}, [additionCount]);
 
 	useEffect(() => {
-		if (!hasInputFiles) setSimulationSourceType('editor');
-	}, [hasInputFiles]);
+		if (!hasInputFiles || filesFromAnotherProject) setSimulationSourceType('editor');
+	}, [hasInputFiles, filesFromAnotherProject]);
 
 	const [selectedCluster, setSelectedCluster] = useState<number | undefined>(0);
 
-	const [simName, setSimName] = useState(editorJson?.project.title ?? '');
+	const [typedSimName, setTypedSimName] = useState<string>();
+	const simName =
+		typedSimName ??
+		(simulationSourceType === 'files'
+			? (filesTitle ?? 'Input files')
+			: (editorJson?.project.title ?? ''));
 	const [nTasks, setNTasks] = useState(1);
 	const [arrayHeader, setArrayHeader] = useState<string>('');
 	const [collectHeader, setCollectHeader] = useState<string>('');
@@ -393,7 +400,7 @@ export function RunSimulationForm({
 								label='Simulation Name'
 								value={simName}
 								fullWidth
-								onChange={e => setSimName(e.target.value)}
+								onChange={e => setTypedSimName(e.target.value)}
 							/>
 							<TextField
 								size='small'
@@ -497,6 +504,15 @@ export function RunSimulationForm({
 									Input Files Data
 								</ToggleButton>
 							</StyledExclusiveToggleButtonGroup>
+							{simulationSourceType === 'files' && filesFromAnotherProject && (
+								<Typography
+									variant='caption'
+									color='warning'
+									sx={{ textAlign: 'center', marginBottom: theme.spacing(1) }}>
+									These input files were added before the current project was
+									loaded.
+								</Typography>
+							)}
 							{simulationSourceType === 'files' && (
 								<Box
 									sx={{

@@ -59,7 +59,8 @@ export default function InputEditorPanel() {
 						await addFiles(
 							generatedFiles,
 							'replace',
-							`Generating ${SimulatorNames.get(simulator)} files from the editor`
+							`Generating ${SimulatorNames.get(simulator)} files from the editor`,
+							editorJSON.project.title
 						)
 					)
 						enqueueSnackbar('Input files generated', { variant: 'info' });
