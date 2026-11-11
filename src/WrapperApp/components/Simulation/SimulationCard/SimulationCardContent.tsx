@@ -40,6 +40,8 @@ export function SimulationProgress(props: {
 	const expectedEndTime =
 		metrics.etaMilliseconds !== null ? new Date(Date.now() + metrics.etaMilliseconds) : null;
 
+	const isRunning = simulationStatus.jobState === StatusState.RUNNING;
+
 	return (
 		<>
 			<Box
@@ -54,15 +56,15 @@ export function SimulationProgress(props: {
 						variant='caption'
 						sx={{
 							display: 'block',
+							color: 'primary',
 							fontWeight: 'bold'
-						}}
-						color='primary'>
-						{metrics.progress.toFixed(0)} % Complete
+						}}>
+						{metrics.progress.toFixed(0)}% Complete
 					</Typography>
 				</Box>
 
-				<Box sx={{ textAlign: 'right' }}>
-					{metrics.etaMilliseconds !== null && (
+				{isRunning && metrics.etaMilliseconds !== null && (
+					<Box sx={{ textAlign: 'right' }}>
 						<Typography
 							variant='caption'
 							sx={{
@@ -72,12 +74,14 @@ export function SimulationProgress(props: {
 							}}>
 							ETA: ~{millisecondsToTimeString(metrics.etaMilliseconds)}
 						</Typography>
-					)}
-				</Box>
+					</Box>
+				)}
 			</Box>
 
 			<LinearProgress
 				variant='buffer'
+				value={metrics.progress}
+				valueBuffer={1}
 				sx={{
 					'height': 18,
 					'mb': 1,
@@ -87,9 +91,8 @@ export function SimulationProgress(props: {
 						animationDuration: '2s'
 					}
 				}}
-				value={metrics.progress}
-				valueBuffer={1}
 			/>
+
 			<Box
 				sx={{
 					display: 'flex',
@@ -103,7 +106,7 @@ export function SimulationProgress(props: {
 					Start: {formatedStartDate}
 				</Typography>
 
-				{expectedEndTime && (
+				{isRunning && expectedEndTime && (
 					<Typography
 						variant='caption'
 						sx={{ color: 'textDisabled' }}>
@@ -140,6 +143,7 @@ export const SimulationCardContent = ({
 					}
 					sx={{ backgroundColor: highlightColor, color: 'white' }}
 				/>
+
 				{currentJobStatusData['hasSpecificProperty'](
 					simulationStatus,
 					'jobTasksStatus'
@@ -156,9 +160,10 @@ export const SimulationCardContent = ({
 									)
 										? acc + taskStatus.requestedPrimaries
 										: acc,
-								0 as number
+								0
 							)}`}
 						/>
+
 						<Chip
 							variant='outlined'
 							size='small'
@@ -166,9 +171,10 @@ export const SimulationCardContent = ({
 						/>
 					</>
 				)}
+
 				{simulationStatus.metadata &&
 					Object.entries(simulationStatus.metadata)
-						.filter(([key, value]) => key !== 'type')
+						.filter(([key]) => key !== 'type')
 						.map(([key, value]) => (
 							<Chip
 								key={key}
@@ -178,6 +184,7 @@ export const SimulationCardContent = ({
 							/>
 						))}
 			</Box>
+
 			<Box sx={{ minHeight: '40px' }}>
 				{needsProgressBar(simulationStatus.jobState)
 					? currentJobStatusData['hasSpecificProperty'](
@@ -192,15 +199,17 @@ export const SimulationCardContent = ({
 						)
 					: simulationStatus.jobState === StatusState.COMPLETED && (
 							<>
-								<Typography color='textDisabled'>
+								<Typography sx={{ color: 'textDisabled' }}>
 									Start: {formatedStartDate}
 								</Typography>
+
 								{endTime && (
-									<Typography color='textDisabled'>
+									<Typography sx={{ color: 'textDisabled' }}>
 										End: {formatedEndDate}
 									</Typography>
 								)}
-								<Typography color='textDisabled'>
+
+								<Typography sx={{ color: 'textDisabled' }}>
 									Duration: {millisecondsToTimeString(duration)}
 								</Typography>
 							</>
