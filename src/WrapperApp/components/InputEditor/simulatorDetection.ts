@@ -17,7 +17,7 @@ export type RequiredInputFiles = Record<RunnableSimulator, string[]>;
 
 export type FileIssue = {
 	severity: 'warning';
-	code: 'copy_suffix';
+	code: 'copy_suffix' | 'wrong_case' | 'extra_extension';
 	message: string;
 	suggestedName: string;
 };
