@@ -34,7 +34,11 @@ export function inputFilesZipName(
 		.map(name => detection?.files[name]?.simulator)
 		.filter((simulator, index, all) => simulator && all.indexOf(simulator) === index);
 	const simulatorPart = simulators.length === 1 ? simulators[0] : 'input_files';
-	const projectPart = (projectTitle || 'project').trim().replace(/[^\w-]+/g, '_');
+	const projectPart =
+		(projectTitle ?? '')
+			.normalize('NFC')
+			.replace(new RegExp('[^\\p{L}\\p{N}_-]+', 'gu'), '_')
+			.replace(/^_+|_+$/g, '') || 'project';
 
 	return `${projectPart}_${simulatorPart}_${format(new Date(), 'yyyy-MM-dd_HHmm')}.zip`;
 }

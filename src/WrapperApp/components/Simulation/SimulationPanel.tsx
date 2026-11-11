@@ -1,7 +1,6 @@
 import { Box, Button, Divider, Fade, Modal, useTheme } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
 import { useInputFiles } from '../../../services/InputFilesContextProvider';
 import { useStore } from '../../../services/StoreService';
@@ -17,22 +16,16 @@ import { RemoteWorkerSimulationsGrid } from './SimulationsGrid/RemoteWorkerSimul
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
-	forwardedInputFiles?: SimulationInputFiles;
 	source: SimulationFetchSource;
 	setSource: (source: SimulationFetchSource) => void;
 }
 
-export default function SimulationPanel({
-	goToResults,
-	forwardedInputFiles,
-	source,
-	setSource
-}: SimulationPanelProps) {
+export default function SimulationPanel({ goToResults, source, setSource }: SimulationPanelProps) {
 	const theme = useTheme();
 	const { yaptideEditor } = useStore();
 	const auth = useAuth();
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
-	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
+	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>();
 	const isBackendAlive = useIsBackendAlive();
 	const { addFiles } = useInputFiles();
 	const modalInputFiles = (inputFiles ?? {}) as InputFiles;
