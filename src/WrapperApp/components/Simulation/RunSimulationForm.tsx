@@ -249,8 +249,10 @@ export function RunSimulationForm({
 			if (selection.reason) return selection.reason;
 		}
 
-		if (isNaN(nTasks) || isNaN(overridePrimariesCount))
-			return 'Fill in the number of tasks and primary particles';
+		if (isNaN(nTasks)) return 'Fill in the number of tasks';
+
+		if (simulationSourceType === 'editor' && isNaN(overridePrimariesCount))
+			return 'Fill in the number of primary particles';
 
 		if (runsGeant4 && !isConverterReady) return 'Waiting for the converter to load';
 
@@ -307,7 +309,7 @@ export function RunSimulationForm({
 			collectOptions
 		};
 
-		if (editorJson && simulationSourceType)
+		if (editorJson && simulationSourceType === 'editor')
 			editorJson.beam.numberOfParticles = overridePrimariesCount;
 
 		setSource(runSimulator === SimulatorType.GEANT4 ? 'local' : 'remote');
@@ -421,184 +423,185 @@ export function RunSimulationForm({
 								size='small'
 								type='number'
 								label='Number of primary particles'
-								error={isNaN(overridePrimariesCount)}
-								value={isNaN(overridePrimariesCount) ? '' : overridePrimariesCount}
+								disabled={simulationSourceType === 'files'}
+								helperText={
+									simulationSourceType === 'files'
+										? 'Taken from the input files'
+										: undefined
+								}
+								error={
+									simulationSourceType === 'editor' &&
+									isNaN(overridePrimariesCount)
+								}
+								value={
+									simulationSourceType === 'files' ||
+									isNaN(overridePrimariesCount)
+										? ''
+										: overridePrimariesCount
+								}
 								onChange={e =>
 									setOverridePrimariesCount(Math.max(1, parseInt(e.target.value)))
 								}
 							/>
-							{simulationSourceType === 'editor' ? (
-								<FormControl
-									fullWidth
-									disabled={editorSimulatorOptions.length < 2}>
-									<InputLabel id='simulator-select-label'>
-										Simulation software
-									</InputLabel>
-									<Select
-										labelId='simulator-select-label'
-										size='small'
-										label='Simulation software'
-										value={editorRunSimulator}
-										onChange={evn =>
-											setEditorRunSimulator(evn.target.value as SimulatorType)
-										}>
-										{editorSimulatorOptions.map(simulator => (
-											<MenuItem
-												key={simulator}
-												value={simulator}>
-												{SimulatorNames.get(simulator)}
-											</MenuItem>
-										))}
-									</Select>
-								</FormControl>
-							) : (
-								<FormControl fullWidth>
-									<InputLabel id='simulator-select-label'>
-										Simulation software
-									</InputLabel>
-									<Select
-										labelId='simulator-select-label'
-										size='small'
-										label='Simulation software'
-										value={filesRunSimulator}
-										renderValue={value => simulatorName(value)}
-										onChange={evn =>
-											setFilesRunSimulator(
-												evn.target.value as RunnableSimulator
-											)
-										}>
-										{RUNNABLE_SIMULATORS.map(simulator => {
-											const reason = unavailableReason(simulator);
-
-											return (
-												<MenuItem
-													key={simulator}
-													value={simulator}
-													sx={
-														reason
-															? { color: 'text.disabled' }
-															: undefined
-													}>
-													<Tooltip
-														title={reason ?? ''}
-														placement='left'
-														disableHoverListener={!reason}>
-														<Box sx={{ width: '100%' }}>
-															{simulatorName(simulator)}
-														</Box>
-													</Tooltip>
-												</MenuItem>
-											);
-										})}
-									</Select>
-								</FormControl>
-							)}
-							<StyledExclusiveToggleButtonGroup
-								fullWidth
-								value={simulationSourceType}
-								onChange={handleSourceTypeChange}>
-								<ToggleButton value='editor'>Editor Project Data</ToggleButton>
-								<ToggleButton
-									value='files'
-									disabled={!hasInputFiles}>
-									Input Files Data
-								</ToggleButton>
-							</StyledExclusiveToggleButtonGroup>
-							{simulationSourceType === 'files' && filesFromAnotherProject && (
-								<Typography
-									variant='caption'
-									color='warning'
-									sx={{ textAlign: 'center', marginBottom: theme.spacing(1) }}>
-									These input files were added before the current project was
-									loaded.
-								</Typography>
-							)}
-							{simulationSourceType === 'files' && (
-								<Box
-									sx={{
-										display: 'flex',
-										gap: 1,
-										flexWrap: 'wrap',
-										justifyContent: 'center',
-										marginBottom: theme.spacing(1)
-									}}>
-									{sortInputFileNames(
-										Object.keys(inputFiles),
-										lastDetection,
-										requiredInputFiles
-									).map(name => {
-										const selected = selectedFiles.includes(name);
-										const hint = selection?.hints[name];
-										const suggested = hint?.kind === 'suggest';
-
-										return (
-											<Tooltip
-												key={name}
-												title={
-													hint?.message ??
-													(selected
-														? 'Included in the run'
-														: 'Not included in the run')
-												}>
-												<Chip
-													color={selected ? 'success' : 'default'}
-													variant='outlined'
-													icon={hintIcon(hint)}
-													label={<Typography>{name}</Typography>}
-													deleteIcon={
-														selected ? (
-															<RemoveCircleIcon />
-														) : (
-															<ControlPointIcon />
-														)
-													}
-													onClick={() => toggleSelected(name)}
-													onDelete={() => toggleSelected(name)}
-													sx={{
-														'& .MuiChip-icon': {
-															color: 'success.main'
-														},
-														...(suggested && {
-															'borderStyle': 'dashed',
-															'borderColor': 'success.main',
-															'& .MuiChip-deleteIcon': {
-																color: 'success.main'
-															}
-														})
-													}}
-												/>
-											</Tooltip>
-										);
-									})}
-								</Box>
-							)}
-							{simulationSourceType === 'files' && (
-								<>
-									<Tooltip title={selectRequiredDisabledReason ?? ''}>
-										<Box
-											component='span'
-											sx={{
-												alignSelf: 'center',
-												marginBottom: theme.spacing(2)
-											}}>
-											<Button
-												size='small'
-												disabled={
-													selectRequiredDisabledReason !== undefined
-												}
-												onClick={() =>
-													setSelectedFiles([
-														...selectedFiles,
-														...unselectedRequired
-													])
-												}>
-												Select required files
-											</Button>
-										</Box>
-									</Tooltip>
-								</>
-							)}
 						</>
+					)}
+					{simulationSourceType === 'editor' ? (
+						<FormControl
+							fullWidth
+							disabled={editorSimulatorOptions.length < 2}>
+							<InputLabel id='simulator-select-label'>Simulation software</InputLabel>
+							<Select
+								labelId='simulator-select-label'
+								size='small'
+								label='Simulation software'
+								value={editorRunSimulator}
+								onChange={evn =>
+									setEditorRunSimulator(evn.target.value as SimulatorType)
+								}>
+								{editorSimulatorOptions.map(simulator => (
+									<MenuItem
+										key={simulator}
+										value={simulator}>
+										{SimulatorNames.get(simulator)}
+									</MenuItem>
+								))}
+							</Select>
+						</FormControl>
+					) : (
+						<FormControl fullWidth>
+							<InputLabel id='simulator-select-label'>Simulation software</InputLabel>
+							<Select
+								labelId='simulator-select-label'
+								size='small'
+								label='Simulation software'
+								value={filesRunSimulator}
+								renderValue={value => simulatorName(value)}
+								onChange={evn =>
+									setFilesRunSimulator(evn.target.value as RunnableSimulator)
+								}>
+								{RUNNABLE_SIMULATORS.map(simulator => {
+									const reason = unavailableReason(simulator);
+
+									return (
+										<MenuItem
+											key={simulator}
+											value={simulator}
+											aria-label={
+												reason
+													? `${simulatorName(simulator)}, unavailable: ${reason}`
+													: undefined
+											}
+											sx={reason ? { color: 'text.disabled' } : undefined}>
+											<Tooltip
+												title={reason ?? ''}
+												placement='left'
+												disableHoverListener={!reason}>
+												<Box sx={{ width: '100%' }}>
+													{simulatorName(simulator)}
+												</Box>
+											</Tooltip>
+										</MenuItem>
+									);
+								})}
+							</Select>
+						</FormControl>
+					)}
+					<StyledExclusiveToggleButtonGroup
+						fullWidth
+						value={simulationSourceType}
+						onChange={handleSourceTypeChange}>
+						<ToggleButton value='editor'>Editor Project Data</ToggleButton>
+						<ToggleButton
+							value='files'
+							disabled={!hasInputFiles}>
+							Input Files Data
+						</ToggleButton>
+					</StyledExclusiveToggleButtonGroup>
+					{simulationSourceType === 'files' && filesFromAnotherProject && (
+						<Typography
+							variant='caption'
+							color='warning'
+							sx={{ textAlign: 'center', marginBottom: theme.spacing(1) }}>
+							These input files were added before the current project was loaded.
+						</Typography>
+					)}
+					{simulationSourceType === 'files' && (
+						<Box
+							sx={{
+								display: 'flex',
+								gap: 1,
+								flexWrap: 'wrap',
+								justifyContent: 'center',
+								marginBottom: theme.spacing(1)
+							}}>
+							{sortInputFileNames(
+								Object.keys(inputFiles),
+								lastDetection,
+								requiredInputFiles
+							).map(name => {
+								const selected = selectedFiles.includes(name);
+								const hint = selection?.hints[name];
+								const suggested = hint?.kind === 'suggest';
+
+								return (
+									<Tooltip
+										key={name}
+										title={
+											hint?.message ??
+											(selected
+												? 'Included in the run'
+												: 'Not included in the run')
+										}>
+										<Chip
+											color={selected ? 'success' : 'default'}
+											variant='outlined'
+											icon={hintIcon(hint)}
+											label={<Typography>{name}</Typography>}
+											deleteIcon={
+												selected ? (
+													<RemoveCircleIcon />
+												) : (
+													<ControlPointIcon />
+												)
+											}
+											onClick={() => toggleSelected(name)}
+											onDelete={() => toggleSelected(name)}
+											sx={{
+												'& .MuiChip-icon': {
+													color: 'success.main'
+												},
+												...(suggested && {
+													'borderStyle': 'dashed',
+													'borderColor': 'success.main',
+													'& .MuiChip-deleteIcon': {
+														color: 'success.main'
+													}
+												})
+											}}
+										/>
+									</Tooltip>
+								);
+							})}
+						</Box>
+					)}
+					{simulationSourceType === 'files' && (
+						<Tooltip title={selectRequiredDisabledReason ?? ''}>
+							<Box
+								component='span'
+								sx={{
+									alignSelf: 'center',
+									marginBottom: theme.spacing(2)
+								}}>
+								<Button
+									size='small'
+									disabled={selectRequiredDisabledReason !== undefined}
+									onClick={() =>
+										setSelectedFiles([...selectedFiles, ...unselectedRequired])
+									}>
+									Select required files
+								</Button>
+							</Box>
+						</Tooltip>
 					)}
 					{usingBatchConfig && runType === 'batch' && (
 						<>
