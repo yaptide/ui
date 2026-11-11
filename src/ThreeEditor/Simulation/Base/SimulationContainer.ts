@@ -19,8 +19,8 @@ export interface SimulationSceneChild extends THREE.Object3D, SerializableState<
  * Implements {@link UniqueChildrenNames} system for unique names for the children.
  */
 export abstract class SimulationSceneContainer<
-		TChild extends SimulationSceneChild = SimulationSceneChild
-	>
+	TChild extends SimulationSceneChild = SimulationSceneChild
+>
 	extends THREE.Group
 	implements
 		SimulationSceneChild,

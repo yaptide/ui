@@ -18,10 +18,10 @@ export type ValidForSnakeize<
 	? F extends '_' | ' ' | '-' | '\n' | '\t' | '\r' | '\v' | '\f' | '\b' | '\0'
 		? never
 		: First extends true
-		? (R extends Lowercase<R> ? true : false) extends false
-			? ValidForCamelize<R, false, Full>
-			: never
-		: ValidForSnakeize<R, false, Full>
+			? (R extends Lowercase<R> ? true : false) extends false
+				? ValidForCamelize<R, false, Full>
+				: never
+			: ValidForSnakeize<R, false, Full>
 	: Full;
 
 /**
@@ -43,16 +43,16 @@ export type ValidForCamelize<
 	? F extends ' ' | '-' | '\n' | '\t' | '\r' | '\v' | '\f' | '\b' | '\0'
 		? never
 		: First extends true
-		? F extends '_'
-			? never
-			: boolean extends
-					| (T extends Uppercase<T> ? true : false)
-					| (T extends Lowercase<T> ? true : false)
-			? Full extends `${string}_${string}`
-				? ValidForCamelize<R, false, Full>
-				: never
-			: never
-		: ValidForCamelize<R, false, Full>
+			? F extends '_'
+				? never
+				: boolean extends
+							| (T extends Uppercase<T> ? true : false)
+							| (T extends Lowercase<T> ? true : false)
+					? Full extends `${string}_${string}`
+						? ValidForCamelize<R, false, Full>
+						: never
+					: never
+			: ValidForCamelize<R, false, Full>
 	: Full;
 
 /**
@@ -63,10 +63,10 @@ export type CamelToSnakeCase<S extends string, First extends string = S> = [
 ] extends [never]
 	? S
 	: S extends `${infer F}${infer S}${infer R}`
-	? [S, IsLetter<S>] extends [Uppercase<S>, true]
-		? `${Lowercase<F>}_${CamelToSnakeCase<`${Lowercase<S>}${R}`, First>}`
-		: `${Lowercase<F>}${CamelToSnakeCase<`${Lowercase<S>}${R}`, First>}`
-	: S;
+		? [S, IsLetter<S>] extends [Uppercase<S>, true]
+			? `${Lowercase<F>}_${CamelToSnakeCase<`${Lowercase<S>}${R}`, First>}`
+			: `${Lowercase<F>}${CamelToSnakeCase<`${Lowercase<S>}${R}`, First>}`
+		: S;
 
 /**
  * Transforms a string key from snake_case to camelCase.
@@ -76,10 +76,10 @@ export type SnakeToCamelCase<S extends string, First extends string = S> = [
 ] extends [never]
 	? S
 	: S extends `${infer L}${infer R}`
-	? L extends '_'
-		? `${Capitalize<SnakeToCamelCase<R, First>>}`
-		: `${Lowercase<L>}${SnakeToCamelCase<R, First>}`
-	: S;
+		? L extends '_'
+			? `${Capitalize<SnakeToCamelCase<R, First>>}`
+			: `${Lowercase<L>}${SnakeToCamelCase<R, First>}`
+		: S;
 
 // Map of transformation functions
 type TransformerMap<A extends string = never> = {
@@ -92,10 +92,10 @@ type TransformerMap<A extends string = never> = {
 type TransformCase<T, M extends keyof TransformerMap = keyof TransformerMap> = T extends string
 	? TransformerMap<T>[M]
 	: T extends Array<unknown>
-	? Array<TransformCase<T[number], M>>
-	: T extends {}
-	? { [K in keyof T as TransformCase<K, M>]: TransformCase<T[K], M> }
-	: T;
+		? Array<TransformCase<T[number], M>>
+		: T extends {}
+			? { [K in keyof T as TransformCase<K, M>]: TransformCase<T[K], M> }
+			: T;
 
 /**
  * Transforms all keys of an object from camelCase to snake_case.
@@ -198,19 +198,19 @@ type UnionToIntersection<U> = (U extends U ? (x: U) => unknown : never) extends 
  * type KeyUnion = ObjUnionToKeyUnion<Obj>; // { a: string | number, b: number }
  * ```
  */
-export type ObjUnionToKeyUnion<T extends {}, Obj extends {} = {}> = UnionToIntersection<
-	T extends any ? () => T : never
-> extends () => infer ReturnType
-	? ObjUnionToKeyUnion<
-			Exclude<T, ReturnType>,
-			Omit<
-				Omit<Obj, keyof ReturnType> & {
-					[K in keyof ReturnType]: (K extends keyof Obj ? Obj[K] : never) | ReturnType[K];
-				},
-				never
+export type ObjUnionToKeyUnion<T extends {}, Obj extends {} = {}> =
+	UnionToIntersection<T extends any ? () => T : never> extends () => infer ReturnType
+		? ObjUnionToKeyUnion<
+				Exclude<T, ReturnType>,
+				Omit<
+					Omit<Obj, keyof ReturnType> & {
+						[K in keyof ReturnType]:
+							(K extends keyof Obj ? Obj[K] : never) | ReturnType[K];
+					},
+					never
+				>
 			>
-	  >
-	: Omit<Obj, never>;
+		: Omit<Obj, never>;
 
 /**
  * Transforms an array of key-value pairs into an object type.
@@ -233,11 +233,13 @@ export type EntriesToObj<T extends readonly [PropertyKey, unknown][]> = {
  * ```
  */
 export type OptionalKeys<T> = keyof {
-	[K in keyof T as [<S>() => S extends { [Z in K]: Exclude<T, T> } ? 1 : 0] extends [
-		<S>() => S extends { [Z in K]-?: Exclude<T, T> } ? 1 : 0
-	]
-		? never
-		: K]: never;
+	[
+		K in keyof T as [<S>() => S extends { [Z in K]: Exclude<T, T> } ? 1 : 0] extends [
+			<S>() => S extends { [Z in K]-?: Exclude<T, T> } ? 1 : 0
+		]
+			? never
+			: K
+	]: never;
 };
 
 /**
@@ -249,11 +251,13 @@ export type OptionalKeys<T> = keyof {
  * ```
  */
 export type RequiredKeys<T extends object> = keyof {
-	[K in keyof T as [<S>() => S extends { [Z in K]: Exclude<T, T> } ? 1 : 0] extends [
-		<S>() => S extends { [Z in K]-?: Exclude<T, T> } ? 1 : 0
-	]
-		? K
-		: never]: never;
+	[
+		K in keyof T as [<S>() => S extends { [Z in K]: Exclude<T, T> } ? 1 : 0] extends [
+			<S>() => S extends { [Z in K]-?: Exclude<T, T> } ? 1 : 0
+		]
+			? K
+			: never
+	]: never;
 };
 
 /**
@@ -290,5 +294,5 @@ export type ValidateKeysTuple<
 		? ValidateKeysTuple<Exclude<T, H>, R, KeyTuple>
 		: never
 	: [never] extends [T]
-	? KeyTuple
-	: never;
+		? KeyTuple
+		: never;

@@ -26,9 +26,9 @@ export type SimulationMeshJSON = Omit<
  * and configurable color.
  */
 export abstract class SimulationMesh<
-		TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry,
-		TMaterial extends THREE.MeshBasicMaterial = THREE.MeshBasicMaterial
-	>
+	TGeometry extends THREE.BufferGeometry = THREE.BufferGeometry,
+	TMaterial extends THREE.MeshBasicMaterial = THREE.MeshBasicMaterial
+>
 	extends THREE.Mesh<TGeometry, TMaterial>
 	implements
 		SimulationPropertiesType,
