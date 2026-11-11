@@ -114,6 +114,7 @@ export function RunSimulationForm({
 		inputFiles,
 		selectedFiles,
 		detection,
+		detectionError,
 		requiredFiles: requiredInputFiles,
 		runSimulator: filesRunSimulator,
 		additionCount,
@@ -157,7 +158,7 @@ export function RunSimulationForm({
 
 		if (availability) return availability;
 
-		if (!detection) return 'Checking files…';
+		if (!detection) return detectionError ?? 'Checking files…';
 
 		return detection.simulators[simulator].possible
 			? undefined
@@ -188,7 +189,7 @@ export function RunSimulationForm({
 	const presentRequired = requiredFiles.filter(name => name in inputFiles);
 	const unselectedRequired = presentRequired.filter(name => !selectedFiles.includes(name));
 	const selectRequiredDisabledReason = !selection
-		? 'Checking files…'
+		? (detectionError ?? 'Checking files…')
 		: presentRequired.length === 0
 			? `None of the files ${simulatorName(filesRunSimulator)} requires are here yet (${requiredFiles.join(', ')})`
 			: unselectedRequired.length === 0
@@ -235,7 +236,7 @@ export function RunSimulationForm({
 		if (availability) return availability;
 
 		if (simulationSourceType === 'files') {
-			if (!selection) return 'Checking files…';
+			if (!selection) return detectionError ?? 'Checking files…';
 
 			if (selection.reason) return selection.reason;
 		}

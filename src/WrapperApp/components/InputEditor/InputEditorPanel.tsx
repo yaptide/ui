@@ -24,6 +24,7 @@ export default function InputEditorPanel() {
 		inputFiles,
 		selectedFiles,
 		detection,
+		detectionError,
 		requiredFiles,
 		addFiles,
 		updateFile,
@@ -192,6 +193,14 @@ export default function InputEditorPanel() {
 					onSubmit={uploadFiles}
 					acceptedFiles=''
 				/>
+				{detectionError && (
+					<Typography
+						color='error'
+						variant='body2'
+						sx={{ textAlign: 'center', marginTop: theme.spacing(1) }}>
+						{detectionError}
+					</Typography>
+				)}
 			</Box>
 
 			{hasInputFiles ? (

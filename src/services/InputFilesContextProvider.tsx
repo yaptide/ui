@@ -19,10 +19,14 @@ import { useStore } from './StoreService';
 
 export type SelectionUpdate = 'replace' | 'add';
 
+export const DETECTION_ERROR =
+	"Couldn't check the input files. Reload the page to load the converter again.";
+
 export interface InputFilesContext {
 	inputFiles: InputFiles;
 	selectedFiles: string[];
 	detection?: SimulatorDetection;
+	detectionError?: string;
 	requiredFiles?: RequiredInputFiles;
 	runSimulator: RunnableSimulator;
 	additionCount: number;
@@ -47,12 +51,19 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 	const { isConverterReady, detectSimulators, requiredInputFiles } = usePythonConverter();
 	const [requiredFiles, setRequiredFiles] = useState<RequiredInputFiles>();
 	const [detected, setDetected] = useState<{ names: string; detection: SimulatorDetection }>();
+	const [detectionError, setDetectionError] = useState<string>();
 	const names = Object.keys(inputFiles).join('\n');
 	const detection = detected?.names === names ? detected.detection : undefined;
 
+	const reportDetectionError = useCallback((error: unknown) => {
+		console.error(error);
+		setDetectionError(DETECTION_ERROR);
+	}, []);
+
 	useEffect(() => {
-		if (isConverterReady) requiredInputFiles().then(setRequiredFiles);
-	}, [isConverterReady, requiredInputFiles]);
+		if (isConverterReady)
+			requiredInputFiles().then(setRequiredFiles).catch(reportDetectionError);
+	}, [isConverterReady, requiredInputFiles, reportDetectionError]);
 
 	useEffect(() => {
 		if (!isConverterReady) return;
@@ -64,14 +75,16 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 				.map(name => [name, ''])
 		);
 
-		detectSimulators(files).then(result => {
-			if (current) setDetected({ names, detection: result });
-		});
+		detectSimulators(files)
+			.then(result => {
+				if (current) setDetected({ names, detection: result });
+			})
+			.catch(reportDetectionError);
 
 		return () => {
 			current = false;
 		};
-	}, [isConverterReady, detectSimulators, names]);
+	}, [isConverterReady, detectSimulators, names, reportDetectionError]);
 
 	const [runSimulator, setRunSimulator] = useState<RunnableSimulator>(RUNNABLE_SIMULATORS[0]);
 
@@ -227,6 +240,7 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 		inputFiles,
 		selectedFiles,
 		detection,
+		detectionError,
 		requiredFiles,
 		runSimulator,
 		additionCount,
