@@ -7,12 +7,12 @@ import { throttle } from 'throttle-debounce';
 
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
 import { useInputFiles } from '../../../services/InputFilesContextProvider';
-import { readFile } from '../../../services/LoaderService';
 import { useStore } from '../../../services/StoreService';
 import { addCustomStoppingPowerTableToEditorJSON } from '../../../ThreeEditor/Simulation/CustomStoppingPower/CustomStoppingPower';
 import { SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
 import { DragDropFiles } from './DragDropFiles';
 import { InputFilesEditor } from './InputFilesEditor';
+import { readInputFiles } from './readInputFiles';
 import { inputFilesZipName, saveInputFilesAsZip } from './saveInputFiles';
 import { emptyFiles, InputFiles, RUNNABLE_SIMULATORS, simulatorName } from './simulatorDetection';
 
@@ -81,14 +81,22 @@ export default function InputEditorPanel() {
 		generate
 	]);
 
-	const uploadFiles = (files: FileList | undefined) => {
-		if (!files) return;
+	const uploadFiles = (fileList: FileList | undefined) => {
+		if (!fileList) return;
 
-		Promise.all(
-			Array.from(files).map(
-				async file => [file.name, (await readFile(file)) as string] as const
-			)
-		).then(entries => addFiles(Object.fromEntries(entries), 'add', 'Uploading files'));
+		readInputFiles(Array.from(fileList))
+			.then(({ files, skipped }) => {
+				if (skipped.length > 0)
+					enqueueSnackbar(`Skipped files that are not text: ${skipped.join(', ')}`, {
+						variant: 'warning'
+					});
+
+				if (Object.keys(files).length > 0) addFiles(files, 'add', 'Uploading files');
+			})
+			.catch(e => {
+				enqueueSnackbar('Error while reading the uploaded files', { variant: 'error' });
+				console.error(e);
+			});
 	};
 
 	return (

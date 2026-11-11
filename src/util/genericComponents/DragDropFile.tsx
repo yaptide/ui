@@ -7,6 +7,7 @@ export interface DragDropProps {
 	onSubmit: (file: FileList) => void;
 	currentFiles?: FileList;
 	acceptedFiles: string;
+	clearAfterSubmit?: boolean;
 	innerElement: FC<DragDropInnerElementProps>;
 }
 
@@ -19,7 +20,7 @@ export interface DragDropInnerElementProps {
 
 // drag drop file component
 export function DragDropFile(props: DragDropProps) {
-	const { id, onSubmit, currentFiles, acceptedFiles } = props;
+	const { id, onSubmit, currentFiles, acceptedFiles, clearAfterSubmit } = props;
 	// drag state
 	const [dragActive, setDragActive] = useState(false);
 	const [hasFiles, setHasFiles] = useState(currentFiles && currentFiles.length > 0);
@@ -80,6 +81,8 @@ export function DragDropFile(props: DragDropProps) {
 		}
 
 		setHasFiles((e.target.files?.length ?? 0) > 0);
+
+		if (clearAfterSubmit) e.target.value = '';
 	};
 
 	return (
