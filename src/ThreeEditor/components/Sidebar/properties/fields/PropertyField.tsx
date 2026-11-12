@@ -1,5 +1,5 @@
 import { Box, Checkbox, Grid, Stack, TextField, Typography, useTheme } from '@mui/material';
-import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
+import { KeyboardEvent, ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Vector2 } from 'three';
 import { Vector3 } from 'three/src/math/Vector3.js';
 
@@ -78,6 +78,7 @@ interface TextPropertyFieldProps {
 	value: string;
 	onChange: (value: string) => void;
 	onBlur?: () => void;
+	onKeyDown?: (event: KeyboardEvent<HTMLElement>) => void;
 }
 
 export function TextPropertyField(props: TextPropertyFieldProps) {
@@ -89,6 +90,7 @@ export function TextPropertyField(props: TextPropertyFieldProps) {
 				value={props.value}
 				onChange={event => props.onChange(event.target.value)}
 				onBlur={props.onBlur}
+				onKeyDown={props.onKeyDown}
 			/>
 		</PropertyField>
 	);

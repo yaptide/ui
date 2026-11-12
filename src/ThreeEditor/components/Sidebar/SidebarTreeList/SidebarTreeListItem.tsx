@@ -12,6 +12,7 @@ import { Object3D } from 'three';
 import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
 import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { canChangeName, isRemovable } from '../../../../util/hooks/useKeyboardEditorControls';
+import { useNameEditing } from '../../../../util/hooks/useNameEditing';
 import { canBeDuplicated } from '../../../js/commands/DuplicateObjectCommand';
 import { SetValueCommand } from '../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../js/YaptideEditor';
@@ -97,6 +98,9 @@ export function SidebarTreeListItem(props: {
 	const popupState = usePopupState({ variant: 'popover', popupId: 'sidebarTreeItemMenu' });
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
+	const nameEditing = useNameEditing(editor, watchedObject.object, watchedObject.name, () =>
+		setMode('view')
+	);
 
 	const actions = [
 		canBeDuplicated(object) && (
@@ -216,24 +220,10 @@ export function SidebarTreeListItem(props: {
 							size='small'
 							variant='standard'
 							color='secondary'
-							value={watchedObject.name}
-							onChange={event =>
-								editor.execute(
-									new SetValueCommand(
-										editor,
-										watchedObject.object,
-										'name',
-										event.target.value
-									)
-								)
-							}
-							onKeyDown={ev => {
-								if (ev.key === 'Enter') {
-									ev.preventDefault();
-									setMode('view');
-								}
-							}}
-							onBlur={() => setMode('view')}
+							value={nameEditing.value}
+							onChange={event => nameEditing.onChange(event.target.value)}
+							onKeyDown={nameEditing.onKeyDown}
+							onBlur={nameEditing.onBlur}
 						/>
 						<span style={{ display: mode === 'view' ? '' : 'none' }}>{node.text}</span>
 					</Typography>
