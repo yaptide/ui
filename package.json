@@ -17,7 +17,6 @@
 		"@mui/system": "^9.5.0",
 		"@mui/x-data-grid": "^9.17.0",
 		"@testing-library/react": "^16.3.3",
-		"@testing-library/user-event": "^14.6.8",
 		"@types/jest": "^30.0.0",
 		"@types/react-dom": "^19.3.0",
 		"@types/signals": "^1.0.4",
