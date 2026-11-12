@@ -6,7 +6,7 @@ import { snakeToCamelCase } from '../util/Notation/Notation';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:5000';
 const DEMO_MODE = process.env.REACT_APP_TARGET === 'demo';
-const SSO_AUTH_ENABLED = process.env.REACT_APP_ALT_AUTH === 'plg';
+const SSO_AUTH_ENABLED = process.env.REACT_APP_SSO_AUTH_ENABLED === 'true';
 
 export const DEPLOYMENT = (process.env.REACT_APP_DEPLOYMENT as ConfigDeployment) ?? 'prod';
 export type ConfigDeployment = 'dev' | 'prod' | undefined;
