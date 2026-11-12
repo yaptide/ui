@@ -10,12 +10,15 @@ import {
 	Typography,
 	useTheme
 } from '@mui/material';
-import { ReactElement } from 'react';
+import { ReactElement, useCallback, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { Object3D } from 'three';
 
 import StyledAccordion from '../../../../shared/components/StyledAccordion';
+import { useSignal } from '../../../../util/hooks/signals';
+import { isDescendantOf } from '../../../../util/isDescendantOf';
 import { CommandButtonProps } from '../../../../util/Ui/CommandButtonProps';
+import { YaptideEditor } from '../../../js/YaptideEditor';
 import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 
 export interface TreeItem {
@@ -32,18 +35,54 @@ export type TreeElement = {
 	title: string;
 	add: CommandButtonProps[];
 	tree: ReactElement;
+	sources: Object3D[];
 };
 
 export interface EditorSidebarTabTreeProps {
+	editor: YaptideEditor;
 	children: TreeElement[];
 }
 
-function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
+function EditorSidebarTabTreeElement(props: TreeElement & { editor: YaptideEditor }): ReactElement {
+	const { editor, sources } = props;
 	const theme = useTheme();
 
+	const containsObject = useCallback(
+		(object: Object3D | null) =>
+			sources.some(source => object === source || isDescendantOf(object, source)),
+		[sources]
+	);
+
+	const [expanded, setExpanded] = useState(() => containsObject(editor.selected));
+	const [containsSelected, setContainsSelected] = useState(() => containsObject(editor.selected));
+
+	useSignal(
+		editor,
+		'objectSelected',
+		useCallback(
+			(object: Object3D | null) => {
+				const isInside = containsObject(object);
+				setContainsSelected(isInside);
+
+				if (isInside) {
+					setExpanded(true);
+				}
+			},
+			[containsObject]
+		)
+	);
+
 	return (
-		<StyledAccordion key={props.title}>
-			<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+		<StyledAccordion
+			key={props.title}
+			expanded={expanded}
+			onChange={(_, isExpanded) => setExpanded(isExpanded)}>
+			<AccordionSummary
+				expandIcon={
+					<ExpandMoreIcon
+						color={containsSelected && !expanded ? 'secondary' : undefined}
+					/>
+				}>
 				<Typography>{props.title}</Typography>
 			</AccordionSummary>
 			<AccordionDetails>
@@ -87,6 +126,7 @@ export function EditorSidebarTabTree(props: EditorSidebarTabTreeProps) {
 				{props.children.map(child => (
 					<EditorSidebarTabTreeElement
 						key={child.title}
+						editor={props.editor}
 						{...child}
 					/>
 				))}

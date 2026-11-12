@@ -87,10 +87,14 @@ export function EditorSidebar(props: EditorSidebarProps) {
 			</StyledTabs>
 			<div>
 				{selectedTab === 'geometry' && (
-					<EditorSidebarTabTree>{geometryTabElements}</EditorSidebarTabTree>
+					<EditorSidebarTabTree editor={editor}>
+						{geometryTabElements}
+					</EditorSidebarTabTree>
 				)}
 				{selectedTab === 'scoring' && (
-					<EditorSidebarTabTree>{scoringTabElements}</EditorSidebarTabTree>
+					<EditorSidebarTabTree editor={editor}>
+						{scoringTabElements}
+					</EditorSidebarTabTree>
 				)}
 			</div>
 			<div>
@@ -155,6 +159,7 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 		{
 			title: 'Figures',
 			add: btnProps['Figures'],
+			sources: [editor.figureManager.figureContainer],
 			tree: (
 				<SidebarTreeList
 					editor={editor}
@@ -165,6 +170,7 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 		{
 			title: 'Zones',
 			add: btnProps['Zones'],
+			sources: [editor.zoneManager.worldZone, editor.zoneManager.zoneContainer],
 			tree: (
 				<>
 					<SidebarTreeList
@@ -183,6 +189,7 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 		{
 			title: 'Detectors',
 			add: btnProps['Detectors'],
+			sources: [editor.detectorManager.detectorContainer],
 			tree: (
 				<SidebarTreeList
 					editor={editor}
@@ -197,6 +204,10 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 		{
 			title: 'Special Components',
 			add: btnProps['Special Components'],
+			sources: [
+				editor.specialComponentsManager.CTCubeContainer,
+				editor.specialComponentsManager.beamModulatorContainer
+			],
 			tree: (
 				<>
 					{editor.specialComponentsManager.CTCubeContainer.children.length > 0 ? (
@@ -227,6 +238,7 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 		{
 			title: 'Hierarchy',
 			add: btnProps['Figures'],
+			sources: [editor.figureManager.figureContainer],
 			tree: (
 				<SidebarTreeList
 					editor={editor}
@@ -238,6 +250,7 @@ function getGeometryTabElements(simulator: SimulatorType, btnProps: any, editor:
 		{
 			title: 'Detectors',
 			add: btnProps['Detectors'],
+			sources: [editor.detectorManager.detectorContainer],
 			tree: (
 				<SidebarTreeList
 					editor={editor}
@@ -266,6 +279,7 @@ function getScoringTabElements(simulator: SimulatorType, btnProps: any, editor: 
 		{
 			title: 'Filters',
 			add: btnProps['Filters'],
+			sources: [editor.scoringManager.filterContainer],
 			tree: (
 				<SidebarTreeList
 					editor={editor}
@@ -276,6 +290,7 @@ function getScoringTabElements(simulator: SimulatorType, btnProps: any, editor: 
 		{
 			title: 'Outputs',
 			add: btnProps['Outputs'],
+			sources: [editor.scoringManager.outputContainer],
 			tree: (
 				<SidebarTreeList
 					editor={editor}
