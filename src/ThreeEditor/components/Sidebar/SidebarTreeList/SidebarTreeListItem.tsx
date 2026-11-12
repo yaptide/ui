@@ -12,6 +12,7 @@ import { Object3D } from 'three';
 import { SimulationPropertiesType } from '../../../../types/SimulationProperties';
 import { useSignal, useSmartWatchEditorState } from '../../../../util/hooks/signals';
 import { canChangeName, isRemovable } from '../../../../util/hooks/useKeyboardEditorControls';
+import { isDescendantOf } from '../../../../util/isDescendantOf';
 import { canBeDuplicated } from '../../../js/commands/DuplicateObjectCommand';
 import { SetValueCommand } from '../../../js/commands/SetValueCommand';
 import { YaptideEditor } from '../../../js/YaptideEditor';
@@ -160,7 +161,13 @@ export function SidebarTreeListItem(props: {
 
 	if (hasChild) {
 		const IconComponent = isOpen ? RemoveIcon : AddIcon;
-		collapseOrExpandIcon = <IconComponent onClick={onToggle} />;
+		const hidesSelected = !isOpen && isDescendantOf(editor.selected, object);
+		collapseOrExpandIcon = (
+			<IconComponent
+				color={hidesSelected ? 'secondary' : undefined}
+				onClick={onToggle}
+			/>
+		);
 	} else if (node.parent) {
 		collapseOrExpandIcon = <Icon />;
 	}
