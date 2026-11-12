@@ -84,6 +84,9 @@ const ObjectTypeField = (props: {
 					label='Geometry Type'
 					value={selectData.value}
 					options={Object.keys(selectData.options)}
+					getOptionLabel={option =>
+						(selectData.options as Record<string, string>)[option] ?? option
+					}
 					onChange={onChange}
 				/>
 			) : (
