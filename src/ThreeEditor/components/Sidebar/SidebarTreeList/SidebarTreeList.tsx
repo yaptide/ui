@@ -1,26 +1,22 @@
 import './SidebarTreeList.style.css';
 
-import { DropOptions, Tree } from '@minoru/react-dnd-treeview';
+import { DropOptions, Tree, TreeMethods } from '@minoru/react-dnd-treeview';
 import { Box } from '@mui/material';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Object3D } from 'three';
 import { generateUUID } from 'three/src/math/MathUtils.js';
 
+import { useSignal } from '../../../../util/hooks/signals';
 import { MoveObjectInTreeCommand } from '../../../js/commands/MoveObjectInTreeCommand';
 import { YaptideEditor } from '../../../js/YaptideEditor';
-import { SimulationSceneChild } from '../../../Simulation/Base/SimulationContainer';
+import {
+	isSimulationSceneContainer,
+	SimulationSceneChild
+} from '../../../Simulation/Base/SimulationContainer';
 import { SidebarTreeListItem, TreeItem, TreeItemData } from './SidebarTreeListItem';
 import { useGenerateTreeData } from './useGenerateTreeData';
 
 type TreeSource = SimulationSceneChild[];
-
-function handleSelected(object: Object3D | null) {
-	if (!object) {
-		return;
-	}
-
-	document.getElementById(object.uuid)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
 
 function Placeholder() {
 	return (
@@ -44,6 +40,38 @@ export function SidebarTreeList(props: {
 
 	const treeId = useMemo(() => generateUUID(), []);
 	const [treeData, refreshTreeData] = useGenerateTreeData(treeId, sources);
+	const treeRef = useRef<TreeMethods>(null);
+
+	const handleSelected = useCallback(
+		(object: Object3D | null) => {
+			if (!object) {
+				return;
+			}
+
+			const ancestorIds: number[] = [];
+
+			for (let parent = object.parent; parent; parent = parent.parent) {
+				if (!isSimulationSceneContainer(parent) || !parent.flattenOnOutliner) {
+					ancestorIds.push(parent.id);
+				}
+
+				if (sources.includes(parent as SimulationSceneChild)) {
+					if (ancestorIds.length > 0) {
+						treeRef.current?.open(ancestorIds);
+					}
+
+					break;
+				}
+			}
+
+			document
+				.getElementById(object.uuid)
+				?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		},
+		[sources]
+	);
+
+	useSignal(editor, 'objectSelected', handleSelected);
 
 	useEffect(() => {
 		refreshTreeData();
@@ -52,14 +80,12 @@ export function SidebarTreeList(props: {
 		editor.signals.objectChanged.add(refreshTreeData);
 		editor.signals.objectAdded.add(refreshTreeData);
 		editor.signals.objectRemoved.add(refreshTreeData);
-		editor.signals.objectSelected.add(handleSelected);
 
 		return () => {
 			editor.signals.editorCleared.remove(refreshTreeData);
 			editor.signals.objectChanged.remove(refreshTreeData);
 			editor.signals.objectAdded.remove(refreshTreeData);
 			editor.signals.objectRemoved.remove(refreshTreeData);
-			editor.signals.objectSelected.remove(handleSelected);
 		};
 	}, [editor, refreshTreeData]);
 
@@ -146,6 +172,7 @@ export function SidebarTreeList(props: {
 
 	return (
 		<Tree
+			ref={treeRef}
 			classes={{
 				root: 'editor-sidebar-tree',
 				dropTarget: 'editor-sidebar-drop-target'
