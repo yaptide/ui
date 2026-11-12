@@ -3,10 +3,7 @@ import * as THREE from 'three';
 import { HollowCylinderGeometry } from '../ThreeEditor/Simulation/Base/HollowCylinderGeometry';
 
 export type PossibleGeometryType =
-	| THREE.BoxGeometry
-	| THREE.CylinderGeometry
-	| THREE.SphereGeometry
-	| HollowCylinderGeometry;
+	THREE.BoxGeometry | THREE.CylinderGeometry | THREE.SphereGeometry | HollowCylinderGeometry;
 
 const geometryParameters = {
 	BoxGeometry: ['width', 'height', 'depth'],
