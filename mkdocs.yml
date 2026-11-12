@@ -4,29 +4,28 @@ repo_url: https://github.com/yaptide/ui
 repo_name: yaptide/ui
 copyright: Copyright &copy; 2023 the Yaptide team
 
-
 theme:
-  name: material
-  features:
-    - content.code.annotate
-    - content.code.copy
-    - navigation.tabs
-    - navigation.tabs.sticky
-    - navigation.top
+    name: material
+    features:
+        - content.code.annotate
+        - content.code.copy
+        - navigation.tabs
+        - navigation.tabs.sticky
+        - navigation.top
 
 nav:
-- Home:
-  - Overview: index.md
-  - Authentication: authentication.md
+    - Home:
+          - Overview: index.md
+          - Authentication: authentication.md
 
 plugins:
-- search
+    - search
 
 markdown_extensions:
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.tabbed:
-      alternate_style: true
+    - pymdownx.superfences:
+          custom_fences:
+              - name: mermaid
+                class: mermaid
+                format: !!python/name:pymdownx.superfences.fence_code_format
+    - pymdownx.tabbed:
+          alternate_style: true
