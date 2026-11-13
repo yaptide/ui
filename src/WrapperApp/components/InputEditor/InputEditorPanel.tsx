@@ -1,125 +1,103 @@
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Box, ToggleButton, useTheme } from '@mui/material';
+import { Box, Button, ListItemText, Menu, MenuItem, Typography, useTheme } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { throttle } from 'throttle-debounce';
 
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
-import { readFile } from '../../../services/LoaderService';
+import { useInputFiles } from '../../../services/InputFilesContextProvider';
 import { useStore } from '../../../services/StoreService';
-import { StyledExclusiveToggleButtonGroup } from '../../../shared/components/StyledExclusiveToggleButtonGroup';
 import { addCustomStoppingPowerTableToEditorJSON } from '../../../ThreeEditor/Simulation/CustomStoppingPower/CustomStoppingPower';
-import { SimulatorType } from '../../../types/RequestTypes';
-import {
-	_defaultFlukaInputFiles,
-	_defaultGeant4Files,
-	_defaultShInputFiles,
-	SimulationInputFiles
-} from '../../../types/ResponseTypes';
+import { SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
 import { DragDropFiles } from './DragDropFiles';
 import { InputFilesEditor } from './InputFilesEditor';
+import { readInputFiles } from './readInputFiles';
+import { inputFilesZipName, saveInputFilesAsZip } from './saveInputFiles';
+import { emptyFiles, InputFiles, RUNNABLE_SIMULATORS, simulatorName } from './simulatorDetection';
 
-interface InputEditorPanelProps {
-	goToRun: (InputFiles?: SimulationInputFiles) => void;
-}
-
-export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
+export default function InputEditorPanel() {
 	const { enqueueSnackbar } = useSnackbar();
 	const { yaptideEditor } = useStore();
 	const { isConverterReady, convertJSON } = usePythonConverter();
+	const {
+		inputFiles,
+		selectedFiles,
+		lastDetection,
+		detectionError,
+		requiredFiles,
+		addFiles,
+		updateFile,
+		clearFile,
+		removeFile,
+		renameFile,
+		toggleSelected
+	} = useInputFiles();
 	const theme = useTheme();
 
-	const setFilesForSimulator = useCallback((simulator: SimulatorType) => {
-		switch (simulator) {
-			case SimulatorType.SHIELDHIT:
-				setInputFiles(_defaultShInputFiles);
-
-				break;
-			case SimulatorType.FLUKA:
-				setInputFiles(_defaultFlukaInputFiles);
-
-				break;
-			case SimulatorType.GEANT4:
-				setInputFiles(_defaultGeant4Files);
-
-				break;
-			default:
-				setInputFiles({});
-
-				break;
-		}
-	}, []);
-
-	// When simulator is set to COMMON, user can select which actual simulator to generate files for
-	// Otherwise, this value is equal to simulator selected in editor
-	const [generateForSimulator, setGenerateForSimulator] = useState(
-		yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON
-	);
-
-	const showSimulatorToGenerateForToggle =
-		yaptideEditor?.contextManager.currentSimulator === SimulatorType.COMMON;
-
-	useEffect(() => {
-		const currentSimulator =
-			yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON;
-		setGenerateForSimulator(currentSimulator);
-		setFilesForSimulator(currentSimulator);
-	}, [yaptideEditor]);
-
 	const [isInProgress, setInProgress] = useState(false);
-	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>({});
+	const [generateMenuAnchor, setGenerateMenuAnchor] = useState<HTMLElement | null>(null);
+	const [emptyMenuAnchor, setEmptyMenuAnchor] = useState<HTMLElement | null>(null);
 
-	const onClickGenerate = useCallback(async () => {
-		if (generateForSimulator === SimulatorType.COMMON) {
-			return enqueueSnackbar('Please select simulator', { variant: 'warning' });
-		}
+	const editorSimulator = yaptideEditor?.contextManager.currentSimulator ?? SimulatorType.COMMON;
+	const canChooseSimulatorToGenerate = editorSimulator === SimulatorType.COMMON;
+	const hasInputFiles = Object.keys(inputFiles).length > 0;
 
-		setInProgress(true);
-		const editorJSON = yaptideEditor?.toSerialized();
+	const generate = useCallback(
+		async (simulator: SimulatorType) => {
+			setInProgress(true);
+			const editorJSON = yaptideEditor?.toSerialized();
 
-		if (!editorJSON) return setInProgress(false);
+			if (!editorJSON) return setInProgress(false);
 
-		await addCustomStoppingPowerTableToEditorJSON(editorJSON);
+			await addCustomStoppingPowerTableToEditorJSON(editorJSON);
 
-		convertJSON(editorJSON, generateForSimulator)
-			.then(res => Object.fromEntries(res) as unknown as SimulationInputFiles)
-			.then(inputFiles => {
-				setInputFiles({ ...inputFiles });
-				enqueueSnackbar('Input files generated', { variant: 'info' });
-			})
-			.catch(e => {
-				enqueueSnackbar('Error while converting input files', { variant: 'error' });
-				console.error(e);
-			})
-			.finally(() => {
-				setInProgress(false);
-			});
-	}, [yaptideEditor, enqueueSnackbar, convertJSON, generateForSimulator]);
+			convertJSON(editorJSON, simulator)
+				.then(res => Object.fromEntries(res) as InputFiles)
+				.then(async generatedFiles => {
+					if (
+						await addFiles(
+							generatedFiles,
+							'replace',
+							`Generating ${SimulatorNames.get(simulator)} files from the editor`,
+							editorJSON.project.title
+						)
+					)
+						enqueueSnackbar('Input files generated', { variant: 'info' });
+				})
+				.catch(e => {
+					enqueueSnackbar('Error while converting input files', { variant: 'error' });
+					console.error(e);
+				})
+				.finally(() => {
+					setInProgress(false);
+				});
+		},
+		[yaptideEditor, enqueueSnackbar, convertJSON, addFiles]
+	);
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const debouncedOnClickGenerate = useCallback(
-		throttle(1000, onClickGenerate, { noTrailing: true }),
-		[onClickGenerate]
-	);
+	const throttledGenerate = useCallback(throttle(1000, generate, { noTrailing: true }), [
+		generate
+	]);
 
-	let acceptedFiles: string;
+	const uploadFiles = (fileList: FileList | undefined) => {
+		if (!fileList) return;
 
-	switch (generateForSimulator) {
-		case SimulatorType.SHIELDHIT:
-			acceptedFiles = '.dat';
+		readInputFiles(Array.from(fileList))
+			.then(({ files, skipped }) => {
+				if (skipped.length > 0)
+					enqueueSnackbar(`Skipped files that are not text: ${skipped.join(', ')}`, {
+						variant: 'warning'
+					});
 
-			break;
-		case SimulatorType.FLUKA:
-			acceptedFiles = '.inp';
-
-			break;
-		case SimulatorType.GEANT4:
-			acceptedFiles = '.gdml,.mac';
-
-			break;
-		default:
-			acceptedFiles = '';
-	}
+				if (Object.keys(files).length > 0) addFiles(files, 'add', 'Uploading files');
+			})
+			.catch(e => {
+				enqueueSnackbar('Error while reading the uploaded files', { variant: 'error' });
+				console.error(e);
+			});
+	};
 
 	return (
 		<Box
@@ -135,89 +113,125 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 					padding: theme.spacing(2),
 					boxSizing: 'border-box'
 				}}>
-				<Box sx={{ marginBottom: theme.spacing(2) }}>
+				<Box
+					sx={{
+						display: 'flex',
+						alignItems: 'center',
+						gap: 2,
+						marginBottom: theme.spacing(2)
+					}}>
 					<LoadingButton
 						id='generate-from-editor'
-						sx={{
-							marginRight: '1rem'
-						}}
 						color='primary'
 						loading={!isConverterReady}
 						variant='contained'
-						onClick={debouncedOnClickGenerate}
+						endIcon={canChooseSimulatorToGenerate ? <ArrowDropDownIcon /> : undefined}
+						onClick={event =>
+							canChooseSimulatorToGenerate
+								? setGenerateMenuAnchor(event.currentTarget)
+								: throttledGenerate(editorSimulator)
+						}
 						disabled={isInProgress}
 						loadingIndicator='Initializing...'>
 						Generate from Editor
 					</LoadingButton>
-					{showSimulatorToGenerateForToggle && (
-						<StyledExclusiveToggleButtonGroup
-							value={generateForSimulator}
-							onChange={(_e, chosenSimulator) => {
-								if (chosenSimulator === generateForSimulator) {
-									return;
-								}
-
-								const willOverwritePreviousFiles = Object.entries(inputFiles).some(
-									([_name, _content]) => _content.length > 0
-								);
-
-								if (willOverwritePreviousFiles) {
-									const shouldProceed = window.confirm(
-										'Current input files will be lost. Are you sure?'
+					<Menu
+						anchorEl={generateMenuAnchor}
+						open={generateMenuAnchor !== null}
+						onClose={() => setGenerateMenuAnchor(null)}>
+						{[SimulatorType.SHIELDHIT, SimulatorType.FLUKA].map(simulator => (
+							<MenuItem
+								key={simulator}
+								onClick={() => {
+									setGenerateMenuAnchor(null);
+									throttledGenerate(simulator);
+								}}>
+								{SimulatorNames.get(simulator)}
+							</MenuItem>
+						))}
+					</Menu>
+					<Button
+						variant='outlined'
+						endIcon={<ArrowDropDownIcon />}
+						disabled={!requiredFiles}
+						onClick={event => setEmptyMenuAnchor(event.currentTarget)}>
+						Create empty files
+					</Button>
+					<Menu
+						anchorEl={emptyMenuAnchor}
+						open={emptyMenuAnchor !== null}
+						onClose={() => setEmptyMenuAnchor(null)}>
+						{RUNNABLE_SIMULATORS.map(simulator => (
+							<MenuItem
+								key={simulator}
+								onClick={() => {
+									setEmptyMenuAnchor(null);
+									addFiles(
+										emptyFiles(requiredFiles?.[simulator] ?? []),
+										'replace',
+										`Creating empty ${simulatorName(simulator)} files`
 									);
-
-									if (!shouldProceed) {
-										return;
-									}
-								}
-
-								setGenerateForSimulator(chosenSimulator);
-								setFilesForSimulator(chosenSimulator); // clears previous files
-							}}>
-							<ToggleButton value={SimulatorType.SHIELDHIT}>
-								SHIELD-HIT12A
-							</ToggleButton>
-							<ToggleButton value={SimulatorType.FLUKA}>Fluka</ToggleButton>
-						</StyledExclusiveToggleButtonGroup>
-					)}
+								}}>
+								<ListItemText
+									primary={simulatorName(simulator)}
+									secondary={requiredFiles?.[simulator].join(', ')}
+								/>
+							</MenuItem>
+						))}
+					</Menu>
+					<Button
+						color='info'
+						sx={{ marginLeft: 'auto' }}
+						disabled={!hasInputFiles}
+						onClick={() =>
+							saveInputFilesAsZip(
+								inputFiles,
+								inputFilesZipName(
+									yaptideEditor?.config.getKey('project/title'),
+									inputFiles,
+									lastDetection
+								)
+							)
+						}>
+						Download all
+					</Button>
 				</Box>
 
 				<DragDropFiles
 					id={'input-file-upload-editor'}
-					onSubmit={files => {
-						if (!files) return;
-
-						const submitedFiles: Record<string, string> = {};
-
-						const promises = Array.from(files).map(async file => {
-							const content = readFile(file) as Promise<string>;
-							submitedFiles[file.name] = await content;
-
-							return content;
-						});
-
-						Promise.all(promises).then(_ => {
-							setInputFiles(oldInput => {
-								if (!oldInput) return submitedFiles as SimulationInputFiles;
-
-								const inputFiles = { ...oldInput, ...submitedFiles };
-
-								return inputFiles as SimulationInputFiles;
-							});
-						});
-					}}
-					acceptedFiles={acceptedFiles}
+					onSubmit={uploadFiles}
+					acceptedFiles=''
 				/>
+				{detectionError && (
+					<Typography
+						color='error'
+						variant='body2'
+						sx={{ textAlign: 'center', marginTop: theme.spacing(1) }}>
+						{detectionError}
+					</Typography>
+				)}
 			</Box>
 
-			<InputFilesEditor
-				simulator={generateForSimulator}
-				inputFiles={inputFiles}
-				goToRun={(inputFiles?: SimulationInputFiles) => {
-					goToRun(inputFiles);
-				}}
-				onChange={inputFiles => setInputFiles(inputFiles)}
-			/>
+			{hasInputFiles ? (
+				<InputFilesEditor
+					inputFiles={inputFiles}
+					detection={lastDetection}
+					requiredFiles={requiredFiles}
+					selectedFiles={selectedFiles}
+					onToggleSelected={toggleSelected}
+					onChange={updateFile}
+					onClear={clearFile}
+					onRemove={removeFile}
+					onRename={renameFile}
+				/>
+			) : (
+				<Typography
+					color='textSecondary'
+					sx={{ textAlign: 'center', padding: theme.spacing(4) }}>
+					No input files yet. Generate them from the editor, upload them or create empty
+					ones.
+				</Typography>
+			)}
 		</Box>
 	);
 }

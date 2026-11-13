@@ -102,6 +102,23 @@ describe('Notation', () => {
 			expect(snakeToCamelCase(obj, true)).toEqual(expected);
 		});
 
+		it('should keep file names in input_files unchanged', () => {
+			const obj = {
+				input: {
+					input_type: 'files',
+					input_files: { 'fl_sim.inp': 'START', 'my_file_2.dat': 'x' }
+				}
+			};
+
+			const expected = {
+				input: {
+					inputType: 'files',
+					inputFiles: { 'fl_sim.inp': 'START', 'my_file_2.dat': 'x' }
+				}
+			};
+			expect(snakeToCamelCase(obj, true)).toEqual(expected);
+		});
+
 		it('should convert string from snake_case to camelCase', () => {
 			const str = 'first_name';
 			const expected = 'firstName';

@@ -64,6 +64,7 @@ type DragDropFilesProps = Omit<DragDropProps, 'innerElement'>;
 export function DragDropFiles(props: DragDropFilesProps) {
 	return (
 		<DragDropFile
+			clearAfterSubmit
 			{...props}
 			innerElement={innerElement}
 		/>

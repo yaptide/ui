@@ -1,38 +1,40 @@
-import { Box, Fade, Modal, useTheme } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { Box, Button, Divider, Fade, Modal, useTheme } from '@mui/material';
+import { useState } from 'react';
 
-import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
+import { useInputFiles } from '../../../services/InputFilesContextProvider';
 import { useStore } from '../../../services/StoreService';
 import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTabs';
 import { SimulationFetchSource, SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
 import { InputFilesEditor } from '../InputEditor/InputFilesEditor';
+import { inputFilesZipName, saveInputFilesAsZip } from '../InputEditor/saveInputFiles';
+import { InputFiles } from '../InputEditor/simulatorDetection';
 import { Geant4LocalWorkerSimulationsGrid } from './SimulationsGrid/Geant4LocalWorkerSimulationsGrid';
 import { useIsBackendAlive } from './SimulationsGrid/hooks/useBackendAliveEffect';
 import { RemoteWorkerSimulationsGrid } from './SimulationsGrid/RemoteWorkerSimulationsGrid';
 
 interface SimulationPanelProps {
 	goToResults?: () => void;
-	goToRun: (inputFiles?: SimulationInputFiles) => void;
-	forwardedInputFiles?: SimulationInputFiles;
 	source: SimulationFetchSource;
 	setSource: (source: SimulationFetchSource) => void;
 }
 
-export default function SimulationPanel({
-	goToResults,
-	goToRun,
-	forwardedInputFiles,
-	source,
-	setSource
-}: SimulationPanelProps) {
+export default function SimulationPanel({ goToResults, source, setSource }: SimulationPanelProps) {
 	const theme = useTheme();
 	const { yaptideEditor } = useStore();
 	const auth = useAuth();
 	const [showInputFilesEditor, setShowInputFilesEditor] = useState(false);
-	const [inputFiles, setInputFiles] = useState(forwardedInputFiles);
+	const [inputFiles, setInputFiles] = useState<SimulationInputFiles>();
+	const [inputFilesTitle, setInputFilesTitle] = useState<string>();
 	const isBackendAlive = useIsBackendAlive();
+	const { addFiles } = useInputFiles();
+	const modalInputFiles = (inputFiles ?? {}) as InputFiles;
+
+	const showSimulationInputFiles = (files: SimulationInputFiles | undefined, title?: string) => {
+		setInputFiles(files);
+		setInputFilesTitle(title || undefined);
+	};
 
 	return (
 		<Box
@@ -72,18 +74,57 @@ export default function SimulationPanel({
 								overflowY: 'scroll',
 								boxSizing: 'border-box'
 							}}>
+							<Box
+								sx={{
+									display: 'flex',
+									justifyContent: 'flex-end',
+									gap: theme.spacing(1),
+									marginBottom: theme.spacing(1)
+								}}>
+								<Button
+									color='primary'
+									variant='contained'
+									onClick={async () => {
+										if (
+											await addFiles(
+												modalInputFiles,
+												'replace',
+												'Using the input files of this simulation',
+												inputFilesTitle
+											)
+										)
+											setShowInputFilesEditor(false);
+									}}>
+									Use these input files
+								</Button>
+								<Button
+									color='info'
+									onClick={() =>
+										saveInputFilesAsZip(
+											modalInputFiles,
+											inputFilesZipName(
+												inputFilesTitle ?? 'simulation',
+												modalInputFiles,
+												undefined
+											)
+										)
+									}>
+									Download all
+								</Button>
+								<Button
+									color='info'
+									onClick={() => setShowInputFilesEditor(false)}>
+									Close
+								</Button>
+							</Box>
+							<Divider />
 							<InputFilesEditor
-								simulator={
-									yaptideEditor?.contextManager.currentSimulator ||
-									SimulatorType.COMMON
+								inputFiles={modalInputFiles}
+								onChange={(name, content) =>
+									setInputFiles(
+										old => ({ ...old, [name]: content }) as SimulationInputFiles
+									)
 								}
-								inputFiles={inputFiles}
-								closeEditor={() => setShowInputFilesEditor(false)}
-								goToRun={(inputFiles?: SimulationInputFiles) => {
-									setShowInputFilesEditor(false);
-									goToRun(inputFiles);
-								}}
-								onChange={newInputFiles => setInputFiles(newInputFiles)}
 							/>
 						</Box>
 					</Box>
@@ -112,7 +153,7 @@ export default function SimulationPanel({
 				<RemoteWorkerSimulationsGrid
 					goToResults={goToResults}
 					setShowInputFilesEditor={setShowInputFilesEditor}
-					setInputFiles={setInputFiles}
+					setInputFiles={showSimulationInputFiles}
 					simulator={
 						yaptideEditor?.contextManager.currentSimulator || SimulatorType.COMMON
 					}
@@ -120,7 +161,7 @@ export default function SimulationPanel({
 			) : (
 				<Geant4LocalWorkerSimulationsGrid
 					goToResults={goToResults}
-					setInputFiles={setInputFiles}
+					setInputFiles={showSimulationInputFiles}
 					setShowInputFilesEditor={setShowInputFilesEditor}
 					simulator={SimulatorType.GEANT4}
 				/>

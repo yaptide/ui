@@ -22,6 +22,7 @@ import {
 	ValidComponentTypes
 } from '../types/DialogServiceTypes';
 import { EntriesToObj } from '../types/TypeTransformUtil';
+import { OverwriteInputFilesDialog } from '../WrapperApp/components/InputEditor/OverwriteInputFilesDialog';
 import { DatasetsFullInfoDialog } from '../WrapperApp/components/Simulation/Modal/DatasetsFullInfoModal';
 import { DatasetsPartialInfoDialog } from '../WrapperApp/components/Simulation/Modal/DatasetsPartialInfoModal';
 import { createGenericContext, GenericContextProviderProps } from './GenericContext';
@@ -45,7 +46,8 @@ export type DialogComponentTypeMap = EntriesToObj<
 		ValidComponentTypes<['changeScoringType', typeof ChangeScoringTypeDialog]>,
 		ValidComponentTypes<['simulatorChange', typeof SimulatorChangeDialog]>,
 		ValidComponentTypes<['datasetsFullDetailsInfo', typeof DatasetsFullInfoDialog]>,
-		ValidComponentTypes<['datasetsPartialDetailsInfo', typeof DatasetsPartialInfoDialog]>
+		ValidComponentTypes<['datasetsPartialDetailsInfo', typeof DatasetsPartialInfoDialog]>,
+		ValidComponentTypes<['overwriteInputFiles', typeof OverwriteInputFilesDialog]>
 	]
 >;
 
@@ -123,7 +125,8 @@ const DialogProvider = ({ children }: GenericContextProviderProps) => {
 			changeScoringType: ChangeScoringTypeDialog,
 			simulatorChange: SimulatorChangeDialog,
 			datasetsFullDetailsInfo: DatasetsFullInfoDialog,
-			datasetsPartialDetailsInfo: DatasetsPartialInfoDialog
+			datasetsPartialDetailsInfo: DatasetsPartialInfoDialog,
+			overwriteInputFiles: OverwriteInputFilesDialog
 		}),
 		[]
 	);
