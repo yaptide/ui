@@ -1,14 +1,17 @@
-import { Box, CardContent, Chip, LinearProgress, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { Box, CardContent, Chip, Collapse, LinearProgress, Typography } from '@mui/material';
+import { formatDate } from 'date-fns/format';
+import { useState } from 'react';
 
 import {
 	currentJobStatusData,
 	currentTaskStatusData,
 	JobUnknownStatus,
 	SimulationInfo,
-	StatusState,
-	TaskUnknownStatus
+	StatusState
 } from '../../../../types/ResponseTypes';
+import { calculateSimulationProgress } from '../../../../util/simulationProgress';
 import { millisecondsToTimeString } from '../../../../util/time';
 
 interface SimulationCardContentProps {
@@ -18,40 +21,6 @@ interface SimulationCardContentProps {
 	formatedStartDate: string;
 	simulationStatus: Omit<JobUnknownStatus & SimulationInfo, never>;
 	highlightColor: string;
-}
-
-function getValidatedPrimaries(primariesNumber: number | undefined): number {
-	return primariesNumber ?? 0;
-}
-
-function percentOfSimulatedPrimaries(
-	requestedPrimariesSum: number,
-	simulatedPrimariesSum: number
-): number {
-	return requestedPrimariesSum > 0
-		? Math.min(100, (simulatedPrimariesSum / requestedPrimariesSum) * 100)
-		: 0;
-}
-
-function calculateSimulationProgress(jobTasksStatus: TaskUnknownStatus[]): number {
-	if (jobTasksStatus.length === 0) {
-		return 0;
-	}
-
-	const { requestedPrimariesSum, simulatedPrimariesSum } = jobTasksStatus.reduce(
-		(
-			acc: { requestedPrimariesSum: number; simulatedPrimariesSum: number },
-			taskStatus: TaskUnknownStatus
-		) => {
-			acc.requestedPrimariesSum += getValidatedPrimaries(taskStatus.requestedPrimaries);
-			acc.simulatedPrimariesSum += getValidatedPrimaries(taskStatus.simulatedPrimaries);
-
-			return acc;
-		},
-		{ requestedPrimariesSum: 0, simulatedPrimariesSum: 0 }
-	);
-
-	return percentOfSimulatedPrimaries(requestedPrimariesSum, simulatedPrimariesSum);
 }
 
 function needsProgressBar(state: StatusState | undefined) {
@@ -69,23 +38,53 @@ export function SimulationProgress(props: {
 }) {
 	const { formatedStartDate, duration, simulationStatus } = props;
 
-	const [simulationProgressPercent, setSimulationProgressPercent] = useState(0);
+	const metrics = calculateSimulationProgress(simulationStatus.jobTasksStatus ?? [], duration);
 
-	useEffect(() => {
-		if (simulationStatus.jobTasksStatus) {
-			const jobTasksStatus = simulationStatus.jobTasksStatus;
-			setSimulationProgressPercent(calculateSimulationProgress(jobTasksStatus));
-		}
-	}, [simulationStatus, setSimulationProgressPercent]);
+	const expectedEndTime =
+		metrics.etaMilliseconds !== null ? new Date(Date.now() + metrics.etaMilliseconds) : null;
+
+	const isRunning = simulationStatus.jobState === StatusState.RUNNING;
 
 	return (
 		<>
-			<Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-				<Typography color='textDisabled'>Start: {formatedStartDate}</Typography>
-				<Typography color='textDisabled'>{millisecondsToTimeString(duration)}</Typography>
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'space-between',
+					alignItems: 'flex-end',
+					mb: 0.5
+				}}>
+				<Box>
+					<Typography
+						variant='caption'
+						sx={{
+							display: 'block',
+							color: 'primary.main',
+							fontWeight: 'bold'
+						}}>
+						{metrics.progress.toFixed(0)}% Complete
+					</Typography>
+				</Box>
+
+				{isRunning && metrics.etaMilliseconds !== null && (
+					<Box sx={{ textAlign: 'right' }}>
+						<Typography
+							variant='caption'
+							sx={{
+								display: 'block',
+								color: 'info.main',
+								fontWeight: 'bold'
+							}}>
+							ETA: ~{millisecondsToTimeString(metrics.etaMilliseconds)}
+						</Typography>
+					</Box>
+				)}
 			</Box>
+
 			<LinearProgress
 				variant='buffer'
+				value={metrics.progress}
+				valueBuffer={1}
 				sx={{
 					'height': 18,
 					'mb': 1,
@@ -95,9 +94,29 @@ export function SimulationProgress(props: {
 						animationDuration: '2s'
 					}
 				}}
-				value={simulationProgressPercent}
-				valueBuffer={1}
 			/>
+
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'space-between',
+					alignItems: 'flex-end',
+					mb: 0.5
+				}}>
+				<Typography
+					variant='caption'
+					sx={{ color: 'textDisabled' }}>
+					Start: {formatedStartDate}
+				</Typography>
+
+				{isRunning && expectedEndTime && (
+					<Typography
+						variant='caption'
+						sx={{ color: 'textDisabled' }}>
+						Expected end: {formatDate(expectedEndTime, 'yyyy-MM-dd HH:mm:ss')}
+					</Typography>
+				)}
+			</Box>
 		</>
 	);
 }
@@ -110,14 +129,33 @@ export const SimulationCardContent = ({
 	simulationStatus,
 	highlightColor
 }: SimulationCardContentProps) => {
+	const [showDetails, setShowDetails] = useState(false);
+
+	const engine =
+		simulationStatus.metadata?.simType ??
+		(simulationStatus.metadata as Record<string, string> | undefined)?.sim_type;
+
+	const hasJobTasks =
+		currentJobStatusData['hasSpecificProperty'](simulationStatus, 'jobTasksStatus') &&
+		simulationStatus.jobTasksStatus.length > 0;
+
+	const otherMetadata = simulationStatus.metadata
+		? Object.entries(simulationStatus.metadata).filter(
+				([key]) => key !== 'type' && key !== 'simType' && key !== 'sim_type'
+			)
+		: [];
+
+	const hasDetails = hasJobTasks || otherMetadata.length > 0;
+
 	return (
 		<CardContent sx={{ flexGrow: 1, p: 0, px: 1 }}>
 			<Box
 				sx={{
 					display: 'flex',
 					flexWrap: 'wrap',
+					alignItems: 'center',
 					gap: 1,
-					mb: 1
+					mb: 0.5
 				}}>
 				<Chip
 					variant='filled'
@@ -127,44 +165,92 @@ export const SimulationCardContent = ({
 					}
 					sx={{ backgroundColor: highlightColor, color: 'white' }}
 				/>
-				{currentJobStatusData['hasSpecificProperty'](
-					simulationStatus,
-					'jobTasksStatus'
-				) && (
-					<>
-						<Chip
-							variant='outlined'
-							size='small'
-							label={`primaries: ${simulationStatus.jobTasksStatus.reduce(
-								(acc, taskStatus) =>
-									currentTaskStatusData['hasSpecificProperty'](
-										taskStatus,
-										'requestedPrimaries'
-									)
-										? acc + taskStatus.requestedPrimaries
-										: acc,
-								0 as number
-							)}`}
-						/>
-						<Chip
-							variant='outlined'
-							size='small'
-							label={`ntask: ${simulationStatus.jobTasksStatus.length}`}
-						/>
-					</>
+
+				{engine && (
+					<Chip
+						variant='outlined'
+						size='small'
+						label={engine}
+					/>
 				)}
-				{simulationStatus.metadata &&
-					Object.entries(simulationStatus.metadata)
-						.filter(([key, value]) => key !== 'type')
-						.map(([key, value]) => (
-							<Chip
-								key={key}
-								variant='outlined'
-								size='small'
-								label={`${key}: ${value}`}
-							/>
-						))}
 			</Box>
+
+			{hasDetails && (
+				<Box sx={{ mb: 1 }}>
+					<Box
+						onClick={() => setShowDetails(prev => !prev)}
+						sx={{
+							'display': 'inline-flex',
+							'alignItems': 'center',
+							'gap': 0.25,
+							'cursor': 'pointer',
+							'userSelect': 'none',
+							'color': 'text.secondary',
+							'&:hover': { color: 'text.primary' }
+						}}>
+						<Typography
+							variant='caption'
+							sx={{ color: 'inherit', fontWeight: 500 }}>
+							details
+						</Typography>
+						{showDetails ? (
+							<KeyboardArrowDownIcon sx={{ fontSize: '1rem' }} />
+						) : (
+							<KeyboardArrowRightIcon sx={{ fontSize: '1rem' }} />
+						)}
+					</Box>
+
+					<Collapse
+						in={showDetails}
+						unmountOnExit>
+						<Box
+							sx={{
+								display: 'flex',
+								flexWrap: 'wrap',
+								gap: 1,
+								mt: 0.5
+							}}>
+							{currentJobStatusData['hasSpecificProperty'](
+								simulationStatus,
+								'jobTasksStatus'
+							) && (
+								<>
+									<Chip
+										variant='outlined'
+										size='small'
+										label={`primaries: ${simulationStatus.jobTasksStatus.reduce(
+											(acc, taskStatus) =>
+												currentTaskStatusData['hasSpecificProperty'](
+													taskStatus,
+													'requestedPrimaries'
+												)
+													? acc + taskStatus.requestedPrimaries
+													: acc,
+											0
+										)}`}
+									/>
+
+									<Chip
+										variant='outlined'
+										size='small'
+										label={`ntask: ${simulationStatus.jobTasksStatus.length}`}
+									/>
+								</>
+							)}
+
+							{otherMetadata.map(([key, value]) => (
+								<Chip
+									key={key}
+									variant='outlined'
+									size='small'
+									label={`${key}: ${value}`}
+								/>
+							))}
+						</Box>
+					</Collapse>
+				</Box>
+			)}
+
 			<Box sx={{ minHeight: '40px' }}>
 				{needsProgressBar(simulationStatus.jobState)
 					? currentJobStatusData['hasSpecificProperty'](
@@ -179,15 +265,17 @@ export const SimulationCardContent = ({
 						)
 					: simulationStatus.jobState === StatusState.COMPLETED && (
 							<>
-								<Typography color='textDisabled'>
+								<Typography sx={{ color: 'textDisabled' }}>
 									Start: {formatedStartDate}
 								</Typography>
+
 								{endTime && (
-									<Typography color='textDisabled'>
+									<Typography sx={{ color: 'textDisabled' }}>
 										End: {formatedEndDate}
 									</Typography>
 								)}
-								<Typography color='textDisabled'>
+
+								<Typography sx={{ color: 'textDisabled' }}>
 									Duration: {millisecondsToTimeString(duration)}
 								</Typography>
 							</>
