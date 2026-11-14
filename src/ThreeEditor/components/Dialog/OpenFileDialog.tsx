@@ -88,7 +88,6 @@ export function OpenFileDialog({
 							<Tooltip title='Clear selection'>
 								{/* Tooltip requires a non disabled child to properly handle events */}
 								<span>
-									{/* Tooltip wraps a span, so it does not name this button; keep this text in sync with the Tooltip. */}
 									<IconButton
 										aria-label='Clear selection'
 										color='error'
@@ -139,7 +138,6 @@ export function OpenFileDialog({
 								value={url}
 								onChange={handleUrlChange}
 								slotProps={{
-									// Compromise: there is no visible label, so the accessible name mirrors the placeholder.
 									htmlInput: { 'aria-label': 'Paste project URL here' }
 								}}
 							/>
@@ -176,7 +174,6 @@ export function OpenFileDialog({
 								value={plainText}
 								onChange={handlePlainTextChange}
 								slotProps={{
-									// Compromise: there is no visible label, so the accessible name mirrors the placeholder.
 									htmlInput: { 'aria-label': 'Paste project JSON here' }
 								}}
 							/>
