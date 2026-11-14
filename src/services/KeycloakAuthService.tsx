@@ -7,11 +7,21 @@ import { useKeycloak } from '../util/keycloak/useKeycloak';
 import { createSubstituteContext, GenericContextProviderProps } from './GenericContext';
 
 const keycloakBaseUrl = process.env.REACT_APP_KEYCLOAK_BASE_URL;
+const keycloakRealm = process.env.REACT_APP_KEYCLOAK_REALM;
+const keycloakClientId = process.env.REACT_APP_KEYCLOAK_CLIENT_ID;
+
+if (keycloakBaseUrl && (!keycloakRealm || !keycloakClientId)) {
+	throw new Error(
+		'Incomplete Keycloak configuration: REACT_APP_KEYCLOAK_BASE_URL requires ' +
+			'REACT_APP_KEYCLOAK_REALM and REACT_APP_KEYCLOAK_CLIENT_ID.'
+	);
+}
+
 const authInstance = keycloakBaseUrl
 	? (new Keycloak({
 			url: `${keycloakBaseUrl}/auth/`,
-			realm: process.env.REACT_APP_KEYCLOAK_REALM ?? '',
-			clientId: process.env.REACT_APP_KEYCLOAK_CLIENT_ID ?? ''
+			realm: keycloakRealm!,
+			clientId: keycloakClientId!
 		}) as any)
 	: undefined;
 
