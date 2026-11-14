@@ -1,6 +1,8 @@
 import { useTheme } from '@mui/material';
-import CodeMirror, { EditorView } from '@uiw/react-codemirror';
-import { useMemo } from 'react';
+import CodeMirror, { EditorView, Extension } from '@uiw/react-codemirror';
+import { useEffect, useMemo, useState } from 'react';
+
+import { loadLanguageForFile } from './inputFileLanguages';
 
 interface InputFileCodeEditorProps {
 	name: string;
@@ -11,10 +13,26 @@ interface InputFileCodeEditorProps {
 export function InputFileCodeEditor({ name, value, onChange }: InputFileCodeEditorProps) {
 	const theme = useTheme();
 
-	const extensions = useMemo(
-		() => [EditorView.contentAttributes.of({ 'aria-label': `${name} text field` })],
-		[name]
-	);
+	const [language, setLanguage] = useState<Extension>();
+
+	useEffect(() => {
+		let current = true;
+
+		loadLanguageForFile(name).then(loaded => {
+			if (current) setLanguage(loaded);
+		});
+
+		return () => {
+			current = false;
+		};
+	}, [name]);
+
+	const extensions = useMemo(() => {
+		return [
+			...(language ? [language] : []),
+			EditorView.contentAttributes.of({ 'aria-label': `${name} text field` })
+		];
+	}, [language, name]);
 
 	return (
 		<CodeMirror

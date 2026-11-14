@@ -7,6 +7,8 @@
 		"node": "^24 || >=26"
 	},
 	"dependencies": {
+		"@codemirror/language": "^6.13.1",
+		"@codemirror/language-data": "^6.5.2",
 		"@emotion/react": "^11.14.0",
 		"@emotion/styled": "^11.14.1",
 		"@minoru/react-dnd-treeview": "^3.5.4",
