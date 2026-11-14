@@ -1,4 +1,5 @@
-import { canChooseLoginMethod, chooseLoginScreen, LoginOptions } from './LoginScreen';
+import type { LoginOptions } from './LoginScreen';
+import { canChooseLoginMethod, chooseLoginScreen } from './LoginScreen';
 
 describe('chooseLoginScreen', () => {
 	const options = (overrides: Partial<LoginOptions> = {}): LoginOptions => ({

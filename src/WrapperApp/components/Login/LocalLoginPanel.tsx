@@ -3,7 +3,7 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 import { useAuth } from '../../../services/AuthService';
 
-export default function NamePasswordLoginPanel() {
+export default function LocalLoginPanel() {
 	const { login } = useAuth();
 
 	const [username, setUsername] = useState('');

@@ -6,7 +6,7 @@ import { snakeToCamelCase } from '../util/Notation/Notation';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:5000';
 const DEMO_MODE = process.env.REACT_APP_TARGET === 'demo';
-const SSO_AUTH_ENABLED = process.env.REACT_APP_SSO_AUTH_ENABLED === 'true';
+const SSO_ENABLED = Boolean(process.env.REACT_APP_KEYCLOAK_BASE_URL);
 
 export const DEPLOYMENT = (process.env.REACT_APP_DEPLOYMENT as ConfigDeployment) ?? 'prod';
 export type ConfigDeployment = 'dev' | 'prod' | undefined;
@@ -17,7 +17,7 @@ interface Config {
 	backendUrl: string;
 	deployment: ConfigDeployment;
 	demoMode: boolean;
-	ssoAuthEnabled: boolean;
+	ssoEnabled: boolean;
 }
 
 declare global {
@@ -36,7 +36,7 @@ const ConfigProvider = ({ children }: { children?: ReactNode }) => {
 		backendUrl: BACKEND_URL,
 		deployment: DEPLOYMENT,
 		demoMode: DEMO_MODE,
-		ssoAuthEnabled: SSO_AUTH_ENABLED
+		ssoEnabled: SSO_ENABLED
 	});
 	window.BACKEND_URL ??= BACKEND_URL;
 
@@ -74,7 +74,7 @@ const ConfigProvider = ({ children }: { children?: ReactNode }) => {
 			defineProperty('BACKEND_URL');
 			defineProperty('DEPLOYMENT', true);
 			defineProperty('DEMO_MODE');
-			defineProperty('SSO_AUTH_ENABLED');
+			defineProperty('SSO_ENABLED');
 		}
 	}, [config]);
 

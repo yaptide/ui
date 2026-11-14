@@ -6,13 +6,14 @@ import KeycloakProvider from '../util/keycloak/KeycloakProvider';
 import { useKeycloak } from '../util/keycloak/useKeycloak';
 import { createSubstituteContext, GenericContextProviderProps } from './GenericContext';
 
-const keycloakParams = {
-	url: `${process.env.REACT_APP_KEYCLOAK_BASE_URL ?? 'https://localhost:8080'}/auth/`,
-	realm: `${process.env.REACT_APP_KEYCLOAK_REALM ?? 'master'}`,
-	clientId: `${process.env.REACT_APP_KEYCLOAK_CLIENT_ID ?? 'my-client'}`
-};
-
-const authInstance = new Keycloak(keycloakParams) as any;
+const keycloakBaseUrl = process.env.REACT_APP_KEYCLOAK_BASE_URL;
+const authInstance = keycloakBaseUrl
+	? (new Keycloak({
+			url: `${keycloakBaseUrl}/auth/`,
+			realm: process.env.REACT_APP_KEYCLOAK_REALM ?? '',
+			clientId: process.env.REACT_APP_KEYCLOAK_CLIENT_ID ?? ''
+		}) as any)
+	: undefined;
 
 const initOptions = {
 	pkceMethod: 'S256',
@@ -37,7 +38,7 @@ const [useKeycloakAuth, KeycloakAuthContextProvider] =
 	createSubstituteContext<KeycloakAuthContext>(useKeycloak);
 
 const KeycloakAuth = ({ children }: GenericContextProviderProps) => {
-	const { ssoAuthEnabled } = useConfig();
+	const { ssoEnabled } = useConfig();
 	const proxyContextProvider = useCallback(
 		(children: ReactNode) => (
 			<KeycloakAuthContextProvider
@@ -50,7 +51,7 @@ const KeycloakAuth = ({ children }: GenericContextProviderProps) => {
 		[]
 	);
 
-	return ssoAuthEnabled ? (
+	return ssoEnabled && authInstance ? (
 		<KeycloakProvider
 			client={authInstance}
 			initOptions={initOptions}>

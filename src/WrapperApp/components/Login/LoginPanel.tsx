@@ -1,38 +1,25 @@
 import ArrowBack from '@mui/icons-material/ArrowBack';
-import {
-	Box,
-	Button,
-	CircularProgress,
-	IconButton,
-	Link,
-	Typography,
-	useTheme
-} from '@mui/material';
-import { useCallback, useState } from 'react';
+import { Box, CircularProgress, IconButton, Typography, useTheme } from '@mui/material';
+import { useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
-import { useKeycloakAuth } from '../../../services/KeycloakAuthService';
+import LocalLoginPanel from './LocalLoginPanel';
 import { chooseLoginScreen, LoginMethod } from './LoginScreen';
-import NamePasswordLoginPanel from './NamePasswordLoginPanel';
+import SsoLoginPanel from './SsoLoginPanel';
 
 export default function LoginPanel() {
 	const theme = useTheme();
-	const { ssoAuthEnabled } = useConfig();
-	const { passwordAuthAvailability } = useAuth();
-	const { keycloak, initialized } = useKeycloakAuth();
-	const [userChoice, setUserChoice] = useState<LoginMethod>(ssoAuthEnabled ? 'sso' : 'local');
+	const { ssoEnabled } = useConfig();
+	const { localLoginStatus } = useAuth();
+	const [userChoice, setUserChoice] = useState<LoginMethod>(ssoEnabled ? 'sso' : 'local');
 	const loginScreen = chooseLoginScreen(
 		{
-			sso: ssoAuthEnabled,
-			local: passwordAuthAvailability === 'unknown' ? 'checking' : passwordAuthAvailability
+			sso: ssoEnabled,
+			local: localLoginStatus
 		},
 		userChoice
 	);
-
-	const keycloakLogin = useCallback(() => {
-		if (initialized && !keycloak.authenticated) keycloak.login();
-	}, [initialized, keycloak]);
 
 	return (
 		<Box
@@ -54,34 +41,17 @@ export default function LoginPanel() {
 					gap: theme.spacing(1)
 				}}>
 				{loginScreen === 'sso' && (
-					<>
-						<Button
-							fullWidth
-							disabled={!initialized}
-							variant='contained'
-							color='primary'
-							onClick={keycloakLogin}
-							sx={{
-								fontSize: 16,
-								textTransform: 'none',
-								py: theme.spacing(1.5),
-								px: theme.spacing(10)
-							}}>
-							Connect with PLGrid
-						</Button>
-						{passwordAuthAvailability === 'enabled' && (
-							<Link
-								color='textDisabled'
-								onClick={() => setUserChoice('local')}
-								sx={{ cursor: 'pointer' }}>
-								use password login
-							</Link>
-						)}
-					</>
+					<SsoLoginPanel
+						onUseLocalLogin={
+							localLoginStatus === 'enabled'
+								? () => setUserChoice('local')
+								: undefined
+						}
+					/>
 				)}
 				{loginScreen === 'local' && (
 					<>
-						{ssoAuthEnabled && (
+						{ssoEnabled && (
 							<Box sx={{ width: '100%' }}>
 								<IconButton
 									size='small'
@@ -90,13 +60,17 @@ export default function LoginPanel() {
 								</IconButton>
 							</Box>
 						)}
-						<NamePasswordLoginPanel />
+						<LocalLoginPanel />
 					</>
 				)}
 				{loginScreen === 'waitingForServer' && <CircularProgress />}
 				{loginScreen === 'noLoginMethod' && (
 					<Typography>
-						No login method is available. Enable SSO or local users.
+						No login method is available. The server does not accept local accounts, and
+						this build has no SSO configured. For local development, start the backend
+						with ENABLE_LOCAL_USERS=true. For SSO, configure
+						REACT_APP_KEYCLOAK_BASE_URL, REACT_APP_KEYCLOAK_REALM and
+						REACT_APP_KEYCLOAK_CLIENT_ID.
 					</Typography>
 				)}
 			</Box>
