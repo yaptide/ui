@@ -91,10 +91,10 @@ export class SpecialComponentManager
 	private hasUsefulGeometry(object: THREE.Object3D): object is BeamModulator {
 		return Boolean(
 			isBeamModulator(object) &&
-				this.editor.selected === object &&
-				object.geometry &&
-				object.geometry.boundingSphere &&
-				object.geometry.boundingSphere.radius > 0
+			this.editor.selected === object &&
+			object.geometry &&
+			object.geometry.boundingSphere &&
+			object.geometry.boundingSphere.radius > 0
 		);
 	}
 

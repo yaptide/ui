@@ -15,7 +15,7 @@ module.exports = {
 		progress: { type: 'none' }, // Disable progress logs for simplicity
 
 		doNotFollow: {
-			path: '^src/(?:__tests__|Loader)|^src/.*\\b(?:setupTests\\.ts|reset\\.d\\.ts|react-app-env\\.d\\.ts|Globals\\.d\\.ts|index\\.tsx|index\\.css)$'
+			path: '^src/(?:__tests__|Loader)|^src/.*\\b(?:reset\\.d\\.ts|react-app-env\\.d\\.ts|Globals\\.d\\.ts|index\\.tsx|index\\.css)$'
 		},
 
 		reporterOptions: {
