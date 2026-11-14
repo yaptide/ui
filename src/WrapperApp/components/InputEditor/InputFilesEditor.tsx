@@ -1,6 +1,5 @@
-import { Box, Button, Checkbox, Chip, FormControlLabel, Typography } from '@mui/material';
-import useTheme from '@mui/system/useTheme';
-import CodeEditor from '@uiw/react-textarea-code-editor';
+import { Box, Button, Checkbox, Chip, FormControlLabel, Skeleton, Typography } from '@mui/material';
+import { lazy, Suspense } from 'react';
 
 import { saveInputFile } from './saveInputFiles';
 import {
@@ -10,6 +9,10 @@ import {
 	simulatorName,
 	sortInputFileNames
 } from './simulatorDetection';
+
+const InputFileCodeEditor = lazy(() =>
+	import('./InputFileCodeEditor').then(module => ({ default: module.InputFileCodeEditor }))
+);
 
 interface InputFilesEditorProps {
 	inputFiles: InputFiles;
@@ -34,37 +37,10 @@ export function InputFilesEditor({
 	onRemove,
 	onRename
 }: InputFilesEditorProps) {
-	const theme = useTheme();
-	const largeFileSize = 100_000;
-	const largeFileLinesLimit = 500;
-
-	const truncateFile = (file: string) => {
-		var result: string[] = [];
-		var lines = file.split('\n').slice(0, largeFileLinesLimit);
-		let totalLength = 0;
-
-		for (const line of lines) {
-			if (totalLength + line.length <= largeFileSize) {
-				totalLength += line.length;
-				result.push(line);
-			} else {
-				result.push(line.substring(0, largeFileSize - totalLength));
-
-				break;
-			}
-		}
-
-		result.push('\n\n... Output truncated ...');
-
-		return result.join('\n');
-	};
-
 	return (
 		<Box>
 			{sortInputFileNames(Object.keys(inputFiles), detection, requiredFiles).map(name => {
 				const value = inputFiles[name];
-				const isLargeFile = value.length > largeFileSize;
-				const content = !isLargeFile ? value : truncateFile(value);
 				const fileDetection = detection?.files[name];
 				const simulator = fileDetection?.simulator ?? null;
 				const shownIssues = fileDetection?.issues ?? [];
@@ -126,15 +102,6 @@ export function InputFilesEditor({
 									label='Include in run'
 								/>
 							)}
-							{isLargeFile && (
-								<Box
-									sx={{
-										color: 'error.main',
-										display: 'inline-flex'
-									}}>
-									File is to large, displaying first few lines...
-								</Box>
-							)}
 						</Box>
 						{shownIssues.map(issue => (
 							<Box
@@ -159,27 +126,19 @@ export function InputFilesEditor({
 								)}
 							</Box>
 						))}
-						<CodeEditor
-							aria-label={name + ' text field'}
-							value={content}
-							placeholder={`Please enter ${name} content.`}
-							onChange={evn => {
-								if (!isLargeFile) onChange(name, evn.target.value);
-							}}
-							disabled={isLargeFile}
-							data-color-mode={theme.palette.mode}
-							padding={15}
-							style={{
-								fontSize: 12,
-								backgroundColor:
-									theme.palette.mode === 'dark' ? '#121212' : '#f5f5f5',
-								fontFamily:
-									'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-								maxHeight: name === 'sobp.dat' ? '15rem' : 'unset',
-								overflowY: name === 'sobp.dat' ? 'auto' : 'unset',
-								borderRadius: theme.spacing(1)
-							}}
-						/>
+						<Suspense
+							fallback={
+								<Skeleton
+									variant='rounded'
+									height={120}
+								/>
+							}>
+							<InputFileCodeEditor
+								name={name}
+								value={value}
+								onChange={content => onChange(name, content)}
+							/>
+						</Suspense>
 					</Box>
 				);
 			})}

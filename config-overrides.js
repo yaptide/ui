@@ -58,7 +58,9 @@ module.exports.jest = function overrideJest(jestConfig) {
 
 	jestConfig.moduleNameMapper = {
 		...jestConfig.moduleNameMapper,
-		'^three$': '<rootDir>/node_modules/three/build/three.module.js'
+		'^three$': '<rootDir>/node_modules/three/build/three.module.js',
+		'^@marijn/find-cluster-break$':
+			'<rootDir>/node_modules/@marijn/find-cluster-break/dist/index.cjs'
 	};
 
 	return jestConfig;
