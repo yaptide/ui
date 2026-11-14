@@ -3,9 +3,7 @@ import { SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
 export type InputFiles = Record<string, string>;
 
 export type RunnableSimulator =
-	| SimulatorType.SHIELDHIT
-	| SimulatorType.FLUKA
-	| SimulatorType.GEANT4;
+	SimulatorType.SHIELDHIT | SimulatorType.FLUKA | SimulatorType.GEANT4;
 
 export const RUNNABLE_SIMULATORS: RunnableSimulator[] = [
 	SimulatorType.SHIELDHIT,
