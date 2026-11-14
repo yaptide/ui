@@ -7,6 +7,7 @@ import {
 	Box,
 	Button,
 	Stack,
+	Tooltip,
 	Typography,
 	useTheme
 } from '@mui/material';
@@ -55,16 +56,21 @@ function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
 						marginBottom: theme.spacing(1)
 					}}>
 					{props.add.map(add => (
-						<Button
+						<Tooltip
 							key={add.label}
-							onClick={add.onClick}
-							disabled={add.disabled}
-							variant='contained'
-							size='small'
-							startIcon={<AddIcon />}
-							disableElevation>
-							{add.label}
-						</Button>
+							title={add.tooltip}>
+							<span>
+								<Button
+									onClick={add.onClick}
+									disabled={add.disabled}
+									variant='contained'
+									size='small'
+									startIcon={<AddIcon />}
+									disableElevation>
+									{add.label}
+								</Button>
+							</span>
+						</Tooltip>
 					))}
 				</Stack>
 				{props.tree}

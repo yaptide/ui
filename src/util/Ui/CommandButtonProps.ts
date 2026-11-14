@@ -34,10 +34,11 @@ export const createCommandButtonProps = (
 	editor: YaptideEditor,
 	data: CommandButtonTuple[]
 ): CommandButtonProps[] => {
-	return data.map(([label, command, disabled]) => ({
+	return data.map(([label, command, disabled, tooltip]) => ({
 		label,
 		onClick: () => (command ? editor.execute(command()) : undefined),
-		disabled
+		disabled,
+		tooltip
 	}));
 };
 
@@ -211,6 +212,13 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 			break;
 	}
 
+	const { selected } = editor;
+	const quantityTarget = isOutput(selected)
+		? selected
+		: isScoringQuantity(selected) && isOutput(selected.parent?.parent)
+			? selected.parent.parent
+			: undefined;
+
 	const outputsTuple: CommandButtonTuple[] = [
 		[
 			'Output',
@@ -233,7 +241,10 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 						: editor.selected
 				);
 			},
-			!isOutput(editor.selected) && !isScoringQuantity(editor.selected)
+			!quantityTarget,
+			quantityTarget
+				? `Add a quantity to "${quantityTarget.name}"`
+				: 'Select an output to add a quantity to it'
 		]
 	];
 
@@ -256,9 +267,14 @@ export type CommandButtonProps = {
 	label: string;
 	onClick: () => void;
 	disabled?: boolean;
+	tooltip?: string;
 };
-type CommandButtonTuple =
-	[string, (() => Command) | undefined] | [string, (() => Command) | undefined, boolean];
+type CommandButtonTuple = [
+	label: string,
+	command: (() => Command) | undefined,
+	disabled?: boolean,
+	tooltip?: string
+];
 
 type ManagerName = 'Figures' | 'Zones' | 'Detectors' | 'Special Components' | 'Filters' | 'Outputs';
 
