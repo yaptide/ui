@@ -180,7 +180,7 @@ function OperationInput({
 						width: '100%'
 					}
 				}}
-				aria-label='operation-select'>
+				aria-label={objectName ? `Boolean operation: ${objectName}` : 'Boolean operation'}>
 				{allowedOperations.map((operation, index) => (
 					<Tooltip
 						title={OperationToTooltip(operation, objectName)}
