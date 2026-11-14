@@ -62,13 +62,14 @@ const getRefreshDelay = (exp: number) => Math.max((exp - new Date().getTime()) /
 enum StorageKey {
 	USER = 'editor.user'
 }
-export type PasswordAuthAvailability = 'unknown' | 'enabled' | 'disabled';
+/** Whether the backend accepts local username-and-password accounts. */
+export type LocalLoginStatus = 'checking' | 'enabled' | 'disabled';
 
 export interface AuthContext {
 	user: AuthUser | null;
 	isAuthorized: boolean;
 	isServerReachable: boolean;
-	passwordAuthAvailability: PasswordAuthAvailability;
+	localLoginStatus: LocalLoginStatus;
 	login: (...args: RequestAuthLogin) => void;
 	logout: (...args: RequestAuthLogout) => void;
 	refresh: (...args: RequestAuthRefresh) => void;
@@ -86,8 +87,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 	const { keycloak, initialized } = useKeycloakAuth();
 	const [keyCloakInterval, setKeyCloakInterval] = useState<number>();
 	const [isServerReachable, setIsServerReachable] = useState<boolean | null>(null);
-	const [passwordAuthAvailability, setPasswordAuthAvailability] =
-		useState<PasswordAuthAvailability>('unknown');
+	const [localLoginStatus, setLocalLoginStatus] = useState<LocalLoginStatus>('checking');
 	const { enqueueSnackbar } = useSnackbar();
 	const { open: openRejectKeycloakUserDialog } = useDialog('rejectKeycloak');
 	const { open: openRejectKeycloakRefreshUserDialog } = useDialog('rejectKeycloakRefresh');
@@ -169,7 +169,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 			.get(``)
 			.json<ResponseRoot>()
 			.then(r => {
-				setPasswordAuthAvailability(r.localUsersEnabled === false ? 'disabled' : 'enabled');
+				setLocalLoginStatus(r.localUsersEnabled === false ? 'disabled' : 'enabled');
 
 				return !!r.message;
 			})
@@ -381,7 +381,7 @@ const Auth = ({ children }: GenericContextProviderProps) => {
 				user,
 				isAuthorized,
 				isServerReachable: Boolean(isServerReachable),
-				passwordAuthAvailability,
+				localLoginStatus,
 				login,
 				logout,
 				authKy,
