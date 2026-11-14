@@ -144,7 +144,9 @@ function OperationInput({
 						arrow
 						followCursor
 						enterDelay={TOOLTIP_DELAY}>
+						{/* Tooltip renders a JSX title, so it does not name this button; keep this text in sync with the Tooltip. */}
 						<IconButton
+							aria-label='Remove operation from a zone area calculations'
 							onClick={onChange}
 							sx={{
 								'padding': 3,
@@ -190,7 +192,6 @@ function OperationInput({
 						enterDelay={TOOLTIP_DELAY}>
 						<ToggleButton
 							value={operation}
-							aria-label={operation}
 							selected={operation === value}
 							color='primary'
 							sx={{

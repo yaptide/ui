@@ -9,7 +9,6 @@ type GeometryIdSelectProps = SelectProps<string> & {
 };
 
 export function GeometryIdSelect({
-	labelId = 'GeometryLabel',
 	id = 'GeometryInput',
 	fullWidth = true,
 	defaultOpen = true,
@@ -23,10 +22,10 @@ export function GeometryIdSelect({
 	return (
 		<Select
 			ref={selectRef}
-			labelId={labelId}
 			id={id}
 			fullWidth={fullWidth}
 			defaultOpen={defaultOpen}
+			aria-label='Select geometry'
 			{...restProps}>
 			{canSelectEmpty && (
 				<MenuItem

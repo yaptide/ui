@@ -15,7 +15,7 @@ import {
 	useTheme
 } from '@mui/material';
 import CodeEditor from '@uiw/react-textarea-code-editor';
-import { ChangeEvent, useCallback, useState } from 'react';
+import { ChangeEvent, useCallback, useId, useState } from 'react';
 
 import { EditableChip } from '../../../util/genericComponents/EditableChip';
 import { ScriptOption } from './RunSimulationForm';
@@ -73,6 +73,7 @@ export function BatchScriptParametersEditor({
 	const [useCommandLineOptionsChecked, setUseCommandLineOptionsChecked] = useState(
 		scriptOptions.length > 0
 	);
+	const commandLineOptionsLabelId = useId();
 
 	const filterKeysAndLabels = createFilterOptions<ScriptOption>({
 		matchFrom: 'any',
@@ -220,11 +221,12 @@ export function BatchScriptParametersEditor({
 						icon={<IntegrationInstructionsOutlinedIcon />}
 						checkedIcon={<IntegrationInstructionsIcon />}
 						slotProps={{
-							input: { 'aria-labelledby': 'useCommandLineOptions' }
+							input: { 'aria-labelledby': commandLineOptionsLabelId }
 						}}
 					/>
 					<ListItemText
 						primary={`Use ${scriptName.toLocaleLowerCase()} command line options`}
+						slotProps={{ primary: { id: commandLineOptionsLabelId } }}
 					/>
 				</ListItemButton>
 			</ListItem>

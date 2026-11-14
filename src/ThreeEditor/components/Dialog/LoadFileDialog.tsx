@@ -45,7 +45,6 @@ export function LoadFileDialog({
 				)
 			}>
 			<Button
-				aria-label='cancel'
 				data-testid={`${testIds.dialog('load-file')}-cancel`}
 				onClick={onClose}
 				color='secondary'
@@ -54,7 +53,6 @@ export function LoadFileDialog({
 			</Button>
 			<Button
 				disabled={!data}
-				aria-label='clear and proceed'
 				data-testid={`${testIds.dialog('load-file')}-confirm`}
 				variant='contained'
 				color='secondary'

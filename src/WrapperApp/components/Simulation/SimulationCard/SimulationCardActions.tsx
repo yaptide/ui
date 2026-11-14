@@ -100,7 +100,7 @@ export const SimulationCardActions = ({
 		<CardActions sx={{ p: 1 }}>
 			<ButtonGroup
 				fullWidth
-				aria-label='full width outlined button group'>
+				aria-label='Simulation actions'>
 				{statusAction}
 				<Button
 					sx={{ fontSize: '.8em' }}

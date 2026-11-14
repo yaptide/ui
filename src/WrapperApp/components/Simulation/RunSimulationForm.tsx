@@ -36,8 +36,7 @@ import { Geant4DatasetDownloadSelector, Geant4DatasetsType } from './Geant4Datas
 
 function a11yProps(index: number, name: string = 'RunSimulation') {
 	return {
-		'id': `${name}Tab${index}`,
-		'aria-controls': `${name}Tabpanel${index}`
+		id: `${name}Tab${index}`
 	};
 }
 

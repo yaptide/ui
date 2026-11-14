@@ -44,13 +44,13 @@ export default function SimulationPanel({
 				flexDirection: 'column'
 			}}>
 			<Modal
-				aria-labelledby='transition-modal-title'
-				aria-describedby='transition-modal-description'
 				open={showInputFilesEditor}
 				onClose={() => setShowInputFilesEditor(false)}
 				closeAfterTransition>
 				<Fade in={showInputFilesEditor}>
 					<Box
+						role='dialog'
+						aria-label='Input files editor'
 						sx={{
 							height: '90vh',
 							width: '80vw',

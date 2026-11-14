@@ -10,7 +10,7 @@ import {
 	IconButton,
 	Theme
 } from '@mui/material';
-import { JSX, ReactNode } from 'react';
+import { JSX, ReactNode, useId } from 'react';
 
 import { testIds } from '../../../util/testIds';
 
@@ -47,21 +47,25 @@ export function CustomDialog({
 	alert = false,
 	onClose,
 	title,
-	titleId = `${titleToKebabCase(title)}-dialog-title`,
-	contentId = `${titleToKebabCase(title)}-dialog-content`,
+	titleId,
+	contentId,
 	testId,
 	contentText,
 	sx,
 	body,
 	children
 }: CustomDialogProps) {
+	const generatedId = useId();
+	const resolvedTitleId = titleId ?? `${generatedId}-dialog-title`;
+	const resolvedContentId = contentId ?? `${generatedId}-dialog-content`;
+
 	return (
 		<Dialog
 			sx={sx}
 			role={`${alert ? 'alert' : ''}dialog`}
 			aria-modal='true'
-			aria-labelledby={titleId}
-			aria-describedby={contentId}
+			aria-labelledby={resolvedTitleId}
+			aria-describedby={resolvedContentId}
 			slotProps={
 				testId
 					? ({
@@ -72,13 +76,13 @@ export function CustomDialog({
 			open={open}
 			onClose={onClose}>
 			<DialogTitle
-				id={titleId}
+				id={resolvedTitleId}
 				data-testid={testId ? testIds.dialogTitle(testId) : undefined}>
 				{title}
 			</DialogTitle>
 			<DialogContent>
 				<DialogContentText
-					id={contentId}
+					id={resolvedContentId}
 					data-testid={testId ? testIds.dialogContent(testId) : undefined}>
 					{contentText}
 				</DialogContentText>

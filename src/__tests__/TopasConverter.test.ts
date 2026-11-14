@@ -16,8 +16,8 @@ import chrome from 'selenium-webdriver/chrome';
  * (`ExamplePanel`) and the anchors used below no longer exist.
  *
  * Keep this file skipped. When TOPAS support returns, rewrite the flow to the
- * current UI and migrate every selector to `byTestId()` / `src/util/testIds.ts`
- * (KROK A convention), instead of relying on ARIA or DOM structure.
+ * current UI and migrate every selector to `byTestId()` / `src/util/testIds.ts`,
+ * instead of relying on ARIA or DOM structure.
  */
 
 describe('TopasConverter', () => {

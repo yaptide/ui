@@ -233,8 +233,12 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 			<Box
 				role='tabpanel'
 				hidden={value.index !== index}
-				id={`vertical-tabpanel-${index}`}
-				aria-labelledby={`vertical-tab-${index}`}
+				{...(index < 0
+					? {}
+					: {
+							'id': `vertical-tabpanel-${index}`,
+							'aria-labelledby': `vertical-tab-${index}`
+						})}
 				sx={{
 					height: '100%',
 					width: '100%',
@@ -315,7 +319,7 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 				variant='scrollable'
 				value={algebraRow.index}
 				onChange={handleTabsChange}
-				aria-label='Vertical tabs example'
+				aria-label='Boolean algebra rows'
 				sx={{
 					borderRight: 1,
 					borderColor: 'divider',
@@ -337,7 +341,6 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 						placement='right'>
 						<IconButton
 							color='secondary'
-							aria-label='add new data row'
 							sx={{
 								minWidth: 30,
 								borderRadius: 0,
@@ -378,7 +381,6 @@ function ZoneManagerPanel(props: BooleanZoneManagerPanelProps) {
 								title='Delete row'
 								placement='left'>
 								<IconButton
-									aria-label='delete'
 									onClick={removeAlgebraDataRow(id)}
 									color='error'
 									sx={{

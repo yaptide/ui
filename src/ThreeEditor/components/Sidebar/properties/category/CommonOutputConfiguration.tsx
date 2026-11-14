@@ -106,15 +106,13 @@ export function CommonOutputConfiguration(props: { editor: YaptideEditor; object
 							size='small'>
 							<ToggleButton
 								value={SCORING_TYPE_ENUM.DETECTOR}
-								disabled={scoringType === SCORING_TYPE_ENUM.DETECTOR}
-								aria-label='left aligned'>
+								disabled={scoringType === SCORING_TYPE_ENUM.DETECTOR}>
 								Detector
 							</ToggleButton>
 
 							<ToggleButton
 								value={SCORING_TYPE_ENUM.ZONE}
-								disabled={scoringType === SCORING_TYPE_ENUM.ZONE}
-								aria-label='left aligned'>
+								disabled={scoringType === SCORING_TYPE_ENUM.ZONE}>
 								Zone
 							</ToggleButton>
 						</StyledExclusiveToggleButtonGroup>

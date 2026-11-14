@@ -118,7 +118,8 @@ export default function NavPanel(props: NavPanelProps) {
 
 	return (
 		<Box
-			aria-label='Navigation drawer for the YAPTIDE application'
+			component='nav'
+			aria-label='Main navigation'
 			data-testid={testIds.navDrawer}
 			sx={{
 				display: 'flex',

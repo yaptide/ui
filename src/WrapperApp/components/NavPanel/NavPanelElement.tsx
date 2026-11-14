@@ -86,7 +86,6 @@ export default function NavPanelElement(props: NavPanelElementProps) {
 				}}>
 				{buttonProps.type === 'label' ? (
 					<Box
-						aria-label={label}
 						sx={{
 							display: 'flex',
 							minHeight: 64,
@@ -97,7 +96,6 @@ export default function NavPanelElement(props: NavPanelElementProps) {
 					</Box>
 				) : (
 					<ListItemButton
-						aria-label={label}
 						data-testid={testIds.navItem(value)}
 						sx={{
 							minHeight: 64,
@@ -108,7 +106,7 @@ export default function NavPanelElement(props: NavPanelElementProps) {
 							? { component: 'a', href: buttonProps.href, target: '_blank' }
 							: {})}
 						selected={selected}
-						aria-selected={selected}
+						aria-current={selected ? 'page' : undefined}
 						onClick={
 							value === 'deployInfo'
 								? onClick
