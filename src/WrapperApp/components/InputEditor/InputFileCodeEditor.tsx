@@ -3,6 +3,7 @@ import CodeMirror, { EditorView, Extension } from '@uiw/react-codemirror';
 import { useEffect, useMemo, useState } from 'react';
 
 import { loadLanguageForFile } from './inputFileLanguages';
+import { searchPanelTheme } from './searchPanelTheme';
 
 interface InputFileCodeEditorProps {
 	name: string;
@@ -27,12 +28,15 @@ export function InputFileCodeEditor({ name, value, onChange }: InputFileCodeEdit
 		};
 	}, [name]);
 
+	const panelTheme = useMemo(() => searchPanelTheme(theme), [theme]);
+
 	const extensions = useMemo(() => {
 		return [
 			...(language ? [language] : []),
+			panelTheme,
 			EditorView.contentAttributes.of({ 'aria-label': `${name} text field` })
 		];
-	}, [language, name]);
+	}, [language, panelTheme, name]);
 
 	return (
 		<CodeMirror
