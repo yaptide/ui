@@ -58,6 +58,17 @@ export const addCustomStoppingPowerTableToEditorJSON = async (editorJson: Editor
 		}
 	}
 
+	for (const output of editorJson.scoringManager.outputs) {
+		for (const quantity of output.quantities) {
+			if (
+				quantity.materialPropertiesOverrides?.customStoppingPower &&
+				quantity.customMaterial
+			) {
+				usedStoppingPowerTables.add(quantity.customMaterial.icru);
+			}
+		}
+	}
+
 	// load files for used stopping power tables
 	const availableStoppingPowerFiles: Record<Icru, StoppingPowerFile> = {};
 

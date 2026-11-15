@@ -105,6 +105,10 @@ export class MaterialManager
 
 	selectedMaterials: CounterMap<string> = new CounterMap<string>();
 
+	private clearCustomMaterials() {
+		for (const icru of Object.keys(this._customMaterials)) delete this._customMaterials[icru];
+	}
+
 	getMaterialByUuid(uuid: string): SimulationMaterial | undefined {
 		return Object.values(this._customMaterials).find(material => material.uuid === uuid);
 	}
@@ -185,7 +189,7 @@ export class MaterialManager
 
 	reset(): void {
 		this.selectedMaterials.clear();
-		this._customMaterials = {};
+		this.clearCustomMaterials();
 
 		// Ensure default material and world zone material are added to _customMaterials
 		// This ensures that when a new empty project is created, these materials are available
@@ -201,6 +205,15 @@ export class MaterialManager
 		const worldZoneMaterial = this._customMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU];
 		const worldZoneMaterialUuid = worldZoneMaterial?.uuid;
 
+		const quantityMaterialUuids = new Set(
+			this.editor.scoringManager.outputs
+				.flatMap(output => output.quantities)
+				.map(quantity => quantity.toSerialized())
+				.flatMap(({ materialUuid, customMaterial }) =>
+					materialUuid && !customMaterial ? [materialUuid] : []
+				)
+		);
+
 		const materials = Object.entries(this._customMaterials)
 			.map(([_icru, material]) => {
 				const serialized = material.toSerialized();
@@ -210,8 +223,9 @@ export class MaterialManager
 			.filter(({ uuid: matUuid }) => {
 				const isWorldZoneMaterial = worldZoneMaterialUuid === matUuid;
 				const isSelected = this.selectedMaterials.has(matUuid);
+				const isUsedByQuantity = quantityMaterialUuids.has(matUuid);
 
-				return isSelected || isWorldZoneMaterial;
+				return isSelected || isWorldZoneMaterial || isUsedByQuantity;
 			});
 
 		return {
@@ -238,7 +252,7 @@ export class MaterialManager
 		this.name = name;
 
 		// Clear existing materials and assign the deserialized ones
-		this._customMaterials = {};
+		this.clearCustomMaterials();
 
 		Object.assign(
 			this._customMaterials,

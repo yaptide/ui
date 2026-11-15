@@ -2,7 +2,7 @@ import { SimulatorType } from '../../../types/RequestTypes';
 import { SerializableState } from '../../js/EditorJson';
 import { YaptideEditor } from '../../js/YaptideEditor';
 import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElement';
-import { OverrideMap } from '../Base/SimulationZone';
+import { OverrideMap, SimulationZoneMaterialJSON } from '../Base/SimulationZone';
 import SimulationMaterial from '../Materials/SimulationMaterial';
 import { ScoringFilter } from './ScoringFilter';
 import * as Scoring from './ScoringOutputTypes';
@@ -23,7 +23,7 @@ export type ScoringQuantityJSON = Omit<
 		filter?: string;
 		modifiers?: DifferentialJSON[];
 		rescale?: number;
-	},
+	} & Partial<Omit<SimulationZoneMaterialJSON, 'visible'>>,
 	never
 >;
 
