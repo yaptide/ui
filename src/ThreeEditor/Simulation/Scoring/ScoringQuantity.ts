@@ -22,7 +22,6 @@ export type ScoringQuantityJSON = Omit<
 		medium?: Scoring.MEDIUM;
 		filter?: string;
 		modifiers?: DifferentialJSON[];
-		primaries?: number;
 		rescale?: number;
 	},
 	never
@@ -48,8 +47,6 @@ export class ScoringQuantity
 	keyword?: Scoring.SCORING_KEYWORD;
 	hasFilter?: boolean;
 	filter?: ScoringFilter;
-	hasPrimaries?: boolean;
-	primaries?: number;
 	hasRescale?: boolean;
 	rescale?: number;
 	selectedModifier?: DifferentialModifier | undefined;
