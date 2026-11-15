@@ -95,7 +95,12 @@ export function SidebarTreeList(props: {
 			};
 
 			const dragObject = findObjectById(dragSource.id)!;
-			let newParent = dropTarget ? findObjectById(dropTarget.id)!.data!.object : null;
+			const newParent =
+				dragSource.parent === (dropTarget?.id ?? 0)
+					? dragSource.data.object.parent
+					: dropTarget
+						? findObjectById(dropTarget.id)!.data!.object
+						: null;
 
 			if (
 				dragObject.parent !== dragSource.parent ||
