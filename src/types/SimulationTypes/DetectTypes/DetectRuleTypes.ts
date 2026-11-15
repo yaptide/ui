@@ -65,17 +65,23 @@ const _operators = {
 	'>=': '≥'
 } as const;
 
-export const OPERATOR_OPTIONS = Object.entries(_operators).reduce((acc, [key, text]) => {
-	acc[key] = text;
+export const OPERATOR_OPTIONS = Object.entries(_operators).reduce(
+	(acc, [key, text]) => {
+		acc[key] = text;
 
-	return acc;
-}, {} as Record<string, string>);
+		return acc;
+	},
+	{} as Record<string, string>
+);
 
-export const KEYWORD_OPTIONS = Object.entries(_rule_descriptions).reduce((acc, [key]) => {
-	acc[key] = key;
+export const KEYWORD_OPTIONS = Object.entries(_rule_descriptions).reduce(
+	(acc, [key]) => {
+		acc[key] = key;
 
-	return acc;
-}, {} as Record<string, string>);
+		return acc;
+	},
+	{} as Record<string, string>
+);
 
 export function KEYWORD_SORT_ORDER(a: string, b: string) {
 	const order = ['A', 'AMASS', 'AMU', 'Z', 'GEN', 'E', 'ENUC', 'EAMU', 'ID', 'NPRIM'];
@@ -104,14 +110,17 @@ const _particles = {
 	20: ['Muon anti-neutrino', 'νµ']
 } as const;
 
-export const PARTICLE_OPTIONS = Object.entries(_particles).reduce((acc, [id, [name, symbol]]) => {
-	const symbolString = textDecoration(+id)
-		? `<span style="text-decoration: ${textDecoration(+id)}">${symbol}</span>`
-		: symbol;
-	acc[id] = `<span>${name} ${symbolString}</span>`;
+export const PARTICLE_OPTIONS = Object.entries(_particles).reduce(
+	(acc, [id, [name, symbol]]) => {
+		const symbolString = textDecoration(+id)
+			? `<span style="text-decoration: ${textDecoration(+id)}">${symbol}</span>`
+			: symbol;
+		acc[id] = `<span>${name} ${symbolString}</span>`;
 
-	return acc;
-}, {} as Record<string, string>);
+		return acc;
+	},
+	{} as Record<string, string>
+);
 
 function textDecoration(id: number) {
 	return [2, 18, 20].includes(id) ? 'overline' : 'none';

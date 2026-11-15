@@ -319,8 +319,10 @@ export function RunSimulationForm({
 			}}>
 			<AccordionSummary>
 				<Typography
-					textTransform='none'
-					fontSize={16}>
+					sx={{
+						textTransform: 'none',
+						fontSize: 16
+					}}>
 					Run new simulation
 				</Typography>
 			</AccordionSummary>
@@ -371,7 +373,13 @@ export function RunSimulationForm({
 							label='Number of tasks'
 							disabled={currentSimulator === SimulatorType.GEANT4}
 							error={isNaN(nTasks)}
-							value={currentSimulator === SimulatorType.GEANT4 ? 1 : nTasks}
+							value={
+								currentSimulator === SimulatorType.GEANT4
+									? 1
+									: isNaN(nTasks)
+										? ''
+										: nTasks
+							}
 							onChange={e => setNTasks(Math.max(1, parseInt(e.target.value)))}
 						/>
 						<TextField
@@ -379,7 +387,7 @@ export function RunSimulationForm({
 							type='number'
 							label='Number of primary particles'
 							error={isNaN(overridePrimariesCount)}
-							value={overridePrimariesCount}
+							value={isNaN(overridePrimariesCount) ? '' : overridePrimariesCount}
 							onChange={e =>
 								setOverridePrimariesCount(Math.max(1, parseInt(e.target.value)))
 							}

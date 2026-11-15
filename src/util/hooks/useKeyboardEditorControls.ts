@@ -1,5 +1,5 @@
 import { RefObject, useEffect } from 'react';
-import { Object3D } from 'three';
+import { Object3D, Vector3 } from 'three';
 
 import { RemoveDetectGeometryCommand } from '../../ThreeEditor/js/commands/RemoveDetectGeometryCommand';
 import { RemoveDifferentialModifierCommand } from '../../ThreeEditor/js/commands/RemoveDifferentialModifierCommand';
@@ -8,7 +8,10 @@ import { RemoveFilterCommand } from '../../ThreeEditor/js/commands/RemoveFilterC
 import { RemoveObjectCommand } from '../../ThreeEditor/js/commands/RemoveObjectCommand';
 import { RemoveQuantityCommand } from '../../ThreeEditor/js/commands/RemoveQuantityCommand';
 import { RemoveZoneCommand } from '../../ThreeEditor/js/commands/RemoveZoneCommand';
+import { SetDetectPositionCommand } from '../../ThreeEditor/js/commands/SetDetectPositionCommand';
 import { SetFilterRuleCommand } from '../../ThreeEditor/js/commands/SetFilterRuleCommand';
+import { SetPositionCommand } from '../../ThreeEditor/js/commands/SetPositionCommand';
+import { SetValueCommand } from '../../ThreeEditor/js/commands/SetValueCommand';
 import { YaptideEditor } from '../../ThreeEditor/js/YaptideEditor';
 import { isDetector } from '../../ThreeEditor/Simulation/Detectors/Detector';
 import { isBasicFigure } from '../../ThreeEditor/Simulation/Figures/BasicFigures';
@@ -17,6 +20,7 @@ import { isCustomFilter } from '../../ThreeEditor/Simulation/Scoring/CustomFilte
 import { isOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
 import { isScoringQuantity } from '../../ThreeEditor/Simulation/Scoring/ScoringQuantity';
 import { isBooleanZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
+import { isWorldZone } from '../../ThreeEditor/Simulation/Zones/WorldZone/WorldZone';
 
 export const isRemovable = (object: Object3D) => {
 	if (object === null) return false;
@@ -31,6 +35,31 @@ export const isRemovable = (object: Object3D) => {
 
 export const canChangeName = (object: Object3D) => {
 	return !isBeam(object);
+};
+
+export const isMovable = (object: Object3D | null) => {
+	if (object === null) return false;
+
+	if ('notMovable' in object) {
+		return !object.notMovable;
+	}
+
+	return true;
+};
+
+export const getSetPositionCommand = (
+	editor: YaptideEditor,
+	object: Object3D,
+	newPosition: Vector3
+) => {
+	if (isWorldZone(object)) return new SetValueCommand(editor, object, 'center', newPosition);
+
+	if (isDetector(object))
+		// probably useless and SetValueCommand should be used instead,
+		// but has to be tested first because it uses additional signals
+		return new SetDetectPositionCommand(editor, object, newPosition);
+
+	return new SetPositionCommand(editor, object, newPosition);
 };
 
 export const hasVisibleChildren = (object: Object3D) => {

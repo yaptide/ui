@@ -98,8 +98,11 @@ export function EditorSidebar(props: EditorSidebarProps) {
 					<>
 						{editor.selected && (
 							<Typography
-								fontSize='1rem'
-								sx={{ marginTop: '1rem', marginBottom: '.5rem' }}>
+								sx={{
+									fontSize: '1rem',
+									marginTop: '1rem',
+									marginBottom: '.5rem'
+								}}>
 								Details
 							</Typography>
 						)}
@@ -112,8 +115,10 @@ export function EditorSidebar(props: EditorSidebarProps) {
 					<Stack spacing={2}>
 						<Box>
 							<Typography
-								fontSize='1rem'
-								sx={{ marginBottom: '.5rem' }}>
+								sx={{
+									fontSize: '1rem',
+									marginBottom: '.5rem'
+								}}>
 								Beam
 							</Typography>
 							<PropertiesPanel
@@ -126,8 +131,10 @@ export function EditorSidebar(props: EditorSidebarProps) {
 						{editor.contextManager.currentSimulator === SimulatorType.SHIELDHIT && (
 							<Box>
 								<Typography
-									fontSize='1rem'
-									sx={{ marginBottom: '.5rem' }}>
+									sx={{
+										fontSize: '1rem',
+										marginBottom: '.5rem'
+									}}>
 									Physics
 								</Typography>
 								<PhysicConfiguration

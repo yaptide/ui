@@ -258,8 +258,7 @@ export type CommandButtonProps = {
 	disabled?: boolean;
 };
 type CommandButtonTuple =
-	| [string, (() => Command) | undefined]
-	| [string, (() => Command) | undefined, boolean];
+	[string, (() => Command) | undefined] | [string, (() => Command) | undefined, boolean];
 
 type ManagerName = 'Figures' | 'Zones' | 'Detectors' | 'Special Components' | 'Filters' | 'Outputs';
 

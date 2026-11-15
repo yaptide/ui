@@ -52,12 +52,14 @@ export function EditorTitleBar({ sx }: { sx: SxProps }) {
 				}}
 				disableRipple>
 				<Typography
-					sx={{ color: theme.palette.text.primary }}
 					variant='subtitle1'
 					component='div'
 					align='center'
 					role='heading'
-					textTransform='none'>
+					sx={{
+						textTransform: 'none',
+						color: theme.palette.text.primary
+					}}>
 					{title}
 				</Typography>
 				{saving && (

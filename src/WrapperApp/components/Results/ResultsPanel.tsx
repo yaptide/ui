@@ -118,7 +118,9 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 							gutterBottom
 							variant='h5'
 							component='div'
-							lineHeight={2}>
+							sx={{
+								lineHeight: 2
+							}}>
 							{title}
 						</Typography>
 						<Divider />

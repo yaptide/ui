@@ -51,8 +51,10 @@ export function SourceFileDefinitionField(props: {
 
 			<PropertyField>
 				<Stack
-					gap={1}
-					direction='row'>
+					direction='row'
+					sx={{
+						gap: 1
+					}}>
 					<Button
 						sx={{ flexGrow: 1 }}
 						variant='contained'

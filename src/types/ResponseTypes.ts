@@ -174,10 +174,7 @@ export type TaskStatusFailed = TaskStatusType<StatusState.FAILED, {}>;
 export type TaskStatusRunning = TaskStatusType<StatusState.RUNNING, { estimatedTime?: TaskTime }>;
 
 type TaskAllStatuses =
-	| TaskStatusCompleted
-	| TaskStatusPending
-	| TaskStatusFailed
-	| TaskStatusRunning;
+	TaskStatusCompleted | TaskStatusPending | TaskStatusFailed | TaskStatusRunning;
 
 /**
  * This type is used to represent the status of a task of unknown type.
@@ -422,6 +419,11 @@ export type ResponseGetJobResult = Estimator & YaptideResponse;
 export type ResponseGetEstimatorPageResult = { pages: Page[] } & YaptideResponse;
 
 export type ResponseAuthStatus = AuthStatus;
+
+// older backends do not report this flag and always allow local users, treat a missing value as enabled
+export type ResponseRoot = {
+	localUsersEnabled?: boolean;
+} & YaptideResponse;
 
 export type ResponseAuthRefresh = AuthData;
 

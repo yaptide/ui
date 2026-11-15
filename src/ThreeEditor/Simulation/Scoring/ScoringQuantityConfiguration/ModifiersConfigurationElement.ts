@@ -1,7 +1,7 @@
 import { YaptideEditor } from '../../../js/YaptideEditor';
 import { ScoringOutput } from '../ScoringOutput';
-import { getQuantityModifiersOptions } from '../ScoringOutputTypes';
 import * as Scoring from '../ScoringOutputTypes';
+import { getQuantityModifiersOptions } from '../ScoringOutputTypes';
 import { DifferentialJSON, DifferentialModifier } from '../ScoringQtyModifiers';
 import ConfigurationElement from './ConfigurationElement';
 import { ScoringQuantityConfigurator } from './ScoringQuantityConfigurator';

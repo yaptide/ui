@@ -217,9 +217,11 @@ export function BatchScriptParametersEditor({
 						checked={useCommandLineOptionsChecked}
 						tabIndex={-1}
 						disableRipple
-						inputProps={{ 'aria-labelledby': 'useCommandLineOptions' }}
 						icon={<IntegrationInstructionsOutlinedIcon />}
 						checkedIcon={<IntegrationInstructionsIcon />}
+						slotProps={{
+							input: { 'aria-labelledby': 'useCommandLineOptions' }
+						}}
 					/>
 					<ListItemText
 						primary={`Use ${scriptName.toLocaleLowerCase()} command line options`}
@@ -272,7 +274,7 @@ export function BatchScriptParametersEditor({
 							/>
 						)}
 						// Value is rendered as chips below the input
-						renderTags={() => null}
+						renderValue={() => null}
 					/>
 					<Box
 						sx={{

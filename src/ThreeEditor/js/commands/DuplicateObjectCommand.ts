@@ -9,9 +9,16 @@ import { isScoringQuantity } from '../../Simulation/Scoring/ScoringQuantity';
 import { YaptideEditor } from '../YaptideEditor';
 
 export const canBeDuplicated = (object: object) => {
-	return 'duplicate' in object && 'notDuplicatable' in object
-		? object.notDuplicatable !== true
-		: true;
+	if ('notDuplicatable' in object && object.notDuplicatable === true) return false;
+
+	return (
+		isBasicFigure(object) ||
+		(isScoringQuantity(object) && isOutput(object.parent?.parent)) ||
+		isSimulationZone(object) ||
+		isDetector(object) ||
+		isOutput(object) ||
+		isScoringFilter(object)
+	);
 };
 
 export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationElement) => {

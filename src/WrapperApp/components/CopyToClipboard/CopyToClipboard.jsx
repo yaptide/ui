@@ -10,7 +10,8 @@ export default class CopyToClipboard extends React.PureComponent {
 		options: PropTypes.shape({
 			debug: PropTypes.bool,
 			message: PropTypes.string,
-			format: PropTypes.string
+			format: PropTypes.string,
+			fallbackToPrompt: PropTypes.bool
 		})
 	};
 
@@ -24,10 +25,10 @@ export default class CopyToClipboard extends React.PureComponent {
 
 		const elem = React.Children.only(children);
 
-		const result = copy(text, options);
+		const result = copy(text, { fallbackToPrompt: true, ...options });
 
 		if (onCopy) {
-			onCopy(text, result);
+			result.then(success => onCopy(text, success));
 		}
 
 		// Bypass onClick if it was present
