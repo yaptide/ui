@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { Object3D } from 'three';
 
 import { useDialog } from '../../../../../services/DialogService';
-import { StyledExclusiveToggleButtonGroup } from '../../../../../shared/components/StyledExclusiveToggleButtonGroup';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
 import { AddQuantityCommand } from '../../../../js/commands/AddQuantityCommand';
 import { SetOutputSettingsCommand } from '../../../../js/commands/SetOutputSettingsCommand';
@@ -17,7 +16,7 @@ import {
 	ObjectSelectOptionType,
 	ObjectSelectPropertyField
 } from '../fields/ObjectSelectPropertyField';
-import { PropertyField } from '../fields/PropertyField';
+import { LabelledExclusiveToggleButtonGroup, PropertyField } from '../fields/PropertyField';
 import { PropertiesCategory } from './PropertiesCategory';
 
 export function CommonOutputConfiguration(props: { editor: YaptideEditor; object: Object3D }) {
@@ -99,10 +98,9 @@ export function CommonOutputConfiguration(props: { editor: YaptideEditor; object
 					<PropertyField
 						label='Scoring Type'
 						disabled={false}>
-						<StyledExclusiveToggleButtonGroup
+						<LabelledExclusiveToggleButtonGroup
 							value={scoringType}
 							onChange={handleChangeOutputType}
-							aria-label='scoring type'
 							size='small'>
 							<ToggleButton
 								value={SCORING_TYPE_ENUM.DETECTOR}
@@ -115,7 +113,7 @@ export function CommonOutputConfiguration(props: { editor: YaptideEditor; object
 								disabled={scoringType === SCORING_TYPE_ENUM.ZONE}>
 								Zone
 							</ToggleButton>
-						</StyledExclusiveToggleButtonGroup>
+						</LabelledExclusiveToggleButtonGroup>
 					</PropertyField>
 
 					{scoringType === SCORING_TYPE_ENUM.DETECTOR && (

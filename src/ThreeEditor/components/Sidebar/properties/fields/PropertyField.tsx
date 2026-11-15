@@ -3,9 +3,12 @@ import {
 	Checkbox,
 	CheckboxProps,
 	Grid,
+	Select,
+	SelectProps,
 	Stack,
 	TextField,
 	TextFieldProps,
+	ToggleButtonGroupProps,
 	Typography,
 	useTheme
 } from '@mui/material';
@@ -22,6 +25,7 @@ import {
 import { Vector2 } from 'three';
 import { Vector3 } from 'three/src/math/Vector3.js';
 
+import { StyledExclusiveToggleButtonGroup } from '../../../../../shared/components/StyledExclusiveToggleButtonGroup';
 import { InfoTooltip } from '../../../../../shared/components/tooltip/InfoTooltip';
 import {
 	KEYWORD_OPTIONS,
@@ -144,7 +148,7 @@ function LabelledCheckbox(props: CheckboxProps) {
  * Wrapper around `AutoCompleteSelect` that names its input from the visible
  * label of the enclosing `PropertyField`. Does nothing when there is no label.
  */
-function LabelledAutoCompleteSelect<
+export function LabelledAutoCompleteSelect<
 	T,
 	Multiple extends boolean | undefined = undefined,
 	FreeSolo extends boolean | undefined = undefined
@@ -155,6 +159,38 @@ function LabelledAutoCompleteSelect<
 		<AutoCompleteSelect<T, Multiple, FreeSolo>
 			{...props}
 			labelId={labelId}
+		/>
+	);
+}
+
+/**
+ * Wrapper around MUI `Select` that names its combobox from the visible label of
+ * the enclosing `PropertyField` (via `labelId`). Does nothing when there is no label.
+ */
+export function LabelledSelect(props: SelectProps) {
+	const labelId = usePropertyFieldLabelId();
+
+	return (
+		<Select
+			{...props}
+			labelId={labelId}
+		/>
+	);
+}
+
+/**
+ * Wrapper around `StyledExclusiveToggleButtonGroup` that names the group from the
+ * visible label of the enclosing `PropertyField`. `aria-label` is forced to
+ * `undefined` so that `aria-labelledby` remains the only source of the name.
+ */
+export function LabelledExclusiveToggleButtonGroup(props: ToggleButtonGroupProps) {
+	const labelId = usePropertyFieldLabelId();
+
+	return (
+		<StyledExclusiveToggleButtonGroup
+			{...props}
+			aria-labelledby={labelId}
+			aria-label={undefined}
 		/>
 	);
 }
