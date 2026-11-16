@@ -184,7 +184,11 @@ export function RunSimulationForm({
 	const [selectedCluster, setSelectedCluster] = useState<number | undefined>(0);
 
 	const [simName, setSimName] = useState(editorJson?.project.title ?? '');
-	const [nTasks, setNTasks] = useState(1);
+	const defaultTasksCount =
+		typeof navigator !== 'undefined' && navigator.hardwareConcurrency
+			? Math.max(1, navigator.hardwareConcurrency - 1)
+			: 1;
+	const [nTasks, setNTasks] = useState(defaultTasksCount);
 	const [arrayHeader, setArrayHeader] = useState<string>('');
 	const [collectHeader, setCollectHeader] = useState<string>('');
 	const [arrayOptions, setArrayOptions] = useState<ScriptOption[]>([]);
@@ -371,16 +375,18 @@ export function RunSimulationForm({
 							size='small'
 							type='number'
 							label='Number of tasks'
-							disabled={currentSimulator === SimulatorType.GEANT4}
-							error={isNaN(nTasks)}
-							value={
-								currentSimulator === SimulatorType.GEANT4
-									? 1
-									: isNaN(nTasks)
-										? ''
-										: nTasks
+							error={isNaN(nTasks) || nTasks < 1}
+							value={isNaN(nTasks) ? '' : nTasks}
+							onChange={e => {
+								const val = parseInt(e.target.value, 10);
+								setNTasks(isNaN(val) ? ('' as any) : Math.max(1, val));
+							}}
+							helperText={
+								currentSimulator === SimulatorType.GEANT4 &&
+								typeof navigator !== 'undefined'
+									? `Parallel Web Workers (CPU cores: ${navigator.hardwareConcurrency || 'unknown'})`
+									: undefined
 							}
-							onChange={e => setNTasks(Math.max(1, parseInt(e.target.value)))}
 						/>
 						<TextField
 							size='small'

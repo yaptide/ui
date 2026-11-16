@@ -31,6 +31,11 @@ import {
 import { FullSimulationData, SimulationService } from '../types/SimulationService';
 import { Geant4DatasetsType } from '../WrapperApp/components/Simulation/Geant4DatasetDownload';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
+import {
+	distributePrimaries,
+	mergeGeant4ResultFiles,
+	prepareWorkerMacro
+} from './Geant4MacroHelpers';
 import { Geant4ResultsFileParser } from './Geant4ResultsFileParser';
 
 type JobId = string;
@@ -42,13 +47,14 @@ interface JobMetadata {
 
 export default class Geant4LocalWorkerSimulationService implements SimulationService {
 	convertJSON: PythonConverterContext['convertJSON'];
-	workers: Record<JobId, Geant4Worker>;
+	workers: Record<JobId, Geant4Worker[]>;
 	inputFiles: Record<JobId, Record<string, string>>;
 	estimators: Record<JobId, EstimatorItem[]>;
 	resultsForEstimators: Record<JobId, Record<string, Estimator>>;
 	jobsEditorJson: Record<JobId, EditorJson>;
 	jobsMetadata: Record<JobId, JobMetadata>;
-	numPrimaries: number;
+	numPrimaries: Record<JobId, number>;
+	primariesPerWorker: Record<JobId, number[]>;
 
 	responseCache: Record<
 		'jobInputs' | 'jobStatusData' | 'jobResults' | 'estimatorsPages' | 'pageStatus',
@@ -70,7 +76,85 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 			estimatorsPages: {},
 			pageStatus: {}
 		};
-		this.numPrimaries = 1; // default value that works as divisor
+		this.numPrimaries = {};
+		this.primariesPerWorker = {};
+	}
+
+	determineWorkerCount(requestedTasks?: number): number {
+		const availableCores =
+			typeof navigator !== 'undefined' && navigator.hardwareConcurrency
+				? navigator.hardwareConcurrency
+				: 2;
+		const defaultWorkers = Math.max(1, availableCores - 1);
+
+		if (requestedTasks && requestedTasks > 0) {
+			return Math.min(requestedTasks, Math.max(1, availableCores));
+		}
+
+		return defaultWorkers;
+	}
+
+	getJobCombinedState(jobId: string): StatusState {
+		const workers = this.workers[jobId];
+
+		if (!workers || workers.length === 0) {
+			return StatusState.PENDING;
+		}
+
+		if (workers.some(w => w.getState() === StatusState.FAILED)) {
+			return StatusState.FAILED;
+		}
+
+		if (workers.some(w => w.getState() === StatusState.CANCELED)) {
+			return StatusState.CANCELED;
+		}
+
+		if (workers.some(w => w.getState() === StatusState.RUNNING)) {
+			return StatusState.RUNNING;
+		}
+
+		if (workers.every(w => w.getState() === StatusState.COMPLETED)) {
+			return StatusState.COMPLETED;
+		}
+
+		return StatusState.PENDING;
+	}
+
+	areAllWorkersCompleted(jobId: string): boolean {
+		const workers = this.workers[jobId];
+
+		return Boolean(
+			workers &&
+				workers.length > 0 &&
+				workers.every(w => w.getState() === StatusState.COMPLETED)
+		);
+	}
+
+	getJobStartTime(jobId: string): string {
+		const workers = this.workers[jobId];
+
+		if (!workers || workers.length === 0) return '';
+
+		const startTimes = workers
+			.map(w => w.getStartTime())
+			.filter((t): t is string => typeof t === 'string' && t.length > 0)
+			.sort();
+
+		return startTimes.length > 0 ? startTimes[0] : '';
+	}
+
+	getJobEndTime(jobId: string): string | undefined {
+		const workers = this.workers[jobId];
+
+		if (!workers || workers.length === 0) return undefined;
+		if (!this.areAllWorkersCompleted(jobId)) return undefined;
+
+		const endTimes = workers
+			.map(w => w.getEndTime())
+			.filter((t): t is string => typeof t === 'string' && t.length > 0)
+			.sort();
+
+		return endTimes.length > 0 ? endTimes[endTimes.length - 1] : undefined;
 	}
 
 	async helloWorld(signal?: AbortSignal): Promise<boolean> {
@@ -103,39 +187,52 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 			);
 		}
 
-		const worker = new Geant4Worker();
-		this.workers[jobId] = worker;
+		const rawGdml = (simData as Record<string, string>)['geometry.gdml'];
+		const rawMacro = (simData as Record<string, string>)['run.mac'];
+
 		this.jobsMetadata[jobId] = { title: title ?? '', inputType };
 
 		this.inputFiles[jobId] = {
-			// @ts-ignore
-			'geometry.gdml': simData['geometry.gdml'],
-			// @ts-ignore
-			'run.mac': simData['run.mac']
+			'geometry.gdml': rawGdml,
+			'run.mac': rawMacro
 		};
 
-		// To find out number of primaries for both editor JSON and input files
-		// we search the /run/beamOn command in macro file, which is either passed directly,
-		// or generated from the editor JSON
-		const rawNumPrimaries = this.inputFiles[jobId]['run.mac']
+		// Extract total requested primaries from the macro
+		const rawNumPrimaries = rawMacro
 			.split('\n')
 			.find(l => l.startsWith('/run/beamOn'))
 			?.split(' ')[1];
-		this.numPrimaries = rawNumPrimaries ? parseInt(rawNumPrimaries) : 0;
+		const totalPrimaries = rawNumPrimaries ? parseInt(rawNumPrimaries, 10) : 0;
 
-		worker.init().then(async () => {
-			if (geant4DatasetType && geant4DatasetType === Geant4DatasetsType.FULL) {
-				await worker.loadDeps();
-			} else {
-				await worker.loadDepsLazy();
-			}
+		const workerCount = this.determineWorkerCount(_ntasks);
+		const primariesDistribution = distributePrimaries(totalPrimaries, workerCount);
 
-			// @ts-ignore
-			await worker.includeFile('geometry.gdml', simData['geometry.gdml']);
-			// @ts-ignore
-			await worker.includeFile('run.mac', simData['run.mac']);
+		// Filter out workers that got 0 primaries (if primaries < workerCount)
+		const activeDistribution = primariesDistribution.filter(p => p > 0);
+		const finalDistribution =
+			activeDistribution.length > 0 ? activeDistribution : [totalPrimaries];
 
-			worker.start();
+		const workers = finalDistribution.map(() => new Geant4Worker());
+		this.workers[jobId] = workers;
+		this.numPrimaries[jobId] = totalPrimaries;
+		this.primariesPerWorker[jobId] = finalDistribution;
+
+		workers.forEach((worker, idx) => {
+			const workerPrimaries = finalDistribution[idx];
+			const workerMacro = prepareWorkerMacro(rawMacro, workerPrimaries);
+
+			worker.init().then(async () => {
+				if (geant4DatasetType && geant4DatasetType === Geant4DatasetsType.FULL) {
+					await worker.loadDeps();
+				} else {
+					await worker.loadDepsLazy();
+				}
+
+				await worker.includeFile('geometry.gdml', rawGdml);
+				await worker.includeFile('run.mac', workerMacro);
+
+				worker.start();
+			});
 		});
 
 		return { jobId, message: '' };
@@ -155,7 +252,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 		this.responseCache.jobInputs[info.jobId] = {
 			jobId: info.jobId,
 			input: {
-				inputType: this.jobsMetadata[info.jobId].inputType,
+				inputType: this.jobsMetadata[info.jobId]?.inputType ?? 'editor',
 				inputFiles: this.inputFiles[info.jobId] as InputFilesRecord<
 					Geant4InputFilesNames,
 					''
@@ -171,12 +268,15 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 	}
 
 	private getJobTasksStatus(jobId: string) {
-		return [
-			{
-				requestedPrimaries: this.numPrimaries,
-				simulatedPrimaries: this.workers[jobId].getSimulatedPrimaries()
-			}
-		];
+		const workers = this.workers[jobId] || [];
+		const requestedPerWorker = this.primariesPerWorker[jobId] || [];
+		const totalPrimaries = this.numPrimaries[jobId] || 1;
+
+		return workers.map((worker, idx) => ({
+			requestedPrimaries:
+				requestedPerWorker[idx] ?? Math.floor(totalPrimaries / (workers.length || 1)),
+			simulatedPrimaries: worker.getSimulatedPrimaries()
+		}));
 	}
 
 	async getJobStatus(...args: RequestGetJobStatus): Promise<JobStatusData | undefined> {
@@ -193,16 +293,16 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 
 		this.responseCache.jobStatusData[info.jobId] = {
 			jobId,
-			title: this.jobsMetadata[jobId]?.title,
-			startTime: this.workers[jobId].getStartTime().toString(),
-			endTime: this.workers[jobId].getEndTime()?.toString(),
+			title: this.jobsMetadata[jobId]?.title ?? '',
+			startTime: this.getJobStartTime(jobId).toString(),
+			endTime: this.getJobEndTime(jobId)?.toString(),
 			metadata: {
-				inputType: this.jobsMetadata[jobId].inputType,
+				inputType: this.jobsMetadata[jobId]?.inputType ?? 'editor',
 				simType: 'Geant4',
 				server: '',
 				platform: 'DIRECT'
 			},
-			jobState: this.workers[jobId].getState(),
+			jobState: this.getJobCombinedState(jobId),
 			jobTasksStatus: this.getJobTasksStatus(jobId)
 		} as JobStatusData;
 
@@ -231,7 +331,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 		// See below for the try catch block that handles it
 		if (
 			!this.workers.hasOwnProperty(jobId) ||
-			this.workers[jobId].getState() !== StatusState.COMPLETED ||
+			!this.areAllWorkersCompleted(jobId) ||
 			this.resultsForEstimators.hasOwnProperty(jobId)
 		) {
 			return;
@@ -247,8 +347,21 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 		let fileContents: string[];
 
 		try {
+			const workers = this.workers[jobId];
+
+			if (!workers || workers.length === 0) {
+				return;
+			}
+
+			// For each output file requested in run.mac, fetch the partial file from all workers and merge them
 			fileContents = await Promise.all(
-				fileNames.map(fileName => this.workers[jobId].fetchResultsFile(fileName))
+				fileNames.map(async fileName => {
+					const contentsFromWorkers = await Promise.all(
+						workers.map(w => w.fetchResultsFile(fileName))
+					);
+
+					return mergeGeant4ResultFiles(contentsFromWorkers);
+				})
 			);
 		} catch {
 			// Worker failed
@@ -263,7 +376,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 		}
 
 		const parser = new Geant4ResultsFileParser(
-			this.numPrimaries,
+			this.numPrimaries[jobId] || 1,
 			this.inputFiles[jobId]['run.mac'],
 			this.jobsEditorJson[jobId]
 		);
@@ -297,7 +410,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 		this.estimators[jobId] = Object.values(estimatorsMetadata);
 		this.resultsForEstimators[jobId] = resultsPerEstimator;
 
-		this.workers[jobId].markSafeForTermination();
+		this.workers[jobId].forEach(w => w.markSafeForTermination());
 	}
 
 	async getJobResults(...args: RequestGetJobResults): Promise<JobResults | undefined> {
@@ -314,10 +427,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 
 		let estimators: Estimator[] = [];
 
-		if (
-			this.workers.hasOwnProperty(jobId) &&
-			this.workers[jobId].getState() === StatusState.COMPLETED
-		) {
+		if (this.workers.hasOwnProperty(jobId) && this.areAllWorkersCompleted(jobId)) {
 			if (!this.estimators.hasOwnProperty(jobId)) {
 				await this.hydrateResults(jobId);
 			}
@@ -354,10 +464,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 
 		let estimators: Estimator[] = [];
 
-		if (
-			this.workers.hasOwnProperty(jobId) &&
-			this.workers[jobId].getState() === StatusState.COMPLETED
-		) {
+		if (this.workers.hasOwnProperty(jobId) && this.areAllWorkersCompleted(jobId)) {
 			if (!this.estimators.hasOwnProperty(jobId)) {
 				await this.hydrateResults(jobId);
 			}
@@ -394,10 +501,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 
 		let estimators: Estimator[] = [];
 
-		if (
-			this.workers.hasOwnProperty(jobId) &&
-			this.workers[jobId].getState() === StatusState.COMPLETED
-		) {
+		if (this.workers.hasOwnProperty(jobId) && this.areAllWorkersCompleted(jobId)) {
 			if (!this.estimators.hasOwnProperty(jobId)) {
 				await this.hydrateResults(jobId);
 			}
@@ -407,18 +511,18 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 
 		return {
 			jobId,
-			title: this.jobsMetadata[jobId]?.title,
-			startTime: this.workers[jobId].getStartTime().toString(),
-			endTime: this.workers[jobId].getEndTime()?.toString(),
+			title: this.jobsMetadata[jobId]?.title ?? '',
+			startTime: this.getJobStartTime(jobId).toString(),
+			endTime: this.getJobEndTime(jobId)?.toString(),
 			metadata: {
-				inputType: this.jobsMetadata[jobId].inputType,
+				inputType: this.jobsMetadata[jobId]?.inputType ?? 'editor',
 				simType: 'Geant4',
 				server: '',
 				platform: 'DIRECT'
 			},
 			jobTasksStatus: this.getJobTasksStatus(jobId),
 			input: {
-				inputType: this.jobsMetadata[jobId].inputType,
+				inputType: this.jobsMetadata[jobId]?.inputType ?? 'editor',
 				inputFiles: this.inputFiles[jobId] as InputFilesRecord<Geant4InputFilesNames, ''>,
 				...(this.jobsEditorJson[jobId] && { inputJson: this.jobsEditorJson[jobId] }) // add iff exists
 			},
@@ -437,19 +541,18 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 	private getSortedWorkersEntries(
 		orderType: OrderType,
 		orderBy: OrderBy
-	): [string, Geant4Worker][] {
-		const getOrderByFn = orderBy === 'start_time' ? 'getStartTime' : 'getEndTime';
+	): [string, Geant4Worker[]][] {
+		const getTimeFn =
+			orderBy === 'start_time'
+				? (jobId: string) => this.getJobStartTime(jobId).toString()
+				: (jobId: string) => this.getJobEndTime(jobId)?.toString() ?? '';
 
 		return Object.entries(this.workers).sort((w1, w2) => {
 			if (w1[1] === undefined && w2[1] === undefined) {
 				return this.compareString(w1[0], w2[0], orderType === 'descend');
 			}
 
-			return this.compareString(
-				w1[1][getOrderByFn]?.() ?? '',
-				w2[1][getOrderByFn]?.() ?? '',
-				orderType === 'descend'
-			);
+			return this.compareString(getTimeFn(w1[0]), getTimeFn(w2[0]), orderType === 'descend');
 		});
 	}
 
@@ -463,8 +566,8 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 	): Promise<ResponseGetPageContents> {
 		const workersEntries = this.getSortedWorkersEntries(orderType, orderBy);
 		const allowedStates = new Set(jobState);
-		const filteredWorkersEntries = workersEntries.filter(([, w]) => {
-			return allowedStates.has(w.getState() as StatusState);
+		const filteredWorkersEntries = workersEntries.filter(([jobId]) => {
+			return allowedStates.has(this.getJobCombinedState(jobId));
 		});
 
 		const paginatedWorkersEntries = filteredWorkersEntries.slice(
@@ -475,18 +578,18 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 		return {
 			pageCount: Math.ceil(filteredWorkersEntries.length / pageSize),
 			simulationsCount: filteredWorkersEntries.length,
-			simulations: paginatedWorkersEntries.map(([jobId, worker]) => ({
+			simulations: paginatedWorkersEntries.map(([jobId]) => ({
 				jobId,
-				title: this.jobsMetadata[jobId]?.title,
-				startTime: worker.getStartTime().toString(),
-				endTime: worker.getEndTime()?.toString(),
+				title: this.jobsMetadata[jobId]?.title ?? '',
+				startTime: this.getJobStartTime(jobId).toString(),
+				endTime: this.getJobEndTime(jobId)?.toString(),
 				metadata: {
-					inputType: this.jobsMetadata[jobId].inputType,
+					inputType: this.jobsMetadata[jobId]?.inputType ?? 'editor',
 					simType: 'Geant4',
 					server: '',
 					platform: 'DIRECT'
 				},
-				jobState: worker.getState(),
+				jobState: this.getJobCombinedState(jobId),
 				jobTasksStatus: this.getJobTasksStatus(jobId)
 			})),
 			message: ''
@@ -497,35 +600,36 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 		const [infoList, cache = true, beforeCacheWrite, signal] = args;
 
 		// IMPORTANT: infoList comes with some order of items that should be kept unchanged
-		const workersEntries: [string, Geant4Worker][] = infoList
+		const workersEntries: [string, Geant4Worker[]][] = infoList
 			.map(info =>
 				this.workers.hasOwnProperty(info.jobId)
-					? [info.jobId, this.workers[info.jobId]]
+					? ([info.jobId, this.workers[info.jobId]] as [string, Geant4Worker[]])
 					: undefined
 			)
-			.filter(Boolean);
+			.filter((entry): entry is [string, Geant4Worker[]] => Boolean(entry));
 
-		return workersEntries.map(([jobId, worker]) => {
+		return workersEntries.map(([jobId]) => {
 			if (this.responseCache.pageStatus.hasOwnProperty(jobId)) {
 				return this.responseCache.pageStatus[jobId];
 			}
 
+			const state = this.getJobCombinedState(jobId);
 			const response = {
 				jobId,
-				title: this.jobsMetadata[jobId]?.title,
-				startTime: worker.getStartTime().toString(),
-				endTime: worker.getEndTime()?.toString(),
+				title: this.jobsMetadata[jobId]?.title ?? '',
+				startTime: this.getJobStartTime(jobId).toString(),
+				endTime: this.getJobEndTime(jobId)?.toString(),
 				metadata: {
-					inputType: this.jobsMetadata[jobId].inputType,
+					inputType: this.jobsMetadata[jobId]?.inputType ?? 'editor',
 					simType: 'Geant4',
 					server: '',
 					platform: 'DIRECT'
 				},
-				jobState: worker.getState(),
+				jobState: state,
 				jobTasksStatus: this.getJobTasksStatus(jobId)
 			} as JobStatusData;
 
-			if (worker.getState() === StatusState.COMPLETED) {
+			if (state === StatusState.COMPLETED) {
 				this.responseCache.pageStatus[jobId] = response;
 
 				if (cache) beforeCacheWrite?.(jobId, response);
@@ -539,7 +643,7 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 		const { jobId } = info;
 
 		if (this.workers.hasOwnProperty(jobId)) {
-			this.workers[jobId].cancel();
+			this.workers[jobId]?.forEach(w => w.cancel());
 		}
 
 		return Promise.resolve();
