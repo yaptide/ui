@@ -11,7 +11,7 @@ import {
 	Typography,
 	useTheme
 } from '@mui/material';
-import { ReactElement } from 'react';
+import { ReactElement, useId } from 'react';
 import { DndProvider } from 'react-dnd';
 import { Object3D } from 'three';
 
@@ -39,6 +39,40 @@ export interface EditorSidebarTabTreeProps {
 	children: TreeElement[];
 }
 
+function AddElementButton({ label, onClick, disabled, tooltip }: CommandButtonProps): ReactElement {
+	const descriptionId = useId();
+
+	const button = (
+		<Button
+			onClick={onClick}
+			disabled={disabled}
+			variant='contained'
+			size='small'
+			startIcon={<AddIcon />}
+			disableElevation
+			aria-describedby={tooltip ? descriptionId : undefined}>
+			{label}
+		</Button>
+	);
+
+	if (!tooltip) return button;
+
+	return (
+		<Tooltip title={tooltip}>
+			<span
+				aria-label={undefined}
+				style={{ display: 'inline-flex' }}>
+				{button}
+				<span
+					id={descriptionId}
+					hidden>
+					{tooltip}
+				</span>
+			</span>
+		</Tooltip>
+	);
+}
+
 function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
 	const theme = useTheme();
 
@@ -56,21 +90,10 @@ function EditorSidebarTabTreeElement(props: TreeElement): ReactElement {
 						marginBottom: theme.spacing(1)
 					}}>
 					{props.add.map(add => (
-						<Tooltip
+						<AddElementButton
 							key={add.label}
-							title={add.tooltip}>
-							<span>
-								<Button
-									onClick={add.onClick}
-									disabled={add.disabled}
-									variant='contained'
-									size='small'
-									startIcon={<AddIcon />}
-									disableElevation>
-									{add.label}
-								</Button>
-							</span>
-						</Tooltip>
+							{...add}
+						/>
 					))}
 				</Stack>
 				{props.tree}

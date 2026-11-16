@@ -215,8 +215,8 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 	const { selected } = editor;
 	const quantityTarget = isOutput(selected)
 		? selected
-		: isScoringQuantity(selected) && isOutput(selected.parent?.parent)
-			? selected.parent.parent
+		: isScoringQuantity(selected)
+			? selected.getParentOutput()
 			: undefined;
 
 	const outputsTuple: CommandButtonTuple[] = [
@@ -232,18 +232,17 @@ export const getAddElementButtonProps = (editor: YaptideEditor): GroupedCommandB
 		],
 		[
 			'Quantity',
-			() => {
-				return commandFactory.createAddCommand(
-					'quantity',
-					new ScoringQuantity(editor),
-					isScoringQuantity(editor.selected)
-						? editor.selected.parent?.parent
-						: editor.selected
-				);
-			},
+			quantityTarget &&
+				(() => {
+					return commandFactory.createAddCommand<
+						'quantity',
+						ScoringQuantity,
+						'quantities'
+					>('quantity', new ScoringQuantity(editor), quantityTarget);
+				}),
 			!quantityTarget,
 			quantityTarget
-				? `Add a quantity to "${quantityTarget.name}"`
+				? `Add a quantity to "${quantityTarget.name || 'the selected output'}"`
 				: 'Select an output to add a quantity to it'
 		]
 	];
