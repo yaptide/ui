@@ -1,24 +1,25 @@
 import ArrowBack from '@mui/icons-material/ArrowBack';
-import { Box, Button, IconButton, Link, useTheme } from '@mui/material';
-import { useCallback, useState } from 'react';
+import { Box, CircularProgress, IconButton, Typography, useTheme } from '@mui/material';
+import { useState } from 'react';
 
 import { useConfig } from '../../../config/ConfigService';
 import { useAuth } from '../../../services/AuthService';
-import { useKeycloakAuth } from '../../../services/KeycloakAuthService';
-import NamePasswordLoginPanel from './NamePasswordLoginPanel';
+import LocalLoginPanel from './LocalLoginPanel';
+import { chooseLoginScreen, LoginMethod } from './LoginScreen';
+import SsoLoginPanel from './SsoLoginPanel';
 
 export default function LoginPanel() {
 	const theme = useTheme();
-	const { altAuth } = useConfig();
-	const { localUsersEnabled } = useAuth();
-	const { keycloak, initialized } = useKeycloakAuth();
-	const [namePasswordLoginSelected, setNamePasswordLoginSelected] = useState(!altAuth);
-	// on Keycloak-only deployments the backend rejects local users, so do not offer password login
-	const namePasswordLogin = namePasswordLoginSelected && (localUsersEnabled || !altAuth);
-
-	const keycloakLogin = useCallback(() => {
-		if (initialized && !keycloak.authenticated) keycloak.login();
-	}, [initialized, keycloak]);
+	const { ssoEnabled } = useConfig();
+	const { localLoginStatus } = useAuth();
+	const [userChoice, setUserChoice] = useState<LoginMethod>(ssoEnabled ? 'sso' : 'local');
+	const loginScreen = chooseLoginScreen(
+		{
+			sso: ssoEnabled,
+			local: localLoginStatus
+		},
+		userChoice
+	);
 
 	return (
 		<Box
@@ -39,44 +40,38 @@ export default function LoginPanel() {
 					backgroundColor: theme.palette.accordion.main,
 					gap: theme.spacing(1)
 				}}>
-				{altAuth && !namePasswordLogin ? (
+				{loginScreen === 'sso' && (
+					<SsoLoginPanel
+						onUseLocalLogin={
+							localLoginStatus === 'enabled'
+								? () => setUserChoice('local')
+								: undefined
+						}
+					/>
+				)}
+				{loginScreen === 'local' && (
 					<>
-						<Button
-							fullWidth
-							disabled={!initialized}
-							variant='contained'
-							color='primary'
-							onClick={keycloakLogin}
-							sx={{
-								fontSize: 16,
-								textTransform: 'none',
-								py: theme.spacing(1.5),
-								px: theme.spacing(10)
-							}}>
-							Connect with PLGrid
-						</Button>
-						{localUsersEnabled && (
-							<Link
-								color='textDisabled'
-								onClick={() => setNamePasswordLoginSelected(true)}
-								sx={{ cursor: 'pointer' }}>
-								use password login
-							</Link>
-						)}
-					</>
-				) : (
-					<>
-						{altAuth && (
+						{ssoEnabled && (
 							<Box sx={{ width: '100%' }}>
 								<IconButton
 									size='small'
-									onClick={() => setNamePasswordLoginSelected(false)}>
+									onClick={() => setUserChoice('sso')}>
 									<ArrowBack />
 								</IconButton>
 							</Box>
 						)}
-						<NamePasswordLoginPanel />
+						<LocalLoginPanel />
 					</>
+				)}
+				{loginScreen === 'waitingForServer' && <CircularProgress />}
+				{loginScreen === 'noLoginMethod' && (
+					<Typography>
+						No login method is available. The server does not accept local accounts, and
+						this build has no SSO configured. For local development, start the backend
+						with ENABLE_LOCAL_USERS=true. For SSO, configure
+						REACT_APP_KEYCLOAK_BASE_URL, REACT_APP_KEYCLOAK_REALM and
+						REACT_APP_KEYCLOAK_CLIENT_ID.
+					</Typography>
 				)}
 			</Box>
 		</Box>
