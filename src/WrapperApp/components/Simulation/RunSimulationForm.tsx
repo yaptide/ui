@@ -31,14 +31,9 @@ import { StyledTab, StyledTabs } from '../../../shared/components/Tabs/StyledTab
 import { EditorJson } from '../../../ThreeEditor/js/EditorJson';
 import { SimulationFetchSource, SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
 import { SimulationInputFiles } from '../../../types/ResponseTypes';
+import { parsePositiveInteger } from '../../../util/parsePositiveInteger';
 import { BatchScriptParametersEditor } from './BatchParametersEditor';
 import { Geant4DatasetDownloadSelector, Geant4DatasetsType } from './Geant4DatasetDownload';
-
-function parsePositiveInteger(text: string): number {
-	const value = Number(text);
-
-	return text.trim() !== '' && Number.isSafeInteger(value) && value >= 1 ? value : NaN;
-}
 
 function a11yProps(index: number, name: string = 'RunSimulation') {
 	return {
@@ -121,7 +116,7 @@ export function RunSimulationForm({
 	);
 
 	const [primariesCountInput, setPrimariesCountInput] = useState(
-		String(yaptideEditor?.beam.numberOfParticles ?? 0)
+		String(yaptideEditor?.beam.numberOfParticles ?? 1)
 	);
 	const overridePrimariesCount = parsePositiveInteger(primariesCountInput);
 
@@ -193,6 +188,7 @@ export function RunSimulationForm({
 	const [simName, setSimName] = useState(editorJson?.project.title ?? '');
 	const [nTasksInput, setNTasksInput] = useState('1');
 	const nTasks = parsePositiveInteger(nTasksInput);
+	const effectiveNTasks = currentSimulator === SimulatorType.GEANT4 ? 1 : nTasks;
 	const [arrayHeader, setArrayHeader] = useState<string>('');
 	const [collectHeader, setCollectHeader] = useState<string>('');
 	const [arrayOptions, setArrayOptions] = useState<ScriptOption[]>([]);
@@ -203,7 +199,7 @@ export function RunSimulationForm({
 	const { managerState: geant4DownloadManagerState } = useSharedDatasetManager();
 
 	useEffect(() => {
-		const runFormIsValid = !isNaN(nTasks) && !isNaN(overridePrimariesCount);
+		const runFormIsValid = !isNaN(effectiveNTasks) && !isNaN(overridePrimariesCount);
 		const converterReadyIfGeant4Selected =
 			currentSimulator !== SimulatorType.GEANT4 || isConverterReady;
 
@@ -214,7 +210,7 @@ export function RunSimulationForm({
 
 		setRunPreconditionsMet(runFormIsValid && converterReadyIfGeant4Selected && datasetsReady);
 	}, [
-		nTasks,
+		effectiveNTasks,
 		overridePrimariesCount,
 		currentSimulator,
 		isConverterReady,
@@ -287,7 +283,7 @@ export function RunSimulationForm({
 			filteredInputFiles,
 			simulationSourceType,
 			simName,
-			nTasks,
+			effectiveNTasks,
 			runSimulator,
 			batchOptions,
 			geant4DatasetType
@@ -380,8 +376,12 @@ export function RunSimulationForm({
 							type='number'
 							label='Number of tasks'
 							disabled={currentSimulator === SimulatorType.GEANT4}
-							error={isNaN(nTasks)}
-							value={currentSimulator === SimulatorType.GEANT4 ? 1 : nTasksInput}
+							error={isNaN(effectiveNTasks)}
+							value={
+								currentSimulator === SimulatorType.GEANT4
+									? effectiveNTasks
+									: nTasksInput
+							}
 							onChange={e => setNTasksInput(e.target.value)}
 							slotProps={{ htmlInput: { min: 1 } }}
 						/>
