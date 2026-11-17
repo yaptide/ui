@@ -49,6 +49,7 @@ import {
 	YaptideResponse
 } from '../types/ResponseTypes';
 import { FullSimulationData, SimulationService } from '../types/SimulationService';
+import { eagerGroups, pageGroups } from '../util/lazyPages';
 import { camelToSnakeCase } from '../util/Notation/Notation';
 import { ValidateShape } from '../util/Types';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
@@ -644,7 +645,8 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 		if (estimatorsPagesByDimensions) {
 			const allResults: JobResults[] = [];
 
-			for (const [dimension, pageDimension] of Object.entries(estimatorsPagesByDimensions)) {
+			// 2D and 3D pages load once they come into view (EstimatorTab)
+			for (const pageDimension of eagerGroups(pageGroups(estimatorsPagesByDimensions))) {
 				const results =
 					firstEstimatorName &&
 					(await this.getEstimatorsPages(
@@ -662,7 +664,17 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 				}
 			}
 
-			if (!inputs || allResults.length === 0) return undefined;
+			if (!inputs) return undefined;
+
+			// an estimator of maps only: its pages come when shown
+			if (allResults.length === 0 && firstEstimatorName)
+				allResults.push({
+					jobId: jobStatus.jobId,
+					estimators: [{ name: firstEstimatorName, pages: [] }],
+					message: ''
+				} as JobResults);
+
+			if (allResults.length === 0) return undefined;
 
 			const aggregationResults = allResults.reduce(
 				(acc, result) => {
