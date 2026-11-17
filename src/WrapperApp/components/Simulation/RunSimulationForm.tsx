@@ -24,6 +24,7 @@ import { MouseEvent, SyntheticEvent, useEffect, useState } from 'react';
 import { DownloadManagerStatus } from '../../../Geant4Worker/Geant4DatasetManager';
 import { usePythonConverter } from '../../../PythonConverter/PythonConverterService';
 import { useSharedDatasetManager } from '../../../services/Geant4DatasetContextProvider';
+import { MAX_LOCAL_GEANT4_WORKERS } from '../../../services/Geant4LocalWorkerSimulationService';
 import { useStore } from '../../../services/StoreService';
 import StyledAccordion from '../../../shared/components/StyledAccordion';
 import { StyledExclusiveToggleButtonGroup } from '../../../shared/components/StyledExclusiveToggleButtonGroup';
@@ -186,7 +187,7 @@ export function RunSimulationForm({
 	const [simName, setSimName] = useState(editorJson?.project.title ?? '');
 	const defaultTasksCount =
 		typeof navigator !== 'undefined' && navigator.hardwareConcurrency
-			? Math.max(1, navigator.hardwareConcurrency - 1)
+			? Math.max(1, Math.min(navigator.hardwareConcurrency - 1, MAX_LOCAL_GEANT4_WORKERS))
 			: 1;
 	const [nTasks, setNTasks] = useState(defaultTasksCount);
 	const [arrayHeader, setArrayHeader] = useState<string>('');
@@ -384,7 +385,7 @@ export function RunSimulationForm({
 							helperText={
 								currentSimulator === SimulatorType.GEANT4 &&
 								typeof navigator !== 'undefined'
-									? `Parallel Web Workers (CPU cores: ${navigator.hardwareConcurrency || 'unknown'})`
+									? `Parallel Web Workers (safe limit: ${MAX_LOCAL_GEANT4_WORKERS}, CPU cores: ${navigator.hardwareConcurrency || 'unknown'})`
 									: undefined
 							}
 						/>

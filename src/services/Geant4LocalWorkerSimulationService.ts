@@ -45,6 +45,13 @@ interface JobMetadata {
 	inputType: SimulationSourceType;
 }
 
+/**
+ * Maximum number of concurrent Geant4 WebAssembly worker instances allowed in browser memory.
+ * Geant4 Wasm allocates significant memory per instance (1-2GB virtual heap).
+ * Limiting concurrency prevents 'RangeError: Array buffer allocation failed'.
+ */
+export const MAX_LOCAL_GEANT4_WORKERS = 3;
+
 export default class Geant4LocalWorkerSimulationService implements SimulationService {
 	convertJSON: PythonConverterContext['convertJSON'];
 	workers: Record<JobId, Geant4Worker[]>;
@@ -85,10 +92,10 @@ export default class Geant4LocalWorkerSimulationService implements SimulationSer
 			typeof navigator !== 'undefined' && navigator.hardwareConcurrency
 				? navigator.hardwareConcurrency
 				: 2;
-		const defaultWorkers = Math.max(1, availableCores - 1);
+		const defaultWorkers = Math.max(1, Math.min(availableCores - 1, MAX_LOCAL_GEANT4_WORKERS));
 
 		if (requestedTasks && requestedTasks > 0) {
-			return Math.min(requestedTasks, Math.max(1, availableCores));
+			return Math.min(requestedTasks, MAX_LOCAL_GEANT4_WORKERS);
 		}
 
 		return defaultWorkers;
