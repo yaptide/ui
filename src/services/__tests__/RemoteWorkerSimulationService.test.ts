@@ -84,6 +84,19 @@ describe('pages loaded with a simulation', () => {
 		expect(data?.estimators[0].pages).toHaveLength(2);
 	});
 
+	test('opening a simulation again does not add pages to the cached ones', async () => {
+		const { service } = backend([
+			{ pageDimension: 0, pageName: 'Dose', pageNumber: 0 },
+			{ pageDimension: 1, pageName: 'Depth dose', pageNumber: 1 }
+		]);
+
+		await service.getFullSimulationData(completed);
+		await service.getFullSimulationData(completed);
+		const data = await service.getFullSimulationData(completed);
+
+		expect(data?.estimators[0].pages).toHaveLength(2);
+	});
+
 	test('an estimator of maps only still comes, with no pages yet', async () => {
 		const { service, requests } = backend([
 			{ pageDimension: 2, pageName: 'yz profile', pageNumber: 0 }

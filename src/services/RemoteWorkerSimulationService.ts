@@ -686,7 +686,8 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 						if (existingEstimator) {
 							existingEstimator.pages.push(...estimator.pages);
 						} else {
-							acc.estimators.push(estimator);
+							// a copy: the estimator is the cached result of its pages, which must not grow
+							acc.estimators.push({ ...estimator, pages: [...estimator.pages] });
 						}
 					});
 
