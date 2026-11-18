@@ -6,33 +6,40 @@ import { PageGroup } from '../../../../util/lazyPages';
 interface LazyPageGroupProps {
 	group: PageGroup;
 	loading: boolean;
+	// the last load failed: only the Load button tries again
+	failed?: boolean;
 	onLoad: (group: PageGroup) => void;
 }
 
 /**
  * The place of pages not loaded yet (2D maps, 3D volumes): they are fetched once the place comes into view, so the
- * researcher downloads only the pages they look at. A button loads them where the browser cannot tell.
+ * researcher downloads only the pages they look at. A button loads them where the browser cannot tell, and after a
+ * failed load.
  */
-const LazyPageGroup = ({ group, loading, onLoad }: LazyPageGroupProps) => {
+const LazyPageGroup = ({ group, loading, failed = false, onLoad }: LazyPageGroupProps) => {
 	const ref = useRef<HTMLDivElement>(null);
 	// read when the place comes into view, so a new handler does not observe again
-	const load = useRef(onLoad);
-	load.current = onLoad;
+	const load = useRef(() => onLoad(group));
+	load.current = () => onLoad(group);
+	// the group is built anew on every render: observed again only when its pages change, as a new observer reports
+	// a place in view at once
+	const pages = group.pageNums.join(',');
+	const watch = !loading && !failed;
 
 	useEffect(() => {
 		const element = ref.current;
 
-		if (!element || typeof IntersectionObserver === 'undefined') return;
+		if (!watch || !element || typeof IntersectionObserver === 'undefined') return;
 		const observer = new IntersectionObserver(entries => {
 			if (entries.some(entry => entry.isIntersecting)) {
 				observer.disconnect();
-				load.current(group);
+				load.current();
 			}
 		});
 		observer.observe(element);
 
 		return () => observer.disconnect();
-	}, [group]);
+	}, [pages, watch]);
 
 	return (
 		<Box
@@ -53,6 +60,7 @@ const LazyPageGroup = ({ group, loading, onLoad }: LazyPageGroupProps) => {
 					<Typography
 						variant='body2'
 						color='text.secondary'>
+						{failed ? 'Could not load the ' : ''}
 						{group.dimension}D results: {group.names.join(', ')}
 					</Typography>
 					<Button

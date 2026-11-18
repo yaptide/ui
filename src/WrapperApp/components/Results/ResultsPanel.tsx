@@ -99,8 +99,10 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 	const chosenEstimator = estimatorsResults[tabsValue];
 
 	// the 2D and 3D pages of the estimator on screen load once they come into view (LazyPageGroup), each group
-	// once: key -> loaded or loading
-	const [loadedGroups, setLoadedGroups] = useState<Record<string, 'loading' | 'loaded'>>({});
+	// once: key -> loading, loaded, or failed (then only the Load button tries again)
+	const [loadedGroups, setLoadedGroups] = useState<
+		Record<string, 'loading' | 'loaded' | 'failed'>
+	>({});
 	const latestSimulation = useRef(simulation);
 	latestSimulation.current = simulation;
 	const tabEstimatorName = (estimatorsTabData ?? uploadedInputFilesEstimatorNames)?.[tabsValue];
@@ -123,9 +125,12 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 					group => !loadedHere(group)
 				);
 
-	const loadingDimensions = pendingGroups
-		.filter(group => loadedGroups[groupKey(simulation?.jobId, group.dimension)] === 'loading')
-		.map(group => group.dimension);
+	const dimensionsIn = (state: 'loading' | 'failed') =>
+		pendingGroups
+			.filter(group => loadedGroups[groupKey(simulation?.jobId, group.dimension)] === state)
+			.map(group => group.dimension);
+	const loadingDimensions = dimensionsIn('loading');
+	const failedDimensions = dimensionsIn('failed');
 
 	const loadGroup = useCallback(
 		async (group: PageGroup) => {
@@ -150,8 +155,15 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 			const current = latestSimulation.current;
 			const pages = results?.estimators.find(e => e.name === tabEstimatorName)?.pages;
 
-			// the load failed, or another simulation is shown meanwhile: it loads its own pages
-			if (!current || !pages || current.jobId !== shown.jobId) {
+			// a failed load is not tried again by itself, so a group in view does not ask again and again
+			if (!pages) {
+				setLoadedGroups(groups => ({ ...groups, [key]: 'failed' }));
+
+				return;
+			}
+
+			// another simulation is shown meanwhile: it loads its own pages
+			if (!current || current.jobId !== shown.jobId) {
 				setLoadedGroups(groups => {
 					const { [key]: _, ...others } = groups;
 
@@ -274,6 +286,7 @@ function ResultsPanel(props: { simulation: FullSimulationData | undefined }) {
 						simulation={simulation}
 						pendingGroups={pendingGroups}
 						loadingDimensions={loadingDimensions}
+						failedDimensions={failedDimensions}
 						onLoadGroup={loadGroup}
 					/>
 				</>

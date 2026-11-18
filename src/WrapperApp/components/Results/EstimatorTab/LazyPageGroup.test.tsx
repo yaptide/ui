@@ -26,14 +26,15 @@ describe('LazyPageGroup', () => {
 		window.IntersectionObserver = original;
 	});
 
-	const show = (loading: boolean, onLoad: jest.Mock) =>
+	const show = (loading: boolean, onLoad: jest.Mock, failed = false, shown = group) =>
 		// React's own act around a plain root: this test does not use Testing Library
 		// eslint-disable-next-line testing-library/no-unnecessary-act
 		act(() =>
 			root.render(
 				<LazyPageGroup
-					group={group}
+					group={shown}
 					loading={loading}
+					failed={failed}
 					onLoad={onLoad}
 				/>
 			)
@@ -62,6 +63,39 @@ describe('LazyPageGroup', () => {
 		expect(onLoad).toHaveBeenCalledTimes(1);
 		expect(onLoad).toHaveBeenCalledWith(group);
 		expect(disconnect).toHaveBeenCalled();
+	});
+
+	const observeAll = () => {
+		const observers: ((entries: { isIntersecting: boolean }[]) => void)[] = [];
+		window.IntersectionObserver = jest.fn(callback => {
+			observers.push(callback);
+
+			return { observe: jest.fn(), disconnect: jest.fn() };
+		}) as unknown as typeof IntersectionObserver;
+
+		return observers;
+	};
+
+	test('is not observed again when its group is only built anew', () => {
+		const observers = observeAll();
+		const onLoad = jest.fn();
+
+		show(false, onLoad);
+		show(false, onLoad, false, { ...group, pageNums: [...group.pageNums] });
+
+		expect(observers).toHaveLength(1);
+	});
+
+	test('after a failed load waits for the Load button instead of loading again by itself', () => {
+		const observers = observeAll();
+		const onLoad = jest.fn();
+
+		show(false, onLoad, true);
+
+		expect(observers).toHaveLength(0);
+		expect(container.textContent).toContain('Could not load the 2D results: Dose map');
+		act(() => loadButton()?.click());
+		expect(onLoad).toHaveBeenCalledTimes(1);
 	});
 
 	test('offers a Load button where the browser cannot tell what is in view', () => {
