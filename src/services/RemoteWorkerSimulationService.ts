@@ -399,7 +399,9 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 				const response = await this.authKy
 					.get('results', {
 						signal,
-						searchParams: camelToSnakeCase({ jobId })
+						searchParams: camelToSnakeCase({ jobId }),
+						// every page of a simulation: on a slow link it takes longer than ky's 10 s
+						timeout: false
 					})
 					.json<ResponseGetJobResults>();
 
@@ -493,7 +495,9 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 				const response = await this.authKy
 					.get('results', {
 						signal,
-						searchParams
+						searchParams,
+						// a group of maps or volumes can take MBs: on a slow link it takes longer than ky's 10 s
+						timeout: false
 					})
 					.json<ResponseGetEstimatorPageResult>();
 
