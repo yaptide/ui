@@ -2,6 +2,7 @@ import { Button } from '@mui/material';
 
 import { useDialog } from '../../../services/DialogService';
 import { StoreContext } from '../../../services/StoreService';
+import { testIds } from '../../../util/testIds';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
 export function NewProjectDialog({
@@ -14,6 +15,7 @@ export function NewProjectDialog({
 		<CustomDialog
 			onClose={onClose}
 			alert={true}
+			testId='new-project'
 			title='New Project Alert'
 			contentText='Your current project will be lost. Are you sure you want to continue?'>
 			<Button
@@ -25,6 +27,7 @@ export function NewProjectDialog({
 			<Button
 				color='secondary'
 				variant='contained'
+				data-testid={`${testIds.dialog('new-project')}-confirm`}
 				onClick={() => {
 					if (yaptideEditor) {
 						yaptideEditor.clear();

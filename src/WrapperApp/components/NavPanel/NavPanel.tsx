@@ -9,6 +9,7 @@ import { useConfig } from '../../../config/ConfigService';
 import { AuthContext, useAuth } from '../../../services/AuthService';
 import { useStore } from '../../../services/StoreService';
 import deployInfo from '../../../util/identify/deployInfo.json';
+import { testIds } from '../../../util/testIds';
 import YaptideDark from './logos/Yaptide';
 import YaptideLight from './logos/YaptideLight';
 import NavPanelElement from './NavPanelElement';
@@ -117,7 +118,9 @@ export default function NavPanel(props: NavPanelProps) {
 
 	return (
 		<Box
-			aria-label='Navigation drawer for the YAPTIDE application'
+			component='nav'
+			aria-label='Main navigation'
+			data-testid={testIds.navDrawer}
 			sx={{
 				display: 'flex',
 				flexDirection: 'column',

@@ -16,6 +16,7 @@ import {
 	_defaultShInputFiles,
 	SimulationInputFiles
 } from '../../../types/ResponseTypes';
+import { testIds } from '../../../util/testIds';
 import { DragDropFiles } from './DragDropFiles';
 import { InputFilesEditor } from './InputFilesEditor';
 
@@ -137,7 +138,7 @@ export default function InputEditorPanel({ goToRun }: InputEditorPanelProps) {
 				}}>
 				<Box sx={{ marginBottom: theme.spacing(2) }}>
 					<LoadingButton
-						id='generate-from-editor'
+						data-testid={testIds.inputEditorGenerate}
 						sx={{
 							marginRight: '1rem'
 						}}

@@ -72,6 +72,7 @@ export function EditorSidebar(props: EditorSidebarProps) {
 					(editor.contextManager.currentContext = newValue)
 				}
 				variant='fullWidth'
+				aria-label='Editor sections'
 				sx={theme => ({ marginBottom: theme.spacing(2) })}>
 				<StyledTab
 					icon={<TokenIcon />}

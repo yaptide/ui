@@ -101,7 +101,6 @@ export function EditorToolbar({ editor, sx }: EditorToolbarProps) {
 								edge='end'
 								color='inherit'
 								disabled={disabled}
-								aria-label={'menu-' + label}
 								onClick={() => onClick(value)}>
 								{icon}
 							</SelectedButton>
@@ -112,7 +111,6 @@ export function EditorToolbar({ editor, sx }: EditorToolbarProps) {
 								color='inherit'
 								disabled={disabled}
 								component='span'
-								aria-label={'menu-' + label}
 								onClick={() => onClick(value)}>
 								{icon}
 							</IconButton>

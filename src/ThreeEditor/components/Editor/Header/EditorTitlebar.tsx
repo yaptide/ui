@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useDialog } from '../../../../services/DialogService';
 import { useStore } from '../../../../services/StoreService';
+import { testIds } from '../../../../util/testIds';
 
 export function EditorTitleBar({ sx }: { sx: SxProps }) {
 	const theme = useTheme();
@@ -45,6 +46,7 @@ export function EditorTitleBar({ sx }: { sx: SxProps }) {
 	return (
 		<Box sx={{ ...sx, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 			<Button
+				data-testid={testIds.projectTitleButton}
 				onClick={() => {
 					if (yaptideEditor) {
 						openEditProjectDialog({ yaptideEditor });

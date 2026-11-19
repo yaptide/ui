@@ -2,6 +2,7 @@ import { Box, Button, TextField } from '@mui/material';
 import { useState } from 'react';
 
 import { StoreContext } from '../../../services/StoreService';
+import { testIds } from '../../../util/testIds';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
 
 export function EditProjectInfoDialog({
@@ -16,6 +17,7 @@ export function EditProjectInfoDialog({
 	return (
 		<CustomDialog
 			onClose={onClose}
+			testId='edit-project'
 			title='Edit Project Info'
 			contentText='Change title or description for current project.'
 			body={
@@ -34,6 +36,9 @@ export function EditProjectInfoDialog({
 							width: 550
 						}}
 						label='Project Title'
+						slotProps={{
+							htmlInput: { 'data-testid': 'edit-project-title-input' }
+						}}
 						value={title}
 						onChange={e => setTitle(e.target.value)}
 					/>
@@ -44,6 +49,9 @@ export function EditProjectInfoDialog({
 						}}
 						multiline
 						label='Project Description'
+						slotProps={{
+							htmlInput: { 'data-testid': 'edit-project-description-input' }
+						}}
 						value={description}
 						onChange={e => setDescription(e.target.value)}
 					/>
@@ -52,12 +60,14 @@ export function EditProjectInfoDialog({
 			<Button
 				onClick={onClose}
 				autoFocus
-				color='secondary'>
+				color='secondary'
+				data-testid={`${testIds.dialog('edit-project')}-cancel`}>
 				Cancel
 			</Button>
 			<Button
 				variant='contained'
 				color='secondary'
+				data-testid={`${testIds.dialog('edit-project')}-save`}
 				onClick={() => {
 					if (yaptideEditor) {
 						yaptideEditor.config.setKey('project/title', title);

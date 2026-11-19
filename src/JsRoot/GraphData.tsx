@@ -161,6 +161,7 @@ function GraphInfo(props: { filter: FilterJSON | undefined }) {
 	return (
 		<>
 			<IconButton
+				aria-label='Graph filter information'
 				color='primary'
 				onClick={() => setOpen(true)}
 				ref={anchorRef}>
@@ -278,6 +279,7 @@ export function generateGraphs(
 					})}>
 					{isPage1d(page) && (
 						<IconButton
+							aria-label='Download graph as CSV'
 							onClick={() => onClickSaveToFile(page as Page1D)}
 							color='primary'>
 							<FileDownloadIcon fontSize='large' />

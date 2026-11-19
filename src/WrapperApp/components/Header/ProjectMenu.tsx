@@ -40,6 +40,7 @@ export function ProjectMenu({ editor }: EditorMenuProps) {
 			<MenuPosition
 				label='Project'
 				idx={10}
+				name='project'
 				openIdx={openIdx}
 				setOpenIdx={setOpenIdx}
 				options={[

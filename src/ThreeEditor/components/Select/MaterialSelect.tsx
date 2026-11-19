@@ -3,6 +3,7 @@ import { SyntheticEvent } from 'react';
 import { AutoCompleteSelect } from '../../../util/genericComponents/AutoCompleteSelect';
 import { COMMON_MATERIAL_ICRUS } from '../../Simulation/Materials/materials';
 import SimulationMaterial from '../../Simulation/Materials/SimulationMaterial';
+import { usePropertyFieldLabelId } from '../Sidebar/properties/fields/PropertyField';
 
 export interface MaterialSelectProps {
 	onChange?: (event: SyntheticEvent<Element, Event>, newValue: number) => void;
@@ -23,6 +24,8 @@ const commonCompare = (a: SimulationMaterial, b: SimulationMaterial): number => 
 };
 
 export function MaterialSelect(props: MaterialSelectProps) {
+	const labelId = usePropertyFieldLabelId();
+
 	const getOptionLabel = ({ icru, name }: SimulationMaterial) => {
 		return `[${icru}] ${name}`;
 	};
@@ -36,6 +39,7 @@ export function MaterialSelect(props: MaterialSelectProps) {
 			options={Object.values(props.materials).sort(commonCompare)}
 			groupBy={option => (isCommonMaterial(option) ? 'Common' : 'Other')}
 			getOptionLabel={getOptionLabel}
+			labelId={labelId}
 		/>
 	);
 }

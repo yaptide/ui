@@ -145,6 +145,7 @@ function OperationInput({
 						followCursor
 						enterDelay={TOOLTIP_DELAY}>
 						<IconButton
+							aria-label='Remove operation from a zone area calculations'
 							onClick={onChange}
 							sx={{
 								'padding': 3,
@@ -179,7 +180,7 @@ function OperationInput({
 						width: '100%'
 					}
 				}}
-				aria-label='operation-select'>
+				aria-label={objectName ? `Boolean operation: ${objectName}` : 'Boolean operation'}>
 				{allowedOperations.map((operation, index) => (
 					<Tooltip
 						title={OperationToTooltip(operation, objectName)}
@@ -190,7 +191,6 @@ function OperationInput({
 						enterDelay={TOOLTIP_DELAY}>
 						<ToggleButton
 							value={operation}
-							aria-label={operation}
 							selected={operation === value}
 							color='primary'
 							sx={{

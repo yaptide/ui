@@ -35,9 +35,7 @@ export const SimulationCardHeader = ({
 						sx={{
 							zIndex: ({ zIndex }) => zIndex.appBar
 						}}>
-						<IconButton
-							aria-label='delete simulation'
-							onClick={() => handleDelete(simulationStatus.jobId)}>
+						<IconButton onClick={() => handleDelete(simulationStatus.jobId)}>
 							<ClearIcon />
 						</IconButton>
 					</Tooltip>
@@ -47,9 +45,7 @@ export const SimulationCardHeader = ({
 						sx={{
 							zIndex: ({ zIndex }) => zIndex.appBar
 						}}>
-						<IconButton
-							aria-label='refresh simulation'
-							onClick={() => handleRefresh(simulationStatus.jobId)}>
+						<IconButton onClick={() => handleRefresh(simulationStatus.jobId)}>
 							<RefreshIcon />
 						</IconButton>
 					</Tooltip>

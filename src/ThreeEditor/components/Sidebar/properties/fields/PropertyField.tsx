@@ -1,8 +1,31 @@
-import { Box, Checkbox, Grid, Stack, TextField, Typography, useTheme } from '@mui/material';
-import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
+import {
+	Box,
+	Checkbox,
+	CheckboxProps,
+	Grid,
+	Select,
+	SelectProps,
+	Stack,
+	TextField,
+	TextFieldProps,
+	ToggleButtonGroupProps,
+	Typography,
+	useTheme
+} from '@mui/material';
+import {
+	createContext,
+	ReactNode,
+	useCallback,
+	useContext,
+	useEffect,
+	useId,
+	useMemo,
+	useRef
+} from 'react';
 import { Vector2 } from 'three';
 import { Vector3 } from 'three/src/math/Vector3.js';
 
+import { StyledExclusiveToggleButtonGroup } from '../../../../../shared/components/StyledExclusiveToggleButtonGroup';
 import { InfoTooltip } from '../../../../../shared/components/tooltip/InfoTooltip';
 import {
 	KEYWORD_OPTIONS,
@@ -12,7 +35,10 @@ import {
 	RULE_UNITS,
 	RULE_VALUE_RANGES
 } from '../../../../../types/SimulationTypes/DetectTypes/DetectRuleTypes';
-import { AutoCompleteSelect } from '../../../../../util/genericComponents/AutoCompleteSelect';
+import {
+	AutoCompleteSelect,
+	AutoCompleteSelectProps
+} from '../../../../../util/genericComponents/AutoCompleteSelect';
 import { createRowColor } from '../../../../../util/Ui/Color';
 import { createNumberInput } from '../../../../../util/Ui/Number';
 import {
@@ -29,11 +55,24 @@ import { SCORING_MODIFIERS_TYPE } from '../../../../Simulation/Scoring/ScoringOu
 import { DifferentialModifier } from '../../../../Simulation/Scoring/ScoringQtyModifiers';
 import { ObjectSelectProperty, ObjectSelectProps } from './ObjectSelectPropertyField';
 
+const PropertyFieldLabelIdContext = createContext<string | undefined>(undefined);
+
+/**
+ * Returns the `id` of the visible label rendered by the closest `PropertyField`,
+ * or `undefined` when that field has no label.
+ */
+export function usePropertyFieldLabelId(): string | undefined {
+	return useContext(PropertyFieldLabelIdContext);
+}
+
 export function PropertyField(props: { label?: string; disabled?: boolean; children: ReactNode }) {
+	const labelId = useId();
+
 	return (
 		<>
 			{props.label !== undefined && (
 				<Grid
+					id={labelId}
 					size={4}
 					sx={{
 						opacity: props.disabled ? 0.5 : 'inherit',
@@ -53,9 +92,106 @@ export function PropertyField(props: { label?: string; disabled?: boolean; child
 						py: theme.spacing(0.5)
 					}
 				})}>
-				{props.children}
+				{props.label !== undefined ? (
+					<PropertyFieldLabelIdContext.Provider value={labelId}>
+						{props.children}
+					</PropertyFieldLabelIdContext.Provider>
+				) : (
+					props.children
+				)}
 			</Grid>
 		</>
+	);
+}
+
+/**
+ * Wrapper around MUI `TextField` that names the native input from the visible
+ * label of the enclosing `PropertyField`. Does nothing when there is no label.
+ */
+function LabelledTextField(props: TextFieldProps) {
+	const labelId = usePropertyFieldLabelId();
+
+	if (labelId === undefined) {
+		return <TextField {...props} />;
+	}
+
+	return (
+		<TextField
+			{...props}
+			slotProps={{ htmlInput: { 'aria-labelledby': labelId } }}
+		/>
+	);
+}
+
+/**
+ * Wrapper around MUI `Checkbox` that names the native input from the visible
+ * label of the enclosing `PropertyField`. Note that a plain `aria-label` prop on
+ * `Checkbox` would land on the root `<span>`, so the attribute has to be applied
+ * to the `input` slot. Does nothing when there is no label.
+ */
+function LabelledCheckbox(props: CheckboxProps) {
+	const labelId = usePropertyFieldLabelId();
+
+	if (labelId === undefined) {
+		return <Checkbox {...props} />;
+	}
+
+	return (
+		<Checkbox
+			{...props}
+			slotProps={{ input: { 'aria-labelledby': labelId } }}
+		/>
+	);
+}
+
+/**
+ * Wrapper around `AutoCompleteSelect` that names its input from the visible
+ * label of the enclosing `PropertyField`. Does nothing when there is no label.
+ */
+export function LabelledAutoCompleteSelect<
+	T,
+	Multiple extends boolean | undefined = undefined,
+	FreeSolo extends boolean | undefined = undefined
+>(props: AutoCompleteSelectProps<T, Multiple, FreeSolo>) {
+	const labelId = usePropertyFieldLabelId();
+
+	return (
+		<AutoCompleteSelect<T, Multiple, FreeSolo>
+			{...props}
+			labelId={labelId}
+		/>
+	);
+}
+
+/**
+ * Wrapper around MUI `Select` that names its combobox from the visible label of
+ * the enclosing `PropertyField` (via `labelId`). Does nothing when there is no label.
+ */
+export function LabelledSelect(props: SelectProps) {
+	const labelId = usePropertyFieldLabelId();
+
+	return (
+		<Select
+			{...props}
+			labelId={labelId}
+		/>
+	);
+}
+
+/**
+ * Wrapper around `StyledExclusiveToggleButtonGroup` that names the group from the
+ * visible label of the enclosing `PropertyField`. `aria-label` is forced to
+ * `undefined` so that `aria-labelledby` remains the only source of the name.
+ */
+export function LabelledExclusiveToggleButtonGroup(props: ToggleButtonGroupProps) {
+	const labelId = usePropertyFieldLabelId();
+
+	return (
+		<StyledExclusiveToggleButtonGroup
+			{...props}
+			aria-labelledby={labelId}
+			aria-label={undefined}
+		/>
 	);
 }
 
@@ -83,7 +219,7 @@ interface TextPropertyFieldProps {
 export function TextPropertyField(props: TextPropertyFieldProps) {
 	return (
 		<PropertyField label={props.label}>
-			<TextField
+			<LabelledTextField
 				size='small'
 				variant='outlined'
 				value={props.value}
@@ -102,8 +238,10 @@ export function NumberInput(props: {
 	unit?: string;
 	nudge?: number;
 	step?: number;
+	ariaLabel?: string;
 	onChange: (value: number) => void;
 }) {
+	const labelId = usePropertyFieldLabelId();
 	const theme = useTheme();
 	const boxRef = useRef<HTMLDivElement>(null);
 
@@ -116,6 +254,28 @@ export function NumberInput(props: {
 			}
 		})
 	);
+
+	useEffect(() => {
+		// The input is a raw DOM node created outside React, so the accessible name
+		// has to be applied imperatively and kept in sync with the label id.
+		const dom = inputRef.current.dom;
+
+		if (props.ariaLabel) {
+			dom.setAttribute('aria-label', props.ariaLabel);
+			dom.removeAttribute('aria-labelledby');
+		} else if (labelId) {
+			dom.setAttribute('aria-labelledby', labelId);
+			dom.removeAttribute('aria-label');
+		} else {
+			dom.removeAttribute('aria-label');
+			dom.removeAttribute('aria-labelledby');
+		}
+
+		return () => {
+			dom.removeAttribute('aria-label');
+			dom.removeAttribute('aria-labelledby');
+		};
+	}, [labelId, props.ariaLabel]);
 
 	useEffect(() => {
 		if (props.unit) {
@@ -167,12 +327,39 @@ export function NumberInput(props: {
 	);
 }
 
-export function ColorInput(props: { value: string; onChange: (value: number) => void }) {
+export function ColorInput(props: {
+	value: string;
+	onChange: (value: number) => void;
+	ariaLabel?: string;
+}) {
+	const labelId = usePropertyFieldLabelId();
 	const boxRef = useRef<HTMLDivElement>(null);
 
 	const input = useMemo(() => {
 		return createRowColor({})[1];
 	}, []);
+
+	useEffect(() => {
+		// The input is a raw DOM node created outside React, so the accessible name
+		// has to be applied imperatively and kept in sync with the label id.
+		const dom = input.dom;
+
+		if (props.ariaLabel) {
+			dom.setAttribute('aria-label', props.ariaLabel);
+			dom.removeAttribute('aria-labelledby');
+		} else if (labelId) {
+			dom.setAttribute('aria-labelledby', labelId);
+			dom.removeAttribute('aria-label');
+		} else {
+			dom.removeAttribute('aria-label');
+			dom.removeAttribute('aria-labelledby');
+		}
+
+		return () => {
+			dom.removeAttribute('aria-label');
+			dom.removeAttribute('aria-labelledby');
+		};
+	}, [input, labelId, props.ariaLabel]);
 
 	useEffect(() => {
 		if (!boxRef.current) return;
@@ -260,16 +447,19 @@ export function Vector3PropertyField(props: XYZPropertyFieldProps) {
 					{...props}
 					value={props.value.x}
 					onChange={onChangeX}
+					ariaLabel={`${props.label} X`}
 				/>
 				<NumberInput
 					{...props}
 					value={props.value.y}
 					onChange={onChangeY}
+					ariaLabel={`${props.label} Y`}
 				/>
 				<NumberInput
 					{...props}
 					value={props.value.z}
 					onChange={onChangeZ}
+					ariaLabel={`${props.label} Z`}
 				/>
 			</Stack>
 		</PropertyField>
@@ -311,11 +501,13 @@ export function Vector2PropertyField(props: XYPropertyFieldProps) {
 					{...props}
 					value={props.value.x}
 					onChange={onChangeX}
+					ariaLabel={`${props.label} X`}
 				/>
 				<NumberInput
 					{...props}
 					value={props.value.y}
 					onChange={onChangeY}
+					ariaLabel={`${props.label} Y`}
 				/>
 			</Stack>
 		</PropertyField>
@@ -331,7 +523,7 @@ interface BooleanPropertyFieldProps {
 export function BooleanPropertyField(props: BooleanPropertyFieldProps) {
 	return (
 		<PropertyField label={props.label}>
-			<Checkbox
+			<LabelledCheckbox
 				sx={{ padding: 0 }}
 				checked={props.value}
 				color='secondary'
@@ -358,7 +550,7 @@ export function ConditionalPropertyField(
 			<Stack
 				direction='row'
 				spacing={1}>
-				<Checkbox
+				<LabelledCheckbox
 					sx={{ padding: 0 }}
 					disabled={props.propertyDisabled}
 					checked={props.enabled}
@@ -377,7 +569,10 @@ type ConditionalNumberPropertyFieldProps = NumberPropertyFieldProps & Conditiona
 export function ConditionalNumberPropertyField(props: ConditionalNumberPropertyFieldProps) {
 	return (
 		<ConditionalPropertyField {...props}>
-			<NumberInput {...props} />
+			<NumberInput
+				{...props}
+				ariaLabel={`${props.label} value`}
+			/>
 		</ConditionalPropertyField>
 	);
 }
@@ -389,7 +584,10 @@ export function ConditionalObjectSelectPropertyField(
 ) {
 	return (
 		<ConditionalPropertyField {...props}>
-			<ObjectSelectProperty {...props} />
+			<ObjectSelectProperty
+				{...props}
+				ariaLabel={`${props.label} value`}
+			/>
 		</ConditionalPropertyField>
 	);
 }
@@ -407,7 +605,7 @@ interface SelectPropertyFieldProps<T> {
 export function SelectPropertyField<T>(props: SelectPropertyFieldProps<T>) {
 	return (
 		<PropertyField label={props.label}>
-			<AutoCompleteSelect
+			<LabelledAutoCompleteSelect
 				onChange={(_event, newValue) => {
 					if (newValue !== null) props.onChange?.call(null, newValue);
 				}}
