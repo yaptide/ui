@@ -17,7 +17,6 @@ import { isDetector } from '../../ThreeEditor/Simulation/Detectors/Detector';
 import { isBasicFigure } from '../../ThreeEditor/Simulation/Figures/BasicFigures';
 import { isBeam } from '../../ThreeEditor/Simulation/Physics/Beam';
 import { isCustomFilter } from '../../ThreeEditor/Simulation/Scoring/CustomFilter';
-import { isOutput } from '../../ThreeEditor/Simulation/Scoring/ScoringOutput';
 import { isScoringQuantity } from '../../ThreeEditor/Simulation/Scoring/ScoringQuantity';
 import { isBooleanZone } from '../../ThreeEditor/Simulation/Zones/BooleanZone';
 import { isWorldZone } from '../../ThreeEditor/Simulation/Zones/WorldZone/WorldZone';
@@ -88,8 +87,9 @@ export const getRemoveCommand = (editor: YaptideEditor, object: Object3D) => {
 		if (object.selectedModifier)
 			return new RemoveDifferentialModifierCommand(editor, object, object.selectedModifier);
 
-		if (isOutput(object.parent?.parent))
-			return new RemoveQuantityCommand(editor, object, object.parent!.parent);
+		const output = object.getParentOutput();
+
+		if (output) return new RemoveQuantityCommand(editor, object, output);
 		else throw new Error('Quantity has no parent output');
 	}
 

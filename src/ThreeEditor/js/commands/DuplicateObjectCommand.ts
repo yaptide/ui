@@ -13,7 +13,7 @@ export const canBeDuplicated = (object: object) => {
 
 	return (
 		isBasicFigure(object) ||
-		(isScoringQuantity(object) && isOutput(object.parent?.parent)) ||
+		(isScoringQuantity(object) && object.getParentOutput() !== undefined) ||
 		isSimulationZone(object) ||
 		isDetector(object) ||
 		isOutput(object) ||
@@ -28,11 +28,10 @@ export const getDuplicateCommand = (editor: YaptideEditor, object: SimulationEle
 
 	if (isBasicFigure(clone)) {
 		return commandFactory.createDuplicateCommand('figure', clone, editor.figureManager);
-	} else if (isScoringQuantity(clone) && object.parent) {
-		const output = object.parent.parent;
+	} else if (isScoringQuantity(clone) && isScoringQuantity(object)) {
+		const output = object.getParentOutput();
 
-		if (isOutput(output))
-			return commandFactory.createDuplicateCommand('quantity', clone, output);
+		if (output) return commandFactory.createDuplicateCommand('quantity', clone, output);
 	} else if (isSimulationZone(clone)) {
 		return commandFactory.createDuplicateCommand('zone', clone, editor.zoneManager);
 	} else if (isDetector(clone)) {
