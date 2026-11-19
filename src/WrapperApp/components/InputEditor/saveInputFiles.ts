@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { strToU8, zipSync } from 'fflate';
+import { enqueueSnackbar } from 'notistack';
 
 import { save, saveString } from '../../../util/File';
 import { InputFiles, SimulatorDetection } from './simulatorDetection';
@@ -13,15 +14,23 @@ export async function saveInputFile(name: string, content: string) {
 
 	if (!pickerWindow.showSaveFilePicker) return saveString(content, name);
 
+	let handle: FileSystemFileHandle;
+
 	try {
-		const handle = await pickerWindow.showSaveFilePicker({ suggestedName: name });
+		handle = await pickerWindow.showSaveFilePicker({ suggestedName: name });
+	} catch (error) {
+		if (error instanceof DOMException && error.name === 'AbortError') return;
+
+		return saveString(content, name);
+	}
+
+	try {
 		const writable = await handle.createWritable();
 		await writable.write(content);
 		await writable.close();
 	} catch (error) {
-		if (error instanceof DOMException && error.name === 'AbortError') return;
-
-		saveString(content, name);
+		console.error(error);
+		enqueueSnackbar(`Couldn't save ${name}`, { variant: 'error' });
 	}
 }
 
