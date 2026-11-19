@@ -142,8 +142,8 @@ export const DEFAULT_ANY: AnyData = {
 };
 
 export const DETECTOR_OPTIONS = {
-	Mesh: 'Mesh',
-	Cyl: 'Cyl',
+	Mesh: 'Cartesian mesh',
+	Cyl: 'R-Z mesh',
 	Zone: 'Zone',
 	All: 'All'
 } as const;

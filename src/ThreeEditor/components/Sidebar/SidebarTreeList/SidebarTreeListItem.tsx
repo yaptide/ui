@@ -19,6 +19,7 @@ import { YaptideEditor } from '../../../js/YaptideEditor';
 import { SimulationElement } from '../../../Simulation/Base/SimulationElement';
 import { BoxFigure, CylinderFigure, SphereFigure } from '../../../Simulation/Figures/BasicFigures';
 import { isOutput } from '../../../Simulation/Scoring/ScoringOutput';
+import { getScoringTypeLabel } from '../../../Simulation/Scoring/scoringTypeLabels';
 import { AddQuantityAction, DeleteAction, DuplicateAction, RenameAction } from './contextActions';
 import BoxIcon from './svg/Box';
 import CylinderIcon from './svg/Cylinder';
@@ -157,6 +158,8 @@ export function SidebarTreeListItem(props: {
 		)
 	);
 
+	const typeLabel = getScoringTypeLabel(object);
+
 	let collapseOrExpandIcon = undefined;
 
 	if (hasChild) {
@@ -244,6 +247,21 @@ export function SidebarTreeListItem(props: {
 						/>
 						<span style={{ display: mode === 'view' ? '' : 'none' }}>{node.text}</span>
 					</Typography>
+
+					{typeLabel && (
+						<Typography
+							variant='caption'
+							sx={{
+								marginLeft: 'auto',
+								paddingLeft: 1,
+								paddingRight: 1,
+								alignSelf: 'center',
+								whiteSpace: 'nowrap',
+								color: theme.palette.text.secondary
+							}}>
+							{typeLabel}
+						</Typography>
+					)}
 
 					{isHidable(object) && (
 						<Checkbox

@@ -14,3 +14,9 @@ The stable demo version is available at <https://yaptide.github.io/>
 ## For developers
 
 [Developer documentation](https://yaptide.github.io/for_developers/frontend/)
+
+For the git blame configuration to work correctly, it is necessary to set the following configuration:
+
+```bash
+git config blame.ignoreRevsFile .git-blame-ignore-revs
+```

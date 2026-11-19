@@ -33,7 +33,11 @@ export function EditorSidebar(props: EditorSidebarProps) {
 		[editor]
 	);
 
-	useSignal(editor, ['objectSelected', 'objectAdded', 'objectRemoved'], handleObjectUpdate);
+	useSignal(
+		editor,
+		['objectSelected', 'objectAdded', 'objectRemoved', 'objectChanged'],
+		handleObjectUpdate
+	);
 
 	const [selectedTab, setSelectedTab] = useState<Context>('geometry');
 

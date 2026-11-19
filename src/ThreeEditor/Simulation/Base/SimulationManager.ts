@@ -78,13 +78,17 @@ export type ManagerParams<
 	 * The keys are transformed to lowercase.
 	 */
 	keyof {
-		[K in keyof TManager as TManager[K] extends (...args: infer Params extends any[]) => unknown
-			? Params extends [TElement]
-				? K extends `add${infer _}` | `remove${infer _}`
-					? Lowercase<_>
+		[
+			K in keyof TManager as TManager[K] extends (
+				...args: infer Params extends any[]
+			) => unknown
+				? Params extends [TElement]
+					? K extends `add${infer _}` | `remove${infer _}`
+						? Lowercase<_>
+						: never
 					: never
 				: never
-			: never]: TManager[K];
+		]: TManager[K];
 	} &
 		string,
 	/**

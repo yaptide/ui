@@ -174,10 +174,7 @@ export type TaskStatusFailed = TaskStatusType<StatusState.FAILED, {}>;
 export type TaskStatusRunning = TaskStatusType<StatusState.RUNNING, { estimatedTime?: TaskTime }>;
 
 type TaskAllStatuses =
-	| TaskStatusCompleted
-	| TaskStatusPending
-	| TaskStatusFailed
-	| TaskStatusRunning;
+	TaskStatusCompleted | TaskStatusPending | TaskStatusFailed | TaskStatusRunning;
 
 /**
  * This type is used to represent the status of a task of unknown type.
