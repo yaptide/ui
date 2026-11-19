@@ -184,6 +184,20 @@ describe('detection errors', () => {
 		expect(result.current.detection).toBeUndefined();
 		error.mockRestore();
 	});
+
+	test('the error goes away when a later check succeeds', async () => {
+		const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+		mockConverter.detectSimulators.mockRejectedValueOnce(new Error('temporary failure'));
+
+		const { result } = renderHook(() => useInputFiles(), { wrapper });
+
+		await waitFor(() => expect(result.current.detectionError).toBe(DETECTION_ERROR));
+		await act(() => result.current.addFiles(SH_FILES, 'add', 'Uploading files'));
+
+		await waitFor(() => expect(result.current.detection).toBeDefined());
+		expect(result.current.detectionError).toBeUndefined();
+		error.mockRestore();
+	});
 });
 
 describe('files from another project', () => {

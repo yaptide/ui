@@ -60,7 +60,8 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 	const { isConverterReady, detectSimulators, requiredInputFiles } = usePythonConverter();
 	const [requiredFiles, setRequiredFiles] = useState<RequiredInputFiles>();
 	const [detected, setDetected] = useState<{ names: string; detection: SimulatorDetection }>();
-	const [detectionError, setDetectionError] = useState<string>();
+	const [requiredFilesFailed, setRequiredFilesFailed] = useState(false);
+	const [failedNames, setFailedNames] = useState<string>();
 	const [runSimulator, setRunSimulator] = useState<RunnableSimulator>(RUNNABLE_SIMULATORS[0]);
 	const [pendingSwitch, setPendingSwitch] = useState<string[]>();
 	const [projectChanged, setProjectChanged] = useState(false);
@@ -69,16 +70,19 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 	const detection = detected?.names === names ? detected.detection : undefined;
 	const lastDetection = detected?.detection;
 	const hasInputFiles = names !== '';
-
-	const reportDetectionError = useCallback((error: unknown) => {
-		console.error(error);
-		setDetectionError(DETECTION_ERROR);
-	}, []);
+	const detectionError =
+		requiredFilesFailed || failedNames === names ? DETECTION_ERROR : undefined;
 
 	useEffect(() => {
-		if (isConverterReady)
-			requiredInputFiles().then(setRequiredFiles).catch(reportDetectionError);
-	}, [isConverterReady, requiredInputFiles, reportDetectionError]);
+		if (!isConverterReady) return;
+
+		requiredInputFiles()
+			.then(setRequiredFiles)
+			.catch(error => {
+				console.error(error);
+				setRequiredFilesFailed(true);
+			});
+	}, [isConverterReady, requiredInputFiles]);
 
 	useEffect(() => {
 		if (!isConverterReady) return;
@@ -92,14 +96,20 @@ const InputFilesProvider = ({ children }: GenericContextProviderProps) => {
 
 		detectSimulators(files)
 			.then(result => {
-				if (current) setDetected({ names, detection: result });
+				if (!current) return;
+				setDetected({ names, detection: result });
+				setFailedNames(undefined);
 			})
-			.catch(reportDetectionError);
+			.catch(error => {
+				console.error(error);
+
+				if (current) setFailedNames(names);
+			});
 
 		return () => {
 			current = false;
 		};
-	}, [isConverterReady, detectSimulators, names, reportDetectionError]);
+	}, [isConverterReady, detectSimulators, names]);
 
 	useEffect(() => {
 		if (!pendingSwitch || !detection) return;
