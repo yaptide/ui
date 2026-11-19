@@ -313,14 +313,19 @@ export function RunSimulationForm({
 			collectOptions
 		};
 
-		if (editorJson && simulationSourceType === 'editor')
-			editorJson.beam.numberOfParticles = overridePrimariesCount;
+		const runEditorJson =
+			editorJson && simulationSourceType === 'editor'
+				? {
+						...editorJson,
+						beam: { ...editorJson.beam, numberOfParticles: overridePrimariesCount }
+					}
+				: editorJson;
 
 		setSource(runSimulator === SimulatorType.GEANT4 ? 'local' : 'remote');
 
 		runSimulation(
 			runType,
-			editorJson!,
+			runEditorJson!,
 			filteredInputFiles,
 			simulationSourceType,
 			simName,
