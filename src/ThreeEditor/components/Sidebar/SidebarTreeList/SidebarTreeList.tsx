@@ -2,7 +2,7 @@ import './SidebarTreeList.style.css';
 
 import { DropOptions, Tree, TreeMethods } from '@minoru/react-dnd-treeview';
 import { Box } from '@mui/material';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Object3D } from 'three';
 import { generateUUID } from 'three/src/math/MathUtils.js';
 
@@ -17,6 +17,22 @@ import { SidebarTreeListItem, TreeItem, TreeItemData } from './SidebarTreeListIt
 import { useGenerateTreeData } from './useGenerateTreeData';
 
 type TreeSource = SimulationSceneChild[];
+
+function getTreeAncestorIds(object: Object3D | null, sources: TreeSource): number[] {
+	const ancestorIds: number[] = [];
+
+	for (let parent = object?.parent; parent; parent = parent.parent) {
+		if (!isSimulationSceneContainer(parent) || !parent.flattenOnOutliner) {
+			ancestorIds.push(parent.id);
+		}
+
+		if (sources.includes(parent as SimulationSceneChild)) {
+			return ancestorIds;
+		}
+	}
+
+	return [];
+}
 
 function Placeholder() {
 	return (
@@ -42,26 +58,18 @@ export function SidebarTreeList(props: {
 	const [treeData, refreshTreeData] = useGenerateTreeData(treeId, sources);
 	const treeRef = useRef<TreeMethods>(null);
 
+	const [initialOpenIds] = useState(() => getTreeAncestorIds(editor.selected, sources));
+
 	const handleSelected = useCallback(
 		(object: Object3D | null) => {
 			if (!object) {
 				return;
 			}
 
-			const ancestorIds: number[] = [];
+			const ancestorIds = getTreeAncestorIds(object, sources);
 
-			for (let parent = object.parent; parent; parent = parent.parent) {
-				if (!isSimulationSceneContainer(parent) || !parent.flattenOnOutliner) {
-					ancestorIds.push(parent.id);
-				}
-
-				if (sources.includes(parent as SimulationSceneChild)) {
-					if (ancestorIds.length > 0) {
-						treeRef.current?.open(ancestorIds);
-					}
-
-					break;
-				}
+			if (ancestorIds.length > 0) {
+				treeRef.current?.open(ancestorIds);
 			}
 
 			document
@@ -173,6 +181,7 @@ export function SidebarTreeList(props: {
 	return (
 		<Tree
 			ref={treeRef}
+			initialOpen={initialOpenIds}
 			classes={{
 				root: 'editor-sidebar-tree',
 				dropTarget: 'editor-sidebar-drop-target'
