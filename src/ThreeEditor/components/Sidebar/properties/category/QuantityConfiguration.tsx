@@ -13,6 +13,7 @@ import {
 	SCORING_TYPE_ENUM
 } from '../../../../Simulation/Scoring/ScoringOutputTypes';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
+import { getFilterGroups } from '../../../../Simulation/Scoring/scoringTypeLabels';
 import { ObjectSelectPropertyField } from '../fields/ObjectSelectPropertyField';
 import {
 	BooleanPropertyField,
@@ -104,6 +105,7 @@ export function QuantityConfiguration(props: { editor: YaptideEditor; object: Ob
 				label='Filter'
 				value={watchedObject.filter?.uuid ?? ''}
 				options={editor.scoringManager.getFilterOptions()}
+				groups={getFilterGroups(editor.scoringManager.filters)}
 				onChange={v =>
 					setQuantityValue('filter', editor.scoringManager.getFilterByUuid(v.uuid))
 				}
