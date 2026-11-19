@@ -154,7 +154,12 @@ describe('ShieldhitConverter', () => {
 		//wait until the text has appeared in the first text field
 		await driver.wait(
 			until.elementTextMatches(
-				driver.findElement(By.xpath("//textarea[@aria-label = 'geo.dat text field']")),
+				await driver.wait(
+					until.elementLocated(
+						By.xpath("//textarea[@aria-label = 'geo.dat text field']")
+					),
+					15_000
+				),
 				/\S/
 			),
 			10_000

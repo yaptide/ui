@@ -80,6 +80,8 @@ export function camelToSnakeCase<T extends unknown>(
 	return obj as CamelToSnakeCaseObject<T>;
 }
 
+const FILE_MAP_KEYS = ['input_files'];
+
 /**
  * Converts an object with snake_case keys to camelCase keys.
  * @param obj The object to convert.
@@ -109,7 +111,9 @@ export function snakeToCamelCase<T extends unknown>(
 		return Object.fromEntries(
 			Object.entries(obj).map(([key, value]) => [
 				camelize(key),
-				recursive && typeof value !== 'string' ? snakeToCamelCase(value, recursive) : value
+				recursive && typeof value !== 'string' && !FILE_MAP_KEYS.includes(key)
+					? snakeToCamelCase(value, recursive)
+					: value
 			])
 		) as SnakeToCamelCaseObject<T>;
 

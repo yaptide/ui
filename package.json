@@ -24,6 +24,7 @@
 		"convert-units": "^3.0.0-beta.8",
 		"copy-to-clipboard": "^4.0.2",
 		"date-fns": "^4.4.0",
+		"fflate": "^0.8.3",
 		"fzstd": "^0.1.1",
 		"glob": "^14.0.4",
 		"jsroot": "^7.12.0",
@@ -196,6 +197,7 @@
 		]
 	},
 	"devDependencies": {
+		"@testing-library/react": "^16.3.3",
 		"@total-typescript/ts-reset": "^0.6.1",
 		"@types/node": "^26.6.6",
 		"@types/react": "^19.3.0",

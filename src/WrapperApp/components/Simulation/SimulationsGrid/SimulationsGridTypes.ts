@@ -29,7 +29,7 @@ export interface SimulationConfig {
 
 export interface SimulationsGridProps {
 	goToResults?: () => void;
-	setInputFiles: (inputFiles: SimulationInputFiles | undefined) => void;
+	setInputFiles: (inputFiles: SimulationInputFiles | undefined, title?: string) => void;
 	setShowInputFilesEditor: (show: boolean) => void;
 	simulator: SimulatorType;
 }
@@ -68,7 +68,7 @@ export interface SimulationState {
 	>;
 	setLocalResultsSimulationData: React.Dispatch<React.SetStateAction<FullSimulationData[]>>;
 	goToResults?: () => void;
-	setInputFiles: (inputFiles: SimulationInputFiles | undefined) => void;
+	setInputFiles: (inputFiles: SimulationInputFiles | undefined, title?: string) => void;
 	setShowInputFilesEditor: (show: boolean) => void;
 	yaptideEditor?: YaptideEditor | undefined;
 }

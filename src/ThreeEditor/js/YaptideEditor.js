@@ -46,6 +46,7 @@ export function YaptideEditor(container) {
 
 		cameraChanged: new Signal(),
 		cameraResetted: new Signal(),
+		viewportsReset: new Signal(),
 
 		geometryChanged: new Signal(),
 
@@ -597,7 +598,7 @@ YaptideEditor.prototype = {
 	},
 
 	resetCamera() {
-		this.signals.editorCleared.dispatch();
+		this.signals.viewportsReset.dispatch();
 	},
 
 	clear() {

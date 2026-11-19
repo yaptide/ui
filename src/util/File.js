@@ -1,6 +1,6 @@
 const link = document.createElement('a');
 
-function save(blob, filename) {
+export function save(blob, filename) {
 	if (link.href) {
 		URL.revokeObjectURL(link.href);
 	}

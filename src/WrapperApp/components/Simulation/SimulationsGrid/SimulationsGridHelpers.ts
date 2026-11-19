@@ -142,9 +142,9 @@ const SimulationsGridHelpers = (
 		}
 	};
 
-	const handleShowInputFiles = (inputFiles?: SimulationInputFiles) => {
+	const handleShowInputFiles = (inputFiles?: SimulationInputFiles, title?: string) => {
 		setShowInputFilesEditor(true);
-		setInputFiles(inputFiles);
+		setInputFiles(inputFiles, title);
 	};
 
 	const refreshPage = useCallback(

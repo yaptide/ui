@@ -149,8 +149,11 @@ describe('Geant4 Converter', () => {
 		//wait until the text has appeared in the first text field
 		await driver.wait(
 			until.elementTextMatches(
-				driver.findElement(
-					By.xpath("//textarea[@aria-label = 'geometry.gdml text field']")
+				await driver.wait(
+					until.elementLocated(
+						By.xpath("//textarea[@aria-label = 'geometry.gdml text field']")
+					),
+					15_000
 				),
 				/\S/
 			)
