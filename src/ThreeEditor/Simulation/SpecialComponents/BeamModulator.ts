@@ -74,7 +74,8 @@ export class BeamModulator extends SimulationPoints {
 		}
 
 		this.geometry.computeBoundingSphere();
-		this.editor.signals.objectSelected.dispatch(this);
+
+		if (this.editor.selected === this) this.editor.signals.objectSelected.dispatch(this);
 	}
 
 	get geometryParameters(): ModulatorParameters {

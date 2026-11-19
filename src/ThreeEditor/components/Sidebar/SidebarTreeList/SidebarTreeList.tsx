@@ -95,7 +95,15 @@ export function SidebarTreeList(props: {
 			};
 
 			const dragObject = findObjectById(dragSource.id)!;
-			let newParent = dropTarget ? findObjectById(dropTarget.id)!.data!.object : null;
+
+			// The outliner may flatten containers (e.g. QuantityContainer), so the tree parent
+			// isn't always the real Object3D parent. When reordering in place, keep the real one.
+			const isReorderInPlace = dragSource.parent === (dropTarget?.id ?? 0);
+			const newParent = isReorderInPlace
+				? dragSource.data.object.parent
+				: dropTarget
+					? findObjectById(dropTarget.id)!.data!.object
+					: null;
 
 			if (
 				dragObject.parent !== dragSource.parent ||

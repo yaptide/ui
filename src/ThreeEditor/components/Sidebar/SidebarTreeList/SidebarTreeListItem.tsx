@@ -163,7 +163,12 @@ export function SidebarTreeListItem(props: {
 
 	if (hasChild) {
 		const IconComponent = isOpen ? RemoveIcon : AddIcon;
-		collapseOrExpandIcon = <IconComponent onClick={onToggle} />;
+		collapseOrExpandIcon = (
+			<IconComponent
+				onClick={onToggle}
+				sx={{ cursor: 'pointer' }}
+			/>
+		);
 	} else if (node.parent) {
 		collapseOrExpandIcon = <Icon />;
 	}
