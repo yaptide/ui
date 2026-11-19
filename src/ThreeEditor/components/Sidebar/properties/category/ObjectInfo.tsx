@@ -3,7 +3,7 @@ import { Object3D } from 'three';
 
 import { SimulatorType } from '../../../../../types/RequestTypes';
 import { useSmartWatchEditorState } from '../../../../../util/hooks/signals';
-import { SetValueCommand } from '../../../../js/commands/SetValueCommand';
+import { useNameEditing } from '../../../../../util/hooks/useNameEditing';
 import { YaptideEditor } from '../../../../js/YaptideEditor';
 import { isBeam } from '../../../../Simulation/Physics/Beam';
 import { isScoringQuantity, ScoringQuantity } from '../../../../Simulation/Scoring/ScoringQuantity';
@@ -14,6 +14,7 @@ export function ObjectInfo(props: { editor: YaptideEditor; object: Object3D }) {
 	const { object, editor } = props;
 
 	const { state: watchedObject } = useSmartWatchEditorState(editor, object);
+	const nameEditing = useNameEditing(editor, watchedObject.object, watchedObject.name);
 
 	const visibleFlag = !isBeam(watchedObject);
 	let scoringType: string | undefined = 'unknown';
@@ -32,24 +33,10 @@ export function ObjectInfo(props: { editor: YaptideEditor; object: Object3D }) {
 				<>
 					<TextPropertyField
 						label='Name'
-						value={watchedObject.name}
-						onChange={value => {
-							editor.execute(
-								new SetValueCommand(editor, watchedObject.object, 'name', value)
-							);
-						}}
-						onBlur={() => {
-							if (watchedObject.name.length == 0) {
-								editor.execute(
-									new SetValueCommand(
-										editor,
-										watchedObject.object,
-										'name',
-										watchedObject.type
-									)
-								);
-							}
-						}}
+						value={nameEditing.value}
+						onChange={nameEditing.onChange}
+						onBlur={nameEditing.onBlur}
+						onKeyDown={nameEditing.onKeyDown}
 					/>
 					{showScoringType && (
 						<>
