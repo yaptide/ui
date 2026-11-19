@@ -49,10 +49,12 @@ import {
 	YaptideResponse
 } from '../types/ResponseTypes';
 import { FullSimulationData, SimulationService } from '../types/SimulationService';
+import { eagerGroups, pageGroups } from '../util/lazyPages';
 import { camelToSnakeCase } from '../util/Notation/Notation';
 import { ValidateShape } from '../util/Types';
 import { SimulationSourceType } from '../WrapperApp/components/Simulation/RunSimulationForm';
 import CacheMap from './CacheMap';
+import { resolveStoredPages } from './storedPages';
 
 const CACHEABLE_STATUSES = new Set([
 	StatusState.FAILED,
@@ -397,10 +399,17 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 				const response = await this.authKy
 					.get('results', {
 						signal,
-						searchParams: camelToSnakeCase({ jobId })
+						searchParams: camelToSnakeCase({ jobId }),
+						// every page of a simulation: on a slow link it takes longer than ky's 10 s
+						timeout: false
 					})
 					.json<ResponseGetJobResults>();
 
+				await Promise.all(
+					response.estimators.map(async estimator => {
+						estimator.pages = await resolveStoredPages(estimator.pages, signal);
+					})
+				);
 				updateEstimators(response.estimators);
 
 				const jobInputs = await this.getJobInputs(info, signal, cache);
@@ -486,14 +495,16 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 				const response = await this.authKy
 					.get('results', {
 						signal,
-						searchParams
+						searchParams,
+						// a group of maps or volumes can take MBs: on a slow link it takes longer than ky's 10 s
+						timeout: false
 					})
 					.json<ResponseGetEstimatorPageResult>();
 
 				const estimator: Estimator[] = [
 					{
 						name: estimatorName,
-						pages: response.pages
+						pages: await resolveStoredPages(response.pages, signal)
 					}
 				];
 
@@ -638,7 +649,8 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 		if (estimatorsPagesByDimensions) {
 			const allResults: JobResults[] = [];
 
-			for (const [dimension, pageDimension] of Object.entries(estimatorsPagesByDimensions)) {
+			// 2D and 3D pages load once they come into view (EstimatorTab)
+			for (const pageDimension of eagerGroups(pageGroups(estimatorsPagesByDimensions))) {
 				const results =
 					firstEstimatorName &&
 					(await this.getEstimatorsPages(
@@ -656,7 +668,17 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 				}
 			}
 
-			if (!inputs || allResults.length === 0) return undefined;
+			if (!inputs) return undefined;
+
+			// an estimator of maps only: its pages come when shown
+			if (allResults.length === 0 && firstEstimatorName)
+				allResults.push({
+					jobId: jobStatus.jobId,
+					estimators: [{ name: firstEstimatorName, pages: [] }],
+					message: ''
+				} as JobResults);
+
+			if (allResults.length === 0) return undefined;
 
 			const aggregationResults = allResults.reduce(
 				(acc, result) => {
@@ -668,7 +690,8 @@ export default class RemoteWorkerSimulationService implements SimulationService 
 						if (existingEstimator) {
 							existingEstimator.pages.push(...estimator.pages);
 						} else {
-							acc.estimators.push(estimator);
+							// a copy: the estimator is the cached result of its pages, which must not grow
+							acc.estimators.push({ ...estimator, pages: [...estimator.pages] });
 						}
 					});
 
