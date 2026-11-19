@@ -1,6 +1,9 @@
+/**
+ * @jest-environment node
+ */
 import { strToU8, zipSync } from 'fflate';
 
-import { readInputFiles } from '../readInputFiles';
+import { readInputFiles, readInputFilesWarnings } from '../readInputFiles';
 
 const file = (name: string, bytes: Uint8Array) =>
 	({ name, arrayBuffer: async () => bytes.buffer }) as unknown as File;
@@ -14,7 +17,9 @@ describe('readInputFiles', () => {
 			])
 		).toEqual({
 			files: { 'fl_sim.inp': 'START 1.0\n', 'Mój plik.dat': 'zażółć' },
-			skipped: []
+			skipped: [],
+			duplicates: [],
+			notUtf8: []
 		});
 	});
 
@@ -29,7 +34,9 @@ describe('readInputFiles', () => {
 
 		expect(await readInputFiles([file('Project_shieldhit.ZIP', zipped)])).toEqual({
 			files: { 'beam.dat': 'NSTAT 10 0', 'geo.dat': 'geo' },
-			skipped: ['Project_shieldhit.ZIP/project/image.png']
+			skipped: ['Project_shieldhit.ZIP/project/image.png'],
+			duplicates: [],
+			notUtf8: []
 		});
 	});
 
@@ -40,6 +47,32 @@ describe('readInputFiles', () => {
 				file('broken.zip', strToU8('not a zip')),
 				file('notes.txt', strToU8('ok'))
 			])
-		).toEqual({ files: { 'notes.txt': 'ok' }, skipped: ['results.bdo', 'broken.zip'] });
+		).toEqual({
+			files: { 'notes.txt': 'ok' },
+			skipped: ['results.bdo', 'broken.zip'],
+			duplicates: [],
+			notUtf8: []
+		});
+	});
+
+	test('reports files with the same name and files that are not UTF-8', async () => {
+		const zipped = zipSync({
+			'a/beam.dat': strToU8('first'),
+			'b/beam.dat': strToU8('second'),
+			'old/mat.dat': new Uint8Array([0x63, 0x61, 0x66, 0xe9])
+		});
+		const read = await readInputFiles([file('project.zip', zipped)]);
+
+		expect(read).toEqual({
+			files: { 'beam.dat': 'second', 'mat.dat': 'caf\uFFFD' },
+			skipped: [],
+			duplicates: ['beam.dat'],
+			notUtf8: ['project.zip/old/mat.dat']
+		});
+
+		expect(readInputFilesWarnings(read)).toEqual([
+			'Several files have the same name, only the last one was kept: beam.dat.',
+			'Characters that are not UTF-8 were replaced with \uFFFD in: project.zip/old/mat.dat.'
+		]);
 	});
 });

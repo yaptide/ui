@@ -12,7 +12,7 @@ import { addCustomStoppingPowerTableToEditorJSON } from '../../../ThreeEditor/Si
 import { SimulatorNames, SimulatorType } from '../../../types/RequestTypes';
 import { DragDropFiles } from './DragDropFiles';
 import { InputFilesEditor } from './InputFilesEditor';
-import { readInputFiles } from './readInputFiles';
+import { readInputFiles, readInputFilesWarnings } from './readInputFiles';
 import { inputFilesZipName, saveInputFilesAsZip } from './saveInputFiles';
 import { emptyFiles, InputFiles, RUNNABLE_SIMULATORS, simulatorName } from './simulatorDetection';
 
@@ -85,13 +85,14 @@ export default function InputEditorPanel() {
 		if (!fileList) return;
 
 		readInputFiles(Array.from(fileList))
-			.then(({ files, skipped }) => {
-				if (skipped.length > 0)
-					enqueueSnackbar(`Skipped files that are not text: ${skipped.join(', ')}`, {
-						variant: 'warning'
-					});
+			.then(read => {
+				const warnings = readInputFilesWarnings(read);
 
-				if (Object.keys(files).length > 0) addFiles(files, 'add', 'Uploading files');
+				if (warnings.length > 0)
+					enqueueSnackbar(warnings.join(' '), { variant: 'warning' });
+
+				if (Object.keys(read.files).length > 0)
+					addFiles(read.files, 'add', 'Uploading files');
 			})
 			.catch(e => {
 				enqueueSnackbar('Error while reading the uploaded files', { variant: 'error' });
