@@ -85,6 +85,8 @@ export function CommonOutputConfiguration(props: { editor: YaptideEditor; object
 				setScoringType(SCORING_TYPE_ENUM.DETECTOR);
 				watchedObject.scoringType = SCORING_TYPE_ENUM.DETECTOR;
 			}
+
+			editor.signals.objectChanged.dispatch(watchedObject.object, 'scoringType');
 		}
 	};
 

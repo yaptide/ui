@@ -25,6 +25,7 @@
 		"copy-to-clipboard": "^4.0.2",
 		"date-fns": "^4.4.0",
 		"fflate": "^0.8.3",
+		"fzstd": "^0.1.1",
 		"glob": "^14.0.4",
 		"jsroot": "^7.12.0",
 		"keycloak-js": "^26.2.1",

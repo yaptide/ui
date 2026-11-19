@@ -5,6 +5,7 @@ import { SimulationElement, SimulationElementJSON } from '../Base/SimulationElem
 import { OverrideMap } from '../Base/SimulationZone';
 import SimulationMaterial from '../Materials/SimulationMaterial';
 import { ScoringFilter } from './ScoringFilter';
+import { isOutput, ScoringOutput } from './ScoringOutput';
 import * as Scoring from './ScoringOutputTypes';
 import { SCORING_TYPE_ENUM } from './ScoringOutputTypes';
 import { DifferentialJSON, DifferentialModifier } from './ScoringQtyModifiers';
@@ -93,6 +94,12 @@ export class ScoringQuantity
 			this.editor.scoringManager.getOutputByQuantityUuid(this.uuid)?.scoringType ??
 			Scoring.SCORING_TYPE_ENUM.DETECTOR
 		);
+	}
+
+	getParentOutput(): ScoringOutput | undefined {
+		const output = this.parent?.parent;
+
+		return isOutput(output) ? output : undefined;
 	}
 
 	private upCaseFirst(s: string) {
