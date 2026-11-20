@@ -13,3 +13,7 @@ function save(blob, filename) {
 export function saveString(text, filename) {
 	save(new Blob([text], { type: 'text/plain' }), filename);
 }
+
+export function saveBlob(blob, filename) {
+	save(blob, filename);
+}

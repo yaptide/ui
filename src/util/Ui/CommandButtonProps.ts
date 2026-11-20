@@ -267,6 +267,8 @@ export type CommandButtonProps = {
 	onClick: () => void;
 	disabled?: boolean;
 	tooltip?: string;
+	/** Optional stable id used for E2E selectors (`data-testid`). */
+	name?: string;
 };
 type CommandButtonTuple = [
 	label: string,
