@@ -50,7 +50,8 @@ export function EditorTitleBar({ sx }: { sx: SxProps }) {
 						openEditProjectDialog({ yaptideEditor });
 					}
 				}}
-				disableRipple>
+				disableRipple
+				sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
 				<Typography
 					variant='subtitle1'
 					component='div'
@@ -58,7 +59,10 @@ export function EditorTitleBar({ sx }: { sx: SxProps }) {
 					role='heading'
 					sx={{
 						textTransform: 'none',
-						color: theme.palette.text.primary
+						color: theme.palette.text.primary,
+						maxWidth: { xs: '40vw', lg: 'none' },
+						overflowWrap: 'break-word',
+						whiteSpace: 'normal'
 					}}>
 					{title}
 				</Typography>
