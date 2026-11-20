@@ -1,3 +1,4 @@
+import { OverrideMap } from '../../Base/SimulationZone';
 import ConfigurationElement from './ConfigurationElement';
 import MaterialConfigurationElement from './MaterialConfigurationElement';
 import { ScoringQuantityConfigurator } from './ScoringQuantityConfigurator';
@@ -21,7 +22,9 @@ export default class MaterialPropertiesOverridesConfigurationElement implements 
 		return this.materialConfig.materialPropertiesOverrides;
 	}
 
-	set(value: unknown) {}
+	set(value: unknown) {
+		this.materialConfig.materialPropertiesOverrides = value as OverrideMap;
+	}
 
 	applySerialize(configurator: ScoringQuantityConfigurator) {
 		return {};

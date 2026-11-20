@@ -107,7 +107,6 @@ export const MEDIUM_KEYWORDS = {
 };
 
 export enum CONFIGURATION_OPTIONS {
-	PER_PRIMARY = 'PER_PRIMARY',
 	MATERIAL_MEDIUM_OVERRIDE = 'MATERIAL_MEDIUM_OVERRIDE',
 	N_K_MEDIUM_OVERRIDE = 'N_K_MEDIUM_OVERRIDE'
 }
@@ -127,7 +126,7 @@ export const SCORING_OPTIONS: IScoringOptions = {
 	[SimulatorType.SHIELDHIT]: {
 		DETECTOR: {
 			'1MeVNEq': {
-				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				configuration: new Set([]),
 				modifiers: new Set([
 					SCORING_MODIFIERS.ANGLE,
 					SCORING_MODIFIERS.DEDX,
@@ -143,7 +142,7 @@ export const SCORING_OPTIONS: IScoringOptions = {
 				])
 			},
 			'Alanine': {
-				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				configuration: new Set([]),
 				modifiers: new Set([
 					SCORING_MODIFIERS.ANGLE,
 					SCORING_MODIFIERS.DEDX,
@@ -191,10 +190,7 @@ export const SCORING_OPTIONS: IScoringOptions = {
 				])
 			},
 			'Dose': {
-				configuration: new Set([
-					CONFIGURATION_OPTIONS.PER_PRIMARY,
-					CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE
-				]),
+				configuration: new Set([CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE]),
 				modifiers: new Set([
 					SCORING_MODIFIERS.ANGLE,
 					SCORING_MODIFIERS.DEDX,
@@ -210,7 +206,7 @@ export const SCORING_OPTIONS: IScoringOptions = {
 				])
 			},
 			'DoseEqv': {
-				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				configuration: new Set([]),
 				modifiers: new Set([
 					SCORING_MODIFIERS.ANGLE,
 					SCORING_MODIFIERS.DEDX,
@@ -226,10 +222,7 @@ export const SCORING_OPTIONS: IScoringOptions = {
 				])
 			},
 			'DDD': {
-				configuration: new Set([
-					CONFIGURATION_OPTIONS.PER_PRIMARY,
-					CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE
-				]),
+				configuration: new Set([CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE]),
 				modifiers: new Set([
 					SCORING_MODIFIERS.ANGLE,
 					SCORING_MODIFIERS.DEDX,
@@ -245,10 +238,7 @@ export const SCORING_OPTIONS: IScoringOptions = {
 				])
 			},
 			'DoseGy': {
-				configuration: new Set([
-					CONFIGURATION_OPTIONS.PER_PRIMARY,
-					CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE
-				]),
+				configuration: new Set([CONFIGURATION_OPTIONS.MATERIAL_MEDIUM_OVERRIDE]),
 				modifiers: new Set([
 					SCORING_MODIFIERS.ANGLE,
 					SCORING_MODIFIERS.DEDX,
@@ -312,7 +302,7 @@ export const SCORING_OPTIONS: IScoringOptions = {
 				])
 			},
 			'Energy': {
-				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				configuration: new Set([]),
 				modifiers: new Set([
 					SCORING_MODIFIERS.ANGLE,
 					SCORING_MODIFIERS.DEDX,
@@ -328,7 +318,7 @@ export const SCORING_OPTIONS: IScoringOptions = {
 				])
 			},
 			'EqvDose': {
-				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				configuration: new Set([]),
 				modifiers: new Set([
 					SCORING_MODIFIERS.ANGLE,
 					SCORING_MODIFIERS.DEDX,
@@ -344,7 +334,7 @@ export const SCORING_OPTIONS: IScoringOptions = {
 				])
 			},
 			'Fluence': {
-				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				configuration: new Set([]),
 				modifiers: new Set([
 					SCORING_MODIFIERS.ANGLE,
 					SCORING_MODIFIERS.DEDX,
@@ -376,10 +366,7 @@ export const SCORING_OPTIONS: IScoringOptions = {
 				])
 			},
 			'NEqvDose': {
-				configuration: new Set([
-					CONFIGURATION_OPTIONS.PER_PRIMARY,
-					CONFIGURATION_OPTIONS.N_K_MEDIUM_OVERRIDE
-				]),
+				configuration: new Set([CONFIGURATION_OPTIONS.N_K_MEDIUM_OVERRIDE]),
 				modifiers: new Set([
 					SCORING_MODIFIERS.ANGLE,
 					SCORING_MODIFIERS.DEDX,
@@ -395,10 +382,7 @@ export const SCORING_OPTIONS: IScoringOptions = {
 				])
 			},
 			'NKERMA': {
-				configuration: new Set([
-					CONFIGURATION_OPTIONS.PER_PRIMARY,
-					CONFIGURATION_OPTIONS.N_K_MEDIUM_OVERRIDE
-				]),
+				configuration: new Set([CONFIGURATION_OPTIONS.N_K_MEDIUM_OVERRIDE]),
 				modifiers: new Set([
 					SCORING_MODIFIERS.ANGLE,
 					SCORING_MODIFIERS.DEDX,
@@ -560,7 +544,7 @@ export const SCORING_OPTIONS: IScoringOptions = {
 		},
 		ZONE: {
 			Energy: {
-				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				configuration: new Set([]),
 				modifiers: new Set([SCORING_MODIFIERS.E])
 			}
 		}
@@ -568,21 +552,21 @@ export const SCORING_OPTIONS: IScoringOptions = {
 	[SimulatorType.FLUKA]: {
 		DETECTOR: {
 			Fluence: {
-				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				configuration: new Set([]),
 				modifiers: new Set([])
 			},
 			Dose: {
-				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				configuration: new Set([]),
 				modifiers: new Set([])
 			}
 		},
 		ZONE: {
 			Fluence: {
-				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				configuration: new Set([]),
 				modifiers: new Set([SCORING_MODIFIERS.E, SCORING_MODIFIERS.ENUC])
 			},
 			Dose: {
-				configuration: new Set([CONFIGURATION_OPTIONS.PER_PRIMARY]),
+				configuration: new Set([]),
 				modifiers: new Set([])
 			}
 		}
@@ -613,14 +597,6 @@ export const MEDIUM_KEYWORD_OPTIONS = Object.keys(MEDIUM_KEYWORDS).reduce(
 export enum SCORING_TYPE_ENUM {
 	DETECTOR = 'DETECTOR',
 	ZONE = 'ZONE'
-}
-
-export function canChangePrimaryMultiplier(
-	simulator: SimulatorType,
-	scoringType: SCORING_TYPE_ENUM,
-	keyword: SCORING_KEYWORD
-): boolean {
-	return configurationExists(simulator, scoringType, keyword, CONFIGURATION_OPTIONS.PER_PRIMARY);
 }
 
 export function canChangeNKMedium(

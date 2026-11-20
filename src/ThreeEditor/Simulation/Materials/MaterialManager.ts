@@ -6,6 +6,7 @@ import { CounterMap } from '../../../util/CounterMap/CounterMap';
 import { SerializableState } from '../../js/EditorJson';
 import { JSON_VERSION, YaptideEditor } from '../../js/YaptideEditor.js';
 import { SimulationElementJSON } from '../Base/SimulationElement';
+import type { SimulationZoneMaterialJSON } from '../Base/SimulationZone';
 import { DEFAULT_MATERIAL_ICRU, MATERIALS, WORLD_ZONE_DEFAULT_MATERIAL_ICRU } from './materials';
 import SimulationMaterial, {
 	isSimulationMaterial,
@@ -105,8 +106,31 @@ export class MaterialManager
 
 	selectedMaterials: CounterMap<string> = new CounterMap<string>();
 
+	private clearCustomMaterials() {
+		for (const icru of Object.keys(this._customMaterials)) delete this._customMaterials[icru];
+	}
+
 	getMaterialByUuid(uuid: string): SimulationMaterial | undefined {
 		return Object.values(this._customMaterials).find(material => material.uuid === uuid);
+	}
+
+	resolveMaterialFromJSON({
+		materialUuid,
+		customMaterial
+	}: Pick<SimulationZoneMaterialJSON, 'materialUuid' | 'customMaterial'>):
+		SimulationMaterial | undefined {
+		if (!materialUuid) return this.defaultMaterial;
+
+		const material = this.getMaterialByUuid(
+			customMaterial && materialUuid === customMaterial.uuid
+				? customMaterial.originalMaterialUuid
+				: materialUuid
+		);
+
+		if (material || !customMaterial || !(customMaterial.icru in this.materials))
+			return material;
+
+		return this.materials[customMaterial.icru];
 	}
 	/***************************************************************/
 
@@ -185,7 +209,7 @@ export class MaterialManager
 
 	reset(): void {
 		this.selectedMaterials.clear();
-		this._customMaterials = {};
+		this.clearCustomMaterials();
 
 		// Ensure default material and world zone material are added to _customMaterials
 		// This ensures that when a new empty project is created, these materials are available
@@ -201,6 +225,16 @@ export class MaterialManager
 		const worldZoneMaterial = this._customMaterials[WORLD_ZONE_DEFAULT_MATERIAL_ICRU];
 		const worldZoneMaterialUuid = worldZoneMaterial?.uuid;
 
+		const quantityMaterialUuids = new Set(
+			this.editor.scoringManager.outputs
+				.flatMap(output => output.quantities)
+				.map(quantity => quantity.toSerialized())
+				.flatMap(({ materialUuid, customMaterial }) =>
+					// Custom materials are stored in the quantity JSON; their base is found by ICRU on load.
+					materialUuid && !customMaterial ? [materialUuid] : []
+				)
+		);
+
 		const materials = Object.entries(this._customMaterials)
 			.map(([_icru, material]) => {
 				const serialized = material.toSerialized();
@@ -210,8 +244,9 @@ export class MaterialManager
 			.filter(({ uuid: matUuid }) => {
 				const isWorldZoneMaterial = worldZoneMaterialUuid === matUuid;
 				const isSelected = this.selectedMaterials.has(matUuid);
+				const isUsedByQuantity = quantityMaterialUuids.has(matUuid);
 
-				return isSelected || isWorldZoneMaterial;
+				return isSelected || isWorldZoneMaterial || isUsedByQuantity;
 			});
 
 		return {
@@ -238,7 +273,7 @@ export class MaterialManager
 		this.name = name;
 
 		// Clear existing materials and assign the deserialized ones
-		this._customMaterials = {};
+		this.clearCustomMaterials();
 
 		Object.assign(
 			this._customMaterials,

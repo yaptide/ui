@@ -67,15 +67,7 @@ export default class MaterialConfigurationElement implements ConfigurationElemen
 		this._materialPropertiesOverrides = {
 			...overrides
 		};
-
-		const isCurrentlyUsingCustomMaterial: boolean = this.isSomePropertyOverridden();
-
-		if (isCurrentlyUsingCustomMaterial !== this.usingCustomMaterial) {
-			this.usingCustomMaterial = isCurrentlyUsingCustomMaterial;
-
-			if (this.usingCustomMaterial) this.material.decrement();
-			else this.material.increment();
-		}
+		this.usingCustomMaterial = this.isSomePropertyOverridden();
 	}
 
 	get materialPropertiesOverrides(): OverrideMap {
@@ -83,12 +75,10 @@ export default class MaterialConfigurationElement implements ConfigurationElemen
 	}
 
 	set simulationMaterial(value: SimulationMaterial) {
+		this.material = value;
 		this.materialPropertiesOverrides = {
 			...getDefaultMaterialPropertiesOverrides(this.material).materialPropertiesOverrides
 		};
-		this.material.decrement();
-		this.material = value as SimulationMaterial;
-		this.material.increment();
 	}
 
 	get() {
@@ -124,14 +114,7 @@ export default class MaterialConfigurationElement implements ConfigurationElemen
 	}
 
 	private reconstructMaterialFromJSON(json: SimulationZoneJSON) {
-		const { materialUuid, customMaterial } = json;
-		const simulationMaterial = materialUuid
-			? this.editor.materialManager.getMaterialByUuid(
-					customMaterial && materialUuid === customMaterial.uuid
-						? customMaterial.originalMaterialUuid
-						: materialUuid
-				)
-			: this.editor.materialManager.defaultMaterial;
+		const simulationMaterial = this.editor.materialManager.resolveMaterialFromJSON(json);
 
 		if (simulationMaterial === undefined) throw new Error('SimulationMaterial not found');
 		this.simulationMaterial = simulationMaterial;
@@ -141,6 +124,7 @@ export default class MaterialConfigurationElement implements ConfigurationElemen
 		configurator: ScoringQuantityConfigurator,
 		json: { [key: string]: any }
 	): void {
+		this.hasMaterial = !!json.materialUuid;
 		this.reconstructMaterialFromJSON(json as SimulationZoneJSON);
 		this.materialPropertiesOverrides = {
 			...Object.entries(json['materialPropertiesOverrides'] ?? {}).reduce<OverrideMap>(
