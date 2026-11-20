@@ -60,7 +60,7 @@ export function EditorTitleBar({ sx }: { sx: SxProps }) {
 					sx={{
 						textTransform: 'none',
 						color: theme.palette.text.primary,
-						maxWidth: { xs: '40vw', lg: '60vw' },
+						maxWidth: { xs: '40vw', lg: 'none' },
 						overflowWrap: 'break-word',
 						whiteSpace: 'normal'
 					}}>

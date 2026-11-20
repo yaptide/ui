@@ -31,13 +31,18 @@ import SimulationPanel from './components/Simulation/SimulationPanel';
 import { useRunGeant4LocalWorkerSimulation } from './UseRunGeant4LocalWorkerSimulation';
 import { useRunRemoteWorkerSimulation } from './UseRunRemoteWorkerSimulation';
 
+// Width of the navigation drawer (the desktop grid column and the mobile overlay share this value).
+const NAV_DRAWER_WIDTH = 200;
+// Vertical space (px) taken by the header, grid gaps and padding on mobile. Keeps the content
+// row at least a full viewport tall while the sidebar stacks in the auto-sized row below it.
+const MOBILE_CONTENT_VERTICAL_OFFSET = 180;
+
 const StyledAppGrid = styled(Box)(({ theme }) => ({
 	background: theme.palette.background.default,
 	display: 'grid',
 	width: '100%',
 	height: '100vh',
-	gridTemplateColumns:
-		'[drawer-start] 200px [drawer-end content-start] 1fr [content-end sidebar-start] 370px [sidebar-end]',
+	gridTemplateColumns: `[drawer-start] ${NAV_DRAWER_WIDTH}px [drawer-end content-start] 1fr [content-end sidebar-start] 370px [sidebar-end]`,
 	gridTemplateRows: '[header-start] 52px [header-end content-start] auto [content-end]',
 	gap: 8,
 	padding: 8,
@@ -54,13 +59,9 @@ const StyledAppGrid = styled(Box)(({ theme }) => ({
 		minHeight: '100vh',
 		gridTemplateColumns:
 			'[drawer-start drawer-end content-start sidebar-start] 1fr [content-end sidebar-end]',
-		gridTemplateRows:
-			'[header-start] minmax(52px, auto) [header-end content-start] minmax(calc(100vh - 180px), 1fr) [content-end sidebar-row-start] auto [sidebar-row-end]'
+		gridTemplateRows: `[header-start] minmax(52px, auto) [header-end content-start] minmax(calc(100vh - ${MOBILE_CONTENT_VERTICAL_OFFSET}px), 1fr) [content-end sidebar-row-start] auto [sidebar-row-end]`
 	}
 }));
-
-// Width of the mobile nav overlay, matching the desktop drawer column (200px).
-const MOBILE_NAV_DRAWER_WIDTH = 200;
 
 function WrapperApp() {
 	const { demoMode } = useConfig();
@@ -70,7 +71,6 @@ function WrapperApp() {
 		FullSimulationData | undefined
 	>();
 	const { isAuthorized, logout } = useAuth();
-	const [open, setOpen] = useState(true);
 	const [tabsValue, setTabsValue] = useState('editor');
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -191,8 +191,6 @@ function WrapperApp() {
 						<NavPanel
 							handleChange={handleChange}
 							tabsValue={tabsValue}
-							open={open}
-							setOpen={setOpen}
 						/>
 					</TabPanel>
 				)}
@@ -214,12 +212,10 @@ function WrapperApp() {
 								}
 							}
 						}}>
-						<Box sx={{ width: MOBILE_NAV_DRAWER_WIDTH, height: '100%' }}>
+						<Box sx={{ width: NAV_DRAWER_WIDTH, height: '100%' }}>
 							<NavPanel
 								handleChange={handleMobileNavChange}
 								tabsValue={tabsValue}
-								open={open}
-								setOpen={setOpen}
 							/>
 						</Box>
 					</Drawer>
