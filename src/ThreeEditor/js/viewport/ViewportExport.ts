@@ -84,8 +84,17 @@ export function getMaxExportSide(maxTextureSize?: number): number {
  * The MVP exports at native 1x resolution and cannot render a different buffer size, so a changed
  * result means the viewport cannot be exported at full resolution: the caller must raise a clear
  * error instead of silently scaling (downscaling lands in stage 2).
+ *
+ * @throws {ExportImageError} when `width`/`height` are not finite positive numbers.
  */
 export function clampExportSize(width: number, height: number, maxSide: number): ExportSize {
+	if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
+		throw new ExportImageError(
+			'canvas-limit',
+			`Invalid viewport size: ${width}x${height}. Expected finite positive numbers.`
+		);
+	}
+
 	const safeWidth = Math.max(1, Math.floor(width));
 	const safeHeight = Math.max(1, Math.floor(height));
 	const sideScale = Math.min(1, maxSide / safeWidth, maxSide / safeHeight);
@@ -188,4 +197,19 @@ export function buildPngFilename(token: string, date: Date = new Date()): string
 	)}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
 
 	return `yaptide-${sanitizeFileNamePart(token)}-${stamp}.png`;
+}
+
+/** Characters that are illegal in file names on Windows/macOS/Linux. */
+const ILLEGAL_FILENAME_CHARACTERS = /[\\/:*?"<>|]/g;
+
+/**
+ * Builds a safe PNG file name from raw user input: trims it, removes characters that are illegal in
+ * file names on common platforms and guarantees the `.png` extension appears exactly once. When
+ * nothing usable is left it falls back to {@link buildPngFilename}.
+ */
+export function sanitizeExportFileName(value: string, date: Date = new Date()): string {
+	const withoutExtension = value.trim().replace(/\.png$/i, '');
+	const sanitized = withoutExtension.replace(ILLEGAL_FILENAME_CHARACTERS, '').trim();
+
+	return sanitized.length > 0 ? `${sanitized}.png` : buildPngFilename('view', date);
 }

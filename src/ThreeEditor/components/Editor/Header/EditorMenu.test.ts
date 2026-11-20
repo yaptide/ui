@@ -1,4 +1,4 @@
-import { Builder, By, until, WebDriver } from 'selenium-webdriver';
+import { Builder, By, Key, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 
 // NOTE: like the other selenium suites in this repository, this test requires the dev server to be
@@ -59,8 +59,14 @@ describe('View menu - Export view as PNG', () => {
 			),
 			10_000
 		);
+		await driver.wait(until.elementIsVisible(dialog), 10_000);
 
-		expect(await dialog.findElement(By.id(dialogTitleId)).getText()).toBe('Export view as PNG');
+		// The dialog is inserted into the DOM before its enter transition finishes, so wait for the
+		// title text to actually render instead of reading it immediately (avoids an empty getText()).
+		const titleElement = await dialog.findElement(By.id(dialogTitleId));
+
+		await driver.wait(until.elementTextIs(titleElement, 'Export view as PNG'), 10_000);
+		expect(await titleElement.getText()).toBe('Export view as PNG');
 
 		// Default file name follows yaptide-<view>-<YYYYMMDD-HHmmss>.png
 		const fileNameInput = await dialog.findElement(
@@ -76,5 +82,56 @@ describe('View menu - Export view as PNG', () => {
 			until.elementLocated(By.xpath("//*[contains(text(), 'View exported as PNG.')]")),
 			15_000
 		);
+	}, 60_000);
+
+	test('pressing Enter in the file name field exports without reloading the page', async () => {
+		await driver.get('http://localhost:3000');
+
+		// Open the Editor screen
+		await driver.wait(until.elementLocated(By.xpath("//div[@aria-label = 'Editor']")), 10_000);
+		const editorButton = await driver.findElement(By.xpath("//div[@aria-label = 'Editor']"));
+		await driver.wait(until.elementIsEnabled(editorButton), 10_000);
+		await editorButton.click();
+
+		// View > Export view as PNG…
+		const viewMenuButton = await driver.wait(
+			until.elementLocated(By.xpath("//button[@data-testid = 'menu-view']")),
+			10_000
+		);
+		await viewMenuButton.click();
+		await driver.sleep(1000);
+
+		const exportOption = await driver.wait(
+			until.elementLocated(By.xpath("//li[@data-testid = 'export-image']")),
+			10_000
+		);
+		await exportOption.click();
+
+		const dialog = await driver.wait(
+			until.elementLocated(By.xpath("//div[@role = 'dialog' or @role = 'alertdialog']")),
+			10_000
+		);
+		await driver.wait(until.elementIsVisible(dialog), 10_000);
+
+		const fileNameInput = await dialog.findElement(
+			By.xpath(".//fieldset[.//*[contains(text(), 'File name')]]/preceding-sibling::input")
+		);
+
+		// A marker that would be lost on a full page reload: pressing Enter must not implicitly
+		// submit the form (no reload) but must still run the export.
+		await driver.executeScript('window.__exportEnterMarker = true;');
+
+		await fileNameInput.click();
+		await fileNameInput.sendKeys(Key.ENTER);
+
+		await driver.wait(
+			until.elementLocated(By.xpath("//*[contains(text(), 'View exported as PNG.')]")),
+			15_000
+		);
+
+		expect(
+			await driver.executeScript<boolean>('return window.__exportEnterMarker === true;')
+		).toBe(true);
+		expect(await driver.getCurrentUrl()).not.toContain('?');
 	}, 60_000);
 });

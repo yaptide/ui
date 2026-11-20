@@ -230,9 +230,8 @@ export function Viewport(
 			grid.visible = gridVisibility;
 			selectionBox.visible = selectionBoxVisibility;
 			editorHelpersVisibility.forEach(([helper, visible]) => (helper.visible = visible));
+			renderer.autoClear = true;
 		}
-
-		renderer.autoClear = true;
 
 		targetContext.drawImage(renderer.domElement, 0, 0);
 	}

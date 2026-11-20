@@ -1,17 +1,15 @@
 import { Button, Checkbox, FormControlLabel, TextField } from '@mui/material';
 import { enqueueSnackbar } from 'notistack';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 
 import { StoreContext } from '../../../services/StoreService';
 import { saveBlob } from '../../../util/File';
-import { buildPngFilename, viewNameToToken } from '../../js/viewport/ViewportExport';
+import {
+	buildPngFilename,
+	sanitizeExportFileName,
+	viewNameToToken
+} from '../../js/viewport/ViewportExport';
 import { ConcreteDialogProps, CustomDialog } from './CustomDialog';
-
-const normalizePngName = (value: string) => {
-	const trimmed = value.trim().replace(/\.png$/i, '');
-
-	return `${trimmed.length > 0 ? trimmed : buildPngFilename('view')}.png`;
-};
 
 export function ExportImageDialog({
 	onClose,
@@ -42,7 +40,7 @@ export function ExportImageDialog({
 				format: 'image/png'
 			});
 
-			saveBlob(result.blob, normalizePngName(fileName));
+			saveBlob(result.blob, sanitizeExportFileName(fileName));
 			enqueueSnackbar('View exported as PNG.', { variant: 'success' });
 			onClose();
 		} catch (error) {
@@ -54,6 +52,12 @@ export function ExportImageDialog({
 		}
 	};
 
+	// Pressing Enter in the form must not reload the page (implicit submit); it triggers the export.
+	const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		void handleDownload();
+	};
+
 	return (
 		<CustomDialog
 			onClose={onClose}
@@ -61,6 +65,7 @@ export function ExportImageDialog({
 			contentText='The active 3D view will be exported as an opaque PNG file.'
 			body={
 				<form
+					onSubmit={handleSubmit}
 					style={{
 						display: 'flex',
 						flexDirection: 'column',
@@ -87,7 +92,7 @@ export function ExportImageDialog({
 						}
 					/>
 					<FormControlLabel
-						label='Include helpers'
+						label='Include helper objects (lights, cameras, selection)'
 						sx={{
 							'&.MuiFormControlLabel-root': { paddingLeft: 1 },
 							'userSelect': 'none'

@@ -8,6 +8,7 @@ import {
 	MAX_EXPORT_AREA,
 	MAX_EXPORT_SIDE,
 	resolveActiveViewportName,
+	sanitizeExportFileName,
 	viewNameToToken
 } from './ViewportExport';
 
@@ -54,6 +55,28 @@ describe('clampExportSize', () => {
 	test('enforces the total-area limit', () => {
 		const { width, height } = clampExportSize(8000, 8000, MAX_EXPORT_SIDE);
 		expect(width * height).toBeLessThanOrEqual(MAX_EXPORT_AREA);
+	});
+
+	test('rejects non-finite and non-positive sizes', () => {
+		expect(() => clampExportSize(Number.NaN, 100, MAX_EXPORT_SIDE)).toThrow(ExportImageError);
+		expect(() => clampExportSize(100, Number.POSITIVE_INFINITY, MAX_EXPORT_SIDE)).toThrow(
+			ExportImageError
+		);
+		expect(() => clampExportSize(0, 100, MAX_EXPORT_SIDE)).toThrow(ExportImageError);
+		expect(() => clampExportSize(100, -1, MAX_EXPORT_SIDE)).toThrow(ExportImageError);
+	});
+
+	test('tags invalid sizes with the canvas-limit code', () => {
+		let caught: unknown;
+
+		try {
+			clampExportSize(0, 0, MAX_EXPORT_SIDE);
+		} catch (error) {
+			caught = error;
+		}
+
+		expect(caught).toBeInstanceOf(ExportImageError);
+		expect((caught as ExportImageError).code).toBe('canvas-limit');
 	});
 });
 
@@ -126,5 +149,28 @@ describe('buildPngFilename', () => {
 		expect(buildPngFilename('My View', new Date(2026, 2, 4, 5, 6, 7))).toBe(
 			'yaptide-my-view-20260304-050607.png'
 		);
+	});
+});
+
+describe('sanitizeExportFileName', () => {
+	const date = new Date(2026, 2, 4, 5, 6, 7);
+
+	test('trims whitespace and appends the .png extension', () => {
+		expect(sanitizeExportFileName('  my view  ', date)).toBe('my view.png');
+	});
+
+	test('removes characters that are illegal in file names', () => {
+		expect(sanitizeExportFileName('a/b\\c:d*e?f"g<h>i|j', date)).toBe('abcdefghij.png');
+	});
+
+	test('does not duplicate an existing .png extension', () => {
+		expect(sanitizeExportFileName('shot.png', date)).toBe('shot.png');
+		expect(sanitizeExportFileName('shot.PNG', date)).toBe('shot.png');
+	});
+
+	test('falls back to the default name when nothing usable is left', () => {
+		expect(sanitizeExportFileName('   ', date)).toBe('yaptide-view-20260304-050607.png');
+		expect(sanitizeExportFileName('///', date)).toBe('yaptide-view-20260304-050607.png');
+		expect(sanitizeExportFileName('.png', date)).toBe('yaptide-view-20260304-050607.png');
 	});
 });
